@@ -20,8 +20,6 @@
 #include "util_io.h"
 #include "util_syntax.h"
 #include "conv.h"
-#include <string.h>
-#include <stdio.h>
 #include <assert.h>
 
 static void CmdPktSrvCallBackKeepAlive (Event *event);

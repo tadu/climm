@@ -37,7 +37,6 @@
 #if HAVE_WCTYPE_H
 #include <wctype.h>
 #endif
-#include <string.h>
 #include <ctype.h>
 #include "util_str.h"
 #include "preferences.h"

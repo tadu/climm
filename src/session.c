@@ -27,7 +27,6 @@
 #include "cmd_pkt_cmd_v5_util.h"
 #include "cmd_pkt_v8.h"
 #include "tcp.h"
-#include <string.h>
 #if HAVE_NETDB_H
 #include <netdb.h>
 #endif

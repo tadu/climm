@@ -22,9 +22,6 @@
  */
 
 #include "micq.h"
-#if HAVE_STRING_H
-#include <string.h>
-#endif
 #if HAVE_ERRNO_H
 #include <errno.h>
 #endif

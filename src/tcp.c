@@ -30,10 +30,7 @@
 #include "cmd_pkt_v8_snac.h"
 #include "cmd_pkt_v8.h"
 
-#include <stdio.h>
 #include <unistd.h>
-#include <string.h>
-#include <time.h>
 #include <assert.h>
 #include <fcntl.h>
 #include <errno.h>

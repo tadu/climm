@@ -36,7 +36,6 @@
 #include "packet.h"
 
 #include <gnutls/gnutls.h>
-#include <string.h>
 #include <errno.h>
 
 #ifndef ENABLE_TCL

@@ -21,7 +21,6 @@
  */
 
 #include "micq.h"
-#include <string.h>
 #include <assert.h>
 #include "util_syntax.h"
 #include "packet.h"

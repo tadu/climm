@@ -22,9 +22,6 @@
 
 #define MICQ_BUILD_NUM 0x80046306
 
-#include <string.h>
-#include <stdio.h>
-
 #include "micq.h"
 #include "buildmark.h"
 #include "conv.h"

@@ -38,7 +38,6 @@
 #else
 #include <tcl.h>
 #endif
-#include <string.h>
 
 
 static Tcl_Interp *tinterp;

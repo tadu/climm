@@ -30,8 +30,6 @@
 #include "contact.h"
 #include "buildmark.h"
 #include <assert.h>
-#include <stdio.h>
-#include <string.h>
 
 #define cap_id   "\x82\x22\x44\x45\x53\x54\x00\x00"
 #define cap_none "\x00\x00\x00\x00\x00\x00\x00\x00"

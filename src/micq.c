@@ -32,12 +32,9 @@
 #include "util_ssl.h"
 #include "os.h"
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <limits.h>
 #include <fcntl.h>
 #include <stdarg.h>
-#include <string.h>
 #include <ctype.h>
 #include <assert.h>
 

@@ -17,11 +17,8 @@
 #include "tcp.h"
 #include "packet.h"
 #include "conv.h"
-#include <stdio.h>
-#include <stdlib.h>
 #include <fcntl.h>
 #include <stdarg.h>
-#include <string.h>
 #include <ctype.h>
 #include <assert.h>
 #include <limits.h>

@@ -2,7 +2,6 @@
 #include "micq.h"
 #include <assert.h>
 #include <stdarg.h>
-#include <string.h>
 #include "conv.h"
 #include "util_ui.h"
 #include "preferences.h"

@@ -2,11 +2,8 @@
 /* Copyright: This file may be distributed under version 2 of the GPL licence. */
 
 #include "micq.h"
-#include <stdlib.h>
-#include <stdio.h>
 #include <stdarg.h>
 #include <assert.h>
-#include <string.h>
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
