@@ -1203,3 +1203,5 @@
 2566:Contact upload for %s%s%s failed, already on server.\n
 2567:Contact upload for %s%s%s succeeded.\n
 2568:Ignored request for auto-response from %s%s%s.\n
+2569:Send <message> and further messages to <contacts> until canceled.
+2570:Continuing chat with %s%s%s:\n
