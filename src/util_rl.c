@@ -205,8 +205,8 @@ void ReadLineTtyUnset (void)
         M_printf (i18n (9999, "Can't restore terminal modes.\n"));
     }
     else
-#endif
         tty_saved = 0;
+#endif
 }
 
 /*
@@ -320,6 +320,7 @@ void ReadLineHandleSig (void)
             ReadLinePromptReset ();
             ReadLinePrompt ();
         }
+#if defined(SIGTSTP) && defined(SIGCONT)
         if (sig & 4)
         {
             ReadLineTtySet ();
@@ -338,6 +339,7 @@ void ReadLineHandleSig (void)
             signal (SIGTSTP, SIG_DFL);
             raise (SIGTSTP);
         }
+#endif
     }
 }
 
@@ -1110,9 +1112,10 @@ str_t ReadLine (UBYTE newbyte)
     switch (rl_stat)
     {
         case 0:
+            if (0) ;
 #if HAVE_TCGETATTR
 #if defined(VERASE)
-            if (ucs == tty_attr.c_cc[VERASE] && tty_attr.c_cc[VERASE] != _POSIX_VDISABLE)
+            else if (ucs == tty_attr.c_cc[VERASE] && tty_attr.c_cc[VERASE] != _POSIX_VDISABLE)
                 rl_key_backspace ();
 #endif
 #if defined(VEOF)

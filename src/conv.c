@@ -805,7 +805,7 @@ static strc_t iconv_to_koi8 (strc_t in, UBYTE enc)
             s_catc (&str, c & 0x80 ? CHAR_NOT_AVAILABLE : c | 0x80);
         }
         else
-            s_catc (&str, c);
+            s_catc (&str, ucs);
     }
     return &str;
 }
@@ -864,7 +864,7 @@ static strc_t iconv_to_win1251 (strc_t in, UBYTE enc)
             s_catc (&str, c & 0x80 ? CHAR_NOT_AVAILABLE : c | 0x80);
         }
         else
-            s_catc (&str, c);
+            s_catc (&str, ucs);
     }
     return &str;
 }

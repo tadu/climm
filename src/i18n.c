@@ -54,7 +54,7 @@ static int i18nAdd (FILE *i18nf, int debug, int *res);
  */
 void i18nInit (const char *arg)
 {
-    const char *encnli = NULL, *earg = arg;
+    const char *earg = arg;
     char *new;
 
     if (!arg || !*arg || !strcasecmp (arg, "C") || !strcasecmp (arg, "POSIX"))
@@ -136,7 +136,7 @@ void i18nInit (const char *arg)
 #if HAVE_NL_LANGINFO
     if (prG->enc_loc == ENC_AUTO && !prG->locale_broken)
     {
-        encnli = nl_langinfo (CODESET);
+        const char *encnli = nl_langinfo (CODESET);
         if (encnli)
             prG->enc_loc = ConvEnc (encnli) | ENC_FAUTO;
     }
