@@ -1,0 +1,959 @@
+.\" $Id$ -*- nroff -*-
+.\"  EN: micq.7,v 1.36.2.12 2004/01/06 00:51:17
+.TH MICQ 7 mICQ
+.SH N\['A]ZOV
+mICQ - pr\['i]kazy programu
+.SH POPIS
+T\['a]to manov\['a] str\['a]nka popisuje pr\['i]kazy mICQ.  T\['a]to str\['a]nka obsahuje
+tie ist\['e] inform\['a]cie ako online help, ale podrobnej¹ie a rozsiahlej¹ie.
+.SH PR\['I]KAZY - mICQ KLIENT
+.TP
+.BI verbose \ [verb]
+Nastav\['i] \['u]roveò hl\['a]¹ok na
+.IR verb ,
+alebo zobraz\['i] aktu\['a]lnu \['u]roveò. \['U]roveò hl\['a]sen\['i] je sada pr\['i]znakov:
+.RS
+.TP
+.B 8
+Zobrazuje chyby protokolu.
+.TP
+.B 16
+Zobrazuje tvorbu a odstraòovanie paketov.
+.TP
+.B 32
+Zobrazuje plnenie a vypr\['a]zdòovanie buffera.
+.TP
+.B 64
+Zobrazuje vytvoren\['e] a zru¹en\['e] spojenia.
+.TP
+.B 256
+Zobrazuje v6 pakety a ich \['u]daje.
+.TP
+.B 4096
+Zobrazuje v7/v8 pakety.
+.TP
+.B 8192
+Zobrazuje hexdump v7/v8 paketov.
+.TP
+.B 16284
+Uklad\('a tieto pakety na disk.
+.TP
+.B 65536
+Zobrazuje peer-to-peer pakety.
+.TP
+.B 131072
+Zobrazuje hexdump peer-to-peer paketov.
+.TP
+.B 262144
+Uklad\('a tieto pakety na disk.
+.TP
+.B 2097152
+Zobrazuje peer-to-peer výmenu (handshake).
+.TP
+.B 4194304
+Zobrazuje I/O nastavenie spojenia.
+.PP
+Tak¾e ka¾d\('a nenulov\('a \('uroveò hl\('asen\('i zobrazuje viac inform\('aci\('i,
+a ka¾d\('a \('uroveò vy¹¹ia ne¾ 1 ïal¹ie.
+.RE
+.TP
+.B clear
+Vyma¾e obrazovku.
+.TP
+.BI sound\ [on|off|event]
+Prep\('ina zvuk
+.B on
+alebo
+.BR off ,
+alebo nastav\('i skript udalosti
+.B event
+pre p\('ipnutie. Nov\('a syntax pre 0.4.10.
+.TP
+.BI autoaway \ [timeout|on|off]
+Nastav\('i timeout na
+.IR timeout ,
+alebo zapne automatick\('y stav Preè
+.I on
+s pou¾it\('im naposledy nastaven\('eho èasu, alebo vypne automatick\('y stav Preè
+.IR off ,
+zachov\('avaj\('uc naposledy nastaven\('y èas. Timeout 0 je ekvivalentn\('y
+.IR off .
+Ak nie je vlo¾en\('y ¾iaden argument, zobraz\('i aktu\('alne nastavenie.
+.TP
+.BI auto \ [on|off]
+Zap\('ina alebo vyp\('ina automatick\('e odpovede. Bez parametru zobraz\('i
+automatick\('e spr\('avy.
+.TP
+.BI auto \ status\ message
+Zmen\('i automatick\('u odpoveï pre stav
+.I status
+na
+.IR message .
+.TP
+.BI alias \ [alias\ expansion]
+Vytvor\('i nov\('y alias
+.I alias
+nahradzuj\('uci
+.IR expansion .
+Bez parametrov vyp\('i¹e v¹etky s\('uèasn\('e aliasy. Ak sa
+v re»azci
+.IR expansion 
+nachádza re»azec %s, tento bude nahradený ïal¹ími argumentami ak bol zadaný alias,
+inak tieto re»azce budú pripojené. 
+Novinka v 0.4.10.
+.TP
+.BI unalias \ alias
+Odstr\('ani alias
+.IR alias .
+Novinka v 0.4.10.
+.TP
+.BI alter \ command\ new
+Nahrad\('i funkciu doteraj¹ieho pr\('ikazu
+.I command
+pr\('ikazom
+.IR new .
+Tento príkaz je nahradený príkazom
+.B alias
+v mICQ 0.4.10.
+.TP
+.BI trans \ [lang|nr]\ ...
+Prepne na jazyk 
+.IR lang ,
+urèen\('y iso k\('odom alebo alebo prekladovou skratkou
+.IR nr .
+Pre v\('yber jazyka podµa syst\('emov\('ych premenn\('ych
+.BR LANG ,
+.B LC_ALL
+a
+.BR LC_MESSAGES ,
+pou¾ite
+.BR ! ,
+.B auto
+alebo
+.BR default .
+Pre zru¹enie prekladu pou¾ite
+.BR . ,
+.B none
+alebo
+.BR unload .
+Pre z\('iskanie ladiacich inform\('aci\('i dajte pred argumenty
+.BR debug .
+Pre z\('abavn\('e spr\('avy, dajte za argumenty
+.BR @fun .
+.sp
+Súbory v ~/.micq/i18n/*.i18n majú prednos» pred globálnymi,
+kým "funny" (zábavné) majú prednos» pred ¹tandartnými.
+.sp
+Mô¾ete ¹pecifikkova» toµko argumentov, koµko si prajete, to znamená.
+¾e pre preklad jediného re»azca è. 117 v nemèine a prepnutie spä»
+mô¾ete pou¾i» "trans de 117 default".
+.TP
+.B uptime
+Zobraz\('i ako dlho mICQ be¾\('i a ¹tatistiku.
+.TP
+.BI set \ option\ value
+Nastav\('i voµbu
+.I option
+na
+.I on
+alebo
+.IR off ,
+alebo nastav\('i voµbu
+.I option
+urèen\('ym zoznamom hodnôt
+.IR value .
+.I option
+mo¾e by»:
+.RS
+.TP
+.BR hermit :
+ignorova» v¹etky neznáme (anonymné) kontakty,
+.TP
+.BR delbs :
+interpretuje mazanie znakov ako znak backspace,
+.TP
+.BR funny :
+pou¾ije z\('abavn\('e spr\('avy,
+.TP
+.BR log :
+zap\('ina logovanie,
+.TP
+.BR logonoff :
+zmena stavu logovania, logova»/nelogova»
+.TP
+.BR auto :
+posielanie automatick\('ych odpoved\('i ak ste napr. Pre¾,
+.TP
+.BR uinprompt :
+zobrazi» posledn\('y nick vo v\('yzve pr\('ikazoveho interpretu,
+.TP
+.BR autosave :
+automatick\('e ukladanie micqrc,
+.TP
+.BR autofinger :
+automatick\('y finger nov\('ych UIN,
+.TP
+.BR linebreak :
+nastavuje ¹týl zalamovania riadkov v správach na
+.BR simple ,
+pre jednoduchý výpis správy za nick-om a zalomenie,
+.BR break ,
+pre pridanie prázdneho riadku pred ka¾dú prichádzajúcu správu,
+.BR indent ,
+v¹etky riadky správy umiestni pod nick, alebo
+.BR smart ,
+pridá zalomenie riadku len ak sa správa nezmestí do riadku
+obrazovky;
+.TP
+.BR tabs :
+nastaví ¹týl pre tabuµky na
+.BR simple ,
+pre tabuµku ka¾dému kontaktu pri prijatí a odoslaní správy,
+.BR cycle ,
+pre rotovanie výpisu online kontaktov,
+or
+.BR cycleall ,
+pre rotovanie výpisu v¹etkých kontaktov (aj offline);
+.TP
+.BR silent :
+nastaví výstup :
+.BR off ,
+.BR on ,
+pre potlaèenie výpisu zmien stavu, alebo
+.BR complete ,
+pre potlaèenie výpisu zmien stavu, prihlásení a odhlásení.
+.PP
+Novinka v 0.4.10.
+.RE
+.TP
+.B save
+Ulo¾\('i aktu\('alne nastavenia do konfiguraèn\('eho s\('uboru, ¹tandartne do
+.IR ~/.micq/micqrc ,
+ak nie ¹pecifikovan\('y in\('y.
+V\('ystraha: odstr\('ani v¹etky pozn\('amky v tomto s\('ubore.
+.TP
+.B q[uit]
+.TP
+.B exit
+Ukonè\('i mICQ.
+Aliasy quit a exit s\('u novinkou v 0.4.10.
+.SH PR\('IKAZY PRE POSIELANIE SPR\('AV
+Argument
+.I <contacts>
+znamen\('a èiarkou oddelen\('y zoznam kontaktov, t.j. UIN a nicky
+. Ak s\('u posledn\('ym argumentom, mô¾u by» kontakty oddelen\('e medzerami.
+.TP
+.BI msg \ <contacts>\ [message]
+Po¹le spr\('avu v¹etk\('ym kontaktom
+.IR contacts .
+Bez
+.I message
+sa spr\('istupn\('i m\('od pre viacriadkov\('u spr\('avu.  Pre jej odoslanie nap\('i¹te
+.RB ( . )
+na samostatn\('y riadok.  Pre zru¹enie spr\('avy nap\('i¹te hash
+.RB ( # )
+na samostatn\('y riadok.
+.br
+Odch\('adzaj\('uce a prich\('adzaj\('uce spr\('avy s\('u oznaèovan\('e rozdielne podµa doruèenia.
+.B \(Fo\(Fo\(Fo
+a
+.B \(Fc\(Fc\(Fc
+oznaèia spr\('avy poslan\('e cez priame spojenie. Ak bola skompilovan\('a podpora SSL a
+priame spojenie bolo vytvoren\('e s SSL,
+.B \(Fo%\(Fo
+a
+.B \(Fc%\(Fc
+bude pou¾it\('e. Ak odoslaná správa nie je nejaký èas prijatá,
+oznaèí sa
+.BR ===
+.B \(Fo<<
+a
+.B >>\(Fc
+oznaèuje icq8 (naz\('yvan\('e aj type-2) spr\('avy; ak odoslaná správa nie je
+nejaký èas prijatá, oznaèi sa
+.BR --= .
+Nakoniec,
+.B <<<
+a
+.B >>>
+oznaèuj\('u icq5 spr\('avy, naz\('yvan\('e aj type-1, type-4 alebo offline
+spr\('avu. Tieto správy sú v¾dy oznaèené ako neprijaté.
+Ak lokaliz\('acia nepodporuje znaky \(Fo a \(Fc,
+znaky { bud\('u } pou¾it\('e namiesto nich.
+.br
+Správa je najskôr posielaná cez u¾ existujúce priame spojenie; ak
+e¹te nie je ¾iadne vytvorené, vytvorí sa jedno na pozadí pre ïal¹ie správy.
+Ak sa nepodarí otvori» ¾iadne priame spojenie, alebo ak nie je správa
+prijatá (istý èas), spojenie je neplatné a uskutoèní sa ïal¹í pokus
+o prenos: po¹le sa práva type-2. Tento krok je vynechaný ak nemá
+príjemca (peer) dostatoèné mo¾nosti na signalizáciu príjmu. Ak je toto
+vynechané, vráti sa ako vypr¹anie spojenia alebo chyba, t.j. príjemca
+sa odhlásil poèas prenosu, a správa je poslaná ako ordinárny typ type-4
+správy.
+.br
+Ak príjemca signalizuje schopnos» prija» ju a ich podpora nebola odstránená
+pri kompilácií, správy sa posielajú v kódovaní UTF-8 patriène oznaèené.
+Inak je správa poslaná v kódovaní príjemcu, alebo, ak nie je nastavené
+pou¾ije sa default nastavenie pre kódovanie vzdialených klientov.
+type-1, type-4 a offline správy nemô¾u by» znaèkované v kôdovaní,
+preto¾e úspe¹ný prenos 8-bitových znakov je závislý od správnej konfigurácie.
+.TP
+.BI a \ [message]
+Po¹le spr\('avu osobe, ktorej ste naposledy poslali spr\('avu.  Pozrite
+.B msg
+pre ïal¹ie inform\('acie.
+.TP
+.BI r \ [message]
+Odpoveï na posledn\('u prijat\('u spr\('avu. Pozrite
+.B msg
+pre ïal¹ie inform\('acie.
+.TP
+.BI url \ <contacts>\ url\ message
+Po¹le
+.I message
+s prilo¾enou
+.I url
+v¹etk\('ym kontaktom
+.IR contacts .
+.TP
+.BI sms \ [nick]\ [cell]\ message
+Po¹le SMS spr\('avu
+.I message
+na mobiln\('e telef\('onne è\('islo
+.IR cell ,
+v tvare +<k\('od krajiny><è\('islo>,
+alebo na è\('islo patriace kontaktu
+.IR nick ,
+ktor\('e bude nastaven\('e na
+.IR cell
+ak e¹te nie je nastaven\('e. Nemus\('ite urèi»
+.IR cell
+ak
+.IR nick
+u¾ m\('a nastaven\('e telef\('onne è\('islo. Chybn\('e telef\('onne è\('isla
+bud\('u odstr\('anen\('e z meta data
+.IR nick u.
+.TP
+.BI getauto \ [auto|away|na|dnd|occ|ffc]\ [contacts]
+Vy¾iada automatick\('u spr\('avu od kontaktov
+.IR contacts
+pre stav, kde
+.B away
+znamen\('a Preè,
+.B na
+znamen\('a Nedostupn\('y,
+.B dnd
+znamen\('a Neru¹i»,
+.B occ
+pre Zanepr\('azdnen\('y a
+.B ffc
+Voµn\('y k rozhovoru. Ak nie je zadan\('e
+.B auto
+ani niè ïal¹ie, automatick\('a spr\('ava pre kontakty je vy¾iadan\('a podµa
+ich aktu\('alneho stavu. Kontakty, ktor\('e nie s\('u v ¾iadnom z t\('ychto stavov,
+bud\('u vynechan\('e.
+Novinka v 0.4.10.
+.TP
+.BI auth \ [req|grant|deny|add]\ <contacts>
+Povol\('i alebo zak\('a¾e v¹etk\('ym kontaktom
+.I contacts
+prid\('ava» v\('as do ich zoznamov, po¾iada v¹etky kontakty
+.I contacts
+o pr\('avo prida» ich do v\('a¹ho zoznamu alebo ozn\('ami kontaktom
+.I contacts
+inform\('aciu o tom, ¾e ste ich pridali do v\('a¹ho zoznamu.
+.TP
+.BI resend \ <contacts>
+Rozpo¹le posledn\('u spr\('avu viacer\('ym kontaktom
+.IR contacts .
+.TP
+.BI last \ [<contacts>]
+Zobraz\('i posledn\('u spr\('avu prija\('u od 
+.IR contact ,
+alebo od kohokoµvek, kto u¾ poslal spr\('avu.
+.TP
+.B tabs 
+Zobrazí zoznam u¾ívateµov pre tabuµkový výpis. Platí len ak je
+nastavený
+.B simple
+výpis. Pozrite nastavenie
+.I tabs
+príkazu
+.B set .
+.SH PR\('IKAZY PRE VYH¥AD\('AVANIE A PREHLIADANIE IN\('YCH U®\('IVATE¥OV
+.TP
+.BI rand \ number
+N\('ajde n\('ahodn\('eho u¾\('ivateµa v z\('aujmovej skupine
+.IR number .
+.TP
+.B s \ [<contacts>]
+Zobraz\('i v\('a¹ aktu\('alny stav alebo stav v¹etk\('ych kontaktov
+.I contacts 
+detailne so v¹etk\('ymi aliasmi.
+.TP
+.BR e ,\  w ,\  ee ,\  ww ,\  eg ,\  wg ,\  eeg ,\  wwg
+Zobraz\('i èasti v\('a¹ho zoznamu kontaktov. Tieto pr\('iznaky sa zobrazuj\('u v prvom ståpci:
+.RS
+.TP
+.B +
+Nie je skutoèn\('y kontakt, ale len alias niektor\('eho. Pou¾iteµn\('e len vo
+.BR ww .
+.TP
+.B #
+Nie je vo va¹om zozname kontaktov, ale toto UIN u¾ bolo niekedy pou¾it\('e. Pou¾iteµn\('e len v o
+.B w
+a
+.BR ww .
+.TP
+.B *
+Vid\('i v\('a¹ stav, ak ste neviditeµn\('y.
+.TP
+.B -
+Nevid\('i v\('as.
+.TP
+.B ^
+Je ignorovan\('y: ¾iadne spr\('avy, ¾iadne zmeny stavu.
+.PP
+.B ww
+a
+.B ee
+zobrazuj\('u v ïal¹om stlpci pr\('iznaky priameho spojenia. Ak je prv\('y stlpec pr\('azdny,
+zobraz\('i sa v prvom pre v¹etky tieto pr\('ikazy okrem
+.BR ^ .
+.TP
+.B %
+SSL roz¹\('irenie je skompilovan\('e a priame spojenie prostredn\('ictvom SSL pre tento
+kontakt je nadviazan\('e.
+.TP
+.B &
+Priame spojenie s t\('ymto kontaktom je nadviazan\('e.
+.TP
+.B \(ba
+Priame spojenie s t\('ymto kontaktom zlyhalo.
+.TP
+.B :
+Priame spojenie je pr\('ave nadv\(:azovan\('e.
+.TP
+.B ^
+Nie je nadviazan\('e priame spojenie, ale je zn\('ama IP adresa a port.
+.TP
+.RE
+.TP
+.B e
+Zobraz\('i v¹etk\('ych online u¾\('ivateµov z v\('a¹ho zoznamu.
+.TP
+.B w
+Zobraz\('i v¹etk\('ych vo va¹om zozname.
+.TP
+.B ee
+Zobraz\('i v¹etk\('ych online u¾\('ivateµov z v\('a¹ho zoznamu s ïal¹\('imi \('udajmi.
+.TP
+.B ww
+Zobraz\('i v¹etk\('ych vo va¹om zozname s ïal¹\('imi \('udajmi.
+.TP
+.B eg
+Zobraz\('i v¹etk\('ych online z v\('a¹ho zoznamu, zotriedi podµa skup\('in. Novinka v  0.4.10.
+.TP
+.B wg
+Zobraz\('i v¹etk\('ych, zotriedi podµa skup\('in. Novinka v 0.4.10.
+.TP
+.B eeg
+Zobraz\('i v¹etk\('ych online z v\('a¹ho zoznamu s ïal¹\('imi detailami, zotriedi podµa skup\('in. Novinka v 0.4.10.
+.TP
+.B wwg
+Zobraz\('i v¹etk\('ych z v\('asho zoznamu s ïal¹\('imi detailami. Zobraz\('i aj aliasy, zotriedi podµa skup\('in. Novinka v 0.4.10.
+.TP
+.B ewide
+Zobraz\('i v¹etk\('ych online z v\('a¹ho zoznamu vo form\('ate pre ¹irok\('u obrazovku.
+.TP
+.B wide
+Zobraz\('i v¹etk\('ych z v\('a¹ho zoznamu vo form\('ate pre ¹irok\('u obrazovku.
+.TP
+.BI status \ [nickname]
+Zobraz\('i aktu\('alny stav kontaktu
+.IR nickname .
+To zahàòa IP adresu, verziu protokolu ICQ a typ spojenia,
+alebo skr\('aten\('y zoznam UIN, nickov, stavov a ¹asu posledn\('eho online spojenia v¹etk\('ych kontaktov.
+.sp
+Pozn\('amka: Tento pr\('ikaz je zastaral\('y, pou¾\('ivajte
+.B s
+alebo
+.B ww
+namiesto neho.
+.TP
+.BI f[inger] \ uin|nickname
+.TP
+.BI info \ uin|nickname
+Zobraz\('i cel\('u str\('anku inform\('aci\('i o kontakte
+.IR uin|nickname .
+.TP
+.B i
+Zobraz\('i v¹etk\('ych zo zoznamu ignorovan\('ych kontaktov.
+.TP
+.B search
+.TP
+.BI search \ em@il
+.TP
+.BI search \ nick
+.TP
+.BI search \ first\ last
+Vyhlad\('a u¾\('ivatela s emailovou adresou
+.I em@il
+, alebo nickom
+.I nick
+(nesmie obsahova» @), alebo podµa krstn\('eho mena
+.I first
+, alebo priezviska
+.IR last .
+Bez argumentu bude pr\('ikaz spusten\('y v dial\('ogu, ktor\('y po¾iada o
+nick, meno, priezvisko, emailov\('u adresu a ïalsie \('udaje, podµa ktor\('ych
+bude vyhµad\('avat.
+.TP
+.BI add[group] \ group\ [contacts]
+Prid\('a v¹etky kontakty
+.IR contacts
+do skupiny
+.IR group ,
+ktor\('a bude vytvoren\('a, ak e¹te neexistuje v pr\('ipade pou¾itia
+.BI addgroup .
+Novinka v 0.4.10.
+.br
+Pozn\('amka: mus\('ite pou¾i»
+.B save
+, aby sa zmeny stali trval\('ymi.
+.TP
+.BI add[alias] \ nickname\ alias
+.TP
+.BI add[alias] \ uin\ nickname
+Prida\('a
+.I uin
+do v\('a¹ho zoznamu kontaktov pod nickom
+.IR nickname ,
+alebo prid\('a alias
+.IR alias
+pre
+.IR nickname .
+Novinka (addalias) v 0.4.10.
+.br
+Pozn\('amka: mus\('ite pou¾i»
+.B save
+, aby sa zmeny stali trval\('ymi.
+.TP
+.BI rem[group] \ [all]\ group
+.TP
+.BI rem[group] \ group\ contacts
+Odstr\('ani v¹etky kontakty
+.IR contacts
+zo skupiny
+.IR group ,
+alebo odstr\('ani skupinu, ak je pou¾it\('y parameter
+.B all .
+Novinka v 0.4.10.
+Pozn\('amka: mus\('ite pou¾i»
+.B save
+, aby sa zmeny stali trval\('ymi.
+.TP
+.BI rem[alias] \ [all]\ contacts
+Ostr\('ani aliasy pre kontakty
+.IR contacts .
+Ak je nick posledn\('ym aliasom kontaktu, alebo je zadan\('e
+.B all
+, odstr\('ani cel\('y kontakt.
+.br
+Novinka (remalias) v 0.4.10.
+Pozn\('amka: mus\('ite pou¾i»
+.B save
+, aby sa zmeny stali trval\('ymi.
+.TP
+.BI togig \ contacts
+Prep\('ina ignorovanie spr\('av a stavov pre kontakty
+.IR contacts .
+.TP
+.BI toginv \ contacts
+Prep\('ina viditeµnos» pre kontakty
+.IR contacts .
+.TP
+.BI togvis \ contacts
+Prep\('ina viditeµnos» pre kontakty
+.I contacts
+, ak ste pr\('ave Neviditeµn\('y.
+.SH PR\('IKAZY PRE V\('A© \('UCET ICQ
+.TP
+.BI reg \ password
+Vytvor\('i nov\('u u¾\('ivatelsk\('y \('uèet s heslom
+.IR password .
+.TP
+.BI pass \ password
+Zmen\('i va¹e ICQ heslo na
+.IR password . 
+.br
+Pozn\('amka: va¹e heslo nesmie obsahova» \('o (byte 0xf3).
+.br
+Pozn\('amka: mus\('ite pou¾i»
+.B save
+aby sa zmeny stali trval\('ymi z\('apisom hesla do s\('uboru
+.I ~/.micq/micqrc
+(pozrite
+.BR micqrc (7)),
+inak nebude nov\('e heslo rozpoznan\('e pri va¹om ïal¹om logine.
+.TP
+.BI change \ [number\ [message]]
+Zmen\('i v\('a¹ stav na
+.IR number .
+Bez parametru number zobraz\('i zoznam dostupn\('ych stavov. Mô¾ete nastavi» aj spr\('avu
+pre automatick\('u odpoveï pre tento stav na
+.IR message .
+.TP
+.B online
+Zmen\('i stav na "online".
+.TP
+.BI away \ [message]
+Zmen\('i stav na "Preè". Mô¾ete nastavi» automatick\('u odpoveï pre tento stav na
+.IR message .
+.TP
+.BI na \ [message]
+Zmen\('i stav na "Nedostupn\('y". Mô¾ete nastavi» automatick\('u odpoveï pre tento stav na
+.IR message .
+.TP
+.BI occ \ [message]
+Zmen\('i stav na "Zanepr\('azdnen\('y". Mô¾ete nastavi» automatick\('u odpoveï pre tento stav na
+.IR message .
+.TP
+.BI dnd \ [message]
+Zmen\('i stav na "Nerusi»". Mô¾ete nastavi» automatick\('u odpoveï pre tento stav na
+.IR message .
+.TP
+.BI ffc \ [message]
+Zmen\('i stav na "Voµný k rozhovoru". Mô¾ete nastavi» automatick\('u odpoveï pre tento stav na
+.IR message .
+.TP
+.B inv
+Zmen\('i stav na "Neviditeµn\('y".
+.TP
+.B update
+Aktualizuje va¹e z\('akladn\('e u¾\('ivateµsk\('e inform\('acie (email, nickname, atd.).
+.TP
+.B other
+Aktualizuje ïal¹ie va¹e inform\('acie ako vek a pohlavie.
+.TP
+.B about
+Aktualizuje va¹e doplòuj\('uce inform\('acie.
+.TP
+.BI setr \ [number]
+Nastav\('i va¹u skupinu n\('ahodn\('u skupinu na
+.IR number .
+Bez parametru zobraz\('i zoznam mo¾n\('ych z\('aujmov\('ych skup\('in.
+.SH ROZ©\('IREN\('E PR\('IKAZY
+.TP
+.BI meta \ [show|load|save|set|get|rget]\ <contacts>
+Spracuje meta data pre kontakty contacts. Podpr\('ikazy:
+.RS
+.TP
+.B show
+Zobraz\('i metadata v¹etk\('ych kontaktov
+.I contacts
+.
+.TP
+.B load
+Naè\('ita meta data pre v¹etky kontakty
+.I contacts
+z disku a zobraz\('i ich.
+.TP
+.B save
+Ulo¾\('i meta data v¹etk\('ych kontaktov
+.I contacts
+na disk.
+.TP
+.B set
+Uploaduje va¹e meta data na server.
+.TP
+.B get
+Stiahne v¹etky meta data pre v¹etky kontakty
+.I contacts
+zo serveru a zobraz\('i ich.
+.TP
+.B getr
+Z\('iska meta data pre kontakt, ktor\('y poslal posledn\('u spr\('avu
+zo severu a zobraz\('i ich.
+.PP
+Novinka v 0.4.10.
+.RE
+.TP
+.BI file \ [...]
+Alias pre pr\('ikaz
+.BR peer\ file .
+Novinka v 0.4.10.
+.TP
+.BI accept \ [...]
+Alias pre
+.BR peer\ accept .
+Novinka v 0.4.10.4.
+.TP
+.BI peer \ command\ arguments
+Správa priamych (peer to peer) spojení.
+.RS
+.TP
+.B open <contact>...
+Nadvia¾e peer-to-peer spojenie prostredn\('ictvom TCP pre kontakty contact.
+.TP
+.B close <contact>...
+Ukonè\('i a zresetuje peer-to-peer spojenie s kontaktami contact.
+.TP
+.B off <contact>...
+Vypne pokusy o vytvorenie spojenia pre posielanie správ
+kým nie je výhradne povolené alebo nastavené.
+.TP
+.BI file <contact> \ <file>\ <description>
+Po¹le s\('ubor
+.I file
+s popisom
+.IR description .
+.TP
+.BI files <contact> \ [<file>\ <as>]...\ [<description>]
+Po¹le viac súborov kontaktu contact. Pre ka¾dú dvojicu
+názov fyzického súboru
+.I file
+a jeho mena
+.IR as ,
+ktoré sa zobrazí príjemcovi.
+Ak
+.IR as
+je
+.RB ' / ',
+meno súboru bez cesty je odoslané, a ak je alias súboru
+.RB ' . '
+po¹le sa zhodné meno.
+.TP
+.BR accept \ [<contact>]\ [<id>]
+Prija» prichádzajúci súbor od kontaktu
+.IR contact
+s urèeným ID
+.IR id .
+Ak je len jedna po¾iadavka na príjem súboru, argumenty
+.IR contact \ and\  id
+mô¾u by» vybechané, inak nie je mo¾né urèi» ktorý príjem je
+autorizovaný.
+.TP
+.BR deny \ [<contact>]\ [<id>]\ [<reason>]
+Zaká¾e príjem súboru od kontaktu
+.IR contact
+s urèeným ID
+.IR id
+so zdôvodnením
+.IR reason .
+.TP
+.BR ssl \ <contact>...
+Vy¾iada SSL kryptovanie pre ka¾d\('y kontakt
+.IR contact .
+.RE
+.TP
+.BI login \ [...]
+Alias pre
+.BR conn\ login .
+Novinka v 0.4.10.4.
+.TP
+.BI conn \ [command\ nr]
+Zobraz\('i v¹etky spojenia alebo aplikuje pr\('ikaz
+.I command
+na spojenie
+.IR nr .
+.RS
+.TP
+.B open
+Nadvia¾e zadan\('e alebo prv\('e serverov\('e spojenie.
+.TP
+.B login
+Otvor\('i zadan\('e alebo prv\('e serverov\('e spojenie.
+.TP
+.B close
+Ukonè\('i zadan\('e sponenie. Doèasn\('e spojenia bud\('u t\('ym odstr\('anen\('e.
+.TP
+.B remove
+Ukonè\('i a odstr\('ani zadan\('e (doèasn\('e) spojenie.
+.TP
+.B select
+Vyberie zadan\('e serverov\('e spojenie ako aktu\('alne.
+.I nr
+mô¾e by» è\('islo spojenia alebo UIN pou¾it\('e pre spojenie.
+.RE
+.TP
+.BI contact \ [command]
+Pracuje so zoznamom kontaktov na serveri:
+.RS
+.TP
+.B show
+Stiahne zoznam kontaktov zo serveru a zobraz\('i ho.
+.TP
+.B diff
+Stiahne zoznam kontaktov zo serveru a zobraz\('i len kontakty (dvojice uin/nick),
+ktor\('e nie s\('u v lok\('alnom zozname kontaktov.
+.TP
+.B import
+Stiahne zoznam kontaktov zo serveru a prida\('a v¹etky kontakty do lok\('alneho
+zoznamu.
+.PP
+Zatiaµ nie je mo¾nos» uploadu zoznamu kontaktov.
+.RE
+.SH PR\('IKAZY PRE TCL SKRIPTY
+.TP
+.BI tcl \ <command>
+Spust\('i pr\('ikaz TCL
+.IR command .
+Pr\('iklad: tcl puts "hello world"
+.TP
+.BI tclscript \ <file>
+Spust\('i TCL skript zo s\('uboru
+.IR file .
+.PP
+Nasledujúce príkazy TCL uvádza mICQ pre ovládanie mICQ z TCL prostredia
+Pre odstránenie konfliktov s pôvodnými TCL príkazmi, v¹etky mICQ TCL
+príkazy sú podpríkazy TCL príkazu 'micq'. To znamená napr. 'micq receive R\(:udiger myproc'
+nain¹taluje správu udalosti pre príjem správ od R\(:udiger. V¹etky nasledujúce
+príkazy musia by» uvedené za 'micq'.
+.TP
+.BI receive \ <command>\ [<contact>]
+Nain¹taluje o¹etrenie udalosti pre príjem správ.
+.I command 
+je TCL príkaz spú¹»aný pri prijatí správy. 
+.I contact
+je voliteµný filter. Ak ho neurèíte, o¹etrenie bude obsluhova» v¹etky
+prichádzajúce správy.  mô¾ete nain¹talova» toµko o¹etrení, koµko chcete.
+Ak u¾ správa udalosti existuje, bude auktualizovaná a procedúra vráti
+pôvodný príkaz.
+.sp
+Len jednoduché textové správy sú spracované. Pou¾ívajte správu udalostí
+pre prijímanie iných typov správ.
+.sp
+V¾dy, keï je správa prijatá v mICQ, urèený príkaz je spustený s dvoma argumentami:
+UIN odosielateµa a text správy.
+.sp
+Poznámka: Táto funkcia je poskytovaná kvôli konvencii. Správca udalosti (popísané ni¾¹ie)
+mô¾e vykona» rovnakú funkciu ale bez filtra.
+.TP
+.BI unreceive \ [<contact>]
+Odstráni in¹talovaného správcu s filtrom
+.IR contact . 
+Ak tento správca existuje, jeho príkaz bude výstupom.
+.TP
+.BI event \ <command>
+Nain¹taluje správu udalosti. 
+.I command
+je TCL príkaz, ktorý sa spustí pri udalosti. Ak u¾ správca udalosti existuje,
+výstupom bude jeho príkaz. V protiklade so správcom správ, len jednoduchý
+správca udalosti je k dispozícii. Nasledujúce volania prepisujú pôvodného
+správcu.
+.sp
+Príkaz mô¾e by» spú¹»aný s premenlivým poètom argumentov. Prvým argumentom
+je v¾dy typ udalosti. Ïal¹ie argumenty závisia pd typu udalosti. Nasledujúci
+zoznam vysvetµuje v¹etky udalosti. Tuèným je vyznaèený typ udalosti a kurzívou
+argumenty popisujúce detaily udalosti.
+.RS
+.TP
+.BI status \ <uin>\ <status>
+Zmena stavu u¾ívateµa.
+.TP
+.BI message \ <uin>\ <text>
+Správa prijatá.
+.TP
+.BI mail \ <uin>\ <content>
+Prijatý mail (správa).
+.TP
+.BI web \ <uin>\ <url>
+URL správa.
+.TP
+.BI file_request \ <uin>\ <filename>\ <size>\ sequence
+Prichádzajúci súbor.
+.TP
+.BI contactlistadded \ <uin>
+Niekto vás pridal do svojho zoznamu kontaktov.
+.TP
+.BI authorization \ <uin>\  \fR{\fPrequest\fR,\fPrefused\fR,\fPgranted\fR}\fP
+Stav autorizácie.
+.TP
+.BI ssl \ <uin> \ <status> \ [<reason>]
+Vytvorenie SSL kryptovanie úspe¹né alebo zlyhalo pre
+.IR uin .
+.I status
+je
+.B ok
+alebo
+.BR failed .
+.I reason
+mô¾e by»:
+.RS
+.TP
+.BI precondition 
+SSL zlyhalo u¾ predtým. Preto sa u¾ o to nepokúsi.
+.TP
+.BI init
+Chyba inicializácie kni¾nice SSL.
+.TP
+.BI key
+Chyba SSL kµúèa.
+.TP
+.BI incapable
+Príjemca vyslal odpoveï "SSL nepodporované".
+.TP
+.BI handshake
+SSL výmena (handshake) zlyhala.
+.TP
+.RB { candidate , no_candidate }
+Urèuje, èi
+.I uin
+má k dispozícii SSL.
+.RE
+.RE
+.TP
+.BI unevent
+Odin¹taluje správcu udalosti. Vráti príkaz bývalého správcu.
+.TP
+.BI hooks
+Vypí¹e zoznam v¹etkých in¹talovaných správcov. Ka¾dý element je správca
+a pozostáva zo zoznamu dvoch: filter a príkaz.
+.TP
+.BI exec \ <command>
+Spustí príkaz mICQ a vráti jeho výstup ako jeden string. ANSI escape
+sequences budú odstránené.
+.TP
+.BI nick \ <uin>
+Zistí, èi nick zo zadaného UIN je u¾ známy.
+Pomôcka: pou¾ite 'exec finger' pre UINmimo vá¹ho zoznamu.
+.TP
+.BI help
+Poskytne malé zhrnutie v¹etkých dostupných mICQ TCL príkazov.
+.PP
+Tieto premenné TCL sú definované. Mô¾ete ich prepísa», ale tým stratíte pôvodné hodnoty:
+.TP
+.BI micq_version
+verzia mICQ
+.TP
+.BI micq_basedir 
+Hlavný adresár (to isté ako mICQ prepínaè \-b )
+.TP
+.BI micq_uin
+Zoznam va¹ich UIN
+.PP
+.nf
+.ta 4n 19n 31n
+Jednoduchý príklad správcu udalosti:
+
+# start of tcl script
+proc we_have_an_event {type args} {
+    puts "type='$type' args=[join $args {,}]"
+    # take further actions...
+}
+# install hook in main context
+micq event we_have_an_event
+# end of tcl script
+.ta
+.fi
+.SH POZRITE E©TE
+.BR micq (1),
+.BR micqrc (5)
+.SH AUTORI
+T\('ato manov\('a str\('anka bola prelo¾en\('a J\('anom Stan\('ikom
+.I <morb@genesys.sk>
+z manovej str\('anky vytvorenej Jamesom Morrisonom
+.I <ja2morrison@student.math.uwaterloo.ca>
+ako z\('akladn\('a referenèn\('a pr\('iruèka interakt\('ivnych pr\('ikazov 
+.BR mICQ .

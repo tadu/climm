@@ -1,0 +1,501 @@
+.\" $Id$ -*- nroff -*-
+.\"  EN: micqrc.5,v 1.23.2.9 2003/10/01 14:13:01
+.TH MICQRC 5 mICQ
+.SH NÁZOV
+.B ~/.micq/micqrc
+\- Konfiguraèný súbor pre micq
+.SH POPIS
+Táto manová stránka popisuje konfiguraèný súbor pre micq. Ten pozostáva
+z niekoµkých sekcií zaèínajúcich
+.IR [section] ,
+kde
+.I section
+je názov sekcie. Názvy súbor alebo adresárov sú relatívne k základnemu
+prieèinku, zvyèajne ~/.micq/.
+
+.SH SPOJENIA
+.B Connection .
+Táto sekcia popisuje spojenie vo vnútri ICQ. Zvyèajne sú dvoch druhov,
+navzájom súvisiacich: spojenie s ICQ serverom a spojenie pre peer-to-peer
+komunikáciu. Mô¾ete e¹te ma» spojenie pre vzdialené ovládanie: to znamená,
+¾e FIFO buffer je otvorený a riadky z neho èítané sú interpretované takisto
+ako vstupné riadky.
+.TP
+.BI type \ type\ [auto]
+Nastaví typ spojenia na
+.IR type ,
+è mô¾e by»
+.B icq5
+pre spojenie na ICQ v5 server,
+.B icq8
+pre spojenie na ICQ v8 server,
+.B peer
+pre peer-to-peer spojenie, alebo
+.B remote
+pre vzdialené ovládanie FIFO. Ak je nastavené
+.I auto ,
+vytvorí toto spojenie pri ¹tarte. Toto mô¾ete preferova», ak máte niekoµko UIN, aby
+spojenie kore¹pondovalo s UIN, ktoré pou¾ívate.
+.TP
+.BI version \ nr
+Nastaví verziu protokolu pre spojenie na
+.IR nr .
+Pamätajte, ¾e pre serverové spojenia, verzie
+.BR 5 ,
+.B 7
+a
+.B 8
+sú podporované, pre peer-to-peer sú podporované verzie
+.BR 6 ,
+.B 7
+a
+.BR 8 .
+Vzdialené ovládanie FIFO je bez urèenia verzie.
+.TP
+.BI server \ server
+Nastaví server pripojenia na
+.IR server .
+Default hodnota je
+.IR login.icq.com .
+Nepou¾íva sa pre peer-to-peer spojenia. Pre vzdialené ovládanie je to cesta
+k FIFO, ktorá sa má vytvori».
+.TP
+.BI port \ port
+Nastaví port spojenia na server na
+.IR port ,
+alebo port pre peer-to-peer komunikáciu na
+.IR port .
+.TP
+.BI uin \ UIN
+Nastaví UIN prelogin na
+.IR UIN .
+Nepou¾íva sa pre peer-to-peer spojenia a FIFO.
+.TP
+.BI password \ [password]
+Nastaví heslo pre login na
+.IR password .
+Nepou¾íva sa pre peer-to-peer spojenie. Ak je vynechané, po¾iada o heslo pri ¹tarte.
+Poznámka: u¾ívatelia BeOS nemô¾u vynecha» heslo.
+.TP
+.BI status \ nr
+Status nastavovaný pri logine na
+.IR nr .
+Status mô¾e by»:
+.RS
+.TP
+0
+online
+.TP
+1
+away
+.TP
+5
+not available
+.TP
+17
+occupied
+.TP
+19
+do not disturb
+.TP
+32
+free for chat
+.TP
+256
+invisible
+.RE
+
+.RS
+Pre peer-to-peer spojenie je toto pou¾ívané pre nastavenie priameho spojenia:
+.TP
+1
+Sme za firewallom a nemô¾eme prija» spojenie. ®iadne ïal¹ie pokusy.
+.TP
+2
+Sme za firewallom, ale pou¾ívame SOCKS a mô¾eme prija» spojenie.
+.TP
+4
+Nie sme za firewallom. Toto je default nastavenie.
+.RE
+.RS
+FIFO pre vzdialené ovládanie nepou¾íva toto nastavenie.
+.RE
+.SH GENERAL
+.B General .
+Sekcia zahàòa nastavenia pre SOCKS 5, ktoré prípadne mô¾u pou¾íva»
+vlastnú sekciu, hlavné nastavenia, TCL startup skripty a nastavenia
+niektorých re»azcov.
+.TP
+.BI s5_use \ number
+nastaví
+.I number
+na 0 pre zákazanie 1 pre povolenie.
+.TP
+.BI s5_host \ host
+Pripája» na socks 5 proxy na hosta
+.IR host .
+.TP
+.BI s5_port \ port
+Pripája» na socks 5 proxy na port
+.IR port .
+.TP
+.BI s5_auth \ number
+Nastaví
+.I number
+na 0 pre vynechanie autentifikácie 1 pre autentifikáciu.
+.TP
+.BI s5_name \ name
+Identifikova» ako user
+.I name
+pre socks 5 proxy.
+.TP
+.BI s5_pass \ password
+Autentifikova» heslom
+.I password
+pre socks 5 proxy.
+.PP
+TCL startup príkazy:
+.TP
+.BI tcl \ command
+Spustí TCL príkaz
+.I command
+pri ¹tarte. Mô¾e by» definované viackrát.
+.TP
+.BI tclscript \ file
+Spustí TCL skript zo súboru
+.I file
+pri ¹tarte. Mô¾e by» definované viackrát.
+.PP
+Niekoµko nastavení pre udr¾iavanie súboru je zvyèajne na zaèiatku
+súboru micqrc:
+.TP
+.BI encoding\ file\  encoding
+©pecifikuje kódovanie súboru
+.IR encoding .
+mICQ zapí¹e tento súbor ako utf8 ak je utf8 zapnuté, inak pou¾ije lokálne nastavenie
+kódovania. Ak je utf8 vypnuté, mICQ odmietne naèíta» súbor, ak kódovanie nastavené
+v tomto kµúèi nesúhlasí s aktuálnym lokálny nastavením.
+.TP
+.BI encoding\ local\  encoding
+©pecifikuje kódovanie terminálu u¾ívateµa
+.IR encoding .
+Prepisuje kódovanie získané z pemenných prostredia.
+.TP
+.BI encoding\ remote\  encoding
+Nastaví kódovanie pre meta data na serveri,
+vrátane hesla, na
+.IR encoding .
+Toto kódodvanie je tie¾ pou¾ívané pre komunikáciu s ïal¹ími kontaktami,
+ktorých klient nepodporuje utf8 kódovanie správ, ak nie je ¹peciálne nastavené
+kódovanie pre tento kontakt.
+.TP
+.BI format \ nr
+Nastaví formát tohoto súboru na
+.IR nr .
+Aktuálne je len formát 1 podporovaný.
+.PP
+Ïla¹ie nastavenia:
+.TP
+.BI verbose \ level
+Nastaví úroveò hlá¹ok pri ¹tarte na
+.IR level .
+.TP
+.BI auto_away \ time
+Nastaví èas pre stav "Preè" na
+.I time
+sekúnd. Nastavenie
+.I 0
+Zru¹í stav "Preè".
+.TP
+.BI Screen_width \ width
+Nastaví default ¹írku obrazovky na
+.IR width .
+Ak nie je nastavená, nastavenie
+.IR 0 , \ 80
+bude pou¾ité. Toto je potrebné, ak sa dá rozlí¹enie
+zisti» a¾ poèas behu programu.
+.TP
+.BI set \ delbs\ on|off
+Ak je nastavené
+.BR on ,
+ponechá znak delete ako backspace. Ak je
+.BR off ,
+ponechá ho ako delete.
+.TP
+.BI set \ funny\ on|off
+Vypne alebo zapne zábavné "funny" správy.
+.TP
+.BI set \ color\ on|off
+Vypne alebo zapne pou¾itie farieb.
+.TP
+.BI set \ hermit\ on|off
+Ak je nastavené
+.BR on ,
+ignoruje v¹etky správy od kontaktov mimo zoznam.
+.TP
+.BI set \ log\ on|off
+Vypne alebo zapne logovanie.
+.TP
+.BI set \ logonoff\ on|off
+Ak loguje, vypne alebo zapne logovanie online/offline zmien stavu.
+.TP
+.BI set \ auto\ on|off
+Vypne alebo zapne automatické odpovede.
+.TP
+.BI set \ uinprompt\ on|off
+Vypne alebo zapne pu¾itie nick-u poslednej prijatej správy vo výzve.
+.TP
+.BI set \ autosave\ on|off
+Vypne alebo zapne automatické ukladanie súboru micqrc.
+.TP
+.BI set \ autofinger\ on|off
+Vypne alebo zapne automatický finger nových UIN.
+.TP
+.BI set \ linebreak\ type
+Nastaví zalamovanie prichádzajúcich správ na
+.IR type ,
+ktorý mô¾e by»
+.B simple
+zvyèajné lámanie riadkov,
+.B break
+zalomenie riadku pred ka¾dou správou,
+.B indent
+zalomenie v¹etkých èastí správy
+.B smart
+zalomenie, ak sa riadok správy nezmestí na riadok obrazovky.
+.TP
+.BI set \ tabs\ simple|cycle|cycleall
+Výber spôsobu tabuµkového výpisu. Star¹ie verzie mICQ poznajú len
+.BR simple ,
+ktorý pracuje len s príkazom
+.B msg
+a dokonèuje príkaz a zaobrazuje v¹etky kontakty, ktore poslali alebo ktorým
+boli poslané správy. V¹etok text za nick je stratený.
+.B cycle
+rotovane zobrazuje v¹etky online kontakty zo zoznamu kontaktov. Ponecháva v¹etky
+textové vstupy nedotknuté, ale nemô¾e pridáva» príkaz
+.B msg .
+.B cycleall
+je ako
+.BR cycle ,
+ale pre v¹etky kontakty (nielen online).
+.TP
+.BI set \ silent\ type
+Potlaèí urèité výstupy, zmeny stavu pre
+.B on
+a zmenu stavu, loginy a logouty pre
+.BR complete .
+.TP
+.BI chat \ nr
+Nastaví náhodnú skupinu na
+.IR nr .
+Pou¾ite
+.B -1
+na vypnutie, a
+.B 49
+pre mICQ (ktoré je default).
+.PP
+Nakoniec, urèité stringy mô¾u by» definované:
+.TP
+.BI color\ scheme \ nr
+Nastaví farebnú schému na
+.IR nr .
+.TP
+.BI color \ use\ color
+Nastaví farbu
+.IR color
+pre
+.IR use .
+.IR use
+mô¾e by»
+.BR none ,
+.BR server ,
+.BR client ,
+.BR message ,
+.BR contact ,
+.BR sent ,
+.BR ack ,
+.BR error ,
+.BR debug
+alebo
+.BR incoming ,
+kým
+.IR color
+mô¾e by»
+.BR black ,
+.BR red ,
+.BR green ,
+.BR yellow ,
+.BR blue ,
+.BR magenta ,
+.BR cyan ,
+.BR white ,
+.BR none ,
+alebo
+.BR bold
+alebo ich kombinácia
+.RB ( bold ,
+musí by» posledná, aby mala efekt),
+alebo akákoµvek definícia farby platná pre terminál u¾ívateµa.
+.TP
+.BI logplace \ file|dir
+Výber súboru pre logovanie ako
+.IR file ,
+alebo adresáru pre logovanie
+.IR dir .
+Pamôtajte, ¾e cesta je pova¾ovaná za adresár ak konèí
+.IR / .
+.TP
+.BI sound \ on|beep|off|event
+Urèí, èo sa stane pri zvonèeku.
+.B on
+alebo
+.B beep
+jednoducho pípne,
+.B off
+neurobí niè,
+kým
+.B event
+zavolá skript pre správu udalostí.
+.TP
+.BI event \ script
+Nastaví skript pre vykonanie pri udalosti na
+.IR script .
+Je volaný s týmito parametrami:
+.br
+1. Typ IM, aktuálne len
+.BR icq .
+.br
+2. UIN kontaktu, súvisiaceho s udalos»ou, alebo 0.
+.br
+3. Prezývka (nick) kontaktu, súvisiaceho s udalos»ou, alebo prázdny re»azec.
+.br
+4. Re»azec
+.BR global .
+.br
+5. Typ udalosti, ktorý mô¾e by»
+.BR msg ,
+.BR on ,
+.BR off ,
+.BR beep
+alebo
+.BR status ,
+kde
+.BR on and off
+sú pre prichádzajúce a odchádzajúce správy. Tento zozname nemô¾e by» roz¹írený.
+.br
+6. Pre správy, typ správy, pre odchádzajúce kontakty, predchádzajúci stav
+a pre prichádzajúce kontakty alebo zmeny stavu, inak 0.
+.br
+7. Text správy.
+.br
+Poznámka: z bezpeènostných dôvodov, jednoduché úvodzovky mô¾u by» nahradené
+dvojitými, text správy mô¾e by» orezaný.
+.TP
+.BI auto \ status\ string
+Nastaví automatickú odpoveï ma status
+.I status
+na
+.IR string .
+Táto voµba mô¾e by» opakovaná pre v¹etky mo¾né hodnoty:
+.BR away ,
+.BR na ,
+.BR dnd ,
+.BR occ ,
+.BR inv ,
+a
+.B ffc
+ako
+.IR status .
+.SH STRINGS
+Sekcia
+.B Strings
+obsahuje aliasy príkazov.
+.TP
+.BI alter \ <old>\ <new>
+premenuje príkaz
+.I old
+na
+.IR new .
+Poznámka: pôvodné mená mô¾u by» stále platné, s výnimkou konfliktov s novým
+.I new .
+Pre názvy príkazov pozri
+.BR micq (7).
+Táto voµba mô¾e by» opakovaná podµa rozhodnutia.
+.br
+Poznámka: táto voµba je zastaralá.
+.TP
+.BI alias \ <alias>\ <expansion>
+Definuje alias s menom
+.I alias
+ktorý nahrádza
+.IR expansion .
+Ak je prítomný re»azec %s v
+.IR expansion ,
+je nahradený ïal¹ími argumentami, inak je pripojený.
+Novinka v 0.4.10.
+.SH SKUPINA
+.B Group .
+Sekcia kontaktov s skupín kontaktov a mô¾e by» opakovaná podµa potreby.
+Má tieto príkazy:
+.TP
+.BI server \ <type> <uin>
+Nastaví serverové spojenie typu
+.IR type ,
+ktorý mô¾e by»
+.BR icqv8
+pre ICQ server verzie 8 alebo
+.BR icqv5
+pre ICQ server verzie 5,
+a pre UIN
+.IR uin .
+Ak je príkaz vynechaný, prvé serverové spojenie je pou¾ité.
+.TP
+.BI label \ <label>
+Nastaví názov skupiny na
+.IR label .
+Ak je
+.BI contacts- type - uin,
+je to zoznam kontaktov pre toto serverové spojenie.
+.TP
+.BI id \ <id>
+Nastaví ID tejto skupiny na
+.IR id .
+.B 0
+znamená nedefinované ID. Toto je nastavené pri downloade skupiny kontaktov.
+.TP
+.BI entry \ <id>\ <uin>
+Pridá kontakt s UIN
+.I uin
+ako ID
+.I id
+do tejto skupiny kontaktov.
+.SH KONTAKTY
+Sekcia
+.B Contacts
+obsahuje globálny zoznam kontaktov. Mô¾e sa sta» zastaralou.
+.TP
+.I [*][~][^] uin nick
+Priradí u¾ívateµovi UIN
+.I uin
+prezývku
+.IR nick .
+Ak je zadané
+.B *
+, u¾ívateµ vás mô¾e vidie», ak ste Neviditeµný. Ak je zadané
+.B ~
+, u¾ívateµ vás stále vidí offline. Ak je zadané
+.B ^
+, ignorujete u¾ívateµa.
+Ak je UIN pou¾ité viackrát, v¹etky okrem prvého sú pova¾ovane za aliasy.
+.SH POZRITE E©TE
+.BR micq (1),
+.BR micq (7)
+.SH AUTORI
+Táto manová stránka bolá napísaná Jamesom Morrisonom
+.IR <ja2morrison@student.math.uwaterloo.ca> .
+Bola prepísaná do novej syntaxe configu R\(:udigerom Kuhlmannom
+.IR <micq@ruediger-kuhlmann.de> .
+Do slovenèiny prelo¾il Ján Staník
+.IR <morb@genesys.sk> .
+Akékoµvek chyby prekladu oznamujte jemu.
