@@ -185,6 +185,11 @@ void Initalize_RC_File (Session *sess)
 
 
     rcf = open (prG->rcfile, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+    if (rcf == -1 && errno == ENOENT)
+    {
+        mkdir (PrefUserDir (), 0700);
+        rcf = open (prG->rcfile, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+    }
     if (rcf == -1)
     {
         perror ("Error creating config file ");
@@ -795,7 +800,7 @@ void Read_RC_File (FD_T rcf)
     
     if (dep & 2)
     {
-        mkdir (PrefUserDir (), 0755);
+        mkdir (PrefUserDir (), 0700);
         oldsess = newsess;
         newsess = SessionC ();
         newsess->spref = PreferencesSessionC ();

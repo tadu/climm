@@ -1,4 +1,7 @@
 
+2002-03-02 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* fix ~/.micq/ creation
+
 2002-02-15 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* update man pages.
 	* Bump to version 0.4.8.
