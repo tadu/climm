@@ -15,26 +15,22 @@ Jeff Bearer <jbearer@tribweb.com>
 21:47:57  m:1126630 <<< Hello,
  : - All mode changes should be in a central system log and not each user
 
-Other stuff:
  : command to display _all_ settings (partially done: opt and set)
  : add https support
  : add missing v8 pieces
    + figure out v8 reverse connection
- : use ASCII art for setup wizard
  : file transfer:
    + figure out server file sending
  : implement more server message types
  : use (contact)options for more message types
  : server side contact list:
-   + contact list upload (initial version)
+   + contact list upload (initial version done)
  : better meta data change functions
- : internal: use string lib
  : fix insertion before a double width character when the newly added character would
    fit into the space inserted at the end of the last line due to the double
    width character being double width
  : implement wait-for-connection TCP transport
  : implement AIM compatibility
- : rearrange file names
  : implement rate control
  : implement proper callback for password requests
  : option to switch off remote client display 
