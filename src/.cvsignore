@@ -2,3 +2,4 @@ micq
 Makefile
 Makefile.in
 .deps
+.cvsupdate
