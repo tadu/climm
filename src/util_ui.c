@@ -314,8 +314,7 @@ void M_print (const char *str, ...)
     vsnprintf (buf, sizeof (buf), str, args);
     M_prints (buf);
 #else
-#error No curses support included yet.
-#error You must add it yourself.
+#error No curses support included yet. You must add it yourself.
 #endif
     va_end (args);
 }
@@ -390,17 +389,28 @@ void M_print (char *str, ...)
     {
         str1[0] = 0;
         M_prints (str2);
-        str1[0] = 0x1B;
-        str2 = strchr (str1, 'm');
-        if (str2)
+        str1[0] = '\x1b';
+        if (strchr ("©<>«»", str1[1]))
         {
-            str2[0] = 0;
-            if (prG->flags & FLAG_COLOR)
-                printf ("%sm", str1);
-            str2++;
+            char c = str1[2];
+            str1[2] = 0;
+            M_prints (str1);
+            str1[2] = c;
+            str2 = str1 + 2;
         }
         else
-            str2 = str1 + 1;
+        {
+            str2 = strchr (str1, 'm');
+            if (str2)
+            {
+                str2[0] = 0;
+                if (prG->flags & FLAG_COLOR)
+                    printf ("%sm", str1);
+                str2++;
+            }
+            else
+                str2 = str1 + 1;
+        }
     }
     M_prints (str2);
 #else
@@ -423,28 +433,32 @@ int M_pos ()
  */
 static const char *DebugStr (UDWORD level)
 {
-    if (level & DEB_PACKET)      return "Packet";
-    if (level & DEB_QUEUE)       return "Queue ";
-    if (level & DEB_PACK5DATA)   return "v5data";
-    if (level & DEB_PACK8)       return "v8pack";
-    if (level & DEB_PACK8DATA)   return "v8data";
-    if (level & DEB_PACK8SAVE)   return "v8save";
-    if (level & DEB_PACKTCP)     return "TCPpac";
-    if (level & DEB_PACKTCPDATA) return "TCPdat";
-    if (level & DEB_PACKTCPSAVE) return "TCPsav";
-    if (level & DEB_PROTOCOL)    return "Proto ";
-    if (level & DEB_TCP)         return "TCP   ";
-    if (level & DEB_IO)          return "I/O   ";
+    if (level & DEB_PACKET)      return "Packet ";
+    if (level & DEB_QUEUE)       return " Queue ";
+    if (level & DEB_PACK5DATA)   return "v5data ";
+    if (level & DEB_PACK8)       return "v8pack ";
+    if (level & DEB_PACK8DATA)   return "v8data ";
+    if (level & DEB_PACK8SAVE)   return "v8save ";
+    if (level & DEB_PACKTCP)     return "TCPpack";
+    if (level & DEB_PACKTCPDATA) return "TCPdata";
+    if (level & DEB_PACKTCPSAVE) return "TCPsave";
+    if (level & DEB_PROTOCOL)    return "Protocl";
+    if (level & DEB_TCP)         return "TCP HS ";
+    if (level & DEB_IO)          return "  I/O  ";
+    if (level & DEB_SESSION)     return "Session";
     return "unknown";
 }
 
+/*
+ * Output a given string iff the debug level is appropriate.
+ */
 void Debug (UDWORD level, const char *str, ...)
 {
     va_list args;
     char buf[2048];
     char buf2[3072];
 
-    if (!(prG->verbose & level))
+    if (!(prG->verbose & level) && level)
         return;
 
     va_start (args, str);
@@ -504,13 +518,23 @@ void Soft_Prompt (void)
 
 void Time_Stamp (void)
 {
+    struct timeval tv;
     struct tm *thetime;
-    time_t p;
 
-    p = time (NULL);
-    thetime = localtime (&p);
+#ifdef HAVE_GETTIMEOFDAY
+    tv.tv_sec = 0;
+    tv.tv_usec = 0;
+    gettimeofday (&tv, NULL);
+#else
+    tv.tv_usec = 0;
+    tv.tv_sec = time (NULL);
+#endif
+    thetime = localtime (&tv.tv_sec);
 
     M_print ("%.02d:%.02d:%.02d", thetime->tm_hour, thetime->tm_min, thetime->tm_sec);
+    
+    if (prG->verbose)
+        M_print (".%.03d", tv.tv_usec / 1000);
 }
 
 /*

@@ -1863,7 +1863,7 @@ static void TCPCallBackReceive (Event *event)
             }
             PacketD (event->pak);
             free (event);
-            break;
+            return;
         
         case TCP_CMD_MESSAGE:
             switch (type)

@@ -22,8 +22,7 @@ various people:
  : fix contact list download segfault
  : finish implementing file transfer
  : fix missing online flags
- : fix wrong-destination messages
-   (re-check session pointers validity)
+ : fix wrong-destination messages (fixed)
 
 
 21:47:57  m:1126630 <<< Hello,

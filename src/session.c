@@ -13,6 +13,7 @@
 #include "cmd_pkt_v8.h"
 #include "tcp.h"
 #include "preferences.h"
+#include "util_ui.h"
 #include <string.h>
 #include <netdb.h>
 #include <assert.h>
@@ -42,6 +43,8 @@ Session *SessionC (void)
     slist[i]->status = STATUS_OFFLINE;
     slist[i]->sok = -1;
 
+    Debug (DEB_SESSION, "<---- %p[%d] create\n", slist[i], i);
+
     return slist[i];
 }
 
@@ -62,6 +65,8 @@ Session *SessionClone (Session *sess)
     child->connect = 0;
     child->incoming = NULL;
     
+    Debug (DEB_SESSION, "<--+- %p clone from %p (%s)\n", child, sess, SessionType (sess));
+
     return child;
 }
 
@@ -131,15 +136,33 @@ Session *SessionFind (UWORD type, UDWORD uin, const Session *parent)
  */
 void SessionClose (Session *sess)
 {
-    int i;
+    int i, j;
     
     for (i = 0; slist[i] != sess && i < listlen; i++)  ;
     
     assert (sess);
     assert (i < listlen);
     
+    Debug (DEB_SESSION, "----> %p[%d] (%s) closing...\n", sess, i, SessionType (sess));
+
     if (sess->sok != -1)
         sockclose (sess->sok);
+    sess->sok     = -1;
+    sess->connect = 0;
+    sess->type    = 0;
+    sess->parent  = NULL;
+
+    for (j = 0; j < listlen; j++)
+        if (slist[j]->assoc == sess)
+            slist[j]->assoc = NULL;
+
+    for (j = 0; j < listlen; j++)
+        if (slist[j]->parent == sess)
+        {
+            slist[j]->parent = NULL;
+            SessionClose (slist[j]);
+            j--;
+        }
 
     QueueCancel (sess);
 
@@ -149,6 +172,8 @@ void SessionClose (Session *sess)
         i++;
     }
     slist[i] = NULL;
+
+    Debug (DEB_SESSION, "----> %p[%d] closed.\n", sess, i);
 
     free (sess);
 }
