@@ -10,10 +10,9 @@
 #include "micq.h"
 #include "contact.h"
 #include "connection.h"
-#include "cmd_pkt_v8.h"
-#include "cmd_pkt_v8_snac.h"
-#include "cmd_pkt_v8_flap.h"
-#include "cmd_pkt_v8_tlv.h"
+#include "oscar.h"
+#include "oscar_snac.h"
+#include "oscar_roster.h"
 #include "im_icq8.h"
 
 UBYTE IMRoster (Connection *conn, int mode)

@@ -21,10 +21,9 @@
  */
 
 #include "micq.h"
-#include "cmd_pkt_v8_tlv.h"
-#include "util_ui.h"
-#include "packet.h"
 #include <assert.h>
+#include "oscar_tlv.h"
+#include "packet.h"
 
 #define __maxTLV  25
 #define __minTLV  16

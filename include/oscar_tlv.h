@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_ICQV8_TLV_H
-#define MICQ_ICQV8_TLV_H
+#ifndef MICQ_OSCAR_TLV_H
+#define MICQ_OSCAR_TLV_H
 
 typedef struct { UWORD tag; UDWORD nr; str_s str; } TLV;
 
@@ -10,4 +10,4 @@ UWORD TLVGet  (TLV *tlv, UWORD nr);
 void  TLVDone (TLV *tlv, UWORD nr);
 void  TLVD    (TLV *tlv);
 
-#endif /* MICQ_ICQV8_TLV_H */
+#endif

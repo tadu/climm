@@ -2,13 +2,21 @@
 /* Copyright: This file may be distributed under version 2 of the GPL licence. */
 
 #include "micq.h"
+#include <fcntl.h>
+#include <stdarg.h>
+#include <ctype.h>
+#include <assert.h>
+#include <limits.h>
 #include "util_ui.h"
 #include "datatype.h"
 #include "mreadline.h"
 #include "server.h"
 #include "util.h"
 #include "icq_response.h"
-#include "cmd_pkt_v8_snac.h"
+#include "oscar.h"
+#include "oscar_snac.h"
+#include "oscar_icbm.h"
+#include "oscar_oldicq.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_user.h"
 #include "contact.h"
@@ -17,11 +25,6 @@
 #include "tcp.h"
 #include "packet.h"
 #include "conv.h"
-#include <fcntl.h>
-#include <stdarg.h>
-#include <ctype.h>
-#include <assert.h>
-#include <limits.h>
 
 static void CallbackMeta (Event *event);
 

@@ -22,7 +22,6 @@ Changes :
 #include "micq.h"
 #include "util.h"
 #include "cmd_pkt_cmd_v5.h"
-#include "cmd_pkt_v8_snac.h"
 #include "contact.h"
 #include "connection.h"
 #include "util_io.h"

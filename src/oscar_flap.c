@@ -21,43 +21,22 @@
  */
 
 #include "micq.h"
-#include "cmd_pkt_v8_flap.h"
-#include "cmd_pkt_v8_snac.h"
-#include "util.h"
+#include <assert.h>
+#if HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
 #include "util_ui.h"
 #include "util_io.h"
+#include "util_syntax.h"
+#include "oscar_tlv.h"
+#include "oscar_flap.h"
+#include "oscar_snac.h"
+#include "oscar_register.h"
 #include "preferences.h"
 #include "connection.h"
 #include "packet.h"
 #include "contact.h"
-#include "util_syntax.h"
-#include "cmd_pkt_v8_tlv.h"
 #include "conv.h"
-#include <assert.h>
-#include <fcntl.h>
-#include <errno.h>
-#if HAVE_NETDB_H
-#include <netdb.h>
-#endif
-#include <assert.h>
-#if HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#if HAVE_SYS_SOCKET_H
-#include <sys/socket.h>
-#endif
-#if HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-#if HAVE_ARPA_INET_H
-#include <arpa/inet.h>
-#endif
-#if HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
-#if HAVE_WINSOCK2_H
-#include <winsock2.h>
-#endif
 
 static void FlapChannel1 (Connection *conn, Packet *pak);
 static void FlapChannel4 (Connection *conn, Packet *pak);

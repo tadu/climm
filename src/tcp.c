@@ -27,8 +27,9 @@
 #include "util_syntax.h"
 #include "util_ssl.h"
 #include "cmd_pkt_cmd_v5.h"
-#include "cmd_pkt_v8_snac.h"
-#include "cmd_pkt_v8.h"
+#include "oscar.h"
+#include "oscar_snac.h"
+#include "oscar_service.h"
 
 #include <unistd.h>
 #include <assert.h>

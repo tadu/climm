@@ -21,32 +21,20 @@
  */
 
 #include "micq.h"
-#include "util.h"
+#include <assert.h>
 #include "util_ui.h"
 #include "util_io.h"
+#include "util_ssl.h"
+#include "oscar.h"
+#include "oscar_flap.h"
 #include "buildmark.h"
 #include "icq_response.h"
 #include "conv.h"
-#include "contact.h"
 #include "connection.h"
 #include "packet.h"
 #include "preferences.h"
-#include "cmd_pkt_v8_flap.h"
-#include "cmd_pkt_v8_snac.h"
-#include "cmd_pkt_v8.h"
 #include "peer_file.h"
-#include "util_ssl.h"
 #include "tcp.h"
-#include <unistd.h>
-#include <fcntl.h>
-#include <errno.h>
-#if HAVE_NETDB_H
-#include <netdb.h>
-#endif
-#if HAVE_WINSOCK2_H
-#include <winsock2.h>
-#endif
-#include <assert.h>
 
 jump_conn_f SrvCallBackReceive;
 static jump_conn_f SrvCallBackReconn;
