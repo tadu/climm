@@ -117,7 +117,7 @@ const char *BuildVersion (void)
 {
     if (!ver)
         ver = strdup (s_sprintf (i18n (2327, "%smICQ (Matt's ICQ clone)%s version %s%s%s\n"),
-            COLSERVER, COLNONE, COLSERVER, MICQ_VERSION " CVS " CVSUPDATE, COLNONE));
+            COLSERVER, COLNONE, COLSERVER, MICQ_VERSION " " CVSUPDATE, COLNONE));
     return ver;
 }
 
