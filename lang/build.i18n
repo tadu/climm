@@ -35,7 +35,7 @@
 1036:Unknown command %s, type /help for help.
 1037:Message sent before last line buffer is full¶
 1038:Message canceled¶
-1039:Server claims we're not connected.¶
+1039:The server claims we're not connected.¶
 1040:mICQ> 
 1041:msg> 
 1042:msg all> 
@@ -57,7 +57,7 @@
 1064:Auto-Changed status to
 1065:Using intel byte ordering.
 1066:Using motorola byte ordering.
-1071:Your status is 
+1071:Your status is
 1072:Users offline:
 1073:Users online:
 1074:mICQ (Matt's ICQ clone)
@@ -766,7 +766,6 @@
 1907:Warning: Server thinks our UIN is %d, while it is %d.¶
 1908:Received USERONLINE packet for non-contact.¶
 1909:Received USEROFFLINE packet for non-contact.¶
-1910:FLAP seq %08x length %04x channel %d¶
 1911:connecting
 1912:closed
 1914:Can't allocate connection structure.¶
@@ -782,7 +781,6 @@
 1926:Invisible
 1927:Free for chat
 1929:User is dnd [Auto-Message]
-1930:Can't send this (%x) yet.¶
 1931:Current session is closed. Try another or open this one.¶
 1934:connected
 1935:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x¶
@@ -856,11 +854,11 @@
 2013:This command is v8 only.¶
 2014:No number given.¶
 2015:No message given.¶
-2017:The user is actually online.¶
+2017:The user is online, but possibly invisible.¶
 2018:    quiet: be quiet about status changes.¶
 2020:Being visible to %s.
 2021:Being invisible to %s.
-2022:The user is indeed offline.¶
+2022:The user is offline.¶
 2023:Direct connection closed by peer.¶
 2024:Unknown protocol version %d for ICQ peer-to-peer protocol.¶
 2026:TCP cookie:
@@ -1009,3 +1007,9 @@
 2185:Closing connection %d.¶
 2186:Accepting file '%s' (%d bytes).¶
 2187:Refused file request '%s' (%d bytes) (unknown: %x, %x)¶
+2188:You're sending data too fast - stop typing now, or the server will disconnect!¶
+2189:Malformed instant message packet refused by server.¶
+2190:The contact's client does not support type-2 messages.¶
+2191:Instant message error: %d.¶
+2192:Capabilities: 
+2193:Directory %s does not exists.¶
