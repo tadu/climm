@@ -11,5 +11,7 @@ Jeff Bearer <jbearer@tribweb.com>
 various people:
  : add https support
  : add missing v8 pieces
-   : password changing
    : ignoring people
+   : server side contact list
+   : contact groups
+   : keep alive

@@ -26,6 +26,7 @@ struct Session_s
         UDWORD  our_session;    /* session ID                                        */
         UWORD   our_seq;        /* current primary sequence number                   */
         UWORD   our_seq2;       /* current secondary sequence number                 */
+        UWORD   our_seq3;       /* current old-ICQ sequence number                   */
 
         UDWORD  stat_real_pak_sent;
         UDWORD  stat_real_pak_rcvd;

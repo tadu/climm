@@ -1005,8 +1005,11 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, char *text, UDWORD type)
     UBYTE format;
     UDWORD mtime = 0, mid = 0;
     
-    Time_Stamp ();
-    M_print (" " COLACK "%10s" COLNONE " " MSGSENTSTR "%s\n", ContactFindName (uin), MsgEllipsis (text));
+    if (type != 0xe8)
+    {
+        Time_Stamp ();
+        M_print (" " COLACK "%10s" COLNONE " " MSGSENTSTR "%s\n", ContactFindName (uin), MsgEllipsis (text));
+    }
     
     switch (type)
     {
@@ -1186,20 +1189,45 @@ void SnacCliReqroster (Session *sess)
 }
 
 /*
+ * Create meta request package.
+ */
+Packet *SnacMetaC (Session *sess, UWORD sub, UWORD type)
+{
+    Packet *pak;
+
+    sess->our_seq3 = sess->our_seq3 ? sess->our_seq3 + 1 : 2;
+    
+    pak = SnacC (sess, 21, 2, 0, rand () % 0xffffff);
+    PacketWriteTLV (pak, 1);
+    PacketWriteLen     (pak);
+    PacketWrite4  (pak, sess->uin);
+    PacketWrite2  (pak, sub);
+    PacketWrite2  (pak, sess->our_seq3);
+    if (type)
+        PacketWrite2 (pak, type);
+
+    return pak;
+}
+
+/*
+ * Complete & send meta request package.
+ */
+void SnacMetaSend (Session *sess, Packet *pak)
+{
+    PacketWriteLenDone (pak);
+    PacketWriteTLVDone (pak);
+    SnacSend (sess, pak);
+}
+
+/*
  * CLI_REQOFFLINEMSGS - SNAC(15,2) - 60
  */
 void SnacCliReqofflinemsgs (Session *sess)
 {
     Packet *pak;
 
-    pak = SnacC (sess, 21, 2, 0, 0);
-    PacketWriteTLV (pak, 1);
-    PacketWrite2  (pak, 8);
-    PacketWrite4  (pak, sess->uin);
-    PacketWrite2  (pak, 60);
-    PacketWrite2  (pak, 2);
-    PacketWriteTLVDone (pak);
-    SnacSend (sess, pak);
+    pak = SnacMetaC (sess, 60, 0);
+    SnacMetaSend    (sess, pak);
 }
 
 /*
@@ -1209,14 +1237,8 @@ void SnacCliAckofflinemsgs (Session *sess)
 {
     Packet *pak;
 
-    pak = SnacC (sess, 21, 2, 0, 0);
-    PacketWriteTLV (pak, 1);
-    PacketWrite2  (pak, 8);
-    PacketWrite4  (pak, sess->uin);
-    PacketWrite2  (pak, 62);
-    PacketWrite2  (pak, 2);
-    PacketWriteTLVDone (pak);
-    SnacSend (sess, pak);
+    pak = SnacMetaC (sess, 62, 0);
+    SnacMetaSend    (sess, pak);
 }
 
 /*
@@ -1226,30 +1248,22 @@ void SnacCliMetasetgeneral (Session *sess, const MetaGeneral *user)
 {
     Packet *pak;
 
-    pak = SnacC (sess, 21, 2, 0, 0);
-    PacketWriteTLV     (pak, 1);
-    PacketWriteLen     (pak);
-    PacketWrite4       (pak, sess->uin);
-    PacketWrite2       (pak, 2000);
-    PacketWrite2       (pak, 2);
-    PacketWrite2       (pak, META_SET_GENERAL_INFO);
-    PacketWriteLNTS    (pak, user->nick);
-    PacketWriteLNTS    (pak, user->first);
-    PacketWriteLNTS    (pak, user->last);
-    PacketWriteLNTS    (pak, user->email);
-    PacketWriteLNTS    (pak, user->city);
-    PacketWriteLNTS    (pak, user->state);
-    PacketWriteLNTS    (pak, user->phone);
-    PacketWriteLNTS    (pak, user->fax);
-    PacketWriteLNTS    (pak, user->street);
-    PacketWriteLNTS    (pak, user->cellular);
-    PacketWriteLNTS    (pak, UtilFill ("%05d", user->zip));
-    PacketWrite2       (pak, user->country);
-    PacketWrite1       (pak, user->tz);
-    PacketWrite1       (pak, user->webaware);
-    PacketWriteLenDone (pak);
-    PacketWriteTLVDone (pak);
-    SnacSend (sess, pak);
+    pak = SnacMetaC (sess, 2000, META_SET_GENERAL_INFO);
+    PacketWriteLNTS (pak, user->nick);
+    PacketWriteLNTS (pak, user->first);
+    PacketWriteLNTS (pak, user->last);
+    PacketWriteLNTS (pak, user->email);
+    PacketWriteLNTS (pak, user->city);
+    PacketWriteLNTS (pak, user->state);
+    PacketWriteLNTS (pak, user->phone);
+    PacketWriteLNTS (pak, user->fax);
+    PacketWriteLNTS (pak, user->street);
+    PacketWriteLNTS (pak, user->cellular);
+    PacketWriteLNTS (pak, UtilFill ("%05d", user->zip));
+    PacketWrite2    (pak, user->country);
+    PacketWrite1    (pak, user->tz);
+    PacketWrite1    (pak, user->webaware);
+    SnacMetaSend    (sess, pak);
 }
 
 /*
@@ -1259,17 +1273,9 @@ void SnacCliMetasetabout (Session *sess, const char *text)
 {
     Packet *pak;
 
-    pak = SnacC (sess, 21, 2, 0, 0);
-    PacketWriteTLV     (pak, 1);
-    PacketWriteLen     (pak);
-    PacketWrite4       (pak, sess->uin);
-    PacketWrite2       (pak, 2000);
-    PacketWrite2       (pak, 2);
-    PacketWrite2       (pak, META_SET_ABOUT_INFO);
-    PacketWriteLNTS    (pak, text);
-    PacketWriteLenDone (pak);
-    PacketWriteTLVDone (pak);
-    SnacSend (sess, pak);
+    pak = SnacMetaC (sess, 2000, META_SET_ABOUT_INFO);
+    PacketWriteLNTS (pak, text);
+    SnacMetaSend    (sess, pak);
 }
 
 /*
@@ -1279,45 +1285,29 @@ void SnacCliMetasetmore (Session *sess, const MetaMore *user)
 {
     Packet *pak;
 
-    pak = SnacC (sess, 21, 2, 0, 0);
-    PacketWriteTLV     (pak, 1);
-    PacketWriteLen     (pak);
-    PacketWrite4       (pak, sess->uin);
-    PacketWrite2       (pak, 2000);
-    PacketWrite2       (pak, 2);
-    PacketWrite2       (pak, META_SET_MORE_INFO);
-    PacketWrite2       (pak, user->age);
-    PacketWrite1       (pak, user->sex);
-    PacketWriteLNTS    (pak, user->hp);
-    PacketWrite2       (pak, user->year);
-    PacketWrite1       (pak, user->month);
-    PacketWrite1       (pak, user->day);
-    PacketWrite1       (pak, user->lang1);
-    PacketWrite1       (pak, user->lang2);
-    PacketWrite1       (pak, user->lang3);
-    PacketWriteLenDone (pak);
-    PacketWriteTLVDone (pak);
-    SnacSend (sess, pak);
+    pak = SnacMetaC (sess, 2000, META_SET_MORE_INFO);
+    PacketWrite2    (pak, user->age);
+    PacketWrite1    (pak, user->sex);
+    PacketWriteLNTS (pak, user->hp);
+    PacketWrite2    (pak, user->year);
+    PacketWrite1    (pak, user->month);
+    PacketWrite1    (pak, user->day);
+    PacketWrite1    (pak, user->lang1);
+    PacketWrite1    (pak, user->lang2);
+    PacketWrite1    (pak, user->lang3);
+    SnacMetaSend    (sess, pak);
 }
 
 /*
- * CLI_METASETPASS - SNAC(15,2) - 2000/1170
+ * CLI_METASETPASS - SNAC(15,2) - 2000/1070
  */
 void SnacCliMetasetpass (Session *sess, const char *newpass)
 {
     Packet *pak;
     
-    pak = SnacC (sess, 21, 2, 0, 0);
-    PacketWriteTLV     (pak, 1);
-    PacketWriteLen     (pak);
-    PacketWrite4       (pak, sess->uin);
-    PacketWrite2       (pak, 2000);
-    PacketWrite2       (pak, 2);
-    PacketWrite2       (pak, 1070);
-    PacketWriteLNTS    (pak, newpass);
-    PacketWriteLenDone (pak);
-    PacketWriteTLVDone (pak);
-    SnacSend (sess, pak);
+    pak = SnacMetaC (sess, 2000, 1070);
+    PacketWriteLNTS (pak, newpass);
+    SnacMetaSend    (sess, pak);
 }
 
 /*
@@ -1327,17 +1317,9 @@ void SnacCliMetareqinfo (Session *sess, UDWORD uin)
 {
     Packet *pak;
 
-    pak = SnacC (sess, 21, 2, 0, 0);
-    PacketWriteTLV     (pak, 1);
-    PacketWriteLen     (pak);
-    PacketWrite4       (pak, sess->uin);
-    PacketWrite2       (pak, 2000);
-    PacketWrite2       (pak, 2);
-    PacketWrite2       (pak, META_REQ_INFO);
-    PacketWrite4       (pak, uin);
-    PacketWriteLenDone (pak);
-    PacketWriteTLVDone (pak);
-    SnacSend (sess, pak);
+    pak = SnacMetaC (sess, 2000, META_REQ_INFO);
+    PacketWrite4    (pak, uin);
+    SnacMetaSend    (sess, pak);
 }
 
 /*
@@ -1347,24 +1329,16 @@ void SnacCliSearchbypersinf (Session *sess, const char *email, const char *nick,
 {
     Packet *pak;
 
-    pak = SnacC (sess, 21, 2, 0, 0);
-    PacketWriteTLV (pak, 1);
-    PacketWriteLen (pak);
-    PacketWrite4  (pak, sess->uin);
-    PacketWrite2  (pak, 2000);
-    PacketWrite2  (pak, 2);
-    PacketWrite2  (pak, META_SEARCH_PERSINFO);
-    PacketWrite2  (pak, 320); /* key: first name */
+    pak = SnacMetaC  (sess, 2000, META_SEARCH_PERSINFO);
+    PacketWrite2     (pak, 320); /* key: first name */
     PacketWriteLLNTS (pak, name);
-    PacketWrite2  (pak, 330); /* key: last name */
+    PacketWrite2     (pak, 330); /* key: last name */
     PacketWriteLLNTS (pak, surname);
-    PacketWrite2  (pak, 340); /* key: nick */
+    PacketWrite2     (pak, 340); /* key: nick */
     PacketWriteLLNTS (pak, nick);
-    PacketWrite2  (pak, 350); /* key: email address */
+    PacketWrite2     (pak, 350); /* key: email address */
     PacketWriteLLNTS (pak, email);
-    PacketWriteLenDone (pak);
-    PacketWriteTLVDone (pak);
-    SnacSend (sess, pak);
+    SnacMetaSend     (sess, pak);
 }
 
 /*
@@ -1374,18 +1348,10 @@ void SnacCliSearchbymail (Session *sess, const char *email)
 {
     Packet *pak;
 
-    pak = SnacC (sess, 21, 2, 0, 0);
-    PacketWriteTLV (pak, 1);
-    PacketWriteLen (pak);
-    PacketWrite4  (pak, sess->uin);
-    PacketWrite2  (pak, 2000);
-    PacketWrite2  (pak, 2);
-    PacketWrite2  (pak, META_SEARCH_EMAIL);
-    PacketWrite2  (pak, 350); /* key: email address */
+    pak = SnacMetaC  (sess, 2000, META_SEARCH_EMAIL);
+    PacketWrite2     (pak, 350); /* key: email address */
     PacketWriteLLNTS (pak, email);
-    PacketWriteLenDone (pak);
-    PacketWriteTLVDone (pak);
-    SnacSend (sess, pak);
+    SnacMetaSend     (sess, pak);
 }
 
 /*
@@ -1395,17 +1361,9 @@ void SnacCliSearchrandom (Session *sess, UWORD group)
 {
     Packet *pak;
 
-    pak = SnacC (sess, 21, 2, 0, 0);
-    PacketWriteTLV (pak, 1);
-    PacketWriteLen (pak);
-    PacketWrite4  (pak, sess->uin);
-    PacketWrite2  (pak, 2000);
-    PacketWrite2  (pak, 2);
-    PacketWrite2  (pak, META_SEARCH_RANDOM);
-    PacketWrite2  (pak, group);
-    PacketWriteLenDone (pak);
-    PacketWriteTLVDone (pak);
-    SnacSend (sess, pak);
+    pak = SnacMetaC (sess, 2000, META_SEARCH_RANDOM);
+    PacketWrite2    (pak, group);
+    SnacMetaSend    (sess, pak);
 }
 
 /*
@@ -1415,14 +1373,8 @@ void SnacCliSetrandom (Session *sess, UWORD group)
 {
     Packet *pak;
 
-    pak = SnacC (sess, 21, 2, 0, 0);
-    PacketWriteTLV (pak, 1);
-    PacketWriteLen (pak);
-    PacketWrite4  (pak, sess->uin);
-    PacketWrite2  (pak, 2000);
-    PacketWrite2  (pak, 2);
-    PacketWrite2  (pak, META_SET_RANDOM);
-    PacketWrite2  (pak, group);
+    pak = SnacMetaC (sess, 2000, META_SET_RANDOM);
+    PacketWrite2    (pak, group);
     if (group)
     {
         PacketWriteB4 (pak, 0x00000220);
@@ -1436,9 +1388,7 @@ void SnacCliSetrandom (Session *sess, UWORD group)
         PacketWriteB4 (pak, 0x00000300);
         PacketWrite2  (pak, 0);
     }
-    PacketWriteLenDone (pak);
-    PacketWriteTLVDone (pak);
-    SnacSend (sess, pak);
+    SnacMetaSend (sess, pak);
 }
 
 /*
@@ -1448,13 +1398,7 @@ void SnacCliSearchwp (Session *sess, const MetaWP *wp)
 {
     Packet *pak;
 
-    pak = SnacC (sess, 21, 2, 0, 0);
-    PacketWriteTLV     (pak, 1);
-    PacketWriteLen     (pak);
-    PacketWrite4       (pak, sess->uin);
-    PacketWrite2       (pak, 2000);
-    PacketWrite2       (pak, 2);
-    PacketWrite2       (pak, META_SEARCH_WP);
+    pak = SnacMetaC (sess, 2000, META_SEARCH_WP);
     PacketWriteLNTS    (pak, wp->first);
     PacketWriteLNTS    (pak, wp->last);
     PacketWriteLNTS    (pak, wp->nick);
@@ -1479,9 +1423,7 @@ void SnacCliSearchwp (Session *sess, const MetaWP *wp)
     PacketWriteB2      (pak, 0);    /* homepage category); */
     PacketWriteLNTS    (pak, NULL); /* description); */
     PacketWrite1       (pak, wp->online);
-    PacketWriteLenDone (pak);
-    PacketWriteTLVDone (pak);
-    SnacSend (sess, pak);
+    SnacMetaSend (sess, pak);
 }
 
 /*
@@ -1500,13 +1442,7 @@ void SnacCliSendsms (Session *sess, const char *target, const char *text)
              "<time>%s</time></icq_sms_message>",
              target, text, sess->uin, "mICQ", tbuf);
 
-    pak = SnacC (sess, 21, 2, 0, 0);
-    PacketWriteTLV     (pak, 1);
-    PacketWriteLen     (pak);
-    PacketWrite4       (pak, sess->uin);
-    PacketWrite2       (pak, 2000);
-    PacketWrite2       (pak, 2);
-    PacketWrite2       (pak, META_SEND_SMS);
+    pak = SnacMetaC (sess, 2000, META_SEND_SMS);
     PacketWriteB2      (pak, 1);
     PacketWriteB2      (pak, 22);
     PacketWriteB4      (pak, 0);
@@ -1514,9 +1450,7 @@ void SnacCliSendsms (Session *sess, const char *target, const char *text)
     PacketWriteB4      (pak, 0);
     PacketWriteB4      (pak, 0);
     PacketWriteTLVStr  (pak, 0, buf);
-    PacketWriteLenDone (pak);
-    PacketWriteTLVDone (pak);
-    SnacSend (sess, pak);
+    SnacMetaSend (sess, pak);
 }
 
 /*
