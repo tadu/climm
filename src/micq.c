@@ -87,6 +87,8 @@ static void Idle_Check (Connection *conn)
     }
     
     now = time (NULL);
+    if (!prG->away_time && !uiG.idle_val)
+        uiG.idle_val = now;
     delta = uiG.idle_val ? now - uiG.idle_val : 0;
 
     if (!prG->away_time && delta > 10 && uiG.idle_val)
@@ -101,27 +103,33 @@ static void Idle_Check (Connection *conn)
                     if (!(conn->status & (STATUSF_AWAY | STATUSF_NA)))
                         return;
                     new = (conn->status & STATUSF_INV) | STATUS_ONLINE;
+                    uiG.idle_flag = 0;
                     break;
                 case 2: /* locked workstation */
                 case 3:
                     if (conn->status & STATUS_NA)
                         return;
                     new = (conn->status & STATUSF_INV) | STATUS_NA;
+                    uiG.idle_msgs = 0;
+                    uiG.idle_flag = 1;
                     break;
                 case 1: /* screen saver only */
                     if ((conn->status & (STATUSF_AWAY | STATUSF_NA)) == STATUS_AWAY)
                         return;
                     new = (conn->status & STATUSF_INV) | STATUS_AWAY;
+                    uiG.idle_msgs = 0;
+                    uiG.idle_flag = 1;
                     break;
             }
 
             uiG.idle_val = 0;
-            uiG.idle_flag = 1;
             delta = 0;
+            if (new == 0xffffffffL || new == conn->status)
+                return;
         }
     }
 
-    if (!prG->away_time && !uiG.idle_flag)
+    if (!prG->away_time && !uiG.idle_flag && new == 0xffffffffL)
         return;
 
     if (!uiG.idle_val)
