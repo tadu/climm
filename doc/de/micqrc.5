@@ -230,6 +230,57 @@ nur daß alle, nicht nur die verbundenen, Kontakte durchgegangen werden.
 .PP
 Zuletzt können noch einige Texte definiert werden:
 .TP
+.BI color\ scheme \ nr
+Wählt das Farbschema
+.I nr
+aus.
+.TP
+.BI color \ use\ color
+Wählt die Farbe
+.I color
+für
+.I use
+aus.
+.IR use
+kann dabei
+.BR none ,
+.BR server ,
+.BR client ,
+.BR message ,
+.BR contact ,
+.BR sent ,
+.BR ack ,
+.BR error
+oder
+.BR incoming
+sein,
+.IR color
+kann dabei beliebig viele von
+.BR black
+(schwarz),
+.BR red
+(red),
+.BR green
+(green),
+.BR yellow
+(gelb),
+.BR blue
+(blaub),
+.BR magenta
+(magenta),
+.BR cyan
+(hellblau),
+.BR white
+(weiß),
+.BR none
+(keine) oder
+.BR bold
+(fett) sein
+.RB ( bold
+muß allerdings zuletzt kommen, um wirksam zu sein), oder eine
+beliebige Zeichenkette, die auf dem Terminal des Benutzers
+die gewünschte Farbe auswählt.
+.TP
 .BI logplace \ file|dir
 Logge in die Datei
 .IR file ,

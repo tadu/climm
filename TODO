@@ -20,7 +20,7 @@ various people:
    + last <uin> doesn't show the time.
  : alias for commands
  : tab completion (check)
- : configurable colors
+ : configurable colors (fixed)
  : saving personal information
  : fix memory leaks (most fixed?)
  : finish implementing file transfer (fixed?)

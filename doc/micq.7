@@ -8,7 +8,7 @@ This manual page describes the commands that can be used within micq.  This
 page holds the same information as the online help.
 .SH COMMANDS
 .TP
-.BI trans \ [lang|nr\ ...]
+.BI trans \ [lang|nr]\ ...
 Switch to the language 
 .IR lang ,
 given by iso code, or output translation string number
@@ -121,15 +121,49 @@ Set verbosity of mICQ to
 or show the current verbosity. The verbosity level is a set of flags:
 .RS
 .TP
-.B 128
-Dump incoming and outgoing packets.
+.B 8
+Show protocol errors.
+.TP
+.B 16
+Show creation and deletion of packets.
+.TP
+.B 32
+Show added and removed queue events.
+.TP
+.B 64
+Show created and deleted connections.
 .TP
 .B 256
-Write incoming and outgoing server packets to disc (~/.micq/debug/packets).
+Show v6 packets and their data.
+.TP
+.B 4096
+Show v7/v8 packets.
+.TP
+.B 8192
+Show the hexdump of v7/v8 packets.
+.TP
+.B 16284
+Save those packets to disc.
+.TP
+.B 65536
+Show peer-to-peer packets.
+.TP
+.B 131072
+Show the hexdump of peer-to-peer packets.
+.TP
+.B 262144
+Save those packets to disc.
+.TP
+.B 2097152
+Show peer-to-peer handshake.
+.TP
+.B 4194304
+Show I/O connection setup.
 .RE
 
 .RS
-And some more.
+However, any non-zero verbose level will cause more information to be printed,
+and any level greater than 1 even more.
 .RE
 .TP
 .B clear
@@ -359,36 +393,74 @@ on user given by UIN
 .I uin
 or nick name
 .IR nick .
-.I command
-can be
+.RS
+.TP
 .B open
-to open a peer to peer connection over TCP to the user, or
+Open a peer to peer connection over TCP to the user.
+.TP
 .B close
-to close and reset such a connection, or
+Close and reset a peer to peer connection to the user.
+.TP
 .B off
-to switch off trying to establish such a connection for sending
-messages until it is explicitly opened or reset, or
+Switch off trying to establish such a connection for sending
+messages until it is explicitly opened or reset.
+.TP
 .B auto
-to get the user's current auto response, or
-.BR away ,
-.BR na ,
-.BR dnd ,
+Get the user's current auto response.
+.TP
+.B away
+Get the user's current away auto response.
+.TP
+.B na
+Get the user's current not available auto response.
+.TP
+.B dnd
+Get the user's current do not disturb auto response.
+.TP
 .B occ
-or
+Get the user's current occupied auto response.
+.TP
 .B ffc
-to get the user's current (auto) response for that status.
+Get the user's current free for chat message.
+.TP
+.BI file \ [file\ as]...\ description
+Send files to the user. There may be arbitrarely many
+pairs of a physical file name
+.I file
+and the name to be presented to the peer,
+.IR as .
+If
+.IR as
+is
+.RB ' / ',
+the file name without the path is sent, and if it is
+.RB ' . '
+the same name is sent.
+.sp
+Note: File names and the description currently may not contacin spaces.
+.RE
 .TP
 .BI conn \ [command\ nr]
 List all connections, or operate
 .I command
 on connection
 .IR nr .
-.I command
-can be
+.RS
+.TP
 .B open
-or
+Open the given, or the first server connection.
+.TP
 .B login
-to open this connection if it is not currently open.
+Open the given, or the first server connection.
+.TP
+.B remove
+Close and remove given (temporary) connection.
+.TP
+.B select
+Select the given server connection as the current one.
+.I nr
+may be the connection number or the UIN used for the connection.
+.RE
 
 .SH SEE ALSO
 .BR micq (1),

@@ -131,15 +131,49 @@ oder zeigt die aktuelle Ausführlichkeit an. Die Ausführlichkeit ist eine Menge v
 Werten, die aufaddiert werden:
 .RS
 .TP
-.B 128
-Zeigt ein- und ausgehende Pakete.
+.B 8
+Zeige Protokoll-Fehler.
+.TP
+.B 16
+Zeige Erzeugung und Entfernung von Paketen.
+.TP
+.B 32
+Zeige hinzugefügte und entfernte Warteschlangen-Ereignisse.
+.TP
+.B 64
+Zeige Erzeugung und Entfernung von Verbindungen.
 .TP
 .B 256
-Schreibt ein- und ausgehende Pakete in eine Datei (~/.micq/debug/packets).
+Zeige Version-6-Pakete mit hexadezimalem Abbild.
+.TP
+.B 4096
+Zeige Version-7/8-Pakete.
+.TP
+.B 8192
+Zeige zusätzlich das hexadezimale Abbild.
+.TP
+.B 16284
+Speichere diese Pakete in eine Datei.
+.TP
+.B 65536
+Zeige Direktverbindungs-Pakete.
+.TP
+.B 131072
+Zeige zusätzlich das hexadezimale Abbild.
+.TP
+.B 262144
+Speichere diese Pakete in eine Datei.
+.TP
+.B 2097152
+Zeige den Direktverbindungs-Handschlag.
+.TP
+.B 4194304
+Zeige den Verbindungsaufbau von Verbindungen.
 .RE
 
 .RS
-Und noch einige weitere.
+In jedem Fall bewirkt eine Ausfühlichkeit größer als 0 die Ausgabe von mehr
+Informationen, und eine größer als 1 von noch mehr.
 .RE
 .TP
 .B clear
@@ -377,26 +411,50 @@ auf den durch Benutzernummer
 oder Spitzname
 .I Spitzname
 angegebenen Benutzer an.
-.I Befehl
-kann dabei sein:
-.BR open ,
-um eine Direktverbindung über TCP zu diesem Benutzer, oder
-.BR close ,
-um eine solche zu schließen und zurückzusetzen, oder
-.BR off ,
-um niemals automatisch eine Direktverbindung aufzubauen, bis diese mit
+.RS
+.TP
+.B open
+Öffnet eine Direktverbindung über TCP zu diesem Benutzer.
+.TP
 .B close
-geschlossen wird, oder
-.BR auto ,
-um die aktuelle automatische Antwort des Benutzers abzufragen, oder
-.BR away ,
-.BR dnd ,
-.BR na ,
+Schließt eine Direktverbindung zu diesem Benutzer bzw. setzt sie zurück.
+.TP
+.B off
+Deaktiviert Direktverbindungen für diesen Benutzer.
+.TP
+.B auto
+Fragt die aktuelle automatische Antwort des Benutzers ab.
+.TP
+.B away
+Fragt die aktuelle automatische Antwort für "abwesend" des Benutzers ab.
+.TP
+.B dnd
+Fragt die aktuelle automatische Antwort für "nicht stören" des Benutzers ab.
+.TP
+.B na
+Fragt die aktuelle automatische Antwort für "nicht verfügbar" des Benutzers ab.
+.TP
 .B occ
-oder
-.BR ffc ,
-um die aktuelle automatische Antwort des Benutzers für den
-entsprechenden Status abzufragen.
+Fragt die aktuelle automatische Antwort für "beschäftigt" des Benutzers ab.
+.TP
+.B ffc
+Fragt die aktuelle "für Plaudereien frei"-Meldung des Benutzers ab.
+.TP
+.BI file \ [Datei\ als]...\ Beschreibung
+Sende Dateien zum Benutzer. Es darf beliebig viele Paare von tatsächlichen Dateinamen
+.I Datei
+und dem gegenüber präsentierten Dateinamen
+.I als
+geben. Wenn
+.IR als
+.RB ' / '
+is, dann gebe den Dateinamen ohne den Pfad an, wenn
+.IR als
+.RB ' . '
+ist, dann gebe den richtigen Dateinamen an.
+.sp
+Hinweis: Weder Dateinamen noch die Beschreibung darf derzeit Leerzeichen enthalten.
+.RE
 .TP
 .BI conn \ [Befehl\ Nr]
 Zeigt alle offenen Verbindungen, oder wendet den Befehl
@@ -404,12 +462,23 @@ Zeigt alle offenen Verbindungen, oder wendet den Befehl
 auf die Verbindung
 .I Nr 
 an.
-.I Befehl
-kann dabei
+.RS
+.TP
 .B open
-oder
+Öffne die angegebene, oder die erster Server-Verbindung.
+.TP
 .B login
-sein, um die Verbindung zu öffnen, wenn sie dies derzeit nicht ist.
+dito
+.TP
+.B remove
+Schließe und entferne die angegebene (temporäre) Verbindung.
+.TP
+.B select
+Wählt die angegebene Server-Verbindung als die aktuelle aus.
+.I Nr
+kann dabei die sowohl die Verbindungsnummer als auch die in der
+Server-Verbindung verwendete Benutzernummer sein.
+.RE
 
 .SH SIEHE AUCH
 .BR micq (1),

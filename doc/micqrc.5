@@ -220,6 +220,47 @@ it just cycles through all, and not only online, contacts.
 .PP
 At last, some strings can be defined:
 .TP
+.BI color\ scheme \ nr
+Select the color scheme number
+.IR nr .
+.TP
+.BI color \ use\ color
+Select color
+.IR color
+for
+.IR use .
+.IR use
+can be any of
+.BR none ,
+.BR server ,
+.BR client ,
+.BR message ,
+.BR contact ,
+.BR sent ,
+.BR ack ,
+.BR error
+or
+.BR incoming ,
+while
+.IR color
+can be any one of
+.BR black ,
+.BR red ,
+.BR green ,
+.BR yellow ,
+.BR blue ,
+.BR magenta ,
+.BR cyan ,
+.BR white ,
+.BR none ,
+or
+.BR bold
+or a combination of those
+.RB ( bold ,
+however, must be last to take effect),
+or any verbatim string to make the user's terminal
+select the desired color.
+.TP
 .BI logplace \ file|dir
 Set the file to log into to
 .IR file ,
