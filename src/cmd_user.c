@@ -35,7 +35,7 @@ static jump_f
     CmdUserAuto, CmdUserAlter, CmdUserMessage, CmdUserResend, CmdUserPeek,
     CmdUserVerbose, CmdUserRandomSet, CmdUserIgnoreStatus, CmdUserSMS,
     CmdUserStatusDetail, CmdUserStatusWide, CmdUserStatusShort,
-    CmdUserStatusSelf, CmdUserSound, CmdUserSoundOnline, CmdUserRegister,
+    CmdUserSound, CmdUserSoundOnline, CmdUserRegister,
     CmdUserSoundOffline, CmdUserAutoaway, CmdUserSet, CmdUserClear,
     CmdUserTogIgnore, CmdUserTogInvis, CmdUserTogVisible, CmdUserAdd, CmdUserRem, CmdUserRInfo,
     CmdUserAuth, CmdUserURL, CmdUserSave, CmdUserTabs, CmdUserLast,
@@ -63,15 +63,14 @@ static jump_t jump[] = {
     { &CmdUserResend,        "resend",       NULL, 0,   0 },
     { &CmdUserVerbose,       "verbose",      NULL, 0,   0 },
     { &CmdUserIgnoreStatus,  "i",            NULL, 0,   0 },
-    { &CmdUserStatusDetail,  "statuse",      NULL, 2,   0 },
-    { &CmdUserStatusDetail,  "statuseo",     NULL, 2,   1 },
-    { &CmdUserStatusDetail,  "status",       NULL, 2,   2 },
-    { &CmdUserStatusDetail,  "statuso",      NULL, 2,   3 },
+    { &CmdUserStatusDetail,  "status",       NULL, 2,  14 },
+    { &CmdUserStatusDetail,  "w",            NULL, 2,   4 },
+    { &CmdUserStatusDetail,  "e",            NULL, 2,   5 },
+    { &CmdUserStatusDetail,  "s",            NULL, 2,  20 },
+    { &CmdUserStatusShort,   "w-old",        NULL, 2,   1 },
+    { &CmdUserStatusShort,   "e-old",        NULL, 2,   0 },
     { &CmdUserStatusWide,    "wide",         NULL, 2,   1 },
     { &CmdUserStatusWide,    "ewide",        NULL, 2,   0 },
-    { &CmdUserStatusShort,   "w",            NULL, 2,   1 },
-    { &CmdUserStatusShort,   "e",            NULL, 2,   0 },
-    { &CmdUserStatusSelf,    "s",            NULL, 0,   0 },
     { &CmdUserSet,           "set",          NULL, 0,   0 },
     { &CmdUserSound,         "sound",        NULL, 2,   0 },
     { &CmdUserSoundOnline,   "soundonline",  NULL, 2,   0 },
@@ -1195,6 +1194,11 @@ static UDWORD __status (UDWORD status)
 
 /*
  * Shows the contact list in a very detailed way.
+ *
+ * data & 8: show only given nick
+ * data & 4: show own status
+ * data & 2: be verbose
+ * data & 1: do not show offline
  */
 static JUMP_F(CmdUserStatusDetail)
 {
@@ -1205,7 +1209,7 @@ static JUMP_F(CmdUserStatusDetail)
     char *name = strtok (args, "\n");
     SESSION;
 
-    if (name)
+    if (name && (data & 8))
     {
         uin = ContactFindByNick (name);
         if (uin == -1)
@@ -1237,12 +1241,18 @@ static JUMP_F(CmdUserStatusDetail)
         }
         while (uin)
             lenuin++, uin /= 10;
-        
+    }
+    if (data & 4)
+    {
+        M_print (W_SEPERATOR);
         Time_Stamp ();
         M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", sess->uin);
         M_print (i18n (1071, "Your status is "));
         Print_Status (sess->status);
         M_print ("\n");
+        M_print (W_SEPERATOR);
+        if (data & 16)
+            return 0;
     }
     for (i = data & 1; i < 9; i++)
     {
@@ -1454,23 +1464,6 @@ static JUMP_F(CmdUserStatusWide)
     free (Online);
     if (data)
         free (Offline);
-    return 0;
-}
-
-/*
- * Display your personal online status
- */
-static JUMP_F(CmdUserStatusSelf)
-{
-    SESSION;
-    
-    M_print (W_SEPERATOR);
-    Time_Stamp ();
-    M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", sess->uin);
-    M_print (i18n (1071, "Your status is "));
-    Print_Status (sess->status);
-    M_print ("\n");
-    M_print (W_SEPERATOR);
     return 0;
 }
 
@@ -2070,25 +2063,64 @@ static JUMP_F(CmdUserRInfo)
  */
 static JUMP_F(CmdUserAuth)
 {
-    char *arg1;
+    const char *cmd, *nick, *msg;
     UDWORD uin;
     SESSION;
 
-    arg1 = strtok (args, "\n");
-    if (!arg1)
+    cmd = strtok (args, " \t\n");
+    if (!cmd)
     {
         M_print (i18n (1676, "Need uin to send to.\n"));
+        return 0;
     }
+
+    nick = strtok (NULL, " \t\n");
+    if (nick)
+        msg = strtok (NULL, "\n");
     else
     {
-        uin = ContactFindByNick (arg1);
-        if (-1 == uin)
-            M_print (i18n (1061, "%s not recognized as a nick name.\n"), arg1);
+        nick = cmd;
+        cmd = "grant";
+        msg = NULL;
+    }
+    
+    uin = ContactFindByNick (nick);
+    if (uin == -1)
+    {
+        M_print (i18n (1061, "%s not recognized as a nick name.\n"), nick);
+        return 0;
+    }
+
+    if (!strcmp (cmd, "req"))
+    {
+        if (!msg)
+            msg = i18n (9999, "Please authorize my request and add me to your Contact List\n");
+        if (sess->type == TYPE_SERVER && sess->ver >= 8)
+            SnacCliReqauth (sess, uin, msg);
+        else if (sess->type == TYPE_SERVER)
+            SnacCliSendmsg (sess, uin, msg, AUTH_REQ_MESS);
         else
-            if (sess->type == TYPE_SERVER)
-                SnacCliSendmsg (sess, uin, "\x03", AUTH_OK_MESS);
-            else
-                CmdPktCmdSendMessage (sess, uin, "\x03", AUTH_OK_MESS);
+            CmdPktCmdSendMessage (sess, uin, msg, AUTH_REQ_MESS);
+    }
+    else if (!strcmp (cmd, "deny"))
+    {
+        if (!msg)
+            msg = i18n (9999, "Authorization refused\n");
+        if (sess->type == TYPE_SERVER && sess->ver >= 8)
+            SnacCliAuthorize (sess, uin, 0, msg);
+        else if (sess->type == TYPE_SERVER)
+            SnacCliSendmsg (sess, uin, "\x03", AUTH_REF_MESS);
+        else
+            CmdPktCmdSendMessage (sess, uin, "\x03", AUTH_REF_MESS);
+    }
+    else if (!strcmp (cmd, "grant"))
+    {
+        if (sess->type == TYPE_SERVER && sess->ver >= 8)
+            SnacCliAuthorize (sess, uin, 1, NULL);
+        else if (sess->type == TYPE_SERVER)
+            SnacCliSendmsg (sess, uin, "\x03", AUTH_OK_MESS);
+        else
+            CmdPktCmdSendMessage (sess, uin, "\x03", AUTH_OK_MESS);
     }
     return 0;
 }
