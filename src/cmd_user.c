@@ -2930,7 +2930,7 @@ static JUMP_F(CmdUserConn)
             }
 
             connl = ConnectionNr (nr - 1);
-            if (!connl)
+            if (!connl && !(connl = ConnectionFindUIN (TYPEF_SERVER, nr)))
             {
                 rl_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
                 return 0;
