@@ -64,11 +64,11 @@ static jump_t jump[] = {
     { &CmdUserVerbose,       "verbose",      NULL, 0,   0 },
     { &CmdUserIgnoreStatus,  "i",            NULL, 0,   0 },
     { &CmdUserStatusDetail,  "status",       NULL, 2,  10 },
-    { &CmdUserStatusDetail,  "ww",           NULL, 2,  10 },
+    { &CmdUserStatusDetail,  "ww",           NULL, 2,   2 },
     { &CmdUserStatusDetail,  "ee",           NULL, 2,  11 },
     { &CmdUserStatusDetail,  "w",            NULL, 2,   4 },
     { &CmdUserStatusDetail,  "e",            NULL, 2,   5 },
-    { &CmdUserStatusDetail,  "s",            NULL, 2,  20 },
+    { &CmdUserStatusDetail,  "s",            NULL, 2,  28 },
     { &CmdUserStatusShort,   "w-old",        NULL, 2,   1 },
     { &CmdUserStatusShort,   "e-old",        NULL, 2,   0 },
     { &CmdUserStatusWide,    "wide",         NULL, 2,   1 },
@@ -1253,7 +1253,7 @@ static JUMP_F(CmdUserStatusDetail)
         if (data & 2)
             totallen += 1 + 3 + 1 + 1 + lenuin + 24;
     }
-    if (data & 4)
+    if (data & 4 && !uin)
     {
         Time_Stamp ();
         M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", sess->uin);

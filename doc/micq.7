@@ -298,11 +298,17 @@ messages and status changes are ignored.
 Show all white page info for
 .IR uin|nickname .
 .TP
+.B e
+List all people who are online in your contact list.
+.TP
 .B w
 List all people in your contact list.
 .TP
-.B e
-List all people who are online in your contact list.
+.B ee
+List all poeple who are online in your contact list with more details.
+.TP
+.B ww
+List all people in your contact list with more details.
 .TP
 .B wide
 List all people who are in your contact list in a screen wide format.
@@ -310,8 +316,8 @@ List all people who are in your contact list in a screen wide format.
 .B ewide
 List all people who are online in your contact list in a screen wide format.
 .TP
-.B s
-Show your current status.
+.B s \ [nickname]
+Show your current status, or the given nickname's in detail.
 .TP
 .B i
 List all the people on your ignore list.
@@ -321,6 +327,12 @@ Show the status of
 .IR nickname .
 This includes IP address, ICQ protocol version and connection type,
 or list shortly UIN, nick, status and last online time for all contacts.
+.sp
+Note: This command is deprecated, use
+.B s
+or
+.B ww
+instead.
 .TP
 .BI change \ [number]
 Changes your status to

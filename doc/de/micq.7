@@ -308,11 +308,17 @@ ignoriert werden sollen.
 Zeigt alle Daten über
 .IR Benutzernummer|Spitzname .
 .TP
+.B e
+Zeigt alle Kontakte auf der Kontaktliste, die verbunden sind.
+.TP
 .B w
 Zeigt alle Kontakte auf der Kontaktliste.
 .TP
-.B e
-Zeigt alle Kontakte auf der Kontaktliste, die verbunden sind.
+.B ee
+Zeigt alle Kontakte auf der Kontaktliste, die verbunden sind, mit mehr Details.
+.TP
+.B ww
+Zeigt alle Kontakte auf der Kontaktliste, mit mehr Details.
 .TP
 .B wide
 Zeigt alle Kontakte auf der Kontaktliste in einem breiten Format.
@@ -320,8 +326,8 @@ Zeigt alle Kontakte auf der Kontaktliste in einem breiten Format.
 .B ewide
 Zeigt alle Kontakte auf der Kontaktliste, die verbunden sind, in einem breiten Format.
 .TP
-.B s
-Zeigt den aktuellen Status.
+.B s \ [Spitzname]
+Zeigt den aktuellen Status, oder die Details zu dem angegebenen Kontakt.
 .TP
 .B i
 Zeigt alle Kontakte auf der Ignorieren-Liste.
@@ -333,6 +339,12 @@ dies beinhaltet die IP-Adresse, verwendete Version des ICQ-Protokolls für
 Direktverbindungen und den Verbindungstyp, oder gebe für alle Kontakte
 die benutzernummer, den Spitznamen, den Status und den Zeitpunkt des
 letzten Verbunden-Seins aus.
+.sp
+Hinweis: Dieses Kommando ist obsolet; man verwende
+.B s
+oder
+.B ww
+stattdessen.
 .TP
 .BI change \ [Nummer]
 Wechselt in den Status
