@@ -838,16 +838,16 @@ JUMP_F(CmdUserVerbose)
 }
 
 /*
- * Shows the contact list a very detailed.
+ * Shows the contact list in a very detailed way.
  */
 JUMP_F(CmdUserStatus)
 {
     int i;
     UDWORD num;
     CONTACT_PTR cont;
-    char *name = args;
+    char *name = strtok (args, "");
 
-    if (name != NULL)
+    if (name)
     {
         num = nick2uin (name);
         if (num == -1)
@@ -1092,12 +1092,12 @@ JUMP_F(CmdUserStatusWide)
     /* Fairly simple print routine. We check that we only print the right
        number of columns to the screen.                                    */
     M_print (COLMESS);
-    for (i = 1; i < (Get_Max_Screen_Width () - strlen ("Offline")) / 2; i++)
+    for (i = 1; i < (Get_Max_Screen_Width () - strlen (i18n (653, "Offline"))) / 2; i++)
     {
         M_print ("=");
     }
     M_print (COLCLIENT "%s" COLMESS, i18n (653, "Offline"));
-    for (i = 1; i < (Get_Max_Screen_Width () - strlen ("Offline")) / 2; i++)
+    for (i = 1; i < (Get_Max_Screen_Width () - strlen (i18n (653, "Offline"))) / 2; i++)
     {
         M_print ("=");
     }
@@ -1123,12 +1123,12 @@ JUMP_F(CmdUserStatusWide)
         M_print ("\n");
     }
     M_print (COLMESS);
-    for (i = 1; i < (Get_Max_Screen_Width () - strlen ("Online")) / 2; i++)
+    for (i = 1; i < (Get_Max_Screen_Width () - strlen (i18n (654, "Online"))) / 2; i++)
     {
         M_print ("=");
     }
     M_print (COLCLIENT "%s" COLMESS, i18n (654, "Online"));
-    for (i = 1; i < (Get_Max_Screen_Width () - strlen ("Online")) / 2; i++)
+    for (i = 1; i < (Get_Max_Screen_Width () - strlen (i18n (654, "Online"))) / 2; i++)
     {
         M_print ("=");
     }

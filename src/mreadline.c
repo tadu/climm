@@ -190,7 +190,7 @@ int R_process_input (void)
         return 0;
     if (!istat)
     {
-        if (ch >= 0 && ch < ' ')
+        if ((ch >= 0 && ch < ' ') || ch == 127)
         {
             switch (ch)
             {
