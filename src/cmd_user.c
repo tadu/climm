@@ -678,7 +678,7 @@ static JUMP_F(CmdUserTrans)
  */
 static JUMP_F(CmdUserTCP)
 {
-#ifdef TCP_COMM
+#ifdef ENABLE_PEER2PEER
     char *arg1 = NULL;
     Contact *cont = NULL;
     Session *list;

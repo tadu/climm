@@ -19,6 +19,17 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_LN_S
 
+# Check for arguments.
+
+AC_CACHE_CHECK(whether to enable peer to peer connections, ac_cv_use_peer2peer,
+               [AC_ARG_ENABLE(peer2peer, AC_HELP_STRING([--disable-peer2peer],
+                                                        [disable peer to peer connections)]),
+                           ac_cv_use_peer2peer=$withval, ac_cv_use_peer2peer=yes)])
+
+if test "x$ac_cv_use_peer2peer" = "xyes"; then
+  AC_DEFINE(ENABLE_PEER2PEER, 1, [Whether to enable peer to peer connections])
+fi;
+
 # Checks for libraries.
 AC_CHECK_FUNCS([inet_ntoa getpeername])
 if test "x$ac_cv_func_inet_ntoa" = "xno"; then

@@ -1,6 +1,6 @@
 /* $Id$ */
 
-#ifdef TCP_COMM
+#ifdef ENABLE_PEER2PEER
 
 /* TCP related constants */
 #define TCP_OK_FLAG      0x04

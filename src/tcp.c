@@ -38,7 +38,7 @@
 #endif
 #include <sys/stat.h>
 
-#ifdef TCP_COMM
+#ifdef ENABLE_PEER2PEER
 
 static void       TCPDispatchPeer    (Session *peer);
 
@@ -2091,4 +2091,4 @@ static int Decrypt_Pak (UBYTE *pak, UDWORD size)
 
     return (1);
 }
-#endif /* TCP_COMM */
+#endif /* ENABLE_PEER2PEER */

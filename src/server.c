@@ -66,7 +66,7 @@ void icq_sendmsg (Session *sess, UDWORD uin, char *text, UDWORD msg_type)
 
     putlog (sess, NOW, uin, STATUS_ONLINE, 
         msg_type == AUTO_MESS ? LOG_AUTO : LOG_SENT, msg_type, "%s\n", text);
-#ifdef TCP_COMM
+#ifdef ENABLE_PEER2PEER
     if (!sess->assoc || !TCPSendMsg (sess->assoc, uin, text, msg_type))
 #endif
     {

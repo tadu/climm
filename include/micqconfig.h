@@ -58,17 +58,6 @@
  * line is printed. */
 #define MSGID_LENGTH 1000
 
-/* Color schemes  leave them all commented out for the default */
-/*
-#define COLOR_SCHEME_A
-#define COLOR_SCHEME_B
-#define COLOR_SCHEME_M
-*/
-
-/* FUNNY_MSGS */
-/* use translation cc_fun for funny messages, */
-/* it is not compiled into the program anymore */
-
 /* Use the arrow keys on ansi terminals.  Very good to have if it works */
 #define USE_MREADLINE
 
@@ -78,6 +67,21 @@
 /* enables you to run a custom command when a message is received */
 #define MSGEXEC
 
-/* enables TCP support */
-#define TCP_COMM
+/*
+ * Obsolete options
+ */
+
+/* TCP_COMM - enables TCP support
+ * use ./configure --enable-peer2peer instead.
+ */
+
+/* FUNNY_MSGS
+ * use translation cc_fun for funny messages.
+ */
+
+/* COLOR_SCHEME_A
+ * COLOR_SCHEME_B
+ * COLOR_SCHEME_M
+ * use the config option "color scheme" in your micqrc file.
+ */
 
