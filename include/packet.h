@@ -76,5 +76,6 @@ int         PacketReadLeft    (const Packet *pak);
 #define PacketWriteTLVData(pak,tlv,data,len) do { PacketWriteB2 (pak, tlv); PacketWriteB2   (pak, len); PacketWriteData (pak, data, len); } while (0)
 #define PacketWriteTLVStr(pak,tlv,data)      do { PacketWriteTLV (pak, tlv); PacketWriteStr (pak, data);PacketWriteTLVDone (pak);         } while (0)
 #define PacketWriteTLVUIN(pak,tlv,data)      do { PacketWriteB2 (pak, tlv); PacketWriteUIN  (pak, data);                                  } while (0)
+#define PacketWriteStrB(pak,str)             do { PacketWriteB2 (pak, strlen (str)); PacketWriteStr (pak, str);                           } while (0)
 
 #endif /* MICQ_PACKET_H */
