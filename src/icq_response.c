@@ -603,19 +603,25 @@ void Display_Ext_Info_Reply (Session *sess, Packet *pak, const char *uinline)
 /*
  * Central entry point for incoming messages.
  */
-void Do_Msg (Session *sess, time_t stamp, UWORD type, const char *text, 
-    UDWORD uin, UDWORD tstatus)
+void Do_Msg (Session *sess, time_t stamp, UWORD type, const char *text, UDWORD uin, UDWORD tstatus)
 {
     char *cdata, *tmp = NULL;
     char *url_url, *url_desc;
     char sep = ConvSep ();
     Contact *cont;
+    Session *serv;
     int x, m;
     
     cdata = strdup (text);
 
     TabAddUIN (uin);            /* Adds <uin> to the tab-list */
-    UtilCheckUIN (sess, uin);
+
+    /* Thanks rtc for breaking and not fixing it */
+    for (serv = sess; serv && ~serv->type & TYPEF_SERVER; )
+        serv = serv->parent;
+    assert (serv);
+
+    UtilCheckUIN (serv, uin);
 
     putlog (sess, stamp, uin, tstatus, 
         type == USER_ADDED_MESS ? LOG_ADDED : LOG_RECVD, type,
@@ -818,10 +824,12 @@ void Do_Msg (Session *sess, time_t stamp, UWORD type, const char *text,
                 url_url++;
             }
 
-            M_print ("%s" COLMESSAGE "%s" COLNONE "\n", sess->type 
-                     & TYPEF_ANY_SERVER ? MSGRECSTR : MSGTCPRECSTR, url_desc);
+            M_print ("%s" COLMESSAGE "%s" COLNONE "\n",
+                     sess->type & TYPEF_ANY_SERVER ? MSGRECSTR : MSGTCPRECSTR,
+                     url_desc);
             Time_Stamp ();
-            M_print (i18n (2125, "        URL: %s%s%s\n"), 
+            M_print (i18n (2127, "    URL: %s%s%s%s\n"), 
+                     sess->type & TYPEF_ANY_SERVER ? MSGRECSTR : MSGTCPRECSTR,
                      COLMESSAGE, url_url, COLNONE);
             break;
         case CONTACT_MESS:

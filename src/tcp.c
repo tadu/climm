@@ -1735,7 +1735,7 @@ static void TCPCallBackReceive (Event *event)
     Contact *cont;
     Packet *pak;
     char *tmp, *tmp3, *text, *reason, *name;
-    UWORD cmd, type, seq, port, i;
+    UWORD cmd, type, seq, port;
     UDWORD len, status, flags;
 
     if (!event->sess)
