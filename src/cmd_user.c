@@ -1485,7 +1485,7 @@ static JUMP_F(CmdUserStatusDetail)
     }
 
     if (cont)
-        assert(uin = cont->uin);
+        uin = cont->uin;
 
     if (data & 32)
     {

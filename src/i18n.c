@@ -47,20 +47,25 @@ void i18nInit (char **loc, UBYTE *enc, const char *arg)
     *loc = q = strdup (arg);
 
     if (*q == '/')
-        q = strrchr (q, '/');
+        return;
     if ((p = strrchr (q, '@')))
     {
-        if (!strcmp (p, "@euro"))
+        if (!strcasecmp (p, "@euro"))
             *enc = ENC_AUTO | ENC_LATIN9;
         *p = '\0';
     }
     if ((p = strrchr (q, '.')))
     {
-        if (!strncmp (p, ".KOI", 3))
+        if (!strncasecmp (p, ".KOI", 3))
             *enc = ENC_AUTO | ENC_KOI8;
-        if (!strcmp (p, ".UTF-8"))
+        if (!strcasecmp (p, ".UTF-8"))
             *enc = ENC_AUTO | ENC_UTF8;
         *p = '\0';
+    }
+    if (*p == 'C' && !p[1] && enc == ENC_AUTO)
+    {
+        s_repl (loc, "en_US");
+        enc = ENC_LATIN1;
     }
 }
 
