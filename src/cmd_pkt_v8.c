@@ -34,6 +34,7 @@
 #include "cmd_pkt_v8_flap.h"
 #include "cmd_pkt_v8_snac.h"
 #include "cmd_pkt_v8.h"
+#include "peer_file.h"
 #include "util_ssl.h"
 #include "tcp.h"
 #include <string.h>
@@ -355,7 +356,8 @@ void SrvMsgGreet (Packet *pak, UWORD cmd, const char *reason, UWORD port, UDWORD
 /*
  * Process an advanced message.
  *
- * Note: swallows only acknowledge event/packet
+ * Note: swallows only acknowledge event/packet;
+ * the caller destructs inc_event after return.
  */
 void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Event *ack_event)
 {
@@ -363,7 +365,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     Contact *cont = inc_event->cont;
     ContactOptions *opt = inc_event->opt, *opt2;
     Packet *ack_pak = ack_event->pak;
-    Event *e1, *e2;
+    Event *e1;
     const char *txt, *ack_msg;
     strc_t text, cname, ctext, reason, cctmp;
     char *name;
@@ -447,29 +449,32 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
             name = strdup (ConvFromCont (cname, cont));
             
             flist = PeerFileCreate (serv);
+            ContactOptionsSetVal (opt, CO_FILEACCEPT, 0);
+            ContactOptionsSetVal (opt, CO_BYTES, flen);
+            ContactOptionsSetStr (opt, CO_MSGTEXT, name);
+            ContactOptionsSetVal (opt, CO_REF, ack_event->seq);
             if (!ContactOptionsGetVal (opt, CO_FILEACCEPT, &opt_acc) && flen)
             {
-                ContactOptionsSetVal (opt, CO_FILEACCEPT, 0);
-                ContactOptionsSetVal (opt, CO_BYTES, flen);
-                ContactOptionsSetStr (opt, CO_MSGTEXT, name);
-                ContactOptionsSetVal (opt, CO_REF, ack_event->seq);
                 opt2 = ContactOptionsC ();
                 ContactOptionsSetVal (opt2, CO_BYTES, flen);
                 ContactOptionsSetStr (opt2, CO_MSGTEXT, name);
                 ContactOptionsSetVal (opt2, CO_REF, ack_event->seq);
                 ContactOptionsSetVal (opt2, CO_MSGTYPE, msgtype);
                 IMSrvMsg (cont, serv, NOW, opt2);
-                e1 = QueueEnqueueData (serv, QUEUE_ACKNOWLEDGE, ack_event->seq, time (NULL) + 120,
-                                       NULL, inc_event->cont, NULL, NULL);
-                e2 = QueueEnqueueData (inc_event->conn, inc_event->type, ack_event->seq,
-                                       time (NULL) + 122, inc_event->pak, inc_event->cont, opt, inc_event->callback);
-                e1->rel = e2;
-                e2->rel = e1;
+                opt2 = ContactOptionsC ();
+                ContactOptionsSetVal (opt2, CO_FILEACCEPT, 0);
+                ContactOptionsSetStr (opt2, CO_REFUSE, i18n (9999, "refused (ignored)"));
+                e1 = QueueEnqueueData (serv, QUEUE_USERFILEACK, ack_event->seq, time (NULL) + 120,
+                                       NULL, inc_event->cont, opt2, &PeerFileTO);
+                QueueEnqueueDep (inc_event->conn, inc_event->type, ack_event->seq, e1,
+                                 inc_event->pak, inc_event->cont, opt, inc_event->callback);
                 inc_event->pak->rpos = inc_event->pak->tpos;
                 inc_event->opt = NULL;
                 inc_event->pak = NULL;
                 ack_event->due = 0;
                 ack_event->callback = NULL;
+                QueueDequeueEvent (ack_event);
+                EventD (ack_event);
                 free (name);
 #ifdef WIP
                 M_printf ("FIXMEWIP: Delaying advanced message: events %p, %p.\n", inc_event, ack_event);
@@ -492,7 +497,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
             }
             else
             {
-                if (!ContactOptionsGetStr (opt, CO_REFUSE, &txt))
+                if (!ContactOptionsGetStr (inc_event->wait->opt, CO_REFUSE, &txt))
                     txt = "";
                 PacketWrite2    (ack_pak, TCP_ACK_REFUSE);
                 PacketWrite2    (ack_pak, ack_flags);
@@ -505,6 +510,8 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                     PacketWrite4 (ack_pak, 0x20726f66);
                 PacketWrite4    (ack_pak, 0);
             }
+            EventD (QueueDequeueEvent (inc_event->wait));
+            inc_event->wait = NULL;
             accept = -1;
             break;
         case MSG_EXTENDED:
@@ -535,29 +542,32 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                 {
                     case 0x0029:
                         flist = PeerFileCreate (serv);
-                        if (!ContactOptionsGetVal (opt, CO_FILEACCEPT, &opt_acc) && flen)
+                        ContactOptionsSetVal (opt, CO_FILEACCEPT, 0);
+                        ContactOptionsSetVal (opt, CO_BYTES, flen);
+                        ContactOptionsSetStr (opt, CO_MSGTEXT, name);
+                        ContactOptionsSetVal (opt, CO_REF, ack_event->seq);
+                        if (!inc_event->wait)
                         {
-                            ContactOptionsSetVal (opt, CO_FILEACCEPT, 0);
-                            ContactOptionsSetVal (opt, CO_BYTES, flen);
-                            ContactOptionsSetStr (opt, CO_MSGTEXT, name);
-                            ContactOptionsSetVal (opt, CO_REF, ack_event->seq);
                             opt2 = ContactOptionsC ();
                             ContactOptionsSetVal (opt2, CO_BYTES, flen);
                             ContactOptionsSetStr (opt2, CO_MSGTEXT, name);
                             ContactOptionsSetVal (opt2, CO_REF, ack_event->seq);
-                            ContactOptionsSetVal (opt2, CO_MSGTYPE, msgtype);
+                            ContactOptionsSetVal (opt2, CO_MSGTYPE, MSG_FILE);
                             IMSrvMsg (cont, serv, NOW, opt2);
-                            e1 = QueueEnqueueData (serv, QUEUE_ACKNOWLEDGE, ack_event->seq, time (NULL) + 120,
-                                                   NULL, inc_event->cont, NULL, NULL);
-                            e2 = QueueEnqueueData (inc_event->conn, inc_event->type, ack_event->seq,
-                                                   time (NULL) + 122, inc_event->pak, inc_event->cont, opt, inc_event->callback);
-                            e1->rel = e2;
-                            e2->rel = e1;
+                            opt2 = ContactOptionsC ();
+                            ContactOptionsSetVal (opt2, CO_FILEACCEPT, 0);
+                            ContactOptionsSetStr (opt2, CO_REFUSE, i18n (9999, "refused (ignored)"));
+                            e1 = QueueEnqueueData (serv, QUEUE_USERFILEACK, ack_event->seq, time (NULL) + 120,
+                                                   NULL, inc_event->cont, opt2, &PeerFileTO);
+                            QueueEnqueueDep (inc_event->conn, inc_event->type, ack_event->seq, e1,
+                                             inc_event->pak, inc_event->cont, opt, inc_event->callback);
                             inc_event->pak->rpos = inc_event->pak->tpos;
                             inc_event->opt = NULL;
                             inc_event->pak = NULL;
                             ack_event->callback = NULL;
                             ack_event->due = 0;
+                            QueueDequeueEvent (ack_event);
+                            EventD (ack_event);
                             free (name);
                             free (gtext);
 #ifdef WIP
@@ -574,13 +584,15 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                         }
                         else
                         {
-                            if (!ContactOptionsGetStr (opt, CO_REFUSE, &txt))
+                            if (!ContactOptionsGetStr (inc_event->wait->opt, CO_REFUSE, &txt))
                                 txt = "";
                             PacketWrite2    (ack_pak, TCP_ACK_REFUSE);
                             PacketWrite2    (ack_pak, ack_flags);
                             PacketWriteLNTS (ack_pak, txt);
                             SrvMsgGreet     (ack_pak, cmd, "", 0, 0, "");
                         }
+                        EventD (QueueDequeueEvent (inc_event->wait));
+                        inc_event->wait = NULL;
                         break;
 
                     case 0x002d:

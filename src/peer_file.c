@@ -100,14 +100,24 @@ Connection *PeerFileCreate (Connection *serv)
 }
 
 /*
+ * Handles a timeout.
+ */
+
+void PeerFileTO (Event *event)
+{
+    QueueEnqueue (event);
+    QueueRelease (event);
+    event->callback = NULL;
+}
+
+/*
  * Handles user reaction to incoming file request
  */
 void PeerFileUser (UDWORD seq, Contact *cont, const char *reason, Connection *serv)
 {
-    Event *event, *revent = NULL;
+    Event *event;
 
-    if (!(event = QueueDequeue2 (serv, QUEUE_ACKNOWLEDGE, seq, cont)) || !(revent = event->rel) ||
-        !(revent = QueueDequeue2 (event->rel->conn, event->rel->type, event->rel->seq, event->rel->cont)))
+    if (!(event = QueueDequeue2 (serv, QUEUE_USERFILEACK, seq, cont)))
     {
         M_printf (i18n (2258, "No pending incoming file transfer request for %s with (sequence %ld) found.\n"),
                   cont ? cont->nick : "<?>", seq);
@@ -115,14 +125,13 @@ void PeerFileUser (UDWORD seq, Contact *cont, const char *reason, Connection *se
     else
     {
         if (reason)
-            revent->opt = ContactOptionsSetVals (revent->opt, CO_FILEACCEPT, 1, CO_REFUSE, reason, 0);
+            event->opt = ContactOptionsSetVals (event->opt, CO_FILEACCEPT, 0, CO_REFUSE, reason, 0);
         else
-            revent->opt = ContactOptionsSetVals (revent->opt, CO_FILEACCEPT, 0, 0);
-        revent->callback (revent);
+            event->opt = ContactOptionsSetVals (event->opt, CO_FILEACCEPT, 1, 0);
+        QueueEnqueue (event);
+        QueueRelease (event);
     }
-    EventD (event);
 }
-
 
 /*
  * Handles an incoming file request.
@@ -133,7 +142,7 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
     ContactOptions *opt;
     Contact *cont;
     UDWORD opt_bytes, opt_acc;
-    const char *txt = "", *opt_files;
+    const char *opt_files;
 
     if (!ContactOptionsGetVal (event->opt, CO_BYTES, &opt_bytes))
         opt_bytes = 0;
@@ -146,30 +155,31 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
     cont  = event->cont;
     flist = PeerFileCreate (serv);
 
-    opt = ContactOptionsSetVals (NULL, CO_BYTES, opt_bytes, CO_MSGTEXT, opt_files, 0);
-
-    if ((ContactOptionsGetStr (event->opt, CO_REFUSE, &txt) && *txt) || !cont || !flist
-        || !ContactOptionsGetVal (event->opt, CO_FILEACCEPT, &opt_acc) || !opt_acc
-        || !(fpeer = ConnectionClone (flist, TYPE_FILEDIRECT)))
+    if (!ContactOptionsGetVal (event->wait->opt, CO_FILEACCEPT, &opt_acc) || !opt_acc
+        || !cont || !flist || !(fpeer = ConnectionClone (flist, TYPE_FILEDIRECT)))
     {
-        if (!txt || !*txt)
-            ContactOptionsSetStr (event->opt, CO_REFUSE, txt = "auto-refused");
+        const char *txt;
+        opt = ContactOptionsSetVals (NULL, CO_MSGTEXT, opt_files, 0);
+        if (!ContactOptionsGetStr (event->wait->opt, CO_REFUSE, &txt))
+            txt = "";
         IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_FILE_REJING, txt, opt);
         return FALSE;
     }
-    
     ASSERT_FILELISTEN (flist);
     ASSERT_FILEDIRECT (fpeer);
     
     fpeer->port      = 0;
     fpeer->ip        = 0;
     fpeer->connect   = 0;
+    fpeer->version   = serv->assoc->version;
     s_repl (&fpeer->server, NULL);
     fpeer->cont      = cont;
     fpeer->len       = opt_bytes;
     fpeer->done      = 0;
     fpeer->close     = &PeerFileDispatchDClose;
     fpeer->reconnect = &TCPDispatchReconn;
+
+    opt = ContactOptionsSetVals (NULL, CO_BYTES, opt_bytes, CO_MSGTEXT, opt_files, 0);
     IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_FILE_ACKING, "", opt);
     
     return TRUE;
@@ -220,7 +230,7 @@ BOOL PeerFileAccept (Connection *peer, UWORD status, UDWORD port)
 static void PeerFileDispatchClose (Connection *flist)
 {
     flist->connect = 0;
-    flist->close (flist);
+    PeerFileClose (flist);
 }
 
 /*
@@ -230,6 +240,7 @@ static void PeerFileDispatchDClose (Connection *fpeer)
 {
     fpeer->connect = 0;
     PeerFileClose (fpeer);
+    ConnectionClose (fpeer);
     ReadLinePromptReset ();
 }
 
@@ -291,18 +302,18 @@ void PeerFileDispatch (Connection *fpeer)
             
             pak = PeerPacketC (fpeer, 1);
             PacketWrite4 (pak, 64);
-            PacketWriteLNTS (pak, "my Nick0");
+            PacketWriteLNTS (pak, cont->nick);
             PeerPacketSend (fpeer, pak);
             PacketD (pak);
             return;
         
         case 1:
-            speed= PacketRead4 (pak); /* SPEED */
-            name = PacketReadL2Str (pak, NULL); /* NICK  */
+            speed = PacketRead4 (pak); /* SPEED */
+            name  = PacketReadL2Str (pak, NULL); /* NICK  */
             PacketD (pak);
             
             M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-            M_printf (i18n (2170, "Sending file at speed %lx to %s.\n"), speed, ConvFromCont (name, cont));
+            M_printf (i18n (2170, "Sending file at speed %lx to %s.\n"), speed, s_wordquote (ConvFromCont (name, cont)));
             
             fpeer->our_seq = 1;
             QueueRetry (fpeer, QUEUE_PEER_FILE, cont);
@@ -527,7 +538,7 @@ void PeerFileResend (Event *event)
     cont = event->cont;
     assert (cont);
     
-    if (!ContactOptionsGetStr (event->opt, CO_MSGTEXT, &opt_text))
+    if (!ContactOptionsGetStr (event->opt, CO_FILENAME, &opt_text))
         opt_text = "";
 
     if (event->attempts >= MAX_RETRY_P2PFILE_ATTEMPTS || (!event->pak && !event->seq))
@@ -581,7 +592,7 @@ void PeerFileResend (Event *event)
         {
             rc = errno;
             M_printf (i18n (2071, "Couldn't stat file %s: %s (%d)\n"),
-                      opt_text, strerror (rc), rc);
+                      s_wordquote (opt_text), strerror (rc), rc);
         }
         ffile->len = finfo.st_size;
 

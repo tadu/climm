@@ -102,8 +102,6 @@ typedef struct Extra_s                 Extra;
 #define STATUS_FFC         STATUSF_FFC
 #define STATUS_ONLINE     0x00000000
 
-#define NOW -1
-
 #define MSGF_MASS         0x8000
 #define MSGF_GETAUTO      0x0300
 

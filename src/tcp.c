@@ -698,7 +698,8 @@ static Packet *TCPReceivePacket (Connection *peer)
     if (!peer->connect)
     {
         TCPClose (peer);
-        PacketD (pak);
+        if (pak)
+            PacketD (pak);
         return NULL;
     }
     
@@ -1027,6 +1028,17 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
             }
             if ((peer2->connect & CONNECT_MASK) == (UDWORD)TCP_STATE_WAITING)
                 EventD (QueueDequeue (peer2, QUEUE_TCP_TIMEOUT, peer2->ip));
+            if (peer2->sok == -1 && peer2->type == TYPE_FILEDIRECT)
+            {
+                peer2->sok = peer->sok;
+                peer2->our_session = peer->our_session;
+                peer2->version = peer->version;
+                peer2->connect = peer->connect | CONNECT_SELECT_R;
+                peer2->dispatch = peer->dispatch;
+                peer->sok = -1;
+                ConnectionClose (peer);
+                return peer2;
+            }
             if (peer2->sok != -1)
                 TCPClose (peer2);
             peer->len = peer2->len;
@@ -1347,6 +1359,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     
     fpeer->cont    = cont;
     fpeer->connect = 77;
+    fpeer->version = flist->version;
     
     s_init (&filenames, "", 0);
     for (sumlen = sum = i = 0; i < count; i++)
@@ -1498,10 +1511,7 @@ static void PeerCallbackReceiveAdvanced (Event *event)
 {
     Debug (DEB_TCP, "%p %p %p\n", event, event ? event->conn : NULL, event ? event->pak : NULL);
     if (event && event->conn && event->pak && event->conn->type & TYPEF_ANY_DIRECT)
-    {
         PeerPacketSend (event->conn, event->pak);
-        event->pak = NULL;
-    }
 #ifdef ENABLE_SSL
     switch (event->conn->ssl_status)
     {
@@ -1575,17 +1585,17 @@ static void TCPCallBackReceive (Event *event)
             if (!ContactOptionsGetVal (oldevent->opt, CO_MSGTYPE, &opt_type))
                 opt_type = type;
             
-            if (opt_type != type)
+            if (opt_type != type && type != MSG_EXTENDED)
             {
                 /* D'oh! */
-                M_printf ("sucky sucky: %d vs %ld\n", type, opt_type); /* FIXME */
+                M_printf ("FIXME: message type mismatch: %d vs %ld\n", type, opt_type); /* FIXME */
                 EventD (oldevent);
                 break;
             }
 
             tmp = strdup (ConvFromCont (ctmp, cont));
             
-            switch (opt_type)
+            switch (type)
             {
                 case MSG_NORM:
                 case MSG_URL:

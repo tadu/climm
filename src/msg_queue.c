@@ -46,7 +46,7 @@ struct Queue_s
     time_t due;
 };
 
-static Queue queued = { NULL, INT_MAX };
+static Queue queued = { NULL, NEVER };
 static Queue *queue = &queued;
 
 static Event *q_QueueDequeueEvent (Event *event, struct QueueEntry *previous);
@@ -65,7 +65,7 @@ void QueueInit (Queue **myqueue)
     {
         queue = malloc (sizeof (Queue));
         queue->head = NULL;
-        queue->due = INT_MAX;
+        queue->due = NEVER;
         *myqueue = queue;
     }
 }
@@ -95,7 +95,7 @@ Event *QueuePop ()
         free (queue->head);
         queue->head = temp;
         if (!queue->head)
-            queue->due = INT_MAX;
+            queue->due = NEVER;
         else
             queue->due = queue->head->event->due;
         Debug (DEB_QUEUE, STR_DOT STR_DOT STR_DOT "> %s %p: %08lx %p %ld @ %p",
@@ -162,7 +162,6 @@ Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD id,
     Event *event = calloc (sizeof (Event), 1);
     assert (event);
     
-    event->rel = NULL;
     event->conn = conn;
     event->type = type;
     event->seq  = id;
@@ -174,6 +173,35 @@ Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD id,
     event->callback = callback;
     
     Debug (DEB_EVENT, "<+" STR_DOT STR_DOT " %s %p: %08lx %p %ld %x @ %p",
+           QueueType (event->type), event, event->seq, event->pak,
+           event->cont ? event->cont->uin : 0, event->flags, event->conn);
+    QueueEnqueue (event);
+
+    return event;
+}
+
+/*
+ * Adds a new waiting entry to the queue. Creates Event for you.
+ */
+Event *QueueEnqueueDep (Connection *conn, UDWORD type, UDWORD id,
+                        Event *dep, Packet *pak, Contact *cont,
+                        ContactOptions *opt, Queuef *callback)
+{
+    Event *event = calloc (sizeof (Event), 1);
+    assert (event);
+    
+    event->wait = dep;
+    event->conn = conn;
+    event->type = type;
+    event->seq  = id;
+    event->attempts = 1;
+    event->cont  = cont;
+    event->due  = NEVER;
+    event->pak = pak;
+    event->opt = opt;
+    event->callback = callback;
+    
+    Debug (DEB_EVENT, "<*" STR_DOT STR_DOT " %s %p: %08lx %p %ld %x @ %p",
            QueueType (event->type), event, event->seq, event->pak,
            event->cont ? event->cont->uin : 0, event->flags, event->conn);
     QueueEnqueue (event);
@@ -204,7 +232,7 @@ static Event *q_QueueDequeueEvent (Event *event, struct QueueEntry *previous)
         free (tmp);
 
         if (!queue->head)
-            queue->due = INT_MAX;
+            queue->due = NEVER;
         else
             queue->due = queue->head->event->due;
 
@@ -322,8 +350,27 @@ Event *QueueDequeue2 (Connection *conn, UDWORD type, UDWORD seq, Contact *cont)
     return NULL;
 }
 
+static Event *q_EventDep (Event *event)
+{
+    struct QueueEntry *iter;
+
+    if (!queue->head)
+        return NULL;
+    
+    if (queue->head->event->wait == event && queue->head->event->due)
+        return q_QueueDequeueEvent (queue->head->event, NULL);
+
+    for (iter = queue->head; iter->next; iter = iter->next)
+        if (iter->next->event->wait == event && iter->next->event->due)
+            return q_QueueDequeueEvent (iter->next->event, iter);
+    
+    return NULL;
+}
+
 void EventD (Event *event)
 {
+    Event *oevent;
+
     if (!event)
         return;
     if (q_QueueDequeueEvent (event, NULL))
@@ -334,10 +381,34 @@ void EventD (Event *event)
     if (event->pak)
         PacketD (event->pak);
     ContactOptionsD (event->opt);
-    if (event->rel && event->rel->rel == event)
-        event->rel->rel = NULL;
+
+    while ((oevent = q_EventDep (event)))
+    {
+        Debug (DEB_QUEUE, STR_DOT "!!" STR_DOT " << %p", event);
+        oevent->wait = NULL;
+        oevent->due = 0;
+        QueueEnqueue (oevent);
+    }
+    
     free (event);
 }
+
+/*
+ * Activate all events depending on given event
+ */
+void QueueRelease (Event *event)
+{
+    Event *oevent;
+    
+    Debug (DEB_QUEUE, STR_DOT "!!" STR_DOT " %p", event);
+    while ((oevent = q_EventDep (event)))
+    {
+        Debug (DEB_QUEUE, STR_DOT "!!" STR_DOT " << %p", event);
+        oevent->due = 0;
+        QueueEnqueue (oevent);
+    }
+}
+
 
 /*
  * Cancels all events for a given (to be removed) session
@@ -404,6 +475,8 @@ void QueueRun ()
         event->flags |= QUEUE_FLAG_CONSIDERED;
         if (event->callback)
             event->callback (event);
+        else
+            EventD (event);
     }
 }
 
@@ -458,6 +531,9 @@ const char *QueueType (UDWORD type)
         case QUEUE_PEER_RESEND:   return "PEER_RESEND";
         case QUEUE_TYPE2_RESEND:  return "TYPE2_RESEND";
         case QUEUE_ACKNOWLEDGE:   return "ACKNOWLEDGE";
+        case QUEUE_USERFILEACK:   return "USERFILEACK";
+        case QUEUE_REQUEST_ROSTER:return "REQUEST_ROSTER";
+        case QUEUE_TODO_EG:       return "TODO_EG";
     }
     return s_sprintf ("%lx", type);
 }
