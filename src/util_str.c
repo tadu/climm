@@ -714,6 +714,56 @@ BOOL s_parsenick_s (char **input, Contact **parsed, char *sep, Contact **parsedr
 }
 
 /*
+ * Try to find a contact group name in the string.
+ */
+BOOL s_parsecg_s (char **input, ContactGroup **parsed, char *sep, Connection *serv)
+{
+    ContactGroup *cg;
+    char *p = *input, *t;
+    UDWORD l, i;
+    
+    while (*p && strchr (sep, *p))
+        p++;
+    *input = p;
+
+    if (!*p)
+    {
+        *parsed = NULL;
+        return FALSE;
+    }
+    
+    t = NULL;
+    if (s_parse_s (&p, &t, sep))
+    {
+        for (i = 0; (cg = ContactGroupIndex (i)); i++)
+        {
+            if (cg->serv == serv && !strcmp (cg->name, t))
+            {
+                *input = p;
+                *parsed = cg;
+                return TRUE;
+            }
+        }
+    }
+    p = *input;
+
+    for (i = 0; (cg = ContactGroupIndex (i)); i++)
+    {
+        l = strlen (cg->name);
+        if (cg->serv == serv && !strncmp (cg->name, p, l)
+            && (strchr (sep, p[l]) || !p[l]))
+        {
+            *input = p + l + (p[l] ? 1 : 0);
+            *parsed = cg;
+            return TRUE;
+        }
+    }
+
+    *parsed = NULL;
+    return FALSE;
+}
+
+/*
  * Finds the remaining non-whitespace line, but parses '\'.
  */
 BOOL s_parserem_s (char **input, char **parsed, char *sep)
@@ -814,6 +864,28 @@ BOOL s_parseint_s (char **input, UDWORD *parsed, char *sep)
     *parsed = nr * sig;
     return TRUE;
 }
+
+/*
+ * Try to find a keyword.
+ */
+BOOL s_parsekey_s (char **input, const char *keyword, char *sep)
+{
+    char *p = *input;
+    
+    while (*p && strchr (sep, *p))
+        p++;
+    *input = p;
+    
+    while (*keyword == *p && *p)
+        keyword++, p++;
+    
+    if (*keyword)
+        return FALSE;
+    
+    *input = p;
+    return TRUE;
+}
+
 
 #define SUPERSAFE "%*+-_.:=@/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 

@@ -6,6 +6,7 @@
 typedef struct str_s str_s;
 typedef struct str_s *str_t;
 typedef const struct str_s *strc_t;
+typedef const struct strc_s *strx_t;
 
 struct str_s
 {
@@ -44,8 +45,10 @@ const char *s_realpath(const char *path);
 
 BOOL        s_parse_s     (char **input, char    **parsed, char *sep);
 BOOL        s_parsenick_s (char **input, Contact **parsed, char *sep, Contact **parsedr, Connection *serv);
+BOOL        s_parsecg_s   (char **input, ContactGroup **parsed, char *sep, Connection *serv);
 BOOL        s_parserem_s  (char **input, char    **parsed, char *sep);
 BOOL        s_parseint_s  (char **input, UDWORD   *parsed, char *sep);
+BOOL        s_parsekey_s  (char **input, const char *kw, char *sep);
 const char *s_quote       (const char *input);
 
 #define s_repl(old,new) do { char **_p_p_ = old; const char *_q_q_ = new; \
@@ -60,7 +63,9 @@ const char *s_quote       (const char *input);
 
 #define s_parse(i,p)          s_parse_s     (i, p, DEFAULT_SEP)
 #define s_parsenick(i,p,pr,s) s_parsenick_s (i, p, DEFAULT_SEP, pr, s)
+#define s_parsecg(i,p,s)      s_parsecg_s   (i, p, DEFAULT_SEP, s)
 #define s_parserem(i,p)       s_parserem_s  (i, p, DEFAULT_SEP)
 #define s_parseint(i,p)       s_parseint_s  (i, p, DEFAULT_SEP)
+#define s_parsekey(i,k)       s_parsekey_s  (i, k, DEFAULT_SEP)
 
 #endif /* MICQ_UTIL_STR_H */
