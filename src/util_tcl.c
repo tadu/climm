@@ -94,7 +94,7 @@ TCL_CALLBACK (TCL_collect_out)
 
 TCL_COMMAND (TCL_command_help)
 {
-    if (argc == 1)
+    if (argc <= 2)
     {
         M_printf (i18n (2346, "The following Tcl commands are supported:\n"));
         M_printf (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s\n%s" COLEXDENT "\n",
@@ -286,24 +286,26 @@ void TCLEvent (const char *type, const char *data)
 {
     const char *result;
     
-    if (tcl_events) {
-        Tcl_Eval (tinterp, s_sprintf ("%s {%s} %s", tcl_events->cmd, type, data));
-        result = Tcl_GetStringResult (tinterp);     
+    if (tcl_events)
+    {
+        char *cdata = strdup (data);
+        Tcl_Eval (tinterp, s_sprintf ("%s {%s} %s", tcl_events->cmd, type, cdata));
+        result = Tcl_GetStringResult (tinterp);
         if (strlen (result) > 0)
             M_printf ("%s\n", Tcl_GetStringResult (tinterp));
+        s_free (cdata);
     }
 }
 
-void TCLMessage (Contact *from, const char *text_)
+void TCLMessage (Contact *from, const char *text)
 {
     tcl_hook_p hook = tcl_msgs;
     tcl_hook_p generic = NULL;
-    const char *uin = "";
-    char *text = strdup (text_);
+    char *uin = NULL;
     const char *result;
 
-    if (from) 
-        uin = s_sprintf ("%lu", from->uin);
+    if (from)
+        uin = strdup (s_sprintf ("%lu", from->uin));
 
     while (hook)
     {
@@ -312,19 +314,19 @@ void TCLMessage (Contact *from, const char *text_)
         else if (from && (!strcmp (hook->filter, from->nick) || 
                   !strcmp (hook->filter, uin)))
         {
-            Tcl_Eval (tinterp, s_sprintf ("%s {%s}", hook->cmd, text));
+            Tcl_Eval (tinterp, s_sprintf ("%s %s {%s}", hook->cmd, uin, text));
             generic = NULL;
             break;
         }
         hook = hook->next;
     }        
     if (generic)
-        Tcl_Eval (tinterp, s_sprintf ("%s {%s}", generic->cmd, text));
+        Tcl_Eval (tinterp, s_sprintf ("%s %s {%s}", generic->cmd, uin, text));
 
     result = Tcl_GetStringResult (tinterp);
     if (strlen (result) > 0)
         M_printf ("%s\n", Tcl_GetStringResult (tinterp));
-    free (text);
+    s_free (uin);
 }
 
 void TCLInit ()
