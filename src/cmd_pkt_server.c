@@ -251,9 +251,7 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             CmdPktCmdAckMessages (conn);
             break;
         case SRV_INFO_REPLY:
-            Display_Info_Reply (conn, pak, i18n (1562, "Info for"), 
-                IREP_HASAUTHFLAG);
-            M_print ("\n");
+            Display_Info_Reply (conn, pak, i18n (2214, "Info for %s%lu%s:\n"), IREP_HASAUTHFLAG);
             break;
         case SRV_EXT_INFO_REPLY:
             Display_Ext_Info_Reply (conn, pak, i18n (1967, "More Info for"));
@@ -333,7 +331,7 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             M_print ("\n");
             break;
         case SRV_USER_FOUND:
-            Display_Info_Reply (conn, pak, i18n (1968, "User found"), IREP_HASAUTHFLAG);
+            Display_Info_Reply (conn, pak, i18n (1968, "User found:\n"), IREP_HASAUTHFLAG);
             M_print ("\n");
             break;
         case SRV_RAND_USER:

@@ -8,9 +8,8 @@ typedef struct
    char  *nick,   *first,  *last; 
    char  *email,  *email2, *email3;
    char  *city,   *state;
-   char  *phone,  *fax;
+   char  *phone,  *fax,    *zip;
    char  *street, *cellular;
-   UDWORD zip;
    UWORD  country; 
    UBYTE  tz;
    BOOL   auth, webaware, hideip;

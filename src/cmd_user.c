@@ -405,7 +405,7 @@ static JUMP_F(CmdUserHelp)
                  i18n (1412, "Sends a message to the last person you sent a message to."));
         M_printf (COLMESSAGE "%s <message>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("r"),
-                 i18n (1414, "Replys to the last person to send you a message."));
+                 i18n (1414, "Replies to the last person to send you a message."));
         M_printf (COLMESSAGE "%s [<uin|nick>]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("last"),
                  i18n (1403, "Displays the last message received from <uin> or <nick> or from everyone who who has send you at least one message."));
@@ -491,12 +491,12 @@ static JUMP_F(CmdUserHelp)
                  CmdUserLookupName ("ffc"),
                  CmdUserLookupName ("inv"),
                  i18n (1431, "Change status to Online."),
-                 i18n (1432, "Mark as \"away\"."),
-                 i18n (1433, "Mark as \"not available\"."),
-                 i18n (1434, "Mark as \"occupied\"."),
-                 i18n (1435, "Mark as \"do not disturb\"."),
-                 i18n (1436, "Mark as \"free for chat\"."),
-                 i18n (1437, "Mark as \"invisible\"."));
+                 i18n (1432, "Set status to \"away\"."),
+                 i18n (1433, "Set status to \"not available\"."),
+                 i18n (1434, "Set status to \"occupied\"."),
+                 i18n (1435, "Set status to \"do not disturb\"."),
+                 i18n (1436, "Set status to \"free for chat\"."),
+                 i18n (1437, "Set status to \"invisible\"."));
         M_printf (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("update"),
                  i18n (1438, "Updates your basic info (email, nickname, etc.)."));
@@ -1151,7 +1151,7 @@ static JUMP_F (CmdUserMessage)
 
             while (offset + strlen (arg1) + 2 > 450)
             {
-                M_print (i18n (1037, "Message sent before last line buffer is full\n"));
+                M_print (i18n (1037, "Message partially sent.\n"));
                 if (first)
                 {
                     diff = 0;
@@ -1366,7 +1366,7 @@ static JUMP_F(CmdUserStatusDetail)
         if (conn)
         {
             M_printf ("%s " COLCONTACT "%10lu" COLNONE " ", s_now, conn->uin);
-            M_printf ("%s %s\n", i18n (1071, "Your status is"), s_status (conn->status));
+            M_printf (i18n (2211, "Your status is %s.\n"), s_status (conn->status));
         }
         if (data & 16)
             return 0;
@@ -1613,7 +1613,7 @@ static JUMP_F(CmdUserStatusWide)
     M_print (COLMESSAGE);
 
     stat = strdup (s_status (conn->status));
-    StatusLen = strlen (i18n (1071, "Your status is")) + strlen (stat) + 13;
+    StatusLen = strlen (i18n (2211, "Your status is %s.\n")) + strlen (stat) + 8;
     for (i = 0; 2 * i + StatusLen + strlen (i18n (1654, "Online")) < Get_Max_Screen_Width (); i++)
     {
         M_print ("=");
@@ -1625,11 +1625,10 @@ static JUMP_F(CmdUserStatusWide)
     }
 
    /* Print our status */
-    M_printf (" " COLCONTACT "%10lu" COLNONE " %s %s",
-             conn->uin, i18n (1071, "Your status is"), stat);
+    M_printf (" " COLCONTACT "%10lu" COLNONE " ", conn->uin);
+    M_printf (i18n (2211, "Your status is %s.\n"), stat);
     free (stat);
     
-    M_print (COLNONE "\n");
     for (i = 0; i < OnIdx; i++)
     {
         char ind;
@@ -1670,7 +1669,7 @@ static JUMP_F(CmdUserStatusShort)
 
     M_print  (W_SEPERATOR);
     M_printf ("%s " COLCONTACT "%10lu" COLNONE " ", s_now, conn->uin);
-    M_printf ("%s %s\n", i18n (1071, "Your status is"), s_status (conn->status));
+    M_printf (i18n (2211, "Your status is %s.\n"), s_status (conn->status));
 
     if (data)
     {
@@ -2864,19 +2863,19 @@ static JUMP_F(CmdUserUpdate)
             R_setpromptf ("%s ", i18n (1553, "Enter Your New Nickname:"));
             return 300;
         case 300:
-            user.nick = strdup ((char *) args);
+            user.nick = strdup (args);
             R_setpromptf ("%s ", i18n (1554, "Enter your new first name:"));
             return ++status;
         case 301:
-            user.first = strdup ((char *) args);
+            user.first = strdup (args);
             R_setpromptf ("%s ", i18n (1555, "Enter your new last name:"));
             return ++status;
         case 302:
-            user.last = strdup ((char *) args);
+            user.last = strdup (args);
             R_setpromptf ("%s ", i18n (1556, "Enter your new email address:"));
             return ++status;
         case 303:
-            user.email = strdup ((char *) args);
+            user.email = strdup (args);
             if (conn->ver > 6)
             {
                 R_setpromptf ("%s ", i18n (1544, "Enter new city:"));
@@ -2886,47 +2885,47 @@ static JUMP_F(CmdUserUpdate)
             R_setpromptf ("%s ", i18n (1542, "Enter other email address:"));
             return ++status;
         case 304:
-            user.email2 = strdup ((char *) args);
+            user.email2 = strdup (args);
             R_setpromptf ("%s ", i18n (1543, "Enter old email address:"));
             return ++status;
         case 305:
-            user.email3 = strdup ((char *) args);
+            user.email3 = strdup (args);
             R_setpromptf ("%s ", i18n (1544, "Enter new city:"));
             return ++status;
         case 306:
-            user.city = strdup ((char *) args);
+            user.city = strdup (args);
             R_setpromptf ("%s ", i18n (1545, "Enter new state:"));
             return ++status;
         case 307:
-            user.state = strdup ((char *) args);
+            user.state = strdup (args);
             R_setpromptf ("%s ", i18n (1546, "Enter new phone number:"));
             return ++status;
         case 308:
-            user.phone = strdup ((char *) args);
+            user.phone = strdup (args);
             R_setpromptf ("%s ", i18n (1547, "Enter new fax number:"));
             return ++status;
         case 309:
-            user.fax = strdup ((char *) args);
+            user.fax = strdup (args);
             R_setpromptf ("%s ", i18n (1548, "Enter new street address:"));
             return ++status;
         case 310:
-            user.street = strdup ((char *) args);
+            user.street = strdup (args);
             R_setpromptf ("%s ", i18n (1549, "Enter new cellular number:"));
             return ++status;
         case 311:
-            user.cellular = strdup ((char *) args);
+            user.cellular = strdup (args);
             R_setpromptf ("%s ", i18n (1550, "Enter new zip code (must be numeric):"));
             return ++status;
         case 312:
-            user.zip = atoi ((char *) args);
+            user.zip = strdup (args);
             R_setpromptf ("%s ", i18n (1551, "Enter your country's phone ID number:"));
             return ++status;
         case 313:
-            user.country = atoi ((char *) args);
+            user.country = atoi (args);
             R_setpromptf ("%s ", i18n (1552, "Enter your time zone (+/- 0-12):"));
             return ++status;
         case 314:
-            user.tz = atoi ((char *) args);
+            user.tz = atoi (args);
             user.tz *= 2;
             R_setpromptf ("%s ", i18n (1557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
             return ++status;
@@ -2977,6 +2976,7 @@ static JUMP_F(CmdUserUpdate)
             }
 
             s_repl (&user.nick,  NULL);
+            s_repl (&user.zip,   NULL);
             s_repl (&user.last,  NULL);
             s_repl (&user.first, NULL);
             s_repl (&user.email, NULL);

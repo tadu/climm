@@ -22,11 +22,8 @@ static const char *ver = 0;
 const char *BuildVersion (void)
 {
     if (!ver)
-        ver = strdup (s_sprintf ("%s%s%s %s %s%s%s (%s %s)\n",
-                  COLSERVER, i18n (1074, "mICQ (Matt's ICQ clone)"), COLNONE,
-                  i18n (1075, "version"),
-                  COLSERVER, MICQ_VERSION " cvs " CVSUPDATE, COLNONE,
-                  i18n (1076, "compiled on"), BUILDDATE));
+        ver = strdup (s_sprintf (i18n (2210, "%smICQ (Matt's ICQ clone)%s version %s%s%s (compiled on %s)\n"),
+            COLSERVER, COLNONE, COLSERVER, MICQ_VERSION " cvs " CVSUPDATE, COLNONE, BUILDDATE));
     return ver;
 }
 

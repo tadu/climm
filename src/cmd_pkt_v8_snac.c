@@ -1664,7 +1664,7 @@ void SnacCliMetasetgeneral (Connection *conn, const MetaGeneral *user)
     PacketWriteLNTS (pak, c_out (user->fax));
     PacketWriteLNTS (pak, c_out (user->street));
     PacketWriteLNTS (pak, c_out (user->cellular));
-    PacketWriteLNTS (pak, s_sprintf ("%05d", user->zip));
+    PacketWriteLNTS (pak, c_out (user->zip));
     PacketWrite2    (pak, user->country);
     PacketWrite1    (pak, user->tz);
     PacketWrite1    (pak, user->webaware);

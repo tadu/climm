@@ -111,7 +111,8 @@ void Idle_Check (Connection *conn)
         else
             CmdPktCmdStatusChange (conn, new);
         conn->status = new;
-        M_printf ("%s %s %s\n", s_now, i18n (1064, "Auto-Changed status to"), s_status (new));
+        M_printf ("%s ", s_now);
+        M_printf (i18n (1064, "Automatically changed status to %s.\n"), s_status (new));
     }
     return;
 }

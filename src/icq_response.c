@@ -369,10 +369,10 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *p)
                 break;
             }
 
-            Display_Info_Reply (conn, p, i18n (1498, "Info for"), 
-                IREP_HASAUTHFLAG);
+            Display_Info_Reply (conn, p, i18n (2214, "Info for %s%lu%s:\n"), IREP_HASAUTHFLAG);
 
-            switch ((wdata = PacketRead2 (p))) {
+            switch ((wdata = PacketRead2 (p)))
+            {
                 case 0:
                     M_printf (COLSERVER "%-15s" COLNONE " %s\n", i18n (1452, "Status:"),
                              i18n (1653, "Offline"));
@@ -525,8 +525,7 @@ void Display_Info_Reply (Connection *conn, Packet *pak, const char *uinline,
     UWORD wdata;
 
     if (uinline)
-        M_printf ("%s " COLSERVER "%lu" COLNONE "\n",
-                 uinline, PacketRead4 (pak));
+        M_printf (uinline, COLSERVER, COLNONE, PacketRead4 (pak));
 
     if (*(data = PacketReadLNTS (pak)))
         M_printf (COLSERVER "%-15s" COLNONE " " COLCONTACT "%s" COLNONE "\n",
@@ -658,11 +657,8 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
         else if (prG->sound & SFLAG_ON_BEEP)
             printf ("\a");
     }
-    M_printf ("%s " COLCONTACT "%10s" COLNONE " %s ",
-             s_now, cont->nick,
-             ~old ? i18n (1035, "changed status to") : i18n (1031, "logged on"));
-
-    M_printf (~old ? "%s" : "(%s)", s_status (status));
+    M_printf ("%s " COLCONTACT "%10s" COLNONE " ", s_now, cont->nick);
+    M_printf (~old ? i18n (2212, "changed status to %s") : i18n (2213, "logged on (%s)"), s_status (status));
     if (cont->version && !~old)
         M_printf (" [%s]", cont->version);
     if ((status & STATUSF_BIRTH) && (!(old & STATUSF_BIRTH) || !~old))

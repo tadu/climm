@@ -86,7 +86,7 @@ void UtilIOConnectUDP (Connection *conn)
         return;
     }
     if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
-        M_print (i18n (1056, "Socket created attempting to connect\n"));
+        M_print (i18n (1056, "Socket created, attempting to connect.\n"));
 
     if (prG->s5Use)
     {

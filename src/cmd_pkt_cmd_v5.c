@@ -361,7 +361,7 @@ void CmdPktCmdMetaGeneral (Connection *conn, MetaGeneral *user)
     PacketWriteLNTS (pak, c_out (user->fax));
     PacketWriteLNTS (pak, c_out (user->street));
     PacketWriteLNTS (pak, c_out (user->cellular));
-    PacketWrite4    (pak, user->zip);
+    PacketWrite4    (pak, atoi (user->zip));
     PacketWrite2    (pak, user->country);
     PacketWrite1    (pak, user->tz);
     PacketWrite1    (pak, !user->auth);
