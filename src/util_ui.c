@@ -851,7 +851,7 @@ void UtilUISetVersion (Contact *cont)
     char buf[100];
     char *new = NULL;
     unsigned int ver = cont->id1 & 0xffff, ssl = 0;
-    signed char v1 = 0, v2 = 0, v3 = 0, v4 = 0;
+    unsigned char v1 = 0, v2 = 0, v3 = 0, v4 = 0;
 
     if ((cont->id1 & 0xff7f0000) == BUILD_LICQ && ver > 1000)
     {
@@ -900,7 +900,7 @@ void UtilUISetVersion (Contact *cont)
                 break;
             case BUILD_YSM:
                 new = "YSM";
-                if (v1 < 0 || v2 < 0 || v3 < 0 || v4 < 0)
+                if ((v1 | v2 | v3 | v4) & 0x80)
                     v1 = v2 = v3 = v4 = 0;
                 break;
             default:
@@ -910,10 +910,10 @@ void UtilUISetVersion (Contact *cont)
     }
     else if (cont->id1 == BUILD_VICQ)
     {
-        v1 = (cont->id2 & 0x7f000000) >> 24;
-        v2 = (cont->id2 &   0xff0000) >> 16;
-        v3 = (cont->id2 &     0xff00) >> 8;
-        v4 =  cont->id2 &       0xff;
+        v1 = 0;
+        v2 = 43;
+        v3 =  cont->id2 &     0xffff;
+        v4 = (cont->id2 & 0x7fff0000) >> 16;
         new = "vICQ";
     }
     
