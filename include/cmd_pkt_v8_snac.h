@@ -9,17 +9,17 @@ void SnacCallback (Event *event);
 const char *SnacName (UWORD fam, UWORD cmd);
 void SnacPrint (Packet *pak);
 
-void   SnacCliFamilies     (Connection *conn);
-void   SnacCliRatesrequest (Connection *conn);
-void   SnacCliReqinfo      (Connection *conn);
-void   SnacCliReqlocation  (Connection *conn);
-void   SnacCliBuddy        (Connection *conn);
-void   SnacCliReqicbm      (Connection *conn);
-void   SnacCliReqbos       (Connection *conn);
-void   SnacCliSetuserinfo  (Connection *conn);
-void   SnacCliSetstatus    (Connection *conn, UDWORD status, UWORD action);
-void   SnacCliReady        (Connection *conn);
-void   SnacCliSeticbm      (Connection *conn);
+void   SnacCliFamilies        (Connection *conn);
+void   SnacCliRatesrequest    (Connection *conn);
+void   SnacCliReqinfo         (Connection *conn);
+void   SnacCliReqlocation     (Connection *conn);
+void   SnacCliBuddy           (Connection *conn);
+void   SnacCliReqicbm         (Connection *conn);
+void   SnacCliReqbos          (Connection *conn);
+void   SnacCliSetuserinfo     (Connection *conn);
+void   SnacCliSetstatus       (Connection *conn, UDWORD status, UWORD action);
+void   SnacCliReady           (Connection *conn);
+void   SnacCliSeticbm         (Connection *conn);
 void   SnacCliAddcontact      (Connection *conn, Contact *cont);
 void   SnacCliRemcontact      (Connection *conn, Contact *cont);
 
@@ -58,6 +58,6 @@ void   SnacCliSearchwp        (Connection *conn, const MetaWP *wp);
 UDWORD SnacCliSearchrandom    (Connection *conn, UWORD group);
 void   SnacCliSetrandom       (Connection *conn, UWORD group);
 
-UBYTE  SnacCliSendmsg2     (Connection *conn, Contact *cont, Extra *extra);
+UBYTE  SnacCliSendmsg2        (Connection *conn, Contact *cont, Extra *extra);
 
 #endif /* MICQ_ICQV8_SNAC_H */

@@ -1001,7 +1001,7 @@ int Read_RC_File (FILE *rcf)
                                 cg->serv = conn;
                                 cg->serv->contacts = cg;
                             }
-                    }
+                        }
                     }
                     if (!cg->serv)
                         if ((conn = ConnectionFind (TYPEF_SERVER, NULL, NULL)))
@@ -1027,12 +1027,12 @@ int Read_RC_File (FILE *rcf)
                     PrefParseInt (uin);
                     
                     if ((conn = ConnectionFindUIN (type, uin, NULL)))
-                        {
-                            if (cg->serv && cg->serv->contacts == cg)
-                                cg->serv->contacts = NULL;
-                            cg->serv = conn;
-                            cg->serv->contacts = cg;
-                        }
+                    {
+                        if (cg->serv && cg->serv->contacts == cg)
+                            cg->serv->contacts = NULL;
+                        cg->serv = conn;
+                        cg->serv->contacts = cg;
+                    }
                 }
                 else if (!strcasecmp (cmd, "entry"))
                 {
@@ -1217,14 +1217,14 @@ void PrefReadStat (FILE *stf)
                         
                         uin = atoi (cg->name + 14);
                         if ((conn = ConnectionFindUIN (type, uin, NULL)))
-                            {
-                                cg->serv = conn;
-                                cg->serv->contacts = cg;
-                            }
+                        {
+                            cg->serv = conn;
+                            cg->serv->contacts = cg;
+                        }
                     }
                     if (!cg->serv)
                         if ((conn = ConnectionFind (TYPEF_SERVER, NULL, NULL)))
-                                cg->serv = conn;
+                            cg->serv = conn;
                 }
                 else if (!strcasecmp (cmd, "id") && !cg->used)
                 {

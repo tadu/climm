@@ -1306,7 +1306,7 @@ static JUMP_SNAC_F(SnacSrvUpdateack)
     
     event2 = QueueDequeue (event->conn, QUEUE_CHANGE_ROSTER, event->pak->ref);
     if (event2)
-        cont = event->cont;
+        cont = event2->cont;
     err = PacketReadB2 (event->pak);
     
     if (cont)

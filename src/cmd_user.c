@@ -606,7 +606,7 @@ static JUMP_F(CmdUserInfo)
         if (*args == ',')
             args++;
         if (data && !(cont = uiG.last_rcvd))
-                return 0;
+            return 0;
         IMCliInfo (conn, cont, 0);
     }
     return 0;

@@ -193,7 +193,7 @@ void CmdPktCmdContactList (Connection *conn)
  * CMD_SEARCH_USER - search for a user.
  */
 void CmdPktCmdSearchUser (Connection *conn, const char *email, const char *nick,
-                                         const char *first, const char *last)
+                          const char *first, const char *last)
 {
     Packet *pak = PacketCv5 (conn, CMD_SEARCH_USER);
     PacketWriteLNTS (pak, c_out (nick));
