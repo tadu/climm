@@ -28,6 +28,9 @@ struct Roster_s {
   RosterEntry *invisible;
   RosterEntry *ignore;
   time_t import;
+  char *ICQTIC;
+  UDWORD delid;
+  UDWORD deltag;
 };
 
 Roster *OscarRosterC (void);

@@ -92,7 +92,7 @@ JUMP_SNAC_F(SnacSrvReplylists)
     SnacCliReqofflinemsgs (serv);
     if (serv->flags & CONN_WIZARD)
         IMRoster (serv, IMROSTER_IMPORT);
-    else
+    else if (ContactGroupPrefVal (serv->contacts, CO_WANTSBL))
         IMRoster (serv, IMROSTER_DIFF);
 }
 
@@ -193,12 +193,11 @@ JUMP_SNAC_F(SnacSrvReplyroster)
         else
             re->nick = NULL;
         
+        rref = &roster->generic;
         switch (re->type)
         {
             case 1: /* group */
-                if (!re->tag && !re->id)
-                    rref = &roster->generic;
-                else
+                if (re->tag || re->id)
                     rref = &roster->groups;
                 break;
             case 2: /* visible */
@@ -223,24 +222,20 @@ JUMP_SNAC_F(SnacSrvReplyroster)
                     roster->import = re->tlv[j].nr;
                 else
                     rl_printf ("#Bogus ImportTime item: %d: %s %d %d.\n", re->type, re->name, re->tag, re->id);
-                rref = NULL;
+                break;
+            case 9: /* ICQTIC */
+                j = TLVGet (re->tlv, 205);
+                if (j != (UWORD)-1)
+                    s_repl (&roster->ICQTIC, re->tlv[j].str.txt);
                 break;
             case 4: /* visibility */
-            case 9: /* ICQTIC */
-                rref = NULL;
                 break;
             default:
-                rref = NULL;
                 rl_printf ("#Unknown type %d: %s %d %d.\n", re->type, re->name, re->tag, re->id);
         }
         
-        if (rref)
-        {
-            re->next = *rref;
-            *rref = re;
-        }
-        else
-            OscarRosterEntryD (re);
+        re->next = *rref;
+        *rref = re;
     }
     stmp = PacketReadB4 (pak);
     if (stmp)
@@ -251,8 +246,11 @@ JUMP_SNAC_F(SnacSrvReplyroster)
             UDWORD da = now;
             SnacCliRosterentryadd (serv, "ImportTime", 0, 1, 19, 212, &da, 4);
         }
+        if (!roster->ICQTIC)
+            SnacCliRosterentryadd (serv, "ICQTIC", 0, 2, 9, 205, "3608,0,0,0,60,null", 18);
         event2->callback (event2);
-        
+        if (ContactGroupPrefVal (serv->contacts, CO_WANTSBL))
+            SnacCliRosterack (serv);
     }
     else
         QueueEnqueue (event2);
@@ -321,8 +319,8 @@ void SnacCliRosteradd (Connection *serv, ContactGroup *cg, Contact *cont)
 void SnacCliRosterentryadd (Connection *serv, const char *name, UWORD tag, UWORD id, UWORD type, UWORD tlv, void *data, UWORD len)
 {
     Packet *pak;
-    int i;
 
+    SnacCliAddstart (serv);
     pak = SnacC (serv, 19, 8, 0, 0);
     PacketWriteStrB     (pak, name);
     PacketWriteB2       (pak, tag);
@@ -333,6 +331,7 @@ void SnacCliRosterentryadd (Connection *serv, const char *name, UWORD tag, UWORD
         PacketWriteTLVData (pak, tlv, data, len);
     PacketWriteBLenDone (pak);
     SnacSend (serv, pak);
+    SnacCliAddend (serv);
 }
 
 /*
@@ -405,6 +404,7 @@ void SnacCliRosterdelete (Connection *serv, ContactGroup *cg, Contact *cont)
 {
     Packet *pak;
 
+    SnacCliAddstart (serv);
     pak = SnacC (serv, 19, 10, 0, 0);
     if (cont)
     {
@@ -425,6 +425,7 @@ void SnacCliRosterdelete (Connection *serv, ContactGroup *cg, Contact *cont)
         PacketWriteBLenDone (pak);
     }
     SnacSend (serv, pak);
+    SnacCliAddend (serv);
 }
 
 /*
@@ -435,6 +436,7 @@ void SnacCliRosterentrydelete (Connection *serv, RosterEntry *re)
     Packet *pak;
     int i;
 
+    SnacCliAddstart (serv);
     pak = SnacC (serv, 19, 10, 0, 0);
     PacketWriteStrB     (pak, re->name);
     PacketWriteB2       (pak, re->tag);
@@ -446,6 +448,7 @@ void SnacCliRosterentrydelete (Connection *serv, RosterEntry *re)
             PacketWriteTLVData (pak, re->tlv[i].tag, re->tlv[i].str.txt, re->tlv[i].str.len);
     PacketWriteBLenDone (pak);
     SnacSend (serv, pak);
+    SnacCliAddend (serv);
 }
 
 /*
@@ -463,26 +466,31 @@ JUMP_SNAC_F(SnacSrvUpdateack)
         cont = event2->cont;
     err = PacketReadB2 (event->pak);
     
-    if (cont)
+    switch (err)
     {
-        switch (err)
-        {
-            case 0xe:
+        case 10:
+            if (cont)
+            {
                 cont->oldflags |= CONT_REQAUTH;
                 OptSetVal (&cont->copts, CO_ISSBL, 0);
                 SnacCliRosteradd (serv, serv->contacts, cont);
-                EventD (event2);
-                return;
-            case 0x3:
+            }
+            rl_printf (i18n (9999, "Contact upload failed, authorization required.\n"));
+            break;
+        case 3:
+            if (cont)
                 cont->id = 0;
-            case 0x0:
+            rl_printf (i18n (9999, "Contact upload failed, already on server.\n"));
+            break;
+        case 0:
+            if (cont)
                 OptSetVal (&cont->copts, CO_ISSBL, 1);
-                EventD (event2);
-                return;
-        }
+            rl_printf (i18n (9999, "Contact upload succeeded.\n"));
+            break;
+        default:
+            rl_printf (i18n (2325, "Warning: server based contact list change failed with error code %d.\n"), err);
     }
     
-    rl_printf (i18n (2325, "Warning: server based contact list change failed with error code %d.\n"), err);
     if (event2)
         EventD (event2);
 }
