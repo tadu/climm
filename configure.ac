@@ -230,12 +230,17 @@ AC_TYPE_SIGNAL
 
 AC_STRUCT_TIMEZONE
 AC_CACHE_CHECK(for timezone external, ac_cv_var_timezone,
-[  AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <time.h>]], [[int x = - timezone;]])],
-      [ac_cv_var_timezone=yes], [ac_cv_var_timezone=no])
-])
-if test $ac_cv_var_timezone = yes; then
-   AC_DEFINE([HAVE_TIMEZONE], 1,
-           [Define if you have the external 'timezone' variable.])
+  [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <time.h>]], [[int x = - timezone;]])],
+      [ac_cv_var_timezone=yes], [ac_cv_var_timezone=no])])
+if test "x$ac_cv_var_timezone" = xyes; then
+   AC_DEFINE([HAVE_TIMEZONE], 1, [Define if you have the external 'timezone' variable.])
+else
+  AC_CACHE_CHECK(for tm_gmtoff member, ac_cv_tm_gmtoff,
+    [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <time.h>]], [[ struct tm stamp; stamp.tm_gmtoff = 0; ]])],
+      [ac_cv_tm_gmtoff=yes], [ac_cv_tm_gmtoff=no])])
+  if test "x$ac_cv_tm_gmtoff" = xyes; then
+    AC_DEFINE([HAVE_TM_GMTOFF], 1, [Define if struct tm has a tm_gmt member.])
+  fi
 fi
 
 AC_CHECK_TYPES(socklen_t,,,[$ac_includes_default

@@ -469,7 +469,9 @@ void Recv_Message (Connection *conn, Packet *pak)
 #else
     time_t now = time (NULL);
     stamp = *localtime (&now);
+#ifdef HAVE_TM_GMTOFF
     stamp.tm_sec   = -stamp.tm_gmtoff;
+#endif
 #endif
     uin            = PacketRead4 (pak);
     stamp.tm_year  = PacketRead2 (pak) - 1900;
