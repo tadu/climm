@@ -16,6 +16,7 @@
 #include "util.h"
 #include "cmd_user.h"
 #include "tabs.h"
+#include "conv.h"
 #include "contact.h"
 #include "preferences.h"
 #include "util_str.h"
@@ -55,9 +56,18 @@ static char *history[HISTORY_LINES + 1];
 static int history_cur = 0;
 static char s[HISTORY_LINE_LEN];
 static char y[HISTORY_LINE_LEN];
-static int cpos = 0;
-static int clen = 0;
 static int istat = 0;
+
+static int curpos;
+static int curlen;
+#ifdef ENABLE_UTF8
+static int bytepos;
+static int bytelen;
+#else
+#define bytepos curpos
+#define bytelen curlen
+#define charbytes 1
+#endif
 
 #ifndef ANSI_TERM
 static char bsbuf[HISTORY_LINE_LEN];
@@ -81,6 +91,8 @@ void R_init (void)
         history[k][0] = 0;
     }
     s[0] = 0;
+    curpos = curlen = 0;
+    bytepos = bytelen = 0;
     inited = 1;
     signal (SIGTSTP, &micq_ttystop_handler);
     signal (SIGCONT, &micq_cont_handler);
@@ -118,78 +130,155 @@ void R_resume (void)
  */
 void R_goto (int pos)
 {
+    int mypos, mylen;
+    static char *t = NULL;
+    static UDWORD size = 0;
 #ifdef ANSI_TERM
     int scr, off;
 #endif
 
     assert (pos >= 0);
     
-    if (pos == cpos)
+    if (pos == curpos)
         return;
         
+    if (!t)
+        t = strdup ("");
+    *t = '\0';
+#ifdef WIP
+    fprintf (stderr, "Goto: from %d to %d (with %d)", curpos, pos, Get_Max_Screen_Width ());
+#endif
+
 #ifdef ANSI_TERM
     scr = Get_Max_Screen_Width ();
     off = M_pos ();
-    while ((off + pos) / scr < (off + cpos) / scr)
+    while ((off + pos) / scr < (off + curpos) / scr)
     {
-        printf (ESC "[A");
-        cpos -= scr;
+        t = s_cat (t, &size, ESC "[A");
+        curpos -= scr;
     }
-    if (cpos < 0)
+    if (curpos < 0)
     {
-        printf (ESC "[%dC", -cpos);
-        cpos = 0;
+        t = s_catf (t, &size, ESC "[%dC", -curpos);
+        curpos = 0;
     }
-    if (pos < cpos)
-        printf (ESC "[%dD", cpos - pos);
+    if (pos < curpos)
+        t = s_catf (t, &size, ESC "[%dD", curpos - pos);
 #else
-    if (pos < cpos)
+    while (pos + 10 <= curpos)
     {
-        printf ("%.*s", cpos - pos, bsbuf);
-        cpos = pos;
+        t = s_cat (t, &size, "\b\b\b\b\b\b\b\b\b\b");
+        curpos -= 10;
+    }
+    if (pos < curpos)
+    {
+        t = s_catf (t, &size, "%.*s", curpos - pos, "\b\b\b\b\b\b\b\b\b\b");
+        curpos = pos;
     }
 #endif
 
-    if (cpos < pos)
-        printf ("%.*s", pos - cpos, s + cpos);
-    cpos = pos;
+    if (curpos < pos)
+    {
+#ifdef ENABLE_UTF8
+        if ((prG->enc_loc & ~ENC_AUTO) == ENC_UTF8)
+        {
+            mypos = s_offset (s, curpos);
+            mylen = s_offset (s, pos) - mypos;
+        }
+        else
+#endif
+        {
+            mypos = curpos;
+            mylen = pos - curpos;
+        }
+        t = s_catf (t, &size, "%.*s", mylen, s + mypos);
+    }
+    curpos = pos;
+#ifdef ENABLE_UTF8
+    bytepos = s_offset (s, curpos);
+#endif
+#ifdef WIP
+    fprintf (stderr, "byte %d '%s' out of '%s'\n", bytepos, t, s);
+#endif
+    printf ("%s", t);
 }
 
 void R_rlap (const char *s, const char *add, BOOL clear)
 {
-#ifdef ANSI_TERM
-    int pos;
-
-    printf ("%s%s%s%s", add, s, clear ? ESC "[J" : "",
-            (M_pos () + cpos) % Get_Max_Screen_Width() == 0 ? " \b" : "");
-    pos = cpos;
-    cpos += strlen (s);
-    R_goto (pos);
+    int len;
+    
+#ifdef ENABLE_UTF8
+    len = (prG->enc_loc & ~ENC_AUTO) == ENC_UTF8 ? s_strlen (s) : strlen (s);
 #else
-    printf ("%s%s%s%.*s", add, s, clear ? " \b" : "", strlen (s), bsbuf);
+    len = strlen (s);
+#endif
+#ifdef ANSI_TERM
+    printf ("%s%s%s%s", add, s, clear ? ESC "[J" : "",
+            (M_pos () + curpos) % Get_Max_Screen_Width() == 0 ? " \b" : "");
+
+    curpos += len;
+    R_goto (curpos - len);
+
+#else
+    printf ("%s%s%s%.*s", add, s, clear ? " \b" : "", len, bsbuf);
 #endif
 }
 
 
 static void R_process_input_backspace (void)
 {
-    if (!cpos)
-        return;
+#ifdef ENABLE_UTF8
+    int charbytes;
+#endif
 
-    clen--;
-    R_goto (cpos - 1);
-    memmove (s + cpos, s + cpos + 1, clen - cpos + 1);
-    R_rlap (s + cpos, "", TRUE);
+    if (!curpos)
+        return;
+    
+#ifdef ENABLE_UTF8
+    if ((prG->enc_loc & ~ENC_AUTO) == ENC_UTF8 && s[bytepos - 1] & 0x80)
+    {
+        charbytes = 0;
+        do {
+            charbytes++;
+        } while ((s[bytepos - charbytes] & 0xc0) != 0xc0);
+    }
+    else
+        charbytes = 1;
+    bytelen -= charbytes;
+#endif
+
+    curlen--;
+    R_goto (curpos - 1);
+    memmove (s + bytepos, s + bytepos + charbytes, bytelen - bytepos + 1);
+    R_rlap (s + bytepos, "", TRUE);
 }
 
 static void R_process_input_delete (void)
 {
-    if (cpos >= clen)
+#ifdef ENABLE_UTF8
+    int charbytes;
+#endif
+
+    if (curpos >= curlen)
         return;
 
-    clen--;
-    memmove (s + cpos, s + cpos + 1, clen - cpos + 1);
-    R_rlap (s + cpos, "", TRUE);
+#ifdef ENABLE_UTF8
+    if ((prG->enc_loc & ~ENC_AUTO) == ENC_UTF8 && s[bytepos] & 0x80)
+    {
+        charbytes = 0;
+        do {
+            charbytes++;
+        } while ((s[bytepos + charbytes] & 0xc0) == 0x80);
+    }
+    else
+        charbytes = 1;
+    bytelen -= charbytes;
+#endif
+
+    curlen--;
+
+    memmove (s + bytepos, s + bytepos + charbytes, bytelen - bytepos + 1);
+    R_rlap (s + bytepos, "", TRUE);
 }
 
 /* tab completion
@@ -232,6 +321,8 @@ void R_process_input_tab (void)
     int nicklen = 0;
     int gotmatch = 0;
 
+/* FIXME: */
+
     if (prG->tabs == TABS_SIMPLE)
     {
         if (strncmp (s, msgcmd, strlen (s) < strlen (msgcmd) ? strlen (s) : strlen (msgcmd)))
@@ -252,19 +343,19 @@ void R_process_input_tab (void)
             sprintf (s, "%s ", msgcmd);
 
         R_remprompt ();
-        clen = cpos = strlen (s);
+        curlen = curpos = strlen (s);
     }
     else
     {
         if (tabstate == 0)
         {
             tabcont = ContactStart ();
-            tabwstart = s + cpos;
+            tabwstart = s + curpos;
             if (*tabwstart == ' ' && tabwstart > s) tabwstart --;
             while (*tabwstart != ' ' && tabwstart >= s) tabwstart --;
             tabwstart ++;
             if (!(tabwend = strchr (tabwstart, ' ')))
-                tabwend = s + clen;
+                tabwend = s + curlen;
             tabwlen = sizeof (tabword) < tabwend - tabwstart ? sizeof (tabword) : tabwend - tabwstart;
             strncpy (tabword, tabwstart, tabwlen);
         }
@@ -299,8 +390,8 @@ void R_process_input_tab (void)
         tabwend = tabwstart + nicklen;
         strncpy (tabwstart, tabcont->nick, nicklen);
         R_remprompt ();
-        clen = strlen (s);
-        cpos = tabwstart - s + nicklen;
+        curlen = strlen (s);
+        curpos = tabwstart - s + nicklen;
         tabstate = 1;
     }
 }
@@ -331,22 +422,23 @@ int R_process_input (void)
                     R_goto (0);
                     break;
                 case 5:        /* ^E */
-                    R_goto (clen);
+                    R_goto (curlen);
                     break;
                 case 8:        /* ^H = \b */
                     R_process_input_backspace ();
                     return 0;
-                case 11:       /* ^K, as requested by Bernhard Sadlowski */
-                    clen = cpos;
-                    s[cpos] = '\0';
+                case 11:       /* ^K */
+                    curlen = curpos;
+                    bytelen = bytepos;
+                    s[bytepos] = '\0';
                     printf (ESC "[J");
                     break;
                 case '\n':
                 case '\r':
-                    s[clen] = 0;
-                    R_goto (clen);
-                    cpos = 0;
-                    clen = 0;
+                    s[bytelen] = 0;
+                    R_goto (curlen);
+                    curpos = curlen = 0;
+                    bytepos = bytelen = 0;
                     printf ("\n");
                     history_cur = 0;
                     TabReset ();
@@ -367,7 +459,10 @@ int R_process_input (void)
                 case 25:       /* ^Y */
                     R_remprompt ();
                     strcpy (s, y);
-                    clen = cpos = strlen (s);
+                    bytelen = bytepos = strlen (s);
+#ifdef ENABLE_UTF8
+                    curlen = curpos = ((prG->enc_loc & ~ENC_AUTO) == ENC_UTF8) ? s_strlen (s) : bytelen;
+#endif
                     break;
 #ifdef ANSI_TERM
                 case 27:       /* ESC */
@@ -385,13 +480,13 @@ int R_process_input (void)
                     }
                     if (ch == t_attr.c_cc[VEOF] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
                     {
-                        if (clen)
+                        if (curlen)
                         {
                             R_process_input_delete ();
                             return 0;
                         }
                         strcpy (s, "q");
-                        printf ("\n");
+                        printf ("q\n");
                         return 1;
                     }
                     if (ch == t_attr.c_cc[VKILL] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
@@ -399,7 +494,8 @@ int R_process_input (void)
                         R_remprompt ();
                         strcpy (y, s);
                         s[0] = '\0';
-                        cpos = clen = 0;
+                        curpos = curlen = 0;
+                        bytepos = bytelen = 0;
                         return 0;
                     }
 #ifdef    VREPRINT
@@ -411,15 +507,58 @@ int R_process_input (void)
 #endif /* VREPRINT */
             }
         }
-        else if (clen + 1 < HISTORY_LINE_LEN)
+        else if (bytelen + 1 < HISTORY_LINE_LEN)
         {
-            char buf[2] = "x";
-            memmove (s + cpos + 1, s + cpos, clen - cpos + 1);
-            s[cpos++] = ch;
-            clen++;
-            s[clen] = 0;
+            static char buf[7] = "\0\0\0\0\0\0";
+            static char todo = 0;
+
+#ifdef ENABLE_UTF8
+            int charbytes;
+            
+            if ((prG->enc_loc & ~ENC_AUTO) == ENC_UTF8 && ch & 0x80)
+            {
+                if (ch & 0x40)
+                {
+                    buf[0] = ch;
+                    buf[1] = '\0';
+                    if (~ch & 0x20)
+                        todo = 1;
+                    else if (~ch & 0x10)
+                        todo = 2;
+                    else if (~ch & 0x08)
+                        todo = 3;
+                    else if (~ch & 0x04)
+                        todo = 4;
+                    else
+                        todo = 5;
+                    return 0;
+                }
+                else if (--todo)
+                {
+                    strncat (buf, &ch, 1);
+                    return 0;
+                }
+            }
+            else
+                buf[0] = '\0';
+            
+            strncat (buf, &ch, 1);
+            charbytes = strlen (buf);
+#else
             buf[0] = ch;
-            R_rlap (s + cpos, buf, FALSE);
+            buf[1] = '\0';
+#endif
+
+            bytelen += charbytes;
+            curlen += 1;
+            curpos += 1;
+            memmove (s + bytepos + charbytes, s + bytepos, bytelen - bytepos);
+            memmove (s + bytepos, buf, charbytes);
+            bytepos += charbytes;
+            s[bytelen] = 0;
+            R_rlap (s + bytepos, buf, FALSE);
+            buf[0] = '\0';
+            todo = 0;
         }
         return 0;
     }
@@ -447,32 +586,33 @@ int R_process_input (void)
                         history_cur++;
                     else
                         history_cur--;
-                    if (history[history_cur][0] || history_cur == 0)
+                    if (history[history_cur][0] || !history_cur)
                     {
                         R_remprompt ();
                         strcpy (s, history[history_cur]);
-                        cpos = clen = strlen (s);
+                        bytepos = bytelen = strlen (s);
+#ifdef ENABLE_UTF8
+                        curpos = curlen = (prG->enc_loc & ~ENC_AUTO) == ENC_UTF8 ? s_strlen (s) : bytepos;
+#endif
                     }
                     else
-                    {
                         history_cur = k;
-                    }
                     break;
                 case 'C':      /* Right key */
-                    if (cpos == clen)
+                    if (curpos == curlen)
                         break;
-                    printf ("%c", s[cpos++]);
+                    R_goto (curpos + 1);
                     break;
                 case 'D':      /* Left key */
-                    if (!cpos)
+                    if (!curpos)
                         break;
-                    R_goto (cpos - 1);
+                    R_goto (curpos - 1);
                     break;
                 case '3':      /* ESC [ 3 ~ = Delete */
                     istat = 3;
                     break;
                 default:
-                    printf ("\007");
+                    printf ("\a");
             }
             break;
         case 3:                /* Del Key */
@@ -483,7 +623,7 @@ int R_process_input (void)
                     R_process_input_delete ();
                     break;
                 default:
-                    printf ("\007");
+                    printf ("\a");
             }
     }
 #endif
@@ -495,7 +635,12 @@ int R_process_input (void)
  */
 void R_getline (char *buf, int len)
 {
+#ifdef ENABLE_UTF8
+    strncpy (buf, ConvToUTF8 (s, prG->enc_loc), len);
+#else
     strncpy (buf, s, len);
+#endif
+    buf[len - 1] = '\0';
     s[0] = 0;
 }
 
@@ -555,7 +700,7 @@ void R_resetprompt (void)
  */
 void R_prompt (void)
 {
-    int pos = cpos;
+    int pos = curpos;
     if (prstat != 2)
     {
         prstat = 1;
@@ -565,7 +710,7 @@ void R_prompt (void)
         M_print (curprompt);
     prstat = 0;
     printf ("%s", s);
-    cpos = clen;
+    curpos = curlen;
     R_goto (pos);
 }
 
@@ -600,10 +745,10 @@ void R_remprompt ()
     
     if (prstat != 1 && prstat != 3)
         return;
-    pos = cpos;
+    pos = curpos;
     prstat = 2;
     R_goto (0);
-    cpos = pos;
+    curpos = pos;
     M_print ("\r");             /* for tab stop reasons */
     printf (ESC "[J");
     prstat = 2;
