@@ -57,6 +57,8 @@ void ConnectionInitServer (Connection *conn)
     conn->close    = &FlapCliGoodbye;
     s_repl (&conn->server, conn->spref->server);
     conn->type     = TYPE_SERVER;
+    if (conn->status == STATUS_OFFLINE)
+        conn->status = conn->spref->status;
     QueueEnqueueData (conn, conn->connect, conn->our_seq,
                       time (NULL) + 10,
                       NULL, conn->uin, NULL, &SrvCallBackTimeout);

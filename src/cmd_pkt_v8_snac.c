@@ -46,7 +46,7 @@ static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd,
     SnacSrvFromicqsrv, SnacSrvAddedyou, SnacSrvToicqerr, SnacSrvNewuin,
     SnacSrvSetinterval, SnacSrvSrvackmsg, SnacSrvAckmsg, SnacSrvAuthreq,
     SnacSrvAuthreply, SnacSrvIcbmerr, SnacSrvReplyroster, SnacSrvContrefused,
-    SnacSrvRateexceeded;
+    SnacSrvRateexceeded, SnacServerpause;
 
 static SNAC SNACv[] = {
     {  1,  3, NULL, NULL},
@@ -68,9 +68,9 @@ static SNAC SNACS[] = {
     {  1,  3, "SRV_FAMILIES",        SnacSrvFamilies},
     {  1,  7, "SRV_RATES",           SnacSrvRates},
     {  1, 10, "SRV_RATEEXCEEDED",    SnacSrvRateexceeded},
-    {  1, 11, "SRV_SERVERPAUSE",     NULL},
+    {  1, 11, "SRV_SERVERPAUSE",     SnacServerpause},
     {  1, 15, "SRV_REPLYINFO",       SnacSrvReplyinfo},
-    {  1, 18, "SRV_MIGRATIONREQ",    NULL},
+    {  1, 18, "SRV_MIGRATIONREQ",    SnacServerpause},
     {  1, 19, "SRV_MOTD",            SnacSrvMotd},
     {  1, 24, "SRV_FAMILIES2",       SnacSrvFamilies2},
     {  2,  3, "SRV_REPLYLOCATION",   SnacSrvReplylocation},
@@ -319,6 +319,24 @@ static JUMP_SNAC_F(SnacSrvRates)
 static JUMP_SNAC_F(SnacSrvRateexceeded)
 {
     M_print (i18n (2188, "You're sending data too fast - stop typing now, or the server will disconnect!\n"));
+}
+
+/*
+ * SRV_SERVERPAUSE - SNAC(1,11)
+ * SRV_MIGRATIONREQ - SNAC(1,18)
+ */
+static JUMP_SNAC_F(SnacServerpause)
+{
+    ContactGroup *cg = event->conn->contacts;
+    Contact *cont;
+    int i;
+
+#ifdef WIP
+    M_printf ("%s WIP: reconnecting because of serverpause.\n", s_time (NULL));
+#endif
+    ConnectionInitServer(event->conn);
+    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+        cont->status = STATUS_OFFLINE;
 }
 
 static void SrvCallbackTodoEg (Event *event)
@@ -848,7 +866,7 @@ static JUMP_SNAC_F(SnacSrvSrvackmsg)
 static JUMP_SNAC_F(SnacSrvReplybos)
 {
     SnacCliSetuserinfo (event->conn);
-    SnacCliSetstatus (event->conn, event->conn->spref->status, 3);
+    SnacCliSetstatus (event->conn, event->conn->status, 3);
     SnacCliReady (event->conn);
     SnacCliAddcontact (event->conn, 0);
     SnacCliReqofflinemsgs (event->conn);
