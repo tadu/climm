@@ -1442,24 +1442,31 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
  */
 static void TCPCallBackResend (Event *event)
 {
-    Contact *cont = event->cont;
-    Connection *peer = event->conn;
-    Packet *pak = event->pak;
+    Contact *cont;
     const char *opt_text;
     UWORD delta;
     UDWORD opt_type, opt_trans;
     char isfile;
+    Connection *peer = event->conn;
+    Packet *pak = event->pak;
     
-    if (!OptGetVal (event->opt, CO_MSGTYPE, &opt_type))
-        opt_type = MSG_NORM;
-    isfile = opt_type == MSG_FILE || opt_type == MSG_SSL_OPEN;
     if (!OptGetStr (event->opt, CO_MSGTEXT, &opt_text))
         opt_text = "";
 
-    if (!peer || !cont)
+    if (!peer)
     {
-        if (!peer)
-            rl_printf (i18n (2092, "TCP message %s discarded - lost session.\n"), opt_text);
+        rl_printf (i18n (2092, "TCP message %s discarded - lost session.\n"), opt_text);
+        EventD (event);
+        return;
+    }
+    
+    cont = event->cont;
+    if (!OptGetVal (event->opt, CO_MSGTYPE, &opt_type))
+        opt_type = MSG_NORM;
+    isfile = opt_type == MSG_FILE || opt_type == MSG_SSL_OPEN;
+
+    if (!cont)
+    {
         EventD (event);
         return;
     }
