@@ -2960,7 +2960,7 @@ static JUMP_F(CmdUserURL)
         msg = "";
 
     IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_URL,
-              s_sprintf ("%s%c%s", url, ConvSep (), msg)));
+              s_sprintf ("%s%c%s", msg, ConvSep (), url)));
 
     free (url);
     return 0;
