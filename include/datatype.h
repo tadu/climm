@@ -37,6 +37,14 @@ typedef UDWORD wchar_t;
 #define atoll atoi
 #endif
 
+#if !HAVE_ISWALNUM
+#define iswalnum(ucs) (!(ucs & 0xffffff00L) && isalnum (ucs))
+#endif
+
+#if !HAVE_ISWSPACE
+#define iswspace(ucs) (!(ucs & 0xffffff00L) && iswspace (ucs))
+#endif
+
 #define val_t UDWORD
 
 #if !ENABLE_FALLBACK_TRANSLIT

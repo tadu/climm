@@ -290,7 +290,7 @@ fi
 AC_FUNC_VPRINTF
 AC_FUNC_SNPRINTF
 AC_FUNC_MEMMOVE
-AC_CHECK_FUNCS([atexit memset memcmp mkdir strcasecmp uname fcntl wcwidth iswalnum \
+AC_CHECK_FUNCS([atexit memset memcmp mkdir strcasecmp uname fcntl wcwidth iswalnum iswspace \
                 strchr memchr strdup strncasecmp strpbrk strrchr strstr strtol strtok_r \
                 symlink chmod tcgetattr gettimeofday setlocale nl_langinfo select atoll])
 

@@ -73,10 +73,6 @@
 
 #undef DEBUG_RL
 
-#if !HAVE_ISWALNUM
-#define iswalnum(ucs) (!(ucs & 0xffffff00L) && isalnum (ucs))
-#endif
-
 #define rl_ucs_at(str,pos) (((UDWORD)(UBYTE)((str)->txt[2 * (pos) + 1])) | (((UDWORD)(UBYTE)((str)->txt[2 * (pos)])) << 8))
 
 #if HAVE_TCGETATTR
