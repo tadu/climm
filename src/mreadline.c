@@ -182,7 +182,7 @@ void R_rlap (const char *s, const char *add, BOOL clear)
 }
 
 
-void R_process_input_backspace (void)
+static void R_process_input_backspace (void)
 {
     if (!cpos)
         return;
@@ -193,7 +193,7 @@ void R_process_input_backspace (void)
     R_rlap (s + cpos, "", TRUE);
 }
 
-void R_process_input_delete (void)
+static void R_process_input_delete (void)
 {
     if (cpos >= clen)
         return;

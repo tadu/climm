@@ -371,7 +371,7 @@ char *PacketReadStrB (Packet *pak)
 const char *PacketReadLNTS (Packet *pak)
 {
     UWORD len;
-    char *str;
+    UBYTE *str;
     
     len = PacketRead2 (pak);
     str = pak->data + pak->rpos;
@@ -508,7 +508,7 @@ char *PacketReadAtStrB (const Packet *pak, UWORD at)
 const char *PacketReadAtLNTS (Packet *pak, UWORD at)
 {
     UWORD len;
-    char *str;
+    UBYTE *str;
     
     len = PacketReadAt2 (pak, at);
     str = pak->data + at + 2;

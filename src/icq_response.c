@@ -87,7 +87,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
         Contact *cont;
         const char *tabd, *data, *data2;
         UWORD wdata, day, month, i;
-        UDWORD len, dwdata, uin;
+        UDWORD dwdata, uin;
         int tz;
 
         case META_SRV_ABOUT_UPDATE:
@@ -103,7 +103,6 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             M_print (i18n (2016, "The server says about the SMS delivery:\n%s"),
                       PacketReadStrB (p));
             
-            len = PacketReadB2 (p);
             break;
         case META_SRV_INFO:
             Display_Info_Reply (sess, p, NULL, 0);
@@ -329,7 +328,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             break;
         case META_SRV_WP_FOUND:
         case META_SRV_WP_LAST_USER:
-            if ((len = PacketRead2 (p)) < 19)
+            if (PacketRead2 (p) < 19)
             {
                 M_print (i18n (1398, "Search " COLCLIENT "failed" COLNONE "."));
                 M_print ("\n");
@@ -439,7 +438,8 @@ void Recv_Message (Session *sess, UBYTE * pak)
     snprintf (buf, sizeof (buf), i18n (2030, "%04d-%02d-%02d %02d:%02d UTC"),
               Chars_2_Word (r_mesg->year), r_mesg->month, r_mesg->day, r_mesg->hour, r_mesg->minute);
     /* TODO: check if null-terminated */
-    Do_Msg (sess, buf, Chars_2_Word (r_mesg->type), r_mesg->len + 2, uiG.last_rcvd_uin, STATUS_OFFLINE, 0);
+    Do_Msg (sess, buf, Chars_2_Word (r_mesg->type), (char *)r_mesg->len + 2,
+            uiG.last_rcvd_uin, STATUS_OFFLINE, 0);
 }
 
 

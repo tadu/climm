@@ -59,7 +59,7 @@ PreferencesSession *PreferencesSessionC ()
 
 static const char *userbasedir = NULL;
 
-FILE *PrefOpenRC (Preferences *pref)
+static FILE *PrefOpenRC (Preferences *pref)
 {
     char def[200];
     FILE *rcf;

@@ -27,7 +27,7 @@
 #define S_IWUSR        _S_IWRITE
 #else
 #include <netinet/in.h>
-#ifndef __BEOS__
+#ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
 #endif
@@ -41,8 +41,6 @@
 #if HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
-
-static BOOL No_Prompt = FALSE;
 
 #ifdef HAVE_TCGETATTR
 struct termios sattr;
@@ -89,7 +87,7 @@ static RETSIGTYPE micq_sigwinch_handler (int a)
     scrwd = 0;
     ioctl (STDIN, TIOCGWINSZ, &ws);
     scrwd = ws.ws_col;
-};
+}
 
 UWORD Get_Max_Screen_Width ()
 {
@@ -158,7 +156,7 @@ static void M_prints (const char *str)
                 printf ("\n%*s", IndentCount, "");
                 CharCount = 0;
             }
-            printf ("%.*s", p - str, str);
+            printf ("%.*s", (int)(p - str), str);
             CharCount += p - str;
             str = p;
         }
@@ -287,7 +285,7 @@ static void M_prints (const char *str)
                         if (s)
                         {
                             if (prG->flags & FLAG_COLOR)
-                                printf ("%.*s", s - str + 1, str);
+                                printf ("%.*s", (int)(s - str + 1), str);
                             str = s;
                         }
                         break;
@@ -448,7 +446,6 @@ useful for multipacket messages.
 ******************************************************/
 void Kill_Prompt (void)
 {
-    No_Prompt = TRUE;
 }
 
 /*****************************************************
@@ -469,7 +466,6 @@ void Prompt (void)
         snprintf (buff, sizeof (buff), COLSERV "%s" COLNONE, i18n (1040, "mICQ> "));
         R_doprompt (buff);
     }
-    No_Prompt = FALSE;
 #ifndef USE_MREADLINE
     fflush (stdout);
 #endif
@@ -481,23 +477,10 @@ configurable
 ******************************************************/
 void Soft_Prompt (void)
 {
-#if 1
     static char buff[200];
     printf ("\r" ESC "[J");
     snprintf (buff, sizeof (buff), COLSERV "%s" COLNONE, i18n (1040, "mICQ> "));
     R_doprompt (buff);
-    No_Prompt = FALSE;
-#else
-    if (!No_Prompt)
-    {
-        M_print (COLSERV "%s" COLNONE, i18n (1040, "mICQ> "));
-        fflush (stdout);
-    }
-    else
-    {
-        No_Prompt = FALSE;
-    }
-#endif
 }
 
 void Time_Stamp (void)

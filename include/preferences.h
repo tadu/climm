@@ -44,14 +44,14 @@ struct Preferences_s
 
 struct PreferencesSession_s
 {
-    UBYTE   type:4;
-    UBYTE   flags:4;
-    UBYTE   version;
-    UDWORD  uin;
-    UDWORD  status;
-    char   *server;
-    UDWORD  port;
-    char   *passwd;
+    unsigned  type:4;
+    unsigned  flags:4;
+    UBYTE     version;
+    UDWORD    uin;
+    UDWORD    status;
+    char     *server;
+    UDWORD    port;
+    char     *passwd;
 };
 
 Preferences *PreferencesC (void);

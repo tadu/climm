@@ -238,10 +238,10 @@ int main (int argc, char *argv[])
     
     srand (time (NULL));
 
-#ifdef __BEOS__
-    Be_Start ();
-    M_print (i18n (1616, "Started BeOS InputThread\n\r"));
-#endif
+//#ifdef __BEOS__
+//    Be_Start ();
+//    M_print (i18n (1616, "Started BeOS InputThread\n\r"));
+//#endif
 
     Check_Endian ();
 
@@ -266,7 +266,7 @@ int main (int argc, char *argv[])
         if (ssG)
             Idle_Check (ssG);
 #if _WIN32 || defined(__BEOS__)
-        M_set_timeout (0, 100000);
+        M_set_timeout (0, 1000);
 #else
         M_set_timeout (2, 500000);
 #endif
@@ -309,9 +309,9 @@ int main (int argc, char *argv[])
         QueueRun (queue);
     }
 
-#ifdef __BEOS__
-    Be_Stop ();
-#endif
+//#ifdef __BEOS__
+//    Be_Stop ();
+//#endif
 
     if (ssG->ver < 6)
         CmdPktCmdSendTextCode (ssG, "B_USER_DISCONNECTED");

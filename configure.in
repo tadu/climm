@@ -47,9 +47,7 @@ AC_C_BIGENDIAN
 
 # Checks for library functions.
 AC_PROG_GCC_TRADITIONAL
-dnl AC_FUNC_MALLOC
 AC_TYPE_SIGNAL
-dnl AC_FUNC_STAT
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([atexit gethostbyname memmove memset mkdir select socket strcasecmp \
                 strchr strdup strncasecmp strpbrk strrchr strstr strtol \
@@ -66,6 +64,12 @@ done
 if test "x$ac_cv_func_gethostbyname" != "xyes"; then
     AC_MSG_WARN([Function gethostbyname() not found; you will need to specify all host names as IP addresses.])
 fi
+
+# Checks for headers.
+
+AC_CHECK_HEADERS(arpa/inet.h)
+
+# Optimize.
 
 if test "x$GCC" = xyes; then
     CFLAGS="$CFLAGS -Wall"

@@ -37,7 +37,7 @@
 #else
 #include <netinet/in.h>
 #include <termios.h>
-#ifndef __BEOS__
+#ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
 #endif

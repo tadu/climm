@@ -160,7 +160,7 @@ void CmdPktSrvRead (Session *sess)
 /*
  * Handles sending keep alives regularly
  */
-void CmdPktSrvCallBackKeepAlive (struct Event *event)
+static void CmdPktSrvCallBackKeepAlive (struct Event *event)
 {
     CmdPktCmdKeepAlive (event->sess);
     event->due = time (NULL) + 120;
@@ -350,7 +350,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             if (!((NULL == ContactFind (Chars_2_DW (s_mesg->uin))) && (prG->flags & FLAG_HERMIT)))
             {
                 uiG.last_rcvd_uin = Chars_2_DW (s_mesg->uin);
-                Do_Msg (sess, NULL, Chars_2_Word (s_mesg->type), s_mesg->len + 2, uiG.last_rcvd_uin, STATUS_OFFLINE, 0);
+                Do_Msg (sess, NULL, Chars_2_Word (s_mesg->type), (char *)s_mesg->len + 2, uiG.last_rcvd_uin, STATUS_OFFLINE, 0);
                 Auto_Reply (sess, Chars_2_DW (s_mesg->uin));
             }
             break;
@@ -376,11 +376,11 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
 /*
  * Splits multi packet into several packets
  */
-JUMP_SRV_F (CmdPktSrvMulti)
+static JUMP_SRV_F (CmdPktSrvMulti)
 {
     int i, num_pack, llen;
     Packet *npak;
-    UDWORD session, /*uin,*/ id;
+    UDWORD session /*,uin*/;
     UWORD /*cmd, seq,*/ seq2;
 
     num_pack = PacketRead1 (pak);
@@ -408,7 +408,6 @@ JUMP_SRV_F (CmdPktSrvMulti)
         seq2      = PacketRead2 (npak);
         uin       = PacketRead4 (npak);
                     PacketRead4 (npak); /* check */
-        id = seq2 << 16 | seq;
 
         if (prG->verbose & 4)
         {
@@ -436,7 +435,7 @@ JUMP_SRV_F (CmdPktSrvMulti)
 /*
  * SRV_ACK - Remove acknowledged packet from queue.
  */
-JUMP_SRV_F (CmdPktSrvAck)
+static JUMP_SRV_F (CmdPktSrvAck)
 {
     struct Event *event = QueueDequeue (queue, seq, QUEUE_TYPE_UDP_RESEND);
     UDWORD ccmd;

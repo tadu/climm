@@ -106,7 +106,7 @@ int i18nOpen (const char *loc)
 /*
  * Adds i18n strings from given file descriptor.
  */
-int i18nAdd (FILE *i18nf, int debug, int *res)
+static int i18nAdd (FILE *i18nf, int debug, int *res)
 {
     char buf[2048];
     int j = 0;

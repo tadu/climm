@@ -50,7 +50,7 @@ void SessionInitServer (Session *sess)
     UtilIOConnectTCP (sess);
 }
 
-void SrvCallBackReconn (Session *sess)
+static void SrvCallBackReconn (Session *sess)
 {
     Contact *cont;
 
@@ -73,13 +73,13 @@ void SrvCallBackReconn (Session *sess)
     }
 }
 
-void SrvCallBackDoReconn (struct Event *event)
+static void SrvCallBackDoReconn (struct Event *event)
 {
     SessionInitServer (event->sess);
     free (event);
 }
 
-void SrvCallBackTimeout (struct Event *event)
+static void SrvCallBackTimeout (struct Event *event)
 {
     Session *sess = event->sess;
     

@@ -6,6 +6,7 @@
  * $Id$
  */
 
+#include "micq.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
@@ -17,9 +18,10 @@
 #include <unistd.h>
 #include <assert.h>
 #include <netinet/in.h>
+#ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
+#endif
 #include <stdarg.h>
-#include "micq.h"
 #include "preferences.h"
 #include "util_ui.h"
 #include "util_io.h"
@@ -67,17 +69,17 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
     struct sockaddr_in s5sin;
     int s5Sok;
     unsigned short s5OurPort;
-    unsigned long s5IP;
 /* SOCKS5 stuff end */
 
-    int conct, length;
+    int conct;
+    unsigned length;
     int sok;
     struct sockaddr_in sin;     /* used to store inet addr stuff */
     struct hostent *host_struct;        /* used in DNS lookup */
 
     sok = socket (AF_INET, SOCK_DGRAM, 0);      /* create the unconnected socket */
 
-    if (sok == -1)
+    if (sok < 0)
     {
         perror (i18n (1055, "Socket creation failed"));
         exit (1);
@@ -115,11 +117,10 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
             }
             s5sin.sin_addr = *((struct in_addr *) host_struct->h_addr);
         }
-        s5IP = ntohl (s5sin.sin_addr.s_addr);
         s5sin.sin_family = AF_INET;     /* we're using the inet not appletalk */
         s5sin.sin_port = htons (prG->s5Port);        /* port */
         s5Sok = socket (AF_INET, SOCK_STREAM, 0);       /* create the unconnected socket */
-        if (s5Sok == -1)
+        if (s5Sok < 0)
         {
             M_print (i18n (1597, "[SOCKS] Socket creation failed\n"));
             return -1;
@@ -277,7 +278,8 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
  */
 void UtilIOConnectTCP (Session *sess)
 {
-    int rc, flags;
+    int rc;
+    unsigned flags;
     struct sockaddr_in sin;
     struct hostent *host;
     char *origserver = NULL;
@@ -289,7 +291,7 @@ void UtilIOConnectTCP (Session *sess)
         M_print ("Debug: UtilIOConnectCallback: %x\n", sess->connect);
 
     sess->sok = socket (AF_INET, SOCK_STREAM, 0);
-    if (sess->sok <= 0)
+    if (sess->sok < 0)
         CONN_FAIL_RC (i18n (1638, "Couldn't create socket"));
     
     rc = fcntl (sess->sok, F_GETFL, 0);
@@ -401,9 +403,10 @@ void UtilIOConnectTCP (Session *sess)
 /*
  * Continue connecting.
  */
-void UtilIOConnectCallback (Session *sess)
+static void UtilIOConnectCallback (Session *sess)
 {
-    int rc, eno, flags, len;
+    int rc, eno = 0, len;
+    unsigned flags;
     char buf[60];
 
     while (1)
@@ -416,7 +419,9 @@ void UtilIOConnectCallback (Session *sess)
         {
             case 0:
                 flags = sizeof (int);
+#ifdef SO_ERROR
                 if (getsockopt (sess->sok, SOL_SOCKET, SO_ERROR, &rc, &flags) < 0)
+#endif
                     rc = errno;
                 if (rc)
                     CONN_FAIL (UtilFill      ("%s: %s (%d).", i18n (1955, "Connection failed"), strerror (rc), rc));
@@ -514,7 +519,7 @@ void UtilIOSocksAccept(Session *sess)
 /*
  * Handles timeout on TCP connect
  */
-void UtilIOTOConn (struct Event *event)
+static void UtilIOTOConn (struct Event *event)
 {
      Session *sess = event->sess;
      free (event);
@@ -548,7 +553,7 @@ Packet *UtilIOReceiveTCP (Session *sess)
         if (pak->len >= off)
             len = PacketReadAt2 (pak, 0) + 2;
     }
-    for (;;)
+    while (1)
     {
         errno = 0;
         if (len < 0 || len > PacketMaxData)

@@ -25,7 +25,9 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
+#endif
 #include <sys/stat.h>
 
 static TLV *tlv = NULL;
@@ -61,7 +63,7 @@ void SrvCallBackFlap (struct Event *event)
 
 /***********************************************/
 
-void FlapChannel1 (Session *sess, Packet *pak)
+static void FlapChannel1 (Session *sess, Packet *pak)
 {
     int i;
 
@@ -100,7 +102,7 @@ void FlapChannel1 (Session *sess, Packet *pak)
     }
 }
 
-void FlapChannel4 (Session *sess, Packet *pak)
+static void FlapChannel4 (Session *sess, Packet *pak)
 {
     tlv = TLVRead (pak);
     if (!tlv[5].len)

@@ -227,7 +227,7 @@ static const UBYTE table[] = {
     0x47, 0x43, 0x69, 0x48, 0x33, 0x51, 0x54, 0x5D, 0x6E, 0x3C, 0x31, 0x64, 0x35, 0x5A, 0x00, 0x00,
 };
 
-UDWORD Gen_Checksum (const Packet *pak)
+static UDWORD Gen_Checksum (const Packet *pak)
 {
     UDWORD cc, cc2;
     UDWORD r1, r2;
@@ -256,7 +256,7 @@ UDWORD Gen_Checksum (const Packet *pak)
     return cc ^ cc2;
 }
 
-UDWORD Scramble_cc (UDWORD cc)
+static UDWORD Scramble_cc (UDWORD cc)
 {
     UDWORD a[6];
 
@@ -275,7 +275,7 @@ UDWORD Scramble_cc (UDWORD cc)
     return a[1] + a[2] + a[3] + a[4] + a[5];
 }
 
-Packet *Wrinkle (const Packet *opak)
+static Packet *Wrinkle (const Packet *opak)
 {
     UDWORD code, pos, checkcode;
     Packet *pak;
@@ -355,7 +355,7 @@ void UDPCallBackResend (struct Event *event)
         {
             UWORD  type = PacketReadAt2 (pak, CMD_v5_OFF_PARAM + 4);
             UDWORD tuin = PacketReadAt4 (pak, CMD_v5_OFF_PARAM);
-            char  *data = &pak->data[CMD_v5_OFF_PARAM + 8];
+            UBYTE *data = (UBYTE *) &pak->data[CMD_v5_OFF_PARAM + 8];
 
             M_print ("\n");
             M_print (i18n (1830, "Discarding message to %s after %d send attempts.  Message content:\n"),

@@ -27,8 +27,8 @@ void ConvSjisEuc (char *pszDest)
     unsigned char *pszDestBuf;
     unsigned char *pszSrcBuf;
 
-    pszDestBuf = pszDest;
-    strncpy (szSrcBuf, pszDest, JP_CONV_SIZE);
+    pszDestBuf = (unsigned char *)pszDest;
+    strncpy ((char *)szSrcBuf, (char *)pszDest, JP_CONV_SIZE);
     pszSrcBuf = szSrcBuf;
 
     for (; *pszSrcBuf != '\0';)
@@ -110,8 +110,8 @@ void ConvEucSjis (char *pszDest)
     unsigned char *pszDestBuf;
     unsigned char *pszSrcBuf;
 
-    pszDestBuf = pszDest;
-    strncpy (szSrcBuf, pszDest, JP_CONV_SIZE);
+    pszDestBuf = (unsigned char *)pszDest;
+    strncpy ((char *)szSrcBuf, (char *)pszDest, JP_CONV_SIZE);
     pszSrcBuf = szSrcBuf;
 
     for (; *pszSrcBuf != '\0';)

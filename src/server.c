@@ -24,21 +24,6 @@
 #include <assert.h>
 #include <limits.h>
 
-#ifdef _WIN32
-#include <conio.h>
-#include <io.h>
-#include <winsock2.h>
-#else
-#include <sys/types.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#ifndef __BEOS__
-#include <arpa/inet.h>
-#endif
-#include <sys/wait.h>
-#include "mreadline.h"
-#endif
-
 /* 
  * Returns auto response string.
  * Result must be free()ed.

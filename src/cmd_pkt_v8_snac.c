@@ -122,11 +122,11 @@ void SrvCallBackSnac (struct Event *event)
 {
     Packet  *pak  = event->pak;
     SNAC *s;
-    UWORD family, flags;
+    UWORD family /*, flags*/;
     
     family   = PacketReadB2 (pak);
     pak->cmd = PacketReadB2 (pak);
-    flags    = PacketReadB2 (pak);
+/* flags = */  PacketReadB2 (pak);
     pak->id  = PacketReadB4 (pak);
     
     for (s = SNACS; s->fam; s++)
@@ -191,7 +191,7 @@ Packet *SnacC (Session *sess, UWORD fam, UWORD cmd, UWORD flags, UDWORD ref)
 /*
  * Any unknown SNAC.
  */
-JUMP_SNAC_F(SnacSrvUnknown)
+static JUMP_SNAC_F(SnacSrvUnknown)
 {
     if (!(prG->verbose & 128))
     {
@@ -208,7 +208,7 @@ JUMP_SNAC_F(SnacSrvUnknown)
 /*
  * SRV_FAMILIES - SNAC(1,3),
  */
-JUMP_SNAC_F(SnacSrvFamilies)
+static JUMP_SNAC_F(SnacSrvFamilies)
 {
     Packet *pak;
     SNAC *s;
@@ -235,7 +235,7 @@ JUMP_SNAC_F(SnacSrvFamilies)
  * SRV_RATES - SNAC(1,7)
  * CLI_ACKRATES - SNAC(1,8)
  */
-JUMP_SNAC_F(SnacSrvRates)
+static JUMP_SNAC_F(SnacSrvRates)
 {
     UWORD nr, grp;
     Packet *pak;
@@ -254,7 +254,7 @@ JUMP_SNAC_F(SnacSrvRates)
 /*
  * SRV_REPLYINFO - SNAC(1,15)
  */
-JUMP_SNAC_F(SnacSrvReplyinfo)
+static JUMP_SNAC_F(SnacSrvReplyinfo)
 {
     Packet *pak;
     TLV *tlv;
@@ -300,7 +300,7 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
 /*
  * SRV_FAMILIES2 - SNAC(1,18)
  */
-JUMP_SNAC_F(SnacSrvFamilies2)
+static JUMP_SNAC_F(SnacSrvFamilies2)
 {
     Packet *pak;
     SNAC *s;
@@ -324,7 +324,7 @@ JUMP_SNAC_F(SnacSrvFamilies2)
 /*
  * SRV_MOTD - SNAC(1,13)
  */
-JUMP_SNAC_F(SnacSrvMotd)
+static JUMP_SNAC_F(SnacSrvMotd)
 {
     if (!(event->sess->connect & CONNECT_OK))
         event->sess->connect++;
@@ -340,7 +340,7 @@ JUMP_SNAC_F(SnacSrvMotd)
 /*
  * SRV_REPLYLOCATION - SNAC(2,3)
  */
-JUMP_SNAC_F(SnacSrvReplylocation)
+static JUMP_SNAC_F(SnacSrvReplylocation)
 {
     /* ignore all data, do nothing */
 }
@@ -348,7 +348,7 @@ JUMP_SNAC_F(SnacSrvReplylocation)
 /*
  * SRV_REPLYBUDDY - SNAC(3,3)
  */
-JUMP_SNAC_F(SnacSrvReplybuddy)
+static JUMP_SNAC_F(SnacSrvReplybuddy)
 {
     /* ignore all data, do nothing */
 }
@@ -356,7 +356,7 @@ JUMP_SNAC_F(SnacSrvReplybuddy)
 /*
  * SRV_USERONLINE - SNAC(3,B)
  */
-JUMP_SNAC_F(SnacSrvUseronline)
+static JUMP_SNAC_F(SnacSrvUseronline)
 {
     Contact *cont;
     Packet *p, *pak;
@@ -406,7 +406,7 @@ JUMP_SNAC_F(SnacSrvUseronline)
 /*
  * SRV_USEROFFLINE - SNAC(3,C)
  */
-JUMP_SNAC_F(SnacSrvUseroffline)
+static JUMP_SNAC_F(SnacSrvUseroffline)
 {
     Contact *cont;
     Packet *pak;
@@ -429,7 +429,7 @@ JUMP_SNAC_F(SnacSrvUseroffline)
 /*
  * SRV_ICBMERR - SNAC(4,1)
  */
-JUMP_SNAC_F(SnacSrvIcbmerr)
+static JUMP_SNAC_F(SnacSrvIcbmerr)
 {
     if (event->pak->id == 0x1771)
     {
@@ -444,7 +444,7 @@ JUMP_SNAC_F(SnacSrvIcbmerr)
 /*
  * SRV_REPLYICBM - SNAC(4,5)
  */
-JUMP_SNAC_F(SnacSrvReplyicbm)
+static JUMP_SNAC_F(SnacSrvReplyicbm)
 {
    SnacCliSeticbm (event->sess);
 }
@@ -452,7 +452,7 @@ JUMP_SNAC_F(SnacSrvReplyicbm)
 /*
  * SRV_RECVMSG - SNAC(4,7)
  */
-JUMP_SNAC_F(SnacSrvRecvmsg)
+static JUMP_SNAC_F(SnacSrvRecvmsg)
 {
     Contact *cont;
     Packet *p, *pak;
@@ -582,17 +582,17 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
 /*
  * SRV_ACKMSG - SNAC(4,C)
  */
-JUMP_SNAC_F(SnacSrvAckmsg)
+static JUMP_SNAC_F(SnacSrvAckmsg)
 {
     Packet *pak;
     UDWORD uin, mid1, mid2;
-    UWORD vers;
+/*  UWORD vers; */
 
     pak = event->pak;
 
     mid1 = PacketReadB4 (pak);
     mid2 = PacketReadB4 (pak);
-    vers = PacketReadB2 (pak);
+/*  vers=*/PacketReadB2 (pak);
 
     uin = PacketReadUIN (pak);
     Time_Stamp ();
@@ -606,7 +606,7 @@ JUMP_SNAC_F(SnacSrvAckmsg)
 /*
  * SRV_REPLYBOS - SNAC(9,3)
  */
-JUMP_SNAC_F(SnacSrvReplybos)
+static JUMP_SNAC_F(SnacSrvReplybos)
 {
     SnacCliSetuserinfo (event->sess);
     SnacCliSetstatus (event->sess, event->sess->spref->status, 3);
@@ -619,7 +619,7 @@ JUMP_SNAC_F(SnacSrvReplybos)
 /*
  * SRV_SETINTERVAL - SNAC(B,2)
  */
-JUMP_SNAC_F(SnacSrvSetinterval)
+static JUMP_SNAC_F(SnacSrvSetinterval)
 {
     Packet *pak;
     UWORD interval;
@@ -634,7 +634,7 @@ JUMP_SNAC_F(SnacSrvSetinterval)
 /*
  * SRV_AUTHREQ - SNAC(13,19)
  */
-JUMP_SNAC_F(SnacSrvAuthreq)
+static JUMP_SNAC_F(SnacSrvAuthreq)
 {
     Packet *pak;
     UDWORD uin;
@@ -659,7 +659,7 @@ JUMP_SNAC_F(SnacSrvAuthreq)
 /*
  * SRV_AUTHREPLY - SNAC(13,1b)
  */
-JUMP_SNAC_F(SnacSrvAuthreply)
+static JUMP_SNAC_F(SnacSrvAuthreply)
 {
     Packet *pak;
     UDWORD uin;
@@ -681,7 +681,7 @@ JUMP_SNAC_F(SnacSrvAuthreply)
 /*
  * SRV_ADDEDYOU - SNAC(13,1c)
  */
-JUMP_SNAC_F(SnacSrvAddedyou)
+static JUMP_SNAC_F(SnacSrvAddedyou)
 {
     Packet *pak;
     UDWORD uin;
@@ -702,12 +702,12 @@ JUMP_SNAC_F(SnacSrvAddedyou)
 /*
  * SRV_FROMOLDICQ - SNAC(15,3)
  */
-JUMP_SNAC_F(SnacSrvFromoldicq)
+static JUMP_SNAC_F(SnacSrvFromoldicq)
 {
     TLV *tlv;
     Packet *p, *pak;
     const char *text;
-    UDWORD len, uin, type, id;
+    UDWORD len, uin, type /*, id*/;
     
     pak = event->pak;
     tlv = TLVRead (pak);
@@ -720,7 +720,7 @@ JUMP_SNAC_F(SnacSrvFromoldicq)
     len = PacketRead2 (p);
     uin = PacketRead4 (p);
     type= PacketRead2 (p);
-    id  = PacketRead2 (p);
+/*  id=*/ PacketRead2 (p);
     if (prG->verbose && uin != event->sess->uin)
     {
         M_print (i18n (1919, "UIN mismatch: %d vs %d.\n"), event->sess->uin, uin);
@@ -780,7 +780,7 @@ JUMP_SNAC_F(SnacSrvFromoldicq)
 /*
  * SRV_REGREFUSED - SNAC(17,1)
  */
-JUMP_SNAC_F(SnacSrvRegrefused)
+static JUMP_SNAC_F(SnacSrvRegrefused)
 {
     M_print (i18n (1920, "Registration of new UIN refused.\n"));
     if (event->sess->flags & CONN_WIZARD)
@@ -793,7 +793,7 @@ JUMP_SNAC_F(SnacSrvRegrefused)
 /*
  * SRV_NEWUIN - SNAC(17,5)
  */
-JUMP_SNAC_F(SnacSrvNewuin)
+static JUMP_SNAC_F(SnacSrvNewuin)
 {
     event->sess->uin = event->sess->spref->uin = PacketReadAt4 (event->pak, 6 + 10 + 46);
     M_print (i18n (1762, "Your new UIN is: %d.\n"), event->sess->uin);

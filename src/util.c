@@ -31,7 +31,7 @@ Changes :
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/select.h>
+#include <sys/types.h>
 #include <fcntl.h>
 #include <util_ui.h>
 #ifdef _WIN32
@@ -40,7 +40,7 @@ Changes :
 #define S_IWUSR          _S_IWRITE
 #else
 #include <netinet/in.h>
-#ifndef __BEOS__
+#ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
 #endif

@@ -31,10 +31,10 @@ Changes :
 #include <unistd.h>
 #include <netinet/in.h>
 #include <sys/stat.h>
-#include <sys/select.h>
+#include <sys/types.h>
 #include <sys/socket.h>
 
-#ifndef __BEOS__
+#ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
 

@@ -153,7 +153,7 @@ const char *CmdUserLookupName (const char *cmd)
 /*
  * Change status.
  */
-JUMP_F(CmdUserChange)
+static JUMP_F(CmdUserChange)
 {
     char *arg1;
     SESSION;
@@ -192,7 +192,7 @@ JUMP_F(CmdUserChange)
 /*
  * Finds random user.
  */
-JUMP_F(CmdUserRandom)
+static JUMP_F(CmdUserRandom)
 {
     char *arg1;
     SESSION;
@@ -227,7 +227,7 @@ JUMP_F(CmdUserRandom)
 /*
  * Sets the random user group.
  */
-JUMP_F(CmdUserRandomSet)
+static JUMP_F(CmdUserRandomSet)
 {
     char *arg1;
     SESSION;
@@ -269,7 +269,7 @@ JUMP_F(CmdUserRandomSet)
 
 /* TODO: needs updateing */
 
-JUMP_F(CmdUserHelp)
+static JUMP_F(CmdUserHelp)
 {
     char *arg1;
     arg1 = strtok (args, " \n\r");
@@ -474,7 +474,7 @@ JUMP_F(CmdUserHelp)
 /*
  * Sets a new password.
  */
-JUMP_F(CmdUserPass)
+static JUMP_F(CmdUserPass)
 {
     char *arg1;
     SESSION;
@@ -498,7 +498,7 @@ JUMP_F(CmdUserPass)
 /*
  * Sends an SMS message.
  */
-JUMP_F(CmdUserSMS)
+static JUMP_F(CmdUserSMS)
 {
     char *arg1, *arg2;
     SESSION;
@@ -525,7 +525,7 @@ JUMP_F(CmdUserSMS)
 /*
  * Queries basic info of a user
  */
-JUMP_F(CmdUserInfo)
+static JUMP_F(CmdUserInfo)
 {
     char *arg1;
     UDWORD uin;
@@ -566,7 +566,7 @@ JUMP_F(CmdUserInfo)
 /*
  * Peeks whether a user is really offline.
  */
-JUMP_F(CmdUserPeek)
+static JUMP_F(CmdUserPeek)
 {
     UDWORD uin;
     SESSION;
@@ -590,7 +590,7 @@ JUMP_F(CmdUserPeek)
  * Gives information about internationalization and translates
  * strings by number.
  */
-JUMP_F(CmdUserTrans)
+static JUMP_F(CmdUserTrans)
 {
     const char *arg1;
     int ver;
@@ -659,7 +659,7 @@ JUMP_F(CmdUserTrans)
 /*
  * Manually handles peer-to-peer (TCP) connections.
  */
-JUMP_F(CmdUserTCP)
+static JUMP_F(CmdUserTCP)
 {
 #ifdef TCP_COMM
     char *cmd, *nick;
@@ -713,7 +713,7 @@ JUMP_F(CmdUserTCP)
 /*
  * Changes automatic reply messages.
  */
-JUMP_F(CmdUserAuto)
+static JUMP_F(CmdUserAuto)
 {
     char *cmd;
     char *arg1;
@@ -808,7 +808,7 @@ JUMP_F(CmdUserAuto)
 /*
  * Relabels commands.
  */
-JUMP_F(CmdUserAlter)
+static JUMP_F(CmdUserAlter)
 {
     char *cmd;
     jump_t *j;
@@ -874,7 +874,7 @@ JUMP_F(CmdUserAlter)
 /*
  * Resend your last message
  */
-JUMP_F (CmdUserResend)
+static JUMP_F (CmdUserResend)
 {
     UDWORD uin;
     char *arg1;
@@ -905,14 +905,14 @@ JUMP_F (CmdUserResend)
 /*
  * Send an instant message.
  */
-JUMP_F (CmdUserMessage)
+static JUMP_F (CmdUserMessage)
 {
-    UDWORD uin;
     static UDWORD multi_uin;
     static int offset = 0;
     static char msg[1024];
-    char *arg1, *p, *temp;
+    char *arg1 = NULL, *p, *temp;
     int len;
+    UDWORD uin = 0;
     Contact *cont;
     SESSION;
 
@@ -1093,7 +1093,7 @@ JUMP_F (CmdUserMessage)
 /*
  * Changes verbosity.
  */
-JUMP_F(CmdUserVerbose)
+static JUMP_F(CmdUserVerbose)
 {
     char *arg1;
 
@@ -1109,7 +1109,7 @@ JUMP_F(CmdUserVerbose)
 /*
  * Shows the contact list in a very detailed way.
  */
-JUMP_F(CmdUserStatusDetail)
+static JUMP_F(CmdUserStatusDetail)
 {
     UDWORD num;
     Contact *cont;
@@ -1262,7 +1262,7 @@ JUMP_F(CmdUserStatusDetail)
 /*
  * Shows the ignored user on the contact list.
  */
-JUMP_F(CmdUserIgnoreStatus)
+static JUMP_F(CmdUserIgnoreStatus)
 {
     Contact *cont;
 
@@ -1295,7 +1295,7 @@ JUMP_F(CmdUserIgnoreStatus)
 /*
  * Displays the contact list in a wide format, similar to the ls command.
  */
-JUMP_F(CmdUserStatusWide)
+static JUMP_F(CmdUserStatusWide)
 {
     Contact **Online;           /* definitely won't need more; could    */
     Contact **Offline = NULL;   /* probably get away with less.    */
@@ -1427,7 +1427,7 @@ JUMP_F(CmdUserStatusWide)
 /*
  * Display your personal online status
  */
-JUMP_F(CmdUserStatusSelf)
+static JUMP_F(CmdUserStatusSelf)
 {
     SESSION;
     
@@ -1444,7 +1444,7 @@ JUMP_F(CmdUserStatusSelf)
 /*
  * Display offline and online users on your contact list.
  */
-JUMP_F(CmdUserStatusShort)
+static JUMP_F(CmdUserStatusShort)
 {
     Contact *cont;
     SESSION;
@@ -1514,7 +1514,7 @@ JUMP_F(CmdUserStatusShort)
 /*
  * Toggles sound or changes sound command.
  */
-JUMP_F(CmdUserSound)
+static JUMP_F(CmdUserSound)
 {
     char *arg1;
     
@@ -1542,7 +1542,7 @@ JUMP_F(CmdUserSound)
 /*
  * Toggles soundonline or changes soundonline command.
  */
-JUMP_F(CmdUserSoundOnline)
+static JUMP_F(CmdUserSoundOnline)
 {
     char *arg1;
     
@@ -1570,7 +1570,7 @@ JUMP_F(CmdUserSoundOnline)
 /*
  * Toggles soundoffine or changes soundoffline command.
  */
-JUMP_F(CmdUserSoundOffline)
+static JUMP_F(CmdUserSoundOffline)
 {
     char *arg1;
     
@@ -1598,7 +1598,7 @@ JUMP_F(CmdUserSoundOffline)
 /*
  * Toggles autoaway or sets autoaway time.
  */
-JUMP_F(CmdUserAutoaway) 
+static JUMP_F(CmdUserAutoaway) 
 {
     char *arg1;
     if ((arg1 = strtok (args, "\n"))) /* assign a value */
@@ -1637,7 +1637,7 @@ JUMP_F(CmdUserAutoaway)
 /*
  * Toggles simple options.
  */
-JUMP_F(CmdUserSet)
+static JUMP_F(CmdUserSet)
 {
     int quiet = 0;
     char *arg1;
@@ -1728,7 +1728,7 @@ JUMP_F(CmdUserSet)
 /*
  * Clears the screen.
  */
-JUMP_F(CmdUserClear)
+static JUMP_F(CmdUserClear)
 {
     clrscr ();
     return 0;
@@ -1738,7 +1738,7 @@ JUMP_F(CmdUserClear)
 /*
  * Registers a new user.
  */
-JUMP_F(CmdUserRegister)
+static JUMP_F(CmdUserRegister)
 {
     char *arg1;
     
@@ -1759,7 +1759,7 @@ JUMP_F(CmdUserRegister)
 /*
  * Toggles ignoring a user.
  */
-JUMP_F(CmdUserTogIgnore)
+static JUMP_F(CmdUserTogIgnore)
 {
     char *arg1;
     Contact *bud;
@@ -1806,7 +1806,7 @@ JUMP_F(CmdUserTogIgnore)
 /*
  * Toggles beeing invisible to a user.
  */
-JUMP_F(CmdUserTogInvis)
+static JUMP_F(CmdUserTogInvis)
 {
     char *arg1;
     Contact *bud;
@@ -1869,7 +1869,7 @@ JUMP_F(CmdUserTogInvis)
 /*
  * Toggles visibility to a user.
  */
-JUMP_F(CmdUserTogVisible)
+static JUMP_F(CmdUserTogVisible)
 {
     char *arg1;
     Contact *bud;
@@ -1926,7 +1926,7 @@ JUMP_F(CmdUserTogVisible)
 /*
  * Add a user to your contact list.
  */
-JUMP_F(CmdUserAdd)
+static JUMP_F(CmdUserAdd)
 {
     Contact *cont;
     char *arg1, *arg2;
@@ -1990,7 +1990,7 @@ JUMP_F(CmdUserAdd)
 /*
  * Remove a user from your contact list.
  */
-JUMP_F(CmdUserRem)
+static JUMP_F(CmdUserRem)
 {
     char *arg1;
     UDWORD uin;
@@ -2021,7 +2021,7 @@ JUMP_F(CmdUserRem)
 /*
  * Basic information on last user a message was received from.
  */
-JUMP_F(CmdUserRInfo)
+static JUMP_F(CmdUserRInfo)
 {
     SESSION;
 
@@ -2043,7 +2043,7 @@ JUMP_F(CmdUserRInfo)
 /*
  * Authorize another user to add you to the contact list.
  */
-JUMP_F(CmdUserAuth)
+static JUMP_F(CmdUserAuth)
 {
     char *arg1;
     UDWORD uin;
@@ -2071,7 +2071,7 @@ JUMP_F(CmdUserAuth)
 /*
  * Save user preferences.
  */
-JUMP_F(CmdUserSave)
+static JUMP_F(CmdUserSave)
 {
     int i = Save_RC ();
     if (i == -1)
@@ -2084,7 +2084,7 @@ JUMP_F(CmdUserSave)
 /*
  * Send an URL message.
  */
-JUMP_F(CmdUserURL)
+static JUMP_F(CmdUserURL)
 {
     char *arg1, *arg2;
     UDWORD uin;
@@ -2125,7 +2125,7 @@ JUMP_F(CmdUserURL)
 /*
  * Shows the user in your tab list.
  */
-JUMP_F(CmdUserTabs)
+static JUMP_F(CmdUserTabs)
 {
     int i;
 
@@ -2152,7 +2152,7 @@ JUMP_F(CmdUserTabs)
 /*
  * Displays the last message received from the given nickname.
  */
-JUMP_F(CmdUserLast)
+static JUMP_F(CmdUserLast)
 {
     char *arg1;
     UDWORD uin;
@@ -2196,7 +2196,7 @@ JUMP_F(CmdUserLast)
 /*
  * Shows micq's uptime.
  */
-JUMP_F(CmdUserUptime)
+static JUMP_F(CmdUserUptime)
 {
     double TimeDiff = difftime (time (NULL), uiG.start_time);
     Session *sess;
@@ -2241,7 +2241,7 @@ JUMP_F(CmdUserUptime)
 /*
  * List connections, and open/close them.
  */
-JUMP_F(CmdUserConn)
+static JUMP_F(CmdUserConn)
 {
     char *arg1;
     int i;
@@ -2298,7 +2298,7 @@ JUMP_F(CmdUserConn)
 /*
  * Exits mICQ.
  */
-JUMP_F(CmdUserQuit)
+static JUMP_F(CmdUserQuit)
 {
     uiG.quit = TRUE;
     return 0;
@@ -2313,7 +2313,7 @@ JUMP_F(CmdUserQuit)
 /*
  * Search for a user.
  */
-JUMP_F(CmdUserOldSearch)
+static JUMP_F(CmdUserOldSearch)
 {
     static char *email, *nick, *first, *last;
     SESSION;
@@ -2362,7 +2362,7 @@ JUMP_F(CmdUserOldSearch)
 /*
  * Do a whitepage search.
  */
-JUMP_F(CmdUserSearch)
+static JUMP_F(CmdUserSearch)
 {
     int temp;
     static MetaWP wp = { 0 };
@@ -2528,7 +2528,7 @@ JUMP_F(CmdUserSearch)
 /*
  * Update your basic user information.
  */
-JUMP_F(CmdUserUpdate)
+static JUMP_F(CmdUserUpdate)
 {
     static MetaGeneral user;
     SESSION;
@@ -2663,7 +2663,7 @@ JUMP_F(CmdUserUpdate)
 /*
  * Update additional information.
  */
-JUMP_F(CmdUserOther)
+static JUMP_F(CmdUserOther)
 {
     static MetaMore other;
     int temp;
@@ -2757,7 +2757,7 @@ JUMP_F(CmdUserOther)
 /*
  * Update about information.
  */
-JUMP_F(CmdUserAbout)
+static JUMP_F(CmdUserAbout)
 {
     static int offset = 0;
     static char msg[1024];
@@ -2834,7 +2834,7 @@ void CmdUserInput (int *idle_val, int *idle_flag)
  */
 void CmdUserProcess (const char *command, int *idle_val, int *idle_flag)
 {
-    unsigned char buf[1024];    /* This is hopefully enough */
+    char buf[1024];    /* This is hopefully enough */
     char *cmd;
 
     static jump_f *sticky = (jump_f *)NULL;
@@ -2853,11 +2853,7 @@ void CmdUserProcess (const char *command, int *idle_val, int *idle_flag)
     else
     {
         memset (buf, 0, 1024);
-#ifdef __BEOS__
-        Be_GetText (buf);
-#else
         R_getline (buf, 1024);
-#endif
         M_print ("\r");             /* reset char printed count for dumb terminals */
         buf[1023] = 0;              /* be safe */
     }
@@ -2874,7 +2870,7 @@ void CmdUserProcess (const char *command, int *idle_val, int *idle_flag)
             {
                 R_pause ();
 #ifdef SHELL_COMMANDS
-                if ((buf[1] < 31) || (buf[1] > 127))
+                if (((unsigned char)buf[1] < 31) || (buf[1] & 128))
                     M_print (i18n (1660, "Invalid Command: %s\n"), &buf[1]);
                 else
                     system (&buf[1]);

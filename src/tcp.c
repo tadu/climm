@@ -31,7 +31,9 @@
 #include <errno.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
+#endif
 
 #ifdef TCP_COMM
 
@@ -180,7 +182,7 @@ void TCPDirectOff (UDWORD uin)
 /*
  * Reconnect hook. Actually, just inform the user.
  */
-void TCPDispatchReconn (Session *sess)
+static void TCPDispatchReconn (Session *sess)
 {
     Time_Stamp ();
     M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
@@ -190,7 +192,7 @@ void TCPDispatchReconn (Session *sess)
 /*
  * Accepts a new direct connection.
  */
-void TCPDispatchMain (Session *sess)
+static void TCPDispatchMain (Session *sess)
 {
     struct sockaddr_in sin;
     Session *peer;
@@ -263,10 +265,9 @@ void TCPDispatchMain (Session *sess)
 /*
  * Continues connecting.
  */
-void TCPDispatchConn (Session *sess)
+static void TCPDispatchConn (Session *sess)
 {
     Contact *cont;
-    int rc;
     
     ASSERT_DIRECT (sess);
     
@@ -280,7 +281,6 @@ void TCPDispatchConn (Session *sess)
             TCPClose (sess);
             return;
         }
-        rc = 0;
         if (prG->verbose)
             M_print ("debug: TCPDispatchConn; Nick: %s state: %x\n", ContactFindName (sess->uin), sess->connect);
 
@@ -369,7 +369,7 @@ void TCPDispatchConn (Session *sess)
 /*
  * Shake hands with peer.
  */
-void TCPDispatchShake (Session *sess)
+static void TCPDispatchShake (Session *sess)
 {
     Contact *cont;
     Packet *pak = NULL;
@@ -494,13 +494,13 @@ void TCPDispatchShake (Session *sess)
  * Queues incoming packets, ignoring resends
  * and deleting CANCEL requests from the queue.
  */
-void TCPDispatchPeer (Session *sess)
+static void TCPDispatchPeer (Session *sess)
 {
     Contact *cont;
     Packet *pak;
     struct Event *event;
     int i = 0;
-    UWORD seq_in = 0, seq, cmd, type;
+    UWORD seq_in = 0, seq, cmd;
     
     ASSERT_DIRECT (sess);
     
@@ -523,7 +523,6 @@ void TCPDispatchPeer (Session *sess)
                PacketRead4 (pak);
         cmd  = PacketReadAt2 (pak, PacketReadPos (pak));
         seq  = PacketReadAt2 (pak, PacketReadPos (pak) + 4);
-        type = PacketReadAt2 (pak, PacketReadPos (pak) + 18);
         
         /* Make sure this isn't a resend */
         if ((seq_in == 0) || (seq < seq_in))
@@ -570,7 +569,7 @@ void TCPDispatchPeer (Session *sess)
 /*
  * Handles timeout on TCP send/read/whatever
  */
-void TCPCallBackTimeout (struct Event *event)
+static void TCPCallBackTimeout (struct Event *event)
 {
     Session *sess = event->sess;
     
@@ -589,7 +588,7 @@ void TCPCallBackTimeout (struct Event *event)
 /*
  * Handles timeout on TCP connect
  */
-void TCPCallBackTOConn (struct Event *event)
+static void TCPCallBackTOConn (struct Event *event)
 {
     ASSERT_DIRECT (event->sess);
 
@@ -602,7 +601,7 @@ void TCPCallBackTOConn (struct Event *event)
  *  Receives an incoming TCP packet.
  *  Resets socket on error. Paket must be freed.
  */
-Packet *TCPReceivePacket (Session *sess)
+static Packet *TCPReceivePacket (Session *sess)
 {
     Packet *pak;
 
@@ -661,7 +660,7 @@ Packet *TCPReceivePacket (Session *sess)
  * Encrypts and sends a TCP packet.
  * Resets socket on error.
  */
-void TCPSendPacket (Packet *pak, Session *sess)
+static void TCPSendPacket (Packet *pak, Session *sess)
 {
     Packet *tpak;
     UBYTE *data;
@@ -699,7 +698,7 @@ void TCPSendPacket (Packet *pak, Session *sess)
     
     data = (void *) &tpak->data;
 
-    for (;;)
+    while (1)
     {
         errno = 0;
 
@@ -774,7 +773,7 @@ void TCPSendInitv6 (Session *sess)
 /*
  * Sends a v7/v8 TCP initialization packet.
  */
-void TCPSendInit (Session *sess)
+static void TCPSendInit (Session *sess)
 {
     Packet *pak;
     
@@ -834,7 +833,7 @@ void TCPSendInit (Session *sess)
 /*
  * Sends the initialization packet
  */
-void TCPSendInitAck (Session *sess)
+static void TCPSendInitAck (Session *sess)
 {
     Packet *pak;
     
@@ -858,7 +857,7 @@ void TCPSendInitAck (Session *sess)
     TCPSendPacket (pak, sess);
 }
 
-void TCPSendInit2 (Session *sess)
+static void TCPSendInit2 (Session *sess)
 {
     Packet *pak;
     
@@ -894,7 +893,7 @@ void TCPSendInit2 (Session *sess)
 
 #define FAIL(x) { err = x; break; }
 
-Session *TCPReceiveInit (Session *sess, Packet *pak)
+static Session *TCPReceiveInit (Session *sess, Packet *pak)
 {
     Contact *cont;
     UDWORD muin, uin, sid, port, port2, oip, iip;
@@ -904,7 +903,8 @@ Session *TCPReceiveInit (Session *sess, Packet *pak)
     ASSERT_DIRECT (sess);
     assert (pak);
 
-    for (err = 0;;)
+    err = 0;
+    while (1)
     {
         cmd       = PacketRead1 (pak);
         nver      = PacketRead2 (pak);
@@ -1001,7 +1001,7 @@ Session *TCPReceiveInit (Session *sess, Packet *pak)
 /*
  * Receives the acknowledge packet for the initialization packet.
  */
-void TCPReceiveInitAck (Session *sess, Packet *pak)
+static void TCPReceiveInitAck (Session *sess, Packet *pak)
 {
     ASSERT_DIRECT (sess);
     assert (pak);
@@ -1013,7 +1013,7 @@ void TCPReceiveInitAck (Session *sess, Packet *pak)
     }
 }
 
-Session *TCPReceiveInit2 (Session *sess, Packet *pak)
+static Session *TCPReceiveInit2 (Session *sess, Packet *pak)
 {
     UWORD  cmd, err;
     UDWORD ten, one;
@@ -1024,7 +1024,8 @@ Session *TCPReceiveInit2 (Session *sess, Packet *pak)
     if (!pak)
         return sess;
 
-    for (err = 0;;)
+    err = 0;
+    while (1)
     {
         cmd     = PacketRead1 (pak);
         ten     = PacketRead4 (pak);
@@ -1057,7 +1058,7 @@ Session *TCPReceiveInit2 (Session *sess, Packet *pak)
 /*
  * Close socket and mark as inactive. If verbose, complain.
  */
-void TCPClose (Session *sess)
+static void TCPClose (Session *sess)
 {
     ASSERT_DIRECT (sess);
     
@@ -1166,7 +1167,7 @@ BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
 /*
  * Resends TCP packets if necessary
  */
-void TCPCallBackResend (struct Event *event)
+static void TCPCallBackResend (struct Event *event)
 {
     Contact *cont;
     Session *peer = event->sess;
@@ -1219,11 +1220,11 @@ void TCPCallBackResend (struct Event *event)
 /*
  * Handles a just received packet.
  */
-void TCPCallBackReceive (struct Event *event)
+static void TCPCallBackReceive (struct Event *event)
 {
     Contact *cont;
     const char *tmp;
-    UWORD cmd, type, seq, status;
+    UWORD cmd, type, seq /*, status*/;
     Packet *pak;
     
     ASSERT_DIRECT (event->sess);
@@ -1240,7 +1241,7 @@ void TCPCallBackReceive (struct Event *event)
              PacketRead4 (pak);
     type   = PacketRead2 (pak);
              PacketRead2 (pak);
-    status = PacketRead2 (pak);
+/*status=*/  PacketRead2 (pak);
     tmp    = PacketReadLNTS (pak);
     /* fore/background color ignored */
     
@@ -1344,7 +1345,7 @@ void Get_Auto_Resp (Session *sess, UDWORD uin)
 /*
  * Acks a TCP packet.
  */
-int Send_TCP_Ack (Session *sess, UWORD seq, UWORD sub_cmd, BOOL accept)
+static int Send_TCP_Ack (Session *sess, UWORD seq, UWORD sub_cmd, BOOL accept)
 {
     Packet *pak;
     char *msg;
@@ -1396,7 +1397,7 @@ const UBYTE client_check_data[] = {
  * Encrypts/Decrypts TCP packets
  * (leeched from licq) 
  */
-void Encrypt_Pak (Session *sess, Packet *pak)
+static void Encrypt_Pak (Session *sess, Packet *pak)
 {
     UDWORD B1, M1, check, size;
     int i;
@@ -1440,7 +1441,7 @@ void Encrypt_Pak (Session *sess, Packet *pak)
     PacketWriteAt4 (pak, sess->ver > 6 ? 1 : 0, check);
 }
 
-int Decrypt_Pak (UBYTE *pak, UDWORD size)
+static int Decrypt_Pak (UBYTE *pak, UDWORD size)
 {
     UDWORD hex, key, B1, M1, check;
     int i;
