@@ -559,6 +559,7 @@ Packet *UtilIOReceiveTCP (Session *sess)
             rc = ENOMEM;
             break;
         }
+        signal (SIGPIPE, SIG_IGN);
         rc = sockread (sess->sok, pak->data + pak->len, len - pak->len);
         if (rc <= 0)
         {
