@@ -44,10 +44,6 @@
 #include <sys/wait.h>
 #endif
 
-#ifdef __BEOS__
-#include "beos.h"
-#endif
-
 user_interface_state uiG;
 Preferences *prG;
 PreferencesConnection *psG;
@@ -202,21 +198,25 @@ int main (int argc, char *argv[])
             else if ((argv[i][1] == 'v') || (argv[i][1] == 'V'))
             {
                 j = atol (argv[i] + 2);
-                prG->verbose = (strlen (argv[i] + 2) ? j : prG->verbose + 1);
+                prG->verbose = (argv[i][2] ? j : prG->verbose + 1);
                 if (!prG->verbose)
                     argverb = 1;
             }
             else if ((argv[i][1] == 'f') || (argv[i][1] == 'F'))
             {
-                i++;            /* skip the argument to f */
-                prG->rcfile = argv[i];
-                M_printf (i18n (1614, "Using config file \"%s\"\n"), argv[i]);
+                if (argv[i][2])
+                    prG->rcfile = &argv[i][2];
+                else
+                    prG->rcfile = argv[++i];
+                M_printf (i18n (1614, "Using config file \"%s\"\n"), prG->rcfile);
             }
             else if ((argv[i][1] == 'l') || (argv[i][1] == 'L'))
             {
-                i++;
-                M_printf (i18n (1615, "Logging to \"%s\"\n"), argv[i]);
-                prG->logplace = argv[i];
+                if (argv[i][2])
+                    prG->logplace = &argv[i][2];
+                else
+                    prG->logplace = argv[++i];
+                M_printf (i18n (1615, "Logging to \"%s\"\n"), prG->logplace);
             }
             else if ((argv[i][1] == '?') || (argv[i][1] == 'h'))
             {
@@ -227,7 +227,6 @@ int main (int argc, char *argv[])
     }
 
     PrefLoad (prG);
-    
     if (argverb) prG->verbose = 0;
     }
     
@@ -246,6 +245,9 @@ int main (int argc, char *argv[])
     srand (time (NULL));
 
     Check_Endian ();
+
+    if (!ConnectionNr (0))
+        Initalize_RC_File ();
 
 #ifdef _WIN32
     i = WSAStartup (0x0101, &wsaData);

@@ -150,8 +150,6 @@ void PrefLoad (Preferences *pref)
             Read_RC_File (rcf);
     }
 #endif
-    if (!ConnectionNr (0))
-        Initalize_RC_File ();
 }
 
 /*
