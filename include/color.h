@@ -15,7 +15,6 @@
 #define WHITE           ESC "[0;37m"
 #define SGR0            ESC "[0m"
 #define BOLD            ESC "[1m"
-#define CLRSCR          ESC "[J;"
 
 #define COLCHR '©'
 #define COLSTR "©"
@@ -29,7 +28,8 @@
 #define CXACK           6  /* ack'ed messages */
 #define CXERROR         7  /* errors          */
 #define CXINCOMING      8  /* incoming msgs   */
-#define CXCOUNT         9
+#define CXDEBUG         9  /* debug messages  */
+#define CXCOUNT         10
 
 #define COLNONE         ESC COLSTR "0"
 #define COLSERVER       ESC COLSTR "1"
@@ -40,6 +40,7 @@
 #define COLACK          ESC COLSTR "6"
 #define COLERROR        ESC COLSTR "7"
 #define COLINCOMING     ESC COLSTR "8"
+#define COLDEBUG        ESC COLSTR "9"
 
 #define COLINDENT       ESC "«"
 #define COLEXDENT       ESC "»"

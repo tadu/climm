@@ -172,6 +172,7 @@ void PrefSetColorScheme (Preferences *pref, UBYTE scheme)
             __repl (pref->colors[CXACK],      GREEN BOLD);
             __repl (pref->colors[CXERROR],    RED BOLD);
             __repl (pref->colors[CXINCOMING], CYAN BOLD);
+            __repl (pref->colors[CXDEBUG],    YELLOW);
             break;
         case 2:
             __repl (pref->colors[CXNONE],     SGR0);
@@ -183,6 +184,7 @@ void PrefSetColorScheme (Preferences *pref, UBYTE scheme)
             __repl (pref->colors[CXACK],      GREEN BOLD);
             __repl (pref->colors[CXERROR],    RED BOLD);
             __repl (pref->colors[CXINCOMING], CYAN BOLD);
+            __repl (pref->colors[CXDEBUG],    YELLOW);
             break;
         case 3:
             __repl (pref->colors[CXNONE],     GREEN);
@@ -194,6 +196,7 @@ void PrefSetColorScheme (Preferences *pref, UBYTE scheme)
             __repl (pref->colors[CXACK],      GREEN BOLD);
             __repl (pref->colors[CXERROR],    RED BOLD);
             __repl (pref->colors[CXINCOMING], CYAN BOLD);
+            __repl (pref->colors[CXDEBUG],    YELLOW);
             break;
         default:
             __repl (pref->colors[CXNONE],     SGR0);
@@ -205,6 +208,7 @@ void PrefSetColorScheme (Preferences *pref, UBYTE scheme)
             __repl (pref->colors[CXACK],      GREEN BOLD);
             __repl (pref->colors[CXERROR],    RED BOLD);
             __repl (pref->colors[CXINCOMING], CYAN BOLD);
+            __repl (pref->colors[CXDEBUG],    YELLOW);
             scheme = 0;
     }
     pref->scheme = scheme;

@@ -450,7 +450,7 @@ BOOL Debug (UDWORD level, const char *str, ...)
         M_print ("\n");
 /*    M_print ("Debug: ");   */
     Time_Stamp ();
-    snprintf (buf2, sizeof (buf2), " %s%7.7s%s %s", YELLOW, DebugStr (level & prG->verbose), COLNONE, buf);
+    snprintf (buf2, sizeof (buf2), " %s%7.7s%s %s", COLDEBUG, DebugStr (level & prG->verbose), COLNONE, buf);
 
     M_print ("%s", buf2);
     if (!c)

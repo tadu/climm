@@ -378,6 +378,7 @@ void Read_RC_File (FILE *rcf)
                         else if (!strcasecmp (tmp, "ack"))      i = 6;
                         else if (!strcasecmp (tmp, "error"))    i = 7;
                         else if (!strcasecmp (tmp, "incoming")) i = 8;
+                        else if (!strcasecmp (tmp, "debug"))    i = 9;
                         else if (!strcasecmp (tmp, "scheme"))   i = -1;
                         else continue;
                     }
@@ -958,6 +959,7 @@ int Save_RC ()
                 case 6: c = "ack     "; break;
                 case 7: c = "error   "; break;
                 case 8: c = "incoming"; break;
+                case 9: c = "debug   "; break;
                 default: c = ""; assert (0);
             }
             fprintf (rcf, "\ncolor %s", c);

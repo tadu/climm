@@ -677,7 +677,7 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
         }
 
         uiG.idle_msgs++;
-        R_setpromptf ("[" CYAN BOLD "%d%s" COLNONE "] " COLSERVER "%s" COLNONE "",
+        R_setpromptf ("[" COLINCOMING "%d%s" COLNONE "] " COLSERVER "%s" COLNONE "",
                       uiG.idle_msgs, uiG.idle_uins, i18n (1040, "mICQ> "));
     }
 
@@ -692,7 +692,7 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
         printf ("\a");
 
     Time_Output (stamp);
-    M_print (" " CYAN BOLD "%10s" COLNONE " ", cont->nick);
+    M_print (" " COLINCOMING "%10s" COLNONE " ", cont->nick);
     
     if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
     {

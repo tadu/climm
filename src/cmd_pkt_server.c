@@ -205,7 +205,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             break;
         case SRV_LOGIN_REPLY:
             Time_Stamp ();
-            M_print (" " MAGENTA BOLD "%10lu" COLNONE " %s\n", uin, i18n (1050, "Login successful!"));
+            M_print (" " COLCONTACT "%10lu" COLNONE " %s\n", uin, i18n (1050, "Login successful!"));
             CmdPktCmdLogin1 (sess);
             CmdPktCmdContactList (sess);
             CmdPktCmdInvisList (sess);
@@ -228,7 +228,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             ip[1] = PacketRead1 (pak);
             ip[2] = PacketRead1 (pak);
             ip[3] = PacketRead1 (pak);
-            M_print (" " MAGENTA BOLD "%10s" COLNONE 
+            M_print (" " COLCONTACT "%10s" COLNONE 
                 " %s: %u.%u.%u.%u\n", ContactFindName (uin), i18n (1642, "IP"),
                 ip[0], ip[1], ip[2], ip[3]);
             QueueEnqueueData (sess, 0, QUEUE_UDP_KEEPALIVE, 0, time (NULL) + 120,

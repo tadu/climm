@@ -1492,7 +1492,7 @@ static JUMP_F(CmdUserStatusShort)
 
     M_print (W_SEPERATOR);
     Time_Stamp ();
-    M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", sess->uin);
+    M_print (" " COLCONTACT "%10lu" COLNONE " ", sess->uin);
     M_print (i18n (1071, "Your status is "));
     Print_Status (sess->status);
     M_print ("\n");
