@@ -2644,12 +2644,16 @@ static JUMP_F(CmdUserTogVisible)
 {
     ContactGroup *cg;
     Contact *cont;
+    Event *event;
     int i;
     OPENCONN;
 
     if ((cg = s_parselistrem (&args, conn)))
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
         {
+            event = QueueDequeue2 (conn, QUEUE_TOGVIS, 0, cont);
+            if (event)
+                EventD (event);
             if (ContactPrefVal (cont, CO_INTIMATE))
             {
                 OptSetVal (&cont->copts, CO_INTIMATE, 0);

@@ -18,6 +18,7 @@
 #include "oscar_snac.h"
 #include "oscar_icbm.h"
 #include "oscar_oldicq.h"
+#include "oscar_bos.h"
 #include "cmd_user.h"
 #include "contact.h"
 #include "connection.h"
@@ -27,13 +28,28 @@
 #include "conv.h"
 
 static void CallbackMeta (Event *event);
+static void CallbackTogvis (Event *event);
+
+static void CallbackTogvis (Event *event)
+{
+    if (!event)
+        return;
+    if (!event->cont || !event->conn || ContactPrefVal (event->cont, CO_INTIMATE) || !(event->conn->status & STATUSF_INV))
+    {
+        EventD (event);
+        return;
+    }
+    SnacCliRemvisible (event->conn, event->cont);
+    EventD (event);
+}
 
 UBYTE IMCliMsg (Connection *conn, Contact *cont, Opt *opt)
 {
     const char *opt_text;
+    Event *event;
     UDWORD opt_type, opt_trans;
     UBYTE ret;
-
+    
     if (!cont || !conn || !OptGetStr (opt, CO_MSGTEXT, &opt_text))
     {
         OptD (opt);
@@ -43,6 +59,16 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, Opt *opt)
         OptSetVal (opt, CO_MSGTYPE, opt_type = MSG_NORM);
     if (!OptGetVal (opt, CO_MSGTRANS, &opt_trans))
         OptSetVal (opt, CO_MSGTRANS, opt_trans = CV_MSGTRANS_ANY);
+    
+    if ((conn->status & STATUSF_INV)  && !ContactPrefVal (cont, CO_INTIMATE)
+        && !(opt_type & MSGF_GETAUTO) && !ContactPrefVal (cont, CO_HIDEFROM))
+    {
+        event = QueueDequeue2 (conn, QUEUE_TOGVIS, 0, cont);
+        if (event)
+            EventD (event);
+        QueueEnqueueData (conn, QUEUE_TOGVIS, 0, time (NULL) + 300, NULL, cont, NULL, CallbackTogvis);
+        SnacCliAddvisible (conn, cont);
+    }
 
     putlog (conn, NOW, cont, STATUS_ONLINE, 
             opt_type == MSG_AUTO ? LOG_AUTO : LOG_SENT, opt_type, opt_text);
@@ -101,7 +127,7 @@ static void CallbackMeta (Event *event)
 {
     Contact *cont;
     
-    assert (event->conn && event->conn->type & TYPEF_ANY_SERVER);
+    assert (event && event->conn && event->conn->type & TYPEF_ANY_SERVER);
 
     cont = event->cont;
     if ((cont->updated != UP_INFO) && !(event->flags & QUEUE_FLAG_CONSIDERED))
