@@ -76,6 +76,8 @@ void Initialize_RC_File ()
     M_printf ("%s ", i18n (1618, "UIN:"));
     fflush (stdout);
     input = UtilIOReadline (stdin);
+    if (!input)
+        exit (0);
     tmpuin = 0;
     sscanf (input, "%ld", &tmpuin);
     uin = tmpuin;
@@ -91,7 +93,8 @@ void Initialize_RC_File ()
         fflush (stdout);
         Echo_Off ();
         input = UtilIOReadline (stdin);
-        assert (input);
+        if (!input)
+            exit (0);
         Echo_On ();
         M_print ("\n");
         if (uin)
@@ -103,7 +106,8 @@ void Initialize_RC_File ()
         Echo_Off ();
         pwd = strdup (input);
         input = UtilIOReadline (stdin);
-        assert (input);
+        if (!input)
+            exit (0);
         Echo_On ();
         M_print ("\n");
         if (strcmp (pwd, input))
@@ -128,7 +132,9 @@ void Initialize_RC_File ()
     M_printf ("%s ", i18n (1094, "SOCKS5 server:"));
     fflush (stdout);
     input = UtilIOReadline (stdin);
-    if (input && strlen (input) > 1)
+    if (!input)
+        exit (0);
+    if (strlen (input) > 1)
     {
         if ((t = strchr (input, ':')))
         {
@@ -143,8 +149,9 @@ void Initialize_RC_File ()
             M_printf ("%s ", i18n (1095, "SOCKS5 port:"));
             fflush (stdout);
             input = UtilIOReadline (stdin);
-            if (input)
-                sscanf (input, "%hu", &prG->s5Port);
+            if (!input)
+                exit (0);
+            sscanf (input, "%hu", &prG->s5Port);
         }
         if (!prG->s5Port)
             prG->s5Port = 1080;
@@ -159,7 +166,9 @@ void Initialize_RC_File ()
         M_printf ("%s ", i18n (1096, "SOCKS5 user name:"));
         fflush (stdout);
         input = UtilIOReadline (stdin);
-        if (input && strlen (input) > 1)
+        if (!input)
+            exit (0);
+        if (strlen (input) > 1)
         {
             prG->s5Auth = 1;
             prG->s5Name = strdup (input);
@@ -167,8 +176,9 @@ void Initialize_RC_File ()
             M_printf ("%s ", i18n (1097, "SOCKS5 password:"));
             fflush (stdout);
             input = UtilIOReadline (stdin);
-            if (input)
-                prG->s5Pass = strdup (input);
+            if (!input)
+                exit (0);
+            prG->s5Pass = strdup (input);
         }
     }
 
