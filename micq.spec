@@ -1,6 +1,6 @@
 %define name		micq
 %define version	0.4.10.1
-%define release	0
+%define release	1
 
 %define prefix	/usr
 
@@ -13,7 +13,7 @@ URL:			http://www.micq.org
 Group:			Networking/ICQ
 Packager:		Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 Copyright:		GPL-2
-BuildRoot:		/var/tmp/build-%{name}-%{version}
+BuildRoot:		%{_tmppath}/build-%{name}-%{version}
 Prefix:			%{prefix}
 
 %description
@@ -30,7 +30,7 @@ Authors: Matthew D. Smith (dead)
 
 %changelog
 * Tue Jan 24 2003 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
-- new upstream bug fix release 0.4.10
+- new upstream bug fix release 0.4.10.1
 
 * Tue Jan 07 2003 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 - new upstream release 0.4.10
@@ -48,14 +48,16 @@ Authors: Matthew D. Smith (dead)
 - first RPM
 
 %prep
-%setup
-./prepare || true
+rm -rf $RPM_BUILD_ROOT
+
+%setup -q -n %{name}-%{version}
 
 %build
 %configure --disable-dependency-tracking CFLAGS=-O4
 make
 
 %install
+
 %makeinstall
 %{__mkdir_p} $RPM_BUILD_ROOT/usr/lib/menu
 cat << EOF > $RPM_BUILD_ROOT/usr/lib/menu/micq
