@@ -645,7 +645,6 @@ int R_process_input (void)
                 inp = ch - 'A' + 10;
             else
                 istat = 0;
-            fprintf (stderr, "Codepoint 10: %04x\n", inp);
             break;
         case 11:
             istat++;
@@ -657,7 +656,6 @@ int R_process_input (void)
             else if (ch >= 'A' && ch <= 'F')
                 inp |= ch - 'A' + 10;
             else istat = 0;
-            fprintf (stderr, "Codepoint 11: %04x\n", inp);
             break;
         case 12:
             istat++;
@@ -669,7 +667,6 @@ int R_process_input (void)
             else if (ch >= 'A' && ch <= 'F')
                 inp |= ch - 'A' + 10;
             else istat = 0;
-            fprintf (stderr, "Codepoint 12: %04x\n", inp);
             break;
         case 13:
             istat++;
@@ -684,7 +681,6 @@ int R_process_input (void)
             if (!istat)
                 return 0;
             
-            fprintf (stderr, "Codepoint: %04x\n", inp);
             {
                 const char *add = ConvUTF8 (inp);
                 int charbytes = strlen (add);
