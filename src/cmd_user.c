@@ -1615,36 +1615,28 @@ static JUMP_F(CmdUserSoundOffline)
 static JUMP_F(CmdUserAutoaway) 
 {
     char *arg1;
-    if ((arg1 = strtok (args, "\n"))) /* assign a value */
+
+    if ((arg1 = strtok (args, " \t\n")))
     {
-        if (prG->away_time == 0 || uiG.away_time_prev == 0 || atoi (arg1) == 0)
+        if (!strcmp (arg1, i18n (1085, "on"))  || !strcmp (arg1, "on"))
         {
-            uiG.away_time_prev = prG->away_time;
-            prG->away_time = atoi (arg1);
+            prG->away_time = uiG.away_time_prev ? uiG.away_time_prev : default_away_time;
         }
-        else
+        else if (!strcmp (arg1, i18n (1086, "off")) || !strcmp (arg1, "off") || !atoi (arg1))
         {
-            prG->away_time = atoi (arg1);
-        }
-    }
-    else                            /* toggle */
-    {
-        if (prG->away_time == 0 && uiG.away_time_prev == 0)
-        {
-            prG->away_time = default_away_time;
-        }
-        else if (prG->away_time == 0)
-        {
-            prG->away_time = uiG.away_time_prev;
-            uiG.away_time_prev = 0;
-        }
-        else
-        {
-            uiG.away_time_prev = prG->away_time;
+            if (prG->away_time)
+                uiG.away_time_prev = prG->away_time;
             prG->away_time = 0;
         }
+        else
+        {
+            if (prG->away_time)
+                uiG.away_time_prev = prG->away_time;
+            prG->away_time = atoi (arg1);
+        }
     }
-    M_print (i18n (1766, "Auto_away is " COLMESS "%d" COLNONE ".\n"), prG->away_time);
+    M_print (i18n (1766, "Changing status to away resp. not available after idling %s%d%s seconds.\n"),
+             COLMESS, prG->away_time, COLNONE);
     return 0;
 }
 

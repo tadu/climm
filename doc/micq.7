@@ -137,9 +137,16 @@ Change auto reply message for status
 .Ar status
 to
 .Ar message .
-.It Ic autoaway Op Ar timeout
-Toggles auto away, or set the timeout to
-.Ar timeout .
+.It Ic autoaway Op Ar timeout|on|off
+Set the timeout to
+.Ar timeout ,
+or switch auto away
+.Ar on
+using the last used or default auto away time, or switch auto away
+.Ar off
+saving the current used auto away time. A timeout of 0 is equivalent to
+.Ar off .
+If no argument is given, the current setting is displayed.
 .It Ic alter Ar command new
 Make command initially or previously known as
 .Ar command
