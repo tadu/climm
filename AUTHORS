@@ -4,83 +4,83 @@ mICQ's original Author was:
 	Matthew D. Smith
 
 current Maintainer:
-	Rüdiger Kuhlmann	<info@ruediger-kuhlmann.de>
+	Rüdiger Kuhlmann	<info__at__ruediger-kuhlmann.de>
 
 Contributors:
 
-	Rico Glöckner		<mc@ukeer.de>
+	Rico Glöckner		<mc__at__ukeer.de>
 	    hosts micq.org and the mailinglist
 
-        Peter Backes            <rtc@helen.PLASMA.Xg8.DE>
+        Peter Backes            <rtc__at__helen.PLASMA.Xg8.DE>
             v8: info stuff; code cleanup; log file format and helper scripts
 
-	Michel Oosterhof	<micheloo@xs4all.nl>
-	    auto{conf,make} support
+	Michel Oosterhof	<micheloo__at__xs4all.nl>
+	    initial auto{conf,make} support
 
-        Per Olofsson		<pelle@dsv.su.se>
+        Per Olofsson		<pelle__at__dsv.su.se>
 	    alias support (GPL >= v2)
 
-	Frédéric Lamorce	<fred@bemail.org>	BeDevId #15453
+	Frédéric Lamorce	<fred__at__bemail.org>	BeDevId #15453
 	    added UDP Socks5 support (for v5)
 	    /* BeDevId #15453, http://www.colba.net/~tiange/ */
 
-	Sergey Shkonda		<serg@bcs.zp.ua>
+	Sergey Shkonda		<serg__at__bcs.zp.ua>
 	    mreadline
 
 Current Translators:
 
-        J. Grant		<jg@jguk.org>
-            japanese (ja_jp.utf-8) translation 0.4.9.4
+	Nikola Lecic		<lecicc__at__ptt.yu>
+	    serbian (sr_yu) translation 0.4.10
 
-	Alberto Bertogli	<albertogli@telpin.com.ar>
+	Artem Sokolov		<sokolov__at__ukr.net>
+	    ukrainian (uk.i18n) translation 0.4.10
+	    2 ukrainian man pages
+	
+        J. Grant		<jg__at__jguk.org>
+            japanese (ja_jp) translation 0.4.9.4
+
+	Alberto Bertogli	<albertogli__at__telpin.com.ar>
 	    spanish (es.i18n) translation 0.4.9.3
 	    spanish man pages, spanish web page
 	
-	Artem Sokolov		<sokolov@ukr.net>
-	    2 ukrainian man pages
-	
-	Fabio KaLiF		<f.venturi@email.it>
+	Fabio KaLiF		<f.venturi__at__email.it>
 	    italian (it.i18n) translation
 	
-	"Pest"			<pezt@mail.ru>
+	"Pest"			<pezt__at__mail.ru>
 	    update russian (ru.i18n) translation to 0.4.9.3
 	    russian man pages, russian web page
 
-	Guido Gloor		<haslo@haslo.ch>
+	Guido Gloor		<haslo__at__haslo.ch>
 	    swiss-german (de_CH.i18n) translation to 0.4.9.3
 
         Digor Dumitru, Alina Pelin
             (partial) romanian (ro.i18n) translation
         
-        Deives Michellis	<dmichellis@yahoo.com>
-            2 portuguese/brazil man pages
+        Deives Michellis	<dmichellis__at__yahoo.com>
+            portuguese/brazil (pt_br) man pages
 
 Former Translators:
 
-	Guillaume Coqueblin	<esquimo_2ooo@caramail.com>
+	Guillaume Coqueblin	<esquimo_2ooo__at__caramail.com>
 	    (update) french (fr.i18n) translation to >= 0.4.8pl9
 	
-	Julien Gilli		<jgilli@nerim.fr>
+	Julien Gilli		<jgilli__at__nerim.fr>
 	    french man pages, french web pages
 	
-	Valerie Dachev		<v.dachev@mail.com>
+	Valerie Dachev		<v.dachev__at__mail.com>
 	    bulgarian translation
 	
 	Taneli Huuskonen
 	    finnish translation
 	    
-	Cawko Xakep 		<xakep@snark.ukma.kiev.ua>
+	Cawko Xakep 		<xakep__at__snark.ukma.kiev.ua>
 	    ukrainan translation
 	
-	Dmitri Lukyanov		<ldv@sdsl-64-7-10-170.dsl.iad.megapath.net>
+	Dmitri Lukyanov		<ldv__at__sdsl-64-7-10-170.dsl.iad.megapath.net>
 	    (update) russian translation
 
-	Björn Hansson		<hansson@netera.se>
+	Björn Hansson		<hansson__at__netera.se>
 	    (update) swedish translation
 
-	Benjamin Michotte <binny@baby-linux.net>
+	Benjamin Michotte <binny__at__baby-linux.net>
 	    (update) french translation
-	
-	Lalo Martins		
-	    brazil translation
-
