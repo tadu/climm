@@ -70,6 +70,10 @@ struct timeval
 };
 #endif
 
+#ifndef SYS_NMLN
+#define SYS_NMLN 200
+#endif
+
 static char username[L_cuserid + SYS_NMLN] = "";
 
 /**********************************************
