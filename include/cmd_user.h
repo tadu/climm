@@ -39,7 +39,7 @@ void CmdUserInterrupt (void);
 void CmdUserCallbackTodo (Event *event);
 
 #define CMD_USER_HELP(syn,des) rl_printf ("%s" syn "%s\n\t" COLINDENT "%s" COLEXDENT "\n", COLQUOTE, COLNONE, des)
-#define CMD_USER_HELP3(syn,d,e,f) rl_printf ("%s" syn "%s\n\t" COLINDENT "%s" COLEXDENT "\n", COLQUOTE, COLNONE, d, e, f)
+#define CMD_USER_HELP3(syn,d,e,f) rl_printf ("%s" syn "%s\n\t" COLINDENT "%s" COLEXDENT "\n", COLQUOTE, d, e, COLNONE, f)
 #define CMD_USER_HELP7(syn,a,b,c,d,e,f,g) rl_printf ("%s" syn "%s\n\t" COLINDENT "%s\n%s\n%s\n%s\n%s\n%s\n%s" COLEXDENT "\n", COLQUOTE, COLNONE, a,b,c,d,e,f,g)
 
 #endif /* MICQ_USER_H */
