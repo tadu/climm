@@ -1261,11 +1261,16 @@ void PrefReadStat (FILE *stf)
     
     for (i = 0; (conn = ConnectionNr (i)); i++)
     {
-        if (!conn->contacts && (conn->type & TYPEF_SERVER))
+        if (conn->type & TYPEF_SERVER)
         {
-            conn->contacts = cg = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%ld", conn->type == TYPE_SERVER ? "icq8" : "icq5", conn->uin));
-            ContactOptionsSetVal (&cg->copts, CO_IGNORE, 0);
-            dep = 21;
+            if (!conn->contacts)
+            {
+                conn->contacts = cg = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%ld", conn->type == TYPE_SERVER ? "icq8" : "icq5", conn->uin));
+                ContactOptionsSetVal (&cg->copts, CO_IGNORE, 0);
+                dep = 21;
+            }
+            if (!conn->cont)
+                conn->cont = ContactUIN (conn, conn->uin);
         }
     }
 
