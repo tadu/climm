@@ -728,7 +728,7 @@ void ContactSetCap (Contact *cont, Cap *cap)
 {
     if (!cap->id)
         return;
-    if (cap->id == CAP_SIM && cap->var)
+    if (cap->var && cap->id == CAP_SIM)
     {
         UBYTE ver;
         
@@ -750,7 +750,7 @@ void ContactSetCap (Contact *cont, Cap *cap)
                 cont->caps &= ~(1 << CAP_UTF8);
         }
     }
-    else if (cap->id == CAP_MICQ && cap->var)
+    else if (cap->var && (cap->id == CAP_MICQ || cap->id == CAP_SIMNEW))
     {
         cont->v1 = cap->var[12];
         cont->v2 = cap->var[13];
@@ -778,7 +778,7 @@ void ContactSetVersion (Contact *cont)
     
     ver = dc->id1 & 0xffff;
     
-    if (!HAS_CAP (cont->caps, CAP_SIM) && !HAS_CAP (cont->caps, CAP_MICQ))
+    if (!HAS_CAP (cont->caps, CAP_SIM) && !HAS_CAP (cont->caps, CAP_MICQ) && !HAS_CAP (cont->caps, CAP_SIMNEW))
         cont->v1 = cont->v2 = cont->v3 = cont->v4 = 0;
 
     if ((dc->id1 & 0xff7f0000) == BUILD_LICQ && ver > 1000)
@@ -889,6 +889,8 @@ void ContactSetVersion (Contact *cont)
     }
     else if (HAS_CAP (cont->caps, CAP_MICQ))
         new = "mICQ";
+    else if (HAS_CAP (cont->caps, CAP_SIMNEW))
+        new = "SIM";
     else if (dc->id1 == dc->id2 && dc->id2 == dc->id3 && dc->id1 == 0xffffffff)
         new = "vICQ/GAIM(?)";
     else if (dc->version == 7 && HAS_CAP (cont->caps, CAP_IS_WEB))

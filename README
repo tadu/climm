@@ -29,7 +29,7 @@ Features of mICQ include:
    * register       - register new uins and setup configuration with an easy to
                       use setup wizard
    * password       - changing password
-   * reconnect      - reconnects when kicked by server
+   * reconnect      - reconnects when kicked by server or lost connection
    * contact list   - complete contact list with several ways for a concise
                       display of online/offline users
    * contact groups - arrange contacts into groups
@@ -52,6 +52,8 @@ Features of mICQ include:
    * connections    - can show a users connection info and last seen online time
    * peek           - check whether someone is offline or just invisible
    * tcp            - full support of v8 direct connections
+   * SSL            - supports SSL-encrypted direct connections compatible with licq and SIM
+   * Tcl            - scripting support using the Tcl scripting language
    * auto messages  - auto replys if away, request and send auto messages
    * file transfer  - v6, v7, v8 file transfer
    * identification - recognizes mICQ, licq, Miranda, StrICQ, &RQ, vICQ

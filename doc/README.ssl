@@ -12,11 +12,12 @@ Specify the command line option --enable-ssl when running configure.
 
 ***   BEHAVIOUR / USING SSL   ***
 
-Whenever mICQ opens a direct connection to another peer, it tries to start SSL
-encryption if the peer is considered to be SSL capable. mICQ detects SSL
-capability of licq peers by the licq specific timestamp flag. mICQ peers are
-expected to support SSL anyway. Why this does not raise problems with older mICQ
-peers that indeed do not support SSL will be explained below.
+Whenever mICQ opens a direct connection to another peer, it tries to start
+SSL encryption if the peer is considered to be SSL capable. mICQ detects SSL
+capability of licq peers by the licq specific timestamp flag, and of SIM
+(*yuck*) peers by it's CAP_NEWSIM. mICQ peers are expected to support SSL
+anyway. Why this does not raise problems with older mICQ peers that indeed
+do not support SSL will be explained below.
 
 In contrary if the direct connection is incoming from another peer, mICQ does
 not try to start SSL for two reasons. First we want to avoid mutual SSL

@@ -65,6 +65,7 @@ static Cap caps[CAP_MAX] =
     { CAP_TRILL_2,     16, "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x09", "CAP_TRILL_2"     },
     { CAP_LICQ,        16, "\x09\x49\x13\x49" cap_mid cap_id,   "CAP_LICQ"        },
     { CAP_SIM,         15, "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x48", "CAP_SIM"         },
+    { CAP_SIMNEW,      12, "SIM client  \x00\x00\x00\x00",      "CAP_SIMNEW"      },
     { CAP_MACICQ,      16, "\xdd\x16\xf2\x02\x84\xe6\x11\xd4\x90\xdb\x00\x10\x4b\x9b\x4b\x7d", "CAP_MACICQ"      },
     { CAP_MICQ,        12, "mICQ \xa9 R.K. \x00\x00\x00\x00",   "CAP_MICQ"        },
     { CAP_KXICQ,       16, "\x09\x49\x13\x44" cap_mid cap_id,   "CAP_KXICQ"},

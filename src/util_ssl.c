@@ -148,7 +148,8 @@ int ssl_supported (Connection *conn)
      * Note: we never initialize SSL for incoming direct connections yet
      *        in order to avoid mutual SSL init trials among mICQ peers.
      */
-    if (!contact || !(HAS_CAP(contact->caps, CAP_MICQ) || (HAS_CAP(contact->caps, CAP_LICQ) && contact->dc && (contact->dc->id1 & 0xFFFF0000) == LICQ_WITHSSL)))
+    if (!contact || !(HAS_CAP(contact->caps, CAP_SIMNEW) || HAS_CAP(contact->caps, CAP_MICQ)
+                      || (contact->dc && (contact->dc->id1 & 0xFFFF0000) == LICQ_WITHSSL)))
     {
         Debug (DEB_SSL, "%s (%ld) is no SSL candidate", contact->nick, contact->uin);
         TCLEvent ("ssl", s_sprintf ("%lu no_candidate", contact->uin));
@@ -364,6 +365,12 @@ const char *ssl_strerror (int error)
  */
 BOOL TCPSendSSLReq (Connection *list, Contact *cont)
 {
-    return TCPSendMsg (list, cont, "", MSG_SSL_OPEN);
+    Connection *peer;
+    UBYTE ret;
+
+    ret = TCPSendMsg (list, cont, "", MSG_SSL_OPEN);
+    if ((peer = ConnectionFind (TYPE_MSGDIRECT, cont->uin, list)))
+        peer->ssl_status = SSL_STATUS_REQUEST;
+    return ret;
 }                      
 #endif /* ENABLE_SSL */
