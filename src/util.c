@@ -132,9 +132,6 @@ void Init_New_User (Connection *conn)
     }
 }
 
-#define LOG_MAX_PATH 255
-#define DSCSIZ 192 /* Maximum length of log file descriptor lines. */
-
 /*
  * Log the event provided to the log with a time stamp.
  */

@@ -3,7 +3,9 @@
  *
  * Copyright: This file may be distributed under version 2 of the GPL licence.
  *
- * alias stuff GPL >= v2
+ * alias stuff GPL >= v2 Copyright Per Olofsson
+ * history & find command Copyright Sebastian Felis
+ * 
  *
  * $Id$
  */
@@ -36,6 +38,14 @@
 #include "util_ssl.h"
 #include <assert.h>
 #include <ctype.h>
+#include <fcntl.h>                      /* fopen parameter */
+#include <sys/stat.h>                   /* fopen parameter */
+#include <errno.h>
+ 
+#define MAX_STR_BUF 2048                /* buffer length for history */
+#define DEFAULT_HISTORY_COUNT 10        /* count of last messages of history */
+#define MALIGN(n)    (((n) & -128)+128) /* align of 2^7 blocks for malloc() 
+                                           in CmdUserFind() */
 
 static jump_f
     CmdUserChange, CmdUserRandom, CmdUserHelp, CmdUserInfo, CmdUserTrans,
@@ -45,9 +55,10 @@ static jump_f
     CmdUserStatusDetail, CmdUserStatusWide, CmdUserStatusShort,
     CmdUserSound, CmdUserSoundOnline, CmdUserRegister, CmdUserStatusMeta,
     CmdUserSoundOffline, CmdUserAutoaway, CmdUserSet, CmdUserClear,
-    CmdUserTogIgnore, CmdUserTogInvis, CmdUserTogVisible, CmdUserAdd, CmdUserRemove,
-    CmdUserAuth, CmdUserURL, CmdUserSave, CmdUserTabs, CmdUserLast,
-    CmdUserUptime, CmdUserOldSearch, CmdUserSearch, CmdUserUpdate, CmdUserPass,
+    CmdUserTogIgnore, CmdUserTogInvis, CmdUserTogVisible, CmdUserAdd,
+    CmdUserRemove, CmdUserAuth, CmdUserURL, CmdUserSave, CmdUserTabs,
+    CmdUserLast, CmdUserHistory, CmdUserFind, CmdUserUptime,
+    CmdUserOldSearch, CmdUserSearch, CmdUserUpdate, CmdUserPass,
     CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserPeer, CmdUserConn,
     CmdUserContact, CmdUserAnyMess, CmdUserGetAuto;
 
@@ -124,7 +135,11 @@ static jump_t jump[] = {
     { &CmdUserSave,          "save",         NULL, 0,   0 },
     { &CmdUserTabs,          "tabs",         NULL, 0,   0 },
     { &CmdUserLast,          "last",         NULL, 0,   0 },
-    { &CmdUserUptime,        "uptime",       NULL, 0,   0 },
+    { &CmdUserHistory,       "h",            NULL, 2,   0 }, 
+    { &CmdUserHistory,       "history",      NULL, 2,   0 }, 
+    { &CmdUserFind,          "find",         NULL, 2,   0 }, 
+    { &CmdUserFind,          "finds",        NULL, 2,   1 }, 
+    { &CmdUserUptime,        "uptime",       NULL, 2,   0 },
     { &CmdUserPeer,          "peer",         NULL, 0,   0 },
     { &CmdUserPeer,          "tcp",          NULL, 0,   0 },
     { &CmdUserPeer,          "file",         NULL, 0,   4 },
@@ -509,6 +524,15 @@ static JUMP_F(CmdUserHelp)
         M_printf (COLMESSAGE "%s [<contacts>]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                   CmdUserLookupName ("last"),
                   i18n (1403, "Displays the last message received from <contacts> or from everyone."));
+        M_printf (COLMESSAGE "%s <contact> [<last> [<number>]]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                  CmdUserLookupName ("history"),
+                  i18n (2383, "View your last messages of <contact>. Type 'h' as short command."));
+        M_printf (COLMESSAGE "%s <contact> <pattern>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                  CmdUserLookupName ("find"),
+                  i18n (2384, "Case insensitive search of <pattern> in log file of <contact>."));
+        M_printf (COLMESSAGE "%s <contact> <pattern>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                  CmdUserLookupName ("finds"),
+                  i18n (2384, "Case sensitive search of <pattern> in log file of <contact>."));
         M_printf (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                   CmdUserLookupName ("tabs"),
                   i18n (1098, "Display a list of nicknames that you can tab through.")); 
@@ -621,7 +645,7 @@ static JUMP_F(CmdUserHelp)
         M_printf (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                   CmdUserLookupName ("about"),
                   i18n (1402, "Updates your about user info."));
-        M_printf (COLMESSAGE "%s <nr>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n", 
+        M_printf (COLMESSAGE "%s <nr>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                   CmdUserLookupName ("setr"),
                   i18n (1439, "Sets your random user group."));
     }
@@ -3142,6 +3166,552 @@ static JUMP_F(CmdUserLast)
             args++;
     }
     while (s_parsenick (&args, &cont, &contr, conn));
+    return 0;
+}
+
+/*
+ * Displays the history received from the given nickname.
+ *
+ * This function reads the log file of a given contact. To print the last
+ * n messages, read all messages and save the last n file position of
+ * these messages. Reset position to the first requested message and print
+ * them all.
+ *
+ * Only the 'real' log files are read, not the symlink
+ * file like putlog().
+ *
+ * Comand parameter:
+ *      h[istory] <contact> [min [num]]
+ *
+ *      <contact> Nick or UIN
+ *      min       Last messages of log file. If min is negative, count from
+ *                begining. -1 means the first message, -13 the 13th message
+ *                of logfile. If min is zero dump all messages. Default is
+ *                DEFAULT_HISTORY_COUNT.
+ *      num       Number of shown message. <contact> -1 20 list the first
+ *                20 messages.  Default is min (if min is negative default is
+ *                DEFAULT_HISTORY_COUNT).
+ */
+static JUMP_F(CmdUserHistory)
+{
+    Contact *cont = NULL, *contr = NULL;
+
+    char *p = NULL;
+    int n, msgCount;
+    int msgMin = DEFAULT_HISTORY_COUNT, msgNum = DEFAULT_HISTORY_COUNT;
+    int year, month, day, hour, min;
+    BOOL isMsg = FALSE, isEmptyMsg = FALSE;
+
+    FILE *logfile;
+    long *fposArray = NULL, fposLen = 0, len;
+    char *line, buffer[LOG_MAX_PATH+1], *target = buffer;
+    int fposCur = 0, fd;
+
+    ANYCONN;
+
+
+    /*
+     * check for nick/uin in contacts. If first parameter isn't a
+     * contact then exit.
+     * parse history parameters min and num
+     */
+    if (!s_parsenick (&args, &cont, &contr, conn))
+    {
+        if (s_parse (&args, &line))
+            M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), line);
+        else
+            M_printf (i18n (2387, "%s <contact> [<last> [<number>]] -- Show history of <contact>.\n"),
+                      CmdUserLookupName ("history"));
+        return 0;
+    }
+
+    n = 0;
+    while (s_parse_s (&args, &p, MULTI_SEP))
+    {
+        switch (n)
+        {
+            case 0:
+                if (!sscanf (p, "%d", &msgMin))
+                msgMin = DEFAULT_HISTORY_COUNT;
+                break;
+            case 1:
+                if (!sscanf (p, "%d", &msgNum))
+                msgNum = (msgMin < 0) ? (DEFAULT_HISTORY_COUNT) : (msgMin);
+        }
+        n++;
+    }
+
+
+    /*
+     * get filename of logfile and open it for reading.
+     */
+    if (!prG->logplace || !*prG->logplace)
+        prG->logplace = "history" _OS_PATHSEPSTR;
+
+    snprintf (buffer, sizeof (buffer), s_realpath (prG->logplace));
+    target += strlen (buffer);
+
+    if (target[-1] == _OS_PATHSEP)
+        snprintf (target, buffer + sizeof (buffer) - target, "%lu.log", cont->uin);
+
+    /* try to open logfile for reading (no symlink file) */
+    if ((fd = open (buffer, O_RDONLY, S_IRUSR)) == -1)
+    {
+        M_printf (i18n (2385, "Couldn't open %s for reading: %s (%d).\n"),
+                  buffer, strerror (errno), errno);
+        return 0;
+    }
+    if (!(logfile = fopen (buffer, "r")))
+    {
+        M_printf (i18n (2385, "Couldn't open %s for reading: %s (%d).\n"),
+                  buffer, strerror (errno), errno);
+        close (fd);
+        return 0;
+    }
+
+
+    /*
+     *  correct parameters min and num parameters
+     */
+    if (n == 1)
+        msgNum = (msgMin < 0) ? (DEFAULT_HISTORY_COUNT) : (msgMin);
+    if (msgMin == 0)
+        msgNum = 0;
+    if (msgNum < 0)
+        msgNum = -msgNum;
+
+    /* Get array of last file positions, reset memory to zeros */
+    if (msgMin > 0)
+    {
+        fposLen = msgMin;
+        fposArray = (long *) malloc (fposLen * sizeof (long));
+    }
+
+    /*
+     * count messages only if history should dump only the last
+     * n message. Save the last n = msgMin file position of each
+     * message in fposArray[].
+     */
+    msgCount = 0;
+    if (msgMin > 0)
+    {
+        while ((line = UtilIOReadline (logfile)))
+        {
+            if (*line == '#')
+            {
+                /* get len to correct the file position to the
+                   beginning of line */
+                len = (long)strlen (line) + 1;
+                line++;
+                n = 0;
+                while (s_parse (&line, &p))
+                {
+                    switch (n)
+                    {
+                        case 2: 
+                            if ((p[0] == '<' && p[1] == '-') ||
+                                (p[0] == '-' && p[1] == '>'))
+                            {
+                                msgCount++;
+
+                                /* save corrected file position */
+                                fposArray[fposCur] = ftell (logfile) - len;
+                                if (++fposCur == fposLen)
+                                    fposCur = 0;
+                            }
+                            break;
+                    }
+                    if (++n > 2) break;
+                }
+            }
+        }
+        /* reset file to the requested position. If message
+           count smaller than msgMin, set file position to the first
+           message. */
+        if (msgCount == 0)
+        {
+            close (fd);
+            free (fposArray);
+            return 0;
+        }
+        if (msgCount < msgMin)
+            fposCur = 0;
+        fseek (logfile, fposArray[fposCur], SEEK_SET);
+    }
+
+
+    /*
+     * if msgMin negativ, count from the beginning (-1 for first message).
+     */
+    if (msgMin > 0)
+    {
+        if (msgCount < msgMin)
+        {
+            msgCount = 0;
+            msgMin = 1;
+        }
+        else
+        {
+            msgMin   = msgCount - msgMin;
+            msgCount = msgMin - 1;
+        }
+    }
+    else
+        msgMin   = -msgMin;
+
+
+    /*
+     * dump message.
+     * If file positions of messages are available (fposArray != NULL) and
+     * log entry isn't a message entry, jump to next message. If fseek()
+     * fails, remove position array.
+     */
+    while ((line = UtilIOReadline (logfile)))
+    {
+        if (*line == '#')
+        {
+            if (fposArray)
+            {
+                len = strlen (line) + 1;
+                /* jump to next message according to fposArray[] */
+                if (ftell (logfile) - len != fposArray[fposCur])
+                {
+                    if (!fseek (logfile, fposArray[fposCur], SEEK_SET))
+                    {
+                        free (fposArray);
+                        fposArray = NULL;
+                    }
+                    continue;
+                }
+                else
+                    if (++fposCur == fposLen)
+                        fposCur = 0;
+            }
+
+            line++;
+            n = 0;
+            isMsg = FALSE;
+
+            /* extract time form sent and received messages */
+            while (s_parse(&line, &p))
+            {
+                switch (n)
+                {
+                    case 0:
+                        if (msgCount > msgMin-2)
+                            sscanf(p, "%4d%2d%2d%2d%2d",
+                                   &year, &month, &day, &hour, &min);
+                        break;
+                    case 2:
+                        if ((p[0] == '<' && p[1] == '-') ||
+                            (p[0] == '-' && p[1] == '>'))
+                        {
+                            msgCount++;
+                            /* msgCount isn't in requested history scope
+                               if all lines are dumped, exit */
+                            if (msgCount < msgMin)
+                                break;
+                            if (msgNum > 0 &&
+                                msgCount+1 > msgMin + msgNum)
+                            {
+                                close (fd);
+                                free (fposArray);
+                                return 0;
+                            }
+
+                            if (isEmptyMsg)
+                                M_printf (COLNONE "\n");
+
+                            isMsg = TRUE;
+                            isEmptyMsg = TRUE;
+
+                            M_printf (COLDEBUG "%.2d.%.2d.%.4d" COLNONE " %.2d:%.2d [%4d] ",
+                                      day, month, year, hour, min,
+                                      msgCount);
+
+                            if (*p == '<')
+                                M_printf (COLINCOMING "<- ");
+                            else
+                                M_printf (COLSENT "-> ");
+                        }
+                        break;
+                }
+                if (++n > 2)
+                    break;
+            }
+        }
+        else
+        {
+            if (isMsg == TRUE)
+            {
+                M_printf (COLNONE "%s\n", line);
+                isEmptyMsg = FALSE;
+            }
+        }
+    }
+
+    if (isEmptyMsg)
+        M_printf (COLNONE "\n");
+
+    close (fd);
+    free (fposArray);
+
+    return 0;
+}
+
+/*
+ * Search a pattern in messages of a given contact.
+ *
+ * Open log file of the given contact and read messages into allocated buffer
+ * *msg (and *msgLower for case insensitive search). To find the pattern
+ * in the message the function strstr() is used. If a pattern is found dump
+ * the hole message with time, message number and highlighted pattern within
+ * the message.
+ * Comand 'find' search for a case insensitive pattern, 'finds' for case
+ * sensitive pattern (parameter data is 1).
+ *
+ * Comand parameter:
+ *      find <contact> <pattern>
+ *      finds <contact> <pattern> 
+ *
+ *      <contact> Nick or UIN
+ *      pattern   Pattern of search. All leaded and followed whitespaces will 
+ *                be deleted. Whitespaces could be protected by a double
+ *                quotation marks.
+ *
+ * ToDo: replace case lowering function tolower() of strings with other 
+ *       function to include international special characters.
+ */
+static JUMP_F(CmdUserFind)
+{
+    Contact *cont = NULL, *contr = NULL;
+    
+    char *line = NULL, *pattern, *p = NULL, c;
+    char *msg = NULL, *m, *msgLower = NULL, *mL;
+    UDWORD size = 0;
+    int n, msgCount, matchCount = 0, patternLen, len;
+    int year, month, day, hour, min;
+    BOOL isMsg = FALSE, isIncoming = FALSE, doRead = TRUE;
+    
+    FILE *logfile;
+    char buffer[LOG_MAX_PATH + 1], *target = buffer;                          
+    int fd;
+    
+    ANYCONN;
+    
+    /* 
+     * parse history parameters and remove all white spaces around 
+     * the pattern. For case insensitive, lower the pattern.
+     */
+    if (!s_parsenick (&args, &cont, &contr, conn))
+    {
+        if (s_parse (&args, &msg))
+            M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), msg);
+        else
+        {
+            M_printf (i18n (2388, "%s <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n"),
+                      CmdUserLookupName ("find"));
+            M_printf (i18n (2389, "%s <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n"),
+                      CmdUserLookupName ("finds"));
+        }
+        return 0;
+    }
+    
+    pattern = args;
+    while (*pattern && strchr (DEFAULT_SEP, *pattern))
+        pattern++;
+    if (*pattern == '"')
+        pattern++;
+    patternLen = strlen (pattern);
+    while (patternLen > 0 && strchr (DEFAULT_SEP, pattern[patternLen - 1]))
+        patternLen--;
+    if (patternLen > 0 && pattern[patternLen - 1] == '"')
+        patternLen--;
+    pattern[patternLen] = '\0';
+    
+    if (!patternLen)
+    {
+        M_printf (i18n (2390, "No or empty pattern given.\n"));
+        return 0;
+    }
+    
+    /* find is case insensitive, lower pattern */
+    if (data == 0)
+    {
+        p = pattern;
+        while (*p)
+        {
+            *p = (char)tolower(*p);
+            p++;
+        }
+    }
+    
+        
+    /*
+     * get filename of logfile and open it for reading.
+     */
+    if (!prG->logplace || !*prG->logplace)
+        prG->logplace = "history" _OS_PATHSEPSTR;
+
+    snprintf (buffer, sizeof (buffer), s_realpath (prG->logplace));
+    target += strlen (buffer);
+
+    if (target[-1] == _OS_PATHSEP)
+        snprintf (target, buffer + sizeof (buffer) - target, "%lu.log", cont->uin);
+
+    if ((fd = open (buffer, O_RDONLY, S_IRUSR)) == -1)
+    {
+        M_printf (i18n (2385, "Couldn't open %s for reading: %s (%d).\n"),
+                  buffer, strerror (errno), errno);
+        return 0;
+    }
+    if (!(logfile = fopen (buffer, "r")))
+    {
+        M_printf (i18n (2385, "Couldn't open %s for reading: %s (%d).\n"),
+                  buffer, strerror (errno), errno);
+        close (fd);
+        return 0;
+    }
+    
+    
+    /*
+     * read message for message into *msg and dump it if pattern is found.
+     */
+    msgCount = 0;
+    doRead = TRUE;
+    while (!doRead || (line = UtilIOReadline (logfile)))
+    {
+        doRead = TRUE;
+        if (!line)
+            break;
+        
+        isMsg = FALSE;
+        if (*line == '#')
+        {
+            line++;
+            n = 0;
+            while (s_parse (&line, &p))
+            {
+                switch (n)
+                {
+                    case 0:
+                        sscanf (p, "%4d%2d%2d%2d%2d", 
+                                &year, &month, &day, &hour, &min);
+                        break;
+                    case 2:
+                        if ((p[0] == '<' && p[1] == '-') || 
+                            (p[0] == '-' && p[1] == '>'))
+                        {
+                            msgCount++;
+                            isMsg = TRUE;
+                            isIncoming = (*p == '<');
+                        }
+                        break;
+                }
+                if (++n > 2)
+                    break;
+            }
+        }
+        
+        if (!isMsg)
+            continue;
+               
+        if (msg)
+            *msg = '\0';
+        while ((line = UtilIOReadline (logfile)))
+        {
+            if (*line == '#')
+                break;
+            
+            if (!msg) 
+            {   
+                msg = (char*) malloc (size = MALIGN (strlen (line)));
+                *msg = '\0';
+                if (!data)
+                    msgLower = (char*) malloc (size);
+            }
+            len = strlen (msg);
+            if (size - len < strlen (line))
+            {
+                msg = realloc (msg, size += MALIGN (strlen (line)));
+                if (!data)
+                    msgLower = realloc (msgLower, size);
+            }
+            if (len)
+                msg[len++] = '\n';
+            strcpy (&msg[len], line);
+        }
+        doRead = FALSE;
+        
+        if (!msg)
+            continue;
+        
+        /* lower message for case insensitive search */
+        if (!data)
+        {
+            m = msg;
+            mL = msgLower;
+            while (*m)
+            {
+                *mL++ = (char)tolower (*m);
+                m++;
+            }
+            *mL = '\0';
+        }
+        else 
+            msgLower = msg;
+
+        /* 
+         * if pattern found, print message and highlight pattern,
+         * otherwise read next log message
+         */
+        if (!(p = strstr (msgLower, pattern)))
+            continue;
+        
+        matchCount++; 
+        M_printf (COLDEBUG "%.2d.%.2d.%.4d" COLNONE " %.2d:%.2d [%4d] ",
+                  day, month, year, hour, min, msgCount);    
+
+        if (isIncoming)
+            M_printf (COLINCOMING "<- ");
+        else
+            M_printf (COLSENT "-> ");
+        
+        m = msg;
+        mL = msgLower;
+        do
+        {
+            /* print message before pattern */
+            len = p - mL;
+            c = m[len];
+            m[len] = '\0';
+            M_printf (COLNONE "%s", m);
+
+            /* print pattern colored */ 
+            m[len] = c;
+            m += len;
+            c = m[patternLen];
+            m[patternLen] = '\0';
+            M_printf (COLMESSAGE "%s", m);
+
+            /* search next pattern in message */
+            m[patternLen] = c;
+            mL = p + patternLen;
+            m += patternLen;
+            p = strstr (mL, pattern);
+        } while (p);
+        M_printf (COLNONE "%s\n", m);
+    } /* next log line */
+    
+    M_printf (i18n (2386, "Found %s%d%s matches.\n"), COLMESSAGE, matchCount, COLNONE);
+    
+    close (fd);
+    
+    if (msg)
+        free (msg);
+    if (!data)
+        free (msgLower);
+        
     return 0;
 }
 
