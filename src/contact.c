@@ -50,6 +50,14 @@ static int            cnt_count = 0;
 #define BUILD_LIBICQ2K_ID2  0x3aa66380
 #define BUILD_LIBICQ2K_ID3  0x3a877a42
 
+#define BUILD_KXICQ_ID1     0x3b4c4c0c
+#define BUILD_KXICQ_ID2     0
+#define BUILD_KXICQ_ID3     0x3b7248ed
+
+#define BUILD_KXICQ2_ID1    0x3aa773ee
+#define BUILD_KXICQ2_ID2    0x3aa66380
+#define BUILD_KXICQ2_ID3    0x3a877a42
+
 /*
  * Initializes the contact group table.
  */
@@ -845,6 +853,18 @@ void ContactSetVersion (Contact *cont)
     {
         new = "libicq2000";
     }
+    else if (dc->id1 == BUILD_KXICQ_ID1 &&
+             dc->id2 == BUILD_KXICQ_ID2 &&
+             dc->id3 == BUILD_KXICQ_ID3)
+    {
+        new = "KXicq2";
+    }
+    else if (dc->id1 == BUILD_KXICQ2_ID1 &&
+             dc->id2 == BUILD_KXICQ2_ID2 &&
+             dc->id3 == BUILD_KXICQ2_ID3)
+    {
+        new = "KXicq2 > 0.7.6";
+    }
     else if (HAS_CAP (cont->caps, CAP_TRILL_CRYPT | CAP_TRILL_2))
         new = "Trillian";
     else if (HAS_CAP (cont->caps, CAP_LICQ))
@@ -870,6 +890,8 @@ void ContactSetVersion (Contact *cont)
         new = "ICQ 2001";
     else if (HAS_CAP (cont->caps, CAP_MACICQ))
         new = "ICQ for Mac";
+    else if (HAS_CAP (cont->caps, CAP_KXICQ))
+        new = "KXicq2";
     else if (dc->version == 8 && HAS_CAP (cont->caps, CAP_UTF8))
         new = "ICQ 2002 (?)";
     else if (dc->version == 8 && HAS_CAP (cont->caps, CAP_IS_2001))
@@ -900,8 +922,6 @@ void ContactSetVersion (Contact *cont)
         else if (cont->v1 || cont->v2)
             snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf),
                       " %d.%d", cont->v1, cont->v2);
-        else
-            snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), " ");
         if (tail)
             snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf),
                       "%s", tail);
