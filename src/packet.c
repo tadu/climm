@@ -141,7 +141,7 @@ void PacketWriteLNTS (Packet *pak, const char *data)
     free (buf);
 }
 
-void PacketWriteDLNTS (Packet *pak, const char *data)
+void PacketWriteDLStr (Packet *pak, const char *data)
 {
     char *buf = strdup (data ? data : "");
 
@@ -389,6 +389,9 @@ char *PacketReadStrB (Packet *pak)
     
     len = PacketReadB2 (pak);
 
+    if (pak->rpos + len >= PacketMaxData)
+        return "<invalidlen>";
+
     str = malloc (len + 1);
     assert (str);
     
@@ -412,13 +415,50 @@ const char *PacketReadLNTS (Packet *pak)
     if (!len)
         return "";
     if (pak->rpos + len >= PacketMaxData)
-        return "<invalid>";
+        return "<invalidlen>";
     if (str [len - 1])
-        return "<invalid>";
+        return "<invalidstr>";
 
     PacketWriteAt2 (pak, pak->rpos - 2, 0); /* clear string to prevent double recoding */
     PacketReadData (pak, NULL, len);
     ConvWinUnix (str);
+    return str;
+}
+
+const char *PacketReadLNTSC (Packet *pak)
+{
+    UWORD len;
+    UBYTE *str;
+    
+    len = PacketRead2 (pak);
+    str = pak->data + pak->rpos;
+
+    if (pak->rpos + len >= PacketMaxData)
+        return "<invalidlen>";
+    if (len && str [len - 1])
+        return "<invalidstr>";
+
+    PacketReadData (pak, NULL, len ? len : strlen (str) + 1);
+    return str;
+}
+
+const char *PacketReadDLStr (Packet *pak)
+{
+    UWORD len;
+    UBYTE *str;
+    
+    len = PacketRead4 (pak);
+
+    if (pak->rpos + len >= PacketMaxData)
+        return "<invalidlen>";
+
+    str = malloc (len + 1);
+    assert (str);
+    
+    PacketReadData (pak, str, len);
+    str[len] = '\0';
+    ConvWinUnix (str);
+
     return str;
 }
 

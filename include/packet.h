@@ -30,7 +30,7 @@ void        PacketWriteB4     (      Packet *pak,           UDWORD data);
 void        PacketWriteData   (      Packet *pak,           const char *data, UWORD len);
 void        PacketWriteStr    (      Packet *pak,           const char *data);
 void        PacketWriteLNTS   (      Packet *pak,           const char *data);
-void        PacketWriteDLNTS  (      Packet *pak,           const char *data);
+void        PacketWriteDLStr  (      Packet *pak,           const char *data);
 void        PacketWriteLLNTS  (      Packet *pak,           const char *data);
 void        PacketWriteUIN    (      Packet *pak, UDWORD uin);
 void        PacketWriteTLV    (      Packet *pak, UDWORD type);
@@ -39,12 +39,13 @@ void        PacketWriteLen    (      Packet *pak);
 void        PacketWriteLenDone(      Packet *pak);
 void        PacketWriteLen4   (      Packet *pak);
 void        PacketWriteLen4Done(     Packet *pak);
-UWORD       PacketWritePos    (const Packet *pak);
+
 void        PacketWriteAt1    (      Packet *pak, UWORD at, UBYTE  data);
 void        PacketWriteAt2    (      Packet *pak, UWORD at, UWORD  data);
 void        PacketWriteAtB2   (      Packet *pak, UWORD at, UWORD  data);
 void        PacketWriteAt4    (      Packet *pak, UWORD at, UDWORD data);
 void        PacketWriteAtB4   (      Packet *pak, UWORD at, UDWORD data);
+
 UBYTE       PacketRead1       (      Packet *pak);
 UWORD       PacketRead2       (      Packet *pak);
 UWORD       PacketReadB2      (      Packet *pak);
@@ -53,8 +54,10 @@ UDWORD      PacketReadB4      (      Packet *pak);
 void        PacketReadData    (      Packet *pak,           char  *data, UWORD len);
 char       *PacketReadStrB    (      Packet *pak);
 const char *PacketReadLNTS    (      Packet *pak);
+const char *PacketReadLNTSC   (      Packet *pak);
+const char *PacketReadDLStr   (      Packet *pak);
 UDWORD      PacketReadUIN     (      Packet *pak);
-UWORD       PacketReadPos     (const Packet *pak);
+
 UBYTE       PacketReadAt1     (const Packet *pak, UWORD at);
 UWORD       PacketReadAt2     (const Packet *pak, UWORD at);
 UWORD       PacketReadAtB2    (const Packet *pak, UWORD at);
@@ -63,6 +66,9 @@ UDWORD      PacketReadAtB4    (const Packet *pak, UWORD at);
 void        PacketReadAtData  (const Packet *pak, UWORD at, char  *data, UWORD len);
 char       *PacketReadAtStrB  (const Packet *pak, UWORD at);
 const char *PacketReadAtLNTS  (      Packet *pak, UWORD at);
+
+UWORD       PacketWritePos    (const Packet *pak);
+UWORD       PacketReadPos     (const Packet *pak);
 int         PacketReadLeft    (const Packet *pak);
 
 #define PacketWriteTLV2(pak,tlv,data)        do { PacketWriteB2 (pak, tlv); PacketWriteB2   (pak, 2);   PacketWriteB2 (pak, data);        } while (0)
