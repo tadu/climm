@@ -151,7 +151,7 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
     char buffer[LOG_MAX_PATH + 1],                   /* path to the logfile */
         symbuf[LOG_MAX_PATH + 1];                     /* path of a sym link */
     char *target = buffer;                        /* Target of the sym link */
-    const char *nick = ContactFindNick (uin);
+    Contact *cont = ContactByUIN (uin, 1);
     const char *username = PrefLogName (prG);
     FILE *logfile;
     int fd;
@@ -161,6 +161,9 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
     char *pos, *indic;
     time_t now;
     struct tm *utctime;
+
+    if (!cont)
+        return 0;
 
     if (~prG->flags & FLAG_LOG)
         return 0;
@@ -210,26 +213,26 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
 
     l = strlen (buf);
 
-    pos = strchr (nick, ' ') ? "\"" : "";
+    pos = strchr (cont->nick, ' ') ? "\"" : "";
     
     switch (conn->type)
     {
         case TYPE_SERVER_OLD:
             snprintf (buf + l, DSCSIZ - l, "[icq5:%lu]!%s %s %s%s%s[icq5:%lu+%lX]", 
-                conn->uin, username, indic, pos, nick ? nick : "", pos, uin, status);
+                conn->uin, username, indic, pos, cont->uin ? cont->nick : "", pos, uin, status);
             break;
         case TYPE_SERVER:
             snprintf (buf + l, DSCSIZ - l, "[icq8:%lu]!%s %s %s%s%s[icq8:%lu+%lX]", 
-                conn->uin, username, indic, pos, nick ? nick : "", pos, uin, status);
+                conn->uin, username, indic, pos, cont->uin ? cont->nick : "", pos, uin, status);
             break;
         case TYPE_MSGLISTEN:
         case TYPE_MSGDIRECT:
             snprintf (buf + l, DSCSIZ - l, "%s %s %s%s%s[tcp:%lu+%lX]",
-                      username, indic, pos, nick ? nick : "", pos, uin, status);
+                      username, indic, pos, cont->uin ? cont->nick : "", pos, uin, status);
             break;
         default:
             snprintf (buf + l, DSCSIZ - l, "%s %s %s%s%s[tcp:%lu+%lX]",
-                      username, indic, pos, nick ? nick : "", pos, uin, status);
+                      username, indic, pos, cont->uin ? cont->nick : "", pos, uin, status);
             break;
     }
     l += strlen (buf + l);
@@ -271,12 +274,12 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
         snprintf (target, buffer + sizeof (buffer) - target, "%lu.log", uin);
 
 #if HAVE_SYMLINK
-        if (nick != NULL)
+        if (cont->uin)
         {
             char *b = target - buffer + symbuf;
 
             strncpy (symbuf, buffer, target - buffer);
-            snprintf (b, symbuf + sizeof (symbuf) - b, "nick-%s.log", nick);
+            snprintf (b, symbuf + sizeof (symbuf) - b, "nick-%s.log", cont->nick);
 
             while ((b = strchr (b, '/')) != NULL)
                 *b = '_';

@@ -384,11 +384,12 @@ void UDPCallBackResend (Event *event)
         {
             UWORD  type = PacketReadAt2 (pak, CMD_v5_OFF_PARAM + 4);
             UDWORD tuin = PacketReadAt4 (pak, CMD_v5_OFF_PARAM);
+            Contact *cont = ContactByUIN (tuin, 1);
             char *data = (char *) &pak->data[CMD_v5_OFF_PARAM + 8];
 
             M_print ("\n");
             M_printf (i18n (1830, "Discarding message to %s after %d send attempts.  Message content:\n"),
-                     ContactFindName (tuin), event->attempts - 1);
+                      cont ? cont->nick : s_sprintf ("%ld", tuin), event->attempts - 1);
 
             if ((type & ~MSGF_MASS) == MSG_URL)
             {

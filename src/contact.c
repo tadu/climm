@@ -115,33 +115,34 @@ Contact *ContactByUIN (UDWORD uin, BOOL create)
 }
 
 /*
- * Returns the nick of UIN or "<all>" or NULL.
+ * Returns (possibly temporary) contact for nick.
  */
-const char *ContactFindNick (UDWORD uin)
+Contact *ContactByNick (const char *nick, BOOL create)
 {
     Contact *cont;
+    const char *p;
+    int i;
 
-    if (uin == -1)
-        return i18n (1617, "<all>");
-    if ((cont = ContactFind (uin)))
-        return cont->nick;
-    return NULL;
-}
+    for (p = nick; *p; p++)
+    {
+        if (!isdigit ((int)*p))
+        {
+            for (i = 0; i < cnt_number; i++)
+            {
+                if (!strncasecmp (nick, cnt_contacts[i].nick, 19))
+                    return &cnt_contacts[i];
+            }
+            return NULL;
+        }
+    }
+    if ((cont = ContactFind (atoi (nick))))
+        return cont;
+    
+    if (!create)
+        return NULL;
 
-/*
- * Returns the nick of UIN or "<all>" or UIN as string.
- */
-const char *ContactFindName (UDWORD uin)
-{
-    static char buff[20];
-    Contact *cont;
-
-    if (uin == -1)
-        return i18n (1617, "<all>");
-    if ((cont = ContactFind (uin)))
-        return cont->nick;
-    snprintf (buff, sizeof (buff), "%lu", uin);
-    return buff;
+    cont = ContactAdd (atoi (nick), NULL);
+    return cont ? cont : NULL;
 }
 
 /*
@@ -155,77 +156,6 @@ Contact *ContactFindAlias (UDWORD uin, const char *nick)
         if (cnt_contacts[i].uin == uin && !strcmp (cnt_contacts[i].nick, nick))
             return &cnt_contacts[i];
     return NULL;
-}
-
-
-/*
- * Returns (possibly temporary) contact for nick.
- */
-Contact *ContactFindContact (const char *nick)
-{
-    Contact *cont;
-    char *mynick, *p;
-    int i;
-
-    mynick = strdup (nick);
-    for (p = mynick + strlen (mynick) - 1; p >= mynick && isspace ((int)*p); p--)
-        *p = '\0';
-
-    for (p = mynick; *p; p++)
-    {
-        if (!isdigit ((int)*p))
-        {
-            for (i = 0; i < cnt_number; i++)
-            {
-                if (!strncasecmp (mynick, cnt_contacts[i].nick, 19))
-                {
-                    free (mynick);
-                    return &cnt_contacts[i];
-                }
-            }
-            free (mynick);
-            return NULL;
-        }
-    }
-    if ((cont = ContactFind (atoi (mynick))))
-        return cont;
-
-    cont = ContactAdd (atoi (mynick), NULL);
-    free (mynick);
-    return cont ? cont : NULL;
-}
-
-/*
- * Returns the UIN of nick, which can be numeric, or -1.
- */
-UDWORD ContactFindByNick (const char *nick)
-{
-    char *mynick, *p;
-    int i;
-
-    mynick = strdup (nick);
-    for (p = mynick + strlen (mynick) - 1; p >= mynick && isspace ((int)*p); p--)
-        *p = '\0';
-
-    for (p = mynick; *p; p++)
-    {
-        if (!isdigit ((int)*p))
-        {
-            for (i = 0; i < cnt_number; i++)
-            {
-                if (!strncasecmp (mynick, cnt_contacts[i].nick, 19))
-                {
-                    free (mynick);
-                    return cnt_contacts[i].uin;
-                }
-            }
-            free (mynick);
-            return -1;
-        }
-    }
-    i = atoi (mynick);
-    free (mynick);
-    return i ? i : -1;
 }
 
 /*

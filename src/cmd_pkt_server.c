@@ -228,9 +228,11 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             ip[1] = PacketRead1 (pak);
             ip[2] = PacketRead1 (pak);
             ip[3] = PacketRead1 (pak);
-            M_printf ("%s " COLCONTACT "%*s" COLNONE " %s: %u.%u.%u.%u\n",
-                s_now, uiG.nick_len + s_delta (ContactFindName (uin)), ContactFindName (uin), i18n (1642, "IP"),
-                ip[0], ip[1], ip[2], ip[3]);
+            cont = ContactByUIN (uin, 1);
+            if (cont)
+                M_printf ("%s " COLCONTACT "%*s" COLNONE " %s: %u.%u.%u.%u\n",
+                    s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, i18n (1642, "IP"),
+                    ip[0], ip[1], ip[2], ip[3]);
             QueueEnqueueData (conn, QUEUE_UDP_KEEPALIVE, 0, 0, time (NULL) + 120,
                               NULL, NULL, &CmdPktSrvCallBackKeepAlive);
             break;
@@ -444,9 +446,13 @@ static JUMP_SRV_F (CmdPktSrvAck)
     if (ccmd == CMD_SEND_MESSAGE)
     {
         char *tmp;
+        Contact *cont;
+        
+        if (!(cont = ContactByUIN (PacketReadAt4 (event->pak, CMD_v5_OFF_PARAM), 1)))
+            return;
+
         M_printf ("%s " COLACK "%*s" COLNONE " %s" COLSINGLE "%s\n",
-                  s_now, uiG.nick_len + s_delta (ContactFindName (PacketReadAt4 (event->pak, CMD_v5_OFF_PARAM))),
-                  ContactFindName (PacketReadAt4 (event->pak, CMD_v5_OFF_PARAM)),
+                  s_now, uiG.nick_len + s_delta (cont->nick), cont->nick,
                   MSGACKSTR, c_in (tmp = PacketReadAtLNTS (event->pak, 30)));
         free (tmp);
     }

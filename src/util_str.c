@@ -526,7 +526,7 @@ BOOL s_parsenick_s (char **input, Contact **parsed, char *sep, Contact **parsedr
     t = NULL;
     if (s_parse_s (&p, &t, sep))
     {
-        *parsed = ContactFindContact (t);
+        *parsed = ContactByNick (t, 1);
         if (*parsed)
         {
             if (parsedr)

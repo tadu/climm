@@ -207,7 +207,11 @@ void TCPDispatchReconn (Connection *peer)
 
     if (prG->verbose)
     {
-        M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (ContactFindName (peer->uin)), ContactFindName (peer->uin), COLNONE);
+        Contact *cont;
+        
+        if (!(cont = ContactFind (peer->uin)))
+            return;
+        M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
         M_print  (i18n (2023, "Direct connection closed by peer.\n"));
     }
     if (peer->close)
@@ -389,7 +393,7 @@ void TCPDispatchConn (Connection *peer)
             case 4:
                 if (prG->verbose)
                 {
-                    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (ContactFindName (peer->uin)), ContactFindName (cont->uin), COLNONE);
+                    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
                     M_printf (i18n (2034, "Opening TCP connection at %s:%d... "),
                              s_ip (peer->ip), peer->port);
                     M_print (i18n (1785, "success.\n"));
@@ -448,7 +452,16 @@ void TCPDispatchShake (Connection *peer)
                 PacketD (pak);
             return;
         }
+        if (!cont)
+        {
+            cont = ContactByUIN (peer->uin, 1);
+            if (!cont)
+                return;
+        }
         
+        Debug (DEB_TCP, "HS %d uin %d nick %s state %d pak %p peer %d",
+                        peer->sok, peer->uin, cont->nick, peer->connect, pak, peer);
+
         switch (peer->connect & CONNECT_MASK)
         {
             case 1:
@@ -526,7 +539,7 @@ void TCPDispatchShake (Connection *peer)
                 QueueDequeue (peer, QUEUE_TCP_TIMEOUT, peer->ip);
                 if (prG->verbose)
                 {
-                    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (ContactFindName (peer->uin)), ContactFindName (peer->uin), COLNONE);
+                    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
                     M_print  (i18n (1833, "Peer to peer TCP connection established.\n"));
                 }
                 peer->connect = CONNECT_OK | CONNECT_SELECT_R;
@@ -644,8 +657,11 @@ static void TCPCallBackTimeout (Event *event)
     
     if ((peer->connect & CONNECT_MASK) && prG->verbose)
     {
-        M_printf (i18n (1850, "Timeout on connection with %s at %s:%d\n"),
-                 ContactFindName (peer->uin), s_ip (peer->ip), peer->port);
+        Contact *cont;
+        
+        if ((cont = ContactByUIN (peer->uin, 1)))
+            M_printf (i18n (1850, "Timeout on connection with %s at %s:%d\n"),
+                      cont->nick, s_ip (peer->ip), peer->port);
         TCPClose (peer);
     }
     free (event);
@@ -800,8 +816,8 @@ void TCPSendInitv6 (Connection *peer)
     PacketWrite4  (pak, peer->parent->port);                   /* our (other) port */
     PacketWrite4  (pak, peer->our_session);                    /* session id       */
 
-    Debug (DEB_TCP, "HS %d uin %d nick %s CONNECT pak %p peer %d",
-                    peer->sok, peer->uin, ContactFindName (peer->uin), pak, peer);
+    Debug (DEB_TCP, "HS %d uin %d CONNECT pak %p peer %d",
+                    peer->sok, peer->uin, pak, peer);
 
     PeerPacketSend (peer, pak);
     PacketD (pak);
@@ -856,8 +872,8 @@ static void TCPSendInit (Connection *peer)
     PacketWrite4  (pak, 0x00000003);
     PacketWrite4  (pak, 0);
 
-    Debug (DEB_TCP, "HS %d uin %d nick %s CONNECTv8 pak %p peer %d",
-                    peer->sok, peer->uin, ContactFindName (peer->uin), pak, peer);
+    Debug (DEB_TCP, "HS %d uin %d CONNECTv8 pak %p peer %d",
+                    peer->sok, peer->uin, pak, peer);
 
     PeerPacketSend (peer, pak);
     PacketD (pak);
@@ -881,8 +897,8 @@ static void TCPSendInitAck (Connection *peer)
     PacketWrite1 (pak, 0);
     PacketWrite2 (pak, 0);
 
-    Debug (DEB_TCP, "HS %d uin %d nick %s INITACK pak %p peer %d",
-                    peer->sok, peer->uin, ContactFindName (peer->uin), pak, peer);
+    Debug (DEB_TCP, "HS %d uin %d INITACK pak %p peer %d",
+                    peer->sok, peer->uin, pak, peer);
 
     PeerPacketSend (peer, pak);
     PacketD (pak);
@@ -912,8 +928,8 @@ static void TCPSendInit2 (Connection *peer)
     PacketWrite4 (pak, 0);
     PacketWrite4 (pak, (peer->connect & 16) ? 0 : 0x40001);
 
-    Debug (DEB_TCP, "HS %d uin %d nick %s INITMSG pak %p peer %d",
-                    peer->sok, peer->uin, ContactFindName (peer->uin), pak, peer);
+    Debug (DEB_TCP, "HS %d uin %d INITMSG pak %p peer %d",
+                    peer->sok, peer->uin, pak, peer);
 
     PeerPacketSend (peer, pak);
     PacketD (pak);
@@ -1105,7 +1121,7 @@ void TCPClose (Connection *peer)
         {
             M_printf ("%s ", s_now);
             if (peer->uin)
-                M_printf (i18n (1842, "Closing socket %d to %s.\n"), peer->sok, ContactFindName (peer->uin));
+                M_printf (i18n (1842, "Closing socket %d to %s.\n"), peer->sok, ContactByUIN (peer->uin, 1)->nick);
             else
                 M_printf (i18n (1843, "Closing socket %d.\n"), peer->sok);
         }
@@ -1171,7 +1187,7 @@ void TCPPrint (Packet *pak, Connection *peer, BOOL out)
     M_printf ("%s " COLINDENT "%s", s_now, out ? COLCLIENT : COLSERVER);
     M_printf (out ? i18n (2078, "Outgoing TCP packet (%d - %s): %s")
                   : i18n (2079, "Incoming TCP packet (%d - %s): %s"),
-              peer->sok, ContactFindName (peer->uin), TCPCmdName (cmd));
+              peer->sok, ContactByUIN (peer->uin, 1)->nick, TCPCmdName (cmd));
     M_print (COLNONE "\n");
 
     if (peer->connect & CONNECT_OK && peer->type == TYPE_MSGDIRECT && peer->ver == 6)
@@ -1583,7 +1599,7 @@ BOOL TCPSendFiles (Connection *list, UDWORD uin, const char *description, const 
         }
         else
         {
-            M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (ContactFindName (peer->uin)), cont->nick);
+            M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
             M_printf (i18n (2091, "Queueing %s as %s for transfer.\n"), files[i], as[i]);
             sum++;
             sumlen += fstat.st_size;
@@ -1662,7 +1678,9 @@ static void TCPCallBackResend (Event *event)
     
     delta = (peer->ver > 6 ? 1 : 0);
 
-    cont = ContactFind (event->uin);
+    cont = ContactByUIN (event->uin, 1);
+    if (!cont)
+        return;
 
     if (event->attempts >= MAX_RETRY_ATTEMPTS)
         TCPClose (peer);
@@ -1672,7 +1690,7 @@ static void TCPCallBackResend (Event *event)
         if (peer->connect & CONNECT_OK)
         {
             if (event->attempts > 1)
-                M_printf ("%s " COLACK "%*s" COLNONE " %s%s\n", s_now, uiG.nick_len + s_delta (ContactFindName (peer->uin)), cont->nick, MSGTCPSENTSTR, event->info);
+                M_printf ("%s " COLACK "%*s" COLNONE " %s%s\n", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, MSGTCPSENTSTR, event->info);
 
             if ((event->attempts++) < 2)
                 PeerPacketSend (peer, pak);
@@ -1822,7 +1840,7 @@ static void TCPCallBackReceive (Event *event)
                     /* fall through */
                 default:
                     Debug (DEB_TCP, "ACK %d uin %d nick %s pak %p peer %d seq %04x",
-                                     event->conn->sok, event->conn->uin, ContactFindName (event->conn->uin), event->pak, event->conn, seq);
+                                     event->conn->sok, event->conn->uin, cont->nick, event->pak, event->conn, seq);
             }
             PacketD (event->pak);
             free (event);

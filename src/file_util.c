@@ -37,8 +37,6 @@
 
 #ifdef _WIN32
 #include <io.h>
-#define S_IRUSR        _S_IREAD
-#define S_IWUSR        _S_IWRITE
 #else
 #include <netinet/in.h>
 #include <termios.h>
@@ -868,7 +866,9 @@ void Read_RC_File (FILE *rcf)
     /* now tab the nicks we may have spooled earlier */
     for (i = 0; i < spooled_tab_nicks; i++)
     {
-        TabAddUIN (ContactFindByNick (tab_nick_spool[i]));
+        Contact *cont = ContactByNick (tab_nick_spool[i], 1);
+        if (cont)
+            TabAddUIN (cont->uin);
         free (tab_nick_spool[i]);
     }
 

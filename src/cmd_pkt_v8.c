@@ -58,7 +58,11 @@ static void SrvCallBackReconn (Connection *conn)
 {
     Contact *cont;
 
-    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (ContactFindName (conn->uin)), ContactFindName (conn->uin), COLNONE);
+    cont = ContactByUIN (conn->uin, 1);
+    if (!cont)
+        return;
+
+    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
     conn->connect = 0;
     if (reconn < 5)
     {

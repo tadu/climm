@@ -1352,16 +1352,16 @@ void SnacCliReqicbm (Connection *conn)
 void SnacCliSendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD type, UBYTE format)
 {
     Packet *pak;
-#ifdef ENABLE_UTF8
-    Contact *cont = ContactFind (uin);
-#endif
+    Contact *cont = ContactByUIN (uin, 1);
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
     BOOL peek = (format == 0xff && type == MSG_GET_AWAY);
     
+    if (!cont)
+        return;
     if (!peek)
     {
         M_printf ("%s " COLACK "%*s" COLNONE " " MSGSENTSTR COLSINGLE "%s\n",
-                  s_now, uiG.nick_len + s_delta (ContactFindName (uin)), ContactFindName (uin), text);
+                  s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, text);
     }
     
     if (!format || format == 0xff)

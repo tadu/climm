@@ -105,11 +105,8 @@ Contact    *ContactAdd (UDWORD uin, const char *nick);
 void        ContactRem (Contact *cont);
 
 Contact    *ContactByUIN (UDWORD uin, BOOL create);
-const char *ContactFindNick (UDWORD uin);
-const char *ContactFindName (UDWORD uin);
+Contact    *ContactByNick (const char *nick, BOOL create);
 Contact    *ContactFindAlias (UDWORD uin, const char *nick);
-Contact    *ContactFindContact (const char *nick);
-UDWORD      ContactFindByNick (const char *nick);
 
 Contact    *ContactStart ();
 Contact    *ContactNext (Contact *cont);
@@ -119,6 +116,7 @@ void        ContactSetCap (Contact *cont, Cap *cap);
 void        ContactSetVersion (Contact *cont);
 
 #define ContactFind(uin) ContactByUIN (uin, 0)
+
 #define CONTACT_GENERAL(cont)     ((cont)->meta_general     ? (cont)->meta_general     : ((cont)->meta_general     = calloc (1, sizeof (MetaGeneral))))
 #define CONTACT_WORK(cont)        ((cont)->meta_work        ? (cont)->meta_work        : ((cont)->meta_work        = calloc (1, sizeof (MetaWork))))
 #define CONTACT_MORE(cont)        ((cont)->meta_more        ? (cont)->meta_more        : ((cont)->meta_more        = calloc (1, sizeof (MetaMore))))

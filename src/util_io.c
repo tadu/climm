@@ -702,8 +702,13 @@ Packet *UtilIOReceiveTCP (Connection *conn)
     {
         if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
         {
-            M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (ContactFindName (conn->uin)), ContactFindName (conn->uin), COLNONE);
-            M_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
+            Contact *cont;
+            
+            if ((cont = ContactByUIN (conn->uin, 1)))
+            {
+                M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                M_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
+            }
         }
         conn->connect = 0;
     }
@@ -771,8 +776,12 @@ Packet *UtilIOReceiveF (Connection *conn)
     {
         if (prG->verbose)
         {
-            M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (ContactFindName (conn->uin)), ContactFindName (conn->uin), COLNONE);
-            M_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
+            Contact *cont;
+            if ((cont = ContactByUIN (conn->uin, 1)))
+            {
+                M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                M_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
+            }
         }
         conn->connect = 0;
     }

@@ -1272,7 +1272,7 @@ static JUMP_F (CmdUserMessage)
         if (data == 8)
             M_printf (i18n (2130, "Composing message to %sall%s:\n"), COLCONTACT, COLNONE);
         else if (!uinlist[1])
-            M_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLCONTACT, ContactFindName (*uinlist), COLNONE);
+            M_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLCONTACT, ContactByUIN (uinlist[0], 1)->nick, COLNONE);
         else
             M_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLMESSAGE, i18n (2220, "several"), COLNONE);
         offset = 0;
@@ -2132,7 +2132,7 @@ static JUMP_F(CmdUserAdd)
             M_printf (i18n (2146, "'%s' is already an alias for '%s' (%d).\n"),
                      cont2->nick, cont->nick, cont->uin);
         }
-        else if ((cont2 = ContactFindContact (arg1)))
+        else if ((cont2 = ContactByNick (arg1, 1)))
         {
             M_printf (i18n (2147, "'%s' (%d) is already used as a nick.\n"),
                      cont2->nick, cont2->uin);
@@ -2404,8 +2404,11 @@ static JUMP_F(CmdUserTabs)
     {
         UDWORD uin = TabGetNext ();
         Contact *cont;
-        M_printf ("    %s", ContactFindName (uin));
-        cont = ContactFind (uin);
+        
+        cont = ContactByUIN (uin, 1);
+        if (!cont)
+            continue;
+        M_printf ("    %s", cont->nick);
         if (cont)
             M_printf (COLMESSAGE " (%s)" COLNONE, s_status (cont->status));
         M_print ("\n");
@@ -2512,8 +2515,13 @@ static JUMP_F(CmdUserConn)
         
         for (i = 0; (conn = ConnectionNr (i)); i++)
         {
+            Contact *cont;
+            
+            if (!(cont = ContactByUIN (conn->uin, 1)))
+                continue;
+
             M_printf (i18n (2093, "%02d %-12s version %d for %s (%x), at %s:%d %s\n"),
-                     i + 1, ConnectionType (conn), conn->ver, ContactFindName (conn->uin), conn->status,
+                     i + 1, ConnectionType (conn), conn->ver, cont->nick, conn->status,
                      conn->server ? conn->server : s_ip (conn->ip), conn->port,
                      conn->connect & CONNECT_FAIL ? i18n (1497, "failed") :
                      conn->connect & CONNECT_OK   ? i18n (1934, "connected") :
