@@ -34,6 +34,7 @@
 #include "packet.h"      /* for capabilities */
 #include "buildmark.h"   /* for versioning */
 #include "preferences.h" /* for BASEDIR */
+#include "util_parse.h"
 
 static ContactGroup **cnt_groups = NULL;
 static int            cnt_count = 0;

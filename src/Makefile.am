@@ -8,7 +8,7 @@ micq_SOURCES = conv.c file_util.c icq_response.c micq.c \
        server.c util.c  util_ui.c mreadline.c mselect.c network.c \
        msg_queue.c tabs.c i18n.c util_table.c contactopts.c contact.c tcp.c packet.c \
        cmd_pkt_cmd_v5.c cmd_pkt_cmd_v5_util.c cmd_pkt_server.c cmd_user.c \
-       preferences.c util_io.c util_str.c util_syntax.c util_rl.c connection.c peer_file.c \
+       preferences.c util_io.c util_str.c util_parse.c util_syntax.c util_rl.c connection.c peer_file.c \
        cmd_pkt_v8.c cmd_pkt_v8_flap.c cmd_pkt_v8_tlv.c cmd_pkt_v8_snac.c \
        remote.c os.c util_tcl.c util_ssl.c im_icq8.c buildmark.c
 

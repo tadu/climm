@@ -15,6 +15,7 @@
 #include "util_io.h"
 #include "util_rl.h"
 #include "util_table.h"
+#include "util_parse.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_cmd_v5_util.h"
 #include "cmd_pkt_v8.h"

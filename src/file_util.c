@@ -42,7 +42,7 @@
 #include "remote.h"
 #include "cmd_pkt_v8.h"
 #include "connection.h"
-
+#include "util_parse.h"
 
 /****/
 
