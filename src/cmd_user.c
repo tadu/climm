@@ -1467,7 +1467,7 @@ static JUMP_F(CmdUserStatusDetail)
                 else
                     M_print (i18n (2192, "Capabilities: "));
                 M_print (cap->name);
-                if (cap->name[4] == 'U')
+                if (cap->name[4] == 'U' && cap->name[5] == 'N')
                 {
                     M_print (": ");
                     M_print (s_dump (cap->cap, 16));
