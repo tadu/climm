@@ -1,6 +1,6 @@
 
 2001-08-12 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
-	* small fixes (\a, last check-in only src/)
+	* small fixes (\a, last check-in only src/, _POSIX_VDISABLE)
 
 2001-08-11 Georgi Kuzmanov <georgi@cs.man.ac.uk>
 	* Big stuff-all-globals-into-a-struct-patch: one for preferences (uiG),

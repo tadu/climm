@@ -40,6 +40,9 @@
 #if HAVE_TERMIOS_H
 #include <termios.h>
 #endif
+#ifndef _POSIX_VDISABLE
+#define _POSIX_VDISABLE 0
+#endif
 
 #define HISTORY_LINES 10
 #define HISTORY_LINE_LEN 1024
