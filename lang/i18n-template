@@ -70,7 +70,7 @@ sub ProcessLine($)
        print OUT "$line\n";
        $ignored++;
     }
-    elsif ($line =~ m/^([0-9][0-9]*):/)
+    elsif ($line =~ m/^([0-9][0-9]*)([:.])(.*)/)
     {
         $neu = sprintf ("%04d", $1);
         for ($last++ ; $last < $neu; $last++)
@@ -98,9 +98,10 @@ sub ProcessLine($)
                 }
             }
         }
-        else
+        elsif ($neu != 9999)
         {
             print "Dropping $neu: $line.\n";
+            print OUT "$1.$3\n";
         }
         $last = $neu;
     }
