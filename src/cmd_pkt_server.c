@@ -342,13 +342,13 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             M_print ("\n");
             break;
         case SRV_SYS_DELIVERED_MESS:
-            uin = PacketRead4 (pak);
-            text = PacketReadLNTS (pak);
+            uin   = PacketRead4 (pak);
+            wdata = PacketRead2 (pak);
+            text  = PacketReadLNTS (pak);
 
             if (~prG->flags & FLAG_HERMIT || ContactFind (uin) != NULL)
             {
                 uiG.last_rcvd_uin = uin;
-                wdata = PacketRead2 (pak);
                 Do_Msg (sess, NULL, wdata, text, uin, 
                     STATUS_OFFLINE, 0);
                 Auto_Reply (sess, uin);

@@ -630,6 +630,8 @@ void Read_RC_File (FILE *rcf)
 
                 if (!*p || *p == '#' )
                     continue;
+                
+                args = p;
 
                 if (isdigit (*p))
                 {
