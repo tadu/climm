@@ -44,7 +44,6 @@ Changes :
 #include <sys/utsname.h>
 #include <fcntl.h>
 #include <util_ui.h>
-#include <wait.h>
 #ifdef _WIN32
 #include <io.h>
 #define S_IRUSR          _S_IREAD
