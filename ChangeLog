@@ -1,3 +1,8 @@
+2002-09-09 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Change translations not to contain ESC characters.
+	* add pt_BR micq.1
+	* update ro.i18n
+	* add memmove() replacement function
 
 2002-09-06 Peter Backes <rtc@gmx.de>
 	* Well-defined logging format.

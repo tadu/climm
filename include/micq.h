@@ -39,6 +39,9 @@
 #ifdef PREFER_PORTABLE_SNPRINTF
   #include <snprintf.h>
 #endif
+#ifdef PREFER_PORTABLE_MEMMOVE
+  #include <memmove.h>
+#endif
 
 struct Queue_s;
 struct Event_s;

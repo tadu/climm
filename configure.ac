@@ -73,13 +73,14 @@ AC_PROG_GCC_TRADITIONAL
 AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
 AC_FUNC_SNPRINTF
-AC_CHECK_FUNCS([atexit gethostbyname memmove memset mkdir select socket strcasecmp \
+AC_FUNC_MEMMOVE
+AC_CHECK_FUNCS([atexit gethostbyname memset mkdir select socket strcasecmp \
                 strchr strdup strncasecmp strpbrk strrchr strstr strtol strtok_r \
                 symlink chmod tcgetattr hstrerror gettimeofday])
 
 
 # vprintf stat malloc \
-for f in memset memmove mkdir select socket atexit \
+for f in memset mkdir select socket atexit \
          strcasecmp strchr strdup strncasecmp strpbrk strrchr strstr strtol; do
     if eval test "x\$ac_cv_func_$f" != "xyes"; then
         AC_MSG_ERROR([Required function $f is missing. Sorry.])
@@ -104,5 +105,6 @@ if test "x$WIP" != "x"; then
      AC_DEFINE(WIP,1,[Include probably buggy work-in-progress code])
 fi
 
-AC_CONFIG_FILES([doc/Makefile src/Makefile Makefile lang/Makefile doc/de/Makefile doc/ru/Makefile doc/fr/Makefile doc/es/Makefile])
+AC_CONFIG_FILES([doc/Makefile src/Makefile Makefile lang/Makefile])
+AC_CONFIG_FILES([doc/de/Makefile doc/ru/Makefile doc/fr/Makefile doc/es/Makefile doc/pt_BR/Makefile])
 AC_OUTPUT

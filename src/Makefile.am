@@ -17,14 +17,18 @@ micq_LDADD = @LIBOBJS@
 $(micq_SOURCES): @LIBOBJS@
 
 snprintf.o: snprintf.c snprintf.h
-
 snprintf.c snprintf.h:
 	rm -f snprintf.c snprintf.h
 	ln -s ../replace/snprintf.c . || cp ../replace/snprintf.c .
 	ln -s ../replace/snprintf.h . || cp ../replace/snprintf.h .
+memmove.o: memmove.c memmove.h
+memmove.c memmove.h:
+	rm -rf memmove.c memmove.h
+	ln -s ../replace/memmove.c . || cp ../replace/memmove.c .
+	ln -s ../replace/memmove.h . || cp ../replace/memmove.h .
 
 clean:
-	rm -f snprintf.c snprintf.h
+	rm -f snprintf.c snprintf.h memmove.c memmove.h
 
 buildmark.o: force
 
