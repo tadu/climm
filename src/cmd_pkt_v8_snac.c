@@ -1508,31 +1508,23 @@ static void SnacCallbackType2 (Event *event)
  */
 UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
 {
-    Extra *extra_message;
     Packet *pak;
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
     BOOL peek = 0;
     UDWORD type;
     const char *text;
     
-    if (!cont || !HAS_CAP (cont->caps, CAP_SRVRELAY))
-        return RET_DEFER;
-    
-    for (extra_message = extra; extra_message; extra_message = extra_message->more)
-        if (extra_message->tag == EXTRA_MESSAGE)
-        {
-            type = extra_message->data;
-            text = extra_message->text;
-            break;
-        }
-    if (!extra_message)
-        return RET_DEFER;
-    
+    text = ExtraGetS (extra, EXTRA_MESSAGE);
+    type = ExtraGet  (extra, EXTRA_MESSAGE);
+
     if (type == MSG_GET_PEEK)
     {
         peek = 1;
         type = MSG_GET_AWAY;
     }
+    
+    if (!text || !cont || !(HAS_CAP (cont->caps, CAP_SRVRELAY) || peek))
+        return RET_DEFER;
     
     switch (type & 0xff)
     {
