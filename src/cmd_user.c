@@ -437,141 +437,235 @@ static JUMP_F(CmdUserRandomSet)
 static JUMP_F(CmdUserHelp)
 {
     strc_t par;
-    char what;
 
-    if (!(par = s_parse (&args))) what = 0;
-    else if (!strcasecmp (par->txt, i18n (1447, "Client"))    || !strcasecmp (par->txt, "Client"))    what = 1;
-    else if (!strcasecmp (par->txt, i18n (1448, "Message"))   || !strcasecmp (par->txt, "Message"))   what = 2;
-    else if (!strcasecmp (par->txt, i18n (1449, "User"))      || !strcasecmp (par->txt, "User"))      what = 3;
-    else if (!strcasecmp (par->txt, i18n (1450, "Account"))   || !strcasecmp (par->txt, "Account"))   what = 4;
-    else if (!strcasecmp (par->txt, i18n (2171, "Advanced"))  || !strcasecmp (par->txt, "Advanced"))  what = 5;
-#ifdef ENABLE_TCL
-    else if (!strcasecmp (par->txt, i18n (2342, "Scripting")) || !strcasecmp (par->txt, "Scripting")) what = 6;
-#endif
-    else what = 0;
-
-    if (!what)
+    if (!(par = s_parse (&args)))
     {
         const char *fmt = i18n (2184, "%s%-10s%s - %s\n");
         rl_printf ("%s\n", i18n (1442, "Please select one of the help topics below."));
+        rl_printf ("\n");
         rl_printf (fmt, COLQUOTE, i18n (1448, "Message"), COLNONE,
                   i18n (1446, "Commands relating to sending messages."));
+        CMD_USER_HELP ("  ", "verbose, clear, sound, autoaway, auto, alias, unalias, trans, uptime, set, opt, save, q, !");
+        CMD_USER_HELP ("  ", i18n (1720, "<contacts> is a comma separated list of UINs and nick names of users."));
+        rl_printf ("\n");
         rl_printf (fmt, COLQUOTE, i18n (1447, "Client"), COLNONE,
                   i18n (1443, "Commands relating to mICQ displays and configuration."));
+        CMD_USER_HELP ("  ", "msg, a, r, url, sms, getauto, auth, resend, last, history, historyd, find, finds, tabs");
+        rl_printf ("\n");
         rl_printf (fmt, COLQUOTE, i18n (1449, "User"), COLNONE,
                   i18n (1444, "Commands relating to finding and seeing other users."));
+        CMD_USER_HELP ("  ", "rand, s, e, w, ee, ww, eg, wg, eeg, wwg, ewide, wide, finger, i, search, addgroup, addalias, remgroup, remalias, togig, toginv, togvis");
+        rl_printf ("\n");
         rl_printf (fmt, COLQUOTE, i18n (1450, "Account"), COLNONE,
                   i18n (1445, "Commands relating to your ICQ account."));
+        CMD_USER_HELP ("  ", "reg, pass, change, online, away, na, occ, dnd, ffc, inv, update, other, about, setr");
+        rl_printf ("\n");
         rl_printf (fmt, COLQUOTE, i18n (2171, "Advanced"), COLNONE,
                   i18n (2172, "Commands for advanced features."));
+        CMD_USER_HELP ("  ", "meta, peer, conn, contact, peek");
+        CMD_USER_HELP ("  ", i18n (2314, "These are advanced commands. Be sure to have read the manual pages for complete information.\n"));
 #ifdef ENABLE_TCL
         rl_printf (fmt, COLQUOTE, i18n (2342, "Scripting"), COLNONE,
                   i18n (2343, "Scripting extensions."));
+        CMD_USER_HELP ("  ", "tclscript, tcl");
+        CMD_USER_HELP ("  ", i18n (2314, "These are advanced commands. Be sure to have read the manual pages for complete information.\n"));
 #endif
+        return 0;
     }
-    else if (what == 1)
-    {
-        CMD_USER_HELP  ("verbose [<nr>]", i18n (1418, "Set the verbosity level, or display verbosity level."));
-        CMD_USER_HELP  ("clear", i18n (1419, "Clears the screen."));
-        CMD_USER_HELP3 ("sound [%s|%s|event]", i18n (1085, "on"), i18n (1086, "off"),
-                        i18n (1420, "Switches beeping when receiving new messages on or off, or using the event script."));
-        CMD_USER_HELP  ("autoaway [<timeout>]", i18n (1767, "Toggles auto cycling to away/not available."));
-        CMD_USER_HELP  ("auto [on|off]", i18n (1424, "Set whether autoreplying when not online, or displays setting."));
-        CMD_USER_HELP  ("auto <status> <message>", i18n (1425, "Sets the message to send as an auto reply for the status."));
-        CMD_USER_HELP  ("alias [<alias> [<expansion>]]", i18n (2300, "Set an alias or list current aliases."));
-        CMD_USER_HELP  ("unalias <alias>", i18n (2301, "Delete an alias."));
-        CMD_USER_HELP  ("trans [<lang|nr>...]", i18n (1800, "Change the working language to <lang> or display string <nr>."));
-        CMD_USER_HELP  ("uptime", i18n (1719, "Shows how long mICQ has been running and some statistics."));
-        CMD_USER_HELP  ("set <option> <value>", i18n (2044, "Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent."));
-        CMD_USER_HELP  ("opt [[<contact>|<contact group>] <option> <value>]", i18n (2398, "Set an option for a contact group, a contact or global.\n"));
-        CMD_USER_HELP  ("save", i18n (2036, "Save current preferences to disc."));
-        CMD_USER_HELP  ("q", i18n (1422, "Logs off and quits."));
-        CMD_USER_HELP  ("  ", i18n (1717, "'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')"));
-    }
-    else if (what == 2)
-    {
-        CMD_USER_HELP  ("msg <contacts> [<message>]", i18n (1409, "Sends a message to <contacts>."));
-        CMD_USER_HELP  ("a <message>", i18n (1412, "Sends a message to the last person you sent a message to."));
-        CMD_USER_HELP  ("r <message>", i18n (1414, "Replies to the last person to send you a message."));
-        CMD_USER_HELP  ("url <contacts> <url> <message>", i18n (1410, "Sends a url and message to <contacts>."));
-        CMD_USER_HELP  ("sms <nick|cell> <message>", i18n (2039, "Sends a message to a (<nick>'s) <cell> phone."));
-        CMD_USER_HELP  ("getauto [auto|away|na|dnd|occ|ffc] [<contacts>]", i18n (2304, "Get automatic reply from all <contacts> for current status, away, not available, do not disturb, occupied, or free for chat."));
-        CMD_USER_HELP  ("auth [grant|deny|req|add] <contacts>", i18n (2313, "Grant, deny, request or acknowledge authorization from/to <contacts> to you/them to their/your contact list."));
-        CMD_USER_HELP  ("resend <contacts>", i18n (1770, "Resend your last message to <contacts>."));
-        CMD_USER_HELP  ("last [<contacts>]", i18n (1403, "Displays the last message received from <contacts> or from everyone."));
-        CMD_USER_HELP  ("history <contact> [<last> [<count>]]", i18n (2383, "View your last messages of <contact>. Type 'h' as short command."));
-        CMD_USER_HELP  ("historyd <contact> [<date> [<count>]]", i18n (2395, "View your messages of <contact> since <date>."));
-        CMD_USER_HELP  ("find <contact> <pattern>", i18n (2384, "Case insensitive search of <pattern> in log file of <contact>."));
-        CMD_USER_HELP  ("finds <contact> <pattern>", i18n (2391, "Case sensitive search of <pattern> in log file of <contact>."));
-        CMD_USER_HELP  ("tabs", i18n (1098, "Display a list of nicknames that you can tab through.")); 
-        CMD_USER_HELP  ("  ", i18n (1720, "<contacts> is a comma separated list of UINs and nick names of users."));
-        CMD_USER_HELP  ("  ", i18n (1721, "Sending a blank message will put the client into multiline mode.\nUse . on a line by itself to end message.\nUse # on a line by itself to cancel the message."));
-    }
-    else if (what == 3)
-    {
-        CMD_USER_HELP  ("rand [<nr>]", i18n (1415, "Finds a random user in interest group <nr> or lists the groups."));
-        CMD_USER_HELP  ("s <uin|nick>", i18n (1400, "Shows locally stored info on <uin> or <nick>, or on yourself."));
-        CMD_USER_HELP  ("e", i18n (1407, "Displays the current status of online people on your contact list."));
-        CMD_USER_HELP  ("w", i18n (1416, "Displays the current status of everyone on your contact list."));
-        CMD_USER_HELP  ("ee", i18n (2177, "Displays verbosely the current status of online people on your contact list."));
-        CMD_USER_HELP  ("ww", i18n (2176, "Displays verbosely the current status of everyone on your contact list."));
-        CMD_USER_HELP  ("eg", i18n (2307, "Displays the current status of online people on your contact list, sorted by contact group."));
-        CMD_USER_HELP  ("wg", i18n (2308, "Displays the current status of everyone on your contact list, sorted by contact group."));
-        CMD_USER_HELP  ("eeg", i18n (2309, "Displays verbosely the current status of online people on your contact list, sorted by contact group."));
-        CMD_USER_HELP  ("wwg", i18n (2310, "Displays verbosely the current status of everyone on your contact list, sorted by contact group."));
-        CMD_USER_HELP  ("ewide", i18n (2042, "Displays a list of online people on your contact list in a screen wide format.")); 
-        CMD_USER_HELP  ("wide", i18n (1801, "Displays a list of people on your contact list in a screen wide format.")); 
-        CMD_USER_HELP  ("finger <uin|nick>", i18n (1430, "Displays general info on <uin> or <nick>."));
-        CMD_USER_HELP  ("i", i18n (1405, "Lists ignored nicks/uins."));
-        CMD_USER_HELP  ("search [<email>|<nick>|<first> <last>]", i18n (1429, "Searches for an ICQ user."));
-        CMD_USER_HELP  ("addgroup <group> [<contacts>]", i18n (1428, "Adds all contacts in <contacts> to contact group <group>."));
-        CMD_USER_HELP  ("addalias <uin|nick> [<new nick>]", i18n (2311, "Adds <uin> as <new nick>, or add alias <new nick> for <uin> or <nick>."));
-        CMD_USER_HELP  ("remgroup [all] group <contacts>", i18n (2043, "Remove all contacts in <contacts> from contact group <group>."));
-        CMD_USER_HELP  ("remalias [all] <contacts>", i18n (2312, "Remove all aliases in <contacts>, removes contact if 'all' is given."));
-        CMD_USER_HELP  ("togig <contacts>", i18n (1404, "Toggles ignoring/unignoring the <contacts>."));
-        CMD_USER_HELP  ("toginv <contacts>", i18n (2045, "Toggles your visibility to <contacts> when you're online."));
-        CMD_USER_HELP  ("togvis <contacts>", i18n (1406, "Toggles your visibility to <contacts> when you're invisible."));
-    }
-    else if (what == 4)
-    {
-        CMD_USER_HELP  ("reg <password>", i18n (1426, "Creates a new UIN with the specified password."));
-        CMD_USER_HELP  ("pass <password>", i18n (1408, "Changes your password to <password>."));
-        CMD_USER_HELP  ("change <status> [<away-message>]", i18n (1427, "Changes your status to the status number, or list the available modes."));
-        CMD_USER_HELP7 ("online|away|na|occ|dnd|ffc|inv [<away-message>]", i18n (1431, "Set status to \"online\"."),
-                  i18n (1432, "Set status to \"away\"."), i18n (1433, "Set status to \"not available\"."),
-                  i18n (1434, "Set status to \"occupied\"."), i18n (1435, "Set status to \"do not disturb\"."),
-                  i18n (1436, "Set status to \"free for chat\"."), i18n (1437, "Set status to \"invisible\"."));
-        CMD_USER_HELP  ("update", i18n (1438, "Updates your basic info (email, nickname, etc.)."));
-        CMD_USER_HELP  ("other", i18n (1401, "Updates more user info like age and sex."));
-        CMD_USER_HELP  ("about", i18n (1402, "Updates your about user info."));
-        CMD_USER_HELP  ("setr <nr>", i18n (1439, "Sets your random user group."));
-    }
-    else if (what == 5)
-    {
-        rl_printf (i18n (2314, "These are advanced commands. Be sure to have read the manual pages for complete information.\n"));
-        CMD_USER_HELP  ("meta [show|load|save|set|get|rget] <contacts>", i18n (2305, "Handle meta data of contacts."));
-        CMD_USER_HELP  ("peer open|close|off <uin|nick>...", i18n (2037, "Open or close a peer-to-peer connection, or disable using peer-to-peer connections for <uin> or <nick>."));
-        CMD_USER_HELP  ("peer file <contacts> <file> <description>", i18n (2179, "Send all <contacts> a single file."));
-        CMD_USER_HELP  ("peer files <uin|nick> <file1> <as1> ... <fileN> <asN> <description>", i18n (2180, "Send <uin> or <nick> several files."));
-        CMD_USER_HELP  ("peer accept [<uin|nick>] [<id>]", i18n (2319, "Accept an incoming file transfer from <uin> or <nick>."));
-        CMD_USER_HELP  ("peer deny [<uin|nick>] [<id>] [<reason>]", i18n (2369, "Refuse an incoming file transfer from <uin> or <nick>."));
+
+    do {
+        if (!strcasecmp (par->txt, "message") || !strcasecmp (par->txt, i18n (1448, "Message")))
+        {
+            args = "verbose clear sound autoaway auto alias unalias trans uptime set opt save q";
+            continue;
+        }
+        else if (!strcasecmp (par->txt, "client") || !strcasecmp (par->txt, i18n (1447, "Client")))
+        {
+            args = "msg a r url sms getauto auth resend last history historyd find finds tabs";
+            continue;
+        }
+        else if (!strcasecmp (par->txt, "user") || !strcasecmp (par->txt, i18n (1449, "User")))
+        {
+            args = "rand s e w ee ww eg wg eeg wwg ewide wide finger i search addgroup addalias remgroup remalias togig toginv togvis";
+            continue;
+        }
+        else if (!strcasecmp (par->txt, "account") || !strcasecmp (par->txt, i18n (1450, "Account")))
+        {
+            args = "reg pass change online away na occ dnd ffc inv update other about setr";
+            continue;
+        }
+        else if (!strcasecmp (par->txt, "advanced") || !strcasecmp (par->txt, i18n (2171, "Advanced")))
+        {
+            args = "meta peer conn contact";
+            continue;
+        }
+        else if (!strcasecmp (par->txt, "scripting") || !strcasecmp (par->txt, i18n (2342, "Scripting")))
+        {
+            args = "tclscript tcl";
+            continue;
+        }
+        /* Client */
+        if (!strcasecmp (par->txt, "verbose"))
+            CMD_USER_HELP  ("verbose [<nr>]", i18n (1418, "Set the verbosity level, or display verbosity level."));
+        else if (!strcasecmp (par->txt, "clear"))
+            CMD_USER_HELP  ("clear", i18n (1419, "Clears the screen."));
+        else if (!strcasecmp (par->txt, "sound"))
+            CMD_USER_HELP3 ("sound [%s|%s|event]", i18n (1085, "on"), i18n (1086, "off"),
+                            i18n (1420, "Switches beeping when receiving new messages on or off, or using the event script."));
+        else if (!strcasecmp (par->txt, "autoaway"))
+            CMD_USER_HELP  ("autoaway [<timeout>]", i18n (1767, "Toggles auto cycling to away/not available."));
+        else if (!strcasecmp (par->txt, "auto"))
+        {
+            CMD_USER_HELP  ("auto [on|off]", i18n (1424, "Set whether autoreplying when not online, or displays setting."));
+            CMD_USER_HELP  ("auto <status> <message>", i18n (1425, "Sets the message to send as an auto reply for the status."));
+        }
+        else if (!strcasecmp (par->txt, "alias"))
+            CMD_USER_HELP  ("alias [<alias> [<expansion>]]", i18n (2300, "Set an alias or list current aliases."));
+        else if (!strcasecmp (par->txt, "unalias"))
+            CMD_USER_HELP  ("unalias <alias>", i18n (2301, "Delete an alias."));
+        else if (!strcasecmp (par->txt, "trans"))
+            CMD_USER_HELP  ("trans [<lang|nr>...]", i18n (1800, "Change the working language to <lang> or display string <nr>."));
+        else if (!strcasecmp (par->txt, "uptime"))
+            CMD_USER_HELP  ("uptime", i18n (1719, "Shows how long mICQ has been running and some statistics."));
+        else if (!strcasecmp (par->txt, "set"))
+            CMD_USER_HELP  ("set <option> <value>", i18n (2044, "Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent."));
+        else if (!strcasecmp (par->txt, "opt"))
+            CMD_USER_HELP  ("opt [[<contact>|<contact group>] <option> <value>]", i18n (2398, "Set an option for a contact group, a contact or global.\n"));
+        else if (!strcasecmp (par->txt, "save"))
+            CMD_USER_HELP  ("save", i18n (2036, "Save current preferences to disc."));
+        else if (!strcasecmp (par->txt, "q"))
+            CMD_USER_HELP  ("q", i18n (1422, "Logs off and quits."));
+        else if (!strcasecmp (par->txt, "!"))
+            CMD_USER_HELP  ("  ", i18n (1717, "'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')"));
+        /* Message */
+        else if (!strcasecmp (par->txt, "msg"))
+        {
+            CMD_USER_HELP  ("msg <contacts> [<message>]", i18n (1409, "Sends a message to <contacts>."));
+            CMD_USER_HELP  ("  ", i18n (1721, "Sending a blank message will put the client into multiline mode.\nUse . on a line by itself to end message.\nUse # on a line by itself to cancel the message."));
+        }
+        else if (!strcasecmp (par->txt, "a"))
+            CMD_USER_HELP  ("a <message>", i18n (1412, "Sends a message to the last person you sent a message to."));
+        else if (!strcasecmp (par->txt, "r"))
+            CMD_USER_HELP  ("r <message>", i18n (1414, "Replies to the last person to send you a message."));
+        else if (!strcasecmp (par->txt, "url"))
+            CMD_USER_HELP  ("url <contacts> <url> <message>", i18n (1410, "Sends a url and message to <contacts>."));
+        else if (!strcasecmp (par->txt, "sms"))
+            CMD_USER_HELP  ("sms <nick|cell> <message>", i18n (2039, "Sends a message to a (<nick>'s) <cell> phone."));
+        else if (!strcasecmp (par->txt, "getauto"))
+            CMD_USER_HELP  ("getauto [auto|away|na|dnd|occ|ffc] [<contacts>]", i18n (2304, "Get automatic reply from all <contacts> for current status, away, not available, do not disturb, occupied, or free for chat."));
+        else if (!strcasecmp (par->txt, "auth"))
+            CMD_USER_HELP  ("auth [grant|deny|req|add] <contacts>", i18n (2313, "Grant, deny, request or acknowledge authorization from/to <contacts> to you/them to their/your contact list."));
+        else if (!strcasecmp (par->txt, "resend"))
+            CMD_USER_HELP  ("resend <contacts>", i18n (1770, "Resend your last message to <contacts>."));
+        else if (!strcasecmp (par->txt, "last"))
+            CMD_USER_HELP  ("last [<contacts>]", i18n (1403, "Displays the last message received from <contacts> or from everyone."));
+        else if (!strcasecmp (par->txt, "history"))
+            CMD_USER_HELP  ("history <contact> [<last> [<count>]]", i18n (2383, "View your last messages of <contact>. Type 'h' as short command."));
+        else if (!strcasecmp (par->txt, "historyd"))
+            CMD_USER_HELP  ("historyd <contact> [<date> [<count>]]", i18n (2395, "View your messages of <contact> since <date>."));
+        else if (!strcasecmp (par->txt, "find"))
+            CMD_USER_HELP  ("find <contact> <pattern>", i18n (2384, "Case insensitive search of <pattern> in log file of <contact>."));
+        else if (!strcasecmp (par->txt, "finds"))
+            CMD_USER_HELP  ("finds <contact> <pattern>", i18n (2391, "Case sensitive search of <pattern> in log file of <contact>."));
+        else if (!strcasecmp (par->txt, "tabs"))
+            CMD_USER_HELP  ("tabs", i18n (1098, "Display a list of nicknames that you can tab through.")); 
+        /* User */
+        else if (!strcasecmp (par->txt, "rand"))
+            CMD_USER_HELP  ("rand [<nr>]", i18n (1415, "Finds a random user in interest group <nr> or lists the groups."));
+        else if (!strcasecmp (par->txt, "s"))
+            CMD_USER_HELP  ("s <uin|nick>", i18n (1400, "Shows locally stored info on <uin> or <nick>, or on yourself."));
+        else if (!strcasecmp (par->txt, "e"))
+            CMD_USER_HELP  ("e", i18n (1407, "Displays the current status of online people on your contact list."));
+        else if (!strcasecmp (par->txt, "w"))
+            CMD_USER_HELP  ("w", i18n (1416, "Displays the current status of everyone on your contact list."));
+        else if (!strcasecmp (par->txt, "ee"))
+            CMD_USER_HELP  ("ee", i18n (2177, "Displays verbosely the current status of online people on your contact list."));
+        else if (!strcasecmp (par->txt, "ww"))
+            CMD_USER_HELP  ("ww", i18n (2176, "Displays verbosely the current status of everyone on your contact list."));
+        else if (!strcasecmp (par->txt, "eg"))
+            CMD_USER_HELP  ("eg", i18n (2307, "Displays the current status of online people on your contact list, sorted by contact group."));
+        else if (!strcasecmp (par->txt, "wg"))
+            CMD_USER_HELP  ("wg", i18n (2308, "Displays the current status of everyone on your contact list, sorted by contact group."));
+        else if (!strcasecmp (par->txt, "eeg"))
+            CMD_USER_HELP  ("eeg", i18n (2309, "Displays verbosely the current status of online people on your contact list, sorted by contact group."));
+        else if (!strcasecmp (par->txt, "wwg"))
+            CMD_USER_HELP  ("wwg", i18n (2310, "Displays verbosely the current status of everyone on your contact list, sorted by contact group."));
+        else if (!strcasecmp (par->txt, "ewide"))
+            CMD_USER_HELP  ("ewide", i18n (2042, "Displays a list of online people on your contact list in a screen wide format.")); 
+        else if (!strcasecmp (par->txt, "wide"))
+            CMD_USER_HELP  ("wide", i18n (1801, "Displays a list of people on your contact list in a screen wide format.")); 
+        else if (!strcasecmp (par->txt, "finger"))
+            CMD_USER_HELP  ("finger <uin|nick>", i18n (1430, "Displays general info on <uin> or <nick>."));
+        else if (!strcasecmp (par->txt, "i"))
+            CMD_USER_HELP  ("i", i18n (1405, "Lists ignored nicks/uins."));
+        else if (!strcasecmp (par->txt, "search"))
+            CMD_USER_HELP  ("search [<email>|<nick>|<first> <last>]", i18n (1429, "Searches for an ICQ user."));
+        else if (!strcasecmp (par->txt, "addgroup"))
+            CMD_USER_HELP  ("addgroup <group> [<contacts>]", i18n (1428, "Adds all contacts in <contacts> to contact group <group>."));
+        else if (!strcasecmp (par->txt, "addalias"))
+            CMD_USER_HELP  ("addalias <uin|nick> [<new nick>]", i18n (2311, "Adds <uin> as <new nick>, or add alias <new nick> for <uin> or <nick>."));
+        else if (!strcasecmp (par->txt, "remgroup"))
+            CMD_USER_HELP  ("remgroup [all] group <contacts>", i18n (2043, "Remove all contacts in <contacts> from contact group <group>."));
+        else if (!strcasecmp (par->txt, "remalias"))
+            CMD_USER_HELP  ("remalias [all] <contacts>", i18n (2312, "Remove all aliases in <contacts>, removes contact if 'all' is given."));
+        else if (!strcasecmp (par->txt, "togig"))
+            CMD_USER_HELP  ("togig <contacts>", i18n (1404, "Toggles ignoring/unignoring the <contacts>."));
+        else if (!strcasecmp (par->txt, "toginv"))
+            CMD_USER_HELP  ("toginv <contacts>", i18n (2045, "Toggles your visibility to <contacts> when you're online."));
+        else if (!strcasecmp (par->txt, "togvis"))
+            CMD_USER_HELP  ("togvis <contacts>", i18n (1406, "Toggles your visibility to <contacts> when you're invisible."));
+        /* Account */
+        else if (!strcasecmp (par->txt, "reg"))
+            CMD_USER_HELP  ("reg <password>", i18n (1426, "Creates a new UIN with the specified password."));
+        else if (!strcasecmp (par->txt, "pass"))
+            CMD_USER_HELP  ("pass <password>", i18n (1408, "Changes your password to <password>."));
+        else if (!strcasecmp (par->txt, "change"))
+            CMD_USER_HELP  ("change <status> [<away-message>]", i18n (1427, "Changes your status to the status number, or list the available modes."));
+        else if (!strcasecmp (par->txt, "online") || !strcasecmp (par->txt, "away") || !strcasecmp (par->txt, "na") || !strcasecmp (par->txt, "occ") || !strcasecmp (par->txt, "dnd") || !strcasecmp (par->txt, "ffc") || !strcasecmp (par->txt, "inv"))
+            CMD_USER_HELP7 ("online|away|na|occ|dnd|ffc|inv [<away-message>]", i18n (1431, "Set status to \"online\"."),
+                      i18n (1432, "Set status to \"away\"."), i18n (1433, "Set status to \"not available\"."),
+                      i18n (1434, "Set status to \"occupied\"."), i18n (1435, "Set status to \"do not disturb\"."),
+                      i18n (1436, "Set status to \"free for chat\"."), i18n (1437, "Set status to \"invisible\"."));
+        else if (!strcasecmp (par->txt, "update"))
+            CMD_USER_HELP  ("update", i18n (1438, "Updates your basic info (email, nickname, etc.)."));
+        else if (!strcasecmp (par->txt, "other"))
+            CMD_USER_HELP  ("other", i18n (1401, "Updates more user info like age and sex."));
+        else if (!strcasecmp (par->txt, "about"))
+            CMD_USER_HELP  ("about", i18n (1402, "Updates your about user info."));
+        else if (!strcasecmp (par->txt, "setr"))
+            CMD_USER_HELP  ("setr <nr>", i18n (1439, "Sets your random user group."));
+        /* Advanced */
+        else if (!strcasecmp (par->txt, "meta"))
+            CMD_USER_HELP  ("meta [show|load|save|set|get|rget] <contacts>", i18n (2305, "Handle meta data of contacts."));
+        else if (!strcasecmp (par->txt, "peer"))
+        {
+            CMD_USER_HELP  ("peer open|close|off <uin|nick>...", i18n (2037, "Open or close a peer-to-peer connection, or disable using peer-to-peer connections for <uin> or <nick>."));
+            CMD_USER_HELP  ("peer file <contacts> <file> <description>", i18n (2179, "Send all <contacts> a single file."));
+            CMD_USER_HELP  ("peer files <uin|nick> <file1> <as1> ... <fileN> <asN> <description>", i18n (2180, "Send <uin> or <nick> several files."));
+            CMD_USER_HELP  ("peer accept [<uin|nick>] [<id>]", i18n (2319, "Accept an incoming file transfer from <uin> or <nick>."));
+            CMD_USER_HELP  ("peer deny [<uin|nick>] [<id>] [<reason>]", i18n (2369, "Refuse an incoming file transfer from <uin> or <nick>."));
 #ifdef ENABLE_SSL
-        CMD_USER_HELP  ("peer ssl <uin|nick>...", i18n (2399, "Request SSL connection."));
+            CMD_USER_HELP  ("peer ssl <uin|nick>...", i18n (2399, "Request SSL connection."));
 #endif
-        CMD_USER_HELP  ("conn open|login [<nr>]", i18n (2038, "Opens connection number <nr>, or the first server connection."));
-        CMD_USER_HELP  ("conn close|remove <nr>", i18n (2181, "Closes or removes connection number <nr>."));
-        CMD_USER_HELP  ("conn select [<nr>]", i18n (2182, "Select server connection number <nr> as current server connection."));
-        CMD_USER_HELP  ("contact [show|diff|import]", i18n (2306, "Request server side contact list and show all or new contacts or import."));
-        CMD_USER_HELP  ("peek <contacts>", i18n (2183, "Check all <contacts> whether they are offline or invisible."));
-    }
+        }
+        else if (!strcasecmp (par->txt, "conn"))
+        {
+            CMD_USER_HELP  ("conn open|login [<nr>]", i18n (2038, "Opens connection number <nr>, or the first server connection."));
+            CMD_USER_HELP  ("conn close|remove <nr>", i18n (2181, "Closes or removes connection number <nr>."));
+            CMD_USER_HELP  ("conn select [<nr>]", i18n (2182, "Select server connection number <nr> as current server connection."));
+        }
+        else if (!strcasecmp (par->txt, "contact"))
+            CMD_USER_HELP  ("contact [show|diff|import]", i18n (2306, "Request server side contact list and show all or new contacts or import."));
+        else if (!strcasecmp (par->txt, "peek"))
+            CMD_USER_HELP  ("peek <contacts>", i18n (2183, "Check all <contacts> whether they are offline or invisible."));
 #ifdef ENABLE_TCL
-    else if (what == 6)
-    {
-        rl_printf (i18n (2314, "These are advanced commands. Be sure to have read the manual pages for complete information.\n"));
-        CMD_USER_HELP  ("tclscript <file>", i18n (2344, "Execute Tcl script from <file>."));
-        CMD_USER_HELP  ("tcl <string>", i18n (2345, "Execute Tcl script in <string>."));
-    }
+        /* Scripting */
+        else if (!strcasecmp (par->txt, "tclscript"))
+            CMD_USER_HELP  ("tclscript <file>", i18n (2344, "Execute Tcl script from <file>."));
+        else if (!strcasecmp (par->txt, "tcl"))
+            CMD_USER_HELP  ("tcl <string>", i18n (2345, "Execute Tcl script in <string>."));
 #endif
+    } while ((par = s_parse (&args)));
     return 0;
 }
 
