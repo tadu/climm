@@ -36,7 +36,7 @@ struct Queue_s
 static Queue queued = { NULL, INT_MAX };
 static Queue *queue = &queued;
 
-static Event *QueueDequeueEvent (Event *event, struct QueueEntry *previous);
+static Event *q_QueueDequeueEvent (Event *event, struct QueueEntry *previous);
 
 /*
  * Create a new empty queue to use, or use the given queue instead.
@@ -165,10 +165,15 @@ Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD id,
     return event;
 }
 
+Event *QueueDequeueEvent (Event *event)
+{
+    return q_QueueDequeueEvent (event, NULL);
+}
+
 /*
  * Removes and returns a given event.
  */
-static Event *QueueDequeueEvent (Event *event, struct QueueEntry *previous)
+static Event *q_QueueDequeueEvent (Event *event, struct QueueEntry *previous)
 {
     struct QueueEntry *iter;
     struct QueueEntry *tmp;
@@ -234,7 +239,7 @@ Event *QueueDequeue (Connection *conn, UDWORD type, UDWORD seq)
         && queue->head->event->type == type
         && queue->head->event->seq  == seq)
     {
-        event = QueueDequeueEvent (queue->head->event, NULL);
+        event = q_QueueDequeueEvent (queue->head->event, NULL);
         Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08lx %p %ld",
                QueueType (type), event, seq, event->pak, event->uin);
         return event;
@@ -245,7 +250,7 @@ Event *QueueDequeue (Connection *conn, UDWORD type, UDWORD seq)
             && iter->next->event->type == type
             && iter->next->event->seq  == seq)
         {
-            event = QueueDequeueEvent (iter->next->event, iter);
+            event = q_QueueDequeueEvent (iter->next->event, iter);
             Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08lx %p %ld",
                    QueueType (type), event, seq, event->pak, event->uin);
             return event;
@@ -276,7 +281,7 @@ Event *QueueDequeue2 (Connection *conn, UDWORD type, UDWORD seq, UDWORD uin)
         && (!seq || queue->head->event->seq == seq)
         && (!uin || queue->head->event->uin == uin))
     {
-        event = QueueDequeueEvent (queue->head->event, NULL);
+        event = q_QueueDequeueEvent (queue->head->event, NULL);
         Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08lx %p %ld",
                QueueType (type), event, event->seq, event->pak, event->uin);
         return event;
@@ -288,7 +293,7 @@ Event *QueueDequeue2 (Connection *conn, UDWORD type, UDWORD seq, UDWORD uin)
             && (!seq || iter->next->event->seq  == seq)
             && (!uin || iter->next->event->uin == uin))
         {
-            event = QueueDequeueEvent (iter->next->event, iter);
+            event = q_QueueDequeueEvent (iter->next->event, iter);
             Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08lx %p %ld",
                    QueueType (type), event, event->seq, event->pak, event->uin);
             return event;
@@ -303,7 +308,7 @@ void EventD (Event *event)
 {
     if (!event)
         return;
-    if (QueueDequeueEvent (event, NULL))
+    if (q_QueueDequeueEvent (event, NULL))
         M_printf ("FIXME: Deleting still queued event %p!\n", event);
     Debug (DEB_EVENT, STR_DOT STR_DOT ">> %s %p: %08lx %p %ld",
            QueueType (event->type), event, event->seq, event->pak, event->uin);
@@ -328,7 +333,7 @@ void QueueCancel (Connection *conn)
 
     while (queue->head && queue->head->event->conn == conn)
     {
-        event = QueueDequeueEvent (queue->head->event, NULL);
+        event = q_QueueDequeueEvent (queue->head->event, NULL);
         Debug (DEB_QUEUE, STR_DOT STR_DOT "!> %s %p %p: %08lx %p %ld",
                QueueType (event->type), conn, event, event->seq, event->pak, event->uin);
         event->conn = NULL;
@@ -343,7 +348,7 @@ void QueueCancel (Connection *conn)
     {
         while (iter->next && iter->next->event->conn == conn)
         {
-            event = QueueDequeueEvent (iter->next->event, iter);
+            event = q_QueueDequeueEvent (iter->next->event, iter);
             Debug (DEB_QUEUE, STR_DOT STR_DOT "!> %s %p %p: %08lx %p %ld",
                    QueueType (event->type), conn, event, event->seq, event->pak, event->uin);
             event->conn = NULL;
@@ -401,7 +406,7 @@ void QueueRetry (Connection *conn, UDWORD type, UDWORD uin)
         }
     
     if (event)
-        event = QueueDequeueEvent (event, NULL);
+        event = q_QueueDequeueEvent (event, NULL);
     
     if (event)
     {

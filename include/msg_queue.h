@@ -20,18 +20,19 @@ struct Event_s
     UBYTE       flags;
 };
 
-void        QueueInit        (Queue **queue);
-void        QueueEnqueue     (Event *event);
-Event      *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD seq, time_t due,
-                              Packet *pak, UDWORD uin, Extra *extra, Queuef *callback);
-Event      *QueueDequeue     (Connection *conn, UDWORD type, UDWORD seq);
-Event      *QueueDequeue2    (Connection *conn, UDWORD type, UDWORD seq, UDWORD uin);
-void        QueueRun         ();
-void        QueueRetry       (Connection *conn, UDWORD type, UDWORD uin);
-void        QueueCancel      (Connection *conn);
+void        QueueInit         (Queue **queue);
+Event      *QueueDequeueEvent (Event *event);
+void        QueueEnqueue      (Event *event);
+Event      *QueueEnqueueData  (Connection *conn, UDWORD type, UDWORD seq, time_t due,
+                               Packet *pak, UDWORD uin, Extra *extra, Queuef *callback);
+Event      *QueueDequeue      (Connection *conn, UDWORD type, UDWORD seq);
+Event      *QueueDequeue2     (Connection *conn, UDWORD type, UDWORD seq, UDWORD uin);
+void        QueueRetry        (Connection *conn, UDWORD type, UDWORD uin);
+void        QueueCancel       (Connection *conn);
 
-Event      *QueuePeek        ();
-Event      *QueuePop         ();
+void        QueueRun  ();
+Event      *QueuePeek ();
+Event      *QueuePop  ();
 
 void EventD (Event *event);
 
