@@ -75,6 +75,7 @@ static SNAC SNACS[] = {
     {  3,  1, "SRV_CONTACTERR",      NULL},
     {  3,  3, "SRV_REPLYBUDDY",      SnacSrvReplybuddy},
     {  3, 11, "SRV_USERONLINE",      SnacSrvUseronline},
+    {  3, 10, "SRV_REFUSE",          NULL}, /* FIXME: */
     {  3, 12, "SRV_USEROFFLINE",     SnacSrvUseroffline},
     {  4,  1, "SRV_ICBMERR",         SnacSrvIcbmerr},
     {  4,  5, "SRV_REPLYICBM",       SnacSrvReplyicbm},
@@ -576,7 +577,10 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
 static void SnacSrvCallbackSendack (Event *event)
 {
     if (event && event->conn && event->pak)
+    {
         SnacSend (event->conn, event->pak);
+        event->pak = NULL;
+    }
     EventD (event);
 }
 

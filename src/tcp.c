@@ -1586,8 +1586,12 @@ static void TCPCallBackResend (Event *event)
 
 static void PeerCallbackReceiveAdvanced (Event *event)
 {
+    Debug (DEB_TCP, "%p %p %p\n", event, event ? event->conn : NULL, event ? event->pak : NULL);
     if (event && event->conn && event->pak)
+    {
         PeerPacketSend (event->conn, event->pak);
+        event->pak = NULL;
+    }
     EventD (event);
 }
 
