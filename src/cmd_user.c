@@ -4624,10 +4624,8 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
     }
     else
     {
-        memset (buf, 0, 1024);
         R_getline (buf, 1024);
         M_print ("\r");             /* reset char printed count for dumb terminals */
-        buf[1023] = 0;              /* be safe */
     }
 
     if (R_isinterrupted ())
