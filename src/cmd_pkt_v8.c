@@ -141,6 +141,7 @@ void SrvCallBackReceive (Connection *conn)
             case 2:
             case 6:
                 conn->connect = 0;
+                SrvCallBackReconn (conn);
                 return;
             case 4:
                 break;
