@@ -149,7 +149,9 @@ static jump_t jump[] = {
     { &CmdUserQuit,          "exit",         NULL, 0,   0 },
     { &CmdUserPass,          "pass",         NULL, 0,   0 },
     { &CmdUserSMS,           "sms",          NULL, 0,   0 },
+#if 0
     { &CmdUserPeek,          "peek",         NULL, 0,   0 },
+#endif
     { &CmdUserAsSession,     "as",           NULL, 0,   0 },
     { &CmdUserContact,       "contact",      NULL, 0,   0 },
     { &CmdUserContact,       "contactshow",  NULL, 0,   1 },
@@ -532,7 +534,7 @@ static JUMP_F(CmdUserHelp)
                   i18n (2384, "Case insensitive search of <pattern> in log file of <contact>."));
         M_printf (COLMESSAGE "%s <contact> <pattern>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                   CmdUserLookupName ("finds"),
-                  i18n (2384, "Case sensitive search of <pattern> in log file of <contact>."));
+                  i18n (2391, "Case sensitive search of <pattern> in log file of <contact>."));
         M_printf (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                   CmdUserLookupName ("tabs"),
                   i18n (1098, "Display a list of nicknames that you can tab through.")); 
@@ -682,9 +684,11 @@ static JUMP_F(CmdUserHelp)
         M_printf (COLMESSAGE "%s [show|diff|import]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                   CmdUserLookupName ("contact"),
                   i18n (2306, "Request server side contact list and show all or new contacts or import."));
+#if 0
         M_printf (COLMESSAGE "%s <contacts>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                   CmdUserLookupName ("peek"),
                   i18n (2183, "Check all <contacts> whether they are offline or invisible."));
+#endif
 #ifdef ENABLE_TCL
     }
     else if (what == 6)
@@ -818,6 +822,7 @@ static JUMP_F(CmdUserInfo)
  */
 static JUMP_F(CmdUserPeek)
 {
+#if 0
     Contact *cont = NULL;
     OPENCONN;
     
@@ -840,6 +845,7 @@ static JUMP_F(CmdUserPeek)
         SnacCliSendmsg2 (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_GET_PEEK, ""));
     }
     return 0;
+#endif
 }
 
 /*
@@ -2567,7 +2573,7 @@ static JUMP_F(CmdUserSet)
         M_print (i18n (2279, "    log:        do logging.\n"));
         M_print (i18n (2280, "    logonoff:   also log status changes.\n"));
         M_print (i18n (2281, "    auto:       send auto-replies.\n"));
-        M_print (i18n (2282, "    uinprompt:  have the last nick in the prompt.\n"));
+        M_print (i18n (2282, "    uinprompt:  display the last nick in the prompt.\n"));
         M_print (i18n (2283, "    autosave:   automatically save the micqrc.\n"));
         M_print (i18n (2284, "    autofinger: automatically finger new UINs.\n"));
         M_print (i18n (2285, "    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n"));
