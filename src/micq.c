@@ -42,8 +42,8 @@
 #if HAVE_SYS_WAIT_H
 #include <sys/wait.h>
 #endif
-#if HAVE_WINSOCK_H
-#include <winsock.h>
+#if HAVE_WINSOCK2_H
+#include <winsock2.h>
 #endif
 #if HAVE_CONIO_H
 #include <conio.h>
@@ -326,7 +326,7 @@ int main (int argc, char *argv[])
     {
 
 #if INPUT_BY_POLL
-        M_set_timeout (0, 1000);
+        M_set_timeout (0, 10000);
 #else
         if (QueuePeek ())
         {

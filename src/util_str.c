@@ -15,8 +15,8 @@
 #if HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
-#if HAVE_WINSOCK_H
-#include <winsock.h>
+#if HAVE_WINSOCK2_H
+#include <winsock2.h>
 #endif
 #include <string.h>
 #include <ctype.h>

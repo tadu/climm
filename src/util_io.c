@@ -35,8 +35,8 @@
 #if HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
-#if HAVE_WINSOCK_H
-#include <winsock.h>
+#if HAVE_WINSOCK2_H
+#include <winsock2.h>
 #endif
 #if !HAVE_DECL_H_ERRNO
 extern int h_errno;
@@ -91,6 +91,7 @@ void UtilIOConnectUDP (Connection *conn)
     struct sockaddr_in sin;     /* used to store inet addr stuff */
     struct hostent *host_struct;        /* used in DNS lookup */
 
+    errno = 0;
     conn->sok = socket (AF_INET, SOCK_DGRAM, 0);      /* create the unconnected socket */
 
     if (conn->sok < 0)
@@ -324,7 +325,7 @@ void UtilIOConnectUDP (Connection *conn)
  */
 void UtilIOConnectTCP (Connection *conn)
 {
-    int rc;
+    int rc, rce;
     socklen_t length;
     struct sockaddr_in sin;
     struct hostent *host;
@@ -335,6 +336,7 @@ void UtilIOConnectTCP (Connection *conn)
 
     Debug (DEB_IO, "UtilIOConnectCallback: %x", conn->connect);
 
+    errno = 0;
     conn->sok = socket (AF_INET, SOCK_STREAM, 0);
     if (conn->sok < 0)
         CONN_FAIL_RC (i18n (1638, "Couldn't create socket"));
@@ -342,9 +344,12 @@ void UtilIOConnectTCP (Connection *conn)
     rc = fcntl (conn->sok, F_GETFL, 0);
     if (rc != -1)
         rc = fcntl (conn->sok, F_SETFL, rc | O_NONBLOCK);
+#elif defined(HAVE_IOCTLSOCKET)
+    origip = 1;
+    rc = ioctlsocket (conn->sok, FIONBIO, &origip);
+#endif
     if (rc == -1)
         CONN_FAIL_RC (i18n (1950, "Couldn't set socket nonblocking"));
-#endif
     if (conn->server || conn->ip || prG->s5Use)
     {
         if (prG->s5Use)
@@ -383,6 +388,7 @@ void UtilIOConnectTCP (Connection *conn)
         }
 
         rc = connect (conn->sok, (struct sockaddr *) &sin, sizeof (struct sockaddr));
+        rce = rc < 0 ? errno : 0;
 
         length = sizeof (struct sockaddr);
         getsockname (conn->sok, (struct sockaddr *) &sin, &length);
@@ -410,12 +416,13 @@ void UtilIOConnectTCP (Connection *conn)
         }
 
 #ifdef __AMIGA__
-        rc = errno;
-        if (rc == EINPROGRESS || rc == 115) /* UAE sucks */
+        if (rce == EINPROGRESS || rce == 115) /* UAE sucks */
 #elif defined(EINPROGRESS)
-        if ((rc = errno) == EINPROGRESS)
+        if (rce == EINPROGRESS)
+#elif defined(WSAEINPROGRESS)
+        if (!rce || rce == WSAEINPROGRESS)
 #else
-        rc = 1;
+        rce = 1;
         if (0)
 #endif
         {
@@ -431,7 +438,11 @@ void UtilIOConnectTCP (Connection *conn)
             conn->connect |= CONNECT_SELECT_W | CONNECT_SELECT_X;
             return;
         }
-        CONN_FAIL_RC (i18n (1952, "Couldn't open connection"));
+        else
+        {
+            errno = rce;
+            CONN_FAIL_RC (i18n (1952, "Couldn't open connection"));
+        }
     }
     else
     {
@@ -505,9 +516,12 @@ void UtilIOConnectF (Connection *conn)
     rc = fcntl (conn->sok, F_GETFL, 0);
     if (rc != -1)
         rc = fcntl (conn->sok, F_SETFL, rc | O_NONBLOCK);
+#elif defined(HAVE_IOCTLSOCKET)
+    origip = 1;
+    rc = ioctlsocket(conn->sok, FIONBIO, &origip);
+#endif
     if (rc == -1)
         CONNS_FAIL_RC (i18n (2228, "Couldn't set FIFO nonblocking"));
-#endif
 
     if (M_pos () > 0)
         M_print (i18n (1634, "ok.\n"));

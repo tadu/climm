@@ -39,8 +39,8 @@
 #if HAVE_NETDB_H
 #include <netdb.h>
 #endif
-#if HAVE_WINSOCK_H
-#include <winsock.h>
+#if HAVE_WINSOCK2_H
+#include <winsock2.h>
 #endif
 
 #define s_read(s) do { char *data = PacketReadLNTS (pak); s_repl (&s, c_in_to (data, cont)); free (data); } while (0)

@@ -189,7 +189,7 @@ fi
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([locale.h sys/select.h arpa/inet.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h winsock.h conio.h])
+AC_CHECK_HEADERS([locale.h sys/select.h arpa/inet.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h winsock2.h conio.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -234,8 +234,8 @@ AC_CHECK_DECLS(h_errno,,,[$ac_includes_default
 #ifdef HAVE_NETDB_H
 #include <netdb.h>
 #endif
-#ifdef HAVE_WINSOCK_H
-#include <winsock.h>
+#ifdef HAVE_WINSOCK2_H
+#include <winsock2.h>
 #endif])
 
 AC_TYPE_SIGNAL
@@ -268,7 +268,7 @@ AC_FUNC_MEMMOVE
 AC_CHECK_FUNCS([atexit memset mkdir strcasecmp uname fcntl \
                 strchr strdup strncasecmp strpbrk strrchr strstr strtol strtok_r \
                 symlink chmod tcgetattr gettimeofday setlocale \
-                select socket gethostbyname hstrerror])
+                select socket gethostbyname hstrerror ioctlsocket])
 
 for f in memset mkdir atexit \
          strcasecmp strchr strdup strncasecmp strpbrk strrchr strstr strtol; do
@@ -279,7 +279,7 @@ done
 
 if test "x$ac_cv_func_select$ac_cv_func_socket" != "xyesyes"; then
     my_old_LIBS=$LIBS
-    LIBS="-lwsock32 $LIBS"
+    LIBS="-lws2_32 $LIBS"
     AC_CACHE_CHECK(for library containing select, ac_cv_search_select,
       [AC_LINK_IFELSE([AC_LANG_PROGRAM([[/* argl */
           #if HAVE_SYS_TYPES_H
@@ -302,26 +302,30 @@ if test "x$ac_cv_func_select$ac_cv_func_socket" != "xyesyes"; then
           #if HAVE_NETDB_H
           #include <netdb.h>
           #endif
-          #if HAVE_WINSOCK_H
-          #include <winsock.h>
+          #if HAVE_WINSOCK2_H
+          #include <winsock2.h>
           #endif]],
           [[struct timeval *tm;
             fd_set *fds;
+            int *i;
             select (1, fds, fds, fds, tm);
             socket (1, 1, 1);
-            gethostbyname ("www.micq.org");]])],
-        [ac_cv_search_select=wsock32],
+            gethostbyname ("www.micq.org");
+            ioctlsocket(1, 1, i);]])],
+        [ac_cv_search_select=ws2_32],
         [ac_cv_search_select=no])])
     LIBS=$my_old_LIBS
     if test x$ac_cv_search_select != xno; then
        AC_DEFINE([ICONV_CONST], const, [Define as const if the declaration of iconv() needs const.])
-       LIBS="-lwsock32 $LIBS"
+       LIBS="-lws2_32 $LIBS"
        ac_cv_func_select=yes
        ac_cv_func_socket=yes
        ac_cv_func_gethostbyname=yes
+       ac_cv_func_ioctlsocket=yes
        AC_DEFINE(HAVE_SELECT, 1)
        AC_DEFINE(HAVE_SOCKET, 1)
        AC_DEFINE(HAVE_GETHOSTBYNAME, 1)
+       AC_DEFINE(HAVE_IOCTLSOCKET, 1)
     else
        AC_MSG_ERROR([Required functions select and/or socket is missing. Sorry.])
     fi

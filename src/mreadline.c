@@ -47,8 +47,11 @@
 #if HAVE_NETINET_IN_H
 #include <netinet/in.h>
 #endif
-#ifdef HAVE_ARPA_INET_H
+#if HAVE_ARPA_INET_H
 #include <arpa/inet.h>
+#endif
+#if HAVE_CONIO_H
+#include <conio.h>
 #endif
 #ifdef HAVE_TCGETATTR
 struct termios sattr;
@@ -505,10 +508,16 @@ int R_process_input (void)
 {
     char ch;
     int k;
+#ifdef ANSI_TERM
     static UDWORD inp = 0;
+#endif
 
+#if INPUT_BY_POLL
+    ch = getch ();
+#else
     if (!read (STDIN_FILENO, &ch, 1))
         return 0;
+#endif
 #ifdef __BEOS__
     if (ch == (char)0x80)
         return 0;
@@ -994,7 +1003,11 @@ void R_remprompt ()
     bytepos = bpos;
 #endif
     M_print ("\r");             /* for tab stop reasons */
+#ifdef ANSI_TERM
     printf (ESC "[J");
+#else
+    printf ("%.*s", curpos, bsbuf);
+#endif
     prstat = 2;
 }
 

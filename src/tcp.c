@@ -50,8 +50,8 @@
 #if HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
-#if HAVE_WINSOCK_H
-#include <winsock.h>
+#if HAVE_WINSOCK2_H
+#include <winsock2.h>
 #endif
 
 #ifdef ENABLE_PEER2PEER

@@ -31,8 +31,8 @@
 #if HAVE_NETINET_IN_H
 #include <netinet/in.h> /* for htonl, htons */
 #endif
-#if HAVE_WINSOCK_H
-#include <winsock.h>
+#if HAVE_WINSOCK2_H
+#include <winsock2.h>
 #endif
 
 static UDWORD Gen_Checksum (const Packet *pak);
