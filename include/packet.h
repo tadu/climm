@@ -3,7 +3,7 @@
 #ifndef MICQ_PACKET_H
 #define MICQ_PACKET_H
 
-#define PacketMaxData 4096
+#define PacketMaxData 1024 * 8
 
 struct Packet_s
 {
