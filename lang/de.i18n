@@ -42,14 +42,14 @@
 1042:msgAll> 
 1043:Alle Benutzer gefunden.
 1044:Zu viele Benutzer gefunden.
-1045:Fertig mit suchen.
+1045:Suche beendet.
 1046:Länge
 1047:Extra-Daten
 1048:Fehlerkode: %d¶
 1049:UIN: %d¶
 1050:Login erfolgreich!
-1053: Auf %s verbunden, warte auf Antwort.¶
-1055:Konnte keinen Socket erstellen!
+1053:Nach %s verbunden, warte auf Antwort.¶
+1055:Konnte keinen Socket erstellen.
 1056:Socket erhalten, versuche zu verbinden...¶
 1060:Ausführlichkeit is %d.¶
 1061:"%s" ist kein Spitzname.¶
@@ -80,7 +80,7 @@
 1095:Port für SOCKS5 (normalerweise 1080):
 1096:Benutzername für SOCKS5 (oder 0, falls Sie keine Authentifizierung benötigen):
 1097:Paßwort für SOCKS5:
-1098:Zeigt eine Liste von Spitznamen an, durch mittels <tab> durchgegangen werden kann.
+1098:Zeigt eine Liste von Spitznamen, durch mittels <tab> durchgegangen werden kann.
 1099:Unbekannte Sprache
 ##
 ## Sprachen
@@ -120,7 +120,7 @@
 1132:Littauisch
 1133:Malaysisch
 1134:Norwegisch
-1135:Polisch
+1135:Polnisch
 1136:Portugiesisch
 1137:Rumänisch
 1138:Russisch
@@ -346,7 +346,7 @@
 1357:Sri Lanka
 1358:Surinam
 1359:Schweden
-1360:Schweitz
+1360:Schweiz
 1361:Taiwan
 1362:Tansania
 1363:Thailand
@@ -537,7 +537,7 @@
 1554:Dein neuer Vorname:
 1555:Dein neuer Nachname:
 1556:Deine Email-Adresse:
-1557:Möchtest Du, daß Mirabelis-User Deine Autorisierung brauchen?
+1557:Möchtest Du, daß Mirabilis-User Deine Autorisierung brauchen?
 1562:Information für
 1564:Vorname:
 1565:Nachname:
