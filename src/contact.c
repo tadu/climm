@@ -718,7 +718,7 @@ void ContactSetCap (Contact *cont, Cap *cap)
         UBYTE ver;
         
         ver = cap->var[15];
-        cont->v1 = ver ? (ver >> 6) - 1 : 0;
+        cont->v1 = (ver >> 6) ? (ver >> 6) - 1 : 0;
         cont->v2 = ver & 0x1f;
         cont->v3 = cont->v4 = 0;
     }
@@ -840,7 +840,7 @@ void ContactSetVersion (Contact *cont)
         new = "licq";
     else if (HAS_CAP (cont->caps, CAP_SIM))
     {
-        if (cont->v1 || cont->v2)
+        if (cont->v1)
             new = "SIM";
         else
             new = "Kopete";
