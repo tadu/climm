@@ -417,10 +417,10 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                 e1 = QueueEnqueueData (serv, QUEUE_ACKNOWLEDGE, ack_event->seq, time (NULL) + 60,
                                        NULL, inc_event->uin, NULL, NULL);
                 e2 = QueueEnqueueData (inc_event->conn, inc_event->type, ack_event->seq,
-                                       time (NULL) + 62, inc_pak, inc_event->uin, extra, inc_event->callback);
+                                       time (NULL) + 62, inc_event->pak, inc_event->uin, extra, inc_event->callback);
                 e1->rel = e2;
                 e2->rel = e1;
-                inc_pak->rpos = inc_pak->tpos;
+                inc_event->pak->rpos = inc_event->pak->tpos;
                 inc_event->extra = NULL;
                 inc_event->pak = NULL;
                 ack_event->due = 0;
@@ -498,10 +498,10 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                             e1 = QueueEnqueueData (serv, QUEUE_ACKNOWLEDGE, ack_event->seq, time (NULL) + 60,
                                                    NULL, inc_event->uin, NULL, NULL);
                             e2 = QueueEnqueueData (inc_event->conn, inc_event->type, ack_event->seq,
-                                                   time (NULL) + 62, inc_pak, inc_event->uin, extra, inc_event->callback);
+                                                   time (NULL) + 62, inc_event->pak, inc_event->uin, extra, inc_event->callback);
                             e1->rel = e2;
                             e2->rel = e1;
-                            inc_pak->rpos = inc_pak->tpos;
+                            inc_event->pak->rpos = inc_event->pak->tpos;
                             inc_event->extra = NULL;
                             inc_event->pak = NULL;
                             ack_event->callback = NULL;
