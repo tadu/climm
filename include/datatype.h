@@ -11,10 +11,6 @@
 #include <windef.h>
 #endif
 
-#if !HAVE_SOCKLEN_T
-typedef int socklen_t;
-#endif
-
 #if !HAVE_BOOL
 typedef unsigned char BOOL;
 #endif
@@ -29,9 +25,20 @@ typedef unsigned SIZE_2_TYPE UWORD;
 typedef unsigned SIZE_1_TYPE UBYTE;
 #endif
 
-typedef signed   SIZE_4_TYPE SDWORD;
-typedef signed   SIZE_2_TYPE SWORD;
+#if !HAVE_SOCKLEN_T
+typedef int socklen_t;
+#endif
+
+#if !HAVE_WCHAR_T
+typedef UDWORD wchar_t;
+#endif
+
+#if !ENABLE_FALLBACK_TRANSLIT
+#define ENABLE_TRANSLIT 1
+#endif
+
 typedef signed   SIZE_1_TYPE SBYTE;
+typedef signed   SIZE_4_TYPE SDWORD;
 
 typedef int FD_T;
 typedef int SOK_T;

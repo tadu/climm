@@ -54,6 +54,7 @@ strc_t      ConvTo         (const char *in, UBYTE enc);
 #define ENC_WIN1257 0x07
 #define ENC_EUC     0x08
 #define ENC_SJIS    0x09  /* Windows Shift-JIS */
+#define ENC_WCHART  0x0a
 
 #define ENC(enc_x) (prG->enc_x & ~ENC_FAUTO)
 

@@ -32,8 +32,10 @@
 #include <ctype.h>
 #endif
 #include "conv.h"
-#include "iconvfb.h"
 #include "preferences.h"
+#if !HAVE_WCWIDTH
+#undef ENABLE_FALLBACK_WCHART
+#endif
 
 typedef strc_t (iconv_func)(strc_t, UBYTE);
 
@@ -42,7 +44,7 @@ typedef strc_t (iconv_func)(strc_t, UBYTE);
 static strc_t iconv_from_iconv (strc_t, UBYTE);
 static strc_t iconv_to_iconv (strc_t, UBYTE);
 #endif
-#if ENABLE_FALLBACK_UTF8
+#if ENABLE_FALLBACK_ASCII
 static iconv_func iconv_from_usascii, iconv_to_usascii;
 #else
 static iconv_func iconv_usascii;
@@ -65,7 +67,9 @@ static iconv_func iconv_from_win1251, iconv_to_win1251;
 #if ENABLE_FALLBACK_UCS2BE
 static iconv_func iconv_from_ucs2be, iconv_to_ucs2be;
 #endif
-
+#if ENABLE_FALLBACK_WCHART
+static iconv_func iconv_from_wchart, iconv_to_wchart;
+#endif
 
 #if HAVE_ICONV
 typedef struct { const char *enca; const char *encb; const char *encc;
@@ -98,23 +102,29 @@ BOOL ConvHaveUe (UBYTE enc)
  */
 static BOOL iconv_check (UBYTE enc)
 {
+#ifdef ENABLE_TRANSLIT
     conv_encs[enc].ito = iconv_open (s_sprintf ("%s//TRANSLIT", conv_encs[enc].enca), "UTF-8");
     if (conv_encs[enc].ito == (iconv_t)-1)
+#endif
         conv_encs[enc].ito = iconv_open (conv_encs[enc].enca, "UTF-8");
     conv_encs[enc].iof = iconv_open ("UTF-8", conv_encs[enc].enca);
     if ((conv_encs[enc].ito == (iconv_t)-1 || conv_encs[enc].iof == (iconv_t)-1)
         && conv_encs[enc].encb)
     {
+#ifdef ENABLE_TRANSLIT
         conv_encs[enc].ito = iconv_open (s_sprintf ("%s//TRANSLIT", conv_encs[enc].encb), "UTF-8");
         if (conv_encs[enc].ito == (iconv_t)-1)
+#endif
             conv_encs[enc].ito = iconv_open (conv_encs[enc].encb, "UTF-8");
         conv_encs[enc].iof = iconv_open ("UTF-8", conv_encs[enc].encb);
     }
     if ((conv_encs[enc].ito == (iconv_t)-1 || conv_encs[enc].iof == (iconv_t)-1)
         && conv_encs[enc].encc)
     {
+#ifdef ENABLE_TRANSLIT
         conv_encs[enc].ito = iconv_open (s_sprintf ("%s//TRANSLIT", conv_encs[enc].encc), "UTF-8");
         if (conv_encs[enc].ito == (iconv_t)-1)
+#endif
             conv_encs[enc].ito = iconv_open (conv_encs[enc].encc, "UTF-8");
         conv_encs[enc].iof = iconv_open ("UTF-8", conv_encs[enc].encc);
     }
@@ -165,6 +175,7 @@ void ConvInit (void)
     conv_encs[ENC_EUC].enca = "EUC-JP";
     conv_encs[ENC_SJIS].enca = "SHIFT-JIS";
     conv_encs[ENC_SJIS].encb = "SJIS";
+    conv_encs[ENC_WCHART].enca = "WCHAR_T";
     
 #if HAVE_ICONV
     /* extra check for UTF-8 */
@@ -254,6 +265,16 @@ void ConvInit (void)
 #else
         conv_encs[ENC_UCS2BE].fof  = conv_encs[ENC_ASCII].fof;
         conv_encs[ENC_UCS2BE].fto  = conv_encs[ENC_ASCII].fto;
+#endif
+    }
+    if (!conv_encs[ENC_WCHART].fof)
+    {
+#if ENABLE_FALLBACK_WCHART
+        conv_encs[ENC_WCHART].fof  = &iconv_from_wchart;
+        conv_encs[ENC_WCHART].fto  = &iconv_to_wchart;
+#else
+        conv_encs[ENC_WCHART].fof  = conv_encs[ENC_ASCII].fof;
+        conv_encs[ENC_WCHART].fto  = conv_encs[ENC_ASCII].fto;
 #endif
     }
 }
@@ -559,7 +580,7 @@ strc_t iconv_usascii (strc_t in, UBYTE enc)
 #endif
 
 #if ENABLE_FALLBACK_ASCII || ENABLE_FALLBACK_UCS2BE || ENABLE_FALLBACK_WIN1251 || ENABLE_FALLBACK_KOI8 \
-  || ENABLE_FALLBACK_LATIN9 || ENABLE_FALLBACK_LATIN1 || ENABLE_FALLBACK_UTF8
+  || ENABLE_FALLBACK_LATIN9 || ENABLE_FALLBACK_LATIN1 || ENABLE_FALLBACK_UTF8 || ENABLE_FALLBACK_WCHART
 
 static UDWORD iconv_get_utf8 (strc_t in, int *off)
 {
@@ -920,5 +941,53 @@ static strc_t iconv_to_ucs2be (strc_t in, UBYTE enc)
     return &str;
 }
 #endif
-#endif /* ENABLE_FALLBACK_* */
 
+#if ENABLE_FALLBACK_WCHART
+static strc_t iconv_from_wchart (strc_t in, UBYTE enc)
+{
+    static str_s str = { NULL, 0, 0 };
+    UDWORD ucs;
+    int off;
+
+    s_init (&str, "", in->len);
+    for (off = 0; off < in->len; )
+    {
+        if (off + sizeof (wchar_t) > in->len)
+        {
+            s_catc (&str, CHAR_INCOMPLETE);
+            break;
+        }
+        
+        ucs = *((wchar_t *)(in->txt + off));
+        off += sizeof (wchar_t);
+        if ((ucs & 0xf800) == 0xd800)
+            s_catc (&str, CHAR_BROKEN);
+        else
+            s_cat (&str, ConvUTF8 (ucs));
+    }
+    return &str;
+}
+
+static strc_t iconv_to_wchart (strc_t in, UBYTE enc)
+{
+    static str_s str = { NULL, 0, 0 };
+    UDWORD ucs;
+    wchar_t na = CHAR_NOT_AVAILABLE;
+    int off;
+
+    s_init (&str, "", in->len);
+    for (off = 0; off < in->len; )
+    {
+        ucs = iconv_get_utf8 (in, &off);
+        if ((ucs & 0xf800) == 0xd800)
+            s_catc (&str, CHAR_BROKEN);
+        else if (   (sizeof (wchar_t) <= 1 && ucs & 0xffffff00)
+                 || (sizeof (wchar_t) <= 2 && ucs & 0xffff0000))
+            s_catc (&str, &na, sizeof (wchar_t));
+        else
+            s_catc (&str, &ucs, sizeof (wchar_t));
+    }
+    return &str;
+}
+#endif
+#endif /* ENABLE_FALLBACK_* */
