@@ -350,7 +350,7 @@ void UtilIOConnectTCP (Session *sess)
         {
             M_print ("");
             if (M_pos () > 0)
-                M_print (i18n (1634, "ok\n"));
+                M_print (i18n (1634, "ok.\n"));
             if (prG->s5Use)
             {
                 QueueEnqueueData (sess, sess->ip, QUEUE_CON_TIMEOUT,
@@ -396,7 +396,7 @@ void UtilIOConnectTCP (Session *sess)
         sess->port = ntohs (sin.sin_port);
         sess->server = strdup ("localhost");
         if (M_pos () > 0)
-            M_print (i18n (1634, "ok\n"));
+            M_print (i18n (1634, "ok.\n"));
         CONN_OK
     }
 }

@@ -310,16 +310,17 @@ static JUMP_F(CmdUserHelp)
 
     if (!what)
     {
-        M_print (COLCLIENT "%s\n", i18n (1442, "Please select one of the help topics below."));
-        M_print ("%s\t-\t%s\n", i18n (1448, "Message"),
+        const char *fmt = i18n (2184, "%s%-10s%s - %s\n");
+        M_print ("%s\n", i18n (1442, "Please select one of the help topics below."));
+        M_print (fmt, COLCLIENT, i18n (1448, "Message"), COLNONE,
                  i18n (1446, "Commands relating to sending messages."));
-        M_print ("%s\t-\t%s\n", i18n (1447, "Client"),
+        M_print (fmt, COLCLIENT, i18n (1447, "Client"), COLNONE,
                  i18n (1443, "Commands relating to mICQ displays and configuration."));
-        M_print ("%s\t-\t%s\n", i18n (1449, "User"),
+        M_print (fmt, COLCLIENT, i18n (1449, "User"), COLNONE,
                  i18n (1444, "Commands relating to finding and seeing other users."));
-        M_print ("%s\t-\t%s\n", i18n (1450, "Account"),
+        M_print (fmt, COLCLIENT, i18n (1450, "Account"), COLNONE,
                  i18n (1445, "Commands relating to your ICQ account."));
-        M_print ("%s\t-\t%s\n", i18n (2171, "Advanced"),
+        M_print (fmt, COLCLIENT, i18n (2171, "Advanced"), COLNONE,
                  i18n (2172, "Commands for advanced features."));
     }
     else if (what == 1)
@@ -363,14 +364,14 @@ static JUMP_F(CmdUserHelp)
         M_print (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("uptime"),
                  i18n (1719, "Shows how long mICQ has been running."));
-        M_print ("  " COLCLIENT "" COLINDENT "%s" COLEXDENT "" COLNONE "\n",
-                 i18n (1717, "! as the first character of a command will execute a shell command (e.g. \"!ls\"  \"!dir\" \"!mkdir temp\")"));
         M_print (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("save"),
                  i18n (2036, "Save current preferences to disc."));
         M_print (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("q"),
                  i18n (1422, "Logs off and quits."));
+        M_print ("  " COLCLIENT "" COLINDENT "%s" COLEXDENT "" COLNONE "\n",
+                 i18n (1717, "! as the first character of a command will execute a shell command (e.g. \"!ls\"  \"!dir\" \"!mkdir temp\")"));
     }
     else if (what == 2)
     {
@@ -2089,7 +2090,7 @@ static JUMP_F(CmdUserRem)
             SnacCliRemcontact (sess, cont->uin);
         else
             CmdPktCmdContactList (sess);
-        M_print (i18n (2150, "Removed contact '%s' (%d)."),
+        M_print (i18n (2150, "Removed contact '%s' (%d).\n"),
                  alias, uin);
     }
 

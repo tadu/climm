@@ -568,7 +568,7 @@
 1623:Doubled packet %04X¶
 1624:Sorry, can't initialize Windows Sockets...
 1632:¶Connection unstable. Exiting....
-1634:ok¶
+1634:ok.¶
 1637:Can't bind socket to free port¶
 1638:Couldn't create socket
 1639:The new UIN is %ld!¶
@@ -977,7 +977,7 @@
 2147:'%s' (%d) is already used as a nick.¶
 2148:Added '%s' as an alias for '%s' (%d).¶
 2149:Removed alias '%s' for '%s' (%d).¶
-2150:Removed contact '%s' (%d).
+2150:Removed contact '%s' (%d).¶
 2151:%d is not on your contact list anymore.¶
 2152:Closing v5 server connection.¶
 2153:Closing v8 server connection.¶
@@ -1011,3 +1011,4 @@
 2181:Closes or removes connection number <nr>.
 2182:Select server connection number <nr> as current server connection.
 2183:Check whether <uin> or <nick> is offline or invisible.
+2184:%s%-10s%s - %s¶
