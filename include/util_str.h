@@ -47,6 +47,7 @@ const char *s_ind     (const char *str);
 UDWORD      s_strlen  (const char *str);
 UDWORD      s_strnlen (const char *str, UDWORD len);
 UDWORD      s_offset  (const char *str, UDWORD offset);
+strc_t      s_split   (const char **str, UBYTE enc, int len);
 const char *s_realpath(const char *path);
 
 BOOL        s_parse_s     (const char **input, strc_t        *parsed, const char *sep);
