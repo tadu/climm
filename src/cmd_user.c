@@ -3419,7 +3419,7 @@ static JUMP_F(CmdUserFind)
     char timestr[MAX_STR_BUF];
     const char *timeformat;
     BOOL isMsg = FALSE, isIncoming = FALSE, doRead = TRUE;
-    strc_t par, line;
+    strc_t par, line = NULL;
 
     FILE *logfile;
     char buffer[LOG_MAX_PATH + 1], *target = buffer;
