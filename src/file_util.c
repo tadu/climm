@@ -239,7 +239,7 @@ void Initalize_RC_File ()
 #define ADD_CMD(a,b)     else if (!strcasecmp (tmp, a))       \
                                  { PrefParseRemainder (tmp);   \
                                    prG->b = strdup (tmp); } else if (0)
-#define ERROR
+#define ERROR continue;
 
 /*
  * Reads in a configuration file.
@@ -559,6 +559,19 @@ void Read_RC_File (FILE *rcf)
                             prG->flags &= ~which;
                         else
                             ERROR;
+                        if (which == FLAG_CONVRUSS)
+                        {
+                            dep = 1;
+                            prG->enc_rem = ENC_WIN1251;
+                            prG->enc_loc = ENC_KOI8;
+                        }
+                        else if (which == FLAG_CONVEUC)
+                        {
+                            dep = 1;
+                            prG->enc_rem = ENC_SJIS;
+                            prG->enc_loc = ENC_EUC;
+                            M_print ("FIXME: conversion to/from SJIS and EUC has not yet been implemented.\n");
+                        }
                     }
                     else if (which == -1)
                     {
@@ -598,6 +611,44 @@ void Read_RC_File (FILE *rcf)
                         else if (strcasecmp (cmd, "simple"))
                             dep = 1;
                     }
+                }
+                else if (!strcasecmp (cmd, "encoding"))
+                {
+                    int which, what;
+                    PrefParse (cmd);
+                    
+                    if (!strcasecmp (cmd, "remote"))
+                        which = 1;
+                    else if (!strcasecmp (cmd, "local"))
+                        which = 2;
+                    else
+                        ERROR;
+                    
+                    PrefParse (cmd);
+                    if (!strcasecmp (cmd, "auto"))
+                        what = ENC_AUTO;
+                    else if (!strcasecmp (cmd, "utf8"))
+                        what = ENC_UTF8;
+                    else if (!strcasecmp (cmd, "latin1"))
+                        what = ENC_LATIN1;
+                    else if (!strcasecmp (cmd, "latin9"))
+                        what = ENC_LATIN9;
+                    else if (!strcasecmp (cmd, "euc"))
+                        what = ENC_EUC;
+                    else if (!strcasecmp (cmd, "sjis"))
+                        what = ENC_SJIS;
+                    else if (!strcasecmp (cmd, "koi8"))
+                        what = ENC_KOI8;
+                    else if (!strcasecmp (cmd, "win1251"))
+                        what = ENC_WIN1251;
+                    else
+                        ERROR;
+                    if (which == 1)
+                        prG->enc_rem = what;
+                    else
+                        prG->enc_loc = what;
+                    if (what == ENC_EUC || what == ENC_SJIS)
+                        M_print ("FIXME: conversion to/from SJIS and EUC has not yet been implemented.\n");
                 }
                 else
                 {
@@ -939,10 +990,6 @@ int Save_RC ()
     fprintf (rcf, "# Set some simple options.\n");
     fprintf (rcf, "set delbs     %s # if a DEL char is supposed to be backspace\n",
                     prG->flags & FLAG_DELBS     ? "on " : "off");
-    fprintf (rcf, "set russian   %s # if you want russian koi8-r/u <-> cp1251 character conversion\n",
-                    prG->flags & FLAG_CONVRUSS  ? "on " : "off");
-    fprintf (rcf, "set japanese  %s # if you want japanese Shift-JIS <-> EUC character conversion\n",
-                    prG->flags & FLAG_CONVEUC   ? "on " : "off");
     fprintf (rcf, "set funny     %s # if you want funny messages\n",
                     prG->flags & FLAG_FUNNY     ? "on " : "off");
     fprintf (rcf, "set color     %s # if you want colored messages\n",
@@ -965,7 +1012,22 @@ int Save_RC ()
                     prG->tabs == TABS_SIMPLE ? "simple" :
                     prG->tabs == TABS_CYCLE ? "cycle" : "cycleall");
 
-
+    fprintf (rcf, "# Character encodings.\nencoding local %s\n",
+                  prG->enc_loc == ENC_UTF8    ? "utf8"    :
+                  prG->enc_loc == ENC_LATIN1  ? "latin1"  :
+                  prG->enc_loc == ENC_LATIN9  ? "latin2"  :
+                  prG->enc_loc == ENC_EUC     ? "euc"     :
+                  prG->enc_loc == ENC_SJIS    ? "sjis"    :
+                  prG->enc_loc == ENC_KOI8    ? "koi8"    :
+                  prG->enc_loc == ENC_WIN1251 ? "win1251" : "auto");
+    fprintf (rcf, "encoding remote %s\n\n",
+                  prG->enc_rem == ENC_UTF8    ? "utf8"    :
+                  prG->enc_rem == ENC_LATIN1  ? "latin1"  :
+                  prG->enc_rem == ENC_LATIN9  ? "latin2"  :
+                  prG->enc_rem == ENC_EUC     ? "euc"     :
+                  prG->enc_rem == ENC_SJIS    ? "sjis"    :
+                  prG->enc_rem == ENC_KOI8    ? "koi8"    :
+                  prG->enc_rem == ENC_WIN1251 ? "win1251" : "auto");
     fprintf (rcf, "# Colors. color scheme 0|1|2|3 or color <use> <color>");
     {
         int i, l;
