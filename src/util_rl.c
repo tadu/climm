@@ -440,6 +440,7 @@ void ReadLineClrScr ()
 #else
     printf ("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 #endif
+    rl_prompt_stat = 0;
 }
 
 /*** read line basics ***/
