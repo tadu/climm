@@ -293,20 +293,11 @@ int main (int argc, char *argv[])
     }
 
     if (i == -1)
-        M_print ("Couldn't load internationalization. Maybe you want to do some translation work?\n");
-    else if (i)
-        M_printf (i18n (1081, "Successfully loaded en translation (%ld entries).\n"), i);
-    else
-        M_print ("No internationalization requested.\n");
-
-#if 0
-    if (i == -1)
         M_printf (i18n (2317, "Translation %s not found. Would you like to translate mICQ into your language?\n"), prG->locale_full);
     else if (i)
         M_printf (i18n (2318, "English (%s) translation loaded (%ld entries).\n"), prG->locale_full, i);
     else
         M_print ("No translation requested.\n");
-#endif
 
     if (ENC(enc_loc) == ENC_UTF8)
 #ifdef ENABLE_UTF8
