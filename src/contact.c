@@ -39,8 +39,10 @@ Contact *ContactAdd (UDWORD uin, const char *nick)
     cont->current_ip[3] = 0xff;
     cont->port = 0;
 #ifdef TCP_COMM
-    cont->sok = 0;
-    cont->sokflag = 0;
+    cont->sok.sok   = 0;
+    cont->sok.state = 0;
+    cont->sok.sid   = 0;
+    cont->sok.cont  = cont;
 #endif
     cont->version = NULL;
     

@@ -370,10 +370,33 @@ int R_process_input (void)
     return 0;
 }
 
+void R_getline (char *buf, int len)
+{
+    strncpy (buf, s, len);
+    cpos = 0;
+    clen = 0;
+    s[0] = 0;
+}
+
 static int R_undraw_counter = 1;
+static const char *curprompt = NULL;
+
+void R_setprompt (const char *prompt)
+{
+    if (curprompt)
+        free ((char *)curprompt);
+    curprompt = strdup (prompt);
+}
+
+void R_prompt (void)
+{
+    if (curprompt)
+        M_print (curprompt);
+}
 
 void R_undraw ()
 {
+    int i;
     R_undraw_counter--;
     if (R_undraw_counter < 0)
     {
@@ -388,6 +411,7 @@ void R_redraw ()
 {
     if (++R_undraw_counter > 0)
     {
+        
         R_prompt ();
         printf ("%s", s);
 #ifdef ANSI_COLOR
@@ -395,28 +419,6 @@ void R_redraw ()
             printf ("\033[%dD", clen - cpos);
 #endif
     }
-}
-
-void R_getline (char *buf, int len)
-{
-    strncpy (buf, s, len);
-    cpos = 0;
-    clen = 0;
-    s[0] = 0;
-}
-
-static const char *curprompt = NULL;
-void R_setprompt (const char *prompt)
-{
-    if (curprompt)
-        free ((char *)curprompt);
-    curprompt = strdup (prompt);
-}
-
-void R_prompt (void)
-{
-    if (curprompt)
-        M_print (curprompt);
 }
 
 void R_doprompt (const char *prompt)

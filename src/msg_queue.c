@@ -1,175 +1,178 @@
 /* $Id$ */
 
-/************************************************************
-Author Lawrence Gold
-Handles resending missed packets.
-*************************************************************/
-#include "micq.h"
-#include "util_ui.h"
-#include "util.h"
-#include "cmd_pkt_server.h"
-#include "contact.h"
+/*
+ * Provides a time sorted queue, with callback for due events.
+ *
+ * This file is © Rüdiger Kuhlmann; it may be distributed under the BSD
+ * licence (without the advertising clause) or version 2 of the GPL.
+ *
+ * This file replaces a simple FIFO implementation for a similar,
+ * but more limited, purpose by Lawrence Gold.
+ */
+
 #include <stdlib.h>
 #include <assert.h>
 #include <limits.h>
+#include "micq.h"
+#include "msg_queue.h"
 
-void msg_queue_init (struct msg_queue **queue)
+struct QueueEntry
+{
+    struct Event      *event;
+    struct QueueEntry *next;
+};
+
+struct Queue
+{
+    struct QueueEntry *head;
+    time_t due;
+};
+
+/*
+ * Create a new empty queue.
+ */
+void QueueInit (struct Queue **queue)
 {
     assert (queue);
     
-    *queue = malloc (sizeof (**queue));
-    (*queue)->entries = 0;
-    (*queue)->head = (*queue)->tail = NULL;
-    (*queue)->exp_time = INT_MAX;
+    *queue = malloc (sizeof (struct Queue));
+    (*queue)->head = NULL;
+    (*queue)->due = INT_MAX;
 }
 
-
-struct msg *msg_queue_peek (struct msg_queue *queue)
+/*
+ * Returns the event most due without removing it, or NULL.
+ */
+struct Event *QueuePeek (struct Queue *queue)
 {
     assert (queue);
 
     if (queue->head)
-        return queue->head->msg;
+        return queue->head->event;
     return NULL;
 }
 
-
-struct msg *msg_queue_pop (struct msg_queue *queue)
+/*
+ * Removes the event most due from the queue, or NULL.
+ */
+struct Event *QueuePop (struct Queue *queue)
 {
-    struct msg *popped_msg;
-    struct msg_queue_entry *temp;
+    struct Event *event;
+    struct QueueEntry *temp;
 
     assert (queue);
 
-    if (queue->head && (queue->entries > 0))
+    if (queue->head)
     {
-        popped_msg = queue->head->msg;
+        event = queue->head->event;
         temp = queue->head->next;
         free (queue->head);
         queue->head = temp;
-        queue->entries--;
         if (!queue->head)
-        {
-            queue->tail = NULL;
-            queue->exp_time = INT_MAX;
-        }
+            queue->due = INT_MAX;
         else
-            queue->exp_time = queue->head->msg->exp_time;
-        return popped_msg;
+            queue->due = queue->head->event->due;
+        return event;
     }
     return NULL;
 }
 
-
-void msg_queue_enqueue (struct msg_queue *queue, struct msg *new_msg)
+/*
+ * Adds a new entry to the queue.
+ */
+void QueueEnqueue (struct Queue *queue, struct Event *event)
 {
-    struct msg_queue_entry *new_entry;
-    struct msg_queue_entry *iter_entry;
+    struct QueueEntry *entry;
+    struct QueueEntry *iter;
 
     assert (queue);
-    assert (new_msg);
+    assert (event);
 
-    new_entry = malloc (sizeof (struct msg_queue_entry));
+    entry = malloc (sizeof (struct QueueEntry));
 
-    assert (new_entry);
+    assert (entry);
 
-    new_entry->next = NULL;
-    new_entry->msg = new_msg;
+    entry->next = NULL;
+    entry->event  = event;
 
-    if (!queue->head || !queue->tail)
+    if (!queue->head)
     {
-        queue->head = queue->tail = new_entry;
+        queue->head = entry;
     }
-    else if (new_msg->exp_time <= queue->head->msg->exp_time)
+    else if (event->due < queue->head->event->due)
     {
-        new_entry->next = queue->head;
-        queue->head = new_entry;
-    }
-    else if (new_msg->exp_time > queue->tail->msg->exp_time)
-    {
-        queue->tail->next = new_entry;
-        queue->tail = new_entry;
+        entry->next = queue->head;
+        queue->head = entry;
     }
     else
     {
-        for (iter_entry = queue->head; new_msg->exp_time > iter_entry->next->msg->exp_time; iter_entry = iter_entry->next)
+        for (iter = queue->head; iter->next &&
+             event->due >= iter->next->event->due; iter = iter->next)
         {
-           assert (iter_entry->next);
-           assert (iter_entry->next->next);
+           assert (iter->next);
         }
-        new_entry->next = iter_entry->next;
-        iter_entry->next = new_entry;
+        entry->next = iter->next;
+        iter->next = entry;
     }
-    queue->entries++;
-    queue->exp_time = queue->head->msg->exp_time;
+    queue->due = queue->head->event->due;
 }
 
-struct msg *msg_queue_dequeue_seq (struct msg_queue *queue, UDWORD seq)
+/*
+ * Removes and returns an event given by sequence number and type.
+ */
+struct Event *QueueDequeue (struct Queue *queue, UDWORD seq, UDWORD type)
 {
-    struct msg *queued_msg;
-    struct msg_queue_entry *iter_entry;
-    struct msg_queue_entry *tmp_entry;
+    struct Event *event;
+    struct QueueEntry *iter;
+    struct QueueEntry *tmp;
 
     assert (queue);
-    assert (0 <= queue->entries);
 
-    if (queue->head && queue->head->msg->seq == seq)
+    if (!queue->head)
+        return NULL;
+
+    if (queue->head->event->seq == seq && queue->head->event->type == type)
     {
-        tmp_entry = queue->head;
-        queued_msg = tmp_entry->msg;
+        tmp = queue->head;
+        event = tmp->event;
         queue->head = queue->head->next;
-        free (tmp_entry);
+        free (tmp);
+
         if (!queue->head)
-        {
-            queue->tail = NULL;
-            queue->exp_time = INT_MAX;
-        }
+            queue->due = INT_MAX;
         else
-            queue->exp_time = queue->head->msg->exp_time;
-        return queued_msg;
+            queue->due = queue->head->event->due;
+
+        return event;
     }
-    for (iter_entry = queue->head; iter_entry->next; iter_entry = iter_entry->next)
+    for (iter = queue->head; iter->next; iter = iter->next)
     {
-        if (iter_entry->next->msg->seq == seq)
+        if (iter->next->event->seq == seq && iter->next->event->type == type)
         {
-            tmp_entry = iter_entry->next;
-            queued_msg = tmp_entry->msg;
-            iter_entry->next=iter_entry->next->next;
-            free (tmp_entry);
-            if (queue->tail == tmp_entry)
-                queue->tail = iter_entry;
-            return queued_msg;
+            tmp = iter->next;
+            event = tmp->event;
+            iter->next=iter->next->next;
+            free (tmp);
+            return event;
         }
     }
     return NULL;
 }
 
-void Check_Queue (UDWORD seq, struct msg_queue *queue)
+/*
+ * Runs over the queue, removes all due events, and calls their callback
+ * function.
+ * Callback function may re-enqueue them with a later due time.
+ */
+void QueueRun (struct Queue *queue, SOK_T srvsok)
 {
-    struct msg *queued_msg = msg_queue_dequeue_seq (queue, seq);
-
-    if (!queued_msg)
-        return;
-
-    if (uiG.Verbose & 16)
+    time_t now = time (NULL);
+    struct Event *event;
+    
+    while (queue->due <= now)
     {
-        UDWORD tmp = Chars_2_Word (&queued_msg->body[CMD_OFFSET]);
-        R_undraw ();
-        M_print (i18n (824, "Acknowledged packet type %04x (%s) sequence %04x removed from queue.\n"),
-                 tmp, CmdPktSrvName (tmp), queued_msg->seq >> 16);
-        R_redraw ();
+        event = QueuePop (queue);
+        if (event->callback)
+            event->callback (srvsok, event);
     }
-    if (Chars_2_Word (&queued_msg->body[CMD_OFFSET]) == CMD_SENDM)
-    {
-        R_undraw ();
-        Time_Stamp ();
-        M_print (" " COLACK "%10s" COLNONE " %s%s\n",
-                 ContactFindName (Chars_2_DW (&queued_msg->body[PAK_DATA_OFFSET])),
-                 MSGACKSTR, MsgEllipsis (&queued_msg->body[32]));
-        R_redraw ();
-    }
-    free (queued_msg->body);
-    free (queued_msg);
-
-    ssG.next_resend = queue->exp_time;
 }

@@ -105,7 +105,6 @@ typedef struct
 #define COL_BG          0x00FFFFFF	/* Background colour in msg boxy */
 #define TCP_MSG_QUEUE   10
 
-extern struct msg_queue *tcp_rq, *tcp_sq;   /* recv and send queues */
 #endif
 
 

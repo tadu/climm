@@ -29,5 +29,5 @@ void Update_About (SOK_T sok, const char *about);
 void update_list (int sok, UDWORD uin, int which, BOOL add);
 void Keep_Alive (int sok);
 void Quit_ICQ (int sok);
-void Initialize_Msg_Queue (void);
-void Do_Resend (SOK_T sok);
+
+void UDPCallBackResend (SOK_T sok, struct Event *event);

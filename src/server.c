@@ -4,7 +4,6 @@
 #include "util_ui.h"
 #include "datatype.h"
 #include "mreadline.h"
-#include "msg_queue.h"
 #include "server.h"
 #include "sendmsg.h"
 #include "util.h"

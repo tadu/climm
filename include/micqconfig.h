@@ -78,5 +78,5 @@
 #define MSGEXEC
 
 /* enables experimental TCP support */
-#undef TCP_COMM
+#define TCP_COMM
 

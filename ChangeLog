@@ -1,12 +1,16 @@
 
-2001-12-## Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+2001-12-14 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Change mselect.c to also do select()ing on writefds; use
+	  M_Add_wsocket() to add.
 	* Let msg_queue.c sort the queue by exp_time; fix long-standing
-	  memory corruption bug
+	  memory corruption bug; add callback
 	* Move all this contact list stuff to a new src/contact.c. All
 	  funtions now named Contact*(), all source files changed
 	  acordingly. Lots of stuff!
-	*
-	*
+	* Rewrote huge parts of tcp.c to make it asynchronous (though
+	  still DoS'able); get rid of send queue; clean up output;
+	  add supplementary "tcp <open|close>" command
+	* Ignore trailing newlines on incoming messages
 
 2001-12-11 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Recognize and display licq's version numbers. Define a way

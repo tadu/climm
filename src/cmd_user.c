@@ -26,7 +26,7 @@ static jump_f
     CmdUserTogIgnore, CmdUserTogVisible, CmdUserAdd, CmdUserRInfo,
     CmdUserAuth, CmdUserURL, CmdUserSave, CmdUserTabs, CmdUserLast,
     CmdUserUptime, CmdUserSearch, CmdUserWpSearch, CmdUserUpdate,
-    CmdUserOther, CmdUserAbout, CmdUserQuit;
+    CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserTCP;
 
 static void CmdUserProcess (SOK_T sok, const char *command, int *idle_val, int *idle_flag);
 
@@ -75,6 +75,7 @@ static jump_t jump[] = {
     { &CmdUserTabs,          "tabs",         NULL, 0,   0 },
     { &CmdUserLast,          "last",         NULL, 0,   0 },
     { &CmdUserUptime,        "uptime",       NULL, 0,   0 },
+    { &CmdUserTCP,           "tcp",          NULL, 0,   0 },
     { &CmdUserQuit,          "q",            NULL, 0,   0 },
 
     { &CmdUserSearch,        "search",       NULL, 0,   0 },
@@ -489,6 +490,45 @@ JUMP_F(CmdUserTrans)
                     M_print ("No internationalization requested.\n");
             } 
         }
+    }
+    return 0;
+}
+
+/*
+ * Manually handles TCP connections.
+ */
+JUMP_F(CmdUserTCP)
+{
+    char *cmd, *nick;
+    Contact *cont = NULL;
+
+    cmd = strtok (args, " \t\n");
+
+    if (!strcmp (cmd, "open"))
+    {
+        nick = strtok (NULL, "");
+        if (nick)
+            cont = ContactFind (ContactFindByNick (nick));
+        if (cont)
+            TCPDirectOpen (cont);
+        else
+            M_print (i18n (845, "Nick %s unknown.\n"), nick ? nick : "");
+    }
+    else if (!strcmp (cmd, "close"))
+    {
+        nick = strtok (NULL, "");
+        if (nick)
+            cont = ContactFind (ContactFindByNick (nick));
+        if (cont)
+            TCPDirectClose (cont);
+        else
+            M_print (i18n (845, "Nick %s unknown.\n"), nick ? nick : "");
+    }
+    else
+    {
+        M_print (i18n (846, "Opens and closes TCP connections:\n"));
+        M_print (i18n (847, "    open <nick>  - Opens TCP connection.\n"));
+        M_print (i18n (848, "    close <nick> - Closes/resets TCP connection(s).\n"));
     }
     return 0;
 }

@@ -954,6 +954,8 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin, BOOL tcp
     else
     {
         ConvWinUnix (data);
+        while (*data && (data[strlen (data) - 1] == '\n' || data[strlen (data) - 1] == '\r'))
+            data[strlen (data) - 1] = '\0';
         log_event (uin, LOG_MESS, "You received instant message from %s\n%s\n",
                    ContactFindName (uin), data);
         M_print ("%s" COLMESS "\x1b<%s" COLNONE "\x1b>\n", tcp ? MSGTCPRECSTR : MSGRECSTR, data);

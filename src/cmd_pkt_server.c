@@ -12,10 +12,10 @@
 #include <string.h>
 #include <stdio.h>
 
-static jump_srv_f CmdPktSrvMulti;
+static jump_srv_f CmdPktSrvMulti, CmdPktSrvAck;
 
 static jump_srv_t jump[] = {
-    { SRV_ACK,                NULL,            "SRV_ACK"                },
+    { SRV_ACK,                &CmdPktSrvAck,   "SRV_ACK"                },
     { SRV_GO_AWAY,            NULL,            "SRV_GO_AWAY"            },
     { SRV_NEW_UIN,            NULL,            "SRV_NEW_UIN"            },
     { SRV_LOGIN_REPLY,        NULL,            "SRV_LOGIN_REPLY"        },
@@ -144,7 +144,7 @@ void CmdPktSrvRead (SOK_T sok)
 /*
  * Process the given server packet
  */
-void CmdPktSrvProcess (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd,
+void CmdPktSrvProcess (SOK_T sok, UBYTE * data, int len, UWORD cmd,
                        UWORD ver, UDWORD seq, UDWORD uin)
 {
     jump_srv_t *t;
@@ -156,22 +156,13 @@ void CmdPktSrvProcess (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd,
     {
         if (cmd == t->cmd && t->f)
         {
-            t->f (sok, data, len);
+            t->f (sok, data, len, cmd, ver, seq, uin);
             return;
         }
     }
 
     switch (cmd)
     {
-        case SRV_ACK:
-            if (len && uiG.Verbose)
-            {
-                R_undraw ();
-                M_print ("%s %s %d\n", i18n (47, "Extra Data"), i18n (46, "Length"), len);
-                R_redraw ();
-            }
-            Check_Queue (seq, queue);
-            break;
         case SRV_META_USER:
             R_undraw ();
             Meta_User (sok, data, len, uin);
@@ -274,6 +265,7 @@ void CmdPktSrvProcess (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd,
             if (i < 0)
             {
                 sleep (2);
+                ssG.our_session = 0;
                 Login (sok, ssG.UIN, &ssG.passwd[0], ssG.our_ip, ssG.our_port, ssG.set_status);
             }
             else if (!i)
@@ -282,6 +274,8 @@ void CmdPktSrvProcess (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd,
                 Login (sok, ssG.UIN, &ssG.passwd[0], ssG.our_ip, ssG.our_port, ssG.set_status);
                 _exit (0);
             }
+            else
+                ssG.our_session = 0;
             R_redraw ();
             break;
         case SRV_USER_ONLINE:
@@ -315,6 +309,7 @@ void CmdPktSrvProcess (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd,
             if (i < 0)
             {
                 sleep (2);
+                ssG.our_session = 0;
                 Login (sok, ssG.UIN, &ssG.passwd[0], ssG.our_ip, ssG.our_port, ssG.set_status);
             }
             else if (!i)
@@ -323,6 +318,8 @@ void CmdPktSrvProcess (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd,
                 Login (sok, ssG.UIN, &ssG.passwd[0], ssG.our_ip, ssG.our_port, ssG.set_status);
                 _exit (0);
             }
+            else
+                ssG.our_session = 0;
             M_print ("\n");
             break;
         case SRV_END_OF_SEARCH:
@@ -442,4 +439,55 @@ JUMP_SRV_F (CmdPktSrvMulti)
                          Chars_2_DW (pak.head.seq), Chars_2_DW (pak.head.UIN));
         j += llen;
     }
+}
+
+/*
+ * SRV_ACK - Remove acknowledged packet from queue.
+ */
+JUMP_SRV_F (CmdPktSrvAck)
+{
+    struct Event *event = QueueDequeue (queue, seq, QUEUE_TYPE_UDP_RESEND);
+    UDWORD ccmd;
+
+    if (!event)
+    {
+        if (uiG.Verbose)
+        {
+            /* complain */
+        }
+        return;
+    }
+
+    if (len && uiG.Verbose)
+    {
+        R_undraw ();
+        M_print ("%s %s %d\n", i18n (47, "Extra Data"), i18n (46, "Length"), len);
+        R_redraw ();
+    }
+    
+    if (!event)
+        return;
+
+    ccmd = Chars_2_Word (&event->body[CMD_OFFSET]);
+
+    if (uiG.Verbose & 16)
+    {
+        R_undraw ();
+        M_print (i18n (824, "Acknowledged packet type %04x (%s) sequence %04x removed from queue.\n"),
+                 ccmd, CmdPktSrvName (ccmd), event->seq >> 16);
+        R_redraw ();
+    }
+    if (ccmd == CMD_SENDM)
+    {
+        R_undraw ();
+        Time_Stamp ();
+        M_print (" " COLACK "%10s" COLNONE " %s%s\n",
+                 ContactFindName (Chars_2_DW (&event->body[PAK_DATA_OFFSET])),
+                 MSGACKSTR, MsgEllipsis (&event->body[32]));
+        R_redraw ();
+    }
+    if (event->info)
+        free (event->info);
+    free (event->body);
+    free (event);
 }

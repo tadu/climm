@@ -1,14 +1,5 @@
 /* $Id$ */
 
-#include "micq.h"
-#include "buildmark.h"
-#include "util_ui.h"
-#include "file_util.h"
-#include "tabs.h"
-#include "contact.h"
-#include "util.h"
-#include "cmd_user.h"
-#include "sendmsg.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -19,6 +10,17 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+
+#include "micq.h"
+#include "buildmark.h"
+#include "util_ui.h"
+#include "file_util.h"
+#include "tabs.h"
+#include "contact.h"
+#include "tcp.h"
+#include "util.h"
+#include "cmd_user.h"
+#include "sendmsg.h"
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>

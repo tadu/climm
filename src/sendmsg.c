@@ -37,18 +37,11 @@ static void Gen_Checksum (UBYTE * buf, UDWORD len);
 static UDWORD Scramble_cc (UDWORD cc);
 static void Wrinkle (void *buf, size_t len);
 
-/* Historical */
-void Initialize_Msg_Queue ()
+/*
+ * Callback function that handles UDP resends.
+ */
+void UDPCallBackResend (SOK_T sok, struct Event *event)
 {
-    msg_queue_init (&queue);
-}
-
-/****************************************************************
-Checks if packets are waiting to be resent and sends them.
-*****************************************************************/
-void Do_Resend (SOK_T sok)
-{
-    struct msg *queued_msg;
     SIMPLE_MESSAGE_PTR s_mesg;
     UDWORD type;
     char *data;
@@ -57,95 +50,79 @@ void Do_Resend (SOK_T sok)
     char url_desc[1024], url_data[1024];
     net_icq_pak pak;
 
-    if ((queued_msg = msg_queue_pop (queue)) != NULL)
+    event->attempts++;
+    if (event->attempts <= MAX_RETRY_ATTEMPTS)
     {
-        queued_msg->attempts++;
-        if (queued_msg->attempts <= MAX_RETRY_ATTEMPTS)
+        if (uiG.Verbose & 16)
         {
-            if (uiG.Verbose & 16)
-            {
-                R_undraw ();
-                M_print ("\n");
-                M_print (i18n (826, "Resending message %04x (%s) sequence %04x (attempt #%d, len %d).\n"),
-                         Chars_2_Word (&queued_msg->body[CMD_OFFSET]), CmdPktSrvName (Chars_2_Word (&queued_msg->body[CMD_OFFSET])),
-                         queued_msg->seq >> 16, queued_msg->attempts, queued_msg->len);
-                R_redraw ();
-            }
-            temp = malloc (queued_msg->len + 3);        /* make sure packet fits in UDWORDS */
-            assert (temp != NULL);
-            memcpy (temp, queued_msg->body, queued_msg->len);
-/*	    Hex_Dump( temp, queued_msg->len );*/
-            SOCKWRITE_LOW (sok, temp, queued_msg->len);
-            free (temp);
-            queued_msg->exp_time = time (NULL) + 10;
-            msg_queue_push (queued_msg, queue);
-        }
-        else
-        {
-            memcpy (&pak.head.ver, queued_msg->body, queued_msg->len);
             R_undraw ();
-            if (CMD_SENDM == Chars_2_Word (pak.head.cmd))
-            {
-                s_mesg = (SIMPLE_MESSAGE_PTR) pak.data;
-                M_print ("\n");
-                M_print (i18n (830, "Discarding message to %s after %d send attempts.  Message content:\n"),
-                         ContactFindName (Chars_2_DW (s_mesg->uin)), queued_msg->attempts - 1);
-
-                type = Chars_2_Word (s_mesg->type);
-                data = s_mesg->len + 2;
-                if (type == URL_MESS || type == MRURL_MESS)
-                {
-                    tmp = strchr (data, '\xFE');
-                    if (tmp != NULL)
-                    {
-                        *tmp = 0;
-                        ConvUnixWin (data);
-                        strcpy (url_desc, data);
-                        tmp++;
-                        data = tmp;
-                        ConvUnixWin (data);
-                        strcpy (url_data, data);
-
-                        M_print (i18n (628, " Description: " COLMESS "%s" COLNONE "\n"), url_desc);
-                        M_print (i18n (629, " URL:         " COLMESS "%s" COLNONE), url_data);
-                    }
-                }
-                else if (type == NORM_MESS || type == MRNORM_MESS)
-                {
-                    ConvUnixWin (data);
-                    M_print (COLMESS "%s", data);
-                    M_print (COLNONE " ");
-                }
-            }
-            else
-            {
-                M_print (i18n (825, "Discarded a %04x (%s) packet"), pak.head.cmd, CmdPktSrvName (*(UDWORD *)(&pak.head.cmd)));
-                if ((CMD_LOGIN == Chars_2_Word (pak.head.cmd))
-                    || (CMD_KEEP_ALIVE == Chars_2_Word (pak.head.cmd)))
-                {
-                    M_print (i18n (632, "\n\aConnection unstable. Exiting...."));
-                    ssG.Quit = TRUE;
-                }
-            }
-            M_print ("\n");
+            M_print (i18n (826, "Resending message %04x (%s) sequence %04x (attempt #%d, len %d).\n"),
+                     Chars_2_Word (&event->body[CMD_OFFSET]), CmdPktSrvName (Chars_2_Word (&event->body[CMD_OFFSET])),
+                     event->seq >> 16, event->attempts, event->len);
             R_redraw ();
-
-            free (queued_msg->body);
-            free (queued_msg);
         }
-
-        if ((queued_msg = msg_queue_peek (queue)) != NULL)
-        {
-            ssG.next_resend = queued_msg->exp_time;
-        }
-        else
-        {
-            ssG.next_resend = INT_MAX;
-        }
+        temp = malloc (event->len + 3);        /* make sure packet fits in UDWORDS */
+        assert (temp != NULL);
+        memcpy (temp, event->body, event->len);
+        SOCKWRITE_LOW (sok, temp, event->len);
+        free (temp);
+        event->due = time (NULL) + 10;
+        QueueEnqueue (queue, event);
     }
     else
     {
-        ssG.next_resend = INT_MAX;
+        memcpy (&pak.head.ver, event->body, event->len);
+        R_undraw ();
+        if (CMD_SENDM == Chars_2_Word (pak.head.cmd))
+        {
+            s_mesg = (SIMPLE_MESSAGE_PTR) pak.data;
+            M_print ("\n");
+            M_print (i18n (830, "Discarding message to %s after %d send attempts.  Message content:\n"),
+                     ContactFindName (Chars_2_DW (s_mesg->uin)), event->attempts - 1);
+
+            type = Chars_2_Word (s_mesg->type);
+            data = s_mesg->len + 2;
+            if (type == URL_MESS || type == MRURL_MESS)
+            {
+                tmp = strchr (data, '\xFE');
+                if (tmp != NULL)
+                {
+                    *tmp = 0;
+                    ConvUnixWin (data);
+                    strcpy (url_desc, data);
+                    tmp++;
+                    data = tmp;
+                    ConvUnixWin (data);
+                    strcpy (url_data, data);
+
+                    M_print (i18n (628, " Description: " COLMESS "%s" COLNONE "\n"), url_desc);
+                    M_print (i18n (629, " URL:         " COLMESS "%s" COLNONE), url_data);
+                }
+            }
+            else if (type == NORM_MESS || type == MRNORM_MESS)
+            {
+                ConvUnixWin (data);
+                M_print (COLMESS "%s", data);
+                M_print (COLNONE " ");
+            }
+        }
+        else
+        {
+            M_print (i18n (825, "Discarded a %04x (%s) packet"), pak.head.cmd, CmdPktSrvName (*(UDWORD *)(&pak.head.cmd)));
+            if ((CMD_LOGIN == Chars_2_Word (pak.head.cmd))
+                || (CMD_KEEP_ALIVE == Chars_2_Word (pak.head.cmd)))
+            {
+                M_print (i18n (632, "\n\aConnection unstable. Exiting...."));
+                ssG.Quit = TRUE;
+            }
+        }
+        M_print ("\n");
+        R_redraw ();
+
+        free (event);
+        free (event->body);
+        if (event->info)
+            free (event->info);
     }
 }
 
@@ -1181,7 +1158,7 @@ Adds packet to the queued messages.
 ****************************************************************/
 size_t SOCKWRITE (SOK_T sok, void *ptr, size_t len)
 {
-    struct msg *msg_to_queue;
+    struct Event *event;
     static UWORD seq2 = 0;
     UWORD temp;
     UWORD cmd;
@@ -1202,9 +1179,9 @@ size_t SOCKWRITE (SOK_T sok, void *ptr, size_t len)
     if (cmd != CMD_ACK)
     {
         ssG.real_packs_sent++;
-        msg_to_queue = (struct msg *) malloc (sizeof (struct msg));
+        event = (struct Event *) malloc (sizeof (struct Event));
 #if ICQ_VER == 0x0004
-        msg_to_queue->seq = Chars_2_Word (&((UBYTE *) ptr)[SEQ_OFFSET]);
+        event->seq = Chars_2_Word (&((UBYTE *) ptr)[SEQ_OFFSET]);
 #elif ICQ_VER == 0x0005
         if (0 == seq2)
         {
@@ -1219,21 +1196,19 @@ size_t SOCKWRITE (SOK_T sok, void *ptr, size_t len)
 /*       seq2++;*/
             ssG.seq_num--;
         }
-        msg_to_queue->seq = Chars_2_DW (&((UBYTE *) ptr)[SEQ_OFFSET]);
+        event->seq = Chars_2_DW (&((UBYTE *) ptr)[SEQ_OFFSET]);
 #else
 #error Incorrect ICQ_VERsion
 #endif
-        msg_to_queue->attempts = 1;
-        msg_to_queue->exp_time = time (NULL) + 10;
-        msg_to_queue->body = (UBYTE *) malloc (len);
-        msg_to_queue->len = len;
-        memcpy (msg_to_queue->body, ptr, msg_to_queue->len);
-        msg_queue_push (msg_to_queue, queue);
-
-        if (msg_queue_peek (queue) == msg_to_queue)
-        {
-            ssG.next_resend = msg_to_queue->exp_time;
-        }
+        event->attempts = 1;
+        event->due = time (NULL) + 10;
+        event->body = (UBYTE *) malloc (len);
+        event->info = NULL;
+        event->len = len;
+        event->callback = &UDPCallBackResend;
+        event->type = QUEUE_TYPE_UDP_RESEND;
+        memcpy (event->body, ptr, event->len);
+        QueueEnqueue (queue, event);
     }
     return SOCKWRITE_LOW (sok, ptr, len);
 }

@@ -56,7 +56,7 @@ socks5_state         s5G;
 static int idle_val = 0;
 static int idle_flag = 0;
 
-struct msg_queue *queue = NULL;
+struct Queue *queue = NULL;
 
 void init_global_defaults () {
   /* Initialize User Interface global state */
@@ -414,7 +414,7 @@ int main (int argc, char *argv[])
     int tcpSok;
     Contact *cont;
 #endif
-    int i, j;
+    int i, j, rc;
     int next;
     int time_delay = 120;
 #ifdef _WIN32
@@ -493,7 +493,7 @@ int main (int argc, char *argv[])
     M_print (i18n (616, "Started BeOS InputThread\n\r"));
 #endif
 
-    Initialize_Msg_Queue ();
+    QueueInit (&queue);
     Check_Endian ();
 
 
@@ -526,7 +526,6 @@ int main (int argc, char *argv[])
     next = time (NULL);
     idle_val = time (NULL);
     next += 120;
-    ssG.next_resend = 10;
     R_init ();
     Prompt ();
     while (!ssG.Quit)
@@ -547,21 +546,26 @@ int main (int argc, char *argv[])
 #ifdef TCP_COMM
         M_Add_rsocket (tcpSok);
         for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
-            if (cont->sokflag > 0)
-                M_Add_rsocket (cont->sok);
+            if (cont->sok.state > 0)
+            {
+                if (cont->sok.state < 3)
+                    M_Add_wsocket (cont->sok.sok);
+                else
+                    M_Add_rsocket (cont->sok.sok);
+            }
 #endif
-
-        M_select ();
+        rc = M_select ();
+        assert (rc >= 0);
 
         if (M_Is_Set (sok))
             CmdPktSrvRead (sok);
 #ifdef TCP_COMM
         if (M_Is_Set (tcpSok))
-            New_TCP (tcpSok);
+            TCPDirectReceive (tcpSok);
         for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
-            if (cont->sokflag > 0)
-                if (M_Is_Set (cont->sok))
-                    TCPHandleComm (cont);
+            if (cont->sok.state > 0)
+                if (M_Is_Set (cont->sok.sok))
+                    TCPHandleComm (cont, M_Is_Set (cont->sok.sok));
 #endif
 
 
@@ -574,11 +578,8 @@ int main (int argc, char *argv[])
         if (M_Is_Set (STDIN))
 #endif
 #endif
-        {
-/*         idle_val = time( NULL );*/
             if (R_process_input ())
                 CmdUserInput (sok, &idle_val, &idle_flag);
-        }
 
         if (time (NULL) > next)
         {
@@ -586,17 +587,7 @@ int main (int argc, char *argv[])
             Keep_Alive (sok);
         }
 
-        if (time (NULL) > ssG.next_resend)
-        {
-            Do_Resend (sok);
-        }
-/*** TCP: Resend stuff ***/
-#ifdef TCP_COMM
-        if (time (NULL) > ssG.next_tcp_resend)
-        {
-            Do_TCP_Resend (sok);
-        }
-#endif
+        QueueRun (queue, sok);
 
 #if HAVE_FORK
         while (waitpid (-1, NULL, WNOHANG) > 0);        /* clean up child processes */

@@ -276,8 +276,6 @@ typedef struct {
         char server[100];
         UDWORD remote_port;
         UDWORD set_status;
-        unsigned int next_resend;
-        unsigned int next_tcp_resend;
         UDWORD our_session;
         BOOL Done_Login;
         unsigned int away_time, away_time_prev;
@@ -315,7 +313,4 @@ extern socks5_state s5G;
 #include "i18n.h"
 int Connect_Remote (char *hostname, int port, FD_T aux);
 
-extern struct msg_queue *queue;
-#ifdef TCP_COMM
-extern struct msg_queue *tcp_rq, *tcp_sq;   /* recv and send queues */
-#endif 
+extern struct Queue *queue;

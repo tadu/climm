@@ -192,7 +192,7 @@
 192:server = %s¶
 193:status = %ld¶
 194:Auto-response message for %s:¶
-195:TCP timeout; sending message to %s after %d send attempts.
+195: 
 196:Message_cmd = %s¶
 197:Password change was ©2%s©0.¶
 198:Other Services
@@ -614,9 +614,9 @@
 614:Using config file "%s"¶
 615:Logging to "%s"¶
 616:Started BeOS InputThread¶\r
-617:Memory exhausted!!¶
-618:¶Total entries %d¶
-619:SEQ = %04x	CMD = %04x	attempts = %d	len = %d¶
+617: 
+618: 
+619: 
 620: 
 621: 
 622:Do you want to apply these changes? (YES/NO)
@@ -777,23 +777,23 @@
 777:The port that will be used for tcp (partially implemented) is %d¶
 778:Incoming TCP packet:
 779:Opening TCP connection to %s at %s:%d... 
-780:failure - couldn't create socket.¶
+780:failure - couldn't create socket: %s (%d).¶
 781: 
 782: 
 783: 
 784: 
 785:success.¶
 786: 
-787:Error sending TCP packet.¶
-788:Error receiving TCP packet.
+787: 
+788: 
 789:Received malformed packet.
-790:Sending init ACK...¶
-791:Error sending TCP packet.
-792:Establishing a direct TCP connection...¶
-793:Port: %lu¶
-794:Uin : %lu¶
-795:SID : 0x%08X¶
-796:Error initiating a TCP connection.¶
+790: 
+791: 
+792: 
+793: 
+794: 
+795: 
+796: 
 797:User %s%s%s closed socket.¶
 798: 
 799: 
@@ -805,10 +805,10 @@
 805:SoundOffline
 806:Received ACK for message (seq %04X) from %s¶
 807:Cancelled incoming message (seq %04X) from %s¶
-808: Typ    = %04x	
+808: 
 809:Unable to retrieve auto-response message for %s.
-810:¶Resending TCP message with SEQ num %04X to %s.	
-811: (Attempt #%d.)
+810: 
+811: 
 812: 
 813: 
 814:Sent auto-response message to %s%s%s.¶
@@ -825,6 +825,25 @@
 825:Discarded a %04x (%s) packet
 826:Resending message %04x (%s) sequence %04x (attempt #%d, len %d).¶
 827:Unknown client
-828:failure - couldn't set socket nonblocking.¶
+828:failure - couldn't set socket nonblocking: %s (%d).¶
 829:failure - connect failed %d (%s) (%d)¶
 830:Discarding message to %s after %d send attempts.  Message content:¶
+831: 
+832:failure - couldn't set socket blocking.¶
+833:Client-to-client TCP connection to %s established.¶
+834:Error while reading from socket - %s (%d)¶
+835:Error while writing to socket - %s (%d)¶
+836:Sending TCP direct connection initialization packet.¶
+837:Acknowledging TCP direct connection initialization packet.¶
+838:Received direct connection initialization.¶
+839:Version %04x:%04x, Port %d, UIN %d, session %08x¶
+840:Received malformed direct connection initialization.¶
+841:Received malformed initialization acknowledgement packet.
+842:Closing socket %d to %s.¶
+843:Closing socket %d.¶
+844:TCP message %04x discarded after timeout.¶
+845:Nick %s unknown.¶
+846:Opens and closes TCP connections:¶
+847:    open <nick>  - Opens TCP connection.¶
+848:    close <nick> - Closes/resets TCP connection(s).¶
+849:Error on select: %s (%d)¶

@@ -5,15 +5,6 @@
  *  Lots of changes from Rüdiger Kuhlmann.
  */
 
-/*
-.#include "datatype.h"
-.#include "mselect.h"
-.#include "msg_queue.h"
-.#include "mreadline.h"
-.#include "util_ui.h"
-.#include "util.h"
-*/
-
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -44,6 +35,18 @@
 
 #ifdef TCP_COMM
 
+static int  TCPReceivePacket  (tcpsock_t *sok, void **pak);
+static void TCPSendPacket     (tcpsock_t *sok, void *pak, UWORD size);
+static void TCPClose          (tcpsock_t *sok);
+
+static void TCPSendInit       (tcpsock_t *sok);
+static void TCPSendInitAck    (tcpsock_t *sok);
+static void TCPReceiveInit    (tcpsock_t *sok);
+static void TCPReceiveInitAck (tcpsock_t *sok);
+
+static void TCPCallBackResend (int srvsok, struct Event *event);
+
+
 const UBYTE client_check_data[] = {
     "As part of this software beta version Mirabilis is "
     "granting a limited access to the ICQ network, "
@@ -54,15 +57,7 @@ const UBYTE client_check_data[] = {
     "ICQ Service and Information may\0"
 };
 
-struct msg_queue *tcp_rq = NULL, *tcp_sq = NULL;
-
-void TCPClose (Contact *cont)
-{
-    close (cont->sok);
-    cont->sok = 0;
-    cont->sokflag = 0;
-    cont->session_id = 0;
-}
+struct Queue *tcp_rq = NULL;
 
 /* Initializes TCP socket for incoming connections on given port.
  * 0 = random port
@@ -73,8 +68,7 @@ SOK_T TCPInit (int port)
     int length;
     struct sockaddr_in sin;
 
-    msg_queue_init (&tcp_rq);
-    msg_queue_init (&tcp_sq);
+    QueueInit (&tcp_rq);
 
     sok = socket (AF_INET, SOCK_STREAM, 0);
     if (sok == -1)
@@ -109,288 +103,416 @@ SOK_T TCPInit (int port)
     return sok;
 }
 
+
 /*
- * Handles activity on socket for given contact.
+ *  Starts establishing a TCP connection to given contact.
  */
-void TCPHandleComm (Contact *cont)
+void TCPDirectOpen (Contact *cont)
 {
-    if (cont->sokflag > 0 && cont->sokflag < 10)
-        TCPConnect (cont);
-    else if (cont->session_id > 0)
-        Recv_TCP_Init (cont->sok);
-    else
-        Handle_TCP_Comm (cont->uin);
+    if (cont->sok.state == 10)
+        return;
+
+    TCPClose (&cont->sok);
+    TCPConnect (&cont->sok, 0);
 }
 
 /*
- *  Establishes a TCP connection to given contact.
+ * Closes TCP message connection to given contact.
+ */
+void TCPDirectClose (Contact *cont)
+{
+    TCPClose (&cont->sok);
+}
+
+
+/*
+ *  Does the next step establishing a TCP connection to given contact.
  *  On error, returns -1.
  */
-int TCPConnect (Contact *cont)
+int TCPConnect (tcpsock_t *sok, int mode)
 {
     struct sockaddr_in sin;
     int flags, rc;
-/*    TCP_INIT_PTR pak;*/
     static time_t last;
     time_t now;
     
-    R_undraw ();
-    M_print ("Debug: entered TCPConnect\n");
-    R_redraw ();
     while (1)
     {
-        R_undraw ();
-        M_print ("Debug: on %s sok %d sokflag %d\n", cont->nick, cont->sok, cont->sokflag);
-        R_redraw ();
-        switch (cont->sokflag)
+        switch (sok->state)
         {
             case -1:
                 return -1;
             case 0:
                 sin.sin_family = AF_INET;
-                sin.sin_port = htons (cont->port);
-                sin.sin_addr.s_addr = Chars_2_DW (cont->current_ip);
+                sin.sin_port = htons (sok->cont->port);
+                sin.sin_addr.s_addr = Chars_2_DW (sok->cont->current_ip);
 
-                cont->sok = socket (AF_INET, SOCK_STREAM, 0);
+                sok->sok = socket (AF_INET, SOCK_STREAM, 0);
               
-                if (cont->sok <= 0)
+                if (sok->sok <= 0)
                 {
-                    R_undraw ();
-                    M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
-                    M_print (i18n (780, "failure - couldn't create socket.\n"));
-                    R_redraw ();
+                    if (uiG.Verbose)
+                    {
+                        rc = errno;
+                        R_undraw ();
+                        M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , sok->cont->nick, inet_ntoa (sin.sin_addr), sok->cont->port);
+                        M_print (i18n (780, "failure - couldn't create socket: %s (%d).\n"), strerror (rc), rc);
+                        R_redraw ();
+                    }
                     return -1;
                 }
 
-                flags = fcntl (cont->sok, F_GETFL, 0);
+                flags = fcntl (sok->sok, F_GETFL, 0);
                 if (flags != -1)
-                    flags = fcntl (cont->sok, F_SETFL, flags | O_NONBLOCK);
+                    flags = fcntl (sok->sok, F_SETFL, flags | O_NONBLOCK);
                 if (flags == -1)
                 {
+                    rc = errno;
                     R_undraw ();
-                    M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
-                    M_print (i18n (828, "failure - couldn't set socket nonblocking.\n"));
+                    M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , sok->cont->nick, inet_ntoa (sin.sin_addr), sok->cont->port);
+                    M_print (i18n (828, "failure - couldn't set socket nonblocking: %s (%d).\n"), strerror (rc), rc);
                     R_redraw ();
-                    close (cont->sok);
+                    close (sok->sok);
                     return -1;
                 }
 
                 last = time (NULL);
-                cont->session_id = sin.sin_addr.s_addr;
-                rc = connect (cont->sok, (struct sockaddr *) &sin, sizeof (struct sockaddr));
+                sok->sid = sin.sin_addr.s_addr;
+                rc = connect (sok->sok, (struct sockaddr *) &sin, sizeof (struct sockaddr));
                 if (rc >= 0)
                 {
-                    cont->sokflag = 3;
+                    sok->state = 3;
                     break;
                 }
-                if (errno == EINPROGRESS)
+                if ((rc = errno) == EINPROGRESS)
                 {
-                    cont->sokflag = 1;
+                    sok->state = 1;
                     return 0;
                 }
                 R_undraw ();
-                M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
-                M_print (i18n (829, "failure - connect failed %d (%s) (%d)\n"), errno, strerror (rc), 1);
+                M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , sok->cont->nick, inet_ntoa (sin.sin_addr), sok->cont->port);
+                M_print (i18n (829, "failure - connect failed %d (%s) (%d)\n"), rc, strerror (rc), 1);
                 R_redraw ();
-                close (cont->sok);
-                cont->sok = 0;
+                close (sok->sok);
+                sok->sok = 0;
+                sok->state = -1;
                 return -1;
             case 1:
                 now = time (NULL);
                 rc = 0;
                 flags = sizeof (int);
-                if (getsockopt (cont->sok, SOL_SOCKET, SO_ERROR, &rc, &flags) < 0)
+                if (getsockopt (sok->sok, SOL_SOCKET, SO_ERROR, &rc, &flags) < 0)
                     rc = errno;
                 if (!rc)
                 {
-                    cont->sokflag = 3;
+                    sok->state = 3;
                     break;
                 }
-                close (cont->sok);
+                close (sok->sok);
 
-                sin.sin_addr.s_addr = cont->session_id;
-                R_undraw ();
-                M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
-                M_print (i18n (829, "failure - connect failed %d (%s) (%d)\n"), errno, strerror (rc), 2);
-                R_redraw ();
+                if (uiG.Verbose)
+                {
+                    sin.sin_addr.s_addr = sok->sid;
+                    R_undraw ();
+                    M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , sok->cont->nick, inet_ntoa (sin.sin_addr), sok->cont->port);
+                    M_print (i18n (829, "failure - connect failed %d (%s) (%d)\n"), errno, strerror (rc), 2);
+                    R_redraw ();
+                }
 
                 sin.sin_family = AF_INET;
-                sin.sin_port = htons (cont->port);
-                sin.sin_addr.s_addr = Chars_2_DW (cont->other_ip);
+                sin.sin_port = htons (sok->cont->port);
+                sin.sin_addr.s_addr = Chars_2_DW (sok->cont->other_ip);
 
-                cont->sok = socket (AF_INET, SOCK_STREAM, 0);
+                sok->sok = socket (AF_INET, SOCK_STREAM, 0);
               
-                if (cont->sok <= 0)
+                if (sok->sok <= 0)
                 {
+                    rc = errno;
                     R_undraw ();
-                    M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
-                    M_print (i18n (780, "failure - couldn't create socket.\n"));
+                    M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , sok->cont->nick, inet_ntoa (sin.sin_addr), sok->cont->port);
+                    M_print (i18n (780, "failure - couldn't create socket: %s (%d).\n"), strerror (rc), rc);
                     R_redraw ();
-                    cont->sok = 0;
+                    sok->sok = 0;
+                    sok->state = 0;
                     return -1;
                 }
 
-                flags = fcntl (cont->sok, F_GETFL, 0);
+                flags = fcntl (sok->sok, F_GETFL, 0);
                 if (flags != -1)
-                    flags = fcntl (cont->sok, F_SETFL, flags | O_NONBLOCK);
+                    flags = fcntl (sok->sok, F_SETFL, flags | O_NONBLOCK);
                 if (flags == -1)
                 {
+                    rc = errno;
                     R_undraw ();
-                    M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
-                    M_print (i18n (828, "failure - couldn't set socket nonblocking.\n"));
+                    M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , sok->cont->nick, inet_ntoa (sin.sin_addr), sok->cont->port);
+                    M_print (i18n (828, "failure - couldn't set socket nonblocking: %s (%d).\n"), strerror (rc), rc);
                     R_redraw ();
-                    close (cont->sok);
-                    cont->sok = 0;
+                    TCPClose (sok);
                     return -1;
                 }
 
                 last = time (NULL);
-                rc = connect (cont->sok, (struct sockaddr *) &sin, sizeof (struct sockaddr));
+                rc = connect (sok->sok, (struct sockaddr *) &sin, sizeof (struct sockaddr));
                 if (rc >= 0)
                 {
-                    cont->sokflag = 3;
+                    sok->state = 3;
                     break;
                 }
                 if (errno == EINPROGRESS)
                 {
-                    cont->sokflag = 2;
+                    sok->state = 2;
                     return 0;
                 }
                 R_undraw ();
-                M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
+                M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , sok->cont->nick, inet_ntoa (sin.sin_addr), sok->cont->port);
                 M_print (i18n (829, "failure - connect failed %d (%s) (%d)\n"), errno, strerror (rc), 3);
                 R_redraw ();
-                close (cont->sok);
-                cont->sok = 0;
-                cont->sokflag = 0;
+                close (sok->sok);
+                sok->sok = 0;
+                sok->state = 0;
                 return -1;
             case 2:
                 now = time (NULL);
                 rc = 0;
                 flags = sizeof (int);
-                if (getsockopt (cont->sok, SOL_SOCKET, SO_ERROR, &rc, &flags) < 0)
+                if (getsockopt (sok->sok, SOL_SOCKET, SO_ERROR, &rc, &flags) < 0)
                     rc = errno;
                 if (!rc)
                 {
-                    cont->sokflag = 3;
+                    sok->state = 3;
                     break;
                 }
-                sin.sin_addr.s_addr = cont->session_id;
+                sin.sin_addr.s_addr = sok->sid;
                 R_undraw ();
-                M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
+                M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , sok->cont->nick, inet_ntoa (sin.sin_addr), sok->cont->port);
                 M_print (i18n (829, "failure - connect failed %d (%s) (%d)\n"), errno, strerror (rc), 4);
                 R_redraw ();
-                close (cont->sok);
-                cont->sok = 0;
-                cont->sokflag = -1;
+                close (sok->sok);
+                sok->sok = 0;
+                sok->state = -1;
                 return -1;
             case 3:
-                sin.sin_addr.s_addr = cont->session_id;
-                R_undraw ();
-                M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
-                M_print (i18n (785, "success.\n"));
-                R_redraw ();
-                Send_TCP_Init (cont->uin);
+                sin.sin_addr.s_addr = sok->sid;
+                if (uiG.Verbose)
+                {
+                    R_undraw ();
+                    M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , sok->cont->nick, inet_ntoa (sin.sin_addr), sok->cont->port);
+                    M_print (i18n (785, "success.\n"));
+                    R_redraw ();
+                }
+                flags = fcntl (sok->sok, F_GETFL, 0);
+                if (flags != -1)
+                    flags = fcntl (sok->sok, F_SETFL, flags & ~O_NONBLOCK);
+                if (flags == -1)
+                {
+                    R_undraw ();
+                    M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , sok->cont->nick, inet_ntoa (sin.sin_addr), sok->cont->port);
+                    M_print (i18n (832, "failure - couldn't set socket blocking.\n"));
+                    R_redraw ();
+                    TCPClose (sok);
+                    return -1;
+                }
+                sok->state = 4;
+                TCPSendInit (sok);
                 return 0;
             case 4:
+                if (!mode)
+                {
+                    TCPClose (sok);
+                    return -1;
+                }
+                sok->state = 5;
+                TCPReceiveInitAck (sok);
+                return 0;
             case 5:
+                if (!mode)
+                {
+                    TCPClose (sok);
+                    return -1;
+                }
+                sok->state = 9;
+                TCPReceiveInit (sok);
+                TCPSendInitAck (sok);
+                break;
+            case 6:
+                sok->state = 7;
+                TCPSendInitAck (sok);
+                TCPSendInit (sok);
+                return 0;
+            case 7:
+                if (!mode)
+                {
+                    TCPClose (sok);
+                    return -1;
+                }
+                sok->state = 9;
+                TCPReceiveInitAck (sok);
+                break;
+            case 9:
+                R_undraw ();
+                Time_Stamp ();
+                M_print (" ");
+                M_print (i18n (833, "Client-to-client TCP connection to %s established.\n"), sok->cont->nick);
+                R_redraw ();
+                sok->state = 10;
+                return 0;
             default:
                 assert (0);
         }
     }
 }
 
-
-
 /*
- *  Reads an incoming TCP packet and returns size of packet.
- *  Returns -1 on error. Paket must be free()d.
+ *  Receives an incoming TCP packet and returns size of packet.
+ *  Resets socket on error. Paket must be free()d.
  */
-int TCPReadPacket (SOK_T sok, void **pak)
+int TCPReceivePacket (tcpsock_t *sok, void **data)
 {
-    UBYTE s[2];
-    int recvSize = 0;
-    int offset = 0;
-    UWORD size;
+    UBYTE buf[2];
+    int rc, size, todo, bytesread = 0;
+    void *get;
 
-    if (sockread (sok, s, 2) < 0)
-        return -1;
+    if (sok->state <= 0)
+        return 0;
 
-    size = Chars_2_Word (s);
-    if (size <= 0 || size > 100000)
-        return -1;
-
-    *pak = malloc (size);
-    if (!pak)
-        return -1;
-    
-    while ((offset += recvSize) < size)
+    for (;;)
     {
-        recvSize = sockread (sok, *pak + offset, (size - offset));
-        if (recvSize < 0)
+        if (sockread (sok->sok, buf, 2) < 0)
+            break;
+
+        size = Chars_2_Word (buf);
+        if (size <= 0)
         {
-            free (pak);
-            return -1;
+            errno = ENOMEM;
+            break;
         }
+
+        *data = malloc (size);
+        if (!data)
+        {
+            errno = ENOMEM;
+            break;
+        }
+        
+        for (get = *data, todo = size; todo > 0; todo -= bytesread, get += bytesread)
+        {
+            bytesread = sockread (sok->sok, get, todo);
+            if (bytesread < 0)
+            {
+                free (*data);
+                break;
+            }
+        }
+        if (bytesread < 0)
+            break;
+
+        if (uiG.Verbose & 4)
+        {
+            R_undraw ();
+            Time_Stamp ();
+            M_print (" \x1b«" COLSERV "");
+            M_print (i18n (778, "Incoming TCP packet:"));
+            M_print (COLNONE "*\n");
+            Hex_Dump (*data, size);
+            M_print ("\x1b»\n");
+            R_redraw ();
+        }
+
+        return size;
     }
-    return size;
+    
+    if (uiG.Verbose)
+    {
+        rc = errno;
+        R_undraw ();
+        Time_Stamp ();
+        M_print (" ");
+        M_print (i18n (834, "Error while reading from socket - %s (%d)\n"),
+                 strerror (rc), rc);
+        R_redraw ();
+    }
+    TCPClose (sok);
+    return 0;
 }
 
 /*
  * Sends an outgoing TCP packet.
- * Returns -1 on error, 1 on success.
+ * Resets socket on error.
  */
-int TCPSendPacket (SOK_T sok, void *pak, UWORD size)
+void TCPSendPacket (tcpsock_t *sok, void *data, UWORD size)
 {
-    UBYTE s[2];
-    int sendSize = 0;
-    int offset = 0;
+    UBYTE buf[2];
+    int rc, todo, bytessend = 0;
     
-    Word_2_Chars (s, size);
-    if (sockwrite (sok, s, 2) < 0)
-        return -1;
+    if (sok->state <= 0)
+        return;
 
-    if (uiG.Verbose & 4)
+    for (;;)
     {
+        Word_2_Chars (buf, size);
+        if (sockwrite (sok->sok, buf, 2) < 0)
+            break;
+
+        if (uiG.Verbose & 4)
+        {
+            R_undraw ();
+            Time_Stamp ();
+            M_print (" \x1b«" COLCLIENT "");
+            M_print (i18n (776, "Outgoing TCP packet:"));
+            M_print (COLNONE "*\n");
+            Hex_Dump (data, size);
+            M_print ("\x1b»\n");
+            R_redraw ();
+        }
+
+        for (todo = size; todo > 0; todo -= bytessend, data += bytessend)
+        {
+            bytessend = sockwrite (sok->sok, data, todo);
+            if (bytessend < 0)
+                break;
+        }
+        if (bytessend < 0)
+            break;
+        return;
+    }
+    
+    if (uiG.Verbose)
+    {
+        rc = errno;
         R_undraw ();
         Time_Stamp ();
-        M_print (" \x1b«" COLCLIENT "");
-        M_print (i18n (776, "Outgoing TCP packet:"));
-        M_print (COLNONE "\n");
-        Hex_Dump (pak, size);
-        M_print ("\x1b»\n");
+        M_print (" ");
+        M_print (i18n (835, "Error while writing to socket - %s (%d)\n"),
+                 strerror (rc), rc);
         R_redraw ();
     }
-
-    while ((offset += sendSize) < size)
-    {
-        sendSize = sockwrite (sok, pak + offset, (size - offset));
-        if (sendSize < 0)
-            return -1;
-    }
-    return 1;
+    TCPClose (sok);
 }
 
 /*
  * Sends a TCP initialization packet.
- * Must be sent to initiate communication or
- * to respond to other side if they initiate
  */
-void Send_TCP_Init (UDWORD dest_uin)
+void TCPSendInit (tcpsock_t *sok)
 {
-    Contact *cont;
     TCP_INIT_PAK pak;
 
-    cont = ContactFind (dest_uin);
+    if (sok->state <= 0)
+        return;
 
-    assert (cont->sokflag >= 3);
-    assert (cont->sokflag <= 4);    
+    if (!sok->sid)
+        sok->sid = rand ();
 
-    /* Form the packet */
+    if (uiG.Verbose)
+    {
+        R_undraw ();
+        M_print (i18n (836, "Sending TCP direct connection initialization packet.\n"));
+        R_redraw ();
+    }
+
     pak.cmd = 0xFF;
     Word_2_Chars (pak.version, TCP_VER);
     Word_2_Chars (pak.rev, TCP_VER_REV);
-    DW_2_Chars (pak.dest_uin, dest_uin);
+    DW_2_Chars (pak.dest_uin, sok->cont->uin);
     bzero (pak.X1, 2);
     DW_2_Chars (pak.port, ssG.our_port);
     DW_2_Chars (pak.uin, ssG.UIN);
@@ -398,388 +520,204 @@ void Send_TCP_Init (UDWORD dest_uin)
     DW_2_Chars (pak.other_ip, htonl (ssG.our_ip));
     pak.connection_type = TCP_OK_FLAG;
     DW_2_Chars (pak.other_port, ssG.our_port);
+    DW_2_Chars (pak.session_id, sok->sid);
 
-    if (cont->sokflag == 3)
-    {    
-        /* Create a random session id, and save the value
-            (to verify against the init packet the other side sends back) */
-        cont->session_id = rand();
-        DW_2_Chars (pak.session_id, cont->session_id);
-    }
-    else
-    {
-        /* Send the existing session id back, and reset the value
-             to zero since we don't need it anymore                                    */    
-        DW_2_Chars (pak.session_id, cont->session_id);
-        cont->session_id = 0;
-    }
-
-    if (TCPSendPacket (cont->sok, (void *) &pak, sizeof(pak)) < 0)
-    {
-        R_undraw ();
-        M_print (i18n (787, "Error sending TCP packet.\n"));
-        R_redraw ();
-        TCPClose (cont);
-        return;
-    }
-
-    cont->sokflag = 5;
+    TCPSendPacket (sok, (void *) &pak, sizeof(pak));
 }
 
 /*
- * Waits for the other side to ack
- * the init packet
+ * Sends the initialization packet
  */
-int Wait_TCP_Init_Ack (SOK_T sok)
-{
-    TCP_INIT_ACK_PTR pak;
-
-    if (TCPReadPacket (sok, (void *) &pak) < 0)
-    {
-        M_print (i18n (788, "Error receiving TCP packet."));
-        return -1;
-    }
-
-    if (pak->cmd != TCP_INIT_ACK)
-    {
-        M_print (i18n (789, "Received malformed packet."));
-        close (sok);
-        return -1;
-    }
-
-    return 0;
-}
-
-/*
- * Acks the init packet
- */
-int TCP_Init_Ack (SOK_T sok)
+void TCPSendInitAck (tcpsock_t *sok)
 {
     TCP_INIT_ACK_PAK pak;
+
+    if (sok->state <= 0)
+        return;
 
     pak.cmd = TCP_INIT_ACK;
     bzero (pak.X1, 3);
 
     if (uiG.Verbose)
-        M_print (i18n (790, "Sending init ACK...\n"));
-
-    if (TCPSendPacket (sok, (void *) &pak, sizeof(pak)) < 0)
     {
-        M_print (i18n (791, "Error sending TCP packet."));
-        return -1;
+        R_undraw ();
+        M_print (i18n (837, "Acknowledging TCP direct connection initialization packet.\n"));
+        R_redraw ();
     }
-    return 1;
+
+    TCPSendPacket (sok, (void *) &pak, sizeof(pak));
 }
 
-/*
- * Handles a new TCP connection.
- * For incoming connections, the flow is:
- *     micq.c calls New_TCP
- *     which creates a sok and calls Recv_TCP_Init
- *     which recvs the init pak and calls Send_TCP_Init
- *     which sends the init pak back.
- */
-void New_TCP (SOK_T sok)
-{
-    SOK_T newSok; 
-    struct sockaddr_in sin;
-    int sinSize;
- 
-    sinSize = sizeof (sin);
-    newSok = accept (sok, (struct sockaddr *)&sin, &sinSize);
-
-    Recv_TCP_Init (newSok);
-}
-
-int Recv_TCP_Init (SOK_T sok)
+void TCPReceiveInit (tcpsock_t *sok)
 {
     TCP_INIT_PTR pak;
     Contact *cont;
+    UDWORD sid, size;
 
-    if (TCPReadPacket (sok, (void *) &pak) < 0)
+    if (sok->state <= 0)
+        return;
+
+    size = TCPReceivePacket (sok, (void *) &pak);
+    
+    if (!size)
+        return;
+
+    for (;;)
     {
-        M_print (i18n (788, "Error receiving TCP packet."));
-        return -1;
-    }
+        if (size < 26)
+            break;
+    
+        cont = ContactFind (Chars_2_DW (pak->uin));
+        sid  = Chars_2_DW (pak->session_id);
 
+        if (sok->cont && sok->cont != cont)
+            break;
+
+        if (!cont)
+            break;
+
+        cont->sok = *sok;
+        sok = &cont->sok;
+        
+        if (!sok->sid)
+            sok->sid = sid;
+
+        if (sok->sid != sid)
+            break;
+
+        if (uiG.Verbose)
+        {
+            R_undraw ();
+            M_print (i18n (838, "Received direct connection initialization.\n"));
+            M_print ("    \x1b«");
+            M_print (i18n (839, "Version %04x:%04x, Port %d, UIN %d, session %08x\n"),
+                     Chars_2_Word (pak->version), Chars_2_Word (pak->rev),
+                     Chars_2_DW (pak->port), Chars_2_DW (pak->uin),
+                     Chars_2_DW (pak->session_id));
+            M_print ("\x1b»\n");
+            R_redraw ();
+        }
+
+        free (pak);
+        return;
+    }
     if (uiG.Verbose)
     {
         R_undraw ();
-        M_print (i18n (792, "Establishing a direct TCP connection...\n"));
-        //M_print("Ver : 0x%04X\n", Chars_2_Word (pak->version));
-        //M_print("Rev : 0x%04X\n", Chars_2_Word (pak->rev));
-        M_print (i18n (793, "Port: %lu\n") , Chars_2_DW (pak->port));
-        M_print (i18n (794, "Uin : %lu\n") , Chars_2_DW (pak->uin));
-        M_print (i18n (795, "SID : 0x%08X\n") , Chars_2_DW (pak->session_id));
+        M_print (i18n (840, "Received malformed direct connection initialization.\n"));
         R_redraw ();
     }
-
-    /* Save the socket with contact */
-    cont = ContactFind (Chars_2_DW (pak->uin));
-    if (cont)
-    {
-        cont->sok = sok;
-        if (cont->session_id == 0)
-        {
-            /* In this case, the other side is initiating the connection,
-                 so we'll save the session_id and send it back for verification. */
-            cont->session_id = Chars_2_DW (pak->session_id);
-            TCP_Init_Ack (sok);
-            Send_TCP_Init (cont->uin);
-        }
-        else
-        {
-            /* Otherwise, WE initiated, so check verify the session_id they
-                 sent back against the one we have saved.                                            */
-            if (cont->session_id != Chars_2_DW (pak->session_id)) 
-            {
-                /* Bad session ID, close the connection */
-                close (sok);
-                TCPClose (cont);
-                if (uiG.Verbose)
-                    M_print (i18n (796, "Error initiating a TCP connection.\n"));
-            }
-            else
-            {
-                TCP_Init_Ack (sok);
-            }
-            cont->session_id = 0;
-        }    
-    }        
-    else
-    {
-        /* Not on contact list -- kill the sok, and hope the client
-             switches to communicating via server */
-        close (sok);
-    }
-    free(pak);
-    return 1;
+    TCPClose (sok);
 }
 
 /*
- * Handles all incoming TCP traffic.
- * Queues incoming packets, ignoring resends
- * and deleting CANCEL requests from the queue.
+ * Receives the acknowledge packet for the initialization packet.
  */
-void Handle_TCP_Comm (UDWORD uin)
+void TCPReceiveInitAck (tcpsock_t *sok)
 {
-    Contact *cont;
-    TCP_MSG_PTR pak;
-    struct msg *msg_in;
+    TCP_INIT_ACK_PTR pak;
     int size;
-    int i = 0;
-    UWORD seq_in = 0;
-    struct msg *queued_msg;
-     
-    cont = ContactFind (uin);
-    msg_in = (struct msg *) malloc (sizeof (struct msg));
 
-    /* Recv all packets before doing anything else.
-         The objective is to delete any packets CANCELLED by the remote user. */
-    while (M_Is_Set (cont->sok) && i <= TCP_MSG_QUEUE)
+    if (sok->state <= 0)
+        return;
+
+    size = TCPReceivePacket (sok, (void *)&pak);
+
+    if (size && (size != 4 || pak->cmd != TCP_INIT_ACK))
     {
-        if ((size = TCPReadPacket (cont->sok, (void **) &pak)) < 0)
-        {
-            if (uiG.Verbose)
-            {
-                R_undraw ();
-                M_print (i18n (797, "User %s%s%s closed socket.\n"), COLCONTACT, cont->nick, COLNONE);
-                R_redraw ();
-            }
-            TCPClose (cont);
-            break;
-        }
-        else 
-        {
-            if (Decrypt_Pak ((UBYTE *) pak, size) < 0)
-            {
-                TCPClose (cont);
-                R_undraw ();
-                M_print (i18n (789, "Received malformed packet."));
-                R_redraw ();
-                break;
-            }
-    
-            if (uiG.Verbose & 4)
-            {
-                R_undraw ();
-                Time_Stamp ();
-                M_print (" \x1b«" COLSERV "");
-                M_print (i18n (778, "Incoming TCP packet:"));
-/*                M_print (" %04X %08X:%08X %04X (%s)" COLNONE "\n", Chars_2_Word (pak.head.ver),
-                         Chars_2_DW (pak.head.session), Chars_2_DW (pak.head.seq),
-                         Chars_2_Word (pak.head.cmd), ...); */
-                M_print (COLNONE "\n");
-                Hex_Dump (pak, size);
-                M_print ("\x1b»\n");
-                R_redraw ();
-            }
-            
-            /* Make sure this isn't a resend */
-            if ((seq_in == 0) || (Chars_2_Word (pak->seq) < seq_in))
-            { 
-                seq_in = Chars_2_Word (pak->seq);
-
-                /* Deal with CANCEL and ACK packets now */
-                switch (Chars_2_Word (pak->cmd))
-                {
-                    case TCP_CMD_ACK:
-                        /* Delete packet from send queue */
-                        Check_Queue (seq_in, tcp_sq);
-                        if (Chars_2_Word (pak->sub_cmd) == NORM_MESS)
-                        {
-                            R_undraw ();
-                            Time_Stamp ();
-                            M_print (" " COLACK "%10s" COLNONE " " MSGTCPACKSTR "%s\n",
-                                     cont->nick, (char *)(pak+1));
-                            R_redraw ();
-                        }
-                        else if (Chars_2_Word (pak->sub_cmd) & TCP_AUTO_RESPONSE_MASK)
-                        {
-                            R_undraw ();
-                            M_print (i18n (194, "Auto-response message for %s:\n"), ContactFindNick (cont->uin));
-                            M_print (MESSCOL "%s\n" NOCOL, ((UBYTE *)pak) + TCP_MSG_OFFSET);
-                            R_redraw ();
-                        }
-                        if (uiG.Verbose)
-                        {
-                            R_undraw ();
-                            M_print (i18n (806, "Received ACK for message (seq %04X) from %s\n"),
-                                     seq_in, cont->nick);
-                            R_redraw ();
-                        }
-                        break;
-                    
-                    case TCP_CMD_CANCEL:
-                            /* Delete packet from recv queue */
-                        Check_Queue (seq_in, tcp_rq);
-                        if (uiG.Verbose)
-                        {
-                            R_undraw ();
-                            M_print (i18n (807, "Cancelled incoming message (seq %04X) from %s\n"),
-                                     seq_in, cont->nick);
-                            R_redraw ();
-                        }
-                        break;
-
-                    default:
-                        /* Store the msg in the recv queue for handling later */            
-                        msg_in->seq = seq_in;
-                        msg_in->attempts = 0;
-                        msg_in->exp_time = 0;
-                        msg_in->body = (UBYTE *) pak;
-                        msg_in->len = size;
-                        msg_queue_push (msg_in, tcp_rq);                
-                        ssG.seq_tcp--;
-                    break;
-                }
-            }
-        }
-        
-        i++;
-        
-        M_set_timeout (0, 100000);
-        M_select_init();
-        M_Add_rsocket (cont->sok);
-        M_select();
-    }
-
-    /* Set the next resend time */
-    if ((queued_msg = msg_queue_peek (tcp_sq)) != NULL)
-        ssG.next_tcp_resend = queued_msg->exp_time;
-    else
-        ssG.next_tcp_resend = INT_MAX;
-
-    /* Now handle all packets in the recv queue */
-    while ((msg_in = msg_queue_pop (tcp_rq)) != NULL)
-    {
-        pak = (TCP_MSG_PAK *) msg_in->body;
         R_undraw ();
-        switch (Chars_2_Word (pak->sub_cmd))
-        {
-            /* Requests for auto-response message */
-            case TCP_CMD_GET_AWAY:
-            case TCP_CMD_GET_OCC:
-            case TCP_CMD_GET_NA:
-            case TCP_CMD_GET_DND:
-            case TCP_CMD_GET_FFC:
-                M_print (i18n (814, "Sent auto-response message to %s%s%s.\n"),
-                         COLCONTACT, cont->nick, COLNONE);
-                Send_TCP_Ack (cont->sok, Chars_2_Word(pak->seq), Chars_2_Word(pak->sub_cmd), TRUE);
-                break;
+        M_print (i18n (841, "Received malformed initialization acknowledgement packet."));
+        R_redraw ();
+        TCPClose (sok);
+    }
+}
 
-            /* Automatically reject file xfer and chat requests
-                 as these are not implemented yet. */ 
-            case CHAT_MESS:
-            case FILE_MESS:
-                Send_TCP_Ack (cont->sok, Chars_2_Word(pak->seq), Chars_2_Word(pak->sub_cmd), FALSE);
-                break;
-
-            /* Regular messages */
-            default:
-                ssG.last_recv_uin = cont->uin;
-                
-                Time_Stamp ();
-                M_print ("\a " CYAN BOLD "%10s" COLNONE " ", ContactFindName (cont->uin));
-                
-/*                if (Chars_2_Word(pak->sub_cmd) & MASS_MESS_MASK)
-                    M_print (" - Sofortnachricht \a ");
-                else
-                    M_print (" - Sofortmassennachricht \a ");
-                if (uiG.Verbose)
-                    M_print (i18n (808, " Typ    = %04x\t"), Chars_2_Word (pak->msg_type));*/
-    
-                Do_Msg (cont->sok, Chars_2_Word (pak->sub_cmd), Chars_2_Word (pak->size), 
-                        &((char *)pak)[TCP_MSG_OFFSET], uin, 1);
-                M_print ("\n");
-
-                Send_TCP_Ack (cont->sok, Chars_2_Word(pak->seq),
-                              Chars_2_Word(pak->sub_cmd), TRUE);
-        }
-        free (pak);
-        free (msg_in);
+/*
+ * Close socket and mark as inactive. If verbose, complain.
+ */
+void TCPClose (tcpsock_t *sok)
+{
+    if (sok->state > 0)
+    {
+        R_undraw ();
+        Time_Stamp ();
+        M_print (" ");
+        if (sok->cont)
+            M_print (i18n (842, "Closing socket %d to %s.\n"), sok->sok, sok->cont->nick);
+        else
+            M_print (i18n (843, "Closing socket %d.\n"), sok->sok);
         R_redraw ();
     }
+
+    if (sok->state > 0)
+        close (sok->sok);
+    sok->sok   = 0;
+    sok->state = 0;
+    sok->sid   = 0;
+}
+
+/*
+ * Accepts a new direct connection.
+ */
+void TCPDirectReceive (SOK_T sok)
+{
+    tcpsock_t sock;
+    struct sockaddr_in sin;
+    int tmp;
+ 
+    tmp = sizeof (sin);
+
+    sock.sok   = accept (sok, (struct sockaddr *)&sin, &tmp);
+    
+    if (sock.sok <= 0)
+        return;
+    
+    sock.state = 6;
+    sock.sid   = 0;
+    sock.cont  = NULL;
+    
+    TCPReceiveInit (&sock);
+}
+
+/*
+ * Handles activity on socket for given contact.
+ */
+void TCPHandleComm (Contact *cont, int mode)
+{
+    if (cont->sok.state > 0 && cont->sok.state < 10)
+        TCPConnect (&cont->sok, mode);
+    else
+        Handle_TCP_Comm (cont->uin);
 }
 
 /*
  * Sends a message via TCP.
  * Adds it to the resend queue until acked.
  */
-BOOL TCPSendMsg (SOK_T srv_sok, UDWORD uin, char *msg, UWORD sub_cmd)
+BOOL TCPSendMsg (SOK_T srvsok, UDWORD uin, char *msg, UWORD sub_cmd)
 {
     Contact *cont;
     TCP_MSG_PTR pak;
-    struct msg *q_item;
+    struct Event *q_item;
     int paksize;
     int msgtype = 0;
 
     cont = ContactFind (uin);
+
     if (!cont)
         return 0;
     if (cont->status == STATUS_OFFLINE)
         return 0;
-    if (cont->sokflag < 0)
+    if (cont->sok.state < 0)
         return 0;
+
+    if (!cont->sok.state)
+        TCPDirectOpen (cont);
 
     paksize = sizeof(TCP_MSG_PAK) + strlen(msg) + 1 + 8; 
                     /*   header   +     msg  + null + footer */
-    q_item = (struct msg *) malloc (sizeof (struct msg));
+    q_item = (struct Event *) malloc (sizeof (struct Event));
 
-    /* Open a connection if necessary */
-    if (!cont->sokflag)
-    {
-        if (TCPConnect (cont) < 0)
-/*        Send_TCP_Init (uin);*/
-
-        /* Did we connect? If not, send by server */
-/*        if (cont->sokflag <= 0 && srv_sok > 0)*/
-            return 0;
-    }     
-
-    Time_Stamp ();
-    M_print (" " COLSENT "%10s" COLNONE " ... %s\n", ContactFindName (uin), MsgEllipsis (msg));
-    
     /* Make the packet */
     pak = (TCP_MSG_PTR) malloc (paksize);
 
@@ -833,38 +771,258 @@ BOOL TCPSendMsg (SOK_T srv_sok, UDWORD uin, char *msg, UWORD sub_cmd)
     /* Queue the message */
     q_item->seq = ssG.seq_tcp + 1;
     q_item->attempts = 1;
-    q_item->exp_time = time (NULL);
-
-/*    if (cont->session_id > 0)
-    {*/
-        /* We're still initializing, so the packet can't be sent yet.
-             Set the exp_time really small so it can be sent ASAP.         */
-/*        q_item->exp_time = time(NULL) + 1;
-    }
-    else
-    {
-        q_item->exp_time = time(NULL) + 10;
-    }*/
-    q_item->dest_uin = uin;
+    q_item->due = time (NULL);
+    q_item->uin = cont->uin;
     q_item->len = paksize;
     q_item->body = (UBYTE *) pak;
-    msg_queue_push (q_item, tcp_sq);
-    if (msg_queue_peek(tcp_sq) == q_item)
-        ssG.next_tcp_resend = q_item->exp_time;
+    q_item->info = strdup (MsgEllipsis (msg));
+    q_item->callback = &TCPCallBackResend;
+    q_item->type = QUEUE_TYPE_TCP_RESEND;
+    QueueEnqueue (queue, q_item);
 
-    /* Are we still initializing? If so, don't try to send now. */
-/*    if (cont->session_id <= 0)
+    if (cont->sok.state != 10)
     {
-        if (Se nd_TCP_Pak (cont->sok, pak, paksize) < 0 && srv_sok > 0)
-        {*/
-            /* Yuck... send it through the server */
-/*            M_print (i18n (791, "Error sending TCP packet."));
-            Check_Queue (ssG.seq_tcp + 1, tcp_sq);
-            return 0;
-        }
-    }*/
+        Time_Stamp ();
+        M_print (" " COLSENT "%10s" COLNONE " ... %s\n", ContactFindName (cont->uin), MsgEllipsis (msg));
+    }
     return 1;
 }
+
+/*
+ * Resends TCP packets if necessary
+ */
+void TCPCallBackResend (int srv_sok, struct Event *event)
+{
+    TCP_MSG_PTR pak;
+    Contact *cont;
+    tcpsock_t *sok;
+
+    pak  = (TCP_MSG_PAK *) event->body;
+    cont = ContactFind (event->uin);
+    sok  = &cont->sok;
+
+    if (event->attempts >= MAX_RETRY_ATTEMPTS)
+        TCPClose (sok);
+
+    if (sok->state > 0)
+    {
+        if (sok->state == 10)
+        {
+            R_undraw ();
+            Time_Stamp ();
+            M_print (" " COLCONTACT "%10s" COLNONE " %s%s\n", cont->nick, MSGTCPSENTSTR, event->info);
+            R_redraw ();
+
+            event->attempts++;
+            TCPSendPacket (sok, event->body, event->len);
+        }
+        event->due = time (NULL) + 1;
+        QueueEnqueue (queue, event);
+        return;
+    }
+
+    if (event->attempts >= MAX_RETRY_ATTEMPTS && Chars_2_Word (pak->cmd) != TCP_CMD_MESSAGE)
+    {
+        R_undraw ();
+        M_print (i18n (844, "TCP message %04x discarded after timeout.\n"), Chars_2_Word (pak->cmd));
+        R_redraw ();
+    }
+    if (event->attempts < MAX_RETRY_ATTEMPTS && Chars_2_Word (pak->cmd) == TCP_CMD_MESSAGE
+        && !(Chars_2_Word (pak->msg_type) & TCP_AUTO_RESPONSE_MASK))
+    {
+        UDPSendMsg (srv_sok, cont->uin, event->body + TCP_MSG_OFFSET,
+                    Chars_2_Word (pak->msg_type));
+    }
+    free (event->info);
+    free (event->body);
+    free (event);
+}
+
+
+
+/*
+ * Handles all incoming TCP traffic.
+ * Queues incoming packets, ignoring resends
+ * and deleting CANCEL requests from the queue.
+ */
+void Handle_TCP_Comm (UDWORD uin)
+{
+    Contact *cont;
+    TCP_MSG_PTR pak;
+    struct Event *event;
+    int size;
+    int i = 0;
+    UWORD seq_in = 0;
+     
+    cont = ContactFind (uin);
+    event = (struct Event *) malloc (sizeof (struct Event));
+
+    /* Recv all packets before doing anything else.
+         The objective is to delete any packets CANCELLED by the remote user. */
+    while (M_Is_Set (cont->sok.sok) && i <= TCP_MSG_QUEUE)
+    {
+        if ((size = TCPReceivePacket (&cont->sok, (void **) &pak)) < 0)
+        {
+            if (uiG.Verbose)
+            {
+                R_undraw ();
+                M_print (i18n (797, "User %s%s%s closed socket.\n"), COLCONTACT, cont->nick, COLNONE);
+                R_redraw ();
+            }
+            TCPClose (&cont->sok);
+            break;
+        }
+        else 
+        {
+            if (Decrypt_Pak ((UBYTE *) pak, size) < 0)
+            {
+                TCPClose (&cont->sok);
+                R_undraw ();
+                M_print (i18n (789, "Received malformed packet."));
+                R_redraw ();
+                break;
+            }
+    
+            if (uiG.Verbose & 4)
+            {
+                R_undraw ();
+                Time_Stamp ();
+                M_print (" \x1b«" COLSERV "");
+                M_print (i18n (778, "Incoming TCP packet:"));
+                M_print (COLNONE "\n");
+                Hex_Dump (pak, size);
+                M_print ("\x1b»\n");
+                R_redraw ();
+            }
+            
+            /* Make sure this isn't a resend */
+            if ((seq_in == 0) || (Chars_2_Word (pak->seq) < seq_in))
+            { 
+                seq_in = Chars_2_Word (pak->seq);
+
+                /* Deal with CANCEL and ACK packets now */
+                switch (Chars_2_Word (pak->cmd))
+                {
+                    case TCP_CMD_ACK:
+                        {
+                            struct Event *event = QueueDequeue (queue, seq_in, QUEUE_TYPE_TCP_RESEND);
+                            if (!event)
+                                break;
+                            if (Chars_2_Word (pak->sub_cmd) == NORM_MESS)
+                            {
+                                R_undraw ();
+                                Time_Stamp ();
+                                M_print (" " COLACK "%10s" COLNONE " " MSGTCPACKSTR "%s\n",
+                                         cont->nick, event->info);
+                                R_redraw ();
+                            }
+                            else if (Chars_2_Word (pak->sub_cmd) & TCP_AUTO_RESPONSE_MASK)
+                            {
+                                R_undraw ();
+                                M_print (i18n (194, "Auto-response message for %s:\n"), ContactFindNick (cont->uin));
+                                M_print (MESSCOL "%s\n" NOCOL, ((UBYTE *)pak) + TCP_MSG_OFFSET);
+                                R_redraw ();
+                            }
+                            if (uiG.Verbose && Chars_2_Word (pak->sub_cmd) != NORM_MESS)
+                            {
+                                R_undraw ();
+                                M_print (i18n (806, "Received ACK for message (seq %04X) from %s\n"),
+                                         seq_in, cont->nick);
+                                R_redraw ();
+                            }
+                            free (event->info);
+                            free (event->body);
+                            free (event);
+                        }
+                        break;
+                    
+                    case TCP_CMD_CANCEL:
+                        {
+                        struct Event *event = QueueDequeue (tcp_rq, seq_in, QUEUE_TYPE_TCP_RESEND);
+                        if (event) {
+                        free (event->info);
+                        free (event->body);
+                        free (event);
+                        }}
+                        if (uiG.Verbose)
+                        {
+                            R_undraw ();
+                            M_print (i18n (807, "Cancelled incoming message (seq %04X) from %s\n"),
+                                     seq_in, cont->nick);
+                            R_redraw ();
+                        }
+                        break;
+
+                    default:
+                        /* Store the event in the recv queue for handling later */            
+                        event->seq = seq_in;
+                        event->attempts = 0;
+                        event->due = 0;
+                        event->body = (UBYTE *) pak;
+                        event->info = NULL;
+                        event->len = size;
+                        event->callback = &TCPCallBackResend;
+                        event->type = QUEUE_TYPE_TCP_RESEND;
+                        QueueEnqueue (tcp_rq, event);                
+                        ssG.seq_tcp--;
+                    break;
+                }
+            }
+        }
+        
+        i++;
+        
+        M_set_timeout (0, 100000);
+        M_select_init();
+        M_Add_rsocket (cont->sok.sok);
+        M_select();
+    }
+
+    /* Now handle all packets in the recv queue */
+    while ((event = QueuePop (tcp_rq)) != NULL)
+    {
+        pak = (TCP_MSG_PAK *) event->body;
+        R_undraw ();
+        switch (Chars_2_Word (pak->sub_cmd))
+        {
+            /* Requests for auto-response message */
+            case TCP_CMD_GET_AWAY:
+            case TCP_CMD_GET_OCC:
+            case TCP_CMD_GET_NA:
+            case TCP_CMD_GET_DND:
+            case TCP_CMD_GET_FFC:
+                M_print (i18n (814, "Sent auto-response message to %s%s%s.\n"),
+                         COLCONTACT, cont->nick, COLNONE);
+                Send_TCP_Ack (&cont->sok, Chars_2_Word(pak->seq), Chars_2_Word(pak->sub_cmd), TRUE);
+                break;
+
+            /* Automatically reject file xfer and chat requests
+                 as these are not implemented yet. */ 
+            case CHAT_MESS:
+            case FILE_MESS:
+                Send_TCP_Ack (&cont->sok, Chars_2_Word(pak->seq), Chars_2_Word(pak->sub_cmd), FALSE);
+                break;
+
+            /* Regular messages */
+            default:
+                ssG.last_recv_uin = cont->uin;
+                
+                Time_Stamp ();
+                M_print ("\a " CYAN BOLD "%10s" COLNONE " ", ContactFindName (cont->uin));
+                
+                Do_Msg (cont->sok.sok, Chars_2_Word (pak->sub_cmd), Chars_2_Word (pak->size), 
+                        &((char *)pak)[TCP_MSG_OFFSET], uin, 1);
+
+                Send_TCP_Ack (&cont->sok, Chars_2_Word(pak->seq),
+                              Chars_2_Word(pak->sub_cmd), TRUE);
+        }
+        free (pak);
+        free (event);
+        R_redraw ();
+    }
+}
+
+
 
 /*
  * Requests the auto-response message
@@ -877,6 +1035,8 @@ void Get_Auto_Resp (UDWORD uin)
     char *msg = "...";    /* seem to need something (anything!) in the msg */
 
     cont = ContactFind (uin);
+    
+    assert (cont);
 
     switch (cont->status & 0x1ff)
     {
@@ -925,7 +1085,7 @@ void Get_Auto_Resp (UDWORD uin)
 /*
  * Acks a TCP packet.
  */
-int Send_TCP_Ack (SOK_T sok, UWORD seq, UWORD sub_cmd, BOOL accept)
+int Send_TCP_Ack (tcpsock_t *sok, UWORD seq, UWORD sub_cmd, BOOL accept)
 {
     TCP_MSG_PTR pak;
     int size;
@@ -949,84 +1109,10 @@ int Send_TCP_Ack (SOK_T sok, UWORD seq, UWORD sub_cmd, BOOL accept)
     DW_2_Chars (&((char *) pak)[TCP_MSG_OFFSET + strlen(msg) + 5], COL_BG);
 
     Encrypt_Pak ((UBYTE *) pak, size);
-    if (TCPSendPacket (sok, pak, size) < 0)
-    {
-        M_print (i18n (791, "Error sending TCP packet."));
-        return -1;
-    }
+    TCPSendPacket (sok, pak, size);
     free (msg);
     return 1;
 }
-
-/*
- * Resends TCP packets if necessary
- */
-void Do_TCP_Resend (SOK_T srv_sok)
-{
-    struct msg *queued_msg;
-    TCP_MSG_PTR pak;
-    Contact *cont;
-
-    if ((queued_msg = msg_queue_pop (tcp_sq)) != NULL)
-    {
-        queued_msg->attempts++;
-        pak = (TCP_MSG_PAK *) queued_msg->body;
-        cont = ContactFind (queued_msg->dest_uin);
-
-        if (queued_msg->attempts <= MAX_RETRY_ATTEMPTS)
-        {
-            if (uiG.Verbose)
-            {
-                R_undraw ();
-                M_print (i18n (810, "Resending TCP message with SEQ num %04X to %s."),
-                         queued_msg->seq, cont->nick);
-                M_print (i18n (811, " (Attempt #%d.)\n"), queued_msg->attempts);
-                R_redraw ();
-            }
-
-            if ((cont->sokflag > 0) && (cont->session_id <= 0))
-            {
-                if (cont->sokflag == 10)
-                    TCPSendPacket (cont->sok, (UBYTE *) pak, queued_msg->len);
-                queued_msg->exp_time = time (NULL) + 10;
-                msg_queue_push (queued_msg, tcp_sq);
-            }
-            else
-            {
-                /* Send by the server (except for auto-response messages) */
-                if ((Chars_2_Word(pak->msg_type) && TCP_AUTO_RESPONSE_MASK) == 0)
-                {
-                    UDPSendMsg (srv_sok, cont->uin,
-                                  ((UBYTE *) pak) + TCP_MSG_OFFSET,
-                                    Chars_2_Word (pak->msg_type));
-                    free (queued_msg->body);
-                    free (queued_msg);
-                }
-            }
-        }
-        else
-        {
-            if (TCP_CMD_MESSAGE == Chars_2_Word (pak->cmd)) 
-            {
-                 R_undraw ();
-                 M_print (i18n (195, "TCP timeout; sending message to %s after %d send attempts."),
-                          cont->nick, queued_msg->attempts - 1);
-                 R_redraw ();
-
-                 UDPSendMsg (srv_sok, cont->uin,
-                                  ((UBYTE *) pak) + TCP_MSG_OFFSET, Chars_2_Word(pak->msg_type));
-                 free(queued_msg->body);
-                 free(queued_msg);
-            }
-        }
-
-    }
-    else
-    {
-        ssG.next_tcp_resend = INT_MAX;
-    }
-}
-
 
 /*
  * Encrypts/Decrypts TCP packets
@@ -1125,9 +1211,12 @@ int Decrypt_Pak (UBYTE *pak, UDWORD size)
  * i18n (748, " ") i18n (749, " ") i18n (750, " ") i18n (751, " ") i18n (752, " ") i18n
  * i18n (753, " ") i18n (754, " ") i18n (755, " ") i18n
  * i18n (32, " ") i18n (33, " ") i18n (48, " ") i18n (49, " ") i18n (51, " ") i18n
- * i18n (98, " ") i18n
+ * i18n (98, " ") i18n (195, " ") i18n
  * i18n (59, " ") i18n
  * i18n (626, " ") i18n (627, " ") i18n
- * i18n (634, " ") i18n
- * i18n (762, " ") i18n
+ * i18n (634, " ") i18n (808, " ") i18n (810, " ") i18n (811, " ") i18n
+ * i18n (762, " ") i18n (787, " ")
+ * i18n (618, " ") i18n (788, " ") i18n (790, " ") i18n (792, " ") i18n (793, " ") i18n
+ * i18n (794, " ") i18n (795, " ") i18n (796, " ") i18n
+ * i18n (831, " ") i18n (619, " ") i18n (791, " ") i18n
  */

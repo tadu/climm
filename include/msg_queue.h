@@ -1,39 +1,35 @@
+
 #ifndef MSG_QUEUE_H
 #define MSG_QUEUE_H
 
 #include "datatype.h"
 
-struct msg
+struct Event;
+struct Queue;
+
+typedef void (Queuef)(SOK_T srvsok, struct Event *event);
+
+struct Event
 {
-    UDWORD seq;
-    UDWORD attempts;
-    UDWORD exp_time;
-    UBYTE *body;
-    UDWORD len;
-    UDWORD dest_uin;
+    UDWORD  seq;
+    UDWORD  type;
+    UDWORD  attempts;
+    UDWORD  uin;
+    time_t  due;
+    UDWORD  len;
+    UBYTE  *body;
+    UBYTE  *info;
+    Queuef *callback;
 };
 
-struct msg_queue_entry
-{
-    struct msg *msg;
-    struct msg_queue_entry *next;
-};
+void          QueueInit    (struct Queue **queue);
+struct Event *QueuePeek    (struct Queue  *queue);
+struct Event *QueuePop     (struct Queue  *queue);
+void          QueueEnqueue (struct Queue  *queue, struct Event *event);
+struct Event *QueueDequeue (struct Queue  *queue, UDWORD seq, UDWORD type);
+void          QueueRun     (struct Queue  *queue, SOK_T srvsok);
 
-struct msg_queue
-{
-    int entries;
-    struct msg_queue_entry *head;
-    struct msg_queue_entry *tail;
-    UDWORD exp_time;
-};
-
-void        msg_queue_init          (struct msg_queue **queue);
-struct msg *msg_queue_peek          (struct msg_queue  *queue);
-struct msg *msg_queue_pop           (struct msg_queue  *queue);
-void        msg_queue_enqueue       (struct msg_queue  *queue, struct msg *new_msg);
-struct msg *msg_queue_dequeue_seq   (struct msg_queue  *queue, UDWORD seq);
-void        Check_Queue (UDWORD seq, struct msg_queue *queue);
-
-#define     msg_queue_push(m,q)   msg_queue_enqueue(q,m)
+#define QUEUE_TYPE_UDP_RESEND  23
+#define QUEUE_TYPE_TCP_RESEND  42
 
 #endif

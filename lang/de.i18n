@@ -511,7 +511,7 @@
 495:Kein zufälliger Benutzer gefunden
 496:%02d/%02d/%04d
 #-#497:Typ: %d	Länge: %d¶
-#497:Discarding message to %s after %d send attempts.  Message content:¶
+#497: 
 498:Information über:
 499:Anderes
 500:Spitzname:
@@ -631,9 +631,9 @@
 614:Benutze Konfigurationsdatei "%s".¶
 615:Protokolliere nach "%s".¶
 616:BeOS "InputThread" gestartet.¶
-617:Speicher erschöpft!¶
-618:¶Insgesamt %d Einträge.¶
-619:Folgenummer = %04x	Kommando = %04x	Versuche = %d	Länge = %d¶
+617: 
+618:
+619:
 620: 
 621: 
 622:Möchten Sie die Änderungen anwenden? (JA/NEIN)
@@ -794,18 +794,18 @@
 777:Eingehende TCP-Verbindungen (teilweise implementiert) werden auf Port %d empfangen.¶
 778:Eingehendes TCP-Paket:
 779:Öffne TCP-Verbindung zu %s auf %s:%d... 
-780:fehlgeschlagen - konnte Verbinsungsendpunkt nicht erzeugen.¶
+780:fehlgeschlagen - konnte Verbindungsendpunkt nicht erzeugen: %s (%d).¶
 781: 
 782: 
 783: 
 784: 
 785:erfolgreich.¶
 786:
-787:Fehler beim Senden eines TCP-Paketes.¶
+787:Fehler beim Senden eines TCP-Paketes. (%d)¶
 788:Fehler beim Empfangen eines TCP-Paketes.
 789:Fehlerhaftes Paket empfangen.
 790:Sende Initialisierungsbestätigung...¶
-791:Fehler beim Senden eines TCP-Paketes.
+791:
 792:Erstelle eine direkte TCP-Verbindung...¶
 #793:Port: %lu¶
 #794:Uin : %lu¶
@@ -824,8 +824,8 @@
 807:Eingehende Nachricht %04x von %s abgebrochen.¶
 #808: Typ    = %04x	
 #809:Unable to retrieve auto-response message for %s.
-#810:¶Resending TCP message with SEQ num %04X to %s.	
-#811: (Attempt #%d.)
+#810:Resending TCP message with SEQ num %04X to %s.
+#811: (Attempt #%d.)¶
 812: 
 813: 
 #814:Sent auto-response message to %s%s%s.¶
@@ -844,3 +844,4 @@
 827:Unbekanntes Programm
 828:fehlgeschlagen - konnte Verbindungsendpunkt nicht nicht-blockierend setzen.¶
 829:fehlgeschlagen - %d (%s) (%d)¶
+#830:Discarding message to %s after %d send attempts.  Message content:¶
