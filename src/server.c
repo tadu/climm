@@ -95,7 +95,7 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, Extra *extra)
     e_trans->data &= ~EXTRA_TRANS_DC;
 #endif
     if (e_trans->data & EXTRA_TRANS_TYPE2)
-        if (conn->type == TYPE_SERVER && HAS_CAP (cont->caps, CAP_ISICQ) && HAS_CAP (cont->caps, CAP_SRVRELAY))
+        if (conn->type == TYPE_SERVER && HAS_CAP (cont->caps, CAP_SRVRELAY))
             if (RET_IS_OK (ret = SnacCliSendmsg2 (conn, cont, extra)))
                 return ret;
     e_trans->data &= ~EXTRA_TRANS_TYPE2;

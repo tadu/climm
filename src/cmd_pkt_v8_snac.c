@@ -1494,7 +1494,7 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
     UDWORD type;
     const char *text;
     
-    if (!cont)
+    if (!cont || !HAS_CAP (cont->caps, CAP_SRVRELAY))
         return RET_DEFER;
     
     for (extra_message = extra; extra_message; extra_message = extra_message->more)
