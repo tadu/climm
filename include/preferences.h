@@ -30,6 +30,7 @@ struct Preferences_s
     UDWORD flags;       /* flags for output */
     UDWORD away_time;   /* time after which to be away automatically; 0 = disable */
     
+    char  *defaultbasedir;  /* the default base dir */
     char  *basedir;     /* the base dir where micqrc etc. reside in */
     char  *rcfile;      /* the preference file to load */
     char  *statfile;    /* the status file to load */
@@ -55,9 +56,11 @@ void                   PreferencesInit (Preferences *pref);
 BOOL        PrefLoad (Preferences *pref);
 const char *PrefSetColorScheme (UBYTE scheme);
 
+#define PrefDefUserDir(pref) (pref->defaultbasedir ? pref->defaultbasedir : PrefDefUserDirReal (pref))
 #define PrefUserDir(pref) (pref->basedir ? pref->basedir : PrefUserDirReal (pref))
 #define PrefLogName(pref) (pref->logname ? pref->logname : PrefLogNameReal (pref))
 
+const char *PrefDefUserDirReal (Preferences *pref);
 const char *PrefUserDirReal (Preferences *pref);
 const char *PrefLogNameReal (Preferences *pref);
 

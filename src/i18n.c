@@ -228,6 +228,15 @@ int i18nOpen (const char *loc)
             i18nTry (s_sprintf ("%si18n" _OS_PATHSEPSTR "%.*s.i18n", PrefUserDir (prG), (int)(strchr (floc, '_') - floc), floc));
         }
 
+        i18nTry (s_sprintf ("%si18n" _OS_PATHSEPSTR "%s.%s.i18n", PrefDefUserDir (prG), floc, encs));
+        i18nTry (s_sprintf ("%si18n" _OS_PATHSEPSTR "%s.i18n", PrefDefUserDir (prG), floc));
+
+        if (strchr (floc, '_'))
+        {
+            i18nTry (s_sprintf ("%si18n" _OS_PATHSEPSTR "%.*s.%s.i18n", PrefDefUserDir (prG), (int)(strchr (floc, '_') - floc), floc, encs));
+            i18nTry (s_sprintf ("%si18n" _OS_PATHSEPSTR "%.*s.i18n", PrefDefUserDir (prG), (int)(strchr (floc, '_') - floc), floc));
+        }
+
         i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%s.%s.i18n", PKGDATADIR, floc, encs));
         i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%s.i18n", PKGDATADIR, floc));
 

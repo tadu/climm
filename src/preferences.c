@@ -73,11 +73,11 @@ void PreferencesInit (Preferences *pref)
 }
 
 /*
- * Return the preference base directory
+ * Return the default preference base directory
  */
-const char *PrefUserDirReal (Preferences *pref)
+const char *PrefDefUserDirReal (Preferences *pref)
 {
-    if (!pref->basedir)
+    if (!pref->defaultbasedir)
     {
         char *home, *path;
         
@@ -88,13 +88,23 @@ const char *PrefUserDirReal (Preferences *pref)
             if (!home)
                 home = "";
             if (*home && home[strlen (home) - 1] != _OS_PATHSEP)
-                pref->basedir = strdup (s_sprintf ("%s%c.micq%c", home, _OS_PATHSEP, _OS_PATHSEP));
+                pref->defaultbasedir = strdup (s_sprintf ("%s%c.micq%c", home, _OS_PATHSEP, _OS_PATHSEP));
             else
-                pref->basedir = strdup (s_sprintf ("%s.micq%c", home, _OS_PATHSEP));
+                pref->defaultbasedir = strdup (s_sprintf ("%s.micq%c", home, _OS_PATHSEP));
         }
         else
-            pref->basedir = strdup (path);
+            pref->defaultbasedir = strdup (path);
     }
+    return pref->defaultbasedir;
+}
+
+/*
+ * Return the preference base directory
+ */
+const char *PrefUserDirReal (Preferences *pref)
+{
+    if (!pref->basedir)
+        pref->basedir = strdup (PrefDefUserDirReal (pref));
     return pref->basedir;
 }
 
