@@ -2548,7 +2548,6 @@ static JUMP_F(CmdUserRemove)
     Contact *cont = NULL;
     UDWORD uin;
     char *alias;
-    const char *argst;
     UBYTE all = 0;
     int i;
     OPENCONN;
@@ -2559,7 +2558,7 @@ static JUMP_F(CmdUserRemove)
         return 0;
     }
 
-    if (s_parsekey (&argst, "all"))
+    if (s_parsekey (&args, "all"))
         all = 2;
     else if (cg && data == 2)
         all = 1;
