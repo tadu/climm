@@ -1,4 +1,12 @@
 
+2002-05-10 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* SMS sending implemented
+	* Password changing implemented
+	* hopefully working Russian/Japanese conversion
+	* namespace cleanup in packet.c (BAt -> AtB)
+	* ANSI_TERM now does what ANSI_COLOR was before; ANSI_COLOR
+	  is always on, use runtime option to switch off
+
 2002-05-07 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Introduce a lot of missing #defines for the META handling.
 	* Implement random chat group setting and requesting.

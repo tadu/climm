@@ -7,7 +7,7 @@
  * $Id$
  */
 
-#define MICQ_BUILD_NUM 488
+#define MICQ_BUILD_NUM 489
 
 #include <string.h>
 #include <stdio.h>
