@@ -17,6 +17,13 @@
 #include <string.h>
 #include <stdio.h>
 
+typedef struct
+{
+   UBYTE uin[4];
+   UBYTE type[2];
+   UBYTE len[2];
+} *SIMPLE_MESSAGE_PTR;
+
 static void CmdPktSrvCallBackKeepAlive (struct Event *event);
 
 static jump_srv_f CmdPktSrvMulti, CmdPktSrvAck;
@@ -344,7 +351,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             {
                 uiG.last_rcvd_uin = Chars_2_DW (s_mesg->uin);
                 Do_Msg (sess, NULL, Chars_2_Word (s_mesg->type), s_mesg->len + 2, uiG.last_rcvd_uin, STATUS_OFFLINE, 0);
-                Auto_Reply (sess, s_mesg);
+                Auto_Reply (sess, Chars_2_DW (s_mesg->uin));
             }
             break;
         case SRV_AUTH_UPDATE:

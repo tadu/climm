@@ -102,6 +102,7 @@ void PrefLoad (Preferences *pref);
 
 #define ASSERT_LISTEN(s) (assert (s), assert (s->type == TYPE_LISTEN))
 #define ASSERT_DIRECT(s) (assert (s), assert (s->type == TYPE_DIRECT))
+#define ASSERT_SERVER(s) (assert (s), assert (s->type == TYPE_SERVER))
 
 #endif
 

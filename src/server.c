@@ -39,15 +39,14 @@
 #include "mreadline.h"
 #endif
 
-/* TCP: auto response 
- * Returns the appropriate auto-reply string IF user has enabled auto-replys
- * dup's the string to prevent Russian conversion from happening on the
- * original */
+/* 
+ * Returns auto response string.
+ * Result must be free()ed.
+ */
 char *Get_Auto_Reply (Session *sess)
 {
-    char *nullmsg;
-    nullmsg = malloc (1);
-    *nullmsg = '\0';
+    char *nullmsg = strdup ("");
+    ASSERT_SERVER (sess);
 
     if (!(prG->flags & FLAG_AUTOREPLY))
         return nullmsg;
@@ -78,58 +77,46 @@ char *Get_Auto_Reply (Session *sess)
     }
 }
 
-void Auto_Reply (Session *sess, SIMPLE_MESSAGE_PTR s_mesg)
+void Auto_Reply (Session *sess, UDWORD uin)
 {
     char *temp;
 
-/* If TCP communication is enabled, don't send auto-reply msgs
-   since the client can request one if they want to see it.   */
-#ifndef TCP_COMM
-/*** TCP: handle auto response ***/
-    if (prG->flags & FLAG_AUTOREPLY)
-    { 
-#endif
-        /*** !!!!???? What does this if do?  Why is it here ????!!!!! ****/
-    if (0xfe != *(((unsigned char *) s_mesg) + sizeof (s_mesg)))
+    if (!(prG->flags & FLAG_AUTOREPLY))
+        return;
+    
+    if (sess->status == STATUS_ONLINE || sess->status == STATUS_FREE_CHAT)
+        return;
+
+    switch (sess->status & 0x1ff)
     {
-        if (prG->flags & FLAG_AUTOREPLY && (sess->status != STATUS_ONLINE) && (sess->status != STATUS_FREE_CHAT))
-        {
-            switch (sess->status & 0x1ff)
-            {
-                case STATUS_OCCUPIED:
-                    temp = prG->auto_occ;
-                    break;
-                case STATUS_AWAY:
-                    temp = prG->auto_away;
-                    break;
-                case STATUS_DND:
-                    temp = prG->auto_dnd;
-                    break;
-                case STATUS_INVISIBLE:
-                    temp = prG->auto_inv;
-                    break;
-                case STATUS_NA:
-                    temp = prG->auto_na;
-                    break;
-                default:
-                    temp = prG->auto_occ;
-                    M_print (i18n (1635, "You have encounterd a bug in my code :( I now own you a beer!\nGreetings Fryslan!\n"));
-            }
-
-            icq_sendmsg (sess, Chars_2_DW (s_mesg->uin), temp, NORM_MESS);
-            free (temp);
-
-            if (ContactFindNick (uiG.last_rcvd_uin) != NULL)
-                log_event (uiG.last_rcvd_uin, LOG_AUTO_MESS,
-                           "Sending an auto-reply message to %s\n", ContactFindNick (uiG.last_rcvd_uin));
-            else
-                log_event (uiG.last_rcvd_uin, LOG_AUTO_MESS,
-                           "Sending an auto-reply message to %d\n", uiG.last_rcvd_uin);
-        }
+        case STATUS_OCCUPIED:
+            temp = prG->auto_occ;
+            break;
+        case STATUS_AWAY:
+            temp = prG->auto_away;
+            break;
+        case STATUS_DND:
+            temp = prG->auto_dnd;
+            break;
+        case STATUS_INVISIBLE:
+            temp = prG->auto_inv;
+            break;
+        case STATUS_NA:
+            temp = prG->auto_na;
+            break;
+        default:
+            /* shouldn't happen */
+            return;
     }
-#ifndef TCP_COMM
-    }
-#endif
+
+    icq_sendmsg (sess, uin, temp, NORM_MESS);
+
+    if (ContactFindNick (uiG.last_rcvd_uin) != NULL)
+        log_event (uin, LOG_AUTO_MESS,
+                   "Sending an auto-reply message to %s\n", ContactFindNick (uin));
+    else
+        log_event (uin, LOG_AUTO_MESS,
+                   "Sending an auto-reply message to %d\n", uin);
 }
 
 void icq_sendurl (Session *sess, UDWORD uin, char *description, char *url)

@@ -13,6 +13,7 @@
 #include "util_ui.h"
 #include "util_io.h"
 #include "contact.h"
+#include "server.h"
 #include "preferences.h"
 #include "icq_response.h"
 #include "cmd_pkt_cmd_v5_util.h"
@@ -564,6 +565,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
     }
 
     Do_Msg (event->sess, NULL, type, txt, uin, tlv[6].len ? tlv[6].nr : STATUS_OFFLINE, 0);
+    Auto_Reply (event->sess, uin);
 
     if (text)
         free (text);

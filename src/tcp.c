@@ -1369,7 +1369,7 @@ int Send_TCP_Ack (Session *sess, UWORD seq, UWORD sub_cmd, BOOL accept)
     char *msg;
 
     ASSERT_DIRECT (sess);
-    msg = Get_Auto_Reply (sess);
+    msg = Get_Auto_Reply (sess->assoc->assoc);
  
     pak = PacketC ();
     if (sess->ver > 6)

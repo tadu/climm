@@ -120,13 +120,6 @@ typedef struct
 
 typedef struct
 {
-   UBYTE uin[4];
-   UBYTE type[2]; 
-   UBYTE len[2];
-} SIMPLE_MESSAGE, *SIMPLE_MESSAGE_PTR;
-
-typedef struct
-{
    char *nick;
    char *first;
    char *last;
