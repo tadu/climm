@@ -1142,28 +1142,25 @@ static const char *TCPCmdName (UWORD cmd)
  */
 static void TCPPrint (Packet *pak, Session *peer, BOOL out)
 {
-    UWORD cmd, done;
+    UWORD cmd;
     
     pak->rpos = 0;
-    if (peer->ver > 6)
-        cmd = PacketRead1 (pak);
-    else
-        cmd = *pak->data;
-    done = pak->rpos;
+    cmd = *pak->data;
 
     Time_Stamp ();
     M_print (out ? " \x1b«" COLCLIENT "" : " \x1b«" COLSERV "");
-    M_print (out ? i18n (1776, "Outgoing TCP packet (%d - %s): %s")
-                 : i18n (1778, "Incoming TCP packet (%d - %s): %s"),
+    M_print (out ? i18n (2078, "Outgoing TCP packet (%d - %s): %s")
+                 : i18n (2079, "Incoming TCP packet (%d - %s): %s"),
              peer->sok, ContactFindName (peer->uin), TCPCmdName (cmd));
     M_print (COLNONE "\n");
 #ifdef WIP
-    if (cmd == 2 || (peer->connect & CONNECT_OK && peer->type == TYPE_DIRECT))
+    if (peer->connect & CONNECT_OK && peer->type == TYPE_DIRECT && cmd == 2)
     {
         UWORD seq, typ;
         UDWORD sta, fla;
         const char *msg;
 
+        cmd = PacketRead1 (pak);
               PacketRead4 (pak);
         cmd = PacketRead2 (pak);
               PacketRead2 (pak);
@@ -1208,10 +1205,9 @@ static void TCPPrint (Packet *pak, Session *peer, BOOL out)
             M_print ("  UNK %08x %08x %08x %06x\n", un1, un2, un3, un4);
         }
         Hex_Dump (pak->data + pak->rpos, pak->len - pak->rpos);
-        if (prG->verbose & DEB_PACKTCPDATA)
-            Hex_Dump (pak->data + done, pak->len - done);
+        M_print ("---\n");
     }
-    else
+/*    else   */
 #endif
         if (prG->verbose & DEB_PACKTCPDATA)
             Hex_Dump (pak->data, pak->len);
