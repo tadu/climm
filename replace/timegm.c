@@ -3,6 +3,8 @@
  * Replacement function timegm is copied from Linux timegm man page.
  */
 
+#include "micq.h"
+
 #if HAVE_SETENV && HAVE_UNSETENV
 time_t portable_timegm (struct tm *tm)
 {
