@@ -186,12 +186,9 @@ void SessionClose (Session *sess)
 
     QueueCancel (sess);
 
-    while (i + 1 < listlen && slist[i])
-    {
-        slist[i] = slist[i + 1];
-        i++;
-    }
-    slist[i] = NULL;
+    for (j = i; j + 1 < listlen && slist[j]; j++)
+        slist[j] = slist[j + 1];
+    slist[j] = NULL;
 
     Debug (DEB_SESSION, "===> %p[%d] closed.", sess, i);
 
