@@ -122,7 +122,7 @@ while ($uname = shift)
 {
     next unless $uname cmp "build.i18n";
 
-    $ver = `grep "# *EN:" $uname | sed "s/.*EN://;s/.*,v //;s/ .*//"`;
+    $ver = `grep -a "# *EN:" $uname | sed "s/.*EN://;s/.*,v //;s/ .*//"`;
     chomp $ver;
     if (!length ($ver))
     {
