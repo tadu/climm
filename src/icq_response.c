@@ -289,9 +289,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             event->callback (event);
             break;
         case META_SRV_ABOUT:
-            s_free (cont->meta_about);
-            cont->meta_about = PacketReadLNTS (pak);
-
+            s_read (cont->meta_about);
             cont->updated |= UPF_ABOUT;
             event->callback (event);
             break;
