@@ -441,24 +441,20 @@ int main (int argc, char *argv[])
     while (!uiG.quit)
     {
 
+        M_select_init ();
 #if INPUT_BY_POLL
-        M_set_timeout (0, 10000);
+        M_set_timeout (0, 1000);
 #else
-        if (QueuePeek ())
-        {
-            int i = QueuePeek ()->due - time (NULL);
-            if (i <= 0)
-                M_set_timeout (0, 100);
-            else if (i <= 2)
-                M_set_timeout (i, 0);
-            else
-                M_set_timeout (2, 500000);
-        }
+        i = QueueTime ();
+        if (!i)
+            M_set_timeout (0, 100);
+        else if (i <= 2)
+            M_set_timeout (i, 0);
         else
             M_set_timeout (2, 500000);
+        M_Add_rsocket (STDIN_FILENO);
 #endif
 
-        M_select_init ();
         for (i = 0; (conn = ConnectionNr (i)); i++)
         {
             if (conn->connect & CONNECT_OK && conn->type & TYPEF_ANY_SERVER)
@@ -473,9 +469,6 @@ int main (int argc, char *argv[])
                 M_Add_xsocket (conn->sok);
         }
 
-#if !INPUT_BY_POLL
-        M_Add_rsocket (STDIN_FILENO);
-#endif
 
         if (conv_error)
         {

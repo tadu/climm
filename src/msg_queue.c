@@ -50,6 +50,9 @@ static Queue queued = { NULL, NEVER };
 static Queue *queue = &queued;
 
 static Event *q_QueueDequeueEvent (Event *event, struct QueueEntry *previous);
+static Event *q_EventDep (Event *event);
+static Event *q_QueuePop (void);
+static void q_QueueEnqueue (Event *event);
 
 /*
  * Create a new empty queue to use, or use the given queue instead.
@@ -57,8 +60,6 @@ static Event *q_QueueDequeueEvent (Event *event, struct QueueEntry *previous);
  */
 void QueueInit (Queue **myqueue)
 {
-    assert (myqueue);
-    
     if (*myqueue)
         queue = *myqueue;
     else
@@ -71,19 +72,23 @@ void QueueInit (Queue **myqueue)
 }
 
 /*
- * Returns the event most due without removing it, or NULL.
+ * Returns the seconds till the next event is due.
  */
-Event *QueuePeek ()
+UDWORD QueueTime ()
 {
-    if (queue->head)
-        return queue->head->event;
-    return NULL;
+    time_t now = time (NULL);
+    
+    if (queue->due <= now)
+        return 0;
+    if (queue->due - 10 > now)
+        return 10;
+    return queue->due - now;
 }
 
 /*
  * Removes the event most due from the queue, or NULL.
  */
-Event *QueuePop ()
+static Event *q_QueuePop (void)
 {
     Event *event;
     struct QueueEntry *temp;
@@ -111,6 +116,14 @@ Event *QueuePop ()
  */
 void QueueEnqueue (Event *event)
 {
+    Debug (DEB_QUEUE, "<" STR_DOT STR_DOT STR_DOT " %s %p: %08lx %p %ld %x @ %p t %ld",
+           QueueType (event->type), event, event->seq, event->pak,
+           event->cont ? event->cont->uin : 0, event->flags, event->conn, (long)event->due);
+    q_QueueEnqueue (event);
+}
+
+static void q_QueueEnqueue (Event *event)
+{
     struct QueueEntry *entry;
     struct QueueEntry *iter;
 
@@ -121,10 +134,6 @@ void QueueEnqueue (Event *event)
 
     entry->next = NULL;
     entry->event  = event;
-
-    Debug (DEB_QUEUE, "<" STR_DOT STR_DOT STR_DOT " %s %p: %08lx %p %ld %x @ %p t %ld",
-           QueueType (event->type), event, event->seq, event->pak,
-           event->cont ? event->cont->uin : 0, event->flags, event->conn, (long)event->due);
 
     if (!queue->head)
     {
@@ -175,7 +184,7 @@ Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD id,
     Debug (DEB_EVENT, "<+" STR_DOT STR_DOT " %s %p: %08lx %p %ld %x @ %p",
            QueueType (event->type), event, event->seq, event->pak,
            event->cont ? event->cont->uin : 0, event->flags, event->conn);
-    QueueEnqueue (event);
+    q_QueueEnqueue (event);
 
     return event;
 }
@@ -204,7 +213,7 @@ Event *QueueEnqueueDep (Connection *conn, UDWORD type, UDWORD id,
     Debug (DEB_EVENT, "<*" STR_DOT STR_DOT " %s %p: %08lx %p %ld %x @ %p",
            QueueType (event->type), event, event->seq, event->pak,
            event->cont ? event->cont->uin : 0, event->flags, event->conn);
-    QueueEnqueue (event);
+    q_QueueEnqueue (event);
 
     return event;
 }
@@ -387,7 +396,7 @@ void EventD (Event *event)
         Debug (DEB_QUEUE, STR_DOT "!!" STR_DOT " << %p", event);
         oevent->wait = NULL;
         oevent->due = 0;
-        QueueEnqueue (oevent);
+        q_QueueEnqueue (oevent);
     }
     
     free (event);
@@ -405,7 +414,7 @@ void QueueRelease (Event *event)
     {
         Debug (DEB_QUEUE, STR_DOT "!!" STR_DOT " << %p", event);
         oevent->due = 0;
-        QueueEnqueue (oevent);
+        q_QueueEnqueue (oevent);
     }
 }
 
@@ -455,7 +464,7 @@ void QueueCancel (Connection *conn)
  * callback function.  Callback function may re-enqueue them, but the event
  * is not reconsidered even if it is still due.
  */
-void QueueRun ()
+void QueueRun (void)
 {
     time_t now = time (NULL);
     Event *event;
@@ -471,12 +480,9 @@ void QueueRun ()
         if (queue->head->event->flags & QUEUE_FLAG_CONSIDERED)
             break;
 
-        event = QueuePop ();
+        event = q_QueuePop ();
         event->flags |= QUEUE_FLAG_CONSIDERED;
-        if (event->callback)
-            event->callback (event);
-        else
-            EventD (event);
+        event->callback (event);
     }
 }
 
