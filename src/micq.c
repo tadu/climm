@@ -131,7 +131,7 @@ int main (int argc, char *argv[])
     char *p;
     
     const char *arg_v, *arg_f, *arg_l, *arg_i, *arg_b;
-    UBYTE arg_h = 0, arg_vv = 0, arg_c = 0;
+    UDWORD arg_h = 0, arg_vv = 0, arg_c = 0;
 
     srand (time (NULL));
     uiG.start_time = time (NULL);
@@ -148,7 +148,7 @@ int main (int argc, char *argv[])
         else if ((argv[i][1] == 'v') || !strcmp (argv[i], "--verbose"))
         {
             arg_v = argv[i] + 2;
-            prG->verbose = arg_vv = (*arg_v ? atol (arg_v) : prG->verbose + 1);
+            arg_vv = (*arg_v ? atol (arg_v) : prG->verbose + 1);
         }
         else if ((argv[i][1] == 'b') || !strcmp (argv[i], "--basedir"))
         {
@@ -258,7 +258,7 @@ int main (int argc, char *argv[])
         M_printf (i18n (2201, "  -b, --basedir  use given BASE dir (default: %s)\n"), "~/.micq/");
         M_printf (i18n (2202, "  -f, --config   use given configuration file (default: %s)\n"), "BASE micqrc");
         M_printf (i18n (2203, "  -l, --logplace use given log file/dir (default: %s)\n"), "BASE history/");
-        M_print  (i18n (2204, "  -i, --i18n     use given locale (default: auto-detected)\n"));
+        M_print  (i18n (2204, "  -i, --i1" "8n     use given locale (default: auto-detected)\n"));
         M_print  (i18n (2205, "  -c, --nocolor  disable colors\n"));
         exit (0);
     }
