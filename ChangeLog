@@ -1,5 +1,8 @@
 2002-08-01 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* More verbosity flags.
+	* add auto_ffc (semi-auto) response
+	* implement command to request auto responses
+	* add check to include WorkInProgress
 
 2002-07-22 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* detect sizeof() of types (for 64bit systems)

@@ -24,30 +24,6 @@
 #include <assert.h>
 #include <limits.h>
 
-/* 
- * Returns auto response string.
- * Result must be free()ed.
- */
-char *Get_Auto_Reply (Session *sess)
-{
-    char *nullmsg = strdup ("");
-    ASSERT_SERVER (sess);
-
-    if (!(prG->flags & FLAG_AUTOREPLY))
-        return nullmsg;
-
-    if (sess->status & STATUSF_DND)
-        return strdup (prG->auto_dnd);
-    if (sess->status & STATUSF_OCC)
-        return strdup (prG->auto_occ);
-    if (sess->status & STATUSF_NA)
-        return strdup (prG->auto_na);
-    if (sess->status & STATUSF_AWAY)
-        return strdup (prG->auto_away);
-
-    return nullmsg;
-}
-
 void Auto_Reply (Session *sess, UDWORD uin)
 {
     char *temp;

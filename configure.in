@@ -125,6 +125,10 @@ if test "x$GCC" = xyes; then
     CFLAGS="$CFLAGS -Wall"
 fi
 
+if test "x$WIP" != "x"; then
+     AC_DEFINE(WIP,1,[Include probably buggy work-in-progress code])
+fi
+
 # autoconf 2.50 uses this syntax, but automake uses the vars in AC_OUTPUT
 # so this is commented out until automake is updated.
 # A C _CONFIG_FILES([doc/Makefile

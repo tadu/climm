@@ -54,6 +54,13 @@ static Session   *TCPReceiveInit     (Session *sess, Packet *pak);
 static void       TCPReceiveInitAck  (Session *sess, Packet *pak);
 static Session   *TCPReceiveInit2    (Session *sess, Packet *pak);
 
+static void       TCPPrint           (Packet *pak, Session *sess, BOOL out);
+
+static Packet    *PacketTCPC         (Session *peer, UDWORD cmd, UDWORD seq,
+                                      UWORD type, UDWORD status, char *msg);
+static void       TCPGreet           (Packet *pak, UWORD cmd, char *reason,
+                                      UWORD port, UDWORD len, char *msg);
+
 static void       TCPCallBackTimeout (struct Event *event);
 static void       TCPCallBackTOConn  (struct Event *event);
 static void       TCPCallBackResend  (struct Event *event);
@@ -61,8 +68,7 @@ static void       TCPCallBackReceive (struct Event *event);
 
 static void       Encrypt_Pak        (Session *sess, Packet *pak);
 static int        Decrypt_Pak        (UBYTE *pak, UDWORD size);
-static int        Send_TCP_Ack (Session *sess, UWORD seq, UWORD sub_cmd, BOOL accept);
-/*static void       Get_Auto_Resp (Session *sess, UDWORD uin);*/
+static int        TCPSendMsgAck      (Session *sess, UWORD seq, UWORD sub_cmd, BOOL accept);
 
 /*********************************************/
 
@@ -200,17 +206,29 @@ static void TCPDispatchMain (Session *sess)
 {
     struct sockaddr_in sin;
     Session *peer;
-    int tmp;
+    int tmp, rc;
  
     ASSERT_LISTEN (sess);
 
-    if (!(sess->connect & CONNECT_OK))
+    if (sess->connect & CONNECT_OK)
+    {
+        if ((rc = UtilIOError (sess)))
+        {
+            M_print (i18n (2051, "Error on socket: %s (%d)\n"), strerror (rc), rc);
+            if (sess->sok > 0)
+                sockclose (sess->sok);
+            sess->sok = -1;
+            sess->connect = 0;
+            return;
+        }
+    }
+    else
     {
         switch (sess->connect & 3)
         {
             case 1:
-                sess->connect |= CONNECT_OK | CONNECT_SELECT_R;
-                sess->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X;
+                sess->connect |= CONNECT_OK | CONNECT_SELECT_R | CONNECT_SELECT_X;
+                sess->connect &= ~CONNECT_SELECT_W; /* & ~CONNECT_SELECT_X; */
                 if (sess->assoc && sess->assoc->ver > 6 &&
                     (sess->assoc->connect & CONNECT_OK))
                     SnacCliSetstatus (sess->assoc, 0, 2);
@@ -235,6 +253,10 @@ static void TCPDispatchMain (Session *sess)
             sockclose (sess->sok);
         return;
     }
+    
+#ifdef
+    M_print ("New incoming\n");
+#endif
 
     peer->type  = TYPE_DIRECT;
     peer->flags = 0;
@@ -659,18 +681,12 @@ static Packet *TCPReceivePacket (Session *sess)
         }
     }
 
-    if (prG->verbose & DEB_PACKDATA)
-    {
-        Time_Stamp ();
-        M_print (" \x1b«" COLSERV "");
-        M_print (i18n (1778, "Incoming TCP packet: (%d)"), sess->sok);
-        M_print (COLNONE "\n");
-        Hex_Dump (pak->data, pak->len);
-        M_print (ESC "»\r");
-    }
-    
+    if (prG->verbose & DEB_PACKTCP)
+        TCPPrint (pak, sess, FALSE);
+
     pak->rpos = 0;
     pak->wpos = 0;
+    
     return pak;
 }
 
@@ -692,15 +708,8 @@ static void TCPSendPacket (Packet *pak, Session *sess)
     if (!(sess->connect & CONNECT_MASK))
         return;
 
-    if (prG->verbose & DEB_PACKDATA)
-    {
-        Time_Stamp ();
-        M_print (" \x1b«" COLCLIENT "");
-        M_print (i18n (1776, "Outgoing TCP packet (%d):"), sess->sok);
-        M_print (COLNONE "\n");
-        Hex_Dump (pak->data, pak->len);
-        M_print (ESC "»\r");
-    }
+    if (prG->verbose & DEB_PACKTCP)
+        TCPPrint (pak, sess, TRUE);
 
     tpak = PacketClone (pak);
     switch (PacketReadAt1 (tpak, 0))
@@ -1106,15 +1115,225 @@ static void TCPClose (Session *sess)
     }
 }
 
+static const char *TCPCmdName (UWORD cmd)
+{
+    static char buf[8];
+
+    switch (cmd)
+    {
+        case   0xff: return "PEER_INIT";
+        case   0x01: return "PEER_INITACK";
+        case   0x02: return "PEER_MSG";
+        case   0x03: return "PEER_INIT2";
+        case 0x07d0: return "CANCEL";
+        case 0x07da: return "ACK";
+        case 0x07ee: return "MSG";
+    }
+    snprintf (buf, sizeof (buf), "%04x", cmd);
+    buf[7] = '\0';
+    return buf;
+}
 
 /*
- * Sends a message via TCP.
- * Adds it to the resend queue until acked.
+ * Output a TCP packet for debugging.
  */
-BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
+static void TCPPrint (Packet *pak, Session *sess, BOOL out)
+{
+    UWORD cmd, done;
+    
+    pak->rpos = 0;
+    cmd = (sess->ver > 6 ? PacketRead1 (pak) : 2);
+    done = pak->rpos;
+
+    Time_Stamp ();
+    M_print (out ? " \x1b«" COLCLIENT "" : " \x1b«" COLSERV "");
+    M_print (out ? i18n (1776, "Outgoing TCP packet (%d - %s): %s")
+                 : i18n (1778, "Incoming TCP packet (%d - %s): %s"),
+             sess->sok, ContactFindName (sess->uin), TCPCmdName (cmd));
+    M_print (COLNONE "\n");
+    if (cmd == 2)
+    {
+#ifdef WIP
+        UWORD seq, typ, len;
+        UDWORD sta;
+        const char *msg;
+
+              PacketRead4 (pak);
+        cmd = PacketRead2 (pak);
+              PacketRead2 (pak);
+        seq = PacketRead2 (pak);
+              PacketRead4 (pak);
+              PacketRead4 (pak);
+              PacketRead4 (pak);
+        typ = PacketRead2 (pak);
+        sta = PacketRead4 (pak);
+        len = PacketRead2 (pak); /* This sucks %TODO% */
+        msg = (pak->rpos + len < 2000 && pak->data[pak->rpos + len] ? 
+               "<invalid>" : (const char *)pak->data + pak->rpos);
+        M_print (i18n (2053, "MSG %s seq %x type %x status %08x: %s\n"),
+                 TCPCmdName (cmd), seq, typ, sta, msg);
+#endif
+        if (prG->verbose & DEB_PACKTCPDATA)
+            Hex_Dump (pak->data + done, pak->len - done);
+    }
+    else
+        if (prG->verbose & DEB_PACKTCPDATA)
+            Hex_Dump (pak->data + done, pak->len - done);
+    M_print (ESC "»\r");
+}
+
+/*
+ * Create and setup a TCP communication packet.
+ */
+static Packet *PacketTCPC (Session *peer, UDWORD cmd, UDWORD seq, UWORD type, UDWORD status, char *msg)
+{
+    Packet *pak;
+
+    pak = PacketC ();
+    if (peer->ver > 6)
+        PacketWrite1 (pak, PEER_MSG);
+    PacketWrite4     (pak, 0);          /* checksum - filled in later */
+    PacketWrite2     (pak, cmd);        /* command                    */
+    PacketWrite2     (pak, TCP_MSG_X1); /* unknown                    */
+    PacketWrite2     (pak, seq);        /* sequence number            */
+    PacketWrite4     (pak, 0);          /* unknown                    */
+    PacketWrite4     (pak, 0);          /* unknown                    */
+    PacketWrite4     (pak, 0);          /* unknown                    */
+    PacketWrite2     (pak, type);       /* message type               */
+    PacketWrite4     (pak, status);     /* status                     */
+    PacketWriteLNTS  (pak, msg);        /* the message                */
+    
+    return pak;
+}
+
+/*
+ * Append the "geeting" part to a packet.
+ */
+void TCPGreet (Packet *pak, UWORD cmd, char *reason, UWORD port, UDWORD len, char *msg)
+{
+    PacketWrite2     (pak, cmd);
+    switch (cmd)
+    {
+        case 0x2d:
+        default:
+            PacketWriteB4  (pak, 0xbff720b2);
+            PacketWriteB4  (pak, 0x378ed411);
+            PacketWriteB4  (pak, 0xbd280004);
+            PacketWriteB4  (pak, 0xac96d905);
+            break;
+        case 0x29:
+        case 0x32:
+            PacketWriteB4  (pak, 0xf02d12d9);
+            PacketWriteB4  (pak, 0x3091d311);
+            PacketWriteB4  (pak, 0x8dd70010);
+            PacketWriteB4  (pak, 0x4b06462e);
+    }
+    PacketWrite2     (pak, 0);
+    switch (cmd)
+    {
+        case 0x29:  PacketWriteDLNTS (pak, "File");          break;
+        case 0x2d:  PacketWriteDLNTS (pak, "ICQ Chat");      break;
+        case 0x32:  PacketWriteDLNTS (pak, "File Transfer"); break;
+        default:    PacketWriteDLNTS (pak, "");
+    }
+    PacketWrite2     (pak, 0);
+    PacketWrite1     (pak, 1);
+    switch (cmd)
+    {
+        case 0x29:
+        case 0x2d:  PacketWriteB4    (pak, 0x00000100);      break;
+        case 0x32:  PacketWriteB4    (pak, 0x01000000);      break;
+        default:    PacketWriteB4    (pak, 0);
+    }
+    PacketWriteB4    (pak, 0);
+    PacketWriteB4    (pak, 0);
+    PacketWriteLen4  (pak);
+    PacketWriteDLNTS (pak, reason);
+    PacketWriteB2    (pak, port);
+    PacketWriteB2    (pak, 0);
+    PacketWriteLNTS  (pak, msg);
+    PacketWrite4     (pak, len);
+    if (cmd != 0x2d)
+        PacketWrite4     (pak, port);
+}
+
+/*
+ * Acks a TCP packet.
+ */
+static int TCPSendMsgAck (Session *sess, UWORD seq, UWORD sub_cmd, BOOL accept)
+{
+    Packet *pak;
+    char *msg;
+    int status;
+
+    ASSERT_DIRECT (sess);
+
+    switch (sub_cmd)
+    {
+        case TCP_MSG_GET_AWAY:  msg = prG->auto_away; break;
+        case TCP_MSG_GET_OCC:   msg = prG->auto_occ;  break;
+        case TCP_MSG_GET_NA:    msg = prG->auto_na;   break;
+        case TCP_MSG_GET_DND:   msg = prG->auto_dnd;  break;
+        case TCP_MSG_GET_FFC:   msg = prG->auto_ffc;  break;
+        default:
+            if (sess->status & STATUSF_DND)
+                msg = prG->auto_dnd;
+            else if (sess->status & STATUSF_OCC)
+                msg = prG->auto_occ;
+            else if (sess->status & STATUSF_NA)
+                msg = prG->auto_na;
+            else if (sess->status & STATUSF_AWAY)
+                msg = prG->auto_away;
+            else
+                msg = "";
+    }
+
+    if (sess->status & STATUSF_DND)  status  = TCP_STAT_DND;   else
+    if (sess->status & STATUSF_OCC)  status  = TCP_STAT_OCC;   else
+    if (sess->status & STATUSF_NA)   status  = TCP_STAT_NA;    else
+    if (sess->status & STATUSF_AWAY) status  = TCP_STAT_AWAY;
+    else                             status  = TCP_STAT_ONLINE;
+    if (sess->status & STATUSF_INV)  status |= TCP_MSGF_INV;
+
+    status ^= TCP_MSGF_LIST;
+    
+    if (!accept) status = TCP_STAT_REFUSE;
+
+    pak = PacketTCPC (sess, TCP_CMD_ACK, seq, sub_cmd, status, msg);
+    switch (sub_cmd)
+    {
+        case 3:
+            PacketWriteB2   (pak, sess->port);   /* port */
+            PacketWrite2    (pak, 0);            /* padding */
+            PacketWriteStr  (pak, "");           /* file name - empty */
+            PacketWrite4    (pak, 0);            /* file len - empty */
+            PacketWrite4    (pak, sess->port);   /* port again */
+            break;
+        case 0:
+        case 1:
+        case 4:
+        case 6:
+        case 7:
+        case 8:
+        default:
+            PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
+            PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
+            break;
+        case 0x1a:
+            /* no idea */
+    }
+    TCPSendPacket (pak, sess);
+
+    free (msg);
+    return 1;
+}
+
+/*
+ * Requests the auto-response message from remote user.
+ */
+BOOL TCPGetAuto (Session *sess, UDWORD uin, UWORD which)
 {
     Contact *cont;
-    int status;
     Packet *pak;
     Session *peer;
 
@@ -1143,35 +1362,70 @@ BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
     if (!peer)
         return 0;
 
-         if (sess->status & STATUSF_INV)
-        status = TCP_MSGF_INV;
-    else if (sess->status & STATUSF_DND)
-        status = TCP_MSGF_DND;
-    else if (sess->status & STATUSF_OCC)
-        status = TCP_MSGF_OCC;
-    else if (sess->status & STATUSF_NA)
-        status = TCP_MSGF_NA;
-    else if (sess->status & STATUSF_AWAY)
-        status = TCP_MSGF_AWAY;
-    else
-        status = 0;
+    if (!which)
+    {
+        if (cont->status & STATUSF_DND)
+            which = TCP_MSG_GET_DND;
+        else if (cont->status & STATUSF_OCC)
+            which = TCP_MSG_GET_OCC;
+        else if (cont->status & STATUSF_NA)
+            which = TCP_MSG_GET_NA;
+        else if (cont->status & STATUSF_AWAY)
+            which = TCP_MSG_GET_AWAY;
+        else if (cont->status & STATUSF_FFC)
+            which = TCP_MSG_GET_FFC;
+        else
+            return 0;
+    }
 
-    status ^= TCP_MSGF_LIST;
+    pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, which, sess->assoc->status, "...");
+    PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
+    PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
 
-    pak = PacketC ();
-    if (peer->ver > 6)
-        PacketWrite1 (pak, PEER_MSG);
-    PacketWrite4 (pak, 0);               /* checksum - filled in later */
-    PacketWrite2 (pak, TCP_CMD_MESSAGE); /* command                    */
-    PacketWrite2 (pak, TCP_MSG_X1);      /* unknown                    */
-    PacketWrite2 (pak, peer->our_seq);   /* sequence number            */
-    PacketWrite4 (pak, 0);               /* unknown                    */
-    PacketWrite4 (pak, 0);               /* unknown                    */
-    PacketWrite4 (pak, 0);               /* unknown                    */
-    PacketWrite2 (pak, sub_cmd);         /* message type               */
-    PacketWrite2 (pak, sess->assoc->status);   /* status - filled in later   */
-    PacketWrite2 (pak, status);          /* our status                 */
-    PacketWriteLNTS (pak, msg);          /* the message                */
+    peer->stat_real_pak_sent++;
+
+    QueueEnqueueData (queue, peer, peer->our_seq--, QUEUE_TYPE_TCP_RESEND,
+                      uin, time (NULL),
+                      pak, strdup ("..."), &TCPCallBackResend);
+    return 1;
+}
+
+/*
+ * Sends a message via TCP.
+ * Adds it to the resend queue until acked.
+ */
+BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
+{
+    Contact *cont;
+    Packet *pak;
+    Session *peer;
+
+    if (!sess)
+        return 0;
+    if (uin == sess->assoc->uin)
+        return 0;
+    cont = ContactFind (uin);
+    if (!cont)
+        return 0;
+    if (!(sess->connect & CONNECT_MASK))
+        return 0;
+    if (!cont->port)
+        return 0;
+    if (!cont->local_ip && !cont->outside_ip)
+        return 0;
+
+    ASSERT_LISTEN (sess);
+    
+    peer = SessionFind (TYPE_DIRECT, uin);
+    if (peer && (peer->connect & CONNECT_FAIL))
+        return 0;
+    TCPDirectOpen (sess, uin);
+    peer = SessionFind (TYPE_DIRECT, uin);
+    
+    if (!peer)
+        return 0;
+
+    pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, sub_cmd, sess->assoc->status, msg);
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
 
@@ -1182,6 +1436,54 @@ BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
                       pak, strdup (msg), &TCPCallBackResend);
     return 1;
 }
+
+#ifdef WIP
+/*
+ * Sends a message via TCP.
+ * Adds it to the resend queue until acked.
+ */
+BOOL TCPSendFile (Session *sess, UDWORD uin, char *file)
+{
+    Contact *cont;
+    Packet *pak;
+    Session *peer;
+
+    if (!sess)
+        return 0;
+    if (uin == sess->assoc->uin)
+        return 0;
+    cont = ContactFind (uin);
+    if (!cont)
+        return 0;
+    if (!(sess->connect & CONNECT_MASK))
+        return 0;
+    if (!cont->port)
+        return 0;
+    if (!cont->local_ip && !cont->outside_ip)
+        return 0;
+
+    ASSERT_LISTEN (sess);
+    
+    peer = SessionFind (TYPE_DIRECT, uin);
+    if (peer && (peer->connect & CONNECT_FAIL))
+        return 0;
+    TCPDirectOpen (sess, uin);
+    peer = SessionFind (TYPE_DIRECT, uin);
+    
+    if (!peer)
+        return 0;
+
+    pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, TCP_MSG_GREETING, sess->assoc->status, "");
+    TCPGreet (pak, 0x29, "without reason", 0, 12345, file);
+
+    peer->stat_real_pak_sent++;
+
+    QueueEnqueueData (queue, peer, peer->our_seq--, QUEUE_TYPE_TCP_RESEND,
+                      uin, time (NULL),
+                      pak, strdup (file), &TCPCallBackResend);
+    return 1;
+}
+#endif
 
 /*
  * Resends TCP packets if necessary
@@ -1214,8 +1516,8 @@ static void TCPCallBackResend (struct Event *event)
                 M_print (" " COLACK "%10s" COLNONE " %s%s\n", cont->nick, MSGTCPSENTSTR, event->info);
             }
 
-            event->attempts++;
-            TCPSendPacket (pak, peer);
+            if ((event->attempts++) < 2)
+                TCPSendPacket (pak, peer);
             event->due = time (NULL) + 10;
         }
         else
@@ -1242,8 +1544,9 @@ static void TCPCallBackResend (struct Event *event)
 static void TCPCallBackReceive (struct Event *event)
 {
     Contact *cont;
-    const char *tmp;
-    UWORD cmd, type, seq /*, status*/;
+    const char *tmp, *tmp2;
+    UWORD cmd, type, seq;
+    UDWORD len /*, status*/;
     Packet *pak;
     
     ASSERT_DIRECT (event->sess);
@@ -1270,131 +1573,91 @@ static void TCPCallBackReceive (struct Event *event)
             event = QueueDequeue (queue, seq, QUEUE_TYPE_TCP_RESEND);
             if (!event)
                 break;
-            if (type == NORM_MESS)
+            switch (type)
             {
-                Time_Stamp ();
-                M_print (" " COLACK "%10s" COLNONE " " MSGTCPACKSTR "%s\n",
-                         cont->nick, event->info);
-            }
-            else if (type & TCP_AUTO_RESPONSE_MASK)
-            {
-                M_print (i18n (1965, "Auto-response message for %s:\n"), cont->nick);
-                M_print (MESSCOL "%s\n" NOCOL, PacketReadAtLNTS (pak, PacketReadPos (pak) + 20));
-            }
-            if ((prG->verbose & DEB_TCP) && type != NORM_MESS)
-            {
-                M_print (i18n (1806, "Received ACK for message (seq %04x) from %s\n"),
-                         seq, cont->nick);
+                case NORM_MESS:
+                    Time_Stamp ();
+                    M_print (" " COLACK "%10s" COLNONE " " MSGTCPACKSTR "%s\n",
+                             cont->nick, event->info);
+                    break;
+
+                    while (0) {
+                case TCP_MSG_GET_AWAY:  tmp2 = i18n (1972, "away");           break;
+                case TCP_MSG_GET_OCC:   tmp2 = i18n (1973, "occupied");       break;
+                case TCP_MSG_GET_NA:    tmp2 = i18n (1974, "not available");  break;
+                case TCP_MSG_GET_DND:   tmp2 = i18n (1971, "do not disturb"); break;
+                case TCP_MSG_GET_FFC:   tmp2 = i18n (1976, "free for chat");  }
+                    Time_Stamp ();
+                    M_print (" " COLACK "%10s" COLNONE " <%s> %s\n",
+                             cont->nick, tmp2, tmp);
+                    break;
+                default:
+                    if (prG->verbose & DEB_TCP)
+                        M_print (i18n (1806, "Received ACK for message (seq %04x) from %s\n"),
+                                 seq, cont->nick);
             }
             PacketD (event->pak);
             free (event);
             break;
         
-        /* Requests for auto-response message */
-        case TCP_CMD_GET_AWAY:
-        case TCP_CMD_GET_OCC:
-        case TCP_CMD_GET_NA:
-        case TCP_CMD_GET_DND:
-        case TCP_CMD_GET_FFC:
-            M_print (i18n (1814, "Sent auto-response message to %s%s%s.\n"),
-                     COLCONTACT, cont->nick, COLNONE);
-            Send_TCP_Ack (event->sess, seq, type, TRUE);
-            break;
+        case TCP_CMD_MESSAGE:
+            switch (type)
+            {
+                /* Requests for auto-response message */
+                case TCP_MSG_GET_AWAY:
+                case TCP_MSG_GET_OCC:
+                case TCP_MSG_GET_NA:
+                case TCP_MSG_GET_DND:
+                case TCP_MSG_GET_FFC:
+                    M_print (i18n (1814, "Sent auto-response message to %s%s%s.\n"),
+                             COLCONTACT, cont->nick, COLNONE);
+                    TCPSendMsgAck (event->sess, seq, type, TRUE);
+                    break;
 
-        /* Automatically reject file xfer and chat requests
-             as these are not implemented yet. */ 
-        case TCP_MSG_MESS:
-        case TCP_MSG_FILE:
-            Send_TCP_Ack (event->sess, seq, type, FALSE);
-            break;
+                /* Automatically reject file xfer and chat requests
+                     as these are not implemented yet. */ 
+                case TCP_MSG_MESS:
+                    TCPSendMsgAck (event->sess, seq, type, FALSE);
+                    break;
 
-        /* Regular messages */
+                case TCP_MSG_FILE:
+                    cmd  = PacketRead4 (pak);
+                    tmp2 = PacketReadLNTS (pak);
+                    len  = PacketRead4 (pak);
+                    type = PacketRead4 (pak);
+#ifdef WIP
+                    if (event->sess->ver < 8 || cont->flags & CONT_TEMPORARY)
+                    {
+#endif
+                    M_print (i18n (####, "Ignored file %s (%d bytes) from %s (unknown: %x, %x)\n"),
+                             tmp2, len, cont->nick, cmd, type);
+                    TCPSendMsgAck (event->sess, seq, type, FALSE);
+#ifdef WIP
+                    }
+                    else
+                    {
+                        M_print (i18n (2052, "Accepting file %s (%d bytes) from %s.\n"),
+                                 tmp2, len, cont->nick);
+                        TCPSendMsgAck (event->sess, seq, type, TRUE);
+                    }
+#endif
+                    break;
+
+                /* Regular messages */
+                default:
+                    uiG.last_rcvd_uin = cont->uin;
+                    Do_Msg (event->sess, NULL, type, tmp, cont->uin, STATUS_OFFLINE, 1);
+
+                    TCPSendMsgAck (event->sess, seq, type, TRUE);
+            }
+            break;
         default:
-            uiG.last_rcvd_uin = cont->uin;
-            Do_Msg (event->sess, NULL, type, tmp, cont->uin, STATUS_OFFLINE, 1);
-
-            Send_TCP_Ack (event->sess, seq, type, TRUE);
+            /* ignore */
     }
     PacketD (pak);
 }
 
 
-/*
- * Requests the auto-response message
- * from remote user.
- */
-/*
-void Get_Auto_Resp (Session *sess, UDWORD uin)
-{
-    Contact *cont;
-    UWORD sub_cmd;
-    char *msg = "...";    / * seem to need something (anything!) in the msg * /
-
-    cont = ContactFind (uin);
-    
-    assert (cont);
-    ASSERT_DIRECT (sess);
-
-         if (sess->status & STATUSF_INV)
-        sub_cmd = 0;
-    else if (cont->status & STATUSF_DND)
-        sub_cmd = TCP_CMD_GET_DND;
-    else if (cont->status & STATUSF_OCC)
-        sub_cmd = TCP_CMD_GET_OCC;
-    else if (cont->status & STATUSF_NA)
-        sub_cmd = TCP_CMD_GET_NA;
-    else if (cont->status & STATUSF_AWAY)
-        sub_cmd = TCP_CMD_GET_AWAY;
-    else if (cont->status & STATUSF_FFC)
-        sub_cmd = TCP_CMD_GET_FFC;
-    else
-        sub_cmd = 0;
-
-    if (cont->connection_type != TCP_OK_FLAG)
-        sub_cmd = 0;
-
-    if (sub_cmd == 0)
-        M_print (i18n (1809, "Unable to retrieve auto-response message for %s."),
-                 ContactFindName (uin));
-    else
-        TCPSendMsg (sess, uin, msg, sub_cmd);
-}
-*/
-
-/*
- * Acks a TCP packet.
- */
-static int Send_TCP_Ack (Session *sess, UWORD seq, UWORD sub_cmd, BOOL accept)
-{
-    Packet *pak;
-    char *msg;
-
-    ASSERT_DIRECT (sess);
-    msg = Get_Auto_Reply (sess->assoc->assoc);
- 
-    pak = PacketC ();
-    if (sess->ver > 6)
-        PacketWrite1 (pak, 2);
-    PacketWrite4 (pak, 0);               /* checksum - filled in later */
-    PacketWrite2 (pak, TCP_CMD_ACK);     /* command                    */
-    PacketWrite2 (pak, TCP_MSG_X1);      /* unknown                    */
-    PacketWrite2 (pak, seq);             /* sequence number            */
-    PacketWrite4 (pak, 0);               /* unknown                    */
-    PacketWrite4 (pak, 0);               /* unknown                    */
-    PacketWrite4 (pak, 0);               /* unknown                    */
-    PacketWrite2 (pak, sub_cmd);         /* message type               */
-    PacketWrite2 (pak, accept ? TCP_STAT_ONLINE : TCP_STAT_REFUSE);
-                                         /* status                     */
-    PacketWrite2 (pak, TCP_MSG_AUTO);    /* message type               */
-    PacketWriteLNTS (pak, msg);          /* the message                */
-    PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
-    PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
-
-    TCPSendPacket (pak, sess);
-
-    free (msg);
-    return 1;
-}
 
 /*
  *

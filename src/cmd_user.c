@@ -702,6 +702,7 @@ static JUMP_F(CmdUserTCP)
 #ifdef WIP
         else if (!strcmp (cmd, "file"))
             TCPSendFile    (sess, uin, strtok (NULL, "\n"));
+#endif
         else if (!strcmp (cmd, "auto"))
             TCPGetAuto     (sess, uin, 0);
         else if (!strcmp (cmd, "away"))
@@ -712,7 +713,6 @@ static JUMP_F(CmdUserTCP)
             TCPGetAuto     (sess, uin, TCP_MSG_GET_DND);
         else if (!strcmp (cmd, "ffc"))
             TCPGetAuto     (sess, uin, TCP_MSG_GET_FFC);
-#endif
     }
     else
     {

@@ -17,12 +17,6 @@
 #define PEER_MSG         0x02
 
 /* Commands */
-#define TCP_CMD_GET_AWAY        1000
-#define TCP_CMD_GET_OCC         1001
-#define TCP_CMD_GET_NA          1002
-#define TCP_CMD_GET_DND         1003
-#define TCP_CMD_GET_FFC         1004
-#define TCP_AUTO_RESPONSE_MASK  0x03E0
 #define TCP_CMD_CANCEL          2000
 #define TCP_CMD_ACK             2010
 #define TCP_CMD_MESSAGE         2030
@@ -40,6 +34,13 @@
 #define TCP_MSG_EMAIL_PAGER     0x000E
 #define TCP_MSG_ADDUIN          0x0013
 #define TCP_MSG_GREETING        0x001A
+/* yes, those are really message types */
+#define TCP_MSG_GET_AWAY        1000
+#define TCP_MSG_GET_OCC         1001
+#define TCP_MSG_GET_NA          1002
+#define TCP_MSG_GET_DND         1003
+#define TCP_MSG_GET_FFC         1004
+#define TCP_AUTO_RESPONSE_MASK  0x03E0
 
 /* Status flags */
 #define TCP_MSGF_REAL           0x0010
@@ -51,7 +52,7 @@
 #define TCP_MSGF_NA             0x0800
 #define TCP_MSGF_DND            0x1000
 
-/* Message statuses */
+/* Acknowledge statuses */
 #define TCP_STAT_ONLINE         0x0000
 #define TCP_STAT_REFUSE         0x0001
 #define TCP_STAT_AWAY           0x0004

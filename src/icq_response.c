@@ -472,7 +472,8 @@ void UserOnlineSetVersion (Contact *con, time_t tstamp, time_t tstamp2, time_t t
     else if (tstamp == tstamp2 && tstamp2 == tstamp3 && tstamp == 0xffffffff)
         new = "vICQ/GAIM(?)";
 
-    if ((tstamp & 0xffff0000) == 0xffff0000)
+    if (   (tstamp & 0xffff0000) == 0xffff0000
+        || (tstamp & 0x0000ffff) == 0x0000ffff)
     {
         switch (tstamp)
         {
