@@ -1221,72 +1221,6 @@ static Packet *PacketTCPC (Connection *peer, UDWORD cmd)
 }
 
 /*
- * Requests the auto-response message from remote user.
- */
-BOOL TCPGetAuto (Connection *list, Contact *cont, UWORD which)
-{
-    Packet *pak;
-    Connection *peer;
-
-    if (!cont || !cont->dc || !cont->dc->port)
-        return FALSE;
-    if (!list || !list->parent)
-        return FALSE;
-    if (cont->uin == list->parent->uin)
-        return FALSE;
-    if (!(list->connect & CONNECT_MASK))
-        return FALSE;
-    if (!cont->dc->ip_loc && !cont->dc->ip_rem)
-        return FALSE;
-
-    ASSERT_MSGLISTEN(list);
-    
-    peer = ConnectionFind (TYPE_MSGDIRECT, cont->uin, list);
-    if (peer)
-    {
-        if (peer->connect & CONNECT_FAIL)
-            return FALSE;
-    }
-    else
-    {
-        if (!TCPDirectOpen (list, cont))
-            return FALSE;
-        peer = ConnectionFind (TYPE_MSGDIRECT, cont->uin, list);
-        if (!peer)
-            return FALSE;
-    }
-
-    ASSERT_MSGDIRECT(peer);
-    
-    if (!which)
-    {
-        if (cont->status & STATUSF_DND)
-            which = MSGF_GETAUTO | MSG_GET_DND;
-        else if (cont->status & STATUSF_OCC)
-            which = MSGF_GETAUTO | MSG_GET_OCC;
-        else if (cont->status & STATUSF_NA)
-            which = MSGF_GETAUTO | MSG_GET_NA;
-        else if (cont->status & STATUSF_AWAY)
-            which = MSGF_GETAUTO | MSG_GET_AWAY;
-        else if (cont->status & STATUSF_FFC)
-            which = MSGF_GETAUTO | MSG_GET_FFC;
-        else
-            return 0;
-    }
-
-    pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
-    SrvMsgAdvanced   (pak, peer->our_seq, which, 0, list->parent->status, "...");
-    PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
-    PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
-
-    peer->stat_real_pak_sent++;
-
-    QueueEnqueueData (peer, QUEUE_TCP_RESEND, peer->our_seq--, time (NULL),
-                      pak, cont->uin, ExtraSet (NULL, EXTRA_MESSAGE, which, "..."), &TCPCallBackResend);
-    return 1;
-}
-
-/*
  * Sends a message via TCP.
  * Adds it to the resend queue until acked.
  */
@@ -1357,6 +1291,24 @@ UBYTE PeerSendMsg (Connection *list, Contact *cont, Extra *extra)
         return RET_DEFER;
     if (!cont->dc->ip_loc && !cont->dc->ip_rem)
         return RET_DEFER;
+    
+    e_msg_text = ExtraGetS (extra, EXTRA_MESSAGE);
+    e_msg_type = ExtraGet  (extra, EXTRA_MESSAGE);
+
+    switch (e_msg_type & 0xff)
+    {
+        case MSG_NORM:
+        case MSG_URL:
+        case MSG_GET_AWAY:
+        case MSG_GET_OCC:
+        case MSG_GET_NA:
+        case MSG_GET_DND:
+        case MSG_GET_FFC:
+        case MSG_GET_VER:
+            break;
+        default:
+            return RET_DEFER;
+    }
 
     ASSERT_MSGLISTEN(list);
     
@@ -1376,9 +1328,6 @@ UBYTE PeerSendMsg (Connection *list, Contact *cont, Extra *extra)
 
     ASSERT_MSGDIRECT(peer);
     
-    e_msg_text = ExtraGetS (extra, EXTRA_MESSAGE);
-    e_msg_type = ExtraGet  (extra, EXTRA_MESSAGE);
-
     pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
     SrvMsgAdvanced   (pak, peer->our_seq, e_msg_type, 0, list->parent->status, c_out_for (e_msg_text, cont));
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */

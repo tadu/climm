@@ -46,7 +46,7 @@ static jump_f
     CmdUserAuth, CmdUserURL, CmdUserSave, CmdUserTabs, CmdUserLast,
     CmdUserUptime, CmdUserOldSearch, CmdUserSearch, CmdUserUpdate, CmdUserPass,
     CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserPeer, CmdUserConn,
-    CmdUserContact, CmdUserAnyMess;
+    CmdUserContact, CmdUserAnyMess, CmdUserGetAuto;
 
 static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag);
 static void CallbackMeta (Event *event);
@@ -67,9 +67,10 @@ static jump_t jump[] = {
     { &CmdUserAlter,         "alter",        NULL, 0,   0 },
     { &CmdUserAnyMess,       "message",      NULL, 0,   0 },
     { &CmdUserMessageNG,     "msg",          NULL, 0,   1 },
+    { &CmdUserMessageNG,     "r",            NULL, 0,   2 },
+    { &CmdUserMessageNG,     "a",            NULL, 0,   4 },
+    { &CmdUserGetAuto,       "getauto",      NULL, 0,   0 },
     { &CmdUserMessage,       "msg-old",      NULL, 0,   1 },
-    { &CmdUserMessage,       "r",            NULL, 0,   2 },
-    { &CmdUserMessage,       "a",            NULL, 0,   4 },
     { &CmdUserResend,        "resend",       NULL, 0,   0 },
     { &CmdUserVerbose,       "verbose",      NULL, 0,   0 },
     { &CmdUserIgnoreStatus,  "i",            NULL, 0,   0 },
@@ -122,7 +123,10 @@ static jump_t jump[] = {
     { &CmdUserUptime,        "uptime",       NULL, 0,   0 },
     { &CmdUserPeer,          "peer",         NULL, 0,   0 },
     { &CmdUserPeer,          "tcp",          NULL, 0,   0 },
+    { &CmdUserPeer,          "file",         NULL, 0,   4 },
     { &CmdUserQuit,          "q",            NULL, 0,   0 },
+    { &CmdUserQuit,          "quit",         NULL, 0,   0 },
+    { &CmdUserQuit,          "exit",         NULL, 0,   0 },
     { &CmdUserPass,          "pass",         NULL, 0,   0 },
     { &CmdUserSMS,           "sms",          NULL, 0,   0 },
     { &CmdUserPeek,          "peek",         NULL, 0,   0 },
@@ -816,6 +820,61 @@ static JUMP_F(CmdUserTrans)
 }
 
 /*
+ * Request auto away/.. strings.
+ */
+static JUMP_F(CmdUserGetAuto)
+{
+    Contact *cont;
+    int one = 0;
+    ANYCONN;
+
+    if (!data)
+    {
+        char *argst = args, *arg1 = NULL;
+        if (!s_parse (&args, &arg1))     data = 0;
+        else if (!strcmp (arg1, "auto")) data = 0;
+        else if (!strcmp (arg1, "away")) data = MSGF_GETAUTO | MSG_GET_AWAY;
+        else if (!strcmp (arg1, "na"))   data = MSGF_GETAUTO | MSG_GET_NA;
+        else if (!strcmp (arg1, "dnd"))  data = MSGF_GETAUTO | MSG_GET_DND;
+        else if (!strcmp (arg1, "ffc"))  data = MSGF_GETAUTO | MSG_GET_FFC;
+        else if (!strcmp (arg1, "occ"))  data = MSGF_GETAUTO | MSG_GET_OCC;
+#ifdef WIP
+        else if (!strcmp (arg1, "ver"))  data = MSGF_GETAUTO | MSG_GET_VER;
+#endif
+        else args = argst;
+    }
+    while (s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
+    {
+        int cdata;
+        
+        one = 1;
+        if (!(cdata = data))
+        {
+            if      (cont->status == STATUS_OFFLINE) continue;
+            else if (cont->status  & STATUSF_DND)    cdata = MSGF_GETAUTO | MSG_GET_DND;
+            else if (cont->status  & STATUSF_OCC)    cdata = MSGF_GETAUTO | MSG_GET_OCC;
+            else if (cont->status  & STATUSF_NA)     cdata = MSGF_GETAUTO | MSG_GET_NA;
+            else if (cont->status  & STATUSF_AWAY)   cdata = MSGF_GETAUTO | MSG_GET_AWAY;
+            else if (cont->status  & STATUSF_FFC)    cdata = MSGF_GETAUTO | MSG_GET_FFC;
+            else continue;
+        }
+        IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, cdata, ""));
+        if (*args == ',')
+            args++;
+    }
+    if (*args)
+        M_printf (i18n (1845, "Nick %s unknown.\n"), args);
+    if (data || *args || one)
+        return 0;
+    M_print (i18n (2056, "getauto [auto] <nick> - Get the auto-response from the contact.\n"));
+    M_print (i18n (2057, "getauto away   <nick> - Get the auto-response for away from the contact.\n"));
+    M_print (i18n (2058, "getauto na     <nick> - Get the auto-response for not available from the contact.\n"));
+    M_print (i18n (2059, "getauto dnd    <nick> - Get the auto-response for do not disturb from the contact.\n"));
+    M_print (i18n (2060, "getauto ffc    <nick> - Get the auto-response for free for chat from the contact.\n"));
+    return 0;
+}
+
+/*
  * Manually handles peer-to-peer (TCP) connections.
  */
 static JUMP_F(CmdUserPeer)
@@ -824,6 +883,7 @@ static JUMP_F(CmdUserPeer)
     char *arg1 = NULL;
     Contact *cont = NULL;
     Connection *list;
+    UDWORD seq = 0;
     ANYCONN;
 
     if (!conn || !(list = conn->assoc))
@@ -832,159 +892,152 @@ static JUMP_F(CmdUserPeer)
         return 0;
     }
 
-    if (!s_parse (&args, &arg1))
-        arg1 = NULL;
-    else
-        arg1 = strdup (arg1);
-
-    while (arg1)
+    if (!data)
     {
-        if (!s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
+        if (!s_parse (&args, &arg1)) data = 0;
+        else if (!strcmp (arg1, "open"))   data = 1;
+        else if (!strcmp (arg1, "close"))  data = 2;
+        else if (!strcmp (arg1, "reset"))  data = 2;
+        else if (!strcmp (arg1, "off"))    data = 3;
+        else if (!strcmp (arg1, "file"))   data = 4;
+        else if (!strcmp (arg1, "files"))  data = 5;
+        else if (!strcmp (arg1, "accept")) data = 6;
+        else if (!strcmp (arg1, "deny"))   data = 7;
+        else if (!strcmp (arg1, "auto"))   data = 10;
+        else if (!strcmp (arg1, "away"))   data = 11;
+        else if (!strcmp (arg1, "na"))     data = 12;
+        else if (!strcmp (arg1, "dnd"))    data = 13;
+        else if (!strcmp (arg1, "ffc"))    data = 14;
+        free (arg1);
+    }
+    while (data && s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
+    {
+        switch (data)
         {
-            if (*args)
-                M_printf (i18n (1845, "Nick %s unknown.\n"), args);
-            free (arg1);
-            return 0;
-        }
-
-        if (!strcmp (arg1, "open"))
-        {
-            if (!TCPDirectOpen  (list, cont))
-                M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
-        }
-        else if (!strcmp (arg1, "close"))
-            TCPDirectClose (list, cont);
-        else if (!strcmp (arg1, "reset"))
-            TCPDirectClose (list, cont);
-        else if (!strcmp (arg1, "off"))
-            TCPDirectOff   (list, cont);
-        else if (!strcmp (arg1, "file"))
-        {
-            const char *files[1], *ass[1];
-            char *des = NULL, *file;
-            
-            if (!s_parse (&args, &file))
-            {
-                M_print (i18n (2158, "No file given.\n"));
-                return 0;
-            }
-            files[0] = file = strdup (file);
-            if (!s_parserem (&args, &des))
-                des = file;
-            des = strdup (des);
-
-            ass[0] = (strchr (file, '/')) ? strrchr (file, '/') + 1 : file;
-            
-            if (!TCPSendFiles (list, cont, des, files, ass, 1))
-                M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
-            
-            free (file);
-            free (des);
-        }
-        else if (!strcmp (arg1, "files"))
-        {
-            char *files[10], *ass[10], *des = NULL, *as;
-            int count;
-            
-            for (count = 0; count < 10; count++)
-            {
-                if (!s_parse (&args, &des))
+            case 1:
+                if (!TCPDirectOpen  (list, cont))
+                    M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
+                break;
+            case 2:
+                TCPDirectClose (list, cont);
+                break;
+            case 3:
+                TCPDirectOff   (list, cont);
+                break;
+            case 4:
                 {
-                    des = strdup (i18n (2159, "Some files."));
-                    break;
-                }
-                files[count] = des = strdup (des);
-                if (!s_parse (&args, &as))
-                    break;
-                if (*as == '/' && !*(as + 1))
-                    as = (strchr (des, '/')) ? strrchr (des, '/') + 1 : des;
-                if (*as == '.' && !*(as + 1))
-                    as = des;
-                ass[count] = as = strdup (as);
-            }
-            if (!count)
-            {
-                free (des);
-                M_print (i18n (2158, "No file given.\n"));
-                return 0;
-            }
-            if (!TCPSendFiles (list, cont, des, (const char **)files, (const char **)ass, count))
-                M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
-            
-            while (count--)
-            {
-               free (ass[count]);
-               free (files[count]);
-            }
-            free (des);
-        }
-#ifdef WIP
-        else if (!strcmp (arg1, "ver"))
-        {
-            if (!TCPGetAuto     (list, cont, MSGF_GETAUTO | MSG_GET_VER))
-                M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
-        }
-#endif
-        else if (!strcmp (arg1, "accept"))
-        {
-            UDWORD seq = 0;
-            Event *event, *revent = NULL;
+                    const char *files[1], *ass[1];
+                    char *des = NULL, *file;
+                    
+                    if (!s_parse (&args, &file))
+                    {
+                        M_print (i18n (2158, "No file given.\n"));
+                        return 0;
+                    }
+                    files[0] = file = strdup (file);
+                    if (!s_parserem (&args, &des))
+                        des = file;
+                    des = strdup (des);
 
-            s_parseint (&args, &seq);
-            if (!(event = QueueDequeue2 (conn, QUEUE_ACKNOWLEDGE, seq, cont->uin)) || !(revent = event->rel) ||
-                !(revent = QueueDequeue2 (event->rel->conn, event->rel->type, event->rel->seq, event->rel->uin)))
-            {
-                M_printf (i18n (2258, "No pending incoming file transfer request for %s with (sequence %ld) found.\n"),
-                          cont->nick, seq);
-            }
-            else
-                revent->callback (revent);
-            EventD (event);
+                    ass[0] = (strchr (file, '/')) ? strrchr (file, '/') + 1 : file;
+                    
+                    if (!TCPSendFiles (list, cont, des, files, ass, 1))
+                        M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
+                    
+                    free (file);
+                    free (des);
+                }
+                return 0;
+            case 5:
+                {
+                    char *files[10], *ass[10], *des = NULL, *as;
+                    int count;
+                    
+                    for (count = 0; count < 10; count++)
+                    {
+                        if (!s_parse (&args, &des))
+                        {
+                            des = strdup (i18n (2159, "Some files."));
+                            break;
+                        }
+                        files[count] = des = strdup (des);
+                        if (!s_parse (&args, &as))
+                            break;
+                        if (*as == '/' && !*(as + 1))
+                            as = (strchr (des, '/')) ? strrchr (des, '/') + 1 : des;
+                        if (*as == '.' && !*(as + 1))
+                            as = des;
+                        ass[count] = as = strdup (as);
+                    }
+                    if (!count)
+                    {
+                        free (des);
+                        M_print (i18n (2158, "No file given.\n"));
+                        return 0;
+                    }
+                    if (!TCPSendFiles (list, cont, des, (const char **)files, (const char **)ass, count))
+                        M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
+                    
+                    while (count--)
+                    {
+                       free (ass[count]);
+                       free (files[count]);
+                    }
+                    free (des);
+                }
+                return 0;
+            case 6:
+                {
+                    Event *event, *revent = NULL;
+
+                    s_parseint (&args, &seq);
+                    if (!(event = QueueDequeue2 (conn, QUEUE_ACKNOWLEDGE, seq, cont->uin)) || !(revent = event->rel) ||
+                        !(revent = QueueDequeue2 (event->rel->conn, event->rel->type, event->rel->seq, event->rel->uin)))
+                    {
+                        M_printf (i18n (2258, "No pending incoming file transfer request for %s with (sequence %ld) found.\n"),
+                                  cont->nick, seq);
+                    }
+                    else
+                        revent->callback (revent);
+                    EventD (event);
+                }
+                break;
+            case 7:
+                {
+                    Event *event, *revent = NULL;
+
+                    s_parseint (&args, &seq);
+                    if (!(event = QueueDequeue2 (conn, QUEUE_ACKNOWLEDGE, seq, cont->uin)) || !(revent = event->rel) ||
+                        !(revent = QueueDequeue2 (event->rel->conn, event->rel->type, event->rel->seq, event->rel->uin)))
+                    {
+                        M_printf (i18n (2258, "No pending incoming file transfer request for %s with (sequence %ld) found.\n"),
+                                  cont->nick, seq);
+                    }
+                    else
+                        event->callback (revent);
+                    EventD (event);
+                    EventD (revent);
+                }
+                break;
+            case 10:
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+                M_printf (i18n (2260, "Please try the getauto command instead.\n"));
+                return 0;
         }
-        else if (!strcmp (arg1, "auto"))
-        {
-            if (!TCPGetAuto     (list, cont, 0))
-                M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
-        }
-        else if (!strcmp (arg1, "away"))
-        {
-            if (!TCPGetAuto     (list, cont, MSGF_GETAUTO | MSG_GET_AWAY))
-                M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
-        }
-        else if (!strcmp (arg1, "na"))
-        {
-            if (!TCPGetAuto     (list, cont, MSGF_GETAUTO | MSG_GET_NA))
-                M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
-        }
-        else if (!strcmp (arg1, "dnd"))
-        {
-            if (!TCPGetAuto     (list, cont, MSGF_GETAUTO | MSG_GET_DND))
-                M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
-        }
-        else if (!strcmp (arg1, "ffc"))
-        {
-            if (!TCPGetAuto     (list, cont, MSGF_GETAUTO | MSG_GET_FFC))
-                M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
-        }
-        else
-            break;
         if (*args == ',')
             args++;
-        if (!*args)
-        {
-            free (arg1);
-            return 0;
-        }
     }
+    if (*args)
+        M_printf (i18n (1845, "Nick %s unknown.\n"), args);
+    if (data || *args)
+        return 0;
     M_print (i18n (1846, "Opens and closes direct (peer to peer) connections:\n"));
     M_print (i18n (1847, "peer open  <nick> - Opens direct connection.\n"));
     M_print (i18n (1848, "peer close <nick> - Closes/resets direct connection(s).\n"));
     M_print (i18n (1870, "peer off   <nick> - Closes direct connection(s) and don't try it again.\n"));
-    M_print (i18n (2056, "peer auto  <nick> - Get the auto-response from the contact.\n"));
-    M_print (i18n (2057, "peer away  <nick> - Get the auto-response for away from the contact.\n"));
-    M_print (i18n (2058, "peer na    <nick> - Get the auto-response for not available from the contact.\n"));
-    M_print (i18n (2059, "peer dnd   <nick> - Get the auto-response for do not disturb from the contact.\n"));
-    M_print (i18n (2060, "peer ffc   <nick> - Get the auto-response for free for chat from the contact.\n"));
     M_print (i18n (2160, "peer file  <nick> <file> [<description>]\n"));
     M_print (i18n (2110, "peer files <nick> <file1> <as1> ... [<description>]\n"));
     M_print (i18n (2111, "                  - Send file1 as as1, ..., with description.\n"));
