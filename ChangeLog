@@ -1,60 +1,269 @@
+
+2002-12-20 RÃ¼diger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* new stuff:
+	- add autosaving of micqrc and meta data
+	- new QueueDequeue2(): search for seq and/or uin
+	- new Event->rel: new pointer for related event
+	- new ExtraClone(): deep-copy an extra structure
+	* obsolete stuff:
+	* renames:
+	* changes:
+	- fold receivescript,soundonline,soundoffline into a single event command
+	- implement per-contact encoding
+	- change links to 0.4.9.4 man pages, not CVS man pages
+	- man pages: transcode all possible characters to named characters (that is, except Russian)
+	- man pages: replace some - meant as - and not as hyphen by \-
+	- check for setlocale() and use
+	- require autoconf 1.56 / automake 1.7
+	- unify type-2 and tcp incoming message handling
+	- note *BSD in default EXTRAVERSION
+	- implement file accepting command
+	- i18n-template: also add previous English string
+	- add dated CVS snapshots
+	* fixes:
+	- fix meta data loading: wrong function called, test for strcmp inverted,
+	  give empty string as a pair of double quotes
+	- fix undocumented message command for type-2 when type-2 is not guaranteed to be understood
+	- fix contact removing
+	- fix event script segfault
+	- fix saving -1 chat group as 255
+	- fix saving auto remote encoding as actual remote encoding
+	- fix typo; ignore format id
+	- fix warning (errror with automake 1.7.2) about not-really missing files
+	- fix iconv() calling
+	- fix: recognize koi* as buildin koi8-u when compiled without iconv()
+	- fix interactive input by new R_settimepromptf() for time-checked prompts
+	- fix koi8 / win1251 buildin conversion
+	- fix time format string
+	- fix a few memory leaks
+	- fix slow sending time
+	- fix s_parserem() to advance input pointer (fixes file sending command), a few more syntax descriptions
+	- fix wrong sender printed
+	- fix scolling for incoming messages
+
+2002-12-02 RÃ¼diger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* new stuff:
+	- add contact groups
+	- add rtc's log converter, log util and log format readme
+	- new ContactGroupIndex(): iterate through contact groups
+	- new ContactGroupID(): return valid contact group id
+	- new ContactIndex(): iterate through contacts in contact group
+	- new ContactAdd(), ContactRemAlias(): add/remove aliases
+	- new ContactUIN(): new macro, use instead of ContactByUIN( , 1)
+	- new commands: eg, eeg, wg, wwg, addgroup, addalias, remgroup, remalias
+	* obsolete stuff:
+	- get rid of ContactByUIN(), ContactByNick(), ContactFindAlias():
+	  use ContactFind() instead
+	- get rid of ContactAdd(), ContactRem(): use new ContactAdd(),
+	  ContactRemAlias() instead
+	- get rid of ContactStart(), ContactNext(), ContactHasNext():
+	  use ContactIndex(NULL, ) instead
+	* renames:
+	- rename ContactGroupAdd(), ContactGroupRem() to ContactAdd(), ContactRem()
+	* changes:
+	- implement contact groups: load, save, import, add/remove
+	- increase M_printf buffer size, add SRV_ROSTER syntax
+	- implement encoding setting for micqrc and meta data files
+	- disable SJIS<->EUC via unicode reserved area hack
+	- logmod.tcl: Added support for TCP direct connection records. Implemented splitting by UIN. (rtc)
+	- begin support for meta data saving
+	- make nick parsing case insensitive
+	- allow -b argument to contain or not contain a trailing /
+	- quote strings written to micqrc and meta data files properly
+	- replace most UDWORD uin parameters by Contact *
+	- sisplay eg instead of e when server connection established
+	- bump numeric version id
+	* fixes:
+	- fix some i18n typos / wording improvements
+	- fix snprintf/%n
+	- fix using C locale (recognized as en_US with iso-8859-1)
+	- fix dumb infinite recursion bug
+	- fix logfile line counting
+	- fix ENC_* #defines
+	- fix possible zero TCP version
+
+2002-11-13 RÃ¼diger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* new stuff:
+	- add ^C handler (initial patch from kaolin)
+	- add type-2 message sending
+	- add Extra data structure to hold optional data
+	- add compiler check for format strings
+	- new SnacCliSendmsg2(): type-2 message with possible extra information
+	- new ExtraFree: free a list of extra data
+	- new ExtraSet(), ExtraGet(): set and get optional data
+	- new ExtraGetS(), ExtraFind(), ExtraD(): new, handle extra options
+	- new IMCliMsg(): send an arbitrary instant message tryig all transports
+	- new CmdUserMessageNG(): new message command using IMCliMsg(), no max len
+	- new PeerSendMsg(): send message with extra
+	- new IMIntMsg(): central entry point for internal messages
+	  regarding a contact (used for sent and acked messages/file transfers)
+	- new ContactGroupFind(): find/create contact group
+	- new ContactGroupAdd(), ContactGroupRem(): add/remove contact from contact group
+	* obsolete:
+	- get rid of ContactFind(): replace by definition
+	- get rid of icq_sendurl(): replace by icq_sendmsg()
+	- obsolete icq_sendmsg(): will be replaced by IMCliMsg()
+	* renames:
+	- Auto_Reply(): move to cmd_pkt_cmd_v5_util.c
+	* changes:
+	- add note about CVS snapshot to README
+	- implement type-2 resend
+	- make s_sprintf cope with arbitrarely long strings
+	- recognize libicq2000 based clients
+	- recognize alicq
+	- swallow message/messagetype into *extra for SnacCliSendmsg2() and IMCliMsg(); don't reden peek; don't
+	- segfault if no nick is given for msg
+	- Store Extra in Event for more data, remove info char*
+	- use EventD() everywhere
+	- use IMCliMsg() everywhere except old message command
+	- make utf8 default
+	- don't beep for outgoing messages
+	- avoid excessive realloc()ing
+	- switch IMSrvMsg to Extra* style parameter
+	- accepts colour for color as well
+	- more correct handling of \xfe seperator character
+	- don't require CAP_ISICQ for type-2 for peek
+	- increase packet size
+	- don't abort on already closed connections
+	- replace 8bit characters in code by escape sequences
+	- remember type-2 packets send
+	- make i18n-format check for newlines as well
+	* fixes:
+	- fix localtime() calling
+	- fix segfault when saving
+	- fix extra hyphen
+	- fix coloring
+	- fix some i18n strings to not reuse string # with different format
+	- fix segfault in multiline msg
+	- fix peek (again and again)
+	- fix endlessly requested email
+	- fix lots of memory hoes found with valgrind
+	- fix a failed assertion in tcp.c
+	- fix type-2 acknowledge
+	- fix length of dc cookie
+
+2002-11-01 RÃ¼diger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* new stuff:
+	- add FIFO socket remote control
+	- add remembering of contact meta data
+	- new s_realpath(): expand ~, prepend base dir if relative path
+	- new UtilIOConnectF(): open FIFO
+	- new UtilIOReceiveF(): receive line from FIFO
+	- new ContactByUIN(): find Contact by UIN, creating temporary if requested
+	- new types MetaGeneral, MetaWork, MetaMore, MetaEmail, MetaObsolete, MetaList,
+	  ContactGroup, ContactDC for ...
+	- new structs ContactMetaGeneral_s, ContactMetaWork_s,
+	  ContactMetaMore_s, ContactMetaEmail_s, ContactMetaList_s, ContactMetaObsolete_s,
+	  ContactGroup_s, ContactDC_s
+	- new user command ss, new CmdUserStatusMeta(): show stored status
+	  info for user
+	- new UtilUIDisplayMeta(): display all meta information given in the new structures
+	- new ContactByNick(): find nick, optionally create if numeric
+	* obsolete stuff:
+	- get rid if Hex_Dump(): use s_dump() instead
+	- get rid of UtilCheckUIN(): use new ContactByUIN() instead
+	- get rid of ExecScript(): use new EventExec() instead
+	- get rid of MsgEllipsis(): re-implement in M_printf()
+	- get rid of ContactFindName(), ContactFindContact(), ContactFindByNick():
+	  use ContactByNick() instead
+	- get rid of CmdUserRInfo(): implemented in CmdUserInfo()
+	- get rid of Display_Rand_User(): inlined.
+	* renames:
+	- src/util.c/clrsrc() to src/mreadline.c/R_clrscr()
+	- ContactFind(): degraded to macro using ContactByUIN()
+	- move Get_Max_Screen_Width(), Echo_Off(), Echo_On(), M_print(),
+	  M_printf(), M_pos(), M_logo(), M_logo_clear() from util_ui.c to
+	  mreadline.c
+	* changes:
+	- remember length of nicks and use in all events
+	- test for iconv() and use if requested instead of home-brewn
+	  conversion functions
+	- amend version ID
+	- make message string arguments const
+	- add delimiter characters for s_parse* to allow uinlist arguments
+	- change script execute arguments
+	- rewrite M_print() to cope with ESC sequences in messages
+	- use 'invisible' instead of 'invisible-online' (rtc)
+	- make parsing more intuitive for line-remainder arguments
+	- syntax dump v5 packets
+	- never create a contact for UIN 0
+	- reconnect also for not-yet-established connections
+	- prepare tcp.c and type-2 v8 code unification
+	* fixes:
+	- fix info reply segfault
+	- fix status width
+	- fix disconnect error code
+	- fix disable-utf8 and CONT_UTF8 #define
+	- fix auto remote encoding
+	- fix segfault if -v without argument is given
+	- fix subversions not cleared for sim version
+	- fix lots of typos
+	- fix segfault for NULL arguments in Conv{To,From}UTF-8
+	- fix character set detection
+	- fix webaware display
+	- fix socks connection (mangled connection type and server name)
+	- fix display connections for UIN 0
+	- fix display search results (random search)
+	- fix some i18n numbering
+	- fix segfaults in tcp.c
+
 2002-10-22 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Last minute fixes for 0.4.9.4:
-	+ always ack type-2
-	+ fix sound preferences
-	+ fix timezone type configure test
+	- always ack type-2
+	- fix sound preferences
+	- fix timezone type configure test
 	* new functions:
-	+ move syntax dump to new util_syntax.c, improve syntax
-	+ ConvUTF8(): convert a single code point
-	+ ConvToUTF8(), ConvFromUTF8(): convert string from or to utf8
-	+ s_strlen(): UTF string length
-	+ s_offset(): byte offset of character offset
-	+ s_strnlen(): count characers within at most n bytes
-	+ PrefLogName(): was init_log()
+	- move syntax dump to new util_syntax.c, improve syntax
+	- ConvUTF8(): convert a single code point
+	- ConvToUTF8(), ConvFromUTF8(): convert string from or to utf8
+	- s_strlen(): UTF string length
+	- s_offset(): byte offset of character offset
+	- s_strnlen(): count characers within at most n bytes
+	- PrefLogName(): was init_log()
 	* obsolete stuff:
-	+ get rid of UIN_DELIM, get rid of unused SOCKREAD
-	+ get rid of ConvWinUnix(), ConvUnixWin() and conv_rus.c, conv_jp.c
+	- get rid of UIN_DELIM, get rid of unused SOCKREAD
+	- get rid of ConvWinUnix(), ConvUnixWin() and conv_rus.c, conv_jp.c
 	* renames:
-	+ rename CAP_IS_2002 to CAP_UTF8
-	+ rename Session to Connection
+	- rename CAP_IS_2002 to CAP_UTF8
+	- rename Session to Connection
 	* implement UTF-8:
-	+ add configure option --enable-utf8 (until it is default)
-	+ input, output, type-2 and dc UTF-8 messages
-	+ implement config option "encoding local" and "encoding remote" for encodings
-	+ Use ^u or ^p or ESC u to input an arbitrary Unicode 16bit codepoint
-	+ add EUC<->UTF8<->SJIS pseudo-conversions
-	+ load bla_bla.UTF-8.i18n if UTF-8 is used
+	- add configure option --enable-utf8 (until it is default)
+	- input, output, type-2 and dc UTF-8 messages
+	- implement config option "encoding local" and "encoding remote" for encodings
+	- Use ^u or ^p or ESC u to input an arbitrary Unicode 16bit codepoint
+	- add EUC<->UTF8<->SJIS pseudo-conversions
+	- load bla_bla.UTF-8.i18n if UTF-8 is used
 	* fixes:
-	+ fix soundoffline cmd
-	+ fix initial contact import
-	+ fix passwords with null-encoded bytes
-	+ fix order LC_* are checked
-	+ compile fixes for --disable-p2p
-	+ fixes for i18n issues
-	+ fix wrong port used in second attempt on file transfer
+	- fix soundoffline cmd
+	- fix initial contact import
+	- fix passwords with null-encoded bytes
+	- fix order LC_* are checked
+	- compile fixes for --disable-p2p
+	- fixes for i18n issues
+	- fix wrong port used in second attempt on file transfer
 	* other changes:
-	+ change logo to a flower
-	+ return success if opening the config file succeeded
-	+ add UAE workaround when compiling for AmigaOS
-	+ remove instead of just close incoming connection if accept() fails
-	+ clear errno before select()
-	+ use ISO date, add UTC time zone
-	+ notify user of offline user (but only once)
-	+ interpret obsolete meta response
-	+ use \n instead of ¶ in i18n files
-	+ Debian merge
-	+ improve argument parsing
-	+ implement GNU style options as well, add option for setting the base dir
-	+ new nice mICQ ASCII art logo
-	+ preliminarily fix login trouble by ignoring error message
-	+ bind to next free port if specified port is already in use
-	+ support for shorter capabilities, detect sim version with this,
+	- change logo to a flower
+	- return success if opening the config file succeeded
+	- add UAE workaround when compiling for AmigaOS
+	- remove instead of just close incoming connection if accept() fails
+	- clear errno before select()
+	- use ISO date, add UTC time zone
+	- notify user of offline user (but only once)
+	- interpret obsolete meta response
+	- use \n instead of ¶ in i18n files
+	- Debian merge
+	- improve argument parsing
+	- implement GNU style options as well, add option for setting the base dir
+	- new nice mICQ ASCII art logo
+	- preliminarily fix login trouble by ignoring error message
+	- bind to next free port if specified port is already in use
+	- support for shorter capabilities, detect sim version with this,
 	  add mICQ version capability
 	  NOTE: The complete version detection code from mICQ was stolen
 	        from the sim developers and used without any attribution,
 	        thus infringing on my copyright. The same is true for the
 	        capabilities table, as you can see from the #defines used.
-	+ fix check for unknown capability
+	- fix check for unknown capability
 
 2002-10-03 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* add error message for missing file reception directory
