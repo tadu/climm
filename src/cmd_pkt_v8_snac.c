@@ -547,7 +547,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
     Time_Stamp ();
     M_print (" " CYAN BOLD "%10s" COLNONE " ", ContactFindName (uin));
 
-    if (tlv[6].len && (!cont || cont->status != old || cont->flags & CONT_TEMPORARY))
+    if (tlv[6].len && (!cont || cont->status != old || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
     {
         M_print ("(");
         Print_Status (tlv[6].nr);

@@ -168,10 +168,8 @@ void R_goto (int pos)
 void R_rlap (const char *s, const char *add, BOOL clear)
 {
 #ifdef ANSI_COLOR
-    char buf[20];
     int pos;
 
-    snprintf (buf, sizeof (buf), ESC "[%dD", strlen (s));
     printf ("%s%s%s%s", add, s, clear ? ESC "[J" : "",
             (M_pos () + cpos) % Get_Max_Screen_Width() == 0 ? " \b" : "");
     pos = cpos;
@@ -329,7 +327,7 @@ int R_process_input (void)
         }
         else if (clen + 1 < HISTORY_LINE_LEN)
         {
-            char buf[2] = "\0\0";
+            char buf[2] = "x";
             memmove (s + cpos + 1, s + cpos, clen - cpos + 1);
             s[cpos++] = ch;
             clen++;
