@@ -48,9 +48,9 @@ void CmdPktCmdSendMessage (Session *sess, UDWORD uin, const char *text, UDWORD t
     Time_Stamp ();
     M_print (" " COLSENT "%10s" COLNONE " " MSGSENTSTR "%s\n", ContactFindName (uin), MsgEllipsis (text));
 
-    PacketWrite4 (pak, uin);
-    PacketWrite2 (pak, type);
-    PacketWriteStrCUW (pak, text);
+    PacketWrite4    (pak, uin);
+    PacketWrite2    (pak, type);
+    PacketWriteLNTS (pak, text);
     PacketEnqueuev5 (pak, sess);
 }
 
@@ -120,12 +120,12 @@ void CmdPktCmdRegNewUser (Session *sess, const char *pass)
 
     assert (strlen (pass) <= 9);
 
-    PacketWriteAt4 (pak, CMD_v5_OFF_UIN, 0); /* no UIN */
+    PacketWriteAt4  (pak, CMD_v5_OFF_UIN, 0); /* no UIN */
     PacketWriteLNTS (pak, pass);
-    PacketWrite4   (pak, 0xA0);
-    PacketWrite4   (pak, 0x2461);
-    PacketWrite4   (pak, 0xA00000);
-    PacketWrite4   (pak, 0x00);
+    PacketWrite4    (pak, 0xA0);
+    PacketWrite4    (pak, 0x2461);
+    PacketWrite4    (pak, 0xA00000);
+    PacketWrite4    (pak, 0x00);
     
     if (!sess->our_session)
         PacketWriteAt4 (pak, CMD_v5_OFF_SESS, rand () & 0x3fffffff);
@@ -209,8 +209,8 @@ void CmdPktCmdSendTextCode (Session *sess, const char *text)
 {
     Packet *pak = PacketCv5 (sess, CMD_SEND_TEXT_CODE);
     PacketWriteLNTS (pak, text);
-    PacketWrite1 (pak, 5);
-    PacketWrite1 (pak, 0);
+    PacketWrite1    (pak, 5);
+    PacketWrite1    (pak, 0);
     PacketEnqueuev5 (pak, sess);
 }
 
@@ -348,26 +348,26 @@ void CmdPktCmdRandSearch (Session *sess, UDWORD group)
 void CmdPktCmdMetaGeneral (Session *sess, MetaGeneral *user)
 {
     Packet *pak = PacketCv5 (sess, CMD_META_USER);
-    PacketWrite2      (pak, META_SET_GENERAL_INFO_v5);
-    PacketWriteStrCUW (pak, user->nick);
-    PacketWriteStrCUW (pak, user->first);
-    PacketWriteStrCUW (pak, user->last);
-    PacketWriteStrCUW (pak, user->email);
-    PacketWriteStrCUW (pak, user->email2);
-    PacketWriteStrCUW (pak, user->email3);
-    PacketWriteStrCUW (pak, user->city);
-    PacketWriteStrCUW (pak, user->state);
-    PacketWriteStrCUW (pak, user->phone);
-    PacketWriteStrCUW (pak, user->fax);
-    PacketWriteStrCUW (pak, user->street);
-    PacketWriteStrCUW (pak, user->cellular);
-    PacketWrite4      (pak, user->zip);
-    PacketWrite2      (pak, user->country);
-    PacketWrite1      (pak, user->tz);
-    PacketWrite1      (pak, !user->auth);
-    PacketWrite1      (pak, user->webaware);
-    PacketWrite1      (pak, user->hideip);
-    PacketEnqueuev5   (pak, sess);
+    PacketWrite2    (pak, META_SET_GENERAL_INFO_v5);
+    PacketWriteLNTS (pak, user->nick);
+    PacketWriteLNTS (pak, user->first);
+    PacketWriteLNTS (pak, user->last);
+    PacketWriteLNTS (pak, user->email);
+    PacketWriteLNTS (pak, user->email2);
+    PacketWriteLNTS (pak, user->email3);
+    PacketWriteLNTS (pak, user->city);
+    PacketWriteLNTS (pak, user->state);
+    PacketWriteLNTS (pak, user->phone);
+    PacketWriteLNTS (pak, user->fax);
+    PacketWriteLNTS (pak, user->street);
+    PacketWriteLNTS (pak, user->cellular);
+    PacketWrite4    (pak, user->zip);
+    PacketWrite2    (pak, user->country);
+    PacketWrite1    (pak, user->tz);
+    PacketWrite1    (pak, !user->auth);
+    PacketWrite1    (pak, user->webaware);
+    PacketWrite1    (pak, user->hideip);
+    PacketEnqueuev5 (pak, sess);
 }
 
 /*
@@ -399,8 +399,8 @@ void CmdPktCmdMetaMore (Session *sess, MetaMore *info)
 void CmdPktCmdMetaAbout (Session *sess, const char *about)
 {
     Packet *pak = PacketCv5 (sess, CMD_META_USER);
-    PacketWrite2 (pak, META_SET_ABOUT_INFO);
-    PacketWriteStrCUW (pak, about);
+    PacketWrite2    (pak, META_SET_ABOUT_INFO);
+    PacketWriteLNTS (pak, about);
     PacketEnqueuev5 (pak, sess);
 }
 
@@ -417,7 +417,7 @@ void CmdPktCmdMetaPass (Session *sess, char *pass)
 
     assert (strlen (pass) <= 9);
 
-    PacketWrite2 (pak, META_SET_PASS);
+    PacketWrite2    (pak, META_SET_PASS);
     PacketWriteLNTS (pak, pass);
     PacketEnqueuev5 (pak, sess);
 }
@@ -439,21 +439,21 @@ void CmdPktCmdMetaReqInfo (Session *sess, UDWORD uin)
 void CmdPktCmdMetaSearchWP (Session *sess, MetaWP *user)
 {
     Packet *pak = PacketCv5 (sess, CMD_META_USER);
-    PacketWrite2      (pak, META_SEARCH_WP);
-    PacketWriteStrCUW (pak, user->first);
-    PacketWriteStrCUW (pak, user->last);
-    PacketWriteStrCUW (pak, user->nick);
-    PacketWriteStrCUW (pak, user->email);
-    PacketWrite2      (pak, user->minage);
-    PacketWrite2      (pak, user->maxage);
-    PacketWrite1      (pak, user->sex);
-    PacketWrite2      (pak, user->language);
-    PacketWriteStrCUW (pak, user->city);
-    PacketWriteStrCUW (pak, user->state);
-    PacketWrite2      (pak, user->country);
-    PacketWriteStrCUW (pak, user->company);
-    PacketWriteStrCUW (pak, user->department);
-    PacketWriteStrCUW (pak, user->position);
+    PacketWrite2    (pak, META_SEARCH_WP);
+    PacketWriteLNTS (pak, user->first);
+    PacketWriteLNTS (pak, user->last);
+    PacketWriteLNTS (pak, user->nick);
+    PacketWriteLNTS (pak, user->email);
+    PacketWrite2    (pak, user->minage);
+    PacketWrite2    (pak, user->maxage);
+    PacketWrite1    (pak, user->sex);
+    PacketWrite2    (pak, user->language);
+    PacketWriteLNTS (pak, user->city);
+    PacketWriteLNTS (pak, user->state);
+    PacketWrite2    (pak, user->country);
+    PacketWriteLNTS (pak, user->company);
+    PacketWriteLNTS (pak, user->department);
+    PacketWriteLNTS (pak, user->position);
 
 /*  Now it gets REALLY shakey, as I don't know even what
     these particular bits of information are.

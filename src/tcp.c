@@ -912,7 +912,7 @@ BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
     PacketWrite2 (pak, sub_cmd);         /* message type               */
     PacketWrite2 (pak, 0);               /* status - filled in later   */
     PacketWrite2 (pak, msgtype);         /* our status                 */
-    PacketWriteStrCUW (pak, msg);        /* the message                */
+    PacketWriteLNTS (pak, msg);          /* the message                */
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
 
@@ -1123,7 +1123,7 @@ int Send_TCP_Ack (Session *sess, UWORD seq, UWORD sub_cmd, BOOL accept)
     PacketWrite2 (pak, accept ? TCP_STAT_ONLINE : TCP_STAT_REFUSE);
                                          /* status                     */
     PacketWrite2 (pak, TCP_MSG_AUTO);    /* message type               */
-    PacketWriteStrCUW (pak, msg);        /* the message                */
+    PacketWriteLNTS (pak, msg);          /* the message                */
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
 

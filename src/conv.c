@@ -26,3 +26,14 @@ void ConvUnixWin (char *text)
     else
         ConvEucSjis (text);
 }
+
+char ConvSep ()
+{
+    static char conv[2] = "\0";
+    
+    if (conv[0])
+        return conv[0];
+    conv[0] = '\xfe';
+    ConvWinUnix (conv);
+    return conv[0];
+}

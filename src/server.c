@@ -14,6 +14,7 @@
 #include "contact.h"
 #include "preferences.h"
 #include "tcp.h"
+#include "conv.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -135,7 +136,7 @@ void icq_sendurl (Session *sess, UDWORD uin, char *description, char *url)
 {
     char buf[450];
 
-    sprintf (buf, "%s\xFE%s", url, description);
+    sprintf (buf, "%s%c%s", url, ConvSep (), description);
     icq_sendmsg (sess, uin, buf, URL_MESS);
 }
 

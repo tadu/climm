@@ -149,13 +149,13 @@ void FlapPrint (Packet *pak)
     if (PacketReadAt1 (pak, 1) == 2)
     {
         M_print (i18n (1910, "FLAP seq %08x length %04x channel %d" COLNONE "\n"),
-                 PacketReadBAt2 (pak, 2), pak->len - 6, PacketReadAt1 (pak, 1));
+                 PacketReadAtB2 (pak, 2), pak->len - 6, PacketReadAt1 (pak, 1));
         SnacPrint (pak);
     }
     else
     {
         M_print (i18n (1910, "FLAP seq %08x length %04x channel %d" COLNONE "\n"),
-                 PacketReadBAt2 (pak, 2), pak->len - 6, PacketReadAt1 (pak, 1));
+                 PacketReadAtB2 (pak, 2), pak->len - 6, PacketReadAt1 (pak, 1));
         Hex_Dump (pak->data + 6, pak->len - 6);
     }
 }
@@ -182,8 +182,8 @@ void FlapSend (Session *sess, Packet *pak)
     sess->our_seq++;
     sess->our_seq &= 0x7fff;
 
-    PacketWriteBAt2 (pak, 2, pak->id = sess->our_seq);
-    PacketWriteBAt2 (pak, 4, pak->len - 6);
+    PacketWriteAtB2 (pak, 2, pak->id = sess->our_seq);
+    PacketWriteAtB2 (pak, 4, pak->len - 6);
     
     if (prG->verbose & 128)
     {
@@ -205,6 +205,7 @@ void FlapSend (Session *sess, Packet *pak)
 void FlapCliIdent (Session *sess)
 {
     Packet *pak;
+    UWORD flags = prG->flags;
 
     char *_encryptpw (const char *pw)
     {
@@ -217,6 +218,7 @@ void FlapCliIdent (Session *sess)
         return cpw;
     }
     
+    prG->flags &= ~FLAG_CONVRUSS & ~FLAG_CONVEUC;
     if (!sess->passwd || !strlen (sess->passwd))
     {
         char pwd[20];
@@ -242,6 +244,7 @@ void FlapCliIdent (Session *sess)
     PacketWriteTLVStr (pak, 15, "de");  /* en */
     PacketWriteTLVStr (pak, 14, "de");  /* en */
     FlapSend (sess, pak);
+    prG->flags = flags;
 }
 
 void FlapCliCookie (Session *sess, const char *cookie, UWORD len)

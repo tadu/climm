@@ -9,11 +9,11 @@
 #include "contact.h"
 #include "util_table.h"
 #include "util.h"
-#include "conv.h"
 #include "packet.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_v8_snac.h"
 #include "preferences.h"
+#include "conv.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -593,6 +593,7 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
 {
     char *cdata, *tmp = NULL;
     char *url_url, *url_desc;
+    char sep = ConvSep ();
     Contact *cont;
     int x, m;
     
@@ -609,84 +610,77 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
     switch (type)
     {
         case USER_ADDED_MESS:
-            tmp = strchr (cdata, '\xFE');
+            tmp = strchr (cdata, sep);
             if (tmp == NULL)
             {
                 M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
                 return;
             }
             *tmp = 0;
-            ConvWinUnix (cdata); /* By Kunia User's nick was not transcoded...;( */
             M_print (i18n (1586, COLCONTACT "\n%s" COLNONE " has added you to their contact list.\n"), cdata);
             tmp++;
             cdata = tmp;
-            tmp = strchr (tmp, '\xFE');
+            tmp = strchr (tmp, sep);
             if (tmp == NULL)
             {
                 M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
                 return;
             }
             *tmp = 0;
-            ConvWinUnix (cdata);
             M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (1564, "First name:"), cdata);
             tmp++;
             cdata = tmp;
-            tmp = strchr (tmp, '\xFE');
+            tmp = strchr (tmp, sep);
             if (tmp == NULL)
             {
                 M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
                 return;
             }
             *tmp = 0;
-            ConvWinUnix (cdata);
             M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (1565, "Last name:"), cdata);
             tmp++;
             cdata = tmp;
-            tmp = strchr (tmp, '\xFE');
+            tmp = strchr (tmp, sep);
             *tmp = 0;
-            ConvWinUnix (cdata);
             M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (1566, "Email address:"), cdata);
             break;
         case AUTH_REQ_MESS:
-            tmp = strchr (cdata, '\xFE');
+            tmp = strchr (cdata, sep);
             *tmp = 0;
             M_print (i18n (1590, COLCONTACT "%10s " COLNONE " has requested your authorization to be added to their contact list.\n"), cdata);
             tmp++;
             cdata = tmp;
-            tmp = strchr (tmp, '\xFE');
+            tmp = strchr (tmp, sep);
             if (tmp == NULL)
             {
                 M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
                 return;
             }
             *tmp = 0;
-            ConvWinUnix (cdata);
             M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (1564, "First name:"), cdata);
             tmp++;
             cdata = tmp;
-            tmp = strchr (tmp, '\xFE');
+            tmp = strchr (tmp, sep);
             if (tmp == NULL)
             {
                 M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
                 return;
             }
             *tmp = 0;
-            ConvWinUnix (cdata);
             M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (1565, "Last name:"), cdata);
             tmp++;
             cdata = tmp;
-            tmp = strchr (tmp, '\xFE');
+            tmp = strchr (tmp, sep);
             if (tmp == NULL)
             {
                 M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
                 return;
             }
             *tmp = 0;
-            ConvWinUnix (cdata);
             M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (1566, "Email address:"), cdata);
             tmp++;
             cdata = tmp;
-            tmp = strchr (tmp, '\xFE');
+            tmp = strchr (tmp, sep);
             if (tmp == NULL)
             {
                 M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
@@ -695,32 +689,31 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
             *tmp = 0;
             tmp++;
             cdata = tmp;
-            tmp = strchr (tmp, '\x00');
+            tmp = strchr (tmp, sep);
             if (tmp == NULL)
             {
                 M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
                 return;
             }
             *tmp = 0;
-            ConvWinUnix (cdata);
             M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (1591, "Reason:"), cdata);
             break;
         case EMAIL_MESS:
         case WEB_MESS:
-            tmp = strchr (cdata, '\xFE');
+            tmp = strchr (cdata, sep);
             *tmp = 0;
             M_print ("\n%s ", cdata);
             tmp++;
             cdata = tmp;
-            tmp = strchr (cdata, '\xFE');
+            tmp = strchr (cdata, sep);
             tmp++;
             cdata = tmp;
 
-            tmp = strchr (cdata, '\xFE');
+            tmp = strchr (cdata, sep);
             tmp++;
             cdata = tmp;
 
-            tmp = strchr (cdata, '\xFE');
+            tmp = strchr (cdata, sep);
             *tmp = 0;
             if (type == EMAIL_MESS)
                 M_print (i18n (1592, "<%s> emailed you a message:\n"), cdata);
@@ -728,7 +721,7 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
                 M_print (i18n (1593, "<%s> send you a web message:\n"), cdata);
             tmp++;
             cdata = tmp;
-            tmp = strchr (cdata, '\xFE');
+            tmp = strchr (cdata, sep);
             *tmp = 0;
             if (prG->verbose)
             {
@@ -741,7 +734,7 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
         case URL_MESS:
         case MRURL_MESS:
             url_desc = cdata;
-            url_url = strchr (cdata, '\xFE');
+            url_url = strchr (cdata, sep);
             if (url_url == NULL)
             {
                 url_url = url_desc;
@@ -752,9 +745,6 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
                 *url_url = '\0';
                 url_url++;
             }
-
-            ConvWinUnix (url_desc);
-            ConvWinUnix (url_url);
 
             log_event (uin, LOG_MESS,
                        "You received URL message from %s\nDescription: %s\nURL: %s\n",
@@ -767,7 +757,7 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
             break;
         case CONTACT_MESS:
         case MRCONTACT_MESS:
-            tmp = strchr (cdata, '\xFE');
+            tmp = strchr (cdata, sep);
             *tmp = 0;
             M_print (i18n (1595, "\nContact List.\n" COLMESS "============================================\n" COLNONE "%d Contacts\n"),
                      atoi (cdata));
@@ -776,19 +766,18 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
             for (x = 0; m > x; x++)
             {
                 cdata = tmp;
-                tmp = strchr (tmp, '\xFE');
+                tmp = strchr (tmp, sep);
                 *tmp = 0;
                 M_print (COLCONTACT "%s\t\t\t", cdata);
                 tmp++;
                 cdata = tmp;
-                tmp = strchr (tmp, '\xFE');
+                tmp = strchr (tmp, sep);
                 *tmp = 0;
                 M_print (COLMESS "%s" COLNONE "\n", cdata);
                 tmp++;
             }
             break;
         default:
-            ConvWinUnix (cdata);
             while (*cdata && (cdata[strlen (cdata) - 1] == '\n' || cdata[strlen (cdata) - 1] == '\r'))
                 cdata[strlen (cdata) - 1] = '\0';
             log_event (uin, LOG_MESS, "You received instant message from %s\n%s\n",
@@ -800,7 +789,6 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
     if ((cont = ContactFind (uin)))
     {
         cont->LastMessage = realloc (cont->LastMessage, len + 1);
-        ConvWinUnix (cdata);
         strncpy (cont->LastMessage, cdata, len + 1);
         cont->LastMessage [len] = '\0';
     }

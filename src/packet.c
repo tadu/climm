@@ -118,47 +118,43 @@ void PacketWriteData (Packet *pak, const char *data, UWORD len)
         pak->len = pak->wpos;
 }
 
-void PacketWriteStrB(Packet *pak, const char *data)
+void PacketWriteStr(Packet *pak, const char *data)
 {
-    PacketWriteB2 (pak, strlen (data));
-    PacketWriteData (pak, data, strlen (data));
+    char *buf = strdup (data);
+    ConvUnixWin (buf);
+    PacketWriteData (pak, buf, strlen (data));
 }
 
 void PacketWriteLNTS (Packet *pak, const char *data)
 {
-    assert (pak);
-    if (!data)
-        data = "";
-    assert (pak->wpos + strlen (data) < PacketMaxData);
+    char *buf = strdup (data ? data : "");
 
-    PacketWrite2 (pak, strlen (data) + 1);
-    strcpy (&pak->data[pak->wpos], data);
-    pak->wpos += strlen (data);
+    assert (pak);
+    assert (buf);
+    assert (pak->wpos + strlen (buf) < PacketMaxData);
+    
+    ConvUnixWin (buf);
+    PacketWrite2 (pak, strlen (buf) + 1);
+    PacketWriteData (pak, buf, strlen (buf));
     PacketWrite1 (pak, 0);
+    
+    free (buf);
 }
 
 void PacketWriteLLNTS (Packet *pak, const char *data)
 {
+    char *buf = strdup (data ? data : "");
+
     assert (pak);
-    if (!data)
-        data = "";
-    assert (pak->wpos + strlen (data) < PacketMaxData);
+    assert (buf);
+    assert (pak->wpos + strlen (buf) < PacketMaxData);
 
-    PacketWrite2 (pak, strlen (data) + 3);
-    PacketWrite2 (pak, strlen (data) + 1);
-    strcpy (&pak->data[pak->wpos], data);
-    pak->wpos += strlen (data);
+    ConvUnixWin (buf);
+    PacketWrite2 (pak, strlen (buf) + 3);
+    PacketWrite2 (pak, strlen (buf) + 1);
+    PacketWriteData (pak, buf, strlen (buf));
     PacketWrite1 (pak, 0);
-}
-
-void PacketWriteStrCUW (Packet *pak, const char *data)
-{
-    char *tmp = malloc (strlen (data) + 2);
-    
-    strcpy (tmp, data);
-    ConvUnixWin (tmp);
-    PacketWriteLNTS (pak, tmp);
-    free (tmp);
+    free (buf);
 }
 
 void PacketWriteUIN (Packet *pak, UDWORD uin)
@@ -184,8 +180,8 @@ void PacketWriteTLVDone (Packet *pak)
 {
     UWORD pos;
     
-    pos = PacketReadBAt2 (pak, pak->tpos);
-    PacketWriteBAt2 (pak, pak->tpos, pak->wpos - pak->tpos - 2);
+    pos = PacketReadAtB2 (pak, pak->tpos);
+    PacketWriteAtB2 (pak, pak->tpos, pak->wpos - pak->tpos - 2);
     pak->tpos = pos;
 }
 
@@ -202,7 +198,7 @@ void PacketWriteLenDone (Packet *pak)
 {
     UWORD pos;
     
-    pos = PacketReadBAt2 (pak, pak->tpos);
+    pos = PacketReadAtB2 (pak, pak->tpos);
     PacketWriteAt2 (pak, pak->tpos, pak->wpos - pak->tpos - 2);
     pak->tpos = pos;
 }
@@ -233,7 +229,7 @@ void PacketWriteAt2 (Packet *pak, UWORD at, UWORD data)
         pak->len = at;
 }
 
-void PacketWriteBAt2 (Packet *pak, UWORD at, UWORD data)
+void PacketWriteAtB2 (Packet *pak, UWORD at, UWORD data)
 {
     assert (pak);
     assert (at + 1 < PacketMaxData);
@@ -257,7 +253,7 @@ void PacketWriteAt4 (Packet *pak, UWORD at, UDWORD data)
         pak->len = at;
 }
 
-void PacketWriteBAt4 (Packet *pak, UWORD at, UDWORD data)
+void PacketWriteAtB4 (Packet *pak, UWORD at, UDWORD data)
 {
     assert (pak);
     assert (at + 3 < PacketMaxData);
@@ -365,6 +361,7 @@ char *PacketReadStrB (Packet *pak)
     
     PacketReadData (pak, str, len);
     str[len] = '\0';
+    ConvWinUnix (str);
 
     return str;
 }
@@ -372,19 +369,19 @@ char *PacketReadStrB (Packet *pak)
 const char *PacketReadLNTS (Packet *pak)
 {
     UWORD len;
-    const char *str;
+    char *str;
     
     len = PacketRead2 (pak);
     str = pak->data + pak->rpos;
 
     if (!len)
         return "";
-    
-    PacketReadData (pak, NULL, len);
-    
     if (str [len - 1])
         return "<invalid>";
-    
+
+    PacketWriteAt2 (pak, pak->rpos - 2, 0); /* clear string to prevent double recoding */
+    PacketReadData (pak, NULL, len);
+    ConvWinUnix (str);
     return str;
 }
 
@@ -430,7 +427,7 @@ UWORD PacketReadAt2 (const Packet *pak, UWORD at)
     return data;
 }
 
-UWORD PacketReadBAt2 (const Packet *pak, UWORD at)
+UWORD PacketReadAtB2 (const Packet *pak, UWORD at)
 {
     UWORD data;
 
@@ -460,7 +457,7 @@ UDWORD PacketReadAt4 (const Packet *pak, UWORD at)
     return data;
 }
 
-UDWORD PacketReadBAt4 (const Packet *pak, UWORD at)
+UDWORD PacketReadAtB4 (const Packet *pak, UWORD at)
 {
     UDWORD data;
 
@@ -491,7 +488,7 @@ char *PacketReadAtStrB (const Packet *pak, UWORD at)
     UWORD len;
     char *str;
     
-    len = PacketReadBAt2 (pak, at);
+    len = PacketReadAtB2 (pak, at);
 
     if (!len)
         return "";
@@ -501,24 +498,26 @@ char *PacketReadAtStrB (const Packet *pak, UWORD at)
     
     PacketReadAtData (pak, at + 2, str, len);
     str[len] = '\0';
+    ConvWinUnix (str);
 
     return str;
 }
 
-const char *PacketReadAtLNTS (const Packet *pak, UWORD at)
+const char *PacketReadAtLNTS (Packet *pak, UWORD at)
 {
     UWORD len;
-    const char *str;
+    char *str;
     
     len = PacketReadAt2 (pak, at);
     str = pak->data + at + 2;
 
     if (!len)
         return "";
-    
     if (str [len - 1])
         return "<invalid>";
-    
+
+    PacketWriteAt2 (pak, at - 2, 0);
+    ConvWinUnix (str);
     return str;
 }
 

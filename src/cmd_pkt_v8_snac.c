@@ -159,9 +159,9 @@ void SnacPrint (Packet *pak)
     assert (pak->len >= 16);
 
     M_print (i18n (1905, "SNAC (%x,%x) [%s] flags %x ref %x\n"),
-             PacketReadBAt2 (pak, 6), PacketReadBAt2 (pak, 8),
-             SnacName (PacketReadBAt2 (pak, 6), PacketReadBAt2 (pak, 8)),
-             PacketReadBAt2 (pak, 10), PacketReadBAt4 (pak, 12));
+             PacketReadAtB2 (pak, 6), PacketReadAtB2 (pak, 8),
+             SnacName (PacketReadAtB2 (pak, 6), PacketReadAtB2 (pak, 8)),
+             PacketReadAtB2 (pak, 10), PacketReadAtB4 (pak, 12));
     M_print (COLNONE);
     Hex_Dump (pak->data + 16, pak->len - 16);
 }
@@ -265,7 +265,7 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
     UDWORD uin, status;
     
     pak = event->pak;
-    if (PacketReadBAt2 (pak, 10) & 0x8000)
+    if (PacketReadAtB2 (pak, 10) & 0x8000)
     {
         PacketReadB4 (pak);
         PacketReadB4 (pak);
@@ -1019,14 +1019,15 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, char *text, UDWORD type)
     switch (format)
     {
         case 1:
-            PacketWriteB2 (pak, 2);
-            PacketWriteB2 (pak, strlen (text) + 13);
-            PacketWriteB4 (pak, 0x05010001);
-            PacketWriteB2 (pak, 0x0101);
-            PacketWrite1  (pak, 0x01);
-            PacketWriteB2 (pak, strlen (text) + 4);
-            PacketWriteB4 (pak, 0);
-            PacketWriteData (pak, text, strlen (text));
+            PacketWriteTLV     (pak, 2);
+            PacketWriteTLV     (pak, 1281);
+            PacketWrite1       (pak, 1);
+            PacketWriteTLVDone (pak);
+            PacketWriteTLV     (pak, 257);
+            PacketWrite4       (pak, 0);
+            PacketWriteStr     (pak, text);
+            PacketWriteTLVDone (pak);
+            PacketWriteTLVDone (pak);
             break;
         case 4:
             PacketWriteB2 (pak, 5);

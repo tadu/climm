@@ -42,9 +42,9 @@ TLV *TLVRead (Packet *pak)
         tlv[n].str = p;
         
         if (len == 2)
-            tlv[n].nr = PacketReadBAt2 (pak, pos);
+            tlv[n].nr = PacketReadAtB2 (pak, pos);
         if (len == 4)
-            tlv[n].nr = PacketReadBAt4 (pak, pos);
+            tlv[n].nr = PacketReadAtB4 (pak, pos);
     }
     return tlv;
 }

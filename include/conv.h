@@ -1,4 +1,5 @@
 
+char ConvSep ();
 void ConvWinUnix (char *text);
 void ConvUnixWin (char *text);
 

@@ -526,7 +526,7 @@ Packet *UtilIOReceiveTCP (Session *sess)
     {
         len = off = 6;
         if (pak->len >= off)
-            len = PacketReadBAt2 (pak, 4) + 6;
+            len = PacketReadAtB2 (pak, 4) + 6;
     }
     else
     {
