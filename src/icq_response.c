@@ -133,7 +133,7 @@ void Meta_User (SOK_T sok, UBYTE * data, UDWORD len, UDWORD uin)
             if ((*(data + 1) > 0) && (*(data + 1) <= 12))
             {
                 M_print ("%s%02d.%s. %4d \t", i18n (532, "Born         : "),
-                         *(data + 2), i18n (-1, TableGetMonth (*(data + 1))), *(data) + 1900);
+                         *(data + 2), TableGetMonth (*(data + 1)), *(data) + 1900);
                 newline = "\n";
             }
             data += 3;
@@ -883,7 +883,7 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
 
         M_print (MSGRECSTR MESSCOL "%s" NOCOL "\n", url_desc);
         Time_Stamp ();
-        M_print ("      URL: " MSGRECSTR MESSCOL "%s" NOCOL "\n", url_url);
+        M_print ("        URL: " MSGRECSTR MESSCOL "%s" NOCOL "\n", url_url);
     }
     else if (type == CONTACT_MESS || type == MRCONTACT_MESS)
     {

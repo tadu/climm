@@ -4,6 +4,8 @@
 	  Adapt from Debian changes (by maintainer Sander Smeenk
 	  <ssmeenk@debian.org>): Reconnect patch, and use $(DESTDIR) and
 	  $(prefix).
+	* src/icq_response.c:
+	  Stop translating month's name twice. You'd see text #0.
 
 2001-04-23 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* include/*.h, src/*.c:
