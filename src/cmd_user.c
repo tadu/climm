@@ -1367,7 +1367,7 @@ static JUMP_F (CmdUserAnyMess)
     if (!s_parse (&args, &arg1))
         return 0;
     
-    t = s_catf (t, &size, "<%s>", arg1);
+    t = s_catf (t, &size, "%s", arg1);
 
     while (s_parse (&args, &arg1))
         t = s_catf (t, &size, "%c<%s>", Conv0xFE, arg1);
