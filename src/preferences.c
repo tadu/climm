@@ -114,7 +114,7 @@ const char *PrefLogNameReal (Preferences *pref)
 #endif
         char username[L_cuserid + SYS_NMLN] = "";
 
-        hostname = username + 1;
+        hostname = username;
         me = getenv ("LOGNAME");
         if (!me)
             me = getenv ("USER");
@@ -124,18 +124,19 @@ const char *PrefLogNameReal (Preferences *pref)
             hostname += strlen (username);
         }
 
-#if HAVE_GETHOSTNAME
-        if (!gethostname (hostname, username + sizeof (username) - hostname))
-            hostname[-1] = '@';
-#elif HAVE_UNAME
+#if HAVE_UNAME
         if (!uname (&name))
-        {
-            snprintf (hostname, username + sizeof (username) - hostname, "%s", name.nodename);
-            hostname[-1] = '@';
-        }
+            snprintf (hostname, username + sizeof (username) - hostname, "@%s", name.nodename);
+        else
+            *hostname = '\0';
+#elif HAVE_GETHOSTNAME
+        if (!gethostname (hostname + 1, username + sizeof (username) - hostname - 1))
+            *hostname = '@';
+        else
+            *hostname = '\0';
+        username[sizeof (username) - 1] = '\0';
 #else
-        snprintf (hostname, username + sizeof (username) - hostname, "(unknown)");
-        hostname[-1] = '@';
+        snprintf (hostname, username + sizeof (username) - hostname, "@(unknown)");
 #endif
         pref->logname = strdup (username);
     }
