@@ -1170,6 +1170,10 @@ int Save_RC ()
     Connection *ss;
     ContactGroup *cg;
 
+#ifdef ENABLE_TCL
+    tcl_pref_p tpref;
+#endif
+
     M_printf (i18n (2048, "Saving preferences to %s.\n"), prG->rcfile);
     rcf = fopen (prG->rcfile, "w");
     if (!rcf)
@@ -1262,7 +1266,7 @@ int Save_RC ()
     fprintf (rcf, "verbose %ld\n\n", prG->verbose);
 
 #ifdef ENABLE_TCL
-    tcl_pref_p tpref = prG->tclscript;
+    tpref = prG->tclscript;
     while (tpref)
     {
         fprintf (rcf, "%s \"%s\"\n", tpref->type == TCL_FILE ? "tclscript" : "tcl",
