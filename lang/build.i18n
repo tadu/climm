@@ -904,7 +904,7 @@
 2123:%sSyntax error%s: Too few arguments: '%s'\n
 2124:%sSyntax error%s: Not an integer: '%s'\n
 2126:is offline, message queued on server.\n
-2127:       URL: %s%s%s%s\n
+2127:       URL: %s %s%s%s\n
 2128: Description: %s%s%s\n
 2129:         URL: %s%s%s\n
 2130:Composing message to %sall%s:\n
@@ -1052,3 +1052,11 @@
 2286:    tabs:       style for tab-handling: simple, cycle, cycleall.\n
 2287:    silence:    suppress some output: off, on, complete.\n
 2288:Indentation style is %s%s%s.\n
+2289:»»»
+2290:«««
+2291:>>»
+2292:«<<
+2293:--=
+2294:===
+2295:>>>
+2296:<<<
