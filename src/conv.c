@@ -280,7 +280,7 @@ UBYTE ConvEnc (const char *enc)
         if (!strcasecmp (conv_encs[nr].enca, enc) ||
             (conv_encs[nr].encb && !strcasecmp (conv_encs[nr].encb, enc)) ||
             (conv_encs[nr].encc && !strcasecmp (conv_encs[nr].encc, enc)) ||
-            (conv_encs[nr].encc && !strcasecmp (conv_encs[nr].encd, enc)))
+            (conv_encs[nr].encd && !strcasecmp (conv_encs[nr].encd, enc)))
         {
 #if HAVE_ICONV
             if (!conv_encs[nr].ito || !conv_encs[nr].iof)
