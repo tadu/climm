@@ -238,7 +238,7 @@ int main (int argc, char *argv[])
     }
 
     prG = PreferencesC ();
-    prG->verbose  = arg_vv;
+    prG->verbose  = arg_vv | 0x8000;
     prG->rcfile   = arg_f ? strdup (arg_f) : NULL;
     prG->logplace = arg_l ? strdup (arg_l) : NULL;
     prG->flags |= arg_c ? 0 : FLAG_COLOR;

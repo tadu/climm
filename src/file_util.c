@@ -811,7 +811,7 @@ void Read_RC_File (FILE *rcf)
                 }
                 if (~cont->flags & CONT_ALIAS)
                     cont->flags = flags;
-                if (prG->verbose > 2)
+                if ((prG->verbose & 0x7fff) > 2)
                     M_printf ("%ld = %s %lx | %p\n", cont->uin, cont->nick, cont->flags, cont);
                 break;
             case 2:
