@@ -1546,7 +1546,6 @@ BOOL TCPSendMsg (Connection *list, UDWORD uin, char *msg, UWORD sub_cmd)
     ASSERT_MSGDIRECT(peer);
 
 #ifdef ENABLE_UTF8
-    fprintf (stderr, "TCPing '%s'\n", msg);
     pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, sub_cmd, 0, list->parent->status,
                       (cont->caps & CAP_UTF8) ? msg : c_out (msg));
 #else
