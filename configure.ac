@@ -168,7 +168,7 @@ if test "x$ac_arg_use_iconv" != "xbuiltin"; then
   fi
 fi
 
-if test "x$ac_arg_use_iconv" = "builtin"; then
+if test "x$ac_arg_use_iconv" = "xbuiltin"; then
   AC_DEFINE([ICONV_LATIN1_NAME], ["ISO-8859-1"])
   AC_DEFINE([ICONV_LATIN9_NAME], ["ISO-8859-15"])
   AC_DEFINE([ICONV_UCS2BE_NAME], ["UCS-2BE"])
