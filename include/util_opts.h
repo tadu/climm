@@ -67,14 +67,16 @@ extern struct OptEntry_s OptList[];
 #define CO_SHOWONOFF     (COF_BOOL    | CO_CONTACT | 0x100001UL) /* show on/offline              */
 #define CO_SHOWCHANGE    (COF_BOOL    | CO_CONTACT | 0x400001UL) /* show status changes          */
 
-#define CO_WEBAWARE      (COF_BOOL    | CO_GROUP   | 0x000102UL) /* this connection is webaware           */
-#define CO_HIDEIP        (COF_BOOL    | CO_GROUP   | 0x000402UL) /* this connection hides its LAN ip      */
-#define CO_DCAUTH        (COF_BOOL    | CO_GROUP   | 0x001002UL) /* this connection requires auth for dc  */
-#define CO_DCCONT        (COF_BOOL    | CO_GROUP   | 0x004002UL) /* this connection: dc only for contacts */
-#define CO_ISSBL         (COF_BOOL    | CO_CONTACT | 0x010002UL) /* is on sbl                    */
-#define CO_WANTSBL       (COF_BOOL    | CO_CONTACT | 0x040002UL) /* want it to be on sbl         */
-#define CO_SHADOW        (COF_BOOL    | CO_CONTACT | 0x100002UL) /* don't display in contact list          */
-#define CO_LOCAL         (COF_BOOL    | CO_CONTACT | 0x000103UL) /* do not request status changes for this */
+#define CO_ISSBL         (COF_BOOL    | CO_CONTACT | 0x000102UL) /* is on sbl                    */
+#define CO_WANTSBL       (COF_BOOL    | CO_CONTACT | 0x000402UL) /* want it to be on sbl         */
+#define CO_SHADOW        (COF_BOOL    | CO_CONTACT | 0x001002UL) /* don't display in contact list          */
+#define CO_LOCAL         (COF_BOOL    | CO_CONTACT | 0x004002UL) /* do not request status changes for this */
+
+#define CO_WEBAWARE      (COF_BOOL    | CO_GROUP   | 0x000103UL) /* this connection is webaware           */
+#define CO_HIDEIP        (COF_BOOL    | CO_GROUP   | 0x000403UL) /* this connection hides its LAN ip      */
+#define CO_DCAUTH        (COF_BOOL    | CO_GROUP   | 0x001003UL) /* this connection requires auth for dc  */
+#define CO_DCCONT        (COF_BOOL    | CO_GROUP   | 0x004003UL) /* this connection: dc only for contacts */
+#define CO_OBEYSBL       (COF_BOOL    | CO_GROUP   | 0x010003UL) /* this connection obeys the sbl         */
 
 #define CO_ENCODING      (COF_NUMERIC | CO_CONTACT | 0x04UL) /* the default encoding for this contact */
 #define CO_ENCODINGSTR   (COF_STRING  | CO_CONTACT | 0x05UL) /* the default encoding for this contact */
