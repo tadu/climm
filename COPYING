@@ -1,0 +1,25 @@
+$Id$
+
+Code written by Matt D. Smith is released under the
+BSD Licence. He never had a real Licence, but i got this:
+| Micq is not really under any license.  If you need to
+| list one make it BSD.  I tell anyone who asks they can
+| use it but give me credit which as I understand it is
+| the essense of BDS license.  I never planned for micq
+| to take off so much and so never worried about a
+| license.
+| There will hopefully be a new version by the end of
+| february and you could include that in the next
+| debian.
+| 
+| -- MAtt
+
+I got this cite from the debian-package maintainer from
+micq.
+
+Beginning from 0.4.7 all the Code is released
+as BSD-ish Licence - when not otherwise noted.
+
+No-one from the micq Project is in any way affiliated with
+Mirabilis. We get neither money nor any hints from them.
+

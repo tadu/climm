@@ -1,0 +1,67 @@
+# $Id$ 
+
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ(2.50)
+AC_INIT
+
+AC_CONFIG_SRCDIR([include/micq.h])
+
+AC_CANONICAL_HOST
+
+AM_INIT_AUTOMAKE(micq, 0.4.6)
+AM_CONFIG_HEADER(include/config.h)
+
+AM_MISSING_PROG(AUTOCONF, autoconf-2.50, $missing_dir)
+if printenv AUTOCONF | grep -q >/dev/null 2>/dev/null missing; then
+  AM_MISSING_PROG(AUTOCONF, autoconf, $missing_dir)
+fi
+AM_MISSING_PROG(AUTOHEADER, autoheader-2.50, $missing_dir)
+if printenv AUTOHEADER | grep -q >/dev/null 2>/dev/null missing; then
+  AM_MISSING_PROG(AUTOHEADER, autoheader, $missing_dir)
+fi
+
+
+# Checks for programs.
+AC_PROG_CC
+AC_PROG_INSTALL
+AC_PROG_LN_S
+
+# Checks for libraries.
+AC_CHECK_FUNCS([inet_ntoa getpeername])
+if test "x$ac_cv_func_inet_ntoa" == "xno"; then
+  AC_CHECK_LIB(nsl, inet_ntoa)
+fi
+if test "x$ac_cv_func_inet_getpeername" == "xno"; then
+  AC_CHECK_LIB(socket, getpeername)
+fi
+
+# Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS([arpa/inet.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_SIZE_T
+AC_HEADER_TIME
+AC_STRUCT_TM
+AC_C_BIGENDIAN
+
+# Checks for library functions.
+AC_PROG_GCC_TRADITIONAL
+AC_FUNC_MALLOC
+AC_TYPE_SIGNAL
+AC_FUNC_STAT
+AC_FUNC_VPRINTF
+AC_CHECK_FUNCS([atexit gethostbyname memset mkdir select socket strcasecmp strchr strdup strncasecmp strpbrk strrchr strstr strtol fork])
+
+# autoconf 2.50 uses this syntax, but automake uses the vars in AC_OUTPUT
+# so this is commented out until automake is updated.
+# AC_CONFIG_FILES([doc/Makefile
+#                 src/Makefile
+#                 Makefile
+#		  include/Makefile
+#                 lang/Makefile])
+
+AC_OUTPUT([doc/Makefile src/Makefile Makefile lang/Makefile include/Makefile])
+

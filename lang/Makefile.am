@@ -1,0 +1,9 @@
+# $Id$
+
+langdir = $(prefix)/share/micq
+lang_DATA = bg.i18n br.i18n cn.i18n de.i18n en.i18n en_fun.i18n \
+         es.i18n fi.i18n fr.i18n hr.i18n id.i18n it.i18n nl.i18n \
+         pl.i18n ru.i18n se.i18n uk.i18n yu.i18n
+
+EXTRA_DIST = i18n-extract i18n-number i18n-template $(lang_DATA)
+
