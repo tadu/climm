@@ -47,9 +47,8 @@ UBYTE ConvEnc (const char *enc)
         conv_encs[3].enc = strdup (ICONV_LATIN9_NAME);
         conv_encs[4].enc = strdup ("KOI8-U");
         conv_encs[5].enc = strdup ("CP1251");      /* NOT cp-1251, NOT windows* */
-        conv_encs[6].enc = strdup (ICONV_LATIN1_NAME);  /* this is dupe (!) */
-        conv_encs[7].enc = strdup ("EUC-JP");
-        conv_encs[8].enc = strdup ("SHIFT-JIS");
+        conv_encs[6].enc = strdup ("EUC-JP");
+        conv_encs[7].enc = strdup ("SHIFT-JIS");
     }
     if (!strcasecmp (enc, "WINDOWS-1251") || !strcmp (enc, "CP-1251"))
         enc = "CP1251";
@@ -69,7 +68,7 @@ UBYTE ConvEnc (const char *enc)
                 && conv_encs[nr].to != (iconv_t)(-1)
                 && conv_encs[nr].from != (iconv_t)(-1))
 #else
-            if (nr <= ENC_LATIN1b)
+            if (nr <= ENC_MAX_BUILTIN)
 #endif
                 return nr;
             break;
@@ -169,9 +168,28 @@ const char *ConvUTF8 (UDWORD x)
     return b;
 }
 
+const char *ConvCrush0xFE (const char *inn)
+{
+    static char *t = NULL;
+    static UDWORD size = 0;
+    char *p;
+    
+    if (!inn || !*inn)
+        return "";
+    
+    t = s_catf (t, &size, "%*s", 100, "");
+    *t = '\0';
+    
+    t = s_catf (t, &size, "%s", inn);
+    for (p = t; *p; p++)
+        if (*p == Conv0xFE)
+            *p = '*';
+    return t;
+}
+
 #ifdef ENABLE_ICONV
 
-const char *ConvToUTF8 (const char *inn, UBYTE enc)
+const char *ConvToUTF8 (const char *inn, UBYTE enc, UBYTE keep0xfe)
 {
     static char *t = NULL;
     static UDWORD size = 0;
@@ -198,13 +216,13 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
             if (enc != ENC_UTF8)
                 return s_sprintf ("<invalid encoding unsupported %d %s>", enc, conv_encs[enc].enc);
             else
-                return s_sprintf ("%s", inn);
+                return keep0xfe ? s_sprintf ("%s", inn) : ConvCrush0xFE (inn);
         }
     }
     iconv (conv_encs[enc].to, NULL, NULL, NULL, NULL);
     in = (ICONV_CONST char *)inn;
     out = t;
-    inleft = (enc != ENC_LATIN1b && strchr (in, 0xfe)) ? strchr (in, 0xfe) - in : strlen (in);
+    inleft = (keep0xfe && strchr (in, 0xfe)) ? strchr (in, 0xfe) - in : strlen (in);
     outleft = size - 1;
     while (iconv (conv_encs[enc].to, &in, &inleft, &out, &outleft) == (size_t)(-1) || *in == (char)0xfe)
     {
@@ -220,17 +238,12 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
             outleft += 50;
             out = t + done;
         }
-        else if (*in == (char)0xfe)
+        else if (*in == (char)0xfe && keep0xfe)
         {
             *out++ = 0xfe;
             outleft--;
             in++;
-            inleft = (enc != ENC_LATIN1b && strchr (in, 0xfe)) ? strchr (in, 0xfe) - in : strlen (in);
-        }
-        else if (rc == EINVAL)
-        {
-            *out++ = '?';
-            break;
+            inleft = (keep0xfe && strchr (in, 0xfe)) ? strchr (in, 0xfe) - in : strlen (in);
         }
         else /* EILSEQ */
         {
@@ -299,17 +312,14 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
             in++;
             inleft = strchr (in, 0xfe) ? strchr (in, 0xfe) - in : strlen (in);
         }
-        else if (rc == EINVAL)
-        {
-            *out++ = '?';
-            break;
-        }
         else /* EILSEQ */
         {
             *out++ = '?';
             outleft--;
             in++;
             inleft--;
+            while (*in && ((*in & 0xc0) == 0x80)) /* skip continuation bytes */
+                in++, inleft--;
         }
     }
     *out = '\0';
@@ -368,7 +378,7 @@ const UDWORD win1251_utf8[] = { /* 7bit are us-ascii */
     0x0
 };
 
-const char *ConvToUTF8 (const char *inn, UBYTE enc)
+const char *ConvToUTF8 (const char *inn, UBYTE enc, UBYTE keep0xfe)
 {
     static char *t = NULL;
     static UDWORD size = 0;
@@ -391,14 +401,14 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
             t = s_catf (t, &size, "%c", *in);
             continue;
         }
+        if (keep0xfe && *in == (unsigned char)Conv0xFE)
+        {
+            t = s_catf (t, &size, "\xfe");
+            continue;
+        }
         switch (enc & ~ENC_AUTO)
         {
             case ENC_UTF8:
-                if (*in == 0xfe) /* we _do_ allow 0xFE here, it's the ICQ separator character */
-                {
-                    t = s_catf (t, &size, "\xfe");
-                    continue;
-                }
                 GET_UTF8 (in, i);
                 in--;
                 PUT_UTF8 (i);

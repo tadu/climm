@@ -696,7 +696,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             /* TLV 1, 2(!), 3, 4, f ignored */
             IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (extra,
                       EXTRA_ORIGIN, EXTRA_ORIGIN_v5, NULL),
-                      EXTRA_MESSAGE, MSG_NORM, c_in_to (text + 4, cont)));
+                      EXTRA_MESSAGE, MSG_NORM, c_in_to_0 (text + 4, cont)));
             Auto_Reply (event->conn, cont);
             break;
         case 2:
@@ -808,7 +808,8 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
 
             IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (extra,
                       EXTRA_ORIGIN, EXTRA_ORIGIN_v5, NULL),
-                      EXTRA_MESSAGE, msgtyp, c_in_to (text, cont)));
+                      EXTRA_MESSAGE, msgtyp, msgtyp == MSG_NORM ?
+                      c_in_to_0 (text, cont) : c_in_to (text, cont)));
             Auto_Reply (event->conn, cont);
             break;
         default:

@@ -333,7 +333,8 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
               inc_event, ack_event, msgtype, seq);
 #endif
  
-    ExtraSet (extra, EXTRA_MESSAGE, msgtype, c_in_to (text, cont));
+    ExtraSet (extra, EXTRA_MESSAGE, msgtype, msgtype == MSG_NORM ?
+              c_in_to_0 (text, cont) : c_in_to (text, cont));
 
     accept = FALSE;
 

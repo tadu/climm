@@ -206,7 +206,7 @@ if test "x$ac_arg_use_utf8" = "xyes"; then
   AC_DEFINE(ENABLE_UTF8, 1, [Whether to use UTF-8 internally])
 fi
 
-if test "x$ac_arg_use_iconv" != "xnone"; then
+if test "x$ac_arg_use_iconv" != "xbuiltin"; then
   AC_DEFINE_UNQUOTED(ENABLE_ICONV, "$ac_arg_use_iconv", [Which lib to use for iconv() functions])
 fi
 

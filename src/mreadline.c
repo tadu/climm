@@ -877,7 +877,7 @@ int R_process_input (void)
 void R_getline (char *buf, int len)
 {
 #ifdef ENABLE_UTF8
-    strncpy (buf, ConvToUTF8 (s, prG->enc_loc), len);
+    strncpy (buf, ConvToUTF8 (s, prG->enc_loc, 0), len);
 #else
     strncpy (buf, s, len);
 #endif

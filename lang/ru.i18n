@@ -1263,14 +1263,14 @@
 #2286:    tabs:       style for tab-handling: simple, cycle, cycleall.\n
 #2287:    silent:     suppress some output: off, on, complete.\n
 #2288:Indentation style is %s%s%s.\n
-#2289:»»»
-#2290:«««
-#2291:>>»
-#2292:«<<
-#2293:--=
-#2294:===
-#2295:>>>
-#2296:<<<
+2289:}}}
+2290:{{{
+2291:>>}
+2292:{<<
+2293:--=
+2294:===
+2295:>>>
+2296:<<<
 #2297:Alias to what?\n
 #2298:Remove which alias?\n
 #2299:Alias doesn't exist.\n

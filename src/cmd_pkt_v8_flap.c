@@ -295,7 +295,7 @@ void FlapCliIdent (Connection *conn)
         M_fdnreadln (stdin, pwd, sizeof (pwd));
         Echo_On ();
 #ifdef ENABLE_UTF8
-        conn->passwd = strdup (ConvToUTF8 (pwd, prG->enc_loc));
+        conn->passwd = strdup (ConvToUTF8 (pwd, prG->enc_loc, 0));
 #else
         conn->passwd = strdup (pwd);
 #endif

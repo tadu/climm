@@ -325,7 +325,7 @@ void Read_RC_File (FILE *rcf)
             else
             {
                 M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                M_printf (i18n (1659, "Unknown section %s in configuration file."), ConvToUTF8 (buf, enc));
+                M_printf (i18n (1659, "Unknown section %s in configuration file."), ConvToUTF8 (buf, enc, 0));
                 M_print ("\n");
                 section = -1;
             }
@@ -337,7 +337,7 @@ void Read_RC_File (FILE *rcf)
             case -1:
                 M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
                 M_print  (i18n (1675, "Ignored line:"));
-                M_printf (" %s\n", ConvToUTF8 (buf, enc));
+                M_printf (" %s\n", ConvToUTF8 (buf, enc, 0));
                 break;
             case 0:
                 if (!s_parse (&args, &cmd))
@@ -554,32 +554,32 @@ void Read_RC_File (FILE *rcf)
                     else if (!strcasecmp (tmp, "away"))
                     {
                         PrefParse (tmp);
-                        s_repl (&prG->auto_away, ConvToUTF8 (tmp, enc));
+                        s_repl (&prG->auto_away, ConvToUTF8 (tmp, enc, 0));
                     }
                     else if (!strcasecmp (tmp, "na"))
                     {
                         PrefParse (tmp);
-                        s_repl (&prG->auto_na, ConvToUTF8 (tmp, enc));
+                        s_repl (&prG->auto_na, ConvToUTF8 (tmp, enc, 0));
                     }
                     else if (!strcasecmp (tmp, "dnd"))
                     {
                         PrefParse (tmp);
-                        s_repl (&prG->auto_dnd, ConvToUTF8 (tmp, enc));
+                        s_repl (&prG->auto_dnd, ConvToUTF8 (tmp, enc, 0));
                     }
                     else if (!strcasecmp (tmp, "occ"))
                     {
                         PrefParse (tmp);
-                        s_repl (&prG->auto_occ, ConvToUTF8 (tmp, enc));
+                        s_repl (&prG->auto_occ, ConvToUTF8 (tmp, enc, 0));
                     }
                     else if (!strcasecmp (tmp, "inv"))
                     {
                         PrefParse (tmp);
-                        s_repl (&prG->auto_inv, ConvToUTF8 (tmp, enc));
+                        s_repl (&prG->auto_inv, ConvToUTF8 (tmp, enc, 0));
                     }
                     else if (!strcasecmp (tmp, "ffc"))
                     {
                         PrefParse (tmp);
-                        s_repl (&prG->auto_ffc, ConvToUTF8 (tmp, enc));
+                        s_repl (&prG->auto_ffc, ConvToUTF8 (tmp, enc, 0));
                     }
                     else
                         ERROR;
@@ -617,7 +617,7 @@ void Read_RC_File (FILE *rcf)
                 {
                     PrefParse (tmp);
                     if (spooled_tab_nicks < TAB_SLOTS)
-                        tab_nick_spool[spooled_tab_nicks++] = strdup (ConvToUTF8 (tmp, enc));
+                        tab_nick_spool[spooled_tab_nicks++] = strdup (ConvToUTF8 (tmp, enc, 0));
                 }
                 else if (!strcasecmp (cmd, "set"))
                 {
@@ -743,7 +743,7 @@ void Read_RC_File (FILE *rcf)
                 else
                 {
                     M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), ConvToUTF8 (cmd, enc));
+                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), ConvToUTF8 (cmd, enc, 0));
                     M_print ("\n");
                 }
                 break;
@@ -794,7 +794,7 @@ void Read_RC_File (FILE *rcf)
                 }
                 
                 
-                if (!(cont = ContactFind (NULL, 0, uin, ConvToUTF8 (cmd, enc), 1)))
+                if (!(cont = ContactFind (NULL, 0, uin, ConvToUTF8 (cmd, enc, 0), 1)))
                 {
                     M_printf (COLERROR "%s" COLNONE " %s\n", i18n (1619, "Warning:"),
                              i18n (1620, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
@@ -812,9 +812,9 @@ void Read_RC_File (FILE *rcf)
                 if (!strcasecmp (cmd, "alter"))
                 {
                     PrefParse (tmp);
-                    tmp = strdup (s_quote (ConvToUTF8 (tmp, enc)));
+                    tmp = strdup (s_quote (ConvToUTF8 (tmp, enc, 0)));
                     PrefParse (tmp2);
-                    tmp2 = strdup (s_quote (ConvToUTF8 (tmp2, enc)));
+                    tmp2 = strdup (s_quote (ConvToUTF8 (tmp2, enc, 0)));
                     
                     CmdUser (cmd = strdup (s_sprintf ("\xb6" "alter quiet %s %s", tmp, tmp2)));
 
@@ -825,9 +825,9 @@ void Read_RC_File (FILE *rcf)
                 else if (!strcasecmp (cmd, "alias"))
                 {
                     PrefParse (tmp);
-                    tmp = strdup (s_quote (ConvToUTF8 (tmp, enc)));
+                    tmp = strdup (s_quote (ConvToUTF8 (tmp, enc, 0)));
                     PrefParse (tmp2);
-                    tmp2 = strdup (ConvToUTF8 (tmp2, enc));
+                    tmp2 = strdup (ConvToUTF8 (tmp2, enc, 0));
 
                     CmdUser (cmd = strdup (s_sprintf ("\xb6" "alias %s %s", tmp, tmp2)));
                     
@@ -838,7 +838,7 @@ void Read_RC_File (FILE *rcf)
                 else
                 {
                     M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), ConvToUTF8 (cmd, enc));
+                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), ConvToUTF8 (cmd, enc, 0));
                     M_print ("\n");
                 }
                 break;
@@ -922,7 +922,7 @@ void Read_RC_File (FILE *rcf)
                 else if (!strcasecmp (cmd, "password"))
                 {
                     PrefParse (tmp);
-                    s_repl (&conn->spref->passwd, ConvToUTF8 (tmp, enc));
+                    s_repl (&conn->spref->passwd, ConvToUTF8 (tmp, enc, 0));
                 }
                 else if (!strcasecmp (cmd, "status"))
                 {
@@ -941,7 +941,7 @@ void Read_RC_File (FILE *rcf)
                 if (!strcasecmp (cmd, "label") && !cg->used)
                 {
                     PrefParse (tmp);
-                    s_repl (&cg->name, ConvToUTF8 (tmp, enc));
+                    s_repl (&cg->name, ConvToUTF8 (tmp, enc, 0));
                     if (!strncmp (cg->name, "contacts-", 9))
                     {
                         UWORD type = 0;
@@ -1007,7 +1007,7 @@ void Read_RC_File (FILE *rcf)
                 else
                 {
                     M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), ConvToUTF8 (cmd, enc));
+                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), ConvToUTF8 (cmd, enc, 0));
                     M_print ("\n");
                 }
                 break;
