@@ -230,7 +230,7 @@ void FlapSend (Session *sess, Packet *pak)
     sess->stat_real_pak_sent++;
     
     sockwrite (sess->sok, pak->data, pak->len);
-/*    PacketD (pak);  TODO */
+    PacketD (pak);
 }
 
 /***********************************************/
