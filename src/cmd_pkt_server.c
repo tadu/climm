@@ -352,8 +352,8 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
                 Do_Msg (sess, NULL, wdata, text, uin, 
                     STATUS_OFFLINE, 0);
                 Auto_Reply (sess, uin);
-                free (text);
             }
+            free (text);
             break;
         case SRV_AUTH_UPDATE:
             break;

@@ -839,6 +839,7 @@ static JUMP_SNAC_F(SnacSrvFromoldicq)
         case 65:
             if (len >= 14)
                 Recv_Message (event->sess, p);
+            break;
 
         case 66:
             SnacCliAckofflinemsgs (event->sess);
