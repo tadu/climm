@@ -1242,7 +1242,7 @@ static JUMP_F (CmdUserMessageNG)
             }
             return 0;
         }
-        else if (!strcmp (arg1, CANCEL_MSG_STR))
+        else if (!strcmp (args, CANCEL_MSG_STR))
         {
             M_print (i18n (1038, "Message canceled.\n"));
             return 0;
