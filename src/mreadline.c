@@ -375,9 +375,17 @@ void R_process_input_tab (void)
 {
     UDWORD uin;
     Contact *cont, *tabcont;
-    const char *msgcmd = CmdUserLookupName ("msg");
+    const char *msgcmd;
     int nicklen = 0;
     int gotmatch = 0;
+
+    msgcmd = CmdUserLookupName ("r");
+    if (strncmp (s, msgcmd, strlen (msgcmd)) && s[strlen (msgcmd)] == ' ')
+        return;
+    msgcmd = CmdUserLookupName ("a");
+    if (strncmp (s, msgcmd, strlen (msgcmd)) && s[strlen (msgcmd)] == ' ')
+        return;
+    msgcmd = CmdUserLookupName ("msg");
 
     if (bytelen < strlen (msgcmd) &&
         !strncmp (s, msgcmd, bytelen < strlen (msgcmd) ? bytelen : strlen (msgcmd)))
