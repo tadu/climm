@@ -1240,7 +1240,12 @@ void PrefReadStat (FILE *stf)
                     if ((conn = ConnectionFindUIN (type, uin)))
                         cg->serv = conn;
                 }
-                else if (!strcasecmp (cmd, "entry"))
+                else if (!strcasecmp (cmd, "options"))
+                {
+                    if (OptImport (&cg->copts, args))
+                        ERROR;
+                }
+                else if (!strcasecmp (cmd, "entry") && cg->serv)
                 {
                     UDWORD uin;
                     
@@ -1250,11 +1255,6 @@ void PrefReadStat (FILE *stf)
                     cont = ContactFindCreate (cg->serv->contacts, i, uin, s_sprintf ("%ld", uin));
                     if (cg != cg->serv->contacts)
                         ContactAdd (cg, cont);
-                }
-                else if (!strcasecmp (cmd, "options"))
-                {
-                    if (OptImport (&cg->copts, args))
-                        ERROR;
                 }
                 else
                 {
