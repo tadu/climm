@@ -209,15 +209,17 @@ int main (int argc, char *argv[])
 #ifndef PATH_MAX
 #define PATH_MAX 1023
 #endif
-        char buf[PATH_MAX + 1];
+        char buf[PATH_MAX + 2];
+        const char *app, *oldbase;
         buf[0] = '\0';
         getcwd  (buf, PATH_MAX);
-        prG->basedir = strdup (arg_b[strlen (arg_b) - 1] == '/'
-                       ? s_sprintf ("%s" _OS_PATHSEPSTR "%s", buf, arg_b)
-                       : s_sprintf ("%s" _OS_PATHSEPSTR "%s" _OS_PATHSEPSTR, buf, arg_b));
+        strcat (buf, _OS_PATHSEPSTR);
+        app = arg_b[strlen (arg_b) - 1] == _OS_PATHSEP ? "" : _OS_PATHSEPSTR;
+        oldbase = arg_b[0] == '.' && arg_b[1] == _OS_PATHSEP ? arg_b += 2, buf : PrefUserDir (prG);
+        prG->basedir = strdup (s_sprintf ("%s%s%s", oldbase, arg_b, app));
     }
     else
-        prG->basedir = arg_b ? strdup (arg_b[strlen (arg_b) - 1] == '/'
+        prG->basedir = arg_b ? strdup (arg_b[strlen (arg_b) - 1] == _OS_PATHSEP
                                ? arg_b : s_sprintf ("%s" _OS_PATHSEPSTR, arg_b)) : NULL;
     
     prG->enc_loc = prG->enc_rem = ENC_AUTO;
