@@ -1,5 +1,5 @@
 .\" $Id$ -*- nroff -*-
-.\"  EN: micqrc.5,v 1.12 2002/08/26 16:45:24 kuhlmann Exp $
+.\"  EN: micqrc.5,v 1.16U 2002/08/26 16:45:24 kuhlmann Exp $
 .\"This is the man page for ~/.micqrc."
 .TH MICQRC 5 mICQ PT_BR
 .SH NOME
@@ -98,6 +98,19 @@ Para conexoes "peer-to-peer", este parametro e usado para a configuracao da cone
 .TP
 1
 Voce esta atras de um firewall e nao pode receber conexoes diretas. Impede a tentativa de conexao.
+
+.B BEGIN UNTRANSLATED
+
+.TP
+2
+We're firewalled, but use SOCKS and can receive connections.
+.TP
+4
+We're not firewalled at all. This is the default.
+
+
+.B END UNTRANSLATED
+
 .TP
 2
 Voce esta atras de um firewall, mas usa SOCKS e pode receber conexoes (padrao).
@@ -223,6 +236,21 @@ antes do "nick name".
 e muito similar ao 
 .BR cycle ,
 so que pesquisa em toda a lista de contatos, nao apenas nos contatos online.
+
+.B BEGIN UNTRANSLATED
+
+.TP
+.BI chat \ nr
+Set the random chat group to
+.IR nr .
+Use
+.B -1
+to disable, and
+.B 49
+for mICQ (which is the default).
+
+.B END UNTRANSLATED
+
 .PP
 Por ultimo, algumas "strings" que podem ser definidas:
 .TP
@@ -244,7 +272,8 @@ pode ser do tipo
 .BR contact ,
 .BR sent ,
 .BR ack ,
-.BR error
+.BR error ,
+.BR debug
 ou
 .BR incoming ,
 enquanto que 

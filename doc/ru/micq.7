@@ -1,5 +1,5 @@
 .\" $Id$ -*- nroff -*-
-.\"  EN: <add CVS id like above from the file this translation is synced to>
+.\"  EN: micq.7,v 1.28U 2002/09/30 21:26:12
 .TH MICQ 7 mICQ RU
 .SH ИМЯ
 .B mICQ
@@ -101,6 +101,22 @@
 .BI uptime
 Показывает сколько времени работает micq.
 .TP
+
+.B BEGIN UNTRANSLATED
+
+.TP
+.BI last \ [contact]
+Show the last message
+received from
+.IR contact ,
+which can be a
+.I uin
+or a
+.IR nickname ,
+or from everyone who already sent a message.
+
+.B END UNTRANSLATED
+
 .BI last \ [контакт]
 Показывает список пользователей, которые послали вам сообщения
 или последнее сообщение принятое от
@@ -201,6 +217,21 @@
 .I command
 на
 .IR new .
+
+.B BEGIN UNTRANSLATED
+
+.TP
+.BI auth \ [req|grant|deny|add]\ uin|nickname
+Grant or deny
+.I uin|nickname
+to add you to their list, request
+.I uin|nickname
+to allow you to add them to your contact list, or tell
+.I uin|nickname
+that you added hem to your contact list.
+
+.B END UNTRANSLATED
+
 .TP
 .BI auth \ uin|ник
 Позволить
@@ -240,6 +271,24 @@
 .I last
 как его фамилия. Если не задано аргументов, то спрашивать все это
 и более того в интерактивном режиме поиска.
+
+.B BEGIN UNTRANSLATED
+
+.TP
+.BI add \ nickname\ alias
+.TP
+.BI add \ uin\ [nickname]
+Add
+.I uin
+to your contact list as
+.IR nickname ,
+or add alias
+.IR alias
+for
+.IR nickname .
+
+.B END UNTRANSLATED
+
 .TP
 .BI add \ uin\ [ник]
 Добавить
@@ -259,6 +308,18 @@
 Замечание: вам нужно сохраниться командой
 .B save
 чтобы инфа не пропала.
+
+.B BEGIN UNTRANSLATED
+
+.BI rem \ alias
+Remove the alias
+.IR alias .
+If
+.IR alias
+is the last alias for this contact, remove the contact completely.
+
+.B BEGIN UNTRANSLATED
+
 .TP
 .BI rem \ ник
 Удаляет
@@ -283,6 +344,8 @@
 .I ник'а
 на его сообщения и режимы.
 .TP
+.BI f[inger] \ uin|nickname
+.TP
 .BI info \ uin|ник
 Показать всю инфу о
 .IR uin|ник .
@@ -298,6 +361,13 @@
 .TP
 .B ww
 Показать всех пользователей в вашем контакт-листе и немного инфы.
+
+.B BEGIN UNTRANSLATED
+
+Also shows all aliases.
+
+.B END UNTRANSLATED
+
 .TP
 .BI wide
 Показать всех в вашем контакт-листе в широком формате.
@@ -306,6 +376,13 @@
 Показать всех online пользователей в вашем контакт-листе в широком формате.
 .TP
 .BI s \ [ник]
+
+.B BEGIN UNTRANSLATED
+
+Show your current status, or the given nickname's in detail, including all aliases.
+
+.B END UNTRANSLATED
+
 Показывает ваш статус, или указанного ника в деталях.
 .TP
 .BI i
@@ -391,7 +468,7 @@ online или нет. Использует дыру в ICQ протоколе;
 .IR number .
 Без аргумента, показывает возможные группы.
 .TP
-.BI tcp \ command\ uin|ник
+.BI peer \ command\ uin|ник
 Приводит в действие команду
 .I command
 на пользователе по UIN'у
@@ -428,7 +505,19 @@ online или нет. Использует дыру в ICQ протоколе;
 .B ffc
 Получить текущий автоответ пользователя для "Готов пообщаться".
 .TP
-.BI file \ [файл\ as]...\ описание
+
+.B BEGIN UNTRANSLATED
+
+.BI file \ file\ description
+Send file
+.I file
+with description
+.IR description .
+.TP
+
+.B END UNTRANSLATED
+
+.BI files \ [файл\ as]...\ описание
 Посылает файл пользователю. Имя файла
 .I файл
 и имя, которое будет представленно удаленной машине,
@@ -440,8 +529,6 @@ online или нет. Использует дыру в ICQ протоколе;
 файл без пути будет послан, если стоит
 .RB ' . '
 будет посланно тоже имя.
-.sp
-Замечание: Имя файла и описания пока еще не могут содержать пробелы.
 .RE
 .TP
 .BI conn \ [command\ nr]
@@ -456,6 +543,15 @@ online или нет. Использует дыру в ICQ протоколе;
 .TP
 .B login
 Открыть это соединение, если оно еще не открыто.
+.TP
+.B close
+
+.B BEGIN UNTRANSLATED
+
+Close the given connection. Temporary connections will get removed by this.
+
+.B END UNTRANSLATED
+
 .TP
 .B remove
 Закрыть или удалить данное (временное) соединение.

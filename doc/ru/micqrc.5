@@ -1,5 +1,5 @@
 .\" $Id$ -*- nroff -*-
-.\"  EN: <add CVS id like above from the file this translation is synced to>
+.\"  EN: micqrc.5,v 1.16U 2002/09/30 21:26:13
 .TH MICQRC 5 mICQ RU
 .SH ИМЯ
 .B ~/.micq/micqrc
@@ -98,10 +98,10 @@ Online
 Мы за файрволом и не можем получить соединение. Даже не пытайтесь.
 .TP
 2
-Мы за файрволом, но используем SOCKS и можем получить соединение. Это по умолчанию.
+Мы за файрволом, но используем SOCKS и можем получить соединение.
 .TP
 4
-Мы вообще не за файрволом.
+Мы вообще не за файрволом. Это по умолчанию.
 .RE
 
 .SH GENERAL
@@ -226,6 +226,20 @@ online/offline режимов.
 только прокручивает через все контакты, не только online.
 .PP
 
+.B BEGIN TRANSLATED
+
+.TP
+.BI chat \ nr
+Set the random chat group to
+.IR nr .
+Use
+.B -1
+to disable, and
+.B 49
+for mICQ (which is the default).
+
+.B END UNTRANSLATED
+
 Наконец, еще кое-что:
 .TP
 .BI color\ схема \ nr
@@ -246,7 +260,8 @@ online/offline режимов.
 .BR contact ,
 .BR sent ,
 .BR ack ,
-.BR error
+.BR error ,
+.BR debug
 или
 .BR incoming ,
 когда
