@@ -213,16 +213,21 @@ void rl_print (const char *org)
                 CharCount--;
                 printf ("\b");
                 break;
-            case '\n':
-                printf ("\n%s%*s%s", M_getlogo (), IndentCount, "", col);
-                CharCount = 0;
-                break;
             case '\r':
-                putchar ('\r');
-                if (str[1] != '\n' && IndentCount)
+                if (!ismsg)
                 {
-                    printf ("\x1b[%dD", IndentCount);
+                    putchar ('\r');
+                    if (str[1] != '\n' && IndentCount)
+                    {
+                        printf ("\x1b[%dD", IndentCount);
+                    }
+                    CharCount = 0;
+                    break;
                 }
+            case '\n':
+                if (ismsg && (str[1] == (*str ^ '\r' ^ '\n')))
+                    str++;
+                printf ("\n%s%*s%s", M_getlogo (), IndentCount, "", col);
                 CharCount = 0;
                 break;
             case '\t':
