@@ -1,5 +1,54 @@
 -*- coding: utf-8 -*-
 
+2004-01-15 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* change malloc()ed size as suggested by Sebastian Felis
+	* apply Sebastian Felis' history dump and search patch
+	* make message splitting correct
+	* ignore CAP_STR_2001 and CAP_STR_200 messages
+	* handle type-1 encoding differently (for debugging)
+	* adapt "conn login" help string
+	* add large file test
+
+2003-11-26 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* detect new Kopete capability
+	* opens current instead of first connection if no number is given
+	* interpret number as UIN for conn login if there is no connection
+	  with this number
+	* display "Your status is offline (<last status>)" instead of "Your
+	  status is <last status>" when offline
+	* fix indentation once more
+
+2003-10-20 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* fix compilation under --disable-peer2peer
+	* fix QNX compilation, remove #includes that are already done in micq.h
+	* fix contact group mess
+	* improve debugging
+	* fix configure check for variadic macros
+	* work around gcc-2.95 preprocessor bug
+	* fix segfault in contact meta data handling
+	* rename session.c to connection.c and ConnectionClose() to ConnectionD()
+	* move s_parse*() functions into seperate util_parse.c
+	* rename contactopts.c to util_opts.c, and ContactOptions*() to Opt*()
+	* rename/split cmd_pkt_v8*.c into oscar*.c
+	* fix compiler warnings on MinGW
+	* split oscar.c to oscar_icbm.c and oscar_flap.c
+	* move cmd_pkt_cmd_v5.c cmd_pkt_cmd_v5_util.c cmd_pkt_server.c
+	  network.c to oldicq_base.c oldicq_client.c oldicq_compat.c
+	  oldicq_server.c oldicq_util.c
+	* rename oscar_flap.c to oscar_base.c for consistency with oldicq_*
+	* reimplement mselect.c functionality in util_io.c, rename M_print{f,}
+	  to rl_print{f,}, M_logo* in rl_logo*, M_pos in rl_pos
+	* fix gross logic error in util_io.c
+	* recognize CAP_UTF8 on auto-replies to normal messages
+	* detect MobICQ
+	* don't save temporary contact groups
+	* rewrite rl_ debug function without strndup()
+	* use 4-byte-type to store current edited line
+	* convert codepoints to wchar_t for wcwidth()
+	* fix tabbing; also tab through aliases
+	* fix command execution when no UIN is given on the command line
+	* fix segfault (thanks rtc)
+
 2003-10-06 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 	* more SSL/Tcl compile fixes
 	* add zh_TW.i18n from stable
