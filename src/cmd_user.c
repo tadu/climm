@@ -2603,17 +2603,25 @@ static JUMP_F(CmdUserTogInvis)
             {
                 OptSetVal (&cont->copts, CO_HIDEFROM, 0);
                 if (conn->type == TYPE_SERVER)
-                    SnacCliReminvis (conn, cont);
+                {
+                    if (!(conn->status & STATUSF_INV))
+                        SnacCliReminvis (conn, cont);
+                }
                 else
                     CmdPktCmdUpdateList (conn, cont, INV_LIST_UPDATE, FALSE);
                 rl_printf (i18n (2020, "Being visible to %s.\n"), cont->nick);
             }
             else
             {
+                i = ContactPrefVal (cont, CO_INTIMATE);
                 OptSetVal (&cont->copts, CO_INTIMATE, 0);
                 OptSetVal (&cont->copts, CO_HIDEFROM, 1);
                 if (conn->type == TYPE_SERVER)
+                {
                     SnacCliAddinvis (conn, cont);
+                    if (i || (conn->status & STATUSF_INV))
+                        SnacCliSetstatus (conn, conn->status, 3);
+                }
                 else
                     CmdPktCmdUpdateList (conn, cont, INV_LIST_UPDATE, TRUE);
                 rl_printf (i18n (2021, "Being invisible to %s.\n"), cont->nick);
@@ -2646,17 +2654,25 @@ static JUMP_F(CmdUserTogVisible)
             {
                 OptSetVal (&cont->copts, CO_INTIMATE, 0);
                 if (conn->type == TYPE_SERVER)
-                    SnacCliRemvisible (conn, cont);
+                {
+                    if (conn->status & STATUSF_INV)
+                        SnacCliRemvisible (conn, cont);
+                }
                 else
                     CmdPktCmdUpdateList (conn, cont, VIS_LIST_UPDATE, FALSE);
                 rl_printf (i18n (1670, "Normal visible to %s now.\n"), cont->nick);
             }
             else
             {
+                i = ContactPrefVal (cont, CO_HIDEFROM);
                 OptSetVal (&cont->copts, CO_HIDEFROM, 0);
                 OptSetVal (&cont->copts, CO_INTIMATE, 1);
                 if (conn->type == TYPE_SERVER)
+                {
                     SnacCliAddvisible (conn, cont);
+                    if (i || !(conn->status & STATUSF_INV))
+                        SnacCliSetstatus (conn, conn->status, 3);
+                }
                 else
                     CmdPktCmdUpdateList (conn, cont, VIS_LIST_UPDATE, TRUE);
                 rl_printf (i18n (1671, "Always visible to %s now.\n"), cont->nick);
