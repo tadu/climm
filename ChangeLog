@@ -1,6 +1,10 @@
 -*- coding: utf-8 -*-
 
 
+2005-02-14 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* update sk.i18n
+	* 0.5
+
 2005-02-01 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 	* add parameter to quit command
 	* add 'verbose sane' for typical verbosity
