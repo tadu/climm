@@ -1150,7 +1150,7 @@ BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
     PacketWrite4 (pak, 0);               /* unknown                    */
     PacketWrite4 (pak, 0);               /* unknown                    */
     PacketWrite2 (pak, sub_cmd);         /* message type               */
-    PacketWrite2 (pak, 0);               /* status - filled in later   */
+    PacketWrite2 (pak, sess->assoc->status);   /* status - filled in later   */
     PacketWrite2 (pak, status);          /* our status                 */
     PacketWriteLNTS (pak, msg);          /* the message                */
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
