@@ -2,43 +2,48 @@
 
 #include "cmd_pkt_cmd_v5.h"
 
+#ifndef MICQ_ICQV8_SNAC_H
+#define MICQ_ICQV8_SNAC_H
+
 void SnacCallback (Event *event);
 const char *SnacName (UWORD fam, UWORD cmd);
 void SnacPrint (Packet *pak);
 
-void SnacCliFamilies     (Session *sess);
-void SnacCliRatesrequest (Session *sess);
-void SnacCliReqinfo      (Session *sess);
-void SnacCliReqlocation  (Session *sess);
-void SnacCliBuddy        (Session *sess);
-void SnacCliReqicbm      (Session *sess);
-void SnacCliReqbos       (Session *sess);
-void SnacCliSetuserinfo  (Session *sess);
-void SnacCliSetstatus    (Session *sess, UWORD status, UWORD action);
-void SnacCliReady        (Session *sess);
-void SnacCliSeticbm      (Session *sess);
-void SnacCliAddcontact   (Session *sess, UDWORD uin);
-void SnacCliRemcontact   (Session *sess, UDWORD uin);
-void SnacCliReqroster    (Session *sess);
-void SnacCliGrantauth    (Session *sess, UDWORD uin);
-void SnacCliReqauth      (Session *sess, UDWORD uin, const char *msg);
-void SnacCliAuthorize    (Session *sess, UDWORD uin, BOOL accept, const char *msg);
-void SnacCliAddvisible   (Session *sess, UDWORD uin);
-void SnacCliRemvisible   (Session *sess, UDWORD uin);
-void SnacCliAddinvis     (Session *sess, UDWORD uin);
-void SnacCliReminvis     (Session *sess, UDWORD uin);
-void SnacCliSendmsg      (Session *sess, UDWORD uin, const char *text, UDWORD type, UBYTE format);
-void SnacCliReqofflinemsgs  (Session *sess);
-void SnacCliAckofflinemsgs  (Session *sess);
-void SnacCliRegisteruser    (Session *sess);
-void SnacCliMetareqinfo     (Session *sess, UDWORD uin);
-void SnacCliMetasetabout    (Session *sess, const char *text);
-void SnacCliMetasetmore     (Session *sess, const MetaMore *user);
-void SnacCliMetasetgeneral  (Session *sess, const MetaGeneral *user);
-void SnacCliMetasetpass     (Session *sess, const char *newpass);
-void SnacCliSendsms         (Session *sess, const char *target, const char *text);
-void SnacCliSearchbypersinf (Session *sess, const char *email, const char *nick, const char *name, const char *surname);
-void SnacCliSearchbymail    (Session *sess, const char *email);
-void SnacCliSearchwp        (Session *sess, const MetaWP *wp);
-void SnacCliSearchrandom    (Session *sess, UWORD group);
-void SnacCliSetrandom       (Session *sess, UWORD group);
+void SnacCliFamilies     (Connection *conn);
+void SnacCliRatesrequest (Connection *conn);
+void SnacCliReqinfo      (Connection *conn);
+void SnacCliReqlocation  (Connection *conn);
+void SnacCliBuddy        (Connection *conn);
+void SnacCliReqicbm      (Connection *conn);
+void SnacCliReqbos       (Connection *conn);
+void SnacCliSetuserinfo  (Connection *conn);
+void SnacCliSetstatus    (Connection *conn, UWORD status, UWORD action);
+void SnacCliReady        (Connection *conn);
+void SnacCliSeticbm      (Connection *conn);
+void SnacCliAddcontact   (Connection *conn, UDWORD uin);
+void SnacCliRemcontact   (Connection *conn, UDWORD uin);
+void SnacCliReqroster    (Connection *conn);
+void SnacCliGrantauth    (Connection *conn, UDWORD uin);
+void SnacCliReqauth      (Connection *conn, UDWORD uin, const char *msg);
+void SnacCliAuthorize    (Connection *conn, UDWORD uin, BOOL accept, const char *msg);
+void SnacCliAddvisible   (Connection *conn, UDWORD uin);
+void SnacCliRemvisible   (Connection *conn, UDWORD uin);
+void SnacCliAddinvis     (Connection *conn, UDWORD uin);
+void SnacCliReminvis     (Connection *conn, UDWORD uin);
+void SnacCliSendmsg      (Connection *conn, UDWORD uin, const char *text, UDWORD type, UBYTE format);
+void SnacCliReqofflinemsgs  (Connection *conn);
+void SnacCliAckofflinemsgs  (Connection *conn);
+void SnacCliRegisteruser    (Connection *conn);
+void SnacCliMetareqinfo     (Connection *conn, UDWORD uin);
+void SnacCliMetasetabout    (Connection *conn, const char *text);
+void SnacCliMetasetmore     (Connection *conn, const MetaMore *user);
+void SnacCliMetasetgeneral  (Connection *conn, const MetaGeneral *user);
+void SnacCliMetasetpass     (Connection *conn, const char *newpass);
+void SnacCliSendsms         (Connection *conn, const char *target, const char *text);
+void SnacCliSearchbypersinf (Connection *conn, const char *email, const char *nick, const char *name, const char *surname);
+void SnacCliSearchbymail    (Connection *conn, const char *email);
+void SnacCliSearchwp        (Connection *conn, const MetaWP *wp);
+void SnacCliSearchrandom    (Connection *conn, UWORD group);
+void SnacCliSetrandom       (Connection *conn, UWORD group);
+
+#endif /* MICQ_ICQV8_SNAC_H */

@@ -32,27 +32,27 @@
 #include "util.h"
 #include "tcp.h"
 
-static void PeerFileDispatchClose   (Session *ffile);
-static void PeerFileDispatchDClose  (Session *ffile);
-static void PeerFileIODispatchClose (Session *ffile);
+static void PeerFileDispatchClose   (Connection *ffile);
+static void PeerFileDispatchDClose  (Connection *ffile);
+static void PeerFileIODispatchClose (Connection *ffile);
 
 
 /*
  * Create a new file listener unless one already exists.
  */
-Session *PeerFileCreate (Session *serv)
+Connection *PeerFileCreate (Connection *serv)
 {
-    Session *flist;
+    Connection *flist;
     
     ASSERT_ANY_SERVER(serv);
     assert (serv->assoc);
     assert (serv->assoc->ver >= 6);
     assert (serv->assoc->ver <= 8);
     
-    if ((flist = SessionFind (TYPE_FILELISTEN, 0, serv)))
+    if ((flist = ConnectionFind (TYPE_FILELISTEN, 0, serv)))
         return flist;
     
-    flist = SessionClone (serv->assoc, TYPE_FILELISTEN);
+    flist = ConnectionClone (serv->assoc, TYPE_FILELISTEN);
     if (!flist)
         return NULL;
 
@@ -80,9 +80,9 @@ Session *PeerFileCreate (Session *serv)
 /*
  * Handles an incoming file request.
  */
-BOOL PeerFileRequested (Session *peer, const char *files, UDWORD bytes)
+BOOL PeerFileRequested (Connection *peer, const char *files, UDWORD bytes)
 {
-    Session *flist, *fpeer;
+    Connection *flist, *fpeer;
     Contact *cont;
     struct stat finfo;
     char buf[300];
@@ -111,7 +111,7 @@ BOOL PeerFileRequested (Session *peer, const char *files, UDWORD bytes)
         return 0;
     }
     
-    fpeer = SessionClone (flist, TYPE_FILEDIRECT);
+    fpeer = ConnectionClone (flist, TYPE_FILEDIRECT);
     if (!fpeer)
         return 0;
 
@@ -130,12 +130,12 @@ BOOL PeerFileRequested (Session *peer, const char *files, UDWORD bytes)
 /*
  * Checks the file request response.
  */
-BOOL PeerFileAccept (Session *peer, UWORD status, UDWORD port)
+BOOL PeerFileAccept (Connection *peer, UWORD status, UDWORD port)
 {
-    Session *flist, *fpeer;
+    Connection *flist, *fpeer;
     
     flist = PeerFileCreate (peer->parent->parent);
-    fpeer = SessionFind (TYPE_FILEDIRECT, peer->uin, flist);
+    fpeer = ConnectionFind (TYPE_FILEDIRECT, peer->uin, flist);
     
     if (!flist || !fpeer || !port || (status == TCP_STAT_REFUSE))
     {
@@ -173,7 +173,7 @@ BOOL PeerFileAccept (Session *peer, UWORD status, UDWORD port)
 /*
  * Close a file listener.
  */
-static void PeerFileDispatchClose (Session *flist)
+static void PeerFileDispatchClose (Connection *flist)
 {
     flist->connect = 0;
     PeerFileClose (flist);
@@ -182,7 +182,7 @@ static void PeerFileDispatchClose (Session *flist)
 /*
  * Close a file transfer connection.
  */
-static void PeerFileDispatchDClose (Session *fpeer)
+static void PeerFileDispatchDClose (Connection *fpeer)
 {
     fpeer->connect = 0;
     PeerFileClose (fpeer);
@@ -192,7 +192,7 @@ static void PeerFileDispatchDClose (Session *fpeer)
 /*
  * Close a file i/o connection.
  */
-static void PeerFileIODispatchClose (Session *ffile)
+static void PeerFileIODispatchClose (Connection *ffile)
 {
     if (ffile->sok != -1)
         close (ffile->sok);
@@ -204,7 +204,7 @@ static void PeerFileIODispatchClose (Session *ffile)
 /*
  * Dispatches incoming packets on the file transfer connection.
  */
-void PeerFileDispatch (Session *fpeer)
+void PeerFileDispatch (Connection *fpeer)
 {
     Contact *cont;
     Packet *pak;
@@ -278,7 +278,7 @@ void PeerFileDispatch (Session *fpeer)
             PacketD (pak);
             
             {
-                Session *ffile = SessionClone (fpeer, TYPE_FILE);
+                Connection *ffile = ConnectionClone (fpeer, TYPE_FILE);
                 char buf[200], *p;
                 int pos = 0;
                 struct stat finfo;
@@ -300,7 +300,7 @@ void PeerFileDispatch (Session *fpeer)
                     M_printf ("%s " COLCONTACT "%10s" COLNONE " ", s_now, cont->nick);
                     M_printf (i18n (2083, "Cannot open file %s: %s (%d).\n"),
                              buf, strerror (rc), rc);
-                    SessionClose (fpeer);
+                    ConnectionClose (fpeer);
                     free (name);
                     return;
                 }
@@ -411,7 +411,7 @@ void PeerFileDispatch (Session *fpeer)
     }
 }
 
-void PeerFileDispatchW (Session *fpeer)
+void PeerFileDispatchW (Connection *fpeer)
 {
     Packet *pak = fpeer->outgoing;
     
@@ -426,7 +426,7 @@ void PeerFileDispatchW (Session *fpeer)
     QueueRetry (fpeer, QUEUE_PEER_FILE, fpeer->uin);
 }
 
-BOOL PeerFileError (Session *fpeer, UDWORD rc, UDWORD flags)
+BOOL PeerFileError (Connection *fpeer, UDWORD rc, UDWORD flags)
 {
     switch (rc)
     {
@@ -435,7 +435,7 @@ BOOL PeerFileError (Session *fpeer, UDWORD rc, UDWORD flags)
                 fpeer->close (fpeer);
             return 1;
         case EAGAIN:
-            if (flags == SESSERR_WRITE)
+            if (flags == CONNERR_WRITE)
             {
                 fpeer->connect = CONNECT_OK | CONNECT_SELECT_W;
                 fpeer->dispatch = &PeerFileDispatchW;
@@ -449,7 +449,7 @@ BOOL PeerFileError (Session *fpeer, UDWORD rc, UDWORD flags)
 void PeerFileResend (Event *event)
 {
     Contact *cont;
-    Session *fpeer = event->sess;
+    Connection *fpeer = event->conn;
     Packet *pak;
     Event *event2;
     int rc;
@@ -507,7 +507,7 @@ void PeerFileResend (Event *event)
     }
     else if (event->pak)
     {
-        Session *ffile;
+        Connection *ffile;
         struct stat finfo;
         
         PeerPacketSend (fpeer, event->pak);
@@ -515,7 +515,7 @@ void PeerFileResend (Event *event)
         event->pak = NULL;
         QueueEnqueue (event);
         
-        ffile = SessionClone (fpeer, TYPE_FILE);
+        ffile = ConnectionClone (fpeer, TYPE_FILE);
         fpeer->assoc = ffile;
 
         if (stat (event->info, &finfo))
@@ -534,8 +534,8 @@ void PeerFileResend (Event *event)
             M_printf (i18n (2083, "Cannot open file %s: %s (%d).\n"),
                      event->info, strerror (rc), rc);
             TCPClose (fpeer);
-            SessionClose (ffile);
-            SessionClose (fpeer);
+            ConnectionClose (ffile);
+            ConnectionClose (fpeer);
             return;
         }
         ffile->close = &PeerFileIODispatchClose;
@@ -587,7 +587,7 @@ void PeerFileResend (Event *event)
             R_resetprompt ();
             M_printf ("%s " COLCONTACT "%10s" COLNONE " ", s_now, cont->nick);
             M_printf (i18n (2087, "Finished sending file %s.\n"), event->info);
-            SessionClose (fpeer->assoc);
+            ConnectionClose (fpeer->assoc);
             fpeer->our_seq++;
             event2 = QueueDequeue (fpeer, QUEUE_PEER_FILE, fpeer->our_seq);
             if (event2)
@@ -600,7 +600,7 @@ void PeerFileResend (Event *event)
             {
                 M_printf ("%s " COLCONTACT "%10s" COLNONE " ", s_now, cont->nick);
                 M_printf (i18n (2088, "Finished sending all %d files.\n"), fpeer->our_seq - 1);
-                SessionClose (fpeer);
+                ConnectionClose (fpeer);
             }
         }
     }

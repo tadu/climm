@@ -54,4 +54,4 @@ Contact    *ContactNext (Contact *cont);
 BOOL        ContactHasNext (Contact *cont);
 void        ContactSetVersion (Contact *cont);
 
-#endif
+#endif /* MICQ_CONTACT_H */

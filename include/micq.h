@@ -1,8 +1,7 @@
-/*
- * $Id$
- *
- * structures and includes used by all mICQ source files
- */
+/* $Id$ */
+
+#ifndef MICQ_H
+#define MICQ_H
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -31,17 +30,17 @@ struct Queue_s;
 struct Event_s;
 struct Contact_s;
 struct Packet_s;
-struct Session_s;
+struct Connection_s;
 struct Preferences_s;
-struct SessionPreferences_s;
+struct ConnectionPreferences_s;
 
-typedef struct Queue_s              Queue;
-typedef struct Event_s              Event;
-typedef struct Contact_s            Contact;
-typedef struct Packet_s             Packet;
-typedef struct Session_s            Session;
-typedef struct Preferences_s        Preferences;
-typedef struct PreferencesSession_s PreferencesSession;
+typedef struct Queue_s                 Queue;
+typedef struct Event_s                 Event;
+typedef struct Contact_s               Contact;
+typedef struct Packet_s                Packet;
+typedef struct Connection_s            Connection;
+typedef struct Preferences_s           Preferences;
+typedef struct PreferencesConnection_s PreferencesConnection;
 
 #include "micqconfig.h"
 #include "datatype.h"
@@ -64,7 +63,6 @@ typedef struct PreferencesSession_s PreferencesSession;
 #define STDERR 2
 
 #include "icq_v2.h"
-#include "icq_v4.h"
 #include "icq_v5.h"
 #include "icq_tcp.h"
 
@@ -160,5 +158,7 @@ enum logtype
     LOG_LIST,    /* added someone to the contact list */
     LOG_EVENT    /* other event */
 };
+
+#endif /* MICQ_H */
 
 #include "i18n.h"

@@ -1,5 +1,8 @@
 /* $Id$ */
 
+#ifndef MICQ_MREADLINE_H
+#define MICQ_MREADLINE_H
+
 #ifdef USE_MREADLINE
 
 void R_init (void);                          /* init mreadline lib */
@@ -33,3 +36,4 @@ void R_goto (int pos);                       /* go to position in input line */
 #define R_goto ()           {}
 
 #endif /* USE_MREADLINE */
+#endif /* MICQ_MREADLINE_H */

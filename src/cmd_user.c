@@ -128,17 +128,17 @@ static jump_t jump[] = {
     { NULL, NULL, NULL, 0 }
 };
 
-static Session *currsess = NULL;
+static Connection *currconn = NULL;
 
 /* Have an opened server connection ready. */
-#define OSESSION Session *sess = currsess; \
-    if (!sess)                     currsess = sess = SessionFind (TYPEF_ANY_SERVER, 0, NULL); \
-    if (!sess || ~sess->connect & CONNECT_OK) \
+#define OPENCONN Connection *conn = currconn; \
+    if (!conn)                     currconn = conn = ConnectionFind (TYPEF_ANY_SERVER, 0, NULL); \
+    if (!conn || ~conn->connect & CONNECT_OK) \
     { M_print (i18n (1931, "Current session is closed. Try another or open this one.\n")); return 0; }
 
 /* Try to have any server connection ready. */
-#define ASESSION Session *sess = currsess; \
-    if (!sess) currsess = sess = SessionFind (TYPEF_ANY_SERVER, 0, NULL);
+#define ANYCONN Connection *conn = currconn; \
+    if (!conn) currconn = conn = ConnectionFind (TYPEF_ANY_SERVER, 0, NULL);
 
 /*
  * Returns a pointer to the jump table.
@@ -184,7 +184,7 @@ const char *CmdUserLookupName (const char *cmd)
 static JUMP_F(CmdUserChange)
 {
     char *arg1 = NULL;
-    OSESSION;
+    OPENCONN;
 
     if (data == -1)
     {
@@ -210,12 +210,12 @@ static JUMP_F(CmdUserChange)
         else if (data & STATUSF_FFC)  s_repl (&prG->auto_ffc,  arg1);
     }
 
-    if (sess->ver > 6)
-        SnacCliSetstatus (sess, data, 1);
+    if (conn->ver > 6)
+        SnacCliSetstatus (conn, data, 1);
     else
     {
-        CmdPktCmdStatusChange (sess, data);
-        M_printf ("%s %s\n", s_now, s_status (sess->status));
+        CmdPktCmdStatusChange (conn, data);
+        M_printf ("%s %s\n", s_now, s_status (conn->status));
     }
     return 0;
 }
@@ -226,7 +226,7 @@ static JUMP_F(CmdUserChange)
 static JUMP_F(CmdUserRandom)
 {
     UDWORD arg1 = 0;
-    OSESSION;
+    OPENCONN;
     
     if (!s_parseint (&args, &arg1))
     {
@@ -245,10 +245,10 @@ static JUMP_F(CmdUserRandom)
     }
     else
     {
-        if (sess->ver > 6)
-            SnacCliSearchrandom (sess, arg1);
+        if (conn->ver > 6)
+            SnacCliSearchrandom (conn, arg1);
         else
-            CmdPktCmdRandSearch (sess, arg1);
+            CmdPktCmdRandSearch (conn, arg1);
     }
     return 0;
 }
@@ -259,12 +259,12 @@ static JUMP_F(CmdUserRandom)
 static JUMP_F(CmdUserRandomSet)
 {
     UDWORD arg1 = 0;
-    OSESSION;
+    OPENCONN;
     
     if (!s_parseint (&args, &arg1))
     {
         M_print (i18n (1704, "Groups:\n"));
-        M_printf ("  %2d %s\n", sess->ver > 6 ? 0 : -1, i18n (1716, "None"));
+        M_printf ("  %2d %s\n", conn->ver > 6 ? 0 : -1, i18n (1716, "None"));
         M_printf ("  %2d %s\n",  1, i18n (1705, "General"));
         M_printf ("  %2d %s\n",  2, i18n (1706, "Romance"));
         M_printf ("  %2d %s\n",  3, i18n (1707, "Games"));
@@ -279,10 +279,10 @@ static JUMP_F(CmdUserRandomSet)
     }
     else
     {
-        if (sess->ver > 6)
-            SnacCliSetrandom (sess, arg1);
+        if (conn->ver > 6)
+            SnacCliSetrandom (conn, arg1);
         else
-            CmdPktCmdRandSet (sess, arg1);
+            CmdPktCmdRandSet (conn, arg1);
     }
     return 0;
 }
@@ -544,21 +544,21 @@ static JUMP_F(CmdUserHelp)
 static JUMP_F(CmdUserPass)
 {
     char *arg1 = NULL;
-    OSESSION;
+    OPENCONN;
     
     if (!s_parserem (&args, &arg1))
         M_print (i18n (2012, "No password given.\n"));
     else
     {
-        if (sess->ver < 6)
-            CmdPktCmdMetaPass (sess, arg1);
+        if (conn->ver < 6)
+            CmdPktCmdMetaPass (conn, arg1);
         else
-            SnacCliMetasetpass (sess, arg1);
-        sess->passwd = strdup (arg1);
-        if (sess->spref->passwd && strlen (sess->spref->passwd))
+            SnacCliMetasetpass (conn, arg1);
+        conn->passwd = strdup (arg1);
+        if (conn->spref->passwd && strlen (conn->spref->passwd))
         {
             M_print (i18n (2122, " Note: You need to 'save' to write new password to disc.\n"));
-            sess->spref->passwd = strdup (arg1);
+            conn->spref->passwd = strdup (arg1);
         }
     }
     return 0;
@@ -570,9 +570,9 @@ static JUMP_F(CmdUserPass)
 static JUMP_F(CmdUserSMS)
 {
     char *arg1 = NULL, *arg2 = NULL;
-    OSESSION;
+    OPENCONN;
     
-    if (sess->ver < 6)
+    if (conn->ver < 6)
     {
         M_print (i18n (2013, "This command is v8 only.\n"));
         return 0;
@@ -585,7 +585,7 @@ static JUMP_F(CmdUserSMS)
         if (!s_parserem (&args, &arg2))
             M_print (i18n (2015, "No message given.\n"));
         else
-            SnacCliSendsms (sess, arg1, arg2);
+            SnacCliSendsms (conn, arg1, arg2);
         free (arg1);
     }
     return 0;
@@ -597,9 +597,9 @@ static JUMP_F(CmdUserSMS)
 static JUMP_F(CmdUserInfo)
 {
     Contact *cont = NULL, *contr = NULL;
-    OSESSION;
+    OPENCONN;
 
-    if (!s_parsenick (&args, &cont, &contr, sess))
+    if (!s_parsenick (&args, &cont, &contr, conn))
     {
         M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
@@ -616,10 +616,10 @@ static JUMP_F(CmdUserInfo)
     M_printf (i18n (1765, "%s has UIN %d."), cont->nick, cont->uin);
     M_print ("\n");
 
-    if (sess->ver > 6)
-        SnacCliMetareqinfo (sess, cont->uin);
+    if (conn->ver > 6)
+        SnacCliMetareqinfo (conn, cont->uin);
     else
-        CmdPktCmdMetaReqInfo (sess, cont->uin);
+        CmdPktCmdMetaReqInfo (conn, cont->uin);
 
     return 0;
 }
@@ -630,18 +630,18 @@ static JUMP_F(CmdUserInfo)
 static JUMP_F(CmdUserPeek)
 {
     Contact *cont = NULL;
-    OSESSION;
+    OPENCONN;
     
-    if (sess->ver < 6)
+    if (conn->ver < 6)
     {
         M_print (i18n (2013, "This command is v8 only.\n"));
         return 0;
     }
 
-    if (!s_parsenick (&args, &cont, NULL, sess))
+    if (!s_parsenick (&args, &cont, NULL, conn))
         M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
     else
-        SnacCliSendmsg (sess, cont->uin, "", MSG_GET_AWAY, -1);
+        SnacCliSendmsg (conn, cont->uin, "", MSG_GET_AWAY, -1);
     return 0;
 }
 
@@ -732,12 +732,12 @@ static JUMP_F(CmdUserPeer)
 #ifdef ENABLE_PEER2PEER
     char *arg1 = NULL;
     Contact *cont = NULL;
-    Session *list;
-    ASESSION;
+    Connection *list;
+    ANYCONN;
 
     while (1)
     {
-        if (!sess || !(list = sess->assoc))
+        if (!conn || !(list = conn->assoc))
         {
             M_print (i18n (2011, "You do not have a listening peer-to-peer connection.\n"));
             return 0;
@@ -748,7 +748,7 @@ static JUMP_F(CmdUserPeer)
         
         arg1 = strdup (arg1);
 
-        if (!s_parsenick (&args, &cont, NULL, sess))
+        if (!s_parsenick (&args, &cont, NULL, conn))
         {
             M_printf (i18n (1845, "Nick %s unknown.\n"), args);
             free (arg1);
@@ -1005,7 +1005,7 @@ static JUMP_F(CmdUserAlter)
 static JUMP_F (CmdUserResend)
 {
     Contact *cont = NULL;
-    OSESSION;
+    OPENCONN;
 
     if (!uiG.last_message_sent) 
     {
@@ -1013,7 +1013,7 @@ static JUMP_F (CmdUserResend)
         return 0;
     }
 
-    if (!s_parsenick (&args, &cont, NULL, sess))
+    if (!s_parsenick (&args, &cont, NULL, conn))
     {
         if (*args)
             M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
@@ -1024,9 +1024,9 @@ static JUMP_F (CmdUserResend)
     
     while (1)
     {
-        icq_sendmsg (sess, uiG.last_sent_uin = cont->uin,
+        icq_sendmsg (conn, uiG.last_sent_uin = cont->uin,
                      uiG.last_message_sent, uiG.last_message_sent_type);
-        if (!s_parsenick (&args, &cont, NULL, sess))
+        if (!s_parsenick (&args, &cont, NULL, conn))
         {
             if (*args)
                 M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
@@ -1043,7 +1043,7 @@ static JUMP_F (CmdUserAnyMess)
     Contact *cont;
     char *arg1 = NULL;
     UDWORD i, f;
-    ASESSION;
+    ANYCONN;
 
     if (!(data & 3))
     {
@@ -1066,26 +1066,26 @@ static JUMP_F (CmdUserAnyMess)
             return 0;
         data |= i << 2;
     }
-    if (!s_parsenick (&args, &cont, NULL, sess))
+    if (!s_parsenick (&args, &cont, NULL, conn))
         return 0;
     if (!s_parserem (&args, &arg1))
         return 0;
 
     if (data & 1)
     {
-        if (!sess->assoc || !TCPDirectOpen  (sess->assoc, cont->uin))
+        if (!conn->assoc || !TCPDirectOpen  (conn->assoc, cont->uin))
         {
             M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
             return 0;
         }
-        TCPSendMsg (sess->assoc, cont->uin, arg1, data >> 2);
+        TCPSendMsg (conn->assoc, cont->uin, arg1, data >> 2);
     }
     else
     {
-        if (sess->type == TYPE_SERVER)
-            SnacCliSendmsg (sess, cont->uin, arg1, data >> 2, f);
+        if (conn->type == TYPE_SERVER)
+            SnacCliSendmsg (conn, cont->uin, arg1, data >> 2, f);
         else
-            CmdPktCmdSendMessage (sess, cont->uin, arg1, data >> 2);
+            CmdPktCmdSendMessage (conn, cont->uin, arg1, data >> 2);
     }
     return 0;
 }
@@ -1101,7 +1101,7 @@ static JUMP_F (CmdUserMessage)
     char *arg1 = NULL, *temp;
     UDWORD uin = 0;
     Contact *cont = NULL;
-    OSESSION;
+    OPENCONN;
 
     if (status)
     {
@@ -1117,13 +1117,13 @@ static JUMP_F (CmdUserMessage)
                 for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
                 {
                     temp = strdup (msg);
-                    icq_sendmsg (sess, cont->uin, temp, MSG_NORM | MSGF_MASS);
+                    icq_sendmsg (conn, cont->uin, temp, MSG_NORM | MSGF_MASS);
                     free (temp);
                 }
             }
             else
             {
-                icq_sendmsg (sess, multi_uin, msg, MSG_NORM);
+                icq_sendmsg (conn, multi_uin, msg, MSG_NORM);
                 uiG.last_sent_uin = multi_uin;
             }
             return 0;
@@ -1162,14 +1162,14 @@ static JUMP_F (CmdUserMessage)
                     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
                     {
                         temp = strdup (msg);
-                        icq_sendmsg (sess, cont->uin, temp, MSG_NORM | MSGF_MASS);
+                        icq_sendmsg (conn, cont->uin, temp, MSG_NORM | MSGF_MASS);
                         free (temp);
                     }
                 }
                 else
                 {
                     temp = strdup (msg);
-                    icq_sendmsg (sess, multi_uin, temp, MSG_NORM);
+                    icq_sendmsg (conn, multi_uin, temp, MSG_NORM);
                     free (temp);
                     uiG.last_sent_uin = multi_uin;
                 }
@@ -1186,7 +1186,7 @@ static JUMP_F (CmdUserMessage)
         switch (data)
         {
             case 1:
-                if (!s_parsenick (&args, &cont, NULL, sess))
+                if (!s_parsenick (&args, &cont, NULL, conn))
                 {
                     M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
                     return 0;
@@ -1233,13 +1233,13 @@ static JUMP_F (CmdUserMessage)
                 for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
                 {
                     temp = strdup (arg1);
-                    icq_sendmsg (sess, cont->uin, temp, MSG_NORM | MSGF_MASS);
+                    icq_sendmsg (conn, cont->uin, temp, MSG_NORM | MSGF_MASS);
                     free (temp);
                 }
             }
             else
             {
-                icq_sendmsg (sess, uin, arg1, MSG_NORM);
+                icq_sendmsg (conn, uin, arg1, MSG_NORM);
                 uiG.last_sent_uin = uin;
             }
             return 0;
@@ -1306,15 +1306,15 @@ static JUMP_F(CmdUserStatusDetail)
 {
     UDWORD uin = 0, tuin = 0, i, lenuin = 0, lennick = 0, lenstat = 0, lenid = 0, totallen = 0;
     Contact *cont = NULL, *contr = NULL;
-    Session *peer;
+    Connection *peer;
     UDWORD stati[] = { 0xfffffffe, STATUS_OFFLINE, STATUS_DND,    STATUS_OCC, STATUS_NA,
                                    STATUS_AWAY,    STATUS_ONLINE, STATUS_FFC, STATUSF_BIRTH };
-    ASESSION;
+    ANYCONN;
 
     if (!data)
         s_parseint (&args, &data);
 
-    if ((data & 8) && (!sess || !s_parsenick (&args, &cont, NULL, sess)) && *args)
+    if ((data & 8) && (!conn || !s_parsenick (&args, &cont, NULL, conn)) && *args)
     {
         M_printf (i18n (1700, "%s is not a valid user in your list.\n"), args);
         return 0;
@@ -1351,10 +1351,10 @@ static JUMP_F(CmdUserStatusDetail)
 
     if (data & 4 && !uin)
     {
-        if (sess)
+        if (conn)
         {
-            M_printf ("%s " COLCONTACT "%10lu" COLNONE " ", s_now, sess->uin);
-            M_printf ("%s %s\n", i18n (1071, "Your status is"), s_status (sess->status));
+            M_printf ("%s " COLCONTACT "%10lu" COLNONE " ", s_now, conn->uin);
+            M_printf ("%s %s\n", i18n (1071, "Your status is"), s_status (conn->status));
         }
         if (data & 16)
             return 0;
@@ -1385,7 +1385,7 @@ static JUMP_F(CmdUserStatusDetail)
             if (cont->flags & CONT_ALIAS && (~data & 2 || data & 1))
                 continue;
 
-            peer = (sess && sess->assoc) ? SessionFind (TYPE_MSGDIRECT, cont->uin, sess->assoc) : NULL;
+            peer = (conn && conn->assoc) ? ConnectionFind (TYPE_MSGDIRECT, cont->uin, conn->assoc) : NULL;
             
             stat = strdup (s_sprintf ("(%s)", s_status (contr->status)));
             if (contr->version)
@@ -1519,7 +1519,7 @@ static JUMP_F(CmdUserStatusWide)
     int StatusLen;
     Contact *cont = NULL;
     char *stat;
-    OSESSION;
+    OPENCONN;
 
     if (data)
     {
@@ -1598,7 +1598,7 @@ static JUMP_F(CmdUserStatusWide)
        is needed. Our own status is shown to the right in the 'Online' headline */
     M_print (COLMESSAGE);
 
-    stat = strdup (s_status (sess->status));
+    stat = strdup (s_status (conn->status));
     StatusLen = strlen (i18n (1071, "Your status is")) + strlen (stat) + 13;
     for (i = 0; 2 * i + StatusLen + strlen (i18n (1654, "Online")) < Get_Max_Screen_Width (); i++)
     {
@@ -1612,7 +1612,7 @@ static JUMP_F(CmdUserStatusWide)
 
    /* Print our status */
     M_printf (" " COLCONTACT "%10lu" COLNONE " %s %s",
-             sess->uin, i18n (1071, "Your status is"), stat);
+             conn->uin, i18n (1071, "Your status is"), stat);
     free (stat);
     
     M_print (COLNONE "\n");
@@ -1652,11 +1652,11 @@ static JUMP_F(CmdUserStatusWide)
 static JUMP_F(CmdUserStatusShort)
 {
     Contact *cont;
-    OSESSION;
+    OPENCONN;
 
     M_print  (W_SEPERATOR);
-    M_printf ("%s " COLCONTACT "%10lu" COLNONE " ", s_now, sess->uin);
-    M_printf ("%s %s\n", i18n (1071, "Your status is"), s_status (sess->status));
+    M_printf ("%s " COLCONTACT "%10lu" COLNONE " ", s_now, conn->uin);
+    M_printf ("%s %s\n", i18n (1071, "Your status is"), s_status (conn->status));
 
     if (data)
     {
@@ -1927,14 +1927,14 @@ static JUMP_F(CmdUserRegister)
 {
     if (strlen (args))
     {
-        ASESSION;
+        ANYCONN;
 
-        if (!sess)
+        if (!conn)
             SrvRegisterUIN (NULL, args);
-        else if (sess->type & TYPEF_SERVER_OLD)
-            CmdPktCmdRegNewUser (sess, args);     /* TODO */
+        else if (conn->type & TYPEF_SERVER_OLD)
+            CmdPktCmdRegNewUser (conn, args);     /* TODO */
         else
-            SrvRegisterUIN (sess, args);
+            SrvRegisterUIN (conn, args);
     }
     return 0;
 }
@@ -1945,9 +1945,9 @@ static JUMP_F(CmdUserRegister)
 static JUMP_F(CmdUserTogIgnore)
 {
     Contact *cont = NULL, *contr = NULL;
-    OSESSION;
+    OPENCONN;
 
-    if (!s_parsenick (&args, &cont, &contr, sess))
+    if (!s_parsenick (&args, &cont, &contr, conn))
     {
         M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
@@ -1973,9 +1973,9 @@ static JUMP_F(CmdUserTogIgnore)
 static JUMP_F(CmdUserTogInvis)
 {
     Contact *cont = NULL, *contr = NULL;
-    OSESSION;
+    OPENCONN;
 
-    if (!s_parsenick (&args, &cont, &contr, sess))
+    if (!s_parsenick (&args, &cont, &contr, conn))
     {
         M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
@@ -1984,28 +1984,28 @@ static JUMP_F(CmdUserTogInvis)
     if (contr->flags & CONT_HIDEFROM)
     {
         contr->flags &= ~CONT_HIDEFROM;
-        if (sess->ver > 6)
-            SnacCliReminvis (sess, cont->uin);
+        if (conn->ver > 6)
+            SnacCliReminvis (conn, cont->uin);
         else
-            CmdPktCmdUpdateList (sess, cont->uin, INV_LIST_UPDATE, FALSE);
+            CmdPktCmdUpdateList (conn, cont->uin, INV_LIST_UPDATE, FALSE);
         M_printf (i18n (2020, "Being visible to %s."), cont->nick);
     }
     else
     {
         contr->flags |= CONT_HIDEFROM;
         contr->flags &= ~CONT_INTIMATE;
-        if (sess->ver > 6)
-            SnacCliAddinvis (sess, cont->uin);
+        if (conn->ver > 6)
+            SnacCliAddinvis (conn, cont->uin);
         else
-            CmdPktCmdUpdateList (sess, cont->uin, INV_LIST_UPDATE, TRUE);
+            CmdPktCmdUpdateList (conn, cont->uin, INV_LIST_UPDATE, TRUE);
         M_printf (i18n (2021, "Being invisible to %s."), cont->nick);
     }
-    if (sess->ver < 6)
+    if (conn->ver < 6)
     {
-        CmdPktCmdContactList (sess);
-        CmdPktCmdInvisList (sess);
-        CmdPktCmdVisList (sess);
-        CmdPktCmdStatusChange (sess, sess->status);
+        CmdPktCmdContactList (conn);
+        CmdPktCmdInvisList (conn);
+        CmdPktCmdVisList (conn);
+        CmdPktCmdStatusChange (conn, conn->status);
     }
     M_print ("\n");
     return 0;
@@ -2017,9 +2017,9 @@ static JUMP_F(CmdUserTogInvis)
 static JUMP_F(CmdUserTogVisible)
 {
     Contact *cont = NULL, *contr = NULL;
-    OSESSION;
+    OPENCONN;
 
-    if (!s_parsenick (&args, &cont, &contr, sess))
+    if (!s_parsenick (&args, &cont, &contr, conn))
     {
         M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
@@ -2028,20 +2028,20 @@ static JUMP_F(CmdUserTogVisible)
     if (contr->flags & CONT_INTIMATE)
     {
         contr->flags &= ~CONT_INTIMATE;
-        if (sess->ver > 6)
-            SnacCliRemvisible (sess, cont->uin);
+        if (conn->ver > 6)
+            SnacCliRemvisible (conn, cont->uin);
         else
-            CmdPktCmdUpdateList (sess, cont->uin, VIS_LIST_UPDATE, FALSE);
+            CmdPktCmdUpdateList (conn, cont->uin, VIS_LIST_UPDATE, FALSE);
         M_printf (i18n (1670, "Normal visible to %s now."), cont->nick);
     }
     else
     {
         contr->flags |= CONT_INTIMATE;
         contr->flags &= ~CONT_HIDEFROM;
-        if (sess-> ver > 6)
-            SnacCliAddvisible (sess, cont->uin);
+        if (conn-> ver > 6)
+            SnacCliAddvisible (conn, cont->uin);
         else
-            CmdPktCmdUpdateList (sess, cont->uin, VIS_LIST_UPDATE, TRUE);
+            CmdPktCmdUpdateList (conn, cont->uin, VIS_LIST_UPDATE, TRUE);
         M_printf (i18n (1671, "Always visible to %s now."), cont->nick);
     }
 
@@ -2056,9 +2056,9 @@ static JUMP_F(CmdUserAdd)
 {
     Contact *cont = NULL, *cont2;
     char *arg1;
-    OSESSION;
+    OPENCONN;
 
-    if (!s_parsenick (&args, &cont, NULL, sess))
+    if (!s_parsenick (&args, &cont, NULL, conn))
     {
         M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
@@ -2073,12 +2073,12 @@ static JUMP_F(CmdUserAdd)
     if (cont->flags & CONT_TEMPORARY)
     {
         M_printf (i18n (2117, "%d added as %s.\n"), cont->uin, arg1);
-        if (!Add_User (sess, cont->uin, arg1))
+        if (!Add_User (conn, cont->uin, arg1))
             M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
-        if (sess->ver > 6)
-            SnacCliAddcontact (sess, cont->uin);
+        if (conn->ver > 6)
+            SnacCliAddcontact (conn, cont->uin);
         else
-            CmdPktCmdContactList (sess);
+            CmdPktCmdContactList (conn);
         s_repl (&cont->nick, arg1);
         cont->flags &= ~CONT_TEMPORARY;
     }
@@ -2120,9 +2120,9 @@ static JUMP_F(CmdUserRem)
     Contact *cont = NULL;
     UDWORD uin;
     char *alias;
-    OSESSION;
+    OPENCONN;
 
-    if (!s_parsenick (&args, &cont, NULL, sess))
+    if (!s_parsenick (&args, &cont, NULL, conn))
     {
         M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
@@ -2140,10 +2140,10 @@ static JUMP_F(CmdUserRem)
     }
     else
     {
-        if (sess->ver > 6)
-            SnacCliRemcontact (sess, uin);
+        if (conn->ver > 6)
+            SnacCliRemcontact (conn, uin);
         else
-            CmdPktCmdContactList (sess);
+            CmdPktCmdContactList (conn);
         M_printf (i18n (2150, "Removed contact '%s' (%d).\n"),
                  alias, uin);
     }
@@ -2159,7 +2159,7 @@ static JUMP_F(CmdUserRem)
 static JUMP_F(CmdUserRInfo)
 {
     Contact *cont;
-    OSESSION;
+    OPENCONN;
 
     cont = ContactFind (uiG.last_rcvd_uin);
     if (!cont)
@@ -2178,10 +2178,10 @@ static JUMP_F(CmdUserRInfo)
     else
         M_print (i18n (1674, "The port is unknown.\n"));
     
-    if (sess->ver > 6)
-        SnacCliMetareqinfo (sess, uiG.last_rcvd_uin);
+    if (conn->ver > 6)
+        SnacCliMetareqinfo (conn, uiG.last_rcvd_uin);
     else
-        CmdPktCmdMetaReqInfo (sess, uiG.last_rcvd_uin);
+        CmdPktCmdMetaReqInfo (conn, uiG.last_rcvd_uin);
     return 0;
 }
 
@@ -2192,7 +2192,7 @@ static JUMP_F(CmdUserAuth)
 {
     char *cmd = NULL, *argsb, *msg = NULL;
     Contact *cont = NULL;
-    OSESSION;
+    OPENCONN;
 
     argsb = args;
     if (!s_parse (&args, &cmd))
@@ -2205,7 +2205,7 @@ static JUMP_F(CmdUserAuth)
     }
     cmd = strdup (cmd);
 
-    if (s_parsenick (&args, &cont, NULL, sess))
+    if (s_parsenick (&args, &cont, NULL, conn))
     {
         s_parserem (&args, &msg);
         if (!strcmp (cmd, "req"))
@@ -2213,14 +2213,14 @@ static JUMP_F(CmdUserAuth)
             if (!msg)         /* FIXME: let it untranslated? */
                 msg = "Please authorize my request and add me to your Contact List\n";
 #ifdef WIP
-            if (sess->type == TYPE_SERVER && sess->ver >= 8)
-                SnacCliReqauth (sess, cont->uin, msg);
+            if (conn->type == TYPE_SERVER && conn->ver >= 8)
+                SnacCliReqauth (conn, cont->uin, msg);
             else
 #endif
-            if (sess->type == TYPE_SERVER)
-                SnacCliSendmsg (sess, cont->uin, msg, MSG_AUTH_REQ, 0);
+            if (conn->type == TYPE_SERVER)
+                SnacCliSendmsg (conn, cont->uin, msg, MSG_AUTH_REQ, 0);
             else
-                CmdPktCmdSendMessage (sess, cont->uin, msg, MSG_AUTH_REQ);
+                CmdPktCmdSendMessage (conn, cont->uin, msg, MSG_AUTH_REQ);
             free (cmd);
             return 0;
         }
@@ -2229,33 +2229,33 @@ static JUMP_F(CmdUserAuth)
             if (!msg)         /* FIXME: let it untranslated? */
                 msg = "Authorization refused\n";
 #ifdef WIP
-            if (sess->type == TYPE_SERVER && sess->ver >= 8)
-                SnacCliAuthorize (sess, cont->uin, 0, msg);
+            if (conn->type == TYPE_SERVER && conn->ver >= 8)
+                SnacCliAuthorize (conn, cont->uin, 0, msg);
             else
 #endif
-            if (sess->type == TYPE_SERVER)
-                SnacCliSendmsg (sess, cont->uin, msg, MSG_AUTH_DENY, 0);
+            if (conn->type == TYPE_SERVER)
+                SnacCliSendmsg (conn, cont->uin, msg, MSG_AUTH_DENY, 0);
             else
-                CmdPktCmdSendMessage (sess, cont->uin, msg, MSG_AUTH_DENY);
+                CmdPktCmdSendMessage (conn, cont->uin, msg, MSG_AUTH_DENY);
             free (cmd);
             return 0;
         }
         else if (!strcmp (cmd, "add"))
         {
 #ifdef WIP
-            if (sess->type == TYPE_SERVER && sess->ver >= 8)
-                SnacCliGrantauth (sess, cont->uin);
+            if (conn->type == TYPE_SERVER && conn->ver >= 8)
+                SnacCliGrantauth (conn, cont->uin);
             else
 #endif
-            if (sess->type == TYPE_SERVER)
-                SnacCliSendmsg (sess, cont->uin, "\x03", MSG_AUTH_ADDED, 0);
+            if (conn->type == TYPE_SERVER)
+                SnacCliSendmsg (conn, cont->uin, "\x03", MSG_AUTH_ADDED, 0);
             else
-                CmdPktCmdSendMessage (sess, cont->uin, "\x03", MSG_AUTH_ADDED);
+                CmdPktCmdSendMessage (conn, cont->uin, "\x03", MSG_AUTH_ADDED);
             free (cmd);
             return 0;
         }
     }
-    if ((strcmp (cmd, "grant") && !s_parsenick (&argsb, &cont, NULL, sess)) || !cont)
+    if ((strcmp (cmd, "grant") && !s_parsenick (&argsb, &cont, NULL, conn)) || !cont)
     {
         M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"),
                  strcmp (cmd, "grant") && strcmp (cmd, "req") && strcmp (cmd, "deny") ? argsb : args);
@@ -2264,14 +2264,14 @@ static JUMP_F(CmdUserAuth)
     }
 
 #ifdef WIP
-    if (sess->type == TYPE_SERVER && sess->ver >= 8)
-        SnacCliAuthorize (sess, cont->uin, 1, NULL);
+    if (conn->type == TYPE_SERVER && conn->ver >= 8)
+        SnacCliAuthorize (conn, cont->uin, 1, NULL);
     else
 #endif
-    if (sess->type == TYPE_SERVER)
-        SnacCliSendmsg (sess, cont->uin, "\x03", MSG_AUTH_GRANT, 0);
+    if (conn->type == TYPE_SERVER)
+        SnacCliSendmsg (conn, cont->uin, "\x03", MSG_AUTH_GRANT, 0);
     else
-        CmdPktCmdSendMessage (sess, cont->uin, "\x03", MSG_AUTH_GRANT);
+        CmdPktCmdSendMessage (conn, cont->uin, "\x03", MSG_AUTH_GRANT);
     return 0;
 }
 
@@ -2295,9 +2295,9 @@ static JUMP_F(CmdUserURL)
 {
     char *url, *msg;
     Contact *cont = NULL;
-    OSESSION;
+    OPENCONN;
 
-    if (!s_parsenick (&args, &cont, NULL, sess))
+    if (!s_parsenick (&args, &cont, NULL, conn))
     {
         M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
@@ -2315,7 +2315,7 @@ static JUMP_F(CmdUserURL)
         msg = "";
 
     uiG.last_sent_uin = cont->uin;
-    icq_sendurl (sess, cont->uin, url, msg);
+    icq_sendurl (conn, cont->uin, url, msg);
     free (url);
 
     return 0;
@@ -2350,9 +2350,9 @@ static JUMP_F(CmdUserTabs)
 static JUMP_F(CmdUserLast)
 {
     Contact *cont = NULL, *contr = NULL;
-    OSESSION;
+    OPENCONN;
 
-    if (!s_parsenick (&args, &cont, &contr, sess))
+    if (!s_parsenick (&args, &cont, &contr, conn))
     {
         M_print (i18n (1682, "You have received messages from:\n"));
         for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
@@ -2383,7 +2383,7 @@ static JUMP_F(CmdUserLast)
 static JUMP_F(CmdUserUptime)
 {
     double TimeDiff = difftime (time (NULL), uiG.start_time);
-    Session *sess;
+    Connection *conn;
     int Days, Hours, Minutes, Seconds, i;
     int pak_sent = 0, pak_rcvd = 0, real_pak_sent = 0, real_pak_rcvd = 0;
 
@@ -2406,15 +2406,15 @@ static JUMP_F(CmdUserUptime)
 /*    M_printf ("%s " COLMESSAGE "%d" COLNONE " / %d\n", i18n (1692, "Contacts:"), uiG.Num_Contacts, MAX_CONTACTS); */
 
     M_print (i18n (1746, " nr type         sent/received packets/unique packets\n"));
-    for (i = 0; (sess = SessionNr (i)); i++)
+    for (i = 0; (conn = ConnectionNr (i)); i++)
     {
         M_printf ("%3d %-12s %7d %7d %7d %7d\n",
-                 i + 1, SessionType (sess), sess->stat_pak_sent, sess->stat_pak_rcvd,
-                 sess->stat_real_pak_sent, sess->stat_real_pak_rcvd);
-        pak_sent += sess->stat_pak_sent;
-        pak_rcvd += sess->stat_pak_rcvd;
-        real_pak_sent += sess->stat_real_pak_sent;
-        real_pak_rcvd += sess->stat_real_pak_rcvd;
+                 i + 1, ConnectionType (conn), conn->stat_pak_sent, conn->stat_pak_rcvd,
+                 conn->stat_real_pak_sent, conn->stat_real_pak_rcvd);
+        pak_sent += conn->stat_pak_sent;
+        pak_rcvd += conn->stat_pak_rcvd;
+        real_pak_sent += conn->stat_real_pak_sent;
+        real_pak_rcvd += conn->stat_real_pak_rcvd;
     }
     M_printf ("    %-12s %7d %7d %7d %7d\n",
              i18n (1747, "total"), pak_sent, pak_rcvd,
@@ -2430,30 +2430,30 @@ static JUMP_F(CmdUserConn)
 {
     char *arg1 = NULL;
     int i;
-    Session *sess;
+    Connection *conn;
 
     if (!s_parse (&args, &arg1))
     {
         M_print (i18n (1887, "Connections:"));
         M_print ("\n  " COLINDENT);
         
-        for (i = 0; (sess = SessionNr (i)); i++)
+        for (i = 0; (conn = ConnectionNr (i)); i++)
         {
             M_printf (i18n (2093, "%02d %-12s version %d for %s (%x), at %s:%d %s\n"),
-                     i + 1, SessionType (sess), sess->ver, ContactFindName (sess->uin), sess->status,
-                     sess->server ? sess->server : s_ip (sess->ip), sess->port,
-                     sess->connect & CONNECT_FAIL ? i18n (1497, "failed") :
-                     sess->connect & CONNECT_OK   ? i18n (1934, "connected") :
-                     sess->connect & CONNECT_MASK ? i18n (1911, "connecting") : i18n (1912, "closed"));
+                     i + 1, ConnectionType (conn), conn->ver, ContactFindName (conn->uin), conn->status,
+                     conn->server ? conn->server : s_ip (conn->ip), conn->port,
+                     conn->connect & CONNECT_FAIL ? i18n (1497, "failed") :
+                     conn->connect & CONNECT_OK   ? i18n (1934, "connected") :
+                     conn->connect & CONNECT_MASK ? i18n (1911, "connecting") : i18n (1912, "closed"));
             if (prG->verbose)
             {
                 char *t1, *t2, *t3;
                 M_printf (i18n (1935, "    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x\n"),
-                     sess->type, sess->sok, t1 = strdup (s_ip (sess->ip)),
-                     sess->connect, t2 = strdup (s_ip (sess->our_local_ip)),
-                     t3 = strdup (s_ip (sess->our_outside_ip)),
-                     sess->our_session, sess->our_seq, sess->our_seq2);
-                M_printf (i18n (2081, "    at %p parent %p assoc %p\n"), sess, sess->parent, sess->assoc);
+                     conn->type, conn->sok, t1 = strdup (s_ip (conn->ip)),
+                     conn->connect, t2 = strdup (s_ip (conn->our_local_ip)),
+                     t3 = strdup (s_ip (conn->our_outside_ip)),
+                     conn->our_session, conn->our_seq, conn->our_seq2);
+                M_printf (i18n (2081, "    at %p parent %p assoc %p\n"), conn, conn->parent, conn->assoc);
                 free (t1);
                 free (t2);
                 free (t3);
@@ -2466,53 +2466,57 @@ static JUMP_F(CmdUserConn)
         UDWORD i = 0, j;
 
         if (!s_parseint (&args, &i))
-            for (j = 0; (sess = SessionNr (j)); j++)
-                if (sess->type & TYPEF_SERVER)
+            for (j = 0; (conn = ConnectionNr (j)); j++)
+                if (conn->type & TYPEF_SERVER)
                 {
                     i = j + 1;
                     break;
                 }
 
-        sess = SessionNr (i - 1);
-        if (!sess)
+        conn = ConnectionNr (i - 1);
+        if (!conn)
         {
             M_printf (i18n (1894, "There is no connection number %d.\n"), i);
             return 0;
         }
-        if (sess->connect & CONNECT_OK)
+        if (conn->connect & CONNECT_OK)
         {
             M_printf (i18n (1891, "Connection %d is already open.\n"), i);
             return 0;
         }
-
-        SessionInit (sess);
+        if (!conn->open)
+        {
+            M_printf (i18n (2194, "Don't know how to open this connection type.\n"));
+            return 0;
+        }
+        conn->open (conn);
     }
     else if (!strcmp (arg1, "select"))
     {
         UDWORD i = 0;
 
         if (!s_parseint (&args, &i))
-            i = SessionFindNr (currsess) + 1;
+            i = ConnectionFindNr (currconn) + 1;
 
-        sess = SessionNr (i - 1);
-        if (!sess && !(sess = SessionFind (TYPEF_SERVER, i, NULL)))
+        conn = ConnectionNr (i - 1);
+        if (!conn && !(conn = ConnectionFind (TYPEF_SERVER, i, NULL)))
         {
             M_printf (i18n (1894, "There is no connection number %d.\n"), i);
             return 0;
         }
-        if (~sess->type & TYPEF_SERVER)
+        if (~conn->type & TYPEF_SERVER)
         {
             M_printf (i18n (2098, "Connection %d is not a server connection.\n"), i);
             return 0;
         }
-        if (~sess->connect & CONNECT_OK)
+        if (~conn->connect & CONNECT_OK)
         {
             M_printf (i18n (2096, "Connection %d is not open.\n"), i);
             return 0;
         }
-        currsess = sess;
+        currconn = conn;
         M_printf (i18n (2099, "Selected connection %d (version %d, UIN %d) as current connection.\n"),
-                 i, sess->ver, sess->uin);
+                 i, conn->ver, conn->uin);
     }
     else if (!strcmp (arg1, "remove") || !strcmp (arg1, "delete"))
     {
@@ -2520,19 +2524,19 @@ static JUMP_F(CmdUserConn)
 
         s_parseint (&args, &i);
 
-        sess = SessionNr (i - 1);
-        if (!sess)
+        conn = ConnectionNr (i - 1);
+        if (!conn)
         {
             M_printf (i18n (1894, "There is no connection number %d.\n"), i);
             return 0;
         }
-        if (sess->spref)
+        if (conn->spref)
         {
             M_printf (i18n (2102, "Connection %d is a configured connection.\n"), i);
             return 0;
         }
         M_printf (i18n (2101, "Removing connection %d and its dependands completely.\n"), i);
-        SessionClose (sess);
+        ConnectionClose (conn);
     }
     else if (!strcmp (arg1, "close") || !strcmp (arg1, "logoff"))
     {
@@ -2540,21 +2544,21 @@ static JUMP_F(CmdUserConn)
 
         s_parseint (&args, &i);
 
-        sess = SessionNr (i - 1);
-        if (!sess)
+        conn = ConnectionNr (i - 1);
+        if (!conn)
         {
             M_printf (i18n (1894, "There is no connection number %d.\n"), i);
             return 0;
         }
-        if (sess->close)
+        if (conn->close)
         {
             M_printf (i18n (2185, "Closing connection %d.\n"), i);
-            sess->close (sess);
+            conn->close (conn);
         }
         else
         {
             M_printf (i18n (2101, "Removing connection %d and its dependands completely.\n"), i);
-            SessionClose (sess);
+            ConnectionClose (conn);
         }
     }
     else
@@ -2576,9 +2580,9 @@ static JUMP_F(CmdUserConn)
 static JUMP_F(CmdUserContact)
 {
     char *tmp = NULL;
-    OSESSION;
+    OPENCONN;
 
-    if (sess->type != TYPE_SERVER)
+    if (conn->type != TYPE_SERVER)
         return 0;
 
     if (!data)
@@ -2592,8 +2596,8 @@ static JUMP_F(CmdUserContact)
     }
     if (data)
     {
-        QueueEnqueueData (sess, QUEUE_REQUEST_ROSTER, 0, data, 0x7fffffffL, NULL, NULL, NULL);
-        SnacCliReqroster (sess);
+        QueueEnqueueData (conn, QUEUE_REQUEST_ROSTER, 0, data, 0x7fffffffL, NULL, NULL, NULL);
+        SnacCliReqroster (conn);
     }
     else
     {
@@ -2625,17 +2629,17 @@ static JUMP_F(CmdUserQuit)
 static JUMP_F(CmdUserOldSearch)
 {
     static char *email, *nick, *first, *last;
-    OSESSION;
+    OPENCONN;
 
     switch (status)
     {
         case 0:
             if (*args)
             {
-                if (sess->type == TYPE_SERVER_OLD)
-                    CmdPktCmdSearchUser (sess, args, "", "", "");
+                if (conn->type == TYPE_SERVER_OLD)
+                    CmdPktCmdSearchUser (conn, args, "", "", "");
                 else
-                    SnacCliSearchbymail (sess, args);
+                    SnacCliSearchbymail (conn, args);
                 
                 return 0;
             }
@@ -2655,10 +2659,10 @@ static JUMP_F(CmdUserOldSearch)
             return ++status;
         case 104:
             last = strdup ((char *) args);
-            if (sess->type == TYPE_SERVER_OLD)
-                CmdPktCmdSearchUser (sess, email, nick, first, last);
+            if (conn->type == TYPE_SERVER_OLD)
+                CmdPktCmdSearchUser (conn, email, nick, first, last);
             else
-                SnacCliSearchbypersinf (sess, email, nick, first, last);
+                SnacCliSearchbypersinf (conn, email, nick, first, last);
             free (email);
             free (nick);
             free (first);
@@ -2676,7 +2680,7 @@ static JUMP_F(CmdUserSearch)
     int temp;
     static MetaWP wp = { 0 };
     char *arg1 = NULL, *arg2 = NULL;
-    OSESSION;
+    OPENCONN;
 
     if (!strcmp (args, "."))
         status += 400;
@@ -2693,26 +2697,26 @@ static JUMP_F(CmdUserSearch)
             arg1 = strdup (arg1);
             if (s_parse (&args, &arg2))
             {
-                if (sess->ver > 6)
-                    SnacCliSearchbypersinf (sess, NULL, NULL, arg1, arg2);
+                if (conn->ver > 6)
+                    SnacCliSearchbypersinf (conn, NULL, NULL, arg1, arg2);
                 else
-                    CmdPktCmdSearchUser (sess, NULL, NULL, arg1, arg2);
+                    CmdPktCmdSearchUser (conn, NULL, NULL, arg1, arg2);
                 free (arg1);
                 return 0;
             }
             if (strchr (arg1, '@'))
             {
-                if (sess->type == TYPE_SERVER_OLD)
-                    CmdPktCmdSearchUser (sess, arg1, "", "", "");
+                if (conn->type == TYPE_SERVER_OLD)
+                    CmdPktCmdSearchUser (conn, arg1, "", "", "");
                 else
-                    SnacCliSearchbymail (sess, arg1);
+                    SnacCliSearchbymail (conn, arg1);
             }
             else
             {
-                if (sess->type == TYPE_SERVER_OLD)
-                    CmdPktCmdSearchUser (sess, NULL, arg1, NULL, NULL);
+                if (conn->type == TYPE_SERVER_OLD)
+                    CmdPktCmdSearchUser (conn, NULL, arg1, NULL, NULL);
                 else
-                    SnacCliSearchbypersinf (sess, NULL, arg1, NULL, NULL);
+                    SnacCliSearchbypersinf (conn, NULL, arg1, NULL, NULL);
             }
             free (arg1);
             return 0;
@@ -2804,19 +2808,19 @@ static JUMP_F(CmdUserSearch)
         case 214:
             wp.position = strdup ((char *) args);
         default:
-            if (sess->ver > 6)
+            if (conn->ver > 6)
             {
                 if (status > 250 && status <= 403)
-                    SnacCliSearchbypersinf (sess, wp.email, wp.nick, wp.first, wp.last);
+                    SnacCliSearchbypersinf (conn, wp.email, wp.nick, wp.first, wp.last);
                 else
-                    SnacCliSearchwp (sess, &wp);
+                    SnacCliSearchwp (conn, &wp);
             }
             else
             {
                 if (status > 250 && status <= 403)
-                    CmdPktCmdSearchUser (sess, wp.email, wp.nick, wp.first, wp.last);
+                    CmdPktCmdSearchUser (conn, wp.email, wp.nick, wp.first, wp.last);
                 else
-                    CmdPktCmdMetaSearchWP (sess, &wp);
+                    CmdPktCmdMetaSearchWP (conn, &wp);
             }
 
             s_repl (&wp.nick,  NULL);
@@ -2838,7 +2842,7 @@ static JUMP_F(CmdUserSearch)
 static JUMP_F(CmdUserUpdate)
 {
     static MetaGeneral user;
-    OSESSION;
+    OPENCONN;
 
     switch (status)
     {
@@ -2859,7 +2863,7 @@ static JUMP_F(CmdUserUpdate)
             return ++status;
         case 303:
             user.email = strdup ((char *) args);
-            if (sess->ver > 6)
+            if (conn->ver > 6)
             {
                 R_setpromptf ("%s ", i18n (1544, "Enter new city:"));
                 status += 3;
@@ -2952,10 +2956,10 @@ static JUMP_F(CmdUserUpdate)
 
             if (!strcasecmp (args, i18n (1027, "YES")))
             {
-                if (sess->ver > 6)
-                    SnacCliMetasetgeneral (sess, &user);
+                if (conn->ver > 6)
+                    SnacCliMetasetgeneral (conn, &user);
                 else
-                    CmdPktCmdMetaGeneral (sess, &user);
+                    CmdPktCmdMetaGeneral (conn, &user);
             }
 
             s_repl (&user.nick,  NULL);
@@ -2974,7 +2978,7 @@ static JUMP_F(CmdUserOther)
 {
     static MetaMore other;
     int temp;
-    OSESSION;
+    OPENCONN;
 
     switch (status)
     {
@@ -3051,10 +3055,10 @@ static JUMP_F(CmdUserOther)
                 return status;
             }
             other.lang3 = temp;
-            if (sess->ver > 6)
-                SnacCliMetasetmore (sess, &other);
+            if (conn->ver > 6)
+                SnacCliMetasetmore (conn, &other);
             else
-                CmdPktCmdMetaMore (sess, &other);
+                CmdPktCmdMetaMore (conn, &other);
             free (other.hp);
             return 0;
     }
@@ -3068,17 +3072,17 @@ static JUMP_F(CmdUserAbout)
 {
     static int offset = 0;
     static char msg[1024];
-    OSESSION;
+    OPENCONN;
 
     if (status > 100)
     {
         msg[offset] = 0;
         if (!strcmp (args, END_MSG_STR))
         {
-            if (sess->ver > 6)
-                SnacCliMetasetabout (sess, msg);
+            if (conn->ver > 6)
+                SnacCliMetasetabout (conn, msg);
             else
-                CmdPktCmdMetaAbout (sess, msg);
+                CmdPktCmdMetaAbout (conn, msg);
             return 0;
         }
         else if (!strcmp (args, CANCEL_MSG_STR))
@@ -3095,10 +3099,10 @@ static JUMP_F(CmdUserAbout)
             }
             else
             {
-                if (sess->ver > 6)
-                    SnacCliMetasetabout (sess, msg);
+                if (conn->ver > 6)
+                    SnacCliMetasetabout (conn, msg);
                 else
-                    CmdPktCmdMetaAbout (sess, msg);
+                    CmdPktCmdMetaAbout (conn, msg);
                 return 0;
             }
         }
@@ -3107,10 +3111,10 @@ static JUMP_F(CmdUserAbout)
     {
         if (args && strlen (args))
         {
-            if (sess->ver > 6)
-                SnacCliMetasetabout (sess, args);
+            if (conn->ver > 6)
+                SnacCliMetasetabout (conn, args);
             else
-                CmdPktCmdMetaAbout (sess, args);
+                CmdPktCmdMetaAbout (conn, args);
             return 0;
         }
         offset = 0;

@@ -1,7 +1,10 @@
 /* $Id$ */
 
-typedef void (jump_srv_f)(Session *sess, Packet *pak, UWORD cmd, UWORD ver, UDWORD seq, UDWORD uin);
-#define JUMP_SRV_F(f) void f (Session *sess, Packet *pak, UWORD cmd, UWORD ver, UDWORD seq, UDWORD uin)
+#ifndef MICQ_ICQV5_SERVER_H
+#define MICQ_ICQV5_SERVER_H
+
+typedef void (jump_srv_f)(Connection *conn, Packet *pak, UWORD cmd, UWORD ver, UDWORD seq, UDWORD uin);
+#define JUMP_SRV_F(f) void f (Connection *conn, Packet *pak, UWORD cmd, UWORD ver, UDWORD seq, UDWORD uin)
 
 struct jumpsrvstr {
     int cmd;
@@ -12,5 +15,7 @@ struct jumpsrvstr {
 typedef struct jumpsrvstr jump_srv_t;
 
 const char *CmdPktSrvName (int cmd);
-void CmdPktSrvRead (Session *sess);
+void CmdPktSrvRead (Connection *conn);
 JUMP_SRV_F(CmdPktSrvProcess);
+
+#endif /* MICQ_ICQV5_SERVER_H */

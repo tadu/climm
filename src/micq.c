@@ -50,7 +50,7 @@
 
 user_interface_state uiG;
 Preferences *prG;
-PreferencesSession *psG;
+PreferencesConnection *psG;
 
 void init_global_defaults () {
   /* Initialize User Interface global state */
@@ -97,16 +97,16 @@ void Check_Endian (void)
     M_print ("\n");
 }
 
-void Idle_Check (Session *sess)
+void Idle_Check (Connection *conn)
 {
     int delta;
     UDWORD new = 0xffffffffL;
 
-    if (~sess->type & TYPEF_ANY_SERVER)
+    if (~conn->type & TYPEF_ANY_SERVER)
         return;
 
-    if ((sess->status & (STATUSF_DND | STATUSF_OCC | STATUSF_FFC))
-        || !(sess->connect & CONNECT_OK))
+    if ((conn->status & (STATUSF_DND | STATUSF_OCC | STATUSF_FFC))
+        || !(conn->connect & CONNECT_OK))
     {
         uiG.idle_val = 0;
         return;
@@ -119,40 +119,40 @@ void Idle_Check (Session *sess)
     delta = (time (NULL) - uiG.idle_val);
     if (uiG.idle_flag)
     {
-        if (sess->status & STATUSF_NA)
+        if (conn->status & STATUSF_NA)
         {
             if (delta < prG->away_time || !prG->away_time)
             {
-                new = (sess->status & STATUSF_INV) | STATUS_ONLINE;
+                new = (conn->status & STATUSF_INV) | STATUS_ONLINE;
                 uiG.idle_flag = 0;
                 uiG.idle_val = 0;
             }
         }
-        else if (sess->status & STATUSF_AWAY)
+        else if (conn->status & STATUSF_AWAY)
         {
             if (delta >= 2 * prG->away_time)
-                new = (sess->status & STATUSF_INV) | STATUS_NA;
+                new = (conn->status & STATUSF_INV) | STATUS_NA;
             else if (delta < prG->away_time || !prG->away_time)
             {
-                new = (sess->status & STATUSF_INV) | STATUS_ONLINE;
+                new = (conn->status & STATUSF_INV) | STATUS_ONLINE;
                 uiG.idle_flag = 0;
                 uiG.idle_val = 0;
             }
         }
     }
-    else if (delta >= prG->away_time && !(sess->status & (STATUSF_AWAY | STATUSF_NA)))
+    else if (delta >= prG->away_time && !(conn->status & (STATUSF_AWAY | STATUSF_NA)))
     {
-        new = (sess->status & STATUSF_INV) | STATUS_AWAY;
+        new = (conn->status & STATUSF_INV) | STATUS_AWAY;
         uiG.idle_flag = 1;
         uiG.idle_msgs = 0;
     }
-    if (new != 0xffffffffL && new != sess->status)
+    if (new != 0xffffffffL && new != conn->status)
     {
-        if (sess->type == TYPE_SERVER)
-            SnacCliSetstatus (sess, new, 1);
+        if (conn->type == TYPE_SERVER)
+            SnacCliSetstatus (conn, new, 1);
         else
-            CmdPktCmdStatusChange (sess, new);
-        sess->status = new;
+            CmdPktCmdStatusChange (conn, new);
+        conn->status = new;
         M_printf ("%s %s %s\n", s_now, i18n (1064, "Auto-Changed status to"), s_status (new));
     }
     return;
@@ -179,10 +179,10 @@ int main (int argc, char *argv[])
 #ifdef _WIN32
     WSADATA wsaData;
 #endif
-    Session *sess;
+    Connection *conn;
 
     prG = PreferencesC ();
-    psG = PreferencesSessionC ();
+    psG = PreferencesConnectionC ();
     init_global_defaults ();
     init_log ();
 
@@ -257,9 +257,9 @@ int main (int argc, char *argv[])
     }
 #endif
 
-    for (i = 0; (sess = SessionNr (i)); i++)
-        if (sess->flags & CONN_AUTOLOGIN)
-            SessionInit (sess);
+    for (i = 0; (conn = ConnectionNr (i)); i++)
+        if (conn->flags & CONN_AUTOLOGIN && conn->open)
+            conn->open (conn);
 
     R_init ();
     R_resetprompt ();
@@ -282,18 +282,18 @@ int main (int argc, char *argv[])
 #endif
 
         M_select_init ();
-        for (i = 0; (sess = SessionNr (i)); i++)
+        for (i = 0; (conn = ConnectionNr (i)); i++)
         {
-            if (sess->connect & CONNECT_OK && sess->type & TYPEF_ANY_SERVER)
-                Idle_Check (sess);
-            if (sess->sok < 0 || !sess->dispatch)
+            if (conn->connect & CONNECT_OK && conn->type & TYPEF_ANY_SERVER)
+                Idle_Check (conn);
+            if (conn->sok < 0 || !conn->dispatch)
                 continue;
-            if (sess->connect & CONNECT_SELECT_R)
-                M_Add_rsocket (sess->sok);
-            if (sess->connect & CONNECT_SELECT_W)
-                M_Add_wsocket (sess->sok);
-            if (sess->connect & CONNECT_SELECT_X)
-                M_Add_xsocket (sess->sok);
+            if (conn->connect & CONNECT_SELECT_R)
+                M_Add_rsocket (conn->sok);
+            if (conn->connect & CONNECT_SELECT_W)
+                M_Add_wsocket (conn->sok);
+            if (conn->connect & CONNECT_SELECT_X)
+                M_Add_xsocket (conn->sok);
         }
 
 #ifndef _WIN32
@@ -311,20 +311,20 @@ int main (int argc, char *argv[])
             if (R_process_input ())
                 CmdUserInput (&uiG.idle_val, &uiG.idle_flag);
 
-        for (i = 0; (sess = SessionNr (i)); i++)
+        for (i = 0; (conn = ConnectionNr (i)); i++)
         {
-            if (sess->sok < 0 || !sess->dispatch || !M_Is_Set (sess->sok))
+            if (conn->sok < 0 || !conn->dispatch || !M_Is_Set (conn->sok))
                 continue;
-            sess->dispatch (sess);
+            conn->dispatch (conn);
         }
 
         QueueRun ();
     }
 
-    for (i = 0; (sess = SessionNr (i)); i++)
+    for (i = 0; (conn = ConnectionNr (i)); i++)
     {
-        if (sess->close)
-            sess->close (sess);
+        if (conn->close)
+            conn->close (conn);
     }
     QueueRun ();
     

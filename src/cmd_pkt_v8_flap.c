@@ -33,26 +33,26 @@
 #endif
 #include <sys/stat.h>
 
-static void FlapChannel1 (Session *sess, Packet *pak);
-static void FlapChannel4 (Session *sess, Packet *pak);
+static void FlapChannel1 (Connection *conn, Packet *pak);
+static void FlapChannel4 (Connection *conn, Packet *pak);
 
 void SrvCallBackFlap (Event *event)
 {
     assert (event->type == QUEUE_FLAP);
 
-    if (!event->sess)
+    if (!event->conn)
     {
         PacketD (event->pak);
         free (event);
         return;
     }
     
-    event->sess->stat_pak_rcvd++;
-    event->sess->stat_real_pak_rcvd++;
+    event->conn->stat_pak_rcvd++;
+    event->conn->stat_real_pak_rcvd++;
     switch (event->pak->cmd)
     {
         case 1: /* Client login */
-            FlapChannel1 (event->sess, event->pak);
+            FlapChannel1 (event->conn, event->pak);
             break;
         case 2: /* SNAC packets */
             SnacCallback (event);
@@ -60,7 +60,7 @@ void SrvCallBackFlap (Event *event)
         case 3: /* Errors */
             break;
         case 4: /* Logoff */
-            FlapChannel4 (event->sess, event->pak);
+            FlapChannel4 (event->conn, event->pak);
             break;
         case 5: /* Ping */
         default:
@@ -72,7 +72,7 @@ void SrvCallBackFlap (Event *event)
 
 /***********************************************/
 
-static void FlapChannel1 (Session *sess, Packet *pak)
+static void FlapChannel1 (Connection *conn, Packet *pak)
 {
     int i;
 
@@ -91,29 +91,29 @@ static void FlapChannel1 (Session *sess, Packet *pak)
                 Hex_Dump (pak->data + pak->rpos, PacketReadLeft (pak));
                 break;
             }
-            if (!sess->uin)
+            if (!conn->uin)
             {
-                FlapCliHello (sess);
-                SnacCliRegisteruser (sess);
+                FlapCliHello (conn);
+                SnacCliRegisteruser (conn);
             }
-            else if (sess->connect & 8)
+            else if (conn->connect & 8)
             {
-                TLV *tlv = sess->tlv;
+                TLV *tlv = conn->tlv;
                 
                 assert (tlv);
-                FlapCliCookie (sess, tlv[6].str, tlv[6].len);
+                FlapCliCookie (conn, tlv[6].str, tlv[6].len);
                 TLVD (tlv);
                 tlv = NULL;
             }
             else
-                FlapCliIdent (sess);
+                FlapCliIdent (conn);
             break;
         default:
             M_printf (i18n (1883, "FLAP channel 1 unknown command %d.\n"), i);
     }
 }
 
-static void FlapChannel4 (Session *sess, Packet *pak)
+static void FlapChannel4 (Connection *conn, Packet *pak)
 {
     TLV *tlv;
     
@@ -121,21 +121,21 @@ static void FlapChannel4 (Session *sess, Packet *pak)
     if (!tlv[5].len)
     {
         M_printf ("%s " COLINDENT, s_now);
-        if (!(sess->connect & CONNECT_OK))
+        if (!(conn->connect & CONNECT_OK))
             M_print (i18n (1895, "Login failed:\n"));
         else
             M_print (i18n (1896, "Server closed connection:\n"));
         M_printf (i18n (1048, "Error code: %d\n"), tlv[8].nr);
-        if (tlv[1].len && tlv[1].nr != sess->uin)
+        if (tlv[1].len && tlv[1].nr != conn->uin)
             M_printf (i18n (1049, "UIN: %d\n"), tlv[1].nr);
         if (tlv[4].len)
             M_printf (i18n (1961, "URL: %s\n"), tlv[4].str);
         M_print (COLEXDENT "\n");
 
-        if ((sess->connect & CONNECT_MASK) && sess->sok != -1)
-            sockclose (sess->sok);
-        sess->connect = 0;
-        sess->sok = -1;
+        if ((conn->connect & CONNECT_MASK) && conn->sok != -1)
+            sockclose (conn->sok);
+        conn->connect = 0;
+        conn->sok = -1;
         TLVD (tlv);
         tlv = NULL;
     }
@@ -145,16 +145,16 @@ static void FlapChannel4 (Session *sess, Packet *pak)
 
         M_printf (i18n (1898, "Redirect to server %s... "), tlv[5].str);
 
-        FlapCliGoodbye (sess);
+        FlapCliGoodbye (conn);
 
-        sess->port = atoi (strchr (tlv[5].str, ':') + 1);
+        conn->port = atoi (strchr (tlv[5].str, ':') + 1);
         *strchr (tlv[5].str, ':') = '\0';
-        sess->server = strdup (tlv[5].str);
-        sess->ip = 0;
+        conn->server = strdup (tlv[5].str);
+        conn->ip = 0;
 
-        sess->connect = 8;
-        sess->tlv = tlv;
-        UtilIOConnectTCP (sess);
+        conn->connect = 8;
+        conn->tlv = tlv;
+        UtilIOConnectTCP (conn);
     }
 }
 
@@ -226,14 +226,14 @@ Packet *FlapC (UBYTE channel)
     return pak;
 }
 
-void FlapSend (Session *sess, Packet *pak)
+void FlapSend (Connection *conn, Packet *pak)
 {
-    if (!sess->our_seq)
-        sess->our_seq = rand () & 0x7fff;
-    sess->our_seq++;
-    sess->our_seq &= 0x7fff;
+    if (!conn->our_seq)
+        conn->our_seq = rand () & 0x7fff;
+    conn->our_seq++;
+    conn->our_seq &= 0x7fff;
 
-    PacketWriteAtB2 (pak, 2, pak->id = sess->our_seq);
+    PacketWriteAtB2 (pak, 2, pak->id = conn->our_seq);
     PacketWriteAtB2 (pak, 4, pak->len - 6);
     
     if (prG->verbose & DEB_PACK8)
@@ -245,10 +245,10 @@ void FlapSend (Session *sess, Packet *pak)
     if (prG->verbose & DEB_PACK8SAVE)
         FlapSave (pak, FALSE);
     
-    sess->stat_pak_sent++;
-    sess->stat_real_pak_sent++;
+    conn->stat_pak_sent++;
+    conn->stat_real_pak_sent++;
     
-    sockwrite (sess->sok, pak->data, pak->len);
+    sockwrite (conn->sok, pak->data, pak->len);
     PacketD (pak);
 }
 
@@ -266,13 +266,13 @@ static char *_encryptpw (const char *pw)
 }
 
     
-void FlapCliIdent (Session *sess)
+void FlapCliIdent (Connection *conn)
 {
     Packet *pak;
     UWORD flags = prG->flags;
 
     prG->flags &= ~FLAG_CONVRUSS & ~FLAG_CONVEUC;
-    if (!sess->passwd || !strlen (sess->passwd))
+    if (!conn->passwd || !strlen (conn->passwd))
     {
 #ifdef __BEOS__
         M_print (i18n (2063, "You need to save your password in your ~/.micq/micqrc file.\n"));
@@ -283,14 +283,14 @@ void FlapCliIdent (Session *sess)
         Echo_Off ();
         M_fdnreadln (stdin, pwd, sizeof (pwd));
         Echo_On ();
-        sess->passwd = strdup (pwd);
+        conn->passwd = strdup (pwd);
 #endif
     }
     
     pak = FlapC (1);
     PacketWriteB4 (pak, CLI_HELLO);
-    PacketWriteTLVStr (pak, 1, s_sprintf ("%d", sess->uin));
-    PacketWriteTLVStr (pak, 2, _encryptpw (sess->passwd));
+    PacketWriteTLVStr (pak, 1, s_sprintf ("%d", conn->uin));
+    PacketWriteTLVStr (pak, 2, _encryptpw (conn->passwd));
     PacketWriteTLVStr (pak, 3, "ICQ Inc. - Product of ICQ (TM).2002a.5.37.1.3728.85");
     PacketWriteTLV2   (pak, 22, 266);
     PacketWriteTLV2   (pak, 23, FLAP_VER_MAJOR);
@@ -300,45 +300,45 @@ void FlapCliIdent (Session *sess)
     PacketWriteTLV4   (pak, 20, FLAP_VER_SUBBUILD);
     PacketWriteTLVStr (pak, 15, "de");  /* en */
     PacketWriteTLVStr (pak, 14, "de");  /* en */
-    FlapSend (sess, pak);
+    FlapSend (conn, pak);
     prG->flags = flags;
 }
 
-void FlapCliCookie (Session *sess, const char *cookie, UWORD len)
+void FlapCliCookie (Connection *conn, const char *cookie, UWORD len)
 {
     Packet *pak;
 
     pak = FlapC (1);
     PacketWriteB4 (pak, CLI_HELLO);
     PacketWriteTLVData (pak, 6, cookie, len);
-    FlapSend (sess, pak);
+    FlapSend (conn, pak);
 }
 
-void FlapCliHello (Session *sess)
+void FlapCliHello (Connection *conn)
 {
     Packet *pak;
     
     pak = FlapC (1);
     PacketWriteB4 (pak, CLI_HELLO);
-    FlapSend (sess, pak);
+    FlapSend (conn, pak);
 }
 
-void FlapCliGoodbye (Session *sess)
+void FlapCliGoodbye (Connection *conn)
 {
     Packet *pak;
     
-    if (!(sess->connect & CONNECT_MASK))
+    if (!(conn->connect & CONNECT_MASK))
         return;
     
     pak = FlapC (4);
-    FlapSend (sess, pak);
+    FlapSend (conn, pak);
     
-    sockclose (sess->sok);
-    sess->sok = -1;
-    sess->connect = 0;
+    sockclose (conn->sok);
+    conn->sok = -1;
+    conn->connect = 0;
 }
 
-void FlapCliKeepalive (Session *sess)
+void FlapCliKeepalive (Connection *conn)
 {
-    FlapSend (sess, FlapC (5));
+    FlapSend (conn, FlapC (5));
 }

@@ -239,8 +239,8 @@ void R_process_input_tab (void)
             M_print ("\a");
             return;
         }
-        if (strpbrk (s, UIN_DELIMS) && strpbrk (s, UIN_DELIMS) - s < strlen (s) - 1
-            && !strchr (UIN_DELIMS, s[strlen (s) - 1]))
+        if (strchr (s, ' ') && strchr (s, ' ') - s < strlen (s) - 1
+            && s[strlen (s) - 1] != ' ')
         {
             M_print ("\a");
             return;

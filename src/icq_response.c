@@ -33,7 +33,7 @@
 /* Attribute-value-pair format string */
 #define AVPFMT COLSERVER "%-15s" COLNONE " %s\n"
 
-void Meta_User (Session *sess, UDWORD uin, Packet *p)
+void Meta_User (Connection *conn, UDWORD uin, Packet *p)
 {
     UDWORD subtype, result;
 
@@ -115,13 +115,13 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             free (data2);
             break;
         case META_SRV_INFO:
-            Display_Info_Reply (sess, p, NULL, 0);
+            Display_Info_Reply (conn, p, NULL, 0);
             /* 3 unknown bytes ignored */
             break;
         case META_SRV_GEN:
-            Display_Info_Reply (sess, p, NULL, 0);
+            Display_Info_Reply (conn, p, NULL, 0);
 
-            if (sess->type == TYPE_SERVER_OLD)
+            if (conn->type == TYPE_SERVER_OLD)
             {
                 if (*(data = PacketReadLNTS (p)))
                     M_printf (AVPFMT, i18n (1503, "Other Email:"), data);
@@ -156,7 +156,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                 M_printf (AVPFMT, i18n (1509, "Cellular:"), data);
             free (data);
 
-            if (sess->type == TYPE_SERVER)
+            if (conn->type == TYPE_SERVER)
             {
                 if (*(data = PacketReadLNTS (p)))
                     M_printf (AVPFMT, i18n (1510, "Zip:"), data);
@@ -201,7 +201,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                 M_printf (AVPFMT, i18n (1531, "Homepage:"), data);
             free (data);
 
-            if (sess->type == TYPE_SERVER_OLD)
+            if (conn->type == TYPE_SERVER_OLD)
                 wdata = PacketRead1 (p) + 1900;
             else
                 wdata = PacketRead2 (p);
@@ -268,7 +268,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                 M_printf (AVPFMT, i18n (1522, "Work Address:"), data);
             free (data);
 
-            if (sess->type == TYPE_SERVER)
+            if (conn->type == TYPE_SERVER)
             {  
                 if (*(data = PacketReadLNTS (p)))
                     M_printf (AVPFMT, i18n (1520, "Work Zip:"), data);
@@ -368,7 +368,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                 break;
             }
 
-            Display_Info_Reply (sess, p, i18n (1498, "Info for"), 
+            Display_Info_Reply (conn, p, i18n (1498, "Info for"), 
                 IREP_HASAUTHFLAG);
 
             switch ((wdata = PacketRead2 (p))) {
@@ -408,14 +408,14 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                 M_printf ("%lu %s\n", dwdata, i18n (1621, "users not returned."));
             break;
         case META_SRV_RANDOM:
-            UtilCheckUIN (sess, uin = PacketRead4 (p));
+            UtilCheckUIN (conn, uin = PacketRead4 (p));
             wdata = PacketRead2 (p);
             M_printf (i18n (2009, "Found random chat partner UIN %d in chat group %d.\n"),
                      uin, wdata);
-            if (sess->ver > 6)
-                SnacCliMetareqinfo (sess, uin);
+            if (conn->ver > 6)
+                SnacCliMetareqinfo (conn, uin);
             else
-                CmdPktCmdMetaReqInfo (sess, uin);
+                CmdPktCmdMetaReqInfo (conn, uin);
             cont = ContactFind (uin);
             if (!cont)
                 break;
@@ -438,7 +438,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
     }
 }
 
-void Display_Rand_User (Session *sess, Packet *pak)
+void Display_Rand_User (Connection *conn, Packet *pak)
 {
     UDWORD uin;
     unsigned char ip[4];
@@ -470,10 +470,10 @@ void Display_Rand_User (Session *sess, Packet *pak)
     M_printf ("%-15s %s\n", i18n (1452, "Status:"), s_status (PacketRead4 (pak)));
     M_printf ("%-15s %d\n", i18n (1453, "TCP version:"), 
         PacketRead2 (pak));
-    CmdPktCmdMetaReqInfo (sess, uin);
+    CmdPktCmdMetaReqInfo (conn, uin);
 }
 
-void Recv_Message (Session *sess, Packet *pak)
+void Recv_Message (Connection *conn, Packet *pak)
 {
     struct tm stamp;
     UDWORD uin;
@@ -497,12 +497,12 @@ void Recv_Message (Session *sess, Packet *pak)
     type           = PacketRead2 (pak);
     text           = PacketReadLNTS (pak);
 
-    UtilCheckUIN (sess, uiG.last_rcvd_uin = uin);
-    IMSrvMsg (ContactFind (uin), sess, mktime (&stamp), type, text, STATUS_ONLINE);
+    UtilCheckUIN (conn, uiG.last_rcvd_uin = uin);
+    IMSrvMsg (ContactFind (uin), conn, mktime (&stamp), type, text, STATUS_ONLINE);
     free (text);
 }
 
-void Display_Info_Reply (Session *sess, Packet *pak, const char *uinline,
+void Display_Info_Reply (Connection *conn, Packet *pak, const char *uinline,
     unsigned int flags)
 {
     char *data, *data2;
@@ -545,7 +545,7 @@ void Display_Info_Reply (Session *sess, Packet *pak, const char *uinline,
     free (data);
 }
 
-void Display_Ext_Info_Reply (Session *sess, Packet *pak, const char *uinline)
+void Display_Ext_Info_Reply (Connection *conn, Packet *pak, const char *uinline)
 {
     const char *tabd;
     char *data, *data2;
@@ -613,7 +613,7 @@ void Display_Ext_Info_Reply (Session *sess, Packet *pak, const char *uinline)
 /*
  * Inform that a user went online
  */
-void IMOnline (Contact *cont, Session *sess, UDWORD status)
+void IMOnline (Contact *cont, Connection *conn, UDWORD status)
 {
     UDWORD old;
 
@@ -629,10 +629,10 @@ void IMOnline (Contact *cont, Session *sess, UDWORD status)
     cont->status = status;
     cont->flags &= ~CONT_SEENAUTO;
     
-    putlog (sess, NOW, cont->uin, status, ~old ? LOG_CHANGE : LOG_ONLINE, 
+    putlog (conn, NOW, cont->uin, status, ~old ? LOG_CHANGE : LOG_ONLINE, 
         0xFFFF, "");
  
-    if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || (prG->flags & FLAG_QUIET) || !(sess->connect & CONNECT_OK))
+    if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || (prG->flags & FLAG_QUIET) || !(conn->connect & CONNECT_OK))
         return;
 
     if (!~old)
@@ -666,12 +666,12 @@ void IMOnline (Contact *cont, Session *sess, UDWORD status)
 /*
  * Inform that a user went offline
  */
-void IMOffline (Contact *cont, Session *sess)
+void IMOffline (Contact *cont, Connection *conn)
 {
     if (!cont)
         return;
 
-    putlog (sess, NOW, cont->uin, STATUS_OFFLINE, LOG_OFFLINE, 0xFFFF, "");
+    putlog (conn, NOW, cont->uin, STATUS_OFFLINE, LOG_OFFLINE, 0xFFFF, "");
 
     cont->status = STATUS_OFFLINE;
     cont->seen_time = time (NULL);
@@ -691,7 +691,7 @@ void IMOffline (Contact *cont, Session *sess)
 /*
  * Central entry point for incoming messages.
  */
-void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const char *text, UDWORD tstatus)
+void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, UWORD type, const char *text, UDWORD tstatus)
 {
     char *cdata, *carr;
     
@@ -703,9 +703,9 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
     while (*cdata && strchr ("\n\r", cdata[strlen (cdata) - 1]))
         cdata[strlen (cdata) - 1] = '\0';
 
-    carr = sess->type & TYPEF_ANY_SERVER ? MSGRECSTR : MSGTCPRECSTR;
+    carr = conn->type & TYPEF_ANY_SERVER ? MSGRECSTR : MSGTCPRECSTR;
 
-    putlog (sess, stamp, cont->uin, tstatus, 
+    putlog (conn, stamp, cont->uin, tstatus, 
         type == MSG_AUTH_ADDED ? LOG_ADDED : LOG_RECVD, type,
         *cdata ? "%s\n" : "%s", cdata);
     

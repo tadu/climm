@@ -41,9 +41,9 @@ Preferences *PreferencesC ()
 /*
  * Create a connection specific preference structure
  */
-PreferencesSession *PreferencesSessionC ()
+PreferencesConnection *PreferencesConnectionC ()
 {
-    PreferencesSession *pref = calloc (1, sizeof (PreferencesSession));
+    PreferencesConnection *pref = calloc (1, sizeof (PreferencesConnection));
     assert (pref);
     
     return pref;
@@ -150,7 +150,7 @@ void PrefLoad (Preferences *pref)
             Read_RC_File (rcf);
     }
 #endif
-    if (!SessionNr (0))
+    if (!ConnectionNr (0))
         Initalize_RC_File ();
 }
 

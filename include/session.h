@@ -1,12 +1,12 @@
 /* $Id$ */
 
-#ifndef MICQ_SESSION_H
-#define MICQ_SESSION_H
+#ifndef MICQ_UTIL_CONNECTION_H
+#define MICQ_UTIL_CONNECTION_H
 
-typedef void (jump_sess_f)(Session *sess);
-typedef BOOL (jump_sess_err_f)(Session *sess, UDWORD rc, UDWORD flags);
+typedef void (jump_conn_f)(Connection *conn);
+typedef BOOL (jump_conn_err_f)(Connection *conn, UDWORD rc, UDWORD flags);
 
-struct Session_s
+struct Connection_s
 {
         UWORD     type;           /* connection type - TYPE_*                 */
         UBYTE     flags;          /* connection flags                         */
@@ -35,21 +35,22 @@ struct Session_s
         UDWORD    len;            /* used for file transfer                   */
         UDWORD    done;           /* used for file transfer                   */
 
+        PreferencesConnection *spref;  /* preferences for this session */
+        Connection            *assoc;  /* associated session           */
+        Connection            *parent; /* parent session               */
+        
         UDWORD    stat_real_pak_sent;
         UDWORD    stat_real_pak_rcvd;
         UDWORD    stat_pak_sent;
         UDWORD    stat_pak_rcvd;
 
-        PreferencesSession *spref;  /* preferences for this session */
-        Session            *assoc;  /* associated session           */
-        Session            *parent; /* parent session               */
-        
-        jump_sess_f *dispatch;     /* function to call on select()    */
-        jump_sess_f *reconnect;    /* function to call for reconnect  */
-        jump_sess_err_f *error;    /* function to call for i/o errors */
-        jump_sess_f *close;        /* function to call to close       */
+        jump_conn_f *open;         /* function to call to open        */
+        jump_conn_f *dispatch;     /* function to call on select()    */
+        jump_conn_f *reconnect;    /* function to call for reconnect  */
+        jump_conn_err_f *error;    /* function to call for i/o errors */
+        jump_conn_f *close;        /* function to call to close       */
 
-        jump_sess_f *utilio;       /* private to util_io.c            */
+        jump_conn_f *utilio;       /* private to util_io.c            */
 };
 
 #define CONNECT_MASK       0x00ff
@@ -61,30 +62,26 @@ struct Session_s
 #define CONNECT_SOCKS_ADD  0x1000
 #define CONNECT_SOCKS      0xf000
 
-Session    *SessionC      (void);
-Session    *SessionClone  (Session *sess, UWORD type);
-void        SessionInit   (Session *sess);
-Session    *SessionNr     (int i);
-Session    *SessionFind   (UWORD type, UDWORD uin, const Session *parent);
-UDWORD      SessionFindNr (Session *sess);
-void        SessionClose  (Session *sess);
-const char *SessionType   (Session *sess);
+Connection    *ConnectionC      (void);
+Connection    *ConnectionClone  (Connection *conn, UWORD type);
+Connection    *ConnectionNr     (int i);
+Connection    *ConnectionFind   (UWORD type, UDWORD uin, const Connection *parent);
+UDWORD         ConnectionFindNr (Connection *conn);
+void           ConnectionClose  (Connection *conn);
+const char    *ConnectionType   (Connection *conn);
 
 /*
                             TYPE_SERVER
                            ^ |       ^
-                          /  a        \
-                         p   |         p
-                        /    V          \
+                         p/  a       p\
+                         /   V         \
                 TYPE_MSGLISTENER    TYPE_FILELISTENER
                         ^                 ^
-                        |                 |
-                        p                 p
+                       p|                p|
                         |                 |
               TYPE_MSGDIRECT(uin)   TYPE_FILEDIRECT(uin)
                                           |  ^
-                                          a  |
-                                          |  p
+                                         a| p|
                                           V  |
                                         TYPE_FILE
 
@@ -102,7 +99,7 @@ const char *SessionType   (Session *sess);
 #define TYPEF_ANY_CHAT    256  /* " && for chat          */
 #define TYPEF_FILE        512  /* any file io            */
 
-/* any sess->type may be only any of those values:
+/* any conn->type may be only any of those values:
  * do not use the flags above unless you _really_ REALLY know what you're doing
  */
 #define TYPE_SERVER_OLD   (TYPEF_ANY_SERVER | TYPEF_SERVER_OLD)
@@ -125,7 +122,7 @@ const char *SessionType   (Session *sess);
 #define ASSERT_FILEDIRECT(s)  (assert (s), assert ((s)->type == TYPE_FILEDIRECT), ASSERT_FILELISTEN ((s)->parent))
 #define ASSERT_FILE(s)        (assert (s), assert ((s)->type == TYPE_FILE), assert ((s)->parent->assoc == (s)), ASSERT_FILEDIRECT ((s)->parent))
 
-#define SESSERR_WRITE       1
-#define SESSERR_READ        2
+#define CONNERR_WRITE       1
+#define CONNERR_READ        2
 
-#endif
+#endif /* MICQ_UTIL_CONNECTION_H */

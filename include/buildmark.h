@@ -3,6 +3,9 @@
  * mICQ version functions and ICQ client identifiers.
  */
 
+#ifndef MICQ_BUILDMARK_H
+#define MICQ_BUILDMARK_H
+
 #define MICQ_VERSION VERSION
 
 #define BUILD_MICQ     0xffffff42L
@@ -24,3 +27,5 @@
 const        char  *BuildVersion (void);
 extern const UDWORD BuildVersionNum;
 extern const char  *BuildVersionText;
+
+#endif /* MICQ_BUILDMARK_H */

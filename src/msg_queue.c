@@ -135,14 +135,14 @@ void QueueEnqueue (Event *event)
 /*
  * Adds a new entry to the queue. Creates Event for you.
  */
-void QueueEnqueueData (Session *sess, UDWORD type, UDWORD seq,
+void QueueEnqueueData (Connection *conn, UDWORD type, UDWORD seq,
                        UDWORD uin, time_t due,
                        Packet *pak, char *info, Queuef *callback)
 {
     Event *event = calloc (sizeof (Event), 1);
     assert (event);
     
-    event->sess = sess;
+    event->conn = conn;
     event->type = type;
     event->seq  = seq;
     event->attempts = 1;
@@ -207,7 +207,7 @@ static Event *QueueDequeueEvent (Event *event, struct QueueEntry *previous)
 /*
  * Removes and returns an event given by sequence number and type.
  */
-Event *QueueDequeue (Session *sess, UDWORD type, UDWORD seq)
+Event *QueueDequeue (Connection *conn, UDWORD type, UDWORD seq)
 {
     Event *event;
     struct QueueEntry *iter;
@@ -220,7 +220,7 @@ Event *QueueDequeue (Session *sess, UDWORD type, UDWORD seq)
         return NULL;
     }
 
-    if (   queue->head->event->sess == sess
+    if (   queue->head->event->conn == conn
         && queue->head->event->type == type
         && queue->head->event->seq  == seq)
     {
@@ -230,7 +230,7 @@ Event *QueueDequeue (Session *sess, UDWORD type, UDWORD seq)
     }
     for (iter = queue->head; iter->next; iter = iter->next)
     {
-        if (   iter->next->event->sess == sess
+        if (   iter->next->event->conn == conn
             && iter->next->event->type == type
             && iter->next->event->seq  == seq)
         {
@@ -247,18 +247,18 @@ Event *QueueDequeue (Session *sess, UDWORD type, UDWORD seq)
  * Cancels all events for a given (to be removed) session
  * by calling the callback with empty session pointer.
  */
-void QueueCancel (Session *sess)
+void QueueCancel (Connection *conn)
 {
     Event *event;
     struct QueueEntry *iter;
 
     assert (queue);
 
-    while (queue->head && queue->head->event->sess == sess)
+    while (queue->head && queue->head->event->conn == conn)
     {
         event = QueueDequeueEvent (queue->head->event, NULL);
-        Debug (DEB_QUEUE, "··!> %s %p %p: %08x %p", QueueType (event->type), sess, event, event->seq, event->pak);
-        event->sess = NULL;
+        Debug (DEB_QUEUE, "··!> %s %p %p: %08x %p", QueueType (event->type), conn, event, event->seq, event->pak);
+        event->conn = NULL;
         if (event->callback)
             event->callback (event);
     }
@@ -268,12 +268,12 @@ void QueueCancel (Session *sess)
 
     for (iter = queue->head; iter && iter->next; iter = iter->next)
     {
-        while (iter->next && iter->next->event->sess == sess)
+        while (iter->next && iter->next->event->conn == conn)
         {
             event = QueueDequeueEvent (iter->next->event, iter);
             Debug (DEB_QUEUE, "··!> %s %p %p: %08x %p", QueueType (event->type),
-                   sess, event, event->seq, event->pak);
-            event->sess = NULL;
+                   conn, event, event->seq, event->pak);
+            event->conn = NULL;
             if (event->callback)
                 event->callback (event);
         }
@@ -312,14 +312,14 @@ void QueueRun ()
  * Checks whether there is an event waiting for uin of that type,
  * and delivers the event with the lowest sequence number
  */
-void QueueRetry (Session *sess, UDWORD type, UDWORD uin)
+void QueueRetry (Connection *conn, UDWORD type, UDWORD uin)
 {
     struct QueueEntry *iter;
     Event *event = NULL;
     
     assert (queue);
     for (iter = queue->head; iter; iter = iter->next)
-        if (iter->event->sess == sess
+        if (iter->event->conn == conn
             && iter->event->type == type
             && iter->event->uin == uin)
         {
@@ -328,7 +328,7 @@ void QueueRetry (Session *sess, UDWORD type, UDWORD uin)
         }
     
     if (event)
-        event = QueueDequeue (event->sess, type, event->seq);
+        event = QueueDequeue (event->conn, type, event->seq);
     
     if (event && event->callback)
     {

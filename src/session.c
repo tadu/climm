@@ -9,23 +9,23 @@
 
 #include "micq.h"
 #include "session.h"
+#include "preferences.h"
+#include "util_ui.h"
 #include "cmd_pkt_cmd_v5_util.h"
 #include "cmd_pkt_v8.h"
 #include "tcp.h"
-#include "preferences.h"
-#include "util_ui.h"
 #include <string.h>
 #include <netdb.h>
 #include <assert.h>
 
 #define listlen 40
 
-static Session *slist[listlen] = { 0 };
+static Connection *slist[listlen] = { 0 };
 
 /*
  * Creates a new session.
  */
-Session *SessionC (void)
+Connection *ConnectionC (void)
 {
     int i;
     
@@ -34,7 +34,7 @@ Session *SessionC (void)
     if (i == listlen)
         return NULL;
 
-    slist[i] = calloc (1, sizeof (Session));
+    slist[i] = calloc (1, sizeof (Connection));
     
     assert (slist[i]);
     
@@ -43,7 +43,7 @@ Session *SessionC (void)
     slist[i]->status = STATUS_OFFLINE;
     slist[i]->sok = -1;
 
-    Debug (DEB_SESSION, "<=== %p[%d] create", slist[i], i);
+    Debug (DEB_CONNECT, "<=== %p[%d] create", slist[i], i);
 
     return slist[i];
 }
@@ -51,47 +51,31 @@ Session *SessionC (void)
 /*
  * Clones an existing session, while blanking out some values.
  */
-Session *SessionClone (Session *sess, UWORD type)
+Connection *ConnectionClone (Connection *conn, UWORD type)
 {
-    Session *child;
+    Connection *child;
     
-    child = SessionC ();
+    child = ConnectionC ();
     if (!child)
         return NULL;
-    memcpy (child, sess, sizeof (*child));
-    child->parent   = sess;
+    memcpy (child, conn, sizeof (*child));
+    child->parent   = conn;
     child->assoc    = NULL;
     child->sok      = -1;
     child->connect  = 0;
     child->incoming = NULL;
     child->type     = type;
+    child->open     = NULL;
     
-    Debug (DEB_SESSION, "<=*= %p (%s) clone from %p (%s)", child, SessionType (child), sess, SessionType (sess));
+    Debug (DEB_CONNECT, "<=*= %p (%s) clone from %p (%s)", child, ConnectionType (child), conn, ConnectionType (conn));
 
     return child;
 }
 
 /*
- * Initializes a session.
- */
-void SessionInit (Session *sess)
-{
-    if (sess->connect & CONNECT_OK)
-        return;
-    if (!sess->spref)
-        return;
-    if (sess->spref->type == TYPE_SERVER)
-        SessionInitServer (sess);
-    else if (sess->spref->type == TYPE_SERVER_OLD)
-        SessionInitServerV5 (sess);
-    else if (sess->spref->type == TYPE_MSGLISTEN)
-        SessionInitPeer (sess);
-}
-
-/*
  * Returns the n-th session.
  */
-Session *SessionNr (int i)
+Connection *ConnectionNr (int i)
 {
     if (i >= listlen)
         return NULL;
@@ -103,7 +87,7 @@ Session *SessionNr (int i)
  * Actually, you may specify TYPEF_* here that must all be set.
  * The parent is the session this one has to have as parent.
  */
-Session *SessionFind (UWORD type, UDWORD uin, const Session *parent)
+Connection *ConnectionFind (UWORD type, UDWORD uin, const Connection *parent)
 {
     int i;
     
@@ -139,14 +123,14 @@ Session *SessionFind (UWORD type, UDWORD uin, const Session *parent)
 /*
  * Finds the index of this session.
  */
-UDWORD SessionFindNr (Session *sess)
+UDWORD ConnectionFindNr (Connection *conn)
 {
     int i;
 
-    if (!sess)
+    if (!conn)
         return -1;
     for (i = 0; i < listlen; i++)
-        if (slist[i] == sess)
+        if (slist[i] == conn)
             return i;
     return -1;
 }
@@ -154,60 +138,60 @@ UDWORD SessionFindNr (Session *sess)
 /*
  * Closes and removes a session.
  */
-void SessionClose (Session *sess)
+void ConnectionClose (Connection *conn)
 {
     int i, j;
     
-    i = SessionFindNr (sess);
+    i = ConnectionFindNr (conn);
     
-    assert (sess);
+    assert (conn);
     assert (i != -1);
     
-    Debug (DEB_SESSION, "===> %p[%d] (%s) closing...", sess, i, SessionType (sess));
+    Debug (DEB_CONNECT, "===> %p[%d] (%s) closing...", conn, i, ConnectionType (conn));
 
-    if (sess->close)
-        sess->close (sess);
+    if (conn->close)
+        conn->close (conn);
 
-    i = SessionFindNr (sess);
+    i = ConnectionFindNr (conn);
     if (i == -1)
         return;
 
-    if (sess->sok != -1)
-        sockclose (sess->sok);
-    sess->sok     = -1;
-    sess->connect = 0;
-    sess->type    = 0;
-    sess->parent  = NULL;
+    if (conn->sok != -1)
+        sockclose (conn->sok);
+    conn->sok     = -1;
+    conn->connect = 0;
+    conn->type    = 0;
+    conn->parent  = NULL;
 
     for (j = 0; j < listlen; j++)
-        if (slist[j] && slist[j]->assoc == sess)
+        if (slist[j] && slist[j]->assoc == conn)
             slist[j]->assoc = NULL;
 
     for (j = 0; j < listlen; j++)
-        if (slist[j] && slist[j]->parent == sess)
+        if (slist[j] && slist[j]->parent == conn)
         {
             slist[j]->parent = NULL;
-            SessionClose (slist[j]);
+            ConnectionClose (slist[j]);
             j--;
         }
 
-    QueueCancel (sess);
+    QueueCancel (conn);
 
     for (j = i; j + 1 < listlen && slist[j]; j++)
         slist[j] = slist[j + 1];
     slist[j] = NULL;
 
-    Debug (DEB_SESSION, "===> %p[%d] closed.", sess, i);
+    Debug (DEB_CONNECT, "===> %p[%d] closed.", conn, i);
 
-    free (sess);
+    free (conn);
 }
 
 /*
  * Returns a string describing the session's type.
  */
-const char *SessionType (Session *sess)
+const char *ConnectionType (Connection *conn)
 {
-    switch (sess->type) {
+    switch (conn->type) {
         case TYPE_SERVER:
             return i18n (1889, "server");
         case TYPE_SERVER_OLD:

@@ -1,43 +1,43 @@
 /* $Id$ */
 
-#ifndef MICQ_TCP_H
-#define MICQ_TCP_H
+#ifndef MICQ_PEER_H
+#define MICQ_PEER_H
 
 #include "contact.h"
 
 #define TCP_STATE_WAITING      32
 
-void SessionInitPeer   (Session *list);
+void ConnectionInitPeer   (Connection *list);
 
 /* Open, close, disallow connection of UIN with this listener */
-BOOL TCPDirectOpen     (Session *list, UDWORD uin);
-void TCPDirectClose    (Session *list, UDWORD uin);
-void TCPDirectOff      (Session *list, UDWORD uin);
+BOOL TCPDirectOpen     (Connection *list, UDWORD uin);
+void TCPDirectClose    (Connection *list, UDWORD uin);
+void TCPDirectOff      (Connection *list, UDWORD uin);
 
 /* Do the given peer2peer request */
-BOOL TCPSendMsg        (Session *list, UDWORD uin, char *msg, UWORD sub_cmd);
-BOOL TCPSendFiles      (Session *list, UDWORD uin, char *description, char **file, char **as, int count);
-BOOL TCPGetAuto        (Session *list, UDWORD uin, UWORD which);
+BOOL TCPSendMsg        (Connection *list, UDWORD uin, char *msg, UWORD sub_cmd);
+BOOL TCPSendFiles      (Connection *list, UDWORD uin, char *description, char **file, char **as, int count);
+BOOL TCPGetAuto        (Connection *list, UDWORD uin, UWORD which);
 
-Session *TCPPeer (UDWORD uin);
+Connection *TCPPeer (UDWORD uin);
 
-Session *PeerFileCreate    (Session *serv);
-BOOL     PeerFileRequested (Session *peer, const char *files, UDWORD bytes);
-BOOL     PeerFileAccept    (Session *peer, UWORD status, UDWORD port);
+Connection *PeerFileCreate    (Connection *serv);
+BOOL     PeerFileRequested (Connection *peer, const char *files, UDWORD bytes);
+BOOL     PeerFileAccept    (Connection *peer, UWORD status, UDWORD port);
 
 void PeerFileResend (Event *event);
-void PeerFileDispatchIncoming (Session *fpeer);
+void PeerFileDispatchIncoming (Connection *fpeer);
 void PeerFileResend (Event *event);
-void PeerFileDispatch (Session *);
+void PeerFileDispatch (Connection *);
 
-Packet *PeerPacketC    (Session *peer, UBYTE cmd);
-void    PeerPacketSend (Session *peer, Packet *pak);
+Packet *PeerPacketC    (Connection *peer, UBYTE cmd);
+void    PeerPacketSend (Connection *peer, Packet *pak);
 
-void       TCPDispatchShake   (Session *peer);
-void       TCPDispatchReconn  (Session *peer);
-void       TCPDispatchMain    (Session *peer);
-void       TCPDispatchConn    (Session *peer);
-void       TCPClose           (Session *peer);
-void       TCPPrint           (Packet *pak, Session *peer, BOOL out);
+void       TCPDispatchShake   (Connection *peer);
+void       TCPDispatchReconn  (Connection *peer);
+void       TCPDispatchMain    (Connection *peer);
+void       TCPDispatchConn    (Connection *peer);
+void       TCPClose           (Connection *peer);
+void       TCPPrint           (Packet *pak, Connection *peer, BOOL out);
 
-#endif
+#endif /* MICQ_PEER_H */

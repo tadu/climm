@@ -1,10 +1,13 @@
 /* $Id$ */
 
+#ifndef MICQ_UTIL_H
+#define MICQ_UTIL_H
+
 char *MsgEllipsis (const char *msg);
 
-void Init_New_User (Session *sess);
+void Init_New_User (Connection *conn);
 
-int putlog (Session *sess, time_t stamp, UDWORD uin, 
+int putlog (Connection *conn, time_t stamp, UDWORD uin, 
             UDWORD status, enum logtype level, UWORD type, char *str, ...);
 void clrscr (void);
 void init_log (void);
@@ -12,4 +15,6 @@ void Hex_Dump (void *buffer, size_t len);
 
 void ExecScript (char *script, UDWORD uin, long num, char *data);
 
-UDWORD UtilCheckUIN (Session *sess, UDWORD uin);
+UDWORD UtilCheckUIN (Connection *conn, UDWORD uin);
+
+#endif /* MICQ_UTIL_H */

@@ -26,43 +26,43 @@
 #include <netdb.h>
 #include <assert.h>
 
-jump_sess_f SrvCallBackReceive;
-static jump_sess_f SrvCallBackReconn;
+jump_conn_f SrvCallBackReceive;
+static jump_conn_f SrvCallBackReconn;
 static void SrvCallBackTimeout (Event *event);
 static void SrvCallBackDoReconn (Event *event);
 
 int reconn = 0;
 
-void SessionInitServer (Session *sess)
+void ConnectionInitServer (Connection *conn)
 {
-    if (!sess->server || !*sess->server || !sess->port)
+    if (!conn->server || !*conn->server || !conn->port)
         return;
 
-    M_printf (i18n (1871, "Opening v8 connection to %s:%d... "), sess->server, sess->port);
+    M_printf (i18n (1871, "Opening v8 connection to %s:%d... "), conn->server, conn->port);
 
-    sess->our_seq  = rand () & 0x7fff;
-    sess->connect  = 0;
-    sess->dispatch = &SrvCallBackReceive;
-    sess->reconnect= &SrvCallBackReconn;
-    sess->close    = &FlapCliGoodbye;
-    sess->server   = strdup (sess->spref->server);
-    sess->type     = TYPE_SERVER;
-    QueueEnqueueData (sess, sess->connect, sess->our_seq,
-                      sess->uin, time (NULL) + 10,
+    conn->our_seq  = rand () & 0x7fff;
+    conn->connect  = 0;
+    conn->dispatch = &SrvCallBackReceive;
+    conn->reconnect= &SrvCallBackReconn;
+    conn->close    = &FlapCliGoodbye;
+    conn->server   = strdup (conn->spref->server);
+    conn->type     = TYPE_SERVER;
+    QueueEnqueueData (conn, conn->connect, conn->our_seq,
+                      conn->uin, time (NULL) + 10,
                       NULL, NULL, &SrvCallBackTimeout);
-    UtilIOConnectTCP (sess);
+    UtilIOConnectTCP (conn);
 }
 
-static void SrvCallBackReconn (Session *sess)
+static void SrvCallBackReconn (Connection *conn)
 {
     Contact *cont;
 
-    M_printf ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (sess->uin), COLNONE);
-    sess->connect = 0;
+    M_printf ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (conn->uin), COLNONE);
+    conn->connect = 0;
     if (reconn < 5)
     {
         M_printf (i18n (2032, "Scheduling v8 reconnect in %d seconds.\n"), 10 << reconn);
-        QueueEnqueueData (sess, /* FIXME: */ 0, 0, sess->uin, time (NULL) + (10 << reconn), NULL, NULL, &SrvCallBackDoReconn);
+        QueueEnqueueData (conn, /* FIXME: */ 0, 0, conn->uin, time (NULL) + (10 << reconn), NULL, NULL, &SrvCallBackDoReconn);
         reconn++;
     }
     else
@@ -78,36 +78,36 @@ static void SrvCallBackReconn (Session *sess)
 
 static void SrvCallBackDoReconn (Event *event)
 {
-    if (event->sess)
-        SessionInitServer (event->sess);
+    if (event->conn)
+        ConnectionInitServer (event->conn);
     free (event);
 }
 
 static void SrvCallBackTimeout (Event *event)
 {
-    Session *sess = event->sess;
+    Connection *conn = event->conn;
     
-    if (!sess)
+    if (!conn)
     {
         free (event);
         return;
     }
     
-    if ((sess->connect & CONNECT_MASK) && !(sess->connect & CONNECT_OK))
+    if ((conn->connect & CONNECT_MASK) && !(conn->connect & CONNECT_OK))
     {
-        if (sess->connect == event->type)
+        if (conn->connect == event->type)
         {
             M_print (i18n (1885, "Connection v8 timed out.\n"));
-            sess->connect = 0;
-            sockclose (sess->sok);
-            sess->sok = -1;
-            SrvCallBackReconn (sess);
+            conn->connect = 0;
+            sockclose (conn->sok);
+            conn->sok = -1;
+            SrvCallBackReconn (conn);
         }
         else
         {
             event->due = time (NULL) + 10;
-            sess->connect |= CONNECT_SELECT_R;
-            event->type = sess->connect;
+            conn->connect |= CONNECT_SELECT_R;
+            event->type = conn->connect;
             QueueEnqueue (event);
             return;
         }
@@ -115,29 +115,29 @@ static void SrvCallBackTimeout (Event *event)
     free (event);
 }
 
-void SrvCallBackReceive (Session *sess)
+void SrvCallBackReceive (Connection *conn)
 {
     Packet *pak;
 
-    if (!(sess->connect & CONNECT_OK))
+    if (!(conn->connect & CONNECT_OK))
     {
-        switch (sess->connect & 7)
+        switch (conn->connect & 7)
         {
             case 0:
             case 1:
             case 5:
-                if (sess->assoc && !(sess->assoc->connect & CONNECT_OK) && (sess->assoc->flags & CONN_AUTOLOGIN))
+                if (conn->assoc && !(conn->assoc->connect & CONNECT_OK) && (conn->assoc->flags & CONN_AUTOLOGIN))
                 {
                     printf ("Buggy: avoiding deadlock\n");
-                    sess->connect &= ~CONNECT_SELECT_R;
+                    conn->connect &= ~CONNECT_SELECT_R;
                 }
                 else
-                    sess->connect |= 4 | CONNECT_SELECT_R;
-                sess->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X & ~3;
+                    conn->connect |= 4 | CONNECT_SELECT_R;
+                conn->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X & ~3;
                 return;
             case 2:
             case 6:
-                sess->connect = 0;
+                conn->connect = 0;
                 return;
             case 4:
                 break;
@@ -146,7 +146,7 @@ void SrvCallBackReceive (Session *sess)
         }
     }
 
-    pak = UtilIOReceiveTCP (sess);
+    pak = UtilIOReceiveTCP (conn);
     
     if (!pak)
         return;
@@ -171,27 +171,27 @@ void SrvCallBackReceive (Session *sess)
     if (prG->verbose & DEB_PACK8SAVE)
         FlapSave (pak, TRUE);
     
-    QueueEnqueueData (sess, QUEUE_FLAP, pak->id,
+    QueueEnqueueData (conn, QUEUE_FLAP, pak->id,
                       0, time (NULL),
                       pak, NULL, &SrvCallBackFlap);
     pak = NULL;
 }
 
-Session *SrvRegisterUIN (Session *sess, const char *pass)
+Connection *SrvRegisterUIN (Connection *conn, const char *pass)
 {
-    Session *new;
+    Connection *new;
     
-    new = SessionC ();
+    new = ConnectionC ();
     if (!new)
         return NULL;
-    new->spref = PreferencesSessionC ();
+    new->spref = PreferencesConnectionC ();
     if (!new->spref)
         return NULL;
-    if (sess)
+    if (conn)
     {
-        assert (sess->spref->type == TYPE_SERVER);
+        assert (conn->spref->type == TYPE_SERVER);
         
-        memcpy (new->spref, sess->spref, sizeof (*new->spref));
+        memcpy (new->spref, conn->spref, sizeof (*new->spref));
         new->spref->server = strdup (new->spref->server);
         new->spref->uin = 0;
     }
@@ -211,6 +211,6 @@ Session *SrvRegisterUIN (Session *sess, const char *pass)
     new->port = new->spref->port;
     new->passwd = strdup (pass);
     
-    SessionInitServer (new);
+    ConnectionInitServer (new);
     return new;
 }

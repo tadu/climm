@@ -1,11 +1,14 @@
 /* $Id$ */
 
-Packet *PacketCv5 (Session *sess, UWORD cmd);
-void PacketEnqueuev5 (Packet *pak, Session *sess);
-void PacketSendv5 (const Packet *pak, Session *sess);
+#ifndef MICQ_ICQV5_UTIL_H
+#define MICQ_ICQV5_UTIL_H
+
+Packet *PacketCv5 (Connection *conn, UWORD cmd);
+void PacketEnqueuev5 (Packet *pak, Connection *conn);
+void PacketSendv5 (const Packet *pak, Connection *conn);
 void UDPCallBackResend (Event *event);
 const char *CmdPktCmdName (UWORD cmd);
-void SessionInitServerV5 (Session *sess);
+void ConnectionInitServerV5 (Connection *conn);
 void CallBackServerInitV5 (Event *event);
 
 #define CMD_v5_OFF_VER    0
@@ -69,3 +72,4 @@ void CallBackServerInitV5 (Event *event);
 #define META_SET_WEB_PRESENCE    2000 /* */
 #define META_SEND_SMS            5250
 
+#endif /* MICQ_ICQV5_UTIL_H */

@@ -1,33 +1,33 @@
 /* $Id$ */
 
-#ifndef MSG_QUEUE_H
-#define MSG_QUEUE_H
+#ifndef MICQ_MSG_QUEUE_H
+#define MICQ_MSG_QUEUE_H
 
 typedef void (Queuef)(Event *event);
 
 struct Event_s
 {
-    Session *sess;
-    UDWORD   type;
-    UDWORD   seq;
-    UDWORD   attempts;
-    UDWORD   uin;
-    time_t   due;
-    Packet  *pak;
-    char    *info;
-    Queuef  *callback;
-    UBYTE    flags;
+    Connection *conn;
+    UDWORD      type;
+    UDWORD      seq;
+    UDWORD      attempts;
+    UDWORD      uin;
+    time_t      due;
+    Packet     *pak;
+    char       *info;
+    Queuef     *callback;
+    UBYTE       flags;
 };
 
 void        QueueInit        (Queue **queue);
 void        QueueEnqueue     (Event *event);
-void        QueueEnqueueData (Session *sess, UDWORD type, UDWORD seq,
+void        QueueEnqueueData (Connection *conn, UDWORD type, UDWORD seq,
                               UDWORD uin, time_t due,
                               Packet *pak, char *info, Queuef *callback);
-Event      *QueueDequeue     (Session *sess, UDWORD type, UDWORD seq);
+Event      *QueueDequeue     (Connection *conn, UDWORD type, UDWORD seq);
 void        QueueRun         ();
-void        QueueRetry       (Session *sess, UDWORD type, UDWORD uin);
-void        QueueCancel      (Session *sess);
+void        QueueRetry       (Connection *conn, UDWORD type, UDWORD uin);
+void        QueueCancel      (Connection *conn);
 
 Event      *QueuePeek        ();
 Event      *QueuePop         ();
@@ -49,4 +49,4 @@ const char *QueueType   (UDWORD type);
 #define QUEUE_FLAG_CONSIDERED     1 /* this event has been considered and won't
                                        be tried again in this queue run */
 
-#endif
+#endif /* MICQ_MSG_QUEUE_H */

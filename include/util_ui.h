@@ -1,5 +1,8 @@
 /* $Id$ */
 
+#ifndef MICQ_UTIL_UI_H
+#define MICQ_UTIL_UI_H
+
 UWORD  Get_Max_Screen_Width ();
 SDWORD Echo_Off (void);
 SDWORD Echo_On (void);
@@ -12,7 +15,7 @@ BOOL   Debug (UDWORD level, const char *str, ...);
 #define DEB_PROTOCOL      0x00000008L
 #define DEB_PACKET        0x00000010L
 #define DEB_QUEUE         0x00000020L
-#define DEB_SESSION       0x00000040L
+#define DEB_CONNECT       0x00000040L
 #define DEB_PACK5DATA     0x00000100L
 #define DEB_PACK8         0x00001000L
 #define DEB_PACK8DATA     0x00002000L
@@ -23,3 +26,4 @@ BOOL   Debug (UDWORD level, const char *str, ...);
 #define DEB_TCP           0x00200000L
 #define DEB_IO            0x00400000L
 
+#endif /* MICQ_UTIL_UI_H */

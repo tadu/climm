@@ -29,7 +29,7 @@
 static UDWORD Gen_Checksum (const Packet *pak);
 static UDWORD Scramble_cc (UDWORD cc);
 static Packet *Wrinkle (const Packet *pak);
-static void CallBackClosev5 (Session *sess);
+static void CallBackClosev5 (Connection *conn);
 
 typedef struct { UWORD cmd; const char *name; } jump_cmd_t;
 #define jump_el(x) { x, #x },
@@ -68,25 +68,25 @@ const char *CmdPktCmdName (UWORD cmd)
 /*
  * Create a v5 packet and fill in the header.
  */
-Packet *PacketCv5 (Session *sess, UWORD cmd)
+Packet *PacketCv5 (Connection *conn, UWORD cmd)
 {
     Packet *pak = PacketC ();
     BOOL  iss2  = cmd != CMD_KEEP_ALIVE && cmd != CMD_SEND_TEXT_CODE && cmd != CMD_ACK;
-    UWORD seq   = cmd != CMD_ACK ? sess->our_seq  : 0;
-    UWORD seq2  = iss2 ? sess->our_seq2 : 0;
+    UWORD seq   = cmd != CMD_ACK ? conn->our_seq  : 0;
+    UWORD seq2  = iss2 ? conn->our_seq2 : 0;
 
     assert (pak);
-    assert (sess);
-    assert (sess->ver == 5);
+    assert (conn);
+    assert (conn->ver == 5);
 
     pak->cmd = cmd;
-    pak->ver = sess->ver;
+    pak->ver = conn->ver;
     pak->id  = (seq2 << 16) + seq;
 
-    PacketWrite2 (pak, sess->ver);  /* 5 */
+    PacketWrite2 (pak, conn->ver);  /* 5 */
     PacketWrite4 (pak, 0);
-    PacketWrite4 (pak, sess->uin);
-    PacketWrite4 (pak, sess->our_session);
+    PacketWrite4 (pak, conn->uin);
+    PacketWrite4 (pak, conn->our_session);
     PacketWrite2 (pak, cmd);
     PacketWrite2 (pak, seq);
     PacketWrite2 (pak, seq2);
@@ -98,18 +98,18 @@ Packet *PacketCv5 (Session *sess, UWORD cmd)
 /*
  * Finalize a v5 packet and enqueue for sending.
  */
-void PacketEnqueuev5 (Packet *pak, Session *sess)
+void PacketEnqueuev5 (Packet *pak, Connection *conn)
 {
     UDWORD cmd = pak->cmd;
     BOOL iss2 = cmd != CMD_KEEP_ALIVE && cmd != CMD_SEND_TEXT_CODE && cmd != CMD_ACK;
 
     assert (pak->len > 0x18);
-    assert (sess);
-    assert (sess->ver == 5);
+    assert (conn);
+    assert (conn->ver == 5);
 
-    if (iss2)           sess->our_seq2++;
+    if (iss2)           conn->our_seq2++;
 
-    PacketSendv5 (pak, sess);
+    PacketSendv5 (pak, conn);
 
     if (prG->verbose & DEB_PACK5DATA)
     {
@@ -125,10 +125,10 @@ void PacketEnqueuev5 (Packet *pak, Session *sess)
 
     if (cmd != CMD_ACK)
     {
-        sess->stat_real_pak_sent++;
-        sess->our_seq++;
+        conn->stat_real_pak_sent++;
+        conn->our_seq++;
 
-        QueueEnqueueData (sess, QUEUE_UDP_RESEND, pak->id,
+        QueueEnqueueData (conn, QUEUE_UDP_RESEND, pak->id,
                           0, time (NULL) + 10,
                           pak, NULL, &UDPCallBackResend);
     }
@@ -136,22 +136,22 @@ void PacketEnqueuev5 (Packet *pak, Session *sess)
         PacketD (pak);
 }
 
-void SessionInitServerV5 (Session *sess)
+void ConnectionInitServerV5 (Connection *conn)
 {
-    if (sess->spref->version < 5)
+    if (conn->spref->version < 5)
     {
         M_print (i18n (1869, "Protocoll versions less than 5 are not supported anymore.\n"));
         return;
     }
     
-    sess->type = TYPE_SERVER_OLD;
-    sess->close = &CallBackClosev5;
-    sess->flags = 0;
-    if (!sess->server || !strlen (sess->server))
-        sess->server = "icq.icq.com";
-    if (!sess->port)
-        sess->port = 4000;
-    if (!sess->passwd || !strlen (sess->passwd))
+    conn->type = TYPE_SERVER_OLD;
+    conn->close = &CallBackClosev5;
+    conn->flags = 0;
+    if (!conn->server || !strlen (conn->server))
+        conn->server = "icq.icq.com";
+    if (!conn->port)
+        conn->port = 4000;
+    if (!conn->passwd || !strlen (conn->passwd))
     {
         char pwd[20];
         pwd[0] = '\0';
@@ -159,33 +159,33 @@ void SessionInitServerV5 (Session *sess)
         Echo_Off ();
         M_fdnreadln (stdin, pwd, sizeof (pwd));
         Echo_On ();
-        sess->passwd = strdup (pwd);
+        conn->passwd = strdup (pwd);
     }
-    QueueEnqueueData (sess, /* FIXME: */ 0, 0, 0, time (NULL), NULL, NULL, &CallBackServerInitV5);
+    QueueEnqueueData (conn, /* FIXME: */ 0, 0, 0, time (NULL), NULL, NULL, &CallBackServerInitV5);
 }
 
-static void CallBackClosev5 (Session *sess)
+static void CallBackClosev5 (Connection *conn)
 {
-    sess->connect = 0;
-    if (sess->sok == -1)
+    conn->connect = 0;
+    if (conn->sok == -1)
         return;
-    CmdPktCmdSendTextCode (sess, "B_USER_DISCONNECTED");
-    sockclose (sess->sok);
-    sess->sok = -1;
+    CmdPktCmdSendTextCode (conn, "B_USER_DISCONNECTED");
+    sockclose (conn->sok);
+    conn->sok = -1;
 }
 
 void CallBackServerInitV5 (Event *event)
 {
-    Session *sess = event->sess;
+    Connection *conn = event->conn;
     int rc;
 
-    if (!sess)
+    if (!conn)
     {
         free (event);
         return;
     }
 
-    if (sess->assoc && !(sess->assoc->connect & CONNECT_OK))
+    if (conn->assoc && !(conn->assoc->connect & CONNECT_OK))
     {
         event->due = time (NULL) + 1;
         QueueEnqueue (event);
@@ -193,30 +193,30 @@ void CallBackServerInitV5 (Event *event)
     }
     free (event);
     
-    M_printf (i18n (1902, "Opening v5 connection to %s:%d... "), sess->server, sess->port);
+    M_printf (i18n (1902, "Opening v5 connection to %s:%d... "), conn->server, conn->port);
     
-    if (sess->sok < 0)
+    if (conn->sok < 0)
     {
-        UtilIOConnectUDP (sess);
+        UtilIOConnectUDP (conn);
 
 #ifdef __BEOS__
-        if (sess->sok == -1)
+        if (conn->sok == -1)
 #else
-        if (sess->sok == -1 || sess->sok == 0)
+        if (conn->sok == -1 || conn->sok == 0)
 #endif
         {
             rc = errno;
             M_printf (i18n (1872, "failed: %s (%d)\n"), strerror (rc), rc);
-            sess->connect = 0;
-            sess->sok = -1;
+            conn->connect = 0;
+            conn->sok = -1;
             return;
         }
     }
     M_print (i18n (1877, "ok.\n"));
-    sess->our_seq2    = 0;
-    sess->connect = 1 | CONNECT_SELECT_R;
-    sess->dispatch = &CmdPktSrvRead;
-    CmdPktCmdLogin (sess);
+    conn->our_seq2    = 0;
+    conn->connect = 1 | CONNECT_SELECT_R;
+    conn->dispatch = &CmdPktSrvRead;
+    CmdPktCmdLogin (conn);
 }
 
 /**
@@ -319,17 +319,17 @@ static Packet *Wrinkle (const Packet *opak)
 /*
  * Actually send a v5 packet.
  */
-void PacketSendv5 (const Packet *pak, Session *sess)
+void PacketSendv5 (const Packet *pak, Connection *conn)
 {
     Packet *cpak;
     
     assert (pak);
-    assert (sess);
+    assert (conn);
 
     Debug (DEB_PACKET, "---- %p sent");
 
     cpak = Wrinkle (pak);
-    UtilIOSendUDP (sess, cpak);
+    UtilIOSendUDP (conn, cpak);
     PacketD (cpak);
 }
 
@@ -347,7 +347,7 @@ void UDPCallBackResend (Event *event)
     cmd     = PacketReadAt2 (pak, CMD_v5_OFF_CMD);
     session = PacketReadAt4 (pak, CMD_v5_OFF_SESS);
 
-    if (!event->sess)
+    if (!event->conn)
     {
         PacketD (pak);
         s_free (event->info);
@@ -357,11 +357,11 @@ void UDPCallBackResend (Event *event)
 
     event->attempts++;
 
-    if (session != event->sess->our_session)
+    if (session != event->conn->our_session)
     {
         M_printf (i18n (1856, "Discarded a %04x (%s) packet from old session %08x (current: %08x).\n"),
                  cmd, CmdPktSrvName (cmd),
-                 session, event->sess->our_session);
+                 session, event->conn->our_session);
         PacketD (pak);
         s_free (event->info);
         free (event);
@@ -374,7 +374,7 @@ void UDPCallBackResend (Event *event)
                      cmd, CmdPktCmdName (cmd),
                      event->seq >> 16, event->attempts, pak->len);
         }
-        PacketSendv5 (pak, event->sess);
+        PacketSendv5 (pak, event->conn);
         event->due = time (NULL) + 10;
         QueueEnqueue (event);
     }

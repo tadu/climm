@@ -1,6 +1,8 @@
 /* $Id$ */
 
-#define UIN_DELIMS     " :|/"
+#ifndef MICQ_USER_H
+#define MICQ_USER_H
+
 #define END_MSG_STR    "."
 #define CANCEL_MSG_STR "#"
 #define W_SEPERATOR COLMESSAGE "============================================" COLNONE "\n"
@@ -27,3 +29,5 @@ const char *CmdUserLookupName (const char *command);
 
 void CmdUser (const char *command);
 void CmdUserInput (time_t *idle_val, UBYTE *idle_flag);
+
+#endif /* MICQ_USER_H */

@@ -129,7 +129,7 @@ char *MsgEllipsis (const char *msg)
 /**************************************************
 Automates the process of creating a new user.
 ***************************************************/
-void Init_New_User (Session *sess)
+void Init_New_User (Connection *conn)
 {
     Packet *pak;
     struct timeval tv;
@@ -141,7 +141,7 @@ void Init_New_User (Session *sess)
     fd_set readfds;
 #endif
 
-    sess->ver = 5;
+    conn->ver = 5;
 #ifdef _WIN32
     i = WSAStartup (0x0101, &wsaData);
     if (i != 0)
@@ -151,14 +151,14 @@ void Init_New_User (Session *sess)
     }
 #endif
     M_print (i18n (1756, "\nCreating Connection...\n"));
-    UtilIOConnectUDP (sess);
-    if (sess->sok == -1)
+    UtilIOConnectUDP (conn);
+    if (conn->sok == -1)
     {
         M_print (i18n (1757, "Couldn't establish connection.\n"));
         exit (1);
     }
     M_print (i18n (1758, "Sending Request...\n"));
-    CmdPktCmdRegNewUser (sess, sess->passwd);
+    CmdPktCmdRegNewUser (conn, conn->passwd);
     for (;;)
     {
 #ifdef _WIN32
@@ -170,24 +170,24 @@ void Init_New_User (Session *sess)
 #endif
 
         FD_ZERO (&readfds);
-        FD_SET (sess->sok, &readfds);
+        FD_SET (conn->sok, &readfds);
 
         /* don't care about writefds and exceptfds: */
-        select (sess->sok + 1, &readfds, NULL, NULL, &tv);
+        select (conn->sok + 1, &readfds, NULL, NULL, &tv);
         M_print (i18n (1759, "Waiting for response....\n"));
-        if (FD_ISSET (sess->sok, &readfds))
+        if (FD_ISSET (conn->sok, &readfds))
         {
-            pak = UtilIOReceiveUDP (sess);
+            pak = UtilIOReceiveUDP (conn);
             if (!pak)
                 continue;
             if (PacketReadAt2 (pak, 7) == SRV_NEW_UIN)
             {
-                sess->uin = PacketReadAt4 (pak, 13);
-                M_printf (i18n (1760, "\nYour new UIN is %s%ld%s!\n"), COLSERVER, sess->uin, COLNONE);
+                conn->uin = PacketReadAt4 (pak, 13);
+                M_printf (i18n (1760, "\nYour new UIN is %s%ld%s!\n"), COLSERVER, conn->uin, COLNONE);
                 return;
             }
         }
-        CmdPktCmdRegNewUser (sess, sess->passwd);
+        CmdPktCmdRegNewUser (conn, conn->passwd);
     }
 }
 
@@ -200,7 +200,7 @@ void Init_New_User (Session *sess)
  *        Andrew Frolov dron@ilm.net
  *        6-20-98 Added names to the logs. Fryslan
  *************************************************************************/
-int putlog (Session *sess, time_t stamp, UDWORD uin, 
+int putlog (Connection *conn, time_t stamp, UDWORD uin, 
             UDWORD status, enum logtype level, UWORD type, char *str, ...)
 {
     static const char deflogdir[] = "history/";
@@ -267,15 +267,15 @@ int putlog (Session *sess, time_t stamp, UDWORD uin,
 
     pos = strchr (nick, ' ') ? "\"" : "";
     
-    switch (sess->type)
+    switch (conn->type)
     {
         case TYPE_SERVER_OLD:
             snprintf (buf + l, DSCSIZ - l, "[icq5:%lu]!%s %s %s%s%s[icq5:%lu+%lX]", 
-                sess->uin, username, indic, pos, nick ? nick : "", pos, uin, status);
+                conn->uin, username, indic, pos, nick ? nick : "", pos, uin, status);
             break;
         case TYPE_SERVER:
             snprintf (buf + l, DSCSIZ - l, "[icq8:%lu]!%s %s %s%s%s[icq8:%lu+%lX]", 
-                sess->uin, username, indic, pos, nick ? nick : "", pos, uin, status);
+                conn->uin, username, indic, pos, nick ? nick : "", pos, uin, status);
             break;
         case TYPE_MSGLISTEN:
         case TYPE_MSGDIRECT:
@@ -499,7 +499,7 @@ void ExecScript (char *script, UDWORD uin, long num, char *data)
     free (who);
 }
 
-UDWORD UtilCheckUIN (Session *sess, UDWORD uin)
+UDWORD UtilCheckUIN (Connection *conn, UDWORD uin)
 {
     if (!ContactFind (uin))
         ContactAdd (uin, NULL);

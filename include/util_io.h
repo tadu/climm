@@ -1,14 +1,18 @@
 /* $Id$ */
 
-size_t SOCKREAD (Session *sess, void *ptr, size_t len);
-void        UtilIOConnectUDP (Session *sess);
-void        UtilIOConnectTCP (Session *sess);
-int         UtilIOError      (Session *sess);
-void        UtilIOSocksAccept(Session *sess);
-Packet     *UtilIOReceiveUDP (Session *sess);
-Packet     *UtilIOReceiveTCP (Session *sess);
-BOOL        UtilIOSendTCP    (Session *sess, Packet *pak);
-void        UtilIOSendUDP    (Session *sess, Packet *pak);
+#ifndef MICQ_UTIL_IO_H
+#define MICQ_UTIL_IO_H
 
-void   M_fdprint   (FD_T fd, const char *str, ...);
-int    M_fdnreadln (FILE *fd, char *buf, size_t len);
+void    UtilIOConnectUDP (Connection *conn);
+void    UtilIOConnectTCP (Connection *conn);
+int     UtilIOError      (Connection *conn);
+void    UtilIOSocksAccept(Connection *conn);
+Packet *UtilIOReceiveUDP (Connection *conn);
+Packet *UtilIOReceiveTCP (Connection *conn);
+BOOL    UtilIOSendTCP    (Connection *conn, Packet *pak);
+void    UtilIOSendUDP    (Connection *conn, Packet *pak);
+
+void    M_fdprint   (FD_T fd, const char *str, ...);
+int     M_fdnreadln (FILE *fd, char *buf, size_t len);
+
+#endif /* MICQ_UTIL_IO_H */

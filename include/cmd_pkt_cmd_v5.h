@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_CMD_PKT_CMD_H
-#define MICQ_CMD_PKT_CMD_H
+#ifndef MICQ_ICQV5_CLI_H
+#define MICQ_ICQV5_CLI_H
 
 typedef struct
 {
@@ -37,30 +37,30 @@ typedef struct
    BOOL online;
 } MetaWP;
 
-void CmdPktCmdAck (Session *sess, UDWORD seq);
-void CmdPktCmdSendMessage (Session *sess, UDWORD uin, const char *text, UDWORD type);
-void CmdPktCmdTCPRequest (Session *sess, UDWORD tuin, UDWORD port);
-void CmdPktCmdLogin (Session *sess);
-void CmdPktCmdRegNewUser (Session *sess, const char *pass);
-void CmdPktCmdContactList (Session *sess);
-void CmdPktCmdSearchUser (Session *sess, const char *email, const char *nick, const char *first, const char *last);
-void CmdPktCmdKeepAlive (Session *sess);
-void CmdPktCmdSendTextCode (Session *sess, const char *text);
-void CmdPktCmdAckMessages (Session *sess);
-void CmdPktCmdLogin1 (Session *sess);
-void CmdPktCmdExtInfoReq (Session *sess, UDWORD uin);
-void CmdPktCmdStatusChange (Session *sess, UDWORD status);
-void CmdPktCmdUpdateInfo (Session *sess, const char *email, const char *nick, const char *first, const char *last, BOOL auth);
-void CmdPktCmdRandSet (Session *sess, UDWORD group);
-void CmdPktCmdRandSearch (Session *sess, UDWORD group);
-void CmdPktCmdMetaGeneral (Session *sess, MetaGeneral *user);
-void CmdPktCmdMetaMore (Session *sess, MetaMore *info);
-void CmdPktCmdMetaAbout (Session *sess, const char *about);
-void CmdPktCmdMetaPass (Session *sess, char *pass);
-void CmdPktCmdMetaReqInfo (Session *sess, UDWORD uin);
-void CmdPktCmdMetaSearchWP (Session *sess, MetaWP *user);
-void CmdPktCmdInvisList (Session *sess);
-void CmdPktCmdVisList (Session *sess);
-void CmdPktCmdUpdateList (Session *sess, UDWORD uin, int which, BOOL add);
+void CmdPktCmdAck          (Connection *conn, UDWORD seq);
+void CmdPktCmdSendMessage  (Connection *conn, UDWORD uin, const char *text, UDWORD type);
+void CmdPktCmdTCPRequest   (Connection *conn, UDWORD tuin, UDWORD port);
+void CmdPktCmdLogin        (Connection *conn);
+void CmdPktCmdRegNewUser   (Connection *conn, const char *pass);
+void CmdPktCmdContactList  (Connection *conn);
+void CmdPktCmdSearchUser   (Connection *conn, const char *email, const char *nick, const char *first, const char *last);
+void CmdPktCmdKeepAlive    (Connection *conn);
+void CmdPktCmdSendTextCode (Connection *conn, const char *text);
+void CmdPktCmdAckMessages  (Connection *conn);
+void CmdPktCmdLogin1       (Connection *conn);
+void CmdPktCmdExtInfoReq   (Connection *conn, UDWORD uin);
+void CmdPktCmdStatusChange (Connection *conn, UDWORD status);
+void CmdPktCmdUpdateInfo   (Connection *conn, const char *email, const char *nick, const char *first, const char *last, BOOL auth);
+void CmdPktCmdRandSet      (Connection *conn, UDWORD group);
+void CmdPktCmdRandSearch   (Connection *conn, UDWORD group);
+void CmdPktCmdMetaGeneral  (Connection *conn, MetaGeneral *user);
+void CmdPktCmdMetaMore     (Connection *conn, MetaMore *info);
+void CmdPktCmdMetaAbout    (Connection *conn, const char *about);
+void CmdPktCmdMetaPass     (Connection *conn, char *pass);
+void CmdPktCmdMetaReqInfo  (Connection *conn, UDWORD uin);
+void CmdPktCmdMetaSearchWP (Connection *conn, MetaWP *user);
+void CmdPktCmdInvisList    (Connection *conn);
+void CmdPktCmdVisList      (Connection *conn);
+void CmdPktCmdUpdateList   (Connection *conn, UDWORD uin, int which, BOOL add);
 
-#endif
+#endif /* MICQ_ICQV5_CLI_H */

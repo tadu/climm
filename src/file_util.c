@@ -22,6 +22,7 @@
 #include "util.h"
 #include "cmd_user.h"
 #include "cmd_pkt_cmd_v5.h"
+#include "cmd_pkt_cmd_v5_util.h"
 #include "preferences.h"
 #include "util_io.h"
 #include "cmd_pkt_v8.h"
@@ -54,7 +55,7 @@
 void Initalize_RC_File ()
 {
     char pwd1[20], pwd2[20], input[200];
-    Session *sess, *sesst;
+    Connection *conn, *connt;
     char *passwd, *t;
     UDWORD uin;
     long tmpuin;
@@ -159,51 +160,53 @@ void Initalize_RC_File ()
     if (!uin)
     {
         M_print (i18n (1796, "Setup wizard finished. Please wait until registration has finished.\n"));
-        sess = SrvRegisterUIN (NULL, pwd1);
-        sess->flags = CONN_WIZARD;
+        conn = SrvRegisterUIN (NULL, pwd1);
+        conn->flags = CONN_WIZARD;
     }
     else
     {
         M_print (i18n (1791, "Setup wizard finished. Congratulations!\n"));
-        sess = SessionC ();
-        assert (sess);
-        sess->spref = PreferencesSessionC ();
-        assert (sess->spref);
+        conn = ConnectionC ();
+        assert (conn);
+        conn->open = &ConnectionInitServer;
+        conn->spref = PreferencesConnectionC ();
+        assert (conn->spref);
         
-        sess->spref->type = TYPE_SERVER;
-        sess->spref->flags = CONN_AUTOLOGIN | CONN_WIZARD;
-        sess->spref->server = strdup ("login.icq.com");
-        sess->spref->port = 5190;
-        sess->spref->status = STATUS_ONLINE;
-        sess->spref->version = 8;
-        sess->spref->uin = uin;
+        conn->spref->type = TYPE_SERVER;
+        conn->spref->flags = CONN_AUTOLOGIN | CONN_WIZARD;
+        conn->spref->server = strdup ("login.icq.com");
+        conn->spref->port = 5190;
+        conn->spref->status = STATUS_ONLINE;
+        conn->spref->version = 8;
+        conn->spref->uin = uin;
 #ifdef __BEOS__
-        sess->spref->passwd = strdup (passwd);
+        conn->spref->passwd = strdup (passwd);
 #endif
         
-        sess->server  = strdup ("login.icq.com");
-        sess->port    = 5190;
-        sess->type    = TYPE_SERVER;
-        sess->flags   = CONN_AUTOLOGIN | CONN_WIZARD;
-        sess->ver     = 8;
-        sess->uin     = uin;
-        sess->passwd  = strdup (passwd);
+        conn->server  = strdup ("login.icq.com");
+        conn->port    = 5190;
+        conn->type    = TYPE_SERVER;
+        conn->flags   = CONN_AUTOLOGIN | CONN_WIZARD;
+        conn->ver     = 8;
+        conn->uin     = uin;
+        conn->passwd  = strdup (passwd);
     }
     
-    sesst = SessionC ();
-    assert (sesst);
-    sesst->spref = PreferencesSessionC ();
-    assert (sesst->spref);
+    connt = ConnectionC ();
+    assert (connt);
+    connt->open = &ConnectionInitPeer;
+    connt->spref = PreferencesConnectionC ();
+    assert (connt->spref);
 
-    sesst->parent = sess;
-    sess->assoc = sesst;
-    sesst->spref->type = TYPE_MSGLISTEN;
-    sesst->spref->flags = CONN_AUTOLOGIN;
-    sesst->type = sesst->spref->type;
-    sesst->flags = sesst->spref->flags;
-    sesst->spref->version = 8;
-    sesst->ver = 8;
-    sesst->status = prG->s5Use ? 2 : TCP_OK_FLAG;
+    connt->parent = conn;
+    conn->assoc = connt;
+    connt->spref->type = TYPE_MSGLISTEN;
+    connt->spref->flags = CONN_AUTOLOGIN;
+    connt->type = connt->spref->type;
+    connt->flags = connt->spref->flags;
+    connt->spref->version = 8;
+    connt->ver = 8;
+    connt->status = prG->s5Use ? 2 : TCP_OK_FLAG;
 
     prG->status = STATUS_ONLINE;
     prG->tabs = TABS_SIMPLE;
@@ -221,12 +224,12 @@ void Initalize_RC_File ()
     prG->logplace  = strdup ("~/.micq/history/");
     prG->chat      = 49;
 
-    if (uin)
-        Save_RC ();
-
-    ContactAdd (11290140, "mICQ author (dead)");
     ContactAdd (82274703, "Rüdiger Kuhlmann");
     ContactAdd (82274703, "mICQ maintainer");
+    ContactAdd (82274703, "Tadu");
+
+    if (uin)
+        Save_RC ();
 }
 
 #define PrefParse(x)          switch (1) { case 1: if (!s_parse    (&args, &x)) { M_printf (i18n (2123, "%sSyntax error%s: Too few arguments: '%s'\n"), COLERROR, COLNONE, buf); continue; }}
@@ -247,7 +250,7 @@ void Read_RC_File (FILE *rcf)
     char *tmp = NULL, *cmd = NULL;
     char *p, *args;
     Contact *cont = NULL, *lastcont = NULL;
-    Session *oldsess = NULL, *sess = NULL;
+    Connection *oldconn = NULL, *conn = NULL;
     int section, dep = 0;
     UDWORD uin, i;
     UWORD flags;
@@ -270,9 +273,9 @@ void Read_RC_File (FILE *rcf)
             else if (!strcasecmp (buf, "[Connection]"))
             {
                 section = 3;
-                oldsess = sess;
-                sess = SessionC ();
-                sess->spref = PreferencesSessionC ();
+                oldconn = conn;
+                conn = ConnectionC ();
+                conn->spref = PreferencesConnectionC ();
             }
             else
             {
@@ -309,7 +312,8 @@ void Read_RC_File (FILE *rcf)
                     {
                         prG->event_cmd = strdup (tmp);
 #ifndef MSGEXEC
-                        printf (i18n (1817, "Warning: ReceiveScript feature not enabled!\n"));
+                        M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                        M_printf (i18n (1817, "ReceiveScript feature not enabled.\n"));
 #endif
                     }
                 }
@@ -686,67 +690,78 @@ void Read_RC_File (FILE *rcf)
 
                     if (!strcasecmp (cmd, "server"))
                     {
-                        sess->spref->type =
-                            (sess->spref->version ? (sess->spref->version > 6 
+                        conn->spref->type =
+                            (conn->spref->version ? (conn->spref->version > 6 
                                ? TYPE_SERVER : TYPE_SERVER_OLD) : 0);
-                        sess->spref->flags = 0;
+                        conn->spref->flags = 0;
+                        dep |= 1;
+                    }
+                    else if (!strcasecmp (cmd, "icq8"))
+                    {
+                        conn->spref->type = TYPE_SERVER;
+                        conn->spref->flags = 0;
+                    }
+                    else if (!strcasecmp (cmd, "icq5"))
+                    {
+                        conn->spref->type = TYPE_SERVER_OLD;
+                        conn->spref->flags = 0;
                     }
                     else if (!strcasecmp (cmd, "peer"))
                     {
-                        sess->spref->type = TYPE_MSGLISTEN;
-                        sess->spref->flags = 0;
-                        if (oldsess->spref->type == TYPE_SERVER || oldsess->spref->type == TYPE_SERVER_OLD)
+                        conn->spref->type = TYPE_MSGLISTEN;
+                        conn->spref->flags = 0;
+                        if (oldconn->spref->type == TYPE_SERVER || oldconn->spref->type == TYPE_SERVER_OLD)
                         {
-                            oldsess->assoc = sess;
-                            sess->parent = oldsess;
+                            oldconn->assoc = conn;
+                            conn->parent = oldconn;
                         }
-                        sess->spref->status = TCP_OK_FLAG;
+                        conn->spref->status = TCP_OK_FLAG;
                     }
                     else 
                         ERROR;
                     if (s_parse (&args, &cmd))
                     {
                         if (!strcasecmp (cmd, "auto"))
-                            sess->spref->flags |= CONN_AUTOLOGIN;
+                            conn->spref->flags |= CONN_AUTOLOGIN;
                     }
                 }
                 else if (!strcasecmp (cmd, "version"))
                 {
                     PrefParseInt (i);
 
-                    sess->spref->version = i;
-                    if (!sess->spref->type)
+                    conn->spref->version = i;
+                    if (!conn->spref->type)
                     {
-                        if (sess->spref->version > 6)
-                            sess->spref->type = TYPE_SERVER;
+                        if (conn->spref->version > 6)
+                            conn->spref->type = TYPE_SERVER;
                         else
-                            sess->spref->type = TYPE_SERVER_OLD;
+                            conn->spref->type = TYPE_SERVER_OLD;
                     }
                 }
                 else if (!strcasecmp (cmd, "server"))
                 {
                     PrefParse (tmp);
-                    sess->spref->server = strdup (tmp);
+                    conn->spref->server = strdup (tmp);
                 }
                 else if (!strcasecmp (cmd, "port"))
                 {
                     PrefParseInt (i);
-                    sess->spref->port = i;
+                    conn->spref->port = i;
                 }
                 else if (!strcasecmp (cmd, "uin"))
                 {
                     PrefParseInt (i);
-                    sess->spref->uin = i;
+                    conn->spref->uin = i;
                 }
                 else if (!strcasecmp (cmd, "password"))
                 {
                     PrefParse (tmp);
-                    sess->spref->passwd = strdup (tmp);
+                    conn->spref->passwd = strdup (tmp);
                 }
                 else if (!strcasecmp (cmd, "status"))
                 {
                     PrefParseInt (i);
-                    sess->spref->status = i;
+                    conn->spref->status = i;
                 }
                 else
                 {
@@ -783,31 +798,46 @@ void Read_RC_File (FILE *rcf)
     if (!prG->chat)
         prG->chat = 49;
 
-    for (i = 0; (sess = SessionNr (i)); i++)
+    for (i = 0; (conn = ConnectionNr (i)); i++)
     {
-        assert (sess->spref);
+        assert (conn->spref);
 
-        sess->port   = sess->spref->port;
-        sess->server = sess->spref->server;
-        sess->passwd = sess->spref->passwd;
-        sess->status = sess->spref->status;
-        sess->uin    = sess->spref->uin;
-        sess->ver    = sess->spref->version;
-        sess->type   = sess->spref->type;
-        sess->flags  = sess->spref->flags;
-        if (prG->s5Use && sess->type & TYPEF_SERVER)
-            sess->type = sess->spref->type = 2;
-        if (sess->spref->type == TYPE_SERVER || sess->spref->type == TYPE_SERVER_OLD)
-            oldsess = sess;
+        conn->port   = conn->spref->port;
+        conn->server = conn->spref->server;
+        conn->passwd = conn->spref->passwd;
+        conn->status = conn->spref->status;
+        conn->uin    = conn->spref->uin;
+        conn->ver    = conn->spref->version;
+        conn->type   = conn->spref->type;
+        conn->flags  = conn->spref->flags;
+        if (prG->s5Use && conn->type & TYPEF_SERVER)
+            conn->type = conn->spref->type = 2;
+        if (conn->spref->type == TYPE_SERVER || conn->spref->type == TYPE_SERVER_OLD)
+            oldconn = conn;
+        switch (conn->type)
+        {
+            case TYPE_SERVER:
+                conn->open = &ConnectionInitServer;
+                break;
+            case TYPE_SERVER_OLD:
+                conn->open = &ConnectionInitServerV5;
+                break;
+            case TYPE_MSGLISTEN:
+                conn->open = &ConnectionInitPeer;
+                break;
+            default:
+                conn->open = NULL;
+                break;
+        }
     }
 
-    if (prG->verbose && oldsess)
+    if (prG->verbose && oldconn)
     {
-        M_printf (i18n (1189, "UIN = %ld\n"),    oldsess->spref->uin);
-        M_printf (i18n (1190, "port = %ld\n"),   oldsess->spref->port);
-        M_printf (i18n (1191, "passwd = %s\n"),  oldsess->spref->passwd ? oldsess->spref->passwd : "[none]");
-        M_printf (i18n (1192, "server = %s\n"),  oldsess->spref->server ? oldsess->spref->server : "[none]");
-        M_printf (i18n (1193, "status = %ld\n"), oldsess->spref->status);
+        M_printf (i18n (1189, "UIN = %ld\n"),    oldconn->spref->uin);
+        M_printf (i18n (1190, "port = %ld\n"),   oldconn->spref->port);
+        M_printf (i18n (1191, "passwd = %s\n"),  oldconn->spref->passwd ? oldconn->spref->passwd : "[none]");
+        M_printf (i18n (1192, "server = %s\n"),  oldconn->spref->server ? oldconn->spref->server : "[none]");
+        M_printf (i18n (1193, "status = %ld\n"), oldconn->spref->status);
         M_printf (i18n (1196, "Message_cmd = %s\n"), CmdUserLookupName ("msg"));
         M_printf ("flags: %08x\n", prG->flags);
     }
@@ -827,7 +857,7 @@ int Save_RC ()
     time_t t;
     int k;
     Contact *cont;
-    Session *ss;
+    Connection *ss;
 
     M_printf (i18n (2048, "Saving preferences to %s.\n"), prG->rcfile);
     rcf = fopen (prG->rcfile, "w");
@@ -856,7 +886,7 @@ int Save_RC ()
     fprintf (rcf, "# This file was generated on %s", ctime (&t));
     fprintf (rcf, "\n");
     
-    for (k = 0; (ss = SessionNr (k)); k++)
+    for (k = 0; (ss = ConnectionNr (k)); k++)
     {
         if (!ss->spref || (ss->spref->type != TYPE_SERVER && ss->spref->type != TYPE_SERVER_OLD && ss->spref->type != TYPE_MSGLISTEN)
             || (!ss->spref->uin && ss->spref->type == TYPE_SERVER)
@@ -864,7 +894,7 @@ int Save_RC ()
             continue;
 
         fprintf (rcf, "[Connection]\n");
-        fprintf (rcf, "type %s%s\n",  ss->spref->type == TYPE_SERVER || ss->spref->type == TYPE_SERVER_OLD ? "server" : "peer",
+        fprintf (rcf, "type %s%s\n",  ss->spref->type == TYPE_SERVER ? "icq8" : ss->spref->type == TYPE_SERVER_OLD ? "icq5" : "peer",
                                         ss->spref->flags & CONN_AUTOLOGIN ? " auto" : "");
         fprintf (rcf, "version %d\n", ss->spref->version);
         if (ss->spref->server)
@@ -1043,7 +1073,7 @@ int Save_RC ()
     return fclose (rcf) ? -1 : 0;
 }
 
-int Add_User (Session *sess, UDWORD uin, const char *name)
+int Add_User (Connection *conn, UDWORD uin, const char *name)
 {
     FILE *rcf;
 

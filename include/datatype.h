@@ -2,6 +2,7 @@
 
 #ifndef MICQ_DATATYPE_H
 #define MICQ_DATATYPE_H
+
 #if HAVE_UNISTD_H
    #include <unistd.h>
 #endif
@@ -67,4 +68,4 @@ typedef int SOK_T;
   #define FALSE 0
 #endif
 
-#endif /* Matt's datatype */
+#endif /* MICQ_DATATYPE_H */

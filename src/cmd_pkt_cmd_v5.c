@@ -26,22 +26,22 @@
 /*
  * CMD_ACK - acknowledge a received packet.
  */
-void CmdPktCmdAck (Session *sess, UDWORD seq)
+void CmdPktCmdAck (Connection *conn, UDWORD seq)
 {
-    Packet *pak = PacketCv5 (sess, CMD_ACK);
+    Packet *pak = PacketCv5 (conn, CMD_ACK);
     PacketWrite4    (pak, rand ());
     PacketWriteAt4  (pak, CMD_v5_OFF_SEQ, seq);
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 }
 
 /*
  * CMD_SEND_MESSAGE - send a message through ICQ.
  */
-void CmdPktCmdSendMessage (Session *sess, UDWORD uin, const char *text, UDWORD type)
+void CmdPktCmdSendMessage (Connection *conn, UDWORD uin, const char *text, UDWORD type)
 {
-    Packet *pak = PacketCv5 (sess, CMD_SEND_MESSAGE);
+    Packet *pak = PacketCv5 (conn, CMD_SEND_MESSAGE);
     
-    UtilCheckUIN (sess, uin);
+    UtilCheckUIN (conn, uin);
     
     M_printf ("%s " COLSENT "%10s" COLNONE " " MSGSENTSTR "%s\n",
              s_now, ContactFindName (uin), MsgEllipsis (text));
@@ -49,73 +49,73 @@ void CmdPktCmdSendMessage (Session *sess, UDWORD uin, const char *text, UDWORD t
     PacketWrite4    (pak, uin);
     PacketWrite2    (pak, type);
     PacketWriteLNTS (pak, text);
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 }
 
 /*
  * CMD_TCP_REQUEST - request peer to open a TCP connection.
  */
-void CmdPktCmdTCPRequest (Session *sess, UDWORD tuin, UDWORD port)
+void CmdPktCmdTCPRequest (Connection *conn, UDWORD tuin, UDWORD port)
 {
     Packet *pak;
 
-    if (!sess->assoc || !(sess->assoc->connect & CONNECT_OK))
+    if (!conn->assoc || !(conn->assoc->connect & CONNECT_OK))
         return;
 
-    pak = PacketCv5 (sess, CMD_TCP_REQUEST);
+    pak = PacketCv5 (conn, CMD_TCP_REQUEST);
     PacketWrite4 (pak, tuin);
-    PacketWrite4 (pak, sess->our_local_ip);
-    PacketWrite4 (pak, sess->assoc->port);
-    PacketWrite1 (pak, sess->assoc->status);
+    PacketWrite4 (pak, conn->our_local_ip);
+    PacketWrite4 (pak, conn->assoc->port);
+    PacketWrite1 (pak, conn->assoc->status);
     PacketWrite4 (pak, port);
-    PacketWrite4 (pak, sess->assoc->port);
+    PacketWrite4 (pak, conn->assoc->port);
     PacketWrite2 (pak, 2);
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 }
 
 /*
  * CMD_LOGIN - start login process by sending login request.
  */
-void CmdPktCmdLogin (Session *sess)
+void CmdPktCmdLogin (Connection *conn)
 {
     Packet *pak;
 
-    if (sess->our_seq2 != 1)
+    if (conn->our_seq2 != 1)
     {
-        sess->our_seq     = rand () & 0x3fff;
-        sess->our_seq2    = 1;
-        sess->our_session = rand () & 0x3fffffff;
+        conn->our_seq     = rand () & 0x3fff;
+        conn->our_seq2    = 1;
+        conn->our_session = rand () & 0x3fffffff;
     }
-    sess->ver = 5;
+    conn->ver = 5;
     
-    assert (strlen (sess->passwd) <= 8);
+    assert (strlen (conn->passwd) <= 8);
     
-    pak = PacketCv5 (sess, CMD_LOGIN);
+    pak = PacketCv5 (conn, CMD_LOGIN);
     PacketWrite4 (pak, time (NULL));
-    PacketWrite4 (pak, sess->assoc && sess->assoc->connect & CONNECT_OK ?
-                       sess->assoc->port : 0);
-    PacketWriteLNTS (pak, sess->passwd);
+    PacketWrite4 (pak, conn->assoc && conn->assoc->connect & CONNECT_OK ?
+                       conn->assoc->port : 0);
+    PacketWriteLNTS (pak, conn->passwd);
     PacketWrite4 (pak, 0x000000d5);
-    PacketWrite4 (pak, sess->our_local_ip);
-    PacketWrite1 (pak, sess->assoc && sess->assoc->connect & CONNECT_OK ?
-                       sess->assoc->status : 0);         /* 1=firewall | 2=proxy | 4=tcp */
+    PacketWrite4 (pak, conn->our_local_ip);
+    PacketWrite1 (pak, conn->assoc && conn->assoc->connect & CONNECT_OK ?
+                       conn->assoc->status : 0);         /* 1=firewall | 2=proxy | 4=tcp */
     PacketWrite4 (pak, prG->status);
-    PacketWrite2 (pak, sess->assoc && sess->assoc->connect & CONNECT_OK ?
-                       sess->assoc->ver : 0);
+    PacketWrite2 (pak, conn->assoc && conn->assoc->connect & CONNECT_OK ?
+                       conn->assoc->ver : 0);
     PacketWrite2 (pak, 0);
     PacketWrite4 (pak, 0x822c01ec);   /* 0x00d50008, 0x00780008 */
     PacketWrite4 (pak, 0x00000050);
     PacketWrite4 (pak, 0x00000003);
     PacketWrite4 (pak, BUILD_MICQ_OLD);
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 }
 
 /*
  * CMD_REG_NEW_USER - request a new user ID.
  */
-void CmdPktCmdRegNewUser (Session *sess, const char *pass)
+void CmdPktCmdRegNewUser (Connection *conn, const char *pass)
 {
-    Packet *pak = PacketCv5 (sess, CMD_REG_NEW_USER);
+    Packet *pak = PacketCv5 (conn, CMD_REG_NEW_USER);
 
     assert (strlen (pass) <= 9);
 
@@ -126,16 +126,16 @@ void CmdPktCmdRegNewUser (Session *sess, const char *pass)
     PacketWrite4    (pak, 0xA00000);
     PacketWrite4    (pak, 0x00);
     
-    if (!sess->our_session)
+    if (!conn->our_session)
         PacketWriteAt4 (pak, CMD_v5_OFF_SESS, rand () & 0x3fffffff);
 
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 }
 
 /*
  * CMD_CONTACT_LIST - send over the contact list.
  */
-void CmdPktCmdContactList (Session *sess)
+void CmdPktCmdContactList (Connection *conn)
 {
     Contact *cont;
     Packet *pak;
@@ -150,7 +150,7 @@ void CmdPktCmdContactList (Session *sess)
             {
                 if (!pak)
                 {
-                    pak = PacketCv5 (sess, CMD_CONTACT_LIST);
+                    pak = PacketCv5 (conn, CMD_CONTACT_LIST);
                     pbytes = PacketWritePos (pak);
                     PacketWrite1 (pak, 0);
                 }
@@ -161,7 +161,7 @@ void CmdPktCmdContactList (Session *sess)
         if (pak)
         {
             PacketWriteAt1 (pak, pbytes, i);
-            PacketEnqueuev5 (pak, sess);
+            PacketEnqueuev5 (pak, conn);
         }
         if (!ContactHasNext (cont))
             break;
@@ -175,62 +175,62 @@ void CmdPktCmdContactList (Session *sess)
 /*
  * CMD_SEARCH_USER - search for a user.
  */
-void CmdPktCmdSearchUser (Session *sess, const char *email, const char *nick,
+void CmdPktCmdSearchUser (Connection *conn, const char *email, const char *nick,
                                          const char *first, const char *last)
 {
-    Packet *pak = PacketCv5 (sess, CMD_SEARCH_USER);
+    Packet *pak = PacketCv5 (conn, CMD_SEARCH_USER);
     PacketWriteLNTS (pak, nick);
     PacketWriteLNTS (pak, first);
     PacketWriteLNTS (pak, last);
     PacketWriteLNTS (pak, email);
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 }
 
 /*
  * CMD_KEEP_ALIVE, CMD_KEEP_ALIVE2 - send keep alive packets.
  */
-void CmdPktCmdKeepAlive (Session *sess)
+void CmdPktCmdKeepAlive (Connection *conn)
 {
-    Packet *pak = PacketCv5 (sess, CMD_KEEP_ALIVE);
+    Packet *pak = PacketCv5 (conn, CMD_KEEP_ALIVE);
     PacketWrite4 (pak, rand ());
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 #if 1
-    pak = PacketCv5 (sess, CMD_KEEP_ALIVE2);
+    pak = PacketCv5 (conn, CMD_KEEP_ALIVE2);
     PacketWrite4 (pak, rand ());
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 #endif
 }
 
 /*
  * CMD_SEND_TEXT_CODE - sends a text-based command to server.
  */
-void CmdPktCmdSendTextCode (Session *sess, const char *text)
+void CmdPktCmdSendTextCode (Connection *conn, const char *text)
 {
-    Packet *pak = PacketCv5 (sess, CMD_SEND_TEXT_CODE);
+    Packet *pak = PacketCv5 (conn, CMD_SEND_TEXT_CODE);
     PacketWriteLNTS (pak, text);
     PacketWrite1    (pak, 5);
     PacketWrite1    (pak, 0);
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 }
 
 /*
  * CMD_ACK_MESSAGES - acknowledge the receipt of all offline messages.
  */
-void CmdPktCmdAckMessages (Session *sess)
+void CmdPktCmdAckMessages (Connection *conn)
 {
-    Packet *pak = PacketCv5 (sess, CMD_ACK_MESSAGES);
+    Packet *pak = PacketCv5 (conn, CMD_ACK_MESSAGES);
     PacketWrite2 (pak, rand ());
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 }
 
 /*
  * CMD_LOGIN_1 - finishes login process.
  */
-void CmdPktCmdLogin1 (Session *sess)
+void CmdPktCmdLogin1 (Connection *conn)
 {
-    Packet *pak = PacketCv5 (sess, CMD_LOGIN_1);
+    Packet *pak = PacketCv5 (conn, CMD_LOGIN_1);
     PacketWrite4 (pak, rand ());
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 }
 
 /*
@@ -244,11 +244,11 @@ void CmdPktCmdLogin1 (Session *sess)
 /*
  * CMD_EXT_INFO_REQ - request extended information on a user (unused)
  */
-void CmdPktCmdExtInfoReq (Session *sess, UDWORD uin)
+void CmdPktCmdExtInfoReq (Connection *conn, UDWORD uin)
 {
-    Packet *pak = PacketCv5 (sess, CMD_EXT_INFO_REQ);
+    Packet *pak = PacketCv5 (conn, CMD_EXT_INFO_REQ);
     PacketWrite4 (pak, uin);
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 }
 
 /*
@@ -274,13 +274,13 @@ void CmdPktCmdExtInfoReq (Session *sess, UDWORD uin)
 /*
  * CMD_STATUS_CHANGE - change status.
  */
-void CmdPktCmdStatusChange (Session *sess, UDWORD status)
+void CmdPktCmdStatusChange (Connection *conn, UDWORD status)
 {
-    Packet *pak = PacketCv5 (sess, CMD_STATUS_CHANGE);
+    Packet *pak = PacketCv5 (conn, CMD_STATUS_CHANGE);
     PacketWrite4 (pak, status);
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 
-    sess->status = status;
+    conn->status = status;
 }
 
 /*
@@ -290,19 +290,19 @@ void CmdPktCmdStatusChange (Session *sess, UDWORD status)
 /*
  * CMD_UPDATE_INFO - update basic info on server. (unused)
  */
-void CmdPktCmdUpdateInfo (Session *sess, const char *email, const char *nick,
+void CmdPktCmdUpdateInfo (Connection *conn, const char *email, const char *nick,
                                          const char *first, const char *last, BOOL auth)
 {
-    Packet *pak = PacketCv5 (sess, CMD_UPDATE_INFO);
+    Packet *pak = PacketCv5 (conn, CMD_UPDATE_INFO);
     PacketWriteLNTS (pak, nick);
     PacketWriteLNTS (pak, first);
     PacketWriteLNTS (pak, last);
     PacketWriteLNTS (pak, email);
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 
-    pak = PacketCv5 (sess, CMD_AUTH_UPDATE);
+    pak = PacketCv5 (conn, CMD_AUTH_UPDATE);
     PacketWrite4 (pak, auth);
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 }
 
 /*
@@ -324,29 +324,29 @@ void CmdPktCmdUpdateInfo (Session *sess, const char *email, const char *nick,
 /*
  * CMD_RAND_SET - set random chat group.
  */
-void CmdPktCmdRandSet (Session *sess, UDWORD group)
+void CmdPktCmdRandSet (Connection *conn, UDWORD group)
 {
-    Packet *pak = PacketCv5 (sess, CMD_RAND_SET);
+    Packet *pak = PacketCv5 (conn, CMD_RAND_SET);
     PacketWrite4 (pak, group);
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 }
 
 /*
  * CMD_RAND_SEARCH - search a random user from given chat group.
  */
-void CmdPktCmdRandSearch (Session *sess, UDWORD group)
+void CmdPktCmdRandSearch (Connection *conn, UDWORD group)
 {
-    Packet *pak = PacketCv5 (sess, CMD_RAND_SEARCH);
+    Packet *pak = PacketCv5 (conn, CMD_RAND_SEARCH);
     PacketWrite4 (pak, group);
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 }
 
 /*
  * CMD_META_USER : META_SET_GENERAL_INFO - Update general information.
  */
-void CmdPktCmdMetaGeneral (Session *sess, MetaGeneral *user)
+void CmdPktCmdMetaGeneral (Connection *conn, MetaGeneral *user)
 {
-    Packet *pak = PacketCv5 (sess, CMD_META_USER);
+    Packet *pak = PacketCv5 (conn, CMD_META_USER);
     PacketWrite2    (pak, META_SET_GENERAL_INFO_v5);
     PacketWriteLNTS (pak, user->nick);
     PacketWriteLNTS (pak, user->first);
@@ -366,7 +366,7 @@ void CmdPktCmdMetaGeneral (Session *sess, MetaGeneral *user)
     PacketWrite1    (pak, !user->auth);
     PacketWrite1    (pak, user->webaware);
     PacketWrite1    (pak, user->hideip);
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 }
 
 /*
@@ -376,9 +376,9 @@ void CmdPktCmdMetaGeneral (Session *sess, MetaGeneral *user)
 /*
  * CMD_META_USER : META_SET_MORE_INFO - Update additional information.
  */
-void CmdPktCmdMetaMore (Session *sess, MetaMore *info)
+void CmdPktCmdMetaMore (Connection *conn, MetaMore *info)
 {
-    Packet *pak = PacketCv5 (sess, CMD_META_USER);
+    Packet *pak = PacketCv5 (conn, CMD_META_USER);
     PacketWrite2    (pak, META_SET_MORE_INFO);
     PacketWrite2    (pak, info->age);
     PacketWrite1    (pak, info->sex);
@@ -389,18 +389,18 @@ void CmdPktCmdMetaMore (Session *sess, MetaMore *info)
     PacketWrite2    (pak, info->lang1);
     PacketWrite2    (pak, info->lang2);
     PacketWrite2    (pak, info->lang3);
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 }
 
 /*
  * CMD_META_USER : META_SET_ABOUT_INFO - Set "about" information.
  */
-void CmdPktCmdMetaAbout (Session *sess, const char *about)
+void CmdPktCmdMetaAbout (Connection *conn, const char *about)
 {
-    Packet *pak = PacketCv5 (sess, CMD_META_USER);
+    Packet *pak = PacketCv5 (conn, CMD_META_USER);
     PacketWrite2    (pak, META_SET_ABOUT_INFO);
     PacketWriteLNTS (pak, about);
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 }
 
 /*
@@ -410,34 +410,34 @@ void CmdPktCmdMetaAbout (Session *sess, const char *about)
 /*
  * CMD_META_USER : META_SET_PASS - set a new password.
  */
-void CmdPktCmdMetaPass (Session *sess, char *pass)
+void CmdPktCmdMetaPass (Connection *conn, char *pass)
 {
-    Packet *pak = PacketCv5 (sess, CMD_META_USER);
+    Packet *pak = PacketCv5 (conn, CMD_META_USER);
 
     assert (strlen (pass) <= 9);
 
     PacketWrite2    (pak, META_SET_PASS);
     PacketWriteLNTS (pak, pass);
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 }
 
 /*
  * CMD_META_USER : META_REQ_INFO - request information on user.
  */
-void CmdPktCmdMetaReqInfo (Session *sess, UDWORD uin)
+void CmdPktCmdMetaReqInfo (Connection *conn, UDWORD uin)
 {
-    Packet *pak = PacketCv5 (sess, CMD_META_USER);
+    Packet *pak = PacketCv5 (conn, CMD_META_USER);
     PacketWrite2 (pak, META_REQ_INFO_v5);
     PacketWrite4 (pak, uin);
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 }
 
 /*
  * CMD_META_USER : META_SEARCH_WP - do an extensive white page search.
  */
-void CmdPktCmdMetaSearchWP (Session *sess, MetaWP *user)
+void CmdPktCmdMetaSearchWP (Connection *conn, MetaWP *user)
 {
-    Packet *pak = PacketCv5 (sess, CMD_META_USER);
+    Packet *pak = PacketCv5 (conn, CMD_META_USER);
     PacketWrite2    (pak, META_SEARCH_WP);
     PacketWriteLNTS (pak, user->first);
     PacketWriteLNTS (pak, user->last);
@@ -471,7 +471,7 @@ void CmdPktCmdMetaSearchWP (Session *sess, MetaWP *user)
     PacketWrite1      (pak, 1);
     PacketWrite2      (pak, 0);
     PacketWrite1      (pak, user->online);
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 }
 
 /*
@@ -481,7 +481,7 @@ void CmdPktCmdMetaSearchWP (Session *sess, MetaWP *user)
 /*
  * CMD_INVIS_LIST - send list of contacts that should never see you
  */
-void CmdPktCmdInvisList (Session *sess)
+void CmdPktCmdInvisList (Connection *conn)
 {
     Contact *cont;
     Packet *pak;
@@ -496,7 +496,7 @@ void CmdPktCmdInvisList (Session *sess)
             {
                 if (!pak)
                 {
-                    pak = PacketCv5 (sess, CMD_INVIS_LIST);
+                    pak = PacketCv5 (conn, CMD_INVIS_LIST);
                     pbytes = PacketWritePos (pak);
                     PacketWrite1 (pak, 0);
                 }
@@ -507,7 +507,7 @@ void CmdPktCmdInvisList (Session *sess)
         if (pak)
         {
             PacketWriteAt1 (pak, pbytes, i);
-            PacketEnqueuev5 (pak, sess);
+            PacketEnqueuev5 (pak, conn);
         }
         if (!ContactHasNext (cont))
             break;
@@ -517,7 +517,7 @@ void CmdPktCmdInvisList (Session *sess)
 /*
  * CMD_VIS_LIST - send list of contacts that may see you while being invisible
  */
-void CmdPktCmdVisList (Session *sess)
+void CmdPktCmdVisList (Connection *conn)
 {
     Contact *cont;
     Packet *pak;
@@ -532,7 +532,7 @@ void CmdPktCmdVisList (Session *sess)
             {
                 if (!pak)
                 {
-                    pak = PacketCv5 (sess, CMD_VIS_LIST);
+                    pak = PacketCv5 (conn, CMD_VIS_LIST);
                     pbytes = PacketWritePos (pak);
                     PacketWrite1 (pak, 0);
                 }
@@ -543,7 +543,7 @@ void CmdPktCmdVisList (Session *sess)
         if (pak)
         {
             PacketWriteAt1 (pak, pbytes, i);
-            PacketEnqueuev5 (pak, sess);
+            PacketEnqueuev5 (pak, conn);
         }
         if (!ContactHasNext (cont))
             break;
@@ -553,11 +553,11 @@ void CmdPktCmdVisList (Session *sess)
 /*
  * CMD_UPDATE_LIST - update contact visible/invisible status
  */
-void CmdPktCmdUpdateList (Session *sess, UDWORD uin, int which, BOOL add)
+void CmdPktCmdUpdateList (Connection *conn, UDWORD uin, int which, BOOL add)
 {
-    Packet *pak = PacketCv5 (sess, CMD_UPDATE_LIST);
+    Packet *pak = PacketCv5 (conn, CMD_UPDATE_LIST);
     PacketWrite4 (pak, uin);
     PacketWrite1 (pak, which);
     PacketWrite1 (pak, add);
-    PacketEnqueuev5 (pak, sess);
+    PacketEnqueuev5 (pak, conn);
 }

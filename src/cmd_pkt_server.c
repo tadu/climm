@@ -79,14 +79,14 @@ const char *CmdPktSrvName (int cmd)
 /*
  * Reads from given socket and processes server packet received.
  */
-void CmdPktSrvRead (Session *sess)
+void CmdPktSrvRead (Connection *conn)
 {
     Packet *pak;
     int s;
     UDWORD session, uin, id;
     UWORD cmd, seq, seq2;
 
-    pak = UtilIOReceiveUDP (sess);
+    pak = UtilIOReceiveUDP (conn);
     if (!pak)
         return;
 
@@ -123,12 +123,12 @@ void CmdPktSrvRead (Session *sess)
             M_print (i18n (1867, "Got a malformed (too short) packet - ignored.\n"));
         return;
     }
-    if (session != sess->our_session)
+    if (session != conn->our_session)
     {
         if (prG->verbose & DEB_PROTOCOL)
         {
             M_printf (i18n (1606, "Got a bad session ID %08x (correct: %08x) with cmd %04x ignored.\n"),
-                     session, sess->our_session, cmd);
+                     session, conn->our_session, cmd);
         }
         return;
     }
@@ -141,17 +141,17 @@ void CmdPktSrvRead (Session *sess)
                 M_printf (i18n (1032, "debug: Doppeltes Packet #%04x vom Typ %04x (%s)\n"),
                          id, cmd, CmdPktSrvName (cmd));
             }
-            CmdPktCmdAck (sess, id);       /* LAGGGGG!! */ 
+            CmdPktCmdAck (conn, id);       /* LAGGGGG!! */ 
             return;
         }
     }
     if (cmd != SRV_ACK)
     {
         Got_SEQ (id);
-        CmdPktCmdAck (sess, id);
-        sess->stat_real_pak_rcvd++;
+        CmdPktCmdAck (conn, id);
+        conn->stat_real_pak_rcvd++;
     }
-    CmdPktSrvProcess (sess, pak, cmd, pak->ver, id, uin);
+    CmdPktSrvProcess (conn, pak, cmd, pak->ver, id, uin);
 }
 
 /*
@@ -159,9 +159,9 @@ void CmdPktSrvRead (Session *sess)
  */
 static void CmdPktSrvCallBackKeepAlive (Event *event)
 {
-    if (event->sess)
+    if (event->conn)
     {
-        CmdPktCmdKeepAlive (event->sess);
+        CmdPktCmdKeepAlive (event->conn);
         event->due = time (NULL) + 120;
         QueueEnqueue (event);
     }
@@ -172,7 +172,7 @@ static void CmdPktSrvCallBackKeepAlive (Event *event)
 /*
  * Process the given server packet
  */
-void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
+void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
                        UWORD ver, UDWORD seq, UDWORD uin)
 {
     jump_srv_t *t;
@@ -187,7 +187,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
     {
         if (cmd == t->cmd && t->f)
         {
-            t->f (sess, pak, cmd, ver, seq, uin);
+            t->f (conn, pak, cmd, ver, seq, uin);
             return;
         }
     }
@@ -195,7 +195,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
     switch (cmd)
     {
         case SRV_META_USER:
-            Meta_User (sess, uin, pak);
+            Meta_User (conn, uin, pak);
             break;
         case SRV_NEW_UIN:
             M_printf (i18n (1639, "The new UIN is %ld!\n"), uin);
@@ -208,12 +208,12 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             break;
         case SRV_LOGIN_REPLY:
             M_printf ("%s " COLCONTACT "%10lu" COLNONE " %s\n", s_now, uin, i18n (1050, "Login successful!"));
-            CmdPktCmdLogin1 (sess);
-            CmdPktCmdContactList (sess);
-            CmdPktCmdInvisList (sess);
-            CmdPktCmdVisList (sess);
-            sess->status = prG->status;
-            sess->connect = CONNECT_OK | CONNECT_SELECT_R;
+            CmdPktCmdLogin1 (conn);
+            CmdPktCmdContactList (conn);
+            CmdPktCmdInvisList (conn);
+            CmdPktCmdVisList (conn);
+            conn->status = prG->status;
+            conn->connect = CONNECT_OK | CONNECT_SELECT_R;
             uiG.reconnect_count = 0;
             if (loginmsg++)
                 break;
@@ -232,36 +232,36 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             M_printf ("%s " COLCONTACT "%10s" COLNONE " %s: %u.%u.%u.%u\n",
                 s_now, ContactFindName (uin), i18n (1642, "IP"),
                 ip[0], ip[1], ip[2], ip[3]);
-            QueueEnqueueData (sess, QUEUE_UDP_KEEPALIVE, 0, 0, time (NULL) + 120,
+            QueueEnqueueData (conn, QUEUE_UDP_KEEPALIVE, 0, 0, time (NULL) + 120,
                               NULL, NULL, &CmdPktSrvCallBackKeepAlive);
             break;
         case SRV_RECV_MESSAGE:
-            Recv_Message (sess, pak);
+            Recv_Message (conn, pak);
             break;
         case SRV_X1:
             if (prG->verbose & DEB_PROTOCOL)
                 M_print (i18n (1643, "Acknowleged SRV_X1 0x021C Done Contact list?\n"));
             CmdUser ("¶e");
-            sess->connect |= CONNECT_OK;
+            conn->connect |= CONNECT_OK;
             break;
         case SRV_X2:
             if (prG->verbose & DEB_PROTOCOL)
                 M_print (i18n (1644, "Acknowleged SRV_X2 0x00E6 Done old messages?\n"));
-            CmdPktCmdAckMessages (sess);
+            CmdPktCmdAckMessages (conn);
             break;
         case SRV_INFO_REPLY:
-            Display_Info_Reply (sess, pak, i18n (1562, "Info for"), 
+            Display_Info_Reply (conn, pak, i18n (1562, "Info for"), 
                 IREP_HASAUTHFLAG);
             M_print ("\n");
             break;
         case SRV_EXT_INFO_REPLY:
-            Display_Ext_Info_Reply (sess, pak, i18n (1967, "More Info for"));
+            Display_Ext_Info_Reply (conn, pak, i18n (1967, "More Info for"));
             M_print ("\n");
             break;
         case SRV_USER_OFFLINE:
-            UtilCheckUIN (sess, uin = PacketRead4 (pak));
+            UtilCheckUIN (conn, uin = PacketRead4 (pak));
             if ((cont = ContactFind (uin)))
-                IMOffline (cont, sess);
+                IMOffline (cont, conn);
             break;
         case SRV_BAD_PASS:
             M_print (i18n (1645, "You entered an incorrect password.\n"));
@@ -278,10 +278,10 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
                 break;
             }
             M_printf (i18n (1082, "Trying to reconnect... [try %d out of %d]\n"), uiG.reconnect_count, MAX_RECONNECT_ATTEMPTS);
-            QueueEnqueueData (sess, /* FIXME: */ 0, 0, 0, time (NULL) + 5, NULL, NULL, &CallBackServerInitV5); 
+            QueueEnqueueData (conn, /* FIXME: */ 0, 0, 0, time (NULL) + 5, NULL, NULL, &CallBackServerInitV5); 
             break;
         case SRV_USER_ONLINE:
-            UtilCheckUIN (sess, uin = PacketRead4 (pak));
+            UtilCheckUIN (conn, uin = PacketRead4 (pak));
             cont = ContactFind (uin);
             if (!cont)
                 return;
@@ -299,12 +299,12 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             cont->id2             = PacketRead4 (pak);
             cont->id3             = PacketRead4 (pak);
             ContactSetVersion (cont);
-            IMOnline (cont, sess, status);
+            IMOnline (cont, conn, status);
             break;
         case SRV_STATUS_UPDATE:
-            UtilCheckUIN (sess, uin = PacketRead4 (pak));
+            UtilCheckUIN (conn, uin = PacketRead4 (pak));
             if ((cont = ContactFind (uin)))
-                IMOnline (cont, sess, PacketRead4 (pak));
+                IMOnline (cont, conn, PacketRead4 (pak));
             break;
         case SRV_GO_AWAY:
         case SRV_NOT_CONNECTED:
@@ -317,7 +317,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
                 break;
             }
             M_printf (i18n (1082, "Trying to reconnect... [try %d out of %d]\n"), uiG.reconnect_count, MAX_RECONNECT_ATTEMPTS);
-            QueueEnqueueData (sess, /* FIXME: */ 0, 0, 0, time (NULL) + 5, NULL, NULL, &CallBackServerInitV5);
+            QueueEnqueueData (conn, /* FIXME: */ 0, 0, 0, time (NULL) + 5, NULL, NULL, &CallBackServerInitV5);
             break;
         case SRV_END_OF_SEARCH:
             M_print (i18n (1045, "Search Done."));
@@ -332,11 +332,11 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             M_print ("\n");
             break;
         case SRV_USER_FOUND:
-            Display_Info_Reply (sess, pak, i18n (1968, "User found"), IREP_HASAUTHFLAG);
+            Display_Info_Reply (conn, pak, i18n (1968, "User found"), IREP_HASAUTHFLAG);
             M_print ("\n");
             break;
         case SRV_RAND_USER:
-            Display_Rand_User (sess, pak);
+            Display_Rand_User (conn, pak);
             M_print ("\n");
             break;
         case SRV_SYS_DELIVERED_MESS:
@@ -344,11 +344,11 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             wdata = PacketRead2 (pak);
             text  = PacketReadLNTS (pak);
 
-            UtilCheckUIN (sess, uin);
+            UtilCheckUIN (conn, uin);
             if ((cont = ContactFind (uin)))
             {
-                IMSrvMsg (cont, sess, NOW, wdata, text, STATUS_OFFLINE);
-                Auto_Reply (sess, uin);
+                IMSrvMsg (cont, conn, NOW, wdata, text, STATUS_OFFLINE);
+                Auto_Reply (conn, uin);
             }
             free (text);
             break;
@@ -420,7 +420,7 @@ static JUMP_SRV_F (CmdPktSrvMulti)
             M_print (COLEXDENT "\n");
         }
 
-        CmdPktSrvProcess (sess, npak, cmd, ver, seq << 16 | seq2, uin);
+        CmdPktSrvProcess (conn, npak, cmd, ver, seq << 16 | seq2, uin);
     }
 }
 
@@ -429,7 +429,7 @@ static JUMP_SRV_F (CmdPktSrvMulti)
  */
 static JUMP_SRV_F (CmdPktSrvAck)
 {
-    Event *event = QueueDequeue (sess, QUEUE_UDP_RESEND, seq);
+    Event *event = QueueDequeue (conn, QUEUE_UDP_RESEND, seq);
     UDWORD ccmd;
 
     if (!event)

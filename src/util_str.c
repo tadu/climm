@@ -416,7 +416,7 @@ BOOL s_parse (char **input, char **parsed)
  * parsed ->nick will be the nick given,
  * unless the user entered an UIN.
  */
-BOOL s_parsenick (char **input, Contact **parsed, Contact **parsedr, Session *serv)
+BOOL s_parsenick (char **input, Contact **parsed, Contact **parsedr, Connection *serv)
 {
     Contact *r;
     char *p = *input, *t;

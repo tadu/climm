@@ -424,7 +424,7 @@ static const char *DebugStr (UDWORD level)
     if (level & DEB_PROTOCOL)    return "Protocl";
     if (level & DEB_TCP)         return "TCP HS ";
     if (level & DEB_IO)          return "  I/O  ";
-    if (level & DEB_SESSION)     return "Session";
+    if (level & DEB_CONNECT)     return "Connect";
     return "unknown";
 }
 

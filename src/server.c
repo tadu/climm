@@ -25,30 +25,30 @@
 #include <assert.h>
 #include <limits.h>
 
-void Auto_Reply (Session *sess, UDWORD uin)
+void Auto_Reply (Connection *conn, UDWORD uin)
 {
     char *temp;
 
     if (!(prG->flags & FLAG_AUTOREPLY))
         return;
     
-          if (sess->status & STATUSF_DND)
+          if (conn->status & STATUSF_DND)
          temp = prG->auto_dnd;
-     else if (sess->status & STATUSF_OCC)
+     else if (conn->status & STATUSF_OCC)
          temp = prG->auto_occ;
-     else if (sess->status & STATUSF_NA)
+     else if (conn->status & STATUSF_NA)
          temp = prG->auto_na;
-     else if (sess->status & STATUSF_AWAY)
+     else if (conn->status & STATUSF_AWAY)
          temp = prG->auto_away;
-     else if (sess->status & STATUSF_INV)
+     else if (conn->status & STATUSF_INV)
          temp = prG->auto_inv;
      else
          return;
     
-    icq_sendmsg (sess, uin, temp, MSG_AUTO);
+    icq_sendmsg (conn, uin, temp, MSG_AUTO);
 }
 
-void icq_sendurl (Session *sess, UDWORD uin, char *description, char *url)
+void icq_sendurl (Connection *conn, UDWORD uin, char *description, char *url)
 {
     int len;
     char *buf;
@@ -58,26 +58,26 @@ void icq_sendurl (Session *sess, UDWORD uin, char *description, char *url)
     assert (buf);
 
     snprintf (buf, len + 1, "%s%c%s", url, ConvSep (), description);
-    icq_sendmsg (sess, uin, buf, MSG_URL);
+    icq_sendmsg (conn, uin, buf, MSG_URL);
     free (buf);
 }
 
-void icq_sendmsg (Session *sess, UDWORD uin, char *text, UDWORD msg_type)
+void icq_sendmsg (Connection *conn, UDWORD uin, char *text, UDWORD msg_type)
 {
     char *old;
 
-    putlog (sess, NOW, uin, STATUS_ONLINE, 
+    putlog (conn, NOW, uin, STATUS_ONLINE, 
         msg_type == MSG_AUTO ? LOG_AUTO : LOG_SENT, msg_type, "%s\n", text);
 #ifdef ENABLE_PEER2PEER
-    if (!sess->assoc || !TCPSendMsg (sess->assoc, uin, text, msg_type))
+    if (!conn->assoc || !TCPSendMsg (conn->assoc, uin, text, msg_type))
 #endif
     {
-        if (~sess->connect & CONNECT_OK)
+        if (~conn->connect & CONNECT_OK)
             return;
-        if (sess->type == TYPE_SERVER)
-            SnacCliSendmsg (sess, uin, text, msg_type, 0);
+        if (conn->type == TYPE_SERVER)
+            SnacCliSendmsg (conn, uin, text, msg_type, 0);
         else
-            CmdPktCmdSendMessage (sess, uin, text, msg_type);
+            CmdPktCmdSendMessage (conn, uin, text, msg_type);
     }
 
     old = uiG.last_message_sent;

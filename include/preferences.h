@@ -44,7 +44,7 @@ struct Preferences_s
     /* Much more stuff to go here - %TODO% */
 };
 
-struct PreferencesSession_s
+struct PreferencesConnection_s
 {
     UDWORD    type;
     UBYTE     flags;
@@ -57,7 +57,7 @@ struct PreferencesSession_s
 };
 
 Preferences        *PreferencesC (void);
-PreferencesSession *PreferencesSessionC (void);
+PreferencesConnection *PreferencesConnectionC (void);
 
 const char *PrefUserDir ();
 void        PrefLoad (Preferences *pref);
@@ -99,5 +99,5 @@ void        PrefSetColorScheme (Preferences *pref, UBYTE scheme);
 #define TABS_CYCLE       2
 #define TABS_CYCLEALL    3
 
-#endif
+#endif /* MICQ_PREFERENCES_H */
 
