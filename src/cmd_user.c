@@ -879,7 +879,6 @@ static JUMP_F(CmdUserGetAuto)
 static JUMP_F(CmdUserPeer)
 {
 #ifdef ENABLE_PEER2PEER
-    char *arg1 = NULL;
     Contact *cont = NULL;
     Connection *list;
     UDWORD seq = 0;
@@ -893,6 +892,7 @@ static JUMP_F(CmdUserPeer)
 
     if (!data)
     {
+        char *arg1 = NULL;
         if (!s_parse (&args, &arg1)) data = 0;
         else if (!strcmp (arg1, "open"))   data = 1;
         else if (!strcmp (arg1, "close"))  data = 2;
@@ -907,7 +907,6 @@ static JUMP_F(CmdUserPeer)
         else if (!strcmp (arg1, "na"))     data = 12;
         else if (!strcmp (arg1, "dnd"))    data = 13;
         else if (!strcmp (arg1, "ffc"))    data = 14;
-        free (arg1);
     }
     while (data && s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
     {
@@ -1015,7 +1014,6 @@ static JUMP_F(CmdUserPeer)
                     else
                         event->callback (revent);
                     EventD (event);
-                    EventD (revent);
                 }
                 break;
             case 10:
@@ -1555,7 +1553,7 @@ static JUMP_F(CmdUserStatusDetail)
 {
     ContactGroup *cg = NULL, *tcg = NULL;
     UDWORD uin = 0, tuin = 0;
-    int i, j, k;
+    int i, j, k, l;
     int lenuin = 0, lennick = 0, lenstat = 0, lenid = 0, totallen = 0;
     Contact *cont = NULL, *alias = NULL;
     Connection *peer;
@@ -1634,7 +1632,7 @@ static JUMP_F(CmdUserStatusDetail)
     if (prG->verbose)
         totallen += 29;
     if (data & 2)
-        totallen += 2 + 3 + 1 + 1 + lenuin + 24;
+        totallen += 2 + 3 + 1 + 1 + lenuin + 19;
 
     if (data & 4 && !uin)
     {
@@ -1646,7 +1644,7 @@ static JUMP_F(CmdUserStatusDetail)
         if (data & 16)
             return 0;
     }
-    for (k = -1; (k == -1) ? (tcg ? (cg = tcg) : cg) : (cg = ContactGroupIndex (k)); k++)
+    for (k = -1, l = 0; (k == -1) ? (tcg ? (cg = tcg) : cg) : (cg = ContactGroupIndex (k)); k++)
     {
         if (k != -1 && (cg == conn->contacts || cg == tcg))
             continue;
@@ -1695,8 +1693,21 @@ static JUMP_F(CmdUserStatusDetail)
                                                (unsigned int)cont->dc->id2, (unsigned int)cont->dc->id3));
                 for (alias = cont; alias && (data & 2 || alias == cont); alias = alias->alias)
                 {
+                    const char *ul = "";
+                    char tbuf[100];
+                    
+                    if (cont->seen_time != -1L && data & 2)
+                        strftime (tbuf, sizeof (tbuf), " %Y-%m-%d %H:%M:%S", localtime (&cont->seen_time));
+                    else if (data & 2)
+                        strcpy (tbuf, "                    ");
+                    else
+                        tbuf[0] = '\0';
+                    
+                    if (!(++l % 5))
+                        ul = ESC "[4m";
+                    
                     if (data & 2)
-                        M_printf (COLSERVER "%c%c%c%1.1d%c" COLNONE " %*ld",
+                        M_printf (COLSERVER "%s%c%c%c%1.1d%c" COLNONE "%s %*ld", ul,
                              alias->flags & CONT_ALIAS     ? '+' :
                              cont->flags  & CONT_TEMPORARY ? '#' : ' ',
                              cont->flags  & CONT_INTIMATE  ? '*' :
@@ -1709,10 +1720,10 @@ static JUMP_F(CmdUserStatusDetail)
                               peer->connect & CONNECT_MASK ? ':' : '.' ) :
                               cont->dc && cont->dc->version && cont->dc->port && ~cont->dc->port &&
                               cont->dc->ip_rem && ~cont->dc->ip_rem ? '^' : ' ',
-                             (int)lenuin, cont->uin);
+                             ul, (int)lenuin, cont->uin);
 
-                    M_printf (COLSERVER "%c" COLCONTACT "%-*s" COLNONE " " COLMESSAGE "%-*s" COLNONE " %-*s%s %s",
-                             data & 2                      ? ' ' :
+                    M_printf (COLSERVER "%s%c" COLCONTACT "%s%-*s" COLNONE "%s " COLMESSAGE "%s%-*s" COLNONE "%s %-*s%s%s" COLNONE "\n",
+                             ul, data & 2                  ? ' ' :
                              alias->flags & CONT_ALIAS     ? '+' :
                              cont->flags  & CONT_TEMPORARY ? '#' :
                              cont->flags  & CONT_INTIMATE  ? '*' :
@@ -1722,11 +1733,10 @@ static JUMP_F(CmdUserStatusDetail)
                              peer->connect & CONNECT_OK    ? '&' :
                              peer->connect & CONNECT_FAIL  ? '|' :
                              peer->connect & CONNECT_MASK  ? ':' : '.' ,
-                             lennick + s_delta (alias->nick), alias->nick,
-                             lenstat + 2 + s_delta (stat), stat,
-                             lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
-                             ver2 ? ver2 : "",
-                             cont->seen_time != -1L && data & 2 ? ctime ((time_t *) &cont->seen_time) : "\n");
+                             ul, lennick + s_delta (alias->nick), alias->nick,
+                             ul, ul, lenstat + 2 + s_delta (stat), stat,
+                             ul, lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
+                             ver2 ? ver2 : "", tbuf);
                 }
                 free (stat);
                 s_free (ver);
