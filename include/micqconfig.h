@@ -1,8 +1,3 @@
-/* If this is defined words will not be broken up at the screen's edge
-**  You should leave this defined unless something is broken or you like
-**  the ugly display  */
-#define WORD_WRAP
-
 /* Set this if your terminal is an ANSI terminal. Note: you can use color even
    if this is unset. */
 #define ANSI_TERM
