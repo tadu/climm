@@ -1153,6 +1153,8 @@ void ContactSetVersion (Contact *cont)
              dc->id3 == BUILD_TRILLIAN_ID3)
     {
         new = "Trillian";
+        /* Trillian only understands unicode in type-1 messages */
+        CLR_CAP (cont->caps, CAP_UTF8);
     }
     else if (dc->id1 == BUILD_LIBICQ2K_ID1 &&
              dc->id2 == BUILD_LIBICQ2K_ID2 &&
