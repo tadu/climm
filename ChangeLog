@@ -4,6 +4,7 @@
 	  timeout fixes; more #define cleanup; more gratious on changed
 	  connection status data and more quiet; ACK types;
 	  short: just fixes.
+	* ru.i18n update by "Pest".
 
 2002-05-15 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Debian merges.
