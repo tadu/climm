@@ -16,8 +16,8 @@
 #define SGR0            ESC "[0m"
 #define BOLD            ESC "[1m"
 
-#define COLCHR '©'
-#define COLSTR "©"
+#define COLCHR '!'
+#define COLSTR "!"
 
 #define CXNONE          0  /* "default" color */
 #define CXSERVER        1  /* server messages */
@@ -42,8 +42,8 @@
 #define COLINCOMING     ESC COLSTR "8"
 #define COLDEBUG        ESC COLSTR "9"
 
-#define COLINDENT       ESC "«"
-#define COLEXDENT       ESC "»"
+#define COLINDENT       ESC "v"
+#define COLEXDENT       ESC "^"
 #define COLMSGINDENT    ESC "<"
 #define COLMSGEXDENT    ESC ">"
 

@@ -148,13 +148,13 @@ void M_print (const char *org)
     {
         for (test = save = str; *test; test++)
         {
-            if (strchr ("\n\r\t\a\x1b", *test))
+            if (strchr ("\n\r\t\a\x1b", *test)) /* special character reached - emit text till last saved position */
             {
                 if (save != str)
                     test = save;
                 break;
             }
-            if (strchr ("-.,_:;!?/ ", *test))
+            if (strchr ("-.,_:;!?/ ", *test)) /* punctuation found - save position after it */
             {
                 temp = test + 1;
                 if (chardiff (temp, str) <= sw - CharCount)
@@ -171,19 +171,19 @@ void M_print (const char *org)
         }
         if (test != str)           /* Print out (block of) word(s) from str to test*/
         {
-            while (chardiff (test, str) > sw)
+            while (chardiff (test, str) > sw) /* word is longer than line, print till end of line */
             {
                 printf ("%.*s%*s", (int) charoff (str, sw - CharCount), str, IndentCount, "");
                 str += charoff (str, sw - CharCount);
                 CharCount = 0;
             }
-            if (chardiff (test, str) > sw - CharCount)
+            if (chardiff (test, str) > sw - CharCount) /* remainder doesn't fit anymore => linebreak */
             {
                 printf ("\n%*s", IndentCount, "");
                 CharCount = 0;
             }
-            printf ("%.*s", (int)charoff (str, test - str), str);
-            CharCount += charoff (str, test - str);
+            printf ("%.*s", test - str, str);
+            CharCount += chardiff (test, str);
             str = test;
         }
         switch (*str)           /* Take care of specials */
@@ -246,13 +246,13 @@ void M_print (const char *org)
                         }
                         str++;
                         break;
-                    case '«':
+                    case 'v':
                         IndentCount = CharCount;
                         sw -= IndentCount;
                         CharCount = 0;
                         str++;
                         break;
-                    case '»':
+                    case '^':
                         CharCount += IndentCount;
                         sw += IndentCount;
                         IndentCount = 0;
