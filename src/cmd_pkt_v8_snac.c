@@ -1054,10 +1054,10 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
                     break;
                 if (!tag) /* meta list of groups */
                     break;
-                if (!(cg = ContactGroupFind (tag, event->conn, name, 0)))
-                    if (!(cg = ContactGroupFind (tag, event->conn, NULL, 0)))
-                        if (!(cg = ContactGroupFind (0, event->conn, name, 0)))
-                            if (!IMROSTER_ISDOWN (data) || !(cg = ContactGroupFind (tag, event->conn, name, 1)))
+                if (!(cg = ContactGroupFind (event->conn, tag, name)))
+                    if (!(cg = ContactGroupFind (event->conn, tag, NULL)))
+                        if (!(cg = ContactGroupFind (event->conn, 0, name)))
+                            if (!IMROSTER_ISDOWN (data) || !(cg = ContactGroupC (event->conn, tag, name)))
                                 break;
                 if (IMROSTER_ISDOWN (data))
                 {
@@ -1070,7 +1070,7 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
             case 3:
             case 14:
             case 0:
-                cg = ContactGroupFind (tag, event->conn, NULL, 0);
+                cg = ContactGroupFind (event->conn, tag, NULL);
                 if (!tag || (!cg && data == IMROSTER_IMPORT))
                     break;
                 j = TLVGet (tlv, 305);
@@ -1189,17 +1189,17 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                         break;
                     p = PacketCreate (&tlv[j].str);
                     while ((id = PacketReadB2 (p)))
-                        if (!ContactGroupFind (id, event->conn, NULL, 0))
+                        if (!ContactGroupFind (event->conn, id, NULL))
                             if (IMROSTER_ISDOWN (data))
-                                ContactGroupFind (id, event->conn, "", 1);
+                                ContactGroupC (event->conn, id, s_sprintf ("<group #%d>", tag));
                     PacketD (p);
                 }
                 else
                 {
-                    if (!(cg = ContactGroupFind (tag, event->conn, name, 0)))
-                        if (!(cg = ContactGroupFind (tag, event->conn, NULL, 0)))
-                            if (!(cg = ContactGroupFind (0, event->conn, name, 0)))
-                                if (!IMROSTER_ISDOWN (data) || !(cg = ContactGroupFind (tag, event->conn, name, 1)))
+                    if (!(cg = ContactGroupFind (event->conn, tag, name)))
+                        if (!(cg = ContactGroupFind (event->conn, tag, NULL)))
+                            if (!(cg = ContactGroupFind (event->conn, 0, name)))
+                                if (!IMROSTER_ISDOWN (data) || !(cg = ContactGroupC (event->conn, tag, name)))
                                     break;
                     if (IMROSTER_ISDOWN (data))
                     {
@@ -1214,11 +1214,11 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
             case 3:
             case 14:
             case 0:
-                cg = ContactGroupFind (tag, event->conn, NULL, 0);
+                cg = ContactGroupFind (event->conn, tag, NULL);
                 if (!tag || (!cg && data == IMROSTER_IMPORT))
                     break;
-                if (!(cg = ContactGroupFind (tag, event->conn, NULL, 0)))
-                    if (!(cg = ContactGroupFind (tag, event->conn, s_sprintf ("<group #%d>", tag), 1)))
+                if (!(cg = ContactGroupFind (event->conn, tag, NULL)))
+                    if (!(cg = ContactGroupC (event->conn, tag, s_sprintf ("<group #%d>", tag))))
                         break;
                 j = TLVGet (tlv, 305);
                 assert (j < 200 || j == (UWORD)-1);

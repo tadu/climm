@@ -1736,7 +1736,7 @@ static JUMP_F(CmdUserStatusDetail)
     {
         const char *argst = args;
         if (s_parse (&argst, &arg1))
-            if ((tcg = cg = ContactGroupFind (0, conn, arg1, 0)))
+            if ((tcg = cg = ContactGroupFind (conn, 0, arg1)))
                 args = argst;
     }
 
@@ -1751,7 +1751,7 @@ static JUMP_F(CmdUserStatusDetail)
 
     if (data & 32)
     {
-        if (!(tcg = ContactGroupFind (0xcafe, conn, "\x01\x02\x03\x04\x05", 1)))
+        if (!(tcg = ContactGroupC (conn, 0, NULL)))
         {
             M_print (i18n (2118, "Out of memory.\n"));
             return 0;
@@ -2836,11 +2836,16 @@ static JUMP_F(CmdUserAdd)
         const char *argst = args;
         if (s_parse (&argst, &arg1))
         {
-            if ((cg = ContactGroupFind (0, conn, arg1, 0)))
+            if ((cg = ContactGroupFind (conn, 0, arg1)))
                 args = argst;
             else if (data == 2)
             {
-                if ((cg = ContactGroupFind (0, conn, arg1, 1)))
+                if ((cg = ContactGroupFind (conn, 0, arg1)))
+                {
+                    M_printf (i18n (9999, "Contact group '%s' already exists\n"), arg1);
+                    args = argst;
+                }
+                if ((cg = ContactGroupC (conn, 0, arg1)))
                 {
                     M_printf (i18n (2245, "Added contact group '%s'.\n"), arg1);
                     args = argst;
@@ -2958,7 +2963,7 @@ static JUMP_F(CmdUserRemove)
     {
         argst = args;
         if (s_parse (&argst, &alias))
-            if ((cg = ContactGroupFind (0, conn, alias, 0)))
+            if ((cg = ContactGroupFind (conn, 0, alias)))
                 args = argst;
         if (data == 2 && !cg)
         {
@@ -3189,6 +3194,7 @@ static JUMP_F(CmdUserURL)
 static JUMP_F(CmdUserTabs)
 {
     int i;
+    ANYCONN;
 
     for (i = 0, TabReset (); TabHasNext (); i++)
         TabGetNext ();
@@ -3198,12 +3204,11 @@ static JUMP_F(CmdUserTabs)
         UDWORD uin = TabGetNext ();
         Contact *cont;
         
-        cont = ContactFindCreate (NULL, 0, uin, NULL);
+        cont = ContactUIN (conn, uin);
         if (!cont)
             continue;
         M_printf ("    %s", cont->nick);
-        if (cont)
-            M_printf (COLMESSAGE " (%s)" COLNONE, s_status (cont->status));
+        M_printf (COLMESSAGE " (%s)" COLNONE, s_status (cont->status));
         M_print ("\n");
     }
     return 0;

@@ -252,9 +252,8 @@ void Initialize_RC_File ()
     prG->logplace  = strdup ("history" _OS_PATHSEPSTR);
     prG->chat      = 49;
 
-    conn->contacts = ContactGroupFind (0, conn, s_sprintf ("contacts-icq8-%ld", uin), 1);
+    conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%ld", uin));
     ContactFindCreate (conn->contacts, 0, 82274703, "R\xc3\xbc" "diger Kuhlmann");
-    ContactFindCreate (conn->contacts, 0, 82274703, "mICQ maintainer");
     ContactFindCreate (conn->contacts, 0, 82274703, "Tadu");
 
     if (uin)
@@ -313,8 +312,7 @@ int Read_RC_File (FILE *rcf)
                 section = 4;
                 if (format < 2)
                 {
-                    cg = ContactGroupFind (0, (Connection *)(-1), "", 1);
-                    cg->serv = NULL;
+                    cg = ContactGroupC (NULL, 0, NULL);
                     for (i = 0; (conn = ConnectionNr (i)); i++)
                         if (conn->flags & CONN_AUTOLOGIN)
                         {
@@ -1114,8 +1112,7 @@ int Read_RC_File (FILE *rcf)
         }
         if (format != 2 && !conn->contacts && conn->type & TYPEF_SERVER)
         {
-            conn->contacts = cg = ContactGroupFind (0, conn, s_sprintf ("contacts-%s-%ld",
-                                conn->type == TYPE_SERVER ? "icq8" : "icq5", conn->uin), 1);
+            conn->contacts = cg = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%ld", conn->type == TYPE_SERVER ? "icq8" : "icq5", conn->uin));
             for (i = 0; (cont = ContactIndex (NULL, i)); i++)
                 ContactFindCreate (cg, 0, cont->uin, cont->nick);
             dep = 21;
@@ -1172,8 +1169,7 @@ void PrefReadStat (FILE *stf)
             if (!strcasecmp (line, "[Group]"))
             {
                 section = 4;
-                cg = ContactGroupFind (0, (Connection *)(-1), "", 1);
-                cg->serv = NULL;
+                cg = ContactGroupC (NULL, 0, NULL);
                 for (i = 0; (conn = ConnectionNr (i)); i++)
                     if (conn->flags & CONN_AUTOLOGIN)
                     {
@@ -1335,10 +1331,9 @@ void PrefReadStat (FILE *stf)
     
     for (i = 0; (conn = ConnectionNr (i)); i++)
     {
-        if (!conn->contacts && conn->type & TYPEF_SERVER)
+        if (!conn->contacts && (conn->type & TYPEF_SERVER))
         {
-            conn->contacts = cg = ContactGroupFind (0, conn, s_sprintf ("contacts-%s-%ld",
-                                conn->type == TYPE_SERVER ? "icq8" : "icq5", conn->uin), 1);
+            conn->contacts = cg = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%ld", conn->type == TYPE_SERVER ? "icq8" : "icq5", conn->uin));
             dep = 21;
         }
     }

@@ -110,14 +110,16 @@ struct Contact_s
 };
 
 
+ContactGroup *ContactGroupC       (Connection *serv, UWORD id, const char *name);
+ContactGroup *ContactGroupFind    (Connection *serv, UWORD id, const char *name);
 ContactGroup *ContactGroupIndex   (int i);
-ContactGroup *ContactGroupFind    (UWORD id, Connection *serv, const char *name, BOOL create);
 UWORD         ContactGroupID      (ContactGroup *group);
 UDWORD        ContactGroupCount   (ContactGroup *group);
 void          ContactGroupD       (ContactGroup *group);
 
 /* NULL ContactGroup accesses global list */
 Contact      *ContactIndex        (ContactGroup *group, int i);
+Contact      *ContactUIN          (Connection *conn, UDWORD uin);
 Contact      *ContactFind         (ContactGroup *group, UWORD id, UDWORD uin, const char *nick);
 Contact      *ContactFindCreate   (ContactGroup *group, UWORD id, UDWORD uin, const char *nick);
 BOOL          ContactAdd          (ContactGroup *group, Contact *cont);
@@ -135,8 +137,6 @@ BOOL          ContactMetaSave     (Contact *cont);
 BOOL          ContactMetaLoad     (Contact *cont);
 
 const char   *ContactPref         (Contact *cont, UWORD flag);
-
-#define ContactUIN(conn,uin)   ContactFindCreate ((conn)->contacts, 0, uin, NULL)
 
 #define CONTACT_GENERAL(cont)  ((cont)->meta_general  ? (cont)->meta_general  : ((cont)->meta_general  = calloc (1, sizeof (MetaGeneral))))
 #define CONTACT_WORK(cont)     ((cont)->meta_work     ? (cont)->meta_work     : ((cont)->meta_work     = calloc (1, sizeof (MetaWork))))

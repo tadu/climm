@@ -409,7 +409,7 @@ void R_process_input_tab (void)
 
         if ((uin = TabGetNext ()))
         {
-            cont = ContactFindCreate (NULL, 0, uin, NULL);
+            cont = ContactFind (NULL, 0, uin, NULL);
             snprintf (s, sizeof (s), "%s %s ", msgcmd,
                       cont ? ConvFromUTF8 (cont->nick, prG->enc_loc, NULL)
                            : s_sprintf ("%ld", uin));
@@ -895,8 +895,9 @@ void R_settimepromptf (const char *prompt, ...)
  */
 void R_resetprompt (void)
 {
-    Contact *cont = ContactFindCreate (NULL, 0, uiG.last_sent_uin, NULL);
-    if (prG->flags & FLAG_UINPROMPT && uiG.last_sent_uin && cont)
+    Contact *cont;
+    if (prG->flags & FLAG_UINPROMPT && uiG.last_sent_uin
+        && (cont = ContactFind (NULL, 0, uiG.last_sent_uin, NULL)))
         R_setpromptf (COLSERVER "[%s]" COLNONE " ", cont->nick);
     else
         R_setpromptf (COLSERVER "%s" COLNONE, i18n (1040, "mICQ> "));

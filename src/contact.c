@@ -85,6 +85,40 @@ static void ContactGroupInit (void)
     }
 }
 
+ContactGroup *ContactGroupC (Connection *conn, UWORD id, const char *name)
+{
+    ContactGroup *cg;
+    int i;
+    
+    if (!cnt_groups)
+        ContactGroupInit ();
+
+    for (i = 1; i < cnt_count; i++)
+        if (!cnt_groups[i])
+            break;
+
+    if (i >= cnt_count - 1)
+    {
+        ContactGroup **ncgp = realloc (cnt_groups, sizeof (ContactGroup *) * (2 * cnt_count));
+        if (!ncgp)
+            return NULL;
+        cnt_groups = ncgp;
+        cnt_groups[i] = NULL;
+        cnt_count *= 2;
+    }
+
+    if (!(cg = calloc (1, sizeof (ContactGroup))))
+        return NULL;
+
+    cnt_groups[i + 1] = NULL;
+    cnt_groups[i] = cg;
+    cg->serv = conn;
+    cg->id = id;
+    s_repl (&cg->name, name);
+    Debug (DEB_CONTACT, "grpadd #%d %p %p '%s'", i, cg, conn, cg->name);
+    return cg;
+}
+
 /*
  * Iterates through the contact groups.
  */
@@ -100,47 +134,22 @@ ContactGroup *ContactGroupIndex (int i)
 /*
  * Finds and/or creates a contact group.
  */
-ContactGroup *ContactGroupFind (UWORD id, Connection *serv, const char *name, BOOL create)
+ContactGroup *ContactGroupFind (Connection *serv, UWORD id, const char *name)
 {
-    int i, j;
+    ContactGroup *cg;
+    int i;
     
     if (!cnt_groups)
         ContactGroupInit ();
     for (i = 1; i < cnt_count; i++)
-        if (    cnt_groups[i]
-            && (!id   || cnt_groups[i]->id   == id)
-            && (!serv || cnt_groups[i]->serv == serv)
-            && (!name || !strcmp (cnt_groups[i]->name, name)))
+        if (    (cg = cnt_groups[i])
+            && (!id   || cg->id   == id)
+            && (!serv || cg->serv == serv)
+            && (!name || !strcmp (cg->name, name)))
         {
-            return cnt_groups[i];
+            return cg;
         }
-    if (!create || !serv || !name)
-        return NULL;
-    for (i = 1; i < cnt_count; i++)
-        if (!cnt_groups[i])
-            break;
-    if (i >= cnt_count - 1)
-    {
-        ContactGroup **ncgp = realloc (cnt_groups, sizeof (ContactGroup *) * (2 * cnt_count));
-        if (!ncgp)
-            return NULL;
-        cnt_groups = ncgp;
-        cnt_groups[i] = NULL;
-        cnt_count *= 2;
-    }
-    cnt_groups[i + 1] = NULL;
-    cnt_groups[i] = calloc (1, sizeof (ContactGroup));
-    if (!cnt_groups[i])
-        return NULL;
-    Debug (DEB_CONTACT, "grpadd #%d %p %p", i, cnt_groups[i], serv);
-    cnt_groups[i]->id = id;
-    cnt_groups[i]->serv = serv;
-    cnt_groups[i]->name = strdup (name ? name : "");
-    cnt_groups[i]->more = NULL;
-    cnt_groups[i]->used = 0;
-    for (j = 0; j < MAX_ENTRIES; j++)
-        cnt_groups[i]->contacts[j] = NULL;
-    return cnt_groups[i];
+    return NULL;
 }
 
 /*
@@ -238,6 +247,53 @@ Contact *ContactIndex (ContactGroup *group, int i)
     return group->contacts[i];
 }
 
+static Contact *ContactC (UWORD id, UDWORD uin, const char *nick)
+{
+    Contact *cont;
+
+    if (!(cont = calloc (1, sizeof (Contact))))
+        return NULL;
+
+    cont->uin = uin;
+    cont->id = id;
+    cont->status = STATUS_OFFLINE;
+    cont->seen_time = -1L;
+    cont->seen_micq_time = -1L;
+    
+    s_repl (&cont->nick, nick ? nick : s_sprintf ("%ld", uin));
+
+    Debug (DEB_CONTACT, "new   #%d %ld '%s' %p", id, uin, nick, cont);
+    ContactAdd (NULL, cont);
+    return cont;
+}
+
+/*
+ * Finds a contact for a connection
+ */
+Contact *ContactUIN (Connection *conn, UDWORD uin)
+{
+    Contact *cont;
+    
+    if (!conn || !conn->contacts)
+        return NULL;
+
+    if (!cnt_groups)
+        ContactGroupInit ();
+
+    if ((cont = ContactFind (conn->contacts, 0, uin, NULL)))
+        return cont;
+    
+    if ((cont = ContactFind (conn->noncontacts, 0, uin, NULL)))
+        return cont;
+
+    if (!(cont = ContactC (0, uin, NULL)))
+        return NULL;
+
+    ContactAdd (conn->noncontacts, cont);
+    cont->group = conn->noncontacts;
+    return cont;
+}
+
 /*
  * Finds a contact on a contact group
  */
@@ -296,37 +352,28 @@ Contact *ContactFindCreate (ContactGroup *group, UWORD id, UDWORD uin, const cha
             return cont;
         ContactRem (group->serv->noncontacts, cont);
         ContactAdd (group, cont);
-        s_repl (&cont->nick, nick);
         cont->group = group;
-        Debug (DEB_CONTACT, "new   #%d %ld '%s' %p in %p was non-contact", id, uin, nick, cont, group);
+        s_repl (&cont->nick, nick);
+        Debug (DEB_CONTACT, "act   #%d %ld '%s' %p in %p", id, uin, nick, cont, group);
         return cont;
     }
     
-    cont = calloc (1, sizeof (Contact));
-    if (!cont)
+    if (!(cont = ContactC (id, uin, nick)))
         return NULL;
-    cont->uin = uin;
-    cont->id = id;
-    cont->status = STATUS_OFFLINE;
-    cont->seen_time = -1L;
-    cont->seen_micq_time = -1L;
-    
+
     if (nick)
     {
-        s_repl (&cont->nick, nick);
-        cont->group = group;
         ContactAdd (group, cont);
-        Debug (DEB_CONTACT, "new   #%d %ld '%s' %p", id, uin, nick, cont);
+        cont->group = group;
+        Debug (DEB_CONTACT, "act   #%d %ld '%s' %p", id, uin, nick, cont);
     }
     else
     {
-        s_repl (&cont->nick, s_sprintf ("%ld", uin));
-        cont->group = group->serv->noncontacts;
         ContactAdd (group->serv->noncontacts, cont);
+        cont->group = group->serv->noncontacts;
         Debug (DEB_CONTACT, "temp  #%d %ld %p", id, uin, cont);
     }
 
-    ContactAdd (NULL, cont);
     return cont;
 }
 
@@ -355,6 +402,7 @@ void ContactD (Contact *cont)
             ContactRem (cg, cont);
     ContactAdd (cont->group->serv->noncontacts, cont);
     cont->group = cont->group->serv->noncontacts;
+    Debug (DEB_CONTACT, "del   #%d %ld %p", cont->id, cont->uin, cont);
 }
 
 
