@@ -15,35 +15,22 @@ if (stat "../lang/en.i18n")
 
 open NRS, "<build.i18n" || die;
 
-{ my ($last, $neu) = (1020, 1020);
+{ my $neu = 0;
 sub NewNumber ()
 {
-    $last++;
-
-    if ($neu)
+    if (!$neu)
     {
-        if ($last < $neu)
+        while (<NRS>)
         {
-            return $last;
-        }
-        $last++;
-    }
-
-    while (<NRS>)
-    {
-        chomp;
-        if (m/^([0-9][0-9][0-9][0-9]):/)
-        {
-            $neu = $1;
-            if ($last < $neu)
+            chomp;
+            if (m/^([0-9][0-9][0-9][0-9]):/)
             {
-                return $last;
+                $neu = $1;
             }
-            $last = $neu + 1;
         }
     }
-    $neu = 0;
-    return $last;
+    $neu ++;
+    return $neu;
 }}
 
 %defstr = {};
