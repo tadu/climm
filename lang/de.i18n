@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.73 2005/01/24 21:17:30
+#  EN: __.i18n,v 1.75 2005/02/05 07:54:47
 1000:UTF-8
 1001:de
 1002:de_DE
@@ -1086,12 +1086,12 @@
 2318.Deutsche Übersetzung (%s) geladen (%ld Einträge).\n
 2319:Akzeptiere eingehende Dateiübertragung von <uin> oder <nick>.
 2320:peer accept <nick> [<id>]\n                  - akzeptiere eine eingehende Dateiübertragung.\n
-#2321:contact add     Add server based contact list to local contact list.\n
-#2322:contact sync    Import server based contact list if appropriate.\n
-#2323:contact export  Export local contact list to server based list.\n
-#2324:contact upload  Add local contacts to server based contact list.\n
-#2325:Warning: server based contact list change failed with error code %d.\n
-#2326:Server side contact list only supported for ICQ v8.\n
+2321:contact add     Füge Server-basierte Kontaktliste zur lokalen Kontaktliste hinzu.\n
+2322:contact sync    Importiere Server-basierte Kontaktliste, wenn diese aktueller ist.\n
+2323:contact export  Exportiere lokale Kontaktliste zur Server-basierten Kontaktliste.\n
+2324:contact upload  Füge lokale Kontakte zur Server-basierte Kontaktliste hinzu.\n
+2325:Warnung: Änderung an der Server-basierten Kontaktliste mit Fehlerkode %d fehlgeschlagen.\n
+2326:Die Server-basierte Kontaktliste wird erst ab Protokoll 8 unterstützt.\n
 2327:%smICQ (Matts ICQ-Klon)%s Version %s%s%s\n
 2328:Zu häufig eingeloggt, bitte 30 Minuten warten.\n
 2329:Syntax-Fehler
@@ -1216,9 +1216,9 @@
 2449:Primäre Kontaktgruppe für Kontakt "%s" ist jetzt "%s".\n
 2450:Die letzten %d Kontakte, mit denen kommuniziert wurde:\n
 2451:history <KontaKt> [<Start> [<Anzahl>]] -- Zeige geloggte Nachrichten von <Kontakt>.\n
-#2452:%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n
-#2453:    at %p parent %p assoc %p ssl %d\n
-#2454:    open %p reconn %p close %p err %p dispatch %p\n
+2452:%02d %-20s v%d%s für %s (%lx) bei %s:%ld %s\n
+2453:    bei %p übergeordnet %p zugehörig %p ssl %d\n
+2454:    öffne %p wiederverbinde %p schließe %p fehler %p ausführen %p\n
 2455:Über>
 2456:Unbekanntes Kommando %s, tippe %shelp%s für Hilfe.\n
 2457:Unbekanntes Konfigurationsdateiformatsversion %d.\n
@@ -1267,7 +1267,7 @@
 2500:Manuelle locale-Einstellung %s ignoriert - benutze stattdessen eine richtige locale.\n
 2501:Es ist keine locale ausgewählt. Mit der Kommandozeilenoption %s--i18n%s oder einer der Umgebungsvariablen %sLC_ALL%s, %sLC_MESSAGES%s, oder %sLANG%s kann eine locale ausgewählt werden.\n
 2502:Die locale-Einstellung %s ist keiner richtige locale und vermutlich nicht das gewünschte.\n
-2503:Das System kennt die locale %s locale - try %slocale -a%s.\n
+2503:Das System kennt die locale %s locale - try %siconv --list%s.\n
 2504:Konnte die Konfigurationsdatei %s%s%s nicht öffnen.
 2505:Veraltete Option -f benutzt. Verwende die ähnliche Option -b stattdessen.\n
 2506:Dieses Textfenster verwendet die Zeichenkodierung %s.\n
@@ -1304,7 +1304,7 @@
 2537:Hochladen von Kontakten fehlgeschlagen, Autorisierung erforderlich.\n
 2538:Hochladen von Kontakten fehlgeschlagen, Kontakt bereits auf dem Server.\n
 2539:Hochladen von Kontakten erfolgreich.\n
-#2540:    sound:      how to beep: off, on = beep, event.\n
+2540:    sound:      wie gepiepst werden soll: on (aus), on = beep (an), event (per Event-Skript).\n
 2541:Status
 2542:Kommandos, um den Status zu wechseln.
 2543:Kontakte
@@ -1332,3 +1332,6 @@
 2565:Hochladen von Kontakt %s%s%s fehlgeschlagen, Autorisierung erforderlich.\n
 2566:Hochladen von Kontakt %s%s%s fehlgeschlagen, Kontakt bereits auf dem Server.\n
 2567:Hochladen von Kontakt %s%s%s erfolgreich.\n
+2568:Anfrage von %s%s%s nach automatischer Antwort ignoriert.\n
+2569:Sende Nachricht <message> und weitere Nachrichten zu Kontakten <contacts>, bis abgebrochen wird.
+2570:Führe Unterhaltung mit %s%s%s fort:\n
