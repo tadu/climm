@@ -263,9 +263,6 @@ void Read_RC_File (FILE *rcf)
     char *tab_nick_spool[TAB_SLOTS];
     int spooled_tab_nicks;
 
-    prG->away_time = default_away_time;
-    prG->tabs = TABS_SIMPLE;
-
     spooled_tab_nicks = 0;
     for (section = 0; !M_fdnreadln (rcf, buf, sizeof (buf)); )
     {
@@ -429,15 +426,15 @@ void Read_RC_File (FILE *rcf)
                         prG->sound_on_cmd = strdup (tmp);
                     }
                 }
-                else if (!strcasecmp (tmp, "Auto_away"))
+                else if (!strcasecmp (tmp, "auto_away"))
                 {
                     prG->away_time = atoi (strtok (NULL, " \n\t"));
                 }
-                else if (!strcasecmp (tmp, "Screen_width"))
+                else if (!strcasecmp (tmp, "screen_width"))
                 {
                     prG->screen = atoi (strtok (NULL, " \n\t"));
                 }
-                else if (!strcasecmp (tmp, "Tab"))
+                else if (!strcasecmp (tmp, "tab"))
                 {
                     if (spooled_tab_nicks < TAB_SLOTS)
                         tab_nick_spool[spooled_tab_nicks++] = M_strdup (strtok (NULL, "\n\t"));

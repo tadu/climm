@@ -116,6 +116,9 @@ void PrefLoad (Preferences *pref)
 {
     FILE *rcf;
     
+    pref->away_time = default_away_time;
+    pref->tabs = TABS_SIMPLE;
+
     rcf = PrefOpenRC (pref);
     if (rcf)
         Read_RC_File (rcf);
