@@ -1528,7 +1528,8 @@ static void TCPCallBackResend (Event *event)
     Connection *peer = event->conn;
     Packet *pak = event->pak;
     UWORD delta, e_trans;
-    char isfile = ExtraGet (event->extra, EXTRA_MESSAGE) == MSG_FILE;
+    int msgtype = ExtraGet (event->extra, EXTRA_MESSAGE);
+    char isfile = msgtype == MSG_FILE || msgtype == MSG_SSL_OPEN;
 
     if (!peer || !cont)
     {
