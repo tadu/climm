@@ -80,8 +80,11 @@ void UtilUIDisplayMeta (Contact *cont)
     if (!cont)
         return;
 
-    M_printf (i18n (2236, "Information for %s%s%s (%ld):\n"),
-              COLCONTACT, cont->nick, COLNONE, cont->uin);
+    if ((cont->updated & (UPF_GENERAL_E | UPF_GENERAL_A)) == UPF_GENERAL_E)
+        M_printf ("%s " COLSERVER "%lu" COLNONE "\n", i18n (1967, "More Info for"), cont->uin);
+    else
+        M_printf (i18n (2236, "Information for %s%s%s (%ld):\n"),
+                  COLCONTACT, cont->nick, COLNONE, cont->uin);
     
     if ((dc = cont->dc))
     {
@@ -99,7 +102,7 @@ void UtilUIDisplayMeta (Contact *cont)
     if (cont->encoding)
         M_printf (COLSERVER "%-15s" COLNONE " %s\n",
                   i18n (2257, "Encoding:"), ConvEncName (cont->encoding));
-    if ((mg = cont->meta_general))
+    if ((mg = cont->meta_general) && cont->updated & UPF_GENERAL_A)
     {
         M_printf (COLSERVER "%-15s" COLNONE " " COLCONTACT "%s" COLNONE "\t%s\n",
                   i18n (1500, "Nickname:"), mg->nick ? mg->nick : "",
@@ -115,6 +118,9 @@ void UtilUIDisplayMeta (Contact *cont)
         if (mg->email && *mg->email)
             M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
                       i18n (1566, "Email address:"), mg->email);
+    }
+    if (mg && cont->updated & (UPF_GENERAL_B | UPF_GENERAL_E))
+    {
         if (mg->city && *mg->city && mg->state && *mg->state)
             M_printf (COLSERVER "%-15s" COLNONE " %s, %s\n",
                      i18n (1505, "Location:"), mg->city, mg->state);
@@ -126,12 +132,18 @@ void UtilUIDisplayMeta (Contact *cont)
             M_printf (AVPFMT, i18n (1506, "Phone:"), mg->phone);
         if (mg->fax && *mg->fax)
             M_printf (AVPFMT, i18n (1507, "Fax:"), mg->fax);
+    }
+    if (mg && cont->updated & UPF_GENERAL_B)
+    {
         if (mg->street && *mg->street)
             M_printf (AVPFMT, i18n (1508, "Street:"), mg->street);
         if (mg->cellular && *mg->cellular)
             M_printf (AVPFMT, i18n (1509, "Cellular:"), mg->cellular);
         if (mg->zip && *mg->zip)
             M_printf (AVPFMT, i18n (1510, "Zip:"), mg->zip);
+    }
+    if (mg && cont->updated & (UPF_GENERAL_B | UPF_GENERAL_E))
+    {
         if ((tabd = TableGetCountry (mg->country)) != NULL)
             M_printf (COLSERVER "%-15s" COLNONE " %s\t", 
                      i18n (1511, "Country:"), tabd);
@@ -139,13 +151,21 @@ void UtilUIDisplayMeta (Contact *cont)
             M_printf (COLSERVER "%-15s" COLNONE " %d\t", 
                      i18n (1512, "Country code:"), mg->country);
         M_printf ("(UTC %+05d)\n", -100 * (mg->tz / 2) + 30 * (mg->tz % 2));
+    }
+    if (mg && cont->updated & UPF_GENERAL_C)
+    {
         M_printf (COLSERVER "%-15s" COLNONE " %s\n", i18n (2237, "Webaware:"),
                        !mg->webaware      ? i18n (1969, "offline") :
                         mg->webaware == 1 ? i18n (1970, "online")  :
                         mg->webaware == 2 ? i18n (1888, "not webaware") :
                                             s_sprintf ("%d", mg->webaware));
+    }
+    /* FIXME Needs to be flagged if this is set, otherwise it's output as zero
+     * which is surely not correct in all cases.
+     */
+    if (mg && 0)
+    {
         M_printf (COLSERVER "%-15s" COLNONE " %d\n", i18n (2238, "Hide IP:"), mg->hideip);
-
     }
     if ((me = cont->meta_email))
     {
@@ -161,7 +181,8 @@ void UtilUIDisplayMeta (Contact *cont)
                          : "");
         }
     }
-    if ((mm = CONTACT_MORE (cont)))
+    if ((mm = cont->meta_more) 
+        && cont->updated & (UPF_MORE | UPF_GENERAL_C | UPF_GENERAL_E))
     {
         if (mm->age && ~mm->age)
             M_printf (COLSERVER "%-15s" COLNONE " %d\n", 
@@ -174,10 +195,14 @@ void UtilUIDisplayMeta (Contact *cont)
                    mm->sex == 1 ? i18n (1528, "female")
                  : mm->sex == 2 ? i18n (1529, "male")
                  :                i18n (1530, "not specified"));
-
+    }
+    if (mm && cont->updated & (UPF_MORE | UPF_GENERAL_E))
+    {
         if (mm->homepage && *mm->homepage)
             M_printf (AVPFMT, i18n (1531, "Homepage:"), mm->homepage);
-
+    }
+    if (mm && cont->updated & UPF_MORE)
+    {
         if (mm->month >= 1 && mm->month <= 12 && mm->day && mm->day < 32 && mm->year)
             M_printf (COLSERVER "%-15s" COLNONE " %02d. %s %4d\n", 
                 i18n (1532, "Born:"), mm->day, TableGetMonth (mm->month), mm->year);
@@ -198,7 +223,7 @@ void UtilUIDisplayMeta (Contact *cont)
         if (mm->unknown)
             M_printf (COLSERVER "%-15s" COLNONE " %d\n", i18n (2239, "Unknown more:"), mm->unknown);
     }
-    if ((mw = CONTACT_WORK (cont)))
+    if ((mw = cont->meta_work))
     {
         if (mw->wcity && *mw->wcity && mw->wstate && *mw->wstate)
             M_printf (COLSERVER "%-15s" COLNONE " %s, %s\n", 
@@ -275,7 +300,7 @@ void UtilUIDisplayMeta (Contact *cont)
                 M_printf ("  %ld: %s\n", ml->data, ml->text);
         }
     }
-    if ((mo = CONTACT_OBSOLETE (cont)))
+    if ((mo = cont->meta_obsolete))
     {
         if (mo->unknown)
             M_printf (COLSERVER "%-15s" COLNONE " %04x = %d\n",

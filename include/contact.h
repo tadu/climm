@@ -150,6 +150,8 @@ BOOL          ContactMetaLoad   (Contact *cont);
 #define UPF_BACKGROUND  0x0080
 #define UPF_AFFILIATION 0x0100
 #define UPF_OBSOLETE    0x0200
+#define UPF_GENERAL_C   0x0400
+#define UPF_GENERAL_E   0x0800
 
 #define UPF_DISC        0x1000
 #define UPF_SERVER      0x2000
