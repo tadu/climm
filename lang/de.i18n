@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.43 2002/09/10 02:20:59
+#  EN: __.i18n,v 1.47 2002/09/23 23:51:32
 1001:de
 1002:de_DE
 1003:0-4-9-3
@@ -185,7 +185,7 @@
 ##
 ## Länder
 ##
-1199:Unbekanntes Land
+1199.Unbekanntes Land
 1200:Nicht angegeben
 1201:Afghanistan
 1202:Albanien
@@ -255,7 +255,7 @@
 1266:Estland
 1267:Äthiopien
 1268:Ehemaliges Jugoslavien
-#1269:Faeroe Islands
+1269:Färöer Inseln
 1270:Falkland-Inseln
 1271:Vereinigte Staaten von Mikronesien
 1272:Fidschi
@@ -288,8 +288,8 @@
 1299:Island
 1300:Indien
 1301:Indonesien
-#1302:INMARSAT
-#1303:INMARSAT Atlantic-East
+1302:maritim (INMARSAT)
+1303:maritim (INMARSAT) Ost-Atlantik
 1304:Iran
 1305:Irak
 1306:Irland
@@ -384,36 +384,36 @@
 ##
 1393:erfolgreich
 1394:erfolglos
-1400:Zeigt zwischengespeicherte Informationen über Benutzer.
+1400:Zeigt lokale Infos über <uin> bzw. <nick>, oder über einen selbst.
 1401:Ändert weitere Informationen wie Alter und Geschlecht.
 1402:Ändert "Über"-Informationen.
-1403:Zeigt die letzte von <nick> empfangene Nachricht, oder eine Liste derjenigen Benutzer, die schon einmal eine Nachricht geschickt haben.
-1404:Setzt auf bzw. entfernt <nick> von der Ignorier-Liste.
+1403:Zeigt die letzte Nachricht von <uin> bzw. <nick>, oder von allen, die schon einmal eine Nachricht geschickt haben.
+1404:Setzt auf bzw. entfernt <uin> bzw. <nick> von der Ignorier-Liste.
 1405:Listet ignorierte Benutzer.
-1406:Ändere Sichtbarkeit gegenüber <nick> im Status "unsichtbar".
-1407:Zeigt den Online-Status der Leute auf der Kontaktliste an.
-1408:Ändert das Passwort in <secret>.
-1409:Sendet eine Nachricht an uin bzw. nick.
-1410:Sendet eine Nachricht und URL an <uin>.
+1406:Ändere Sichtbarkeit gegenüber <uin> bzw. <nick> im Status "unsichtbar".
+1407:Zeigt den Status aller verbundenen Kontakte an.
+1408:Ändert das Passwort in <password>.
+1409:Sendet eine Nachricht an <uin> bzw. <nick>.
+1410:Sendet eine Nachricht und URL an <uin> bzw. <nick>.
 1411:Sendet eine mehrzeilige Nachricht an JEDEN in der Kontaktliste.
 1412:Sendet eine Nachricht zu der letzten Person, zu der du eine Nachricht geschickt hast.
-1413:Erlaubt uin bzw. nick das Hinzufügen zu seiner Kontaktliste.
+1413:Erlaubt <uin> bzw. <nick> das Hinzufügen zu seiner Kontaktliste.
 1414:Antwort auf die letzte Nachricht, die du bekommen hast.
 1415:Findet einen zufälligen User in der Interessengruppe <nr> oder listet alle Gruppen.
-1416:Zeigt den momentanen Status aller Benutzer auf der Kontaktliste.
+1416:Zeigt den Status aller Kontakte an.
 1417:Benennt Kommando <old cmd> in <new cmd> um.
 1418:Setzt den Grad der Ausführlichkeit auf <nr>, oder zeigt Grad der Ausführlichkeit an.
 1419:Löscht den Bildschirm.
 1420:Schaltet das Piepsen beim Erhalt von Nachrichten an/aus, setzt ein Kommando für dieses Ereignis oder zeigt den aktuellen Status dieser Option an.
 1422:Logt aus und beendet mICQ.
-1423:Zeigt on, ob und welche automatischen Antwortet gegeben werden.
+1423.Zeigt on, ob und welche automatischen Antwortet gegeben werden.
 1424:Aktiviert bzw. deaktiviert automatische Antworten.
 1425:Ändert die automatische Antwort im Status <status> auf <message>.
 1426:Erzeugt eine neue Benutzernummer mit dem Paßwort <password>.
 1427:Wechselt in den Status <nr> oder listet die Bedeutung einiger Status-Nummern.
-1428:Fügt uin zu deiner Kontaktliste mit Spitzname nick hinzu oder nennt es um.
-1429:Sucht nach einem ICQ-Benutzer mit eMail-Adresse <email>.
-1430:Zeigt grundlegende Informationen über <uin> an.
+1428:Fügt <uin> als <new-nick> hinzu, oder vergebe Zweit-Namen für <uin> bzw. <nick>.
+1429:Sucht nach einem ICQ-Benutzer.
+1430:Zeigt grundlegende Informationen über <uin> bzw. <nick> an.
 1431:-verbunden-
 1432:-nicht da-
 1433:-nicht erreichbar-
@@ -427,13 +427,13 @@
 1441:IP-Adresse:
 1442:Bitte wähle eines der Hilfe-Themen.
 1443:Kommandos, um mICQ zu konfigurieren.
-1444:Kommandos, um andere User zu finden.
-1445:Kommandos, zu deinem ICQ-Account.
-1446:Kommandos, wie man Nachrichten an andere User schickt.
-1447:Client
+1444:Kommandos, um andere User zu finden oder sehen.
+1445:Kommandos, um Einstellungen am ICQ-Account vorzunehmen.
+1446:Kommandos, um anderen Benutzern Nachrichten zu schicken.
+1447:Konfig
 1448:Nachricht
-1449:User
-1450:Account
+1449:Benutzer
+1450:Status
 1451:IP-Adresse 2:
 1452:Status:
 1453:TCP-Version:
@@ -550,10 +550,10 @@
 1578:Landesvorwahl:
 1579:Firma:
 1584:Warnung! Befehl "%s" mit Rückgabewert %d fehlgeschlagen¶
-1585:Arrgghh!!!!!!!  Schlechtes Paket.
+1585.Arrgghh!!!!!!!  Schlechtes Paket.
 1587:Abteilung:
-1590:bittet um Autorisierung, Sie auf seine Kontaktliste zu setzen.
-1591:Grund:
+1590.bittet um Autorisierung, Sie auf seine Kontaktliste zu setzen.
+1591.Grund:
 1592:<%s> schickt eine Nachricht per eMail:¶
 1593:<%s> schickt eine Nachricht per Web:¶
 1595:¶Kontaktliste:¶============================================¶%d Kontakte.¶
@@ -586,7 +586,7 @@
 1623:Doppeltes Paket %04X.¶
 #1624:Sorry, can't initialize Windows Sockets...
 1632:¶Verbindung instabil. Beende...
-#1634:ok¶
+1634:ok.¶
 1637:Kann Kommunikationsendpunkt nicht mit einem freien Anschluß verknüpfen.¶
 1638:Konnte Verbindungsendpunkt nicht erzeugen
 1639:Die neue Benutzernummer ist %ld!¶
@@ -601,7 +601,7 @@
 1649:Die Version war %X	
 1650:¶Die Folgenummer war %04X	
 1651:Die Größe war %d¶
-1652:Ungenügend Speicher, um eine ausführliche Kontaktliste darzustellen.¶
+1652.Ungenügend Speicher, um eine ausführliche Kontaktliste darzustellen.¶
 1653:Abgeklemmt
 1654:Verbunden
 1655:Geben Sie die eMail-Adresse des Benutzers ein:
@@ -616,8 +616,8 @@
 1670:Für %s jetzt normal sichtbar.
 1671:Für %s jetzt immer sichtbar.
 1672:%ss IP-Adresse ist 
-1673:	Der Port ist %d.¶
-1674:	Der Port ist unbekannt.¶
+1673:Der Port ist %d.¶
+1674:Der Port ist unbekannt.¶
 1675:Ignoriere Zeile:
 1676:Benötige Benutzernummer/Spitzname, an die ich schicken soll.¶
 1678:Benötige URL.¶
@@ -666,8 +666,8 @@
 1745:Unbekannt
 1746: Nr Type                aus/eingehend Pakete/identische Pakete¶
 1747:Gesamt
-1749:Benutzernummer %d in %s umbenannt.¶
-1751:Spitzname %s entfernt.
+1749.Benutzernummer %d in %s umbenannt.¶
+1751.Spitzname %s entfernt.
 1754: Hinweis: Sie müssen diese Änderung mit "save" abspeichern.¶
 1755:hat Sie zu seiner Kontaktliste hinzugefügt.¶
 1756:¶Erstelle Verbindung...¶
@@ -683,8 +683,8 @@
 1766:Automatische Abwesenheit bzw. Nichtverfügbarkeit nach %s%d%s Sekunden.¶
 1767:Schaltet die automatische Abwesenheitsschaltung an oder ab.
 1768:Der Bezeichner '%s' ist schon in Verwendung.¶
-1769:Zeigt Deinen aktuellen Verbindungsstatus.
-1770:Sendet die letzte Nachricht an einen neuen Benutzer.
+1769.Zeigt Deinen aktuellen Verbindungsstatus.
+1770:Sendet die letzte Nachricht an <uin> bzw. <nick>.
 1771:Noch keine Nachricht an irgendwen verschickt!¶
 1774:Eingehendes Paket:
 1775:Ausgehendes Paket:
@@ -708,8 +708,8 @@
 1797:Finanzen und Firmen
 1798:Grundschule
 1799:weiterführende Schule
-1800:Wählt die Sprache <lang> aus.
-1801:Zeigt die Kontaktliste im ausführlichen Format an.
+1800:Wählt die Sprache <lang> aus, oder zeigt Text <nr> an.
+1801:Zeigt den Status aller Kontakte im breiten Format an.
 1802:Klang-Befehl, wenn jemand verbindet:
 1803:Klang-Befehl, wenn jemand sich abmeldet:
 1804:Klang, wenn jemand verbindet:
@@ -738,8 +738,8 @@
 1844:Direktverbindungs-Nachricht vm Typ %04x wegen Zeitüberschreitung weggeworfen.¶
 1845:Spitzname %s unbekannt.¶
 1846:Öffnet und schließt Direkt-Verbindungen:¶
-1847:    open  <nick> - Öffnet eine Direkt-Verbindung.¶
-1848:    close <nick> - Schließt Direkt-Verbindung.¶
+1847:peer open  <nick> - Öffnet eine Direkt-Verbindung.¶
+1848:peer close <nick> - Schließt Direkt-Verbindung.¶
 #1849:Error on select: %s (%d)¶
 1850:Zeitüberschreibtung bei Verbindung mit %s zu %s:%d.¶
 1855:Direkt-Verbindung zu %s bei %s:%d ist fehlgeschlagen.¶
@@ -750,7 +750,7 @@
 1867:Empfange fehlerhaftes (zu kurzes) packet - ignored.¶
 1868:Empfange fehlerhaftes (zu kurzes Unterpaket) Mehrfach-Paket - Rest ignoriert.¶
 1869:Versionen kleiner als 5 werden nicht mehr unterstützt.¶
-1870:    off   <nick> - Schaltet die Benutzung von Direkt-Verbindungen ab.¶
+1870:peer off   <nick> - Schaltet die Benutzung von Direkt-Verbindungen ab.¶
 1871:Öffne Verbindung zu v8-Server bei %s:%d... 
 1872:fehlgeschlagen: %s (%d).¶
 1873:Arbeits-Stadt:
@@ -780,7 +780,7 @@
 1898:Weiterleitung zu Server %s... 
 1899:Unbekannte Befehlsfamilie angefordert: %d.¶
 1900:Nur lesbar.
-1901:hat Dich authorisiert, ihn zu Deiner Kontaktliste hinzuzufügen.¶
+1901:hat die Autorisierung erteilt.¶
 1902:Öffne Verbindung zu v5-Server bei %s:%d... 
 1903:Ausgehendes v8-Server-Paket:
 1904:Der Server versteht Version %d (nur Version %d) für Familie %d!¶
@@ -805,7 +805,7 @@
 1927:Für Plaudereien frei
 1929:[Automatische Nachricht] Bitte nicht stören (Do Not Disturb)
 #1930:Can't send this (%x) yet.¶
-1931:Keine Verbindung zum Server.¶
+1931:Die aktuelle Verbindung ist geschlossen; bitte eine andere wählen oder diese öffnen.¶
 1934:verbunden
 #1935:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x¶
 1936:Bitte Mindestalter eingeben (18-22,23-29,30-39,40-49,50-59,60-120):
@@ -893,15 +893,15 @@
 2034:Öffne Direktverbindung auf %s:%d... 
 2035:Zeige Betriebszeit und einige Statistiken an.
 2036:Speichere die aktuellen Einstellungen.
-2037:Öffne oder schließe eine Direktverbindung, oder schalte die Verwendung einer Direktverbindung für uin|nick ab.
-2038:Öffne Verbindung Nummer nr.
+2037:Öffne oder schließe eine Direktverbindung, oder schalte die Verwendung einer Direktverbindung für <uin> bzw. <nick> ab.
+2038:Öffne Verbindung Nummer <nr>, oder die erste Server-Verbindung.
 2039:Sende eine Nachricht an ein Handy.
 2040:Schaltet das Piepsen bei sich verbindenden Kontakten an/aus, setzt ein Kommando für dieses Ereignis oder zeigt den aktuellen Status dieser Option an.
 2041:Schaltet das Piepsen bei sich trennenden Kontakten an/aus, setzt ein Kommando für dieses Ereignis oder zeigt den aktuellen Status dieser Option an.
-2042:Zeigt die verbundenen Mitglieder der Kontaktliste im ausführlichen Format an.
-2043:Entfernt einen Kontakt aus der Kontaktliste.
+2042:Zeigt den Status aller verbundenen Kontakte im breiten Format an.
+2043:Entfernt Zweit-Namen <alias> bzw. <uin>, oder entfernt Kontakt aus der Kontaktliste.
 2044:Setzt oder löscht eine Option.
-2045:Setzt oder löscht die Unsichtbarkeit für andere Benutzer.
+2045:Setzt oder löscht die Unsichtbarkeit für <uin> bzw. <nick>.
 2046:Sie sollten die Version 8 (statt Version 6) für Direktverbindungen wählen.¶
 2047:Erzeuge Verzeichnis %s.¶
 2048:Speichere Einstellungen in %s.¶
@@ -912,11 +912,11 @@
 #2053:TCP %s seq %x type %x status %x flags %x: '%s'¶
 2054:Die für-Plaudereien-frei-Nachricht ist:
 2055:Der Benutzer ist für Plauereien frei und möchte über alles plaudern.
-2056:    auto  <nick> - Hole die automatische Antwort von diesem Kontakt.¶
-2057:    away  <nick> - Hole die automatische Antwort für "weg" von diesem Kontakt.¶
-2058:    na    <nick> - Hole die automatische Antwort für "nicht verfügbar" von diesem Kontakt.¶
-2059:    dnd   <nick> - Hole die automatische Antwort für "nicht stören" von diesem Kontakt.¶
-2060:    ffc   <nick> - Hole die automatische Antwort für "für Plaudereien frei" von diesem Kontakt.¶
+2056:peer auto  <nick> - Hole die automatische Antwort von diesem Kontakt.¶
+2057:peer away  <nick> - Hole die automatische Antwort für "abwesend" von diesem Kontakt.¶
+2058:peer na    <nick> - Hole die automatische Antwort für "nicht verfügbar" von diesem Kontakt.¶
+2059:peer dnd   <nick> - Hole die automatische Antwort für "nicht stören" von diesem Kontakt.¶
+2060:peer ffc   <nick> - Hole die automatische Antwort für "für Plaudereien frei" von diesem Kontakt.¶
 2061:Lehne Dateiübertragung von "%s" (%d Bytes) ab %s (unbekannt: %x, %x),¶
 2063:Sie müssen Ihr Paßwort in Ihrem ~/.micq/micqrc speichern.¶
 2064:Lehne Plaudereianfrage (%s/%s/%s) von %s ab.¶
@@ -927,7 +927,7 @@
 2069:Dateiübertragung "%s" vom Gegenüber abgelehnt (%x,%x): %s.¶
 2070:Dateiübertragung "%s" zu Anschluß %d.¶
 2071:Kann Datei "%s" nicht finden: %s (%d).¶
-2072:Breche Dateiübertragung %d (%s) wegen geschlossener Verbindung ab.¶
+2072:Dateiübertragung Nummer %d (%s) wegen geschlossener Verbindung abgebrochen.¶
 2073:Speicherverbrauch: %d Pakete.¶
 2078:Ausgehendes TCP-Paket (%d - %s): %s
 2079:Eingehendes TCP-Paket (%d - %s): %s
@@ -936,7 +936,7 @@
 2082:Öffne Kommunikationsendpunkt für Dateiübertragungen auf localhost:%d... 
 2083:Kann Datei "%s" nicht öffnen: %s (%d).¶
 2084:Fehler beim Suchen vom %d. Byte: %s (%d).¶
-2085:Breche Dateiübertragung %d %d wegen Zeitüberschreitung ab.¶
+2085.Breche Dateiübertragung %d %d wegen Zeitüberschreitung ab.¶
 2086:Fehler beim Lesen der Datei "%s": %s (%d).¶
 2087:Datei "%s" fertig gesendet.¶
 2088:Alle %d Dateien fertig gesendet.¶
@@ -944,7 +944,7 @@
 2090:Dateiübertragung
 2091:Reihe "%s" als "%s" in die Warteschlange für Dateiübertragung ein.¶
 2092:Direktverbindungsnachricht %s weggeworfen - Verbindung verschwunden.¶
-2093:%02d %-12s Version %d für %s (%x) zu %s:%d %s¶
+2093:%02d %-20s Version %d für %s (%x) zu %s:%d %s¶
 2094:conn login         Öffne erste Server-Verbindung.¶
 2095:conn remove <nr>   Entferne Verbindung <nr>.¶
 2096:Verbindung %d ist nicht offen.¶
@@ -961,9 +961,9 @@
 2107:Noch keine Nachrichten von %s%s%s empfangen.¶
 2108:automatisch
 2109:Version
-2110:    file <Spitz> <Datei1> <Als1> ... <Beschreibung>¶
-2111:                 - Sende Datei1 als Als1, ..., mit Beschreibung.¶
-2112:                 - Als = "/": entferne Pfad, Als = ".": wie Datei¶
+2110:peer file <Spitz> <Datei1> <Als1> ... [<Beschreibung>]¶
+2111:                  - Sende Datei1 als Als1, ..., mit Beschreibung.¶
+2112:                  - Als = "/": entferne Pfad, Als = ".": wie Datei¶
 2113:Unbekannter Status "%s".¶
 2114:Der Befehlsname "%s" existiert nicht.¶
 2115:"%s" ist keine ganze Zahl.¶
@@ -977,6 +977,7 @@
 2123:%sSyntax-Fehler%s: Zu wenige Argumente: '%s'¶
 2124:%sSyntax-Fehler%s: Keine ganze Zahl: '%s'¶
 2126:Der Benutzer ist nicht verbunden, die Nachricht (%s#%08lx:%08lx%s) wird eingereiht.¶
+2127:       URL: %s%s%s%s¶
 2128: Beschreibung: %s%s%s¶
 2129:          URL: %s%s%s¶
 2130:Erstelle Nachricht an %salle%s:¶
@@ -991,3 +992,46 @@
 2139:Änderung der sonstigen Informationen war %s%s%s.¶
 2140:Interessengruppenänderung war %s%s%s.¶
 2141:Suche %sfehlgeschlagen%s.¶
+2142:Direkt-Verbindung mit %s nicht möglich.¶
+2143:hat die Autorisierung abgelehnt: %s%s%s¶
+2144:fragt Autorisierung an: %s%s%s¶
+2145:auth add  <Spitz>         - Nach Autorisierung hinzugefügt.¶
+2146:"%s" ist bereits ein Zweit-Name für "%s" (%d).¶
+2147:"%s" (%d) wird bereits als Spitzname verwendet.¶
+2148:"%s" ist jetzt ein Zweit-Name für "%s" (%d).¶
+2149:Entferne Zweit-Name "%s" für "%s" (%d).¶
+2150:Entferne Kontakt "%s" (%d).¶
+2151:Es gibt keinen Kontakt mit Benutzernummer %d mehr auf der Kontaktliste.¶
+2152:Schließe Server-Verbindung (Version 5).¶
+2153:Schließe Server-Verbindung (Version 8).¶
+2154:Schließe Nachrichten-Annahme.¶
+2155:Schließe Direktverbindung.¶
+2156:conn close <nr>    Schließe Verbindung <nr>.¶
+2157:Moldavien
+2158:Keine Datei angegeben.¶
+2159:Ein paar Dateien.
+2160:peer file  <Spitz> <Datei> [<Beschreibung>]¶
+2161:Empfange %d Dateien mit zusammen %d Bytes in Geschwindigkeit %x von %s.¶
+2162:Empfange Datei %s (%s) mit %d Bytes als %s.¶
+2163:Sende Datei %d, setze nach %d Bytes fort.¶
+2164:Fehler beim Schreiben in die Datei.¶
+2165:Das Gegenüber hat mehr Bytes (%d) gesendet als vorher angegeben (%d).¶
+2166:Datei erfolgreich empfangen.¶
+2167:Fehler - unbekanntes Paket.¶
+2168:Dateiübertragung Nummer #%d (%s) nach %d Versuchen wegen Zeitüberschreitung abgebrochen.¶
+2169:Dateiübertragung von Gegenüber abgebrochen (%d).¶
+2170:Sende mit Geschwindigkeit %x zu %s.¶
+2171:Weiteres
+2172:Kommandos für Fortgeschrittenes.
+2173:Lehne Autorisierungsanfrage von <uin> bzw. <nick> ab.
+2174:Request authorization from <uin> or <nick>.
+2175:Teile <uin> bzw. <nick> das Hinzufügen nach Autorisierung mit.
+2176:Zeigt den Status aller Kontakte im ausführlichen Format an.
+2177:Zeigt den Status aller verbundenen Kontakte im ausführlichen Format an.
+2178:Frage automatische Nachricht von <uin> bzw. <nick> ab.
+2179:Schickt <uin> bzw. <nick> eine einzelne Datei.
+2180:Schickt <uin> bzw. <nick> mehrere Dateien.
+2181:Schließt bzw. entfernt Verbindung Nummer <nr>.
+2182:Wählt <nr> als aktuelle Server-Verbindung.
+2183:Überprüft, ob <uin> bzw. <nick> nur unsichtbar oder nicht verbunden ist.
+2184:%s%-10s%s - %s¶
