@@ -42,7 +42,6 @@
 #include "cmd_pkt_cmd_v5_util.h"
 #include "preferences.h"
 #include "util_io.h"
-#include "contact.h"
 #include "remote.h"
 #include "cmd_pkt_v8.h"
 #include "session.h"
@@ -298,10 +297,7 @@ int Read_RC_File (FILE *rcf)
     UDWORD uin, i, j;
     UWORD flags;
     UBYTE enc = ENC_LATIN1, format = 0;
-    char *tab_nick_spool[TAB_SLOTS];
-    int spooled_tab_nicks;
 
-    spooled_tab_nicks = 0;
     for (section = 0; (line = UtilIOReadline (rcf)); )
     {
         if (!line->len || (line->txt[0] == '#'))
@@ -608,9 +604,11 @@ int Read_RC_File (FILE *rcf)
                 }
                 else if (!strcasecmp (cmd, "tab"))
                 {
+                    dep = 234;
                     PrefParse (tmp);
-                    if (spooled_tab_nicks < TAB_SLOTS)
-                        tab_nick_spool[spooled_tab_nicks++] = strdup (tmp);
+                    M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                    M_printf (i18n (9999, "Can't tab spool %s; type \"%sopt %s tabspool 1%s\" manually.\n"),
+                              s_cquote (tmp, COLQUOTE), COLQUOTE, tmp, COLNONE);
                 }
                 else if (!strcasecmp (cmd, "set"))
                 {
@@ -1066,15 +1064,6 @@ int Read_RC_File (FILE *rcf)
         }
     }
     
-    /* now tab the nicks we may have spooled earlier */
-    for (i = 0; i < spooled_tab_nicks; i++)
-    {
-        Contact *cont = ContactFind (NULL, 0, 0, tab_nick_spool[i]);
-        if (cont)
-            TabAddUIN (cont->uin);
-        free (tab_nick_spool[i]);
-    }
-
     if (!prG->logplace)
         prG->logplace = strdup ("history" _OS_PATHSEPSTR);
     
@@ -1144,7 +1133,8 @@ int Read_RC_File (FILE *rcf)
                            
     if (dep || !format)
     {
-        M_printf (i18n (1818, "Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or \"save\" the configuration file and check for changes.\n"), prG->rcfile);
+        M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+        M_printf (i18n (9999, "Deprecated syntax found in configuration file '%s'!\n    Please update or \"save\" the configuration file and check for changes.\n"), prG->rcfile);
         M_printf ("FIXME: dep %d\n", dep);
     }
     fclose (rcf);

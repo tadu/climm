@@ -754,7 +754,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
         return;
     }
 
-    TabAddUIN (cont->uin);            /* Adds <uin> to the tab-list */
+    TabAddIn (cont);
 
     if (uiG.idle_flag)
     {

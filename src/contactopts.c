@@ -44,6 +44,7 @@ struct ContactOption_s ContactOptionsList[] = {
   { "colorcontact",  CO_COLORCONTACT  },
   { "encoding",      CO_ENCODINGSTR   }, /* not CO_ENCODING */
   { "colorscheme",   CO_CSCHEME       },
+  { "tabspool",      CO_TABSPOOL      },
   { NULL }
 };
 

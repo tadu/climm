@@ -25,54 +25,89 @@
 #include "tabs.h"
 #include "contact.h"
 
-static UDWORD tab_array[TAB_SLOTS + 1] = { 0 };
-static int tab_pointer = 0;
+#define TAB_SLOTS 16
+
+static Contact *tab_in[TAB_SLOTS + 1];
+static Contact *tab_out[TAB_SLOTS + 1];
+
+void TabInit (void)
+{
+    Contact *cont;
+    int i;
+    
+    for (i = 0; i <= TAB_SLOTS; i++)
+        tab_in[i] = tab_out[i] = NULL;
+    for (i = 0; (cont = ContactIndex (NULL, i)); i++)
+        if (ContactPrefVal (cont, CO_TABSPOOL))
+            TabAddOut (cont);
+}
 
 /*
- * Appends an UIN to the list. A previous occurrence is deleted.
+ * Appends an UIN to the incoming list. A previous occurrence is deleted.
  * Last entry might get lost.
  */
-void TabAddUIN (UDWORD uin)
+void TabAddIn (Contact *cont)
 {
     int found;
 
-    if (!ContactFind (NULL, 0, uin, NULL))
-        return ;
-
     for (found = 0; found < TAB_SLOTS; found++)
-        if (tab_array[found] == uin)
+        if (tab_in[found] == cont)
             break;
 
     for (; found; found--)
-        tab_array[found] = tab_array[found - 1];
+        tab_in[found] = tab_in[found - 1];
 
-    tab_array[0] = uin;
-    tab_array[TAB_SLOTS] = 0;
-    tab_pointer = 0;
+    tab_in[0] = cont;
 }
 
 /*
- * Returns != 0, if there is another entry in the list.
+ * Appends an UIN to the outgoing list. A previous occurrence is deleted.
+ * Last entry might get lost.
  */
-int TabHasNext (void)
+void TabAddOut (Contact *cont)
 {
-    return tab_array[tab_pointer];
+    int found;
+
+    for (found = 0; found < TAB_SLOTS; found++)
+        if (tab_out[found] == cont)
+            break;
+
+    for (; found; found--)
+        tab_out[found] = tab_out[found - 1];
+
+    tab_out[0] = cont;
 }
 
 /*
- * Returns next UIN, if the list is not empty; wraps around if necessary.
+ * Returns the nr.th entry, or NULL.
  */
-UDWORD TabGetNext (void)
+Contact *TabGetIn (int nr)
 {
-    if (!tab_array[tab_pointer])
-        tab_pointer = 0;
-    return tab_array[tab_pointer++];
+    return nr > TAB_SLOTS ? NULL : tab_in[nr];
 }
 
 /*
- * Resets pointer of current UIN in list to the beginning.
+ * Returns the nr.th entry, or NULL.
  */
-void TabReset (void)
+Contact *TabGetOut (int nr)
 {
-    tab_pointer = 0;
+    return nr > TAB_SLOTS ? NULL : tab_out[nr];
+}
+
+/*
+ * Returns the nr.th entry of both list, or NULL.
+ */
+Contact *TabGet (int nr)
+{
+    static int off = TAB_SLOTS;
+    int tnr;
+    
+    if (nr < off && tab_out[nr])
+        return tab_out[nr];
+    if (nr < TAB_SLOTS && !tab_out[nr])
+        off = nr;
+    tnr = nr - off;
+    if (!tab_in[tnr])
+        off = TAB_SLOTS;
+    return tab_in[tnr];
 }

@@ -1245,7 +1245,7 @@ static JUMP_F (CmdUserMessage)
                     continue;
                 IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_NORM, arg1));
                 uiG.last_sent_uin = cont->uin;
-                TabAddUIN (cont->uin);
+                TabAddOut (cont);
             }
             return 0;
         }
@@ -1278,7 +1278,7 @@ static JUMP_F (CmdUserMessage)
                     continue;
                 IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_NORM, t.txt));
                 uiG.last_sent_uin = cont->uin;
-                TabAddUIN (cont->uin);
+                TabAddOut (cont);
             }
             return 0;
         }
@@ -2800,19 +2800,22 @@ static JUMP_F(CmdUserURL)
 static JUMP_F(CmdUserTabs)
 {
     int i;
+    Contact *cont;
     ANYCONN;
 
-    for (i = 0, TabReset (); TabHasNext (); i++)
-        TabGetNext ();
+    for (i = 0; TabGetOut (i); i++)
+        ;
     M_printf (i18n (1681, "Last %d people you talked to:\n"), i);
-    for (TabReset (); TabHasNext ();)
+    for (i = 0; (cont = TabGetOut (i)); i++)
     {
-        UDWORD uin = TabGetNext ();
-        Contact *cont;
-        
-        cont = ContactUIN (conn, uin);
-        if (!cont)
-            continue;
+        M_printf ("    %s", cont->nick);
+        M_printf (" %s(%s)%s\n", COLQUOTE, s_status (cont->status), COLNONE);
+    }
+    for (i = 0; TabGetIn (i); i++)
+        ;
+    M_printf (i18n (9999, "Last %d people that talked to you:\n"), i);
+    for (i = 0; (cont = TabGetIn (i)); i++)
+    {
         M_printf ("    %s", cont->nick);
         M_printf (" %s(%s)%s\n", COLQUOTE, s_status (cont->status), COLNONE);
     }

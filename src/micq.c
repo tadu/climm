@@ -20,6 +20,7 @@
 #include "contactopts.h"
 #include "session.h"
 #include "tcp.h"
+#include "tabs.h"
 #include "msg_queue.h"
 #include "util_io.h"
 #include "cmd_pkt_v8.h"
@@ -395,6 +396,7 @@ int main (int argc, char *argv[])
 #endif
 
     R_init ();
+    TabInit ();
 
     for (i = 0; (conn = ConnectionNr (i)); i++)
         if ((conn->flags & CONN_AUTOLOGIN) && conn->open)

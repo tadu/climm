@@ -92,6 +92,8 @@ static int bytelen;
 static char bsbuf[HISTORY_LINE_LEN];
 #endif
 
+static int tabnr = 0;
+
 void R_init (void)
 {
     int k;
@@ -110,6 +112,7 @@ void R_init (void)
         history[k][0] = 0;
     }
     s[0] = 0;
+    tabnr = 0;
     curpos = curlen = 0;
     bytepos = bytelen = 0;
     inited = 1;
@@ -174,7 +177,7 @@ static RETSIGTYPE micq_int_handler (int a)
     R_remprompt ();
     s[bytelen] = 0;
     history_cur = 0;
-    TabReset ();
+    tabnr = 0;
     strcpy (history[0], s);
     if (strcmp (s, history[1]) && *s)
         for (k = HISTORY_LINES; k; k--)
@@ -368,7 +371,6 @@ containing spaces */
 
 void R_process_input_tab (void)
 {
-    UDWORD uin;
     Contact *cont, *tabcont;
     const char *msgcmd;
     int nicklen = 0;
@@ -406,13 +408,12 @@ void R_process_input_tab (void)
             return;
         }
 
-        if ((uin = TabGetNext ()))
-        {
-            cont = ContactFind (NULL, 0, uin, NULL);
+        if (!(cont = TabGet (tabnr++)))
+            cont = TabGet (tabnr = 0);
+
+        if (cont)
             snprintf (s, sizeof (s), "%s %s ", msgcmd,
-                      cont ? ConvTo (cont->nick, prG->enc_loc)->txt
-                           : s_sprintf ("%ld", uin));
-        }
+                      ConvTo (cont->nick, prG->enc_loc)->txt);
         else
             snprintf (s, sizeof (s), "%s ", msgcmd);
 
@@ -530,7 +531,7 @@ int R_process_input (void)
                     bytepos = bytelen = 0;
                     printf ("\n");
                     history_cur = 0;
-                    TabReset ();
+                    tabnr = 0;
                     strcpy (history[0], s);
                     if (!s[0])
                         return 1;
