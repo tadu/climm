@@ -856,7 +856,7 @@ static void TCPSendInit (Connection *peer)
     peer->stat_real_pak_sent++;
 
     pak = PeerPacketC (peer, PEER_INIT);
-    PacketWrite2  (pak, peer->parent->ver);            /* TCP version      */
+    PacketWrite2  (pak, peer->ver);                    /* TCP version      */
     PacketWrite2  (pak, 43);                           /* length           */
     PacketWrite4  (pak, peer->uin);                    /* destination UIN  */
     PacketWrite2  (pak, 0);                            /* unknown - zero   */
