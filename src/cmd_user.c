@@ -4685,7 +4685,6 @@ void CmdUserInterrupt (void)
  */
 static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag)
 {
-    char buf[1024];    /* This is hopefully enough */
     char *cmd = NULL;
     const char *args;
     strc_t par;
@@ -4697,9 +4696,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
     idle_save = *idle_val;
     *idle_val = time (NULL);
 
-    snprintf (buf, sizeof (buf), "%s", command);
     rl_print ("\r");
-    buf[1023] = 0;
 
     if (!conn || !(ConnectionFindNr (conn) + 1))
         conn = ConnectionFind (TYPEF_ANY_SERVER, 0, NULL);
@@ -4707,26 +4704,27 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
     if (isinterrupted)
     {
         if (status)
-            status = (*sticky)(buf, 0, -1);
+            status = (*sticky)(command, 0, -1);
         isinterrupted = 0;
     }
     
     if (status)
     {
-        status = (*sticky)(buf, 0, status);
+        status = (*sticky)(command, 0, status);
     }
     else
     {
-        if (buf[0] != 0)
+        args = command;
+        if (args[0] != 0)
         {
-            if ('!' == buf[0])
+            if ('!' == args[0])
             {
                 ReadLineTtyUnset ();
 #ifdef SHELL_COMMANDS
-                if (((unsigned char)buf[1] < 31) || (buf[1] & 128))
-                    rl_printf (i18n (1660, "Invalid Command: %s\n"), &buf[1]);
+                if (((unsigned char)args[1] < 31) || (args[1] & 128))
+                    rl_printf (i18n (1660, "Invalid Command: %s\n"), args + 1);
                 else
-                    system (&buf[1]);
+                    system (args + 1);
 #else
                 rl_print (i18n (1661, "Shell commands have been disabled.\n"));
 #endif
@@ -4735,7 +4733,6 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
                     ReadLinePromptReset ();
                 return;
             }
-            args = buf;
             if (!(par = s_parse (&args)))
             {
                 if (!command)
