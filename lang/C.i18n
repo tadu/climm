@@ -27,7 +27,7 @@
 1028:NO
 1029:Please enter YES or NO!
 1030:logged off.
-1032:debug: Doppeltes Packet #%04lx vom Typ %04x (%s)\n
+1032:debug: double packet #%04lx type %04x (%s)\n
 1033:Incoming v8 server packet:
 1034:Maximum number of tries reached. Giving up.
 1036:Unknown command %s, type /help for help.
@@ -36,7 +36,6 @@
 1039:The server claims we're not connected.\n
 1040:mICQ> 
 1041:msg> 
-1042:msg all> 
 1043:All users found.
 1044:Too many users found.
 1045:Search Done.
@@ -60,8 +59,6 @@
 1080:Couldn't load "%s" internationalization.\n
 1081:Successfully loaded en translation (%ld entries).\n
 1082:Trying to reconnect... [try %d out of %d]\n
-1083:Sound cmd
-1084:Sound
 1085:on
 1086:off
 1089:Unloaded translation.
@@ -524,7 +521,7 @@
 1603:Enter position: 
 1604:Should the users be online?
 1605:Do you want your status to be available on the web? (YES/NO)
-1606:Got a bad session ID %08lx (correct: %08lx) with cmd %04x ignored.\n
+1606:Received a bad session ID %08lx (correct: %08lx) with cmd %04x ignored.\n
 1607:Usage: micq [-h] [-v[level]] [-f <rc-file>] [-l <logfile>]\n
 1612:This program was made without any help from Mirabilis or their consent.\n
 1613:No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n
@@ -615,7 +612,7 @@
 1745:unknown
 1746: nr type         sent/received packets/unique packets\n
 1747:total
-1754: Note: You need to 'save' to write new contact list to disc.\n
+1754:Note: You need to 'save' to write new contact list to disc.\n
 1755:has added you to their contact list.\n
 1756:\nCreating Connection...\n
 1757:Couldn't establish connection.\n
@@ -656,10 +653,6 @@
 1799:High School
 1800:Change the working language to <lang> or display string <nr>.
 1801:Displays a list of people on your contact list in a screen wide format.
-1802:SoundOnline cmd
-1803:SoundOffline cmd
-1804:SoundOnline
-1805:SoundOffline
 1807:Cancelled incoming message (seq %04x) from %s\n
 1808:College
 1810:University
@@ -668,7 +661,7 @@
 1814:Sent auto-response message to %s%s%s.\n
 1815:    funny: use funny messages for output.\n
 1816:Unknown option %s to set command.\n
-1817:ReceiveScript feature not enabled.\n
+1817:The event scripting feature is disabled.\n
 1818:Warning: Deprecated syntax found in rc file!\n    Please update or "save" the rc file and check for changes.\n
 1820:%s <option> [on|off] - control simple options.\n
 1822:    color: use colored text output.\n
@@ -693,9 +686,9 @@
 1857:Do you want to hide your IP from other contacts? (YES/NO)
 1864:Can't open rcfile %s.
 1866:This version of mICQ is compiled without direct connection (peer to peer) support.\n
-1867:Got a malformed (too short) packet - ignored.\n
+1867:Received a malformed (too short) packet - ignored.\n
 1868:Got a malformed (to long subpacket) multi-packet - remainder ignored.\n
-1869:Protocoll versions less than 5 are not supported anymore.\n
+1869:Protocol versions less than 5 are not supported anymore.\n
 1870:peer off   <nick> - Closes direct connection(s) and don't try it again.\n
 1871:Opening v8 connection to %s:%ld... 
 1872:failed: %s (%d)\n
@@ -731,7 +724,7 @@
 1903:Outgoing v8 server packet:
 1904:Server doesn't understand ver %d (only %d) for family %d!\n
 1905:SNAC (%x,%x) [%s] flags %x ref %lx\n
-1907:Warning: Server thinks our UIN is %ld, while it is %ld.\n
+1907:Warning: Server thinks our UIN is %ld, when it is %ld.\n
 1908:Received USERONLINE packet for non-contact.\n
 1909:Received USEROFFLINE packet for non-contact.\n
 1911:connecting
@@ -849,7 +842,6 @@
 2047:Creating directory %s.\n
 2048:Saving preferences to %s.\n
 2049:Receiving group "%s":\n
-2050:Imported %d contacts.\n
 2051:Error on socket: %s (%d)\n
 2054:The "free for chat" message is:
 2055:User is ffc and wants to chat about everything.
@@ -862,14 +854,14 @@
 2065:Unknown TCP_MSG_GREET_ command %04x.\n
 2066:Unknown TCP_MSG_ command %04x.\n
 2067:file io
-2068:Opening file transfer connection at %s:%ld... \n
+2068:Opening file transfer connection to %s:%ld... \n
 2070:File transfer '%s' to port %ld.\n
 2071:Couldn't stat file %s: %s (%d)\n
-2072:File transfer #%ld (%s) dropped because of closed connection.\n
+2072:File transfer #%ld (%s) canceled because of closed connection.\n
 2073:Memory usage: %ld packets processing.\n
 2078:Outgoing TCP packet (%d - %s): %s
 2079:Incoming TCP packet (%d - %s): %s
-2080:The server says about the SMS delivery:\n%s\n
+2080:Server SMS delivery responce:\n%s\n
 2081:    at %p parent %p assoc %p\n
 2082:Opening file listener connection at localhost:%ld... 
 2083:Cannot open file %s: %s (%d).\n
@@ -889,7 +881,7 @@
 2098:Connection %ld is not a server connection.\n
 2099:Selected connection %ld (version %d, UIN %ld) as current connection.\n
 2100:conn select <uin>  Select connection with UIN <uin> as server connection.\n
-2101:Removing connection %ld and its dependands completely.\n
+2101:Removing connection %ld and its dependents completely.\n
 2102:Connection %ld is a configured connection.\n
 2103:contact show    Show server side contact list.\n
 2104:contact diff    Show server side contacts not on local contact list.\n
@@ -910,7 +902,7 @@
 2119:auth [grant] <nick>    - grant authorization.\n
 2120:auth deny <nick> <msg> - refuse authorization.\n
 2121:auth req  <nick> <msg> - request authorization.\n
-2122: Note: You need to 'save' to write new password to disc.\n
+2122:Note: You need to 'save' to write new password to disc.\n
 2123:%sSyntax error%s: Too few arguments: '%s'\n
 2124:%sSyntax error%s: Not an integer: '%s'\n
 2126:User is offline, message (%s#%08lx:%08lx%s) queued.\n
@@ -1014,3 +1006,21 @@
 2237:Webaware:
 2238:Hide IP:
 2239:Unknown more:
+2240:No contact group given.\n
+2241:Added '%s' to contact group '%s'.\n
+2242:Imported %d new contacts, added %d times to a contact group.\n
+2243:Removed contact '%s' from group '%s'.\n
+2244:Contact group '%s' already has contact '%s' (%ld).\n
+2245:Added contact group '%s'.\n
+2246:Contact '%s' is not in group '%s'.\n
+2247:Couldn't load meta data for '%s' (%ld).\n
+2248:Saved meta data for '%s' (%ld).\n
+2249:Couldn't save meta data for '%s' (%ld).\n
+2250:Number '%s' is not of the format +<coutrycode><cellprovider><number>.\n
+2251:Error:
+2252:A beep is generated by %sbeep%sing.\n
+2253:A beep is generated by running the %sevent%s script.\n
+2254:A beep is never generated.
+2255:A beep for oncoming contacts is always generated by running the %sevent%s script.\n
+2256:A beep for offgoing contacts is always generated by running the %sevent%s script.\n
+2257:Encoding:
