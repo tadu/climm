@@ -1,5 +1,5 @@
 .\"                                      Hey, EMACS: -*- nroff -*-
-.Dd September 19, 2001
+.Dd February 15, 2002
 .Dt MICQ 1
 .Os MICQ(1)
 .\" Please adjust this date whenever revising the manpage.
@@ -17,21 +17,28 @@ the client by Mirabillis. Micq allows to change the user password, create
 new accounts, updating user info, search other users, etc.
 .Sh OPTIONS
 .Bl -tag -width flag
-.It Fl v , V
-Toggle verbose mode.
-.It Fl f , F Ar filename
+.It Fl v Op Ar level
+Set verbose mode, or set verbosity to
+.Ar level .
+.It Fl f Ar filename
 Use
 .Ar filename
 as the rc file.
-.\ .B \-E
-.\ Use ~/etc/micq.conf instead of ~/.micqrc
+.It Fl l Ar file|dir
+Use
+.Ar file
+as file to write log into, or use
+.Ar dir
+as a directory to create per user log files in.
+.It Fl ?, h
+Print usage.
 .El
 
 .Sh FEATURES
 .Ic mICQ
 is very portable and has run on Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD and any
 other modern unix system.  
-.Ic mICQ version 0.4.6 
+.Ic mICQ version 0.4.8
 is known to run on Linux, GNU HURD and other unices.  However, the other ports
 may or may not still work and anyone wishing to test them is welcome to.
 .Sh HISTORY
@@ -67,18 +74,20 @@ cvs -d:pserver:anonymous@micq.ukeer.de:/usr/local/cvsroot -z3 co micq
 .Sh FILES
 .Bl -tag -width Fl
 .It ~/.micqrc
+Old configuration file for mICQ - obsolete.
+.It ~/.micq/micqrc
 Configuration file for mICQ.
 .It PREFIX/share/micq/*.i18n
-Internationalizsation files containing the translation of all strings mICQ
-outputs.
-.It ~/.micq/*.i18n
-As above. Obsolete, as *.i18n are now installed under the given prefix.
-.It ~/micq.log
+Internationalization files containing translations of all strings
+mICQ outputs.
+.It ~/.micq/i18n/*.i18n
+Local overrides for the files above.
+.It ~/.micq/history/
 Default location of directory where log files are created in.
 .El
 .Sh BUGS
 Send bug reports or comments to Rico Glöckner <mc@verdinet.de>,
-UIN #99798577
+UIN #99798577, or Rüdiger Kuhlmann <micq@ruediger-kuhlmann.de>.
 .Sh AUTHOR
 This manual page was derived by James Morrison
 .Pa <ja2morrison@student.math.uwaterloo.ca>

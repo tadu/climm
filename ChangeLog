@@ -1,4 +1,8 @@
 
+2002-02-15 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* update man pages.
+	* Bump to version 0.4.8.
+
 2002-02-10 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* fix verbose command line buglet
 	* new: session.c for connection management. TCP still (ab)uses

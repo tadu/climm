@@ -1,8 +1,6 @@
-.\"This is the man page for ~/.micqrc."
-.\"There is also no global preferences such as micq.conf"
-.\"However, ~/etc/micq.conf is an options with micq -E"
-.\".TH MICQ 7 "June 15, 2001" "MICQ(7)"
-.Dd September 19, 2001
+.\"This is the man page for ~/.micq/micqrc."
+.\".TH MICQ 7 "February 15, 2002" "MICQ(7)"
+.Dd February 15, 2002
 .Dt MICQ 7
 .Os MICQ(7)
 .Sh NAME
@@ -38,14 +36,18 @@ To get debugging information, prefix it with
 To get funny messages, postfix it with
 .Ic _fun .
 .sp
+The files from ~/.micq/i18n/*.i18n take precedence over the global
+ones, while the "funny" ones take precedence over the standard ones.
+.sp
 Actually you may specify as many arguments as you wish, e.g. to print
 string number 117 in German and then switch back to default language,
 use "trans de 117 default".
 .It Ic tabs 
 Shows of a list of users you can tab through.
 .It Ic save
-Saves current settings in
-.Pa ~/.micqrc .
+Saves current settings in the configuration file, which is
+.Pa ~/.micq/micqrc ,
+unless specified otherwise.
 Beware, it will clobber any comments in this file.
 .It Ic r Op Ar message
 Reply to last message received.  Without
@@ -124,7 +126,7 @@ Find a random user in interest group
 Changes your icq password to
 .Ar password . 
 Note: you should alter your password directly in your
-.Pa .micqrc
+.Pa .micq/micqrc
 file (see
 .Xr micqrc 7 ) .
 .It Ic search Ar email
@@ -186,10 +188,38 @@ Updates your basic user information (email, nickname, etc.).
 Updates other user information like age and sex.
 .It Ic about
 Updates your about user information.
-.It Ic set Op Ar number
+.It Ic set Ar option Ar value
+Set option
+.Ar option
+to either
+.Ic on
+or
+.Ic off .
+.Ar option
+can be
+.Ic color
+or
+.Ic funny.
+.It Ic setr Op Ar number
 Sets your random user group to
 .Ar number .
 Without argument, lists possible interest groups.
+.It Ic tcp Ar command Ar uin|nick
+Operate command
+.Ar command
+on user given by UIN
+.Ar uin
+or nick name
+.Ar nick .
+.Ar command
+can be
+.Ic open
+to open a peer to peer connection over TCP to the user, or
+.Ic close
+to close and reset such a connection, or
+.Ic off
+to switch off trying to establish such a connection for sending
+messages until it is explicitly opened or reset.
 .El
 .Sh SEE ALSO
 .Xr micq 1 ,

@@ -1,30 +1,68 @@
 .\"This is the man page for ~/.micqrc."
-.\"There is also no global preferences such as micq.conf"
-.\"However, ~/etc/micq.conf is an options with micq -E"
-.Dd June 16, 2001
-.Dt MICQ.CONF 5
-.Os MICQ.CONF(5)
-.\".TH micq.conf 5 "10 June 2001"
+.Dd February 15, 2002
+.Dt MICQRC 5
+.Os MICQRC(5)
+.\".TH micqrc 5 "February 15, 2002"
 .Sh NAME
-.Ic ~/.micqrc
+.Ic ~/.micq/micqrc
 \- The configuration file for micq
 .Sh DESCRIPTION
-This manual page describes the configuration file for micq.
-.Sh BASIC CONFIGURATION
+This manual page describes the configuration file for micq. It consists
+of several sections that are started by
+.Ic [section] ,
+where
+.Ic section is the name of the section.
+.Sh CONNECTIONS
+A
+.Ic Connection
+section describes a connection within ICQ. Typically, there are two of them,
+that are related to each other: a connection to the ICQ server, and a
+connection to listen to peer to peer communication.
 .Bl -tag -width Fl
-.It Ic UIN Ar uin
-Log in using UIN
-.Ar uin .
-.It Ic Password Op Ar password
-Log in with password
+.It Ic type Ar type Op Ar auto
+Set the connection type to
+.Ar type ,
+which can be
+.Ic server
+for a connection to the ICQ server, or
+.Ic peer
+for a connection listening to peer to peer communication. If
+.Ar auto
+is given, create this connection on startup. You presumable want to do this,
+unless you have several UINs, then set this on the connection corresponding
+to this UIN you are using.
+.It Ic version Ar nr
+Set the version of the protocol used for this connection to
+.Ar nr .
+Please note that for server connections, only version
+.Ic 5
+is supported, though
+.Ic 8
+is planned, and for peer to peer connections only
+.Ic 6 .
+.It Ic server Ar server
+Set the server to connect to to
+.Ar server .
+This defaults to
+.Ic icq.icq.com .
+Unused for peer to peer connections.
+.It Ic port Ar port
+Set the port to connect on the server to
+.Ar port ,
+or the port to listen on for peer to peer connections to
+.Ar port.
+.It Ic uin Ar UIN
+Set the UIN to log in with to
+.Ar UIN .
+Unused for peer to peer connections.
+.It Ic password Op Ar password
+Se the password to log in with to
 .Ar password .
-If omitted, ask for password at startup.
-.It Ic Status Ar number
-Be initially in status
-.Ar status
-after log in.
-.Ar status
-can be:
+Unused for peer to peer connections. If omitted, ask for password on startup.
+.It Ic status Ar nr
+Set the status to be on log in in to
+.Ar nr .
+Status can be:
 .br
 0   Online
 .br
@@ -39,18 +77,10 @@ can be:
 32  Free for Chat
 .br
 256 Invisible
-.It Ic Server Ar server
-Connect to ICQ server
-.Ar server ,
-e.g. icq1.mirabilis.com.
-.It Ic Port Ar port
-Listen on port
-.Ar port
-for incoming connections.
-.Ar port
-can be any unpriviledged port (> 1024), e.g. 4000.
 .El
-.Sh SOCKS 5
+.Sh GENERAL
+This section includes the options for SOCKS 5, that may be eventually
+moved to their own section, general options, and some strings to override.
 .Bl -tag -width Fl
 .It Ic s5_use Ar number
 Set
@@ -76,133 +106,136 @@ Authenticate with password
 .Ar password
 to socks 5 proxy.
 .El
-.Sh OPTIONS
+.sp
+Now the options:
 .Bl -tag -width Fl
-.It Ic Hermit
-Only accept messages from people on your contact list.
-.It Ic LogDir Ar path
-Put log files into directory
-.Ar path .
-Default is the home directory.
-.It Ic LogType Ar number
-Choose logging style
-.Ar number ,
-which can be:
-0 Disable logging
-1 Log to LogDir/micq_log
-2 Log to LogDir/micq.log/uin.log
-3 Log to LogDir/micq.log/uin.log but don't log mode changes
-.It Ic No_Color
-Do not use colors in output.
-.It Ic Auto
-Turns auto reply messages on.
-.It Ic Auto_Away Ar number
-Wait
-.Ar number
-seconds before automatically changing status to away or na.
-Use 0 to disable.
-.It Ic Screen_Width Ar number
-Set screen width to
-.Ar number
-columns, or 0 to auto detect.
+.It Ic verbose Ar level
+Set the verbosity level on startup to
+.Ar level .
+.It Ic auto_away Ar time
+Set the time to set status to away after to
+.Ar time
+seconds. Set to
+.Ic 0
+to disable.
+.It Ic Screen_width Ar width
+Set the default screen with to
+.Ar width .
+If unset or
+.Ic 0 , 80
+will be used. This is rarely needed as usually
+the current screen width can be deduced on runtime.
+.It Ic set delbs Ar on|off
+If set to
+.Ar on ,
+let the delete character act as a backspace. When
+.Ar off ,
+let it act as a delete character.
+.It Ic set russian Ar on|off
+Disable or enable Russian character conversion between koi8-r/u and cp1251.
+.It Ic set japanese Ar on|off
+Disable or enable Japanese character conversion between Shift-JIS and EUC.
+.It Ic set funny Ar on|off
+Disable or enable "funny" messages.
+.It Ic set color Ar on|off
+Disable or enable the use of colors.
+.It Ic set hermit Ar on|off
+If set to
+.Ar on ,
+ignore all messages from everyone not on your contact list.
+.It Ic set log Ar on|off
+Disable or enable logging.
+.It Ic set logonoff Ar on|off
+Whenn logging, disable or enable the logging of online/offline status changes.
+.It Ic set auto Ar on|off
+Disable or enable automatic responses (reply messages).
+.It Ic set uinprompt Ar on|off
+Disable or enable the use of the nick you last received a message from in the prompt.
+.It Ic set linebreak Ar type
+The the line break type for incoming messages to
+.Ar type ,
+which can be
+.Ic simple
+to just wrap lines as usual,
+.Ic break
+to have a line break before each message,
+.Ic indent
+to have a line break and indent the message and
+.Ic smart
+to have a line break only if the message doesn't fit on the current line.
 .El
-.Sh COMMAND IDENTIFIERS
-The following items define the command names for the internal commands
-whose defaults (unless noted otherwise) are defined in
+.sp
+At last, some strings can be defined:
+.Bl -tag -width Fl
+.It Ic logplace Ar file|dir
+Set the file to log into to
+.Ar file ,
+or the directory to log into to
+.Ar dir .
+Please note that a path is assumed to be a directory if it has a trailing
+.Ic / .
+.It Ic sound Ar on|off|cmd
+Disable or enable beeping. If the argument is neither
+.Ar on
+nor
+.Ar off,
+it is assumed to be a program to execute instead of beeping.
+.It Ic soundonline Ar on|off|cmd
+The same as above for users coming online.
+.It Ic soundoffline Ar on|off|cmd
+The same as above for users going offline.
+.It Ic receivescript Ar cmd
+The command to execute for incoming messages. Leave blank to do nothing.
+.It Ic auto Ar status Ar string
+Set the automatic reply in status
+.Ar status
+to
+.Ar string .
+This option may be repeated for all possible values
+.Ic away ,
+.Ic na ,
+.Ic dnd ,
+.Ic occ ,
+and
+.Ic inv
+for
+.Ar status .
+.El
+
+.Sh STRINGS
+This sections contains command renames.
+.Bl -tag -width Fl
+.It Ic alter Ar old Ar new
+Rename command
+.Ar old
+to
+.Ar new .
+Note the old name may still be used, unless it conflicts with some
+.Ar new name .
+For posible command names, see
 .Xr micq 7 .
-.Bl -tag -width Fl
-.It Ic clear_cmd Ar alias
-.It Ic message_cmd Ar alias
-Default
-.Ic msg .
-.It Ic togig_cmd Ar alias
-.It Ic iglist_cmd Ar alias
-Default
-.Ic i .
-.It Ic info_cmd Ar alias
-.It Ic quit_cmd Ar alias
-Default
-.Ic q .
-.It Ic reply_cmd Ar alias
-Default
-.Ic r .
-.It Ic again_cmd Ar alias
-Default
-.Ic a .
-.It Ic list_cmd Ar alias
-Default
-.Ic w .
-.It Ic online_list_cmd Ar alias
-Default
-.Ic e .
-.It Ic away_cmd Ar alias
-.It Ic na_cmd Ar alias
-.It Ic dnd_cmd Ar alias
-.It Ic online_cmd Ar alias
-.It Ic occ_cmd Ar alias
-.It Ic ffc_cmd Ar alias
-.It Ic inv_cmd Ar alias
-.It Ic search_cmd Ar alias
-.It Ic status_cmd Ar alias
-.It Ic auth_cmd Ar alias
-.It Ic auto_cmd Ar alias
-.It Ic add_cmd Ar alias
-.It Ic togvis_cmd Ar alias
-.It Ic change_cmd Ar alias
-.It Ic save_cmd Ar alias
-.It Ic alter_cmd Ar alias
-.It Ic msga_cmd Ar alias
-.It Ic url_cmd Ar alias
-.It Ic update_cmd Ar alias
-.It Ic about_cmd Ar alias
+This option may be repeated as desired.
 .El
-.Sh AUTO RESPONSE MESSAGES
+.Sh CONTACTS
+This section contains the contact list.
 .Bl -tag -width Fl
-.It Ic auto_rep_str_away Ar msg
-Set the away auto reply message to
-.Ar msg .
-.It Ic auto_rep_str_na Ar msg
-Set the not available auto replay message to
-.Ar msg .
-.It Ic auto_rep_str_dnd Ar msg
-Set the do not disturb auto reply message to
-.Ar msg .
-.It Ic auto_rep_str_occ Ar msg
-Set the occupied auto reply message to
-.Ar msg .
-.It Ic auto_rep_str_inv Ar msg
-Set the invisible auto reply message to
-.Ar msg .
-.El
-.Sh CONTACT LIST
-.Bl -tag -width Fl
-.It Ic Contacts
-Start the contact list.
-.El
-.br
-The contacts are of the form
-.br
+.It Ic [ Ar * ] [ Ar ~ ] Ar uin Ar nick
+Make user with UIN
 .Ar uin
-.Ar nickname ,
-.br
-which will associate
-.Ar nickname
-to the user with user ID
-.Ar uin .
-Prefixing the
-.Ar uin
-with an asterisk
-.Ic ( * )
-will allow the user to see you while beeing invisible, while a
-tilde
-.Ic ( ~ )
-will put the user on your ignore list of users that will never see you.
-.br
-Note: micq does not reject messages from people on your ignore list. Note:
-the contact list has to be the last part of this file.
+known under the nick
+.Ar nick .
+If
+.Ar *
+is given, the user may see you while you're invisible. If
+.Ar ~
+is given, ignore this user and let him see you as always offline.
+.El
+Note: the contact list has to be the last part of this file.
 .Sh SEE ALSO
 .Xr micq 1 ,
 .Xr micq 7
 .Sh Author
 This man page was written by James Morrison
 .Pa <ja2morrison@student.math.uwaterloo.ca> .
+It was rewritten to match new config file syntax by Rüdiger Kuhlmann
+.Pa <micq@ruediger-kuhlmann.de> .
