@@ -1504,14 +1504,14 @@ int Save_RC ()
     fprintf (rcf, "set tabs       %s # type of tab completion (simple, cycle, cycleall)\n",
                     prG->tabs == TABS_SIMPLE ? "simple" :
                     prG->tabs == TABS_CYCLE ? "cycle" : "cycleall");
-    if (prG->flags & FLAG_WEBAWARE)
-        fprintf (rcf, "set webaware   %s # whether to be globally webaware\n", "on");
-    if (prG->flags & FLAG_HIDEIP)
-        fprintf (rcf, "set hideip     %s # whether to hide the local IP globally\n", "on");
-    if (prG->flags & FLAG_DC_AUTH)
-        fprintf (rcf, "set dcauth     %s # whether to allow dc only from authorized contacts\n", "on");
-    if (prG->flags & FLAG_DC_CONT)
-        fprintf (rcf, "set dccont     %s # whether to allow dc only from contacts\n", "on");
+    fprintf (rcf, "set webaware   %s # whether to be globally webaware\n",
+                    prG->flags & FLAG_WEBAWARE ? "on" : "off");
+    fprintf (rcf, "set hideip     %s # whether to hide the local IP globally\n",
+                    prG->flags & FLAG_HIDEIP ? "on" : "off");
+    fprintf (rcf, "set dcauth     %s # whether to allow dc only from authorized contacts\n",
+                    prG->flags & FLAG_DC_AUTH ? "on" : "off");
+    fprintf (rcf, "set dccont     %s # whether to allow dc only from contacts\n",
+                    prG->flags & FLAG_DC_CONT ? "on" : "off");
     fprintf (rcf, "\n");
     
     fprintf (rcf, "%s\n\n", ContactOptionsString (&prG->copts));
