@@ -29,8 +29,8 @@
 029:Please enter YES or NO!
 030:logged off.
 031:logged on
-032: - Instant Message
-033: - Instant Mass Message
+032: 
+033: 
 034:Maximum number of tries reached. Giving up.
 035:changed status to
 036:Unknown command %s, type /help for help.
@@ -56,7 +56,7 @@
 056:Socket created attempting to connect¶
 057:[SOCKS] Can't find hostname %s.
 058:Can't find hostname %s: %s.
-059:The port that will be used for tcp (not yet implemented) is %d¶
+059: 
 060:Verbosity level is %d.¶
 061:%s not recognized as a nick name
 062:Users ignored:
@@ -620,7 +620,7 @@
 620:Removed message with SEQ %04X CMD 
 621: from resend queue because of ack.¶
 622:Do you want to apply these changes? (YES/NO)
-623:¶Doubled packet %04X¶
+623:Doubled packet %04X¶
 624:Resending message with SEQ num %04X CMD 
 625:(Attempt #%d.)
 626:Discarding message to 
@@ -631,7 +631,7 @@
 631: packet.
 632:¶Connection unstable. Exiting....
 633:ACK!!! %d¶
-634:¶Send Keep_Alive packet to the server¶
+634: 
 635:You have encounterd a bug in my code :( I now own you a beer!¶Greetings Fryslan!¶
 636:[ Sent auto-reply message to %d(%d)]¶
 637:¶Packet Number %d¶
@@ -759,7 +759,7 @@
 759:Waiting for response....¶
 760:¶Your new UIN is %s%ld%s!¶
 761:unknown
-762:Ack!!!!!!  %d¶
+762: 
 763:The command '%s' has been renamed to '%s'.
 764:The command '%s' is unchanged.
 765:%s has UIN %d.
@@ -773,6 +773,9 @@
 773:%s could not be added.
 774:Incoming packet:
 775:Outgoing packet:
+776:Outgoing TCP packet:
+777:The port that will be used for tcp (partially implemented) is %d¶
+778:Incoming TCP packet:
 800:Change the working language to <lang>.
 801:Displays a list of people on your contact list in a screen wide format.
 802:SoundOnline cmd

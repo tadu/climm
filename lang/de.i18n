@@ -30,8 +30,8 @@
 029:Bitte Ja oder Nein eingeben!
 030:hat sich ausgeloggt.
 031:hat sich eingeloggt
-032:Nachricht:
-033:MassenNachricht:
+032: 
+033: 
 034:Maximale Anzahl an Versuchen erreicht - gabe auf.
 035:hat Status gewechselt nach:
 036:Unbekanntes Kommando %s, tippe "help" für Hilfe.
@@ -57,7 +57,7 @@
 056: Socket erhalten, versuche zu verbinden...¶
 057:[SOCKS] Kann den Rechnernamen %s nicht auflösen.
 058:Kann den Rechnernamen %s nicht auflösen: %s.
-059:Verwende Port %d für TCP/IP (noch nicht implementiert).¶
+059: 
 060:Ausführlichkeit is %d.¶
 #AusführlichkeitGeschwätzigkeitWortreichtumPlapperhaftigkeit
 061:%s ist kein Spitzname.
@@ -615,14 +615,10 @@
 599:[SOCKS] Autorisationsmethode ungültig.¶
 600:[SOCKS] Autorisierung fehlgeschlagen.¶
 601:[SOCKS] Allgemeiner SOCKS-Server-Fehlschlag.¶
-#-#602:Kommando:    %04X	
-#-#603:Version:     %04X	
-#-#604:Folgenummer: %08X	
-#-#605:Sitzung:     %08X¶
-#602: 
-#603: 
-#604: 
-#605: 
+602: 
+603: 
+604: 
+605: 
 606:Falsche Sitzungskennung %08X bei Kommando CMD %04X ignoriert.¶
 607:Benutzung: micq [-v|-V] [-f|-F <KonfDatei>] [-l|-L <ProtDatei>] [-?|-h]¶
 608:        -v   ausführlicher Modus (nur zur Fehlersuche nützlich)¶
@@ -640,7 +636,7 @@
 620:Entferne Nachricht mit Folgenummer %04X und Kommando 
 621: von der Warteschlange wegen Bestätigung.¶
 622:Möchten Sie die Änderungen anwenden? (JA/NEIN)
-623:¶Doppeltes Paket %04X.¶
+623:Doppeltes Paket %04X.¶
 624:Sende Nachricht mit Folgenummer %04x und Kommando 
 625: erneut (Versuch #%d).
 626:Werfe Nachricht an 
@@ -651,7 +647,7 @@
 631:Paket weggeworfen.
 632:¶Verbindung instabil. Beende...
 633:Bestätigung! %d¶
-634:¶Sende Am-Leben-Erhalte-Paket an den Server.¶
+634: 
 635:Du bist auf einen Fehler in meinem Programmcode gestoßen :(. Jetzt schulde ich Dir ein Bier! Grüße, Fryslan!¶
 636:[ Sende automatische Antwort an %d(%d)]¶
 637:¶Paket-Nummer %d¶
@@ -779,20 +775,23 @@
 759:Warte auf Antwort....¶
 760:¶Ihre neue Benutzernummer ist %s%ld%s!¶
 761:unbekannt
-762:Bestätigt!!!!!!  %d¶
+762: 
 763:Das Kommando "%s" wurde in "%s" umbenannt.
 764:Das Kommando "%s" hat noch den ursprünglichen Namen.
 765:%s hat die Benutzernummer %d.
 766:Automatische Abwesenheit nach ©3%d©0 Sekunden.¶
 767:Schaltet die automatische Abwesenheitsschaltung an oder ab.
 768:Der Bezeichner '%s' ist schon in Verwendung.
-#769:Displays your current online status.
-#770:Resend your last message to a new uin.
-#771:You haven't sent a message to anyone yet!¶
+769:Zeigt Deinen aktuellen Verbindungsstatus.
+770:Sendet die letzte Nachricht an einen neuen Benutzer.
+771:Noch keine Nachricht an irgendwen verschickt!¶
 772:Kann Rechner %s nicht finden.
 773:Konnte Nick %s nicht hinzufügen.
-#774:Incoming packet:
-#775:Outgoing packet:
+774:Eingehendes Paket:
+775:Ausgehendes Paket:
+776:Ausgehendes TCP-Paket:
+777:Eingehende TCP-Verbindungen (teilweise implementiert) werden auf Port %d empfangen.¶
+778:Eingehendes TCP-Paket:
 800:Wählt die Sprache <lang> aus.
 801:Zeigt die Kontaktliste im ausführlichen Format an.
 802:Klang-Befehl, wenn jemand verbindet:
