@@ -10,7 +10,7 @@
 void SessionInitPeer   (Session *list);
 
 /* Open, close, disallow connection of UIN with this listener */
-void TCPDirectOpen     (Session *list, UDWORD uin);
+BOOL TCPDirectOpen     (Session *list, UDWORD uin);
 void TCPDirectClose    (Session *list, UDWORD uin);
 void TCPDirectOff      (Session *list, UDWORD uin);
 
@@ -39,6 +39,5 @@ void       TCPDispatchMain    (Session *peer);
 void       TCPDispatchConn    (Session *peer);
 void       TCPClose           (Session *peer);
 void       TCPPrint           (Packet *pak, Session *peer, BOOL out);
-
 
 #endif

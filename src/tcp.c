@@ -100,7 +100,7 @@ void SessionInitPeer (Session *list)
 /*
  *  Starts establishing a TCP connection to given contact.
  */
-void TCPDirectOpen (Session *list, UDWORD uin)
+BOOL TCPDirectOpen (Session *list, UDWORD uin)
 {
     Session *peer;
     Contact *cont;
@@ -108,23 +108,23 @@ void TCPDirectOpen (Session *list, UDWORD uin)
     ASSERT_MSGLISTEN (list);
 
     if (uin == list->parent->uin)
-        return;
+        return FALSE;
 
     UtilCheckUIN (list->parent, uin);
     cont = ContactFind (uin);
     if (!cont || cont->TCP_version < 6)
-        return;
+        return FALSE;
 
     if ((peer = SessionFind (TYPE_MSGDIRECT, uin, list)))
     {
         if (peer->connect & CONNECT_MASK)
-            return;
+            return TRUE;
     }
     else
         peer = SessionClone (list, TYPE_MSGDIRECT);
     
     if (!peer)
-        return;
+        return FALSE;
     
     peer->port   = 0;
     peer->uin    = uin;
@@ -135,6 +135,8 @@ void TCPDirectOpen (Session *list, UDWORD uin)
     peer->ver    = list->ver <= cont->TCP_version ? list->ver : cont->TCP_version;
 
     TCPDispatchConn (peer);
+
+    return TRUE;
 }
 
 /*
@@ -1433,32 +1435,36 @@ BOOL TCPGetAuto (Session *list, UDWORD uin, UWORD which)
     Packet *pak;
     Session *peer;
 
-    assert (list->parent);
-
-    if (!list)
-        return 0;
+    if (!list || !list->parent)
+        return FALSE;
     if (uin == list->parent->uin)
-        return 0;
+        return FALSE;
     cont = ContactFind (uin);
     if (!cont)
-        return 0;
+        return FALSE;
     if (!(list->connect & CONNECT_MASK))
-        return 0;
+        return FALSE;
     if (!cont->port)
-        return 0;
+        return FALSE;
     if (!cont->local_ip && !cont->outside_ip)
-        return 0;
+        return FALSE;
 
     ASSERT_MSGLISTEN(list);
     
     peer = SessionFind (TYPE_MSGDIRECT, uin, list);
-    if (peer && (peer->connect & CONNECT_FAIL))
-        return 0;
-    TCPDirectOpen (list, uin);
-    peer = SessionFind (TYPE_MSGDIRECT, uin, list);
-    
-    if (!peer)
-        return 0;
+    if (peer)
+    {
+        if (peer->connect & CONNECT_FAIL)
+            return FALSE;
+    }
+    else
+    {
+        if (!TCPDirectOpen (list, uin))
+            return FALSE;
+        peer = SessionFind (TYPE_MSGDIRECT, uin, list);
+        if (!peer)
+            return FALSE;
+    }
 
     ASSERT_MSGDIRECT(peer);
     
@@ -1500,32 +1506,36 @@ BOOL TCPSendMsg (Session *list, UDWORD uin, char *msg, UWORD sub_cmd)
     Packet *pak;
     Session *peer;
 
-    assert (list->parent);
-
-    if (!list)
-        return 0;
+    if (!list || !list->parent)
+        return FALSE;
     if (uin == list->parent->uin)
-        return 0;
+        return FALSE;
     cont = ContactFind (uin);
     if (!cont)
-        return 0;
+        return FALSE;
     if (!(list->connect & CONNECT_MASK))
-        return 0;
+        return FALSE;
     if (!cont->port)
-        return 0;
+        return FALSE;
     if (!cont->local_ip && !cont->outside_ip)
-        return 0;
+        return FALSE;
 
-    ASSERT_MSGLISTEN (list);
+    ASSERT_MSGLISTEN(list);
     
     peer = SessionFind (TYPE_MSGDIRECT, uin, list);
-    if (peer && (peer->connect & CONNECT_FAIL))
-        return 0;
-    TCPDirectOpen (list, uin);
-    peer = SessionFind (TYPE_MSGDIRECT, uin, list);
-    
-    if (!peer)
-        return 0;
+    if (peer)
+    {
+        if (peer->connect & CONNECT_FAIL)
+            return FALSE;
+    }
+    else
+    {
+        if (!TCPDirectOpen (list, uin))
+            return FALSE;
+        peer = SessionFind (TYPE_MSGDIRECT, uin, list);
+        if (!peer)
+            return FALSE;
+    }
 
     ASSERT_MSGDIRECT(peer);
 
@@ -1553,37 +1563,41 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
     int i, rc, sumlen = 0, sum = 0;
 
     if (!count)
-        return 1;
+        return TRUE;
     if (count < 0)
-        return 0;
+        return FALSE;
     
-    if (!list)
-        return 0;
-    
-    ASSERT_MSGLISTEN (list);
-    assert (list->parent);
-
+    if (!list || !list->parent)
+        return FALSE;
     if (uin == list->parent->uin)
-        return 0;
+        return FALSE;
     cont = ContactFind (uin);
     if (!cont)
-        return 0;
+        return FALSE;
     if (!(list->connect & CONNECT_MASK))
-        return 0;
+        return FALSE;
     if (!cont->port)
-        return 0;
+        return FALSE;
     if (!cont->local_ip && !cont->outside_ip)
-        return 0;
+        return FALSE;
 
-    peer = SessionFind (TYPE_MSGDIRECT, uin, list);
-    if (peer && (peer->connect & CONNECT_FAIL))
-        return 0;
-    TCPDirectOpen (list, uin);
-    peer = SessionFind (TYPE_MSGDIRECT, uin, list);
-
-    if (!peer)
-        return 0;
+    ASSERT_MSGLISTEN(list);
     
+    peer = SessionFind (TYPE_MSGDIRECT, uin, list);
+    if (peer)
+    {
+        if (peer->connect & CONNECT_FAIL)
+            return FALSE;
+    }
+    else
+    {
+        if (!TCPDirectOpen (list, uin))
+            return FALSE;
+        peer = SessionFind (TYPE_MSGDIRECT, uin, list);
+        if (!peer)
+            return FALSE;
+    }
+
     ASSERT_MSGDIRECT(peer);
     
     flist = PeerFileCreate (peer->parent->parent);
@@ -1690,10 +1704,7 @@ static void TCPCallBackResend (Event *event)
     cont = ContactFind (event->uin);
 
     if (event->attempts >= MAX_RETRY_ATTEMPTS)
-    {
         TCPClose (peer);
-        peer->connect = CONNECT_FAIL;
-    }
 
     if (peer->connect & CONNECT_MASK)
     {
@@ -1714,6 +1725,8 @@ static void TCPCallBackResend (Event *event)
         QueueEnqueue (event);
         return;
     }
+
+    peer->connect = CONNECT_FAIL;
 
     if (PacketReadAt2 (pak, 4 + delta) == TCP_CMD_MESSAGE)
         icq_sendmsg (peer->parent->parent, cont->uin, event->info, PacketReadAt2 (pak, 22 + delta));

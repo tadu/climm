@@ -705,7 +705,10 @@ static JUMP_F(CmdUserTCP)
         }
 
         if (!strcmp (arg1, "open"))
-            TCPDirectOpen  (list, cont->uin);
+        {
+            if (!TCPDirectOpen  (list, cont->uin))
+                M_print (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
+        }
         else if (!strcmp (arg1, "close"))
             TCPDirectClose (list, cont->uin);
         else if (!strcmp (arg1, "reset"))
