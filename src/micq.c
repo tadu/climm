@@ -3,6 +3,7 @@
  * This file may be distributed under version 2 of the GPL licence.
  */
 
+
 #include "micq.h"
 
 #include <limits.h>
@@ -438,17 +439,18 @@ static void Init (int argc, char *argv[])
     TCLInit ();
 #endif
 
-    if (!uingiven)
+    if (uingiven)
     {
-        for (i = 0; (conn = ConnectionNr (i)); i++)
-            if (conn->flags & CONN_AUTOLOGIN)
-                if (conn->type & TYPEF_ANY_SERVER)
-                    conn->status = STATUS_OFFLINE;
         targv[j++] = "-u";
         targv[j++] = "";
     }
 
-    conn = ConnectionFind (TYPEF_ANY_SERVER, NULL, NULL);
+    for (i = 0; (conn = ConnectionNr (i)); i++)
+        if (conn->open && conn->flags & CONN_AUTOLOGIN)
+            if (conn->type & TYPEF_ANY_SERVER)
+                conn->status = conn->pref_status;
+
+    conn = NULL; //ConnectionFind (TYPEF_ANY_SERVER, NULL, NULL);
     s_init (&arg_C, "", 0);
     arg_u = arg_p = arg_s = NULL;
     
@@ -508,24 +510,22 @@ static void Init (int argc, char *argv[])
         }
     }
     
-    for (i = 0; (conn = ConnectionNr (i)); i++)
-        if (conn->open && conn->flags & CONN_AUTOLOGIN)
-        {
-            if (conn->type & TYPEF_ANY_SERVER)
+    if (!uingiven)
+    {
+        for (i = 0; (conn = ConnectionNr (i)); i++)
+            if (conn->open && conn->flags & CONN_AUTOLOGIN)
             {
-                if (uingiven || conn->status == STATUS_OFFLINE)
+                if (conn->type & TYPEF_ANY_SERVER)
                 {
-                    conn->status = conn->pref_status;
-                    continue;
+                    if (conn->status != STATUS_OFFLINE && (loginevent = conn->open (conn)))
+                         QueueEnqueueDep (conn, QUEUE_MICQ_COMMAND, 0, loginevent, NULL, conn->cont,
+                                          OptSetVals (NULL, CO_MICQCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
+                                          &CmdUserCallbackTodo);
                 }
-                if ((loginevent = conn->open (conn)))
-                     QueueEnqueueDep (conn, QUEUE_MICQ_COMMAND, 0, loginevent, NULL, conn->cont,
-                                      OptSetVals (NULL, CO_MICQCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
-                                      &CmdUserCallbackTodo);
+                else
+                    conn->open (conn);
             }
-            else
-                conn->open (conn);
-        }
+    }
     s_done (&arg_C);
     free (targv);
 }
