@@ -125,6 +125,7 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
     static UDWORD size = 0;
     const unsigned char *in = inn;
     UDWORD i;
+    unsigned char x, y;
     
 #ifdef WIP
     fprintf (stderr, "Converting '%s' in %d to utf ", in, enc);
@@ -180,7 +181,28 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
                 PUT_UTF8 (win1251_utf8[*in & 0x7f]);
                 continue;
             case ENC_EUC:
+                /* FIXME: No, this is no real UTF-8. We just stuff EUC
+                          into the private use area U+Fxxxx */
+                PUT_UTF8 (0xf0000 | (*in << 8) | in[1]);
+                in++;
+                continue;
             case ENC_SJIS:
+                x = *in++;
+                y = *in;
+                if ((x & 0xe0) == 0x80)
+                {
+                    if (y < 0x9f)
+                    {
+                        x = 2 * x - (x >= 0xe0 ? 0xe1 : 0x61);
+                        y += 0x61 - (y >= 0x7f ?    1 :    0);
+                    }
+                    else
+                    {
+                        x = 2 * x - (x >= 0xe0 ? 0xe0 : 0x60);
+                        y += 2;
+                    }
+                }
+                PUT_UTF8 (0xf0000 | (x << 8) | y);
             default:
                 t = s_cat (t, &size, "?");
         }
@@ -198,6 +220,7 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
     static UDWORD size = 0;
     const unsigned char *in = inn;
     UDWORD val, i;
+    unsigned char x, y;
 
 #ifdef WIP
     fprintf (stderr, "Converting '%s' from utf to %d ", in, enc);
@@ -277,7 +300,32 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
                 t = s_catf (t, &size, "?");
                 continue;
             case ENC_EUC:
+                if ((val & 0xffff0000) != 0xf0000)
+                {
+                    t = s_catf (t, &size, "?");
+                    continue;
+                }
+                t = s_catf (t, &size, "%c%c", (val & 0xff00) >> 8, val & 0xff);
+                continue;
             case ENC_SJIS:
+                if ((val & 0xffff0000) != 0xf0000)
+                {
+                    t = s_catf (t, &size, "?");
+                    continue;
+                }
+                x = (val & 0xff00) >> 8;
+                y = val & 0xff;
+                if (x & 1)
+                {
+                    x = x / 2 + (x < 0xdf ? 0x31 : 0x71);
+                    y -= 0x61 - (y < 0xe0 ?    0 :    1);
+                }
+                else
+                {
+                    x = x / 2 + (x < 0xdf ? 0x30 : 0x70);
+                    y -= 2;
+                }
+                continue;
             default:
                 t = s_cat (t, &size, "?");
         }
