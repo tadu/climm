@@ -1,7 +1,7 @@
 micq - a portable ICQ Console Client
 $Id$
 
-current Version: 0.4.9.2
+current Version: 0.4.9.2b
 ====================================
 
 a) About mICQ
@@ -69,10 +69,10 @@ They are hosted by <rg@micq.org>.
 
 Currently you:
     post	   
-                                           micq-list@micq.org
+                                           <micq-list@micq.org>
 
     subscribe, unsubscribe, help
-                   http://micq.org/mailman/listinfo/micq-list
+                   <http://micq.org/mailman/listinfo/micq-list>
 
 An Archive might be found at:
 <http://micq.org/pipermail/micq-list/>
