@@ -631,7 +631,8 @@ JUMP_F(CmdUserAlter)
         j = CmdUserLookup (cmd, CU_USER);
     if (!j)
     {
-        M_print (i18n (722, "Type help to see your current command, because this  one you typed wasn't one!\n"));
+        M_print (i18n (722, "Type help to see your current command, because this one you typed wasn't one!"));
+        M_print ("\n");
     }
     else
     {
@@ -639,9 +640,21 @@ JUMP_F(CmdUserAlter)
         
         if (new)
         {
-            if (j->name)
-                free ((char *) j->name);
-            j->name = strdup (new);
+            if (CmdUserLookup (new, CU_USER))
+            {
+                if (!quiet)
+                {
+                    M_print (i18n (768, "The label '%s' is already being used."), new);
+                    M_print ("\n");
+                }
+                return 0;
+            }
+            else
+            {
+                if (j->name)
+                    free ((char *) j->name);
+                j->name = strdup (new);
+            }
         }
         
         if (!quiet)
@@ -649,11 +662,10 @@ JUMP_F(CmdUserAlter)
             if (j->name)
                 M_print (i18n (763, "The command '%s' has been renamed to '%s'."), j->defname, j->name);
             else
-                M_print (i18n (764, "The command '%s' has still it's original name."), j->defname);
+                M_print (i18n (764, "The command '%s' is unchanged."), j->defname);
             M_print ("\n");
         }
     }
-
     return 0;
 }
 
@@ -2295,9 +2307,10 @@ void CmdUserProcess (SOK_T sok, const char *command, int *idle_val, int *idle_fl
                     args = "";
                 argsd = strdup (args);
 
-                j = CmdUserLookup (*cmd == '¶' ? cmd + 1 : cmd, CU_DEFAULT);
-                if (!j && *cmd != '¶')
+                if (*cmd != '¶')
                     j = CmdUserLookup (cmd, CU_USER);
+                if (!j)
+                    j = CmdUserLookup (*cmd == '¶' ? cmd + 1 : cmd, CU_DEFAULT);
 
                 if (j)
                 {

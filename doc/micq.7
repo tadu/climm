@@ -2,14 +2,14 @@
 .\"There is also no global preferences such as micq.conf"
 .\"However, ~/etc/micq.conf is an options with micq -E"
 .\".TH MICQ 7 "June 15, 2001" "MICQ(7)"
-.Dd June 16, 2001
+.Dd September 19, 2001
 .Dt MICQ 7
 .Os MICQ(7)
 .Sh NAME
 micq interactive commands
 .Sh DESCRIPTION
 This manual page describes the commands that can be used within micq.  This
-page is holds the same information as the online help.
+page holds the same information as the online help.
 .Sh COMMANDS
 .Bl -tag -width Fl
 .It Ic trans Op Ar lang|nr ...
@@ -56,15 +56,16 @@ a period
 on a line of its own.  To cancel the message, put a hash sign
 .Ic ( # )
 on a line of its own.
-.It Ic a Ar message
+.It Ic a Op Ar message
 Send a message to the last person you sent a message to.  See
 .Ic r
-for behaviour without [message].
+for behaviour without
+.Ar message .
 .It Ic msg Ar uin|nickname Ic / Op Ar message
 Send a message to
 .Ar uin|nickname .
 See
-.Ic r
+.Ic r 
 for behaviour without
 .Ar message .
 .It Ic msga
@@ -85,12 +86,15 @@ Set verbosity of micq to
 default is 0, maximum is 5.
 .It Ic clear
 Clear the screen.
-.It Ic sound
-Toggle sound on or off.
-.It Ic soundonline
-Toggle soundonline events on or off.
-.It Ic soundoffline
-Toggle soundoffline events on or off.
+.It Ic sound Op Ar command
+Toggle sound on or off, or set to
+.Ar command .
+.It Ic soundonline Op Ar command
+Toggle sound for users coming online on or off, or set to
+.Ar command .
+.It Ic soundoffline Op Ar command
+Toggle sound for users going offline on or off, or set to
+.Ar command .
 .It Ic q
 Quit micq.
 .It Ic auto Op Ar on|off
@@ -101,8 +105,11 @@ Change auto reply message for status
 .Ar status
 to
 .Ar message .
+.It Ic autoaway Op Ar timeout
+Toggles auto away, or set the timeout to
+.Ar timeout .
 .It Ic alter Ar command new
-Make command previously known as
+Make command initially or previously known as
 .Ar command
 from now on known as
 .Ar new .

@@ -781,6 +781,7 @@
 765:%s hat die Benutzernummer %d.
 766:Automatische Abwesenheit nach ©3%d©0 Sekunden.¶
 767:Schaltet die automatische Abwesenheitsschaltung an oder ab.
+768:Der Bezeichner '%s' ist schon in Verwendung.
 800:Wählt die Sprache <lang> aus.
 801:Zeigt die Kontaktliste im ausführlichen Format an.
 802:Klang-Befehl, wenn jemand verbindet:

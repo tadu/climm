@@ -1,12 +1,16 @@
 
 2001-09-19 Kaolin <cognosco@tentacle.net>
 	* added command autoaway to set the auto away timeout.
+	* fix alter.
 
 2001-09-19 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* rewrote CmdUserStatusWide to also do ewide, as proposed
 	  by Sander Smeenk <ssmeenk@cistron.nl>.
 	* merge CmdStatus(E|W), now called CmdStatusShort, rename
 	  CmdStatus as CmdStatsDetail.
+	* fix alter.
+	* prefer user defined command names.
+	* update man page for r, sound, soundonline, soundoffline, autoaway.
 
 2001-09-13 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* fix delete.

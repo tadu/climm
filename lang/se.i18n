@@ -727,7 +727,7 @@
 719:Visar hur länge micq varit igång.
 720:kan vara ett nummer eller namn på användare.
 #721:Sending a blank message will put the client into multiline mode.¶Use . on a line by itself to end message.¶Use # on a line by itself to cancel the message.
-#722:Type help to see your current command, because this  one you typed wasn't one!¶
+#722:Type help to see your current command, because this one you typed wasn't one!
 723:%s IP adress är
 724:Automatiska svar är %s.¶
 #725:<all>
@@ -769,10 +769,11 @@
 761:okänt
 #762:Ack!!!!!!  %d¶
 #763:The command '%s' has been renamed to '%s'.
-#764:The command '%s' has still it's original name.
+#764:The command '%s' is unchanged.
 #765:%s has UIN %d.
 #766:Auto_away is ©3%d©0.¶
 #767:Toggles auto cycling to away/not available.
+#768:The label '%s' is already being used.
 #800:Change the working language to <lang>.
 #801:Displays a list of people on your contact list in a screen wide format.
 #802:SoundOnline cmd

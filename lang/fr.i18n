@@ -722,7 +722,8 @@
 719:©3uptime		Montre depuis combien de temps micq est lancé.¶©0
 720:©2	L'UIN peut être soit un numéro ou le surnom de l'utilisateur.¶
 721:©2	En laissant le message vide, la mode multi-ligne sera activé.¶	Faites . sur un nouveau ligne pour envoyer le message.¶
-722:	Faites # sur un nouveau ligne pour la terminer.©0¶
+#-#722:	Faites # sur un nouveau ligne pour la terminer.©0¶
+#722:Type help to see your current command, because this one you typed wasn't one!
 723:%s - IP 
 724:Les réponses automatiques sont %s.¶
 #725:<all>
@@ -765,10 +766,11 @@
 761:inconnu
 762:Ack !!!!!!  %d¶
 #763:The command '%s' has been renamed to '%s'.
-#764:The command '%s' has still it's original name.
+#764:The command '%s' is unchanged.
 #765:%s has UIN %d.
 #766:Auto_away is ©3%d©0.¶
 #767:Toggles auto cycling to away/not available.
+#768:The label '%s' is already being used.
 #800:Change the working language to <lang>.
 #801:Displays a list of people on your contact list in a screen wide format.
 #802:SoundOnline cmd
