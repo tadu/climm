@@ -22,8 +22,8 @@ char ConvSep ();
 #define c_out(t)    t
 #define c_in(t)     t
 #define c_strlen(t) strlen (t)
-#define c_delta     0
-#define s_delta     0
+#define c_delta(t)  0
+#define s_delta(t)  0
 #endif
 
 #define ENC_AUTO    0x80
