@@ -1,8 +1,8 @@
 # $Id$ (Russian)
-#  EN: __.i18n,v 1.70 2004/11/18 21:25:15
+#  EN: __.i18n,v 1.71 2004/12/05 00:57:40
 #-#1000:UTF-8
 #+#1000:iso-8859-1
-# #1000:UTF-8
+#1000:UTF-8
 1001:ru
 1002:ru_RU
 1003:0-4-10
@@ -162,7 +162,7 @@
 1187:Строительство Web
 #-#1188:Непонятная команда в файле конфигурации: "%s" (игнорирована).
 #+#1188:Unrecognized command in rc file '%s', ignored.
-# #1188:Unrecognized command '%s' in configuration file, ignored.
+#1188:Unrecognized command '%s' in configuration file, ignored.
 1198:Другое
 1200:Не указано
 1201:Афганистан
@@ -398,7 +398,9 @@
 1441:IP адрес:
 1442:Выберите одну из тем.
 1443:Команды, относящиеся к дисплею и конфигурации.
-1444:Команды, относящиеся к поиску и просмотру пользователей.
+#-#1444:Команды, относящиеся к поиску и просмотру пользователей.
+#+#1444:Commands relating to finding and seeing other users.
+# #1444:Commands relating to seeing and finding other users.
 1445:Команды, относящиеся к Вашему uin.
 1446:Команды, относящиеся к посылке сообщений.
 1447:Client
@@ -535,11 +537,11 @@
 1622:Вы хотите принять эти изменения? (YES/NO)
 #-#1623:Дубликат пакета %04X\n
 #+#1623:Doubled packet %04X\n
-# #1623:Double packet %04x.\n
+#1623:Double packet %04x.\n
 1624.Извините, не могу инициализировать Windows Sockets...
 #-#1632:\n^GСоединение нестабильно. Выхожу....
 #+#1632:\nConnection unstable. Exiting....
-# #1632:\nConnection unstable. Exiting....
+#1632:\nConnection unstable. Exiting....
 1634:ok.\n
 1637:Не могу соединить сокет со свободным портом\n
 1638:Не могу создать socket
@@ -550,7 +552,7 @@
 1643:Подтвердил SRV_X1 "0x021C Сделан контакт-лист?"\n
 #-#1644:Подтвердил получение SRV_X2 "0x00E6 Готовы старые сообщения?"\n
 #+#1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
-# #1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
+#1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
 1645:Вы ввели неправильный пароль.\n
 1646:Сервер занят.\n
 1648:Был получен отклик %04x	
@@ -565,7 +567,7 @@
 1658:Введите фамилию пользователя:
 #-#1659:Непонятная секция %s в конфиг. файле.
 #+#1659:Unknown section %s in configuration file.
-# #1659:Unknown section '%s' in configuration file.
+#1659:Unknown section '%s' in configuration file.
 1660:Неверная команда: %s\n
 1661:Shell-команды были отключены.\n
 1666:Перестал игнорировать %s.\n
@@ -579,7 +581,7 @@
 1676.Нужен uin/ник, кому отправить.\n
 #-#1678:Нужен URL.\n
 #+#1678:Need URL please.\n
-# #1678:No URL given.\n
+#1678:No URL given.\n
 1679:Извините, сохранение Ваших личных ответов прошло неверно!\n
 1680:Ваши личные настройки были сохранены!\n
 1681.Последний %d, с кем Вы говорили:\n
@@ -606,11 +608,12 @@
 1714:Ищу мужчину
 1715:mICQ
 1716:Ничего
-1717:"!" как первый символ запустит команду shell (т.е. "!ls"  "!dir" "!mkdir temp")
+#-#1717:"!" как первый символ запустит команду shell (т.е. "!ls"  "!dir" "!mkdir temp")
+#+#1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
+# #1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 1719:Показать как долго работает mICQ и некоторую статистику.
 #-#1720:<Контакты> это разделённый запятыми список UIN'ов или ников пользователей.
 #+#1720:<contacts> is a comma seperated list of UINs and nick names of users.
-# #1720:<contacts> is a comma separated list of UINs and nick names of users.
 1721:Отправка пустого сообщения переключит программу в многострочный режим.\nИспользуйте . на пустой строке, чтобы закончить сообщение.\nИспользуйте # на пустой строке, чтобы отменить сообщение.
 1724.Автоматические ответы: %s.\n
 1727.Не Беспокоить:
@@ -666,7 +669,9 @@
 1797:Финансы и корпоративный
 1798:Начальная школа
 1799:Средняя школа
-1800:Изменить язык на <lang> или показать строку <nr>.
+#-#1800:Изменить язык на <lang> или показать строку <nr>.
+#+#1800:Change the working language to <lang> or display string <nr>.
+# #1800:Change the working language (and encoding) to <lang> or display string <nr>.
 1801:Показать Ваш список контактов в широком формате.
 1807:Отменил входящее сообщение (seq %04x) от %s\n
 1808:Колледж
@@ -678,7 +683,7 @@
 1817:Событийные скрипты запрещены.\n
 #-#1818:Предупреждение: устаревший формат обнаружен в файле конфигурации!\n    Обновите или сохраните файл, набрав "save" и посмотрите изменения.\n
 #+#1818:Warning: Deprecated syntax found in rc file!\n    Please update or "save" the rc file and check for changes.\n
-# #1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
+#1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 1820:%s <параметр> [on|off|<значение>] - управление простыми параметрами.\n
 1822:    color:      использовать цвета при выводе.\n
 1823:Входящий частичный пакет:
@@ -733,7 +738,7 @@
 1896:Сервер закрыл соединение:\n
 #-#1897:Неполный TLV %d, длина %ld из %d - игнорирую.\n
 #+#1897:Incomplete TLV %d, len %ld of %d - ignoring.\n
-# #1897:Incomplete TLV %d, len %ld of %ld - ignoring.\n
+#1897:Incomplete TLV %d, len %ld of %ld - ignoring.\n
 1898.Перенаправляю на сервер %s... 
 1899:Неизвестное семейство запрошено: %d\n
 1900:Только для чтения.
@@ -845,11 +850,15 @@
 2034.Открываю TCP соединение на %s:%ld... 
 2036:Сохранить текущие настройки на диск.
 2037:Открыть или закрыть прямое соединение или отключить использование прямых соединений для <uin> или <ника>.
-2038:Открыть соединение номер nr или первое серверное соединение.
+#-#2038:Открыть соединение номер nr или первое серверное соединение.
+#+#2038:Opens connection number <nr>, or the first server connection.
+# #2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
 2039:Послать sms сообщение на сотовый телефон.
 2042:Показывает список людей в вашем контакт-листе в широком формате.
 2043:Удалить все контакты <контакты> из группы контактов <группа>.
-2044:Установить, очистить или показать <параметр>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
+#-#2044:Установить, очистить или показать <параметр>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
+#+#2044:Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
+# #2044:Set, clear or display an <option>: color, delbs, auto, uinprompt, autosave, autofinger, linebreak, funny.
 2045:Переключить Вашу видимость для <контакт>а, когда Вы на линии.
 2046:Вы можете захотеть использовать протокол версии 8 для прямого соединения ICQ.\n
 2047:Создаю директорию %s.\n
@@ -880,7 +889,7 @@
 2083:Не могу открыть файл %s: %s (%d).\n
 #-#2084:Ошибка в позиции %ld: %s (%ld).\n
 #+#2084:Error while seeking to offset %ld: %s (%ld).\n
-# #2084:Error while seeking to offset %ld: %s (%d).\n
+#2084:Error while seeking to offset %ld: %s (%d).\n
 2086:Ошибка чтения файла %s: %s (%d).\n
 2087:Закончил передачу файла %s.\n
 2088:Закончил передачу всех %d файлов.\n
@@ -891,7 +900,7 @@
 2093.%02d %-12s версия %d для %s (%lx), на %s:%ld %s\n
 #-#2094:conn login         Открывает первое серверное соединение.\n
 #+#2094:conn login         Open first server connection.\n
-# #2094:conn login         Open current/first server connection.\n
+#2094:conn login         Open current/first server connection.\n
 2095:conn remove <nr>   Удаляет соединение номер <nr>.\n
 2096.Соединение %ld не открыто.\n
 2097:conn select <nr>   Выбирает соединение номер <nr> как серверное соединение.\n
@@ -902,13 +911,13 @@
 2102:Соединение %ld является настроенным соединением.\n
 #-#2103:contact show    Показывает контакт-лист серверной стороны.\n
 #+#2103:contact show    Show server side contact list.\n
-# #2103:contact show    Show server based contact list.\n
 #-#2104:contact diff    Показывает контакты серверной стороны, не на локальном контакт-листе.\n
 #+#2104:contact diff    Show server side contacts not on local contact list.\n
-# #2104:contact diff    Show server based contacts not on local contact list.\n
 #-#2105:contact import  Добавляет контакт-лист серверной стороны в локальный контакт-лист.\n
 #+#2105:contact import  Add server side contact list to local contact list.\n
-# #2105:contact import  Import server based contact list as local contact list.\n
+#2103:contact show    Show server based contact list.\n
+#2104:contact diff    Show server based contacts not on local contact list.\n
+#2105:contact import  Import server based contact list as local contact list.\n
 2106:Последнее сообщение от %s%s%s (%s):\n
 2107:Вы не получали сообщения от %s%s%s.\n
 2108:auto
@@ -924,20 +933,20 @@
 2118:Недостаточно памяти.\n
 #-#2119:auth [grant] <ник>    - авторизировать.\n
 #+#2119:auth [grant] <nick>    - grant authorization.\n
-# #2119:auth [grant] <contacts>    - grant authorization.\n
 #-#2120:auth deny <ник> <msg> - отклонить авторизацию.\n
 #+#2120:auth deny <nick> <msg> - refuse authorization.\n
-# #2120:auth deny <contacts> <msg> - refuse authorization.\n
 #-#2121:auth req  <ник> <msg> - запросить авторизацию.\n
 #+#2121:auth req  <nick> <msg> - request authorization.\n
-# #2121:auth req  <contacts> <msg> - request authorization.\n
+#2119:auth [grant] <contacts>    - grant authorization.\n
+#2120:auth deny <contacts> <msg> - refuse authorization.\n
+#2121:auth req  <contacts> <msg> - request authorization.\n
 2122:Внимание: Вы должны ввести "save", чтобы записать новый пароль на диск.\n
 #-#2123:%sОшибка синтаксиса%s: Слишком мало аргументов: "%s"\n
 #+#2123:%sSyntax error%s: Too few arguments: '%s'\n
-# #2123:%sSyntax error%s: Too few arguments: %s\n
 #-#2124:%sОшибка синтаксиса%s: Не целое: "%s"\n
 #+#2124:%sSyntax error%s: Not an integer: '%s'\n
-# #2124:%sSyntax error%s: Not an integer: %s\n
+#2123:%sSyntax error%s: Too few arguments: %s\n
+#2124:%sSyntax error%s: Not an integer: %s\n
 2126:отключился, сообщение сохранено на сервере.\n
 2128: Описание: %s%s%s\n
 2129: URL:         %s%s%s\n
@@ -955,7 +964,7 @@
 2142:Прямое соединение с %s невозможно.\n
 #-#2145:auth add  <ник>       - авторизованное добавление.\n
 #+#2145:auth add  <nick>       - authorized add.\n
-# #2145:auth add  <contacts>       - authorized add.\n
+#2145:auth add  <contacts>       - authorized add.\n
 2146:"%s" уже является псевдонимом для "%s" (%ld).\n
 2147:"%s" (%ld) уже использовано как ник.\n
 2148:Добавлен "%s" как псевдоним для "%s" (%ld).\n
@@ -965,39 +974,45 @@
 2157:Молдова
 #-#2158:Не задан файл.\n
 #+#2158:No file given.\n
-# #2158:No file name given.\n
+#2158:No file name given.\n
 2159:Несколько фалов.
 2160:peer файл <ник> <файл> [<описание>]\n
 #-#2161:Получаю %ld файлов общим размером %ld байт на скорости %lx от %s.\n
 #+#2161:Receiving %ld files with together %ld bytes at speed %lx from %s.\n
-# #2161:Receiving %ld files with total size %ld bytes at speed %lx from %s.\n
+#2161:Receiving %ld files with total size %ld bytes at speed %lx from %s.\n
 2162:Получаю файл %s (%s) размером %ld байт как %s.\n
 2163:Посылаю файл %ld со смещением %ld.\n
 2164:Ошибка записи в файл.\n
 #-#2165:Та сторона прислала больше байт (%ld), чем есть в файле (%ld).\n
 #+#2165:The peer sent more bytes (%ld) than file length (%ld).\n
-# #2165:The peer sent more bytes (%ld) than the file length (%ld).\n
+#2165:The peer sent more bytes (%ld) than the file length (%ld).\n
 2166:Закончил прием файлов.\n
 2167:Ошибка - неизвестный пакет.\n
 2168:Передача файла #%ld (%s) прервана после %ld попыток в связи с превышением времени ожидания.\n
 2169:Передача файла прервана удаленной машиной (%d).\n
 #-#2170:Посылаю со скоростью %lx к %s.\n
 #+#2170:Sending at speed %lx to %s.\n
-# #2170:Sending file at speed %lx to %s.\n
+#2170:Sending file at speed %lx to %s.\n
 2171:Advanced
-2172:Команды для расширенного режима.
+#-#2172:Команды для расширенного режима.
+#+#2172:Commands for advanced features.
+# #2172:Advanced commands.
 #-#2176:Показать подробно текущий статус всех в вашем контакт-листе.
 #+#2176:Displays verbose the current status of everyone on your contact list.
-# #2176:Displays verbosely the current status of everyone on your contact list.
 #-#2177:Показать подробно текущий статус всех online пользователей в вашем контакт-листе.
 #+#2177:Displays verbose the current status of online people on your contact list.
-# #2177:Displays verbosely the current status of online people on your contact list.
+#2176:Displays verbosely the current status of everyone on your contact list.
+#2177:Displays verbosely the current status of online people on your contact list.
 2179:Послать всем <контакт>ам один файл.
 2180:Послать <uin>у или <ник>у несколько файлов.
 2181:Закрыть или удалить соединение номер <nr>.
-2182:Выбрать серверное соединение номер <nr>, как текущее серверное соединение.
+#-#2182:Выбрать серверное соединение номер <nr>, как текущее серверное соединение.
+#+#2182:Select server connection number <nr> as current server connection.
+# #2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
 2183:Проверить всех <контакт>ов, невидимы они или отключены.
-2184:%s%-10s%s - %s\n
+#-#2184:%s%-10s%s - %s\n
+#+#2184:%s%-10s%s - %s\n
+# #2184:%s%-14s%s - %s\n
 2185:Закрываю соединение %ld.\n
 2186.Принимаю файл "%s" (%ld байт).\n
 2188:Вы слишком быстро посылаете данные - прекратите печатать, или сервер отключит вас!\n
@@ -1042,7 +1057,7 @@
 2232.запрашивает авторизацию: %s%s\n
 #-#2233:отклонена авторизация: %s%s\n
 #+#2233:refused authorization: %s%s\n
-# #2233:refused authorization: %s%s%s\n
+#2233:refused authorization: %s%s%s\n
 2234:Сообщение %s выброшено - потеряна сессия.\n
 2235.Не задан ник.\n
 2236:Информация о %s%s%s (%ld):\n
@@ -1065,7 +1080,7 @@
 2253:Сигнал осуществляется скриптом %sevent%s.\n
 #-#2254:Сигнал выключен.
 #+#2254:A beep is never generated.
-# #2254:A beep is never generated.\n
+#2254:A beep is never generated.\n
 2255:Сигнал пришедшего контакта всегда выполняется посредством скрипта %sevent%s.\n
 2256:Сигнал ушедшего контакта всегда выполняется посредством скрипта %sevent%s.\n
 2257.Кодировка:
@@ -1092,7 +1107,7 @@
 2281:    auto:       посылать автоответы.\n
 #-#2282:    uinprompt:  использовать последний ник в качестве приглашения.\n
 #+#2282:    uinprompt:  display the last nick in the prompt.\n
-# #2282:    uinprompt:  have the last nick in the prompt.\n
+#2282:    uinprompt:  have the last nick in the prompt.\n
 2283:    autosave:   автозапись micqrc.\n
 2284:    autofinger: автозапрос информации по новому UINу.\n
 2285:    linebreak:  способ переноса сообщений: simple, break, indent, smart.\n
@@ -1121,10 +1136,10 @@
 2308:Показать текущий статус всех в Вашем списке контактов, сортированном по группам.
 #-#2309:Показать подробно текущий статус людей в сети из Вашего списка контактов, сортированного по группам.
 #+#2309:Displays verbose the current status of online people on your contact list, sorted by contact group.
-# #2309:Displays verbosely the current status of online people on your contact list, sorted by contact group.
 #-#2310:Показать подробно текущий статус всех в Вашем списке контактов, сортированном по группам.
 #+#2310:Displays verbose the current status of everyone on your contact list, sorted by contact group.
-# #2310:Displays verbosely the current status of everyone on your contact list, sorted by contact group.
+#2309:Displays verbosely the current status of online people on your contact list, sorted by contact group.
+#2310:Displays verbosely the current status of everyone on your contact list, sorted by contact group.
 2311:Добавить <uin> как <new nick>, или добавить псевдоним <new nick> к <uin>у или <ник>у.
 2312:Удалить все псевдонимы <контакт>а, удалить контакт, если добавлено "all".
 2313:Разрежить, запретить, запросить или подтвердить авторизацию для <контакт>у на добавление Вас/его в его/Ваш список контактов.
@@ -1157,7 +1172,7 @@
 2340.Передача файла "%s" отвергнута той стороной: %s%s.\n
 2341.Отклоняем файловый запрос "%s" (%ld байт): %s%s.\n
 #2342:Scripting
-#2343:Scripting extensions.
+#2343:Advanced commands for scripting.
 #2344:Execute Tcl script from <file>.
 #2345:Execute Tcl script in <string>.
 #2346:The following Tcl commands are supported:\n
@@ -1201,7 +1216,7 @@
 #2395:View your messages of <contact> since <date>.
 #2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n
 #2397:No server session found.\n
-#2398:Set an option for a contact group, a contact or global.\n
+#2398:Set or display options for a contact group, a contact or global.\n
 #2399:Request SSL connection.
 #2400:No translation (%s) loaded (%d entries).\n
 #2401:Auto reply messages are now contact options, see the %s command.\n
@@ -1213,7 +1228,7 @@
 #2408:%s is not a contact group.\n
 #2409:%s is not a contact.\n
 #2410:%s is neither a contact, nor a contact group, nor the %sglobal%s keyword.\n
-#2411:opt - short hand for optglobal, optgroup or optcontact.\n
+#2411:opt - short hand for optglobal, optconnection, optgroup or optcontact.\n
 #2412:optglobal            [<option> [<value>]] - set global option.\n
 #2413:optconnection        {<option> [<value>]] - set connection option.\n
 #2414:optgroup   <group>   [<option> [<value>]] - set contact group option.\n
@@ -1342,3 +1357,28 @@
 #2537:Contact upload failed, authorization required.\n
 #2538:Contact upload failed, already on server.\n
 #2539:Contact upload succeeded.\n
+#2540:    sound:      how to beep: off, on = beep, event.\n
+#2541:Status
+#2542:Commands to change your status.
+#2543:Contacts
+#2544:Commands to modify your contact list.
+#2545:     %s\n
+#2546:No help available for '%s'\n
+#2547:Displays saved meta data about <contacts>.
+#2548:Displays the current status of online people on your contact list, including otherwise hidden contacts.
+#2549:Displays verbosely the current status of online people on your contact list, including otherwise hidden contacts.
+#2550:Displays the current status of online people on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2551:Displays verbosely the current status of online people on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2552:Displays the current status of everyone on your contact list, including otherwise hidden contacts.
+#2553:Displays verbosely the current status of everyone on your contact list, including otherwise hidden contacts.
+#2554:Displays the current status of everyone on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2555:Displays verbosely the current status of everyone on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2556:Add contact, alias, or contact to group.
+#2557:Remove alias, or contact from group or contact list.
+#2558:Set or display options for a contact.\n
+#2559:Set or display options for a contact group.\n
+#2560:Set or display global options.\n
+#2561:Logs off and quits without saving.
+#2562:Execute <cmd> with connection <nr> or connection for uin <uin> as current server connection.
+#2563:Set or display connection options.\n
+#2564:The user couldn't be detected to be online.\n

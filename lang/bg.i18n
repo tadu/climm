@@ -1,5 +1,5 @@
 # $Id$ (Bulgarian)
-#  EN: __.i18n,v 1.70 2004/11/18 21:25:15
+#  EN: __.i18n,v 1.71 2004/12/05 00:57:40
 #-#1010:Ïîòðåáèòåëÿò å \"Äàëå÷\" [Àâòîìàòè÷íî Ñúîáùåíèå]
 #1000:UTF-8
 #1001:<lang>
@@ -444,7 +444,7 @@
 #-#1443:Êîìàíäè îòíàñÿùè ñå äî èçõîäà íà mICQ è êîíôèãóðèðàíåòî ìó.
 #-#1444:Êîìàíäè îòíàñÿùè ñå äî íàìèðàíåòî íà äðóãè ïîòðåáèòåëè.
 #1443:Commands relating to mICQ displays and configuration.
-#1444:Commands relating to finding and seeing other users.
+#1444:Commands relating to seeing and finding other users.
 1445:Êîìàíäè îòíàñÿùè ñå äî ICQ àêàóíòà âè.
 1446:Êîìàíäè îòíàñÿùè ñå äî èçïðàùàíåòî íà ñúîáùåíèÿ.
 1447:Client
@@ -688,9 +688,8 @@
 #1714:Seeking men
 #1715:mICQ
 #1716:None
-#1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
+#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 #1719:Shows how long mICQ has been running and some statistics.
-#1720:<contacts> is a comma separated list of UINs and nick names of users.
 #1721:Sending a blank message will put the client into multiline mode.\nUse . on a line by itself to end message.\nUse # on a line by itself to cancel the message.
 #1741:Must receive a message first.\n
 #1742:Must write a message first.\n
@@ -727,7 +726,7 @@
 #1797:Finance and corporate
 #1798:Elementary School
 #1799:High School
-#1800:Change the working language to <lang> or display string <nr>.
+#1800:Change the working language (and encoding) to <lang> or display string <nr>.
 #1801:Displays a list of people on your contact list in a screen wide format.
 #1807:Cancelled incoming message (seq %04x) from %s\n
 #1808:College
@@ -890,11 +889,11 @@
 #2033:born today
 #2036:Save current preferences to disc.
 #2037:Open or close a peer-to-peer connection, or disable using peer-to-peer connections for <uin> or <nick>.
-#2038:Opens connection number <nr>, or the first server connection.
+#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
 #2039:Sends a message to a (<nick>'s) <cell> phone.
 #2042:Displays a list of online people on your contact list in a screen wide format.
 #2043:Remove all contacts in <contacts> from contact group <group>.
-#2044:Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
+#2044:Set, clear or display an <option>: color, delbs, auto, uinprompt, autosave, autofinger, linebreak, funny.
 #2045:Toggles your visibility to <contacts> when you're online.
 #2046:You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n
 #2047:Creating directory %s.\n
@@ -989,15 +988,15 @@
 #2169:File transfer aborted by peer (%d).\n
 #2170:Sending file at speed %lx to %s.\n
 #2171:Advanced
-#2172:Commands for advanced features.
+#2172:Advanced commands.
 #2176:Displays verbosely the current status of everyone on your contact list.
 #2177:Displays verbosely the current status of online people on your contact list.
 #2179:Send all <contacts> a single file.
 #2180:Send <uin> or <nick> several files.
 #2181:Closes or removes connection number <nr>.
-#2182:Select server connection number <nr> as current server connection.
+#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
 #2183:Check all <contacts> whether they are offline or invisible.
-#2184:%s%-10s%s - %s\n
+#2184:%s%-14s%s - %s\n
 #2185:Closing connection %ld.\n
 #2188:You're sending data too fast - stop typing now, or the server will disconnect!\n
 #2191:Instant message error: %d.\n
@@ -1114,7 +1113,7 @@
 #2338:  get  - query server for meta data\n
 #2339:  rget - query server for last sender's meta data\n
 #2342:Scripting
-#2343:Scripting extensions.
+#2343:Advanced commands for scripting.
 #2344:Execute Tcl script from <file>.
 #2345:Execute Tcl script in <string>.
 #2346:The following Tcl commands are supported:\n
@@ -1157,7 +1156,7 @@
 #2395:View your messages of <contact> since <date>.
 #2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n
 #2397:No server session found.\n
-#2398:Set an option for a contact group, a contact or global.\n
+#2398:Set or display options for a contact group, a contact or global.\n
 #2399:Request SSL connection.
 #2400:No translation (%s) loaded (%d entries).\n
 #2401:Auto reply messages are now contact options, see the %s command.\n
@@ -1169,7 +1168,7 @@
 #2408:%s is not a contact group.\n
 #2409:%s is not a contact.\n
 #2410:%s is neither a contact, nor a contact group, nor the %sglobal%s keyword.\n
-#2411:opt - short hand for optglobal, optgroup or optcontact.\n
+#2411:opt - short hand for optglobal, optconnection, optgroup or optcontact.\n
 #2412:optglobal            [<option> [<value>]] - set global option.\n
 #2413:optconnection        {<option> [<value>]] - set connection option.\n
 #2414:optgroup   <group>   [<option> [<value>]] - set contact group option.\n
@@ -1298,3 +1297,28 @@
 #2537:Contact upload failed, authorization required.\n
 #2538:Contact upload failed, already on server.\n
 #2539:Contact upload succeeded.\n
+#2540:    sound:      how to beep: off, on = beep, event.\n
+#2541:Status
+#2542:Commands to change your status.
+#2543:Contacts
+#2544:Commands to modify your contact list.
+#2545:     %s\n
+#2546:No help available for '%s'\n
+#2547:Displays saved meta data about <contacts>.
+#2548:Displays the current status of online people on your contact list, including otherwise hidden contacts.
+#2549:Displays verbosely the current status of online people on your contact list, including otherwise hidden contacts.
+#2550:Displays the current status of online people on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2551:Displays verbosely the current status of online people on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2552:Displays the current status of everyone on your contact list, including otherwise hidden contacts.
+#2553:Displays verbosely the current status of everyone on your contact list, including otherwise hidden contacts.
+#2554:Displays the current status of everyone on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2555:Displays verbosely the current status of everyone on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2556:Add contact, alias, or contact to group.
+#2557:Remove alias, or contact from group or contact list.
+#2558:Set or display options for a contact.\n
+#2559:Set or display options for a contact group.\n
+#2560:Set or display global options.\n
+#2561:Logs off and quits without saving.
+#2562:Execute <cmd> with connection <nr> or connection for uin <uin> as current server connection.
+#2563:Set or display connection options.\n
+#2564:The user couldn't be detected to be online.\n

@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.70 2004/11/18 21:25:15
+#  EN: __.i18n,v 1.71 2004/12/05 00:57:40
 1000:UTF-8
 1001:de
 1002:de_DE
@@ -404,7 +404,9 @@
 1441:äußere IP:
 1442:Bitte wähle eines der Hilfe-Themen.
 1443:Kommandos, um mICQ zu konfigurieren.
-1444:Kommandos, um andere User zu finden oder sehen.
+#-#1444:Kommandos, um andere User zu finden oder sehen.
+#+#1444:Commands relating to finding and seeing other users.
+# #1444:Commands relating to seeing and finding other users.
 1445:Kommandos, um Einstellungen am ICQ-Konto vorzunehmen.
 1446:Kommandos, um anderen Benutzern Nachrichten zu schicken.
 1447:Konfig
@@ -602,9 +604,11 @@
 1714:Weiblein sucht Männlein
 1715:mICQ
 1716:Keine
-1717:"!" als erstes Zeichen, um ein Shell-Kommando auszuführen (z.B. "!ls", "!dir", "!mkdir temp").
+#-#1717:"!" als erstes Zeichen, um ein Shell-Kommando auszuführen (z.B. "!ls", "!dir", "!mkdir temp").
+#+#1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
+# #1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 1719:Zeigt, wie lange mICQ schon läuft, und ein paar Statistiken.
-1720:<contacts> ist eine Komma-separierte von Benutzernummern und Spitznamen von Benutzern.
+1720.<contacts> ist eine Komma-separierte von Benutzernummern und Spitznamen von Benutzern.
 1721:Bei einer leeren Nachricht können mehrere Zeilen eingegeben werden.\nDabei bedeutet eine Zeile nur mit . das Ende der Nachricht.\nEbenso verwirft eine Zeile nur mit # die Nachricht.
 1724.Automatische Antworten sind %s.\n
 1727.Die "bitte nicht stören"-Nachricht lautet:
@@ -660,7 +664,9 @@
 1797:Finanzen und Firmen
 1798:Grundschule
 1799:weiterführende Schule
-1800:Wählt die Sprache <lang> aus, oder zeigt Text <nr> an.
+#-#1800:Wählt die Sprache <lang> aus, oder zeigt Text <nr> an.
+#+#1800:Change the working language to <lang> or display string <nr>.
+# #1800:Change the working language (and encoding) to <lang> or display string <nr>.
 1801:Zeigt den Status aller Kontakte im breiten Format an.
 1807:Eingehende Nachricht %04x von %s abgebrochen.\n
 1808:Gymnasium
@@ -836,11 +842,15 @@
 2034.Öffne Direktverbindung auf %s:%ld... 
 2036:Speichere die aktuellen Einstellungen.
 2037:Öffne oder schließe eine Direktverbindung, oder schalte die Verwendung einer Direktverbindung für <uin> bzw. <nick> ab.
-2038:Öffne Verbindung Nummer <nr>, oder die erste Server-Verbindung.
+#-#2038:Öffne Verbindung Nummer <nr>, oder die erste Server-Verbindung.
+#+#2038:Opens connection number <nr>, or the first server connection.
+# #2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
 2039:Sende eine Nachricht an ein Handy (mit der Nummer <cell> / des Benutzers <nick>).
 2042:Zeigt den Status aller verbundenen Kontakte im breiten Format an.
 2043:Entfernt alle <contacts> von der Kontaktgruppe <group>.
-2044:Setzt, löscht or zeigt eine Option an: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
+#-#2044:Setzt, löscht or zeigt eine Option an: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
+#+#2044:Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
+# #2044:Set, clear or display an <option>: color, delbs, auto, uinprompt, autosave, autofinger, linebreak, funny.
 2045:Setzt oder löscht die Unsichtbarkeit gegenüber allen <contacts>.
 2046:Sie sollten die Version 8 (statt Version 6) für Direktverbindungen wählen.\n
 2047:Erzeuge Verzeichnis %s.\n
@@ -947,15 +957,21 @@
 2169:Dateiübertragung von Gegenüber abgebrochen (%d).\n
 2170:Sende Datei mit Geschwindigkeit %lx zu %s.\n
 2171:Weiteres
-2172:Kommandos für Fortgeschrittenes.
+#-#2172:Kommandos für Fortgeschrittenes.
+#+#2172:Commands for advanced features.
+# #2172:Advanced commands.
 2176:Zeigt den Status aller Kontakte im ausführlichen Format an.
 2177:Zeigt den Status aller verbundenen Kontakte im ausführlichen Format an.
 2179:Schickt allen <contacts> eine einzelne Datei.
 2180:Schickt <uin> bzw. <nick> mehrere Dateien.
 2181:Schließt bzw. entfernt Verbindung Nummer <nr>.
-2182:Wählt <nr> als aktuelle Server-Verbindung.
+#-#2182:Wählt <nr> als aktuelle Server-Verbindung.
+#+#2182:Select server connection number <nr> as current server connection.
+# #2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
 2183:Überprüft für alle <contacts>, ob diese nur unsichtbar oder nicht verbunden ist.
-2184:%s%-10s%s - %s\n
+#-#2184:%s%-10s%s - %s\n
+#+#2184:%s%-10s%s - %s\n
+# #2184:%s%-14s%s - %s\n
 2185:Schließe Verbindung %ld.\n
 2186.Akzeptiere Datei "%s" (%ld Bytes).\n
 2188:Sende Daten zu schnell - erstmal keine weiteren Befehle eingeben, oder der Server wird die Verbindung unterbrechen.\n
@@ -1108,7 +1124,9 @@
 2340.Dateiübertragung "%s" vom Gegenüber abgelehnt: %s%s.\n
 2341.Lehne Dateiübertragung "%s" ab (%ld bytes): %s%s.\n
 2342:Skript
-2343:Kommandos, um mICQ per Skript zu steuern.
+#-#2343:Kommandos, um mICQ per Skript zu steuern.
+#+#2343:Scripting extensions.
+# #2343:Advanced commands for scripting.
 2344:Führe Tcl-Skript aus Datei <file> aus.
 2345:Führe Tcl-Befehle <string> aus.
 2346:Die folgenden Tcl-Befehle werden unterstützt:\n
@@ -1163,7 +1181,7 @@
 2395:Zeigt die Nachrichten von <Kontakt> ab dem Datum <date> an.
 2396:Parameter '%s' ist nicht im ISO 8601 Format (Bsp.: '2004-31-01' oder '2004-31-01T23:12:05').\n
 #2397:No server session found.\n
-#2398:Set an option for a contact group, a contact or global.\n
+#2398:Set or display options for a contact group, a contact or global.\n
 #2399:Request SSL connection.
 #2400:No translation (%s) loaded (%d entries).\n
 #2401:Auto reply messages are now contact options, see the %s command.\n
@@ -1175,7 +1193,7 @@
 #2408:%s is not a contact group.\n
 #2409:%s is not a contact.\n
 #2410:%s is neither a contact, nor a contact group, nor the %sglobal%s keyword.\n
-#2411:opt - short hand for optglobal, optgroup or optcontact.\n
+#2411:opt - short hand for optglobal, optconnection, optgroup or optcontact.\n
 #2412:optglobal            [<option> [<value>]] - set global option.\n
 #2413:optconnection        {<option> [<value>]] - set connection option.\n
 #2414:optgroup   <group>   [<option> [<value>]] - set contact group option.\n
@@ -1304,3 +1322,28 @@
 #2537:Contact upload failed, authorization required.\n
 #2538:Contact upload failed, already on server.\n
 #2539:Contact upload succeeded.\n
+#2540:    sound:      how to beep: off, on = beep, event.\n
+#2541:Status
+#2542:Commands to change your status.
+#2543:Contacts
+#2544:Commands to modify your contact list.
+#2545:     %s\n
+#2546:No help available for '%s'\n
+#2547:Displays saved meta data about <contacts>.
+#2548:Displays the current status of online people on your contact list, including otherwise hidden contacts.
+#2549:Displays verbosely the current status of online people on your contact list, including otherwise hidden contacts.
+#2550:Displays the current status of online people on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2551:Displays verbosely the current status of online people on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2552:Displays the current status of everyone on your contact list, including otherwise hidden contacts.
+#2553:Displays verbosely the current status of everyone on your contact list, including otherwise hidden contacts.
+#2554:Displays the current status of everyone on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2555:Displays verbosely the current status of everyone on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2556:Add contact, alias, or contact to group.
+#2557:Remove alias, or contact from group or contact list.
+#2558:Set or display options for a contact.\n
+#2559:Set or display options for a contact group.\n
+#2560:Set or display global options.\n
+#2561:Logs off and quits without saving.
+#2562:Execute <cmd> with connection <nr> or connection for uin <uin> as current server connection.
+#2563:Set or display connection options.\n
+#2564:The user couldn't be detected to be online.\n

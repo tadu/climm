@@ -1,5 +1,5 @@
 # $Id$ Português (Brazillian)
-#  EN: __.i18n,v 1.70 2004/11/18 21:25:15
+#  EN: __.i18n,v 1.71 2004/12/05 00:57:40
 #1000:UTF-8
 1001:pt
 1002:pt_BR
@@ -160,7 +160,7 @@
 1187:Construção de Redes
 #-#1188:Comando desconhecido no arquivo rc '%s', ignorado.
 #+#1188:Unrecognized command in rc file '%s', ignored.
-# #1188:Unrecognized command '%s' in configuration file, ignored.
+#1188:Unrecognized command '%s' in configuration file, ignored.
 1198:Outros Serviços
 1200:não fornecido
 1201:Afeganistão
@@ -396,7 +396,9 @@
 1441:IP remoto:
 1442:Por favor selecione um dos tópicos de ajuda abaixo.
 1443:Comandos para a aparência e configuração do mICQ.
-1444:Comandos para encontrar e ver outros usuários.
+#-#1444:Comandos para encontrar e ver outros usuários.
+#+#1444:Commands relating to finding and seeing other users.
+# #1444:Commands relating to seeing and finding other users.
 1445:Comandos para sua conta ICQ.
 1446:Comandos para enviar mensagens.
 1447:Cliente
@@ -533,11 +535,11 @@
 1622:Deseja aplicar estar mudanças? (SIM/NÃO)
 #-#1623:Pacote duplicado %04X\n
 #+#1623:Doubled packet %04X\n
-# #1623:Double packet %04x.\n
+#1623:Double packet %04x.\n
 1624.Desculpe, não pude inicializar Windows Sockets...
 #-#1632:\nConexão instável. Saindo....
 #+#1632:\nConnection unstable. Exiting....
-# #1632:\nConnection unstable. Exiting....
+#1632:\nConnection unstable. Exiting....
 1634:ok.\n
 1637:Não pude ligar socket para a porta livre\n
 1638:Não pude criar socket
@@ -548,7 +550,7 @@
 1643:Conhecido SRV_X1 0x021C Lista de contatos pronta?\n
 #-#1644:Conhecido SRV_X2 0x00E6 Antigas mensagens prontas?\n
 #+#1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
-# #1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
+#1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
 1645:Você entrou uma senha inválida.\n
 1646:Servidor ocupado.\n
 1648:A resposta foi %04x	
@@ -563,7 +565,7 @@
 1658:Entre com o sobrenome do usuário:
 #-#1659:Seção %s desconhecida no arquivo de configuração.
 #+#1659:Unknown section %s in configuration file.
-# #1659:Unknown section '%s' in configuration file.
+#1659:Unknown section '%s' in configuration file.
 1660:Comando Inválido: %s\n
 1661:Comandos shell foram desabilitados.\n
 1666:Não ignorado %s.\n
@@ -577,7 +579,7 @@
 1676.Precisa de uin/apelido para enviar.\n
 #-#1678:Precisa URL por favor.\n
 #+#1678:Need URL please.\n
-# #1678:No URL given.\n
+#1678:No URL given.\n
 1679:Desculpe, salvando suas mensagens pessoais de resposta foram erradas!\n
 1680:Suas opções pessoais foram salvas!\n
 1681.Últimas %d pessoas com quem você falou:\n
@@ -604,11 +606,12 @@
 1714:Procurando homem
 1715:mICQ
 1716:Nenhum
-1717:'!' como o primeiro caractere de um comando executará um comando shell (p.ex. '!ls', '!dir', '!mkdir temp')
+#-#1717:'!' como o primeiro caractere de um comando executará um comando shell (p.ex. '!ls', '!dir', '!mkdir temp')
+#+#1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
+# #1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 1719:Mostra há quanto tempo mICQ está rodando e algumas estatísticas.
 #-#1720:<contatos> é uma lista separada por vírgula de UINs e apelidos de usuários.
 #+#1720:<contacts> is a comma seperated list of UINs and nick names of users.
-# #1720:<contacts> is a comma separated list of UINs and nick names of users.
 1721:Enviando uma mensagem em branco colocará o cliente em modo multilinha.\nUse . em uma linha própria para encerrar a mensagem.\nUse # em uma linha própria para cancelar a mensagem.
 1724.Respostas automáticas são %s.\n
 1727.A mensagem "não perturbe" é:
@@ -664,7 +667,9 @@
 1797:Finanças e corporação
 1798:Escola Elementar
 1799:Escola Superior
-1800:Altera o idioma de trabalho para <idioma> ou mostra a palavra <nr>.
+#-#1800:Altera o idioma de trabalho para <idioma> ou mostra a palavra <nr>.
+#+#1800:Change the working language to <lang> or display string <nr>.
+# #1800:Change the working language (and encoding) to <lang> or display string <nr>.
 1801:Mostra uma lista de pessoas em sua lista de contatos em um formato de tela cheia.
 1807:Mensagem chegando (seq %04x) de %s cancelada\n
 1808:Colégio
@@ -676,7 +681,7 @@
 1817:A ferramenta de script de eventos está desabilitada.\n
 #-#1818:Aviso: Sintaxe depreciada encontrada no arquivo rc!\n    Por favor atualize ou salve ("save") o arquivo rc e verifique as mudanças.\n
 #+#1818:Warning: Deprecated syntax found in rc file!\n    Please update or "save" the rc file and check for changes.\n
-# #1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
+#1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 1820:%s <opção> [on|off|<valor>] - controla opções simples.\n
 1822:    color:      usa textos coloridos para a saída.\n
 1823:Pacote parcial chegando:
@@ -731,7 +736,7 @@
 1896:Conexão encerrada com o servidor:\n
 #-#1897:TLV %d incompleto, compr %ld de %d - ignorando.\n
 #+#1897:Incomplete TLV %d, len %ld of %d - ignoring.\n
-# #1897:Incomplete TLV %d, len %ld of %ld - ignoring.\n
+#1897:Incomplete TLV %d, len %ld of %ld - ignoring.\n
 1898.Redirecionando ao servidor %s... 
 1899:Família requerida desconhecida: %d\n
 1900:Está somente para leitura.
@@ -844,11 +849,15 @@
 2034.Abrindo conexão TCP a %s:%ld... 
 2036:Salvar preferências atuais no disco.
 2037:Abrir ou fechar uma conexão ponto-a-ponto, ou desabilitar uso de conexões ponto-a-ponto para <uin> ou <apelido>.
-2038:Abre conexão número <nr>, ou a primeira conexão com o servidor.
+#-#2038:Abre conexão número <nr>, ou a primeira conexão com o servidor.
+#+#2038:Opens connection number <nr>, or the first server connection.
+# #2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
 2039:Envia uma mensagem para o telefone <celular> (do <apelido>).
 2042:Mostra uma lista de pessoas conectadas na sua lista de contatos em um formato de tela cheia.
 2043:Remove todos os contatos em <contatos> do grupo de contatos <grupo>.
-2044:Seleciona, limpa ou mostra uma <opção>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
+#-#2044:Seleciona, limpa ou mostra uma <opção>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
+#+#2044:Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
+# #2044:Set, clear or display an <option>: color, delbs, auto, uinprompt, autosave, autofinger, linebreak, funny.
 2045:Muda sua visibilidade para <contatos> quando você estiver conectado.
 2046:Você pode querer usar protocolo versão 8 para o protocolo ICQ ponto-a-ponto ao invés.\n
 2047:Criando diretório %s.\n
@@ -879,7 +888,7 @@
 2083:Arquivo %s não pode ser aberto: %s (%d).\n
 #-#2084:Erro durante procura por equivalência %ld: %s (%ld).\n
 #+#2084:Error while seeking to offset %ld: %s (%ld).\n
-# #2084:Error while seeking to offset %ld: %s (%d).\n
+#2084:Error while seeking to offset %ld: %s (%d).\n
 2086:Erro durante leitura do arquivo %s: %s (%d).\n
 2087:Envio de arquivo %s finalizado.\n
 2088:Envio de todos os %d arquivos finalizado.\n
@@ -890,7 +899,7 @@
 2093.%02d %-13s versão %d para %s (%lx), a %s:%ld %s\n
 #-#2094:conn login         Abre primeira conexão com o servidor.\n
 #+#2094:conn login         Open first server connection.\n
-# #2094:conn login         Open current/first server connection.\n
+#2094:conn login         Open current/first server connection.\n
 2095:conn remove <nr>   Remove conexão <nr>.\n
 2096.Conexão %ld não está aberta.\n
 2097:conn select <nr>   Seleciona conexão <nr> como conexão servidor.\n
@@ -901,13 +910,13 @@
 2102:Conexão %ld é uma conexão configurada.\n
 #-#2103:contact show    Mostra lista de contatos no lado do servidor.\n
 #+#2103:contact show    Show server side contact list.\n
-# #2103:contact show    Show server based contact list.\n
 #-#2104:contact diff    Mostra contatos no servidor que não estão na lista local.\n
 #+#2104:contact diff    Show server side contacts not on local contact list.\n
-# #2104:contact diff    Show server based contacts not on local contact list.\n
 #-#2105:contact import  Adiciona lista do servidor na lista de contatos local.\n
 #+#2105:contact import  Add server side contact list to local contact list.\n
-# #2105:contact import  Import server based contact list as local contact list.\n
+#2103:contact show    Show server based contact list.\n
+#2104:contact diff    Show server based contacts not on local contact list.\n
+#2105:contact import  Import server based contact list as local contact list.\n
 2106:Última mensagem de %s%s%s a %s:\n
 2107:Nenhuma mensagem recebida de %s%s%s.\n
 2108:auto
@@ -923,20 +932,20 @@
 2118:Sem memória.\n
 #-#2119:auth [grant] <apelido>    - concede autorização.\n
 #+#2119:auth [grant] <nick>    - grant authorization.\n
-# #2119:auth [grant] <contacts>    - grant authorization.\n
 #-#2120:auth deny <apelido> <msg> - recusa autorização.\n
 #+#2120:auth deny <nick> <msg> - refuse authorization.\n
-# #2120:auth deny <contacts> <msg> - refuse authorization.\n
 #-#2121:auth req  <apelido> <msg> - pede autorização.\n
 #+#2121:auth req  <nick> <msg> - request authorization.\n
-# #2121:auth req  <contacts> <msg> - request authorization.\n
+#2119:auth [grant] <contacts>    - grant authorization.\n
+#2120:auth deny <contacts> <msg> - refuse authorization.\n
+#2121:auth req  <contacts> <msg> - request authorization.\n
 2122:Nota: Você precisa salvar ('save') para gravar a nova senha no disco.\n
 #-#2123:%sErro de sintaxe %s: Poucos argumentos: '%s'\n
 #+#2123:%sSyntax error%s: Too few arguments: '%s'\n
-# #2123:%sSyntax error%s: Too few arguments: %s\n
 #-#2124:%sErro de sintaxe%s: Não é um inteiro: '%s'\n
 #+#2124:%sSyntax error%s: Not an integer: '%s'\n
-# #2124:%sSyntax error%s: Not an integer: %s\n
+#2123:%sSyntax error%s: Too few arguments: %s\n
+#2124:%sSyntax error%s: Not an integer: %s\n
 2126:está desconectado, mensagem acumulada no servidor.\n
 2127.       URL: %s %s%s%s\n
 2128: Descrição: %s%s%s\n
@@ -955,7 +964,7 @@
 2142:Conexão direta com %s impossível.\n
 #-#2145:auth add  <apelido>       - adicionar autorização.\n
 #+#2145:auth add  <nick>       - authorized add.\n
-# #2145:auth add  <contacts>       - authorized add.\n
+#2145:auth add  <contacts>       - authorized add.\n
 2146:'%s' já é um alias para '%s' (%ld).\n
 2147:'%s' (%ld) já é usado para um apelido.\n
 2148:Adicionado '%s' como um alias para '%s' (%ld).\n
@@ -965,39 +974,45 @@
 2157:Moldova
 #-#2158:Nenhum arquivo dado.\n
 #+#2158:No file given.\n
-# #2158:No file name given.\n
+#2158:No file name given.\n
 2159:Alguns arquivos.
 2160:peer file  <apelido> <arquivo> [<descrição>]\n
 #-#2161:Recebendo %ld arquivos juntos com %ld bytes na velocidade %lx de %s.\n
 #+#2161:Receiving %ld files with together %ld bytes at speed %lx from %s.\n
-# #2161:Receiving %ld files with total size %ld bytes at speed %lx from %s.\n
+#2161:Receiving %ld files with total size %ld bytes at speed %lx from %s.\n
 2162:Recebendo arquivo %s (%s) com %ld bytes como %s.\n
 2163:Enviando arquivo %ld na equivalência %ld.\n
 2164:Erro escrevendo arquivo.\n
 #-#2165:O ponto enviou mais bytes (%ld) que o tamanho do arquivo (%ld).\n
 #+#2165:The peer sent more bytes (%ld) than file length (%ld).\n
-# #2165:The peer sent more bytes (%ld) than the file length (%ld).\n
+#2165:The peer sent more bytes (%ld) than the file length (%ld).\n
 2166:Recepção de arquivo finalizada.\n
 2167:Erro - pacote desconhecido.\n
 2168:Transferência de arquivo #%ld (%s) abandonada após %ld tentativas devido ão timeout.\n
 2169:Transferência de arquivo abortada pelo ponto (%d).\n
 #-#2170:Enviando com velocidade %lx para %s.\n
 #+#2170:Sending at speed %lx to %s.\n
-# #2170:Sending file at speed %lx to %s.\n
+#2170:Sending file at speed %lx to %s.\n
 2171:Avançado  
-2172:Comandos para características avançadas.
+#-#2172:Comandos para características avançadas.
+#+#2172:Commands for advanced features.
+# #2172:Advanced commands.
 #-#2176:Mostra informações do estado atual de todos na sua lista de contatos.
 #+#2176:Displays verbose the current status of everyone on your contact list.
-# #2176:Displays verbosely the current status of everyone on your contact list.
 #-#2177:Mostra informações do estado atual de pessoas conectadas na sua lista de contatos.
 #+#2177:Displays verbose the current status of online people on your contact list.
-# #2177:Displays verbosely the current status of online people on your contact list.
+#2176:Displays verbosely the current status of everyone on your contact list.
+#2177:Displays verbosely the current status of online people on your contact list.
 2179:Envia a todos os <contatos> um único arquivo.
 2180:Envia a <uin> ou <apelido> diversos arquivos.
 2181:Fecha ou remove conexão número <nr>.
-2182:Seleciona conexão servidor número <nr> como conexão servidor atual.
+#-#2182:Seleciona conexão servidor número <nr> como conexão servidor atual.
+#+#2182:Select server connection number <nr> as current server connection.
+# #2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
 2183:Verifica se todos os <contatos> estão desconectados ou invisíveis.
-2184:%s%-10s%s - %s\n
+#-#2184:%s%-10s%s - %s\n
+#+#2184:%s%-10s%s - %s\n
+# #2184:%s%-14s%s - %s\n
 2185:Fechando conexão %ld.\n
 2186.Aceitando arquivo '%s' (%ld bytes).\n
 2188:Você está enviando dados muito rápido - pare de digitar agora, ou o servidor irá desconectar!\n
@@ -1042,7 +1057,7 @@
 2232.pede autorização: %s%s\n
 #-#2233:autorização recusada: %s%s\n
 #+#2233:refused authorization: %s%s\n
-# #2233:refused authorization: %s%s%s\n
+#2233:refused authorization: %s%s%s\n
 2234:Mensagem %s descartada - sessão perdida.\n
 2235.Nenhum apelido dado.\n
 2236:Informações para %s%s%s (%ld):\n
@@ -1065,7 +1080,7 @@
 2253:Um bipe é gerado rodando o script %seventos%s.\n
 #-#2254:Um bipe não é nunca gerado.
 #+#2254:A beep is never generated.
-# #2254:A beep is never generated.\n
+#2254:A beep is never generated.\n
 2255:Um bipe por contatos ficando conectados é sempre gerado rodando o script %seventos%s.\n
 2256:Um bipe por contatos ficando desconectados é sempre gerado rodando o script %seventos%s.\n
 2257.Codificação:
@@ -1095,7 +1110,7 @@
 2281:    auto:       enviar auto-respostas.\n
 #-#2282:    uinprompt:  ter o último apelido no prompt.\n
 #+#2282:    uinprompt:  display the last nick in the prompt.\n
-# #2282:    uinprompt:  have the last nick in the prompt.\n
+#2282:    uinprompt:  have the last nick in the prompt.\n
 2283:    autosave:   automaticamente salvar o micqrc.\n
 2284:    autofinger: automaticamente 'finger' novos UINs.\n
 2285:    linebreak:  estilo para quebra de linha das mensagens: simple, break, indent, smart.\n
@@ -1124,10 +1139,10 @@
 2308:Mostra o estado atual de todos em sua lista de contatos, classificado por grupos de contatos.
 #-#2309:Mostra informações do estado atual das pessoas conectadas na sua lista de contatos, classificadas por grupos de contatos.
 #+#2309:Displays verbose the current status of online people on your contact list, sorted by contact group.
-# #2309:Displays verbosely the current status of online people on your contact list, sorted by contact group.
 #-#2310:Mostra informações do estado atual de todos em sua lista de contatos, classificado por grupos de contatos.
 #+#2310:Displays verbose the current status of everyone on your contact list, sorted by contact group.
-# #2310:Displays verbosely the current status of everyone on your contact list, sorted by contact group.
+#2309:Displays verbosely the current status of online people on your contact list, sorted by contact group.
+#2310:Displays verbosely the current status of everyone on your contact list, sorted by contact group.
 2311:Adiciona <uin> como <novo apelido>, ou adiciona alias <novo apelido> para <uin> ou <apelido>.
 2312:Remove todos os aliases em <contatos>, remove contato se 'all' for dado.
 2313:Concede, recusa, pede ou reconhece autorização de/para <contatos> para você/eles em sua(s) listas de contatos.
@@ -1160,7 +1175,9 @@
 2340.Transferência de arquivo '%s' rejeitado pelo ponto: %s%s.\n
 2341.Recusando pedido de arquivo '%s' (%ld bytes): %s%s.\n
 2342:Scripting
-2343:Extensões para scripting.
+#-#2343:Extensões para scripting.
+#+#2343:Scripting extensions.
+# #2343:Advanced commands for scripting.
 2344:Executar script Tcl de <arquivo>.
 2345:Executar script Tcl em <texto>.
 2346:Os seguintes comandos TCL são suportados:\n
@@ -1207,10 +1224,10 @@
 2387.%s <contato> [<último> [<count>]] -- Mostra o histórico de <contato>.\n
 #-#2388:%s <contato> <padrão> -- Busca <padrão> em caso insensitivo no histórico de <contato>.\n
 #+#2388:%s <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n
-# #2388:find <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n
 #-#2389:%s <contato> <padrão> -- Busca <padrão> em caso sensitivo no histórico de <contato>.\n
 #+#2389:%s <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
-# #2389:finds <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
+#2388:find <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n
+#2389:finds <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
 2390:Padrão vazio ou nenhum dado.\n
 2391:Busca em caso sensitivo de <padrão> no arquivo log de <contato>.
 2392.Seu estado é %s (%s).\n
@@ -1219,7 +1236,7 @@
 #2395:View your messages of <contact> since <date>.
 #2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n
 #2397:No server session found.\n
-#2398:Set an option for a contact group, a contact or global.\n
+#2398:Set or display options for a contact group, a contact or global.\n
 #2399:Request SSL connection.
 #2400:No translation (%s) loaded (%d entries).\n
 #2401:Auto reply messages are now contact options, see the %s command.\n
@@ -1231,7 +1248,7 @@
 #2408:%s is not a contact group.\n
 #2409:%s is not a contact.\n
 #2410:%s is neither a contact, nor a contact group, nor the %sglobal%s keyword.\n
-#2411:opt - short hand for optglobal, optgroup or optcontact.\n
+#2411:opt - short hand for optglobal, optconnection, optgroup or optcontact.\n
 #2412:optglobal            [<option> [<value>]] - set global option.\n
 #2413:optconnection        {<option> [<value>]] - set connection option.\n
 #2414:optgroup   <group>   [<option> [<value>]] - set contact group option.\n
@@ -1360,3 +1377,28 @@
 #2537:Contact upload failed, authorization required.\n
 #2538:Contact upload failed, already on server.\n
 #2539:Contact upload succeeded.\n
+#2540:    sound:      how to beep: off, on = beep, event.\n
+#2541:Status
+#2542:Commands to change your status.
+#2543:Contacts
+#2544:Commands to modify your contact list.
+#2545:     %s\n
+#2546:No help available for '%s'\n
+#2547:Displays saved meta data about <contacts>.
+#2548:Displays the current status of online people on your contact list, including otherwise hidden contacts.
+#2549:Displays verbosely the current status of online people on your contact list, including otherwise hidden contacts.
+#2550:Displays the current status of online people on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2551:Displays verbosely the current status of online people on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2552:Displays the current status of everyone on your contact list, including otherwise hidden contacts.
+#2553:Displays verbosely the current status of everyone on your contact list, including otherwise hidden contacts.
+#2554:Displays the current status of everyone on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2555:Displays verbosely the current status of everyone on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2556:Add contact, alias, or contact to group.
+#2557:Remove alias, or contact from group or contact list.
+#2558:Set or display options for a contact.\n
+#2559:Set or display options for a contact group.\n
+#2560:Set or display global options.\n
+#2561:Logs off and quits without saving.
+#2562:Execute <cmd> with connection <nr> or connection for uin <uin> as current server connection.
+#2563:Set or display connection options.\n
+#2564:The user couldn't be detected to be online.\n

@@ -1,5 +1,5 @@
 # $Id$
-#  EN: __.i18n,v 1.70 2004/11/18 21:25:15
+#  EN: __.i18n,v 1.71 2004/12/05 00:57:40
 #1000:UTF-8
 1001:de
 1002:de_CH
@@ -183,7 +183,7 @@
 1187:Webdesigner
 #-#1188:Unbekannti Option '%s' ir Konfigurationsdatei ignoriert.
 #+#1188:Unrecognized command in rc file '%s', ignored.
-# #1188:Unrecognized command '%s' in configuration file, ignored.
+#1188:Unrecognized command '%s' in configuration file, ignored.
 1198:Angeri Dienschte
 ##
 ## Länder
@@ -462,7 +462,7 @@
 1442:Bitte wäu eis vo de Hiufe-Theme us.
 1443:Kommandos zum Konfiguriere vo mICQ.
 #-#1444:Kommandos zum finge vo angerne User.
-#1444:Commands relating to finding and seeing other users.
+#1444:Commands relating to seeing and finding other users.
 1445:Kommandos für dis ICQ-Account.
 1446:Kommandos wie me Nachrichte a angeri User schickt.
 1447:Client
@@ -606,12 +606,12 @@
 1622:Möchtisch die Änderige anwände? (Iu/Nei)
 #-#1623:Dopplets Päckli %04X.\n
 #+#1623:Doubled packet %04X\n
-# #1623:Double packet %04x.\n
+#1623:Double packet %04x.\n
 1624.Sorry, cha d Windows Sockets ned initialisiere...
 #-#1632:\nVerbindig inschtabil. Beände...
 #+#1632:\nConnection unstable. Exiting....
-# #1632:\nConnection unstable. Exiting....
 #-#1634:OK\n
+#1632:\nConnection unstable. Exiting....
 #1634:ok.\n
 1637:Cha der Socket zu kem freie Port verbinde\n
 1638:Ha der Verbindigsändpunkt ned chönne erzüge
@@ -622,11 +622,11 @@
 #+#1642:IP
 #-#1643:Beschtätiget SRV_X1 0x021C Fertig mit Kontaktlischte (?)\n
 #+#1643:Acknowleged SRV_X1 0x021C Done Contact list?\n
-#1642:IP:
-#1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
 #-#1644:Beschtätiget SRV_X2 0x00E6 Fertig mit aute Nachrichte (?)\n
 #+#1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
-# #1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
+#1642:IP:
+#1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
+#1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
 1645:Das Passwort isch ned richtig.\n
 1646:Der Server isch beschäftiget.\n
 #-#1648:D Antwort isch %04X gsi
@@ -647,7 +647,7 @@
 1658:Gib der Nachname vom User i:
 #-#1659:Unbekannte Abschnitt %s ir Konfigurationsdatei.
 #+#1659:Unknown section %s in configuration file.
-# #1659:Unknown section '%s' in configuration file.
+#1659:Unknown section '%s' in configuration file.
 1660:Ungüutigs Kommando: %s\n
 1661:Shell-Kommandos si abgschautet.\n
 #-#1666:Ignoriere %s nümme.
@@ -669,7 +669,7 @@
 1676.I bruche d Usernummere/Nickname, wo nis söu häreschicke.\n
 #-#1678:I bruche e URL.\n
 #+#1678:Need URL please.\n
-# #1678:No URL given.\n
+#1678:No URL given.\n
 1679:Leider isch ds Schpichere vo dine persönleche Ischteuige fäugschlage!\n
 1680:Dini persönleche Ischteuige si gschpicheret!\n
 1681.Die letschte %d Lüt wo de mit ne gschnuret hesch:\n
@@ -706,9 +706,8 @@
 #+#1719:Shows how long mICQ has been running.
 #-#1720:<uin> cha d Usernummere oder der Nickname vo me User si.
 #+#1720:uin can be either a number or the nickname of the user.
-#1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
+#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 #1719:Shows how long mICQ has been running and some statistics.
-#1720:<contacts> is a comma separated list of UINs and nick names of users.
 1721:Bire lääre Nachricht chöi mehreri Zile igä wärde.\nDerbi bedütet e Zile nume mit . ds Ändi vor Nachricht.\nE Zile nume mit # verwirft d Nachricht.
 1724.Automatischi Antworte sind %s.\n
 1727.D Nachricht für "bitte ned schtöre" isch:
@@ -780,7 +779,7 @@
 1798:Grundschueu
 1799:High School
 #-#1800:Wäut d Schprach <lang> us.
-#1800:Change the working language to <lang> or display string <nr>.
+#1800:Change the working language (and encoding) to <lang> or display string <nr>.
 1801:Zeigt d Kontaktlischte im usfüehrleche Format a.
 1807:Igehendi Nachricht %04x vo %s abbroche.\n
 1808:College
@@ -792,15 +791,15 @@
 #+#1815:    funny: use funny messages for output.\n
 #-#1817:Ds Feature "ReceiveScript" isch deaktiviert!\n
 #+#1817:ReceiveScript feature not enabled.\n
-#1815:    funny:      use funny messages for output.\n
-#1817:The event scripting feature is disabled.\n
 #-#1818:Warnig: Verauteti Syntax ir Konfigurationsdatei gfunge!\nBitte nöi erschteue oder mit "save" überschribe und uf Änderige prüefe.\n
 #+#1818:Warning: Deprecated syntax found in rc file!\n    Please update or "save" the rc file and check for changes.\n
-# #1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 #-#1820:%s <option> [igschaute|usgschaute] - eifach Optione ändere.\n
 #+#1820:%s <option> [on|off] - control simple options.\n
 #-#1822:    color: Farb bruche.\n
 #+#1822:    color: use colored text output.\n
+#1815:    funny:      use funny messages for output.\n
+#1817:The event scripting feature is disabled.\n
+#1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 #1820:%s <option> [on|off|<value>] - control simple options.\n
 #1822:    color:      use colored text output.\n
 1823:Igehends Unger-Päckli:
@@ -1018,7 +1017,7 @@
 #-#2039:Schickt es SMS
 #+#2039:Sends a message to a cell phone.
 #2037:Open or close a peer-to-peer connection, or disable using peer-to-peer connections for <uin> or <nick>.
-#2038:Opens connection number <nr>, or the first server connection.
+#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
 #2039:Sends a message to a (<nick>'s) <cell> phone.
 2042:Zeigt die verbundene Mitglieder vor Kontaktlischte im breite Format a.
 #-#2043:Entfärnt e Kontakt us der Kontaktlischte.
@@ -1026,7 +1025,7 @@
 #+#2044:Set or clear an option.
 #-#2045:Setzt oder löscht d Unsichtbarkeit für <nick>.
 #2043:Remove all contacts in <contacts> from contact group <group>.
-#2044:Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
+#2044:Set, clear or display an <option>: color, delbs, auto, uinprompt, autosave, autofinger, linebreak, funny.
 #2045:Toggles your visibility to <contacts> when you're online.
 2046:Du söttisch d Version 8 (schtatt der Version 6) für Diräktverbindige wähle.\n
 2047:Erschteue ds Verzeichnis %s.\n
@@ -1081,7 +1080,7 @@
 2093.%02d %-12s Version %d für %s (%lx), bi %s:%ld %s\n
 #-#2094:conn login         Erschti Serververbindig uftue.\n
 #+#2094:conn login         Open first server connection.\n
-# #2094:conn login         Open current/first server connection.\n
+#2094:conn login         Open current/first server connection.\n
 2095:conn remove <nr>   Verbindig Nummere <nr> zuetue.\n
 #-#2096:D Verbindig %d isch ned offe.\n
 #+#2096:Connection %d is not open.\n
@@ -1097,17 +1096,17 @@
 #+#2101:Removing connection %d and its dependands completely.\n
 #-#2102:D Verbindig %d isch e konfigurierti Verbindig.\n
 #+#2102:Connection %d is a configured connection.\n
-#2101:Removing connection %ld and its dependents completely.\n
-#2102:Connection %ld is a configured connection.\n
 #-#2103:contact show    Die serversitigi Kontaktlischte azeige.\n
 #+#2103:contact show    Show server side contact list.\n
-# #2103:contact show    Show server based contact list.\n
 #-#2104:contact diff    Aui serversitige Kontakte azeige wo ned uf der lokale Kontaktlischte si.\n
 #+#2104:contact diff    Show server side contacts not on local contact list.\n
-# #2104:contact diff    Show server based contacts not on local contact list.\n
 #-#2105:contact import  Aui serversitige Kontakte zur lokale Kontaktlischte derzuetue.\n
 #+#2105:contact import  Add server side contact list to local contact list.\n
-# #2105:contact import  Import server based contact list as local contact list.\n
+#2101:Removing connection %ld and its dependents completely.\n
+#2102:Connection %ld is a configured connection.\n
+#2103:contact show    Show server based contact list.\n
+#2104:contact diff    Show server based contacts not on local contact list.\n
+#2105:contact import  Import server based contact list as local contact list.\n
 2106:Letschti Nachricht vo %s%s%s um %s:\n
 2107:No keni Nachrichte vo %s%s%s empfange.\n
 2108:auto
@@ -1128,26 +1127,26 @@
 2118:Schpicher vou (out of memory).\n
 #-#2119:auth [grant] <nick>    - Outhorisation gä.\n
 #+#2119:auth [grant] <nick>    - grant authorization.\n
-# #2119:auth [grant] <contacts>    - grant authorization.\n
 #-#2120:auth deny <nick> <msg> - Outhorisation ablehne.\n
 #+#2120:auth deny <nick> <msg> - refuse authorization.\n
-# #2120:auth deny <contacts> <msg> - refuse authorization.\n
 #-#2121:auth req  <nick> <msg> - Outhorisation beantrage.\n
 #+#2121:auth req  <nick> <msg> - request authorization.\n
-# #2121:auth req  <contacts> <msg> - request authorization.\n
 #-#2122: Hiwis: Du muesch "save" zum ds nöie Passwort uf d Feschtplatte z schpichere.\n
 #+#2122: Note: You need to 'save' to write new password to disc.\n
-#2122:Note: You need to 'save' to write new password to disc.\n
 #-#2123:%sSyntaxfähler%s: Z weni Argumänt: "%s"\n
 #+#2123:%sSyntax error%s: Too few arguments: '%s'\n
-# #2123:%sSyntax error%s: Too few arguments: %s\n
 #-#2124:%sSyntaxfähler%s: Ke ganzi Zau:    "%s"\n
 #+#2124:%sSyntax error%s: Not an integer: '%s'\n
-# #2124:%sSyntax error%s: Not an integer: %s\n
 #-#2126:Der User isch offline, d Nachricht (%s#%08lx:%08lx%s) isch ir Warteschlange.\n
 #+#2126:User is offline, message (%s#%08lx:%08lx%s) queued.\n
 #-#2127:       URL: %s%s%s%s\n
 #+#2127:       URL: %s%s%s%s\n
+#2119:auth [grant] <contacts>    - grant authorization.\n
+#2120:auth deny <contacts> <msg> - refuse authorization.\n
+#2121:auth req  <contacts> <msg> - request authorization.\n
+#2122:Note: You need to 'save' to write new password to disc.\n
+#2123:%sSyntax error%s: Too few arguments: %s\n
+#2124:%sSyntax error%s: Not an integer: %s\n
 #2126:is offline, message queued on server.\n
 2128: Beschriebig: %s%s%s\n
 2129:         URL: %s%s%s\n
@@ -1185,15 +1184,15 @@
 #2169:File transfer aborted by peer (%d).\n
 #2170:Sending file at speed %lx to %s.\n
 #2171:Advanced
-#2172:Commands for advanced features.
+#2172:Advanced commands.
 #2176:Displays verbosely the current status of everyone on your contact list.
 #2177:Displays verbosely the current status of online people on your contact list.
 #2179:Send all <contacts> a single file.
 #2180:Send <uin> or <nick> several files.
 #2181:Closes or removes connection number <nr>.
-#2182:Select server connection number <nr> as current server connection.
+#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
 #2183:Check all <contacts> whether they are offline or invisible.
-#2184:%s%-10s%s - %s\n
+#2184:%s%-14s%s - %s\n
 #2185:Closing connection %ld.\n
 #2188:You're sending data too fast - stop typing now, or the server will disconnect!\n
 #2191:Instant message error: %d.\n
@@ -1310,7 +1309,7 @@
 #2338:  get  - query server for meta data\n
 #2339:  rget - query server for last sender's meta data\n
 #2342:Scripting
-#2343:Scripting extensions.
+#2343:Advanced commands for scripting.
 #2344:Execute Tcl script from <file>.
 #2345:Execute Tcl script in <string>.
 #2346:The following Tcl commands are supported:\n
@@ -1354,7 +1353,7 @@
 #2395:View your messages of <contact> since <date>.
 #2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n
 #2397:No server session found.\n
-#2398:Set an option for a contact group, a contact or global.\n
+#2398:Set or display options for a contact group, a contact or global.\n
 #2399:Request SSL connection.
 #2400:No translation (%s) loaded (%d entries).\n
 #2401:Auto reply messages are now contact options, see the %s command.\n
@@ -1366,7 +1365,7 @@
 #2408:%s is not a contact group.\n
 #2409:%s is not a contact.\n
 #2410:%s is neither a contact, nor a contact group, nor the %sglobal%s keyword.\n
-#2411:opt - short hand for optglobal, optgroup or optcontact.\n
+#2411:opt - short hand for optglobal, optconnection, optgroup or optcontact.\n
 #2412:optglobal            [<option> [<value>]] - set global option.\n
 #2413:optconnection        {<option> [<value>]] - set connection option.\n
 #2414:optgroup   <group>   [<option> [<value>]] - set contact group option.\n
@@ -1495,3 +1494,28 @@
 #2537:Contact upload failed, authorization required.\n
 #2538:Contact upload failed, already on server.\n
 #2539:Contact upload succeeded.\n
+#2540:    sound:      how to beep: off, on = beep, event.\n
+#2541:Status
+#2542:Commands to change your status.
+#2543:Contacts
+#2544:Commands to modify your contact list.
+#2545:     %s\n
+#2546:No help available for '%s'\n
+#2547:Displays saved meta data about <contacts>.
+#2548:Displays the current status of online people on your contact list, including otherwise hidden contacts.
+#2549:Displays verbosely the current status of online people on your contact list, including otherwise hidden contacts.
+#2550:Displays the current status of online people on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2551:Displays verbosely the current status of online people on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2552:Displays the current status of everyone on your contact list, including otherwise hidden contacts.
+#2553:Displays verbosely the current status of everyone on your contact list, including otherwise hidden contacts.
+#2554:Displays the current status of everyone on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2555:Displays verbosely the current status of everyone on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2556:Add contact, alias, or contact to group.
+#2557:Remove alias, or contact from group or contact list.
+#2558:Set or display options for a contact.\n
+#2559:Set or display options for a contact group.\n
+#2560:Set or display global options.\n
+#2561:Logs off and quits without saving.
+#2562:Execute <cmd> with connection <nr> or connection for uin <uin> as current server connection.
+#2563:Set or display connection options.\n
+#2564:The user couldn't be detected to be online.\n

@@ -1,5 +1,5 @@
 # $Id$ (Indonesian)
-#  EN: __.i18n,v 1.70 2004/11/18 21:25:15
+#  EN: __.i18n,v 1.71 2004/12/05 00:57:40
 #1000:UTF-8
 1001:id
 1002:id_ID
@@ -160,7 +160,7 @@
 1187:Pembuatan Web
 #-#1188:Perintah tidak dikenal di dalam file rc '%s', diabaikan.
 #+#1188:Unrecognized command in rc file '%s', ignored.
-# #1188:Unrecognized command '%s' in configuration file, ignored.
+#1188:Unrecognized command '%s' in configuration file, ignored.
 1198:Layanan Lain
 1200:tidak dimasukkan
 1201:Afghanistan
@@ -396,7 +396,9 @@
 1441:IP remote:
 1442:Silahkan pilih salah satu topik dibawah.
 1443:Perintah-perintah yang berhubungan dengan tampilan mICQ dan konfigurasi.
-1444:Perintah-perintah yang berhubungan dengan pencarian dan melihat user lain.
+#-#1444:Perintah-perintah yang berhubungan dengan pencarian dan melihat user lain.
+#+#1444:Commands relating to finding and seeing other users.
+# #1444:Commands relating to seeing and finding other users.
 1445:Perintah-perintah yang berhubungan dengan account ICQ Anda.
 1446:Perintah-perintah yang berhubungan dengan pengiriman pesan.
 1447:Klien
@@ -533,11 +535,11 @@
 1622:Anda menyetujui perubahan tersebut? (YA/TIDAK)
 #-#1623:Paket Dobel %04X\n
 #+#1623:Doubled packet %04X\n
-# #1623:Double packet %04x.\n
+#1623:Double packet %04x.\n
 1624.Maaf, tidak dapat mengenal Soket Windows...
 #-#1632:\nKoneksi tidak stabil. Keluar....
 #+#1632:\nConnection unstable. Exiting....
-# #1632:\nConnection unstable. Exiting....
+#1632:\nConnection unstable. Exiting....
 1634:ok.\n
 1637:Tidak dapat mem-bind soket untuk membebaskan port\n
 1638:Tidak dapat membuat soket
@@ -548,7 +550,7 @@
 1643:Telah diketahui SRV_X1 0x021C Daftar kontak selesai?\n
 #-#1644:Telah diketahui SRV_X2 0x00E6 Pesan lama selesai?\n
 #+#1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
-# #1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
+#1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
 1645:Anda memasukkan password yang salah.\n
 1646:Server sedang sibuk.\n
 1648:Respon-nya adalah %04x	
@@ -563,7 +565,7 @@
 1658:Masukkan nama belakang user:
 #-#1659:Bagian yang tidak dikenal %s pada file konfigurasi.
 #+#1659:Unknown section %s in configuration file.
-# #1659:Unknown section '%s' in configuration file.
+#1659:Unknown section '%s' in configuration file.
 1660:Perintah yang salah: %s\n
 1661:Perintah shell telah di non-aktifkan.\n
 1666:Tak terabaikan %s.\n
@@ -577,7 +579,7 @@
 1676.Memerlukan uin/nick untuk mengrimkan.\n
 #-#1678:Membutuhkan URL.\n
 #+#1678:Need URL please.\n
-# #1678:No URL given.\n
+#1678:No URL given.\n
 1679:Maaf penyimpanan pesan balasan pribadi ada kesalahan!\n
 1680:Setting pribadi Anda telah disimpan!\n
 1681.%d terakhir orang yang Anda ajak bicara:\n
@@ -604,11 +606,12 @@
 1714:Mencari pria
 1715:mICQ
 1716:Tidak Ada
-1717:'!' sebagai karakter pertama perintah akan menjalankan perintah shell (contoh: '!ls', '!dir', '!mkdir temp')
+#-#1717:'!' sebagai karakter pertama perintah akan menjalankan perintah shell (contoh: '!ls', '!dir', '!mkdir temp')
+#+#1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
+# #1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 1719:Menampilkan berapa lama mICQ telah menyala dan beberapa statistik.
 #-#1720:<contacts> adalah daftar UIN dan nickname dari user yang terpisah dengan koma.
 #+#1720:<contacts> is a comma seperated list of UINs and nick names of users.
-# #1720:<contacts> is a comma separated list of UINs and nick names of users.
 1721:Mengirimkan pesan kosong akan membawa klien ke mode multiline.\nGunakan . pada baris tersebut untuk mengakhiri pesan.\nGunakan # pada baris tersebut untuk membatalkan pesan.
 1724.Jawaban otomatis %s.\n
 1727.Pesan "jangan diganggu" adalah:
@@ -664,7 +667,9 @@
 1797:Finansial dan corporate
 1798:Sekolah Kejuruan
 1799:SMU
-1800:Mengubah bahasa aktif ke <lang> atau tampilkan karakter <nr>.
+#-#1800:Mengubah bahasa aktif ke <lang> atau tampilkan karakter <nr>.
+#+#1800:Change the working language to <lang> or display string <nr>.
+# #1800:Change the working language (and encoding) to <lang> or display string <nr>.
 1801:Menampilkan daftar orang pada daftar kontak Anda dengan format layar melebar.
 1807:Pesan masuk dibatalkan (seq %04x) dari %s\n
 1808:Kuliah
@@ -676,7 +681,7 @@
 1817:Fitur script tambahan tidak aktif.\n
 #-#1818:Peringatan: Ditemukan sintak yang tidak digunakan dalam file rc!\n    Silahkan perbaharui atau "save" file rc dan lihat perubahannya.\n
 #+#1818:Warning: Deprecated syntax found in rc file!\n    Please update or "save" the rc file and check for changes.\n
-# #1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
+#1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 1820:%s <option> [on|off|<value>] - kontrol pilihan sederhana.\n
 1822:    color:      menggunakan keluaran text berwarna.\n
 1823:Potongan paket masuk:
@@ -731,7 +736,7 @@
 1896:Server menutup koneksi:\n
 #-#1897:TLV %d tidak lengkap, panjang %ld dari %d - diabaikan.\n
 #+#1897:Incomplete TLV %d, len %ld of %d - ignoring.\n
-# #1897:Incomplete TLV %d, len %ld of %ld - ignoring.\n
+#1897:Incomplete TLV %d, len %ld of %ld - ignoring.\n
 1898.Redireksi ke server %s...
 1899:Permintaan keluarga tidak dikenal: %d\n
 1900:Hanya bisa dibaca.
@@ -844,11 +849,15 @@
 2034.Membuka koneksi TCP pada %s:%ld...
 2036:Menyimpan preferensi saat ini ke disk.
 2037:Membuka atau menutup koneksi peer-to-peer, atau non-aktifkan penggunaan koneksi peer-to-peer untuk <uin> atau <nick>.
-2038:Membuka koneksi nomor <nr>, atau koneksi pertama server.
+#-#2038:Membuka koneksi nomor <nr>, atau koneksi pertama server.
+#+#2038:Opens connection number <nr>, or the first server connection.
+# #2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
 2039:Mengirim pesan ke telepon (<nick>'s) <cell>.
 2042:Menampilkan daftar orang yang online pada daftar kontak dengan menggunakan format layar lebar.
 2043:Menghapus semua kontak di <contacts> dari grup kontak <group>.
-2044:Set, bersihkan atau tampilkan <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
+#-#2044:Set, bersihkan atau tampilkan <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
+#+#2044:Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
+# #2044:Set, clear or display an <option>: color, delbs, auto, uinprompt, autosave, autofinger, linebreak, funny.
 2045:Mengubah penampakan Anda menjadi tidak terlihat kepada <contacts> sewaktu Anda online.
 2046:Anda mungkin ingin menggunakan protokol versi 8 untuk peer-to-peer ICQ sebagai gantinya.\n
 2047:Membuat direktori %s.\n
@@ -879,7 +888,7 @@
 2083:Tidak dapat membuka file %s: %s (%d).\n
 #-#2084:Salah sewaktu mencari ke offset %ld: %s (%ld).\n
 #+#2084:Error while seeking to offset %ld: %s (%ld).\n
-# #2084:Error while seeking to offset %ld: %s (%d).\n
+#2084:Error while seeking to offset %ld: %s (%d).\n
 2086:Salah sewaktu membaca file %s: %s (%d).\n
 2087:Pengiriman file selesai %s.\n
 2088:Selesai mengirimkan semua file %d.\n
@@ -890,7 +899,7 @@
 2093.%02d %-12s versi %d untuk %s (%lx), pada %s:%ld %s\n
 #-#2094:conn login         Membuka koneksi server pertama.\n
 #+#2094:conn login         Open first server connection.\n
-# #2094:conn login         Open current/first server connection.\n
+#2094:conn login         Open current/first server connection.\n
 2095:conn remove <nr>   Menutup koneksi <nr>.\n
 2096.Koneksi %ld tidak terbuka.\n
 2097:conn select <nr>   Pilih koneksi <nr> sebagai koneksi ke server.\n
@@ -901,13 +910,13 @@
 2102:Koneksi %ld adalah koneksi yang terkonfigurasi.\n
 #-#2103:contact show    Menampilkan daftar kontak pada sisi server.\n
 #+#2103:contact show    Show server side contact list.\n
-# #2103:contact show    Show server based contact list.\n
 #-#2104:contact diff    Menampilkan kontak pada sisi server tidak pada daftar kontak lokal.\n
 #+#2104:contact diff    Show server side contacts not on local contact list.\n
-# #2104:contact diff    Show server based contacts not on local contact list.\n
 #-#2105:contact import  Menambahkan daftar kontak pada sisi server ke daftar kontak lokal.\n
 #+#2105:contact import  Add server side contact list to local contact list.\n
-# #2105:contact import  Import server based contact list as local contact list.\n
+#2103:contact show    Show server based contact list.\n
+#2104:contact diff    Show server based contacts not on local contact list.\n
+#2105:contact import  Import server based contact list as local contact list.\n
 2106:Pesan terakhir dari %s%s%s at %s:\n
 2107:Tidak ada pesan yang diterima dari %s%s%s.\n
 2108:otomatis
@@ -923,20 +932,20 @@
 2118:Memori habis.\n
 #-#2119:auth [grant] <nick>    - menerima otorisasi.\n
 #+#2119:auth [grant] <nick>    - grant authorization.\n
-# #2119:auth [grant] <contacts>    - grant authorization.\n
 #-#2120:auth deny <nick> <msg> - menolak otorisasi.\n
 #+#2120:auth deny <nick> <msg> - refuse authorization.\n
-# #2120:auth deny <contacts> <msg> - refuse authorization.\n
 #-#2121:auth req  <nick> <msg> - meminta otorisasi.\n
 #+#2121:auth req  <nick> <msg> - request authorization.\n
-# #2121:auth req  <contacts> <msg> - request authorization.\n
+#2119:auth [grant] <contacts>    - grant authorization.\n
+#2120:auth deny <contacts> <msg> - refuse authorization.\n
+#2121:auth req  <contacts> <msg> - request authorization.\n
 2122:Catatan: Anda perlu untuk men-'save' untuk menyimpan password ke disk.\n
 #-#2123:%sKesalahan sintak%s: Argumen terlalu sedikit: '%s'\n
 #+#2123:%sSyntax error%s: Too few arguments: '%s'\n
-# #2123:%sSyntax error%s: Too few arguments: %s\n
 #-#2124:%sKesalahan sintak%s: Bukan bilangan integer: '%s'\n
 #+#2124:%sSyntax error%s: Not an integer: '%s'\n
-# #2124:%sSyntax error%s: Not an integer: %s\n
+#2123:%sSyntax error%s: Too few arguments: %s\n
+#2124:%sSyntax error%s: Not an integer: %s\n
 2126:sedang offline, pesan antri di server.\n
 2127.       URL: %s %s%s%s\n
 2128:   Deskripsi: %s%s%s\n
@@ -955,7 +964,7 @@
 2142:Koneksi langsung dengan %s tidak mungkin dilakukan.\n
 #-#2145:auth add  <nick>       - otorisasi menambahkan.\n
 #+#2145:auth add  <nick>       - authorized add.\n
-# #2145:auth add  <contacts>       - authorized add.\n
+#2145:auth add  <contacts>       - authorized add.\n
 2146:'%s' sudah sebagai alias untuk '%s' (%ld).\n
 2147:'%s' (%ld) sudah digunakan sebagai nick.\n
 2148:Menambahkan '%s' sebagai alias untuk '%s' (%ld).\n
@@ -965,39 +974,45 @@
 2157:Moldova
 #-#2158:Tidak ada file yang diberikan.\n
 #+#2158:No file given.\n
-# #2158:No file name given.\n
+#2158:No file name given.\n
 2159:Beberapa file.
 2160:peer file  <nick> <file> [<description>]\n
 #-#2161:Menerima %ld file dengan bersamaan %ld byte pada kecepatan %lx dari %s.\n
 #+#2161:Receiving %ld files with together %ld bytes at speed %lx from %s.\n
-# #2161:Receiving %ld files with total size %ld bytes at speed %lx from %s.\n
+#2161:Receiving %ld files with total size %ld bytes at speed %lx from %s.\n
 2162:Menerima file %s (%s) dengan %ld byte sebagai %s.\n
 2163:Mengirimkan file %ld pada offset %ld.\n
 2164:Kesalahan sewaktu menulis ke file.\n
 #-#2165:Peer mengirim byte tambahan (%ld) daripada ukuran file (%ld).\n
 #+#2165:The peer sent more bytes (%ld) than file length (%ld).\n
-# #2165:The peer sent more bytes (%ld) than the file length (%ld).\n
+#2165:The peer sent more bytes (%ld) than the file length (%ld).\n
 2166:Selesai menerima file.\n
 2167:Kesalahan - paket tidak dikenal.\n
 2168:Transfer file #%ld (%s) dihentikan setelah %ld percobaan karena timeout.\n
 2169:Transfer file dibatalkan oleh peer (%d).\n
 #-#2170:Mengirimkan dengan kecepatan %lx ke %s.\n
 #+#2170:Sending at speed %lx to %s.\n
-# #2170:Sending file at speed %lx to %s.\n
+#2170:Sending file at speed %lx to %s.\n
 2171:Tambahan
-2172:Perintah untuk fitur tambahan.
+#-#2172:Perintah untuk fitur tambahan.
+#+#2172:Commands for advanced features.
+# #2172:Advanced commands.
 #-#2176:Menampilkan secara lengkap status saat ini dari setiap orang yang ada pada daftar kontak Anda.
 #+#2176:Displays verbose the current status of everyone on your contact list.
-# #2176:Displays verbosely the current status of everyone on your contact list.
 #-#2177:Menampilkan secara lengkap status saat ini dari orang yang online pada daftar kontak Anda.
 #+#2177:Displays verbose the current status of online people on your contact list.
-# #2177:Displays verbosely the current status of online people on your contact list.
+#2176:Displays verbosely the current status of everyone on your contact list.
+#2177:Displays verbosely the current status of online people on your contact list.
 2179:Mengirim semua <contacts> sebagai file tunggal.
 2180:Mengirim <uin> atau <nick> beberapa file.
 2181:Menutup atau menghapus nomor koneksi <nr>.
-2182:Memilih nomor koneksi server <nr> sebagai koneksi saat ini.
+#-#2182:Memilih nomor koneksi server <nr> sebagai koneksi saat ini.
+#+#2182:Select server connection number <nr> as current server connection.
+# #2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
 2183:Cek semua <contacts> meskipun mereka offline ataupun tidak nampak.
-2184:%s%-10s%s - %s\n
+#-#2184:%s%-10s%s - %s\n
+#+#2184:%s%-10s%s - %s\n
+# #2184:%s%-14s%s - %s\n
 2185:Menutup koneksi %ld.\n
 2186.Menerima file '%s' (%ld bytes).\n
 2188:Anda mengirim data terlalu cepat - berhenti mengetik sekarang, atau server akan memutus hubungan!\n
@@ -1042,7 +1057,7 @@
 2232.meminta otorisasi: %s%s\n
 #-#2233:otorisasi yang ditolak: %s%s\n
 #+#2233:refused authorization: %s%s\n
-# #2233:refused authorization: %s%s%s\n
+#2233:refused authorization: %s%s%s\n
 2234:Pesan %s dihilangkan - sesi telah hilang.\n
 2235.Tidak ada nick name yang diberikan.\n
 2236:Informasi untuk %s%s%s (%ld):\n
@@ -1065,7 +1080,7 @@
 2253:Beep di hasilkan dari eksekusi skrip %sevent%s.\n
 #-#2254:Beep tidak pernah dihasilkan.
 #+#2254:A beep is never generated.
-# #2254:A beep is never generated.\n
+#2254:A beep is never generated.\n
 2255:Beep untuk kontak yang datang selalu dihasilkan oleh skrip %sevent%s yang bekerja.\n
 2256:Beep untuk kontak yang pergi selalu dihasilkan oleh skrip %sevent%s yang bekerja.\n
 2257.Pengkodean:
@@ -1095,7 +1110,7 @@
 2281:    auto:       kirim jawaban otomatis.\n
 #-#2282:    uinprompt:  menggunakan nick terakhir pada prompt.\n
 #+#2282:    uinprompt:  display the last nick in the prompt.\n
-# #2282:    uinprompt:  have the last nick in the prompt.\n
+#2282:    uinprompt:  have the last nick in the prompt.\n
 2283:    autosave:   otomatis menyimpan micqrc.\n
 2284:    autofinger: otomatis finger UIN baru.\n
 2285:    linebreak:  gaya untuk pesan berbaris: simple, break, indent, smart.\n
@@ -1124,10 +1139,10 @@
 2308:Menampilkan status saat ini dari semua orang yang ada pada daftar kontak Anda, diurutkan dengan grup kontak.
 #-#2309:Menampilkan secara lengkap informasi status saat ini dari orang yang online pada daftar kontak Anda, diurutkan dengan grup kontak.
 #+#2309:Displays verbose the current status of online people on your contact list, sorted by contact group.
-# #2309:Displays verbosely the current status of online people on your contact list, sorted by contact group.
 #-#2310:Menampilkan secara lengkap informasi status saat ini dari semua orang yang ada pada daftar kontak Anda, diurutkan dengan grup kontak.
 #+#2310:Displays verbose the current status of everyone on your contact list, sorted by contact group.
-# #2310:Displays verbosely the current status of everyone on your contact list, sorted by contact group.
+#2309:Displays verbosely the current status of online people on your contact list, sorted by contact group.
+#2310:Displays verbosely the current status of everyone on your contact list, sorted by contact group.
 2311:Menambahkan <uin> sebagai <new nick>, atau menambah alias <new nick> untuk <uin> atau <nick>.
 2312:Hapus semua alias pada <contacts>, hapus kontak jika 'all' diberikan.
 2313:Menerima, menolak, meminta atau mengetahui otorisasi dari/kepada <contacts> ke Anda/mereka ke daftar kontak mereka/Anda.
@@ -1160,7 +1175,7 @@
 2340.Transfer file '%s' ditolak oleh peer: %s%s.\n
 2341.Menolak permintan file '%s' (%ld byte): %s%s.\n
 #2342:Scripting
-#2343:Scripting extensions.
+#2343:Advanced commands for scripting.
 #2344:Execute Tcl script from <file>.
 #2345:Execute Tcl script in <string>.
 #2346:The following Tcl commands are supported:\n
@@ -1204,7 +1219,7 @@
 #2395:View your messages of <contact> since <date>.
 #2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n
 #2397:No server session found.\n
-#2398:Set an option for a contact group, a contact or global.\n
+#2398:Set or display options for a contact group, a contact or global.\n
 #2399:Request SSL connection.
 #2400:No translation (%s) loaded (%d entries).\n
 #2401:Auto reply messages are now contact options, see the %s command.\n
@@ -1216,7 +1231,7 @@
 #2408:%s is not a contact group.\n
 #2409:%s is not a contact.\n
 #2410:%s is neither a contact, nor a contact group, nor the %sglobal%s keyword.\n
-#2411:opt - short hand for optglobal, optgroup or optcontact.\n
+#2411:opt - short hand for optglobal, optconnection, optgroup or optcontact.\n
 #2412:optglobal            [<option> [<value>]] - set global option.\n
 #2413:optconnection        {<option> [<value>]] - set connection option.\n
 #2414:optgroup   <group>   [<option> [<value>]] - set contact group option.\n
@@ -1345,3 +1360,28 @@
 #2537:Contact upload failed, authorization required.\n
 #2538:Contact upload failed, already on server.\n
 #2539:Contact upload succeeded.\n
+#2540:    sound:      how to beep: off, on = beep, event.\n
+#2541:Status
+#2542:Commands to change your status.
+#2543:Contacts
+#2544:Commands to modify your contact list.
+#2545:     %s\n
+#2546:No help available for '%s'\n
+#2547:Displays saved meta data about <contacts>.
+#2548:Displays the current status of online people on your contact list, including otherwise hidden contacts.
+#2549:Displays verbosely the current status of online people on your contact list, including otherwise hidden contacts.
+#2550:Displays the current status of online people on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2551:Displays verbosely the current status of online people on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2552:Displays the current status of everyone on your contact list, including otherwise hidden contacts.
+#2553:Displays verbosely the current status of everyone on your contact list, including otherwise hidden contacts.
+#2554:Displays the current status of everyone on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2555:Displays verbosely the current status of everyone on your contact list, sorted by contact group, including otherwise hidden contacts.
+#2556:Add contact, alias, or contact to group.
+#2557:Remove alias, or contact from group or contact list.
+#2558:Set or display options for a contact.\n
+#2559:Set or display options for a contact group.\n
+#2560:Set or display global options.\n
+#2561:Logs off and quits without saving.
+#2562:Execute <cmd> with connection <nr> or connection for uin <uin> as current server connection.
+#2563:Set or display connection options.\n
+#2564:The user couldn't be detected to be online.\n
