@@ -677,13 +677,13 @@ static JUMP_F(CmdUserHelp)
         else if (!strcasecmp (par->txt, "save"))
             CMD_USER_HELP  ("save", i18n (2036, "Save current preferences to disc."));
         else if (!strcasecmp (par->txt, "q"))
-            CMD_USER_HELP  ("q", i18n (1422, "Logs off and quits."));
+            CMD_USER_HELP  ("q [<msg>]", i18n (1422, "Logs off and quits."));
         else if (!strcasecmp (par->txt, "quit"))
-            CMD_USER_HELP  ("quit", i18n (1422, "Logs off and quits."));
+            CMD_USER_HELP  ("quit [<msg>]", i18n (1422, "Logs off and quits."));
         else if (!strcasecmp (par->txt, "exit"))
-            CMD_USER_HELP  ("exit", i18n (1422, "Logs off and quits."));
+            CMD_USER_HELP  ("exit [<msg>]", i18n (1422, "Logs off and quits."));
         else if (!strcasecmp (par->txt, "x"))
-            CMD_USER_HELP  ("x", i18n (2561, "Logs off and quits without saving."));
+            CMD_USER_HELP  ("x [<msg>]", i18n (2561, "Logs off and quits without saving."));
         else if (!strcasecmp (par->txt, "!"))
             CMD_USER_HELP  ("! <cmd>", i18n (1717, "Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp')."));
         /* Advanced */
