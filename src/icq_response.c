@@ -525,7 +525,7 @@ void Display_Info_Reply (Connection *conn, Packet *pak, const char *uinline,
     UWORD wdata;
 
     if (uinline)
-        M_printf (uinline, COLSERVER, COLNONE, PacketRead4 (pak));
+        M_printf (uinline, COLSERVER, PacketRead4 (pak), COLNONE);
 
     if (*(data = PacketReadLNTS (pak)))
         M_printf (COLSERVER "%-15s" COLNONE " " COLCONTACT "%s" COLNONE "\n",
