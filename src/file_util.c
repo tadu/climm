@@ -1235,15 +1235,14 @@ void PrefReadStat (FILE *stf)
                             break;
                         
                         uin = atoi (cg->name + 14);
-                        if ((conn = ConnectionFindUIN (type, uin)))
+                        if ((conn = ConnectionFindUIN (type, uin)) && conn->contacts && conn->contacts != cg)
                         {
-                            cg->serv = conn;
-                            cg->serv->contacts = cg;
+                            ContactGroupD (cg);
+                            cg = conn->contacts;
                         }
                     }
                     if (!cg->serv)
-                        if ((conn = ConnectionFind (TYPEF_SERVER, NULL, NULL)))
-                            cg->serv = conn;
+                        cg->serv = ConnectionFind (TYPEF_SERVER, NULL, NULL);
                 }
                 else if (!strcasecmp (cmd, "id") && !cg->used)
                 {
@@ -1277,10 +1276,24 @@ void PrefReadStat (FILE *stf)
                     PrefParseInt (i);
                     PrefParseInt (uin);
                     
+                    if (!cg->serv->contacts)
+                    {
+                        cg->serv->contacts = ContactGroupC (NULL, 0, NULL);
+                        OptSetVal (&cg->serv->contacts->copts, CO_IGNORE, 0);
+                        cg->serv->contacts->serv = cg->serv;
+                    }
+                    
                     if (format == 1)
                         cont = ContactFindCreate (cg->serv->contacts, i, uin, s_sprintf ("%ld", uin));
                     else
                         cont = ContactFind (cg->serv->contacts, 0, uin, NULL);
+                    
+                    if (!cont)
+                    {
+                        rl_printf ("FIXME: could not find %ld in %p / fmt %d).\n", uin, cg->serv->contacts, format);
+                        ERROR;
+                    }
+
                     if (cg != cg->serv->contacts)
                     {
                         ContactAdd (cg, cont);
@@ -1465,7 +1478,7 @@ int PrefWriteStatusFile (void)
 
         for (i = 0; (cont = ContactIndex (0, i)); i++)
         {
-            if (cont->group == ss->contacts)
+            if (cont->group->serv == ss)
             {
                 ContactAlias *alias;
                 fprintf (stf, "entry %d %10ld %s", cont->id, cont->uin, s_quote (cont->nick));
