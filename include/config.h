@@ -30,6 +30,15 @@
 ** But you can change the tab stops if you so desire */
 #define TAB_STOP 8
 
+/* Define what to output additionally when sending a message. */
+#define MSGSENTSTR ">>> "
+
+/* Define what to output additionally when a message is acknowledged. */
+#define MSGACKSTR  "ok: "
+
+/* Define what to output additionally when a message is received. */
+#define MSGRECSTR  "<<< "
+
 /* Define how many characters to print when messages are sent
  * or acknowledged to identify a message. */
 #define MSGID_LENGTH 20

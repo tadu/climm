@@ -1,5 +1,18 @@
 
 2001-03-24 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* src/server.c: Send login message 2 only once.
+	* include/config.h: Add #defines MSGSENTSTR, MSGACKSTR, MSGRECSTR
+	  for the strings denoting a sent, acknowledged resp. received
+	  message.
+	* include/micq.h: New #defines SENTCOL and ACKCOL for the
+	  respective colors.
+	* src/icq_response.c, src/msq_queue, src/server.c, src/ui.c:
+	  Modify to include timestamp at beginning of line.  Rewrite URL
+	  message reception code not to use superfluous fixed-size buffers
+	  anymore.
+	* Upped version to 0.4.6p2.
+
+2001-03-24 Huub Reuver <theanaloguekid@tak.dhis.org>
 	* src/file_util.c: Changed order of included files to cure
 	  warnings on FreeBSD.
 
@@ -12,8 +25,6 @@
 	  delete, and the delete character backspace or delete depending on
 	  whether del_is_bs is set. Allow different arrow key codes
 	  and stop beeping at end of line etc.
-
-2001-03-23 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* src/file_util.c, src/micq.c, include/micq.h: Add config option
 	  "Last_UIN_Prompt" tied to global BOOL last_uin_prompt (default
 	  FALSE).
@@ -24,24 +35,16 @@
 	* src/mselect.c: Zero fd set on failure of select() (e.g. caused
 	  by interruption by SIGWINCH), which could freeze micq till a
 	  server input.
-
-2001-03-23 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* src/util_ui.c: Use sigwinch handler in Get_Max_Screen_Width() to
 	  update screen width if possible.
-
-2001-03-23 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* src/util_ui.c: Change color handling: Everything between
 	  ESC and m ist either printed directly or ignored (if color is
 	  off).
-
-2001-03-23 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* include/color.h: Add back BOLD #define.
 	* include/micq.h, src/util.c, include/config.h: Add new functions
 	  UIN2Name() and Print_UIN_Name_8() to better convert UIN to strings
 	  resp. print them, and MsgEllipsis() to "shorten" messages to
 	  MSGID_LENGTH characters, using ellipsis if necessary.
-
-2001-03-23 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* src/file_util.c, src/util.c: Prefer $HOME to PROGDIR: on AmigaOS.
 	  Do not segfault if $HOME is unset.
 

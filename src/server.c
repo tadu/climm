@@ -115,6 +115,7 @@ static void Multi_Packet( SOK_T sok, BYTE *data )
 void Server_Response( SOK_T sok, BYTE *data, DWORD len, WORD cmd, WORD ver, DWORD seq, DWORD uin )
 {
    SIMPLE_MESSAGE_PTR s_mesg;
+   static int loginmsg = 0;
    
    switch ( cmd )
    {
@@ -169,15 +170,19 @@ void Server_Response( SOK_T sok, BYTE *data, DWORD len, WORD cmd, WORD ver, DWOR
       R_undraw ();
       our_ip = Chars_2_DW( &data[0] );
       M_print( LOGIN_SUCCESS_STR " UIN : %lu\n", uin );
-#if ICQ_VER == 0x0002
-      M_print( " IP : %u.%u.%u.%u\t", data[4], data[5], data[6], data[7] );
-#elif ICQ_VER == 0x0004
-      M_print( " IP : %u.%u.%u.%u\t", data[0], data[1], data[2], data[3] );
-#else
-      M_print( " IP : %u.%u.%u.%u\t", data[12], data[13], data[14], data[15] );
-#endif
       Time_Stamp();
-      M_print( "\n" );
+      M_print (" " MAGENTA BOLD "%lu" NOCOL " " LOGIN_SUCCESS_STR "\n", uin);
+      if (loginmsg++)
+        break;
+      Time_Stamp ();
+#if ICQ_VER == 0x0002
+      M_print (" " MAGENTA BOLD "%8s" NOCOL " IP: %u.%u.%u.%u\n", UIN2Name (uin), data[4], data[5], data[6], data[7]);
+#elif ICQ_VER == 0x0004
+      M_print (" " MAGENTA BOLD "%8s" NOCOL " IP: %u.%u.%u.%u\n", UIN2Name (uin), data[0], data[1], data[2], data[3]);
+#else
+      M_print (" " MAGENTA BOLD "%8s" NOCOL " IP: %u.%u.%u.%u\n", UIN2Name (uin), data[12], data[13], data[14], data[15]);
+#endif
+      R_redraw ();
       snd_login_1( sok );
       snd_contact_list( sok );
       snd_invis_list( sok );
@@ -185,7 +190,6 @@ void Server_Response( SOK_T sok, BYTE *data, DWORD len, WORD cmd, WORD ver, DWOR
       Current_Status = set_status;
 /*      icq_change_status( sok, set_status );*/
 /*      Prompt();*/
-      R_redraw ();
       break;
    case SRV_RECV_MESSAGE:
          R_undraw();
@@ -227,7 +231,6 @@ void Server_Response( SOK_T sok, BYTE *data, DWORD len, WORD cmd, WORD ver, DWOR
    case SRV_USER_OFFLINE:
       R_undraw ();
       User_Offline( sok, data );
-      M_print( "\n" );
       R_redraw ();
       break;
    case SRV_BAD_PASS:
@@ -266,15 +269,14 @@ void Server_Response( SOK_T sok, BYTE *data, DWORD len, WORD cmd, WORD ver, DWOR
    case SRV_GO_AWAY:
    case SRV_NOT_CONNECTED:
       R_undraw ();
-      #ifdef FUNNY_MSGS 
-      M_print( "Server sent \"Go away!!\" command. Lag sucks! :(\t" );
-      #else
-      M_print( "Server has forced us to disconnect.  This may be because of network lag.\t" );
-      #endif
       Time_Stamp();
-      Quit = TRUE;
-      M_print ("\n");
+      #ifdef FUNNY_MSGS 
+      M_print (" Server sent \"Go away!!\" command. Lag sucks! :(\n" );
+      #else
+      M_print (" Server has forced us to disconnect.  This may be because of network lag.\n" );
+      #endif
       R_redraw ();
+      Quit = TRUE;
       break;
    case SRV_END_OF_SEARCH:
       R_undraw ();
@@ -309,20 +311,22 @@ void Server_Response( SOK_T sok, BYTE *data, DWORD len, WORD cmd, WORD ver, DWOR
       R_undraw ();
       s_mesg = ( SIMPLE_MESSAGE_PTR ) data;
       if (!( ( NULL == UIN2Contact( Chars_2_DW( s_mesg->uin ) ) ) &&
-         ( Hermit ) )) {
-      last_recv_uin = Chars_2_DW( s_mesg->uin );
-      Print_UIN_Name( Chars_2_DW( s_mesg->uin  ) );
-      if ( 0 == ( Chars_2_Word( s_mesg->type ) & MASS_MESS_MASK ) )
-         M_print( INSTANT_MSG_STR "\a " );
-      else
-         M_print( INSTANT_MASS_MSG_STR "\a " );
-      if ( Verbose )
-         M_print( " Type = %04x\t", Chars_2_Word( s_mesg->type ) );
-      Time_Stamp();
-      Do_Msg( sok, Chars_2_Word( s_mesg->type ), Chars_2_Word( s_mesg->len ), 
-              s_mesg->len + 2,last_recv_uin);
-	Auto_Reply ( sok, s_mesg );
-      M_print ("\n");
+         ( Hermit ) ))
+      {
+        last_recv_uin = Chars_2_DW( s_mesg->uin );
+        Time_Stamp();
+        M_print ("\a " CYAN BOLD "%8s" NOCOL " ", UIN2Name (Chars_2_DW (s_mesg->uin)));
+        /*
+        if ( 0 == ( Chars_2_Word( s_mesg->type ) & MASS_MESS_MASK ) )
+           M_print( INSTANT_MSG_STR "\a " );
+        else
+           M_print( INSTANT_MASS_MSG_STR "\a " );
+        */
+        if ( Verbose )
+           M_print( " Type = %04x\t", Chars_2_Word( s_mesg->type ) );
+        Do_Msg( sok, Chars_2_Word( s_mesg->type ), Chars_2_Word( s_mesg->len ), 
+                s_mesg->len + 2,last_recv_uin);
+        Auto_Reply ( sok, s_mesg );
       }
       R_redraw ();
       break;
@@ -330,9 +334,9 @@ void Server_Response( SOK_T sok, BYTE *data, DWORD len, WORD cmd, WORD ver, DWOR
        break;
    default: /* commands we dont handle yet */
        R_undraw ();
-       M_print( CLIENTCOL "The response was %04X\t", cmd );
-       M_print( "The version was %X\t", ver  );
        Time_Stamp();
+       M_print( " " CLIENTCOL "The response was %04X\t", cmd );
+       M_print( "The version was %X\t", ver  );
        M_print( "\nThe SEQ was %04X\t", seq  );
        M_print( "The size was %d\n", len );
        if ( Verbose )

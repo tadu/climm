@@ -381,31 +381,26 @@ This is called when a user goes offline
 *************************************************/
 void User_Offline( int sok, BYTE * pak )
 {
+   CONTACT_PTR con;
    int remote_uin;
-   int index;
 
    remote_uin = Chars_2_DW( &pak[0] );
 
-/*   M_print( "\n" );*/
-   M_print( CONTACTCOL );
-   index = Print_UIN_Name( remote_uin );
-   M_print( NOCOL );
-   M_print( LOGGED_OFF_STR "\t" );
    Time_Stamp();
-/*   M_print( "\n" );*/
-   if ( UIN2nick( remote_uin ) != NULL )
-      log_event( remote_uin, LOG_ONLINE, "User logged off %s\n", UIN2nick( remote_uin ) );
-   else
-      log_event( remote_uin, LOG_ONLINE, "User logged off %d\n", remote_uin );
-   if ( index != -1 )
+   M_print (" ");
+   Print_UIN_Name_8 (remote_uin);
+   M_print (" " LOGGED_OFF_STR "\n");
+   log_event( remote_uin, LOG_ONLINE, "User logged off %s\n", UIN2Name (remote_uin));
+   if ((con = UIN2Contact (remote_uin)) != NULL)
    {
-      Contacts[ index ].status = STATUS_OFFLINE;
-      Contacts[ index ].last_time = time( NULL );
+      con->status = STATUS_OFFLINE;
+      con->last_time = time (NULL);
    }
 }
 
 void User_Online( int sok, BYTE * pak )
 {
+   CONTACT_PTR con;
    int remote_uin, new_status;
    int index;
 
@@ -415,38 +410,32 @@ void User_Online( int sok, BYTE * pak )
    
    if ( Done_Login )
    {
-/*      M_print( "\n" );*/
       R_undraw();
-      M_print( CONTACTCOL );
-      index = Print_UIN_Name( remote_uin );
-      M_print( NOCOL );
-      if ( index != -1 )
-      {
-         Contacts[ index ].status = new_status;
-         Contacts[ index ].current_ip[0] =  pak[4];
-         Contacts[ index ].current_ip[1] =  pak[5];
-         Contacts[ index ].current_ip[2] =  pak[6];
-         Contacts[ index ].current_ip[3] =  pak[7];
-         Contacts[ index ].other_ip[0] =  pak[12];
-         Contacts[ index ].other_ip[1] =  pak[13];
-         Contacts[ index ].other_ip[2] =  pak[14];
-         Contacts[ index ].other_ip[3] =  pak[15];
-         Contacts[ index ].port = Chars_2_DW( &pak[8] );
-         Contacts[ index ].last_time = time( NULL );
-	Contacts[ index ].TCP_version = Chars_2_Word( &pak[21] );
-	Contacts[ index ].connection_type = pak[16];
-      }
-      M_print( " (" );
-      Print_Status( new_status );
-      M_print( ")" LOGGED_ON_STR "\t" );
       Time_Stamp();
-/*      M_print( "\n" );*/
+      M_print (" ");
+      Print_UIN_Name_8 (remote_uin);
+      M_print (" " LOGGED_ON_STR " (");
+      Print_Status (new_status);
+      M_print (")");
 
-      if ( UIN2nick( remote_uin ) != NULL )
-         log_event( remote_uin, LOG_ONLINE, "User logged on %s\n", UIN2nick( remote_uin ) );
-      else
-         log_event( remote_uin, LOG_ONLINE, "User logged on %d\n", remote_uin );
-      
+      if ((con = UIN2Contact (remote_uin)))
+      {
+        con->status = new_status;
+        con->current_ip[0] =  pak[4];
+        con->current_ip[1] =  pak[5];
+        con->current_ip[2] =  pak[6];
+        con->current_ip[3] =  pak[7];
+        con->other_ip[0] =  pak[12];
+        con->other_ip[1] =  pak[13];
+        con->other_ip[2] =  pak[14];
+        con->other_ip[3] =  pak[15];
+        con->port = Chars_2_DW( &pak[8] );
+        con->last_time = time( NULL );
+        con->TCP_version = Chars_2_Word( &pak[21] );
+        con->connection_type = pak[16];
+      }
+      log_event( remote_uin, LOG_ONLINE, "User logged on %s\n", UIN2Name( remote_uin ) );
+
       if ( Verbose )
       {
          M_print( "\nThe IP address is %u.%u.%u.%u\n", pak[4], pak[5], pak[6], pak[7] );
@@ -498,23 +487,19 @@ void Status_Update( int sok, BYTE * pak )
           return;
       }
    }
-/*   M_print( "\n" );*/
-   M_print( CONTACTCOL );
-   index = Print_UIN_Name( remote_uin );
-   M_print( NOCOL );
+   Time_Stamp();
+   M_print (" ");
+   index = Print_UIN_Name_8 (remote_uin);
    if ( index != -1 )
    {
       Contacts[ index ].status = new_status;
    }
-   M_print( CHANGE_STATUS_STR );
+   M_print (" " CHANGE_STATUS_STR);
    Print_Status( new_status );
-   M_print( "\t" );
-   Time_Stamp();
    M_print( "\n" );
-   
 }
 
-/* This procedure logins into the server with UIN and pass
+/* This procedure logs into the server with UIN and pass
    on the socket sok and gives our ip and port.
    It does NOT wait for any kind of a response.         */
 void Login( int sok, int UIN, char *pass, int ip, int port, DWORD status )
@@ -725,9 +710,6 @@ void Do_Msg( SOK_T sok, DWORD type, WORD len, char * data, DWORD uin )
    char *tmp = NULL;
    int   x,
 	 m;
-   char message[11264];
-   char url_data[5120];
-   char url_desc[5120];
 
 #ifdef MSGEXEC
     char *cmd = NULL, *who = NULL;
@@ -905,39 +887,30 @@ void Do_Msg( SOK_T sok, DWORD type, WORD len, char * data, DWORD uin )
    }
    else if (type == URL_MESS || type == MRURL_MESS)
    {
+      char *url_url, *url_desc;
 
-      tmp = strchr( data, '\xFE' );
-      if ( tmp == NULL )
+      url_desc = data;
+      url_url = strchr (data, '\xFE');
+      if (url_url == NULL)
       {
-         M_print( "Ack!!!!!!!  Bad packet" );
-         return;
+         url_url = url_desc;
+         url_desc = "";
       }
-      *tmp = 0;
-      char_conv ("wc",data);
-// temporaryy fix to buffer overflow
-// should be solved better -mc
-//      strcpy (url_desc,data);
-      url_desc[0] = '\0';
-      strncat(url_desc,data,sizeof(url_data)-1);
-
-      tmp++;
-      data = tmp;
-      char_conv ("wc",data);
-// same apllies here --mc
-//      strcpy (url_data,data);
-      url_data[0] = '\0';
-      strncat (url_data,data,sizeof(url_data)-1);
-
-// and again
-//      sprintf (message,"Description: %s \n                          URL: %s",url_desc,url_data);  
-      snprintf (message,sizeof(message),"Description: %s \nURL: %s",url_desc,url_data); 
-      if ( UIN2nick( uin ) != NULL )
-         log_event( uin, LOG_MESS, "You received URL message from %s\n%s\n", UIN2nick(uin), message );
       else
-         log_event( uin, LOG_MESS, "You received URL message from %d\n%s\n", uin, message );
+      {
+         *url_url = '\0';
+         url_url++;
+      }
+      
+      char_conv ("wc", url_desc);
+      char_conv ("wc", url_url);
 
-      M_print( " URL Message.\n Description: " MESSCOL "%s" NOCOL "\n", url_desc );
-      M_print(               " URL        : " MESSCOL "%s" NOCOL "\n", url_data );
+      log_event (uin, LOG_MESS, "You received URL message from %s\nDescription: %s\nURL: %s\n",
+         UIN2Name (uin), url_desc, url_url);
+
+      M_print (MSGRECSTR MESSCOL "%s" NOCOL "\n", url_desc);
+      Time_Stamp ();
+      M_print ("     URL: " MSGRECSTR MESSCOL "%s" NOCOL "\n", url_url);
    }
 	else if (type == CONTACT_MESS || type==MRCONTACT_MESS)
 	{
@@ -962,13 +935,9 @@ void Do_Msg( SOK_T sok, DWORD type, WORD len, char * data, DWORD uin )
 	}
    else
    {
-      char_conv ("wc",data);
-      if ( UIN2nick( uin ) != NULL )
-         log_event( uin, LOG_MESS, "You received instant message from %s\n%s\n", UIN2nick(uin), data );
-      else
-         log_event( uin, LOG_MESS, "You received instant message from %d\n%s\n", uin, data );
-      M_print( MESSCOL "\n%s", data );
-      M_print( NOCOL " " );
+      char_conv ("wc", data);
+      log_event( uin, LOG_MESS, "You received instant message from %s\n%s\n", UIN2Name (uin), data);
+      M_print (MSGRECSTR MESSCOL "%s" NOCOL "\n", data );
    }
       /* aaron
          If we just received a message from someone on the contact list,
