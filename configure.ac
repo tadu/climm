@@ -360,20 +360,15 @@ fi
 AC_FUNC_VPRINTF
 AC_FUNC_SNPRINTF
 AC_FUNC_MEMMOVE
-AC_CHECK_FUNCS([localtime_r timegm timelocal atexit memcmp mkdir strcasecmp uname fcntl \
-                strchr memchr strdup strncasecmp strpbrk strrchr strstr strtol strtok_r \
+AC_CHECK_FUNCS([mkdir atexit strcasecmp strchr memchr strdup strncasecmp strpbrk strrchr strstr strtol],,
+               [AC_MSG_ERROR([Required function $ac_func missing. Sorry.])])
+AC_CHECK_FUNCS([localtime_r timegm timelocal memcmp uname fcntl strchr strtok_r \
                 symlink chmod tcgetattr gettimeofday setlocale select sigprocmask])
 
 if test "x$ac_cv_func_timegm" != xyes; then
     AC_LIBOBJ(timegm)
+    AC_CHECK_FUNCS([setenv putenv unsetenv])
 fi
-
-for f in mkdir atexit \
-         strcasecmp strchr memchr strdup strncasecmp strpbrk strrchr strstr strtol; do
-    if eval test "x\$ac_cv_func_$f" != "xyes"; then
-        AC_MSG_ERROR([Required function $f is missing. Sorry.])
-    fi
-done
 
 if test "x$ac_cv_func_select" != "xyes"; then
     AC_CHECK_HEADERS([winsock2.h conio.h windef.h])

@@ -5,6 +5,7 @@
 
 #include "micq.h"
 
+#if HAVE_SETENV && HAVE_UNSETENV
 time_t portable_timegm (struct tm *tm)
 {
     time_t ret;
@@ -21,3 +22,51 @@ time_t portable_timegm (struct tm *tm)
     tzset ();
     return ret;
 }
+#elif HAVE_PUTENV && HAVE_UNSETENV
+time_t portable_timegm (struct tm *tm)
+{
+    static char *envblank = NULL;
+    static char *envset = NULL;
+    time_t ret;
+    char *tz;
+
+    if (!envblank)
+        envblank = strdup ("TZ=");
+    if (!envset)
+    {
+        tz = getenv ("TZ"); /* mICQ doesn't change TZ */
+        envset = malloc (strlen (tz) + 4);
+        strcpy (envset, "TZ=");
+        strcat (envset, tz);
+    }
+    putenv (envblank);
+
+    tzset ();
+    ret = mktime (tm);
+    if (tz)
+        putenv (envset);
+    else
+        unsetenv ("TZ");
+    tzset ();
+    return ret;
+}
+#else
+time_t portable_timegm (struct tm *tm)
+{
+    struct tm stamp;
+#if HAVE_TIMEZONE
+    *stamp = *tm;
+    stamp.tm_sec -= timezone;
+#elif HAVE_TM_GMTOFF
+    time_t now = time (NULL);
+    unsigned long s;
+    stamp = *localtime (&now);
+    s = -stamp.tm_gmtoff;
+    *stamp = *tm;
+    stamp.tm_sec += s;
+#else
+    *stamp = *tm;    
+#endif
+    return mktime (&stamp);
+}
+#endif
