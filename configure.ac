@@ -109,7 +109,7 @@ if test "x$ac_arg_use_iconv" != "xbuiltin"; then
       [ac_cv_iconv_min=cross])
   ])
   if test $ac_cv_iconv_min != ok; then
-    ac_arg_use_iconv=buildin
+    ac_arg_use_iconv=builtin
   else
     AC_CACHE_CHECK(for iconv declaration, ac_cv_iconv_const,
       [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
@@ -168,7 +168,7 @@ if test "x$ac_arg_use_iconv" != "xbuiltin"; then
   fi
 fi
 
-if test "x$ac_arg_use_iconv" = "buildin"; then
+if test "x$ac_arg_use_iconv" = "builtin"; then
   AC_DEFINE([ICONV_LATIN1_NAME], ["ISO-8859-1"])
   AC_DEFINE([ICONV_LATIN9_NAME], ["ISO-8859-15"])
   AC_DEFINE([ICONV_UCS2BE_NAME], ["UCS-2BE"])
