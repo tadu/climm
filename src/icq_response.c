@@ -728,7 +728,7 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
     if (prG->sound & SFLAG_BEEP)
         printf ("\a");
 
-    M_print ("%s " COLINCOMING "%10s" COLNONE " ", s_now, cont->nick);
+    M_print ("%s " COLINCOMING "%10s" COLNONE " ", s_time (&stamp), cont->nick);
     
     if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
         M_print ("(%s) ", s_status (tstatus));
