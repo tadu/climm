@@ -2497,7 +2497,10 @@ static JUMP_F(CmdUserRegister)
         ANYCONN;
 
         if (!conn || conn->type == TYPE_SERVER)
-            SrvRegisterUIN (conn, par->txt);
+        {
+            Connection *newc = SrvRegisterUIN (conn, par->txt);
+            ConnectionInitServer (newc);
+        }
         else
             CmdPktCmdRegNewUser (conn, par->txt);     /* TODO */
     }

@@ -616,8 +616,6 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
     new->port = new->pref_port;
     new->passwd = strdup (pass);
     new->open = &ConnectionInitServer;
-
-    ConnectionInitServer (new);
     return new;
 }
 
