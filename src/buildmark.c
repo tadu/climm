@@ -44,6 +44,9 @@
 #elif defined (__QNX__)
 #define EXTRAVERSION_DEF "QNX"
 #define BUILD_PLATFORM BUILD_PLATFORM_QNX
+#elif defined (__APPLE__)
+#define EXTRAVERSION_DEF "Apple Mac OS X"
+#define BUILD_PLATFORM BUILD_PLATFORM_MACOSX
 #elif defined (__BEOS__)
 #define EXTRAVERSION_DEF "BeOS"
 #define BUILD_PLATFORM BUILD_PLATFORM_BEOS
