@@ -20,20 +20,19 @@ various people:
  : add missing v8 pieces
  : server side contact list:
    + contact groups
-   + fix contact list download segfault (fixed)
- : history of messages:
-   + It would be nice to know just how many messages a person has sent while
-     one was away - regarding the 'last' function. (fixed)
-   + last <uin> doesn't show the time. (fixed)
+ : history of messages
  : alias for commands
  : tab completion (improve)
- : configurable colors (fixed)
  : saving personal information
  : fix memory leaks (most fixed)
  : finish implementing file transfer (fixed?)
- : fix missing online flags (fixed)
  : Trillian bugaround (fixed?)
  : use old-style auth stuff as well :-/ (fixed?)
- : fix wrong-destination messages (fixed)
  : "" quoting of arguments
+ : change add/rem-behaviour
+ : connection killing
+ : add UIN to SMS
+ : remove color codes from i18n strings
+ : do not show temporary/ignored contacts
+ : do not interpret deny as authorize
 

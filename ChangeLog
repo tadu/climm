@@ -1,4 +1,11 @@
 
+2002-09-04 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* util_ui.c: UtilUIParse{,Int,Nick,Remainder}: new, quote
+	  arguments with " or \, detects intelligent nick names intelligently.
+	* cmd_user.c: use UtilUIParse*.
+	* src/Makefile.am: fix bogus snprintf.[ch] links.
+	* TODO, Changelog: update.
+
 2002-09-04 Peter Backes <rtc@gmx.de>
 	* Changed some remaining code to use the packet handling library
 	  instead of structure aliasing.
