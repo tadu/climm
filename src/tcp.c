@@ -1945,7 +1945,6 @@ static void TCPCallBackReceive (Event *event)
                 case TCP_MSG_WEB_PAGER:
                 case TCP_MSG_EMAIL_PAGER:
                 case TCP_MSG_ADDUIN:
-                    uiG.last_rcvd_uin = cont->uin;
                     Do_Msg (event->sess, NULL, type, tmp, cont->uin, STATUS_OFFLINE, 1);
 
                     TCPSendMsgAck (event->sess, seq, type, TRUE);

@@ -662,6 +662,7 @@ void Display_Ext_Info_Reply (Session *sess, Packet *pak, const char *uinline)
 
 void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, UDWORD uin, UDWORD tstatus, BOOL tcp)
 {
+    static char *uins = NULL;
     char *cdata, *tmp = NULL;
     char *url_url, *url_desc;
     char sep = ConvSep ();
@@ -675,12 +676,29 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
 
     log_event (uin, LOG_MESS, "You received %s message type %x from %s\n%s\n",
                tcp ? "TCP" : "instant", type, ContactFindName (uin), cdata);
-
+    
     cont = ContactFind (uin);
     if (cont && (cont->flags & CONT_IGNORE))
         return;
     if (!cont && (prG->flags & FLAG_HERMIT))
         return;
+
+    if (uiG.idle_flag)
+    {
+        char buf[2048];
+
+        if ((uin != uiG.last_rcvd_uin) || !uins)
+        {
+            snprintf (buf, sizeof (buf), "%s %s", uins && uiG.idle_msgs ? uins : "", ContactFindName (uin));
+            if (uins)
+                free (uins);
+            uins = strdup (buf);
+        }
+
+        uiG.idle_msgs++;
+        R_setpromptf ("[" CYAN BOLD "%d%s" COLNONE "] " COLSERV "%s" COLNONE "",
+                      uiG.idle_msgs, uins, i18n (1040, "mICQ> "));
+    }
 
 #ifdef MSGEXEC
     if (prG->event_cmd && strlen (prG->event_cmd))
@@ -701,6 +719,14 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
         M_print ("(");
         Print_Status (tstatus);
         M_print (") ");
+    }
+
+    uiG.last_rcvd_uin = uin;
+    if (cont)
+    {
+        cont->LastMessage = realloc (cont->LastMessage, strlen (text) + 1);
+        strncpy (cont->LastMessage, cdata, strlen (text) + 1);
+        cont->LastMessage [strlen (text)] = '\0';
     }
 
     switch (type)
@@ -874,12 +900,5 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
                 cdata[strlen (cdata) - 1] = '\0';
             M_print ("%s" COLMESS "\x1b<%s" COLNONE "\x1b>\n", tcp ? MSGTCPRECSTR : MSGRECSTR, cdata);
             break;
-    }
-    uiG.last_rcvd_uin = uin;
-    if (cont)
-    {
-        cont->LastMessage = realloc (cont->LastMessage, strlen (text) + 1);
-        strncpy (cont->LastMessage, cdata, strlen (text) + 1);
-        cont->LastMessage [strlen (text)] = '\0';
     }
 }

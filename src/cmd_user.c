@@ -43,7 +43,7 @@ static jump_f
     CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserTCP, CmdUserConn,
     CmdUserContactDL;
 
-static void CmdUserProcess (const char *command, int *idle_val, int *idle_flag);
+static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag);
 
 /* 1 = do not apply idle stuff next time           v
    2 = count this line as being idle               v */
@@ -2893,14 +2893,15 @@ static JUMP_F(CmdUserAbout)
  */
 void CmdUser (const char *command)
 {
-    int a, b;
+    time_t a;
+    UBYTE  b;
     CmdUserProcess (command, &a, &b);
 }
 
 /*
  * Get one line of input and process it.
  */
-void CmdUserInput (int *idle_val, int *idle_flag)
+void CmdUserInput (time_t *idle_val, UBYTE *idle_flag)
 {
     CmdUserProcess (NULL, idle_val, idle_flag);
 }
@@ -2908,7 +2909,7 @@ void CmdUserInput (int *idle_val, int *idle_flag)
 /*
  * Process one line of command, get it if necessary.
  */
-void CmdUserProcess (const char *command, int *idle_val, int *idle_flag)
+void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag)
 {
     char buf[1024];    /* This is hopefully enough */
     char *cmd;
@@ -2916,11 +2917,9 @@ void CmdUserProcess (const char *command, int *idle_val, int *idle_flag)
     static jump_f *sticky = (jump_f *)NULL;
     static int status = 0;
 
-/* GRYN - START */
-    int idle_save;
+    time_t idle_save;
     idle_save = *idle_val;
     *idle_val = time (NULL);
-/* GRYN - STOP */
 
     if (command)
     {

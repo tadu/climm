@@ -157,6 +157,9 @@ typedef struct
         UBYTE  reconnect_count;
         BOOL   quit;
         UDWORD packets;
+        time_t idle_val;
+        UDWORD idle_msgs;
+        UBYTE  idle_flag;
 } user_interface_state;
 
 extern user_interface_state uiG;

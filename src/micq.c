@@ -51,10 +51,6 @@ user_interface_state uiG;
 Preferences *prG;
 PreferencesSession *psG;
 
-/*** auto away values ***/
-static int idle_val = 0;
-static int idle_flag = 0;
-
 void init_global_defaults () {
   /* Initialize User Interface global state */
   uiG.start_time = time (NULL);
@@ -64,6 +60,9 @@ void init_global_defaults () {
   uiG.away_time_prev = 0;
   uiG.last_sent_uin  = 0;
   uiG.reconnect_count = 0;
+  uiG.idle_val = 0;
+  uiG.idle_flag = 0;
+  uiG.idle_msgs = 0;
 }
 
 /**********************************************
@@ -107,24 +106,24 @@ void Idle_Check (Session *sess)
     if ((sess->status & (STATUSF_DND | STATUSF_OCC | STATUSF_FFC))
         || !(sess->connect & CONNECT_OK))
     {
-        idle_val = 0;
+        uiG.idle_val = 0;
         return;
     }
-    if (!prG->away_time && !idle_flag)
+    if (!prG->away_time && !uiG.idle_flag)
         return;
-    if (!idle_val)
-        idle_val = time (NULL);
+    if (!uiG.idle_val)
+        uiG.idle_val = time (NULL);
 
-    delta = (time (NULL) - idle_val);
-    if (idle_flag)
+    delta = (time (NULL) - uiG.idle_val);
+    if (uiG.idle_flag)
     {
         if (sess->status & STATUSF_NA)
         {
             if (delta < prG->away_time || !prG->away_time)
             {
                 new = (sess->status & STATUSF_INV) | STATUS_ONLINE;
-                idle_flag = 0;
-                idle_val = 0;
+                uiG.idle_flag = 0;
+                uiG.idle_val = 0;
             }
         }
         else if (sess->status & STATUSF_AWAY)
@@ -134,15 +133,16 @@ void Idle_Check (Session *sess)
             else if (delta < prG->away_time || !prG->away_time)
             {
                 new = (sess->status & STATUSF_INV) | STATUS_ONLINE;
-                idle_flag = 0;
-                idle_val = 0;
+                uiG.idle_flag = 0;
+                uiG.idle_val = 0;
             }
         }
     }
     else if (delta >= prG->away_time && !(sess->status & (STATUSF_AWAY | STATUSF_NA)))
     {
         new = (sess->status & STATUSF_INV) | STATUS_AWAY;
-        idle_flag = 1;
+        uiG.idle_flag = 1;
+        uiG.idle_msgs = 0;
     }
     if (new != -1 && new != sess->status)
     {
@@ -310,7 +310,7 @@ int main (int argc, char *argv[])
 
         if (__os_has_input)
             if (R_process_input ())
-                CmdUserInput (&idle_val, &idle_flag);
+                CmdUserInput (&uiG.idle_val, &uiG.idle_flag);
 
         for (i = 0; (sess = SessionNr (i)); i++)
         {

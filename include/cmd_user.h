@@ -26,7 +26,7 @@ jump_t *CmdUserLookup (const char *command, int flags);
 const char *CmdUserLookupName (const char *command);
 
 void CmdUser (const char *command);
-void CmdUserInput (int *idle_val, int *idle_flag);
+void CmdUserInput (time_t *idle_val, UBYTE *idle_flag);
 
 
 extern UDWORD last_uin;
