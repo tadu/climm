@@ -88,6 +88,9 @@ static void IMRosterShow (Event *event)
     Contact *cont;
     int cnt_groups = 0, cnt_ignored = 0, cnt_hidden = 0, cnt_intimate = 0, cnt_normal = 0;
     
+    if (!roster)
+        return;
+    
     for (rg = roster->groups; rg; rg = rg->next)
     {
         IMRosterCheckGroup (serv, rg);
@@ -156,6 +159,9 @@ static void IMRosterAdddown (Event *event)
     Contact *cont;
     int cnt_groups = 0, cnt_ignored = 0, cnt_hidden = 0, cnt_intimate = 0, cnt_normal = 0;
     
+    if (!roster)
+        return;
+
     for (rg = roster->groups; rg; rg = rg->next)
     {
         cg = IMRosterCheckGroup (serv, rg);
@@ -282,6 +288,9 @@ static void IMRosterAddup (Event *event)
     Contact *cont;
     int i, cnt_groups = 0, cnt_normal = 0;
     
+    if (!roster)
+        return;
+    
     for (rg = roster->groups; rg; rg = rg->next)
         IMRosterCheckGroup (serv, rg);
     
@@ -328,6 +337,9 @@ static void IMRosterDiff (Event *event)
     int i, cnt_more = 0;
     int cnt_groups = 0, cnt_ignored = 0, cnt_hidden = 0, cnt_intimate = 0, cnt_normal = 0;
     
+    if (!roster)
+        return;
+
     for (rg = roster->groups; rg; rg = rg->next)
     {
         cg = IMRosterCheckGroup (serv, rg);
