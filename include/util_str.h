@@ -3,13 +3,13 @@
 #ifndef MICQ_UTIL_STR_H
 #define MICQ_UTIL_STR_H
 
-const char *s_sprintf (const char *fmt, ...);
+const char *s_sprintf (const char *fmt, ...) __attribute__ ((format (__printf__, 1, 2)));
 const char *s_ip      (UDWORD ip);
 const char *s_status  (UDWORD status);
 const char *s_time    (time_t *stamp);
 const char *s_msgtok  (char *);
 char       *s_cat     (char *str, UDWORD *size, const char *add);
-char       *s_catf    (char *str, UDWORD *size, const char *fmt, ...);
+char       *s_catf    (char *str, UDWORD *size, const char *fmt, ...) __attribute__ ((format (__printf__, 3, 4)));
 const char *s_dump    (const UBYTE *data, UWORD len);
 const char *s_dumpnd  (const UBYTE *data, UWORD len);
 const char *s_ind     (const char *str);

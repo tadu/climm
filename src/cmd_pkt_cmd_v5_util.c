@@ -122,7 +122,7 @@ void PacketEnqueuev5 (Packet *pak, Connection *conn)
         pak->rpos = 0;
         M_printf ("%s " COLINDENT COLCLIENT "", s_now);
         M_print  (i18n (1775, "Outgoing packet:"));
-        M_printf (" %04x %08x:%08x %04x (%s) @%p" COLNONE "\n",
+        M_printf (" %04x %08lx:%08lx %04x (%s) @%p" COLNONE "\n",
                  PacketReadAt2 (pak, CMD_v5_OFF_VER), PacketReadAt4 (pak, CMD_v5_OFF_SESS),
                  PacketReadAt4 (pak, CMD_v5_OFF_SEQ), PacketReadAt2 (pak, CMD_v5_OFF_SEQ2),
                  CmdPktCmdName (PacketReadAt2 (pak, CMD_v5_OFF_CMD)), pak);
@@ -200,7 +200,7 @@ void CallBackServerInitV5 (Event *event)
     }
     EventD (event);
     
-    M_printf (i18n (1902, "Opening v5 connection to %s:%d... "), conn->server, conn->port);
+    M_printf (i18n (1902, "Opening v5 connection to %s:%ld... "), conn->server, conn->port);
     
     if (conn->sok < 0)
     {
@@ -333,7 +333,7 @@ void PacketSendv5 (const Packet *pak, Connection *conn)
     assert (pak);
     assert (conn);
 
-    Debug (DEB_PACKET, "---- %p sent");
+    Debug (DEB_PACKET, "---- %p sent", pak);
 
     cpak = Wrinkle (pak);
     UtilIOSendUDP (conn, cpak);
@@ -387,7 +387,7 @@ void UDPCallBackResend (Event *event)
 
     if (session != event->conn->our_session)
     {
-        M_printf (i18n (1856, "Discarded a %04x (%s) packet from old session %08x (current: %08x).\n"),
+        M_printf (i18n (1856, "Discarded a %04x (%s) packet from old session %08lx (current: %08lx).\n"),
                  cmd, CmdPktSrvName (cmd),
                  session, event->conn->our_session);
         EventD (event);
@@ -396,7 +396,7 @@ void UDPCallBackResend (Event *event)
     {
         if (prG->verbose & 32)
         {
-            M_printf (i18n (1826, "Resending message %04x (%s) sequence %04x (attempt #%d, len %d).\n"),
+            M_printf (i18n (1826, "Resending message %04x (%s) sequence %04lx (attempt #%ld, len %d).\n"),
                      cmd, CmdPktCmdName (cmd),
                      event->seq >> 16, event->attempts, pak->len);
         }
@@ -414,7 +414,7 @@ void UDPCallBackResend (Event *event)
             char *data = (char *) &pak->data[CMD_v5_OFF_PARAM + 8];
 
             M_print ("\n");
-            M_printf (i18n (1830, "Discarding message to %s after %d send attempts.  Message content:\n"),
+            M_printf (i18n (1830, "Discarding message to %s after %ld send attempts.  Message content:\n"),
                       cont ? cont->nick : s_sprintf ("%ld", tuin), event->attempts - 1);
 
             if ((type & ~MSGF_MASS) == MSG_URL)

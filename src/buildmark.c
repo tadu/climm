@@ -1,7 +1,7 @@
 /*
  * Provides a build mark with the current version and current time of compilation.
  *
- * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * This file is Copyright Â© RÃ¼diger Kuhlmann; it may be distributed under
  * version 2 of the GPL licence.
  *
  * $Id$
@@ -71,8 +71,8 @@ const char  *BuildVersionText = "$VER: mICQ " VERSION " CVS " EV EXTRAVERSION " 
  i19n (1001, "en")               locale
  i19n (1002, "en_US")            locale 
  i19n (1003, "0-4-9-4")          MICQ_BUILD_NUM
- i19n (1004, "Rüdiger Kuhlmann") all contributors
- i19n (1005, "Rüdiger Kuhlmann") last contributor
+ i19n (1004, "Ruediger Kuhlmann") all contributors
+ i19n (1005, "Ruediger Kuhlmann") last contributor
  i19n (1006, "2002-05-02")       last change
  i18n (1007, "iso-8859-1")       charset used. must be iso-8859-1 if possible
  */

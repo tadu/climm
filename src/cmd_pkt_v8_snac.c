@@ -1,7 +1,7 @@
 /*
  * Handles incoming and creates outgoing SNAC packets.
  *
- * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * This file is Copyright Â© RÃ¼diger Kuhlmann; it may be distributed under
  * version 2 of the GPL licence.
  *
  * $Id$
@@ -222,12 +222,12 @@ void SnacPrint (Packet *pak)
     ref  = PacketReadB4 (pak);
     len  = PacketReadAtB2 (pak, pak->rpos);
 
-    M_printf ("%s " COLDEBUG "SNAC     (%x,%x) [%s] flags %x ref %x",
+    M_printf ("%s " COLDEBUG "SNAC     (%x,%x) [%s] flags %x ref %lx",
              s_dumpnd (pak->data + 6, flag & 0x8000 ? 10 + len : 10),
              fam, cmd, SnacName (fam, cmd), flag, ref);
     if (flag & 0x8000)
     {
-        M_printf (" extra (%d)", len);
+        M_printf (" extra (%ld)", len);
         pak->rpos += len + 2;
     }
     M_print (COLNONE "\n");
@@ -326,7 +326,7 @@ static JUMP_SNAC_F(SnacSrvReplyinfo)
     uin = PacketReadUIN (pak);
     
     if (uin != event->conn->uin)
-        M_printf (i18n (1907, "Warning: Server thinks our UIN is %d, while it is %d.\n"),
+        M_printf (i18n (1907, "Warning: Server thinks our UIN is %ld, while it is %ld.\n"),
                  uin, event->conn->uin);
     PacketReadB2 (pak);
     PacketReadB2 (pak);
@@ -769,7 +769,8 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                         PacketWrite2 (p, pri);
                         PacketWriteLNTS (p, c_out (resp));
 #ifdef WIP
-                        SnacSrvUnknown (event);
+                        M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
+                        M_printf ("FIXME: Sent %04x auto response.\n", msgtyp);
 #endif
                         SnacSend (event->conn, p);
                         TLVD (tlv);
@@ -849,7 +850,7 @@ static JUMP_SNAC_F(SnacSrvSrvackmsg)
 
 /*          cont->status = STATUS_OFFLINE;
             putlog (event->conn, NOW, uin, STATUS_OFFLINE, LOG_ACK, 0xFFFF, 
-                "%08lx%08lx\n", mid1, mid2); */
+                s_sprintf ("%08lx%08lx\n", mid1, mid2)); */
             break;
         case 2:
             /* msg was received by server */
@@ -1056,7 +1057,7 @@ static JUMP_SNAC_F(SnacSrvToicqerr)
 
         event->conn->connect = CONNECT_OK | CONNECT_SELECT_R;
         reconn = 0;
-        CmdUser ("¶e");
+        CmdUser ("\xb6" "e");
         
         QueueEnqueueData (event->conn, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
                           NULL, event->conn->uin, NULL, &SrvCallBackKeepalive);
@@ -1096,7 +1097,7 @@ static JUMP_SNAC_F(SnacSrvFromicqsrv)
     {
         if (prG->verbose & DEB_PROTOCOL)
         {
-            M_printf (i18n (1919, "UIN mismatch: %d vs %d.\n"), event->conn->uin, uin);
+            M_printf (i18n (1919, "UIN mismatch: %ld vs %ld.\n"), event->conn->uin, uin);
             SnacSrvUnknown (event);
         }
         TLVD (tlv);
@@ -1129,7 +1130,7 @@ static JUMP_SNAC_F(SnacSrvFromicqsrv)
 
             event->conn->connect = CONNECT_OK | CONNECT_SELECT_R;
             reconn = 0;
-            CmdUser ("¶e");
+            CmdUser ("\xb6" "e");
             
             QueueEnqueueData (event->conn, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
                               NULL, event->conn->uin, NULL, &SrvCallBackKeepalive);
@@ -1165,7 +1166,7 @@ static JUMP_SNAC_F(SnacSrvRegrefused)
 static JUMP_SNAC_F(SnacSrvNewuin)
 {
     event->conn->uin = event->conn->spref->uin = PacketReadAt4 (event->pak, 6 + 10 + 46);
-    M_printf (i18n (1762, "Your new UIN is: %d.\n"), event->conn->uin);
+    M_printf (i18n (1762, "Your new UIN is: %ld.\n"), event->conn->uin);
     if (event->conn->flags & CONN_WIZARD)
     {
         assert (event->conn->spref);

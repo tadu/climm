@@ -77,7 +77,7 @@ void UtilUIDisplayMeta (Contact *cont)
     if (!cont)
         return;
 
-    M_printf (i18n (2236, "Information for %s%s%s (%d):\n"),
+    M_printf (i18n (2236, "Information for %s%s%s (%ld):\n"),
               COLCONTACT, cont->nick, COLNONE, cont->uin);
     
     if ((mg = cont->meta_general))
@@ -227,7 +227,7 @@ void UtilUIDisplayMeta (Contact *cont)
             if ((tabd = TableGetInterest (ml->data)))
                 M_printf ("  %s: %s\n", tabd, ml->text);
             else
-                M_printf ("  %d: %s\n", ml->data, ml->text);
+                M_printf ("  %ld: %s\n", ml->data, ml->text);
         }
     }
     if ((ml = cont->meta_background))
@@ -240,7 +240,7 @@ void UtilUIDisplayMeta (Contact *cont)
             if ((tabd = TableGetPast (ml->data)))
                 M_printf ("  %s: %s\n", tabd, ml->text);
             else
-                M_printf ("  %d: %s\n", ml->data, ml->text);
+                M_printf ("  %ld: %s\n", ml->data, ml->text);
         }
     }
     if ((ml = cont->meta_affiliation))
@@ -253,7 +253,7 @@ void UtilUIDisplayMeta (Contact *cont)
             if ((tabd = TableGetAffiliation (ml->data)))
                 M_printf ("  %s: %s\n", tabd, ml->text);
             else
-                M_printf ("  %d: %s\n", ml->data, ml->text);
+                M_printf ("  %ld: %s\n", ml->data, ml->text);
         }
     }
     if ((mo = CONTACT_OBSOLETE (cont)))

@@ -1,7 +1,7 @@
 /*
  * Manages the available connections (note the file is misnamed)
  *
- * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * This file is Copyright Â© RÃ¼diger Kuhlmann; it may be distributed under
  * version 2 of the GPL licence.
  *
  * $Id$

@@ -9,7 +9,7 @@ void R_init (void);                          /* init mreadline lib */
 void R_undraw (void);                        /* hide input (defer) */
 void R_redraw (void);                        /* unhide (redraw) input line */
 void R_setprompt (const char *prompt);       /* set prompt */
-void R_setpromptf (const char *prompt, ...); /* set prompt formatted */
+void R_setpromptf (const char *prompt, ...) __attribute__ ((format (__printf__, 1, 2))); /* set prompt formatted */
 void R_resetprompt (void);                   /* reset prompt to standard */
 void R_remprompt (void);                     /* remove hidden prompt */
 void R_prompt (void);                        /* type prompt */
@@ -45,7 +45,7 @@ SDWORD Echo_Off (void);
 SDWORD Echo_On (void);
 
 void   M_print  (const char *str);
-void   M_printf (const char *str, ...);
+void   M_printf (const char *str, ...) __attribute__ ((format (__printf__, 1, 2)));
 int    M_pos (void);
 void   M_logo (const char *logo);
 void   M_logo_clear (void);

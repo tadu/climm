@@ -258,7 +258,7 @@ void UtilIOConnectUDP (Connection *conn)
     if (conct == -1)            /* did we connect ? */
     {
         if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
-            M_printf (i18n (1966, " Conection Refused on port %d at %s\n"), conn->port, conn->server);
+            M_printf (i18n (1966, " Conection Refused on port %ld at %s\n"), conn->port, conn->server);
         conn->sok = -1;
         return;
     }
@@ -352,7 +352,7 @@ void UtilIOConnectTCP (Connection *conn)
             if (!host)
             {
                 rc = h_errno;
-                CONN_FAIL (s_sprintf (i18n (1951, "Can't find hostname %s"), conn->server, hstrerror (rc), rc));
+                CONN_FAIL (s_sprintf (i18n (1951, "Can't find hostname %s: %s (%d)."), conn->server, hstrerror (rc), rc));
             }
             sin.sin_addr = *((struct in_addr *) host->h_addr);
             conn->ip = ntohl (sin.sin_addr.s_addr);

@@ -18,7 +18,7 @@ void ExtraD (Extra *extra)
 {
     Extra *tmp;
     if (extra)
-        Debug (DEB_EXTRA, "***> %p (%04x: '%s' %08x)", extra, extra->tag,
+        Debug (DEB_EXTRA, "***> %p (%04lx: '%s' %08lx)", extra, extra->tag,
                extra->text ? extra->text : "", extra->data);
     while (extra)
     {
@@ -79,7 +79,7 @@ Extra *ExtraSet (Extra *extra, UWORD type, UDWORD value, const char *text)
     tmp->text = text ? strdup (text) : NULL;
     if (!old)
     {
-        Debug (DEB_EXTRA, "<*** %p (%04x: '%s' %08x)", tmp, type, tmp->text ? tmp->text : "", value);
+        Debug (DEB_EXTRA, "<*** %p (%04x: '%s' %08lx)", tmp, type, tmp->text ? tmp->text : "", value);
         return tmp;
     }
     old->more = tmp;

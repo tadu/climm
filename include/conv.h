@@ -13,8 +13,8 @@ char ConvSep ();
 #define     c_out(t)       ConvFromUTF8 (t, prG->enc_rem)
 #define     c_in(t)        ConvToUTF8   (t, prG->enc_rem)
 #define     c_strlen(t)    (ENC(enc_loc) == ENC_UTF8 ? s_strlen (t) : strlen (t))
-#define     c_delta(t)     (ENC(enc_loc) == ENC_UTF8 ? strlen (t) - s_strlen (t) : 0)
-#define     s_delta(t)     strlen (t) - s_strlen (t)
+#define     c_delta(t)     (int)(ENC(enc_loc) == ENC_UTF8 ? strlen (t) - s_strlen (t) : 0)
+#define     s_delta(t)     (int)strlen (t) - (int)s_strlen (t)
 const char *ConvUTF8       (UDWORD codepoint);
 const char *ConvToUTF8     (const char *in, UBYTE enc);
 const char *ConvFromUTF8   (const char *in, UBYTE enc);

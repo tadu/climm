@@ -4,7 +4,7 @@
  * Handles a list of recently used UINs that are to be recalled by pressing
  * tab.
  *
- * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * This file is Copyright Â© RÃ¼diger Kuhlmann; it may be distributed under
  * version 2 of the GPL licence.
  */
 

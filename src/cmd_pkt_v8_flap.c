@@ -1,7 +1,7 @@
 /*
  * Decodes and creates FLAPs.
  *
- * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * This file is Copyright Â© RÃ¼diger Kuhlmann; it may be distributed under
  * version 2 of the GPL licence.
  *
  * $Id$
@@ -64,7 +64,7 @@ void SrvCallBackFlap (Event *event)
             break;
         case 5: /* Ping */
         default:
-            M_printf (i18n (1884, "FLAP with unknown channel %d received.\n"), event->pak->cmd);
+            M_printf (i18n (1884, "FLAP with unknown channel %ld received.\n"), event->pak->cmd);
     }
     EventD (event);
 }
@@ -124,7 +124,7 @@ static void FlapChannel4 (Connection *conn, Packet *pak)
             M_print (i18n (1895, "Login failed:\n"));
         else
             M_print (i18n (1896, "Server closed connection:\n"));
-        M_printf (i18n (1048, "Error code: %d\n"), tlv[9].nr ? tlv[9].nr : tlv[8].nr);
+        M_printf (i18n (1048, "Error code: %ld\n"), tlv[9].nr ? tlv[9].nr : tlv[8].nr);
         if (tlv[1].len && atoi (tlv[1].str) != conn->uin)
             M_printf (i18n (2218, "UIN: %s\n"), tlv[1].str);
         if (tlv[4].len)
@@ -201,7 +201,7 @@ void FlapSave (Packet *pak, BOOL in)
         fHexDump (logf, pak->data + 6, pak->len - 6);
     else
     {
-        fprintf (logf, i18n (1905, "SNAC (%x,%x) [%s] flags %x ref %x\n"),
+        fprintf (logf, i18n (1905, "SNAC (%x,%x) [%s] flags %x ref %lx\n"),
                  PacketReadAtB2 (pak, 6), PacketReadAtB2 (pak, 8),
                  SnacName (PacketReadAtB2 (pak, 6), PacketReadAtB2 (pak, 8)),
                  PacketReadAtB2 (pak, 10), PacketReadAtB4 (pak, 12));
@@ -291,7 +291,7 @@ void FlapCliIdent (Connection *conn)
     
     pak = FlapC (1);
     PacketWriteB4 (pak, CLI_HELLO);
-    PacketWriteTLVStr  (pak, 1, s_sprintf ("%d", conn->uin));
+    PacketWriteTLVStr  (pak, 1, s_sprintf ("%ld", conn->uin));
     PacketWriteTLVData (pak, 2, f = _encryptpw (conn->passwd), strlen (conn->passwd));
     PacketWriteTLVStr  (pak, 3, "ICQ Inc. - Product of ICQ (TM).2002a.5.37.1.3728.85");
     PacketWriteTLV2    (pak, 22, 266);

@@ -110,7 +110,7 @@ void CmdPktSrvRead (Connection *conn)
         UDWORD rpos = pak->rpos;
         M_printf ("%s " COLINDENT COLSERVER "", s_now);
         M_print  (i18n (1774, "Incoming packet:"));
-        M_printf (" %04x %08x:%04x%04x %04x (%s)" COLNONE "\n",
+        M_printf (" %04x %08lx:%04x%04x %04x (%s)" COLNONE "\n",
                  pak->ver, session, seq2, seq, cmd, CmdPktSrvName (cmd));
 #if ICQ_VER == 5
         pak->rpos = 0;
@@ -132,7 +132,7 @@ void CmdPktSrvRead (Connection *conn)
     {
         if (prG->verbose & DEB_PROTOCOL)
         {
-            M_printf (i18n (1606, "Got a bad session ID %08x (correct: %08x) with cmd %04x ignored.\n"),
+            M_printf (i18n (1606, "Got a bad session ID %08lx (correct: %08lx) with cmd %04x ignored.\n"),
                      session, conn->our_session, cmd);
         }
         return;
@@ -143,7 +143,7 @@ void CmdPktSrvRead (Connection *conn)
         {
             if (prG->verbose & DEB_PROTOCOL)
             {
-                M_printf (i18n (1032, "debug: Doppeltes Packet #%04x vom Typ %04x (%s)\n"),
+                M_printf (i18n (1032, "debug: Doppeltes Packet #%04lx vom Typ %04x (%s)\n"),
                          id, cmd, CmdPktSrvName (cmd));
             }
             CmdPktCmdAck (conn, id);       /* LAGGGGG!! */ 
@@ -248,7 +248,7 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
         case SRV_X1:
             if (prG->verbose & DEB_PROTOCOL)
                 M_print (i18n (1643, "Acknowledged SRV_X1 0x021C Done Contact list?\n"));
-            CmdUser ("¶e");
+            CmdUser ("\xb6" "e");
             conn->connect |= CONNECT_OK;
             break;
         case SRV_X2:
@@ -399,9 +399,9 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             break;
         default:               /* commands we dont handle yet */
             M_printf ("%s " COLCLIENT, s_now);
-            M_printf (i18n (1648, "The response was %04X\t"), cmd);
-            M_printf (i18n (1649, "The version was %X\t"), ver);
-            M_printf (i18n (1650, "\nThe SEQ was %04X\t"), seq);
+            M_printf (i18n (1648, "The response was %04x\t"), cmd);
+            M_printf (i18n (1649, "The version was %x\t"), ver);
+            M_printf (i18n (1650, "\nThe SEQ was %04lx\t"), seq);
             M_printf (i18n (1651, "The size was %d\n"), pak->len - pak->rpos);
             M_print  (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
             M_print  (COLNONE "\n");
@@ -452,7 +452,7 @@ static JUMP_SRV_F (CmdPktSrvMulti)
             UDWORD rpos = pak->rpos;
             M_printf ("%s " COLINDENT COLSERVER "", s_now);
             M_print  (i18n (1823, "Incoming partial packet:"));
-            M_printf (" %04x %08x:%04x%04x %04x (%s)" COLNONE "\n",
+            M_printf (" %04x %08lx:%04x%04lx %04x (%s)" COLNONE "\n",
                      ver, session, seq2, seq, cmd, CmdPktSrvName (cmd));
 #if ICQ_VER == 5
             pak->rpos = 0;
@@ -487,7 +487,7 @@ static JUMP_SRV_F (CmdPktSrvAck)
     
     ccmd = PacketReadAt2 (event->pak, CMD_v5_OFF_CMD);
 
-    Debug (DEB_QUEUE, "···· ack type %04x (%s) seq %04x",
+    Debug (DEB_QUEUE, STR_DOT STR_DOT STR_DOT STR_DOT " ack type %04lx (%s) seq %04lx",
                       ccmd, CmdPktCmdName (ccmd), event->seq >> 16);
 
     if (ccmd == CMD_SEND_MESSAGE)

@@ -144,9 +144,8 @@ void Init_New_User (Connection *conn)
  * Log the event provided to the log with a time stamp.
  */
 int putlog (Connection *conn, time_t stamp, UDWORD uin, 
-            UDWORD status, enum logtype level, UWORD type, char *str, ...)
+            UDWORD status, enum logtype level, UWORD type, const char *log)
 {
-    static const char deflogdir[] = "history/";
     char buffer[LOG_MAX_PATH + 1],                   /* path to the logfile */
         symbuf[LOG_MAX_PATH + 1];                     /* path of a sym link */
     char *target = buffer;                        /* Target of the sym link */
@@ -154,9 +153,9 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
     const char *username = PrefLogName (prG);
     FILE *logfile;
     int fd;
-    va_list args;
-    size_t l, lcnt;
-    char buf[2048];                   /* Buffer to compute log entry */
+    char *t = NULL, *mylog; /* Buffer to compute log entry */
+    UDWORD size = 0;
+    size_t lcnt;
     char *pos, *indic;
     time_t now;
     struct tm *utctime;
@@ -189,75 +188,60 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
         default:          indic = "=="; break;
     }
     
-    pos = buf + DSCSIZ;
-
     now = time (NULL);
-    va_start (args, str);
-    vsnprintf (pos, sizeof (buf) - DSCSIZ, str, args);
-    va_end (args);
 
-    l = strlen (pos);
-
-    for (lcnt = 0; pos < buf + DSCSIZ + l; lcnt += *pos++ == '\n')
+    for (lcnt = 0, pos = mylog = strdup (log); *pos; lcnt += *pos++ == '\n')
         if (pos[0] == '\r' && pos[1] == '\n')
             *pos = ' ';
 
     utctime = gmtime (&now);
 
-    snprintf (buf, DSCSIZ, "# %04d%02d%02d%02d%02d%02d%s%.0ld ",
+    t = s_catf (t, &size, "# %04d%02d%02d%02d%02d%02d%s%.0ld ",
         utctime->tm_year + 1900, utctime->tm_mon + 1, 
         utctime->tm_mday, utctime->tm_hour, utctime->tm_min, 
         utctime->tm_sec, stamp != -1 ? "/" : "", 
         stamp != NOW ? stamp - now : 0);
-
-    l = strlen (buf);
 
     pos = strchr (cont->nick, ' ') ? "\"" : "";
     
     switch (conn->type)
     {
         case TYPE_SERVER_OLD:
-            snprintf (buf + l, DSCSIZ - l, "[icq5:%lu]!%s %s %s%s%s[icq5:%lu+%lX]", 
+            t = s_catf (t, &size, "[icq5:%lu]!%s %s %s%s%s[icq5:%lu+%lX]", 
                 conn->uin, username, indic, pos, cont->uin ? cont->nick : "", pos, uin, status);
             break;
         case TYPE_SERVER:
-            snprintf (buf + l, DSCSIZ - l, "[icq8:%lu]!%s %s %s%s%s[icq8:%lu+%lX]", 
+            t = s_catf (t, &size, "[icq8:%lu]!%s %s %s%s%s[icq8:%lu+%lX]", 
                 conn->uin, username, indic, pos, cont->uin ? cont->nick : "", pos, uin, status);
             break;
         case TYPE_MSGLISTEN:
         case TYPE_MSGDIRECT:
-            snprintf (buf + l, DSCSIZ - l, "%s %s %s%s%s[tcp:%lu+%lX]",
+            t = s_catf (t, &size, "%s %s %s%s%s[tcp:%lu+%lX]",
                       username, indic, pos, cont->uin ? cont->nick : "", pos, uin, status);
             break;
         default:
-            snprintf (buf + l, DSCSIZ - l, "%s %s %s%s%s[tcp:%lu+%lX]",
+            t = s_catf (t, &size, "%s %s %s%s%s[tcp:%lu+%lX]",
                       username, indic, pos, cont->uin ? cont->nick : "", pos, uin, status);
             break;
     }
-    l += strlen (buf + l);
 
     if (lcnt != 0)
-    {
-        snprintf (buf + l, DSCSIZ - l, " +%u", lcnt);
-        l += strlen (buf + l);
-    }
+        t = s_catf (t, &size, " +%u", lcnt);
 
     if (type != 0xFFFF && type != MSG_NORM)
-    {
-        snprintf (buf + l, DSCSIZ - l, " (%u)", type);
-        l += strlen (buf + l);
-    }
-    buf[l++] = '\n';
-    pos = buf + DSCSIZ;
+        t = s_catf (t, &size, " (%u)", type);
     
-    memmove (buf + l, pos, strlen (pos) + 1);
+    t = s_cat (t, &size, "\n");
+
+    if (strlen (mylog))
+    {
+        t = s_cat (t, &size, mylog);
+        t = s_cat (t, &size, "\n");
+    }
+    free (mylog);
 
     if (!prG->logplace)
-    {
-        const char *userdir = PrefUserDir (prG);
-        prG->logplace = strcat (strcpy (malloc (strlen (userdir) 
-            + sizeof (deflogdir)), userdir), deflogdir);
-    }
+        prG->logplace = "history/";
 
     /* Check for '/' below doesn't work for empty strings. */
     assert (*prG->logplace != '\0');
@@ -267,7 +251,7 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
     
     if (target[-1] == '/')
     {
-        if (mkdir (prG->logplace, S_IRWXU) == -1 && errno != EEXIST)
+        if (mkdir (buffer, S_IRWXU) == -1 && errno != EEXIST)
             return -1;
 
         snprintf (target, buffer + sizeof (buffer) - target, "%lu.log", uin);
@@ -291,11 +275,13 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
         == -1)
     {
         fprintf (stderr, "\nCouldn't open %s for logging\n", buffer);
+        free (t);
         return -1;
     }
     if (!(logfile = fdopen (fd, "a")))
     {
         fprintf (stderr, "\nCouldn't open %s for logging\n", buffer);
+        free (t);
         close (fd);
         return -1;
     }
@@ -303,7 +289,8 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
     /* Write the log entry as a single chunk to cope with concurrent writes 
      * of multiple mICQ instances.
      */
-    fputs (buf, logfile);
+    fputs (t, logfile);
+    free (t);
 
     /* Closes stream and file descriptor. */
     fclose (logfile);

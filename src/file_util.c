@@ -47,9 +47,9 @@
 
 /****/
 
-#define WAND1 " · · "
-#define WAND2 "· o ·"
-#define WAND3 " · \\ "
+#define WAND1 " \xb7 \xb7 "
+#define WAND2 "\xb7 o \xb7"
+#define WAND3 " \xb7 \\ "
 #define WAND4 "    \\"
 
 void Initalize_RC_File ()
@@ -75,7 +75,7 @@ void Initalize_RC_File ()
 
     M_print ("\n");
     if (uin)
-        M_printf (i18n (1781, "Your password for UIN %d:\n"), uin);
+        M_printf (i18n (1781, "Your password for UIN %ld:\n"), uin);
     else
         M_print (i18n (1782, "You need a password for your new UIN.\n"));
     memset (pwd1, 0, sizeof (pwd1));
@@ -239,7 +239,11 @@ void Initalize_RC_File ()
     prG->logplace  = strdup ("history/");
     prG->chat      = 49;
 
-    ContactAdd (82274703, "Rüdiger Kuhlmann");
+#ifdef ENABLE_UTF8
+    ContactAdd (82274703, "R\xc3\xbc" "diger Kuhlmann");
+#else
+    ContactAdd (82274703, "R\xfc" "diger Kuhlmann");
+#endif
     ContactAdd (82274703, "mICQ maintainer");
     ContactAdd (82274703, "Tadu");
 
@@ -749,7 +753,7 @@ void Read_RC_File (FILE *rcf)
                 if (~cont->flags & CONT_ALIAS)
                     cont->flags = flags;
                 if (prG->verbose > 2)
-                    M_printf ("%ld = %s %x | %p\n", cont->uin, cont->nick, cont->flags, cont);
+                    M_printf ("%ld = %s %lx | %p\n", cont->uin, cont->nick, cont->flags, cont);
                 break;
             case 2:
                 PrefParse (cmd);
@@ -757,7 +761,7 @@ void Read_RC_File (FILE *rcf)
                 if (!strcasecmp (cmd, "alter"))
                 {
                     PrefParseRemainder (tmp);
-                    CmdUser (cmd = strdup (s_sprintf ("¶alter quiet %s", tmp)));
+                    CmdUser (cmd = strdup (s_sprintf ("\xb6" "alter quiet %s", tmp)));
                     free (cmd);
                 }
                 else
@@ -1091,7 +1095,7 @@ int Save_RC ()
                 default: c = ""; assert (0);
             }
             fprintf (rcf, "\ncolor %s", c);
-            for (t = strdup (prG->colors[i]); *t; t += l)
+            for (t = prG->colors[i]; *t; t += l)
             {
                 if      (!strncmp (BLACK,   t, l = strlen (BLACK)))   c = "black  ";
                 else if (!strncmp (RED,     t, l = strlen (RED)))     c = "red    ";

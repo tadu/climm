@@ -14,7 +14,7 @@ Packet *UtilIOReceiveF   (Connection *conn);
 BOOL    UtilIOSendTCP    (Connection *conn, Packet *pak);
 void    UtilIOSendUDP    (Connection *conn, Packet *pak);
 
-void    M_fdprint   (FD_T fd, const char *str, ...);
+void    M_fdprint   (FD_T fd, const char *str, ...) __attribute__ ((format (__printf__, 2, 3)));
 int     M_fdnreadln (FILE *fd, char *buf, size_t len);
 
 #endif /* MICQ_UTIL_IO_H */

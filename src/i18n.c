@@ -1,7 +1,7 @@
 /*
  * Poor man's gettext; handles internationalization of texts.
  *
- * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * This file is Copyright Â© RÃ¼diger Kuhlmann; it may be distributed under
  * version 2 of the GPL licence.
  *
  * $Id$
@@ -102,47 +102,47 @@ int i18nOpen (const char *loc, UBYTE enc)
     if ((enc & ~ENC_AUTO) == ENC_UTF8)
         utf8 = 1;
 
-#define i18nTry(x,y,z,a) do { \
-    if ((i18nf = fopen (s_sprintf (x,y,z,a), "r"))) \
+#define i18nTry(f) do { \
+    if ((i18nf = fopen (f, "r"))) \
         j += i18nAdd (i18nf, debug, &res); \
 } while (0)
 
     if (*loc == '/')
-        i18nTry (loc, "", "", "");
+        i18nTry (loc);
     else
     {
         if (prG->flags & FLAG_FUNNY)
         {
             if (utf8)
-                i18nTry ("%s/i18n/%s.UTF-8@fun.i18n", PrefUserDir (prG), loc, "");
-            i18nTry ("%s/i18n/%s@fun.i18n", PrefUserDir (prG), loc, "");
+                i18nTry (s_sprintf ("%s/i18n/%s.UTF-8@fun.i18n", PrefUserDir (prG), loc));
+            i18nTry (s_sprintf ("%s/i18n/%s@fun.i18n", PrefUserDir (prG), loc));
             if (strchr (loc, '_') && utf8)
-                i18nTry ("%s/i18n/%.*s.UTF-8@fun.i18n", PrefUserDir (prG), strchr (loc, '_') - loc, loc);
+                i18nTry (s_sprintf ("%s/i18n/%.*s.UTF-8@fun.i18n", PrefUserDir (prG), strchr (loc, '_') - loc, loc));
             if (strchr (loc, '_'))
-                i18nTry ("%s/i18n/%.*s@fun.i18n", PrefUserDir (prG), strchr (loc, '_') - loc, loc);
+                i18nTry (s_sprintf ("%s/i18n/%.*s@fun.i18n", PrefUserDir (prG), strchr (loc, '_') - loc, loc));
             if (utf8)
-                i18nTry (PKGDATADIR "/%s.UTF-8@fun.i18n", loc, "", "");
-            i18nTry (PKGDATADIR "/%s@fun.i18n", loc, "", "");
+                i18nTry (s_sprintf (PKGDATADIR "/%s.UTF-8@fun.i18n", loc));
+            i18nTry (s_sprintf (PKGDATADIR "/%s@fun.i18n", loc));
             if (strchr (loc, '_') && utf8)
-                i18nTry (PKGDATADIR "/%.*s.UTF-8@fun.i18n", strchr (loc, '_') - loc, loc, "");
+                i18nTry (s_sprintf (PKGDATADIR "/%.*s.UTF-8@fun.i18n", strchr (loc, '_') - loc, loc));
             if (strchr (loc, '_'))
-                i18nTry (PKGDATADIR "/%.*s@fun.i18n", strchr (loc, '_') - loc, loc, "");
+                i18nTry (s_sprintf (PKGDATADIR "/%.*s@fun.i18n", strchr (loc, '_') - loc, loc));
         }
 
         if (utf8)
-            i18nTry ("%s/i18n/%s.UTF-8.i18n", PrefUserDir (prG), loc, "");
-        i18nTry ("%s/i18n/%s.i18n", PrefUserDir (prG), loc, "");
+            i18nTry (s_sprintf ("%s/i18n/%s.UTF-8.i18n", PrefUserDir (prG), loc));
+        i18nTry (s_sprintf ("%s/i18n/%s.i18n", PrefUserDir (prG), loc));
         if (strchr (loc, '_') && utf8)
-            i18nTry ("%s/i18n/%.*s.UTF-8.i18n", PrefUserDir (prG), strchr (loc, '_') - loc, loc);
+            i18nTry (s_sprintf ("%s/i18n/%.*s.UTF-8.i18n", PrefUserDir (prG), strchr (loc, '_') - loc, loc));
         if (strchr (loc, '_'))
-            i18nTry ("%s/i18n/%.*s.i18n", PrefUserDir (prG), strchr (loc, '_') - loc, loc);
+            i18nTry (s_sprintf ("%s/i18n/%.*s.i18n", PrefUserDir (prG), strchr (loc, '_') - loc, loc));
         if (utf8)
-            i18nTry (PKGDATADIR "/%s.UTF-8.i18n", loc, "", "");
-        i18nTry (PKGDATADIR "/%s.i18n", loc, "", "");
+            i18nTry (s_sprintf (PKGDATADIR "/%s.UTF-8.i18n", loc));
+        i18nTry (s_sprintf (PKGDATADIR "/%s.i18n", loc));
         if (strchr (loc, '_') && utf8)
-            i18nTry (PKGDATADIR "/%.*s.UTF-8.i18n", strchr (loc, '_') - loc, loc, "");
+            i18nTry (s_sprintf (PKGDATADIR "/%.*s.UTF-8.i18n", strchr (loc, '_') - loc, loc));
         if (strchr (loc, '_'))
-            i18nTry (PKGDATADIR "/%.*s.i18n", strchr (loc, '_') - loc, loc, "");
+            i18nTry (s_sprintf (PKGDATADIR "/%.*s.i18n", strchr (loc, '_') - loc, loc));
     }
     s_free (floc);
 

@@ -143,7 +143,7 @@ typedef struct
         UDWORD idle_msgs;
         UBYTE  idle_flag;
         char * idle_uins;
-        UBYTE  nick_len;
+        int    nick_len;   /* this *must* be an int */
 } user_interface_state;
 
 extern user_interface_state uiG;

@@ -2,7 +2,7 @@
 /*
  * Initialization and basic support for v8 of the ICQ protocl.
  *
- * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * This file is Copyright Â© RÃ¼diger Kuhlmann; it may be distributed under
  * version 2 of the GPL licence.
  *
  * $Id$
@@ -39,7 +39,7 @@ void ConnectionInitServer (Connection *conn)
     if (!conn->server || !*conn->server || !conn->port)
         return;
 
-    M_printf (i18n (1871, "Opening v8 connection to %s:%d... "), conn->server, conn->port);
+    M_printf (i18n (1871, "Opening v8 connection to %s:%ld... "), conn->server, conn->port);
 
     conn->our_seq  = rand () & 0x7fff;
     conn->connect  = 0;

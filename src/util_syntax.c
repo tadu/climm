@@ -111,31 +111,31 @@ char *PacketDump (Packet *pak, const char *syntax)
             case 'b':
                 nr = PacketRead1 (pak);
                 t = s_cat  (t, &size, s_dumpnd (pak->data + pak->rpos - 1, 1));
-                t = s_catf (t, &size, " " COLDEBUG "BYTE     0x%02x = %03u" COLNONE "\n", nr, nr);
+                t = s_catf (t, &size, " " COLDEBUG "BYTE     0x%02lx = %03lu" COLNONE "\n", nr, nr);
                 continue;
             case 'W':
                 if (pak->len < pak->rpos + 2) break;
                 t = s_cat  (t, &size, s_dumpnd (pak->data + pak->rpos, 2));
                 nr = PacketReadB2 (pak);
-                t = s_catf (t, &size, " " COLDEBUG "WORD.B   0x%04x = %05u" COLNONE "\n", nr, nr);
+                t = s_catf (t, &size, " " COLDEBUG "WORD.B   0x%04lx = %05lu" COLNONE "\n", nr, nr);
                 continue;
             case 'w':
                 if (pak->len < pak->rpos + 2) break;
                 t = s_cat  (t, &size, s_dumpnd (pak->data + pak->rpos, 2));
                 nr = PacketRead2 (pak);
-                t = s_catf (t, &size, " " COLDEBUG "WORD.L   0x%04x = %05u" COLNONE "\n", nr, nr);
+                t = s_catf (t, &size, " " COLDEBUG "WORD.L   0x%04lx = %05lu" COLNONE "\n", nr, nr);
                 continue;
             case 'D':
                 if (pak->len < pak->rpos + 4) break;
                 t = s_cat  (t, &size, s_dumpnd (pak->data + pak->rpos, 4));
                 nr = PacketReadB4 (pak);
-                t = s_catf (t, &size, " " COLDEBUG "DWORD.B  0x%08x = %010u" COLNONE "\n", nr, nr);
+                t = s_catf (t, &size, " " COLDEBUG "DWORD.B  0x%08lx = %010lu" COLNONE "\n", nr, nr);
                 continue;
             case 'd':
                 if (pak->len < pak->rpos + 4) break;
                 t = s_cat  (t, &size, s_dumpnd (pak->data + pak->rpos, 4));
                 nr = PacketRead4 (pak);
-                t = s_catf (t, &size, " " COLDEBUG "DWORD.L  0x%08x = %010u" COLNONE "\n", nr, nr);
+                t = s_catf (t, &size, " " COLDEBUG "DWORD.L  0x%08lx = %010lu" COLNONE "\n", nr, nr);
                 continue;
             case 'C':
                 if (pak->len < pak->rpos + 16) break;
@@ -145,7 +145,7 @@ char *PacketDump (Packet *pak, const char *syntax)
             case 'u':
                 nr = PacketReadAt1 (pak, pak->rpos);
                 t = s_cat  (t, &size, s_dumpnd (pak->data + pak->rpos, nr + 1));
-                t = s_catf (t, &size, " " COLDEBUG "UIN      %d" COLNONE "\n", PacketReadUIN (pak));
+                t = s_catf (t, &size, " " COLDEBUG "UIN      %ld" COLNONE "\n", PacketReadUIN (pak));
                 continue;
             case 'B':
                 nr = PacketReadAtB2 (pak, pak->rpos);
@@ -226,13 +226,13 @@ char *PacketDump (Packet *pak, const char *syntax)
                 {
                     val = PacketReadAtB2 (pak, pak->rpos + 4);
                     t = s_cat  (t, &size, s_dumpnd (pak->data + pak->rpos, len + 4));
-                    t = s_catf (t, &size, " " COLDEBUG "TLV (% 2x) 0x%04x = %05u" COLNONE "\n", nr, val, val);
+                    t = s_catf (t, &size, " " COLDEBUG "TLV (%2lx) 0x%04lx = %05lu" COLNONE "\n", nr, val, val);
                 }
                 else if (len == 4)
                 {
                     val = PacketReadAtB4 (pak, pak->rpos + 4);
                     t = s_cat  (t, &size, s_dumpnd (pak->data + pak->rpos, len + 4));
-                    t = s_catf (t, &size, " " COLDEBUG "TLV (% 2x) 0x%08x = %010u" COLNONE "\n", nr, val, val);
+                    t = s_catf (t, &size, " " COLDEBUG "TLV (%2lx) 0x%08lx = %010lu" COLNONE "\n", nr, val, val);
                 }
                 else if (sub)
                 {
@@ -241,7 +241,7 @@ char *PacketDump (Packet *pak, const char *syntax)
                     p = PacketCreate (pak->data + pak->rpos + 4, len);
                     
                     t = s_cat  (t, &size, s_dumpnd (pak->data + pak->rpos, 4));
-                    t = s_catf (t, &size, " " COLDEBUG "TLV (% 2x) \"%s\"" COLNONE "\n", nr, sub);
+                    t = s_catf (t, &size, " " COLDEBUG "TLV (%2lx) \"%s\"" COLNONE "\n", nr, sub);
                     t = s_cat  (t, &size, s_ind (tmp = PacketDump (p, sub)));
                     
                     PacketD (p);
@@ -252,7 +252,7 @@ char *PacketDump (Packet *pak, const char *syntax)
                 else
                 {
                     t = s_cat  (t, &size, s_dumpnd (pak->data + pak->rpos, 4));
-                    t = s_catf (t, &size, " " COLDEBUG "TLV (% 2x)" COLNONE "\n", nr);
+                    t = s_catf (t, &size, " " COLDEBUG "TLV (%2lx)" COLNONE "\n", nr);
                     t = s_cat  (t, &size, s_ind (s_dump (pak->data + pak->rpos + 4, len)));
                 }
                 pak->rpos += len + 4;

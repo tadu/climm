@@ -847,9 +847,10 @@ void R_setpromptf (const char *prompt, ...)
  */
 void R_resetprompt (void)
 {
+    Contact *cont = ContactByUIN (uiG.last_sent_uin, 1);
     prlast = 0;
-    if (prG->flags & FLAG_UINPROMPT && uiG.last_sent_uin)
-        R_setpromptf (COLSERVER "[%s]" COLNONE " ", ContactByUIN (uiG.last_sent_uin, 1));
+    if (prG->flags & FLAG_UINPROMPT && uiG.last_sent_uin && cont)
+        R_setpromptf (COLSERVER "[%s]" COLNONE " ", cont->nick);
     else
         R_setpromptf (COLSERVER "%s" COLNONE, i18n (1040, "mICQ> "));
 }
@@ -1084,9 +1085,9 @@ void M_print (const char *org)
     str = fstr;
     switch (ENC(enc_loc))
     {
-        case ENC_UTF8:   para = "Â¶"; break;
+        case ENC_UTF8:   para = "\xc2\xb6"; break;
         case ENC_LATIN1:
-        case ENC_LATIN9: para = "¶";  break;
+        case ENC_LATIN9: para = "\xb6";  break;
         default:         para = "P";  break;
     }
 
@@ -1166,7 +1167,7 @@ void M_print (const char *org)
         if (isline && (*str == '\n' || *str == '\r'))
         {
             if (str[1])
-                printf ("%s¶..",USECOLOR (CXCONTACT));
+                printf ("%s%s..",USECOLOR (CXCONTACT), para);
             printf ("%s\n",USECOLOR (col));
             CharCount = 0;
             free (fstr);
@@ -1246,7 +1247,7 @@ void M_print (const char *org)
                                 CharCount = 0;
                                 break;
                             case FLAG_LIBR_BR | FLAG_LIBR_INT:
-                                save = strstr (str, "\x1b»");
+                                save = strstr (str, "\x1bv");
                                 if (save && chardiff (save, str) - 2 > sw - CharCount)
                                 {
                                     printf ("\n%s", M_getlogo ());
@@ -1258,7 +1259,7 @@ void M_print (const char *org)
                         str++;
                         break;
                     case 'v':
-                        IndentCount = CharCount;
+                        IndentCount += CharCount;
                         sw -= IndentCount;
                         CharCount = 0;
                         str++;
@@ -1402,7 +1403,7 @@ void M_printf (char *str, ...)
         str1[0] = 0;
         M_prints (str2);
         str1[0] = '\x1b';
-        if (strchr ("©<>«»", str1[1]))
+        if (strchr (".<>v^", str1[1]))
         {
             char c = str1[2];
             str1[2] = 0;

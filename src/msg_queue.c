@@ -1,7 +1,7 @@
 /*
  * Provides a time sorted queue, with callback for due events.
  *
- * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * This file is Copyright Â© RÃ¼diger Kuhlmann; it may be distributed under
  * version 2 of the GPL licence.
  *
  * This file replaces a simple FIFO implementation for a similar,
@@ -20,12 +20,6 @@
 #include "util_extra.h"
 #include "icq_response.h" /* yuck */
 #include "packet.h" /* yuck */
-
-#ifdef ENABLE_UTF8
-#define STR_DOT "Â·"
-#else
-#define STR_DOT "·"
-#endif
 
 struct QueueEntry
 {
@@ -91,7 +85,7 @@ Event *QueuePop ()
             queue->due = INT_MAX;
         else
             queue->due = queue->head->event->due;
-        Debug (DEB_QUEUE, STR_DOT STR_DOT STR_DOT "> %s %p: %08x %p", QueueType (event->type), event, event->seq, event->pak);
+        Debug (DEB_QUEUE, STR_DOT STR_DOT STR_DOT "> %s %p: %08lx %p", QueueType (event->type), event, event->seq, event->pak);
         return event;
     }
     return NULL;
@@ -113,7 +107,7 @@ void QueueEnqueue (Event *event)
     entry->next = NULL;
     entry->event  = event;
 
-    Debug (DEB_QUEUE, "<" STR_DOT STR_DOT STR_DOT " %s %p: %08x %p %x", QueueType (event->type), event, event->seq, event->pak, event->flags);
+    Debug (DEB_QUEUE, "<" STR_DOT STR_DOT STR_DOT " %s %p: %08lx %p %x", QueueType (event->type), event, event->seq, event->pak, event->flags);
 
     if (!queue->head)
     {
@@ -161,7 +155,7 @@ Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD id,
     event->extra = extra;
     event->callback = callback;
     
-    Debug (DEB_EVENT, "<+" STR_DOT STR_DOT " %s %p: %08x %p %x", QueueType (event->type), event, event->seq, event->pak, event->flags);
+    Debug (DEB_EVENT, "<+" STR_DOT STR_DOT " %s %p: %08lx %p %x", QueueType (event->type), event, event->seq, event->pak, event->flags);
     QueueEnqueue (event);
 
     return event;
@@ -228,7 +222,7 @@ Event *QueueDequeue (Connection *conn, UDWORD type, UDWORD seq)
 
     if (!queue->head)
     {
-        Debug (DEB_QUEUE, STR_DOT "??" STR_DOT " %s %08x", QueueType (type), seq);
+        Debug (DEB_QUEUE, STR_DOT "??" STR_DOT " %s %08lx", QueueType (type), seq);
         return NULL;
     }
 
@@ -237,7 +231,7 @@ Event *QueueDequeue (Connection *conn, UDWORD type, UDWORD seq)
         && queue->head->event->seq  == seq)
     {
         event = QueueDequeueEvent (queue->head->event, NULL);
-        Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08x %p", QueueType (type), event, seq, event->pak);
+        Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08lx %p", QueueType (type), event, seq, event->pak);
         return event;
     }
     for (iter = queue->head; iter->next; iter = iter->next)
@@ -247,11 +241,11 @@ Event *QueueDequeue (Connection *conn, UDWORD type, UDWORD seq)
             && iter->next->event->seq  == seq)
         {
             event = QueueDequeueEvent (iter->next->event, iter);
-            Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08x %p", QueueType (type), event, seq, event->pak);
+            Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08lx %p", QueueType (type), event, seq, event->pak);
             return event;
         }
     }
-    Debug (DEB_QUEUE, STR_DOT "??" STR_DOT " %s %08x", QueueType (type), seq);
+    Debug (DEB_QUEUE, STR_DOT "??" STR_DOT " %s %08lx", QueueType (type), seq);
     return NULL;
 }
 
@@ -259,7 +253,7 @@ void EventD (Event *event)
 {
     if (!event)
         return;
-    Debug (DEB_EVENT, STR_DOT STR_DOT ">> %s %p: %08x %p", QueueType (event->type), event, event->seq, event->pak);
+    Debug (DEB_EVENT, STR_DOT STR_DOT ">> %s %p: %08lx %p", QueueType (event->type), event, event->seq, event->pak);
     if (event->pak)
         PacketD (event->pak);
     ExtraD (event->extra);
@@ -280,7 +274,7 @@ void QueueCancel (Connection *conn)
     while (queue->head && queue->head->event->conn == conn)
     {
         event = QueueDequeueEvent (queue->head->event, NULL);
-        Debug (DEB_QUEUE, STR_DOT STR_DOT "!> %s %p %p: %08x %p", QueueType (event->type), conn, event, event->seq, event->pak);
+        Debug (DEB_QUEUE, STR_DOT STR_DOT "!> %s %p %p: %08lx %p", QueueType (event->type), conn, event, event->seq, event->pak);
         event->conn = NULL;
         if (event->callback)
             event->callback (event);
@@ -294,7 +288,7 @@ void QueueCancel (Connection *conn)
         while (iter->next && iter->next->event->conn == conn)
         {
             event = QueueDequeueEvent (iter->next->event, iter);
-            Debug (DEB_QUEUE, STR_DOT STR_DOT "!> %s %p %p: %08x %p", QueueType (event->type),
+            Debug (DEB_QUEUE, STR_DOT STR_DOT "!> %s %p %p: %08lx %p", QueueType (event->type),
                    conn, event, event->seq, event->pak);
             event->conn = NULL;
             if (event->callback)
@@ -360,7 +354,7 @@ void QueueRetry (Connection *conn, UDWORD type, UDWORD uin)
             event->callback (event);
     }
     else
-        Debug (DEB_QUEUE, STR_DOT STR_DOT "s" STR_DOT " %d %s", uin, QueueType (type));
+        Debug (DEB_QUEUE, STR_DOT STR_DOT "s" STR_DOT " %ld %s", uin, QueueType (type));
 }
 
 /*

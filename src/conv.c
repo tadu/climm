@@ -1,7 +1,7 @@
 /*
  * This file handles character conversions.
  *
- * This file is Copyright Rüdiger Kuhlmann; it may be distributed under
+ * This file is Copyright RÃ¼diger Kuhlmann; it may be distributed under
  * version 2 of the GPL licence.
  *
  * $Id$
@@ -451,7 +451,7 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
         in--;
         if (val == '?')
         {
-            t = s_catf (t, &size, "·");
+            t = s_catf (t, &size, "?");
             continue;
         }
         switch (enc & ~ENC_AUTO)

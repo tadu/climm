@@ -1,7 +1,7 @@
 /*
  * This file contains static string helper functions.
  *
- * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * This file is Copyright Â© RÃ¼diger Kuhlmann; it may be distributed under
  * version 2 of the GPL licence.
  *
  * $Id$
@@ -244,7 +244,8 @@ const char *s_ind (const char *str)
     for (p = str; *p; p++, cnt++)
         if (*p == '\n')
             cnt += 2;
-    t = s_catf (t, &size, "");
+    if (!t)
+        t = calloc (1, size = 100);
     if (size < cnt)
         t = realloc (t, cnt);
     if (!t)
@@ -325,7 +326,8 @@ const char *s_dump (const UBYTE *data, UWORD len)
     UDWORD i, off;
     const unsigned char *d = (const unsigned char *)data;
     
-    t = s_catf (t, &size, "");
+    if (!t)
+        t = calloc (1, size = 100);
     *t = '\0';
     while (len >= 16)
     {

@@ -1,7 +1,7 @@
 /*
  * Reads remaining TLVs from a SNAC. Unfortunately, not all packets are just TLVs.
  *
- * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * This file is Copyright Â© RÃ¼diger Kuhlmann; it may be distributed under
  * version 2 of the GPL licence.
  *
  * $Id$
@@ -37,7 +37,7 @@ TLV *TLVRead (Packet *pak, UDWORD TLVlen)
         len = PacketReadB2 (pak);
         if (TLVlen < len)
         {
-            M_printf (i18n (1897, "Incomplete TLV %d, len %d of %d - ignoring.\n"), typ, TLVlen, len);
+            M_printf (i18n (1897, "Incomplete TLV %d, len %ld of %d - ignoring.\n"), typ, TLVlen, len);
             return tlv;
         }
         if (typ >= __minTLV || tlv[typ].len)

@@ -33,7 +33,7 @@ void icq_sendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD msg_typ
     char *old;
 
     putlog (conn, NOW, uin, STATUS_ONLINE, 
-        msg_type == MSG_AUTO ? LOG_AUTO : LOG_SENT, msg_type, "%s\n", text);
+        msg_type == MSG_AUTO ? LOG_AUTO : LOG_SENT, msg_type, text);
 #ifdef ENABLE_PEER2PEER
     if (!conn->assoc || !TCPSendMsg (conn->assoc, uin, text, msg_type))
 #endif
@@ -84,7 +84,7 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, Extra *extra)
         free (old);
 
     putlog (conn, NOW, cont->uin, STATUS_ONLINE, 
-            e_msg->data == MSG_AUTO ? LOG_AUTO : LOG_SENT, e_msg->data, "%s\n", e_msg->text);
+            e_msg->data == MSG_AUTO ? LOG_AUTO : LOG_SENT, e_msg->data, e_msg->text);
 
 #ifdef ENABLE_PEER2PEER
     if (e_trans->data & EXTRA_TRANS_DC)
@@ -94,7 +94,7 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, Extra *extra)
     e_trans->data &= ~EXTRA_TRANS_DC;
 #endif
     if (e_trans->data & EXTRA_TRANS_TYPE2)
-        if (conn->type == TYPE_SERVER && HAS_CAP (cont->caps, CAP_SRVRELAY) && HAS_CAP (cont->caps, CAP_SRVRELAY))
+        if (conn->type == TYPE_SERVER && HAS_CAP (cont->caps, CAP_SRVRELAY))
             if (RET_IS_OK (ret = SnacCliSendmsg2 (conn, cont, extra)))
                 return ret;
     e_trans->data &= ~EXTRA_TRANS_TYPE2;

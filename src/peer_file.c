@@ -1,7 +1,7 @@
 /*
  * This file handles incoming and outgoing file requests.
  *
- * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * This file is Copyright Â© RÃ¼diger Kuhlmann; it may be distributed under
  * version 2 of the GPL licence.
  *
  * $Id$
@@ -62,7 +62,7 @@ Connection *PeerFileCreate (Connection *serv)
         return NULL;
 
     if (prG->verbose)
-        M_printf (i18n (2082, "Opening file listener connection at localhost:%d... "), serv->assoc->spref->port);
+        M_printf (i18n (2082, "Opening file listener connection at localhost:%ld... "), serv->assoc->spref->port);
 
     flist->spref       = NULL;
     flist->parent      = serv;
@@ -164,7 +164,7 @@ BOOL PeerFileAccept (Connection *peer, UWORD status, UDWORD port)
     fpeer->close    = &PeerFileDispatchDClose;
     
     if (prG->verbose)
-        M_printf (i18n (2068, "Opening file transfer connection at %s:%d... \n"),
+        M_printf (i18n (2068, "Opening file transfer connection at %s:%ld... \n"),
                   fpeer->server, fpeer->port);
 
     TCPDispatchConn (fpeer);
@@ -240,12 +240,12 @@ void PeerFileDispatch (Connection *fpeer)
             PacketD (pak);
             
             M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-            M_printf (i18n (2161, "Receiving %d files with together %d bytes at speed %x from %s.\n"),
+            M_printf (i18n (2161, "Receiving %ld files with together %ld bytes at speed %lx from %s.\n"),
                      nr, len, speed, c_in (name));
             
             if (len != fpeer->len)
             {
-                M_printf ("FIXME: byte len different than in file request: requested %d, sending %d.\n",
+                M_printf ("FIXME: byte len different than in file request: requested %ld, sending %ld.\n",
                          fpeer->len, len);
                 fpeer->len = len;
             }
@@ -264,7 +264,7 @@ void PeerFileDispatch (Connection *fpeer)
             PacketD (pak);
             
             M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-            M_printf (i18n (2170, "Sending with speed %x to %s.\n"), speed, c_in (name));
+            M_printf (i18n (2170, "Sending with speed %lx to %s.\n"), speed, c_in (name));
             
             fpeer->our_seq = 1;
             QueueRetry (fpeer, QUEUE_PEER_FILE, fpeer->uin);
@@ -315,7 +315,7 @@ void PeerFileDispatch (Connection *fpeer)
                 ffile->close = &PeerFileIODispatchClose;
 
                 M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-                M_printf (i18n (2162, "Receiving file %s (%s) with %d bytes as %s.\n"),
+                M_printf (i18n (2162, "Receiving file %s (%s) with %ld bytes as %s.\n"),
                          name, text, len, buf);
             }
             pak = PeerPacketC (fpeer, 3);
@@ -336,7 +336,7 @@ void PeerFileDispatch (Connection *fpeer)
             PacketD (pak);
             
             M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-            M_printf (i18n (2163, "Sending file %d at offset %d.\n"),
+            M_printf (i18n (2163, "Sending file %ld at offset %ld.\n"),
                      nr, off);
             
             err = lseek (fpeer->assoc->sok, off, SEEK_SET);
@@ -344,7 +344,7 @@ void PeerFileDispatch (Connection *fpeer)
             {
                 err = errno;
                 M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-                M_printf (i18n (2084, "Error while seeking to offset %d: %s (%d).\n"),
+                M_printf (i18n (2084, "Error while seeking to offset %ld: %s (%ld).\n"),
                          off, strerror (err), err);
                 TCPClose (fpeer);
                 return;
@@ -382,7 +382,7 @@ void PeerFileDispatch (Connection *fpeer)
             if (fpeer->assoc->done > fpeer->assoc->len)
             {
                 M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-                M_printf (i18n (2165, "The peer sent more bytes (%d) than file length (%d).\n"),
+                M_printf (i18n (2165, "The peer sent more bytes (%ld) than file length (%ld).\n"),
                          fpeer->assoc->done, fpeer->assoc->len);
                 TCPClose (fpeer);
                 return;
@@ -395,7 +395,7 @@ void PeerFileDispatch (Connection *fpeer)
             }
             else if (fpeer->assoc->len)
             {
-                R_setpromptf ("[" COLINCOMING "%d %02d%%" COLNONE "] " COLSERVER "%s" COLNONE "",
+                R_setpromptf ("[" COLINCOMING "%ld %02d%%" COLNONE "] " COLSERVER "%s" COLNONE "",
                               fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
                               i18n (1040, "mICQ> "));
             }
@@ -411,7 +411,7 @@ void PeerFileDispatch (Connection *fpeer)
     }
     if ((prG->verbose & DEB_TCP) && err)
     {
-        M_printf ("%s %s: %d\n", s_now, i18n (2029, "Protocol error on peer-to-peer connection"), err);
+        M_printf ("%s %s: %ld\n", s_now, i18n (2029, "Protocol error on peer-to-peer connection"), err);
         PeerFileClose (fpeer);
     }
 }
@@ -476,21 +476,21 @@ void PeerFileResend (Event *event)
     if (event->attempts >= MAX_RETRY_ATTEMPTS || (!event->pak && !event->seq))
     {
         M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-        M_printf (i18n (2168, "File transfer #%d (%s) dropped after %d attempts because of timeout.\n"),
+        M_printf (i18n (2168, "File transfer #%ld (%s) dropped after %ld attempts because of timeout.\n"),
                  event->seq, e_msg_text, event->attempts);
         TCPClose (fpeer);
     }
     else if (!(fpeer->connect & CONNECT_MASK))
     {
         M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-        M_printf (i18n (2072, "File transfer #%d (%s) dropped because of closed connection.\n"),
+        M_printf (i18n (2072, "File transfer #%ld (%s) dropped because of closed connection.\n"),
                  event->seq, e_msg_text);
     }
     else if (~fpeer->connect & CONNECT_OK)
     {
         if (event->attempts > 1)
         {
-            M_printf ("%s " COLACK "%*s" COLNONE " %s [%d] %x %s\n",
+            M_printf ("%s " COLACK "%*s" COLNONE " %s [%ld] %x %s\n",
                      s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, " + ", event->attempts, fpeer->connect, e_msg_text);
         }
         if (!event->seq)
@@ -580,11 +580,11 @@ void PeerFileResend (Event *event)
             if (len == 2048)
             {
                 if (fpeer->assoc->len)
-                    R_setpromptf ("[" COLCONTACT "%d %02d%%" COLNONE "] " COLSERVER "%s" COLNONE "",
+                    R_setpromptf ("[" COLCONTACT "%ld %02d%%" COLNONE "] " COLSERVER "%s" COLNONE "",
                                   fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
                                   i18n (1040, "mICQ> "));
                 else
-                    R_setpromptf ("[" COLCONTACT "%d" COLNONE "] " COLSERVER "%s" COLNONE "",
+                    R_setpromptf ("[" COLCONTACT "%ld" COLNONE "] " COLSERVER "%s" COLNONE "",
                                   fpeer->assoc->done, i18n (1040, "mICQ> "));
                 event->attempts = 0;
                 QueueEnqueue (event);

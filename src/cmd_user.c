@@ -564,7 +564,7 @@ static JUMP_F(CmdUserPass)
         if (*arg1 == '\xf3')
 #endif
         {
-            M_printf (i18n (2198, "Unsuitable password '%s' - may not start with ó.\n"), arg1);
+            M_printf (i18n (2198, "Unsuitable password '%s' - may not start with byte 0xf3.\n"), arg1);
             return 0;
         }
         if (conn->ver < 6)
@@ -654,11 +654,11 @@ static JUMP_F(CmdUserInfo)
         M_print ("\t");
 
         if (contr->dc && contr->dc->port && ~contr->dc->port)
-            M_printf (i18n (1673, "The port is %d.\n"), contr->dc->port);
+            M_printf (i18n (1673, "The port is %ld.\n"), contr->dc->port);
         else
             M_print (i18n (1674, "The port is unknown.\n"));
 
-        M_printf (i18n (1765, "%s has UIN %d."), cont->nick, cont->uin);
+        M_printf (i18n (1765, "%s has UIN %ld."), cont->nick, cont->uin);
         M_print ("\n");
         
         cont->updated = 0;
@@ -718,7 +718,7 @@ static JUMP_F(CmdUserTrans)
 
         if (s_parseint (&args, &i))
         {
-            M_printf ("%3d:%s\n", i, i18n (i, i18n (1078, "No translation available.")));
+            M_printf ("%3ld:%s\n", i, i18n (i, i18n (1078, "No translation available.")));
             one = 1;
             continue;
         }
@@ -732,7 +732,7 @@ static JUMP_F(CmdUserTrans)
                     if (p)
                     {
                         l = i;
-                        M_printf ("%3d:%s\n", i, p);
+                        M_printf ("%3ld:%s\n", i, p);
                     }
                 }
             }
@@ -750,7 +750,7 @@ static JUMP_F(CmdUserTrans)
                 if (i == -1)
                     M_printf (i18n (1080, "Couldn't load \"%s\" internationalization.\n"), arg1);
                 else if (i)
-                    M_printf (i18n (1081, "Successfully loaded en translation (%d entries).\n"), i);
+                    M_printf (i18n (1081, "Successfully loaded en translation (%ld entries).\n"), i);
                 else
                     M_print ("No internationalization requested.\n");
             }
@@ -772,10 +772,10 @@ static JUMP_F(CmdUserTrans)
             s_parseint (&arg1, &v4);
             
             /* i18n (1079, "Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n") */
-            M_printf (i18n (-1, "1079:No translation; using compiled-in strings.¶"),
+            M_printf (i18n (-1, "1079:No translation; using compiled-in strings.\n"),
                      i18n (1001, "<lang>"), i18n (1002, "<lang_cc>"), i18n (1004, "<translation authors>"),
                      i18n (1006, "<last edit date>"), i18n (1005, "<last editor>"),
-                     v1, v2, v3, v4 ? s_sprintf (".%d", v4) : "");
+                     v1, v2, v3, v4 ? s_sprintf (".%ld", v4) : "");
             return 0;
         }
     }
@@ -1445,7 +1445,7 @@ static JUMP_F(CmdUserVerbose)
         M_printf (i18n (2115, "'%s' is not an integer.\n"), args);
         return 0;
     }
-    M_printf (i18n (1060, "Verbosity level is %d.\n"), prG->verbose = i);
+    M_printf (i18n (1060, "Verbosity level is %ld.\n"), prG->verbose = i);
     return 0;
 }
 
@@ -1474,7 +1474,8 @@ static UDWORD __status (Contact *cont)
  */
 static JUMP_F(CmdUserStatusDetail)
 {
-    UDWORD uin = 0, tuin = 0, i, lenuin = 0, lennick = 0, lenstat = 0, lenid = 0, totallen = 0;
+    UDWORD uin = 0, tuin = 0, i;
+    int lenuin = 0, lennick = 0, lenstat = 0, lenid = 0, totallen = 0;
     Contact *cont = NULL, *contr = NULL;
     Connection *peer;
     UDWORD stati[] = { 0xfffffffe, STATUS_OFFLINE, STATUS_DND,    STATUS_OCC, STATUS_NA,
@@ -1536,7 +1537,7 @@ static JUMP_F(CmdUserStatusDetail)
         M_print (COLMESSAGE);
         for (i = totallen; i >= 20; i -= 20)
             M_print ("====================");
-        M_printf ("%.*s" COLNONE "\n", i, "====================");
+        M_printf ("%.*s" COLNONE "\n", (int)i, "====================");
     }
     for (i = (data & 1 ? 2 : 0); i < 9; i++)
     {
@@ -1580,7 +1581,7 @@ static JUMP_F(CmdUserStatusDetail)
                       peer->connect & CONNECT_MASK ? ':' : '.' ) :
                       contr->dc && contr->dc->version && contr->dc->port && ~contr->dc->port &&
                       contr->dc->ip_rem && ~contr->dc->ip_rem ? '^' : ' ',
-                     lenuin, cont->uin);
+                     (int)lenuin, cont->uin);
 
             M_printf (COLSERVER "%c" COLCONTACT "%-*s" COLNONE " " COLMESSAGE "%-*s" COLNONE " %-*s%s %s",
                      data & 2                      ? ' ' :
@@ -1612,7 +1613,7 @@ static JUMP_F(CmdUserStatusDetail)
 
         if (contr->dc)
         {
-            M_printf ("%-15s %s/%s:%d\n", i18n (1441, "remote IP:"),
+            M_printf ("%-15s %s/%s:%ld\n", i18n (1441, "remote IP:"),
                       t1 = strdup (s_ip (contr->dc->ip_rem)),
                       t2 = strdup (s_ip (contr->dc->ip_loc)), contr->dc->port);
             M_printf ("%-15s %d\n", i18n (1453, "TCP version:"), contr->dc->version);
@@ -1645,7 +1646,7 @@ static JUMP_F(CmdUserStatusDetail)
     M_print (COLMESSAGE);
     for (i = totallen; i >= 20; i -= 20)
         M_print ("====================");
-    M_printf ("%.*s" COLNONE "\n", i, "====================");
+    M_printf ("%.*s" COLNONE "\n", (int)i, "====================");
     return 0;
 }
 
@@ -2013,7 +2014,7 @@ static JUMP_F(CmdUserAutoaway)
             prG->away_time = 0;
         }
     }
-    M_printf (i18n (1766, "Changing status to away resp. not available after idling %s%d%s seconds.\n"),
+    M_printf (i18n (1766, "Changing status to away resp. not available after idling %s%ld%s seconds.\n"),
              COLMESSAGE, prG->away_time, COLNONE);
     return 0;
 }
@@ -2283,7 +2284,7 @@ static JUMP_F(CmdUserAdd)
 
     if (cont->flags & CONT_TEMPORARY)
     {
-        M_printf (i18n (2117, "%d added as %s.\n"), cont->uin, arg1);
+        M_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, arg1);
         if (!Add_User (conn, cont->uin, arg1))
             M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
         if (c_strlen (arg1) > uiG.nick_len)
@@ -2299,12 +2300,12 @@ static JUMP_F(CmdUserAdd)
     {
         if ((cont2 = ContactFindAlias (cont->uin, arg1)))
         {
-            M_printf (i18n (2146, "'%s' is already an alias for '%s' (%d).\n"),
+            M_printf (i18n (2146, "'%s' is already an alias for '%s' (%ld).\n"),
                      cont2->nick, cont->nick, cont->uin);
         }
         else if ((cont2 = ContactByNick (arg1, 1)))
         {
-            M_printf (i18n (2147, "'%s' (%d) is already used as a nick.\n"),
+            M_printf (i18n (2147, "'%s' (%ld) is already used as a nick.\n"),
                      cont2->nick, cont2->uin);
         }
         else
@@ -2315,7 +2316,7 @@ static JUMP_F(CmdUserAdd)
             }
             else
             {
-                M_printf (i18n (2148, "Added '%s' as an alias for '%s' (%d).\n"),
+                M_printf (i18n (2148, "Added '%s' as an alias for '%s' (%ld).\n"),
                          cont2->nick, cont->nick, cont->uin);
                 M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
             }
@@ -2363,12 +2364,12 @@ static JUMP_F(CmdUserRem)
         
         if ((cont = ContactFind (uin)))
         {
-            M_printf (i18n (2149, "Removed alias '%s' for '%s' (%d).\n"),
+            M_printf (i18n (2149, "Removed alias '%s' for '%s' (%ld).\n"),
                      alias, cont->nick, uin);
         }
         else if (tmp)
         {
-            M_printf (i18n (2221, "Removed temporary contact '%s' (%d).\n"),
+            M_printf (i18n (2221, "Removed temporary contact '%s' (%ld).\n"),
                      alias, uin);
         }
         else
@@ -2377,7 +2378,7 @@ static JUMP_F(CmdUserRem)
                 SnacCliRemcontact (conn, uin);
             else
                 CmdPktCmdContactList (conn);
-            M_printf (i18n (2150, "Removed contact '%s' (%d).\n"),
+            M_printf (i18n (2150, "Removed contact '%s' (%ld).\n"),
                      alias, uin);
         }
         if (*args == ',')
@@ -2619,7 +2620,7 @@ static JUMP_F(CmdUserUptime)
     M_print (i18n (1746, " nr type         sent/received packets/unique packets\n"));
     for (i = 0; (conn = ConnectionNr (i)); i++)
     {
-        M_printf ("%3d %-12s %7d %7d %7d %7d\n",
+        M_printf ("%3d %-12s %7ld %7ld %7ld %7ld\n",
                  i + 1, ConnectionType (conn), conn->stat_pak_sent, conn->stat_pak_rcvd,
                  conn->stat_real_pak_sent, conn->stat_real_pak_rcvd);
         pak_sent += conn->stat_pak_sent;
@@ -2630,7 +2631,7 @@ static JUMP_F(CmdUserUptime)
     M_printf ("    %-12s %7d %7d %7d %7d\n",
              i18n (1747, "total"), pak_sent, pak_rcvd,
              real_pak_sent, real_pak_rcvd);
-    M_printf (i18n (2073, "Memory usage: %d packets processing.\n"), uiG.packets);
+    M_printf (i18n (2073, "Memory usage: %ld packets processing.\n"), uiG.packets);
     return 0;
 }
 
@@ -2654,7 +2655,7 @@ static JUMP_F(CmdUserConn)
             
             cont = ContactByUIN (conn->uin, 1);
 
-            M_printf (i18n (2093, "%02d %-12s version %d for %s (%x), at %s:%d %s\n"),
+            M_printf (i18n (2093, "%02d %-12s version %d for %s (%lx), at %s:%ld %s\n"),
                      i + 1, ConnectionType (conn), conn->ver, cont ? cont->nick : "", conn->status,
                      conn->server ? conn->server : s_ip (conn->ip), conn->port,
                      conn->connect & CONNECT_FAIL ? i18n (1497, "failed") :
@@ -2663,7 +2664,7 @@ static JUMP_F(CmdUserConn)
             if (prG->verbose)
             {
                 char *t1, *t2, *t3;
-                M_printf (i18n (1935, "    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x\n"),
+                M_printf (i18n (1935, "    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n"),
                      conn->type, conn->sok, t1 = strdup (s_ip (conn->ip)),
                      conn->connect, t2 = strdup (s_ip (conn->our_local_ip)),
                      t3 = strdup (s_ip (conn->our_outside_ip)),
@@ -2691,12 +2692,12 @@ static JUMP_F(CmdUserConn)
         conn = ConnectionNr (i - 1);
         if (!conn)
         {
-            M_printf (i18n (1894, "There is no connection number %d.\n"), i);
+            M_printf (i18n (1894, "There is no connection number %ld.\n"), i);
             return 0;
         }
         if (conn->connect & CONNECT_OK)
         {
-            M_printf (i18n (1891, "Connection %d is already open.\n"), i);
+            M_printf (i18n (1891, "Connection %ld is already open.\n"), i);
             return 0;
         }
         if (!conn->open)
@@ -2716,21 +2717,21 @@ static JUMP_F(CmdUserConn)
         conn = ConnectionNr (i - 1);
         if (!conn && !(conn = ConnectionFind (TYPEF_SERVER, i, NULL)))
         {
-            M_printf (i18n (1894, "There is no connection number %d.\n"), i);
+            M_printf (i18n (1894, "There is no connection number %ld.\n"), i);
             return 0;
         }
         if (~conn->type & TYPEF_SERVER)
         {
-            M_printf (i18n (2098, "Connection %d is not a server connection.\n"), i);
+            M_printf (i18n (2098, "Connection %ld is not a server connection.\n"), i);
             return 0;
         }
         if (~conn->connect & CONNECT_OK)
         {
-            M_printf (i18n (2096, "Connection %d is not open.\n"), i);
+            M_printf (i18n (2096, "Connection %ld is not open.\n"), i);
             return 0;
         }
         currconn = conn;
-        M_printf (i18n (2099, "Selected connection %d (version %d, UIN %d) as current connection.\n"),
+        M_printf (i18n (2099, "Selected connection %ld (version %d, UIN %ld) as current connection.\n"),
                  i, conn->ver, conn->uin);
     }
     else if (!strcmp (arg1, "remove") || !strcmp (arg1, "delete"))
@@ -2742,15 +2743,15 @@ static JUMP_F(CmdUserConn)
         conn = ConnectionNr (i - 1);
         if (!conn)
         {
-            M_printf (i18n (1894, "There is no connection number %d.\n"), i);
+            M_printf (i18n (1894, "There is no connection number %ld.\n"), i);
             return 0;
         }
         if (conn->spref)
         {
-            M_printf (i18n (2102, "Connection %d is a configured connection.\n"), i);
+            M_printf (i18n (2102, "Connection %ld is a configured connection.\n"), i);
             return 0;
         }
-        M_printf (i18n (2101, "Removing connection %d and its dependands completely.\n"), i);
+        M_printf (i18n (2101, "Removing connection %ld and its dependands completely.\n"), i);
         ConnectionClose (conn);
     }
     else if (!strcmp (arg1, "close") || !strcmp (arg1, "logoff"))
@@ -2762,17 +2763,17 @@ static JUMP_F(CmdUserConn)
         conn = ConnectionNr (i - 1);
         if (!conn)
         {
-            M_printf (i18n (1894, "There is no connection number %d.\n"), i);
+            M_printf (i18n (1894, "There is no connection number %ld.\n"), i);
             return 0;
         }
         if (conn->close)
         {
-            M_printf (i18n (2185, "Closing connection %d.\n"), i);
+            M_printf (i18n (2185, "Closing connection %ld.\n"), i);
             conn->close (conn);
         }
         else
         {
-            M_printf (i18n (2101, "Removing connection %d and its dependands completely.\n"), i);
+            M_printf (i18n (2101, "Removing connection %ld and its dependands completely.\n"), i);
             ConnectionClose (conn);
         }
     }
@@ -3446,10 +3447,10 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
                     argsd = "";
                 argsd = strdup (argsd);
 
-                if (*cmd != '¶')
+                if (*cmd != '\xb6')
                     j = CmdUserLookup (cmd, CU_USER);
                 if (!j)
-                    j = CmdUserLookup (*cmd == '¶' ? cmd + 1 : cmd, CU_DEFAULT);
+                    j = CmdUserLookup (*cmd == '\xb6' ? cmd + 1 : cmd, CU_DEFAULT);
 
                 if (j)
                 {

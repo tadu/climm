@@ -58,7 +58,8 @@ static BOOL Meta_Read_List (Packet *pak, Extra **list)
 
 void Meta_User (Connection *conn, UDWORD uin, Packet *pak)
 {
-    UDWORD subtype, result;
+    UWORD subtype;
+    UDWORD result;
     Event *event = NULL;
     Contact *cont;
 
@@ -115,7 +116,7 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *pak)
             M_printf ("%s\n", pak->data + pak->rpos);
             return;
         default:
-            M_printf (i18n (1940, "Unknown Meta User result %x.\n"), result);
+            M_printf (i18n (1940, "Unknown Meta User result %lx.\n"), result);
             return;
     }
 
@@ -139,7 +140,7 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *pak)
         case META_SRV_RANDOM:
         if (!(event = QueueDequeue (conn, QUEUE_REQUEST_META, pak->ref)) || !event->callback)
         {
-            M_printf ("FIXME: meta reply ref %x not found.\n", pak->ref);
+            M_printf ("FIXME: meta reply ref %lx not found.\n", pak->ref);
             return;
         }
         if (event->uin)
@@ -334,7 +335,7 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *pak)
             event->uin = PacketRead4 (pak);
             cont = ContactByUIN (event->uin, 1);
             wdata = PacketRead2 (pak);
-            M_printf (i18n (2009, "Found random chat partner UIN %d in chat group %d.\n"),
+            M_printf (i18n (2009, "Found random chat partner UIN %ld in chat group %d.\n"),
                       cont->uin, wdata);
             if (!cont || !CONTACT_DC (cont))
                 break;
@@ -405,7 +406,7 @@ void Display_Ext_Info_Reply (Connection *conn, Packet *pak)
     if (!(mg = CONTACT_GENERAL (cont)) || !(mo = CONTACT_MORE (cont)))
         return;
 
-    M_printf ("%s " COLSERVER "%lu" COLNONE "\n", i18n (1967, "More Info for"));
+    M_printf ("%s " COLSERVER "%lu" COLNONE "\n", i18n (1967, "More Info for"), cont->uin);
 
     s_read (mg->city);
     mg->country = PacketRead2 (pak);
@@ -516,8 +517,7 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
     cont->status = status;
     cont->flags &= ~CONT_SEENAUTO;
     
-    putlog (conn, NOW, cont->uin, status, ~old ? LOG_CHANGE : LOG_ONLINE, 
-        0xFFFF, "");
+    putlog (conn, NOW, cont->uin, status, ~old ? LOG_CHANGE : LOG_ONLINE, 0xFFFF, "");
  
     if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || (prG->flags & FLAG_QUIET) || !(conn->connect & CONNECT_OK))
         return;
@@ -598,16 +598,16 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
     switch (type)
     {
         case INT_FILE_ACKED:
-            line = s_sprintf (i18n (2070, "File transfer '%s' to port %d.\n"), extra->text, extra->data);
+            line = s_sprintf (i18n (2070, "File transfer '%s' to port %ld.\n"), extra->text, extra->data);
             break;
         case INT_FILE_REJED:
             line = s_sprintf (i18n (2231, "File transfer '%s' rejected by peer: %s.\n"), extra->text, text);
             break;
         case INT_FILE_ACKING:
-            line = s_sprintf (i18n (2186, "Accepting file '%s' (%d bytes).\n"), extra->text, extra->data);
+            line = s_sprintf (i18n (2186, "Accepting file '%s' (%ld bytes).\n"), extra->text, extra->data);
             break;
         case INT_FILE_REJING:
-            line = s_sprintf (i18n (2229, "Refusing file request '%s' (%d bytes): %s.\n"), extra->text, extra->data, text);
+            line = s_sprintf (i18n (2229, "Refusing file request '%s' (%ld bytes): %s.\n"), extra->text, extra->data, text);
             break;
         case INT_CHAR_REJING:
             line = s_sprintf (i18n (2230, "Refusing chat request (%s/%s) from %s.\n"), extra->text, text, cont->nick);
@@ -620,7 +620,7 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
             break;
         case INT_MSGACK_TYPE2:
             col = COLACK;
-            line = s_sprintf ("%s%s\n", ">>» " COLSINGLE, text);
+            line = s_sprintf ("%s%s\n", MSGTYPE2SENTSTR COLSINGLE, text);
             break;
         case INT_MSGACK_DC:
             col = COLACK;
@@ -675,12 +675,12 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
     e_msg_type = ExtraGet (extra, EXTRA_MESSAGE);
 
     carr = ExtraGet (extra, EXTRA_ORIGIN) == EXTRA_ORIGIN_dc ? MSGTCPRECSTR :
-           ExtraGet (extra, EXTRA_ORIGIN) == EXTRA_ORIGIN_v8 ? "«<< " : MSGRECSTR;
+           ExtraGet (extra, EXTRA_ORIGIN) == EXTRA_ORIGIN_v8 ? MSGTYPE2RECSTR : MSGRECSTR;
 
     putlog (conn, stamp, cont->uin,
         (e = ExtraFind (extra, EXTRA_STATUS)) ? e->data : STATUS_OFFLINE, 
         e_msg_type == MSG_AUTH_ADDED ? LOG_ADDED : LOG_RECVD, e_msg_type,
-        *cdata ? "%s\n" : "%s", cdata);
+        cdata);
     
     if (cont->flags & CONT_IGNORE || (((cont->flags & CONT_TEMPORARY) && (prG->flags & FLAG_HERMIT))))
     {
@@ -701,7 +701,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
         }
 
         uiG.idle_msgs++;
-        R_setpromptf ("[" COLINCOMING "%d%s" COLNONE "] " COLSERVER "%s" COLNONE "",
+        R_setpromptf ("[" COLINCOMING "%ld%s" COLNONE "] " COLSERVER "%s" COLNONE "",
                       uiG.idle_msgs, uiG.idle_uins, i18n (1040, "mICQ> "));
     }
 
@@ -715,7 +715,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
         M_printf ("(%s) ", s_status (e->data));
 
     if (prG->verbose > 1)
-        M_printf ("<%d> ", e_msg_type);
+        M_printf ("<%ld> ", e_msg_type);
 
     uiG.last_rcvd_uin = cont->uin;
     if (cont)
@@ -728,7 +728,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
     {
         while (1)
         {
-            M_printf ("?%x? %s%s\n", e_msg_type, COLMSGINDENT, e_msg_text);
+            M_printf ("?%lx? %s%s\n", e_msg_type, COLMSGINDENT, e_msg_text);
             M_printf ("    ");
             for (i = 0; i < strlen (e_msg_text); i++)
                 M_printf ("%c", cdata[i] ? cdata[i] : '.');

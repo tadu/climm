@@ -2,7 +2,7 @@
  * This file handles TCP client-to-client communications.
  *
  *  Author/Copyright: James Schofield (jschofield@ottawa.com) 22 Feb 2001
- *  Lots of changes from Rüdiger Kuhlmann. File transfer by Rüdiger Kuhlmann.
+ *  Lots of changes from RÃ¼diger Kuhlmann. File transfer by RÃ¼diger Kuhlmann.
  *  This file may be distributed under version 2 of the GPL licence.
  *
  * $Id$
@@ -90,7 +90,7 @@ void ConnectionInitPeer (Connection *list)
     if (list->ver == 6)
         M_print (i18n (2046, "You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n"));
 
-    M_printf (i18n (1777, "Opening peer-to-peer connection at localhost:%d... "), list->port);
+    M_printf (i18n (1777, "Opening peer-to-peer connection at localhost:%ld... "), list->port);
 
     list->connect     = 0;
     list->our_seq     = -1;
@@ -331,7 +331,7 @@ void TCPDispatchConn (Connection *peer)
             return;
         }
         
-        Debug (DEB_TCP, "Conn: uin %d nick %s state %x", peer->uin, cont->nick, peer->connect);
+        Debug (DEB_TCP, "Conn: uin %ld nick %s state %x", peer->uin, cont->nick, peer->connect);
 
         switch (peer->connect & CONNECT_MASK)
         {
@@ -350,7 +350,7 @@ void TCPDispatchConn (Connection *peer)
                 if (prG->verbose)
                 {
                     M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                    M_printf (i18n (2034, "Opening TCP connection at %s:%d... "),
+                    M_printf (i18n (2034, "Opening TCP connection at %s:%ld... "),
                              s_ip (peer->ip), peer->port);
                 }
                 UtilIOConnectTCP (peer);
@@ -370,7 +370,7 @@ void TCPDispatchConn (Connection *peer)
                 if (prG->verbose)
                 {
                     M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                    M_printf (i18n (2034, "Opening TCP connection at %s:%d... "),
+                    M_printf (i18n (2034, "Opening TCP connection at %s:%ld... "),
                              s_ip (peer->ip), peer->port);
                 }
                 UtilIOConnectTCP (peer);
@@ -395,7 +395,7 @@ void TCPDispatchConn (Connection *peer)
                 if (prG->verbose)
                 {
                     M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                    M_printf (i18n (2034, "Opening TCP connection at %s:%d... "),
+                    M_printf (i18n (2034, "Opening TCP connection at %s:%ld... "),
                              s_ip (peer->ip), peer->port);
                     M_print (i18n (1785, "success.\n"));
                 }
@@ -408,7 +408,7 @@ void TCPDispatchConn (Connection *peer)
             case TCP_STATE_WAITING:
             case TCP_STATE_WAITING + 2:
                 if (prG->verbose)
-                    M_printf (i18n (1855, "TCP connection to %s at %s:%d failed.\n"),
+                    M_printf (i18n (1855, "TCP connection to %s at %s:%ld failed.\n"),
                              cont->nick, s_ip (peer->ip), peer->port);
                 peer->connect = CONNECT_FAIL;
                 peer->sok = -1;
@@ -453,7 +453,7 @@ void TCPDispatchShake (Connection *peer)
             return;
         }
         
-        Debug (DEB_TCP, "HS %d uin %d nick %s state %d pak %p peer %d",
+        Debug (DEB_TCP, "HS %d uin %ld nick %s state %d pak %p peer %p",
                         peer->sok, peer->uin, cont ? cont->nick : "<>", peer->connect, pak, peer);
 
         switch (peer->connect & CONNECT_MASK)
@@ -657,7 +657,7 @@ static void TCPCallBackTimeout (Event *event)
         Contact *cont;
         
         if ((cont = ContactByUIN (peer->uin, 1)))
-            M_printf (i18n (1850, "Timeout on connection with %s at %s:%d\n"),
+            M_printf (i18n (1850, "Timeout on connection with %s at %s:%ld\n"),
                       cont->nick, s_ip (peer->ip), peer->port);
         TCPClose (peer);
     }
@@ -814,7 +814,7 @@ void TCPSendInitv6 (Connection *peer)
     PacketWrite4  (pak, peer->parent->port);                   /* our (other) port */
     PacketWrite4  (pak, peer->our_session);                    /* session id       */
 
-    Debug (DEB_TCP, "HS %d uin %d CONNECT pak %p peer %d",
+    Debug (DEB_TCP, "HS %d uin %ld CONNECT pak %p peer %p",
                     peer->sok, peer->uin, pak, peer);
 
     PeerPacketSend (peer, pak);
@@ -870,7 +870,7 @@ static void TCPSendInit (Connection *peer)
     PacketWrite4  (pak, 0x00000003);
     PacketWrite4  (pak, 0);
 
-    Debug (DEB_TCP, "HS %d uin %d CONNECTv8 pak %p peer %d",
+    Debug (DEB_TCP, "HS %d uin %ld CONNECTv8 pak %p peer %p",
                     peer->sok, peer->uin, pak, peer);
 
     PeerPacketSend (peer, pak);
@@ -895,7 +895,7 @@ static void TCPSendInitAck (Connection *peer)
     PacketWrite1 (pak, 0);
     PacketWrite2 (pak, 0);
 
-    Debug (DEB_TCP, "HS %d uin %d INITACK pak %p peer %d",
+    Debug (DEB_TCP, "HS %d uin %ld INITACK pak %p peer %p",
                     peer->sok, peer->uin, pak, peer);
 
     PeerPacketSend (peer, pak);
@@ -926,7 +926,7 @@ static void TCPSendInit2 (Connection *peer)
     PacketWrite4 (pak, 0);
     PacketWrite4 (pak, (peer->connect & 16) ? 0 : 0x40001);
 
-    Debug (DEB_TCP, "HS %d uin %d INITMSG pak %p peer %d",
+    Debug (DEB_TCP, "HS %d uin %ld INITMSG pak %p peer %p",
                     peer->sok, peer->uin, pak, peer);
 
     PeerPacketSend (peer, pak);
@@ -1009,7 +1009,7 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
         if (iip)      cont->dc->ip_loc = iip;
         if (tcpflag)  cont->dc->type = tcpflag;
 
-        Debug (DEB_TCP, "HS %d uin %d nick %s init pak %p peer %d: ver %04x:%04x port %d uin %d SID %08x type %x",
+        Debug (DEB_TCP, "HS %d uin %ld nick %s init pak %p peer %p: ver %04x:%04x port %ld uin %ld SID %08lx type %x",
                         peer->sok, peer->uin, cont->nick, pak, peer, peer->ver, len, port, uin, sid, peer->type);
 
         for (i = 0; (peer2 = ConnectionNr (i)); i++)
@@ -1908,7 +1908,7 @@ static void TCPCallBackReceive (Event *event)
 
                     /* fall through */
                 default:
-                    Debug (DEB_TCP, "ACK %d uin %d nick %s pak %p peer %d seq %04x",
+                    Debug (DEB_TCP, "ACK %d uin %ld nick %s pak %p peer %p seq %04x",
                                      aevent->conn->sok, aevent->conn->uin, cont->nick, aevent->pak, aevent->conn, seq);
             }
             EventD (aevent);
