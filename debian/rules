@@ -20,7 +20,7 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 endif
 
 ifeq (,$(MICQ_EXTRAVERSION))
-	MICQ_EXTRAVERSION = Debian
+	MICQ_EXTRAVERSION = "Debian hand compiled"
 endif
 export MICQ_EXTRAVERSION
 
@@ -28,7 +28,7 @@ config.status: configure
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
-	./configure --host=$(DEB_HOST_GNU_TYPE) \
+	./configure --host=$(DEB_HOST_GNU_TYPE) CFLAGS="-O4 $CFLAGS"\
 	  --build=$(DEB_BUILD_GNU_TYPE) \
 	  --prefix=/usr \
 	  --mandir=\$${prefix}/share/man \
@@ -60,9 +60,9 @@ binary-arch: build install
 	
 	dh_installchangelogs ChangeLog
 	install -D -m 644 doc/micq.xpm debian/micq/usr/X11R6/include/X11/pixmaps/micq.xpm
-	install -D -m 644 doc/micq@16x16.png debian/micq/usr/share/icons/hicolor/16x16/apps/micq.png
-	install -D -m 644 doc/micq@32x32.png debian/micq/usr/share/icons/hicolor/32x32/apps/micq.png
 	install -D -m 644 doc/micq@48x48.png debian/micq/usr/share/icons/hicolor/48x48/apps/micq.png
+	install -D -m 644 doc/micq@32x32.png debian/micq/usr/share/icons/hicolor/32x32/apps/micq.png
+	install -D -m 644 doc/micq@16x16.png debian/micq/usr/share/icons/hicolor/16x16/apps/micq.png
 	dh_installmenu
 	
 	dh_strip

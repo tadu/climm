@@ -14,10 +14,10 @@ When the Author passed away 2001-01-05, some of us users overtook the
 "leadership" of the project and its now actively developed by some of us
 freaks.
 
-For some time, Rico Gloeckner <rg@micq.org> maintained the code. He also set
+For some time, Rico Glöckner <rg@micq.org> maintained the code. He also set
 up the mailinglist and hosts www.micq.org.
 
-Right now, R�diger Kuhlmann maintains the code. All code to implement the
+Right now, Rüdiger Kuhlmann maintains the code. All code to implement the
 new v8 ICQ protocol is from him.
 
 b) Features
@@ -31,10 +31,13 @@ Features of mICQ include:
    * reconnect      - reconnects when kicked by server
    * contact list   - complete contact list with several ways for a concise
                       display of online/offline users
+   * contact groups - arrange contacts into groups
    * server side contact list
                     - download server side contact list and show, diff or import
    * status         - set status arbitrarely
    * messages       - send and receive messages and urls
+   * utf-8 messages - first non-official client to support sending and receiving
+                      of utf-8 encoded messages
    * sms            - send SMS to user's cell phone
    * user info      - request and update all user an dpersonal information
    * search         - easy search command, can search by (nearly) any information
@@ -44,27 +47,32 @@ Features of mICQ include:
    * chat group     - request user from interest group and set own's interest group
    * events         - can beep or execute arbitrarely commands when other users go online,
                       offline or send a message.
+   * remote control - can be operated from other programs via a FIFO
    * connections    - can show a users connection info and last seen online time
    * peek           - check whether someone is offline or just invisible
    * tcp            - full support of v8 direct connections
    * auto messages  - auto replys if away, request and send auto messages
    * file transfer  - v6, v7, v8 file transfer
-   * identification - recognizes mICQ, licq, Miranda, StrICQ including version
-                      number, and YSM
+   * identification - recognizes mICQ, licq, Miranda, StrICQ, &RQ, vICQ
+                      including version number, and YSM, Trillian, Kopete,
+                      sim and some of the official client versions
    * history        - writes a log of all messages to and from a user
    * debugging      - easy debugging by selecting what data to display, including
                       concise packet monitor
    * i18n           - translations include English, German, Russian, French,
                       partially Spanish, Polish, Swedish, Hungarian.
-   * transcoding    - transcode texts for Russian and Japanese users.
+   * transcoding    - transcode texts into arbitrarely character encodings,
+                      in particular for Russian and Japanese users.
+   * utf-8          - can hande unicode input and output of arbitrarely
+                      single-charactercell unicode characters
    * birthday flag  - show if it is user's birthday
    * socks5         - supports connections via socks5
 
 c) Translations
 
 mICQ, its man page and the www.micq.org website are translated into several
-languages, including English, German and Russian. See the web page for
-downloads of new translations.
+languages, including English, German, Spanish and Russian. See the web page
+for downloads of new translations.
 
 d) Mailinglist
 
@@ -89,8 +97,8 @@ Download mICQ sources and binaries from
 
 f) CVS
 
-Required is the cvs client, autoconf 2.53 or greater and automake 1.6 or
-greater. autoconf 2.54 is recommended, however.
+Required is the cvs client, autoconf 2.57 or greater and automake 1.7 or
+greater. automake 1.7.2 is recommended, however.
 
 cvs -d :pserver:anonymous@micq.org:/usr/local/cvsroot co micq
 

@@ -1,17 +1,32 @@
 
+Q: How do I report bugs?
+
+A: You first make sure that you have the latest and greatest version of mICQ
+   - the bug might have already been fixed. Also check the mailing list
+   archive if it's mentioned there, and, of course, this FAQ. You might also
+   check the version in CVS, or this page in English. If you still thing
+   you've found a new bug, please report it to me, and please report as much
+   detail about your setup as possible. If you can provide a fix, that would
+   be appreciated very much, but, because of the speed mICQ evolves, if
+   possible create a diff against the current CVS.
+
+Q: I have a bug in mICQ 0.4.2, ...
+
+A: Go away. I'm not interested in bug reports for old versions, because
+   they probably will already be fixed. Upgrade to the newest version,
+   check the mailing list and this FAQ, and if the bug still persists,
+   I'm more than willing to help you.
+
 Q: My friend uses Trillian, and...
 
-A: Friends don't let friends use Trillian. Tell him to upgrad to Miranda or
-   at least Trillian 0.75.
+A: Friends don't let friends use Trillian.
 
 Q: My friend uses Trillian, and sometimes he can't send messages.
 
-A: That's a well-known stupid bug on Trillian's side. It is unable to route
-   a message through the server if for some reason it fails to send it
-   directly. Unfortunately, mICQ used to hard-code that it isn't firewalled.
-   This has been changed; if you're firewalled, and can't use SOCKS, you
-   need to set the status field in your peer-to-peer connection. See
-   micqrc.5 for details.
+A: That's a well-known stupid bug on Trillian's side. It is unable to send
+   a message in the old type-1 or type-4 format if sending as type-2 fails.
+   This shouldn't happen with mICQ as the destination anymore because now
+   mICQ broadcasts its ability to receive those properly.
 
 Q: When I send someone a message, it gives me some failed connections errors.
 
@@ -21,6 +36,7 @@ A: mICQ tries to send the messages directly if it can, so as soon as mICQ
    and the internal IP address, so you might get two error messages if it
    fails. It is harmless, because it will route the message through the
    server if it fails (we're not Trillain, are we?).
+   Update: Current mICQ will display this only in verbose mode.
 
 Q: When I start mICQ, I get lines like those:
 
@@ -36,14 +52,57 @@ A: The server for some reason gives an error when mICQ acknowledges the
    is so that I get feedback for new packets.
    If you get them every 30s, upgrade your mICQ.
 
-Q: I have a bug in mICQ 0.4.2, ...
-
-A: Go away. I'm not interested in bug reports for old versions, because
-   they probably will already be fixed. Upgrade to the newest version,
-   check the mailing list and this FAQ, and if the bug still persists,
-   I'm more than willing to help you.
-
 Q: When I try to login, I get an error 24.
 
 A: Try again in 30min. AOL will block you with that error message if you
-   login too often in too short a time.
+   login too often in too short a time (called "turboing").
+
+Q: What do these symbols mean that are printed for each contact with the
+   'e', 'w', 'ee', 'ww' and 's' commands?
+
+A: The symbol printed after the peer-to-peer protocol version with the 'ee'
+   and 'ww' commands are connectivity flags:
+   * '&': direct connection with contact established.
+   * '|': direct connection with contact failed.
+   * ':': direct connection with contact is tried to establish.
+   * '.': direct connection with contact closed.
+   * '^': no direct connection, but IP address and port number known.
+   * ' ': no direct connection possible. 
+   The symbols printed with all commands are contact flags:
+   * '+': alias entry, only with 'ww'
+   * '#': temporary contact (i.e. UIN was mentioned, but not added to
+          contact list), only with 'w' and 'ww'
+   * '*': intimate: sees you when invisible
+   * '-': hide: doesn't see you at any time
+   * '^': ignore this contact 
+   If none of the latter are applicable, '&', '|', ':', '.' as above are
+   printed if applicable.
+
+Q: Why do messages to and from some contacts are noted with '«««' and
+   '»»»', while for some others '<<<' and '>>>' are used?
+
+A: The former are used when a direct connection to the contact is
+   established and the message is acknowledged, while the latter is printed
+   when the message is sent through the server (as a non-acknowledged
+   message). '>>»' and '«<<' are used for acknowledged messages.
+
+Q: Are there any known bugs in 0.4.10?
+
+A: No, not yet.
+
+Q: Are there known bugs in older versions of mICQ?
+
+A: Of course. It takes time to clean up all the mess.
+
+  * 0.4.9.4: Removing the canonical name of a contact (and not an alias of
+    it) will remove the contact's status information.  Workaround: refresh
+    this information by changing your status (doesn't even need to be a
+    different status than before).
+
+  * 0.4.9.3 and earlier: reception of web messages, sms messages and some
+    other types where a 'þ' is expected as seperator between message parts
+    but none is given, will crash mICQ.
+
+  * 0.4.9.2: request of auto messages will accidently free them, leading to
+    memory corruption.
+

@@ -42,17 +42,23 @@ Current Translators:
 	    update russian (ru.i18n) translation to 0.4.9.3
 	    russian man pages, russian web page
 
+	Guido Gloor		<haslo@haslo.ch>
+	    swiss-german (de_CH.i18n) translation to 0.4.9.3
+
+        Digor Dumitru, Alina Pelin
+            (partial) romanian (ro.i18n) translation
+        
+        Deives Michellis	<dmichellis@yahoo.com>
+            2 portuguese/brazil man pages
+
+Former Translators:
+
 	Guillaume Coqueblin	<esquimo_2ooo@caramail.com>
 	    (update) french (fr.i18n) translation to >= 0.4.8pl9
 	
 	Julien Gilli		<jgilli@nerim.fr>
 	    french man pages, french web pages
 	
-	Guido Gloor		<haslo@haslo.ch>
-	    swiss-german (de_CH.i18n) translation to 0.4.9.3
-
-Former Translators:
-
 	Valerie Dachev		<v.dachev@mail.com>
 	    bulgarian translation
 	

@@ -5,3 +5,6 @@
 2002-08-26: 0.4.9.3: file transfer, Trillian bug fix, more translations, colors customizable, ~-expansion for logplace
 2002-10-??: 0.4.9.4: fix/improve file transfer, Peter Backes' new log file format, recognize most clients,
                      capabilities support, dump packets following a syntax definition, allow quoting of parameters
+????-??-??: ??????: autosaving, autofingering, new event script handling, contact meta data saving, contact groups,
+                    log file utils (from rtc), ^C handler, type-2 message sending, remote control via a FIFO,
+                    send and receive UTF-8 encoded message, ASCII art mICQ logo

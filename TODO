@@ -18,7 +18,7 @@ Jeff Bearer <jbearer@tribweb.com>
 <e.hemmink@student.utwente.nl>: (refuses to do translation work)
  : implement web aware feature
 
-TODO (after next release):
+TODO:
  : add https support
  : add missing v8 pieces
    + figure out v8 reverse connection
@@ -29,27 +29,12 @@ TODO (after next release):
  : use ASCII art for setup wizard
  : file transfer:
    + figure out server file sending
- : implement more server message types, unify code with peer2peer messages
+ : implement more server message types
  : use Extra * for more message types
  : use wprintf() etc to figure out width in character cells (needed for Japanese)
  : replace all UDWORD uin parameters by Contact * (function calls done, Event,Connection missing)
  : command to display _all_ settings
-
-TODO (probably next release):
  : server side contact list:
-   + contact groups (done)
    + contact list upload
- : save meta info about contacts, save to file (done)
- : finish implementing file transfer (fixed?)
-   + add receive command (done)
-   + add better syntax (done)
- : fix seperator characters (url etc) (seems to work)
- : message length
- : fix encoding of config files (done)
- : fix quoting of config file saving (done)
- : contact specific encoding (done)
- : use library function to determine charset/locale (setlocale done)
+ : message length (partially done)
  : better meta data change functions
- : add sensible commands for away etc. automessages (done)
- : add autosave micqrc function (done)
- : update Changelog (done)

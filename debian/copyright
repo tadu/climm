@@ -1,13 +1,13 @@
 This package was first debianized by Jordi 'Oskuro' Mallach in 1999.
 In 2002, Martin 'Madkiss' Loschwitz overtook the package maintenance.
 
-It was downloaded from http://www.micq.org/download.shtml and from CVS.
+It can be downloaded from http://www.micq.org/download.shtml or from CVS.
 
-Upstream Author(s): Matthew Smith <meadhros@yahoo.com> (dead)
-                    Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+Upstream Authors: Matthew Smith <meadhros@yahoo.com> (dead)
+                  RÃ¼diger Kuhlmann <info@ruediger-kuhlmann.de>
 
 This software is copyright (c) 1998-99 by Matthew Smith,
-                               2002 Rüdiger Kuhlmann.
+                               2002 RÃ¼diger Kuhlmann.
 
 You are free to distribute this software under the terms of version 2 of
 the GNU public licence (GPL).

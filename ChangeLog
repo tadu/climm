@@ -1,4 +1,27 @@
 
+2002-12-25 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de
+	* add ukrainian man pages
+	* add alias quit, exit for q; file for peer file
+	* new command getauto to fetch auto messages, replaces peer auto|away|na|dnd|occ|ffc
+	* streamline dc auto message fetching into normal message sending
+	* Document quit,exit,file aliases
+	* add getauto command
+	* document remote control (FIFO), encoding/format options, new event handling, contact groups
+	* add configure test for remote control FIFOs
+	* redo iconv convifuger test to check for minimum set of available conversions
+	* require newest autotools
+	* add configure test for gmt_off
+	* prefer cp1251 to windows-1251 as that is supported by more iconv() implementations
+	* fix segfault, underline every 5th line in status display
+	* implement autofinger
+	* re-implement set command to allow to change all options
+	* make silence available in micqrc
+	* document complete set command and set rc option
+	* add issues from FAQ to man page
+	* make receive/acknoledge string configurable
+	* fix adding of temporary users with aliases
+	* (preliminarily) implement splitting of overlong type-1 messages
+
 2002-12-20 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* new stuff:
 	- add autosaving of micqrc and meta data
