@@ -25,6 +25,13 @@ lang:
 	@../lang/i18n-extract
 	@rm -rf ../lang/*.i18n~
 
-buildmark.o: force
+snprintf.c:
+	ln -s ../replace/snprintf.c ../replace/snprintf.h . \
+	|| cp ../replace/snprintf.c ../replace/snprintf.h .
+
+distclean:
+	rm snprintf.c
+
+buildmark.o: @LIBOBJS@ force
 
 force:
