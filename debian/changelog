@@ -1,15 +1,27 @@
-micq (0.4.8.pl7-0) unstable; urgency=low
+micq (0.4.8.pl9-0) unstable; urgency=low
 
-  * New Upstream release.
+  * New Upstream release
 
- -- Rüdiger Kuhlmann <Ruediger.Kuhlmann@stud.uni-karlsruhe.de>  Wed, 03 May 2002 12:00:00 +0100
+ -- Rüdiger Kuhlmann <Ruediger.Kuhlmann@stud.uni-karlsruhe.de>  Wed, xx May 2002 12:00:00 +0100
+
+micq (0.4.8.pl8-1) unstable; urgency=low
+
+  * New Upstream release
+
+ -- Martin Loschwitz <madkiss@madkiss.org>  Tue, 08 May 2002 14:53:00 +0200
+
+micq (0.4.8.pl7-1) unstable; urgency=low
+
+  * New Upstream release
+  
+ -- Martin Loschwitz <madkiss@madkiss.org>  Tue, 07 May 2002 16:38:00 +0200
 
 micq (0.4.8.pl6-1) unstable; urgency=high
 
   * New Upstream release (Closes: #92611, #119513, #144422, #92606, #107562, #143038)
-  
- -- Martin Loschwitz <madkiss@madkiss.org>  Thu, 01 May 2002 19:29:00 +0200
 
+ -- Martin Loschwitz <madkiss@madkiss.org>  Thu, 01 May 2002 19:29:00 +0200
+   
 micq (0.4.8.pl3-1) unstable; urgency=low
 
   * New Upstream release (Closes: #85713, #108130, #116143, #128619, #113805, #92807, #94402, #117894, #125983)

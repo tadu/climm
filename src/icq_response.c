@@ -41,7 +41,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
 
     switch (subtype)
     {
-        case META_SRV_PASS:
+        case META_SRV_PASS_UPDATE:
             M_print (i18n (1197, "Password change was " COLCLIENT "%s" COLNONE ".\n"),
                      result == META_SUCCESS ? i18n (1393, "successful") : i18n (1394, "unsuccessful"));
             break;
@@ -92,7 +92,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
         case META_SRV_ABOUT_UPDATE:
         case META_SRV_OTHER_UPDATE:
         case META_SRV_GEN_UPDATE:
-        case META_SRV_PASS:
+        case META_SRV_PASS_UPDATE:
         case META_SRV_RANDOM_UPDATE:
             break;
         case META_SRV_INFO:

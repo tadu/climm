@@ -20,35 +20,42 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 endif
 
 config.status: configure
+configure: configure-stamp
+configure-stamp:
 	dh_testdir
 	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) \
 	            --prefix=/usr --mandir=\$${prefix}/share/man
+	touch configure-stamp
 
-build: config.status
+build: configure-stamp build-stamp
+build-stamp:
 	$(MAKE)
+	touch build-stamp
 
 clean:
 	-$(MAKE) distclean
-	dh_clean -k
+	dh_clean
+	rm -rf configure-stamp
+	rm -rf build-stamp
 
-install: build
+install:
 	dh_clean -k
 	dh_testroot
 	dh_installdirs
 	$(MAKE) install DESTDIR=`pwd`/debian/micq
 
-binary-indep: ;
+binary-indep: build install
 
-binary-arch: install
+binary-arch: build install
 	dh_testroot
 	dh_installdocs
-
+	
 	dh_installchangelogs ChangeLog
-
+	
 	dh_installman doc/micq.1
 	dh_installman doc/micq.7
 	dh_installman doc/micqrc.5
-
+	
 	dh_strip
 	dh_compress
 	dh_fixperms
