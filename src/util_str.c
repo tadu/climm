@@ -902,7 +902,7 @@ ContactGroup *s_parselist_s (const char **input, BOOL rem, Connection *serv)
             p++;
     }
     
-    if ((rem && ContactIndex (ncg, 0)) || strchr (DEFAULT_SEP, *p))
+    if (ContactIndex (ncg, 0) && (rem || strchr (DEFAULT_SEP, *p)))
     {
         *input = p;
         return ncg;
