@@ -1,5 +1,5 @@
 .\" $Id$
-.\"  EN: micqrc.5,v 1.16 2002/08/09 01:22:20
+.\"  EN: micqrc.5,v 1.23 2003/01/06 03:10:20
 .TH MICQRC 5 mICQ DE
 .SH NAME
 .B ~/.micq/micqrc
@@ -11,21 +11,28 @@ aus mehreren Abschnitten, die jeweils durch
 eingeleitet werden, wobei
 .I section
 der Name des Abschnittes ist.
+Datei- oder Verzeichnisnamen sind immer relativ zum Basisverzeichnis,
+das normalerweise ~/.micq/ ist.
 .SH VERBINDUNGEN - connection
 Ein Abschnitt
 .B Connection
 beschreibt eine Verbindung innerhalb ICQ. Typischerweise gibt es genau zwei davon,
 die voneinander abh\(:angen: eine Verbindung zum ICQ-Server, und eine Verbindung,
-auf der auf eingehende Direktverbindungen gewartet wird.
+auf der auf eingehende Direktverbindungen gewartet wird. Man kann auch eine
+Fernbedienungsverbindung haben: dann wird eine FIFO-Warteschlange
+ge\(:offnet, und daraus gelesene Zeilen genauso bearbeitet wie
+Eingabezeilen.
 .TP
 .BI type \ type\ [auto]
 W\(:ahlt 
 .I type
 als Typ der Verbindung:
 .B server
-f\(:ur eine Verbindung zum ICQ-Server oder
+f\(:ur eine Verbindung zum ICQ-Server,
 .B peer
-f\(:ur eine Verbindung f\(:ur eingehende Direktverbindungen. Wenn
+f\(:ur eine Verbindung f\(:ur eingehende Direktverbindungen oder
+.B remote
+f\(:ur einen Fernbedienungs-FIFO. Wenn
 .B auto
 gegeben ist, \(:o\(ffne diese Verbindung beim Programmstart.
 Dies m\(:ochte man normalerweise, es sei denn, man hat mehrere Benutzernummern,
@@ -46,6 +53,7 @@ und
 .I 8
 unterst\(:utzt werden. Empfehlenswerterweise verwende man stets
 Version 8.
+Fernbedienungs-FIFOs haben keine Version.
 .TP
 .BI server \ server
 Setzt den Rechnername, zu dem verbunden werden soll, auf
@@ -53,6 +61,8 @@ Setzt den Rechnername, zu dem verbunden werden soll, auf
 Dies ist standardm\(:a\(ssig
 .IR login.icq.com .
 Unbenutzt f\(:ur Direktverbindungen.
+F\(:ur Fernbedienungs-FIFOs ist das der Pfad zu dem zu
+erschaffenden FIFO.
 .TP
 .BI port \ port
 Setzt den Port, zu dem verbunden werden soll, bzw. auf dem
@@ -62,7 +72,7 @@ auf eingehende Verbindungen gewartet werden soll, auf
 .BI uin \ UIN
 Setzt die Benutzernummer, mit der einzuloggen ist, auf
 .IR UIN .
-Unbenutzt f\(:ur Direktverbindungen.
+Unbenutzt f\(:ur Direktverbindungen und Fernbedienungs-FIFOs.
 .TP
 .BI password \ password
 Setzt das Login-Pa\(sswort auf
@@ -97,9 +107,7 @@ frei f\(:ur Plaudereien
 .TP
 256
 unsichtbar
-.RE
-
-.RS
+.PP
 F\(:ur Direktverbindungen gibt dies an, in wie weit man hinter einer Firewall ist:
 .TP
 1
@@ -110,8 +118,9 @@ Hinter einer Firewall, aber kann mittels SOCKS Verbindungen annehmen.
 .TP
 4
 Nicht hinter einer Firewall. Dies ist die Vorgabe.
+.PP
+Fernbedienungs-FIFOs verwenden diese Einstellung nicht.
 .RE
-
 .SH ALLGEMEINES - general
 Dieser Abschnitt enth\(:alt Optionen f\(:ur SOCKS 5, die m\(:oglicherweise sp\(:ater
 in einen eigenen Abschnitt wandern, allgemeine Optionen, und ein paar
@@ -145,6 +154,35 @@ Verwende Pa\(sswort
 .I password
 beim SOCKS-5-Server.
 .PP
+Einige Optionen befinden sich \(:ublicherweise am Anfang der Datei:
+.TP
+.BI encoding\ file <encoding>
+Setzt die Kodierung, die f\(:ur in dieser Datei vorkommenden Zeichenketten
+verwendet wird, auf
+.IR encoding .
+Wenn UTF-8 angeschaltet ist, wird die Datei immer in UTF-8 geschrieben,
+andernfalls mit der aktuell verwendeten Zeichenkodierung. Wenn UTF-8
+abgeschaltet ist, kann mICQ keine Konfigurationsdateien lesen, deren
+Kodierung nicht mit der aktuellen \(:ubereinstimmt.
+.TP
+.BI encoding\ local <encoding>
+Setzt die aktuelle Kodierung auf
+.IR encoding .
+Dies \(:uberschreibt die durch die Umgebungsvariablen bestimmte Kodierung.
+.TP
+.BI encoding\ remote encoding
+Setzt die Kodierung, die f\(:ur Benutzerdaten auf dem Server
+inklusive dem Pa\(sswort verwendet wird, auf
+including the password to
+.RI encoding .
+Diese Kodierung wird auch zur Kommunikation mit anderen Kontakten
+verwendet, deren ICQ-Programm keine UTF-8-Nachrichten versteht und
+f\(:ur die keine eigene Kodierung gesetzt ist.
+.BI format nr
+Setzt das Format dieser Konfigurationsdatei auf
+.RI nr .
+Derzeit ist nur Format 1 g\(:ultig.
+.PP
 Jetzt die Optionen:
 .TP
 .BI verbose \ level
@@ -172,18 +210,16 @@ Bildschirmbreite zur Laufzeit bestimmt werden kann.
 .BI set \ delbs\ on|off
 Wenn es auf
 .B on
-gesetzt ist, funktioniert das DELETE-Zeichen wie ein R\(:uckschritt. Wenn es auf
+gesetzt ist, funktioniert das K\(:oschzeichen wie ein R\(:uckschritt. Wenn es auf
 .B off
-gesetzt ist, funktioniert es wie ein L\(:oschen-Zeichen.
-.TP
-.BI set \ russian\ on|off
-Aktiviere (\fBon\fR) oder deaktiviere (\fBoff\fR) russische Zeichenkonvertierung zwischen koi8-r/u und cp1251.
-.TP
-.BI set \ japanese\ on|off
-Aktiviere oder deaktiviere japanische Zeichenkonvertierung zwischen Shift-JIS und EUC.
+gesetzt ist, funktioniert es wie ein L\(:oschzeichen.
 .TP
 .BI set \ funny\ on|off
-Aktiviere oder deaktiviere lustige Meldungen.
+Aktiviere 
+.RB ( on )
+oder deaktiviere 
+.RB ( off )
+lustige Meldungen.
 .TP
 .BI set \ color\ on|off
 Aktiviere oder deaktiviere Farben.
@@ -205,6 +241,13 @@ Aktiviere oder deaktiviere automatische Antworten.
 .BI set \ uinprompt\ on|off
 Aktiviere oder deaktiviere das Verwenden in der Eingabeaufforderung des Spitznamens, von dem
 zuletzt eine Nachricht empfangen wurde.
+.TP
+.BI set \ autosave\ on|off
+Aktiviere oder deaktiviere das automatische Speichern
+der Konfigurationsdatei beim Beenden.
+.TP
+.BI set \ autofinger\ on|off
+Aktiviere oder deaktiviere das automatische Fingern neuer Benutzernummern.
 .TP
 .BI set \ linebreak\ type
 Setzt den Zeilenumbruchtyp f\(:ur eingehende Nachrichten auf
@@ -241,7 +284,15 @@ ist wie
 .BR cycle ,
 nur da\(ss alle, nicht nur die verbundenen, Kontakte durchgegangen werden.
 .TP
-.BI char \ nr
+.BI set \ silent\ type
+Unterdr\(:uckt manche Ausgaben, n\(:amlich keine
+.BR ( off ),
+Statuswechsel
+.BR ( on )
+oder Statuswechsel, Einloggen und Ausloggen
+.BR ( complete ).
+.TP
+.BI chat \ nr
 Setzt die Interessengruppe auf
 .IR nr .
 Ausschalten kann man dies mit
@@ -314,24 +365,51 @@ er mit einem
 .I /
 endet.
 .TP
-.BI sound \ on|off|cmd
-Aktiviere oder deaktiviere Piepsen. Ist das Argument weder
-.B on
-noch
-.B off,
-dann ist es ein Programm, das stattdessen ausgef\(:uhrt wird.
+.BI sound \ on|beep|off|event
+Gibt an, was beim Piepsen passieren soll.
+Entweder nichts
+.BR ( off ),
+ein normales Piepsen
+.BR ( on oder beep ),
+oder es wird das Ereignis-Skript verwendet
+.BR ( event ).
 .TP
-.BI soundonline \ on|off|cmd
-Wie oben, aber nur bei sich verbindenden Kontakten.
+.BI event \ script
+Ein Skript, das bei allen m\(:oglichen Ereignissen ausgef\(:uhrt wird.
+Es wird mit den folgenden Parametern aufgerufen:
+.br
+1. Das verwendete Protokoll, derzeit immer
+.BR icq .
+.br
+2. Die Benutzernummer des Kontaktes, zu dem dieses Eregnis geh\(:ort, oder 0.
+.br
+3. Der Spitzname des Kontaktes, zu dem dieses Eregnis geh\(:ort, oder die leere Zeichenkette.
+.br
+4. Die Zeichenkette
+.BR global .
+.br
+Die Art dieses Ereignisses, n\(:amlich
+.BR msg
+(eine Nachricht),
+.BR on 
+(ein Kontakt loggt sich ein),
+.BR off
+(ein Kontakt loggt sich aus),
+.BR beep
+(ein Piepser) oder
+.BR status
+(ein Statuswechsel eines Kontaktes). Diese Liste ist m\(:oglicherweise
+nicht vollst\(:andig.
+.br
+6. F\(:ur Nachrichten, der Nachrichtentyp, beim Ausloggen der bisherige Status,
+beim Einloggen oder bei Statuswechseln der neue Status, sonst 0.
+.br
+7. Der Text der Nachricht.
+.br
+Hinweis: Aus Sicherheitsgr\(:unden werden einfach Anf\(:uhrungszeichen durch doppelte
+ersetzt, und der Text der Nachricht kann gek\(:urzt sein.
 .TP
-.BI soundoffline \ on|off|cmd
-wie oben, aber nur bei sich ausloggenden Kontakten.
-.TP
-.BI receivescript \ cmd
-Befehl, der ausgef\(:uhrt wird, wenn eine Nachricht eingeht.
-Wenn dieser leer ist, wird nichts ausgef\(:uhrt.
-.TP
-.BI auto \ status\ string
+.BI auto \ <status>\ <string>
 Setze die automatische Antwort im Status
 .I status
 auf
@@ -347,7 +425,6 @@ oder
 f\(:ur
 .I status
 wiederholt werden.
-
 .SH TEXTE - strings
 Dieser Abschnitt enth\(:alt umbenannte Befehle.
 .TP
@@ -362,9 +439,61 @@ mit einem neuen
 \(:ubereinstimmt. F\(:ur m\(:ogliche Befehle siehe
 .BR micq (7).
 Diese Option kann beliebig wiederholt werden.
-
+.br
+Hinweis: Diese Option ist obsolet.
+.TP
+.BI alias \ <alias>\ <expansion>
+Erzeugt einen neuen Alias
+.IR alias ,
+also einen Befehl, der bei Verwendung durch
+.IR expansion
+ersetzt wird. Enth\(:alt
+.IR expansion
+die Zeichenkette %s, so wird diese durch die beim Aufruf des Aliases
+angegebenen Parameter ersetzt, andernfalls werden diese an das Ende
+angef\(:ugt.
+Neu seit 0.4.10.
+.SH KONTAKTGRUPPEN - group
+Dieser Abschnitt beschreibt eine Kontaktgruppe und kann beliebig
+wiederholt werden. Es k\(:onnen die folgenden Befehle vorkommen:
+.TP
+.BI server \ <type> <uin>
+Setzt die Server-Verbindung, zu der diese Kontaktgruppe
+geh\(:ort, zu der durch den Typ
+.IR type ,
+der zur Zeit
+.BR icqv8
+f\(:ur ICQ-Server-Verbindungen mit Version 8 oder
+.BR icqv5
+f\(:ur ICQ-Server-Verbindungen mit Version 5 sein kann,
+und durch die Benutzernummer
+.IR uin 
+bestimmten.
+Wird dieser Befehl ausgelassen, wird die erste aktive Server-Verbindung
+verwendet.
+.TP
+.BI label \ <label>
+Setzt den Namen dieser Kontaktgruppe auf
+.IR label .
+Wenn dieser
+.BI contacts- type - uin
+ist, dann ist dies die gesamte Kontaktliste f\(:ur diese Verbindung.
+.TP
+.BI id \ <id>
+Setzt die Identifikationsnummer dieser Kontaktgruppe auf
+.IR id .
+.B 0
+bedeutet, da\(ss noch keine definiert ist. Sie wird gesetzt, wenn die
+Kontaktliste vom Server heruntergeladen wird.
+.TP
+.BI entry \ <id>\ <uin>
+F\(:ugt den Kontakt mit der Benutzernummer
+.I uin
+wird unter der Identifikationsnummer
+.I id
+zu dieser Kontaktgruppe hinzu.
 .SH KONTAKTE - contacts
-Dieser Abschnitt enth\(:alt die Kontakt-Liste.
+Dieser Abschnitt enth\(:alt die Kontakt-Liste. Er wird m\(:oglicherweise bald obsolet.
 .TP
 .I [*][~][^] uin nick
 Mach den Benutzer mit der Benutzernummer
@@ -381,8 +510,6 @@ gegeben, ist man diesem Kontakt gegen\(:uber immer nicht verbunden. Ist
 gegeben, dann ignoriere diesen Kontakt. Taucht eine
 Benutzernummer mehrfach auf, dann werden alle au\(sser dem ersten
 als Alias behandelt.
-
-Hinweis: Die Kontaktliste mu\(ss immer der letzte Teil dieser Datei sein.
 .SH SIEHE AUCH
 .BR micq (1),
 .BR micq (7)
