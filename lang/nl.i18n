@@ -1,13 +1,13 @@
 # $Id$ (Dutch)
-#  EN: __.i18n,v 1.63.2.3 2003/04/08 15:28:43
+#  EN: __.i18n,v 1.63.2.16 2004/03/10 22:31:00
 #-#1010:Gebruiker is weg [Automatisch bericht]
-#1000:iso-8859-1
 #1001:<lang>
 #1002:<lang_cc>
 #1003:0
 #1004:<translation authors>
 #1005:<last editor>
 #1006:<last edit date>
+1008:iso-8859-1
 #1010:User is away [Auto-Message]
 1011:Gebruiker is niet beschikbaar [Automatisch bericht]
 #-#1012:Gebruiker is bezet [Automatisch bericht]
@@ -85,7 +85,6 @@
 #1064:Automatically changed status to %s.\n
 #1072:Users offline:
 #1073:Users online:
-#1077:in dedication to Matthew D. Smith.
 #1078:No translation available.
 #1079:Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n
 #1080:Couldn't load "%s" internationalization.\n
@@ -668,7 +667,7 @@
 #1639:The new UIN is %ld!\n
 #1640:Failed to update info.\n
 #1641:User info successfully updated.\n
-#1642:IP
+#1642:IP:
 #1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
 #1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
 #1645:You entered an incorrect password.\n
@@ -797,7 +796,6 @@
 #1826:Resending message %04x (%s) sequence %04lx (attempt #%ld, len %d).\n
 #1830:Discarding message to %s after %ld send attempts.  Message content:\n
 #1833:Peer to peer TCP connection established.\n
-#1835:Error while writing to socket - %s (%d)\n
 #1841:Received malformed initialization acknowledgement packet.\n
 #1842:Closing socket %d to %s.\n
 #1843:Closing socket %d.\n
@@ -996,10 +994,8 @@
 #2090:file peer-to-peer
 #2091:Queueing %s as %s for transfer.\n
 #2092:TCP message %s discarded - lost session.\n
-#2093:%02d %-12s version %d for %s (%lx), at %s:%ld %s\n
 #2094:conn login         Open first server connection.\n
 #2095:conn remove <nr>   Remove connection <nr>.\n
-#2096:Connection %ld is not open.\n
 #2097:conn select <nr>   Select connection <nr> as server connection.\n
 #2098:Connection %ld is not a server connection.\n
 #2099:Selected connection %ld (version %d, UIN %ld) as current connection.\n
@@ -1064,7 +1060,7 @@
 #2167:Error - unknown packet.\n
 #2168:File transfer #%ld (%s) dropped after %ld attempts because of timeout.\n
 #2169:File transfer aborted by peer (%d).\n
-#2170:Sending with speed %lx to %s.\n
+#2170:Sending at speed %lx to %s.\n
 #2171:Advanced
 #2172:Commands for advanced features.
 #2176:Displays verbose the current status of everyone on your contact list.
@@ -1094,9 +1090,8 @@
 #2205:  -c, --nocolor  disable colors\n
 #2206:The server doesn't want to give us offline messages.\n
 #2207:Protocol error in command to old ICQ server: %d.\n
-#2208:Detected UTF-8 encoding, however, this mICQ was compiled without UTF-8 support.\n
+#2208:Detected UTF-8 encoding. However, this mICQ was compiled without UTF-8 support.\n
 #2209:Detected UTF-8 encoding.\n
-#2210:%smICQ (Matt's ICQ clone)%s version %s%s%s (compiled on %s)\n
 #2211:Your status is %s.\n
 #2212:changed status to %s
 #2213:logged on (%s)
@@ -1113,9 +1108,7 @@
 #2226:Couldn't create FIFO
 #2227:Couldn't open FIFO
 #2228:Couldn't set FIFO nonblocking
-#2229:Refusing file request '%s' (%ld bytes): %s.\n
 #2230:Refusing chat request (%s/%s) from %s.\n
-#2231:File transfer '%s' rejected by peer: %s.\n
 #2232:requests authorization: %s%s\n
 #2233:refused authorization: %s%s\n
 #2234:Message %s discarded - lost session.\n
@@ -1166,17 +1159,17 @@
 #2279:    log:        do logging.\n
 #2280:    logonoff:   also log status changes.\n
 #2281:    auto:       send auto-replies.\n
-#2282:    uinprompt:  have the last nick in the prompt.\n
+#2282:    uinprompt:  display the last nick in the prompt.\n
 #2283:    autosave:   automatically save the micqrc.\n
 #2284:    autofinger: automatically finger new UINs.\n
 #2285:    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n
 #2286:    tabs:       style for tab-handling: simple, cycle, cycleall.\n
 #2287:    silent:     suppress some output: off, on, complete.\n
 #2288:Indentation style is %s%s%s.\n
-#2289:»»»
-#2290:«««
-#2291:>>»
-#2292:«<<
+#2289:Â»Â»Â»
+#2290:Â«Â«Â«
+#2291:>>Â»
+#2292:Â«<<
 #2293:--=
 #2294:===
 #2295:>>>
@@ -1204,3 +1197,73 @@
 2318:Dutch (%s) translation loaded (%ld entries).\n
 #2319:Accept an incoming file transfer from <uin> or <nick>.
 #2320:peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n
+#2327:%smICQ (Matt's ICQ clone)%s version %s%s%s\n
+#2328:You logged in too frequently, please wait 30 minutes before trying again.\n
+#2329:syntax error
+#2330:removing non-contact
+#2331:unknown
+#2332:Contact error %d (%s) for %d contacts: 
+#2333:%s [show|load|save|set|get|rget] <contacts> - handle meta data for contacts.\n
+#2334:  show - show current known meta data\n
+#2335:  load - load from file and show meta data\n
+#2336:  save - save meta data to file\n
+#2337:  set  - upload own meta data to server\n
+#2338:  get  - query server for meta data\n
+#2339:  rget - query server for last sender's meta data\n
+#2340:File transfer '%s' rejected by peer: %s%s.\n
+#2341:Refusing file request '%s' (%ld bytes): %s%s.\n
+#2342:Scripting
+#2343:Scripting extensions.
+#2344:Execute Tcl script from <file>.
+#2345:Execute Tcl script in <string>.
+#2346:The following Tcl commands are supported:\n
+#2347:micq receive <script> [<contact>]
+#2348:Install hook to receive messages from UIN or nick, or all if omitted.
+#2349:Callback arguments: from message
+#2350:micq unreceive [<contact>]
+#2351:Uninstall message hook for UIN or nick.
+#2352:micq event <script>
+#2353:Install event hook. Callback arguments: type ...
+#2354:micq unevent
+#2355:Uninstall event hook.
+#2356:List all installed hooks. Format: <type> <command> <filter>.
+#2357:micq exec <cmd>
+#2358:Execute micq command.
+#2359:micq nick <uin>
+#2360:Find nick from <uin>.
+#2361:Wrong number of arguments for command '%s %s'. Expected %d.\n
+#2362:Wrong number of arguments. Try 'help'.
+#2363:Error: recursive 'micq exec' not allowed.
+#2364:No connection found.
+#2365:unknown command: %s
+#2366:TCL error in file %s: %s\n
+#2367:TCL error: %s\n
+#2368:peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n
+#2369:Refuse an incoming file transfer from <uin> or <nick>.
+#2370:%02d %-12s version %d%s for %s (%lx), at %s:%ld %s\n
+#2371:SSL init failed.\n
+#2372:Could not send SSL request to %s\n
+#2373:Error while reading from socket (SSL): %s (%d)\n
+#2374:SSL error: %s [%d]\n
+#2375:SSL handshake ok\n
+#2376:SSL read from %s [ERR=%d]: %s
+#2377:SSL write to %s [ERR=%d]: %s
+#2378:peer ssl <nick>   - initiate SSL handshake.
+2379:Â»%Â»
+2380:Â«%Â«
+#2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
+#2382:Peer-to-peer connection not associated to server connection, discarding.\n
+#2383:View your last messages of <contact>. Type 'h' as short command.
+#2384:Case insensitive search of <pattern> in log file of <contact>.
+#2385:Couldn't open %s for reading: %s (%d).\n
+#2386:Found %s%d%s matches.\n
+#2387:%s <contact> [<last> [<count>]] -- Show history of <contact>.\n
+#2388:%s <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n
+#2389:%s <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
+#2390:No or empty pattern given.\n
+#2391:Case sensitive search of <pattern> in log file of <contact>.
+#2392:Your status is %s (%s).\n
+#2393:%m/%d/%Y
+#2394: %I:%M %p
+#2395:View your messages of <contact> since <date>.
+#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n

@@ -1,5 +1,5 @@
 # $Id$ Chinese/Taiwan (中文)
-#  EN: __.i18n,v 1.63.2.10 2003/09/21 23:20:15
+#  EN: __.i18n,v 1.63.2.16 2004/03/10 22:31:00
 1000:big5
 1001:zh
 1002:zh_TW
@@ -668,7 +668,7 @@
 ###1830:%ld 傳送嘗試後拾棄給 %s 的訊息，訊息內容:\n
 #1830:Discarding message to %s after %ld send attempts.  Message content:\n
 1833:Peer to peer TCP 連線已建立。\n
-1835:寫入 socket 時發生錯誤 - %s (%d)\n
+1835.寫入 socket 時發生錯誤 - %s (%d)\n
 1841:收到畸形的初始確認封包。\n
 1842:正在關閉 socket %d 至 %s。\n
 1843:正在關閉 socket %d。\n
@@ -1118,7 +1118,6 @@
 #2368:peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n
 #2369:Refuse an incoming file transfer from <uin> or <nick>.
 2370:%02d %-12s version %d%s 與 %s (%lx), 於 %s:%ld %s\n
-#2370:%02d %-12s version %d%s for %s (%lx), at %s:%ld %s\n
 #2371:SSL init failed.\n
 #2372:Could not send SSL request to %s\n
 #2373:Error while reading from socket (SSL): %s (%d)\n
@@ -1129,3 +1128,19 @@
 #2378:peer ssl <nick>   - initiate SSL handshake.
 2379:}%}
 2380:{%{
+#2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
+#2382:Peer-to-peer connection not associated to server connection, discarding.\n
+#2383:View your last messages of <contact>. Type 'h' as short command.
+#2384:Case insensitive search of <pattern> in log file of <contact>.
+#2385:Couldn't open %s for reading: %s (%d).\n
+#2386:Found %s%d%s matches.\n
+#2387:%s <contact> [<last> [<count>]] -- Show history of <contact>.\n
+#2388:%s <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n
+#2389:%s <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
+#2390:No or empty pattern given.\n
+#2391:Case sensitive search of <pattern> in log file of <contact>.
+#2392:Your status is %s (%s).\n
+#2393:%m/%d/%Y
+#2394: %I:%M %p
+#2395:View your messages of <contact> since <date>.
+#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n
