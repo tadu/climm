@@ -720,6 +720,15 @@ BOOL s_parseint_s (char **input, UDWORD *parsed, char *sep)
         nr = nr * 10 + (*p - '0');
         p++;
     }
+    if (!nr && *p == 'x')
+    {
+        p++;
+        while (*p && ((*p >= '0' && *p <= '9') || (*p >= 'a' && *p <= 'f') || (*p >= 'A' && *p <= 'F')))
+        {
+            nr = nr * 16 + (*p >= '0' && *p <= '9' ? *p - '0' : *p >= 'a' && *p <= 'f' ? *p - 'a' + 10 : *p - 'A' + 10);
+            p++;
+        }
+    }
     if (*p && !strchr (sep, *p))
     {
         *parsed = 0;
