@@ -54,17 +54,21 @@ fi
 AC_HEADER_STDC
 AC_CHECK_HEADERS([locale.h langinfo.h sys/select.h arpa/inet.h ctype.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h wchar.h wctype.h])
 
-if test "x$ac_arg_use_ssl" != "xno"; then
-  AM_PATH_LIBGNUTLS(0.8.8, ac_use_ssl=yes, ac_use_ssl=no)
-  if test "x$ac_use_ssl$ac_arg_use_ssl" = "xnoyes"; then
-    AC_MSG_FAILURE([cannot find a suitable SSL library])
+if test "x$ac_arg_use_peer2peer" != "xno"; then
+  if test "x$ac_arg_use_ssl" != "xno"; then
+    AM_PATH_LIBGNUTLS(0.8.8, ac_use_ssl=yes, ac_use_ssl=no)
+    if test "x$ac_use_ssl$ac_arg_use_ssl" = "xnoyes"; then
+      AC_MSG_FAILURE([cannot find a suitable SSL library])
+    fi
+    if test "x$ac_use_ssl" = "xyes"; then
+      LIBS="$LIBGNUTLS_LIBS $LIBS"
+      CFLAGS="$LIBGNUTLS_CFLAGS $CFLAGS"
+      AC_CHECK_FUNCS([gnutls_dh_params_generate2])
+    fi
+    ac_arg_use_ssl=$ac_use_ssl
   fi
-  if test "x$ac_use_ssl" = "xyes"; then
-    LIBS="$LIBGNUTLS_LIBS $LIBS"
-    CFLAGS="$LIBGNUTLS_CFLAGS $CFLAGS"
-    AC_CHECK_FUNCS([gnutls_dh_params_generate2])
-  fi
-  ac_arg_use_ssl=$ac_use_ssl
+else
+  ac_arg_use_ssl=no
 fi
 
 if test "x$ac_arg_use_tcl" != "xno"; then

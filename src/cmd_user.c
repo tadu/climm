@@ -51,8 +51,12 @@ static jump_f
     CmdUserTogIgnore, CmdUserTogInvis, CmdUserTogVisible, CmdUserAdd, CmdUserRemove,
     CmdUserAuth, CmdUserURL, CmdUserSave, CmdUserTabs, CmdUserLast,
     CmdUserUptime, CmdUserOldSearch, CmdUserSearch, CmdUserUpdate, CmdUserPass,
-    CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserPeer, CmdUserConn,
+    CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserConn,
     CmdUserContact, CmdUserAnyMess, CmdUserGetAuto, CmdUserOpt;
+
+#ifdef ENABLE_PEER2PEER
+static jump_f CmdUserPeer;
+#endif
 
 #ifdef ENABLE_DEBUG
 static jump_f CmdUserListQueue;
@@ -1134,8 +1138,8 @@ static JUMP_F (CmdUserAnyMess)
             return 0;
         }
         PeerSendMsg (conn->assoc, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, data >> 2, CO_MSGTEXT, t.txt, 0));
-    }
 #endif
+    }
     else
     {
         if (conn->type != TYPE_SERVER)

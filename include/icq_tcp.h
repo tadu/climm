@@ -1,8 +1,6 @@
 /* $Id$ */
 
 #ifdef ENABLE_PEER2PEER
-
-/* TCP related constants */
 #define TCP_OK_FLAG      0x04
 
 /* Packets */
@@ -15,6 +13,14 @@
 #define TCP_CMD_CANCEL          2000
 #define TCP_CMD_ACK             2010
 #define TCP_CMD_MESSAGE         2030
+
+/* Miscellaneous */
+#define TCP_MSG_X1      0x000E
+#define TCP_MSG_QUEUE   10
+
+#else
+#define TCP_OK_FLAG      0x00
+#endif
 
 /* Status flags */
 #define TCP_MSGF_1              0x0001
@@ -36,12 +42,5 @@
 #define TCP_ACK_DND             0x000A
 #define TCP_ACK_NA              0x000E
 
-/* Miscellaneous */
-#define TCP_MSG_X1      0x000E
 #define TCP_COL_FG      0x00000000      /* Foreground colour in msg body */
 #define TCP_COL_BG      0x00FFFFFF      /* Background colour in msg body */
-#define TCP_MSG_QUEUE   10
-
-#else
-#define TCP_OK_FLAG      0x00
-#endif
