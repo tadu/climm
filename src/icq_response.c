@@ -166,7 +166,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
                     PacketRead2 (pak);
             data  = PacketReadStrB (pak);
             data2 = PacketReadStrB (pak);
-            M_printf (i18n (2080, "Server SMS delivery responce:\n%s\n"), c_in (data2));
+            M_printf (i18n (2080, "Server SMS delivery response:\n%s\n"), c_in (data2));
             free (data);
             free (data2);
             break;
@@ -662,8 +662,8 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
     
     if (!cont)
     {
-        return;
         ExtraD (extra);
+        return;
     }
 
     cdata = strdup (e_msg_text = ExtraGetS (extra, EXTRA_MESSAGE));
@@ -736,6 +736,11 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
         case MSG_NORM:
         default:
             M_printf ("%s" COLMSGINDENT "%s\n", carr, cdata);
+            break;
+
+        case TCP_MSG_FILE:
+            M_printf (i18n (2259, "requests file transfer '%s' of %ld bytes (sequence %ld).\n"),
+                      cdata, ExtraGet (extra, EXTRA_FILETRANS), ExtraGet (extra, EXTRA_REF));
             break;
 
         case MSG_AUTO:

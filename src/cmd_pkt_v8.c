@@ -239,7 +239,7 @@ void SrvMsgAdvanced (Packet *pak, UDWORD seq, UWORD type, UWORD flags, UWORD sta
 }
 
 /*
- * Append the "geeting" part to a packet.
+ * Append the "geeting" part to an advanced message packet.
  */
 void SrvMsgGreet (Packet *pak, UWORD cmd, const char *reason, UWORD port, UDWORD len, const char *msg)
 {
@@ -290,28 +290,39 @@ void SrvMsgGreet (Packet *pak, UWORD cmd, const char *reason, UWORD port, UDWORD
     PacketWriteLen4Done (pak);
 }
 
-
-
-UBYTE SrvReceiveAdvanced (Connection *serv, Contact *cont, Packet *pak, Packet *ack_pak, Extra *extra)
+/*
+ * Process an advanced message.
+ *
+ * Note: swallows both incoming and acknowledge packet,
+ *       but only acknowledge event.
+ */
+void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Event *ack_event)
 {
     Connection *flist;
+    Contact *cont = ContactUIN (serv, inc_event->uin);
+    Extra *extra = inc_event->extra;
+    Packet *inc_pak = inc_event->pak, *ack_pak = ack_event->pak;
+    Event *e1, *e2;
     const char *txt, *ack_msg;
-    char *text, *ctmp, *tmp3;
-    char *ctext, *cname, *cctmp;
-    UDWORD tmp, cmd, len;
+    char *text, *ctext, *cname, *name, *cctmp;
+    UDWORD tmp, cmd, flen;
     UWORD unk, seq, msgtype, status, pri;
     UWORD ack_type, ack_flags, ack_status, accept;
 
-    unk     = PacketRead2 (pak);  PacketWrite2 (ack_pak, unk);
-    seq     = PacketRead2 (pak);  PacketWrite2 (ack_pak, seq);
-    tmp     = PacketRead4 (pak);  PacketWrite4 (ack_pak, tmp);
-    tmp     = PacketRead4 (pak);  PacketWrite4 (ack_pak, tmp);
-    tmp     = PacketRead4 (pak);  PacketWrite4 (ack_pak, tmp);
-    msgtype = PacketRead2 (pak);  PacketWrite2 (ack_pak, msgtype);
+    M_printf ("FIXME: Starting advanced message: events %p, %p.\n", inc_event, ack_event);
+ 
+    unk     = PacketRead2    (inc_pak);  PacketWrite2 (ack_pak, unk);
+    seq     = PacketRead2    (inc_pak);  PacketWrite2 (ack_pak, seq);
+    tmp     = PacketRead4    (inc_pak);  PacketWrite4 (ack_pak, tmp);
+    tmp     = PacketRead4    (inc_pak);  PacketWrite4 (ack_pak, tmp);
+    tmp     = PacketRead4    (inc_pak);  PacketWrite4 (ack_pak, tmp);
+    msgtype = PacketRead2    (inc_pak);  PacketWrite2 (ack_pak, msgtype);
 
-    status  = PacketRead2 (pak);
-    pri     = PacketRead2 (pak);
-    text    = PacketReadLNTS (pak);
+    status  = PacketRead2    (inc_pak);
+    pri     = PacketRead2    (inc_pak);
+    text    = PacketReadLNTS (inc_pak);
+    
+    ExtraSet (extra, EXTRA_MESSAGE, msgtype, c_in_to (text, cont));
 
     ack_type = msgtype;
     accept = FALSE;
@@ -359,51 +370,85 @@ UBYTE SrvReceiveAdvanced (Connection *serv, Contact *cont, Packet *pak, Packet *
             break;
 
         case TCP_MSG_FILE:
-            cmd  = PacketRead4 (pak);
-            ctmp = PacketReadLNTS (pak);
-            len  = PacketRead4 (pak);
-            msgtype = PacketRead4 (pak);
+            cmd     = PacketRead4 (inc_pak);
+            cname   = PacketReadLNTS (inc_pak);
+            flen    = PacketRead4 (inc_pak);
+            msgtype = PacketRead4 (inc_pak);
             
-            tmp3 = strdup (c_in_to (ctmp, cont));
-            free (ctmp);
-
-            accept = PeerFileRequested (serv->assoc, tmp3, len) ? TRUE : FALSE;
-
-            if (!(flist = PeerFileCreate (serv)))
-                accept = FALSE;
-
-            PacketWrite2    (ack_pak, accept ? ack_status : TCP_STAT_REFUSE);
-            PacketWrite2    (ack_pak, ack_flags);
-            PacketWriteLNTS (ack_pak, c_out (ack_msg));
-            PacketWriteB2   (ack_pak, accept ? flist->port : 0);     /* port */
-            PacketWrite2    (ack_pak, 0);                            /* padding */
-            PacketWriteStr  (ack_pak, accept ? "" : "auto-refused"); /* file name - empty */
-            PacketWrite4    (ack_pak, 0);                            /* file len - empty */
-            if (serv->assoc->ver > 6)
-                PacketWrite4 (ack_pak, 0x20726f66);                  /* unknown - strange - 'for ' */
-            PacketWrite4    (ack_pak, accept ? flist->port : 0);     /* port again */
+            name = strdup (c_in_to (cname, cont));
+            free (cname);
+            
+            flist = PeerFileCreate (serv);
+            if (!ExtraGet (extra, EXTRA_FILETRANS) && flen)
+            {
+                ExtraSet (extra, EXTRA_FILETRANS, flen, name);
+                ExtraSet (extra, EXTRA_REF, ack_event->seq, NULL);
+                IMSrvMsg (cont, serv, NOW, ExtraClone (extra));
+                e1 = QueueEnqueueData (serv, QUEUE_ACKNOWLEDGE, ack_event->seq, time (NULL) + 60,
+                                       NULL, inc_event->uin, NULL, NULL);
+                e2 = QueueEnqueueData (inc_event->conn, inc_event->type, ack_event->seq,
+                                       time (NULL) + 62, inc_pak, inc_event->uin, extra, inc_event->callback);
+                e1->rel = e2;
+                e2->rel = e1;
+                inc_pak->rpos = inc_pak->tpos;
+                inc_event->extra = NULL;
+                inc_event->pak = NULL;
+                ack_event->due = 0;
+                ack_event->callback = NULL;
+                free (text);
+                free (name);
+                M_printf ("FIXME: Delaying advanced message: events %p, %p.\n", inc_event, ack_event);
+                return;
+            }
+            free (name);
+            if (PeerFileIncAccept (serv->assoc, inc_event))
+            {
+                PacketWrite2    (ack_pak, ack_status);
+                PacketWrite2    (ack_pak, ack_flags);
+                PacketWriteLNTS (ack_pak, c_out (ack_msg));
+                PacketWriteB2   (ack_pak, flist->port);
+                PacketWrite2    (ack_pak, 0);
+                PacketWriteStr  (ack_pak, "");
+                PacketWrite4    (ack_pak, 0);
+                if (serv->assoc->ver > 6)
+                    PacketWrite4 (ack_pak, 0x20726f66);
+                PacketWrite4    (ack_pak, flist->port);
+            }
+            else
+            {
+                txt = ExtraGetS (extra, EXTRA_REF);
+                PacketWrite2    (ack_pak, TCP_STAT_REFUSE);
+                PacketWrite2    (ack_pak, ack_flags);
+                PacketWriteLNTS (ack_pak, c_out (ack_msg));
+                PacketWriteB2   (ack_pak, 0);
+                PacketWrite2    (ack_pak, 0);
+                PacketWriteStr  (ack_pak, txt ? txt : "");
+                PacketWrite4    (ack_pak, 0);
+                if (serv->assoc->ver > 6)
+                    PacketWrite4 (ack_pak, 0x20726f66);
+                PacketWrite4    (ack_pak, 0);
+            }
             accept = -1;
-            free (tmp3);
             break;
         case TCP_MSG_GREETING:
             {
-                UWORD /*port, port2,*/ flen /*, pad*/;
-                char *text, *reason, *name;
+                /* UWORD port, port2, pad; */
+                char *gtext, *reason;
                 
-                cmd    = PacketRead2 (pak);
-                         PacketReadData (pak, NULL, 16);
-                         PacketRead2 (pak);
-                ctext  = PacketReadDLStr (pak);
-                         PacketReadData (pak, NULL, 15);
-                         PacketRead4 (pak);
-                reason = PacketReadDLStr (pak);
-                /*port=*/PacketReadB2 (pak);
-                /*pad=*/ PacketRead2 (pak);
-                cname  = PacketReadLNTS (pak);
-                flen   = PacketRead4 (pak);
-                /*port2*/PacketRead4 (pak);
+                cmd    = PacketRead2 (inc_pak);
+                         PacketReadData (inc_pak, NULL, 16);
+                         PacketRead2 (inc_pak);
+                ctext  = PacketReadDLStr (inc_pak);
+                         PacketReadData (inc_pak, NULL, 15);
+                         PacketRead4 (inc_pak);
+                reason = PacketReadDLStr (inc_pak);
+                /*port=*/PacketReadB2 (inc_pak);
+                /*pad=*/ PacketRead2 (inc_pak);
+                cname  = PacketReadLNTS (inc_pak);
+                flen   = PacketRead4 (inc_pak);
+                /*port2*/PacketRead4 (inc_pak);
                 
-                text = strdup (c_in_to (ctext, cont));
+                gtext = strdup (c_in_to (ctext, cont));
                 free (ctext);
                 name = strdup (c_in_to (cname, cont));
                 free (cname);
@@ -411,46 +456,77 @@ UBYTE SrvReceiveAdvanced (Connection *serv, Contact *cont, Packet *pak, Packet *
                 switch (cmd)
                 {
                     case 0x0029:
-                        accept = PeerFileRequested (serv->assoc, name, flen) ? TRUE : FALSE;
-                        if (!(flist = PeerFileCreate (serv)))
-                            accept = FALSE;
-                        PacketWrite2      (ack_pak, accept ? ack_status : TCP_STAT_REFUSE);
-                        PacketWrite2      (ack_pak, ack_flags);
-                        PacketWriteLNTS   (ack_pak, "");
-                        SrvMsgGreet (pak, cmd, "", accept ? flist->port : 0, 0, "");
-                        accept = -1;
+                        flist = PeerFileCreate (serv);
+                        if (!ExtraGet (extra, EXTRA_FILETRANS) && flen)
+                        {
+                            ExtraSet (extra, EXTRA_FILETRANS, flen, name);
+                            ExtraSet (extra, EXTRA_REF, ack_event->seq, NULL);
+                            ExtraSet (extra, EXTRA_MESSAGE, TCP_MSG_FILE, name);
+                            IMSrvMsg (cont, serv, NOW, ExtraClone (extra));
+                            e1 = QueueEnqueueData (serv, QUEUE_ACKNOWLEDGE, ack_event->seq, time (NULL) + 60,
+                                                   NULL, inc_event->uin, NULL, NULL);
+                            e2 = QueueEnqueueData (inc_event->conn, inc_event->type, ack_event->seq,
+                                                   time (NULL) + 62, inc_pak, inc_event->uin, extra, inc_event->callback);
+                            e1->rel = e2;
+                            e2->rel = e1;
+                            inc_pak->rpos = inc_pak->tpos;
+                            inc_event->extra = NULL;
+                            inc_event->pak = NULL;
+                            ack_event->callback = NULL;
+                            ack_event->due = 0;
+                            free (text);
+                            free (name);
+                            free (gtext);
+                            free (reason);
+                            M_printf ("FIXME: Delaying advanced message: events %p, %p.\n", inc_event, ack_event);
+                            return;
+                        }
+                        if (PeerFileIncAccept (serv->assoc, inc_event))
+                        {
+                            PacketWrite2    (ack_pak, ack_status);
+                            PacketWrite2    (ack_pak, ack_flags);
+                            PacketWriteLNTS (ack_pak, "");
+                            SrvMsgGreet     (ack_pak, cmd, "", flist->port, 0, "");
+                        }
+                        else
+                        {
+                            PacketWrite2    (ack_pak, TCP_STAT_REFUSE);
+                            PacketWrite2    (ack_pak, ack_flags);
+                            PacketWriteLNTS (ack_pak, "");
+                            SrvMsgGreet     (ack_pak, cmd, "", 0, 0, "");
+                        }
                         break;
+
                     case 0x002d:
-                        IMSrvMsg (cont, serv->assoc, NOW, ExtraSet (ExtraSet (extra,
+                        IMSrvMsg (cont, serv->assoc, NOW, ExtraSet (ExtraClone (extra),
+                                  EXTRA_STATUS, status, NULL));
+                        IMSrvMsg (cont, serv->assoc, NOW, ExtraSet (ExtraSet (ExtraClone (extra),
                                   EXTRA_STATUS, status, NULL),
                                   EXTRA_MESSAGE, TCP_MSG_CHAT, name));
-                        IMSrvMsg (cont, serv->assoc, NOW, ExtraSet (ExtraSet (extra,
-                                  EXTRA_STATUS, status, NULL),
-                                  EXTRA_MESSAGE, TCP_MSG_CHAT, text));
-                        IMSrvMsg (cont, serv->assoc, NOW, ExtraSet (ExtraSet (extra,
+                        IMSrvMsg (cont, serv->assoc, NOW, ExtraSet (ExtraSet (ExtraClone (extra),
                                   EXTRA_STATUS, status, NULL),
                                   EXTRA_MESSAGE, TCP_MSG_CHAT, reason));
-                        PacketWrite2      (ack_pak, TCP_STAT_REFUSE);
-                        PacketWrite2      (ack_pak, ack_flags);
-                        PacketWriteLNTS   (ack_pak, "");
-                        SrvMsgGreet (pak, cmd, "", 0, 0, "");
+                        PacketWrite2    (ack_pak, TCP_STAT_REFUSE);
+                        PacketWrite2    (ack_pak, ack_flags);
+                        PacketWriteLNTS (ack_pak, "");
+                        SrvMsgGreet     (ack_pak, cmd, "", 0, 0, "");
                         break;
 
                     case 0x0032:
                     default:
                         if (prG->verbose & DEB_PROTOCOL)
                             M_printf (i18n (2065, "Unknown TCP_MSG_GREET_ command %04x.\n"), msgtype);
-                        PacketWrite2      (ack_pak, TCP_STAT_REFUSE);
-                        PacketWrite2      (ack_pak, ack_flags);
-                        PacketWriteLNTS   (ack_pak, "");
-                        SrvMsgGreet (pak, cmd, "", 0, 0, "");
+                        PacketWrite2    (ack_pak, TCP_STAT_REFUSE);
+                        PacketWrite2    (ack_pak, ack_flags);
+                        PacketWriteLNTS (ack_pak, "");
+                        SrvMsgGreet     (ack_pak, cmd, "", 0, 0, "");
                         break;
                     
                 }
-                accept = -1;
                 free (name);
-                free (text);
+                free (gtext);
                 free (reason);
+                accept = -1;
             }
             break;
         default:
@@ -474,27 +550,16 @@ UBYTE SrvReceiveAdvanced (Connection *serv, Contact *cont, Packet *pak, Packet *
         case MSG_EMAIL:
         case MSG_CONTACT:
 #ifdef ENABLE_UTF8
-            /**/    PacketRead4 (pak);
-            /**/    PacketRead4 (pak);
-            cctmp = PacketReadDLStr (pak);
+            /**/    PacketRead4 (inc_pak);
+            /**/    PacketRead4 (inc_pak);
+            cctmp = PacketReadDLStr (inc_pak);
             if (!strcmp (cctmp, CAP_GID_UTF8))
-                txt = text;
-            else
-                txt = c_in_to (text, cont);
+                ExtraSet (extra, EXTRA_MESSAGE, msgtype, text);
             free (cctmp);
 #endif
-
-#ifdef WIP
-            if (!*txt && unk == 0x12)
-            {
-                M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-                M_printf ("FIXME: Received capability.\n");
-            }
-#endif
-            if (*txt)
-            IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraSet (extra,
-                      EXTRA_STATUS, status, NULL),
-                      EXTRA_MESSAGE, msgtype, txt));
+            if (*text)
+            IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraClone (extra),
+                      EXTRA_STATUS, status, NULL));
             PacketWrite2     (ack_pak, ack_status);
             PacketWrite2     (ack_pak, ack_flags);
             PacketWriteLNTS  (ack_pak, c_out (ack_msg));
@@ -520,6 +585,7 @@ UBYTE SrvReceiveAdvanced (Connection *serv, Contact *cont, Packet *pak, Packet *
             PacketWriteLNTS   (ack_pak, c_out_to (ack_msg, cont));
     }
     free (text);
-    return TRUE;
+    M_printf ("FIXME: Finishing advanced message: events %p, %p.\n", inc_event, ack_event);
+    ack_event->callback (ack_event);
 }
 

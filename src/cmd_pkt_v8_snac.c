@@ -141,6 +141,8 @@ void SnacCallback (Event *event)
     SNAC *s;
     UWORD family;
     
+    pak->tpos = pak->rpos;
+    
     family     = PacketReadB2 (pak);
     pak->cmd   = PacketReadB2 (pak);
     pak->flags = PacketReadB2 (pak);
@@ -571,12 +573,20 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
     free (text);
 }
 
+static void SnacSrvCallbackSendack (Event *event)
+{
+    if (event && event->conn && event->pak)
+        SnacSend (event->conn, event->pak);
+    EventD (event);
+}
+
 /*
  * SRV_RECVMSG - SNAC(4,7)
  */
 static JUMP_SNAC_F(SnacSrvRecvmsg)
 {
     Contact *cont;
+    Event *newevent;
     Cap *cap1, *cap2;
     Packet *p = NULL, *pp = NULL, *pak;
     Extra *extra = NULL;
@@ -718,12 +728,10 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             ContactSetCap (cont, cap2);
             ContactSetVersion (cont);
             
-            if (SrvReceiveAdvanced (event->conn, cont, pp, p,
-                ExtraSet (NULL, EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL)))
-            {
-                SnacSend (event->conn, p);
-            }
-            PacketD (pp);
+            event->extra = ExtraSet (event->extra, EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL);
+            newevent = QueueEnqueueData (event->conn, QUEUE_ACKNOWLEDGE, seq1,
+                         (time_t)-1, p, cont->uin, NULL, &SnacSrvCallbackSendack);
+            SrvReceiveAdvanced (event->conn, event, newevent);
 
             /* TLV 1, 2(!), 3, 4, f ignored */
             break;

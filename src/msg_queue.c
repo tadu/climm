@@ -108,8 +108,8 @@ void QueueEnqueue (Event *event)
     entry->next = NULL;
     entry->event  = event;
 
-    Debug (DEB_QUEUE, "<" STR_DOT STR_DOT STR_DOT " %s %p: %08lx %p %ld %x @ %p",
-           QueueType (event->type), event, event->seq, event->pak, event->uin, event->flags, event->conn);
+    Debug (DEB_QUEUE, "<" STR_DOT STR_DOT STR_DOT " %s %p: %08lx %p %ld %x @ %p t %ld",
+           QueueType (event->type), event, event->seq, event->pak, event->uin, event->flags, event->conn, event->due);
 
     if (!queue->head)
     {
@@ -303,6 +303,8 @@ void EventD (Event *event)
 {
     if (!event)
         return;
+    if (QueueDequeueEvent (event, NULL))
+        M_printf ("FIXME: Deleting still queued event %p!\n", event);
     Debug (DEB_EVENT, STR_DOT STR_DOT ">> %s %p: %08lx %p %ld",
            QueueType (event->type), event, event->seq, event->pak, event->uin);
     if (event->pak)
@@ -429,6 +431,7 @@ const char *QueueType (UDWORD type)
         case QUEUE_PEER_FILE:     return "PEER_FILE";
         case QUEUE_PEER_RESEND:   return "PEER_RESEND";
         case QUEUE_TYPE2_RESEND:  return "TYPE2_RESEND";
+        case QUEUE_ACKNOWLEDGE:   return "ACKNOWLEDGE";
     }
     return s_sprintf ("%lx", type);
 }

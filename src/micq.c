@@ -304,9 +304,11 @@ int main (int argc, char *argv[])
 #else
         if (QueuePeek ())
         {
-            i = QueuePeek ()->due - time (NULL);
+            int i = QueuePeek ()->due - time (NULL);
             if (i <= 0)
                 M_set_timeout (0, 100);
+            else if (i <= 2)
+                M_set_timeout (i, 0);
             else
                 M_set_timeout (2, 500000);
         }

@@ -85,53 +85,44 @@ Connection *PeerFileCreate (Connection *serv)
 /*
  * Handles an incoming file request.
  */
-UBYTE PeerFileRequested (Connection *peer, const char *files, UDWORD bytes)
+UBYTE PeerFileIncAccept (Connection *list, Event *event)
 {
-    Connection *flist, *fpeer;
+    Connection *flist, *fpeer, *serv;
+    Extra *extra;
     Contact *cont;
-    struct stat finfo;
-    char buf[300];
+    UDWORD bytes = ExtraGet (event->extra, EXTRA_FILETRANS);
+    const char *files = ExtraGetS (event->extra, EXTRA_FILETRANS);
+    const char *txt;
 
-    ASSERT_MSGDIRECT(peer);
+    ASSERT_MSGLISTEN(list);
     
-    if (peer->ver < 6)
-        return 0;
-    
-    cont = ContactUIN (peer->parent->parent, peer->uin);
-    assert (cont);
-    
-    if (cont->flags & CONT_TEMPORARY)
-        return 0;
+    serv  = list->parent;
+    cont  = ContactUIN (serv, event->uin);
+    flist = PeerFileCreate (serv);
 
-    flist = PeerFileCreate (peer->parent->parent);
-    if (!flist)
-        return 0;
-    ASSERT_FILELISTEN (flist);
-    
-    snprintf (buf, sizeof (buf), "%sfiles/%ld", PrefUserDir (prG), peer->uin);
-    if (stat (buf, &finfo))
+    extra = ExtraSet (NULL, 0, bytes, files);
+
+    if (((txt = ExtraGetS (event->extra, EXTRA_REF)) && *txt) || !cont || !flist
+        || !(fpeer = ConnectionClone (flist, TYPE_FILEDIRECT)))
     {
-        M_printf ("%s " COLACK "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-        M_printf (i18n (2193, "Directory %s does not exist.\n"), buf);
-        IMIntMsg (cont, peer, NOW, STATUS_OFFLINE, INT_FILE_REJING, "auto-refused", ExtraSet (NULL, 0, bytes, files));
-        return 0;
+        IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_FILE_REJING, txt ? txt : "auto-refused", extra);
+        return FALSE;
     }
     
-    fpeer = ConnectionClone (flist, TYPE_FILEDIRECT);
-    if (!fpeer)
-        return 0;
-
+    ASSERT_FILELISTEN (flist);
+    ASSERT_FILEDIRECT (fpeer);
+    
     fpeer->port    = 0;
     fpeer->ip      = 0;
     fpeer->connect = 0;
     s_repl (&fpeer->server, NULL);
-    fpeer->uin     = peer->uin;
+    fpeer->uin     = event->uin;
     fpeer->len     = bytes;
     fpeer->done    = 0;
     fpeer->close   = &PeerFileDispatchDClose;
+    IMIntMsg (cont, list, NOW, STATUS_OFFLINE, INT_FILE_ACKING, "", extra);
     
-    IMIntMsg (cont, peer, NOW, STATUS_OFFLINE, INT_FILE_ACKING, "", ExtraSet (NULL, 0, bytes, files));
-    return 1;
+    return TRUE;
 }
 
 /*
@@ -256,6 +247,7 @@ void PeerFileDispatch (Connection *fpeer)
             PacketWrite4 (pak, 64);
             PacketWriteLNTS (pak, "my Nick0");
             PeerPacketSend (fpeer, pak);
+            PacketD (pak);
             
             free (name);
             return;
@@ -305,12 +297,22 @@ void PeerFileDispatch (Connection *fpeer)
                 if (ffile->sok == -1)
                 {
                     int rc = errno;
-                    M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-                    M_printf (i18n (2083, "Cannot open file %s: %s (%d).\n"),
-                             buf, strerror (rc), rc);
-                    ConnectionClose (fpeer);
-                    free (name);
-                    return;
+                    if (rc == ENOENT)
+                    {
+                        mkdir (s_sprintf ("%s/files", PrefUserDir (prG)), 0700);
+                        mkdir (s_sprintf ("%s/files/%ld", PrefUserDir (prG), fpeer->uin), 0700);
+                        ffile->sok = open (buf, O_CREAT | O_WRONLY | (off ? O_APPEND : O_TRUNC), 0660);
+                    }
+                    if (ffile->sok == -1)
+                    {
+                        M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
+                        M_printf (i18n (2083, "Cannot open file %s: %s (%d).\n"),
+                                 buf, strerror (rc), rc);
+                        ConnectionClose (fpeer);
+                        free (name);
+                        free (text);
+                        return;
+                    }
                 }
                 ffile->connect = CONNECT_OK;
                 ffile->len = len;
@@ -327,8 +329,9 @@ void PeerFileDispatch (Connection *fpeer)
             PacketWrite4 (pak, 64);
             PacketWrite4 (pak, 1);
             PeerPacketSend (fpeer, pak);
-            
+            PacketD (pak);
             free (name);
+            free (text);
             return;
 
         case 3:
@@ -378,6 +381,7 @@ void PeerFileDispatch (Connection *fpeer)
             {
                 M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
                 M_print  (i18n (2164, "Error writing to file.\n"));
+                PacketD (pak);
                 TCPClose (fpeer);
                 return;
             }
@@ -387,6 +391,7 @@ void PeerFileDispatch (Connection *fpeer)
                 M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
                 M_printf (i18n (2165, "The peer sent more bytes (%ld) than file length (%ld).\n"),
                          fpeer->assoc->done, fpeer->assoc->len);
+                PacketD (pak);
                 TCPClose (fpeer);
                 return;
             }
@@ -398,11 +403,10 @@ void PeerFileDispatch (Connection *fpeer)
             }
             else if (fpeer->assoc->len)
             {
-                R_setpromptf ("[" COLINCOMING "%ld %02d%%" COLNONE "] " COLSERVER "%s" COLNONE "",
+                R_settimepromptf ("[" COLINCOMING "%ld %02d%%" COLNONE "] " COLSERVER "%s" COLNONE "",
                               fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
                               i18n (1040, "mICQ> "));
             }
-                                          
             PacketD (pak);
             return;
         default:
@@ -448,6 +452,10 @@ BOOL PeerFileError (Connection *fpeer, UDWORD rc, UDWORD flags)
                 fpeer->connect = CONNECT_OK | CONNECT_SELECT_W;
                 fpeer->dispatch = &PeerFileDispatchW;
                 fpeer->assoc->connect = CONNECT_OK | 1;
+                if (fpeer->assoc->len)
+                    R_settimepromptf ("[" COLCONTACT "%ld:%02d%%" COLNONE "] " COLSERVER "%s" COLNONE "",
+                                  fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
+                                  i18n (1040, "mICQ> "));
                 return 1;
             }
     }
@@ -491,11 +499,6 @@ void PeerFileResend (Event *event)
     }
     else if (~fpeer->connect & CONNECT_OK)
     {
-        if (event->attempts > 1)
-        {
-            M_printf ("%s " COLACK "%*s" COLNONE " %s [%ld] %x %s\n",
-                     s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, " + ", event->attempts, fpeer->connect, e_msg_text);
-        }
         if (!event->seq)
             event->attempts++;
         event->due = time (NULL) + 10;
@@ -583,11 +586,11 @@ void PeerFileResend (Event *event)
             if (len == 2048)
             {
                 if (fpeer->assoc->len)
-                    R_setpromptf ("[" COLCONTACT "%ld %02d%%" COLNONE "] " COLSERVER "%s" COLNONE "",
+                    R_settimepromptf ("[" COLCONTACT "%ld %02d%%" COLNONE "] " COLSERVER "%s" COLNONE "",
                                   fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
                                   i18n (1040, "mICQ> "));
                 else
-                    R_setpromptf ("[" COLCONTACT "%ld" COLNONE "] " COLSERVER "%s" COLNONE "",
+                    R_settimepromptf ("[" COLCONTACT "%ld" COLNONE "] " COLSERVER "%s" COLNONE "",
                                   fpeer->assoc->done, i18n (1040, "mICQ> "));
                 event->attempts = 0;
                 QueueEnqueue (event);

@@ -841,7 +841,8 @@ static JUMP_F(CmdUserPeer)
     {
         if (!s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
         {
-            M_printf (i18n (1845, "Nick %s unknown.\n"), args);
+            if (*args)
+                M_printf (i18n (1845, "Nick %s unknown.\n"), args);
             free (arg1);
             return 0;
         }
@@ -924,6 +925,22 @@ static JUMP_F(CmdUserPeer)
                 M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
         }
 #endif
+        else if (!strcmp (arg1, "accept"))
+        {
+            UDWORD seq = 0;
+            Event *event, *revent = NULL;
+
+            s_parseint (&args, &seq);
+            if (!(event = QueueDequeue2 (conn, QUEUE_ACKNOWLEDGE, seq, cont->uin)) || !(revent = event->rel) ||
+                !(revent = QueueDequeue2 (event->rel->conn, event->rel->type, event->rel->seq, event->rel->uin)))
+            {
+                M_printf (i18n (2258, "No pending incoming file transfer request for %s with (sequence %ld) found.\n"),
+                          cont->nick, seq);
+            }
+            else
+                revent->callback (revent);
+            EventD (event);
+        }
         else if (!strcmp (arg1, "auto"))
         {
             if (!TCPGetAuto     (list, cont, 0))
