@@ -39,7 +39,7 @@
 #include <winsock2.h>
 #endif
 
-#define s_read(s) do { char *data = PacketReadLNTS (pak); s_repl (&s, c_in_to (data, cont)); free (data); } while (0)
+#define s_read(s) do { char *data = PacketReadLNTS (pak); s_repl (&s, c_in_to_0 (data, cont)); free (data); } while (0)
 
 #ifndef ENABLE_TCL
 #define TCLMessage(from, text) {}
