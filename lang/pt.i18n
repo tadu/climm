@@ -1129,14 +1129,15 @@
 2378:peer ssl <apelido>   - inicia negociação SSL.
 2379:»%»
 2380:«%«
-#2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
-#2382:Peer-to-peer connection not associated to server connection, discarding.\n
-#2383:View your last messages of <contact>. Type 'h' as short command.
-#2384:Case insensitive search of <pattern> in log file of <contact>.
-#2385:Couldn't open %s for reading: %s (%d).\n
-#2386:Found %s%d%s matches.\n
-#2387:%s <contact> [<last> [<number>]] -- Show history of <contact>.\n
-#2388:%s <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n
-#2389:%s <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
-#2390:No or empty pattern given.\n
-#2391:Case sensitive search of <pattern> in log file of <contact>.
+2381:Eu irei adicionar o autor do mICQ à sua lista de contatos para sua conveniência. Não abuse desta oportunidade - por favor use o comando help e tente seriamente ler as páginas de manual e o FAQ antes de fazer perguntas.\n
+2382:Conexão Ponto-a-ponto não associada à conexão do servidor, descartando.\n
+2383:Vê suas últimas mensagens de <contato>. Tecle 'h' como um comando abreviado.
+2384:Busca em caso insensitivo de <padrão> no arquivo log de <contato>.
+2385:Impossível abrir %s para leitura: %s (%d).\n
+2386:Encontrados %s%d%s ocorrências.\n
+2387:%s <contato> [<último> [<número>]] -- Mostra o histórico de <contato>.\n
+2388:%s <contato> <padrão> -- Busca <padrão> em caso insensitivo no histórico de <contato>.\n
+2389:%s <contato> <padrão> -- Busca <padrão> em caso sensitivo no histórico de <contato>.\n
+2390:Padrão vazio ou nenhum dado.\n
+2391:Busca em caso sensitivo de <padrão> no arquivo log de <contato>.
+2392:Seu estado é %s (%s).\n
