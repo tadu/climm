@@ -1004,21 +1004,25 @@ void Get_Input( SOK_T sok , int *idle_val, int *idle_flag ) /* GRYN */
                  if ((uin = nick2uin(arg1)) == -1) {
                      M_print("Unknown Contact: %s\n", arg1);
                  } else {
-                     if (UIN2Contact(uin)->LastMessage != NULL) {
-                         M_print("Last message from " CONTACTCOL "%s"
-                                 NOCOL ":\n", UIN2Contact(uin)->nick);
-                         M_print(MESSCOL "%s",
-                                 UIN2Contact(uin)->LastMessage);
-                         M_print(NOCOL " \n");
-                     } else {
+		     if (UIN2Contact(uin) == NULL) {
+			     M_print("%s is not a known Contact\n", arg1);
+			} else {
+			     if (UIN2Contact(uin)->LastMessage != NULL) {
+	                         M_print("Last message from " CONTACTCOL "%s"
+        	                         NOCOL ":\n", UIN2Contact(uin)->nick);
+                	         M_print(MESSCOL "%s",
+                        	         UIN2Contact(uin)->LastMessage);
+	                         M_print(NOCOL " \n");
+        	             } else {
 #ifdef FUNNY_MSGS
-						 M_print(CONTACTCOL "%s" NOCOL " hasn't had anything "
-						 		 "intelligent to say today.\n", 
-								 UIN2Contact(uin)->nick);
+				 M_print(CONTACTCOL "%s" NOCOL " hasn't had anything "
+			 		 "intelligent to say today.\n", 
+				 UIN2Contact(uin)->nick);
 #else
-                         M_print("No messages received from " CONTACTCOL
-						 		 "%s\n" NOCOL, UIN2Contact(uin)->nick);
+        	                 M_print("No messages received from " CONTACTCOL
+			 		 "%s\n" NOCOL, UIN2Contact(uin)->nick);
 #endif
+			     }
                      }
                  }
              }
