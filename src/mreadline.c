@@ -1221,9 +1221,9 @@ void M_print (const char *org)
                 }
                 break;
             case '\a':
-                if (prG->sound & SFLAG_CMD)
-                    EventExec (NULL, prG->sound_cmd, 0, 0, NULL);
-                else if (prG->sound & SFLAG_BEEP)
+                if (prG->sound == SFLAG_EVENT)
+                    EventExec (NULL, prG->event_cmd, 4, 0, NULL);
+                else if (prG->sound == SFLAG_BEEP)
                     printf ("\a");
                 break;
             case '\x1b':
@@ -1378,9 +1378,9 @@ void M_print (char *str)
                 }
             }
         }
-        else if (prG->sound & SFLAG_CMD)
-            EventExec (NULL, prG->sound_cmd, 0, 0, NULL);
-        else if (prG->sound & SFLAG_BEEP)
+        else if (prG->sound == SFLAG_EVENT)
+            EventExec (NULL, prG->event_cmd, 4, 0, NULL);
+        else if (prG->sound == SFLAG_BEEP)
             printf ("\a");
     }
 }

@@ -392,11 +392,13 @@ void Read_RC_File (FILE *rcf)
                     if (format != 1)
                         return;
                 }
-                else if (!strcasecmp (cmd, "receivescript"))
+                else if (!strcasecmp (cmd, "receivescript") || !strcasecmp (cmd, "event"))
                 {
+                    if (!strcasecmp (cmd, "receivescript"))
+                        dep |= 1;
                     if (!s_parse (&args, &tmp))
                     {
-                        dep = 1;
+                        dep |= 1;
                         prG->event_cmd = NULL;
                         continue;
                     }
@@ -407,7 +409,7 @@ void Read_RC_File (FILE *rcf)
                         prG->event_cmd = strdup (tmp);
 #ifndef MSGEXEC
                         M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                        M_printf (i18n (1817, "ReceiveScript feature not enabled.\n"));
+                        M_printf (i18n (1817, "The event scripting feature is disabled.\n"));
 #endif
                     }
                 }
@@ -569,55 +571,23 @@ void Read_RC_File (FILE *rcf)
                 }
                 else if (!strcasecmp (cmd, "sound"))
                 {
-                    if (!s_parserem (&args, &tmp))
+                    if (!s_parse (&args, &tmp))
                     {
-                        prG->sound |= SFLAG_BEEP;
+                        prG->sound = SFLAG_BEEP;
                         dep |= 1;
                         continue;
                     }
-                    prG->sound &= ~SFLAG_BEEP & ~SFLAG_CMD;
-                    if (!strcasecmp (tmp, "on"))
-                        prG->sound |= SFLAG_BEEP;
-                    else if (strcasecmp (tmp, "off"))
-                    {
-                        prG->sound |= SFLAG_CMD;
-                        prG->sound_cmd = strdup (tmp);
-                    }
+                    if (!strcasecmp (tmp, "on") || !strcasecmp (tmp, "beep"))
+                        prG->sound = SFLAG_BEEP;
+                    else if (!strcasecmp (tmp, "event"))
+                        prG->sound = SFLAG_EVENT;
+                    else
+                        prG->sound = 0;
                 }
                 else if (!strcasecmp (cmd, "soundonline"))
-                {
-                    if (!s_parserem (&args, &tmp))
-                    {
-                        prG->sound |= SFLAG_ON_BEEP;
-                        dep |= 1;
-                        continue;
-                    }
-                    prG->sound &= ~SFLAG_ON_BEEP & ~SFLAG_ON_CMD;
-                    if (!strcasecmp (tmp, "on"))
-                        prG->sound |= SFLAG_ON_BEEP;
-                    else if (strcasecmp (tmp, "off"))
-                    {
-                        prG->sound |= SFLAG_ON_CMD;
-                        prG->sound_on_cmd = strdup (tmp);
-                    }
-                }
+                    dep |= 1;
                 else if (!strcasecmp (cmd, "soundoffline"))
-                {
-                    if (!s_parserem (&args, &tmp))
-                    {
-                        prG->sound |= SFLAG_OFF_BEEP;
-                        dep |= 1;
-                        continue;
-                    }
-                    prG->sound &= ~SFLAG_OFF_BEEP & ~SFLAG_OFF_CMD;
-                    if (!strcasecmp (tmp, "on"))
-                        prG->sound |= SFLAG_OFF_BEEP;
-                    else if (strcasecmp (tmp, "off"))
-                    {
-                        prG->sound |= SFLAG_OFF_CMD;
-                        prG->sound_off_cmd = strdup (tmp);
-                    }
-                }
+                    dep |= 1;
                 else if (!strcasecmp (cmd, "auto_away"))
                 {
                     PrefParseInt (i);
@@ -1212,7 +1182,7 @@ int Save_RC ()
                     prG->tabs == TABS_SIMPLE ? "simple" :
                     prG->tabs == TABS_CYCLE ? "cycle" : "cycleall");
 
-    fprintf (rcf, "# Colors. color scheme 0|1|2|3 or color <use> <color>");
+    fprintf (rcf, "# Colors. color scheme 0|1|2|3 or color <use> <color>\n");
     {
         char *t, *c;
 
@@ -1232,7 +1202,7 @@ int Save_RC ()
                 case 9: c = "debug   "; break;
                 default: c = ""; assert (0);
             }
-            fprintf (rcf, "\ncolor %s", c);
+            fprintf (rcf, "color %s", c);
             for (t = prG->colors[i]; *t; t += l)
             {
                 if      (!strncmp (BLACK,   t, l = strlen (BLACK)))   c = "black";
@@ -1248,31 +1218,25 @@ int Save_RC ()
                 else c = t, l = strlen (t);
                 fprintf (rcf, " %s", s_quote (c));
             }
+            fprintf (rcf, "\n");
         }
     }
     if (prG->scheme != (UBYTE)-1)
-        fprintf (rcf, "\ncolor scheme   %d", prG->scheme);
+        fprintf (rcf, "color scheme   %d\n\n", prG->scheme);
+    else
+        fprintf (rcf, "# color scheme <0,1,2,3>\n\n");
     
-    fprintf (rcf, "\n\nchat %d          # random chat group; -1 to disable, 49 for mICQ\n",
+    fprintf (rcf, "chat %d          # random chat group; -1 to disable, 49 for mICQ\n\n",
                   prG->chat);
 
-    fprintf (rcf, "\n\nlogplace %s      # the file or (dstinct files in) dir to log to\n",
-                    prG->logplace ? s_quote (prG->logplace) : "");
+    fprintf (rcf, "logplace %s      # the file or (distinct files in) dir to log to\n\n",
+                  prG->logplace ? s_quote (prG->logplace) : "");
 
-    fprintf (rcf, "# Define to a program which is executed to play sound when a message is received.\n");
-    fprintf (rcf, "sound %s\n\n", prG->sound & SFLAG_BEEP ? "on" :
-                                    prG->sound & SFLAG_CMD && prG->sound_cmd ? s_quote (prG->sound_cmd) : "off");
+    fprintf (rcf, "sound %s # on=beep,off,event\n",
+                  prG->sound & SFLAG_BEEP  ? "beep " :
+                  prG->sound & SFLAG_EVENT ? "event" : "off  ");
 
-    fprintf (rcf, "# Execute this cmd when a user comes online in your contacts.\n");
-    fprintf (rcf, "soundonline %s\n\n", prG->sound & SFLAG_ON_BEEP ? "on" :
-                                          prG->sound & SFLAG_ON_CMD && prG->sound_on_cmd ? 
-                                          s_quote (prG->sound_on_cmd) : "off");
-
-    fprintf (rcf, "# Execute this cmd when a user goes offline in your contacts.\n");
-    fprintf (rcf, "soundoffline %s\n\n", prG->sound & SFLAG_OFF_BEEP ? "on" :
-                                           prG->sound & SFLAG_OFF_CMD && prG->sound_off_cmd ?
-                                           s_quote (prG->sound_off_cmd) : "off");
-    fprintf (rcf, "receivescript %s\n\n", prG->event_cmd && *prG->event_cmd ? s_quote (prG->event_cmd) : "off");
+    fprintf (rcf, "event %s\n\n", prG->event_cmd && *prG->event_cmd ? s_quote (prG->event_cmd) : "off");
 
     fprintf (rcf, "\n# automatic responses\n");
     fprintf (rcf, "auto away %s\n", s_quote (prG->auto_away));

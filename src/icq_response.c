@@ -522,12 +522,10 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
         return;
 
     if (!~old)
-    {
-        if (prG->sound & SFLAG_ON_CMD)
-            EventExec (cont, prG->sound_on_cmd, 2, status, NULL);
-        else if (prG->sound & SFLAG_ON_BEEP)
-            printf ("\a");
-    }
+        EventExec (cont, prG->event_cmd, 2, status, NULL);
+    else
+        EventExec (cont, prG->event_cmd, 5, status, NULL);
+
     M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
     M_printf (~old ? i18n (2212, "changed status to %s") : i18n (2213, "logged on (%s)"), s_status (status));
     if (cont->version && !~old)
@@ -568,10 +566,7 @@ void IMOffline (Contact *cont, Connection *conn)
     if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || (prG->flags & FLAG_QUIET))
         return;
 
-    if (prG->sound & SFLAG_OFF_CMD)
-        EventExec (cont, prG->sound_off_cmd, 3, old, NULL);
-    else if (prG->sound & SFLAG_OFF_BEEP)
-        printf ("\a");
+    EventExec (cont, prG->event_cmd, 3, old, NULL);
  
     M_printf ("%s " COLCONTACT "%*s" COLNONE " %s\n",
              s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, i18n (1030, "logged off."));

@@ -5,27 +5,31 @@
 
 struct Preferences_s
 {
+    char  *s5Host;      /* socks 5 settings */
+    char  *s5Name;
+    char  *s5Pass;
+    UWORD  s5Port;
+    BOOL   s5Use;
+    BOOL   s5Auth;
+
+    char  *locale;      /* the used locale */
+    UBYTE  enc_rem;     /* the (assumed) remote encoding */
+    UBYTE  enc_loc;     /* the local character encoding */
+    
     UDWORD verbose;     /* verbosity to use on startup */
-    UWORD  sound;       /* flags for sound output */
+    UWORD  sound;       /* how to beep */
     UDWORD status;      /* status to use when logging in */
     UWORD  screen;      /* manual maximum screen width; 0 = auto */
     UWORD  flags;       /* flags for output */
     UDWORD away_time;   /* time after which to be away automatically; 0 = disable */
     UWORD  tabs;        /* type of tab completion */
     
-    UBYTE  enc_rem;     /* the (assumed) remote encoding */
-    UBYTE  enc_loc;     /* the local character encoding */
-    char  *locale;      /* the used locale */
-    
     char  *basedir;     /* the base dir where micqrc etc. reside in */
     char  *rcfile;      /* the preference file to load */
     char  *logplace;    /* where to log to */
     char  *logname;     /* which name to use for logging */
 
-    char  *sound_cmd;
-    char  *sound_on_cmd;
-    char  *sound_off_cmd;
-    char  *event_cmd;
+    char  *event_cmd;   /* the command to execute for events */
     
     char  *auto_na;
     char  *auto_away;
@@ -37,13 +41,6 @@ struct Preferences_s
     char  *colors[CXCOUNT];
     UBYTE  scheme;
     UBYTE  chat;
-
-    BOOL   s5Use;
-    char  *s5Host;
-    UWORD  s5Port;
-    BOOL   s5Auth;
-    char  *s5Name;
-    char  *s5Pass;
 
     /* Much more stuff to go here - %TODO% */
 };
@@ -90,11 +87,7 @@ const char *PrefLogNameReal (Preferences *pref);
  */
 
 #define SFLAG_BEEP          1
-#define SFLAG_CMD           2
-#define SFLAG_ON_BEEP       4
-#define SFLAG_ON_CMD        8
-#define SFLAG_OFF_BEEP     16
-#define SFLAG_OFF_CMD      32
+#define SFLAG_EVENT         2
 
 #define CONN_AUTOLOGIN   1
 #define CONN_WIZARD      2

@@ -308,7 +308,8 @@ void EventExec (Contact *cont, const char *script, UBYTE type, UDWORD msgtype, c
 
     mytext = strdup (text ? text : "");
     mynick = strdup (cont ? cont->nick : "");
-    mytype = (type == 1 ? "msg" : type == 2 ? "on" : type == 3 ? "off" : "other");
+    mytype = (type == 1 ? "msg" : type == 2 ? "on" : type == 3 ? "off" : 
+              type == 4 ? "beep" : type == 5 ? "status" : "other");
     myscript = strdup (s_realpath (script));
 
     for (tmp = mytext; *tmp; tmp++)
