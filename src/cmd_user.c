@@ -1183,7 +1183,6 @@ static UDWORD __status (UDWORD status)
 {
     if (status == STATUS_OFFLINE)  return STATUS_OFFLINE;
     if (status  & STATUSF_BIRTH)   return STATUSF_BIRTH;
-    if (status  & STATUSF_INV)     return STATUS_INV;
     if (status  & STATUSF_DND)     return STATUS_DND;
     if (status  & STATUSF_OCC)     return STATUS_OCC;
     if (status  & STATUSF_NA)      return STATUS_NA;
@@ -1204,8 +1203,8 @@ static JUMP_F(CmdUserStatusDetail)
 {
     UDWORD uin = 0, i, lenuin = 0, lennick = 0, lenstat = 0, lenid = 0;
     Contact *cont = NULL;
-    UDWORD stati[] = { STATUS_OFFLINE, STATUS_INV,  STATUS_DND,    STATUS_OCC,
-                       STATUS_NA,      STATUS_AWAY, STATUS_ONLINE, STATUS_FFC, STATUSF_BIRTH };
+    UDWORD stati[] = { STATUS_OFFLINE, STATUS_DND,    STATUS_OCC, STATUS_NA,
+                       STATUS_AWAY,    STATUS_ONLINE, STATUS_FFC, STATUSF_BIRTH };
     char *name = strtok (args, "\n");
     SESSION;
 
