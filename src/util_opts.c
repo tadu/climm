@@ -349,7 +349,7 @@ BOOL OptGetVal (const Opt *opt, UDWORD flag, val_t *res DEBUGPARAM)
 {
     const Opt *cot;
     UBYTE tag = flag & 0xff;
-    int k;
+    int k = 0;
 
     for (cot = opt; cot; cot = cot->next)
     {
@@ -428,7 +428,7 @@ val_t OptUndef (Opt *opt, UDWORD flag DEBUGPARAM)
     Opt *cot, *cotold;
     UBYTE tag = flag & 0xff;
     val_t old = 0;
-    int k, m;
+    int k = 0, m;
 
 
     for (cot = opt; cot; cot = cot->next)

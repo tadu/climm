@@ -827,7 +827,7 @@ int Read_RC_File (FILE *rcf)
                 
                 args = p;
 
-                if (isdigit (*p))
+                if (isdigit ((int)*p))
                 {
                     PrefParseInt (uin);
                     PrefParse (cmd);

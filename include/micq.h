@@ -48,6 +48,10 @@ time_t portable_timegm (struct tm *tm);
 #define localtime_r(t, s)      memcpy(s, localtime(t), sizeof(struct tm))
 #endif
 
+#ifndef _REENTRANT
+#define _REENTRANT 1
+#endif
+
 #ifndef __attribute__
 #if !defined(__GNUC__) || __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 7)
   #define __attribute__(x)
