@@ -1,3 +1,17 @@
+
+2002-08-27 Alberto Bertogli <albertogli@telpin.com.ar>
+	* update Spanish (es) translation and man pages
+	* add Spanish (es) web page
+
+2002-08-27 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Fix last-minute bugs (contact download crash)
+	* Fix get status from correct session
+	* Fix history symlinks
+	* Re-release as 0.4.9.3.1
+	* Transcode incoming contact names
+	* de, en, ru i18n update
+	* more status flags for direct connections displayed
+
 2002-08-24 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* unify packet.c code: read strings now always need free()
 	* forget about mc.ukeer.de or micq.ukeeer.de and use www.micq.org
