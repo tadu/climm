@@ -544,7 +544,7 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
 
     if (prG->verbose && !~old && cont->dc)
     {
-        M_printf ("    %s: %s / ", i18n (1642, "IP:"), s_ip (cont->dc->ip_rem));
+        M_printf ("    %s %s / ", i18n (1642, "IP:"), s_ip (cont->dc->ip_rem));
         M_printf ("%s:%ld    %s %d    %s (%d)\n", s_ip (cont->dc->ip_loc),
             cont->dc->port, i18n (1453, "TCP version:"), cont->dc->version,
             cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),

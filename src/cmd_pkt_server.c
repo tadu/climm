@@ -240,7 +240,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             ip[1] = PacketRead1 (pak);
             ip[2] = PacketRead1 (pak);
             ip[3] = PacketRead1 (pak);
-            M_printf ("%s " COLCONTACT "%*s" COLNONE " %s: %u.%u.%u.%u\n",
+            M_printf ("%s " COLCONTACT "%*s" COLNONE " %s %u.%u.%u.%u\n",
                 s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, i18n (1642, "IP:"),
                 ip[0], ip[1], ip[2], ip[3]);
             QueueEnqueueData (conn, QUEUE_UDP_KEEPALIVE, 0, time (NULL) + 120,
