@@ -2,6 +2,7 @@
 #  EN:
 1001:de
 1002:de_DE
+1003:0-4-9-3
 1004:Rico -mc- Glöckner, Rüdiger Kuhlmann
 1005:Rüdiger Kuhlmann
 1006:27. Juni 2002
@@ -824,7 +825,6 @@
 #1914:Can't allocate connection structure.¶
 1915:Der Server hat %s als IP-Adresse ermittelt.¶
 #1916:Need a nick or uin.¶
-1917:%-20s Version %d für %s (%x), bei %s:%d %s¶
 #1918:Ignored server request for a minimum report interval of %d.¶
 #1919:UIN mismatch: %d vs %d.¶
 1920:Beantragung einer neuen Benutzernummer abgelehnt.¶
@@ -921,11 +921,11 @@
 2021:Für %s jetzt unsichtbar.
 2022:Der Benutzer ist in Wirklichkeit nicht verbunden.¶
 2023:Direkte Verbindung von Verbindungspartner geschlossen.¶
-#2024:Unknown protocol version %d for ICQ peer-to-peer protocol.¶
+2024:Unbekannte Protokoll-Version %d für ICQ-Direktverbindungen.¶
 #2026:TCP cookie:
 #2028:Wrong argument count.¶
 2029:Protokoll-Fehler einer Direktverbindung
-#2030:%04d-%02d-%02d %02d:%02d UTC
+2030:%04d-%02d-%02d %02d:%02d UTC
 2031:Verbindung zu oft fehlgeschlagen, gebe auf.¶
 2032:Verbinde in %d Sekunden neu.¶
 2033:Geburtstagskind
@@ -957,11 +957,10 @@
 2059:    dnd   <nick> - Hole die automatische Antwort für "nicht stören" von diesem Kontakt.¶
 2060:    ffc   <nick> - Hole die automatische Antwort für "für Plaudereien frei" von diesem Kontakt.¶
 2061:Lehne Dateiübertragung von "%s" (%d Bytes) ab %s (unbekannt: %x, %x),¶
-#2062:version
 2063:Sie müssen Ihr Paßwort in Ihrem ~/.micq/micqrc speichern.¶
 2064:Lehne Plaudereianfrage (%s/%s/%s) von %s ab.¶
-#2065:Unknown TCP_MSG_GREET_ command %04x.¶
-#2066:Unknown TCP_MSG_ command %04x.¶
+2065:Unbekanntes TCP_MSG_GREET_-Kommando %04x.¶
+2066:Unbekanntes TCP_MSG_-Kommando %04x.¶
 2067:Dateiein-/ausgabe
 2068:Öffne Dateiübertragungsverbindung zu %s:%d... ¶
 2069:Dateiübertragung "%s" vom Gegenüber abgelehnt (%x,%x): %s.¶
@@ -983,6 +982,21 @@
 2089:Dateiannahme
 2090:Dateiübertragung
 2091:Reihe "%s" als "%s" in die Warteschlange für Dateiübertragung ein.¶
-#2092:TCP message %s discarded - lost session.¶
+2092:Direktverbindungsnachricht %s weggeworfen - Verbindung verschwunden.¶
+2093:%02d %-12s Version %d für %s (%x) zu %s:%d %s¶
+2094:conn login         Öffne erste Server-Verbindung.¶
+2095:conn remove <nr>   Entferne Verbindung <nr>.¶
+2096:Verbindung %d ist nicht offen.¶
+2097:conn select <nr>   Wähle Verbindung <nr> als aktuelle Server-Verbindung aus.¶
+2098:Verbindung %d ist keine Server-Verbindung.¶
+2099:Wähle Verbindung %d (Version %d, Benutzernummer %d) als aktuelle Server-Verbindung.¶
+2100:conn select <uin>  Wähle Verbindung mit Benutzernummer <uin> als aktive Server-Verbindung.¶
+2101:Entferne Verbindung %d und davon abhängige Verbindungen vollständig.¶
+2102:Verbindung %d ist eine konfigurierte Verbindung.¶
+2103:contact show    Zeige Server-seitige Kontaktliste.¶
+2104:contact diff    Zeige Server-seitige Kontakte, die nicht auf der lokalen Kontaktliste sind.¶
+2105:contact import  Füge Server-seitige Kontaktliste zur lokalen Kontaktliste hinzu.¶
 2106:Letzte Nachricht von %s%s%s um %s Uhr:¶
 2107:Noch keine Nachrichten von %s%s%s empfangen.¶
+2108:automatisch
+2109:Version

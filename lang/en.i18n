@@ -1,6 +1,7 @@
 # $Id$ English (English)
 1001:en
 1002:en_US
+1003:0-4-9-3
 1004:Rüdiger Kuhlmann
 1005:Rüdiger Kuhlmann
 1006:2002-08-23
@@ -27,7 +28,7 @@
 1029:Please enter YES or NO!
 1030:logged off.
 1031:logged on
-#1032:debug: Doppeltes Packet #%04x vom Typ %04x (%s)¶
+1032:debug: double packet #%04x of type %04x (%s).¶
 1033:Incoming v8 server packet:
 1034:Maximum number of tries reached. Giving up.
 1035:changed status to
@@ -810,7 +811,6 @@
 1914:Can't allocate connection structure.¶
 1915:Server says we're at %s.¶
 1916:Need a nick or uin.¶
-1917:%-12s version %d for %s (%x), at %s:%d %s¶
 1918:Ignored server request for a minimum report interval of %d.¶
 1919:UIN mismatch: %d vs %d.¶
 1920:Registration of new UIN refused.¶
@@ -970,3 +970,20 @@
 2090:file peer-to-peer
 2091:Queueing %s as %s for transfer.¶
 2092:TCP message %s discarded - lost session.¶
+2093:%02d %-12s version %d for %s (%x), at %s:%d %s¶
+2094:conn login         Open first server connection.¶
+2095:conn remove <nr>   Remove connection <nr>.¶
+2096:Connection %d is not open.¶
+2097:conn select <nr>   Select connection <nr> as server connection.¶
+2098:Connection %d is not a server connection.¶
+2099:Selected connection %d (version %d, UIN %d) as current connection.¶
+2100:conn select <uin>  Select connection with UIN <uin> as server connection.¶
+2101:Removing connection %d and its dependands completely.¶
+2102:Connection %d is a configured connection.¶
+2103:contact show    Show server side contact list.¶
+2104:contact diff    Show server side contacts not on local contact list.¶
+2105:contact import  Add server side contact list to local contact list.¶
+2106:Last message from %s%s%s at %s:¶
+2107:No messages received from %s%s%s.¶
+2108:auto
+2109:version
