@@ -419,9 +419,9 @@ void R_process_input_tab (void)
             sprintf (s, "%s ", msgcmd);
 
         R_remprompt ();
-        curlen = curpos = strlen (s);
+        bytelen = bytepos = strlen (s);
 #ifdef ENABLE_UTF8
-        bytelen = bytepos = c_strlen (s);
+        curlen = curpos = c_strlen (s);
 #endif
     }
     else
