@@ -3195,7 +3195,7 @@ static JUMP_F(CmdUserConn)
             cont = ContactUIN (conn, conn->uin);
 
             M_printf (i18n (2093, "%02d %-12s version %d for %s (%lx), at %s:%ld %s\n"),
-                     i + 1, ConnectionType (conn), conn->ver, cont ? cont->nick : "", conn->status,
+                     i + 1, ConnectionType (conn), conn->ver, cont && conn->uin ? cont->nick : "", conn->status,
                      conn->server ? conn->server : s_ip (conn->ip), conn->port,
                      conn->connect & CONNECT_FAIL ? i18n (1497, "failed") :
                      conn->connect & CONNECT_OK   ? i18n (1934, "connected") :
