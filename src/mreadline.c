@@ -116,7 +116,6 @@ void R_resume (void)
 
 /*
  * Moves cursor to different position in input line.
- * Note: this is not in mreadline.c, as it requires CharCount.
  */
 void R_goto (int pos)
 {
@@ -233,7 +232,7 @@ int R_process_input (void)
                     R_process_input_backspace ();
                     return 0;
                 case 11:       /* ^K, as requested by Bernhard Sadlowski */
-                    clen = cpos - 1;
+                    clen = cpos;
                     s[cpos] = '\0';
                     R_rlap ("");
                     break;

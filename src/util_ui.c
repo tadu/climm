@@ -436,7 +436,7 @@ void Debug (UDWORD level, const char *str, ...)
               level == 64 ? "Packet" : "unknown",
               buf);
     
-    M_prints (buf2);
+    M_print ("%s", buf2);
 }
 
 

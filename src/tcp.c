@@ -98,6 +98,9 @@ void TCPDirectOpen (Session *sess, UDWORD uin)
     
     ASSERT_PEER (sess);
     
+    if (uin == sess->assoc->uin)
+        return;
+
     if ((peer = SessionFind (TYPE_DIRECT, uin)))
     {
         if (peer->connect & CONNECT_MASK)
@@ -316,10 +319,12 @@ void TCPDispatchConn (Session *sess)
                     QueueEnqueueData (queue, sess, sess->ip, QUEUE_TYPE_TCP_TIMEOUT,
                                       cont->uin, time (NULL) + 30,
                                       NULL, NULL, &TCPCallBackTOConn);
+                    sess->connect = TCP_STATE_WAITING;
                 }
+                else
+                    sess->connect = CONNECT_FAIL;
                 sockclose (sess->sok);
                 sess->sok = -1;
-                sess->connect = TCP_STATE_WAITING;
                 return;
             }
             case TCP_STATE_CONNECTED:
@@ -476,9 +481,6 @@ void TCPDispatchPeer (Session *sess)
                         break;
                     if (PacketReadAt2 (pak, 26) == NORM_MESS)
                     {
-                        log_event (cont->uin, LOG_MESS, "You sent a TCP message to %s\n%s\n",
-                                   cont->nick, PacketReadAtStrN (pak, 28));
-
                         Time_Stamp ();
                         M_print (" " COLACK "%10s" COLNONE " " MSGTCPACKSTR "%s\n",
                                  cont->nick, event->info);
@@ -763,6 +765,10 @@ Session *TCPReceiveInit (Session *sess, Packet *pak)
             break;
     
         uin  = PacketReadAt4 (pak, 15);
+        
+        if (uin == sess->assoc->assoc->uin)
+            break;
+        
         cont = ContactFind (uin);
         sid  = PacketReadAt4 (pak, 32);
 
@@ -865,6 +871,8 @@ BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
     Session *peer;
 
     if (!sess)
+        return 0;
+    if (uin == sess->assoc->uin)
         return 0;
     cont = ContactFind (uin);
     if (!cont)
@@ -982,8 +990,8 @@ void TCPCallBackResend (struct Event *event)
 
     if (event->attempts < MAX_RETRY_ATTEMPTS && PacketReadAt2 (pak, 4) == TCP_CMD_MESSAGE)
     {
-        peer->assoc->connect = CONNECT_FAIL;
-        icq_sendmsg (peer->assoc->assoc, cont->uin, strdup (PacketReadAtStrN (pak, 28)), PacketReadAt2 (pak, 26));
+        peer->connect = CONNECT_FAIL;
+        icq_sendmsg (peer->assoc->assoc, cont->uin, strdup (PacketReadAtStrN (pak, 28)), PacketReadAt2 (pak, 22));
     }
     else
         M_print (i18n (844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4));

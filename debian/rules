@@ -36,7 +36,7 @@ install:
 	dh_clean -k
 	dh_testroot
 	dh_installdirs
-	$(MAKE) install DESTDIR=`pwd`/debian/tmp
+	$(MAKE) install DESTDIR=`pwd`/debian/micq
 
 binary-indep: ;
 
