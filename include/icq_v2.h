@@ -65,6 +65,7 @@ typedef struct
 
 #define CMD_ACK               	0x000A 
 #define CMD_SENDM             	0x010E
+#define CMD_TCP_REQUEST		0x015E
 #define CMD_LOGIN             	0x03E8
 #define CMD_REG_NEW_USER      	0x03FC
 #define CMD_CONT_LIST         	0x0406
@@ -104,6 +105,7 @@ typedef struct
 #define SRV_X2             	0x00E6
 #define SRV_INFO_REPLY     	0x0118
 #define SRV_EXT_INFO_REPLY 	0x0122
+#define SRV_TCP_REQUEST		0x015E
 #define SRV_STATUS_UPDATE  	0x01A4
 #define SRV_SYSTEM_MESSAGE 	0x01C2
 #define SRV_UPDATE_SUCCESS 	0x01E0

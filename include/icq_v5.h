@@ -45,7 +45,7 @@ typedef struct
    UBYTE X5[4];
    UBYTE X6[4];
    UBYTE X7[4];
-   UBYTE X8[4];
+   UBYTE build[4];
 } pak_5_log2_s;
 
 
@@ -62,7 +62,6 @@ typedef struct
  to values that did work.
  *********************************/
 /*#define LOGIN_X1_DEF 0x00000078 */
-/*   #define LOGIN_X2_DEF 0x04*/
 #define LOGIN_X1_DEF 0x000000d5
 /*#define LOGIN_X1_DEF 0x000000C8*/
 /*#define LOGIN_X4_DEF 0x00000000*/
@@ -73,8 +72,8 @@ typedef struct
 /*#define LOGIN_X5_DEF 0x00C80010*/
 #define LOGIN_X6_DEF 0x00000050
 #define LOGIN_X7_DEF 0x00000003
-/*#define LOGIN_X8_DEF 0x36abff13*/ 
-#define LOGIN_X8_DEF 0x36d61600 /* == 920 000 000 */
+
+#define BUILD_MICQ 0x7a000000
 
 #endif
 

@@ -55,58 +55,54 @@ int Open_TCP_Connection (CONTACT_PTR cont)
 {
     struct sockaddr_in sin;
 
-    cont->sok = socket(AF_INET, SOCK_STREAM, 0);
-  
-    if (uiG.Verbose)
-        M_print (i18n (779, "Opening TCP connection to %s.\n") , cont->nick);
-
-    if (cont->sok <= 0)
-    {
-        M_print (i18n (780, "Error creating socket.\n"));
-        return -1;
-    }
-
     sin.sin_family = AF_INET;
     sin.sin_port = htons (cont->port);
-
-    /* Try connecting to the external (current) IP first. */
     sin.sin_addr.s_addr = Chars_2_DW (cont->current_ip);
 
-    if (uiG.Verbose)
-        M_print (i18n (781, "Trying %s:%d..."), inet_ntoa (sin.sin_addr), cont->port);
+    M_print (i18n (779, "Opening TCP connection to %s at %s:%d...") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
+
+    cont->sok = socket (AF_INET, SOCK_STREAM, 0);
+  
+    if (cont->sok <= 0)
+    {
+        M_print (i18n (780, " failure - couldn't create socket.\n"));
+        return -1;
+    }
 
     if (connect (cont->sok, (struct sockaddr *) &sin, 
                           sizeof (struct sockaddr)) < 0)
     {
-        /* Try the internal (other) IP now */
-        cont->sok = socket (AF_INET, SOCK_STREAM, 0);
-        if (cont->sok <= 0)
-        {
-            M_print (i18n (780, "Error creating socket.\n"));
-            return -1;
-        }
-    
+        M_print (i18n (783, " failure.\n"));
+
         sin.sin_family = AF_INET;
         sin.sin_port = htons (cont->port);
         sin.sin_addr.s_addr = Chars_2_DW (cont->other_ip);
 
-        if (uiG.Verbose)
-            M_print (i18n (782, " failure.\nTrying %s:%d..."), inet_ntoa (sin.sin_addr), cont->port);
+        M_print (i18n (779, "Opening TCP connection to %s at %s:%d...") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
 
+        /* Try the internal (other) IP now */
+        cont->sok = socket (AF_INET, SOCK_STREAM, 0);
+        if (cont->sok <= 0)
+        {
+            M_print (i18n (780, " failure - couldn't create socket.\n"));
+            return -1;
+        }
+    
         if (connect (cont->sok, (struct sockaddr *) &sin,
                             sizeof (struct sockaddr)) < 0)
         {
-             /* Internal didn't work either.. :(  */
-             if (uiG.Verbose)
-                 M_print (i18n (783, " failure.\n"));
-             M_print (i18n (784, "Error connecting to remote user.\n"));
+             close (cont->sok);
+             cont->sok = 0;
+             cont->connection_type &= ~TCP_OK_FLAG;
+             M_print (i18n (783, " failure.\n"));
              return -1;
         }
     }
-    if (uiG.Verbose)
-        M_print (i18n (785, " success.\n"));
+    M_print (i18n (785, " success.\n"));
     return 0;
 }
+
+/* i18n (784, " ") i18n */
 
 /*
  *  Receives a TCP packet 
@@ -149,7 +145,6 @@ int Recv_TCP_Pak (SOK_T sok, void **pak)
     } while ((offset += recvSize) < size);
     /* ensure we get entire packet */
     return size;
-    
 }
 
 /*
@@ -254,10 +249,7 @@ void Send_TCP_Init (UDWORD dest_uin)
     if (cont->sok <= 0)
     {
         if (Open_TCP_Connection (cont) == -1)
-        {
-            M_print (i18n (786, "Error establishing a direct TCP connection.\n"));
             return;
-        }
     }
 
     if (Send_TCP_Pak (cont->sok, (void *) &pak, sizeof(pak)) < 0)
@@ -455,12 +447,10 @@ void Handle_TCP_Comm (UDWORD uin)
                 Time_Stamp ();
                 M_print (" \x1b«" COLSERV "");
                 M_print (i18n (778, "Incoming TCP packet:"));
-/*                M_print (" %04X %08X:%08X %04X (", Chars_2_Word (pak.head.ver),
+/*                M_print (" %04X %08X:%08X %04X (%s)" COLNONE "\n", Chars_2_Word (pak.head.ver),
                          Chars_2_DW (pak.head.session), Chars_2_DW (pak.head.seq),
-                         Chars_2_Word (pak.head.cmd));
-                Print_CMD (Chars_2_Word (pak.head.cmd));*/
+                         Chars_2_Word (pak.head.cmd), ...); */
                 M_print (COLNONE "\n");
-
                 Hex_Dump (pak, size);
                 M_print ("\x1b»\n");
                 R_redraw ();
@@ -495,7 +485,7 @@ void Handle_TCP_Comm (UDWORD uin)
                         if (uiG.Verbose)
                         {
                             R_undraw ();
-                            M_print (i18n (806, "Received ACK for message (seq %04X) from %s"),
+                            M_print (i18n (806, "Received ACK for message (seq %04X) from %s\n"),
                                      seq_in, cont->nick);
                             R_redraw ();
                         }
@@ -507,7 +497,7 @@ void Handle_TCP_Comm (UDWORD uin)
                         if (uiG.Verbose)
                         {
                             R_undraw ();
-                            M_print (i18n (807, "Cancelled incoming message (seq %04X) from %s"),
+                            M_print (i18n (807, "Cancelled incoming message (seq %04X) from %s\n"),
                                      seq_in, cont->nick);
                             R_redraw ();
                         }
@@ -582,7 +572,7 @@ void Handle_TCP_Comm (UDWORD uin)
                     M_print (i18n (808, " Typ    = %04x\t"), Chars_2_Word (pak->msg_type));*/
     
                 Do_Msg (cont->sok, Chars_2_Word (pak->sub_cmd), Chars_2_Word (pak->size), 
-                        &((char *)pak)[TCP_MSG_OFFSET], uin);
+                        &((char *)pak)[TCP_MSG_OFFSET], uin, 1);
                 M_print ("\n");
 
                 Send_TCP_Ack (cont->sok, Chars_2_Word(pak->seq),
@@ -613,9 +603,6 @@ void Send_TCP_Msg (SOK_T srv_sok, UDWORD uin, char *msg, UWORD sub_cmd)
     cont = UIN2Contact (uin);
     if (cont == NULL) return;
 
-    Time_Stamp ();
-    M_print (" " COLSENT "%10s" COLNONE " " MSGTCPSENTSTR "%s\n", UIN2Name (uin), MsgEllipsis (msg));
-    
     /* Open a connection if necessary */
     if (cont->sok <= 0)
     { 
@@ -629,6 +616,9 @@ void Send_TCP_Msg (SOK_T srv_sok, UDWORD uin, char *msg, UWORD sub_cmd)
         }
     }     
 
+    Time_Stamp ();
+    M_print (" " COLSENT "%10s" COLNONE " " MSGTCPSENTSTR "%s\n", UIN2Name (uin), MsgEllipsis (msg));
+    
     /* Make the packet */
     pak = (TCP_MSG_PTR) malloc (paksize);
 

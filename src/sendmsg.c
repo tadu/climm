@@ -21,6 +21,7 @@ Author : zed@mentasm.com
 #include "micq.h"
 #include "util_ui.h"
 #include "sendmsg.h"
+#include "cmd_pkt_server.h"
 #include "util.h"
 #include "conv.h"
 #include "tcp.h"
@@ -66,10 +67,9 @@ void Do_Resend (SOK_T sok)
             {
                 R_undraw ();
                 M_print ("\n");
-                M_print (i18n (624, "Resending message with SEQ num %04X CMD "), (queued_msg->seq >> 16));
-                Print_CMD (Chars_2_Word (&queued_msg->body[CMD_OFFSET]));
-                M_print (i18n (625, "(Attempt #%d.)"), queued_msg->attempts);
-                M_print ("%d\n", queued_msg->len);
+                M_print (i18n (826, "Resending message %04x (%s) sequence %04x (attempt #%d, len %d).\n"),
+                         Chars_2_Word (&queued_msg->body[CMD_OFFSET]), CmdPktSrvName (Chars_2_Word (&queued_msg->body[CMD_OFFSET])),
+                         queued_msg->seq >> 16, queued_msg->attempts, queued_msg->len);
                 R_redraw ();
             }
             if (0x1000 < Chars_2_Word (&queued_msg->body[CMD_OFFSET]))
@@ -125,10 +125,7 @@ void Do_Resend (SOK_T sok)
             }
             else
             {
-                M_print ("\n");
-                M_print (i18n (630, "Discarded a "));
-                Print_CMD (Chars_2_Word (pak.head.cmd));
-                M_print (i18n (631, " packet."));
+                M_print (i18n (825, "Discarded a %04x (%s) packet"), pak.head.cmd, CmdPktSrvName (*(UDWORD *)(&pak.head.cmd)));
                 if ((CMD_LOGIN == Chars_2_Word (pak.head.cmd))
                     || (CMD_KEEP_ALIVE == Chars_2_Word (pak.head.cmd)))
                 {
@@ -675,6 +672,7 @@ void info_req_99 (SOK_T sok, UDWORD uin)
 
 }
 
+#if 0
 void info_req_old (SOK_T sok, UDWORD uin)
 {
     net_icq_pak pak;
@@ -700,6 +698,7 @@ void info_req_old (SOK_T sok, UDWORD uin)
     SOCKWRITE (sok, &(pak.head.ver), size + sizeof (pak.head) - 2);
 #endif
 }
+#endif
 
 /*********************************************************
 Sends a request to the server for info on a specific user
@@ -1272,11 +1271,10 @@ static size_t SOCKWRITE_LOW (SOK_T sok, void *ptr, size_t len)
         M_print (" \x1b«" COLCLIENT "");
         M_print (i18n (775, "Outgoing packet:"));
 #if ICQ_VER == 5
-        M_print (" %04X %08X:%08X %04X (", Chars_2_Word (ptr),
-                 Chars_2_DW (ptr + 10), Chars_2_DW (ptr + 16),
-                 Chars_2_Word (ptr + 14));
-        Print_CMD (Chars_2_Word (ptr + 14));
-        M_print (")" COLNONE "\n");
+        M_print (" %04x %08x:%08x %04x (%s)" COLNONE "\n",
+                 Chars_2_Word (ptr), Chars_2_DW (ptr + 10),
+                 Chars_2_DW (ptr + 16), Chars_2_Word (ptr + 14),
+                 CmdPktSrvName (Chars_2_Word (ptr + 14)));
 #else
         M_print ("\n");
 #endif

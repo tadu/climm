@@ -7,6 +7,7 @@ Handles resending missed packets.
 #include "micq.h"
 #include "util_ui.h"
 #include "util.h"
+#include "cmd_pkt_server.h"
 #include <stdlib.h>
 #include <assert.h>
 #include <limits.h>
@@ -136,11 +137,10 @@ void Check_Queue (UDWORD seq, struct msg_queue *queue)
         {
             if (uiG.Verbose & 16)
             {
+                UDWORD tmp = Chars_2_Word (&queued_msg->body[CMD_OFFSET]);
                 R_undraw ();
-                M_print ("\n");
-                M_print (i18n (620, "Removed message with SEQ %04X CMD "), queued_msg->seq >> 16);
-                Print_CMD (Chars_2_Word (&queued_msg->body[CMD_OFFSET]));
-                M_print (i18n (621, " from resend queue because of ack.\n"));
+                M_print (i18n (824, "Acknowledged packet type %04x (%s) sequence %04x removed from queue.\n"),
+                         tmp, CmdPktSrvName (tmp), queued_msg->seq >> 16);
                 R_redraw ();
             }
             if (Chars_2_Word (&queued_msg->body[CMD_OFFSET]) == CMD_SENDM)

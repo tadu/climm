@@ -94,60 +94,6 @@ const char *Convert_Status_2_Str (UDWORD status)
     }
 }
 
-
-/********************************************
-Prints a informative string to the screen.
-describing the command
-*********************************************/
-void Print_CMD (UWORD cmd)
-{
-    switch (cmd)
-    {
-        case CMD_KEEP_ALIVE:
-            M_print (i18n (743, "Keep Alive"));
-            break;
-        case CMD_KEEP_ALIVE2:
-            M_print (i18n (744, "Secondary Keep Alive"));
-            break;
-        case CMD_CONT_LIST:
-            M_print (i18n (745, "Contact List"));
-            break;
-        case CMD_INVIS_LIST:
-            M_print (i18n (746, "Invisible List"));
-            break;
-        case CMD_VIS_LIST:
-            M_print (i18n (747, "Visible List"));
-            break;
-        case CMD_RAND_SEARCH:
-            M_print (i18n (748, "Random Search"));
-            break;
-        case CMD_RAND_SET:
-            M_print (i18n (749, "Set Random"));
-            break;
-        case CMD_ACK_MESSAGES:
-            M_print (i18n (750, "Delete Server Messages"));
-            break;
-        case CMD_LOGIN_1:
-            M_print (i18n (751, "Finish Login"));
-            break;
-        case CMD_LOGIN:
-            M_print (i18n (752, "Login"));
-            break;
-        case CMD_SENDM:
-            M_print (i18n (753, "Send Message"));
-            break;
-        case CMD_INFO_REQ:
-            M_print (i18n (754, "Info Request"));
-            break;
-        case CMD_EXT_INFO_REQ:
-            M_print (i18n (755, "Extended Info Request"));
-            break;
-        default:
-            M_print ("%04X", cmd);
-            break;
-    }
-}
-
 /********************************************
 prints out the status of new_status as a string
 if possible otherwise as a hex number
@@ -684,7 +630,7 @@ void ExecScript (char *script, UDWORD uin, long num, char *data)
     int cmdlen, rc;
     char *mydata, *cmd, *who, *tmp;
 
-    mydata = data ? strdup (data) : "";
+    mydata = strdup (data ? data : "");
     who = UIN2Name (uin);
 
     for (tmp = mydata; *tmp; tmp++)

@@ -14,4 +14,6 @@ void Send_TCP_Ack (int sok, UWORD seq, UWORD sub_cmd, BOOL accept);
 int Decrypt_Pak (UBYTE *pak, UDWORD size);
 void Encrypt_Pak (UBYTE *pak, UDWORD size);
 void Get_Auto_Resp (UDWORD uin);
+#if 0
 char * Get_Auto_Reply ( );
+#endif

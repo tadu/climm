@@ -45,10 +45,10 @@
 045:Search Done.
 046:Length
 047:Extra Data
-048:SEQ
-049:Ver
+048: 
+049: 
 050:Login successful!
-051:The server acknowledged the %04x command.
+051: 
 052:Couldn't establish connection¶
 053:Connected to %s, waiting for response¶
 054: Conection Refused on port %d at %s¶
@@ -617,25 +617,25 @@
 617:Memory exhausted!!¶
 618:¶Total entries %d¶
 619:SEQ = %04x	CMD = %04x	attempts = %d	len = %d¶
-620:Removed message with SEQ %04X CMD 
-621: from resend queue because of ack.¶
+620: 
+621: 
 622:Do you want to apply these changes? (YES/NO)
 623:Doubled packet %04X¶
-624:Resending message with SEQ num %04X CMD 
-625:(Attempt #%d.)
+624: 
+625: 
 626:Discarding message to 
 627: after %d send attempts.  Message content:¶
 628: Description: ©3%s©0¶
 629: URL:         ©3%s©0
-630:Discarded a 
-631: packet.
+630: 
+631: 
 632:¶Connection unstable. Exiting....
 633:ACK!!! %d¶
 634: 
 635:You have encounterd a bug in my code :( I now own you a beer!¶Greetings Fryslan!¶
-636:[ Sent auto-reply message to %d(%d)]¶
-637:¶Packet Number %d¶
-638:¶The SEQ was %04X¶
+636: 
+637: 
+638: 
 639:The new UIN is %ld!¶
 640:Failed to update info.¶
 641:User info successfully updated.¶
@@ -740,19 +740,19 @@
 740:Composing message to ©2%d©0:¶
 741:Must receive a message first¶
 742:Must write one message first¶
-743:Keep Alive
-744:Secondary Keep Alive
-745:Contact List
-746:Invisible List
-747:Visible List
-748:Random Search
-749:Set Random
-750:Delete Server Messages
-751:Finish Login
-752:Login
-753:Send Message
-754:Info Request
-755:Extended Info Request
+743: 
+744: 
+745: 
+746: 
+747: 
+748: 
+749: 
+750: 
+751: 
+752: 
+753: 
+754: 
+755: 
 756:¶Creating Connection...¶
 757:Couldn't establish connection¶
 758:Sending Request...¶
@@ -803,8 +803,8 @@
 803:SoundOffline cmd
 804:SoundOnline
 805:SoundOffline
-806:Received ACK for message (seq %04X) from %s
-807:Cancelled incoming message (seq %04X) from %s
+806:Received ACK for message (seq %04X) from %s¶
+807:Cancelled incoming message (seq %04X) from %s¶
 808: Typ    = %04x	
 809:Unable to retrieve auto-response message for 
 810:¶Resending TCP message with SEQ num %04X to %s.	
@@ -820,3 +820,8 @@
 820:%s <option> [on|off] - control simple options.¶
 821:Funny messages are ©3%s©0.¶
 822:    color: use colored text output.¶
+823:Incoming partial packet:
+824:Acknowledged packet type %04x (%s) sequence %04x removed vom queue.¶
+825:Discarded a %04x (%s) packet
+826:Resending message %04x (%s) sequence %04x (attempt #%d, len %d).¶
+827:Unknown client

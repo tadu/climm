@@ -5,7 +5,6 @@ UWORD Chars_2_Word (UBYTE * buf);
 void DW_2_Chars (UBYTE * buf, UDWORD num);
 void Word_2_Chars (UBYTE * buf, UWORD num);
 
-void Print_CMD (UWORD cmd);
 void Print_Status (UDWORD new_status);
 int Print_UIN_Name (UDWORD uin);
 int Print_UIN_Name_10 (UDWORD uin);

@@ -21,6 +21,7 @@
 #endif
 #include <time.h>
 #include <string.h>
+#include <assert.h>
 
 static void Handle_Interest (UBYTE count, UBYTE * data);
 static void PktPrintString (UBYTE ** data, const char *fmt, ...);
@@ -411,18 +412,13 @@ void Recv_Message (int sok, UBYTE * pak)
 {
     RECV_MESSAGE_PTR r_mesg;
 
-/*    M_print( "\n" );*/
     r_mesg = (RECV_MESSAGE_PTR) pak;
     uiG.last_recv_uin = Chars_2_DW (r_mesg->uin);
     M_print (i18n (496, "%02d/%02d/%04d"), r_mesg->month, r_mesg->day, Chars_2_Word (r_mesg->year));
     M_print (" %02d:%02d UTC \a" CYAN BOLD "%10s" COLNONE " ",
              r_mesg->hour, r_mesg->minute, UIN2Name (Chars_2_DW (r_mesg->uin)));
-/*    M_print (i18n (497, "Type: %d\t Len: %d\n"), Chars_2_Word (r_mesg->type), Chars_2_Word (r_mesg->len));*/
     Do_Msg (sok, Chars_2_Word (r_mesg->type), Chars_2_Word (r_mesg->len),
-            (r_mesg->len + 2), uiG.last_recv_uin);
-
-/*    M_print( COLMESS "%s\n" COLNONE, ((char *) &r_mesg->len) + 2 );*/
-/*    ack_srv( sok, Chars_2_Word( pak.head.seq ) ); */
+            (r_mesg->len + 2), uiG.last_recv_uin, 0);
 }
 
 
@@ -452,6 +448,37 @@ void User_Offline (int sok, UBYTE * pak)
     }
 }
 
+static void UserOnlineSetVersion (CONTACT_PTR con, UDWORD tstamp)
+{
+    char buf[100];
+    char *new = NULL;
+    unsigned int ver = tstamp & 0xffff, ssl = 0;
+
+    if      ((tstamp & 0xffff0000) == 0x7d000000) { ssl = 0; new = "licq"; ver *= 10; }
+    else if ((tstamp & 0xffff0000) == 0x7d800000) { ssl = 1; new = "licq"; ver *= 10; }
+    else if ((tstamp & 0xffff0000) == 0x7a000000) { ssl = 0; new = "mICQ"; }
+    else if ((tstamp & 0xffff0000) == 0x7a800000) { ssl = 1; new = "mICQ"; }
+    else if (tstamp == 0x3b292cf3) { new = "2000b Beta"; ver = 46300; }
+    
+    if (new)
+    {
+        strcpy (buf, new);
+        strcat (buf, " ");
+                       sprintf (buf + strlen (buf), "%d.%d", ver / 10000,
+                                                            (ver / 100) % 100);
+        if (ver % 100) sprintf (buf + strlen (buf), ".%d",  (ver / 10)  %  10);
+        if (ver % 10)  sprintf (buf + strlen (buf), " cvs %d",   ver        %  10);
+        if (ssl) strcat (buf, "/SSL");
+    }
+    else if (uiG.Verbose)
+        sprintf (buf, "%s %08x", i18n (827, "Unknown client"), (unsigned int)tstamp);
+    else
+        buf[0] = '\0';
+
+    if (con->version) free (con->version);
+    con->version = strlen (buf) ? strdup (buf) : NULL;
+}
+
 void User_Online (int sok, UBYTE * pak)
 {
     CONTACT_PTR con;
@@ -464,19 +491,13 @@ void User_Online (int sok, UBYTE * pak)
 
     if (ssG.Done_Login)
     {
-        R_undraw ();
-        Time_Stamp ();
-        M_print (" ");
-        Print_UIN_Name_10 (remote_uin);
-        M_print (" %s (", i18n (31, "logged on"));
-        Print_Status (new_status);
-        M_print (").");
 
         if (uiG.SoundOnline == SOUND_CMD)
             ExecScript (uiG.Sound_Str_Online, remote_uin, 0, NULL);
 
         if ((con = UIN2Contact (remote_uin)))
         {
+            UserOnlineSetVersion (con, Chars_2_DW (&pak[37]));
             con->status = new_status;
             con->current_ip[0] = pak[4];
             con->current_ip[1] = pak[5];
@@ -490,20 +511,28 @@ void User_Online (int sok, UBYTE * pak)
             con->last_time = time (NULL);
             con->TCP_version = Chars_2_Word (&pak[21]);
             con->connection_type = pak[16];
+            
         }
         log_event (remote_uin, LOG_ONLINE, "User logged on %s\n", UIN2Name (remote_uin));
 
+        R_undraw ();
+        Time_Stamp ();
+        M_print (" ");
+        Print_UIN_Name_10 (remote_uin);
+        M_print (" %s (", i18n (31, "logged on"));
+        Print_Status (new_status);
+        M_print (")");
+        if (con->version)
+            M_print ("[%s]", con->version);
+        M_print (".\n");
         if (uiG.Verbose)
         {
-            M_print ("\n");
             M_print ("%-15s %d.%d.%d.%d\n", i18n (441, "IP:"), pak[4], pak[5], pak[6], pak[7]);
             M_print ("%-15s %d.%d.%d.%d\n", i18n (451, "IP2:"), pak[12], pak[13], pak[14], pak[15]);
             M_print ("%-15s %d\n", i18n (453, "TCP version:"), Chars_2_Word (&pak[21]));
             M_print ("%-15s %s\n", i18n (454, "Connection:"),
                      pak[16] == 4 ? i18n (493, "Peer-to-Peer") : i18n (494, "Server Only"));
-            Hex_Dump (pak, 0x2B);
         }
-        M_print ("\n");
         R_redraw ();
     }
     else
@@ -522,6 +551,7 @@ void User_Online (int sok, UBYTE * pak)
                 uiG.Contacts[index].last_time = time (NULL);
                 uiG.Contacts[index].TCP_version = Chars_2_Word (&pak[21]);
                 uiG.Contacts[index].connection_type = pak[16];
+                UserOnlineSetVersion (&uiG.Contacts[index], Chars_2_DW (&pak[37]));
                 break;
             }
         }
@@ -592,7 +622,7 @@ void Login (int sok, int UIN, char *pass, int ip, int port, UDWORD status)
     DW_2_Chars   (s2.X5, LOGIN_X5_DEF);
     DW_2_Chars   (s2.X6, LOGIN_X6_DEF);
     DW_2_Chars   (s2.X7, LOGIN_X7_DEF);
-    DW_2_Chars   (s2.X8, LOGIN_X8_DEF);
+    DW_2_Chars   (s2.build, BUILD_MICQ | MICQ_VERSION_NUM);
 
     memcpy (pak.data, &s1, sizeof (s1));
     size = sizeof (s1);
@@ -737,7 +767,7 @@ void Display_Search_Reply (int sok, UBYTE * pak)
     }
 }
 
-void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
+void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin, BOOL tcp)
 {
     char *tmp = NULL;
     int x, m;
@@ -905,9 +935,10 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
                    "You received URL message from %s\nDescription: %s\nURL: %s\n",
                    UIN2Name (uin), url_desc, url_url);
 
-        M_print (MSGRECSTR COLMESS "%s" COLNONE "\n", url_desc);
+        M_print ("%s" COLMESS "%s" COLNONE "\n", tcp ? MSGTCPRECSTR : MSGRECSTR, url_desc);
         Time_Stamp ();
-        M_print (i18n (594, "        URL: %s" COLMESS "%s" COLNONE "\n"), MSGRECSTR, url_url);
+        M_print (i18n (594, "        URL: %s" COLMESS "%s" COLNONE "\n"),
+                 tcp ? MSGTCPRECSTR : MSGRECSTR, url_url);
     }
     else if (type == CONTACT_MESS || type == MRCONTACT_MESS)
     {
@@ -936,7 +967,7 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
         ConvWinUnix (data);
         log_event (uin, LOG_MESS, "You received instant message from %s\n%s\n",
                    UIN2Name (uin), data);
-        M_print (MSGRECSTR COLMESS "\x1b<%s" COLNONE "\x1b>\n", data);
+        M_print ("%s" COLMESS "\x1b<%s" COLNONE "\x1b>\n", tcp ? MSGTCPRECSTR : MSGRECSTR, data);
     }
     /* aaron
        If we just received a message from someone on the contact list,

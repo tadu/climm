@@ -147,6 +147,7 @@ typedef struct
    UWORD TCP_version;
    UBYTE connection_type;
    UBYTE other_ip[4];
+   char *version;
    /* aaron
     Pointer to a string containing the last message recieved from this
     person. If we haven't received a message from them, this pointer will

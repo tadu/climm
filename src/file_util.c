@@ -585,6 +585,7 @@ static void Read_RC_File (FD_T rcf)
                     uiG.Contacts[uiG.Num_Contacts].current_ip[1] = 0xff;
                     uiG.Contacts[uiG.Num_Contacts].current_ip[2] = 0xff;
                     uiG.Contacts[uiG.Num_Contacts].current_ip[3] = 0xff;
+                    uiG.Contacts[uiG.Num_Contacts].version = NULL;
                     tmp = strtok (NULL, "");
                     if (tmp != NULL)
                         memcpy (uiG.Contacts[uiG.Num_Contacts].nick, tmp, sizeof (uiG.Contacts->nick));
@@ -607,6 +608,7 @@ static void Read_RC_File (FD_T rcf)
                     uiG.Contacts[uiG.Num_Contacts].current_ip[1] = 0xff;
                     uiG.Contacts[uiG.Num_Contacts].current_ip[2] = 0xff;
                     uiG.Contacts[uiG.Num_Contacts].current_ip[3] = 0xff;
+                    uiG.Contacts[uiG.Num_Contacts].version = NULL;
                     tmp = strtok (NULL, "");
                     if (tmp != NULL)
                         memcpy (uiG.Contacts[uiG.Num_Contacts].nick, tmp, sizeof (uiG.Contacts->nick));
@@ -630,6 +632,7 @@ static void Read_RC_File (FD_T rcf)
                     uiG.Contacts[uiG.Num_Contacts].current_ip[1] = 0xff;
                     uiG.Contacts[uiG.Num_Contacts].current_ip[2] = 0xff;
                     uiG.Contacts[uiG.Num_Contacts].current_ip[3] = 0xff;
+                    uiG.Contacts[uiG.Num_Contacts].version = NULL;
                     tmp = strtok (NULL, "");
                     if (tmp != NULL)
                         memcpy (uiG.Contacts[uiG.Num_Contacts].nick, tmp, sizeof (uiG.Contacts->nick));
@@ -656,6 +659,7 @@ static void Read_RC_File (FD_T rcf)
                         uiG.Contacts[uiG.Num_Contacts].current_ip[1] = 0xff;
                         uiG.Contacts[uiG.Num_Contacts].current_ip[2] = 0xff;
                         uiG.Contacts[uiG.Num_Contacts].current_ip[3] = 0xff;
+                        uiG.Contacts[uiG.Num_Contacts].version = NULL;
                         uiG.Contacts[uiG.Num_Contacts].port = 0;
                         uiG.Contacts[uiG.Num_Contacts].sok = (SOK_T) - 1L;
                         uiG.Contacts[uiG.Num_Contacts].invis_list = FALSE;
@@ -954,6 +958,7 @@ int Add_User (SOK_T sok, UDWORD uin, char *name)
     uiG.Contacts[uiG.Num_Contacts].sok = (SOK_T) - 1L;
     uiG.Contacts[uiG.Num_Contacts].vis_list = FALSE;
     uiG.Contacts[uiG.Num_Contacts].invis_list = FALSE;
+    uiG.Contacts[uiG.Num_Contacts].version = NULL;
     snprintf (uiG.Contacts[uiG.Num_Contacts++].nick, sizeof (uiG.Contacts->nick), "%s", name);
     snd_contact_list (sok);
     return 1;

@@ -10,4 +10,4 @@ void ack_srv (SOK_T sok, UDWORD seq);
 void Display_Info_Reply (int sok, UBYTE * pak);
 void Display_Ext_Info_Reply (int sok, UBYTE * pak);
 void Display_Search_Reply (int sok, UBYTE * pak);
-void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin);
+void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin, BOOL tcp);

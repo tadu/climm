@@ -1,4 +1,17 @@
 
+2001-12-11 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Recognize and display licq's version numbers. Define a way
+	  for micq's version numbers.
+	* Display incoming tcp messages differently than server messages
+	* Create cmd_pkt_server.c, handles incoming server packets. Move
+	  stuff from server.c there, create jump table (though still
+	  somewhat empty) holding all commands; replace Print_CMD() by
+	  CmdPktSrvName() using this table.
+	* Print tcp connections even if nonverbose, since it may freeze
+	  till a network timeout occurs, which can be minutes.
+	* Remove tcp socket when connect fails (cures segfault)
+	* Fix segfault reported by Jeremy Hall <jhall@UU.NET>.
+
 2001-12-06 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Moved tcp packet defs to icq_tcp.h.
 	* Revamped Logging: now have LogLevel (>0 = on, &2 = omit on/off)

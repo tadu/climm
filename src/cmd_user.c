@@ -15,44 +15,17 @@
 
 UDWORD last_uin = 0;
 
-static jump_f CmdUserChange;
-static jump_f CmdUserRandom;
-static jump_f CmdUserHelp;
-static jump_f CmdUserInfo;
-static jump_f CmdUserTrans;
-static jump_f CmdUserAuto;
-static jump_f CmdUserAlter;
-static jump_f CmdUserMessage;
-static jump_f CmdUserResend;
-static jump_f CmdUserVerbose;
-static jump_f CmdUserRandomSet;
-static jump_f CmdUserIgnoreStatus;
-static jump_f CmdUserStatusDetail;
-static jump_f CmdUserStatusWide;
-static jump_f CmdUserStatusShort;
-static jump_f CmdUserStatusSelf;
-static jump_f CmdUserSound;
-static jump_f CmdUserSoundOnline;
-static jump_f CmdUserSoundOffline;
-static jump_f CmdUserAutoaway;
-static jump_f CmdUserSet;
-static jump_f CmdUserClear;
-static jump_f CmdUserTogIgnore;
-static jump_f CmdUserTogVisible;
-static jump_f CmdUserAdd;
-static jump_f CmdUserRInfo;
-static jump_f CmdUserAuth;
-static jump_f CmdUserURL;
-static jump_f CmdUserSave;
-static jump_f CmdUserTabs;
-static jump_f CmdUserLast;
-static jump_f CmdUserUptime;
-static jump_f CmdUserSearch;
-static jump_f CmdUserWpSearch;
-static jump_f CmdUserUpdate;
-static jump_f CmdUserOther;
-static jump_f CmdUserAbout;
-static jump_f CmdUserQuit;
+static jump_f
+    CmdUserChange, CmdUserRandom, CmdUserHelp, CmdUserInfo, CmdUserTrans,
+    CmdUserAuto, CmdUserAlter, CmdUserMessage, CmdUserResend,
+    CmdUserVerbose, CmdUserRandomSet, CmdUserIgnoreStatus,
+    CmdUserStatusDetail, CmdUserStatusWide, CmdUserStatusShort,
+    CmdUserStatusSelf, CmdUserSound, CmdUserSoundOnline,
+    CmdUserSoundOffline, CmdUserAutoaway, CmdUserSet, CmdUserClear,
+    CmdUserTogIgnore, CmdUserTogVisible, CmdUserAdd, CmdUserRInfo,
+    CmdUserAuth, CmdUserURL, CmdUserSave, CmdUserTabs, CmdUserLast,
+    CmdUserUptime, CmdUserSearch, CmdUserWpSearch, CmdUserUpdate,
+    CmdUserOther, CmdUserAbout, CmdUserQuit;
 
 static void CmdUserProcess (SOK_T sok, const char *command, int *idle_val, int *idle_flag);
 
@@ -838,7 +811,6 @@ JUMP_F (CmdUserMessage)
         }
         if (arg1)
         {
-            Time_Stamp ();
             if (data == 8)
             {
                 int i;
@@ -1293,7 +1265,10 @@ JUMP_F(CmdUserStatusShort)
                     }
                     M_print (COLCONTACT "%-20s\t" COLMESS "(", uiG.Contacts[i].nick);
                     Print_Status (uiG.Contacts[i].status);
-                    M_print (")" COLNONE "\n");
+                    M_print (")" COLNONE);
+                    if (uiG.Contacts[i].version)
+                       M_print (" [%s]", uiG.Contacts[i].version);
+                    M_print ("\n");
                 }
             }
         }

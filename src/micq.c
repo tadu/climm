@@ -8,6 +8,7 @@
 #include "sendmsg.h"
 #include "network.h"
 #include "cmd_user.h"
+#include "cmd_pkt_server.h"
 #include "icq_response.h"
 #include "server.h"
 
@@ -368,102 +369,6 @@ SOK_T Connect_Remote (char *hostname, int port, FD_T aux)
     return sok;
 }
 
-
-/******************************************
-Handles packets that the server sends to us.
-*******************************************/
-void Handle_Server_Response (SOK_T sok)
-{
-    srv_net_icq_pak pak;
-    static UDWORD last_seq = -1;
-    int s;
-
-    s = SOCKREAD (sok, &pak.head.ver, sizeof (pak) - 2);
-    if (s < 0)
-        return;
-
-    if (uiG.Verbose & 4)
-    {
-        R_undraw ();
-        Time_Stamp ();
-        M_print (" \x1b«" COLSERV "");
-        M_print (i18n (774, "Incoming packet:"));
-        M_print (" %04X %08X:%08X %04X (", Chars_2_Word (pak.head.ver),
-                 Chars_2_DW (pak.head.session), Chars_2_DW (pak.head.seq),
-                 Chars_2_Word (pak.head.cmd));
-        Print_CMD (Chars_2_Word (pak.head.cmd));
-        M_print (")" COLNONE "\n");
-#if ICQ_VER == 5
-        Hex_Dump (pak.head.ver, 3);                       M_print ("\n");
-        Hex_Dump (pak.head.ver + 3, 6);                   M_print ("\n");
-        Hex_Dump (pak.head.ver + 9, 12);      if (s > 21) M_print ("\n");
-        Hex_Dump (pak.head.ver + 21, s - 21);
-#else
-        Hex_Dump (pak.head.ver, s);
-#endif
-        M_print ("\x1b»\n");
-        R_redraw ();
-        /* i18n (602, " ") i18n (603, " ") i18n (604, " ") i18n (605, " ") */
-    }
-/*    if ( pak.head.cmd != SRV_BAD_PASS ) {
-      if ( Chars_2_Word( pak.head.ver ) != ICQ_VER ) {
-              R_undraw();
-              M_print( "Invalid server response:\tVersion: %d\n", Chars_2_Word( pak.head.ver ) );
-          if ( uiG.Verbose ) {
-              Hex_Dump( pak.head.ver, s );
-          }
-      R_redraw();
-      return;
-        }
-    }*/
-    if (Chars_2_DW (pak.head.session) != ssG.our_session)
-    {
-        if (uiG.Verbose)
-        {
-            R_undraw ();
-            M_print (i18n (606, "Got a bad session ID %08X with CMD %04X ignored.\n"),
-                     Chars_2_DW (pak.head.session), Chars_2_Word (pak.head.cmd));
-            R_redraw ();
-        }
-        return;
-    }
-    /* !!! TODO make a check checksum routine to verify the packet further */
-/*   if ( ( ssG.serv_mess[ Chars_2_Word( pak.head.seq2 ) ] ) && 
-      ( Chars_2_Word( pak.head.cmd ) != SRV_NEW_UIN ) )*/
-/*   if ( ( last_seq == Chars_2_DW( pak.head.seq ) ) && 
-      ( Chars_2_Word( pak.head.cmd ) != SRV_NEW_UIN ) ) */
-    if ((Chars_2_Word (pak.head.cmd) != SRV_NEW_UIN)
-        && (Is_Repeat_Packet (Chars_2_Word (pak.head.seq))))
-    {
-        if (Chars_2_Word (pak.head.seq))
-        {
-            if (Chars_2_Word (pak.head.cmd) != SRV_ACK) /* ACKs don't matter */
-            {
-                if (uiG.Verbose)
-                {
-                    R_undraw ();
-                    M_print (i18n (67, "\nIgnored a message cmd  %04x\n"),
-                             Chars_2_Word (pak.head.cmd));
-                    R_redraw ();
-                }
-                ack_srv (sok, Chars_2_DW (pak.head.seq));       /* LAGGGGG!! */
-                return;
-            }
-        }
-    }
-    if (Chars_2_Word (pak.head.cmd) != SRV_ACK)
-    {
-        ssG.serv_mess[Chars_2_Word (pak.head.seq2)] = TRUE;
-        last_seq = Chars_2_DW (pak.head.seq);
-        Got_SEQ (Chars_2_DW (pak.head.seq));
-        ack_srv (sok, Chars_2_DW (pak.head.seq));
-        ssG.real_packs_recv++;
-    }
-    Server_Response (sok, pak.head.check + DATA_OFFSET, s - (sizeof (pak.head) - 2),
-                     Chars_2_Word (pak.head.cmd), Chars_2_Word (pak.head.ver),
-                     Chars_2_DW (pak.head.seq), Chars_2_DW (pak.head.UIN));
-}
-
 /**********************************************
 Verifies that we are in the correct endian
 ***********************************************/
@@ -715,7 +620,7 @@ int main (int argc, char *argv[])
         M_select ();
 
         if (M_Is_Set (sok))
-            Handle_Server_Response (sok);
+            CmdPktSrvRead (sok);
 /*** TCP: on receiving a connection ***/
 #ifdef TCP_COMM
         if (M_Is_Set (tcpSok))

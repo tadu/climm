@@ -1,6 +1,4 @@
 
-struct jumpstr;
-
 #define UIN_DELIMS ":|/" /* add space if you don't want your nick names to have spaces */
 #define END_MSG_STR "."
 #define CANCEL_MSG_STR "#"

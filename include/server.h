@@ -1,2 +1,4 @@
 
-void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver, UDWORD seq, UDWORD uin);
+void Auto_Reply (SOK_T sok, SIMPLE_MESSAGE_PTR s_mesg);
+char *Get_Auto_Reply (void);
+
