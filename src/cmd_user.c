@@ -726,6 +726,8 @@ static JUMP_F(CmdUserTCP)
             }
             TCPSendFiles (sess, uin, des, files, ass, count);
         }
+        else if (!strcmp (cmd, "ver"))
+            TCPGetAuto     (sess, uin, TCP_MSG_GET_VER);
 #endif
         else if (!strcmp (cmd, "auto"))
             TCPGetAuto     (sess, uin, 0);
