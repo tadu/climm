@@ -48,6 +48,7 @@ static jump_f
     CmdUserContact, CmdUserAnyMess;
 
 static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag);
+static void CallbackMeta (Event *event);
 
 /* 1 = do not apply idle stuff next time           v
    2 = count this line as being idle               v */
@@ -248,10 +249,12 @@ static JUMP_F(CmdUserRandom)
     }
     else
     {
+        UDWORD ref;
         if (conn->ver > 6)
-            SnacCliSearchrandom (conn, arg1);
+            ref = SnacCliSearchrandom (conn, arg1);
         else
-            CmdPktCmdRandSearch (conn, arg1);
+            ref = CmdPktCmdRandSearch (conn, arg1);
+        QueueEnqueueData (conn, QUEUE_REQUEST_META, ref, 0, time (NULL) + 10, NULL, NULL, &CallbackMeta);
     }
     return 0;
 }
@@ -2531,11 +2534,10 @@ static JUMP_F(CmdUserConn)
         {
             Contact *cont;
             
-            if (!(cont = ContactByUIN (conn->uin, 1)))
-                continue;
+            cont = ContactByUIN (conn->uin, 1);
 
             M_printf (i18n (2093, "%02d %-12s version %d for %s (%x), at %s:%d %s\n"),
-                     i + 1, ConnectionType (conn), conn->ver, cont->nick, conn->status,
+                     i + 1, ConnectionType (conn), conn->ver, cont ? cont->nick : "", conn->status,
                      conn->server ? conn->server : s_ip (conn->ip), conn->port,
                      conn->connect & CONNECT_FAIL ? i18n (1497, "failed") :
                      conn->connect & CONNECT_OK   ? i18n (1934, "connected") :
