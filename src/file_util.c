@@ -1526,11 +1526,10 @@ int Save_RC ()
     fprintf (stf, "# Contact groups.");
     for (k = 1; (cg = ContactGroupIndex (k)); k++)
     {
+        if (!cg->serv)
+            continue;
         fprintf (stf, "\n[Group]\n");
-        if (cg->serv)
-            fprintf (stf, "server %s %ld\n", cg->serv->type == TYPE_SERVER ? "icq8" : "icq5", cg->serv->uin);
-        else
-            fprintf (stf, "#server <icq5|icq8> <uin>\n");
+        fprintf (stf, "server %s %ld\n", cg->serv->type == TYPE_SERVER ? "icq8" : "icq5", cg->serv->uin);
         fprintf (stf, "label %s\n", s_quote (cg->name));
         fprintf (stf, "id %d\n", cg->id);
 
