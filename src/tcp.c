@@ -271,9 +271,8 @@ void TCPDispatchMain (Session *list)
         return;
     }
 
-#ifdef WIP
-    M_printf ("New incoming direct(?) (%d) %x,%x\n", list->sok, list->type, peer->type);
-#endif
+    if (list->ver == 6)
+        M_print (i18n (2046, "You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n"));
 
     peer->flags = 0;
     peer->spref = NULL;
@@ -1539,6 +1538,7 @@ BOOL TCPSendMsg (Session *list, UDWORD uin, char *msg, UWORD sub_cmd)
     pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, sub_cmd, 0, list->parent->status, msg);
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
+/*    PacketWriteDLStr (pak, "{0946134E-4C7F-11D1-8222-444553540000}"); FIXME: implement UTF-8 */
 
     peer->stat_real_pak_sent++;
 
@@ -1948,6 +1948,7 @@ static void TCPCallBackReceive (Event *event)
                             case 0x0032:
 
                             case 0x002d:
+                                M_printf ("%s " COLACK "%10s" COLNONE " ", s_now, cont->nick);
                                 M_printf (i18n (2064, "Refusing chat request (%s/%s/%s) from %s.\n"),
                                          text, reason, name, cont->nick);
                                 TCPSendGreetAck (event->sess, seq, cmd, FALSE);
