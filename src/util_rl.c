@@ -65,8 +65,19 @@
 #define __USE_XOPEN 1
 #include <wchar.h>
 #endif
+#if HAVE_WCTYPE_H
+#include <wctype.h>
+#else
+#include <ctype.h>
+#endif
 
 #undef DEBUG_RL
+
+#if !HAVE_ISWALNUM
+#define iswalnum(ucs) (!(ucs & 0xffffff00L) && isalnum (ucs))
+#endif
+
+#define rl_ucs_at(str,pos) (((UDWORD)((str)->txt[2 * (pos) + 1])) | (((UDWORD)((str)->txt[2 * (pos)]) << 8)))
 
 #if HAVE_TCGETATTR
 static struct termios tty_attr;
@@ -92,14 +103,18 @@ static int  rl_delete (void);
 static int  rl_left (UDWORD i);
 static int  rl_right (UDWORD i);
 static const Contact *rl_tab_getnext (strc_t common);
+static const Contact *rl_tab_getprev (strc_t common);
 static void rl_tab_accept (void);
 static void rl_tab_cancel (void);
 static void rl_key_tab (void);
+static void rl_key_shifttab (void);
 static void rl_key_insert (UWORD ucs);
 static void rl_key_left (void);
 static void rl_key_right (void);
 static void rl_key_delete (void);
 static void rl_key_backspace (void);
+static void rl_key_backward_word (void);
+static void rl_key_forward_word (void);
 static void rl_key_end (void);
 static void rl_key_cut (void);
 static void rl_key_kill (void);
@@ -130,7 +145,7 @@ static char *rl_yank = NULL;
 static char *rl_history[RL_HISTORY_LINES + 1];
 static int   rl_history_pos = 0;
 
-static int    rl_tab_state = 0;  /* 0 = OFF 1 = Out 2 = Inc 3 = Online 4 = Offline */
+static int    rl_tab_state = 0;  /* 0 = OFF 1 = Out 2 = Inc 3 = Online 4 = Offline |8 = second try */
 static UDWORD rl_tab_index = 0;  /* index in list */
 static UDWORD rl_tab_len   = 0;  /* number of codepoints tabbed in */
 static UDWORD rl_tab_pos   = 0;  /* start of word tabbed in */
@@ -727,7 +742,7 @@ static void rl_linecompress (str_t line, UDWORD from, UDWORD to)
     s_init (line, "", 0);
     for (i = from; i < to; i++)
     {
-        ucs = ((UBYTE)rl_ucs.txt[2 * i + 1]) | (((UBYTE)rl_ucs.txt[2 * i]) << 8);
+        ucs = rl_ucs_at (&rl_ucs, i);
         if ((ucs != 0xffff) && (ucs != (UDWORD)-1))
             s_cat (line, ConvUTF8 (ucs));
     }
@@ -751,7 +766,7 @@ static void rl_lineexpand (char *hist)
     line = ConvTo (hist, ENC_UCS2BE);
     s_catn (&str, line->txt, line->len);
     for (i = 0; 2 * i + 1 < str.len; i++)
-        rl_insert (((UBYTE)str.txt[2 * i + 1]) | (((UBYTE)str.txt[2 * i]) << 8));
+        rl_insert (rl_ucs_at (&str, i));
     s_done (&str);
 }
 
@@ -825,57 +840,110 @@ static const Contact *rl_tab_getnext (strc_t common)
 {
     const Contact *cont;
     
-    switch (rl_tab_state)
+    rl_tab_state &= ~8;
+    while (1)
     {
-        case 1:
-            while ((cont = TabGetOut (rl_tab_index++)))
-                if (!strncasecmp (cont->nick, common->txt, common->len))
-                    return cont;
-            rl_tab_index = 0;
-            rl_tab_state++;
-        case 2:
-            while ((cont = TabGetIn (rl_tab_index++)))
-                if (!strncasecmp (cont->nick, common->txt, common->len))
-                    return cont;
-            rl_tab_index = 0;
-            rl_tab_state++;
-        case 3:
-            while ((cont = ContactIndex (NULL, rl_tab_index++)))
-                if (!strncasecmp (cont->nick, common->txt, common->len)
-                    && cont->status != STATUS_OFFLINE && !TabHas (cont))
-                    return cont;
-            rl_tab_index = 0;
-            rl_tab_state++;
-        case 4:
-            while ((cont = ContactIndex (NULL, rl_tab_index++)))
-                if (!strncasecmp (cont->nick, common->txt, common->len)
-                    && cont->status == STATUS_OFFLINE && !TabHas (cont))
-                    return cont;
-            rl_tab_index = 0;
-            rl_tab_state = 1;
-            while ((cont = TabGetOut (rl_tab_index++)))
-                if (!strncasecmp (cont->nick, common->txt, common->len))
-                    return cont;
-            rl_tab_index = 0;
-            rl_tab_state++;
-            while ((cont = TabGetIn (rl_tab_index++)))
-                if (!strncasecmp (cont->nick, common->txt, common->len))
-                    return cont;
-            rl_tab_index = 0;
-            rl_tab_state++;
-            while ((cont = ContactIndex (NULL, rl_tab_index++)))
-                if (!strncasecmp (cont->nick, common->txt, common->len)
-                    && cont->status != STATUS_OFFLINE && !TabHas (cont))
-                    return cont;
-            rl_tab_index = 0;
-            rl_tab_state++;
-            while ((cont = ContactIndex (NULL, rl_tab_index++)))
-                if (!strncasecmp (cont->nick, common->txt, common->len)
-                    && cont->status == STATUS_OFFLINE && !TabHas (cont))
-                    return cont;
-            return NULL;
+        switch (rl_tab_state & 7)
+        {
+            case 1:
+                while ((cont = TabGetOut (rl_tab_index++)))
+                    if (!strncasecmp (cont->nick, common->txt, common->len))
+                        return cont;
+                rl_tab_index = 0;
+                rl_tab_state++;
+            case 2:
+                while ((cont = TabGetIn (rl_tab_index++)))
+                    if (!strncasecmp (cont->nick, common->txt, common->len))
+                        return cont;
+                rl_tab_index = 0;
+                rl_tab_state++;
+            case 3:
+                while ((cont = ContactIndex (NULL, rl_tab_index++)))
+                    if (!strncasecmp (cont->nick, common->txt, common->len)
+                        && cont->status != STATUS_OFFLINE && !TabHas (cont))
+                        return cont;
+                rl_tab_index = 0;
+                rl_tab_state++;
+            case 4:
+                while ((cont = ContactIndex (NULL, rl_tab_index++)))
+                    if (!strncasecmp (cont->nick, common->txt, common->len)
+                        && cont->status == STATUS_OFFLINE && !TabHas (cont))
+                        return cont;
+                if (rl_tab_state & 8)
+                    return NULL;
+                rl_tab_index = 0;
+                rl_tab_state = 9;
+                continue;
+        }
+        assert (0);
     }
-    assert (0);
+}
+
+/*
+ * Fetch previous tab contact
+ */
+static const Contact *rl_tab_getprev (strc_t common)
+{
+    const Contact *cont;
+    
+    rl_tab_index--;
+    rl_tab_state &= ~8;
+    while (1)
+    {
+        switch (rl_tab_state & 7)
+        {
+            case 1:
+                while (rl_tab_index && (cont = TabGetOut (--rl_tab_index)))
+                    if (!strncasecmp (cont->nick, common->txt, common->len))
+                    {
+                        rl_tab_index++;
+                        return cont;
+                    }
+                rl_tab_index = 0;
+                rl_tab_state++;
+                while (TabGetOut (rl_tab_index))
+                    rl_tab_index++;
+            case 2:
+                while (rl_tab_index && (cont = TabGetIn (--rl_tab_index)))
+                    if (!strncasecmp (cont->nick, common->txt, common->len))
+                    {
+                        rl_tab_index++;
+                        return cont;
+                    }
+                rl_tab_index = 0;
+                rl_tab_state++;
+                while (TabGetIn (rl_tab_index))
+                    rl_tab_index++;
+            case 3:
+                while (rl_tab_index && (cont = ContactIndex (NULL, --rl_tab_index)))
+                    if (!strncasecmp (cont->nick, common->txt, common->len)
+                        && cont->status != STATUS_OFFLINE && !TabHas (cont))
+                    {
+                        rl_tab_index++;
+                        return cont;
+                    }
+                rl_tab_index = 0;
+                rl_tab_state++;
+                while (ContactIndex (NULL, rl_tab_index))
+                    rl_tab_index++;
+            case 4:
+                while (rl_tab_index && (cont = ContactIndex (NULL, --rl_tab_index)))
+                    if (!strncasecmp (cont->nick, common->txt, common->len)
+                        && cont->status == STATUS_OFFLINE && !TabHas (cont))
+                    {
+                        rl_tab_index++;
+                        return cont;
+                    }
+                if (rl_tab_state & 8)
+                    return NULL;
+                while (ContactIndex (NULL, rl_tab_index))
+                    rl_tab_index++;
+                rl_tab_index = 0;
+                rl_tab_state = 9;
+                continue;
+        }
+        assert (0);
+    }
 }
 
 /*
@@ -897,9 +965,9 @@ static void rl_tab_accept (void)
     ins = ConvTo (rl_tab_cont->nick, ENC_UCS2BE);
     s_init (&inss, "", 0);
     s_catn (&inss, ins->txt, ins->len);
-    for (i = 0; i < inss.len; i += 2)
+    for (i = 0; i < inss.len / 2; i++)
     {
-        UWORD ucs = ((UBYTE)inss.txt[i + 1]) | (((UBYTE)inss.txt[i]) << 8);
+        UWORD ucs = rl_ucs_at (&inss, i);
         rl_analyze_ucs (ucs, &display, &columns);
         rl_insert_basic (ucs, display, strlen (display), columns);
     }
@@ -929,7 +997,7 @@ static void rl_tab_cancel (void)
     s_catn (&inss, ins->txt, ins->len);
     for (i = 0; i < rl_tab_common; i++)
     {
-        UWORD ucs = ((UBYTE)inss.txt[2 * i + 1]) | (((UBYTE)inss.txt[2 * i]) << 8);
+        UWORD ucs = rl_ucs_at (&inss, i);
         rl_analyze_ucs (ucs, &display, &columns);
         rl_insert_basic (ucs, display, strlen (display), columns);
     }
@@ -1006,9 +1074,55 @@ static void rl_key_tab (void)
     ins = ConvTo (rl_tab_cont->nick, ENC_UCS2BE);
     s_init (&inss, "", 0);
     s_catn (&inss, ins->txt, ins->len);
-    for (i = 0; i < inss.len; i += 2)
+    for (i = 0; i < inss.len / 2; i++)
     {
-        UWORD ucs = ((UBYTE)inss.txt[i + 1]) | (((UBYTE)inss.txt[i]) << 8);
+        UWORD ucs = rl_ucs_at (&inss, i);
+        rl_analyze_ucs (ucs, &display, &columns);
+        rl_insert_basic (ucs, s_sprintf ("%s%s%s", rl_colon.txt, display, rl_coloff.txt),
+                         strlen (display) + rl_colon.len + rl_coloff.len, columns);
+        rl_tab_len++;
+    }
+    rl_left (rl_tab_len - rl_tab_common);
+    s_done (&inss);
+    rl_recheck (TRUE);
+}
+
+/*
+ * Handle tab key - continue tabbing backwards
+ */
+static void rl_key_shifttab (void)
+{
+    str_s inss = { NULL, 0, 0 };
+    strc_t ins;
+    const char *display;
+    UDWORD i;
+    UWORD columns;
+
+    if (!rl_tab_state)
+    {
+        printf ("\a");
+        return;
+    }
+
+    rl_linecompress (&rl_temp, rl_tab_pos, rl_ucspos);
+    rl_tab_cont = rl_tab_getprev (&rl_temp);
+    rl_left (rl_tab_common);
+
+    for ( ; rl_tab_len; rl_tab_len--)
+        rl_delete ();
+    if (!rl_tab_cont)
+    {
+        printf ("\a");
+        rl_tab_state = 0;
+        rl_recheck (TRUE);
+        return;
+    }
+    ins = ConvTo (rl_tab_cont->nick, ENC_UCS2BE);
+    s_init (&inss, "", 0);
+    s_catn (&inss, ins->txt, ins->len);
+    for (i = 0; i < inss.len / 2; i++)
+    {
+        UWORD ucs = rl_ucs_at (&inss, i);
         rl_analyze_ucs (ucs, &display, &columns);
         rl_insert_basic (ucs, s_sprintf ("%s%s%s", rl_colon.txt, display, rl_coloff.txt),
                          strlen (display) + rl_colon.len + rl_coloff.len, columns);
@@ -1099,6 +1213,36 @@ static void rl_key_backspace (void)
         rl_tab_cancel ();
     if (rl_left (1))
         rl_key_delete ();
+}
+
+/*
+ * Handle backward-word
+ */
+static void rl_key_backward_word (void)
+{
+    if (rl_ucspos > 0)
+        rl_key_left ();
+    if (rl_ucspos > 0 && !iswalnum (rl_ucs_at (&rl_ucs, rl_ucspos)))
+        while (rl_ucspos > 0 && !iswalnum (rl_ucs_at (&rl_ucs, rl_ucspos)))
+            rl_key_left ();
+    while (rl_ucspos > 0 && iswalnum (rl_ucs_at (&rl_ucs, rl_ucspos)))
+        rl_key_left ();
+    if (!iswalnum (rl_ucs_at (&rl_ucs, rl_ucspos)))
+        rl_key_right ();
+}
+
+/*
+ * Handle forward-word
+ */
+static void rl_key_forward_word (void)
+{
+    if (rl_ucspos < rl_ucscol.len)
+        rl_key_right ();
+    if (rl_ucspos < rl_ucscol.len && !iswalnum (rl_ucs_at (&rl_ucs, rl_ucspos)))
+        while (rl_ucspos < rl_ucscol.len && !iswalnum (rl_ucs_at (&rl_ucs, rl_ucspos)))
+            rl_key_right ();
+    while (rl_ucspos < rl_ucscol.len && iswalnum (rl_ucs_at (&rl_ucs, rl_ucspos)))
+        rl_key_right ();
 }
 
 /*
@@ -1282,10 +1426,15 @@ str_t ReadLine (UBYTE newbyte)
 #ifdef ANSI_TERM
 
         case 1: /* state 1: ESC was pressed */
+            rl_stat = 0;
             if (ucs == 'u' || ucs == 'U')
                 rl_stat = 10;
             else if (ucs == '[' || ucs == 'O')
                 rl_stat = 2;
+            else if (ucs == 'b')
+                rl_key_backward_word ();
+            else if (ucs == 'f')
+                rl_key_forward_word ();
             else
             {
                 printf ("\a");
@@ -1317,6 +1466,9 @@ str_t ReadLine (UBYTE newbyte)
                     break;
                 case 'F':            /* end */
                     rl_key_end ();
+                    break;
+                case 'Z':            /* shift tab */
+                    rl_key_shifttab ();
                     break;
                 case '3':            /* + ~ = delete */
                     rl_stat = 3;
