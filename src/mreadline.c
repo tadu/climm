@@ -228,6 +228,7 @@ int R_process_input (void)
                             strcpy (history[k], history[k - 1]);
                     return 1;
                 case 12:       /* ^L */
+                    R_undraw ();
                     system ("clear");
                     R_redraw ();
                     break;
@@ -378,7 +379,6 @@ void R_getline (char *buf, int len)
     s[0] = 0;
 }
 
-static int R_undraw_counter = 1;
 static const char *curprompt = NULL;
 
 void R_setprompt (const char *prompt)
@@ -390,35 +390,24 @@ void R_setprompt (const char *prompt)
 
 void R_prompt (void)
 {
-    if (curprompt)
-        M_print (curprompt);
 }
 
 void R_undraw ()
 {
-    int i;
-    R_undraw_counter--;
-    if (R_undraw_counter < 0)
-    {
-        M_print ("Error! R_un/redraw() unbalanced!\n");
-        R_undraw_counter = 0;
-    }
     M_print ("\r");             /* for tab stop reasons */
     printf ("\033[K");
 }
 
 void R_redraw ()
 {
-    if (++R_undraw_counter > 0)
-    {
-        
-        R_prompt ();
-        printf ("%s", s);
+    R_prompt ();
+    if (curprompt)
+        M_print (curprompt);
+    printf ("%s", s);
 #ifdef ANSI_COLOR
-        if (cpos != clen)
-            printf ("\033[%dD", clen - cpos);
+    if (cpos != clen)
+        printf ("\033[%dD", clen - cpos);
 #endif
-    }
 }
 
 void R_doprompt (const char *prompt)

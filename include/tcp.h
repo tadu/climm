@@ -4,18 +4,27 @@
 
 #include "contact.h"
 
+#define TCP_STATE_ESTABLISHED 32
+#define TCP_STATE_CONNECTED    6
+#define TCP_STATE_WAITING     -2
+#define TCP_STATE_FAILED      -1
+
 typedef struct
 {
     SOK_T   sok;
     int     state;
+    int     ip;
     UDWORD  sid;
     struct Contact_t *cont;
 } tcpsock_t;
 
-SOK_T TCPInit (int port);
+void TCPInit (int port);
 
 void TCPDirectOpen     (struct Contact_t *cont);
 void TCPDirectClose    (struct Contact_t *cont);
+
+void TCPAddSockets ();
+void TCPDispatch ();
 
 /* probably only internal */
 

@@ -15,6 +15,7 @@
 #include <limits.h>
 #include "micq.h"
 #include "msg_queue.h"
+#include "util_ui.h"
 
 struct QueueEntry
 {
@@ -72,6 +73,8 @@ struct Event *QueuePop (struct Queue *queue)
             queue->due = INT_MAX;
         else
             queue->due = queue->head->event->due;
+        if (uiG.Verbose & 32)
+            M_print (i18n (851, "Debug: Queue: popping type %d seq %08x\n"), event->type, event->seq);
         return event;
     }
     return NULL;
@@ -94,6 +97,9 @@ void QueueEnqueue (struct Queue *queue, struct Event *event)
 
     entry->next = NULL;
     entry->event  = event;
+
+    if (uiG.Verbose & 32)
+        M_print (i18n (852, "Debug: Queue: enqueuing type %d seq %08x\n"), event->type, event->seq);
 
     if (!queue->head)
     {
@@ -118,6 +124,30 @@ void QueueEnqueue (struct Queue *queue, struct Event *event)
 }
 
 /*
+ * Adds a new entry to the queue. Creates struct Event for you.
+ */
+void QueueEnqueueData (struct Queue *queue, UDWORD seq, UDWORD type,
+                       UDWORD uin, time_t due, UDWORD len,
+                       UBYTE *body, UBYTE *info, Queuef *callback)
+{
+    struct Event *event = malloc (sizeof (struct Event));
+    
+    assert (event);
+    
+    event->seq  = seq;
+    event->type = type;
+    event->attempts = 1;
+    event->uin  = uin;
+    event->due  = due;
+    event->len  = len;
+    event->body = body;
+    event->info = info;
+    event->callback = callback;
+    
+    QueueEnqueue (queue, event);
+}
+
+/*
  * Removes and returns an event given by sequence number and type.
  */
 struct Event *QueueDequeue (struct Queue *queue, UDWORD seq, UDWORD type)
@@ -129,7 +159,11 @@ struct Event *QueueDequeue (struct Queue *queue, UDWORD seq, UDWORD type)
     assert (queue);
 
     if (!queue->head)
+    {
+        if (uiG.Verbose & 32)
+            M_print (i18n (853, "Debug: Queue: couldn't dequeue type %d seq %08x\n"), type, seq);
         return NULL;
+    }
 
     if (queue->head->event->seq == seq && queue->head->event->type == type)
     {
@@ -143,6 +177,8 @@ struct Event *QueueDequeue (struct Queue *queue, UDWORD seq, UDWORD type)
         else
             queue->due = queue->head->event->due;
 
+        if (uiG.Verbose & 32)
+            M_print (i18n (854, "Debug: Queue: dequeue type %d seq %08x\n"), type, seq);
         return event;
     }
     for (iter = queue->head; iter->next; iter = iter->next)
@@ -153,9 +189,13 @@ struct Event *QueueDequeue (struct Queue *queue, UDWORD seq, UDWORD type)
             event = tmp->event;
             iter->next=iter->next->next;
             free (tmp);
+            if (uiG.Verbose & 32)
+                M_print (i18n (854, "Debug: Queue: dequeue type %d seq %08x\n"), type, seq);
             return event;
         }
     }
+    if (uiG.Verbose & 32)
+        M_print (i18n (853, "Debug: Queue: couldn't dequeue type %d seq %08x\n"), type, seq);
     return NULL;
 }
 

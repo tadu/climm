@@ -102,6 +102,7 @@ if possible otherwise as a hex number
 void Print_Status (UDWORD new_status)
 {
     BOOL inv = FALSE;
+    
     if (STATUS_OFFLINE != new_status)
     {
         if (new_status & STATUS_INVISIBLE)
@@ -122,7 +123,7 @@ void Print_Status (UDWORD new_status)
             M_print ("%s", Convert_Status_2_Str (new_status));
         }
         if (uiG.Verbose)
-            M_print (" %06X", (UWORD) (new_status >> 8));
+            M_print (" %08x", new_status);
     }
     else
     {
@@ -368,10 +369,10 @@ int log_event (UDWORD uin, int type, char *str, ...)
 
     if (uiG.LogPlace[strlen (uiG.LogPlace) - 1] == '/')
     {
-        if (stat (buffer, &statbuf) == -1)
+        if (stat (uiG.LogPlace, &statbuf) == -1)
         {
             if (errno == ENOENT)
-                mkdir (buffer, 0700);
+                mkdir (uiG.LogPlace, 0700);
             else
                 return -1;
         }
@@ -448,7 +449,7 @@ void Hex_Dump (void *buffer, size_t len)
             {
                 if (i - j >= len)
                     return;
-                if (buf[i - j] > 31)
+                if ((buf[i - j] & 0x7f) > 31)
                     M_print ("%c", buf[i - j]);
                 else
                     M_print (".");

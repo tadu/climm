@@ -80,11 +80,10 @@ void CmdPktSrvRead (SOK_T sok)
 
     if (uiG.Verbose & 4)
     {
-        R_undraw ();
         Time_Stamp ();
         M_print (" \x1b«" COLSERV "");
         M_print (i18n (774, "Incoming packet:"));
-        M_print (" %04X %08X:%08X %04X (%s)" COLNONE "\n",
+        M_print (" %04x %08x:%08x %04x (%s)" COLNONE "\n",
                  Chars_2_Word (pak.head.ver), Chars_2_DW (pak.head.session),
                  Chars_2_DW (pak.head.seq), Chars_2_Word (pak.head.cmd),
                  CmdPktSrvName (Chars_2_Word (pak.head.cmd)));
@@ -97,16 +96,13 @@ void CmdPktSrvRead (SOK_T sok)
         Hex_Dump (pak.head.ver, s);
 #endif
         M_print ("\x1b»\n");
-        R_redraw ();
     }
     if (Chars_2_DW (pak.head.session) != ssG.our_session)
     {
         if (uiG.Verbose)
         {
-            R_undraw ();
             M_print (i18n (606, "Got a bad session ID %08X with CMD %04X ignored.\n"),
                      Chars_2_DW (pak.head.session), Chars_2_Word (pak.head.cmd));
-            R_redraw ();
         }
         return;
     }
@@ -119,10 +115,8 @@ void CmdPktSrvRead (SOK_T sok)
             {
                 if (uiG.Verbose)
                 {
-                    R_undraw ();
                     M_print (i18n (67, "\nIgnored a message cmd  %04x\n"),
                              Chars_2_Word (pak.head.cmd));
-                    R_redraw ();
                 }
                 ack_srv (sok, Chars_2_DW (pak.head.seq));       /* LAGGGGG!! */
                 return;
@@ -164,27 +158,18 @@ void CmdPktSrvProcess (SOK_T sok, UBYTE * data, int len, UWORD cmd,
     switch (cmd)
     {
         case SRV_META_USER:
-            R_undraw ();
             Meta_User (sok, data, len, uin);
-            R_redraw ();
             break;
         case SRV_NEW_UIN:
-            R_undraw ();
             M_print (i18n (639, "The new UIN is %ld!\n"), uin);
-            R_redraw ();
             break;
         case SRV_UPDATE_FAIL:
-            R_undraw ();
             M_print (i18n (640, "Failed to update info.\n"));
-            R_redraw ();
             break;
         case SRV_UPDATE_SUCCESS:
-            R_undraw ();
             M_print (i18n (641, "User info successfully updated.\n"));
-            R_redraw ();
             break;
         case SRV_LOGIN_REPLY:
-            R_undraw ();
             Time_Stamp ();
             M_print (" " MAGENTA BOLD "%10lu" COLNONE " %s\n", uin, i18n (50, "Login successful!"));
             snd_login_1 (sok);
@@ -193,10 +178,8 @@ void CmdPktSrvProcess (SOK_T sok, UBYTE * data, int len, UWORD cmd,
             snd_vis_list (sok);
             uiG.Current_Status = ssG.set_status;
             if (loginmsg++)
-            {
-                R_redraw ();
                 break;
-            }
+
             Time_Stamp ();
             M_print (" " MAGENTA BOLD "%10s" COLNONE " %s: %u.%u.%u.%u\n", ContactFindName (uin), i18n (642, "IP"),
 #if ICQ_VER == 0x0002
@@ -206,66 +189,49 @@ void CmdPktSrvProcess (SOK_T sok, UBYTE * data, int len, UWORD cmd,
 #else
                      data[12], data[13], data[14], data[15]);
 #endif
-            R_redraw ();
             break;
         case SRV_RECV_MESSAGE:
-            R_undraw ();
             Recv_Message (sok, data);
-            R_redraw ();
             break;
         case SRV_X1:
-            R_undraw ();
             if (uiG.Verbose)
             {
                 M_print (i18n (643, "Acknowleged SRV_X1 0x021C Done Contact list?\n"));
             }
             CmdUser (sok, "¶e");
-            R_redraw ();
             ssG.Done_Login = TRUE;
             break;
         case SRV_X2:
             if (uiG.Verbose)
-            {
-                R_undraw ();
                 M_print (i18n (644, "Acknowleged SRV_X2 0x00E6 Done old messages?\n"));
-                R_redraw ();
-            }
             snd_got_messages (sok);
             break;
         case SRV_INFO_REPLY:
-            R_undraw ();
             Display_Info_Reply (sok, data);
             M_print ("\n");
-            R_redraw ();
             break;
         case SRV_EXT_INFO_REPLY:
-            R_undraw ();
             Display_Ext_Info_Reply (sok, data);
             M_print ("\n");
-            R_redraw ();
             break;
         case SRV_USER_OFFLINE:
-            R_undraw ();
             User_Offline (sok, data);
-            R_redraw ();
             break;
         case SRV_BAD_PASS:
-            R_undraw ();
             M_print (i18n (645, COLMESS "You entered an incorrect password." COLNONE "\n"));
             exit (1);
             break;
         case SRV_TRY_AGAIN:
-            R_undraw ();
             M_print (i18n (646, COLMESS "Server is busy please try again.\nTrying again...\n"));
 #if HAVE_FORK
             i = fork();
 #else
             i = -1;
 #endif
+            ssG.our_session = rand();
             if (i < 0)
             {
                 sleep (2);
-                ssG.our_session = 0;
                 Login (sok, ssG.UIN, &ssG.passwd[0], ssG.our_ip, ssG.our_port, ssG.set_status);
             }
             else if (!i)
@@ -274,21 +240,15 @@ void CmdPktSrvProcess (SOK_T sok, UBYTE * data, int len, UWORD cmd,
                 Login (sok, ssG.UIN, &ssG.passwd[0], ssG.our_ip, ssG.our_port, ssG.set_status);
                 _exit (0);
             }
-            else
-                ssG.our_session = 0;
-            R_redraw ();
             break;
         case SRV_USER_ONLINE:
             User_Online (sok, data);
             break;
         case SRV_STATUS_UPDATE:
-            R_undraw ();
             Status_Update (sok, data);
-            R_redraw ();
             break;
         case SRV_GO_AWAY:
         case SRV_NOT_CONNECTED:
-            R_undraw ();
             Time_Stamp ();
             M_print (" ");
             Reconnect_Count++;
@@ -296,7 +256,6 @@ void CmdPktSrvProcess (SOK_T sok, UBYTE * data, int len, UWORD cmd,
             {
                 M_print ("%s\n", i18n (34, "Maximum number of tries reached. Giving up."));
                 ssG.Quit = TRUE;
-                R_redraw ();
                 break;
             }
             M_print ("%s\n", i18n (39, "Server has forced us to disconnect.  This may be because of network lag."));
@@ -306,10 +265,10 @@ void CmdPktSrvProcess (SOK_T sok, UBYTE * data, int len, UWORD cmd,
 #else
             i = -1;
 #endif
+            ssG.our_session = rand ();
             if (i < 0)
             {
                 sleep (2);
-                ssG.our_session = 0;
                 Login (sok, ssG.UIN, &ssG.passwd[0], ssG.our_ip, ssG.our_port, ssG.set_status);
             }
             else if (!i)
@@ -318,12 +277,9 @@ void CmdPktSrvProcess (SOK_T sok, UBYTE * data, int len, UWORD cmd,
                 Login (sok, ssG.UIN, &ssG.passwd[0], ssG.our_ip, ssG.our_port, ssG.set_status);
                 _exit (0);
             }
-            else
-                ssG.our_session = 0;
             M_print ("\n");
             break;
         case SRV_END_OF_SEARCH:
-            R_undraw ();
             M_print (i18n (45, "Search Done."));
             if (len >= 1)
             {
@@ -338,25 +294,19 @@ void CmdPktSrvProcess (SOK_T sok, UBYTE * data, int len, UWORD cmd,
                 }
             }
             M_print ("\n");
-            R_redraw ();
             break;
         case SRV_USER_FOUND:
-            R_undraw ();
             Display_Search_Reply (sok, data);
             M_print ("\n");
-            R_redraw ();
             break;
         case SRV_RAND_USER:
-            R_undraw ();
             Display_Rand_User (sok, data, len);
             M_print ("\n");
-            R_redraw ();
             break;
         case SRV_SYS_DELIVERED_MESS:
         /***  There are 2 places we get messages!! */
         /*** Don't edit here unless you're sure you know the difference */
         /*** Edit Do_Msg() in icq_response.c so you handle all messages */
-            R_undraw ();
             s_mesg = (SIMPLE_MESSAGE_PTR) data;
             if (!((NULL == ContactFind (Chars_2_DW (s_mesg->uin))) && (uiG.Hermit)))
             {
@@ -369,12 +319,10 @@ void CmdPktSrvProcess (SOK_T sok, UBYTE * data, int len, UWORD cmd,
                         s_mesg->len + 2, uiG.last_recv_uin, 0);
                 Auto_Reply (sok, s_mesg);
             }
-            R_redraw ();
             break;
         case SRV_AUTH_UPDATE:
             break;
         default:               /* commands we dont handle yet */
-            R_undraw ();
             Time_Stamp ();
             M_print (i18n (648, " " COLCLIENT "The response was %04X\t"), cmd);
             M_print (i18n (649, "The version was %X\t"), ver);
@@ -386,7 +334,6 @@ void CmdPktSrvProcess (SOK_T sok, UBYTE * data, int len, UWORD cmd,
                     Hex_Dump (data, len);
             }
             M_print (COLNONE "\n");
-            R_redraw ();
             break;
     }
 }
@@ -413,11 +360,10 @@ JUMP_SRV_F (CmdPktSrvMulti)
 
         if (uiG.Verbose & 4)
         {
-            R_undraw ();
             Time_Stamp ();
             M_print (" \x1b«" COLSERV "");
             M_print (i18n (823, "Incoming partial packet:"));
-            M_print (" %04X %08X:%08X %04X (%s)" COLNONE "\n",
+            M_print (" %04x %08x:%08x %04x (%s)" COLNONE "\n",
                      Chars_2_Word (pak.head.ver), Chars_2_DW (pak.head.session),
                      Chars_2_DW (pak.head.seq), Chars_2_Word (pak.head.cmd),
                      CmdPktSrvName (Chars_2_Word (pak.head.cmd)));
@@ -430,7 +376,6 @@ JUMP_SRV_F (CmdPktSrvMulti)
             Hex_Dump (pak.head.ver, llen);
 #endif
             M_print ("\x1b»\n");
-            R_redraw ();
         }
 
         Kill_Prompt ();
@@ -460,9 +405,7 @@ JUMP_SRV_F (CmdPktSrvAck)
 
     if (len && uiG.Verbose)
     {
-        R_undraw ();
         M_print ("%s %s %d\n", i18n (47, "Extra Data"), i18n (46, "Length"), len);
-        R_redraw ();
     }
     
     if (!event)
@@ -470,21 +413,17 @@ JUMP_SRV_F (CmdPktSrvAck)
 
     ccmd = Chars_2_Word (&event->body[CMD_OFFSET]);
 
-    if (uiG.Verbose & 16)
+    if (uiG.Verbose & 32)
     {
-        R_undraw ();
         M_print (i18n (824, "Acknowledged packet type %04x (%s) sequence %04x removed from queue.\n"),
                  ccmd, CmdPktSrvName (ccmd), event->seq >> 16);
-        R_redraw ();
     }
     if (ccmd == CMD_SENDM)
     {
-        R_undraw ();
         Time_Stamp ();
         M_print (" " COLACK "%10s" COLNONE " %s%s\n",
                  ContactFindName (Chars_2_DW (&event->body[PAK_DATA_OFFSET])),
                  MSGACKSTR, MsgEllipsis (&event->body[32]));
-        R_redraw ();
     }
     if (event->info)
         free (event->info);

@@ -794,7 +794,7 @@ int Save_RC ()
             M_fdprint (rcf, cont->vis_list ? "*" : cont->invis_list ? "~" : " ");
             M_fdprint (rcf, "%9d %s\n", cont->uin, cont->nick);
             k = 0;
-            for (cont2 = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+            for (cont2 = ContactStart (); ContactHasNext (cont2); cont2 = ContactNext (cont2))
             {
                 if (cont2->uin == - cont->uin)
                 {

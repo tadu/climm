@@ -514,7 +514,6 @@ void User_Online (int sok, UBYTE * pak)
         }
         log_event (remote_uin, LOG_ONLINE, "User logged on %s\n", ContactFindName (remote_uin));
 
-        R_undraw ();
         Time_Stamp ();
         M_print (" " COLCONTACT "%10s" COLNONE " %s (",
                  ContactFindName (remote_uin), i18n (31, "logged on"));
@@ -531,7 +530,6 @@ void User_Online (int sok, UBYTE * pak)
             M_print ("%-15s %s\n", i18n (454, "Connection:"),
                      pak[16] == 4 ? i18n (493, "Peer-to-Peer") : i18n (494, "Server Only"));
         }
-        R_redraw ();
     }
     else
     {

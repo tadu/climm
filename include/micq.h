@@ -206,7 +206,11 @@ typedef struct {
 
 /* user interface global state variables */
 typedef struct {
-        BOOL Verbose;          /* displays extra debugging info */
+        BOOL Verbose;          /* displays extra debugging info
+                                *  4 = show paket
+                                *  8 = show paket contents
+                                * 32 = debug queue
+                                */
         UBYTE Sound;           /* sound setting for normal beeps etc */
         UBYTE SoundOnline;     /* sound setting for users comming online */
         UBYTE SoundOffline;    /* sound settng for users going offline */
@@ -267,6 +271,7 @@ typedef struct {
         UWORD seq_num;  /* current sequence number */
 #ifdef TCP_COMM
         UWORD seq_tcp;  /*** TCP: tcp sequence number ***/
+        SOK_T tcpsok;
 #endif
         UDWORD our_ip;
         UDWORD our_outside_ip ;

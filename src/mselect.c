@@ -52,12 +52,14 @@ Changes :
 static struct timeval tv;
 static fd_set readfds;
 static fd_set writefds;
+static fd_set exceptfds;
 static int max_fd;
 
 void M_select_init (void)
 {
     FD_ZERO (&readfds);
     FD_ZERO (&writefds);
+    FD_ZERO (&exceptfds);
     max_fd = 0;
 }
 
@@ -81,22 +83,32 @@ void M_Add_wsocket (FD_T sok)
         max_fd = sok;
 }
 
+void M_Add_xsocket (FD_T sok)
+{
+    FD_SET (sok, &exceptfds);
+    if (sok > max_fd)
+        max_fd = sok;
+}
+
 BOOL M_Is_Set (FD_T sok)
 {
-    return ((FD_ISSET (sok, &readfds) ? 1 : 0) | (FD_ISSET (sok, &writefds) ? 2 : 0));
+    return ((FD_ISSET (sok, &readfds)   ? 1 : 0) 
+          | (FD_ISSET (sok, &writefds)  ? 2 : 0)
+          | (FD_ISSET (sok, &exceptfds) ? 4 : 0));
 }
 
 int M_select (void)
 {
     int res;
 
-    /* don't care about writefds and exceptfds: */
-    res = select (max_fd + 1, &readfds, &writefds, NULL, &tv);
+    res = select (max_fd + 1, &readfds, &writefds, &exceptfds, &tv);
     if (res == -1)
     {
         FD_ZERO (&readfds);
         FD_ZERO (&writefds);
-        res=errno;
+        res = errno;
+        if (res == EINTR)
+            return 0;
         printf (i18n (849, "Error on select: %s (%d)\n"), strerror (res), res);
         return -1;
     }

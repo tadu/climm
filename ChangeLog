@@ -1,4 +1,18 @@
 
+2001-12-18 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Change mselect.c to also do select()ing on exceptfds; use
+	  M_Add_xsocket() to add. I'm not sure if we need it, but anyway.
+	* Get rid of 99% R_{re,un}draw() - basically just have a pair
+	  around the select() and where needed in mreadline.c.
+	* Add debugging to msg_queue.c (verbose & 32; was & 16 outside
+	  of msg_queue.c...)
+	* Make TCP differences to micq.c less invading: add TCPAddSockets()
+	  and TCPDispatch() to do the stuff. Make TCP socket# global.
+	* Don't bark on interrupted select() (e.g. on SIGWINCH...)
+	* Have a timeout for connects (10s for now). Reports IP correct
+	  when failed. Correctly dequeues first TCP message now.
+	* Fix creating wrong log directories.
+
 2001-12-14 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Change mselect.c to also do select()ing on writefds; use
 	  M_Add_wsocket() to add.

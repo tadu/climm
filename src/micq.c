@@ -354,24 +354,20 @@ void Idle_Check (SOK_T sok)
         && tm < ssG.away_time && idle_flag == 1)
     {
         icq_change_status (sok, STATUS_ONLINE);
-        R_undraw ();
         Time_Stamp ();
         M_print (" %s ", i18n (64, "Auto-Changed status to"));
         Print_Status (uiG.Current_Status);
         M_print ("\n");
-        R_redraw ();
         idle_flag = 0;
         return;
     }
     if ((uiG.Current_Status == STATUS_AWAY) && (tm >= (ssG.away_time * 2)) && (idle_flag == 1))
     {
         icq_change_status (sok, STATUS_NA);
-        R_undraw ();
         Time_Stamp ();
         M_print (" %s ", i18n (64, "Auto-Changed status to"));
         Print_Status (uiG.Current_Status);
         M_print ("\n");
-        R_redraw ();
         return;
     }
     if (uiG.Current_Status != STATUS_ONLINE && uiG.Current_Status != STATUS_FREE_CHAT)
@@ -381,12 +377,10 @@ void Idle_Check (SOK_T sok)
     if (tm >= ssG.away_time)
     {
         icq_change_status (sok, STATUS_AWAY);
-        R_undraw ();
         Time_Stamp ();
         M_print (" %s ", i18n (64, "Auto-Changed status to"));
         Print_Status (uiG.Current_Status);
         M_print ("\n");
-        R_redraw ();
         idle_flag = 1;
     }
     return;
@@ -410,10 +404,6 @@ in a loop waiting for server responses.
 int main (int argc, char *argv[])
 {
     int sok;
-#ifdef TCP_COMM
-    int tcpSok;
-    Contact *cont;
-#endif
     int i, j, rc;
     int next;
     int time_delay = 120;
@@ -496,7 +486,6 @@ int main (int argc, char *argv[])
     QueueInit (&queue);
     Check_Endian ();
 
-
 #ifdef _WIN32
     i = WSAStartup (0x0101, &wsaData);
     if (i != 0)
@@ -508,7 +497,7 @@ int main (int argc, char *argv[])
 #endif
 
 #ifdef TCP_COMM
-    tcpSok = TCPInit (TCP_PORT);
+    TCPInit (TCP_PORT);
 #endif
 
     sok = Connect_Remote (ssG.server, ssG.remote_port, STDERR);
@@ -523,9 +512,8 @@ int main (int argc, char *argv[])
         exit (1);
     }
     Login (sok, ssG.UIN, &ssG.passwd[0], ssG.our_ip, ssG.our_port, ssG.set_status);
-    next = time (NULL);
+    next = time (NULL) + 120;
     idle_val = time (NULL);
-    next += 120;
     R_init ();
     Prompt ();
     while (!ssG.Quit)
@@ -544,30 +532,12 @@ int main (int argc, char *argv[])
 #endif
 
 #ifdef TCP_COMM
-        M_Add_rsocket (tcpSok);
-        for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
-            if (cont->sok.state > 0)
-            {
-                if (cont->sok.state < 3)
-                    M_Add_wsocket (cont->sok.sok);
-                else
-                    M_Add_rsocket (cont->sok.sok);
-            }
+        TCPAddSockets ();
 #endif
+        R_redraw ();
+
         rc = M_select ();
         assert (rc >= 0);
-
-        if (M_Is_Set (sok))
-            CmdPktSrvRead (sok);
-#ifdef TCP_COMM
-        if (M_Is_Set (tcpSok))
-            TCPDirectReceive (tcpSok);
-        for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
-            if (cont->sok.state > 0)
-                if (M_Is_Set (cont->sok.sok))
-                    TCPHandleComm (cont, M_Is_Set (cont->sok.sok));
-#endif
-
 
 #if _WIN32
         if (_kbhit ())          /* sorry, this is a bit ugly...   [UH] */
@@ -580,6 +550,16 @@ int main (int argc, char *argv[])
 #endif
             if (R_process_input ())
                 CmdUserInput (sok, &idle_val, &idle_flag);
+
+        R_undraw ();
+
+        if (M_Is_Set (sok))
+            CmdPktSrvRead (sok);
+
+#ifdef TCP_COMM
+        TCPDispatch ();
+#endif
+
 
         if (time (NULL) > next)
         {

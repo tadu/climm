@@ -46,6 +46,7 @@ typedef struct
     UBYTE msg_type[2];
     UBYTE size[2];
 } TCP_MSG_PAK, *TCP_MSG_PTR;
+
 #else
 #error Undefined TCP version
 #endif

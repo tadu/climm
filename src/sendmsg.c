@@ -28,7 +28,7 @@ Author : zed@mentasm.com
 #include "tcp.h"
 
 static size_t SOCKWRITE_LOW (SOK_T sok, void *ptr, size_t len);
-static void Fill_Header (net_icq_pak * pak, UWORD cmd);
+void Fill_Header (net_icq_pak * pak, UWORD cmd);
 static void info_req_99 (SOK_T sok, UDWORD uin);
 #if 0
 static void info_req_old (SOK_T sok, UDWORD uin);
@@ -51,15 +51,26 @@ void UDPCallBackResend (SOK_T sok, struct Event *event)
     net_icq_pak pak;
 
     event->attempts++;
-    if (event->attempts <= MAX_RETRY_ATTEMPTS)
+    memcpy (&pak.head.ver, event->body, event->len);
+
+    if (Chars_2_DW (pak.head.session) != ssG.our_session)
     {
-        if (uiG.Verbose & 16)
+        M_print (i18n (856, "Discarded a %04x (%s) packet from old session %08x (current: %08x).\n"),
+                 pak.head.cmd, CmdPktSrvName (*(UDWORD *)(&pak.head.cmd)),
+                 Chars_2_DW (pak.head.session), ssG.our_session);
+
+        free (event);
+        free (event->body);
+        if (event->info)
+            free (event->info);
+    }
+    else if (event->attempts <= MAX_RETRY_ATTEMPTS)
+    {
+        if (uiG.Verbose & 32)
         {
-            R_undraw ();
             M_print (i18n (826, "Resending message %04x (%s) sequence %04x (attempt #%d, len %d).\n"),
                      Chars_2_Word (&event->body[CMD_OFFSET]), CmdPktSrvName (Chars_2_Word (&event->body[CMD_OFFSET])),
                      event->seq >> 16, event->attempts, event->len);
-            R_redraw ();
         }
         temp = malloc (event->len + 3);        /* make sure packet fits in UDWORDS */
         assert (temp != NULL);
@@ -71,8 +82,6 @@ void UDPCallBackResend (SOK_T sok, struct Event *event)
     }
     else
     {
-        memcpy (&pak.head.ver, event->body, event->len);
-        R_undraw ();
         if (CMD_SENDM == Chars_2_Word (pak.head.cmd))
         {
             s_mesg = (SIMPLE_MESSAGE_PTR) pak.data;
@@ -117,7 +126,6 @@ void UDPCallBackResend (SOK_T sok, struct Event *event)
             }
         }
         M_print ("\n");
-        R_redraw ();
 
         free (event);
         free (event->body);
@@ -588,8 +596,6 @@ void Quit_ICQ (int sok)
 {
     net_icq_pak pak;
     int size, len;
-
-    R_undraw ();
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_SEND_TEXT_CODE);
@@ -1158,10 +1164,10 @@ Adds packet to the queued messages.
 ****************************************************************/
 size_t SOCKWRITE (SOK_T sok, void *ptr, size_t len)
 {
-    struct Event *event;
-    static UWORD seq2 = 0;
-    UWORD temp;
-    UWORD cmd;
+    static UWORD seq, seq2 = 0;
+    UBYTE *body;
+    UWORD temp, cmd;
+    UDWORD seqa;
 
 #if ICQ_VER == 0x0004
     Word_2_Chars (&((UBYTE *) ptr)[4], 0);
@@ -1169,7 +1175,7 @@ size_t SOCKWRITE (SOK_T sok, void *ptr, size_t len)
     ((UBYTE *) ptr)[0x0B] = ((UBYTE *) ptr)[9];
 #elif ICQ_VER == 0x0005
     DW_2_Chars (&((UBYTE *) ptr)[2], 0L);
-    if (0 == ssG.our_session)
+    if (!ssG.our_session)
     {
         ssG.our_session = rand () & 0x3fffffff;
     }
@@ -1179,14 +1185,12 @@ size_t SOCKWRITE (SOK_T sok, void *ptr, size_t len)
     if (cmd != CMD_ACK)
     {
         ssG.real_packs_sent++;
-        event = (struct Event *) malloc (sizeof (struct Event));
 #if ICQ_VER == 0x0004
-        event->seq = Chars_2_Word (&((UBYTE *) ptr)[SEQ_OFFSET]);
+        seq = Chars_2_Word (&((UBYTE *) ptr)[SEQ_OFFSET]);
 #elif ICQ_VER == 0x0005
-        if (0 == seq2)
-        {
+        if (!seq2)
             seq2 = rand () & 0x7fff;
-        }
+
         temp = Chars_2_Word (&((UBYTE *) ptr)[SEQ2_OFFSET]);
         temp += seq2;
         Word_2_Chars (&((UBYTE *) ptr)[SEQ_OFFSET], temp);
@@ -1196,21 +1200,23 @@ size_t SOCKWRITE (SOK_T sok, void *ptr, size_t len)
 /*       seq2++;*/
             ssG.seq_num--;
         }
-        event->seq = Chars_2_DW (&((UBYTE *) ptr)[SEQ_OFFSET]);
+        seq = Chars_2_Word (&((UBYTE *) ptr)[SEQ_OFFSET]);
+        seqa = Chars_2_Word (&((UBYTE *) ptr)[SEQ_OFFSET]) +
+              (Chars_2_Word (&((UBYTE *) ptr)[SEQ2_OFFSET]) << 16);
 #else
 #error Incorrect ICQ_VERsion
 #endif
-        event->attempts = 1;
-        event->due = time (NULL) + 10;
-        event->body = (UBYTE *) malloc (len);
-        event->info = NULL;
-        event->len = len;
-        event->callback = &UDPCallBackResend;
-        event->type = QUEUE_TYPE_UDP_RESEND;
-        memcpy (event->body, ptr, event->len);
-        QueueEnqueue (queue, event);
+        body = malloc (len);
+
+        memcpy (body, ptr, len);
+        QueueEnqueueData (queue, seqa, QUEUE_TYPE_UDP_RESEND,
+                          0, time (NULL) + (sok >= 0 ? 10 : 0), len,
+                          body, NULL, &UDPCallBackResend);
     }
-    return SOCKWRITE_LOW (sok, ptr, len);
+    if (sok >= 0)
+        return SOCKWRITE_LOW (sok, ptr, len);
+    else
+        return 0;
 }
 
 /***************************************************************
@@ -1229,7 +1235,6 @@ static size_t SOCKWRITE_LOW (SOK_T sok, void *ptr, size_t len)
 
     if (uiG.Verbose & 4)
     {
-        R_undraw ();
         Time_Stamp ();
         M_print (" \x1b«" COLCLIENT "");
         M_print (i18n (775, "Outgoing packet:"));
@@ -1243,7 +1248,6 @@ static size_t SOCKWRITE_LOW (SOK_T sok, void *ptr, size_t len)
 #endif
         Hex_Dump (ptr, len);
         M_print ("\x1b»\n");
-        R_redraw ();
     }
 
     Wrinkle (ptr, len);

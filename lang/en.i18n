@@ -777,7 +777,7 @@
 777:The port that will be used for tcp (partially implemented) is %d¶
 778:Incoming TCP packet:
 779:Opening TCP connection to %s at %s:%d... 
-780:failure - couldn't create socket: %s (%d).¶
+780:Couldn't create socket: %s (%d).¶
 781: 
 782: 
 783: 
@@ -794,7 +794,7 @@
 794: 
 795: 
 796: 
-797:User %s%s%s closed socket.¶
+797: 
 798: 
 799: 
 800:Change the working language to <lang>.
@@ -825,8 +825,8 @@
 825:Discarded a %04x (%s) packet
 826:Resending message %04x (%s) sequence %04x (attempt #%d, len %d).¶
 827:Unknown client
-828:failure - couldn't set socket nonblocking: %s (%d).¶
-829:failure - connect failed %d (%s) (%d)¶
+828:Warning: couldn't set socket nonblocking: %s (%d).¶
+829:Opening TCP connection to %s%s%s at %s:%d failed: %d (%s) (%d)¶
 830:Discarding message to %s after %d send attempts.  Message content:¶
 831: 
 832:failure - couldn't set socket blocking.¶
@@ -847,3 +847,10 @@
 847:    open <nick>  - Opens TCP connection.¶
 848:    close <nick> - Closes/resets TCP connection(s).¶
 849:Error on select: %s (%d)¶
+850:Timeout on connection with %s at %s:%d¶
+851:Debug: Queue: popping type %d seq %d¶
+852:Debug: Queue: enqueuing type %d seq %d¶
+853:Debug: Queue: couldn't dequeue type %d seq %d¶
+854:Debug: Queue: dequeue type %d seq %d¶
+855:TCP connection to %s at %s:%d failed.¶
+856:Discarded a %04x (%s) packet from old session %08x (current: %08x).¶
