@@ -320,7 +320,6 @@ int main (int argc, char *argv[])
         M_print  (i18n (2199, "  -h, --help     gives this help text\n"));
         M_print  (i18n (2200, "  -v, --verbose  set (or increase) verbosity (mostly for debugging)\n"));
         M_printf (i18n (2201, "  -b, --basedir  use given BASE dir (default: %s)\n"), "$HOME" _OS_PATHSEPSTR ".micq" _OS_PATHSEPSTR);
-        M_printf (i18n (2202, "  -f, --config   use given configuration file (default: %s)\n"), "BASE" _OS_PATHSEPSTR "micqrc");
         M_printf (i18n (2203, "  -l, --logplace use given log file/dir (default: %s)\n"), "BASE" _OS_PATHSEPSTR "history" _OS_PATHSEPSTR);
         M_print  (i18n (2204, "  -i, --i1" "8n     use given locale (default: auto-detected)\n"));
         M_print  (i18n (2205, "  -c, --nocolor  disable colors\n"));
@@ -332,6 +331,9 @@ int main (int argc, char *argv[])
         M_printf (i18n (1864, "Could not open configuration file %s."), prG->rcfile);
         exit (20);
     }
+
+    if (arg_f)
+        M_printf (i18n (9999, "Deprecated option -f used. Please use the similar -b instead.\n"));
 
     if (i == -1)
         M_printf (i18n (2317, "Translation %s not found. Would you like to translate mICQ into your language?\n"), prG->locale_full);
