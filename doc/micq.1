@@ -8,11 +8,14 @@
 .B micq
 .I [\-h]
 .I [\-c]
-.I [\-i <locale>]
 .I [\-b <basedir>]
-.I [\-f <configfile>]
+.I [\-i <locale>]
 .I [\-v[level]]
 .I [\-l <logplace>]
+.I [\-u <UIN>]
+.I [\-p <passwd>]
+.I [\-s <status>]
+.I [\-C <commands>]
 .SH DESCRIPTION
 .B mICQ
 is a text based ICQ client supporting many of the ICQ features provided by
@@ -29,32 +32,59 @@ Display a short help text and exit.
 .BI \-c|\-\-nocolor
 Disable the use of color.
 .TP
-.BI \-i|\-\-i18n \ <locale>
-Use the locale
-.I locale
-instead of the one derived from environment variables.
-.TP
 .BI \-b|\-\-basedir \ <basedir>
 Specify
 .I basedir
 as the base directory where mICQ will look for its files, in particular
 its micqrc file.
 .TP
-.BI \-f|\-\-config \ <configfile>
-Specify
-.I configfile
-as the configuration file to use.
+.BI \-i|\-\-i18n \ <locale>
+Use the locale
+.I locale
+instead of the one derived from environment variables.
 .TP
 .BI \-v|\-\-verbose [level]
 Set verbose mode, or set verbosity to
 .IR level .
 .TP
-.BI \-l|\-\-logplace \ file|dir
+.BI \-l|\-\-logplace \ <file>|<dir>
 Use
 .I file
 as file to write log into, or use
 .I dir
 as a directory to create per user log files in.
+.TP
+.BI \-u|\-\-uin \ <uin>
+Login with
+.I uin
+only. Maybe repeated.
+.TP
+.BI \-p|\-\-passwd \ <passwd>
+Login with
+.I passwd
+as password. Maybe repeated for each
+.I \-u
+switch, or single.
+.TP
+.BI \-s|\-\-status \ <status>
+Login with
+.I status
+as status, which may be given numerically or
+.BR inv ,
+.BR dnd ,
+.BR occ ,
+.BR na ,
+.BR away ,
+.BR ffc ,
+or
+.BR off[line] .
+.TP
+.BI \-C|\-\-cmd \ <commands>
+Execute mICQ commands
+.I cmds
+after login instead of the default
+.I eg
+command.
 .SH FEATURES
 .B mICQ
 is very portable and runs on Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD and any
@@ -119,7 +149,10 @@ Default directory for log files.
 Directory where incoming file transfers are saved.
 .TP
 .I BASE/remote-control
-Default location of the FIFO used for remote control.
+Old default location of the FIFO used for scripting. Renamed as it confused lusers.
+.TP
+.I BASE/scripting
+Default location of the FIFO used for scripting.
 .TP
 .I PREFIX/share/micq/*.i18n
 Internationalization files containing translations of all strings
