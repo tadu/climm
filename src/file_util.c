@@ -229,10 +229,10 @@ void Initalize_RC_File ()
 
     prG->status = STATUS_ONLINE;
     prG->tabs = TABS_SIMPLE;
+    prG->flags = FLAG_LOG | FLAG_LOG_ONOFF | FLAG_DELBS;
+    prG->flags |= FLAG_AUTOSAVE | FLAG_AUTOFINGER;
 #ifdef ANSI_TERM
-    prG->flags = FLAG_COLOR | FLAG_LOG | FLAG_LOG_ONOFF | FLAG_DELBS | FLAG_AUTOSAVE;
-#else
-    prG->flags =              FLAG_LOG | FLAG_LOG_ONOFF | FLAG_DELBS | FLAG_AUTOSAVE;
+    prG->flags |= FLAG_COLOR;
 #endif
     prG->auto_dnd  = strdup (i18n (1929, "User is dnd [Auto-Message]"));
     prG->auto_away = strdup (i18n (1010, "User is away [Auto-Message]"));

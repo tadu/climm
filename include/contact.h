@@ -153,6 +153,7 @@ BOOL          ContactMetaLoad   (Contact *cont);
 
 #define UPF_DISC        0x1000
 #define UPF_SERVER      0x2000
+#define UPF_AUTOFINGER  0x4000
 
 #define UP_ALL          (UPF_DISC | UPF_SERVER)
 #define UP_INFO         (UPF_GENERAL_A  | UPF_GENERAL_B | UPF_WORK | UPF_MORE \
