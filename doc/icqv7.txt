@@ -1,0 +1,79 @@
+This Document has been written by Rico "mc" Gloeckner <micq@ukeer.de>
+All the Data has been engineered by reading other Docs and looking at
+random TCP/IP Dumps.
+
+
+0) Basics
+0.1) FLAP
+0.1.1) Flap Structure
+
+A Flap is a single Message from ICQ to the Client, or vice Versa.
+
+Flap =	[Command Start]		BYTE	0x2a
+	[Channel ID]		BYTE	0x0[1-4] 
+	[Sequence Number]	WORD	0x0000 - 0xFFFF
+	[Data Field Length]	WORD	0x0000 - 0xFFFF
+	[Data Field] | [SNAC]	Variable Length and Content
+
+0.1.2) Command Start
+
+The Command Start is a fixed Byte of 0x2A.
+
+0.1.3) Channel ID
+
+The Channel ID tells the Client, what kind of Message it is. Currently
+those Messages are Supported:
+
+Channel ID = 	0x01		New Connection Negotiation (see 1.2)
+		0x02		SNAC Message
+		0x03		FLAP Level Error (?)
+		0x04		End Connection Negotiation (see x.y)
+
+0.1.4) Sequence Number
+
+The Sequence Number is a Re-incarnation of the Sequence Numbers ICQ used
+for UDP. Since they now use TCP its kinda useless, but... well.
+The Sequence Number starts at a random Word, will wrap to 0x0000 after 0xFFFF
+AND THE SERVER WILL DISCONNECT YOU IF YOU HAVE THE WRONG SEQUENCE.
+	
+0.1.5) Data Field Length
+
+The Data Field Length basically is a sizeof(Data_Field).
+
+0.1.6) Data Field
+
+The Data Field is either fixed (i.e. for Logins) or a SNAC. Please see the
+specific Articles for the Content it must be filled with.
+
+0.2) SNAC
+0.2.1) Basic SNAC Structure
+
+A SNAC occurs on FLAP Channel 02 only. Those are ICQ-specific Messages,
+which do almost all of the ICQ Stuff.
+
+SNAC =		[Family ID]	WORD
+		[SubType ID]	WORD
+		[Flags]		WORD
+		[Request ID]	DWORD
+		[SNAC Data]	Variable Length
+
+
+1) Connection
+1.1) Hostnames
+
+Connection are made to login.icq.com:5190. At the time of this writing,
+this Hostname points to:
+  - 64.12.162.57    (ibucp-vip-m.blue.aol.com)
+  - 205.188.179.233 (ibucp-vip-d.blue.aol.com) 
+
+1.2) Connection Procedure
+
+  - Connection to login.icq.com:5190
+  - Server send
+	[Byte] 
+  - Client replies 
+
+
+
+2) Basic Understanding
+
