@@ -40,7 +40,7 @@ extern int reconn;
 static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd,
     SnacSrvRates, SnacSrvReplyicbm, SnacSrvReplybuddy, SnacSrvReplybos,
     SnacSrvReplyinfo, SnacSrvReplylocation, SnacSrvUseronline, SnacSrvRegrefused,
-    SnacSrvUseroffline, SnacSrvRecvmsg, SnacSrvUnknown, SnacSrvFromoldicq,
+    SnacSrvUseroffline, SnacSrvRecvmsg, SnacSrvUnknown, SnacSrvFromicqsrv,
     SnacSrvAddedyou, SnacSrvNewuin, SnacSrvSetinterval, SnacSrvAckmsg,
     SnacSrvAuthreq, SnacSrvAuthreply, SnacSrvIcbmerr, SnacSrvReplyroster;
 
@@ -67,6 +67,7 @@ static SNAC SNACS[] = {
     {  1, 19, "SRV_MOTD",            SnacSrvMotd},
     {  1, 24, "SRV_FAMILIES2",       SnacSrvFamilies2},
     {  2,  3, "SRV_REPLYLOCATION",   SnacSrvReplylocation},
+    {  3,  1, "SRV_CONTACTERR",      NULL},
     {  3,  3, "SRV_REPLYBUDDY",      SnacSrvReplybuddy},
     {  3, 11, "SRV_USERONLINE",      SnacSrvUseronline},
     {  3, 12, "SRV_USEROFFLINE",     SnacSrvUseroffline},
@@ -76,14 +77,15 @@ static SNAC SNACS[] = {
     {  4, 12, "SRV_ACKMSG",          SnacSrvAckmsg},
     {  9,  3, "SRV_REPLYBOS",        SnacSrvReplybos},
     { 11,  2, "SRV_SETINTERVAL",     SnacSrvSetinterval},
-    { 19,  3, "SRV_REPLYUNKNOWN",    SnacSrvUnknown},
+    { 19,  3, "SRV_REPLYLISTS",      NULL},
     { 19,  6, "SRV_REPLYROSTER",     SnacSrvReplyroster},
-    { 19, 14, "SRV_UPDATEACK",       SnacSrvUnknown},
-    { 19, 15, "SRV_REPLYROSTEROK",   SnacSrvUnknown},
+    { 19, 14, "SRV_UPDATEACK",       NULL},
+    { 19, 15, "SRV_REPLYROSTEROK",   NULL},
     { 19, 25, "SRV_AUTHREQ",         SnacSrvAuthreq},
     { 19, 27, "SRV_AUTHREPLY",       SnacSrvAuthreply},
     { 19, 28, "SRV_ADDEDYOU",        SnacSrvAddedyou},
-    { 21,  3, "SRV_FROMOLDICQ",      SnacSrvFromoldicq},
+    { 21,  1, "SRV_TOICQERR",        NULL},
+    { 21,  3, "SRV_FROMICQSRV",      SnacSrvFromicqsrv},
     { 23,  1, "SRV_REGREFUSED",      SnacSrvRegrefused},
     { 23,  5, "SRV_NEWUIN",          SnacSrvNewuin},
     {  1,  2, "CLI_READY",           NULL},
@@ -96,22 +98,25 @@ static SNAC SNACS[] = {
     {  2,  4, "CLI_SETUSERINFO",     NULL},
     {  3,  2, "CLI_REQBUDDY",        NULL},
     {  3,  4, "CLI_ADDCONTACT",      NULL},
-    {  3,  5, "CLI_RREMCONTACT",     NULL},
+    {  3,  5, "CLI_REMCONTACT",      NULL},
     {  4,  2, "CLI_SETICBM",         NULL},
     {  4,  4, "CLI_REQICBM",         NULL},
     {  4,  6, "CLI_SENDMSG",         NULL},
     {  9,  2, "CLI_REQBOS",          NULL},
     {  9,  5, "CLI_ADDVISIBLE",      NULL},
     {  9,  6, "CLI_REMVISIBLE",      NULL},
-    {  9,  7, "CLI_ADDINVIS",        NULL},
-    {  9,  8, "CLI_REMINVIS",        NULL},
-    { 19,  2, "CLI_REQUNKNOWN",      NULL},
-    { 19,  5, "CLI_REQROSTER",       NULL},
-    { 19,  7, "CLI_UNKNOWN1",        NULL},
+    {  9,  7, "CLI_ADDINVISIBLE",    NULL},
+    {  9,  8, "CLI_REMINVISIBLE",    NULL},
+    { 19,  2, "CLI_REQLISTS",        NULL},
+    { 19,  4, "CLI_REQROSTER",       NULL},
+    { 19,  5, "CLI_CHECKROSTER",     NULL},
+    { 19,  7, "CLI_ROSTERACK",       NULL},
     { 19,  8, "CLI_ADDBUDDY",        NULL},
     { 19,  9, "CLI_UPDATEGROUP",     NULL},
+    { 19, 10, "CLI_DELETEBUDDY",     NULL},
     { 19, 17, "CLI_ADDSTART",        NULL},
-    { 19, 18, "CLI_ADDREND",         NULL},
+    { 19, 18, "CLI_ADDEND",          NULL},
+    { 19, 20, "CLI_GRANTAUTH?",      NULL},
     { 19, 24, "CLI_REQAUTH",         NULL},
     { 19, 26, "CLI_AUTHORIZE",       NULL},
     { 21,  2, "CLI_TOICQSRV",        NULL},
@@ -795,7 +800,7 @@ static JUMP_SNAC_F(SnacSrvAddedyou)
 /*
  * SRV_FROMOLDICQ - SNAC(15,3)
  */
-static JUMP_SNAC_F(SnacSrvFromoldicq)
+static JUMP_SNAC_F(SnacSrvFromicqsrv)
 {
     TLV *tlv;
     Packet *p, *pak;
