@@ -674,7 +674,7 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
         IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (NULL,
                   EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
                   EXTRA_MESSAGE, msgtype, text));
-    else
+    else if (event)
     {
         IMIntMsg (cont, event->conn, NOW, STATUS_OFFLINE, INT_MSGACK_TYPE2, ExtraGetS (event->extra, EXTRA_MESSAGE), NULL);
         if (~cont->flags & CONT_SEENAUTO && strlen (text) && strcmp (text, ExtraGetS (event->extra, EXTRA_MESSAGE)))
