@@ -504,6 +504,132 @@ char *UtilUITime (time_t *t)
     return buf;
 }
 
+/*
+ * Try to find a parameter in the string.
+ * String pointer is advanced to point after the parsed argument.
+ * Result must NOT be free()d.
+ */
+BOOL UtilUIParse (char **input, char **parsed)
+{
+    static char *t = NULL;
+    char *p = *input;
+    int s = 0;
+    
+    while (*p && strchr (" \t\r\n", *p))
+        p++;
+    
+    *input = p;
+    if (!*p)
+    {
+        *parsed = NULL;
+        return FALSE;
+    }
+    if (t)
+        free (t);
+    *parsed = t = malloc (strlen (p));
+    
+    if (*p == '"')
+    {
+        s = 1;
+        p++;
+    }
+    while (*p)
+    {
+        if (*p == '\\' && *(p + 1))
+        {
+            p++;
+            *(t++) = *(p++);
+            continue;
+        }
+        if (*p == '"' && s)
+        {
+            *t = '\0';
+            *input = p;
+            return TRUE;
+        }
+        *(t++) = *(p++);
+    }
+    *t = '\0';
+    *input = p;
+    return TRUE;
+}
+
+/*
+ * Try to find a nick name or uin in the string.
+ * String pointer is advanced to point after the parsed argument.
+ */
+BOOL UtilUIParseNick (char **input, Contact **parsed)
+{
+    Contact *r;
+    char *p = *input, *t;
+    int max, l, ll;
+    
+    while (*p && strchr (" \t\r\n", *p))
+        p++;
+    
+    *input = p;
+    if (!*p)
+    {
+        *parsed = NULL;
+        return FALSE;
+    }
+    
+    if (*p == '"')
+    {
+        t = NULL;
+        if (UtilUIParse (&p, &t))
+        {
+            *parsed = ContactFindContact (t);
+            *input = p;
+            return TRUE;
+        }
+    }
+    max = 0;
+    ll = strlen (p);
+    for (r = ContactStart (); ContactHasNext (r); r = ContactNext (r))
+    {
+        l = strlen (r->nick);
+        if (l > max && l <= ll && (!p[l] || strchr (" \t\r\n", p[l])) && !strncmp (p, r->nick, l))
+        {
+            *parsed = r;
+            max = strlen (r->nick);
+        }
+    }
+    if (max)
+    {
+        *input = p + max;
+        return TRUE;
+    }
+    return FALSE;
+}
+
+/*
+ * Try to find a number.
+ * String pointer is advanced to point after the parsed argument.
+ */
+BOOL UtilUIParseInt (char **input, UDWORD *parsed)
+{
+    char *p = *input;
+    UDWORD nr;
+    
+    while (*p && strchr (" \t\r\n", *p))
+        p++;
+    
+    nr = 0;
+    while (*p && *p >= '0' && *p <= '9')
+    {
+        nr = nr * 10 + (*p - '0');
+        p++;
+    }
+    if (*p && !strchr (" \t\r\n", *p))
+    {
+        *parsed = 0;
+        return FALSE;
+    }
+    *input = p;
+    *parsed = nr;
+    return TRUE;
+}
 
 /*
  * Inform that a user went online
