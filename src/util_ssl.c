@@ -1,7 +1,7 @@
 /*
  * TLS Diffie Hellmann extension.
  *
- * mICQ TCL extension Copyright (C) © 2003 Roman Hoog Antink
+ * mICQ TLS extension Copyright (C) © 2003 Roman Hoog Antink
  *
  * This extension is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -198,7 +198,7 @@ int ssl_connect (Connection *conn, BOOL is_client)
 
     SSL_CHECK_SUCCESS_0_OK (ret, 0, "credentials_set", is_client ? "[client]" : "[server]");
     if (is_client)
-        /* reduce minimal prime bits expected for OpenSSL interoperability */
+        /* reduce minimal prime bits expected for licq interoperability */
         gnutls_dh_set_prime_bits (conn->ssl, DH_EXPECT_BITS);
     
     gnutls_transport_set_ptr (conn->ssl, (gnutls_transport_ptr)conn->sok); /* return type void */
@@ -347,16 +347,6 @@ void ssl_sockclose (Connection *conn)
         ssl_disconnect (conn);
     }
     sockclose (conn->sok);
-}
-
-/*
- * Tell whether SSL is up and running
- *
- * Return 0 means no.
- */
-int check_ssl_init ()
-{
-    return ssl_init_ok;
 }
 
 /*

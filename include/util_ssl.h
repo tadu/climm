@@ -19,7 +19,6 @@ int ssl_sockwrite (Connection *c, UBYTE *data, UWORD len);
 int ssl_sockread (Connection *c, UBYTE *data, UWORD len);
 void ssl_sockclose (Connection *c);
 void ssl_disconnect (Connection *conn);
-int check_ssl_init ();
 int ssl_supported (Connection *c);
 int ssl_connect (Connection *c, BOOL is_client);
 int ssl_handshake (Connection *conn);
