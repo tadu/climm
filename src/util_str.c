@@ -256,7 +256,7 @@ const char *s_ind (const char *str)
         t = calloc (1, size = 100);
     if (size < cnt)
         t = realloc (t, cnt);
-    if (!t)
+    if (!t || !str || !*str)
         return str;
     q = t;
     *q++ = ' ';

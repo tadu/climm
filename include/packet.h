@@ -81,6 +81,7 @@ void        PacketWriteTLV    (      Packet *pak, UDWORD type);
 void        PacketWriteTLVDone(      Packet *pak);
 void        PacketWriteLen    (      Packet *pak);
 void        PacketWriteLenDone(      Packet *pak);
+void        PacketWriteBLenDone(     Packet *pak);
 void        PacketWriteLen4   (      Packet *pak);
 void        PacketWriteLen4Done(     Packet *pak);
 
@@ -122,5 +123,6 @@ Cap        *PacketCap         (UBYTE id);
 #define PacketWriteTLVData(pak,tlv,data,len) do { PacketWriteB2 (pak, tlv); PacketWriteB2   (pak, len); PacketWriteData (pak, data, len); } while (0)
 #define PacketWriteTLVStr(pak,tlv,data)      do { PacketWriteTLV (pak, tlv); PacketWriteStr (pak, data);PacketWriteTLVDone (pak);         } while (0)
 #define PacketWriteStrB(pak,str)             do { PacketWriteB2 (pak, strlen (str)); PacketWriteStr (pak, str);                           } while (0)
+#define PacketWriteBLen(pak) PacketWriteLen(pak)
 
 #endif /* MICQ_PACKET_H */

@@ -62,7 +62,7 @@ static const char *syntable[] = {
     "s19x6s",  "bWgs19x6cs",
     "s19x6cs", "BWWW<t-)gs19x6cs",
     "s19x7s",  "",
-    "s19x8s",  "uWWWWt-",
+    "s19x8s",  ")uWWWWt-",
     "s19x9s",  "BWWWWt-",
     "s19x10s", "uWWWWt-",
     "s19x14s", "W",

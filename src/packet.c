@@ -302,6 +302,15 @@ void PacketWriteLenDone (Packet *pak)
     pak->tpos = pos;
 }
 
+void PacketWriteBLenDone (Packet *pak)
+{
+    UWORD pos;
+    
+    pos = PacketReadAtB2 (pak, pak->tpos);
+    PacketWriteAtB2 (pak, pak->tpos, pak->wpos - pak->tpos - 2);
+    pak->tpos = pos;
+}
+
 void PacketWriteLen4 (Packet *pak)
 {
     UWORD pos;

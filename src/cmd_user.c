@@ -20,6 +20,7 @@
 #include "cmd_pkt_v8.h"
 #include "cmd_pkt_v8_flap.h"
 #include "cmd_pkt_v8_snac.h"
+#include "im_icq8.h"
 #include "preferences.h"
 #include "packet.h"
 #include "tabs.h"
@@ -1441,7 +1442,7 @@ static JUMP_F (CmdUserMessageNG)
         }
         if (!s_parserem (&args, &arg1))
             arg1 = NULL;
-        if (arg1)
+        if (arg1 && (arg1[strlen (arg1) - 1] != '\\'))
         {
             s_repl (&uiG.last_message_sent, arg1);
             uiG.last_message_sent_type = MSG_NORM;
@@ -1461,6 +1462,12 @@ static JUMP_F (CmdUserMessageNG)
             M_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLMESSAGE, i18n (2220, "several"), COLNONE);
         msg = s_cat (msg, &size, "");
         *msg = 0;
+        if (arg1)
+        {
+            arg1[strlen (arg1) - 1] = '\0';
+            msg = s_cat (msg, &size, arg1);
+            msg = s_cat (msg, &size, "\r\n");
+        }
         status = 1;
     }
     else
@@ -3260,27 +3267,35 @@ static JUMP_F(CmdUserContact)
     OPENCONN;
 
     if (conn->type != TYPE_SERVER)
+    {
+        M_print (i18n (2319, "Server side contact list only supported for ICQ v8.\n"));
         return 0;
+    }
 
     if (!data)
     {
-        if (!s_parse (&args, &tmp))           data = 0;
-        else if (!strcasecmp (tmp, "show"))   data = 1;
-        else if (!strcasecmp (tmp, "diff"))   data = 2;
-        else if (!strcasecmp (tmp, "add"))    data = 3;
-        else if (!strcasecmp (tmp, "import")) data = 3;
-        else                                  data = 0;
+        if (!s_parse (&args, &tmp))             data = 0;
+        else if (!strcasecmp (tmp, "show"))     data = IMROSTER_SHOW;
+        else if (!strcasecmp (tmp, "diff"))     data = IMROSTER_DIFF;
+        else if (!strcasecmp (tmp, "add"))      data = IMROSTER_DOWNLOAD;
+        else if (!strcasecmp (tmp, "download")) data = IMROSTER_DOWNLOAD;
+        else if (!strcasecmp (tmp, "import"))   data = IMROSTER_IMPORT;
+        else if (!strcasecmp (tmp, "sync"))     data = IMROSTER_SYNC;
+        else if (!strcasecmp (tmp, "export"))   data = IMROSTER_EXPORT;
+        else if (!strcasecmp (tmp, "upload"))   data = IMROSTER_UPLOAD;
+        else                                    data = 0;
     }
     if (data)
-    {
-        QueueEnqueueData (conn, QUEUE_REQUEST_ROSTER, 0, 0x7fffffffL, NULL, data, NULL, NULL);
-        SnacCliReqroster (conn);
-    }
+        IMRoster (conn, data);
     else
     {
-        M_print (i18n (2103, "contact show    Show server side contact list.\n"));
-        M_print (i18n (2104, "contact diff    Show server side contacts not on local contact list.\n"));
-        M_print (i18n (2105, "contact import  Add server side contact list to local contact list.\n"));
+        M_print (i18n (2103, "contact show    Show server based contact list.\n"));
+        M_print (i18n (2104, "contact diff    Show server based contacts not on local contact list.\n"));
+        M_print (i18n (2321, "contact add     Add server based contact list to local contact list.\n"));
+        M_print (i18n (2105, "contact import  Import server based contact list as local contact list.\n"));
+        M_print (i18n (2322, "contact sync    Import server based contact list if appropriate.\n"));
+        M_print (i18n (2323, "contact export  Export local contact list to server based list.\n"));
+        M_print (i18n (2324, "contact upload  Add local contacts to server based contact list.\n"));
     }
     return 0;
 }

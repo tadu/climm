@@ -25,6 +25,7 @@
 #include "cmd_pkt_v8_snac.h"
 #include "cmd_pkt_v8_flap.h"
 #include "cmd_pkt_v8_tlv.h"
+#include "im_icq8.h"
 #include "file_util.h"
 #include "buildmark.h"
 #include "cmd_user.h"
@@ -46,7 +47,7 @@ static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd,
     SnacSrvFromicqsrv, SnacSrvAddedyou, SnacSrvToicqerr, SnacSrvNewuin,
     SnacSrvSetinterval, SnacSrvSrvackmsg, SnacSrvAckmsg, SnacSrvAuthreq,
     SnacSrvAuthreply, SnacSrvIcbmerr, SnacSrvReplyroster, SnacSrvContrefused,
-    SnacSrvRateexceeded, SnacServerpause;
+    SnacSrvRateexceeded, SnacSrvReplylists, SnacSrvUpdateack, SnacServerpause;
 
 static SNAC SNACv[] = {
     {  1,  3, NULL, NULL},
@@ -86,9 +87,9 @@ static SNAC SNACS[] = {
     {  4, 12, "SRV_SRVACKMSG",       SnacSrvSrvackmsg},
     {  9,  3, "SRV_REPLYBOS",        SnacSrvReplybos},
     { 11,  2, "SRV_SETINTERVAL",     SnacSrvSetinterval},
-    { 19,  3, "SRV_REPLYLISTS",      NULL},
+    { 19,  3, "SRV_REPLYLISTS",      SnacSrvReplylists},
     { 19,  6, "SRV_REPLYROSTER",     SnacSrvReplyroster},
-    { 19, 14, "SRV_UPDATEACK",       NULL},
+    { 19, 14, "SRV_UPDATEACK",       SnacSrvUpdateack},
     { 19, 15, "SRV_REPLYROSTEROK",   NULL},
     { 19, 25, "SRV_AUTHREQ",         SnacSrvAuthreq},
     { 19, 27, "SRV_AUTHREPLY",       SnacSrvAuthreply},
@@ -121,9 +122,9 @@ static SNAC SNACS[] = {
     { 19,  4, "CLI_REQROSTER",       NULL},
     { 19,  5, "CLI_CHECKROSTER",     NULL},
     { 19,  7, "CLI_ROSTERACK",       NULL},
-    { 19,  8, "CLI_ADDBUDDY",        NULL},
-    { 19,  9, "CLI_UPDATEGROUP",     NULL},
-    { 19, 10, "CLI_DELETEBUDDY",     NULL},
+    { 19,  8, "CLI_ROSTERADD",       NULL},
+    { 19,  9, "CLI_ROSTERUPDATE",    NULL},
+    { 19, 10, "CLI_ROSTERDELETE",    NULL},
     { 19, 17, "CLI_ADDSTART",        NULL},
     { 19, 18, "CLI_ADDEND",          NULL},
     { 19, 20, "CLI_GRANTAUTH?",      NULL},
@@ -428,10 +429,18 @@ static JUMP_SNAC_F(SnacSrvMotd)
 
     SnacCliRatesrequest (event->conn);
     SnacCliReqinfo      (event->conn);
+    SnacCliReqlists     (event->conn);
     if (event->conn->flags & CONN_WIZARD)
     {
-        QueueEnqueueData (event->conn, QUEUE_REQUEST_ROSTER, 0, 0x7fffffffL, NULL, 3, NULL, NULL);
-        SnacCliReqroster (event->conn);
+        SnacCliReqroster  (event->conn);
+        QueueEnqueueData (event->conn, QUEUE_REQUEST_ROSTER, 0, 0x7fffffffL,
+                          NULL, IMROSTER_IMPORT, NULL, NULL);
+    }
+    else
+    {
+        SnacCliCheckroster  (event->conn);
+        QueueEnqueueData (event->conn, QUEUE_REQUEST_ROSTER, 0, 0x7fffffffL,
+                          NULL, IMROSTER_DIFF, NULL, NULL);
     }
     SnacCliReqlocation  (event->conn);
     SnacCliBuddy        (event->conn);
@@ -485,7 +494,6 @@ static JUMP_SNAC_F(SnacSrvUseronline)
     {
         if (prG->verbose & DEB_PROTOCOL)
             M_print (i18n (1908, "Received USERONLINE packet for non-contact.\n"));
-        PacketD (pak);
         return;
     }
 
@@ -889,27 +897,30 @@ static JUMP_SNAC_F(SnacSrvSetinterval)
 }
 
 /*
+ * SRV_REPLYLISTS - SNAC(13,3)
+ */
+static JUMP_SNAC_F(SnacSrvReplylists)
+{
+    /* ignore */
+}
+
+/*
  * SRV_REPLYROSTER - SNAC(13,6)
  */
-static JUMP_SNAC_F(SnacSrvReplyroster)
+static JUMP_SNAC_F(SnacSrvReplyrosterexport)
 {
-    Packet *pak, *p;
-    TLV *tlv;
-    Event *event2;
+    Packet *pak;
     ContactGroup *cg = NULL;
     Contact *cont;
-    int i, k, l;
     char *name, *cname, *nick;
-    UWORD count, type, tag, id, TLVlen, j, data;
-    time_t stmp;
-
-    pak = event->pak;
+    TLV *tlv;
+    UWORD type, tag, id, TLVlen, j, data;
+    int cnt_sbl_add, cnt_sbl_chn, cnt_sbl_del;
+    int i, k, l, count;
     
-    event2 = QueueDequeue (event->conn, QUEUE_REQUEST_ROSTER, 0);
-    data = event2 ? event2->uin : 1;
-
-    PacketRead1 (pak);
-    count = PacketReadB2 (pak);          /* COUNT */
+    pak = event->pak;
+    cnt_sbl_add = cnt_sbl_chn = cnt_sbl_del = 0;
+    count = PacketReadB2 (pak);
     for (i = k = l = 0; i < count; i++)
     {
         cname  = PacketReadStrB (pak);   /* GROUP NAME */
@@ -925,15 +936,151 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
         switch (type)
         {
             case 1:
-                if (!tag && !id)
+                if (id) /* should be zero for groups */
+                    break;
+                if (!tag) /* meta list of groups */
+                    break;
+                if (!(cg = ContactGroupFind (tag, event->conn, name, 0)))
+                    if (!(cg = ContactGroupFind (tag, event->conn, NULL, 0)))
+                        if (!(cg = ContactGroupFind (0, event->conn, name, 0)))
+                            if (!IMROSTER_ISDOWN (data) || !(cg = ContactGroupFind (tag, event->conn, name, 1)))
+                                break;
+                if (IMROSTER_ISDOWN (data))
+                {
+                    s_repl (&cg->name, name);
+                    cg->id = tag;
+                }
+                M_printf ("FIXME: Group #%08d '%s'\n", tag, name);
+                break;
+            case 2:
+            case 3:
+            case 14:
+            case 0:
+                cg = ContactGroupFind (tag, event->conn, NULL, 0);
+                if (!tag || (!cg && data == IMROSTER_IMPORT))
+                    break;
+                j = TLVGet (tlv, 305);
+                assert (j < 200 || j == (UWORD)-1);
+                nick = strdup (j != (UWORD)-1 ? c_in (tlv[j].str) : name);
+
+                switch (data)
+                {
+                    case 3:
+                        if (j != (UWORD)-1 || !(cont = ContactFind (event->conn->contacts, 0, atoi (name), NULL, 0))
+                                           || cont->flags & CONT_TEMPORARY)
+                        {
+                            cont = ContactFind (event->conn->contacts, id, atoi (name), nick, 1);
+                            SnacCliAddcontact (event->conn, cont);
+                            k++;
+                        }
+                        if (!cont)
+                            break;
+                        if (!ContactFind (event->conn->contacts, 0, atoi (name), nick, 0))
+                            ContactFind (event->conn->contacts, id, atoi (name), nick, 1);
+                        cont->id = id;   /* FIXME: should be in ContactGroup? */
+                        if (type == 2)
+                        {
+                            cont->flags |= CONT_INTIMATE;
+                            cont->flags &= CONT_HIDEFROM;
+                        }
+                        else if (type == 3)
+                        {
+                            cont->flags |= CONT_HIDEFROM;
+                            cont->flags &= CONT_INTIMATE;
+                        }
+                        else if (type == 14)
+                            cont->flags |= CONT_IGNORE;
+                        if (!ContactFind (cg, 0, cont->uin, NULL, 0))
+                        {
+                            ContactAdd (cg, cont);
+                            l++;
+                        }
+                        M_printf (" #%d %10d %s\n", id, atoi (name), nick);
+                        break;
+                    case 2:
+                        if ((cont = ContactFind (event->conn->contacts, id, atoi (name), nick, 0))
+                            && ~cont->flags & CONT_TEMPORARY)
+                            break;
+                    case 1:
+                        M_printf (" #%08d %10d %s\n", id, atoi (name), nick);
+                }
+                free (nick);
+                break;
+            case 4:
+            case 9:
+            case 17:
+                /* unknown / ignored */
+                break;
+        }
+        free (name);
+        TLVD (tlv);
+    }
+    /* TIMESTAMP ignored */
+    if (k || l)
+    {
+        M_printf (i18n (2242, "Imported %d new contacts, added %d times to a contact group.\n"), k, l);
+        if (event->conn->flags & CONN_WIZARD)
+        {
+            if (Save_RC () == -1)
+                M_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
+        }
+        else
+            M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
+    }
+    SnacCliRosterack (event->conn);
+}
+
+
+static JUMP_SNAC_F(SnacSrvReplyroster)
+{
+    Packet *pak, *p;
+    TLV *tlv;
+    Event *event2;
+    ContactGroup *cg = NULL;
+    Contact *cont;
+    int i, k, l;
+    int cnt_sbl_add, cnt_sbl_chn, cnt_sbl_del;
+    int cnt_loc_add, cnt_loc_chn, cnt_loc_del;
+    char *name, *cname, *nick;
+    UWORD count, type, tag, id, TLVlen, j, data;
+    time_t stmp;
+
+    pak = event->pak;
+    
+    event2 = QueueDequeue (event->conn, QUEUE_REQUEST_ROSTER, 0);
+    data = event2 ? event2->uin : 1;
+
+    PacketRead1 (pak);
+
+
+    count = PacketReadB2 (pak);          /* COUNT */
+    cnt_sbl_add = cnt_sbl_chn = cnt_sbl_del = 0;
+    cnt_loc_add = cnt_loc_chn = cnt_loc_del = 0;
+    for (i = k = l = 0; i < count; i++)
+    {
+        cname  = PacketReadStrB (pak);   /* GROUP NAME */
+        tag    = PacketReadB2 (pak);     /* TAG  */
+        id     = PacketReadB2 (pak);     /* ID   */
+        type   = PacketReadB2 (pak);     /* TYPE */
+        TLVlen = PacketReadB2 (pak);     /* TLV length */
+        tlv    = TLVRead (pak, TLVlen);
+        
+        name = strdup (c_in (cname));
+        free (cname);
+
+        switch (type)
+        {
+            case 1:
+                if (!tag && !id) /* group 0, ID 0: list IDs of all groups */
                 {
                     j = TLVGet (tlv, 200);
                     if (j == (UWORD)-1)
                         break;
                     p = PacketCreate (tlv[j].str, tlv[j].len);
                     while ((id = PacketReadB2 (p)))
-                        if (!ContactGroupFind (id, event->conn, NULL, 0) && data == 3)
-                            ContactGroupFind (id, event->conn, "", 1);
+                        if (!ContactGroupFind (id, event->conn, NULL, 0))
+                            if (IMROSTER_ISDOWN (data))
+                                ContactGroupFind (id, event->conn, "", 1);
                     PacketD (p);
                 }
                 else
@@ -941,17 +1088,23 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                     if (!(cg = ContactGroupFind (tag, event->conn, name, 0)))
                         if (!(cg = ContactGroupFind (tag, event->conn, NULL, 0)))
                             if (!(cg = ContactGroupFind (0, event->conn, name, 0)))
-                                if (data != 3 || !(cg = ContactGroupFind (tag, event->conn, name, 1)))
+                                if (!IMROSTER_ISDOWN (data) || !(cg = ContactGroupFind (tag, event->conn, name, 1)))
                                     break;
-                    s_repl (&cg->name, name);
-                    M_printf (i18n (2049, "Receiving group \"%s\":\n"), name);
+                    if (IMROSTER_ISDOWN (data))
+                    {
+                        s_repl (&cg->name, name);
+                        cg->id = tag;
+                    }
+                    M_printf ("FIXME: Group #%08d '%s'\n", tag, name);
+//                  M_printf (i18n (2049, "Receiving group \"%s\":\n"), name);
                 }
                 break;
             case 2:
             case 3:
             case 14:
             case 0:
-                if (!tag)
+                cg = ContactGroupFind (tag, event->conn, NULL, 0);
+                if (!tag || (!cg && data == IMROSTER_IMPORT))
                     break;
                 if (!(cg = ContactGroupFind (tag, event->conn, NULL, 0)))
                     if (!(cg = ContactGroupFind (tag, event->conn, s_sprintf ("<group #%d>", tag), 1)))
@@ -999,7 +1152,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                             && ~cont->flags & CONT_TEMPORARY)
                             break;
                     case 1:
-                        M_printf (" #%d %10d %s\n", id, atoi (name), nick);
+                        M_printf (" #%08d %10d %s\n", id, atoi (name), nick);
                 }
                 free (nick);
                 break;
@@ -1029,7 +1182,45 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
         else
             M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
     }
+    SnacCliRosterack (event->conn);
+}
+
+/*
+ *
+ */
+static JUMP_SNAC_F(SnacSrvUpdateack)
+{
+    Contact *cont = NULL;
+    Event *event2;
+    UWORD err;
     
+    event2 = QueueDequeue (event->conn, QUEUE_CHANGE_ROSTER, event->pak->ref);
+    if (event2)
+        cont = ContactUIN (event->conn, event2->uin);
+    err = PacketReadB2 (event->pak);
+    
+    if (cont)
+    {
+        switch (err)
+        {
+            case 0xe:
+                cont->flags &= CONT_ISSBL;
+                cont->flags |= CONT_REQAUTH;
+                SnacCliRosteradd (event->conn, event->conn->contacts, cont);
+                EventD (event2);
+                return;
+            case 0x3:
+                cont->id = 0;
+            case 0x0:
+                cont->flags |= CONT_ISSBL;
+                EventD (event2);
+                return;
+        }
+    }
+    
+    M_printf (i18n (2320, "Warning: server based contact list change failed with error code %d.\n"), err);
+    if (event2)
+        EventD (event2);
 }
 
 /*
@@ -1761,9 +1952,32 @@ void SnacCliReminvis (Connection *conn, Contact *cont)
 }
 
 /*
- * CLI_REQROSTER - SNAC(13,5)
+ * CLI_REQLISTS - SNAC(13,2)
  */
+void SnacCliReqlists (Connection *conn)
+{
+    Packet *pak;
+    
+    pak = SnacC (conn, 19, 2, 0, 0);
+    SnacSend (conn, pak);
+}
+
+/*
+ * CLI_REQROSTER - SNAC(13,4)
+ */
+
 void SnacCliReqroster (Connection *conn)
+{
+    Packet *pak;
+    
+    pak = SnacC (conn, 19, 4, 0, 0);
+    SnacSend (conn, pak);
+}
+
+/*
+ * CLI_CHECKROSTER - SNAC(13,5)
+ */
+void SnacCliCheckroster (Connection *conn)
 {
     ContactGroup *cg;
 /*    Contact *cont;*/
@@ -1777,6 +1991,162 @@ void SnacCliReqroster (Connection *conn)
 
     PacketWriteB4 (pak, 0);  /* last modification of server side contact list */
     PacketWriteB2 (pak, i);  /* # of entries */
+    SnacSend (conn, pak);
+}
+
+/*
+ * CLI_ROSTERACK - SNAC(13,7)
+ */
+void SnacCliRosterack (Connection *conn)
+{
+    Packet *pak;
+    
+    pak = SnacC (conn, 19, 7, 0, 0);
+    SnacSend (conn, pak);
+}
+
+/*
+ * CLI_ADDBUDDY - SNAC(13,8)
+ */
+void SnacCliRosteradd (Connection *conn, ContactGroup *cg, Contact *cont)
+{
+    Packet *pak;
+    
+    if (cont)
+    {
+/*        SnacCliGrantauth (conn, cont);  */
+        SnacCliAddstart (conn);
+        
+        pak = SnacC (conn, 19, 8, 0, 0);
+        PacketWriteStrB     (pak, s_sprintf ("%ld", cont->uin));
+        PacketWriteB2       (pak, ContactGroupID (cg));
+        PacketWriteB2       (pak, ContactID (cont));
+        PacketWriteB2       (pak, 0);
+        PacketWriteBLen     (pak);
+        PacketWriteTLVStr   (pak, 305, cont->nick);
+        if (cont->flags & CONT_REQAUTH)
+        {
+            PacketWriteTLV     (pak, 102);
+            PacketWriteTLVDone (pak);
+        }
+        PacketWriteBLenDone (pak);
+        QueueEnqueueData (conn, QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont->uin, NULL, NULL);
+    }
+    else
+    {
+        pak = SnacC (conn, 19, 8, 0, 0);
+        PacketWriteStrB     (pak, cg->name);
+        PacketWriteB2       (pak, ContactGroupID (cg));
+        PacketWriteB2       (pak, 0);
+        PacketWriteB2       (pak, 1);
+        PacketWriteBLen     (pak);
+        PacketWriteBLenDone (pak);
+    }
+    SnacSend (conn, pak);
+}
+
+/*
+ * CLI_ROSTERUPDATE - SNAC(12,9)
+ */
+void SnacCliRosterupdate (Connection *conn, ContactGroup *cg, Contact *cont)
+{
+    Packet *pak;
+    int i;
+
+    pak = SnacC (conn, 19, 9, 0, 0);
+    if (cont)
+    {
+        PacketWriteStrB     (pak, s_sprintf ("%ld", cont->uin));
+        PacketWriteB2       (pak, ContactGroupID (cg));
+        PacketWriteB2       (pak, ContactID (cont));
+        PacketWriteB2       (pak, 0);
+        PacketWriteBLen     (pak);
+        PacketWriteTLVStr   (pak, 305, cont->nick);
+        PacketWriteBLenDone (pak);
+    }
+    else
+    {
+        PacketWriteStrB     (pak, cg->name);
+        PacketWriteB2       (pak, ContactGroupID (cg));
+        PacketWriteB2       (pak, 0);
+        PacketWriteB2       (pak, 1);
+        PacketWriteBLen     (pak);
+        PacketWriteTLV      (pak, 200);
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            PacketWriteB2   (pak, ContactID (cont));
+        PacketWriteTLVDone  (pak);
+        PacketWriteBLenDone (pak);
+    }
+}
+
+/*
+ * CLI_ROSTERUPDATE - SNAC(13,9)
+ */
+void SnacCliSetvisibility (Connection *conn)
+{
+    Packet *pak;
+    
+    pak = SnacC (conn, 19, 9, 0, 0);
+    PacketWriteStrB     (pak, "");
+    PacketWriteB2       (pak, 0);
+    PacketWriteB2       (pak, 0x4242);
+    PacketWriteB2       (pak, 4);
+    PacketWriteBLen     (pak);
+    PacketWriteB2       (pak, 5);
+    PacketWriteTLV      (pak, 202);
+    PacketWrite1        (pak, 4);
+    PacketWriteTLVDone  (pak);
+    PacketWriteBLenDone (pak);
+    SnacSend (conn, pak);
+}
+
+/*
+ * CLI_ROSTERDELETE - SANC(12,a)
+ */
+void SnacCliRosterdelete (Connection *conn, ContactGroup *cg, Contact *cont)
+{
+    Packet *pak;
+
+    pak = SnacC (conn, 19, 10, 0, 0);
+    if (cont)
+    {
+        PacketWriteStrB     (pak, s_sprintf ("%ld", cont->uin));
+        PacketWriteB2       (pak, ContactGroupID (cg));
+        PacketWriteB2       (pak, ContactID (cont));
+        PacketWriteB2       (pak, 0);
+        PacketWriteBLen     (pak);
+        PacketWriteBLenDone (pak);
+    }
+    else
+    {
+        PacketWriteStrB     (pak, cg->name);
+        PacketWriteB2       (pak, ContactGroupID (cg));
+        PacketWriteB2       (pak, 0);
+        PacketWriteB2       (pak, 1);
+        PacketWriteBLen     (pak);
+        PacketWriteBLenDone (pak);
+    }
+}
+
+/*
+ * CLI_ADDSTART - SNAC(13,11)
+ */
+void SnacCliAddstart (Connection *conn)
+{
+    Packet *pak;
+    
+    pak = SnacC (conn, 19, 17, 0, 0);
+    SnacSend (conn, pak);
+}
+
+/*
+ * CLI_ADDEND - SNAC(13,12)
+ */
+void SnacCliAddend (Connection *conn)
+{
+    Packet *pak;
+
+    pak = SnacC (conn, 19, 18, 0, 0);
     SnacSend (conn, pak);
 }
 

@@ -52,6 +52,7 @@ const char *QueueType   (UDWORD type);
 #define QUEUE_FLAP          34
 #define QUEUE_REQUEST_ROSTER  90
 #define QUEUE_REQUEST_META    91
+#define QUEUE_CHANGE_ROSTER   92
 #define QUEUE_ACKNOWLEDGE   80
 #define QUEUE_TODO_EG       11
 #define QUEUE_CACHE_MSG     100
