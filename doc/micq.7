@@ -334,32 +334,39 @@ or
 .B ww
 instead.
 .TP
-.BI change \ [number]
-Changes your status to
-.IR number .
-Without a number it lists some available modes.
-.TP
 .BI reg \ password
 Creates a new user account with password
 .IR password .
 .TP
+.BI change \ [number\ [message]]
+Changes your status to
+.IR number .
+Without a number it lists some available modes. Optionally
+set auto response for this status to
+.IR message .
+.TP
 .B online
 Change status to "online".
 .TP
-.B away
-Change status to "away".
+.B away \ [message]
+Change status to "away". Optionally set auto response for this status to
+.IR message .
 .TP
-.B na
-Change status to "not available".
+.B na \ [message]
+Change status to "not available". Optionally set auto response for this status to
+.IR message .
 .TP
-.B occ             
-Change status to "occupied".
+.B occ \ [message]
+Change status to "occupied". Optionally set auto response for this status to
+.IR message .
 .TP
-.B dnd 
-Change status to "do not disturb".
+.B dnd \ [message]
+Change status to "do not disturb". Optionally set auto response for this status to
+.IR message .
 .TP
-.B ffc
-Change status to "free for chat".
+.B ffc \ [message]
+Change status to "free for chat". Optionally set auto response for this status to
+.IR message .
 .TP
 .B inv
 Change status to "invisible".

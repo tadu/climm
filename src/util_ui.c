@@ -520,6 +520,7 @@ void UtilUIUserOnline (Session *sess, Contact *cont, UDWORD status)
     
     old = cont->status;
     cont->status = status;
+    cont->flags &= ~CONT_SEENAUTO;
 
     log_event (cont->uin, LOG_ONLINE, "User logged on %s (%08lx)\n", ContactFindName (cont->uin), status);
  

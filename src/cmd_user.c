@@ -79,13 +79,13 @@ static jump_t jump[] = {
     { &CmdUserSoundOffline,  "soundoffline", NULL, 2,   0 },
     { &CmdUserAutoaway,      "autoaway",     NULL, 2,   0 },
     { &CmdUserChange,        "change",       NULL, 1,  -1 },
-    { &CmdUserChange,        "online",       NULL, 1,   0 },
-    { &CmdUserChange,        "away",         NULL, 1,   1 },
-    { &CmdUserChange,        "na",           NULL, 1,   5 },
-    { &CmdUserChange,        "occ",          NULL, 1,  17 },
-    { &CmdUserChange,        "dnd",          NULL, 1,  19 },
-    { &CmdUserChange,        "ffc",          NULL, 1,  32 },
-    { &CmdUserChange,        "inv",          NULL, 1, 256 },
+    { &CmdUserChange,        "online",       NULL, 1, STATUS_ONLINE },
+    { &CmdUserChange,        "away",         NULL, 1, STATUS_AWAY },
+    { &CmdUserChange,        "na",           NULL, 1, STATUS_NA   },
+    { &CmdUserChange,        "occ",          NULL, 1, STATUS_OCC  },
+    { &CmdUserChange,        "dnd",          NULL, 1, STATUS_DND  },
+    { &CmdUserChange,        "ffc",          NULL, 1, STATUS_FFC  },
+    { &CmdUserChange,        "inv",          NULL, 1, STATUS_INV  },
     { &CmdUserClear,         "clear",        NULL, 2,   0 },
     { &CmdUserTogIgnore,     "togig",        NULL, 0,   0 },
     { &CmdUserTogVisible,    "togvis",       NULL, 0,   0 },
@@ -173,10 +173,10 @@ static JUMP_F(CmdUserChange)
     char *arg1;
     SESSION;
 
-    arg1 = strtok (args, " \n\r");
     if (data == -1)
     {
-        if (arg1 == NULL)
+        arg1 = strtok (args, " \n\r");
+        if (!arg1)
         {
             M_print (i18n (1703, COLCLIENT "Status modes: \n"));
             M_print ("  %-20s %d\n", i18n (1921, "Online"),         STATUS_ONLINE);
@@ -190,7 +190,19 @@ static JUMP_F(CmdUserChange)
             return 0;
         }
         data = atoi (arg1);
+        arg1 = strtok (NULL, "\n");
     }
+    else
+        arg1 = strtok (args, "\n");
+    if (arg1)
+    {
+        if      (data & STATUSF_DND) { if (prG->auto_dnd) free (prG->auto_dnd); prG->auto_dnd = strdup (arg1); }
+        else if (data & STATUSF_OCC) { if (prG->auto_occ) free (prG->auto_occ); prG->auto_occ = strdup (arg1); }
+        else if (data & STATUSF_NA)  { if (prG->auto_na)  free (prG->auto_na);  prG->auto_na  = strdup (arg1); }
+        else if (data & STATUSF_AWAY){ if (prG->auto_away)free (prG->auto_away);prG->auto_away= strdup (arg1); }
+        else if (data & STATUSF_FFC) { if (prG->auto_ffc) free (prG->auto_ffc); prG->auto_ffc = strdup (arg1); }
+    }
+
     if (sess->ver > 6)
         SnacCliSetstatus (sess, data, 1);
     else

@@ -1,0 +1,49 @@
+
+Q: My friend uses Trillian, and...
+
+A: Friends don't let friends use Trillian. Tell him to upgrad to Miranda or
+   at least Trillian 0.75.
+
+Q: My friend uses Trillian, and sometimes he can't send messages.
+
+A: That's a well-known stupid bug on Trillian's side. It is unable to route
+   a message through the server if for some reason it fails to send it
+   directly. Unfortunately, mICQ used to hard-code that it isn't firewalled.
+   This has been changed; if you're firewalled, and can't use SOCKS, you
+   need to set the status field in your peer-to-peer connection. See
+   micqrc.5 for details.
+
+Q: When I send someone a message, it gives me some failed connections errors.
+
+A: mICQ tries to send the messages directly if it can, so as soon as mICQ
+   knows the target's IP address and port, the next message will cause it
+   to try to open a connection to the target. It will try the external
+   and the internal IP address, so you might get two error messages if it
+   fails. It is harmless, because it will route the message through the
+   server if it fails (we're not Trillain, are we?).
+
+Q: When I start mICQ, I get lines like those:
+
+07:33:10  Incoming v8 server packet: FLAP seq 000065e2 length 001a channel 2
+ SNAC (15,1) [unknown] flags 0 ref eee0dc
+
+A: The server for some reason gives an error when mICQ acknowledges the
+   receipt of offline messages. This happens only for some servers you
+   might be connected to. The message is harmless - you should just
+   ignore it.
+   If you wonder why mICQ still prints it then it's because it doesn't
+   handle this packets yet and mICQ always prints unknown packets. This
+   is so that I get feedback for new packets.
+   If you get them every 30s, upgrade your mICQ.
+
+Q: I have a bug in mICQ 0.4.2, ...
+
+A: Go away. I'm not interested in bug reports for old versions, because
+   they probably will already be fixed. Upgrade to the newest version,
+   check the mailing list and this FAQ, and if the bug still persists,
+   I'm more than willing to help you.
+
+Q: When I try to login, I get an error 24.
+
+A: Try again in 30min. AOL will block you with that error message if you
+   login too often in too short a time.

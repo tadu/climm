@@ -7,7 +7,8 @@
 #define CONT_HIDEFROM   2UL /* Always pretend to be offline. */
 #define CONT_INTIMATE   4UL /* Can see even if invisible. */
 #define CONT_TEMPORARY  8UL /* No status display for this contact. */
-#define CONT_ALIAS     16UL /* Is an alias entry (not yet used). */
+#define CONT_ALIAS     16UL /* Is an alias entry. */
+#define CONT_SEENAUTO  32UL /* has seen auto response. */
 
 struct Contact_s
 {
@@ -19,8 +20,6 @@ struct Contact_s
    UDWORD local_ip;
    UDWORD outside_ip;
    UDWORD port;
-   time_t seen_time;
-   time_t seen_micq_time;
    UWORD  TCP_version;
    UBYTE  connection_type;
    UDWORD cookie;
@@ -29,6 +28,9 @@ struct Contact_s
    char  *version;
    char  *last_message;
    time_t last_time;
+
+   time_t seen_time;
+   time_t seen_micq_time;
 };
 
 Contact    *ContactAdd (UDWORD uin, const char *nick);

@@ -1335,27 +1335,27 @@ static int TCPSendMsgAck (Session *peer, UWORD seq, UWORD type, BOOL accept)
             msg = BuildVersionText;
             break;
         default:
-            if (peer->status & STATUSF_DND)
+            if      (peer->parent->parent->status & STATUSF_DND)
                 msg = prG->auto_dnd;
-            else if (peer->status & STATUSF_OCC)
+            else if (peer->parent->parent->status & STATUSF_OCC)
                 msg = prG->auto_occ;
-            else if (peer->status & STATUSF_NA)
+            else if (peer->parent->parent->status & STATUSF_NA)
                 msg = prG->auto_na;
-            else if (peer->status & STATUSF_AWAY)
+            else if (peer->parent->parent->status & STATUSF_AWAY)
                 msg = prG->auto_away;
             else
                 msg = "";
     }
 
-    if (peer->status & STATUSF_DND)  status  = TCP_STAT_DND;   else
-    if (peer->status & STATUSF_OCC)  status  = TCP_STAT_OCC;   else
-    if (peer->status & STATUSF_NA)   status  = TCP_STAT_NA;    else
-    if (peer->status & STATUSF_AWAY) status  = TCP_STAT_AWAY;
-    else                             status  = TCP_STAT_ONLINE;
-    if (!accept)                     status  = TCP_STAT_REFUSE;
+    if (peer->parent->parent->status & STATUSF_DND)  status  = TCP_STAT_DND;   else
+    if (peer->parent->parent->status & STATUSF_OCC)  status  = TCP_STAT_OCC;   else
+    if (peer->parent->parent->status & STATUSF_NA)   status  = TCP_STAT_NA;    else
+    if (peer->parent->parent->status & STATUSF_AWAY) status  = TCP_STAT_AWAY;
+    else                                             status  = TCP_STAT_ONLINE;
+    if (!accept)                                     status  = TCP_STAT_REFUSE;
 
     flags = 0;
-    if (peer->status & STATUSF_INV)  flags |= TCP_MSGF_INV;
+    if (peer->parent->parent->status & STATUSF_INV)  flags |= TCP_MSGF_INV;
     flags ^= TCP_MSGF_LIST;
 
     pak = PacketTCPC (peer, TCP_CMD_ACK, seq, type, flags, status, msg);
@@ -1776,6 +1776,11 @@ static void TCPCallBackReceive (Event *event)
                     Time_Stamp ();
                     M_print (" " COLACK "%10s" COLNONE " " MSGTCPACKSTR "%s\n",
                              cont->nick, event->info);
+                    if (~cont->flags & CONT_SEENAUTO)
+                    {
+                        Do_Msg (event->sess->parent, NULL, NORM_MESS, tmp, cont->uin, status, 1);
+                        cont->flags |= CONT_SEENAUTO;
+                    }
                     break;
 
                     while (0) {  /* Duff-uesque */

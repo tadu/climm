@@ -346,32 +346,40 @@ oder
 .B ww
 stattdessen.
 .TP
-.BI change \ [Nummer]
-Wechselt in den Status
-.IR Nummer .
-Ohne eine Nummer: liste die verfügbaren Nummern auf.
-.TP
 .BI reg \ Paßwort
 Erzeugt eine neue Benutzernummer mit dem Paßwort
 .IR Paßwort .
 .TP
-.B online
-Wechselt in den Status "verbunden".
+.BI change \ [Nummer\ [Nachricht]]
+Wechselt in den Status
+.IR Nummer ,
+und setze optional die automatische Antwort für diesen Status auf
+.IR Nachricht .
+Ohne eine Nummer: liste die verfügbaren Nummern auf.
 .TP
-.B away
-Wechselt in den Status "abwesend".
+.B online \ [Nachricht]
+Wechselt in den Status "verbunden". Setzt optional die automatische Antwort auf
+.IR Nachricht .
 .TP
-.B na
-Wechselt in den Status "nicht verfügbar".
+.B away \ [Nachricht]
+Wechselt in den Status "abwesend". Setzt optional die automatische Antwort auf
+.IR Nachricht .
 .TP
-.B occ             
-Wechselt in den Status "beschäftigt".
+.B na \ [Nachricht]
+Wechselt in den Status "nicht verfügbar". Setzt optional die automatische Antwort auf
+.IR Nachricht .
 .TP
-.B dnd 
-Wechselt in den Status "nicht stören".
+.B occ \ [Nachricht]
+Wechselt in den Status "beschäftigt". Setzt optional die automatische Antwort auf
+.IR Nachricht .
 .TP
-.B ffc
-Wechselt in den Status "frei für Plaudereien".
+.B dnd \ [Nachricht]
+Wechselt in den Status "nicht stören". Setzt optional die automatische Antwort auf
+.IR Nachricht .
+.TP
+.B ffc \ [Nachricht]
+Wechselt in den Status "frei für Plaudereien". Setzt optional die automatische Antwort auf
+.IR Nachricht .
 .TP
 .B inv
 Wechselt in den Status "unsichtbar".
