@@ -108,7 +108,7 @@ ContactGroup *ContactGroupFind (UWORD id, Connection *serv, const char *name, BO
         if (    cnt_groups[i]
             && (!id   || cnt_groups[i]->id   == id)
             && (!serv || cnt_groups[i]->serv == serv)
-            && (!name || !strcmp (cnt_groups[i]->name, name)))
+            && (!name || !strcasecmp (cnt_groups[i]->name, name)))
         {
             return cnt_groups[i];
         }
@@ -255,7 +255,7 @@ Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nic
         for (i = 0; i < tmp->used; i++)
             for (cont = tmp->contacts[i]; cont; cont = cont->alias)
                 if ((!uin  || uin == cont->uin) &&
-                    (!nick || !strcmp (nick, cont->nick)) &&
+                    (!nick || !strcasecmp (nick, cont->nick)) &&
                     (!id   || id == cont->id))
                 {
                     return cont;
