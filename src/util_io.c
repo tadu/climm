@@ -393,7 +393,6 @@ Packet *UtilIOReceiveTCP (Session *sess)
             break;
         }
         rc = sockread (sess->sok, pak->data + pak->len, len - pak->len);
-        printf ("deb red TCP: sess %p sok %d off %d len %d paklen %d rc %d\n",sess,sess->sok,off,len,pak->len,rc);
         if (rc <= 0)
         {
             rc = errno;
@@ -407,7 +406,6 @@ Packet *UtilIOReceiveTCP (Session *sess)
         if (len == off)
             return NULL;
         sess->incoming = NULL;
-        printf (">deb red TCP: sok %d off %d len %d paklen %d rc %d\n",sess->sok,off,len,pak->len,rc);
         if (off == 2)
         {
             pak->len -= 2;
