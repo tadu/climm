@@ -130,7 +130,7 @@ void PacketEnqueuev5 (Packet *pak, Connection *conn)
                  PacketReadAt2 (pak, CMD_v5_OFF_VER), PacketReadAt4 (pak, CMD_v5_OFF_SESS),
                  PacketReadAt4 (pak, CMD_v5_OFF_SEQ), PacketReadAt2 (pak, CMD_v5_OFF_SEQ2),
                  CmdPktCmdName (PacketReadAt2 (pak, CMD_v5_OFF_CMD)), pak, COLNONE);
-        M_print  (f = PacketDump (pak, "gv5cp"));
+        M_print  (f = PacketDump (pak, "gv5cp", COLDEBUG, COLNONE));
         free (f);
         M_print  (COLEXDENT "\r");
     }

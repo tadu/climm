@@ -118,7 +118,7 @@ void CmdPktSrvRead (Connection *conn)
                  pak->ver, session, seq2, seq, cmd, CmdPktSrvName (cmd), COLNONE);
 #if ICQ_VER == 5
         pak->rpos = 0;
-        M_print  (f = PacketDump (pak, "gv5sp"));
+        M_print  (f = PacketDump (pak, "gv5sp", COLDEBUG, COLNONE));
         free (f);
         pak->rpos = rpos;
 #else
@@ -461,7 +461,7 @@ static JUMP_SRV_F (CmdPktSrvMulti)
                      ver, session, seq2, seq, cmd, CmdPktSrvName (cmd), COLNONE);
 #if ICQ_VER == 5
             pak->rpos = 0;
-            M_print  (f = PacketDump (pak, "gv5sp"));
+            M_print  (f = PacketDump (pak, "gv5sp", COLDEBUG, COLNONE));
             free (f);
             pak->rpos = rpos;
 #else

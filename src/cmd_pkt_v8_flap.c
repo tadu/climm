@@ -30,7 +30,7 @@
 #include "session.h"
 #include "packet.h"
 #include "contact.h"
-#include "file_util.h"
+#include "util_syntax.h"
 #include "cmd_pkt_v8_tlv.h"
 #include "conv.h"
 #include <assert.h>
@@ -225,6 +225,7 @@ void FlapPrint (Packet *pak)
 void FlapSave (Packet *pak, BOOL in)
 {
     FILE *logf;
+    UDWORD oldrpos = pak->rpos;
     char buf[200];
     
     snprintf (buf, sizeof (buf), "%sdebug", PrefUserDir (prG));
@@ -237,15 +238,17 @@ void FlapSave (Packet *pak, BOOL in)
              in ? "<<<" : ">>>", PacketReadAtB2 (pak, 2),
              pak->len - 6, PacketReadAt1 (pak, 1));
     if (PacketReadAt1 (pak, 1) != 2)
-        fHexDump (logf, pak->data + 6, pak->len - 6);
+        pak->rpos = 6;
     else
     {
-        fprintf (logf, i18n (1905, "SNAC (%x,%x) [%s] flags %x ref %lx\n"),
+        fprintf (logf, "SNAC (%x,%x) [%s] flags %x ref %lx\n",
                  PacketReadAtB2 (pak, 6), PacketReadAtB2 (pak, 8),
                  SnacName (PacketReadAtB2 (pak, 6), PacketReadAtB2 (pak, 8)),
                  PacketReadAtB2 (pak, 10), PacketReadAtB4 (pak, 12));
-        fHexDump (logf, pak->data + 16, pak->len - 16);
+        pak->rpos = 16;
     }
+    fprintf (logf, PacketDump (pak, "", "", ""));
+    pak->rpos = oldrpos;
     fclose (logf);
 }
 

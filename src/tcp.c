@@ -1182,7 +1182,7 @@ void TCPPrint (Packet *pak, Connection *peer, BOOL out)
     if (prG->verbose & DEB_PACKTCPDATA)
         if (cmd != 6)
         {
-            M_print (f = PacketDump (pak, peer->type == TYPE_MSGDIRECT ? "gpeer" : "gfile"));
+            M_print (f = PacketDump (pak, peer->type == TYPE_MSGDIRECT ? "gpeer" : "gfile", COLDEBUG, COLNONE));
             free (f);
         }
 

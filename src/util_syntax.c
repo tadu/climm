@@ -26,8 +26,6 @@
 #include "util_syntax.h"
 #include "packet.h"
 #include "conv.h"
-#include "contact.h"
-#include "preferences.h"
 
 #define c_pin(x) ConvFrom (x, ENC_LATIN1)->txt
 
@@ -103,7 +101,7 @@ static const char *syntable[] = {
     NULL,      NULL
 };
 
-char *PacketDump (Packet *pak, const char *syntax)
+char *PacketDump (Packet *pak, const char *syntax, const char *coldebug, const char *colnone)
 {
     Packet *p = NULL;
     str_s str = { NULL, 0, 0 };
@@ -128,59 +126,59 @@ char *PacketDump (Packet *pak, const char *syntax)
             case 'b':
                 nr = PacketRead1 (pak);
                 s_cat  (&str, s_dumpnd (pak->data + pak->rpos - 1, 1));
-                s_catf (&str, " %sBYTE     0x%02lx = %03lu%s\n", COLDEBUG, nr, nr, COLNONE);
+                s_catf (&str, " %sBYTE     0x%02lx = %03lu%s\n", coldebug, nr, nr, colnone);
                 continue;
             case 'W':
                 if (pak->len < pak->rpos + 2) break;
                 s_cat  (&str, s_dumpnd (pak->data + pak->rpos, 2));
                 nr = PacketReadB2 (pak);
-                s_catf (&str, " %sWORD.B   0x%04lx = %05lu%s\n", COLDEBUG, nr, nr, COLNONE);
+                s_catf (&str, " %sWORD.B   0x%04lx = %05lu%s\n", coldebug, nr, nr, colnone);
                 continue;
             case 'w':
                 if (pak->len < pak->rpos + 2) break;
                 s_cat  (&str, s_dumpnd (pak->data + pak->rpos, 2));
                 nr = PacketRead2 (pak);
-                s_catf (&str, " %sWORD.L   0x%04lx = %05lu%s\n", COLDEBUG, nr, nr, COLNONE);
+                s_catf (&str, " %sWORD.L   0x%04lx = %05lu%s\n", coldebug, nr, nr, colnone);
                 continue;
             case 'D':
                 if (pak->len < pak->rpos + 4) break;
                 s_cat  (&str, s_dumpnd (pak->data + pak->rpos, 4));
                 nr = PacketReadB4 (pak);
-                s_catf (&str, " %sDWORD.B  0x%08lx = %010lu%s\n", COLDEBUG, nr, nr, COLNONE);
+                s_catf (&str, " %sDWORD.B  0x%08lx = %010lu%s\n", coldebug, nr, nr, colnone);
                 continue;
             case 'd':
                 if (pak->len < pak->rpos + 4) break;
                 s_cat  (&str, s_dumpnd (pak->data + pak->rpos, 4));
                 nr = PacketRead4 (pak);
-                s_catf (&str, " %sDWORD.L  0x%08lx = %010lu%s\n", COLDEBUG, nr, nr, COLNONE);
+                s_catf (&str, " %sDWORD.L  0x%08lx = %010lu%s\n", coldebug, nr, nr, colnone);
                 continue;
             case 'C':
                 if (pak->len < pak->rpos + 16) break;
                 s_cat  (&str, s_dumpnd (pak->data + pak->rpos, 16));
-                s_catf (&str, " %s%s%s\n", COLDEBUG, PacketReadCap (pak)->name, COLNONE);
+                s_catf (&str, " %s%s%s\n", coldebug, PacketReadCap (pak)->name, colnone);
                 continue;
             case 'u':
                 nr = PacketReadAt1 (pak, pak->rpos);
                 s_cat  (&str, s_dumpnd (pak->data + pak->rpos, nr + 1));
-                s_catf (&str, " %sUIN      %s%s\n", COLDEBUG, PacketReadUIN (pak)->txt, COLNONE);
+                s_catf (&str, " %sUIN      %s%s\n", coldebug, PacketReadUIN (pak)->txt, colnone);
                 continue;
             case 'B':
                 nr = PacketReadAtB2 (pak, pak->rpos);
                 if (pak->len < pak->rpos + nr + 2) break;
                 s_cat  (&str, s_dumpnd (pak->data + pak->rpos, nr + 2));
-                s_catf (&str, " %sBStr     '%s'%s\n", COLDEBUG, c_pin (PacketReadB2Str (pak, NULL)), COLNONE);
+                s_catf (&str, " %sBStr     '%s'%s\n", coldebug, c_pin (PacketReadB2Str (pak, NULL)), colnone);
                 continue;
             case 'L':
                 nr = PacketReadAt2 (pak, pak->rpos);
                 if (pak->len < pak->rpos + nr + 2) break;
                 s_cat  (&str, s_dumpnd (pak->data + pak->rpos, nr + 2));
-                s_catf (&str, " %sLNTS     '%s'%s\n", COLDEBUG, c_pin (PacketReadL2Str (pak, NULL)), COLNONE);
+                s_catf (&str, " %sLNTS     '%s'%s\n", coldebug, c_pin (PacketReadL2Str (pak, NULL)), colnone);
                 continue;
             case 'S':
                 nr = PacketReadAt4 (pak, pak->rpos);
                 if (pak->len < pak->rpos + nr + 4) break;
                 s_cat  (&str, s_dumpnd (pak->data + pak->rpos, nr + 4));
-                s_catf (&str, " %sDLStr    '%s'%s\n", COLDEBUG, c_pin (PacketReadL4Str (pak, NULL)), COLNONE);
+                s_catf (&str, " %sDLStr    '%s'%s\n", coldebug, c_pin (PacketReadL4Str (pak, NULL)), colnone);
                 continue;
             case '-':
                 l = last;
@@ -240,13 +238,13 @@ char *PacketDump (Packet *pak, const char *syntax)
                 {
                     val = PacketReadAtB2 (pak, pak->rpos + 4);
                     s_cat  (&str, s_dumpnd (pak->data + pak->rpos, len + 4));
-                    s_catf (&str, " %sTLV (%2lx) 0x%04lx = %05lu%s\n", COLDEBUG, nr, val, val, COLNONE);
+                    s_catf (&str, " %sTLV (%2lx) 0x%04lx = %05lu%s\n", coldebug, nr, val, val, colnone);
                 }
                 else if (len == 4)
                 {
                     val = PacketReadAtB4 (pak, pak->rpos + 4);
                     s_cat  (&str, s_dumpnd (pak->data + pak->rpos, len + 4));
-                    s_catf (&str, " %sTLV (%2lx) 0x%08lx = %010lu%s\n", COLDEBUG, nr, val, val, COLNONE);
+                    s_catf (&str, " %sTLV (%2lx) 0x%08lx = %010lu%s\n", coldebug, nr, val, val, colnone);
                 }
                 else if (sub)
                 {
@@ -258,8 +256,8 @@ char *PacketDump (Packet *pak, const char *syntax)
                     p = PacketCreate (&tt);
                     
                     s_cat  (&str, s_dumpnd (pak->data + pak->rpos, 4));
-                    s_catf (&str, " %sTLV (%2lx) \"%s\"%s\n", COLDEBUG, nr, sub, COLNONE);
-                    s_cat  (&str, s_ind (tmp = PacketDump (p, sub)));
+                    s_catf (&str, " %sTLV (%2lx) \"%s\"%s\n", coldebug, nr, sub, colnone);
+                    s_cat  (&str, s_ind (tmp = PacketDump (p, sub, coldebug, colnone)));
                     
                     PacketD (p);
                     p = NULL;
@@ -269,7 +267,7 @@ char *PacketDump (Packet *pak, const char *syntax)
                 else
                 {
                     s_cat  (&str, s_dumpnd (pak->data + pak->rpos, 4));
-                    s_catf (&str, " %sTLV (%2lx)%s\n", COLDEBUG, nr, COLNONE);
+                    s_catf (&str, " %sTLV (%2lx)%s\n", coldebug, nr, colnone);
                     s_cat  (&str, s_ind (s_dump (pak->data + pak->rpos + 4, len)));
                 }
                 pak->rpos += len + 4;
@@ -282,7 +280,7 @@ char *PacketDump (Packet *pak, const char *syntax)
                     len = PacketReadAt2 (pak, pak->rpos);
                 if (pak->len < pak->rpos + 2 + len) break;
                 s_cat  (&str, s_dumpnd (pak->data + pak->rpos, 2));
-                s_catf (&str, " %sDWORD.%c  \"%s\"%s\n", COLDEBUG, *f == '<' ? 'B' : 'L', f, COLNONE);
+                s_catf (&str, " %sDWORD.%c  \"%s\"%s\n", coldebug, *f == '<' ? 'B' : 'L', f, colnone);
                 {
                     str_s tt = { 0, 0, 0 };
                     tt.txt = (char *)pak->data + pak->rpos + 2;
@@ -290,7 +288,7 @@ char *PacketDump (Packet *pak, const char *syntax)
                     p = PacketCreate (&tt);
                 }
                 pak->rpos += len + 2;
-                if (*(tmp = PacketDump (p, ++f)))
+                if (*(tmp = PacketDump (p, ++f, coldebug, colnone)))
                     s_cat  (&str, s_ind (tmp));
                 PacketD (p);
                 free (tmp);
