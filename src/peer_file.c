@@ -161,8 +161,9 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
     cont  = event->cont;
     flist = PeerFileCreate (serv);
 
-    if (!OptGetVal (event->wait->opt, CO_FILEACCEPT, &opt_acc) || !opt_acc
-        || !cont || !flist || !(fpeer = ConnectionClone (flist, TYPE_FILEDIRECT)))
+    if ((event->wait && !OptGetVal (event->wait->opt, CO_FILEACCEPT, &opt_acc))
+        || !opt_acc || !cont || !flist
+        || !(fpeer = ConnectionClone (flist, TYPE_FILEDIRECT)))
     {
         const char *txt;
         opt = OptSetVals (NULL, CO_MSGTEXT, opt_files, 0);
@@ -432,30 +433,38 @@ void PeerFileDispatch (Connection *fpeer)
             return;
 
         case 6:
+            if (fpeer->assoc->done + pak->len - 1 > fpeer->assoc->len)
+            {
+                rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                rl_printf (i18n (2165, "The peer sent more bytes (%ld) than the file length (%ld).\n"),
+                         fpeer->assoc->done + len, fpeer->assoc->len);
+                PacketD (pak);
+                TCPClose (fpeer);
+                return;
+            }
+            if (pak->len > 1)
+            {
+                PacketD (pak);
+                return;
+            }
             len = write (fpeer->assoc->sok, pak->data + 1, pak->len - 1);
             if (len + 1 != pak->len)
             {
                 rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                rl_print  (i18n (2164, "Error writing to file.\n"));
+                rl_printf (i18n (9999, "Error writing to file (%lu bytes written out of %u).\n"), len, pak->len - 1);
                 PacketD (pak);
                 TCPClose (fpeer);
                 return;
             }
             fpeer->assoc->done += len;
-            if (fpeer->assoc->done > fpeer->assoc->len)
-            {
-                rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                rl_printf (i18n (2165, "The peer sent more bytes (%ld) than the file length (%ld).\n"),
-                         fpeer->assoc->done, fpeer->assoc->len);
-                PacketD (pak);
-                TCPClose (fpeer);
-                return;
-            }
-            else if (fpeer->assoc->len == fpeer->assoc->done)
+            if (fpeer->assoc->len == fpeer->assoc->done)
             {
                 ReadLinePromptReset ();
                 rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
                 rl_print  (i18n (2166, "Finished receiving file.\n"));
+                fsync (fpeer->assoc->sok);
+                close (fpeer->assoc->sok);
+                fpeer->assoc->sok = -1;
             }
             else if (fpeer->assoc->len)
             {
