@@ -62,10 +62,10 @@ void i18nInit (char **loc, UBYTE *enc, const char *arg)
             *enc = ENC_AUTO | ENC_UTF8;
         *p = '\0';
     }
-    if (*p == 'C' && !p[1] && enc == ENC_AUTO)
+    if (*q == 'C' && !q[1] && enc && *enc == ENC_AUTO)
     {
         s_repl (loc, "en_US");
-        enc = ENC_LATIN1;
+        *enc = ENC_LATIN1;
     }
 }
 
