@@ -38,5 +38,14 @@ void R_goto (int pos);                       /* go to position in input line */
 #endif /* USE_MREADLINE */
 
 void R_clrscr (void);
+UWORD  Get_Max_Screen_Width ();
+SDWORD Echo_Off (void);
+SDWORD Echo_On (void);
+
+void   M_print  (const char *str);
+void   M_printf (const char *str, ...);
+int    M_pos (void);
+void   M_logo (const char *logo);
+void   M_logo_clear (void);
 
 #endif /* MICQ_MREADLINE_H */

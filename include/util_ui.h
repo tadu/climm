@@ -3,16 +3,7 @@
 #ifndef MICQ_UTIL_UI_H
 #define MICQ_UTIL_UI_H
 
-UWORD  Get_Max_Screen_Width ();
-SDWORD Echo_Off (void);
-SDWORD Echo_On (void);
-
-void   M_print  (const char *str);
-void   M_printf (const char *str, ...);
-int    M_pos (void);
 BOOL   Debug (UDWORD level, const char *str, ...);
-void   M_logo (const char *logo);
-void   M_logo_clear (void);
 
 #define DEB_PROTOCOL      0x00000008L
 #define DEB_PACKET        0x00000010L
