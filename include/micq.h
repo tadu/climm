@@ -666,6 +666,9 @@ extern char online_list_cmd[16];
 extern char togig_cmd[16];
 extern char iglist_cmd[16];
 
+extern BOOL del_is_bs;
+extern BOOL last_uin_prompt;
+
 extern BOOL Russian;
 extern BOOL JapaneseEUC;
 extern BOOL Logging;

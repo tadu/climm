@@ -1,4 +1,4 @@
-DWORD last_uin=0;
+extern DWORD last_uin;
 static DWORD multi_uin;
 static int status = 0;
 static void Show_Status( char * );

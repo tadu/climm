@@ -49,6 +49,8 @@ BYTE LogType = 2;      /* Currently 0 = no logging
 		     *********************************************/
 BOOL Logging = TRUE;  /* Do we log messages to ~/micq_log?  This should probably have different levels */
 BOOL Color = TRUE; /* Do we use ANSI color? */
+BOOL del_is_bs = TRUE; /* del char is backspace */
+BOOL last_uin_prompt = FALSE; /* use last UIN's nick as prompt */
 BOOL Quit = FALSE;    /* set when it's time to exit the program */
 BOOL Verbose = FALSE; /* this is displays extra debuging info */
 BOOL serv_mess[ 1024 ]; /* used so that we don't get duplicate messages with the same SEQ */

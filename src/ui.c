@@ -53,6 +53,7 @@ Changes :
 #endif
  
 MORE_INFO_STRUCT user;
+DWORD last_uin = 0;
 
 #if 0
 char *strdup( const char * );

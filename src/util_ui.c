@@ -382,16 +382,21 @@ void Kill_Prompt( void )
 Displays the Micq prompt.  Maybe someday this will be 
 configurable
 ******************************************************/
+extern DWORD last_uin;
 void Prompt( void )
 {
-#if 0
-   if ( !No_Prompt ) 
-#endif
-      R_doprompt ( SERVCOL PROMPT_STR NOCOL );
-#ifndef USE_MREADLINE
-      fflush( stdout );
-#endif
+   static char buff[200];
+   if (last_uin_prompt && last_uin)
+   {
+      snprintf (buff, 198, SERVCOL "[%s]" NOCOL " ", UIN2Name (last_uin));
+      R_doprompt (buff);
+   }
+   else
+      R_doprompt (SERVCOL PROMPT_STR NOCOL);
    No_Prompt = FALSE;
+#ifndef USE_MREADLINE
+   fflush (stdout);
+#endif
 }
 
 /*****************************************************

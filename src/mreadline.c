@@ -45,6 +45,8 @@ static struct termios t_attr;
 static void tty_prepare(void);
 static void tty_restore(void);
 
+static void R_process_input_backspace (void);
+static void R_process_input_delete (void);
 
 static char *history[HISTORY_LINES+1];
 static int history_cur = 0;
@@ -82,6 +84,47 @@ void R_resume (void)
 	tty_prepare ();
 }
 
+void R_process_input_backspace (void)
+{
+   if (cpos)
+   {
+      clen--;
+      cpos--;
+      strcpy (s + cpos, s + cpos + 1);
+#ifndef ANSI_COLOR
+      {
+         int i;
+         print ("\b%s", s + cpos);
+         for (i = clen - cpos; i; i--) print ("\b");
+      }
+#else
+      printf ("\b\033[K%s", s + cpos);
+      if (cpos < clen)
+         printf ("\033[%dD", clen - cpos);
+#endif
+   }
+}
+
+void R_process_input_delete (void)
+{
+   if (cpos < clen)
+   {
+      clen--;
+      strcpy (s + cpos, s + cpos + 1);
+#ifndef ANSI_COLOR
+      {
+         int i;
+         print (s + cpos);
+         for (i = clen - cpos; i; i--) print ("\b");
+      }
+#else
+      printf ("\033[K%s", s + cpos);
+      if (cpos < clen)
+         printf ("\033[%dD", clen - cpos);
+#endif
+   }
+}
+
 int R_process_input (void)
 {
 	char	ch;
@@ -95,21 +138,10 @@ int R_process_input (void)
 		if (ch == t_attr.c_cc[VERASE] &&
 				t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
 		{
-			if (cpos)
-			{
-#ifndef ANSI_COLOR
-				s[--cpos] = 0;
-				clen--;
-				M_print ("\b \b");
-#else
-				cpos--;
-				clen--;
-				strcpy (s + cpos, s + cpos+1);
-				printf ("\b\033[K%s",s+cpos);
-				if (cpos < clen)
-					printf ("\033[%dD", clen-cpos);
-#endif
-			}
+			if (del_is_bs)
+				R_process_input_backspace ();
+			else
+				R_process_input_delete ();
 			return 0;
 		}
 		if (ch == t_attr.c_cc[VEOF] &&
@@ -117,13 +149,7 @@ int R_process_input (void)
 		{
 			if (clen)
 			{
-				if (cpos == clen)
-					return 0;
-				clen--;
-				strcpy (s + cpos, s + cpos+1);
-				printf ("\033[K%s", s+cpos);
-				if (cpos < clen)
-					printf ("\033[%dD", clen-cpos);
+				R_process_input_delete ();
 				return 0;
 			}
 			strcpy (s,"q");
@@ -158,14 +184,17 @@ int R_process_input (void)
 		if (ch >= 0 && ch < ' ')
 		{
 			switch (ch) {
-				case 01: /* ^A */
+				case  1: /* ^A */
 					printf ("\033[%dD", cpos);
 					cpos = 0;
 					break;
-				case 05: /* ^E */
+				case  5: /* ^E */
 					printf ("\033[%dC", clen-cpos);
 					cpos = clen;
 					break;
+				case  8: /* ^H = \b */
+					R_process_input_backspace ();
+					return 0;
 				case 11: /* ^K, as requested by Bernhard Sadlowski */
 					clen = cpos;
 					printf ("\033[K");
@@ -187,16 +216,16 @@ int R_process_input (void)
 					system ("clear");
 					R_redraw ();
 					break;
-#ifdef ANSI_COLOR
-				case 0x1b: /* ESC */
-					istat = 1;
-					break;
-#endif
 				case 25: /* ^Y */
 					strcpy (s, y);
 					clen = cpos = strlen (s);
 					R_undraw ();
 					R_redraw ();
+#ifdef ANSI_COLOR
+				case 27: /* ESC */
+					istat = 1;
+					break;
+#endif
 			}
 		}
 		else if (clen + 1 < HISTORY_LINE_LEN)
@@ -219,7 +248,7 @@ int R_process_input (void)
 	switch (istat)
 	{
 		case 1: /* ESC */
-			if (ch == '[')
+			if (ch == '[' || ch == 'O')
 				istat = 2;
 			else
 				istat = 0;
@@ -232,10 +261,7 @@ int R_process_input (void)
 				case 'B': /* Down key */
 					if (	(ch == 'A' && history_cur >= HISTORY_LINES) ||
 						(ch == 'B' && history_cur == 0))
-					{
-						printf ("\007");
 						break;
-					}
 					k = history_cur;
 					strcpy (history[history_cur], s);
 					if (ch == 'A')
@@ -252,31 +278,37 @@ int R_process_input (void)
 					else
 					{
 						history_cur = k;
-						printf ("\007");
 					}
 					break;
 				case 'C': /* Right key */
 					if (cpos == clen)
-					{
-						printf ("\007");
 						break;
-					}
 					cpos++;
 					printf ("\033[C");
 					break;
 				case 'D': /* Left key */
 					if (!cpos)
-					{
-						printf ("\007");
 						break;
-					}
 					cpos--;
 					printf ("\033[D");
+					break;
+				case '3': /* ESC [ 3 ~ = Delete */
+					istat = 3;
 					break;
 				default:
 					printf ("\007");
 			}
 			break;
+		case 3: /* Del Key */
+			istat = 0;
+			switch (ch)
+			{
+				case '~': /* Del Key */
+					R_process_input_delete ();
+					break;
+				default:
+					printf ("\007");
+			}
 	}
 #endif
 	return 0;

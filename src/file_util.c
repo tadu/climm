@@ -356,6 +356,10 @@ static void Read_RC_File( FD_T rcf )
 	    }
          else if ( ! strcasecmp( tmp, "No_Color" ) )
             { Color = FALSE;   }
+         else if ( ! strcasecmp (tmp, "Last_UIN_Prompt"))
+            { last_uin_prompt = TRUE; }
+         else if ( ! strcasecmp (tmp, "Del_is_Del"))
+            { del_is_bs = FALSE; }
          else if ( ! strcasecmp( tmp, "UIN" ) )
             {  UIN = atoi( strtok( NULL, " \n\t" ) );         }
          else if ( ! strcasecmp( tmp, "port" ) )
@@ -697,6 +701,14 @@ int Save_RC()
       M_fdprint( rcf, "#No_Color\n" );
    else
       M_fdprint( rcf, "No_Color\n" );
+   if (del_is_bs)
+      M_fdprint (rcf, "#Del_is_Del\n");
+   else
+      M_fdprint (rcf, "Del_is_Del\n");
+   if (last_uin_prompt)
+      M_fdprint (rcf, "Last_UIN_Prompt\n");
+   else
+      M_fdprint (rcf, "#Last_UIN_Prompt\n");
    if ( Russian )
       M_fdprint( rcf, "\nRussian\n#if you want KOI8-R/U to CP1251 Cyrillic translation uncomment the above line.\n" );
    else
