@@ -25,7 +25,6 @@ sub ReadTrans($)
             $val = $2;
             $max = $nr;
             $nrval{$nr}=$val;
-            print "Reading: nrval{$nr}=$val\n";
             $found++;
         }
         elsif (m/^#/)
