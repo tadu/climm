@@ -15,6 +15,7 @@
 #include "preferences.h"
 #include "util_ui.h"
 #include "util_str.h"
+#include "buildmark.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -25,34 +26,35 @@
 
 #define cap_mid  "\x4c\x7f\x11\xd1"
 #define cap_mstr "\x4f\xe9\xd3\x11"
+#define cap_aim  "\x09\x46\x13"
 
 static Cap caps[CAP_MAX] =
 {
-    { CAP_NONE,        cap_none cap_none,                   "CAP_NONE"        },
-    { CAP_AIM_VOICE,   "\x09\x46\x13\x41" cap_mid cap_id,   "CAP_AIM_VOICE"   },
-    { CAP_AIM_SFILE,   "\x09\x46\x13\x43" cap_mid cap_id,   "CAP_AIM_SFILE"   },
-    { CAP_ISICQ,       "\x09\x46\x13\x44" cap_mid cap_id,   "CAP_ISICQ"       },
-    { CAP_AIM_IMIMAGE, "\x09\x46\x13\x45" cap_mid cap_id,   "CAP_AIM_IMIMAGE" },
-    { CAP_AIM_BUDICON, "\x09\x46\x13\x46" cap_mid cap_id,   "CAP_AIM_BUDICON" },
-    { CAP_AIM_STOCKS,  "\x09\x46\x13\x47" cap_mid cap_id,   "CAP_AIM_STOCKS"  },
-    { CAP_AIM_GETFILE, "\x09\x46\x13\x48" cap_mid cap_id,   "CAP_AIM_GETFILE" },
-    { CAP_SRVRELAY,    "\x09\x46\x13\x49" cap_mid cap_id,   "CAP_SRVRELAY"    },
-    { CAP_AIM_GAMES,   "\x09\x46\x13\x4a" cap_mid cap_id,   "CAP_AIM_GAMES"   },
-    { CAP_AIM_SBUD,    "\x09\x46\x13\x4b" cap_mid cap_id,   "CAP_AIM_SBUD"    },
-    { CAP_UTF8,        "\x09\x46\x13\x4e" cap_mid cap_id,   "CAP_UTF8"        },
-    { CAP_RTFMSGS,     "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x92", "CAP_RTFMSGS"     },
-    { CAP_IS_2001,     "\x2e\x7a\x64\x75\xfa\xdf\x4d\xc8\x88\x6f\xea\x35\x95\xfd\xb6\xdf", "CAP_IS_2001"     },
-    { CAP_STR_2001,    "\xa0\xe9\x3f\x37" cap_mstr cap_str, "CAP_STR_2001"    },
-    { CAP_STR_2002,    "\x10\xcf\x40\xd1" cap_mstr cap_str, "CAP_STR_2002"    },
-    { CAP_AIM_CHAT,    "\x74\x8f\x24\x20\x62\x87\x11\xd1" cap_id,                          "CAP_AIM_CHAT"    },
-    { CAP_IS_WEB,      "\x56\x3f\xc8\x09\x0b\x6f\x41\xbd\x9f\x79\x42\x26\x09\xdf\xa2\xf3", "CAP_IS_WEB"      },
-    { CAP_TRILL_CRYPT, "\xf2\xe7\xc7\xf4\xfe\xad\x4d\xfb\xb2\x35\x36\x79\x8b\xdf\x00\x00", "CAP_TRILL_CRYPT" },
-    { CAP_TRILL_2,     "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x09", "CAP_TRILL_2"     },
-    { CAP_LICQ,        "\x09\x49\x13\x49" cap_mid cap_id,   "CAP_LICQ"        },
-    { CAP_SIM,         "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x48", "CAP_SIM"         },
-    { CAP_MACICQ,      "\xdd\x16\xf2\x02\x84\xe6\x11\xd4\x90\xdb\x00\x10\x4b\x9b\x4b\x7d", "CAP_MACICQ"      },
-    { CAP_MICQ,        "mICQ\x00\x04\x09\x04mICQ\x00\x04\x09\x04",                         "CAP_MICQ_0494"   },
-    { 0, NULL, NULL }
+    { CAP_NONE,        16, cap_none cap_none,                   "CAP_NONE"        },
+    { CAP_AIM_VOICE,   16, cap_aim "\x41" cap_mid cap_id,       "CAP_AIM_VOICE"   },
+    { CAP_AIM_SFILE,   16, cap_aim "\x43" cap_mid cap_id,       "CAP_AIM_SFILE"   },
+    { CAP_ISICQ,       16, cap_aim "\x44" cap_mid cap_id,       "CAP_ISICQ"       },
+    { CAP_AIM_IMIMAGE, 16, cap_aim "\x45" cap_mid cap_id,       "CAP_AIM_IMIMAGE" },
+    { CAP_AIM_BUDICON, 16, cap_aim "\x46" cap_mid cap_id,       "CAP_AIM_BUDICON" },
+    { CAP_AIM_STOCKS,  16, cap_aim "\x47" cap_mid cap_id,       "CAP_AIM_STOCKS"  },
+    { CAP_AIM_GETFILE, 16, cap_aim "\x48" cap_mid cap_id,       "CAP_AIM_GETFILE" },
+    { CAP_SRVRELAY,    16, cap_aim "\x49" cap_mid cap_id,       "CAP_SRVRELAY"    },
+    { CAP_AIM_GAMES,   16, cap_aim "\x4a" cap_mid cap_id,       "CAP_AIM_GAMES"   },
+    { CAP_AIM_SBUD,    16, cap_aim "\x4b" cap_mid cap_id,       "CAP_AIM_SBUD"    },
+    { CAP_UTF8,        16, cap_aim "\x4e" cap_mid cap_id,       "CAP_UTF8"        },
+    { CAP_RTFMSGS,     16, "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x92", "CAP_RTFMSGS"     },
+    { CAP_IS_2001,     16, "\x2e\x7a\x64\x75\xfa\xdf\x4d\xc8\x88\x6f\xea\x35\x95\xfd\xb6\xdf", "CAP_IS_2001"     },
+    { CAP_STR_2001,    16, "\xa0\xe9\x3f\x37" cap_mstr cap_str, "CAP_STR_2001"    },
+    { CAP_STR_2002,    16, "\x10\xcf\x40\xd1" cap_mstr cap_str, "CAP_STR_2002"    },
+    { CAP_AIM_CHAT,    16, "\x74\x8f\x24\x20\x62\x87\x11\xd1" cap_id,                          "CAP_AIM_CHAT"    },
+    { CAP_IS_WEB,      16, "\x56\x3f\xc8\x09\x0b\x6f\x41\xbd\x9f\x79\x42\x26\x09\xdf\xa2\xf3", "CAP_IS_WEB"      },
+    { CAP_TRILL_CRYPT, 16, "\xf2\xe7\xc7\xf4\xfe\xad\x4d\xfb\xb2\x35\x36\x79\x8b\xdf\x00\x00", "CAP_TRILL_CRYPT" },
+    { CAP_TRILL_2,     16, "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x09", "CAP_TRILL_2"     },
+    { CAP_LICQ,        16, "\x09\x49\x13\x49" cap_mid cap_id,   "CAP_LICQ"        },
+    { CAP_SIM,         15, "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x48", "CAP_SIM"         },
+    { CAP_MACICQ,      16, "\xdd\x16\xf2\x02\x84\xe6\x11\xd4\x90\xdb\x00\x10\x4b\x9b\x4b\x7d", "CAP_MACICQ"      },
+    { CAP_MICQ,        12, "mICQ © R.K. \x00\x00\x00\x00",      "CAP_MICQ"        },
+    { 0, 0, NULL, NULL }
 };
 
 Packet *PacketC (void)
@@ -165,7 +167,7 @@ void PacketWriteB4 (Packet *pak, UDWORD data)
         pak->len = pak->wpos;
 }
 
-void PacketWriteCap (Packet *pak, UBYTE id)
+void PacketWriteCapID (Packet *pak, UBYTE id)
 {
     UBYTE i;
 
@@ -174,7 +176,13 @@ void PacketWriteCap (Packet *pak, UBYTE id)
     
     if (caps[id].id == id)
     {
-        PacketWriteData (pak, caps[id].cap, 16);
+        if (id == CAP_MICQ)
+        {
+            PacketWriteData (pak, caps[id].cap, 12);
+            PacketWriteB4   (pak, BuildVersionNum);
+        }
+        else
+            PacketWriteData (pak, caps[id].cap, 16);
         return;
     }
 
@@ -184,6 +192,14 @@ void PacketWriteCap (Packet *pak, UBYTE id)
     
     i %= CAP_MAX;
     PacketWriteData (pak, caps[i].cap, 16);
+}
+
+void PacketWriteCap (Packet *pak, Cap *cap)
+{
+    assert (pak);
+    assert (cap);
+
+    PacketWriteData (pak, cap->var ? cap->var : cap->cap, 16);
 }
 
 void PacketWriteData (Packet *pak, const char *data, UWORD len)
@@ -454,23 +470,39 @@ Cap *PacketReadCap (Packet *pak)
         if (caps[id].cap)
         {
 #ifdef HAVE_MEMCMP
-            if (!memcmp (cap, caps[id].cap, 16)
+            if (!memcmp (cap, caps[id].cap, caps[id].len)
+            {
+                if (caps[id].len != 16)
+                {
+                    s_free (caps[id].var);
+                    caps[id].var = malloc (16);
+                    memcpy (caps[id].var, cap, 16);
+                }
                 return &caps[id];
+            }
 #else
             {
                 const UBYTE *p, *q;
                 int i;
-                for (p = cap, q = caps[id].cap, i = 0; i < 16; i++)
+                for (p = cap, q = caps[id].cap, i = 0; i < caps[id].len; i++)
                     if (*p++ != *q++)
                         break;
                     else
-                        if (i == 15)
+                        if (i + 1 == caps[id].len)
+                        {
+                            if (caps[id].len != 16)
+                            {
+                                s_free (caps[id].var);
+                                caps[id].var = malloc (16);
+                                memcpy (caps[id].var, cap, 16);
+                            }
                             return &caps[id];
+                        }
             }
 #endif
         }
         else
-            if (id == 19)
+            if (id == CAP_MAX)
                 return &caps[0];
             else
                 break;
@@ -481,6 +513,7 @@ Cap *PacketReadCap (Packet *pak)
 
     caps[id].id = id;
     caps[id].cap = p;
+    caps[id].len = 16;
     caps[id].name = strdup (s_sprintf ("CAP_UNK_%d", id));
     return &caps[id];
 }

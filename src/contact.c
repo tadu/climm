@@ -245,34 +245,58 @@ BOOL ContactHasNext (Contact *cont)
     return cont->uin != 0;
 }
 
+void ContactSetCap (Contact *cont, Cap *cap)
+{
+    if (!cap->id)
+        return;
+    if (cap->id == CAP_SIM && cap->var)
+    {
+        UBYTE ver;
+        
+        ver = cap->var[15];
+        cont->v1 = ver ? (ver >> 6) - 1 : 0;
+        cont->v2 = ver & 0x1f;
+    }
+    else if (cap->id == CAP_MICQ && cap->var)
+    {
+        cont->v1 = cap->var[12];
+        cont->v2 = cap->var[13];
+        cont->v3 = cap->var[14];
+        cont->v4 = cap->var[15];
+    }
+    cont->caps |= 1 << cap->id;
+}
+
 /*
  * Guess the contacts client from time stamps.
  */
 void ContactSetVersion (Contact *cont)
 {
     char buf[100];
-    char *new = NULL;
-    unsigned int ver = cont->id1 & 0xffff, ssl = 0;
-    unsigned char v1 = 0, v2 = 0, v3 = 0, v4 = 0;
+    char *new = NULL, *tail = NULL;
+    unsigned int ver = cont->id1 & 0xffff;
+
+    if (!HAS_CAP (cont->caps, CAP_SIM) && !HAS_CAP (cont->caps, CAP_MICQ))
+        cont->v1 = cont->v2 = cont->v3 = cont->v4 = 0;
 
     if ((cont->id1 & 0xff7f0000) == BUILD_LICQ && ver > 1000)
     {
         new = "licq";
         if (cont->id1 & BUILD_SSL)
-            ssl = 1;
-        v1 = ver / 1000;
-        v2 = (ver / 10) % 100;
-        v3 = ver % 10;
-        v4 = 0;
+            tail = "/SSL";
+        cont->v1 = ver / 1000;
+        cont->v2 = (ver / 10) % 100;
+        cont->v3 = ver % 10;
+        cont->v4 = 0;
     }
 #ifdef WIP
     else if ((cont->id1 & 0xff7f0000) == BUILD_MICQ || (cont->id1 & 0xff7f0000) == BUILD_LICQ)
     {
         new = "mICQ";
-        v1 = ver / 10000;
-        v2 = (ver / 100) % 100;
-        v3 = (ver / 10) % 10;
-        v4 = ver % 10;
+        cont->v1 = ver / 10000;
+        cont->v2 = (ver / 100) % 100;
+        cont->v3 = (ver / 10) % 10;
+        cont->v4 = ver % 10;
         if (ver >= 489 && cont->id2)
             cont->id1 = BUILD_MICQ;
     }
@@ -280,16 +304,18 @@ void ContactSetVersion (Contact *cont)
 
     else if ((cont->id1 & 0xffff0000) == 0xffff0000)
     {
-        v1 = (cont->id2 & 0x7f000000) >> 24;
-        v2 = (cont->id2 &   0xff0000) >> 16;
-        v3 = (cont->id2 &     0xff00) >> 8;
-        v4 =  cont->id2 &       0xff;
+        cont->v1 = (cont->id2 & 0x7f000000) >> 24;
+        cont->v2 = (cont->id2 &   0xff0000) >> 16;
+        cont->v3 = (cont->id2 &     0xff00) >> 8;
+        cont->v4 =  cont->id2 &       0xff;
         switch (cont->id1)
         {
             case BUILD_MIRANDA:
                 if (cont->id2 <= 0x00010202 && cont->TCP_version >= 8)
                     cont->TCP_version = 7;
                 new = "Miranda";
+                if (cont->id2 & 0x80000000)
+                    tail = " cvs";
                 break;
             case BUILD_STRICQ:
                 new = "StrICQ";
@@ -300,8 +326,8 @@ void ContactSetVersion (Contact *cont)
                 break;
             case BUILD_YSM:
                 new = "YSM";
-                if ((v1 | v2 | v3 | v4) & 0x80)
-                    v1 = v2 = v3 = v4 = 0;
+                if ((cont->v1 | cont->v2 | cont->v3 | cont->v4) & 0x80)
+                    cont->v1 = cont->v2 = cont->v3 = cont->v4 = 0;
                 break;
             case BUILD_ARQ:
                 new = "&RQ";
@@ -313,10 +339,10 @@ void ContactSetVersion (Contact *cont)
     }
     else if (cont->id1 == BUILD_VICQ)
     {
-        v1 = 0;
-        v2 = 43;
-        v3 =  cont->id2 &     0xffff;
-        v4 = (cont->id2 & 0x7fff0000) >> 16;
+        cont->v1 = 0;
+        cont->v2 = 43;
+        cont->v3 =  cont->id2 &     0xffff;
+        cont->v4 = (cont->id2 & 0x7fff0000) >> 16;
         new = "vICQ";
     }
     else if (cont->id1 == BUILD_TRILLIAN_ID1 &&
@@ -325,18 +351,25 @@ void ContactSetVersion (Contact *cont)
     {
         new = "Trillian";
     }
+    else if (HAS_CAP (cont->caps, CAP_TRILL_CRYPT | CAP_TRILL_2))
+        new = "Trillian";
+    else if (HAS_CAP (cont->caps, CAP_LICQ))
+        new = "licq";
+    else if (HAS_CAP (cont->caps, CAP_SIM))
+    {
+        if (cont->v1 || cont->v2)
+            new = "sim";
+        else
+            new = "Kopete";
+    }
+    else if (HAS_CAP (cont->caps, CAP_MICQ))
+        new = "mICQ";
     else if (cont->id1 == cont->id2 && cont->id2 == cont->id3 && cont->id1 == 0xffffffff)
         new = "vICQ/GAIM(?)";
     else if (cont->TCP_version == 7 && HAS_CAP (cont->caps, CAP_IS_WEB))
         new = "ICQ2go";
     else if (cont->TCP_version == 9 && HAS_CAP (cont->caps, CAP_IS_WEB))
         new = "ICQ Lite";
-    else if (HAS_CAP (cont->caps, CAP_TRILL_CRYPT | CAP_TRILL_2))
-        new = "Trillian";
-    else if (HAS_CAP (cont->caps, CAP_LICQ))
-        new = "licq";
-    else if (HAS_CAP (cont->caps, CAP_SIM))
-        new = "sim";
     else if (HAS_CAP (cont->caps, CAP_STR_2002) && HAS_CAP (cont->caps, CAP_UTF8))
         new = "ICQ 2002";
     else if (HAS_CAP (cont->caps, CAP_STR_2001) && HAS_CAP (cont->caps, CAP_IS_2001))
@@ -356,14 +389,14 @@ void ContactSetVersion (Contact *cont)
     {
         if (new != buf)
             strcpy (buf, new);
-        if (v1 || v2 || v3 || v4)
+        if (cont->v1 || cont->v2 || cont->v3 || cont->v4)
         {
             strcat (buf, " ");
-                          sprintf (buf + strlen (buf), "%d.%d", v1, v2);
-            if (v3 || v4) sprintf (buf + strlen (buf), ".%d", v3);
-            if (v4)       sprintf (buf + strlen (buf), ".%d", v4);
+                                      sprintf (buf + strlen (buf), "%d.%d", cont->v1, cont->v2);
+            if (cont->v3 || cont->v4) sprintf (buf + strlen (buf), ".%d", cont->v3);
+            if (cont->v4)             sprintf (buf + strlen (buf), ".%d", cont->v4);
         }
-        if (ssl) strcat (buf, "/SSL");
+        if (tail) strcat (buf, tail);
     }
     else
         buf[0] = '\0';

@@ -35,6 +35,7 @@ struct Packet_s;
 struct Connection_s;
 struct Preferences_s;
 struct ConnectionPreferences_s;
+struct Cap_s;
 
 typedef struct Queue_s                 Queue;
 typedef struct Event_s                 Event;
@@ -43,6 +44,7 @@ typedef struct Packet_s                Packet;
 typedef struct Connection_s            Connection;
 typedef struct Preferences_s           Preferences;
 typedef struct PreferencesConnection_s PreferencesConnection;
+typedef struct Cap_s                   Cap;
 
 #include "datatype.h"
 #include <stdlib.h>

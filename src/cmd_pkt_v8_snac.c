@@ -463,16 +463,7 @@ static JUMP_SNAC_F(SnacSrvUseronline)
         p = PacketCreate (tlv[13].str, tlv[13].len);
         
         while (PacketReadLeft (p))
-        {
-            Cap *cap = PacketReadCap (p);
-            if (~cont->caps & (1 << cap->id) && cap->id)
-            {
-                cont->caps |= 1 << cap->id;
-#ifdef WIP
-                IMSrvMsg (cont, event->conn, NOW, MSG_INT_CAP, cap->name, STATUS_OFFLINE);
-#endif
-            }
-        }
+            ContactSetCap (cont, PacketReadCap (p));
     }
     ContactSetVersion (cont);
     IMOnline (cont, event->conn, tlv[6].len ? tlv[6].nr : 0);
@@ -656,7 +647,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             pp = PacketCreate (tlv[i].str, tlv[i].len);
             len    = PacketRead2 (pp);      PacketWrite2 (p, len);
             tcpver = PacketRead2 (pp);      PacketWrite2 (p, tcpver);
-            cap2   = PacketReadCap (pp);    PacketWriteCap (p, cap2->id);
+            cap2   = PacketReadCap (pp);    PacketWriteCap (p, cap2);
             tmp    = PacketRead2 (pp);      PacketWrite2 (p, tmp);
             tmp    = PacketRead4 (pp);      PacketWrite4 (p, tmp);
             tmp    = PacketRead1 (pp);      PacketWrite1 (p, tmp);
@@ -691,25 +682,10 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             if (cont)
                 cont->TCP_version = tcpver;
 
-            if (cap1->id || cap2->id)
-            {
-                if (cap1->id && ~cont->caps & (1 << cap1->id))
-                {
-#ifdef WIP
-                    IMSrvMsg (cont, event->conn, NOW, MSG_INT_CAP, cap1->name, STATUS_OFFLINE);
-#endif
-                    cont->caps |= 1 << cap1->id;
-                    ContactSetVersion (cont);
-                }
-                if (cap2->id && ~cont->caps & (1 << cap2->id))
-                {
-#ifdef WIP
-                    IMSrvMsg (cont, event->conn, NOW, MSG_INT_CAP, cap2->name, STATUS_OFFLINE);
-#endif
-                    cont->caps |= 1 << cap2->id;
-                    ContactSetVersion (cont);
-                }
-            }
+            ContactSetCap (cont, cap1);
+            ContactSetCap (cont, cap2);
+            ContactSetVersion (cont);
+
             if (!strlen (text) && unk == 0x12)
             {
                 PacketD (p);
@@ -1268,15 +1244,13 @@ void SnacCliSetuserinfo (Connection *conn)
     
     pak = SnacC (conn, 2, 4, 0, 0);
     PacketWriteTLV     (pak, 5);
-    PacketWriteCap     (pak, CAP_SRVRELAY);
-    PacketWriteCap     (pak, CAP_ISICQ);
+    PacketWriteCapID   (pak, CAP_SRVRELAY);
+    PacketWriteCapID   (pak, CAP_ISICQ);
 #if defined(ENABLE_UTF8)
     if (ENC(enc_loc) != ENC_EUC && ENC(enc_loc) != ENC_SJIS)
-        PacketWriteCap     (pak, CAP_UTF8);
+        PacketWriteCapID   (pak, CAP_UTF8);
 #endif
-#ifdef WIP
-    PacketWriteCap     (pak, CAP_MICQ);
-#endif
+    PacketWriteCapID   (pak, CAP_MICQ);
     PacketWriteTLVDone (pak);
     SnacSend (conn, pak);
 }
@@ -1414,14 +1388,14 @@ void SnacCliSendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD type
              PacketWrite2       (pak, 0);
              PacketWriteB4      (pak, mtime);
              PacketWriteB4      (pak, mid);
-             PacketWriteCap     (pak, CAP_SRVRELAY);
+             PacketWriteCapID   (pak, CAP_SRVRELAY);
              PacketWriteTLV2    (pak, 10, 1);
              PacketWriteB4      (pak, 0x000f0000); /* empty TLV(15) */
              PacketWriteTLV     (pak, 10001);
               PacketWriteLen     (pak);
                PacketWrite2       (pak, conn->assoc && conn->assoc->connect & CONNECT_OK
                                      ? conn->assoc->ver : 0);
-               PacketWriteCap     (pak, CAP_NONE);
+               PacketWriteCapID   (pak, CAP_NONE);
                PacketWrite2       (pak, 0);
                PacketWrite4       (pak, 3);
                PacketWrite1       (pak, 0);

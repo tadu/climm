@@ -21,6 +21,7 @@ struct Contact_s
    UBYTE  connection_type;
    UDWORD cookie;
    time_t id1, id2, id3;
+   UBYTE  v1, v2, v3, v4;
    UDWORD caps;
 
    /* statistic data */
@@ -44,6 +45,7 @@ UDWORD      ContactFindByNick (const char *nick);
 Contact    *ContactStart ();
 Contact    *ContactNext (Contact *cont);
 BOOL        ContactHasNext (Contact *cont);
+void        ContactSetCap (Contact *cont, Cap *cap);
 void        ContactSetVersion (Contact *cont);
 
 #define CONT_UTF8(cont) ((cont->caps & CAP_UTF8) && (prG->enc_loc != ENC_EUC))
