@@ -310,7 +310,7 @@ void UtilIOConnectTCP (Session *sess)
 
         if (sess->server)
             sess->ip = htonl (inet_addr (sess->server));
-        if (sess->ip == -1)
+        if (sess->ip == -1 && sess->server)
         {
             host = gethostbyname (sess->server);
             if (!host)

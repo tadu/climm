@@ -837,7 +837,7 @@
 1837:Acknowledging TCP direct connection initialization packet.¶
 1838:Received direct connection initialization.¶
 1839:Version %04x:%04x, Port %d, UIN %d, session %08x¶
-1840:Received malformed direct connection initialization.¶
+1840: 
 1841:Received malformed initialization acknowledgement packet.¶
 1842:Closing socket %d to %s.¶
 1843:Closing socket %d.¶
@@ -1026,3 +1026,4 @@
 2026:TCP cookie:
 2027:Sending third TCP direct connection packet.¶
 2028:Wrong argument count.¶
+2029:Protocol error on peer-to-peer connection
