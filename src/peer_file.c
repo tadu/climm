@@ -164,7 +164,7 @@ BOOL PeerFileAccept (Connection *peer, UWORD status, UDWORD port)
     fpeer->close    = &PeerFileDispatchDClose;
     
     if (prG->verbose)
-        M_printf (i18n (2068, "Opening file transfer connection at %s:%ld... \n"),
+        M_printf (i18n (2068, "Opening file transfer connection to %s:%ld... \n"),
                   fpeer->server, fpeer->port);
 
     TCPDispatchConn (fpeer);
@@ -484,7 +484,7 @@ void PeerFileResend (Event *event)
     else if (!(fpeer->connect & CONNECT_MASK))
     {
         M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-        M_printf (i18n (2072, "File transfer #%ld (%s) dropped because of closed connection.\n"),
+        M_printf (i18n (2072, "File transfer #%ld (%s) canceled because of closed connection.\n"),
                  event->seq, e_msg_text);
     }
     else if (~fpeer->connect & CONNECT_OK)

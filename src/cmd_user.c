@@ -2990,7 +2990,7 @@ static JUMP_F(CmdUserConn)
             M_printf (i18n (2102, "Connection %ld is a configured connection.\n"), i);
             return 0;
         }
-        M_printf (i18n (2101, "Removing connection %ld and its dependands completely.\n"), i);
+        M_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), i);
         ConnectionClose (conn);
     }
     else if (!strcmp (arg1, "close") || !strcmp (arg1, "logoff"))
@@ -3012,7 +3012,7 @@ static JUMP_F(CmdUserConn)
         }
         else
         {
-            M_printf (i18n (2101, "Removing connection %ld and its dependands completely.\n"), i);
+            M_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), i);
             ConnectionClose (conn);
         }
     }

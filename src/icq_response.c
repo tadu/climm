@@ -169,7 +169,7 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *pak)
                     PacketRead2 (pak);
             data  = PacketReadStrB (pak);
             data2 = PacketReadStrB (pak);
-            M_printf (i18n (2080, "The server says about the SMS delivery:\n%s\n"), c_in (data2));
+            M_printf (i18n (2080, "Server SMS delivery responce:\n%s\n"), c_in (data2));
             free (data);
             free (data2);
             break;
