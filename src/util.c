@@ -442,12 +442,5 @@ void EventExec (Contact *cont, const char *script, UBYTE type, UDWORD msgtype, c
                  myscript, strerror (rc), rc);
     free (mynick);
     free (mytext);
-}
-
-UDWORD UtilCheckUIN (Connection *conn, UDWORD uin)
-{
-    if (!ContactFind (uin))
-        ContactAdd (uin, NULL);
-
-    return uin;
+    free (myscript);
 }

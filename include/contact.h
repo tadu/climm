@@ -36,18 +36,22 @@ struct Contact_s
 
 Contact    *ContactAdd (UDWORD uin, const char *nick);
 void        ContactRem (Contact *cont);
-Contact    *ContactFind (UDWORD uin);
+
+Contact    *ContactByUIN (UDWORD uin, BOOL create);
 const char *ContactFindNick (UDWORD uin);
 const char *ContactFindName (UDWORD uin);
 Contact    *ContactFindAlias (UDWORD uin, const char *nick);
 Contact    *ContactFindContact (const char *nick);
 UDWORD      ContactFindByNick (const char *nick);
+
 Contact    *ContactStart ();
 Contact    *ContactNext (Contact *cont);
 BOOL        ContactHasNext (Contact *cont);
+
 void        ContactSetCap (Contact *cont, Cap *cap);
 void        ContactSetVersion (Contact *cont);
 
+#define ContactFind(uin) ContactByUIN (uin, 0)
 #define CONT_UTF8(cont) ((cont->caps & (1 << CAP_UTF8)) && (prG->enc_loc != ENC_EUC))
 
 #define CONT_IGNORE     1UL /* ignore contact. */

@@ -547,8 +547,7 @@ BOOL s_parsenick_s (char **input, Contact **parsed, char *sep, Contact **parsedr
         l = 0;
         if (s_parseint_s (&p, &max, sep))
         {
-            UtilCheckUIN (serv, max);
-            if ((r = ContactFind (max)))
+            if ((r = ContactByUIN (max, 1)))
             {
                 *parsed = r;
                 if (parsedr)

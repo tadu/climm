@@ -40,9 +40,14 @@ void CmdPktCmdAck (Connection *conn, UDWORD seq)
  */
 void CmdPktCmdSendMessage (Connection *conn, UDWORD uin, const char *text, UDWORD type)
 {
-    Packet *pak = PacketCv5 (conn, CMD_SEND_MESSAGE);
+    Packet *pak;
+    Contact *cont;
     
-    UtilCheckUIN (conn, uin);
+    cont = ContactByUIN (uin, 1);
+    if (!cont)
+        return;
+
+    pak = PacketCv5 (conn, CMD_SEND_MESSAGE);
     
     M_printf ("%s " COLSENT "%*s" COLNONE " " MSGSENTSTR "%s\n",
              s_now, uiG.nick_len + s_delta (ContactFindName (uin)), ContactFindName (uin), MsgEllipsis (text));

@@ -545,8 +545,7 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
     text = strdup (c_in (ctext));
     free (ctext);
 
-    UtilCheckUIN (event->conn, uin);
-    cont = ContactFind (uin);
+    cont = ContactByUIN (uin, 1);
     if (!cont)
         return;
     if ((msgtype & 0x300) != 0x300)
@@ -578,8 +577,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
               PacketReadB2 (pak); /* WARNING */
               PacketReadB2 (pak); /* COUNT */
     
-    UtilCheckUIN (event->conn, uin);
-    cont = ContactFind (uin);
+    cont = ContactByUIN (uin, 1);
     if (!cont)
         return;
 
@@ -587,7 +585,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
 
 #ifdef WIP
     if (tlv[6].nr != cont->status)
-        M_print ("FIXME: status embedded in message 0x%08x different from server status 0x%08x.\n", tlv[6].nr, cont->status);
+        M_printf ("FIXME: status embedded in message 0x%08x different from server status 0x%08x.\n", tlv[6].nr, cont->status);
 #endif
 
     if (tlv[6].len && cont && cont->status != STATUS_OFFLINE)
@@ -799,8 +797,7 @@ static JUMP_SNAC_F(SnacSrvSrvackmsg)
 
     uin = PacketReadUIN (pak);
     
-    UtilCheckUIN (event->conn, uin);
-    cont = ContactFind (uin);
+    cont = ContactByUIN (uin, 1);
     if (!cont)
         return;
     
@@ -962,8 +959,7 @@ static JUMP_SNAC_F(SnacSrvAuthreq)
     text = strdup (c_in (ctext));
     free (ctext);
     
-    UtilCheckUIN (event->conn, uin);
-    IMSrvMsg (ContactFind (uin), event->conn, NOW, MSG_AUTH_REQ, text, STATUS_OFFLINE);
+    IMSrvMsg (ContactByUIN (uin, 1), event->conn, NOW, MSG_AUTH_REQ, text, STATUS_OFFLINE);
 
     free (text);
 }
@@ -986,8 +982,7 @@ static JUMP_SNAC_F(SnacSrvAuthreply)
     text = strdup (c_in (ctext));
     free (ctext);
 
-    UtilCheckUIN (event->conn, uin);
-    IMSrvMsg (ContactFind (uin), event->conn, NOW,
+    IMSrvMsg (ContactByUIN (uin, 1), event->conn, NOW,
               acc ? MSG_AUTH_GRANT : MSG_AUTH_DENY, text, STATUS_OFFLINE);
 
     free (text);
@@ -1004,8 +999,7 @@ static JUMP_SNAC_F(SnacSrvAddedyou)
     pak = event->pak;
     uin = PacketReadUIN (pak);
 
-    UtilCheckUIN (event->conn, uin);
-    IMSrvMsg (ContactFind (uin), event->conn, NOW, MSG_AUTH_ADDED, "", STATUS_ONLINE);
+    IMSrvMsg (ContactByUIN (uin, 1), event->conn, NOW, MSG_AUTH_ADDED, "", STATUS_ONLINE);
 }
 
 /*

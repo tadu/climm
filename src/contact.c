@@ -91,13 +91,13 @@ void ContactRem (Contact *cont)
 
     cnt_contacts[cnt_number].uin = 0;
     
-    ContactFind (uin);
+    ContactByUIN (uin, 0);
 }
 
 /*
  * Returns the contact list entry for UIN or NULL.
  */
-Contact *ContactFind (UDWORD uin)
+Contact *ContactByUIN (UDWORD uin, BOOL create)
 {
     int i;
     
@@ -110,7 +110,10 @@ Contact *ContactFind (UDWORD uin)
             cnt_contacts[i].flags &= ~CONT_ALIAS;
             return &cnt_contacts[i];
         }
-    return NULL;
+    if (!create)
+        return NULL;
+
+    return ContactAdd (uin, NULL);
 }
 
 /*

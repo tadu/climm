@@ -409,7 +409,8 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *p)
                 M_printf ("%lu %s\n", dwdata, i18n (1621, "users not returned."));
             break;
         case META_SRV_RANDOM:
-            UtilCheckUIN (conn, uin = PacketRead4 (p));
+            uin = PacketRead4 (p);
+            cont = ContactByUIN (uin, 1);
             wdata = PacketRead2 (p);
             M_printf (i18n (2009, "Found random chat partner UIN %d in chat group %d.\n"),
                      uin, wdata);
@@ -417,7 +418,6 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *p)
                 SnacCliMetareqinfo (conn, uin);
             else
                 CmdPktCmdMetaReqInfo (conn, uin);
-            cont = ContactFind (uin);
             if (!cont)
                 break;
             cont->outside_ip      = PacketReadB4 (p);
@@ -514,8 +514,8 @@ void Recv_Message (Connection *conn, Packet *pak)
     text = strdup (c_in (ctext));
     free (ctext);
 
-    UtilCheckUIN (conn, uiG.last_rcvd_uin = uin);
-    IMSrvMsg (ContactFind (uin), conn, mktime (&stamp), type, text, STATUS_ONLINE);
+    uiG.last_rcvd_uin = uin;
+    IMSrvMsg (ContactByUIN (uin, 1), conn, mktime (&stamp), type, text, STATUS_ONLINE);
     free (text);
 }
 

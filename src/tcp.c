@@ -120,8 +120,7 @@ BOOL TCPDirectOpen (Connection *list, UDWORD uin)
     if (uin == list->parent->uin)
         return FALSE;
 
-    UtilCheckUIN (list->parent, uin);
-    cont = ContactFind (uin);
+    cont = ContactByUIN (uin, 1);
     if (!cont || cont->TCP_version < 6)
         return FALSE;
 

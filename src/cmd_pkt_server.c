@@ -256,8 +256,8 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             M_print ("\n");
             break;
         case SRV_USER_OFFLINE:
-            UtilCheckUIN (conn, uin = PacketRead4 (pak));
-            if ((cont = ContactFind (uin)))
+            uin = PacketRead4 (pak);
+            if ((cont = ContactByUIN (uin, 1)))
                 IMOffline (cont, conn);
             break;
         case SRV_BAD_PASS:
@@ -278,8 +278,8 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             QueueEnqueueData (conn, /* FIXME: */ 0, 0, 0, time (NULL) + 5, NULL, NULL, &CallBackServerInitV5); 
             break;
         case SRV_USER_ONLINE:
-            UtilCheckUIN (conn, uin = PacketRead4 (pak));
-            cont = ContactFind (uin);
+            uin = PacketRead4 (pak);
+            cont = ContactByUIN (uin, 1);
             if (!cont)
                 return;
             cont->seen_time = time (NULL);
@@ -299,8 +299,8 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             IMOnline (cont, conn, status);
             break;
         case SRV_STATUS_UPDATE:
-            UtilCheckUIN (conn, uin = PacketRead4 (pak));
-            if ((cont = ContactFind (uin)))
+            uin = PacketRead4 (pak);
+            if ((cont = ContactByUIN (uin, 1)))
                 IMOnline (cont, conn, PacketRead4 (pak));
             break;
         case SRV_GO_AWAY:
@@ -344,8 +344,7 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             text = strdup (c_in (ctext));
             free (ctext);
 
-            UtilCheckUIN (conn, uin);
-            if ((cont = ContactFind (uin)))
+            if ((cont = ContactByUIN (uin, 1)))
             {
                 IMSrvMsg (cont, conn, NOW, wdata, text, STATUS_OFFLINE);
                 Auto_Reply (conn, uin);
