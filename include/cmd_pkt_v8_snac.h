@@ -13,7 +13,7 @@ void   SnacCliFamilies        (Connection *conn);
 void   SnacCliRatesrequest    (Connection *conn);
 void   SnacCliReqinfo         (Connection *conn);
 void   SnacCliReqlocation     (Connection *conn);
-void   SnacCliBuddy           (Connection *conn);
+void   SnacCliReqbuddy        (Connection *conn);
 void   SnacCliReqicbm         (Connection *conn);
 void   SnacCliReqbos          (Connection *conn);
 void   SnacCliSetuserinfo     (Connection *conn);

@@ -57,7 +57,7 @@ static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd,
     SnacSrvReplyinfo, SnacSrvReplylocation, SnacSrvUseronline, SnacSrvContacterr,
     SnacSrvRegrefused, SnacSrvUseroffline, SnacSrvRecvmsg, SnacSrvUnknown,
     SnacSrvFromicqsrv, SnacSrvAddedyou, SnacSrvToicqerr, SnacSrvNewuin,
-    SnacSrvSetinterval, SnacSrvSrvackmsg, SnacSrvAckmsg, SnacSrvAuthreq,
+    SnacSrvSetinterval, SnacSrvSrvackmsg, SnacSrvAckmsg, SnacSrvAuthreq, SnacSrvRosterok,
     SnacSrvAuthreply, SnacSrvIcbmerr, SnacSrvReplyroster, SnacSrvContrefused,
     SnacSrvRateexceeded, SnacSrvReplylists, SnacSrvUpdateack, SnacServerpause;
 
@@ -69,11 +69,9 @@ static Packet *SnacMetaC (Connection *serv, UWORD sub, UWORD type, UWORD ref);
 static void SnacMetaSend (Connection *serv, Packet *pak);
 
 static SNAC SNACv[] = {
-    {  1,  3, NULL, NULL},
-    { 19,  4, NULL, NULL},
+    {  1,  4, NULL, NULL},
     {  2,  1, NULL, NULL},
     {  3,  1, NULL, NULL},
-    { 21,  1, NULL, NULL},
     {  4,  1, NULL, NULL},
     {  6,  1, NULL, NULL},
     {  8,  0, NULL, NULL},
@@ -81,6 +79,8 @@ static SNAC SNACv[] = {
     { 10,  1, NULL, NULL},
     { 11,  1, NULL, NULL},
     { 12,  1, NULL, NULL},
+    { 19,  4, NULL, NULL},
+    { 21,  1, NULL, NULL},
     {  0,  0, NULL, NULL}
 };
 
@@ -109,7 +109,7 @@ static SNAC SNACS[] = {
     { 19,  3, "SRV_REPLYLISTS",      SnacSrvReplylists},
     { 19,  6, "SRV_REPLYROSTER",     SnacSrvReplyroster},
     { 19, 14, "SRV_UPDATEACK",       SnacSrvUpdateack},
-    { 19, 15, "SRV_REPLYROSTEROK",   NULL},
+    { 19, 15, "SRV_REPLYROSTEROK",   SnacSrvRosterok},
     { 19, 25, "SRV_AUTHREQ",         SnacSrvAuthreq},
     { 19, 27, "SRV_AUTHREPLY",       SnacSrvAuthreply},
     { 19, 28, "SRV_ADDEDYOU",        SnacSrvAddedyou},
@@ -332,6 +332,15 @@ static JUMP_SNAC_F(SnacSrvRates)
         PacketWriteB2 (pak, grp);
     }
     SnacSend (serv, pak);
+
+    if (!(serv->connect & CONNECT_OK))
+        serv->connect++;
+
+    SnacCliReqlocation  (serv);
+    SnacCliReqbuddy     (serv);
+    SnacCliReqicbm      (serv);
+    SnacCliReqbos       (serv);
+    SnacCliReqlists     (serv);
 }
 
 
@@ -425,6 +434,7 @@ static JUMP_SNAC_F(SnacSrvReplyinfo)
  */
 static JUMP_SNAC_F(SnacSrvFamilies2)
 {
+    Connection *serv = event->conn;
     Packet *pak;
     SNAC *s;
     UWORD fam, ver;
@@ -442,6 +452,10 @@ static JUMP_SNAC_F(SnacSrvFamilies2)
         if (s->cmd > ver)
             M_printf (i18n (1904, "Server doesn't understand ver %d (only %d) for family %d!\n"), s->cmd, ver, fam);
     }
+
+    if (!(serv->connect & CONNECT_OK))
+        serv->connect++;
+    SnacCliRatesrequest (serv);
 }
 
 /*
@@ -449,29 +463,7 @@ static JUMP_SNAC_F(SnacSrvFamilies2)
  */
 static JUMP_SNAC_F(SnacSrvMotd)
 {
-    Connection *serv = event->conn;
-    if (!(serv->connect & CONNECT_OK))
-        serv->connect++;
-
-    SnacCliRatesrequest (serv);
-    SnacCliReqinfo      (serv);
-    SnacCliReqlists     (serv);
-    if (serv->flags & CONN_WIZARD)
-    {
-        SnacCliReqroster  (serv);
-        QueueEnqueueData (serv, QUEUE_REQUEST_ROSTER, IMROSTER_IMPORT, 0x7fffffffL,
-                          NULL, NULL, NULL, NULL);
-    }
-    else
-    {
-        SnacCliCheckroster  (serv);
-        QueueEnqueueData (serv, QUEUE_REQUEST_ROSTER, IMROSTER_DIFF, 0x7fffffffL,
-                          NULL, NULL, NULL, NULL);
-    }
-    SnacCliReqlocation  (serv);
-    SnacCliBuddy        (serv);
-    SnacCliReqicbm      (serv);
-    SnacCliReqbos       (serv);
+    /* ignore */
 }
 
 /*
@@ -479,7 +471,8 @@ static JUMP_SNAC_F(SnacSrvMotd)
  */
 static JUMP_SNAC_F(SnacSrvReplylocation)
 {
-    /* ignore all data, do nothing */
+    Connection *serv = event->conn;
+    SnacCliSetuserinfo (serv);
 }
 
 /*
@@ -1006,12 +999,7 @@ static JUMP_SNAC_F(SnacSrvSrvackmsg)
  */
 static JUMP_SNAC_F(SnacSrvReplybos)
 {
-    Connection *serv = event->conn;
-    SnacCliSetuserinfo (serv);
-    SnacCliSetstatus (serv, serv->status, 3);
-    SnacCliReady (serv);
-    SnacCliAddcontact (serv, 0);
-    SnacCliReqofflinemsgs (serv);
+    /* ignore */
 }
 
 /*
@@ -1034,132 +1022,29 @@ static JUMP_SNAC_F(SnacSrvSetinterval)
  */
 static JUMP_SNAC_F(SnacSrvReplylists)
 {
-    /* ignore */
-}
-
-static JUMP_SNAC_F(SnacSrvReplyrosterexport)
-{
     Connection *serv = event->conn;
-    Packet *pak;
-    ContactGroup *cg = NULL;
-    Contact *cont;
-    strc_t cname;
-    char *name, *nick;
-    TLV *tlv;
-    UWORD type, tag, id, TLVlen, j, data = 0;
-    int cnt_sbl_add, cnt_sbl_chn, cnt_sbl_del;
-    int i, k, l, count;
-    
-    pak = event->pak;
-    cnt_sbl_add = cnt_sbl_chn = cnt_sbl_del = 0;
-    count = PacketReadB2 (pak);
-    for (i = k = l = 0; i < count; i++)
-    {
-        cname  = PacketReadB2Str (pak, NULL);   /* GROUP NAME */
-        tag    = PacketReadB2 (pak);     /* TAG  */
-        id     = PacketReadB2 (pak);     /* ID   */
-        type   = PacketReadB2 (pak);     /* TYPE */
-        TLVlen = PacketReadB2 (pak);     /* TLV length */
-        tlv    = TLVRead (pak, TLVlen);
-        
-        name = strdup (ConvFromServ (cname));
 
-        switch (type)
-        {
-            case 1:
-                if (id) /* should be zero for groups */
-                    break;
-                if (!tag) /* meta list of groups */
-                    break;
-                if (!(cg = ContactGroupFind (serv, tag, name)))
-                    if (!(cg = ContactGroupFind (serv, tag, NULL)))
-                        if (!(cg = ContactGroupFind (serv, 0, name)))
-                            if (!IMROSTER_ISDOWN (data) || !(cg = ContactGroupC (serv, tag, name)))
-                                break;
-                if (IMROSTER_ISDOWN (data))
-                {
-                    s_repl (&cg->name, name);
-                    cg->id = tag;
-                }
-                M_printf ("FIXME: Group #%08d '%s'\n", tag, name);
-                break;
-            case 2:
-            case 3:
-            case 14:
-            case 0:
-                cg = ContactGroupFind (serv, tag, NULL);
-                if (!tag || (!cg && data == IMROSTER_IMPORT))
-                    break;
-                j = TLVGet (tlv, 305);
-                assert (j < 200 || j == (UWORD)-1);
-                nick = strdup (j != (UWORD)-1 ? ConvFromServ (&tlv[j].str) : name);
-
-                switch (data)
-                {
-                    case 3:
-                        if (j != (UWORD)-1 || !(cont = ContactFind (serv->contacts, 0, atoi (name), NULL)))
-                        {
-                            cont = ContactFindCreate (serv->contacts, id, atoi (name), nick);
-                            SnacCliAddcontact (serv, cont);
-                            k++;
-                        }
-                        if (!cont)
-                            break;
-                        if (!ContactFind (serv->contacts, 0, atoi (name), nick))
-                            ContactFindCreate (serv->contacts, id, atoi (name), nick);
-                        cont->id = id;   /* FIXME: should be in ContactGroup? */
-                        if (type == 2)
-                        {
-                            ContactOptionsSetVal (&cont->copts, CO_INTIMATE, 1);
-                            ContactOptionsSetVal (&cont->copts, CO_HIDEFROM, 0);
-                        }
-                        else if (type == 3)
-                        {
-                            ContactOptionsSetVal (&cont->copts, CO_HIDEFROM, 1);
-                            ContactOptionsSetVal (&cont->copts, CO_INTIMATE, 0);
-                        }
-                        else if (type == 14)
-                            ContactOptionsSetVal (&cont->copts, CO_IGNORE, 1);
-                        if (!ContactFind (cg, 0, cont->uin, NULL))
-                        {
-                            ContactAdd (cg, cont);
-                            l++;
-                        }
-                        M_printf (" #%d %10d %s\n", id, atoi (name), nick);
-                        break;
-                    case 2:
-                        if ((cont = ContactFind (serv->contacts, id, atoi (name), nick)))
-                            break;
-                    case 1:
-                        M_printf (" #%08d %10d %s\n", id, atoi (name), nick);
-                }
-                free (nick);
-                break;
-            case 4:
-            case 9:
-            case 17:
-                /* unknown / ignored */
-                break;
-        }
-        free (name);
-        TLVD (tlv);
-    }
-    /* TIMESTAMP ignored */
-    if (k || l)
+    SnacCliSetstatus (serv, serv->status, 3);
+    SnacCliReady (serv);
+    SnacCliAddcontact (serv, 0);
+    SnacCliReqofflinemsgs (serv);
+    if (serv->flags & CONN_WIZARD)
     {
-        M_printf (i18n (2242, "Imported %d new contacts, added %d times to a contact group.\n"), k, l);
-        if (serv->flags & CONN_WIZARD)
-        {
-            if (Save_RC () == -1)
-                M_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
-        }
-        else
-            M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
+        SnacCliReqroster  (serv);
+        QueueEnqueueData (serv, QUEUE_REQUEST_ROSTER, IMROSTER_IMPORT, 0x7fffffffL,
+                          NULL, NULL, NULL, NULL);
     }
-    SnacCliRosterack (serv);
+    else
+    {
+        SnacCliCheckroster  (serv);
+        QueueEnqueueData (serv, QUEUE_REQUEST_ROSTER, IMROSTER_DIFF, 0x7fffffffL,
+                          NULL, NULL, NULL, NULL);
+    }
 }
 
-
+/*
+ * SRV_REPLYROSTER - SNAC(13,6)
+ */
 static JUMP_SNAC_F(SnacSrvReplyroster)
 {
     Connection *serv = event->conn;
@@ -1308,11 +1193,19 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
         else
             M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
     }
-    SnacCliRosterack (serv);
+//    SnacCliRosterack (serv);
 }
 
 /*
- *
+ * SRV_ROSTEROK - SNAC(13,f)
+ */
+static JUMP_SNAC_F(SnacSrvRosterok)
+{
+    /* ignore */
+}
+
+/*
+ * SRV_UPDATEACK - SNAC(13,e)
  */
 static JUMP_SNAC_F(SnacSrvUpdateack)
 {
@@ -1663,7 +1556,7 @@ void SnacCliSetstatus (Connection *serv, UDWORD status, UWORD action)
         PacketWriteTLV2 (pak, 8, 0);
     }
     SnacSend (serv, pak);
-    if ((action & 1) && !(status & STATUSF_INV))
+    if ((action & 1) && (~status & STATUSF_INV))
         SnacCliAddinvis (serv, 0);
 }
 
@@ -1711,7 +1604,7 @@ void SnacCliSetuserinfo (Connection *serv)
 /*
  * CLI_REQBUDDY - SNAC(3,2)
  */
-void SnacCliBuddy (Connection *serv)
+void SnacCliReqbuddy (Connection *serv)
 {
     SnacSend (serv, SnacC (serv, 3, 2, 0, 0));
 }
@@ -2191,7 +2084,7 @@ void SnacCliCheckroster (Connection *serv)
         i++;
 
     PacketWriteB4 (pak, 0);  /* last modification of server side contact list */
-    PacketWriteB2 (pak, i);  /* # of entries */
+    PacketWriteB2 (pak, 0);  /* # of entries */
     SnacSend (serv, pak);
 }
 
