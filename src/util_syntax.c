@@ -11,75 +11,78 @@
 #include "util_str.h"
 #include "preferences.h"
 
-#undef  c_in
-#define c_in(x) ConvToUTF8 (x, ENC_LATIN1)
+#ifdef ENABLE_UTF8
+#define c_pin(x) ConvToUTF8 (x, ENC_LATIN1)
+#else
+#define c_pin(x) x
+#endif
 
 static const char *syntable[] = {
-    "s1x2",   "W-",
-    "s1x3",   "W-",
-    "s1x6",   "",
-    "s1x7",   "",
-    "s1x8",   "W-",
-    "s1x10",  "",
-    "s1x14",  "",
-    "s1x15",  "uWWt[12gp2p]-",
-    "s1x19",  "Wt-",
-    "s1x23",  "D-",
-    "s1x24",  "D-",
-    "s1x30",  "t[12gp2p]-",
-    "s2x3",   "t-",
-    "s2x4",   "t[5C-]-",
-    "s3x1",   "W",
-    "s3x2",   "",
-    "s3x3",   "t-",
-    "s3x4",   "u-",
-    "s3x5",   "u-",
-    "s3x11",  "uWWt[13C-][12gp2p]-",
-    "s3x12",  "uDt-",
-    "s4x1",   "W",
-    "s4x2",   "W-",
-    "s4x4",   "",
-    "s4x5",   "W-",
-    "s4x6",   "DDW[1uWWt[2t[257D]-]-][2uWWt[5WDDCt[10001(wCwdbw)WWDDDWWWLDD]-]-][4uWWt[5DWL]-]",
-    "s4x7",   "DDW[1uWWt[2t[257D]-]-][2uWWt[5WDDCt[10001(wCwdbw)wwdddwwwLDD]-]-][4uWWt[5DWL]-]",
-    "s4x11",  "DDwuW(wCwdbw)wwdddwwwLDD",
-    "s4x12",  "DDwu",
-    "s9x2",   "",
-    "s9x3",   "t-",
-    "s9x5",   "u-",
-    "s9x6",   "u-",
-    "s9x7",   "u-",
-    "s9x8",   "u-",
-    "s11x2",  "W",
-    "s19x2",  "",
-    "s19x3",  "t-",
-    "s19x4",  "",
-    "s19x5",  "DW",
-    "s19x6",  "",
-    "s19x7",  "",
-    "s19x8",  "uWWWWt-",
-    "s19x9",  "BWWWWt-",
-    "s19x10", "uWWWWt-",
-    "s19x14", "W",
-    "s19x15", "DW",
-    "s19x17", "",
-    "s19x18", "",
-    "s19x20", "uD",
-    "s19x24", "uBW",
-    "s19x25", "uB",
-    "s19x27", "ubBW",
-    "s19x28", "u",
-    "s21x1",  "Wt-",
-    "s21x2",  "t[1wdww]-",
-    "s21x3",  "t[1wDw,w.[2010w,b.[270bwLb]]]-",
-    "s23x1",  "Wt[33DdWDDDD]-",
-    "s23x4",  "t[1DDDDDDDDDDLDDW]-",
-    "s23x5",  "t-",
-    "p2p",    "DDbWDWWWWDDDW",
-    "peer",   "b[1bw][2gpeemsg][3dddddddd][255wwdwddDDbddddS]",
-    "peemsg", "dwwwdddw,wwL.[1DDS][26ggreet]",
-    "greet",  "wddddwSdddwbdSdd",
-    NULL,    NULL
+    "s1x2s",   "W-",
+    "s1x3s",   "W-",
+    "s1x6s",   "",
+    "s1x7s",   "",
+    "s1x8s",   "W-",
+    "s1x10s",  "",
+    "s1x14s",  "",
+    "s1x15s",  "uWWt[12gp2p]-",
+    "s1x19s",  "Wt-",
+    "s1x23s",  "D-",
+    "s1x24s",  "D-",
+    "s1x30s",  "t[12gp2p]-",
+    "s2x3s",   "t-",
+    "s2x4s",   "t[5C-]-",
+    "s3x1s",   "W",
+    "s3x2s",   "",
+    "s3x3s",   "t-",
+    "s3x4s",   "u-",
+    "s3x5s",   "u-",
+    "s3x11s",  "uWWt[13C-][12gp2p]-",
+    "s3x12s",  "uDt-",
+    "s4x1s",   "W",
+    "s4x2s",   "W-",
+    "s4x4s",   "",
+    "s4x5s",   "W-",
+    "s4x6s",   "DDW[1uWWt[2t[257D]-]-][2uWWt[5WDDCt[10001(wCwdbw)WWDDDWWWLDD]-]-][4uWWt[5DWL]-]",
+    "s4x7s",   "DDW[1uWWt[2t[257D]-]-][2uWWt[5WDDCt[10001(wCwdbw)wwdddwwwLDD]-]-][4uWWt[5DWL]-]",
+    "s4x11s",  "DDwuW(wCwdbw)wwdddwwwLDD",
+    "s4x12s",  "DDwu",
+    "s9x2s",   "",
+    "s9x3s",   "t-",
+    "s9x5s",   "u-",
+    "s9x6s",   "u-",
+    "s9x7s",   "u-",
+    "s9x8s",   "u-",
+    "s11x2s",  "W",
+    "s19x2s",  "",
+    "s19x3s",  "t-",
+    "s19x4s",  "",
+    "s19x5s",  "DW",
+    "s19x6s",  "",
+    "s19x7s",  "",
+    "s19x8s",  "uWWWWt-",
+    "s19x9s",  "BWWWWt-",
+    "s19x10s", "uWWWWt-",
+    "s19x14s", "W",
+    "s19x15s", "DW",
+    "s19x17s", "",
+    "s19x18s", "",
+    "s19x20s", "uD",
+    "s19x24s", "uBW",
+    "s19x25s", "uB",
+    "s19x27s", "ubBW",
+    "s19x28s", "u",
+    "s21x1s",  "Wt-",
+    "s21x2s",  "t[1wdww]-",
+    "s21x3s",  "t[1wDw,w.[2010w,b.[270bwLb]]]-",
+    "s23x1s",  "Wt[33DdWDDDD]-",
+    "s23x4s",  "t[1DDDDDDDDDDLDDW]-",
+    "s23x5s",  "t-",
+    "p2p",     "DDbWDWWWWDDDW",
+    "peer",    "b[1bw][2gpeemsg][3dddddddd][255wwdwddDDbddddS]",
+    "peemsg",  "dwwwdddw,wwL.[1DDS][26ggreet]",
+    "greet",   "wddddwSdddwbdSdd",
+    NULL,      NULL
 };
 
 const char *PacketDump (Packet *pak, const char *syntax)
@@ -144,21 +147,21 @@ const char *PacketDump (Packet *pak, const char *syntax)
                 nr = PacketReadAtB2 (pak, pak->rpos);
                 if (pak->len < pak->rpos + nr + 2) break;
                 t = s_cat  (t, &size, s_dumpnd (pak->data + pak->rpos, nr + 2));
-                t = s_catf (t, &size, " " COLDEBUG "BStr     '%s'" COLNONE "\n", c_in (tmp = PacketReadStrB (pak)));
+                t = s_catf (t, &size, " " COLDEBUG "BStr     '%s'" COLNONE "\n", c_pin (tmp = PacketReadStrB (pak)));
                 free (tmp);
                 continue;
             case 'L':
                 nr = PacketReadAt2 (pak, pak->rpos);
                 if (pak->len < pak->rpos + nr + 2) break;
                 t = s_cat  (t, &size, s_dumpnd (pak->data + pak->rpos, nr + 2));
-                t = s_catf (t, &size, " " COLDEBUG "LNTS     '%s'" COLNONE "\n", c_in (tmp = PacketReadLNTS (pak)));
+                t = s_catf (t, &size, " " COLDEBUG "LNTS     '%s'" COLNONE "\n", c_pin (tmp = PacketReadLNTS (pak)));
                 free (tmp);
                 continue;
             case 'S':
                 nr = PacketReadAt4 (pak, pak->rpos);
                 if (pak->len < pak->rpos + nr + 4) break;
                 t = s_cat  (t, &size, s_dumpnd (pak->data + pak->rpos, nr + 4));
-                t = s_catf (t, &size, " " COLDEBUG "DLStr    '%s'" COLNONE "\n", c_in (tmp = PacketReadDLStr (pak)));
+                t = s_catf (t, &size, " " COLDEBUG "DLStr    '%s'" COLNONE "\n", c_pin (tmp = PacketReadDLStr (pak)));
                 free (tmp);
                 continue;
             case '-':
