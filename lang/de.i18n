@@ -2,7 +2,6 @@
 #  EN:
 1001:de
 1002:de_DE
-1003:0-4-9-2
 1004:Rico -mc- Glöckner, Rüdiger Kuhlmann
 1005:Rüdiger Kuhlmann
 1006:27. Juni 2002
@@ -48,12 +47,9 @@
 1048:Fehlerkode: %d¶
 1049:UIN: %d¶
 1050:Login erfolgreich!
-1052:Öffne Version-5-Verbindung nach %s:%d... 
 1053: Auf %s verbunden, warte auf Antwort.¶
 1055:Konnte keinen Socket erstellen!
 1056:Socket erhalten, versuche zu verbinden...¶
-1057:Ausgehendes Server-Paket (Version 8):
-1058:SNAC (%x,%x) [%s] Flags %x Referenz %x¶
 1060:Ausführlichkeit is %d.¶
 1061:%s ist kein Spitzname.¶
 1062:ignorierte User:
@@ -61,10 +57,6 @@
 1064:Auto-Status-Wechsel nach:
 1065:Bytereihenfolge: Intel.
 1066:Bytereihenfolge: Motorola.
-1067:Warnung: Der Server denkt, wir seien UIN %d, obwohl wir %d sind.¶
-1068: Online seit %s
-1069: Zuletzt am %s online gewesen
-1070: Es ist nicht bekannt, wann der User das letzte mal online war.
 1071:Dein Status ist: 
 1072:User abgeklemmt:
 1073:User verbunden:
@@ -82,11 +74,8 @@
 1085:an
 1086:aus
 1087:Ignoriere Müll nach der Zahl.
-1088:Das (%x) kann ich noch nicht verschicken.¶
 1089:Entferne Übersetzung aus dem Speicher.
 1090:%s ist eine Benutzernummer, kein Spitzname.
-1091:Sie müssen ein Paßwort eingeben!
-1092:Geben Sie Ihr Paßwort zur Kontrolle erneut ein:
 1093:Die Paßwörter stimmen nicht überein, nochmal!
 1094:Rechnername oder IP-Adresse für SOCKS5 (oder 0, wenn Sie kein SOCKS5 benötigen):
 1095:Port für SOCKS5 (normalerweise 1080):
@@ -158,7 +147,6 @@
 1158:Albanisch
 1159:Armenisch
 ##
-1160:Nicht angegeben
 1161:Akademiker
 1162:Verwaltung
 1163:Kunst/Unterhaltung
@@ -193,7 +181,6 @@
 1191:Paßwort = %s¶
 1192:Rechner = %s¶
 1193:Status  = %ld¶
-1194:Benötige eine UIN.
 1195:Farbe ist [©3%s[©0.¶
 #1196:Message_cmd = %s¶
 1197:Änderung des Paßwortes war ©2%s©0.¶
@@ -404,7 +391,6 @@
 1396:Änderung der grundlegenden Informationen war ©2%s©0.¶
 1397:Änderung der sonstigen Informationen war ©2%s©0.¶
 1398:Suche ©2fehlgeschlagen©0.
-1399:Unbekannte "Meta User"-Antwort ©1%04X©0.¶
 1400:Zeigt zwischengespeicherte Informationen über Benutzer.
 1401:Ändert weitere Informationen wie Alter und Geschlecht.
 1402:Ändert "Über"-Informationen.
@@ -468,7 +454,6 @@
 1461:Fitness
 1462:Spiele
 1463:Hobbies
-1464:ICQ - Hilfe bereitstellen
 1465:Internet
 1466:Lebensstil
 1467:Filme/Fernsehen
@@ -531,8 +516,6 @@
 1523:Telephon (Arbeit):
 1524:Ort (Arbeit):
 1525:Über:
-1526:Nicht angegeben
-1527:Alter:
 1528:weiblich
 1529:männlich
 1530:nicht angegeben
@@ -563,10 +546,6 @@
 1555:Dein neuer Nachname:
 1556:Deine Email-Adresse:
 1557:Möchtest Du, daß Mirabelis-User Deine Autorisierung brauchen?
-1558:verbunden
-1559:    Typ %d Verbindungsendpunkt %d IP %s (%d) [%s,%s] ID %x/%x/%x¶
-1560:Gebe das Mindestalter ein (18-22,23-29,30-39,40-49,50-59,60-120):
-1561:Gebe das Maximalalter ein (22,29,39,49,59,120):
 1562:Information für
 1564:Vorname:
 1565:Nachname:
@@ -574,15 +553,10 @@
 1567:Keine Autorisation erforderlich.©0 
 1568:Autorisation erforderlich.©0 
 1570:Stadt:
-1571:Land:
-1572:Landescode:
 1574:Bundesstaat:
 1575:Alter:
-1577:nicht angegeben
 1578:Landesvorwahl:
 1579:Firma:
-1581:Internetseite:
-1582:Über:
 1584:Warnung! Befehl "%s" mit Rückgabewert %d fehlgeschlagen¶
 1585:Arrgghh!!!!!!!  Schlechtes Paket.
 1586:©4¶%s©0 hat Sie auf seine Kontaktliste gesetzt.¶
@@ -613,7 +587,6 @@
 1613:Dazu wurde kein Programmcode von Mirabilis zurückentwickelt oder zurückübersetzt.¶
 1614:Benutze Konfigurationsdatei "%s".¶
 1615:Protokolliere nach "%s".¶
-1616:BeOS "InputThread" gestartet.¶
 1617:<alle>
 #1618:UIN:
 #1619:Warning:
@@ -651,7 +624,6 @@
 1660:Ungültiges Kommando: %s¶
 1661:Shell-Kommandos wurden abgeschaltet.¶
 1664:Erstelle Nachricht an ©4alle©0:¶
-1665:%s ist kein bekannter Spitzname.
 1666:Ignoriere %s nicht mehr.
 1667:Ignoriere %s.
 1668:Sie müssen einen Spitznamen angeben.
@@ -663,13 +635,11 @@
 1674:	Der Port ist unbekannt.¶
 1675:Ignoriere Zeile:
 1676:Benötige Benutzernummer, an die ich schicken soll.¶
-1677:%s ist kein bekannter Spitzname.¶
 1678:Benötige URL.¶
 1679:Leider ist das Speichern Ihrer persönlichen Einstellungen fehlgeschlagen!¶
 1680:Ihre persönlichen Einstellungen wurden gespeichert!¶
 1681:Die letzten %d Leute, zu denen Sie gesprochen haben:¶
 1682:Sie haben Nachrichten empfangen von:¶
-1683:Unbekannter Kontakt %s.¶
 1684:%s ist kein bekannter Kontakt.¶
 1685:Letzte Nachricht von ©4%s©0:¶
 1686:No messages received from ©4%s©0¶
@@ -679,12 +649,7 @@
 1690:Minuten
 1691:Sekunden
 1692:Kontakte:
-1693:Pakete gesendet:
-1694:Pakete empfangen:
-1695:Pakete verzögert:
 1696:Geschlecht:
-1697:Unterschiedliche Pakete gesendet:
-1698:Unterschiedliche Pakete empfangen:
 1699:Benötige gültige Benutzernummer oder Spitzname.¶
 1700:%s ist kein gültiger Benutzer in Ihrer Kontaktliste.¶
 1703:©2Status-Modi: ¶
@@ -706,13 +671,12 @@
 1720:<uin> kann die Benutzernummer oder der Spitzname eines Benutzers sein.
 1721:Bei einer leeren Nachricht können mehrere Zeilen eingegeben werden.¶Dabei bedeutet eine Zeile nur mit . das Ende der Nachricht.¶Ebenso verwirft eine Zeile nur mit # die Nachricht.
 1722:Unbekanntes Kommando zum Umbenennen, gebe "help" für Hilfe ein.
-1723:%ss IP-Adresse ist 
 1724:Automatische Antworten sind %s.¶
-1727:Die "Bitte nicht stören"-Nachricht lautet:
-1728:Die "Nicht da"-Nachricht lautet:
-1729:Die "Nicht erreichbar"-Nachricht lautet:
-1730:Die "Beschäftigt"-Nachricht lautet:
-1731:Die "Unsichtbar"-Nachricht lautet:
+1727:Die "bitte nicht stören"-Nachricht lautet:
+1728:Die "nicht da"-Nachricht lautet:
+1729:Die "nicht erreichbar"-Nachricht lautet:
+1730:Die "beschäftigt"-Nachricht lautet:
+1731:Die "unsichtbar"-Nachricht lautet:
 1734:Leider falsche Syntax, kann keinen Status finden.¶
 1735:Benötige eine Nachricht.¶
 1736:Leider falsche Syntax. Lies doch die Hilfe, Mensch!¶
@@ -751,14 +715,10 @@
 1769:Zeigt Deinen aktuellen Verbindungsstatus.
 1770:Sendet die letzte Nachricht an einen neuen Benutzer.
 1771:Noch keine Nachricht an irgendwen verschickt!¶
-1772:Kann Rechner %s nicht finden.
 1773:Konnte Nick %s nicht hinzufügen.
 1774:Eingehendes Paket:
 1775:Ausgehendes Paket:
-1776:Ausgehendes TCP-Paket (%d):
 1777:Öffne Direkt-Verbindung auf localhost:%d...
-1778:Eingehendes TCP-Paket (%d):
-1779:Öffne TCP-Verbindung zu %s auf %s:%d... 
 1781:Bitte Paßwort für Benutzernummer %d eingeben:¶
 1782:Sie benötigen ein Paßwort für Ihre neue Benutzernummer.¶
 1783:Um Tippfehler zu vermeiden, geben Sie Ihr Paßwort bitte erneut ein.¶
@@ -784,7 +744,6 @@
 1803:Klang-Befehl, wenn jemand sich abmeldet:
 1804:Klang, wenn jemand verbindet:
 1805:Klang, wenn sich jemand abmeldet:
-1806:Nachricht %04x von %s bestätigt.¶
 1807:Eingehende Nachricht %04x von %s abgebrochen.¶
 #1808:College
 1810:Universität
@@ -799,12 +758,9 @@
 1821:Lustige Meldungen sind ©3%s©0.¶
 1822:    color: Farbe verwenden.¶
 1823:Eingehendes Unter-Paket:
-1824:Bestätigtes Paket vom Typ %04x (%s), Sequenz-Nummer %04x, von der Warteschlange entfernt.¶
 1825:Werfe ein Paket vom Typ %04x (%s) weg.
 1826:Sende Paket vom Typ %04x (%s), Sequenz-Nummer %04x, erneut (Versuch #%d, Länge %d).¶
-1827:Unbekanntes Programm
 #1830:Discarding message to %s after %d send attempts.  Message content:¶
-1831:[SOCKS] Autorisationsmethode ungültig.
 1833:Direkte Verbindung aufgebaut.¶
 1835:Fehler beim Schreiben in den Kommunikationsendpunkt: %s (%d)¶
 #1841:Received malformed initialization acknowledgement packet.¶
@@ -820,11 +776,11 @@
 1855:Direkt-Verbindung zu %s bei %s:%d ist fehlgeschlagen.¶
 #1856:Discarded a %04x (%s) packet from old session %08x (current: %08x).¶
 1857:Möchten Sie Ihre IP-Adresse vor anderen Benutzern verbergen? (Ja/Nein)
-#1864:Can't open rcfile %s.
+1864:Kann Konfigurationsdatei "%s" nicht öffnen.
 1866:Diese Version von mICQ ist ohne Unterstützung von Direkt-Verbindungen übersetzt worden.¶
 #1867:Got a malformed (too short) packet - ignored.¶
 #1868:Got a malformed (to long subpacket) multi-packet - remainder ignored.¶
-#1869:Protocoll versions less than 5 are not supported anymore.¶
+1869:Versionen kleiner als 5 werden nicht mehr unterstützt.¶
 1870:    off   <nick> - Schaltet die Benutzung von Direkt-Verbindungen ab.¶
 1871:Öffne Verbindung zu v8-Server bei %s:%d... 
 1872:fehlgeschlagen: %s (%d).¶
@@ -881,7 +837,6 @@
 1925:Beschäftigt
 1926:Unsichtbar
 1927:Für Plaudereien frei
-1928:Abgeklemmt
 1929:[Automatische Nachricht] Bitte nicht stören (Do Not Disturb)
 #1930:Can't send this (%x) yet.¶
 1931:Keine Verbindung zum Server.¶
@@ -908,14 +863,12 @@
 1953:Kann nicht mit einem freien Port verknüpfen
 1954:Kann nicht auf einem freien Port horchen
 1955:Verbindung fehlgeschlagen
-1956:[SOCKS] Allgemeiner SOCKS-Server-Fehler
-1957:[SOCKS] Authorisierung fehlgeschlagen
 1958:[SOCKS] Verbindung verweigert (%d)
 1960:Bitte Suchdaten eingeben. Zum Starten "." eingeben.¶
 1961:URL: %s¶
 #1966: Conection Refused on port %d at %s¶
 #1967:More Info for
-#1968:User found
+1968:Benutzer gefunden
 1969:nicht verbunden
 1970:verbunden
 1971:nicht stören
