@@ -20,7 +20,7 @@
  * $Id$
  */
 
-#define MICQ_BUILD_NUM 0x80046308
+#define MICQ_BUILD_NUM 0x80046309
 
 #include "micq.h"
 #include "buildmark.h"

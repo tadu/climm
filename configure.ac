@@ -3,19 +3,19 @@
 
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.57)
-AC_INIT([micq], [0.4.99.8])
+AC_PREREQ(2.59)
+AC_INIT([micq], [0.4.99.9])
 AC_CONFIG_SRCDIR([include/micq.h])
 AC_CONFIG_LIBOBJ_DIR(replace)
 AC_CONFIG_HEADER(include/config.h)
 AC_CANONICAL_HOST
 
-AC_CHECK_PROG(AUTOMAKE, automake-1.7, automake-1.7)
-AC_CHECK_PROG(ACLOCAL, aclocal-1.7, aclocal-1.7)
+AC_CHECK_PROG(AUTOMAKE, automake-1.9, automake-1.9)
+AC_CHECK_PROG(ACLOCAL, aclocal-1.9, aclocal-1.9)
 AC_CHECK_PROG(AUTOHEADER, autoheader, autoheader)
 AC_CHECK_PROG(AUTOCONF, autoconf, autoconf)
 
-AM_INIT_AUTOMAKE(1.7)
+AM_INIT_AUTOMAKE(1.9)
 AM_MAINTAINER_MODE
 
 AC_DEFINE(MICQ_VERSION,VERSION,[mICQ's current version])
