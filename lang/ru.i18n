@@ -1,5 +1,5 @@
 # $Id$ (Russian)
-#  EN: __.i18n,v 1.63.2.10 2003/09/21 23:20:15
+#  EN: __.i18n,v 1.63.2.12 2003/10/06 16:55:58
 1000:koi8-r
 1001:ru
 1002:ru_RU
@@ -668,7 +668,7 @@
 1826:Перепосылаю сообщение %04x (%s) последовательность %04lx (попытка номер %ld, длина %d).\n
 1830:Отменено сообщение для %s после %ld попыток.  Текст сообщения:\n
 1833:Один-на-Один TCP соединение к %s установленно.\n
-1835:Ошибка записи в сокет - %s (%d)\n
+1835.Ошибка записи в сокет - %s (%d)\n
 1841:Принял плохо сформированный пакет подтверждения для прямого TCP соединения.\n
 1842:Закрываю socket %d к %s.\n
 1843:Закрываю socket %d.\n
@@ -1129,3 +1129,5 @@
 #2378:peer ssl <nick>   - initiate SSL handshake.
 2379:}%}
 2380:{%{
+#2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
+#2382:Peer-to-peer connection not associated to server connection, discarding.\n

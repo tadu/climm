@@ -1,12 +1,12 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.63.2.10 2003/09/21 23:20:15
+#  EN: __.i18n,v 1.63.2.12 2003/10/06 16:55:58
 1000:iso-8859-1
 1001:de
 1002:de_DE
-1003:0-4-9-10
+1003:0-4-10-5
 1004:Rico -mc- Glöckner, Rüdiger Kuhlmann
 1005:Rüdiger Kuhlmann
-1006:2003-01-05
+1006:2003-10-06
 1007.iso-8859-1
 1010:[Automatische Nachricht] Benutzer ist nicht da (User is Away)
 1011:[Automatische Nachricht] Benutzer ist nicht verfügbar (User is not available)
@@ -678,7 +678,7 @@
 1826:Sende Paket vom Typ %04x (%s), Sequenz-Nummer %04lx, erneut (Versuch #%ld, Länge %d).\n
 1830:Werfe Nachricht an %s nach %ld Versuchen weg. Inhalt der Nachricht:\n
 1833:Direkte Verbindung aufgebaut.\n
-1835:Fehler beim Schreiben in den Kommunikationsendpunkt: %s (%d)\n
+1835.Fehler beim Schreiben in den Kommunikationsendpunkt: %s (%d)\n
 1841:Empfange fehlerhaftes Initialisierungsbestätigungspaket.\n
 1842:Schließe Verbindung (Verbindungsendpunkt Nr. %d) zu %s.\n
 1843:Schließe Verbindungsendpunkt Nr. %d.\n
@@ -1139,3 +1139,5 @@
 2378:peer ssl <nick>   - baue eine gesicherte (SSL) Verbindung auf.
 2379:»%»
 2380:«%«
+2381:Ich füge den Autor von mICQ zur Kontaktliste hinzu. Diese Gelegenheit sollte man nicht mißbrauchen - bitte erst den "help"-Befehl benutzen und einen ernsthaften Versuch machen, die Hilfeseiten und die FAQ (häufig gestellte Fragen) zu lesen, und erst danach fragen.\n
+2382:Verbindungsannahme gehört zu keiner Server-Verbindung, wird ignoriert.\n

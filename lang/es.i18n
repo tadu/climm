@@ -1,5 +1,5 @@
 # $Id$ castellano (Spanish)
-#  EN: __.i18n,v 1.63.2.10 2003/09/21 23:20:15
+#  EN: __.i18n,v 1.63.2.12 2003/10/06 16:55:58
 1000:iso-8859-1
 1001:es
 1002:es
@@ -696,7 +696,7 @@
 1826:Reenviando mensaje %04x (%s) secuencia %04lx (intento numero %ld, longitud %d).\n
 1830:Descartando envio de mensaje a %s luego de %ld intentos. El contenido del mensaje es:\n
 1833:Conexión TCP par-a-par establecida.\n
-1835:Error escribiendo al socket - %s (%d)\n
+1835.Error escribiendo al socket - %s (%d)\n
 1841:Se recibio un paquete de confirmación de inicialización deforme.\n
 1842:Cerrando socket %d a %s.\n
 1843:Cerrando socket %d.\n
@@ -1183,3 +1183,5 @@
 #2378:peer ssl <nick>   - initiate SSL handshake.
 2379:»%»
 2380:«%«
+#2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
+#2382:Peer-to-peer connection not associated to server connection, discarding.\n

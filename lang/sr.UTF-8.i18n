@@ -1,5 +1,5 @@
 # $Id$
-#  EN: __.i18n,v 1.63.2.10 2003/09/21 23:20:15
+#  EN: __.i18n,v 1.63.2.12 2003/10/06 16:55:58
 1000:UTF-8
 1001:sr
 1002:sr_YU
@@ -667,7 +667,7 @@
 1826:Поновно слање поруке %04x (%s) секвенца %04lx (%ld. покушај, дужина %d).\n
 1830:Укидање поруке за '%s' после %ld покушаја слања. Садржај поруке:\n
 1833:Успостављена један-на-један TCP веза.
-1835:Грешка током писања у socket - %s (%d)\n
+1835.Грешка током писања у socket - %s (%d)\n
 1841:Примљен деформисан пакет са почетним оверавањем.\n 
 1842:Затварање socket-а %d према %s.\n
 1843:Затварање socket-а %d.\n
@@ -1128,3 +1128,5 @@
 #2378:peer ssl <nick>   - initiate SSL handshake.
 2379:»%»
 2380:«%«
+#2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
+#2382:Peer-to-peer connection not associated to server connection, discarding.\n

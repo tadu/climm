@@ -1,12 +1,12 @@
 # $Id$ English (English)
-#  EN: __.i18n,v 1.63.2.10 2003/09/21 23:20:15
+#  EN: __.i18n,v 1.63.2.12 2003/10/06 16:55:58
 1000:iso-8859-1
 1001:en
 1002:en_US
-1003:0-4-10
+1003:0-4-10-5
 1004:Rüdiger Kuhlmann
 1005:Rüdiger Kuhlmann
-1006:2003-01-05
+1006:2003-10-06
 1007.iso-8859-1
 1010:User is away [Auto-Message]
 1011:User is not available [Auto-Message]
@@ -668,7 +668,7 @@
 1826:Resending message %04x (%s) sequence %04lx (attempt #%ld, len %d).\n
 1830:Discarding message to %s after %ld send attempts.  Message content:\n
 1833:Peer to peer TCP connection established.\n
-1835:Error while writing to socket - %s (%d)\n
+1835.Error while writing to socket - %s (%d)\n
 1841:Received malformed initialization acknowledgement packet.\n
 1842:Closing socket %d to %s.\n
 1843:Closing socket %d.\n
@@ -1129,3 +1129,7 @@
 2378:peer ssl <nick>   - initiate SSL handshake.
 2379:»%»
 2380:«%«
+#-#2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
+#+#2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.
+# #2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
+2382:Peer-to-peer connection not associated to server connection, discarding.\n

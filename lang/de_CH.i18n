@@ -1,5 +1,5 @@
 # $Id$
-#  EN: __.i18n,v 1.63.2.10 2003/09/21 23:20:15
+#  EN: __.i18n,v 1.63.2.12 2003/10/06 16:55:58
 1000:iso-8859-1
 1001:de
 1002:de_CH
@@ -804,7 +804,7 @@
 #1826:Resending message %04x (%s) sequence %04lx (attempt #%ld, len %d).\n
 #1830:Discarding message to %s after %ld send attempts.  Message content:\n
 1833:Diräkti Verbindig aufboue.\n
-1835:Fähler bim Schribe i Socket: %s (%d)\n
+1835.Fähler bim Schribe i Socket: %s (%d)\n
 1841:Ha es ausch formatierts initialization acknowledgement packet becho.\n
 1842:Tue d Verbindig (Verbindigsändpunkt Nr. %d) zu %s zue.\n
 1843:Tue der Verbindigsändpunkt Nr. %d zue.\n
@@ -1078,7 +1078,7 @@
 2090:Dateiübertragig
 2091:Reihe "%s" aus "%s" id Warteschlange für Dateiübertragig i.\n
 2092:TCP Nachricht %s wäggschmisse - ha d Sitzig verlore.\n
-2093:%02d %-12s Version %d für %s (%lx), bi %s:%ld %s\n
+2093.%02d %-12s Version %d für %s (%lx), bi %s:%ld %s\n
 2094:conn login         Erschti Serververbindig uftue.\n
 2095:conn remove <nr>   Verbindig Nummere <nr> zuetue.\n
 #-#2096:D Verbindig %d isch ned offe.\n
@@ -1357,3 +1357,5 @@
 #2378:peer ssl <nick>   - initiate SSL handshake.
 2379:»%»
 2380:«%«
+#2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
+#2382:Peer-to-peer connection not associated to server connection, discarding.\n

@@ -1,5 +1,5 @@
 # $Id$ (Ukrainian)
-#  EN: __.i18n,v 1.63.2.10 2003/09/21 23:20:15
+#  EN: __.i18n,v 1.63.2.12 2003/10/06 16:55:58
 1000:KOI8-U
 1001:uk
 1002:uk_UA
@@ -668,7 +668,7 @@
 1826:Повторно посила╓ться пов╕домлення %04x (%s) посл╕довн╕сть %04lx (спроба #%ld, довжина %d).\n
 1830:Скасову╓ться пов╕домлення до %s п╕сля %ld спроб в╕дправлення. Вм╕ст пов╕домлення:\n
 1833:Встановлено TCP з'╓днання один-на-один.\n
-1835:Помилка запису в сокет - %s (%d)\n
+1835.Помилка запису в сокет - %s (%d)\n
 1841:Отримано поганий пакет п╕дтвердження ╕н╕ц╕ац╕╖.\n
 1842:Закрива╓ться сокет %d до %s.\n
 1843:Закрива╓ться сокет %d.\n
@@ -1129,3 +1129,5 @@
 #2378:peer ssl <nick>   - initiate SSL handshake.
 #2379:╩%╩
 #2380:╚%╚
+#2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
+#2382:Peer-to-peer connection not associated to server connection, discarding.\n

@@ -1,5 +1,5 @@
 # $Id$ Romana (Romanian)
-#  EN: __.i18n,v 1.63.2.10 2003/09/21 23:20:15
+#  EN: __.i18n,v 1.63.2.12 2003/10/06 16:55:58
 1000:iso-8859-2
 1001:ro
 1002:ro_RO
@@ -670,7 +670,7 @@
 1826:Trimit din nou mesajul %04x (%s) secventa %04lx (incercare #%ld, lungime %d).\n
 1830:Ignor mesaj pentru %s dupa %ld incercari de a trimite.  Continutul mesajului:\n
 1833:Conexiune TCP "Peer to peer" stabilita.\n
-1835:Eroare la scrierea in socket - %s (%d)\n
+1835.Eroare la scrierea in socket - %s (%d)\n
 1841:Am primit un pachet rau de initializare a confirmarii.\n
 1842:Inchidere socket %d catre %s.\n
 1843:Inchidere socket %d.\n
@@ -1130,3 +1130,5 @@
 #2378:peer ssl <nick>   - initiate SSL handshake.
 2379:}%}
 2380:{%{
+#2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
+#2382:Peer-to-peer connection not associated to server connection, discarding.\n
