@@ -591,8 +591,12 @@ BOOL UtilUIParse (char **input, char **parsed)
 
 /*
  * Try to find a nick name or uin in the string.
+ * parsed is the Contact entry for this alias,
+ * parsedr the "real" entry for this UIN.
+ * parsed ->nick will be the nick given,
+ * unless the user entered an UIN.
  */
-BOOL UtilUIParseNick (char **input, Contact **parsed, Session *serv)
+BOOL UtilUIParseNick (char **input, Contact **parsed, Contact **parsedr, Session *serv)
 {
     Contact *r;
     char *p = *input, *t;
@@ -604,6 +608,7 @@ BOOL UtilUIParseNick (char **input, Contact **parsed, Session *serv)
     if (!*p)
     {
         *parsed = NULL;
+        *parsedr = NULL;
         return FALSE;
     }
     
@@ -613,6 +618,15 @@ BOOL UtilUIParseNick (char **input, Contact **parsed, Session *serv)
         *parsed = ContactFindContact (t);
         if (*parsed)
         {
+            if (parsedr)
+            {
+                *parsedr = ContactFind ((*parsed)->uin);
+                if (!*parsedr)
+                {
+                    *parsed = NULL;
+                    return FALSE;
+                }
+            }
             *input = p;
             return TRUE;
         }
@@ -628,6 +642,8 @@ BOOL UtilUIParseNick (char **input, Contact **parsed, Session *serv)
             if ((r = ContactFind (max)))
             {
                 *parsed = r;
+                if (parsedr)
+                    *parsedr = r;
                 *input = p;
                 return TRUE;
             }
@@ -647,6 +663,15 @@ BOOL UtilUIParseNick (char **input, Contact **parsed, Session *serv)
     }
     if (max)
     {
+        if (parsedr)
+        {
+            *parsedr = ContactFind ((*parsed)->uin);
+            if (!*parsedr)
+            {
+                *parsed = NULL;
+                return FALSE;
+            }
+        }
         *input = p + max;
         return TRUE;
     }

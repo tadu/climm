@@ -544,10 +544,10 @@ static JUMP_F(CmdUserSMS)
  */
 static JUMP_F(CmdUserInfo)
 {
-    Contact *cont = NULL;
+    Contact *cont = NULL, *contr = NULL;
     SESSION;
 
-    if (!UtilUIParseNick (&args, &cont, sess))
+    if (!UtilUIParseNick (&args, &cont, &contr, sess))
     {
         M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
@@ -585,7 +585,7 @@ static JUMP_F(CmdUserPeek)
         return 0;
     }
 
-    if (!UtilUIParseNick (&args, &cont, sess))
+    if (!UtilUIParseNick (&args, &cont, NULL, sess))
         M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
     else
         SnacCliSendmsg (sess, cont->uin, "", 0xe8);
@@ -697,7 +697,7 @@ static JUMP_F(CmdUserTCP)
         
         arg1 = strdup (arg1);
 
-        if (!UtilUIParseNick (&args, &cont, sess))
+        if (!UtilUIParseNick (&args, &cont, NULL, sess))
         {
             M_print (i18n (1845, "Nick %s unknown.\n"), args);
             free (arg1);
@@ -929,7 +929,7 @@ static JUMP_F (CmdUserResend)
         return 0;
     }
 
-    if (!UtilUIParseNick (&args, &cont, sess))
+    if (!UtilUIParseNick (&args, &cont, NULL, sess))
     {
         if (*args)
             M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
@@ -942,7 +942,7 @@ static JUMP_F (CmdUserResend)
     {
         icq_sendmsg (sess, uiG.last_sent_uin = cont->uin,
                      uiG.last_message_sent, uiG.last_message_sent_type);
-        if (!UtilUIParseNick (&args, &cont, sess))
+        if (!UtilUIParseNick (&args, &cont, NULL, sess))
         {
             if (*args)
                 M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
@@ -1047,7 +1047,7 @@ static JUMP_F (CmdUserMessage)
         switch (data)
         {
             case 1:
-                if (!UtilUIParseNick (&args, &cont, sess))
+                if (!UtilUIParseNick (&args, &cont, NULL, sess))
                 {
                     M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
                     return 0;
@@ -1175,7 +1175,7 @@ static JUMP_F(CmdUserStatusDetail)
     if (!data)
         UtilUIParseInt (&args, &data);
 
-    if ((data & 8) && !UtilUIParseNick (&args, &cont, sess) && *args)
+    if ((data & 8) && !UtilUIParseNick (&args, &cont, NULL, sess) && *args)
     {
         M_print (i18n (1700, "%s is not a valid user in your list.\n"), args);
         return 0;
@@ -1783,23 +1783,23 @@ static JUMP_F(CmdUserRegister)
  */
 static JUMP_F(CmdUserTogIgnore)
 {
-    Contact *cont = NULL;
+    Contact *cont = NULL, *contr = NULL;
     SESSION;
 
-    if (!UtilUIParseNick (&args, &cont, sess))
+    if (!UtilUIParseNick (&args, &cont, &contr, sess))
     {
         M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
     }
 
-    if (cont->flags & CONT_IGNORE)
+    if (contr->flags & CONT_IGNORE)
     {
-        cont->flags &= ~CONT_IGNORE;
+        contr->flags &= ~CONT_IGNORE;
         M_print (i18n (1666, "Unignored %s."), cont->nick);
     }
     else
     {
-        cont->flags |= CONT_IGNORE;
+        contr->flags |= CONT_IGNORE;
         M_print (i18n (1667, "Ignoring %s."), cont->nick);
     }
     M_print ("\n");
@@ -1811,18 +1811,18 @@ static JUMP_F(CmdUserTogIgnore)
  */
 static JUMP_F(CmdUserTogInvis)
 {
-    Contact *cont = NULL;
+    Contact *cont = NULL, *contr = NULL;
     SESSION;
 
-    if (!UtilUIParseNick (&args, &cont, sess))
+    if (!UtilUIParseNick (&args, &cont, &contr, sess))
     {
         M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
     }
 
-    if (cont->flags & CONT_HIDEFROM)
+    if (contr->flags & CONT_HIDEFROM)
     {
-        cont->flags &= ~CONT_HIDEFROM;
+        contr->flags &= ~CONT_HIDEFROM;
         if (sess->ver > 6)
             SnacCliReminvis (sess, cont->uin);
         else
@@ -1831,8 +1831,8 @@ static JUMP_F(CmdUserTogInvis)
     }
     else
     {
-        cont->flags |= CONT_HIDEFROM;
-        cont->flags &= ~CONT_INTIMATE;
+        contr->flags |= CONT_HIDEFROM;
+        contr->flags &= ~CONT_INTIMATE;
         if (sess->ver > 6)
             SnacCliAddinvis (sess, cont->uin);
         else
@@ -1855,18 +1855,18 @@ static JUMP_F(CmdUserTogInvis)
  */
 static JUMP_F(CmdUserTogVisible)
 {
-    Contact *cont = NULL;
+    Contact *cont = NULL, *contr = NULL;
     SESSION;
 
-    if (!UtilUIParseNick (&args, &cont, sess))
+    if (!UtilUIParseNick (&args, &cont, &contr, sess))
     {
         M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
     }
 
-    if (cont->flags & CONT_INTIMATE)
+    if (contr->flags & CONT_INTIMATE)
     {
-        cont->flags &= ~CONT_INTIMATE;
+        contr->flags &= ~CONT_INTIMATE;
         if (sess->ver > 6)
             SnacCliRemvisible (sess, cont->uin);
         else
@@ -1875,8 +1875,8 @@ static JUMP_F(CmdUserTogVisible)
     }
     else
     {
-        cont->flags |= CONT_INTIMATE;
-        cont->flags &= ~CONT_HIDEFROM;
+        contr->flags |= CONT_INTIMATE;
+        contr->flags &= ~CONT_HIDEFROM;
         if (sess-> ver > 6)
             SnacCliAddvisible (sess, cont->uin);
         else
@@ -1893,11 +1893,11 @@ static JUMP_F(CmdUserTogVisible)
  */
 static JUMP_F(CmdUserAdd)
 {
-    Contact *cont = NULL /*, *cont2 */;
+    Contact *cont = NULL, *cont2;
     char *arg1;
     SESSION;
 
-    if (!UtilUIParseNick (&args, &cont, sess))
+    if (!UtilUIParseNick (&args, &cont, NULL, sess))
     {
         M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
@@ -1944,7 +1944,7 @@ static JUMP_F(CmdUserRem)
     Contact *cont = NULL;
     SESSION;
 
-    if (!UtilUIParseNick (&args, &cont, sess))
+    if (!UtilUIParseNick (&args, &cont, NULL, sess))
     {
         M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
@@ -2002,7 +2002,7 @@ static JUMP_F(CmdUserAuth)
     }
     cmd = strdup (cmd);
 
-    if (UtilUIParseNick (&args, &cont, sess))
+    if (UtilUIParseNick (&args, &cont, NULL, sess))
     {
         UtilUIParse (&args, &msg);
         if (!strcmp (cmd, "req"))
@@ -2044,7 +2044,7 @@ static JUMP_F(CmdUserAuth)
             return 0;
         }
     }
-    if ((strcmp (cmd, "grant") && !UtilUIParseNick (&argsb, &cont, sess)) || !cont)
+    if ((strcmp (cmd, "grant") && !UtilUIParseNick (&argsb, &cont, NULL, sess)) || !cont)
     {
         M_print (i18n (1061, "'%s' not recognized as a nick name.\n"),
                  strcmp (cmd, "grant") && strcmp (cmd, "req") && strcmp (cmd, "deny") ? argsb : args);
@@ -2083,7 +2083,7 @@ static JUMP_F(CmdUserURL)
     Contact *cont = NULL;
     SESSION;
 
-    if (!UtilUIParseNick (&args, &cont, sess))
+    if (!UtilUIParseNick (&args, &cont, NULL, sess))
     {
         M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
@@ -2139,10 +2139,10 @@ static JUMP_F(CmdUserTabs)
  */
 static JUMP_F(CmdUserLast)
 {
-    Contact *cont = NULL;
+    Contact *cont = NULL, *contr = NULL;
     SESSION;
 
-    if (!UtilUIParseNick (&args, &cont, sess))
+    if (!UtilUIParseNick (&args, &cont, &contr, sess))
     {
         M_print (i18n (1682, "You have received messages from:\n"));
         for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
@@ -2152,10 +2152,10 @@ static JUMP_F(CmdUserLast)
     }
     else
     {
-        if (cont->last_message)
+        if (contr->last_message)
         {
             M_print (i18n (2106, "Last message from %s%s%s at %s:\n"),
-                     COLCONTACT, cont->nick, COLNONE, UtilUITime (&cont->last_time));
+                     COLCONTACT, cont->nick, COLNONE, UtilUITime (&contr->last_time));
             M_print (COLMESSAGE "%s" COLNONE "\n", cont->last_message);
         }
         else

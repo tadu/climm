@@ -11,7 +11,7 @@ int    M_pos ();
 BOOL   Debug (UDWORD level, const char *str, ...);
 
 BOOL   UtilUIParse          (char **input, char **parsed);
-BOOL   UtilUIParseNick      (char **input, Contact **parsed, Session *serv);
+BOOL   UtilUIParseNick      (char **input, Contact **parsed, Contact **parsedr, Session *serv);
 BOOL   UtilUIParseInt       (char **input, UDWORD *parsed);
 BOOL   UtilUIParseRemainder (char **input, char **parsed);
 /* ... */
