@@ -157,29 +157,30 @@ to socks 5 proxy.
 A few book-keeping options are usually placed at the beginning of
 the micqrc file:
 .TP
-.BI encoding\ file\  encoding
-Set the encoding which is used for strings in this files to
+.BI encoding \ file\ encoding
+Specify the encoding which is used for strings in this file as
 .IR encoding .
-If utf8 is enabled, will be set to utf8, otherwise to the current
-locale. If utf8 is disabled, mICQ will refuse to load the file
-if the locale given in this option does not agree with the
-current one.
+mICQ will write this file in utf8 it utf8 is enabled, otherwise in the
+current local encoding. If utf8 is disabled, mICQ will refuse to load the
+file if the encoding given in this option does not agree with the current
+local one.
 .TP
-.BI encoding\ local\ encoding
-Set the encoding the user currently uses to
+.BI encoding \ local\ encoding
+Specify the user's terminal's encoding as
 .IR encoding .
 This overrides the encoding derived from environment variables.
 .TP
-.BI encoding\ remote\ encoding
+.BI encoding \ remote\ encoding
 Set the encoding to use for meta data on the server,
-including the password to
+including the password, to
 .RI encoding .
 This encoding is also used for communicating with other contacts
 whose client doesn't understand utf8 messages unless a specific
 encoding is set for this contact.
-.BI format nr
+.TP
+.BI format \ nr
 Set the format this config file is to
-.RI nr .
+.IR nr .
 Currently, only format 1 is known and accepted.
 .PP
 Now the other options:
