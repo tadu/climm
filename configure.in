@@ -51,12 +51,12 @@ dnl AC_FUNC_MALLOC
 AC_TYPE_SIGNAL
 dnl AC_FUNC_STAT
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([atexit gethostbyname memset mkdir select socket strcasecmp \
+AC_CHECK_FUNCS([atexit gethostbyname memmove memset mkdir select socket strcasecmp \
                 strchr strdup strncasecmp strpbrk strrchr strstr strtol \
                 symlink chmod tcgetattr hstrerror])
 
 # vprintf stat malloc \
-for f in gethostbyname memset mkdir select socket atexit \
+for f in gethostbyname memset memmove mkdir select socket atexit \
          strcasecmp strchr strdup strncasecmp strpbrk strrchr strstr strtol; do
     if eval test "x\$ac_cv_func_$f" != "xyes"; then
         AC_MSG_ERROR([Required function $f is missing. Sorry.])

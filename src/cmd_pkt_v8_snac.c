@@ -28,7 +28,7 @@ typedef struct { UWORD fam; UWORD cmd; const char *name; jump_snac_f *f; } SNAC;
 
 static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd, SnacSrvRates,
     SnacSrvReplyicbm, SnacSrvReplybuddy, SnacSrvReplybos, SnacSrvReplyinfo, SnacSrvReplylocation,
-    SnacSrvUseronline, SnacSrvUseroffline, SnacSrvRecvmsg, SnacSrvUnknown;
+    SnacSrvUseronline, SnacSrvUseroffline, SnacSrvRecvmsg, SnacSrvUnknown, SnacSrvFromoldicq;
 
 static SNAC SNACv[] = {
     {  1,  3, NULL, NULL},
@@ -64,6 +64,7 @@ static SNAC SNACS[] = {
     { 19, 14, "SRV_UPDATEACK",       SnacSrvUnknown},
     { 19, 15, "SRV_REPLYROSTEROK",   SnacSrvUnknown},
     { 19, 28, "SRV_ADDEDYOU",        SnacSrvUnknown},
+    { 21,  3, "SRV_FROMOLDICQ",      SnacSrvFromoldicq},
     {  1,  2, "CLI_READY",           NULL},
     {  1,  6, "CLI_RATESREQUEST",    NULL},
     {  1,  8, "CLI_ACKRATES",        NULL},
@@ -457,7 +458,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
                 M_print (" " CYAN BOLD "%10s" COLNONE " ",
                          ContactFindName (uin));
                 Do_Msg (event->sess, NORM_MESS, len - 4, text + 4, uin, 0);
-                free (text);
+                free ((char *)text);
             }
             /* TLV 1, 2(!), 3, 4, f ignored */
             if (prG->sound & SFLAG_CMD)
@@ -480,10 +481,75 @@ JUMP_SNAC_F(SnacSrvReplybos)
     SnacCliSetuserinfo (event->sess);
     SnacCliSetstatus (event->sess, event->sess->spref->status);
     SnacCliReady (event->sess);
+    SnacCliReqOfflineMsgs (event->sess);
 /*    SnacCliReqroster (event->sess); */
     SnacCliSendcontactlist (event->sess);
 
     event->sess->connect = CONNECT_OK | CONNECT_SELECT_R;
+}
+
+/*
+ * SRV_FROMOLDICQ - SNAC(15,3)
+ */
+JUMP_SNAC_F(SnacSrvFromoldicq)
+{
+    TLV *tlv;
+    Packet *p, *pak;
+    const char *text;
+    UDWORD len, uin, type, id;
+    
+    pak = event->pak;
+    tlv = TLVRead (pak);
+    if (tlv[1].len < 10)
+    {
+        SnacSrvUnknown (event);
+        return;
+    }
+    p = TLVPak (tlv + 1);
+    len = PacketRead2 (p);
+    uin = PacketRead4 (p);
+    type= PacketRead2 (p);
+    id  = PacketRead2 (p);
+    if (prG->verbose && uin != event->sess->uin)
+    {
+        M_print (i18n (733, "UIN mismatch: %d vs %d.\n"), event->sess->uin, uin);
+        SnacSrvUnknown (event);
+        return;
+    }
+    if (prG->verbose && len != tlv[1].len - 2)
+    {
+        M_print (i18n (743, "Size mismatch in packet lengths.\n"));
+        SnacSrvUnknown (event);
+        return;
+    }
+    switch (type)
+    {
+        case 0x41:
+        {
+            UDWORD year, mon, mday, hour, min, flags;
+            if (len < 14)
+                break;
+            uin  = PacketRead4 (p);
+            year = PacketRead2 (p);
+            mon  = PacketRead1 (p);
+            mday = PacketRead1 (p);
+            hour = PacketRead1 (p);
+            min  = PacketRead1 (p);
+            flags= PacketRead2 (p);
+            text = PacketReadStrN (p);
+
+            M_print ("%04d-%02d-%02d %2d:%02d:%02d", year, mon, mday, hour, min, 0);
+            M_print (" " CYAN BOLD "%10s" COLNONE " ",
+                     ContactFindName (uin));
+            Do_Msg (event->sess, flags, strlen (text), text, uin, 0);
+            return;
+        }
+        case 0x42:
+            SnacCliAckOfflineMsgs (event->sess);
+            return;
+        default:
+    }
+    SnacSrvUnknown (event);
 }
 
 /*************************************/
@@ -738,3 +804,31 @@ void SnacCliReqroster (Session *sess)
     SnacSend (sess, pak);
 }
 
+/*
+ * CLI_REQOFFLINEMSGS - SNAC(15,2) - 60
+ */
+void SnacCliReqOfflineMsgs (Session *sess)
+{
+    Packet *pak;
+    pak = SnacC (sess, 21, 2, 0, 0);
+    PacketWriteB2 (pak, 1);  /* TLV(1) */
+    PacketWriteB2 (pak, 10);
+    PacketWrite2  (pak, 8);
+    PacketWrite4  (pak, sess->uin);
+    PacketWrite2  (pak, 0x3c);
+    PacketWrite2  (pak, 2);
+    SnacSend (sess, pak);
+}
+
+void SnacCliAckOfflineMsgs (Session *sess)
+{
+    Packet *pak;
+    pak = SnacC (sess, 21, 2, 0, 0);
+    PacketWriteB2 (pak, 1);  /* TLV(1) */
+    PacketWriteB2 (pak, 10);
+    PacketWrite2  (pak, 8);
+    PacketWrite4  (pak, sess->uin);
+    PacketWrite2  (pak, 0x3e);
+    PacketWrite2  (pak, 2);
+    SnacSend (sess, pak);
+}

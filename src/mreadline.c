@@ -135,21 +135,20 @@ void R_goto (int pos)
         printf (ESC "[A");
         cpos -= scr;
     }
-    while (cpos < 0)
+    if (cpos < 0)
     {
-        printf (ESC "[C");
-        cpos++;
+        printf (ESC "[%dC", -cpos);
+        cpos = 0;
     }
-#endif
+    if (pos < cpos)
+        printf (ESC "[%dD", cpos - pos);
+#else
     while (pos < cpos)
     {
-#ifdef ANSI_COLOR
-        printf (ESC "[D");
-#else
         printf ("\b");
-#endif
         cpos--;
     }
+#endif
     if (cpos < pos)
         printf ("%.*s", pos - cpos, s + cpos);
     cpos = pos;
@@ -172,7 +171,7 @@ void R_process_input_backspace (void)
 
     clen--;
     R_goto (cpos - 1);
-    strcpy (s + cpos, s + cpos + 1);
+    memmove (s + cpos, s + cpos + 1, clen - cpos + 1);
     R_rlap (s + cpos);
 }
 
@@ -182,7 +181,7 @@ void R_process_input_delete (void)
         return;
 
     clen--;
-    strcpy (s + cpos, s + cpos + 1);
+    memmove (s + cpos, s + cpos + 1, clen - cpos + 1);
     R_rlap (s + cpos);
 }
 
@@ -310,8 +309,7 @@ int R_process_input (void)
         }
         else if (clen + 1 < HISTORY_LINE_LEN)
         {
-            strcpy (s1, s + cpos);
-            strcpy (s + cpos + 1, s1);
+            memmove (s + cpos, s + cpos + 1, clen - cpos + 1);
             s[cpos++] = ch;
             clen++;
             s[clen] = 0;

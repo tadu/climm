@@ -730,6 +730,7 @@
 730:The Occupied message is:
 731:The Invisible message is:
 732:listener
+733:UIN mismatch: %d vs %d.¶
 734:Sorry wrong syntax, can't find a status somewhere.\r¶
 735:Must give a message.¶
 736:Sorry wrong syntax. Read tha help man!¶
@@ -739,6 +740,7 @@
 740:Composing message to ©2%d©0:¶
 741:Must receive a message first¶
 742:Must write one message first¶
+743:Size mismatch in packet lengths.¶
 756:¶Creating Connection...¶
 757:Couldn't establish connection.¶
 758:Sending Request...¶

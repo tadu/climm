@@ -18,6 +18,8 @@ void SnacCliSeticbm      (Session *sess);
 void SnacCliSendcontactlist (Session *sess);
 void SnacCliReqroster    (Session *sess);
 void SnacCliSendmsg      (Session *sess, UDWORD uin, char *text, UDWORD type);
+void SnacCliReqOfflineMsgs (Session *sess);
+void SnacCliAckOfflineMsgs (Session *sess);
 /*void  (Session *sess);
 void  (Session *sess);
 void  (Session *sess);

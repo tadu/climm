@@ -8,6 +8,8 @@
 	* use ESC [J instead of ESC [K (Peter Backes)
 	* remove surplus brackets as requested by Peter Backes
 	* get window size from stdin terminal, not stdout
+	* no overlapping strcpy (Peter Backes)
+	* implement request/receive/ack offline messages
 
 2002-04-16 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* mention GPL-2 in COPYING
