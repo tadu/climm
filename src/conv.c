@@ -429,7 +429,7 @@ strc_t ConvFromSplit (strc_t text, UBYTE enc)
     return &str;
 }
 
-strc_t ConvTo (const char *ctext, UBYTE enc)
+strc_t ConvToLen (const char *ctext, UBYTE enc, size_t len)
 {
     str_s text;
     enc &= ~ENC_FAUTO;
@@ -438,11 +438,16 @@ strc_t ConvTo (const char *ctext, UBYTE enc)
         iconv_check (enc);
 #endif
     text.txt = (char *)ctext;
-    text.len = ctext ? strlen (ctext) : 0;
+    text.len = len;
     text.max = 0;
     if ((enc >= conv_nr) || (!conv_encs[enc].fto))
         enc = ENC_ASCII;
     return conv_encs[enc].fto (&text, enc);
+}
+
+strc_t ConvTo (const char *ctext, UBYTE enc)
+{
+    return ConvToLen (ctext, enc, ctext ? strlen (ctext) : 0);
 }
 
 /*

@@ -494,22 +494,24 @@ strc_t s_split (const char **input, UBYTE enc, int len)
 {
     static str_s str = { NULL, 0, 0 };
     str_s in = { NULL, 0, 0 };
-    int off, offold, offnl, offin, offmax;
+    strc_t tr;
+    int off, offt, offold, offnl, offin, offmax;
     UDWORD ucs;
     
     in.txt = (char *) *input;
     in.len = strlen (*input);
-    off = offnl = offin = offmax = 0;
+    off = offt = offnl = offin = offmax = 0;
     
     while (in.txt[off])
     {
         offold = off;
         ucs = ConvGetUTF8 (&in, &off);
+        tr = ConvToLen (in.txt + offold, enc, off - offold);
         if (ucs == '\r')
             offnl = offold;
-        if (isspace (ucs & 0xff))
+        if (!(ucs & ~0xff) && isspace (ucs & 0xff))
             offin = offold;
-        if ((off - offold) > len)
+        if (tr->len > len)
         {
             off = offold;
             break;
@@ -518,7 +520,7 @@ strc_t s_split (const char **input, UBYTE enc, int len)
             offnl = off;
         if (!iswalnum (ucs))
             offin = off;
-        len -= (off - offold);
+        len -= tr->len;
         if (!in.txt[off])
             offmax = off;
     }

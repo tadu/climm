@@ -32,6 +32,7 @@ const char *ConvTranslit (const char *orig, const char *trans);
 strc_t      ConvFrom       (strc_t in, UBYTE enc);
 strc_t      ConvFromSplit  (strc_t in, UBYTE enc);
 strc_t      ConvTo         (const char *in, UBYTE enc);
+strc_t      ConvToLen      (const char *in, UBYTE enc, size_t len);
 
 #define CHAR_NOT_AVAILABLE '?'
 #define CHAR_INCOMPLETE    '_'
