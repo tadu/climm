@@ -27,7 +27,7 @@
 1028:NO
 1029:Please enter YES or NO!
 1030:logged off.
-1032:debug: Doppeltes Packet #%04x vom Typ %04x (%s)\n
+1032:debug: Doppeltes Packet #%04lx vom Typ %04x (%s)\n
 1033:Incoming v8 server packet:
 1034:Maximum number of tries reached. Giving up.
 1036:Unknown command %s, type /help for help.
@@ -42,12 +42,12 @@
 1045:Search Done.
 1046:Length
 1047:Extra Data
-1048:Error code: %d\n
+1048:Error code: %ld\n
 1050:Login successful!
 1053:Connected to %s, waiting for response\n
 1055:Socket creation failed
 1056:Socket created, attempting to connect.\n
-1060:Verbosity level is %d.\n
+1060:Verbosity level is %ld.\n
 1061:'%s' not recognized as a nick name.\n
 1062:Users ignored:
 1063:Enter password:
@@ -58,7 +58,7 @@
 1078:No translation available.
 1079:Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n
 1080:Couldn't load "%s" internationalization.\n
-1081:Successfully loaded en translation (%d entries).\n
+1081:Successfully loaded en translation (%ld entries).\n
 1082:Trying to reconnect... [try %d out of %d]\n
 1083:Sound cmd
 1084:Sound
@@ -524,7 +524,7 @@
 1603:Enter position: 
 1604:Should the users be online?
 1605:Do you want your status to be available on the web? (YES/NO)
-1606:Got a bad session ID %08x (correct: %08x) with cmd %04x ignored.\n
+1606:Got a bad session ID %08lx (correct: %08lx) with cmd %04x ignored.\n
 1607:Usage: micq [-h] [-v[level]] [-f <rc-file>] [-l <logfile>]\n
 1612:This program was made without any help from Mirabilis or their consent.\n
 1613:No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n
@@ -547,9 +547,9 @@
 1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
 1645:You entered an incorrect password.\n
 1646:Server is busy.\n
-1648:The response was %04X	
-1649:The version was %X	
-1650:\nThe SEQ was %04X	
+1648:The response was %04x	
+1649:The version was %x	
+1650:\nThe SEQ was %04lx	
 1651:The size was %d\n
 1653:Offline
 1654:Online
@@ -565,7 +565,7 @@
 1670:Normal visible to %s now.\n
 1671:Always visible to %s now.\n
 1672:%s's IP address is 
-1673:The port is %d.\n
+1673:The port is %ld.\n
 1674:The port is unknown.\n
 1675:Ignored line:
 1676:Need uin/nick to send to.\n
@@ -623,19 +623,19 @@
 1759:Waiting for response....\n
 1760:\nYour new UIN is %s%ld%s!\n
 1761:unknown
-1762:Your new UIN is: %d.\n
+1762:Your new UIN is: %ld.\n
 1763:The command '%s' has been renamed to '%s'.
 1764:The command '%s' is unchanged.
-1765:%s has UIN %d.
-1766:Changing status to away resp. not available after idling %s%d%s seconds.\n
+1765:%s has UIN %ld.
+1766:Changing status to away resp. not available after idling %s%ld%s seconds.\n
 1767:Toggles auto cycling to away/not available.
 1768:The command name '%s' is already being used.\n
 1770:Resend your last message to <uin> or <nick>.
 1771:You haven't sent a message to anyone yet!\n
 1774:Incoming packet:
 1775:Outgoing packet:
-1777:Opening peer-to-peer connection at localhost:%d... 
-1781:Your password for UIN %d:\n
+1777:Opening peer-to-peer connection at localhost:%ld... 
+1781:Your password for UIN %ld:\n
 1782:You need a password for your new UIN.\n
 1783:To prevent typos, please enter your password again.\n
 1784:If you are firewalled, you may need to use a SOCKS5 server. If you do, please enter its hostname or IP address. Otherwise, or if unsure, just press return.\n
@@ -674,8 +674,8 @@
 1822:    color: use colored text output.\n
 1823:Incoming partial packet:
 1825:Discarded a %04x (%s) packet
-1826:Resending message %04x (%s) sequence %04x (attempt #%d, len %d).\n
-1830:Discarding message to %s after %d send attempts.  Message content:\n
+1826:Resending message %04x (%s) sequence %04lx (attempt #%ld, len %d).\n
+1830:Discarding message to %s after %ld send attempts.  Message content:\n
 1833:Peer to peer TCP connection established.\n
 1835:Error while writing to socket - %s (%d)\n
 1841:Received malformed initialization acknowledgement packet.\n
@@ -687,9 +687,9 @@
 1847:peer open  <nick> - Opens direct connection.\n
 1848:peer close <nick> - Closes/resets direct connection(s).\n
 1849:Error on select: %s (%d)\n
-1850:Timeout on connection with %s at %s:%d\n
-1855:TCP connection to %s at %s:%d failed.\n
-1856:Discarded a %04x (%s) packet from old session %08x (current: %08x).\n
+1850:Timeout on connection with %s at %s:%ld\n
+1855:TCP connection to %s at %s:%ld failed.\n
+1856:Discarded a %04x (%s) packet from old session %08lx (current: %08lx).\n
 1857:Do you want to hide your IP from other contacts? (YES/NO)
 1864:Can't open rcfile %s.
 1866:This version of mICQ is compiled without direct connection (peer to peer) support.\n
@@ -697,7 +697,7 @@
 1868:Got a malformed (to long subpacket) multi-packet - remainder ignored.\n
 1869:Protocoll versions less than 5 are not supported anymore.\n
 1870:peer off   <nick> - Closes direct connection(s) and don't try it again.\n
-1871:Opening v8 connection to %s:%d... 
+1871:Opening v8 connection to %s:%ld... 
 1872:failed: %s (%d)\n
 1873:Work City:
 1874:Work State:
@@ -710,28 +710,28 @@
 1881:FLAP channel 1 out of data.\n
 1882:FLAP channel 1 cmd 1 extra data:\n
 1883:FLAP channel 1 unknown command %d.\n
-1884:FLAP with unknown channel %d received.\n
+1884:FLAP with unknown channel %ld received.\n
 1885:Connection v8 timed out.\n
 1887:Connections:
 1888:not webaware
 1889:server
 1890:peer-to-peer
-1891:Connection %d is already open.\n
+1891:Connection %ld is already open.\n
 1892:conn               List available connections.\n
 1893:conn login <nr>    Open connection <nr>.\n
-1894:There is no connection number %d.\n
+1894:There is no connection number %ld.\n
 1895:Login failed:\n
 1896:Server closed connection:\n
-1897:Incomplete TLV %d, len %d of %d - ignoring.\n
+1897:Incomplete TLV %d, len %ld of %d - ignoring.\n
 1898:Redirect to server %s... 
 1899:Unknown family requested: %d\n
 1900:It's readonly.
 1901:has authorized you to add them to your contact list.\n
-1902:Opening v5 connection to %s:%d... 
+1902:Opening v5 connection to %s:%ld... 
 1903:Outgoing v8 server packet:
 1904:Server doesn't understand ver %d (only %d) for family %d!\n
-1905:SNAC (%x,%x) [%s] flags %x ref %x\n
-1907:Warning: Server thinks our UIN is %d, while it is %d.\n
+1905:SNAC (%x,%x) [%s] flags %x ref %lx\n
+1907:Warning: Server thinks our UIN is %ld, while it is %ld.\n
 1908:Received USERONLINE packet for non-contact.\n
 1909:Received USEROFFLINE packet for non-contact.\n
 1911:connecting
@@ -739,7 +739,7 @@
 1914:Can't allocate connection structure.\n
 1915:Server says we're at %s.\n
 1918:Ignored server request for a minimum report interval of %d.\n
-1919:UIN mismatch: %d vs %d.\n
+1919:UIN mismatch: %ld vs %ld.\n
 1920:Registration of new UIN refused.\n
 1921:Online
 1922:Do not disturb
@@ -751,12 +751,12 @@
 1929:User is dnd [Auto-Message]
 1931:Current session is closed. Try another or open this one.\n
 1934:connected
-1935:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x\n
+1935:    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n
 1936:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
 1937:Enter max age (22,29,39,49,59,120):
 1938:Enter sex:
 1939:Enter a city:
-1940:Unknown Meta User result %x.\n
+1940:Unknown Meta User result %lx.\n
 1942:Additional Email addresses:
 1943:(no authorization needed)
 1944:(must request authorization)
@@ -765,7 +765,7 @@
 1948:Can't find hostname %s: %s.
 1949:failed:\n
 1950:Couldn't set socket nonblocking
-1951:Can't find hostname %s
+1951:Can't find hostname %s: %s (%d).
 1952:Couldn't open connection
 1953:couldn't bind socket to free port
 1954:unable to listen on socket
@@ -773,7 +773,7 @@
 1958:[SOCKS] Connection request refused (%d)
 1960:Enter data to search user for. Enter '.' to start the search.\n
 1961:URL: %s\n
-1966: Conection Refused on port %d at %s\n
+1966: Connection refused on port %ld at %s\n
 1967:More Info for
 1968:User found:\n
 1969:offline
@@ -815,7 +815,7 @@
 2005:Household products
 2006:Mail order catalog
 2007:Business services
-2009:Found random chat partner UIN %d in chat group %d.\n
+2009:Found random chat partner UIN %ld in chat group %d.\n
 2011:You do not have a listening peer-to-peer connection.\n
 2012:No password given.\n
 2013:This command is v8 only.\n
@@ -833,7 +833,7 @@
 2031:Connecting failed too often, giving up.\n
 2032:Scheduling v8 reconnect in %d seconds.\n
 2033:born today
-2034:Opening TCP connection at %s:%d... 
+2034:Opening TCP connection at %s:%ld... 
 2035:Show uptime and some statistics.
 2036:Save current preferences to disc.
 2037:Open or close a peer-to-peer connection, or disable using peer-to-peer connections for <uin> or <nick>.
@@ -862,18 +862,18 @@
 2065:Unknown TCP_MSG_GREET_ command %04x.\n
 2066:Unknown TCP_MSG_ command %04x.\n
 2067:file io
-2068:Opening file transfer connection at %s:%d... \n
-2070:File transfer '%s' to port %d.\n
+2068:Opening file transfer connection at %s:%ld... \n
+2070:File transfer '%s' to port %ld.\n
 2071:Couldn't stat file %s: %s (%d)\n
-2072:File transfer #%d (%s) dropped because of closed connection.\n
-2073:Memory usage: %d packets processing.\n
+2072:File transfer #%ld (%s) dropped because of closed connection.\n
+2073:Memory usage: %ld packets processing.\n
 2078:Outgoing TCP packet (%d - %s): %s
 2079:Incoming TCP packet (%d - %s): %s
 2080:The server says about the SMS delivery:\n%s\n
 2081:    at %p parent %p assoc %p\n
-2082:Opening file listener connection at localhost:%d... 
+2082:Opening file listener connection at localhost:%ld... 
 2083:Cannot open file %s: %s (%d).\n
-2084:Error while seeking to offset %d: %s (%d).\n
+2084:Error while seeking to offset %ld: %s (%ld).\n
 2086:Error while reading file %s: %s (%d).\n
 2087:Finished sending file %s.\n
 2088:Finished sending all %d files.\n
@@ -881,16 +881,16 @@
 2090:file peer-to-peer
 2091:Queueing %s as %s for transfer.\n
 2092:TCP message %s discarded - lost session.\n
-2093:%02d %-12s version %d for %s (%x), at %s:%d %s\n
+2093:%02d %-12s version %d for %s (%lx), at %s:%ld %s\n
 2094:conn login         Open first server connection.\n
 2095:conn remove <nr>   Remove connection <nr>.\n
-2096:Connection %d is not open.\n
+2096:Connection %ld is not open.\n
 2097:conn select <nr>   Select connection <nr> as server connection.\n
-2098:Connection %d is not a server connection.\n
-2099:Selected connection %d (version %d, UIN %d) as current connection.\n
+2098:Connection %ld is not a server connection.\n
+2099:Selected connection %ld (version %d, UIN %ld) as current connection.\n
 2100:conn select <uin>  Select connection with UIN <uin> as server connection.\n
-2101:Removing connection %d and its dependands completely.\n
-2102:Connection %d is a configured connection.\n
+2101:Removing connection %ld and its dependands completely.\n
+2102:Connection %ld is a configured connection.\n
 2103:contact show    Show server side contact list.\n
 2104:contact diff    Show server side contacts not on local contact list.\n
 2105:contact import  Add server side contact list to local contact list.\n
@@ -905,7 +905,7 @@
 2114:The command name '%s' does not exist.\n
 2115:'%s' is not an integer.\n
 2116:No new nick name given.\n
-2117:%d added as %s.\n
+2117:%ld added as %s.\n
 2118:Out of memory.\n
 2119:auth [grant] <nick>    - grant authorization.\n
 2120:auth deny <nick> <msg> - refuse authorization.\n
@@ -930,26 +930,26 @@
 2141:Search %sfailed%s.\n
 2142:Direct connection with %s not possible.\n
 2145:auth add  <nick>       - authorized add.\n
-2146:'%s' is already an alias for '%s' (%d).\n
-2147:'%s' (%d) is already used as a nick.\n
-2148:Added '%s' as an alias for '%s' (%d).\n
-2149:Removed alias '%s' for '%s' (%d).\n
-2150:Removed contact '%s' (%d).\n
+2146:'%s' is already an alias for '%s' (%ld).\n
+2147:'%s' (%ld) is already used as a nick.\n
+2148:Added '%s' as an alias for '%s' (%ld).\n
+2149:Removed alias '%s' for '%s' (%ld).\n
+2150:Removed contact '%s' (%ld).\n
 2156:conn close <nr>    Close connection <nr>.\n
 2157:Moldova
 2158:No file given.\n
 2159:Some files.
 2160:peer file  <nick> <file> [<description>]\n
-2161:Receiving %d files with together %d bytes at speed %x from %s.\n
-2162:Receiving file %s (%s) with %d bytes as %s.\n
-2163:Sending file %d at offset %d.\n
+2161:Receiving %ld files with together %ld bytes at speed %lx from %s.\n
+2162:Receiving file %s (%s) with %ld bytes as %s.\n
+2163:Sending file %ld at offset %ld.\n
 2164:Error writing to file.\n
-2165:The peer sent more bytes (%d) than file length (%d).\n
+2165:The peer sent more bytes (%ld) than file length (%ld).\n
 2166:Finished receiving file.\n
 2167:Error - unknown packet.\n
-2168:File transfer #%d (%s) dropped after %d attempts because of timeout.\n
+2168:File transfer #%ld (%s) dropped after %ld attempts because of timeout.\n
 2169:File transfer aborted by peer (%d).\n
-2170:Sending with speed %x to %s.\n
+2170:Sending with speed %lx to %s.\n
 2171:Advanced
 2172:Commands for advanced features.
 2173:Deny <uin> or <nick> to add you to their list.
@@ -964,19 +964,17 @@
 2182:Select server connection number <nr> as current server connection.
 2183:Check whether <uin> or <nick> is offline or invisible.
 2184:%s%-10s%s - %s\n
-2185:Closing connection %d.\n
-2186:Accepting file '%s' (%d bytes).\n
+2185:Closing connection %ld.\n
+2186:Accepting file '%s' (%ld bytes).\n
 2188:You're sending data too fast - stop typing now, or the server will disconnect!\n
-2189:Malformed instant message packet refused by server.\n
-2190:The contact's client does not support type-2 messages.\n
 2191:Instant message error: %d.\n
 2192:Capabilities: 
-2193:Directory %s does not exists.\n
+2193:Directory %s does not exist.\n
 2194:Don't know how to open this connection type.\n
 2195:Obsolete number:
 2196:Obsolete text:
 2197:Obsolete byte
-2198:Unsuitable password '%s' - may not start with ó.\n
+2198:Unsuitable password '%s' - may not start with byte 0xf3.\n
 2199:  -h, --help     gives this help text\n
 2200:  -v, --verbose  set (or increase) verbosity (mostly for debugging)\n
 2201:  -b, --basedir  use given BASE dir (default: %s)\n
@@ -997,23 +995,22 @@
 2216:This mICQ doesn't know the '%s' encoding.\n
 2217:This mICQ can't convert between '%s' and unicode.\n
 2218:UIN: %s\n
-2219:'empty' message with unknown 0x%08x = %d.\n
 2220:several
-2221:Removed temporary contact '%s' (%d).\n
+2221:Removed temporary contact '%s' (%ld).\n
 2222:Script command '%s' failed: %s (%d).\n
 2223:Opening remote control FIFO at %s... 
 2225:remote control
 2226:Couldn't create FIFO
 2227:Couldn't open FIFO
 2228:Couldn't set FIFO nonblocking
-2229:Refusing file request '%s' (%d bytes): %s.\n
+2229:Refusing file request '%s' (%ld bytes): %s.\n
 2230:Refusing chat request (%s/%s) from %s.\n
 2231:File transfer '%s' rejected by peer: %s.\n
 2232:requests authorization: %s%s\n
 2233:refused authorization: %s%s\n
 2234:Message %s discarded - lost session.\n
 2235:No nick name given.\n
-2236:Information for %s%s%s (%d):\n
+2236:Information for %s%s%s (%ld):\n
 2237:Webaware:
 2238:Hide IP:
 2239:Unknown more:
