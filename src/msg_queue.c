@@ -135,7 +135,8 @@ void Check_Queue (UDWORD seq)
             if (Verbose)
             {
                 R_undraw ();
-                M_print (i18n (620, "\nRemoved message with SEQ %04X CMD "), queued_msg->seq >> 16);
+                M_print ("\n");
+                M_print (i18n (620, "Removed message with SEQ %04X CMD "), queued_msg->seq >> 16);
                 Print_CMD (Chars_2_Word (&queued_msg->body[CMD_OFFSET]));
                 M_print (i18n (621, " from resend queue because of ack.\n"));
                 R_redraw ();

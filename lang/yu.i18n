@@ -27,7 +27,9 @@
 026:Dec
 027:DA
 028:NE
-029:Molim Vas unesite " YES_STR " or " NO_STR "¶
+#-#029:Molim Vas unesite " YES_STR " or " NO_STR "¶
+#29:
+#029:Please enter YES or NO!
 030: logged off.
 031: logged on.
 032: - Instant Message
@@ -60,8 +62,12 @@
 059:The port that will be used for tcp ( not yet implemented ) is %d¶
 060:Nivo detaljnosti ispisa je %d.¶
 061:%s nije prepoznato kao nadimak
-062:Users ignored: 
-063:Enter password : 
+#-#062:Users ignored: 
+#62:
+#-#063:Enter password : 
+#63:
+#062:Users ignored:
+#063:Enter password:
 064:¶Auto-Changed status to 
 065:Using intel byte ordering.
 066:Using motorola byte ordering.
@@ -70,8 +76,12 @@
 069: Poslednji put na vezi %s
 070: Poslednji put na vezi - nepoznato.
 071:Va$ status je 
-072:Korisnici koji nisu na vezi: 
-073:Korisnici koji su na vezi: 
+#-#072:Korisnici koji nisu na vezi: 
+#72:
+#-#073:Korisnici koji su na vezi: 
+#73:
+#072:Users offline:
+#073:Users online:
 #074:Micq (Matt's ICQ clone)
 #075:version
 #076:compiled on
@@ -86,16 +96,15 @@
 #085:on
 #086:off
 #087:Ignoring garbage after number.
-#088:Enter UIN or 0 for new UIN: #
+#088:Enter UIN or 0 for new UIN:
 #089:Unloaded translation.
-#090:Enter password : 
-#091:¶Must enter password!¶
-#092:¶Reenter password to verify: 
-#093:¶Passwords did not match reenter¶
-#094:¶SOCKS5 server hostname or IP (type 0 if you don't want to use this) : 
-#095:SOCKS5 port (in general 1080) : 
-#096:SOCKS5 username (type 0 if you don't need authentification) : 
-#097:SOCKS5 password : 
+#091:Must enter password!
+#092:Reenter password to verify:
+#093:Passwords did not match - please reenter.
+#094:SOCKS5 server hostname or IP (type 0 if you don't want to use this):
+#095:SOCKS5 port (in general 1080):
+#096:SOCKS5 username (type 0 if you don't need authentification):
+#097:SOCKS5 password:
 #098:©4"No_Log" is deprecated.¶Use "LogType 0" Instead.¶©0
 #099:Unknown language.
 100:None
@@ -186,7 +195,7 @@
 #185:Technical
 #186:University Student
 #187:Web Building
-#188:©1Unrecognized command in rc file : %s, ignored.©0¶
+#188:©1Unrecognized command in rc file '%s', ignored.©0¶
 #189:UIN = %ld¶
 #190:port = %ld¶
 #191:passwd = %s¶
@@ -195,7 +204,7 @@
 #194:# of contacts = %d¶
 #195:UIN of contact[0] = %ld¶
 #196:Message_cmd = %s¶
-#197:Password Change was ©2%s©0.¶
+#197:Password change was ©2%s©0.¶
 #198:Other Services
 #199:Unknown country
 200:Nije uneto
@@ -393,9 +402,9 @@
 392:Zimbabve
 #393:successful
 #394:unsuccessful
-#395:About info Change was ©2%s©0.¶
-#396:Info Change was ©2%s©0.¶
-#397:Other Info Change was ©2%s©0.¶
+#395:About info change was ©2%s©0.¶
+#396:Info change was ©2%s©0.¶
+#397:Other info change was ©2%s©0.¶
 #398:Search ©2failed©0.¶
 #399:Unknown Meta User response ©1%04X©0¶
 400:		Shows locally stored info on user¶
@@ -438,8 +447,8 @@
 437:		Oznacava kao Invisible (Nevidljiv).¶
 438:		Koriguje Va$e osnovne informacije (e-mail, nadimak, itd.)¶
 439:		Postavlja Va$u slucajnu korisnicku grupu.¶
-#440:Random User :	%d¶
-#441:IP             :	%d.%d.%d.%d : 
+#440:Random User:
+#441:IP:
 442:Molim Vas izaberite jedno od podrucja za pomoc ispod.
 443:Komande vezane za micq prikaz i konfigurisanje.
 444:Komande vezane za pronalazenje korisnika.
@@ -449,147 +458,193 @@
 448:Poruka
 449:Korisnik
 450:Nalog
-#451:IP2            :	%d.%d.%d.%d¶
-#452:Status        :	
-#453:¶TCP version :	%d	
-#454:Connection  :	%s
-#455:Art               
-#456:Cars              
-#457:Celebrity Fans    
-#458:Collections       
-#459:Computers         
-#460:Culture & Literature 
-#461:Fitness           
-#462:Games             
-#463:Hobbies           
-#464:ICQ - Providing Help 
-#465:Internet          
-#466:Lifestyle         
-#467:Movies/TV         
-#468:Music             
+#-#500:Nickname     : 
+#-#501:Name         : 
+#-#502:Email        : 
+#-#503:Other Email  : 
+#-#504:Old Email    : 
+#-#505:Location     : 
+#-#506:Phone        : 
+#-#507:Fax          : 
+#-#508:Street       : 
+#-#509:Cellular     : 
+#-#510:Zip          : 
+#-#511:Country      : 
+#-#512:Country Code : 
+#-#513:Work Country Code : 
+#-#514:Work Country : 
+#-#515:Work Homepage: 
+#-#516:Occupation   : 
+#-#517:Job Position : 
+#-#518:Department   : 
+#-#519:Company Name : 
+#-#520:Work Zip     : 
+#-#521:Work Fax     : 
+#-#522:Work Address : 
+#-#523:Work Phone   : 
+#-#524:Work Location: 
+#-#525:About : 
+#451:IP2:
+#452:Status:
+#453:TCP version:
+#454:Connection:
+#455:Art
+#456:Cars
+#457:Celebrity Fans
+#458:Collections
+#459:Computers
+#460:Culture & Literature
+#461:Fitness
+#462:Games
+#463:Hobbies
+#464:ICQ - Providing Help
+#465:Internet
+#466:Lifestyle
+#467:Movies/TV
+#468:Music
 #469:Outdoor Activities
-#470:Parenting         
-#471:Pets/Animals      
-#472:Religion          
+#470:Parenting
+#471:Pets/Animals
+#472:Religion
 #473:Science/Technology
-#474:Skills            
-#475:Sports            
-#476:Web Design        
+#474:Skills
+#475:Sports
+#476:Web Design
 #477:Nature and Environment
-#478:News & Media      
-#479:Government        
+#478:News & Media
+#479:Government
 #480:Business & Economy
-#481:Mystics           
-#482:Travel            
-#483:Astronomy         
-#484:Space             
-#485:Clothing          
-#486:Parties           
-#487:Women             
-#488:Social science    
-#489:60's              
-#490:70's              
-#491:80's              
-#492:50's              
+#481:Mystics
+#482:Travel
+#483:Astronomy
+#484:Space
+#485:Clothing
+#486:Parties
+#487:Women
+#488:Social science
+#489:60's
+#490:70's
+#491:80's
+#492:50's
 #493:Peer-to-Peer
 #494:Server Only
 #495:No Random User Found
 #496::\a¶Date %d/%d/%d	%d:%02d UTC¶
-#497:Type : %d 	 Len : %d¶
-#498:¶The IP address is %u.%u.%u.%u¶
-#499:Other             
-500:Nickname     : 
-501:Name         : 
-502:Email        : 
-503:Other Email  : 
-504:Old Email    : 
-505:Location     : 
-506:Phone        : 
-507:Fax          : 
-508:Street       : 
-509:Cellular     : 
-510:Zip          : 
-511:Country      : 
-512:Country Code : 
-513:Work Country Code : 
-514:Work Country : 
-515:Work Homepage: 
-516:Occupation   : 
-517:Job Position : 
-518:Department   : 
-519:Company Name : 
-520:Work Zip     : 
-521:Work Fax     : 
-522:Work Address : 
-523:Work Phone   : 
-524:Work Location: 
-525:About : 
+#497:Type: %d	 Len: %d¶
+#499:Other
+#500:Nickname:
+#501:Name:
+#502:Email:
+#503:Other Email:
+#504:Old Email:
+#505:Location:
+#506:Phone:
+#507:Fax:
+#508:Street:
+#509:Cellular:
+#510:Zip:
+#511:Country:
+#512:Country Code:
+#513:Work Country Code:
+#514:Work Country:
+#515:Work Homepage:
+#516:Occupation:
+#517:Job Position:
+#518:Department:
+#519:Company Name:
+#520:Work Zip:
+#521:Work Fax:
+#522:Work Address:
+#523:Work Phone:
+#524:Work Location:
+#525:About:
 526:Not Entered
-527:Age          : 
-528:Sex : Female
-529:Sex : Male
-530:Sex : Not Specified
-531:Homepage     : 
-532:Born         : 
-533:Languages    : 
-534:Enter a language by number or L for a list: 
-535:Enter new age: 
-536:Enter new sex: 
-537:Enter new homepage: 
-538:Enter new year of birth (4 digits): 
-539:Enter new month of birth: 
-540:Enter new day of birth: 
+#-#527:Age          : 
+#-#528:Sex : Female
+#-#529:Sex : Male
+#-#530:Sex : Not Specified
+#-#531:Homepage     : 
+#-#532:Born         : 
+#-#533:Languages    : 
+#-#534:Enter a language by number or L for a list: 
+#-#535:Enter new age: 
+#-#536:Enter new sex: 
+#-#537:Enter new homepage: 
+#-#538:Enter new year of birth (4 digits): 
+#-#539:Enter new month of birth: 
+#-#540:Enter new day of birth: 
+#527:Age:
+#528:female
+#529:male
+#530:not specified
+#531:Homepage:
+#532:Born:
+#533:Languages:
+#534:Enter a language by number or L for a list:
+#535:Enter new age:
+#536:Enter new sex:
+#537:Enter new homepage:
+#538:Enter new year of birth (4 digits):
+#539:Enter new month of birth:
+#540:Enter new day of birth:
 541:About> 
-542:Enter other email address: 
-543:Enter old email address: 
-544:Enter new city: 
-545:Enter new state: 
-546:Enter new phone number: 
-547:Enter new fax number: 
-548:Enter new street address: 
-549:Enter new cellular number: 
-550:Enter new zip code (must be numeric): 
-551:Enter your country's phone ID number: 
-552:Enter your time zone (+/- 0-12): 
-553:Unesite Va$ nadimak : 
-554:Unesite Va$e ime : 
-555:Unesite Va$e prezime : 
-556:Unesite va$ novi e-mail : 
-557:Da li zelite da korisnici zahtevaju od vas autorizaciju ? : 
-#558:The "real" IP address is %u.%u.%u.%u¶
-#559:Peer-to-Peer mode
-#560:Server Only Communication.
-#561:TCP ICQ version : %d¶
+#-#542:Enter other email address: 
+#-#543:Enter old email address: 
+#-#544:Enter new city: 
+#-#545:Enter new state: 
+#-#546:Enter new phone number: 
+#-#547:Enter new fax number: 
+#-#548:Enter new street address: 
+#-#549:Enter new cellular number: 
+#-#550:Enter new zip code (must be numeric): 
+#-#551:Enter your country's phone ID number: 
+#-#552:Enter your time zone (+/- 0-12): 
+#-#553:Unesite Va$ nadimak : 
+#-#554:Unesite Va$e ime : 
+#-#555:Unesite Va$e prezime : 
+#-#556:Unesite va$ novi e-mail : 
+#-#557:Da li zelite da korisnici zahtevaju od vas autorizaciju ? : 
+#542:Enter other email address:
+#543:Enter old email address:
+#544:Enter new city:
+#545:Enter new state:
+#546:Enter new phone number:
+#547:Enter new fax number:
+#548:Enter new street address:
+#549:Enter new cellular number:
+#550:Enter new zip code (must be numeric):
+#551:Enter your country's phone ID number:
+#552:Enter your time zone (+/- 0-12):
+#553:Enter Your New Nickname:
+#554:Enter your new first name:
+#555:Enter your new last name:
+#556:Enter your new email address:
+#557:Do you want to require Mirabilis users to request your authorization? (YES/NO)
 #562:©1Info for %ld¶
-#563:Nick Name :	%s¶
-#564:First name :	%s¶
-#565:Last name :	%s¶
-#566:Email Address :	%s¶
+#563:Nick Name:
+#564:First name:
+#565:Last name:
+#566:Email address:
 #567:No authorization needed.©0 
 #568:Must request authorization.©0 
 #569:©1More Info for %ld¶
-#570:City            :	%s¶
-#571:Country        :	%s¶
-#572:Country Code :	%d¶
-#573:Time Zone     :	GMT %+d¶
-#574:State          :	%s¶
-#575:Age             :	%d¶
-#576:Age             :	Not Entered¶
-#577:Sex             :	Male¶
-#578:Sex             :	Female¶
-#579:Sex             :	Not specified¶
-#580:Phone Number :	%s¶
-#581:Home Page     :	%s¶
-#582:About          :¶%s
+#570:City:
+#571:Country:
+#572:Country code:
+#573:Time Zone:
+#574:State:
+#575:Age:
+#576:not entered
+#577:Sex:
+#580:Phone number:
+#581:Home page:
+#582:About:
 #583:©1User found %ld¶
 #584:Warning! Script command '%s' failed with exit value %d¶
 #585:Ack!!!!!!!  Bad packet
 #586:©4¶%s©0 has added you to their contact list.¶
-#587:First name     : ©3%s©0¶
-#588:Last name      : ©3%s©0¶
-#589:Email address : ©3%s©0¶
 #590:©4¶%s©0 has requested your authorization to be added to their contact list.¶
-#591:Reason : ©3%s©0¶
+#591:Reason:
 #592:<%s> emailed you a message:¶
 #593:<%s> send you a web message:¶
 #594:        URL: %s©3%s©0¶
@@ -600,10 +655,10 @@
 #599:[SOCKS] Authentication method incorrect¶
 #600:[SOCKS] Authorization failure¶
 #601:[SOCKS] General SOCKS server failure¶
-#602:Cmd : %04X	
-#603:Ver : %04X	
-#604:Seq : %08X	
-#605:Ses : %08X¶
+#602:Cmd: %04X	
+#603:Ver: %04X	
+#604:Seq: %08X	
+#605:Ses: %08X¶
 #606:Got a bad session ID %08X with CMD %04X ignored.¶
 #607:Usage: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]¶
 #608:        -v   Turn on verbose Mode (useful for Debugging only)¶
@@ -618,16 +673,17 @@
 #617:Memory exhausted!!\a¶
 #618:¶Total entries %d¶
 #619:SEQ = %04x	CMD = %04x	attempts = %d	len = %d¶
-#620:¶Removed message with SEQ %04X CMD 
+#620:Removed message with SEQ %04X CMD 
 #621: from resend queue because of ack.¶
+#622:Do you want to apply these changes? (YES/NO)
 #623:¶Doubled packet %04X¶
-#624:¶Resending message with SEQ num %04x.	CMD 
+#624:Resending message with SEQ num %04X CMD 
 #625:(Attempt #%d.)
-#626:¶Discarding message to 
+#626:Discarding message to 
 #627: after %d send attempts.  Message content:¶
 #628: Description: ©3%s©0¶
-#629: URL        : ©3%s©0 
-#630:¶Discarded a 
+#629: URL:         ©3%s©0
+#630:Discarded a 
 #631: packet.
 #632:¶\aConnection unstable. Exiting....
 #633:ACK!!! %d¶
@@ -652,15 +708,14 @@
 #652:Insuffificient memory to display a wide Contact List.¶
 #653:Offline
 #654:Online
-#655:Enter the Users E-mail address : 
-#656:Enter the Users Nick : 
-#657:Enter The Users First Name : 
-#658:Enter The Users Last Name : 
+#655:Enter the Users E-mail address:
+#656:Enter the Users Nick:
+#657:Enter The Users First Name:
+#658:Enter The Users Last Name:
 #659:Message sent!¶
 #660:Invalid Command: %s¶
 #661:Shell commands have been disabled.¶
-#662:Color is ©3on©0.¶
-#663:Color is ©3off©0.¶
+#662:Color is ©3%s©0.¶
 #664:Composing message to ©1all©0:¶
 #665:%s not recognized as a nick name
 #666:Unignored %s!¶
@@ -684,21 +739,20 @@
 #684:%s is not a known Contact¶
 #685:Last message from ©4%s©0:¶
 #686:No messages received from ©4%s©0¶
-#687:Micq has been running for 
-#688:©3%02d ©0days, 
-#689:©3%02d ©0hours, 
-#690:©3%02d ©0minutes, 
-#691:©3%02d ©0seconds.¶
-#692:Contacts ©3%d©0 / %d¶
-#693:Packets Sent : ©3
-#694:%d©0	Packets Recieved : ©3%d©0	
-#695:Lag : ©3
-#697:Distinct Packets Sent : ©3
-#698:%d©0	Distinct Packets Recieved : ©3%d©0¶
+#687:Micq has been running for
+#688:days
+#689:hours
+#690:minutes
+#691:seconds
+#692:Contacts:
+#693:Packets sent:
+#694:Packets recieved:
+#695:Lag:
+#696:Sex:
+#697:Distinct packets sent:
+#698:Distinct packets recieved:
 #699:Must give a valid uin/nickname¶
 #700:%s is not a valid user in your list.¶
-#701:IP : %d.%d.%d.%d : %d¶
-#702:TCP Version : %d	%s¶
 #703:©2Status modes: ¶
 #704:©2Groups: ¶
 #705:General                    1¶
@@ -720,16 +774,12 @@
 #721:©2	Sending a blank message will put the client into multiline mode.¶	Use . on a line by itself to end message.¶
 #722:	Use # on a line by itself to cancel the message.©0¶
 #723:%s's IP address is 
-#724:Automatic replies are %s¶
-#725:On
-#726:Off
-#727:The Do not disturb message is: %s¶
-#728:The Away message is          : %s¶
-#729:The Not available message is : %s¶
-#730:The Occupied message is      : %s¶
-#731:The Invisible message is     : %s¶
-#732:Automatic replies are on.¶
-#733:Automatic replies are off.¶
+#724:Automatic replies are %s.¶
+#727:The Do not disturb message is:
+#728:The Away message is:
+#729:The Not available message is:
+#730:The Occupied message is:
+#731:The Invisible message is:
 #734:Sorry wrong syntax, can't find a status somewhere.\r¶
 #735:Must give a message.¶
 #736:Sorry wrong syntax. Read tha help man!¶

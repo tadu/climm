@@ -25,6 +25,7 @@ extern UDWORD last_uin;
 #define NEW_COUNTRY 923
 #define NEW_TIME_ZONE 924
 #define NEW_AUTH 925
+#define NEW_DONE 926
 #define MULTI_ABOUT 1000
 #define NEW_AGE 1001
 #define NEW_SEX 1002

@@ -291,15 +291,15 @@ void Info_Other_Update (SOK_T sok, char *buf)
     {
         case NEW_AGE:
             other.age = atoi (buf);
-            M_print (i18n (536, "Enter new sex: "));
+            M_print ("%s ", i18n (536, "Enter new sex:"));
             status = NEW_SEX;
             break;
         case NEW_SEX:
-            if ((buf[0] == 'f') || (buf[0] == 'F'))
+            if (!strncasecmp (buf, i18n (528, "female"), 1))
             {
                 other.sex = 1;
             }
-            else if ((buf[0] == 'm') || (buf[0] == 'M'))
+            else if (!strncasecmp (buf, i18n (529, "male"), 1))
             {
                 other.sex = 2;
             }
@@ -307,27 +307,27 @@ void Info_Other_Update (SOK_T sok, char *buf)
             {
                 other.sex = 0;
             }
-            M_print (i18n (537, "Enter new homepage: "));
+            M_print ("%s ", i18n (537, "Enter new homepage:"));
             status = NEW_HP;
             break;
         case NEW_HP:
             other.hp = strdup (buf);
-            M_print (i18n (538, "Enter new year of birth (4 digits): "));
+            M_print ("%s ", i18n (538, "Enter new year of birth (4 digits):"));
             status = NEW_YEAR;
             break;
         case NEW_YEAR:
             other.year = atoi (buf) - 1900;
-            M_print (i18n (539, "Enter new month of birth: "));
+            M_print ("%s ", i18n (539, "Enter new month of birth:"));
             status = NEW_MONTH;
             break;
         case NEW_MONTH:
             other.month = atoi (buf);
-            M_print (i18n (540, "Enter new day of birth: "));
+            M_print ("%s ", i18n (540, "Enter new day of birth:"));
             status = NEW_DAY;
             break;
         case NEW_DAY:
             other.day = atoi (buf);
-            M_print (i18n (534, "Enter a language by number or L for a list: "));
+            M_print ("%s ", i18n (534, "Enter a language by number or L for a list:"));
             status = NEW_LANG1;
             break;
         case NEW_LANG1:
@@ -342,7 +342,7 @@ void Info_Other_Update (SOK_T sok, char *buf)
                 other.lang1 = temp;
                 status = NEW_LANG2;
             }
-            M_print (i18n (534, "Enter a language by number or L for a list: "));
+            M_print ("%s ", i18n (534, "Enter a language by number or L for a list:"));
             break;
         case NEW_LANG2:
             temp = atoi (buf);
@@ -356,7 +356,7 @@ void Info_Other_Update (SOK_T sok, char *buf)
                 other.lang2 = temp;
                 status = NEW_LANG3;
             }
-            M_print (i18n (534, "Enter a language by number or L for a list: "));
+            M_print ("%s ", i18n (534, "Enter a language by number or L for a list:"));
             break;
         case NEW_LANG3:
             temp = atoi (buf);
@@ -364,7 +364,7 @@ void Info_Other_Update (SOK_T sok, char *buf)
             {
                 TablePrintLang ();
                 status = NEW_LANG3;
-                M_print (i18n (534, "Enter a language by number or L for a list: "));
+                M_print ("%s ", i18n (534, "Enter a language by number or L for a list:"));
             }
             else
             {
@@ -387,85 +387,102 @@ void Info_Update (SOK_T sok, char *buf)
     {
         case NEW_NICK:
             user.nick = strdup ((char *) buf);
-            M_print (i18n (554, "Enter Your New First Name : "));
+            M_print ("%s ", i18n (554, "Enter your new first name:"));
             status++;
             break;
         case NEW_FIRST:
             user.first = strdup ((char *) buf);
-            M_print (i18n (555, "Enter Your New Last Name : "));
+            M_print ("%s ", i18n (555, "Enter your new last name:"));
             status++;
             break;
         case NEW_LAST:
             user.last = strdup ((char *) buf);
-            M_print (i18n (556, "Enter Your New Email Address : "));
+            M_print ("%s ", i18n (556, "Enter your new email address:"));
             status++;
             break;
         case NEW_EMAIL:
             user.email = strdup ((char *) buf);
-            M_print (i18n (542, "Enter other email address: "));
+            M_print ("%s ", i18n (542, "Enter other email address:"));
             status++;
             break;
         case NEW_EMAIL2:
             user.email2 = strdup ((char *) buf);
-            M_print (i18n (543, "Enter old email address: "));
+            M_print ("%s ", i18n (543, "Enter old email address:"));
             status++;
             break;
         case NEW_EMAIL3:
             user.email3 = strdup ((char *) buf);
-            M_print (i18n (544, "Enter new city: "));
+            M_print ("%s ", i18n (544, "Enter new city:"));
             status++;
             break;
         case NEW_CITY:
             user.city = strdup ((char *) buf);
-            M_print (i18n (545, "Enter new state: "));
+            M_print ("%s ", i18n (545, "Enter new state:"));
             status++;
             break;
         case NEW_STATE:
             user.state = strdup ((char *) buf);
-            M_print (i18n (546, "Enter new phone number: "));
+            M_print ("%s ", i18n (546, "Enter new phone number:"));
             status++;
             break;
         case NEW_PHONE:
             user.phone = strdup ((char *) buf);
-            M_print (i18n (547, "Enter new fax number: "));
+            M_print ("%s ", i18n (547, "Enter new fax number:"));
             status++;
             break;
         case NEW_FAX:
             user.fax = strdup ((char *) buf);
-            M_print (i18n (548, "Enter new street address: "));
+            M_print ("%s ", i18n (548, "Enter new street address:"));
             status++;
             break;
         case NEW_STREET:
             user.street = strdup ((char *) buf);
-            M_print (i18n (549, "Enter new cellular number: "));
+            M_print ("%s ", i18n (549, "Enter new cellular number:"));
             status++;
             break;
         case NEW_CELLULAR:
             user.cellular = strdup ((char *) buf);
-            M_print (i18n (550, "Enter new zip code (must be numeric): "));
+            M_print ("%s ", i18n (550, "Enter new zip code (must be numeric):"));
             status++;
             break;
         case NEW_ZIP:
             user.zip = atoi ((char *) buf);
-            M_print (i18n (551, "Enter your country's phone ID number: "));
+            M_print ("%s ", i18n (551, "Enter your country's phone ID number:"));
             status = NEW_COUNTRY;
             break;
         case NEW_COUNTRY:
             user.country = atoi ((char *) buf);
-            M_print (i18n (552, "Enter your time zone (+/- 0-12): "));
+            M_print ("%s ", i18n (552, "Enter your time zone (+/- 0-12):"));
             status = NEW_TIME_ZONE;
             break;
         case NEW_TIME_ZONE:
             user.c_status = atoi ((char *) buf);
             user.c_status <<= 1;
-            M_print (i18n (557, "Do you want to require Mirabilis users to request your authorization? : "));
+            M_print ("%s ", i18n (557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
             status = NEW_AUTH;
             break;
         case NEW_AUTH:
             if (!strcasecmp (buf, i18n (28, "NO")))
             {
                 user.auth = FALSE;
-                Update_More_User_Info (sok, &user);
+                status = NEW_DONE;
+                M_print ("%s ", i18n (622, "Do you want to apply these changes? (YES/NO)"));
+            }
+            else if (!strcasecmp (buf, i18n (27, "YES")))
+            {
+                user.auth = TRUE;
+                status = NEW_DONE;
+                M_print ("%s ", i18n (622, "Do you want to apply these changes? (YES/NO)"));
+            }
+            else
+            {
+                M_print ("%s\n", i18n (29, "Please enter YES or NO!"));
+                M_print ("%s ", i18n (557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
+            }
+            break;
+        case NEW_DONE:
+            if (!strcasecmp (buf, i18n (28, "NO")))
+            {
                 free (user.nick);
                 free (user.last);
                 free (user.first);
@@ -474,7 +491,6 @@ void Info_Update (SOK_T sok, char *buf)
             }
             else if (!strcasecmp (buf, i18n (27, "YES")))
             {
-                user.auth = TRUE;
                 Update_More_User_Info (sok, &user);
                 free (user.nick);
                 free (user.last);
@@ -484,8 +500,8 @@ void Info_Update (SOK_T sok, char *buf)
             }
             else
             {
-                M_print (i18n (29, "Please enter YES or NO!\n"));
-                M_print (i18n (557, "Do you want to require Mirabilis users to request your authorization? : "));
+                M_print ("%s\n", i18n (29, "Please enter YES or NO!"));
+                M_print ("%s ", i18n (622, "Do you want to apply these changes? (YES/NO)"));
             }
             break;
     }
@@ -537,22 +553,22 @@ void User_Search (SOK_T sok, char *buf)
     switch (status)
     {
         case SRCH_START:
-            M_print (i18n (655, "Enter the Users E-mail address : "));
+            M_print ("%s ", i18n (655, "Enter the Users E-mail address:"));
             status++;
             break;
         case SRCH_EMAIL:
             user.email = strdup ((char *) buf);
-            M_print (i18n (656, "Enter the Users Nick : "));
+            M_print ("%s ", i18n (656, "Enter the Users Nick:"));
             status++;
             break;
         case SRCH_NICK:
             user.nick = strdup ((char *) buf);
-            M_print (i18n (657, "Enter The Users First Name : "));
+            M_print ("%s ", i18n (657, "Enter The Users First Name:"));
             status++;
             break;
         case SRCH_FIRST:
             user.first = strdup ((char *) buf);
-            M_print (i18n (658, "Enter The Users Last Name : "));
+            M_print ("%s", i18n (658, "Enter The Users Last Name:"));
             status++;
             break;
         case SRCH_LAST:
@@ -664,7 +680,7 @@ void Get_Input (SOK_T sok, int *idle_val, int *idle_flag)
         else
             R_doprompt (i18n (541, "About> "));
     }
-    else if ((status >= NEW_NICK) && (status <= NEW_AUTH))
+    else if ((status >= NEW_NICK) && (status <= NEW_DONE))
     {
         Info_Update (sok, buf);
     }
@@ -763,11 +779,11 @@ void Get_Input (SOK_T sok, int *idle_val, int *idle_flag)
                 Color = !Color;
                 if (Color)
                 {
-                    M_print (i18n (662, "Color is " COLMESS "on" COLNONE ".\n"));
+                    M_print (i18n (662, "Color is " COLMESS "%s" COLNONE ".\n"), i18n (85, "on"));
                 }
                 else
                 {
-                    M_print (i18n (663, "Color is " COLMESS "off" COLNONE ".\n"));
+                    M_print (i18n (662, "Color is " COLMESS "%s" COLNONE ".\n"), i18n (86, "off"));
                 }
             }
             else if (!strcasecmp (cmd, online_cmd))     /* online command */
@@ -846,7 +862,7 @@ void Get_Input (SOK_T sok, int *idle_val, int *idle_flag)
             else if (!strcasecmp (cmd, "other"))
             {
                 status = NEW_AGE;
-                M_print (i18n (535, "Enter new age: "));
+                M_print ("%s ", i18n (535, "Enter new age:"));
             }
             else if (!strcasecmp (cmd, reply_cmd))
             {
@@ -1088,7 +1104,7 @@ void Get_Input (SOK_T sok, int *idle_val, int *idle_flag)
             else if (!strcasecmp (cmd, "update"))
             {
                 status = NEW_NICK;
-                M_print (i18n (553, "Enter Your New Nickname : "));
+                M_print ("%s ", i18n (553, "Enter Your New Nickname:"));
             }
             else if (strcasecmp (cmd, auto_cmd) == 0)
             {
@@ -1172,26 +1188,24 @@ void Get_Input (SOK_T sok, int *idle_val, int *idle_flag)
                 TimeDiff = TimeDiff / 24.0;
                 Days = TimeDiff;
 
-                M_print (i18n (687, "Micq has been running for "));
+                M_print ("%s ", i18n (687, "Micq has been running for"));
                 if (Days != 0)
-                    M_print (i18n (688, COLMESS "%02d " COLNONE "days, "), Days);
+                    M_print (COLMESS "%02d" COLNONE "%s, ", Days, i18n (688, "days"));
                 if (Hours != 0)
-                    M_print (i18n (689, COLMESS "%02d " COLNONE "hours, "), Hours);
+                    M_print (COLMESS "%02d" COLNONE "%s, ", Hours, i18n (689, "hours"));
                 if (Minutes != 0)
-                    M_print (i18n (690, COLMESS "%02d " COLNONE "minutes, "), Minutes);
-                M_print (i18n (691, COLMESS "%02d " COLNONE "seconds.\n"), Seconds);
-                M_print (i18n (692, "Contacts " COLMESS "%d" COLNONE " / %d\n"), Num_Contacts, MAX_CONTACTS);
-                M_print (i18n (693, "Packets Sent : " COLMESS));
-                M_print (i18n (694, "%d" COLNONE "\tPackets Recieved : " COLMESS "%d" COLNONE "\t"),
-                         Packets_Sent, Packets_Recv);
-                if (Packets_Sent | Packets_Recv)
+                    M_print (COLMESS "%02d" COLNONE "%s, ", Minutes, i18n (690, "minutes"));
+                M_print (COLMESS "%02d" COLNONE "%s.\n", Seconds, i18n (691, "seconds"));
+                M_print ("%s " COLMESS "%d" COLNONE " / %d\n", i18n (692, "Contacts:"), Num_Contacts, MAX_CONTACTS);
+                M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (693, "Packets sent:"), Packets_Sent);
+                M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (694, "Packets recieved:"), Packets_Recv);
+                if (Packets_Sent || Packets_Recv)
                 {
-                    M_print (i18n (695, "Lag : " COLMESS));
-                    M_print ("%2.2f" COLNONE " %%\n", abs (Packets_Sent - Packets_Recv) * (200.0 / (Packets_Sent + Packets_Recv)));
+                    M_print ("%s " COLMESS "%2.2f" COLNONE "%%\n", i18n (695, "Lag:"),
+                             abs (Packets_Sent - Packets_Recv) * (200.0 / (Packets_Sent + Packets_Recv)));
                 }
-                M_print (i18n (697, "Distinct Packets Sent : " COLMESS));
-                M_print (i18n (698, "%d" COLNONE "\tDistinct Packets Recieved : " COLMESS "%d" COLNONE "\n"),
-                         real_packs_sent, real_packs_recv);
+                M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (697, "Distinct packets sent:"), real_packs_sent);
+                M_print ("%s " COLMESS "%d" COLNONE "\n", i18n (698, "Distinct packets recieved:"), real_packs_recv);
             }
             else if (strcasecmp (cmd, "wide") == 0)
             {
@@ -1279,10 +1293,11 @@ static void Show_Status (char *name)
                 M_print ("\n");
             }
         }
-        M_print (i18n (701, "IP : %d.%d.%d.%d : %d\n"), cont->current_ip[0], cont->current_ip[1],
+        M_print ("%-15s %d.%d.%d.%d : %d\n", i18n (441, "IP:"), cont->current_ip[0], cont->current_ip[1],
                  cont->current_ip[2], cont->current_ip[3], cont->port);
-        M_print (i18n (702, "TCP Version : %d\t%s\n"), cont->TCP_version,
-                 cont->connection_type == 4 ? "Peer-to-Peer mode" : "Server Only Communication");
+        M_print ("%-15s %d\n", i18n (453, "TCP version:"), cont->TCP_version);
+        M_print ("%-15s %s\n", i18n (454, "Connection:"),
+                 cont->connection_type == 4 ? i18n (493, "Peer-to-Peer") : i18n (494, "Server Only"));
         return;
     }
     M_print (W_SEPERATOR);
@@ -1292,9 +1307,7 @@ static void Show_Status (char *name)
     Print_Status (Current_Status);
     M_print ("\n");
     /*  First loop sorts thru all offline users */
-    M_print (W_SEPERATOR);
-    M_print (i18n (72, "Users offline: "));
-    M_print ("\n");
+    M_print ("%s%s\n", W_SEPERATOR, i18n (72, "Users offline:"));
     for (i = 0; i < Num_Contacts; i++)
     {
         if ((SDWORD) Contacts[i].uin > 0)
@@ -1332,9 +1345,7 @@ static void Show_Status (char *name)
         }
     }
     /* The second loop displays all the online users */
-    M_print (W_SEPERATOR);
-    M_print (i18n (73, "Users online: "));
-    M_print ("\n");
+    M_print ("%s%s\n", W_SEPERATOR, i18n (73, "Users online:"));
     for (i = 0; i < Num_Contacts; i++)
     {
         if ((SDWORD) Contacts[i].uin > 0)
@@ -1391,9 +1402,7 @@ void Show_Quick_Status (void)
     M_print (i18n (71, "Your status is "));
     Print_Status (Current_Status);
     M_print ("\n");
-    M_print (W_SEPERATOR);
-    M_print (i18n (72, "Users offline: "));
-    M_print ("\n");
+    M_print ("%s%s\n", W_SEPERATOR, i18n (72, "Users offline:"));
     /*  First loop sorts thru all offline users */
     /*  This comes first so that if there are many contacts */
     /*  The online ones will be less likely to scroll off the screen */
@@ -1421,9 +1430,7 @@ void Show_Quick_Status (void)
         }
     }
     /* The second loop displays all the online users */
-    M_print (W_SEPERATOR);
-    M_print (i18n (73, "Users online: "));
-    M_print ("\n");
+    M_print ("%s%s\n", W_SEPERATOR, i18n (73, "Users online:"));
     for (i = 0; i < Num_Contacts; i++)
     {
         if ((SDWORD) Contacts[i].uin > 0)
@@ -1457,9 +1464,7 @@ static void Show_Ignore_Status (void)
 {
     int i;
 
-    M_print (W_SEPERATOR);
-    M_print (i18n (62, "Users ignored: "));
-    M_print ("\n");
+    M_print ("%s%s\n", W_SEPERATOR, i18n (62, "Users ignored:"));
     /*  Sorts thru all ignored users */
     for (i = 0; i < Num_Contacts; i++)
     {
@@ -1497,11 +1502,9 @@ void Show_Quick_Online_Status (void)
     M_print (i18n (71, "Your status is "));
     Print_Status (Current_Status);
     M_print ("\n");
-    M_print (W_SEPERATOR);
 
     /* Loop displays all the online users */
-    M_print (i18n (73, "Users online: "));
-    M_print ("\n");
+    M_print ("%s%s\n", W_SEPERATOR, i18n (73, "Users online:"));
     for (i = 0; i < Num_Contacts; i++)
     {
         if ((SDWORD) Contacts[i].uin > 0)
@@ -1839,23 +1842,23 @@ static void Auto_Function (SOK_T sok)
     cmd = strtok (NULL, "");
     if (cmd == NULL)
     {
-        M_print (i18n (724, "Automatic replies are %s\n"), auto_resp ? i18n (725, "On") : i18n (726, "Off"));
-        M_print (i18n (727, "The Do not disturb message is: %s\n"), auto_rep_str_dnd);
-        M_print (i18n (728, "The Away message is          : %s\n"), auto_rep_str_away);
-        M_print (i18n (729, "The Not available message is : %s\n"), auto_rep_str_na);
-        M_print (i18n (730, "The Occupied message is      : %s\n"), auto_rep_str_occ);
-        M_print (i18n (731, "The Invisible message is     : %s\n"), auto_rep_str_inv);
+        M_print (i18n (724, "Automatic replies are %s.\n"), auto_resp ? i18n (85, "on") : i18n (86, "off"));
+        M_print ("%30s %s\n", i18n (727, "The Do not disturb message is:"), auto_rep_str_dnd);
+        M_print ("%30s %s\n", i18n (728, "The Away message is:"),           auto_rep_str_away);
+        M_print ("%30s %s\n", i18n (729, "The Not available message is:"),  auto_rep_str_na);
+        M_print ("%30s %s\n", i18n (730, "The Occupied message is:"),       auto_rep_str_occ);
+        M_print ("%30s %s\n", i18n (731, "The Invisible message is:"),      auto_rep_str_inv);
         return;
     }
     else if (strcasecmp (cmd, "on") == 0)
     {
         auto_resp = TRUE;
-        M_print (i18n (732, "Automatic replies are on.\n"));
+        M_print (i18n (724, "Automatic replies are %s.\n"), i18n (85, "on"));
     }
     else if (strcasecmp (cmd, "off") == 0)
     {
         auto_resp = FALSE;
-        M_print (i18n (733, "Automatic replies are off.\n"));
+        M_print (i18n (724, "Automatic replies are %s.\n"), i18n (86, "off"));
     }
     else
     {

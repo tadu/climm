@@ -21,14 +21,18 @@
 #include <time.h>
 #include <string.h>
 
-static BOOL Show_Short_String (UBYTE ** data, const char *str);
-static void Show_String (UBYTE ** data, const char *str);
-static void Show_String_A (UBYTE ** data, const char *fmt, ...);
 static void Handle_Interest (UBYTE count, UBYTE * data);
+static void PktPrintString (UBYTE ** data, const char *fmt, ...);
 
-static BOOL Show_Short_String (UBYTE ** data, const char *str)
+static void PktPrintString (UBYTE ** data, const char *fmt, ...)
 {
+    char buf[2048];
+    va_list args;
     int len;
+
+    va_start (args, fmt);
+    vsnprintf (buf, sizeof (buf), fmt, args);
+    va_end (args);
 
     len = Chars_2_Word ((*data));
     *data += 2;
@@ -36,47 +40,35 @@ static BOOL Show_Short_String (UBYTE ** data, const char *str)
     {
         (*data)[len - 1] = 0;   /* be safe */
         ConvWinUnix (*data);
-        M_print ("%s%s", str, *data);
-        *data += len;
-        return TRUE;
+        M_print (buf, *data);        /* Careful - fmt is used as a format string twice. */
     }
     *data += len;
-    return FALSE;
-}
-
-static void Show_String (UBYTE ** data, const char *str)
-{
-    if (Show_Short_String (data, str))
-        M_print ("\n");
-}
-
-static void Show_String_A (UBYTE ** data, const char *fmt, ...)
-{
-    char buf[2048];
-    va_list args;
-
-    va_start (args, fmt);
-    vsnprintf (buf, sizeof (buf), fmt, args);
-    va_end (args);
-
-    if (Show_Short_String (data, buf))
-        M_print ("\n");
 }
 
 static void Handle_Interest (UBYTE count, UBYTE * data)
 {
     const char *nomen;
+    UBYTE * data2;
+    int len, nlen, count2;
+    
+    for (data2 = data, count2 = count, len = 0; count2; count2--)
+    {
+        nomen = TableGetInterest (Chars_2_Word (data));
+        if (nomen && (nlen = strlen (nomen)) > len)
+            len = nlen;
+    }
+    
     for (; count; count--)
     {
         nomen = TableGetInterest (Chars_2_Word (data));
 
         if (nomen)
-            M_print (COLSERV "%s\t: " COLMESS, nomen);
+            M_print (COLSERV "%*s:\t" COLMESS, len, nomen);
         else
-            M_print (COLSERV "%d\t: " COLMESS, Chars_2_Word (data));
+            M_print (COLSERV "%*d:\t" COLMESS, len, Chars_2_Word (data));
 
         data += 2;
-        Show_Short_String (&data, "");
+        PktPrintString (&data, "%%s");
         M_print (COLNONE "\n");
     }
 }
@@ -93,19 +85,19 @@ void Meta_User (SOK_T sok, UBYTE * data, UDWORD len, UDWORD uin)
     switch (subcmd)
     {
         case META_SRV_PASS:
-            M_print (i18n (197, "Password Change was " COLCLIENT "%s" COLNONE ".\n"),
+            M_print (i18n (197, "Password change was " COLCLIENT "%s" COLNONE ".\n"),
                      data[2] == 0xA ? i18n (393, "successful") : i18n (394, "unsuccessful"));
             break;
         case META_SRV_ABOUT_UPDATE:
-            M_print (i18n (395, "About info Change was " COLCLIENT "%s" COLNONE ".\n"),
+            M_print (i18n (395, "About info change was " COLCLIENT "%s" COLNONE ".\n"),
                      data[2] == 0xA ? i18n (393, "successful") : i18n (394, "unsuccessful"));
             break;
         case META_SRV_GEN_UPDATE:
-            M_print (i18n (396, "Info Change was " COLCLIENT "%s" COLNONE ".\n"),
+            M_print (i18n (396, "Info change was " COLCLIENT "%s" COLNONE ".\n"),
                      data[2] == 0xA ? i18n (393, "successful") : i18n (394, "unsuccessful"));
             break;
         case META_SRV_OTHER_UPDATE:
-            M_print (i18n (397, "Other Info Change was " COLCLIENT "%s" COLNONE ".\n"),
+            M_print (i18n (397, "Other info change was " COLCLIENT "%s" COLNONE ".\n"),
                      data[2] == 0xA ? i18n (393, "successful") : i18n (394, "unsuccessful"));
             break;
         case META_SRV_MORE:
@@ -113,71 +105,69 @@ void Meta_User (SOK_T sok, UBYTE * data, UDWORD len, UDWORD uin)
             if (*data != 0x0A)
                 break;
             data++;
+
             if (Chars_2_Word (data) != (UWORD) - 1)
-                M_print (COLSERV "%s%d     \t", i18n (527, "Age          : "),
+                M_print (COLSERV "%-15s" COLNONE " %d\n", i18n (527, "Age:"),
                          Chars_2_Word (data));
             else
-                M_print (COLSERV "%s%s\t", i18n (527, "Age          : "),
+                M_print (COLSERV "%-15s" COLNONE " %s\n", i18n (527, "Age:"),
                          i18n (526, "Not Entered"));
             data += 2;
-            if (*data == 1)
-                M_print (i18n (528, "Sex : Female"));
-            else if (*data == 2)
-                M_print (i18n (529, "Sex : Male"));
-            else
-                M_print (i18n (530, "Sex : Not Specified"));
-            M_print ("\n");
+
+            M_print (COLSERV "%-15s" COLNONE " %s\n", i18n (696, "Sex:"),
+                       *data == 1 ? i18n (528, "female")
+                     : *data == 2 ? i18n (529, "male")
+                     :              i18n (530, "not specified"));
             data++;
-            Show_String (&data, i18n (531, "Homepage     : "));
+
+            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (531, "Homepage:"));
             newline = "";
             if ((*(data + 1) > 0) && (*(data + 1) <= 12))
             {
-                M_print ("%s%02d.%s. %4d \t", i18n (532, "Born         : "),
+                M_print (COLSERV "%-15s" COLNONE " %02d. %s %4d\n", i18n (532, "Born:"),
                          *(data + 2), TableGetMonth (*(data + 1)), *(data) + 1900);
-                newline = "\n";
             }
             data += 3;
             if (((*data != 0) && (*data != (UBYTE) 0xff))
                 || ((*(data + 1) != 0) && (*(data + 1) != (UBYTE) 0xff))
                 || ((*(data + 2) != 0) && (*(data + 2) != (UBYTE) 0xff)))
             {
-                M_print (i18n (533, "Languages    : "));
+                M_print (COLSERV "%-15s" COLNONE " ", i18n (533, "Languages:"));
                 if (TableGetLang (*data) != NULL)
                 {
-                    M_print ("%s ", TableGetLang (*data));
+                    M_print ("%s", TableGetLang (*data));
                 }
                 else
                 {
-                    M_print ("%X ", *data);
+                    M_print ("%X", *data);
                 }
                 data++;
                 if (TableGetLang (*data) != NULL)
                 {
-                    M_print ("%s ", TableGetLang (*data));
+                    M_print (", %s", TableGetLang (*data));
                 }
                 else
                 {
-                    M_print ("%X ", *data);
+                    M_print (", %X", *data);
                 }
                 data++;
                 if (TableGetLang (*data) != NULL)
                 {
-                    M_print ("%s ", TableGetLang (*data));
+                    M_print (", %s", TableGetLang (*data));
                 }
                 else
                 {
-                    M_print ("%X ", *data);
+                    M_print (", %X", *data);
                 }
-                newline = "\n";
+                M_print ("\n");
             }
-            M_print (COLNONE "%s", newline);
             break;
         case META_SRV_ABOUT:
             data += 2;
             if (*data != 0x0A)
                 break;
             data++;
-            Show_String_A (&data, COLSERV "%s\n" COLCLIENT, i18n (525, "About : "));
+            PktPrintString (&data, COLSERV "%s" COLCLIENT "\n%%s", i18n (525, "About:"));
             M_print (COLNONE);
             break;
         case META_SRV_WORK:
@@ -185,51 +175,40 @@ void Meta_User (SOK_T sok, UBYTE * data, UDWORD len, UDWORD uin)
             if (*data != 0x0A)
                 break;
             data++;
-            if ((Chars_2_Word (data) > 1) || (Chars_2_Word (data + 2 + Chars_2_Word (data)) > 1))
+            
+            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (524, "Work Location:"));
+            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (524, "Work Location:"));
+            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (523, "Work Phone:"));
+            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (521, "Work Fax:"));
+            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (522, "Work Address:"));
+
+            if (Chars_2_DW (data))
             {
-                M_print (COLSERV);
-                M_print (i18n (524, "Work Location: "));
-                Show_Short_String (&data, "");
-                Show_Short_String (&data, ", ");
-                M_print ("\n");
-            }
-            else
-            {
-                data += 6;
-            }
-            Show_String_A (&data, COLSERV "%s", i18n (523, "Work Phone   : "));
-            Show_String_A (&data, COLSERV "%s", i18n (521, "Work Fax     : "));
-            Show_String_A (&data, COLSERV "%s", i18n (522, "Work Address : "));
-            if (Chars_2_DW (data) != 0)
-            {
-                newline = "\n";
-                M_print (COLSERV "%s%05d\t", i18n (520, "Work Zip     : "), Chars_2_DW (data));
-            }
-            else
-            {
-                newline = "";
+                M_print (COLSERV "%-15s" COLNONE " %d\n", i18n (520, "Work Zip:"), Chars_2_DW (data));
             }
             data += 4;
-            if (0 != Chars_2_Word (data))
+            
+            if (Chars_2_Word (data))
             {
-                if (TableGetCountry (Chars_2_Word (data)) != NULL)
-                    M_print (COLSERV "%s%s\n", i18n (514, "Work Country : "),
+                if (TableGetCountry (Chars_2_Word (data)))
+                    M_print (COLSERV "%-15s" COLNONE " %s\n", i18n (514, "Work Country:"),
                              TableGetCountry (Chars_2_Word (data)));
                 else
-                    M_print (COLSERV "%s%d\n", i18n (513, "Work Country Code : "),
+                    M_print (COLSERV "%-15s" COLNONE " %d\n", i18n (513, "Work Country Code:"),
                              Chars_2_Word (data));
-                newline = "";
             }
-            M_print ("%s", newline);
             data += 2;
-            Show_String_A (&data, COLSERV "%s", i18n (519, "Company Name : "));
-            Show_String_A (&data, COLSERV "%s", i18n (518, "Department   : "));
-            Show_String_A (&data, COLSERV "%s", i18n (517, "Job Position : "));
-            if (0 != Chars_2_Word (data))
-                M_print (COLSERV "%s%s\n", i18n (516, "Occupation   : "),
+            
+            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (519, "Company Name:"));
+            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (518, "Department:"));
+            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (517, "Job Position:"));
+            
+            if (Chars_2_Word (data))
+                M_print (COLSERV "%-15s" COLNONE " %s\n", i18n (516, "Occupation:"),
                          TableGetOccupation (Chars_2_Word (data)));
             data += 2;
-            Show_String_A (&data, COLSERV "%s", i18n (515, "Work Homepage: "));
+            
+            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (515, "Work Homepage:"));
             M_print (COLNONE);
             break;
         case META_SRV_GEN:
@@ -237,54 +216,58 @@ void Meta_User (SOK_T sok, UBYTE * data, UDWORD len, UDWORD uin)
             if (*data != 0x0A)
                 break;
             data++;
-            Show_String_A (&data, COLSERV "%s" COLCONTACT, i18n (500, "Nickname     : "));
-            /*Show_String( &data, COLSERV "First Name    : " );
-               Show_String( &data, COLSERV "Last Name     : " ); */
-            M_print (COLSERV "%s", i18n (501, "Name         : "));
-            Show_Short_String (&data, "");
-            Show_Short_String (&data, "\t");
-            M_print ("\n");
-            Show_String_A (&data, COLSERV "%s", i18n (502, "Email        : "));
-            Show_String_A (&data, COLSERV "%s", i18n (503, "Other Email  : "));
-            Show_String_A (&data, COLSERV "%s", i18n (504, "Old Email    : "));
-            if ((Chars_2_Word (data) > 1) || (Chars_2_Word (data + 2 + Chars_2_Word (data)) > 1))
+            PktPrintString (&data, COLSERV "%-15s" COLNONE " " COLCONTACT "%%s" COLNONE "\n", i18n (500, "Nickname:"));
+
+        /*  PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (-1, "First Name:");
+            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (-1, "Last Name:");   */
+
+            if (Chars_2_Word (data))
             {
-                M_print (COLSERV "%s", i18n (505, "Location     : "));
-                Show_Short_String (&data, "");
-                Show_Short_String (&data, ", ");
+                PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s", i18n (501, "Name:"));
+                PktPrintString (&data, "\t%%s");
                 M_print ("\n");
             }
-            else
-            {
-                data += 6;
-            }
-            /*Show_String( &data, COLSERV "City            : " );
-               Show_String( &data, COLSERV "State          : " ); */
 
-            Show_String_A (&data, COLSERV "%s", i18n (506, "Phone        : "));
-            Show_String_A (&data, COLSERV "%s", i18n (507, "Fax          : "));
-            Show_String_A (&data, COLSERV "%s", i18n (508, "Street       : "));
-            Show_String_A (&data, COLSERV "%s", i18n (509, "Cellular     : "));
+            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (502, "Email:"));
+            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (503, "Other Email:"));
+            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (504, "Old Email:"));
+
+        /*  PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (-1, "City:");
+            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (-1, "State:");   */
+
+            if (Chars_2_Word (data))
+            {
+                PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s", i18n (505, "Location:"));
+                PktPrintString (&data, ", %%s");
+                M_print ("\n");
+            }
+
+            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (506, "Phone:"));
+            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (507, "Fax:"));
+            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (508, "Street:"));
+            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (509, "Cellular:"));
+
             zip = Chars_2_DW (data);
-            data += 4;
             if (((signed long) zip) > 0)
-                M_print (COLSERV "%s%05u\n", i18n (510, "Zip          : "), zip);
-            if (TableGetCountry (Chars_2_Word (data)) != NULL)
-                M_print ("%s%s\t", i18n (511, "Country      : "),
+                M_print (COLSERV "%-15s" COLNONE " %05u\n", i18n (510, "Zip:"), zip);
+            data += 4;
+
+            if (TableGetCountry (Chars_2_Word (data)))
+                M_print (COLSERV "%-15s" COLNONE " %s\t", i18n (511, "Country:"),
                          TableGetCountry (Chars_2_Word (data)));
             else
-                M_print ("%s%d\t", i18n (512, "Country Code : "), Chars_2_Word (data));
+                M_print (COLSERV "%-15s" COLNONE " %d\t", i18n (512, "Country Code:"), Chars_2_Word (data));
             data += 2;
+
             if (((signed char) *data) >> 1 != -50)
-                M_print ("(UTC %+d)" COLNONE "\n", ((signed char) *data) >> 1);
-            else
-                M_print (COLNONE "\n");
+                M_print ("(UTC %+d)", ((signed char) *data) >> 1);
+            M_print (COLNONE "\n");
             break;
         case 0x00F0:
             data += 3;
             Handle_Interest ((UBYTE) * data, data + 1);
             break;
-        case 0x00FA:           /* Silently ignor these so as not to confuse people */
+        case 0x00FA:           /* Silently ignore these so as not to confuse people */
             if (data[2] == 0x14)
             {
                 M_print (i18n (398, "Search " COLCLIENT "failed" COLNONE ".\n"));
@@ -308,14 +291,14 @@ void Display_Rand_User (SOK_T sok, UBYTE * data, UDWORD len)
 {
     if (len == 37)
     {
-        M_print (i18n (440, "Random User :\t%d\n"), Chars_2_DW (&data[0]));
-        M_print (i18n (441, "IP             :\t%d.%d.%d.%d : "), data[4], data[5], data[6], data[7]);
-        M_print ("%d\n", Chars_2_DW (&data[8]));
-        M_print (i18n (451, "IP2            :\t%d.%d.%d.%d\n"), data[12], data[13], data[14], data[15]);
-        M_print (i18n (452, "Status        :\t"));
+        M_print ("%-15s %d\n", i18n (440, "Random User:"), Chars_2_DW (&data[0]));
+        M_print ("%-15s %d.%d.%d.%d : %d\n", i18n (441, "IP:"), data[4], data[5], data[6], data[7], Chars_2_DW (&data[8]));
+        M_print ("%-15s %d.%d.%d.%d\n", i18n (451, "IP2:"), data[12], data[13], data[14], data[15]);
+        M_print ("%-15s ", i18n (452, "Status:"));
         Print_Status (Chars_2_DW (&data[17]));
-        M_print (i18n (453, "\nTCP version :\t%d\t"), Chars_2_Word (&data[21]));
-        M_print (i18n (454, "Connection  :\t%s"),
+        M_print ("\n");
+        M_print ("%-15s %d\n", i18n (453, "TCP version:"), Chars_2_Word (&data[21]));
+        M_print ("%-15s %s\n", i18n (454, "Connection:"),
                  data[16] == 4 ? i18n (493, "Peer-to-Peer") : i18n (494, "Server Only"));
         if (Verbose > 1)
         {
@@ -327,7 +310,7 @@ void Display_Rand_User (SOK_T sok, UBYTE * data, UDWORD len)
     }
     else
     {
-        M_print (i18n (495, "No Random User Found"));
+        M_print ("%s\n", i18n (495, "No Random User Found"));
     }
 }
 
@@ -342,7 +325,7 @@ void Recv_Message (int sok, UBYTE * pak)
     M_print (i18n (496, ":\a\nDate %d/%d/%d\t%d:%02d UTC\n"), r_mesg->month, r_mesg->day,
              Chars_2_Word (r_mesg->year), r_mesg->hour, r_mesg->minute);
 
-    M_print (i18n (497, "Type : %d \t Len : %d\n"), Chars_2_Word (r_mesg->type), Chars_2_Word (r_mesg->len));
+    M_print (i18n (497, "Type: %d\t Len: %d\n"), Chars_2_Word (r_mesg->type), Chars_2_Word (r_mesg->len));
     Do_Msg (sok, Chars_2_Word (r_mesg->type), Chars_2_Word (r_mesg->len),
             (r_mesg->len + 2), last_recv_uin);
 
@@ -413,11 +396,12 @@ void User_Online (int sok, UBYTE * pak)
 
         if (Verbose)
         {
-            M_print (i18n (498, "\nThe IP address is %u.%u.%u.%u\n"), pak[4], pak[5], pak[6], pak[7]);
-            M_print (i18n (558, "The \"real\" IP address is %u.%u.%u.%u\n"), pak[12], pak[13],
-                     pak[14], pak[15]);
-            M_print ("%s\n", pak[16] == 4 ? i18n (559, "Peer-to-Peer mode") : i18n (560, "Server Only Communication."));
-            M_print (i18n (561, "TCP ICQ version : %d\n"), Chars_2_Word (&pak[21]));
+            M_print ("\n");
+            M_print ("%-15s %d.%d.%d.%d\n", i18n (441, "IP:"), pak[4], pak[5], pak[6], pak[7]);
+            M_print ("%-15s %d.%d.%d.%d\n", i18n (451, "IP2:"), pak[12], pak[13], pak[14], pak[15]);
+            M_print ("%-15s %d\n", i18n (453, "TCP version:"), Chars_2_Word (&pak[21]));
+            M_print ("%-15s %s\n", i18n (454, "Connection:"),
+                     pak[16] == 4 ? i18n (493, "Peer-to-Peer") : i18n (494, "Server Only"));
             Hex_Dump (pak, 0x2B);
         }
         M_print ("\n");
@@ -581,19 +565,19 @@ void Display_Info_Reply (int sok, UBYTE * pak)
     M_print (i18n (562, COLSERV "Info for %ld\n"), Chars_2_DW (&pak[0]));
     len = Chars_2_Word (&pak[4]);
     ConvWinUnix (&pak[6]);
-    M_print (i18n (563, "Nick Name :\t%s\n"), &pak[6]);
+    M_print ("%-15s %s\n", i18n (563, "Nick Name:"), &pak[6]);
     tmp = &pak[6 + len];
     len = Chars_2_Word (tmp);
     ConvWinUnix (tmp + 2);
-    M_print (i18n (564, "First name :\t%s\n"), tmp + 2);
+    M_print ("%-15s %s\n", i18n (564, "First name:"), tmp + 2);
     tmp += len + 2;
     len = Chars_2_Word (tmp);
     ConvWinUnix (tmp + 2);
-    M_print (i18n (565, "Last name :\t%s\n"), tmp + 2);
+    M_print ("%-15s %s\n", i18n (565, "Last name:"), tmp + 2);
     tmp += len + 2;
     len = Chars_2_Word (tmp);
     ConvWinUnix (tmp + 2);
-    M_print (i18n (566, "Email Address :\t%s\n"), tmp + 2);
+    M_print ("%-15s %s\n", i18n (566, "Email address:"), tmp + 2);
     tmp += len + 2;
     if (*tmp == 1)
     {
@@ -614,38 +598,38 @@ void Display_Ext_Info_Reply (int sok, UBYTE * pak)
     M_print (i18n (569, COLSERV "More Info for %ld\n"), Chars_2_DW (&pak[0]));
     len = Chars_2_Word (&pak[4]);
     ConvWinUnix (&pak[6]);
-    M_print (i18n (570, "City            :\t%s\n"), &pak[6]);
+    M_print ("%-15s %s\n", i18n (570, "City:"), &pak[6]);
     if (TableGetCountry (Chars_2_Word (&pak[6 + len])) != NULL)
-        M_print (i18n (571, "Country        :\t%s\n"), TableGetCountry (Chars_2_Word (&pak[6 + len])));
+        M_print ("%-15s %s\n", i18n (571, "Country:"), TableGetCountry (Chars_2_Word (&pak[6 + len])));
     else
-        M_print (i18n (572, "Country Code :\t%d\n"), Chars_2_Word (&pak[6 + len]));
-    M_print (i18n (573, "Time Zone     :\tGMT %+d\n"), ((signed char) pak[len + 8]) >> 1);
+        M_print ("%-15s %d\n", i18n (572, "Country code:"), Chars_2_Word (&pak[6 + len]));
+    M_print ("%-15s UTC %+d\n", i18n (573, "Time Zone:"), ((signed char) pak[len + 8]) >> 1);
     tmp = &pak[9 + len];
     len = Chars_2_Word (tmp);
     ConvWinUnix (tmp + 2);
-    M_print (i18n (574, "State          :\t%s\n"), tmp + 2);
+    M_print ("%-15s %s\n", i18n (574, "State:"), tmp + 2);
     if (Chars_2_Word (tmp + 2 + len) != 0xffff)
-        M_print (i18n (575, "Age             :\t%d\n"), Chars_2_Word (tmp + 2 + len));
+        M_print ("%-15s %d\n", i18n (575, "Age:"), Chars_2_Word (tmp + 2 + len));
     else
-        M_print (i18n (576, "Age             :\tNot Entered\n"));
+        M_print ("%-15s %s\n", i18n (575, "Age:"), i18n (576, "not entered"));
     if (*(tmp + len + 4) == 2)
-        M_print (i18n (577, "Sex             :\tMale\n"));
+        M_print ("%-15s %s\n", i18n (577, "Sex:"), i18n (529, "male"));
     else if (*(tmp + len + 4) == 1)
-        M_print (i18n (578, "Sex             :\tFemale\n"));
+        M_print ("%-15s %s\n", i18n (577, "Sex:"), i18n (528, "female"));
     else
-        M_print (i18n (579, "Sex             :\tNot specified\n"));
+        M_print ("%-15s %s\n", i18n (577, "Sex:"), i18n (576, "not entered"));
     tmp += len + 5;
     len = Chars_2_Word (tmp);
     ConvWinUnix (tmp + 2);
-    M_print (i18n (580, "Phone Number :\t%s\n"), tmp + 2);
+    M_print ("%-15s %s\n", i18n (580, "Phone number:"), tmp + 2);
     tmp += len + 2;
     len = Chars_2_Word (tmp);
     ConvWinUnix (tmp + 2);
-    M_print (i18n (581, "Home Page     :\t%s\n"), tmp + 2);
+    M_print ("%-15s %s\n", i18n (581, "Home page:"), tmp + 2);
     tmp += len + 2;
     len = Chars_2_Word (tmp);
     ConvWinUnix (tmp + 2);
-    M_print (i18n (582, "About          :\n%s"), tmp + 2);
+    M_print ("%-15s %s\n", i18n (582, "About:"), tmp + 2);
 /*    ack_srv( sok, Chars_2_Word( pak.head.seq ) ); */
 }
 
@@ -656,19 +640,19 @@ void Display_Search_Reply (int sok, UBYTE * pak)
     M_print (i18n (583, COLSERV "User found %ld\n"), Chars_2_DW (&pak[0]));
     len = Chars_2_Word (&pak[4]);
     ConvWinUnix (&pak[6]);
-    M_print (i18n (563, "Nick Name :\t%s\n"), &pak[6]);
+    M_print ("%-15s %s\n", i18n (563, "Nick Name:"), &pak[6]);
     tmp = &pak[6 + len];
     len = Chars_2_Word (tmp);
     ConvWinUnix (tmp + 2);
-    M_print (i18n (564, "First name :\t%s\n"), tmp + 2);
+    M_print ("%-15s %s\n", i18n (564, "First name:"), tmp + 2);
     tmp += len + 2;
     len = Chars_2_Word (tmp);
     ConvWinUnix (tmp + 2);
-    M_print (i18n (565, "Last name :\t%s\n"), tmp + 2);
+    M_print ("%-15s %s\n", i18n (565, "Last name:"), tmp + 2);
     tmp += len + 2;
     len = Chars_2_Word (tmp);
     ConvWinUnix (tmp + 2);
-    M_print (i18n (566, "Email Address :\t%s\n"), tmp + 2);
+    M_print ("%-15s %s\n", i18n (566, "Email address:"), tmp + 2);
     tmp += len + 2;
     if (*tmp == 1)
     {
@@ -742,7 +726,7 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
         }
         *tmp = 0;
         ConvWinUnix (data);
-        M_print (i18n (587, "First name     : " COLMESS "%s" COLNONE "\n"), data);
+        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (564, "First name:"), data);
         tmp++;
         data = tmp;
         tmp = strchr (tmp, '\xFE');
@@ -753,13 +737,13 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
         }
         *tmp = 0;
         ConvWinUnix (data);
-        M_print (i18n (588, "Last name      : " COLMESS "%s" COLNONE "\n"), data);
+        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (565, "Last name:"), data);
         tmp++;
         data = tmp;
         tmp = strchr (tmp, '\xFE');
         *tmp = 0;
         ConvWinUnix (data);
-        M_print (i18n (589, "Email address : " COLMESS "%s" COLNONE "\n"), data);
+        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (566, "Email address:"), data);
     }
     else if (type == AUTH_REQ_MESS)
     {
@@ -776,7 +760,7 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
         }
         *tmp = 0;
         ConvWinUnix (data);
-        M_print (i18n (587, "First name     : " COLMESS "%s" COLNONE "\n"), data);
+        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (564, "First name:"), data);
         tmp++;
         data = tmp;
         tmp = strchr (tmp, '\xFE');
@@ -787,7 +771,7 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
         }
         *tmp = 0;
         ConvWinUnix (data);
-        M_print (i18n (588, "Last name      : " COLMESS "%s" COLNONE "\n"), data);
+        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (565, "Last name:"), data);
         tmp++;
         data = tmp;
         tmp = strchr (tmp, '\xFE');
@@ -798,7 +782,7 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
         }
         *tmp = 0;
         ConvWinUnix (data);
-        M_print (i18n (589, "Email address : " COLMESS "%s" COLNONE "\n"), data);
+        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (566, "Email address:"), data);
         tmp++;
         data = tmp;
         tmp = strchr (tmp, '\xFE');
@@ -818,7 +802,7 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
         }
         *tmp = 0;
         ConvWinUnix (data);
-        M_print (i18n (591, "Reason : " COLMESS "%s" COLNONE "\n"), data);
+        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (591, "Reason:"), data);
     }
     else if ((type == EMAIL_MESS) || (type == WEB_MESS))
     {

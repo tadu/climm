@@ -28,6 +28,9 @@ echo -n "Strings extracted ok:"
 cat en.i18n.exnum | wc -l
 diff -u en.i18n.num en.i18n.exnum | uniq
 
+diff -u0 en.i18n~ en.i18n | grep "^-[0-9]" | sed "s,^-,," >> en.tainted
+sort -n -t : -k 1,1 -u -o en.tainted en.tainted
+
 rm en.i18n.num en.i18n.exnum
 
 diff -u en.i18n~ en.i18n | tr '' '[' || true

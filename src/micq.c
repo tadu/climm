@@ -436,10 +436,10 @@ void Handle_Server_Response (SOK_T sok)
 //#if 0      
     if (Verbose)
     {
-        M_print (i18n (602, "Cmd : %04X\t"), Chars_2_Word (pak.head.cmd));
-        M_print (i18n (603, "Ver : %04X\t"), Chars_2_Word (pak.head.ver));
-        M_print (i18n (604, "Seq : %08X\t"), Chars_2_DW (pak.head.seq));
-        M_print (i18n (605, "Ses : %08X\n"), Chars_2_DW (pak.head.session));
+        M_print (i18n (602, "Cmd: %04X\t"), Chars_2_Word (pak.head.cmd));
+        M_print (i18n (603, "Ver: %04X\t"), Chars_2_Word (pak.head.ver));
+        M_print (i18n (604, "Seq: %08X\t"), Chars_2_DW (pak.head.seq));
+        M_print (i18n (605, "Ses: %08X\n"), Chars_2_DW (pak.head.session));
     }
 //#endif
 //    if ( pak.head.cmd != SRV_BAD_PASS ) {
@@ -668,7 +668,7 @@ int main (int argc, char *argv[])
     srand (time (NULL));
     if (!strcmp (passwd, ""))
     {
-        M_print (i18n (63, "Enter password : "));
+        M_print ("%s ", i18n (63, "Enter password:"));
         Echo_Off ();
         M_fdnreadln (STDIN, passwd, sizeof (passwd));
         Echo_On ();

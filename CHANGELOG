@@ -1,4 +1,15 @@
 
+2001-05-12 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* lang/i18n-*: Mark changed translation strings.
+	* lang/*.i18n: Regenerate, update de.i18n.
+	* src/*: Fix lots of plenking and get as much formatting
+	  out of i18n strings as possible.
+	* src/icq_response.c: Replace Show_String* () functions by
+	  new PktPrintString () function.
+	* src/ui.c: Make sure user really wants to apply the user info
+	  changes he entered.
+	* include/buildmark.h: Upped pl.
+
 2001-05-04 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* src/util_ui.c: Fix output glitch.
 

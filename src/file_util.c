@@ -108,11 +108,11 @@ static void Initalize_RC_File (void)
 
     away_time = default_away_time;
 
-    M_print (i18n (88, "Enter UIN or 0 for new UIN: #"));
+    M_print ("%s ", i18n (88, "Enter UIN or 0 for new UIN:"));
     fflush (stdout);
     scanf ("%ld", &UIN);
   password_entry:
-    M_print (i18n (90, "Enter password : "));
+    M_print ("%s ", i18n (63, "Enter password:"));
     fflush (stdout);
     Echo_Off ();
     memset (passwd, 0, sizeof (passwd));
@@ -122,10 +122,10 @@ static void Initalize_RC_File (void)
     {
         if (0 == passwd[0])
         {
-            M_print (i18n (91, "\nMust enter password!\n"));
+            M_print ("\n%s\n", i18n (91, "Must enter password!"));
             goto password_entry;
         }
-        M_print (i18n (92, "\nReenter password to verify: "));
+        M_print ("\n%s ", i18n (92, "Reenter password to verify:"));
         fflush (stdout);
         Echo_Off ();
         memset (passwd2, 0, sizeof (passwd2));
@@ -133,30 +133,30 @@ static void Initalize_RC_File (void)
         Echo_On ();
         if (strcmp (passwd, passwd2))
         {
-            M_print (i18n (93, "\nPasswords did not match reenter\n"));
+            M_print ("\n%s\n", i18n (93, "Passwords did not match - please reenter."));
             goto password_entry;
         }
         Init_New_User ();
     }
 
 /* SOCKS5 stuff begin */
-    M_print (i18n (94, "\nSOCKS5 server hostname or IP (type 0 if you don't want to use this) : "));
+    M_print ("\n%s ", i18n (94, "SOCKS5 server hostname or IP (type 0 if you don't want to use this):"));
     fflush (stdout);
     scanf ("%s", s5Host);
     if (strlen (s5Host) > 1)
     {
         s5Use = 1;
-        M_print (i18n (95, "SOCKS5 port (in general 1080) : "));
+        M_print ("%s ", i18n (95, "SOCKS5 port (in general 1080):"));
         fflush (stdout);
         scanf ("%hu", &s5Port);
 
-        M_print (i18n (96, "SOCKS5 username (type 0 if you don't need authentification) : "));
+        M_print ("%s ", i18n (96, "SOCKS5 username (type 0 if you don't need authentification):"));
         fflush (stdout);
         scanf ("%s", s5Name);
         if (strlen (s5Name) > 1)
         {
             s5Auth = 1;
-            M_print (i18n (97, "SOCKS5 password : "));
+            M_print ("%s ", i18n (97, "SOCKS5 password:"));
             fflush (stdout);
             scanf ("%s", s5Pass);
         }
@@ -500,7 +500,7 @@ static void Read_RC_File (FD_T rcf)
             }
             else
             {
-                M_print (i18n (188, COLSERV "Unrecognized command in rc file : %s, ignored." COLNONE "\n"), tmp);
+                M_print (i18n (188, COLSERV "Unrecognized command in rc file '%s', ignored." COLNONE "\n"), tmp);
             }
         }
     }

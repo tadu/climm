@@ -65,7 +65,8 @@ void Do_Resend (SOK_T sok)
             if (Verbose)
             {
                 R_undraw ();
-                M_print (i18n (624, "\nResending message with SEQ num %04x.\tCMD "), (queued_msg->seq >> 16));
+                M_print ("\n");
+                M_print (i18n (624, "Resending message with SEQ num %04X CMD "), (queued_msg->seq >> 16));
                 Print_CMD (Chars_2_Word (&queued_msg->body[CMD_OFFSET]));
                 M_print (i18n (625, "(Attempt #%d.)"), queued_msg->attempts);
                 M_print ("%d\n", queued_msg->len);
@@ -92,7 +93,8 @@ void Do_Resend (SOK_T sok)
             if (CMD_SENDM == Chars_2_Word (pak.head.cmd))
             {
                 s_mesg = (SIMPLE_MESSAGE_PTR) pak.data;
-                M_print (i18n (626, "\nDiscarding message to "));
+                M_print ("\n");
+                M_print (i18n (626, "Discarding message to "));
                 Print_UIN_Name (Chars_2_DW (s_mesg->uin));
                 M_print (i18n (627, " after %d send attempts.  Message content:\n"), queued_msg->attempts - 1);
 
@@ -112,7 +114,7 @@ void Do_Resend (SOK_T sok)
                         strcpy (url_data, data);
 
                         M_print (i18n (628, " Description: " COLMESS "%s" COLNONE "\n"), url_desc);
-                        M_print (i18n (629, " URL        : " COLMESS "%s" COLNONE " "), url_data);
+                        M_print (i18n (629, " URL:         " COLMESS "%s" COLNONE), url_data);
                     }
                 }
                 else if (type == NORM_MESS || type == MRNORM_MESS)
@@ -124,7 +126,8 @@ void Do_Resend (SOK_T sok)
             }
             else
             {
-                M_print (i18n (630, "\nDiscarded a "));
+                M_print ("\n");
+                M_print (i18n (630, "Discarded a "));
                 Print_CMD (Chars_2_Word (pak.head.cmd));
                 M_print (i18n (631, " packet."));
                 if ((CMD_LOGIN == Chars_2_Word (pak.head.cmd))
