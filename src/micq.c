@@ -53,6 +53,14 @@
 #define MICQ_ICON_6 "  " BLUE "\\" UL "m" BLUE BOLD "/" BLUE "CQ" SGR0 "  "
 #define MICQ_ICON_7 "         "
 
+#define MICQ_ICON_NOCOLOR_1 "   _     "
+#define MICQ_ICON_NOCOLOR_2 " _/ \\_   "
+#define MICQ_ICON_NOCOLOR_3 "/ \\ / \\  "
+#define MICQ_ICON_NOCOLOR_4 ">--o--<  "
+#define MICQ_ICON_NOCOLOR_5 "\\_/ \\_/  "
+#define MICQ_ICON_NOCOLOR_6 "  \\m/CQ  "
+#define MICQ_ICON_NOCOLOR_7 "         "
+
 user_interface_state uiG = { 0 };
 Preferences *prG;
 
@@ -230,12 +238,24 @@ int main (int argc, char *argv[])
     if (arg_v)
         prG->verbose = arg_vv;
     
-    M_logo (MICQ_ICON_1 "\n" MICQ_ICON_2);
-    M_logo (MICQ_ICON_3);
-    M_logo (MICQ_ICON_4);
-    M_logo (MICQ_ICON_5);
-    M_logo (MICQ_ICON_6);
-    M_logo (MICQ_ICON_7);
+    if (prG->flags & FLAG_COLOR)
+    {
+        M_logo (MICQ_ICON_1 "\n" MICQ_ICON_2);
+        M_logo (MICQ_ICON_3);
+        M_logo (MICQ_ICON_4);
+        M_logo (MICQ_ICON_5);
+        M_logo (MICQ_ICON_6);
+        M_logo (MICQ_ICON_7);
+    }
+    else
+    {
+        M_logo (MICQ_ICON_NOCOLOR_1 "\n" MICQ_ICON_NOCOLOR_2);
+        M_logo (MICQ_ICON_NOCOLOR_3);
+        M_logo (MICQ_ICON_NOCOLOR_4);
+        M_logo (MICQ_ICON_NOCOLOR_5);
+        M_logo (MICQ_ICON_NOCOLOR_6);
+        M_logo (MICQ_ICON_NOCOLOR_7);
+    }
 
     M_print (BuildVersion ());
     M_print (BuildAttribution ());
@@ -246,12 +266,12 @@ int main (int argc, char *argv[])
 
     if (arg_h)
     {
-        M_print  (i18n (1607, "Usage: micq [-h] [-v[level]] [-f <rc-file>] [-l <logfile>]\n"));
+        M_print  (i18n (1607, "Usage: micq [-h] [-c] [-i <locale>] [-b <basedir>] \n            [-f <configfile>] [-v[<level>]] [-l <logplace>]\n"));
         M_print  (i18n (2199, "  -h, --help     gives this help text\n"));
         M_print  (i18n (2200, "  -v, --verbose  set (or increase) verbosity (mostly for debugging)\n"));
         M_printf (i18n (2201, "  -b, --basedir  use given BASE dir (default: %s)\n"), "~/.micq/");
-        M_printf (i18n (2202, "  -f, --config   use given configuration file (default: %s)\n"), "BASE micqrc");
-        M_printf (i18n (2203, "  -l, --logplace use given log file/dir (default: %s)\n"), "BASE history/");
+        M_printf (i18n (2202, "  -f, --config   use given configuration file (default: %s)\n"), "BASE/micqrc");
+        M_printf (i18n (2203, "  -l, --logplace use given log file/dir (default: %s)\n"), "BASE/history/");
         M_print  (i18n (2204, "  -i, --i1" "8n     use given locale (default: auto-detected)\n"));
         M_print  (i18n (2205, "  -c, --nocolor  disable colors\n"));
         exit (0);
