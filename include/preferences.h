@@ -106,6 +106,7 @@ const char *PrefLogNameReal (Preferences *pref);
 
 #define CONN_AUTOLOGIN   1
 #define CONN_WIZARD      2
+#define CONN_INITWP      4
 
 #define TABS_SIMPLE      1
 #define TABS_CYCLE       2

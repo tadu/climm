@@ -1038,12 +1038,15 @@ static JUMP_SNAC_F(SnacSrvReplylists)
     SnacCliReqofflinemsgs (serv);
     if (serv->flags & CONN_WIZARD)
     {
-        Contact *cont = ContactUIN (serv, serv->uin);
-        CONTACT_GENERAL (cont);
-        CONTACT_MORE (cont);
-        SnacCliMetasetabout (serv, "mICQ");
-        SnacCliMetasetgeneral (serv, cont);
-        SnacCliMetasetmore (serv, cont);
+        if (serv->flags & CONN_INITWP)
+        {
+            Contact *cont = ContactUIN (serv, serv->uin);
+            CONTACT_GENERAL (cont);
+            CONTACT_MORE (cont);
+            SnacCliMetasetabout (serv, "mICQ");
+            SnacCliMetasetgeneral (serv, cont);
+            SnacCliMetasetmore (serv, cont);
+        }
         
         SnacCliReqroster  (serv);
         QueueEnqueueData (serv, QUEUE_REQUEST_ROSTER, 3, 0x7fffffffL,
@@ -1395,6 +1398,7 @@ static JUMP_SNAC_F(SnacSrvNewuin)
 
         event->conn->spref->flags |= CONN_AUTOLOGIN;
         event->conn->assoc->spref->flags |= CONN_AUTOLOGIN;
+        event->conn->flags |= CONN_INITWP;
 
         s_repl (&event->conn->contacts->name, s_sprintf ("contacts-icq8-%ld", event->conn->uin));
         M_print (i18n (1790, "Setup wizard finished. Congratulations to your new UIN!\n"));
