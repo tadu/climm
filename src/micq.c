@@ -350,7 +350,7 @@ int main (int argc, char *argv[])
             M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
             M_printf (i18n (9999, "Locale setting %s ignored - use a real locale instead.\n"), s_cquote (prG->locale_orig, COLQUOTE));
         }
-        if (prG->locale_broken)
+        if (prG->locale_full && prG->locale_broken)
         {
             M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
             M_printf (i18n (9999, "Your system doesn't know the %s locale - try %siconv --list%s.\n"),
