@@ -528,8 +528,13 @@ BOOL ContactRem (ContactGroup *group, Contact *cont DEBUGPARAM)
         for (i = 0; i < group->used; i++)
             if (group->contacts[i] == cont)
             {
-                group->contacts[i] = group->contacts[--group->used];
-                group->contacts[group->used] = 0;
+                if (orig->temp)
+                    group->contacts[i] = NULL;
+                else
+                {
+                    group->contacts[i] = group->contacts[--group->used];
+                    group->contacts[group->used] = NULL;
+                }
                 Debug (DEB_CONTACT, "rem   #%d %ld '%s' %p to %p", cont->id, cont->uin, cont->nick, cont, orig);
                 return TRUE;
             }

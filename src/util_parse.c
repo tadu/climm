@@ -234,6 +234,7 @@ ContactGroup *s_parselist_s (const char **input, BOOL rem, Connection *serv)
     if (scg)
         ContactGroupD (scg);
     scg = ContactGroupC (NULL, 0, "");
+    scg->temp = 1; /* ContactD will not compact contacts on temporary lists! */
     while (*p)
     {
         while (*p && strchr (DEFAULT_SEP, *p))
