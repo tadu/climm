@@ -239,6 +239,37 @@ const char *s_ind (const char *str)
     return t;
 }
 
+/*
+ * Count the string length in unicode characters.
+ */
+UDWORD s_strlen (const char *str)
+{
+    UDWORD c;
+    
+    for (c = 0; *str; str++)
+        if (!(*str & 0x80) || (*str & 0x40))
+            c++;
+    return c;
+}
+
+/*
+ * Gives the byte offset of a character offset in UTF-8.
+ */
+UDWORD s_offset  (const char *str, UDWORD offset)
+{
+    int off;
+    for (off = 0; offset && *str; offset--, str++, off++)
+    {
+        if (*str & 0x80)
+        {
+            str++;
+            while (*str && (~(*str) & 0x40))
+                str++, off++;
+            str--;
+        }
+    }
+    return off;
+}
 
 /*
  * Hex dump to a string with ASCII.

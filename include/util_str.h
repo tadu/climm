@@ -13,6 +13,8 @@ char       *s_catf    (char *str, UDWORD *size, const char *fmt, ...);
 const char *s_dump    (const UBYTE *data, UWORD len);
 const char *s_dumpnd  (const UBYTE *data, UWORD len);
 const char *s_ind     (const char *str);
+UDWORD      s_strlen  (const char *str);
+UDWORD      s_offset  (const char *str, UDWORD offset);
 
 BOOL s_parse     (char **input, char **parsed);
 BOOL s_parsenick (char **input, Contact **parsed, Contact **parsedr, Connection *serv);
