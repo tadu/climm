@@ -42,9 +42,6 @@ When the Author passed away 2001-01-05, some of us Users
 overtook the "leadership" of the project and its now
 actively developed by some of us Freaks.
 
-mICQ is now hosted at Sourceforge, where you might find
-it at <http://sourceforge.net/projects/micq/>
-
 
 c) Mailinglist
 
@@ -68,22 +65,25 @@ You might get it at:
 
 Primary Mirror
     ftp://micq.chatzone.org:/
-    ftp://micq.ukeer.de:/
+    http://micq.ukeer.de:/
 
 CVS (do that only if you know what cvs is)
-export CVSROOT=:pserver:anonymous@micq.sourceforge.net:/home/cvsroot
-cvs login
+$ export CVSROOT=:pserver:anonymous@mc.ukeer.de:/usr/local/cvsroot
+$ cvs login
 [leave password empty]
-cvs -z9 co micq
+$ cvs -z9 co micq
 
+(Yes: '$' is the Prompt only ;)
 
 e) Compile
 
-cd include
-vi config.h
-cd ../src
-vi Makefile
-make
+Edit include/config.h to your needs, then `make` and
+then (optionally) `make install`.
+
+$ vi include/config.h
+$ make
+$ su
+# make install
 
 
 f) Usage
@@ -94,3 +94,16 @@ Password.
 
 
 g) Youll find original docs in the src/ Subdirectory.
+
+
+h) NOTE!
+
+mICQ is in a Phase of being re-organized, thus things may change
+very fast. When in Doubt, have a Look at http://micq.ukeer.de/ or
+email mc@verdinet.de or...
+However, look out for announcements on Freshmeat.net.
+
+We will see how the Future of mICQ looks.
+
+
+		- Rico Gloeckner <mc@verdinet.de> 2000-01-23

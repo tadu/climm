@@ -37,12 +37,8 @@ micq : ${OBJS}
 .c.o:     
 	${CC} ${CFLAGS} ${INCLUDE} -c $< -o $@
 
-# a dependency of the objects of the headers is senseless imho.
-# ${OBJS} :
-
 clean :
 	rm -f ${OBJS} micq *~
 
 install:
-	@install -g root -o root -m 755 micq /usr/local/bin
-	@install -g root -o root -m 755 ../micq.1 /usr/local/man/man1
+	install -g root -o root -m 755 micq /usr/local/bin
