@@ -28,7 +28,7 @@
 #include "util_str.h"
 #include "preferences.h"
 
-#define c_pin(x) ConvToUTF8 (x, ENC_LATIN1, -1, 0)
+#define c_pin(x) ConvFrom (x, ENC_LATIN1)->txt
 
 static const char *syntable[] = {
     "s1x2s",   "W-",
@@ -167,19 +167,19 @@ char *PacketDump (Packet *pak, const char *syntax)
                 nr = PacketReadAtB2 (pak, pak->rpos);
                 if (pak->len < pak->rpos + nr + 2) break;
                 s_cat  (&str, s_dumpnd (pak->data + pak->rpos, nr + 2));
-                s_catf (&str, " " COLDEBUG "BStr     '%s'" COLNONE "\n", c_pin (PacketReadB2Str (pak, NULL)->txt));
+                s_catf (&str, " " COLDEBUG "BStr     '%s'" COLNONE "\n", c_pin (PacketReadB2Str (pak, NULL)));
                 continue;
             case 'L':
                 nr = PacketReadAt2 (pak, pak->rpos);
                 if (pak->len < pak->rpos + nr + 2) break;
                 s_cat  (&str, s_dumpnd (pak->data + pak->rpos, nr + 2));
-                s_catf (&str, " " COLDEBUG "LNTS     '%s'" COLNONE "\n", c_pin (PacketReadL2Str (pak, NULL)->txt));
+                s_catf (&str, " " COLDEBUG "LNTS     '%s'" COLNONE "\n", c_pin (PacketReadL2Str (pak, NULL)));
                 continue;
             case 'S':
                 nr = PacketReadAt4 (pak, pak->rpos);
                 if (pak->len < pak->rpos + nr + 4) break;
                 s_cat  (&str, s_dumpnd (pak->data + pak->rpos, nr + 4));
-                s_catf (&str, " " COLDEBUG "DLStr    '%s'" COLNONE "\n", c_pin (PacketReadL4Str (pak, NULL)->txt));
+                s_catf (&str, " " COLDEBUG "DLStr    '%s'" COLNONE "\n", c_pin (PacketReadL4Str (pak, NULL)));
                 continue;
             case '-':
                 l = last;

@@ -58,7 +58,8 @@
 
 void Initialize_RC_File ()
 {
-    char *pwd, *input;
+    strc_t line;
+    char *pwd;
     Connection *conn, *connt;
 #ifdef ENABLE_REMOTECONTROL
     Connection *conns;
@@ -75,9 +76,10 @@ void Initialize_RC_File ()
     M_print (i18n (1794, "If you already have an UIN, please enter it. Otherwise, enter 0, and I will request one for you.\n"));
     M_printf ("%s ", i18n (1618, "UIN:"));
     fflush (stdout);
-    input = UtilIOReadline (stdin);
+    line = UtilIOReadline (stdin);
     tmpuin = 0;
-    sscanf (input, "%ld", &tmpuin);
+    if (line)
+        sscanf (line->txt, "%ld", &tmpuin);
     uin = tmpuin;
 
     M_print ("\n");
@@ -85,36 +87,39 @@ void Initialize_RC_File ()
         M_printf (i18n (1781, "Your password for UIN %ld:\n"), uin);
     else
         M_print (i18n (1782, "You need a password for your new UIN.\n"));
-    do
+    while (1)
     {
         M_printf ("%s ", i18n (1795, "Password:"));
         fflush (stdout);
         Echo_Off ();
-        input = UtilIOReadline (stdin);
-        assert (input);
+        line = UtilIOReadline (stdin);
         Echo_On ();
+        if (!line)
+            continue;
         M_print ("\n");
         if (uin)
-            continue;
+            break;
 
         M_print (i18n (1783, "To prevent typos, please enter your password again.\n"));
         M_printf ("%s ", i18n (1795, "Password:"));
         fflush (stdout);
         Echo_Off ();
-        pwd = strdup (input);
-        input = UtilIOReadline (stdin);
-        assert (input);
+        pwd = strdup (line->txt);
+        line = UtilIOReadline (stdin);
         Echo_On ();
+        if (!line)
+            continue;
         M_print ("\n");
-        if (strcmp (pwd, input))
+        if (strcmp (pwd, line->txt))
         {
             M_printf ("\n%s\n", i18n (1093, "Passwords did not match - please try again."));
-            *input = 0;
+            free (pwd);
+            continue;
         }
         free (pwd);
+        break;
     }
-    while (!*input);
-    passwd = strdup (c_out (input));
+    passwd = strdup (c_out (line->txt));
 
     prG->s5Use = 0;
     prG->s5Port = 0;
@@ -123,24 +128,25 @@ void Initialize_RC_File ()
     M_print (i18n (1784, "If you are firewalled, you may need to use a SOCKS5 server. If you do, please enter its hostname or IP address. Otherwise, or if unsure, just press return.\n"));
     M_printf ("%s ", i18n (1094, "SOCKS5 server:"));
     fflush (stdout);
-    input = UtilIOReadline (stdin);
-    if (input && strlen (input) > 1)
+    line = UtilIOReadline (stdin);
+    if (line && line->len)
     {
-        if ((t = strchr (input, ':')))
+        if (strchr (line->txt, ':'))
         {
+            prG->s5Host = strdup (line->txt);
+            t = strchr (prG->s5Host, ':');
             prG->s5Port = atoi (t + 1);
             *t = '\0';
-            prG->s5Host = strdup (input);
         }
         else
         {
-            prG->s5Host = strdup (input);
+            prG->s5Host = strdup (line->txt);
             M_print (i18n (1786, "I also need the port the socks server listens on. If unsure, press return for the default port.\n"));
             M_printf ("%s ", i18n (1095, "SOCKS5 port:"));
             fflush (stdout);
-            input = UtilIOReadline (stdin);
-            if (input)
-                sscanf (input, "%hu", &prG->s5Port);
+            line = UtilIOReadline (stdin);
+            if (line)
+                sscanf (line->txt, "%hu", &prG->s5Port);
         }
         if (!prG->s5Port)
             prG->s5Port = 1080;
@@ -154,17 +160,17 @@ void Initialize_RC_File ()
         M_print (i18n (1787, "You probably need to authenticate yourself to the socks server. If so, you need to enter the user name the administrator of the socks server gave you. Otherwise, just press return.\n"));
         M_printf ("%s ", i18n (1096, "SOCKS5 user name:"));
         fflush (stdout);
-        input = UtilIOReadline (stdin);
-        if (input && strlen (input) > 1)
+        line = UtilIOReadline (stdin);
+        if (line && line->len)
         {
             prG->s5Auth = 1;
-            prG->s5Name = strdup (input);
+            prG->s5Name = strdup (line->txt);
             M_print (i18n (1788, "Now I also need the password for this user.\n"));
             M_printf ("%s ", i18n (1097, "SOCKS5 password:"));
             fflush (stdout);
-            input = UtilIOReadline (stdin);
-            if (input)
-                prG->s5Pass = strdup (input);
+            line = UtilIOReadline (stdin);
+            if (line && line->len)
+                prG->s5Pass = strdup (line->txt);
         }
     }
 
@@ -268,8 +274,8 @@ void Initialize_RC_File ()
     free (passwd);
 }
 
-#define PrefParse(x)          switch (1) { case 1: if (!s_parse    (&args, &x)) { M_printf (i18n (2123, "%sSyntax error%s: Too few arguments: '%s'\n"), COLERROR, COLNONE, line); continue; }}
-#define PrefParseInt(i)       switch (1) { case 1: if (!s_parseint (&args, &i)) { M_printf (i18n (2124, "%sSyntax error%s: Not an integer: '%s'\n"), COLERROR, COLNONE, line); continue; }}
+#define PrefParse(x)          switch (1) { case 1: if (!s_parse    (&args, &par)) { M_printf (i18n (2123, "%sSyntax error%s: Too few arguments: '%s'\n"), COLERROR, COLNONE, line->txt); x = par->txt; continue; }}
+#define PrefParseInt(i)       switch (1) { case 1: if (!s_parseint (&args, &i)) { M_printf (i18n (2124, "%sSyntax error%s: Not an integer: '%s'\n"), COLERROR, COLNONE, line->txt); continue; }}
 #define ERROR continue;
 
 /*
@@ -278,7 +284,7 @@ void Initialize_RC_File ()
 int Read_RC_File (FILE *rcf)
 {
     char *tmp = NULL, *tmp2 = NULL, *cmd = NULL;
-    char *line;
+    strc_t line, par;
     const char *args, *p;
     Contact *cont = NULL, *lastcont = NULL;
     Connection *oldconn = NULL, *conn = NULL, *tconn;
@@ -296,24 +302,25 @@ int Read_RC_File (FILE *rcf)
     spooled_tab_nicks = 0;
     for (section = 0; (line = UtilIOReadline (rcf)); )
     {
-        if (!*line || (*line == '#'))
+        if (!line->len || (line->txt[0] == '#'))
             continue;
-        if (*line == '[')
+        args = ConvFrom (line, enc)->txt;
+        if (*args == '[')
         {
-            if (!strcasecmp (line, "[General]"))
+            if (!strcasecmp (args, "[General]"))
                 section = 0;
-            else if (!strcasecmp (line, "[Contacts]"))
+            else if (!strcasecmp (args, "[Contacts]"))
                 section = 1;
-            else if (!strcasecmp (line, "[Strings]"))
+            else if (!strcasecmp (args, "[Strings]"))
                 section = 2;
-            else if (!strcasecmp (line, "[Connection]"))
+            else if (!strcasecmp (args, "[Connection]"))
             {
                 section = 3;
                 oldconn = conn;
                 conn = ConnectionC ();
                 conn->spref = PreferencesConnectionC ();
             }
-            else if (!strcasecmp (line, "[Group]"))
+            else if (!strcasecmp (args, "[Group]"))
             {
                 section = 4;
                 if (format < 2)
@@ -331,23 +338,23 @@ int Read_RC_File (FILE *rcf)
             else
             {
                 M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                M_printf (i18n (1659, "Unknown section '%s' in configuration file."), ConvToUTF8 (line, enc, -1, 0));
+                M_printf (i18n (1659, "Unknown section '%s' in configuration file."), args);
                 M_print ("\n");
                 section = -1;
             }
             continue;
         }
-        args = line;
         switch (section)
         {
             case -1:
                 M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
                 M_print  (i18n (1675, "Ignored line:"));
-                M_printf (" %s\n", ConvToUTF8 (args, enc, -1, 0));
+                M_printf (" %s\n", args);
                 break;
             case 0:
-                if (!s_parse (&args, &cmd))
+                if (!s_parse (&args, &par))
                     continue;
+                cmd = par->txt;
 
                 if (!strcasecmp (cmd, "encoding"))
                 {
@@ -426,12 +433,13 @@ int Read_RC_File (FILE *rcf)
                 {
                     if (!strcasecmp (cmd, "receivescript"))
                         dep = 8;
-                    if (!s_parse (&args, &tmp))
+                    if (!s_parse (&args, &par))
                     {
                         dep = 9;
                         prG->event_cmd = NULL;
                         continue;
                     }
+                    tmp = par->txt;
                     if (!strcmp (tmp, "off") || !strcmp (tmp, i18n (1086, "off")) || !*tmp)
                         prG->event_cmd = NULL;
                     else
@@ -516,12 +524,13 @@ int Read_RC_File (FILE *rcf)
                 }
                 else if (!strcasecmp (cmd, "auto"))
                 {
-                    if (!s_parse (&args, &tmp))
+                    if (!s_parse (&args, &par))
                     {
                         dep = 10;
                         prG->flags |= FLAG_AUTOREPLY;
                         continue;
                     }
+                    tmp = par->txt;
                     
                     if (!strcasecmp (tmp, "on"))
                         prG->flags |= FLAG_AUTOREPLY;
@@ -530,25 +539,25 @@ int Read_RC_File (FILE *rcf)
                     else if (!strcasecmp (tmp, "away"))
                     {
                         PrefParse (tmp);
-                        ContactOptionsSetStr (&prG->copts, CO_AUTOAWAY, ConvToUTF8 (tmp, enc, -1, 0));
+                        ContactOptionsSetStr (&prG->copts, CO_AUTOAWAY, tmp);
                         dep = 1;
                     }
                     else if (!strcasecmp (tmp, "na"))
                     {
                         PrefParse (tmp);
-                        ContactOptionsSetStr (&prG->copts, CO_AUTONA, ConvToUTF8 (tmp, enc, -1, 0));
+                        ContactOptionsSetStr (&prG->copts, CO_AUTONA, tmp);
                         dep = 1;
                     }
                     else if (!strcasecmp (tmp, "dnd"))
                     {
                         PrefParse (tmp);
-                        ContactOptionsSetStr (&prG->copts, CO_AUTODND, ConvToUTF8 (tmp, enc, -1, 0));
+                        ContactOptionsSetStr (&prG->copts, CO_AUTODND, tmp);
                         dep = 1;
                     }
                     else if (!strcasecmp (tmp, "occ"))
                     {
                         PrefParse (tmp);
-                        ContactOptionsSetStr (&prG->copts, CO_AUTOOCC, ConvToUTF8 (tmp, enc, -1, 0));
+                        ContactOptionsSetStr (&prG->copts, CO_AUTOOCC, tmp);
                         dep = 1;
                     }
                     else if (!strcasecmp (tmp, "inv"))
@@ -559,7 +568,7 @@ int Read_RC_File (FILE *rcf)
                     else if (!strcasecmp (tmp, "ffc"))
                     {
                         PrefParse (tmp);
-                        ContactOptionsSetStr (&prG->copts, CO_AUTOFFC, ConvToUTF8 (tmp, enc, -1, 0));
+                        ContactOptionsSetStr (&prG->copts, CO_AUTOFFC, tmp);
                         dep = 1;
                     }
                     else
@@ -567,12 +576,13 @@ int Read_RC_File (FILE *rcf)
                 }
                 else if (!strcasecmp (cmd, "sound"))
                 {
-                    if (!s_parse (&args, &tmp))
+                    if (!s_parse (&args, &par))
                     {
                         prG->sound = SFLAG_BEEP;
                         dep = 11;
                         continue;
                     }
+                    tmp = par->txt;
                     if (!strcasecmp (tmp, "on") || !strcasecmp (tmp, "beep"))
                         prG->sound = SFLAG_BEEP;
                     else if (!strcasecmp (tmp, "event"))
@@ -598,7 +608,7 @@ int Read_RC_File (FILE *rcf)
                 {
                     PrefParse (tmp);
                     if (spooled_tab_nicks < TAB_SLOTS)
-                        tab_nick_spool[spooled_tab_nicks++] = strdup (ConvToUTF8 (tmp, enc, -1, 0));
+                        tab_nick_spool[spooled_tab_nicks++] = strdup (tmp);
                 }
                 else if (!strcasecmp (cmd, "set"))
                 {
@@ -761,7 +771,7 @@ int Read_RC_File (FILE *rcf)
                 else
                 {
                     M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), ConvToUTF8 (cmd, enc, -1, 0));
+                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
                     M_print ("\n");
                 }
                 break;
@@ -822,7 +832,7 @@ int Read_RC_File (FILE *rcf)
                     if ((cont = ContactFind (tconn->contacts, 0, uin, NULL)))
                     {
                         j = 1;
-                        ContactAddAlias (cont, ConvToUTF8 (cmd, enc, -1, 0));
+                        ContactAddAlias (cont, cmd);
                         ContactOptionsSetVal (&cont->copts, flags, 1); /* FIXME */
                     }
                 }
@@ -834,7 +844,7 @@ int Read_RC_File (FILE *rcf)
                             break;
                     if (!tconn)
                         break;
-                    if (!(cont = ContactFindCreate (tconn->contacts, 0, uin, ConvToUTF8 (cmd, enc, -1, 0))))
+                    if (!(cont = ContactFindCreate (tconn->contacts, 0, uin, cmd)))
                     {
                         M_printf (COLERROR "%s" COLNONE " %s\n", i18n (1619, "Warning:"),
                                  i18n (1620, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
@@ -850,9 +860,9 @@ int Read_RC_File (FILE *rcf)
                 if (!strcasecmp (cmd, "alter"))
                 {
                     PrefParse (tmp);
-                    tmp = strdup (s_quote (ConvToUTF8 (tmp, enc, -1, 0)));
+                    tmp = strdup (s_quote (tmp));
                     PrefParse (tmp2);
-                    tmp2 = strdup (s_quote (ConvToUTF8 (tmp2, enc, -1, 0)));
+                    tmp2 = strdup (s_quote (tmp2));
                     
                     CmdUser (cmd = strdup (s_sprintf ("\xb6" "alter quiet %s %s", tmp, tmp2)));
 
@@ -863,9 +873,9 @@ int Read_RC_File (FILE *rcf)
                 else if (!strcasecmp (cmd, "alias"))
                 {
                     PrefParse (tmp);
-                    tmp = strdup (s_quote (ConvToUTF8 (tmp, enc, -1, 0)));
+                    tmp = strdup (s_quote (tmp));
                     PrefParse (tmp2);
-                    tmp2 = strdup (ConvToUTF8 (tmp2, enc, -1, 0));
+                    tmp2 = strdup (tmp2);
 
                     CmdUser (cmd = strdup (s_sprintf ("\xb6" "alias %s %s", tmp, tmp2)));
                     
@@ -876,7 +886,7 @@ int Read_RC_File (FILE *rcf)
                 else
                 {
                     M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), ConvToUTF8 (cmd, enc, -1, 0));
+                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
                     M_print ("\n");
                 }
                 break;
@@ -923,9 +933,9 @@ int Read_RC_File (FILE *rcf)
                     }
                     else
                         ERROR;
-                    if (s_parse (&args, &cmd))
+                    if (s_parse (&args, &par))
                     {
-                        if (!strcasecmp (cmd, "auto"))
+                        if (!strcasecmp (par->txt, "auto"))
                             conn->spref->flags |= CONN_AUTOLOGIN;
                     }
                 }
@@ -960,7 +970,7 @@ int Read_RC_File (FILE *rcf)
                 else if (!strcasecmp (cmd, "password"))
                 {
                     PrefParse (tmp);
-                    s_repl (&conn->spref->passwd, ConvToUTF8 (tmp, enc, -1, 0));
+                    s_repl (&conn->spref->passwd, tmp);
                 }
                 else if (!strcasecmp (cmd, "status"))
                 {
@@ -982,7 +992,7 @@ int Read_RC_File (FILE *rcf)
                 if (!strcasecmp (cmd, "label") && !cg->used)
                 {
                     PrefParse (tmp);
-                    s_repl (&cg->name, ConvToUTF8 (tmp, enc, -1, 0));
+                    s_repl (&cg->name, tmp);
                     if (!strncmp (cg->name, "contacts-", 9))
                     {
                         UWORD type = 0;
@@ -1050,7 +1060,7 @@ int Read_RC_File (FILE *rcf)
                 else
                 {
                     M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), ConvToUTF8 (cmd, enc, -1, 0));
+                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
                     M_print ("\n");
                 }
                 break;
@@ -1148,24 +1158,26 @@ int Read_RC_File (FILE *rcf)
  */
 void PrefReadStat (FILE *stf)
 {
-    char *line, *cmd = NULL;
+    char *cmd = NULL;
     const char *args;
     Contact *cont = NULL;
     Connection *conn;
     ContactGroup *cg = NULL;
     int section, dep = 0;
     UDWORD i;
+    strc_t par, line;
     UBYTE format = 0;
     UDWORD uinconts = 0;
     Contact *uincont[20];
 
     for (section = 0; (line = UtilIOReadline (stf)); )
     {
-        if (!*line || (*line == '#'))
+        if (!line->len || (line->txt[0] == '#'))
             continue;
-        if (*line == '[')
+        args = ConvFrom (line, ENC_UTF8)->txt;
+        if (*args == '[')
         {
-            if (!strcasecmp (line, "[Group]"))
+            if (!strcasecmp (args, "[Group]"))
             {
                 section = 4;
                 cg = ContactGroupC (NULL, 0, NULL);
@@ -1177,24 +1189,23 @@ void PrefReadStat (FILE *stf)
                         break;
                     }
             }
-            else if (!strcasecmp (line, "[Contacts]"))
+            else if (!strcasecmp (args, "[Contacts]"))
                 section = 5;
             else
             {
                 M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                M_printf (i18n (1659, "Unknown section '%s' in configuration file."), ConvToUTF8 (line, ENC_UTF8, -1, 0));
+                M_printf (i18n (1659, "Unknown section '%s' in configuration file."), args);
                 M_print ("\n");
                 section = -1;
             }
             continue;
         }
-        args = line;
         switch (section)
         {
             case -1:
                 M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
                 M_print  (i18n (1675, "Ignored line:"));
-                M_printf (" %s\n", ConvToUTF8 (args, ENC_UTF8, -1, 0));
+                M_printf (" %s\n", args);
                 break;
             case 0:
                 PrefParse (cmd);
@@ -1208,7 +1219,7 @@ void PrefReadStat (FILE *stf)
                 else
                 {
                     M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), ConvToUTF8 (cmd, ENC_UTF8, -1, 0));
+                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
                     M_print ("\n");
                 }
                 break;
@@ -1217,7 +1228,7 @@ void PrefReadStat (FILE *stf)
                 if (!strcasecmp (cmd, "label") && !cg->used)
                 {
                     PrefParse (cmd);
-                    s_repl (&cg->name, ConvToUTF8 (cmd, ENC_UTF8, -1, 0));
+                    s_repl (&cg->name, cmd);
                     if (!strncmp (cg->name, "contacts-", 9))
                     {
                         UWORD type = 0;
@@ -1287,7 +1298,7 @@ void PrefReadStat (FILE *stf)
                 else
                 {
                     M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), ConvToUTF8 (cmd, ENC_UTF8, -1, 0));
+                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
                     M_print ("\n");
                 }
                 break;
@@ -1305,13 +1316,13 @@ void PrefReadStat (FILE *stf)
                         if (conn->contacts && (cont = ContactFind (conn->contacts, 0, uin, NULL)) && uinconts < 20)
                         {
                             uincont[uinconts++] = cont;
-                            ContactAddAlias (cont, ConvToUTF8 (cmd, ENC_UTF8, -1, 0));
+                            ContactAddAlias (cont, cmd);
                         }
                     }
-                    while (s_parse (&args, &cmd))
+                    while (s_parse (&args, &par))
                     {
                         for (i = 0; i < uinconts; i++)
-                            ContactAddAlias (uincont[i], ConvToUTF8 (cmd, ENC_UTF8, -1, 0));
+                            ContactAddAlias (uincont[i], par->txt);
                     }
                 }
                 else if (!strcasecmp (cmd, "options"))
@@ -1322,7 +1333,7 @@ void PrefReadStat (FILE *stf)
                 else
                 {
                     M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), ConvToUTF8 (cmd, ENC_UTF8, -1, 0));
+                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
                     M_print ("\n");
                 }
                 break;

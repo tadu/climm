@@ -336,7 +336,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     Packet *ack_pak = ack_event->pak;
     Event *e1, *e2;
     const char *txt, *ack_msg;
-    const char *text, *ctext, *reason, *cname, *cctmp;
+    strc_t text, cname, ctext, reason, cctmp;
     char *name;
     UDWORD tmp, cmd, flen;
     UWORD unk, seq, msgtype, /*unk2,*/ pri;
@@ -351,7 +351,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
 
     /*unk2=*/ PacketRead2    (inc_pak);
     pri     = PacketRead2    (inc_pak);
-    text    = PacketReadL2Str (inc_pak, NULL)->txt;
+    text    = PacketReadL2Str (inc_pak, NULL);
     
 #ifdef WIP
     if (prG->verbose)
@@ -360,7 +360,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
 #endif
  
     ExtraSet (extra, EXTRA_MESSAGE, msgtype, msgtype == MSG_NORM ?
-              c_in_to_0 (text, cont) : c_in_to (text, cont));
+              ConvFromCont (text, cont) : c_in_to_split (text, cont));
 
     accept = FALSE;
 
@@ -411,11 +411,11 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
 
         case MSG_FILE:
             cmd     = PacketRead4 (inc_pak);
-            cname   = PacketReadL2Str (inc_pak, NULL)->txt;
+            cname   = PacketReadL2Str (inc_pak, NULL);
             flen    = PacketRead4 (inc_pak);
             msgtype = PacketRead4 (inc_pak);
             
-            name = strdup (c_in_to (cname, cont));
+            name = strdup (ConvFromCont (cname, cont));
             
             flist = PeerFileCreate (serv);
             if (!ExtraGet (extra, EXTRA_FILETRANS) && flen)
@@ -480,18 +480,18 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                 cmd    = PacketRead2 (inc_pak);
                          PacketReadData (inc_pak, &t, 16);
                          PacketRead2 (inc_pak);
-                ctext  = PacketReadL4Str (inc_pak, NULL)->txt;
+                ctext  = PacketReadL4Str (inc_pak, NULL);
                          PacketReadData (inc_pak, NULL, 15);
                          PacketRead4 (inc_pak);
-                reason = PacketReadL4Str (inc_pak, NULL)->txt;
+                reason = PacketReadL4Str (inc_pak, NULL);
                 /*port=*/PacketReadB2 (inc_pak);
                 /*pad=*/ PacketRead2 (inc_pak);
-                cname  = PacketReadL2Str (inc_pak, NULL)->txt;
+                cname  = PacketReadL2Str (inc_pak, NULL);
                 flen   = PacketRead4 (inc_pak);
                 /*port2*/PacketRead4 (inc_pak);
                 
-                gtext = strdup (c_in_to (ctext, cont));
-                name = strdup (c_in_to (cname, cont));
+                gtext = strdup (ConvFromCont (ctext, cont));
+                name = strdup (ConvFromCont (cname, cont));
                 
                 switch (cmd)
                 {
@@ -544,7 +544,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                             IMSrvMsg (cont, serv->assoc, NOW, ExtraSet (ExtraClone (extra),
                                       EXTRA_MESSAGE, MSG_CHAT, name));
                             IMSrvMsg (cont, serv->assoc, NOW, ExtraSet (ExtraClone (extra),
-                                      EXTRA_MESSAGE, MSG_CHAT, reason));
+                                      EXTRA_MESSAGE, MSG_CHAT, reason->txt));
                             PacketWrite2    (ack_pak, TCP_ACK_REFUSE);
                             PacketWrite2    (ack_pak, ack_flags);
                             PacketWriteLNTS (ack_pak, "");
@@ -553,7 +553,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                         }
                         else if (id[0] == (char)0x2a)
                         {
-                            IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraClone (extra), EXTRA_MESSAGE, MSG_CONTACT, c_in_to (reason, cont)));
+                            IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraClone (extra), EXTRA_MESSAGE, MSG_CONTACT, c_in_to_split (reason, cont)));
                             PacketWrite2    (ack_pak, ack_status);
                             PacketWrite2    (ack_pak, ack_flags);
                             PacketWriteLNTS (ack_pak, "");
@@ -599,10 +599,10 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
         case MSG_CONTACT:
             /**/    PacketRead4 (inc_pak);
             /**/    PacketRead4 (inc_pak);
-            cctmp = PacketReadL4Str (inc_pak, NULL)->txt;
-            if (!strcmp (cctmp, CAP_GID_UTF8))
-                ExtraSet (extra, EXTRA_MESSAGE, msgtype, text);
-            if (*text)
+            cctmp = PacketReadL4Str (inc_pak, NULL);
+            if (!strcmp (cctmp->txt, CAP_GID_UTF8))
+                ExtraSet (extra, EXTRA_MESSAGE, msgtype, text->txt);
+            if (*text->txt)
                 IMSrvMsg (cont, serv, NOW, ExtraClone (extra));
             PacketWrite2     (ack_pak, ack_status);
             PacketWrite2     (ack_pak, ack_flags);

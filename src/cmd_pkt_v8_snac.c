@@ -639,7 +639,7 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
     UWORD msgtype, seq_dc;
     Contact *cont;
     Packet *pak;
-    const char *ctext;
+    strc_t ctext;
     char *text;
     
     pak = event->pak;
@@ -657,13 +657,13 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
     msgtype = PacketRead2 (pak);
               PacketRead2 (pak);
               PacketRead2 (pak);
-    ctext   = PacketReadL2Str (pak, NULL)->txt;
+    ctext   = PacketReadL2Str (pak, NULL);
     
     cont = ContactUIN (event->conn, uin);
     if (!cont)
         return;
     
-    text = strdup (c_in_to (ctext, cont));
+    text = strdup (c_in_to_split (ctext, cont));
 
     event = QueueDequeue (event->conn, QUEUE_TYPE2_RESEND, seq_dc);
 
@@ -709,7 +709,8 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     TLV *tlv;
     UDWORD midtim, midrnd, midtime, midrand, uin, unk, tmp, type1enc;
     UWORD seq1, tcpver, len, i, msgtyp, type;
-    const char *ctext, *txt = NULL;
+    const char *txt = NULL;
+    strc_t ctext;
     str_s str = { NULL };
 
     pak = event->pak;
@@ -769,20 +770,20 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             switch (type1enc & 0xf0000)
             {
                 case 0x00020000:
-                    txt = ConvToUTF8 (str.txt, ENC_UCS2BE, len - 4, 0);
+                    txt = ConvFrom (&str, ENC_UCS2BE)->txt;
                     break;
                 case 0x00030000:
-                    txt = c_in_to_0 (str.txt, cont);
+                    txt = ConvFromCont (&str, cont);
                     break;
                 case 0x00000000:
                     if (ConvIsUTF8 (str.txt) && len - 4 == strlen (str.txt))
-                        txt = ConvToUTF8 (str.txt, ENC_UTF8, -1, 0);
+                        txt = ConvFrom (&str, ENC_UTF8)->txt;
                     else
-                        txt = c_in_to_0 (str.txt, cont);
+                        txt = ConvFromCont (&str, cont);
                     break;
                 default:
                     SnacSrvUnknown (event);
-                    txt = c_in_to_0 (str.txt, cont);
+                    txt = ConvFromCont (&str, cont);
                     break;
             }
             IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (extra,
@@ -926,7 +927,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                 SnacSrvUnknown (event);
                 return;
             }
-            ctext = PacketReadL2Str (p, NULL)->txt;
+            ctext = PacketReadL2Str (p, NULL);
             PacketD (p);
             /* FOREGROUND / BACKGROUND ignored */
             /* TLV 1, 2(!), 3, 4, f ignored */
@@ -934,7 +935,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (extra,
                       EXTRA_ORIGIN, EXTRA_ORIGIN_v5, NULL),
                       EXTRA_MESSAGE, msgtyp, msgtyp == MSG_NORM ?
-                      c_in_to_0 (ctext, cont) : c_in_to (ctext, cont)));
+                      ConvFromCont (ctext, cont) : c_in_to_split (ctext, cont)));
             Auto_Reply (event->conn, cont);
             break;
         default:
@@ -1026,7 +1027,7 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
     Packet *pak;
     ContactGroup *cg = NULL;
     Contact *cont;
-    const char *cname;
+    strc_t cname;
     char *name, *nick;
     TLV *tlv;
     UWORD type, tag, id, TLVlen, j, data = 0;
@@ -1038,14 +1039,14 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
     count = PacketReadB2 (pak);
     for (i = k = l = 0; i < count; i++)
     {
-        cname  = PacketReadB2Str (pak, NULL)->txt;   /* GROUP NAME */
+        cname  = PacketReadB2Str (pak, NULL);   /* GROUP NAME */
         tag    = PacketReadB2 (pak);     /* TAG  */
         id     = PacketReadB2 (pak);     /* ID   */
         type   = PacketReadB2 (pak);     /* TYPE */
         TLVlen = PacketReadB2 (pak);     /* TLV length */
         tlv    = TLVRead (pak, TLVlen);
         
-        name = strdup (c_in (cname));
+        name = strdup (ConvFromServ (cname));
 
         switch (type)
         {
@@ -1075,7 +1076,7 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
                     break;
                 j = TLVGet (tlv, 305);
                 assert (j < 200 || j == (UWORD)-1);
-                nick = strdup (j != (UWORD)-1 ? c_in (tlv[j].str.txt) : name);
+                nick = strdup (j != (UWORD)-1 ? ConvFromServ (&tlv[j].str) : name);
 
                 switch (data)
                 {
@@ -1153,7 +1154,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
     int i, k, l;
     int cnt_sbl_add, cnt_sbl_chn, cnt_sbl_del;
     int cnt_loc_add, cnt_loc_chn, cnt_loc_del;
-    const char *cname;
+    strc_t cname;
     char *name, *nick;
     UWORD count, type, tag, id, TLVlen, j, data;
     time_t stmp;
@@ -1170,14 +1171,14 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
     cnt_loc_add = cnt_loc_chn = cnt_loc_del = 0;
     for (i = k = l = 0; i < count; i++)
     {
-        cname  = PacketReadB2Str (pak, NULL)->txt;   /* GROUP NAME */
+        cname  = PacketReadB2Str (pak, NULL);   /* GROUP NAME */
         tag    = PacketReadB2 (pak);     /* TAG  */
         id     = PacketReadB2 (pak);     /* ID   */
         type   = PacketReadB2 (pak);     /* TYPE */
         TLVlen = PacketReadB2 (pak);     /* TLV length */
         tlv    = TLVRead (pak, TLVlen);
         
-        name = strdup (c_in (cname));
+        name = strdup (ConvFromServ (cname));
 
         switch (type)
         {
@@ -1222,7 +1223,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                         break;
                 j = TLVGet (tlv, 305);
                 assert (j < 200 || j == (UWORD)-1);
-                nick = strdup (j != (UWORD)-1 && tlv[j].str.len ? c_in (tlv[j].str.txt) : name);
+                nick = strdup (j != (UWORD)-1 && tlv[j].str.len ? ConvFromServ (&tlv[j].str) : name);
 
                 switch (data)
                 {
@@ -1339,19 +1340,19 @@ static JUMP_SNAC_F(SnacSrvAuthreq)
 {
     Packet *pak;
     Contact *cont;
-    const char *ctext;
+    strc_t ctext;
     char *text;
     UDWORD uin;
 
     pak   = event->pak;
     uin   = PacketReadUIN (pak);
-    ctext = PacketReadB2Str (pak, NULL)->txt;
+    ctext = PacketReadB2Str (pak, NULL);
     
     cont = ContactUIN (event->conn, uin);
     if (!cont)
         return;
     
-    text = strdup (c_in_to (ctext, cont));
+    text = strdup (c_in_to_split (ctext, cont));
     
     IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (NULL,
               EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
@@ -1367,7 +1368,7 @@ static JUMP_SNAC_F(SnacSrvAuthreply)
 {
     Packet *pak;
     Contact *cont;
-    const char *ctext;
+    strc_t ctext;
     char *text;
     UDWORD uin;
     UBYTE acc;
@@ -1375,13 +1376,13 @@ static JUMP_SNAC_F(SnacSrvAuthreply)
     pak = event->pak;
     uin   = PacketReadUIN  (pak);
     acc   = PacketRead1    (pak);
-    ctext = PacketReadB2Str (pak, NULL)->txt;
+    ctext = PacketReadB2Str (pak, NULL);
     
     cont = ContactUIN (event->conn, uin);
     if (!cont)
         return;
     
-    text = strdup (c_in_to (ctext, cont));
+    text = strdup (c_in_to_split (ctext, cont));
 
     IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (NULL,
               EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
@@ -1800,11 +1801,10 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
 
         case 1:
             {
-            char buf[451];
-            const char *p;
+            strc_t str;
+            str_s bstr;
 
             int enc = ENC_LATIN1, icqenc = 0;
-            size_t len = 0, olen;
             
             remenc = ContactPrefVal (cont, CO_ENCODING);
             
@@ -1827,11 +1827,13 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
                 enc = ENC_LATIN9;
             }
 
-            p = ConvFromUTF8 (text, enc, &len);
-            if (len > 450)
-                len = 450;
-            memcpy (buf, p, len);
-            buf[450] = 0;
+            str = ConvTo (text, enc);
+            s_init (&bstr, str->txt, 0);
+            if (bstr.len > 450)
+            {
+                bstr.len = 450;
+                bstr.txt[450] = '\0';
+            }
 
             PacketWriteTLV     (pak, 2);
             PacketWriteTLV     (pak, 1281);
@@ -1842,19 +1844,19 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
             PacketWriteTLVDone (pak);
             PacketWriteTLV     (pak, 257);
             PacketWriteB4      (pak, icqenc);
-            PacketWriteData    (pak, buf, len);
+            PacketWriteData    (pak, bstr.txt, bstr.len);
             PacketWriteTLVDone (pak);
             PacketWriteTLVDone (pak);
             PacketWriteB2 (pak, 6);
             PacketWriteB2 (pak, 0);
             SnacSend (conn, pak);
-            if (len == 450 && strlen (text) > (olen = strlen (ConvToUTF8 (buf, enc, len, 0))))
-                return SnacCliSendmsg (conn, cont, text + olen, type, format);
+            if (bstr.len == 450) /* FIXME - message splitting */
+                return SnacCliSendmsg (conn, cont, text + 450, type, format);
             }
             break;
         case 4:
             remenc = ContactPrefVal (cont, CO_ENCODING);
-            convtext = ConvFromUTF8 (text, remenc, NULL);
+            convtext = ConvTo (text, remenc)->txt;
             
             PacketWriteTLV     (pak, 5);
             PacketWrite4       (pak, conn->uin);

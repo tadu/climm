@@ -165,12 +165,12 @@ void ConnectionInitServerV5 (Connection *conn)
         conn->port = 4000;
     if (!conn->passwd || !*conn->passwd)
     {
-        char *pwd;
+        strc_t pwd;
         M_printf ("%s ", i18n (1063, "Enter password:"));
         Echo_Off ();
         pwd = UtilIOReadline (stdin);
         Echo_On ();
-        conn->passwd = strdup (pwd ? pwd : "");
+        conn->passwd = strdup (pwd ? pwd->txt : "");
     }
     QueueEnqueueData (conn, /* FIXME: */ 0, 0, time (NULL), NULL, 0, NULL, &CallBackServerInitV5);
 }
@@ -424,14 +424,17 @@ void UDPCallBackResend (Event *event)
             if ((type & ~MSGF_MASS) == MSG_URL)
             {
                 char *tmp = strchr (data, '\xFE');
-                if (tmp != NULL)
+                if (tmp)
                 {
                     char *url_desc;
                     const char *url_data;
+                    str_s cdata = { data, strlen (data), 0 };
                     
                     *tmp++ = 0;
-                    url_desc = strdup (c_in_to (data, cont));
-                    url_data = c_in_to (tmp, cont);
+                    url_desc = strdup (ConvFromCont (&cdata, cont));
+                    cdata.txt = tmp;
+                    cdata.len = strlen (tmp);
+                    url_data = ConvFromCont (&cdata, cont);
 
                     M_printf (i18n (2128, " Description: %s%s%s\n"), COLMESSAGE, url_desc, COLNONE);
                     M_printf (i18n (2129, "         URL: %s%s%s\n"), COLMESSAGE, url_data, COLNONE);
@@ -440,7 +443,10 @@ void UDPCallBackResend (Event *event)
                 }
             }
             else if ((type & ~MSGF_MASS) == MSG_NORM)
-                M_printf (COLMESSAGE "%s" COLNONE " ", c_in_to (data, cont));
+            {
+                str_s cdata = { data, strlen (data), 0 };
+                M_printf (COLMESSAGE "%s" COLNONE " ", ConvFromCont (&cdata, cont));
+            }
         }
         else
         {

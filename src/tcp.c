@@ -1562,7 +1562,7 @@ static void TCPCallBackReceive (Event *event)
     Event *oldevent;
     Contact *cont;
     Packet *pak, *ack_pak = NULL;
-    const char *ctmp, *ctext, *cname, *reason;
+    strc_t ctmp, ctext, cname, creason;
     char *tmp, *text, *name;
     UWORD cmd, type, seq, port /*, unk*/;
     UDWORD /*len,*/ status /*, flags, xtmp1, xtmp2, xtmp3*/;
@@ -1599,9 +1599,9 @@ static void TCPCallBackReceive (Event *event)
             type   = PacketRead2 (pak);
             status = PacketRead2 (pak);
             /*flags*/PacketRead2 (pak);
-            ctmp   = PacketReadL2Str (pak, NULL)->txt;
+            ctmp   = PacketReadL2Str (pak, NULL);
             /* fore/background color ignored */
-            tmp = strdup (c_in_to (ctmp, cont));
+            tmp = strdup (ConvFromCont (ctmp, cont));
             
             if (!(oldevent = QueueDequeue (peer, QUEUE_TCP_RESEND, seq)))
             {
@@ -1653,22 +1653,22 @@ static void TCPCallBackReceive (Event *event)
                              PacketReadB4 (pak);
                              PacketReadB4 (pak);
                              PacketRead2 (pak);    /* EMPTY */
-                    ctext  = PacketReadL4Str (pak, NULL)->txt;
+                    ctext  = PacketReadL4Str (pak, NULL);
                              PacketReadB4 (pak);   /* UNKNOWN */
                              PacketReadB4 (pak);
                              PacketReadB4 (pak);
                              PacketReadB2 (pak);
                              PacketRead1 (pak);
                              PacketRead4 (pak);    /* LEN */
-                    reason = PacketReadL4Str (pak, NULL)->txt;
+                    creason= PacketReadL4Str (pak, NULL);
                     port   = PacketReadB2 (pak);
                              PacketRead2 (pak);    /* PAD */
-                    cname  = PacketReadL2Str (pak, NULL)->txt;
+                    cname  = PacketReadL2Str (pak, NULL);
                     /*len=*/ PacketRead4 (pak);
                              /* PORT2 ignored */
 
-                    text = strdup (c_in_to (ctext, cont));
-                    name = strdup (c_in_to (cname, cont));
+                    text = strdup (ConvFromCont (ctext, cont));
+                    name = strdup (ConvFromCont (cname, cont));
 
                     switch (cmd)
                     {

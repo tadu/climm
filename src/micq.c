@@ -185,6 +185,7 @@ int main (int argc, char *argv[])
     const char *arg_v, *arg_f, *arg_l, *arg_i, *arg_b;
     UDWORD arg_h = 0, arg_vv = 0, arg_c = 0;
     UWORD res;
+    UBYTE save_conv_error;
 
     srand (time (NULL));
     uiG.start_time = time (NULL);
@@ -238,6 +239,9 @@ int main (int argc, char *argv[])
             arg_c++;
             
     }
+
+    ConvInit ();
+    save_conv_error = conv_error;
 
     prG = PreferencesC ();
     prG->verbose  = arg_vv | 0x8000;
@@ -328,10 +332,27 @@ int main (int argc, char *argv[])
         M_print  (i18n (2205, "  -c, --nocolor  disable colors\n"));
         exit (0);
     }
+    
+    if (conv_error)
+    {
+        M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+        M_printf (i18n (9999, "Encoding %s%s%s is not supported by this mICQ.\n"), COLMESSAGE, ConvEncName (conv_error), COLNONE);
+        if (save_conv_error)
+        {
+            M_print  (i18n (9999, "Please recompile using the '--enable-iconvrepl' configure option.\n"));
+            if (conv_error <= prG->enc_loc)
+            {
+                M_print  ("Warning: ");
+                M_printf ("Encoding %s is not supported by this mICQ.\n", ConvEncName (conv_error));
+                M_print  ("Please recompile using the '--enable-iconvrepl' configure option.\n");
+            }
+        }
+        conv_error = 0;
+    }
 
     if (!rc && arg_l)
     {
-        M_printf (i18n (1864, "Could not open configuration file %s."), prG->rcfile);
+        M_printf (i18n (9999, "Could not open configuration file %s%s%s."), COLMESSAGE, prG->rcfile, COLNONE);
         exit (20);
     }
 
@@ -339,9 +360,9 @@ int main (int argc, char *argv[])
         M_printf (i18n (9999, "Deprecated option -f used. Please use the similar -b instead.\n"));
 
     if (i == -1)
-        M_printf (i18n (2317, "Translation %s not found. Would you like to translate mICQ into your language?\n"), prG->locale_full);
+        M_printf (i18n (9999, "Translation %s%s%s not found. Would you like to translate mICQ into your language?\n"), COLMESSAGE, prG->locale_full, COLNONE);
     else if (i)
-        M_printf (i18n (2318, "English (%s) translation loaded (%ld entries).\n"), prG->locale_full, i);
+        M_printf (i18n (9999, "English (%s) translation loaded (%s%ld%s entries).\n"), prG->locale_full, COLMESSAGE, i, COLNONE);
     else
         M_print ("No translation requested.\n");
 
@@ -401,6 +422,13 @@ int main (int argc, char *argv[])
 #if !INPUT_BY_POLL
         M_Add_rsocket (STDIN_FILENO);
 #endif
+
+        if (conv_error)
+        {
+            M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+            M_printf (i18n (9999, "Encoding %s%s%s is not supported by this mICQ.\n"), COLMESSAGE, ConvEncName (conv_error), COLNONE);
+            conv_error = 0;
+        }
 
         R_redraw ();
 

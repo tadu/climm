@@ -42,7 +42,7 @@
 #include <winsock2.h>
 #endif
 
-#define s_read(s) s_repl (&s, c_in_to (PacketReadL2Str (pak, NULL)->txt, cont))
+#define s_read(s) s_repl (&s, ConvFromCont (PacketReadL2Str (pak, NULL), cont))
 
 static BOOL Meta_Read_List (Packet *pak, Extra **list, Contact *cont)
 {
@@ -160,7 +160,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
 
     switch (subtype)
     {
-        const char *data;
+        strc_t data;
         UWORD wdata, i, j;
         UDWORD dwdata;
         MetaGeneral *mg;
@@ -173,8 +173,8 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
                    PacketRead4 (pak);
                    PacketRead2 (pak);
                    PacketReadB2Str (pak, NULL);
-            data = PacketReadB2Str (pak, NULL)->txt;
-            M_printf (i18n (2080, "Server SMS delivery response:\n%s\n"), c_in (data));
+            data = PacketReadB2Str (pak, NULL);
+            M_printf (i18n (2080, "Server SMS delivery response:\n%s\n"), ConvFromServ (data));
             break;
         case META_SRV_INFO:
             Display_Info_Reply (conn, cont, pak, 0);
@@ -444,7 +444,8 @@ void Recv_Message (Connection *conn, Packet *pak)
 {
     struct tm stamp;
     Contact *cont;
-    const char *text, *ctext;
+    strc_t ctext;
+    const char *text;
     UDWORD uin;
     UWORD type, len;
 
@@ -468,18 +469,18 @@ void Recv_Message (Connection *conn, Packet *pak)
     stamp.tm_isdst = -1;
     type           = PacketRead2 (pak);
     len            = PacketReadAt2 (pak, pak->rpos);
-    ctext          = PacketReadL2Str (pak, NULL)->txt; /* FIXME: use str_t */
+    ctext          = PacketReadL2Str (pak, NULL);
     
     cont = ContactUIN (conn, uin);
     if (!cont)
         return;
     
-    if (len - 1 == strlen (ctext) && ConvIsUTF8 (ctext))
-        text = ConvToUTF8 (ctext, ENC_UTF8, -1, 1);
-    else if (len - 1 != strlen (ctext) && type == MSG_NORM && len & 1)
-        text = ConvToUTF8 (ctext, ENC_UCS2BE, len - 1, 1);
+    if (len - 1 == ctext->len && ConvIsUTF8 (ctext->txt))
+        text = ConvFrom (ctext, ENC_UTF8)->txt;
+    else if (len - 1 != ctext->len && type == MSG_NORM && len & 1)
+        text = ConvFrom (ctext, ENC_UCS2BE)->txt;
     else
-        text = c_in_to (ctext, cont);
+        text = c_in_to_split (ctext, cont);
 
     uiG.last_rcvd_uin = uin;
     IMSrvMsg (cont, conn, mktime (&stamp),

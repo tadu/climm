@@ -4,6 +4,7 @@
 #define MICQ_UTIL_STR_H
 
 typedef struct str_s str_s;
+typedef struct strc_s strc_s;
 typedef struct str_s *str_t;
 typedef const struct str_s *strc_t;
 typedef const struct strc_s *strx_t;
@@ -43,7 +44,7 @@ UDWORD      s_strnlen (const char *str, UDWORD len);
 UDWORD      s_offset  (const char *str, UDWORD offset);
 const char *s_realpath(const char *path);
 
-BOOL        s_parse_s     (const char **input, char         **parsed, const char *sep);
+BOOL        s_parse_s     (const char **input, strc_t        *parsed, const char *sep);
 BOOL        s_parsenick_s (const char **input, Contact      **parsed, const char *sep, Connection *serv);
 BOOL        s_parsecg_s   (const char **input, ContactGroup **parsed, const char *sep, Connection *serv);
 BOOL        s_parserem_s  (const char **input, char         **parsed, const char *sep);

@@ -30,146 +30,115 @@ AC_PROG_LN_S
 AC_ARG_ENABLE([peer2peer], AC_HELP_STRING([--disable-peer2peer], [disable peer to peer connections]),
               ac_arg_use_peer2peer=$enableval, ac_arg_use_peer2peer=yes)
 AC_ARG_ENABLE([iconv], AC_HELP_STRING([--disable-iconv], [do not use iconv() at all]),
-              ac_arg_use_iconv=$enableval, ac_arg_use_iconv=auto)
+              ac_arg_use_iconv=$enableval, ac_arg_use_iconv=yes)
+AC_ARG_ENABLE([iconvrepl], AC_HELP_STRING([--enable-iconvrepl], [compile in iconv() replacement fallbacks]),
+              ac_arg_use_iconvrepl=$enableval, ac_arg_use_iconvrepl=no)
 AC_ARG_ENABLE([remote], AC_HELP_STRING([--disable-remote], [disable remote control FIFO]),
               ac_arg_use_remote=$enableval, ac_arg_use_remote=auto)
 
-if test "x$ac_arg_use_utf8" = "xno"; then
-  ac_arg_use_iconv=no
-fi
-
 if test "x$ac_arg_use_iconv" != "xno"; then
-  AC_CHECK_FUNC([iconv], [ac_arg_use_iconv=system], [ac_arg_use_iconv=builtin])
-  if test "x$ac_arg_use_iconv" = "xbuiltin"; then
-    AC_CHECK_LIB([iconv], [iconv], [ac_arg_use_iconv=iconv])
-    if test "x$ac_arg_use_iconv" = "xbuiltin"; then
-      AC_CHECK_LIB([iconv], [libiconv], [ac_arg_use_iconv=libiconv])
-    fi
-    if test "x$ac_arg_use_iconv" != "xbuiltin"; then
-      LIBS="-liconv $LIBS"
-    fi
-  fi
-else
-  ac_arg_use_iconv=builtin
-fi
-
-if test "x$ac_arg_use_iconv" != "xbuiltin"; then
-  AC_CACHE_CHECK(for iconv minimal functionality, ac_cv_iconv_min,
-    [AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
-          #include <iconv.h>]],
-        [[iconv_t res;
-          res = iconv_open ("UTF-8", "ISO-8859-1");
-          if (res == (iconv_t)-1 || !res)
-          {
-              res = iconv_open ("UTF-8", "ISO8859-1");
-              if (res == (iconv_t)-1 || !res) exit (2);
-              res = iconv_open ("ISO8859-1", "UTF-8");
-              if (res == (iconv_t)-1 || !res) exit (3);
-          }
-          else
-          {
-              res = iconv_open ("ISO-8859-1", "UTF-8");
-              if (res == (iconv_t)-1 || !res) exit (4);
-          }
-          res = iconv_open ("UTF-8", "ISO-8859-15");
-          if (res == (iconv_t)-1 || !res)
-          {
-              res = iconv_open ("UTF-8", "ISO8859-15");
-              if (res == (iconv_t)-1 || !res) exit (5);
-              res = iconv_open ("ISO8859-15", "UTF-8");
-              if (res == (iconv_t)-1 || !res) exit (6);
-          }
-          else
-          {
-              res = iconv_open ("ISO-8859-15", "UTF-8");
-              if (res == (iconv_t)-1 || !res) exit (7);
-          }
-          res = iconv_open ("UTF-8", "KOI8-U");
-          if (res == (iconv_t)-1 || !res) exit (8);
-          res = iconv_open ("KOI8-U", "UTF-8");
-          if (res == (iconv_t)-1 || !res) exit (9);
-          res = iconv_open ("UTF-8", "UCS-2BE");
-          if (res == (iconv_t)-1 || !res)
-          {
-              res = iconv_open ("UTF-8", "UNICODEBIG");
-              if (res == (iconv_t)-1 || !res) exit (10);
-              res = iconv_open ("UNICODEBIG", "UTF-8");
-              if (res == (iconv_t)-1 || !res) exit (11);
-          }
-          else
-          {
-              res = iconv_open ("UCS-2BE", "UTF-8");
-              if (res == (iconv_t)-1 || !res) exit (12);
-          }
-          exit (0);]])],
-      [ac_cv_iconv_min=ok],
-      [ac_cv_iconv_min=broken],
-      [ac_cv_iconv_min=cross])
-  ])
-  if test $ac_cv_iconv_min != ok; then
-    ac_arg_use_iconv=builtin
+  AM_ICONV
+  echo "#define ENABLE_FALLBACK_ASCII   1" > include/iconvfb.h
+  echo "#define ENABLE_FALLBACK_UCS2BE  1" >> include/iconvfb.h
+  echo "#define ENABLE_FALLBACK_WIN1251 1" >> include/iconvfb.h
+  echo "#define ENABLE_FALLBACK_KOI8    1" >> include/iconvfb.h
+  echo "#define ENABLE_FALLBACK_LATIN9  1" >> include/iconvfb.h
+  echo "#define ENABLE_FALLBACK_LATIN1  1" >> include/iconvfb.h
+  echo "#define ENABLE_FALLBACK_UTF8    1" >> include/iconvfb.h
+  if test "x$am_cv_func_iconv$ac_arg_use_iconvrepl" = "xyesno"; then
+    AC_CACHE_CHECK(for iconv() fallbacks to compile in, ac_cv_iconv_fb,
+      [ac_cv_iconv_min="UCS2BE WIN1251 KOI8 LATIN9 LATIN1 UTF8"
+       AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
+            #include <iconv.h>
+            #include <stdio.h>]],
+          [[iconv_t resa, resb;
+            FILE *hf = fopen ("include/iconvfb.h", "w");
+            resa = iconv_open ("UTF-8", "US-ASCII");
+            resb = iconv_open ("US-ASCII", "UTF-8");
+            if (resa == (iconv_t)-1 || !resa || resb == (iconv_t)-1 || !resb)
+                fprintf (hf, "#define ENABLE_FALLBACK_ASCII  1\n");
+            else
+                fprintf (hf, "#undef  ENABLE_FALLBACK_ASCII\n");
+            resa = iconv_open ("UTF-8", "UCS-2BE");
+            resb = iconv_open ("UCS-2BE", "UTF-8");
+            if (resa == (iconv_t)-1 || !resa || resb == (iconv_t)-1 || !resb)
+            {
+                resa = iconv_open ("UTF-8", "UNICODEBIG");
+                resb = iconv_open ("UNICODEBIG", "UTF-8");
+            }
+            if (resa == (iconv_t)-1 || !resa || resb == (iconv_t)-1 || !resb)
+                fprintf (hf, "#define ENABLE_FALLBACK_UCS2BE  1\n");
+            else
+                fprintf (hf, "#undef  ENABLE_FALLBACK_UCS2BE\n");
+            resa = iconv_open ("UTF-8", "CP1251");
+            resb = iconv_open ("CP1251", "UTF-8");
+            if (resa == (iconv_t)-1 || !resa || resb == (iconv_t)-1 || !resb)
+            {
+                resa = iconv_open ("UTF-8", "WINDOWS-1251");
+                resb = iconv_open ("WINDOWS-1251", "UTF-8");
+            }
+            if (resa == (iconv_t)-1 || !resa || resb == (iconv_t)-1 || !resb)
+                fprintf (hf, "#define ENABLE_FALLBACK_WIN1251 1\n");
+            else
+                fprintf (hf, "#undef  ENABLE_FALLBACK_WIN1251\n");
+            resa = iconv_open ("UTF-8", "KOI8-U");
+            resb = iconv_open ("KOI8-U", "UTF-8");
+            if (resa == (iconv_t)-1 || !resa || resb == (iconv_t)-1 || !resb)
+                fprintf (hf, "#define ENABLE_FALLBACK_KOI8     1\n");
+            else
+                fprintf (hf, "#undef  ENABLE_FALLBACK_KOI8\n");
+            resa = iconv_open ("UTF-8", "ISO-8859-15");
+            resb = iconv_open ("ISO-8859-15", "UTF-8");
+            if (resa == (iconv_t)-1 || !resa || resb == (iconv_t)-1 || !resb)
+            {
+                resa = iconv_open ("UTF-8", "ISO8859-15");
+                resb = iconv_open ("ISO8859-15", "UTF-8");
+            }
+            if (resa == (iconv_t)-1 || !resa || resb == (iconv_t)-1 || !resb)
+                fprintf (hf, "#define ENABLE_FALLBACK_LATIN9  1\n");
+            else
+                fprintf (hf, "#undef  ENABLE_FALLBACK_LATIN9\n");
+            resa = iconv_open ("UTF-8", "ISO-8859-1");
+            resb = iconv_open ("ISO-8859-1", "UTF-8");
+            if (resa == (iconv_t)-1 || !resa || resb == (iconv_t)-1 || !resb)
+            {
+                resa = iconv_open ("UTF-8", "ISO8859-1");
+                resb = iconv_open ("ISO8859-1", "UTF-8");
+            }
+            if (resa == (iconv_t)-1 || !resa || resb == (iconv_t)-1 || !resb)
+                fprintf (hf, "#define ENABLE_FALLBACK_LATIN1  1\n");
+            else
+                fprintf (hf, "#undef  ENABLE_FALLBACK_LATIN1\n");
+            resa = iconv_open ("UTF-8", "UTF-8");
+            if (resa == (iconv_t)-1)
+                resa = 0;
+            else
+            {
+                size_t inl = 2, outl = 10;
+                char inb[10], outb[10], *inp = inb, *outp = outb;
+                strcpy (inp, "\xfc.\xc0\xaf");
+                if (iconv (resa, &inp, &inl, &outp, &outl) != (size_t)-1)
+                    resa = 0;
+                else
+                {
+                    inp = inb + 2;
+                    iconv (resa, NULL, NULL, NULL, NULL);
+                    if ((iconv (resa, &inp, &inl, &outp, &outl) != (size_t)-1) && *outp != '/')
+                        resa = 0;
+                }
+            }
+            if (resa)
+                fprintf (hf, "#undef  ENABLE_FALLBACK_UTF8\n");
+            else
+                fprintf (hf, "#define ENABLE_FALLBACK_UTF8    1\n");
+            fclose (hf);
+            exit (0);]])],
+        [ac_cv_iconv_min="`grep ^#define include/iconvfb.h | sed 's/.*_//;s/1$//'`"],
+        [], [])
+    ])
   else
-    AC_CACHE_CHECK(for iconv declaration, ac_cv_iconv_const,
-      [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
-          #include <iconv.h>]],
-          [[#ifdef __cplusplus
-            "C"
-            #endif
-            #if defined(__STDC__) || defined(__cplusplus)
-            size_t iconv (iconv_t cd, char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);
-            #else
-            size_t iconv();
-            #endif]])],
-        [ac_cv_iconv_const=no-const],
-        [ac_cv_iconv_const=const])])
-    if test $ac_cv_iconv_const = const; then
-       AC_DEFINE([ICONV_CONST], const, [Define as const if the declaration of iconv() needs const.])
-    else
-       AC_DEFINE([ICONV_CONST], /* no-const */)
-    fi
-    AC_CACHE_CHECK(for iconv name of latin-1 encoding, ac_cv_iconv_latin1_name,
-      [AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
-            #include <iconv.h>]],
-          [[iconv_t res;
-            res = iconv_open ("UTF-8", "ISO-8859-1");
-            if (res == (iconv_t)-1 || !res) exit (1);
-            exit (0);]])],
-        [ac_cv_iconv_latin1_name=ISO-8859-1],
-        [ac_cv_iconv_latin1_name=ISO8859-1],
-        [ac_cv_iconv_latin1_name=cannothappen])
-    ])
-    AC_DEFINE_UNQUOTED([ICONV_LATIN1_NAME], ["$ac_cv_iconv_latin1_name"], [the name of the latin1 encoding])
-    AC_CACHE_CHECK(for iconv name of latin-9 encoding, ac_cv_iconv_latin9_name,
-      [AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
-            #include <iconv.h>]],
-          [[iconv_t res;
-            res = iconv_open ("UTF-8", "ISO-8859-15");
-            if (res == (iconv_t)-1 || !res) exit (1);
-            exit (0);]])],
-        [ac_cv_iconv_latin9_name=ISO-8859-15],
-        [ac_cv_iconv_latin9_name=ISO8859-15],
-        [ac_cv_iconv_latin9_name=cannothappen])
-    ])
-    AC_DEFINE_UNQUOTED([ICONV_LATIN9_NAME], ["$ac_cv_iconv_latin9_name"], [the name of the latin9 encoding])
-    AC_CACHE_CHECK(for iconv name of ucs-2be encoding, ac_cv_iconv_ucs2be_name,
-      [AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
-            #include <iconv.h>]],
-          [[iconv_t res;
-            res = iconv_open ("UTF-8", "UCS-2BE");
-            if (res == (iconv_t)-1 || !res) exit (1);
-            exit (0);]])],
-        [ac_cv_iconv_ucs2be_name=UCS-2BE],
-        [ac_cv_iconv_ucs2be_name=UNICODEBIG],
-        [ac_cv_iconv_ucs2be_name=cannothappen])
-    ])
-    AC_DEFINE_UNQUOTED([ICONV_UCS2BE_NAME], ["$ac_cv_iconv_ucs2be_name"], [the name of the ucs-2be encoding])
+    AC_CACHE_CHECK(for iconv() fallbacks to compile in, ac_cv_iconv_fb, [])
   fi
-fi
-
-if test "x$ac_arg_use_iconv" = "xbuiltin"; then
-  AC_DEFINE([ICONV_LATIN1_NAME], ["ISO-8859-1"])
-  AC_DEFINE([ICONV_LATIN9_NAME], ["ISO-8859-15"])
-  AC_DEFINE([ICONV_UCS2BE_NAME], ["UCS-2BE"])
 fi
 
 if test "x$ac_arg_use_remote" != "xno"; then
@@ -216,16 +185,10 @@ else
   ac_arg_use_remote=none
 fi
 
-AC_MSG_CHECKING([whether to enable iconv and which iconv lib to use])
-AC_MSG_RESULT([$ac_arg_use_iconv])
 AC_MSG_CHECKING([whether to enable peer to peer connections])
 AC_MSG_RESULT([$ac_arg_use_peer2peer])
 AC_MSG_CHECKING([whether to enable remote control FIFO])
 AC_MSG_RESULT([$ac_arg_use_remote])
-
-if test "x$ac_arg_use_iconv" != "xbuiltin"; then
-  AC_DEFINE_UNQUOTED(ENABLE_ICONV, "$ac_arg_use_iconv", [Which lib to use for iconv() functions])
-fi
 
 if test "x$ac_arg_use_peer2peer" = "xyes"; then
   AC_DEFINE(ENABLE_PEER2PEER, 1, [Whether to enable peer to peer connections])

@@ -960,34 +960,32 @@ Packet *UtilIOReceiveUDP (Connection *conn)
  *
  * Returned string may not be free()d.
  */
-char *UtilIOReadline (FILE *fd)
+strc_t UtilIOReadline (FILE *fd)
 {
-    static UDWORD size;
-    static char *t = NULL;
-    UDWORD pos = 0;
+    static str_s str;
     char *p;
     
-    if (!t)
-        t = malloc (size = 100);
-    *t = 0;
-    *(t + size - 2) = 0;
+    s_init (&str, "", 100);
     while (1)
     {
-        if (!fgets (t + pos, size - pos, fd))
+        str.txt[str.max - 2] = 0;
+        if (!fgets (str.txt + str.len, str.max - str.len, fd))
         {
-            if (!pos)
+            str.txt[str.len] = '\0';
+            if (!str.len)
                 return NULL;
-            else
-                break;
-        }
-        if (!*(t + size - 2))
             break;
-        t = realloc (t, size += 100);
-        pos = strlen (t);
-        *(t + size - 2) = 0;
+        }
+        str.txt[str.max - 1] = '\0';
+        str.len = strlen (str.txt);
+        if (!str.txt[str.max - 2])
+            break;
+        s_blow (&str, 100);
     }
-    *(t + size - 2) = 0;
-    if ((p = strpbrk (t, "\r\n")))
+    if ((p = strpbrk (str.txt, "\r\n")))
+    {
         *p = 0;
-    return t;
+        str.len = strlen (str.txt);
+    }
+    return &str;
 }

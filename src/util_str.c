@@ -555,9 +555,9 @@ const char *s_realpath (const char *path)
  * Try to find a parameter in the string.
  * Result must NOT be free()d.
  */
-BOOL s_parse_s (const char **input, char **parsed, const char *sep)
+BOOL s_parse_s (const char **input, strc_t *parsed, const char *sep)
 {
-    static char *t = NULL;
+    static str_s str;
     const char *p = *input;
     char *q;
     int s = 0;
@@ -576,10 +576,11 @@ BOOL s_parse_s (const char **input, char **parsed, const char *sep)
         return FALSE;
     }
 
-    s_repl (&t, p);
+    s_init (&str, p, 0);
 
-    *parsed = q = t;
-    if (!t)
+    q = str.txt;
+    *parsed = &str;
+    if (!q)
     {
         return FALSE;
     }
@@ -599,7 +600,7 @@ BOOL s_parse_s (const char **input, char **parsed, const char *sep)
                 p++;
                 *q = (*p >= '0' && *p <= '9' ? *p - '0' : *p >= 'a' && *p <= 'f' ? *p - 'a' + 10 : *p - 'A' + 10) << 4;
                 p++;
-                *q = *p >= '0' && *p <= '9' ? *p - '0' : *p >= 'a' && *p <= 'f' ? *p - 'a' + 10 : *p - 'A' + 10;
+                *q |= *p >= '0' && *p <= '9' ? *p - '0' : *p >= 'a' && *p <= 'f' ? *p - 'a' + 10 : *p - 'A' + 10;
                 p++, q++;
                 continue;
             }
@@ -613,6 +614,7 @@ BOOL s_parse_s (const char **input, char **parsed, const char *sep)
         {
             *q = '\0';
             *input = p + 1;
+            str.len = q - str.txt;
             return TRUE;
         }
         if (!s && strchr (sep, *p))
@@ -621,6 +623,7 @@ BOOL s_parse_s (const char **input, char **parsed, const char *sep)
     }
     *q = '\0';
     *input = p;
+    str.len = q - str.txt;
     return TRUE;
 }
 
@@ -636,7 +639,7 @@ BOOL s_parsenick_s (const char **input, Contact **parsed, const char *sep, Conne
     ContactGroup *cg;
     Contact *r;
     const char *p = *input;
-    char *t;
+    strc_t t;
     UDWORD max, l, ll, i;
     
     while (*p && strchr (sep, *p))
@@ -651,7 +654,7 @@ BOOL s_parsenick_s (const char **input, Contact **parsed, const char *sep, Conne
     t = NULL;
     if (s_parse_s (&p, &t, sep))
     {
-        *parsed = ContactFind (serv->contacts, 0, 0, t);
+        *parsed = ContactFind (serv->contacts, 0, 0, t->txt);
         if (*parsed)
         {
             *input = p;
@@ -713,7 +716,7 @@ BOOL s_parsecg_s (const char **input, ContactGroup **parsed, const char *sep, Co
 {
     ContactGroup *cg;
     const char *p = *input;
-    char *t;
+    strc_t t;
     UDWORD l, i;
     
     while (*p && strchr (sep, *p))
@@ -731,7 +734,7 @@ BOOL s_parsecg_s (const char **input, ContactGroup **parsed, const char *sep, Co
     {
         for (i = 0; (cg = ContactGroupIndex (i)); i++)
         {
-            if (cg->serv == serv && !strcmp (cg->name, t))
+            if (cg->serv == serv && !strcmp (cg->name, t->txt))
             {
                 *input = p;
                 *parsed = cg;

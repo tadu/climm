@@ -399,17 +399,15 @@ static JUMP_F(CmdUserRandomSet)
  */
 static JUMP_F(CmdUserHelp)
 {
-    char *arg1 = NULL;
+    strc_t par;
     char what;
 
-    s_parse (&args, &arg1);
-
-    if (!arg1) what = 0;
-    else if (!strcasecmp (arg1, i18n (1447, "Client"))   || !strcasecmp (arg1, "Client"))   what = 1;
-    else if (!strcasecmp (arg1, i18n (1448, "Message"))  || !strcasecmp (arg1, "Message"))  what = 2;
-    else if (!strcasecmp (arg1, i18n (1449, "User"))     || !strcasecmp (arg1, "User"))     what = 3;
-    else if (!strcasecmp (arg1, i18n (1450, "Account"))  || !strcasecmp (arg1, "Account"))  what = 4;
-    else if (!strcasecmp (arg1, i18n (2171, "Advanced")) || !strcasecmp (arg1, "Advanced")) what = 5;
+    if (!s_parse (&args, &par)) what = 0;
+    else if (!strcasecmp (par->txt, i18n (1447, "Client"))   || !strcasecmp (par->txt, "Client"))   what = 1;
+    else if (!strcasecmp (par->txt, i18n (1448, "Message"))  || !strcasecmp (par->txt, "Message"))  what = 2;
+    else if (!strcasecmp (par->txt, i18n (1449, "User"))     || !strcasecmp (par->txt, "User"))     what = 3;
+    else if (!strcasecmp (par->txt, i18n (1450, "Account"))  || !strcasecmp (par->txt, "Account"))  what = 4;
+    else if (!strcasecmp (par->txt, i18n (2171, "Advanced")) || !strcasecmp (par->txt, "Advanced")) what = 5;
     else what = 0;
 
     if (!what)
@@ -693,8 +691,9 @@ static JUMP_F(CmdUserPass)
 static JUMP_F(CmdUserSMS)
 {
     Contact *cont = NULL;
-    char *arg1 = NULL, *arg3 = NULL;
-    const char *arg2 = NULL;
+    const char *cell = NULL;
+    strc_t par;
+    char *cellv, *text;
     UDWORD i;
     OPENCONN;
     
@@ -706,33 +705,37 @@ static JUMP_F(CmdUserSMS)
     if (s_parsenick (&args, &cont, conn))
     {
         CONTACT_GENERAL (cont);
-        arg2 = args;
+        cell = args;
         if ((!cont->meta_general->cellular || !cont->meta_general->cellular[0])
-            && s_parseint (&arg2, &i) && s_parse (&args, &arg1))
+            && s_parseint (&cell, &i) && s_parse (&args, &par))
         {
-            s_repl (&cont->meta_general->cellular, arg1);
+            s_repl (&cont->meta_general->cellular, par->txt);
             cont->updated = 0;
         }
-        arg1 = cont->meta_general->cellular;
+        cell = cont->meta_general->cellular;
     }
-    if ((!arg1 || !arg1[0]) && !s_parse (&args, &arg1))
+    if (!cell || !cell)
     {
-        M_print (i18n (2014, "No number given.\n"));
-        return 0;
+        if (!s_parse (&args, &par))
+        {
+            M_print (i18n (2014, "No number given.\n"));
+            return 0;
+        }
+        cell = par->txt;
     }
-    if (arg1[0] != '+' || arg1[1] == '0')
+    if (cell[0] != '+' || cell[1] == '0')
     {
-        M_printf (i18n (2250, "Number '%s' is not of the format +<countrycode><cellprovider><number>.\n"), arg1);
+        M_printf (i18n (2250, "Number '%s' is not of the format +<countrycode><cellprovider><number>.\n"), cell);
         if (cont && cont->meta_general)
             s_repl (&cont->meta_general->cellular, NULL);
         return 0;
     }
-    arg1 = strdup (arg1);
-    if (!s_parserem (&args, &arg3))
+    cellv = strdup (cell);
+    if (!s_parserem (&args, &text))
         M_print (i18n (2015, "No message given.\n"));
     else
-        SnacCliSendsms (conn, arg1, arg3);
-    free (arg1);
+        SnacCliSendsms (conn, cellv, text);
+    free (cellv);
     return 0;
 }
 
@@ -799,7 +802,7 @@ static JUMP_F(CmdUserPeek)
  */
 static JUMP_F(CmdUserTrans)
 {
-    char *arg1 = NULL;
+    strc_t par;
     char *t = NULL;
     const char *p = NULL, *arg2;
     int one = 0;
@@ -814,9 +817,9 @@ static JUMP_F(CmdUserTrans)
             one = 1;
             continue;
         }
-        if (s_parse (&args, &arg1))
+        if (s_parse (&args, &par))
         {
-            if (!strcmp (arg1, "all"))
+            if (!strcmp (par->txt, "all"))
             {
                 for (i = l = 1000; i - l < 100; i++)
                 {
@@ -830,7 +833,7 @@ static JUMP_F(CmdUserTrans)
             }
             else
             {
-                if (!strcmp (arg1, ".") || !strcmp (arg1, "none") || !strcmp (arg1, "unload"))
+                if (!strcmp (par->txt, ".") || !strcmp (par->txt, "none") || !strcmp (par->txt, "unload"))
                 {
                     t = strdup (i18n (1089, "Unloaded translation."));
                     i18nClose ();
@@ -838,13 +841,13 @@ static JUMP_F(CmdUserTrans)
                     free (t);
                     continue;
                 }
-                i = i18nOpen (arg1, prG->enc_loc);
+                i = i18nOpen (par->txt, prG->enc_loc);
                 if (i == -1)
-                    M_printf (i18n (2316, "Translation %s not found.\n"), arg1);
+                    M_printf (i18n (2316, "Translation %s not found.\n"), par->txt);
                 else if (i)
                     {
-                        s_repl (&prG->locale, arg1);
-                        M_printf (i18n (2318, "English (%s) translation loaded (%ld entries).\n"), arg1, i);
+                        s_repl (&prG->locale, par->txt);
+                        M_printf (i18n (2318, "English (%s) translation loaded (%ld entries).\n"), par->txt, i);
                     }
                 else
                     M_print ("No translation required.\n");
@@ -856,6 +859,7 @@ static JUMP_F(CmdUserTrans)
         else
         {
             UDWORD v1 = 0, v2 = 0, v3 = 0, v4 = 0;
+            char *arg1;
             const char *s = "1079:No translation; using compiled-in strings.\n";
 
             arg1 = strdup (i18n (1003, "0"));
@@ -890,16 +894,16 @@ static JUMP_F(CmdUserGetAuto)
     if (!data)
     {
         const char *argst = args;
-        char *arg1 = NULL;
-        if (!s_parse (&args, &arg1))     data = 0;
-        else if (!strcmp (arg1, "auto")) data = 0;
-        else if (!strcmp (arg1, "away")) data = MSGF_GETAUTO | MSG_GET_AWAY;
-        else if (!strcmp (arg1, "na"))   data = MSGF_GETAUTO | MSG_GET_NA;
-        else if (!strcmp (arg1, "dnd"))  data = MSGF_GETAUTO | MSG_GET_DND;
-        else if (!strcmp (arg1, "ffc"))  data = MSGF_GETAUTO | MSG_GET_FFC;
-        else if (!strcmp (arg1, "occ"))  data = MSGF_GETAUTO | MSG_GET_OCC;
+        strc_t par;
+        if (!s_parse (&args, &par))     data = 0;
+        else if (!strcmp (par->txt, "auto")) data = 0;
+        else if (!strcmp (par->txt, "away")) data = MSGF_GETAUTO | MSG_GET_AWAY;
+        else if (!strcmp (par->txt, "na"))   data = MSGF_GETAUTO | MSG_GET_NA;
+        else if (!strcmp (par->txt, "dnd"))  data = MSGF_GETAUTO | MSG_GET_DND;
+        else if (!strcmp (par->txt, "ffc"))  data = MSGF_GETAUTO | MSG_GET_FFC;
+        else if (!strcmp (par->txt, "occ"))  data = MSGF_GETAUTO | MSG_GET_OCC;
 #ifdef WIP
-        else if (!strcmp (arg1, "ver"))  data = MSGF_GETAUTO | MSG_GET_VER;
+        else if (!strcmp (par->txt, "ver"))  data = MSGF_GETAUTO | MSG_GET_VER;
 #endif
         else args = argst;
     }
@@ -953,21 +957,21 @@ static JUMP_F(CmdUserPeer)
 
     if (!data)
     {
-        char *arg1 = NULL;
-        if (!s_parse (&args, &arg1)) data = 0;
-        else if (!strcmp (arg1, "open"))   data = 1;
-        else if (!strcmp (arg1, "close"))  data = 2;
-        else if (!strcmp (arg1, "reset"))  data = 2;
-        else if (!strcmp (arg1, "off"))    data = 3;
-        else if (!strcmp (arg1, "file"))   data = 4;
-        else if (!strcmp (arg1, "files"))  data = 5;
-        else if (!strcmp (arg1, "accept")) data = 6;
-        else if (!strcmp (arg1, "deny"))   data = 7;
-        else if (!strcmp (arg1, "auto"))   data = 10;
-        else if (!strcmp (arg1, "away"))   data = 11;
-        else if (!strcmp (arg1, "na"))     data = 12;
-        else if (!strcmp (arg1, "dnd"))    data = 13;
-        else if (!strcmp (arg1, "ffc"))    data = 14;
+        strc_t par;
+        if (!s_parse (&args, &par)) data = 0;
+        else if (!strcmp (par->txt, "open"))   data = 1;
+        else if (!strcmp (par->txt, "close"))  data = 2;
+        else if (!strcmp (par->txt, "reset"))  data = 2;
+        else if (!strcmp (par->txt, "off"))    data = 3;
+        else if (!strcmp (par->txt, "file"))   data = 4;
+        else if (!strcmp (par->txt, "files"))  data = 5;
+        else if (!strcmp (par->txt, "accept")) data = 6;
+        else if (!strcmp (par->txt, "deny"))   data = 7;
+        else if (!strcmp (par->txt, "auto"))   data = 10;
+        else if (!strcmp (par->txt, "away"))   data = 11;
+        else if (!strcmp (par->txt, "na"))     data = 12;
+        else if (!strcmp (par->txt, "dnd"))    data = 13;
+        else if (!strcmp (par->txt, "ffc"))    data = 14;
     }
     while (data && s_parsenick_s (&args, &cont, MULTI_SEP, conn))
     {
@@ -985,15 +989,16 @@ static JUMP_F(CmdUserPeer)
                 break;
             case 4:
                 {
+                    strc_t par;
                     const char *files[1], *ass[1];
                     char *des = NULL, *file;
                     
-                    if (!s_parse (&args, &file))
+                    if (!s_parse (&args, &par))
                     {
                         M_print (i18n (2158, "No file name given.\n"));
                         return 0;
                     }
-                    files[0] = file = strdup (file);
+                    files[0] = file = strdup (par->txt);
                     if (!s_parserem (&args, &des))
                         des = file;
                     des = strdup (des);
@@ -1009,24 +1014,27 @@ static JUMP_F(CmdUserPeer)
                 return 0;
             case 5:
                 {
-                    char *files[10], *ass[10], *des = NULL, *as;
+                    char *files[10], *ass[10], *des = NULL;
+                    const char *as;
                     int count;
                     
                     for (count = 0; count < 10; count++)
                     {
-                        if (!s_parse (&args, &des))
+                        strc_t par;
+                        if (!s_parse (&args, &par))
                         {
                             des = strdup (i18n (2159, "Some files."));
                             break;
                         }
-                        files[count] = des = strdup (des);
-                        if (!s_parse (&args, &as))
+                        files[count] = des = strdup (par->txt);
+                        if (!s_parse (&args, &par))
                             break;
+                        as = par->txt;
                         if (*as == '/' && !*(as + 1))
                             as = (strchr (des, '/')) ? strrchr (des, '/') + 1 : des;
                         if (*as == '.' && !*(as + 1))
                             as = des;
-                        ass[count] = as = strdup (as);
+                        ass[count] = strdup (as);
                     }
                     if (!count)
                     {
@@ -1112,30 +1120,30 @@ static JUMP_F(CmdUserPeer)
  */
 static JUMP_F(CmdUserAuto)
 {
-    char *arg1 = NULL; //, *arg2 = NULL;
+    strc_t par;
 
-#if 0
-    if (!s_parse (&args, &arg1))
+    if (!s_parse (&args, &par))
     {
         M_printf (i18n (1724, "Automatic replies are %s.\n"),
                  prG->flags & FLAG_AUTOREPLY ? i18n (1085, "on") : i18n (1086, "off"));
+#if 0
         M_printf ("%30s %s\n", i18n (1727, "The \"do not disturb\" message is:"), prG->auto_dnd);
         M_printf ("%30s %s\n", i18n (1728, "The \"away\" message is:"),           prG->auto_away);
         M_printf ("%30s %s\n", i18n (1729, "The \"not available\" message is:"),  prG->auto_na);
         M_printf ("%30s %s\n", i18n (1730, "The \"occupied\" message is:"),       prG->auto_occ);
         M_printf ("%30s %s\n", i18n (1731, "The \"invisible\" message is:"),      prG->auto_inv);
         M_printf ("%30s %s\n", i18n (2054, "The \"free for chat\" message is:"),  prG->auto_ffc);
+#endif
         return 0;
     }
-#endif
 
-    if      (!strcasecmp (arg1, "on")  || !strcasecmp (arg1, i18n (1085, "on")))
+    if      (!strcasecmp (par->txt, "on")  || !strcasecmp (par->txt, i18n (1085, "on")))
     {
         prG->flags |= FLAG_AUTOREPLY;
         M_printf (i18n (1724, "Automatic replies are %s.\n"), i18n (1085, "on"));
         return 0;
     }
-    else if (!strcasecmp (arg1, "off") || !strcasecmp (arg1, i18n (1086, "off")))
+    else if (!strcasecmp (par->txt, "off") || !strcasecmp (par->txt, i18n (1086, "off")))
     {
         prG->flags &= ~FLAG_AUTOREPLY;
         M_printf (i18n (1724, "Automatic replies are %s.\n"), i18n (1086, "off"));
@@ -1178,43 +1186,38 @@ static JUMP_F(CmdUserAuto)
 
 static JUMP_F(CmdUserAlter)
 {
-    char *arg1 = NULL, *arg2 = NULL;
+    strc_t par;
     jump_t *j;
     int quiet = 0;
 
-    s_parse (&args, &arg1);
-
-    if (arg1 && !strcasecmp ("quiet", arg1))
-    {
+    if (s_parsekey (&args, "quiet"))
         quiet = 1;
-        s_parse (&args, &arg1);
-    }
-        
-    if (!arg1)
+    
+    if (!s_parse (&args, &par))
     {
         M_print (i18n (1738, "Need a command to alter.\n"));
         return 0;
     }
-    
-    j = CmdUserLookup (arg1, CU_DEFAULT);
+
+    j = CmdUserLookup (par->txt, CU_DEFAULT);
     if (!j)
-        j = CmdUserLookup (arg1, CU_USER);
+        j = CmdUserLookup (par->txt, CU_USER);
     if (!j)
     {
-        M_printf (i18n (2114, "The command name '%s' does not exist.\n"), arg1);
+        M_printf (i18n (2114, "The command name '%s' does not exist.\n"), par->txt);
         return 0;
     }
     
-    if (s_parse (&args, &arg2))
+    if (s_parse (&args, &par))
     {
-        if (CmdUserLookup (arg2, CU_USER))
+        if (CmdUserLookup (par->txt, CU_USER))
         {
             if (!quiet)
-                M_printf (i18n (1768, "The command name '%s' is already being used.\n"), arg2);
+                M_printf (i18n (1768, "The command name '%s' is already being used.\n"), par->txt);
             return 0;
         }
         else
-            s_repl (&j->name, arg2);
+            s_repl (&j->name, par->txt);
     }
     
     if (!quiet)
@@ -1234,11 +1237,10 @@ static JUMP_F(CmdUserAlter)
 
 static JUMP_F(CmdUserAlias)
 {
-    char *name = NULL, *exp = NULL;
+    strc_t name;
+    char *exp = NULL, *nname;
 
-    s_parse_s (&args, &name, " \t\r\n=");
-
-    if (!name)
+    if (!s_parse_s (&args, &name, " \t\r\n="))
     {
         alias_t *node;
 
@@ -1248,7 +1250,7 @@ static JUMP_F(CmdUserAlias)
         return 0;
     }
     
-    if ((exp = strpbrk (name, " \t\r\n")))
+    if ((exp = strpbrk (name->txt, " \t\r\n")))
     {
         M_printf (i18n (2303, "Invalid character 0x%x in alias name.\n"), *exp);
         return 0;
@@ -1257,29 +1259,24 @@ static JUMP_F(CmdUserAlias)
     if (*args == '=')
         args++;
     
-    name = strdup (name);
-    s_parserem (&args, &exp);
-
-    if (!exp)
+    nname = strdup (name->txt);
+    
+    if (s_parserem (&args, &exp))
+        CmdUserSetAlias (nname, exp);
+    else
     {
         alias_t *node;
 
         for (node = aliases; node; node = node->next)
-            if (!strcasecmp (node->name, name))
+            if (!strcasecmp (node->name, nname))
             {
                 M_printf ("alias %s %s\n", node->name, node->expansion);
-                free (name);
+                free (nname);
                 return 0;
             }
-
-        free (name);
         M_print (i18n (2297, "Alias to what?\n"));
-        return 0;
     }
-    
-    CmdUserSetAlias (name, exp);
-
-    free (name);
+    free (nname);
     return 0;
 }
 
@@ -1289,13 +1286,11 @@ static JUMP_F(CmdUserAlias)
 
 static JUMP_F(CmdUserUnalias)
 {
-    char *arg = NULL;
+    strc_t par;
 
-    s_parse (&args, &arg);
-
-    if (!arg)
+    if (!s_parse (&args, &par))
         M_print (i18n (2298, "Remove which alias?\n"));
-    else if (!CmdUserRemoveAlias (arg))
+    else if (!CmdUserRemoveAlias (par->txt))
         M_print (i18n (2299, "Alias doesn't exist.\n"));
     
     return 0;
@@ -1346,18 +1341,18 @@ static JUMP_F (CmdUserResend)
 static JUMP_F (CmdUserAnyMess)
 {
     Contact *cont;
-    char *arg1 = NULL;
+    strc_t par;
     UDWORD i, f = 0;
     static str_s t;
     ANYCONN;
 
     if (!(data & 3))
     {
-        if (!s_parse (&args, &arg1))
+        if (!s_parse (&args, &par))
             return 0;
-        if (!strcmp (arg1, "peer"))
+        if (!strcmp (par->txt, "peer"))
             data |= 1;
-        else if (!strcmp (arg1, "srv"))
+        else if (!strcmp (par->txt, "srv"))
         {
             if (!s_parseint (&args, &f))
                 return 0;
@@ -1377,13 +1372,13 @@ static JUMP_F (CmdUserAnyMess)
     if (!s_parsenick (&args, &cont, conn))
         return 0;
     
-    if (!s_parse (&args, &arg1))
+    if (!s_parse (&args, &par))
         return 0;
     
-    s_catf (&t, "%s", arg1);
+    s_catf (&t, "%s", par->txt);
 
-    while (s_parse (&args, &arg1))
-        s_catf (&t, "%c%s", Conv0xFE, arg1);
+    while (s_parse (&args, &par))
+        s_catf (&t, "%c%s", Conv0xFE, par->txt);
         
     if (data & 1)
     {
@@ -1723,7 +1718,7 @@ static JUMP_F(CmdUserStatusDetail)
     Contact *cont = NULL;
     ContactAlias *alias;
     Connection *peer;
-    char *arg1;
+    strc_t par;
     UDWORD stati[] = { 0xfffffffe, STATUS_OFFLINE, STATUS_DND,    STATUS_OCC, STATUS_NA,
                                    STATUS_AWAY,    STATUS_ONLINE, STATUS_FFC, STATUSF_BIRTH };
     ANYCONN;
@@ -1734,8 +1729,8 @@ static JUMP_F(CmdUserStatusDetail)
     if (~data & 32)
     {
         const char *argst = args;
-        if (s_parse (&argst, &arg1))
-            if ((tcg = cg = ContactGroupFind (conn, 0, arg1)))
+        if (s_parse (&argst, &par))
+            if ((tcg = cg = ContactGroupFind (conn, 0, par->txt)))
                 args = argst;
     }
 
@@ -1990,18 +1985,18 @@ static JUMP_F(CmdUserStatusDetail)
 static JUMP_F(CmdUserStatusMeta)
 {
     Contact *cont;
-    char *cmd;
+    strc_t par;
     ANYCONN;
 
     if (!data)
     {
-        if (!s_parse (&args, &cmd)) data = 0;
-        else if (!strcmp (cmd, "show")) data = 1;
-        else if (!strcmp (cmd, "load")) data = 2;
-        else if (!strcmp (cmd, "save")) data = 3;
-        else if (!strcmp (cmd, "set"))  data = 4;
-        else if (!strcmp (cmd, "get"))  data = 5;
-        else if (!strcmp (cmd, "rget")) data = 6;
+        if (!s_parse (&args, &par))     data = 0;
+        else if (!strcmp (par->txt, "show")) data = 1;
+        else if (!strcmp (par->txt, "load")) data = 2;
+        else if (!strcmp (par->txt, "save")) data = 3;
+        else if (!strcmp (par->txt, "set"))  data = 4;
+        else if (!strcmp (par->txt, "get"))  data = 5;
+        else if (!strcmp (par->txt, "rget")) data = 6;
         
         if (!data)
         {
@@ -2322,13 +2317,13 @@ static JUMP_F(CmdUserStatusShort)
  */
 static JUMP_F(CmdUserSound)
 {
-    char *arg;
+    strc_t par;
     
-    if (s_parse (&args, &arg))
+    if (s_parse (&args, &par))
     {
-        if (!strcasecmp (arg, "on") || !strcasecmp (arg, i18n (1085, "on")) || !strcasecmp (arg, "beep"))
+        if (!strcasecmp (par->txt, "on") || !strcasecmp (par->txt, i18n (1085, "on")) || !strcasecmp (par->txt, "beep"))
            prG->sound = SFLAG_BEEP;
-        else if (strcasecmp (arg, "off") && strcasecmp (arg, i18n (1086, "off")))
+        else if (strcasecmp (par->txt, "off") && strcasecmp (par->txt, i18n (1086, "off")))
            prG->sound = SFLAG_EVENT;
         else
            prG->sound = 0;
@@ -2365,7 +2360,7 @@ static JUMP_F(CmdUserSoundOffline)
  */
 static JUMP_F(CmdUserAutoaway) 
 {
-    char *arg1 = NULL;
+    strc_t par;
     UDWORD i = 0;
 
     if (s_parseint (&args, &i))
@@ -2374,13 +2369,13 @@ static JUMP_F(CmdUserAutoaway)
             uiG.away_time_prev = prG->away_time;
         prG->away_time = i;
     }
-    else if (s_parse (&args, &arg1))
+    else if (s_parse (&args, &par))
     {
-        if      (!strcmp (arg1, i18n (1085, "on"))  || !strcmp (arg1, "on"))
+        if      (!strcmp (par->txt, i18n (1085, "on"))  || !strcmp (par->txt, "on"))
         {
             prG->away_time = uiG.away_time_prev ? uiG.away_time_prev : default_away_time;
         }
-        else if (!strcmp (arg1, i18n (1086, "off")) || !strcmp (arg1, "off"))
+        else if (!strcmp (par->txt, i18n (1086, "off")) || !strcmp (par->txt, "off"))
         {
             if (prG->away_time)
                 uiG.away_time_prev = prG->away_time;
@@ -2398,27 +2393,27 @@ static JUMP_F(CmdUserAutoaway)
 static JUMP_F(CmdUserSet)
 {
     int quiet = 0, setstatus = 0;
-    char *arg1 = NULL;
+    strc_t par;
     const char *str = "";
     
     while (!data)
     {
-        if (!s_parse (&args, &arg1))               data = 0;
-        else if (!strcasecmp (arg1, "color"))      { data = FLAG_COLOR;      str = i18n (2133, "Color is %s%s%s.\n"); }
-        else if (!strcasecmp (arg1, "colour"))     { data = FLAG_COLOR;      str = i18n (2133, "Color is %s%s%s.\n"); }
-        else if (!strcasecmp (arg1, "delbs"))      { data = FLAG_DELBS;      str = i18n (2262, "Interpreting a delete character as backspace is %s%s%s.\n"); }
-        else if (!strcasecmp (arg1, "funny"))      { data = FLAG_FUNNY;      str = i18n (2134, "Funny messages are %s%s%s.\n"); }
-        else if (!strcasecmp (arg1, "auto"))       { data = FLAG_AUTOREPLY;  str = i18n (2265, "Automatic replies are %s%s%s.\n"); }
-        else if (!strcasecmp (arg1, "uinprompt"))  { data = FLAG_UINPROMPT;  str = i18n (2266, "Having the last nick in the prompt is %s%s%s.\n"); }
-        else if (!strcasecmp (arg1, "autosave"))   { data = FLAG_AUTOSAVE;   str = i18n (2267, "Automatic saves are %s%s%s.\n"); }
-        else if (!strcasecmp (arg1, "autofinger")) { data = FLAG_AUTOFINGER; str = i18n (2268, "Automatic fingering of new UINs is %s%s%s.\n"); }
-        else if (!strcasecmp (arg1, "linebreak"))  data = -1;
-        else if (!strcasecmp (arg1, "tabs"))       data = -2;
-        else if (!strcasecmp (arg1, "webaware"))   { data = FLAG_WEBAWARE; setstatus = 1; }
-        else if (!strcasecmp (arg1, "hideip"))     { data = FLAG_HIDEIP;   setstatus = 1; }
-        else if (!strcasecmp (arg1, "dcauth"))     { data = FLAG_DC_AUTH;  setstatus = 1; }
-        else if (!strcasecmp (arg1, "dccont"))     { data = FLAG_DC_CONT;  setstatus = 1; }
-        else if (!strcasecmp (arg1, "quiet"))
+        if (!s_parse (&args, &par))                    break;
+        else if (!strcasecmp (par->txt, "color"))      { data = FLAG_COLOR;      str = i18n (2133, "Color is %s%s%s.\n"); }
+        else if (!strcasecmp (par->txt, "colour"))     { data = FLAG_COLOR;      str = i18n (2133, "Color is %s%s%s.\n"); }
+        else if (!strcasecmp (par->txt, "delbs"))      { data = FLAG_DELBS;      str = i18n (2262, "Interpreting a delete character as backspace is %s%s%s.\n"); }
+        else if (!strcasecmp (par->txt, "funny"))      { data = FLAG_FUNNY;      str = i18n (2134, "Funny messages are %s%s%s.\n"); }
+        else if (!strcasecmp (par->txt, "auto"))       { data = FLAG_AUTOREPLY;  str = i18n (2265, "Automatic replies are %s%s%s.\n"); }
+        else if (!strcasecmp (par->txt, "uinprompt"))  { data = FLAG_UINPROMPT;  str = i18n (2266, "Having the last nick in the prompt is %s%s%s.\n"); }
+        else if (!strcasecmp (par->txt, "autosave"))   { data = FLAG_AUTOSAVE;   str = i18n (2267, "Automatic saves are %s%s%s.\n"); }
+        else if (!strcasecmp (par->txt, "autofinger")) { data = FLAG_AUTOFINGER; str = i18n (2268, "Automatic fingering of new UINs is %s%s%s.\n"); }
+        else if (!strcasecmp (par->txt, "linebreak"))  data = -1;
+        else if (!strcasecmp (par->txt, "tabs"))       data = -2;
+        else if (!strcasecmp (par->txt, "webaware"))   { data = FLAG_WEBAWARE; setstatus = 1; }
+        else if (!strcasecmp (par->txt, "hideip"))     { data = FLAG_HIDEIP;   setstatus = 1; }
+        else if (!strcasecmp (par->txt, "dcauth"))     { data = FLAG_DC_AUTH;  setstatus = 1; }
+        else if (!strcasecmp (par->txt, "dccont"))     { data = FLAG_DC_CONT;  setstatus = 1; }
+        else if (!strcasecmp (par->txt, "quiet"))
         {
             quiet = 1;
             continue;
@@ -2426,51 +2421,60 @@ static JUMP_F(CmdUserSet)
         break;
     }
     
-    if (data && !s_parse (&args, &arg1))
-        arg1 = "";
+    if (data && !s_parse (&args, &par))
+        par = NULL;
     
     switch (data)
     {
         case 0:
             break;
         default:
-            if (!strcasecmp (arg1, "on") || !strcmp (arg1, i18n (1085, "on")))
-                prG->flags |= data;
-            else if (!strcasecmp (arg1, "off") || !strcmp (arg1, i18n (1086, "off")))
-                prG->flags &= ~data;
-            else if (*arg1)
-                data = 0;
+            if (par)
+            {
+                if (!strcasecmp (par->txt, "on") || !strcmp (par->txt, i18n (1085, "on")))
+                    prG->flags |= data;
+                else if (!strcasecmp (par->txt, "off") || !strcmp (par->txt, i18n (1086, "off")))
+                    prG->flags &= ~data;
+                else
+                    data = 0;
+            }
             if (!quiet && str)
                 M_printf (str, COLMESSAGE, prG->flags & data ? i18n (1085, "on") : i18n (1086, "off"), COLNONE);
             if (setstatus && currconn && currconn->type == TYPE_SERVER)
                 SnacCliSetstatus (currconn, currconn->status & 0xffff, 3);
             break;
         case -1:
-            prG->flags &= ~FLAG_LIBR_BR & ~FLAG_LIBR_INT;
-            if (!strcasecmp (arg1, "break") || !strcasecmp (arg1, i18n (2269, "break")))
-                prG->flags |= FLAG_LIBR_BR;
-            else if (!strcasecmp (arg1, "simple") || !strcasecmp (arg1, i18n (2270, "simple")))
-                ;
-            else if (!strcasecmp (arg1, "indent") || !strcasecmp (arg1, i18n (2271, "indent")))
-                prG->flags |= FLAG_LIBR_INT;
-            else if (!strcasecmp (arg1, "smart") || !strcasecmp (arg1, i18n (2272, "smart")))
-                prG->flags |= FLAG_LIBR_BR | FLAG_LIBR_INT;
-            else if (*arg1)
-                data = 0;
+            if (par)
+            {
+                UDWORD flags = prG->flags & ~FLAG_LIBR_BR & ~FLAG_LIBR_INT;
+                if (!strcasecmp (par->txt, "break") || !strcasecmp (par->txt, i18n (2269, "break")))
+                    prG->flags = flags | FLAG_LIBR_BR;
+                else if (!strcasecmp (par->txt, "simple") || !strcasecmp (par->txt, i18n (2270, "simple")))
+                    prG->flags = flags;
+                else if (!strcasecmp (par->txt, "indent") || !strcasecmp (par->txt, i18n (2271, "indent")))
+                    prG->flags = flags | FLAG_LIBR_INT;
+                else if (!strcasecmp (par->txt, "smart") || !strcasecmp (par->txt, i18n (2272, "smart")))
+                    prG->flags = flags | FLAG_LIBR_BR | FLAG_LIBR_INT;
+                else
+                    data = 0;
+            }
             if (!quiet)
                 M_printf (i18n (2288, "Indentation style is %s%s%s.\n"), COLMESSAGE,
                           ~prG->flags & FLAG_LIBR_BR ? (~prG->flags & FLAG_LIBR_INT ? i18n (2270, "simple") : i18n (2271, "indent")) :
                           ~prG->flags & FLAG_LIBR_INT ? i18n (2269, "break") : i18n (2272, "smart"), COLNONE);
             break;
         case -2:
-            if (!strcasecmp (arg1, "cycle") || !strcasecmp (arg1, i18n (2273, "cycle")))
-                prG->tabs = TABS_CYCLE;
-            else if (!strcasecmp (arg1, "cycleall") || !strcasecmp (arg1, i18n (2274, "cycleall")))
-                prG->tabs = TABS_CYCLEALL;
-            else if (!strcasecmp (arg1, "simple") || !strcasecmp (arg1, i18n (2270, "simple")))
-                prG->tabs = TABS_SIMPLE;
-            else if (*arg1)
-                data = 0;
+            if (par)
+            {
+                if (!strcasecmp (par->txt, "cycle") || !strcasecmp (par->txt, i18n (2273, "cycle")))
+                    prG->tabs = TABS_CYCLE;
+                else if (!strcasecmp (par->txt, "cycleall") || !strcasecmp (par->txt, i18n (2274, "cycleall")))
+                    prG->tabs = TABS_CYCLEALL;
+                else if (!strcasecmp (par->txt, "simple") || !strcasecmp (par->txt, i18n (2270, "simple")))
+                    prG->tabs = TABS_SIMPLE;
+                else
+                    data = 0;
+            }
             if (!quiet)
                 M_printf (i18n (2275, "Tab style is %s%s%s.\n"), COLMESSAGE,
                           prG->tabs == TABS_CYCLE ? i18n (2273, "cycle") :
@@ -2505,8 +2509,7 @@ static JUMP_F(CmdUserOpt)
     ContactOptions *copts = NULL;
     int opttype = 0, i;
     UWORD flag = 0, val;
-    
-    char *cmd;
+    strc_t par;
     ANYCONN;
 
     if (!*args)
@@ -2520,7 +2523,7 @@ static JUMP_F(CmdUserOpt)
     if (s_parsekey (&args, "global"))           { copts = &prG->copts;  opttype = 0; optobj = ""; }
     else if (s_parsecg (&args, &cg, conn))      { copts = &cg->copts;   opttype = 1; optobj = cg->name; }
     else if (s_parsenick (&args, &cont, conn))  { copts = &cont->copts; opttype = 2; optobj = cont->nick; }
-    else if (s_parse (&args, &cmd))
+    else if (s_parse (&args, &par))
     {
         M_printf (i18n (9999, "Could not find contact or contact group name in %s.\n"), args);
         return 0;
@@ -2596,11 +2599,11 @@ static JUMP_F(CmdUserOpt)
     
     while (*args)
     {
-        if (!s_parse (&args, &cmd))
+        if (!s_parse (&args, &par))
             return 0;
         
         for (i = 0; ContactOptionsList[i].name; i++)
-            if (!strcmp (cmd, ContactOptionsList[i].name))
+            if (!strcmp (par->txt, ContactOptionsList[i].name))
             {
                 optname = ContactOptionsList[i].name;
                 flag = ContactOptionsList[i].flag;
@@ -2609,11 +2612,11 @@ static JUMP_F(CmdUserOpt)
         
         if (!optname)
         {
-            M_printf (i18n (9999, "Unknown option '%s'.\n"), cmd);
+            M_printf (i18n (9999, "Unknown option '%s'.\n"), par->txt);
             continue;
         }
         
-        if (!s_parse (&args, &cmd))
+        if (!s_parse (&args, &par))
         {
             const char *res = NULL;
             UWORD val;
@@ -2639,29 +2642,29 @@ static JUMP_F(CmdUserOpt)
         
         if (flag & COF_STRING)
         {
-            ContactOptionsSetStr (copts, flag, cmd);
+            ContactOptionsSetStr (copts, flag, par->txt);
             M_printf (opttype == 2 ? i18n (9999, "Setting option '%s' for contact '%s' to '%s'.\n") :
                       opttype == 1 ? i18n (9999, "Setting option '%s' for contact group '%s' to '%s'.\n")
                                    : i18n (9999, "Setting option '%s%s' globally to '%s'.\n"),
-                      optname, optobj, cmd);
+                      optname, optobj, par->txt);
         }
         else if (flag & COF_COLOR)
         {
-            ContactOptionsSetStr (copts, flag, ContactOptionsC2S (cmd));
+            ContactOptionsSetStr (copts, flag, ContactOptionsC2S (par->txt));
             M_printf (opttype == 2 ? i18n (9999, "Setting option '%s' for contact '%s' to '%s'.\n") :
                       opttype == 1 ? i18n (9999, "Setting option '%s' for contact group '%s' to '%s'.\n")
                                    : i18n (9999, "Setting option '%s%s' globally to '%s'.\n"),
-                      optname, optobj, cmd);
+                      optname, optobj, par->txt);
         }
         else if (flag & COF_NUMERIC)
         {
-            ContactOptionsSetVal (copts, flag, atoi (cmd));
+            ContactOptionsSetVal (copts, flag, atoi (par->txt));
             M_printf (opttype == 2 ? i18n (9999, "Setting option '%s' for contact '%s' to '%d'.\n") :
                       opttype == 1 ? i18n (9999, "Setting option '%s' for contact group '%s' to '%d'.\n")
                                    : i18n (9999, "Setting option '%s%s' globally to '%d'.\n"),
-                      optname, optobj, atoi (cmd));
+                      optname, optobj, atoi (par->txt));
         }
-        else if (!strcasecmp (cmd, "on")  || !strcasecmp (cmd, i18n (1085, "on")))
+        else if (!strcasecmp (par->txt, "on")  || !strcasecmp (par->txt, i18n (1085, "on")))
         {
             ContactOptionsSetVal (copts, flag, 1);
             M_printf (opttype == 2 ? i18n (9999, "Setting option '%s' for contact '%s'.\n") :
@@ -2669,7 +2672,7 @@ static JUMP_F(CmdUserOpt)
                                    : i18n (9999, "Setting option '%s%s' globally.\n"),
                       optname, optobj);
         }
-        else if (!strcasecmp (cmd, "off") || !strcasecmp (cmd, i18n (1086, "off")))
+        else if (!strcasecmp (par->txt, "off") || !strcasecmp (par->txt, i18n (1086, "off")))
         {
             ContactOptionsSetVal (copts, flag, 0);
             M_printf (opttype == 2 ? i18n (9999, "Clearing option '%s' for contact '%s'.\n") :
@@ -2677,7 +2680,7 @@ static JUMP_F(CmdUserOpt)
                                    : i18n (9999, "Clearing option '%s%s' globally.\n"),
                       optname, optobj);
         }
-        else if (!strcasecmp (cmd, "undef"))
+        else if (!strcasecmp (par->txt, "undef"))
         {
             ContactOptionsUndef (copts, flag);
             M_printf (opttype == 2 ? i18n (9999, "Undefining option '%s' for contact '%s'.\n") :
@@ -2687,7 +2690,7 @@ static JUMP_F(CmdUserOpt)
         }
         else
         {
-            M_printf (i18n (9999, "Invalid value '%s' for boolean option '%s'.\n"), cmd, optname);
+            M_printf (i18n (9999, "Invalid value '%s' for boolean option '%s'.\n"), par->txt, optname);
             continue;
         }
     }
@@ -2855,26 +2858,27 @@ static JUMP_F(CmdUserAdd)
 {
     ContactGroup *cg = NULL;
     Contact *cont = NULL, *cont2;
-    char *arg1;
+    char *cmd;
+    strc_t par;
     OPENCONN;
 
     if (data != 1)
     {
         const char *argst = args;
-        if (s_parse (&argst, &arg1))
+        if (s_parse (&argst, &par))
         {
-            if ((cg = ContactGroupFind (conn, 0, arg1)))
+            if ((cg = ContactGroupFind (conn, 0, par->txt)))
                 args = argst;
             else if (data == 2)
             {
-                if ((cg = ContactGroupFind (conn, 0, arg1)))
+                if ((cg = ContactGroupFind (conn, 0, par->txt)))
                 {
-                    M_printf (i18n (9999, "Contact group '%s' already exists\n"), arg1);
+                    M_printf (i18n (9999, "Contact group '%s' already exists\n"), par->txt);
                     args = argst;
                 }
-                if ((cg = ContactGroupC (conn, 0, arg1)))
+                if ((cg = ContactGroupC (conn, 0, par->txt)))
                 {
-                    M_printf (i18n (2245, "Added contact group '%s'.\n"), arg1);
+                    M_printf (i18n (2245, "Added contact group '%s'.\n"), par->txt);
                     args = argst;
                 }
                 else
@@ -2913,8 +2917,8 @@ static JUMP_F(CmdUserAdd)
                 if (*args == ',')
                     args++;
             }
-            if (s_parse (&args, &arg1) && strlen (arg1))
-                M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), arg1);
+            if (s_parse (&args, &par) && *par->txt)
+                M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), par->txt);
         }
         return 0;
     }
@@ -2925,21 +2929,21 @@ static JUMP_F(CmdUserAdd)
         return 0;
     }
 
-    if (!s_parserem (&args, &arg1))
+    if (!s_parserem (&args, &cmd))
     {
         M_print (i18n (2116, "No new nick name given.\n"));
         return 0;
     }
 
-    if (arg1)
+    if (cmd)
     {
         if (!cont->group)
         {
-            M_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, arg1);
+            M_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, cmd);
             M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
-            if (c_strlen (arg1) > uiG.nick_len)
-                uiG.nick_len = c_strlen (arg1);
-            ContactFindCreate (conn->contacts, 0, cont->uin, arg1);
+            if (c_strlen (cmd) > uiG.nick_len)
+                uiG.nick_len = c_strlen (cmd);
+            ContactFindCreate (conn->contacts, 0, cont->uin, cmd);
             if (conn->ver > 6)
                 SnacCliAddcontact (conn, cont);
             else
@@ -2947,15 +2951,15 @@ static JUMP_F(CmdUserAdd)
         }
         else
         {
-            if ((cont2 = ContactFind (conn->contacts, 0, cont->uin, arg1)))
+            if ((cont2 = ContactFind (conn->contacts, 0, cont->uin, cmd)))
                 M_printf (i18n (2146, "'%s' is already an alias for '%s' (%ld).\n"),
                          cont2->nick, cont->nick, cont->uin);
-            else if ((cont2 = ContactFind (conn->contacts, 0, 0, arg1)))
+            else if ((cont2 = ContactFind (conn->contacts, 0, 0, cmd)))
                 M_printf (i18n (2147, "'%s' (%ld) is already used as a nick.\n"),
                          cont2->nick, cont2->uin);
             else
             {
-                if (!(cont2 = ContactFindCreate (conn->contacts, 0, cont->uin, arg1)))
+                if (!(cont2 = ContactFindCreate (conn->contacts, 0, cont->uin, cmd)))
                     M_print (i18n (2118, "Out of memory.\n"));
                 else
                 {
@@ -2981,6 +2985,7 @@ static JUMP_F(CmdUserRemove)
     ContactGroup *cg = NULL;
     Contact *cont = NULL;
     UDWORD uin;
+    strc_t par;
     char *alias;
     const char *argst;
     UBYTE all = 0;
@@ -2989,8 +2994,8 @@ static JUMP_F(CmdUserRemove)
     if (data != 1)
     {
         argst = args;
-        if (s_parse (&argst, &alias))
-            if ((cg = ContactGroupFind (conn, 0, alias)))
+        if (s_parse (&argst, &par))
+            if ((cg = ContactGroupFind (conn, 0, par->txt)))
                 args = argst;
         if (data == 2 && !cg)
         {
@@ -2999,15 +3004,8 @@ static JUMP_F(CmdUserRemove)
         }
     }
 
-    argst = args;
-    if (s_parse (&argst, &alias))
-    {
-        if (!strcmp (alias, "all"))
-        {
-            args = argst;
-            all = 2;
-        }
-    }
+    if (s_parsekey (&argst, "all"))
+        all = 2;
     else if (cg && data == 2)
         all = 1;
     
@@ -3078,13 +3076,14 @@ static JUMP_F(CmdUserRemove)
  */
 static JUMP_F(CmdUserAuth)
 {
+    strc_t par;
     char *cmd = NULL, *msg = NULL;
     const char *argsb;
     Contact *cont = NULL;
     OPENCONN;
 
     argsb = args;
-    if (!s_parse (&args, &cmd))
+    if (!s_parse (&args, &par))
     {
         M_print (i18n (2119, "auth [grant] <nick>    - grant authorization.\n"));
         M_print (i18n (2120, "auth deny <nick> <msg> - refuse authorization.\n"));
@@ -3092,7 +3091,7 @@ static JUMP_F(CmdUserAuth)
         M_print (i18n (2145, "auth add  <nick>       - authorized add.\n"));
         return 0;
     }
-    cmd = strdup (cmd);
+    cmd = strdup (par->txt);
 
     if (s_parsenick (&args, &cont, conn))
     {
@@ -3184,6 +3183,7 @@ static JUMP_F(CmdUserURL)
 {
     char *url, *msg;
     const char *cmsg;
+    strc_t par;
     Contact *cont = NULL;
     OPENCONN;
 
@@ -3193,13 +3193,13 @@ static JUMP_F(CmdUserURL)
         return 0;
     }
 
-    if (!s_parse (&args, &url))
+    if (!s_parse (&args, &par))
     {
         M_print (i18n (1678, "Need URL please.\n"));
         return 0;
     }
 
-    url = strdup (url);
+    url = strdup (par->txt);
 
     if (!s_parserem (&args, &msg))
         msg = "";
@@ -3336,11 +3336,11 @@ static JUMP_F(CmdUserUptime)
  */
 static JUMP_F(CmdUserConn)
 {
-    char *arg1 = NULL;
     int i;
+    strc_t par;
     Connection *conn;
 
-    if (!s_parse (&args, &arg1))
+    if (!s_parse (&args, &par))
     {
         M_print (i18n (1887, "Connections:"));
         M_print ("\n  " COLINDENT);
@@ -3373,7 +3373,7 @@ static JUMP_F(CmdUserConn)
         } 
         M_print (COLEXDENT "\r");
     }
-    else if (!strcmp (arg1, "login") || !strcmp (arg1, "open"))
+    else if (!strcmp (par->txt, "login") || !strcmp (par->txt, "open"))
     {
         UDWORD i = 0, j;
 
@@ -3403,7 +3403,7 @@ static JUMP_F(CmdUserConn)
         }
         conn->open (conn);
     }
-    else if (!strcmp (arg1, "select"))
+    else if (!strcmp (par->txt, "select"))
     {
         UDWORD i = 0;
 
@@ -3432,7 +3432,7 @@ static JUMP_F(CmdUserConn)
         M_printf (i18n (2099, "Selected connection %ld (version %d, UIN %ld) as current connection.\n"),
                  i, conn->ver, conn->uin);
     }
-    else if (!strcmp (arg1, "remove") || !strcmp (arg1, "delete"))
+    else if (!strcmp (par->txt, "remove") || !strcmp (par->txt, "delete"))
     {
         UDWORD i = 0;
 
@@ -3452,7 +3452,7 @@ static JUMP_F(CmdUserConn)
         M_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), i);
         ConnectionClose (conn);
     }
-    else if (!strcmp (arg1, "close") || !strcmp (arg1, "logoff"))
+    else if (!strcmp (par->txt, "close") || !strcmp (par->txt, "logoff"))
     {
         UDWORD i = 0;
 
@@ -3493,7 +3493,7 @@ static JUMP_F(CmdUserConn)
  */
 static JUMP_F(CmdUserContact)
 {
-    char *tmp = NULL;
+    strc_t par;
     OPENCONN;
 
     if (conn->type != TYPE_SERVER)
@@ -3504,16 +3504,16 @@ static JUMP_F(CmdUserContact)
 
     if (!data)
     {
-        if (!s_parse (&args, &tmp))             data = 0;
-        else if (!strcasecmp (tmp, "show"))     data = IMROSTER_SHOW;
-        else if (!strcasecmp (tmp, "diff"))     data = IMROSTER_DIFF;
-        else if (!strcasecmp (tmp, "add"))      data = IMROSTER_DOWNLOAD;
-        else if (!strcasecmp (tmp, "download")) data = IMROSTER_DOWNLOAD;
-        else if (!strcasecmp (tmp, "import"))   data = IMROSTER_IMPORT;
-        else if (!strcasecmp (tmp, "sync"))     data = IMROSTER_SYNC;
-        else if (!strcasecmp (tmp, "export"))   data = IMROSTER_EXPORT;
-        else if (!strcasecmp (tmp, "upload"))   data = IMROSTER_UPLOAD;
-        else                                    data = 0;
+        if (!s_parse (&args, &par))                  data = 0;
+        else if (!strcasecmp (par->txt, "show"))     data = IMROSTER_SHOW;
+        else if (!strcasecmp (par->txt, "diff"))     data = IMROSTER_DIFF;
+        else if (!strcasecmp (par->txt, "add"))      data = IMROSTER_DOWNLOAD;
+        else if (!strcasecmp (par->txt, "download")) data = IMROSTER_DOWNLOAD;
+        else if (!strcasecmp (par->txt, "import"))   data = IMROSTER_IMPORT;
+        else if (!strcasecmp (par->txt, "sync"))     data = IMROSTER_SYNC;
+        else if (!strcasecmp (par->txt, "export"))   data = IMROSTER_EXPORT;
+        else if (!strcasecmp (par->txt, "upload"))   data = IMROSTER_UPLOAD;
+        else                                         data = 0;
     }
     if (data)
         IMRoster (conn, data);
@@ -3546,22 +3546,17 @@ static JUMP_F(CmdUserQuit)
 static JUMP_F(CmdUserAsSession)
 {
     Connection *saveconn, *tmpconn;
-    char *q = NULL;
     UDWORD quiet = 0, nr;
     
     saveconn = currconn;
+    
+    if (s_parsekey (&args, "quiet"))
+        quiet = 1;
+
     if (!s_parseint (&args, &nr))
     {
-        if (!s_parse (&args, &q))
-            /* syntax error */
-            return 0;
-        if (!strcmp (q, "quiet"))
-            /* syntax error */
-            return 0;
-        quiet = 1;
-        if (!s_parseint (&args, &nr))
-            /* syntax error */
-            return 0;
+        /* syntax error */
+        return 0;
     }
 
     tmpconn = ConnectionNr (nr - 1);
@@ -3646,7 +3641,8 @@ static JUMP_F(CmdUserSearch)
 {
     int temp;
     static MetaWP wp = { 0 };
-    char *arg1 = NULL, *arg2 = NULL;
+    strc_t par;
+    char *arg1 = NULL;
     OPENCONN;
 
     if (!strcmp (args, "."))
@@ -3655,19 +3651,19 @@ static JUMP_F(CmdUserSearch)
     switch (status)
     {
         case 0:
-            if (!s_parse (&args, &arg1))
+            if (!s_parse (&args, &par))
             {
                 M_print (i18n (1960, "Enter data to search user for. Enter '.' to start the search.\n"));
                 R_setpromptf ("%s ", i18n (1656, "Enter the user's nick name:"));
                 return 200;
             }
-            arg1 = strdup (arg1);
-            if (s_parse (&args, &arg2))
+            arg1 = strdup (par->txt);
+            if (s_parse (&args, &par))
             {
                 if (conn->ver > 6)
-                    SnacCliSearchbypersinf (conn, NULL, NULL, arg1, arg2);
+                    SnacCliSearchbypersinf (conn, NULL, NULL, arg1, par->txt);
                 else
-                    CmdPktCmdSearchUser (conn, NULL, NULL, arg1, arg2);
+                    CmdPktCmdSearchUser (conn, NULL, NULL, arg1, par->txt);
                 free (arg1);
                 return 0;
             }
@@ -4039,6 +4035,7 @@ static JUMP_F(CmdUserAbout)
 {
     static int offset = 0;
     static char msg[1024];
+    char *arg;
     OPENCONN;
 
     if (status > 100)
@@ -4076,12 +4073,12 @@ static JUMP_F(CmdUserAbout)
     }
     else
     {
-        if (args && strlen (args))
+        if (s_parserem (&args, &arg))
         {
             if (conn->ver > 6)
-                SnacCliMetasetabout (conn, args);
+                SnacCliMetasetabout (conn, arg);
             else
-                CmdPktCmdMetaAbout (conn, args);
+                CmdPktCmdMetaAbout (conn, arg);
             return 0;
         }
         offset = 0;
@@ -4164,6 +4161,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
     char buf[1024];    /* This is hopefully enough */
     char *cmd = NULL;
     const char *args;
+    strc_t par;
 
     static jump_f *sticky = (jump_f *)NULL;
     static int status = 0;
@@ -4212,12 +4210,13 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
                 return;
             }
             args = buf;
-            if (!s_parse (&args, &cmd))
+            if (!s_parse (&args, &par))
             {
                 if (!command)
                     R_resetprompt ();
                 return;
             }
+            cmd = par->txt;
 
             /* skip all non-alphanumeric chars on the beginning
              * to accept IRC like commands starting with a /

@@ -205,8 +205,9 @@ int i18nOpen (const char *loc, UBYTE enc)
  */
 static int i18nAdd (FILE *i18nf, int debug, int *res)
 {
-    char *line;
-    int j = 0;
+    strc_t line;
+    str_s str;
+    int i, j = 0;
     UBYTE enc = 0;
     
     if (*res)
@@ -216,10 +217,9 @@ static int i18nAdd (FILE *i18nf, int debug, int *res)
     }
     while ((line = UtilIOReadline (i18nf)))
     {
-        int i;
         char *p;
 
-        i = strtol (line, &p, 10) - i18nOffset;
+        i = strtol ((char * /*POSIX sucks*/)line->txt, &p, 10) - i18nOffset;
 
         if (i == 7 || !i)
         {
@@ -232,11 +232,12 @@ static int i18nAdd (FILE *i18nf, int debug, int *res)
                 prG->enc_loc = ENC_AUTO | enc;
         }
 
-        if (p == line || i < 0 || i >= i18nSLOTS || i18nStrings[i])
+        if (p == line->txt || i < 0 || i >= i18nSLOTS || i18nStrings[i])
             continue;
         
-        p = debug ? line : p + 1;
-        i18nStrings[i] = p = strdup (ConvToUTF8 (p, enc ? enc : ENC_LATIN1, -1, 0));
+        str.txt = debug ? line->txt : p + 1;
+        str.len = debug ? line->len : line->len - (p + 1 - line->txt);
+        i18nStrings[i] = p = strdup (ConvFrom (&str, enc ? enc : ENC_LATIN1)->txt);
         j++;
         for (; *p; p++)
             if (*p == '\\' && p[1] == 'n')

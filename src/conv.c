@@ -35,62 +35,203 @@
 #include "preferences.h"
 #include "util_str.h"
 
-#ifdef ENABLE_ICONV
+typedef strc_t (iconv_func)(strc_t, UBYTE);
+
+#if HAVE_ICONV
 #include <iconv.h>
-typedef struct { const char *enc; iconv_t to; iconv_t from; } enc_t;
+static strc_t iconv_from_iconv (strc_t, UBYTE);
+static strc_t iconv_to_iconv (strc_t, UBYTE);
+#endif
+#if ENABLE_FALLBACK_UTF8
+static iconv_func iconv_from_usascii, iconv_to_usascii;
 #else
-typedef struct { const char *enc; } enc_t;
+static iconv_func iconv_usascii;
+#endif
+#if ENABLE_FALLBACK_UTF8
+static iconv_func iconv_utf8;
+#endif
+#if ENABLE_FALLBACK_LATIN1
+static iconv_func iconv_from_latin1, iconv_to_latin1;
+#endif
+#if ENABLE_FALLBACK_LATIN9
+static iconv_func iconv_from_latin9, iconv_to_latin9;
+#endif
+#if ENABLE_FALLBACK_KOI8
+static iconv_func iconv_from_koi8, iconv_to_koi8;
+#endif
+#if ENABLE_FALLBACK_WIN1251
+static iconv_func iconv_from_win1251, iconv_to_win1251;
+#endif
+#if ENABLE_FALLBACK_UCS2BE
+static iconv_func iconv_from_ucs2be, iconv_to_ucs2be;
+#endif
+
+
+#if HAVE_ICONV
+typedef struct { const char *enca; const char *encb; const char *encc;
+                 iconv_func *fof; iconv_func *fto;
+                 iconv_t     iof; iconv_t      ito; } enc_t;
+#else
+typedef struct { const char *enca; const char *encb; const char *encc;
+                 iconv_func *fof; iconv_func *fto; } enc_t;
 #endif
 
 static int conv_nr = 0;
 static enc_t *conv_encs = NULL;
 
+UBYTE conv_error = 0;
+
 /*
- * Give an ID for the given encoding name
+ * Initialize encoding table.
+ */
+void ConvInit (void)
+{
+    int i;
+
+    conv_error = 0;
+    conv_encs = calloc (sizeof (enc_t), conv_nr = 15);
+    conv_encs[0].enca = "US-ASCII";
+    conv_encs[1].enca = "UTF-8";
+    conv_encs[2].enca = "ISO-8859-1";
+    conv_encs[2].encb = "ISO8859-1";
+    conv_encs[2].encc = "LATIN1";
+    conv_encs[3].enca = "ISO-8859-15";
+    conv_encs[3].encb = "ISO8859-15";
+    conv_encs[3].encc = "LATIN9";
+    conv_encs[4].enca = "KOI8-U";
+    conv_encs[4].encb = "KOI8-R";
+    conv_encs[4].encc = "KOI8";
+    conv_encs[5].enca = "CP1251";
+    conv_encs[5].encb = "WINDOWS-1251";
+    conv_encs[5].encc = "CP-1251";
+    conv_encs[6].enca = "UCS2BE";
+    conv_encs[6].encb = "UNICODEBIG";
+    conv_encs[7].enca = "CP1257";
+    conv_encs[7].encb = "WINDOWS-1257";
+    conv_encs[7].encc = "CP-1257";
+    conv_encs[8].enca = "EUC-JP";
+    conv_encs[9].enca = "SHIFT-JIS";
+    conv_encs[9].encb = "SJIS";
+    
+#if HAVE_ICONV
+    for (i = 0; i < 10; i++)
+        ConvEnc (conv_encs[i].enca);
+    /* extra check for UTF-8 */
+    if (conv_encs[1].fof)
+    {
+        size_t inl = 2, outl = 10;
+        char inb[10], outb[10], *inp = inb, *outp = outb;
+        strcpy (inp, "\xfc.\xc0\xaf");
+        if (iconv (conv_encs[1].ito, &inp, &inl, &outp, &outl) != (size_t)-1)
+            conv_encs[1].fto = conv_encs[1].fof = NULL;
+        else
+        {
+            inp = inb + 2;
+            iconv (conv_encs[1].ito, NULL, NULL, NULL, NULL);
+            if ((iconv (conv_encs[1].ito, &inp, &inl, &outp, &outl) != (size_t)-1) && *outp != '/')
+                conv_encs[1].fto = conv_encs[1].fof = NULL;
+        }
+    }
+#endif
+    if (!conv_encs[0].fof)
+    {
+#if ENABLE_FALLBACK_ASCII
+        conv_encs[0].fof  = &iconv_from_usascii;
+        conv_encs[0].fto  = &iconv_to_usascii;
+#else
+        conv_encs[0].fof  = &iconv_usascii;
+        conv_encs[0].fto  = &iconv_usascii;
+#endif
+    }
+    if (!conv_encs[1].fof)
+    {
+#if ENABLE_FALLBACK_UTF8
+        conv_encs[1].fof  = &iconv_utf8;
+        conv_encs[1].fto  = &iconv_utf8;
+#else
+        conv_encs[1].fof  = conv_encs[0].fof;
+        conv_encs[1].fto  = conv_encs[0].fto;
+        conv_error = 1;
+#endif
+    }
+    if (!conv_encs[2].fof)
+    {
+#if ENABLE_FALLBACK_LATIN1
+        conv_encs[2].fof  = &iconv_from_latin1;
+        conv_encs[2].fto  = &iconv_to_latin1;
+#else
+        conv_encs[2].fof  = conv_encs[0].fof;
+        conv_encs[2].fto  = conv_encs[0].fto;
+        conv_error = 2;
+#endif
+    }
+    if (!conv_encs[3].fof)
+    {
+#if ENABLE_FALLBACK_LATIN9
+        conv_encs[3].fof  = &iconv_from_latin9;
+        conv_encs[3].fto  = &iconv_to_latin9;
+#else
+        conv_encs[3].fof  = conv_encs[0].fof;
+        conv_encs[3].fto  = conv_encs[0].fto;
+        conv_error = 3;
+#endif
+    }
+    if (!conv_encs[4].fof)
+    {
+#if ENABLE_FALLBACK_KOI8
+        conv_encs[4].fof  = &iconv_from_koi8;
+        conv_encs[4].fto  = &iconv_to_koi8;
+#else
+        conv_encs[4].fof  = conv_encs[0].fof;
+        conv_encs[4].fto  = conv_encs[0].fto;
+        conv_error = 4;
+#endif
+    }
+    if (!conv_encs[5].fof)
+    {
+#if ENABLE_FALLBACK_WIN1251
+        conv_encs[5].fof  = &iconv_from_win1251;
+        conv_encs[5].fto  = &iconv_to_win1251;
+#else
+        conv_encs[5].fof  = conv_encs[0].fof;
+        conv_encs[5].fto  = conv_encs[0].fto;
+        conv_error = 5;
+#endif
+    }
+    if (!conv_encs[6].fof)
+    {
+#if ENABLE_FALLBACK_UCS2BE
+        conv_encs[6].fof  = &iconv_from_ucs2be;
+        conv_encs[6].fto  = &iconv_to_ucs2be;
+#else
+        conv_encs[6].fof  = conv_encs[0].fof;
+        conv_encs[6].fto  = conv_encs[0].fto;
+        conv_error = 6;
+#endif
+    }
+}
+
+/*
+ * Give an ID for the given encoding name.
  */
 UBYTE ConvEnc (const char *enc)
 {
     UBYTE nr;
 
-    if (!conv_encs || !conv_nr)
-    {
-        conv_encs = calloc (sizeof (enc_t), conv_nr = 15);
-        conv_encs[0].enc = strdup ("none");
-        conv_encs[1].enc = strdup ("UTF-8");
-        conv_encs[2].enc = strdup (ICONV_LATIN1_NAME);
-        conv_encs[3].enc = strdup (ICONV_LATIN9_NAME);
-        conv_encs[4].enc = strdup ("KOI8-U");
-        conv_encs[5].enc = strdup ("CP1251");      /* NOT cp-1251, NOT windows* */
-        conv_encs[6].enc = strdup (ICONV_UCS2BE_NAME);
-        conv_encs[7].enc = strdup ("CP1257");
-        conv_encs[8].enc = strdup ("EUC-JP");
-        conv_encs[9].enc = strdup ("SHIFT-JIS");
-    }
-    if (!strcasecmp (enc, "WINDOWS-1251") || !strcmp (enc, "CP-1251"))
-        enc = "CP1251";
-    if (!strcasecmp (enc, "WINDOWS-1257") || !strcmp (enc, "CP-1257"))
-        enc = "CP1257";
-    if (!strcasecmp (enc, "ISO-8859-1") || !strcasecmp (enc, "ISO8859-1") || !strcasecmp (enc, "LATIN1"))
-        enc = ICONV_LATIN1_NAME;
-    if (!strcasecmp (enc, "ISO-8859-15") || !strcasecmp (enc, "ISO8859-15") || !strcasecmp (enc, "LATIN9"))
-        enc = ICONV_LATIN9_NAME;
-    if (!strcasecmp (enc, "UCS-2BE") || !strcasecmp (enc, "UNICODEBIG"))
-        enc = ICONV_UCS2BE_NAME;
-
-#ifndef ENABLE_ICONV
-    if (!strncasecmp (enc, "KOI8", 4))
-        enc = "KOI8-U";
-#endif
-    for (nr = 0; conv_encs[nr].enc; nr++)
-        if (!strcasecmp (conv_encs[nr].enc, enc))
+    for (nr = 0; conv_encs[nr].enca; nr++)
+        if (!strcasecmp (conv_encs[nr].enca, enc) ||
+            (conv_encs[nr].encb && !strcasecmp (conv_encs[nr].encb, enc)) ||
+            (conv_encs[nr].encc && !strcasecmp (conv_encs[nr].encc, enc)))
         {
-#ifdef ENABLE_ICONV
-            if (conv_encs[nr].to && conv_encs[nr].from
-                && conv_encs[nr].to != (iconv_t)(-1)
-                && conv_encs[nr].from != (iconv_t)(-1))
-#else
-            if (nr <= ENC_MAX_BUILTIN)
+#if HAVE_ICONV
+            if (conv_encs[nr].ito && conv_encs[nr].iof)
+            {
+                if (conv_encs[nr].ito != (iconv_t)(-1) && conv_encs[nr].iof != (iconv_t)(-1))
+                    return nr;
+                return ENC_AUTO | nr;
+            }
 #endif
+            if (conv_encs[nr].fof && conv_encs[nr].fto)
                 return nr;
             break;
         }
@@ -103,22 +244,37 @@ UBYTE ConvEnc (const char *enc)
         conv_nr += 10;
         conv_encs = new;
     }
-    if (!conv_encs[nr].enc)
+    if (!conv_encs[nr].enca)
     {
         char *p;
-        for (conv_encs[nr].enc = p = strdup (enc); *p; p++)
+        for (conv_encs[nr].enca = p = strdup (enc); *p; p++)
             *p = toupper (*p);
-        conv_encs[nr + 1].enc = NULL;
+        conv_encs[nr + 1].enca = NULL;
     }
-#ifdef ENABLE_ICONV
-    conv_encs[nr].to   = iconv_open ("UTF-8", enc);
-    conv_encs[nr].from = iconv_open (enc, "UTF-8");
-    if (conv_encs[nr].to == (iconv_t)(-1) || conv_encs[nr].from == (iconv_t)(-1))
-        return ENC_AUTO | nr;
-    return nr;
-#else
-    return ENC_AUTO | nr;
+#if HAVE_ICONV
+    conv_encs[nr].iof = iconv_open ("UTF-8", conv_encs[nr].enca);
+    conv_encs[nr].ito = iconv_open (conv_encs[nr].enca, "UTF-8");
+    if ((conv_encs[nr].ito == (iconv_t)(-1) || conv_encs[nr].iof == (iconv_t)(-1))
+        && conv_encs[nr].encb)
+    {
+        conv_encs[nr].iof = iconv_open ("UTF-8", conv_encs[nr].encb);
+        conv_encs[nr].ito = iconv_open (conv_encs[nr].encb, "UTF-8");
+    }
+    if ((conv_encs[nr].ito == (iconv_t)(-1) || conv_encs[nr].iof == (iconv_t)(-1))
+        && conv_encs[nr].encc)
+    {
+        conv_encs[nr].iof = iconv_open ("UTF-8", conv_encs[nr].encc);
+        conv_encs[nr].ito = iconv_open (conv_encs[nr].encc, "UTF-8");
+    }
+    if (conv_encs[nr].ito != (iconv_t)(-1) && conv_encs[nr].iof != (iconv_t)(-1))
+    {
+        conv_encs[nr].fof = &iconv_from_iconv;
+        conv_encs[nr].fto = &iconv_to_iconv;
+        return nr;
+    }
 #endif
+    conv_error = nr;
+    return ENC_AUTO | nr;
 }
 
 /*
@@ -126,20 +282,18 @@ UBYTE ConvEnc (const char *enc)
  */
 const char *ConvEncName (UBYTE enc)
 {
-    if (!conv_encs)
-        ConvEnc ("none");
-    return conv_encs[enc & ~ENC_AUTO].enc;
+    return conv_encs[enc & ~ENC_AUTO].enca;
 }
 
-const char *ConvCrush0xFE (const char *inn)
+const char *ConvCrush0xFE (const char *in)
 {
     static str_s t;
     char *p;
     
-    if (!inn || !*inn)
+    if (!in || !*in)
         return "";
     
-    s_init (&t, inn, 0);
+    s_init (&t, in, 0);
 
     for (p = t.txt; *p; p++)
         if (*p == Conv0xFE)
@@ -150,241 +304,374 @@ const char *ConvCrush0xFE (const char *inn)
 /*
  * Convert a single unicode code point to UTF-8
  */
-const char *ConvUTF8 (UDWORD x)
+const char *ConvUTF8 (UDWORD ucs)
 {
-    static char b[7];
+    static char b[5];
     
-    if      (!(x & 0xffffff80))
+    if      (!(ucs & 0xffffff80))
     {
-        b[0] = x;
+        b[0] = ucs;
         b[1] = '\0';
     }
-    else if (!(x & 0xfffff800))
+    else if (!(ucs & 0xfffff800))
     {
-        b[0] = 0xc0 |  (x               >>  6);
-        b[1] = 0x80 |  (x &       0x3f);
+        b[0] = 0xc0 |  (ucs               >>  6);
+        b[1] = 0x80 |  (ucs &       0x3f);
         b[2] = '\0';
     }
-    else if (!(x & 0xffff0000))
+    else if (!(ucs & 0xffff0000))
     {
-        b[0] = 0xe0 | ( x               >> 12);
-        b[1] = 0x80 | ((x &      0xfc0) >>  6);
-        b[2] = 0x80 |  (x &       0x3f);
+        b[0] = 0xe0 | ( ucs               >> 12);
+        b[1] = 0x80 | ((ucs &      0xfc0) >>  6);
+        b[2] = 0x80 |  (ucs &       0x3f);
         b[3] = '\0';
     }
-    else if (!(x) & 0xffe00000)
+    else if (!(ucs & 0xffe00000))
     {
-        b[0] = 0xf0 | ( x               >> 18);
-        b[1] = 0x80 | ((x &    0x3f000) >> 12);
-        b[2] = 0x80 | ((x &      0xfc0) >>  6);
-        b[3] = 0x80 |  (x &       0x3f);
+        b[0] = 0xf0 | ( ucs               >> 18);
+        b[1] = 0x80 | ((ucs &    0x3f000) >> 12);
+        b[2] = 0x80 | ((ucs &      0xfc0) >>  6);
+        b[3] = 0x80 |  (ucs &       0x3f);
         b[4] = '\0';
     }
-    else if (!(x) & 0xfc000000)
-    {
-        b[0] = 0xf8 | ( x               >> 24);
-        b[1] = 0x80 | ((x &   0xfc0000) >> 18);
-        b[2] = 0x80 | ((x &    0x3f000) >> 12);
-        b[3] = 0x80 | ((x &      0xfc0) >>  6);
-        b[4] = 0x80 |  (x &       0x3f);
-        b[5] = '\0';
-    }
-    else if (!(x) & 0x80000000)
-    {
-        b[0] = 0xfc | ( x               >> 30);
-        b[1] = 0x80 | ((x & 0x3f000000) >> 24);
-        b[2] = 0x80 | ((x &   0xfc0000) >> 18);
-        b[3] = 0x80 | ((x &    0x3f000) >> 12);
-        b[4] = 0x80 | ((x &      0xfc0) >>  6);
-        b[5] = 0x80 |  (x &       0x3f);
-        b[6] = '\0';
-    }
     else
-        return "?";
+    {
+        b[0] = CHAR_BR;
+        b[1] = '\0';
+    }
     return b;
 }
 
-BOOL ConvIsUTF8 (const char *in)
+strc_t ConvFrom (strc_t text, UBYTE enc)
 {
-    char c;
-
-    for ( ; *in; in++)
+    enc &= ~ENC_AUTO;
+    if ((enc >= conv_nr) || (!conv_encs[enc].fof))
     {
-        if (~*in & 0x80)
-            continue;
-        if (~*in & 0x40)
-            return 0;
-        for (c = *in; (in[1] & 0x80) && (~in[1] & 0x40) && (c & 0x40); in++)
-            c *= 2;
-        if (c & 0x40)
-            return 0;
+        conv_error = enc;
+        enc = ENC_ASCII;
     }
-    return 1;
+    return conv_encs[enc].fof (text, enc);
 }
 
-
-#ifdef ENABLE_ICONV
-
-const char *ConvToUTF8 (const char *inn, UBYTE enc, size_t totalin, UBYTE keep0xfe)
+strc_t ConvFromSplit (strc_t text, UBYTE enc)
 {
-    static str_s t;
-
-    size_t inleft, outleft, totalleft;
-    char *out;
-    ICONV_CONST char *in;
-
-    if (!inn)
-        return "";
-
-    s_init (&t, "", 100);
+    static str_s str;
+    str_s tstr = { (char *)text->txt, text->len, 0 };
+    const char *p;
+    size_t tlen = text->len;
     
-    enc &= ~ENC_AUTO;
-    if (!conv_nr)
-        ConvEnc ("UTF-8");
-    if (enc >= conv_nr || !enc)
-        return s_sprintf ("<invalid encoding %d>", enc);
-    if (!conv_encs[enc].to || !~(long)conv_encs[enc].to)
+    s_init (&str, "", 100);
+    while ((p = memchr (tstr.txt, '\xfe', tlen)))
     {
-        conv_encs[enc].to = iconv_open ("UTF-8", conv_encs[enc].enc);
-        if (conv_encs[enc].to == (iconv_t)(-1))
-        {
-            if (enc != ENC_UTF8)
-                return s_sprintf ("<invalid encoding unsupported %d %s>", enc, conv_encs[enc].enc);
-            else
-                return keep0xfe ? s_sprintf ("%s", inn) : ConvCrush0xFE (inn);
-        }
+        tstr.len = p - tstr.txt;
+        s_cat (&str, ConvFrom (&tstr, enc)->txt);
+        s_catc (&str, '\xfe');
+        tstr.txt += tstr.len + 1;
+        tlen     -= tstr.len + 1;
     }
-    iconv (conv_encs[enc].to, NULL, NULL, NULL, NULL);
-    out = t.txt;
-    outleft = t.max - 2;
-    in = (ICONV_CONST char *)inn;
-    totalin = (totalin == -1 ? strlen (in) : totalin);
-    totalleft = totalin;
-    inleft = (keep0xfe && memchr (in, 0xfe, totalin)) ? (const char *)memchr (in, 0xfe, totalin) - in : totalin;
-    while (iconv (conv_encs[enc].to, &in, &inleft, &out, &outleft) == (size_t)(-1) || *in == (char)0xfe)
-    {
-        UDWORD rc = errno;
-
-        t.len = out - t.txt;
-
-        if (outleft < 10 || rc == E2BIG)
-        {
-            s_blow (&t, 50);
-        }
-        else if (*in == (char)0xfe && keep0xfe)
-        {
-            s_catc (&t, 0xfe);
-            in++;
-            totalin = totalleft - (in - inn);
-            inleft = (keep0xfe && memchr (in, 0xfe, totalin)) ? (const char *)memchr (in, 0xfe, totalin) - in : totalin;
-        }
-        else /* EILSEQ */
-        {
-            s_catc (&t, '?');
-            in++;
-            inleft--;
-        }
-        out = t.txt + t.len;
-        outleft = t.max - t.len - 2;
-    }
-    *out = '\0';
-    return t.txt;
+    s_cat (&str, ConvFrom (&tstr, enc)->txt);
+    return &str;
 }
 
-const char *ConvFromUTF8 (const char *inn, UBYTE enc, size_t *resultlen)
+strc_t ConvTo (const char *ctext, UBYTE enc)
 {
-    static str_s t;
-
-    size_t inleft, outleft;
-    char *out;
-    ICONV_CONST char *in;
-
-    if (!inn)
-        return "";
-    
-    s_init (&t, "", 100);
-    
+    str_s text = { (char *)ctext, strlen (ctext), 0 };
     enc &= ~ENC_AUTO;
-    if (!conv_nr)
-        ConvEnc ("UTF-8");
-    if (enc >= conv_nr || !enc)
-        return s_sprintf ("<invalid encoding %d>", enc);
-    if (!conv_encs[enc].from || !~(long)conv_encs[enc].from)
+    if ((enc >= conv_nr) || (!conv_encs[enc].fto))
     {
-        conv_encs[enc].from = iconv_open (conv_encs[enc].enc, "UTF-8");
-        if (conv_encs[enc].from == (iconv_t)(-1))
-        {
-            if (enc != ENC_UTF8)
-                return s_sprintf ("<invalid encoding unsupported %d %s>", enc, conv_encs[enc].enc);
-            else
-                return s_sprintf ("%s", inn);
-        }
+        conv_error = enc;
+        enc = ENC_ASCII;
     }
-    iconv (conv_encs[enc].from, NULL, NULL, NULL, NULL);
-    out = t.txt;
-    outleft = t.max - 2;
-    in = (ICONV_CONST char *)inn;
-    inleft = strchr (in, 0xfe) ? strchr (in, 0xfe) - in : strlen (in);
-    while (iconv (conv_encs[enc].from, &in, &inleft, &out, &outleft) == (size_t)(-1) || *in == (char)0xfe)
-    {
-        UDWORD rc = errno;
-
-        t.len = out - t.txt;
-
-        if (outleft < 10 || rc == E2BIG)
-        {
-            s_blow (&t, 50);
-        }
-        else if (*in == (char)0xfe)
-        {
-            s_catc (&t, 0xfe);
-            in++;
-            inleft = strchr (in, 0xfe) ? strchr (in, 0xfe) - in : strlen (in);
-        }
-        else /* EILSEQ */
-        {
-            s_catc (&t, '?');
-            in++;
-            inleft--;
-            while (*in && ((*in & 0xc0) == 0x80)) /* skip continuation bytes */
-                in++, inleft--;
-        }
-        out = t.txt + t.len;
-        outleft = t.max - t.len - 2;
-    }
-    *out = '\0';
-    if (resultlen)
-        *resultlen = t.len = out - t.txt;
-    return t.txt;
+    return conv_encs[enc].fto (&text, enc);
 }
 
 BOOL ConvFits (const char *in, UBYTE enc)
 {
     char *inn, *p;
+    int i;
     
     inn = strdup (in);
     if (!inn)
         return 0;
     for (p = inn; *p; p++)
-        if (*p == Conv0xFE || *p == '?')
+        if (*p == Conv0xFE || *p == CHAR_NA || *p == CHAR_BR)
             *p = ' ';
-    return strchr (ConvFromUTF8 (inn, enc, NULL), '?') ? 0 : 1;
+    i = strpbrk (ConvTo (inn, enc)->txt, "?*") ? 0 : 1;
+    free (inn);
+    return i;
 }
 
-#else
+#if HAVE_ICONV
+static strc_t iconv_from_iconv (strc_t text, UBYTE enc)
+{
+    static str_s str;
 
+    size_t inleft, outleft;
+    char *out;
+    ICONV_CONST char *in;
 
+    s_init (&str, "", 100);
+    out = str.txt;
+    outleft = str.max - 2;
+    in = (ICONV_CONST char *) text->txt;
+    inleft = text->len;
 
-#define PUT_UTF8(x) s_cat (&t, ConvUTF8 (x))
+    iconv (conv_encs[enc].iof, NULL, NULL, NULL, NULL);
+    while (iconv (conv_encs[enc].iof, &in, &inleft, &out, &outleft) == (size_t)(-1))
+    {
+        UDWORD rc = errno;
+        str.len = out - str.txt;
 
-#define GET_UTF8(in,y) \
- do { UDWORD vl = 0; int todo = 1; UDWORD org = *in++; if ((org & 0xc0) != 0xc0) { y = '!'; continue; } \
-      while (org & 0x20) { todo += 1; org <<= 2; }; org &= 0x3f; for (vl = 1; vl < todo; vl++) org >>= 2; \
-      vl = org; while (todo > 0) { org = *in++; \
-      if ((org & 0xc0) != 0x80) { todo = -1; continue; } org &= 0x3f; \
-      vl <<= 6; vl |= org; todo--; } if (todo == -1) y = '?'; else y = vl; } while (0)
+        if (outleft < 10 || rc == E2BIG)
+            s_blow (&str, 50 + inleft);
+        else
+        {
+            s_catc (&str, CHAR_NA);
+            in++;
+            inleft--;
+        }
+        out = str.txt + str.len;
+        outleft = str.max - str.len - 2;
+    }
+    *out = '\0';
+    return &str;
+}
 
+static strc_t iconv_to_iconv (strc_t text, UBYTE enc)
+{
+    static str_s str;
 
+    size_t inleft, outleft;
+    char *out;
+    ICONV_CONST char *in;
+
+    s_init (&str, "", 100 + text->len);
+    out = str.txt;
+    outleft = str.max - 2;
+    in = (ICONV_CONST char *) text->txt;
+    inleft = text->len;
+
+    iconv (conv_encs[enc].ito, NULL, NULL, NULL, NULL);
+    while (iconv (conv_encs[enc].ito, &in, &inleft, &out, &outleft) == (size_t)(-1))
+    {
+        UDWORD rc = errno;
+        str.len = out - str.txt;
+
+        if (outleft < 10 || rc == E2BIG)
+            s_blow (&str, 50 + inleft);
+        else
+        {
+            s_catc (&str, CHAR_NA);
+            in++;
+            inleft--;
+        }
+        out = str.txt + str.len;
+        outleft = str.max - str.len - 2;
+    }
+    *out = '\0';
+    return &str;
+}
+#endif
+
+#if !ENABLE_FALLBACK_ASCII
+strc_t iconv_usascii (strc_t in, UBYTE enc)
+{
+    static str_s str;
+    int off;
+    char c;
+    s_init (&str, "", in->len);
+    
+    for (off = 0; off < in->len; off++)
+        if ((c = in->txt[off]) & 0x80)
+            str.txt[off] = CHAR_BR;
+        else
+            str.txt[off] = c;
+    str.txt[off] = '\0';
+    str.len = in->len;
+    return &str;
+}
+#endif
+
+#if ENABLE_FALLBACK_ASCII || ENABLE_FALLBACK_UCS2BE || ENABLE_FALLBACK_WIN1251 || ENABLE_FALLBACK_KOI8 \
+  || ENABLE_FALLBACK_LATIN9 || ENABLE_FALLBACK_LATIN1 || ENABLE_FALLBACK_UTF8
+
+static UDWORD iconv_get_utf8 (str_t in, int *off)
+{
+     UDWORD ucs = 0;
+     int i, continuations = 1;
+     UBYTE  c = in->txt[*(off++)];
+
+     if (~c & 0x80)
+         return c;
+
+     if (~c & 0x40)
+         return CHAR_BR;
+
+     while (c & 0x20)
+     {
+         continuations++;
+         c <<= 1;
+     }
+
+     c &= 0x3f;
+     c >>= continuations;
+
+     for (i = 0, ucs = c; i < continuations; i++)
+     {
+         if (((c = in->txt[*off + i]) & 0xc0) != 0x80)
+             return CHAR_BR;
+
+         c &= 0x3f;
+         ucs <<= 6;
+         ucs |= c;
+     }
+     *off += continuations;
+     return ucs;
+}
+
+#if ENABLE_FALLBACK_USASCII
+static strc_t iconv_from_usascii (strc_t in, UBYTE enc)
+{
+    static str_s str;
+    int off;
+    char c;
+    s_init (&str, "", in->len);
+    
+    for (off = 0; off < in->len; off++)
+        if ((c = in->txt[off]) & 0x80)
+            s_catc (&str, CHAR_BR);
+        else
+            s_catc (&str, c);
+    return &str;
+}
+
+static strc_t iconv_to_usascii (strc_t in, UBYTE enc)
+{
+    static str_s str;
+    UDWORD ucs;
+    int off;
+    s_init (&str, "", in->len);
+    
+    for (off = 0; off < in->len; )
+    {
+        ucs = iconv_get_utf8 (&str, &off);
+        s_catc (&str, ucs & 0x80 ? CHAR_NA : ucs);
+    }
+    return &str;
+}
+#endif
+
+#if ENABLE_FALLBACK_UTF8
+strc_t iconv_utf8 (strc_t in, UBYTE enc)
+{
+    static str_s str;
+    UDWORD ucs;
+    int off;
+    s_init (&str, "", in.len);
+    
+    for (off = 0; off < in.len; )
+    {
+        ucs = iconv_get_utf8 (&str, &off);
+        s_cat (&str, ConvUTF8 (ucs);
+    }
+    return &str;
+}
+#endif
+
+#if ENABLE_FALLBACK_LATIN1
+static strc_t iconv_from_latin1 (strc_t in, UBYTE enc)
+{
+    static str_s str;
+    int off;
+    
+    for (off = 0; off < in.len; off++)
+        s_cat (&str, ConvUTF8 (in.txt[off]));
+}
+
+static strc_t iconv_to_latin1 (strc_t in, UBYTE enc)
+{
+    static str_s str;
+    UDWORD ucs;
+    int off;
+    s_init (&str, "", in.len);
+    
+    for (off = 0; off < in.len; )
+    {
+        ucs = iconv_get_utf8 (&str, &off);
+        s_catc (&str, ucs & 0xffffff00 ? CHAR_NA : ucs);
+    }
+    return &str;
+}
+#endif
+
+#if ENABLE_FALLBACK_LATIN9
+static strc_t iconv_from_latin1 (strc_t in, UBYTE enc)
+{
+    static str_s str;
+    UDWORD ucs;
+    UBYTE c;
+    int off;
+    
+    for (off = 0; off < in.len; off++)
+    {
+        c = in.txt[off];
+        switch (c)
+        {
+            case 0xa4: ucs = 0x20ac; /* EURO */
+            case 0xa6: ucs = 0x0160; /* SCARON */
+            case 0xa8: ucs = 0x0161; /* SMALL SCARON */
+            case 0xb4: ucs = 0x017d; /* ZCARON */
+            case 0xb8: ucs = 0x017e; /* SMALL ZCARON */
+            case 0xbc: ucs = 0x0152; /* OE */
+            case 0xbd: ucs = 0x0153; /* SMALL OE */
+            case 0xbe: ucs = 0x0178; /* Y DIAERESIS */
+            default:   ucs = c;
+        }
+        s_cat (&str, ConvUTF8 (ucs));
+    }
+}
+
+static strc_t iconv_to_latin1 (strc_t in, UBYTE enc)
+{
+    static str_s str;
+    UDWORD ucs;
+    int off;
+    s_init (&str, "", in.len);
+    
+    for (off = 0; off < in.len; )
+    {
+        ucs = iconv_get_utf8 (&str, &off);
+        if (!(ucs & 0xffffff00))
+        {
+            switch (ucs)
+            {
+                case 0xa4: case 0xa6: case 0xa8: case 0xb4:
+                case 0xb8: case 0xbc: case 0xbd: case 0xbe:
+                    ucs = CHAR_NA;
+            }
+            s_catc (&str, ucs);
+        }
+        else
+        {
+            switch (ucs)
+            {
+                case 0x20ac: s_catc (&str, '\xa4'); /* EURO */
+                case 0x0160: s_catc (&str, '\xa6'); /* SCARON */
+                case 0x0161: s_catc (&str, '\xa8'); /* SMALL SCARON */
+                case 0x017d: s_catc (&str, '\xb4'); /* ZCARON */
+                case 0x017e: s_catc (&str, '\xb8'); /* SMALL ZCARON */
+                case 0x0152: s_catc (&str, '\xbc'); /* OE */
+                case 0x0153: s_catc (&str, '\xbd'); /* SMALL OE */
+                case 0x0178: s_catc (&str, '\xbe'); /* Y DIAERESIS */
+                default:     s_catc (&str, CHAR_NA);
+            }
+        }
+    }
+    return &str;
+}
+#endif
+
+#if ENABLE_FALLBACK_KOI8
 const UDWORD koi8u_utf8[] = { /* 7bit are us-ascii */
     0x2500, 0x2502, 0x250c, 0x2510, 0x2514, 0x2518, 0x251c, 0x2524,
     0x252c, 0x2534, 0x253c, 0x2580, 0x2584, 0x2588, 0x258c, 0x2590,
@@ -405,6 +692,41 @@ const UDWORD koi8u_utf8[] = { /* 7bit are us-ascii */
     0x0
 };
 
+static strc_t iconv_from_koi8 (strc_t in, UBYTE enc)
+{
+    static str_s str;
+    UBYTE c;
+    int off;
+    
+    for (off = 0; off < in.len; off++)
+        s_cat (&str, ConvUTF8 ((c = in.txt[off]) & 0x80 ? koi8_utf8[c] : c));
+}
+
+static strc_t iconv_to_koi8 (strc_t in, UBYTE enc)
+{
+    static str_s str;
+    UDWORD ucs;
+    UBYTE c;
+    int off;
+    s_init (&str, "", in.len);
+    
+    for (off = 0; off < in.len; )
+    {
+        ucs = iconv_get_utf8 (&str, &off);
+        if (ucs & 0xffffff00)
+        {
+            for (c = 0; ~c & 0x80; c++)
+                if (koi8_utf8[c] == ucs)
+                    break;
+            
+            s_catc (&str, c & 0x80 ? CHAR_NA : c);
+        }
+        else
+            s_catc (&str, c);
+}
+#endif
+
+#if ENABLE_FALLBACK_WIN1251
 const UDWORD win1251_utf8[] = { /* 7bit are us-ascii */
     0x0402, 0x0403, 0x201a, 0x0453, 0x201e, 0x2026, 0x2020, 0x2021,
     0x0088, 0x2030, 0x0409, 0x2039, 0x040a, 0x040c, 0x040b, 0x040f,
@@ -425,220 +747,107 @@ const UDWORD win1251_utf8[] = { /* 7bit are us-ascii */
     0x0
 };
 
-const char *ConvToUTF8 (const char *inn, UBYTE enc, size_t totalin, UBYTE keep0xfe)
+static strc_t iconv_from_win1251 (strc_t in, UBYTE enc)
 {
-    static str_s t;
-
-    const unsigned char *in = (const unsigned char *)inn;
-    UDWORD ucs, i;
+    static str_s str;
+    UBYTE c;
+    int off;
     
-    if (!inn)
-        return "";
-    
-    totalin = (enc == ENC_UCS2BE ? (totalin == -1 ? strlen (in) : totalin) : 0);
-    /* obey totalin _only_ for UCS-2BE */
-
-    s_init (&t, "", 100):
-    
-    for ( ; *in || totalin; in++)
-    {
-        if ((~*in & 0x80) && (enc & ~ENC_AUTO) != ENC_UCS2BE)
-        {
-            s_catf (&t, "%c", *in);
-            continue;
-        }
-        if (keep0xfe && *in == (unsigned char)Conv0xFE)
-        {
-            s_catf (&t, "\xfe");
-            continue;
-        }
-        switch (enc & ~ENC_AUTO)
-        {
-            case ENC_UTF8:
-                GET_UTF8 (in, i);
-                in--;
-                PUT_UTF8 (i);
-                continue;
-            case ENC_LATIN1:
-                PUT_UTF8 (*in);
-                continue;
-            case ENC_LATIN9:
-                switch (*in)
-                {
-                    case 0xa4: ucs = 0x20ac; /* EURO */
-                    case 0xa6: ucs = 0x0160; /* SCARON */
-                    case 0xa8: ucs = 0x0161; /* SMALL SCARON */
-                    case 0xb4: ucs = 0x017d; /* ZCARON */
-                    case 0xb8: ucs = 0x017e; /* SMALL ZCARON */
-                    case 0xbc: ucs = 0x0152; /* OE */
-                    case 0xbd: ucs = 0x0153; /* SMALL OE */
-                    case 0xbe: ucs = 0x0178; /* Y DIAERESIS */
-                    default:   ucs = *in;
-                }
-                PUT_UTF8 (ucs);
-                continue;
-            case ENC_KOI8:
-                PUT_UTF8 (koi8u_utf8[*in & 0x7f]);
-                continue;
-            case ENC_WIN1251:
-                PUT_UTF8 (win1251_utf8[*in & 0x7f]);
-                continue;
-            case ENC_UCS2BE:
-                ucs = *(in++) << 8;
-                ucs |= *in;
-                if ((*in & 0xfc) == 0xd8)
-                {
-                    in++;
-                    totalin -= 2;
-                    ucs &= 0x4ff;
-                    ucs <<= 2;
-                    if ((*in & 0xfc) != 0xc)
-                    {
-                        PUT_UTF8 ('?');
-                        in--;
-                        if (totalin < 2)
-                            return t.txt;
-                        continue;
-                    }
-                    ucs |= (0x3 & *(in++));
-                    ucs <<= 8;
-                    ucs = *in;
-                }
-                totalin -= 2;
-                PUT_UTF8 (ucs);
-                if (totalin < 2)
-                    return t.txt;
-                continue;
-            default:
-                s_catc (&t, '?');
-        }
-    }
-    return t.txt;
+    for (off = 0; off < in.len; off++)
+        s_cat (&str, ConvUTF8 ((c = in.txt[off]) & 0x80 ? win1251_utf8[c] : c));
 }
 
-const char *ConvFromUTF8 (const char *inn, UBYTE enc, size_t *resultlen)
+static strc_t iconv_to_win1251 (strc_t in, UBYTE enc)
 {
-    static str_s t;
-
-    const unsigned char *in = (const unsigned char *)inn;
-    UDWORD val, i;
-
-    if (!inn)
-        return "";
-
-    s_init (&t, "", 100);
-
-    if ((enc & ~ENC_AUTO) == ENC_UCS2BE)
+    static str_s str;
+    UDWORD ucs;
+    UBYTE c;
+    int off;
+    s_init (&str, "", in.len);
+    
+    for (off = 0; off < in.len; )
     {
-        for ( ; *in; )
+        ucs = iconv_get_utf8 (&str, &off);
+        if (ucs & 0xffffff00)
         {
-            if (~*in & 0x80)
-                val = *(in++);
-            else
-            {
-                val = '?';
-                GET_UTF8 (in,val);
-            }
-            if (val > 0xffff || (val & 0xf800) == 0xd800)
-            {
-                s_catc (&t, 0xd8 | ((val >> 18) & 0x3)));
-                s_catc (&t, (val >> 10) & 0xff);
-                s_catc (&t, 0xdc | ((val >> 8) & 0x3));
-                s_catc (&t, val & 0xff);
-            }
-            else
-            {
-                s_catc (&t, (val >> 8) & 0xff);
-                s_catc (&t, val & 0xff);
-            }
+            for (c = 0; ~c & 0x80; c++)
+                if (win1251_utf8[c] == ucs)
+                    break;
+            
+            s_catc (&str, c & 0x80 ? CHAR_NA : c);
         }
-        if (resultlen)
-            *resultlen = t.len;
-        s_catc (&t, 0);
-        s_catc (&t, 0);
-        return t.txt;
-    }
+        else
+            s_catc (&str, c);
+}
+#endif
 
-    for ( ; *in; in++)
+#if ENABLE_FALLBACK_UCS2BE
+static strc_t iconv_from_ucs2be (strc_t in, UBYTE enc)
+{
+    static str_s str;
+    UDWORD ucs, ucs2;
+    UBYTE c;
+    int off;
+    s_init (&str, "", in.len);
+    
+    for (off = 0; off < in.len; )
     {
-        if (~*in & 0x80)
+        if (off + 1 == in.len)
         {
-            s_catc (&t, *in);
-            continue;
+            s_catc (&str, CHAR_BR);
+            break;
         }
-        if (*in == 0xfe) /* we _do_ allow 0xFE here, it's the ICQ separator character */
+
+        ucs = in->txt[off++] << 8;
+        ucs |= in->txt[off++];
+        if ((ucs & 0xfc00) == 0xd800)
         {
-            s_catfc (&t, '\xfe');
-            continue;
+            if (off + 3 >= in.len)
+            {
+                s_catc (&str, CHAR_BR);
+                break;
+            }
+            ucs &= 0x4ff;
+            ucs <<= 2;
+            if (((c = in->txt[off++]) & 0xfc) != 0xc)
+            {
+                s_catc (&str, CHAR_BR);
+                off++;
+                continue;
+            }
+            ucs |= 0x3 & c;
+            ucs <<= 8;
+            ucs = in->txt[off++];
         }
-        val = '?';
-        GET_UTF8 (in,val);
-        in--;
-        if (val == '?')
-        {
-            s_catc (&t, '?');
-            continue;
-        }
-        switch (enc & ~ENC_AUTO)
-        {
-            case ENC_UTF8:
-                PUT_UTF8 (val);
-                continue;
-            case ENC_LATIN1:
-                if (!(val & 0xffffff00))
-                    s_catc (&t, val);
-                else
-                    s_catc (&t, '?');
-                continue;
-            case ENC_LATIN9:
-                if (!(val & 0xffffff00))
-                    s_catc (&t, val);
-                else
-                    switch (val)
-                    {
-                        case 0x20ac: s_catc (&t, '\xa4'); continue; /* EURO */
-                        case 0x0160: s_catc (&t, '\xa6'); continue; /* SCARON */
-                        case 0x0161: s_catc (&t, '\xa8'); continue; /* SMALL SCARON */
-                        case 0x017d: s_catc (&t, '\xb4'); continue; /* ZCARON */
-                        case 0x017e: s_catc (&t, '\xb8'); continue; /* SMALL ZCARON */
-                        case 0x0152: s_catc (&t, '\xbc'); continue; /* OE */
-                        case 0x0153: s_catc (&t, '\xbd'); continue; /* SMALL OE */
-                        case 0x0178: s_catc (&t, '\xbe'); continue; /* Y DIAERESIS */
-                        default:     s_catc (&t, '?');
-                    }
-                continue;
-            case ENC_KOI8:
-                for (i = 0; i <= 128; i++)
-                {
-                    if (koi8u_utf8[i] == val)
-                    {
-                        s_catc (&t, i + 128);
-                        break;
-                    }
-                    if (i == 128)
-                        s_catc (&t, '?');
-                }
-                continue;
-            case ENC_WIN1251:
-                for (i = 0; i <= 128; i++)
-                {
-                    if (win1251_utf8[i] == val)
-                    {
-                        s_catc (&t, i + 128);
-                        break;
-                    }
-                    if (i == 128)
-                        s_catc (&t, '?');
-                }
-                continue;
-/*          case ENC_UCS2BE:  handled above */
-            default:
-                s_catc (&t, '?');
-        }
+        s_cat (&str, ConvUTF8 (ucs));
     }
-    if (resultlen)
-        *resultlen = t.len;
-    return t.txt;
 }
 
-#endif /* ENABLE_ICONV */
+static strc_t iconv_to_ucs2be (strc_t in, UBYTE enc)
+{
+    static str_s str;
+    UDWORD ucs;
+    int off;
+    s_init (&str, "", in.len);
+    
+    for (off = 0; off < in.len; )
+    {
+        ucs = iconv_get_utf8 (&str, &off);
+        if (ucs & 0xffff || (val & 0xf800) == 0xd800)
+        {
+            s_catc (&str, 0xd8 | ((ucs >> 18) & 0x3)));
+            s_catc (&str, (ucs >> 10) & 0xff);
+            s_catc (&str, 0xdc | ((ucs >> 8) & 0x3));
+            s_catc (&str, ucs & 0xff);
+        }
+        else
+        {
+            s_catc (&str, (ucs >> 8) & 0xff);
+            s_catc (&str, ucs & 0xff);
+        }
+        s_catc (&str, 0);
+        s_catc (&str, 0);
+}
+#endif
+#endif /* ENABLE_FALLBACK_* */
+

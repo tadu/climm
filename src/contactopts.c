@@ -299,12 +299,14 @@ BOOL ContactOptionsSetStr (ContactOptions *opt, UWORD flag, const char *text)
 const char *ContactOptionsC2S (const char *color)
 {
     static str_s str;
-    char *c, *cmd;
+    strc_t par;
+    const char *cmd, *c;
 
     s_init (&str, "", 10);
 
-    while (s_parse (&color, &cmd))
+    while (s_parse (&color, &par))
     {
+        cmd = par->txt;
         if      (!strcasecmp (cmd, "black"))   c = BLACK;
         else if (!strcasecmp (cmd, "red"))     c = RED;
         else if (!strcasecmp (cmd, "green"))   c = GREEN;
@@ -397,7 +399,8 @@ const char *ContactOptionsString (const ContactOptions *opts)
  */
 int ContactOptionsImport (ContactOptions *opts, const char *args)
 {
-    char *cmd, *argst;
+    strc_t par;
+    char *argst;
     const char *argstt;
     UWORD flag = 0;
     int i, ret = 0;
@@ -405,10 +408,10 @@ int ContactOptionsImport (ContactOptions *opts, const char *args)
     argst = strdup (args);
     argstt = argst;
     
-    while (s_parse (&argstt, &cmd))
+    while (s_parse (&argstt, &par))
     {
         for (i = 0; ContactOptionsList[i].name; i++)
-            if (!strcmp (cmd, ContactOptionsList[i].name))
+            if (!strcmp (par->txt, ContactOptionsList[i].name))
             {
                 flag = ContactOptionsList[i].flag;
                 break;
@@ -420,7 +423,7 @@ int ContactOptionsImport (ContactOptions *opts, const char *args)
             break;
         }
         
-        if (!s_parse (&argstt, &cmd))
+        if (!s_parse (&argstt, &par))
         {
             ret = 1;
             break;
@@ -428,20 +431,20 @@ int ContactOptionsImport (ContactOptions *opts, const char *args)
         
         if (flag & COF_COLOR)
         {
-            char *color = strdup (cmd);
+            char *color = strdup (par->txt);
             ContactOptionsSetStr (opts, flag, ContactOptionsC2S (color));
             ContactOptionsUndef  (opts, CO_CSCHEME);
             free (color);
         }
         else if (flag == CO_ENCODINGSTR)
         {
-            UWORD enc = ConvEnc (cmd) & ~ENC_AUTO;
+            UWORD enc = ConvEnc (par->txt) & ~ENC_AUTO;
             ContactOptionsSetVal (opts, CO_ENCODING, enc);
             ContactOptionsSetStr (opts, CO_ENCODINGSTR, ConvEncName (enc));
         }
         else if (flag & COF_NUMERIC)
         {
-            UWORD val = atoi (cmd);
+            UWORD val = atoi (par->txt);
             
             if (flag == CO_CSCHEME)
                 ContactOptionsImport (opts, PrefSetColorScheme (val));
@@ -449,12 +452,12 @@ int ContactOptionsImport (ContactOptions *opts, const char *args)
             ContactOptionsSetVal (opts, flag, val);
         }
         else if (~flag & COF_BOOL)
-            ContactOptionsSetStr (opts, flag, cmd);
-        else if (!strcasecmp (cmd, "on")  || !strcasecmp (cmd, i18n (1085, "on")))
+            ContactOptionsSetStr (opts, flag, par->txt);
+        else if (!strcasecmp (par->txt, "on")  || !strcasecmp (par->txt, i18n (1085, "on")))
             ContactOptionsSetVal (opts, flag, 1);
-        else if (!strcasecmp (cmd, "off") || !strcasecmp (cmd, i18n (1086, "off")))
+        else if (!strcasecmp (par->txt, "off") || !strcasecmp (par->txt, i18n (1086, "off")))
             ContactOptionsSetVal (opts, flag, 0);
-        else if (!strcasecmp (cmd, "undef"))
+        else if (!strcasecmp (par->txt, "undef"))
             ContactOptionsUndef (opts, flag);
         else
         {
