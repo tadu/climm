@@ -629,10 +629,38 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                 return;
             }
             
-            if (midtim != midtime || midrnd != midrand
-                || tlv[i].str[0] != 0x1b)
+            if (midtim != midtime || midrnd != midrand ||
+                (tlv[i].str[0] != 0x1b && tlv[i].len != 0x1b))
             {
                 SnacSrvUnknown (event);
+                TLVD (tlv);
+                return;
+            }
+
+            pp = PacketCreate (tlv[i].str, tlv[i].len);
+
+            if (tlv[i].str[0] != 0x1b)
+            {
+                UDWORD suin = PacketRead4  (pp);
+                UDWORD sip  = PacketReadB4 (pp);
+                UDWORD sp1  = PacketRead4  (pp);
+                UBYTE  scon = PacketRead1  (pp);
+                UDWORD sop  = PacketRead4  (pp);
+                UDWORD sp2  = PacketRead4  (pp);
+                UWORD  sver = PacketRead2  (pp);
+                UDWORD sunk = PacketRead4  (pp);
+                if (suin != uin || sip != cont->outside_ip || sp1 != cont->port
+                    || scon != cont->connection_type || sver != cont->TCP_version
+                    || sp1 != sp2 || (event->conn->assoc && sop != event->conn->assoc->port))
+                {
+                    SnacSrvUnknown (event);
+                }
+                else
+                {
+                    M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
+                    M_printf (i18n (2219, "'empty' message with unknown 0x%08x = %d.\n"), sunk, sunk);
+                }
+                PacketD (pp);
                 TLVD (tlv);
                 return;
             }
@@ -644,7 +672,6 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             PacketWriteUIN (p, cont->uin);
             PacketWriteB2 (p, 3);
 
-            pp = PacketCreate (tlv[i].str, tlv[i].len);
             len    = PacketRead2 (pp);      PacketWrite2 (p, len);
             tcpver = PacketRead2 (pp);      PacketWrite2 (p, tcpver);
             cap2   = PacketReadCap (pp);    PacketWriteCap (p, cap2);
@@ -679,8 +706,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             txt = text;
 #endif
             PacketD (pp);
-            if (cont)
-                cont->TCP_version = tcpver;
+            cont->TCP_version = tcpver;
 
             ContactSetCap (cont, cap1);
             ContactSetCap (cont, cap2);
