@@ -1,7 +1,7 @@
 /* $Id$ */
 
 int   Save_RC(void);
-int   Add_User (Session *sess, UDWORD uin, char *name);
+int   Add_User (Session *sess, UDWORD uin, const char *name);
 void  Get_Unix_Config_Info (Session *sess);
 void  Set_rcfile (const char * name);
 

@@ -128,7 +128,7 @@ const char *ContactFindNick (UDWORD uin)
 /*
  * Returns the nick of UIN or "<all>" or UIN as string.
  */
-char *ContactFindName (UDWORD uin)
+const char *ContactFindName (UDWORD uin)
 {
     static char buff[20];
     Contact *cont;
@@ -137,7 +137,7 @@ char *ContactFindName (UDWORD uin)
         return i18n (1617, "<all>");
     if ((cont = ContactFind (uin)))
         return cont->nick;
-    snprintf (buff, sizeof (buf), "%lu", uin);
+    snprintf (buff, sizeof (buff), "%lu", uin);
     return buff;
 }
 

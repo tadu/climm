@@ -468,7 +468,7 @@ void ExecScript (char *script, UDWORD uin, long num, char *data)
     char *mydata, *cmd, *tmp, *who;
 
     mydata = strdup (data ? data : "");
-    who = ContactFindName (uin);
+    who = strdup (ContactFindName (uin));
 
     for (tmp = mydata; *tmp; tmp++)
         if (*tmp == '\'')
@@ -494,6 +494,7 @@ void ExecScript (char *script, UDWORD uin, long num, char *data)
     }
     free (cmd);
     free (mydata);
+    free (who);
 }
 
 const char *UtilFill (const char *fmt, ...)

@@ -1952,7 +1952,8 @@ static JUMP_F(CmdUserTogVisible)
 static JUMP_F(CmdUserAdd)
 {
     Contact *cont;
-    char *arg1, *arg2;
+    char *arg1;
+    const char *arg2;
     UDWORD uin;
     SESSION;
 
@@ -2236,11 +2237,11 @@ static JUMP_F(CmdUserLast)
             M_print (i18n (1933, "%s is neither a nick nor a UIN.\n"), arg1);
         else
         {
-            if (ContactFind (uin) == NULL)
+            if (!(cont = ContactFind (uin)))
                 M_print (i18n (1684, "%s is not on your contact list.\n"), arg1);
             else
             {
-                if (ContactFind (uin)->last_message != NULL)
+                if (cont->last_message)
                 {
                     M_print (i18n (1685, "Last message from " COLCONTACT "%s" COLNONE " at %s\n"),
                              ContactFind (uin)->nick, UtilUITime (&cont->last_time));
@@ -2248,7 +2249,7 @@ static JUMP_F(CmdUserLast)
                 }
                 else
                 {
-                    M_print (i18n (1686, "No messages received from " COLCONTACT "%s" COLNONE "\n"),
+                    M_print (i18n (1686, "No messages received from " COLCONTACT "%s" COLNONE ".\n"),
                              ContactFind (uin)->nick);
                 }
             }

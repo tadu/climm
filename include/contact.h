@@ -35,7 +35,7 @@ Contact    *ContactAdd (UDWORD uin, const char *nick);
 void        ContactRem (UDWORD uin);
 Contact    *ContactFind (UDWORD uin);
 const char *ContactFindNick (UDWORD uin);
-char       *ContactFindName (UDWORD uin);
+const char *ContactFindName (UDWORD uin);
 UDWORD      ContactFindByNick (const char *nick);
 Contact    *ContactStart ();
 Contact    *ContactNext (Contact *cont);

@@ -1004,7 +1004,7 @@ int Save_RC ()
     return fclose (rcf) ? -1 : 0;
 }
 
-int Add_User (Session *sess, UDWORD uin, char *name)
+int Add_User (Session *sess, UDWORD uin, const char *name)
 {
     FILE *rcf;
 
