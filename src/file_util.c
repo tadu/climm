@@ -305,6 +305,7 @@ int Read_RC_File (FILE *rcf)
                 OptSetVal (&cg->copts, CO_IGNORE, 0);
                 if ((conn = ConnectionFind (TYPEF_SERVER, NULL, NULL)))
                     cg->serv = conn;
+                cont = NULL;
             }
             else
             {
@@ -395,8 +396,12 @@ int Read_RC_File (FILE *rcf)
                 {
                     PrefParseInt (i);
                     format = i;
-                    if (format != 1 && format != 2)
+                    if (format > 2)
+                    {
+                        rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                        rl_printf (i18n (9999, "Unknown configuration file format version %d.\n"), format);
                         return 0;
+                    }
                     if (format == 2)
                         enc = ENC_UTF8;
                 }
@@ -770,7 +775,7 @@ int Read_RC_File (FILE *rcf)
                 }
                 break;
             case 1:
-                if (format == 2)
+                if (format > 1)
                     continue;
 
                 flags = 0;
@@ -813,7 +818,10 @@ int Read_RC_File (FILE *rcf)
                 else
                 {
                     if (!lastcont)     /* ignore noise */
+                    {
+                        dep = 1;
                         continue;
+                    }
                     uin = lastcont->uin;
                     PrefParse (cmd);
                 }
@@ -976,7 +984,7 @@ int Read_RC_File (FILE *rcf)
                 }
                 break;
             case 4: /* contact groups */
-                if (format == 2)
+                if (format > 1) /* contacts are in seperate file now */
                     continue;
 
                 PrefParse (cmd);
@@ -1095,7 +1103,7 @@ int Read_RC_File (FILE *rcf)
                 conn->open = NULL;
                 break;
         }
-        if (format != 2 && !conn->contacts && conn->type & TYPEF_SERVER)
+        if (format < 2 && !conn->contacts && conn->type & TYPEF_SERVER)
         {
             conn->contacts = cg = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%ld", conn->type == TYPE_SERVER ? "icq8" : "icq5", conn->uin));
             for (i = 0; (cont = ContactIndex (NULL, i)); i++)
@@ -1135,7 +1143,7 @@ void PrefReadStat (FILE *stf)
     char *cmd = NULL;
     const char *args;
     Contact *cont = NULL;
-    Connection *conn;
+    Connection *conn = NULL;
     ContactGroup *cg = NULL;
     int section, dep = 0;
     UDWORD i;
@@ -1149,7 +1157,7 @@ void PrefReadStat (FILE *stf)
         if (!line->len || (line->txt[0] == '#'))
             continue;
         args = ConvFrom (line, ENC_UTF8)->txt;
-        if (*args == '[')
+        if (format && *args == '[')
         {
             if (!strcasecmp (args, "[Group]"))
             {
@@ -1160,7 +1168,13 @@ void PrefReadStat (FILE *stf)
                     cg->serv = conn;
             }
             else if (!strcasecmp (args, "[Contacts]"))
-                section = 5;
+            {
+                if (format == 1)
+                    section = 5;
+                else
+                    section = 6;
+                conn = NULL;
+            }
             else
             {
                 rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
@@ -1183,8 +1197,12 @@ void PrefReadStat (FILE *stf)
                 {
                     PrefParseInt (i);
                     format = i;
-                    if (format != 1)
+                    if (format > 2)
+                    {
+                        rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                        rl_printf (i18n (9999, "Unknown configuration file format version %d.\n"), format);
                         return;
+                    }
                 }
                 else
                 {
@@ -1245,16 +1263,22 @@ void PrefReadStat (FILE *stf)
                     if (OptImport (&cg->copts, args))
                         ERROR;
                 }
-                else if (!strcasecmp (cmd, "entry") && cg->serv)
+                else if (cg->serv && !strcasecmp (cmd, "entry"))
                 {
                     UDWORD uin;
                     
                     PrefParseInt (i);
                     PrefParseInt (uin);
                     
-                    cont = ContactFindCreate (cg->serv->contacts, i, uin, s_sprintf ("%ld", uin));
+                    if (format == 1)
+                        cont = ContactFindCreate (cg->serv->contacts, i, uin, s_sprintf ("%ld", uin));
+                    else
+                        cont = ContactFind (cg->serv->contacts, 0, uin, NULL);
                     if (cg != cg->serv->contacts)
                         ContactAdd (cg, cont);
+
+                    while ((par = s_parse (&args)))
+                        ContactAddAlias (cont, par->txt);
                 }
                 else
                 {
@@ -1299,6 +1323,57 @@ void PrefReadStat (FILE *stf)
                     rl_print ("\n");
                 }
                 break;
+            case 6:
+                PrefParse (cmd);
+                if (!strcasecmp (cmd, "server"))
+                {
+                    UWORD type = 0;
+                    UDWORD uin = 0;
+                    
+                    PrefParse (cmd);
+                    if      (!strcasecmp (cmd, "icq5")) type = TYPE_SERVER_OLD;
+                    else if (!strcasecmp (cmd, "icq8")) type = TYPE_SERVER;
+                    else
+                        ERROR;
+                    
+                    PrefParseInt (uin);
+                    cont = NULL;
+                    if (!(conn = ConnectionFindUIN (type, uin)))
+                        ERROR;
+                    if (!conn->contacts)
+                    {
+                        conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%ld", conn->type == TYPE_SERVER ? "icq8" : "icq5", conn->uin));
+                        OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
+                        conn->contacts->serv = conn;
+                    }
+                }
+                else if (conn && !strcasecmp (cmd, "entry"))
+                {
+                    UDWORD id;
+                    UDWORD uin;
+                    
+                    PrefParseInt (id);
+                    PrefParseInt (uin);
+                    PrefParse (cmd);
+                    
+                    cont = ContactFindCreate (conn->contacts, id, uin, cmd);
+                    if (!cont)
+                        ERROR;
+                    
+                    while ((par = s_parse (&args)))
+                        ContactAddAlias (cont, par->txt);
+                }
+                else if (conn && cont && !strcasecmp (cmd, "options"))
+                {
+                    OptImport (&cont->copts, args);
+                }
+                else
+                {
+                    rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                    rl_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
+                    rl_print ("\n");
+                }
+                break;
         }
     }
     
@@ -1325,19 +1400,101 @@ void PrefReadStat (FILE *stf)
     fclose (stf);
 }
 
-/************************************************
- *   This function should save your auto reply messages in the rc file.
- *   NOTE: the code isn't really neat yet, I hope to change that soon.
- *   Added on 6-20-98 by Fryslan
- ***********************************************/
-int Save_RC ()
+int PrefWriteStatusFile (void)
 {
-    FILE *rcf, *stf;
+    FILE *stf;
+    char *stfn;
     time_t t;
     int i, k;
     Contact *cont;
     Connection *ss;
     ContactGroup *cg;
+
+    if (!prG->statfile)
+        prG->statfile = strdup (s_sprintf ("%sstatus", PrefUserDir (prG)));
+    stfn = strdup (s_sprintf ("%s.##", prG->statfile));
+    stf = fopen (stfn, "w");
+    if (!stf)
+    {
+        int rc = errno;
+        if (rc == ENOENT)
+        {
+            char *tmp = strdup (PrefUserDir (prG));
+            if (tmp[strlen (tmp) - 1] == '/')
+                tmp[strlen (tmp) - 1] = '\0';
+            rl_printf (i18n (2047, "Creating directory %s.\n"), tmp);
+            k = mkdir (tmp, 0700);
+            if (!k)
+                stf = fopen (stfn, "w");
+            if (!stf)
+                rc = errno;
+            free (tmp);
+        }
+        if (!stf)
+            rl_printf (i18n (1872, "failed: %s (%d)\n"), strerror (rc), rc);
+    }
+    if (!stf)
+        return -1;
+
+    t = time (NULL);
+    fprintf (stf, "# This file was generated by mICQ " MICQ_VERSION " of %s %s\n", __TIME__, __DATE__);
+    fprintf (stf, "# This file was generated on %s\n", ctime (&t));
+    fprintf (stf, "format 2\n\n");
+
+    fprintf (stf, "\n# The contact list section.\n");
+    for (k = 0; (ss = ConnectionNr (k)); k++)
+    {
+        if (!ss->flags || !ss->uin)
+            continue;
+        if (ss->type != TYPE_SERVER && ss->type != TYPE_SERVER_OLD)
+            continue;
+
+        fprintf (stf, "[Contacts]\n");
+        fprintf (stf, "server %s %ld\n", ss->type == TYPE_SERVER ? "icq8" : "icq5", ss->uin);
+
+        for (i = 0; (cont = ContactIndex (0, i)); i++)
+        {
+            if (cont->group == ss->contacts)
+            {
+                ContactAlias *alias;
+                fprintf (stf, "entry %d %10ld %s", cont->id, cont->uin, s_quote (cont->nick));
+                for (alias = cont->alias; alias; alias = alias->more)
+                    fprintf (stf, " %s", s_quote (alias->alias));
+                fprintf (stf, "\n%s", OptString (&cont->copts));
+            }
+        }
+        fprintf (stf, "\n");
+    }
+    
+    fprintf (stf, "# Contact groups.");
+    for (k = 1; (cg = ContactGroupIndex (k)); k++)
+    {
+        if (!cg->serv || cg->serv->contacts == cg)
+            continue;
+
+        fprintf (stf, "\n[Group]\n");
+        fprintf (stf, "server %s %ld\n", cg->serv->type == TYPE_SERVER ? "icq8" : "icq5", cg->serv->uin);
+        fprintf (stf, "label %s\n", s_quote (cg->name));
+        fprintf (stf, "id %d\n", cg->id);
+        fprintf (stf, "%s", OptString (&cg->copts));
+
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            fprintf (stf, "entry 0 %10ld\n", cont->uin);
+    }
+
+    if (fclose (stf))
+        return -1;
+    
+    return rename (stfn, prG->statfile);
+}
+
+int PrefWriteConfFile (void)
+{
+    FILE *rcf;
+    char *rcfn;
+    time_t t;
+    int k;
+    Connection *ss;
 #ifdef ENABLE_TCL
     tcl_pref_p tpref;
 #endif
@@ -1345,7 +1502,8 @@ int Save_RC ()
     if (!prG->rcfile)
         prG->rcfile = strdup (s_sprintf ("%smicqrc", PrefUserDir (prG)));
     rl_printf (i18n (2048, "Saving preferences to %s.\n"), prG->rcfile);
-    rcf = fopen (prG->rcfile, "w");
+    rcfn = strdup (s_sprintf ("%s.##", prG->rcfile));
+    rcf = fopen (rcfn, "w");
     if (!rcf)
     {
         int rc = errno;
@@ -1357,7 +1515,7 @@ int Save_RC ()
             rl_printf (i18n (2047, "Creating directory %s.\n"), tmp);
             k = mkdir (tmp, 0700);
             if (!k)
-                rcf = fopen (prG->rcfile, "w");
+                rcf = fopen (rcfn, "w");
             if (!rcf)
                 rc = errno;
             free (tmp);
@@ -1368,41 +1526,10 @@ int Save_RC ()
     if (!rcf)
         return -1;
 
-    if (!prG->statfile)
-        prG->statfile = strdup (s_sprintf ("%sstatus", PrefUserDir (prG)));
-
-    stf = fopen (prG->statfile, "w");
-    if (!stf)
-    {
-        int rc = errno;
-        if (rc == ENOENT)
-        {
-            char *tmp = strdup (PrefUserDir (prG));
-            if (tmp[strlen (tmp) - 1] == '/')
-                tmp[strlen (tmp) - 1] = '\0';
-            rl_printf (i18n (2047, "Creating directory %s.\n"), tmp);
-            k = mkdir (tmp, 0700);
-            if (!k)
-                rcf = fopen (prG->statfile, "w");
-            if (!rcf)
-                rc = errno;
-            free (tmp);
-        }
-        if (!stf)
-            rl_printf (i18n (1872, "failed: %s (%d)\n"), strerror (rc), rc);
-    }
-    if (!stf)
-        return -1;
-
-
     t = time (NULL);
     fprintf (rcf, "# This file was generated by mICQ " MICQ_VERSION " of %s %s\n", __TIME__, __DATE__);
     fprintf (rcf, "# This file was generated on %s\n", ctime (&t));
 
-    fprintf (stf, "# This file was generated by mICQ " MICQ_VERSION " of %s %s\n", __TIME__, __DATE__);
-    fprintf (stf, "# This file was generated on %s\n", ctime (&t));
-    fprintf (stf, "format 1\n\n");
-    
     fprintf (rcf, "# Character encodings: auto, iso-8859-1, koi8-u, ...\n");
     fprintf (rcf, "encoding file UTF-8\n");
     fprintf (rcf, "%sencoding local %s%s\n",
@@ -1523,37 +1650,13 @@ int Save_RC ()
     }
     fprintf (rcf, "\n");
 
-    fprintf (stf, "# Contact groups.");
-    for (k = 1; (cg = ContactGroupIndex (k)); k++)
-    {
-        if (!cg->serv)
-            continue;
-        fprintf (stf, "\n[Group]\n");
-        fprintf (stf, "server %s %ld\n", cg->serv->type == TYPE_SERVER ? "icq8" : "icq5", cg->serv->uin);
-        fprintf (stf, "label %s\n", s_quote (cg->name));
-        fprintf (stf, "id %d\n", cg->id);
-
-        fprintf (stf, "%s", OptString (&cg->copts));
-
-        for (i = 0; (cont = ContactIndex (cg, i)); i++)
-            fprintf (stf, "entry %d %ld\n", cont->id, cont->uin);
-    }
-
-    fprintf (stf, "\n# The contact list section.\n");
-    fprintf (stf, "[Contacts]\n");
-
-    for (i = 0; (cont = ContactIndex (0, i)); i++)
-    {
-        if (cont->group)
-        {
-            ContactAlias *alias;
-            fprintf (stf, "entry %9ld %s", cont->uin, s_quote (cont->nick));
-            for (alias = cont->alias; alias; alias = alias->more)
-                fprintf (stf, " %s", s_quote (alias->alias));
-            fprintf (stf, "\n%s", OptString (&cont->copts));
-        }
-    }
-    fprintf (stf, "\n");
+    if (fclose (rcf))
+        return -1;
     
-    return fclose (rcf) | fclose (stf) ? -1 : 0;
+    return rename (rcfn, prG->rcfile);
+}
+
+int Save_RC ()
+{
+    return PrefWriteConfFile () | PrefWriteStatusFile ();
 }
