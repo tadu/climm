@@ -146,9 +146,11 @@ void ConnectionClose (Connection *conn)
     i = ConnectionFindNr (conn);
     
     assert (conn);
-    assert (i != -1);
     
     Debug (DEB_CONNECT, "===> %p[%d] (%s) closing...", conn, i, ConnectionType (conn));
+
+    if (i == -1)
+        return;
 
     if (conn->close)
         conn->close (conn);
