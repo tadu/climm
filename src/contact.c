@@ -1109,6 +1109,8 @@ void ContactSetVersion (Contact *cont)
         new = "ICQ2go";
     else if (dc->version == 9 && HAS_CAP (cont->caps, CAP_IS_WEB))
         new = "ICQ Lite";
+    else if (dc->version == 10 && HAS_CAP (cont->caps, CAP_STR_2002) && HAS_CAP (cont->caps, CAP_UTF8))
+        new = "ICQ 2003";
     else if (HAS_CAP (cont->caps, CAP_STR_2002) && HAS_CAP (cont->caps, CAP_UTF8))
         new = "ICQ 2002";
     else if (HAS_CAP (cont->caps, CAP_STR_2001) && HAS_CAP (cont->caps, CAP_IS_2001))
@@ -1128,6 +1130,8 @@ void ContactSetVersion (Contact *cont)
         new = "AIM(?)";
     else if (dc->version == 7 && !HAS_CAP (cont->caps, CAP_RTFMSGS))
         new = "ICQ 2000 (?)";
+    else if (dc->version == 10 && HAS_CAP (cont->caps, CAP_UTF8))
+        new = "ICQ 2003 (?)";
     else if (!dc->version && HAS_CAP (cont->caps, CAP_UTF8))
         new = "ICQ 2002 (?)";
     else if (!dc->version && HAS_CAP (cont->caps, CAP_IS_2001))
