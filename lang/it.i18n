@@ -1289,3 +1289,4 @@
 2318:Italian (%s) translation loaded (%ld entries).\n
 #2319:Accept an incoming file transfer from <uin> or <nick>.
 #2320:peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n
+2327:%smICQ (Clone di Matt ICQ)%s versione %s%s%s\n

@@ -1085,3 +1085,4 @@
 2318:Deutsche Übersetzung (%s) geladen (%ld Einträge).\n
 2319:Akzeptiere eingehende Dateiübertragung von <uin> oder <nick>.
 2320:peer accept <nick> [<id>]\n                  - akzeptiere eine eingehende Dateiübertragung.\n
+2327:%smICQ (Matts ICQ-Klon)%s Version %s%s%s\n
