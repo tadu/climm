@@ -514,9 +514,11 @@ void R_getline (char *buf, int len)
 
 static const char *curprompt = NULL;
 static int prstat = 0;
+static time_t prlast = 0;
 /* 0 = prompt printed
  * 1 = prompt printed, but "virtually" removed
  * 2 = prompt removed
+ * 3 = prompt printed, but "virtually" removed, and modified
  */
 
 /*
@@ -524,11 +526,16 @@ static int prstat = 0;
  */
 void R_setprompt (const char *prompt)
 {
+    time_t now = time (NULL);
+
+    if (now == prlast)
+        return;
+    prlast = now;
     if (curprompt)
         free ((char *)curprompt);
     curprompt = strdup (prompt);
     R_undraw ();
-    R_remprompt ();
+    prstat = 3;
 }
 
 /*
@@ -551,7 +558,7 @@ void R_setpromptf (const char *prompt, ...)
  */
 void R_resetprompt (void)
 {
-    printf ("\r" ESC "[J");
+    prlast = 0;
     if (prG->flags & FLAG_UINPROMPT && uiG.last_sent_uin)
         R_setpromptf (COLSERVER "[%s]" COLNONE " ", ContactFindName (uiG.last_sent_uin));
     else
@@ -569,7 +576,6 @@ void R_prompt (void)
         prstat = 1;
         R_remprompt ();
     }
-    printf (ESC "[J");
     if (curprompt)
         M_print (curprompt);
     prstat = 0;
@@ -607,13 +613,14 @@ void R_remprompt ()
 {
     int pos;
     
-    if (prstat != 1)
+    if (prstat != 1 && prstat != 3)
         return;
     pos = cpos;
     prstat = 2;
     R_goto (0);
     cpos = pos;
     M_print ("\r");             /* for tab stop reasons */
+    printf (ESC "[J");
     prstat = 2;
 }
 
