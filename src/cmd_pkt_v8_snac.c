@@ -1712,15 +1712,18 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
         (HAS_CAP (cont->caps, CAP_SRVRELAY) && HAS_CAP (cont->caps, CAP_ISICQ))))
         return RET_DEFER;
     
-    switch (type & 0xff)
+    if (!ExtraGet (extra, EXTRA_FORCE))
     {
-        case MSG_AUTO:
-        case MSG_URL:
-        case MSG_AUTH_REQ:
-        case MSG_AUTH_GRANT:
-        case MSG_AUTH_DENY:
-        case MSG_AUTH_ADDED:
-            return RET_DEFER;
+        switch (type & 0xff)
+        {
+            case MSG_AUTO:
+            case MSG_URL:
+            case MSG_AUTH_REQ:
+            case MSG_AUTH_GRANT:
+            case MSG_AUTH_DENY:
+            case MSG_AUTH_ADDED:
+                return RET_DEFER;
+        }
     }
 
     conn->our_seq_dc--;

@@ -1331,7 +1331,9 @@ static JUMP_F (CmdUserAnyMess)
 {
     Contact *cont;
     char *arg1 = NULL;
-    UDWORD i, f;
+    UDWORD i, f = 0;
+    static UDWORD size;
+    static char *t = NULL;
     ANYCONN;
 
     if (!(data & 3))
@@ -1355,11 +1357,21 @@ static JUMP_F (CmdUserAnyMess)
             return 0;
         data |= i << 2;
     }
+    if (!t)
+        t = s_catf (t, &size, " ");
+    *t = 0;
+
     if (!s_parsenick (&args, &cont, NULL, conn))
         return 0;
-    if (!s_parserem (&args, &arg1))
+    
+    if (!s_parse (&args, &arg1))
         return 0;
+    
+    t = s_catf (t, &size, "<%s>", arg1);
 
+    while (s_parse (&args, &arg1))
+        t = s_catf (t, &size, "%c<%s>", Conv0xFE, arg1);
+        
     if (data & 1)
     {
 #ifdef ENABLE_PEER2PEER
@@ -1368,17 +1380,17 @@ static JUMP_F (CmdUserAnyMess)
             M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
             return 0;
         }
-        TCPSendMsg (conn->assoc, cont, arg1, data >> 2);
+        TCPSendMsg (conn->assoc, cont, t, data >> 2);
     }
 #endif
     else
     {
         if (conn->type != TYPE_SERVER)
-            CmdPktCmdSendMessage (conn, cont, arg1, data >> 2);
+            CmdPktCmdSendMessage (conn, cont, t, data >> 2);
         else if (f != 2)
-            SnacCliSendmsg (conn, cont, arg1, data >> 2, f);
+            SnacCliSendmsg (conn, cont, t, data >> 2, f);
         else
-            SnacCliSendmsg2 (conn, cont, ExtraSet (ExtraSet (NULL, EXTRA_FORCE, 1, NULL), EXTRA_MESSAGE, data >> 2, arg1));
+            SnacCliSendmsg2 (conn, cont, ExtraSet (ExtraSet (NULL, EXTRA_FORCE, 1, NULL), EXTRA_MESSAGE, data >> 2, t));
     }
     return 0;
 }
