@@ -6,7 +6,7 @@ mICQ's original Author was:
 
 
 current Maintainer:
-	Rico Gloeckner		<mc@verdinet.de>		#
+	Rico Glöckner		<mc@verdinet.de>		#
 
 
 Contributors:
@@ -21,14 +21,24 @@ Contributors:
 	    various patches and Features
 	    brazil translation
 	
+	Michel Oosterhof	<micheloo@xs4all.nl>
+	    auto{conf,make} support
+
 	Sergey Shkonda		<serg@bcs.zp.ua>
-	    mreadline Translation
+	    mreadline translation
 	    
 	Valerie Dachev		<v.dachev@mail.com>
-	    bulgarian Translation
+	    bulgarian translation
 	
 	Taneli Huuskonen
-	    finnish Translation
+	    finnish translation
 	    
 	Cawko Xakep 		<xakep@snark.ukma.kiev.ua>
-	    ukrainan translator
+	    ukrainan translation
+
+	Dmitri Lukyanov		<ldv@sdsl-64-7-10-170.dsl.iad.megapath.net>
+	    (update) russian translation
+
+	Björn Hansson		<hansson@netera.se>
+	    (update) swedish translation
+
