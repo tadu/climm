@@ -1403,15 +1403,15 @@ static int TCPSendGreetAck (Session *peer, UWORD seq, UWORD cmd, BOOL accept)
 
     ASSERT_MSGDIRECT (peer);
 
-    if (peer->status & STATUSF_DND)  status  = TCP_STAT_DND;   else
-    if (peer->status & STATUSF_OCC)  status  = TCP_STAT_OCC;   else
-    if (peer->status & STATUSF_NA)   status  = TCP_STAT_NA;    else
-    if (peer->status & STATUSF_AWAY) status  = TCP_STAT_AWAY;
-    else                             status  = TCP_STAT_ONLINE;
-    if (!accept)                     status  = TCP_STAT_REFUSE;
+    if (peer->parent->parent->status & STATUSF_DND)  status  = TCP_STAT_DND;   else
+    if (peer->parent->parent->status & STATUSF_OCC)  status  = TCP_STAT_OCC;   else
+    if (peer->parent->parent->status & STATUSF_NA)   status  = TCP_STAT_NA;    else
+    if (peer->parent->parent->status & STATUSF_AWAY) status  = TCP_STAT_AWAY;
+    else                                             status  = TCP_STAT_ONLINE;
+    if (!accept)                                     status  = TCP_STAT_REFUSE;
 
     flags = 0;
-    if (peer->status & STATUSF_INV)  flags |= TCP_MSGF_INV;
+    if (peer->parent->parent->status & STATUSF_INV)  flags |= TCP_MSGF_INV;
     flags ^= TCP_MSGF_LIST;
 
     flist = PeerFileCreate (peer->parent->parent);

@@ -121,7 +121,7 @@ BOOL PeerFileAccept (Session *peer, UWORD status, UDWORD port)
     ASSERT_FILELISTEN(flist);
     ASSERT_FILEDIRECT(fpeer);
     
-    if (!flist || !fpeer || !port || status)
+    if (!flist || !fpeer || !port || (status == TCP_STAT_REFUSE))
     {
         if (fpeer)
             TCPClose (fpeer);
