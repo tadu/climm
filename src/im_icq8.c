@@ -163,7 +163,7 @@ static void IMRosterShow (Event *event)
     {
         cont = IMRosterCheckCont (serv, rc);
         rg = IMRosterGroup (roster, rc->tag);
-        rl_printf ("  %s%s%s %s%s%s %s%s%s\n",
+        rl_printf ("  %s%-25s%s %s%-15s%s %s%s%s\n",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
             COLCONTACT, rc->name, COLNONE,
             COLCONTACT, rc->nick ? rc->nick : "", COLNONE);
@@ -175,7 +175,7 @@ static void IMRosterShow (Event *event)
     {
         cont = IMRosterCheckCont (serv, rc);
         rg = IMRosterGroup (roster, rc->tag);
-        rl_printf ("  %s%s%s %s%s%s %s%s%s\n",
+        rl_printf ("  %s%-25s%s %s%-15s%s %s%s%s\n",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
             COLCONTACT, rc->name, COLNONE,
             COLCONTACT, rc->nick ? rc->nick : "", COLNONE);
@@ -187,7 +187,7 @@ static void IMRosterShow (Event *event)
     {
         cont = IMRosterCheckCont (serv, rc);
         rg = IMRosterGroup (roster, rc->tag);
-        rl_printf ("  %s%s%s %s%s%s %s%s%s\n",
+        rl_printf ("  %s%-25s%s %s%-15s%s %s%s%s\n",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
             COLCONTACT, rc->name, COLNONE,
             COLCONTACT, rc->nick ? rc->nick : "", COLNONE);
@@ -199,7 +199,7 @@ static void IMRosterShow (Event *event)
     {
         cont = IMRosterCheckCont (serv, rc);
         rg = IMRosterGroup (roster, rc->tag);
-        rl_printf ("  %s%s%s %s%s%s %s%s%s\n",
+        rl_printf ("  %s%-25s%s %s%-15s%s %s%s%s\n",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
             COLCONTACT, rc->name, COLNONE,
             COLCONTACT, rc->nick ? rc->nick : "", COLNONE);
@@ -259,7 +259,7 @@ static void IMRosterAdddown (Event *event)
             ContactAddAlias (cont, rc->nick);
             ContactAddAlias (cont, rc->name);
         }
-        rl_printf ("  %s%s%s %s%s%s %s%s%s\n",
+        rl_printf ("  %s%-25s%s %s%-15s%s %s%s%s\n",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
             COLCONTACT, rc->name, COLNONE,
             COLCONTACT, rc->nick ? rc->nick : "", COLNONE);
@@ -282,7 +282,7 @@ static void IMRosterAdddown (Event *event)
             ContactAddAlias (cont, rc->nick);
             ContactAddAlias (cont, rc->name);
         }
-        rl_printf ("  %s%s%s %s%s%s %s%s%s\n",
+        rl_printf ("  %s%-25s%s %s%-15s%s %s%s%s\n",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
             COLCONTACT, rc->name, COLNONE,
             COLCONTACT, rc->nick ? rc->nick : "", COLNONE);
@@ -305,7 +305,7 @@ static void IMRosterAdddown (Event *event)
             ContactAddAlias (cont, rc->nick);
             ContactAddAlias (cont, rc->name);
         }
-        rl_printf ("  %s%s%s %s%s%s %s%s%s\n",
+        rl_printf ("  %s%-25s%s %s%-15s%s %s%s%s\n",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
             COLCONTACT, rc->name, COLNONE,
             COLCONTACT, rc->nick ? rc->nick : "", COLNONE);
@@ -328,7 +328,7 @@ static void IMRosterAdddown (Event *event)
             ContactAddAlias (cont, rc->nick);
             ContactAddAlias (cont, rc->name);
         }
-        rl_printf ("  %s%s%s %s%s%s %s%s%s\n",
+        rl_printf ("  %s%-25s%s %s%-15s%s %s%s%s\n",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
             COLCONTACT, rc->name, COLNONE,
             COLCONTACT, rc->nick ? rc->nick : "", COLNONE);
@@ -465,7 +465,7 @@ static void IMRosterDiff (Event *event)
                        rg && rg->name ? rg->name : "?", rc->nick ? rc->nick : rc->name, rc->id);
             cnt_hidden++;
         }
-        if (cont && cont->group && !ContactPrefVal (cont, CO_HIDEFROM))
+        if (cont && cont->group && !ContactPrefVal (cont, CO_HIDEFROM) && ContactPrefVal (cont, CO_WANTSBL))
         {
             rl_printf (i18n (2482, "Server: Group %s Contact %s/%s (#%d) <hidefrom>\n"),
                        rg && rg->name ? rg->name : "?", rc->name, rc->nick ? rc->nick : rc->name, rc->id);
@@ -484,7 +484,7 @@ static void IMRosterDiff (Event *event)
                        rg && rg->name ? rg->name : "?", rc->nick ? rc->nick : rc->name, rc->id);
             cnt_normal++;
         }
-        if (cont && cont->group && (ContactPrefVal (cont, CO_HIDEFROM) || ContactPrefVal (cont, CO_INTIMATE)))
+        if (cont && cont->group && (ContactPrefVal (cont, CO_HIDEFROM) || ContactPrefVal (cont, CO_INTIMATE)) && ContactPrefVal (cont, CO_WANTSBL))
         {
             rl_printf (i18n (2485, "Server: Group %s Contact %s/%s (#%d)\n"),
                        rg && rg->name ? rg->name : "?", rc->name, rc->nick ? rc->nick : rc->name, rc->id);
@@ -504,7 +504,7 @@ static void IMRosterDiff (Event *event)
                        rg && rg->name ? rg->name : "?", rc->nick ? rc->nick : rc->name, rc->id);
             cnt_intimate++;
         }
-        if (cont && cont->group && !ContactPrefVal (cont, CO_INTIMATE))
+        if (cont && cont->group && !ContactPrefVal (cont, CO_INTIMATE) && ContactPrefVal (cont, CO_WANTSBL))
         {
             rl_printf (i18n (2489, "Server: Group %s Contact %s/%s (#%d) <intimate>\n"),
                        rg && rg->name ? rg->name : "?", rc->name, rc->nick ? rc->nick : rc->name, rc->id);
@@ -516,7 +516,7 @@ static void IMRosterDiff (Event *event)
 
     for (i = 0; (cont = ContactIndex (serv->contacts, i)); i++)    
         if (!ContactPrefVal (cont, CO_ISSBL))
-            if (!ContactPrefVal (cont, CO_IGNORE))
+            if (!ContactPrefVal (cont, CO_IGNORE) && ContactPrefVal (cont, CO_WANTSBL))
             {
                 cnt_more++;
                 rl_printf (i18n (2486, "Local:  Group %s Contact %s/%s (#%d) <%s>\n"),
