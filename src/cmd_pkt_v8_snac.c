@@ -1420,19 +1420,16 @@ void SnacCliReqicbm (Connection *conn)
 /*
  * CLI_SENDMSG - SNAC(4,6)
  */
-void SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD type, UBYTE format)
+UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD type, UBYTE format)
 {
     Packet *pak;
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
     
     if (!cont)
-        return;
+        return RET_DEFER;
     
     if (format == 2 || type == MSG_GET_PEEK)
-    {
-        SnacCliSendmsg2 (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, type, text));
-        return;
-    }
+        return SnacCliSendmsg2 (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, type, text));
     
     IMIntMsg (cont, conn, NOW, STATUS_OFFLINE, INT_MSGACK_V8, text, NULL);
         
@@ -1440,7 +1437,6 @@ void SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD t
     {
         switch (type & 0xff)
         {
-            default:
             case MSG_AUTO:
             case MSG_URL:
             case MSG_AUTH_REQ:
@@ -1452,13 +1448,14 @@ void SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD t
             case MSG_NORM:
                 format = 1;
                 break;
+            default:
             case MSG_GET_AWAY:
             case MSG_GET_DND:
             case MSG_GET_OCC:
             case MSG_GET_FFC:
             case MSG_GET_NA:
             case MSG_GET_VER:
-                return;
+                return RET_DEFER;
         }
     }
     
@@ -1487,7 +1484,7 @@ void SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD t
             PacketWriteB2 (pak, 0);
             SnacSend (conn, pak);
             if (strlen (text) > 450)
-                SnacCliSendmsg (conn, cont, text + 450, type, format);
+                return SnacCliSendmsg (conn, cont, text + 450, type, format);
             }
             break;
         case 4:
@@ -1501,6 +1498,7 @@ void SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD t
             PacketWriteB2 (pak, 0);
             SnacSend (conn, pak);
     }
+    return RET_OK;
 }
 
 void SnacCallbackType2Ack (Event *event)
