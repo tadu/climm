@@ -281,7 +281,7 @@ int main (int argc, char *argv[])
     R_init ();
 
     for (i = 0; (conn = ConnectionNr (i)); i++)
-        if (conn->flags & CONN_AUTOLOGIN && conn->open)
+        if ((conn->flags & CONN_AUTOLOGIN) && conn->open)
             conn->open (conn);
 
     while (!uiG.quit)
