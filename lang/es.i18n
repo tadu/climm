@@ -52,8 +52,7 @@
 1055:Error en la creación del socket
 1056:Socket creado, intentando conectar
 1060:El nivel de salida es %d
-#-#1061:%s no es un nick reconocido
-#1061:'%s' not recognized as a nick name.¶
+1061:'%s' no es un nick reconocido.¶
 1062:Usuarios ignorados:
 1063:Ingrese su clave:
 1064:Su estado se cambio automaticamente a
@@ -531,10 +530,8 @@
 1564:Nombre:
 1565:Apellido:
 1566:Email:
-#-#1567:No se necesita autorización.©0 
-#-#1568:Se requiere autorización.©0 
-#1567:No authorization needed.
-#1568:Must request authorization.
+1567:No se necesita autorización. 
+1568:Se requiere autorización. 
 1570:Ciudad:
 1574:Estado:
 1575:Edad:
@@ -543,13 +540,11 @@
 1584:Alerta! El comando de script '%s' falló con valor %d¶
 #1585:Ack!!!!!!!  Bad packet¶
 1587:Ingresa tu departamento/area: 
-#-#1590:©4%10s ©0 te pidió autorización para agregarte a su lista de contactos.¶
-#1590:has requested your authorization to be added to their contact list.
+1590:te pidió autorización para agregarte a su lista de contactos.
 1591:Motivo:
 1592:<%s> te mando un mensaje por email:¶
 1593:<%s> te mando un mensaje por web:¶
-#-#1595:¶Lista de contactos.¶©3============================================¶©0%d Contactos¶
-#1595:¶Contact List.¶============================================¶%d Contacts¶
+1595:¶Lista de contactos.¶============================================¶%d Contactos¶
 1596:[SOCKS] No se puede encontrar el nombre del host %s: %s.
 1597:[SOCKS] No se pudo crear el socket¶
 1598:[SOCKS] Pedido de conexión rechazado
@@ -586,14 +581,11 @@
 1640:Error actualizando la información.¶
 1641:La información se actualizó con exito.¶
 1642:IP
-#-#1645:©3Ingresaste una clave incorrecta.©0¶
-#-#1646:©3El servidor se encuentra ocupado.¶
-#-#1648: ©2La respuesta fue %04X	
 #1643:Acknowleged SRV_X1 0x021C Done Contact list?¶
 #1644:Acknowleged SRV_X2 0x00E6 Done old messages?¶
-#1645:You entered an incorrect password.¶
-#1646:Server is busy.¶
-#1648:The response was %04X	
+1645:Ingresaste una clave incorrecta.¶
+1646:El servidor se encuentra ocupado.¶
+1648:La respuesta fue %04X	
 1649:La versión fue %X	
 1650:¶El SEQ fue %04X	
 1651:El tamaño fue %d¶
@@ -615,8 +607,7 @@
 1673:	El puerto es %d¶
 1674:	Puerto desconocido¶
 1675:Linea ignorada:
-#-#1676:Se necesita el UIN a quien enviar.¶
-#1676:Need uin/nick to send to.¶
+1676:Se necesita el UIN a quien enviar.¶
 1678:Se necesita el URL.¶
 1679:Error al grabar tus respuestas automaticas personales¶
 1680:Tu configuración personal ha sido grabada!¶
@@ -630,34 +621,20 @@
 1692:Contactos:
 1696:Género:
 1700:%s no es un usuario valido de tu lista de contactos.¶
-#-#1703:©2Estados posibles: ¶
-#-#1704:©2Grupos: ¶
-#-#1705:General                    1¶
-#-#1706:Romance                    2¶
-#-#1707:Juegos                     3¶
-#-#1708:Estudiantes                4¶
-#-#1709:20 años o mas              6¶
-#-#1710:30 años o mas              7¶
-#-#1711:40 años o mas              8¶
-#-#1712:50+                        9¶
-#-#1713:Hombres buscando mujeres  10¶
-#-#1714:Mujeres buscando hombres  11¶
-#-#1715:mICQ                      49 (capaz no anda, pero probá)
-#-#1716:None                      -1¶
-#1703:Status modes:¶
-#1704:Groups:¶
-#1705:General
-#1706:Romance
-#1707:Games
-#1708:Students
-#1709:20 something
-#1710:30 something
-#1711:40 something
-#1712:50+
-#1713:Man chat requesting women
-#1714:Woman chat requesting men
-#1715:mICQ
-#1716:None
+1703:Estados posibles:¶
+1704:Grupos:¶
+1705:General
+1706:Romance
+1707:Juegos
+1708:Estudiantes
+1709:20 años o mas
+1710:30 años o mas
+1711:40 años o mas
+1712:50+
+1713:Hombres buscando mujeres
+1714:Mujeres buscando hombres
+1715:mICQ
+1716:Ninguno
 1717:! como primer caracter de una linea la ejecutara como un comando de shell (por ejemplo "!ls"  "!dir" "!mkdir temp")
 1719:Muestra por cuanto tiempo ha estado corriendo mICQ.
 1720:uin puede sar tanto un numero como el nick de un usuario.
@@ -669,8 +646,7 @@
 1730:El mensaje de 'Ocupado' es:
 1731:El mensaje de 'Invisible' es:
 1735:Debe escribir un mensaje.¶
-#-#1738:Necesito un comando que cambiar!¶
-#1738:Need a command to alter.¶
+1738:Necesito un comando que cambiar.¶
 1741:Tenes que recibir un comando primero¶
 1742:Tenes que mandar un comando primero¶
 1743:Los tamaños de los mensajes no concuerdan.¶
@@ -681,8 +657,7 @@
 1749:UIN %d renombrado a to %s.¶
 1751:Nick %s eliminado.
 1754: Nota: tenes que escribir 'save' para grabar los cambios de tu lista de contactos.¶
-#-#1755:te agregó a su lista de contactos.¶
-#1755:has added you to their contact list.¶
+1755:te agregó a su lista de contactos.¶
 1756:¶Creando conexión...¶
 1757:No se pudo establecer la conexión.¶
 1758:Enviando pedido...¶
@@ -695,8 +670,7 @@
 1765:El UIN de %s es %d.
 1766:El cambio de estado automatico esta %s%d%s.¶
 1767:Cambia el cambio de estado automatico de 'lejos' a 'no disponible'.
-#-#1768:La etiqueta '%s' ya esta siendo utilizada.
-#1768:The command name '%s' is already being used.¶
+1768:El nombre de comando '%s' ya esta siendo utilizado.¶
 1769:Muestra tu estado de conexión actual.
 1770:Reenvia el ultimo mensaje a un nuevo uin.
 1771:Todavia no le mandaste un mensaje a nadie!¶
@@ -736,7 +710,7 @@
 1814:Mensaje de respuesta automática configurado a %s%s%s.¶
 1815:    funny: usa mensajes graciosos.¶
 1816:Opción %s desconocida para la configuración de comando.¶
-#1817:Warning: ReceiveScript feature not enabled!¶
+1817:Alerta: funcionalidad ReceiveScript no implementada!¶
 1818:Alerta: sintaxis en desuso encontrada en el archivo de configuración!¶    Por favor hace "save" y revisa los cambios.¶
 1820:%s <opcion> [on|off] - controla las opciones simples.¶
 1822:    color: usa colores en el texto.¶
@@ -785,10 +759,8 @@
 1889:server
 1890:par-a-par
 1891:Conexión %d ya esta abierta.¶
-#-#1892:conn             Lista las conexiones disponibles.¶
-#-#1893:conn login <nr>  Abre conexión <nr>.¶
-#1892:conn               List available connections.¶
-#1893:conn login <nr>    Open connection <nr>.¶
+1892:conn               Lista las conexiones disponibles.¶
+1893:conn login <nr>    Abre conexión <nr>.¶
 1894:No existe el numero de conexión %d.¶
 1895:Error validando usuario y clave:¶
 1896:El servidor ha cerrado la conexión:¶
@@ -927,7 +899,7 @@
 2052:Aceptando archivo '%s' (%d bytes) de %s.¶
 #2053:TCP %s seq %x type %x status %x flags %x: '%s'¶
 2054:El mensaje del modo "libre para hablar" es:
-#2055:User is ffc and wants to chat about everything.
+2055:El usuario esta "libre para hablar" y quiere hablar de cualquier cosa.
 2056:    auto  <nick> - Obtiene la respuesta automatica del contacto.¶
 2057:    away  <nick> - Obtiene la respuesta automatica del estado 'lejos' del contacto.¶
 2058:    na    <nick> - Obtiene la respuesta automatica del estado 'no disponible' del contacto.¶
@@ -949,7 +921,7 @@
 #2079:Incoming TCP packet (%d - %s): %s
 2080:El servidor responde acerca del envio de mensaje SMS:¶%s¶
 #2081:    at %p parent %p assoc %p¶
-#2082:Opening file listener connection at localhost:%d... 
+2082:Abriendo conexion en espera de archivos en localhost:%d... 
 2083:No se pudo abrir el archivo %s: %s (%d).¶
 2084:Error moviendo al offset %d: %s (%d).¶
 2085:Cerrando la transferencia de archivos debido a que se alcanzo el timeout: %d %d.¶
@@ -958,7 +930,7 @@
 2088:El envio de los %d archivos ha finalizado.¶
 #2089:file listener
 #2090:file peer-to-peer
-#2091:Queueing %s as %s for transfer.¶
+2091:Agregando %s como %s a la lista de transferencias.¶
 #2092:TCP message %s discarded - lost session.¶
 #2093:%02d %-12s version %d for %s (%x), at %s:%d %s¶
 2094:conn login         Abre la primer conexión con el servidor.¶
@@ -977,23 +949,23 @@
 2107:No se recibieron mensajes de %s%s%s.¶
 2108:auto
 2109:versión
-#2110:    file  <nick> <file1> <as1> ... <description>¶
-#2111:                 - Send file1 as as1, ..., with description.¶
-#2112:                 - as = '/': strip path, as = '.': as is¶
-#2113:Unknown status '%s'.¶
-#2114:The command name '%s' does not exist.¶
-#2115:'%s' is not an integer.¶
-#2116:No new nick name given.¶
-#2117:%d added as %s.¶
-#2118:Out of memory.¶
-#2119:auth [grant] <nick>    - grant authorization.¶
-#2120:auth deny <nick> <msg> - refuse authorization.¶
-#2121:auth req  <nick> <msg> - request authorization.¶
-#2122: Note: You need to 'save' to write new password to disc.¶
-#2123:%sSyntax error%s: Too few arguments: '%s'¶
-#2124:%sSyntax error%s: Not an integer: '%s'¶
-#2126:User is offline, message (%s#%08lx:%08lx%s) queued.¶
-#2127:       URL: %s%s%s%s¶
+2110:    file  <nick> <file1> <as1> ... <descripción>¶
+2111:                 - Envia file1 como as1, ..., con la descripción.¶
+2112:                 - Si as = '/': se remueve el path del nombre del archivo, si as = '.': se envia tal cual¶
+2113:Estado desconocido: '%s'.¶
+2114:El nombre de comando '%s' no existe.¶
+2115:'%s' no es un entero.¶
+2116:No se dio un nuevo nick.¶
+2117:%d agregado como %s.¶
+2118:Memoria insuficiente.¶
+2119:auth [grant] <nick>    - otorga autorización.¶
+2120:auth deny <nick> <msg> - niega autorización.¶
+2121:auth req  <nick> <msg> - pide autorización.¶
+2122: Nota: necesitas grabar mediante el comando 'save' para guardar la nueva clave al disco.¶
+2123:%sError de sintaxis%s: muy pocos argumentos: '%s'¶
+2124:%sError de sintaxis%s: '%s' no es un entero¶
+2126:El usuario esta desconectado, el mensaje (%s#%08lx:%08lx%s) fue puesto en la cola de espera.¶
+2127:       URL: %s%s%s%s¶
 2128: Descripción: %s%s%s¶
 2129: URL:         %s%s%s
 2130:Escribiendo mensaje para %sall%s:¶
