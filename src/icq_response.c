@@ -707,39 +707,46 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
     if ((cont->flags & CONT_TEMPORARY) && (prG->flags & FLAG_HERMIT))
         return;
 
-    TabAddUIN (cont->uin);            /* Adds <uin> to the tab-list */
-
-    if (uiG.idle_flag)
+    if (type != MSG_INT_CAP)
     {
-        char buf[2048];
+            TabAddUIN (cont->uin);            /* Adds <uin> to the tab-list */
 
-        if ((cont->uin != uiG.last_rcvd_uin) || !uiG.idle_uins)
+        if (uiG.idle_flag)
         {
-            snprintf (buf, sizeof (buf), "%s %s", uiG.idle_uins && uiG.idle_msgs ? uiG.idle_uins : "", cont->nick);
-            s_repl (&uiG.idle_uins, buf);
+            char buf[2048];
+
+            if ((cont->uin != uiG.last_rcvd_uin) || !uiG.idle_uins)
+            {
+                snprintf (buf, sizeof (buf), "%s %s", uiG.idle_uins && uiG.idle_msgs ? uiG.idle_uins : "", cont->nick);
+                s_repl (&uiG.idle_uins, buf);
+            }
+
+            uiG.idle_msgs++;
+            R_setpromptf ("[" COLINCOMING "%d%s" COLNONE "] " COLSERVER "%s" COLNONE "",
+                          uiG.idle_msgs, uiG.idle_uins, i18n (1040, "mICQ> "));
         }
 
-        uiG.idle_msgs++;
-        R_setpromptf ("[" COLINCOMING "%d%s" COLNONE "] " COLSERVER "%s" COLNONE "",
-                      uiG.idle_msgs, uiG.idle_uins, i18n (1040, "mICQ> "));
-    }
-
 #ifdef MSGEXEC
-    if (prG->event_cmd && strlen (prG->event_cmd))
-        ExecScript (prG->event_cmd, cont->uin, type, cdata);
+        if (prG->event_cmd && strlen (prG->event_cmd))
+            ExecScript (prG->event_cmd, cont->uin, type, cdata);
 #endif
 
-    if (prG->sound & SFLAG_CMD)
-        ExecScript (prG->sound_cmd, cont->uin, 0, NULL);
-    if (prG->sound & SFLAG_BEEP)
-        printf ("\a");
-    M_printf ("%s " COLINCOMING "%10s" COLNONE " ", s_time (&stamp), cont->nick);
-    
-    if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
-        M_printf ("(%s) ", s_status (tstatus));
+        if (prG->sound & SFLAG_CMD)
+            ExecScript (prG->sound_cmd, cont->uin, 0, NULL);
+        if (prG->sound & SFLAG_BEEP)
+            printf ("\a");
+    }
 
-    if (prG->verbose)
-        M_printf ("<%d> ", type);
+    if (type != MSG_INT_CAP || prG->verbose)
+    {
+        M_printf ("%s " COLINCOMING "%10s" COLNONE " ", s_time (&stamp), cont->nick);
+        
+        if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
+            M_printf ("(%s) ", s_status (tstatus));
+
+        if (prG->verbose)
+            M_printf ("<%d> ", type);
+    }
 
     uiG.last_rcvd_uin = cont->uin;
     if (cont)
