@@ -31,7 +31,7 @@ typedef struct { UBYTE id; const UBYTE *cap; const char *name; } Cap;
 #define CAP_SRVRELAY    8
 #define CAP_AIM_GAMES   9
 #define CAP_AIM_SBUD    10
-#define CAP_IS_2002     11
+#define CAP_UTF8        11
 #define CAP_RTFMSGS     12
 #define CAP_IS_2001     13
 #define CAP_STR_2001    14

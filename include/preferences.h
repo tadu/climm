@@ -99,5 +99,14 @@ void        PrefSetColorScheme (Preferences *pref, UBYTE scheme);
 #define TABS_CYCLE       2
 #define TABS_CYCLEALL    3
 
+#define ENC_AUTO    0x80
+#define ENC_UTF8    0x01
+#define ENC_LATIN1  0x02
+#define ENC_LATIN9  0x03
+#define ENC_EUC     0x04
+#define ENC_SJIS    0x05  /* Windows Shift-JIS */
+#define ENC_KOI8    0x06
+#define ENC_WIN1251 0x07  /* Windows code page 1251 */
+
 #endif /* MICQ_PREFERENCES_H */
 

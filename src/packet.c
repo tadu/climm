@@ -39,7 +39,7 @@ static Cap caps[CAP_MAX] =
     { CAP_SRVRELAY,    "\x09\x46\x13\x49" cap_mid cap_id,   "CAP_SRVRELAY"    },
     { CAP_AIM_GAMES,   "\x09\x46\x13\x4a" cap_mid cap_id,   "CAP_AIM_GAMES"   },
     { CAP_AIM_SBUD,    "\x09\x46\x13\x4b" cap_mid cap_id,   "CAP_AIM_SBUD"    },
-    { CAP_IS_2002,     "\x09\x46\x13\x4e" cap_mid cap_id,   "CAP_IS_2002"     },
+    { CAP_UTF8,        "\x09\x46\x13\x4e" cap_mid cap_id,   "CAP_UTF8"        },
     { CAP_RTFMSGS,     "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x92", "CAP_RTFMSGS"     },
     { CAP_IS_2001,     "\x2e\x7a\x64\x75\xfa\xdf\x4d\xc8\x88\x6f\xea\x35\x95\xfd\xb6\xdf", "CAP_IS_2001"     },
     { CAP_STR_2001,    "\xa0\xe9\x3f\x37" cap_mstr cap_str, "CAP_STR_2001"    },
