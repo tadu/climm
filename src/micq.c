@@ -186,8 +186,8 @@ int main (int argc, char *argv[])
 #endif
     Connection *conn;
     
-    const char *arg_v, *arg_f, *arg_l, *arg_i, *arg_b;
-    UDWORD rc, arg_h = 0, arg_vv = 0, arg_c = 0;
+    const char *arg_v, *arg_f, *arg_l, *arg_i, *arg_b, *arg_s;
+    UDWORD rc, arg_h = 0, arg_vv = 0, arg_c = 0, arg_ss = 0;
     val_t res;
     UBYTE save_conv_error;
     SDWORD i;
@@ -197,7 +197,7 @@ int main (int argc, char *argv[])
     setbuf (stdout, NULL);
     tzset ();
 
-    arg_v = arg_f = arg_l = arg_i = arg_b = NULL;
+    arg_v = arg_f = arg_l = arg_i = arg_b = arg_s = NULL;
     for (i = 1; i < argc; i++)
     {
         if (argv[i][0] != '-')
@@ -222,7 +222,24 @@ int main (int argc, char *argv[])
             arg_h++;
         else if ((argv[i][1] == 'c') || !strcmp (argv[i], "--nocolor") || !strcmp (argv[i], "--nocolour"))
             arg_c++;
-            
+        else if ((argv[i][1] == 's') || !strcmp (argv[i], "--status"))
+        {
+            arg_s = argv[++i];
+            if (!strncmp (arg_s, "inv", 3))
+                arg_ss = STATUS_INV;
+            else if (!strcmp (arg_s, "dnd"))
+                arg_ss = STATUS_DND;
+            else if (!strcmp (arg_s, "occ"))
+                arg_ss = STATUS_OCC;
+            else if (!strcmp (arg_s, "na"))
+                arg_ss = STATUS_NA;
+            else if (!strcmp (arg_s, "away"))
+                arg_ss = STATUS_AWAY;
+            else if (!strcmp (arg_s, "ffc"))
+                arg_ss = STATUS_FFC;
+            else
+                arg_ss = atoll (arg_s);
+        }
     }
 
     ConvInit ();
@@ -314,6 +331,7 @@ int main (int argc, char *argv[])
         M_printf (i18n (2201, "  -b, --basedir  use given BASE dir (default: %s)\n"), "$HOME" _OS_PATHSEPSTR ".micq" _OS_PATHSEPSTR);
         M_printf (i18n (2203, "  -l, --logplace use given log file/dir (default: %s)\n"), "BASE" _OS_PATHSEPSTR "history" _OS_PATHSEPSTR);
         M_print  (i18n (2204, "  -i, --i1" "8n     use given locale (default: auto-detected)\n"));
+        M_print  (i18n (9999, "  -s, --status   overide status of auto-login server connections\n"));
         M_print  (i18n (2205, "  -c, --nocolor  disable colors\n"));
         exit (0);
     }
@@ -414,7 +432,11 @@ int main (int argc, char *argv[])
 
     for (i = 0; (conn = ConnectionNr (i)); i++)
         if ((conn->flags & CONN_AUTOLOGIN) && conn->open)
+        {
+            if (arg_s && conn->type & TYPEF_ANY_SERVER)
+                conn->status = arg_ss;
             conn->open (conn);
+        }
 
     while (!uiG.quit)
     {

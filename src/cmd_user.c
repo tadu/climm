@@ -289,7 +289,7 @@ static int CmdUserRemoveAlias (const char *name)
 static JUMP_F(CmdUserChange)
 {
     char *arg1 = NULL;
-    OPENCONN;
+    ANYCONN;
 
     if (data + 1 == 0)
     {
@@ -317,7 +317,9 @@ static JUMP_F(CmdUserChange)
         else if (data & STATUSF_INV)  ContactOptionsSetStr (&prG->copts, CO_AUTOINV,  arg1);
     }
 
-    if (conn->type == TYPE_SERVER)
+    if (~conn->connect & CONNECT_OK)
+        conn->status = data;
+    else if (conn->type == TYPE_SERVER)
         SnacCliSetstatus (conn, data, 1);
     else
     {
