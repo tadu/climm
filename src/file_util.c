@@ -1037,15 +1037,15 @@ void Read_RC_File (FILE *rcf)
                             break;
                         }
                 }
-                else if (!strcasecmp (cmd, "entry") && cg->conn)
+                else if (!strcasecmp (cmd, "entry") && cg->serv)
                 {
                     UDWORD uin;
                     
                     PrefParseInt (i);
                     PrefParseInt (uin);
                     
-                    cont = ContactFind (cg->conn->contacts, i, uin, s_sprintf ("%ld", uin), 1);
-                    if (cg != cg->conn->contacts)
+                    cont = ContactFind (cg->serv->contacts, i, uin, s_sprintf ("%ld", uin), 1);
+                    if (cg != cg->serv->contacts)
                         ContactAdd (cg, cont);
                     cont->flags |= CONT_TEMPORARY;
                 }
