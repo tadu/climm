@@ -186,7 +186,8 @@ if( s5Use )
    sin.sin_family = AF_INET;
    sin.sin_port = 0;
 
-   if(bind(sok, (struct sockaddr*)&sin, sizeof(struct sockaddr))<0)
+   if(bind(sok, (struct sockaddr*)&sin, sizeof(struct sockaddr))<0) 
+   {
      M_fdprint(aux, "Can't bind socket to free port\n");
      return -1;
    }
