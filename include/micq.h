@@ -167,6 +167,7 @@ extern Preferences *prG;
 #define LOG_MESS 1
 #define LOG_AUTO_MESS 2
 #define LOG_ONLINE 3
+#define LOG_EVENT 4
 
 #include "i18n.h"
 
