@@ -32,6 +32,22 @@ Packet *PacketC (void)
     return pak;
 }
 
+Packet *PacketCreate (const char *data, UDWORD len)
+{
+    Packet *newpak;
+    
+    newpak = calloc (1, sizeof (Packet));
+    assert (newpak);
+    
+    memcpy (newpak->data, data, len);
+    newpak->len = len;
+    
+    Debug (DEB_PACKET, "<-+- %p create", newpak);
+    uiG.packets++;
+
+    return newpak;
+}
+
 void PacketD (Packet *pak)
 {
     Debug (DEB_PACKET, "---> %p free", pak);

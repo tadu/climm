@@ -19,8 +19,9 @@ struct Packet_s
 };
 
 Packet *PacketC        (void);
-void    PacketD        (Packet *pak);
+Packet *PacketCreate   (const char *data, UDWORD len);
 Packet *PacketClone    (const Packet *pak);
+void    PacketD        (Packet *pak);
 
 void        PacketWrite1      (      Packet *pak,           UBYTE  data);
 void        PacketWrite2      (      Packet *pak,           UWORD  data);

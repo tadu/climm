@@ -437,7 +437,7 @@ static JUMP_SNAC_F(SnacSrvUseronline)
     if (tlv[12].len)
     {
         UDWORD ip;
-        p = TLVPak (tlv + 12);
+        p = PacketCreate (tlv[12].str, tlv[12].len);
         
                            ip = PacketReadB4 (p);
         cont->port            = PacketReadB4 (p);
@@ -551,17 +551,18 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                 return;
             }
 
-            p = TLVPak (tlv + 2);
+            p = PacketCreate (tlv[2].str, tlv[2].len);
             PacketReadB2 (p);
             PacketReadData (p, NULL, PacketReadB2 (p));
             PacketReadB2 (p);
             text = PacketReadStrB (p);
+            PacketD (p);
             txt = text + 4;
             type = MSG_NORM;
             /* TLV 1, 2(!), 3, 4, f ignored */
             break;
         case 2:
-            p = TLVPak (tlv + 5);
+            p = PacketCreate (tlv[5].str, tlv[5].len);
             type = PacketReadB2 (p); /* ACKTYPE */
                    PacketReadB4 (p); /* MID-TIME */
                    PacketReadB4 (p); /* MID-RANDOM */
@@ -569,10 +570,12 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             tlv = TLVRead (p, PacketReadLeft (p));
             if ((i = TLVGet (tlv, 0x2711)) == (UWORD)-1)
             {
+                PacketD (p);
                 SnacSrvUnknown (event);
                 return;
             }
-            pp = TLVPak (tlv + i);
+            pp = PacketCreate (tlv[i].str, tlv[i].len);
+            PacketD (p);
             if (PacketRead1 (pp) != 0x1b)
             {
                 SnacSrvUnknown (event);
@@ -593,14 +596,16 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             PacketReadB2 (pp); /* UNKNOWN */
             PacketReadB2 (pp); /* UNKNOWN */
             txt = text = PacketReadLNTS (pp);
+            PacketD (pp);
             /* FOREGROUND / BACKGROUND ignored */
             /* TLV 1, 2(!), 3, 4, f ignored */
             break;
         case 4:
-            p = TLVPak (tlv + 5);
+            p = PacketCreate (tlv[5].str, tlv[5].len);
             uin  = PacketRead4 (p);
             type = PacketRead2 (p);
             txt = text = PacketReadLNTS (p);
+            PacketD (p);
             /* FOREGROUND / BACKGROUND ignored */
             /* TLV 1, 2(!), 3, 4, f ignored */
             break;
@@ -616,12 +621,6 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
 
     s_free (text);
     
-    if (pp)
-        PacketD (pp);
-    
-    if (p)
-        PacketD (p);
-
     if (prG->sound & SFLAG_CMD)
         ExecScript (prG->sound_cmd, uin, 0, NULL);
     else if (prG->sound & SFLAG_BEEP)
@@ -859,7 +858,7 @@ static JUMP_SNAC_F(SnacSrvFromicqsrv)
         SnacSrvUnknown (event);
         return;
     }
-    p = TLVPak (tlv + 1);
+    p = PacketCreate (tlv[1].str, tlv[1].len);
     p->id = pak->id; /* copy reference */
     len = PacketRead2 (p);
     uin = PacketRead4 (p);

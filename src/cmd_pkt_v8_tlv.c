@@ -63,7 +63,7 @@ TLV *TLVRead (Packet *pak, UDWORD TLVlen)
         PacketReadData (pak, p, len);
         p[len] = '\0';
 
-        tlv[n].tlv = typ;
+        tlv[n].tag = typ;
         tlv[n].len = len;
         tlv[n].str = p;
         
@@ -85,10 +85,10 @@ UWORD TLVGet (TLV *tlv, UWORD nr)
     UWORD i;
 
     for (i = 0; i < __minTLV; i++)
-        if (tlv[i].tlv == nr)
+        if (tlv[i].tag == nr)
             return i;
-    for ( ; tlv[i].tlv; i++)
-        if (tlv[i].tlv == nr)
+    for ( ; tlv[i].tag; i++)
+        if (tlv[i].tag == nr)
             return i;
 
     return (UWORD)-1;
@@ -104,25 +104,25 @@ void TLVDone (TLV *tlv, UWORD nr)
 {
     int i;
     s_repl (&tlv[nr].str, NULL);
-    tlv[nr].tlv = 0;
+    tlv[nr].tag = 0;
     if (nr < __minTLV)
     {
-        for (i = __minTLV; tlv[i].tlv; i++)
-            if (tlv[i].tlv == nr)
+        for (i = __minTLV; tlv[i].tag; i++)
+            if (tlv[i].tag == nr)
                 break;
-        if (!tlv[i].tlv)
+        if (!tlv[i].tag)
             return;
         tlv[nr] = tlv[i];
         nr = i;
     }
     i = nr + 1;
-    while (tlv[i].tlv)
+    while (tlv[i].tag)
         i++;
     if (i == nr + 1)
         return;
     i--;
     tlv[nr] = tlv[i];
-    tlv[i].tlv = 0;
+    tlv[i].tag = 0;
     tlv[i].str = NULL;
 }
 
@@ -134,22 +134,7 @@ void TLVD (TLV *tlv)
     int i;
     for (i = 0; i < __minTLV; i++)
         s_repl (&tlv[i].str, NULL);
-    for ( ; tlv[i].tlv; i++)
+    for ( ; tlv[i].tag; i++)
         s_repl (&tlv[i].str, NULL);
     free (tlv);
-}
-
-/*
- * Copy the data of a TLV into a new Packet.
- */
-Packet *TLVPak (TLV *tlv)
-{
-    Packet *pak;
-    
-    pak = PacketC ();
-    pak->len = tlv->len;
-    pak->cmd = tlv->tlv;
-    pak->id  = tlv->nr;
-    memcpy (pak->data, tlv->str, tlv->len);
-    return pak;
 }
