@@ -193,7 +193,7 @@ int main (int argc, char *argv[])
     prG->logplace = arg_l ? strdup (arg_l) : NULL;
     prG->flags |= arg_c ? 0 : FLAG_COLOR;
     
-    prG->enc_loc = ENC_AUTO;
+    prG->enc_loc = prG->enc_rem = ENC_AUTO;
     i18nInit (&prG->locale, &prG->enc_loc, arg_i);
     
     rc = arg_h ? 0 : PrefLoad (prG);
