@@ -324,11 +324,6 @@ static JUMP_SNAC_F(SnacSrvReplyinfo)
     UDWORD uin, status;
     
     pak = event->pak;
-    if (pak->flags & 0x8000)
-    {
-        PacketReadB4 (pak);
-        PacketReadB4 (pak);
-    }
     uin = PacketReadUIN (pak);
     
     if (uin != event->sess->uin)
@@ -715,11 +710,6 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
     UWORD count, type, tag, id, TLVlen, j, data;
 
     pak = event->pak;
-    if (pak->flags & 0x8000)
-    {
-        PacketReadB4 (pak);
-        PacketReadB4 (pak);
-    }
     
     event2 = QueueDequeue (0, QUEUE_REQUEST_ROSTER);
     if (event2)
