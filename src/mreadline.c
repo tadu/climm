@@ -478,6 +478,7 @@ int R_process_input (void)
                     R_process_input_tab ();
                     break;
 #ifdef ENABLE_UTF8
+                case 16:       /* ^P */
                 case 21:       /* ^U */
                     istat = 10;
                     break;
@@ -592,7 +593,9 @@ int R_process_input (void)
     switch (istat)
     {
         case 1:                /* ESC */
-            if (ch == '[' || ch == 'O')
+            if (ch == 'u' || ch == 'U')
+                istat = 10;
+            else if (ch == '[' || ch == 'O')
                 istat = 2;
             else
                 istat = 0;
