@@ -425,23 +425,13 @@ void Recv_Message (Connection *conn, Packet *pak)
     UDWORD uin;
     UWORD type, len;
 
-#ifdef HAVE_TIMEZONE
-    stamp.tm_sec   = -timezone;
-#else
-    time_t now = time (NULL);
-    stamp = *localtime (&now);
-#ifdef HAVE_TM_GMTOFF
-    stamp.tm_sec   = -stamp.tm_gmtoff;
-#endif
-#endif
     uin            = PacketRead4 (pak);
+    stamp.tm_sec   = 0;
     stamp.tm_year  = PacketRead2 (pak) - 1900;
     stamp.tm_mon   = PacketRead1 (pak) - 1;
     stamp.tm_mday  = PacketRead1 (pak);
     stamp.tm_hour  = PacketRead1 (pak);
     stamp.tm_min   = PacketRead1 (pak);
-    /* kludge to convert that strange UTC-DST time to time_t */
-    /* FIXME: The following probably only works correctly in Europe. */
     stamp.tm_isdst = -1;
     type           = PacketRead2 (pak);
     len            = PacketReadAt2 (pak, pak->rpos);
@@ -461,7 +451,6 @@ void Recv_Message (Connection *conn, Packet *pak)
         text = c_in_to_split (ctext, cont);
 
     uiG.last_rcvd = cont;
-    IMSrvMsg (cont, conn, mktime (&stamp),
+    IMSrvMsg (cont, conn, timegm (&stamp),
               OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v5, CO_MSGTYPE, type, CO_MSGTEXT, text, 0));
 }
-
