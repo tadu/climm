@@ -401,6 +401,46 @@
 390:Zair
 391:Zambia
 392:Zimbabve
+#-#400:		Shows locally stored info on user¶
+#-#401:		Updates other user info like age and sex¶
+#-#402:		Updates your about user info.¶
+#-#403:		Displays the last message received from <nick>.¶			They must be in your Contact List.¶
+#-#404:		Toggles ignoring/unignoring nick¶
+#-#405:		Lists ignored nicks/uins¶
+#-#406:	Toggles your visibility to a user when you're invisible.¶
+#-#407:			Displays the current status of online people on your contact list¶
+#-#408:		Menja Va$u $ifru u tajnu.¶
+#-#409:		$alje poruku UIN-u¶
+#-#410:	$alje URL i poruku UIN-u¶
+#-#411:	$alje multilinijsku poruku svima sa liste.¶
+#-#412:		$alje poruku poslednjoj osobi kojoj ste poslali poruku¶
+#-#413:		Autorizuje UIN da Vas ubaci na svoju listu¶
+#-#414:		Odgovara osobi koja vam se poslednja obratila¶
+#-#415:		Pronalazi slucajnog korisnika u navedenoj grupi ili izlista grupu.¶
+#-#416:			Ispisuje trenutni status svih na Va$oj kontakt listi¶
+#-#417:	Ova komanda Vam omogucava da promenite Va$ set komandi u letu.¶
+#-#418:			Postavlja nivo preglednosti ( podrazumevano = 0 ).¶
+#-#419:				Bri$e ekran.¶
+#-#420:				Ukljucuje/Iskljucuje pisak priliko primanja nove poruke.¶
+#-#421:				Ukljucuje/Iskljucuje prikaz u boji.¶
+#-#422:			Odloguje se i izadje iz programa.¶
+#-#423:				Prikazuje va$ autoodgovor status¶
+#-#424:			Ukljucuje/Iskljucuje slanje poruka kada je va$ status DND, NA, itd.¶
+#-#425:		Postavlja poruku koju ce poslati kao automatski odgovor na trenutni status¶
+#-#426:	Kreira novi UIN (Univerzalni Identifikacioni Broj) sa navedenom $ifrom.¶
+#-#427:	Menja Va$ status u status broj.¶		Bez navedenog broja ispisuje dozvoljene modove.¶
+#-#428:	Dodaje UIN broj va$oj kontakt listi uz unos nadimka.¶
+#-#429:	Pronalazi ICQ korisnika sa navedenom e-mail adresom.¶
+#-#430:		Ispisuje osnovne informacije za navedeni UIN¶
+#-#431:		Oznacava kao Online (Na vezi).¶
+#-#432:		Oznacava kao Away (Odsutan).¶
+#-#433:		Oznacava kao Not Available (Nije dostupan).¶
+#-#434:		Oznacava kao Occupied (Zauzet).¶
+#-#435:		Oznacava kao Do not Disturb (Ne uznemiravaj).¶
+#-#436:		Oznacava kao Free for Chat (Raspolozen za chavrljanje).¶
+#-#437:		Oznacava kao Invisible (Nevidljiv).¶
+#-#438:		Koriguje Va$e osnovne informacije (e-mail, nadimak, itd.)¶
+#-#439:		Postavlja Va$u slucajnu korisnicku grupu.¶
 #393:successful
 #394:unsuccessful
 #395:About info change was ©2%s©0.¶
@@ -408,47 +448,46 @@
 #397:Other info change was ©2%s©0.¶
 #398:Search ©2failed©0.¶
 #399:Unknown Meta User response ©1%04X©0¶
-400:		Shows locally stored info on user¶
-401:		Updates other user info like age and sex¶
-402:		Updates your about user info.¶
-#-#403:		Displays the last message received from <nick>.¶			They must be in your Contact List.¶
-#403:		Displays the last message received from <nick>.¶			They must be in your Contact List.¶		Or a list of who has send you at least one message.¶
-404:		Toggles ignoring/unignoring nick¶
-405:		Lists ignored nicks/uins¶
-406:	Toggles your visibility to a user when you're invisible.¶
-407:			Displays the current status of online people on your contact list¶
-408:		Menja Va$u $ifru u tajnu.¶
-409:		$alje poruku UIN-u¶
-410:	$alje URL i poruku UIN-u¶
-411:	$alje multilinijsku poruku svima sa liste.¶
-412:		$alje poruku poslednjoj osobi kojoj ste poslali poruku¶
-413:		Autorizuje UIN da Vas ubaci na svoju listu¶
-414:		Odgovara osobi koja vam se poslednja obratila¶
-415:		Pronalazi slucajnog korisnika u navedenoj grupi ili izlista grupu.¶
-416:			Ispisuje trenutni status svih na Va$oj kontakt listi¶
-417:	Ova komanda Vam omogucava da promenite Va$ set komandi u letu.¶
-418:			Postavlja nivo preglednosti ( podrazumevano = 0 ).¶
-419:				Bri$e ekran.¶
-420:				Ukljucuje/Iskljucuje pisak priliko primanja nove poruke.¶
-421:				Ukljucuje/Iskljucuje prikaz u boji.¶
-422:			Odloguje se i izadje iz programa.¶
-423:				Prikazuje va$ autoodgovor status¶
-424:			Ukljucuje/Iskljucuje slanje poruka kada je va$ status DND, NA, itd.¶
-425:		Postavlja poruku koju ce poslati kao automatski odgovor na trenutni status¶
-426:	Kreira novi UIN (Univerzalni Identifikacioni Broj) sa navedenom $ifrom.¶
-427:	Menja Va$ status u status broj.¶		Bez navedenog broja ispisuje dozvoljene modove.¶
-428:	Dodaje UIN broj va$oj kontakt listi uz unos nadimka.¶
-429:	Pronalazi ICQ korisnika sa navedenom e-mail adresom.¶
-430:		Ispisuje osnovne informacije za navedeni UIN¶
-431:		Oznacava kao Online (Na vezi).¶
-432:		Oznacava kao Away (Odsutan).¶
-433:		Oznacava kao Not Available (Nije dostupan).¶
-434:		Oznacava kao Occupied (Zauzet).¶
-435:		Oznacava kao Do not Disturb (Ne uznemiravaj).¶
-436:		Oznacava kao Free for Chat (Raspolozen za chavrljanje).¶
-437:		Oznacava kao Invisible (Nevidljiv).¶
-438:		Koriguje Va$e osnovne informacije (e-mail, nadimak, itd.)¶
-439:		Postavlja Va$u slucajnu korisnicku grupu.¶
+#400:Shows locally stored info on user.
+#401:Updates other user info like age and sex.
+#402:Updates your about user info.
+#403:Displays the last message received from <nick>, or a list of who has send you at least one message.
+#404:Toggles ignoring/unignoring nick.
+#405:Lists ignored nicks/uins.
+#406:Toggles your visibility to a user when you're invisible.
+#407:Displays the current status of online people on your contact list.
+#408:Changes your password to secret.
+#409:Sends a message to uin.
+#410:Sends a url and message to uin.
+#411:Sends a multiline message to everyone on your list.
+#412:Sends a message to the last person you sent a message to.
+#413:Authorize uin to add you to their list.
+#414:Replys to the last person to send you a message.
+#415:Finds a random user in the specified group or lists the groups.
+#416:Displays the current status of everyone on your contact list.
+#417:This command allows you to alter your command set on the fly.
+#418:Set the verbosity level (default 0).
+#419:Clears the screen.
+#420:Toggles beeping when recieving new messages.
+#421:Toggles displaying colors.
+#422:Logs off and quits.
+#423:Displays your autoreply status.
+#424:Toggles sending messages when your status is DND, NA, etc.
+#425:Sets the message to send as an auto reply for the status.
+#426:Creates a new UIN with the specified password.
+#427:Changes your status to the status number. Without a number it lists the available modes.
+#428:Adds the uin number to your contact list with nickname.
+#429:Searches for a ICQ user.
+#430:Displays general info on uin.
+#431:Change status to Online.
+#432:Mark as Away.
+#433:Mark as Not Available.
+#434:Mark as Occupied.
+#435:Mark as Do not Disturb.
+#436:Mark as Free for Chat.
+#437:Mark as Invisible.
+#438:Updates your basic info (email, nickname, etc.).
+#439:Sets your random user group.
 #440:Random User:
 #441:IP:
 442:Molim Vas izaberite jedno od podrucja za pomoc ispod.
@@ -767,7 +806,7 @@
 #699:Must give a valid uin/nickname¶
 #700:%s is not a valid user in your list.¶
 #701:%d users not returned.
-#702:		Display a list of nicknames that you can tab through.¶
+#702:Display a list of nicknames that you can tab through.
 #703:©2Status modes: ¶
 #704:©2Groups: ¶
 #705:General                    1¶
@@ -782,12 +821,10 @@
 #714:Woman chat requesting men 11¶
 #715:Micq                      49 (might not work but try it)
 #716:None                      -1¶
-#717:©2	! as the first character of a command will execute¶
-#718:©2	a shell command (e.g. "!ls"  "!dir" "!mkdir temp")©0¶
-#719:©3uptime		Shows how long Micq has been running.¶©0
-#720:©2	uin can be either a number or the nickname of the user.¶
-#721:©2	Sending a blank message will put the client into multiline mode.¶	Use . on a line by itself to end message.¶
-#722:	Use # on a line by itself to cancel the message.©0¶
+#717:! as the first character of a command will execute a shell command (e.g. "!ls"  "!dir" "!mkdir temp")
+#719:Shows how long Micq has been running.
+#720:uin can be either a number or the nickname of the user.
+#721:Sending a blank message will put the client into multiline mode.¶Use . on a line by itself to end message.¶Use # on a line by itself to cancel the message.
 #723:%s's IP address is 
 #724:Automatic replies are %s.¶
 #727:The Do not disturb message is:
@@ -824,5 +861,5 @@
 #760:¶Your new UIN is %s%ld%s!¶
 #761:unknown
 #762:Ack!!!!!!  %d\a¶
-#800:		Change the working language to <lang>¶
-#801:		Displays a list of people on your contact list in a screen wide format.¶
+#800:Change the working language to <lang>.
+#801:Displays a list of people on your contact list in a screen wide format.

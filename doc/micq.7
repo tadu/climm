@@ -1,207 +1,190 @@
 .\"This is the man page for ~/.micqrc."
 .\"There is also no global preferences such as micq.conf"
 .\"However, ~/etc/micq.conf is an options with micq -E"
-.TH micq 7 "10 June 2001"
-
-.SH NAME
+.\".TH MICQ 7 "June 15, 2001" "MICQ(7)"
+.Dd June 16, 2001
+.Dt MICQ 7
+.Os MICQ(7)
+.Sh NAME
 micq interactive commands
-.SH DESCRIPTION
+.Sh DESCRIPTION
 This manual page describes the commands that can be used within micq.  This
 page is holds the same information as the online help.
-.SH COMMANDS
-.B trans <lang|nr>
-.br
-	Switch to the language <lang>, given by iso code.
-	To select the default language given by the environment
-	variables LANG, LC_ALL and LC_MESSAGES, use !, auto or default.
-	To select no translation at all, use ., none or unload.
-	To get debugging information, prefix it with debug.
-	To get funny messages, postfix it with _fun.
-.br
-	Output translation string number <nr>.
-.br
-	Actually you may specify as many arguments as you wish, e.g. to print
-	string number 117 in German and then switch back to default language,
-	use "trans de 117 default".
-.sp 2
-.B tabs 
-.br
-	Shows of a list of users you can tab through
-.sp 2
-.B save
-.br
-	Saves current settings in ~/.micqrc. Beware, it will clobber
-	any comments in this file.
-.sp 2
-.B r [message]
-.br
-	Reply to last message received.  Without [message] multi-line 
-message mode is enabled.  To send the multi-line message put period on
-a line of its own.  To cancel the message put # on a line of its own.
-.sp 2
-.B a [message]
-.br
-	Send a message to the last person you sent a message to.  See 'r'
+.Sh COMMANDS
+.Bl -tag -width Fl
+.It Ic trans Op Ar lang|nr ...
+Switch to the language 
+.Ar lang ,
+given by iso code, or output translation string number
+.Ar nr .
+To select the default language given by the environment
+variables
+.Ic LANG ,
+.Ic LC_ALL
+and
+.Ic LC_MESSAGES ,
+use
+.Ic \&! ,
+.Ic auto
+or
+.Ic default .
+To select no translation at all, use
+.Ic \&. ,
+.Ic none
+or
+.Ic unload .
+To get debugging information, prefix it with
+.Ic debug .
+To get funny messages, postfix it with
+.Ic _fun .
+.sp
+Actually you may specify as many arguments as you wish, e.g. to print
+string number 117 in German and then switch back to default language,
+use "trans de 117 default".
+.It Ic tabs 
+Shows of a list of users you can tab through.
+.It Ic save
+Saves current settings in
+.Pa ~/.micqrc .
+Beware, it will clobber any comments in this file.
+.It Ic r Op Ar message
+Reply to last message received.  Without
+.Ar message
+multi-line message mode is enabled.  To send the multi-line message, put
+a period
+.Ic ( . )
+on a line of its own.  To cancel the message, put a hash sign
+.Ic ( # )
+on a line of its own.
+.It Ic a Ar message
+Send a message to the last person you sent a message to.  See
+.Ic r
 for behaviour without [message].
-.sp 2
-.B msg <uin|nickname>/[message]
-.br
-	Send a message to <uin|nickname>.  See 'r' for behaviour without [message].
-.sp 2
-.B msga
-.br
-	Send a multiple line message to everyone on your list.  Use '.' on
-its own line to send the message or # on its own line to cancel the message.
-.sp 2
-.B uptime
-.br
-	Show the time micq has been running.
-.sp 2
-.B last [uin|nickname]
-.br
-	Show a list of users who have sent you messages or the last message
-received from <uin|nickname>.
-.sp 2
-.B verbose [0|1|2|3|4|5]
-.br
-	set verbosity of micq. Default is 0.
-.sp 2
-.B clear
-.br
-	Clear the screen.
-.sp 2
-.B sound
-.br
-	Toggle sound on or off.
-.sp 2
-.B q
-.br
-	Quit micq.
-.sp 2
-.B auto [on|off]
-.br
-	Turn auto reply messages on or off. If neither on or off is given
+.It Ic msg Ar uin|nickname Ic / Op Ar message
+Send a message to
+.Ar uin|nickname .
+See
+.Ic r
+for behaviour without
+.Ar message .
+.It Ic msga
+Send a multiple line message to everyone on your list.  Use a period
+.Ic ( . )
+on a line of its own to send the message, or a hash sign
+.Ic ( # )
+on a line of its own to cancel the message.
+.It Ic uptime
+Show the time micq has been running.
+.It Ic last Op Ar uin|nickname
+Show a list of users who have sent you messages or the last message
+received from
+.Ar uin|nickname .
+.It Ic verbose Ar verb
+Set verbosity of micq to
+.Ar verb ,
+default is 0, maximum is 5.
+.It Ic clear
+Clear the screen.
+.It Ic sound
+Toggle sound on or off.
+.It Ic q
+Quit micq.
+.It Ic auto Op Ar on|off
+Turn auto reply messages on or off. If neither on or off is given
 the auto reply messages are displayed.
-.br
-.B auto <status> <message>
-.br
-	Change auto reply message for status.
-.sp 2
-.B alter <command> <new command>
-.br
-	Change command to new command. eg: alter msg m
-.br
-	This changes msq <uin|nickname> to m <uin|nickname>
-.sp 2
-.B auth <uin|nickname>
-.br
-	Allow <uin|nickname> to add you to their list.
-.sp 2
-.B rand <number>
-.br
-	Find a random user in an interest group of # <number>.
-.sp 2
-.B pass <password>
-.br
-	Changes your icq password to <password>.  Note: you should alter
-your password directly in your .micqrc(7) file.
-.sp 2
-.B search <email@host>
-.br
-	Search for a user with <email@host> as there email address.
-.sp 2
-.B add <uin> <nickname>
-.br
-	Add <uin> to your list as <nickname>.
-.sp 2
-.B w
-.br
-	List all people on your contact list.
-.sp 2
-.B e
-.br
-	List all people who are online in your contact list.
-.sp 2
-.B i
-.br
-	List all the people on your ignore list.
-.sp 2
-.B togvis <nickname>
-.br
-	Toggles whether can see you when you are invisible.
-.sp 2
-.B info <uin|nickname>
-.br
-	Show the info for <uin> or <nickname>.
-.sp 2
-.B status <nickname>
-.br
-	Show the status of <nickname>.  This includes IP address, ICQ protocol version and connection type.
-.sp 2
-.B togig <nickname>
-.br
-	Toggle whether <nickname> is on your ignore list or not.
-.sp 2
-.B change [number]
-.br
-	Changes your status to the status #<number>.
-Without a number it lists the available modes.
-.sp 2
-.B reg <password>
-.br
-	Creates a new UIN with the specified password.
-.sp 2
-.B online
-.br
-	Change status to Online.
-.sp 2
-.B away
-.br
-	Change status to Away.
-.sp 2 
-.B na
-.br
-	Change status to Not Available.
-.sp 2
-.B occ             
-.br
-	Change status to Occupied.
-.sp 2
-.B dnd 
-.br
-	Change status to Do not Disturb.
-.sp 2
-.B ffc
-.br
-	Change status to Free for Chat.
-.sp 2
-.B inv
-.br
-	Change status to Invisible
-.sp 2
-.B update
-.br
-	Updates your basic info (email, nickname, etc.)
-.sp 2
-.B other
-.br
-	Updates other user info like age and sex
-.sp 2
-.B about
-.br
-	Updates your about user info.
-.sp 2
-.B set [number]
-.br
-	Sets your random user group to number.  Without [number] set lists
-possible interestin groups.
- 
-.SH SEE ALSO
-micq(1), micqrc(5)
-
-.SH AUTHOR
-	This man page was created by James Morrison <ja2morrison@student.math.uwaterloo.ca
+.It Ic auto Ar status message
+Change auto reply message for status
+.Ar status
+to
+.Ar message .
+.It Ic alter Ar command new
+Make command previously known as
+.Ar command
+from now on known as
+.Ar new .
+.It Ic auth Ar uin|nickname
+Allow
+.Ar uin|nickname
+to add you to their list.
+.It Ic rand Ar number
+Find a random user in interest group
+.Ar number .
+.It Ic pass Ar password
+Changes your icq password to
+.Ar password . 
+Note: you should alter your password directly in your
+.Pa .micqrc
+file (see
+.Xr micqrc 7 ) .
+.It Ic search Ar email
+Search for a user with
+.Ar email
+as their email address.
+.It Ic add Ar uin nickname
+Add
+.Ar uin
+to your contact list as
+.Ar nickname .
+.It Ic w
+List all people in your contact list.
+.It Ic e
+List all people who are online in your contact list.
+.It Ic wide
+List all people who are in your contact list in a screen wide format.
+.It Ic i
+List all the people on your ignore list.
+.It Ic togvis nickname
+Toggles whether
+.Ar nickname
+can see you when you are invisible.
+.It Ic info Ar uin|nickname
+Show the info for
+.Ar uin|nickname .
+.It Ic status Ar nickname
+Show the status of
+.Ar nickname .
+This includes IP address, ICQ protocol version and connection type.
+.It Ic togig Ar nickname
+Toggles whether
+.Ar nickname
+is on your ignore list or not.
+.It Ic change Op Ar number
+Changes your status to
+.Ar number .
+Without a number it lists some available modes.
+.It Ic reg password
+Creates a new user account with password
+.Ar password .
+.It Ic online
+Change status to Online.
+.It Ic away
+Change status to Away.
+.It Ic na
+Change status to Not Available.
+.It Ic occ             
+Change status to Occupied.
+.It Ic dnd 
+Change status to Do not Disturb.
+.It Ic ffc
+Change status to Free for Chat.
+.It Ic inv
+Change status to Invisible
+.It Ic update
+Updates your basic user information (email, nickname, etc.).
+.It Ic other
+Updates other user information like age and sex.
+.It Ic about
+Updates your about user information.
+.It Ic set Op Ar number
+Sets your random user group to
+.Ar number .
+Without argument, lists possible interest groups.
+.El
+.Sh SEE ALSO
+.Xr micq 1 ,
+.Xr micqrc 5
+.Sh AUTHOR
+This man page was created by James Morrison
+.Pa <ja2morrison@student.math.uwaterloo.ca>
 for a reference to all interactive commands in 
-.B micq
-version 0.4.6 
-
+.Ic micq .

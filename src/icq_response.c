@@ -984,7 +984,7 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
         ConvWinUnix (data);
         log_event (uin, LOG_MESS, "You received instant message from %s\n%s\n",
                    UIN2Name (uin), data);
-        M_print (MSGRECSTR COLMESS "\x1b«%s" COLNONE "\x1b»\n", data);
+        M_print (MSGRECSTR COLMESS "\x1b<%s" COLNONE "\x1b>\n", data);
     }
     /* aaron
        If we just received a message from someone on the contact list,

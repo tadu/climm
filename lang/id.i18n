@@ -401,6 +401,46 @@
 390:Zaire
 391:Zambia
 392:Zimbabwe
+#-#400:		Tampilkan info lokal yang tersimpan pada user¶
+#-#401:		Perbaharui info user lainnya seperti usia dan kelamin¶
+#-#402:		Perbaharui info tentang diri anda.¶
+#-#403:		Tampilkan pesan terakhir yang diterima dari <nick>.¶			Mereka harus berada dalam Daftar Kontak anda.¶
+#-#404:		(Non)Aktifkan pengabaian samaran¶
+#-#405:		Daftar samaran/uin yang diabaikan¶
+#-#406:	Ganti penampakan anda kepada user jika anda tidak tampak.¶
+#-#407:			Tampilkan status sekarang dari orang yang online yang berada di daftar kontak anda¶
+#-#408:		Ganti password anda menjadi rahasia.¶
+#-#409:		Mengirim pesan ke uin¶
+#-#410:	Mengirim url dan pesan ke uin¶
+#-#411:	Mengirim pesan lebih dari 1 baris ke semua yang ada di daftar anda.¶
+#-#412:		Mengirim pesan kepada orang terakhir yang anda kirimi pesan¶
+#-#413:		Mengijinkan uin untuk menambahkan anda sebagai daftar kontak mereka¶
+#-#414:		Balas kepada orang terakhir yang memberikan pesan kepada anda¶
+#-#415:		Mencari user secara acak dalam grup atau daftar yang terdaftar di dalam grup.¶
+#-#416:			Tampilkan status saat ini dari tiap orang yang ada di daftar kontak anda¶
+#-#417:	Perintah ini mengijinkan anda untuk memberikan perintah anda sambil lalu.¶
+#-#418:			Set level tampilan ( standar = 0 ).¶
+#-#419:				Membersihkan layar.¶
+#-#420:				Mengaktifkan beep sewaktu menerima pesan baru.¶
+#-#421:				Mengaktifkan penampilan warna.¶
+#-#422:			Log off dan keluar¶
+#-#423:				Tampilkan status balasan otomatis¶
+#-#424:			Aktifkan pengiriman pesan sewaktu status anda DND, NA, dan lain-lain.¶
+#-#425:		Pasang pesan untuk mengirimkan balasan otomatis untuk status¶
+#-#426:	Membuat UIN baru dengan password yang diberikan.¶
+#-#427:	Mengubah status anda menjadi status tertentu.¶		Tanpa nomor akan menampilkan semua mode yang tersedia.¶
+#-#428:	Menambahkan nomor uin ke dalam daftar kontak anda dengan samaran.¶
+#-#429:	Mencari user ICQ.¶
+#-#430:		Menampilkan informasi umum pada uin¶
+#-#431:		Menandai sedang Online.¶
+#-#432:		Menandai sedang jauh (Away).¶
+#-#433:		Menandai sedang tidak ditempat (Not Available).¶
+#-#434:		Menandai sedang sibuk (Occupied).¶
+#-#435:		Menandai sedang tidak ingin diganggu (Do not Disturb).¶
+#-#436:		Menandai sedang bebas untuk ngobrol (Free for Chat).¶
+#-#437:		Menandai sedang tidak kelihatan (Invisible).¶
+#-#438:		Memperbaharui informasi dasar anda (email, nama samaran, dan lain-lain)¶
+#-#439:		Memasang group user acak anda.¶
 #393:successful
 #394:unsuccessful
 #395:About info change was ©2%s©0.¶
@@ -408,47 +448,46 @@
 #397:Other info change was ©2%s©0.¶
 #398:Search ©2failed©0.¶
 #399:Unknown Meta User response ©1%04X©0¶
-400:		Tampilkan info lokal yang tersimpan pada user¶
-401:		Perbaharui info user lainnya seperti usia dan kelamin¶
-402:		Perbaharui info tentang diri anda.¶
-#-#403:		Tampilkan pesan terakhir yang diterima dari <nick>.¶			Mereka harus berada dalam Daftar Kontak anda.¶
-#403:		Displays the last message received from <nick>.¶			They must be in your Contact List.¶		Or a list of who has send you at least one message.¶
-404:		(Non)Aktifkan pengabaian samaran¶
-405:		Daftar samaran/uin yang diabaikan¶
-406:	Ganti penampakan anda kepada user jika anda tidak tampak.¶
-407:			Tampilkan status sekarang dari orang yang online yang berada di daftar kontak anda¶
-408:		Ganti password anda menjadi rahasia.¶
-409:		Mengirim pesan ke uin¶
-410:	Mengirim url dan pesan ke uin¶
-411:	Mengirim pesan lebih dari 1 baris ke semua yang ada di daftar anda.¶
-412:		Mengirim pesan kepada orang terakhir yang anda kirimi pesan¶
-413:		Mengijinkan uin untuk menambahkan anda sebagai daftar kontak mereka¶
-414:		Balas kepada orang terakhir yang memberikan pesan kepada anda¶
-415:		Mencari user secara acak dalam grup atau daftar yang terdaftar di dalam grup.¶
-416:			Tampilkan status saat ini dari tiap orang yang ada di daftar kontak anda¶
-417:	Perintah ini mengijinkan anda untuk memberikan perintah anda sambil lalu.¶
-418:			Set level tampilan ( standar = 0 ).¶
-419:				Membersihkan layar.¶
-420:				Mengaktifkan beep sewaktu menerima pesan baru.¶
-421:				Mengaktifkan penampilan warna.¶
-422:			Log off dan keluar¶
-423:				Tampilkan status balasan otomatis¶
-424:			Aktifkan pengiriman pesan sewaktu status anda DND, NA, dan lain-lain.¶
-425:		Pasang pesan untuk mengirimkan balasan otomatis untuk status¶
-426:	Membuat UIN baru dengan password yang diberikan.¶
-427:	Mengubah status anda menjadi status tertentu.¶		Tanpa nomor akan menampilkan semua mode yang tersedia.¶
-428:	Menambahkan nomor uin ke dalam daftar kontak anda dengan samaran.¶
-429:	Mencari user ICQ.¶
-430:		Menampilkan informasi umum pada uin¶
-431:		Menandai sedang Online.¶
-432:		Menandai sedang jauh (Away).¶
-433:		Menandai sedang tidak ditempat (Not Available).¶
-434:		Menandai sedang sibuk (Occupied).¶
-435:		Menandai sedang tidak ingin diganggu (Do not Disturb).¶
-436:		Menandai sedang bebas untuk ngobrol (Free for Chat).¶
-437:		Menandai sedang tidak kelihatan (Invisible).¶
-438:		Memperbaharui informasi dasar anda (email, nama samaran, dan lain-lain)¶
-439:		Memasang group user acak anda.¶
+#400:Shows locally stored info on user.
+#401:Updates other user info like age and sex.
+#402:Updates your about user info.
+#403:Displays the last message received from <nick>, or a list of who has send you at least one message.
+#404:Toggles ignoring/unignoring nick.
+#405:Lists ignored nicks/uins.
+#406:Toggles your visibility to a user when you're invisible.
+#407:Displays the current status of online people on your contact list.
+#408:Changes your password to secret.
+#409:Sends a message to uin.
+#410:Sends a url and message to uin.
+#411:Sends a multiline message to everyone on your list.
+#412:Sends a message to the last person you sent a message to.
+#413:Authorize uin to add you to their list.
+#414:Replys to the last person to send you a message.
+#415:Finds a random user in the specified group or lists the groups.
+#416:Displays the current status of everyone on your contact list.
+#417:This command allows you to alter your command set on the fly.
+#418:Set the verbosity level (default 0).
+#419:Clears the screen.
+#420:Toggles beeping when recieving new messages.
+#421:Toggles displaying colors.
+#422:Logs off and quits.
+#423:Displays your autoreply status.
+#424:Toggles sending messages when your status is DND, NA, etc.
+#425:Sets the message to send as an auto reply for the status.
+#426:Creates a new UIN with the specified password.
+#427:Changes your status to the status number. Without a number it lists the available modes.
+#428:Adds the uin number to your contact list with nickname.
+#429:Searches for a ICQ user.
+#430:Displays general info on uin.
+#431:Change status to Online.
+#432:Mark as Away.
+#433:Mark as Not Available.
+#434:Mark as Occupied.
+#435:Mark as Do not Disturb.
+#436:Mark as Free for Chat.
+#437:Mark as Invisible.
+#438:Updates your basic info (email, nickname, etc.).
+#439:Sets your random user group.
 #440:Random User:
 #441:IP:
 442:Tolong pilih salah satu topik pertolongan dibawah ini.
@@ -767,7 +806,7 @@
 #699:Must give a valid uin/nickname¶
 #700:%s is not a valid user in your list.¶
 #701:%d users not returned.
-#702:		Display a list of nicknames that you can tab through.¶
+#702:Display a list of nicknames that you can tab through.
 #703:©2Status modes: ¶
 #704:©2Groups: ¶
 #705:General                    1¶
@@ -782,12 +821,10 @@
 #714:Woman chat requesting men 11¶
 #715:Micq                      49 (might not work but try it)
 #716:None                      -1¶
-#717:©2	! as the first character of a command will execute¶
-#718:©2	a shell command (e.g. "!ls"  "!dir" "!mkdir temp")©0¶
-#719:©3uptime		Shows how long Micq has been running.¶©0
-#720:©2	uin can be either a number or the nickname of the user.¶
-#721:©2	Sending a blank message will put the client into multiline mode.¶	Use . on a line by itself to end message.¶
-#722:	Use # on a line by itself to cancel the message.©0¶
+#717:! as the first character of a command will execute a shell command (e.g. "!ls"  "!dir" "!mkdir temp")
+#719:Shows how long Micq has been running.
+#720:uin can be either a number or the nickname of the user.
+#721:Sending a blank message will put the client into multiline mode.¶Use . on a line by itself to end message.¶Use # on a line by itself to cancel the message.
 #723:%s's IP address is 
 #724:Automatic replies are %s.¶
 #727:The Do not disturb message is:
@@ -824,5 +861,5 @@
 #760:¶Your new UIN is %s%ld%s!¶
 #761:unknown
 #762:Ack!!!!!!  %d\a¶
-#800:		Change the working language to <lang>¶
-#801:		Displays a list of people on your contact list in a screen wide format.¶
+#800:Change the working language to <lang>.
+#801:Displays a list of people on your contact list in a screen wide format.

@@ -1815,98 +1815,110 @@ static void Help_Function (void)
     }
     else if (!strcasecmp (arg1, i18n (447, "Client")))
     {
-        M_print (COLMESS "verbose #" COLNONE "%s",
-                 i18n (418, "\t\t\tSet the verbosity level ( default = 0 ).\n"));
-        M_print (COLMESS "%s" COLNONE "%s", clear_cmd, i18n (419, "\t\t\t\tClears the screen.\n"));
-        M_print (COLMESS "%s" COLNONE "%s", sound_cmd,
-                 i18n (420, "\t\t\t\tToggles beeping when recieving new messages.\n"));
-        M_print (COLMESS "%s" COLNONE "%s", color_cmd,
-                 i18n (421, "\t\t\t\tToggles displaying colors.\n"));
-        M_print (COLMESS "%s\t" COLNONE "%s", quit_cmd, i18n (422, "\t\t\tLogs off and quits\n"));
-        M_print (COLMESS "%s" COLNONE "%s", auto_cmd,
-                 i18n (423, "\t\t\t\tDisplays your autoreply status\n"));
-        M_print (COLMESS "%s [on|off]" COLNONE "%s", auto_cmd,
-                 i18n (424, "\t\t\tToggles sending messages when your status is DND, NA, etc.\n"));
-        M_print (COLMESS "%s <status> <message>" COLNONE "%s", auto_cmd,
-                 i18n (425, "\t\tSets the message to send as an auto reply for the status\n"));
-        M_print (COLMESS "%s <old cmd> <new cmd>" COLNONE "%s", alter_cmd,
-                 i18n (417, "\tThis command allows you to alter your command set on the fly.\n"));
-        M_print (COLMESS "%s <lang>" COLNONE "%s", "trans", 
-                 i18n (800, "\t\tChange the working language to <lang>\n"));  
-        M_print (i18n (717, COLCLIENT "\t! as the first character of a command will execute\n"));
-        M_print (i18n (718, COLCLIENT "\ta shell command (e.g. \"!ls\"  \"!dir\" \"!mkdir temp\")" COLNONE "\n"));
+        M_print (COLMESS "verbose <nr>" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 i18n (418, "Set the verbosity level (default 0)."));
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", clear_cmd, 
+		 i18n (419, "Clears the screen."));
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", sound_cmd,
+                 i18n (420, "Toggles beeping when recieving new messages."));
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", color_cmd,
+                 i18n (421, "Toggles displaying colors."));
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", quit_cmd, 
+		 i18n (422, "Logs off and quits."));
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", auto_cmd,
+                 i18n (423, "Displays your autoreply status."));
+        M_print (COLMESS "%s [on|off]" COLNONE "\n\t\x1b«%s\x1b»\n", auto_cmd,
+                 i18n (424, "Toggles sending messages when your status is DND, NA, etc."));
+        M_print (COLMESS "%s <status> <message>" COLNONE "\n\t\x1b«%s\x1b»\n", auto_cmd,
+                 i18n (425, "Sets the message to send as an auto reply for the status."));
+        M_print (COLMESS "%s <old cmd> <new cmd>" COLNONE "\n\t\x1b«%s\x1b»\n", alter_cmd,
+                 i18n (417, "This command allows you to alter your command set on the fly."));
+        M_print (COLMESS "%s <lang>" COLNONE "\n\t\x1b«%s\x1b»\n", "trans", 
+                 i18n (800, "Change the working language to <lang>."));  
+        M_print ("  " COLCLIENT "\x1b«%s\x1b»" COLNONE "\n",
+                 i18n (717, "! as the first character of a command will execute a shell command (e.g. \"!ls\"  \"!dir\" \"!mkdir temp\")"));
     }
     else if (!strcasecmp (arg1, i18n (448, "Message")))
     {
-        M_print (COLMESS "%s <uin>" COLNONE "%s", auth_cmd,
-                 i18n (413, "\t\tAuthorize uin to add you to their list\n"));
-        M_print (COLMESS "%s <uin>/<message>" COLNONE "%s", message_cmd,
-                 i18n (409, "\t\tSends a message to uin\n"));
-        M_print (COLMESS "%s <uin> <url> <message>" COLNONE "%s", url_cmd,
-                 i18n (410, "\tSends a url and message to uin\n"));
-        M_print (COLMESS "%s\t\t" COLNONE "%s", msga_cmd,
-                 i18n (411, "\tSends a multiline message to everyone on your list.\n"));
-        M_print (COLMESS "%s <message>" COLNONE "%s", again_cmd,
-                 i18n (412, "\t\tSends a message to the last person you sent a message to\n"));
-        M_print (COLMESS "%s <message>" COLNONE "%s", reply_cmd,
-                 i18n (414, "\t\tReplys to the last person to send you a message\n"));
-        M_print (COLMESS "%s <nick>" COLNONE "%s", "last",
-                 i18n (403, "\t\tDisplays the last message received from <nick>.\n\t\t\tThey must be in your Contact List.\n\t\tOr a list of who has send you at least one message.\n"));
-        M_print (COLMESS "%s" COLNONE "%s", "tabs", i18n (702, "\t\tDisplay a list of nicknames that you can tab through.\n")); 
-        M_print (i18n (719, COLMESS "uptime\t\tShows how long Micq has been running.\n" COLNONE));
-        M_print (i18n (720, COLCLIENT "\tuin can be either a number or the nickname of the user.\n"));
-        M_print (i18n (721, COLCLIENT "\tSending a blank message will put the client into multiline mode.\n\tUse . on a line by itself to end message.\n"));
-        M_print (i18n (722, "\tUse # on a line by itself to cancel the message." COLNONE "\n"));
+        M_print (COLMESS "%s <uin>" COLNONE "\n\t\x1b«%s\x1b»\n", auth_cmd,
+                 i18n (413, "Authorize uin to add you to their list."));
+        M_print (COLMESS "%s <uin>/<message>" COLNONE "\n\t\x1b«%s\x1b»\n", message_cmd,
+                 i18n (409, "Sends a message to uin."));
+        M_print (COLMESS "%s <uin> <url> <message>" COLNONE "\n\t\x1b«%s\x1b»\n", url_cmd,
+                 i18n (410, "Sends a url and message to uin."));
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", msga_cmd,
+                 i18n (411, "Sends a multiline message to everyone on your list."));
+        M_print (COLMESS "%s <message>" COLNONE "\n\t\x1b«%s\x1b»\n", again_cmd,
+                 i18n (412, "Sends a message to the last person you sent a message to."));
+        M_print (COLMESS "%s <message>" COLNONE "\n\t\x1b«%s\x1b»\n", reply_cmd,
+                 i18n (414, "Replys to the last person to send you a message."));
+        M_print (COLMESS "%s <nick>" COLNONE "\n\t\x1b«%s\x1b»\n", "last",
+                 i18n (403, "Displays the last message received from <nick>, or a list of who has send you at least one message."));
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", "tabs", 
+		 i18n (702, "Display a list of nicknames that you can tab through.")); 
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", "uptime", 
+		 i18n (719, "Shows how long Micq has been running."));
+        M_print ("  " COLCLIENT "\x1b«%s\x1b»" COLNONE "\n",
+                 i18n (720, "uin can be either a number or the nickname of the user."));
+        M_print ("  " COLCLIENT "\x1b«%s\x1b»" COLNONE "\n",
+                 i18n (721, "Sending a blank message will put the client into multiline mode.\nUse . on a line by itself to end message.\nUse # on a line by itself to cancel the message."));
     }
     else if (!strcasecmp (arg1, i18n (449, "User")))
     {
-        M_print (COLMESS "%s <uin>" COLNONE "%s", auth_cmd,
-                 i18n (413, "\t\tAuthorize uin to add you to their list\n"));
-        M_print (COLMESS "%s [#]" COLNONE "%s", rand_cmd,
-                 i18n (415, "\t\tFinds a random user in the specified group or lists the groups.\n"));
-        M_print (COLMESS "pass <secret>" COLNONE "%s",
-                 i18n (408, "\t\tChanges your password to secret.\n"));
-        M_print (COLMESS "%s" COLNONE "%s", list_cmd,
-                 i18n (416, "\t\t\tDisplays the current status of everyone on your contact list\n"));
-        M_print (COLMESS "%s [user]" COLNONE "%s", status_cmd,
-                 i18n (400, "\t\tShows locally stored info on user\n"));
-        M_print (COLMESS "%s" COLNONE "%s", online_list_cmd,
-                 i18n (407, "\t\t\tDisplays the current status of online people on your contact list\n"));
-        M_print (COLMESS "%s" COLNONE "%s", "wide", 
-                 i18n (801, "\t\tDisplays a list of people on your contact list in a screen wide format.\n")); 
-        M_print (COLMESS "%s <uin>" COLNONE "%s", info_cmd,
-                 i18n (430, "\t\tDisplays general info on uin\n"));
-        M_print (COLMESS "%s <nick>" COLNONE "%s", togig_cmd,
-                 i18n (404, "\t\tToggles ignoring/unignoring nick\n"));
-        M_print (COLMESS "%s\t" COLNONE "%s", iglist_cmd,
-                 i18n (405, "\t\tLists ignored nicks/uins\n"));
-        M_print (COLMESS "%s [email@host]" COLNONE "%s", search_cmd,
-                 i18n (429, "\tSearches for a ICQ user.\n"));
-        M_print (COLMESS "%s <uin> <nick>" COLNONE "%s", add_cmd,
-                 i18n (428, "\tAdds the uin number to your contact list with nickname.\n"));
-        M_print (COLMESS "%s <nick>" COLNONE "%s", togvis_cmd,
-                 i18n (406, "\tToggles your visibility to a user when you're invisible.\n"));
+        M_print (COLMESS "%s <nr>" COLNONE "\n\t\x1b«%s\x1b»\n", rand_cmd,
+                 i18n (415, "Finds a random user in the specified group or lists the groups."));
+        M_print (COLMESS "pass <secret>" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 i18n (408, "Changes your password to secret."));
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", list_cmd,
+                 i18n (416, "Displays the current status of everyone on your contact list."));
+        M_print (COLMESS "%s <user>" COLNONE "\n\t\x1b«%s\x1b»\n", status_cmd,
+                 i18n (400, "Shows locally stored info on user."));
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", online_list_cmd,
+                 i18n (407, "Displays the current status of online people on your contact list."));
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", "wide", 
+                 i18n (801, "Displays a list of people on your contact list in a screen wide format.")); 
+        M_print (COLMESS "%s <uin>" COLNONE "\n\t\x1b«%s\x1b»\n", info_cmd,
+                 i18n (430, "Displays general info on uin."));
+        M_print (COLMESS "%s <nick>" COLNONE "\n\t\x1b«%s\x1b»\n", togig_cmd,
+                 i18n (404, "Toggles ignoring/unignoring nick."));
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", iglist_cmd,
+                 i18n (405, "Lists ignored nicks/uins."));
+        M_print (COLMESS "%s <email>" COLNONE "\n\t\x1b«%s\x1b»\n", search_cmd,
+                 i18n (429, "Searches for a ICQ user."));
+        M_print (COLMESS "%s <uin> <nick>" COLNONE "\n\t\x1b«%s\x1b»\n", add_cmd,
+                 i18n (428, "Adds the uin number to your contact list with nickname."));
+        M_print (COLMESS "%s <nick>" COLNONE "\n\t\x1b«%s\x1b»\n", togvis_cmd,
+                 i18n (406, "Toggles your visibility to a user when you're invisible."));
     }
     else if (!strcasecmp (arg1, i18n (450, "Account")))
     {
-        M_print (COLMESS "%s [#]" COLNONE "%s", change_cmd,
-                 i18n (427, "\tChanges your status to the status number.\n\t\tWithout a number it lists the available modes.\n"));
-        M_print (COLMESS "reg password" COLNONE "%s",
-                 i18n (426, "\tCreates a new UIN with the specified password.\n"));
-        M_print (COLMESS "%s" COLNONE "%s", online_cmd, i18n (431, "\t\tMark as Online.\n"));
-        M_print (COLMESS "%s" COLNONE "%s", away_cmd, i18n (432, "\t\tMark as Away.\n"));
-        M_print (COLMESS "%s" COLNONE "%s", na_cmd, i18n (433, "\t\tMark as Not Available.\n"));
-        M_print (COLMESS "%s" COLNONE "%s", occ_cmd, i18n (434, "\t\tMark as Occupied.\n"));
-        M_print (COLMESS "%s" COLNONE "%s", dnd_cmd, i18n (435, "\t\tMark as Do not Disturb.\n"));
-        M_print (COLMESS "%s" COLNONE "%s", ffc_cmd, i18n (436, "\t\tMark as Free for Chat.\n"));
-        M_print (COLMESS "%s" COLNONE "%s", inv_cmd, i18n (437, "\t\tMark as Invisible.\n"));
-        M_print (COLMESS "%s" COLNONE "%s", update_cmd,
-                 i18n (438, "\t\tUpdates your basic info (email, nickname, etc.)\n"));
-        M_print (COLMESS "other" COLNONE "%s",
-                 i18n (401, "\t\tUpdates other user info like age and sex\n"));
-        M_print (COLMESS "%s" COLNONE "%s", about_cmd,
-                 i18n (402, "\t\tUpdates your about user info.\n"));
-        M_print (COLMESS "set [#]" COLNONE "%s", i18n (439, "\t\tSets your random user group.\n"));
+        M_print (COLMESS "%s <status>" COLNONE "\n\t\x1b«%s\x1b»\n", change_cmd,
+                 i18n (427, "Changes your status to the status number. Without a number it lists the available modes."));
+        M_print (COLMESS "reg <password>" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 i18n (426, "Creates a new UIN with the specified password."));
+        M_print (COLMESS "%s|%s|%s|%s|%s|%s|%s" COLNONE "\n\t\x1b«%s\n%s\n%s\n%s\n%s\n%s\n%s\x1b»\n", 
+		 online_cmd, away_cmd, na_cmd,occ_cmd,dnd_cmd,ffc_cmd, inv_cmd,
+		 i18n (431, "Change status to Online."),
+		 /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", away_cmd, */ 
+		 i18n (432, "Mark as Away."),
+		 /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", na_cmd, */
+		 i18n (433, "Mark as Not Available."),
+		 /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", occ_cmd, */
+		 i18n (434, "Mark as Occupied."),
+		 /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", dnd_cmd, */
+		 i18n (435, "Mark as Do not Disturb."),
+		 /*        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", ffc_cmd, */ 
+		 i18n (436, "Mark as Free for Chat."),
+		 /*        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", inv_cmd, */
+		 i18n (437, "Mark as Invisible."));
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", update_cmd,
+                 i18n (438, "Updates your basic info (email, nickname, etc.)."));
+        M_print (COLMESS "other" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 i18n (401, "Updates other user info like age and sex."));
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", about_cmd,
+                 i18n (402, "Updates your about user info."));
+        M_print (COLMESS "set <nr>" COLNONE "\n\t\x1b«%s\x1b»\n", 
+		 i18n (439, "Sets your random user group."));
     }
 }
 

@@ -397,47 +397,46 @@
 397:Uppdateringen av informationen ©2%s©0.¶
 398:Sökningen ©2failed©0.¶
 #399:Unknown Meta User response ©1%04X©0¶
-400:		Visar lokal infomation om användaren¶
-401:		Uppdaterar information som ålder och kön¶
-402:		Uppdaterar informationen om dig.¶
-#-#403:		Visar det sista meddelandet du har fått från <namn>.¶			Namnet måste vara med på din lista.¶
-#403:		Displays the last message received from <nick>.¶			They must be in your Contact List.¶		Or a list of who has send you at least one message.¶
-404:		Väljer att ignorera/ej ignorera en användare¶
-405:		Visar ignorerade användare¶
-406:	Väljer om de är synlig för en användare när du är osynlig.¶
-407:			Visar status för användare på din lista¶
-408:		Byter lösenord.¶
-409:		Skickar ett meddelande till uin¶
-410:	Skickar en webadress och ett meddelande till uin¶
-411:	Skickar ett meddelande till alla i din lista.¶
-412:		Skickar ett meddelande till den du sist skickade ett meddelande till¶
-413:		Tillåter uin att lägga till dig på din lista¶
-414:		Svarar på det meddelande du fick sist¶
-415:		Hittar en slumpmässig användare i den specificerade gruppen eller listan av grupper.¶
-416:			Visar nuvarande status på alla i din kontaktlista¶
-417:	Det här kommandot tillåter dig att ändra dina kommandon under drift.¶
-418:			Ändra debug nivå ( standard = 0 ).¶
-419:				Rensa skärmen.¶
-420:				Ändrar om det piper när du får meddelande.¶
-421:				Sätter av och på färger.¶
-422:			Loggar av och avslutar¶
-423:				Visar din automatiskasvarsstatus¶
-424:			Ändrar om du skickar automatiska svar när du är DND, NA, och så vidare¶
-425:		Ställer in dina automatiska svar för en viss status¶
-426:	Skapar en ny ICQ-användare med detta lösenord.¶
-427:	Ändrar din status till statusnumret¶		Utan ett nummer listar det alternativen.¶
-428:	Lägg till uin till din lista med smeknamn.¶
-429:	Letar efter ICQ-användare.¶
-430:		Visar allmän information om uin¶
-431:		Ändra status till inloggad ¶
-432:		Ändra status till borta¶
-433:		Ändra status till ej tillgänglig.¶
-434:		Ändra status till upptagen.¶
-435:		Ändra status till stör ej.¶
-436:		Mark as Free for Chat.¶
-437:		Ändra status till osynlig.¶
-438:		Uppdaterar informationen om dig själv¶
-439:		Ställer in din slumpmässiga användaregrupp.¶
+400:Visar lokal infomation om användaren.
+401:Uppdaterar information som ålder och kön.
+402:Uppdaterar informationen om dig.
+403:Visar det sista meddelandet du har fått från <namn>.¶Namnet måste vara med på din lista.
+404:Väljer att ignorera/ej ignorera en användare.
+405:Visar ignorerade användare.
+406:Väljer om de är synlig för en användare när du är osynlig.
+407:Visar status för användare på din lista.
+408:Byter lösenord.
+409:Skickar ett meddelande till uin.
+410:Skickar en webadress och ett meddelande till uin.
+411:Skickar ett meddelande till alla i din lista.
+412:Skickar ett meddelande till den du sist skickade ett meddelande till.
+413:Tillåter uin att lägga till dig på din lista.
+414:Svarar på det meddelande du fick sist.
+415:Hittar en slumpmässig användare i den specificerade gruppen eller listan av grupper.
+416:Visar nuvarande status på alla i din kontaktlista.
+417:Det här kommandot tillåter dig att ändra dina kommandon under drift.
+418:Ändra debug nivå (standard 0).
+419:Rensa skärmen.
+420:Ändrar om det piper när du får meddelande.
+421:Sätter av och på färger.
+422:Loggar av och avslutar.
+423:Visar din automatiskasvarsstatus.
+424:Ändrar om du skickar automatiska svar när du är DND, NA, och så vidare.
+425:Ställer in dina automatiska svar för en viss status.
+426:Skapar en ny ICQ-användare med detta lösenord.
+427:Ändrar din status till statusnumret. Utan ett nummer listar det alternativen.
+428:Lägg till uin till din lista med smeknamn.
+429:Letar efter ICQ-användare.
+430:Visar allmän information om uin.
+431:Ändra status till inloggad.
+432:Ändra status till borta.
+433:Ändra status till ej tillgänglig.
+434:Ändra status till upptagen.
+435:Ändra status till stör ej.
+#436:Ändra status till <Free for Chat>.
+437:Ändra status till osynlig.
+438:Uppdaterar informationen om dig själv.
+439:Ställer in din slumpmässiga användaregrupp.
 440:Slumpmässig användare:
 441:IP:
 442:Var vänlig välj ett ämne ur hjälpen.
@@ -708,7 +707,7 @@
 #699:Must give a valid uin/nickname¶
 #700:%s is not a valid user in your list.¶
 #701:%d users not returned.
-#702:		Display a list of nicknames that you can tab through.¶
+#702:Display a list of nicknames that you can tab through.
 #703:©2Status modes: ¶
 #704:©2Groups: ¶
 705:Allmänt                    1¶
@@ -723,12 +722,10 @@
 714:Kvinnor söker män         11¶
 715:Micq                      49 (kanske inte fungerar, men testa!)
 #716:None                      -1¶
-717:©2	! som det första tecknet av ett kommando kommer köra¶
-718:©2	ett skalkommando (t.ex. "!ls"  "!dir" "!mkdir temp")©0¶
-719:©3uptime		Visar hur länge micq varit igång.¶©0
-720:©2	kan vara ett nummer eller namn på användare.¶
-#721:©2	Sending a blank message will put the client into multiline mode.¶	Use . on a line by itself to end message.¶
-722:	Skriver # ensamt på en rad för att avbryta ett meddelande.©0¶
+717:! som det första tecknet av ett kommando kommer köra ett skalkommando (t.ex. "!ls"  "!dir" "!mkdir temp").
+719:Visar hur länge micq varit igång.
+720:kan vara ett nummer eller namn på användare.
+#721:Sending a blank message will put the client into multiline mode.¶Use . on a line by itself to end message.¶Skriver # ensamt på en rad för att avbryta ett meddelande.
 723:%s IP adress är
 724:Automatiska svar är %s.¶
 #727:The Do not disturb message is:
@@ -765,5 +762,5 @@
 760:¶Ditt nya nummer är %s%ld%s!¶
 761:okänt
 #762:Ack!!!!!!  %d\a¶
-#800:		Change the working language to <lang>¶
-#801:		Displays a list of people on your contact list in a screen wide format.¶
+#800:Change the working language to <lang>.
+#801:Displays a list of people on your contact list in a screen wide format.

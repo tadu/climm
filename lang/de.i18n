@@ -410,46 +410,46 @@
 397:Änderung der sonstigen Informationen war ©2%s©0.¶
 398:Suche ©2fehlgeschlagen©0.¶
 399:Unbekannte "Meta User"-Antwort ©1%04X©0.¶
-400:		Shows locally stored info on user¶
-401:		Updates other user info like age and sex¶
-402:		Aktualisiert die Infos ueber dich.¶
-403:		Zeigt die letzte von <nick> empfangene Nachricht.¶			<nick> muß in der Kontaktliste stehen.¶		Oder schonmal eine Nachricht geschickt haben.¶
-404:		Ignoriert/Unignoriert <nick>¶
-405:		Listet ignorierte nicks/uins¶
-406:	Macht dich (un)sichtbar gegen andere User, wenn du generell unsichtbar bist.¶
-407:			Zeigt den Online-Status der Leute auf deiner Kontaktliste an.¶
-408:		Ändert dein Passwort in secret.¶
-409:		Sendet eine Nachricht an uin.¶
-410:	Sendet eine Nachricht und URL an uin¶
-411:	Sendet eine MehrZeilen-Nachricht an JEDEN in deiner Kontaktliste.¶
-412:		Sendet eine Nachricht zu der letzten Person zu der du eine Nachricht geschickt hast.¶
-413:		Authorisiert uin dich zu seiner Kontaktliste hinzuzufügen¶
-414:		Antwort auf die letzte Nachricht die du bekommen hast.¶
-415:		Findet einen zufaelligen User in der spezifizierten Gruppe oder listet alle Gruppen.¶
-416:			zeigt den momentanen Status aller User auf deiner Kontaktliste.¶
-417:	Diese Kommando erlaubt Dir, die Namen anderer Kommandos zur Laufzeit zu verändern.¶
-418:			Setzt die Ausführlichkeit (Vorgabe: 0).¶
-419:			Löscht den Bildschirm.¶
-420:			Schaltet das Piepsen beim Erhalt von Nachrichten an/aus.¶
-421:			tSchaltet die Anzeige von Farben um.¶
-422:			Logt aus und beendet mICQ.¶
-423:				zeigt den Auto-Reply Status¶
-424:			Schaltet das Senden von Nachrichten, wenn du OCC, DND oder NA bist, um.¶
-425:		Setzt die Nachricht, die als auto-reply waehrend eines Modus erzeugt wird, neu.¶
-426:	Kreeirt eine neue UIN mit dem spezifizierten Passwort.¶
-427:	Wechselt deinen Status auf die spezifizierte StatusNummer.¶		Ohne Nummer listet es alle verfuegbaren Nummern.¶
-428:	Fügt die uin zu deiner Kontaktliste mit Nickname.¶
-429:	Sucht nach einem ICQ User mit der spezifizierten eMail-Adresse.¶
-430:		zeigt generelle Infos über uin.¶
-431:		-verbunden-¶
-432:		-nicht da-¶
-433:		-nicht erreichbar-¶
-434:		-beschäftigt-¶
-435:		-nicht stören-¶
-436:		-für Plaudereien frei-¶
-437:		-unsichtbar-¶
-438:		Ändert deine persönlichen Userinfos (eMail, Spitzname, etc.)¶
-439:		Setzt deine zufällige Usergruppe.¶
+400:Zeigt zwischengespeicherte Informationen über Benutzer.
+401:Ändert sonstige Informationen wie Alter und Geschlecht.
+402:Ändert "Über"-Informationen.
+403:Zeigt die letzte von <nick> empfangene Nachricht, oder eine Liste derjenigen Benutzer, die schon einmal eine Nachricht geschickt haben.
+404:Setzt auf bzw. entfernt <nick> von der Ignorier-Liste.
+405:Listet ignorierte Benutzer.
+406:Ändere Sichtbarkeit gegenüber <nick> im Status "unsichtbar".
+407:Zeigt den Online-Status der Leute auf der Kontaktliste an.
+408:Ändert das Passwort in <secret>.
+409:Sendet eine Nachricht an <uin>.
+410:Sendet eine Nachricht und URL an <uin>.
+411:Sendet eine mehrzeilige Nachricht an JEDEN in der Kontaktliste.
+412:Sendet eine Nachricht zu der letzten Person, zu der du eine Nachricht geschickt hast.
+413:Erlaubt <uin>, dich zu seiner Kontaktliste hinzuzufügen.
+414:Antwort auf die letzte Nachricht, die du bekommen hast.
+415:Findet einen zufälligen User in der Interessengruppe <nr> oder listet alle Gruppen.
+416:Zeigt den momentanen Status aller Benutzer auf der Kontaktliste.
+417:Benennt Kommando <old cmd> in <new cmd> um.
+418:Setzt die Ausführlichkeit auf <nr> (Vorgabe: 0).
+419:Löscht den Bildschirm.
+420:Schaltet das Piepsen beim Erhalt von Nachrichten an/aus.
+421:Schaltet die Anzeige von Farben um.
+422:Logt aus und beendet mICQ.
+423:Zeigt on, ob und welche automatischen Antwortet gegeben werden.
+424:Aktiviert bzw. deaktiviert automatische Antworten.
+425:Ändert die automatische Antwort im Status <status> auf <message>.
+426:Erzeugt eine neue Benutzernummer mit dem Paßwort <password>.
+427:Wechselt in den Status <nr> oder listet die Bedeutung einiger Status-Nummern.
+428:Fügt <uin> zu deiner Kontaktliste mit Spitzname <nick> hinzu.
+429:Sucht nach einem ICQ-Benutzer mit eMail-Adresse <email>.
+430:Zeigt grundlegende Informationen über <uin> an.
+431:-verbunden-
+432:-nicht da-
+433:-nicht erreichbar-
+434:-beschäftigt-
+435:-nicht stören-
+436:-für Plaudereien frei-
+437:-unsichtbar-
+438:Ändert grundlegende Benutzer-Informationen (eMail-Adresse, Spitzname, usw).
+439:Setzt die zufällige Benutzergruppe.
 440:Zufälliger Benutzer:
 441:IP-Adresse:
 442:Bitte wähle eines der Hilfe-Themen.
@@ -715,7 +715,7 @@
 699:Benötige gültige Benutzernummer oder Spitzname.¶
 700:%s ist kein gültiger Benutzer in Ihrer Kontaktliste.¶
 701:%d Benutzer nicht zurückgegeben.
-702:		Zeigt eine Liste von Benutzernamen, die man durch die tab-Taste auswählen kann.¶
+702:Zeigt eine Liste von Benutzernamen, die man durch die tab-Taste auswählen kann.
 703:©2Status-Modi: ¶
 704:©2Gruppen: ¶
 705:Allgemein                  1¶
@@ -730,12 +730,10 @@
 714:Weiblein sucht Männlein   11¶
 715:mICQ                      49 (wird möglicherweise nicht funktionieren, aber ein Versuch ist's wert)
 716:Keine                     -1¶
-717:©2	! als erstes Zeichen, um ein Shell-Kommando auszuführen¶
-718:©2	(z.B. "!ls"  "!dir" "!mkdir temp").©0¶
-719:©3uptime		Zeigt, wie lange mICQ schon läuft.¶©0
-720:©2	uin kann die Benutzernummer oder der Spitzname des Benutzers sein.¶
-721:©2	Bei einer leeren Nachricht können mehrere Zeilen eingegeben werden.¶	Dabei bedeutet eine Zeile nur mit . das Ende der Nachricht.¶
-722:	Ebenso verwirft eine Zeile nur mit # die Nachricht.©0¶
+717:! als erstes Zeichen, um ein Shell-Kommando auszuführen (z.B. "!ls"  "!dir" "!mkdir temp").
+719:Zeigt, wie lange mICQ schon läuft.
+720:<uin> kann die Benutzernummer oder der Spitzname eines Benutzers sein.
+721:Bei einer leeren Nachricht können mehrere Zeilen eingegeben werden.¶Dabei bedeutet eine Zeile nur mit . das Ende der Nachricht.¶Ebenso verwirft eine Zeile nur mit # die Nachricht.
 723:%ss IP-Adresse ist 
 724:Automatische Antworten sind %s.¶
 727:Die "Bitte nicht stören"-Nachricht lautet:
@@ -772,5 +770,5 @@
 760:¶Ihre neue Benutzernummer ist %s%ld%s!¶
 761:unbekannt
 762:Bestätigt!!!!!!  %d\a¶
-800:		Wählt die Sprache <lang> aus.¶
-801:		Zeigt die Kontaktliste im ausführlichen Format.
+800:Wählt die Sprache <lang> aus.
+801:Zeigt die Kontaktliste im ausführlichen Format an.

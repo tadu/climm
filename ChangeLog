@@ -1,4 +1,14 @@
 
+2001-15-06 James Morrison <ja2morrison@student.math.uwaterloo.ca>, rk
+	* src/ui.c:
+	  help patch from James Morrison, but \t and \n moved to format
+	  string, and indenting used.
+	* doc/micq.1, doc/micq.7, doc/micqrc.5:
+	  micq.7 new, all modified in appearance.
+	* lang/*.i18n:
+	  Regenerated; white space changes of this and earlier check ins
+	  mergend into some *.i18n files.
+
 2001-06-12 James Morrison <ja2morrison@student.math.uwaterloo.ca>
 	* src/ui.c: Add help for trans, wide, tabs
 	* doc/micq.7, doc/micqrc.5: new.

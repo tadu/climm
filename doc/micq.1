@@ -1,86 +1,87 @@
 .\"                                      Hey, EMACS: -*- nroff -*-
-.\" First parameter, NAME, should be all caps
-.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
-.\" other parameters are allowed: see man(7), man(1)
-.TH MICQ 1 "10 June 2001"
+.Dd June 16, 2001
+.Dt MICQ 1
+.Os MICQ(1)
 .\" Please adjust this date whenever revising the manpage.
-.\"
-.\" Some roff macros, for reference:
-.\" .nh        disable hyphenation
-.\" .hy        enable hyphenation
-.\" .ad l      left justify
-.\" .ad b      justify to both left and right margins
-.\" .nf        disable filling
-.\" .fi        enable filling
-.\" .br        insert line break
-.\" .sp <n>    insert n+1 empty lines
-.\" for manpage-specific macros, see man(7)
-.SH NAME
-micq \- a small, text mode ICQ client
-.SH SYNOPSIS
-.B micq
-.RI [-v]\ [-f\ <filename>]
+.Sh NAME
+.Ic micq
+\- a small, text mode ICQ client
+.Sh SYNOPSIS
+.Ic micq Op Ar -v
+.Op Ar -f filename
 .br
-.SH DESCRIPTION
-This manual page briefly documents the
-.B micq
-command.
-This manual page was originally written for the Debian GNU/Linux distribution
-because the original program did not have a manual page.
-.PP
-\fBmicq\fP is a text based ICQ client supporting many of the ICQ
-features provided by the client by Mirabillis. Micq allows to change the user password, create new
-accounts, updating user info, search other users, etc.
-.SH OPTIONS
-.TP
-.B \-v, \-V
+.Sh DESCRIPTION
+.Ic mICQ
+is a text based ICQ client supporting many of the ICQ features provided by
+the client by Mirabillis. Micq allows to change the user password, create
+new accounts, updating user info, search other users, etc.
+.Sh OPTIONS
+.Bl -tag -width flag
+.It Fl v , V
 Toggle verbose mode.
-.TP
-.B \-f, \-F <filename>
-Use <filename> as the rc file.
+.It Fl f , F Ar filename
+Use
+.Ar filename
+as the rc file.
 .\ .B \-E
 .\ Use ~/etc/micq.conf instead of ~/.micqrc
+.El
 
-.SH FEATURES
-.B Micq
+.Sh FEATURES
+.Ic mICQ
 is very portable and has run on Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD and any
 other modern unix system.  
-.B Micq version 0.4.6 
+.Ic mICQ version 0.4.6 
 is known to run on Linux, GNU HURD and other unices.  However, the other ports
 may or may not still work and anyone wishing to test them is welcome to.
-.SH HISTORY
-16 Aug 1998
-.br
-	Matthew D. Smith releases micq unto the world. 
-.br
-	Followed by 12 dated releases until 25 Sept 1998
-.br
-05 Jan 2001
-.br
-	Matthew D. Smith died in a car accident.
-.br
-	Users pick up where Matthew left off, formalize micq under the BSD 
-license and restart the development of micq. 
+.Sh HISTORY
+.Bl -tag -width Fl
+.It 16 Aug 1998
+Matthew D. Smith releases micq unto the world. 
+Followed by 12 dated releases until 25 Sept 1998.
+.It 05 Jan 2001
+Matthew D. Smith died in a car accident.
+Users pick up where Matthew left off, formalize micq under the BSD 
+license and restart the development of
+.Ic mICQ .
 
-.SH MAILING-LIST
-The micq mailing list is: micq-list@mc.ukeer.de
+.Sh MAILING-LIST
+The micq mailing list is
+.Pa micq-list@mc.ukeer.de .
+Information about subscribing and archives is available at
+.Pa http://micq.ukeer.de/pipermail/micq-list/ .
+.Sh DOWNLOAD
+Via HTTP from
+.Pa http://micq.ukeer.de/download.html .
 .br
-Archives are available @ http://micq.ukeer.de/pipermail/micq-list/
-.SH DOWNLOAD
-http://micq.ukeer.de/download.html
+To get the newest version from CVS, enter
 .br
 cvs -d:pserver:anonymous@micq.ukeer.de:/usr/local/cvsroot login
 .br
 empty password, hit enter
 .br
 cvs -d:pserver:anonymous@micq.ukeer.de:/usr/local/cvsroot -z3 co micq
-.SH SEE ALSO
-micqrc(5),micq(7)
-.SH BUGS
-Send Bugreport or Comments to Rico Gloeckner <mc@verdinet.de>,
+.Sh SEE ALSO
+.Xr micqrc 5 ,
+.Xr micq 7
+.Sh FILES
+.Bl -tag -width Fl
+.It ~/.micqrc
+Configuration file for mICQ.
+.It PREFIX/share/micq/*.i18n
+Internationalizsation files containing the translation of all strings mICQ
+outputs.
+.It ~/.micq/*.i18n
+As above. Obsolete, as *.i18n are now installed under the given prefix.
+.It ~/micq.log
+Default location of directory where log files are created in.
+.El
+.Sh BUGS
+Send bug reports or comments to Rico Glöckner <mc@verdinet.de>,
 UIN #99798577
-.SH AUTHOR
-This manual page was written by Jordi Mallach <jordi@sindominio.net>,
-for the Debian GNU/Linux system.  The current revision of the document
-is by James Morrison <ja2morrison@student.math.uwaterloo.ca>.
-
+.Sh AUTHOR
+This manual page was derived by James Morrison
+.Pa <ja2morrison@student.math.uwaterloo.ca>
+from the minimal man page written by Jordi Mallach
+.Pa <jordi@sindominio.net>
+for the Debian GNU/Linux system.

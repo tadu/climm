@@ -27,9 +27,7 @@
 026:Dez
 027:SIM
 028:NÃO
-#-#029:Por favor escolha " YES_STR " ou " NO_STR "¶
-#29:
-#029:Please enter YES or NO!
+029:Por favor escolha SIM ou NÃO
 030: saiu do ICQ.
 031: entrou no ICQ.
 032: enviou uma Mensagem
@@ -62,12 +60,8 @@
 059:O port que será usado para TCP (não implementado ainda) é %d¶
 060:Nível de mensagens adicionais é %d.¶
 061:%s não é reconhecido como um nickname.
-#-#062:Usuários ignorados: 
-#62:
-#-#063:Digite a senha : 
-#63:
-#062:Users ignored:
-#063:Enter password:
+062:Usuários ignorados:
+063:Digite a senha:
 064:¶Mudando automaticamente o estado para: 
 065:Usando organização de bytes da Intel.
 066:Usando organização de bytes da Motorola.
@@ -76,12 +70,8 @@
 069: Conectado pela última vez em %s
 070: Última conexão: desconhecido.
 071:Seu estado é 
-#-#072:Usuários desconectados: 
-#72:
-#-#073:Usuários conectados: 
-#73:
-#072:Users offline:
-#073:Users online:
+072:Usuários desconectados:
+073:Usuários conectados:
 #074:Micq (Matt's ICQ clone)
 #075:version
 #076:compiled on
@@ -408,47 +398,46 @@
 #397:Other info change was ©2%s©0.¶
 #398:Search ©2failed©0.¶
 #399:Unknown Meta User response ©1%04X©0¶
-400:		Mostra informação disponível localmente sobre o usuário¶
-401:		Atualiza informações de usuário adicionais¶
-402:		Atualiza suas informações de usuário.¶
-#-#403:		Mostra a última mensagem recebida de <nick>.¶			A pessoa precisa estar em sua Lista de Contatos.¶
-#403:		Displays the last message received from <nick>.¶			They must be in your Contact List.¶		Or a list of who has send you at least one message.¶
-404:		Ignora/designora um nick¶
-405:		Lista os nicks/uins ignorados¶
-406:	Inclui alguém na lista de visibilidade¶
-407:			Mostra o status das pessoas na lista de contatos¶
-408:		Muda sua senha para \"secret\".¶
-409:		Envia mensagem ao uin especificado.¶
-410:	Envia uma mensagem e URL ao uin especificado.¶
-411:	Envia uma mensagem de múltiplas linhas a todos em sua lista.¶
-412:		Envia uma mensagem à última pessoa a quem você enviou mensagem.¶
-413:		Autoriza o usuário do uin a acrescentar você a sua lista.¶
-414:		Envia mensagem à última pessoa que enviou a você (responde).¶
-415:		Encontra um usuário aleatório no grupo ou lista de grupos.¶
-416:			Mostra o estado atual de todos em sua listaa de contatos.¶
-417:	Este comando permite alterar durante execução o conjunto de comandos.¶
-418:			Altera o nível de mensagens adicionais ( normalmente 0 ).¶
-419:				Limpa a tela.¶
-420:				Liga/desliga o ruído ao receber mensagens.¶
-421:				Liga/desliga as cores.¶
-422:			Desconecta e encerra o programa.¶
-423:				Mostra seu estado atual.¶
-424:			Liga/desliga a habilidade de enviar mensagens quando DND, NA, etc.¶
-425:		Configura a resposta automática a ser usada quando nesse estado.¶
-426:	Cria um novo UIN com a senha especificada.¶
-427:	Muda seu estado para o número especificado.¶		Sem o número, lista os estados disponíveis.¶
-428:	Acrescenta o UIN especificado à sua lista sob o nick \"nickname\".¶
-429:	Busca um usuário ICQ com o endereço de e-mail especificado.¶
-430:		Exibe informações sobre o UIN especificado.¶
-431:		Muda seu estado para Online (conectado).¶
-432:		Muda seu estado para Away (fora).¶
-433:		Muda seu estado para Not Available (não disponível).¶
-434:		Muda seu estado para Occupied (ocupado).¶
-435:		Muda seu estado para Do not Disturb (não perturbe).¶
-436:		Muda seu estado para Free for Chat (disponível para chat).¶
-437:		Muda seu estado para Invisible (invisível).¶
-438:		Atualiza sua informação básica (email, nick, etc.)¶
-439:		Configura seu grupo de usuários aleatórios.¶
+400:Mostra informação disponível localmente sobre o usuário
+401:Atualiza informações de usuário adicionais
+402:Atualiza suas informações de usuário.
+403:Mostra a última mensagem recebida de <nick>.A pessoa precisa estar em sua Lista de Contatos.
+404:Ignora/designora um nick
+405:Lista os nicks/uins ignorados
+406:Inclui alguém na lista de visibilidade
+407:Mostra o status das pessoas na lista de contatos
+408:Muda sua senha para \"secret\".
+409:Envia mensagem ao uin especificado.
+410:Envia uma mensagem e URL ao uin especificado.
+411:Envia uma mensagem de múltiplas linhas a todos em sua lista.
+412:Envia uma mensagem à última pessoa a quem você enviou mensagem.
+413:Autoriza o usuário do uin a acrescentar você a sua lista.
+414:Envia mensagem à última pessoa que enviou a você (responde).
+415:Encontra um usuário aleatório no grupo ou lista de grupos.
+416:Mostra o estado atual de todos em sua listaa de contatos.
+417:Este comando permite alterar durante execução o conjunto de comandos.
+418:Altera o nível de mensagens adicionais ( normalmente 0 ).
+419:Limpa a tela.
+420:Liga/desliga o ruído ao receber mensagens.
+421:Liga/desliga as cores.
+422:Desconecta e encerra o programa.
+423:Mostra seu estado atual.
+424:Liga/desliga a habilidade de enviar mensagens quando DND, NA, etc.
+425:Configura a resposta automática a ser usada quando nesse estado.
+426:Cria um novo UIN com a senha especificada.
+427:Muda seu estado para o número especificado.Sem o número, lista os estados disponíveis.
+428:Acrescenta o UIN especificado à sua lista sob o nick \"nickname\".
+429:Busca um usuário ICQ com o endereço de e-mail especificado.
+430:Exibe informações sobre o UIN especificado.
+431:Muda seu estado para Online (conectado).
+432:Muda seu estado para Away (fora).
+433:Muda seu estado para Not Available (não disponível).
+434:Muda seu estado para Occupied (ocupado).
+435:Muda seu estado para Do not Disturb (não perturbe).
+436:Muda seu estado para Free for Chat (disponível para chat).
+437:Muda seu estado para Invisible (invisível).
+438:Atualiza sua informação básica (email, nick, etc.)
+439:Configura seu grupo de usuários aleatórios.
 #440:Random User:
 #441:IP:
 442:Escolha um dos tópicos de ajuda abaixo.
@@ -460,32 +449,6 @@
 448:Mensagem
 449:Usuário
 450:Conta
-#-#500:Apelido      : 
-#-#501:Nome         : 
-#-#502:Email        : 
-#-#503:Outro Email  : 
-#-#504:Antigo Email : 
-#-#505:Cidade       : 
-#-#506:Telefone     : 
-#-#507:Fax          : 
-#-#508:Endereço     : 
-#-#509:Celular      : 
-#-#510:CEP          : 
-#-#511:País         : 
-#-#512:Cód. do País : 
-#-#513:Cód. do País trab. : 
-#-#514:País onde trabalha : 
-#-#515:Homepage do trab.  : 
-#-#516:Ocupação    : 
-#-#517:Emprego     : 
-#-#518:Departmento  : 
-#-#519:Nome Empresa : 
-#-#520:CEP trab.    : 
-#-#521:Fax trab.    : 
-#-#522:Endereço tr. : 
-#-#523:Fone trab.   : 
-#-#524:Cidade trab. : 
-#-#525:Sobre : 
 #451:IP2:
 #452:Status:
 #453:TCP version:
@@ -535,94 +498,64 @@
 #497:Type: %d	 Len: %d¶
 #498:Info for:
 #499:Other
-#500:Nickname:
-#501:Name:
-#502:Email:
-#503:Other Email:
-#504:Old Email:
-#505:Location:
-#506:Phone:
-#507:Fax:
-#508:Street:
-#509:Cellular:
-#510:Zip:
-#511:Country:
-#512:Country Code:
-#513:Work Country Code:
-#514:Work Country:
-#515:Work Homepage:
-#516:Occupation:
-#517:Job Position:
-#518:Department:
-#519:Company Name:
-#520:Work Zip:
-#521:Work Fax:
-#522:Work Address:
-#523:Work Phone:
-#524:Work Location:
-#525:About:
+500:Apelido:
+501:Nome:
+502:Email:
+503:Outro Email:
+504:Antigo Email:
+505:Cidade:
+506:Telefone:
+507:Fax:
+508:Endereço:
+509:Celular:
+510:CEP:
+511:País:
+512:Cód. do País:
+513:Cód. do País trab.:
+514:País onde trabalha:
+515:Homepage do trab.:
+516:Ocupação:
+517:Emprego:
+518:Departmento:
+519:Nome Empresa:
+520:CEP trab.:
+521:Fax trab.:
+522:Endereço tr.:
+523:Fone trab.:
+524:Cidade trab.:
+525:Sobre:
 526:Não preenchido
-#-#527:Idade        : 
-#-#528:Sexo : Feminino
-#-#529:Sexo : Masculino
-#-#530:Sexo : Não preenchido
-#-#531:Homepage     : 
-#-#532:Data nascim. : 
-#-#533:Idiomas      : 
-#-#534:Escolha um idioma pelo número, ou digite L para ver uma listagem: 
-#-#535:Digite sua idade: 
-#-#536:Digite seu sexo: 
-#-#537:Digite o endereço de sua homepage: 
-#-#538:Digite o ano de seu nascimento (4 dígitos): 
-#-#539:Digite o mês de seu nascimento: 
-#-#540:Digite o dia de seu nascimento: 
-#527:Age:
-#528:female
-#529:male
-#530:not specified
-#531:Homepage:
-#532:Born:
-#533:Languages:
-#534:Enter a language by number or L for a list:
-#535:Enter new age:
-#536:Enter new sex:
-#537:Enter new homepage:
-#538:Enter new year of birth (4 digits):
-#539:Enter new month of birth:
-#540:Enter new day of birth:
+527:Idade:
+528:Feminino
+529:Masculino
+530:Não preenchido
+531:Homepage:
+532:Data nascim.:
+533:Idiomas:
+534:Escolha um idioma pelo número, ou digite L para ver uma listagem:
+535:Digite sua idade:
+536:Digite seu sexo:
+537:Digite o endereço de sua homepage:
+538:Digite o ano de seu nascimento (4 dígitos):
+539:Digite o mês de seu nascimento:
+540:Digite o dia de seu nascimento:
 541:Sobre> 
-#-#542:Seu outro endereço de email: 
-#-#543:Seu antigo endereço de email: 
-#-#544:Sua cidade: 
-#-#545:Seu estado: 
-#-#546:Seu número de telefone: 
-#-#547:Seu número de fax: 
-#-#548:Seu endereço: 
-#-#549:Seu número de telefone celular: 
-#-#550:Seu código postal (apenas numérico): 
-#-#551:Código telefônico de seu país (Brasil = 55): 
-#-#552:Seu fuso horário (+/- 0-12 - Brasil = +2 a +4): 
-#-#553:Escolha seu novo Nick : 
-#-#554:Escolha seu novo Primeiro nome : 
-#-#555:Escolha seu novo Sobrenome : 
-#-#556:Escolha seu novo Endereço de email : 
-#-#557:Você quer que usuários Mirabilis tenham que pedir sua autorização? : 
-#542:Enter other email address:
-#543:Enter old email address:
-#544:Enter new city:
-#545:Enter new state:
-#546:Enter new phone number:
-#547:Enter new fax number:
-#548:Enter new street address:
-#549:Enter new cellular number:
-#550:Enter new zip code (must be numeric):
-#551:Enter your country's phone ID number:
-#552:Enter your time zone (+/- 0-12):
-#553:Enter Your New Nickname:
-#554:Enter your new first name:
-#555:Enter your new last name:
-#556:Enter your new email address:
-#557:Do you want to require Mirabilis users to request your authorization? (YES/NO)
+542:Seu outro endereço de email:
+543:Seu antigo endereço de email:
+544:Sua cidade:
+545:Seu estado:
+546:Seu número de telefone:
+547:Seu número de fax:
+548:Seu endereço:
+549:Seu número de telefone celular:
+550:Seu código postal (apenas numérico):
+551:Código telefônico de seu país (Brasil = 55):
+552:Seu fuso horário (+/- 0-12 - Brasil = +2 a +4):
+553:Escolha seu novo Nick:
+554:Escolha seu novo Primeiro nome:
+555:Escolha seu novo Sobrenome:
+556:Escolha seu novo Endereço de email:
+557:Você quer que usuários Mirabilis tenham que pedir sua autorização?
 #558:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
 #559:Enter max age (22,29,39,49,59,120):
 #560:Enter a city:
@@ -767,7 +700,7 @@
 #699:Must give a valid uin/nickname¶
 #700:%s is not a valid user in your list.¶
 #701:%d users not returned.
-#702:		Display a list of nicknames that you can tab through.¶
+#702:Display a list of nicknames that you can tab through.
 #703:©2Status modes: ¶
 #704:©2Groups: ¶
 #705:General                    1¶
@@ -782,12 +715,10 @@
 #714:Woman chat requesting men 11¶
 #715:Micq                      49 (might not work but try it)
 #716:None                      -1¶
-#717:©2	! as the first character of a command will execute¶
-#718:©2	a shell command (e.g. "!ls"  "!dir" "!mkdir temp")©0¶
-#719:©3uptime		Shows how long Micq has been running.¶©0
-#720:©2	uin can be either a number or the nickname of the user.¶
-#721:©2	Sending a blank message will put the client into multiline mode.¶	Use . on a line by itself to end message.¶
-#722:	Use # on a line by itself to cancel the message.©0¶
+#717:! as the first character of a command will execute a shell command (e.g. "!ls"  "!dir" "!mkdir temp")
+#719:Shows how long Micq has been running.
+#720:uin can be either a number or the nickname of the user.
+#721:Sending a blank message will put the client into multiline mode.¶Use . on a line by itself to end message.¶Use # on a line by itself to cancel the message.
 #723:%s's IP address is 
 #724:Automatic replies are %s.¶
 #727:The Do not disturb message is:
@@ -824,5 +755,5 @@
 #760:¶Your new UIN is %s%ld%s!¶
 #761:unknown
 #762:Ack!!!!!!  %d\a¶
-#800:		Change the working language to <lang>¶
-#801:		Displays a list of people on your contact list in a screen wide format.¶
+#800:Change the working language to <lang>.
+#801:Displays a list of people on your contact list in a screen wide format.

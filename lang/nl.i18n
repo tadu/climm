@@ -401,6 +401,46 @@
 390:Zaire
 391:Zambia
 392:Zimbabwe
+#-#400:		Shows locally stored info on user¶
+#-#401:		Updates other user info like age and sex¶
+#-#402:		Algemene gebruikers informatie wijzigen.¶
+#-#403:		Geeft het laatste bericht ontvangen van <gebruiker> weer.¶			Deze moet in uw 'contact-list' staan.¶
+#-#404:		Zet het negeren van 'gebruiker' aan of uit¶
+#-#405:		Lijst van genegeerde gebruikers/gebruikersnummers¶
+#-#406:	Zet uw zichtbaarheid voor een gebruiker aan of uit (als u onzichtbaar bent).¶
+#-#407:			Geeft de huidige toestand van de ingelogde gebruikers op uw contact-list weer¶
+#-#408:		Verandert uw password in 'geheim'.¶
+#-#409:		Stuurt een bericht naar 'uin'¶
+#-#410:	Stuurt een link en een bericht naar 'uin'¶
+#-#411:	Stuurt een bericht van meerdere regels naar iedereen op jouw contact-list.¶
+#-#412:		Stuurt een bericht naar de laatste persoon waar u een bericht naartoe gestuurd heeft.¶
+#-#413:		Geeft 'uin' toestemming om u op zijn/haar contact-list te zetten¶
+#-#414:		Stuurt een bericht naar de laatste persoon die jou een bericht stuurde¶
+#-#415:		Vindt een willekeurige gebruiker in de aangegeven groep, of een lijst van mogelijke groepen.¶
+#-#416:			Geeft de huidige toestand van iedereen op jouw contact-list¶
+#-#417:	Dit commando maakt het mogelijk uw commando-set te veranderen zonder micq opnieuw op te starten¶
+#-#418:			Verandert de uitgebreidheid van technische berichten ( standaard = 0).¶
+#-#419:				Maakt het scherm schoon.¶
+#-#420:				Piepen bij het ontvangen van berichten aan of uit.¶
+#-#421:				Kleur aan of uit.¶
+#-#422:			Logt uit en sluit af¶
+#-#423:				Geeft de status van 'automatisch antwoorden'¶
+#-#424:			Automatisch antwoorden aan of uit.¶
+#-#425:		Stelt het bericht in dat automatisch wordt teruggestuurd voor de toestand in¶
+#-#426:	Maakt een nieuw account aan met het aangegeven password.¶
+#-#427:	Verandert uw toestand in het toestandsnummer.¶		Zonder nummer geeft het de mogelijke toestanden.¶
+#-#428:	Voegt de gebuiker met 'uin' als nummer toe aan uw contact-list.¶
+#-#429:	Zoekt naar een ICQ gebruiker met het aangegeven email-adres¶
+#-#430:		Geeft algemene informatie over 'uin'¶
+#-#431:		Zet op Online.¶
+#-#432:		Zet op Weg.¶
+#-#433:		Zet op Niet Beschikbaar.¶
+#-#434:		Zet Bezig.¶
+#-#435:		Zet op Niet Storen.¶
+#-#436:		Zet op In voor een Chat.¶
+#-#437:		Zet op Onzichtbaar.¶
+#-#438:		Wijzig uw algemene informatie (email, nickname, etc.)¶
+#-#439:		Stelt uw 'willekeurige gebruikers groep' in.¶
 #393:successful
 #394:unsuccessful
 #395:About info change was ©2%s©0.¶
@@ -408,47 +448,46 @@
 #397:Other info change was ©2%s©0.¶
 #398:Search ©2failed©0.¶
 #399:Unknown Meta User response ©1%04X©0¶
-400:		Shows locally stored info on user¶
-401:		Updates other user info like age and sex¶
-402:		Algemene gebruikers informatie wijzigen.¶
-#-#403:		Geeft het laatste bericht ontvangen van <gebruiker> weer.¶			Deze moet in uw 'contact-list' staan.¶
-#403:		Displays the last message received from <nick>.¶			They must be in your Contact List.¶		Or a list of who has send you at least one message.¶
-404:		Zet het negeren van 'gebruiker' aan of uit¶
-405:		Lijst van genegeerde gebruikers/gebruikersnummers¶
-406:	Zet uw zichtbaarheid voor een gebruiker aan of uit (als u onzichtbaar bent).¶
-407:			Geeft de huidige toestand van de ingelogde gebruikers op uw contact-list weer¶
-408:		Verandert uw password in 'geheim'.¶
-409:		Stuurt een bericht naar 'uin'¶
-410:	Stuurt een link en een bericht naar 'uin'¶
-411:	Stuurt een bericht van meerdere regels naar iedereen op jouw contact-list.¶
-412:		Stuurt een bericht naar de laatste persoon waar u een bericht naartoe gestuurd heeft.¶
-413:		Geeft 'uin' toestemming om u op zijn/haar contact-list te zetten¶
-414:		Stuurt een bericht naar de laatste persoon die jou een bericht stuurde¶
-415:		Vindt een willekeurige gebruiker in de aangegeven groep, of een lijst van mogelijke groepen.¶
-416:			Geeft de huidige toestand van iedereen op jouw contact-list¶
-417:	Dit commando maakt het mogelijk uw commando-set te veranderen zonder micq opnieuw op te starten¶
-418:			Verandert de uitgebreidheid van technische berichten ( standaard = 0).¶
-419:				Maakt het scherm schoon.¶
-420:				Piepen bij het ontvangen van berichten aan of uit.¶
-421:				Kleur aan of uit.¶
-422:			Logt uit en sluit af¶
-423:				Geeft de status van 'automatisch antwoorden'¶
-424:			Automatisch antwoorden aan of uit.¶
-425:		Stelt het bericht in dat automatisch wordt teruggestuurd voor de toestand in¶
-426:	Maakt een nieuw account aan met het aangegeven password.¶
-427:	Verandert uw toestand in het toestandsnummer.¶		Zonder nummer geeft het de mogelijke toestanden.¶
-428:	Voegt de gebuiker met 'uin' als nummer toe aan uw contact-list.¶
-429:	Zoekt naar een ICQ gebruiker met het aangegeven email-adres¶
-430:		Geeft algemene informatie over 'uin'¶
-431:		Zet op Online.¶
-432:		Zet op Weg.¶
-433:		Zet op Niet Beschikbaar.¶
-434:		Zet Bezig.¶
-435:		Zet op Niet Storen.¶
-436:		Zet op In voor een Chat.¶
-437:		Zet op Onzichtbaar.¶
-438:		Wijzig uw algemene informatie (email, nickname, etc.)¶
-439:		Stelt uw 'willekeurige gebruikers groep' in.¶
+#400:Shows locally stored info on user.
+#401:Updates other user info like age and sex.
+#402:Updates your about user info.
+#403:Displays the last message received from <nick>, or a list of who has send you at least one message.
+#404:Toggles ignoring/unignoring nick.
+#405:Lists ignored nicks/uins.
+#406:Toggles your visibility to a user when you're invisible.
+#407:Displays the current status of online people on your contact list.
+#408:Changes your password to secret.
+#409:Sends a message to uin.
+#410:Sends a url and message to uin.
+#411:Sends a multiline message to everyone on your list.
+#412:Sends a message to the last person you sent a message to.
+#413:Authorize uin to add you to their list.
+#414:Replys to the last person to send you a message.
+#415:Finds a random user in the specified group or lists the groups.
+#416:Displays the current status of everyone on your contact list.
+#417:This command allows you to alter your command set on the fly.
+#418:Set the verbosity level (default 0).
+#419:Clears the screen.
+#420:Toggles beeping when recieving new messages.
+#421:Toggles displaying colors.
+#422:Logs off and quits.
+#423:Displays your autoreply status.
+#424:Toggles sending messages when your status is DND, NA, etc.
+#425:Sets the message to send as an auto reply for the status.
+#426:Creates a new UIN with the specified password.
+#427:Changes your status to the status number. Without a number it lists the available modes.
+#428:Adds the uin number to your contact list with nickname.
+#429:Searches for a ICQ user.
+#430:Displays general info on uin.
+#431:Change status to Online.
+#432:Mark as Away.
+#433:Mark as Not Available.
+#434:Mark as Occupied.
+#435:Mark as Do not Disturb.
+#436:Mark as Free for Chat.
+#437:Mark as Invisible.
+#438:Updates your basic info (email, nickname, etc.).
+#439:Sets your random user group.
 #440:Random User:
 #441:IP:
 442:Kies een van de onderstaande helponderwerpen.
@@ -767,7 +806,7 @@
 #699:Must give a valid uin/nickname¶
 #700:%s is not a valid user in your list.¶
 #701:%d users not returned.
-#702:		Display a list of nicknames that you can tab through.¶
+#702:Display a list of nicknames that you can tab through.
 #703:©2Status modes: ¶
 #704:©2Groups: ¶
 #705:General                    1¶
@@ -782,12 +821,10 @@
 #714:Woman chat requesting men 11¶
 #715:Micq                      49 (might not work but try it)
 #716:None                      -1¶
-#717:©2	! as the first character of a command will execute¶
-#718:©2	a shell command (e.g. "!ls"  "!dir" "!mkdir temp")©0¶
-#719:©3uptime		Shows how long Micq has been running.¶©0
-#720:©2	uin can be either a number or the nickname of the user.¶
-#721:©2	Sending a blank message will put the client into multiline mode.¶	Use . on a line by itself to end message.¶
-#722:	Use # on a line by itself to cancel the message.©0¶
+#717:! as the first character of a command will execute a shell command (e.g. "!ls"  "!dir" "!mkdir temp")
+#719:Shows how long Micq has been running.
+#720:uin can be either a number or the nickname of the user.
+#721:Sending a blank message will put the client into multiline mode.¶Use . on a line by itself to end message.¶Use # on a line by itself to cancel the message.
 #723:%s's IP address is 
 #724:Automatic replies are %s.¶
 #727:The Do not disturb message is:
@@ -824,5 +861,5 @@
 #760:¶Your new UIN is %s%ld%s!¶
 #761:unknown
 #762:Ack!!!!!!  %d\a¶
-#800:		Change the working language to <lang>¶
-#801:		Displays a list of people on your contact list in a screen wide format.¶
+#800:Change the working language to <lang>.
+#801:Displays a list of people on your contact list in a screen wide format.

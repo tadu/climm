@@ -246,7 +246,7 @@ static void M_prints (const char *str)
             case '\x1b':
                 switch (*++p)
                 {
-                    case '«':
+                    case '<':
                         switch (line_break_type)
                         {
                             case 0:
@@ -270,7 +270,19 @@ static void M_prints (const char *str)
                         }
                         str++;
                         break;
+                    case '«':
+                        IndentCount = CharCount;
+                        sw -= IndentCount;
+                        CharCount = 0;
+                        str++;
+                        break;
                     case '»':
+                        CharCount += IndentCount;
+                        sw += IndentCount;
+                        IndentCount = 0;
+                        str++;
+                        break;
+                    case '>':
                         switch (line_break_type)
                         {
                             case 2:
