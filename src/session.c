@@ -76,9 +76,7 @@ Connection *ConnectionC (UWORD type)
     while (cl->conn[i])
         i++, j++;
 
-    conn = calloc (1, sizeof (Connection));
-    
-    if (!conn)
+    if (!(conn = calloc (1, sizeof (Connection))))
         return NULL;
     
     conn->our_local_ip   = 0x7f000001;
@@ -86,6 +84,7 @@ Connection *ConnectionC (UWORD type)
     conn->status = STATUS_OFFLINE;
     conn->sok = -1;
     conn->type = type;
+    conn->flags = CONN_CONFIGURED;
 
     Debug (DEB_CONNECT, "<=== %p[%d] create %d", conn, j, type);
 
@@ -104,15 +103,9 @@ Connection *ConnectionClone (Connection *conn, UWORD type)
     if (!child)
         return NULL;
 
-    memcpy (child, conn, sizeof (Connection));
     child->parent   = conn;
-    child->assoc    = NULL;
-    child->sok      = -1;
-    child->connect  = 0;
-    child->incoming = NULL;
-    child->open     = NULL;
-    child->server   = NULL;
-    child->contacts = NULL;
+    child->cont  = conn->cont;
+    child->flags = 0;
     
     Debug (DEB_CONNECT, "<=*= %p (%s) clone from %p (%s)", child, ConnectionType (child), conn, ConnectionType (conn));
 
@@ -152,7 +145,7 @@ Connection *ConnectionFind (UWORD type, const Contact *cont, const Connection *p
         {
             for (cl = &slist; cl; cl = cl->more)
                 for (i = 0; i < ConnectionListLen; i++)
-                    if ((conn = cl->conn[i]) && (conn->type & type) == type && conn->uin == cont->uin && conn->parent == parent)
+                    if ((conn = cl->conn[i]) && (conn->type & type) == type && conn->cont == cont && conn->parent == parent)
                         return conn;
         }
         else
@@ -167,7 +160,7 @@ Connection *ConnectionFind (UWORD type, const Contact *cont, const Connection *p
         {
             for (cl = &slist; cl; cl = cl->more)
                 for (i = 0; i < ConnectionListLen; i++)
-                    if ((conn = cl->conn[i]) && (conn->type & type) == type && conn->uin == cont->uin)
+                    if ((conn = cl->conn[i]) && (conn->type & type) == type && conn->cont == cont)
                         return conn;
         }
         else
@@ -277,7 +270,6 @@ void ConnectionClose (Connection *conn)
         sockclose (conn->sok);
     conn->sok     = -1;
     conn->connect = 0;
-    conn->type    = 0;
     conn->parent  = NULL;
     if (conn->server)
         free (conn->server);

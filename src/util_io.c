@@ -407,7 +407,7 @@ void UtilIOConnectTCP (Connection *conn)
             {
                 QueueEnqueueData (conn, QUEUE_CON_TIMEOUT, conn->ip,
                                   time (NULL) + 10, NULL,
-                                  ContactUIN (conn, conn->uin), NULL, &UtilIOTOConn);
+                                  conn->cont, NULL, &UtilIOTOConn);
                 conn->dispatch = &UtilIOConnectCallback;
                 conn->connect |= CONNECT_SOCKS_ADD;
                 UtilIOConnectCallback (conn);
@@ -433,7 +433,7 @@ void UtilIOConnectTCP (Connection *conn)
                     M_print ("\n");
             QueueEnqueueData (conn, QUEUE_CON_TIMEOUT, conn->ip,
                               time (NULL) + 10, NULL,
-                              ContactUIN (conn, conn->uin), NULL, &UtilIOTOConn);
+                              conn->cont, NULL, &UtilIOTOConn);
             conn->utilio   = conn->dispatch;
             conn->dispatch = &UtilIOConnectCallback;
             conn->connect |= CONNECT_SELECT_W | CONNECT_SELECT_X;
@@ -758,7 +758,7 @@ Packet *UtilIOReceiveTCP (Connection *conn)
         {
             Contact *cont;
             
-            if ((cont = ContactUIN (conn, conn->uin)))
+            if ((cont = conn->cont))
             {
                 M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
                 M_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
@@ -834,7 +834,7 @@ Packet *UtilIOReceiveF (Connection *conn)
         if (prG->verbose)
         {
             Contact *cont;
-            if ((cont = ContactUIN (conn, conn->uin)))
+            if ((cont = conn->cont))
             {
                 M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
                 M_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);

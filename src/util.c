@@ -92,7 +92,7 @@ void Init_New_User (Connection *conn)
     }
 #endif
 
-    conn->ver = 5;
+    conn->version = 5;
     M_print (i18n (1756, "\nCreating Connection...\n"));
     UtilIOConnectUDP (conn);
     if (conn->sok == -1)

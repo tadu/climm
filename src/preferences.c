@@ -66,17 +66,6 @@ void PreferencesInit (Preferences *pref)
 }
 
 /*
- * Create a connection specific preference structure
- */
-PreferencesConnection *PreferencesConnectionC ()
-{
-    PreferencesConnection *pref = calloc (1, sizeof (PreferencesConnection));
-    assert (pref);
-    
-    return pref;
-}
-
-/*
  * Return the preference base directory
  */
 const char *PrefUserDirReal (Preferences *pref)

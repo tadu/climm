@@ -96,6 +96,9 @@ void CmdPktCmdTCPRequest (Connection *conn, Contact *cont, UDWORD port)
 void CmdPktCmdLogin (Connection *conn)
 {
     Packet *pak;
+    
+    if (conn->version != 5)
+        return;
 
     if (conn->our_seq2 != 1)
     {
@@ -103,7 +106,6 @@ void CmdPktCmdLogin (Connection *conn)
         conn->our_seq2    = 1;
         conn->our_session = rand () & 0x3fffffff;
     }
-    conn->ver = 5;
     
     assert (strlen (conn->passwd) <= 8);
     
@@ -118,7 +120,7 @@ void CmdPktCmdLogin (Connection *conn)
                        conn->assoc->status : 0);         /* 1=firewall | 2=proxy | 4=tcp */
     PacketWrite4 (pak, prG->status);
     PacketWrite2 (pak, conn->assoc && conn->assoc->connect & CONNECT_OK ?
-                       conn->assoc->ver : 0);
+                       conn->assoc->version : 0);
     PacketWrite2 (pak, 0);
     PacketWrite4 (pak, 0x822c01ec);   /* 0x00d50008, 0x00780008 */
     PacketWrite4 (pak, 0x00000050);

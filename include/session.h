@@ -8,52 +8,57 @@ typedef BOOL (jump_conn_err_f)(Connection *conn, UDWORD rc, UDWORD flags);
 
 struct Connection_s
 {
-        UWORD     type;           /* connection type - TYPE_*                 */
-        UBYTE     flags;          /* connection flags                         */
-        UBYTE     ver;            /* protocol version in this session         */
-        UDWORD    uin;            /* current user identification number       */
-        UDWORD    status;         /* status of uin                            */
-        char     *server;         /* the remote server name                   */
-        UDWORD    port;           /* the port the server is listening on      */
-        char     *passwd;         /* the password for this user               */
-        UDWORD    ip;             /* the remote ip (host byte order)          */
-        void     *tlv;            /* temporary during v8 connect              */
+    UWORD     type;           /* connection type - TYPE_*                 */
+    UBYTE     flags;          /* connection flags                         */
+    UBYTE     version;        /* protocol version in this session         */
+    UDWORD    uin;            /* the uin of this server connection        */
+    UDWORD    pref_status;
+    char     *pref_server;
+    UDWORD    pref_port;
+    char     *pref_passwd;
 
-        SOK_T     sok;            /* socket for connection to server          */
-        UWORD     connect;        /* connection setup status                  */
-        Packet   *incoming;       /* packet we're receiving                   */
-        Packet   *outgoing;       /* packet we're sending                     */
-        
-        ContactGroup *contacts;   /* The contacts for this connection         */
+    Contact  *cont;           /* the user this connection is for          */
+    UDWORD    status;         /* status of uin                            */
+    char     *server;         /* the remote server name                   */
+    UDWORD    port;           /* the port the server is listening on      */
+    char     *passwd;         /* the password for this user               */
+    UDWORD    ip;             /* the remote ip (host byte order)          */
+    void     *tlv;            /* temporary during v8 connect              */
 
-        UDWORD    our_local_ip;   /* LAN-internal IP (host byte order)        */
-        UDWORD    our_outside_ip; /* the IP address the server sees from us   */
+    SOK_T     sok;            /* socket for connection to server          */
+    UWORD     connect;        /* connection setup status                  */
+    Packet   *incoming;       /* packet we're receiving                   */
+    Packet   *outgoing;       /* packet we're sending                     */
+    
+    ContactGroup *contacts;   /* The contacts for this connection         */
 
-        UDWORD    our_session;    /* session ID                               */
-        UWORD     our_seq_dc;     /* sequence number for dc and type-2        */
-        UWORD     our_seq;        /* current primary sequence number          */
-        UWORD     our_seq2;       /* current secondary sequence number        */
-        UDWORD    our_seq3;       /* current old-ICQ sequence number          */
-        
-        UDWORD    len;            /* used for file transfer                   */
-        UDWORD    done;           /* used for file transfer                   */
+    UDWORD    our_local_ip;   /* LAN-internal IP (host byte order)        */
+    UDWORD    our_outside_ip; /* the IP address the server sees from us   */
 
-        PreferencesConnection *spref;  /* preferences for this session */
-        Connection            *assoc;  /* associated session           */
-        Connection            *parent; /* parent session               */
-        
-        UDWORD    stat_real_pak_sent;
-        UDWORD    stat_real_pak_rcvd;
-        UDWORD    stat_pak_sent;
-        UDWORD    stat_pak_rcvd;
+    UDWORD    our_session;    /* session ID                               */
+    UWORD     our_seq_dc;     /* sequence number for dc and type-2        */
+    UWORD     our_seq;        /* current primary sequence number          */
+    UWORD     our_seq2;       /* current secondary sequence number        */
+    UDWORD    our_seq3;       /* current old-ICQ sequence number          */
+    
+    UDWORD    len;            /* used for file transfer                   */
+    UDWORD    done;           /* used for file transfer                   */
 
-        jump_conn_f *open;         /* function to call to open        */
-        jump_conn_f *dispatch;     /* function to call on select()    */
-        jump_conn_f *reconnect;    /* function to call for reconnect  */
-        jump_conn_err_f *error;    /* function to call for i/o errors */
-        jump_conn_f *close;        /* function to call to close       */
+    Connection            *assoc;  /* associated session           */
+    Connection            *parent; /* parent session               */
+    
+    UDWORD    stat_real_pak_sent;
+    UDWORD    stat_real_pak_rcvd;
+    UDWORD    stat_pak_sent;
+    UDWORD    stat_pak_rcvd;
 
-        jump_conn_f *utilio;       /* private to util_io.c            */
+    jump_conn_f *open;         /* function to call to open        */
+    jump_conn_f *dispatch;     /* function to call on select()    */
+    jump_conn_f *reconnect;    /* function to call for reconnect  */
+    jump_conn_err_f *error;    /* function to call for i/o errors */
+    jump_conn_f *close;        /* function to call to close       */
+
+    jump_conn_f *utilio;       /* private to util_io.c            */
 };
 
 #define CONNECT_MASK       0x00ff
@@ -131,5 +136,9 @@ const char    *ConnectionType    (Connection *conn);
 
 #define CONNERR_WRITE       1
 #define CONNERR_READ        2
+
+#define CONN_AUTOLOGIN   1
+#define CONN_WIZARD      2
+#define CONN_CONFIGURED  4
 
 #endif /* MICQ_UTIL_CONNECTION_H */

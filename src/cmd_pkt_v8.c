@@ -60,21 +60,22 @@ void ConnectionInitServer (Connection *conn)
     if (!conn->server || !*conn->server || !conn->port)
         return;
 
-    M_printf (i18n (9999, "Opening v8 connection to %s:%s%ld%s... "),
-              s_mquote (conn->server, COLQUOTE, 0), COLQUOTE, conn->port, COLNONE);
-
+    conn->cont = ContactUIN (conn, conn->uin);
     conn->our_seq  = rand () & 0x7fff;
     conn->connect  = 0;
     conn->dispatch = &SrvCallBackReceive;
     conn->reconnect= &SrvCallBackReconn;
     conn->close    = &FlapCliGoodbye;
-    s_repl (&conn->server, conn->spref->server);
-    conn->type     = TYPE_SERVER;
+    s_repl (&conn->server, conn->pref_server);
     if (conn->status == STATUS_OFFLINE)
-        conn->status = conn->spref->status;
+        conn->status = conn->pref_status;
     QueueEnqueueData (conn, conn->connect, conn->our_seq,
                       time (NULL) + 10,
-                      NULL, ContactUIN (conn, conn->uin), NULL, &SrvCallBackTimeout);
+                      NULL, conn->cont, NULL, &SrvCallBackTimeout);
+
+    M_printf (i18n (9999, "Opening v8 connection to %s:%s%ld%s... "),
+              s_mquote (conn->server, COLQUOTE, 0), COLQUOTE, conn->port, COLNONE);
+
     UtilIOConnectTCP (conn);
 }
 
@@ -84,7 +85,7 @@ static void SrvCallBackReconn (Connection *conn)
     Contact *cont;
     int i;
 
-    if (!(cont = ContactUIN (conn, conn->uin)))
+    if (!(cont = conn->cont))
         return;
 
     M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
@@ -207,33 +208,31 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
 {
     Connection *new;
     
-    new = ConnectionC (TYPE_SERVER);
-    if (!new)
-        return NULL;
-    new->spref = PreferencesConnectionC ();
-    if (!new->spref)
+    if (!(new = ConnectionC (TYPE_SERVER)))
         return NULL;
     if (conn)
     {
-        assert (conn->spref->type == TYPE_SERVER);
+        assert (conn->type == TYPE_SERVER);
         
-        memcpy (new->spref, conn->spref, sizeof (*new->spref));
-        new->spref->server = strdup (new->spref->server);
-        new->spref->uin = 0;
+        new->flags   = conn->flags;
+        new->version = conn->version;
+        new->uin     = 0;
+        new->pref_status  = STATUS_ONLINE;
+        new->pref_server  = strdup (new->pref_server);
+        new->pref_port    = new->pref_port;
+        new->pref_passwd  = strdup (pass);
     }
     else
     {
-        new->spref->type = TYPE_SERVER;
-        new->spref->flags = 0;
-        new->spref->version = 8;
-        new->spref->server = strdup ("login.icq.com");
-        new->spref->port = 5190;
+        new->version = 8;
+        new->uin     = 0;
+        new->pref_status  = STATUS_ONLINE;
+        new->pref_server  = strdup ("login.icq.com");
+        new->pref_port    = 5190;
+        new->pref_passwd  = strdup (pass);
     }
-    new->spref->passwd = strdup (pass);
-    new->flags   = 0;
-    new->ver  = new->spref->version;
-    new->server = strdup (new->spref->server);
-    new->port = new->spref->port;
+    new->server = strdup (new->pref_server);
+    new->port = new->pref_port;
     new->passwd = strdup (pass);
     
     ConnectionInitServer (new);
@@ -451,7 +450,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                 PacketWrite2    (ack_pak, 0);
                 PacketWriteStr  (ack_pak, "");
                 PacketWrite4    (ack_pak, 0);
-                if (serv->assoc->ver > 6)
+                if (serv->assoc->version > 6)
                     PacketWrite4 (ack_pak, 0x20726f66);
                 PacketWrite4    (ack_pak, flist->port);
             }
@@ -465,7 +464,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                 PacketWrite2    (ack_pak, 0);
                 PacketWriteStr  (ack_pak, txt ? txt : "");
                 PacketWrite4    (ack_pak, 0);
-                if (serv->assoc->ver > 6)
+                if (serv->assoc->version > 6)
                     PacketWrite4 (ack_pak, 0x20726f66);
                 PacketWrite4    (ack_pak, 0);
             }

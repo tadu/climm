@@ -85,14 +85,14 @@ Packet *PacketCv5 (Connection *conn, UWORD cmd)
 
     assert (pak);
     assert (conn);
-    assert (conn->ver == 5);
+    assert (conn->version == 5);
 
     pak->cmd = cmd;
-    pak->ver = conn->ver;
+    pak->ver = conn->version;
     pak->id  = (seq2 << 16) + seq;
     pak->ref = seq;
 
-    PacketWrite2 (pak, conn->ver);  /* 5 */
+    PacketWrite2 (pak, conn->version);  /* 5 */
     PacketWrite4 (pak, 0);
     PacketWrite4 (pak, conn->uin);
     PacketWrite4 (pak, conn->our_session);
@@ -114,7 +114,7 @@ void PacketEnqueuev5 (Packet *pak, Connection *conn)
 
     assert (pak->len > 0x18);
     assert (conn);
-    assert (conn->ver == 5);
+    assert (conn->version == 5);
 
     if (iss2)           conn->our_seq2++;
 
@@ -149,15 +149,14 @@ void PacketEnqueuev5 (Packet *pak, Connection *conn)
 
 void ConnectionInitServerV5 (Connection *conn)
 {
-    if (conn->spref->version < 5)
+    if (conn->version < 5)
     {
         M_print (i18n (1869, "Protocol versions less than 5 are not supported anymore.\n"));
         return;
     }
     
-    conn->type = TYPE_SERVER_OLD;
     conn->close = &CallBackClosev5;
-    conn->flags = 0;
+    conn->cont = ContactUIN (conn, conn->uin);
     if (!conn->server || !*conn->server)
         s_repl (&conn->server, "icq.icq.com");
     if (!conn->port)

@@ -364,8 +364,8 @@ static JUMP_SNAC_F(SnacServerpause)
 
 static void SrvCallbackTodoEg (Event *event)
 {
-    if (event && event->conn && event->conn->uin && event->conn->type == TYPE_SERVER)
-        CmdUser (s_sprintf ("\\as %ld eg", event->conn->uin));
+    if (event && event->conn && event->conn->cont && event->conn->type == TYPE_SERVER)
+        CmdUser (s_sprintf ("\\as %ld eg", event->conn->cont->uin));
 }
 
 /*
@@ -1534,18 +1534,16 @@ static JUMP_SNAC_F(SnacSrvNewuin)
     Contact *cont;
 
     cont = ContactUIN (serv, PacketReadAt4 (event->pak, 6 + 10 + 46));
-    serv->uin = serv->spref->uin = cont->uin;
+    serv->uin = cont->uin;
     M_printf (i18n (1762, "Your new UIN is: %ld.\n"), cont->uin);
     if (serv->flags & CONN_WIZARD)
     {
-        assert (serv->spref);
         assert (serv->assoc);
-        assert (serv->assoc->spref);
         assert (serv->open);
         assert (serv->assoc->open);
 
-        serv->spref->flags |= CONN_AUTOLOGIN;
-        serv->assoc->spref->flags |= CONN_AUTOLOGIN;
+        serv->flags |= CONN_AUTOLOGIN;
+        serv->assoc->flags |= CONN_AUTOLOGIN;
 
         s_repl (&serv->contacts->name, s_sprintf ("contacts-icq8-%ld", cont->uin));
         M_print (i18n (1790, "Setup wizard finished. Congratulations to your new UIN!\n"));
@@ -1632,7 +1630,7 @@ void SnacCliSetstatus (Connection *serv, UDWORD status, UWORD action)
         {
             PacketWriteB4 (pak, serv->assoc->port);
             PacketWrite1  (pak, serv->assoc->status);
-            PacketWriteB2 (pak, serv->assoc->ver);
+            PacketWriteB2 (pak, serv->assoc->version);
             PacketWriteB4 (pak, serv->assoc->our_session);
         }
         else
@@ -2037,7 +2035,7 @@ UBYTE SnacCliSendmsg2 (Connection *serv, Contact *cont, Extra *extra)
      PacketWriteTLV     (pak, 10001);
       PacketWriteLen     (pak);
        PacketWrite2       (pak, serv->assoc && serv->assoc->connect & CONNECT_OK
-                              ? serv->assoc->ver : 8);
+                              ? serv->assoc->version : 8);
        PacketWriteCapID   (pak, CAP_NONE);
        PacketWrite2       (pak, 0);
        PacketWrite4       (pak, 3);
@@ -2640,7 +2638,7 @@ void SnacCliSetrandom (Connection *serv, UWORD group)
         PacketWrite1  (pak, serv->assoc && serv->assoc->connect & CONNECT_OK
                             ? serv->assoc->status : 0);
         PacketWrite2  (pak, serv->assoc && serv->assoc->connect & CONNECT_OK
-                            ? serv->assoc->ver : 0);
+                            ? serv->assoc->version : 0);
         PacketWriteB4 (pak, 0);
         PacketWriteB4 (pak, 0x00005000);
         PacketWriteB4 (pak, 0x00000300);

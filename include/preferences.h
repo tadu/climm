@@ -42,21 +42,8 @@ struct Preferences_s
     /* Much more stuff to go here - %TODO% */
 };
 
-struct PreferencesConnection_s
-{
-    UDWORD    type;
-    UBYTE     flags;
-    UBYTE     version;
-    UDWORD    uin;
-    UDWORD    status;
-    char     *server;
-    UDWORD    port;
-    char     *passwd;
-};
-
 Preferences           *PreferencesC (void);
 void                   PreferencesInit (Preferences *pref);
-PreferencesConnection *PreferencesConnectionC (void);
 
 BOOL        PrefLoad (Preferences *pref);
 const char *PrefSetColorScheme (UBYTE scheme);
@@ -93,13 +80,6 @@ const char *PrefLogNameReal (Preferences *pref);
 
 #define SFLAG_BEEP          1
 #define SFLAG_EVENT         2
-
-#define CONN_AUTOLOGIN   1
-#define CONN_WIZARD      2
-
-#define TABS_SIMPLE      1
-#define TABS_CYCLE       2
-#define TABS_CYCLEALL    3
 
 #endif /* MICQ_PREFERENCES_H */
 

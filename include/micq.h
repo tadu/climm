@@ -54,7 +54,6 @@ typedef struct ContactAlias_s          ContactAlias;
 typedef struct Packet_s                Packet;
 typedef struct Connection_s            Connection;
 typedef struct Preferences_s           Preferences;
-typedef struct PreferencesConnection_s PreferencesConnection;
 typedef struct Cap_s                   Cap;
 typedef struct Extra_s                 Extra;
 

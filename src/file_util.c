@@ -182,7 +182,7 @@ void Initialize_RC_File ()
     {
         M_print (i18n (1796, "Setup wizard finished. Please wait until registration has finished.\n"));
         conn = SrvRegisterUIN (NULL, passwd);
-        conn->flags = CONN_WIZARD;
+        conn->flags |= CONN_WIZARD;
         conn->open = &ConnectionInitServer;
     }
     else
@@ -190,56 +190,41 @@ void Initialize_RC_File ()
         M_print (i18n (1791, "Setup wizard finished. Congratulations!\n"));
         conn = ConnectionC (TYPE_SERVER);
         conn->open = &ConnectionInitServer;
-        conn->spref = PreferencesConnectionC ();
         
-        conn->spref->type = TYPE_SERVER;
-        conn->spref->flags = CONN_AUTOLOGIN | CONN_WIZARD;
-        conn->spref->server = strdup ("login.icq.com");
-        conn->spref->port = 5190;
-        conn->spref->status = STATUS_ONLINE;
-        conn->spref->version = 8;
-        conn->spref->uin = uin;
+        conn->flags |= CONN_AUTOLOGIN | CONN_WIZARD;
+        conn->pref_server = strdup ("login.icq.com");
+        conn->pref_port = 5190;
+        conn->pref_status = STATUS_ONLINE;
+        conn->version = 8;
+        conn->uin = uin;
 #ifdef __BEOS__
-        conn->spref->passwd = strdup (passwd);
+        conn->pref_passwd = strdup (passwd);
 #endif
         
         conn->server  = strdup ("login.icq.com");
         conn->port    = 5190;
-        conn->type    = TYPE_SERVER;
         conn->flags   = CONN_AUTOLOGIN | CONN_WIZARD;
-        conn->ver     = 8;
-        conn->uin     = uin;
         conn->passwd  = strdup (passwd);
     }
     
 #ifdef ENABLE_PEER2PEER
     connt = ConnectionC (TYPE_MSGLISTEN);
     connt->open = &ConnectionInitPeer;
-    connt->spref = PreferencesConnectionC ();
 
     connt->parent = conn;
     conn->assoc = connt;
-    connt->spref->type = TYPE_MSGLISTEN;
-    connt->spref->flags = CONN_AUTOLOGIN;
-    connt->spref->status = prG->s5Use ? 2 : TCP_OK_FLAG;
-    connt->type  = connt->spref->type;
-    connt->flags = connt->spref->flags;
-    connt->status = connt->spref->status;
-    connt->spref->version = 8;
-    connt->ver = 8;
+    connt->flags |= CONN_AUTOLOGIN;
+    connt->pref_status = prG->s5Use ? 2 : TCP_OK_FLAG;
+    connt->status = connt->pref_status;
+    connt->version = 8;
 #endif
 
 #ifdef ENABLE_REMOTECONTROL
     conns = ConnectionC (TYPE_REMOTE);
     conns->open = &RemoteOpen;
-    conns->spref = PreferencesConnectionC ();
-    
-    conns->spref->type = TYPE_REMOTE;
-    conns->spref->flags = CONN_AUTOLOGIN;
-    conns->spref->server = strdup ("remote-control");
-    conns->type  = conns->spref->type;
-    conns->flags = conns->spref->flags;
-    conns->server = strdup (conns->spref->server);
+    conns->flags |= CONN_AUTOLOGIN;
+    conns->pref_server = strdup ("remote-control");
+    conns->server = strdup (conns->pref_server);
 #endif
 
     prG->status = STATUS_ONLINE;
@@ -317,7 +302,6 @@ int Read_RC_File (FILE *rcf)
                 section = 3;
                 oldconn = conn;
                 conn = ConnectionC (0);
-                conn->spref = PreferencesConnectionC ();
             }
             else if (!strcasecmp (args, "[Group]"))
             {
@@ -830,7 +814,7 @@ int Read_RC_File (FILE *rcf)
                 {
                     dep = 19;
                     for (i = 0; (tconn = ConnectionNr (i)); i++)
-                        if (tconn->spref->type & TYPEF_ANY_SERVER)
+                        if (tconn->type & TYPEF_ANY_SERVER)
                             break;
                     if (!tconn)
                         break;
@@ -889,83 +873,73 @@ int Read_RC_File (FILE *rcf)
 
                     if (!strcasecmp (cmd, "server"))
                     {
-                        conn->spref->type =
-                            (conn->spref->version ? (conn->spref->version > 6 
-                               ? TYPE_SERVER : TYPE_SERVER_OLD) : conn->spref->type);
-                        conn->spref->flags = 0;
+                        conn->type =
+                            (conn->version ? (conn->version > 6 
+                               ? TYPE_SERVER : TYPE_SERVER_OLD) : conn->type);
                         dep = 20;
                     }
                     else if (!strcasecmp (cmd, "icq8"))
-                    {
-                        conn->spref->type = TYPE_SERVER;
-                        conn->spref->flags = 0;
-                    }
+                        conn->type = TYPE_SERVER;
                     else if (!strcasecmp (cmd, "icq5"))
-                    {
-                        conn->spref->type = TYPE_SERVER_OLD;
-                        conn->spref->flags = 0;
-                    }
+                        conn->type = TYPE_SERVER_OLD;
                     else if (!strcasecmp (cmd, "peer"))
                     {
-                        conn->spref->type = TYPE_MSGLISTEN;
-                        conn->spref->flags = 0;
-                        if (oldconn->spref->type == TYPE_SERVER || oldconn->spref->type == TYPE_SERVER_OLD)
+                        conn->type = TYPE_MSGLISTEN;
+                        if (oldconn->type == TYPE_SERVER || oldconn->type == TYPE_SERVER_OLD)
                         {
                             oldconn->assoc = conn;
                             conn->parent = oldconn;
                         }
-                        conn->spref->status = TCP_OK_FLAG;
+                        conn->pref_status = TCP_OK_FLAG;
                     }
                     else if (!strcasecmp (cmd, "remote"))
-                    {
-                        conn->spref->type = TYPE_REMOTE;
-                        conn->spref->flags = 0;
-                    }
+                        conn->type = TYPE_REMOTE;
                     else
                         ERROR;
+
                     if (s_parse (&args, &par))
                     {
                         if (!strcasecmp (par->txt, "auto"))
-                            conn->spref->flags |= CONN_AUTOLOGIN;
+                            conn->flags |= CONN_AUTOLOGIN;
                     }
                 }
                 else if (!strcasecmp (cmd, "version"))
                 {
                     PrefParseInt (i);
 
-                    conn->spref->version = i;
-                    if (!conn->spref->type)
+                    conn->version = i;
+                    if (!conn->type)
                     {
-                        if (conn->spref->version > 6)
-                            conn->spref->type = TYPE_SERVER;
+                        if (conn->version > 6)
+                            conn->type = TYPE_SERVER;
                         else
-                            conn->spref->type = TYPE_SERVER_OLD;
+                            conn->type = TYPE_SERVER_OLD;
                     }
                 }
                 else if (!strcasecmp (cmd, "server"))
                 {
                     PrefParse (tmp);
-                    s_repl (&conn->spref->server, tmp);
+                    s_repl (&conn->pref_server, tmp);
                 }
                 else if (!strcasecmp (cmd, "port"))
                 {
                     PrefParseInt (i);
-                    conn->spref->port = i;
+                    conn->pref_port = i;
                 }
                 else if (!strcasecmp (cmd, "uin"))
                 {
                     PrefParseInt (i);
-                    conn->spref->uin = i;
+                    conn->uin = i;
                 }
                 else if (!strcasecmp (cmd, "password"))
                 {
                     PrefParse (tmp);
-                    s_repl (&conn->spref->passwd, tmp);
+                    s_repl (&conn->pref_passwd, tmp);
                 }
                 else if (!strcasecmp (cmd, "status"))
                 {
                     PrefParseInt (i);
-                    conn->spref->status = i;
+                    conn->pref_status = i;
                 }
                 else
                 {
@@ -1063,18 +1037,12 @@ int Read_RC_File (FILE *rcf)
 
     for (i = 0; (conn = ConnectionNr (i)); i++)
     {
-        assert (conn->spref);
-
-        conn->port   = conn->spref->port;
-        s_repl (&conn->server, conn->spref->server);
-        s_repl (&conn->passwd, conn->spref->passwd);
-        conn->status = conn->spref->status;
-        conn->uin    = conn->spref->uin;
-        conn->ver    = conn->spref->version;
-        conn->type   = conn->spref->type;
-        conn->flags  = conn->spref->flags;
-        if (prG->s5Use && conn->type & TYPEF_SERVER && !conn->ver)
-            conn->ver = 2;
+        conn->port   = conn->pref_port;
+        s_repl (&conn->server, conn->pref_server);
+        s_repl (&conn->passwd, conn->pref_passwd);
+        conn->status = conn->pref_status;
+        if (prG->s5Use && conn->type & TYPEF_SERVER && !conn->version)
+            conn->version = 2;
         switch (conn->type)
         {
             case TYPE_SERVER:
@@ -1095,6 +1063,7 @@ int Read_RC_File (FILE *rcf)
                 break;
 #endif
             default:
+                conn->type = 0;
                 conn->open = NULL;
                 break;
         }
@@ -1112,12 +1081,9 @@ int Read_RC_File (FILE *rcf)
     {
         connr = ConnectionC (TYPE_REMOTE);
         connr->open = &RemoteOpen;
-        connr->spref = PreferencesConnectionC ();
-        connr->spref->server = strdup ("remote-control");
+        connr->pref_server = strdup ("remote-control");
         connr->parent = NULL;
-        connr->spref->type = TYPE_REMOTE;
-        connr->type  = connr->spref->type;
-        connr->server = strdup (connr->spref->server);
+        connr->server = strdup (connr->pref_server);
         dep = 22;
     }
 #endif
@@ -1410,32 +1376,32 @@ int Save_RC ()
 
     for (k = 0; (ss = ConnectionNr (k)); k++)
     {
-        if (!ss->spref)
+        if (!ss->flags)
             continue;
-        if ((!ss->spref->uin && ss->spref->type == TYPE_SERVER)
-            || (ss->spref->type != TYPE_SERVER && ss->spref->type != TYPE_SERVER_OLD
-                && ss->spref->type != TYPE_MSGLISTEN && ss->spref->type != TYPE_REMOTE)
-            || (ss->spref->type == TYPE_MSGLISTEN && ss->parent && !ss->parent->spref->uin))
+        if ((!ss->uin && ss->type == TYPE_SERVER)
+            || (ss->type != TYPE_SERVER && ss->type != TYPE_SERVER_OLD
+                && ss->type != TYPE_MSGLISTEN && ss->type != TYPE_REMOTE)
+            || (ss->type == TYPE_MSGLISTEN && ss->parent && !ss->parent->uin))
             continue;
 
         fprintf (rcf, "[Connection]\n");
-        fprintf (rcf, "type %s%s\n",  ss->spref->type == TYPE_SERVER     ? "icq8" :
-                                      ss->spref->type == TYPE_SERVER_OLD ? "icq5" :
-                                      ss->spref->type == TYPE_MSGLISTEN  ? "peer" : "remote",
-                                      ss->spref->flags & CONN_AUTOLOGIN ? " auto" : "");
-        fprintf (rcf, "version %d\n", ss->spref->version);
-        if (ss->spref->server)
-            fprintf (rcf, "server %s\n",   s_quote (ss->spref->server));
-        if (ss->spref->port)
-            fprintf (rcf, "port %ld\n",    ss->spref->port);
-        if (ss->spref->uin)
-            fprintf (rcf, "uin %ld\n",     ss->spref->uin);
-        if (ss->spref->passwd)
-            fprintf (rcf, "password %s\n", s_quote (ss->spref->passwd));
+        fprintf (rcf, "type %s%s\n",  ss->type == TYPE_SERVER     ? "icq8" :
+                                      ss->type == TYPE_SERVER_OLD ? "icq5" :
+                                      ss->type == TYPE_MSGLISTEN  ? "peer" : "remote",
+                                      ss->flags & CONN_AUTOLOGIN ? " auto" : "");
+        fprintf (rcf, "version %d\n", ss->version);
+        if (ss->pref_server)
+            fprintf (rcf, "server %s\n",   s_quote (ss->pref_server));
+        if (ss->pref_port)
+            fprintf (rcf, "port %ld\n",    ss->pref_port);
+        if (ss->uin)
+            fprintf (rcf, "uin %ld\n",     ss->uin);
+        if (ss->pref_passwd)
+            fprintf (rcf, "password %s\n", s_quote (ss->pref_passwd));
         else if (!k)
             fprintf (rcf, "# password\n");
-        if (ss->spref->status || !k)
-            fprintf (rcf, "status %ld\n",  ss->spref->status);
+        if (ss->pref_status || !k)
+            fprintf (rcf, "status %ld\n",  ss->pref_status);
         fprintf (rcf, "\n");
     }
 

@@ -62,6 +62,9 @@ static void PeerFileIODispatchClose (Connection *ffile);
 static void PeerFileDispatchW       (Connection *fpeer);
 static BOOL PeerFileError (Connection *fpeer, UDWORD rc, UDWORD flags);
 
+#define FAIL(x) { err = x; break; }
+#define PeerFileClose TCPClose
+
 /*
  * Create a new file listener unless one already exists.
  */
@@ -71,31 +74,26 @@ Connection *PeerFileCreate (Connection *serv)
     
     ASSERT_ANY_SERVER(serv);
     
-    if (!serv->assoc || serv->assoc->ver < 6)
+    if (!serv->assoc || serv->assoc->version < 6)
         return NULL;
     
     if ((flist = ConnectionFind (TYPE_FILELISTEN, 0, serv)))
         return flist;
     
-    flist = ConnectionClone (serv->assoc, TYPE_FILELISTEN);
+    flist = ConnectionClone (serv, TYPE_FILELISTEN);
     if (!flist)
         return NULL;
 
     if (prG->verbose)
         M_printf (i18n (9999, "Opening file listener connection at %slocalhost%s:%s%ld%s... "),
-                  COLQUOTE, COLNONE, COLQUOTE, serv->assoc->spref->port, COLNONE);
+                  COLQUOTE, COLNONE, COLQUOTE, serv->assoc->pref_port, COLNONE);
 
-    flist->spref       = NULL;
-    flist->parent      = serv;
-    flist->connect     = 0;
-    flist->flags       = 0;
-    flist->our_seq     = -1;
-    flist->our_session = 0;
-    flist->port        = serv->assoc->spref->port;
-    s_repl (&flist->server, NULL);
-    flist->ip          = 0;
-    flist->dispatch    = &TCPDispatchMain;
-    flist->close       = &PeerFileDispatchClose;
+    flist->our_seq  = -1;
+    flist->version  = serv->assoc->version;
+    flist->cont     = serv->assoc->cont;
+    flist->port     = serv->assoc->pref_port;
+    flist->dispatch = &TCPDispatchMain;
+    flist->close    = &PeerFileDispatchClose;
     
     UtilIOConnectTCP (flist);
     
@@ -132,14 +130,14 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
     ASSERT_FILELISTEN (flist);
     ASSERT_FILEDIRECT (fpeer);
     
-    fpeer->port    = 0;
-    fpeer->ip      = 0;
-    fpeer->connect = 0;
+    fpeer->port      = 0;
+    fpeer->ip        = 0;
+    fpeer->connect   = 0;
     s_repl (&fpeer->server, NULL);
-    fpeer->uin     = event->cont->uin;
-    fpeer->len     = bytes;
-    fpeer->done    = 0;
-    fpeer->close   = &PeerFileDispatchDClose;
+    fpeer->cont      = cont;
+    fpeer->len       = bytes;
+    fpeer->done      = 0;
+    fpeer->close     = &PeerFileDispatchDClose;
     fpeer->reconnect = &TCPDispatchReconn;
     IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_FILE_ACKING, "", extra);
     
@@ -154,7 +152,7 @@ BOOL PeerFileAccept (Connection *peer, UWORD status, UDWORD port)
     Connection *flist, *fpeer;
     
     flist = PeerFileCreate (peer->parent->parent);
-    fpeer = ConnectionFindUIN (TYPE_FILEDIRECT, peer->uin, flist);
+    fpeer = ConnectionFind (TYPE_FILEDIRECT, peer->cont, flist);
     
     if (!flist || !fpeer || !port || (status == TCP_ACK_REFUSE))
     {
@@ -169,7 +167,6 @@ BOOL PeerFileAccept (Connection *peer, UWORD status, UDWORD port)
     ASSERT_FILEDIRECT(fpeer);
     
     fpeer->connect  = 0;
-    fpeer->flags    = 0;
     fpeer->our_seq  = 0;
     fpeer->port     = port;
     fpeer->ip       = peer->ip;
@@ -185,9 +182,6 @@ BOOL PeerFileAccept (Connection *peer, UWORD status, UDWORD port)
     
     return 1;
 }
-
-#define FAIL(x) { err = x; break; }
-#define PeerFileClose TCPClose
 
 /*
  * Close a file listener.
@@ -230,6 +224,7 @@ void PeerFileDispatch (Connection *fpeer)
     int err = 0;
     
     ASSERT_FILEDIRECT (fpeer);
+    assert (fpeer->cont);
     
     if (!(pak = UtilIOReceiveTCP (fpeer)))
         return;
@@ -237,8 +232,7 @@ void PeerFileDispatch (Connection *fpeer)
     if (prG->verbose & DEB_PACKTCP)
         TCPPrint (pak, fpeer, FALSE);
 
-    cont = ContactUIN (fpeer->parent->parent, fpeer->uin);
-    assert (cont);
+    cont = fpeer->cont;
 
     switch (PacketRead1 (pak))
     {
@@ -280,7 +274,7 @@ void PeerFileDispatch (Connection *fpeer)
             M_printf (i18n (2170, "Sending file at speed %lx to %s.\n"), speed, ConvFromCont (name, cont));
             
             fpeer->our_seq = 1;
-            QueueRetry (fpeer, QUEUE_PEER_FILE, ContactUIN (fpeer->parent->parent, fpeer->uin));
+            QueueRetry (fpeer, QUEUE_PEER_FILE, cont);
             return;
             
         case 2:
@@ -301,7 +295,7 @@ void PeerFileDispatch (Connection *fpeer)
 
                 assert (ffile);
                 pos = snprintf (buf, sizeof (buf), "%sfiles" _OS_PATHSEPSTR "%ld" _OS_PATHSEPSTR,
-                                PrefUserDir (prG), fpeer->uin);
+                                PrefUserDir (prG), cont->uin);
                 snprintf (buf + pos, sizeof (buf) - pos, "%s", ConvFromCont (name, cont));
                 for (p = buf + pos; *p; p++)
                     if (*p == '/')
@@ -318,7 +312,7 @@ void PeerFileDispatch (Connection *fpeer)
                     if (rc == ENOENT)
                     {
                         mkdir (s_sprintf ("%sfiles", PrefUserDir (prG)), 0700);
-                        mkdir (s_sprintf ("%sfiles" _OS_PATHSEPSTR "%ld", PrefUserDir (prG), fpeer->uin), 0700);
+                        mkdir (s_sprintf ("%sfiles" _OS_PATHSEPSTR "%ld", PrefUserDir (prG), cont->uin), 0700);
                         ffile->sok = open (buf, O_CREAT | O_WRONLY | (off ? O_APPEND : O_TRUNC), 0660);
                     }
                     if (ffile->sok == -1)
@@ -372,7 +366,7 @@ void PeerFileDispatch (Connection *fpeer)
             fpeer->assoc->done = off;
             fpeer->assoc->connect = CONNECT_OK;
             
-            QueueRetry (fpeer, QUEUE_PEER_FILE, ContactUIN (fpeer->parent->parent, fpeer->uin));
+            QueueRetry (fpeer, QUEUE_PEER_FILE, cont);
             return;
             
         case 4:
@@ -441,6 +435,8 @@ static void PeerFileDispatchW (Connection *fpeer)
 {
     Packet *pak = fpeer->outgoing;
     
+    ASSERT_FILEDIRECT(fpeer);
+    
     fpeer->outgoing = NULL;
     fpeer->connect = CONNECT_OK | CONNECT_SELECT_R;
     fpeer->dispatch = &PeerFileDispatch;
@@ -449,12 +445,15 @@ static void PeerFileDispatchW (Connection *fpeer)
     if (!UtilIOSendTCP (fpeer, pak))
         TCPClose (fpeer);
     
-    QueueRetry (fpeer, QUEUE_PEER_FILE, ContactUIN (fpeer->parent->parent, fpeer->uin));
+    QueueRetry (fpeer, QUEUE_PEER_FILE, fpeer->cont);
 }
 
 static BOOL PeerFileError (Connection *fpeer, UDWORD rc, UDWORD flags)
 {
-    Contact *cont = ContactUIN (fpeer->parent->parent, fpeer->uin);
+    Contact *cont = fpeer->cont;
+    
+    ASSERT_FILEDIRECT(fpeer);
+    
     switch (rc)
     {
         case EPIPE:
@@ -622,7 +621,7 @@ void PeerFileResend (Event *event)
             if (event2)
             {
                 QueueEnqueue (event2);
-                QueueRetry (fpeer, QUEUE_PEER_FILE, ContactUIN (fpeer->parent->parent, fpeer->uin));
+                QueueRetry (fpeer, QUEUE_PEER_FILE, fpeer->cont);
                 return;
             }
             else

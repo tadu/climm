@@ -355,7 +355,7 @@ static JUMP_F(CmdUserRandomSet)
     if (!s_parseint (&args, &arg1))
     {
         M_print (i18n (1704, "Groups:\n"));
-        M_printf ("  %2d %s\n", conn->ver > 6 ? 0 : -1, i18n (1716, "None"));
+        M_printf ("  %2d %s\n", conn->version > 6 ? 0 : -1, i18n (1716, "None"));
         M_printf ("  %2d %s\n",  1, i18n (1705, "General"));
         M_printf ("  %2d %s\n",  2, i18n (1706, "Romance"));
         M_printf ("  %2d %s\n",  3, i18n (1707, "Games"));
@@ -525,10 +525,10 @@ static JUMP_F(CmdUserPass)
         else
             CmdPktCmdMetaPass (conn, arg1);
         conn->passwd = strdup (arg1);
-        if (conn->spref->passwd && strlen (conn->spref->passwd))
+        if (conn->pref_passwd && strlen (conn->pref_passwd))
         {
             M_print (i18n (2122, "Note: You need to 'save' to write new password to disc.\n"));
-            conn->spref->passwd = strdup (arg1);
+            conn->pref_passwd = strdup (arg1);
         }
     }
     return 0;
@@ -1530,7 +1530,7 @@ static JUMP_F(CmdUserStatusDetail)
 
     if (data & 4)
     {
-        if (conn && conn->uin)
+        if (conn)
         {
             M_printf ("%s %s%10lu%s ", s_now, COLCONTACT, conn->uin, COLNONE);
             M_printf (i18n (2211, "Your status is %s.\n"), s_status (conn->status));
@@ -1659,7 +1659,7 @@ static JUMP_F(CmdUserStatusMeta)
                     args++;
                 continue;
             case 4:
-                if (!(cont = ContactUIN (conn, conn->uin)))
+                if (!(cont = conn->cont))
                     return 0;
                 if (conn->type == TYPE_SERVER)
                 {
@@ -1789,7 +1789,7 @@ static JUMP_F(CmdUserStatusWide)
         ContactGroupD (cgoff);
     }
 
-    cont = ContactUIN (conn, conn->uin);
+    cont = conn->cont;
     M_printf ("%s%ld%s %s", COLCONTACT, cont->uin, COLNONE, COLQUOTE);
     colleft = (rl_columns - s_strlen (i18n (1654, "Online"))) / 2 - s_strlen (s_sprintf ("%ld", cont->uin)) - 2;
     for (i = 0; i < colleft; i++)
@@ -2652,7 +2652,7 @@ static JUMP_F(CmdUserAuth)
             if (!msg)         /* FIXME: let it untranslated? */
                 msg = "Please authorize my request and add me to your Contact List\n";
 #ifdef WIP
-            if (conn->type == TYPE_SERVER && conn->ver >= 8)
+            if (conn->type == TYPE_SERVER && conn->version >= 8)
                 SnacCliReqauth (conn, cont, msg);
             else
 #endif
@@ -2668,7 +2668,7 @@ static JUMP_F(CmdUserAuth)
             if (!msg)         /* FIXME: let it untranslated? */
                 msg = "Authorization refused\n";
 #ifdef WIP
-            if (conn->type == TYPE_SERVER && conn->ver >= 8)
+            if (conn->type == TYPE_SERVER && conn->version >= 8)
                 SnacCliAuthorize (conn, cont, 0, msg);
             else
 #endif
@@ -2682,7 +2682,7 @@ static JUMP_F(CmdUserAuth)
         else if (!strcmp (cmd, "add"))
         {
 #ifdef WIP
-            if (conn->type == TYPE_SERVER && conn->ver >= 8)
+            if (conn->type == TYPE_SERVER && conn->version >= 8)
                 SnacCliGrantauth (conn, cont);
             else
 #endif
@@ -2703,7 +2703,7 @@ static JUMP_F(CmdUserAuth)
     }
 
 #ifdef WIP
-    if (conn->type == TYPE_SERVER && conn->ver >= 8)
+    if (conn->type == TYPE_SERVER && conn->version >= 8)
         SnacCliAuthorize (conn, cont, 1, NULL);
     else
 #endif
@@ -2899,11 +2899,10 @@ static JUMP_F(CmdUserConn)
         
         for (i = 0; (connl = ConnectionNr (i)); i++)
         {
-            Contact *cont;
-            cont = ContactUIN (conn, conn->uin);
+            Contact *cont = connl->cont;
 
             M_printf (i18n (2093, "%02d %-15s version %d for %s (%lx), at %s:%ld %s\n"),
-                     i + 1, ConnectionType (connl), connl->ver, cont ? cont->nick : "", connl->status,
+                     i + 1, ConnectionType (connl), connl->version, cont ? cont->nick : "", connl->status,
                      connl->server ? connl->server : s_ip (connl->ip), connl->port,
                      connl->connect & CONNECT_FAIL ? i18n (1497, "failed") :
                      connl->connect & CONNECT_OK   ? i18n (1934, "connected") :
@@ -2981,7 +2980,7 @@ static JUMP_F(CmdUserConn)
 #endif
         conn = connl;
         M_printf (i18n (2099, "Selected connection %ld (version %d, UIN %ld) as current connection.\n"),
-                 i, connl->ver, connl->uin);
+                 i, connl->version, connl->uin);
     }
     else if (!strcmp (par->txt, "remove") || !strcmp (par->txt, "delete"))
     {
@@ -2995,7 +2994,7 @@ static JUMP_F(CmdUserConn)
             M_printf (i18n (1894, "There is no connection number %ld.\n"), i);
             return 0;
         }
-        if (connl->spref)
+        if (connl->flags & CONN_CONFIGURED)
         {
             M_printf (i18n (2102, "Connection %ld is a configured connection.\n"), i);
             return 0;
@@ -3359,7 +3358,7 @@ static JUMP_F(CmdUserUpdate)
     MetaGeneral *user;
     OPENCONN;
     
-    if (!(cont = ContactUIN (conn, conn->uin)))
+    if (!(cont = conn->cont))
         return 0;
     if (!(user = CONTACT_GENERAL(cont)))
         return 0;
@@ -3500,7 +3499,7 @@ static JUMP_F(CmdUserOther)
     int temp;
     OPENCONN;
     
-    if (!(cont = ContactUIN (conn, conn->uin)))
+    if (!(cont = conn->cont))
         return 0;
     if (!(more = CONTACT_MORE(cont)))
         return 0;

@@ -88,15 +88,15 @@ static void TCPSendInitv6 (Connection *peer);
  */
 void ConnectionInitPeer (Connection *list)
 {
-    assert (list);
+    ASSERT_MSGLISTEN (list);
     
-    if (list->ver < 6 || list->ver > 8)
+    if (list->version < 6 || list->version > 8)
     {
-        M_printf (i18n (2024, "Unknown protocol version %d for ICQ peer-to-peer protocol.\n"), list->ver);
+        M_printf (i18n (2024, "Unknown protocol version %d for ICQ peer-to-peer protocol.\n"), list->version);
         return;
     }
 
-    if (list->ver == 6)
+    if (list->version == 6)
         M_print (i18n (2046, "You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n"));
 
     M_printf (i18n (9999, "Opening peer-to-peer connection at %slocalhost%s:%s%ld%s... "),
@@ -104,14 +104,12 @@ void ConnectionInitPeer (Connection *list)
 
     list->connect     = 0;
     list->our_seq     = -1;
-    list->type        = TYPE_MSGLISTEN;
-    list->flags       = 0;
     list->dispatch    = &TCPDispatchMain;
     list->our_session = 0;
     list->ip          = 0;
     s_repl (&list->server, NULL);
-    list->port        = list->spref->port;
-    list->uin         = list->parent ? list->parent->uin : 0;
+    list->port        = list->pref_port;
+    list->cont        = list->parent->cont ? list->parent->cont : ContactUIN (list->parent, list->parent->uin);
 
     UtilIOConnectTCP (list);
 }
@@ -124,30 +122,26 @@ BOOL TCPDirectOpen (Connection *list, Contact *cont)
     Connection *peer;
 
     ASSERT_MSGLISTEN (list);
+    assert (cont);
 
     if (!cont || !cont->dc || cont->dc->version < 6)
         return FALSE;
-    if (cont->uin == list->parent->uin)
+    if (cont == list->cont)
         return FALSE;
 
-    if ((peer = ConnectionFind (TYPE_MSGDIRECT, cont, list)))
-    {
-        if (peer->connect & CONNECT_MASK)
-            return TRUE;
-    }
-    else
-        peer = ConnectionClone (list, TYPE_MSGDIRECT);
+    if (!(peer = ConnectionFind (TYPE_MSGDIRECT, cont, list)))
+        if (!(peer = ConnectionClone (list, TYPE_MSGDIRECT)))
+            return FALSE;
+
+    ASSERT_MSGDIRECT (peer);
+
+    if (peer->connect & CONNECT_MASK)
+        return TRUE;
     
-    if (!peer)
-        return FALSE;
-    
-    peer->port   = 0;
-    peer->uin    = cont->uin;
-    peer->flags  = 0;
-    peer->spref  = NULL;
-    peer->parent = list;
-    peer->assoc  = NULL;
-    peer->ver    = list->ver <= cont->dc->version ? list->ver : cont->dc->version;
+    peer->version   = list->version <= cont->dc->version ? list->version : cont->dc->version;
+    peer->port      = 0;
+    peer->cont      = cont;
+    peer->assoc     = NULL;
     peer->close     = &PeerDispatchClose;
     peer->reconnect = &TCPDispatchReconn;
 
@@ -164,10 +158,9 @@ void TCPDirectClose (Connection *list, Contact *cont)
     Connection *peer;
 
     ASSERT_MSGLISTEN (list);
-    if (!cont)
-        return;
+    assert (cont);
     
-    while ((peer = ConnectionFindUIN (TYPEF_ANY_DIRECT, list->uin, list)))
+    while ((peer = ConnectionFind (TYPEF_ANY_DIRECT, list->cont, list)))
         TCPClose (peer);
 }
 
@@ -179,19 +172,14 @@ void TCPDirectOff (Connection *list, Contact *cont)
     Connection *peer;
     
     ASSERT_MSGLISTEN (list);
-    if (!cont)
-        return;
-    peer = ConnectionFind (TYPE_MSGDIRECT, cont, list);
+    assert (cont);
+
+    if (!(peer = ConnectionFind (TYPE_MSGDIRECT, cont, list)))
+        if (!(peer = ConnectionC (TYPE_MSGDIRECT)))
+            return;
     
-    if (!peer)
-        peer = ConnectionC (TYPE_MSGDIRECT);
-    if (!peer)
-        return;
-    
-    peer->uin     = cont->uin;
-    peer->connect = CONNECT_FAIL;
-    peer->flags   = 0;
-    peer->parent  = list;
+    peer->cont     = cont;
+    peer->connect  = CONNECT_FAIL;
 
     ASSERT_MSGDIRECT(peer);
 
@@ -213,10 +201,8 @@ void TCPDispatchReconn (Connection *peer)
 
     if (prG->verbose)
     {
-        Contact *cont;
-        
-        if (!(cont = ContactUIN (peer->parent->parent, peer->uin)))
-            return;
+        Contact *cont = peer->cont;
+
         M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
         M_print  (i18n (2023, "Direct connection closed by peer.\n"));
     }
@@ -283,11 +269,9 @@ void TCPDispatchMain (Connection *list)
         return;
     }
 
-    if (list->ver == 6)
+    if (list->version == 6)
         M_print (i18n (2046, "You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n"));
 
-    peer->flags = 0;
-    peer->spref = NULL;
     peer->our_session = 0;
     peer->dispatch    = &TCPDispatchShake;
 
@@ -312,7 +296,7 @@ void TCPDispatchMain (Connection *list)
     }
 
     peer->connect = 16 | CONNECT_SELECT_R;
-    peer->uin = 0;
+    peer->cont = NULL;
 }
 
 /*
@@ -328,8 +312,7 @@ void TCPDispatchConn (Connection *peer)
 
     while (1)
     {
-        cont = ContactUIN (peer->parent->parent, peer->uin);
-        if (!cont || !cont->dc)
+        if (!(cont = peer->cont) || !cont->dc)
         {
             TCPClose (peer);
             return;
@@ -436,19 +419,15 @@ void TCPDispatchShake (Connection *peer)
     ASSERT_ANY_DIRECT (peer);
     
     if ((peer->connect & CONNECT_MASK) != 1)
-    {
-        pak = TCPReceivePacket (peer);
-        if (!pak)
+        if (!(pak = TCPReceivePacket (peer)))
             return;
-    }
 
     while (1)
     {
         if (!peer)
             return;
 
-        cont = ContactUIN (peer->parent->parent, peer->uin);
-        if (!cont && (peer->connect & CONNECT_MASK) != 16)
+        if (!(cont = peer->cont) && (peer->connect & CONNECT_MASK) != 16)
         {
             TCPClose (peer);
             peer->connect = CONNECT_FAIL;
@@ -458,7 +437,7 @@ void TCPDispatchShake (Connection *peer)
         }
         
         Debug (DEB_TCP, "HS %d uin %ld nick %s state %d pak %p peer %p",
-                        peer->sok, cont->uin, cont ? cont->nick : "<>", peer->connect, pak, peer);
+                        peer->sok, cont ? cont->uin : 0, cont ? cont->nick : "<>", peer->connect, pak, peer);
 
         switch (peer->connect & CONNECT_MASK)
         {
@@ -483,7 +462,7 @@ void TCPDispatchShake (Connection *peer)
                 continue;
             case 5:
                 peer->connect++;
-                if (peer->ver > 6 && peer->type == TYPE_MSGDIRECT)
+                if (peer->version > 6 && peer->type == TYPE_MSGDIRECT)
                 {
                     TCPSendInit2 (peer);
                     return;
@@ -491,7 +470,7 @@ void TCPDispatchShake (Connection *peer)
                 continue;
             case 6:
                 peer->connect = 7 | CONNECT_SELECT_R;
-                if (peer->ver > 6 && peer->type == TYPE_MSGDIRECT)
+                if (peer->version > 6 && peer->type == TYPE_MSGDIRECT)
                 {
                     peer = TCPReceiveInit2 (peer, pak);
                     PacketD (pak);
@@ -519,13 +498,13 @@ void TCPDispatchShake (Connection *peer)
                 peer->connect++;
                 TCPReceiveInitAck (peer, pak);
                 PacketD (pak);
-                if (peer->ver > 6 && peer->type == TYPE_MSGDIRECT)
+                if (peer->version > 6 && peer->type == TYPE_MSGDIRECT)
                     return;
                 pak = NULL;
                 continue;
             case 20:
                 peer->connect++;
-                if (peer->ver > 6 && peer->type == TYPE_MSGDIRECT)
+                if (peer->version > 6 && peer->type == TYPE_MSGDIRECT)
                 {
                     peer = TCPReceiveInit2 (peer, pak);
                     PacketD (pak);
@@ -534,7 +513,7 @@ void TCPDispatchShake (Connection *peer)
                 continue;
             case 21:
                 peer->connect = 48 | CONNECT_SELECT_R;
-                if (peer->ver > 6 && peer->type == TYPE_MSGDIRECT)
+                if (peer->version > 6 && peer->type == TYPE_MSGDIRECT)
                     TCPSendInit2 (peer);
                 continue;
             case 48:
@@ -579,7 +558,7 @@ static void TCPDispatchPeer (Connection *peer)
     
     ASSERT_MSGDIRECT (peer);
     
-    if (!(cont = ContactUIN (peer->parent->parent, peer->uin)))
+    if (!(cont = peer->cont))
     {
         TCPClose (peer);
         return;
@@ -592,7 +571,7 @@ static void TCPDispatchPeer (Connection *peer)
         if (!(pak = TCPReceivePacket (peer)))
             return;
 
-        if (peer->ver > 6)
+        if (peer->version > 6)
             PacketRead1 (pak);
                PacketRead4 (pak);
         cmd  = PacketReadAt2 (pak, PacketReadPos (pak));
@@ -650,7 +629,6 @@ static void TCPCallBackTimeout (Event *event)
         EventD (event);
         return;
     }
-    
     ASSERT_ANY_DIRECT (peer);
     assert (event->type == QUEUE_TCP_TIMEOUT);
     
@@ -658,7 +636,7 @@ static void TCPCallBackTimeout (Event *event)
     {
         Contact *cont;
         
-        if ((cont = ContactUIN (peer->parent->parent, peer->uin)))
+        if ((cont = peer->cont))
             M_printf (i18n (1850, "Timeout on connection with %s at %s:%ld\n"),
                       cont->nick, s_ip (peer->ip), peer->port);
         TCPClose (peer);
@@ -676,7 +654,6 @@ static void TCPCallBackTOConn (Event *event)
         EventD (event);
         return;
     }
-
     ASSERT_ANY_DIRECT (event->conn);
 
     event->conn->connect += 2;
@@ -747,8 +724,10 @@ Packet *PeerPacketC (Connection *peer, UBYTE cmd)
 {
     Packet *pak;
     
+    ASSERT_ANY_DIRECT (peer);
+    
     pak = PacketC ();
-    if (peer->type != TYPE_MSGDIRECT || peer->ver > 6 || cmd != PEER_MSG)
+    if (peer->type != TYPE_MSGDIRECT || peer->version > 6 || cmd != PEER_MSG)
         PacketWrite1 (pak, cmd);
     return pak;
 }
@@ -778,7 +757,7 @@ void PeerPacketSend (Connection *peer, Packet *pak)
     tpak->len = pak->len + 2;
     
     if (peer->type == TYPE_MSGDIRECT)
-        if (PacketReadAt1 (pak, 0) == PEER_MSG || (!PacketReadAt1 (pak, 0) && peer->type == TYPE_MSGDIRECT && peer->ver == 6)) 
+        if (PacketReadAt1 (pak, 0) == PEER_MSG || (!PacketReadAt1 (pak, 0) && peer->type == TYPE_MSGDIRECT && peer->version == 6)) 
             Encrypt_Pak (peer, tpak);
     
     if (!UtilIOSendTCP (peer, tpak))
@@ -794,6 +773,7 @@ static void TCPSendInitv6 (Connection *peer)
     Packet *pak;
     
     ASSERT_ANY_DIRECT (peer);
+    assert (peer->cont);
 
     if (!(peer->connect & CONNECT_MASK))
         return;
@@ -806,7 +786,7 @@ static void TCPSendInitv6 (Connection *peer)
     pak = PeerPacketC (peer, PEER_INIT);
     PacketWrite2  (pak, 6);                                    /* TCP version      */
     PacketWrite2  (pak, 0);                                    /* TCP revision     */
-    PacketWrite4  (pak, peer->uin);                            /* destination UIN  */
+    PacketWrite4  (pak, peer->cont->uin);                      /* destination UIN  */
     PacketWrite2  (pak, 0);                                    /* unknown - zero   */
     PacketWrite4  (pak, peer->parent->port);                   /* our port         */
     PacketWrite4  (pak, peer->parent->parent->uin);            /* our UIN          */
@@ -817,7 +797,7 @@ static void TCPSendInitv6 (Connection *peer)
     PacketWrite4  (pak, peer->our_session);                    /* session id       */
 
     Debug (DEB_TCP, "HS %d uin %ld CONNECT pak %p peer %p",
-                    peer->sok, peer->uin, pak, peer);
+                    peer->sok, peer->cont->uin, pak, peer);
 
     PeerPacketSend (peer, pak);
     PacketD (pak);
@@ -832,7 +812,7 @@ static void TCPSendInit (Connection *peer)
     
     ASSERT_ANY_DIRECT (peer);
 
-    if (peer->ver == 6)
+    if (peer->version == 6)
     {
         TCPSendInitv6 (peer);
         return;
@@ -845,8 +825,7 @@ static void TCPSendInit (Connection *peer)
     {
         Contact *cont;
 
-        cont = ContactUIN (peer->parent->parent, peer->uin);
-        if (!cont || !cont->dc)
+        if (!(cont = peer->cont) || !cont->dc)
         {
             TCPClose (peer);
             return;
@@ -857,36 +836,37 @@ static void TCPSendInit (Connection *peer)
     peer->stat_real_pak_sent++;
 
     pak = PeerPacketC (peer, PEER_INIT);
-    PacketWrite2  (pak, peer->ver);                    /* TCP version      */
-    PacketWrite2  (pak, 43);                           /* length           */
-    PacketWrite4  (pak, peer->uin);                    /* destination UIN  */
-    PacketWrite2  (pak, 0);                            /* unknown - zero   */
-    PacketWrite4  (pak, peer->parent->port);           /* our port         */
-    PacketWrite4  (pak, peer->parent->parent->uin);             /* our UIN          */
-    PacketWriteB4 (pak, peer->parent->parent->our_outside_ip);  /* our (remote) IP  */
-    PacketWriteB4 (pak, peer->parent->parent->our_local_ip);    /* our (local)  IP  */
-    PacketWrite1  (pak, peer->parent->status);                  /* connection type  */
-    PacketWrite4  (pak, peer->parent->port);           /* our (other) port */
-    PacketWrite4  (pak, peer->our_session);            /* session id       */
+    PacketWrite2  (pak, peer->version);                        /* TCP version      */
+    PacketWrite2  (pak, 43);                                   /* length           */
+    PacketWrite4  (pak, peer->cont->uin);                      /* destination UIN  */
+    PacketWrite2  (pak, 0);                                    /* unknown - zero   */
+    PacketWrite4  (pak, peer->parent->port);                   /* our port         */
+    PacketWrite4  (pak, peer->parent->parent->uin);            /* our UIN          */
+    PacketWriteB4 (pak, peer->parent->parent->our_outside_ip); /* our (remote) IP  */
+    PacketWriteB4 (pak, peer->parent->parent->our_local_ip);   /* our (local)  IP  */
+    PacketWrite1  (pak, peer->parent->status);                 /* connection type  */
+    PacketWrite4  (pak, peer->parent->port);                   /* our (other) port */
+    PacketWrite4  (pak, peer->our_session);                    /* session id       */
     PacketWrite4  (pak, 0x00000050);
     PacketWrite4  (pak, 0x00000003);
     PacketWrite4  (pak, 0);
 
     Debug (DEB_TCP, "HS %d uin %ld CONNECTv8 pak %p peer %p",
-                    peer->sok, peer->uin, pak, peer);
+                    peer->sok, peer->cont->uin, pak, peer);
 
     PeerPacketSend (peer, pak);
     PacketD (pak);
 }
 
 /*
- * Sends the initialization packet
+ * Sends the initialization acknowledge packet
  */
 static void TCPSendInitAck (Connection *peer)
 {
     Packet *pak;
     
     ASSERT_ANY_DIRECT (peer);
+    assert (peer->cont);
 
     if (!(peer->connect & CONNECT_MASK))
         return;
@@ -898,7 +878,7 @@ static void TCPSendInitAck (Connection *peer)
     PacketWrite2 (pak, 0);
 
     Debug (DEB_TCP, "HS %d uin %ld INITACK pak %p peer %p",
-                    peer->sok, peer->uin, pak, peer);
+                    peer->sok, peer->cont->uin, pak, peer);
 
     PeerPacketSend (peer, pak);
     PacketD (pak);
@@ -909,9 +889,8 @@ static void TCPSendInit2 (Connection *peer)
     Packet *pak;
     
     ASSERT_ANY_DIRECT (peer);
-    
-    if (peer->ver == 6)
-        return;
+    assert (peer->cont);
+    assert (peer->version > 6);
     
     if (!(peer->connect & CONNECT_MASK))
         return;
@@ -929,7 +908,7 @@ static void TCPSendInit2 (Connection *peer)
     PacketWrite4 (pak, (peer->connect & 16) ? 0 : 0x40001);
 
     Debug (DEB_TCP, "HS %d uin %ld INITMSG pak %p peer %p",
-                    peer->sok, peer->uin, pak, peer);
+                    peer->sok, peer->cont->uin, pak, peer);
 
     PeerPacketSend (peer, pak);
     PacketD (pak);
@@ -993,10 +972,10 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
         if (port && port2 && port != port2)
             FAIL (11);
 
-        peer->ver = (peer->ver > nver ? nver : peer->ver);
+        peer->version = (peer->parent->version > nver ? nver : peer->parent->version);
 
         if (!peer->our_session)
-            peer->our_session = peer->ver > 6 ? cont->dc->cookie : sid;
+            peer->our_session = peer->version > 6 ? cont->dc->cookie : sid;
         if (sid  != peer->our_session)
             FAIL (8);
 
@@ -1005,18 +984,18 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
 
         /* okay, the connection seems not to be faked, so update using the following information. */
 
-        peer->uin = uin;
+        peer->cont = cont;
         if (port)     cont->dc->port = port;
         if (oip)      cont->dc->ip_rem = oip;
         if (iip)      cont->dc->ip_loc = iip;
         if (tcpflag)  cont->dc->type = tcpflag;
 
         Debug (DEB_TCP, "HS %d uin %ld nick %s init pak %p peer %p: ver %04x:%04x port %ld uin %ld SID %08lx type %x",
-                        peer->sok, cont->uin, cont->nick, pak, peer, peer->ver, len, port, uin, sid, peer->type);
+                        peer->sok, cont->uin, cont->nick, pak, peer, peer->version, len, port, uin, sid, peer->type);
 
         for (i = 0; (peer2 = ConnectionNr (i)); i++)
             if (     peer2->type == peer->type && peer2->parent == peer->parent
-                  && peer2->uin  == peer->uin  && !peer->assoc && peer2 != peer)
+                  && peer2->cont  == peer->cont  && !peer->assoc && peer2 != peer)
                 break;
 
         if (peer2)
@@ -1119,7 +1098,7 @@ void TCPClose (Connection *peer)
     {
         if (peer->connect & CONNECT_MASK && prG->verbose)
         {
-            Contact *cont = ContactUIN (peer->parent->parent, peer->uin);
+            Contact *cont = peer->cont;
             M_printf ("%s ", s_now);
             if (cont)
                 M_printf (i18n (1842, "Closing socket %d to %s.\n"), peer->sok, cont->nick);
@@ -1142,7 +1121,7 @@ void TCPClose (Connection *peer)
         peer->outgoing = NULL;
     }
     
-    if (peer->type == TYPE_FILEDIRECT || !peer->uin)
+    if (peer->type == TYPE_FILEDIRECT || !peer->cont)
     {
         peer->close = NULL;
         ConnectionClose (peer);
@@ -1186,7 +1165,7 @@ void TCPPrint (Packet *pak, Connection *peer, BOOL out)
     
     pak->rpos = 0;
     cmd = *pak->data;
-    cont = ContactUIN (peer->parent->parent, peer->uin);
+    cont = peer->cont;
 
     M_printf ("%s " COLINDENT "%s", s_now, out ? COLCLIENT : COLSERVER);
     M_printf (out ? i18n (2078, "Outgoing TCP packet (%d - %s): %s")
@@ -1194,7 +1173,7 @@ void TCPPrint (Packet *pak, Connection *peer, BOOL out)
               peer->sok, cont ? cont->nick : "", TCPCmdName (cmd));
     M_printf ("%s\n", COLNONE);
 
-    if (peer->connect & CONNECT_OK && peer->type == TYPE_MSGDIRECT && peer->ver == 6)
+    if (peer->connect & CONNECT_OK && peer->type == TYPE_MSGDIRECT && peer->version == 6)
     {
         cmd = 2;
         pak->rpos --;
@@ -1236,7 +1215,10 @@ UBYTE PeerSendMsg (Connection *list, Contact *cont, Extra *extra)
     const char *e_msg_text = NULL;
     UDWORD e_msg_type = 0;
 
-    if (!list || !list->parent || !cont || !cont->dc || !cont->dc->port)
+    ASSERT_MSGLISTEN(list);
+    assert (cont);
+
+    if (!cont->dc || !cont->dc->port)
         return RET_DEFER;
     if (cont->uin == list->parent->uin || !(list->connect & CONNECT_MASK))
         return RET_DEFER;
@@ -1261,17 +1243,11 @@ UBYTE PeerSendMsg (Connection *list, Contact *cont, Extra *extra)
             return RET_DEFER;
     }
 
-    ASSERT_MSGLISTEN(list);
-    
-    peer = ConnectionFind (TYPE_MSGDIRECT, cont, list);
-    if (peer)
-    {
+    if ((peer = ConnectionFind (TYPE_MSGDIRECT, cont, list)))
         if (peer->connect & CONNECT_FAIL)
             return RET_DEFER;
-        if (~peer->connect & CONNECT_OK)
-            peer = NULL;
-    }
-    if (!peer)
+
+    if (!peer || ~peer->connect & CONNECT_OK)
     {
        TCPDirectOpen (list, cont);
        return RET_DEFER;
@@ -1305,15 +1281,16 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     int i, rc, sumlen, sum;
     time_t now = time (NULL);
 
+    ASSERT_MSGLISTEN(list);
+    assert (cont);
+    
     if (!count)
         return TRUE;
     if (count < 0)
         return FALSE;
-    if (!cont || !cont->dc || !cont->dc->port)
+    if (!cont->dc || !cont->dc->port)
         return FALSE;
     
-    if (!list || !list->parent)
-        return FALSE;
     if (cont->uin == list->parent->uin)
         return FALSE;
     if (!(list->connect & CONNECT_MASK))
@@ -1321,10 +1298,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     if (!cont->dc->ip_loc && !cont->dc->ip_rem)
         return FALSE;
 
-    ASSERT_MSGLISTEN(list);
-    
-    peer = ConnectionFind (TYPE_MSGDIRECT, cont, list);
-    if (peer)
+    if ((peer = ConnectionFind (TYPE_MSGDIRECT, cont, list)))
     {
         if (peer->connect & CONNECT_FAIL)
             return FALSE;
@@ -1333,16 +1307,13 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     {
         if (!TCPDirectOpen (list, cont))
             return FALSE;
-        peer = ConnectionFind (TYPE_MSGDIRECT, cont, list);
-        if (!peer)
+        if (!(peer = ConnectionFind (TYPE_MSGDIRECT, cont, list)))
             return FALSE;
     }
 
     ASSERT_MSGDIRECT(peer);
     
-    flist = PeerFileCreate (peer->parent->parent);
-    if (!flist)
-        return FALSE;
+    if (!(flist = PeerFileCreate (peer->parent->parent)))
     
     ASSERT_FILELISTEN(flist);
 
@@ -1351,9 +1322,9 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
 
     fpeer = ConnectionClone (flist, TYPE_FILEDIRECT);
     
-    assert (fpeer);
+    ASSERT_FILEDIRECT(fpeer);
     
-    fpeer->uin     = cont->uin;
+    fpeer->cont    = cont;
     fpeer->connect = 77;
         
     for (sumlen = sum = i = 0; i < count; i++)
@@ -1400,7 +1371,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     QueueEnqueueData (fpeer, QUEUE_PEER_FILE, 0, now, pak, cont,
                       ExtraSet (NULL, EXTRA_MESSAGE, MSG_FILE, description), &PeerFileResend);
         
-    if (peer->ver < 8)
+    if (peer->version < 8)
     {
         pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
         SrvMsgAdvanced   (pak, peer->our_seq, MSG_FILE, list->parent->status,
@@ -1474,7 +1445,7 @@ static void TCPCallBackResend (Event *event)
 
     peer->connect = CONNECT_FAIL;
     event->extra = ExtraSet (event->extra, EXTRA_TRANS, e_trans & ~EXTRA_TRANS_DC, NULL);
-    delta = (peer->ver > 6 ? 1 : 0);
+    delta = (peer->version > 6 ? 1 : 0);
     if (PacketReadAt2 (pak, 4 + delta) == TCP_CMD_MESSAGE)
     {
         IMCliMsg (peer->parent->parent, cont, event->extra);
@@ -1681,7 +1652,7 @@ static void Encrypt_Pak (Connection *peer, Packet *pak)
     p = pak->data + 2;
     size = pak->len - 2;
     
-    if (peer->ver > 6)
+    if (peer->version > 6)
     {
         p++;
         size--;
@@ -1712,7 +1683,7 @@ static void Encrypt_Pak (Connection *peer, Packet *pak)
     }
 
     /* storing the checkcode */
-    PacketWriteAt4 (pak, peer->ver > 6 ? 3 : 2, check);
+    PacketWriteAt4 (pak, peer->version > 6 ? 3 : 2, check);
 }
 
 static BOOL Decrypt_Pak (Connection *peer, Packet *pak)
@@ -1723,14 +1694,14 @@ static BOOL Decrypt_Pak (Connection *peer, Packet *pak)
     p = pak->data;
     size = pak->len;
     
-    if (peer->ver > 6)
+    if (peer->version > 6)
     {
         p++;
         size--;
     }
 
     /* Get checkcode */
-    check = PacketReadAt4 (pak, peer->ver > 6 ? 1 : 0);
+    check = PacketReadAt4 (pak, peer->version > 6 ? 1 : 0);
 
     /* primary decryption */
     key = 0x67657268 * size + check;
