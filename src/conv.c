@@ -56,7 +56,7 @@ UBYTE ConvEnc (const char *enc)
     if (!strcasecmp (enc, "ISO-8859-1") || !strcasecmp (enc, "ISO8859-1") || !strcasecmp (enc, "LATIN1"))
         enc = ICONV_LATIN1_NAME;
     if (!strcasecmp (enc, "ISO-8859-15") || !strcasecmp (enc, "ISO8859-15") || !strcasecmp (enc, "LATIN9"))
-        enc = ICONV_LATIN15_NAME;
+        enc = ICONV_LATIN9_NAME;
 #ifndef ENABLE_ICONV
     if (!strncasecmp (enc, "KOI8", 4))
         enc = "KOI8-U";
