@@ -690,15 +690,13 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             isutf8 = 0;
             if (PacketReadLeft (pp) >= 38)
             {
-                char buf[40];
-                PacketReadData (pp, buf, 38);
-                buf [38] = '\0';
-                if (!strcmp (buf, CAP_GID_UTF8))
+                char *gid = PacketReadDLStr (pp);
+                if (!strcmp (gid, CAP_GID_UTF8))
                     isutf8 = 1;
-                else
-                    fprintf (stderr, "Buf: \"%s\"\n", buf);
             }
             txt = isutf8 ? text : c_in (text);
+            free (text);
+            txt = text = strdup (txt);
 #else
             txt = text;
 #endif
@@ -756,7 +754,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             }
             PacketWrite2 (p, 0);
             PacketWrite2 (p, pri);
-            PacketWriteLNTS (p, c_out (""));
+            PacketWriteLNTS (p, "");
             SnacSend (event->conn, p);
             /* TLV 1, 2(!), 3, 4, f ignored */
             break;
@@ -1431,7 +1429,7 @@ void SnacCliSendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD type
               PacketWriteB4      (pak, 0xffffff00);
 #ifdef ENABLE_UTF8
               if (cont->caps & CAP_UTF8)
-                  PacketWriteStr     (pak, CAP_GID_UTF8);
+                  PacketWriteDLStr     (pak, CAP_GID_UTF8);
 #endif
              PacketWriteTLVDone (pak);
              if (peek)
