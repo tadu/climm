@@ -320,8 +320,10 @@ void TCPDispatchMain (Connection *list)
         if (rc != -1)
             rc = fcntl (peer->sok, F_SETFL, rc | O_NONBLOCK);
 #elif defined(HAVE_IOCTLSOCKET)
-        origip = 1;
-        rc = ioctlsocket (peer->sok, FIONBIO, &origip);
+        {
+          UDWORD origip = 1;
+          rc = ioctlsocket (peer->sok, FIONBIO, &origip);
+        }
 #endif
         if (rc == -1)
         {
