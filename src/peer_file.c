@@ -103,9 +103,13 @@ BOOL PeerFileRequested (Session *peer, const char *files, UDWORD bytes)
         return 0;
     ASSERT_FILELISTEN (flist);
     
-    snprintf (buf, sizeof (buf), "%s/files/%ld", PrefUserDir (), peer->uin);
+    snprintf (buf, sizeof (buf), "%sfiles/%ld", PrefUserDir (), peer->uin);
     if (stat (buf, &finfo))
+    {
+        M_print ("%s " COLACK "%10s" COLNONE " ", s_now, cont->nick);
+        M_print (i18n (2193, "Directory %s does not exists.\n"), buf);
         return 0;
+    }
     
     fpeer = SessionClone (flist, TYPE_FILEDIRECT);
     if (!fpeer)
