@@ -782,21 +782,25 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
      * run our script if we have one, but only
      * if we have one (submitted by Benjamin Simon)
      */
-    if (uiG.receive_script[0] != '\0')
+    if (*uiG.receive_script)
     {
-        if (UIN2nick (uin) != NULL)
-        {
-            who = strdup (UIN2nick (uin));
-        }
-        else
-        {
-            who = (char *) malloc (20);
-            snprintf (who, sizeof (who), "%ld", uin);
-        }
+        int cmdlen;
+        char *mydata;
+        
+        mydata = strdup (data);
+        who = UIN2Name (uin);
+        
+        for (tmp = mydata; *tmp; tmp++)
+            if (*tmp == '\'')
+                *tmp = '"';
+        for (tmp = who; *tmp; tmp++)
+            if (*tmp == '\'')
+                *tmp = '"';
+        
+        cmdlen = strlen (uiG.receive_script) + strlen (mydata) + strlen (who) + 20;
+        cmd = (char *) malloc (cmdlen + 1);
 
-        cmd = (char *) malloc (strlen (uiG.receive_script) + strlen (data) + strlen (who) + 20);
-
-        snprintf (cmd, sizeof (cmd), "%s %s %ld '%s'", uiG.receive_script, who, type, data);
+        snprintf (cmd, cmdlen, "%s '%s' %ld '%s'", uiG.receive_script, who, type, mydata);
         script_exit_status = system (cmd);
         if (script_exit_status != 0)
         {

@@ -670,8 +670,8 @@
 654:Verbunden
 655:Geben Sie die eMail-Adresse des Benutzers ein:
 656:Geben Sie den Spitznamen des Benutzers ein:
-657:Geben Sie den Vornamen des Benuters ein:
-658:Geben Sie den Nachnamen des Benuters ein:
+657:Geben Sie den Vornamen des Benutzers ein:
+658:Geben Sie den Nachnamen des Benutzers ein:
 659:Unbekannter Abschnitt %s in der Konfigurationsdatei.
 660:Ungültiges Kommando: %s¶
 661:Shell-Kommandos wurden abgeschaltet.¶
@@ -778,6 +778,7 @@
 762:Bestätigt!!!!!!  %d¶
 763:Das Kommando "%s" wurde in "%s" umbenannt.
 764:Das Kommando "%s" hat noch den ursprünglichen Namen.
+765:%s hat die Benutzernummer %d.
 800:Wählt die Sprache <lang> aus.
 801:Zeigt die Kontaktliste im ausführlichen Format an.
 802:Klang-Befehl, wenn jemand verbindet:

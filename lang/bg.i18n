@@ -526,8 +526,8 @@
 525:Информация: 
 526:Не е въведена
 527:Възраст:
-528:Мъжки
-529:Женски
+528:Женски
+529:Мъжки
 530:Не е въведен
 531:Страница:
 532:Роден:
@@ -763,6 +763,7 @@
 #762:Ack!!!!!!  %d¶
 #763:The command '%s' has been renamed to '%s'.
 #764:The command '%s' has still it's original name.
+#765:%s has UIN %d.
 #800:Change the working language to <lang>.
 #801:Displays a list of people on your contact list in a screen wide format.
 #802:SoundOnline cmd

@@ -1,4 +1,10 @@
 
+2001-09-07 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Fix "search" commands.
+	* Add target UIN to "info" output.
+	* check terminfo keycodes last when processing input.
+	* fix receivescript security leak.
+
 2001-08-12 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Fix saving alter'ed commands.
 

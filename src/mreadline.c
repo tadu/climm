@@ -189,47 +189,6 @@ int R_process_input (void)
         return 0;
     if (!istat)
     {
-        if (ch == t_attr.c_cc[VERASE] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
-        {
-            if (uiG.del_is_bs)
-                R_process_input_backspace ();
-            else
-                R_process_input_delete ();
-            return 0;
-        }
-        if (ch == t_attr.c_cc[VEOF] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
-        {
-            if (clen)
-            {
-                R_process_input_delete ();
-                return 0;
-            }
-            strcpy (s, "q");
-            printf ("\n");
-            return 1;
-        }
-        if (ch == t_attr.c_cc[VKILL] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
-        {
-            strcpy (y, s);
-            s[0] = '\0';
-            cpos = clen = 0;
-            R_undraw ();
-            R_redraw ();
-            return 0;
-        }
-#ifdef    VREPRINT
-        if (ch == t_attr.c_cc[VREPRINT] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
-        {
-            R_undraw ();
-            R_redraw ();
-            return 0;
-        }
-#endif /* VREPRINT */
-        if (ch == '\t' && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
-        {
-            R_process_input_tab ();
-            return 0;
-        }
         if (ch >= 0 && ch < ' ')
         {
             switch (ch)
@@ -269,16 +228,57 @@ int R_process_input (void)
                     system ("clear");
                     R_redraw ();
                     break;
+                case '\t':
+                    R_process_input_tab ();
+                    break;
                 case 25:       /* ^Y */
                     strcpy (s, y);
                     clen = cpos = strlen (s);
                     R_undraw ();
                     R_redraw ();
+                    break;
 #ifdef ANSI_COLOR
                 case 27:       /* ESC */
                     istat = 1;
                     break;
 #endif
+                default:
+                    if (ch == t_attr.c_cc[VERASE] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
+                    {
+                        if (uiG.del_is_bs)
+                            R_process_input_backspace ();
+                        else
+                            R_process_input_delete ();
+                        return 0;
+                    }
+                    if (ch == t_attr.c_cc[VEOF] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
+                    {
+                        if (clen)
+                        {
+                            R_process_input_delete ();
+                            return 0;
+                        }
+                        strcpy (s, "q");
+                        printf ("\n");
+                        return 1;
+                    }
+                    if (ch == t_attr.c_cc[VKILL] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
+                    {
+                        strcpy (y, s);
+                        s[0] = '\0';
+                        cpos = clen = 0;
+                        R_undraw ();
+                        R_redraw ();
+                        return 0;
+                    }
+#ifdef    VREPRINT
+                    if (ch == t_attr.c_cc[VREPRINT] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
+                    {
+                        R_undraw ();
+                        R_redraw ();
+                        return 0;
+                    }
+#endif /* VREPRINT */
             }
         }
         else if (clen + 1 < HISTORY_LINE_LEN)

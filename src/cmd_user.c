@@ -433,6 +433,8 @@ JUMP_F(CmdUserInfo)
     {
         M_print (i18n (674, "\tThe port is unknown\n"));
     }
+    M_print (i18n (765, "%s has UIN %d."), arg1, uin);
+    M_print ("\n");
     send_info_req (sok, uin);
 /*   send_ext_info_req( sok, uin );*/
     return 0;
@@ -1757,15 +1759,13 @@ JUMP_F(CmdUserSearch)
     switch (status)
     {
         case 0:
-            if (args)
+            if (*args)
             {
                 start_search (sok, args, "", "", "");
                 return 0;
             }
-            return 100;
-        case 100:
             M_print ("%s ", i18n (655, "Enter the user's e-mail address:"));
-            return ++status;
+            return status = 101;
         case 101:
             user.email = strdup ((char *) args);
             M_print ("%s ", i18n (656, "Enter the user's nick name:"));
