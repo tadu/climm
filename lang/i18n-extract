@@ -1,18 +1,14 @@
 
 cd "../lang/";
-test -f build.i18n || test -f en.i18n || exit 1
 
 echo "Extracting translations to build.i18n."
 touch build.i18n
 mv build.i18n build.i18n~
 
-(head -1 build.i18n~; cat ../src/*.c \
+(echo "# \$Id$ strings extracted from mICQ sources"; cat ../src/*.c \
     | sed "s¹i18n¹¶i18n¹g" | tr ¶ "\n" | grep "^i18n ([0-9#]" \
-    | sed 's¹ *COLNONE *¹"©0"¹g;s¹ *COLSERVER *¹"©1"¹g;s¹ *COLCLIENT *¹"©2"¹g;s¹ *COLMESSAGE *¹"©3"¹g;' \
-    | sed 's¹ *COLCONTACT *¹"©4"¹g;s¹ *COLSENT *¹"©5"¹g;s¹ *COLACK *¹"©6"¹g;' \
-    | sed 's¹""¹¹g' \
     | sed 's¹i18n *(\([0-9#]*\), *"\(\([^\"]\|\\.\)*\)").*¹\1:\2¹;s¹^\([0-9]\):¹00\1:¹;s¹^\([0-9][0-9]\):¹0\1:¹' \
-    | sed 's¹\\n¹¶¹g;s¹\\a¹¹g;s¹\\t¹	¹g;s¹\\"¹"¹g' | sort -n | uniq ) > build.i18n
+    | sed 's¹\\a¹¹g;s¹\\t¹	¹g;s¹\\"¹"¹g' | sort -n | uniq ) > build.i18n
 
 cat ../src/*.c \
     | sed "s¹i18n¹¶i18n¹g" | tr ¶ "\n" | grep "^i18n ([0-9#]" \
