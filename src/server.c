@@ -50,10 +50,14 @@ void Auto_Reply (Session *sess, UDWORD uin)
 
 void icq_sendurl (Session *sess, UDWORD uin, char *description, char *url)
 {
-    char buf[strlen (url) + strlen (description) + 2];
+    int len = strlen (url) + strlen (description) + 1;
+    char *buf = malloc (len + 1);
+
+    assert (buf);
 
     snprintf (buf, sizeof (buf), "%s%c%s", url, ConvSep (), description);
     icq_sendmsg (sess, uin, buf, URL_MESS);
+    free (buf);
 }
 
 void icq_sendmsg (Session *sess, UDWORD uin, char *text, UDWORD msg_type)
