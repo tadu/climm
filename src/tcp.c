@@ -1121,13 +1121,13 @@ static const char *TCPCmdName (UWORD cmd)
 
     switch (cmd)
     {
-        case   0xff: return "PEER_INIT";
-        case   0x01: return "PEER_INITACK";
-        case   0x02: return "PEER_MSG";
-        case   0x03: return "PEER_INIT2";
-        case 0x07d0: return "CANCEL";
-        case 0x07da: return "ACK";
-        case 0x07ee: return "MSG";
+        case PEER_INIT:       return "PEER_INIT";
+        case PEER_INITACK:    return "PEER_INITACK";
+        case PEER_MSG:        return "PEER_MSG";
+        case PEER_INIT2:      return "PEER_INIT2";
+        case TCP_CMD_CANCEL:  return "CANCEL";
+        case TCP_CMD_ACK:     return "ACK";
+        case TCP_CMD_MESSAGE: return "MSG";
     }
     snprintf (buf, sizeof (buf), "%04x", cmd);
     buf[7] = '\0';
@@ -1275,6 +1275,7 @@ static int TCPSendMsgAck (Session *sess, UWORD seq, UWORD sub_cmd, BOOL accept)
         case TCP_MSG_GET_NA:    msg = prG->auto_na;   break;
         case TCP_MSG_GET_DND:   msg = prG->auto_dnd;  break;
         case TCP_MSG_GET_FFC:   msg = prG->auto_ffc;  break;
+        case TCP_MSG_GET_VER:   msg = "...";          break;
         default:
             if (sess->status & STATUSF_DND)
                 msg = prG->auto_dnd;
@@ -1581,12 +1582,13 @@ static void TCPCallBackReceive (struct Event *event)
                              cont->nick, event->info);
                     break;
 
-                    while (0) {
+                    while (0) {  /* Duff-uesque */
                 case TCP_MSG_GET_AWAY:  tmp2 = i18n (1972, "away");           break;
                 case TCP_MSG_GET_OCC:   tmp2 = i18n (1973, "occupied");       break;
                 case TCP_MSG_GET_NA:    tmp2 = i18n (1974, "not available");  break;
                 case TCP_MSG_GET_DND:   tmp2 = i18n (1971, "do not disturb"); break;
-                case TCP_MSG_GET_FFC:   tmp2 = i18n (1976, "free for chat");  }
+                case TCP_MSG_GET_FFC:   tmp2 = i18n (1976, "free for chat");  break;
+                case TCP_MSG_GET_VER:   tmp2 = i18n (####, "version");  }
                     Time_Stamp ();
                     M_print (" " COLACK "%10s" COLNONE " <%s> %s\n",
                              cont->nick, tmp2, tmp);
@@ -1611,6 +1613,7 @@ static void TCPCallBackReceive (struct Event *event)
                 case TCP_MSG_GET_FFC:
                     M_print (i18n (1814, "Sent auto-response message to %s%s%s.\n"),
                              COLCONTACT, cont->nick, COLNONE);
+                case TCP_MSG_GET_VER:
                     TCPSendMsgAck (event->sess, seq, type, TRUE);
                     break;
 
@@ -1629,7 +1632,7 @@ static void TCPCallBackReceive (struct Event *event)
                     if (event->sess->ver < 8 || cont->flags & CONT_TEMPORARY)
                     {
 #endif
-                    M_print (i18n (####, "Ignored file %s (%d bytes) from %s (unknown: %x, %x)\n"),
+                    M_print (i18n (2061, "Ignored file %s (%d bytes) from %s (unknown: %x, %x)\n"),
                              tmp2, len, cont->nick, cmd, type);
                     TCPSendMsgAck (event->sess, seq, type, FALSE);
 #ifdef WIP

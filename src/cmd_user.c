@@ -720,6 +720,11 @@ static JUMP_F(CmdUserTCP)
         M_print (i18n (1847, "    open  <nick> - Opens TCP connection.\n"));
         M_print (i18n (1848, "    close <nick> - Closes/resets TCP connection(s).\n"));
         M_print (i18n (1870, "    off   <nick> - Closes TCP connection(s) and don't try TCP again.\n"));
+        M_print (i18n (2056, "    auto  <nick> - Get the auto-response from the contact.\n"));
+        M_print (i18n (2057, "    away  <nick> - Get the auto-response for away from the contact.\n"));
+        M_print (i18n (2058, "    na    <nick> - Get the auto-response for not available from the contact.\n"));
+        M_print (i18n (2059, "    dnd   <nick> - Get the auto-response for do not disturb from the contact.\n"));
+        M_print (i18n (2060, "    ffc   <nick> - Get the auto-response for free for chat from the contact.\n"));
     }
 #else
     M_print (i18n (1866, "This version of mICQ is compiled without TCP support.\n"));

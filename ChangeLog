@@ -3,6 +3,9 @@
 	* add auto_ffc (semi-auto) response
 	* implement command to request auto responses
 	* add check to include WorkInProgress
+	* prepare for 0.4.9.pl2
+	* add missing CVS version identifiers
+	* update man pages for new commands
 
 2002-07-22 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* detect sizeof() of types (for 64bit systems)
