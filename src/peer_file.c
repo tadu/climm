@@ -113,6 +113,7 @@ UBYTE PeerFileRequested (Connection *peer, const char *files, UDWORD bytes)
     {
         M_printf ("%s " COLACK "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
         M_printf (i18n (2193, "Directory %s does not exist.\n"), buf);
+        IMIntMsg (cont, peer, NOW, STATUS_OFFLINE, INT_FILE_REJING, "auto-refused", ExtraSet (NULL, 0, bytes, files));
         return 0;
     }
     
@@ -129,6 +130,7 @@ UBYTE PeerFileRequested (Connection *peer, const char *files, UDWORD bytes)
     fpeer->done    = 0;
     fpeer->close   = &PeerFileDispatchDClose;
     
+    IMIntMsg (cont, peer, NOW, STATUS_OFFLINE, INT_FILE_ACKING, "", ExtraSet (NULL, 0, bytes, files));
     return 1;
 }
 

@@ -61,8 +61,6 @@ static Connection   *TCPReceiveInit2    (Connection *peer, Packet *pak);
 
 
 static Packet    *PacketTCPC         (Connection *peer, UDWORD cmd);
-static void       TCPGreet           (Packet *pak, UWORD cmd, const char *reason,
-                                      UWORD port, UDWORD len, const char *msg);
 
 static void       TCPCallBackTimeout (Event *event);
 static void       TCPCallBackTOConn  (Event *event);
@@ -1223,177 +1221,6 @@ static Packet *PacketTCPC (Connection *peer, UDWORD cmd)
 }
 
 /*
- * Append the "geeting" part to a packet.
- */
-static void TCPGreet (Packet *pak, UWORD cmd, const char *reason, UWORD port, UDWORD len, const char *msg)
-{
-    PacketWrite2     (pak, cmd);
-    switch (cmd)
-    {
-        case 0x2d:
-        default:
-            PacketWriteB4  (pak, 0xbff720b2);
-            PacketWriteB4  (pak, 0x378ed411);
-            PacketWriteB4  (pak, 0xbd280004);
-            PacketWriteB4  (pak, 0xac96d905);
-            break;
-        case 0x29:
-        case 0x32:
-            PacketWriteB4  (pak, 0xf02d12d9);
-            PacketWriteB4  (pak, 0x3091d311);
-            PacketWriteB4  (pak, 0x8dd70010);
-            PacketWriteB4  (pak, 0x4b06462e);
-    }
-    PacketWrite2     (pak, 0);
-    switch (cmd)
-    {
-        case 0x29:  PacketWriteDLStr (pak, "File");          break;
-        case 0x2d:  PacketWriteDLStr (pak, "ICQ Chat");      break;
-        case 0x32:  PacketWriteDLStr (pak, "File Transfer"); break;
-        default:    PacketWriteDLStr (pak, "");
-    }
-    PacketWrite2     (pak, 0);
-    PacketWrite1     (pak, 1);
-    switch (cmd)
-    {
-        case 0x29:
-        case 0x2d:  PacketWriteB4    (pak, 0x00000100);      break;
-        case 0x32:  PacketWriteB4    (pak, 0x01000000);      break;
-        default:    PacketWriteB4    (pak, 0);
-    }
-    PacketWriteB4    (pak, 0);
-    PacketWriteB4    (pak, 0);
-    PacketWriteLen4  (pak);
-    PacketWriteDLStr (pak, c_out (reason));
-    PacketWriteB2    (pak, port);
-    PacketWriteB2    (pak, 0);
-    PacketWriteLNTS  (pak, c_out (msg));
-    PacketWrite4     (pak, len);
-    if (cmd != 0x2d)
-        PacketWrite4     (pak, port);
-    PacketWriteLen4Done (pak);
-}
-
-/*
- * Acks a TCP packet.
- */
-int TCPSendMsgAck (Connection *peer, UWORD seq, UWORD type, BOOL accept)
-{
-    Packet *pak;
-    const char *msg;
-    char *cmsg;
-    UWORD status, flags;
-    Connection *flist;
-
-    ASSERT_MSGDIRECT (peer);
-
-    switch (type)
-    {
-        case MSGF_GETAUTO | MSG_GET_AWAY:  msg = prG->auto_away; break;
-        case MSGF_GETAUTO | MSG_GET_OCC:   msg = prG->auto_occ;  break;
-        case MSGF_GETAUTO | MSG_GET_NA:    msg = prG->auto_na;   break;
-        case MSGF_GETAUTO | MSG_GET_DND:   msg = prG->auto_dnd;  break;
-        case MSGF_GETAUTO | MSG_GET_FFC:   msg = prG->auto_ffc;  break;
-        case MSGF_GETAUTO | MSG_GET_VER:
-            msg = BuildVersionText;
-            break;
-        default:
-            if      (peer->parent->parent->status & STATUSF_DND)
-                msg = prG->auto_dnd;
-            else if (peer->parent->parent->status & STATUSF_OCC)
-                msg = prG->auto_occ;
-            else if (peer->parent->parent->status & STATUSF_NA)
-                msg = prG->auto_na;
-            else if (peer->parent->parent->status & STATUSF_AWAY)
-                msg = prG->auto_away;
-            else
-                msg = "";
-    }
-
-    if (peer->parent->parent->status & STATUSF_DND)  status  = TCP_STAT_DND;   else
-    if (peer->parent->parent->status & STATUSF_OCC)  status  = TCP_STAT_OCC;   else
-    if (peer->parent->parent->status & STATUSF_NA)   status  = TCP_STAT_NA;    else
-    if (peer->parent->parent->status & STATUSF_AWAY) status  = TCP_STAT_AWAY;
-    else                                             status  = TCP_STAT_ONLINE;
-    if (!accept)                                     status  = TCP_STAT_REFUSE;
-
-    flags = 0;
-    if (peer->parent->parent->status & STATUSF_INV)  flags |= TCP_MSGF_INV;
-    flags ^= TCP_MSGF_LIST;
-
-    cmsg = strdup (c_out (msg));
-    pak = PacketTCPC (peer, TCP_CMD_ACK);
-    SrvMsgAdvanced   (pak, seq, type, flags, status, cmsg);
-    free (cmsg);
-    switch (type)
-    {
-        case TCP_MSG_FILE:
-            flist = PeerFileCreate (peer->parent->parent);
-            
-            if (flist)
-            {
-                PacketWriteB2   (pak, accept ? flist->port : 0);     /* port */
-                PacketWrite2    (pak, 0);                            /* padding */
-                PacketWriteStr  (pak, accept ? "" : "auto-refused"); /* file name - empty */
-                PacketWrite4    (pak, 0);                            /* file len - empty */
-                if (peer->ver > 6)
-                    PacketWrite4 (pak, 0x20726f66);                  /* unknown - strange - 'for ' */
-                PacketWrite4    (pak, accept ? flist->port : 0);     /* port again */
-            }
-            break;
-        case 0:
-        case 1:
-        case 4:
-        case 6:
-        case 7:
-        case 8:
-        default:
-            PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
-            PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
-            break;
-        case 0x1a:
-            /* no idea */
-            break;
-    }
-    PeerPacketSend (peer, pak);
-    PacketD (pak);
-    return 1;
-}
-
-/*
- * Acks a TCP packet.
- */
-static int TCPSendGreetAck (Connection *peer, UWORD seq, UWORD cmd, BOOL accept)
-{
-    Packet *pak;
-    UWORD status, flags;
-    Connection *flist;
-
-    ASSERT_MSGDIRECT (peer);
-
-    if (peer->parent->parent->status & STATUSF_DND)  status  = TCP_STAT_DND;   else
-    if (peer->parent->parent->status & STATUSF_OCC)  status  = TCP_STAT_OCC;   else
-    if (peer->parent->parent->status & STATUSF_NA)   status  = TCP_STAT_NA;    else
-    if (peer->parent->parent->status & STATUSF_AWAY) status  = TCP_STAT_AWAY;
-    else                                             status  = TCP_STAT_ONLINE;
-    if (!accept)                                     status  = TCP_STAT_REFUSE;
-
-    flags = 0;
-    if (peer->parent->parent->status & STATUSF_INV)  flags |= TCP_MSGF_INV;
-    flags ^= TCP_MSGF_LIST;
-
-    flist = PeerFileCreate (peer->parent->parent);
-    if (!flist)
-        status = TCP_STAT_REFUSE;
-
-    pak = PacketTCPC (peer, TCP_CMD_ACK);
-    SrvMsgAdvanced   (pak, seq, TCP_MSG_GREETING, flags, status, "");
-    TCPGreet (pak, cmd, "", flist ? flist->port : 0, 0, "");
-    PeerPacketSend (peer, pak);
-    return 1;
-}
-
-/*
  * Requests the auto-response message from remote user.
  */
 BOOL TCPGetAuto (Connection *list, Contact *cont, UWORD which)
@@ -1686,7 +1513,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     {
         pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
         SrvMsgAdvanced   (pak, peer->our_seq, TCP_MSG_GREETING, 0, list->parent->status, "");
-        TCPGreet (pak, 0x29, description, 0, 12345, "many, really many files");
+        SrvMsgGreet (pak, 0x29, description, 0, 12345, "many, really many files");
     }
 
     peer->stat_real_pak_sent++;
@@ -1729,7 +1556,7 @@ static void TCPCallBackResend (Event *event)
             if (event->attempts > 1)
                 IMIntMsg (cont, peer, NOW, STATUS_OFFLINE, INT_MSGTRY_DC, ExtraGetS (event->extra, EXTRA_MESSAGE), NULL);
 
-/*          if (event->attempts < 2) */
+            if (event->attempts < 2)
                 PeerPacketSend (peer, pak);
             event->attempts++;
             event->due = time (NULL) + 10;
@@ -1754,74 +1581,68 @@ static void TCPCallBackResend (Event *event)
     EventD (event);
 }
 
-
-
 /*
  * Handles a just received packet.
  */
 static void TCPCallBackReceive (Event *event)
 {
-    Extra *etmp;
-    Event *aevent;
+    Connection *serv, *peer;
+    Event *oldevent;
     Contact *cont;
-    Packet *pak;
-    char *tmp, *ctmp, *cctmp, *tmp3, *ctext, *text, *reason, *name, *cname;
-    UWORD cmd, type, seq, port;
-    UDWORD len, status, flags;
-    const char *e_msg_text = "<>";
-    UWORD e_msg_type = 1;
+    Packet *pak, *ack_pak = NULL;
+    char *tmp, *ctmp, *ctext, *text, *reason, *name, *cname;
+    UWORD cmd, type, seq, port, unk;
+    UDWORD len, status, flags, xtmp1, xtmp2, xtmp3;
+    const char *e_msg_text;
+    UWORD e_msg_type;
 
-    if (!event->conn)
+    if (!(peer = event->conn))
     {
         EventD (event);
         return;
     }
     
-    ASSERT_MSGDIRECT (event->conn);
+    ASSERT_MSGDIRECT (peer);
     assert (event->pak);
     
-    pak = event->pak;
-    cont = ContactUIN (event->conn, event->uin);
+    cont = ContactUIN (peer, event->uin);
     if (!cont)
         return;
     
+    pak = event->pak;
+    serv = peer->parent->parent;
+
     cmd    = PacketRead2 (pak);
-/* the following is like type-2 */
-             PacketRead2 (pak);
-    seq    = PacketRead2 (pak);
-             PacketRead4 (pak);
-             PacketRead4 (pak);
-             PacketRead4 (pak);
-    type   = PacketRead2 (pak);
-    status = PacketRead2 (pak);
-    flags  = PacketRead2 (pak);
-    ctmp   = PacketReadLNTS (pak);
-    /* fore/background color ignored */
-    
-    tmp = strdup (c_in_to (ctmp, cont));
-    
+
     switch (cmd)
     {
         case TCP_CMD_ACK:
-            aevent = QueueDequeue (event->conn, QUEUE_TCP_RESEND, seq);
-            if (!aevent)
-                break;
-            for (etmp = aevent->extra; etmp; etmp = etmp->more)
-                if (etmp->tag == EXTRA_MESSAGE)
-                {
-                    e_msg_text = etmp->text ? etmp->text : "<>";
-                    e_msg_type = etmp->data;
-                    break;
-                }
+            unk    = PacketRead2 (pak);
+            seq    = PacketRead2 (pak);
+            xtmp1  = PacketRead4 (pak);
+            xtmp2  = PacketRead4 (pak);
+            xtmp3  = PacketRead4 (pak);
+            type   = PacketRead2 (pak);
+            status = PacketRead2 (pak);
+            flags  = PacketRead2 (pak);
+            ctmp   = PacketReadLNTS (pak);
+            /* fore/background color ignored */
+            tmp = strdup (c_in_to (ctmp, cont));
             
+            if (!(oldevent = QueueDequeue (peer, QUEUE_TCP_RESEND, seq)))
+                break;
+            
+            e_msg_text = ExtraGetS (oldevent->extra, EXTRA_MESSAGE);
+            e_msg_type = ExtraGet  (oldevent->extra, EXTRA_MESSAGE);
+
             switch (type)
             {
                 case MSG_NORM:
                 case MSG_URL:
-                    IMIntMsg (cont, aevent->conn, NOW, STATUS_OFFLINE, INT_MSGACK_DC, e_msg_text, NULL);
+                    IMIntMsg (cont, peer, NOW, STATUS_OFFLINE, INT_MSGACK_DC, e_msg_text, NULL);
                     if (~cont->flags & CONT_SEENAUTO && strlen (tmp))
                     {
-                        IMSrvMsg (cont, aevent->conn, NOW, ExtraSet (ExtraSet (ExtraSet (NULL,
+                        IMSrvMsg (cont, peer, NOW, ExtraSet (ExtraSet (ExtraSet (NULL,
                                   EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
                                   EXTRA_STATUS, status, NULL),
                                   EXTRA_MESSAGE, MSG_NORM, tmp));
@@ -1835,7 +1656,7 @@ static void TCPCallBackReceive (Event *event)
                 case MSGF_GETAUTO | MSG_GET_DND:
                 case MSGF_GETAUTO | MSG_GET_FFC:
                 case MSGF_GETAUTO | MSG_GET_VER:
-                    IMSrvMsg (cont, aevent->conn, NOW, ExtraSet (ExtraSet (ExtraSet (NULL,
+                    IMSrvMsg (cont, peer, NOW, ExtraSet (ExtraSet (ExtraSet (NULL,
                               EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
                               EXTRA_STATUS, status & ~MSGF_GETAUTO, NULL),
                               EXTRA_MESSAGE, type, tmp));
@@ -1843,10 +1664,10 @@ static void TCPCallBackReceive (Event *event)
 
                 case TCP_MSG_FILE:
                     port = PacketReadB2 (pak);
-                    if (PeerFileAccept (aevent->conn, status, port))
-                        IMIntMsg (cont, aevent->conn, NOW, status, INT_FILE_ACKED, tmp, ExtraSet (NULL, 0, port, e_msg_text));
+                    if (PeerFileAccept (peer, status, port))
+                        IMIntMsg (cont, peer, NOW, status, INT_FILE_ACKED, tmp, ExtraSet (NULL, 0, port, e_msg_text));
                     else
-                        IMIntMsg (cont, aevent->conn, NOW, status, INT_FILE_REJED, tmp, ExtraSet (NULL, 0, port, e_msg_text));
+                        IMIntMsg (cont, peer, NOW, status, INT_FILE_REJED, tmp, ExtraSet (NULL, 0, port, e_msg_text));
                     break;
 
                 case TCP_MSG_GREETING:
@@ -1878,10 +1699,10 @@ static void TCPCallBackReceive (Event *event)
                     switch (cmd)
                     {
                         case 0x0029:
-                            if (PeerFileAccept (aevent->conn, status, port))
-                                IMIntMsg (cont, aevent->conn, NOW, status, INT_FILE_ACKED, tmp, ExtraSet (NULL, 0, port, e_msg_text));
+                            if (PeerFileAccept (peer, status, port))
+                                IMIntMsg (cont, peer, NOW, status, INT_FILE_ACKED, tmp, ExtraSet (NULL, 0, port, e_msg_text));
                             else
-                                IMIntMsg (cont, aevent->conn, NOW, status, INT_FILE_REJED, tmp, ExtraSet (NULL, 0, port, e_msg_text));
+                                IMIntMsg (cont, peer, NOW, status, INT_FILE_REJED, tmp, ExtraSet (NULL, 0, port, e_msg_text));
                             break;
                             
                         default:
@@ -1896,161 +1717,22 @@ static void TCPCallBackReceive (Event *event)
                     /* fall through */
                 default:
                     Debug (DEB_TCP, "ACK %d uin %ld nick %s pak %p peer %p seq %04x",
-                                     aevent->conn->sok, aevent->conn->uin, cont->nick, aevent->pak, aevent->conn, seq);
+                                     peer->sok, peer->uin, cont->nick, oldevent->pak, peer, seq);
             }
-            EventD (aevent);
+            EventD (oldevent);
             break;
-        
+
         case TCP_CMD_MESSAGE:
-            switch (type)
+            ack_pak = PacketTCPC (peer, TCP_CMD_ACK);
+            if (SrvReceiveAdvanced (event->conn->parent->parent, cont, pak, ack_pak,
+                ExtraSet (NULL, EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL)))
             {
-                /* Requests for auto-response message */
-                case MSGF_GETAUTO | MSG_GET_AWAY:
-                case MSGF_GETAUTO | MSG_GET_OCC:
-                case MSGF_GETAUTO | MSG_GET_NA:
-                case MSGF_GETAUTO | MSG_GET_DND:
-                case MSGF_GETAUTO | MSG_GET_FFC:
-                    M_printf (i18n (1814, "Sent auto-response message to %s%s%s.\n"),
-                             COLCONTACT, cont->nick, COLNONE);
-                case MSGF_GETAUTO | MSG_GET_VER:
-                    TCPSendMsgAck (event->conn, seq, type, TRUE);
-                    break;
-
-                /* Automatically reject file xfer and chat requests
-                     as these are not implemented yet. */ 
-                case TCP_MSG_CHAT:
-                    TCPSendMsgAck (event->conn, seq, type, FALSE);
-                    break;
-
-                case TCP_MSG_FILE:
-                    cmd  = PacketRead4 (pak);
-                    ctmp = PacketReadLNTS (pak);
-                    len  = PacketRead4 (pak);
-                    type = PacketRead4 (pak);
-                    
-                    tmp3 = strdup (c_in_to (ctmp, cont));
-                    free (ctmp);
-
-                    if (PeerFileRequested (event->conn, e_msg_text, len))
-                    {
-                        IMIntMsg (cont, event->conn, NOW, status, INT_FILE_ACKING, "", ExtraSet (NULL, 0, len, e_msg_text));
-                        TCPSendMsgAck (event->conn, event->seq, TCP_MSG_FILE, TRUE);
-                    }
-                    else
-                    {
-                        IMIntMsg (cont, event->conn, NOW, status, INT_FILE_REJING, "auto-refused", ExtraSet (NULL, 0, len, e_msg_text));
-                        TCPSendMsgAck (event->conn, event->seq, TCP_MSG_FILE, FALSE);
-                    }
-                    free (tmp3);
-                    break;
-                case TCP_MSG_GREETING:
-                    {
-                        UWORD /*port, port2,*/ flen /*, pad*/;
-                        char *text, *reason, *name;
-                        
-                        cmd    = PacketRead2 (pak);
-                                 PacketReadData (pak, NULL, 16);
-                                 PacketRead2 (pak);
-                        ctext  = PacketReadDLStr (pak);
-                                 PacketReadData (pak, NULL, 15);
-                                 PacketRead4 (pak);
-                        reason = PacketReadDLStr (pak);
-                        /*port=*/PacketReadB2 (pak);
-                        /*pad=*/ PacketRead2 (pak);
-                        cname  = PacketReadLNTS (pak);
-                        flen   = PacketRead4 (pak);
-                        /*port2*/PacketRead4 (pak);
-                        
-                        text = strdup (c_in_to (ctext, cont));
-                        free (ctext);
-                        name = strdup (c_in_to (cname, cont));
-                        free (cname);
-                        
-                        switch (cmd)
-                        {
-                            case 0x0029:
-                                if (PeerFileRequested (event->conn, name, flen))
-                                {
-                                    IMIntMsg (cont, event->conn, NOW, status, INT_FILE_ACKING, "", ExtraSet (NULL, 0, flen, name));
-                                    TCPSendGreetAck (event->conn, seq, cmd, TRUE);
-                                }
-                                else
-                                {
-                                    IMIntMsg (cont, event->conn, NOW, status, INT_FILE_REJING, "auto-refused", ExtraSet (NULL, 0, flen, name));
-                                    TCPSendGreetAck (event->conn, seq, cmd, FALSE);
-                                }
-                                break;
-                            case 0x0032:
-                                break;
-                            case 0x002d:
-                                IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (ExtraSet (NULL,
-                                          EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
-                                          EXTRA_STATUS, status, NULL),
-                                          EXTRA_MESSAGE, TCP_MSG_CHAT, name));
-                                IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (ExtraSet (NULL,
-                                          EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
-                                          EXTRA_STATUS, status, NULL),
-                                          EXTRA_MESSAGE, TCP_MSG_CHAT, text));
-                                IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (ExtraSet (NULL,
-                                          EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
-                                          EXTRA_STATUS, status, NULL),
-                                          EXTRA_MESSAGE, TCP_MSG_CHAT, reason));
-                                TCPSendGreetAck (event->conn, seq, cmd, FALSE);
-
-                            default:
-                                if (prG->verbose & DEB_PROTOCOL)
-                                    M_printf (i18n (2065, "Unknown TCP_MSG_GREET_ command %04x.\n"), type);
-                                TCPSendGreetAck (event->conn, seq, cmd, FALSE);
-                                break;
-                            
-                        }
-                        free (name);
-                        free (text);
-                        free (reason);
-                    }
-                    break;
-                default:
-                    if (prG->verbose & DEB_PROTOCOL)
-                        M_printf (i18n (2066, "Unknown TCP_MSG_ command %04x.\n"), type);
-                    break;
-
-                /* Regular messages */
-                case MSG_AUTO:
-                case MSG_NORM:
-                case MSG_URL:
-                case MSG_AUTH_REQ:
-                case MSG_AUTH_DENY:
-                case MSG_AUTH_GRANT:
-                case MSG_AUTH_ADDED:
-                case MSG_WEB:
-                case MSG_EMAIL:
-                case MSG_CONTACT:
-#ifdef ENABLE_UTF8
-                    /**/    PacketRead4 (pak);
-                    /**/    PacketRead4 (pak);
-                    cctmp = PacketReadDLStr (pak);
-
-                    if (!strcmp (cctmp, CAP_GID_UTF8))
-                    {
-                        free (tmp);
-                        tmp = ctmp;
-                        ctmp = cctmp;
-                    }
-                    else
-                        free (cctmp);
-#endif
-                    IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (ExtraSet (NULL,
-                              EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
-                              EXTRA_STATUS, status, NULL),
-                              EXTRA_MESSAGE, type, tmp));
-
-                    TCPSendMsgAck (event->conn, seq, type, TRUE);
-                    break;
+                PeerPacketSend (peer, ack_pak);
+                PacketD (ack_pak);
             }
-            break;
         default:
-            /* ignore */
-            break;
+            EventD (event);
+            return;
     }
     free (ctmp);
     free (tmp);

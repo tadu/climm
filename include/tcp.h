@@ -19,7 +19,6 @@ BOOL TCPSendMsg        (Connection *list, Contact *cont, const char *msg, UWORD 
 UBYTE PeerSendMsg      (Connection *list, Contact *cont, Extra *extra);
 BOOL TCPSendFiles      (Connection *list, Contact *cont, const char *description, const char **file, const char **as, int count);
 BOOL TCPGetAuto        (Connection *list, Contact *cont, UWORD which);
-int  TCPSendMsgAck     (Connection *peer, UWORD seq, UWORD sub_cmd, BOOL accept);
 
 Connection *PeerFileCreate    (Connection *serv);
 UBYTE       PeerFileRequested (Connection *peer, const char *files, UDWORD bytes);

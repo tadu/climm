@@ -582,9 +582,8 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     Extra *extra = NULL;
     TLV *tlv;
     UDWORD midtim, midrnd, midtime, midrand, uin, unk, tmp;
-    UWORD seq1, seq2, tcpver, len, i, msgtyp, type, status, pri;
+    UWORD seq1, tcpver, len, i, msgtyp, type;
     char *text = NULL;
-    const char *resp, *txt = NULL;
 
     pak = event->pak;
 
@@ -715,87 +714,18 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             tmp    = PacketRead1 (pp);      PacketWrite1 (p, tmp);
             seq1   = PacketRead2 (pp);      PacketWrite2 (p, seq1);
 
-/* the following is like tcp */
-            unk    = PacketRead2 (pp);      PacketWrite2 (p, unk);
-            seq2   = PacketRead2 (pp);      PacketWrite2 (p, seq2);
-            tmp    = PacketRead4 (pp);      PacketWrite4 (p, tmp);
-            tmp    = PacketRead4 (pp);      PacketWrite4 (p, tmp);
-            tmp    = PacketRead4 (pp);      PacketWrite4 (p, tmp);
-            msgtyp = PacketRead2 (pp);      PacketWrite2 (p, msgtyp);
-            status = PacketRead2 (pp);
-            pri    = PacketRead2 (pp);
-            text   = PacketReadLNTS (pp);
-                     PacketRead4 (pp); /* FOREGROUND */
-                     PacketRead4 (pp); /* BACKGROUND */
-#ifdef ENABLE_UTF8
-            {
-                UBYTE isutf8 = 0;
-                char *gid = PacketReadDLStr (pp);
-                char *tmp;
-                if (!strcmp (gid, CAP_GID_UTF8))
-                    isutf8 = 1;
-                txt = isutf8 ? text : c_in_to (text, cont);
-                tmp = strdup (txt);
-                free (text);
-                free (gid);
-                txt = text = tmp;
-            }
-#else
-            txt = text;
-#endif
-            PacketD (pp);
-/*          cont->dc->version = tcpver; */
-
             ContactSetCap (cont, cap1);
             ContactSetCap (cont, cap2);
             ContactSetVersion (cont);
-
-            if (!strlen (text) && unk == 0x12)
+            
+            if (SrvReceiveAdvanced (event->conn, cont, pp, p,
+                ExtraSet (NULL, EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL)))
             {
-#ifdef WIP
-                M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-                M_printf ("FIXME: Received capability %s.\n", cap2->name);
-#endif
-                PacketD (p);
-                TLVD (tlv);
-                s_free (text);
-                return;
+                SnacSend (event->conn, p);
             }
+            PacketD (pp);
 
-            if ((msgtyp & MSGF_GETAUTO) == MSGF_GETAUTO)
-            {
-                switch (msgtyp & 0xff)
-                {
-                    do  {
-                    case MSG_GET_AWAY: resp = prG->auto_away; break;
-                    case MSG_GET_OCC:  resp = prG->auto_occ;  break;
-                    case MSG_GET_NA:   resp = prG->auto_na;   break;
-                    case MSG_GET_DND:  resp = prG->auto_dnd;  break;
-                    case MSG_GET_FFC:  resp = prG->auto_ffc;  break;
-                    case MSG_GET_VER:  resp = BuildVersionText;
-                        } while (0);
-                        PacketWrite2 (p, 0);
-                        PacketWrite2 (p, pri);
-                        PacketWriteLNTS (p, c_out_to (resp, cont));
-#ifdef WIP
-                        M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-                        M_printf ("FIXME: Sent %04x auto response.\n", msgtyp);
-#endif
-                        SnacSend (event->conn, p);
-                        TLVD (tlv);
-                        s_free (text);
-                        return;
-                }
-            }
-            PacketWrite2 (p, status);
-            PacketWrite2 (p, pri);
-            PacketWriteLNTS (p, "");
-            SnacSend (event->conn, p);
             /* TLV 1, 2(!), 3, 4, f ignored */
-
-            IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (extra,
-                      EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
-                      EXTRA_MESSAGE, msgtyp, txt));
             break;
         case 4:
             p = PacketCreate (tlv[5].str, tlv[5].len);
