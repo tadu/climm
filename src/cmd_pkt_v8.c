@@ -353,7 +353,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
 
     ack_flags = 0;
     if (serv->status & STATUSF_INV)  ack_flags |= TCP_MSGF_INV;
-    ack_flags ^= TCP_MSGF_LIST;
+/*    ack_flags ^= TCP_MSGF_LIST;   */
 
     switch (msgtype & ~MSGF_MASS)
     {
