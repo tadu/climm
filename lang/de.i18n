@@ -78,7 +78,7 @@
 076:kompiliert am
 077:gewidmet Matthew D. Smith.
 078:Keine Übersetzung verfügbar.
-079:Übersetzung von Rüdiger Kuhlmann und anderen, zuletzt geändert am 24.4.2001.¶
+079:Übersetzung von Rico -mc- Glöckner und Rüdiger Kuhlmann, zuletzt geändert am 27.4.2001.¶
 080:Konnte Übersetzung "%s" nicht laden.¶
 081:Deutsche Übersetzung erfolgreich geladen (%d Einträge).¶
 082:Versuche, neu zu verbinden... [Versuch %d von %d]
@@ -87,8 +87,17 @@
 085:an
 086:aus
 087:Ignoriere Müll nach der Zahl.
-088:automatisch
+088:Geben Sie Ihre Benutzernummer (oder 0 für eine neue) ein:
 089:Entferne Übersetzung aus dem Speicher.
+090:Geben Sie Ihr Paßwort ein: 
+091:¶Sie müssen ein Paßwort eingeben!¶
+092:¶Geben Sie Ihr Paßwort zur Kontrolle erneut ein: 
+093:¶Die Paßwörter stimmen nicht überein, nochmal!¶
+094:¶Rechnername oder IP-Adresse für SOCKS5 (oder 0, wenn Sie kein SOCKS5 benötigen): 
+095:Port für SOCKS5 (normalerweise 1080): 
+096:Benutzername für SOCKS5 (oder 0, falls Sie keine Authentifizierung benötigen): 
+097:Paßwort für SOCKS5: 
+098:Die Option "©4No_Log©0" ist veraltet.¶Benutzen Sie [©4"LogType 0"[©0 stattdessen.¶
 099:Unbekannte Sprache
 ##
 ## Sprachen
@@ -183,6 +192,16 @@
 185:Techniker
 186:Student (Uni)
 187:Webdesigner
+188:©1Unbekannte Option %s in der Konfigurationsdatei ignoriert.©0¶
+189:Benutzernummer = %ld¶
+190:Port    = %ld¶
+191:Paßwort = %s¶
+192:Rechner = %s¶
+193:Status  = %ld¶
+194:Anzahl der Einträge in der Kontaktliste: %d.¶
+195:Benutzernummer von contact[0]: %ld¶
+#196:Message_cmd = %s¶
+197:Änderung des Paßwortes war ©2%s©0.¶
 198:Andere Dienste
 ##
 ## Länder
@@ -384,6 +403,13 @@
 ##
 ## Hilfe-Texte
 ##
+393:erfolgreich
+394:erfolglos
+395:Änderung der "Über"-Information war ©2%s©0.¶
+396:Änderung der grundlegenden Informationen war ©2%s©0.¶
+397:Änderung der sonstigen Informationen war ©2%s©0.¶
+398:Suche ©2fehlgeschlagen©0.¶
+399:Unbekannte "Meta User"-Antwort ©1%04X©0.¶
 400:		Shows locally stored info on user¶
 401:		Updates other user info like age and sex¶
 402:		Aktualisiert die Infos ueber dich.¶
@@ -425,6 +451,8 @@
 437:		-unsichtbar-¶
 438:		Ändert deine persönlichen Userinfos (eMail, Spitzname, etc.)¶
 439:		Setzt deine zufällige Usergruppe.¶
+440:Zufälliger Benutzer:	%d¶
+441:IP-Adresse:	%d.%d.%d.%d: 
 442:Bitte wähle eines der Hilfe-Themen.
 443:Kommandos, um mICQ zu konfigurieren.
 444:Kommandos, um andere User zu finden.
@@ -435,6 +463,10 @@
 449:User
 450:Account
 ##
+451:IP-Adresse 2:	%d.%d.%d.%d¶
+452:Status:	
+453:¶TCP-Version:	%d	
+454:Verbindung:	%s
 455:Kunst
 456:Autos
 457:Fan
@@ -474,6 +506,12 @@
 490:70iger Jahre
 491:80iger Jahre
 492:50iger Jahre
+493:Benutzer-zu-Benutzer
+494:Nur Server
+495:Kein zufälliger Benutzer gefunden
+496::\a¶Datum %d.%d.%d	%d:%02d UTC¶
+497:Typ: %d	Länge: %d¶
+498:¶Die IP-Adresse ist %u.%u.%u.%u¶
 499:Anderes
 500:Spitzname:       
 501:Name:            
@@ -533,3 +571,206 @@
 555:Dein neuer Nachname : 
 556:Deine Email-Adresse : 
 557:Möchtest du, daß Mirabelis-User dein Autorisierung brauchen? : 
+558:Die "wirkliche" IP-Adresse ist %u.%u.%u.%u¶
+559:Benutzer-zu-Benutzer-Modus
+560:Nur-Server-Modus
+561:TCP-ICQ-Version: %d¶
+562:©1Information für %ld¶
+563:Spitzname:	%s¶
+564:Vorname:	%s¶
+565:Nachname:	%s¶
+566:eMail-Adresse:	%s¶
+567:Keine Autorisation erforderlich.©0 
+568:Autorisation erforderlich.©0 
+569:©1Mehr Informationen für %ld¶
+570:Stadt:		%s¶
+571:Land:		%s¶
+572:Ländercode:		%d¶
+573:Zeitzone:		GMT %+d¶
+574:Bundesstaat:	%s¶
+575:Alter:		%d¶
+576:Alter:		nicht angegeben¶
+577:Geschlecht:		männlich¶
+578:Geschlecht:		weiblich¶
+579:Geschlecht:		nicht angegeben¶
+580:Telephonnummer:	%s¶
+581:Internetseite:	%s¶
+582:Über:¶%s
+583:©1Benutzer %ld gefunden¶
+584:Warnung! Befehl "%s" mit Rückgabewert %d fehlgeschlagen¶
+585:Arrgghh!!!!!!!  Schlechtes Paket.
+586:©4¶%s©0 hat Sie auf seine Kontaktliste gesetzt.¶
+587:Vorname: ©3%s©0¶
+588:Nachname: ©3%s©0¶
+589:eMail-Adresse: ©3%s©0¶
+590:©4¶%s©0 bittet um Autorisierung, Sie auf seine Kontaktliste zu setzen.¶
+591:Grund: ©3%s©0¶
+592:<%s> schickt eine Nachricht per eMail:¶
+593:<%s> schickt eine Nachricht per Web:¶
+594:        URL: %s©3%s©0¶
+595:¶Kontaktliste:¶©3============================================¶©0%d Kontakte.¶
+596:[SOCKS] Kann Rechner %s nicht finden.¶
+597:[SOCKS] Kann keinen Socket erzeugen.¶
+598:[SOCKS] Verbindung verweigert.¶
+599:[SOCKS] Autorisationsmethode ungültig.¶
+600:[SOCKS] Autorisierung fehlgeschlagen.¶
+601:[SOCKS] Allgemeiner SOCKS-Server-Fehlschlag.¶
+602:Kommando:    %04X	
+603:Version:     %04X	
+604:Folgenummer: %08X	
+605:Sitzung:     %08X¶
+606:Falsche Sitzungskennung %08X bei Kommando CMD %04X ignoriert.¶
+607:Benutzung: micq [-v|-V] [-f|-F <KonfDatei>] [-l|-L <ProtDatei>] [-?|-h]¶
+608:        -v   ausführlicher Modus (nur zur Fehlersuche nützlich)¶
+609:        -f   alternative Konfigurationsdatei verwenden (normalerweise ~/.micqrc)¶
+610:        -l   alternative Protokoll-Datei verwenden¶
+611:        -?   diese Hilfe¶¶
+612:Dieses Programm wurde ohne Hilfe oder Zustimmung von Mirabilis erstellt.¶
+613:Dazu wurde kein Programmcode von Mirabilis zurückentwickelt oder zurückübersetzt.¶
+614:Die Konfigurationsdatei dieser Sitzung ist "%s".¶
+615:Das Protokoll-Verzechnis dieser Sitzung ist "%s".¶
+616:BeOS "InputThread" gestartet.¶
+617:Speicher erschöpft!\a¶
+618:¶Insgesamt %d Einträge.¶
+619:Folgenummer = %04x	Kommando = %04x	Versuche = %d	Länge = %d¶
+620:¶Entferne Nachricht mit Folgenummer %04X und Kommando 
+621: von der Warteschlange wegen Bestätigung.¶
+623:¶Doppeltes Paket %04X.¶
+624:¶Sende Nachricht mit Folgenummer %04x und Kommando 
+625: erneut (Versuch #%d).
+626:¶Werfe Nachricht an 
+627: weg nach %d Sendeversuchen. Inhalt der Nachricht:¶
+628: Beschreibung: ©3%s©0¶
+629: URL         : ©3%s©0 
+630:¶Habe ein 
+631:Paket weggeworfen.
+632:¶\aVerbindung instabil. Beende...
+633:Bestätigung! %d¶
+634:¶Sende Am-Leben-Erhalte-Paket an den Server.¶
+635:Du bist auf einen Fehler in meinem Programmcode gestoßen :(. Jetzt schulde ich Dir ein Bier! Grüße, Fryslan!¶
+636:[ Sende automatische Antwort an %d(%d)]¶
+637:¶Paket-Nummer %d¶
+638:¶Die Folgenummer war %04X¶
+639:Die neue Benutzernummer ist %ld!¶
+640:Aktualisieren der Informationen fehlgeschlagen.¶
+641:Benutzerinformationen erfolgreich aktualisiert.¶
+642:IP-Adresse
+643:Bestätigt SRV_X1 0x021C Fertig mit Kontaktliste (?)¶
+644:Bestätigt SRV_X2 0x00E6 Fertig mit alten Nachrichten (?)¶
+645:©3Sie haben ein ungültiges Paßwort eingegeben.©0¶
+646:©3Server ist beschäftigt, bitte versuchen Sie es erneut.¶Versuche es erneut...¶
+647: Typ: %04x	
+648: ©2Die Antwort war %04X	
+649:Die Version war %X	
+650:¶Die Folgenummer war %04X	
+651:Die Größe war %d¶
+652:Ungenügend Speicher, um eine ausführliche Kontaktliste darzustellen.¶
+653:Abgeklemmt
+654:Verbunden
+655:Geben Sie die eMail-Adresse des Benutzers ein:
+656:Geben Sie den Spitznamen des Benutzers ein:
+657:Geben Sie den Vornamen des Benuters ein:
+658:Geben Sie den Nachnamen des Benuters ein:
+659:Nachricht gesendet!¶
+660:Ungültiges Kommando: %s¶
+661:Shell-Kommandos wurden abgeschaltet.¶
+662:Farbe ist ©3an©0.¶
+663:Farbe ist ©3aus©0.¶
+664:Erstelle Nachricht an ©1alle©0:¶
+665:%s ist kein bekannter Spitzname
+666:Ignoriere %s nicht mehr!¶
+667:Ignoriere %s!¶
+668:©1Sie müssen einen Spitznamen angeben©0.¶
+669:%s hinzugefügt.¶
+670:Für %s jetzt unsichtbar.¶
+671:Für %s jetzt sichtbar.¶
+672:s IP-Adresse ist 
+673:	Der Port ist %d.¶
+674:	Der Port ist unbekannt.¶
+675:Benötige Benutzernummer, an die ich schicken soll
+676:Benötige Benutzernummer, an die ich schicken soll.¶
+677:%s ist kein bekannter Spitzname.¶
+678:Benötige URL.¶
+679:Leider ist das Speichern Ihrer persönlichen Einstellungen fehlgeschlagen!¶
+680:Ihre persönlichen Einstellungen wurden gespeichert!¶
+681:Die letzten %d Leute, zu denen Sie gesprochen haben:¶
+682:Sie haben Nachrichten empfangen von:¶
+683:Unbekannter Kontakt %s.¶
+684:%s ist kein bekannter Kontakt.¶
+685:Letzte Nachricht von ©4%s©0:¶
+686:No messages received from ©4%s©0¶
+687:mICQ läuft seit
+688:©3%02d©0 Tagen, 
+689:©3%02d©0 Stunden, 
+690:©3%02d©0 Minuten, 
+691:©3%02d©0 Sekunden.¶
+692:Kontakte: ©3%d©0 / %d¶
+693:Pakete gesendet: ©3
+694:%d©0	Pakete empfangen: ©3%d©0	
+695:Pakete verzögert: ©3
+697:Unterschiedliche Pakete gesendet: ©3
+698:%d©0	Unterschiedliche Pakete empfangen: ©3%d©0¶
+699:Benötige gültige Benutzernummer oder Spitzname.¶
+700:%s ist kein gültiger Benutzer in Ihrer Kontaktliste.¶
+701:IP-Adresse: %d.%d.%d.%d: %d¶
+702:TCP-Version: %d	%s¶
+703:©2Status-Modi: ¶
+704:©2Gruppen: ¶
+705:Allgemein                  1¶
+706:Romanzen                   2¶
+707:Spiele                     3¶
+708:Studenten                  4¶
+709:in die 20                  6¶
+710:in die 30                  7¶
+711:in die 40                  8¶
+712:über 50                    9¶
+713:Männlein sucht Weiblein   10¶
+714:Weiblein sucht Männlein   11¶
+715:mICQ                      49 (wird möglicherweise nicht funktionieren, aber ein Versuch ist's wert)
+716:Keine                     -1¶
+717:©2	! als erstes Zeichen, um ein Shell-Kommando auszuführen¶
+718:©2	(z.B. "!ls"  "!dir" "!mkdir temp").©0¶
+719:©3uptime		Zeigt, wie lange mICQ schon läuft.¶©0
+720:©2	uin kann die Benutzernummer oder der Spitzname des Benutzers sein.¶
+721:©2	Bei einer leeren Nachricht können mehrere Zeilen eingegeben werden.¶	Dabei bedeutet eine Zeile nur mit . das Ende der Nachricht.¶
+722:	Ebenso verwirft eine Zeile nur mit # die Nachricht.©0¶
+723:%ss IP-Adresse ist 
+724:Automatische Antworten sind %s.¶
+725:an
+726:aus
+727:Die "Bitte nicht stören"-Nachricht ist: %s¶
+728:Die "Nicht da"-Nachricht ist:           %s¶
+729:Die "Nicht erreichbar"-Nachricht ist:   %s¶
+730:Die "Beschäftigt"-Nachricht ist:        %s¶
+731:Die "Unsichtbar"-Nachricht ist:         %s¶
+732:Automatische Antworten sind an.¶
+733:Automatische Antowrten sind aus.¶
+734:Leider falsche Syntax, kann keinen Status finden.¶
+735:Benötige eine Nachricht.¶
+736:Leider falsche Syntax. Lies doch die Hilfe, Mensch!¶
+737:Automatische Antwort Einstellung dieser 4 Substantive¶
+738:Benötige eine Kommando, das umgenannt werden soll!¶
+739:Erstelle Nachricht an ©4%s©0:¶
+740:Erstelle Nachricht an ©2%d©0:¶
+741:Man muß erst eine Nachricht empfangen.¶
+742:Man muß erst eine Nachricht schreiben.¶
+743:Am-Leben-erhalten
+744:zweitrangiges Am-Leben-erhalten
+745:Kontaktliste
+746:Unsichtbar-Liste
+747:Sichtbar-Liste
+748:Zufällige Suche
+749:Setze Zufall
+750:Lösche Server-Nachrichten
+751:Anmeldung fertigstellen
+752:Anmeldung
+753:Sende Nachricht
+754:Informations-Anfrage
+755:Erweiterte Informations-Anfrage
+756:¶Erstelle Verbindung...¶
+757:Konnte keine Verbindung herstellen.¶
+758:Sende Anfrage...¶
+759:Warte auf Antwort....¶
+760:¶Ihre neue Benutzernummer ist %s%ld%s!¶
+761:unbekannt
+762:Bestätigt!!!!!!  %d\a¶
