@@ -40,7 +40,7 @@ struct Preferences_s
     
     char  *colors[CXCOUNT];
     UBYTE  scheme;
-    UBYTE  chat;
+    SBYTE  chat;
 
     /* Much more stuff to go here - %TODO% */
 };

@@ -402,7 +402,7 @@ void Read_RC_File (FILE *rcf)
                         prG->event_cmd = NULL;
                         continue;
                     }
-                    if (!strcmp (tmp, "off") || !strcmp (tmp, i18n (1086, "off")) || !strlen (tmp))
+                    if (!strcmp (tmp, "off") || !strcmp (tmp, i18n (1086, "off")) || !*tmp)
                         prG->event_cmd = NULL;
                     else
                     {

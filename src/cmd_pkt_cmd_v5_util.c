@@ -154,11 +154,11 @@ void ConnectionInitServerV5 (Connection *conn)
     conn->type = TYPE_SERVER_OLD;
     conn->close = &CallBackClosev5;
     conn->flags = 0;
-    if (!conn->server || !strlen (conn->server))
+    if (!conn->server || !*conn->server)
         s_repl (&conn->server, "icq.icq.com");
     if (!conn->port)
         conn->port = 4000;
-    if (!conn->passwd || !strlen (conn->passwd))
+    if (!conn->passwd || !*conn->passwd)
     {
         char pwd[20];
         pwd[0] = '\0';

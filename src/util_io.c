@@ -148,7 +148,7 @@ void UtilIOConnectUDP (Connection *conn)
         }
         buf[0] = 5;             /* protocol version */
         buf[1] = 1;             /* number of methods */
-        if (!strlen (prG->s5Name) || !strlen (prG->s5Pass) || !prG->s5Auth)
+        if (!*prG->s5Name || !*prG->s5Pass || !prG->s5Auth)
             buf[2] = 0;         /* no authorization required */
         else
             buf[2] = 2;         /* method username/password */

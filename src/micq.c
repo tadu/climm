@@ -219,11 +219,11 @@ int main (int argc, char *argv[])
     {
         switch (prG->enc_loc & ~ENC_AUTO)
         {
-            case ENC_EUC:     prG->enc_rem = ENC_SJIS;    break;
-            case ENC_SJIS:    prG->enc_rem = ENC_SJIS;    break;
-            case ENC_KOI8:    prG->enc_rem = ENC_WIN1251; break;
-            case ENC_WIN1251: prG->enc_rem = ENC_WIN1251; break;
-            default:          prG->enc_rem = ENC_LATIN1;
+            case ENC_EUC:     prG->enc_rem |= ENC_SJIS;    break;
+            case ENC_SJIS:    prG->enc_rem |= ENC_SJIS;    break;
+            case ENC_KOI8:    prG->enc_rem |= ENC_WIN1251; break;
+            case ENC_WIN1251: prG->enc_rem |= ENC_WIN1251; break;
+            default:          prG->enc_rem |= ENC_LATIN1;
         }
     }
     

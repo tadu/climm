@@ -270,7 +270,7 @@ void FlapCliIdent (Connection *conn)
     Packet *pak;
     char *f;
 
-    if (!conn->passwd || !strlen (conn->passwd))
+    if (!conn->passwd || !*conn->passwd)
     {
 #ifdef __BEOS__
         M_print (i18n (2063, "You need to save your password in your ~/.micq/micqrc file.\n"));
