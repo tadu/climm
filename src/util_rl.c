@@ -70,7 +70,13 @@
 
 #undef DEBUG_RL
 
-#define rl_ucs_at(str,pos) (((UDWORD)(UBYTE)((str)->txt[2 * (pos) + 1])) | (((UDWORD)(UBYTE)((str)->txt[2 * (pos)])) << 8))
+/* We'd like to use win_t and wchar_t to store the input line,
+   however not all C implementations store the unicode codepoint
+   in wint_t/wchar_t, which kills the possibility to enter an
+   arbitrary codepoint into the line. Thus, we end up using UDWORDS instead. */
+#define wint_tt  UDWORD
+#define wchar_tt UDWORD
+#define rl_ucs_at(str,pos) *(wint_tt *)((str)->txt + sizeof (wint_tt) * (pos))
 
 #if HAVE_TCGETATTR
 static struct termios tty_attr;
@@ -89,9 +95,9 @@ static int  rl_getcolumns (void);
 static void rl_syncpos (UDWORD pos);
 static void rl_goto (UDWORD pos);
 static void rl_recheck (BOOL clear);
-static void rl_insert_basic (UWORD ucs, const char *display, UDWORD len, UDWORD collen);
-static void rl_analyze_ucs (UWORD ucs, const char **display, UWORD *columns);
-static void rl_insert (UWORD ucs);
+static void rl_insert_basic (wchar_tt ucs, const char *display, UDWORD len, UDWORD collen);
+static void rl_analyze_ucs (wchar_tt ucs, const char **display, UWORD *columns);
+static void rl_insert (wchar_tt ucs);
 static int  rl_delete (void);
 static int  rl_left (UDWORD i);
 static int  rl_right (UDWORD i);
@@ -101,7 +107,7 @@ static void rl_tab_accept (void);
 static void rl_tab_cancel (void);
 static void rl_key_tab (void);
 static void rl_key_shifttab (void);
-static void rl_key_insert (UWORD ucs);
+static void rl_key_insert (wchar_tt ucs);
 static void rl_key_left (void);
 static void rl_key_right (void);
 static void rl_key_delete (void);
@@ -197,8 +203,8 @@ static void rl_dump_line (void)
     {
         char *p = strdup (rl_display.txt + bp);
         p[rl_ucsbytes.txt[i]] = 0;
-        fprintf (stderr, " %02x%02x %d/%d %s",
-                 (UBYTE)rl_ucs.txt[2 * i], (UBYTE)rl_ucs.txt[2 * i + 1], rl_ucscol.txt[i], rl_ucsbytes.txt[i],
+        fprintf (stderr, " %08x %d/%d %s",
+                 rl_ucs_at (&rl_ucs, i), rl_ucscol.txt[i], rl_ucsbytes.txt[i],
                  s_qquote (p));
         bp += rl_ucsbytes.txt[i];
         free (p);
@@ -485,10 +491,9 @@ static void rl_recheck (BOOL clear)
     
     while (rl_ucspos < rl_ucscol.len)
     {
-        if (rl_ucs.txt[2 * rl_ucspos] == -1 && rl_ucs.txt[2 * rl_ucspos + 1] == -1)
+        if (rl_ucs_at (&rl_ucs, rl_ucspos) == WEOF)
         {
-            s_delc (&rl_ucs, 2 * rl_ucspos);
-            s_delc (&rl_ucs, 2 * rl_ucspos);
+            s_deln (&rl_ucs, sizeof (wint_tt) * rl_ucspos, sizeof (wint_tt));
             s_delc (&rl_ucsbytes, rl_ucspos);
             s_delc (&rl_ucscol, rl_ucspos);
             s_delc (&rl_display, rl_bytepos);
@@ -498,8 +503,8 @@ static void rl_recheck (BOOL clear)
         {
             for (i = (rl_columns - ((rl_prompt_len + rl_colpos) % rl_columns)); i > 0; i--)
             {
-                s_insc (&rl_ucs, 2 * rl_ucspos, -1);
-                s_insc (&rl_ucs, 2 * rl_ucspos, -1);
+                wint_tt weof = WEOF;
+                s_insn (&rl_ucs, sizeof (wint_tt) * rl_ucspos, (const char *)&weof, sizeof (wint_tt));
                 s_insc (&rl_ucscol, rl_ucspos, 1);
                 s_insc (&rl_ucsbytes, rl_ucspos++, 1);
                 s_insc (&rl_display, rl_bytepos++, ' ');
@@ -529,7 +534,7 @@ static void rl_recheck (BOOL clear)
  * Insert a character by unicode codepoint, display string in local encoding
  * and its length, and its width in columns
  */
-static void rl_insert_basic (UWORD ucs, const char *display, UDWORD len, UDWORD collen)
+static void rl_insert_basic (wchar_tt ucs, const char *display, UDWORD len, UDWORD collen)
 {
     int i;
     
@@ -537,8 +542,8 @@ static void rl_insert_basic (UWORD ucs, const char *display, UDWORD len, UDWORD 
     {
         for (i = (rl_columns - ((rl_prompt_len + rl_colpos) % rl_columns)); i > 0; i--)
         {
-            s_insc (&rl_ucs, 2 * rl_ucspos, -1);
-            s_insc (&rl_ucs, 2 * rl_ucspos, -1);
+            wint_tt weof = WEOF;
+            s_insn (&rl_ucs, sizeof (wint_tt) * rl_ucspos, (const char *)&weof, sizeof (wint_tt));
             s_insc (&rl_ucscol, rl_ucspos, 1);
             s_insc (&rl_ucsbytes, rl_ucspos++, 1);
             s_insc (&rl_display, rl_bytepos++, ' ');
@@ -547,8 +552,7 @@ static void rl_insert_basic (UWORD ucs, const char *display, UDWORD len, UDWORD 
         }
     }
     
-    s_insc (&rl_ucs, 2 * rl_ucspos,  ucs        & 0xff);
-    s_insc (&rl_ucs, 2 * rl_ucspos, (ucs / 256) & 0xff);
+    s_insn (&rl_ucs, sizeof (wint_tt) * rl_ucspos, (const char *)&ucs, sizeof (wint_tt));
     s_insc (&rl_ucscol, rl_ucspos, collen);
     s_insc (&rl_ucsbytes, rl_ucspos++, len);
     s_insn (&rl_display, rl_bytepos, display, len);
@@ -557,90 +561,86 @@ static void rl_insert_basic (UWORD ucs, const char *display, UDWORD len, UDWORD 
     s_cat (&rl_operate, display);
 }
 
+#if HAVE_WCWIDTH
+/*
+ * Determine width from wcwidth()
+ */
+static int rl_wcwidth (wint_tt ucs, const char *display)
+{
+    wchar_t wc[20]; /* NOT wchar_tt */
+    int i, b, w;
+    
+    if (ucs != CHAR_NOT_AVAILABLE && *display == CHAR_NOT_AVAILABLE)
+        return -1;
+
+    if ((b = mbstowcs (wc, display, 20)) <= 0)
+        return -1;
+    
+    for (i = w = 0; i < b; i++)
+        if (!iswprint (wc[i]) || ((b = wcwidth (wc[i])) < 0))
+            return -1;
+        else
+            w += b;
+    return w;
+}
+#endif
+
+#define rl_hex(u) ((u) & 15) <= 9 ? '0' + (char)((u) & 15) : 'a' - 10 + (char)((u) & 15)
+
 /*
  * Determine for a character is display string and columns width
  */
-static void rl_analyze_ucs (UWORD ucs, const char **display, UWORD *columns)
+static void rl_analyze_ucs (wint_tt ucs, const char **display, UWORD *columns)
 {
    char *utf = NULL;
 #if HAVE_WCWIDTH
    int width;
-#if ENABLE_TRANSLIT
-   char *trans = NULL;
-   strc_t wstr;
-#endif
 #endif
   
    utf = strdup (ConvUTF8 (ucs));
    *display = ConvTo (utf, ENC(enc_loc))->txt;
 
-   if (ucs < 32 || ucs == 127 || ucs == 173) /* control code */
+    if (ucs < 32 || ucs == 127 || ucs == 173) /* control code */
     {
-        *display = s_sprintf ("%s^%c%s", COLINVCHAR, (ucs - 1 + 'A') & 0x7f, COLNONE);
+        *display = s_sprintf ("%s^%c%s", COLINVCHAR, (char)((ucs - 1 + 'A') & 0x7f), COLNONE);
         *columns = 2;
     }
-#if HAVE_WCWIDTH
-    else if (!prG->locale_broken && (width = wcwidth (ucs)) != -1)
-    {
-        *display = ConvTo (utf, ENC(enc_loc))->txt;
-        *columns = width;
-    }
-#if ENABLE_TRANSLIT
-    else if (!prG->locale_broken && (trans = strdup (ConvFrom (ConvTo (utf, ENC(enc_loc)), ENC(enc_loc))->txt))
-             && strcmp (utf, trans) && (wstr = ConvTo (trans, ENC_WCHART))
-             && (width = wcswidth ((const wchar_t *)(wstr->txt), wstr->len / sizeof (wchar_t))) != -1)
-    {
-        *display = ConvTo (utf, ENC(enc_loc))->txt;
-        *columns = width;
-    }
-#endif
     else if (ucs < 127)
+        *columns = 1;
+#if HAVE_WCWIDTH
+    else if (!prG->locale_broken && (width = rl_wcwidth (ucs, *display)) != -1)
+        *columns = width;
 #else
-    else if (ucs < 127 || ucs >= 160) /* no way I'll hard-code double-width or combining marks here */
+    else if (ucs >= 160) /* no way I'll hard-code double-width or combining marks here */
+        *columns = 1;
 #endif
-    {
-        *display = ConvTo (utf, ENC(enc_loc))->txt;
-        *columns = 1;
-    }
     else if (prG->locale_broken && !strcmp (ConvFrom (ConvTo (utf, ENC(enc_loc)), ENC(enc_loc))->txt, utf))
-    {
-        *display = ConvTo (utf, ENC(enc_loc))->txt;
         *columns = 1;
-    }
     else if (!(ucs & 0xffff0000)) /* more control code, or unknown */
     {
         *display = s_sprintf ("%s\\u%c%c%c%c%s", COLINVCHAR,
-           ((ucs / 4096) & 0xf) <= 9 ? '0' + ((ucs / 4096) & 0xf) : 'a' - 10 + ((ucs / 4096) & 0xf),
-           ((ucs /  256) & 0xf) <= 9 ? '0' + ((ucs /  256) & 0xf) : 'a' - 10 + ((ucs /  256) & 0xf),
-           ((ucs /   16) & 0xf) <= 9 ? '0' + ((ucs /   16) & 0xf) : 'a' - 10 + ((ucs /   16) & 0xf),
-           ( ucs         & 0xf) <= 9 ? '0' + ( ucs         & 0xf) : 'a' - 10 + ( ucs         & 0xf),
+           rl_hex (ucs / 4096), rl_hex (ucs /  256),
+           rl_hex (ucs /   16), rl_hex (ucs),
            COLNONE);
         *columns = 6;
     }
     else /* unknown stellar planes */
     {
         *display = s_sprintf ("%s\\U%c%c%c%c%c%c%c%c%s", COLINVCHAR,
-           ((ucs / 268435456) & 0xf) <= 9 ? '0' + ((ucs / 268435456) & 0xf) : 'a' - 10 + ((ucs / 268435456) & 0xf),
-           ((ucs /  16777216) & 0xf) <= 9 ? '0' + ((ucs /  16777216) & 0xf) : 'a' - 10 + ((ucs /  16777216) & 0xf),
-           ((ucs /   1048576) & 0xf) <= 9 ? '0' + ((ucs /   1048576) & 0xf) : 'a' - 10 + ((ucs /   1048576) & 0xf),
-           ((ucs /     65536) & 0xf) <= 9 ? '0' + ((ucs /     65536) & 0xf) : 'a' - 10 + ((ucs /     65536) & 0xf),
-           ((ucs /      4096) & 0xf) <= 9 ? '0' + ((ucs /      4096) & 0xf) : 'a' - 10 + ((ucs /      4096) & 0xf),
-           ((ucs /       256) & 0xf) <= 9 ? '0' + ((ucs /       256) & 0xf) : 'a' - 10 + ((ucs /       256) & 0xf),
-           ((ucs /        16) & 0xf) <= 9 ? '0' + ((ucs /        16) & 0xf) : 'a' - 10 + ((ucs /        16) & 0xf),
-           ( ucs              & 0xf) <= 9 ? '0' + ( ucs              & 0xf) : 'a' - 10 + ( ucs              & 0xf),
+           rl_hex (ucs / 268435456), rl_hex (ucs /  16777216),
+           rl_hex (ucs /   1048576), rl_hex (ucs /     65536),
+           rl_hex (ucs /      4096), rl_hex (ucs /       256),
+           rl_hex (ucs /        16), rl_hex (ucs),
            COLNONE);
         *columns = 10;
     }
     free (utf);
-#if HAVE_WCWIDTH && ENABLE_TRANSLIT
-    s_free (trans);
-#endif
 }
 
 /*
  * Insert a given unicode codepoint
  */
-static void rl_insert (UWORD ucs)
+static void rl_insert (wint_tt ucs)
 {
     const char *display;
     UWORD columns;
@@ -659,28 +659,25 @@ static int rl_delete (void)
     if (rl_ucspos >= rl_ucscol.len)
         return FALSE;
     
-    while ((rl_ucs.txt[2 * rl_ucspos] == -1) && (rl_ucs.txt[2 * rl_ucspos + 1] == -1))
+    while (rl_ucs_at (&rl_ucs, rl_ucspos) == WEOF)
     {
         s_deln (&rl_display,  rl_bytepos, rl_ucsbytes.txt[rl_ucspos]);
         s_delc (&rl_ucscol,   rl_ucspos);
         s_delc (&rl_ucsbytes, rl_ucspos);
-        s_delc (&rl_ucs,  2 * rl_ucspos);
-        s_delc (&rl_ucs,  2 * rl_ucspos);
+        s_deln (&rl_ucs, sizeof (wint_tt) * rl_ucspos, sizeof (wint_tt));
     }
 
     s_deln (&rl_display,  rl_bytepos, rl_ucsbytes.txt[rl_ucspos]);
     s_delc (&rl_ucscol,   rl_ucspos);
     s_delc (&rl_ucsbytes, rl_ucspos);
-    s_delc (&rl_ucs,  2 * rl_ucspos);
-    s_delc (&rl_ucs,  2 * rl_ucspos);
+    s_deln (&rl_ucs, sizeof (wint_tt) * rl_ucspos, sizeof (wint_tt));
     
     while (!rl_ucscol.txt[rl_ucspos] && rl_ucspos < rl_ucscol.len)
     {
         s_deln (&rl_display,  rl_bytepos, rl_ucsbytes.txt[rl_ucspos]);
         s_delc (&rl_ucscol,   rl_ucspos);
         s_delc (&rl_ucsbytes, rl_ucspos);
-        s_delc (&rl_ucs,  2 * rl_ucspos);
-        s_delc (&rl_ucs,  2 * rl_ucspos);
+        s_deln (&rl_ucs, sizeof (wint_tt) * rl_ucspos, sizeof (wint_tt));
     }
     return TRUE;
 }
@@ -699,7 +696,7 @@ static int rl_left (UDWORD i)
     for ( ; i > 0; i--)
     {
         while (rl_ucspos > 0 && (!rl_ucscol.txt[rl_ucspos - 1] || 
-               (rl_ucs.txt[2 * rl_ucspos - 2] == -1 && rl_ucs.txt[2 * rl_ucspos - 1] == -1)))
+               (rl_ucs_at (&rl_ucs, rl_ucspos) == WEOF)))
             gpos -= rl_ucscol.txt[--rl_ucspos];
         if (rl_ucspos > 0)
             gpos -= rl_ucscol.txt[--rl_ucspos];
@@ -724,7 +721,7 @@ static int rl_right (UDWORD i)
         if (rl_ucspos < rl_ucscol.len)
             gpos += rl_ucscol.txt[rl_ucspos++];
         while (rl_ucspos < rl_ucscol.len && (!rl_ucscol.txt[rl_ucspos] || 
-               (rl_ucs.txt[2 * rl_ucspos] == -1 && rl_ucs.txt[2 * rl_ucspos + 1] == -1)))
+               (rl_ucs_at (&rl_ucs, rl_ucspos) == WEOF)))
             gpos += rl_ucscol.txt[rl_ucspos++];
     }
     rl_goto (gpos);
@@ -739,7 +736,8 @@ static int rl_right (UDWORD i)
  */
 static void rl_linecompress (str_t line, UDWORD from, UDWORD to)
 {
-    UDWORD i, ucs;
+    UDWORD i;
+    wint_tt ucs;
     
     if (to == (UDWORD)-1)
         to = rl_ucscol.len;
@@ -750,7 +748,7 @@ static void rl_linecompress (str_t line, UDWORD from, UDWORD to)
 #if DEBUG_RL
         fprintf (stderr, "ucs %x\n", ucs);
 #endif
-        if ((ucs != (UDWORD)0xffff) && (ucs != (UDWORD)-1))
+        if (ucs != WEOF)
             s_cat (line, ConvUTF8 (ucs));
     }
 #if DEBUG_RL
@@ -764,20 +762,18 @@ static void rl_linecompress (str_t line, UDWORD from, UDWORD to)
 static void rl_lineexpand (char *hist)
 {
     str_s str = { NULL, 0, 0 };
-    strc_t line;
-    UDWORD i;
+    int off;
 
     s_init (&rl_ucs, "", 0);
     s_init (&rl_ucscol, "", 0);
     s_init (&rl_ucsbytes, "", 0);
     s_init (&rl_display, "", 0);
     rl_colpos = rl_ucspos = rl_bytepos = 0;
-    s_init (&str, "", 0);
-    line = ConvTo (hist, ENC_UCS2BE);
-    s_catn (&str, line->txt, line->len);
-    for (i = 0; 2 * i + 1 < str.len; i++)
-        rl_insert (rl_ucs_at (&str, i));
-    s_done (&str);
+    
+    str.txt = hist;
+    str.len = strlen (str.txt);
+    for (off = 0; off < str.len; )
+        rl_insert (ConvGetUTF8 (&str, &off));
 }
 
 /*
@@ -961,10 +957,9 @@ static const Contact *rl_tab_getprev (strc_t common)
  */
 static void rl_tab_accept (void)
 {
-    str_s inss = { NULL, 0, 0 };
-    strc_t ins;
+    str_s str = { NULL, 0, 0 };
     const char *display;
-    UDWORD i;
+    int off;
     UWORD columns;
     
     if (!rl_tab_state)
@@ -972,17 +967,15 @@ static void rl_tab_accept (void)
     rl_left (rl_tab_common);
     for ( ; rl_tab_len; rl_tab_len--)
         rl_delete ();
-    ins = ConvTo (rl_tab_cont->nick, ENC_UCS2BE);
-    s_init (&inss, "", 0);
-    s_catn (&inss, ins->txt, ins->len);
-    for (i = 0; i < inss.len / 2; i++)
+    str.txt = rl_tab_cont->nick;
+    str.len = strlen (str.txt);
+    for (off = 0; off < str.len; )
     {
-        UWORD ucs = rl_ucs_at (&inss, i);
+        wint_tt ucs = ConvGetUTF8 (&str, &off);
         rl_analyze_ucs (ucs, &display, &columns);
         rl_insert_basic (ucs, display, strlen (display), columns);
     }
     rl_tab_state = 0;
-    s_done (&inss);
     rl_recheck (TRUE);
 }
 
@@ -991,10 +984,9 @@ static void rl_tab_accept (void)
  */
 static void rl_tab_cancel (void)
 {
-    str_s inss = { NULL, 0, 0 };
-    strc_t ins;
+    str_s str = { NULL, 0, 0 };
     const char *display;
-    UDWORD i;
+    int i, off;
     UWORD columns;
     
     if (!rl_tab_state)
@@ -1002,17 +994,15 @@ static void rl_tab_cancel (void)
     rl_left (rl_tab_common);
     for ( ; rl_tab_len; rl_tab_len--)
         rl_delete ();
-    ins = ConvTo (rl_tab_cont->nick, ENC_UCS2BE);
-    s_init (&inss, "", 0);
-    s_catn (&inss, ins->txt, ins->len);
-    for (i = 0; i < rl_tab_common; i++)
+    str.txt = rl_tab_cont->nick;
+    str.len = strlen (str.txt);
+    for (off = i = 0; off < str.len && i < rl_tab_common; i++)
     {
-        UWORD ucs = rl_ucs_at (&inss, i);
+        wint_tt ucs = ConvGetUTF8 (&str, &off);
         rl_analyze_ucs (ucs, &display, &columns);
         rl_insert_basic (ucs, display, strlen (display), columns);
     }
     rl_tab_state = 0;
-    s_done (&inss);
     rl_recheck (TRUE);
 }
 
@@ -1038,7 +1028,7 @@ static void rl_key_tab (void)
         }
         for (i = 0; i < rl_ucspos; i++)
         {
-            if (rl_ucs.txt[2 * i] == 0 && rl_ucs.txt[2 * i + 1] == ' ')
+            if (rl_ucs_at (&rl_ucs, i) == ' ')
             {
                 rl_tab_index = 0;
                 rl_tab_state = 1;
@@ -1148,7 +1138,7 @@ static void rl_key_shifttab (void)
 /*
  * Handle key to insert itself
  */
-static void rl_key_insert (UWORD ucs)
+static void rl_key_insert (wchar_tt ucs)
 {
     if (rl_tab_state && rl_tab_common)
     {
