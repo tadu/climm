@@ -227,7 +227,7 @@ void Initialize_RC_File ()
     conns = ConnectionC (TYPE_REMOTE);
     conns->open = &RemoteOpen;
     conns->flags |= CONN_AUTOLOGIN;
-    conns->pref_server = strdup ("remote-control");
+    conns->pref_server = strdup ("scripting");
     conns->server = strdup (conns->pref_server);
 #endif
 
@@ -1133,7 +1133,7 @@ int Read_RC_File (FILE *rcf)
     {
         connr = ConnectionC (TYPE_REMOTE);
         connr->open = &RemoteOpen;
-        connr->pref_server = strdup ("remote-control");
+        connr->pref_server = strdup ("scripting");
         connr->parent = NULL;
         connr->server = strdup (connr->pref_server);
         dep = 22;
