@@ -44,7 +44,7 @@ BOOL DebugReal (UDWORD level, const char *str, ...)
 {
     va_list args;
     char buf[2048], c;
-    const char *name;
+    const char *name, *coldebug, *colnone;
 
     if (!(prG->verbose & level) && level)
         return 0;
@@ -55,17 +55,17 @@ BOOL DebugReal (UDWORD level, const char *str, ...)
 
     name = DebugStr (level & prG->verbose);
     level = prG->verbose;
+    prG->verbose = 0;
+    coldebug = COLDEBUG;
+    colnone = COLNONE;
     prG->verbose = 8;
 
     M_print ("");
     if ((c = M_pos ()))
         M_print ("\n");
-    
-    M_printf ("%s %s%7.7s%s %s", s_now, COLDEBUG, name, COLNONE, buf);
-
+    M_printf ("%s %s%7.7s%s %s", s_now, coldebug, name, colnone, buf);
     if (!c)
         M_print ("\n");
-
     prG->verbose = level;
 
     return 1;
