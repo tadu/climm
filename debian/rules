@@ -19,6 +19,10 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	INSTALL_PROGRAM += -s
 endif
 
+ifeq (,$(MICQ_EXTRAVERSION))
+	MICQ_EXTRAVERSION = Debian
+endif
+
 config.status: configure
 configure: configure-stamp
 configure-stamp:
