@@ -1555,40 +1555,6 @@ int Save_RC ()
     }
     fprintf (rcf, "\n");
 
-#if 1
-    fprintf (rcf, "# Contact groups. This is a compatibily section and ignored for mICQ 0.5.x.");
-    for (k = 1; (cg = ContactGroupIndex (k)); k++)
-    {
-        fprintf (rcf, "\n[Group]\n");
-        if (cg->serv)
-            fprintf (rcf, "server %s %ld\n", cg->serv->type == TYPE_SERVER ? "icq8" : "icq5", cg->serv->uin);
-        else
-            fprintf (rcf, "#server <icq5|icq8> <uin>\n");
-        fprintf (rcf, "label %s\n", s_quote (cg->name));
-        fprintf (rcf, "id %d\n", cg->id);
-        
-        for (i = 0; (cont = ContactIndex (cg, i)); i++)
-            fprintf (rcf, "entry 0 %ld\n", cont->uin);
-    }
-    fprintf (rcf, "\n# The contact list section. This is a compatibily section and ignored for mICQ 0.5.x.\n");
-    fprintf (rcf, "#  Use * in front of the number of anyone you want to see you while you're invisible.\n");
-    fprintf (rcf, "#  Use ~ in front of the number of anyone you want to always see you as offline.\n");
-    fprintf (rcf, "#  Use ^ in front of the number of anyone you want to ignore.\n");
-    fprintf (rcf, "[Contacts]\n");
-    for (i = 0; (cont = ContactIndex (0, i)); i++)
-    {
-        ContactAlias *alias;
-        UWORD val;
-        if (ContactOptionsGetVal (&cont->copts, CO_INTIMATE, &val) && val) fprintf (rcf, "*"); else fprintf (rcf, " ");
-        if (ContactOptionsGetVal (&cont->copts, CO_HIDEFROM, &val) && val) fprintf (rcf, "~"); else fprintf (rcf, " ");
-        if (ContactOptionsGetVal (&cont->copts, CO_IGNORE,   &val) && val) fprintf (rcf, "^"); else fprintf (rcf, " ");
-        fprintf (rcf, "%9ld %s\n", cont->uin, s_quote (cont->nick));
-        for (alias = cont->alias; alias; alias = alias->more)
-            fprintf (rcf, "   %9ld %s\n", cont->uin, s_quote (alias->alias));
-    }
-    fprintf (rcf, "\n");
-#endif
-
     fprintf (stf, "# Contact groups.");
     for (k = 1; (cg = ContactGroupIndex (k)); k++)
     {

@@ -1052,14 +1052,6 @@ static JUMP_F(CmdUserAuto)
     {
         M_printf (i18n (1724, "Automatic replies are %s.\n"),
                  prG->flags & FLAG_AUTOREPLY ? i18n (1085, "on") : i18n (1086, "off"));
-#if 0
-        M_printf ("%30s %s\n", i18n (1727, "The \"do not disturb\" message is:"), prG->auto_dnd);
-        M_printf ("%30s %s\n", i18n (1728, "The \"away\" message is:"),           prG->auto_away);
-        M_printf ("%30s %s\n", i18n (1729, "The \"not available\" message is:"),  prG->auto_na);
-        M_printf ("%30s %s\n", i18n (1730, "The \"occupied\" message is:"),       prG->auto_occ);
-        M_printf ("%30s %s\n", i18n (1731, "The \"invisible\" message is:"),      prG->auto_inv);
-        M_printf ("%30s %s\n", i18n (2054, "The \"free for chat\" message is:"),  prG->auto_ffc);
-#endif
         return 0;
     }
 
@@ -1077,32 +1069,6 @@ static JUMP_F(CmdUserAuto)
     }
     M_printf (i18n (9999, "Auto reply messages are now contact options, see the 'opt' command.\n"));
 
-#if 0    
-    arg1 = strdup (arg1);
-
-    if (!s_parserem (&args, &arg2))
-    {
-        M_print (i18n (1735, "Must give a message.\n"));
-        free (arg1);
-        return 0;
-    }
-
-    if      (!strcasecmp (arg1, "dnd")  || !strcasecmp (arg1, CmdUserLookupName ("dnd")))
-        s_repl       (&prG->auto_dnd,  arg2);
-    else if (!strcasecmp (arg1, "away") || !strcasecmp (arg1, CmdUserLookupName ("away")))
-        s_repl       (&prG->auto_away, arg2);
-    else if (!strcasecmp (arg1, "na")   || !strcasecmp (arg1, CmdUserLookupName ("na")))
-        s_repl       (&prG->auto_na,   arg2);
-    else if (!strcasecmp (arg1, "occ")  || !strcasecmp (arg1, CmdUserLookupName ("occ")))
-        s_repl       (&prG->auto_occ,  arg2);
-    else if (!strcasecmp (arg1, "inv")  || !strcasecmp (arg1, CmdUserLookupName ("inv")))
-        s_repl       (&prG->auto_inv,  arg2);
-    else if (!strcasecmp (arg1, "ffc")  || !strcasecmp (arg1, CmdUserLookupName ("ffc")))
-        s_repl       (&prG->auto_ffc,  arg2);
-    else
-        M_printf (i18n (2113, "Unknown status '%s'.\n"), arg1);
-    free (arg1);
-#endif
     return 0;
 }
 
