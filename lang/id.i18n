@@ -1,12 +1,12 @@
 # $Id$ (Indonesian)
-#  EN: __.i18n,v 1.63.2.3 2003/04/08 15:28:43
+#  EN: __.i18n,v 1.63.2.2 2003/01/10 15:57:15
 1000:iso-8859-1
 1001:id
 1002:id_ID
 1003:0-4-10-2
 1004:L. Budi Handoko
 1005:L. Budi Handoko
-1006:24 Naret 2003
+1006:22 April 2003
 1010:User sedang jauh [Pesan Otomatis]
 1011:User sedang tidak ditempat [Pesan Otomatis]
 1012:User sedang sibuk [Pesan Otomatis]
@@ -31,7 +31,7 @@
 1032:debug: paket ganda #%04lx type %04x (%s)\n
 1033:Paket server v8 datang:
 1034:Sudah mencapai jumlah percobaan maksimum. Menyerah.
-1036:Perintah tidak dikenal %s, ketik /help untuk pertolongan.
+1036:Perintah %s tidak dikenal, ketik /help untuk pertolongan.
 1037:Pesan terkirim sebagian.\n
 1038:Pesan dibatalkan.\n
 1039:Server menyatakan bahwa kita tidak terhubung.\n
@@ -95,7 +95,7 @@
 1122:Hindi
 1123:Hungaria
 1124:Icelandic
-1125:Indonesian
+1125:Indonesia
 1126:Itali
 1127:Jepang
 1128:Khmer
@@ -354,13 +354,13 @@
 1392:Zimbabwe
 1393:berhasil
 1394:tidak berhasil
-1400:Menampilkan informasi yang tersimpan lokal pada <uin> atau <nick>, atau pada diri Anda.
+1400:Menampilkan status untuk <uin> atau <nick>, atau pada diri Anda.
 1401:Memperbaharui informasi user lain seperti usia dan kelamin.
 1402:Memperbaharui informasi user tentang Anda.
 1403:Menampilkan pesan terakhir yang diterima dari <contacts> atau dari setiap orang.
-1404:Mengubah abaikan/jangan abaikan <contacts>.
+1404:Mengubah kondisi untuk mengabaikan <contacts>.
 1405:Daftar nick/uin yang diabaikan.
-1406:Mengubah penampakan Anda kepada <contacts> sewaktu Anda tidak nampak.
+1406:Mengubah penampakan Anda agar selalu nampak kepada <contacts> sewaktu Anda tidak terlihat.
 1407:Menampilkan status saat ini dari orang yang online pada daftar kontak Anda.
 1408:Mengubah password Anda ke <password>.
 1409:Mengirimkan pesan ke <contacts>.
@@ -462,7 +462,7 @@
 1516:Kesibukan:
 1517:Posisi Pekerjaan:
 1518:Bagian:
-1519:Name Perusahaan:
+1519:Nama Perusahaan:
 1520:Kode Pos Perusahaan:
 1521:Fax Perusahaan:
 1522:Alamat Perusahaan:
@@ -621,7 +621,7 @@
 1762:UIN baru Anda adalah: %ld.\n
 1763:Perintah '%s' telah diubah menjadi '%s'.
 1764:Perintah '%s' tidak berubah.
-1765.%s UIN-nya %ld.
+1765:%s UIN-nya %ld.
 1766:Mengubah status ke jauh/tidak ditempat setelah nganggur selama %s%ld%s detik.\n
 1767:Menganti perputaran otomatis ke jauh/tidak ditempat.
 1768:Nama perintah '%s' telah digunakan.\n
@@ -830,7 +830,7 @@
 2042:Menampilkan daftar orang yang online pada daftar kontak dengan menggunakan format layar lebar.
 2043:Menghapus semua kontak di <contacts> dari grup kontak <group>.
 2044:Set, bersihkan atau tampilkan <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
-2045:Mengubah penampakan Anda pada <contacts> sewaktu Anda online.
+2045:Mengubah penampakan Anda menjadi tidak terlihat kepada <contacts> sewaktu Anda online.
 2046:Anda mungkin ingin menggunakan protokol versi 8 untuk peer-to-peer ICQ sebagai gantinya.\n
 2047:Membuat direktori %s.\n
 2048:Menyimpan preferensi ke %s.\n
@@ -905,7 +905,7 @@
 2130:Menulis pesan kepada %sall%s:\n
 2131:Menulis pesan kepada %s%s%s:\n
 2133:Warna adalah %s%s%s.\n
-2134:Pesab kucunya %s%s%s.\n
+2134:Pesan lucunya %s%s%s.\n
 2135:Keluaran kosongnya adalah %s%s%s.\n
 2136:Password yang telah berubah adalah %s%s%s.\n
 2137:Informasi tentang yang berubah adalah %s%s%s.\n
@@ -978,8 +978,8 @@
 2220:beberapa
 2221:Menghapus kontak sementara '%s' (%ld).\n
 2222:Perintah skrip '%s' gagal: %s (%d).\n
-2223:Membuka remote control FIFO pada %s...
-2225:remote control
+2223:Membuka pengendali jarak jauh FIFO pada %s...
+2225:pengendali jarak jauh
 2226:Tidak dapat membuat FIFO
 2227:Tidak dapat membuka FIFO
 2228:Tidak dapat men-set FIFO nonblocking
@@ -1035,7 +1035,7 @@
 2278:    delbs:      menterjemahkan karakter delete sebagai backspace.\n
 2279:    log:        lakukan pencatatan.\n
 2280:    logonoff:   juga catat perubahan status.\n
-2281:    auto:       kirim jawaban otomati.\n
+2281:    auto:       kirim jawaban otomatis.\n
 2282:    uinprompt:  menggunakan nick terakhir pada prompt.\n
 2283:    autosave:   otomatis menyimpan micqrc.\n
 2284:    autofinger: otomatis finger UIN baru.\n
@@ -1070,7 +1070,7 @@
 2313:Menerima, menolak, meminta atau mengetahui otorisasi dari/kepada <contacts> ke Anda/mereka ke daftar kontak mereka/Anda.
 2314:Berikut ini adalah perintah tambahan. Pastikan telah membaca halaman manual untuk informasi lengkap.\n
 2315:Tidak dapat melihat status dari %s - terlalu banyak pengamat.\n
-#2317:Translation %s not found. Would you like to translate mICQ into your language?\n
-2318:Indonesian (%s) translation loaded (%ld entries).\n
-#2319:Accept an incoming file transfer from <uin> or <nick>.
-#2320:peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n
+2317:Terjemahan %s tidak ketemu. Apakah anda ingin menterjemahkan mICQ ke dalam bahasa Anda ?\n
+2318:Terjemahan bahasa Inggris (%s) dimuat (%ld entri).\n
+2319:Menerima transfer file yang datang dari <uin> atau <nick>.
+2320:peer accept <nick> [<id>]\n                  - menerima transfer file yang datang.\n
