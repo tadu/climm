@@ -123,7 +123,11 @@ void R_init (void)
     signal (SIGTSTP, &micq_ttystop_handler);
     signal (SIGCONT, &micq_cont_handler);
 #endif
+#ifndef __amigaos__
     signal (SIGINT, &micq_int_handler);
+#else
+    signal (SIGINT, SIG_IGN);
+#endif
     tty_prepare ();
     atexit (tty_restore);
     R_resetprompt ();
@@ -527,7 +531,7 @@ int R_process_input (void)
     {
         if (prG->tabs != TABS_SIMPLE && ch != '\t')
             tabstate = 0;
-        if ((ch > 0 && ch < ' ') || ch == 127 || !ch)
+        if ((ch > 0 && ch < ' ') || ch == (char)127 || !ch)
         {
             switch (ch)
             {
@@ -587,14 +591,12 @@ int R_process_input (void)
                     istat = 1;
                     break;
 #endif
-#if !defined(VERASE)
                 case 127:      /* DEL */
                     if (prG->flags & FLAG_DELBS)
                         R_process_input_backspace ();
                     else
                         R_process_input_delete ();
                     return 0;
-#endif
                 default:
 #if HAVE_TCGETATTR
 #if defined(VERASE)
@@ -642,6 +644,8 @@ int R_process_input (void)
                     /* silence warning */ ;
             }
         }
+        else if (ENC(enc_loc) == ENC_LATIN1 && ch == (char)0x9b)
+            istat = 2;
         else if (bytelen + 1 < HISTORY_LINE_LEN)
         {
             static char buf[7] = "\0\0\0\0\0\0";
