@@ -1,5 +1,32 @@
 -*- coding: utf-8 -*-
 
+
+2003-09-19 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
+	* add missing/undocumented/broken peer deny command,
+	  plus a few more file transfer fixes
+	* built-in aliases login for conn login and accept for peer accept
+	* apply Roman's SSL patch
+
+2003-09-14 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
+	* don't show wrong nick for remote controls
+	* try to ignore auto-reply that match the message acknowledged
+
+2003-09-03 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
+	* add it micq.1
+	* apply Roman's TCL scripting patch
+	* fix layout bug, blank lines and hyphen in man page
+	* update pt.i18n
+
+2003-08-31 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
+	* fix login sequence (backport from unstable)
+	* be more case-insensitive for contacts/contact groups
+	* fix infinite loop on rinfo
+	* fix info on aliases
+	* new function s_sanitize() to replace control codes by hex value
+	* use to fix all places where control codes from messages or
+	  meta data could be output unchecked
+	* work-around bug in Miranda < 0.3.1
+
 2003-08-09 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
 	* fix those freakin' \x## parsing
 	* add zh_TW translation from Kenneth Chan
