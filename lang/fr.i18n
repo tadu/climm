@@ -76,6 +76,7 @@
 1076:compilé le
 1077:dedié à Matthew D. Smith.
 1078:Aucune traduction disponible.
+#1079:Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.¶
 1080:N'a pu pas ouvrir le fichier de langue "%s".¶
 1081:Chargement de la traduction française réussi (%d données).¶
 1082:Tentative de reconnexion.. [essai %d de %d]
@@ -190,8 +191,8 @@
 1191:mot de passe = %s¶
 1192:serveur = %s¶
 1193:status = %ld¶
-1195:UIN de la personne[0] = %ld¶
 #1194: 
+1195:UIN de la personne[0] = %ld¶
 1195:La couleur est ©3%s©0.¶
 1196:cmd de message = %s¶
 1197:Le changement du mot de passe a ©2%s©0.¶
@@ -722,13 +723,12 @@
 1715:mICQ                      49 (peut-être en panne, mais essayez-le !)
 1716:Aucun                     -1¶
 1717:©2	! comme première caractère d'une commande exécutera¶
-1719:©3uptime		Affiche depuis combien de temps micq est lancé.¶©0
 #1718: 
+1719:©3uptime		Affiche depuis combien de temps micq est lancé.¶©0
 1720:©2	L'UIN peut être soit un numéro ou le surnom de l'utilisateur.¶
 1721:©2	En laissant le message vide, la mode multi-ligne sera activé.¶	Faites . sur un nouveau ligne pour envoyer le message.¶
 #-#1722:	Faites # sur un nouveau ligne pour la terminer.©0¶
-1722:Taper aide pour voir la commande courante, car celle que vous avez
-tapé n'en était pas une!
+1722:Taper aide pour voir la commande courante, car celle que vous avez tapé n'en était pas une!
 1723:%s - IP 
 1724:Les réponses automatiques sont %s.¶
 #1725: 
@@ -791,29 +791,19 @@ tapé n'en était pas une!
 1781:Votre mot de passe pour l'UIN %d:¶
 1782:Vous avez besoin d'un mot de passe pour votre nouvel UIN.¶
 1783:Pour éviter les fautes de frappe,veuillez confirmer votre mot de passe.¶
-1784:Si vous êtes derriere un firewall, vous avez sans doute besoin
-d'utiliser un server SOCKS5.Si tel est le cas,veuillez entrer son hostname
-ou son adresse ips.Si vous n'etes pas sûr,appuyez sur entrer.¶
+1784:Si vous êtes derriere un firewall, vous avez sans doute besoin d'utiliser un server SOCKS5.Si tel est le cas,veuillez entrer son hostname ou son adresse ips. Si vous n'etes pas sûr,appuyez sur entrer.¶
 1785:Réussi.¶
-1786:J'ai aussi besoin du port sur lequel le server SOCKS ecoute.Si vous
-n'êtes pas sur, appuyez sur Entrer pour sélectionner le port par defaut.¶
-1787:Vous avez sans doute besoin de vous authentifier sur le serveur
-SOCKS.Si oui, vous devez entrer le nom d'utilisateur que l'administrateur du
-serveur SOCKS vous a attribué.Ou alors appuiyez simplement sur Entrer.¶
+1786:J'ai aussi besoin du port sur lequel le server SOCKS ecoute. Si vous n'êtes pas sur, appuyez sur Entrer pour sélectionner le port par defaut.¶
+1787:Vous avez sans doute besoin de vous authentifier sur le serveur SOCKS. Si oui, vous devez entrer le nom d'utilisateur que l'administrateur du serveur SOCKS vous a attribué. Ou alors appuiyez simplement sur Entrer.¶
 1788:J'ai désormais besoin du mot de passe pour cet utilisateur.¶
 1789:Les paquets reçus sont détériorés: (%d)
 1790:L'assistant d'installation a terminé.Félicitations pour votre nouvel UIN!¶
 1791:SL'assistant d'installation a terminé.Félicitations!¶
-1792:Je suis désolé, AOL ne veut pas vous attribuer un nouvel UIN,sans doute
-a cause d'un trop grand nombre de demande de nouveaux UIN pour cette IP.
-Veuillez réessayer plus tard.¶
-1793:Aucun UIN valide n'a été trouvé. L'assistant d'installation va vous
-guider pendant la procédure pour en obtenir un.¶
-1794:Si vous possedez déjà un UIN, veuille le rentrer. Sinon, entrer O, et
-je vais en demander un pour vous.¶
+1792:Je suis désolé, AOL ne veut pas vous attribuer un nouvel UIN,sans doute a cause d'un trop grand nombre de demande de nouveaux UIN pour cette IP. Veuillez réessayer plus tard.¶
+1793:Aucun UIN valide n'a été trouvé. L'assistant d'installation va vous guider pendant la procédure pour en obtenir un.¶
+1794:Si vous possedez déjà un UIN, veuille le rentrer. Sinon, entrer O, et je vais en demander un pour vous.¶
 1795:Mot de passe:
-1796:L'assistant d'installation a terminé. Veuillez patienter jusqu'à la fin
-de l'enregistrement.¶
+1796:L'assistant d'installation a terminé. Veuillez patienter jusqu'à la fin de l'enregistrement.¶
 #1797:Finance and corporate
 1798:Ecole élémentaire
 1799:Grande école
@@ -887,8 +877,7 @@ de l'enregistrement.¶
 1867:Reçu un paquet malformé (trop court) - ignoré.¶
 1868:Reçu un multi-paquet malformé (sous-paquet trop long) - ignoré.¶
 1869:Les versions de Protocoll inférieures à 5 ne sont plus supportées.¶
-1870:    off   <nick> - Ferme la(les) connection(s) TCP et n'essayera pas TCP a
-nouveau.¶
+1870:    off   <nick> - Ferme la(les) connection(s) TCP et n'essayera pas TCP a nouveau.¶
 1871:Ouverture de la connection v8 à %s:%d... 
 1872:echoué: %s (%d)¶
 1873:Lieu de travail:
@@ -978,8 +967,7 @@ nouveau.¶
 #1957: 
 1958:[SOCKS] Demande de connection refusée (%d)
 #1959: 
-1960:Entrez les données pour la recherche d'utilisateur. Entrez \'.\' pour
-commencer une recherche.¶
+1960:Entrez les données pour la recherche d'utilisateur. Entrez \'.\' pour commencer une recherche.¶
 1961:URL: %s¶
 #1962: 
 #1963:popping type %d seq %08x at %p (pak %p)
@@ -1054,3 +1042,14 @@ commencer une recherche.¶
 2032:Préparation de la reconnection v8 dans %d secondes.¶
 2033:Né aujourd'hui
 2034:Ouverture de la connection TCP à %s:%d... 
+#2035:Show uptime and some statistics.
+#2036:Save current preferences to disc.
+#2037:Open or close a peer-to-peer connection, or disable using peer-to-peer connections for uin|nick.
+#2038:Opens connection number nr.
+#2039:Sends a message to a cell phone.
+#2040:Switches beeping for incoming contacts on or off, sets a command for this event or displays current state of this option.
+#2041:Switches beeping for offgoing contacts on or off, sets a command for this event or displays current state of this option.
+#2042:Displays a list of online people on your contact list in a screen wide format.
+#2043:Remove contact from your contact list.
+#2044:Set or clear an option.
+#2045:Toggles your visibility to a user when you're online.
