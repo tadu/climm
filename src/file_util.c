@@ -383,7 +383,7 @@ void Read_RC_File (FILE *rcf)
                         M_printf (i18n (2216, "This mICQ doesn't know the '%s' encoding.\n"), cmd);
                         ERROR;
                     }
-                    if (what & ENC_AUTO)
+                    if (what & ENC_AUTO && what != (ENC_AUTO | ENC_UTF8))
                     {
                         if ((which == 3 && (what ^ prG->enc_loc) & ~ENC_AUTO)
                             || (which == 2 && (what ^ enc) & ~ENC_AUTO))
