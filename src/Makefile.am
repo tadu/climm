@@ -14,7 +14,7 @@ micq_SOURCES = conv.c conv_rus.c conv_jp.c file_util.c icq_response.c micq.c \
        buildmark.c
 
 micq_LDADD = @LIBOBJS@
-$(micq_SOURCES): snprintf.h
+$(micq_SOURCES): @LIBOBJS@
 
 lang:
 	@rm -f *.c~ ../lang/*.i18n~
@@ -27,6 +27,8 @@ lang:
 	@rm -f *.c~ ../lang/*.i18n~
 	@../lang/i18n-extract
 	@rm -rf ../lang/*.i18n~
+
+snprintf.o: snprintf.c snprintf.h
 
 snprintf.c:
 	rm -f snprintf.c
