@@ -462,9 +462,10 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
             {
                 /* UWORD port, port2, pad; */
                 char *gtext, *reason;
+                char id[16];
                 
                 cmd    = PacketRead2 (inc_pak);
-                         PacketReadData (inc_pak, NULL, 16);
+                         PacketReadData (inc_pak, id, 16);
                          PacketRead2 (inc_pak);
                 ctext  = PacketReadDLStr (inc_pak);
                          PacketReadData (inc_pak, NULL, 15);
@@ -528,16 +529,28 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                         break;
 
                     case 0x002d:
-                        IMSrvMsg (cont, serv->assoc, NOW, ExtraClone (extra));
-                        IMSrvMsg (cont, serv->assoc, NOW, ExtraSet (ExtraClone (extra),
-                                  EXTRA_MESSAGE, MSG_CHAT, name));
-                        IMSrvMsg (cont, serv->assoc, NOW, ExtraSet (ExtraClone (extra),
-                                  EXTRA_MESSAGE, MSG_CHAT, reason));
-                        PacketWrite2    (ack_pak, TCP_ACK_REFUSE);
-                        PacketWrite2    (ack_pak, ack_flags);
-                        PacketWriteLNTS (ack_pak, "");
-                        SrvMsgGreet     (ack_pak, cmd, "", 0, 0, "");
-                        break;
+                        if (id[0] == (char)0xbf)
+                        {
+                            IMSrvMsg (cont, serv->assoc, NOW, ExtraClone (extra));
+                            IMSrvMsg (cont, serv->assoc, NOW, ExtraSet (ExtraClone (extra),
+                                      EXTRA_MESSAGE, MSG_CHAT, name));
+                            IMSrvMsg (cont, serv->assoc, NOW, ExtraSet (ExtraClone (extra),
+                                      EXTRA_MESSAGE, MSG_CHAT, reason));
+                            PacketWrite2    (ack_pak, TCP_ACK_REFUSE);
+                            PacketWrite2    (ack_pak, ack_flags);
+                            PacketWriteLNTS (ack_pak, "");
+                            SrvMsgGreet     (ack_pak, cmd, "", 0, 0, "");
+                            break;
+                        }
+                        else if (id[0] == (char)0x2a)
+                        {
+                            IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraClone (extra), EXTRA_MESSAGE, MSG_CONTACT, c_in_to (reason, cont)));
+                            PacketWrite2    (ack_pak, ack_status);
+                            PacketWrite2    (ack_pak, ack_flags);
+                            PacketWriteLNTS (ack_pak, "");
+                            SrvMsgGreet     (ack_pak, cmd, "", 0, 0, "");
+                            break;
+                        }
 
                     case 0x0032:
                     default:
