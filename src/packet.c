@@ -553,11 +553,8 @@ Cap *PacketReadCap (Packet *pak)
             }
 #endif
         }
-        else
-            if (id == CAP_MAX)
-                return &caps[0];
-            else
-                break;
+    if (id == CAP_MAX)
+        return &caps[0];
     
     p = malloc (16);
     assert (p);
