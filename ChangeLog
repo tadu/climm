@@ -1,5 +1,7 @@
 2002-04-03 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Really check in i18n changes.
+	* Fix off-by-one in packet.c.
+	* Fix "tcp off <nick>".
 
 2002-04-03 Pavel Roskin <proski@gnu.org>
 	* Include <string.h> when needed.

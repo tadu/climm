@@ -869,6 +869,9 @@ BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
 
     ASSERT_PEER (sess);
     
+    peer = SessionFind (TYPE_DIRECT, uin);
+    if (peer && (peer->connect & CONNECT_FAIL))
+        return 0;
     TCPDirectOpen (sess, uin);
     peer = SessionFind (TYPE_DIRECT, uin);
     

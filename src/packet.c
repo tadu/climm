@@ -319,7 +319,7 @@ const char *PacketReadStrN (Packet *pak)
     len += pak->data[pak->rpos++] << 8;
     
     assert (pak->rpos + len < PacketMaxData);
-    assert (!pak->data[pak->rpos + len]);
+    assert (!pak->data[pak->rpos + len - 1]);
 
     pak->rpos += len;
 
@@ -444,7 +444,7 @@ const char *PacketReadAtStrN (const Packet *pak, UWORD at)
     len += pak->data[at++] << 8;
     
     assert (at + len < PacketMaxData);
-    assert (!pak->data[at + len]);
+    assert (!pak->data[at + len - 1]);
 
     return &pak->data[at];
 }
