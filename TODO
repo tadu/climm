@@ -18,26 +18,37 @@ Jeff Bearer <jbearer@tribweb.com>
 <e.hemmink@student.utwente.nl>: (refuses to do translation work)
  : implement web aware feature
 
-TODO:
+TODO (after next release):
  : add https support
  : add missing v8 pieces
    + figure out v8 reverse connection
- : add capabilities support
- : server side contact list:
-   + contact groups
  : history of messages
  : alias for commands
  : tab completion (improve)
- : save meta info about contacts, save to file
+ : make MSGSENTSTR etc configurable (awaiting user feedback)
+ : use ASCII art for setup wizard
+ : file transfer:
+   + figure out server file sending
+ : implement more server message types, unify code with peer2peer messages
+ : use Extra * for more message types
+ : use wprintf() etc to figure out width in character cells (needed for Japanese)
+ : replace all UDWORD uin parameters by Contact * (function calls done, Event,Connection missing)
+ : command to display _all_ settings
+
+TODO (probably next release):
+ : server side contact list:
+   + contact groups (done)
+   + contact list upload
+ : save meta info about contacts, save to file (done)
  : finish implementing file transfer (fixed?)
    + add receive command
    + add better syntax (a bit fixed, awaiting user feedback)
-   + figure out server file sending
- : make MSGSENTSTR etc configurable (awaiting user feedback)
- : allow uinlist parameters instead of single uins only
- : implement more server message types, unify handling
- : use ASCII art for setup wizard
- : use type-2 outgoing messages, unify code with peer2peer messages
- : replace all UDWORD uin parameters by Contact *
- : check sending UTF-8 directly
- 
+ : fix seperator characters (url etc) (seems to work)
+ : message length
+ : fix encoding of config files (done)
+ : fix quoting of config file saving (done)
+ : contact specific encoding
+ : use library function to determine charset/locale (setlocale done)
+ : better meta data change functions
+ : add sensible commands for away etc. automessages
+ : add autosave micqrc function (done)
