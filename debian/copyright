@@ -11,7 +11,6 @@ This software is copyright (c) 1998-99 by Matthew Smith,
 
 You are free to distribute this software under the terms of version 2 of
 the GNU public licence (GPL).
-On Debian systems, the complete text of the GPL can be found in the
-/usr/share/common-licenses/GPL-2 file.
 
-There is more info available in the README that ships with this package.
+Debian GNU/Linux users may find the full text of the GPL version 2 in
+/usr/share/common-licenses/GPL-2.

@@ -23,8 +23,10 @@ config.status: configure
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
-	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) \
-	            --prefix=/usr --mandir=\$${prefix}/share/man
+	./configure --host=$(DEB_HOST_GNU_TYPE) \
+	  --build=$(DEB_BUILD_GNU_TYPE) \
+	  --prefix=/usr \
+	  --mandir=\$${prefix}/share/man
 	touch configure-stamp
 
 build: configure-stamp build-stamp
