@@ -156,6 +156,7 @@ typedef struct
         UDWORD away_time_prev;
         UBYTE  reconnect_count;
         BOOL   quit;
+        UDWORD packets;
 } user_interface_state;
 
 extern user_interface_state uiG;

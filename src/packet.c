@@ -24,6 +24,7 @@ Packet *PacketC (void)
     assert (pak);
 
     Debug (DEB_PACKET, "<-- %p %s", pak, i18n (1863, "creating new packet"));
+    uiG.packets++;
 
     return pak;
 }
@@ -31,6 +32,7 @@ Packet *PacketC (void)
 void PacketD (Packet *pak)
 {
     Debug (DEB_PACKET, "--> %p %s", pak, i18n (1946, "freeing packet"));
+    uiG.packets--;
     free (pak);
 }
 
@@ -45,6 +47,7 @@ Packet *PacketClone (const Packet *pak)
     newpak->rpos = 0;
     
     Debug (DEB_PACKET, "<+- %p %s %p", newpak, i18n (1865, "cloning existing packet"), pak);
+    uiG.packets++;
 
     return newpak;
 }

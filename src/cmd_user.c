@@ -2273,6 +2273,7 @@ static JUMP_F(CmdUserUptime)
     M_print ("    %-12s %7d %7d %7d %7d\n",
              i18n (1747, "total"), pak_sent, pak_rcvd,
              real_pak_sent, real_pak_rcvd);
+    M_print (i18n (2073, "Memory usage: %d packets processing.\n"), uiG.packets);
     return 0;
 }
 
