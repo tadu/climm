@@ -234,8 +234,8 @@ JUMP_SNAC_F(SnacSrvReplyroster)
                 break;
             case 17: /* wierd */
                 SnacCliRosterentrydelete (serv, re);
-                rref = NULL;
-                break;
+                OscarRosterEntryD (re);
+                continue;
             case 19: /* ImportTime */
                 j = TLVGet (re->tlv, 212);
                 if (j != (UWORD)-1 && re->tlv[j].str.len == 4)
