@@ -29,7 +29,7 @@
 1029:Yes か No を入力してください
 1030:がログアウトしました
 1031:がログインしました
-1032:デバック: double packet #%04x of type %04x (%s).
+1032:デバック: double packet #%04lx of type %04x (%s).\n
 1033:受信した v8 サーバー パケット:
 1034:リトライの最大値になりました。終了します。
 1035:ステータスを %s に変更しました。
@@ -45,17 +45,17 @@
 1045:検索を終了します
 1046:長さ
 1047:付加データ
-1048:エラーコード: %d
+1048:エラーコード: %ld\n
 1049:UIN: %d
 1050:ログインに成功しました
-1053:%s に接続します。応答を待っています
+1053:%s に接続します。応答を待っています\n
 1055:ソケットの作成に失敗しました
 1056:接続に使用するソケットを作成しました
-1060:詳細表示のレベルは %d です。
-1061:「%s」というニックネームは登録されていません
+1060:詳細表示のレベルは %d です。\n
+1061:「%s」というニックネームは登録されていません\n
 1062:ユーザーは無視した:
 1063:パスワードを入力してください:
-1064:状態を自動的に %s に変更しました。
+1064:状態を自動的に %s に変更しました。\n
 1065:Intel byte orderを使用します
 1066:Motorola byte orderを使用します
 1071:現在 の 状態 は %s です。
@@ -66,10 +66,10 @@
 1076:コンパイル日時
 1077:Matthew D. Smith.に感謝します
 1078:利用できる翻訳がありません
-1079:翻訳  (%s, %s) %s から, 最終変更日:%s (変更者:%s), mICQ ver %d.%d.%d%s 用.
-1080:指定された「%s」という翻訳は読み込めませんでした。
-1081:日本語の翻訳を読み込みました (%d 項目分)
-1082:再接続を行います...[%d回目(最大 %d回まで)]
+1079:翻訳  (%s, %s) %s から, 最終変更日:%s (変更者:%s), mICQ ver %d.%d.%d%s 用.\n
+1080:指定された「%s」という翻訳は読み込めませんでした。\n
+1081:日本語の翻訳を読み込みました (%ld 項目分)\n
+1082:再接続を行います...[%d回目(最大 %d回まで)]\n
 1083:サウンド コマンド
 1084:サウンド
 1085:オン
@@ -538,8 +538,8 @@
 1579:会社名を入力してください:
 1584:警告!スクリプトコマンド「%s」は戻り値 %d で失敗しました
 1587:会社の部署を入力してください:
-1592:%s からメール経由でメッセージが届きました:
-1593:%s からWeb経由でメッセージが届きました:
+1592:%s からメール経由でメッセージが届きました:\n
+1593:%s からWeb経由でメッセージが届きました:\n
 1595:\nコンタクトリスト\n============================================\n%d個あります\n
 1596:[SOCKS] ホスト名 %s: %s は見つかりませんでした。
 1597:[SOCKS] ソケットの作成は失敗しました。\n
@@ -551,7 +551,7 @@
 1603:場所を入力してください:
 1604:ユーザーはオンラインにするべきですか?
 1605:現在のステータスをWebで確認できるようにしますか? (yes or no)
-1606:不正なセッションID %08x を受信しました(正しくは: %08x) コマンド要求 %04x を無視します。\n
+1606:不正なセッションID %08lx を受信しました(正しくは: %08lx) コマンド要求 %04x を無視します。\n
 1607:使用法: micq [-v|-V] [-f|-F *<rc*-file*>*] [-l|-L *<logfile>*] [-?|-h]\n
 1608:        -v   デバッグ用の詳細表示モードにします]\n
 1609:        -f   設定ファイルを指定します (デフォルト: ~/.micq/micqrc)\n
@@ -583,7 +583,7 @@
 1646:サーバーは使用中です。\n
 1648:応答は %04x でした。
 1649:バージョンは %x でした。
-1650:SEQ は %04lx でした。
+1650:\nSEQ は %04lx でした。
 1651:サイズは %d でした。\n
 1653:オフライン
 1654:オンライン
@@ -599,7 +599,7 @@
 1670:%s へのステータス表示を通常のものとしました。\n
 1671:%s へのステータス表示を常に可視状態としました。\n
 1672:%s の IP アドレス:
-1673:ポート: %d\n
+1673:ポート: %ld\n
 1674:ポート: 不明\n
 1675:次の行を無視しました:
 1676:メッセージの送信には UIN か Nickname の指定が必要です。\n
@@ -615,7 +615,7 @@
 1691:秒
 1692:コンタクト:
 1696:性別:
-1700:%s はあなたのコンタクトリストに登録されていません。
+1700:%s はあなたのコンタクトリストに登録されていません。\n
 1703:ステータスモード番号:
 1704:グループ番号:
 1705:一般的
@@ -634,7 +634,7 @@
 1719:mICQの動作時間を表示します。
 1720:uinは数字で指定してください。もしくは、ユーザのnicknameを指定します。
 1721:messageを入力しないでコマンドを実行すると、複数行の入力モードになります。\n「.」を入力するとメッセージを送信します。\n「#」を入力すると送信を取りやめます。
-1724:自動応答機能: %s
+1724:自動応答機能: %s\n
 1727: 「邪魔しないで」：
 1728: 「離席中」：
 1729: 「応答不可」：
@@ -716,116 +716,72 @@
 1833:ピア・ツー・ピア TCP 接続は確立しました。\n
 1835:ソケットに書く間のエラー %s (%d)\n
 1841:受信奇形の初期化認識パケット。\n
-#-#1842:%s にソケット %d を閉じること。\n
-#1842:Closing socket %d to %s.\n
-#-#1843:ソケット %d を閉じること。\n
-#1843:Closing socket %d.\n
-#-#1844:TCPメッセージ%04xはタイムアウトの後に廃棄しました。\n
-#1844:TCP message %04x discarded after timeout.\n
-#-#1845:未知のあだ名の %s。\n
-#1845:Nick %s unknown.\n
-#-#1846:直接の(ピア・ツー・ピア)接続を開始し閉じます:
-#1846:Opens and closes direct (peer to peer) connections:\n
-#-#1847:peer open「あだ名」 - 直接の接続を開始します。
-#1847:peer open  <nick> - Opens direct connection.\n
-#-#1848:peer close 「あだ名」- 終了/リセット、直接の接続。
-#1848:peer close <nick> - Closes/resets direct connection(s).\n
-#-#1849:誤�、の上で、選択される %s (%d)\n
-#1849:Error on select: %s (%d)\n
-#-#1850:%s:%ld の %s との接続中のタイムアウト\n
-#1850:Timeout on connection with %s at %s:%ld\n
-#-#1855:%s:%ld の %s への TCP 接続は失敗しました。\n
-#1855:TCP connection to %s at %s:%ld failed.\n
+1842:閉鎖のソケット%d への%s。\n
+1843:ソケット %d を閉じること。\n
+1843:Closing socket %d.\n
+1844:TCPメッセージ %04x はタイムアウトの後に廃棄しました。\n
+1845:未知のあだ名の %s。\n
+1846:直接の(ピア・ツー・ピア)接続を開始し閉じます:\n
+1847:peer open「あだ名」 - 直接の接続を開始します。\n
+1848:peer close 「あだ名」- 終了/リセット、直接の接続。\n
+1849:誤�、の上で、選択される %s (%d)\n
+1850:%s の %s:%ld との接続中のタイムアウト\n
+1855:%s の %s:%ld への TCP 接続は失敗しました。\n
 #-#1856:古いセッション %08lx (流れ: %08lx)からの %04x (%s) パケットを廃棄しました。\n
 #1856:Discarded a %04x (%s) packet from old session %08lx (current: %08lx).\n
-1857:あなたは他の接触からIPを隠したいと思いますか。(yes/no)
+1857:あなたは他の接触から IP を隠したいと思いますか。(yes/no)
 1864:rcfile %s を開くことができません。
-#-#1866:この mICQ のバージョンは直接の接続(ピア・ツー・ピア)支援なしでコンパイルされます。
-#1866:This version of mICQ is compiled without direct connection (peer to peer) support.\n
-#-#1867:奇形の(短すぎる)パケットを得た―無視されました。
-#1867:Received a malformed (too short) packet - ignored.\n
-#-#1868:奇形の(長いサブパケットに)多重パケットを得ました。― 無視された残り。
-#1868:Got a malformed (to long subpacket) multi-packet - remainder ignored.\n
-#-#1869:5 未満のプロトコル・バージョンは今は支援されません。
-#1869:Protocol versions less than 5 are not supported anymore.\n
-#-#1870:peer off   「あだ名」 - 直接の接続(s)を閉じて、それを再び試みません。
-#1870:peer off   <nick> - Closes direct connection(s) and don't try it again.\n
-#-#1871:%s:%ld に v8接続を開くこと...
-#1871:Opening v8 connection to %s:%ld...
-#-#1872:失敗しました: %s (%d)\n
-#1872:failed: %s (%d)\n
+1866:この mICQ のバージョンは直接の接続(ピア・ツー・ピア)支援なしでコンパイルされます。\n
+1867:奇形の(短すぎる)パケットを得た―無視されました。\n
+1867:Received a malformed (too short) packet - ignored.\n
+1868:奇形の(長いサブパケットに)多重パケットを得ました。― 無視された残り。\n
+1869:5 未満のプロトコル・バージョンは今は支援されません。\n
+1870:peer off   「あだ名」 - 直接の接続(s)を閉じて、それを再び試みません。\n
+1871:%s:%ld に v8接続を開くこと...
+1872:失敗しました: %s (%d)\n
 1873:仕事都市:
 1874:仕事郡:
 1875:個人の利益:
 1876:背景を過ぎて個人です:
-#-#1877:合意
-#1877:ok.\n
-#-#1878:ソケットから読む間のエラー:%s(%d)\n
-#1878:Error while reading from socket: %s (%d)\n
+1877:合意\n
+1878:ソケットから読む間のエラー:%s(%d)\n
 1879:加入:
-#-#1880:入って来るパケットはFLAP識別ではありません%dです。\n
-#1880:Incoming packet is not a FLAP: id is %d.\n
-#-#1881:データからの FLAP チャンネル 1。
-#1881:FLAP channel 1 out of data.\n
-#-#1882:余分の物の FLAP チャンネル 1 コマンド1データ:
-#1882:FLAP channel 1 cmd 1 extra data:\n
-#-#1883:FLAP チャンネル 1、未知のコマンド%d。\n
-#1883:FLAP channel 1 unknown command %d.\n
-#-#1884:未知のチャンネル %ld を備えた FLAP は受け取りました。\n
-#1884:FLAP with unknown channel %ld received.\n
-#-#1885:接続 v8 は外に時間を計りました。
-#1885:Connection v8 timed out.\n
+1880:入って来るパケットは FLAP 識別ではありません %d です。\n
+1881:データからの FLAP チャンネル 1。\n
+1882:余分の物の FLAP チャンネル 1 コマンド1データ:\n
+1883:FLAP チャンネル 1、未知のコマンド %d。\n
+1884:未知のチャンネル %ld を備えた FLAP は受け取りました。\n
+1885:接続 v8 は外に時間を計りました。\n
 1887:関係:
-#-#1888:ウェブは知っていません。
-#1888:not webaware
+1888:ウェブは知っていません。
 1889:サーバー
-1890:peer-to-peer
-#-#1891:接続 %ld は既に開いています。\n
-#1891:Connection %ld is already open.\n
-#-#1892:conn               リスト利用可能な接続。
-#1892:conn               List available connections.\n
-#-#1893:conn login *<nr>*    開いた接続 *<nr>*
-#1893:conn login <nr>    Open connection <nr>.\n
-#-#1894:接続数 %ld はありません。\n
-#1894:There is no connection number %ld.\n
-#-#1895:ログオンは失敗した:
-#1895:Login failed:\n
-#-#1896:サーバーは関係を閉めた:
-#1896:Server closed connection:\n
-#-#1897:不完全な TLV %d、%ld の長さ%d、無視する(その後)こと\n
-#1897:Incomplete TLV %d, len %ld of %d - ignoring.\n
+1890:ピア・ツー・ピア
+1891:接続 %ld は既に開いています。\n
+1892:conn               リスト利用可能な接続。\n
+1893:conn login <nr>    開いた接続 <nr>\n
+1894:接続数 %ld はありません。\n
+1895:ログオンは失敗した:\n
+1896:サーバーは関係を閉めた:\n
+1897:不完全な TLV %d、%ld の長さ %d、無視する(その後)こと\n
 1898:転送する、サーバー %s に...
-#-#1899:未知の家族は要求しました: %d\n
-#1899:Unknown family requested: %d\n
+1899:未知の家族は要求しました: %d\n
 1900:それは読み出し専用です。
-#-#1901: は、あなたが接触リストにそれらを加えることを認めました。
-#1901:has authorized you to add them to your contact list.\n
-#-#1902:%s:%ldにv5接続を開くこと
-#1902:Opening v5 connection to %s:%ld...
+1901: は、あなたが接触リストにそれらを加えることを認めました。\n
+1902:%s:%ldに v5 接続を開くこと...
 1903:出発の v8 サーバー・パケット:
-#-#1904:サーバーは家族 %d のためにバージョン %d (単に %d)を理解しません!\n
-#1904:Server doesn't understand ver %d (only %d) for family %d!\n
-#-#1905:SNAC(%x、%x) [%s] フラグ %x 参照 %lx\n
-#1905:SNAC (%x,%x) [%s] flags %x ref %lx\n
-#-#1907:警告: サーバーは、%ld 場合、私たちの「ユーザー数」が %ld であると考えます。\n
-#1907:Warning: Server thinks our UIN is %ld, when it is %ld.\n
-#-#1908:受け取られた「ユーザはオンラインです」非接触用パケット。
-#1908:Received USERONLINE packet for non-contact.\n
-#-#1909:受け取られた「ユーザはオフラインです」非接触用パケット。
-#1909:Received USEROFFLINE packet for non-contact.\n
+1904:サーバーは家族 %d のためにバージョン %d (単に %d)を理解しません!\n
+1905:SNAC(%x、%x) [%s] フラグ %x 参照 %lx\n
+1907:警告: サーバーは、%ld 場合、私たちの「ユーザー数」が %ld であると考えます。\n
+1908:受け取られた「ユーザはオンラインです」非接触用パケット。\n
+1909:受け取られた「ユーザはオフライン」非接触用パケット。\n
 1910.FLAP seq %08x 長さ %04x チャンネル %d
 1911:接続
 1912:閉じられました。
-#-#1914:接続構造を割り付けることができません。
-#1914:Can't allocate connection structure.\n
-#-#1915:サーバーは、私たちが %s にいると言います。\n
-#1915:Server says we're at %s.\n
-#-#1918:%d の最小の報告書間隔の無視されたサーバー要請。\n
-#1918:Ignored server request for a minimum report interval of %d.\n
-#-#1919:「ユーザー数」 誤った組合せ: %ld は %ld を作詩します。\n
-#1919:UIN mismatch: %ld vs %ld.\n
-#-#1920:新しい「ユーザー数」の登録は拒絶しました。
-#1920:Registration of new UIN refused.\n
+1914:接続構造を割り付けるこができません。\n
+1915:サーバーは、私たちが %s にいると言います。\n
+1918:%d の最小の報告書間隔の無視されたサーバー要請。\n
+1919:「ユーザー数」 誤った組合せ: %ld は %ld を作詩します。\n
+1920:新しい「ユーザー数」の登録は拒絶しました。\n
 1921:オンライン
 1922:妨げてはいけない
 1923:欠席する
@@ -835,17 +791,14 @@
 1927:雑談には自由な
 1929:ユーザー は 「妨げてはいけない」 [自動メッセージ]
 1930.これ (%x) をまだ送ることができません。
-#-#1931:現在のセッションは閉まっています。別のものを試みるか、あるいはこれを再開してください。
-#1931:Current session is closed. Try another or open this one.\n
+1931:現在のセッションは閉まっています。別のものを試みるか、あるいはこれを再開してください。\n
 1934:接続されました。
-#-#1935:    %d ソケット %d IP %s (%d) をタイプする、の上で [%s,%s]識別 %lx/%x/%x\n
-#1935:    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n
+1935:    %d ソケット %d IP %s (%d) をタイプする、の上で [%s,%s]識別 %lx/%x/%x\n
 1936:最小の時代(18-22、23-29、30-39、40-49、50-59、60-120)に入ってください:
 1937:最大の時代(22、29、39、49、59,120)に入ってください:
 1938:性別を入力してください:
 1939:都市に入ります:
-#-#1940:未知のメータ川ユーザ結果 %lx。\n
-#1940:Unknown Meta User result %lx.\n
+1940:未知のメータ川ユーザ結果 %lx。\n
 1941.電子メールを公表します:
 1942:追加の電子メールアドレス:
 1943:(必要とされる認可はありません)
@@ -853,25 +806,20 @@
 1945:未知のユーザ応答
 1947:聞くこと
 1948:ホスト名%s: %sを見つけることができせん。
-#-#1949:失敗しました:
-#1949:failed:\n
-1950:ソケット非ブロッキングをセットすることができませんでした。
-#-#1951:ホスト名 %sを見つけることができません。\n
-#1951:Can't find hostname %s: %s (%d).
+1949:失敗しました:\n
+1950:ソケット非ブロッキングをセットすることができませんでした。\n
+1951:Hostname %s: %s (%d) 見つけるできない。
 1952:接続を開始することができませんでした。
 1953:ポートを解放するためにはソッケトをリンクすることができませんでした。
 1954:ソッケトの上で聞くのにできません。
 1955:接続は失敗しました
-1958:[SOCKS] 接続リクエストが拒絶されました (%d)
-#-#1960:ユーザを探索するデータを入力してください。探索を始めるために「.」を入力してください。
-#1960:Enter data to search user for. Enter '.' to start the search.\n
-#-#1961:URL: %s\n
-#1961:URL: %s\n
-#-#1966:接続は %s のポート：%ldの上で拒絶されました。\n
-#1966: Connection refused on port %ld at %s\n
+1958:[SOCKS] 続クエストが拒絶されました (%d)
+1960:ユーザを探索するデータを入力してください。探索を始めるために「.」を入力してください。\n
+1961:URL: %s\n
+1961:URL: %s\n
+1966:接続は ポート：%ld の %s の上で拒絶されました。\n
 1967:次のものに関するより多くの情報:
-#-#1968:ユーザは見つけました。
-#1968:User found:\n
+1968:ユーザは見つけました。\n
 1969:オフライン
 1970:オンライン
 1971:妨げてはいけない
@@ -911,41 +859,25 @@
 2005:世帯プロダクト
 2006:通信販売カタログ
 2007:ビジネス サービス
-#-#2009:雑談グループ %ld に任意の雑談パートナー「ユーザー数」 %d を見つけました。\n
-#2009:Found random chat partner UIN %ld in chat group %d.\n
-#-#2011:聞く ピア・ツー・ピア 接続を行っていません。
-#2011:You do not have a listening peer-to-peer connection.\n
-#-#2012:与えられたパスワードはありません。
-#2012:No password given.\n
-#-#2013:このコマンドはv8のみです。
-#2013:This command is v8 only.\n
-#-#2014:与えられた数はありません。
-#2014:No number given.\n
-#-#2015:与えられたメッセージはありません。
-#2015:No message given.\n
-#-#2017:ユーザはオンラインですが、恐らく目に見えません。
-#2017:The user is online, but possibly invisible.\n
-#-#2018:    静かです:ステータス変更について口外しません。
-#2018:    quiet: be quiet about status changes.\n
-#-#2020:%sに見えること。\n
-#2020:Being visible to %s.\n
-#-#2021:%sに目に見えないこと。\n
-#2021:Being invisible to %s.\n
-#-#2022:ユーザはオフラインです。
-#2022:The user is offline.\n
-#-#2023:仲間によって閉じた直接の接続。
-#2023:Direct connection closed by peer.\n
-#-#2024:ICQ の ピア・ツー・ピア のプロトコル用の未知のプロトコル・バージョン %d。\n
-#2024:Unknown protocol version %d for ICQ peer-to-peer protocol.\n
+2009:雑談グループ %ld に任意の雑談パートナー「ユーザー数」 %d を見つけました。\n
+2011:聞く ピア・ツー・ピア 接続を行っていません。\n
+2012:与えられたパスワードはありません。\n
+2013:このコマンドはv8のみです。\n
+2014:与えられた数はありません。\n
+2015:与えられたメッセージはありません。\n
+2017:ユーザはオンラインですが、恐らく目に見えません。\n
+2018:    静かです:ステータス変更について口外しません。\n
+2020:%s に見えること。\n
+2021:%s に目に見えないこと。\n
+2022:ユーザはオフラインです。\n
+2023:仲間によって閉じた直接の接続。\n
+2024:ICQ の ピア・ツー・ピア のプロトコル用の未知のプロトコル・バージョン %d。\n
 2026:TCPクッキー:
 2029:ピア・ツー・ピア 接続中のプロトコル・エラー
-#-#2031:接続は降参して、しばしば失敗しすぎました。
-#2031:Connecting failed too often, giving up.\n
-#-#2032:v8 の予定 %d 秒で再度接続します。\n
-#2032:Scheduling v8 reconnect in %d seconds.\n
+2031:接続は降参して、しばしば失敗しすぎました。\n
+2032:v8 サーバー の予定 %d 秒で再度接続します。\n
 2033:今日生まれました。
-#-#2034:%s:%ldでTCP接続を開始すること
-#2034:Opening TCP connection at %s:%ld...
+2034:%s:%ld で TCP 接続を開始すること
 2035:アップタイムおよびある統計を示してください。
 2036:ディスクへの現在の優先権を保存してください。
 2037:ピア・ツー・ピア 接続を開始するか閉じるか、不能にする「ユーザー数」または「あだ名」のために ピア・ツー・ピア 接続を使用すること。
@@ -957,125 +889,76 @@
 2043:別名「別名」移動する、あるいは「ユーザー数」、あるいは接触を削除します。
 2044:オプションをセットするか取り除いてください。
 2045:オンラインです場合、あなたの視界 「ユーザー数」あるいは「あだ名」をトグルで留めます。
-#-#2046:ICQ の ピア・ツー・ピア プロトコル用にバージョン8プロトコルを代わりに使用することが好きかもしれません。
-#2046:You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n
-#-#2047:ディレクトリー %s の作成。\n
-#2047:Creating directory %s.\n
-#-#2048:%sへの優先権の保存。\n
-#2048:Saving preferences to %s.\n
-#-#2049:グループ「%s」を受け取ること:\n
-#2049:Receiving group "%s":\n
+2046:ICQ の ピア・ツー・ピア プロトコル用にバージョン 8 プロトコルを代わりに使用することが好きかもしれません。\n
+2047:ディレクトリー %s の作成。\n
+2048:%s への優先権の保存。\n
+2049:グループ「%s」を受け取ること:\n
 2050.輸入された %ld 接触。
-#-#2051:ソケット上のエラー: %s (%d)\n
-#2051:Error on socket: %s (%d)\n
+2051:ソケット上のエラー: %s (%d)\n
+2051:Error on socket: %s (%d)\n
 2052.%sからファイル「%s」(%d バイト) を受理すること。
 2053.TCP %s シーケンス %x タイプ %x ステータス %x は %x にフラグを立てます:「%s」
 2054:その「雑談には自由な」メッセージは次のとおりです:
-2055:ユーザは「雑談には自由な」で、何に対しても歓談したい。
-#-#2056:peer auto  「あだ名」 - 接触からの自動応答を得てください。
-#2056:peer auto  <nick> - Get the auto-response from the contact.\n
-#-#2057:peer away  「あだ名」 - 接触から「欠席する」のための自動レスポンスを得てください。
-#2057:peer away  <nick> - Get the auto-response for away from the contact.\n
-#-#2058:peer na    「あだ名」 - 接触から「利用できない」のための自動レスポンスを得てください。
-#2058:peer na    <nick> - Get the auto-response for not available from the contact.\n
-#-#2059:peer dnd   「あだ名」 - 接触から「妨げてはいけない」のための自動レスポンスを得てください。
-#2059:peer dnd   <nick> - Get the auto-response for do not disturb from the contact.\n
-#-#2060:peer ffc   「あだ名」 - 接触から「雑談には自由な」のための自動レスポンスを得てください。
-#2060:peer ffc   <nick> - Get the auto-response for free for chat from the contact.\n
+2055:ユーザは「雑談には自由な」で、に対しても歓談したい。
+2056:peer auto  「あだ名」 - 接触からの自動応答を得てください。\n
+2057:peer away  「あだ名」 - 接触から「欠席する」のための自動レスポンスを得てください。\n
+2058:peer na    「あだ名」 - 接触から「利用できない」のための自動レスポンスを得てください。\n
+2059:peer dnd   「あだ名」 - 接触から「妨げてはいけない」のための自動レスポンスを得てください。\n
+2060:peer ffc   「あだ名」 - 接触から「雑談には自由な」のための自動レスポンスを得てください。\n
 2061.%s (未知: %x、%x)からの拒絶されたファイル・リクエスト「%s」(%d バイト)
-#-#2063:~/.micq/micqrc ファイルの中でパスワードを指定する必要があります。
-#2063:You need to save your password in your ~/.micq/micqrc file.\n
+2063:~/.micq/micqrc ファイルの中でパスワードを指定する必要があります。\n
 2064.%s から雑談リクエスト(%s/%s/%s)を拒絶すること。
-#-#2065:未知のTCP_MSG_GREET_コマンド%04x。\n
-#2065:Unknown TCP_MSG_GREET_ command %04x.\n
-#-#2066:未知のTCP_MSG_コマンド %04x。\n
-#2066:Unknown TCP_MSG_ command %04x.\n
-2067:フィル io
-#2068:Opening file transfer connection to %s:%ld... \n
+2065:未知の TCP_MSG_GREET_コマンド %04x。\n
+2066:未知のTCP_MSG_ コマンド %04x。\n
+2067:フィル IO
+2068:%s:%ld への開始ファイル転送の関係...\n
 2069.ファイル転送 「%s」 は同等者によって (%x,%x): %s を拒絶した
 #2070:File transfer '%s' to port %ld.\n
-#-#2071:状態ファイル %s: %s (%d) はできなかった\n
-#2071:Couldn't stat file %s: %s (%d)\n
-#-#2072:閉鎖した関係のために取り消されるファイル転送 #%ld (%s)。\n
-#2072:File transfer #%ld (%s) canceled because of closed connection.\n
-#-#2073:記憶使用法: %ld のパッケトの処理。\n
-#2073:Memory usage: %ld packets processing.\n
+2071:状態ファイル %s: %s (%d) はできなかった\n
+2072:閉鎖した関係のために取り消されるファイル転送 #%ld (%s)。\n
+2073:記憶使用法: %ld のパッケトの処理。\n
 2078:出て行く TCP 包み (%d - %s): %s
 2079:入って来る TCP 包み (%d - %s): %s
-#-#2080:sサーバーSMS 配達確認:\n%s\n
-#2080:Server SMS delivery responce:\n%s\n
-#-#2081:       %p  親   %p   連合   %p\n
-#2081:    at %p parent %p assoc %p\n
-#-#2082:localhost:%ld の開始ファイル傾聴者の関係
-#2082:Opening file listener connection at localhost:%ld...
-#-#2083:ファイル%s: %s (%d) を開けるできない\n
-#2083:Cannot open file %s: %s (%d).\n
-#-#2084:�フセットの %ld: %s (%ld) をファイルするように努めている間間違い\n
-#2084:Error while seeking to offset %ld: %s (%ld).\n
+2080:サーバーSMS 配達確認:\n%s\n
+2081:       %p  親   %p   連合   %p\n
+2082:localhost:%ld の開始ファイル傾聴者の関係
+2083:ファイル%s: %s (%d) を開けるできない\n
+2084:�フセットの %ld: %s (%ld) をファイルするように努めている間間違い\n
 2085.タイムアウトのために取り消されたファイル転送: %d %d。
-#-#2086:%s: %s (%d).ファイル %s: %s (%d) を読んでいる間間違い。\n
-#2086:Error while reading file %s: %s (%d).\n
-#-#2087:終えられた発送ファイル %s。\n
-#2087:Finished sending file %s.\n
-#-#2088:%d すべてを送ることは終えられてファイルする。\n
-#2088:Finished sending all %d files.\n
+2086:ファイル %s: %s (%d) を読んでいる間間違い。\n
+2087:終えられた発送ファイル %s。\n
+2088:%d すべてを送ることは終えられてファイルする。\n
 2089:ファイル傾聴者
 2090:ファイル同等者へ同等者
-#-#2091:移動のための %s として列を作ること。\n
-#2091:Queueing %s as %s for transfer.\n
-#-#2092:TCP メッセージ %s は会議を放棄したり、失った。\n
-#2092:TCP message %s discarded - lost session.\n
-#-#2093:%02d %-12s 版 %d for %s (%lx), の %s:%ld %s\n
-#2093:%02d %-12s version %d for %s (%lx), at %s:%ld %s\n
-#-#2094:conn login         最初サーバー関係を開けなさい。
-#2094:conn login         Open first server connection.\n
-#-#2095:conn remove 「nr」   関係 「nr」 を取除きなさい。
-#2095:conn remove <nr>   Remove connection <nr>.\n
-#-#2096:関係 %ld は開いていない。\n
-#2096:Connection %ld is not open.\n
-#-#2097:conn select 「nr」   サーバー関係として関係の 「nr」 を選びなさい。
-#2097:conn select <nr>   Select connection <nr> as server connection.\n
-#-#2098:関係 %ld はサーバー関係でない。\n
-#2098:Connection %ld is not a server connection.\n
-#-#2099:指定関係  %ld (版 %d, 「ユーザー数」 %ld) 現在の関係として。\n
-#2099:Selected connection %ld (version %d, UIN %ld) as current connection.\n
-#-#2100:conn select 「ユーザー数」   サーバー関係として 「ユーザー数」 の関係を選びなさい。
-#2100:conn select <uin>  Select connection with UIN <uin> as server connection.\n
-#-#2101:関係%ld と扶養家族を完全に取除く。\n
-#2101:Removing connection %ld and its dependents completely.\n
-#-#2102:関係%ld は形成された関係である。\n
-#2102:Connection %ld is a configured connection.\n
-#-#2103:contact show    表示サーバー側面の接触のリスト。
-#2103:contact show    Show server side contact list.\n
-#-#2104:contact diff    ローカル接触のリストのサーバー側面の接触をない表示しなさい 。
-#2104:contact diff    Show server side contacts not on local contact list.\n
-#-#2105:contact import  ローカル接触のリストへサーバー側面の接触のリストを加えなさ い。
-#2105:contact import  Add server side contact list to local contact list.\n
-#-#2106:%s%s%s の %s からの最後のメッセージ:\n
-#2106:Last message from %s%s%s at %s:\n
-#-#2107:%s%s%s から届くメッセージ。\n
-#2107:No messages received from %s%s%s.\n
+#+#2091:移動のための %s として列を作ること。\n
+2092:TCP メッセージ %s は会議を放棄したり、失った。\n
+2093:%02d %-12s 版 %d for %s (%lx), の %s:%ld %s\n
+2094:conn login         最初サーバー関係を開けなさい。\n
+2095:conn remove 「nr」   関係 「nr」 を取除きなさい。\n
+2096:関係 %ld は開いていない。\n
+2097:conn select 「nr」   サーバー関係として関係の 「nr」 を選びなさい。\n
+2098:関係 %ld はサーバー関係でない。\n
+2099:指定関係  %ld (版 %d, 「ユーザー数」 %ld) 現在の関係として。\n
+2100:conn select 「ユーザー数」   サーバー関係として 「ユーザー数」 の関係を選びなさい。\n
+2101:関係 %ld と扶養家族を完全に取除く。\n
+2102:関係%ld は形成された関係である。\n
+2103:contact show    表示サーバー側面の接触のリスト。\n
+2104:contact diff    ローカル接触のリストのサーバー側面の接触をない表示しなさい 。\n
+2105:contact import  ローカル接触のリストへサーバー側面の接触のリストを加えなさい。\n
+2106:%s%s%s の %s からの最後のメッセージ:\n
+2107:%s%s%s から届くメッセージ。\n
 2108:自動
 2109:版
-#-#2110:peer files 「あだ名」「ファイル 1」 「この名前として」 ... 「記述」
-#2110:peer files <nick> <file1> <as1> ... [<description>]\n
-#-#2111:                  - 記述の「この名前として」 として「ファイル 1」 を..., 送りなさい。
-#2111:                  - Send file1 as as1, ..., with description.\n
-#-#2112:                  - の = '/': ファイル名道を取除きなさい , の = '.': そうのように
-#2112:                  - as = '/': strip path, as = '.': as is\n
-#-#2113:未知の状態 '%s'。\n
-#2113:Unknown status '%s'.\n
-#-#2114:指令名 「%s」 はない。\n
-#2114:The command name '%s' does not exist.\n
-#-#2115:「%s」 は整数でない。\n
-#2115:'%s' is not an integer.\n
-#-#2116:新しい刻み目の名前は与えられなかった。
-#2116:No new nick name given.\n
-#-#2117:%ld %s として加えられた。\n
-#2117:%ld added as %s.\n
-#-#2118:ない十分な記憶。
-#2118:Out of memory.\n
-#-#2119:auth [grant] 「あだ名」    - grant authorization.
+2110:peer files 「あだ名」「ファイル 1」 「この名前として」 ... 「記述」\n
+2111:                  - 記述の「この名前として」 として「ファイル 1」 を..., 送りなさい。\n
+2112:                  - の = '/': ファイル名道を取除きなさい , の = '.': そうのように\n
+2113:未知の状態 '%s'。\n
+2114:指令名 「%s」 はない。\n
+2115:「%s」 は整数でない。\n
+2116:新しい刻み目の名前は与えられなかった。\n
+2117:%ld %s として加えられた。\n
+2118:ない十分な記憶。\n
+2119:auth [grant] 「あだ名」    - grant authorization.\n
 
 
 
