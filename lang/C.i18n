@@ -1,11 +1,11 @@
 # $Id$ strings extracted from mICQ sources
+1000:UTF-8
 1001:<lang>
 1002:<lang_cc>
 1003:0
 1004:<translation authors>
 1005:<last editor>
 1006:<last edit date>
-1008:US-ASCII
 1010:User is away [Auto-Message]
 1011:User is not available [Auto-Message]
 1012:User is occupied [Auto-Message]
@@ -881,7 +881,7 @@
 2185:Closing connection %ld.\n
 2188:You're sending data too fast - stop typing now, or the server will disconnect!\n
 2191:Instant message error: %d.\n
-2192:Capabilities: 
+2192:Capabilities:
 2194:Don't know how to open this connection type.\n
 2195:Obsolete number:
 2196:Obsolete text:
@@ -1020,6 +1020,7 @@
 2376:SSL read from %s [ERR=%d]: %s
 2377:SSL write to %s [ERR=%d]: %s
 2378:peer ssl <nick>   - initiate SSL handshake.
+2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
 2383:View your last messages of <contact>. Type 'h' as short command.
 2384:Case insensitive search of <pattern> in log file of <contact>.
 2385:Couldn't open %s for reading: %s (%d).\n
@@ -1039,7 +1040,6 @@
 2401:Auto reply messages are now contact options, see the %s command.\n
 2402:The global auto reply flag is handled by the %s command.\n
 2403:msg>
-2404:Group: %s\n
 2405:Your status is %s (%s).\n
 2406:Couldn't load meta data for %s (%ld).\n
 2407:This flag is handled by the %s command.\n
@@ -1170,3 +1170,8 @@
 2532:OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n
 2533:SSL handshake failed
 2534:IP:
+2535:Groups:\n
+2536:Group:
+2537:Contact upload failed, authorization required.\n
+2538:Contact upload failed, already on server.\n
+2539:Contact upload succeeded.\n
