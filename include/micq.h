@@ -76,18 +76,23 @@ typedef struct PreferencesSession_s PreferencesSession;
 #include "icq_v5.h"
 #include "icq_tcp.h"
 
-#define STATUS_OFFLINE        0xffffffff
-#define STATUS_ONLINE               0x00
-#define STATUS_NA_99                0x04
-#define STATUS_NA                   0x05
-#define STATUS_FREE_CHAT            0x20
-#define STATUS_OCCUPIED_MAC         0x10
-#define STATUS_OCCUPIED             0x11
-#define STATUS_AWAY                 0x01
-#define STATUS_DND                  0x13
-#define STATUS_DND_99               0x02
-#define STATUSF_INVISIBLE     0x00000100
-#define STATUSF_BIRTHDAY      0x00080000
+/* test in this order */
+#define STATUSF_INV       0x00000100
+#define STATUSF_DND       0x00000002
+#define STATUSF_OCC       0x00000010
+#define STATUSF_NA        0x00000004
+#define STATUSF_AWAY      0x00000001
+#define STATUSF_FFC       0x00000020
+#define STATUSF_BIRTH     0x00080000
+
+#define STATUS_OFFLINE    0xffffffff
+#define STATUS_INV         STATUSF_INV
+#define STATUS_DND        (STATUSF_DND | STATUSF_OCC | STATUSF_AWAY)
+#define STATUS_OCC        (STATUSF_OCC | STATUSF_AWAY)
+#define STATUS_NA         (STATUSF_NA  | STATUSF_AWAY)
+#define STATUS_AWAY        STATUSF_AWAY
+#define STATUS_FFC         STATUSF_FFC
+#define STATUS_ONLINE     0x00000000
 
 #define AUTH_REQ_MESS           0x0006
 #define AUTH_REF_MESS           0x0007

@@ -130,7 +130,7 @@ void Idle_Check (Session *sess)
         idle_val = time (NULL);
         return;
     }
-    if (sess->status != STATUS_ONLINE && sess->status != STATUS_FREE_CHAT)
+    if (sess->status != STATUS_ONLINE && sess->status != STATUS_FFC)
     {
         return;
     }

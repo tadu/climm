@@ -51,30 +51,16 @@ char *Get_Auto_Reply (Session *sess)
     if (!(prG->flags & FLAG_AUTOREPLY))
         return nullmsg;
 
-    switch (sess->status & 0x1FF)
-    {
-        case STATUS_OCCUPIED:
-            return strdup (prG->auto_occ);
-            break;
+    if (sess->status & STATUSF_DND)
+        return strdup (prG->auto_dnd);
+    if (sess->status & STATUSF_OCC)
+        return strdup (prG->auto_occ);
+    if (sess->status & STATUSF_NA)
+        return strdup (prG->auto_na);
+    if (sess->status & STATUSF_AWAY)
+        return strdup (prG->auto_away);
 
-        case STATUS_AWAY:
-            return strdup (prG->auto_away);
-            break;
-
-        case STATUS_DND:
-            return strdup (prG->auto_dnd);
-            break;
-
-        case STATUS_NA:
-            return strdup (prG->auto_na);
-            break;
-
-        case STATUSF_INVISIBLE:
-        case STATUS_ONLINE:
-        case STATUS_FREE_CHAT:
-        default:
-            return nullmsg;
-    }
+    return nullmsg;
 }
 
 void Auto_Reply (Session *sess, UDWORD uin)
@@ -84,31 +70,19 @@ void Auto_Reply (Session *sess, UDWORD uin)
     if (!(prG->flags & FLAG_AUTOREPLY))
         return;
     
-    if (sess->status == STATUS_ONLINE || sess->status == STATUS_FREE_CHAT)
-        return;
-
-    switch (sess->status & 0x1ff)
-    {
-        case STATUS_OCCUPIED:
-            temp = prG->auto_occ;
-            break;
-        case STATUS_AWAY:
-            temp = prG->auto_away;
-            break;
-        case STATUS_DND:
-            temp = prG->auto_dnd;
-            break;
-        case STATUSF_INVISIBLE:
-            temp = prG->auto_inv;
-            break;
-        case STATUS_NA:
-            temp = prG->auto_na;
-            break;
-        default:
-            /* shouldn't happen */
-            return;
-    }
-
+          if (sess->status & STATUSF_DND)
+         temp = prG->auto_dnd;
+     else if (sess->status & STATUSF_OCC)
+         temp = prG->auto_occ;
+     else if (sess->status & STATUSF_NA)
+         temp = prG->auto_na;
+     else if (sess->status & STATUSF_AWAY)
+         temp = prG->auto_away;
+     else if (sess->status & STATUSF_INV)
+         temp = prG->auto_inv;
+     else
+         return;
+    
     icq_sendmsg (sess, uin, temp, NORM_MESS);
 
     if (ContactFindNick (uiG.last_rcvd_uin) != NULL)

@@ -1119,34 +1119,19 @@ BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
     if (!peer)
         return 0;
 
-    switch (sess->status)
-    {
-        case STATUS_AWAY:
-            status = TCP_MSGF_AWAY;
-            break;
- 
-        case STATUS_NA:
-        case STATUS_NA_99:
-            status = TCP_MSGF_NA;
-            break;
+         if (sess->status & STATUSF_INV)
+        status = TCP_MSGF_INV;
+    else if (sess->status & STATUSF_DND)
+        status = TCP_MSGF_DND;
+    else if (sess->status & STATUSF_OCC)
+        status = TCP_MSGF_OCC;
+    else if (sess->status & STATUSF_NA)
+        status = TCP_MSGF_NA;
+    else if (sess->status & STATUSF_AWAY)
+        status = TCP_MSGF_AWAY;
+    else
+        status = 0;
 
-        case STATUS_OCCUPIED:
-        case STATUS_OCCUPIED_MAC:
-            status = TCP_MSGF_OCC;
-            break;
-            
-        case STATUS_DND:
-        case STATUS_DND_99:
-            status = TCP_MSGF_DND;
-            break;
-
-        case STATUSF_INVISIBLE:
-            status = TCP_MSGF_INV;
-            break;
-
-        default:
-            status = 0;    
-    }
     status ^= TCP_MSGF_LIST;
 
     pak = PacketC ();
@@ -1326,42 +1311,23 @@ void Get_Auto_Resp (Session *sess, UDWORD uin)
     assert (cont);
     ASSERT_DIRECT (sess);
 
-    switch (cont->status & 0x1ff)
-    {
-        case STATUS_NA:
-        case STATUS_NA_99:
-            sub_cmd = TCP_CMD_GET_NA;
-            break;
-
-        case STATUS_FREE_CHAT:
-            sub_cmd = TCP_CMD_GET_FFC;
-            break;
-
-        case STATUS_OCCUPIED:
-        case STATUS_OCCUPIED_MAC:
-            sub_cmd = TCP_CMD_GET_OCC;
-            break;
-        
-        case STATUS_AWAY:
-            sub_cmd = TCP_CMD_GET_AWAY;
-            break;
- 
-        case STATUS_DND:
-        case STATUS_DND_99:
-            sub_cmd = TCP_CMD_GET_DND;
-            break;
-
-        case STATUS_OFFLINE:
-        case STATUS_ONLINE:
-        case STATUSF_INVISIBLE:
-        default:
-            sub_cmd = 0;
-    }
+         if (sess->status & STATUSF_INV)
+        sub_cmd = 0;
+    else if (cont->status & STATUSF_DND)
+        sub_cmd = TCP_CMD_GET_DND;
+    else if (cont->status & STATUSF_OCC)
+        sub_cmd = TCP_CMD_GET_OCC;
+    else if (cont->status & STATUSF_NA)
+        sub_cmd = TCP_CMD_GET_NA;
+    else if (cont->status & STATUSF_AWAY)
+        sub_cmd = TCP_CMD_GET_AWAY;
+    else if (cont->status & STATUSF_FFC)
+        sub_cmd = TCP_CMD_GET_FFC;
+    else
+        sub_cmd = 0;
 
     if (cont->connection_type != TCP_OK_FLAG)
-    {
         sub_cmd = 0;
-    }
 
     if (sub_cmd == 0)
         M_print (i18n (1809, "Unable to retrieve auto-response message for %s."),

@@ -64,38 +64,26 @@ timeval;
 #endif
 
 /********************************************
-returns a string describing the status or
-a NULL if no such string exists
+returns a string describing the status
 *********************************************/
 const char *Convert_Status_2_Str (UDWORD status)
 {
-    if (STATUS_OFFLINE == (status | STATUSF_INVISIBLE))       /* this because -1 & 0xFFFF is not -1 */
-    {
+    if (STATUS_OFFLINE == (status | STATUSF_INV))       /* this because -1 & 0xFFFF is not -1 */
         return i18n (1969, "offline");
-    }
 
-    switch (status & 0x1ff)
-    {
-        case STATUS_ONLINE:
-            return i18n (1970, "online");
-        case STATUS_DND_99:
-        case STATUS_DND:
-            return i18n (1971, "do not disturb");
-        case STATUS_AWAY:
-            return i18n (1972, "away");
-        case STATUS_OCCUPIED_MAC:
-        case STATUS_OCCUPIED:
-            return i18n (1973, "occupied");
-        case STATUS_NA:
-        case STATUS_NA_99:
-            return i18n (1974, "not available");
-        case STATUSF_INVISIBLE:
-            return i18n (1975, "invisible");
-        case STATUS_FREE_CHAT:
-            return i18n (1976, "free for chat");
-        default:
-            return NULL;
-    }
+    if (status & STATUSF_INV)
+        return i18n (1975, "invisible");
+    if (status & STATUSF_DND)
+        return i18n (1971, "do not disturb");
+    if (status & STATUSF_OCC)
+        return i18n (1973, "occupied");
+    if (status & STATUSF_NA)
+        return i18n (1974, "not available");
+    if (status & STATUSF_AWAY)
+        return i18n (1972, "away");
+    if (status & STATUSF_FFC)
+        return i18n (1976, "free for chat");
+    return i18n (1970, "online");
 }
 
 /********************************************
@@ -104,9 +92,9 @@ if possible otherwise as a hex number
 *********************************************/
 void Print_Status (UDWORD status)
 {
-    if (status != STATUS_OFFLINE && (status & STATUSF_INVISIBLE))
+    if (status != STATUS_OFFLINE && (status & STATUSF_INV))
         M_print ("%s-", i18n (1975, "invisible"));
-    M_print (Convert_Status_2_Str (status & ~STATUSF_INVISIBLE));
+    M_print (Convert_Status_2_Str (status & ~STATUSF_INV));
     if (prG->verbose)
         M_print (" %08x", status);
 }
