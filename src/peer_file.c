@@ -655,7 +655,7 @@ void PeerFileResend (Event *event)
             PeerPacketSend (fpeer, pak);
             PacketD (pak);
 
-            if (len == 2048)
+            if (len > 0)
             {
                 if (fpeer->assoc->len)
                     ReadLinePromptUpdate (s_sprintf ("[%s%ld %02d%%%s] %s%s",
