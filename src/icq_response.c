@@ -420,33 +420,6 @@ void Recv_Message (Session *sess, UBYTE * pak)
 }
 
 
-/************************************************
-This is called when a user goes offline
-*************************************************/
-void User_Offline (Session *sess, UBYTE * pak)
-{
-    Contact *con;
-    int remote_uin;
-
-    remote_uin = Chars_2_DW (&pak[0]);
-
-    Time_Stamp ();
-    M_print (" " COLCONTACT "%10s" COLNONE " %s\n",
-             ContactFindName (remote_uin), i18n (30, "logged off."));
-    log_event (remote_uin, LOG_ONLINE, "User logged off %s\n", ContactFindName (remote_uin));
-
-    if (prG->sound & SFLAG_OFF_CMD)
-        ExecScript (prG->sound_off_cmd, remote_uin, 0, NULL);
-    else if (prG->sound & SFLAG_OFF_BEEP)
-        printf ("\n");
-
-    if ((con = ContactFind (remote_uin)) != NULL)
-    {
-        con->status = STATUS_OFFLINE;
-        con->last_time = time (NULL);
-    }
-}
-
 void UserOnlineSetVersion (Contact *con, UDWORD tstamp)
 {
     char buf[100];
@@ -478,92 +451,6 @@ void UserOnlineSetVersion (Contact *con, UDWORD tstamp)
 
     if (con->version) free (con->version);
     con->version = strlen (buf) ? strdup (buf) : NULL;
-}
-
-void User_Online (Session *sess, Packet *pak)
-{
-    Contact *con;
-    int uin, status;
-
-    uin = PacketRead4 (pak);
-    con = ContactFind (uin);
-    log_event (uin, LOG_ONLINE, "User logged on %s\n", ContactFindName (uin));
-    
-    if (!con)
-        return;
-
-    con->last_time = time (NULL);
-    con->outside_ip      = PacketRead4 (pak);
-    con->port            = PacketRead4 (pak);
-    con->local_ip        = PacketRead4 (pak);
-    con->connection_type = PacketRead1 (pak);
-    status               = PacketRead4 (pak);
-    con->TCP_version     = PacketRead4 (pak);
-                           PacketRead4 (pak);
-                           PacketRead4 (pak);
-                           PacketRead4 (pak);
-    UserOnlineSetVersion (con, PacketRead4 (pak));
-
-    if (status == con->status)
-        return;
-    
-    con->status = status;
-    if (sess->connect & CONNECT_OK)
-    {
-
-        if (prG->sound & SFLAG_ON_CMD)
-            ExecScript (prG->sound_on_cmd, uin, 0, NULL);
-        else if (prG->sound & SFLAG_ON_BEEP)
-            printf ("\a");
-
-        Time_Stamp ();
-        M_print (" " COLCONTACT "%10s" COLNONE " %s (",
-                 ContactFindName (uin), i18n (31, "logged on"));
-        Print_Status (con->status);
-        M_print (")");
-        if (con && con->version)
-            M_print ("[%s]", con->version);
-        M_print (".\n");
-        if (prG->verbose)
-        {
-            M_print ("%-15s %s\n", i18n (441, "IP:"), UtilIOIP (con->outside_ip));
-            M_print ("%-15s %s\n", i18n (451, "IP2:"), UtilIOIP (con->local_ip));
-            M_print ("%-15s %d\n", i18n (453, "TCP version:"), con->TCP_version);
-            M_print ("%-15s %s\n", i18n (454, "Connection:"), con->connection_type == 4 
-                                 ? i18n (493, "Peer-to-Peer") : i18n (494, "Server Only"));
-        }
-    }
-    else
-    {
-        Kill_Prompt ();
-    }
-}
-
-void Status_Update (Session *sess, UBYTE * pak)
-{
-    Contact *cont;
-    int remote_uin, new_status;
-
-    remote_uin = Chars_2_DW (&pak[0]);
-
-    new_status = Chars_2_DW (&pak[4]);
-    if (pak[8])
-        M_print ("%02X\n", pak[8]);
-    cont = ContactFind (remote_uin);
-    if (cont)
-    {
-        if (cont->status == new_status)
-        {
-            Kill_Prompt ();
-            return;
-        }
-        cont->status = new_status;
-    }
-    Time_Stamp ();
-    M_print (" " COLCONTACT "%10s" COLNONE " %s ",
-             ContactFindName (remote_uin), i18n (35, "changed status to"));
-    Print_Status (new_status);
-    M_print ("\n");
 }
 
 void Display_Info_Reply (Session *sess, UBYTE * pak)

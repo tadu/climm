@@ -171,6 +171,8 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
     static int loginmsg = 0;
     UBYTE *data = pak->data + pak->rpos;
     UWORD len = pak->len - pak->rpos;
+    Contact *cont;
+    UDWORD status;
     
     for (t = jump; t->cmd; t++)
     {
@@ -245,7 +247,9 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             M_print ("\n");
             break;
         case SRV_USER_OFFLINE:
-            User_Offline (sess, data);
+            UtilCheckUIN (sess, uin = PacketRead4 (pak));
+            if ((cont = ContactFind (uin)))
+                UtilUIUserOffline (cont);
             break;
         case SRV_BAD_PASS:
             M_print (i18n (645, COLMESS "You entered an incorrect password." COLNONE "\n"));
@@ -266,10 +270,27 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             QueueEnqueueData (queue, sess, 0, 0, 0, time (NULL) + 5, NULL, NULL, &CallBackServerInitV5); 
             break;
         case SRV_USER_ONLINE:
-            User_Online (sess, pak);
+            UtilCheckUIN (sess, uin = PacketRead4 (pak));
+            cont = ContactFind (uin);
+            if (!cont)
+                return;
+            cont->last_time = time (NULL);
+            cont->outside_ip      = PacketRead4 (pak);
+            cont->port            = PacketRead4 (pak);
+            cont->local_ip        = PacketRead4 (pak);
+            cont->connection_type = PacketRead1 (pak);
+            status                = PacketRead4 (pak);
+            cont->TCP_version     = PacketRead4 (pak);
+                                    PacketRead4 (pak);
+                                    PacketRead4 (pak);
+                                    PacketRead4 (pak);
+            UserOnlineSetVersion (cont, PacketRead4 (pak));
+            UtilUIUserOnline (cont, status);
             break;
         case SRV_STATUS_UPDATE:
-            Status_Update (sess, data);
+            UtilCheckUIN (sess, uin = PacketRead4 (pak));
+            if ((cont = ContactFind (uin)))
+                UtilUIUserOnline (cont, PacketRead4 (pak));
             break;
         case SRV_GO_AWAY:
         case SRV_NOT_CONNECTED:
