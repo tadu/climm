@@ -131,6 +131,8 @@ const char *s_status (UDWORD status)
         snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1972, "away"));
     else if (status & STATUSF_FFC)
         snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1976, "free for chat"));
+    else if (buf[0])
+        buf[strlen (buf) - 1] = '\0';
     else
         snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1970, "online"));
     
