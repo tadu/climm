@@ -1,5 +1,5 @@
 # $Id$ (Bulgarian)
-#  EN: __.i18n,v 1.71 2004/12/05 00:57:40
+#  EN: __.i18n,v 1.76 2005/02/11 22:21:08 <-- NEVER TOUCH THIS - it's updated automatically
 #-#1010:Ïîòðåáèòåëÿò å \"Äàëå÷\" [Àâòîìàòè÷íî Ñúîáùåíèå]
 #1000:UTF-8
 #1001:<lang>
@@ -8,11 +8,11 @@
 #1004:<translation authors>
 #1005:<last editor>
 #1006:<last edit date>
+#1008:US-ASCII
 #1010:User is away [Auto-Message]
 1011:Íÿìà ãî [Àâòîìàòè÷íî Ñúîáùåíèå]
 #-#1012:Ïîòðåáèòåëÿò å \"Çàåò\" [Àâòîìàòè÷íî Ñúîáùåíèå]
 #1012:User is occupied [Auto-Message]
-1013.Íå ñè å ïóñíàë ICQ-òî  [Àâòîìàòè÷íî Ñúîáùåíèå]
 1014:Íÿìà
 1015:ßíó
 1016:Ôåâ
@@ -34,7 +34,6 @@
 #1032:debug: double packet #%04lx type %04x (%s)\n
 1033:Âõîäÿù v8 server packet:
 #1034:Maximum number of tries reached. Giving up.
-1036.Íåèçâåñòíà êîìàíäà %s, íàïèøåòå /help çà ïîìîù.
 #-#1037:Ñúîáùåíèåòî å èçïðàòåíî ïðåäè äà ñå çàïúëíè ðåäîâèÿ áóôåð.\n
 #+#1037:Message sent before last line buffer is full\n
 #-#1038:Ñúîáùåíèåòî å ïðåêúñíàòî.\n
@@ -42,8 +41,6 @@
 #-#1039:Ñúðâúðà ìèñëè ÷å íå ñìå ñâúðçàíè.\n
 #1038:Message canceled.\n
 #1039:The server claims we're not connected.\n
-1040.Micq>
-1041.Ñúîáùåíèå>
 1043:Âñè÷êè ïîòðåáèòåëè ñà íàìåðåíè.
 1044:Íàìåðåíè ñà ïðåêàëåíî ìíîãî ïîòðåáèòåëè.
 1045:Òúðñåíåòî ïðèêëþ÷è.
@@ -68,8 +65,6 @@
 #+#1064:Auto-Changed status to
 #-#1071:Ñúñòîÿíèåòî âè å 
 #1064:Automatically changed status to %s.\n
-1072.Ïîòðåáèòåëè offline:
-1073.Ïîòðåáèòåëè Îíëàéí:
 #1078:No translation available.
 #1079:Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n
 #1082:Trying to reconnect... [try %d out of %d]\n
@@ -82,8 +77,6 @@
 #1096:SOCKS5 user name:
 #1097:SOCKS5 password:
 #1098:Display a list of nicknames that you can tab through.
-1099.Íåïîçíàò åçèê.
-1100.Íÿìà
 1101:Àðàáñêè
 1102:Bhojpuri
 1103:Áúëãàðñêè
@@ -572,7 +565,6 @@
 #1538:Enter new year of birth (4 digits):
 #1539:Enter new month of birth:
 #1540:Enter new day of birth:
-1541.Èíôîðìàöèÿ> 
 #-#1542:Âúâåäåòå äðóã E-Mail àäðåñ:
 #-#1543:Âúâåäåòå ñòàð E-Mail àäðåñ:
 #-#1544:Âúâåäåòå íîâ ãðàä:
@@ -612,8 +604,6 @@
 #1578:Enter country's phone ID number:
 #1579:Enter company: 
 #1587:Enter department: 
-#1592:<%s> emailed you a message:\n
-#1593:<%s> send you a web message:\n
 #1595:\nContact List.\n============================================\n%d Contacts\n
 #1596:[SOCKS] Can't find hostname %s: %s.
 #1597:[SOCKS] Socket creation failed\n
@@ -1024,8 +1014,8 @@
 #2218:UIN: %s\n
 #2220:several
 #2222:Script command '%s' failed: %s (%d).\n
-#2223:Opening remote control FIFO at %s... 
-#2225:remote control
+#2223:Opening scripting FIFO at %s... 
+#2225:scripting
 #2226:Couldn't create FIFO
 #2227:Couldn't open FIFO
 #2228:Couldn't set FIFO nonblocking
@@ -1090,7 +1080,6 @@
 #2314:These are advanced commands. Be sure to have read the manual pages for complete information.\n
 #2315:Cannot watch status of %s - too many watchers.\n
 #2316:Translation %s not found.\n
-2318.Bulgarian (%s) translation loaded (%ld entries).\n
 #2319:Accept an incoming file transfer from <uin> or <nick>.
 #2320:peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n
 #2321:contact add     Add server based contact list to local contact list.\n
@@ -1136,12 +1125,10 @@
 #2371:SSL init failed.\n
 #2372:Could not send SSL request to %s\n
 #2374:SSL error: %s [%d]\n
-#2375:SSL handshake ok\n
+#2375:SSL handshake ok.\n
 #2376:SSL read from %s [ERR=%d]: %s
 #2377:SSL write to %s [ERR=%d]: %s
 #2378:peer ssl <nick>   - initiate SSL handshake.
-2379.»%»
-2380.«%«
 #2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
 #2383:View your last messages of <contact>. Type 'h' as short command.
 #2384:Case insensitive search of <pattern> in log file of <contact>.
@@ -1154,7 +1141,7 @@
 #2393:%Y-%m-%d
 #2394: %I:%M %p
 #2395:View your messages of <contact> since <date>.
-#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n
+#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-01-31' or '2004-01-31T23:12:05'.\n
 #2397:No server session found.\n
 #2398:Set or display options for a contact group, a contact or global.\n
 #2399:Request SSL connection.
@@ -1205,7 +1192,7 @@
 #2445:Clearing option %s%s globally.\n
 #2446:Invalid value %s for boolean option %s.\n
 #2447:No new password given.\n
-#2448:Contact group '%s' already exists\n
+#2448:Contact group '%s' already exists.\n
 #2449:Primary contact group for contact '%s' is now '%s'.\n
 #2450:Last %d people you talked with:\n
 #2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
@@ -1259,8 +1246,8 @@
 #2499:Please recompile using the '--enable-iconvrepl' configure option.\n
 #2500:Manual locale setting %s ignored - use a real locale instead.\n
 #2501:Your locale is unset. Please use the %s--i18n%s command line option or set one of the environment variables %sLC_ALL%s, %sLC_MESSAGES%s, or %sLANG%s to your current locale.\n
-#2502:Locale setting %s ignored - use a real locale instead.\n
-#2503:Your system doesn't know the %s locale - try %siconv --list%s.\n
+#2502:Locale setting %s is no real locale and probably not what you want.\n
+#2503:Your system doesn't know the %s locale - try %slocale -a%s.\n
 #2504:Could not open configuration file %s%s%s.
 #2505:Deprecated option -f used. Please use the similar -b instead.\n
 #2506:This console uses encoding %s.\n
@@ -1290,7 +1277,7 @@
 #2530:OpenSSL write error: %s\n
 #2531:OpenSSL write error %d (unknown)\n
 #2532:OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n
-#2533:SSL handshake failed
+#2533:SSL handshake failed.\n
 #2534:IP:
 #2535:Groups:\n
 #2536:Group:
@@ -1303,7 +1290,7 @@
 #2543:Contacts
 #2544:Commands to modify your contact list.
 #2545:     %s\n
-#2546:No help available for '%s'\n
+#2546:No help available for '%s'.\n
 #2547:Displays saved meta data about <contacts>.
 #2548:Displays the current status of online people on your contact list, including otherwise hidden contacts.
 #2549:Displays verbosely the current status of online people on your contact list, including otherwise hidden contacts.
@@ -1322,3 +1309,11 @@
 #2562:Execute <cmd> with connection <nr> or connection for uin <uin> as current server connection.
 #2563:Set or display connection options.\n
 #2564:The user couldn't be detected to be online.\n
+#2565:Contact upload for %s%s%s failed, authorization required.\n
+#2566:Contact upload for %s%s%s failed, already on server.\n
+#2567:Contact upload for %s%s%s succeeded.\n
+#2568:Ignored request for auto-response from %s%s%s.\n
+#2569:Send <message> and further messages to <contacts> until canceled.
+#2570:Continuing chat with %s%s%s:\n
+#2571:"%s" <%s> emailed you a message [%s]: %s\n
+#2572:"%s" <%s> sent you a web message [%s]: %s\n

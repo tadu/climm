@@ -1,5 +1,5 @@
 # $Id$
-#  EN: __.i18n,v 1.71 2004/12/05 00:57:40
+#  EN: __.i18n,v 1.76 2005/02/11 22:21:08 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:de
 1002:de_CH
@@ -7,11 +7,10 @@
 1004:Guido Gloor
 1005:Guido Gloor
 1006:11. Septämber 2002
-1008.iso-8859-1
+1008:iso-8859-1
 1010:[Outomatischi Nachricht] Dä User isch grad ned ume (User is Away)
 1011:[Outomatischi Nachricht] Dä User isch grad wit wäg (User is N/A)
 1012:[Outomatischi Nachricht] Dä User isch grad beschäftiget (User is Occupied)
-1013.[Outomatischi Nachricht] Dä User isch grad ned am Netz (User is Offline)
 1014:---
 1015:Jan
 1016:Feb
@@ -34,7 +33,6 @@
 #1032:debug: double packet #%04lx type %04x (%s)\n
 1033:Igehends Server-Päckli (Version 8):
 1034:I gloube es het ke Sinn me (ha z mängisch probiert...)
-1036.Unbekannts Kommando %s, tue doch mau "help" tippe
 #-#1037:Ha dini Nachricht mau zwüschegsändet - da hets so ne Puffer, dä isch vou gsi\n
 #+#1037:Message sent before last line buffer is full\n
 #-#1038:Nachricht abbroche\n
@@ -42,8 +40,6 @@
 #-#1039:Irgend öpper het da öppis gäg üs - der Server meint mir sige offline\n
 #1038:Message canceled.\n
 #1039:The server claims we're not connected.\n
-1040.mICQ> 
-1041.msg> 
 1043:Aui User gfunge.
 1044:Z viu User gfunge.
 1045:Fertig gsuecht.
@@ -68,12 +64,8 @@
 #+#1064:Auto-Changed status to
 #-#1071:Di Schtatus isch: 
 #1064:Automatically changed status to %s.\n
-1072.User offline:
-1073.User online:
-1077.Gwidmet em Matthew D. Smith.
 1078:Ke Übersetzig verfüegbar.
 1079:Übersetzig (%s, %s) vom %s, zletsch gänderet am %s vom %s, für mICQ %d.%d.%d%s.\n
-1080.Ha d'Übersetzig "%s" ned chönne lade.\n
 #-#1081:Bärndütschi Übersetzig erfougrich glade (%d Iträg).\n
 #+#1081:Successfully loaded en translation (%d entries).\n
 1082:Versueche nomau z verbinde... [Versuech %d vo %d]\n
@@ -86,11 +78,9 @@
 1096:Username für SOCKS5 (oder 0, faus de ke Outhentifizierig bruchsch):
 1097:Passwort für SOCKS5:
 1098:Zeigt die letschte paar User a wo de mit ne gschnuret hesch
-1099.Unbekannti Schprach
 ##
 ## Schprache
 ##
-1100.Keni
 1101:Arabisch
 1102:Bhojpuri
 1103:Bulgarisch
@@ -555,7 +545,6 @@
 1538:Nöis Geburtsjahr (4 Ziffere):
 1539:Nöie Geburtsmonet:
 1540:Nöie Geburtstag:
-1541.Über> 
 1544:Nöii Schtadt:
 1545:Nöie Schtaat:
 1546:Nöii Telefonnummere:
@@ -579,8 +568,6 @@
 1578:Landesvorwau:
 1579:Firma:
 1587:Abteilig:
-1592:<%s> schickt e Nachricht per eMail:\n
-1593:<%s> schickt e Nachricht per Web:\n
 1595:\nKontaktlischte:\n============================================\n%d Kontakte.\n
 1596:[SOCKS] Cha der Rächnername %s ned uflöse: %s.
 1597:[SOCKS] Cha ke Socket erzüge.\n
@@ -607,7 +594,6 @@
 #-#1623:Dopplets Päckli %04X.\n
 #+#1623:Doubled packet %04X\n
 #1623:Double packet %04x.\n
-1624.Sorry, cha d Windows Sockets ned initialisiere...
 #-#1632:\nVerbindig inschtabil. Beände...
 #+#1632:\nConnection unstable. Exiting....
 #-#1634:OK\n
@@ -662,26 +648,21 @@
 #1667:Ignoring %s.\n
 #1670:Normal visible to %s now.\n
 #1671:Always visible to %s now.\n
-1672.%s sini IP-Adresse isch 
 #-#1673:, der Port isch %d.\n
 #-#1674:, der Port isch unbekannt.\n
 1675:Ignoriere d Zile:
-1676.I bruche d Usernummere/Nickname, wo nis söu häreschicke.\n
 #-#1678:I bruche e URL.\n
 #+#1678:Need URL please.\n
 #1678:No URL given.\n
 1679:Leider isch ds Schpichere vo dine persönleche Ischteuige fäugschlage!\n
 1680:Dini persönleche Ischteuige si gschpicheret!\n
-1681.Die letschte %d Lüt wo de mit ne gschnuret hesch:\n
 1682:Du hesch Nachrichte empfange vo:\n
 1687:mICQ louft sit
 1688:Täg
 1689:Schtunde
 1690:Minute
 1691:Sekunde
-1692.Kontakte:
 1696:Gschlächt:
-1700.%s isch ke güutige User i dire Kontaktlischte.\n
 1703:Schtatus-Modi:\n
 1704:Gruppe:\n
 1705:Augemein
@@ -709,14 +690,6 @@
 #1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 #1719:Shows how long mICQ has been running and some statistics.
 1721:Bire lääre Nachricht chöi mehreri Zile igä wärde.\nDerbi bedütet e Zile nume mit . ds Ändi vor Nachricht.\nE Zile nume mit # verwirft d Nachricht.
-1724.Automatischi Antworte sind %s.\n
-1727.D Nachricht für "bitte ned schtöre" isch:
-1728.D Nachricht für "ned ume" isch:
-1729.D Nachricht für "wit wäg" isch:
-1730.D Nachricht für "beschäftiget" isch:
-1731.D Nachricht für "verschteckt" isch:
-1735.Benötige e Nachricht.\n
-1738.Benötige es Kommando, wo söu umbenennt wärde.\n
 #-#1741:Sorry, hesch no ke Nachricht becho.\n
 #+#1741:Must receive a message first\n
 #-#1742:Sorry, hesch no ke Nachricht verschickt.\n
@@ -732,24 +705,15 @@
 #+#1754: Note: You need to 'save' to write new contact list to disc.\n
 #1754:Note: You need to 'save' to write new contact list to disc.\n
 1755:hat di zu sinere Kontaktlischte derzueta.\n
-1756.\nErschteue Verbindig...\n
-1757.Ha ke Verbindig chönne härschteue.\n
-1758.Sände d Afrag...\n
-1759.Warte uf Antwort....\n
-1760.\nDini nöii Usernummere isch %s%ld%s!\n
-1761.unbekannt
 #-#1762:Dini nöii Usernummere isch: %d.\n
 #+#1762:Your new UIN is: %d.\n
 #1762:Your new UIN is: %ld.\n
-1763.Ds Kommando "%s" isch nach  "%s" umbenannt worde.
-1764.Ds Kommando "%s" het no der urschprünglich Name.
 #-#1765:%s het d Usernummere %d.
 #+#1765:%s has UIN %d.
 #-#1766:Outomatischi Schautig für ned ume / wit wäg nach %s%d%s Sekunde.\n
 #+#1766:Changing status to away resp. not available after idling %s%d%s seconds.\n
 #1766:Changing status to away/not available after idling %s%ld%s seconds.\n
 1767:Schautet di outomatische Abwäseheitsschautig a oder ab oder setzt ds Timeout.
-1768.Der Name '%s' isch scho in Verwändig.\n
 #-#1770:Sändet die letschti Nachricht a ne nöie User.
 #1770:Resend your last message to <contacts>.
 1771:No ke Nachricht a irgendöpper verschickt!\n
@@ -811,12 +775,9 @@
 #1826:Resending message %04x (%s) sequence %04lx (attempt #%ld, len %d).\n
 #1830:Discarding message to %s after %ld send attempts.  Message content:\n
 1833:Diräkti Verbindig aufboue.\n
-1835.Fähler bim Schribe i Socket: %s (%d)\n
-1841.Ha es ausch formatierts initialization acknowledgement packet becho.\n
 1842:Tue d Verbindig (Verbindigsändpunkt Nr. %d) zu %s zue.\n
 1843:Tue der Verbindigsändpunkt Nr. %d zue.\n
 1844:Ha d TCP-Nachricht %04x nach eme Timeout wäggschmisse.\n
-1845.Der Nickname %s isch mir ned bekannt.\n
 #-#1846:Öffnet u schliest Diräkt-Verbindige:\n
 #-#1847:    open  <nick> - Öffnet e Diräkt-Verbindig.\n
 #-#1848:    close <nick> - Schliesst e Diräkt-Verbindig.\n
@@ -834,7 +795,6 @@
 #1855:TCP connection to %s at %s:%ld failed.\n
 #1856:Discarded a %04x (%s) packet from old session %08lx (current: %08lx).\n
 1857:Möchtisch dini IP-Adrässe vor angerne Users verschtecke? (Iu/Nei)
-1864.Cha d Konfigurationsdatei "%s" ned uftue.
 #-#1866:Die Version vo mICQ isch ohni Ungerschtützig vo Diräkt-Verbindige kompiliert worde.\n
 #-#1867:Ha es z churzes Päckli becho - ignoriert.\n
 #+#1867:Got a malformed (too short) packet - ignored.\n
@@ -855,7 +815,6 @@
 1877:OK.\n
 1878:Fähler bim Läse vom Socket: %s (%d)\n
 1879:Verbindige:
-1880.Das Päckli isch ned es FLAP: sini id isch %d.\n
 1881:Der FLAP Channel 1 het kener Date me.\n
 1882:Der FLAP Channel 1 het Äxtradate (cmd 1):\n
 1883:Der FLAP Channel 1 het e unbekannte Befäu becho (%d).\n
@@ -880,7 +839,6 @@
 1895:Login fäugschlage:\n
 1896:Der Server het d Verbindig zueta:\n
 #1897:Incomplete TLV %d, len %ld of %ld - ignoring.\n
-1898.Witerleitig zum Server %s... 
 #1899:Unknown family requested: %d\n
 1900:Isch nume läsbar.
 #-#1901:het di outhorisiert, ihn zu dinere Kontaktlischte derzue z tue.\n
@@ -892,8 +850,6 @@
 #+#1907:Warning: Server thinks our UIN is %d, while it is %d.\n
 #1904:Server doesn't understand ver %d (only %d) for family %d!\n
 #1907:Warning: Server thinks our UIN is %ld, when it is %ld.\n
-1908.Igehends USERONLINE-Päckli für ned-Kontakt.\n
-1909.Igehends USEROFFLINE-Päckli für ned-Kontakt.\n
 1911:verbinde
 1912:zueta
 #1914:Can't allocate connection structure.\n
@@ -1030,9 +986,7 @@
 2046:Du söttisch d Version 8 (schtatt der Version 6) für Diräktverbindige wähle.\n
 2047:Erschteue ds Verzeichnis %s.\n
 2048:Schpichere d Ischteuige in %s.\n
-2049.Lade d Gruppe "%s" ache:\n
 2051:Fähler am Socket: %s (%d)\n
-2054.D Nachricht für "wott chatte" isch:
 2055:Dä User isch für Ploudereie frei u möcht gärn über aus quatsche
 #-#2056:    auto  <nick> - Hou die outomatischi Antwort vo däm Kontkat
 #-#2057:    away  <nick> - Hou die outomatischi Antwort für "ned ume" vo däm Kontakt
@@ -1077,7 +1031,6 @@
 2090:Dateiübertragig
 2091:Reihe "%s" aus "%s" id Warteschlange für Dateiübertragig i.\n
 2092:TCP Nachricht %s wäggschmisse - ha d Sitzig verlore.\n
-2093.%02d %-12s Version %d für %s (%lx), bi %s:%ld %s\n
 #-#2094:conn login         Erschti Serververbindig uftue.\n
 #+#2094:conn login         Open first server connection.\n
 #2094:conn login         Open current/first server connection.\n
@@ -1117,8 +1070,6 @@
 #2110:peer files <nick> <file1> <as1> ... [<description>]\n
 #2111:                  - Send file1 as as1, ..., with description.\n
 #2112:                  - as = '/': strip path, as = '.': as is\n
-2113.Unbekannte Schtatus '%s'.\n
-2114.Der Befäu "%s" exischtiert ned.\n
 2115:"%s" isch ke ganzi Zau.\n
 2116:Ke nöie Nickname definiert.\n
 #-#2117:%d aus %s derzuegfüegt.\n
@@ -1150,11 +1101,9 @@
 #2126:is offline, message queued on server.\n
 2128: Beschriebig: %s%s%s\n
 2129:         URL: %s%s%s\n
-2130.Schribe e Nachricht a %saui%s:\n
 2131:Schribe e Nachricht a %s%s%s:\n
 2133:D Farb isch %s%s%s.\n
 2134:Luschtigi Nachrichte si %s%s%s.\n
-2135.Lislige Output isch %s%s%s.\n
 2136:Passwortänderig isch %s%s%s gsi.\n
 2137:Modifikation vor "Über"-Info isch %s%s%s gsi.\n
 2138:Modifikation vor grundlegende Info isch %s%s%s gsi.\n
@@ -1220,8 +1169,8 @@
 #2218:UIN: %s\n
 #2220:several
 #2222:Script command '%s' failed: %s (%d).\n
-#2223:Opening remote control FIFO at %s... 
-#2225:remote control
+#2223:Opening scripting FIFO at %s... 
+#2225:scripting
 #2226:Couldn't create FIFO
 #2227:Couldn't open FIFO
 #2228:Couldn't set FIFO nonblocking
@@ -1286,7 +1235,6 @@
 #2314:These are advanced commands. Be sure to have read the manual pages for complete information.\n
 #2315:Cannot watch status of %s - too many watchers.\n
 #2316:Translation %s not found.\n
-2318.Swiss-German (%s) translation loaded (%ld entries).\n
 #2319:Accept an incoming file transfer from <uin> or <nick>.
 #2320:peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n
 #2321:contact add     Add server based contact list to local contact list.\n
@@ -1329,16 +1277,13 @@
 #2367:TCL error: %s\n
 #2368:peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n
 #2369:Refuse an incoming file transfer from <uin> or <nick>.
-2370.%02d %-12s Version %d%s für %s (%lx), bi %s:%ld %s\n
 #2371:SSL init failed.\n
 #2372:Could not send SSL request to %s\n
 #2374:SSL error: %s [%d]\n
-#2375:SSL handshake ok\n
+#2375:SSL handshake ok.\n
 #2376:SSL read from %s [ERR=%d]: %s
 #2377:SSL write to %s [ERR=%d]: %s
 #2378:peer ssl <nick>   - initiate SSL handshake.
-2379.»%»
-2380.«%«
 #2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
 #2383:View your last messages of <contact>. Type 'h' as short command.
 #2384:Case insensitive search of <pattern> in log file of <contact>.
@@ -1351,7 +1296,7 @@
 #2393:%Y-%m-%d
 #2394: %I:%M %p
 #2395:View your messages of <contact> since <date>.
-#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n
+#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-01-31' or '2004-01-31T23:12:05'.\n
 #2397:No server session found.\n
 #2398:Set or display options for a contact group, a contact or global.\n
 #2399:Request SSL connection.
@@ -1402,7 +1347,7 @@
 #2445:Clearing option %s%s globally.\n
 #2446:Invalid value %s for boolean option %s.\n
 #2447:No new password given.\n
-#2448:Contact group '%s' already exists\n
+#2448:Contact group '%s' already exists.\n
 #2449:Primary contact group for contact '%s' is now '%s'.\n
 #2450:Last %d people you talked with:\n
 #2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
@@ -1456,8 +1401,8 @@
 #2499:Please recompile using the '--enable-iconvrepl' configure option.\n
 #2500:Manual locale setting %s ignored - use a real locale instead.\n
 #2501:Your locale is unset. Please use the %s--i18n%s command line option or set one of the environment variables %sLC_ALL%s, %sLC_MESSAGES%s, or %sLANG%s to your current locale.\n
-#2502:Locale setting %s ignored - use a real locale instead.\n
-#2503:Your system doesn't know the %s locale - try %siconv --list%s.\n
+#2502:Locale setting %s is no real locale and probably not what you want.\n
+#2503:Your system doesn't know the %s locale - try %slocale -a%s.\n
 #2504:Could not open configuration file %s%s%s.
 #2505:Deprecated option -f used. Please use the similar -b instead.\n
 #2506:This console uses encoding %s.\n
@@ -1487,7 +1432,7 @@
 #2530:OpenSSL write error: %s\n
 #2531:OpenSSL write error %d (unknown)\n
 #2532:OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n
-#2533:SSL handshake failed
+#2533:SSL handshake failed.\n
 #2534:IP:
 #2535:Groups:\n
 #2536:Group:
@@ -1500,7 +1445,7 @@
 #2543:Contacts
 #2544:Commands to modify your contact list.
 #2545:     %s\n
-#2546:No help available for '%s'\n
+#2546:No help available for '%s'.\n
 #2547:Displays saved meta data about <contacts>.
 #2548:Displays the current status of online people on your contact list, including otherwise hidden contacts.
 #2549:Displays verbosely the current status of online people on your contact list, including otherwise hidden contacts.
@@ -1519,3 +1464,11 @@
 #2562:Execute <cmd> with connection <nr> or connection for uin <uin> as current server connection.
 #2563:Set or display connection options.\n
 #2564:The user couldn't be detected to be online.\n
+#2565:Contact upload for %s%s%s failed, authorization required.\n
+#2566:Contact upload for %s%s%s failed, already on server.\n
+#2567:Contact upload for %s%s%s succeeded.\n
+#2568:Ignored request for auto-response from %s%s%s.\n
+#2569:Send <message> and further messages to <contacts> until canceled.
+#2570:Continuing chat with %s%s%s:\n
+#2571:"%s" <%s> emailed you a message [%s]: %s\n
+#2572:"%s" <%s> sent you a web message [%s]: %s\n

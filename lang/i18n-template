@@ -19,7 +19,7 @@ sub ReadTrans($)
         {
             $version = $1;
         }
-        elsif (m/^([0-9]{1,4}):(.*)/)
+        elsif (m/^([0-9]{1,4})[.:](.*)/)
         {
             $nr = sprintf ("%04d", $1);
             $val = $2;
@@ -48,7 +48,7 @@ sub ReadTainted($)
     open IN, "<$name" || return;
     while (<IN>)
     {
-        if (m/^([0-9]{4}):(.*)$/)
+        if (m/^([0-9]{4})[.:](.*)$/)
         {
             $tain{$1} = $2;
         }
@@ -85,21 +85,23 @@ sub ProcessLine($)
             print OUT "#$last:$nrval{$last}\n";
             $added++;
         }
-        $last = sprintf ("%04d", $last);
-        if (length ($nrval{$neu}))
+        print "Error: $last $neu" if $last != $neu;
+        $last = $mod = sprintf ("%04d", $last);
+        $mod -= 2000 if $mod > 3000;
+        if (length ($nrval{$mod}))
         {
-            if (length ($tain{$neu}))
+            if (length ($tain{$mod}))
             {
                 print OUT "#-#$line\n";
-                print OUT "#+#$last:$tain{$neu}\n";
-                print OUT "# #$last:$nrval{$last}\n";
+                print OUT "#+#$last:$tain{$mod}\n";
+                print OUT "# #$last:$nrval{$mod}\n";
                 $tainted++;
             }
             else
             {
                 if ($neu != 9999)
                 {
-                    print OUT "$line\n";
+                    print OUT "$1:$3\n";
                     $preserved++;
                 }
             }

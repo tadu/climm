@@ -1,5 +1,5 @@
 # $Id$ (Indonesian)
-#  EN: __.i18n,v 1.71 2004/12/05 00:57:40
+#  EN: __.i18n,v 1.76 2005/02/11 22:21:08 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:id
 1002:id_ID
@@ -7,11 +7,10 @@
 1004:L. Budi Handoko
 1005:L. Budi Handoko
 1006:22 April 2003
-1008.iso-8859-1
+1008:iso-8859-1
 1010:User sedang jauh [Pesan Otomatis]
 1011:User sedang tidak ditempat [Pesan Otomatis]
 1012:User sedang sibuk [Pesan Otomatis]
-1013.User offline
 1014:Tidak Ada
 1015:Januari
 1016:Pebruari
@@ -32,12 +31,8 @@
 1032:debug: paket ganda #%04lx type %04x (%s)\n
 1033:Paket server v8 datang:
 1034:Sudah mencapai jumlah percobaan maksimum. Menyerah.
-1036.Perintah %s tidak dikenal, ketik /help untuk pertolongan.
-1037.Pesan terkirim sebagian.\n
 1038:Pesan dibatalkan.\n
 1039:Server menyatakan bahwa kita tidak terhubung.\n
-1040.mICQ>
-1041.pesan>
 1043:Semua user ketemu.
 1044:Terlalu banyak user yang ditemukan.
 1045:Pencarian Selesai.
@@ -53,13 +48,8 @@
 1062:User-user diabaikan:
 1063:Masukkan password:
 1064:Otomatis berubah status menjadi %s.\n
-1072.User-user offline:
-1073.User-user online:
-1077.didedikasikan kepada Matthew D. Smith.
 1078:Tidak ada terjemahan yang tersedia.
 1079:Terjemahan (%s, %s) dari %s, terakhir di perbaiki pada %s oleh %s, untuk mICQ %d.%d.%d%s.\n
-1080.Tidak dapat memuat peng-internasionalan "%s".\n
-1081.Berhasil memuat terjemahan id (%ld entri).\n
 1082:Mencoba untuk terhubung kembali... [percobaan ke %d dari %d]\n
 1085:hidup
 1086:mati
@@ -70,8 +60,6 @@
 1096:User name SOCKS5:
 1097:Password SOCKS5:
 1098:Menampilkan daftar nickname yang bisa anda pilih.
-1099.Bahasa tidak dikenal.
-1100.Tidak Ada
 1101:Arab
 1102:Bhojpuri
 1103:Bulgaria
@@ -399,6 +387,7 @@
 #-#1444:Perintah-perintah yang berhubungan dengan pencarian dan melihat user lain.
 #+#1444:Commands relating to finding and seeing other users.
 # #1444:Commands relating to seeing and finding other users.
+#1444:Commands relating to seeing and finding other users.
 1445:Perintah-perintah yang berhubungan dengan account ICQ Anda.
 1446:Perintah-perintah yang berhubungan dengan pengiriman pesan.
 1447:Klien
@@ -487,7 +476,6 @@
 1538:Masukkan tahun kelahiran baru (4 digit):
 1539:Masukkan bulan kelahiran baru:
 1540:Masukkan tanggal kelahiran baru:
-1541.Tentang>
 1544:Masukkan kota baru:
 1545:Masukkan propinsi baru:
 1546:Masukkan nomor telepon baru:
@@ -511,8 +499,6 @@
 1578:Masukkan kode negara telepon Anda:
 1579:Masukkan nama perusahaan:
 1587:Masukkan nama bagian:
-1592:<%s> meng-email pesan kepada Anda:\n
-1593:<%s> mengirim Anda alamat web:\n
 1595:\nDaftar Kontak.\n============================================\n%d Kontak\n
 1596:[SOCKS] Tidak dapat mencari nama host %s: %s.
 1597:[SOCKS] Pembuatan soket gagal\n
@@ -525,7 +511,6 @@
 1604:Haruskah user online?
 1605:Anda ingin status Anda tersedia di web? (YA/TIDAK)
 1606:Menerima sesi buruk dengan ID %08lx (yang benar: %08lx) dengan cmd %04x diabaikan.\n
-1607.Penggunaan: micq [-h] [-c] [-i <locale>] [-b <basedir>] \n            [-f <configfile>] [-v[<level>]] [-l <logplace>]\n
 1612:Program ini dibuat tanpa bantuan dari Mirabilis atau rekanan mereka.\n
 1613:Tidak ada pendekodean dari kode program Mirabilis yang digunakan untuk membuat program ini.\n
 1618:UIN:
@@ -536,7 +521,6 @@
 #-#1623:Paket Dobel %04X\n
 #+#1623:Doubled packet %04X\n
 #1623:Double packet %04x.\n
-1624.Maaf, tidak dapat mengenal Soket Windows...
 #-#1632:\nKoneksi tidak stabil. Keluar....
 #+#1632:\nConnection unstable. Exiting....
 #1632:\nConnection unstable. Exiting....
@@ -572,26 +556,19 @@
 1667:Mengabaikan %s.\n
 1670:Sekarang penampakan normal kepada %s.\n
 1671:Sekarang selalu nampak kepada %s.\n
-1672.Alamat IP %s adalah
-1673.Portnya adalah %ld.\n
-1674.Port tidak dikenal.\n
 1675:Baris yang diabaikan:
-1676.Memerlukan uin/nick untuk mengrimkan.\n
 #-#1678:Membutuhkan URL.\n
 #+#1678:Need URL please.\n
 #1678:No URL given.\n
 1679:Maaf penyimpanan pesan balasan pribadi ada kesalahan!\n
 1680:Setting pribadi Anda telah disimpan!\n
-1681.%d terakhir orang yang Anda ajak bicara:\n
 1682:Anda telah menerima pesan dari:\n
 1687:mICQ telah menyala untuk
 1688:hari
 1689:jam
 1690:menit
 1691:detik
-1692.Kontak:
 1696:Kelamin:
-1700.%s bukan user yang valid di dalam daftar Anda.\n
 1703:Mode status:\n
 1704:Grup:\n
 1705:Umum
@@ -609,18 +586,11 @@
 #-#1717:'!' sebagai karakter pertama perintah akan menjalankan perintah shell (contoh: '!ls', '!dir', '!mkdir temp')
 #+#1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
 # #1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
+#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 1719:Menampilkan berapa lama mICQ telah menyala dan beberapa statistik.
 #-#1720:<contacts> adalah daftar UIN dan nickname dari user yang terpisah dengan koma.
 #+#1720:<contacts> is a comma seperated list of UINs and nick names of users.
 1721:Mengirimkan pesan kosong akan membawa klien ke mode multiline.\nGunakan . pada baris tersebut untuk mengakhiri pesan.\nGunakan # pada baris tersebut untuk membatalkan pesan.
-1724.Jawaban otomatis %s.\n
-1727.Pesan "jangan diganggu" adalah:
-1728.Pesan "jauh" adalah:
-1729.Pesan "tidak ditempat" adalah:
-1730.Pesan "sibuk" adalah:
-1731.Pesan "tidak terlihat" adalah:
-1735.Harus memberikan pesan.\n
-1738.Memerlukan perintah untuk mengganti.\n
 1741:Harus menerima pesan dulu.\n
 1742:Harus menulis pesan dulu.\n
 1743:Ukuran tidak sesuai dalam panjang paket.\n
@@ -630,24 +600,13 @@
 1747:total
 1754:Catatan: Anda perlu untuk men-'save' untuk menulis daftar kontak baru ke disk.\n
 1755:telah menambahkan Anda ke daftar kontaknya.\n
-1756.\nMembuat Koneksi...\n
-1757.Tidak dapat melakukan koneksi.\n
-1758.Mengirimkan Permintaan...\n
-1759.Menunggu jawaban....\n
-1760.\nUIN baru Anda adalah %s%ld%s!\n
-1761.tidak diketahui
 1762:UIN baru Anda adalah: %ld.\n
-1763.Perintah '%s' telah diubah menjadi '%s'.
-1764.Perintah '%s' tidak berubah.
-1765.%s UIN-nya %ld.
 1766:Mengubah status ke jauh/tidak ditempat setelah nganggur selama %s%ld%s detik.\n
 1767:Menganti perputaran otomatis ke jauh/tidak ditempat.
-1768.Nama perintah '%s' telah digunakan.\n
 1770:Mengirim ulang pesan terakhir Anda kepada <contacts>.
 1771:Anda belum mengirim pesan kepada siapapun!\n
 1774:Paket masuk:
 1775:Paket keluar:
-1777.Membuka koneksi peer-to-peer pada localhost:%ld...
 1781:Password Anda untuk UIN %ld:\n
 1782:Anda memerlukan password untuk UIN baru Anda.\n
 1783:Untuk mencegah kesalahan pengetikan, tolong masukkan password Anda lagi.\n
@@ -670,6 +629,7 @@
 #-#1800:Mengubah bahasa aktif ke <lang> atau tampilkan karakter <nr>.
 #+#1800:Change the working language to <lang> or display string <nr>.
 # #1800:Change the working language (and encoding) to <lang> or display string <nr>.
+#1800:Change the working language (and encoding) to <lang> or display string <nr>.
 1801:Menampilkan daftar orang pada daftar kontak Anda dengan format layar melebar.
 1807:Pesan masuk dibatalkan (seq %04x) dari %s\n
 1808:Kuliah
@@ -689,12 +649,9 @@
 1826:Mengirim ulang pesan %04x (%s) urutan %04lx (usaha #%ld, len %d).\n
 1830:Menghilangkan pesan ke %s setelah %ld usaha pengiriman.  Isi pesan:\n
 1833:Koneksi Peer to peer TCP terlaksana.\n
-1835.Salah sewaktu menulis ke soket - %s (%d)\n
-1841.Menerima paket pengenalan awal malformed.\n
 1842:Menutup soket %d ke %s.\n
 1843:Menutup soket %d.\n
 1844:Pesan TCP %04x dihilangkan setelah timeout.\n
-1845.Nick %s tidak dikenal.\n
 1846:Langsung buka dan tutup koneksi (peer to peer):\n
 1847:peer open  <nick> - Membuka koneksi langsung.\n
 1848:peer close <nick> - Menutup/mereset koneksi langsung.\n
@@ -703,13 +660,10 @@
 1855:Koneksi TCP ke %s pada %s:%ld gagal.\n
 1856:Paket %04x (%s) dihilangkan dari sesi lama %08lx (sekarang: %08lx).\n
 1857:Anda ingin menyembunyikan IP Anda dari kontak yang lain? (YA/TIDAK)
-1864.Tidak dapat membuka file rc %s.
-1866.Versi mICQ ini dikompile tanpa dukungan koneksi langsung (peer to peer).\n
 1867:Paket malformed diterima (terlalu pendek) - diabaikan.\n
 1868:Mendapat multi-paket malformed (sub paket terlalu panjang) - pengingat diabaikan.\n
 1869:Protokol versi sebelum 5 sudah tidak didukung lagi.\n
 1870:peer off   <nick> - Tutup koneksi langsung dan jangan dicoba lagi.\n
-1871.Membuka koneksi v8 ke %s:%ld...
 1872:gagal: %s (%d)\n
 1873:Kota Perusahaan:
 1874:Propinsi Perusahaan:
@@ -718,7 +672,6 @@
 1877:ok.\n
 1878:Salah sewaktu membaca dari soket: %s (%d)\n
 1879:Affiliasi:
-1880.Paket masuk bukan FLAP: id adalah %d.\n
 1881:FLAP saluran 1 kehabisan data.\n
 1882:FLAP saluran 1 cmd 1 data ekstra:\n
 1883:FLAP saluran 1 perintah tidak dikenal %d.\n
@@ -737,17 +690,12 @@
 #-#1897:TLV %d tidak lengkap, panjang %ld dari %d - diabaikan.\n
 #+#1897:Incomplete TLV %d, len %ld of %d - ignoring.\n
 #1897:Incomplete TLV %d, len %ld of %ld - ignoring.\n
-1898.Redireksi ke server %s...
 1899:Permintaan keluarga tidak dikenal: %d\n
 1900:Hanya bisa dibaca.
 1901:telah mengijinkan Anda untuk menambahkan mereka ke daftar kontak Anda.\n
-1902.Membuka koneksi v5 ke %s:%ld...
 1903:Paket Keluar server v8:
 1904:Server tidak mengerti ver %d (hanya %d) untuk keluarga %d!\n
-1905.SNAC (%x,%x) [%s] flags %x ref %lx\n
 1907:Peringatan: Server mengira UIN kita adalah %ld, sewaktu %ld.\n
-1908.Menerima paket USERONLINE untuk non-kontak.\n
-1909.Menerima paket USEROFFLINE untuk non-kontak.\n
 1911:menghubungkan diri
 1912:tertutup
 1914:Tidak dapat memberi struktur alokasi koneksi.\n
@@ -846,25 +794,24 @@
 2031:Koneksi terlalu sering gagal, menyerah.\n
 2032:Menjadwalkan koneksi ulang v8 dalam %d detik.\n
 2033:lahir hari ini
-2034.Membuka koneksi TCP pada %s:%ld...
 2036:Menyimpan preferensi saat ini ke disk.
 2037:Membuka atau menutup koneksi peer-to-peer, atau non-aktifkan penggunaan koneksi peer-to-peer untuk <uin> atau <nick>.
 #-#2038:Membuka koneksi nomor <nr>, atau koneksi pertama server.
 #+#2038:Opens connection number <nr>, or the first server connection.
 # #2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
+#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
 2039:Mengirim pesan ke telepon (<nick>'s) <cell>.
 2042:Menampilkan daftar orang yang online pada daftar kontak dengan menggunakan format layar lebar.
 2043:Menghapus semua kontak di <contacts> dari grup kontak <group>.
 #-#2044:Set, bersihkan atau tampilkan <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
 #+#2044:Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
 # #2044:Set, clear or display an <option>: color, delbs, auto, uinprompt, autosave, autofinger, linebreak, funny.
+#2044:Set, clear or display an <option>: color, delbs, auto, uinprompt, autosave, autofinger, linebreak, funny.
 2045:Mengubah penampakan Anda menjadi tidak terlihat kepada <contacts> sewaktu Anda online.
 2046:Anda mungkin ingin menggunakan protokol versi 8 untuk peer-to-peer ICQ sebagai gantinya.\n
 2047:Membuat direktori %s.\n
 2048:Menyimpan preferensi ke %s.\n
-2049.Menerima grup "%s":\n
 2051:Kesalahan pada soket: %s (%d)\n
-2054.Pesan "bebas untuk bicara" adalah:
 2055:User bebas untuk bicara dan ingin berbicara tentang apapun.
 2056:getauto [auto] <nick> - Mendapatkan jawaban otomatis dari kontak.\n
 2057:getauto away   <nick> - Mendapatkan jawaban otomatis untuk jauh dari kontak.\n
@@ -875,8 +822,6 @@
 2065:Perintah TCP_MSG_GREET_ yang tidak dikenal %04x.\n
 2066:Perintah TCP_MSG_ yang tidak dikenal %04x.\n
 2067:io file
-2068.Membuka koneksi transfer file ke %s:%ld... \n
-2070.Transfer file '%s' ke port %ld.\n
 2071:Tidak dapat mencatat file %s: %s (%d)\n
 2072:Transfer file #%ld (%s) dibatalkan karena koneksi tertutup.\n
 2073:Penggunaan memori : %ld proses paket.\n
@@ -884,7 +829,6 @@
 2079:Paket TCP masuk (%d - %s): %s
 2080:Jawaban server pengantar SMS:\n%s\n
 2081:    at %p parent %p assoc %p\n
-2082.Membuka koneksi penerima file pada localhost:%ld...
 2083:Tidak dapat membuka file %s: %s (%d).\n
 #-#2084:Salah sewaktu mencari ke offset %ld: %s (%ld).\n
 #+#2084:Error while seeking to offset %ld: %s (%ld).\n
@@ -896,12 +840,10 @@
 2090:file peer-to-peer
 2091:Mengantri %s sebagai %s untuk transfer.\n
 2092:Pesan TCP %s dihapus - sesi telah hilang.\n
-2093.%02d %-12s versi %d untuk %s (%lx), pada %s:%ld %s\n
 #-#2094:conn login         Membuka koneksi server pertama.\n
 #+#2094:conn login         Open first server connection.\n
 #2094:conn login         Open current/first server connection.\n
 2095:conn remove <nr>   Menutup koneksi <nr>.\n
-2096.Koneksi %ld tidak terbuka.\n
 2097:conn select <nr>   Pilih koneksi <nr> sebagai koneksi ke server.\n
 2098:Koneksi %ld bukan koneksi ke server.\n
 2099:Koneksi terpilih %ld (versi %d, UIN %ld) sebagai koneksi aktif.\n
@@ -924,8 +866,6 @@
 2110:peer files <nick> <file1> <as1> ... [<description>]\n
 2111:                  - Mengirim file1 sebagai as1, ..., dengan deskripsi.\n
 2112:                  - sebagai = '/': menghilangkan path, sebagai = '.': sebagai\n
-2113.Status tidak diketahui '%s'.\n
-2114.Perintah '%s' tidak ada.\n
 2115:'%s' bukan bilangan integer.\n
 2116:Tidak ada nick name baru yang diberikan.\n
 2117:%ld ditambahkan sebagai %s.\n
@@ -947,14 +887,11 @@
 #2123:%sSyntax error%s: Too few arguments: %s\n
 #2124:%sSyntax error%s: Not an integer: %s\n
 2126:sedang offline, pesan antri di server.\n
-2127.       URL: %s %s%s%s\n
 2128:   Deskripsi: %s%s%s\n
 2129:         URL: %s%s%s\n
-2130.Menulis pesan kepada %sall%s:\n
 2131:Menulis pesan kepada %s%s%s:\n
 2133:Warna adalah %s%s%s.\n
 2134:Pesan lucunya %s%s%s.\n
-2135.Keluaran kosongnya adalah %s%s%s.\n
 2136:Password yang telah berubah adalah %s%s%s.\n
 2137:Informasi tentang yang berubah adalah %s%s%s.\n
 2138:Informasi yang berubah adalah %s%s%s.\n
@@ -1001,6 +938,7 @@
 #+#2176:Displays verbose the current status of everyone on your contact list.
 #-#2177:Menampilkan secara lengkap status saat ini dari orang yang online pada daftar kontak Anda.
 #+#2177:Displays verbose the current status of online people on your contact list.
+#2172:Advanced commands.
 #2176:Displays verbosely the current status of everyone on your contact list.
 #2177:Displays verbosely the current status of online people on your contact list.
 2179:Mengirim semua <contacts> sebagai file tunggal.
@@ -1009,12 +947,13 @@
 #-#2182:Memilih nomor koneksi server <nr> sebagai koneksi saat ini.
 #+#2182:Select server connection number <nr> as current server connection.
 # #2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
+#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
 2183:Cek semua <contacts> meskipun mereka offline ataupun tidak nampak.
 #-#2184:%s%-10s%s - %s\n
 #+#2184:%s%-10s%s - %s\n
 # #2184:%s%-14s%s - %s\n
+#2184:%s%-14s%s - %s\n
 2185:Menutup koneksi %ld.\n
-2186.Menerima file '%s' (%ld bytes).\n
 2188:Anda mengirim data terlalu cepat - berhenti mengetik sekarang, atau server akan memutus hubungan!\n
 2191:Kesalahan pesan instan: %d.\n
 2192:Kemampuan:
@@ -1026,15 +965,11 @@
 2199:  -h, --help     memberikan teks pertolongan ini\n
 2200:  -v, --verbose  set (atau menambah) kelengkapan informasi (biasanya untuk pelacakan)\n
 2201:  -b, --basedir  menggunakan dir BASE yang diberikan (default: %s)\n
-2202.  -f, --config   menggunakan file konfigurasi yang diberikan (default: %s)\n
 2203:  -l, --logplace menggunakan file/dir log yang diberikan (default: %s)\n
 2204:  -i, --i18n     menggunakan lokalisasi yang diberikan (default: deteksi otomatis)\n
 2205:  -c, --nocolor  warna dimatikan\n
 2206:Server tidak ingin memberi kita pesan offline.\n
 2207:Kesalahan protokol pada perintah kepada server ICQ tua: %d.\n
-2208.Terdeteksi pengkodean UTF-8, bagaimanapun juga, mICQ ini dkompile tanpa dukungan UTF-8.\n
-2209.Terdeteksi pengkodean UTF-8.\n
-2210.%smICQ (Matt's ICQ clone)%s versi %s%s%s (dikompilasi pada %s)\n
 2211:Status Anda adalah %s.\n
 2212:berubah status menjadi %s
 2213:masuk (%s)
@@ -1044,34 +979,32 @@
 2217:mICQ ini tidak dapat mengkonversi antara '%s' dan unicode.\n
 2218:UIN: %s\n
 2220:beberapa
-2221.Menghapus kontak sementara '%s' (%ld).\n
 2222:Perintah skrip '%s' gagal: %s (%d).\n
-2223:Membuka pengendali jarak jauh FIFO pada %s...
-2225:pengendali jarak jauh
+#-#2223:Membuka pengendali jarak jauh FIFO pada %s...
+#+#2223:Opening remote control FIFO at %s... 
+# #2223:Opening scripting FIFO at %s... 
+#-#2225:pengendali jarak jauh
+#+#2225:remote control
+# #2225:scripting
+#2223:Opening scripting FIFO at %s... 
+#2225:scripting
 2226:Tidak dapat membuat FIFO
 2227:Tidak dapat membuka FIFO
 2228:Tidak dapat men-set FIFO nonblocking
-2229.Menolak permintan file '%s' (%ld byte): %s.\n
-2230.Menolak permintaan bicara (%s/%s) dari %s.\n
-2231.Transfer file '%s' ditolak oleh peer: %s.\n
-2232.meminta otorisasi: %s%s\n
 #-#2233:otorisasi yang ditolak: %s%s\n
 #+#2233:refused authorization: %s%s\n
 #2233:refused authorization: %s%s%s\n
 2234:Pesan %s dihilangkan - sesi telah hilang.\n
-2235.Tidak ada nick name yang diberikan.\n
 2236:Informasi untuk %s%s%s (%ld):\n
 2237:Webaware:
 2238:Sembunyikan IP:
 2239:Tidak diketahui lainnya:
 2240:Tidak ada grup kontak yang diberikan.\n
 2241:Ditambahkan '%s' ke grup kontak '%s'.\n
-2242.Ditambahkan %d kontak baru, ditambahkan %d kali ke grup kontak.\n
 2243:Menghapus kontak '%s' dari grup '%s'.\n
 2244:Grup kontak '%s' sudah memiliki kontak '%s' (%ld).\n
 2245:Ditambahkan grup kontak '%s'.\n
 2246:Kontak '%s' tidak di dalam grup '%s'.\n
-2247.Tidak dapat memuat meta data untuk '%s' (%ld).\n
 2248:Telah disimpan meta data untuk '%s' (%ld).\n
 2249:Tidak dapat menyimpan meta data untuk '%s' (%ld).\n
 2250:Nomor '%s' tidak merupakan format +<countrycode><cellprovider><number>.\n
@@ -1083,14 +1016,9 @@
 #2254:A beep is never generated.\n
 2255:Beep untuk kontak yang datang selalu dihasilkan oleh skrip %sevent%s yang bekerja.\n
 2256:Beep untuk kontak yang pergi selalu dihasilkan oleh skrip %sevent%s yang bekerja.\n
-2257.Pengkodean:
 2258:Tidak ada permintaan transfer file masuk yang ditunda untuk %s dengan (urutan %ld) ditemukan.\n
-2259.permintaan transfer file '%s' dari %ld bytes (urutan %ld).\n
 2260:Tolong coba perintah getauto sebagai gantinya.\n
-2261.Hermit adalah %s%s%s.\n
 2262:Penerjemahan karakter delete sebagai backspace adalah %s%s%s.\n
-2263.Status login %s%s%s.\n
-2264.Perubahan status login menjadi %s%s%s.\n
 2265:Jawaban otomatis %s%s%s.\n
 2266:Menggunakan nick terakhir pada prompt %s%s%s.\n
 2267:Penyimpanan otomatisnya %s%s%s.\n
@@ -1099,14 +1027,7 @@
 2270:simple
 2271:indent
 2272:smart
-2273.cycle
-2274.cycleall
-2275.Gaya Tab adalah %s%s%s.\n
-2276.complete
-2277.    hermit:     mengabaikan semua yang bukan kontak.\n
 2278:    delbs:      menterjemahkan karakter delete sebagai backspace.\n
-2279.    log:        lakukan pencatatan.\n
-2280.    logonoff:   juga catat perubahan status.\n
 2281:    auto:       kirim jawaban otomatis.\n
 #-#2282:    uinprompt:  menggunakan nick terakhir pada prompt.\n
 #+#2282:    uinprompt:  display the last nick in the prompt.\n
@@ -1114,17 +1035,9 @@
 2283:    autosave:   otomatis menyimpan micqrc.\n
 2284:    autofinger: otomatis finger UIN baru.\n
 2285:    linebreak:  gaya untuk pesan berbaris: simple, break, indent, smart.\n
-2286.    tabs:       gaya untuk menangani tab: simple, cycle, cycleall.\n
-2287.    silent:     menghilangkan beberapa keluaran: off, on, complete.\n
 2288:Gaya indentasi %s%s%s.\n
-2289.»»»
-2290.«««
-2291.>>»
-2292.«<<
 2293:--=
 2294:===
-2295.>>>
-2296.<<<
 2297:Alias menjadi apa?\n
 2298:Hapus alias yang mana?\n
 2299:Alias tidak ada.\n
@@ -1149,8 +1062,6 @@
 2314:Berikut ini adalah perintah tambahan. Pastikan telah membaca halaman manual untuk informasi lengkap.\n
 2315:Tidak dapat melihat status dari %s - terlalu banyak pengamat.\n
 #2316:Translation %s not found.\n
-2317.Terjemahan %s tidak ketemu. Apakah anda ingin menterjemahkan mICQ ke dalam bahasa Anda ?\n
-2318.Terjemahan bahasa Inggris (%s) dimuat (%ld entri).\n
 2319:Menerima transfer file yang datang dari <uin> atau <nick>.
 2320:peer accept <nick> [<id>]\n                  - menerima transfer file yang datang.\n
 #2321:contact add     Add server based contact list to local contact list.\n
@@ -1172,8 +1083,6 @@
 #2337:  set  - upload own meta data to server\n
 #2338:  get  - query server for meta data\n
 #2339:  rget - query server for last sender's meta data\n
-2340.Transfer file '%s' ditolak oleh peer: %s%s.\n
-2341.Menolak permintan file '%s' (%ld byte): %s%s.\n
 #2342:Scripting
 #2343:Advanced commands for scripting.
 #2344:Execute Tcl script from <file>.
@@ -1195,16 +1104,13 @@
 #2367:TCL error: %s\n
 #2368:peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n
 #2369:Refuse an incoming file transfer from <uin> or <nick>.
-2370.%02d %-12s versi %d%s untuk %s (%lx), pada %s:%ld %s\n
 #2371:SSL init failed.\n
 #2372:Could not send SSL request to %s\n
 #2374:SSL error: %s [%d]\n
-#2375:SSL handshake ok\n
+#2375:SSL handshake ok.\n
 #2376:SSL read from %s [ERR=%d]: %s
 #2377:SSL write to %s [ERR=%d]: %s
 #2378:peer ssl <nick>   - initiate SSL handshake.
-2379.»%»
-2380.«%«
 #2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
 #2383:View your last messages of <contact>. Type 'h' as short command.
 #2384:Case insensitive search of <pattern> in log file of <contact>.
@@ -1217,7 +1123,7 @@
 #2393:%Y-%m-%d
 #2394: %I:%M %p
 #2395:View your messages of <contact> since <date>.
-#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n
+#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-01-31' or '2004-01-31T23:12:05'.\n
 #2397:No server session found.\n
 #2398:Set or display options for a contact group, a contact or global.\n
 #2399:Request SSL connection.
@@ -1268,7 +1174,7 @@
 #2445:Clearing option %s%s globally.\n
 #2446:Invalid value %s for boolean option %s.\n
 #2447:No new password given.\n
-#2448:Contact group '%s' already exists\n
+#2448:Contact group '%s' already exists.\n
 #2449:Primary contact group for contact '%s' is now '%s'.\n
 #2450:Last %d people you talked with:\n
 #2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
@@ -1322,8 +1228,8 @@
 #2499:Please recompile using the '--enable-iconvrepl' configure option.\n
 #2500:Manual locale setting %s ignored - use a real locale instead.\n
 #2501:Your locale is unset. Please use the %s--i18n%s command line option or set one of the environment variables %sLC_ALL%s, %sLC_MESSAGES%s, or %sLANG%s to your current locale.\n
-#2502:Locale setting %s ignored - use a real locale instead.\n
-#2503:Your system doesn't know the %s locale - try %siconv --list%s.\n
+#2502:Locale setting %s is no real locale and probably not what you want.\n
+#2503:Your system doesn't know the %s locale - try %slocale -a%s.\n
 #2504:Could not open configuration file %s%s%s.
 #2505:Deprecated option -f used. Please use the similar -b instead.\n
 #2506:This console uses encoding %s.\n
@@ -1353,7 +1259,7 @@
 #2530:OpenSSL write error: %s\n
 #2531:OpenSSL write error %d (unknown)\n
 #2532:OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n
-#2533:SSL handshake failed
+#2533:SSL handshake failed.\n
 #2534:IP:
 #2535:Groups:\n
 #2536:Group:
@@ -1366,7 +1272,7 @@
 #2543:Contacts
 #2544:Commands to modify your contact list.
 #2545:     %s\n
-#2546:No help available for '%s'\n
+#2546:No help available for '%s'.\n
 #2547:Displays saved meta data about <contacts>.
 #2548:Displays the current status of online people on your contact list, including otherwise hidden contacts.
 #2549:Displays verbosely the current status of online people on your contact list, including otherwise hidden contacts.
@@ -1385,3 +1291,11 @@
 #2562:Execute <cmd> with connection <nr> or connection for uin <uin> as current server connection.
 #2563:Set or display connection options.\n
 #2564:The user couldn't be detected to be online.\n
+#2565:Contact upload for %s%s%s failed, authorization required.\n
+#2566:Contact upload for %s%s%s failed, already on server.\n
+#2567:Contact upload for %s%s%s succeeded.\n
+#2568:Ignored request for auto-response from %s%s%s.\n
+#2569:Send <message> and further messages to <contacts> until canceled.
+#2570:Continuing chat with %s%s%s:\n
+#2571:"%s" <%s> emailed you a message [%s]: %s\n
+#2572:"%s" <%s> sent you a web message [%s]: %s\n

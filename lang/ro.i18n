@@ -1,5 +1,5 @@
 # $Id$ Romana (Romanian)
-#  EN: __.i18n,v 1.71 2004/12/05 00:57:40
+#  EN: __.i18n,v 1.76 2005/02/11 22:21:08 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:ro
 1002:ro_RO
@@ -7,11 +7,10 @@
 1004:Digor Dumitru, Alina Pelin
 1005:Alina Pelin
 1006:18-01-2003
-1008.iso-8859-2
+1008:iso-8859-2
 1010:Utilizatorul e plecat [Auto-Message]
 1011:Utilizatorul nu e disponibil [Auto-Message]
 1012:Utilizatorul e ocupat [Auto-Message]
-1013.Utilizatorul e deconectat
 1014:Nimic
 1015:Ian
 1016:Feb
@@ -32,12 +31,8 @@
 #1032:debug: double packet #%04lx type %04x (%s)\n
 1033:Pachet server v8 care vine:
 1034:Numarul maxim de incercari a fost atins. Cedez.
-1036.%s comanda necunoscuta, tastati /help pentru ajutor.
-1037.Mesajul a fost trimis partial.\n
 1038:Mesajul a fost anulat.\n
 1039:Serverul afirma ca nu sintem conectati.\n
-1040.mICQ> 
-1041.msg> 
 1043:Toti utilizatorii au fost gasiti.
 1044:Au fost gasiti foarte multi utilizatori.
 1045:Cautare Terminata.
@@ -53,13 +48,8 @@
 1062:Utilizatori ignorati:
 1063:Introduceti parola:
 1064:Starea a fost automat schimbata in %s.\n
-1072.Utilizatori indisponibili:
-1073.Utilizatori accesibili:
-1077.consacrat lui Matthew D. Smith.
 1078:Traducere nu exista.
 1079:Traducere (%s, %s) din %s, ultima modificare facuta la %s de %s, pentru mICQ %d.%d.%d%s.\n
-1080.N-am reusit sa incarc internationalizarea "%s".\n
-1081.Am incarcat cu succes traducerea romaneasca (%ld inregistrari).\n
 1082:Incerc sa ma reconectez... [incercarea %d din %d]\n
 #1085:on
 #1086:off
@@ -70,8 +60,6 @@
 1096:nume utilizator SOCKS5:
 1097:parola SOCKS5:
 1098:Afiseaza o lista a numelor accesibile cu TAB.
-1099.Limba necunoscuta.
-1100.lipseste
 1101:Araba
 #1102:Bhojpuri
 1103:Bulgara
@@ -401,6 +389,7 @@
 #-#1444:Comenzi ce tin de gasirea si vederea altor utilizatori.
 #+#1444:Commands relating to finding and seeing other users.
 # #1444:Commands relating to seeing and finding other users.
+#1444:Commands relating to seeing and finding other users.
 1445:Comenzi ce tin de contul d-stra ICQ.
 1446:Comenzi ce tin de trimiterea mesajelor.
 1447:Client
@@ -489,7 +478,6 @@
 1538:Introduceti noul an de nastere (4 caractere):
 1539:Introduceti noua luna de nastere:
 1540:Introduceti noua data de nastere:
-1541.Despre:
 1544:Introduceti noul oras:
 1545:Introduceti noul stat:
 1546:Introduceti numarul nou de telefon:
@@ -513,8 +501,6 @@
 1578:Introduceti codul telefonic pentru tara:
 1579:Introduceti compania:
 1587:Introduceti departamentul:
-1592:<%s> v-a trimis mesaj prin email:\n
-1593:<%s> va trimite un mesaj web:\n
 1595:\nLista de contacte.\n============================================\n%d Contacte\n
 1596:[SOCKS] Nu pot gasi numele hostului %s: %s.
 1597:[SOCKS] Crearea socketului a esuat\n
@@ -527,7 +513,6 @@
 1604:E necesar utilizatorii sa fie conectati?
 1605:Doriti starea sa va fie aratata pe web? (DA/NU)
 1606:A fost primit un ID de sesiune rau %08lx (corect: %08lx) cu cmd %04x ignorat.\n
-1607.Utilizare: micq [-h] [-c] [-i <localizare>] [-b <mapadebaza>] \n            [-f <fisierconfig>] [-v[<nivel>]] [-l <locloguri>]\n
 1612:Acest program a fost creata fara vre-un ajutor de la Mirabilis si fara acordul lor.\n
 1613:Nu s-a utilizat cod de la Mirabilis pentru crearea acestui program.\n
 1618:UIN:
@@ -538,7 +523,6 @@
 #-#1623:%04X pachet dublat\n
 #+#1623:Doubled packet %04X\n
 #1623:Double packet %04x.\n
-1624.Din pacate Windows Sockets nu a putut fi initializat...
 #-#1632:\nConexiune instabila. Iesire....
 #+#1632:\nConnection unstable. Exiting....
 #1632:\nConnection unstable. Exiting....
@@ -572,26 +556,19 @@
 1667:%s este ignorat(a).\n
 1670:Vizibil normal pentru %s de acum.\n
 1671:Mereu vizibil pentru %s de acum.\n
-1672.Adresa IP a lui %s este:
-1673.Portul este %ld.\n
-1674.Portul este necunoscut.\n
 1675:Rand ignorat:
-1676.E nevoide de uin/nick pentru a trimite.\n
 #-#1678:Specificati si un URL va rog.\n
 #+#1678:Need URL please.\n
 #1678:No URL given.\n
 #1679:Sorry saving your personal reply messages went wrong!\n
 1680:Setarile dvs. personale au fost salvate!\n
-1681.Ultimele %d persoane carora le-ati scris:\n
 1682:Ati primit mesaj de la:\n
 1687:mICQ lucreaza 
 1688:zile
 1689:ore
 1690:minute
 1691:secunde
-1692.Contactele:
 1696:Sex:
-1700.%s nu este un utilizator valid.\n
 1703:Modurile starii:\n
 1704:Grupurile:\n
 1705:General
@@ -609,18 +586,11 @@
 #-#1717:daca '!' este primul caracter al unei comenzi, se executa comanda shell (exemple: '!ls', '!dir', '!mkdir temp')
 #+#1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
 # #1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
+#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 1719:Arata de cat timp ruleaza mICQ si ceva statistica.
 #-#1720:<contacts> este o lista de UINuri si nickuri separate prin virgula.
 #+#1720:<contacts> is a comma seperated list of UINs and nick names of users.
 1721:Trimiterea unui mesaj fara continut va trece clientul in regim de\nmai multe randuri.\nUtilizati . singur intr-un rand pentru a termina mesajul.\nUtilizati # singur intr-un rand pentru a anula mesajul.
-1724.Raspunsurile automate sint %s.\n
-1727.Mesajul pentru "sa nu ma deranjati"  este:
-1728.Mesajul pentru "plecat" este:
-1729.Mesajul pentru "inaccesibil" este:
-1730.Mesajul pentru "ocupat" este:
-1731.Mesajul pentru "invizibil" este:
-1735.Este necesar sa fie specificat un mesaj.\n
-1738.E nevoie de o comanda pentru a fi alterata.\n
 1741:E necesar sa primiti un mesaj inainte.\n
 1742:E necesar sa scrieti un mesaj inainte.\n
 1743:Marimea nu se incadreaza in limita lungimii pachetului.\n
@@ -630,24 +600,13 @@
 1747:total
 1754:Nota: E necesar sa tastati 'save' pentru a scrie noua lista de contacte pe disc.\n
 1755:v-a adaugat in lista sa de contacte.\n
-1756.\nAre loc conectarea...\n
-1757.Conectarea nu reuseste sa fie facuta.\n
-1758.Are loc trimiterea cererii...\n
-1759.In asteptarea raspunsului....\n
-1760.\n UIN-ul d-stra nou este  %s%ld%s!\n
-1761.necunoscut
 1762:UINul dvs. este: %ld.\n
-1763.Numele comenzii  '%s' a fost schimbat in   '%s'.
-1764.Comanda '%s' nu a fost schimbata.
-1765.%s are UINul %ld.
 1766:Starea a fost schimbata in plecat/indisponibil dupa %s%ld%s secunde lipsite de activitate.\n
 #1767:Toggles auto cycling to away/not available.
-1768.Numele comenzii '%s' este deja utilizat.\n
 1770:Trimite ultimul mesaj catre <contacts>.
 1771:D-stra pana ce nu ati trimis nici un mesaj nimanui!\n
 1774:Pachetul primit:
 1775:Pachetul trimis:
-1777.Deschiderea unei conexiuni peer-to-peer la localhost:%ld... 
 1781:Parola pentru UIN %ld:\n
 1782:Este necesara o parola pentru UIN-ul d-stra nou.\n
 1783:Pentru a preveni erori, va rugam sa introduceti inca o data parola d-stra \n 
@@ -670,6 +629,7 @@
 #-#1800:Schimba limba curenta in <lang> sau afiseaza sirul <nr>.
 #+#1800:Change the working language to <lang> or display string <nr>.
 # #1800:Change the working language (and encoding) to <lang> or display string <nr>.
+#1800:Change the working language (and encoding) to <lang> or display string <nr>.
 1801:Afiseaza o lista a oamenilor din lista de contacte intr-un format de ecran larg.
 1807:Am anulat un mesaj care vine (seq %04x) de la %s\n
 1808:Colegiu
@@ -687,12 +647,9 @@
 1826:Trimit din nou mesajul %04x (%s) secventa %04lx (incercare #%ld, lungime %d).\n
 1830:Ignor mesaj pentru %s dupa %ld incercari de a trimite.  Continutul mesajului:\n
 1833:Conexiune TCP "Peer to peer" stabilita.\n
-1835.Eroare la scrierea in socket - %s (%d)\n
-1841.Am primit un pachet rau de initializare a confirmarii.\n
 1842:Inchidere socket %d catre %s.\n
 1843:Inchidere socket %d.\n
 1844:Mesajul TCP %04x ignorat in urma expirarii termenului.\n
-1845.Nickul %s este necunoscut.\n
 1846:Deschide si inchide conexiunile directe (peer to peer):\n
 1847:peer open  <nick> - Deschide conexiune directa.\n
 1848:peer close <nick> - Inchide/reseteaza conexiune/conexiuni direct(e).\n
@@ -701,13 +658,10 @@
 1855:Conexiunea TCP catre %s la %s:%ld a esuat.\n
 1856:Un pachet %04x (%s) din sesiunea veche %08lx (curenta: %08lx) a fost ignorat.\n
 1857:Doriti sa ascundeti Ip-ul d-stra de alte contacte? (DA/NU)
-1864.Nu pot deschide fisierul de configurare %s.
-1866.Aceasta versiune de mICQ e compilata fara suport de conexiuni directe (peer to peer).\n
 1867:Am primit un pachet rau (prea scurt) - l-am ignorat.\n
 1868:Am primit un pachet rau (subpachet prea lung) multi-pachet - restul ignorat.\n
 1869:Protocoalele cu versiunile mai mici de 5 nu mai sunt suportate.\n
 1870:peer off   <nick> - Inchide conexiunea/conexiunile directa/directe si nu o/le mai incerca.\n
-1871.Deschid conexiune v8 catre %s:%ld... 
 1872:esec: %s (%d)\n
 1873:Orasul unde lucrati:
 1874:Statul in care lucrati:
@@ -716,7 +670,6 @@
 1877:bine.\n
 1878:Eroare la citirea din socket: %s (%d)\n
 #1879:Affiliations:
-1880.Pachetul care a venit nu este FLAP: IDul e %d.\n
 1881:canalul FLAP 1 nu are date.\n
 1882:canalul FLAP 1 cmd 1 date suplimentare:\n
 1883:canalul FLAP 1 comanda necunoscuta %d.\n
@@ -735,16 +688,12 @@
 #-#1897:TLV incomplet %d, len %ld of %d - ignor.\n
 #+#1897:Incomplete TLV %d, len %ld of %d - ignoring.\n
 #1897:Incomplete TLV %d, len %ld of %ld - ignoring.\n
-1898.Redirectionare la serverul %s... 
 1899:A fost ceruta familie necunoscuta: %d\n
 1900:E doar pentru citire.
 1901:v-a autorizat ca sa poata fi introdus in lista d-stra de contacte.\n
-1902.Deschid conexiune v5 catre %s:%ld... 
 1903:Pachet de server v8 ce pleaca:
 1904:Serverul nu intelege ver %d (doar %d) pentru familia %d!\n
 1907:Preintampinare: Serverul crede ca UINul nostru e %ld, cand e %ld.\n
-1908.Am primit pachet USERONLINE pentru non-contact.\n
-1909.Am primit pachet USEROFFLINE pentru non-contact.\n
 1911:ma conectez
 1912:inchis
 1914:N-am reusit sa aloc structura de conectare.\n
@@ -843,25 +792,24 @@
 2031:Prea des au esuat conexiuni, cedez.\n
 2032:Programez reconectare v8 in %d secunde.\n
 2033:nascut astazi
-2034.Deschid conexiune TCP catre %s:%ld... 
 2036:Salveaza preferinte curente pe disc.
 2037:Deschide sau inchide o conexiune peer-to-peer, sau inceteaza utilizarea conexiunilor peer-to-peer pentru <uin> sau <nick>.
 #-#2038:Deschide conexiunea <nr>, sau prima conexiune server.
 #+#2038:Opens connection number <nr>, or the first server connection.
 # #2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
+#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
 2039:Trimite un mesaj catre numarul <cell> (al <nick>).
 2042:Afiseaza o lista a oamenilor conectati intr-un format ecran larg.
 2043:Sterge toate contactele <contacts> din grupul de contacte <group>.
 #-#2044:Seteaza, sterge sau afiseaza o <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
 #+#2044:Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
 # #2044:Set, clear or display an <option>: color, delbs, auto, uinprompt, autosave, autofinger, linebreak, funny.
+#2044:Set, clear or display an <option>: color, delbs, auto, uinprompt, autosave, autofinger, linebreak, funny.
 2045:Schimba starea vizibilitatii dvs. pentru <contacts> cand sunteti conectat.
 2046:Posibil sa doriti utilizarea protocolului cu versiunea 8 pentru protocolul ICQ peer-to-peer.\n
 2047:Creez mapa %s.\n
 2048:Salvez preferintele in %s.\n
-2049.Primesc grupul "%s":\n
 2051:Eroare la socket: %s (%d)\n
-2054.Mesajul pentru "liber pentru discutii" este:
 2055:Utilizatorul este LPD si ar dori sa vorbeasca despre orice.
 2056:getauto [auto] <nick> - Ia raspunsul automat de la contact.\n
 2057:getauto away   <nick> - Ia raspunsul automat pentru plecat de la contact.\n
@@ -872,8 +820,6 @@
 2065:Comanda TCP_MSG_GREET_ %04x necunoscuta.\n
 2066:Comanda TCP_MSG_ %04x necunoscuta.\n
 #2067:file io
-2068.Deschid conexiune de transfer fisiere catre %s:%ld... \n
-2070.Transfer fisiere '%s' la portul %ld.\n
 2071:Nu pot gasi fisierul %s: %s (%d)\n
 2072:Transfer fisiere #%ld (%s) intrerupt din cauza conexiunii inchise.\n
 2073:Utilizare memorie: %ld procesare pachete.\n
@@ -881,7 +827,6 @@
 2079:Pachet TCP ce vine (%d - %s): %s
 #2080:Server SMS delivery response:\n%s\n
 #2081:    at %p parent %p assoc %p\n
-2082.Deschid conexiune de ascultare fisiere la localhost:%ld... 
 2083:Nu pot deschide fisierul %s: %s (%d).\n
 #2084:Error while seeking to offset %ld: %s (%d).\n
 2086:Eroare la citirea fisierului %s: %s (%d).\n
@@ -895,7 +840,6 @@
 #+#2094:conn login         Open first server connection.\n
 #2094:conn login         Open current/first server connection.\n
 2095:conn remove <nr>   Sterge conexiunea <nr>.\n
-2096.Conexiunea %ld nu e deschisa.\n
 2097:conn select <nr>   Selecteaza conexiunea <nr> pentru a fi conexiune server.\n
 2098:Conexiunea %ld nu e conexiune la server.\n
 2099:Conexiunea selectata %ld (versiunea %d, UIN %ld) va fi curenta.\n
@@ -918,8 +862,6 @@
 2110:peer files <nick> <fisier1> <as1> ... [<descriere>]\n
 2111:                  - Trimite fisier1 ca as1, ..., cu descriere.\n
 #2112:                  - as = '/': strip path, as = '.': as is\n
-2113.Stare necunoscuta '%s'.\n
-2114.Numele  '%s' pentru comanda este inexistibil.\n
 2115:'%s' nu este un intreg.\n
 2116:Nu a fost introdus un nou nickname.\n
 2117:%ld adaugat ca %s.\n
@@ -943,7 +885,6 @@
 2126:e deconectat, mesaj pus in coada pe server.\n
 2128: Descriere: %s%s%s\n
 #2129:         URL: %s%s%s\n
-2130.Compunere mesaj catre %stoti%s:\n
 2131:Compunere mesaj catre%s%s%s:\n
 2133:Culoarea este %s%s%s.\n
 2134:Mesajele hazlii sunt %s%s%s.\n
@@ -993,6 +934,7 @@
 #+#2176:Displays verbose the current status of everyone on your contact list.
 #-#2177:Afiseaza cu detalii starea curenta a fiecaruia conectat din lista de contacte.
 #+#2177:Displays verbose the current status of online people on your contact list.
+#2172:Advanced commands.
 #2176:Displays verbosely the current status of everyone on your contact list.
 #2177:Displays verbosely the current status of online people on your contact list.
 2179:Trimite la toti <contacts> un singur fisier.
@@ -1001,10 +943,10 @@
 #-#2182:Selecteaza conexiunea server cu numarul <nr> pentru a fi conexiune server curenta.
 #+#2182:Select server connection number <nr> as current server connection.
 # #2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
+#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
 2183:Verifica toate <contacts> daca sint deconectati sau invizibili.
 #2184:%s%-14s%s - %s\n
 2185:Inchid conexiunea %ld.\n
-2186.Accept fisierul '%s' (%ld octeti).\n
 2188:Trimiti date prea repede - inceteaza sa tapezi sau serverul se va deconecta!\n
 2191:Eroare mesaj instantaneu: %d.\n
 2192:Capabilitati:
@@ -1016,15 +958,11 @@
 2199:  -h, --help     afiseaza acest text de ajutor\n
 2200:  -v, --verbose  seteaza (sau creste) detaliile (mai mult pentru depanare)\n
 2201:  -b, --basedir  foloseste mapa de baza specificata (implicit: %s)\n
-2202.  -f, --config   foloseste fisierul de configurare specificat (implicit: %s)\n
 2203:  -l, --logplace foloseste fisierul/mapa de loguri specificata (implicit: %s)\n
 2204:  -i, --i18n     foloseste localizarea specificata (implicit: auto-detectare)\n
 2205:  -c, --nocolor  dezactiveaza culorile\n
 2206:Serverul nu doreste sa ne dea mesajele acumulate in timp ce erati deconectat.\n
 2207:Eroare de protocol in comanda catre ICQ serverul vechi: %d.\n
-2208.S-a detectat codificare UTF-8, insa, acest mICQ e compilat fara suport UTF-8.\n
-2209.S-a detectat codificare UTF-8.\n
-2210.%smICQ (ICQ clonul lui Matt)%s versiunea %s%s%s (compilat la %s)\n
 2211:Starea dvs. este %s.\n
 2212:am schimbat starea in %s
 2213:conectat la (%s)
@@ -1034,34 +972,29 @@
 2217:Acest mICQ nu poate converti din '%s' in unicode si invers.\n
 #2218:UIN: %s\n
 #2220:several
-2221.Am sters contactul temporar '%s' (%ld).\n
 2222:Comanda din script '%s' a esuat: %s (%d).\n
-2223:Deschid FIFO de ghidare de la distantza la %s... 
-#2225:remote control
+#-#2223:Deschid FIFO de ghidare de la distantza la %s... 
+#+#2223:Opening remote control FIFO at %s... 
+# #2223:Opening scripting FIFO at %s... 
+#2223:Opening scripting FIFO at %s... 
+#2225:scripting
 2226:N-am putut crea FIFO
 2227:N-am putut deschide FIFO
 2228:N-am putut seta FIFO nonblocking
-2229.Cererea fisierului '%s' (%ld bytes) a fost refuzata: %s.\n
-2230.Cererea chatului (%s/%s) de la %s a fost refuzata.\n
-2231.Transferul de fisiere '%s' a fost refuzat de partener: %s.\n
-2232.cere autorizare: %s%s\n
 #-#2233:a refuzat autorizarea: %s%s\n
 #+#2233:refused authorization: %s%s\n
 #2233:refused authorization: %s%s%s\n
 2234:Mesajul %s a fost ignorat - conexiune pierduta.\n
-2235.Nu s-a specificat nici un nick name.\n
 2236:Informatie despre %s%s%s (%ld):\n
 2237:Stie de Web:
 2238:Ascunde IP:
 #2239:Unknown more:
 2240:Nu s-a specificat nici un grup de contacte.\n
 2241:Am adaugat '%s' in grupul de contacte '%s'.\n
-2242.Am importat %d contacte noi, adaugate de %d ori la un grup de contacte.\n
 2243:Removed contact '%s' from group '%s'.\n
 2244:Grupul de contacte '%s' deja contine contactul '%s' (%ld).\n
 2245:Am adaugat grupul de contacte '%s'.\n
 2246:Contactul '%s' nu e in grupul '%s'.\n
-2247.Nu am putut incarca meta date pentru '%s' (%ld).\n
 2248:Meta datele pentru '%s' (%ld) au fost salvate.\n
 2249:Meta datele pentru '%s' (%ld) nu au putut fi salvate.\n
 2250:Numarul '%s' nu are formatul +<codtara><operatorcelulare><numar>.\n
@@ -1073,14 +1006,9 @@
 #2254:A beep is never generated.\n
 2255:Un beep pentru contacte ce vin e mereu generat de scriptul pentru %sevenimente%s.\n
 2256:Un beep pentru contacte ce vin e mereu generat de scriptul pentrU %sevenimente%s.\n
-2257.Codificare:
 2258:Nu au fost gasite transferuri de fisier in asteptare ce vin pentru %s cu (secventa %ld).\n
-2259.cere transfer de fisiere '%s' de %ld octeti (secventa %ld).\n
 2260:Incercati va rog comanda getauto.\n
-2261.Hermit este %s%s%s.\n
 2262:Interpretarea unui caracter delete ca backspace este %s%s%s.\n
-2263.Logarea este %s%s%s.\n
-2264.Logarea schimbarii starii este %s%s%s.\n
 2265:Raspunsurile automate sint %s%s%s.\n
 2266:Prezenta ultimului nick in prompt este %s%s%s.\n
 2267:Salvarile automate sunt %s%s%s.\n
@@ -1089,11 +1017,7 @@
 #2270:simple
 #2271:indent
 #2272:smart
-2275.Ciclul cu Tab este %s%s%s.\n
-2277.    hermit:     ignora pe totzi care nu-s in lista de contacte.\n
 2278:    delbs:      interpreteaza caracterul del ca bs.\n
-2279.    log:        fa loguri.\n
-2280.    logonoff:   de asemenea fa log la schimbarile de stare.\n
 2281:    auto:       trimite raspunsuri automate.\n
 #-#2282:    uinprompt:  ultimul nick sa fie in prompt.\n
 #+#2282:    uinprompt:  display the last nick in the prompt.\n
@@ -1101,16 +1025,9 @@
 2283:    autosave:   automat salveaza micqrc.\n
 2284:    autofinger: automat fa finger la UINurile noi.\n
 #2285:    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n
-2286.    tabs:       stil pentru lucrul cu tab-ul: simple, cycle, cycleall.\n
 #2288:Indentation style is %s%s%s.\n
-2289.}}}
-2290.{{{
-2291.>>}
-2292.{<<
 2293:--=
 2294:===
-2295.>>>
-2296.<<<
 2297:Alias la ce?\n
 2298:Care alias sa sterg?\n
 2299:Alias-ul nu exista.\n
@@ -1135,7 +1052,6 @@
 2314:Acestea sunt comenzi avansate. Asigurati-va ca ati citit paginile de manual pentru informatie completa.\n
 2315:Nu pot privi starea lui %s - prea multi privesc.\n
 #2316:Translation %s not found.\n
-2318.Romanian (%s) translation loaded (%ld entries).\n
 #2319:Accept an incoming file transfer from <uin> or <nick>.
 #2320:peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n
 #2321:contact add     Add server based contact list to local contact list.\n
@@ -1157,8 +1073,6 @@
 #2337:  set  - upload own meta data to server\n
 #2338:  get  - query server for meta data\n
 #2339:  rget - query server for last sender's meta data\n
-2340.Transferul de fisiere '%s' a fost refuzat de partener: %s%s.\n
-2341.Cererea fisierului '%s' (%ld bytes) a fost refuzata: %s%s.\n
 #2342:Scripting
 #2343:Advanced commands for scripting.
 #2344:Execute Tcl script from <file>.
@@ -1183,12 +1097,10 @@
 #2371:SSL init failed.\n
 #2372:Could not send SSL request to %s\n
 #2374:SSL error: %s [%d]\n
-#2375:SSL handshake ok\n
+#2375:SSL handshake ok.\n
 #2376:SSL read from %s [ERR=%d]: %s
 #2377:SSL write to %s [ERR=%d]: %s
 #2378:peer ssl <nick>   - initiate SSL handshake.
-2379.}%}
-2380.{%{
 #2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
 #2383:View your last messages of <contact>. Type 'h' as short command.
 #2384:Case insensitive search of <pattern> in log file of <contact>.
@@ -1201,7 +1113,7 @@
 #2393:%Y-%m-%d
 #2394: %I:%M %p
 #2395:View your messages of <contact> since <date>.
-#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n
+#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-01-31' or '2004-01-31T23:12:05'.\n
 #2397:No server session found.\n
 #2398:Set or display options for a contact group, a contact or global.\n
 #2399:Request SSL connection.
@@ -1252,7 +1164,7 @@
 #2445:Clearing option %s%s globally.\n
 #2446:Invalid value %s for boolean option %s.\n
 #2447:No new password given.\n
-#2448:Contact group '%s' already exists\n
+#2448:Contact group '%s' already exists.\n
 #2449:Primary contact group for contact '%s' is now '%s'.\n
 #2450:Last %d people you talked with:\n
 #2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
@@ -1306,8 +1218,8 @@
 #2499:Please recompile using the '--enable-iconvrepl' configure option.\n
 #2500:Manual locale setting %s ignored - use a real locale instead.\n
 #2501:Your locale is unset. Please use the %s--i18n%s command line option or set one of the environment variables %sLC_ALL%s, %sLC_MESSAGES%s, or %sLANG%s to your current locale.\n
-#2502:Locale setting %s ignored - use a real locale instead.\n
-#2503:Your system doesn't know the %s locale - try %siconv --list%s.\n
+#2502:Locale setting %s is no real locale and probably not what you want.\n
+#2503:Your system doesn't know the %s locale - try %slocale -a%s.\n
 #2504:Could not open configuration file %s%s%s.
 #2505:Deprecated option -f used. Please use the similar -b instead.\n
 #2506:This console uses encoding %s.\n
@@ -1337,7 +1249,7 @@
 #2530:OpenSSL write error: %s\n
 #2531:OpenSSL write error %d (unknown)\n
 #2532:OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n
-#2533:SSL handshake failed
+#2533:SSL handshake failed.\n
 #2534:IP:
 #2535:Groups:\n
 #2536:Group:
@@ -1350,7 +1262,7 @@
 #2543:Contacts
 #2544:Commands to modify your contact list.
 #2545:     %s\n
-#2546:No help available for '%s'\n
+#2546:No help available for '%s'.\n
 #2547:Displays saved meta data about <contacts>.
 #2548:Displays the current status of online people on your contact list, including otherwise hidden contacts.
 #2549:Displays verbosely the current status of online people on your contact list, including otherwise hidden contacts.
@@ -1369,3 +1281,11 @@
 #2562:Execute <cmd> with connection <nr> or connection for uin <uin> as current server connection.
 #2563:Set or display connection options.\n
 #2564:The user couldn't be detected to be online.\n
+#2565:Contact upload for %s%s%s failed, authorization required.\n
+#2566:Contact upload for %s%s%s failed, already on server.\n
+#2567:Contact upload for %s%s%s succeeded.\n
+#2568:Ignored request for auto-response from %s%s%s.\n
+#2569:Send <message> and further messages to <contacts> until canceled.
+#2570:Continuing chat with %s%s%s:\n
+#2571:"%s" <%s> emailed you a message [%s]: %s\n
+#2572:"%s" <%s> sent you a web message [%s]: %s\n
