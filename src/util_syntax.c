@@ -74,7 +74,7 @@ static const char *syntable[] = {
     "s19x28s", "u",
     "s21x1s",  "Wt-",
     "s21x2s",  "t[1wdww]-",
-    "s21x3s",  "t[1wDw,w.[2010w,b.[270bwLb]]]-",
+    "s21x3s",  "t[1wdw,w.[2010w,b.[270bwLb]]]-",
     "s23x1s",  "Wt[33DdWDDDD]-",
     "s23x4s",  "t[1DDDDDDDDDDLDDW]-",
     "s23x5s",  "t-",
@@ -82,19 +82,22 @@ static const char *syntable[] = {
     "peer",    "b[1bw][2gpeemsg][3dddddddd][255wwdwddDDbddddS]",
     "peemsg",  "dwwwdddw,wwL.[1DDS][26ggreet]",
     "greet",   "wddddwSdddwbdSdd",
-    "v5sp",    "WbDWWWDD",
+    "v5sp",    "wbdwwwdd",
+    "v5cp",    "wdddwwwd",
     NULL,      NULL
 };
 
 const char *PacketDump (Packet *pak, const char *syntax)
 {
     Packet *p = NULL;
-    UDWORD size, nr, len, val, i, mem1, mem2;
+    UDWORD size, nr, len, val, i, mem1, mem2, oldrpos;
     const char *f, *l, *last;
     char *t, *sub, lev, *tmp;
     
     assert (pak);
     assert (syntax);
+    
+    oldrpos = pak->rpos;
 
     nr = size = mem1 = mem2 = 0;
     t = strdup ("");
@@ -304,6 +307,7 @@ const char *PacketDump (Packet *pak, const char *syntax)
         break;
     }
     t = s_cat (t, &size, s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
+    pak->rpos = oldrpos;
     return t;
 }
 

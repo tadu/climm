@@ -105,12 +105,15 @@ void CmdPktSrvRead (Connection *conn)
     
     if (prG->verbose & DEB_PACK5DATA)
     {
+        UDWORD rpos = pak->rpos;
         M_printf ("%s " COLINDENT COLSERVER "", s_now);
         M_print  (i18n (1774, "Incoming packet:"));
         M_printf (" %04x %08x:%04x%04x %04x (%s)" COLNONE "\n",
                  pak->ver, session, seq2, seq, cmd, CmdPktSrvName (cmd));
 #if ICQ_VER == 5
+        pak->rpos = 0;
         M_print  (PacketDump (pak, "gv5sp"));
+        pak->rpos = rpos;
 #else
         M_print  (s_dump (pak->data, s));
 #endif
@@ -412,12 +415,15 @@ static JUMP_SRV_F (CmdPktSrvMulti)
 
         if (prG->verbose & DEB_PACK5DATA)
         {
+            UDWORD rpos = pak->rpos;
             M_printf ("%s " COLINDENT COLSERVER "", s_now);
             M_print  (i18n (1823, "Incoming partial packet:"));
             M_printf (" %04x %08x:%04x%04x %04x (%s)" COLNONE "\n",
                      ver, session, seq2, seq, cmd, CmdPktSrvName (cmd));
 #if ICQ_VER == 5
+            pak->rpos = 0;
             M_print  (PacketDump (pak, "gv5sp"));
+            pak->rpos = rpos;
 #else
             M_print  (s_dump (pak->data, llen));
 #endif

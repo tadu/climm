@@ -14,6 +14,7 @@
 #include "cmd_pkt_cmd_v5_util.h"
 #include "util_ui.h"
 #include "util.h"
+#include "util_syntax.h"
 #include "conv.h"
 #include "cmd_pkt_server.h"
 #include "preferences.h"
@@ -114,13 +115,14 @@ void PacketEnqueuev5 (Packet *pak, Connection *conn)
 
     if (prG->verbose & DEB_PACK5DATA)
     {
+        pak->rpos = 0;
         M_printf ("%s " COLINDENT COLCLIENT "", s_now);
         M_print  (i18n (1775, "Outgoing packet:"));
         M_printf (" %04x %08x:%08x %04x (%s) @%p" COLNONE "\n",
                  PacketReadAt2 (pak, CMD_v5_OFF_VER), PacketReadAt4 (pak, CMD_v5_OFF_SESS),
                  PacketReadAt4 (pak, CMD_v5_OFF_SEQ), PacketReadAt2 (pak, CMD_v5_OFF_SEQ2),
                  CmdPktCmdName (PacketReadAt2 (pak, CMD_v5_OFF_CMD)), pak);
-        M_print  (s_dump (pak->data, pak->len));
+        M_print  (PacketDump (pak, "gv5cp"));
         M_print  (COLEXDENT "\r");
     }
 
