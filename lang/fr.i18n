@@ -1023,7 +1023,6 @@
 2013:Cette commande est uniquement v8.¶
 2014:Aucun numéro donné.¶
 2015:Aucun message donné.¶
-2016:Le serveur dit que la remise du SMS:¶%s
 2017:L'utilisateur est actuellement online.¶
 2018:    silence: etre silencieux lors du changement d'état.¶
 2019:La sortie silencieuse est ©3%s©0.¶
@@ -1053,3 +1052,4 @@
 #2043:Remove contact from your contact list.
 #2044:Set or clear an option.
 #2045:Toggles your visibility to a user when you're online.
+2080:Le serveur dit que la remise du SMS:¶%s¶

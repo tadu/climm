@@ -1012,7 +1012,6 @@
 2013:Este comando es solo para v8.¶
 2014:No se ingreso un numero.¶
 2015:No se ingreso un mensaje.¶
-2016:El servidor responde acerca del envio de mensaje SMS:¶%s
 2017:El usuario esta realmente conectado.¶
 2018:    quiet: no informa acerca de cambios de estado.¶
 2019:La salida quiet esta ©3%s©0.¶
@@ -1043,3 +1042,4 @@
 2044:Activa o desactiva una opción.
 2045:Cambia tu visibilidad con un usuario cuando estas conectado.
 2046:Probablemente quieras usar la versión 8 del protocolo para conexiones par-a-par.¶
+2080:El servidor responde acerca del envio de mensaje SMS:¶%s¶

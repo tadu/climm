@@ -101,7 +101,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             PacketRead4 (p);
             PacketRead2 (p);
             PacketReadStrB (p);
-            M_print (i18n (2016, "The server says about the SMS delivery:\n%s"),
+            M_print (i18n (2080, "The server says about the SMS delivery:\n%s\n"),
                       PacketReadStrB (p));
             
             break;
