@@ -101,7 +101,7 @@ test $RPM_BUILD_ROOT != / && rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,0755)
 %doc NEWS AUTHORS FAQ README TODO COPYING COPYING-GPLv2
-%doc doc/README.i18n doc/README.logformat doc/README.ssl
+%doc doc/README.i18n doc/README.logformat doc/README.ssl doc/example-micq-event-script
 %{_bindir}/*
 %{_datadir}/micq
 %if %{?update_menus:1}%{!?update_menus:0}
