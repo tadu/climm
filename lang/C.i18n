@@ -32,7 +32,7 @@
 1034:Maximum number of tries reached. Giving up.
 1036:Unknown command %s, type /help for help.
 1037:Message partially sent.\n
-1038:Message canceled\n
+1038:Message canceled.\n
 1039:The server claims we're not connected.\n
 1040:mICQ> 
 1041:msg> 
@@ -43,7 +43,6 @@
 1046:Length
 1047:Extra Data
 1048:Error code: %d\n
-1049:UIN: %d\n
 1050:Login successful!
 1053:Connected to %s, waiting for response\n
 1055:Socket creation failed
@@ -524,7 +523,6 @@
 1575:Age:
 1578:Enter country's phone ID number:
 1579:Enter company: 
-1584:Warning! Script command '%s' failed with exit value %d\n
 1587:Enter department: 
 1592:<%s> emailed you a message:\n
 1593:<%s> send you a web message:\n
@@ -559,7 +557,7 @@
 1640:Failed to update info.\n
 1641:User info successfully updated.\n
 1642:IP
-1643:Acknowleged SRV_X1 0x021C Done Contact list?\n
+1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
 1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
 1645:You entered an incorrect password.\n
 1646:Server is busy.\n
@@ -576,10 +574,10 @@
 1659:Unknown section %s in configuration file.
 1660:Invalid Command: %s\n
 1661:Shell commands have been disabled.\n
-1666:Unignored %s.
-1667:Ignoring %s.
-1670:Normal visible to %s now.
-1671:Always visible to %s now.
+1666:Unignored %s.\n
+1667:Ignoring %s.\n
+1670:Normal visible to %s now.\n
+1671:Always visible to %s now.\n
 1672:%s's IP address is 
 1673:The port is %d.\n
 1674:The port is unknown.\n
@@ -608,11 +606,11 @@
 1710:30 something
 1711:40 something
 1712:50+
-1713:Man chat requesting women
-1714:Woman chat requesting men
+1713:Seeking women
+1714:Seeking men
 1715:mICQ
 1716:None
-1717:! as the first character of a command will execute a shell command (e.g. "!ls"  "!dir" "!mkdir temp")
+1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
 1719:Shows how long mICQ has been running.
 1720:uin can be either a number or the nickname of the user.
 1721:Sending a blank message will put the client into multiline mode.\nUse . on a line by itself to end message.\nUse # on a line by itself to cancel the message.
@@ -840,8 +838,8 @@
 2015:No message given.\n
 2017:The user is online, but possibly invisible.\n
 2018:    quiet: be quiet about status changes.\n
-2020:Being visible to %s.
-2021:Being invisible to %s.
+2020:Being visible to %s.\n
+2021:Being invisible to %s.\n
 2022:The user is offline.\n
 2023:Direct connection closed by peer.\n
 2024:Unknown protocol version %d for ICQ peer-to-peer protocol.\n
@@ -938,7 +936,6 @@
 2129:         URL: %s%s%s\n
 2130:Composing message to %sall%s:\n
 2131:Composing message to %s%s%s:\n
-2132:Composing message to %s%d%s:\n
 2133:Color is %s%s%s.\n
 2134:Funny messages are %s%s%s.\n
 2135:Quiet output is %s%s%s.\n
@@ -949,8 +946,8 @@
 2140:Random chat group change was %s%s%s.\n
 2141:Search %sfailed%s.\n
 2142:Direct connection with %s not possible.\n
-2143:refused authorization: %s%s%s\n
-2144:requests authorization: %s%s%s\n
+2143:refused authorization: %s%s\n
+2144:requests authorization: %s%s\n
 2145:auth add  <nick>       - authorized add.\n
 2146:'%s' is already an alias for '%s' (%d).\n
 2147:'%s' (%d) is already used as a nick.\n
@@ -1017,3 +1014,16 @@
 2212:changed status to %s
 2213:logged on (%s)
 2214:Info for %s%lu%s:\n
+2215:This mICQ can't convert between SJIS or EUC and unicode.\n
+2216:This mICQ doesn't know the '%s' encoding.\n
+2217:This mICQ can't convert between '%s' and unicode.\n
+2218:UIN: %s\n
+2219:'empty' message with unknown 0x%08x = %d.\n
+2220:several
+2221:Removed temporary contact '%s' (%d).\n
+2222:Script command '%s' failed: %s (%d).\n
+2223:Opening remote control FIFO at %s... 
+2225:remote control
+2226:Couldn't create FIFO
+2227:Couldn't open FIFO
+2228:Couldn't set FIFO nonblocking
