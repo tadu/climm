@@ -485,8 +485,7 @@ static void Init (int argc, char *argv[])
                 arg_u = NULL;
             arg_p = arg_s = NULL;
             s_init (&arg_C, "", 0);
-            arg_s = "offline";
-            arg_ss = STATUS_OFFLINE;
+            arg_ss = STATUS_ONLINE;
             conn = NULL;
         }
         else if (!strcmp (targv[i], "-p") || !strcmp (targv[i], "--passwd"))
