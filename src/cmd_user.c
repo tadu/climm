@@ -240,8 +240,8 @@ static JUMP_F(CmdUserRandom)
         M_printf ("  %2d %s\n",  7, i18n (1710, "30 something"));
         M_printf ("  %2d %s\n",  8, i18n (1711, "40 something"));
         M_printf ("  %2d %s\n",  9, i18n (1712, "50+"));
-        M_printf ("  %2d %s\n", 10, i18n (1713, "Man chat requesting women"));
-        M_printf ("  %2d %s\n", 11, i18n (1714, "Woman chat requesting men"));
+        M_printf ("  %2d %s\n", 10, i18n (1713, "Seeking women"));
+        M_printf ("  %2d %s\n", 11, i18n (1714, "Seeking men"));
         M_printf ("  %2d %s\n", 49, i18n (1715, "mICQ"));
     }
     else
@@ -274,8 +274,8 @@ static JUMP_F(CmdUserRandomSet)
         M_printf ("  %2d %s\n",  7, i18n (1710, "30 something"));
         M_printf ("  %2d %s\n",  8, i18n (1711, "40 something"));
         M_printf ("  %2d %s\n",  9, i18n (1712, "50+"));
-        M_printf ("  %2d %s\n", 10, i18n (1713, "Man chat requesting women"));
-        M_printf ("  %2d %s\n", 11, i18n (1714, "Woman chat requesting men"));
+        M_printf ("  %2d %s\n", 10, i18n (1713, "Seeking women"));
+        M_printf ("  %2d %s\n", 11, i18n (1714, "Seeking men"));
         M_printf ("  %2d %s\n", 49, i18n (1715, "mICQ"));
     }
     else
@@ -372,7 +372,7 @@ static JUMP_F(CmdUserHelp)
                  CmdUserLookupName ("q"),
                  i18n (1422, "Logs off and quits."));
         M_printf ("  " COLCLIENT "" COLINDENT "%s" COLEXDENT "" COLNONE "\n",
-                 i18n (1717, "! as the first character of a command will execute a shell command (e.g. \"!ls\"  \"!dir\" \"!mkdir temp\")"));
+                 i18n (1717, "'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')"));
     }
     else if (what == 2)
     {
