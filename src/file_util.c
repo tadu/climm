@@ -227,9 +227,9 @@ void Initalize_RC_File ()
     prG->status = STATUS_ONLINE;
     prG->tabs = TABS_SIMPLE;
 #ifdef ANSI_TERM
-    prG->flags = FLAG_COLOR | FLAG_LOG | FLAG_LOG_ONOFF | FLAG_DELBS;
+    prG->flags = FLAG_COLOR | FLAG_LOG | FLAG_LOG_ONOFF | FLAG_DELBS | FLAG_AUTOSAVE;
 #else
-    prG->flags =              FLAG_LOG | FLAG_LOG_ONOFF | FLAG_DELBS;
+    prG->flags =              FLAG_LOG | FLAG_LOG_ONOFF | FLAG_DELBS | FLAG_AUTOSAVE;
 #endif
     prG->auto_dnd  = strdup (i18n (1929, "User is dnd [Auto-Message]"));
     prG->auto_away = strdup (i18n (1010, "User is away [Auto-Message]"));
@@ -632,6 +632,8 @@ void Read_RC_File (FILE *rcf)
                         which = FLAG_AUTOREPLY;
                     else if (!strcasecmp (cmd, "uinprompt"))
                         which = FLAG_UINPROMPT;
+                    else if (!strcasecmp (cmd, "autosave"))
+                        which = FLAG_AUTOSAVE;
                     else if (!strcasecmp (cmd, "linebreak"))
                         which = -2;
                     else if (!strcasecmp (cmd, "tabs"))
@@ -1174,6 +1176,8 @@ int Save_RC ()
                     prG->flags & FLAG_AUTOREPLY ? "on " : "off");
     fprintf (rcf, "set uinprompt %s # if the prompt should contain the last uin a message was received from\n",
                     prG->flags & FLAG_UINPROMPT ? "on " : "off");
+    fprintf (rcf, "set autosave  %s # whether the micqrc should be automatically saved on exit\n",
+                    prG->flags & FLAG_AUTOSAVE ? "on " : "off");
     fprintf (rcf, "set linebreak %s # the line break type to be used (simple, break, indent, smart)\n",
                     prG->flags & FLAG_LIBR_INT 
                     ? prG->flags & FLAG_LIBR_BR ? "smart " : "indent"

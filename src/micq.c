@@ -360,6 +360,8 @@ int main (int argc, char *argv[])
             conn->close (conn);
     }
     QueueRun ();
+    if (prG->flags & FLAG_AUTOSAVE)
+        Save_RC ();
     
     return 0;
 }
