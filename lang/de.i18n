@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.53 2002/10/27 19:36:28
+#  EN: __.i18n,v 1.54 2002/11/08 03:36:53
 1001:de
 1002:de_DE
 1003:0-4-9-3
@@ -175,12 +175,12 @@
 1186:Student (Uni)
 1187:Webdesigner
 1188:Unbekannte Option '%s' in der Konfigurationsdatei ignoriert.
-1189:Benutzernummer = %ld\n
-1190:Port    = %ld\n
-1191:Paßwort = %s\n
-1192:Rechner = %s\n
-1193:Status  = %ld\n
-1196:Kommando= %s\n
+1189.Benutzernummer = %ld\n
+1190.Port    = %ld\n
+1191.Paßwort = %s\n
+1192.Rechner = %s\n
+1193.Status  = %ld\n
+1196.Kommando= %s\n
 1198:Andere Dienste
 ##
 ## Länder
@@ -422,7 +422,7 @@
 1438:Ändert grundlegende Benutzer-Informationen (eMail-Adresse, Spitzname, usw).
 1439:Setzt die zufällige Benutzergruppe.
 1440:Zufälliger Benutzer:
-1441:IP-Adresse:
+1441:äußere IP:
 1442:Bitte wähle eines der Hilfe-Themen.
 1443:Kommandos, um mICQ zu konfigurieren.
 1444:Kommandos, um andere User zu finden oder sehen.
@@ -432,7 +432,7 @@
 1448:Nachricht
 1449:Konto
 1450:Status
-1451:IP-Adresse 2:
+1451:lokale IP:
 1452:Status:
 1453:TCP-Version:
 1454:Verbindung:
@@ -478,13 +478,13 @@
 1494:Nur Server
 1495:Kein zufälliger Benutzer gefunden
 1497:fehlgeschlagen
-1498.Information über
+1498.Information über z
 1499:Anderes
 1500:Spitzname:
 1501:Name:
-1502:eMail:
-1503:Zweit-eMail:
-1504:Alte eMail:
+1502.eMail:
+1503.Zweit-eMail:
+1504.Alte eMail:
 1505:Ort:
 1506:Telephon:
 1507:Fax:
@@ -520,8 +520,8 @@
 1539:Neuer Geburtsmonat:
 1540:Neuer Geburtstag:
 1541:Über> 
-1542:Zweite eMail-Adresse:
-1543:Alte   eMail-Adresse:
+1542.Zweite eMail-Adresse:
+1543.Alte   eMail-Adresse:
 1544:Neue  Stadt:
 1545:Neuer Staat:
 1546:Neue  Telefonnummer:
@@ -536,12 +536,12 @@
 1555:Dein neuer Nachname:
 1556:Deine Email-Adresse:
 1557:Möchtest Du, daß Mirabilis-User Deine Autorisierung brauchen?
-1562.Information für
+1562.Information für sse
 1564:Vorname:
 1565:Nachname:
 1566:eMail-Adresse:
-1567:Keine Autorisation erforderlich.
-1568:Autorisation erforderlich.
+1567.Keine Autorisation erforderlich.
+1568.Autorisation erforderlich.
 1570:Stadt:
 1574:Bundesstaat:
 1575:Alter:
@@ -572,7 +572,7 @@
 1613:Dazu wurde kein Programmcode von Mirabilis zurückentwickelt oder zurückübersetzt.\n
 1614.Benutze Konfigurationsdatei "%s".\n
 1615.Protokolliere nach "%s".\n
-1617:<alle>
+1617.<alle>
 1618:Benutzernummer:
 1619:Warnung:
 1620:Maximale Anzahl an Kontakten erreicht.
@@ -802,7 +802,7 @@
 1938:Bitte Geschlecht eingeben:
 1939:Bitte Stadt eingeben:
 1940:Unbekanntes Benutzerinformations-Ergebnis %x.\n
-1941:eMail-adresse publizieren:
+1941.eMail-adresse publizieren:
 1942:Weitere eMail-Adressen:
 1943:(keine Autorisierung erforderlich)
 1944:(Autorisierung erforderlich)
@@ -906,12 +906,12 @@
 2059:peer dnd   <nick> - Hole die automatische Antwort für "nicht stören" von diesem Kontakt.\n
 2060:peer ffc   <nick> - Hole die automatische Antwort für "für Plaudereien frei" von diesem Kontakt.\n
 2063:Sie müssen Ihr Paßwort in Ihrem ~/.micq/micqrc speichern.\n
-2064:Lehne Plaudereianfrage (%s/%s/%s) von %s ab.\n
+2064.Lehne Plaudereianfrage (%s/%s/%s) von %s ab.\n
 2065:Unbekanntes TCP_MSG_GREET_-Kommando %04x.\n
 2066:Unbekanntes TCP_MSG_-Kommando %04x.\n
 2067:Dateiein-/ausgabe
 2068:Öffne Dateiübertragungsverbindung zu %s:%d... \n
-2069:Dateiübertragung "%s" vom Gegenüber abgelehnt (%x,%x): %s.\n
+2069.Dateiübertragung "%s" vom Gegenüber abgelehnt (%x,%x): %s.\n
 2070:Dateiübertragung "%s" zu Anschluß %d.\n
 2071:Kann Datei "%s" nicht finden: %s (%d).\n
 2072:Dateiübertragung Nummer %d (%s) wegen geschlossener Verbindung abgebrochen.\n
@@ -979,15 +979,15 @@
 2140:Interessengruppenänderung war %s%s%s.\n
 2141:Suche %sfehlgeschlagen%s.\n
 2142:Direkt-Verbindung mit %s nicht möglich.\n
-2143:hat die Autorisierung abgelehnt: %s%s\n
-2144:fragt Autorisierung an: %s%s\n
+2143.hat die Autorisierung abgelehnt: %s%s\n
+2144.fragt Autorisierung an: %s%s\n
 2145:auth add  <Spitz>         - Nach Autorisierung hinzugefügt.\n
 2146:"%s" ist bereits ein Zweit-Name für "%s" (%d).\n
 2147:"%s" (%d) wird bereits als Spitzname verwendet.\n
 2148:"%s" ist jetzt ein Zweit-Name für "%s" (%d).\n
 2149:Entferne Zweit-Name "%s" für "%s" (%d).\n
 2150:Entferne Kontakt "%s" (%d).\n
-2151:Es gibt keinen Kontakt mit Benutzernummer %d mehr auf der Kontaktliste.\n
+2151.Es gibt keinen Kontakt mit Benutzernummer %d mehr auf der Kontaktliste.\n
 2156:conn close <nr>    Schließe Verbindung <nr>.\n
 2157:Moldavien
 2158:Keine Datei angegeben.\n
@@ -1019,7 +1019,7 @@
 2184:%s%-10s%s - %s\n
 2185:Schließe Verbindung %d.\n
 2186:Akzeptiere Datei "%s" (%d Bytes).\n
-2187:Lehne Dateianfrage "%s" (%d Bytes) ab (Unbekannte Daten: %x, %x).\n
+2187.Lehne Dateianfrage "%s" (%d Bytes) ab (Unbekannte Daten: %x, %x).\n
 2188:Sende Daten zu schnell - erstmal keine weiteren Befehle eingeben, oder der Server wird die Verbindung unterbrechen.\n
 2189:Fehlerhaftes Nachrichten-Paket vom Server abgelehnt.\n
 2190:Das ICQ-Programm des Kontaktes unterstützt keine Typ-2-Nachrichten.\n
@@ -1027,8 +1027,8 @@
 2192:Fähigkeiten: 
 2193:Verzeichnis %s existiert nicht.\n
 2194:Kann Verbindungen dieses Typs nicht ohne weiteres öffnen.\n
-2195:Veraltete Nummer
-2196:Veralteter Text
+2195:Veraltete Nummer:
+2196:Veralteter Text:
 2197:Veraltetes Byte
 2198:Ungeeignetes Paßwort '%s' - darf nicht mit ó beginnen.\n
 2199:  -h, --help     gibt diesen hilfe-Text aus\n
@@ -1060,3 +1060,14 @@
 2226:Konnte FIFO nicht erschaffen
 2227:Konnte FIFO nicht öffnen
 2228:Konnte FIFO nicht nicht-blockieren machen
+2229:Lehne Dateiübertragung '%s' ab (%d bytes): %s.\n
+2230:Lehne Chatanfrage ab (%s/%s) from %s.\n
+2231:Dateiübertragung '%s' vom Gegenüber abgelehnt: %s.\n
+2232:fragt die Autorisierung an: %s%s\n
+2233:hat die Autorisierung abgelehnt: %s%s\n
+2234:Nachricht "%s" weggeworfen - die Verbindung ist verschwunden.\n
+2235:Kein Spitzname angegeben.\n
+2236:Informationen über %s%s%s (%d):\n
+2237:Webaware:
+2238:IP verstecken:
+2239:Unbekanntes:
