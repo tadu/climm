@@ -255,10 +255,6 @@ void Initalize_RC_File ()
 #define PrefParse(x)          switch (1) { case 1: if (!s_parse    (&args, &x)) { M_printf (i18n (2123, "%sSyntax error%s: Too few arguments: '%s'\n"), COLERROR, COLNONE, buf); continue; }}
 #define PrefParseInt(i)       switch (1) { case 1: if (!s_parseint (&args, &i)) { M_printf (i18n (2124, "%sSyntax error%s: Not an integer: '%s'\n"), COLERROR, COLNONE, buf); continue; }}
 #define PrefParseRemainder(x) switch (1) { case 1: if (!s_parserem (&args, &x)) { M_printf (i18n (2123, "%sSyntax error%s: Too few arguments: '%s'\n"), COLERROR, COLNONE, buf); continue; }}
-
-#define ADD_CMD(a,b)     else if (!strcasecmp (tmp, a))       \
-                                 { PrefParseRemainder (tmp);   \
-                                   prG->b = strdup (tmp); } else if (0)
 #define ERROR continue;
 
 /*
@@ -275,6 +271,7 @@ void Read_RC_File (FILE *rcf)
     int section, dep = 0;
     UDWORD uin, i;
     UWORD flags;
+    UBYTE enc = ENC_LATIN1;
     char *tab_nick_spool[TAB_SLOTS];
     int spooled_tab_nicks;
 
@@ -313,7 +310,7 @@ void Read_RC_File (FILE *rcf)
             else
             {
                 M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                M_printf (i18n (1659, "Unknown section %s in configuration file."), buf);
+                M_printf (i18n (1659, "Unknown section %s in configuration file."), ConvToUTF8 (buf, enc));
                 M_print ("\n");
                 section = -1;
             }
@@ -325,13 +322,73 @@ void Read_RC_File (FILE *rcf)
             case -1:
                 M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
                 M_print  (i18n (1675, "Ignored line:"));
-                M_printf (" %s\n", buf);
+                M_printf (" %s\n", ConvToUTF8 (buf, enc));
                 break;
             case 0:
                 if (!s_parse (&args, &cmd))
                     continue;
 
-                if (!strcasecmp (cmd, "receivescript"))
+                if (!strcasecmp (cmd, "encoding"))
+                {
+                    int which, what;
+                    PrefParse (cmd);
+                    
+                    if (!strcasecmp (cmd, "remote"))
+                        which = 1;
+                    else if (!strcasecmp (cmd, "local"))
+                        which = 2;
+                    else if (!strcasecmp (cmd, "file"))
+                        which = 3;
+                        ERROR;
+                    
+                    PrefParse (cmd);
+                    if (!strcasecmp (cmd, "auto"))
+                        continue;
+                    else if (!strcasecmp (cmd, "utf8"))
+                    {   what = ConvEnc ("utf-8");        dep = 1; }
+                    else if (!strcasecmp (cmd, "latin1"))
+                    {   what = ConvEnc ("iso-8859-1");   dep = 1; }
+                    else if (!strcasecmp (cmd, "latin9"))
+                    {   what = ConvEnc ("iso-8859-15");  dep = 1; }
+                    else if (!strcasecmp (cmd, "koi8"))
+                    {   what = ConvEnc ("koi8-u");       dep = 1; }
+                    else if (!strcasecmp (cmd, "win1251"))
+                    {   what = ConvEnc ("windows-1251"); dep = 1; }
+                    else if (!strcasecmp (cmd, "euc"))
+                    {   what = ConvEnc ("euc-jp");       dep = 1; }
+                    else if (!strcasecmp (cmd, "sjis"))
+                    {   what = ConvEnc ("shift-jis");    dep = 1; }
+                    else
+                        what = ConvEnc (cmd);
+
+                    if (!what)
+                    {
+                        M_printf (COLERROR "%s" COLNONE " ", i18n (2251, "Error:"));
+                        M_printf (i18n (2216, "This mICQ doesn't know the '%s' encoding.\n"), cmd);
+                        ERROR;
+                    }
+                    if (what & ENC_AUTO)
+                    {
+                        if ((which == 3 && (what ^ prG->enc_loc) & ~ENC_AUTO)
+                            || (which == 2 && (what ^ enc) & ~ENC_AUTO))
+                            M_printf (COLERROR "%s" COLNONE " ", i18n (2251, "Error:"));
+                        else
+                            M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                        M_printf (i18n (2217, "This mICQ can't convert between '%s' and unicode.\n"), cmd);
+                        what &= ~ENC_AUTO;
+                    }
+                    if (which == 1)
+                        prG->enc_rem = what;
+                    else if (which == 2)
+                        prG->enc_loc = what;
+                    else
+                        enc = what;
+                }
+                else if (!strcasecmp (cmd, "format"))
+                {
+                    /* currently, only one format is defined */
+                }
+                else if (!strcasecmp (cmd, "receivescript"))
                 {
                     if (!s_parserem (&args, &tmp))
                     {
@@ -473,12 +530,36 @@ void Read_RC_File (FILE *rcf)
                         prG->flags |= FLAG_AUTOREPLY;
                     else if (!strcasecmp (tmp, "off"))
                         prG->flags &= ~FLAG_AUTOREPLY;
-                    ADD_CMD ("away", auto_away);
-                    ADD_CMD ("na",   auto_na);
-                    ADD_CMD ("dnd",  auto_dnd);
-                    ADD_CMD ("occ",  auto_occ);
-                    ADD_CMD ("inv",  auto_inv);
-                    ADD_CMD ("ffc",  auto_ffc);
+                    else if (!strcasecmp (tmp, "away"))
+                    {
+                        PrefParseRemainder (tmp);
+                        s_repl (&prG->auto_away, ConvToUTF8 (tmp, enc));
+                    }
+                    else if (!strcasecmp (tmp, "na"))
+                    {
+                        PrefParseRemainder (tmp);
+                        s_repl (&prG->auto_na, ConvToUTF8 (tmp, enc));
+                    }
+                    else if (!strcasecmp (tmp, "dnd"))
+                    {
+                        PrefParseRemainder (tmp);
+                        s_repl (&prG->auto_dnd, ConvToUTF8 (tmp, enc));
+                    }
+                    else if (!strcasecmp (tmp, "occ"))
+                    {
+                        PrefParseRemainder (tmp);
+                        s_repl (&prG->auto_occ, ConvToUTF8 (tmp, enc));
+                    }
+                    else if (!strcasecmp (tmp, "inv"))
+                    {
+                        PrefParseRemainder (tmp);
+                        s_repl (&prG->auto_inv, ConvToUTF8 (tmp, enc));
+                    }
+                    else if (!strcasecmp (tmp, "ffc"))
+                    {
+                        PrefParseRemainder (tmp);
+                        s_repl (&prG->auto_ffc, ConvToUTF8 (tmp, enc));
+                    }
                     else
                         ERROR;
                 }
@@ -547,7 +628,7 @@ void Read_RC_File (FILE *rcf)
                 {
                     PrefParseRemainder (tmp);
                     if (spooled_tab_nicks < TAB_SLOTS)
-                        tab_nick_spool[spooled_tab_nicks++] = strdup (tmp);
+                        tab_nick_spool[spooled_tab_nicks++] = strdup (ConvToUTF8 (tmp, enc));
                 }
                 else if (!strcasecmp (cmd, "set"))
                 {
@@ -651,62 +732,10 @@ void Read_RC_File (FILE *rcf)
                             dep = 1;
                     }
                 }
-                else if (!strcasecmp (cmd, "encoding"))
-                {
-                    int which, what;
-                    PrefParse (cmd);
-                    
-                    if (!strcasecmp (cmd, "remote"))
-                        which = 1;
-                    else if (!strcasecmp (cmd, "local"))
-                        which = 2;
-                    else
-                        ERROR;
-                    
-                    PrefParse (cmd);
-                    if (!strcasecmp (cmd, "auto"))
-                        continue;
-                    else if (!strcasecmp (cmd, "utf8"))
-                        what = ENC_UTF8;
-                    else if (!strcasecmp (cmd, "latin1"))
-                        what = ENC_LATIN1;
-                    else if (!strcasecmp (cmd, "latin9"))
-                        what = ENC_LATIN9;
-                    else if (!strcasecmp (cmd, "koi8"))
-                        what = ENC_KOI8;
-                    else if (!strcasecmp (cmd, "win1251"))
-                        what = ENC_WIN1251;
-                    else if (!strcasecmp (cmd, "euc"))
-                        what = ENC_EUC;
-                    else if (!strcasecmp (cmd, "sjis"))
-                        what = ENC_SJIS;
-                    else
-                    {
-                        what = ConvEnc (cmd);
-                        if (!what)
-                        {
-                            M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                            M_printf (i18n (2216, "This mICQ doesn't know the '%s' encoding.\n"), cmd);
-                            ERROR;
-                        }
-                    }
-#ifndef ENABLE_ICONV
-                    if (what > ENC_SJIS || (what >= ENC_EUC && prG->enc_loc == ENC_UTF8))
-                    {
-                        M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                        M_printf (i18n (2217, "This mICQ can't convert between '%s' and unicode.\n"), cmd);
-                        ERROR;
-                    }
-#endif
-                    if (which == 1)
-                        prG->enc_rem = what;
-                    else
-                        prG->enc_loc = what;
-                }
                 else
                 {
                     M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), cmd);
+                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), ConvToUTF8 (cmd, enc));
                     M_print ("\n");
                 }
                 break;
@@ -757,7 +786,7 @@ void Read_RC_File (FILE *rcf)
                 }
                 
                 
-                if (!(cont = ContactFind (NULL, 0, uin, cmd, 1)))
+                if (!(cont = ContactFind (NULL, 0, uin, ConvToUTF8 (cmd, enc), 1)))
                 {
                     M_printf (COLERROR "%s" COLNONE " %s\n", i18n (1619, "Warning:"),
                              i18n (1620, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
@@ -775,13 +804,13 @@ void Read_RC_File (FILE *rcf)
                 if (!strcasecmp (cmd, "alter"))
                 {
                     PrefParseRemainder (tmp);
-                    CmdUser (cmd = strdup (s_sprintf ("\xb6" "alter quiet %s", tmp)));
+                    CmdUser (cmd = strdup (s_sprintf ("\xb6" "alter quiet %s", ConvToUTF8 (tmp, enc))));
                     free (cmd);
                 }
                 else
                 {
                     M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), cmd);
+                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), ConvToUTF8 (cmd, enc));
                     M_print ("\n");
                 }
                 break;
@@ -865,7 +894,7 @@ void Read_RC_File (FILE *rcf)
                 else if (!strcasecmp (cmd, "password"))
                 {
                     PrefParse (tmp);
-                    s_repl (&conn->spref->passwd, strdup (tmp));
+                    s_repl (&conn->spref->passwd, ConvToUTF8 (tmp, enc));
                 }
                 else if (!strcasecmp (cmd, "status"))
                 {
@@ -884,7 +913,7 @@ void Read_RC_File (FILE *rcf)
                 if (!strcasecmp (cmd, "label") && !cg->used)
                 {
                     PrefParseRemainder (tmp);
-                    s_repl (&cg->name, tmp);
+                    s_repl (&cg->name, ConvToUTF8 (tmp, enc));
                     if (!strncmp (cg->name, "contacts-", 9))
                     {
                         UWORD type = 0;
@@ -950,7 +979,7 @@ void Read_RC_File (FILE *rcf)
                 else
                 {
                     M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), cmd);
+                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), ConvToUTF8 (cmd, enc));
                     M_print ("\n");
                 }
                 break;
@@ -1089,6 +1118,18 @@ int Save_RC ()
     fprintf (rcf, "# This file was generated on %s", ctime (&t));
     fprintf (rcf, "\n");
     
+    fprintf (rcf, "# Character encodings: auto, iso-8859-1, koi8-u, ...\n");
+#ifdef ENABLE_UTF8
+    fprintf (rcf, "encoding file utf-8\n");
+#else
+    fprintf (rcf, "encoding file %s\n", ConvEncName (prG->enc_loc));
+#endif
+    fprintf (rcf, "%sencoding local %s%s\n",
+             prG->enc_loc & ENC_AUTO ? "#" : "", ConvEncName (prG->enc_loc),
+             prG->enc_loc & ENC_AUTO ? "" : " # please set your locale correctly instead");
+    fprintf (rcf, "%sencoding remote %s\n\n",
+             prG->enc_rem & ENC_AUTO ? "#" : "", ConvEncName (prG->enc_rem));
+
     for (k = 0; (ss = ConnectionNr (k)); k++)
     {
         if (!ss->spref || (!ss->spref->uin && ss->spref->type == TYPE_SERVER)
@@ -1166,12 +1207,6 @@ int Save_RC ()
     fprintf (rcf, "set tabs %s # type of tab completion (simple, cycle, cycleall)\n\n",
                     prG->tabs == TABS_SIMPLE ? "simple" :
                     prG->tabs == TABS_CYCLE ? "cycle" : "cycleall");
-
-    fprintf (rcf, "# Character encodings: auto, iso-8859-1, koi8-u, ...\n");
-    fprintf (rcf, "%sencoding local %s\n",
-             prG->enc_loc & ENC_AUTO ? "#" : "", ConvEncName (prG->enc_loc));
-    fprintf (rcf, "%sencoding remote %s\n\n",
-             prG->enc_rem & ENC_AUTO ? "#" : "", ConvEncName (prG->enc_rem));
 
     fprintf (rcf, "# Colors. color scheme 0|1|2|3 or color <use> <color>");
     {

@@ -40,15 +40,24 @@ UBYTE ConvEnc (const char *enc)
         conv_encs[3].enc = strdup ("iso-8859-15");
         conv_encs[4].enc = strdup ("koi8-u");
         conv_encs[5].enc = strdup ("windows-1251");
-        conv_encs[6].enc = strdup ("euc-jp");
-        conv_encs[7].enc = strdup ("shift-jis");
-        conv_encs[8].enc = strdup ("iso-8859-1"); /* this is dupe (!) */
+        conv_encs[6].enc = strdup ("iso-8859-1"); /* this is dupe (!) */
+        conv_encs[7].enc = strdup ("euc-jp");
+        conv_encs[8].enc = strdup ("shift-jis");
     }
     for (nr = 0; conv_encs[nr].enc; nr++)
         if (!strcasecmp (conv_encs[nr].enc, enc))
-            return nr;
-    
+        {
 #ifdef ENABLE_ICONV
+            if (conv_encs[nr].to && conv_encs[nr].from
+                && conv_encs[nr].to != (iconv_t)(-1)
+                && conv_encs[nr].from != (iconv_t)(-1))
+#else
+            if (nr <= ENC_LATIN1b)
+#endif
+                return nr;
+            break;
+        }
+    
     if (nr == conv_nr - 1)
     {
         enc_t *new = realloc (conv_encs, sizeof (enc_t) * (conv_nr + 10));
@@ -57,15 +66,19 @@ UBYTE ConvEnc (const char *enc)
         conv_nr += 10;
         conv_encs = new;
     }
+    if (!conv_encs[nr].enc)
+    {
+        conv_encs[nr].enc = strdup (enc);
+        conv_encs[nr + 1].enc = NULL;
+    }
+#ifdef ENABLE_ICONV
     conv_encs[nr].to   = iconv_open ("utf-8", enc);
     conv_encs[nr].from = iconv_open (enc, "utf-8");
     if (conv_encs[nr].to == (iconv_t)(-1) || conv_encs[nr].from == (iconv_t)(-1))
-        return 0;
-    conv_encs[nr].enc = strdup (enc);
-    conv_encs[nr + 1].enc = NULL;
+        return ENC_AUTO | nr;
     return nr;
 #else
-    return 0;
+    return ENC_AUTO | nr;
 #endif
 }
 
@@ -390,6 +403,7 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
             case ENC_WIN1251:
                 PUT_UTF8 (win1251_utf8[*in & 0x7f]);
                 continue;
+#if 0
             case ENC_EUC:
                 /* FIXME: No, this is no real UTF-8. We just stuff EUC
                           into the private use area U+Fxxxx */
@@ -413,6 +427,8 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
                     }
                 }
                 PUT_UTF8 (0xf0000 | (x << 8) | y);
+                continue;
+#endif
             default:
                 t = s_cat (t, &size, "?");
         }
@@ -501,6 +517,7 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
                     }
                 t = s_catf (t, &size, "?");
                 continue;
+#if 0
             case ENC_EUC:
                 if ((val & 0xffff0000) != 0xf0000)
                 {
@@ -528,6 +545,7 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
                     y -= 2;
                 }
                 continue;
+#endif
             default:
                 t = s_cat (t, &size, "?");
         }

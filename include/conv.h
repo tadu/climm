@@ -35,10 +35,10 @@ const char *ConvUTF8       (UDWORD codepoint);
 #define ENC_UTF8    0x01
 #define ENC_LATIN1  0x02
 #define ENC_LATIN9  0x03
-#define ENC_EUC     0x04
-#define ENC_SJIS    0x05  /* Windows Shift-JIS */
-#define ENC_KOI8    0x06
-#define ENC_WIN1251 0x07  /* Windows code page 1251 */
-#define ENC_LATIN1b 0x08  /* also convert 0xfe */
+#define ENC_KOI8    0x04
+#define ENC_WIN1251 0x05  /* Windows code page 1251 */
+#define ENC_LATIN1b 0x06  /* also convert 0xfe */
+#define ENC_EUC     0x07
+#define ENC_SJIS    0x08  /* Windows Shift-JIS */
 
 #endif /* MICQ_UTIL_CONV */
