@@ -46,6 +46,27 @@ static void CallbackTogvis (Event *event)
 UBYTE IMCliMsg (Connection *conn, Contact *cont, Opt *opt)
 {
     const char *opt_text;
+    UDWORD opt_type, opt_trans;
+    
+    if (!cont || !conn || !OptGetStr (opt, CO_MSGTEXT, &opt_text))
+    {
+        OptD (opt);
+        return RET_FAIL;
+    }
+    if (!OptGetVal (opt, CO_MSGTYPE, &opt_type))
+        OptSetVal (opt, CO_MSGTYPE, opt_type = MSG_NORM);
+    if (!OptGetVal (opt, CO_MSGTRANS, &opt_trans))
+        OptSetVal (opt, CO_MSGTRANS, opt_trans = CV_MSGTRANS_ANY);
+    
+    putlog (conn, NOW, cont, STATUS_ONLINE, 
+            opt_type == MSG_AUTO ? LOG_AUTO : LOG_SENT, opt_type, opt_text);
+
+    return IMCliReMsg (conn, cont, opt);
+}
+
+UBYTE IMCliReMsg (Connection *conn, Contact *cont, Opt *opt)
+{
+    const char *opt_text;
     Event *event;
     UDWORD opt_type, opt_trans, reveal_time;
     UBYTE ret;
@@ -71,9 +92,6 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, Opt *opt)
             SnacCliAddvisible (conn, cont);
         QueueEnqueueData (conn, QUEUE_TOGVIS, 0, time (NULL) + reveal_time, NULL, cont, NULL, CallbackTogvis);
     }
-
-    putlog (conn, NOW, cont, STATUS_ONLINE, 
-            opt_type == MSG_AUTO ? LOG_AUTO : LOG_SENT, opt_type, opt_text);
 
 #ifdef ENABLE_PEER2PEER
     if (opt_trans & CV_MSGTRANS_DC)

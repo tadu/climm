@@ -4,6 +4,7 @@
 #define MICQ_IM_CLI_H
 
 UBYTE IMCliMsg (Connection *conn, Contact *cont, Opt *opt);
+UBYTE IMCliReMsg (Connection *conn, Contact *cont, Opt *opt); /* no log */
 void IMCliInfo (Connection *conn, Contact *cont, int group);
 
 #endif /* MICQ_IM_CLI_H */

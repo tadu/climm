@@ -1519,7 +1519,7 @@ static void TCPCallBackResend (Event *event)
         delta = (peer->version > 6 ? 1 : 0);
         if (PacketReadAt2 (pak, 4 + delta) == TCP_CMD_MESSAGE)
         {
-            IMCliMsg (peer->parent->parent, cont, event->opt);
+            IMCliReMsg (peer->parent->parent, cont, event->opt);
             event->opt = NULL;
         }
         else

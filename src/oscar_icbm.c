@@ -330,7 +330,7 @@ static void SnacCallbackType2Ack (Event *event)
     }
     ASSERT_SERVER (serv);
     
-    IMCliMsg (serv, cont, aevent->opt);
+    IMCliReMsg (serv, cont, aevent->opt);
     aevent->opt = NULL;
     EventD (aevent);
     EventD (event);
@@ -379,7 +379,7 @@ static void SnacCallbackType2 (Event *event)
         return;
     }
     
-    IMCliMsg (serv, cont, event->opt);
+    IMCliReMsg (serv, cont, event->opt);
     event->opt = NULL;
     EventD (event);
 }
