@@ -1,9 +1,122 @@
 -*- coding: utf-8 -*-
 
-2003-08-10 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-09-22 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* backport file transfer fixes from stable
+	* handle ^W (delete-word-backward)
+
+2003-09-15 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* fix rl_uca_st() macro
+	* add fallback if locale is broken
+
+2003-09-03 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* implement double-width character support
+	* fix line breaking bugs exposed by the former
+	* fix SIGWINCH handling
+	* implement ESC b, ESC f as backward-word, forward-word
+	   as requested by Thorsten Sandfuchs
+	* implement backwards tabbing via ESC [ Z (shift tab)
+	* fix conversion fallback for WCHAR_T
+
+2003-09-01 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* add convenience macros s_wordquote, s_msgquote (both for s_mquote) and
+	  s_qquote (for s_cquote), and use s_*quote to make sure all incoming/server
+	  data is decontaminated from control sequences
+	* fix infinite loop in rinfo
+	* workaround bug in Miranda < 0.3.1
+	* make configure test for encodings work with autoconf's cache,
+	  get rid of created .h file
+	* add configure tests for wchar_t, wchar.h, wcwidth()
+	* add fallback function for conversion to/from WCHAR_T
+	* activate v8 (versus v7) authorization packets
+	* fix failed assertion due to wrong check for server type
+
+2003-08-29 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* fix registration of new UINs
+	* also create p2p listener
+	* guard more code with #ifdef PEER2PEER
+	* discard connection if no new UIN is granted
+	* fix reconnect
+	* fill in conn->cont after status file is read in
+	* fix compilation bugs found for MingW port
+	* fix missing line break for language contact info, improve display
+	* reduce calls to ContactPref() in PacketDump() and reduce dependancies
+	  by adding parameters for the debug color / no color to use
+	* replace fHexDump() by call to PacketDump()
+	* fix login sequence, don't send CliRosterAck (fixes invisible)
+
+2003-08-18 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* replace some UDWORD uin by Contact *cont members
+	* on the way rename PacketWriteUIN() to PacketWriteCont(),
+	  make PacketReadUIN() return screen name and PacketReadCont() a contact *
+	* ConnectionFind() is split into ConnectionFind() and ConnectionFindUIN()
+	* remove some obsplete declarations: macro Get_Config_Info,
+	  Get_Unix_Config_Info(), Set_rcfile(), PeerFileRequested()
+	* remove dead code: icq_sendmsg(), TCPSendMsg ()
+	* make sure all IM* functions get a Connection* to the server session
+	* fix too early line break
+	* fix segfault in meta data setting
+	* rename all Connection *conn to serv as they're server connections in *snac.c
+	* merge PreferencesConnection into Connection, drop some duplicate entries
+	* remove unused cases from ConnectionFindUIN()
+	* fix segfault if contact group name is undefined
+	* reduce race conditions on signals
+	* fix cursor placing after ^Z
+	* allow a cleanup call for sticky user commands
+	* fix contact group leak that way
+	* make sure cursor really wraps to new line
+	* improve tab handling: expire outgoing to incoming tabbed contacts after 5 mins
+
+2003-08-16 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* remove obsolete tab micqrc option
+	* remove obsolete alter name member in user command table
+	* remove obsolete CmdUserLookupName()
+	* add missing special case for opts user command
+	* fix a bunch of missing initializer, missing prototypes and signedness differences
+	* up build num after so many changes (0.4.99.4)
+	* fix to use \ instead of latin1-¶
+	* fix _ input bug
+	* fix iconv() fallback functions
+	* fix fallback function list for --disable-iconv
+	* fix prompt re-display
+	* fix infinite loop on connection close
+	* fix direct connection sending
+	* fix another infinite loop in tab handling
+
+2003-08-15 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	** complete rewrite of line editing code:
+	* new: util_rl.c, util_rl.h with ReadLineInit() - initialize code;
+	  ReadLineTtyUnset(), ReadLineTtySet() - set terminal options for mICQ and undo;
+	  ReadLineClrScr() - clear +screen; ReadLine() - process input byte;
+	  ReadLinePrompt() - show prompt; ReadLinePromptHide() - hide prompt;
+	  ReadLinePromptSet() - set prompt; ReadLinePromptUpdate () - update prompt (ignore if too often);
+	  ReadLinePromptReset() - set default prompt; extern int rl_columns - keeps current screen width;
+	* remove functions: R_init(), R_undraw(), R_redraw(), R_setprompt(),
+	  R_setpromptf(), R_settimepromptf(), R_resetprompt(), R_remprompt(),
+	  R_prompt(), R_process_input(), R_getline(), R_pause(), R_resume(), R_goto(),
+	  R_clrscr(), R_isinterrupted(), Get_Max_Screen_Width();
+	* turn Echo_Off(), Echo_On() into no-ops
+	* new CmdUserInterupt() - call if interrupt has occured
+	* remove: TabGetAny(); new: TabHas() - check if Contact is in any of the tab lists
+	* make Tab* parameter/returns const
+	* do not store contacts in outgoing list into incoming list
+	* new line editing code features better unified tab completion and supports
+	  characters of arbitrary cell width
+	* lots of new static rl_*() functions; lots of calling name fixes
+
+2003-08-15 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* make util_str.h a default include
+	* new: s_catn() - append n bytes, s_insn() - insert n bytes,
+	  s_insc() - insert one byte, s_delc() - delete on byte, s_deln() - delete n bytes
+	* turn remaining COL* macros into ContactPrefStr() calls
+	* differentiate better between incomplete input sequence, broken input
+	  sequence and unavailable character if possible
+	* change tab handling to have two lists, for incoming and outgoing used contacts
+
+2003-08-11 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 	* remove obsolete commands: w-old, e-old, msg-old, alter
 	* remove obsolete code, don't write compatibility section in micqrc anymore
 	* remove unmaintained, unsecure non-WORD_WRAP code
+	* fix another stupid type-1 bug
 
 2003-08-09 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
 	* fix those freakin' \x## parsing
