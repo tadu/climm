@@ -55,7 +55,7 @@ time_t portable_timegm (struct tm *tm)
 {
     struct tm stamp;
 #if HAVE_TIMEZONE
-    *stamp = *tm;
+    stamp = *tm;
     stamp.tm_sec -= timezone;
 #elif HAVE_TM_GMTOFF
     time_t now = time (NULL);
