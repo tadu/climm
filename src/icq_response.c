@@ -435,8 +435,8 @@ void Recv_Message (Session *sess, UBYTE * pak)
 
     r_mesg = (RECV_MESSAGE_PTR) pak;
     uiG.last_rcvd_uin = Chars_2_DW (r_mesg->uin);
-    M_print (i18n (1962, "%04d-%02d-%02d"), Chars_2_Word (r_mesg->year), r_mesg->month, r_mesg->day);
-    snprintf (buf, sizeof (buf), " %02d:%02d UTC ", r_mesg->hour, r_mesg->minute);
+    snprintf (buf, sizeof (buf), i18n (1647, "%04d-%02d-%02d %02d:%02d UTC"),
+              Chars_2_Word (r_mesg->year), r_mesg->month, r_mesg->day, r_mesg->hour, r_mesg->minute);
     /* TODO: check if null-terminated */
     Do_Msg (sess, buf, Chars_2_Word (r_mesg->type), r_mesg->len + 2, uiG.last_rcvd_uin, STATUS_OFFLINE, 0);
 }

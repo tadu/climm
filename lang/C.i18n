@@ -644,7 +644,7 @@
 1644:Acknowleged SRV_X2 0x00E6 Done old messages?¶
 1645:©3You entered an incorrect password.©0¶
 1646:©3Server is busy.¶
-1647: Type = %04x	
+1647:%04d-%02d-%02d %02d:%02d UTC
 1648: ©2The response was %04X	
 1649:The version was %X	
 1650:¶The SEQ was %04X	
@@ -959,7 +959,7 @@
 1959: 
 1960:Enter data to search user for. Enter \'.\' to start the search.¶
 1961:URL: %s¶
-1962:%04d-%02d-%02d
+1962: 
 1963:popping type %d seq %08x at %p (pak %p)
 1964:couldn't dequeue type %d seq %08x
 1965:Auto-response message for %s:¶
