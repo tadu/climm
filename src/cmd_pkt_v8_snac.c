@@ -464,7 +464,8 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     Packet *p = NULL, *pp = NULL, *pak;
     TLV *tlv;
     UDWORD uin;
-    int i, type, t;
+    UWORD i;
+    int type, t;
     char *text = NULL;
     const char *txt = NULL;
 
@@ -510,15 +511,11 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
         case 2:
             p = TLVPak (tlv + 5);
             type = PacketReadB2 (p); /* ACKTYPE */
-                   PacketReadB4 (p); /* TIME */
-                   PacketReadB2 (p); /* RANDOM */
-                   PacketReadB2 (p); /* UNKNOWN */
+                   PacketReadB4 (p); /* MID-TIME */
+                   PacketReadB4 (p); /* MID-RANDOM */
                    PacketReadB4 (p); PacketReadB4 (p); PacketReadB4 (p); PacketReadB4 (p); /* CAP */
-            tlv = TLVRead (pak, PacketReadLeft (pak));
-            for (i = 16; i < 20; i++)
-                if (tlv[i].nr == 0x2711)
-                    break;
-            if (i == 20)
+            tlv = TLVRead (p, PacketReadLeft (p));
+            if ((i = TLVGet (tlv, 0x2711)) == (UWORD)-1)
             {
                 SnacSrvUnknown (event);
                 return;

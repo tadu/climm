@@ -167,7 +167,7 @@ void FlapPrint (Packet *pak)
     M_print (COLNONE);
     if (PacketReadAt1 (pak, 1) != 2)
     {
-        if (prG->verbose & DEB_PACK8DATA)
+        if (prG->verbose & DEB_PACK8DATA || ~prG->verbose & DEB_PACK8)
             Hex_Dump (pak->data + 6, pak->len - 6);
     }
     else 
@@ -177,7 +177,7 @@ void FlapPrint (Packet *pak)
                  SnacName (PacketReadAtB2 (pak, 6), PacketReadAtB2 (pak, 8)),
                  PacketReadAtB2 (pak, 10), PacketReadAtB4 (pak, 12));
         M_print (COLNONE);
-        if (prG->verbose & DEB_PACK8DATA)
+        if (prG->verbose & DEB_PACK8DATA || ~prG->verbose & DEB_PACK8)
             Hex_Dump (pak->data + 16, pak->len - 16);
     }
 }
