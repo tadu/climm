@@ -12,7 +12,7 @@ AC_CANONICAL_HOST
 AM_INIT_AUTOMAKE(micq, 0.4.8+cvs-2002-03-02)
 AM_CONFIG_HEADER(include/config.h)
 AC_DEFINE(MICQ_VERSION,VERSION,[mICQ's current version])
-AC_DEFINE(MICQ_VERSION_NUM,481,[mICQ's current version numerical])
+AC_DEFINE(MICQ_VERSION_NUM,482,[mICQ's current version numerical])
 
 # prefer 2.50 auto{conf,header}
 AM_MISSING_PROG(AUTOCONFNG, autoconf-2.50, $missing_dir)
