@@ -228,14 +228,6 @@ JUMP_SNAC_F(SnacSrvFamilies)
 }
 
 /*
- * SRV_REPLYLOCATION - SNAC(2,3)
- */
-JUMP_SNAC_F(SnacSrvReplylocation)
-{
-    /* ignore all data, do nothing */
-}
-
-/*
  * SRV_RATES - SNAC(1,7)
  * CLI_ACKRATES - SNAC(1,8)
  */
@@ -342,6 +334,14 @@ JUMP_SNAC_F(SnacSrvMotd)
 }
 
 /*
+ * SRV_REPLYLOCATION - SNAC(2,3)
+ */
+JUMP_SNAC_F(SnacSrvReplylocation)
+{
+    /* ignore all data, do nothing */
+}
+
+/*
  * SRV_REPLYBUDDY - SNAC(3,3)
  */
 JUMP_SNAC_F(SnacSrvReplybuddy)
@@ -423,7 +423,11 @@ JUMP_SNAC_F(SnacSrvUseroffline)
 JUMP_SNAC_F(SnacSrvIcbmerr)
 {
     if (event->pak->id == 0x1771)
-        M_print (i18n (2017, "The user is actually online.\n"));
+    {
+        UWORD err = PacketReadB2 (event->pak);
+        if (err == 0xe)
+            M_print (i18n (2017, "The user is actually online.\n"));
+    }
 }
 
 /*
