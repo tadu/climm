@@ -1,4 +1,4 @@
 # $Id$ 
 
 mandir = @mandir@/pt_BR
-man_MANS = micq.1 # micq.7 micqrc.5
+man_MANS = micq.1 micqrc.5 # micq.7

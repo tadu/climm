@@ -1,0 +1,355 @@
+.\" $Id$ -*- nroff -*-
+.\"  EN: micqrc.5,v 1.12 2002/08/26 16:45:24 kuhlmann Exp $
+.\"This is the man page for ~/.micqrc."
+.TH MICQRC 5 mICQ PT_BR
+.SH NOME
+.B ~/.micq/micqrc
+\- O arquivo de configuracao para o mICQ
+.SH DESCRICAO
+Esta pagina de manual (man-page) descreve o arquivo de configuracao para o mICQ. Consiste em diversas secoes que sao iniciadas por
+.IR [secao] ,
+onde
+.I secao
+e o nome da secao
+.SH CONNECTION
+A secao
+.B Connection
+(conexao) descreve uma conexao na rede ICQ. Normalmente existem 2 lados da conexao, que sao co-relacionados: uma conexao para o servidor ICQ e uma conexao para atender a requisicoes "peer-to-peer" ou pessoa-a-pessoa.
+.TP
+.BI type \ tipo\ [auto]
+Ajusta o tipo da conexao para 
+.IR tipo ,
+o qual pode ser
+.B server
+para uma conexao com o servidor ICQ, ou
+.B peer
+para uma conexao do tipo "peer-to-peer" ou pessoa-a-pessoa. Se
+.I auto
+e usado como parametro, cria-se esta conexao direto na inicializacao. Voce possivelmente quer isso, a menos que possua diversos UINs, sendo entao necessario acertar isso na conexao correspondente como o UIN que se esta usando no momento.
+.TP
+.BI version \ ver
+Ajusta a versao do protocolo usado na conexao para 
+.IR ver .
+No entanto, preste atencao que para conexoes para servidor, as versoes 
+.BR 5 ,
+.B 7
+e
+.B 8
+sao permitidas, e para "peer-to-peer" ou pessoa-a-pessoa
+.BR 6 ,
+.B 7
+e
+.BR 8 .
+.TP
+.BI server \ servidor
+Ajusta o servidor ICQ padrao para 
+.IR servidor .
+O padrao e 
+.IR login.icq.com .
+Nao valido para conexoes "peer-to-peer".
+.TP
+.BI port \ porta
+Muda a porta de conexao no servidor para 
+.IR porta ,
+ou muda a porta padrao pra "escutar" requisicoes "peer-to-peer" para a porta
+.IR porta .
+.TP
+.BI uin \ UIN
+Muda o UIN (numero ICQ) para fazer o login na rede ICQ para 
+.IR UIN .
+Nao valido para conexoes "peer-to-peer".
+.TP
+.BI password \ [senha]
+Ajusta a senha para conexao na rede ICQ para
+.IR password .
+Nao valido para conexoes "peer-to-peer". Se omitido, voce devera digitar a senha na inicializacao do mICQ.
+Obs: Usuarios BeOS precisam preencher este campo.
+.TP
+.BI status \ nr
+Ajusta o "status" padrao ao efetuar login para
+.IR nr .
+Onde "status" pode ser:
+.RS
+.TP
+0
+online
+.TP
+1
+away (distante)
+.TP
+5
+not available (nao disponivel)
+.TP
+17
+occupied (ocupado)
+.TP
+19
+do not disturb (nao perturbe)
+.TP
+32
+free for chat (livre pra bate-papo)
+.TP
+256
+invisible (invisivel)
+.RE
+
+.RS
+Para conexoes "peer-to-peer", este parametro e usado para a configuracao da conexao direta:
+.TP
+1
+Voce esta atras de um firewall e nao pode receber conexoes diretas. Impede a tentativa de conexao.
+.TP
+2
+Voce esta atras de um firewall, mas usa SOCKS e pode receber conexoes (padrao).
+.TP
+4
+Nao ha firewall nenhum.
+.RE
+.SH GERAL
+A secao
+.B General
+(geral) inclui as opcoes para SOCKS 5 (que poderao no futuro ganhar sua propria secao), opcoes gerais, e algumas string especificas.
+.TP
+.BI s5_use \ numero
+Use
+.I numero
+em 0 para desabilitar e 1 para habilitar.
+.TP
+.BI s5_host \ endereco
+Conecte ao servidor de proxy SOCKS 5 no endereco
+.IR endereco .
+.TP
+.BI s5_port \ porta
+Conecte ao servidor de proxy SOCKS 5 na porta
+.IR porta .
+.TP
+.BI s5_auth \ numero
+Use
+.I numero
+0 para ignorar autenticacao e 1 para efetuar a autenticacao.
+.TP
+.BI s5_name \ nome
+Efetuar a identificacao como o usuario 
+.I nome
+no servidor proxy SOCKS 5.
+.TP
+.BI s5_pass \ senha
+Efetuar a autenticacao com a senha 
+.I senha
+no servidor proxy SOCKS 5.
+.PP
+As opcoes:
+.TP
+.BI verbose \ nivel
+Muda o nivel de informacao verbal para
+.IR nivel .
+.TP
+.BI auto_away \ tempo
+Muda o tempo de inatividade para auto-away (distante) para 
+.I tempo
+segundos. Mude para
+.I 0
+para desabilitar o auto-away.
+.TP
+.BI Screen_width \ largura
+Muda a largura padrao da tela para
+.IR largura .
+Se configurado para
+.IR 0 , \ 80
+sera usado como medida padrao. Este parametro deificilmente precisa ser especificado, pois e possivel defini-lo em tempo de execucao (run-time).
+.TP
+.BI set \ delbs\ on|off
+Se configurado para
+.BR on ,
+faz com que a tecla "delete" funcione como um "back space". Quando configurado para
+.BR off ,
+deixa a tecla "delete" funcionar normalmente.
+.TP
+.BI set \ russian\ on|off
+Habilita ou desabilita a coneversao de caracters russos entre koi8-r/u e cp1251.
+.TP
+.BI set \ japanese\ on|off
+Habilita ou desabilita a conversao de caracteres Japoneses entre Shift-JIS e EUC.
+.TP
+.BI set \ funny\ on|off
+Habilita ou desabilita as mensagens "engracadas" ("funny").
+.TP
+.BI set \ color\ on|off
+Habilita ou desabilita o uso de cores.
+.TP
+.BI set \ hermit\ on|off
+Se "hermit" for configurado para 
+.BR on ,
+descarta todas as mensagens de qualquer pessoa que nao esteja na lista de contatos.
+.TP
+.BI set \ log\ on|off
+Habilita ou desabilita o "logging" (historico).
+.TP
+.BI set \ logonoff\ on|off
+Quando gerando historio de mensagens, desabilita ou habilita a geracao de historico de quando os usuarios ficam "online" e quando saem.
+.TP
+.BI set \ auto\ on|off
+Desabilita ou habilita as responstas automaticas.
+.TP
+.BI set \ uinprompt\ on|off
+Desabilita ou habilita o uso do ultimo nick a lhe mandar uma mensagem.
+.TP
+.BI set \ linebreak\ tipo
+Configura o tipo da quebra de linha (line break) em mensagens recebidas para
+.IR tipo ,
+o qual pode ser
+.B simple
+para fazer da maneira convencional,
+.B break
+para se ter uma quebra de linha antes de cada mensagem,
+.B indent
+para haver uma quebra de linha e a indentacao (paragrafo), e
+.B smart
+para se ter uma quebra de linha apenas se a mensagem nao couber na linha atual.
+.TP
+
+.BI set \ tabs\ simple|cycle|cycleall
+Seleciona o estilo de auto-completar da tecla "tab". Versoes antigas do mICQ so conheciam o
+.BR simple ,
+o qual so funciona com o comando 
+.B msg
+e completa o comando e tenta o auto-completar usando a lista de contatos. Qualquer texto digitado depois do "nick name" seria perdido quando pressionasse a tecla "tab".
+.B cycle
+faz o auto-completar com os contatos online na sua lista de contatos. Mantem intacto qualquer outro texto digitado no comando 
+, no entanto, ele nao coloca o 
+.B msg
+antes do "nick name".
+.B cycleall
+e muito similar ao 
+.BR cycle ,
+so que pesquisa em toda a lista de contatos, nao apenas nos contatos online.
+.PP
+Por ultimo, algumas "strings" que podem ser definidas:
+.TP
+.BI color\ scheme \ num
+Muda o esquema de cor para o numero
+.IR num .
+.TP
+.BI color \ uso\ cor
+Seleciona a cor a ser usada para
+.IR cor
+para
+.IR uso .
+.IR uso
+pode ser do tipo 
+.BR none ,
+.BR server ,
+.BR client ,
+.BR message ,
+.BR contact ,
+.BR sent ,
+.BR ack ,
+.BR error
+ou
+.BR incoming ,
+enquanto que 
+.IR cor
+pode ser do tipo
+.BR black ,
+.BR red ,
+.BR green ,
+.BR yellow ,
+.BR blue ,
+.BR magenta ,
+.BR cyan ,
+.BR white ,
+.BR none ,
+ou
+.BR bold
+ou uma combinacao das anteriores
+.RB ( bold ,
+no entanto, precisa ser o ultimo parametro na definicao),
+ou qualquer "string" que faca o terminal do usuario usar a cor desejada.
+.TP
+.BI logplace \ arquivo|dir
+Ajusta o arquivo de logs (historico) para
+.IR arquivo ,
+ou, senao, o diretorio para geracao do historico em
+.IR dir .
+Por favor note que um diretorio e identificado pelo
+.IR / 
+no final.
+.TP
+.BI sound \ on|off|comando
+Desabilita ou habilita o esquema de sons. Se o parametro nao for nem
+.B on
+ou
+.BR off ,
+significa que e o nome de algum programa externo ao mICQ que devera ser executado ao inves do beep.
+.TP
+.BI soundonline \ on|off|comando
+Identico ao anterior, so que sao os sons para quando os usuarios ficam online.
+.TP
+.BI soundoffline \ on|off|comando
+Identico ao anterior, so que sao os sons para quando os usuarios ficam offline.
+.TP
+.BI receivescript \ comando
+Ajusta o comando que devera ser executado para tratar novas mensagens. Deixe em branco para que nada seja feito.
+.TP
+.BI auto \ estado\ texto
+Muda a resposta automatica para quando o usuario se encontra no estado  
+.I estado
+(away/distante, not available/nao-disponivel, etc) para o texto
+.IR texto .
+Esta opcao pode ser repetida para todos os outros estados, como
+.BR away ,
+.BR na ,
+.BR dnd ,
+.BR occ ,
+.BR inv ,
+e
+.B ffc
+para
+.IR status .
+.SH STRINGS
+A secao "Strings"
+.B Strings
+define comandos renomeados.
+.TP
+.BI alter \ antigo\ novo
+Renomeia o comando 
+.I antigo
+para
+.IR novo .
+Observe que o comando antigo ainda funciona. Voce podera usar as 2 formas do comando, a menos que entre em conflito com algum outro comando
+.I novo .
+Para saber quais sao os comandos possiveis, consulte a pagina de manual 
+.BR micq (7).
+Esta opcao pode ser usada quantas vezes quiser.
+
+.SH CONTACTS
+A secao Contacts 
+.B Contacts
+define a lista de contatos do mICQ.
+.TP
+.I [*][~][^] uin apelido
+Faz com que um usuario com UIN (Universal Internet Number)
+.I uin
+seja conhecido pelo  
+.IR apelido 
+no mICQ.
+Se a opcao
+.B *
+e usada, o usuario tem a capacidade de ver seu "status" mesmo quando voce esta invisivel. Se a opcao
+.B ~
+e usada, o usuario vai sempre lhe enxergar como offline. Se a opcao
+.B ^
+e passada, coloca o usuario na lista de ignorados.
+Se um UIN aparece mais de uma vez, sao tratador como "alias" ou apelidos para o UIN.
+
+Observacao: a secao "Contacts" precisa ser a ultima parte do arquivo de configuracao.
+.SH VEJA TAMBEM
+.BR micq (1),
+.BR micq (7)
+.SH AUTOR
+Esta pagina de manual foi escrita por James Morrison
+.IR <ja2morrison@student.math.uwaterloo.ca> .
+Foi reescrita para se adaptar as novas opcoes de configuracao do mICQ por Rüdiger Kuhlmann
+.IR <micq@ruediger-kuhlmann.de> .
+Traduzida por Deives Michellis 
+.IR <dmichellis@yahoo.com>.
