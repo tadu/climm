@@ -5,7 +5,7 @@
 #define portable_memmove memmove
 #endif
 
-void portable_memmove (void *dsta, const void *srca, size_t len)
+void *portable_memmove (void *dsta, const void *srca, size_t len)
 {
     char *dst = dsta;
     const char *src = srca;
@@ -20,4 +20,6 @@ void portable_memmove (void *dsta, const void *srca, size_t len)
     else
         while (len-- > 0)
             *dst++ = *src++;
+
+    return dsta;
 }
