@@ -82,8 +82,8 @@ typedef struct Extra_s                 Extra;
 #else
 #define DEBUGARGS
 #define DEBUGPARAM
-#define DEBUG0ARGS   void
-#define DEBUG0PARAM
+#define DEBUG0ARGS
+#define DEBUG0PARAM  void
 #define DEBUGFOR
 #define DEBUGNONE
 #define DebugH DebugReal

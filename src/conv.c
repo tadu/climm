@@ -938,9 +938,9 @@ static strc_t iconv_to_wchart (strc_t in, UBYTE enc)
             s_catc (&str, CHAR_BROKEN);
         else if (   (sizeof (wchar_t) <= 1 && ucs & 0xffffff00)
                  || (sizeof (wchar_t) <= 2 && ucs & 0xffff0000))
-            s_catn (&str, &na, sizeof (wchar_t));
+            s_catn (&str, (const char *)&na, sizeof (wchar_t));
         else
-            s_catn (&str, &ucs, sizeof (wchar_t));
+            s_catn (&str, (const char *)&ucs, sizeof (wchar_t));
     }
     return &str;
 }
