@@ -25,8 +25,8 @@
 
 jump_sess_f SrvCallBackReceive;
 static jump_sess_f SrvCallBackReconn;
-static void SrvCallBackTimeout (struct Event *event);
-static void SrvCallBackDoReconn (struct Event *event);
+static void SrvCallBackTimeout (Event *event);
+static void SrvCallBackDoReconn (Event *event);
 
 int reconn = 0;
 
@@ -73,13 +73,13 @@ static void SrvCallBackReconn (Session *sess)
     }
 }
 
-static void SrvCallBackDoReconn (struct Event *event)
+static void SrvCallBackDoReconn (Event *event)
 {
     SessionInitServer (event->sess);
     free (event);
 }
 
-static void SrvCallBackTimeout (struct Event *event)
+static void SrvCallBackTimeout (Event *event)
 {
     Session *sess = event->sess;
     

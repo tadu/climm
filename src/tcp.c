@@ -61,10 +61,10 @@ static Packet    *PacketTCPC         (Session *peer, UDWORD cmd, UDWORD seq,
 static void       TCPGreet           (Packet *pak, UWORD cmd, char *reason,
                                       UWORD port, UDWORD len, char *msg);
 
-static void       TCPCallBackTimeout (struct Event *event);
-static void       TCPCallBackTOConn  (struct Event *event);
-static void       TCPCallBackResend  (struct Event *event);
-static void       TCPCallBackReceive (struct Event *event);
+static void       TCPCallBackTimeout (Event *event);
+static void       TCPCallBackTOConn  (Event *event);
+static void       TCPCallBackResend  (Event *event);
+static void       TCPCallBackReceive (Event *event);
 
 static void       Encrypt_Pak        (Session *sess, Packet *pak);
 static int        Decrypt_Pak        (UBYTE *pak, UDWORD size);
@@ -72,7 +72,7 @@ static int        TCPSendMsgAck      (Session *sess, UWORD seq, UWORD sub_cmd, B
 
 #ifdef WIP
 static void PeerFileDispatch (Session *sess);
-static void PeerFileResend (struct Event *event);
+static void PeerFileResend (Event *event);
 #endif
 
 /*********************************************/
@@ -561,7 +561,7 @@ static void TCPDispatchPeer (Session *sess)
 {
     Contact *cont;
     Packet *pak;
-    struct Event *event;
+    Event *event;
     int i = 0;
     UWORD seq_in = 0, seq, cmd;
     
@@ -632,7 +632,7 @@ static void TCPDispatchPeer (Session *sess)
 /*
  * Handles timeout on TCP send/read/whatever
  */
-static void TCPCallBackTimeout (struct Event *event)
+static void TCPCallBackTimeout (Event *event)
 {
     Session *sess = event->sess;
     
@@ -651,7 +651,7 @@ static void TCPCallBackTimeout (struct Event *event)
 /*
  * Handles timeout on TCP connect
  */
-static void TCPCallBackTOConn (struct Event *event)
+static void TCPCallBackTOConn (Event *event)
 {
     ASSERT_DIRECT_FILE (event->sess);
 
@@ -1527,7 +1527,7 @@ BOOL TCPSendFile (Session *sess, UDWORD uin, char *file)
 /*
  * Resends TCP packets if necessary
  */
-static void TCPCallBackResend (struct Event *event)
+static void TCPCallBackResend (Event *event)
 {
     Contact *cont;
     Session *peer = event->sess;
@@ -1580,7 +1580,7 @@ static void TCPCallBackResend (struct Event *event)
 /*
  * Handles a just received packet.
  */
-static void TCPCallBackReceive (struct Event *event)
+static void TCPCallBackReceive (Event *event)
 {
     Contact *cont;
     const char *tmp, *tmp2;
@@ -1908,7 +1908,7 @@ static int Decrypt_Pak (UBYTE *pak, UDWORD size)
 }
 
 #ifdef WIP
-static void PeerFileResend (struct Event *event)
+static void PeerFileResend (Event *event)
 {
     Contact *cont;
     Session *fpeer = event->sess;

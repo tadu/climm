@@ -27,9 +27,9 @@
 #include <string.h>
 #include <assert.h>
 
-typedef void (jump_snac_f)(struct Event *);
+typedef void (jump_snac_f)(Event *);
 typedef struct { UWORD fam; UWORD cmd; const char *name; jump_snac_f *f; } SNAC;
-#define JUMP_SNAC_F(f) void f (struct Event *event)
+#define JUMP_SNAC_F(f) void f (Event *event)
 
 extern int reconn;
 
@@ -118,7 +118,7 @@ static SNAC SNACS[] = {
 /*
  * Interprets the given SNAC.
  */
-void SrvCallBackSnac (struct Event *event)
+void SrvCallBackSnac (Event *event)
 {
     Packet  *pak  = event->pak;
     SNAC *s;
@@ -145,7 +145,7 @@ void SrvCallBackSnac (struct Event *event)
 /*
  * Keeps track of sending a keep alive every 30 seconds.
  */
-void SrvCallBackKeepalive (struct Event *event)
+void SrvCallBackKeepalive (Event *event)
 {
     if (event->sess->connect & CONNECT_OK)
     {

@@ -161,7 +161,7 @@ void SessionInitServerV5 (Session *sess)
     QueueEnqueueData (queue, sess, 0, 0, 0, time (NULL), NULL, NULL, &CallBackServerInitV5);
 }
 
-void CallBackServerInitV5 (struct Event *event)
+void CallBackServerInitV5 (Event *event)
 {
     Session *sess = event->sess;
     int rc;
@@ -318,7 +318,7 @@ void PacketSendv5 (const Packet *pak, Session *sess)
 /*
  * Callback function that handles UDP resends.
  */
-void UDPCallBackResend (struct Event *event)
+void UDPCallBackResend (Event *event)
 {
     Packet *pak = event->pak;
 

@@ -24,7 +24,7 @@ typedef struct
    UBYTE len[2];
 } *SIMPLE_MESSAGE_PTR;
 
-static void CmdPktSrvCallBackKeepAlive (struct Event *event);
+static void CmdPktSrvCallBackKeepAlive (Event *event);
 
 static jump_srv_f CmdPktSrvMulti, CmdPktSrvAck;
 
@@ -160,7 +160,7 @@ void CmdPktSrvRead (Session *sess)
 /*
  * Handles sending keep alives regularly
  */
-static void CmdPktSrvCallBackKeepAlive (struct Event *event)
+static void CmdPktSrvCallBackKeepAlive (Event *event)
 {
     CmdPktCmdKeepAlive (event->sess);
     event->due = time (NULL) + 120;
@@ -433,7 +433,7 @@ static JUMP_SRV_F (CmdPktSrvMulti)
  */
 static JUMP_SRV_F (CmdPktSrvAck)
 {
-    struct Event *event = QueueDequeue (queue, seq, QUEUE_TYPE_UDP_RESEND);
+    Event *event = QueueDequeue (queue, seq, QUEUE_TYPE_UDP_RESEND);
     UDWORD ccmd;
 
     if (!event)

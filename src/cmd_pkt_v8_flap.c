@@ -34,7 +34,7 @@ static TLV *tlv = NULL;
 static void FlapChannel1 (Session *sess, Packet *pak);
 static void FlapChannel4 (Session *sess, Packet *pak);
 
-void SrvCallBackFlap (struct Event *event)
+void SrvCallBackFlap (Event *event)
 {
     assert (event->type == QUEUE_TYPE_FLAC);
     

@@ -37,12 +37,16 @@
 #endif
 #include <stdio.h>
 
+struct Queue_s;
+struct Event_s;
 struct Contact_s;
 struct Packet_s;
 struct Session_s;
 struct Preferences_s;
 struct SessionPreferences_s;
 
+typedef struct Queue_s              Queue;
+typedef struct Event_s              Event;
 typedef struct Contact_s            Contact;
 typedef struct Packet_s             Packet;
 typedef struct Session_s            Session;

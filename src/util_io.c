@@ -45,7 +45,7 @@ struct hostent *gethostbyname(const char *name)
 
 #define BACKLOG 10
 
-static void UtilIOTOConn (struct Event *event);
+static void UtilIOTOConn (Event *event);
 static void UtilIOConnectCallback (Session *sess);
 
 /*
@@ -526,7 +526,7 @@ void UtilIOSocksAccept (Session *sess)
 /*
  * Handles timeout on TCP connect
  */
-static void UtilIOTOConn (struct Event *event)
+static void UtilIOTOConn (Event *event)
 {
      Session *sess = event->sess;
      free (event);

@@ -19,11 +19,11 @@
 
 struct QueueEntry
 {
-    struct Event      *event;
+    Event             *event;
     struct QueueEntry *next;
 };
 
-struct Queue
+struct Queue_s
 {
     struct QueueEntry *head;
     time_t due;
@@ -56,9 +56,9 @@ struct Event *QueuePeek (struct Queue *queue)
 /*
  * Removes the event most due from the queue, or NULL.
  */
-struct Event *QueuePop (struct Queue *queue)
+Event *QueuePop (struct Queue *queue)
 {
-    struct Event *event;
+    Event *event;
     struct QueueEntry *temp;
 
     assert (queue);
@@ -83,7 +83,7 @@ struct Event *QueuePop (struct Queue *queue)
 /*
  * Adds a new entry to the queue.
  */
-void QueueEnqueue (struct Queue *queue, struct Event *event)
+void QueueEnqueue (Event *event)
 {
     struct QueueEntry *entry;
     struct QueueEntry *iter;
@@ -130,8 +130,7 @@ void QueueEnqueueData (struct Queue *queue, Session *sess, UDWORD seq, UDWORD ty
                        UDWORD uin, time_t due,
                        Packet *pak, UBYTE *info, Queuef *callback)
 {
-    struct Event *event = malloc (sizeof (struct Event));
-    
+    Event *event = malloc (sizeof (Event));
     assert (event);
     
     event->seq  = seq;
@@ -150,9 +149,9 @@ void QueueEnqueueData (struct Queue *queue, Session *sess, UDWORD seq, UDWORD ty
 /*
  * Removes and returns an event given by sequence number and type.
  */
-struct Event *QueueDequeue (struct Queue *queue, UDWORD seq, UDWORD type)
+Event *QueueDequeue (UDWORD seq, UDWORD type)
 {
-    struct Event *event;
+    Event *event;
     struct QueueEntry *iter;
     struct QueueEntry *tmp;
 

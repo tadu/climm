@@ -3,16 +3,9 @@
 #ifndef MSG_QUEUE_H
 #define MSG_QUEUE_H
 
-#include "session.h"
-#include "datatype.h"
-#include "packet.h"
+typedef void (Queuef)(Event *event);
 
-struct Event;
-struct Queue;
-
-typedef void (Queuef)(struct Event *event);
-
-struct Event
+struct Event_s
 {
     UDWORD   seq;
     UDWORD   type;
