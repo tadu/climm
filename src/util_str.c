@@ -39,6 +39,34 @@ const char *s_sprintf (const char *fmt, ...)
 /*
  * Appends to a dynamically allocated string.
  */
+char *s_cat (char *str, UDWORD *size, const char *add)
+{
+    UDWORD nsize;
+    char *nstr;
+    
+    if (!str)
+        str = strdup ("");
+    if (!size)
+        return str;
+    
+    nsize = strlen (nstr = str) + strlen (add) + 1;
+    if (nsize > *size)
+        nstr = realloc (str, nsize);
+    if (nstr)
+        *size = nsize;
+    else
+    {
+        nstr = str;
+        nsize = *size;
+    }
+    strcat (nstr, add);
+    return nstr;
+}
+
+
+/*
+ * Appends to a dynamically allocated string.
+ */
 char *s_catf (char *str, UDWORD *size, const char *fmt, ...)
 {
     va_list args;
@@ -163,6 +191,8 @@ const char *s_msgtok (char *txt)
         sep = ConvSep ();
     if (!str)
         return NULL;
+    if (txt && !*str)
+        return NULL;
     p = strchr (t = str, sep);
     if (p)
     {
@@ -177,6 +207,40 @@ const char *s_msgtok (char *txt)
 }
 
 /*
+ * Indent a string two characters.
+ */
+const char *s_ind (const char *str)
+{
+    static char *t = NULL;
+    static UDWORD size = 0;
+    UDWORD cnt = 5;
+    const char *p;
+    char *q;
+    
+    for (p = str; *p; p++, cnt++)
+        if (*p == '\n')
+            cnt += 2;
+    t = s_catf (t, &size, "");
+    if (size < cnt)
+        t = realloc (t, cnt);
+    if (!t)
+        return str;
+    q = t;
+    *q++ = ' ';
+    *q++ = ' ';
+    for (p = str; *p; )
+        if ((*q++ = *p++) == '\n')
+            if (*p)
+            {
+                *q++ = ' ';
+                *q++ = ' ';
+            }
+    *q = '\0';
+    return t;
+}
+
+
+/*
  * Hex dump to a string with ASCII.
  */
 const char *s_dump (const char *data, UWORD len)
@@ -186,6 +250,7 @@ const char *s_dump (const char *data, UWORD len)
     UDWORD i, off;
     const unsigned char *d = data;
     
+    t = s_catf (t, &size, "");
     if (t)
         *t = 0;
     while (len >= 16)
@@ -255,7 +320,7 @@ const char *s_dumpnd (const char *data, UWORD len)
     }
     if (len > 10)
     {
-        for (i = 0; i < len--; i++)
+        for (i = 0; i < len; i++)
         {
             t = s_catf (t, &size, "%02x ", *d++);
             if (i == 7)

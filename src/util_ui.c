@@ -288,7 +288,7 @@ M_print with colors.
 void M_print (const char *str, ...)
 {
     va_list args;
-    char buf[2048];
+    char buf[4048];
 
     R_remprompt ();
     va_start (args, str);
