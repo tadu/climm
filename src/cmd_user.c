@@ -1314,11 +1314,11 @@ static JUMP_F(CmdUserStatusDetail)
         {
             char statbuf[100], verbuf[100];
             
-            contr = ContactFind (cont->uin);
-            if (!contr)
+            if (uin && cont->uin != uin)
                 continue;
 
-            if (uin && cont->uin != uin)
+            contr = ContactFind (cont->uin);
+            if (!contr)
                 continue;
 
             if (__status (contr) != status)
