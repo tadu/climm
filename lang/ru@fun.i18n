@@ -1,17 +1,19 @@
 # $Id$ (Russian)
-#  EN: __.i18n,v 1.63.2.14 2003/10/06 16:55:58
-1000:koi8-r
+#  EN: __.i18n,v 1.70 2004/11/18 21:25:15
+#-#1000:koi8-r
+#+#1000:iso-8859-1
+# #1000:UTF-8
 1001:ru
 1002:ru_RU
 1003:0-4-10
 1004:Pest, Seva Gluschenko
 1005:Seva Gluschenko
 1006:2003-03-07
-1008:koi8-r
+1008.koi8-r
 1010:Туплю [Автоответчик]
 1011:Смылся [Автоответчик]
 1012:Тружусь [Автоответчик]
-1013:Да он в отключке
+1013.Да он в отключке
 1014:Фиг
 1015:Янв
 1016:Фев
@@ -32,12 +34,12 @@
 1032:Отладка: дубликат пакета %04lx тип %04x (%s)\n
 1033:Пришел v8 серверный пакет:
 1034:Пытался сколько мог. Утомился.
-1036:Не знаю такой команды %s, для справки /help рулит.
-1037:Телегу порубил и отправил частично.\n
+1036.Не знаю такой команды %s, для справки /help рулит.
+1037.Телегу порубил и отправил частично.\n
 1038:Телега отменена.\n
 1039:Сервер гнет пальцы, что мы не подключены.\n
-1040:Маська> 
-1041:телега> 
+1040.Маська> 
+1041.телега> 
 1043:Все пользователи найдены.
 1044:Найдено слишком много пользователей.
 1045:Поиск завершен.
@@ -53,13 +55,13 @@
 1062:Игнорируемые:
 1063:Введите пароль:
 1064:Автоматом принял позу "%s".\n
-1072:Отдыхают:
-1073:Торчат здесь:
+1072.Отдыхают:
+1073.Торчат здесь:
 1077.памяти Мэттью Д. Смита.
 1078:Перевода нет.
 1079:Перевод (%s, %s) от %s, изменен %s %s, для mICQ %d.%d.%d%s.\n
-1080:Не могу вкрутить "%s" локализацию.\n
-1081:Успешно вкрутил чиста русский перевод (%ld записей).\n
+1080.Не могу вкрутить "%s" локализацию.\n
+1081.Успешно вкрутил чиста русский перевод (%ld записей).\n
 1082:Восстанавливаем соединение... [попытка %d из %d]\n
 1085:on
 1086:off
@@ -70,8 +72,8 @@
 1096:Имя пользователя для SOCKS5:
 1097:Пароль для SOCKS5:
 1098:Список имен, которые можно щёлкать табуляцией.
-1099:Неизвестный язык.
-1100:нет
+1099.Неизвестный язык.
+1100.нет
 1101:Арабский
 1102:Бходжпури
 1103:Болгарский
@@ -158,7 +160,9 @@
 1185:Технический
 1186:Студент Университета
 1187:Строительство Web
-1188:Непонятная команда в файле конфигурации: "%s" (игнорирована).
+#-#1188:Непонятная команда в файле конфигурации: "%s" (игнорирована).
+#+#1188:Unrecognized command in rc file '%s', ignored.
+# #1188:Unrecognized command '%s' in configuration file, ignored.
 1198:Другое
 1200:Не указано
 1201:Афганистан
@@ -483,7 +487,7 @@
 1538:Введите год рождения (4 цифры):
 1539:Введите месяц рождения:
 1540:Введите день рождения:
-1541:Досье> 
+1541.Досье> 
 1544:Введите город:
 1545:Введите штат:
 1546:Введите телефон:
@@ -521,7 +525,7 @@
 1604:Пользователи должны быть на виду?
 1605:Вы хотите, чтобы Ваше состояние было видно на web? (YES/NO)
 1606:Получен ложный идентификатор сессии %08lx (верный: %08lx) с командой %04x -  проигнорирован.\n
-1607:Синтаксис: micq [-h] [-c] [-i <язык>] [-b <базовый_каталог>]\n	[-f <конфигурация>] [-v[<уровень>]] [-l <папка_журнала>]\n
+1607.Синтаксис: micq [-h] [-c] [-i <язык>] [-b <базовый_каталог>]\n	[-f <конфигурация>] [-v[<уровень>]] [-l <папка_журнала>]\n
 1612:Эта программа была создана безо всякой помощи от Mirabilis и их согласия.\n
 1613:При создании этой программы ни одного Mirabilis'а не пострадало.\n
 1618:UIN:
@@ -529,9 +533,13 @@
 1620:Упёрлись в предельное количество контактов в списке. Попросите автора увеличить его!
 1621:Информация от пользователей не возвращена.
 1622:Вы хотите принять эти изменения? (YES/NO)
-1623:Дубликат пакета %04X\n
-1624:Извините, не могу инициализировать Windows Sockets...
-1632:\n^GСоединение нестабильно. Падаю....
+#-#1623:Дубликат пакета %04X\n
+#+#1623:Doubled packet %04X\n
+# #1623:Double packet %04x.\n
+1624.Извините, не могу инициализировать Windows Sockets...
+#-#1632:\n^GСоединение нестабильно. Падаю....
+#+#1632:\nConnection unstable. Exiting....
+# #1632:\nConnection unstable. Exiting....
 1634:ok.\n
 1637:Не могу сцепить сокет со свободным портом\n
 1638:Не могу заделать socket
@@ -540,7 +548,9 @@
 1641:Досье на пользователя успешно обновлено.\n
 1642:IP:
 1643:Подтвердил SRV_X1 "0x021C Сделан контакт-лист?"\n
-1644:Подтвердил получение SRV_X2 "0x00E6 Готовы старые сообщения?"\n
+#-#1644:Подтвердил получение SRV_X2 "0x00E6 Готовы старые сообщения?"\n
+#+#1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
+# #1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
 1645:Вы ввели неправильный пароль.\n
 1646:Сервер занят.\n
 1648:Был получен отклик %04x	
@@ -553,31 +563,35 @@
 1656:Введите ник пользователя:
 1657:Введите имя пользователя:
 1658:Введите фамилию пользователя:
-1659:Непонятная секция %s в конфиг. файле.
+#-#1659:Непонятная секция %s в конфиг. файле.
+#+#1659:Unknown section %s in configuration file.
+# #1659:Unknown section '%s' in configuration file.
 1660:Неверная команда: %s\n
 1661:Shell-команды были отключены.\n
 1666:Перестал игнорировать %s.\n
 1667:Игнорируем %s.\n
 1670:Нормально видимый для %s.\n
 1671:Всегда видимый для %s.\n
-1672:%s IP адрес 
-1673:Порт %ld.\n
-1674:	Порт неизвестен.\n
+1672.%s IP адрес 
+1673.Порт %ld.\n
+1674.	Порт неизвестен.\n
 1675:Игнорирована строка:
-1676:Нужен uin/ник, кому отправить.\n
-1678:Нужен URL.\n
+1676.Нужен uin/ник, кому отправить.\n
+#-#1678:Нужен URL.\n
+#+#1678:Need URL please.\n
+# #1678:No URL given.\n
 1679:Извините, сохранение Ваших личных ответов прошло неверно!\n
 1680:Ваши личные настройки были сохранены!\n
-1681:Последний %d, с кем Вы говорили:\n
+1681.Последний %d, с кем Вы говорили:\n
 1682:Вы получили телегу от:\n
 1687:Маська уже работает
 1688:д(ень)-(ня)-(ней)
 1689:час(а)-(ов)
 1690:минут(у)-(ы)
 1691:секунд(у)
-1692:Контакты:
+1692.Контакты:
 1696:Пол:
-1700:%s неверный пользователь в Ваших контактах.\n
+1700.%s неверный пользователь в Ваших контактах.\n
 1703:Режимы состояния:\n
 1704:Группы:\n
 1705:Общий
@@ -594,16 +608,18 @@
 1716:Ничего
 1717:"!" как первый символ запустит команду shell (т.е. "!ls"  "!dir" "!mkdir temp")
 1719:Показать как долго работает Маська и некоторую статистику.
-1720:<Контакты> это разделённый запятыми список UIN'ов или ников пользователей.
+#-#1720:<Контакты> это разделённый запятыми список UIN'ов или ников пользователей.
+#+#1720:<contacts> is a comma seperated list of UINs and nick names of users.
+# #1720:<contacts> is a comma separated list of UINs and nick names of users.
 1721:Отправка пустой телеги переключит программу в многострочный режим.\nИспользуйте . на пустой строке, чтобы закончить телегу.\nИспользуйте # на пустой строке, чтобы отменить телегу.
-1724:Автоотмазки: %s.\n
-1727:Не Кантовать:
-1728:Туплю:
-1729:Смылся:
-1730:Тружусь:
-1731:Нычкарь:
-1735:Надо указать телегу.\n
-1738:Нужна команда, чтобы поменять.\n
+1724.Автоотмазки: %s.\n
+1727.Не Кантовать:
+1728.Туплю:
+1729.Смылся:
+1730.Тружусь:
+1731.Нычкарь:
+1735.Надо указать телегу.\n
+1738.Нужна команда, чтобы поменять.\n
 1741:Сперва надо получить хоть одну телегу.\n
 1742:Сперва надо написать хотя бы одну телегу.\n
 1743:Размер не совпадает с указанным в длине пакета.\n
@@ -613,24 +629,24 @@
 1747:всего
 1754: Внимание: Вы должны набрать "save", чтобы сохранить новый список контактов на диске.\n
 1755:добавил Вас в свой список контактов.\n
-1756:\nСоединяю...\n
-1757:Не могу установить соединение.\n
-1758:Посылаю запрос...\n
-1759:Жду ответ....\n
-1760:\nВаш новый UIN: %s%ld%s\n
-1761:неизвестно
+1756.\nСоединяю...\n
+1757.Не могу установить соединение.\n
+1758.Посылаю запрос...\n
+1759.Жду ответ....\n
+1760.\nВаш новый UIN: %s%ld%s\n
+1761.неизвестно
 1762:Ваш новый UIN: %ld.\n
-1763:Команда "%s" переименована в "%s".
-1764:Команда "%s" не изменена.
+1763.Команда "%s" переименована в "%s".
+1764.Команда "%s" не изменена.
 1765.%s имеет UIN %ld.
 1766:Принимаем позу туплю/смылся после простоя в %s%ld%s секунд.\n
 1767:Включить/выключить автоприём позы туплю/смылся.
-1768:Имя команды "%s" уже использовано.\n
+1768.Имя команды "%s" уже использовано.\n
 1770:Пересылает Вашу последнюю телегу указанному контакту.
 1771:Вы еще никому не отправили телегу!\n
 1774:Входящий пакет:
 1775:Исходящий пакет:
-1777:Открываю прямое соединение на localhost:%ld... 
+1777.Открываю прямое соединение на localhost:%ld... 
 1781:Ваш пароль к UIN %ld:\n
 1782:Вам нужен пароль для нового UIN'а.\n
 1783:Чтобы предотвратить опечатку, введите пароль еще раз.\n
@@ -660,7 +676,9 @@
 1814:Послал автоотмазку %s%s%s.\n
 1815:	funny:		использовать смешные сообщения для вывода.\n
 1817:Событийные скрипты запрещены.\n
-1818:Предупреждение: устаревший формат обнаружен в файле конфигурации!\n    Обновите или сохраните файл, набрав "save" и посмотрите изменения.\n
+#-#1818:Предупреждение: устаревший формат обнаружен в файле конфигурации!\n    Обновите или сохраните файл, набрав "save" и посмотрите изменения.\n
+#+#1818:Warning: Deprecated syntax found in rc file!\n    Please update or "save" the rc file and check for changes.\n
+# #1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 1820:%s <параметр> [on|off|<значение>] - управление простыми параметрами.\n
 1822:    color:      использовать цвета при выводе.\n
 1823:Входящий частичный пакет:
@@ -669,11 +687,11 @@
 1830:Отменена телега для %s после %ld попыток.  Текст телеги:\n
 1833:Тет-а-Тет TCP соединение к %s установленно.\n
 1835.Ошибка записи в сокет - %s (%d)\n
-1841:Принял плохо сформированный пакет подтверждения для прямого TCP соединения.\n
+1841.Принял плохо сформированный пакет подтверждения для прямого TCP соединения.\n
 1842:Закрываю socket %d к %s.\n
 1843:Закрываю socket %d.\n
 1844:TCP сообщение %04x отмененно после таймаута.\n
-1845:Ник %s неизвестен.\n
+1845.Ник %s неизвестен.\n
 1846:Открывает и закрывает прямые TCP соединения:\n
 1847:peer open  <ник> - Открывает прямое соединение.\n
 1848:peer close <ник> - Закрывает/сбрасывает прямые соединения.\n
@@ -682,13 +700,13 @@
 1855:TCP соединение с %s на %s:%ld разрушено.\n
 1856:Отменён пакет %04x (%s) от старой сессии %08lx (текущая: %08lx).\n
 1857:Вы хотите спрятать ваш IP? (YES/NO)
-1864:Не могу открыть файл конфигурации %s.
-1866:Эта версия Маськи собрана без поддержки прямого соединения.\n
+1864.Не могу открыть файл конфигурации %s.
+1866.Эта версия Маськи собрана без поддержки прямого соединения.\n
 1867:Получен плохо сформированный (слишком короткий) пакет - игнорирован.\n
 1868:Получен плохо сформированный (слишком длинный субпакет) mульти-пакет - остаток игнорирован.\n
 1869:Версии протокола младше 5 более не поддерживается.\n
 1870:peer  off   <ник> - Закрывает прямое соединение и больше не открывает.\n
-1871:Открываю v8 соединение к %s:%ld... 
+1871.Открываю v8 соединение к %s:%ld... 
 1872:неудачно: %s (%d)\n
 1873:Город, в котором работает:
 1874:Штат, в котором работает:
@@ -697,7 +715,7 @@
 1877:ok.\n
 1878:Ошибка чтения из socket'а: %s (%d)\n
 1879:Другое:
-1880:Входящий пакет не FLAP: id %d.\n
+1880.Входящий пакет не FLAP: id %d.\n
 1881:FLAP канал 1 вне данных.\n
 1882:FLAP канал 1 cmd 1 extra данные:\n
 1883:FLAP канал 1 неизвестная команда %d.\n
@@ -713,18 +731,19 @@
 1894:Нет номера соединения %ld.\n
 1895:Логин не прошел:\n
 1896:Сервер закрыл соединение:\n
-1897:Неполный TLV %d, длина %ld из %d - игнорирую.\n
-1898:Перенаправляю на сервер %s... 
+#-#1897:Неполный TLV %d, длина %ld из %d - игнорирую.\n
+#+#1897:Incomplete TLV %d, len %ld of %d - ignoring.\n
+# #1897:Incomplete TLV %d, len %ld of %ld - ignoring.\n
+1898.Перенаправляю на сервер %s... 
 1899:Неизвестное семейство запрошено: %d\n
 1900:Только для чтения.
 1901:авторизовал вас, чтобы вы добавили его в ваш контакт-лист.\n
-1902:Открываю v5 соединение к %s:%ld... 
+1902.Открываю v5 соединение к %s:%ld... 
 1903:Исходящий v8 пакет сервера:
 1904:Сервер не понимает вер. %d (только %d) для семейства %d!\n
-#1905:SNAC (%x,%x) [%s] flags %x ref %lx\n
 1907:Предупреждение: Сервер думает, что наш UIN %ld, хотя он %ld.\n
-1908:Принял USERONLINE пакет для не контакта.\n
-1909:Принял USEROFFLINE пакет для не контакта..\n
+1908.Принял USERONLINE пакет для не контакта.\n
+1909.Принял USEROFFLINE пакет для не контакта..\n
 1911:соединяю
 1912:закрыт
 1914:Не могу разместить структуру соединения.\n
@@ -823,7 +842,7 @@
 2031:Соединение часто срывается, сдаюсь.\n
 2032:Ставлю в очередь v8 пересоединение на %d seconds.\n
 2033:родился сегодня
-2034:Открываю TCP соединение на %s:%ld... 
+2034.Открываю TCP соединение на %s:%ld... 
 2036:Сохранить текущие настройки на диск.
 2037:Открыть или закрыть прямое соединение или отключить использование прямых соединений для <uin> или <ника>.
 2038:Открыть соединение номер nr или первое серверное соединение.
@@ -835,9 +854,9 @@
 2046:Вы можете захотеть использовать протокол версии 8 для прямого соединения ICQ.\n
 2047:Создаю директорию %s.\n
 2048:Сохраняю настройки в %s.\n
-2049:Получил группу "%s":\n
+2049.Получил группу "%s":\n
 2051:Ошибка на сокете: %s (%d)\n
-2054:"Желаю, чтобы все" телега:
+2054."Желаю, чтобы все" телега:
 2055:Пользователь готов пообщаться и хочет поговорить о чем угодно.
 2056:getauto [auto] <nick> - Получить автоотмаз от ника.\n
 2057:getauto away   <nick> - Получить автоотмаз "тупит" от ника.\n
@@ -848,8 +867,8 @@
 2065:Неизвестная TCP_MSG_GREET_ команда %04x.\n
 2066:Неизвестная TCP_MSG_ команда %04x.\n
 2067:файловый ввод-вывод
-2068:Открываю соединение для передачи файла на %s:%ld... \n
-2070:Передача файла "%s" на порту %ld.\n
+2068.Открываю соединение для передачи файла на %s:%ld... \n
+2070.Передача файла "%s" на порту %ld.\n
 2071:Не могу принять файл %s: %s (%d)\n
 2072:Отменяю передачу файла #%ld (%s), поскольку соединение закрылось.\n
 2073:Использование памяти: %ld пакетов обработанно.\n
@@ -857,9 +876,11 @@
 2079:Входящий TCP пакет (%d - %s): %s
 2080:Отклик сервера доставки SMS:\n%s\n
 #2081:    at %p parent %p assoc %p\n
-2082:Открываю соединение для принятия файлов на localhost:%ld... 
+2082.Открываю соединение для принятия файлов на localhost:%ld... 
 2083:Не могу открыть файл %s: %s (%d).\n
-2084:Ошибка в позиции %ld: %s (%ld).\n
+#-#2084:Ошибка в позиции %ld: %s (%ld).\n
+#+#2084:Error while seeking to offset %ld: %s (%ld).\n
+# #2084:Error while seeking to offset %ld: %s (%d).\n
 2086:Ошибка чтения файла %s: %s (%d).\n
 2087:Закончил передачу файла %s.\n
 2088:Закончил передачу всех %d файлов.\n
@@ -868,7 +889,9 @@
 2091:Помещаю в очередь %s как %s для передачи.\n
 2092:TCP сообщение %s отклоненно - потеря сессии.\n
 2093.%02d %-12s версия %d для %s (%lx), на %s:%ld %s\n
-2094:conn login         Открывает первое серверное соединение.\n
+#-#2094:conn login         Открывает первое серверное соединение.\n
+#+#2094:conn login         Open first server connection.\n
+# #2094:conn login         Open current/first server connection.\n
 2095:conn remove <nr>   Удаляет соединение номер <nr>.\n
 2096.Соединение %ld не открыто.\n
 2097:conn select <nr>   Выбирает соединение номер <nr> как серверное соединение.\n
@@ -877,9 +900,15 @@
 2100:conn select <uin>  Выбирает соединение с UIN <uin> как серверное соединение.\n
 2101:Удаляю соединение %ld и его придатки полностью.\n
 2102:Соединение %ld является настроенным соединением.\n
-2103:contact show    Показывает контакт-лист серверной стороны.\n
-2104:contact diff    Показывает контакты серверной стороны, не на локальном контакт-листе.\n
-2105:contact import  Добавляет контакт-лист серверной стороны в локальный контакт-лист.\n
+#-#2103:contact show    Показывает контакт-лист серверной стороны.\n
+#+#2103:contact show    Show server side contact list.\n
+# #2103:contact show    Show server based contact list.\n
+#-#2104:contact diff    Показывает контакты серверной стороны, не на локальном контакт-листе.\n
+#+#2104:contact diff    Show server side contacts not on local contact list.\n
+# #2104:contact diff    Show server based contacts not on local contact list.\n
+#-#2105:contact import  Добавляет контакт-лист серверной стороны в локальный контакт-лист.\n
+#+#2105:contact import  Add server side contact list to local contact list.\n
+# #2105:contact import  Import server based contact list as local contact list.\n
 2106:Последняя телега от %s%s%s (%s):\n
 2107:Вы не получали телег от %s%s%s.\n
 2108:auto
@@ -887,27 +916,36 @@
 2110:peer файлы  <ник> <file1> <as1> ... [<описание>]\n
 2111:                 - Посылает file1 как as1, ..., с описанием.\n
 2112:                 - as = "/": отрезает путь, as = ".": как есть\n
-2113:Неизвестная поза "%s".\n
-2114:Имя команды "%s" не существует.\n
+2113.Неизвестная поза "%s".\n
+2114.Имя команды "%s" не существует.\n
 2115:"%s" не целое.\n
 2116:Не задано нового ника.\n
 2117:%ld добавлен как %s.\n
 2118:Недостаточно памяти.\n
-2119:auth [grant] <ник>    - авторизировать.\n
-2120:auth deny <ник> <msg> - отклонить авторизацию.\n
-2121:auth req  <ник> <msg> - запросить авторизацию.\n
+#-#2119:auth [grant] <ник>    - авторизировать.\n
+#+#2119:auth [grant] <nick>    - grant authorization.\n
+# #2119:auth [grant] <contacts>    - grant authorization.\n
+#-#2120:auth deny <ник> <msg> - отклонить авторизацию.\n
+#+#2120:auth deny <nick> <msg> - refuse authorization.\n
+# #2120:auth deny <contacts> <msg> - refuse authorization.\n
+#-#2121:auth req  <ник> <msg> - запросить авторизацию.\n
+#+#2121:auth req  <nick> <msg> - request authorization.\n
+# #2121:auth req  <contacts> <msg> - request authorization.\n
 2122:Внимание: Вы должны ввести "save", чтобы записать новый пароль на диск.\n
-2123:%sОшибка синтаксиса%s: Слишком мало аргументов: "%s"\n
-2124:%sОшибка синтаксиса%s: Не целое: "%s"\n
+#-#2123:%sОшибка синтаксиса%s: Слишком мало аргументов: "%s"\n
+#+#2123:%sSyntax error%s: Too few arguments: '%s'\n
+# #2123:%sSyntax error%s: Too few arguments: %s\n
+#-#2124:%sОшибка синтаксиса%s: Не целое: "%s"\n
+#+#2124:%sSyntax error%s: Not an integer: '%s'\n
+# #2124:%sSyntax error%s: Not an integer: %s\n
 2126:отключился, телега сохранена на сервере.\n
-#2127:       URL: %s %s%s%s\n
 2128: Описание: %s%s%s\n
 2129: URL:         %s%s%s\n
-2130:Катаем телегу %sвсем%s:\n
+2130.Катаем телегу %sвсем%s:\n
 2131:Катаем телегу к %s%s%s:\n
 2133:Цвет %s%s%s.\n
 2134:Смешные сообщения %s%s%s.\n
-2135:Тихий вывод %s%s%s.\n
+2135.Тихий вывод %s%s%s.\n
 2136:Пароль меняли %s%s%s.\n
 2137:Общее досье было изменено %s%s%s.\n
 2138:Досье было изменено %s%s%s.\n
@@ -915,7 +953,9 @@
 2140:Изменение случайной чат-группы было %s%s%s.\n
 2141:Поиск %sнеудачен%s.\n
 2142:Прямое соединение с %s невозможно.\n
-2145:auth add  <ник>       - авторизованное добавление.\n
+#-#2145:auth add  <ник>       - авторизованное добавление.\n
+#+#2145:auth add  <nick>       - authorized add.\n
+# #2145:auth add  <contacts>       - authorized add.\n
 2146:"%s" уже является псевдонимом для "%s" (%ld).\n
 2147:"%s" (%ld) уже использовано как ник.\n
 2148:Добавлен "%s" как псевдоним для "%s" (%ld).\n
@@ -923,23 +963,35 @@
 2150:Удалён контакт "%s" (%ld).\n
 2156:conn close <nr>    Закрыть соединение номер <nr>.\n
 2157:Молдова
-2158:Не задан файл.\n
+#-#2158:Не задан файл.\n
+#+#2158:No file given.\n
+# #2158:No file name given.\n
 2159:Несколько фалов.
 2160:peer файл <ник> <файл> [<описание>]\n
-2161:Получаю %ld файлов общим размером %ld байт на скорости %lx от %s.\n
+#-#2161:Получаю %ld файлов общим размером %ld байт на скорости %lx от %s.\n
+#+#2161:Receiving %ld files with together %ld bytes at speed %lx from %s.\n
+# #2161:Receiving %ld files with total size %ld bytes at speed %lx from %s.\n
 2162:Получаю файл %s (%s) размером %ld байт как %s.\n
 2163:Посылаю файл %ld со смещением %ld.\n
 2164:Ошибка записи в файл.\n
-2165:Та сторона прислала больше байт (%ld), чем есть в файле (%ld).\n
+#-#2165:Та сторона прислала больше байт (%ld), чем есть в файле (%ld).\n
+#+#2165:The peer sent more bytes (%ld) than file length (%ld).\n
+# #2165:The peer sent more bytes (%ld) than the file length (%ld).\n
 2166:Закончил прием файлов.\n
 2167:Ошибка - неизвестный пакет.\n
 2168:Передача файла #%ld (%s) прервана после %ld попыток в связи с превышением времени ожидания.\n
 2169:Передача файла прервана удаленной машиной (%d).\n
-2170:Посылаю со скоростью %lx к %s.\n
+#-#2170:Посылаю со скоростью %lx к %s.\n
+#+#2170:Sending at speed %lx to %s.\n
+# #2170:Sending file at speed %lx to %s.\n
 2171:Advanced
 2172:Команды для расширенного режима.
-2176:Показать подробно позы всех в вашем контакт-листе.
-2177:Показать подробно позы всех в вашем контакт-листе, кто сейчас в сети.
+#-#2176:Показать подробно позы всех в вашем контакт-листе.
+#+#2176:Displays verbose the current status of everyone on your contact list.
+# #2176:Displays verbosely the current status of everyone on your contact list.
+#-#2177:Показать подробно позы всех в вашем контакт-листе, кто сейчас в сети.
+#+#2177:Displays verbose the current status of online people on your contact list.
+# #2177:Displays verbosely the current status of online people on your contact list.
 2179:Послать всем <контакт>ам один файл.
 2180:Послать <uin>у или <ник>у несколько файлов.
 2181:Закрыть или удалить соединение номер <nr>.
@@ -947,7 +999,7 @@
 2183:Проверить всех <контакт>ов, невидимы они или отключены.
 2184:%s%-10s%s - %s\n
 2185:Закрываю соединение %ld.\n
-2186:Принимаю файл "%s" (%ld байт).\n
+2186.Принимаю файл "%s" (%ld байт).\n
 2188:Вы слишком быстро посылаете данные - прекратите печатать, или сервер отключит вас!\n
 2191:Ошибка текущего сообщения: %d.\n
 2192:Возможности:
@@ -959,14 +1011,14 @@
 2199:  -h, --help     показывает эту справку\n
 2200:  -v, --verbose  установить (или увеличить) подробность вывода (в основном для отладки)\n
 2201:  -b, --basedir  использовать данную базовую директорию (по умолчанию: %s)\n
-2202:  -f, --config   использовать данный файл конфигурации (по умолчанию: %s)\n
+2202.  -f, --config   использовать данный файл конфигурации (по умолчанию: %s)\n
 2203:  -l, --logplace использовать данный файл/директорию для журнала (по умолчанию: %s)\n
 2204:  -i, --i18n     использовать данную локализацию (по умолчанию: автоопределение)\n
 2205:  -c, --nocolor  отключить цвета\n
 2206:Сервер отказывается передать нам отложенные сообщения.\n
 2207:Ошибка протокола в команде к старому ICQ серверу: %d.\n
-2208:Обнаружено UTF-8, но эта Маська была слеплена без поддержки UTF-8.\n
-2209:Обнаружено UTF-8.\n
+2208.Обнаружено UTF-8, но эта Маська была слеплена без поддержки UTF-8.\n
+2209.Обнаружено UTF-8.\n
 2210.%smICQ (Matt's ICQ клон)%s версия %s%s%s (слеплена %s)\n
 2211:Ваша поза - "%s".\n
 2212:меняет позу на "%s"
@@ -977,7 +1029,7 @@
 2217:Эта Маська не может выполнять преобразования между "%s" и юникодом.\n
 #2218:UIN: %s\n
 2220:различные
-2221:Удалён временный контакт "%s" (%ld).\n
+2221.Удалён временный контакт "%s" (%ld).\n
 2222:Команда скрипта "%s" не выполнена: %s (%d).\n
 #2223:Opening remote control FIFO at %s... 
 2225:дистанционное управление
@@ -985,41 +1037,45 @@
 2227:Не смог открыть FIFO
 #2228:Couldn't set FIFO nonblocking
 2229.Отклоняем файловый запрос "%s" (%ld байт): %s.\n
-2230:Отклоняем запрос на чат (%s/%s) от %s.\n
+2230.Отклоняем запрос на чат (%s/%s) от %s.\n
 2231.Передача файла "%s" отвергнута той стороной: %s.\n
-2232:запрашивает авторизацию: %s%s\n
-2233:отклонена авторизация: %s%s\n
+2232.запрашивает авторизацию: %s%s\n
+#-#2233:отклонена авторизация: %s%s\n
+#+#2233:refused authorization: %s%s\n
+# #2233:refused authorization: %s%s%s\n
 2234:Сообщение %s выброшено - потеряна сессия.\n
-2235:Не задан ник.\n
+2235.Не задан ник.\n
 2236:Информация о %s%s%s (%ld):\n
 2237:Web-статус:
 2238:Скрыть IP:
 #2239:Unknown more:
 2240:Не указана группа контактов.\n
 2241:Добавлен "%s" в группу контактов "%s".\n
-2242:Импортировано %d новых контактов, добавлено %d раз в группу контактов.\n
+2242.Импортировано %d новых контактов, добавлено %d раз в группу контактов.\n
 2243:Контакт "%s" удалён из группы "%s".\n
 2244:В группе контактов "%s" уже есть контакт "%s" (%ld).\n
 2245:Добавлена группа контактов "%s".\n
 2246:Контакт "%s" не относится к группе "%s".\n
-2247:Не смог загрузить мета-данные о "%s" (%ld).\n
+2247.Не смог загрузить мета-данные о "%s" (%ld).\n
 2248:Сохранил мета-данные о "%s" (%ld).\n
 2249:Не смог сохранить мета-данные о "%s" (%ld).\n
 2250:Номер "%s" не соответствует формату +<код_страны><сотовый_оператор><номер>.\n
 2251:Ошибка:
 2252:Сигнал осуществляется %sбип%sом.\n
 2253:Сигнал осуществляется скриптом %sevent%s.\n
-2254:Сигнал выключен.
+#-#2254:Сигнал выключен.
+#+#2254:A beep is never generated.
+# #2254:A beep is never generated.\n
 2255:Сигнал пришедшего контакта всегда выполняется посредством скрипта %sevent%s.\n
 2256:Сигнал ушедшего контакта всегда выполняется посредством скрипта %sevent%s.\n
-2257:Кодировка:
+2257.Кодировка:
 2258:Не найдено ожидающих входящих запросов на передачу файла для  %s (последовательность %ld).\n
-2259:запрашивает передачу файла "%s" размером %ld байт (последовательность %ld).\n
+2259.запрашивает передачу файла "%s" размером %ld байт (последовательность %ld).\n
 2260:Попробуйте пожалуйста команду getauto взамен.\n
-2261:Hermit %s%s%s.\n
+2261.Hermit %s%s%s.\n
 2262:Использование клавиши delete в качестве backspace %s%s%s.\n
-2263:Записьки %s%s%s.\n
-2264:Записьки изменений позы %s%s%s.\n
+2263.Записьки %s%s%s.\n
+2264.Записьки изменений позы %s%s%s.\n
 2265:Автоотмазчик %s%s%s.\n
 2266:Ник для команды повтора в качестве приглашения %s%s%s.\n
 2267:Автозапись %s%s%s.\n
@@ -1028,30 +1084,29 @@
 #2270:simple
 #2271:indent
 #2272:smart
-#2273:cycle
-#2274:cycleall
-2275:Использование Tab как %s%s%s.\n
-#2276:complete
-2277:    hermit:     игнорировать всех, кто не в списке контактов.\n
+2275.Использование Tab как %s%s%s.\n
+2277.    hermit:     игнорировать всех, кто не в списке контактов.\n
 2278:    delbs:      использовать клавишу delete как backspace.\n
-2279:    log:        писать, всё писать.\n
-2280:    logonoff:   записывать также изменения позы.\n
+2279.    log:        писать, всё писать.\n
+2280.    logonoff:   записывать также изменения позы.\n
 2281:    auto:       посылать автоответы.\n
-2282:    uinprompt:  использовать ник для команды повтора в качестве приглашения.\n
+#-#2282:    uinprompt:  использовать ник для команды повтора в качестве приглашения.\n
+#+#2282:    uinprompt:  display the last nick in the prompt.\n
+# #2282:    uinprompt:  have the last nick in the prompt.\n
 2283:    autosave:   автозапись micqrc.\n
 2284:    autofinger: автозапрос информации по новому UINу.\n
 2285:    linebreak:  способ переноса сообщений: simple, break, indent, smart.\n
-2286:    tabs:       обработка клавиши tab: simple, cycle, cycleall.\n
-2287:    silent:     выключить вывод служебной информации: off, on, complete.\n
+2286.    tabs:       обработка клавиши tab: simple, cycle, cycleall.\n
+2287.    silent:     выключить вывод служебной информации: off, on, complete.\n
 2288:Способ отступа - %s%s%s.\n
-2289:}}}
-2290:{{{
-2291:>>}
-2292:{<<
+2289.}}}
+2290.{{{
+2291.>>}
+2292.{<<
 2293:--=
 2294:===
-2295:>>>
-2296:<<<
+2295.>>>
+2296.<<<
 2297:Псевдоним к чему?\n
 2298:Какой псевдоним удалить?\n
 2299:Псевдоним не существует.\n
@@ -1064,17 +1119,28 @@
 2306:Запросить список контактов с сервера и показать всех либо новые контакты для импорта.
 2307:Показать позы людей в сети из Вашего списка контактов, сортированного по группам.
 2308:Показать позы всех в Вашем списке контактов, сортированном по группам.
-2309:Показать подробно позы людей в сети из Вашего списка контактов, сортированного по группам.
-2310:Показать подробно позы всех в Вашем списке контактов, сортированном по группам.
+#-#2309:Показать подробно позы людей в сети из Вашего списка контактов, сортированного по группам.
+#+#2309:Displays verbose the current status of online people on your contact list, sorted by contact group.
+# #2309:Displays verbosely the current status of online people on your contact list, sorted by contact group.
+#-#2310:Показать подробно позы всех в Вашем списке контактов, сортированном по группам.
+#+#2310:Displays verbose the current status of everyone on your contact list, sorted by contact group.
+# #2310:Displays verbosely the current status of everyone on your contact list, sorted by contact group.
 2311:Добавить <uin> как <new nick>, или добавить псевдоним <new nick> к <uin>у или <ник>у.
 2312:Удалить все псевдонимы <контакт>а, удалить контакт, если добавлено "all".
 2313:Разрежить, запретить, запросить или подтвердить авторизацию для <контакт>у на добавление Вас/его в его/Ваш список контактов.
 2314:Это экспертные команды. Не поленитесь прочитать подробную информацию в справочном руководстве.\n
 2315:Не могу следить за статусом %s - слишком много следящих.\n
-2317:Перевод %s не найден. Хотите перевести Маську на этот язык?\n
-2318:Включаем чиста русский (%s) перевод (%ld записей).\n
+#2316:Translation %s not found.\n
+2317.Перевод %s не найден. Хотите перевести Маську на этот язык?\n
+2318.Включаем чиста русский (%s) перевод (%ld записей).\n
 2319:Разрешить приём файла от <uin>а или <nick>а.
 2320:peer accept <nick> [<id>]\n                  - разрешить приём файла.\n
+#2321:contact add     Add server based contact list to local contact list.\n
+#2322:contact sync    Import server based contact list if appropriate.\n
+#2323:contact export  Export local contact list to server based list.\n
+#2324:contact upload  Add local contacts to server based contact list.\n
+#2325:Warning: server based contact list change failed with error code %d.\n
+#2326:Server side contact list only supported for ICQ v8.\n
 2327:%smICQ (Matt's ICQ клон)%s версия %s%s%s\n
 2328:Чего было долбиться так часто? Теперь подожди полчасика, а потом заходи.\n
 2329:ошибочка вышла
@@ -1088,26 +1154,19 @@
 2337:  set  - загрузить сервер нашими мета-данными\n
 2338:  get  - запросить мета-данные с сервера\n
 2339:  rget - запросить с сервера мета-данные на последнего тележника\n
-2340:Передача файла "%s" отвергнута той стороной: %s%s.\n
-2341:Отклоняем файловый запрос "%s" (%ld байт): %s%s.\n
+2340.Передача файла "%s" отвергнута той стороной: %s%s.\n
+2341.Отклоняем файловый запрос "%s" (%ld байт): %s%s.\n
 #2342:Scripting
 #2343:Scripting extensions.
 #2344:Execute Tcl script from <file>.
 #2345:Execute Tcl script in <string>.
 #2346:The following Tcl commands are supported:\n
-#2347:micq receive <script> [<contact>]
 #2348:Install hook to receive messages from UIN or nick, or all if omitted.
-#2349:Callback arguments: from message
-#2350:micq unreceive [<contact>]
 #2351:Uninstall message hook for UIN or nick.
-#2352:micq event <script>
 #2353:Install event hook. Callback arguments: type ...
-#2354:micq unevent
 #2355:Uninstall event hook.
 #2356:List all installed hooks. Format: <type> <command> <filter>.
-#2357:micq exec <cmd>
 #2358:Execute micq command.
-#2359:micq nick <uin>
 #2360:Find nick from <uin>.
 #2361:Wrong number of arguments for command '%s %s'. Expected %d.\n
 #2362:Wrong number of arguments. Try 'help'.
@@ -1118,16 +1177,165 @@
 #2367:TCL error: %s\n
 2368:peer deny <nick> [<id>] [<reason>]\n                  - запретить приём файла.\n
 2369:Отклонить приём файла от <uin> или <nick>.
-#2370:%02d %-12s version %d%s for %s (%lx), at %s:%ld %s\n
 #2371:SSL init failed.\n
 #2372:Could not send SSL request to %s\n
-#2373:Error while reading from socket (SSL): %s (%d)\n
 #2374:SSL error: %s [%d]\n
 #2375:SSL handshake ok\n
 #2376:SSL read from %s [ERR=%d]: %s
 #2377:SSL write to %s [ERR=%d]: %s
 #2378:peer ssl <nick>   - initiate SSL handshake.
-#2379:╩%╩
-#2380:╚%╚
 2381:Я тебе запишу в контакт-лист автора mICQ, но ты его зря не дёргай, сперва читай help, man, FAQ и много думай.\n
-#2382:Peer-to-peer connection not associated to server connection, discarding.\n
+#2383:View your last messages of <contact>. Type 'h' as short command.
+#2384:Case insensitive search of <pattern> in log file of <contact>.
+#2385:Couldn't open %s for reading: %s (%d).\n
+#2386:Found %s%d%s matches.\n
+#2388:find <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n
+#2389:finds <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
+#2390:No or empty pattern given.\n
+#2391:Case sensitive search of <pattern> in log file of <contact>.
+#2393:%Y-%m-%d
+#2394: %I:%M %p
+#2395:View your messages of <contact> since <date>.
+#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n
+#2397:No server session found.\n
+#2398:Set an option for a contact group, a contact or global.\n
+#2399:Request SSL connection.
+#2400:No translation (%s) loaded (%d entries).\n
+#2401:Auto reply messages are now contact options, see the %s command.\n
+#2402:The global auto reply flag is handled by the %s command.\n
+#2403:msg>
+#2405:Your status is %s (%s).\n
+#2406:Couldn't load meta data for %s (%ld).\n
+#2407:This flag is handled by the %s command.\n
+#2408:%s is not a contact group.\n
+#2409:%s is not a contact.\n
+#2410:%s is neither a contact, nor a contact group, nor the %sglobal%s keyword.\n
+#2411:opt - short hand for optglobal, optgroup or optcontact.\n
+#2412:optglobal            [<option> [<value>]] - set global option.\n
+#2413:optconnection        {<option> [<value>]] - set connection option.\n
+#2414:optgroup   <group>   [<option> [<value>]] - set contact group option.\n
+#2415:optcontact <contact> [<option> [<value>]] - set contact option.\n
+#2416:Options for contact %s:\n
+#2417:Options for contact group %s:\n
+#2418:Global options:\n
+#2419:undefined
+#2420:effectivly
+#2421:Unknown option %s.\n
+#2422:Option %s for contact %s is undefined.\n
+#2423:Option %s for contact group %s is undefined.\n
+#2424:Option %s%s has no global value.\n
+#2425:Option %s for contact %s is %s%s%s.\n
+#2426:Option %s for contact group %s is %s%s%s.\n
+#2427:Option %s%s is globally %s%s%s.\n
+#2428:Option %s for contact %s is %s.\n
+#2429:Option %s for contact group %s is %s.\n
+#2430:Option %s%s is globally %s.\n
+#2431:Undefining option %s for contact %s.\n
+#2432:Undefining option %s for contact group %s.\n
+#2433:Undefining global option %s%s.\n
+#2434:Setting option %s for contact %s to %s.\n
+#2435:Setting option %s for contact group %s to %s.\n
+#2436:Setting option %s%s globally to %s.\n
+#2437:Setting option %s for contact %s to %s%d%s.\n
+#2438:Setting option %s for contact group %s to %s%d%s.\n
+#2439:Setting option %s%s globally to %s%d%s.\n
+#2440:Setting option %s for contact %s.\n
+#2441:Setting option %s for contact group %s.\n
+#2442:Setting option %s%s globally.\n
+#2443:Clearing option %s for contact %s.\n
+#2444:Clearing option %s for contact group %s.\n
+#2445:Clearing option %s%s globally.\n
+#2446:Invalid value %s for boolean option %s.\n
+#2447:No new password given.\n
+#2448:Contact group '%s' already exists\n
+#2449:Primary contact group for contact '%s' is now '%s'.\n
+#2450:Last %d people you talked with:\n
+#2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
+#2452:%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n
+#2453:    at %p parent %p assoc %p ssl %d\n
+#2454:    open %p reconn %p close %p err %p dispatch %p\n
+#2455:About>
+#2456:Unknown command %s, type %shelp%s for help.\n
+#2457:Unknown configuration file format version %d.\n
+#2458:Can't tab spool %s; type "%sopt %s tabspool 1%s" manually.\n
+#2459:Peer-to-peer connection not associated to server connection, discarding.\n
+#2460:Contact group %s (id %s%d%s) not associated to server connection.\n
+#2461:Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
+#2462:File transfer %s to port %s%ld%s.
+#2463:File transfer %s rejected by peer: %s.
+#2464:Accepting file %s (%s%ld%s bytes).
+#2465:Refusing file request %s (%s%ld%s bytes): %s.
+#2466:Refusing chat request (%s/%s) from %s%s%s.
+#2467:mICQ>
+#2468:requests file transfer %s of %s%ld%s bytes (sequence %s%ld%s).\n
+#2469:URL:
+#2470:requests authorization: %s\n
+#2471:Ignored contacts:\n
+#2472:Hidden-from contacts:\n
+#2473:Normal contacts:\n
+#2474:Intimate contacts:\n
+#2475:Showed %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
+#2476:Downloaded %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
+#2477:Uploading %d contact groups and %d contacts.\n
+#2478:Server: Group %s (#%d)\n
+#2479:Local:  Group %s (#%d)\n
+#2480:Server: Group %s Contact %s (#%d) <ignored>\n
+#2481:Server: Group %s Contact %s (#%d) <hidefrom>\n
+#2482:Server: Group %s Contact %s/%s (#%d) <hidefrom>\n
+#2483:Local:  Group %s Contact %s/%s (#%d)\n
+#2484:Server: Group %s Contact %s (#%d)\n
+#2485:Server: Group %s Contact %s/%s (#%d)\n
+#2486:Local:  Group %s Contact %s/%s (#%d) <%s>\n
+#2487:hidefrom
+#2488:intimate
+#2489:Server: Group %s Contact %s/%s (#%d) <intimate>\n
+#2490:normal
+#2491:Differences in %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate, %d local.\n
+#2492:Usage: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
+#2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
+#2494:  -u, --uin      login with this UIN instead of those configured\n
+#2495:  -p, --passwd   ... and override password\n
+#2496:  -s, --status   ... and override status\n
+#2497:  -C, --cmd      ... and execute mICQ command\n
+#2498:Encoding %s%s%s is not supported by this mICQ.\n
+#2499:Please recompile using the '--enable-iconvrepl' configure option.\n
+#2500:Manual locale setting %s ignored - use a real locale instead.\n
+#2501:Your locale is unset. Please use the %s--i18n%s command line option or set one of the environment variables %sLC_ALL%s, %sLC_MESSAGES%s, or %sLANG%s to your current locale.\n
+#2502:Locale setting %s ignored - use a real locale instead.\n
+#2503:Your system doesn't know the %s locale - try %siconv --list%s.\n
+#2504:Could not open configuration file %s%s%s.
+#2505:Deprecated option -f used. Please use the similar -b instead.\n
+#2506:This console uses encoding %s.\n
+#2507:Translation %s%s%s not found. Would you like to translate mICQ into your language?\n
+#2508:English (%s) translation loaded (%s%d%s entries).\n
+#2509:WSAStartup() for WinSocks 1.1 failed
+#2510:Opening v5 connection to %s:%s%ld%s... 
+#2511:Redirect to server %s:%s%ld%s... 
+#2512:Opening v8 connection to %s:%s%ld%s for %s%s%s... 
+#2513:new UIN
+#2514:refused (ignored)
+#2515:You queried already too many users today - come back tomorrow.\n
+#2516:The query got stuck. Or somesuch. Try again later.\n
+#2517:I'm out of wisdom about the server's problem. It just didn't work out.\n
+#2518:You need to 'save' to write your new UIN to disc.\n
+#2519:Opening file listener connection at %slocalhost%s:%s%ld%s... 
+#2520:Opening file transfer connection to %s:%s%ld%s... \n
+#2521:Opening peer-to-peer connection at %slocalhost%s:%s%ld%s... 
+#2522:Opening TCP connection at %s:%s%ld%s... 
+#2523:%s not recognized as a nick name.\n
+#2524:Can't restore terminal modes.\n
+#2525:Can't read terminal modes.\n
+#2526:Can't modify terminal modes.\n
+#2527:OpenSSL internal error: %s:%i\n
+#2528:OpenSSL read error: %s\n
+#2529:OpenSSL read error %d (unknown)\n
+#2530:OpenSSL write error: %s\n
+#2531:OpenSSL write error %d (unknown)\n
+#2532:OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n
+#2533:SSL handshake failed
+#2534:IP:
+#2535:Groups:\n
+#2536:Group:
+#2537:Contact upload failed, authorization required.\n
+#2538:Contact upload failed, already on server.\n
+#2539:Contact upload succeeded.\n

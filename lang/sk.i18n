@@ -1,5 +1,5 @@
 # $Id$ Slovak (Slovak)
-#  EN: __.i18n,v 1.69 2004/07/25 16:29:30
+#  EN: __.i18n,v 1.70 2004/11/18 21:25:15
 1000.UTF-8
 1001:sk
 1002:sk_SK
@@ -7,7 +7,7 @@
 1004:Ján Staník
 1005:Ján Staník
 1006:2.8.2004
-1008:iso-8859-2
+1008.iso-8859-2
 1010:Užívateľ je Preč [Automatická správa]
 1011:Užívateľ Nie je k dispozícii [Automatická správa]
 1012:Užívateľ je Zaneprázdnený [Automatická správa]
@@ -941,7 +941,7 @@
 2186.Accepting file '%s' (%ld bytes).\n
 2188:You're sending data too fast - stop typing now, or the server will disconnect!\n
 2191:Instant message error: %d.\n
-2192:Capabilities: 
+#2192:Capabilities:
 2194:Don't know how to open this connection type.\n
 2195:Obsolete number:
 2196:Obsolete text:
@@ -1146,7 +1146,6 @@
 #2401:Auto reply messages are now contact options, see the %s command.\n
 #2402:The global auto reply flag is handled by the %s command.\n
 #2403:msg>
-#2404:Group: %s\n
 #2405:Your status is %s (%s).\n
 #2406:Couldn't load meta data for %s (%ld).\n
 #2407:This flag is handled by the %s command.\n
@@ -1277,3 +1276,8 @@
 #2532:OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n
 #2533:SSL handshake failed
 #2534:IP:
+#2535:Groups:\n
+#2536:Group:
+#2537:Contact upload failed, authorization required.\n
+#2538:Contact upload failed, already on server.\n
+#2539:Contact upload succeeded.\n

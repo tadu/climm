@@ -1,5 +1,6 @@
 # $Id$
-#  EN: __.i18n,v 1.63.2.16 2004/03/10 22:31:00
+#  EN: __.i18n,v 1.70 2004/11/18 21:25:15
+#1000:UTF-8
 1001:sr
 1002:sr_YU
 1003:0-4-10
@@ -9,7 +10,7 @@
 1010:Корисник је 'отишао' [аутоматска порука]
 1011:Корисник је 'недоступан' [аутоматска порука]
 1012:Корисник је 'заузет' [аутоматска порука]
-1013:Корисник није на вези
+1013.Корисник није на вези
 1014:није унесен
 1015:јан
 1016:феб
@@ -30,12 +31,12 @@
 1032:debug: дупли пакет #%04lx, тип %04x (%s)\n
 1033:Долазећи v8 серверски пакет:
 1034:Достигнут максималан број покушаја. Одустајање.
-1036:Непозната команда %s, откуцајте /help за упутства.
-1037:Порука само делимично послата.\n
+1036.Непозната команда %s, откуцајте /help за упутства.
+1037.Порука само делимично послата.\n
 1038:Порука прекинута.\n
 1039:Сервер тврди да нисмо повезани.\n
-1040:mICQ> 
-1041:порука> 
+1040.mICQ> 
+1041.порука> 
 1043:Пронађени сви корисници.
 1044:Пронађено превише корисника.
 1045:Претраживање завршено.
@@ -51,13 +52,13 @@
 1062:Игнорисани корисници:
 1063:Унесите лозинку:
 1064:Аутоматски промењен статус на '%s'.\n
-1072:Корисници који нису на вези:
-1073:Корисници на вези:
+1072.Корисници који нису на вези:
+1073.Корисници на вези:
 1077.посвећено успомени на Метјуа Д. Смита (Matthew D. Smith).
 1078:Превод није доступан.
 1079:Превод (%s, %s) са %s, на којем је последњу преправку %s направио %s, за mICQ %d.%d.%d%s.\n
-1080:Није могуће учитати међународне поставке за "%s".\n
-1081:Успешно учитан sr_YU превод (%ld ставки).\n
+1080.Није могуће учитати међународне поставке за "%s".\n
+1081.Успешно учитан sr_YU превод (%ld ставки).\n
 1082:Покушај да се поново успостави веза [покушај %d од %d]\n
 1085:укључено
 1086:искључено
@@ -68,8 +69,8 @@
 1096:Корисничко име за SOCKS:
 1097:Лозинка за SOCKS:
 1098:Приказивање листе надимака кроз који можете проћи табулатором.
-1099:Непознати језик.
-1100:ништа
+1099.Непознати језик.
+1100.ништа
 1101:арапски
 1102:бхаџпури
 1103:бугарски
@@ -156,7 +157,9 @@
 1185:техника
 1186:универзитетски студент
 1187:прављење веб сајтова
-1188:Непозната команда у rc фајлу '%s', игнорисана.
+#-#1188:Непозната команда у rc фајлу '%s', игнорисана.
+#+#1188:Unrecognized command in rc file '%s', ignored.
+# #1188:Unrecognized command '%s' in configuration file, ignored.
 1198:остало
 1200:није унесено
 1201:Авганистан
@@ -481,7 +484,7 @@
 1538:Унесите нову годину рођења (4 цифре):
 1539:Унесите нови месец рођења:
 1540:Унесите нови дан рођења:
-1541:Подаци> 
+1541.Подаци> 
 1544:Унесите нов град:
 1545:Унесите нову земљу:
 1546:Унесите нов број телефона:
@@ -519,7 +522,7 @@
 1604:Да ли би требало да су корисници на вези?
 1605:Да ли желите да ваш статус буде видљив на вебу? (ДА/НЕ)
 1606:Примљена неисправна сесија ID %08lx (исправно: %08lx) са командом %04x која је игнорисана.\n
-1607:Употреба: micq [-h] [-v[ниво]] [-f <rc-фајл>] [-l <лог-фајл>]\n
+1607.Употреба: micq [-h] [-v[ниво]] [-f <rc-фајл>] [-l <лог-фајл>]\n
 1612:Овај програм је написан без икакве помоћи Мирабилиса или из његове сагласности.\n
 1613:Није било никаквог декомпајлирања било каквог Мирабилис кода да би се написао овај програм.\n 
 1618:UIN:
@@ -527,9 +530,13 @@
 1620:Достигнут максималан број контаката. Тражите од програма да га повећа!
 1621:корисника није послало повратну информацију.
 1622:Да ли желите да ове измене буду примењене? (ДА/НЕ)
-1623:Дуплиран пакет %04X\n
-1624:Нажалост, не могу се иницијализовати Windows Sockets... 
-1632:\n^GВеза нестабилна. Излазак.... 
+#-#1623:Дуплиран пакет %04X\n
+#+#1623:Doubled packet %04X\n
+# #1623:Double packet %04x.\n
+1624.Нажалост, не могу се иницијализовати Windows Sockets... 
+#-#1632:\n^GВеза нестабилна. Излазак.... 
+#+#1632:\nConnection unstable. Exiting....
+# #1632:\nConnection unstable. Exiting....
 1634:у реду.\n
 1637:Није могуће спајање socket-а (зглоба) са слободним портом\n
 1638:Није било могуће направити socket (зглоб)
@@ -538,7 +545,9 @@
 1641:Кориснички подаци успешно освежени.\n
 1642:IP:
 1643:Потврђен SRV_X1 0x021C Да ли је контакт-листа готова?\n
-1644:Потврђен SRV_X2 0x00E6 Да ли су старе поруке готове?\n
+#-#1644:Потврђен SRV_X2 0x00E6 Да ли су старе поруке готове?\n
+#+#1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
+# #1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
 1645:Унели сте нетачну лозинку.\n
 1646:Сервер је заузет.\n
 1648:Одговор је био %04x	
@@ -551,31 +560,35 @@
 1656:Унесите надимак корисника:
 1657:Унесите име корисника:
 1658:Унесите презиме корисника:
-1659:Непозната секција %s у конфигурационом фајлу.
+#-#1659:Непозната секција %s у конфигурационом фајлу.
+#+#1659:Unknown section %s in configuration file.
+# #1659:Unknown section '%s' in configuration file.
 1660:Непрописна команда: %s\n
 1661:Шел (shell) команде су искључене.\n
 1666:%s није игнорисан.\n
 1667:Игнорисан %s.\n
 1670:Од сада нормална видљивост према '%s'.\n
 1671:Од сада увек укључена видљивост према '%s'.\n
-1672:IP адреса на којој се налази %s: 
-1673:Порт је %ld.\n
-1674:Порт је непознат.\n
+1672.IP адреса на којој се налази %s: 
+1673.Порт је %ld.\n
+1674.Порт је непознат.\n
 1675:Игнорисана линија:
-1676:Неопходан је uin/nick (надимак) за слање.\n
-1678:Потребан URL.\n
+1676.Неопходан је uin/nick (надимак) за слање.\n
+#-#1678:Потребан URL.\n
+#+#1678:Need URL please.\n
+# #1678:No URL given.\n
 1679:Нажалост, снимање ваших личних одговора је лоше прошло!\n
 1680:Ваше личне поставке су снимљене!\n
-1681:Последњих %d особа са којима сте разговарали:\n
+1681.Последњих %d особа са којима сте разговарали:\n
 1682:Примили сте поруке од:\n
 1687:mICQ ради
 1688:дан(а)
 1689:сат(и)
 1690:минут(а)
 1691:секунд(и)
-1692:Контакти:
+1692.Контакти:
 1696:Пол:
-1700:%s није регуларан корисник у вашој листи.\n
+1700.%s није регуларан корисник у вашој листи.\n
 1703:Варијанте статуса:\n
 1704:Групе:\n
 1705:Уопште
@@ -592,16 +605,18 @@
 1716:нема
 1717:'|' као први карактер у команди значи извршавање шел (shell) команде (нпр. '!ls', '!dir', '!mkdir temp')
 1719:Приказивање колико дуго mICQ ради и неких статистика.
-1720:<contacts> је зарезима раздвојен списак UIN-а и надимака корисника.
+#-#1720:<contacts> је зарезима раздвојен списак UIN-а и надимака корисника.
+#+#1720:<contacts> is a comma seperated list of UINs and nick names of users.
+# #1720:<contacts> is a comma separated list of UINs and nick names of users.
 1721:Слање празне поруке ће поставити клијента у вишелинијски мод.\nКористите само . у празној линији да завршите поруку.\nКористите само # у празној линији да прекинете поруку.
-1724:Аутоматски одговори су %s.\n
-1727:Порука за "не узнемиравати":
-1728:Порука за "отишао":
-1729:Порука за "није доступан":
-1730:Порука за "заузет":
-1731:Порука за "невидљив":
-1735:Морате дати поруку.\n
-1738:Потребна је команда да би се обавила преправка.\n
+1724.Аутоматски одговори су %s.\n
+1727.Порука за "не узнемиравати":
+1728.Порука за "отишао":
+1729.Порука за "није доступан":
+1730.Порука за "заузет":
+1731.Порука за "невидљив":
+1735.Морате дати поруку.\n
+1738.Потребна је команда да би се обавила преправка.\n
 1741:Прво морате примити поруку.\n
 1742:Прво морате написати поруку.\n
 1743:Несагласност величина у пакетима.\n
@@ -611,24 +626,24 @@
 1747:укупно
 1754:Напомена: Треба да урадите 'save' да бисте снимили нове контакте на диск.\n 
 1755:вас је додао/ла у своју контакт-листу.\n
-1756:\nУспостављање везе...\n
-1757:Везу није могуће успоставити.\n
-1758:Слање захтева...\n
-1759:Чекање на одговор...\n
-1760:\nВаш нови UIN је %s%ld%s!\n
-1761:непознато
+1756.\nУспостављање везе...\n
+1757.Везу није могуће успоставити.\n
+1758.Слање захтева...\n
+1759.Чекање на одговор...\n
+1760.\nВаш нови UIN је %s%ld%s!\n
+1761.непознато
 1762:Ваш нови UIN је: %ld.\n
-1763:Команда '%s' је преименована у '%s'.
-1764:Команда '%s' није промењена.
+1763.Команда '%s' је преименована у '%s'.
+1764.Команда '%s' није промењена.
 1765.%s има UIN %ld.
 1766:Промена статуса на 'отишао'/'недоступан' после %s%ld%s секунд(и) неактивности.\n
 1767:Аутоматско кружно пребацивање на 'отишао'/'недоступан'.
-1768:Име за команду '%s' је већ употребљено.\n
+1768.Име за команду '%s' је већ употребљено.\n
 1770:Поновно слање ваше последње поруке контактима <contacts>.
 1771:Још никоме нисте послали поруку!\n
 1774:Долазећи пакет:
 1775:Одлазећи пакет:
-1777:Отварање један-на-један везе на локалхост:%ld... 
+1777.Отварање један-на-један везе на локалхост:%ld... 
 1781:Ваша лозинка за UIN %ld:\n
 1782:Потребна је лозинка за ваш нови UIN.\n
 1783:Да бисмо избегли грешаке у куцању, унесите лозинку поново.\n
@@ -658,7 +673,9 @@
 1814:Послат аутоматски одговор: %s%s%s.\n
 1815:    funny:      коришћење забавних порука на излазу.\n
 1817:Искључена употреба 'скрипти за догађај'.\n
-1818:Упозорење: У rc фајлу пронађена недопустива синтакса!\n    Освежите или снимите ("save") rc фајл и проверите своје измене.\n
+#-#1818:Упозорење: У rc фајлу пронађена недопустива синтакса!\n    Освежите или снимите ("save") rc фајл и проверите своје измене.\n
+#+#1818:Warning: Deprecated syntax found in rc file!\n    Please update or "save" the rc file and check for changes.\n
+# #1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 1820:%s <опција> [on|off|<вредност>] - управљање једноставним опцијама.\n
 1822:    color:      укључивање шареног текст излаза.\n
 1823:Долазећи делимичне пакет:
@@ -667,11 +684,11 @@
 1830:Укидање поруке за '%s' после %ld покушаја слања. Садржај поруке:\n
 1833:Успостављена један-на-један TCP веза.
 1835.Грешка током писања у socket - %s (%d)\n
-1841:Примљен деформисан пакет са почетним оверавањем.\n 
+1841.Примљен деформисан пакет са почетним оверавањем.\n 
 1842:Затварање socket-а %d према %s.\n
 1843:Затварање socket-а %d.\n
 1844:TPC порука %04x прекинута после истека времена.\n
-1845:Надимак %s непознат.\n
+1845.Надимак %s непознат.\n
 1846:Отварање и затварање директних (један-на-један) веза:\n
 1847:peer open  <надимак> - Oтварање директне везе.\n
 1848:peer close <надимак> - Затварање/ресетовање директне везе (веза).\n
@@ -680,13 +697,13 @@
 1855:TCP веза према %s прекинута у %s:%ld.\n
 1856:Укинут пекет %04x (%s) из старе сесије %08lx (тренутна: %08lx).\n
 1857:Да ли желите да сакријете свој IP од других контаката? (ДА/НЕ)
-1864:Не може да се отвори rc-фајл %s.
-1866:Ова верзија mICQ-а је компајлирана без подршке преко директне (један-на-један) везе.\n
+1864.Не може да се отвори rc-фајл %s.
+1866.Ова верзија mICQ-а је компајлирана без подршке преко директне (један-на-један) везе.\n
 1867:Примљен деформисан (прекратак) пакет - игнорисано.\n
 1868:Добијен деформисан вишеструки пакет (предугачак под-пакет) - остатак игнорисан.\n
 1869:Верзије протокола мање од 5 се више не подржавају.\n
 1870:peer off   <надимак> - Затварање директне везе/веза, без поновних покушаја.\n
-1871:Отварање v8 везе према %s:%ld... 
+1871.Отварање v8 везе према %s:%ld... 
 1872:неуспешно: %s (%d)\n
 1873:Град где радите:
 1874:Земља где радите:
@@ -695,7 +712,7 @@
 1877:у реду.\n
 1878:Грешка током читања из socket-а: %s (%d)\n
 1879:разне ствари:
-1880:Долазећи пакет није FLAP: ID је %d.\n
+1880.Долазећи пакет није FLAP: ID је %d.\n
 1881:FLAP канал 1 застарео.\n
 1882:FLAP канал 1 cmd 1 екстра подаци:\n
 1883:FLAP канал 1 непозната команда %d.\n
@@ -711,18 +728,20 @@
 1894:Не постоји број за везу %ld.\n
 1895:Логовање није прошло:\n
 1896:Сервер је затворио везу:\n
-1897:Непотпун TLV %d, дужине %ld [%d] - игнорисано.\n
-1898:Преусмеравање на сервер %s... 
+#-#1897:Непотпун TLV %d, дужине %ld [%d] - игнорисано.\n
+#+#1897:Incomplete TLV %d, len %ld of %d - ignoring.\n
+# #1897:Incomplete TLV %d, len %ld of %ld - ignoring.\n
+1898.Преусмеравање на сервер %s... 
 1899:Захтевана је непозната фамилија: %d\n
 1900:То може само да се чита (readonly).
 1901:вас је овластио/ла да их додате у вашу контакт-листу.\n
-1902:Отварање v5 везе према %s:%ld... 
+1902.Отварање v5 везе према %s:%ld... 
 1903:Одлазећи v8 серверски пакет:
 1904:Сервер не разуме вер. %d (само %d) за фамилију %d!\n
-1905:SNAC (%x,%x) [%s] заставице %x ref %lx\n
+1905.SNAC (%x,%x) [%s] заставице %x ref %lx\n
 1907:Упозорење: Сервер мисли да је наш UIN %ld, а он је уствари %ld.\n
-1908:Примљен пакет типа 'КОРИСНИК-НА-ВЕЗИ' за не-контакт.\n
-1909:Примљен пакет типа 'КОРИСНИК-ВАН-ВЕЗЕ' за не-контакт.\n
+1908.Примљен пакет типа 'КОРИСНИК-НА-ВЕЗИ' за не-контакт.\n
+1909.Примљен пакет типа 'КОРИСНИК-ВАН-ВЕЗЕ' за не-контакт.\n
 1911:повезивање
 1912:затворено
 1914:Не може се разлучити структура везе.\n
@@ -821,7 +840,7 @@
 2031:Повезивање није успевало превише често, одустајање.\n
 2032:Предвиђено поновно v8 повезивање за %d секунди.\n
 2033:рођен(а) на данашњи дан
-2034:Отварање TCP везе на %s:%ld... 
+2034.Отварање TCP везе на %s:%ld... 
 2036:Снимање тренутних поставки на диск.
 2037:Отварање или затварање везе један-на-један, или обустава један-на-један веза за <uin> или <nick>.
 2038:Отварање везе број <nr> или прве серверске везе.
@@ -833,9 +852,9 @@
 2046:Уместо овог, можда треба да користите верзију 8 протокола за ICQ протокол један-на-један.\n
 2047:Прављење директоријума %s.\n
 2048:Снимање поставки у %s.\n
-2049:Примање грипе "%s":\n
+2049.Примање грипе "%s":\n
 2051:Грешка на socket-у: %s (%d)\n
-2054:Порука за "слободан за разговор":
+2054.Порука за "слободан за разговор":
 2055:Корисник је слободан за разговор (ffc) и жели да прича о свачему.
 2056:getauto [auto] <надимак> - Давање аутоматског одговора са контакта.\n
 2057:getauto away   <надимак> - Давање аутоматског одговора када се оде са контакта.\n
@@ -846,8 +865,8 @@
 2065:Непозната ТCP_MSG_GREET_ команда %04x.\n
 2066:Непозната TCP_MSG_ команда %04x.\n
 2067:фајл I/O
-2068:Отварање везе за пренос фајла ка %s:%ld... \n
-2070:Преношење фајла '%s' на порт %ld.\n
+2068.Отварање везе за пренос фајла ка %s:%ld... \n
+2070.Преношење фајла '%s' на порт %ld.\n
 2071:Не може се установити фајл %s: %s (%d)\n
 2072:Пренос фајла #%ld (%s) прекинут због затворене везе.\n
 2073:Заузеће меморије: %ld пакета у обради.\n
@@ -855,9 +874,11 @@
 2079:Долазећи TCP пакет (%d - %s): %s
 2080:Одговор сервера за слање SMS порука:\n%s\n
 2081:    на %p 'родитељ' %p assoc %p\n
-2082:Отварање везе за пријем фајлова на локалхост:%ld... 
+2082.Отварање везе за пријем фајлова на локалхост:%ld... 
 2083:Фајл %s не може да се отвори: %s (%d).\n
-2084:Грешка током прелажења до офсета %ld: %s (%ld).\n
+#-#2084:Грешка током прелажења до офсета %ld: %s (%ld).\n
+#+#2084:Error while seeking to offset %ld: %s (%ld).\n
+# #2084:Error while seeking to offset %ld: %s (%d).\n
 2086:Грешка током читања фајла %s: %s (%d).\n
 2087:Слање фајла %s завршено.\n
 2088:Слање свих %d фајлова завршено.\n
@@ -866,7 +887,9 @@
 2091:%s стављен као %s у ред за чекање за пренос.\n
 2092:TCP порука укинута - последња сесија.\n
 2093.%02d %-12s верзија %d за %s (%lx), на %s:%ld %s\n
-2094:conn login         Отварање прве серверске везе.\n
+#-#2094:conn login         Отварање прве серверске везе.\n
+#+#2094:conn login         Open first server connection.\n
+# #2094:conn login         Open current/first server connection.\n
 2095:conn remove <бр>   Уклањање везе број <бр>.\n
 2096.Веза %ld није отворена.\n
 2097:conn select <бр>   Селектовање везе број <бр> као серверске везе.\n
@@ -875,9 +898,15 @@
 2100:conn select <uin>  Селектовање везе са UIN-ом <uin> као серверске везе.\n
 2101:Комплетно уклањање везе %ld и свега што зависи од ње.\n
 2102:Веза %ld је конфигурисана веза.\n
-2103:contact show    Приказивање контакт-листе са серверске стране.
-2104:contact diff    Приказивање контаката са серверске стране којих нема на локалној контакт-листи.\n
-2105:contact import  Додавање контакт-листе са серверске стране на локалну контакт-листу.\n
+#-#2103:contact show    Приказивање контакт-листе са серверске стране.
+#+#2103:contact show    Show server side contact list.\n
+# #2103:contact show    Show server based contact list.\n
+#-#2104:contact diff    Приказивање контаката са серверске стране којих нема на локалној контакт-листи.\n
+#+#2104:contact diff    Show server side contacts not on local contact list.\n
+# #2104:contact diff    Show server based contacts not on local contact list.\n
+#-#2105:contact import  Додавање контакт-листе са серверске стране на локалну контакт-листу.\n
+#+#2105:contact import  Add server side contact list to local contact list.\n
+# #2105:contact import  Import server based contact list as local contact list.\n
 2106:Последња порука од %s%s%s у %s:\n
 2107:Од %s%s%s није примљена ниједна порука.\n
 2108:аутоматски
@@ -885,27 +914,37 @@
 2110:peer files <надимак> <фајл1> <као1> ... [<опис>]\n
 2111:                  - Слање фајл1 као као1, ..., са описом.\n
 2112:                  - као = '/': очишћена путања; као = '.': онако како јесте\n
-2113:Непознат статус '%s'.\n
-2114:Име за команду '%s' не постоји.\n
+2113.Непознат статус '%s'.\n
+2114.Име за команду '%s' не постоји.\n
 2115:'%s' није цео број.\n
 2116:Није дат нов надимак.\n
 2117:%ld додат као %s.\n
 2118:Нема више меморије.\n
-2119:auth [grant] <надимак>       - дозвољавање овлашћења.\n 
-2120:auth deny <надимак> <порука> - одбијање овлашћења.\n
-2121:auth req  <надимак> <порука> - захтев за овлашћивањем.\n
+#-#2119:auth [grant] <надимак>       - дозвољавање овлашћења.\n 
+#+#2119:auth [grant] <nick>    - grant authorization.\n
+# #2119:auth [grant] <contacts>    - grant authorization.\n
+#-#2120:auth deny <надимак> <порука> - одбијање овлашћења.\n
+#+#2120:auth deny <nick> <msg> - refuse authorization.\n
+# #2120:auth deny <contacts> <msg> - refuse authorization.\n
+#-#2121:auth req  <надимак> <порука> - захтев за овлашћивањем.\n
+#+#2121:auth req  <nick> <msg> - request authorization.\n
+# #2121:auth req  <contacts> <msg> - request authorization.\n
 2122:Напомена: Треба да урадите 'save' ('сними') да бисте записали нову лозинку на диск.\n
-2123:%sСинтактичка грешка%s: Премало аргумената: '%s'\n
-2124:%sСинтактичка грешка%s: Није цео број: '%s'\n
+#-#2123:%sСинтактичка грешка%s: Премало аргумената: '%s'\n
+#+#2123:%sSyntax error%s: Too few arguments: '%s'\n
+# #2123:%sSyntax error%s: Too few arguments: %s\n
+#-#2124:%sСинтактичка грешка%s: Није цео број: '%s'\n
+#+#2124:%sSyntax error%s: Not an integer: '%s'\n
+# #2124:%sSyntax error%s: Not an integer: %s\n
 2126:је ван везе, порука на чекању на серверу.\n
-2127:         URL: %s %s%s%s\n
+2127.         URL: %s %s%s%s\n
 2128:        Опис: %s%s%s\n
 2129:         URL: %s%s%s\n
-2130:Састављање поруке за %sсве%s:\n
+2130.Састављање поруке за %sсве%s:\n
 2131:Састављање поруке за %s%s%s:\n
 2133:Боја је %s%s%s.\n
 2134:Забавне поруке су %s%s%s.\n
-2135:"Тихи" излаз је %s%s%s.\n
+2135."Тихи" излаз је %s%s%s.\n
 2136:Лозинка је промењена %s%s%s.\n
 2137:Описни подаци су промењени %s%s%s.\n
 2138:Подаци су промењени %s%s%s.\n
@@ -913,7 +952,9 @@
 2140:Случајне групе за ћаскање су промењене %s%s%s.\n
 2141:Претрага %sпропала%s.\n
 2142:Директна веза са %s није могућа.\n
-2145:auth add  <надимак>    - овлашћено додавање.\n
+#-#2145:auth add  <надимак>    - овлашћено додавање.\n
+#+#2145:auth add  <nick>       - authorized add.\n
+# #2145:auth add  <contacts>       - authorized add.\n
 2146:'%s' је већ алиас за '%s' (%ld).\n
 2147:'%s' (%ld) је већ употребљено као надимак.\n
 2148:Додато '%s' као алиас за '%s' (%ld).\n
@@ -921,23 +962,35 @@
 2150:Уклоњен контакт '%s' (%ld).\n
 2156:conn close <бр>    Затварање везе број <бр>.\n
 2157:Молдавија
-2158:Није дат ниједан фајл.\n
+#-#2158:Није дат ниједан фајл.\n
+#+#2158:No file given.\n
+# #2158:No file name given.\n
 2159:Неколико фајлова.
 2160:peer file  <надимак> <фајл> [<опис>]\n
-2161:Примање %ld фајлова укупне величине %ld бајтова брзином %lx од %s.\n
+#-#2161:Примање %ld фајлова укупне величине %ld бајтова брзином %lx од %s.\n
+#+#2161:Receiving %ld files with together %ld bytes at speed %lx from %s.\n
+# #2161:Receiving %ld files with total size %ld bytes at speed %lx from %s.\n
 2162:Примање фајла %s (%s) од %ld бајтова као %s.\n
 2163:Слање фајла %ld са офсетом %ld.\n
 2164:Грешка током писања у фајл.\n
-2165:Друга страна је послала више бајтова (%ld) него што је величина фајла (%ld).\n
+#-#2165:Друга страна је послала више бајтова (%ld) него што је величина фајла (%ld).\n
+#+#2165:The peer sent more bytes (%ld) than file length (%ld).\n
+# #2165:The peer sent more bytes (%ld) than the file length (%ld).\n
 2166:Примање фајла завршено.\n
 2167:Грешка - непознати пакет.\n
 2168:Пренос фајла #%ld (%s) прекинут после %ld покушаја због прекорачења времена.\n
 2169:Пренос фајла прекинут с једне стране (%d).\n
-2170:Слање брзином %lx ка %s.\n
+#-#2170:Слање брзином %lx ка %s.\n
+#+#2170:Sending at speed %lx to %s.\n
+# #2170:Sending file at speed %lx to %s.\n
 2171:Шире
 2172:Команде за шире захтеве.
-2176:Опширно приказивање тренутног статуса свих са ваше контакт-листе.
-2177:Опширно приказивање тренутног статуса особа са ваше контакт-листе које су на вези.
+#-#2176:Опширно приказивање тренутног статуса свих са ваше контакт-листе.
+#+#2176:Displays verbose the current status of everyone on your contact list.
+# #2176:Displays verbosely the current status of everyone on your contact list.
+#-#2177:Опширно приказивање тренутног статуса особа са ваше контакт-листе које су на вези.
+#+#2177:Displays verbose the current status of online people on your contact list.
+# #2177:Displays verbosely the current status of online people on your contact list.
 2179:Слање једног фајла свим контактима <contacts>.
 2180:Слање више фајлова <uin>-у или <nick>-у.
 2181:Затварање или уклањање везе број <nr>.
@@ -945,10 +998,10 @@
 2183:Проверавање свих контаката <contacts> да ли су невидљиви или стварно нису на вези.
 2184:%s%-10s%s - %s\n
 2185:Затварање везе %ld.\n
-2186:Прихватање фајла '%s' (%ld бајтова).\n
+2186.Прихватање фајла '%s' (%ld бајтова).\n
 2188:Шаљете податке пребрзо - прекините куцање или ће сервер прекинути везу!\n
 2191:Грешка у инстант-поруци: %d.\n
-2192:Могућности: 
+2192:Могућности:
 2194:Непознат начин на који би се отворила веза овог типа.\n
 2195:Застарео број:
 2196:Застареи текст:
@@ -957,14 +1010,14 @@
 2199:  -h, --help     за добијање овог упутства\n
 2200:  -v, --verbose  подешавање (или повећавање) нивоа опширности порука (углавном за дебаговање)\n
 2201:  -b, --basedir  коришћење задатог основног директоријума (подразумева се: %s)\n
-2202:  -f, --config   коришћење задатог конфигурационог фајла (подразумева се: %s)\n
+2202.  -f, --config   коришћење задатог конфигурационог фајла (подразумева се: %s)\n
 2203:  -l, --logplace коришћење задатог лог-фајла/директоријума (подразумева се: %s)\n
 2204:  -i, --i18n     коришћење задате локализације (подразумева се: auto-detected)\n
 2205:  -c, --nocolor  искључивање боја\n
 2206:Сервер не жели да нам да коришћење порука ван везе.\n
 2207:Грешка на протоколу због команде упућене старом ICQ серверу: %d.\n
-2208:Установљен унокод кодни распоред (UTF-8), међутим, овај mICQ је компајлиран без подршке за уникод.\n
-2209:Установљен уникод кодни распоред (UTF-8).\n
+2208.Установљен унокод кодни распоред (UTF-8), међутим, овај mICQ је компајлиран без подршке за уникод.\n
+2209.Установљен уникод кодни распоред (UTF-8).\n
 2210.%smICQ (Метјуов ICQ клон)%s верзија %s%s%s (компајлиран %s)\n
 2211:Ваш статус: %s.\n
 2212:статус промењен у '%s'
@@ -975,7 +1028,7 @@
 2217:Овај mICQ не може да изврши конверзију између '%s' и уникода (UTF-8).\n
 2218:UIN: %s\n
 2220:више
-2221:Обрисан привремени контакт '%s' (%ld).\n
+2221.Обрисан привремени контакт '%s' (%ld).\n
 2222:Скрипт-команда '%s' пропала: %s (%d).\n
 2223:Отварање FIFO-а за даљинску контролу на %s... 
 2225:даљинска контрола
@@ -983,41 +1036,45 @@
 2227:Није могуће отворити FIFO
 2228:Није могуће поставити FIFO да буде без блокирања
 2229.Одбијен захтев за фајлом '%s' (%ld бајтова): %s.\n
-2230:Одбијен захтев за разговор (%s/%s) од стране %s.\n
+2230.Одбијен захтев за разговор (%s/%s) од стране %s.\n
 2231.Пренос фајла '%s' одбачен с једне стране: %s.\n
-2232:прихватање овлашћења: %s%s\n 
-2233:одбијено овлашћивање: %s%s\n
+2232.прихватање овлашћења: %s%s\n 
+#-#2233:одбијено овлашћивање: %s%s\n
+#+#2233:refused authorization: %s%s\n
+# #2233:refused authorization: %s%s%s\n
 2234:Порука %s одбачена - сесија прекинута.\n
-2235:Није дат надимак.\n
+2235.Није дат надимак.\n
 2236:Подаци за %s%s%s (%ld):\n
 2237:Веб-видљивост:
 2238:Скривеност IP адресе:
 2239:Још непознато:
 2240:Није дата контакт-група.\n
 2241:'%s' додат(а) у контакт-групу '%s'.\n
-2242:Увезено %d нових контаката, додати %d пута у контакт-групу.\n
+2242.Увезено %d нових контаката, додати %d пута у контакт-групу.\n
 2243:Уклоњен контакт '%s' из групе '%s'.\n
 2244:Контакт-група '%s' већ садржи контакт '%s' (%ld).\n
 2245:Додата контакт-група '%s'.\n
 2246:Контакт '%s' није у групи '%s'.\n
-2247:Није могуће учитати мета-податке за '%s' (%ld).\n
+2247.Није могуће учитати мета-податке за '%s' (%ld).\n
 2248:Снимљени мета-подаци за '%s' (%ld).\n
 2249:Није могуће снимити мета-податке за '%s' (%ld).\n
 2250:Број '%s' нема облик +<код земље><мобилни провајдер><број>.\n
 2251:Грешка:
 2252:Звучни сигнал се ствара %sбип%sовањем.\n
 2253:Звучни сигнал се ствара покретањем 'скрипте за %sдогађај%s'.\n
-2254:Звучни сигнал се не ствара никад.
+#-#2254:Звучни сигнал се не ствара никад.
+#+#2254:A beep is never generated.
+# #2254:A beep is never generated.\n
 2255:Звучни сигнал уз долазак новог контакта се увек ствара покретањем 'скрипте за %sдогађај%s'.\n
 2256:Звучни сигнал уз одлазак новог контакта се увек ствара покретањем 'скрипте за %sдогађај%s'.\n
-2257:Кодни распоред:
+2257.Кодни распоред:
 2258:Није пронађен никакав захтев на чекању о долазећем преносу фајла за %s са (sequence %ld).\n
-2259:захтевање преноса фајла '%s' величине %ld бајтова (секвенца %ld).\n
+2259.захтевање преноса фајла '%s' величине %ld бајтова (секвенца %ld).\n
 2260:Уместо овога покушајте са 'getauto' командом.\n
-2261:Пустињак (hermit) је %s%s%s.\n
+2261.Пустињак (hermit) је %s%s%s.\n
 2262:Примена 'delete' карактера као 'backspace'-a: %s%s%s.\n
-2263:Логовање: %s%s%s.\n
-2264:Логовање промена статуса: %s%s%s.\n
+2263.Логовање: %s%s%s.\n
+2264.Логовање промена статуса: %s%s%s.\n
 2265:Аутоматски одговори: %s%s%s.\n
 2266:Исписивање последњег надимка на промпту: %s%s%s.\n
 2267:Аутоматска снимања: %s%s%s.\n
@@ -1026,30 +1083,32 @@
 2270:једноставни
 2271:увлачећи
 2272:паметни
-2273:кружни
-2274:потпуно кружни
-2275:Стил табулатора: %s%s%s.\n
-2276:комплетно
-2277:    hermit:     игнорисање свих не-кентаката.\n
+2273.кружни
+2274.потпуно кружни
+2275.Стил табулатора: %s%s%s.\n
+2276.комплетно
+2277.    hermit:     игнорисање свих не-кентаката.\n
 2278:    delbs:      примена 'delete' карактера као 'backspace'-a.\n
-2279:    log:        да се уради логовање.\n
-2280:    logonoff:   да се такође логују промене статуса.\n
+2279.    log:        да се уради логовање.\n
+2280.    logonoff:   да се такође логују промене статуса.\n
 2281:    auto:       слање аутоматских одговора.\n
-2282:    uinprompt:  исписивање последњег надимка на промпту.\n
+#-#2282:    uinprompt:  исписивање последњег надимка на промпту.\n
+#+#2282:    uinprompt:  display the last nick in the prompt.\n
+# #2282:    uinprompt:  have the last nick in the prompt.\n
 2283:    autosave:   аутоматско снимање фајла micqrc.\n
 2284:    autofinger: аутоматско фингеровање нових UIN-а.\n
 2285:    linebreak:  стил за поруке веће од једне линије: simple (једноставни), break (прекидни), indent (увлачећи), smart (паметни).\n
-2286:    tabs:       стил за баратање табулаторима: simple (једноставни), cycle (кружни), cycleall (потпуно кружни).\n
-2287:    silent:     спречавање дела излазних порука: off, on, complete.\n
+2286.    tabs:       стил за баратање табулаторима: simple (једноставни), cycle (кружни), cycleall (потпуно кружни).\n
+2287.    silent:     спречавање дела излазних порука: off, on, complete.\n
 2288:Стил увлачења: %s%s%s.\n
-2289:»»»
-2290:«««
-2291:>>»
-2292:<<«
+2289.»»»
+2290.«««
+2291.>>»
+2292.<<«
 2293:--=
 2294:===
-2295:>>>
-2296:<<<
+2295.>>>
+2296.<<<
 2297:Алиас на шта?\n
 2298:Који алиас склонити?\n
 2299:Алиас не постоји.\n
@@ -1062,17 +1121,28 @@
 2306:Тражење контакт-листе са серверске стране и приказивање свих нових контаката. или преузимање.
 2307:Приказивање тренутног статуса свих особа на вези из ваше контакт-листе, сортираних по контакт-групама.
 2308:Приказивање тренутног статуса свих особа из ваше контакт-листе, сортираних по контакт-групама.
-2309:Опширно приказивање тренутног статуса особа на вези из ваше контакт-листе, сортираних по контакт-групама.
-2310:Опширно приказивање тренутног статуса свих особа на вези из ваше контакт-листе, сортираних по контакт-групама.
+#-#2309:Опширно приказивање тренутног статуса особа на вези из ваше контакт-листе, сортираних по контакт-групама.
+#+#2309:Displays verbose the current status of online people on your contact list, sorted by contact group.
+# #2309:Displays verbosely the current status of online people on your contact list, sorted by contact group.
+#-#2310:Опширно приказивање тренутног статуса свих особа на вези из ваше контакт-листе, сортираних по контакт-групама.
+#+#2310:Displays verbose the current status of everyone on your contact list, sorted by contact group.
+# #2310:Displays verbosely the current status of everyone on your contact list, sorted by contact group.
 2311:Додавање <uin>-a као <new nick> (нови надимак), или додавање <new nick>-a (новог надимка) за <uin> или <nick> (надимак).
 2312:Уклањање свих алиаса у контактима <contacts>, уклањање контакта ако се зада 'all' (све).
 2313:Одобравање, одбијање, захтевање или оверавање овлашћења од/према контактима <contacts> за вашим/њиховим присуством у њиховој/вашој контакт-листи. 
 2314:Ово су проширене команде. Обавезно прочитајте упутства (man pages) да бисте имали све податке о њима.\n
 2315:Не може се видети статус за '%s' - превише посматрача.\n
-2317:Превод %s није пронађен. Да ли бисте желели да преведете mICQ на свој језик?\n
-2318:Учитан енглески (%s) превод (%ld ставки).\n
+#2316:Translation %s not found.\n
+2317.Превод %s није пронађен. Да ли бисте желели да преведете mICQ на свој језик?\n
+2318.Учитан енглески (%s) превод (%ld ставки).\n
 2319:Прихватање долазећег преноса фајла од <uin>-а или <надимак>.
 2320:Друга страна прихвата <надимак> [<id>]\n                  - прихватање долазећег преноса фајла.\n
+#2321:contact add     Add server based contact list to local contact list.\n
+#2322:contact sync    Import server based contact list if appropriate.\n
+#2323:contact export  Export local contact list to server based list.\n
+#2324:contact upload  Add local contacts to server based contact list.\n
+#2325:Warning: server based contact list change failed with error code %d.\n
+#2326:Server side contact list only supported for ICQ v8.\n
 2327:%smICQ (Метјуов ICQ клон)%s верзија %s%s%s\n
 #2328:You logged in too frequently, please wait 30 minutes before trying again.\n
 #2329:syntax error
@@ -1086,26 +1156,19 @@
 #2337:  set  - upload own meta data to server\n
 #2338:  get  - query server for meta data\n
 #2339:  rget - query server for last sender's meta data\n
-2340:Пренос фајла '%s' одбачен с једне стране: %s%s.\n
-2341:Одбијен захтев за фајлом '%s' (%ld бајтова): %s%s.\n
+2340.Пренос фајла '%s' одбачен с једне стране: %s%s.\n
+2341.Одбијен захтев за фајлом '%s' (%ld бајтова): %s%s.\n
 #2342:Scripting
 #2343:Scripting extensions.
 #2344:Execute Tcl script from <file>.
 #2345:Execute Tcl script in <string>.
 #2346:The following Tcl commands are supported:\n
-#2347:micq receive <script> [<contact>]
 #2348:Install hook to receive messages from UIN or nick, or all if omitted.
-#2349:Callback arguments: from message
-#2350:micq unreceive [<contact>]
 #2351:Uninstall message hook for UIN or nick.
-#2352:micq event <script>
 #2353:Install event hook. Callback arguments: type ...
-#2354:micq unevent
 #2355:Uninstall event hook.
 #2356:List all installed hooks. Format: <type> <command> <filter>.
-#2357:micq exec <cmd>
 #2358:Execute micq command.
-#2359:micq nick <uin>
 #2360:Find nick from <uin>.
 #2361:Wrong number of arguments for command '%s %s'. Expected %d.\n
 #2362:Wrong number of arguments. Try 'help'.
@@ -1116,30 +1179,168 @@
 #2367:TCL error: %s\n
 #2368:peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n
 #2369:Refuse an incoming file transfer from <uin> or <nick>.
-2370:%02d %-12s верзија %d%s за %s (%lx), на %s:%ld %s\n
+2370.%02d %-12s верзија %d%s за %s (%lx), на %s:%ld %s\n
 #2371:SSL init failed.\n
 #2372:Could not send SSL request to %s\n
-#2373:Error while reading from socket (SSL): %s (%d)\n
 #2374:SSL error: %s [%d]\n
 #2375:SSL handshake ok\n
 #2376:SSL read from %s [ERR=%d]: %s
 #2377:SSL write to %s [ERR=%d]: %s
 #2378:peer ssl <nick>   - initiate SSL handshake.
-2379:»%»
-2380:«%«
+2379.»%»
+2380.«%«
 #2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
-#2382:Peer-to-peer connection not associated to server connection, discarding.\n
 #2383:View your last messages of <contact>. Type 'h' as short command.
 #2384:Case insensitive search of <pattern> in log file of <contact>.
 #2385:Couldn't open %s for reading: %s (%d).\n
 #2386:Found %s%d%s matches.\n
-#2387:%s <contact> [<last> [<count>]] -- Show history of <contact>.\n
-#2388:%s <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n
-#2389:%s <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
+#2388:find <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n
+#2389:finds <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
 #2390:No or empty pattern given.\n
 #2391:Case sensitive search of <pattern> in log file of <contact>.
-#2392:Your status is %s (%s).\n
-#2393:%m/%d/%Y
+#2393:%Y-%m-%d
 #2394: %I:%M %p
 #2395:View your messages of <contact> since <date>.
 #2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n
+#2397:No server session found.\n
+#2398:Set an option for a contact group, a contact or global.\n
+#2399:Request SSL connection.
+#2400:No translation (%s) loaded (%d entries).\n
+#2401:Auto reply messages are now contact options, see the %s command.\n
+#2402:The global auto reply flag is handled by the %s command.\n
+#2403:msg>
+#2405:Your status is %s (%s).\n
+#2406:Couldn't load meta data for %s (%ld).\n
+#2407:This flag is handled by the %s command.\n
+#2408:%s is not a contact group.\n
+#2409:%s is not a contact.\n
+#2410:%s is neither a contact, nor a contact group, nor the %sglobal%s keyword.\n
+#2411:opt - short hand for optglobal, optgroup or optcontact.\n
+#2412:optglobal            [<option> [<value>]] - set global option.\n
+#2413:optconnection        {<option> [<value>]] - set connection option.\n
+#2414:optgroup   <group>   [<option> [<value>]] - set contact group option.\n
+#2415:optcontact <contact> [<option> [<value>]] - set contact option.\n
+#2416:Options for contact %s:\n
+#2417:Options for contact group %s:\n
+#2418:Global options:\n
+#2419:undefined
+#2420:effectivly
+#2421:Unknown option %s.\n
+#2422:Option %s for contact %s is undefined.\n
+#2423:Option %s for contact group %s is undefined.\n
+#2424:Option %s%s has no global value.\n
+#2425:Option %s for contact %s is %s%s%s.\n
+#2426:Option %s for contact group %s is %s%s%s.\n
+#2427:Option %s%s is globally %s%s%s.\n
+#2428:Option %s for contact %s is %s.\n
+#2429:Option %s for contact group %s is %s.\n
+#2430:Option %s%s is globally %s.\n
+#2431:Undefining option %s for contact %s.\n
+#2432:Undefining option %s for contact group %s.\n
+#2433:Undefining global option %s%s.\n
+#2434:Setting option %s for contact %s to %s.\n
+#2435:Setting option %s for contact group %s to %s.\n
+#2436:Setting option %s%s globally to %s.\n
+#2437:Setting option %s for contact %s to %s%d%s.\n
+#2438:Setting option %s for contact group %s to %s%d%s.\n
+#2439:Setting option %s%s globally to %s%d%s.\n
+#2440:Setting option %s for contact %s.\n
+#2441:Setting option %s for contact group %s.\n
+#2442:Setting option %s%s globally.\n
+#2443:Clearing option %s for contact %s.\n
+#2444:Clearing option %s for contact group %s.\n
+#2445:Clearing option %s%s globally.\n
+#2446:Invalid value %s for boolean option %s.\n
+#2447:No new password given.\n
+#2448:Contact group '%s' already exists\n
+#2449:Primary contact group for contact '%s' is now '%s'.\n
+#2450:Last %d people you talked with:\n
+#2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
+#2452:%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n
+#2453:    at %p parent %p assoc %p ssl %d\n
+#2454:    open %p reconn %p close %p err %p dispatch %p\n
+#2455:About>
+#2456:Unknown command %s, type %shelp%s for help.\n
+#2457:Unknown configuration file format version %d.\n
+#2458:Can't tab spool %s; type "%sopt %s tabspool 1%s" manually.\n
+#2459:Peer-to-peer connection not associated to server connection, discarding.\n
+#2460:Contact group %s (id %s%d%s) not associated to server connection.\n
+#2461:Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
+#2462:File transfer %s to port %s%ld%s.
+#2463:File transfer %s rejected by peer: %s.
+#2464:Accepting file %s (%s%ld%s bytes).
+#2465:Refusing file request %s (%s%ld%s bytes): %s.
+#2466:Refusing chat request (%s/%s) from %s%s%s.
+#2467:mICQ>
+#2468:requests file transfer %s of %s%ld%s bytes (sequence %s%ld%s).\n
+#2469:URL:
+#2470:requests authorization: %s\n
+#2471:Ignored contacts:\n
+#2472:Hidden-from contacts:\n
+#2473:Normal contacts:\n
+#2474:Intimate contacts:\n
+#2475:Showed %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
+#2476:Downloaded %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
+#2477:Uploading %d contact groups and %d contacts.\n
+#2478:Server: Group %s (#%d)\n
+#2479:Local:  Group %s (#%d)\n
+#2480:Server: Group %s Contact %s (#%d) <ignored>\n
+#2481:Server: Group %s Contact %s (#%d) <hidefrom>\n
+#2482:Server: Group %s Contact %s/%s (#%d) <hidefrom>\n
+#2483:Local:  Group %s Contact %s/%s (#%d)\n
+#2484:Server: Group %s Contact %s (#%d)\n
+#2485:Server: Group %s Contact %s/%s (#%d)\n
+#2486:Local:  Group %s Contact %s/%s (#%d) <%s>\n
+#2487:hidefrom
+#2488:intimate
+#2489:Server: Group %s Contact %s/%s (#%d) <intimate>\n
+#2490:normal
+#2491:Differences in %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate, %d local.\n
+#2492:Usage: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
+#2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
+#2494:  -u, --uin      login with this UIN instead of those configured\n
+#2495:  -p, --passwd   ... and override password\n
+#2496:  -s, --status   ... and override status\n
+#2497:  -C, --cmd      ... and execute mICQ command\n
+#2498:Encoding %s%s%s is not supported by this mICQ.\n
+#2499:Please recompile using the '--enable-iconvrepl' configure option.\n
+#2500:Manual locale setting %s ignored - use a real locale instead.\n
+#2501:Your locale is unset. Please use the %s--i18n%s command line option or set one of the environment variables %sLC_ALL%s, %sLC_MESSAGES%s, or %sLANG%s to your current locale.\n
+#2502:Locale setting %s ignored - use a real locale instead.\n
+#2503:Your system doesn't know the %s locale - try %siconv --list%s.\n
+#2504:Could not open configuration file %s%s%s.
+#2505:Deprecated option -f used. Please use the similar -b instead.\n
+#2506:This console uses encoding %s.\n
+#2507:Translation %s%s%s not found. Would you like to translate mICQ into your language?\n
+#2508:English (%s) translation loaded (%s%d%s entries).\n
+#2509:WSAStartup() for WinSocks 1.1 failed
+#2510:Opening v5 connection to %s:%s%ld%s... 
+#2511:Redirect to server %s:%s%ld%s... 
+#2512:Opening v8 connection to %s:%s%ld%s for %s%s%s... 
+#2513:new UIN
+#2514:refused (ignored)
+#2515:You queried already too many users today - come back tomorrow.\n
+#2516:The query got stuck. Or somesuch. Try again later.\n
+#2517:I'm out of wisdom about the server's problem. It just didn't work out.\n
+#2518:You need to 'save' to write your new UIN to disc.\n
+#2519:Opening file listener connection at %slocalhost%s:%s%ld%s... 
+#2520:Opening file transfer connection to %s:%s%ld%s... \n
+#2521:Opening peer-to-peer connection at %slocalhost%s:%s%ld%s... 
+#2522:Opening TCP connection at %s:%s%ld%s... 
+#2523:%s not recognized as a nick name.\n
+#2524:Can't restore terminal modes.\n
+#2525:Can't read terminal modes.\n
+#2526:Can't modify terminal modes.\n
+#2527:OpenSSL internal error: %s:%i\n
+#2528:OpenSSL read error: %s\n
+#2529:OpenSSL read error %d (unknown)\n
+#2530:OpenSSL write error: %s\n
+#2531:OpenSSL write error %d (unknown)\n
+#2532:OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n
+#2533:SSL handshake failed
+#2534:IP:
+#2535:Groups:\n
+#2536:Group:
+#2537:Contact upload failed, authorization required.\n
+#2538:Contact upload failed, already on server.\n
+#2539:Contact upload succeeded.\n

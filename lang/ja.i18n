@@ -1,16 +1,17 @@
 # $Id$ <Japanese in Japanese> (Japanese)
-#  EN: __.i18n,v 1.63.2.16 2004/03/10 22:31:00
+#  EN: __.i18n,v 1.70 2004/11/18 21:25:15
+#1000:UTF-8
 1001:ja
 1002:ja_JP
 1003:0-4-10
 1004:グラント・ジョナサン (J. Grant), おかさな (Okasana, T.), 小町守 (Mamoru KOMACHI)
 1005:小町守 (Mamoru KOMACHI)
 1006:2003-07-04
-1008:euc-jp
+1008.euc-jp
 1010:ユーザは不在です [自動メッセージ ]
 1011:ユーザは応答不能です [自動メッセージ]
 1012:ユーザは取り込み中です [自動メッセージ]
-1013:ユーザはオフラインです
+1013.ユーザはオフラインです
 1014:未指定
 1015:一月
 1016:二月
@@ -31,12 +32,12 @@
 1032:デバック: ダブル パケット #%04lx タイプ %04x (%s)。\n
 1033:受信した v8 サーバパケット:
 1034:リトライの最大値になりました。終了します。
-1036:%s というコマンドはありません、 /help を実行しヘルプで確認してください
-1037:バッファが一杯になる前にメッセージを送信しました
+1036.%s というコマンドはありません、 /help を実行しヘルプで確認してください
+1037.バッファが一杯になる前にメッセージを送信しました
 1038:メッセージの送信をキャンセルしました
 1039:サーバから接続を拒否されました
-1040:mICQ>
-1041:メッセージ>
+1040.mICQ>
+1041.メッセージ>
 1043:すべてのユーザーを見つけました
 1044:たくさんのユーザを見つけました
 1045:検索を終了します
@@ -52,13 +53,13 @@
 1062:ユーザは無視しました:
 1063:パスワードを入力してください:
 1064:ステータスを自動的に %s に変更しました。\n
-1072:オフライン ユーザ:
-1073:オンライン ユーザ:
+1072.オフライン ユーザ:
+1073.オンライン ユーザ:
 1077.Matthew D. Smith. に感謝します
 1078:利用できる翻訳がありません
 1079:翻訳  (%s, %s) %s から, 最終変更日:%s (変更者:%s), mICQ バージョン %d.%d.%d%s 用。\n
-1080:指定された「%s」という翻訳は読み込めませんでした。\n
-1081:日本語の翻訳を読み込みました (%ld 項目分)\n
+1080.指定された「%s」という翻訳は読み込めませんでした。\n
+1081.日本語の翻訳を読み込みました (%ld 項目分)\n
 1082:再接続を行います...[%d回目(最大 %d回まで)]\n
 1085:on
 1086:off
@@ -69,8 +70,8 @@
 1096:SOCKS5 ユーザ名:
 1097:SOCKS5 パスワード:
 1098:Tab キー補完で使用できるニックネームを表示する
-1099:未知の言語。
-1100:指定なし
+1099.未知の言語。
+1100.指定なし
 1101:アラビア語
 1102:ボジュプリー語
 1103:ブルガリア語
@@ -157,7 +158,9 @@
 1185:技術
 1186:大学生
 1187:インターネット開発
-1188:rc ファイル内に'%s'という不明なコマンドがありました。無視します。
+#-#1188:rc ファイル内に'%s'という不明なコマンドがありました。無視します。
+#+#1188:Unrecognized command in rc file '%s', ignored.
+# #1188:Unrecognized command '%s' in configuration file, ignored.
 1198:他の仕事
 1200:未入力
 1201:アフガニスタン
@@ -482,7 +485,7 @@
 1538:生まれた年を入れてください:
 1539:生まれた月を入れてください:
 1540:生まれた日を入れてください:
-1541:について>
+1541.について>
 1544:市町村を入力してください:
 1545:都道府県を入力してください:
 1546:電話番号を入力してください:
@@ -520,7 +523,7 @@
 1604:ユーザはオンラインにするべきですか?
 1605:現在のステータスを Web で確認できるようにしますか? (yes or no)
 1606:不正なセッション ID %08lx を受信しました(正しくは: %08lx) コマンド要求 %04x を無視します。\n
-1607:使用法: micq [-h] [-c] [-i <locale>] [-b <basedir>] \n            [-f <configfile>] [-v[<level>]] [-l <logplace>]\n
+1607.使用法: micq [-h] [-c] [-i <locale>] [-b <basedir>] \n            [-f <configfile>] [-v[<level>]] [-l <logplace>]\n
 1612:このプログラムの作成にはMirabilis社から援助も承認も受けていません。\n
 1613:また、作成にはMirabilis社のプログラムに対して解析を行っていません。\n
 1618:UIN:
@@ -528,9 +531,13 @@
 1620:コンタクトリストに登録できる最大数になりました。
 1621:ユーザは戻ってきていません
 1622:これらの変更を反映させますか? (yes or no)
-1623:重複したパケット %04X\n
-1624:Windows ソケットを初期化することができませんでした...
-1632:\n接続が不安定です。終了します...
+#-#1623:重複したパケット %04X\n
+#+#1623:Doubled packet %04X\n
+# #1623:Double packet %04x.\n
+1624.Windows ソケットを初期化することができませんでした...
+#-#1632:\n接続が不安定です。終了します...
+#+#1632:\nConnection unstable. Exiting....
+# #1632:\nConnection unstable. Exiting....
 1634:ok.\n
 1637:空きポートが見つからないので、ソケット接続を行うことができません\n
 1638:ソケットを作成できません
@@ -539,7 +546,9 @@
 1641:ユーザ情報の更新に成功しました。\n
 1642:IP:
 1643:SRV_X1 0x021C を受け取りました。コンタクトリストを終了してよろしいですか?\n
-1644:SRV_X2 0x00E6 を受け取りました。古いメッセージを終了してよろしいですか?\n
+#-#1644:SRV_X2 0x00E6 を受け取りました。古いメッセージを終了してよろしいですか?\n
+#+#1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
+# #1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
 1645:あなたの入力したパスワードは間違っています。\n
 1646:サーバは使用中です。\n
 1648:応答は %04x でした。
@@ -552,31 +561,35 @@
 1656:ユーザのニックネームを入力してください:
 1657:ユーザの名を入力してください:
 1658:ユーザの姓を入力してください:
-1659:設定ファイル内に未知のセクション %s が発見されました
+#-#1659:設定ファイル内に未知のセクション %s が発見されました
+#+#1659:Unknown section %s in configuration file.
+# #1659:Unknown section '%s' in configuration file.
 1660:無効なコマンド: %s\n
 1661:シェル コマンドを無効としました。\n
 1666:%s の無視設定を解除しました\n
 1667:%s を無視します\n
 1670:%s へのステータス表示を通常のものとしました。\n
 1671:%s へのステータス表示を常に可視にしました。\n
-1672:%s の IP アドレス
-1673::%ld\n
-1674::不明\n
+1672.%s の IP アドレス
+1673.:%ld\n
+1674.:不明\n
 1675:次の行を無視しました:
-1676:メッセージの送信には <UIN> か <ニックネーム> の指定が必要です。\n
-1678:URL が必要です\n
+1676.メッセージの送信には <UIN> か <ニックネーム> の指定が必要です。\n
+#-#1678:URL が必要です\n
+#+#1678:Need URL please.\n
+# #1678:No URL given.\n
 1679:設定の保存に失敗しました。\n
 1680:設定を保存しました。\n
-1681:最近話した人(最新の %d 人):\n
+1681.最近話した人(最新の %d 人):\n
 1682:最近受信したメッセージ:
 1687:mICQ の連続稼働時間:
 1688:日
 1689:時間
 1690:分
 1691:秒
-1692:コンタクト:
+1692.コンタクト:
 1696:性別:
-1700:%s はあなたのコンタクトリストに登録されていません。\n
+1700.%s はあなたのコンタクトリストに登録されていません。\n
 1703:ステータスモード番号:
 1704:グループ番号:
 1705:一般的
@@ -593,16 +606,18 @@
 1716:無し
 1717:"!"をつけたコマンドはshellで実行されます。(例:"!ls"、"!dir"、"!mkdir temp")
 1719:mICQ の動作時間を表示します。
-1720:UIN は数字で指定してください。もしくは、ユーザのニックネームを指定します。
+#-#1720:UIN は数字で指定してください。もしくは、ユーザのニックネームを指定します。
+#+#1720:<contacts> is a comma seperated list of UINs and nick names of users.
+# #1720:<contacts> is a comma separated list of UINs and nick names of users.
 1721:メッセージを入力しないでコマンドを実行すると、複数行の入力モードになります。\n「.」を入力するとメッセージを送信します。\n「#」を入力すると送信を取りやめます。
-1724:自動応答機能: %s\n
-1727:「邪魔しないで」：
-1728:「不在」：
-1729:「応答不可」：
-1730:「取り込み中」：
-1731:「不可視」：
-1735:メッセージを指定する必要があります。
-1738:変更するコマンドを指定してください。
+1724.自動応答機能: %s\n
+1727.「邪魔しないで」：
+1728.「不在」：
+1729.「応答不可」：
+1730.「取り込み中」：
+1731.「不可視」：
+1735.メッセージを指定する必要があります。
+1738.変更するコマンドを指定してください。
 1741:まずメッセージを受け取らなければなりません。\n
 1742:まずメッセージを書かなければなりません。\n
 1743:パケットの長さが合っていません。\n
@@ -612,24 +627,24 @@
 1747:合計
 1754:注: 新しいコンタクトリストをディスクに書き込むためには「save」する必要があります。\n
 1755:%s はあなたをコンタクトリストに加えました。\n
-1756:\n接続しています...\n
-1757:接続を確立できません。\n
-1758:要求を送っています...\n
-1759:応答を待っています....\n
-1760:\nあなたの新しい UIN は %s%ld%s です!\n
-1761:不明
+1756.\n接続しています...\n
+1757.接続を確立できません。\n
+1758.要求を送っています...\n
+1759.応答を待っています....\n
+1760.\nあなたの新しい UIN は %s%ld%s です!\n
+1761.不明
 1762:あなたの新しい UIN は: %ld。\n
-1763:コマンド「%s」は「%s」に名前が変更されました。
-1764:コマンド「%s」は変わっていません。
+1763.コマンド「%s」は「%s」に名前が変更されました。
+1764.コマンド「%s」は変わっていません。
 1765.%s は UIN %ld です。
 1766:%s%ld%s 秒なにもしないと、ステータスが不在/応答不可へ変わります。\n
 1767:不在/応答不可の自動サイクルを切り替えます。\n
-1768:コマンド名「%s」はすでに使用されています。\n
+1768.コマンド名「%s」はすでに使用されています。\n
 1770:<contacts> へ最後のメッセージを送り直します。
 1771:まだ誰にもへメッセージを送っていません!\n
 1774:受信パケット:
 1775:送信パケット:
-1777:localhost:%ld でピア・ツー・ピア接続を開始しています...
+1777.localhost:%ld でピア・ツー・ピア接続を開始しています...
 1781:あなたの UIN のパスワードは %ld:\n
 1782:新しい UIN にはパスワードが必要です。\n
 1783:もう一度入力してください。\n
@@ -659,7 +674,9 @@
 1814:%s%s%s へ自動応答メッセージを送りました。\n
 1815:    funny: おもしろいメッセージを出します。\n
 1817:イベントスクリプト機能は無効です。\n
-1818:警告: 古い形式の設定ファイルです! 更新するか、設定ファイルを「save」して変更を調べてください。\n
+#-#1818:警告: 古い形式の設定ファイルです! 更新するか、設定ファイルを「save」して変更を調べてください。\n
+#+#1818:Warning: Deprecated syntax found in rc file!\n    Please update or "save" the rc file and check for changes.\n
+# #1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 1820:%s <option> [on|off|<値>] - 単純なオプションをコントロールします。\n
 1822:    color: 色つきでメッセージを出します。\n
 1823:一部だけ受信したパケット:
@@ -668,11 +685,11 @@
 1830:%s へのメッセージを廃棄しました。%ld 回送信を試行しました。廃棄されたメッセージの内容:\n
 1833:ピア・ツー・ピア TCP 接続が確立しました。\n
 1835.ソケットに書き込む間にエラーがありました - %s (%d)\n
-1841:不正な初期化の ACK パケットを受信しました。\n
+1841.不正な初期化の ACK パケットを受信しました。\n
 1842:ソケット %d を閉じます。%s への接続でした。\n
 1843:ソケット %d を閉じます。\n
 1844:TCP メッセージ %04x はタイムアウトの後に廃棄されました。\n
-1845:ニックネーム %s とは誰のことでしょう？\n
+1845.ニックネーム %s とは誰のことでしょう？\n
 1846:直接(ピア・ツー・ピア)接続を開閉します:\n
 1847:peer open <ニックネーム>  - 直接接続を開始します。\n
 1848:peer close <ニックネーム> - 直接接続を終了/リセットします。\n
@@ -681,13 +698,13 @@
 1855:%s への %s:%ld での TCP 接続が失敗しました。\n
 1856:パケット %04x (%s) を廃棄しました。古いセッション %08lx (現在: %08lx) からでした。\n
 1857:他の人のコンタクトから IP を隠したいですか？(yes/no)
-1864:設定ファイル %s を開くことができません。
-1866:このバージョンの mICQ は直接接続(ピア・ツー・ピア)サポートなしでコンパイルされています。\n
+1864.設定ファイル %s を開くことができません。
+1866.このバージョンの mICQ は直接接続(ピア・ツー・ピア)サポートなしでコンパイルされています。\n
 1867:不正な(短すぎる)受信パケット - 無視します。\n
 1868:不正な(サブパケットが長すぎる)複数の受信パケット - 残りを無視します。\n
 1869:プロトコルバージョン4以下はもうサポートされていません。\n
 1870:peer off <ニックネーム> - 直接接続を閉じ、二度と直接接続しなくなります。\n
-1871:%s:%ld へ v8 接続を開いています...
+1871.%s:%ld へ v8 接続を開いています...
 1872:失敗しました: %s (%d)\n
 1873:働いている区市町村:
 1874:働いている都道府県:
@@ -696,7 +713,7 @@
 1877:ok.\n
 1878:ソケットから読み込む間にエラーがありました:%s(%d)\n
 1879:交友関係:
-1880:受信パケットが FLAP ではありません: id は %d です。\n
+1880.受信パケットが FLAP ではありません: id は %d です。\n
 1881:FLAP チャンネル 1 にデータがありません。\n
 1882:FLAP チャンネル 1 のコマンド 1 に余分なデータがあります:\n
 1883:FLAP チャンネル 1 のコマンド %d は不明です。\n
@@ -712,18 +729,20 @@
 1894:接続番号 %ld はありません。\n
 1895:ログインに失敗しました:\n
 1896:サーバは接続を切断しました:\n
-1897:不完全な TLV %d、%ld 長の %d - 無視します。\n
-1898:サーバ %s に転送します...
+#-#1897:不完全な TLV %d、%ld 長の %d - 無視します。\n
+#+#1897:Incomplete TLV %d, len %ld of %d - ignoring.\n
+# #1897:Incomplete TLV %d, len %ld of %ld - ignoring.\n
+1898.サーバ %s に転送します...
 1899:不明な家族リストを要求しました: %d\n
 1900:読み出し専用です。
 1901:は、あなたがコンタクトリストに加えることを認めました。\n
-1902:%s:%ldに v5 接続を開いています...
+1902.%s:%ldに v5 接続を開いています...
 1903:送信 v8 サーバパケット:
 1904:サーバは %d ファミリーのためのバージョン %d (%d だけ)を理解しません!\n
-1905:SNAC(%x,%x) [%s] フラグ %x 参照 %lx\n
+1905.SNAC(%x,%x) [%s] フラグ %x 参照 %lx\n
 1907:警告: サーバはわたしたちの UIN が %ld の場合、UIN は %ld であると考えます。\n
-1908:コンタクトリストにない人からオンライン通知パケットを受信しました。\n
-1909:コンタクトリストにない人からオフライン通知パケットを受信しました。\n
+1908.コンタクトリストにない人からオンライン通知パケットを受信しました。\n
+1909.コンタクトリストにない人からオフライン通知パケットを受信しました。\n
 1911:接続中
 1912:切断
 1914:接続構造を確保することができません。\n
@@ -822,7 +841,7 @@
 2031:接続が失敗しすぎるので諦めます。\n
 2032:%d 秒後に v8 サーバに再接続します。\n
 2033:今日が誕生日です。
-2034:%s:%ld で TCP 接続を開始します...
+2034.%s:%ld で TCP 接続を開始します...
 2036:ディスクに現在の設定を保存します。
 2037:ピア・ツー・ピア 接続を開始したり閉じたり、もしくは <UIN> か <ニックネーム>  へのピア・ツー・ピア 接続を使用不可能にします。
 2038:接続番号 <nr> か、最初のサーバ接続を開始します。
@@ -834,9 +853,9 @@
 2046:ICQ のピア・ツー・ピアプロトコル用にはプロトコルバージョン 8 を使いたいかもしれません。\n
 2047:ディレクトリ %s を作成しています。\n
 2048:設定を %s に保存しています。\n
-2049:グループ「%s」を受信しています:\n
+2049.グループ「%s」を受信しています:\n
 2051:ソケット上のエラー: %s (%d)\n
-2054:「チャットしたい!」メッセージは:
+2054.「チャットしたい!」メッセージは:
 2055:ユーザは「チャットしたい!」で、話題はなんでも OK です。
 2056:peer [auto] <ニックネーム> - 相手から自動応答メッセージを取得します。\n
 2057:peer away   <ニックネーム> - 相手から「不在」の自動応答メッセージを取得します。\n
@@ -847,8 +866,8 @@
 2065:未知の TCP_MSG_GREET_コマンド %04x。\n
 2066:未知の TCP_MSG_ コマンド %04x。\n
 2067:ファイル IO
-2068:%s:%ld へのファイル転送接続を開いています...\n
-2070:ファイル転送「%s」ポート %ld\n
+2068.%s:%ld へのファイル転送接続を開いています...\n
+2070.ファイル転送「%s」ポート %ld\n
 2071:ファイル %s: %s (%d) を調べることができませんでした\n
 2072:接続が切断されたのでファイル転送 #%ld (%s) をキャンセルします。\n
 2073:メモリ使用: %ld のパケットを処理しています。\n
@@ -856,9 +875,11 @@
 2079:受信 TCP パケット (%d - %s): %s
 2080:サーバ SMS 配送の応答:\n%s\n
 2081:       %p 親 %p 連合 %p\n
-2082:localhost: %ld でファイルリスナー接続を開始します...
+2082.localhost: %ld でファイルリスナー接続を開始します...
 2083:ファイル %s: %s (%d) を開けません。\n
-2084:オフセット %ld: %s (%ld) を探している最中にエラーがありました。\n
+#-#2084:オフセット %ld: %s (%ld) を探している最中にエラーがありました。\n
+#+#2084:Error while seeking to offset %ld: %s (%ld).\n
+# #2084:Error while seeking to offset %ld: %s (%d).\n
 2086:ファイル %s: %s (%d) を読んでいる最中にエラーがありました。\n
 2087:ファイル %s の送信を完了しました。\n
 2088:ファイル %d すべての送信を完了しました。\n
@@ -867,7 +888,9 @@
 2091:転送のために %s を %s としてキューに入れます。\n
 2092:TCP メッセージ %s は廃棄されました - セッションが失われました。\n
 2093.%02d %-12s バージョン %d for %s (%lx) の %s:%ld %s\n
-2094:conn login              最初のサーバ接続を開きます。\n
+#-#2094:conn login              最初のサーバ接続を開きます。\n
+#+#2094:conn login         Open first server connection.\n
+# #2094:conn login         Open current/first server connection.\n
 2095:conn remove <接続番号>   <接続番号> の接続を取り除きます。\n
 2096.接続 %ld は開いていません。\n
 2097:conn select <接続番号>   サーバ接続として <接続番号> を選びます。\n
@@ -876,9 +899,15 @@
 2100:conn select <UIN>        サーバ接続として <UIN> で接続します。\n
 2101:接続 %ld とそれに関する接続全てを完全に切ります。\n
 2102:接続 %ld は設定がなされています。\n
-2103:contact show    サーバ側のコンタクトリストを表示します。\n
-2104:contact diff    手元のコンタクトリストにないサーバー側の相手リストを表示します。\n
-2105:contact import  サーバ側のコンタクトリストを手元のコンタクトリストに加えます。\n
+#-#2103:contact show    サーバ側のコンタクトリストを表示します。\n
+#+#2103:contact show    Show server side contact list.\n
+# #2103:contact show    Show server based contact list.\n
+#-#2104:contact diff    手元のコンタクトリストにないサーバー側の相手リストを表示します。\n
+#+#2104:contact diff    Show server side contacts not on local contact list.\n
+# #2104:contact diff    Show server based contacts not on local contact list.\n
+#-#2105:contact import  サーバ側のコンタクトリストを手元のコンタクトリストに加えます。\n
+#+#2105:contact import  Add server side contact list to local contact list.\n
+# #2105:contact import  Import server based contact list as local contact list.\n
 2106:%s%s%s から %s での最後のメッセージ:\n
 2107:%s%s%s からはメッセージを受信していません。\n
 2108:自動
@@ -886,27 +915,37 @@
 2110:peer files <ニックネーム> <ファイル名1> <セーブ名1> ... [<説明>]\n
 2111:                  - 「説明」つきで「ファイル名1」を「セーブ名1」などとしてファイルを送信します。\n
 2112:                  - 「セーブ名」が '/' のときはパスを相対パスにし、'.' のときはそのままセーブします。\n
-2113:未知のステータス '%s'。\n
-2114:コマンド名 「%s」 は存在しません。\n
+2113.未知のステータス '%s'。\n
+2114.コマンド名 「%s」 は存在しません。\n
 2115:「%s」 は整数ではありません。\n
 2116:新しいニックネームが与えられていません。\n
 2117:%ld は %s として加えられました。\n
 2118:メモリが足りません。\n
-2119:auth [grant] <ニックネーム>           - 認証を発行します。\n
-2120:auth deny <ニックネーム> <メッセージ>  - 認証を拒否します。\n
-2121:auth req  <ニックネーム> <メッセージ>  - 認証を要求します。\n
+#-#2119:auth [grant] <ニックネーム>           - 認証を発行します。\n
+#+#2119:auth [grant] <nick>    - grant authorization.\n
+# #2119:auth [grant] <contacts>    - grant authorization.\n
+#-#2120:auth deny <ニックネーム> <メッセージ>  - 認証を拒否します。\n
+#+#2120:auth deny <nick> <msg> - refuse authorization.\n
+# #2120:auth deny <contacts> <msg> - refuse authorization.\n
+#-#2121:auth req  <ニックネーム> <メッセージ>  - 認証を要求します。\n
+#+#2121:auth req  <nick> <msg> - request authorization.\n
+# #2121:auth req  <contacts> <msg> - request authorization.\n
 2122:注: 新しいパスワードをディスクに保存するには「save」する必要があります。\n
-2123:%s文法エラー%s: 引数が足りません: '%s'\n
-2124:%s文法エラー%s: 整数ではありません: '%s'\n
+#-#2123:%s文法エラー%s: 引数が足りません: '%s'\n
+#+#2123:%sSyntax error%s: Too few arguments: '%s'\n
+# #2123:%sSyntax error%s: Too few arguments: %s\n
+#-#2124:%s文法エラー%s: 整数ではありません: '%s'\n
+#+#2124:%sSyntax error%s: Not an integer: '%s'\n
+# #2124:%sSyntax error%s: Not an integer: %s\n
 2126:はオフラインです。メッセージはサーバに保存されます。\n
-2127:       URL: %s %s%s%s\n
+2127.       URL: %s %s%s%s\n
 2128:      説明: %s%s%s\n
 2129:       URL: %s%s%s\n
-2130:%s全員%s へのメッセージを書いています:\n
+2130.%s全員%s へのメッセージを書いています:\n
 2131:%s%s%s へのメッセージを書いています:\n
 2133:色は %s%s%s です。\n
 2134:おもしろいメッセージは %s%s%s です。\n
-2135:出力抑制は %s%s%s です。\n
+2135.出力抑制は %s%s%s です。\n
 2136:パスワード変更は %s%s%s でした。\n
 2137:コメントの変更は %s%s%s でした。\n
 2138:情報の変更は %s%s%s でした。\n
@@ -914,7 +953,9 @@
 2140:ランダムチャットグループの変更は %s%s%s でした。\n
 2141:検索 %s %s は失敗しました。\n
 2142:%s との直接関係は利用できません。\n
-2145:auth add <ニックネーム>       - <ニックネーム> を承認します。\n
+#-#2145:auth add <ニックネーム>       - <ニックネーム> を承認します。\n
+#+#2145:auth add  <nick>       - authorized add.\n
+# #2145:auth add  <contacts>       - authorized add.\n
 2146:「%s」は すでに「%s」(%ld) 別名になっています。\n
 2147:「%s」(%ld) はニックネームとして、 としてすでに使用されています。\n
 2148:「%s」を「%s」(%ld) の別名として追加しました。\n
@@ -922,23 +963,35 @@
 2150:相手「%s」(%ld) を取り除きました。\n
 2156:conn close <接続番号>    - <接続番号> を閉じます。\n
 2157:モルドバ
-2158:ファイル名が与えられていません。\n
+#-#2158:ファイル名が与えられていません。\n
+#+#2158:No file given.\n
+# #2158:No file name given.\n
 2159:ファイルがあります。
 2160:peer file <ニックネーム> <ファイル名> [<説明>]\n
-2161:%ld 個のファイルを総サイズ %ld バイト速度 %lx で %s から受信します。\n
+#-#2161:%ld 個のファイルを総サイズ %ld バイト速度 %lx で %s から受信します。\n
+#+#2161:Receiving %ld files with together %ld bytes at speed %lx from %s.\n
+# #2161:Receiving %ld files with total size %ld bytes at speed %lx from %s.\n
 2162:%s (%s) をサイズ %ld バイトで %s として受信します。\n
 2163:ファイル %ld をオフセットは %ld で送信します。\n
 2164:ファイルへ書き込む際にエラーが発生しました。\n
-2165:ピア接続先の送信データ (%ld バイト)はファイルの長さ (%ld) よりも長かったです。\n
+#-#2165:ピア接続先の送信データ (%ld バイト)はファイルの長さ (%ld) よりも長かったです。\n
+#+#2165:The peer sent more bytes (%ld) than file length (%ld).\n
+# #2165:The peer sent more bytes (%ld) than the file length (%ld).\n
 2166:ファイル受信を完了しました。\n
 2167:エラー(未知のパケット)です。\n
 2168:ファイル転送 #%ld (%s) はタイムアウトのため %ld 回試行して終了しました。\n
 2169:ファイル転送はピア接続先 (%d) によって中止されました。\n
-2170:速度 %lx で %s に送信します。\n
+#-#2170:速度 %lx で %s に送信します。\n
+#+#2170:Sending at speed %lx to %s.\n
+# #2170:Sending file at speed %lx to %s.\n
 2171:Advanced
 2172:高度な機能のためのコマンドです。
-2176:コンタクトリストにある全員の現在の状況を詳細に表示します。
-2177:コンタクトリストにあるオンラインの人の現在の状況を詳細に表示します。
+#-#2176:コンタクトリストにある全員の現在の状況を詳細に表示します。
+#+#2176:Displays verbose the current status of everyone on your contact list.
+# #2176:Displays verbosely the current status of everyone on your contact list.
+#-#2177:コンタクトリストにあるオンラインの人の現在の状況を詳細に表示します。
+#+#2177:Displays verbose the current status of online people on your contact list.
+# #2177:Displays verbosely the current status of online people on your contact list.
 2179:全ての <contacts> にファイルを送信します。
 2180:<UIN> か <ニックネーム> にファイルを送信します。
 2181:接続番号 <nr> を閉じたり取り除いたりします。
@@ -946,7 +999,7 @@
 2183:全ての <contacts> についてオフラインか不可視になっているかどうか調べます。
 2184:%s%-10s%s - %s\n
 2185:接続 %ld を閉じています。\n
-2186:ファイル「%s」を受信しています(%ld バイト)。\n
+2186.ファイル「%s」を受信しています(%ld バイト)。\n
 2187.拒絶されたファイル・リクエスト 「%s」 (%d バイト) (未知: %x, %x)
 2188:データを速く送りすぎています。入力をやめないと、サーバは切断します!\n
 2189.サーバによって拒絶された悪いメッセージ・パケット。
@@ -962,14 +1015,14 @@
 2199:  -h, --help     このヘルプを表示\n
 2200:  -v, --verbose  詳細性のレベルを設定(あるいは増加)します(たいていデバッギングのため)\n
 2201:  -b, --basedir  指定された BASE ディレクトリを使用します(デフォルト: %s)\n
-2202:  -f, --config   指定された設定ファイルを使用します(デフォルト: %s)\n
+2202.  -f, --config   指定された設定ファイルを使用します(デフォルト: %s)\n
 2203:  -l, --logplace 指定されたファイル/ディレクトリにログを保存します(デフォルト: %s)\n
 2204:  -i, --i18n     指定されたロケールを使用します(デフォルト: 自動検出)\n
 2205:  -c, --nocolour 色を消します\n
 2206:このサーバは我々にはオフラインメッセージを渡したくないようです。\n
 2207:古い ICQ サーバへのコマンドでプロトコルエラーが発生しました: %d。\n
-2208:UTF-8 を検出しましたが、この mICQ は UTF-8 サポートなしでコンパイルされています。\n
-2209:UTF-8 を検出しました。\n
+2208.UTF-8 を検出しましたが、この mICQ は UTF-8 サポートなしでコンパイルされています。\n
+2209.UTF-8 を検出しました。\n
 2210.%smICQ (Matt's ICQ クローン)%s バージョン %s%s%s (%s でコンパイルされました)\n
 2211:あなたのステータスは %s です。\n
 2212:ステータスを %s へ変えました
@@ -980,7 +1033,7 @@
 2217:この mICQ は「%s」と UTF-8 の間の変換ができません。\n
 2218:UIN: %s\n
 2220:複数
-2221:一時的な相手「%s」(%ld) を消しました。\n
+2221.一時的な相手「%s」(%ld) を消しました。\n
 2222:スクリプトコマンド「%s」は失敗しました: %s (%d) 。\n
 2223:%s でリモートコントロール FIFO を開いています...
 2225:リモートコントロール
@@ -988,41 +1041,45 @@
 2227:FIFO を開くことができません
 2228:FIFO を非ブロッキングに設定できません
 2229.ファイル要求「%s」(%ld バイト) を拒否します: %s 。\n
-2230:チャット要求 (%s/%s) は断ります。チャット要求は %s からありました。\n
+2230.チャット要求 (%s/%s) は断ります。チャット要求は %s からありました。\n
 2231.ピア接続先によってファイル転送「%s」は拒絶されました: %s 。\n
-2232:は認証を要求しています: %s%s 。\n
-2233:は認証を断りました: %s%s 。\n
+2232.は認証を要求しています: %s%s 。\n
+#-#2233:は認証を断りました: %s%s 。\n
+#+#2233:refused authorization: %s%s\n
+# #2233:refused authorization: %s%s%s\n
 2234:メッセージ %s は廃棄されました - セッションが失われました。\n
-2235:ニックネームが入力されていません。\n
+2235.ニックネームが入力されていません。\n
 2236:%s%s%s (%ld) についての情報:\n
 2237:ウェブ通知:
 2238:IP アドレスを隠す:
 2239:その他知らないこと:
 2240:コンタクトグループが入力されていません。\n
 2241:「%s」をコンタクトグループ「%s」に追加しました。\n
-2242:%d 新しいコンタクトリストとしてインポートしました。コンタクトグループに %d を加えました。\n
+2242.%d 新しいコンタクトリストとしてインポートしました。コンタクトグループに %d を加えました。\n
 2243:「%s」をコンタクトグループ「%s」から消去しました。\n
 2244:コンタクトグループ「%s」はすでに「%s」(%ld) が存在します。\n
 2245:コンタクトグループ「%s」を追加しました。\n
 2246:「%s」はグループ「%s」に入っていません。\n
-2247:「%s」(%ld) についてのメタデータをロードできません。\n
+2247.「%s」(%ld) についてのメタデータをロードできません。\n
 2248:「%s」(%ld) についてのメタデータを保存しました。\n
 2249:「%s」(%ld) についてのメタデータを保存できませんでした。\n
 2250:電話番号「%s」は +<国コード><携帯会社><電話番号> という形式になっていません。\n
 2251:エラー:
 2252:ビープ音は %sbeep%sing によって生成されます。\n
 2253:ビープ音はイベント %s のスクリプト %s によって生成されます。\n
-2254:ビープ音は生成されません。
+#-#2254:ビープ音は生成されません。
+#+#2254:A beep is never generated.
+# #2254:A beep is never generated.\n
 2255:入って来る人についてのビープ音は常にイベント %s のスクリプト %s によって生成されます。\n
 2256:出て行く人についてのビープ音は常にイベント %s のスクリプト %s によって生成されます。\n
-2257:エンコード:
+2257.エンコード:
 2258:%s への (順序 %ld での) 受信ファイル転送要求は溜まっていません。\n
-2259:ファイル転送「%s」を要求します。%ld バイト (順序 %ld) です。\n
+2259.ファイル転送「%s」を要求します。%ld バイト (順序 %ld) です。\n
 2260:getauto コマンドを試してください。\n
-2261:%s%s%s は隠れています。\n
+2261.%s%s%s は隠れています。\n
 2262:デリート文字をバックスペースとして解釈するのは %s%s%s です。\n
-2263:ログ機能は %s%s%s です。\n
-2264:ステータス変化のログは %s%s%s です。\n
+2263.ログ機能は %s%s%s です。\n
+2264.ステータス変化のログは %s%s%s です。\n
 2265:自動応答機能は %s%s%s です。\n
 2266:プロンプトにある最後のニックネームは %s%s%s です。\n
 2267:自動保存機能は %s%s%s です。\n
@@ -1031,30 +1088,32 @@
 2270:simple
 2271:indent
 2272:smart
-2273:cycle
-2274:cycleall
-2275:タブのスタイルは %s%s%s です。\n
-2276:complete
-2277:    hermit:      コンタクトリストに入っていない人たちを無視します。\n
+2273.cycle
+2274.cycleall
+2275.タブのスタイルは %s%s%s です。\n
+2276.complete
+2277.    hermit:      コンタクトリストに入っていない人たちを無視します。\n
 2278:    delbs:       デリート文字をバックスペースとして解釈します。\n
-2279:    log:         ログを採ります。\n
-2280:    logonoff:    ステータス変化もログに含めます。\n
+2279.    log:         ログを採ります。\n
+2280.    logonoff:    ステータス変化もログに含めます。\n
 2281:    auto:        自動応答メッセージを送ります。\n
-2282:    uinprompt:   最後のニックネームをプロンプトに表示します。\n
+#-#2282:    uinprompt:   最後のニックネームをプロンプトに表示します。\n
+#+#2282:    uinprompt:  display the last nick in the prompt.\n
+# #2282:    uinprompt:  have the last nick in the prompt.\n
 2283:    autosave:    micqrc を自動で保存します。\n
 2284:    autofinger:  自動で新しい UIN の人の情報を取得します。\n
 2285:    linebreak:   行をまたがるメッセージのスタイル: simple, break, indent, smart\n
-2286:    tabs:        タブの扱い方のスタイル: simple, cycle, cycleall\n
-2287:    silent:      出力の抑制: off, on complete\n
+2286.    tabs:        タブの扱い方のスタイル: simple, cycle, cycleall\n
+2287.    silent:      出力の抑制: off, on complete\n
 2288:インデントのスタイルは %s%s%s です。\n
-2289:»»»
-2290:«««
-2291:>>»
-2292:«<<
+2289.»»»
+2290.«««
+2291.>>»
+2292.«<<
 2293:--=
 2294:===
-2295:>>>
-2296:<<<
+2295.>>>
+2296.<<<
 2297:なにに別名をつけるのでしょうか？\n
 2298:どの別名を削除するのでしょうか？\n
 2299:別名は存在しません。\n
@@ -1067,17 +1126,28 @@
 2306:サーバ側のコンタクトリストを要求し、全て表示したり新しい相手先を表示したりインポートしたりします。
 2307:コンタクトグループ順にコンタクトリストにあるオンラインの人の現在のステータスを表示します。
 2308:コンタクトグループ順にコンタクトリストにいる全員の現在のステータスを表示します。
-2309:コンタクトグループ順にコンタクトリストにあるオンラインの人の現在のステータスを詳細に表示します。
-2310:コンタクトグループ順にコンタクトリストにいる全員の現在のステータスを詳細に表示します。
+#-#2309:コンタクトグループ順にコンタクトリストにあるオンラインの人の現在のステータスを詳細に表示します。
+#+#2309:Displays verbose the current status of online people on your contact list, sorted by contact group.
+# #2309:Displays verbosely the current status of online people on your contact list, sorted by contact group.
+#-#2310:コンタクトグループ順にコンタクトリストにいる全員の現在のステータスを詳細に表示します。
+#+#2310:Displays verbose the current status of everyone on your contact list, sorted by contact group.
+# #2310:Displays verbosely the current status of everyone on your contact list, sorted by contact group.
 2311:<UIN> を <ニックネーム> として加えるか、<UIN> か <ニックネーム> への新しい別名 <新しいニックネーム> を加えます。
 2312:<contacts> の全ての別名を解除し、「all」が与えられるとその相手を削除します。
 2313:<contacts> から、もしくは <contacts> への認証の承認・拒否・要求・通知をします。
 2314:これらは高機能なコマンドです。完全な情報を得るにはマニュアルページを読んでください。\n
 2315:%s のステータスを調べることができません - ステータスを調べている人が多すぎます。\n
-2317:%s の翻訳が見つかりません。mICQ をあなたの言語に翻訳してくださいますか？\n
-2318:日本語の翻訳を読み込みました (%s) (%ld 項目分)。\n
+#2316:Translation %s not found.\n
+2317.%s の翻訳が見つかりません。mICQ をあなたの言語に翻訳してくださいますか？\n
+2318.日本語の翻訳を読み込みました (%s) (%ld 項目分)。\n
 2319:<UIN> か <ニックネーム> からの受信ファイル転送を受けつけます。
 2320:peer accept <ニックネーム> [<id>]\n                  - 受信ファイル転送を受けつけます。\n
+#2321:contact add     Add server based contact list to local contact list.\n
+#2322:contact sync    Import server based contact list if appropriate.\n
+#2323:contact export  Export local contact list to server based list.\n
+#2324:contact upload  Add local contacts to server based contact list.\n
+#2325:Warning: server based contact list change failed with error code %d.\n
+#2326:Server side contact list only supported for ICQ v8.\n
 2327:%smICQ (マットのICQ クローン)%s バージョン %s%s%s\n
 2328:余りに頻繁にログインしました。30分待ってから再度試してください。\n
 2329:文法エラー
@@ -1091,26 +1161,26 @@
 2337:  set  - サーバへ個人的なメタデータをアップロードする\n
 2338:  get  - メタデータをサーバに問い合わせる\n
 2339:  rget - 最後に入力メッセージを入れた人のメタデータをサーバに問い合わせる\n
-2340:ピア接続先によってファイル転送「%s」は拒絶されました: %s%s 。\n
-2341:ファイル要求「%s」(%ld バイト) を拒否します: %s%s 。\n
+2340.ピア接続先によってファイル転送「%s」は拒絶されました: %s%s 。\n
+2341.ファイル要求「%s」(%ld バイト) を拒否します: %s%s 。\n
 2342:Scripting
 2343:スクリプト拡張機能。
 2344:<ファイル> から Tcl スクリプトを実行します。
 2345:<文字列> の Tcl スクリプトを実行します。
 2346:次の Tcl 命令はサポートされています:\n
-2347:micq receive <スクリプト> [<ユーザ>]
+2347.micq receive <スクリプト> [<ユーザ>]
 2348:UIN かニックネームからメッセージを受け取るフックをインストールしてください。省略された場合全ての名前を指します。
-2349:コールバック引数: メッセージ から
-2350:micq unreceive [<コンタクト>]
+2349.コールバック引数: メッセージ から
+2350.micq unreceive [<コンタクト>]
 2351:UINまたはニックネームのメッセージフックをアンインストールします。
-2352:micq event <スクリプト>
+2352.micq event <スクリプト>
 2353:イベントフックをインストールします。コールバック引数: タイプ ...
-2354:micq unevent
+2354.micq unevent
 2355:イベントフックをアンインストールします。
 2356:インストールされているフックを全部挙げます。形式: <タイプ> <コマンド> <フィルター>。
-2357:micq exec <コマンド>
+2357.micq exec <コマンド>
 2358:micq 命令を実行します。
-2359:micq nick <uin>
+2359.micq nick <uin>
 2360:<uin> からニックネームを検索します。
 2361:コマンド '%s %s' の引数の数が間違っています。%d を期待しています。\n
 2362:引数の数が間違っています。'help' を試してください。
@@ -1121,30 +1191,178 @@
 2367:TCL エラー: %s\n
 2368:peer deny <ニックネーム> [<id>] [<理由>]\n                  - 入って来るファイル転送を拒否します。\n
 2369:「UIN」または「あだ名」から入って来るファイル転送を断ります。
-2370:%02d %-12s バージョン %d%s for %s (%lx) の %s:%ld %s\n
+2370.%02d %-12s バージョン %d%s for %s (%lx) の %s:%ld %s\n
 2371:SSL の初期化に失敗しました。\n
 2372:%s への SSL のネットワーク・コネクションを送ることができませんでした\n
-2373:ソケット(SSL)から読み込んでいる最中にエラー: %s (%d)\n
+2373.ソケット(SSL)から読み込んでいる最中にエラー: %s (%d)\n
 2374:SSL エラー: %s [%d]\n
 2375:SSL ハンドシェイク OK\n
 2376:%s [ERR=%d] から SSL 読み込み: %s
 2377:%s [ERR=%d] へ SSL 書き込み: %s
 2378:peer ssl <ニックネーム>   - SSL ハンドシェイクの初期化。
-2379:»%»
-2380:«%«
+2379.»%»
+2380.«%«
 2381:mICQの著者をあなたが便利なようにあなたのコンタクトリストに加えます。この機会を悪用しないでください。質問をする前に、ヘルプコマンドを使ったり、真面目にmanページやFAQを読もうとしてください。\n連づけられませんでした。破棄します。\n
-2382:ピア・ツー・ピア接続はサーバー接続と関連づけられませんでした。破棄します。\n
+2382.ピア・ツー・ピア接続はサーバー接続と関連づけられませんでした。破棄します。\n
 2383:<ユーザ>からの最後のメッセージを見ます。'h' は短縮されたコマンドです。
 2384:<ユーザ>のログファイルで<パターン>を大文字と小文字の区別をしないで検索します。
 2385:読み込むために '%s' を開けることができませんでした: %s (%d)。\n
 2386:%s%d%s  のテキストのマッチを見つけました。\n
-2387:%s <ユーザ> [<last> [<count>]] -- <ユーザ> の履歴を表示します。\n
-2388:%s <ユーザ> <パターン> -- <ユーザ> の履歴の中で <パターン> を大文字小文字に関係なく検索します。\n
-2389:%s <ユーザ> <パターン> -- <ユーザ> の履歴の中で <パターン> を大文字小文字の区別をして検索します。\n
+2387.%s <ユーザ> [<last> [<count>]] -- <ユーザ> の履歴を表示します。\n
+#-#2388:%s <ユーザ> <パターン> -- <ユーザ> の履歴の中で <パターン> を大文字小文字に関係なく検索します。\n
+#+#2388:%s <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n
+# #2388:find <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n
+#-#2389:%s <ユーザ> <パターン> -- <ユーザ> の履歴の中で <パターン> を大文字小文字の区別をして検索します。\n
+#+#2389:%s <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
+# #2389:finds <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
 2390:パターンが与えられなかった、または空のパターンが与えられました。\n
 2391:<ユーザ> のログファイルの中で <パターン> を大文字小文字の区別をして検索します。
-2392:あなたの状態は %s (%s) です。\n
-2393:%m/%d/%Y
+2392.あなたの状態は %s (%s) です。\n
+#-#2393:%m/%d/%Y
+#+#2393:%m/%d/%Y
+# #2393:%Y-%m-%d
 2394: %I:%M %p
 2395: 眺めは <ニックネーム> からメッセージを受け取った、<日付> から。
 2396:変数 '%s' に間違った日付表示形式、それが ISO 8601 の標準形式でなければならないある。試みの '2004-31-01' か '2004-31-01T23:12:05' ください。\n
+#2397:No server session found.\n
+#2398:Set an option for a contact group, a contact or global.\n
+#2399:Request SSL connection.
+#2400:No translation (%s) loaded (%d entries).\n
+#2401:Auto reply messages are now contact options, see the %s command.\n
+#2402:The global auto reply flag is handled by the %s command.\n
+#2403:msg>
+#2405:Your status is %s (%s).\n
+#2406:Couldn't load meta data for %s (%ld).\n
+#2407:This flag is handled by the %s command.\n
+#2408:%s is not a contact group.\n
+#2409:%s is not a contact.\n
+#2410:%s is neither a contact, nor a contact group, nor the %sglobal%s keyword.\n
+#2411:opt - short hand for optglobal, optgroup or optcontact.\n
+#2412:optglobal            [<option> [<value>]] - set global option.\n
+#2413:optconnection        {<option> [<value>]] - set connection option.\n
+#2414:optgroup   <group>   [<option> [<value>]] - set contact group option.\n
+#2415:optcontact <contact> [<option> [<value>]] - set contact option.\n
+#2416:Options for contact %s:\n
+#2417:Options for contact group %s:\n
+#2418:Global options:\n
+#2419:undefined
+#2420:effectivly
+#2421:Unknown option %s.\n
+#2422:Option %s for contact %s is undefined.\n
+#2423:Option %s for contact group %s is undefined.\n
+#2424:Option %s%s has no global value.\n
+#2425:Option %s for contact %s is %s%s%s.\n
+#2426:Option %s for contact group %s is %s%s%s.\n
+#2427:Option %s%s is globally %s%s%s.\n
+#2428:Option %s for contact %s is %s.\n
+#2429:Option %s for contact group %s is %s.\n
+#2430:Option %s%s is globally %s.\n
+#2431:Undefining option %s for contact %s.\n
+#2432:Undefining option %s for contact group %s.\n
+#2433:Undefining global option %s%s.\n
+#2434:Setting option %s for contact %s to %s.\n
+#2435:Setting option %s for contact group %s to %s.\n
+#2436:Setting option %s%s globally to %s.\n
+#2437:Setting option %s for contact %s to %s%d%s.\n
+#2438:Setting option %s for contact group %s to %s%d%s.\n
+#2439:Setting option %s%s globally to %s%d%s.\n
+#2440:Setting option %s for contact %s.\n
+#2441:Setting option %s for contact group %s.\n
+#2442:Setting option %s%s globally.\n
+#2443:Clearing option %s for contact %s.\n
+#2444:Clearing option %s for contact group %s.\n
+#2445:Clearing option %s%s globally.\n
+#2446:Invalid value %s for boolean option %s.\n
+#2447:No new password given.\n
+#2448:Contact group '%s' already exists\n
+#2449:Primary contact group for contact '%s' is now '%s'.\n
+#2450:Last %d people you talked with:\n
+#2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
+#2452:%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n
+#2453:    at %p parent %p assoc %p ssl %d\n
+#2454:    open %p reconn %p close %p err %p dispatch %p\n
+#2455:About>
+#2456:Unknown command %s, type %shelp%s for help.\n
+#2457:Unknown configuration file format version %d.\n
+#2458:Can't tab spool %s; type "%sopt %s tabspool 1%s" manually.\n
+#2459:Peer-to-peer connection not associated to server connection, discarding.\n
+#2460:Contact group %s (id %s%d%s) not associated to server connection.\n
+#2461:Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
+#2462:File transfer %s to port %s%ld%s.
+#2463:File transfer %s rejected by peer: %s.
+#2464:Accepting file %s (%s%ld%s bytes).
+#2465:Refusing file request %s (%s%ld%s bytes): %s.
+#2466:Refusing chat request (%s/%s) from %s%s%s.
+#2467:mICQ>
+#2468:requests file transfer %s of %s%ld%s bytes (sequence %s%ld%s).\n
+#2469:URL:
+#2470:requests authorization: %s\n
+#2471:Ignored contacts:\n
+#2472:Hidden-from contacts:\n
+#2473:Normal contacts:\n
+#2474:Intimate contacts:\n
+#2475:Showed %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
+#2476:Downloaded %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
+#2477:Uploading %d contact groups and %d contacts.\n
+#2478:Server: Group %s (#%d)\n
+#2479:Local:  Group %s (#%d)\n
+#2480:Server: Group %s Contact %s (#%d) <ignored>\n
+#2481:Server: Group %s Contact %s (#%d) <hidefrom>\n
+#2482:Server: Group %s Contact %s/%s (#%d) <hidefrom>\n
+#2483:Local:  Group %s Contact %s/%s (#%d)\n
+#2484:Server: Group %s Contact %s (#%d)\n
+#2485:Server: Group %s Contact %s/%s (#%d)\n
+#2486:Local:  Group %s Contact %s/%s (#%d) <%s>\n
+#2487:hidefrom
+#2488:intimate
+#2489:Server: Group %s Contact %s/%s (#%d) <intimate>\n
+#2490:normal
+#2491:Differences in %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate, %d local.\n
+#2492:Usage: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
+#2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
+#2494:  -u, --uin      login with this UIN instead of those configured\n
+#2495:  -p, --passwd   ... and override password\n
+#2496:  -s, --status   ... and override status\n
+#2497:  -C, --cmd      ... and execute mICQ command\n
+#2498:Encoding %s%s%s is not supported by this mICQ.\n
+#2499:Please recompile using the '--enable-iconvrepl' configure option.\n
+#2500:Manual locale setting %s ignored - use a real locale instead.\n
+#2501:Your locale is unset. Please use the %s--i18n%s command line option or set one of the environment variables %sLC_ALL%s, %sLC_MESSAGES%s, or %sLANG%s to your current locale.\n
+#2502:Locale setting %s ignored - use a real locale instead.\n
+#2503:Your system doesn't know the %s locale - try %siconv --list%s.\n
+#2504:Could not open configuration file %s%s%s.
+#2505:Deprecated option -f used. Please use the similar -b instead.\n
+#2506:This console uses encoding %s.\n
+#2507:Translation %s%s%s not found. Would you like to translate mICQ into your language?\n
+#2508:English (%s) translation loaded (%s%d%s entries).\n
+#2509:WSAStartup() for WinSocks 1.1 failed
+#2510:Opening v5 connection to %s:%s%ld%s... 
+#2511:Redirect to server %s:%s%ld%s... 
+#2512:Opening v8 connection to %s:%s%ld%s for %s%s%s... 
+#2513:new UIN
+#2514:refused (ignored)
+#2515:You queried already too many users today - come back tomorrow.\n
+#2516:The query got stuck. Or somesuch. Try again later.\n
+#2517:I'm out of wisdom about the server's problem. It just didn't work out.\n
+#2518:You need to 'save' to write your new UIN to disc.\n
+#2519:Opening file listener connection at %slocalhost%s:%s%ld%s... 
+#2520:Opening file transfer connection to %s:%s%ld%s... \n
+#2521:Opening peer-to-peer connection at %slocalhost%s:%s%ld%s... 
+#2522:Opening TCP connection at %s:%s%ld%s... 
+#2523:%s not recognized as a nick name.\n
+#2524:Can't restore terminal modes.\n
+#2525:Can't read terminal modes.\n
+#2526:Can't modify terminal modes.\n
+#2527:OpenSSL internal error: %s:%i\n
+#2528:OpenSSL read error: %s\n
+#2529:OpenSSL read error %d (unknown)\n
+#2530:OpenSSL write error: %s\n
+#2531:OpenSSL write error %d (unknown)\n
+#2532:OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n
+#2533:SSL handshake failed
+#2534:IP:
+#2535:Groups:\n
+#2536:Group:
+#2537:Contact upload failed, authorization required.\n
+#2538:Contact upload failed, already on server.\n
+#2539:Contact upload succeeded.\n

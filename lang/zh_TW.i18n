@@ -1,6 +1,8 @@
 # $Id$ Chinese/Taiwan (中文)
-#  EN: __.i18n,v 1.63.2.16 2004/03/10 22:31:00
-1000:big5
+#  EN: __.i18n,v 1.70 2004/11/18 21:25:15
+#-#1000:big5
+#+#1000:iso-8859-1
+# #1000:UTF-8
 1001:zh
 1002:zh_TW
 1003:0-4-10
@@ -11,7 +13,7 @@
 1010:用家是 away [自動訊息]
 1011:用家是 not available [自動訊息]
 1012:用家是 occupied [自動訊息]
-1013:用家是 offline
+1013.用家是 offline
 1014:None
 1015:一月
 1016:二月
@@ -32,12 +34,12 @@
 1032:debug: double packet #%04lx type %04x (%s)\n
 1033:接收到的 v8 伺服器封包:
 1034:已到達最大的嘗試次數，放棄了。
-1036:不知名的指令 %s，要幫助請鍵入 /help。 
-1037:部份訊息已被傳送。\n
+1036.不知名的指令 %s，要幫助請鍵入 /help。 
+1037.部份訊息已被傳送。\n
 1038:訊息已被取消。\n
 1039:伺服器指我們沒有連線。\n
-1040:mICQ> 
-1041:msg> 
+1040.mICQ> 
+1041.msg> 
 1043:找到所有使用者。
 1044:找到太多使用者。
 1045:已完成搜尋。
@@ -53,12 +55,12 @@
 1062:不理會的使用者: 
 1063:請輸入密碼:
 1064:自動改變狀態為 %s。\n
-1072:離線的好友:
-1073:在線的好友:
+1072.離線的好友:
+1073.在線的好友:
 1078:沒有翻譯。
 1079:Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n
-1080:無法載入 "%s" 國際化。\n
-1081:成功載入 zh_TW 翻譯 (%ld 項)。\n
+1080.無法載入 "%s" 國際化。\n
+1081.成功載入 zh_TW 翻譯 (%ld 項)。\n
 1082:嘗試再次連線中... [%d 次嘗試中的第 %d 次]\n
 1085:開啟
 1086:關閉
@@ -69,8 +71,8 @@
 1096:SOCKS5 用戶名稱:
 1097:SOCKS5 密碼:
 1098:顯示可用 tab 鍵帶出的 nickname 列。
-1099:不名的語言
-1100:無
+1099.不名的語言
+1100.無
 1101:阿拉伯文
 1102:Bhojpuri
 1103:保加利亞文
@@ -157,7 +159,9 @@
 1185:專門的
 1186:大學學生
 1187:網路架設
-1188:rc 檔 '%s' 含不明指令，已略過。
+#-#1188:rc 檔 '%s' 含不明指令，已略過。
+#+#1188:Unrecognized command in rc file '%s', ignored.
+# #1188:Unrecognized command '%s' in configuration file, ignored.
 1198:其他服務
 1200:並無輸入
 1201:阿富汗
@@ -482,7 +486,7 @@
 1538:輸入新的出生年份 (4位):
 1539:輸入新的出生月份:
 1540:輸入新的出生日期:
-1541:關於> 
+1541.關於> 
 1544:輸入新的城市:
 1545:輸入新的州:
 1546:輸入新的電話號碼:
@@ -520,7 +524,7 @@
 1604:用家應該在線嗎﹖
 1605:想在網上顯示你的狀態嗎﹖ (YES/NO)
 1606:Received a bad session ID %08lx (correct: %08lx) with cmd %04x ignored.\n
-1607:用法: micq [-h] [-c] [-i <locale>] [-b <basedir>] \n            [-f <configfile>] [-v[<level>]] [-l <logplace>]\n
+1607.用法: micq [-h] [-c] [-i <locale>] [-b <basedir>] \n            [-f <configfile>] [-v[<level>]] [-l <logplace>]\n
 1612:這程式並無透過 Mirabilis 的協助或許可而寫成。\n
 1613:寫這程式時沒有反工程或反編譯任何 Mirabilis 碼。\n
 1618:UIN:
@@ -528,9 +532,13 @@
 1620:已達到最大的好友數目，請向精靈要求把我加大吧﹗
 1621:用戶還未回來。
 1622:要套用這些變更嗎﹖ (YES/NO)
-1623:雙重封包 %04X\n
-1624:很抱歉，無法啟始 Windows Sockets...
-1632:\n連線不穩定，正在退出....
+#-#1623:雙重封包 %04X\n
+#+#1623:Doubled packet %04X\n
+# #1623:Double packet %04x.\n
+1624.很抱歉，無法啟始 Windows Sockets...
+#-#1632:\n連線不穩定，正在退出....
+#+#1632:\nConnection unstable. Exiting....
+# #1632:\nConnection unstable. Exiting....
 1634:ok.\n
 1637:Can't bind socket to free port\n
 1638:無法建立 socket
@@ -539,7 +547,9 @@
 1641:成功更新用戶個人資料。\n
 1642:IP:
 1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
-1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
+#-#1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
+#+#1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
+# #1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
 1645:輸入了不正確的密碼。\n
 1646:伺服器很煩忙。\n
 1648:反應是 %04x	
@@ -552,31 +562,35 @@
 1656:請輸入用戶的 nick name:
 1657:請輸入用戶的名字:
 1658:請輸入用戶的姓氏:
-1659:設定檔內有不明的部份 %s。
+#-#1659:設定檔內有不明的部份 %s。
+#+#1659:Unknown section %s in configuration file.
+# #1659:Unknown section '%s' in configuration file.
 1660:無效的指令: %s\n
 1661:不能使用 shell 指令。\n
 1666:不會忽略 %s。\n
 1667:忽略 %s。\n
 1670:現在 %s 是正常可視度。\n
 1671:現在 %s 是永遠可視。\n
-1672:%s 的 IP 地址是 
-1673:埠是 %ld。\n
-1674:不明的埠。\n
+1672.%s 的 IP 地址是 
+1673.埠是 %ld。\n
+1674.不明的埠。\n
 1675:忽略了這行:
-1676:需要 uin/nick 來傳送。\n
-1678:需要 URL 喔。\n
+1676.需要 uin/nick 來傳送。\n
+#-#1678:需要 URL 喔。\n
+#+#1678:Need URL please.\n
+# #1678:No URL given.\n
 1679:很抱歉，儲存個人回覆訊息時出了錯誤﹗\n
 1680:閣下的個人設定已被儲存﹗\n
-1681:跟你說話的最後 %d 個人:\n
+1681.跟你說話的最後 %d 個人:\n
 1682:收到來自這些人的訊息:\n
 1687:mICQ 已經跑了 
 1688:日
 1689:小時
 1690:分
 1691:秒
-1692:Contacts:
+1692.Contacts:
 1696:性別:
-1700:列表中並無 %s。\n
+1700.列表中並無 %s。\n
 1703:狀態模式:\n
 1704:興趣小組:\n
 1705:一般
@@ -593,16 +607,18 @@
 1716:無
 1717:指令的第一個字為 '!' 會執行 shell 指令 (例如 '!ls', '!dir', '!mkdir temp')
 1719:顯示 mICQ 已跑了多久及一些統計數據。
-1720:<contacts> 是一行以逗號分隔的用戶 UINs 與 nick names。
+#-#1720:<contacts> 是一行以逗號分隔的用戶 UINs 與 nick names。
+#+#1720:<contacts> is a comma seperated list of UINs and nick names of users.
+# #1720:<contacts> is a comma separated list of UINs and nick names of users.
 1721:傳送空白的訊息會令程式進入多行模式。\n在新一行上用 . 來結束訊息。\n在新一行上用 # 來取消訊息。
-1724:自動回覆是 %s。\n
-1727:"do not disturb" 訊息是:
-1728:"away" 訊息是:
-1729:"not available" 訊息是:
-1730:"occupied" 訊息是:
-1731:"invisible" 訊息是:
-1735:一定要給個訊息。\n
-1738:需要一個指令來更改。\n
+1724.自動回覆是 %s。\n
+1727."do not disturb" 訊息是:
+1728."away" 訊息是:
+1729."not available" 訊息是:
+1730."occupied" 訊息是:
+1731."invisible" 訊息是:
+1735.一定要給個訊息。\n
+1738.需要一個指令來更改。\n
 1741:必定要先收到一個訊息。\n
 1742:必定要先寫一個訊息。\n
 1743:封包大小不相配。\n
@@ -612,23 +628,23 @@
 1747:總共
 1754:注意: 要用 'save' 來把新的好友列表寫到磁碟上。\n
 1755:已把你加進他們的好友列表。\n
-1756:\n正在建立連線...\n
-1757:無法建立連線。\n
-1758:正在傳送請求...\n
-1759:正在等候回應....\n
-1760:\n閣下的新 UIN 是 %s%ld%s!\n
-1761:不明
+1756.\n正在建立連線...\n
+1757.無法建立連線。\n
+1758.正在傳送請求...\n
+1759.正在等候回應....\n
+1760.\n閣下的新 UIN 是 %s%ld%s!\n
+1761.不明
 1762:閣下的新 UIN 是:%ld。\n
-1763:指令 '%s' 已被改名為 '%s'。
-1764:指令 '%s' 沒有變更。
+1763.指令 '%s' 已被改名為 '%s'。
+1764.指令 '%s' 沒有變更。
 1766:空閒了 %s%ld%s 秒後轉變狀態為 away/not available。\n
 1767:切換自動循環至 away/not available。
-1768:指令名稱 '%s' 已被採用。\n
+1768.指令名稱 '%s' 已被採用。\n
 1770:重送上一個訊息給 <contacts>。
 1771:還沒有發出訊息給任何人﹗\n
 1774:接收到的封包:
 1775:發出的封包:
-1777:正在開啟 peer-to-peer 連線於 localhost:%ld... 
+1777.正在開啟 peer-to-peer 連線於 localhost:%ld... 
 1781:閣下 UIN %ld 的密碼:\n
 1782:閣下的新 UIN 需要密碼。\n
 1783:為免打錯字，請再次輸入密碼。\n
@@ -659,7 +675,9 @@
 1814:傳送了自動回覆訊息給 %s%s%s。\n
 1815:    funny:      使用趣怪訊息作為輸出。\n
 1817:沒有事件 scipting 工能。\n
-1818:警告:在 rc 檔中有已廢除的句法﹗\n    請更新或 "save" rc 檔並檢查變更。\n
+#-#1818:警告:在 rc 檔中有已廢除的句法﹗\n    請更新或 "save" rc 檔並檢查變更。\n
+#+#1818:Warning: Deprecated syntax found in rc file!\n    Please update or "save" the rc file and check for changes.\n
+# #1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 1820:%s <option> [on|off|<value>] - 控制簡單的選擇。\n
 1822:    color:      使用顏色文字輸出。\n
 1823:進來不完整的封包:
@@ -669,11 +687,11 @@
 #1830:Discarding message to %s after %ld send attempts.  Message content:\n
 1833:Peer to peer TCP 連線已建立。\n
 1835.寫入 socket 時發生錯誤 - %s (%d)\n
-1841:收到畸形的初始確認封包。\n
+1841.收到畸形的初始確認封包。\n
 1842:正在關閉 socket %d 至 %s。\n
 1843:正在關閉 socket %d。\n
 1844:過時後 TCP 訊息 %04x 已被捨棄。\n
-1845:不知名的 nick %s。\n
+1845.不知名的 nick %s。\n
 1846:打開及關閉直接 (peer to peer) 連線:\n
 1847:peer open  <nick> - 打開直接連線。\n
 1848:peer close <nick> - 關閉/從設直接連線。\n
@@ -682,13 +700,13 @@
 1855:TCP 連線至 %s 於 %s:%ld 失敗了。\n
 1856:Discarded a %04x (%s) packet from old session %08lx (current: %08lx).\n
 1857:想向其他用戶隱藏你的 IP 嗎﹖ (YES/NO)
-1864:無法開啟 rc 檔 %s。
-1866:這個 mICQ 版本編譯並不支援直接連線 (peer to peer)。\n
+1864.無法開啟 rc 檔 %s。
+1866.這個 mICQ 版本編譯並不支援直接連線 (peer to peer)。\n
 1867:收到一個畸形 (太短) 的封包 — 略過。\n
 1868:有一個畸形的 (太長的子封包) 多封包 — 略過多餘的。\n
 1869:協定版本早過五的已不再支援。\n
 1870:peer off   <nick> - 關閉直接連線並不再嘗試。\n
-1871:正在開啟 v8 連線至 %s:%ld... 
+1871.正在開啟 v8 連線至 %s:%ld... 
 1872:失敗: %s (%d)\n
 1873:工作城市:
 1874:工作州名:
@@ -697,7 +715,7 @@
 1877:ok.\n
 1878:讀取 socket: %s (%d) 時發生錯誤\n
 1879:所屬團體:
-1880:進來的封包並不是一個 FLAP: id 是 %d。\n
+1880.進來的封包並不是一個 FLAP: id 是 %d。\n
 1881:FLAP channel 1 out of data.\n
 1882:FLAP channel 1 cmd 1 extra data:\n
 1883:FLAP channel 1 unknown command %d.\n
@@ -713,18 +731,20 @@
 1894:沒有連線號碼 %ld。\n
 1895:登入失敗:\n
 1896:伺服器關閉了連線:\n
-1897:未完成之 TLV %d，長度 %ld 中的 %d — 略過。\n
-1898:重新指向伺服器 %s...
+#-#1897:未完成之 TLV %d，長度 %ld 中的 %d — 略過。\n
+#+#1897:Incomplete TLV %d, len %ld of %d - ignoring.\n
+# #1897:Incomplete TLV %d, len %ld of %ld - ignoring.\n
+1898.重新指向伺服器 %s...
 1899:不知明的類別要求: %d\n
 1900:那是唯讀。
 1901:已授權讓你把她們加至好友列表。\n
-1902:正在開啟 v5 連線至 %s:%ld...
+1902.正在開啟 v5 連線至 %s:%ld...
 1903:發出的 v8 伺服器封包:
 1904:伺服器不明白 ver %d (only %d) for family %d!\n
-1905:SNAC (%x,%x) [%s] flags %x ref %lx\n
+1905.SNAC (%x,%x) [%s] flags %x ref %lx\n
 1907:警告: 伺服器以為我們的 UIN 是 %ld，但其實是 %ld。\n
-1908:收到給非聯絡的 USERONLINE 封包。\n
-1909:收到給非聯絡的 USEROFFLINE 封包。\n
+1908.收到給非聯絡的 USERONLINE 封包。\n
+1909.收到給非聯絡的 USEROFFLINE 封包。\n
 1911:正在連線
 1912:關閉
 1914:無法分配連線結構。\n
@@ -823,7 +843,7 @@
 2031:連線失敗的次數太頻密，所以放棄了。\n
 2032:於 %d 秒後編排 v8 重新連線。\n
 2033:於今天出生
-2034:正在開啟 TCP 連線於 %s:%ld... 
+2034.正在開啟 TCP 連線於 %s:%ld... 
 2036:儲存設定到磁碟中。
 2037:開啟或關閉 peer-to-peer 連線，或停止使用 peer-to-peer 連線于 <uin> 或 <nick>。
 2038:開啟連線編號 <nr>，或第一個伺服器連線。
@@ -835,9 +855,9 @@
 2046:你或許應考慮改用 protocol version 8 來作 ICQ peer-to-peer 協定。\n
 2047:正在建立目錄 %s。\n
 2048:正在儲存設定到 %s。\n
-2049:正在接收組別 "%s":\n
+2049.正在接收組別 "%s":\n
 2051:錯誤發生於 socket: %s (%d)\n
-2054:"free for chat" 訊息:
+2054."free for chat" 訊息:
 2055:用戶是 ffc，任何事情都想談。
 2056:getauto [auto] <nick> - 從好友處取得自動回覆。\n
 2057:getauto away   <nick> - 從好友處取得 away 的自動回覆。\n
@@ -848,8 +868,8 @@
 2065:不明的 TCP_MSG_GREET_ 指令 %04x。\n
 2066:不明的 TCP_MSG_ 指令 %04x。\n
 2067:file io
-2068:正在開啟檔案傳送連線至 %s:%ld... \n
-2070:檔案傳送 '%s' 至埠 %ld。\n
+2068.正在開啟檔案傳送連線至 %s:%ld... \n
+2070.檔案傳送 '%s' 至埠 %ld。\n
 2071:Couldn't stat file %s: %s (%d)\n
 2072:檔案傳送 #%ld (%s) 因連線關閉而被取消。\n
 2073:Memory usage: %ld packets processing.\n
@@ -857,9 +877,11 @@
 2079:接收的 TCP 封包 (%d - %s): %s
 2080:伺服器 SMS 發送回覆:\n%s\n
 2081:    at %p parent %p assoc %p\n
-2082:正在開啟檔案聆聽連線於 localhost:%ld... 
+2082.正在開啟檔案聆聽連線於 localhost:%ld... 
 2083:無法開啟檔案 %s: %s (%d)。\n
-2084:當搜尋至 offset %ld: %s 時發生錯誤 (%ld)。\n
+#-#2084:當搜尋至 offset %ld: %s 時發生錯誤 (%ld)。\n
+#+#2084:Error while seeking to offset %ld: %s (%ld).\n
+# #2084:Error while seeking to offset %ld: %s (%d).\n
 2086:當讀取檔案 %s: %s 時發生錯誤 (%d)。\n
 2087:傳送完檔案 %s。\n
 2088:傳送完所有 %d 個檔案。\n
@@ -868,7 +890,9 @@
 2091:%s 正排隊為 %s 預備傳送。\n
 2092:TCP 訊息 %s 被捨棄 - 失去連線。\n
 2093.%02d %-12s version %d 與 %s (%lx), 於 %s:%ld %s\n
-2094:conn login         開啟第一個伺服器連線。\n
+#-#2094:conn login         開啟第一個伺服器連線。\n
+#+#2094:conn login         Open first server connection.\n
+# #2094:conn login         Open current/first server connection.\n
 2095:conn remove <nr>   移除連線 <nr>。\n
 2096.連線 %ld 並沒有開啟。\n
 2097:conn select <nr>   選擇連線 <nr> 為伺服器連線。\n
@@ -877,9 +901,15 @@
 2100:conn select <uin>  選擇與 UIN <uin> 的連線為伺服器連線。\n
 2101:正在移除 %ld 及所有關的連線。\n
 2102:連線 %ld 是已設定的連線。\n
-2103:contact show    顯示伺服器端的好友列表。\n
-2104:contact diff    顯示不在本機好友列表內的伺服器端好友。\n
-2105:contact import  把伺服器端的好友列表加到本機上。\n
+#-#2103:contact show    顯示伺服器端的好友列表。\n
+#+#2103:contact show    Show server side contact list.\n
+# #2103:contact show    Show server based contact list.\n
+#-#2104:contact diff    顯示不在本機好友列表內的伺服器端好友。\n
+#+#2104:contact diff    Show server side contacts not on local contact list.\n
+# #2104:contact diff    Show server based contacts not on local contact list.\n
+#-#2105:contact import  把伺服器端的好友列表加到本機上。\n
+#+#2105:contact import  Add server side contact list to local contact list.\n
+# #2105:contact import  Import server based contact list as local contact list.\n
 2106:最後自 %s%s%s 於 %s 的訊息:\n
 2107:沒有收到 %s%s%s 的訊息。\n
 2108:auto
@@ -887,27 +917,37 @@
 2110:peer files <nick> <file1> <as1> ... [<description>]\n
 2111:                  - Send file1 as as1, ..., with description.\n
 2112:                  - as = '/': strip path, as = '.': as is\n
-2113:不明的狀態 '%s'。\n
-2114:指令名稱 '%s' 並不存在。\n
+2113.不明的狀態 '%s'。\n
+2114.指令名稱 '%s' 並不存在。\n
 2115:'%s' 並非一個整數。\n
 2116:沒有新的 nick name 提供。\n
 2117:%ld 加入為 %s。\n
 2118:記憶體不足。\n
-2119:auth [grant] <nick>    - 允許授權。\n
-2120:auth deny <nick> <msg> - 拒絕授權。\n
-2121:auth req  <nick> <msg> - 要求授權。\n
+#-#2119:auth [grant] <nick>    - 允許授權。\n
+#+#2119:auth [grant] <nick>    - grant authorization.\n
+# #2119:auth [grant] <contacts>    - grant authorization.\n
+#-#2120:auth deny <nick> <msg> - 拒絕授權。\n
+#+#2120:auth deny <nick> <msg> - refuse authorization.\n
+# #2120:auth deny <contacts> <msg> - refuse authorization.\n
+#-#2121:auth req  <nick> <msg> - 要求授權。\n
+#+#2121:auth req  <nick> <msg> - request authorization.\n
+# #2121:auth req  <contacts> <msg> - request authorization.\n
 2122:注意: 要用 'save' 來把密碼寫到磁碟上。\n
-2123:%s語法錯誤%s: 太少參數: '%s'\n
-2124:%s語法錯誤%s: 並非整數: '%s'\n
+#-#2123:%s語法錯誤%s: 太少參數: '%s'\n
+#+#2123:%sSyntax error%s: Too few arguments: '%s'\n
+# #2123:%sSyntax error%s: Too few arguments: %s\n
+#-#2124:%s語法錯誤%s: 並非整數: '%s'\n
+#+#2124:%sSyntax error%s: Not an integer: '%s'\n
+# #2124:%sSyntax error%s: Not an integer: %s\n
 2126:是 offline，訊息已在伺服器排隊。\n
-2127:       URL: %s %s%s%s\n
+2127.       URL: %s %s%s%s\n
 2128:        描述: %s%s%s\n
 2129:         URL: %s%s%s\n
-2130:撰寫訊息給 %sall%s:\n
+2130.撰寫訊息給 %sall%s:\n
 2131:撰寫訊息給 %s%s%s:\n
 2133:顏色文字是 %s%s%s。\n
 2134:趣怪訊息是 %s%s%s。\n
-2135:安靜輸出是 %s%s%s。\n
+2135.安靜輸出是 %s%s%s。\n
 2136:Password change was %s%s%s.\n
 2137:About info change was %s%s%s.\n
 2138:Info change was %s%s%s.\n
@@ -915,7 +955,9 @@
 2140:Random chat group change was %s%s%s.\n
 2141:搜尋 %s失敗%s。\n
 2142:無法與 %s 作直接連線。\n
-2145:auth add  <nick>       - 授權後加入。\n
+#-#2145:auth add  <nick>       - 授權後加入。\n
+#+#2145:auth add  <nick>       - authorized add.\n
+# #2145:auth add  <contacts>       - authorized add.\n
 2146:'%s' 已是 '%s' 的化名 (%ld)。\n
 2147:'%s' (%ld) 已是一個 nick。\n
 2148:加了 '%s' 為 '%s' 的化名 (%ld)。\n
@@ -923,23 +965,35 @@
 2150:已移除好友 '%s' (%ld)。\n
 2156:conn close <nr>    關閉連線 <nr>。\n
 2157:Moldova
-2158:沒有檔案提供。\n
+#-#2158:沒有檔案提供。\n
+#+#2158:No file given.\n
+# #2158:No file name given.\n
 2159:一些檔案。
 2160:peer file  <nick> <file> [<description>]\n
-2161:Receiving %ld files with together %ld bytes at speed %lx from %s.\n
+#-#2161:Receiving %ld files with together %ld bytes at speed %lx from %s.\n
+#+#2161:Receiving %ld files with together %ld bytes at speed %lx from %s.\n
+# #2161:Receiving %ld files with total size %ld bytes at speed %lx from %s.\n
 2162:Receiving file %s (%s) with %ld bytes as %s.\n
 2163:Sending file %ld at offset %ld.\n
 2164:錯誤寫入檔案。\n
-2165:The peer sent more bytes (%ld) than file length (%ld).\n
+#-#2165:The peer sent more bytes (%ld) than file length (%ld).\n
+#+#2165:The peer sent more bytes (%ld) than file length (%ld).\n
+# #2165:The peer sent more bytes (%ld) than the file length (%ld).\n
 2166:接收檔案完成。\n
 2167:錯誤 - 不明的封包。\n
 2168:檔案傳送 #%ld (%s) 超時，嘗試了 %ld 次後放棄。\n
 2169:File transfer aborted by peer (%d).\n
-2170:以 %lx 的速度傳送給 %s。\n
+#-#2170:以 %lx 的速度傳送給 %s。\n
+#+#2170:Sending at speed %lx to %s.\n
+# #2170:Sending file at speed %lx to %s.\n
 2171:Advanced
 2172:進階工能的指令。
-2176:Displays verbose the current status of everyone on your contact list.
-2177:Displays verbose the current status of online people on your contact list.
+#-#2176:Displays verbose the current status of everyone on your contact list.
+#+#2176:Displays verbose the current status of everyone on your contact list.
+# #2176:Displays verbosely the current status of everyone on your contact list.
+#-#2177:Displays verbose the current status of online people on your contact list.
+#+#2177:Displays verbose the current status of online people on your contact list.
+# #2177:Displays verbosely the current status of online people on your contact list.
 2179:傳送一個檔案給所有 <contacts>。
 2180:傳送數個檔案給 <uin> 或 <nick>。
 2181:關閉或移除連線 <nr>。
@@ -947,10 +1001,12 @@
 2183:檢查全部 <contacts> 是否離線還是隱形。
 2184:%s%-10s%s - %s\n
 2185:正在關閉連線 %ld。\n
-2186:正在接收檔案 '%s' (%ld bytes)。\n
+2186.正在接收檔案 '%s' (%ld bytes)。\n
 2188:資料傳送太快了 - 請立刻停止，否則會被伺服器斷線﹗\n
 2191:即時訊息錯誤: %d。\n
-2192:能力: 
+#-#2192:能力: 
+#+#2192:Capabilities: 
+# #2192:Capabilities:
 2194:不知如何開啟此連線類形。\n
 2195:過時編號:
 2196:過時文字:
@@ -959,14 +1015,14 @@
 2199:  -h, --help     顯示這段說明文字\n
 2200:  -v, --verbose  設定 (或增加) verbosity (主要用作除蟲)\n
 2201:  -b, --basedir  使用所指定的 BASE 目錄 (預設: %s)\n
-2202:  -f, --config   使用所指定的設定檔 (預設: %s)\n
+2202.  -f, --config   使用所指定的設定檔 (預設: %s)\n
 2203:  -l, --logplace 使用所指定的記錄檔/目錄 (預設: %s)\n
 2204:  -i, --i18n     使用所指定的區域 (預設: 自動偵測))\n
 2205:  -c, --nocolor  不使用顏色\n
 2206:伺服器不想給我們離線訊息。\n
 2207:給舊 ICQ 伺服器的指令出現通訊協定錯誤: %d。\n
-2208:偵測到 UTF-8 編碼，但這個 mICQ 編譯並不支援 UTF-8。\n
-2209:偵測到 UTF-8 編碼。\n
+2208.偵測到 UTF-8 編碼，但這個 mICQ 編譯並不支援 UTF-8。\n
+2209.偵測到 UTF-8 編碼。\n
 2211:你的狀態是 %s。\n
 2212:改變狀態為 %s
 2213:登入 (%s)
@@ -976,7 +1032,7 @@
 2217:這個 mICQ 無法切換於 '%s' 與 unicode 之間。\n
 2218:UIN: %s\n
 2220:several
-2221:移除了臨時好友 '%s' (%ld)。\n
+2221.移除了臨時好友 '%s' (%ld)。\n
 2222:Script command '%s' failed: %s (%d).\n
 2223:正在開啟遙控 FIFO 於 %s... 
 2225:remote control
@@ -984,41 +1040,45 @@
 2227:無法開啟 FIFO
 2228:無法設定 FIFO nonblocking
 2229.正在拒絕檔案要求 '%s' (%ld bytes): %s。\n
-2230:正在拒絕聊天要求 (%s/%s) 自 %s。\n
+2230.正在拒絕聊天要求 (%s/%s) 自 %s。\n
 2231.檔案傳送 '%s' 被 peer: %s 拒絕。\n
-2232:要求授權: %s%s\n
-2233:拒絕授權: %s%s\n
+2232.要求授權: %s%s\n
+#-#2233:拒絕授權: %s%s\n
+#+#2233:refused authorization: %s%s\n
+# #2233:refused authorization: %s%s%s\n
 2234:訊息 %s 被捨棄 — 失去連線。\n
-2235:沒有 nick name 提供。\n
+2235.沒有 nick name 提供。\n
 2236:%s%s%s (%ld) 的個人資料:\n
 2237:網上察覺:
 2238:隱藏 IP:
 2239:Unknown more:
 2240:並無提供好友組別。\n
 2241:已把 '%s' 加到好友組別 '%s'。\n
-2242:匯入了 %d 個新好友，加了 %d 次到好友組別。\n
+2242.匯入了 %d 個新好友，加了 %d 次到好友組別。\n
 2243:移除了好友 '%s' 從組別 '%s'。\n
 2244:好友組別 '%s' 已經有好友 '%s' (%ld)。\n
 2245:新增了好友組別 '%s'。\n
 2246:好友 '%s' 並不在組別 '%s'內。\n
-2247:無法為 '%s' 載入 meta 資訊 (%ld)。\n
+2247.無法為 '%s' 載入 meta 資訊 (%ld)。\n
 2248:已為 '%s' 儲存了 meta 資訊 (%ld)。\n
 2249:無法為 '%s' 儲存 meta 資訊 (%ld)。\n
 2250:號碼並不是 +<國家編號><手機供應商><號碼> 的格式。\n
 2251:錯誤:
 2252:A beep is generated by %sbeep%sing.\n
 2253:A beep is generated by running the %sevent%s script.\n
-2254:A beep is never generated.
+#-#2254:A beep is never generated.
+#+#2254:A beep is never generated.
+# #2254:A beep is never generated.\n
 2255:A beep for oncoming contacts is always generated by running the %sevent%s script.\n
 2256:A beep for offgoing contacts is always generated by running the %sevent%s script.\n
-2257:編碼:
+2257.編碼:
 2258:No pending incoming file transfer request for %s with (sequence %ld) found.\n
-2259:requests file transfer '%s' of %ld bytes (sequence %ld).\n
+2259.requests file transfer '%s' of %ld bytes (sequence %ld).\n
 2260:請嘗試改用 getauto 指令。\n
-2261:忽略所有非好友 %s%s%s。\n
+2261.忽略所有非好友 %s%s%s。\n
 2262:把 delete 字元譯為 backspace 是 %s%s%s。\n
-2263:做記錄是 %s%s%s。\n
-2264:記錄狀態改變是 %s%s%s。\n
+2263.做記錄是 %s%s%s。\n
+2264.記錄狀態改變是 %s%s%s。\n
 2265:自動回覆是 %s%s%s。\n
 2266:於 prompt 顯示上一個好友是 %s%s%s。\n
 2267:自動儲存是 %s%s%s。\n
@@ -1027,30 +1087,32 @@
 2270:simple
 2271:indent
 2272:smart
-2273:cycle
-2274:cycleall
-2275:Tab 款式是 %s%s%s。\n
-2276:完成
-2277:    hermit:     忽略所有非好友。\n
+2273.cycle
+2274.cycleall
+2275.Tab 款式是 %s%s%s。\n
+2276.完成
+2277.    hermit:     忽略所有非好友。\n
 2278:    delbs:      把 delete 字元譯為 backspace。\n
-2279:    log:        做記錄。\n
-2280:    logonoff:   連狀態轉變也記錄。\n
+2279.    log:        做記錄。\n
+2280.    logonoff:   連狀態轉變也記錄。\n
 2281:    auto:       送出自動回覆。\n
-2282:    uinprompt:  於 prompt 顯示上一個好友。\n
+#-#2282:    uinprompt:  於 prompt 顯示上一個好友。\n
+#+#2282:    uinprompt:  display the last nick in the prompt.\n
+# #2282:    uinprompt:  have the last nick in the prompt.\n
 2283:    autosave:   自動儲存 micqrc。\n
 2284:    autofinger: 自動 finger 新 UINs。\n
 2285:    linebreak:  分隔行款式: simple, break, indent, smart。\n
-2286:    tabs:       tab-handling 款式: simple, cycle, cycleall。\n
-2287:    silent:     抑制輸出: 開, 關, 完全。\n
+2286.    tabs:       tab-handling 款式: simple, cycle, cycleall。\n
+2287.    silent:     抑制輸出: 開, 關, 完全。\n
 2288:分隔行款式是 %s%s%s。\n
-2289:》》》
-2290:《《《
-2291:>>》
-2292:《<<
+2289.》》》
+2290.《《《
+2291.>>》
+2292.《<<
 2293:--=
 2294:===
-2295:>>>
-2296:<<<
+2295.>>>
+2296.<<<
 2297:是甚麼的化名﹖\n
 2298:移除哪個化名﹖\n
 2299:化名並不存在。
@@ -1063,17 +1125,28 @@
 2306:要求伺服器端的好友列表及顯示所有或新好友或匯入的。
 2307:顯示閣下的好友列表內在線的人目前的狀態，依好友組別順序。
 2308:顯示閣下的好友列表內每個人目前的狀態，依好友組別順序。
-2309:詳細顯示閣下的好友列表內在線的人目前的狀態，依好友組別順序。
-2310:詳細顯示閣下的好友列表內每個人目前的狀態，依好友組別順序。
+#-#2309:詳細顯示閣下的好友列表內在線的人目前的狀態，依好友組別順序。
+#+#2309:Displays verbose the current status of online people on your contact list, sorted by contact group.
+# #2309:Displays verbosely the current status of online people on your contact list, sorted by contact group.
+#-#2310:詳細顯示閣下的好友列表內每個人目前的狀態，依好友組別順序。
+#+#2310:Displays verbose the current status of everyone on your contact list, sorted by contact group.
+# #2310:Displays verbosely the current status of everyone on your contact list, sorted by contact group.
 2311:新增 <uin> 為 <new nick>，或為 <uin> 或 <nick> 新增化名 <new nick>。
 2312:移除 <contacts> 內所有化名﹔若加上 'all' 把好友移除。
 2313:允許、拒絕、要求或確認授權 <contacts>/閣下 至 閣下/他們 的好友到表。
 2314:這些是進階指令，要取得具體資料，請切記參閱用戶手冊。\n
 2315:Cannot watch status of %s - too many watchers.\n
-2317:找不到 %s 翻譯，想翻譯 mICQ 成你的語言嗎﹖\n
-2318:中文 (%s) 翻譯已載入 (%ld entries)。\n
+#2316:Translation %s not found.\n
+2317.找不到 %s 翻譯，想翻譯 mICQ 成你的語言嗎﹖\n
+2318.中文 (%s) 翻譯已載入 (%ld entries)。\n
 2319:接受 <uin> 或 <nick> 的來檔傳送。
 2320:peer accept <nick> [<id>]\n                  - 接受來檔傳送。\n
+#2321:contact add     Add server based contact list to local contact list.\n
+#2322:contact sync    Import server based contact list if appropriate.\n
+#2323:contact export  Export local contact list to server based list.\n
+#2324:contact upload  Add local contacts to server based contact list.\n
+#2325:Warning: server based contact list change failed with error code %d.\n
+#2326:Server side contact list only supported for ICQ v8.\n
 2327:%smICQ (Matt's ICQ clone)%s version %s%s%s\n
 2328:閣下登入得太頻密，請在 30 分鐘後再嘗試。\n
 2329:syntax error
@@ -1087,26 +1160,19 @@
 2337:  set  - 上載自己的 meta 資訊至伺服器 \n
 2338:  get  - 詢問伺服器 meta 資訊\n
 2339:  rget - 詢問伺服器前一個發送者的 meta 資訊\n
-2340:檔案傳送 '%s' 被 peer: %s%s 拒絕。\n
-2341:正在拒絕檔案要求 '%s' (%ld bytes): %s%s。\n
+2340.檔案傳送 '%s' 被 peer: %s%s 拒絕。\n
+2341.正在拒絕檔案要求 '%s' (%ld bytes): %s%s。\n
 #2342:Scripting
 #2343:Scripting extensions.
 #2344:Execute Tcl script from <file>.
 #2345:Execute Tcl script in <string>.
 #2346:The following Tcl commands are supported:\n
-#2347:micq receive <script> [<contact>]
 #2348:Install hook to receive messages from UIN or nick, or all if omitted.
-#2349:Callback arguments: from message
-#2350:micq unreceive [<contact>]
 #2351:Uninstall message hook for UIN or nick.
-#2352:micq event <script>
 #2353:Install event hook. Callback arguments: type ...
-#2354:micq unevent
 #2355:Uninstall event hook.
 #2356:List all installed hooks. Format: <type> <command> <filter>.
-#2357:micq exec <cmd>
 #2358:Execute micq command.
-#2359:micq nick <uin>
 #2360:Find nick from <uin>.
 #2361:Wrong number of arguments for command '%s %s'. Expected %d.\n
 #2362:Wrong number of arguments. Try 'help'.
@@ -1117,30 +1183,168 @@
 #2367:TCL error: %s\n
 #2368:peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n
 #2369:Refuse an incoming file transfer from <uin> or <nick>.
-2370:%02d %-12s version %d%s 與 %s (%lx), 於 %s:%ld %s\n
+2370.%02d %-12s version %d%s 與 %s (%lx), 於 %s:%ld %s\n
 #2371:SSL init failed.\n
 #2372:Could not send SSL request to %s\n
-#2373:Error while reading from socket (SSL): %s (%d)\n
 #2374:SSL error: %s [%d]\n
 #2375:SSL handshake ok\n
 #2376:SSL read from %s [ERR=%d]: %s
 #2377:SSL write to %s [ERR=%d]: %s
 #2378:peer ssl <nick>   - initiate SSL handshake.
-2379:}%}
-2380:{%{
+2379.}%}
+2380.{%{
 #2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
-#2382:Peer-to-peer connection not associated to server connection, discarding.\n
 #2383:View your last messages of <contact>. Type 'h' as short command.
 #2384:Case insensitive search of <pattern> in log file of <contact>.
 #2385:Couldn't open %s for reading: %s (%d).\n
 #2386:Found %s%d%s matches.\n
-#2387:%s <contact> [<last> [<count>]] -- Show history of <contact>.\n
-#2388:%s <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n
-#2389:%s <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
+#2388:find <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n
+#2389:finds <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
 #2390:No or empty pattern given.\n
 #2391:Case sensitive search of <pattern> in log file of <contact>.
-#2392:Your status is %s (%s).\n
-#2393:%m/%d/%Y
+#2393:%Y-%m-%d
 #2394: %I:%M %p
 #2395:View your messages of <contact> since <date>.
 #2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n
+#2397:No server session found.\n
+#2398:Set an option for a contact group, a contact or global.\n
+#2399:Request SSL connection.
+#2400:No translation (%s) loaded (%d entries).\n
+#2401:Auto reply messages are now contact options, see the %s command.\n
+#2402:The global auto reply flag is handled by the %s command.\n
+#2403:msg>
+#2405:Your status is %s (%s).\n
+#2406:Couldn't load meta data for %s (%ld).\n
+#2407:This flag is handled by the %s command.\n
+#2408:%s is not a contact group.\n
+#2409:%s is not a contact.\n
+#2410:%s is neither a contact, nor a contact group, nor the %sglobal%s keyword.\n
+#2411:opt - short hand for optglobal, optgroup or optcontact.\n
+#2412:optglobal            [<option> [<value>]] - set global option.\n
+#2413:optconnection        {<option> [<value>]] - set connection option.\n
+#2414:optgroup   <group>   [<option> [<value>]] - set contact group option.\n
+#2415:optcontact <contact> [<option> [<value>]] - set contact option.\n
+#2416:Options for contact %s:\n
+#2417:Options for contact group %s:\n
+#2418:Global options:\n
+#2419:undefined
+#2420:effectivly
+#2421:Unknown option %s.\n
+#2422:Option %s for contact %s is undefined.\n
+#2423:Option %s for contact group %s is undefined.\n
+#2424:Option %s%s has no global value.\n
+#2425:Option %s for contact %s is %s%s%s.\n
+#2426:Option %s for contact group %s is %s%s%s.\n
+#2427:Option %s%s is globally %s%s%s.\n
+#2428:Option %s for contact %s is %s.\n
+#2429:Option %s for contact group %s is %s.\n
+#2430:Option %s%s is globally %s.\n
+#2431:Undefining option %s for contact %s.\n
+#2432:Undefining option %s for contact group %s.\n
+#2433:Undefining global option %s%s.\n
+#2434:Setting option %s for contact %s to %s.\n
+#2435:Setting option %s for contact group %s to %s.\n
+#2436:Setting option %s%s globally to %s.\n
+#2437:Setting option %s for contact %s to %s%d%s.\n
+#2438:Setting option %s for contact group %s to %s%d%s.\n
+#2439:Setting option %s%s globally to %s%d%s.\n
+#2440:Setting option %s for contact %s.\n
+#2441:Setting option %s for contact group %s.\n
+#2442:Setting option %s%s globally.\n
+#2443:Clearing option %s for contact %s.\n
+#2444:Clearing option %s for contact group %s.\n
+#2445:Clearing option %s%s globally.\n
+#2446:Invalid value %s for boolean option %s.\n
+#2447:No new password given.\n
+#2448:Contact group '%s' already exists\n
+#2449:Primary contact group for contact '%s' is now '%s'.\n
+#2450:Last %d people you talked with:\n
+#2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
+#2452:%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n
+#2453:    at %p parent %p assoc %p ssl %d\n
+#2454:    open %p reconn %p close %p err %p dispatch %p\n
+#2455:About>
+#2456:Unknown command %s, type %shelp%s for help.\n
+#2457:Unknown configuration file format version %d.\n
+#2458:Can't tab spool %s; type "%sopt %s tabspool 1%s" manually.\n
+#2459:Peer-to-peer connection not associated to server connection, discarding.\n
+#2460:Contact group %s (id %s%d%s) not associated to server connection.\n
+#2461:Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
+#2462:File transfer %s to port %s%ld%s.
+#2463:File transfer %s rejected by peer: %s.
+#2464:Accepting file %s (%s%ld%s bytes).
+#2465:Refusing file request %s (%s%ld%s bytes): %s.
+#2466:Refusing chat request (%s/%s) from %s%s%s.
+#2467:mICQ>
+#2468:requests file transfer %s of %s%ld%s bytes (sequence %s%ld%s).\n
+#2469:URL:
+#2470:requests authorization: %s\n
+#2471:Ignored contacts:\n
+#2472:Hidden-from contacts:\n
+#2473:Normal contacts:\n
+#2474:Intimate contacts:\n
+#2475:Showed %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
+#2476:Downloaded %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
+#2477:Uploading %d contact groups and %d contacts.\n
+#2478:Server: Group %s (#%d)\n
+#2479:Local:  Group %s (#%d)\n
+#2480:Server: Group %s Contact %s (#%d) <ignored>\n
+#2481:Server: Group %s Contact %s (#%d) <hidefrom>\n
+#2482:Server: Group %s Contact %s/%s (#%d) <hidefrom>\n
+#2483:Local:  Group %s Contact %s/%s (#%d)\n
+#2484:Server: Group %s Contact %s (#%d)\n
+#2485:Server: Group %s Contact %s/%s (#%d)\n
+#2486:Local:  Group %s Contact %s/%s (#%d) <%s>\n
+#2487:hidefrom
+#2488:intimate
+#2489:Server: Group %s Contact %s/%s (#%d) <intimate>\n
+#2490:normal
+#2491:Differences in %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate, %d local.\n
+#2492:Usage: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
+#2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
+#2494:  -u, --uin      login with this UIN instead of those configured\n
+#2495:  -p, --passwd   ... and override password\n
+#2496:  -s, --status   ... and override status\n
+#2497:  -C, --cmd      ... and execute mICQ command\n
+#2498:Encoding %s%s%s is not supported by this mICQ.\n
+#2499:Please recompile using the '--enable-iconvrepl' configure option.\n
+#2500:Manual locale setting %s ignored - use a real locale instead.\n
+#2501:Your locale is unset. Please use the %s--i18n%s command line option or set one of the environment variables %sLC_ALL%s, %sLC_MESSAGES%s, or %sLANG%s to your current locale.\n
+#2502:Locale setting %s ignored - use a real locale instead.\n
+#2503:Your system doesn't know the %s locale - try %siconv --list%s.\n
+#2504:Could not open configuration file %s%s%s.
+#2505:Deprecated option -f used. Please use the similar -b instead.\n
+#2506:This console uses encoding %s.\n
+#2507:Translation %s%s%s not found. Would you like to translate mICQ into your language?\n
+#2508:English (%s) translation loaded (%s%d%s entries).\n
+#2509:WSAStartup() for WinSocks 1.1 failed
+#2510:Opening v5 connection to %s:%s%ld%s... 
+#2511:Redirect to server %s:%s%ld%s... 
+#2512:Opening v8 connection to %s:%s%ld%s for %s%s%s... 
+#2513:new UIN
+#2514:refused (ignored)
+#2515:You queried already too many users today - come back tomorrow.\n
+#2516:The query got stuck. Or somesuch. Try again later.\n
+#2517:I'm out of wisdom about the server's problem. It just didn't work out.\n
+#2518:You need to 'save' to write your new UIN to disc.\n
+#2519:Opening file listener connection at %slocalhost%s:%s%ld%s... 
+#2520:Opening file transfer connection to %s:%s%ld%s... \n
+#2521:Opening peer-to-peer connection at %slocalhost%s:%s%ld%s... 
+#2522:Opening TCP connection at %s:%s%ld%s... 
+#2523:%s not recognized as a nick name.\n
+#2524:Can't restore terminal modes.\n
+#2525:Can't read terminal modes.\n
+#2526:Can't modify terminal modes.\n
+#2527:OpenSSL internal error: %s:%i\n
+#2528:OpenSSL read error: %s\n
+#2529:OpenSSL read error %d (unknown)\n
+#2530:OpenSSL write error: %s\n
+#2531:OpenSSL write error %d (unknown)\n
+#2532:OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n
+#2533:SSL handshake failed
+#2534:IP:
+#2535:Groups:\n
+#2536:Group:
+#2537:Contact upload failed, authorization required.\n
+#2538:Contact upload failed, already on server.\n
+#2539:Contact upload succeeded.\n
