@@ -106,8 +106,8 @@ BOOL PeerFileRequested (Session *peer, const char *files, UDWORD bytes)
     snprintf (buf, sizeof (buf), "%sfiles/%ld", PrefUserDir (), peer->uin);
     if (stat (buf, &finfo))
     {
-        M_print ("%s " COLACK "%10s" COLNONE " ", s_now, cont->nick);
-        M_print (i18n (2193, "Directory %s does not exists.\n"), buf);
+        M_printf ("%s " COLACK "%10s" COLNONE " ", s_now, cont->nick);
+        M_printf (i18n (2193, "Directory %s does not exists.\n"), buf);
         return 0;
     }
     
