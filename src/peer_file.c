@@ -83,7 +83,7 @@ Connection *PeerFileCreate (Connection *serv)
 /*
  * Handles an incoming file request.
  */
-BOOL PeerFileRequested (Connection *peer, const char *files, UDWORD bytes)
+UBYTE PeerFileRequested (Connection *peer, const char *files, UDWORD bytes)
 {
     Connection *flist, *fpeer;
     Contact *cont;

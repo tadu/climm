@@ -28,6 +28,7 @@
 #include "util_syntax.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_v8_snac.h"
+#include "cmd_pkt_v8.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -58,8 +59,7 @@ static void       TCPReceiveInitAck  (Connection *peer, Packet *pak);
 static Connection   *TCPReceiveInit2    (Connection *peer, Packet *pak);
 
 
-static Packet    *PacketTCPC         (Connection *peer, UDWORD cmd, UDWORD seq,
-                                      UWORD type, UWORD flags, UWORD status, const char *msg);
+static Packet    *PacketTCPC         (Connection *peer, UDWORD cmd);
 static void       TCPGreet           (Packet *pak, UWORD cmd, const char *reason,
                                       UWORD port, UDWORD len, const char *msg);
 
@@ -70,7 +70,6 @@ static void       TCPCallBackReceive (Event *event);
 
 static void       Encrypt_Pak        (Connection *peer, Packet *pak);
 static BOOL       Decrypt_Pak        (Connection *peer, Packet *pak);
-static int        TCPSendMsgAck      (Connection *peer, UWORD seq, UWORD sub_cmd, BOOL accept);
 
 /*********************************************/
 
@@ -1189,7 +1188,7 @@ void TCPPrint (Packet *pak, Connection *peer, BOOL out)
 /*
  * Create and setup a TCP communication packet.
  */
-static Packet *PacketTCPC (Connection *peer, UDWORD cmd, UDWORD seq, UWORD type, UWORD flags, UWORD status, const char *msg)
+static Packet *PacketTCPC (Connection *peer, UDWORD cmd)
 {
     Packet *pak;
     
@@ -1198,16 +1197,6 @@ static Packet *PacketTCPC (Connection *peer, UDWORD cmd, UDWORD seq, UWORD type,
     pak = PeerPacketC (peer, PEER_MSG);
     PacketWrite4      (pak, 0);          /* checksum - filled in later */
     PacketWrite2      (pak, cmd);        /* command                    */
-    PacketWrite2      (pak, TCP_MSG_X1); /* unknown                    */
-    PacketWrite2      (pak, seq);        /* sequence number            */
-    PacketWrite4      (pak, 0);          /* unknown                    */
-    PacketWrite4      (pak, 0);          /* unknown                    */
-    PacketWrite4      (pak, 0);          /* unknown                    */
-    PacketWrite2      (pak, type);       /* message type               */
-    PacketWrite2      (pak, status);     /* flags                      */
-    PacketWrite2      (pak, flags);      /* status                     */
-    PacketWriteLNTS   (pak, msg);        /* the message                */
-    
     return pak;
 }
 
@@ -1266,7 +1255,7 @@ static void TCPGreet (Packet *pak, UWORD cmd, const char *reason, UWORD port, UD
 /*
  * Acks a TCP packet.
  */
-static int TCPSendMsgAck (Connection *peer, UWORD seq, UWORD type, BOOL accept)
+int TCPSendMsgAck (Connection *peer, UWORD seq, UWORD type, BOOL accept)
 {
     Packet *pak;
     const char *msg;
@@ -1311,7 +1300,8 @@ static int TCPSendMsgAck (Connection *peer, UWORD seq, UWORD type, BOOL accept)
     flags ^= TCP_MSGF_LIST;
 
     cmsg = strdup (c_out (msg));
-    pak = PacketTCPC (peer, TCP_CMD_ACK, seq, type, flags, status, cmsg);
+    pak = PacketTCPC (peer, TCP_CMD_ACK);
+    SrvMsgAdvanced   (pak, seq, type, flags, status, cmsg);
     free (cmsg);
     switch (type)
     {
@@ -1373,7 +1363,8 @@ static int TCPSendGreetAck (Connection *peer, UWORD seq, UWORD cmd, BOOL accept)
     if (!flist)
         status = TCP_STAT_REFUSE;
 
-    pak = PacketTCPC (peer, TCP_CMD_ACK, seq, TCP_MSG_GREETING, flags, status, "");
+    pak = PacketTCPC (peer, TCP_CMD_ACK);
+    SrvMsgAdvanced   (pak, seq, TCP_MSG_GREETING, flags, status, "");
     TCPGreet (pak, cmd, "", flist ? flist->port : 0, 0, "");
     PeerPacketSend (peer, pak);
     return 1;
@@ -1437,7 +1428,8 @@ BOOL TCPGetAuto (Connection *list, UDWORD uin, UWORD which)
             return 0;
     }
 
-    pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, which, 0, list->parent->status, "...");
+    pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
+    SrvMsgAdvanced   (pak, peer->our_seq, which, 0, list->parent->status, "...");
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
 
@@ -1491,11 +1483,11 @@ BOOL TCPSendMsg (Connection *list, UDWORD uin, const char *msg, UWORD sub_cmd)
 
     ASSERT_MSGDIRECT(peer);
 
+    pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
 #ifdef ENABLE_UTF8
-    pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, sub_cmd, 0, list->parent->status,
-                      CONT_UTF8 (cont) ? msg : c_out (msg));
+    SrvMsgAdvanced   (pak, peer->our_seq, sub_cmd, 0, list->parent->status, CONT_UTF8 (cont) ? msg : c_out (msg));
 #else
-    pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, sub_cmd, 0, list->parent->status, msg);
+    SrvMsgAdvanced   (pak, peer->our_seq, sub_cmd, 0, list->parent->status, msg);
 #endif
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
@@ -1622,7 +1614,8 @@ BOOL TCPSendFiles (Connection *list, UDWORD uin, const char *description, const 
         
     if (peer->ver < 8)
     {
-        pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, TCP_MSG_FILE, 0, list->parent->status, c_out (description));
+        pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
+        SrvMsgAdvanced   (pak, peer->our_seq, TCP_MSG_FILE, 0, list->parent->status, c_out (description));
         PacketWrite2 (pak, 0);
         PacketWrite2 (pak, 0);
         PacketWriteLNTS (pak, "many, really many, files");
@@ -1631,7 +1624,8 @@ BOOL TCPSendFiles (Connection *list, UDWORD uin, const char *description, const 
     }
     else
     {
-        pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, TCP_MSG_GREETING, 0, list->parent->status, "");
+        pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
+        SrvMsgAdvanced   (pak, peer->our_seq, TCP_MSG_GREETING, 0, list->parent->status, "");
         TCPGreet (pak, 0x29, description, 0, 12345, "many, really many files");
     }
 
@@ -1725,8 +1719,11 @@ static void TCPCallBackReceive (Event *event)
     
     pak = event->pak;
     cont = (Contact *) event->info;
+    if (!cont)
+        return;
     
     cmd    = PacketRead2 (pak);
+/* the following is like type-2 */
              PacketRead2 (pak);
     seq    = PacketRead2 (pak);
              PacketRead4 (pak);
@@ -1753,7 +1750,7 @@ static void TCPCallBackReceive (Event *event)
                               s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, event->info);
                     if (~cont->flags & CONT_SEENAUTO && strlen (tmp))
                     {
-                        IMSrvMsg (cont, event->conn, NOW, MSG_NORM, tmp, status);
+                        IMSrvMsg (cont, event->conn, NOW, status, MSG_NORM, tmp, 0);
                         cont->flags |= CONT_SEENAUTO;
                     }
                     break;
@@ -1764,20 +1761,15 @@ static void TCPCallBackReceive (Event *event)
                 case MSGF_GETAUTO | MSG_GET_DND:
                 case MSGF_GETAUTO | MSG_GET_FFC:
                 case MSGF_GETAUTO | MSG_GET_VER:
-                    IMSrvMsg (cont, event->conn, NOW, type, tmp, status);
+                    IMSrvMsg (cont, event->conn, NOW, status & ~MSGF_GETAUTO, type, tmp, 0);
                     break;
 
                 case TCP_MSG_FILE:
-                    port = PacketReadB2 (pak);
-                    if (PeerFileAccept (event->conn, status, port))
-                    {
-                        M_printf (i18n (2070, "File transfer '%s' to port %d.\n"), event->info, port);
-                    }
+                    event->attempts = PacketReadB2 (pak); /* port */
+                    if (PeerFileAccept (event->conn, status, event->attempts))
+                        IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_FILE | 0x100, tmp, event);
                     else
-                    {
-                        M_printf (i18n (2069, "File transfer '%s' rejected by peer (%x,%x): %s.\n"),
-                                 event->info, status, flags, tmp);
-                    }
+                        IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_FILE | 0x200, tmp, event);
                     break;
 
                 case TCP_MSG_GREETING:
@@ -1809,15 +1801,11 @@ static void TCPCallBackReceive (Event *event)
                     switch (cmd)
                     {
                         case 0x0029:
+                            event->attempts = port;
                             if (PeerFileAccept (event->conn, status, port))
-                            {
-                                M_printf (i18n (2070, "File transfer '%s' to port %d.\n"), event->info, port);
-                            }
+                                IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_FILE | 0x100, tmp, event);
                             else
-                            {
-                                M_printf (i18n (2069, "File transfer '%s' rejected by peer (%x,%x): %s.\n"),
-                                         event->info, status, flags, tmp);
-                            }
+                                IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_FILE | 0x200, tmp, event);
                             break;
                             
                         default:
@@ -1868,19 +1856,16 @@ static void TCPCallBackReceive (Event *event)
                     tmp3 = strdup (c_in (ctmp));
                     free (ctmp);
 
-                    if (PeerFileRequested (event->conn, tmp3, len))
+                    event->attempts = len;
+                    if (PeerFileRequested (event->conn, event->info, len))
                     {
-                        M_printf ("%s " COLACK "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-                        M_printf (i18n (2186, "Accepting file '%s' (%d bytes).\n"),
-                                 tmp3, len);
-                        TCPSendMsgAck (event->conn, seq, TCP_MSG_FILE, TRUE);
+                        IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_FILE | 0x300, "", event);
+                        TCPSendMsgAck (event->conn, event->seq, TCP_MSG_FILE, TRUE);
                     }
                     else
                     {
-                        M_printf ("%s " COLACK "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-                        M_printf (i18n (2187, "Refused file request '%s' (%d bytes) (unknown: %x, %x)\n"),
-                                 tmp3, len, cmd, type);
-                        TCPSendMsgAck (event->conn, seq, TCP_MSG_FILE, FALSE);
+                        IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_FILE | 0x400, "auto-refused", event);
+                        TCPSendMsgAck (event->conn, event->seq, TCP_MSG_FILE, FALSE);
                     }
                     free (tmp3);
                     break;
@@ -1912,25 +1897,25 @@ static void TCPCallBackReceive (Event *event)
                             case 0x0029:
                                 if (PeerFileRequested (event->conn, name, flen))
                                 {
-                                    M_printf ("%s " COLACK "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-                                    M_printf (i18n (2186, "Accepting file '%s' (%d bytes).\n"),
-                                             name, flen);
+                                    event->attempts = flen;
+                                    s_repl (&event->info, name);
+                                    IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_FILE | 0x300, "", event);
                                     TCPSendGreetAck (event->conn, seq, cmd, TRUE);
                                 }
                                 else
                                 {
-                                    M_printf ("%s " COLACK "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-                                    M_printf (i18n (2187, "Refused file request '%s' (%d bytes) (unknown: %x, %x)\n"),
-                                             name, flen, cmd, type);
+                                    event->attempts = flen;
+                                    s_repl (&event->info, name);
+                                    IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_FILE | 0x400, "auto-refused", event);
                                     TCPSendGreetAck (event->conn, seq, cmd, FALSE);
                                 }
                                 break;
                             case 0x0032:
-
+                                break;
                             case 0x002d:
-                                M_printf ("%s " COLACK "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-                                M_printf (i18n (2064, "Refusing chat request (%s/%s/%s) from %s.\n"),
-                                         text, reason, name, cont->nick);
+                                s_repl (&event->info, name);
+                                IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_CHAT, text, event);
+                                IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_CHAT, reason, event);
                                 TCPSendGreetAck (event->conn, seq, cmd, FALSE);
 
                             default:
@@ -1975,7 +1960,7 @@ static void TCPCallBackReceive (Event *event)
                     else
                         free (cctmp);
 #endif
-                    IMSrvMsg (cont, event->conn, NOW, type, tmp, status);
+                    IMSrvMsg (cont, event->conn, NOW, status, type, tmp, 0);
 
                     TCPSendMsgAck (event->conn, seq, type, TRUE);
                     break;

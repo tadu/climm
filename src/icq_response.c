@@ -11,11 +11,14 @@
 #include "util.h"
 #include "conv.h"
 #include "packet.h"
+#include "tcp.h"
+#include "peer_file.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_v8_snac.h"
 #include "preferences.h"
 #include "session.h"
 #include "util_str.h"
+#include "peer_file.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -515,7 +518,7 @@ void Recv_Message (Connection *conn, Packet *pak)
     free (ctext);
 
     uiG.last_rcvd_uin = uin;
-    IMSrvMsg (ContactByUIN (uin, 1), conn, mktime (&stamp), type, text, STATUS_ONLINE);
+    IMSrvMsg (ContactByUIN (uin, 1), conn, mktime (&stamp), STATUS_ONLINE, type, text, NULL);
     free (text);
 }
 
@@ -710,9 +713,11 @@ void IMOffline (Contact *cont, Connection *conn)
 /*
  * Central entry point for incoming messages.
  */
-void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, UWORD type, const char *text, UDWORD tstatus)
+void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UWORD type, const char *text, Event *event)
 {
+    const char *tmp, *tmp2, *tmp3, *tmp4, *tmp5, *tmp6;
     char *cdata, *carr;
+    int i;
     
     if (!cont)
         return;
@@ -733,44 +738,38 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, UWORD type, const 
     if ((cont->flags & CONT_TEMPORARY) && (prG->flags & FLAG_HERMIT))
         return;
 
-    if (type != MSG_INT_CAP)
+    TabAddUIN (cont->uin);            /* Adds <uin> to the tab-list */
+
+    if (uiG.idle_flag)
     {
-            TabAddUIN (cont->uin);            /* Adds <uin> to the tab-list */
+        char buf[2048];
 
-        if (uiG.idle_flag)
+        if ((cont->uin != uiG.last_rcvd_uin) || !uiG.idle_uins)
         {
-            char buf[2048];
-
-            if ((cont->uin != uiG.last_rcvd_uin) || !uiG.idle_uins)
-            {
-                snprintf (buf, sizeof (buf), "%s %s", uiG.idle_uins && uiG.idle_msgs ? uiG.idle_uins : "", cont->nick);
-                s_repl (&uiG.idle_uins, buf);
-            }
-
-            uiG.idle_msgs++;
-            R_setpromptf ("[" COLINCOMING "%d%s" COLNONE "] " COLSERVER "%s" COLNONE "",
-                          uiG.idle_msgs, uiG.idle_uins, i18n (1040, "mICQ> "));
+            snprintf (buf, sizeof (buf), "%s %s", uiG.idle_uins && uiG.idle_msgs ? uiG.idle_uins : "", cont->nick);
+            s_repl (&uiG.idle_uins, buf);
         }
 
+        uiG.idle_msgs++;
+        R_setpromptf ("[" COLINCOMING "%d%s" COLNONE "] " COLSERVER "%s" COLNONE "",
+                      uiG.idle_msgs, uiG.idle_uins, i18n (1040, "mICQ> "));
+    }
+
 #ifdef MSGEXEC
-        if (prG->event_cmd && strlen (prG->event_cmd))
-            EventExec (cont, prG->event_cmd, 1, type, cdata);
-        else
+    if (prG->event_cmd && strlen (prG->event_cmd))
+        EventExec (cont, prG->event_cmd, 1, type, cdata);
+    else
 #endif
-        if (prG->sound & SFLAG_BEEP)
-            printf ("\a");
-    }
+    if (prG->sound & SFLAG_BEEP)
+        printf ("\a");
 
-    if (type != MSG_INT_CAP || prG->verbose)
-    {
-        M_printf ("%s " COLINCOMING "%*s" COLNONE " ", s_time (&stamp), uiG.nick_len + s_delta (cont->nick), cont->nick);
-        
-        if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
-            M_printf ("(%s) ", s_status (tstatus));
+    M_printf ("%s " COLINCOMING "%*s" COLNONE " ", s_time (&stamp), uiG.nick_len + s_delta (cont->nick), cont->nick);
+    
+    if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
+        M_printf ("(%s) ", s_status (tstatus));
 
-        if (prG->verbose)
-            M_printf ("<%d> ", type);
-    }
+    if (prG->verbose)
+        M_printf ("<%d> ", type);
 
     uiG.last_rcvd_uin = cont->uin;
     if (cont)
@@ -779,12 +778,44 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, UWORD type, const 
         cont->last_time = time (NULL);
     }
 
+    if (event)
+    {
+        switch (type)
+        {
+            while (1)
+            {
+                M_printf ("?%x? %s%s\n", type, COLMSGINDENT, text);
+                M_printf ("    ");
+                for (i = 0; i < strlen (text); i++)
+                    M_printf ("%c", cdata[i] ? cdata[i] : '.');
+                M_print ("'\n");
+                break;
+
+            case TCP_MSG_FILE | 0x100:
+                M_printf (i18n (2070, "File transfer '%s' to port %d.\n"), event->info, event->attempts);
+                break;
+            case TCP_MSG_FILE | 0x200:
+                M_printf (i18n (2069, "File transfer '%s' rejected by peer: %s.\n"), event->info, cdata);
+                break;
+            case TCP_MSG_FILE | 0x300:
+                M_printf (i18n (2186, "Accepting file '%s' (%d bytes).\n"), event->info, event->attempts);
+                break;
+            case TCP_MSG_FILE | 0x400:
+                M_printf (i18n (2229, "Refusing file request '%s' (%d bytes): %s.\n"), event->info, event->attempts, cdata);
+                break;
+            case TCP_MSG_CHAT:
+                M_printf (i18n (2230, "Refusing chat request (%s/%s) from %s.\n"), event->info, cdata, cont->nick);
+                break;
+            }
+        }
+        free (cdata);
+        return;
+    }
+    
     switch (type & ~MSGF_MASS)
     {
-        const char *tmp, *tmp2, *tmp3, *tmp4, *tmp5, *tmp6;
-        int i;
-
-        while (1) {
+        while (1)
+        {
             M_printf ("?%x? %s%s\n", type, COLMSGINDENT, text);
             M_printf ("    ");
             for (i = 0; i < strlen (text); i++)

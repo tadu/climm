@@ -20,6 +20,7 @@
 #include "preferences.h"
 #include "icq_response.h"
 #include "cmd_pkt_cmd_v5_util.h"
+#include "cmd_pkt_v8.h"
 #include "cmd_pkt_v8_snac.h"
 #include "cmd_pkt_v8_flap.h"
 #include "cmd_pkt_v8_tlv.h"
@@ -550,7 +551,7 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
         return;
     if ((msgtype & 0x300) != 0x300)
         return;
-    IMSrvMsg (cont, event->conn, NOW, msgtype, text, STATUS_OFFLINE);
+    IMSrvMsg (cont, event->conn, NOW, STATUS_OFFLINE, msgtype, text, 0);
     free (text);
 }
 
@@ -682,6 +683,8 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             tmp    = PacketRead4 (pp);      PacketWrite4 (p, tmp);
             tmp    = PacketRead1 (pp);      PacketWrite1 (p, tmp);
             seq1   = PacketRead2 (pp);      PacketWrite2 (p, seq1);
+
+/* the following is like tcp */
             unk    = PacketRead2 (pp);      PacketWrite2 (p, unk);
             seq2   = PacketRead2 (pp);      PacketWrite2 (p, seq2);
             tmp    = PacketRead4 (pp);      PacketWrite4 (p, tmp);
@@ -771,8 +774,8 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             return;
     }
 
-    IMSrvMsg (cont, event->conn, NOW, msgtyp, txt,
-              tlv[6].len ? tlv[6].nr : STATUS_OFFLINE);
+    IMSrvMsg (cont, event->conn, NOW, tlv[6].len ? tlv[6].nr : STATUS_OFFLINE,
+              msgtyp, txt, 0);
     Auto_Reply (event->conn, uin);
 
     TLVD (tlv);
@@ -959,7 +962,7 @@ static JUMP_SNAC_F(SnacSrvAuthreq)
     text = strdup (c_in (ctext));
     free (ctext);
     
-    IMSrvMsg (ContactByUIN (uin, 1), event->conn, NOW, MSG_AUTH_REQ, text, STATUS_OFFLINE);
+    IMSrvMsg (ContactByUIN (uin, 1), event->conn, NOW, STATUS_OFFLINE, MSG_AUTH_REQ, text, 0);
 
     free (text);
 }
@@ -982,8 +985,8 @@ static JUMP_SNAC_F(SnacSrvAuthreply)
     text = strdup (c_in (ctext));
     free (ctext);
 
-    IMSrvMsg (ContactByUIN (uin, 1), event->conn, NOW,
-              acc ? MSG_AUTH_GRANT : MSG_AUTH_DENY, text, STATUS_OFFLINE);
+    IMSrvMsg (ContactByUIN (uin, 1), event->conn, NOW, STATUS_OFFLINE,
+              acc ? MSG_AUTH_GRANT : MSG_AUTH_DENY, text, 0);
 
     free (text);
 }
@@ -999,7 +1002,7 @@ static JUMP_SNAC_F(SnacSrvAddedyou)
     pak = event->pak;
     uin = PacketReadUIN (pak);
 
-    IMSrvMsg (ContactByUIN (uin, 1), event->conn, NOW, MSG_AUTH_ADDED, "", STATUS_ONLINE);
+    IMSrvMsg (ContactByUIN (uin, 1), event->conn, NOW, STATUS_ONLINE, MSG_AUTH_ADDED, "", 0);
 }
 
 /*
@@ -1428,19 +1431,10 @@ void SnacCliSendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD type
                PacketWrite1       (pak, 0);
                PacketWrite2       (pak, -1);
               PacketWriteLenDone (pak);
-              PacketWriteLen     (pak);
-               PacketWrite2       (pak, -1);
-               PacketWrite4       (pak, 0);
-               PacketWrite4       (pak, 0);
-               PacketWrite4       (pak, 0);
-              PacketWriteLenDone (pak);
-              PacketWrite2       (pak, type);
-              PacketWrite2       (pak, 0);
-              PacketWrite2       (pak, 1);
 #ifdef ENABLE_UTF8
-              PacketWriteLNTS    (pak, CONT_UTF8 (cont) ? text : c_out (text));
+              SrvMsgAdvanced     (pak, -1, type, 1, 0, CONT_UTF8 (cont) ? text : c_out (text));
 #else
-              PacketWriteLNTS    (pak, text);
+              SrvMsgAdvanced     (pak, -1, type, 1, 0, text);
 #endif
               PacketWriteB4      (pak, 0);
               PacketWriteB4      (pak, 0xffffff00);
@@ -1605,10 +1599,10 @@ Packet *SnacMetaC (Connection *conn, UWORD sub, UWORD type, UWORD ref)
     
     pak = SnacC (conn, 21, 2, 0, (ref ? ref : rand () % 0x7fff) + (conn->our_seq3 << 16));
     PacketWriteTLV (pak, 1);
-    PacketWriteLen     (pak);
-    PacketWrite4  (pak, conn->uin);
-    PacketWrite2  (pak, sub);
-    PacketWrite2  (pak, conn->our_seq3);
+    PacketWriteLen (pak);
+    PacketWrite4   (pak, conn->uin);
+    PacketWrite2   (pak, sub);
+    PacketWrite2   (pak, conn->our_seq3);
     if (type)
         PacketWrite2 (pak, type);
 

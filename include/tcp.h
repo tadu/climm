@@ -18,12 +18,13 @@ void TCPDirectOff      (Connection *list, UDWORD uin);
 BOOL TCPSendMsg        (Connection *list, UDWORD uin, const char *msg, UWORD sub_cmd);
 BOOL TCPSendFiles      (Connection *list, UDWORD uin, const char *description, const char **file, const char **as, int count);
 BOOL TCPGetAuto        (Connection *list, UDWORD uin, UWORD which);
+int  TCPSendMsgAck     (Connection *peer, UWORD seq, UWORD sub_cmd, BOOL accept);
 
 Connection *TCPPeer (UDWORD uin);
 
 Connection *PeerFileCreate    (Connection *serv);
-BOOL     PeerFileRequested (Connection *peer, const char *files, UDWORD bytes);
-BOOL     PeerFileAccept    (Connection *peer, UWORD status, UDWORD port);
+UBYTE       PeerFileRequested (Connection *peer, const char *files, UDWORD bytes);
+BOOL        PeerFileAccept    (Connection *peer, UWORD status, UDWORD port);
 
 void PeerFileResend (Event *event);
 void PeerFileDispatchIncoming (Connection *fpeer);

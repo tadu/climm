@@ -72,9 +72,7 @@ static void SrvCallBackReconn (Connection *conn)
         reconn = 0;
     }
     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
-    {
         cont->status = STATUS_OFFLINE;
-    }
 }
 
 static void SrvCallBackDoReconn (Event *event)
@@ -215,3 +213,19 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
     ConnectionInitServer (new);
     return new;
 }
+
+void SrvMsgAdvanced (Packet *pak, UDWORD seq, UWORD type, UWORD flags, UWORD status, const char *msg)
+{
+    PacketWriteLen    (pak);
+     PacketWrite2      (pak, seq);        /* sequence number            */
+     PacketWrite4      (pak, 0);
+     PacketWrite4      (pak, 0);
+     PacketWrite4      (pak, 0);
+    PacketWriteLenDone (pak);
+    PacketWrite2      (pak, type);       /* message type               */
+    PacketWrite2      (pak, status);     /* flags                      */
+    PacketWrite2      (pak, flags);      /* status                     */
+    PacketWriteLNTS   (pak, msg);        /* the message                */
+}
+
+

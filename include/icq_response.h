@@ -12,7 +12,7 @@ void ack_srv (Connection *conn, UDWORD seq);
 void Display_Info_Reply (Connection *conn, Packet *pak, const char *uinline, unsigned int flags);
 void Display_Ext_Info_Reply (Connection *conn, Packet *pak, const char *uinline);
 
-void IMSrvMsg  (Contact *cont, Connection *conn, time_t stamp, UWORD type, const char *text, UDWORD tstatus);
+void IMSrvMsg  (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UWORD type, const char *text, Event *event);
 void IMOnline  (Contact *cont, Connection *conn, UDWORD status);
 void IMOffline (Contact *cont, Connection *conn);
 

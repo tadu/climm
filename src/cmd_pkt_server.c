@@ -346,7 +346,7 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
 
             if ((cont = ContactByUIN (uin, 1)))
             {
-                IMSrvMsg (cont, conn, NOW, wdata, text, STATUS_OFFLINE);
+                IMSrvMsg (cont, conn, NOW, STATUS_OFFLINE, wdata, text, 0);
                 Auto_Reply (conn, uin);
             }
             free (text);
