@@ -245,7 +245,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
 
 #define CONN_FAIL(s)  { const char *t = s;        \
                         if (t)    M_printf ("%s [%d]\n", t, __LINE__);  \
-                        QueueDequeue (sess, sess->ip, QUEUE_CON_TIMEOUT); \
+                        QueueDequeue (sess, QUEUE_CON_TIMEOUT, sess->ip); \
                         if (sess->sok > 0)           \
                           sockclose (sess->sok);      \
                         sess->sok = -1;                \
@@ -260,7 +260,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
                           if (rc == EAGAIN) return;             \
                           CONN_FAIL (s_sprintf  ("%s: %s (%d).", s, strerror (rc), rc)) } }
 #define CONN_OK         { sess->connect++;                        \
-                          QueueDequeue (sess, sess->ip, QUEUE_CON_TIMEOUT); \
+                          QueueDequeue (sess, QUEUE_CON_TIMEOUT, sess->ip); \
                           sess->dispatch = sess->utilio;            \
                           sess->dispatch (sess);                     \
                           return; }
