@@ -82,6 +82,9 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             return;
         case META_SUCCESS:
             break;
+        case 0x46:
+            M_printf ("%s\n", p->data + p->rpos);
+            return;
         default:
             M_printf (i18n (1940, "Unknown Meta User result %x.\n"), result);
             return;
