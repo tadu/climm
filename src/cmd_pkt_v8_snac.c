@@ -57,16 +57,14 @@ static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd,
     SnacSrvReplyinfo, SnacSrvReplylocation, SnacSrvUseronline, SnacSrvContacterr,
     SnacSrvRegrefused, SnacSrvUseroffline, SnacSrvRecvmsg, SnacSrvUnknown,
     SnacSrvFromicqsrv, SnacSrvAddedyou, SnacSrvToicqerr, SnacSrvNewuin,
-    SnacSrvSetinterval, SnacSrvSrvackmsg, SnacSrvAckmsg, SnacSrvAuthreq,
+    SnacSrvSetinterval, SnacSrvSrvackmsg, SnacSrvAckmsg, SnacSrvAuthreq, SnacSrvRosterok,
     SnacSrvAuthreply, SnacSrvIcbmerr, SnacSrvReplyroster, SnacSrvContrefused,
-    SnacSrvRateexceeded, SnacServerpause;
+    SnacSrvRateexceeded, SnacSrvReplylists, SnacServerpause;
 
 static SNAC SNACv[] = {
-    {  1,  3, NULL, NULL},
-    { 19,  4, NULL, NULL},
+    {  1,  4, NULL, NULL},
     {  2,  1, NULL, NULL},
     {  3,  1, NULL, NULL},
-    { 21,  1, NULL, NULL},
     {  4,  1, NULL, NULL},
     {  6,  1, NULL, NULL},
     {  8,  0, NULL, NULL},
@@ -74,6 +72,8 @@ static SNAC SNACv[] = {
     { 10,  1, NULL, NULL},
     { 11,  1, NULL, NULL},
     { 12,  1, NULL, NULL},
+    { 19,  4, NULL, NULL},
+    { 21,  1, NULL, NULL},
     {  0,  0, NULL, NULL}
 };
 
@@ -99,10 +99,10 @@ static SNAC SNACS[] = {
     {  4, 12, "SRV_SRVACKMSG",       SnacSrvSrvackmsg},
     {  9,  3, "SRV_REPLYBOS",        SnacSrvReplybos},
     { 11,  2, "SRV_SETINTERVAL",     SnacSrvSetinterval},
-    { 19,  3, "SRV_REPLYLISTS",      NULL},
+    { 19,  3, "SRV_REPLYLISTS",      SnacSrvReplylists},
     { 19,  6, "SRV_REPLYROSTER",     SnacSrvReplyroster},
     { 19, 14, "SRV_UPDATEACK",       NULL},
-    { 19, 15, "SRV_REPLYROSTEROK",   NULL},
+    { 19, 15, "SRV_REPLYROSTEROK",   SnacSrvRosterok},
     { 19, 25, "SRV_AUTHREQ",         SnacSrvAuthreq},
     { 19, 27, "SRV_AUTHREPLY",       SnacSrvAuthreply},
     { 19, 28, "SRV_ADDEDYOU",        SnacSrvAddedyou},
@@ -321,6 +321,15 @@ static JUMP_SNAC_F(SnacSrvRates)
         PacketWriteB2 (pak, grp);
     }
     SnacSend (event->conn, pak);
+
+    if (!(event->conn->connect & CONNECT_OK))
+        event->conn->connect++;
+
+    SnacCliReqlocation  (event->conn);
+    SnacCliReqbuddy     (event->conn);
+    SnacCliReqicbm      (event->conn);
+    SnacCliReqbos       (event->conn);
+    SnacCliReqlists     (event->conn);
 }
 
 
@@ -427,6 +436,10 @@ static JUMP_SNAC_F(SnacSrvFamilies2)
         if (s->cmd > ver)
             M_printf (i18n (1904, "Server doesn't understand ver %d (only %d) for family %d!\n"), s->cmd, ver, fam);
     }
+
+    if (!(event->conn->connect & CONNECT_OK))
+        event->conn->connect++;
+    SnacCliRatesrequest (event->conn);
 }
 
 /*
@@ -434,20 +447,7 @@ static JUMP_SNAC_F(SnacSrvFamilies2)
  */
 static JUMP_SNAC_F(SnacSrvMotd)
 {
-    if (!(event->conn->connect & CONNECT_OK))
-        event->conn->connect++;
-
-    SnacCliRatesrequest (event->conn);
-    SnacCliReqinfo      (event->conn);
-    if (event->conn->flags & CONN_WIZARD)
-    {
-        QueueEnqueueData (event->conn, QUEUE_REQUEST_ROSTER, 0, 0x7fffffffL, NULL, 3, NULL, NULL);
-        SnacCliReqroster (event->conn);
-    }
-    SnacCliReqlocation  (event->conn);
-    SnacCliBuddy        (event->conn);
-    SnacCliReqicbm      (event->conn);
-    SnacCliReqbos       (event->conn);
+    /* ignore */
 }
 
 /*
@@ -455,7 +455,7 @@ static JUMP_SNAC_F(SnacSrvMotd)
  */
 static JUMP_SNAC_F(SnacSrvReplylocation)
 {
-    /* ignore all data, do nothing */
+    SnacCliSetuserinfo (event->conn);
 }
 
 /*
@@ -995,11 +995,7 @@ static JUMP_SNAC_F(SnacSrvSrvackmsg)
  */
 static JUMP_SNAC_F(SnacSrvReplybos)
 {
-    SnacCliSetuserinfo (event->conn);
-    SnacCliSetstatus (event->conn, event->conn->status, 3);
-    SnacCliReady (event->conn);
-    SnacCliAddcontact (event->conn, 0);
-    SnacCliReqofflinemsgs (event->conn);
+    /* ignore */
 }
 
 /*
@@ -1015,6 +1011,25 @@ static JUMP_SNAC_F(SnacSrvSetinterval)
     if (prG->verbose & DEB_PROTOCOL)
         M_printf (i18n (1918, "Ignored server request for a minimum report interval of %d.\n"), 
             interval);
+}
+
+/*
+ * SRV_REPLYLISTS - SNAC(13,3)
+ */
+static JUMP_SNAC_F(SnacSrvReplylists)
+{
+    Connection *serv = event->conn;
+
+    SnacCliSetstatus (serv, serv->status, 3);
+    SnacCliReady (serv);
+    SnacCliAddcontact (serv, 0);
+    SnacCliReqofflinemsgs (serv);
+    if (serv->flags & CONN_WIZARD)
+    {
+        SnacCliReqroster  (serv);
+        QueueEnqueueData (serv, QUEUE_REQUEST_ROSTER, 3, 0x7fffffffL,
+                          NULL, 0, NULL, NULL);
+    }
 }
 
 /*
@@ -1035,7 +1050,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
     pak = event->pak;
     
     event2 = QueueDequeue (event->conn, QUEUE_REQUEST_ROSTER, 0);
-    data = event2 ? event2->uin : 1;
+    data = event2 ? event2->seq : 1;
 
     PacketRead1 (pak);
     count = PacketReadB2 (pak);          /* COUNT */
@@ -1159,6 +1174,14 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
             M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
     }
     
+}
+
+/*
+ * SRV_ROSTEROK - SNAC(13,f)
+ */
+static JUMP_SNAC_F(SnacSrvRosterok)
+{
+    /* ignore */
 }
 
 /*
@@ -1462,7 +1485,7 @@ void SnacCliSetstatus (Connection *conn, UDWORD status, UWORD action)
         PacketWriteTLV2 (pak, 8, 0);
     }
     SnacSend (conn, pak);
-    if ((action & 1) && !(status & STATUSF_INV))
+    if ((action & 1) && (~status & STATUSF_INV))
         SnacCliAddinvis (conn, 0);
 }
 
@@ -1515,7 +1538,7 @@ void SnacCliSetuserinfo (Connection *conn)
 /*
  * CLI_REQBUDDY - SNAC(3,2)
  */
-void SnacCliBuddy (Connection *conn)
+void SnacCliReqbuddy (Connection *conn)
 {
     SnacSend (conn, SnacC (conn, 3, 2, 0, 0));
 }
@@ -1945,6 +1968,17 @@ void SnacCliReminvis (Connection *conn, Contact *cont)
     pak = SnacC (conn, 9, 8, 0, 0);
     PacketWriteUIN (pak, cont->uin);
     SnacSend (conn, pak);
+}
+
+/*
+ * CLI_REQLISTS - SNAC(13,2)
+ */
+void SnacCliReqlists (Connection *serv)
+{
+    Packet *pak;
+
+    pak = SnacC (serv, 19, 2, 0, 0);
+    SnacSend (serv, pak);
 }
 
 /*

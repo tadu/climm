@@ -3328,7 +3328,7 @@ static JUMP_F(CmdUserContact)
     }
     if (data)
     {
-        QueueEnqueueData (conn, QUEUE_REQUEST_ROSTER, 0, 0x7fffffffL, NULL, data, NULL, NULL);
+        QueueEnqueueData (conn, QUEUE_REQUEST_ROSTER, data, 0x7fffffffL, NULL, 0, NULL, NULL);
         SnacCliReqroster (conn);
     }
     else
