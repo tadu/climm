@@ -114,6 +114,25 @@ const char *ConvEncName (UBYTE enc)
     return conv_encs[enc & ~ENC_AUTO].enc;
 }
 
+const char *ConvCrush0xFE (const char *inn)
+{
+    static char *t = NULL;
+    static UDWORD size = 0;
+    char *p;
+    
+    if (!inn || !*inn)
+        return "";
+    
+    t = s_catf (t, &size, "%*s", 100, "");
+    *t = '\0';
+    
+    t = s_catf (t, &size, "%s", inn);
+    for (p = t; *p; p++)
+        if (*p == Conv0xFE)
+            *p = '*';
+    return t;
+}
+
 #ifdef ENABLE_UTF8
 /*
  * Convert a single unicode code point to UTF-8
@@ -190,25 +209,6 @@ BOOL ConvIsUTF8 (const char *in)
     return 1;
 }
 
-
-const char *ConvCrush0xFE (const char *inn)
-{
-    static char *t = NULL;
-    static UDWORD size = 0;
-    char *p;
-    
-    if (!inn || !*inn)
-        return "";
-    
-    t = s_catf (t, &size, "%*s", 100, "");
-    *t = '\0';
-    
-    t = s_catf (t, &size, "%s", inn);
-    for (p = t; *p; p++)
-        if (*p == Conv0xFE)
-            *p = '*';
-    return t;
-}
 
 #ifdef ENABLE_ICONV
 
