@@ -84,7 +84,7 @@ void TabAddOut (const Contact *cont)
     for (found = 0; found < TAB_SLOTS + 1; found++)
         if (tab_in[found] == cont)
         {
-            while (found < TAB_SLOTS)
+            for ( ; found < TAB_SLOTS; found++)
                 tab_in[found] = tab_in[found + 1];
             tab_in[TAB_SLOTS] = NULL;
         }
