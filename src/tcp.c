@@ -988,7 +988,7 @@ void TCPCallBackReceive (struct Event *event)
     pak = event->pak;
     cont = (Contact *) event->info;
     
-    switch (PacketReadAt2 (pak, 26))
+    switch (PacketReadAt2 (pak, 22))
     {
         /* Requests for auto-response message */
         case TCP_CMD_GET_AWAY:
@@ -1016,7 +1016,7 @@ void TCPCallBackReceive (struct Event *event)
             M_print ("\a " CYAN BOLD "%10s" COLNONE " ", ContactFindName (cont->uin));
             
             tmp = PacketReadAtLNTS (pak, 28);
-            Do_Msg (event->sess, PacketReadAt2 (pak, 24), strlen (tmp),
+            Do_Msg (event->sess, PacketReadAt2 (pak, 22), strlen (tmp),
                     tmp, cont->uin, 1);
 
             log_event (cont->uin, LOG_MESS, "You received a TCP message from %s\n%s\n",
