@@ -103,6 +103,7 @@ JUMP_SNAC_F(SnacSrvNewuin)
     uin = PacketReadAt4 (event->pak, 6 + 10 + 46);
     cont = ContactUIN (serv, uin);
     serv->uin = cont->uin;
+    rl_print ("\n");
     rl_printf (i18n (1762, "Your new UIN is: %ld.\n"), cont->uin);
     serv->flags |= CONN_CONFIGURED;
     if (serv->flags & CONN_WIZARD)
@@ -118,6 +119,9 @@ JUMP_SNAC_F(SnacSrvNewuin)
 
         s_repl (&serv->contacts->name, s_sprintf ("contacts-icq8-%ld", cont->uin));
         rl_print (i18n (1790, "Setup wizard finished. Congratulations to your new UIN!\n"));
+        rl_printf ("\n%s", COLERROR);
+        rl_print (i18n (2381, "I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n"));
+        rl_printf ("%s\n", COLNONE);
 
         if (Save_RC () == -1)
             rl_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));

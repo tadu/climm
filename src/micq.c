@@ -304,6 +304,8 @@ static void Init (int argc, char *argv[])
     
     if (arg_c)
         prG->flags &= ~FLAG_COLOR;
+    else if (!arg_h && !loaded)
+        prG->flags |= FLAG_COLOR;
     
     if (prG->flags & FLAG_COLOR)
     {
