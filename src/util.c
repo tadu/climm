@@ -190,7 +190,7 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
     
     now = time (NULL);
 
-    for (lcnt = 0, pos = mylog = strdup (log); *pos; lcnt += *pos++ == '\n')
+    for (lcnt = 1, pos = mylog = strdup (log); *pos; lcnt += *pos++ == '\n')
         if (pos[0] == '\r' && pos[1] == '\n')
             *pos = ' ';
 
@@ -225,7 +225,7 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
             break;
     }
 
-    if (lcnt != 0)
+    if ((lcnt += *mylog != '\0') != 0)
         t = s_catf (t, &size, " +%u", lcnt);
 
     if (type != 0xFFFF && type != MSG_NORM)
@@ -233,7 +233,7 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
     
     t = s_cat (t, &size, "\n");
 
-    if (strlen (mylog))
+    if (*mylog)
     {
         t = s_cat (t, &size, mylog);
         t = s_cat (t, &size, "\n");
