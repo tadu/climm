@@ -102,9 +102,11 @@ void Idle_Check (Session *sess)
     int delta;
     UDWORD new = -1;
 
-    if (prG->away_time == 0 || !(sess->connect & CONNECT_OK))
-        return;
     if (sess->status & (STATUSF_DND | STATUSF_OCC | STATUSF_FFC))
+        return;
+    if (!(sess->connect & CONNECT_OK))
+        return;
+    if (!prG->away_time && !idle_flag)
         return;
     if (!idle_val)
         idle_val = time (NULL);
@@ -114,7 +116,7 @@ void Idle_Check (Session *sess)
     {
         if (sess->status & STATUSF_NA)
         {
-            if (delta < prG->away_time)
+            if (delta < prG->away_time || !prG->away_time)
             {
                 new = (sess->status & STATUSF_INV) | STATUS_ONLINE;
                 idle_flag = 0;
