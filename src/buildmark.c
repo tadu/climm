@@ -24,6 +24,12 @@
 #define EXTRAVERSION "BeOS hand compiled"
 #elif defined (_WIN32)
 #define EXTRAVERSION "Win32 hand compiled"
+#elif defined (__OpenBSD__)
+#define EXTRAVERSION "OpenBSD hand compiled"
+#elif defined (__NetBSD__)
+#define EXTRAVERSION "NetBSD hand compiled"
+#elif defined (__FreeBSD__)
+#define EXTRAVERSION "FreeBSD hand compiled"
 #else
 #define EXTRAVERSION "hand compiled"
 #endif
