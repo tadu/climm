@@ -64,6 +64,7 @@ struct ContactGroup_s
     ContactGroup *more;
     Connection   *serv;
     char         *name;
+    UDWORD        flags, flagsset;
     Contact      *contacts[32];
     UWORD         id;
     UBYTE         used;
@@ -75,7 +76,7 @@ struct Contact_s
     char  *nick;
     UDWORD uin;
     UDWORD status;
-    UDWORD flags;
+    UDWORD flags, flagsset;
     UDWORD caps;
     UWORD  id;
     UBYTE  v1, v2, v3, v4;
@@ -100,28 +101,29 @@ struct Contact_s
 };
 
 
-ContactGroup *ContactGroupIndex (int i);
-ContactGroup *ContactGroupFind  (UWORD id, Connection *serv, const char *name, BOOL create);
-UWORD         ContactGroupID    (ContactGroup *group);
-UDWORD        ContactGroupCount (ContactGroup *group);
-void          ContactGroupD     (ContactGroup *group);
+ContactGroup *ContactGroupIndex   (int i);
+ContactGroup *ContactGroupFind    (UWORD id, Connection *serv, const char *name, BOOL create);
+UWORD         ContactGroupID      (ContactGroup *group);
+UDWORD        ContactGroupCount   (ContactGroup *group);
+void          ContactGroupD       (ContactGroup *group);
 
 /* NULL ContactGroup accesses global list */
-Contact      *ContactIndex      (ContactGroup *group, int i);
-Contact      *ContactFind       (ContactGroup *group, UWORD id, UDWORD uin, const char *nick, BOOL create);
-BOOL          ContactAdd        (ContactGroup *group, Contact *cont);
-BOOL          ContactRem        (ContactGroup *group, Contact *cont);
-BOOL          ContactRemAlias   (ContactGroup *group, Contact *cont);
+Contact      *ContactIndex        (ContactGroup *group, int i);
+Contact      *ContactFind         (ContactGroup *group, UWORD id, UDWORD uin, const char *nick, BOOL create);
+BOOL          ContactAdd          (ContactGroup *group, Contact *cont);
+BOOL          ContactRem          (ContactGroup *group, Contact *cont);
+BOOL          ContactRemAlias     (ContactGroup *group, Contact *cont);
 
-UWORD         ContactID         (Contact *cont);
-void          ContactSetCap     (Contact *cont, Cap *cap);
-void          ContactSetVersion (Contact *cont);
+UWORD         ContactID           (Contact *cont);
+void          ContactSetCap       (Contact *cont, Cap *cap);
+void          ContactSetVersion   (Contact *cont);
 
-BOOL          ContactMetaSave   (Contact *cont);
-BOOL          ContactMetaLoad   (Contact *cont);
+BOOL          ContactMetaSave     (Contact *cont);
+BOOL          ContactMetaLoad     (Contact *cont);
 
-#define ContactPref(cont,flag) ((cont)->flags & (flag) ? 1 : 0)
-#define ContactPrefSet(cont,flag,mode) (cont)->flags = ((cont)->flags & ~(flag)) | (mode == CONT_MODE_SET ? (flag) : 0)
+UDWORD        ContactPref         (Contact *cont, UDWORD flag);
+void          ContactPrefSet      (Contact *cont, UDWORD flag, UBYTE mode);
+void          ContactGroupPrefSet (ContactGroup *group, UDWORD flag, UBYTE mode);
 
 #define ContactUIN(conn,uin)   ContactFind ((conn)->contacts, 0, uin, NULL, 1)
 
@@ -145,6 +147,15 @@ BOOL          ContactMetaLoad   (Contact *cont);
 
 #define CONT_ISSBL    128UL /* contact has been added to server based list */
 #define CONT_REQAUTH  256UL /* contact requires authorization */
+#define CONT_TMPSBL   512UL /* contact tagged for SBL operation */
+
+#define CONT_BYCONT     (CONT_IGNORE | CONT_HIDEFROM | CONT_INTIMATE)
+#define CONT_BYGROUP    (CONT_IGNORE | CONT_HIDEFROM | CONT_INTIMATE)
+#define CONT_BYGLOBAL     0
+#define CONT_BINARY     (CONT_IGNORE | CONT_HIDEFROM | CONT_INTIMATE | \
+                         CONT_TEMPORARY | CONT_ALIAS | CONT_SEENAUTO | \
+                         CONT_ISEDITED | CONT_ISSBL | CONT_REQAUTH | \
+                         CONT_TMPSBL)
 
 #define CONT_MODE_SET    2
 #define CONT_MODE_CLEAR  1

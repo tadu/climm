@@ -595,7 +595,7 @@ BOOL ContactMetaLoad (Contact *cont)
             else if (!strcmp (cmd, "b_nick"))  { s_parse (&line, &cmd); /* ignore for now */ }
             else if (!strcmp (cmd, "b_alias")) { s_parse (&line, &cmd); /* ignore for now */ }
             else if (!strcmp (cmd, "b_enc"))   { if (s_parse (&line, &cmd))  cont->encoding = ConvEnc (cmd) & ~ENC_AUTO; }
-            else if (!strcmp (cmd, "b_flags")) { if (s_parseint (&line, &i)) cont->flags = ((cont->flags & ~CONT_ISEDITED) | (i & CONT_ISEDITED)); }
+            else if (!strcmp (cmd, "b_flags")) { s_parseint (&line, &i); /* ignore for compatibility */ }
             else if (!strcmp (cmd, "b_about")) { if (s_parse (&line, &cmd))  s_repl (&cont->meta_about, ConvToUTF8 (cmd, enc, -1, 0)); }
             else if (!strcmp (cmd, "b_seen"))  { if (s_parseint (&line, &i)) cont->seen_time = i; }
             else if (!strcmp (cmd, "b_micq"))  { if (s_parseint (&line, &i)) cont->seen_micq_time = i; }
@@ -714,6 +714,77 @@ BOOL ContactMetaLoad (Contact *cont)
     return TRUE;
 }
 
+/*
+ * Query a flag for a contact.
+ */
+UDWORD ContactPref (Contact *cont, UDWORD flag)
+{
+    if (cont->flagsset & flag)
+    {
+        if (flag & CONT_BINARY)
+            return cont->flags & flag ? 1 : 0;
+        return 0;
+    }
+    if (cont->group->flagsset & flag)
+    {
+        if (flag & CONT_BINARY)
+            return cont->group->flags & flag ? 1 : 0;
+        return 0;
+    }
+    if (cont->group->serv->contacts->flagsset & flag)
+    {
+        if (flag & CONT_BINARY)
+            return cont->group->serv->contacts->flags & flag ? 1 : 0;
+        return 0;
+    }
+    if (flag & CONT_BINARY)
+        return prG->contflags & flag ? 1 : 0;
+    return 0;
+}
+
+/*
+ * Sets, clears or undefines a contact flag.
+ */
+void ContactPrefSet (Contact *cont, UDWORD flag, UBYTE mode)
+{
+    switch (mode)
+    {
+        case CONT_MODE_UNDEF:
+            cont->flags    &= ~flag;
+            cont->flagsset &= ~flag;
+            return;
+        case CONT_MODE_CLEAR:
+            cont->flags    &= ~flag;
+            cont->flagsset |=  flag;
+            return;
+        case CONT_MODE_SET:
+            cont->flags    |=  flag;
+            cont->flagsset |=  flag;
+            return;
+    }
+}
+
+/*
+ * Sets, clears or undefines a contact group flag.
+ */
+void ContactGroupPrefSet (ContactGroup *group, UDWORD flag, UBYTE mode)
+{
+    switch (mode)
+    {
+        case CONT_MODE_UNDEF:
+            group->flags    &= ~flag;
+            group->flagsset &= ~flag;
+            return;
+        case CONT_MODE_CLEAR:
+            group->flags    &= ~flag;
+            group->flagsset |=  flag;
+            return;
+        case CONT_MODE_SET:
+            group->flags    |=  flag;
+            group->flagsset |=  flag;
+            return;
+    }
+}
 
 /*
  * Set a capability for the contact.

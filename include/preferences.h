@@ -17,6 +17,8 @@ struct Preferences_s
     UBYTE  enc_rem;     /* the (assumed) remote encoding */
     UBYTE  enc_loc;     /* the local character encoding */
     
+    UDWORD contflags;   /* global (default) contact flags */
+
     UDWORD verbose;     /* verbosity to use on startup */
     UWORD  sound;       /* how to beep */
     UDWORD status;      /* status to use when logging in */
@@ -66,6 +68,8 @@ void        PrefSetColorScheme (Preferences *pref, UBYTE scheme);
 
 #define PrefUserDir(pref) (pref->basedir ? pref->basedir : PrefUserDirReal (pref))
 #define PrefLogName(pref) (pref->logname ? pref->logname : PrefLogNameReal (pref))
+
+void PrefContactSet (Preferences *pref, UDWORD flag, UBYTE mode);
 
 const char *PrefUserDirReal (Preferences *pref);
 const char *PrefLogNameReal (Preferences *pref);
