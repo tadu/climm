@@ -126,9 +126,9 @@ static void FlapChannel4 (Connection *conn, Packet *pak)
             M_print (i18n (1895, "Login failed:\n"));
         else
             M_print (i18n (1896, "Server closed connection:\n"));
-        M_printf (i18n (1048, "Error code: %d\n"), tlv[8].nr);
-        if (tlv[1].len && tlv[1].nr != conn->uin)
-            M_printf (i18n (1049, "UIN: %d\n"), tlv[1].nr);
+        M_printf (i18n (1048, "Error code: %d\n"), tlv[9].nr ? tlv[9].nr : tlv[8].nr);
+        if (tlv[1].len && atoi (tlv[1].str) != conn->uin)
+            M_printf (i18n (2218, "UIN: %s\n"), tlv[1].str);
         if (tlv[4].len)
             M_printf (i18n (1961, "URL: %s\n"), tlv[4].str);
         M_print (COLEXDENT "\n");
