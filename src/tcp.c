@@ -1260,6 +1260,8 @@ UBYTE PeerSendMsg (Connection *list, Contact *cont, Extra *extra)
         case MSG_GET_NA:
         case MSG_GET_DND:
         case MSG_GET_FFC:
+        case MSG_SSL_OPEN:
+        case MSG_SSL_CLOSE:
         case MSG_GET_VER:
             break;
         default:
