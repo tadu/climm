@@ -55,12 +55,11 @@ Changes :
 #include "mreadline.h"
 
 #ifdef _WIN32
-typedef struct
+struct timeval
 {
     long tv_sec;
     long tv_usec;
-}
-timeval;
+};
 #endif
 
 /*
