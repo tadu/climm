@@ -1374,13 +1374,13 @@ static int TCPSendMsgAck (Session *peer, UWORD seq, UWORD type, BOOL accept)
             
             assert (flist && fpeer);
             
-            PacketWriteB2   (pak, peer->port);   /* port */
+            PacketWriteB2   (pak, flist->port);  /* port */
             PacketWrite2    (pak, 0);            /* padding */
             PacketWriteStr  (pak, "");           /* file name - empty */
             PacketWrite4    (pak, 0);            /* file len - empty */
             if (peer->ver > 6)
                 PacketWrite4 (pak, 0x20726f66);  /* unknown - strange - 'for ' */
-            PacketWrite4    (pak, peer->port);   /* port again */
+            PacketWrite4    (pak, flist->port);  /* port again */
             break;
         case 0:
         case 1:
@@ -1630,6 +1630,8 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
         }
         else
         {
+            Time_Stamp ();
+            M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);
             M_print (i18n (2091, "Queueing %s as %s for transfer.\n"), files[i], as[i]);
             sum++;
             sumlen += fstat.st_size;

@@ -40,7 +40,7 @@ static jump_f
     CmdUserTogIgnore, CmdUserTogInvis, CmdUserTogVisible, CmdUserAdd, CmdUserRem, CmdUserRInfo,
     CmdUserAuth, CmdUserURL, CmdUserSave, CmdUserTabs, CmdUserLast,
     CmdUserUptime, CmdUserOldSearch, CmdUserSearch, CmdUserUpdate, CmdUserPass,
-    CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserTCP, CmdUserConn,
+    CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserPeer, CmdUserConn,
     CmdUserContact;
 
 static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag);
@@ -103,8 +103,8 @@ static jump_t jump[] = {
     { &CmdUserTabs,          "tabs",         NULL, 0,   0 },
     { &CmdUserLast,          "last",         NULL, 0,   0 },
     { &CmdUserUptime,        "uptime",       NULL, 0,   0 },
-    { &CmdUserTCP,           "peer",         NULL, 0,   0 },
-    { &CmdUserTCP,           "tcp",          NULL, 0,   0 },
+    { &CmdUserPeer,          "peer",         NULL, 0,   0 },
+    { &CmdUserPeer,          "tcp",          NULL, 0,   0 },
     { &CmdUserQuit,          "q",            NULL, 0,   0 },
     { &CmdUserPass,          "pass",         NULL, 0,   0 },
     { &CmdUserSMS,           "sms",          NULL, 0,   0 },
@@ -687,7 +687,7 @@ static JUMP_F(CmdUserTrans)
 /*
  * Manually handles peer-to-peer (TCP) connections.
  */
-static JUMP_F(CmdUserTCP)
+static JUMP_F(CmdUserPeer)
 {
 #ifdef ENABLE_PEER2PEER
     char *arg1 = NULL;
@@ -728,6 +728,28 @@ static JUMP_F(CmdUserTCP)
             TCPDirectOff   (list, cont->uin);
         else if (!strcmp (arg1, "file"))
         {
+            char *files[1], *ass[1], *des = NULL, *file;
+            
+            if (!UtilUIParse (&args, &file))
+            {
+                M_print (i18n (2158, "No file given.\n"));
+                return 0;
+            }
+            files[0] = file = strdup (file);
+            if (!UtilUIParse (&args, &des))
+                des = file;
+            des = strdup (des);
+
+            ass[0] = (strchr (file, '/')) ? strrchr (file, '/') + 1 : file;
+            
+            if (TCPSendFiles (list, cont->uin, des, files, ass, 1))
+                M_print (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
+            
+            free (files[0]);
+            free (des);
+        }
+        else if (!strcmp (arg1, "files"))
+        {
             char *files[10], *ass[10], *des = NULL, *as;
             int count;
             
@@ -735,7 +757,7 @@ static JUMP_F(CmdUserTCP)
             {
                 if (!UtilUIParse (&args, &des))
                 {
-                    des = strdup ("no descriptione, sir.");
+                    des = strdup (i18n (2159, "Some files."));
                     break;
                 }
                 files[count] = des = strdup (des);
@@ -747,7 +769,15 @@ static JUMP_F(CmdUserTCP)
                     as = des;
                 ass[count] = as = strdup (as);
             }
-            TCPSendFiles (list, cont->uin, des, files, ass, count);
+            if (!count)
+            {
+                free (des);
+                M_print (i18n (2158, "No file given.\n"));
+                return 0;
+            }
+            if (!TCPSendFiles (list, cont->uin, des, files, ass, count))
+                M_print (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
+            
             while (count--)
             {
                free (ass[count]);
@@ -757,37 +787,56 @@ static JUMP_F(CmdUserTCP)
         }
 #ifdef WIP
         else if (!strcmp (arg1, "ver"))
-            TCPGetAuto     (list, cont->uin, TCP_MSG_GET_VER);
+        {
+            if (!TCPGetAuto     (list, cont->uin, TCP_MSG_GET_VER))
+                M_print (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
+        }
 #endif
         else if (!strcmp (arg1, "auto"))
-            TCPGetAuto     (list, cont->uin, 0);
+        {
+            if (!TCPGetAuto     (list, cont->uin, 0))
+                M_print (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
+        }
         else if (!strcmp (arg1, "away"))
-            TCPGetAuto     (list, cont->uin, TCP_MSG_GET_AWAY);
+        {
+            if (!TCPGetAuto     (list, cont->uin, TCP_MSG_GET_AWAY))
+                M_print (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
+        }
         else if (!strcmp (arg1, "na"))
-            TCPGetAuto     (list, cont->uin, TCP_MSG_GET_NA);
+        {
+            if (!TCPGetAuto     (list, cont->uin, TCP_MSG_GET_NA))
+                M_print (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
+        }
         else if (!strcmp (arg1, "dnd"))
-            TCPGetAuto     (list, cont->uin, TCP_MSG_GET_DND);
+        {
+            if (!TCPGetAuto     (list, cont->uin, TCP_MSG_GET_DND))
+                M_print (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
+        }
         else if (!strcmp (arg1, "ffc"))
-            TCPGetAuto     (list, cont->uin, TCP_MSG_GET_FFC);
+        {
+            if (!TCPGetAuto     (list, cont->uin, TCP_MSG_GET_FFC))
+                M_print (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
+        }
         else
             break;
         free (arg1);
         return 0;
     }
-    M_print (i18n (1846, "Opens and closes TCP connections:\n"));
-    M_print (i18n (1847, "    open  <nick> - Opens TCP connection.\n"));
-    M_print (i18n (1848, "    close <nick> - Closes/resets TCP connection(s).\n"));
-    M_print (i18n (1870, "    off   <nick> - Closes TCP connection(s) and don't try TCP again.\n"));
-    M_print (i18n (2056, "    auto  <nick> - Get the auto-response from the contact.\n"));
-    M_print (i18n (2057, "    away  <nick> - Get the auto-response for away from the contact.\n"));
-    M_print (i18n (2058, "    na    <nick> - Get the auto-response for not available from the contact.\n"));
-    M_print (i18n (2059, "    dnd   <nick> - Get the auto-response for do not disturb from the contact.\n"));
-    M_print (i18n (2060, "    ffc   <nick> - Get the auto-response for free for chat from the contact.\n"));
-    M_print (i18n (2110, "    file  <nick> <file1> <as1> ... <description>\n"));
-    M_print (i18n (2111, "                 - Send file1 as as1, ..., with description.\n"));
-    M_print (i18n (2112, "                 - as = '/': strip path, as = '.': as is\n"));
+    M_print (i18n (1846, "Opens and closes direct (peer to peer) connections:\n"));
+    M_print (i18n (1847, "peer open  <nick> - Opens direct connection.\n"));
+    M_print (i18n (1848, "peer close <nick> - Closes/resets direct connection(s).\n"));
+    M_print (i18n (1870, "peer off   <nick> - Closes direct connection(s) and don't try it again.\n"));
+    M_print (i18n (2056, "peer auto  <nick> - Get the auto-response from the contact.\n"));
+    M_print (i18n (2057, "peer away  <nick> - Get the auto-response for away from the contact.\n"));
+    M_print (i18n (2058, "peer na    <nick> - Get the auto-response for not available from the contact.\n"));
+    M_print (i18n (2059, "peer dnd   <nick> - Get the auto-response for do not disturb from the contact.\n"));
+    M_print (i18n (2060, "peer ffc   <nick> - Get the auto-response for free for chat from the contact.\n"));
+    M_print (i18n (2160, "peer file  <nick> <file> [<description>]\n"));
+    M_print (i18n (2110, "peer files <nick> <file1> <as1> ... [<description>]\n"));
+    M_print (i18n (2111, "                  - Send file1 as as1, ..., with description.\n"));
+    M_print (i18n (2112, "                  - as = '/': strip path, as = '.': as is\n"));
 #else
-    M_print (i18n (1866, "This version of mICQ is compiled without TCP support.\n"));
+    M_print (i18n (1866, "This version of mICQ is compiled without direct connection (peer to peer) support.\n"));
 #endif
     return 0;
 }

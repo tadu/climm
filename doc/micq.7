@@ -352,23 +352,23 @@ set auto response for this status to
 .B online
 Change status to "online".
 .TP
-.B away \ [message]
+.BI away \ [message]
 Change status to "away". Optionally set auto response for this status to
 .IR message .
 .TP
-.B na \ [message]
+.BI na \ [message]
 Change status to "not available". Optionally set auto response for this status to
 .IR message .
 .TP
-.B occ \ [message]
+.BI occ \ [message]
 Change status to "occupied". Optionally set auto response for this status to
 .IR message .
 .TP
-.B dnd \ [message]
+.BI dnd \ [message]
 Change status to "do not disturb". Optionally set auto response for this status to
 .IR message .
 .TP
-.B ffc \ [message]
+.BI ffc \ [message]
 Change status to "free for chat". Optionally set auto response for this status to
 .IR message .
 .TP
@@ -409,7 +409,7 @@ Sets your random user group to
 .IR number .
 Without argument, lists possible interest groups.
 .TP
-.BI tcp \ command\ uin|nick
+.BI peer \ command\ uin|nick
 Operate command
 .I command
 on user given by UIN
@@ -446,7 +446,13 @@ Get the user's current occupied auto response.
 .B ffc
 Get the user's current free for chat message.
 .TP
-.BI file \ [file\ as]...\ description
+.BI file \ file\ description
+Send file
+.I file
+with description
+.IR description .
+.TP
+.BI files \ [file\ as]...\ description
 Send files to the user. There may be arbitrarely many
 pairs of a physical file name
 .I file
@@ -459,8 +465,6 @@ is
 the file name without the path is sent, and if it is
 .RB ' . '
 the same name is sent.
-.sp
-Note: File names and the description currently may not contain spaces.
 .RE
 .TP
 .BI conn \ [command\ nr]

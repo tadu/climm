@@ -569,6 +569,7 @@ void R_prompt (void)
         prstat = 1;
         R_remprompt ();
     }
+    printf (ESC "[J");
     if (curprompt)
         M_print (curprompt);
     prstat = 0;
@@ -613,7 +614,6 @@ void R_remprompt ()
     R_goto (0);
     cpos = pos;
     M_print ("\r");             /* for tab stop reasons */
-    printf (ESC "[J");
     prstat = 2;
 }
 

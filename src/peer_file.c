@@ -46,12 +46,12 @@ Session *PeerFileCreate (Session *serv)
     if ((flist = SessionFind (TYPE_FILELISTEN, 0, serv)))
         return flist;
     
-    if (prG->verbose)
-        M_print (i18n (2082, "Opening file listener connection at localhost:%d... "), serv->assoc->spref->port);
-
     flist = SessionClone (serv->assoc, TYPE_FILELISTEN);
     if (!flist)
         return NULL;
+
+    if (prG->verbose)
+        M_print (i18n (2082, "Opening file listener connection at localhost:%d... "), serv->assoc->spref->port);
 
     flist->parent      = serv;
     flist->connect     = 0;
@@ -97,12 +97,13 @@ BOOL PeerFileRequested (Session *peer, const char *files, UDWORD bytes)
     if (!fpeer)
         return 0;
 
-    fpeer->port     = 0;
-    fpeer->ip       = 0;
-    fpeer->connect  = 0;
-    fpeer->server   = NULL;
-    fpeer->uin      = peer->uin;
-    fpeer->our_seq3 = bytes;
+    fpeer->port    = 0;
+    fpeer->ip      = 0;
+    fpeer->connect = 0;
+    fpeer->server  = NULL;
+    fpeer->uin     = peer->uin;
+    fpeer->len     = bytes;
+    fpeer->done    = 0;
     
     return 1;
 }
@@ -117,10 +118,6 @@ BOOL PeerFileAccept (Session *peer, UWORD status, UDWORD port)
     flist = PeerFileCreate (peer->parent->parent);
     fpeer = SessionFind (TYPE_FILEDIRECT, peer->uin, flist);
     
-    ASSERT_MSGDIRECT(peer);
-    ASSERT_FILELISTEN(flist);
-    ASSERT_FILEDIRECT(fpeer);
-    
     if (!flist || !fpeer || !port || (status == TCP_STAT_REFUSE))
     {
         if (fpeer)
@@ -129,10 +126,10 @@ BOOL PeerFileAccept (Session *peer, UWORD status, UDWORD port)
         return 0;
     }
 
-    if (prG->verbose)
-        M_print (i18n (2068, "Opening file transfer connection at %s:%d... \n"),
-                 fpeer->server = strdup (UtilIOIP (fpeer->ip)), fpeer->port);
-
+    ASSERT_MSGDIRECT(peer);
+    ASSERT_FILELISTEN(flist);
+    ASSERT_FILEDIRECT(fpeer);
+    
     fpeer->connect  = 0;
     fpeer->type     = TYPE_FILEDIRECT;
     fpeer->flags    = 0;
@@ -141,6 +138,10 @@ BOOL PeerFileAccept (Session *peer, UWORD status, UDWORD port)
     fpeer->ip       = peer->ip;
     fpeer->server   = NULL;
     
+    if (prG->verbose)
+        M_print (i18n (2068, "Opening file transfer connection at %s:%d... \n"),
+                 fpeer->server = strdup (UtilIOIP (fpeer->ip)), fpeer->port);
+
     TCPDispatchConn (fpeer);
     
     return 1;
@@ -154,6 +155,7 @@ BOOL PeerFileAccept (Session *peer, UWORD status, UDWORD port)
  */
 void PeerFileDispatch (Session *fpeer)
 {
+    Contact *cont;
     Packet *pak;
     UDWORD err = 0;
     
@@ -164,6 +166,9 @@ void PeerFileDispatch (Session *fpeer)
 
     if (prG->verbose & DEB_PACKTCP)
         TCPPrint (pak, fpeer, FALSE);
+
+    cont = ContactFind (fpeer->uin);
+    assert (cont);
 
     switch (PacketRead1 (pak))
     {
@@ -178,8 +183,17 @@ void PeerFileDispatch (Session *fpeer)
             name = PacketReadLNTS (pak); /* NICK  */
             PacketD (pak);
             
-            M_print ("Incoming initialization: %d files with together %d bytes @ %x from %s.\n",
+            Time_Stamp ();
+            M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);
+            M_print (i18n (2161, "Receiving %d files with together %d bytes at speed %x from %s.\n"),
                      nr, len, speed, name);
+            
+            if (len != fpeer->len)
+            {
+                M_print ("FIXME: byte len different than in file request: requested %d, sending %d.\n",
+                         fpeer->len, len);
+                fpeer->len = len;
+            }
             
             pak = PeerPacketC (fpeer, 1);
             PacketWrite4 (pak, 64);
@@ -194,7 +208,9 @@ void PeerFileDispatch (Session *fpeer)
             name = PacketReadLNTS (pak); /* NICK  */
             PacketD (pak);
             
-            M_print ("Files accepted @ %x by %s.\n", speed, name);
+            Time_Stamp ();
+            M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);
+            M_print (i18n (2170, "Sending with speed %x to %s.\n"), speed, name);
             
             fpeer->our_seq = 1;
             QueueRetry (fpeer->uin, QUEUE_PEER_FILE);
@@ -232,6 +248,8 @@ void PeerFileDispatch (Session *fpeer)
                 if (ffile->sok == -1)
                 {
                     int rc = errno;
+                    Time_Stamp ();
+                    M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);
                     M_print (i18n (2083, "Cannot open file %s: %s (%d).\n"),
                              buf, strerror (rc), rc);
                     SessionClose (fpeer);
@@ -239,8 +257,12 @@ void PeerFileDispatch (Session *fpeer)
                     return;
                 }
                 ffile->connect = CONNECT_OK;
+                ffile->len = len;
+                ffile->done = off;
 
-                M_print ("Starting receiving %s (%s), len %d as %s\n",
+                Time_Stamp ();
+                M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);
+                M_print (i18n (2162, "Receiving file %s (%s) with %d bytes as %s.\n"),
                          name, text, len, buf);
             }
             pak = PeerPacketC (fpeer, 3);
@@ -260,42 +282,83 @@ void PeerFileDispatch (Session *fpeer)
             nr  = PacketRead4 (pak); /* NR */
             PacketD (pak);
             
-            M_print ("Sending file %d at offset %d.\n",
+            Time_Stamp ();
+            M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);
+            M_print (i18n (2163, "Sending file %d at offset %d.\n"),
                      nr, off);
             
             err = lseek (fpeer->assoc->sok, off, SEEK_SET);
             if (err == -1)
             {
                 err = errno;
+                Time_Stamp ();
+                M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);
                 M_print (i18n (2084, "Error while seeking to offset %d: %s (%d).\n"),
                          off, strerror (err), err);
                 TCPClose (fpeer);
                 return;
             }
+            fpeer->assoc->done = off;
             fpeer->assoc->connect = CONNECT_OK;
             
             QueueRetry (fpeer->uin, QUEUE_PEER_FILE);
             return;
             
         case 4:
-            M_print ("File transfer aborted by peer (%d).\n",
+            Time_Stamp ();
+            M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);
+            M_print (i18n (2169, "File transfer aborted by peer (%d).\n"),
                      PacketRead1 (pak));
             PacketD (pak);
             PeerFileClose (fpeer);
             return;
 
         case 5:
-            M_print ("Ignoring speed change to %d.\n",
+            M_print ("FIXME: Ignoring speed change to %d.\n",
                      PacketRead1 (pak));
             PacketD (pak);
             return;
 
         case 6:
-            write (fpeer->assoc->sok, pak->data + 1, pak->len - 1);
+            len = write (fpeer->assoc->sok, pak->data + 1, pak->len - 1);
+            if (len != pak->len - 1)
+            {
+                Time_Stamp ();
+                M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);
+                M_print (i18n (2164, "Error writing to file.\n"));
+                TCPClose (fpeer);
+                return;
+            }
+            fpeer->assoc->done += len;
+            if (fpeer->assoc->done > fpeer->assoc->len)
+            {
+                Time_Stamp ();
+                M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);
+                M_print (i18n (2165, "The peer sent more bytes (%d) than file length (%d).\n"),
+                         fpeer->assoc->done, fpeer->assoc->len);
+                TCPClose (fpeer);
+                return;
+            }
+            else if (fpeer->assoc->len == fpeer->assoc->done)
+            {
+                R_resetprompt ();
+                Time_Stamp ();
+                M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);
+                M_print (i18n (2166, "Finished receiving file.\n"));
+            }
+            else if (fpeer->assoc->len)
+            {
+                R_setpromptf ("[" COLINCOMING "%d %02d%%" COLNONE "] " COLSERVER "%s" COLNONE "",
+                              fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
+                              i18n (1040, "mICQ> "));
+            }
+                                          
             PacketD (pak);
             return;
         default:
-            M_print ("Error - unknown packet.\n");
+            Time_Stamp ();
+            M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);
+            M_print (i18n (2167, "Error - unknown packet.\n"));
             Hex_Dump (pak->data, pak->len);
             PacketD (pak);
             PeerFileClose (fpeer);
@@ -346,6 +409,7 @@ void PeerFileResend (Event *event)
     Session *fpeer = event->sess;
     Packet *pak;
     Event *event2;
+    int rc;
     
     if (!fpeer)
     {
@@ -357,125 +421,152 @@ void PeerFileResend (Event *event)
     ASSERT_FILEDIRECT (fpeer);
 
     cont = ContactFind (event->uin);
+    assert (cont);
 
     if (event->attempts >= MAX_RETRY_ATTEMPTS || (!event->pak && !event->seq))
     {
-        M_print (i18n (2085, "Dropping file transfer because of timeout: %d %d.\n"),
-                 event->attempts, event->seq);
+        Time_Stamp ();
+        M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);
+        M_print (i18n (2168, "File transfer #%d (%s) dropped after %d attempts because of timeout.\n"),
+                 event->seq, event->info, event->attempts);
         TCPClose (fpeer);
     }
 
-    if (fpeer->connect & CONNECT_MASK)
+    if (!(fpeer->connect & CONNECT_MASK))
     {
-        if (fpeer->connect & CONNECT_OK)
+        Time_Stamp ();
+        M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);
+        M_print (i18n (2072, "File transfer #%d (%s) dropped because of closed connection.\n"),
+                 event->seq, event->info);
+    }
+    else if (~fpeer->connect & CONNECT_OK)
+    {
+        if (event->attempts > 1)
         {
-            if (!event->seq)
-            {
-                fpeer->our_seq = 0;
-                PeerPacketSend (fpeer, event->pak);
-                PacketD (event->pak);
-                event->pak = NULL;
-            }
-            else if (event->seq != fpeer->our_seq)
-            {
-                event->due = time (NULL) + 10;
-                QueueEnqueue (event);
-                return;
-            }
-            else if (event->pak)
-            {
-                Session *ffile;
-                
-                PeerPacketSend (fpeer, event->pak);
-                PacketD (event->pak);
-                event->pak = NULL;
-                QueueEnqueue (event);
-                
-                ffile = SessionClone (fpeer, TYPE_FILE);
-                fpeer->assoc = ffile;
-                ffile->sok = open (event->info, O_RDONLY);
-                if (ffile->sok == -1)
-                {
-                    int rc = errno;
-                    M_print (i18n (2083, "Cannot open file %s: %s (%d).\n"),
-                             event->info, strerror (rc), rc);
-                    TCPClose (fpeer);
-                    SessionClose (fpeer);
-                    SessionClose (ffile);
-                    return;
-                }
-                return;
-            }
-            else if (fpeer->assoc && fpeer->assoc->connect == CONNECT_OK)
-            {
-                int len = 0;
-
-                pak = PeerPacketC (fpeer, 6);
-                len = read (fpeer->assoc->sok, pak->data + 1, 2048);
-                if (len == -1)
-                {
-                    len = errno;
-                    M_print (i18n (2086, "Error while reading file %s: %s (%d).\n"),
-                             event->info, strerror (len), len);
-                    TCPClose (fpeer);
-                }
-                else
-                {
-                    pak->len += len;
-                    fpeer->error = &PeerFileError;
-                    PeerPacketSend (fpeer, pak);
-                    PacketD (pak);
-
-                    if (len == 2048)
-                    {
-                        event->attempts = 0;
-                        QueueEnqueue (event);
-                        return;
-                    }
-                    M_print (i18n (2087, "Finished sending file %s.\n"), event->info);
-                    SessionClose (fpeer->assoc);
-                    fpeer->our_seq++;
-                    event2 = QueueDequeue (fpeer->our_seq, QUEUE_PEER_FILE);
-                    if (event2)
-                    {
-                        QueueEnqueue (event2);
-                        QueueRetry (fpeer->uin, QUEUE_PEER_FILE);
-                        return;
-                    }
-                    else
-                    {
-                        M_print (i18n (2088, "Finished sending all %d files.\n"), fpeer->our_seq - 1);
-                        SessionClose (fpeer);
-                    }
-                }
-            }
-            else
-            {
-                event->attempts++;
-                event->due = time (NULL) + 3;
-                QueueEnqueue (event);
-                return;
-            }
+            Time_Stamp ();
+            M_print (" " COLACK "%10s" COLNONE " %s [%d] %x %s\n",
+                     cont->nick, " + ", event->attempts, fpeer->connect, event->info);
         }
-        else
+        if (!event->seq)
+            event->attempts++;
+        event->due = time (NULL) + 10;
+        QueueEnqueue (event);
+        return;
+    }
+    else if (!event->seq)
+    {
+        fpeer->our_seq = 0;
+        PeerPacketSend (fpeer, event->pak);
+        PacketD (event->pak);
+        event->pak = NULL;
+    }
+    else if (event->seq != fpeer->our_seq)
+    {
+        event->due = time (NULL) + 10;
+        QueueEnqueue (event);
+        return;
+    }
+    else if (event->pak)
+    {
+        Session *ffile;
+        struct stat finfo;
+        
+        PeerPacketSend (fpeer, event->pak);
+        PacketD (event->pak);
+        event->pak = NULL;
+        QueueEnqueue (event);
+        
+        ffile = SessionClone (fpeer, TYPE_FILE);
+        fpeer->assoc = ffile;
+
+        if (stat (event->info, &finfo))
         {
-            if (event->attempts > 1)
-            {
-                Time_Stamp ();
-                M_print (" " COLACK "%10s" COLNONE " %s [%d] %x %s\n",
-                         cont->nick, " + ", event->attempts, fpeer->connect, event->info);
-            }
-            if (!event->seq)
-                event->attempts++;
-            event->due = time (NULL) + 10;
-            QueueEnqueue (event);
+            rc = errno;
+            M_print (i18n (2071, "Couldn't stat file %s: %s (%d)\n"),
+                     event->info, strerror (rc), rc);
+        }
+        ffile->len = finfo.st_size;
+
+        ffile->sok = open (event->info, O_RDONLY);
+        if (ffile->sok == -1)
+        {
+            int rc = errno;
+            Time_Stamp ();
+            M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);
+            M_print (i18n (2083, "Cannot open file %s: %s (%d).\n"),
+                     event->info, strerror (rc), rc);
+            TCPClose (fpeer);
+            SessionClose (fpeer);
+            SessionClose (ffile);
             return;
         }
+        return;
+    }
+    else if (!fpeer->assoc || fpeer->assoc->connect != CONNECT_OK)
+    {
+        event->attempts++;
+        event->due = time (NULL) + 3;
+        QueueEnqueue (event);
+        return;
     }
     else
     {
-        M_print (i18n (2072, "Dropping file transfer %d (%s) because of closed connection.\n"),
-                 event->seq, event->info);
+        int len = 0;
+
+        pak = PeerPacketC (fpeer, 6);
+        len = read (fpeer->assoc->sok, pak->data + 1, 2048);
+        if (len == -1)
+        {
+            len = errno;
+            Time_Stamp ();
+            M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);
+            M_print (i18n (2086, "Error while reading file %s: %s (%d).\n"),
+                     event->info, strerror (len), len);
+            TCPClose (fpeer);
+        }
+        else
+        {
+            pak->len += len;
+            fpeer->assoc->done += len;
+            fpeer->error = &PeerFileError;
+            PeerPacketSend (fpeer, pak);
+            PacketD (pak);
+
+            if (len == 2048)
+            {
+                if (fpeer->assoc->len)
+                    R_setpromptf ("[" COLCONTACT "%d %02d%%" COLNONE "] " COLSERVER "%s" COLNONE "",
+                                  fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
+                                  i18n (1040, "mICQ> "));
+                else
+                    R_setpromptf ("[" COLCONTACT "%d" COLNONE "] " COLSERVER "%s" COLNONE "",
+                                  fpeer->assoc->done, i18n (1040, "mICQ> "));
+                event->attempts = 0;
+                QueueEnqueue (event);
+                return;
+            }
+
+            R_resetprompt ();
+            Time_Stamp ();
+            M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);
+            M_print (i18n (2087, "Finished sending file %s.\n"), event->info);
+            SessionClose (fpeer->assoc);
+            fpeer->our_seq++;
+            event2 = QueueDequeue (fpeer->our_seq, QUEUE_PEER_FILE);
+            if (event2)
+            {
+                QueueEnqueue (event2);
+                QueueRetry (fpeer->uin, QUEUE_PEER_FILE);
+                return;
+            }
+            else
+            {
+                Time_Stamp ();
+                M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);
+                M_print (i18n (2088, "Finished sending all %d files.\n"), fpeer->our_seq - 1);
+                SessionClose (fpeer);
+            }
+        }
     }
     free (event->info);
     free (event);
