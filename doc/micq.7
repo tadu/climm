@@ -168,7 +168,7 @@ and display
 .I count
 messages, defaulting to 20 if not given.
 .TP
-.BI historyd \ <contact>\ [<date>\ [<count>]]
+.BI historyd \ <contact>\ <date>\ [<count>]
 Show messages from
 .I <contact>
 from the log files. Start at date
@@ -371,12 +371,12 @@ Add
 .I uin
 to your contact list as
 .IR nickname .
-.TP
-.BI add \ <contact>\ <alias>
 .br
 Note: you need to
 .B save
 to make this persistent.
+.TP
+.BI add \ <contact>\ <alias>
 .TP
 .BI addalias \ <contact>\ <alias>
 Add alias
@@ -404,9 +404,9 @@ Note: you need to
 .B save
 to make this persistent.
 .TP
-.BI rem \ [all]\ <contacts>
+.BI rem\ [all] \ <contacts>
 .TP
-.BI remalias \ [all]\ <contacts>
+.BI remalias\ [all] \ <contacts>
 Remove the aliases in
 .IR contacts .
 If any nick is the last alias for this contact, or if
@@ -418,11 +418,11 @@ Note: you need to
 .B save
 to make this persistent.
 .TP
-.BI rem \ [all]\ <group>
+.BI rem\ all \ <group>
 .TP
 .BI rem \ <group>\ <contacts>
 .TP
-.BI remgroup \ [all]\ <group>
+.BI remgroup\ all \ <group>
 .TP
 .BI remgroup \ <group>\ <contacts>
 Remove all contacts in
@@ -558,16 +558,6 @@ saving the current used auto away time. A timeout of 0 is equivalent to
 .IR off .
 If no argument is given, the current setting is displayed.
 .TP
-.BI auto \ [on|off]
-Turn auto reply messages on or off. If neither on or off is given
-the auto reply messages are displayed.
-.TP
-.BI auto \ <status>\ <message>
-Change auto reply message for status
-.I status
-to
-.IR message .
-.TP
 .BI alias \ [<alias>\ <expansion>]
 Make a new alias named
 .I alias
@@ -608,11 +598,11 @@ or
 .BR unload .
 To get debugging information, prefix it with
 .BR debug .
-To get funny messages, postfix it with
-.BR @fun .
 .sp
-The files from ~/.micq/i18n/*.i18n take precedence over the global
-ones, while the "funny" ones take precedence over the standard ones.
+The files from ~/.micq/i18n/*.i18n take precedence over the global ones, the
+files from BASE/i18n/*.i18b take precedence over those from
+~/.micq/i18n/*.i18n, while the "funny" texts take precedence over the
+standard ones.
 .sp
 You may specify as many arguments as you wish, e.g. to print
 string number 117 in German and then switch back to default language,
@@ -1026,10 +1016,18 @@ Download the server side contact list and just show it.
 Download the server side contact list and show only contacts (uin/nick pairs) that are not
 in the local contact list.
 .TP
-.B import
+.B add
 Download the server side contact list and add all contacts to the local one.
-.PP
-There is no contact list upload yet.
+.TP
+.B upload
+Try to upload local contacts to the server side contact list.
+.br
+.B Note:
+This will always try to upload only those contacts with the
+.I wantsbl
+contact option. Do a
+.I optglobal wantsbl on
+if you want to upload all of your contacts.
 .RE
 .TP
 .BI peek \ <contacts>
