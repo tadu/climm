@@ -139,7 +139,7 @@ while ($uname = shift)
     }
     print "Old version tag: $ver.\n";
     
-    system "cvs -d $cvs rdiff -u -r $ver micq/lang/C.i18n"
+    system "cvs -d $cvs rdiff -u -r $ver micq/lang/C.i18n -r stable-0-4-10 "
          . " | grep \"^-[0-9]\" | sed \"s,^-,,\" | sort -n -t : -k 1,1 -u -o .$uname.tainted";
     ReadTainted ("$uname");
 
