@@ -1360,6 +1360,7 @@ void ReadLinePrompt ()
         M_print (rl_prompt.txt);
         rl_prompt_len = M_pos ();
         rl_prompt_stat = 1;
+        rl_colpos = 0;
     }
     s_init (&rl_operate, "", 0);
     rl_recheck (TRUE);
