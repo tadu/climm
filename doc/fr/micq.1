@@ -7,41 +7,41 @@
 \- Un petit client ICQ en mode texte
 .SH SYNOPSIS
 .BR micq
-.I [-v[level]]
-.I [-f nom_fichier]
+.I [\-v[level]]
+.I [\-f nom_fichier]
 .br
 .SH DESCRIPTION
 .BR mICQ
-est un client ICQ en mode texte qui supporte de nombreuses caractéristiques parmi celles fournies par le client de Mirabilis.
-Micq permet de changer le mot de passe de l'utilisateur, de créer de nouveaux comptes, d'actualiser les informations de 
+est un client ICQ en mode texte qui supporte de nombreuses caract\('eristiques parmi celles fournies par le client de Mirabilis.
+Micq permet de changer le mot de passe de l'utilisateur, de cr\('eer de nouveaux comptes, d'actualiser les informations de 
 l'utilisateur, de rechercher d'autres utilisateurs, etc.
 .SH OPTIONS
 
 .TP
-.BI -v [verbosité]
-Active le mode verbeux, ou paramètre le niveau de verbosité à 
-.IR verbosité .
+.BI \-v [verbosit\('e]
+Active le mode verbeux, ou param\(`etre le niveau de verbosit\('e \(`a 
+.IR verbosit\('e .
 .TP
-.BI -f \ nom_fichier
+.BI \-f \ nom_fichier
 Utilise le fichier 
 .IR nom_fichier
 comme fichier de configuration.
 .TP
-.BI -l \ fichier|répertoire
+.BI \-l \ fichier|r\('epertoire
 Utilise
 .IR fichier
 comme fichier journal, ou utilise
-.IR répertoire
-comme répertoire dans lequel créer des fichiers journaux par utilisateur.
+.IR r\('epertoire
+comme r\('epertoire dans lequel cr\('eer des fichiers journaux par utilisateur.
 .TP
-.BI -?,\ -h
+.BI \-?,\ \-h
 Affiche l'aide.
 
 
 .SH CARACTERISTIQUES
 .BR mICQ
-est très portable et tourne sous Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD 
-et tout autre système de type Unix moderne.
+est tr\(`es portable et tourne sous Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD 
+et tout autre syst\(`eme de type Unix moderne.
 
 La version
 .B 0.4.9 de mICQ 
@@ -51,30 +51,30 @@ les tester est la bienvenue.
 
 .SH HISTORIQUE
 .TP
-16 Août 1998
+16 Ao\(^ut 1998
 Matthew D. Smith publie micq au monde. 
 Cela sera suivit par 12 publications jusqu'au 25 Septembre 1998.
 .TP
 05 Janvier 2001
-Matthew D. Smith est décédé d'un accident de voiture. 
-Les utilisateurs de mICQ ont repris le projet où Matthew l'a quitté, 
-ont opté pour la licence BSD et relancé le développement de
+Matthew D. Smith est d\('ec\('ed\('e d'un accident de voiture. 
+Les utilisateurs de mICQ ont repris le projet o\(`u Matthew l'a quitt\('e, 
+ont opt\('e pour la licence BSD et relanc\('e le d\('eveloppement de
 .BR mICQ .
 .TP
 10 Juin 2002
-La version 0.4.9 est publiée par Rüdiger Kuhlmann dans les termes de la licence GPL, 
-et implémente la nouvelle version du protocole ICQ (version 8).
+La version 0.4.9 est publi\('ee par R\(:udiger Kuhlmann dans les termes de la licence GPL, 
+et impl\('emente la nouvelle version du protocole ICQ (version 8).
 .SH LISTE DE DISCUSSION
 La liste de discussion de micq est
-.IR micq-list@micq.org .
-Les informations concernant l'abonnement  et les archives sont disponibles à
-.IR http://www.micq.org/pipermail/micq-list/ .
+.IR micq\-list@micq.org .
+Les informations concernant l'abonnement  et les archives sont disponibles \(`a
+.IR http://www.micq.org/pipermail/micq\-list/ .
 .SH TELECHARGEMENT
-Par HTTP à
+Par HTTP \(`a
 .IR http://www.micq.org/download .
-Pour obtenir la dernière version par CVS, entrez:
+Pour obtenir la derni\(`ere version par CVS, entrez:
 .sp
-cvs -d:pserver:anonymous@micq.org:/usr/local/cvsroot co micq
+cvs \-d:pserver:anonymous@micq.org:/usr/local/cvsroot co micq
 .SH VOIR AUSSI
 .BR micqrc (5),
 .BR micq (7)
@@ -82,29 +82,29 @@ cvs -d:pserver:anonymous@micq.org:/usr/local/cvsroot co micq
 
 .TP
 .I ~/.micqrc
-Ancien fichier de configuration de mICQ, obsolète.
+Ancien fichier de configuration de mICQ, obsol\(`ete.
 .TP
 .I ~/.micq/micqrc
 Fichier de configuration de mICQ.
 .TP
 .I PREFIXE/share/micq/*.i18n
-Fichiers de traduction contenant les traductions de toutes les chaînes de 
-caractères que mICQ affiche.
+Fichiers de traduction contenant les traductions de toutes les cha\(^ines de 
+caract\(`eres que mICQ affiche.
 .TP
 .I ~/.micq/i18n/*.i18n
-Substituts locaux pour les fichiers de traduction mentionnés ci-dessus.
+Substituts locaux pour les fichiers de traduction mentionn\('es ci-dessus.
 .TP
 .I ~/.micq/history/
-Chemin par défaut du répertoire où les fichiers journaux sont créés.
+Chemin par d\('efaut du r\('epertoire o\(`u les fichiers journaux sont cr\('e\('es.
 
 .SH BUGS
-Envoyez les rapports de bugs et commentaires à Rüdiger Kuhlmann
-<micq@ruediger-kuhlmann.de> (en allemand ou en anglais).
+Envoyez les rapports de bugs et commentaires \(`a R\(:udiger Kuhlmann
+<micq@ruediger\-kuhlmann.de> (en allemand ou en anglais).
 .SH AUTEUR
-Cette page de manuel a été écrite par James Morrison
+Cette page de manuel a \('et\('e \('ecrite par James Morrison
 .IR <ja2morrison@student.math.uwaterloo.ca>
-à partir de la page de manuel minimale écrite par Jordi Mallach
+\(`a partir de la page de manuel minimale \('ecrite par Jordi Mallach
 .IR <jordi@sindominio.net>
-pour le système d'exploitation Debian GNU/Linux.
-Cette page de manuel a été traduite par Julien Gilli 
+pour le syst\(`eme d'exploitation Debian GNU/Linux.
+Cette page de manuel a \('et\('e traduite par Julien Gilli 
 .IR <jgilli@nerim.fr> .

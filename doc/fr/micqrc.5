@@ -6,84 +6,84 @@
 .BR ~/.micq/micqrc
 \- Le fichier de configuration de mICQ
 .SH DESCRIPTION
-Cette page de manuel décrit le fichier de configuration de micq. Il comprend
-plusieurs sections qui débutent par
+Cette page de manuel d\('ecrit le fichier de configuration de micq. Il comprend
+plusieurs sections qui d\('ebutent par
 .BR [section] ,
-où
+o\(`u
 .BR section
 est le nom de la section.
 .SH CONNEXIONS - connection
 Une section
 .BR Connection
-décrit une connexion au sein d'ICQ. En général, il y en a deux,
+d\('ecrit une connexion au sein d'ICQ. En g\('en\('eral, il y en a deux,
 qui sont en relation l'une avec l'autre: une connexion au serveur ICQ, et une
-connexion pour écouter les communications des contacts.
+connexion pour \('ecouter les communications des contacts.
 
 
 .TP
 .BI type \ type\ [auto]
-Paramètre le type de la connexion à
+Param\(`etre le type de la connexion \(`a
 .IR type ,
-qui peut être
+qui peut \(^etre
 .BR server
 pour une connexion au serveur ICQ, ou
 .BR peer
 pour une connexion qui concerne les communications avec les contacts. Si l'option
 .IR auto
-est donnée, la connexion est créée au démarrage de mICQ.
-Ceci est probablement ce que vous devriez faire, à moins que vous
-possédiez plusieurs UINs, dans ce cas paramétrez cela sur la connexion
-correspondant à l'UIN que vous utilisez.
+est donn\('ee, la connexion est cr\('e\('ee au d\('emarrage de mICQ.
+Ceci est probablement ce que vous devriez faire, \(`a moins que vous
+poss\('ediez plusieurs UINs, dans ce cas param\('etrez cela sur la connexion
+correspondant \(`a l'UIN que vous utilisez.
 
 .TP
 .BI version \ nr
-Paramètre la version du protocole ICQ utilisée pour cette connexion à
+Param\(`etre la version du protocole ICQ utilis\('ee pour cette connexion \(`a
 .IR nr .
 Remarquez que pour les connexions vers des serveurs, seule la version
 .BR 5
-est supportée, bien que le support pour la version
+est support\('ee, bien que le support pour la version
 .BR 8
-soit plannifié, et seule la version
+soit plannifi\('e, et seule la version
 .BR 6
-est supportée pour les communications avec les contacts.
+est support\('ee pour les communications avec les contacts.
 
 .TP
 .BI server \ server
-Paramètre le serveur auquel se connecter à
+Param\(`etre le serveur auquel se connecter \(`a
 .IR server .
-La valeur par défaut est
+La valeur par d\('efaut est
 .BR icq.icq.com .
-Ceci est inutilisé pour les communications avec les contacts.
+Ceci est inutilis\('e pour les communications avec les contacts.
 
 .TP
 .BI port \ port
-Paramètre le port auquel se connecter sur le serveur à
+Param\(`etre le port auquel se connecter sur le serveur \(`a
 .IR port ,
-ou le port à écouter pour les communications avec les contacts à
+ou le port \(`a \('ecouter pour les communications avec les contacts \(`a
 .IR port .
 
 .TP
 .BI uin \ UIN
-Paramètre l'UIN à utiliser pour la phase de connexion à
+Param\(`etre l'UIN \(`a utiliser pour la phase de connexion \(`a
 .IR UIN .
-Inutilisé pour les communications avec les contacts.
+Inutilis\('e pour les communications avec les contacts.
 
 .TP
 .BI password \ [mot_de_passe]
-Paramètre le mot de passe à utiliser lors de la phase de connexion à
+Param\(`etre le mot de passe \(`a utiliser lors de la phase de connexion \(`a
 .IR mot_de_passe .
-Inutilisé pour les communications avec les contacts. Si ce paramètre n'est
-pas présent, le mot de passe vous sera demandé au lancement.
+Inutilis\('e pour les communications avec les contacts. Si ce param\(`etre n'est
+pas pr\('esent, le mot de passe vous sera demand\('e au lancement.
 
 .TP
 .BI status \ nr
-Paramètre l'état à choisir après la phase de connexion à
+Param\(`etre l'\('etat \(`a choisir apr\(`es la phase de connexion \(`a
 .IR nr .
-L'état peut être:
+L'\('etat peut \(^etre:
 .RS
 .TP
 0
-connecté
+connect\('e
 .TP
 1
 absent
@@ -92,10 +92,10 @@ absent
 non disponible
 .TP
 17
-occupé
+occup\('e
 .TP
 19
-ne pas déranger
+ne pas d\('eranger
 .TP
 32
 libre pour chatter
@@ -123,15 +123,15 @@ We're not firewalled at all. This is the default.
 
 .SH GENERAL - general
 Cette section inclue les options concernant SOCKS 5, qui seront
-éventuellement déplacées vers leur propre section, les options générales,
-et quelques chaînes de caractères à redéfinir.
+\('eventuellement d\('eplac\('ees vers leur propre section, les options g\('en\('erales,
+et quelques cha\(^ines de caract\(`eres \(`a red\('efinir.
 
 
 .TP
 .BI s5_use \ nombre
-Paramétrez
+Param\('etrez
 .IR number
-à 0 pour désactiver et 1 pour activer l'utilisation de SOCKS 5.
+\(`a 0 pour d\('esactiver et 1 pour activer l'utilisation de SOCKS 5.
 
 .TP
 .BI s5_host \ host
@@ -140,27 +140,27 @@ Se connecter au proxy socks 5 de la machine
 
 .TP
 .BI s5_port \ port
-Se connecter au proxy socks 5 qui écoute sur le port
+Se connecter au proxy socks 5 qui \('ecoute sur le port
 .IR port .
 
 .TP
 .BI s5_auth \ nombre
-Paramètrez
+Param\(`etrez
 .IR nombre
-à 0 pour ne pas effectuer l'authentification et 1 pour l'effectuer.
+\(`a 0 pour ne pas effectuer l'authentification et 1 pour l'effectuer.
 
 .TP
 .BI s5_name \ nom
 S'identifier en tant qu'utilisateur de nom
 .IR nom
-auprès du proxy socks 5.
+aupr\(`es du proxy socks 5.
 .br
 
 .TP
 .BI s5_pass \ mot_de_passe
 S'authentifier avec le mot de passe
 .IR mot_de_passe
-auprès du proxy socks5.
+aupr\(`es du proxy socks5.
 
 .sp
 Maintenant les options :
@@ -168,110 +168,110 @@ Maintenant les options :
 
 .TP
 .BI verbose \ niveau
-Paramètre le niveau de verbosité au lancement à
+Param\(`etre le niveau de verbosit\('e au lancement \(`a
 .IR niveau .
 
 .TP
-.BI auto_away \ délai
-Paramètre le délai précédent l'activation de l'état away à
-.IR délai
+.BI auto_away \ d\('elai
+Param\(`etre le d\('elai pr\('ec\('edent l'activation de l'\('etat away \(`a
+.IR d\('elai
 en secondes. Donnez la valeur
 .BR 0
-pour désactiver le mode auto away.
+pour d\('esactiver le mode auto away.
 
 .TP
 .BI Screen_width \ largeur
-Paramètre la largeur par défaut de l'écran à
+Param\(`etre la largeur par d\('efaut de l'\('ecran \(`a
 .IR largeur .
-Si la valeur n'est pas paramétrée ou égale à
+Si la valeur n'est pas param\('etr\('ee ou \('egale \(`a
 .BR 0 , \ 80
-sera la valeur utilisée. Cela est rarement utile car
-généralement la largeur actuelle de l'écran peut être connue à l'exécution.
+sera la valeur utilis\('ee. Cela est rarement utile car
+g\('en\('eralement la largeur actuelle de l'\('ecran peut \(^etre connue \(`a l'ex\('ecution.
 
 .TP
 .BI set \ delbs\ on|off
 Si la valeur est
 .B on ,
-le caractère suppr agira comme un retour (backspace). Si la valeur est
+le caract\(`ere suppr agira comme un retour (backspace). Si la valeur est
 .B off ,
-le caractère suppr agira normalement.
+le caract\(`ere suppr agira normalement.
 
 .TP
 .BI set \ russian\ on|off
-Désactive ou active la conversion des caractères russes entre le jeu koi8-r/u
+D\('esactive ou active la conversion des caract\(`eres russes entre le jeu koi8-r/u
 et  cp1251.
 
 .TP
 .BI set \ japanese\ on|off
-Désactive ou active la conversion des caractères japonais entre le jeu
+D\('esactive ou active la conversion des caract\(`eres japonais entre le jeu
 Shift-JIS et EUC.
 
 .TP
 .BI set \ funny\ on|off
-Désactive ou active les messages amusants.
+D\('esactive ou active les messages amusants.
 
 .TP
 .BI set \ color\ on|off
-Désactive ou active l'utilisation des couleurs.
+D\('esactive ou active l'utilisation des couleurs.
 
 .TP
 .BI set \ hermit\ on|off
 Si la valeur est
 .IR on ,
 tous les messages provenant de personnes qui ne sont pas dans votre
-liste de contacts seront ignorés.
+liste de contacts seront ignor\('es.
 
 .TP
 .BI set \ log\ on|off
-Désactive ou active l'utilisation des journaux.
+D\('esactive ou active l'utilisation des journaux.
 
 .TP
 .BI set \ logonoff\ on|off
-Lorsque l'utilisation des journaux est activée, désactive ou active l'enregistrement
-des changements d'états de connecté à deconnecté et vice-versa.
+Lorsque l'utilisation des journaux est activ\('ee, d\('esactive ou active l'enregistrement
+des changements d'\('etats de connect\('e \(`a deconnect\('e et vice-versa.
 
 .TP
 .BI set \ auto\ on|off
-Désactive ou active les réponses automatiques.
+D\('esactive ou active les r\('eponses automatiques.
 
 .TP
 .BI set \ uinprompt\ on|off
-Désactive ou active l'utilisation à partir de l'invite du dernier surnom
-duquel vous avez reçu un message.
+D\('esactive ou active l'utilisation \(`a partir de l'invite du dernier surnom
+duquel vous avez re\(,cu un message.
 
 .TP
 .BI set \ linebreak\ type
-Paramètre le type des retours à la ligne pour les messages reçus à
+Param\(`etre le type des retours \(`a la ligne pour les messages re\(,cus \(`a
 .IR type ,
-qui peut être
+qui peut \(^etre
 .BR simple
-pour arranger les lignes de manière habituelle,
+pour arranger les lignes de mani\(`ere habituelle,
 .BR break
-pour obtenir un retour à la ligne avant chaque message,
+pour obtenir un retour \(`a la ligne avant chaque message,
 .BR indent
-pour obtenir un retour à la ligne et indenter le message et
+pour obtenir un retour \(`a la ligne et indenter le message et
 .BR smart
-pour obtenir un retour à la ligne seulement si le message ne rentre pas dans la ligne actuelle.
+pour obtenir un retour \(`a la ligne seulement si le message ne rentre pas dans la ligne actuelle.
 
 .TP
 .BI set \ tabs\ simple|cycle|cycleall
-Sélectionne le type d'utilisation de la complétion. Les anciennes versions de
+S\('electionne le type d'utilisation de la compl\('etion. Les anciennes versions de
 mICQ ne connaissaient que
 .BR simple ,
 qui ne fonctionne qu'avec la commande
 .BR msg
-et complète la commande en parcourant la liste de tous les contacts auquel
-vous avez envoyé ou desquels vous avez reçus des messages.
-Le texte déjà entré après le surnom était perdu.
+et compl\(`ete la commande en parcourant la liste de tous les contacts auquel
+vous avez envoy\('e ou desquels vous avez re\(,cus des messages.
+Le texte d\('ej\(`a entr\('e apr\(`es le surnom \('etait perdu.
 .BR cycle
 parcourt la liste de tous les contacts en ligne de votre liste de contact.
-Elle conserve tout texte entré précédemment intact, cependant elle ne
+Elle conserve tout texte entr\('e pr\('ec\('edemment intact, cependant elle ne
 fonctionne qu'avec la commande
 .BR msg .
 .BR cycleall
-est équivalente à
+est \('equivalente \(`a
 .BR cycle ,
-mais parcourt la liste de tous les contacts, même ceux qui ne sont pas connectés.
+mais parcourt la liste de tous les contacts, m\(^eme ceux qui ne sont pas connect\('es.
 
 .B BEGIN UNTRANSLATED
 
@@ -288,7 +288,7 @@ for mICQ (which is the default).
 .B END UNTRANSLATED
 
 .PP
-Enfin, des chaînes de caractères peuvent être définies:
+Enfin, des cha\(^ines de caract\(`eres peuvent \(^etre d\('efinies:
 
 .B BEGIN UNTRANSLATED
 
@@ -338,45 +338,45 @@ select the desired color.
 .B END UNTRANSLATED
 
 .TP
-.BI logplace \ fichier|répertoire
-Paramètre le fichier contenant le journal à
+.BI logplace \ fichier|r\('epertoire
+Param\(`etre le fichier contenant le journal \(`a
 .IR fichier ,
-ou le répertoire contenant les journaux à
-.IR répertoire .
-Remarquez qu'un chemin est considéré comme un répertoire si il a un
+ou le r\('epertoire contenant les journaux \(`a
+.IR r\('epertoire .
+Remarquez qu'un chemin est consid\('er\('e comme un r\('epertoire si il a un
 .BR /
-à la
+\(`a la
 fin de son nom.
 
 .TP
 .BI sound \ on|off|cmd
-Désactive ou active l'avertissement sonore. Si le paramètre n'est ni
+D\('esactive ou active l'avertissement sonore. Si le param\(`etre n'est ni
 .B on
 ni
 .B off,
-le paramètre est considéré comme un programme à exécuter à la place de
+le param\(`etre est consid\('er\('e comme un programme \(`a ex\('ecuter \(`a la place de
 l'avertissement sonore.
 
 .TP
 .BI soundonline \ on|off|cmd
-Même chose que ci-dessus, mais concernant les utilisateurs se connectant.
+M\(^eme chose que ci-dessus, mais concernant les utilisateurs se connectant.
 
 .TP
 .BI soundoffline \ on|off|cmd
-Même chose que ci-dessus, mais pour les utilisateurs qui se déconnectent.
+M\(^eme chose que ci-dessus, mais pour les utilisateurs qui se d\('econnectent.
 
 .TP
 .BI receivescript \ cmd
-Paramètre la commande à exécuter lors de la réception d'un message.
+Param\(`etre la commande \(`a ex\('ecuter lors de la r\('eception d'un message.
 Laissez vide pour ne rien faire.
 
 .TP
-.BI auto \ état\ chaîne_de_caractères
-Paramètre la réponse automatique de l'état
-.IR état
-à
-.IR chaine_de_caractères.
-Cette option peut être répétée pour tous les états possibles
+.BI auto \ \('etat\ cha\(^ine_de_caract\(`eres
+Param\(`etre la r\('eponse automatique de l'\('etat
+.IR \('etat
+\(`a
+.IR chaine_de_caract\(`eres.
+Cette option peut \(^etre r\('ep\('et\('ee pour tous les \('etats possibles
 .BR away ,
 .BR na ,
 .BR dnd ,
@@ -392,37 +392,37 @@ Renomme la commande
 .IR ancienne
 en
 .IR nouvelle .
-Remarquez que l'ancien nom peut toujours être utilisé, à moins qu'il entre
+Remarquez que l'ancien nom peut toujours \(^etre utilis\('e, \(`a moins qu'il entre
 en conflit avec le nom de la commande
 .IR nouvelle
 Pour les noms de commandes possibles, consultez
 .BR micq (7).
-Cette option peut être répétée à volontée.
+Cette option peut \(^etre r\('ep\('et\('ee \(`a volont\('ee.
 .SH CONTACTS - contacts
 Cette section contient la liste de contacts.
 .I [*][~][^] uin surnom
-Donner à l'utilisateur possédant l'UIN
+Donner \(`a l'utilisateur poss\('edant l'UIN
 .IR uin
 le surnom
 .IR surnom .
 Si
 .B *
-est donnée, l'utilisateur peut vous voir lorsque vous êtes en mode invisible. Si
+est donn\('ee, l'utilisateur peut vous voir lorsque vous \(^etes en mode invisible. Si
 .B ~
-est donnée, il vous verra toujours comme étant déconnecté. Si
+est donn\('ee, il vous verra toujours comme \('etant d\('econnect\('e. Si
 .B ^
-est donnée, vous ignorez l'utilisateur.
-Si un UIN apparaît plusieurs fois, tous excepté le premier sont considérés comme
+est donn\('ee, vous ignorez l'utilisateur.
+Si un UIN appara\(^it plusieurs fois, tous except\('e le premier sont consid\('er\('es comme
 des alias.
-Remarque: la liste de contacts doit être la dernière partie du fichier.
+Remarque: la liste de contacts doit \(^etre la derni\(`ere partie du fichier.
 .SH VOIR AUSSI
 .BR micq (1),
 .BR micq (7)
 .SH AUTEUR
-Cette page de manuel a été écrite par James Morrison
+Cette page de manuel a \('et\('e \('ecrite par James Morrison
 .IR <ja2morrison@student.math.uwaterloo.ca> .
-Elle a été écrite pour correspondre à la nouvelle syntaxe du fichier de
-configuration choisie par Rüdiger Kuhlmann
+Elle a \('et\('e \('ecrite pour correspondre \(`a la nouvelle syntaxe du fichier de
+configuration choisie par R\(:udiger Kuhlmann
 .IR <micq@ruediger-kuhlmann.de> .
-Cette page de manuel a été traduite vers le français par Julien Gilli
+Cette page de manuel a \('et\('e traduite vers le fran\(,cais par Julien Gilli
 .IR <jgilli@nerim.fr> .

@@ -1,53 +1,52 @@
-.\" $Id$
+.\" $Id$ -*- nroff -*-
 .\"  EN: micq.1,v 1.12 2002/08/09 01:22:20
-.\"                                      Hey, EMACS: -*- nroff -*-
 .TH MICQ 1 mICQ DE
 .SH NAME
 .B mICQ
-\- ein kleines ICQ-Programm, das im Text-Modus läuft
-.SH ÜBERSICHT
+\- ein kleines ICQ-Programm, das im Text-Modus l\(:auft
+.SH \(:UBERSICHT
 .B micq
-.I [-v[level]]
-.I [-f Dateiname]
+.I [\-v[level]]
+.I [\-f Dateiname]
 .br
 .SH BESCHREIBUNG
 .I mICQ
 ist ein text-basiertes ICQ-Programm, das viele Eigenschaften
-des von Mirabilis erstellten ICQ unterstützt. Mit mICQ kann man
-das Paßwort ändern, neue Benutzernumern erzeugen, die
+des von Mirabilis erstellten ICQ unterst\(:utzt. Mit mICQ kann man
+das Pa\(sswort \(:andern, neue Benutzernumern erzeugen, die
 Benutzerinformationen aktualisieren, andere Benutzer suchen,
 und so weiter.
 .SH OPTIONEN
 .TP
-.BI -v [level]
-Wählt den ausführlichen Modus bzw. setzt wie Ausführlichkeit auf
+.BI \-v [level]
+W\(:ahlt den ausf\(:uhrlichen Modus bzw. setzt wie Ausf\(:uhrlichkeit auf
 .IR level .
 .TP
-.BI -f \ Dateiname
+.BI \-f \ Dateiname
 Benutzt
 .I Dateiname
-als Konfigurationsdatei.
+als Kon\(figurationsdatei.
 .TP
-.BI -l \ Datei|Verzeichnis
+.BI \-l \ Datei|Verzeichnis
 Benutzt
 .I Datei
 als Log-Datei, bzw. benutzt
 .IR Verzeichnis ,
 um dort die nach Benutzern getrennte Log-Dateien abzulegen.
 .TP
-.BI -?,\ -h
+.BI \-?,\ \-h
 Gibt die Syntax aus.
 
 
 .SH EIGENSCHAFTEN
 .B mICQ
-ist sehr portabel und läuft unter Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD
+ist sehr portabel und l\(:auft unter Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD
 und jedem anderen modernen Unix-artigen System.
 .B mICQ version 0.4.9.2
-läuft unter Linux, AIX, HPUX, Tru64, AmigaOS, teilweise BeOS und anderen
+l\(:auft unter Linux, AIX, HPUX, Tru64, AmigaOS, teilweise BeOS und anderen
 Unix-artigen Systemen. Andere Portierungen funktionieren
-möglicherweise ebenfalls noch, und jeder, der dies
-testen möchte, sei dazu aufgerufen.
+m\(:oglicherweise ebenfalls noch, und jeder, der dies
+testen m\(:ochte, sei dazu aufgerufen.
 .SH GESCHICHTE
 .Bl -tag -width Fl
 .TP
@@ -57,7 +56,7 @@ gefolgt von 12 datierten Freigaben bis zum 25. Septembet 1998.
 .TP
 5. Januar 2001
 Matthew D. Smith stirb in einem Autounfall.
-Die Benutzer fahren dort fort, wo Matthew aufgehört hat,
+Die Benutzer fahren dort fort, wo Matthew aufgeh\(:ort hat,
 formieren
 .B mICQ
 unter der BSD-Lizenz neu und nehmen
@@ -67,19 +66,19 @@ wieder auf.
 .TP
 10. Juni 2002
 Version 0.4.9 wird unter der GPL-Lizenz freigegeben und implementiert
-endlich die neue Version 8 des ICQ-Protokolls, und wurde von Rüdiger
+endlich die neue Version 8 des ICQ-Protokolls, und wurde von R\(:udiger
 Kuhlmann gemacht.
 .SH MAILINGLISTE
 Die mICQ-Mailingliste ist
-.IR micq-list@micq.org .
-Informationen über die Anmeldung und Archive finden sich unter
-.IR http://www.micq.org/pipermail/micq-list/ .
+.IR micq\-list@micq.org .
+Informationen \(:uber die Anmeldung und Archive \(finden sich unter
+.IR http://www.micq.org/pipermail/micq\-list/ .
 .SH HERUNTERLADEN
-Über HTTP von
+\(:Uber HTTP von
 .IR http://www.micq.org/download .
 Um die neueste Version aus dem CVS zu bekommen, gebe man ein:
 .sp
-cvs -d:pserver:anonymous@micq.org:/usr/local/cvsroot co micq
+cvs \-d:pserver:anonymous@micq.org:/usr/local/cvsroot co micq
 
 .SH SIEHE AUCH
 .BR micqrc (5),
@@ -87,27 +86,27 @@ cvs -d:pserver:anonymous@micq.org:/usr/local/cvsroot co micq
 .SH DATEIEN
 .TP
 .I ~/.micqrc
-Alte Konfigurationsdatei für mICQ - veraltet.
+Alte Kon\(figurationsdatei f\(:ur mICQ \- veraltet.
 .TP
 .I ~/.micq/micqrc
-Konfigurationsdatei für mICQ.
+Kon\(figurationsdatei f\(:ur mICQ.
 .TP
 .I PREFIX/share/micq/*.i18n
-Übersetzungsdateien mit Übersetzungen von alle Texten, die mICQ ausgibt.
+\(:Ubersetzungsdateien mit \(:Ubersetzungen von alle Texten, die mICQ ausgibt.
 .TP
 .I ~/.micq/i18n/*.i18n
-Benutzer-Änderungen zu diesen Dateien.
+Benutzer-\(:Anderungen zu diesen Dateien.
 .TP
 .I ~/.micq/history/
-Standardverzeichnis für Log-Dateien.
+Standardverzeichnis f\(:ur Log-Dateien.
 
 .SH FEHLERBERICHTE
-Fehlerberichte oder Kommentare bitte an Rüdiger Kuhlmann
-<micq@ruediger-kuhlmann.de> (auf Deutsch oder Englisch) schicken.
+Fehlerberichte oder Kommentare bitte an R\(:udiger Kuhlmann
+<micq@ruediger\-kuhlmann.de> (auf Deutsch oder Englisch) schicken.
 .SH AUTOR
 Diese Hilfeseite basiert auf einer von James Morrison
 .IR <ja2morrison@student.math.uwaterloo.ca> ,
 die aus der minimalen Hilfeseite hervorging, die Jordi Mallach
 .I <jordi@sindominio.net>
-für das  Debian-GNU/Linux-System geschrieben hat.
-Sie wurde von Rüdiger Kuhlmann übersetzt.
+f\(:ur das  Debian-GNU/Linux-System geschrieben hat.
+Sie wurde von R\(:udiger Kuhlmann \(:ubersetzt.

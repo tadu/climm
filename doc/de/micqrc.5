@@ -3,9 +3,9 @@
 .TH MICQRC 5 mICQ DE
 .SH NAME
 .B ~/.micq/micqrc
-\- die Konfigurationsdatei für mICQ
+\- die Kon\(figurationsdatei f\(:ur mICQ
 .SH BESCHREIBUNG
-Diese Hilfeseite beschreibt die konfigurationsdatei für mICQ. Dieses besteht
+Diese Hilfeseite beschreibt die kon\(figurationsdatei f\(:ur mICQ. Dieses besteht
 aus mehreren Abschnitten, die jeweils durch
 .I [section]
 eingeleitet werden, wobei
@@ -15,44 +15,44 @@ der Name des Abschnittes ist.
 Ein Abschnitt
 .B Connection
 beschreibt eine Verbindung innerhalb ICQ. Typischerweise gibt es genau zwei davon,
-die voneinander abhängen: eine Verbindung zum ICQ-Server, und eine Verbindung,
+die voneinander abh\(:angen: eine Verbindung zum ICQ-Server, und eine Verbindung,
 auf der auf eingehende Direktverbindungen gewartet wird.
 .TP
 .BI type \ type\ [auto]
-Wählt 
+W\(:ahlt 
 .I type
 als Typ der Verbindung:
 .B server
-für eine Verbindung zum ICQ-Server oder
+f\(:ur eine Verbindung zum ICQ-Server oder
 .B peer
-für eine Verbindung für eingehende Direktverbindungen. Wenn
+f\(:ur eine Verbindung f\(:ur eingehende Direktverbindungen. Wenn
 .B auto
-gegeben ist, öffne diese Verbindung beim Programmstart.
-Dies möchte man normalerweise, es sei denn, man hat mehrere Benutzernummern,
-dann verwendet man es nur für diejenige, die man gerade verwenden will.
+gegeben ist, \(:o\(ffne diese Verbindung beim Programmstart.
+Dies m\(:ochte man normalerweise, es sei denn, man hat mehrere Benutzernummern,
+dann verwendet man es nur f\(:ur diejenige, die man gerade verwenden will.
 .TP
 .BI version \ nr
-Setzt die Version, die für diese Verbindung zu verwenden ist, auf
+Setzt die Version, die f\(:ur diese Verbindung zu verwenden ist, auf
 .IR nr .
-Man beachte, daß für Server-Verbindungen nur die Versionen
+Man beachte, da\(:ss f\(:ur Server-Verbindungen nur die Versionen
 .IR 5 ,
 .I 7
 und
 .IR 8 ,
-und für Direktverbindungen
+und f\(:ur Direktverbindungen
 .IR 6 ,
 .I 7
 und
 .I 8
-unterstützt werden. Empfehlenswerterweise verwende man stets
+unterst\(:utzt werden. Empfehlenswerterweise verwende man stets
 Version 8.
 .TP
 .BI server \ server
 Setzt den Rechnername, zu dem verbunden werden soll, auf
 .IR server .
-Dies ist standardmäßig
+Dies ist standardm\(:a\(:ssig
 .IR login.icq.com .
-Unbenutzt für Direktverbindungen.
+Unbenutzt f\(:ur Direktverbindungen.
 .TP
 .BI port \ port
 Setzt den Port, zu dem verbunden werden soll, bzw. auf dem
@@ -62,13 +62,13 @@ auf eingehende Verbindungen gewartet werden soll, auf
 .BI uin \ UIN
 Setzt die Benutzernummer, mit der einzuloggen ist, auf
 .IR UIN .
-Unbenutzt für Direktverbindungen.
+Unbenutzt f\(:ur Direktverbindungen.
 .TP
 .BI password \ password
-Setzt das Login-Paßwort auf
+Setzt das Login-Pa\(:sswort auf
 .IR password .
-Unbenutzt für Direktverbindungen. Wenn dies weggelassen wird, fragt mICQ
-beim Programmstart nach dem Paßwort. Benutzer von BeOS müssen diese
+Unbenutzt f\(:ur Direktverbindungen. Wenn dies weggelassen wird, fragt mICQ
+beim Programmstart nach dem Pa\(:sswort. Benutzer von BeOS m\(:ussen diese
 Option verwenden.
 .TP
 .BI status \ nr
@@ -84,26 +84,26 @@ verbunden
 abwesend
 .TP
 5
-nicht verfügbar
+nicht verf\(:ugbar
 .TP
 17
-beschäftigt
+besch\(:aftigt
 .TP
 19
-nicht stören
+nicht st\(:oren
 .TP
 32
-frei für Plaudereien
+frei f\(:ur Plaudereien
 .TP
 256
 unsichtbar
 .RE
 
 .RS
-Für Direktverbindungen gibt dies an, in wie weit man hinter einer Firewall ist:
+F\(:ur Direktverbindungen gibt dies an, in wie weit man hinter einer Firewall ist:
 .TP
 1
-Hinter einer Firewall, die keine eingehende Verbindungen durchläßt.
+Hinter einer Firewall, die keine eingehende Verbindungen durchl\(:a\(:sst.
 .TP
 2
 Hinter einer Firewall, aber kann mittels SOCKS Verbindungen annehmen.
@@ -113,7 +113,7 @@ Nicht hinter einer Firewall. Dies ist die Vorgabe.
 .RE
 
 .SH ALLGEMEINES - general
-Dieser Abschnitt enthält Optionen für SOCKS 5, die möglicherweise später
+Dieser Abschnitt enth\(:alt Optionen f\(:ur SOCKS 5, die m\(:oglicherweise sp\(:ater
 in einen eigenen Abschnitt wandern, allgemeine Optionen, und ein paar
 Texte, die man anpassen kann.
 .TP
@@ -133,7 +133,7 @@ Verbinde zum SOCKS-5-Server auf Port
 .BI s5_auth \ number
 Falls
 .IR number
-gleich 1 ist, authentifiziere beim SOCKS-5-Server mit Paßwort, ansonsten nicht.
+gleich 1 ist, authenti\(fiziere beim SOCKS-5-Server mit Pa\(:sswort, ansonsten nicht.
 .TP
 .BI s5_name \ name
 Verwende
@@ -141,18 +141,18 @@ Verwende
 als Benutzername beim SOCKS-5-Server.
 .TP
 .BI s5_pass \ password
-Verwende Paßwort
+Verwende Pa\(:sswort
 .I password
 beim SOCKS-5-Server.
 .PP
 Jetzt die Optionen:
 .TP
 .BI verbose \ level
-Setzt die Ausfühlichkeit bei der Ausgabe auf
+Setzt die Ausf\(:uhlichkeit bei der Ausgabe auf
 .IR level .
 .TP
 .BI auto_away \ time
-Setzt die Zeit, nach der automatisch nach "abwesend" und "nicht verfügbar"
+Setzt die Zeit, nach der automatisch nach "abwesend" und "nicht verf\(:ugbar"
 gewechselt wird, auf
 .I time
 Sekunden. Deaktiviere mit
@@ -160,21 +160,21 @@ Sekunden. Deaktiviere mit
 Sekunden.
 .TP
 .BI Screen_width \ width
-Setzt die standardmäßige Bildschirmbreite auf
+Setzt die standardm\(:a\(:ssige Bildschirmbreite auf
 .IR width .
 Wenn nicht gesetzt oder auf
 .BR 0 ,
 wird
 .B 80
-verwendet. Dies wird sehr selten benötigt, da normalerweise die
+verwendet. Dies wird sehr selten ben\(:otigt, da normalerweise die
 Bildschirmbreite zur Laufzeit bestimmt werden kann.
 .TP
 .BI set \ delbs\ on|off
 Wenn es auf
 .B on
-gesetzt ist, funktioniert das DELETE-Zeichen wie ein Rückschritt. Wenn es auf
+gesetzt ist, funktioniert das DELETE-Zeichen wie ein R\(:uckschritt. Wenn es auf
 .B off
-gesetzt ist, funktioniert es wie ein Löschen-Zeichen.
+gesetzt ist, funktioniert es wie ein L\(:oschen-Zeichen.
 .TP
 .BI set \ russian\ on|off
 Aktiviere (\fBon\fR) oder deaktiviere (\fBoff\fR) russische Zeichenkonvertierung zwischen koi8-r/u und cp1251.
@@ -207,7 +207,7 @@ Aktiviere oder deaktiviere das Verwenden in der Eingabeaufforderung des Spitznam
 zuletzt eine Nachricht empfangen wurde.
 .TP
 .BI set \ linebreak\ type
-Setzt den Zeilenumbruchtyp für eingehende Nachrichten auf
+Setzt den Zeilenumbruchtyp f\(:ur eingehende Nachrichten auf
 .IR type ,
 der sein kann:
 .BR simple ,
@@ -216,51 +216,51 @@ um ganz normal umzubrechen,
 um vor jeder Nachricht einen Zeilenumbruch zu machen,
 .BR indent ,
 um vor jeder Nachricht einen Zeilenumbruch zu machen und die
-Nachricht einzurücken, und
+Nachricht einzur\(:ucken, und
 .BR smart ,
 um nur dann einen Zeilenumbruch vor der Nachricht zu machen,
-wenn diese nicht in die aktuelle Zeile paßt.
+wenn diese nicht in die aktuelle Zeile pa\(:sst.
 .TP
 .BI set \ tabs\ simple|cycle|cycleall
-Wählt aus, wie mit der tab-Taste die Spitznamen durchgegangen werden.
-Ältere Versionen von mICQ kannten nur
+W\(:ahlt aus, wie mit der tab-Taste die Spitznamen durchgegangen werden.
+\(:Altere Versionen von mICQ kannten nur
 .BR simple ,
 welches nur beim
 .BR msg -Befehl
-funktioniert und den Befehl vervollständigt und durch alle
+funktioniert und den Befehl vervollst\(:andigt und durch alle
 Kontakte geht, von denen schon Nachrichten empfangen wurden bzw. zu
 denen schon Nachrichten geschickt wurden. Schon getippter Text
 nach dem Spitznamen ging verloren.
 .B cycle
 hingegen geht alle Kontakte der Kontaktliste durch, die verbunden sind.
-Es läßt die sonstige Eingabe intakt, vervollständigt allerdings auch nicht
+Es l\(:a\(:sst die sonstige Eingabe intakt, vervollst\(:andigt allerdings auch nicht
 den
 .BR msg -Befehl.
 .B cycleall
 ist wie
 .BR cycle ,
-nur daß alle, nicht nur die verbundenen, Kontakte durchgegangen werden.
+nur da\(:ss alle, nicht nur die verbundenen, Kontakte durchgegangen werden.
 .TP
 .BI char \ nr
 Setzt die Interessengruppe auf
 .IR nr .
 Ausschalten kann man dies mit
 .BR -1 ;
-für mICQ steht
+f\(:ur mICQ steht
 .BR 46 ,
 welches auch der Standard ist.
 .PP
-Zuletzt können noch einige Texte definiert werden:
+Zuletzt k\(:onnen noch einige Texte de\(finiert werden:
 .TP
 .BI color\ scheme \ nr
-Wählt das Farbschema
+W\(:ahlt das Farbschema
 .I nr
 aus.
 .TP
 .BI color \ use\ color
-Wählt die Farbe
+W\(:ahlt die Farbe
 .I color
-für
+f\(:ur
 .I use
 aus.
 .IR use
@@ -294,22 +294,22 @@ kann dabei beliebig viele von
 .BR cyan
 (hellblau),
 .BR white
-(weiß),
+(wei\(:ss),
 .BR none
 (keine) oder
 .BR bold
 (fett) sein
 .RB ( bold
-muß allerdings zuletzt kommen, um wirksam zu sein), oder eine
+mu\(:ss allerdings zuletzt kommen, um wirksam zu sein), oder eine
 beliebige Zeichenkette, die auf dem Terminal des Benutzers
-die gewünschte Farbe auswählt.
+die gew\(:unschte Farbe ausw\(:ahlt.
 .TP
 .BI logplace \ file|dir
 Logge in die Datei
 .IR file ,
 oder logge in einzelne Dateien im Verzeichnis
 .IR dir .
-Ein Pfad wird dabei als Verzeichnis aufgefaßt, wenn
+Ein Pfad wird dabei als Verzeichnis aufgefa\(:sst, wenn
 er mit einem
 .I /
 endet.
@@ -319,7 +319,7 @@ Aktiviere oder deaktiviere Piepsen. Ist das Argument weder
 .B on
 noch
 .B off,
-dann ist es ein Programm, das stattdessen ausgeführt wird.
+dann ist es ein Programm, das stattdessen ausgef\(:uhrt wird.
 .TP
 .BI soundonline \ on|off|cmd
 Wie oben, aber nur bei sich verbindenden Kontakten.
@@ -328,15 +328,15 @@ Wie oben, aber nur bei sich verbindenden Kontakten.
 wie oben, aber nur bei sich ausloggenden Kontakten.
 .TP
 .BI receivescript \ cmd
-Befehl, der ausgeführt wird, wenn eine Nachricht eingeht.
-Wenn dieser leer ist, wird nichts ausgeführt.
+Befehl, der ausgef\(:uhrt wird, wenn eine Nachricht eingeht.
+Wenn dieser leer ist, wird nichts ausgef\(:uhrt.
 .TP
 .BI auto \ status\ string
 Setze die automatische Antwort im Status
 .I status
 auf
 .I string .
-Diese Option kann für alle möglichen Werte
+Diese Option kann f\(:ur alle m\(:oglichen Werte
 .BR away ,
 .BR na ,
 .BR dnd ,
@@ -344,12 +344,12 @@ Diese Option kann für alle möglichen Werte
 .B inv 
 oder
 .B ffc
-für
+f\(:ur
 .I status
 wiederholt werden.
 
 .SH TEXTE - strings
-Dieser Abschnitt enthält umbenannte Befehle.
+Dieser Abschnitt enth\(:alt umbenannte Befehle.
 .TP
 .BI alter \ old\ new
 Nenne den Befehl
@@ -359,12 +359,12 @@ in
 um. Der alte Name kann weiterverwendet werden, wenn er nicht
 mit einem neuen
 .I new
-übereinstimmt. Für mögliche Befehle siehe
+\(:ubereinstimmt. F\(:ur m\(:ogliche Befehle siehe
 .BR micq (7).
 Diese Option kann beliebig wiederholt werden.
 
 .SH KONTAKTE - contacts
-Dieser Abschnitt enthält die Kontakt-Liste.
+Dieser Abschnitt enth\(:alt die Kontakt-Liste.
 .TP
 .I [*][~][^] uin nick
 Mach den Benutzer mit der Benutzernummer
@@ -373,21 +373,21 @@ bekannt unter dem Spitznamen
 .IR nick .
 Ist
 .B *
-gegeben, dann ist man diesem Kontakt gegenüber auch sichtbar, wenn
+gegeben, dann ist man diesem Kontakt gegen\(:uber auch sichtbar, wenn
 man eigentlich unsichtbar ist. Ist
 .B ~
-gegeben, ist man diesem Kontakt gegenüber immer nicht verbunden. Ist
+gegeben, ist man diesem Kontakt gegen\(:uber immer nicht verbunden. Ist
 .B ^
 gegeben, dann ignoriere diesen Kontakt. Taucht eine
-Benutzernummer mehrfach auf, dann werden alle außer dem ersten
+Benutzernummer mehrfach auf, dann werden alle au\(:sser dem ersten
 als Alias behandelt.
 
-Hinweis: Die Kontaktliste muß immer der letzte Teil dieser Datei sein.
+Hinweis: Die Kontaktliste mu\(:ss immer der letzte Teil dieser Datei sein.
 .SH SIEHE AUCH
 .BR micq (1),
 .BR micq (7)
 .SH AUTOR
 Diese Hilfeseite wurde von James Morrison
 .I <ja2morrison@student.math.uwaterloo.ca>
-geschrieben. Sie wurde an die neue Syntax angepaßt
-und ins Deutsche übersetzt von Rüdiger Kuhlmann.
+geschrieben. Sie wurde an die neue Syntax angepa\(:sst
+und ins Deutsche \(:ubersetzt von R\(:udiger Kuhlmann.
