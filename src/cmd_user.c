@@ -22,6 +22,7 @@
 #include "tabs.h"
 #include "session.h"
 #include "tcp.h"
+#include "conv.h"
 #include "file_util.h"
 #include "buildmark.h"
 #include "contact.h"
@@ -1331,14 +1332,14 @@ static JUMP_F(CmdUserStatusDetail)
             continue;
         if (cont->uin > tuin)
             tuin = cont->uin;
-        if (strlen (cont->nick) > lennick)
-            lennick = strlen (cont->nick);
+        if (c_strlen (cont->nick) > lennick)
+            lennick = c_strlen (cont->nick);
         if (cont->flags & CONT_ALIAS)
             continue;
-        if (strlen (s_status (cont->status)) > lenstat)
-            lenstat = strlen (s_status (cont->status));
-        if (cont->version && strlen (cont->version) > lenid)
-            lenid = strlen (cont->version);
+        if (c_strlen (s_status (cont->status)) > lenstat)
+            lenstat = c_strlen (s_status (cont->status));
+        if (cont->version && c_strlen (cont->version) > lenid)
+            lenid = c_strlen (cont->version);
     }
 
     while (tuin)
@@ -1421,8 +1422,10 @@ static JUMP_F(CmdUserStatusDetail)
                      peer->connect & CONNECT_OK    ? '&' :
                      peer->connect & CONNECT_FAIL  ? '|' :
                      peer->connect & CONNECT_MASK  ? ':' : '.' ,
-                     lennick, cont->nick, lenstat + 2, stat,
-                     lenid + 2, ver ? ver : "", ver2 ? ver2 : "",
+                     lennick + c_strlen (cont->nick) - strlen (cont->nick), cont->nick,
+                     lenstat + 2 + c_strlen (stat) - strlen (stat), stat,
+                     lenid + 2 + c_strlen (ver ? ver : "") - strlen (ver ? ver : ""), ver ? ver : "",
+                     ver2 ? ver2 : "",
                      contr->seen_time != -1L && data & 2 ? ctime ((time_t *) &contr->seen_time) : "\n");
             free (stat);
             s_free (ver);
