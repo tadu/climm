@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.57 2002/12/09 12:48:07
+#  EN: __.i18n,v 1.62 2003/01/03 18:14:40
 1001:de
 1002:de_DE
 1003:0-4-9-3
@@ -185,7 +185,7 @@
 ##
 ## Länder
 ##
-1200:Nicht angegeben
+1200:nicht angegeben
 1201:Afghanistan
 1202:Albanien
 1203:Algerien
@@ -386,30 +386,30 @@
 1400:Zeigt lokale Infos über <uin> bzw. <nick>, oder über einen selbst.
 1401:Ändert weitere Informationen wie Alter und Geschlecht.
 1402:Ändert "Über"-Informationen.
-1403:Zeigt die letzte Nachricht von <uin> bzw. <nick>, oder von allen, die schon einmal eine Nachricht geschickt haben.
-1404:Setzt auf bzw. entfernt <uin> bzw. <nick> von der Ignorier-Liste.
+1403:Zeigt die letzte Nachricht von allen <contacts>, oder von allen.
+1404:Setzt auf bzw. entfernt alle <contacts> von der Ignorier-Liste.
 1405:Listet ignorierte Benutzer.
-1406:Ändere Sichtbarkeit gegenüber <uin> bzw. <nick> im Status "unsichtbar".
+1406:Ändere Sichtbarkeit gegenüber allen <contacts> im Status "unsichtbar".
 1407:Zeigt den Status aller verbundenen Kontakte an.
 1408:Ändert das Passwort in <password>.
-1409:Sendet eine Nachricht an <uin> bzw. <nick>.
-1410:Sendet eine Nachricht und URL an <uin> bzw. <nick>.
-1411:Sendet eine mehrzeilige Nachricht an JEDEN in der Kontaktliste.
+1409:Sendet eine Nachricht an alle <contacts>.
+1410:Sendet eine Nachricht und URL an alle <contacts>.
+1411.Sendet eine mehrzeilige Nachricht an JEDEN in der Kontaktliste.
 1412:Sendet eine Nachricht zu der letzten Person, zu der du eine Nachricht geschickt hast.
-1413:Erlaubt <uin> bzw. <nick> das Hinzufügen zu seiner Kontaktliste.
+1413.Erlaubt <uin> bzw. <nick> das Hinzufügen zu seiner Kontaktliste.
 1414:Antwort auf die letzte Nachricht, die man bekommen hat.
 1415:Findet einen zufälligen User in der Interessengruppe <nr> oder listet alle Gruppen.
 1416:Zeigt den Status aller Kontakte an.
-1417:Benennt Kommando <old cmd> in <new cmd> um.
+1417.Benennt Kommando <old cmd> in <new cmd> um.
 1418:Setzt den Grad der Ausführlichkeit auf <nr>, oder zeigt Grad der Ausführlichkeit an.
 1419:Löscht den Bildschirm.
-1420:Schaltet das Piepsen beim Erhalt von Nachrichten an/aus, setzt ein Kommando für dieses Ereignis oder zeigt den aktuellen Status dieser Option an.
+1420:Schaltet das Piepsen beim Erhalt von Nachrichten an/aus, oder benutzt das Ereignis-Skrip ("event").
 1422:Logt aus und beendet mICQ.
 1424:Aktiviert bzw. deaktiviert automatische Antworten.
 1425:Ändert die automatische Antwort im Status <status> auf <message>.
 1426:Erzeugt eine neue Benutzernummer mit dem Paßwort <password>.
 1427:Wechselt in den Status <nr> oder listet die Bedeutung einiger Status-Nummern.
-1428:Fügt <uin> als <new-nick> hinzu, oder vergebe Zweit-Namen für <uin> bzw. <nick>.
+1428:Fügt alle <contacts>  zur Kontakt-Gruppe <group> hinzu.
 1429:Sucht nach einem ICQ-Benutzer.
 1430:Zeigt grundlegende Informationen über <uin> bzw. <nick> an.
 1431:-verbunden-
@@ -642,8 +642,8 @@
 1715:mICQ
 1716:Keine
 1717:"!" als erstes Zeichen, um ein Shell-Kommando auszuführen (z.B. "!ls", "!dir", "!mkdir temp").
-1719:Zeigt, wie lange mICQ schon läuft.
-1720:<uin> kann die Benutzernummer oder der Spitzname eines Benutzers sein.
+1719:Zeigt, wie lange mICQ schon läuft, und ein paar Statistiken.
+1720:<contacts> ist eine Komma-separierte von Benutzernummern und Spitznamen von Benutzern.
 1721:Bei einer leeren Nachricht können mehrere Zeilen eingegeben werden.\nDabei bedeutet eine Zeile nur mit . das Ende der Nachricht.\nEbenso verwirft eine Zeile nur mit # die Nachricht.
 1724:Automatische Antworten sind %s.\n
 1727:Die "bitte nicht stören"-Nachricht lautet:
@@ -672,10 +672,10 @@
 1763:Das Kommando "%s" wurde in "%s" umbenannt.
 1764:Das Kommando "%s" hat noch den ursprünglichen Namen.
 1765:%s hat die Benutzernummer %ld.
-1766:Automatische Abwesenheit bzw. Nichtverfügbarkeit nach %s%ld%s Sekunden.\n
+1766:Automatische Abwesenheit/Nichtverfügbarkeit nach %s%ld%s Sekunden.\n
 1767:Schaltet die automatische Abwesenheitsschaltung an oder ab.
 1768:Der Bezeichner "%s" ist schon in Verwendung.\n
-1770:Sendet die letzte Nachricht an <uin> bzw. <nick>.
+1770:Sendet die letzte Nachricht erneut an alle <contacts>.
 1771:Noch keine Nachricht an irgendwen verschickt!\n
 1774:Eingehendes Paket:
 1775:Ausgehendes Paket:
@@ -711,12 +711,12 @@
 1812:vergangener Arbeitsplatz
 1813:vergangene Organisation
 1814:Versende automatische Antwort an %s%s%s.\n
-1815:    funny: Lustige Meldungen verwenden.\n
-1816:Unbekannte Option %s des set-Kommandos.\n
+1815:    funny:      Lustige Meldungen verwenden.\n
+1816.Unbekannte Option %s des set-Kommandos.\n
 1817:Die FÃ¤higkeit, auf Ereignisse mit einem Skript zu reagieren, ist abgeschaltet.\n
 1818:Warnung: Veraltete Syntax in der Konfigurationsdatei gefunden!\nBitte neu erstellen oder mit "save" überschreiben und auf Änderungen prüfen.\n
-1820:%s <option> [an|aus] - einfach Optionen ändern.\n
-1822:    color: Farbe verwenden.\n
+1820:%s <option> [an|aus|<value>] - einfache Optionen ändern.\n
+1822:    color:      Farbe verwenden.\n
 1823:Eingehendes Unter-Paket:
 1825:Werfe ein Paket vom Typ %04x (%s) weg.
 1826:Sende Paket vom Typ %04x (%s), Sequenz-Nummer %04lx, erneut (Versuch #%ld, Länge %d).\n
@@ -868,7 +868,7 @@
 2014:Keine Zahl angegeben.\n
 2015:Keine Nachricht angegeben.\n
 2017:Der Benutzer ist verbunden, aber möglicherweise unsichtbar.\n
-2018:    quiet: keine Ausgabe für Statuswechsel.\n
+2018.    quiet: keine Ausgabe für Statuswechsel.\n
 2020:Für %s jetzt sichtbar.\n
 2021:Für %s jetzt unsichtbar.\n
 2022:Der Benutzer ist nicht verbunden.\n
@@ -880,17 +880,17 @@
 2032:Verbinde in %d Sekunden neu.\n
 2033:Geburtstagskind
 2034:Öffne Direktverbindung auf %s:%ld... 
-2035:Zeige Betriebszeit und einige Statistiken an.
+2035.Zeige Betriebszeit und einige Statistiken an.
 2036:Speichere die aktuellen Einstellungen.
 2037:Öffne oder schließe eine Direktverbindung, oder schalte die Verwendung einer Direktverbindung für <uin> bzw. <nick> ab.
 2038:Öffne Verbindung Nummer <nr>, oder die erste Server-Verbindung.
-2039:Sende eine Nachricht an ein Handy.
-2040:Schaltet das Piepsen bei sich verbindenden Kontakten an/aus, setzt ein Kommando für dieses Ereignis oder zeigt den aktuellen Status dieser Option an.
-2041:Schaltet das Piepsen bei sich trennenden Kontakten an/aus, setzt ein Kommando für dieses Ereignis oder zeigt den aktuellen Status dieser Option an.
+2039:Sende eine Nachricht an ein Handy (mit der Nummer <cell> / des Benutzers <nick>).
+2040.Schaltet das Piepsen bei sich verbindenden Kontakten an/aus, setzt ein Kommando für dieses Ereignis oder zeigt den aktuellen Status dieser Option an.
+2041.Schaltet das Piepsen bei sich trennenden Kontakten an/aus, setzt ein Kommando für dieses Ereignis oder zeigt den aktuellen Status dieser Option an.
 2042:Zeigt den Status aller verbundenen Kontakte im breiten Format an.
-2043:Entfernt Zweit-Namen <alias> bzw. <uin>, oder entfernt Kontakt aus der Kontaktliste.
-2044:Setzt oder löscht eine Option.
-2045:Setzt oder löscht die Unsichtbarkeit für <uin> bzw. <nick>.
+2043:Entfernt alle <contacts> von der Kontaktgruppe <group>.
+2044:Setzt, löscht or zeigt eine Option an: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silence.
+2045:Setzt oder löscht die Unsichtbarkeit gegenüber allen <contacts>.
 2046:Sie sollten die Version 8 (statt Version 6) für Direktverbindungen wählen.\n
 2047:Erzeuge Verzeichnis %s.\n
 2048:Speichere Einstellungen in %s.\n
@@ -900,11 +900,11 @@
 2053.TCP %s Sequenz %x Typ %x Status %x Optionen %x: "%s"\n
 2054:Die für-Plaudereien-frei-Nachricht ist:
 2055:Der Benutzer ist für Plauereien frei und möchte über alles plaudern.
-2056:peer auto  <nick> - Hole die automatische Antwort von diesem Kontakt.\n
-2057:peer away  <nick> - Hole die automatische Antwort für "abwesend" von diesem Kontakt.\n
-2058:peer na    <nick> - Hole die automatische Antwort für "nicht verfügbar" von diesem Kontakt.\n
-2059:peer dnd   <nick> - Hole die automatische Antwort für "nicht stören" von diesem Kontakt.\n
-2060:peer ffc   <nick> - Hole die automatische Antwort für "für Plaudereien frei" von diesem Kontakt.\n
+2056:getauto auto  <nick> - Hole die automatische Antwort von diesem Kontakt.\n
+2057:getauto away  <nick> - Hole die automatische Antwort für "abwesend" von diesem Kontakt.\n
+2058:getauto na    <nick> - Hole die automatische Antwort für "nicht verfügbar" von diesem Kontakt.\n
+2059:getauto dnd   <nick> - Hole die automatische Antwort für "nicht stören" von diesem Kontakt.\n
+2060:getauto ffc   <nick> - Hole die automatische Antwort für "für Plaudereien frei" von diesem Kontakt.\n
 2063:Sie müssen Ihr Paßwort in Ihrem ~/.micq/micqrc speichern.\n
 2064.Lehne Plaudereianfrage (%s/%s/%s) von %s ab.\n
 2065:Unbekanntes TCP_MSG_GREET_-Kommando %04x.\n
@@ -962,8 +962,8 @@
 2122:Hinweis: Die Paßwort-Änderung muß mittels "save" abgespeichert werden.\n
 2123:%sSyntax-Fehler%s: Zu wenige Argumente: "%s"\n
 2124:%sSyntax-Fehler%s: Keine ganze Zahl: "%s"\n
-2126:Der Benutzer ist nicht verbunden, die Nachricht (%s#%08lx:%08lx%s) wird eingereiht.\n
-2127:       URL: %s%s%s%s\n
+2126:Der Benutzer ist nicht verbunden, die Nachricht wird auf dem Server eingereiht.\n
+2127:       URL: %s %s%s%s\n
 2128: Beschreibung: %s%s%s\n
 2129:          URL: %s%s%s\n
 2130:Erstelle Nachricht an %salle%s:\n
@@ -1005,17 +1005,17 @@
 2170:Sende mit Geschwindigkeit %lx zu %s.\n
 2171:Weiteres
 2172:Kommandos für Fortgeschrittenes.
-2173:Lehne Autorisierungsanfrage von <uin> bzw. <nick> ab.
-2174:Request authorization from <uin> or <nick>.
-2175:Teile <uin> bzw. <nick> das Hinzufügen nach Autorisierung mit.
+2173.Lehne Autorisierungsanfrage von <uin> bzw. <nick> ab.
+2174.Request authorization from <uin> or <nick>.
+2175.Teile <uin> bzw. <nick> das Hinzufügen nach Autorisierung mit.
 2176:Zeigt den Status aller Kontakte im ausführlichen Format an.
 2177:Zeigt den Status aller verbundenen Kontakte im ausführlichen Format an.
-2178:Frage automatische Nachricht von <uin> bzw. <nick> ab.
-2179:Schickt <uin> bzw. <nick> eine einzelne Datei.
+2178.Frage automatische Nachricht von <uin> bzw. <nick> ab.
+2179:Schickt allen <contacts> eine einzelne Datei.
 2180:Schickt <uin> bzw. <nick> mehrere Dateien.
 2181:Schließt bzw. entfernt Verbindung Nummer <nr>.
 2182:Wählt <nr> als aktuelle Server-Verbindung.
-2183:Überprüft, ob <uin> bzw. <nick> nur unsichtbar oder nicht verbunden ist.
+2183:Überprüft für alle <contacts>, ob diese nur unsichtbar oder nicht verbunden ist.
 2184:%s%-10s%s - %s\n
 2185:Schließe Verbindung %ld.\n
 2186:Akzeptiere Datei "%s" (%ld Bytes).\n
@@ -1090,3 +1090,58 @@
 2257:Kodierung:
 2258:Keine wartende Dateiübertragung für %s (mit der Sequenz %ld) gefunden.\n
 2259:möchte eine Dateiübertragung "%s" von insgesamt %ld Bytes starten (Sequenz %ld).\n
+2260:Bitte verwenden Sie den "getauto"-Befehl stattdessen.\n
+2261:Hermit ist %s%s%s.\n
+2262:Interpretieren eines Lösch-Zeichens als Rückschritt ist %s%s%s.\n
+2263:Loggen ist %s%s%s.\n
+2264:Loggen von Statuswechseln ist %s%s%s.\n
+2265:Automatische Antworten sind %s%s%s.\n
+2266:Having the last nick in the prompt is %s%s%s.\n
+2267:Automatisches Speichern ist %s%s%s.\n
+2268:Automatisches fingern neuer Benutzernummern ist %s%s%s.\n
+#2269:break
+#2270:simple
+#2271:indent
+#2272:smart
+#2273:cycle
+#2274:cycleall
+2275:Tab-Stil ist %s%s%s.\n
+#2276:complete
+2277:    hermit:     ignoriere alle nicht-Kontakte.\n
+2278:    delbs:      interpretiere das Lösch-Zeichen als Rückschritt.\n
+2279:    log:        logge.\n
+2280:    logonoff:   logge auch Statuswechsel.\n
+2281:    auto:       sende automatische Antworten.\n
+2282:    uinprompt:  baue den letztverwendete Spitznamen in die Eingabeaufforderung ein.\n
+2283:    autosave:   speichere automatisch das micqrc.\n
+2284:    autofinger: fingere automatisch neue Benutzernummern.\n
+2285:    linebreak:  Stil für mehrzeilige Nachrichten: simple, break, indent, smart.\n
+2286:    tabs:       Stil für Tab-Vervollständigung: simple, cycle, cycleall.\n
+2287:    silence:    unterdrücke manche Ausgaben: off, on, complete.\n
+2288:Stil für mehrzeilige Nachrichten ist %s%s%s.\n
+2289:»»»
+2290:«««
+2291:>>»
+2292:«<<
+2293:--=
+2294:===
+2295:>>>
+2296:<<<
+#2297:Alias to what?\n
+#2298:Remove which alias?\n
+#2299:Alias doesn't exist.\n
+#2300:Set an alias or list current aliases.
+#2301:Delete an alias.
+#2302:Too many levels of alias expansion; probably an infinite loop.\n
+#2303:Invalid character 0x%x in alias name.\n
+2304:Hole automatische Antworten für alle <contacts> für den aktuellen Status, abwesend, nicht verfügbar, nicht stören, beschäftigt oder frei für Plaudereien.
+2305:Bearbeite Meta-Daten eines Kontaktes.
+2306:Fordere die Server-seitige Kontaktliste an und zeige alle oder neue Kontakte oder importiere diese.
+2307:Zeigt den Status aller verbundenen Kontakte an, sortiert nach Kontaktgruppen.
+2308:Zeigt den Status aller Kontakte an, sortiert nach Kontaktgruppen.
+2309:Zeigt den Status aller verbundenen Kontakte im ausführlichen Format an, sortiert nach Kontaktgruppen.
+2310:Zeigt den Status aller Kontakte im ausführlichen Format an, sortiert nach Kontaktgruppen.
+2311:Fügt <uin> als <new nick> hinzu, oder fügt den Zweit-Namen <new nick> für <uin> oder <nick> hinzu.
+2312:Entfernt alle Zweit-Namen in <contacts>, entfernt Kontakte, wenn "all" angegeben ist.
+2313:Erteile, verweigere, erbitte oder bestätige die Autorisierung an alle <contacts>, zur Kontaktliste hinzugefügt zu werden.
+2314:Dies sind fortgeschrittene Kommandos. Bitte lesen sie die Hilfeseiten für vollständige Informationen.\n
