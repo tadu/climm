@@ -50,6 +50,25 @@ if test "x$ac_arg_use_iconv" != "xno"; then
       AC_CHECK_FUNC([iconv], [ac_arg_use_iconv=glibc])
     fi
   fi
+  AC_CACHE_CHECK(for iconv declaration, ac_cv_iconv_const,
+    [AC_TRY_LINK([#include <stdlib.h>
+                  #include <iconv.h>],
+                 [#ifdef __cplusplus
+                  "C"
+                  #endif
+                  #if defined(__STDC__) || defined(__cplusplus)
+                  size_t iconv (iconv_t cd, char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);
+                  #else
+                  size_t iconv();
+                  #endif],
+        ac_cv_iconv_const=no-const,
+        ac_cv_iconv_const=const)
+  ])
+  if test $ac_cv_iconv_const = const; then
+     AC_DEFINE([ICONV_CONST], const, [Define as const if the declaration of iconv() needs const.])
+  else
+     AC_DEFINE([ICONV_CONST], /* no-const */)
+  fi
 else
   ac_arg_use_iconv=none
 fi

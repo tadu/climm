@@ -150,7 +150,8 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
     static char *t = NULL;
     static UDWORD size = 0;
     size_t inleft, outleft;
-    char *in, *out, *tmp;
+    char *out, *tmp;
+    ICONV_CONST char *in;
 
     t = s_catf (t, &size, "%*s", 100, "");
     *t = '\0';
@@ -167,7 +168,7 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
             return "<invalid encoding unsupported>";
     }
     iconv (conv_encs[enc].to, NULL, NULL, NULL, NULL);
-    in = (char *)inn;
+    in = (ICONV_CONST char *)inn;
     out = t;
     inleft = strlen (in);
     outleft = size - 1;
@@ -207,7 +208,8 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
     static char *t = NULL;
     static UDWORD size = 0;
     size_t inleft, outleft;
-    char *in, *out, *tmp;
+    char *out, *tmp;
+    ICONV_CONST char *in;
 
     t = s_catf (t, &size, "%*s", 100, "");
     *t = '\0';
@@ -224,7 +226,7 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
             return "<invalid encoding unsupported>";
     }
     iconv (conv_encs[enc].from, NULL, NULL, NULL, NULL);
-    in = (char *)inn;
+    in = (ICONV_CONST char *)inn;
     out = t;
     inleft = strlen (in);
     outleft = size - 1;
