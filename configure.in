@@ -29,10 +29,10 @@ AC_PROG_LN_S
 
 # Checks for libraries.
 AC_CHECK_FUNCS([inet_ntoa getpeername])
-if test "x$ac_cv_func_inet_ntoa" == "xno"; then
+if test "x$ac_cv_func_inet_ntoa" = "xno"; then
   AC_CHECK_LIB(nsl, inet_ntoa)
 fi
-if test "x$ac_cv_func_inet_getpeername" == "xno"; then
+if test "x$ac_cv_func_inet_getpeername" = "xno"; then
   AC_CHECK_LIB(socket, getpeername)
 fi
 

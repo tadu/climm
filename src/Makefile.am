@@ -22,3 +22,6 @@ lang:
 	@rm -rf ../lang/*.i18n~
 	@../lang/i18n-template
 
+buildmark.o: force
+
+force:
