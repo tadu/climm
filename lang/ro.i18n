@@ -1,5 +1,5 @@
 # $Id$ Romana (Romanian)
-#  EN: __.i18n,v 1.63.2.2 2003/01/10 15:57:15
+#  EN: __.i18n,v 1.63.2.3 2003/04/08 15:28:43
 1000:iso-8859-2
 1001:ro
 1002:ro_RO
@@ -624,7 +624,7 @@
 1762:UINul dvs. este: %ld.\n
 1763:Numele comenzii  '%s' a fost schimbat in   '%s'.
 1764:Comanda '%s' nu a fost schimbata.
-1765:%s are UINul %ld.
+1765.%s are UINul %ld.
 1766:Starea a fost schimbata in plecat/indisponibil dupa %s%ld%s secunde lipsite de activitate.\n
 #1767:Toggles auto cycling to away/not available.
 1768:Numele comenzii '%s' este deja utilizat.\n
@@ -1073,3 +1073,7 @@
 #2313:Grant, deny, request or acknowledge authorization from/to <contacts> to you/them to their/your contact list.
 2314:Acestea sunt comenzi avansate. Asigurati-va ca ati citit paginile de manual pentru informatie completa.\n
 2315:Nu pot privi starea lui %s - prea multi privesc.\n
+#2317:Translation %s not found. Would you like to translate mICQ into your language?\n
+2318:Romanian (%s) translation loaded (%ld entries).\n
+#2319:Accept an incoming file transfer from <uin> or <nick>.
+#2320:peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n

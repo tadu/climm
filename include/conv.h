@@ -11,6 +11,7 @@ const char *ConvCrush0xFE  (const char *in);
 
 #ifdef ENABLE_UTF8
 BOOL        ConvIsUTF8     (const char *in);
+BOOL        ConvFits       (const char *in, UBYTE enc);
 const char *ConvToUTF8     (const char *in, UBYTE enc, size_t totalin, UBYTE keep0xfe);
 const char *ConvFromUTF8   (const char *in, UBYTE enc, size_t *resultlen);
 #define     c_out_for(t,c) (CONT_UTF8 (c) ? t : c_out_to (t,c))
@@ -27,6 +28,7 @@ const char *ConvFromUTF8   (const char *in, UBYTE enc, size_t *resultlen);
 #define     ConvToUTF8(i,e,l,k) i
 #define     ConvFromUTF8(i,e,x) i
 #define     ConvIsUTF8(i)  0
+#define     ConvFits(i,e)  0
 #define     c_out_for(t,c) t
 #define     c_out(t)       t
 #define     c_in(t)        t
@@ -48,8 +50,8 @@ const char *ConvFromUTF8   (const char *in, UBYTE enc, size_t *resultlen);
 #define ENC_WIN1251 0x05  /* Windows code page 1251 */
 #define ENC_UCS2BE  0x06
 #define ENC_MAX_BUILTIN ENC_UCS2BE
-#define ENC_EUC     0x07
-#define ENC_SJIS    0x08  /* Windows Shift-JIS */
-
+#define ENC_WIN1257 0x07
+#define ENC_EUC     0x08
+#define ENC_SJIS    0x09  /* Windows Shift-JIS */
 
 #endif /* MICQ_UTIL_CONV */

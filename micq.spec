@@ -1,20 +1,18 @@
 %define name		micq
 %define version	0.4.10.2
-%define release	1
+%define release	2
 
-%define prefix	/usr
-
-Summary:		micq - text based ICQ client with many features
+Summary:		text based ICQ client with many features
 Name:			%{name}
 Version:		%{version}
 Release:		%{release}
 Source:			%{name}-%{version}.tgz
-URL:			http://www.micq.org
+URL:			http://www.micq.org/
 Group:			Networking/ICQ
 Packager:		Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
-Copyright:		GPL-2
+License:		GPL-2
 BuildRoot:		%{_tmppath}/build-%{name}-%{version}
-Prefix:			%{prefix}
+Prefix:			%{_prefix}
 
 %description
 mICQ is a portable, small, yet powerful console based ICQ client. It
@@ -61,14 +59,14 @@ make
 
 %install
 
-%makeinstall
-%{__mkdir_p} $RPM_BUILD_ROOT/usr/lib/menu
-cat << EOF > $RPM_BUILD_ROOT/usr/lib/menu/micq
+make install DESTDIR=$RPM_BUILD_ROOT
+%{__mkdir_p} $RPM_BUILD_ROOT/%{_libdir}/menu
+cat << EOF > $RPM_BUILD_ROOT/%{_libdir}/menu/micq
 ?package(micq):needs=text section=Networking/ICQ \
-  title="mICQ" command="/usr/bin/micq" hints="ICQ client"\
-  icon=/usr/X11R6/include/X11/pixmaps/micq.xpm
+  title="mICQ" command="%{_bindir}/micq" hints="ICQ client"\
+  icon=%{_datadir}/pixmaps/micq.xpm
 EOF
-install -D -m 644 doc/micq.xpm $RPM_BUILD_ROOT/usr/X11R6/include/X11/pixmaps/micq.xpm
+install -D -m 644 doc/micq.xpm $RPM_BUILD_ROOT/%{_datadir}/pixmaps/micq.xpm
 
 %clean
 rm -rf "${RPM_BUILD_ROOT}"
@@ -79,7 +77,8 @@ rm -rf "${RPM_BUILD_ROOT}"
 %doc doc/README.i18n doc/README.logformat doc/icq091.txt doc/icqv7.txt
 %{_bindir}/*
 %{_datadir}/micq
-/usr/lib/menu/micq
+%{_libdir}/menu/micq
+%{_mandir}/*
 
 %post
 %{update_menus} || true

@@ -48,11 +48,14 @@ UBYTE ConvEnc (const char *enc)
         conv_encs[4].enc = strdup ("KOI8-U");
         conv_encs[5].enc = strdup ("CP1251");      /* NOT cp-1251, NOT windows* */
         conv_encs[6].enc = strdup ("UCS-2BE");
-        conv_encs[7].enc = strdup ("EUC-JP");
-        conv_encs[8].enc = strdup ("SHIFT-JIS");
+        conv_encs[7].enc = strdup ("CP1257");
+        conv_encs[8].enc = strdup ("EUC-JP");
+        conv_encs[9].enc = strdup ("SHIFT-JIS");
     }
     if (!strcasecmp (enc, "WINDOWS-1251") || !strcmp (enc, "CP-1251"))
         enc = "CP1251";
+    if (!strcasecmp (enc, "WINDOWS-1257") || !strcmp (enc, "CP-1257"))
+        enc = "CP1257";
     if (!strcasecmp (enc, "ISO-8859-1") || !strcasecmp (enc, "ISO8859-1") || !strcasecmp (enc, "LATIN1"))
         enc = ICONV_LATIN1_NAME;
     if (!strcasecmp (enc, "ISO-8859-15") || !strcasecmp (enc, "ISO8859-15") || !strcasecmp (enc, "LATIN9"))
@@ -186,6 +189,7 @@ BOOL ConvIsUTF8 (const char *in)
     }
     return 1;
 }
+
 
 const char *ConvCrush0xFE (const char *inn)
 {
@@ -348,6 +352,19 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc, size_t *resultlen)
     if (resultlen)
         *resultlen = out - t;
     return t;
+}
+
+BOOL ConvFits (const char *in, UBYTE enc)
+{
+    char *inn, *p;
+    
+    inn = strdup (in);
+    if (!inn)
+        return 0;
+    for (p = inn; *p; p++)
+        if (*p == Conv0xFE || *p == '?')
+            *p = ' ';
+    return strchr (ConvFromUTF8 (inn, enc, NULL), '?') ? 0 : 1;
 }
 
 #else

@@ -16,12 +16,6 @@
 #define TCP_CMD_ACK             2010
 #define TCP_CMD_MESSAGE         2030
 
-/* Message types */
-#define TCP_MSG_CHAT            0x0002
-#define TCP_MSG_FILE            0x0003
-#define TCP_MSG_GREETING        0x001A
-/* see also micq.h */
-
 /* Status flags */
 #define TCP_MSGF_1              0x0001
 #define TCP_MSGF_CLIST          0x0004
