@@ -14,15 +14,15 @@ Handles resending missed packets.
 static struct msg_queue *queue = NULL;
 
 
-void msg_queue_init (void)
+void msg_queue_init (struct msg_queue **queue)
 {
-    queue = malloc (sizeof (*queue));
-    queue->entries = 0;
-    queue->head = queue->tail = NULL;
+    *queue = malloc (sizeof (*queue));
+    (*queue)->entries = 0;
+    (*queue)->head = (*queue)->tail = NULL;
 }
 
 
-struct msg *msg_queue_peek (void)
+struct msg *msg_queue_peek (struct msg_queue *queue)
 {
     if (NULL != queue->head)
     {
@@ -35,7 +35,7 @@ struct msg *msg_queue_peek (void)
 }
 
 
-struct msg *msg_queue_pop (void)
+struct msg *msg_queue_pop (struct msg_queue *queue)
 {
     struct msg *popped_msg;
     struct msg_queue_entry *temp;
@@ -64,7 +64,7 @@ struct msg *msg_queue_pop (void)
 }
 
 
-void msg_queue_push (struct msg *new_msg)
+void msg_queue_push (struct msg *new_msg, struct msg_queue *queue)
 {
     struct msg_queue_entry *new_entry;
 
@@ -106,7 +106,7 @@ void Dump_Queue (void)
     M_print (i18n (618, "\nTotal entries %d\n"), queue->entries);
     for (i = 0; i < queue->entries; i++)
     {
-        queued_msg = msg_queue_pop ();
+        queued_msg = msg_queue_pop (queue);
         M_print (i18n (619, "SEQ = %04x\tCMD = %04x\tattempts = %d\tlen = %d\n"),
                  (queued_msg->seq >> 16), Chars_2_Word (&queued_msg->body[CMD_OFFSET]),
                  queued_msg->attempts, queued_msg->len);
@@ -114,11 +114,11 @@ void Dump_Queue (void)
         {
             Hex_Dump (queued_msg->body, queued_msg->len);
         }
-        msg_queue_push (queued_msg);
+        msg_queue_push (queued_msg, queue);
     }
 }
 
-void Check_Queue (UDWORD seq)
+void Check_Queue (UDWORD seq, struct msg_queue *queue)
 {
     int i;
     struct msg *queued_msg;
@@ -127,10 +127,10 @@ void Check_Queue (UDWORD seq)
 
     for (i = 0; i < queue->entries; i++)
     {
-        queued_msg = msg_queue_pop ();
+        queued_msg = msg_queue_pop (queue);
         if (queued_msg->seq != seq)
         {
-            msg_queue_push (queued_msg);
+            msg_queue_push (queued_msg, queue);
         }
         else
         {
@@ -155,7 +155,7 @@ void Check_Queue (UDWORD seq)
             free (queued_msg->body);
             free (queued_msg);
 
-            if ((queued_msg = msg_queue_peek ()) != NULL)
+            if ((queued_msg = msg_queue_peek (queue)) != NULL)
             {
                 ssG.next_resend = queued_msg->exp_time;
             }

@@ -55,9 +55,11 @@
 #define STDOUT 1
 #define STDERR 2
 
+
 #include "icq_v2.h"
 #include "icq_v4.h"
 #include "icq_v5.h"
+#include "icq_tcp.h"
 
 #ifndef login_1
 #error Strange ICQ_VER version
@@ -103,6 +105,10 @@ typedef struct
 #define MRNORM_MESS		0x8001
 #define CONTACT_MESS		0x0013
 #define MRCONTACT_MESS		0x8013
+/*** TCP: tcp mess  ***/
+#define CHAT_MESS               0x0002
+#define FILE_MESS               0x0003
+/*** TCP: end tcp mess  ***/
 
 #define INV_LIST_UPDATE 	0x01
 #define VIS_LIST_UPDATE 	0x02
@@ -127,6 +133,51 @@ typedef struct
    UBYTE len[2];
 } SIMPLE_MESSAGE, *SIMPLE_MESSAGE_PTR;
 
+
+/*** TCP: packet struct ***/
+#ifdef TCP_COMM
+#if TCP_VER == 6
+
+typedef struct
+{
+    UBYTE cmd;           /* 0xFF */
+    UBYTE version[2];  
+    UBYTE rev[2];     
+    UBYTE dest_uin[4];
+    UBYTE X1[2];         /* null */
+    UBYTE port[4];
+    UBYTE uin[4];
+    UBYTE current_ip[4];
+    UBYTE other_ip[4];
+    UBYTE connection_type;
+    UBYTE other_port[4];
+    UBYTE session_id[4];
+} TCP_INIT_PAK, *TCP_INIT_PTR;
+
+typedef struct
+{
+    UBYTE cmd;		/* 0x01 */
+    UBYTE X1[3];
+} TCP_INIT_ACK_PAK, *TCP_INIT_ACK_PTR;
+
+typedef struct
+{
+    UBYTE checksum[4];
+    UBYTE cmd[2];
+    UBYTE X1[2];
+    UBYTE seq[2];
+    UBYTE X2[4];
+    UBYTE X3[4];
+    UBYTE X4[4];
+    UBYTE sub_cmd[2];
+    UBYTE status[2];
+    UBYTE msg_type[2];
+    UBYTE size[2];
+} TCP_MSG_PAK, *TCP_MSG_PTR;
+#endif
+#endif
+/*** TCP: end packet struct ***/
+
 typedef struct
 {
    UDWORD uin;
@@ -148,6 +199,11 @@ typedef struct
    char *LastMessage;
    /* end of aaron */
    char nick[20];
+
+   UDWORD session_id; 
+   /* james
+    Random number set in first packet. All other TCP packets for remainder
+    or the session must send same number. */
 } Contact_Member, *CONTACT_PTR;
 
 typedef struct
@@ -286,7 +342,12 @@ typedef struct {
                                 /* messages with the same SEQ          */
 
         UWORD seq_num;  /* current sequence number */
+#ifdef TCP_COMM
+        //UWORD seq_tcp = 0xFFFF;  /*** TCP: tcp sequence number ***/
+        UWORD seq_tcp;  /*** TCP: tcp sequence number ***/
+#endif
         UDWORD our_ip;
+        UDWORD our_outside_ip ;
         UDWORD our_port; /* the port to make tcp connections on */
         BOOL Quit;
         char passwd[100];
@@ -294,6 +355,7 @@ typedef struct {
         UDWORD remote_port;
         UDWORD set_status;
         unsigned int next_resend;
+        unsigned int next_tcp_resend;
         UDWORD our_session;
         BOOL Done_Login;
         unsigned int away_time, away_time_prev;
@@ -303,6 +365,7 @@ typedef struct {
         UDWORD Packets_Recv;
         char*  last_message_sent;
         UDWORD last_message_sent_type;
+        UDWORD last_recv_uin;
 } session_state;
 
 extern session_state ssG;
@@ -329,3 +392,8 @@ extern socks5_state s5G;
 
 #include "i18n.h"
 int Connect_Remote (char *hostname, int port, FD_T aux);
+
+extern struct msg_queue *queue;
+#ifdef TCP_COMM
+extern struct msg_queue *tcp_rq, *tcp_sq;   /* recv and send queues */
+#endif 

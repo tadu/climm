@@ -10,6 +10,9 @@
 #include "cmd_user.h"
 #include "icq_response.h"
 #include "server.h"
+
+#include "tcp.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -41,6 +44,9 @@
 #include "beos.h"
 #endif
 
+
+#define BACKLOG 10 /* james */
+
 extern int h_error;
 
 user_interface_state uiG;
@@ -50,6 +56,9 @@ socks5_state         s5G;
 /*** auto away values ***/
 static int idle_val = 0;
 static int idle_flag = 0;
+
+/*** TCP: message queue ***/
+struct msg_queue *queue = NULL, *tcp_rq = NULL, *tcp_sq = NULL;
 
 void init_global_defaults () {
   /* Initialize User Interface global state */
@@ -63,7 +72,6 @@ void init_global_defaults () {
   uiG.Sound_Str_Online[0]  = 0;
   uiG.Sound_Str_Offline[0] = 0;
   uiG.Current_Status = STATUS_OFFLINE;
-  uiG.last_recv_uin  = 0;
   uiG.Logging  = TRUE;
   uiG.LogType = 2;
   uiG.auto_resp = FALSE;
@@ -89,6 +97,7 @@ void init_global_defaults () {
   /* Initialize ICQ session global state    */
   ssG.seq_num = 1;  /* current sequence number */
   ssG.our_ip = 0x0100007f; /* Intel-ism??? why little-endian? */
+  ssG.our_outside_ip = 0x0100007f;
   ssG.Quit = FALSE;
   ssG.passwd[0] = 0;
   ssG.server[0] = 0;
@@ -98,12 +107,62 @@ void init_global_defaults () {
   ssG.Packets_Sent = 0;
   ssG.Packets_Recv = 0;
   ssG.last_message_sent = NULL;
+  ssG.last_recv_uin  = 0;
 
   /* Initialize SOCKS5 global state         */
   s5G.s5Host[0] = 0;
   s5G.s5Name[0] = 0;
   s5G.s5Pass[0] = 0;
 }
+
+
+/* TCP: init function james -- initializes TCP socket for incoming
+ * connections Set port to 0 for random port
+ */
+SOK_T Init_TCP (int port, FD_T aux)
+{
+    int sok;
+    int length;
+    struct sockaddr_in sin;
+
+    /* Create the socket */
+    sok = socket (AF_INET, SOCK_STREAM, 0);
+    if (sok == -1)
+    {
+        perror ("Error creating TCP socket.");
+        exit (1);
+    }
+    else if (uiG.Verbose)
+    {
+        M_fdprint (aux, "Created TCP socket.\n");
+    }
+
+    /* Bind the socket to a port */
+    sin.sin_family = AF_INET;
+    sin.sin_port = htons (port);
+    sin.sin_addr.s_addr = INADDR_ANY;   /* my ip */
+   
+    if (bind (sok, (struct sockaddr*)&sin, sizeof (struct sockaddr)) < 0)
+    {
+        perror ("Can't bind socket to free port.");
+        return (-1);
+    }
+
+    /* Listen on socket */
+    if (listen (sok, BACKLOG) < 0)
+    {
+        perror ("Unable to listen on TCP socket");
+        return (-1);
+    }
+
+    /* Get the port used -- needs to be sent in login packet to ICQ server */
+    length = sizeof (struct sockaddr);
+    getsockname (sok, (struct sockaddr *) &sin, &length );
+    ssG.our_port = ntohs (sin.sin_port);
+
+    return sok;
+}
+
 
 /*/////////////////////////////////////////////
 // Connects to hostname on port port
@@ -558,6 +617,9 @@ in a loop waiting for server responses.
 int main (int argc, char *argv[])
 {
     int sok;
+#ifdef TCP_COMM
+    int tcpSok;
+#endif
     int i;
     int next;
     int time_delay = 120;
@@ -650,6 +712,10 @@ int main (int argc, char *argv[])
     }
 #endif
 
+/*** TCP: tcp init ***/
+#ifdef TCP_COMM
+    tcpSok = Init_TCP (TCP_PORT, STDERR);
+#endif
 
     sok = Connect_Remote (ssG.server, ssG.remote_port, STDERR);
 
@@ -685,10 +751,50 @@ int main (int argc, char *argv[])
         M_Add_rsocket (STDIN);
 #endif
 
+/*** TCP: add tcp socket into select queue ***/
+#ifdef TCP_COMM
+		M_Add_rsocket( tcpSok );
+		for ( i=0; i < uiG.Num_Contacts; i++ )
+		{
+			if ( uiG.Contacts[i].sok>0 )
+			{
+				M_Add_rsocket( uiG.Contacts[i].sok );
+			}
+		}
+#endif
+
+
         M_select ();
 
         if (M_Is_Set (sok))
             Handle_Server_Response (sok);
+/*** TCP: on receiving a connection ***/
+#ifdef TCP_COMM
+		if (M_Is_Set (tcpSok))
+			New_TCP (tcpSok);
+		for (i = 0; i < uiG.Num_Contacts; i++)
+		{
+			if (uiG.Contacts[i].sok > 0)
+			{
+				if (M_Is_Set (uiG.Contacts[i].sok))
+				{
+					/* Are we waiting for an init packet
+					   ... or is init already finished? */
+					if (uiG.Contacts[i].session_id > 0)
+					{ 
+						/* session id is non-zero only during init */
+						Recv_TCP_Init (uiG.Contacts[i].sok);
+					}
+					else
+					{
+						Handle_TCP_Comm (uiG.Contacts[i].uin);
+					}
+				}
+			}
+		}
+#endif
+
+
 #if _WIN32
         if (_kbhit ())          /* sorry, this is a bit ugly...   [UH] */
 #else
@@ -714,6 +820,14 @@ int main (int argc, char *argv[])
         {
             Do_Resend (sok);
         }
+/*** TCP: Resend stuff ***/
+#ifdef TCP_COMM
+		if (time (NULL) > ssG.next_tcp_resend)
+		{
+			Do_TCP_Resend (sok);
+		}
+#endif
+
 #if HAVE_FORK
         while (waitpid (-1, NULL, WNOHANG) > 0);        /* clean up child processes */
 #endif

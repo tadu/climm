@@ -1,5 +1,6 @@
 
 void icq_sendmsg (SOK_T sok, UDWORD uin, char *text, UDWORD msg_type);
+void icq_sendmsg_srv (SOK_T sok, UDWORD uin, char *text, UDWORD msg_type);
 void icq_sendauthmsg (SOK_T sok, UDWORD uin);
 void icq_rand_user_req (SOK_T sok, UDWORD group);
 void icq_rand_set (SOK_T sok, UDWORD group);

@@ -67,3 +67,6 @@
 
 /* enables you to run a custom command when a message is received */
 #define MSGEXEC
+
+#define TCP_COMM 1
+

@@ -23,6 +23,7 @@ Author : zed@mentasm.com
 #include "sendmsg.h"
 #include "util.h"
 #include "conv.h"
+#include "tcp.h"
 
 static size_t SOCKWRITE_LOW (SOK_T sok, void *ptr, size_t len);
 static void Fill_Header (net_icq_pak * pak, UWORD cmd);
@@ -35,7 +36,11 @@ static void Wrinkle (void *buf, size_t len);
 /* Historical */
 void Initialize_Msg_Queue ()
 {
-    msg_queue_init ();
+    msg_queue_init (&queue);
+#ifdef TCP_COMM
+    msg_queue_init (&tcp_rq);
+    msg_queue_init (&tcp_sq);
+#endif
 }
 
 /****************************************************************
@@ -52,7 +57,7 @@ void Do_Resend (SOK_T sok)
     char url_desc[1024], url_data[1024];
     net_icq_pak pak;
 
-    if ((queued_msg = msg_queue_pop ()) != NULL)
+    if ((queued_msg = msg_queue_pop (queue)) != NULL)
     {
         queued_msg->attempts++;
         if (queued_msg->attempts <= MAX_RETRY_ATTEMPTS)
@@ -79,7 +84,7 @@ void Do_Resend (SOK_T sok)
             SOCKWRITE_LOW (sok, temp, queued_msg->len);
             free (temp);
             queued_msg->exp_time = time (NULL) + 10;
-            msg_queue_push (queued_msg);
+            msg_queue_push (queued_msg, queue);
         }
         else
         {
@@ -139,7 +144,7 @@ void Do_Resend (SOK_T sok)
             free (queued_msg);
         }
 
-        if ((queued_msg = msg_queue_peek ()) != NULL)
+        if ((queued_msg = msg_queue_peek (queue)) != NULL)
         {
             ssG.next_resend = queued_msg->exp_time;
         }
@@ -460,10 +465,36 @@ static const UBYTE table[] = {
 };
 
 /***************************************************
+Sends a message to uin. Text is the message to send.
+***************************************************/
+void icq_sendmsg( SOK_T sok, UDWORD uin, char *text, UDWORD msg_type)
+{	
+#ifdef TCP_COMM
+
+    CONTACT_PTR cont;
+
+    /* attempt to send message directly if user is on contact list */
+    cont = UIN2Contact (uin);
+    if ((cont->connection_type == TCP_OK_FLAG) && (cont->status != STATUS_OFFLINE))
+    {
+        Send_TCP_Msg (sok, uin, text, msg_type);
+    }
+    else        
+    {
+#endif
+    /* send message via server */
+    icq_sendmsg_srv (sok, uin, text, msg_type);
+#ifdef TCP_COMM  
+  }
+#endif
+}
+
+
+/***************************************************
 Sends a message thru the server to uin.  Text is the
 message to send.
 ****************************************************/
-void icq_sendmsg (SOK_T sok, UDWORD uin, char *text, UDWORD msg_type)
+void icq_sendmsg_srv (SOK_T sok, UDWORD uin, char *text, UDWORD msg_type)
 {
     SIMPLE_MESSAGE msg;
     net_icq_pak pak;
@@ -1215,9 +1246,9 @@ size_t SOCKWRITE (SOK_T sok, void *ptr, size_t len)
         msg_to_queue->body = (UBYTE *) malloc (len);
         msg_to_queue->len = len;
         memcpy (msg_to_queue->body, ptr, msg_to_queue->len);
-        msg_queue_push (msg_to_queue);
+        msg_queue_push (msg_to_queue, queue);
 
-        if (msg_queue_peek () == msg_to_queue)
+        if (msg_queue_peek (queue) == msg_to_queue)
         {
             ssG.next_resend = msg_to_queue->exp_time;
         }

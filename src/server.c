@@ -43,10 +43,57 @@ static void Multi_Packet (SOK_T sok, UBYTE * data);
 /*extern BOOL serv_mess[ 1024 ];  used so that we don't get duplicate messages with the same SEQ */
 static int Reconnect_Count = 0;
 
+
+/* TCP: auto response 
+ * Returns the appropriate auto-reply string IF user has enabled auto-replys
+ * dup's the string to prevent Russian conversion from happening on the
+ * original */
+char *Get_Auto_Reply ()
+{
+    char *nullmsg;
+    nullmsg = malloc (1);
+    *nullmsg = '\0';
+
+    if (uiG.auto_resp == FALSE)
+        return nullmsg;
+
+    switch (uiG.Current_Status & 0x1FF)
+    {
+        case STATUS_OCCUPIED:
+            return strdup (uiG.auto_rep_str_occ);
+            break;
+
+        case STATUS_AWAY:
+            return strdup (uiG.auto_rep_str_away);
+            break;
+
+        case STATUS_DND:
+            return strdup (uiG.auto_rep_str_dnd);
+            break;
+
+        case STATUS_NA:
+            return strdup (uiG.auto_rep_str_na);
+            break;
+
+        case STATUS_INVISIBLE:
+        case STATUS_ONLINE:
+        case STATUS_FREE_CHAT:
+        default:
+            return nullmsg;
+    }
+}
+
 static void Auto_Reply (SOK_T sok, SIMPLE_MESSAGE_PTR s_mesg)
 {
     char *temp;
 
+/* If TCP communication is enabled, don't send auto-reply msgs
+   since the client can request one if they want to see it.   */
+#ifndef TCP_COMM
+/*** TCP: handle auto response ***/
+    if (uiG.auto_resp)
+    { 
+#endif
         /*** !!!!???? What does this if do?  Why is it here ????!!!!! ****/
     if (0xfe != *(((unsigned char *) s_mesg) + sizeof (s_mesg)))
     {
@@ -88,6 +135,9 @@ static void Auto_Reply (SOK_T sok, SIMPLE_MESSAGE_PTR s_mesg)
                            "Sending an auto-reply message to %d\n", uiG.last_recv_uin);
         }
     }
+#ifndef TCP_COMM
+    }
+#endif
 }
 
 static void Multi_Packet (SOK_T sok, UBYTE * data)
@@ -141,7 +191,7 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
                          ssG.last_cmd[seq >> 16]);
                 M_print (i18n (638, "\nThe SEQ was %04X\n"), seq);
             }
-            Check_Queue (seq);
+            Check_Queue (seq, queue);
             if (uiG.Verbose)
             {
                 if (len != 0)
