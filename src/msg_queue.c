@@ -266,7 +266,8 @@ void QueueCancel (Session *sess)
         while (iter->next && iter->next->event->sess == sess)
         {
             event = QueueDequeueEvent (iter->next->event, iter);
-            Debug (DEB_QUEUE, "··!> %s %p %p: %08x %p", QueueType (event->type), sess, event, event->seq, event->pak);
+            Debug (DEB_QUEUE, "··!> %s %p %p: %08x %p", QueueType (event->type),
+                   sess, event, event->seq, event->pak);
             event->sess = NULL;
             if (event->callback)
                 event->callback (event);
@@ -321,7 +322,12 @@ void QueueRetry (UDWORD uin, UDWORD type)
         event = QueueDequeue (event->seq, type);
     
     if (event && event->callback)
+    {
+        event->due = time (NULL);
         event->callback (event);
+    }
+    else
+        Debug (DEB_QUEUE, "··s· %d %s", uin, QueueType (type));
 }
 
 /*
