@@ -320,14 +320,12 @@ const char *s_dumpnd (const char *data, UWORD len)
     }
     if (len > 10)
     {
-        for (i = 0; i < len; i++)
+        for (i = 0; i < len && i < 8; i++)
         {
             t = s_catf (t, &size, "%02x ", *d++);
-            if (i == 7)
-                t = s_catf (t, &size, " ");
         }
-        t = s_catf (t, &size, "\n                               ");
-        return t;
+        t = s_catf (t, &size, "\n");
+        len -= i;
     }
     for (i = 0; i < 10; i++)
     {
