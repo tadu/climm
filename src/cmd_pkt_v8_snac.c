@@ -693,7 +693,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                 char buf[40];
                 PacketReadData (pp, buf, 38);
                 buf [38] = '\0';
-                if (!strcmp (buf, "{0946134E-4C7F-11D1-8222-444553540000}"))
+                if (!strcmp (buf, CAP_GID_UTF8))
                     isutf8 = 1;
                 else
                     fprintf (stderr, "Buf: \"%s\"\n", buf);
@@ -1431,7 +1431,7 @@ void SnacCliSendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD type
               PacketWriteB4      (pak, 0xffffff00);
 #ifdef ENABLE_UTF8
               if (cont->caps & CAP_UTF8)
-                  PacketWriteStr     (pak, "{0946134E-4C7F-11D1-8222-444553540000}");
+                  PacketWriteStr     (pak, CAP_GID_UTF8);
 #endif
              PacketWriteTLVDone (pak);
              if (peek)

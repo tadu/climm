@@ -46,6 +46,8 @@ typedef struct { UBYTE id; const UBYTE *cap; const char *name; } Cap;
 #define CAP_MICQ        23
 #define CAP_MAX         30
 
+#define CAP_GID_UTF8    "{0946134E-4C7F-11D1-8222-444553540000}"
+
 #define HAS_CAP(caps,cap) ((caps) & (1L << (cap)))
 
 Packet *PacketC        (void);
