@@ -1,5 +1,22 @@
 -*- coding: utf-8 -*-
 
+2003-01-09 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+	* add pt_BR micq.7
+	* fix compiler warnings (unused variables, UBYTE != char)
+	* update *.i18n files (use branch release number)
+	* don't use ^U for Unicode input, it's the kill character
+	  (ESC u still works)
+
+2003-01-08 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+        * fix buggy setlocale()s (workaround)
+        * fix missing character recoding in tab completion
+        * fix rand segfault
+        * #define __attributes__ to nothing if undefined
+        * fix configure tests on HPUX
+        * fix spelling
+        * fix freaking SIM/Kopete detection
+        * suppress instant message error
+
 2003-01-07 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 	* fix configure test for FIFO (test with O_NOBLOCK as used in util_io.c)
 	* fix file group length reported in file transfer request
