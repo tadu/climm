@@ -863,11 +863,11 @@ int Read_RC_File (FILE *rcf)
                 if (!strcasecmp (cmd, "alter"))
                 {
                     PrefParse (tmp);
-                    tmp = strdup (s_quote (tmp));
+                    tmp = strdup (tmp);
                     PrefParse (tmp2);
                     tmp2 = strdup (s_quote (tmp2));
                     
-                    CmdUser (cmd = strdup (s_sprintf ("\xb6" "alter quiet %s %s", tmp, tmp2)));
+                    CmdUser (cmd = strdup (s_sprintf ("\xb6" "alias %s %s", tmp2, tmp)));
 
                     free (cmd);
                     free (tmp);
@@ -1543,14 +1543,8 @@ int Save_RC ()
     fprintf (rcf, "event %s\n\n", prG->event_cmd && *prG->event_cmd ? s_quote (prG->event_cmd) : "off");
 
     fprintf (rcf, "\n# The strings section - runtime redefinable strings.\n");
-    fprintf (rcf, "# The alter command redefines command names.\n");
+    fprintf (rcf, "# The aliases.\n");
     fprintf (rcf, "[Strings]\n");
-    {
-        jump_t *f;
-        for (f = CmdUserTable (); f->f; f++)
-            if (f->name && strcmp (f->name, f->defname))
-                fprintf (rcf, "alter %s %s\n", f->defname, s_quote (f->name));
-    }
     {
         alias_t *node;
         for (node = CmdUserAliases (); node; node = node->next)

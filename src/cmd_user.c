@@ -40,10 +40,10 @@
 
 static jump_f
     CmdUserChange, CmdUserRandom, CmdUserHelp, CmdUserInfo, CmdUserTrans,
-    CmdUserAuto, CmdUserAlter, CmdUserAlias, CmdUserUnalias, CmdUserMessage,
-    CmdUserMessageNG, CmdUserResend, CmdUserPeek, CmdUserAsSession,
+    CmdUserAuto, CmdUserAlias, CmdUserUnalias, CmdUserMessage,
+    CmdUserResend, CmdUserPeek, CmdUserAsSession,
     CmdUserVerbose, CmdUserRandomSet, CmdUserIgnoreStatus, CmdUserSMS,
-    CmdUserStatusDetail, CmdUserStatusWide, CmdUserStatusShort,
+    CmdUserStatusDetail, CmdUserStatusWide,
     CmdUserSound, CmdUserSoundOnline, CmdUserRegister, CmdUserStatusMeta,
     CmdUserSoundOffline, CmdUserAutoaway, CmdUserSet, CmdUserClear,
     CmdUserTogIgnore, CmdUserTogInvis, CmdUserTogVisible, CmdUserAdd, CmdUserRemove,
@@ -67,15 +67,13 @@ static jump_t jump[] = {
     { &CmdUserTrans,         "lang",         NULL, 0,   0 },
     { &CmdUserTrans,         "trans",        NULL, 0,   0 },
     { &CmdUserAuto,          "auto",         NULL, 0,   0 },
-    { &CmdUserAlter,         "alter",        NULL, 0,   0 },
     { &CmdUserAlias,         "alias",        NULL, 0,   0 },
     { &CmdUserUnalias,       "unalias",      NULL, 0,   0 },
     { &CmdUserAnyMess,       "message",      NULL, 0,   0 },
-    { &CmdUserMessageNG,     "msg",          NULL, 0,   1 },
-    { &CmdUserMessageNG,     "r",            NULL, 0,   2 },
-    { &CmdUserMessageNG,     "a",            NULL, 0,   4 },
+    { &CmdUserMessage,       "msg",          NULL, 0,   1 },
+    { &CmdUserMessage,       "r",            NULL, 0,   2 },
+    { &CmdUserMessage,       "a",            NULL, 0,   4 },
     { &CmdUserGetAuto,       "getauto",      NULL, 0,   0 },
-    { &CmdUserMessage,       "msg-old",      NULL, 0,   1 },
     { &CmdUserResend,        "resend",       NULL, 0,   0 },
     { &CmdUserVerbose,       "verbose",      NULL, 0,   0 },
     { &CmdUserIgnoreStatus,  "i",            NULL, 0,   0 },
@@ -92,8 +90,6 @@ static jump_t jump[] = {
     { &CmdUserStatusDetail,  "s-any",        NULL, 2,   0 },
     { &CmdUserStatusMeta,    "ss",           NULL, 2,   1 },
     { &CmdUserStatusMeta,    "meta",         NULL, 2,   0 },
-    { &CmdUserStatusShort,   "w-old",        NULL, 2,   1 },
-    { &CmdUserStatusShort,   "e-old",        NULL, 2,   0 },
     { &CmdUserStatusWide,    "wide",         NULL, 2,   1 },
     { &CmdUserStatusWide,    "ewide",        NULL, 2,   0 },
     { &CmdUserSet,           "set",          NULL, 0,   0 },
@@ -1111,57 +1107,6 @@ static JUMP_F(CmdUserAuto)
 }
 
 /*
- * Relabels commands.
- */
-
-static JUMP_F(CmdUserAlter)
-{
-    strc_t par;
-    jump_t *j;
-    int quiet = 0;
-
-    if (s_parsekey (&args, "quiet"))
-        quiet = 1;
-    
-    if (!s_parse (&args, &par))
-    {
-        M_print (i18n (1738, "Need a command to alter.\n"));
-        return 0;
-    }
-
-    j = CmdUserLookup (par->txt, CU_DEFAULT);
-    if (!j)
-        j = CmdUserLookup (par->txt, CU_USER);
-    if (!j)
-    {
-        M_printf (i18n (2114, "The command name '%s' does not exist.\n"), par->txt);
-        return 0;
-    }
-    
-    if (s_parse (&args, &par))
-    {
-        if (CmdUserLookup (par->txt, CU_USER))
-        {
-            if (!quiet)
-                M_printf (i18n (1768, "The command name '%s' is already being used.\n"), par->txt);
-            return 0;
-        }
-        else
-            s_repl (&j->name, par->txt);
-    }
-    
-    if (!quiet)
-    {
-        if (j->name)
-            M_printf (i18n (1763, "The command '%s' has been renamed to '%s'."), j->defname, j->name);
-        else
-            M_printf (i18n (1764, "The command '%s' is unchanged."), j->defname);
-        M_print ("\n");
-    }
-    return 0;
-}
-
-/*
  * Add an alias.
  */
 
@@ -1336,7 +1281,7 @@ static JUMP_F (CmdUserAnyMess)
 /*
  * Send an instant message.
  */
-static JUMP_F (CmdUserMessageNG)
+static JUMP_F (CmdUserMessage)
 {
     static str_s t;
     static UDWORD uinlist[20] = { 0 };
@@ -1449,146 +1394,6 @@ static JUMP_F (CmdUserMessageNG)
             s_catc (&t, '\r');
             s_catc (&t, '\n');
         }
-    }
-    R_setprompt (i18n (1041, "msg> "));
-    return status;
-}
-
-/*
- * Send an instant message.
- */
-static JUMP_F (CmdUserMessage)
-{
-    static int offset = 0;
-    static char msg[1024];
-    static UDWORD uinlist[20] = { 0 };
-    const char *arg1 = NULL;
-    char *arg2;
-    UDWORD i;
-    Contact *cont = NULL;
-    OPENCONN;
-
-    if (status)
-    {
-        arg1 = args;
-        msg[offset] = 0;
-        if (strcmp (arg1, END_MSG_STR) == 0)
-        {
-            msg[offset - 1] = msg[offset - 2] = 0;
-            for (i = 0; uinlist[i]; i++)
-            {
-                icq_sendmsg (conn, uiG.last_sent_uin = uinlist[i], msg, MSG_NORM);
-                TabAddUIN (uinlist[i]);
-            }
-            return 0;
-        }
-        else if (strcmp (arg1, CANCEL_MSG_STR) == 0)
-        {
-            M_print (i18n (1038, "Message canceled.\n"));
-            return 0;
-        }
-        else
-        {
-            int diff, first = 1;
-
-            while (offset + strlen (arg1) + 2 > 450)
-            {
-                M_print (i18n (1037, "Message partially sent.\n"));
-                if (first)
-                {
-                    diff = 0;
-                    first = 0;
-                }
-                else
-                {
-                    diff = 450 - offset - 2;
-                    while (arg1[diff] != ' ')
-                        if (!--diff)
-                            break;
-                    diff = diff ? diff : 450 - offset - 2;
-                    snprintf (msg + offset, diff, "%s\r\n", arg1);
-                    arg1 += diff;
-                    while (*arg1 == ' ')
-                        arg1++;
-                }
-                for (i = 0; uinlist[i]; i++)
-                {
-                    icq_sendmsg (conn, uiG.last_sent_uin = uinlist[i], msg, MSG_NORM);
-                    TabAddUIN (uinlist[i]);
-                }
-                msg[0] = '\0';
-                offset = 0;
-            }
-            strcat (msg, arg1);
-            strcat (msg, "\r\n");
-            offset += strlen (arg1) + 2;
-        }
-    }
-    else
-    {
-        switch (data)
-        {
-            case 1:
-                i = 0;
-                if (!*args)
-                {
-                    M_print (i18n (2235, "No nick name given.\n"));
-                    return 0;
-                }
-                while (*args)
-                {
-                    if (!s_parsenick_s (&args, &cont, MULTI_SEP, conn))
-                    {
-                        M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
-                        return 0;
-                    }
-                    uinlist[i++] = cont->uin;
-                    if (*args != ',')
-                        break;
-                    args++;
-                }
-                uinlist[i] = 0;
-                break;
-            case 2:
-                if (!uiG.last_rcvd_uin)
-                {
-                    M_print (i18n (1741, "Must receive a message first.\n"));
-                    return 0;
-                }
-                uinlist[0] = uiG.last_rcvd_uin;
-                uinlist[1] = 0;
-                break;
-            case 4:
-                if (!uiG.last_sent_uin)
-                {
-                    M_print (i18n (1742, "Must write a message first.\n"));
-                    return 0;
-                }
-                uinlist[0] = uiG.last_sent_uin;
-                uinlist[1] = 0;
-                break;
-            default:
-                assert (0);
-        }
-        if (!s_parserem (&args, &arg2))
-            arg2 = NULL;
-        if (arg2)
-        {
-            for (i = 0; uinlist[i]; i++)
-            {
-                icq_sendmsg (conn, uiG.last_sent_uin = uinlist[i], arg2, MSG_NORM);
-                TabAddUIN (uinlist[i]);
-            }
-            return 0;
-        }
-        if (data == 8)
-            M_printf (i18n (2130, "Composing message to %sall%s:\n"), COLCONTACT, COLNONE);
-        else if (!uinlist[1])
-            M_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLCONTACT, ContactUIN (conn, uinlist[0])->nick, COLNONE);
-        else
-            M_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLQUOTE, i18n (2220, "several"), COLNONE);
-        offset = 0;
-        status = data;
     }
     R_setprompt (i18n (1041, "msg> "));
     return status;
@@ -2132,69 +1937,6 @@ static JUMP_F(CmdUserStatusWide)
     M_print (COLNONE "\n");
     ContactGroupD (cgon);
 
-    return 0;
-}
-
-/*
- * Display offline and online users on your contact list.
- */
-static JUMP_F(CmdUserStatusShort)
-{
-    ContactGroup *cg;
-    Contact *cont;
-    int i;
-    OPENCONN;
-
-    M_print  (W_SEPARATOR);
-    cont = ContactUIN (conn, conn->uin);
-    M_printf ("%s %s%10lu" COLNONE " ", s_now, COLCONTACT, conn->uin);
-    M_printf (i18n (2211, "Your status is %s.\n"), s_status (conn->status));
-
-    cg = conn->contacts;
-    if (data)
-    {
-        M_printf ("%s%s\n", W_SEPARATOR, i18n (1072, "Users offline:"));
-        for (i = 0; (cont = ContactIndex (cg, i)); i++)
-        {
-            if (!ContactPrefVal (cont, CO_IGNORE))
-            {
-                if (cont->status == STATUS_OFFLINE)
-                {
-                    if (ContactPrefVal (cont, CO_INTIMATE))
-                        M_print (COLSERVER "*" COLNONE);
-                    else
-                        M_print (" ");
-
-                    M_printf ("%s%-20s\t" COLQUOTE "(%s)" COLNONE "\n",
-                              COLCONTACT, cont->nick, s_status (cont->status));
-                }
-            }
-        }
-    }
-
-    M_printf ("%s%s\n", W_SEPARATOR, i18n (1073, "Users online:"));
-    for (i = 0; (cont = ContactIndex (cg, i)); i++)
-    {
-        if (!ContactPrefVal (cont, CO_IGNORE))
-        {
-            if (cont->status != STATUS_OFFLINE)
-            {
-                if (ContactPrefVal (cont, CO_INTIMATE))
-                    M_print (COLSERVER "*" COLNONE);
-                else
-                    M_print (" ");
-
-                M_printf ("%s%-20s\t" COLQUOTE "(%s)" COLNONE "\n",
-                          COLCONTACT, cont->nick, s_status (cont->status));
-                if (cont->version)
-                   M_printf (" [%s]", cont->version);
-                if (cont->status & STATUSF_BIRTH)
-                   M_printf (" (%s)", i18n (2033, "born today"));
-                M_print ("\n");
-            }
-        }
-    }
-    M_print (W_SEPARATOR);
     return 0;
 }
 
