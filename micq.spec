@@ -1,6 +1,6 @@
 Summary:		text/line based ICQ client with many features%{?_without_tcl: [no Tcl]}%{?_without_ssl: [no SSL]}
 Name:			micq
-Version:		0.4.99.9
+Version:		0.5
 Release:		1%{?_without_tcl:.notcl}%{?_without_ssl:.nossl}
 Source:			micq-%{version}.tgz
 URL:			http://www.micq.org/
@@ -31,6 +31,9 @@ Authors: Matthew D. Smith (deceased)
          Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 
 %changelog
+* Fri Feb 12 2005 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+- new upstream release 0.5
+
 * Sun Dec  5 2004 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 - new upstream release 0.4.99.9
 
