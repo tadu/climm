@@ -1494,7 +1494,7 @@ int Save_RC ()
     ContactGroup *cg;
 
     if (!prG->rcfile)
-        prG->rcfile = strdup (s_sprintf ("%smicqrc", PrefUserDir (pref)));
+        prG->rcfile = strdup (s_sprintf ("%smicqrc", PrefUserDir (prG)));
     M_printf (i18n (2048, "Saving preferences to %s.\n"), prG->rcfile);
     rcf = fopen (prG->rcfile, "w");
     if (!rcf)
@@ -1520,7 +1520,7 @@ int Save_RC ()
         return -1;
 
     if (!prG->statfile)
-        prG->statfile = strdup (s_sprintf ("%sstatus", PrefUserDir (pref)));
+        prG->statfile = strdup (s_sprintf ("%sstatus", PrefUserDir (prG)));
 
     stf = fopen (prG->statfile, "w");
     if (!stf)
