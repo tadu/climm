@@ -95,6 +95,7 @@ void init_global_defaults () {
   ssG.real_packs_recv = 0;
   ssG.Packets_Sent = 0;
   ssG.Packets_Recv = 0;
+  ssG.last_message_sent = NULL;
 
   /* Initialize SOCKS5 global state         */
   s5G.s5Host[0] = 0;

@@ -576,6 +576,8 @@ typedef struct {
         UDWORD real_packs_recv;
         UDWORD Packets_Sent;
         UDWORD Packets_Recv;
+        char*  last_message_sent;
+        UDWORD last_message_sent_type;
 } session_state;
 
 extern session_state ssG;

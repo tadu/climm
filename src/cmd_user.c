@@ -23,12 +23,14 @@ static jump_f CmdUserTrans;
 static jump_f CmdUserAuto;
 static jump_f CmdUserAlter;
 static jump_f CmdUserMessage;
+static jump_f CmdUserResend;
 static jump_f CmdUserVerbose;
 static jump_f CmdUserRandomSet;
 static jump_f CmdUserIgnoreStatus;
 static jump_f CmdUserStatusDetail;
 static jump_f CmdUserStatusWide;
 static jump_f CmdUserStatusShort;
+static jump_f CmdUserStatusSelf;
 static jump_f CmdUserSound;
 static jump_f CmdUserSoundOnline;
 static jump_f CmdUserSoundOffline;
@@ -66,6 +68,7 @@ static jump_t jump[] = {
     { &CmdUserMessage,       "r",            NULL, 0,   2 },
     { &CmdUserMessage,       "a",            NULL, 0,   4 },
     { &CmdUserMessage,       "msga",         NULL, 0,   8 },
+    { &CmdUserResend,        "resend",       NULL, 0,   0 },
     { &CmdUserVerbose,       "verbose",      NULL, 0,   0 },
     { &CmdUserIgnoreStatus,  "i",            NULL, 0,   0 },
     { &CmdUserStatusDetail,  "status",       NULL, 2,   0 },
@@ -73,6 +76,7 @@ static jump_t jump[] = {
     { &CmdUserStatusWide,    "ewide",        NULL, 2,   0 },
     { &CmdUserStatusShort,   "w",            NULL, 2,   0 },
     { &CmdUserStatusShort,   "e",            NULL, 2,   1 },
+    { &CmdUserStatusSelf,    "s",            NULL, 0,   0 },
     { &CmdUserSound,         "sound",        NULL, 2,   0 },
     { &CmdUserSoundOnline,   "soundonline",  NULL, 2,   0 },
     { &CmdUserSoundOffline,  "soundoffline", NULL, 2,   0 },
@@ -321,6 +325,9 @@ JUMP_F(CmdUserHelp)
                  i18n (403, "Displays the last message received from <nick>, or a list of who has send you at least one message."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", "tabs", 
                  i18n (702, "Display a list of nicknames that you can tab through.")); 
+        M_print (COLMESS "%s <uin>" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("resend"),
+                 i18n (770, "Resend your last message to a new uin."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", "uptime", 
                  i18n (719, "Shows how long Micq has been running."));
         M_print ("  " COLCLIENT "\x1b«%s\x1b»" COLNONE "\n",
@@ -341,6 +348,9 @@ JUMP_F(CmdUserHelp)
         M_print (COLMESS "%s <user>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("status"),
                  i18n (400, "Shows locally stored info on user."));
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("s"),
+                 i18n (769, "Displays your current online status."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("e"),
                  i18n (407, "Displays the current status of online people on your contact list."));
@@ -666,6 +676,41 @@ JUMP_F(CmdUserAlter)
             M_print ("\n");
         }
     }
+    return 0;
+}
+
+/*
+ * Resend your last message
+ */
+JUMP_F (CmdUserResend)
+{
+    UDWORD uin;
+    char *arg1, *temp;
+
+    arg1 = strtok (args, UIN_DELIMS);
+    if (!ssG.last_message_sent) 
+    {
+        M_print (i18n (771, "You haven't sent a message to anyone yet!\n"));
+        return 0;
+    }
+    if (!arg1)
+    {
+        M_print (i18n (676, "Need uin to send to.\n"));
+        return 0;
+    }
+    uin = nick2uin (arg1);
+    if (uin == -1)
+    {
+        M_print (i18n (61, "%s not recognized as a nick name"), arg1);
+        M_print ("\n");
+        return 0;
+    }
+    temp = strdup (ssG.last_message_sent);
+    icq_sendmsg (sok, uin, temp, ssG.last_message_sent_type);
+    free (temp);
+    last_uin = uin;
+    Time_Stamp ();
+    M_print (" " COLSENT "%10s" COLNONE " " MSGSENTSTR "%s\n", UIN2Name (uin), MsgEllipsis (ssG.last_message_sent));
     return 0;
 }
 
@@ -1177,6 +1222,21 @@ JUMP_F(CmdUserStatusWide)
     free (Online);
     if (data)
         free (Offline);
+    return 0;
+}
+
+/*
+ * Display your personal online status
+ */
+JUMP_F(CmdUserStatusSelf)
+{
+    M_print (W_SEPERATOR);
+    Time_Stamp ();
+    M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", ssG.UIN);
+    M_print (i18n (71, "Your status is "));
+    Print_Status (uiG.Current_Status);
+    M_print ("\n");
+    M_print (W_SEPERATOR);
     return 0;
 }
 

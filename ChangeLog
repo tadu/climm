@@ -1,5 +1,9 @@
 
-2001-09-19 Kaolin <cognosco@tentacle.net>
+2001-09-20 Kaolin Fire <cognosco@tentacle.net>
+	* added "s" command -- display your current online status
+	* added "resend" command -- resend your last message to a new UIN
+
+2001-09-19 Kaolin Fire <cognosco@tentacle.net>
 	* added command autoaway to set the auto away timeout.
 	* fix alter.
 

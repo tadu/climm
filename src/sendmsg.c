@@ -468,7 +468,9 @@ void icq_sendmsg (SOK_T sok, UDWORD uin, char *text, UDWORD msg_type)
     SIMPLE_MESSAGE msg;
     net_icq_pak pak;
     int size, len;
-
+    if (ssG.last_message_sent != NULL) free(ssG.last_message_sent);
+    ssG.last_message_sent = strdup(text);
+    ssG.last_message_sent_type = msg_type;
     if (UIN2nick (uin) != NULL)
         log_event (uin, LOG_MESS, "You sent instant message to %s\n%s\n", UIN2nick (uin), text);
     else
