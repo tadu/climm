@@ -7,6 +7,7 @@
 #include "util_io.h"
 #include "util.h"
 #include "contact.h"
+#include "session.h"
 #include "preferences.h"
 #include <stdlib.h>
 #include <stdio.h>

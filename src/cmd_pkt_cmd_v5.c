@@ -10,6 +10,7 @@
 
 #include "micq.h"
 #include "packet.h"
+#include "session.h"
 #include "contact.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_cmd_v5_util.h"

@@ -12,6 +12,7 @@
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_user.h"
 #include "contact.h"
+#include "session.h"
 #include "preferences.h"
 #include "tcp.h"
 #include "conv.h"

@@ -25,6 +25,7 @@
 #include "preferences.h"
 #include "util_io.h"
 #include "cmd_pkt_v8.h"
+#include "session.h"
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>

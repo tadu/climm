@@ -19,6 +19,7 @@
 #include "file_util.h"
 #include "preferences.h"
 #include "util_ui.h"
+#include "session.h"
 
 static FILE *PrefOpenRC (Preferences *pref);
 

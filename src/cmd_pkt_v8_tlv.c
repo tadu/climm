@@ -10,6 +10,8 @@
 #include "micq.h"
 #include "cmd_pkt_v8_tlv.h"
 #include "util_ui.h"
+#include "session.h"
+#include "packet.h"
 #include <string.h>
 
 #define __maxTLV  25

@@ -20,8 +20,10 @@ Changes :
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_v8_snac.h"
 #include "contact.h"
+#include "session.h"
 #include "util_io.h"
 #include "preferences.h"
+#include "packet.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>

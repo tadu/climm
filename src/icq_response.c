@@ -14,6 +14,7 @@
 #include "cmd_pkt_v8_snac.h"
 #include "preferences.h"
 #include "conv.h"
+#include "session.h"
 #include "buildmark.h"
 #include <stdlib.h>
 #include <stdio.h>
