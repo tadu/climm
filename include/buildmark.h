@@ -10,6 +10,7 @@
 #define BUILD_MIRANDA  0xffffffffL
 #define BUILD_STRICQ   0xffffff8fL
 #define BUILD_YSM      0xffffffabL
+#define BUILD_ARQ      0xffffff7fL
 #define BUILD_VICQ     0x04031980L
 
 #define BUILD_LICQ     0x7d000000L

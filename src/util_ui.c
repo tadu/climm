@@ -517,6 +517,9 @@ void UtilUISetVersion (Contact *cont)
                 if ((v1 | v2 | v3 | v4) & 0x80)
                     v1 = v2 = v3 = v4 = 0;
                 break;
+            case BUILD_ARQ:
+                new = "&RQ";
+                break;
             default:
                 snprintf (buf, sizeof (buf), "%08lx", cont->id1);
                 new = buf;
