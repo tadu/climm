@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.47 2002/09/23 23:51:32
+#  EN: __.i18n,v 1.50 2002/09/30 17:45:07
 1001:de
 1002:de_DE
 1003:0-4-9-3
@@ -58,7 +58,7 @@
 1064:Auto-Status-Wechsel nach:
 1065:Bytereihenfolge: Intel.
 1066:Bytereihenfolge: Motorola.
-1071:Dein Status ist: 
+1071:Dein Status ist:
 1072:User abgeklemmt:
 1073:User verbunden:
 1074:mICQ (Matts ICQ-Klon)
@@ -428,11 +428,11 @@
 1442:Bitte wähle eines der Hilfe-Themen.
 1443:Kommandos, um mICQ zu konfigurieren.
 1444:Kommandos, um andere User zu finden oder sehen.
-1445:Kommandos, um Einstellungen am ICQ-Account vorzunehmen.
+1445:Kommandos, um Einstellungen am ICQ-Konto vorzunehmen.
 1446:Kommandos, um anderen Benutzern Nachrichten zu schicken.
 1447:Konfig
 1448:Nachricht
-1449:Benutzer
+1449:Konto
 1450:Status
 1451:IP-Adresse 2:
 1452:Status:
@@ -788,7 +788,6 @@
 1907:Warnung: Der Server hält unsere Benutzernummer für %d, obwohl sie %d ist.¶
 1908:Eingehendes USERONLINE-Paket für nicht-Kontakt.¶
 1909:Eingehendes USEROFFLINE-Paket für nicht-Kontakt.¶
-#1910:FLAP seq %08x length %04x channel %d¶
 1911:verbinde
 1912:geschlossen
 1914:Kann Verbindungs-Datenstruktur nicht allokieren.¶
@@ -804,7 +803,6 @@
 1926:Unsichtbar
 1927:Für Plaudereien frei
 1929:[Automatische Nachricht] Bitte nicht stören (Do Not Disturb)
-#1930:Can't send this (%x) yet.¶
 1931:Die aktuelle Verbindung ist geschlossen; bitte eine andere wählen oder diese öffnen.¶
 1934:verbunden
 #1935:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x¶
@@ -878,11 +876,11 @@
 2013:Dieses Kommando ist nur für Version 7 oder neuer gültig.¶
 2014:Keine Zahl angegeben.¶
 2015:Keine Nachricht angegeben.¶
-2017:Der Benutzer ist in Wirklichkeit verbunden.¶
+2017:Der Benutzer ist verbunden, aber möglicherweise unsichtbar.¶
 2018:    quiet: keine Ausgabe für Statuswechsel.¶
 2020:Für %s jetzt sichtbar.
 2021:Für %s jetzt unsichtbar.
-2022:Der Benutzer ist in Wirklichkeit nicht verbunden.¶
+2022:Der Benutzer ist nicht verbunden.¶
 2023:Direkte Verbindung von Verbindungspartner geschlossen.¶
 2024:Unbekannte Protokoll-Version %d für ICQ-Direktverbindungen.¶
 2026:Direktverbindungs-Kennung:
@@ -908,7 +906,7 @@
 2049:Lade Gruppe "%s" herunter:¶
 2050:Importiere %d Kontakte.¶
 2051:Fehler am Kommunikationsendpunkt: %s (%d)¶
-2052:Akzeptiere Dateiübertragung "%s" (%d Bytes) von %s.¶
+2052.Akzeptiere Dateiübertragung "%s" (%d Bytes) von %s.¶
 #2053:TCP %s seq %x type %x status %x flags %x: '%s'¶
 2054:Die für-Plaudereien-frei-Nachricht ist:
 2055:Der Benutzer ist für Plauereien frei und möchte über alles plaudern.
@@ -917,7 +915,7 @@
 2058:peer na    <nick> - Hole die automatische Antwort für "nicht verfügbar" von diesem Kontakt.¶
 2059:peer dnd   <nick> - Hole die automatische Antwort für "nicht stören" von diesem Kontakt.¶
 2060:peer ffc   <nick> - Hole die automatische Antwort für "für Plaudereien frei" von diesem Kontakt.¶
-2061:Lehne Dateiübertragung von "%s" (%d Bytes) ab %s (unbekannt: %x, %x),¶
+2061.Lehne Dateiübertragung von "%s" (%d Bytes) ab %s (unbekannt: %x, %x),¶
 2063:Sie müssen Ihr Paßwort in Ihrem ~/.micq/micqrc speichern.¶
 2064:Lehne Plaudereianfrage (%s/%s/%s) von %s ab.¶
 2065:Unbekanntes TCP_MSG_GREET_-Kommando %04x.¶
@@ -942,7 +940,7 @@
 2088:Alle %d Dateien fertig gesendet.¶
 2089:Dateiannahme
 2090:Dateiübertragung
-2091:Reihe "%s" als "%s" in die Warteschlange für Dateiübertragung ein.¶
+2091:Sende "%s" als "%s".¶
 2092:Direktverbindungsnachricht %s weggeworfen - Verbindung verschwunden.¶
 2093:%02d %-20s Version %d für %s (%x) zu %s:%d %s¶
 2094:conn login         Öffne erste Server-Verbindung.¶
@@ -1002,10 +1000,10 @@
 2149:Entferne Zweit-Name "%s" für "%s" (%d).¶
 2150:Entferne Kontakt "%s" (%d).¶
 2151:Es gibt keinen Kontakt mit Benutzernummer %d mehr auf der Kontaktliste.¶
-2152:Schließe Server-Verbindung (Version 5).¶
-2153:Schließe Server-Verbindung (Version 8).¶
-2154:Schließe Nachrichten-Annahme.¶
-2155:Schließe Direktverbindung.¶
+2152.Schließe Server-Verbindung (Version 5).¶
+2153.Schließe Server-Verbindung (Version 8).¶
+2154.Schließe Nachrichten-Annahme.¶
+2155.Schließe Direktverbindung.¶
 2156:conn close <nr>    Schließe Verbindung <nr>.¶
 2157:Moldavien
 2158:Keine Datei angegeben.¶
@@ -1035,3 +1033,12 @@
 2182:Wählt <nr> als aktuelle Server-Verbindung.
 2183:Überprüft, ob <uin> bzw. <nick> nur unsichtbar oder nicht verbunden ist.
 2184:%s%-10s%s - %s¶
+2185:Schließe Verbindung %d.¶
+2186:Akzeptiere Datei "%s" (%d Bytes).¶
+2187:Lehne Dateianfrage "%s" (%d Bytes) ab (Unbekannte Daten: %x, %x).¶
+2188:Sende Daten zu schnell - erstmal keine weiteren Befehle eingeben, oder der Server wird die Verbindung unterbrechen.¶
+2189:Fehlerhaftes Nachrichten-Paket vom Server abgelehnt.¶
+2190:Das ICQ-Programm des Kontaktes unterstützt keine Typ-2-Nachrichten.¶
+2191:Fehler beim Versenden einer Nachricht: %d.¶
+2192:Fähigkeiten: 
+2193:Verzeichnis %s existiert nicht.¶
