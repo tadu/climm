@@ -52,6 +52,8 @@
 
 static void SnacCallbackType2Ack (Event *event);
 static void SnacCallbackType2 (Event *event);
+static void SnacCallbackIgnore (Event *event);
+
 
 /*
  * SRV_ICBMERR - SNAC(4,1)
@@ -179,6 +181,11 @@ JUMP_SNAC_F(SnacSrvAckmsg)
     free (text);
 }
 
+void SnacCallbackIgnore (Event *event)
+{
+    EventD (event);
+}
+
 /*
  * CLI_SENDMSG - SNAC(4,6)
  */
@@ -259,7 +266,7 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
             QueueEnqueueData (serv, QUEUE_TYPE1_RESEND_ACK, pak->ref,
                               time (NULL) + 120, NULL, cont,
                               OptSetVals (NULL, CO_MSGTEXT, text, 0),
-                              NULL);
+                              SnacCallbackIgnore);
 
             icqcol = atoi (text); /* FIXME FIXME WIXME */
             str = s_split (&text, enc, 450);
@@ -309,7 +316,7 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
             QueueEnqueueData (serv, QUEUE_TYPE4_RESEND_ACK, pak->ref,
                               time (NULL) + 120, NULL, cont,
                               OptSetVals (NULL, CO_MSGTYPE, type, CO_MSGTEXT, text, 0),
-                              NULL);
+                              SnacCallbackIgnore);
             SnacSend (serv, pak);
     }
     return RET_OK;
