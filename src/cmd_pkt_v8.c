@@ -430,7 +430,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
         case MSGF_GETAUTO | MSG_GET_VER:   ack_msg = BuildVersionText;
             } while (0);
 #ifdef WIP
-            M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
+            M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
             M_printf (i18n (1814, "Sent auto-response message to %s%s%s.\n"),
                      COLCONTACT, cont->nick, COLNONE);
 #endif

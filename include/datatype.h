@@ -33,6 +33,12 @@ typedef int socklen_t;
 typedef UDWORD wchar_t;
 #endif
 
+#if !HAVE_ATOLL
+#define atoll atoi
+#endif
+
+#define val_t UDWORD
+
 #if !ENABLE_FALLBACK_TRANSLIT
 #define ENABLE_TRANSLIT 1
 #endif

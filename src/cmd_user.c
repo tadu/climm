@@ -1392,6 +1392,10 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
     ContactAlias *alias;
     char *stat, *ver = NULL, *ver2 = NULL;
     const char *ul = "";
+    time_t tseen;
+#ifdef WIP
+    time_t tmicq;
+#endif
     char tbuf[100];
     
     peer = (conn && conn->assoc) ? ConnectionFind (TYPE_MSGDIRECT, cont, conn->assoc) : NULL;
@@ -1402,13 +1406,25 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
     if (prG->verbose && cont->dc)
         ver2 = strdup (s_sprintf (" <%08x:%08x:%08x>", (unsigned int)cont->dc->id1,
                                    (unsigned int)cont->dc->id2, (unsigned int)cont->dc->id3));
+    if (!ContactOptionsGetVal (&cont->copts, cont->status == STATUS_OFFLINE ? CO_TIMESEEN : CO_TIMEONLINE, &tseen))
+        tseen = (time_t)-1;
+#ifdef WIP
+    if (!ContactOptionsGetVal (&cont->copts, CO_TIMEMICQ, &tmicq))
+        tmicq = (time_t)-1;
+#endif
 
-    if (cont->seen_time != -1L && data & 2)
-        strftime (tbuf, sizeof (tbuf), " %Y-%m-%d %H:%M:%S", localtime (&cont->seen_time));
+    if (tseen != (time_t)-1 && data & 2)
+        strftime (tbuf, sizeof (tbuf), " %Y-%m-%d %H:%M:%S", localtime (&tseen));
     else if (data & 2)
         strcpy (tbuf, "                    ");
     else
         tbuf[0] = '\0';
+
+#ifdef WIP
+    if (tmicq != (time_t)-1 && data & 2)
+        strftime (tbuf + strlen (tbuf), sizeof (tbuf) - strlen (tbuf),
+                  " %Y-%m-%d %H:%M:%S", localtime (&tmicq));
+#endif
     
 #ifdef CONFIG_UNDERLINE
     if (!(++__l % 5))
@@ -2040,7 +2056,8 @@ static JUMP_F(CmdUserOpt)
     char *coptname, *coptobj, *col;
     ContactOptions *copts = NULL;
     int i;
-    UWORD flag = 0, val;
+    UWORD flag = 0;
+    val_t val;
     strc_t par;
     ANYCONN;
 
@@ -2134,15 +2151,15 @@ static JUMP_F(CmdUserOpt)
                     break;
                 case COF_NUMERIC:
                     if (data == COF_CONTACT)
-                        M_printf ("    %-15s  %s%-15s%s  (%s %s%d%s)\n", optname, COLQUOTE,
+                        M_printf ("    %-15s  %s%-15s%s  (%s %s%ld%s)\n", optname, COLQUOTE,
                                   ContactOptionsGetVal (copts, flag, &val)
-                                    ? s_sprintf ("%d", val)
+                                    ? s_sprintf ("%ld", val)
                                     : i18n (9999, "undefined"), COLNONE, i18n (9999, "effectivly"), COLQUOTE,
                                   ContactPrefVal (cont, flag), COLNONE);
                     else
                         M_printf ("    %-15s  %s%s%s\n", optname, COLQUOTE,
                                   ContactOptionsGetVal (copts, flag, &val)
-                                    ? s_sprintf ("%d", val)
+                                    ? s_sprintf ("%ld", val)
                                     : i18n (9999, "undefined"), COLNONE);
                     break;
                 case COF_STRING:
@@ -2198,7 +2215,7 @@ static JUMP_F(CmdUserOpt)
         if (!s_parse (&args, &par))
         {
             const char *res = NULL;
-            UWORD val;
+            val_t val;
 
             if (!ContactOptionsGetVal (copts, flag, &val) || ((flag & (COF_STRING | COF_COLOR)) && !ContactOptionsGetStr (copts, flag, &res)))
                 M_printf (data == COF_CONTACT ? i18n (9999, "Option %s for contact %s is undefined.\n") :
@@ -2209,7 +2226,7 @@ static JUMP_F(CmdUserOpt)
                 M_printf (data == COF_CONTACT ? i18n (9999, "Option %s for contact %s is %s%s%s.\n") :
                           data == COF_GROUP   ? i18n (9999, "Option %s for contact group %s is %s%s%s.\n")
                                               : i18n (9999, "Option %s%s is globally %s%s%s.\n"),
-                          coptname, coptobj, COLQUOTE, flag & COF_NUMERIC ? s_sprintf ("%d", val)
+                          coptname, coptobj, COLQUOTE, flag & COF_NUMERIC ? s_sprintf ("%ld", val)
                           : val ? i18n (1085, "on") : i18n (1086, "off"), COLNONE);
             else
                 M_printf (data == COF_CONTACT ? i18n (9999, "Option %s for contact %s is %s.\n") :

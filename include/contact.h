@@ -92,7 +92,7 @@ struct Contact_s
 
     char  *version;
     char  *last_message;
-    time_t last_time, seen_time, seen_micq_time;
+    time_t last_time;
     
     ContactAlias *alias; /* alias of this entry */
 
@@ -136,7 +136,7 @@ BOOL          ContactMetaSave     (Contact *cont);
 BOOL          ContactMetaLoad     (Contact *cont);
 
 const char   *ContactPrefStr      (Contact *cont, UWORD flag);
-UWORD         ContactPrefVal      (Contact *cont, UWORD flag);
+val_t         ContactPrefVal      (Contact *cont, UWORD flag);
 
 #define CONTACT_GENERAL(cont)  ((cont)->meta_general  ? (cont)->meta_general  : ((cont)->meta_general  = calloc (1, sizeof (MetaGeneral))))
 #define CONTACT_WORK(cont)     ((cont)->meta_work     ? (cont)->meta_work     : ((cont)->meta_work     = calloc (1, sizeof (MetaWork))))

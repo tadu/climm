@@ -9,8 +9,8 @@ struct ContactOptions_s
     {
         struct
         {
-            UWORD  vala, valb;
-            UBYTE  taga, tagb;
+            val_t vala, valb;
+            UBYTE taga, tagb;
         } co_dir;
         struct
         {
@@ -26,8 +26,8 @@ struct ContactOption_s
     UWORD flag;
 };
 
-BOOL ContactOptionsGetVal (const ContactOptions *opt, UWORD flag, UWORD *val);
-BOOL ContactOptionsSetVal (ContactOptions *opt, UWORD flag, UWORD val);
+BOOL ContactOptionsGetVal (const ContactOptions *opt, UWORD flag, val_t *val);
+BOOL ContactOptionsSetVal (ContactOptions *opt, UWORD flag, val_t val);
 void ContactOptionsUndef  (ContactOptions *opt, UWORD flag);
 
 BOOL ContactOptionsGetStr (const ContactOptions *opt, UWORD flag, const char **res);
@@ -71,6 +71,10 @@ extern struct ContactOption_s ContactOptionsList[];
 #define CO_ENCODINGSTR   (COF_STRING  | CO_CONTACT | 0x02) /* the default encoding for this contact */
 #define CO_CSCHEME       (COF_NUMERIC | CO_GLOBAL  | 0x03) /* the color scheme to use               */
 #define CO_TABSPOOL      (COF_NUMERIC | CO_CONTACT | 0x0a) /* spool contact into tab list           */
+
+#define CO_TIMESEEN      (COF_NUMERIC | COF_CONTACT| 0x0b) /* time contact was last seen            */
+#define CO_TIMEONLINE    (COF_NUMERIC | COF_CONTACT| 0x0c) /* time since contact is online          */
+#define CO_TIMEMICQ      (COF_NUMERIC | COF_CONTACT| 0x0d) /* time contact last used mICQ           */
 
 #define CO_AUTOAWAY      (COF_STRING  | CO_CONTACT | 0x04) /* the away auto reply message           */
 #define CO_AUTONA        (COF_STRING  | CO_CONTACT | 0x05) /* the not available auto reply message  */

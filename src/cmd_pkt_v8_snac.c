@@ -586,6 +586,8 @@ static JUMP_SNAC_F(SnacSrvUseronline)
             ContactSetCap (cont, PacketReadCap (p));
         PacketD (p);
     }
+    
+    ContactOptionsSetVal (&cont->copts, CO_TIMEONLINE, time (NULL) - tlv[15].nr);
     ContactSetVersion (cont);
     IMOnline (cont, serv, tlv[6].str.len ? tlv[6].nr : 0);
     TLVD (tlv);
@@ -825,7 +827,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
 #ifdef WIP
                 else
                 {
-                    M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
+                    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
                     M_printf ("FIXMEWIP: tlv(b)-only packet.\n");
                 }
 #endif

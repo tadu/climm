@@ -13,7 +13,7 @@ static int strmax = 0;
 struct ContactOptionsTable_s
 {
     UBYTE tags[16];
-    UWORD vals[16];
+    val_t vals[16];
 };
 
 struct ContactOption_s ContactOptionsList[] = {
@@ -45,13 +45,16 @@ struct ContactOption_s ContactOptionsList[] = {
   { "encoding",      CO_ENCODINGSTR   }, /* not CO_ENCODING */
   { "colorscheme",   CO_CSCHEME       },
   { "tabspool",      CO_TABSPOOL      },
+  { "timeseen",      CO_TIMESEEN      },
+  { "timeonline",    CO_TIMEONLINE    },
+  { "timemicq",      CO_TIMEMICQ      },
   { NULL, 0 }
 };
 
 /*
  * Get a contact option.
  */
-BOOL ContactOptionsGetVal (const ContactOptions *opt, UWORD flag, UWORD *res)
+BOOL ContactOptionsGetVal (const ContactOptions *opt, UWORD flag, val_t *res)
 {
     UBYTE tag;
 
@@ -60,7 +63,7 @@ BOOL ContactOptionsGetVal (const ContactOptions *opt, UWORD flag, UWORD *res)
         if (flag & CO_FLAGS & opt->set)
         {
             *res = (flag & CO_FLAGS & opt->val) ? 1 : 0;
-            Debug (DEB_OPTS, "(%p,%x) = %d", opt, flag, *res);
+            Debug (DEB_OPTS, "(%p,%x) = %ld", opt, flag, *res);
             return TRUE;
         }
         Debug (DEB_OPTS, "(%p,%x) undef", opt, flag);
@@ -87,20 +90,20 @@ BOOL ContactOptionsGetVal (const ContactOptions *opt, UWORD flag, UWORD *res)
         }
 
         *res = opt->co_un.co_indir.table[j].vals[k];
-        Debug (DEB_OPTS, "(%p,%x) = %x = %d", opt, tag, *res, *res);
+        Debug (DEB_OPTS, "(%p,%x) = %lx = %lu", opt, tag, *res, *res);
         return TRUE;
     }
 
     if (opt->co_un.co_dir.taga == tag)
     {
         *res = opt->co_un.co_dir.vala;
-        Debug (DEB_OPTS, "(%p,%x) = %x = %d", opt, tag, *res, *res);
+        Debug (DEB_OPTS, "(%p,%x) = %lx = %lu", opt, tag, *res, *res);
         return TRUE;
     }
     if (opt->co_un.co_dir.tagb == tag)
     {
         *res = opt->co_un.co_dir.valb;
-        Debug (DEB_OPTS, "(%p,%x) = %x = %d", opt, tag, *res, *res);
+        Debug (DEB_OPTS, "(%p,%x) = %lx = %lu", opt, tag, *res, *res);
         return TRUE;
     }
     Debug (DEB_OPTS, "(%p,%x) undef", opt, tag);
@@ -110,12 +113,12 @@ BOOL ContactOptionsGetVal (const ContactOptions *opt, UWORD flag, UWORD *res)
 /*
  * Set a contact option.
  */
-BOOL ContactOptionsSetVal (ContactOptions *opt, UWORD flag, UWORD val)
+BOOL ContactOptionsSetVal (ContactOptions *opt, UWORD flag, val_t val)
 {
     int j, k;
     UBYTE tag;
 
-    Debug (DEB_OPTS, "(%p,%x) := %x = %d", opt, flag, val, val);
+    Debug (DEB_OPTS, "(%p,%x) := %lx = %lu", opt, flag, val, val);
 
     if (flag & COF_DIRECT)
     {
@@ -242,7 +245,7 @@ void ContactOptionsUndef (ContactOptions *opt, UWORD flag)
  */
 BOOL ContactOptionsGetStr (const ContactOptions *opt, UWORD flag, const char **res)
 {
-    UWORD val;
+    val_t val;
 
     assert (flag & (COF_STRING | COF_COLOR));
 
@@ -365,7 +368,7 @@ const char *ContactOptionsString (const ContactOptions *opts)
 {
     static str_s str;
     int i, flag;
-    UWORD val;
+    val_t val;
     
     s_init (&str, "", 100);
     
@@ -383,7 +386,7 @@ const char *ContactOptionsString (const ContactOptions *opts)
                 if (*str.txt)
                     s_catc (&str, '\n');
                 if (flag & COF_NUMERIC)
-                    s_catf (&str, "options %s %d", ContactOptionsList[i].name, val);
+                    s_catf (&str, "options %s %lu", ContactOptionsList[i].name, val);
                 else if (flag & COF_COLOR)
                     s_catf (&str, "options %s %s", ContactOptionsList[i].name, s_quote (ContactOptionsS2C (strtable[val])));
                 else
@@ -446,7 +449,7 @@ int ContactOptionsImport (ContactOptions *opts, const char *args)
         }
         else if (flag & COF_NUMERIC)
         {
-            UWORD val = atoi (par->txt);
+            val_t val = atoll (par->txt);
             
             if (flag == CO_CSCHEME)
                 ContactOptionsImport (opts, PrefSetColorScheme (val));

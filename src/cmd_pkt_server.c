@@ -297,9 +297,10 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
         case SRV_USER_ONLINE:
             uin = PacketRead4 (pak);
             cont = ContactUIN (conn, uin);
-            cont->seen_time = time (NULL);
             if (!cont || !CONTACT_DC (cont))
                 return;
+            ContactOptionsSetVal (&cont->copts, CO_TIMESEEN, time (NULL));
+            ContactOptionsSetVal (&cont->copts, CO_TIMEONLINE, time (NULL));
             cont->dc->ip_rem  = PacketRead4 (pak);
             cont->dc->port    = PacketRead4 (pak);
             cont->dc->ip_loc  = PacketRead4 (pak);

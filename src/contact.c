@@ -257,8 +257,6 @@ static Contact *ContactC (UWORD id, UDWORD uin, const char *nick)
     cont->uin = uin;
     cont->id = id;
     cont->status = STATUS_OFFLINE;
-    cont->seen_time = -1L;
-    cont->seen_micq_time = -1L;
     
     s_repl (&cont->nick, nick ? nick : s_sprintf ("%ld", uin));
 
@@ -578,8 +576,6 @@ BOOL ContactMetaSave (Contact *cont)
     fprintf (f, "b_uin      %ld\n", cont->uin);
     fprintf (f, "b_id       %d\n", cont->id);
     fprintf (f, "b_nick     %s\n", s_quote (cont->nick));
-    fprintf (f, "b_seen     %ld\n", (long)cont->seen_time);
-    fprintf (f, "b_micq     %ld\n", (long)cont->seen_micq_time);
     if (cont->meta_about)
         fprintf (f, "b_about    %s\n", s_quote (cont->meta_about));
     if (cont->meta_general)
@@ -711,8 +707,8 @@ BOOL ContactMetaLoad (Contact *cont)
             else if (!strcmp (cmd, "b_enc"))   { s_parse (&line, &par); /* deprecated */ }
             else if (!strcmp (cmd, "b_flags")) { s_parseint (&line, &i); /* ignore for compatibility */ }
             else if (!strcmp (cmd, "b_about")) { if (s_parse (&line, &par))  s_repl (&cont->meta_about, par->txt); }
-            else if (!strcmp (cmd, "b_seen"))  { if (s_parseint (&line, &i)) cont->seen_time = i; }
-            else if (!strcmp (cmd, "b_micq"))  { if (s_parseint (&line, &i)) cont->seen_micq_time = i; }
+            else if (!strcmp (cmd, "b_seen"))  { s_parseint (&line, &i); /* deprecated */ }
+            else if (!strcmp (cmd, "b_micq"))  { s_parseint (&line, &i); /* deprecated */ }
         }
         else if (!strncmp (cmd, "g_", 2))
         {
@@ -831,9 +827,9 @@ BOOL ContactMetaLoad (Contact *cont)
 /*
  * Query a flag for a contact.
  */
-UWORD ContactPrefVal (Contact *cont, UWORD flag)
+val_t ContactPrefVal (Contact *cont, UWORD flag)
 {
-    UWORD res = 0;
+    val_t res = 0;
     
     if (cont)
     {
@@ -994,7 +990,7 @@ void ContactSetVersion (Contact *cont)
                 new = "StrICQ";
                 break;
             case BUILD_MICQ:
-                cont->seen_micq_time = time (NULL);
+                ContactOptionsSetVal (&cont->copts, CO_TIMEMICQ, time (NULL));
                 new = "mICQ";
                 if (dc->id2 & 0x80000000)
                     tail = " cvs";
@@ -1059,7 +1055,10 @@ void ContactSetVersion (Contact *cont)
             new = "Kopete";
     }
     else if (HAS_CAP (cont->caps, CAP_MICQ))
+    {
         new = "mICQ";
+        ContactOptionsSetVal (&cont->copts, CO_TIMEMICQ, time (NULL));
+    }
     else if (dc->id1 == dc->id2 && dc->id2 == dc->id3 && dc->id1 == -1)
         new = "vICQ/GAIM(?)";
     else if (dc->version == 7 && HAS_CAP (cont->caps, CAP_IS_WEB))

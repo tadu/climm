@@ -188,7 +188,7 @@ int main (int argc, char *argv[])
     
     const char *arg_v, *arg_f, *arg_l, *arg_i, *arg_b;
     UDWORD rc, arg_h = 0, arg_vv = 0, arg_c = 0;
-    UWORD res;
+    val_t res;
     UBYTE save_conv_error;
     SDWORD i;
 

@@ -513,7 +513,7 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
         return;
     }
     
-    cont->seen_time = time (NULL);
+    ContactOptionsSetVal (&cont->copts, CO_TIMESEEN, time (NULL));
 
     old = cont->status;
     cont->status = status;
@@ -571,9 +571,9 @@ void IMOffline (Contact *cont, Connection *conn)
 
     putlog (conn, NOW, cont, STATUS_OFFLINE, LOG_OFFLINE, 0xFFFF, "");
 
+    ContactOptionsSetVal (&cont->copts, CO_TIMESEEN, time (NULL));
     old = cont->status;
     cont->status = STATUS_OFFLINE;
-    cont->seen_time = time (NULL);
 
     if (!cont->group || ContactPrefVal (cont, CO_IGNORE) || !ContactPrefVal (cont, CO_SHOWONOFF))
         return;
