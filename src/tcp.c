@@ -1491,7 +1491,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
  */
 static void TCPCallBackResend (Event *event)
 {
-    Contact *cont = ContactUIN (event->conn, event->uin);
+    Contact *cont = ContactUIN (event->conn->parent->parent, event->uin);
     Connection *peer = event->conn;
     Packet *pak = event->pak;
     UWORD delta, e_trans;
