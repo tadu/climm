@@ -232,18 +232,35 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
     return new;
 }
 
-void SrvMsgAdvanced (Packet *pak, UDWORD seq, UWORD type, UWORD flags, UWORD status, const char *msg)
+void SrvMsgAdvanced (Packet *pak, UDWORD seq, UWORD msgtype, UWORD status, UWORD deststatus, UWORD flags, const char *msg)
 {
+    if      (status == STATUS_OFFLINE) /* keep */ ;
+    else if (status & STATUSF_DND)     status = STATUSF_DND  | (status & STATUSF_INV);
+    else if (status & STATUSF_OCC)     status = STATUSF_OCC  | (status & STATUSF_INV);
+    else if (status & STATUSF_NA)      status = STATUSF_NA   | (status & STATUSF_INV);
+    else if (status & STATUSF_AWAY)    status = STATUSF_AWAY | (status & STATUSF_INV);
+    else if (status & STATUSF_FFC)     status = STATUSF_FFC  | (status & STATUSF_INV);
+    else                               status &= STATUSF_INV;
+    
+    if      (flags != (UWORD)-1)           /* keep */ ;
+    else if (deststatus == STATUS_OFFLINE) /* keep */ ;
+    else if (deststatus & STATUSF_DND)     flags = TCP_MSGF_CLIST;
+    else if (deststatus & STATUSF_OCC)     flags = TCP_MSGF_CLIST;
+    else if (deststatus & STATUSF_NA)      flags = TCP_MSGF_1;
+    else if (deststatus & STATUSF_AWAY)    flags = TCP_MSGF_1;
+    else if (deststatus & STATUSF_FFC)     flags = TCP_MSGF_LIST | TCP_MSGF_1;
+    else                                   flags = TCP_MSGF_LIST | TCP_MSGF_1;
+
     PacketWriteLen    (pak);
-     PacketWrite2      (pak, seq);        /* sequence number            */
+     PacketWrite2      (pak, seq);       /* sequence number */
      PacketWrite4      (pak, 0);
      PacketWrite4      (pak, 0);
      PacketWrite4      (pak, 0);
     PacketWriteLenDone (pak);
-    PacketWrite2      (pak, type);       /* message type               */
-    PacketWrite2      (pak, status);     /* flags                      */
-    PacketWrite2      (pak, flags);      /* status                     */
-    PacketWriteLNTS   (pak, msg);        /* the message                */
+    PacketWrite2      (pak, msgtype);    /* message type    */
+    PacketWrite2      (pak, status);     /* status          */
+    PacketWrite2      (pak, flags);      /* flags           */
+    PacketWriteLNTS   (pak, msg);        /* the message     */
 }
 
 /*
@@ -349,16 +366,17 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     else
         ack_msg = "";
 
-    if (pri & 4)                     ack_status  = TCP_STAT_ONLINE; else
-    if (serv->status & STATUSF_DND)  ack_status  = TCP_STAT_DND;    else
-    if (serv->status & STATUSF_OCC)  ack_status  = TCP_STAT_OCC;    else
-    if (serv->status & STATUSF_NA)   ack_status  = TCP_STAT_NA;     else
-    if (serv->status & STATUSF_AWAY) ack_status  = TCP_STAT_AWAY;
-    else                             ack_status  = TCP_STAT_ONLINE;
+/*  if (serv->status & STATUSF_DND)  ack_status  = pri & 4 ? TCP_ACK_ONLINE : TCP_ACK_DND; else
+    if (serv->status & STATUSF_OCC)  ack_status  = TCP_ACK_OCC;    else
+ *
+ * Don't refuse until we have sensible preferences for that
+ */
+    if (serv->status & STATUSF_NA)   ack_status  = TCP_ACK_NA;     else
+    if (serv->status & STATUSF_AWAY) ack_status  = TCP_ACK_AWAY;
+    else                             ack_status  = TCP_ACK_ONLINE;
 
     ack_flags = 0;
     if (serv->status & STATUSF_INV)  ack_flags |= TCP_MSGF_INV;
-/*    ack_flags ^= TCP_MSGF_LIST;   */
 
     switch (msgtype & ~MSGF_MASS)
     {
@@ -431,7 +449,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
             else
             {
                 txt = ExtraGetS (extra, EXTRA_REF);
-                PacketWrite2    (ack_pak, TCP_STAT_REFUSE);
+                PacketWrite2    (ack_pak, TCP_ACK_REFUSE);
                 PacketWrite2    (ack_pak, ack_flags);
                 PacketWriteLNTS (ack_pak, c_out (ack_msg));
                 PacketWriteB2   (ack_pak, 0);
@@ -506,7 +524,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                         }
                         else
                         {
-                            PacketWrite2    (ack_pak, TCP_STAT_REFUSE);
+                            PacketWrite2    (ack_pak, TCP_ACK_REFUSE);
                             PacketWrite2    (ack_pak, ack_flags);
                             PacketWriteLNTS (ack_pak, "");
                             SrvMsgGreet     (ack_pak, cmd, "", 0, 0, "");
@@ -519,7 +537,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                                   EXTRA_MESSAGE, TCP_MSG_CHAT, name));
                         IMSrvMsg (cont, serv->assoc, NOW, ExtraSet (ExtraClone (extra),
                                   EXTRA_MESSAGE, TCP_MSG_CHAT, reason));
-                        PacketWrite2    (ack_pak, TCP_STAT_REFUSE);
+                        PacketWrite2    (ack_pak, TCP_ACK_REFUSE);
                         PacketWrite2    (ack_pak, ack_flags);
                         PacketWriteLNTS (ack_pak, "");
                         SrvMsgGreet     (ack_pak, cmd, "", 0, 0, "");
@@ -529,7 +547,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                     default:
                         if (prG->verbose & DEB_PROTOCOL)
                             M_printf (i18n (2065, "Unknown TCP_MSG_GREET_ command %04x.\n"), msgtype);
-                        PacketWrite2    (ack_pak, TCP_STAT_REFUSE);
+                        PacketWrite2    (ack_pak, TCP_ACK_REFUSE);
                         PacketWrite2    (ack_pak, ack_flags);
                         PacketWriteLNTS (ack_pak, "");
                         SrvMsgGreet     (ack_pak, cmd, "", 0, 0, "");
@@ -586,7 +604,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     switch (accept)
     {
         case FALSE:
-            PacketWrite2      (ack_pak, TCP_STAT_REFUSE);
+            PacketWrite2      (ack_pak, TCP_ACK_REFUSE);
             PacketWrite2      (ack_pak, ack_flags);
             PacketWriteLNTS   (ack_pak, c_out_to (ack_msg, cont));
             break;

@@ -23,6 +23,8 @@
 /* see also micq.h */
 
 /* Status flags */
+#define TCP_MSGF_1              0x0001
+#define TCP_MSGF_CLIST          0x0004
 #define TCP_MSGF_REAL           0x0010
 #define TCP_MSGF_LIST           0x0020
 #define TCP_MSGF_URGENT         0x0040
@@ -33,12 +35,12 @@
 #define TCP_MSGF_DND            0x1000
 
 /* Acknowledge statuses */
-#define TCP_STAT_ONLINE         0x0000
-#define TCP_STAT_REFUSE         0x0001
-#define TCP_STAT_AWAY           0x0004
-#define TCP_STAT_OCC            0x0009
-#define TCP_STAT_DND            0x000A
-#define TCP_STAT_NA             0x000E
+#define TCP_ACK_ONLINE          0x0000
+#define TCP_ACK_REFUSE          0x0001
+#define TCP_ACK_AWAY            0x0004
+#define TCP_ACK_OCC             0x0009
+#define TCP_ACK_DND             0x000A
+#define TCP_ACK_NA              0x000E
 
 /* Miscellaneous */
 #define TCP_MSG_X1      0x000E

@@ -1316,7 +1316,7 @@ void SnacCliSetstatus (Connection *conn, UDWORD status, UWORD action)
         {
             PacketWriteB4 (pak, 0);
             PacketWrite1  (pak, 0);
-            PacketWriteB2 (pak, 0);
+            PacketWriteB2 (pak, 8);
             PacketWriteB4 (pak, 0);
         }
         PacketWriteB2 (pak, 0);
@@ -1660,7 +1660,7 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
        PacketWrite1       (pak, 0);
        PacketWrite2       (pak, conn->our_seq_dc);
       PacketWriteLenDone (pak);
-      SrvMsgAdvanced     (pak, conn->our_seq_dc, type, 1, 0, c_out_for (text, cont));
+      SrvMsgAdvanced     (pak, conn->our_seq_dc, type, conn->status, cont->status, -1, c_out_for (text, cont));
       PacketWrite4       (pak, TCP_COL_FG);
       PacketWrite4       (pak, TCP_COL_BG);
 #ifdef ENABLE_UTF8

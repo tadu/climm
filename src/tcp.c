@@ -1268,7 +1268,8 @@ BOOL TCPSendMsg (Connection *list, Contact *cont, const char *msg, UWORD sub_cmd
     ASSERT_MSGDIRECT(peer);
 
     pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
-    SrvMsgAdvanced   (pak, peer->our_seq, sub_cmd, 0, list->parent->status, c_out_for (msg, cont));
+    SrvMsgAdvanced   (pak, peer->our_seq, sub_cmd, list->parent->status,
+                      cont->status, -1, c_out_for (msg, cont));
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
 #ifdef ENABLE_UTF8
@@ -1338,7 +1339,8 @@ UBYTE PeerSendMsg (Connection *list, Contact *cont, Extra *extra)
     ASSERT_MSGDIRECT(peer);
     
     pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
-    SrvMsgAdvanced   (pak, peer->our_seq, e_msg_type, 0, list->parent->status, c_out_for (e_msg_text, cont));
+    SrvMsgAdvanced   (pak, peer->our_seq, e_msg_type, list->parent->status,
+                      cont->status, -1, c_out_for (e_msg_text, cont));
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
 #ifdef ENABLE_UTF8
@@ -1461,7 +1463,8 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     if (peer->ver < 8)
     {
         pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
-        SrvMsgAdvanced   (pak, peer->our_seq, TCP_MSG_FILE, 0, list->parent->status, c_out_to (description, cont));
+        SrvMsgAdvanced   (pak, peer->our_seq, TCP_MSG_FILE, list->parent->status,
+                          cont->status, -1, c_out_to (description, cont));
         PacketWrite2 (pak, 0);
         PacketWrite2 (pak, 0);
         PacketWriteLNTS (pak, "many, really many, files");
@@ -1471,7 +1474,8 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     else
     {
         pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
-        SrvMsgAdvanced   (pak, peer->our_seq, TCP_MSG_GREETING, 0, list->parent->status, "");
+        SrvMsgAdvanced   (pak, peer->our_seq, TCP_MSG_GREETING, list->parent->status,
+                          cont->status, -1, "");
         SrvMsgGreet (pak, 0x29, description, 0, sumlen, "many, really many files");
     }
 
