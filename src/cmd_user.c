@@ -776,7 +776,7 @@ static JUMP_F(CmdUserPeer)
                 return 0;
             }
             files[0] = file = strdup (file);
-            if (!s_parse (&args, &des))
+            if (!s_parserem (&args, &des))
                 des = file;
             des = strdup (des);
 
