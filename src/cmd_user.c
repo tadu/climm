@@ -1997,6 +1997,7 @@ static JUMP_F(CmdUserAuth)
         M_print (i18n (2119, "auth [grant] <nick>    - grant authorization.\n"));
         M_print (i18n (2120, "auth deny <nick> <msg> - refuse authorization.\n"));
         M_print (i18n (2121, "auth req  <nick> <msg> - request authorization.\n"));
+        M_print (i18n (2145, "auth add  <nick>       - authorized add.\n"));
         return 0;
     }
     cmd = strdup (cmd);
@@ -2006,10 +2007,12 @@ static JUMP_F(CmdUserAuth)
         UtilUIParse (&args, &msg);
         if (!strcmp (cmd, "req"))
         {
+/* FIXME: v8 packets seem to cause trouble */
             if (!msg)         /* FIXME: let it untranslated? */
                 msg = "Please authorize my request and add me to your Contact List\n";
-            if (sess->type == TYPE_SERVER && sess->ver >= 8)
+/*            if (sess->type == TYPE_SERVER && sess->ver >= 8)
                 SnacCliReqauth (sess, cont->uin, msg);
+ */
             else if (sess->type == TYPE_SERVER)
                 SnacCliSendmsg (sess, cont->uin, msg, MSG_AUTH_REQ);
             else
@@ -2021,12 +2024,25 @@ static JUMP_F(CmdUserAuth)
         {
             if (!msg)         /* FIXME: let it untranslated? */
                 msg = "Authorization refused\n";
-            if (sess->type == TYPE_SERVER && sess->ver >= 8)
+/*            if (sess->type == TYPE_SERVER && sess->ver >= 8)
                 SnacCliAuthorize (sess, cont->uin, 0, msg);
+ */
             else if (sess->type == TYPE_SERVER)
                 SnacCliSendmsg (sess, cont->uin, "\x03", MSG_AUTH_DENY);
             else
                 CmdPktCmdSendMessage (sess, cont->uin, "\x03", MSG_AUTH_DENY);
+            free (cmd);
+            return 0;
+        }
+        else if (!strcmp (cmd, "add"))
+        {
+/*            if (sess->type == TYPE_SERVER && sess->ver >= 8)
+                SnacCliGrantauth (sess, cont->uin);
+ */
+            else if (sess->type == TYPE_SERVER)
+                SnacCliSendmsg (sess, cont->uin, "\x03", MSG_AUTH_ADDED);
+            else
+                CmdPktCmdSendMessage (sess, cont->uin, "\x03", MSG_AUTH_ADDED);
             free (cmd);
             return 0;
         }
@@ -2039,8 +2055,9 @@ static JUMP_F(CmdUserAuth)
         return 0;
     }
         
-    if (sess->type == TYPE_SERVER && sess->ver >= 8)
+/*    if (sess->type == TYPE_SERVER && sess->ver >= 8)
         SnacCliAuthorize (sess, cont->uin, 1, NULL);
+ */
     else if (sess->type == TYPE_SERVER)
         SnacCliSendmsg (sess, cont->uin, "\x03", MSG_AUTH_GRANT);
     else

@@ -20,6 +20,7 @@ void SnacCliSeticbm      (Session *sess);
 void SnacCliAddcontact   (Session *sess, UDWORD uin);
 void SnacCliRemcontact   (Session *sess, UDWORD uin);
 void SnacCliReqroster    (Session *sess);
+void SnacCliGrantauth    (Session *sess, UDWORD uin);
 void SnacCliReqauth      (Session *sess, UDWORD uin, const char *msg);
 void SnacCliAuthorize    (Session *sess, UDWORD uin, BOOL accept, const char *msg);
 void SnacCliAddvisible   (Session *sess, UDWORD uin);

@@ -1289,6 +1289,19 @@ void SnacCliReqroster (Session *sess)
 }
 
 /*
+ * CLI_GRANTAUTH - SNAC(13,14)
+ */
+void SnacCliGrantauth (Session *sess, UDWORD uin)
+{
+    Packet *pak;
+    
+    pak = SnacC (sess, 19, 20, 0, 0);
+    PacketWriteUIN  (pak, uin);
+    PacketWrite4    (pak, 0);
+    SnacSend (sess, pak);
+}
+
+/*
  * CLI_REQAUTH - SNAC(13,18)
  */
 void SnacCliReqauth (Session *sess, UDWORD uin, const char *msg)
