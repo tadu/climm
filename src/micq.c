@@ -129,7 +129,6 @@ int main (int argc, char *argv[])
     WSADATA wsaData;
 #endif
     Connection *conn;
-    char *p;
     
     const char *arg_v, *arg_f, *arg_l, *arg_i, *arg_b;
     UDWORD arg_h = 0, arg_vv = 0, arg_c = 0;
@@ -193,32 +192,8 @@ int main (int argc, char *argv[])
     prG->logplace = arg_l ? strdup (arg_l) : NULL;
     prG->flags |= arg_c ? 0 : FLAG_COLOR;
     
-    if (!arg_i)
-        arg_i = getenv ("LC_ALL");
-    if (!arg_i)
-        arg_i = getenv ("LC_MESSAGES");
-    if (!arg_i)
-        arg_i = getenv ("LANG");
-    if (!arg_i)
-        arg_i = "C";
-    prG->locale = strdup (arg_i);
-
-    prG->enc_loc = ENC_AUTO;
-    if ((p = strchr (prG->locale, '@')))
-    {
-        if (!strcmp (p, "@euro"))
-            prG->enc_loc = ENC_AUTO | ENC_LATIN9;
-        *p = '\0';
-    }
-    if ((p = strchr (prG->locale, '.')))
-    {
-        if (!strncmp (p, ".KOI", 3))
-            prG->enc_loc = ENC_AUTO | ENC_KOI8;
-        if (!strcmp (p, ".UTF-8"))
-            prG->enc_loc = ENC_AUTO | ENC_UTF8;
-        *p = '\0';
-    }
-
+    i18nInit (&prG->locale, &prG->enc_loc, arg_i);
+    
     rc = arg_h ? 0 : PrefLoad (prG);
 
     i = i18nOpen (prG->locale);

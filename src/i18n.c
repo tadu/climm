@@ -35,12 +35,50 @@ char *i18nStrings[i18nSLOTS] = { 0 };
 static int i18nAdd (FILE *i18nf, int debug, int *res);
 
 /*
+ * Finds the default locale/encoding.
+ */
+void i18nInit (char **loc, UBYTE *enc, const char *arg)
+{
+    char *p, *q;
+
+    if (!arg)
+        arg = getenv ("LC_ALL");
+    if (!arg)
+        arg = getenv ("LC_MESSAGES");
+    if (!arg)
+        arg = getenv ("LANG");
+    if (!arg)
+        arg = "en";
+    *loc = q = strdup (arg);
+
+    *enc = ENC_AUTO;
+    if (*q == '/')
+        q = strrchr (q, '/');
+    if ((p = strrchr (q, '@')))
+    {
+        if (!strcmp (p, "@euro"))
+            *enc = ENC_AUTO | ENC_LATIN9;
+        *p = '\0';
+    }
+    if ((p = strrchr (q, '.')))
+    {
+        if (!strncmp (p, ".KOI", 3))
+            *enc = ENC_AUTO | ENC_KOI8;
+        if (!strcmp (p, ".UTF-8"))
+            *enc = ENC_AUTO | ENC_UTF8;
+        *p = '\0';
+    }
+}
+
+/*
  * Opens and reads the localization file defined by parameter or the
  * environment variables LANG, LC_ALL, LC_MESSAGES.
  */
 int i18nOpen (const char *loc)
 {
     int j = 0, debug = 0, res = 1;
+    char *floc = NULL;
+    UBYTE enc, utf8 = 0;
     FILE *i18nf;
 
     if (*loc == '+')
@@ -57,16 +95,18 @@ int i18nOpen (const char *loc)
     if (!strcmp (loc, "!") || !strcmp (loc, "auto") || !strcmp (loc, "default"))
         loc = NULL;
 
-    if (!loc)   loc = getenv ("LC_MESSAGES");
-    if (!loc)   loc = getenv ("LC_ALL");
-    if (!loc)   loc = getenv ("LANG");
-    if (!loc)   return 0;
+    i18nInit (&floc, &enc, loc);
+    loc = floc;
 
     if (!strcmp (loc, "C"))
     {
+        s_free (floc);
         i18nClose ();
         return 0;
     }
+    
+    if ((enc & ~ENC_AUTO) == ENC_UTF8)
+        utf8 = 1;
 
 #define i18nTry(x,y,z,a) do { \
     if ((i18nf = fopen (s_sprintf (x,y,z,a), "r"))) \
@@ -74,28 +114,43 @@ int i18nOpen (const char *loc)
 } while (0)
 
     if (*loc == '/')
-    {
         i18nTry (loc, "", "", "");
-    }
     else
     {
         if (prG->flags & FLAG_FUNNY)
         {
-            i18nTry ("%s/i18n/%s_fun.i18n", PrefUserDir (prG), loc, "");
+            if (utf8)
+                i18nTry ("%s/i18n/%s.UTF-8@fun.i18n", PrefUserDir (prG), loc, "");
+            i18nTry ("%s/i18n/%s@fun.i18n", PrefUserDir (prG), loc, "");
+            if (strchr (loc, '_') && utf8)
+                i18nTry ("%s/i18n/%.*s.UTF-8@fun.i18n", PrefUserDir (prG), strchr (loc, '_') - loc, loc);
             if (strchr (loc, '_'))
                 i18nTry ("%s/i18n/%.*s@fun.i18n", PrefUserDir (prG), strchr (loc, '_') - loc, loc);
+            if (utf8)
+                i18nTry (PKGDATADIR "/%s.UTF-8@fun.i18n", loc, "", "");
             i18nTry (PKGDATADIR "/%s@fun.i18n", loc, "", "");
+            if (strchr (loc, '_') && utf8)
+                i18nTry (PKGDATADIR "/%.*s.UTF-8@fun.i18n", strchr (loc, '_') - loc, loc, "");
             if (strchr (loc, '_'))
                 i18nTry (PKGDATADIR "/%.*s@fun.i18n", strchr (loc, '_') - loc, loc, "");
         }
 
+        if (utf8)
+            i18nTry ("%s/i18n/%s.UTF-8.i18n", PrefUserDir (prG), loc, "");
         i18nTry ("%s/i18n/%s.i18n", PrefUserDir (prG), loc, "");
+        if (strchr (loc, '_') && utf8)
+            i18nTry ("%s/i18n/%.*s.UTF-8.i18n", PrefUserDir (prG), strchr (loc, '_') - loc, loc);
         if (strchr (loc, '_'))
             i18nTry ("%s/i18n/%.*s.i18n", PrefUserDir (prG), strchr (loc, '_') - loc, loc);
+        if (utf8)
+            i18nTry (PKGDATADIR "/%s.UTF-8.i18n", loc, "", "");
         i18nTry (PKGDATADIR "/%s.i18n", loc, "", "");
+        if (strchr (loc, '_') && utf8)
+            i18nTry (PKGDATADIR "/%.*s.UTF-8.i18n", strchr (loc, '_') - loc, loc, "");
         if (strchr (loc, '_'))
             i18nTry (PKGDATADIR "/%.*s.i18n", strchr (loc, '_') - loc, loc, "");
     }
+    s_free (floc);
 
     return j ? j : -1;
 }
@@ -124,7 +179,7 @@ static int i18nAdd (FILE *i18nf, int debug, int *res)
         if (p == buf || i < 0 || i >= i18nSLOTS || i18nStrings[i])
             continue;
         
-        p = debug ? buf : ++p;
+        p = debug ? buf : p + 1;
         if (i == 1007)
         {
             if      (!strcmp (buf, "iso-8859-1")) enc = ENC_LATIN1;
