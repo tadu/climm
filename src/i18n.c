@@ -77,14 +77,21 @@ void i18nInit (const char *arg)
         arg = setlocale (LC_MESSAGES, NULL);
         if (arg)
         {
+#if HAVE_NL_LANGINFO && defined (CODESET)
+            if (!*arg)
+#else
             if (!*arg || !strcasecmp (arg, "C") || !strcasecmp (arg, "POSIX"))
+#endif
             {
                 prG->locale_broken = TRUE;
                 arg = NULL;
             }
             else
+            {
                 if (!prG->locale_orig)
                     s_repl (&prG->locale_orig, arg);
+                earg = arg;
+            }
             if (!prG->locale_full)
                 s_repl (&prG->locale_full, arg);
         }
