@@ -1,5 +1,22 @@
 
 2001-03-23 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* src/file_util.c, src/micq.c, include/micq.h: Add config option
+	  "Del_is_Del" tied to global BOOL del_is_bs, (default TRUE).
+	* src/mreadline.c: Put backspace and delete processing into
+	  seperate functions R_process_input_backspace() and
+	  R_process_input_delete(); now ^h triggers backspace, ESC[3~
+	  delete, and the delete character backspace or delete depending on
+	  whether del_is_bs is set. Allow different arrow key codes
+	  and stop beeping at end of line etc.
+
+2001-03-23 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* src/file_util.c, src/micq.c, include/micq.h: Add config option
+	  "Last_UIN_Prompt" tied to global BOOL last_uin_prompt (default
+	  FALSE).
+	* include/ui.h, src/ui.c, src/util_ui.c: Change prompt to contain
+	  last used UIN's name, if last_uin_prompt is set.
+
+2001-03-23 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* src/mselect.c: Zero fd set on failure of select() (e.g. caused
 	  by interruption by SIGWINCH), which could freeze micq till a
 	  server input.
