@@ -14,6 +14,7 @@
 
 #include "micq.h"
 #include "contact.h"
+#include "util_str.h"
 
 static int cnt_number = 0;
 static Contact cnt_contacts[MAX_CONTACTS];
@@ -26,6 +27,7 @@ Contact *ContactAdd (UDWORD uin, const char *nick)
     Contact *cont;
     int i;
     int flags = 0;
+    char buf[20];
     
     if (nick)
         for (i = 0; i < cnt_number; i++)
@@ -42,17 +44,16 @@ Contact *ContactAdd (UDWORD uin, const char *nick)
         return NULL;
 
     cont->uin = uin;
-    if (nick)
+    if (!nick)
     {
-        strncpy (cont->nick, nick, 20);
-        cont->nick[19] = '\0';
-    }
-    else
-    {
-        snprintf (cont->nick, sizeof (cont->nick), "%ld", uin);
+        snprintf (buf, sizeof (buf), "%ld", uin);
+        nick = buf;
         flags |= CONT_TEMPORARY;
     }
-    (cont + 1)->uin = 0;
+    s_repl (&cont->nick, nick);
+
+    if (cnt_number != MAX_CONTACTS - 1)
+        (cont + 1)->uin = 0;
 
     cont->flags = flags;
     cont->status = STATUS_OFFLINE;
@@ -79,6 +80,8 @@ void ContactRem (Contact *cont)
             break;
     if (i == cnt_number)
         return;
+
+    s_repl (&cont->nick, NULL);
 
     uin = cont->uin;
     for (cnt_number--; i < cnt_number; i++)

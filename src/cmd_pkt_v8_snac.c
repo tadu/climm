@@ -26,6 +26,7 @@
 #include "buildmark.h"
 #include "cmd_user.h"
 #include "conv.h"
+#include "util_str.h"
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
@@ -200,8 +201,7 @@ static JUMP_SNAC_F(SnacSrvUnknown)
 {
     if (!(prG->verbose & DEB_PACK8))
     {
-        Time_Stamp ();
-        M_print (" " COLINDENT COLSERVER "%s ", i18n (1033, "Incoming v8 server packet:"));
+        M_print ("%s " COLINDENT COLSERVER "%s ", s_now, i18n (1033, "Incoming v8 server packet:"));
         FlapPrint (event->pak);
         M_print (COLEXDENT "\n");
     }
@@ -282,7 +282,7 @@ static JUMP_SNAC_F(SnacSrvReplyinfo)
     {
         event->sess->our_outside_ip = tlv[10].nr;
         if (prG->verbose)
-            M_print (i18n (1915, "Server says we're at %s.\n"), UtilIOIP (event->sess->our_outside_ip));
+            M_print (i18n (1915, "Server says we're at %s.\n"), s_ip (event->sess->our_outside_ip));
         if (event->sess->assoc)
             event->sess->assoc->our_outside_ip = event->sess->our_outside_ip;
     }
@@ -292,10 +292,7 @@ static JUMP_SNAC_F(SnacSrvReplyinfo)
         if (status != event->sess->status)
         {
             event->sess->status = status;
-            Time_Stamp ();
-            M_print (" ");
-            Print_Status (event->sess->status);
-            M_print ("\n");
+            M_print ("%s %s\n", s_now, s_status (event->sess->status));
         }
     }
     /* TLV 1 c f 2 3 ignored */
@@ -565,8 +562,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             tlv[6].len ? tlv[6].nr : STATUS_OFFLINE);
     Auto_Reply (event->sess, uin);
 
-    if (text)
-        free (text);
+    s_free (text);
     
     if (pp)
         PacketD (pp);
@@ -604,8 +600,7 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
         return;
     cont->status = STATUS_OFFLINE;
 
-    Time_Stamp ();
-    M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);
+    M_print ("%s " COLCONTACT "%10s" COLNONE " ", s_now, cont->nick);
     M_print (i18n (2126, "User is offline, message (%s#%08lx:%08lx%s) queued.\n"),
              COLSERVER, mid1, mid2, COLNONE);
     putlog (event->sess, NOW, uin, STATUS_OFFLINE, LOG_ACK, 0xFFFF, 
@@ -1115,10 +1110,8 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, const char *text, UDWORD type)
     UDWORD mtime = 0, mid = 0;
     
     if (type != 0xe8)
-    {
-        Time_Stamp ();
-        M_print (" " COLACK "%10s" COLNONE " " MSGSENTSTR "%s\n", ContactFindName (uin), MsgEllipsis (text));
-    }
+        M_print ("%s " COLACK "%10s" COLNONE " " MSGSENTSTR "%s\n",
+                 s_now, ContactFindName (uin), MsgEllipsis (text));
     
     switch (type)
     {
@@ -1412,7 +1405,7 @@ void SnacCliMetasetgeneral (Session *sess, const MetaGeneral *user)
     PacketWriteLNTS (pak, user->fax);
     PacketWriteLNTS (pak, user->street);
     PacketWriteLNTS (pak, user->cellular);
-    PacketWriteLNTS (pak, UtilFill ("%05d", user->zip));
+    PacketWriteLNTS (pak, s_sprintf ("%05d", user->zip));
     PacketWrite2    (pak, user->country);
     PacketWrite1    (pak, user->tz);
     PacketWrite1    (pak, user->webaware);

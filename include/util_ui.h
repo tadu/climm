@@ -4,8 +4,6 @@ UWORD  Get_Max_Screen_Width ();
 SDWORD Echo_Off (void);
 SDWORD Echo_On (void);
 
-void   Time_Output (time_t stamp);
-void   Time_Stamp (void);
 void   M_print (const char *str, ...);
 int    M_pos ();
 BOOL   Debug (UDWORD level, const char *str, ...);
@@ -18,7 +16,6 @@ BOOL   UtilUIParseRemainder (char **input, char **parsed);
 void   UtilUIUserOnline  (Session *sess, Contact *cont, UDWORD status);
 void   UtilUIUserOffline (Session *sess, Contact *cont);
 void   UtilUISetVersion (Contact *cont);
-char  *UtilUITime (time_t *t);
 
 #define DEB_PROTOCOL      0x00000008L
 #define DEB_PACKET        0x00000010L

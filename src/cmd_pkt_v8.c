@@ -18,6 +18,7 @@
 #include "preferences.h"
 #include "cmd_pkt_v8_flap.h"
 #include "cmd_pkt_v8_snac.h"
+#include "util_str.h"
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -56,8 +57,7 @@ static void SrvCallBackReconn (Session *sess)
 {
     Contact *cont;
 
-    Time_Stamp ();
-    M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
+    M_print ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (sess->uin), COLNONE);
     sess->connect = 0;
     if (reconn < 5)
     {
@@ -162,8 +162,8 @@ void SrvCallBackReceive (Session *sess)
     
     if (prG->verbose & DEB_PACK8)
     {
-        Time_Stamp ();
-        M_print (" " COLINDENT COLSERVER "%s ", i18n (1033, "Incoming v8 server packet:"));
+        M_print ("%s " COLINDENT COLSERVER "%s ",
+                 s_now, i18n (1033, "Incoming v8 server packet:"));
         FlapPrint (pak);
         M_print (COLEXDENT "\r");
     }

@@ -11,6 +11,7 @@
 #include "cmd_pkt_v8_tlv.h"
 #include "util_ui.h"
 #include "packet.h"
+#include "util_str.h"
 #include <string.h>
 #include <assert.h>
 
@@ -102,10 +103,8 @@ UWORD TLVGet (TLV *tlv, UWORD nr)
 void TLVDone (TLV *tlv, UWORD nr)
 {
     int i;
-    if (tlv[nr].str)
-        free (tlv[nr].str);
+    s_repl (&tlv[nr].str, NULL);
     tlv[nr].tlv = 0;
-    tlv[nr].str = NULL;
     if (nr < __minTLV)
     {
         for (i = __minTLV; tlv[i].tlv; i++)
@@ -134,11 +133,9 @@ void TLVD (TLV *tlv)
 {
     int i;
     for (i = 0; i < __minTLV; i++)
-        if (tlv[i].str)
-            free ((char *)tlv[i].str);
+        s_repl (&tlv[i].str, NULL);
     for ( ; tlv[i].tlv; i++)
-        if (tlv[i].str)
-            free ((char *)tlv[i].str);
+        s_repl (&tlv[i].str, NULL);
     free (tlv);
 }
 

@@ -9,17 +9,18 @@
  * $Id$
  */
 
+#include "micq.h"
 #include <stdlib.h>
 #include <assert.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
-#include "micq.h"
 #include "file_util.h"
 #include "preferences.h"
 #include "util_ui.h"
 #include "session.h"
+#include "util_str.h"
 
 static FILE *PrefOpenRC (Preferences *pref);
 
@@ -153,8 +154,6 @@ void PrefLoad (Preferences *pref)
         Initalize_RC_File ();
 }
 
-#define __repl(a,b) do { if (a) free (a); a = strdup (b); } while (0)
-
 /*
  * Set the color scheme to use.
  */
@@ -163,52 +162,52 @@ void PrefSetColorScheme (Preferences *pref, UBYTE scheme)
     switch (scheme)
     {
         case 1: /* former colors scheme A */
-            __repl (pref->colors[CXNONE],     SGR0);
-            __repl (pref->colors[CXSERVER],   BLUE BOLD);
-            __repl (pref->colors[CXCLIENT],   RED BOLD);
-            __repl (pref->colors[CXMESSAGE],  BLUE BOLD);
-            __repl (pref->colors[CXCONTACT],  GREEN);
-            __repl (pref->colors[CXSENT],     MAGENTA BOLD);
-            __repl (pref->colors[CXACK],      GREEN BOLD);
-            __repl (pref->colors[CXERROR],    RED BOLD);
-            __repl (pref->colors[CXINCOMING], CYAN BOLD);
-            __repl (pref->colors[CXDEBUG],    YELLOW);
+            s_repl (&pref->colors[CXNONE],     SGR0);
+            s_repl (&pref->colors[CXSERVER],   BLUE BOLD);
+            s_repl (&pref->colors[CXCLIENT],   RED BOLD);
+            s_repl (&pref->colors[CXMESSAGE],  BLUE BOLD);
+            s_repl (&pref->colors[CXCONTACT],  GREEN);
+            s_repl (&pref->colors[CXSENT],     MAGENTA BOLD);
+            s_repl (&pref->colors[CXACK],      GREEN BOLD);
+            s_repl (&pref->colors[CXERROR],    RED BOLD);
+            s_repl (&pref->colors[CXINCOMING], CYAN BOLD);
+            s_repl (&pref->colors[CXDEBUG],    YELLOW);
             break;
         case 2:
-            __repl (pref->colors[CXNONE],     SGR0);
-            __repl (pref->colors[CXSERVER],   MAGENTA);
-            __repl (pref->colors[CXCLIENT],   CYAN);
-            __repl (pref->colors[CXMESSAGE],  CYAN);
-            __repl (pref->colors[CXCONTACT],  CYAN);
-            __repl (pref->colors[CXSENT],     MAGENTA BOLD);
-            __repl (pref->colors[CXACK],      GREEN BOLD);
-            __repl (pref->colors[CXERROR],    RED BOLD);
-            __repl (pref->colors[CXINCOMING], CYAN BOLD);
-            __repl (pref->colors[CXDEBUG],    YELLOW);
+            s_repl (&pref->colors[CXNONE],     SGR0);
+            s_repl (&pref->colors[CXSERVER],   MAGENTA);
+            s_repl (&pref->colors[CXCLIENT],   CYAN);
+            s_repl (&pref->colors[CXMESSAGE],  CYAN);
+            s_repl (&pref->colors[CXCONTACT],  CYAN);
+            s_repl (&pref->colors[CXSENT],     MAGENTA BOLD);
+            s_repl (&pref->colors[CXACK],      GREEN BOLD);
+            s_repl (&pref->colors[CXERROR],    RED BOLD);
+            s_repl (&pref->colors[CXINCOMING], CYAN BOLD);
+            s_repl (&pref->colors[CXDEBUG],    YELLOW);
             break;
         case 3:
-            __repl (pref->colors[CXNONE],     GREEN);
-            __repl (pref->colors[CXSERVER],   SGR0);
-            __repl (pref->colors[CXCLIENT],   GREEN);
-            __repl (pref->colors[CXMESSAGE],  GREEN);
-            __repl (pref->colors[CXCONTACT],  GREEN BOLD);
-            __repl (pref->colors[CXSENT],     MAGENTA BOLD);
-            __repl (pref->colors[CXACK],      GREEN BOLD);
-            __repl (pref->colors[CXERROR],    RED BOLD);
-            __repl (pref->colors[CXINCOMING], CYAN BOLD);
-            __repl (pref->colors[CXDEBUG],    YELLOW);
+            s_repl (&pref->colors[CXNONE],     GREEN);
+            s_repl (&pref->colors[CXSERVER],   SGR0);
+            s_repl (&pref->colors[CXCLIENT],   GREEN);
+            s_repl (&pref->colors[CXMESSAGE],  GREEN);
+            s_repl (&pref->colors[CXCONTACT],  GREEN BOLD);
+            s_repl (&pref->colors[CXSENT],     MAGENTA BOLD);
+            s_repl (&pref->colors[CXACK],      GREEN BOLD);
+            s_repl (&pref->colors[CXERROR],    RED BOLD);
+            s_repl (&pref->colors[CXINCOMING], CYAN BOLD);
+            s_repl (&pref->colors[CXDEBUG],    YELLOW);
             break;
         default:
-            __repl (pref->colors[CXNONE],     SGR0);
-            __repl (pref->colors[CXSERVER],   RED);
-            __repl (pref->colors[CXCLIENT],   GREEN);
-            __repl (pref->colors[CXMESSAGE],  BLUE BOLD);
-            __repl (pref->colors[CXCONTACT],  MAGENTA BOLD);
-            __repl (pref->colors[CXSENT],     MAGENTA BOLD);
-            __repl (pref->colors[CXACK],      GREEN BOLD);
-            __repl (pref->colors[CXERROR],    RED BOLD);
-            __repl (pref->colors[CXINCOMING], CYAN BOLD);
-            __repl (pref->colors[CXDEBUG],    YELLOW);
+            s_repl (&pref->colors[CXNONE],     SGR0);
+            s_repl (&pref->colors[CXSERVER],   RED);
+            s_repl (&pref->colors[CXCLIENT],   GREEN);
+            s_repl (&pref->colors[CXMESSAGE],  BLUE BOLD);
+            s_repl (&pref->colors[CXCONTACT],  MAGENTA BOLD);
+            s_repl (&pref->colors[CXSENT],     MAGENTA BOLD);
+            s_repl (&pref->colors[CXACK],      GREEN BOLD);
+            s_repl (&pref->colors[CXERROR],    RED BOLD);
+            s_repl (&pref->colors[CXINCOMING], CYAN BOLD);
+            s_repl (&pref->colors[CXDEBUG],    YELLOW);
             scheme = 0;
     }
     pref->scheme = scheme;

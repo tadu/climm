@@ -18,6 +18,7 @@
 #include "packet.h"
 #include "file_util.h"
 #include "cmd_pkt_v8_tlv.h"
+#include "util_str.h"
 #include <assert.h>
 #include <string.h>
 #include <fcntl.h>
@@ -119,8 +120,7 @@ static void FlapChannel4 (Session *sess, Packet *pak)
     tlv = TLVRead (pak, PacketReadLeft (pak));
     if (!tlv[5].len)
     {
-        Time_Stamp ();
-        M_print (" " COLINDENT);
+        M_print ("%s " COLINDENT, s_now);
         if (!(sess->connect & CONNECT_OK))
             M_print (i18n (1895, "Login failed:\n"));
         else
@@ -236,8 +236,7 @@ void FlapSend (Session *sess, Packet *pak)
     
     if (prG->verbose & DEB_PACK8)
     {
-        Time_Stamp ();
-        M_print (" " COLINDENT COLCLIENT "%s ", i18n (1903, "Outgoing v8 server packet:"));
+        M_print ("%s " COLINDENT COLCLIENT "%s ", s_now, i18n (1903, "Outgoing v8 server packet:"));
         FlapPrint (pak);
         M_print (COLEXDENT "\r");
     }
@@ -288,7 +287,7 @@ void FlapCliIdent (Session *sess)
     
     pak = FlapC (1);
     PacketWriteB4 (pak, CLI_HELLO);
-    PacketWriteTLVStr (pak, 1, UtilFill ("%d", sess->uin));
+    PacketWriteTLVStr (pak, 1, s_sprintf ("%d", sess->uin));
     PacketWriteTLVStr (pak, 2, _encryptpw (sess->passwd));
     PacketWriteTLVStr (pak, 3, "ICQ Inc. - Product of ICQ (TM).2001b.5.15.1.3638.85");
     PacketWriteTLV2   (pak, 22, 266);

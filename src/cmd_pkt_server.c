@@ -16,6 +16,7 @@
 #include "packet.h"
 #include "contact.h"
 #include "util_io.h"
+#include "util_str.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -100,8 +101,7 @@ void CmdPktSrvRead (Session *sess)
     
     if (prG->verbose & DEB_PACK5DATA)
     {
-        Time_Stamp ();
-        M_print (" " COLINDENT COLSERVER "");
+        M_print ("%s " COLINDENT COLSERVER "", s_now);
         M_print (i18n (1774, "Incoming packet:"));
         M_print (" %04x %08x:%04x%04x %04x (%s)" COLNONE "\n",
                  pak->ver, session, seq2, seq, cmd, CmdPktSrvName (cmd));
@@ -204,8 +204,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             M_print (i18n (1641, "User info successfully updated.\n"));
             break;
         case SRV_LOGIN_REPLY:
-            Time_Stamp ();
-            M_print (" " COLCONTACT "%10lu" COLNONE " %s\n", uin, i18n (1050, "Login successful!"));
+            M_print ("%s " COLCONTACT "%10lu" COLNONE " %s\n", s_now, uin, i18n (1050, "Login successful!"));
             CmdPktCmdLogin1 (sess);
             CmdPktCmdContactList (sess);
             CmdPktCmdInvisList (sess);
@@ -216,7 +215,6 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             if (loginmsg++)
                 break;
 
-            Time_Stamp ();
 #if ICQ_VER == 0x0002
             PacketRead4 (pak);
 #elif ICQ_VER != 0x0004
@@ -228,8 +226,8 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             ip[1] = PacketRead1 (pak);
             ip[2] = PacketRead1 (pak);
             ip[3] = PacketRead1 (pak);
-            M_print (" " COLCONTACT "%10s" COLNONE 
-                " %s: %u.%u.%u.%u\n", ContactFindName (uin), i18n (1642, "IP"),
+            M_print ("%s " COLCONTACT "%10s" COLNONE " %s: %u.%u.%u.%u\n",
+                s_now, ContactFindName (uin), i18n (1642, "IP"),
                 ip[0], ip[1], ip[2], ip[3]);
             QueueEnqueueData (sess, 0, QUEUE_UDP_KEEPALIVE, 0, time (NULL) + 120,
                               NULL, NULL, &CmdPktSrvCallBackKeepAlive);
@@ -267,8 +265,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             exit (1);
             break;
         case SRV_TRY_AGAIN:
-            Time_Stamp ();
-            M_print (" " COLMESSAGE);
+            M_print ("%s " COLMESSAGE, s_now);
             M_print (i18n (1646, "Server is busy.\n"));
             uiG.reconnect_count++;
             if (uiG.reconnect_count >= MAX_RECONNECT_ATTEMPTS)
@@ -307,9 +304,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             break;
         case SRV_GO_AWAY:
         case SRV_NOT_CONNECTED:
-            Time_Stamp ();
-            M_print (" ");
-            M_print ("%s\n", i18n (1039, "Server claims we're not connected.\n"));
+            M_print ("%s %s\n", s_now, i18n (1039, "The server claims we're not connected.\n"));
             uiG.reconnect_count++;
             if (uiG.reconnect_count >= MAX_RECONNECT_ATTEMPTS)
             {
@@ -356,8 +351,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
         case SRV_AUTH_UPDATE:
             break;
         default:               /* commands we dont handle yet */
-            Time_Stamp ();
-            M_print (" " COLCLIENT);
+            M_print ("%s " COLCLIENT, s_now);
             M_print (i18n (1648, "The response was %04X\t"), cmd);
             M_print (i18n (1649, "The version was %X\t"), ver);
             M_print (i18n (1650, "\nThe SEQ was %04X\t"), seq);
@@ -407,8 +401,7 @@ static JUMP_SRV_F (CmdPktSrvMulti)
 
         if (prG->verbose & DEB_PACK5DATA)
         {
-            Time_Stamp ();
-            M_print (" " COLINDENT COLSERVER "");
+            M_print ("%s " COLINDENT COLSERVER "", s_now);
             M_print (i18n (1823, "Incoming partial packet:"));
             M_print (" %04x %08x:%04x%04x %04x (%s)" COLNONE "\n",
                      ver, session, seq2, seq, cmd, CmdPktSrvName (cmd));
@@ -451,15 +444,13 @@ static JUMP_SRV_F (CmdPktSrvAck)
     if (ccmd == CMD_SEND_MESSAGE)
     {
         char *tmp;
-        Time_Stamp ();
-        M_print (" " COLACK "%10s" COLNONE " %s%s\n",
-                 ContactFindName (PacketReadAt4 (event->pak, CMD_v5_OFF_PARAM)),
+        M_print ("%s " COLACK "%10s" COLNONE " %s%s\n",
+                 s_now, ContactFindName (PacketReadAt4 (event->pak, CMD_v5_OFF_PARAM)),
                  MSGACKSTR, MsgEllipsis (tmp = PacketReadAtLNTS (event->pak, 30)));
         free (tmp);
     }
     
     PacketD (pak);
-    if (event->info)
-        free (event->info);
+    s_free (event->info);
     free (event);
 }

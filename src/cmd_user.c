@@ -25,6 +25,7 @@
 #include "buildmark.h"
 #include "contact.h"
 #include "server.h"
+#include "util_str.h"
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
@@ -200,11 +201,11 @@ static JUMP_F(CmdUserChange)
     }
     if (UtilUIParseRemainder (&args, &arg1))
     {
-        if      (data & STATUSF_DND) { if (prG->auto_dnd)  free (prG->auto_dnd);  prG->auto_dnd  = strdup (arg1); }
-        else if (data & STATUSF_OCC) { if (prG->auto_occ)  free (prG->auto_occ);  prG->auto_occ  = strdup (arg1); }
-        else if (data & STATUSF_NA)  { if (prG->auto_na)   free (prG->auto_na);   prG->auto_na   = strdup (arg1); }
-        else if (data & STATUSF_AWAY){ if (prG->auto_away) free (prG->auto_away); prG->auto_away = strdup (arg1); }
-        else if (data & STATUSF_FFC) { if (prG->auto_ffc)  free (prG->auto_ffc);  prG->auto_ffc  = strdup (arg1); }
+        if      (data & STATUSF_DND)  s_repl (&prG->auto_dnd,  arg1);
+        else if (data & STATUSF_OCC)  s_repl (&prG->auto_occ,  arg1);
+        else if (data & STATUSF_NA)   s_repl (&prG->auto_na,   arg1);
+        else if (data & STATUSF_AWAY) s_repl (&prG->auto_away, arg1);
+        else if (data & STATUSF_FFC)  s_repl (&prG->auto_ffc,  arg1);
     }
 
     if (sess->ver > 6)
@@ -212,10 +213,7 @@ static JUMP_F(CmdUserChange)
     else
     {
         CmdPktCmdStatusChange (sess, data);
-        Time_Stamp ();
-        M_print (" ");
-        Print_Status (sess->status);
-        M_print ("\n");
+        M_print ("%s %s\n", s_now, s_status (sess->status));
     }
     return 0;
 }
@@ -605,7 +603,7 @@ static JUMP_F(CmdUserInfo)
         return 0;
     }
     M_print (i18n (1672, "%s's IP address is "), cont->nick);
-    Print_IP (cont->uin); /* FIXME: static buffer helper instead of printer */
+    M_print ("%s", contr->outside_ip == -1 ? i18n (1761, "unknown") : s_ip (contr->outside_ip));
     M_print ("\t");
 
     if (contr->port != (UWORD) 0xffff)
@@ -718,9 +716,7 @@ static JUMP_F(CmdUserTrans)
             M_print (i18n (-1, "1079:No translation; using compiled-in strings.¶"),
                      i18n (1001, "<lang>"), i18n (1002, "<lang_cc>"), i18n (1004, "<translation authors>"),
                      i18n (1006, "<last edit date>"), i18n (1005, "<last editor>"),
-                     v1, v2, v3, v4 ? t = (char *)UtilFill (".%d", v4) : "");
-            if (t)
-                free (t);
+                     v1, v2, v3, v4 ? s_sprintf (".%d", v4) : "");
             return 0;
         }
     }
@@ -926,29 +922,17 @@ static JUMP_F(CmdUserAuto)
     }
 
     if      (!strcasecmp (arg1, "dnd")  || !strcasecmp (arg1, CmdUserLookupName ("dnd")))
-    {
-        if (prG->auto_dnd)  free (prG->auto_dnd);  prG->auto_dnd  = strdup (arg2);
-    }
+        s_repl       (&prG->auto_dnd,  arg2);
     else if (!strcasecmp (arg1, "away") || !strcasecmp (arg1, CmdUserLookupName ("away")))
-    {
-        if (prG->auto_away) free (prG->auto_away); prG->auto_away = strdup (arg2);
-    }
+        s_repl       (&prG->auto_away, arg2);
     else if (!strcasecmp (arg1, "na")   || !strcasecmp (arg1, CmdUserLookupName ("na")))
-    {
-        if (prG->auto_na)   free (prG->auto_na);   prG->auto_na   = strdup (arg2);
-    }
+        s_repl       (&prG->auto_na,   arg2);
     else if (!strcasecmp (arg1, "occ")  || !strcasecmp (arg1, CmdUserLookupName ("occ")))
-    {
-        if (prG->auto_occ)  free (prG->auto_occ);  prG->auto_occ  = strdup (arg2);
-    }
+        s_repl       (&prG->auto_occ,  arg2);
     else if (!strcasecmp (arg1, "inv")  || !strcasecmp (arg1, CmdUserLookupName ("inv")))
-    {
-        if (prG->auto_inv)  free (prG->auto_inv);  prG->auto_inv  = strdup (arg2);
-    }
+        s_repl       (&prG->auto_inv,  arg2);
     else if (!strcasecmp (arg1, "ffc")  || !strcasecmp (arg1, CmdUserLookupName ("ffc")))
-    {
-        if (prG->auto_ffc)  free (prG->auto_ffc);  prG->auto_ffc  = strdup (arg2);
-    }
+        s_repl       (&prG->auto_ffc,  arg2);
     else
         M_print (i18n (2113, "Unknown status '%s'.\n"), arg1);
     free (arg1);
@@ -999,11 +983,7 @@ static JUMP_F(CmdUserAlter)
             return 0;
         }
         else
-        {
-            if (j->name)
-                free ((char *) j->name);
-            j->name = strdup (arg2);
-        }
+            s_repl (&j->name, arg2);
     }
     
     if (!quiet)
@@ -1298,8 +1278,8 @@ static JUMP_F(CmdUserStatusDetail)
             lennick = strlen (cont->nick);
         if (cont->flags & CONT_ALIAS)
             continue;
-        if (strlen (UtilStatus (cont->status)) > lenstat)
-            lenstat = strlen (UtilStatus (cont->status));
+        if (strlen (s_status (cont->status)) > lenstat)
+            lenstat = strlen (s_status (cont->status));
         if (cont->version && strlen (cont->version) > lenid)
             lenid = strlen (cont->version);
     }
@@ -1314,11 +1294,8 @@ static JUMP_F(CmdUserStatusDetail)
     {
         if (sess)
         {
-            Time_Stamp ();
-            M_print (" " COLCONTACT "%10lu" COLNONE " ", sess->uin);
-            M_print (i18n (1071, "Your status is "));
-            Print_Status (sess->status);
-            M_print ("\n");
+            M_print ("%s " COLCONTACT "%10lu" COLNONE " ", s_now, sess->uin);
+            M_print ("%s %s\n", i18n (1071, "Your status is"), s_status (sess->status));
         }
         if (data & 16)
             return 0;
@@ -1351,7 +1328,7 @@ static JUMP_F(CmdUserStatusDetail)
 
             peer = (sess && sess->assoc) ? SessionFind (TYPE_MSGDIRECT, cont->uin, sess->assoc) : NULL;
 
-            snprintf (statbuf, sizeof (statbuf), "(%s)", UtilStatus (contr->status));
+            snprintf (statbuf, sizeof (statbuf), "(%s) ", s_status (contr->status));
             if (contr->version)
                 snprintf (verbuf,  sizeof (verbuf), "[%s]", contr->version);
             else
@@ -1391,15 +1368,20 @@ static JUMP_F(CmdUserStatusDetail)
     }
     if (uin)
     {
+        char *t1, *t2;
         if (!contr)
             return 0;
 
-        M_print ("%-15s %s/%s:%d\n", i18n (1441, "IP:"), UtilIOIP (contr->outside_ip), UtilIOIP (contr->local_ip), contr->port);
+        M_print ("%-15s %s/%s:%d\n", i18n (1441, "IP:"),
+                 t1 = strdup (s_ip (contr->outside_ip)),
+                 t2 = strdup (s_ip (contr->local_ip)), contr->port);
         M_print ("%-15s %d\n", i18n (1453, "TCP version:"), contr->TCP_version);
         M_print ("%-15s %s (%d)\n", i18n (1454, "Connection:"),
                  contr->connection_type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),
                  contr->connection_type);
         M_print ("%-15s %08x\n", i18n (2026, "TCP cookie:"), contr->cookie);
+        free (t1);
+        free (t2);
         return 0;
     }
     M_print (COLMESSAGE);
@@ -1431,9 +1413,8 @@ static JUMP_F(CmdUserIgnoreStatus)
                 else
                     M_print (" ");
 
-                M_print (COLCONTACT "%-20s\t" COLMESSAGE "(", cont->nick);
-                Print_Status (cont->status);
-                M_print (")" COLNONE "\n");
+                M_print (COLCONTACT "%-20s\t" COLMESSAGE "(%s)" COLNONE "\n",
+                         cont->nick, s_status (cont->status));
             }
         }
     }
@@ -1536,7 +1517,7 @@ static JUMP_F(CmdUserStatusWide)
        is needed. Our own status is shown to the right in the 'Online' headline */
     M_print (COLMESSAGE);
 
-    stat = UtilStatus (sess->status);
+    stat = strdup (s_status (sess->status));
     StatusLen = strlen (i18n (1071, "Your status is ")) + strlen (stat) + 12;
     for (i = 0; 2 * i + StatusLen + strlen (i18n (1654, "Online")) < Get_Max_Screen_Width (); i++)
     {
@@ -1551,21 +1532,20 @@ static JUMP_F(CmdUserStatusWide)
    /* Print our status */
     M_print (" " COLCONTACT "%10lu" COLNONE " %s%s",
              sess->uin, i18n (1071, "Your status is "), stat);
+    free (stat);
     
     M_print (COLNONE "\n");
     for (i = 0; i < OnIdx; i++)
     {
-        const char *status;
-        char weird = 'W';       /* for weird statuses that are reported as hex */
+        char ind;
+        
+        ind = s_status (Online[i]->status)[0];
 
-        status = Convert_Status_2_Str (Online[i]->status);
-        status = status ? status : &weird;
-        if ((Online[i]->status & 0xfff) == STATUS_ONLINE)
-        {
-            status = " ";
-        }
+        if ((Online[i]->status & 0xffff) == STATUS_ONLINE)
+            ind = ' ';
+
         M_print (COLNONE "%c " COLCONTACT "%-*s" COLNONE,
-                 *status, MaxLen + 2, Online[i]->nick);
+                 ind, MaxLen + 2, Online[i]->nick);
         if ((i + 1) % NumCols == 0)
             M_print ("\n");
     }
@@ -1579,7 +1559,6 @@ static JUMP_F(CmdUserStatusWide)
         M_print ("=");
     }
     M_print (COLNONE "\n");
-    free (stat);
     free (Online);
     if (data)
         free (Offline);
@@ -1595,11 +1574,8 @@ static JUMP_F(CmdUserStatusShort)
     OSESSION;
 
     M_print (W_SEPERATOR);
-    Time_Stamp ();
-    M_print (" " COLCONTACT "%10lu" COLNONE " ", sess->uin);
-    M_print (i18n (1071, "Your status is "));
-    Print_Status (sess->status);
-    M_print ("\n");
+    M_print ("%s " COLCONTACT "%10lu" COLNONE " ", s_now, sess->uin);
+    M_print ("%s %s\n", i18n (1071, "Your status is"), s_status (sess->status));
 
     if (data)
     {
@@ -1617,9 +1593,8 @@ static JUMP_F(CmdUserStatusShort)
                         else
                             M_print (" ");
 
-                        M_print (COLCONTACT "%-20s\t" COLMESSAGE "(", cont->nick);
-                        Print_Status (cont->status);
-                        M_print (")" COLNONE "\n");
+                        M_print (COLCONTACT "%-20s\t" COLMESSAGE "(%s)" COLNONE "\n",
+                                 cont->nick, s_status (cont->status));
                     }
                 }
             }
@@ -1640,9 +1615,8 @@ static JUMP_F(CmdUserStatusShort)
                     else
                         M_print (" ");
 
-                    M_print (COLCONTACT "%-20s\t" COLMESSAGE "(", cont->nick);
-                    Print_Status (cont->status);
-                    M_print (")" COLNONE);
+                    M_print (COLCONTACT "%-20s\t" COLMESSAGE "(%s)" COLNONE "\n",
+                             cont->nick, s_status (cont->status));
                     if (cont->version)
                        M_print (" [%s]", cont->version);
                     if (cont->status & STATUSF_BIRTH)
@@ -2024,9 +1998,8 @@ static JUMP_F(CmdUserAdd)
             SnacCliAddcontact (sess, cont->uin);
         else
             CmdPktCmdContactList (sess);
+        s_repl (&cont->nick, arg1);
         cont->flags &= ~CONT_TEMPORARY;
-        strncpy (cont->nick, arg1, 18);
-        cont->nick[19] = '\0';
     }
     else
     {
@@ -2115,7 +2088,7 @@ static JUMP_F(CmdUserRInfo)
     }
     
     M_print (i18n (1672, "%s's IP address is "), cont->nick);
-    Print_IP (uiG.last_rcvd_uin);
+    M_print ("%s", cont->outside_ip == -1 ? i18n (1761, "unknown") : s_ip (cont->outside_ip));
     M_print ("\t");
 
     if (cont->port != (UWORD) 0xffff)
@@ -2272,11 +2245,7 @@ static JUMP_F(CmdUserTabs)
         M_print ("    %s", ContactFindName (uin));
         cont = ContactFind (uin);
         if (cont)
-        {
-            M_print (COLMESSAGE " (");
-            Print_Status (cont->status);
-            M_print (")" COLNONE);
-        }
+            M_print (COLMESSAGE " (%s)" COLNONE, s_status (cont->status));
         M_print ("\n");
     }
     return 0;
@@ -2296,14 +2265,14 @@ static JUMP_F(CmdUserLast)
         for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
             if (cont->last_message)
                 M_print ("  " COLCONTACT "%s" COLNONE " %s " COLMESSAGE "%s" COLNONE "\n",
-                         cont->nick, UtilUITime (&cont->last_time), cont->last_message);
+                         cont->nick, s_time (&cont->last_time), cont->last_message);
     }
     else
     {
         if (contr->last_message)
         {
             M_print (i18n (2106, "Last message from %s%s%s at %s:\n"),
-                     COLCONTACT, cont->nick, COLNONE, UtilUITime (&contr->last_time));
+                     COLCONTACT, cont->nick, COLNONE, s_time (&contr->last_time));
             M_print (COLMESSAGE "%s" COLNONE "\n", cont->last_message);
         }
         else
@@ -2379,17 +2348,22 @@ static JUMP_F(CmdUserConn)
         {
             M_print (i18n (2093, "%02d %-12s version %d for %s (%x), at %s:%d %s\n"),
                      i + 1, SessionType (sess), sess->ver, ContactFindName (sess->uin), sess->status,
-                     sess->server ? sess->server : UtilIOIP (sess->ip), sess->port,
+                     sess->server ? sess->server : s_ip (sess->ip), sess->port,
                      sess->connect & CONNECT_FAIL ? i18n (1497, "failed") :
                      sess->connect & CONNECT_OK   ? i18n (1934, "connected") :
                      sess->connect & CONNECT_MASK ? i18n (1911, "connecting") : i18n (1912, "closed"));
             if (prG->verbose)
             {
+                char *t1, *t2, *t3;
                 M_print (i18n (1935, "    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x\n"),
-                     sess->type, sess->sok, UtilIOIP (sess->ip),
-                     sess->connect, UtilIOIP (sess->our_local_ip), UtilIOIP (sess->our_outside_ip),
+                     sess->type, sess->sok, t1 = strdup (s_ip (sess->ip)),
+                     sess->connect, t2 = strdup (s_ip (sess->our_local_ip)),
+                     t3 = strdup (s_ip (sess->our_outside_ip)),
                      sess->our_session, sess->our_seq, sess->our_seq2);
                 M_print (i18n (2081, "    at %p parent %p assoc %p\n"), sess, sess->parent, sess->assoc);
+                free (t1);
+                free (t2);
+                free (t3);
             }
         } 
         M_print (COLEXDENT "\r");
@@ -2752,15 +2726,15 @@ static JUMP_F(CmdUserSearch)
                     CmdPktCmdMetaSearchWP (sess, &wp);
             }
 
-            if (wp.nick)       free (wp.nick);       wp.nick = NULL;
-            if (wp.last)       free (wp.last);       wp.last = NULL;
-            if (wp.first)      free (wp.first);      wp.first = NULL;
-            if (wp.email)      free (wp.email);      wp.email = NULL;
-            if (wp.company)    free (wp.company);    wp.company = NULL;
-            if (wp.department) free (wp.department); wp.department = NULL;
-            if (wp.position)   free (wp.position);   wp.position = NULL;
-            if (wp.city)       free (wp.city);       wp.city = NULL;
-            if (wp.state)      free (wp.state);      wp.state = NULL;
+            s_repl (&wp.nick,  NULL);
+            s_repl (&wp.last,  NULL);
+            s_repl (&wp.first, NULL);
+            s_repl (&wp.email, NULL);
+            s_repl (&wp.company,    NULL);
+            s_repl (&wp.department, NULL);
+            s_repl (&wp.position,   NULL);
+            s_repl (&wp.city,  NULL);
+            s_repl (&wp.state, NULL);
             return 0;
     }
     return 0;
@@ -2892,10 +2866,10 @@ static JUMP_F(CmdUserUpdate)
                     CmdPktCmdMetaGeneral (sess, &user);
             }
 
-            free (user.nick);
-            free (user.last);
-            free (user.first);
-            free (user.email);
+            s_repl (&user.nick,  NULL);
+            s_repl (&user.last,  NULL);
+            s_repl (&user.first, NULL);
+            s_repl (&user.email, NULL);
             return 0;
     }
     return 0;

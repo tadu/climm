@@ -10,6 +10,7 @@
 #include "session.h"
 #include "preferences.h"
 #include "buildmark.h"
+#include "util_str.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -436,7 +437,7 @@ static const char *DebugStr (UDWORD level)
 BOOL Debug (UDWORD level, const char *str, ...)
 {
     va_list args;
-    char buf[2048], buf2[3072], c;
+    char buf[2048], c;
 
     if (!(prG->verbose & level) && level)
         return 0;
@@ -448,76 +449,12 @@ BOOL Debug (UDWORD level, const char *str, ...)
     M_print ("");
     if ((c = M_pos ()))
         M_print ("\n");
-/*    M_print ("Debug: ");   */
-    Time_Stamp ();
-    snprintf (buf2, sizeof (buf2), " %s%7.7s%s %s", COLDEBUG, DebugStr (level & prG->verbose), COLNONE, buf);
+    M_print ("%s %s%7.7s%s %s", s_now, COLDEBUG, DebugStr (level & prG->verbose), COLNONE, buf);
 
-    M_print ("%s", buf2);
     if (!c)
         M_print ("\n");
 
     return 1;
-}
-
-/* Outputs a given time stamp (or current time if it is NOW). */
-void Time_Output (time_t stamp)
-{
-    struct timeval p = {0L, 0L};
-    struct tm now;
-    struct tm *thetime;
-    char tbuf[32];
-
-#ifdef HAVE_GETTIMEOFDAY
-    if (gettimeofday (&p, NULL) == -1)
-    {
-        p.tv_usec = 0L;
-        p.tv_sec = time (NULL);
-    }
-#else
-    p.tv_sec = time (NULL);
-#endif
-
-    now = *localtime (&p.tv_sec);
-
-    thetime = stamp == NOW ? &now : localtime (&stamp);
-
-    strftime(tbuf, sizeof (tbuf), thetime->tm_year == now.tm_year 
-        && thetime->tm_mon == now.tm_mon && thetime->tm_mday == now.tm_mday
-        ? "%X" : "%a %b %d %X %Y", thetime);
-
-    if (prG->verbose > 7)
-        M_print ("%s.%.06d", tbuf, p.tv_usec);
-    else if (prG->verbose > 1)
-        M_print ("%s.%.03d", tbuf, p.tv_usec / 1000);
-    else
-        M_print ("%s", tbuf);
-}
-
-/*
- * Output the current time. Add µs for high enough debug level.
- */
-void Time_Stamp (void)
-{
-    Time_Output (NOW);
-}
-
-/*
- * Returns static string describing given time.
- */
-char *UtilUITime (time_t *t)
-{
-    static char buf[20];
-    struct tm *thetime;
-    
-    thetime = localtime (t);
-    snprintf (buf, sizeof (buf), "%.02d:%.02d:%.02d", thetime->tm_hour, thetime->tm_min, thetime->tm_sec);
-    
-/*  if (prG->verbose > 7)
-        snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), ".%.06d", tv.tv_usec);
-    else if (prG->verbose > 1)
-        snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), ".%.03d", tv.tv_usec / 1000); */
-    
-    return buf;
 }
 
 /*
@@ -553,9 +490,9 @@ BOOL UtilUIParse (char **input, char **parsed)
         return FALSE;
     }
 
-    if (t)
-        free (t);
-    *parsed = q = t = strdup (p);
+    s_repl (&t, p);
+
+    *parsed = q = t;
     if (!t)
     {
         return FALSE;
@@ -706,9 +643,9 @@ BOOL UtilUIParseRemainder (char **input, char **parsed)
         s = 1;
         p++;
     }
-    if (t)
-        free (t);
-    *parsed = q = t = strdup (p);
+    
+    s_repl (&t, p);
+    *parsed = q = t;
     q = q + strlen (q) - 1;
     while (strchr (" \t\r\n", *q))
         *(q--) = '\0';
@@ -795,16 +732,11 @@ void UtilUIUserOnline (Session *sess, Contact *cont, UDWORD status)
         else if (prG->sound & SFLAG_ON_BEEP)
             printf ("\a");
     }
-    Time_Stamp ();
-    M_print (" " COLCONTACT "%10s" COLNONE " %s ",
-             ContactFindName (cont->uin),
+    M_print ("%s " COLCONTACT "%10s" COLNONE " %s ",
+             s_now, cont->nick,
              ~old ? i18n (1035, "changed status to") : i18n (1031, "logged on"));
 
-    if (!~old)
-        M_print ("(");
-    Print_Status (status);
-    if (!~old)
-        M_print (")");
+    M_print (~old ? "%s" : "(%s)", s_status (status));
     if (cont->version && !~old)
         M_print (" [%s]", cont->version);
     if ((status & STATUSF_BIRTH) && (!(old & STATUSF_BIRTH) || !~old))
@@ -813,8 +745,8 @@ void UtilUIUserOnline (Session *sess, Contact *cont, UDWORD status)
 
     if (prG->verbose && !~old)
     {
-        M_print ("%-15s %s\n", i18n (1441, "IP:"), UtilIOIP (cont->outside_ip));
-        M_print ("%-15s %s\n", i18n (1451, "IP2:"), UtilIOIP (cont->local_ip));
+        M_print ("%-15s %s\n", i18n (1441, "IP:"), s_ip (cont->outside_ip));
+        M_print ("%-15s %s\n", i18n (1451, "IP2:"), s_ip (cont->local_ip));
         M_print ("%-15s %d\n", i18n (1453, "TCP version:"), cont->TCP_version);
         M_print ("%-15s %s\n", i18n (1454, "Connection:"),
                  cont->connection_type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"));
@@ -839,9 +771,8 @@ void UtilUIUserOffline (Session *sess, Contact *cont)
     else if (prG->sound & SFLAG_OFF_BEEP)
         printf ("\a");
  
-    Time_Stamp ();
-    M_print (" " COLCONTACT "%10s" COLNONE " %s\n",
-             ContactFindName (cont->uin), i18n (1030, "logged off."));
+    M_print ("%s " COLCONTACT "%10s" COLNONE " %s\n",
+             s_now, cont->nick, i18n (1030, "logged off."));
 }
 
 /*
@@ -944,7 +875,5 @@ void UtilUISetVersion (Contact *cont)
         sprintf (buf + strlen (buf), " <%08x:%08x:%08x>", (unsigned int)cont->id1,
                  (unsigned int)cont->id2, (unsigned int)cont->id3);
 
-    if (cont->version) free (cont->version);
-    cont->version = strlen (buf) ? strdup (buf) : NULL;
+    s_repl (&cont->version, strlen (buf) ? buf : NULL);
 }
-

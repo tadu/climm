@@ -32,6 +32,7 @@
 #include "tabs.h"
 #include "contact.h"
 #include "preferences.h"
+#include "util_str.h"
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -512,7 +513,7 @@ void R_getline (char *buf, int len)
     s[0] = 0;
 }
 
-static const char *curprompt = NULL;
+static char *curprompt = NULL;
 static int prstat = 0;
 static time_t prlast = 0;
 /* 0 = prompt printed
@@ -531,9 +532,7 @@ void R_setprompt (const char *prompt)
     if (now == prlast)
         return;
     prlast = now;
-    if (curprompt)
-        free ((char *)curprompt);
-    curprompt = strdup (prompt);
+    s_repl (&curprompt, prompt);
     R_undraw ();
     prstat = 3;
 }

@@ -136,7 +136,7 @@ void QueueEnqueue (Event *event)
  */
 void QueueEnqueueData (Session *sess, UDWORD seq, UDWORD type,
                        UDWORD uin, time_t due,
-                       Packet *pak, UBYTE *info, Queuef *callback)
+                       Packet *pak, char *info, Queuef *callback)
 {
     Event *event = calloc (sizeof (Event), 1);
     assert (event);

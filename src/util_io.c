@@ -26,6 +26,7 @@
 #include "preferences.h"
 #include "util_ui.h"
 #include "util_io.h"
+#include "util_str.h"
 #include "util.h"
 #include "contact.h"
 #include "session.h"
@@ -49,16 +50,6 @@ struct hostent *gethostbyname(const char *name)
 
 static void UtilIOTOConn (Event *event);
 static void UtilIOConnectCallback (Session *sess);
-
-/*
- * Return a string consisting of the given IP.
- */
-const char *UtilIOIP (UDWORD ip)
-{
-    struct sockaddr_in sin;
-    sin.sin_addr.s_addr = htonl (ip);
-    return strdup (inet_ntoa (sin.sin_addr));
-}
 
 /*
  * Connects to hostname on port port
@@ -252,7 +243,8 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
     return sok;
 }
 
-#define CONN_FAIL(s)  { if (s) M_print ("%s [%d]\n", s, __LINE__);  \
+#define CONN_FAIL(s)  { const char *t = s;        \
+                        if (t)    M_print ("%s [%d]\n", t, __LINE__);  \
                         QueueDequeue (sess->ip, QUEUE_CON_TIMEOUT); \
                         if (sess->sok > 0)           \
                           sockclose (sess->sok);      \
@@ -263,10 +255,10 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
                         return; }
 #define CONN_FAIL_RC(s) { int rc = errno;                   \
                           M_print (i18n (1949, "failed:\n"));\
-                          CONN_FAIL (UtilFill  ("%s: %s (%d).", s, strerror (rc), rc)) }
+                          CONN_FAIL (s_sprintf  ("%s: %s (%d).", s, strerror (rc), rc)) }
 #define CONN_CHECK(s) { if (rc == -1) { rc = errno;            \
                           if (rc == EAGAIN) return;             \
-                          CONN_FAIL (UtilFill  ("%s: %s (%d).", s, strerror (rc), rc)) } }
+                          CONN_FAIL (s_sprintf  ("%s: %s (%d).", s, strerror (rc), rc)) } }
 #define CONN_OK         { sess->connect++;                        \
                           QueueDequeue (sess->ip, QUEUE_CON_TIMEOUT); \
                           sess->dispatch = sess->utilio;            \
@@ -324,7 +316,7 @@ void UtilIOConnectTCP (Session *sess)
             if (!host)
             {
                 rc = h_errno;
-                CONN_FAIL (UtilFill (i18n (1951, "Can't find hostname %s"), sess->server, hstrerror (rc), rc));
+                CONN_FAIL (s_sprintf (i18n (1951, "Can't find hostname %s"), sess->server, hstrerror (rc), rc));
             }
             sin.sin_addr = *((struct in_addr *) host->h_addr);
             sess->ip = ntohl (sin.sin_addr.s_addr);
@@ -432,7 +424,7 @@ static void UtilIOConnectCallback (Session *sess)
         {
             case 0:
                 if ((rc = UtilIOError (sess)))
-                    CONN_FAIL (UtilFill      ("%s: %s (%d).", i18n (1955, "Connection failed"), strerror (rc), rc));
+                    CONN_FAIL (s_sprintf ("%s: %s (%d).", i18n (1955, "Connection failed"), strerror (rc), rc));
 
                 sess->connect += CONNECT_SOCKS_ADD;
             case 1:
@@ -496,7 +488,7 @@ static void UtilIOConnectCallback (Session *sess)
                     return;
                 }
                 if (buf[1])
-                    CONN_FAIL (UtilFill (i18n (1958, "[SOCKS] Connection request refused (%d)"), buf[1]));
+                    CONN_FAIL (s_sprintf (i18n (1958, "[SOCKS] Connection request refused (%d)"), buf[1]));
                 if (!sess->server && !sess->ip)
                 {
                     sess->our_outside_ip = ntohl (*(UDWORD *)(&buf[4]));
@@ -534,7 +526,7 @@ static void UtilIOTOConn (Event *event)
      Session *sess = event->sess;
      free (event);
      if (sess)
-         CONN_FAIL (UtilFill ("%s: %s (%d).", i18n (1955, "Connection failed"),
+         CONN_FAIL (s_sprintf ("%s: %s (%d).", i18n (1955, "Connection failed"),
                     strerror (ETIMEDOUT), ETIMEDOUT));
 }
 
@@ -610,8 +602,7 @@ Packet *UtilIOReceiveTCP (Session *sess)
 
     if ((rc && rc != ECONNRESET) || !sess->reconnect)
     {
-        Time_Stamp ();
-        M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
+        M_print ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (sess->uin), COLNONE);
         M_print (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
         sess->connect = 0;
     }
@@ -679,8 +670,7 @@ BOOL UtilIOSendTCP (Session *sess, Packet *pak)
 
     PacketD (pak);
 
-    Time_Stamp ();
-    M_print (" ");
+    M_print ("%s ", s_now);
     M_print (i18n (1835, "Error while writing to socket - %s (%d)\n"),
              strerror (rc), rc);
 

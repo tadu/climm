@@ -26,6 +26,7 @@
 #include "util_io.h"
 #include "cmd_pkt_v8.h"
 #include "session.h"
+#include "util_str.h"
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -58,6 +59,11 @@ static void M_strcpy (char *dest, char *src)
         *dest = '\0';
 }
 */
+
+#define WAND1 " · · "
+#define WAND2 "· o ·"
+#define WAND3 " · \\ "
+#define WAND4 "    \\"
 
 void Initalize_RC_File ()
 {
@@ -397,8 +403,6 @@ void Read_RC_File (FILE *rcf)
 
                         if (i >= CXCOUNT)
                             continue;
-                        if (prG->colors[i])
-                            free (prG->colors[i]);
                         buf[0] = '\0';
 
                         while (UtilUIParse (&args, &cmd))
@@ -418,7 +422,7 @@ void Read_RC_File (FILE *rcf)
                             snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", c);
                         }
                         prG->scheme = -1;
-                        prG->colors[i] = strdup (buf);
+                        s_repl (&prG->colors[i], buf);
                     }
                 }
                 else if (!strcasecmp (cmd, "linebreaktype"))
@@ -675,7 +679,8 @@ void Read_RC_File (FILE *rcf)
                 if (!strcasecmp (cmd, "alter"))
                 {
                     PrefParseRemainder (tmp);
-                    CmdUser (UtilFill ("¶alter quiet %s", tmp));
+                    CmdUser (cmd = strdup (s_sprintf ("¶alter quiet %s", tmp)));
+                    free (cmd);
                 }
                 else
                 {

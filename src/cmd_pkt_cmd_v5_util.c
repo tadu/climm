@@ -18,6 +18,7 @@
 #include "cmd_pkt_server.h"
 #include "preferences.h"
 #include "contact.h"
+#include "util_str.h"
 #include "util_io.h"
 #include <string.h>
 #include <assert.h>
@@ -112,8 +113,7 @@ void PacketEnqueuev5 (Packet *pak, Session *sess)
 
     if (prG->verbose & DEB_PACK5DATA)
     {
-        Time_Stamp ();
-        M_print (" " COLINDENT COLCLIENT "");
+        M_print ("%s " COLINDENT COLCLIENT "", s_now);
         M_print (i18n (1775, "Outgoing packet:"));
         M_print (" %04x %08x:%08x %04x (%s) @%p" COLNONE "\n",
                  PacketReadAt2 (pak, CMD_v5_OFF_VER), PacketReadAt4 (pak, CMD_v5_OFF_SESS),
@@ -350,8 +350,7 @@ void UDPCallBackResend (Event *event)
     if (!event->sess)
     {
         PacketD (pak);
-        if (event->info)
-            free (event->info);
+        s_free (event->info);
         free (event);
         return;
     }
@@ -364,8 +363,7 @@ void UDPCallBackResend (Event *event)
                  cmd, CmdPktSrvName (cmd),
                  session, event->sess->our_session);
         PacketD (pak);
-        if (event->info)
-            free (event->info);
+        s_free (event->info);
         free (event);
     }
     else if (event->attempts <= MAX_RETRY_ATTEMPTS)
@@ -430,8 +428,7 @@ void UDPCallBackResend (Event *event)
         M_print ("\n");
 
         PacketD (event->pak);
-        if (event->info)
-            free (event->info);
+        s_free (event->info);
         free (event);
     }
 }

@@ -1,7 +1,6 @@
 /* $Id$ */
 
 size_t SOCKREAD (Session *sess, void *ptr, size_t len);
-const char *UtilIOIP         (UDWORD ip);
 SOK_T       UtilIOConnectUDP (char *hostname, int port);
 void        UtilIOConnectTCP (Session *sess);
 int         UtilIOError      (Session *sess);

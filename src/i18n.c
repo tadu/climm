@@ -13,6 +13,7 @@
 #include "util_ui.h"
 #include "util_io.h"
 #include "preferences.h"
+#include "util_str.h"
 #include <string.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -62,10 +63,8 @@ int i18nOpen (const char *loc)
     }
 
 #define i18nTry(x,y,z,a) do { \
-    const char *str = UtilFill (x,y,z,a); \
-    if ((i18nf = fopen (str, "r"))) \
+    if ((i18nf = fopen (s_sprintf (x,y,z,a), "r"))) \
         j += i18nAdd (i18nf, debug, &res); \
-    free ((char *)str); \
 } while (0)
 
     if (*loc == '/')
@@ -148,11 +147,7 @@ void i18nClose (void)
     
     q = i18nStrings + i18nSLOTS;
     for (p = i18nStrings; p < q; p++)
-    {
-        if (*p)
-            free (*p);
-        *p = NULL;
-    }
+        s_repl (p, NULL);
 }
 
 /*

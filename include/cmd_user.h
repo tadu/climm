@@ -14,7 +14,7 @@ typedef int (jump_f)(char *args, UDWORD data, UDWORD status);
 struct jumpstr {
     jump_f *f;
     const char *defname;
-    const char *name;
+    char *name;
     int unidle;
     int data;
 };

@@ -15,6 +15,7 @@
 #include "preferences.h"
 #include "conv.h"
 #include "session.h"
+#include "util_str.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -74,13 +75,11 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
     {
         case 0x32:
         case 0x14:
-            Time_Stamp ();
-            M_print (" ");
+            M_print ("%s ", s_now);
             M_print (i18n (2141, "Search %sfailed%s.\n"), COLCLIENT, COLNONE);
             return;
         case META_READONLY:
-            Time_Stamp ();
-            M_print (" %s\n", i18n (1900, "It's readonly."));
+            M_print ("%s %s\n", s_now, i18n (1900, "It's readonly."));
             return;
         case META_SUCCESS:
             break;
@@ -466,9 +465,7 @@ void Display_Rand_User (Session *sess, Packet *pak)
         ip[0], ip[1], ip[2], ip[3]);
     M_print ("%-15s %s\n", i18n (1454, "Connection:"), PacketRead1 (pak) == 4
         ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"));
-    M_print ("%-15s ", i18n (1452, "Status:"));
-    Print_Status (PacketRead4 (pak));
-    M_print ("\n");
+    M_print ("%-15s %s\n", i18n (1452, "Status:"), s_status (PacketRead4 (pak)));
     M_print ("%-15s %d\n", i18n (1453, "TCP version:"), 
         PacketRead2 (pak));
     CmdPktCmdMetaReqInfo (sess, uin);
@@ -672,9 +669,7 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
         if ((cont->uin != uiG.last_rcvd_uin) || !uiG.idle_uins)
         {
             snprintf (buf, sizeof (buf), "%s %s", uiG.idle_uins && uiG.idle_msgs ? uiG.idle_uins : "", cont->nick);
-            if (uiG.idle_uins)
-                free (uiG.idle_uins);
-            uiG.idle_uins = strdup (buf);
+            s_repl (&uiG.idle_uins, buf);
         }
 
         uiG.idle_msgs++;
@@ -692,22 +687,15 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
     if (prG->sound & SFLAG_BEEP)
         printf ("\a");
 
-    Time_Output (stamp);
-    M_print (" " COLINCOMING "%10s" COLNONE " ", cont->nick);
+    M_print ("%s " COLINCOMING "%10s" COLNONE " ", s_now, cont->nick);
     
     if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
-    {
-        M_print ("(");
-        Print_Status (tstatus);
-        M_print (") ");
-    }
+        M_print ("(%s) ", s_status (tstatus));
 
     uiG.last_rcvd_uin = cont->uin;
     if (cont)
     {
-        if (cont->last_message)
-            free (cont->last_message);
-        cont->last_message = strdup (text);
+        s_repl (&cont->last_message, text);
         cont->last_time = time (NULL);
     }
 
@@ -768,8 +756,7 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
             tmp  = _septok (cdata); if (!tmp)  continue;
             tmp2 = _septok (NULL);  if (!tmp2) continue;
             
-            M_print ("%s" COLMESSAGE "%s" COLNONE "\n", carr, tmp);
-            Time_Stamp ();
+            M_print ("%s" COLMESSAGE "%s" COLNONE "\n%s", carr, tmp, s_now);
             M_print (i18n (2127, "       URL: %s%s%s%s\n"), carr, COLMESSAGE, tmp2, COLNONE);
             break;
 

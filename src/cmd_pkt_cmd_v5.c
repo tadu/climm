@@ -18,6 +18,7 @@
 #include "util.h"
 #include "util_ui.h"
 #include "buildmark.h"
+#include "util_str.h"
 #include <string.h>
 #include <assert.h>
 #include <netinet/in.h> /* for htonl, htons */
@@ -42,8 +43,8 @@ void CmdPktCmdSendMessage (Session *sess, UDWORD uin, const char *text, UDWORD t
     
     UtilCheckUIN (sess, uin);
     
-    Time_Stamp ();
-    M_print (" " COLSENT "%10s" COLNONE " " MSGSENTSTR "%s\n", ContactFindName (uin), MsgEllipsis (text));
+    M_print ("%s " COLSENT "%10s" COLNONE " " MSGSENTSTR "%s\n",
+             s_now, ContactFindName (uin), MsgEllipsis (text));
 
     PacketWrite4    (pak, uin);
     PacketWrite2    (pak, type);

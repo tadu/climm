@@ -1,6 +1,10 @@
 /* $Id$ */
 
-/*********************************************
+/*
+ * This file is the general dumpster for functions
+ * that better be rewritten.
+
+********************************************
 **********************************************
 This is a file of general utility functions useful
 for programming in general and icq in specific
@@ -24,6 +28,7 @@ Changes :
 #include "util_io.h"
 #include "preferences.h"
 #include "packet.h"
+#include "util_str.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -65,76 +70,6 @@ struct timeval
 
 static char username[L_cuserid + SYS_NMLN] = "";
 
-/*
- * Return a string describing the status.
- * Result must be free()d.
- */
-char *UtilStatus (UDWORD status)
-{
-    char buf[200];
-    
-    if (status == STATUS_OFFLINE)
-        return (strdup (i18n (1969, "offline")));
- 
-    if (status & STATUSF_INV)
-        snprintf (buf, sizeof (buf), "%s-", i18n (1975, "invisible"));
-    else
-        buf[0] = '\0';
-    
-    if (status & STATUSF_DND)
-        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1971, "do not disturb"));
-    else if (status & STATUSF_OCC)
-        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1973, "occupied"));
-    else if (status & STATUSF_NA)
-        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1974, "not available"));
-    else if (status & STATUSF_AWAY)
-        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1972, "away"));
-    else if (status & STATUSF_FFC)
-        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1976, "free for chat"));
-    else
-        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1970, "online"));
-    
-    if (prG->verbose)
-        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), " %08lx", status);
-    
-    return strdup (buf);
-}
-
-/********************************************
-returns a string describing the status
-*********************************************/
-const char *Convert_Status_2_Str (UDWORD status)
-{
-    if (STATUS_OFFLINE == (status | STATUSF_INV))       /* this because -1 & 0xFFFF is not -1 */
-        return i18n (1969, "offline");
-
-    if (status & STATUSF_INV)
-        return i18n (1975, "invisible");
-    if (status & STATUSF_DND)
-        return i18n (1971, "do not disturb");
-    if (status & STATUSF_OCC)
-        return i18n (1973, "occupied");
-    if (status & STATUSF_NA)
-        return i18n (1974, "not available");
-    if (status & STATUSF_AWAY)
-        return i18n (1972, "away");
-    if (status & STATUSF_FFC)
-        return i18n (1976, "free for chat");
-    return i18n (1970, "online");
-}
-
-/********************************************
-prints out the status of new_status as a string
-if possible otherwise as a hex number
-*********************************************/
-void Print_Status (UDWORD status)
-{
-   char *stat;
-
-   stat = UtilStatus (status);
-   M_print (stat);
-   free (stat);
-}
 /**********************************************
  * Returns at most MSGID_LENGTH characters of a
  * message, possibly using ellipsis.
@@ -250,24 +185,6 @@ void Init_New_User (Session *sess)
     }
 }
 
-
-void Print_IP (UDWORD uin)
-{
-    Contact *cont;
-
-    if (!(cont = ContactFind (uin)) || (cont->outside_ip == -1L))
-    {
-        M_print (i18n (1761, "unknown"));
-        return;
-    }
-    
-    M_print (UtilIOIP (cont->outside_ip));
-}
-
-/********************************************
-Converts an intel endian character sequence to
-a UDWORD
-*********************************************/
 UDWORD Chars_2_DW (UBYTE * buf)
 {
     UDWORD i;
@@ -282,22 +199,6 @@ UDWORD Chars_2_DW (UBYTE * buf)
 
     return i;
 }
-
-/********************************************
-Converts an intel endian character sequence to
-a UWORD
-*********************************************/
-UWORD Chars_2_Word (UBYTE * buf)
-{
-    UWORD i;
-
-    i = buf[1];
-    i <<= 8;
-    i += buf[0];
-
-    return i;
-}
-
 #define LOG_MAX_PATH 255
 #define DSCSIZ 192 /* Maximum length of log file descriptor lines. */
 
@@ -368,7 +269,7 @@ int putlog (Session *sess, time_t stamp, UDWORD uin,
         utctime->tm_year + 1900, utctime->tm_mon + 1, 
         utctime->tm_mday, utctime->tm_hour, utctime->tm_min, 
         utctime->tm_sec, stamp != -1 ? "/" : "", 
-        stamp != -1 ? stamp - now : 0);
+        stamp != NOW ? stamp - now : 0);
 
     l = strlen (buf);
 
@@ -604,18 +505,6 @@ void ExecScript (char *script, UDWORD uin, long num, char *data)
     free (cmd);
     free (mydata);
     free (who);
-}
-
-const char *UtilFill (const char *fmt, ...)
-{
-    char buf[1024];
-    va_list args;
-
-    va_start (args, fmt);
-    vsnprintf (buf, sizeof (buf), fmt, args);
-    va_end (args);
-
-    return strdup (buf);
 }
 
 UDWORD UtilCheckUIN (Session *sess, UDWORD uin)

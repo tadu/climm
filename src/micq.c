@@ -24,6 +24,7 @@
 #include "cmd_pkt_v8_flap.h"
 #include "cmd_pkt_v8_snac.h"
 #include "cmd_pkt_cmd_v5_util.h"
+#include "util_str.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -152,10 +153,7 @@ void Idle_Check (Session *sess)
         else
             CmdPktCmdStatusChange (sess, new);
         sess->status = new;
-        Time_Stamp ();
-        M_print (" %s ", i18n (1064, "Auto-Changed status to"));
-        Print_Status (new);
-        M_print ("\n");
+        M_print ("%s %s %s\n", s_now, i18n (1064, "Auto-Changed status to"), s_status (new));
     }
     return;
 }
