@@ -25,6 +25,7 @@
 #include "file_util.h"
 #include "buildmark.h"
 #include "cmd_user.h"
+#include "conv.h"
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>

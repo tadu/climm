@@ -1224,6 +1224,7 @@ static JUMP_F(CmdUserStatusDetail)
 {
     UDWORD uin = 0, i, lenuin = 0, lennick = 0, lenstat = 0, lenid = 0, totallen = 0;
     Contact *cont = NULL;
+    Session *peer;
     UDWORD stati[] = { STATUS_OFFLINE, STATUS_DND,    STATUS_OCC, STATUS_NA,
                        STATUS_AWAY,    STATUS_ONLINE, STATUS_FFC, STATUSF_BIRTH };
     char *name = strtok (args, "\n");
@@ -1296,6 +1297,7 @@ static JUMP_F(CmdUserStatusDetail)
                 if (cont->flags & CONT_ALIAS)
                     continue;
             }
+            peer = sess->assoc ? SessionFind (TYPE_MSGDIRECT, cont->uin, sess->assoc) : NULL;
 
             snprintf (statbuf, sizeof (statbuf), "(%s)", UtilStatus (cont->status));
             if (cont->version)
@@ -1304,19 +1306,30 @@ static JUMP_F(CmdUserStatusDetail)
                 verbuf[0] = '\0';
 
             if (data & 2)
-                M_print (COLSERVER "%c%c%c%1.1d" COLNONE " %*ld",
-                     cont->flags & CONT_TEMPORARY ? '#' : ' ',
-                     cont->flags & CONT_INTIMATE  ? '*' :
-                      cont->flags & CONT_HIDEFROM ? '-' : ' ',
-                     cont->flags & CONT_IGNORE    ? '^' : ' ',
-                     cont->TCP_version, lenuin, cont->uin);
+                M_print (COLSERVER "%c%c%c%1.1d%c" COLNONE " %*ld",
+                     cont->flags & CONT_TEMPORARY  ? '#' : ' ',
+                     cont->flags & CONT_INTIMATE   ? '*' :
+                      cont->flags & CONT_HIDEFROM  ? '-' : ' ',
+                     cont->flags & CONT_IGNORE     ? '^' : ' ',
+                     cont->TCP_version,
+                     peer ? (
+                      peer->connect & CONNECT_OK   ? '&' :
+                      peer->connect & CONNECT_FAIL ? '|' :
+                      peer->connect & CONNECT_MASK ? ':' : '.' ) :
+                      cont->TCP_version && cont->port &&
+                      cont->outside_ip && ~cont->outside_ip ? '^' : ' ',
+                     lenuin, cont->uin);
 
-            M_print (COLCONTACT "%c%-*s" COLNONE " " COLMESSAGE "%-*s" COLNONE " %-*s %s",
-                     data & 2                     ? ' ' :
-                     cont->flags & CONT_TEMPORARY ? '#' :
-                     cont->flags & CONT_INTIMATE  ? '*' :
-                     cont->flags & CONT_HIDEFROM  ? '-' :
-                     cont->flags & CONT_IGNORE    ? '^' : ' ',
+            M_print (COLSERVER "%c" COLCONTACT "%-*s" COLNONE " " COLMESSAGE "%-*s" COLNONE " %-*s %s",
+                     data & 2                      ? ' ' :
+                     cont->flags & CONT_TEMPORARY  ? '#' :
+                     cont->flags & CONT_INTIMATE   ? '*' :
+                     cont->flags & CONT_HIDEFROM   ? '-' :
+                     cont->flags & CONT_IGNORE     ? '^' :
+                     !peer                         ? ' ' :
+                     peer->connect & CONNECT_OK   ? '&' :
+                     peer->connect & CONNECT_FAIL ? '|' :
+                     peer->connect & CONNECT_MASK ? ':' : '.' ,
                      lennick, cont->nick, lenstat + 2, statbuf, lenid + 2, verbuf,
                      cont->seen_time != -1L && data & 2 ? ctime ((time_t *) &cont->seen_time) : "\n");
             
