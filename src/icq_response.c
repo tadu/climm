@@ -644,7 +644,7 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
         ExecScript (prG->event_cmd, uin, type, cdata);
 #endif
 
-    if (sess->flags & SFLAG_BEEP)
+    if (prG->sound & SFLAG_BEEP)
         printf ("\a");
 
     if (timestr)
