@@ -764,7 +764,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
                 tmp = NULL;
             }
 
-            M_printf (i18n (2144, "requests authorization: %s%s\n"),
+            M_printf (i18n (2232, "requests authorization: %s%s\n"),
                       COLMSGINDENT, tmp6);
             
             if (tmp && strlen (tmp))
@@ -781,7 +781,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
             break;
 
         case MSG_AUTH_DENY:
-            M_printf (i18n (2143, "refused authorization: %s%s\n"), COLMSGINDENT, cdata);
+            M_printf (i18n (2233, "refused authorization: %s%s\n"), COLMSGINDENT, cdata);
             break;
 
         case MSG_AUTH_GRANT:
