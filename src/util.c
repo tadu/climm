@@ -266,7 +266,7 @@ char *UIN2Name (UDWORD uin)
     for (i = 0; i < uiG.Num_Contacts; i++)
     {
         if (uiG.Contacts[i].uin == uin)
-            return uiG.Contacts[i].nick;
+            return strdup (uiG.Contacts[i].nick);
     }
     snprintf (buff, 98, "%lu", uin);
     return strdup (buff);
@@ -778,4 +778,42 @@ void Hex_Dump (void *buffer, size_t len)
         if (((i - j) & 3) == 3)
             M_print (" ");
     }
+}
+
+/*
+ * Executes a program and feeds some shell-proof information data into it
+ */
+void ExecScript (char *script, UDWORD uin, long num, char *data)
+{
+    int cmdlen, rc;
+    char *mydata, *cmd, *who, *tmp;
+
+    mydata = data ? strdup (data) : "";
+    who = UIN2Name (uin);
+
+    for (tmp = mydata; *tmp; tmp++)
+        if (*tmp == '\'')
+            *tmp = '"';
+    for (tmp = who; *tmp; tmp++)
+        if (*tmp == '\'')
+            *tmp = '"';
+
+    cmdlen = strlen (script) + strlen (mydata) + strlen (who) + 20;
+    cmd = (char *) malloc (cmdlen);
+
+    if (data)
+        snprintf (cmd, cmdlen, "%s '%s' %ld '%s'", script, who, num, mydata);
+    else if (uin)
+        snprintf (cmd, cmdlen, "%s '%s'", script, who);
+    else
+        snprintf (cmd, cmdlen, "%s", script);
+    rc = system (cmd);
+    if (rc)
+    {
+        M_print (i18n (584, "Warning! Script command '%s' failed with exit value %d\n"),
+                 script, rc);
+    }
+    free (cmd);
+    free (who);
+    free (mydata);
 }

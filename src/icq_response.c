@@ -443,7 +443,7 @@ void User_Offline (int sok, UBYTE * pak)
     log_event (remote_uin, LOG_ONLINE, "User logged off %s\n", UIN2Name (remote_uin));
 
     if (uiG.SoundOffline == SOUND_CMD)
-        system (uiG.Sound_Str_Offline);
+        ExecScript (uiG.Sound_Str_Offline, remote_uin, 0, NULL);
 
     if ((con = UIN2Contact (remote_uin)) != NULL)
     {
@@ -473,7 +473,7 @@ void User_Online (int sok, UBYTE * pak)
         M_print (").");
 
         if (uiG.SoundOnline == SOUND_CMD)
-            system (uiG.Sound_Str_Online);
+            ExecScript (uiG.Sound_Str_Online, remote_uin, 0, NULL);
 
         if ((con = UIN2Contact (remote_uin)))
         {
@@ -770,44 +770,11 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
     char *tmp = NULL;
     int x, m;
 
-#ifdef MSGEXEC
-    char *cmd = NULL, *who = NULL;
-    int script_exit_status = -1;
-#endif
-
     TabAddUIN (uin);            /* Adds <uin> to the tab-list */
 
 #ifdef MSGEXEC
-    /*
-     * run our script if we have one, but only
-     * if we have one (submitted by Benjamin Simon)
-     */
     if (*uiG.receive_script)
-    {
-        int cmdlen;
-        char *mydata;
-        
-        mydata = strdup (data);
-        who = UIN2Name (uin);
-        
-        for (tmp = mydata; *tmp; tmp++)
-            if (*tmp == '\'')
-                *tmp = '"';
-        for (tmp = who; *tmp; tmp++)
-            if (*tmp == '\'')
-                *tmp = '"';
-        
-        cmdlen = strlen (uiG.receive_script) + strlen (mydata) + strlen (who) + 20;
-        cmd = (char *) malloc (cmdlen + 1);
-
-        snprintf (cmd, cmdlen, "%s '%s' %ld '%s'", uiG.receive_script, who, type, mydata);
-        script_exit_status = system (cmd);
-        if (script_exit_status != 0)
-        {
-            M_print (i18n (584, "Warning! Script command '%s' failed with exit value %d\n"),
-                     uiG.receive_script, script_exit_status);
-        }
-    }
+        ExecScript (uiG.receive_script, uin, type, data);
 #endif
 
     if (type == USER_ADDED_MESS)

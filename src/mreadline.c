@@ -29,6 +29,7 @@
 #include "tabs.h"
 
 #include <stdio.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -388,7 +389,9 @@ void R_getline (char *buf, int len)
 static const char *curprompt = NULL;
 void R_setprompt (const char *prompt)
 {
-    curprompt = prompt;
+    if (curprompt)
+        free ((char *)curprompt);
+    curprompt = strdup (prompt);
 }
 
 void R_prompt (void)
@@ -400,7 +403,19 @@ void R_prompt (void)
 void R_doprompt (const char *prompt)
 {
     R_setprompt (prompt);
-/*    M_print( "\n\a" );*/
+    R_prompt ();
+}
+
+void R_dopromptf (const char *prompt, ...)
+{
+    va_list args;
+    char buf[2048];
+    
+    va_start (args, prompt);
+    vsnprintf (buf, sizeof (buf), prompt, args);
+    va_end (args);
+
+    R_setprompt (buf);
     R_prompt ();
 }
 

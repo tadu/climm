@@ -25,3 +25,5 @@ UDWORD Get_Port (UDWORD uin);
 int log_event (UDWORD uin, int type, char *str, ...);
 void clrscr (void);
 void Hex_Dump (void *buffer, size_t len);
+
+void ExecScript (char *script, UDWORD uin, long num, char *data);

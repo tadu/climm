@@ -430,7 +430,7 @@ static void Read_RC_File (FD_T rcf)
                 else if (!strcasecmp (tmp, "No_SoundOnline"))
                 {
                     uiG.SoundOnline = SOUND_OFF;
-                    uiG.Sound_Str[0] = '\0';
+                    uiG.Sound_Str_Online[0] = '\0';
                 }
                 else if (!strcasecmp (tmp, "SoundOffline"))
                 {       
@@ -447,7 +447,7 @@ static void Read_RC_File (FD_T rcf)
                 else if (!strcasecmp (tmp, "No_SoundOffline"))
                 {
                     uiG.SoundOffline = SOUND_OFF;
-                    uiG.Sound_Str[0] = '\0';
+                    uiG.Sound_Str_Offline[0] = '\0';
                 }
                 else if (!strcasecmp (tmp, "Auto_away"))
                 {

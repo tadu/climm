@@ -5,6 +5,8 @@
 	* check terminfo keycodes last when processing input.
 	* fix receivescript security leak.
 	* SoundOnline and SoundOffline were mixed up.
+	* Implement SoundExec in util.c for script execution.
+	* free memory used for script execution.
 
 2001-08-12 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Fix saving alter'ed commands.

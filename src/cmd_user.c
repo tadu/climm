@@ -1764,19 +1764,19 @@ JUMP_F(CmdUserSearch)
                 start_search (sok, args, "", "", "");
                 return 0;
             }
-            M_print ("%s ", i18n (655, "Enter the user's e-mail address:"));
+            R_dopromptf ("%s ", i18n (655, "Enter the user's e-mail address:"));
             return status = 101;
         case 101:
             user.email = strdup ((char *) args);
-            M_print ("%s ", i18n (656, "Enter the user's nick name:"));
+            R_dopromptf ("%s ", i18n (656, "Enter the user's nick name:"));
             return ++status;
         case 102:
             user.nick = strdup ((char *) args);
-            M_print ("%s ", i18n (657, "Enter the user's first name:"));
+            R_dopromptf ("%s ", i18n (657, "Enter the user's first name:"));
             return ++status;
         case 103:
             user.first = strdup ((char *) args);
-            M_print ("%s", i18n (658, "Enter the user's last name:"));
+            R_dopromptf ("%s", i18n (658, "Enter the user's last name:"));
             return ++status;
         case 104:
             user.last = strdup ((char *) args);
@@ -1797,31 +1797,31 @@ JUMP_F(CmdUserWpSearch)
     switch (status)
     {
         case 0:
-            M_print ("%s ", i18n (656, "Enter the user's nick name:"));
+            R_dopromptf ("%s ", i18n (656, "Enter the user's nick name:"));
             return 200;
         case 200:
             wp.nick = strdup ((char *) args);
-            M_print ("%s ", i18n (657, "Enter the user's first name:"));
+            R_dopromptf ("%s ", i18n (657, "Enter the user's first name:"));
             return ++status;
         case 201:
             wp.first = strdup ((char *) args);
-            M_print ("%s ", i18n (658, "Enter the user's last name:"));
+            R_dopromptf ("%s ", i18n (658, "Enter the user's last name:"));
             return ++status;
         case 202:
             wp.last = strdup ((char *) args);
-            M_print ("%s ", i18n (655, "Enter the user's e-mail address:"));
+            R_dopromptf ("%s ", i18n (655, "Enter the user's e-mail address:"));
             return ++status;
         case 203:
             wp.email = strdup ((char *) args);
-            M_print ("%s ", i18n (558, "Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):"));
+            R_dopromptf ("%s ", i18n (558, "Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):"));
             return ++status;
         case 204:
             wp.minage = atoi (args);
-            M_print ("%s ", i18n (559, "Enter max age (22,29,39,49,59,120):"));
+            R_dopromptf ("%s ", i18n (559, "Enter max age (22,29,39,49,59,120):"));
             return ++status;
         case 205:
             wp.maxage = atoi (args);
-            M_print (i18n (663, "Enter sex:"));
+            R_doprompt (i18n (663, "Enter sex:"));
             return ++status;
         case 206:
             if (!strncasecmp (args, i18n (528, "female"), 1))
@@ -1836,45 +1836,45 @@ JUMP_F(CmdUserWpSearch)
             {
                 wp.sex = 0;
             }
-            M_print ("%s ", i18n (534, "Enter a language by number or L for a list:"));
+            R_dopromptf ("%s ", i18n (534, "Enter a language by number or L for a list:"));
             return ++status;
         case 207:
             temp = atoi (args);
             if ((0 == temp) && (toupper (args[0]) == 'L'))
             {
                 TablePrintLang ();
-                M_print ("%s ", i18n (534, "Enter a language by number or L for a list:"));
+                R_dopromptf ("%s ", i18n (534, "Enter a language by number or L for a list:"));
             }
             else
             {
                 wp.language = temp;
                 status++;
-                M_print ("%s ", i18n (560, "Enter a city:"));
+                R_dopromptf ("%s ", i18n (560, "Enter a city:"));
             }
             return status;
         case 208:
             wp.city = strdup ((char *) args);
-            M_print ("%s ", i18n (561, "Enter a state:"));
+            R_dopromptf ("%s ", i18n (561, "Enter a state:"));
             return ++status;
         case 209:
             wp.state = strdup ((char *) args);
-            M_print ("%s ", i18n (578, "Enter country's phone ID number:"));
+            R_dopromptf ("%s ", i18n (578, "Enter country's phone ID number:"));
             return ++status;
         case 210:
             wp.country = atoi ((char *) args);
-            M_print ("%s ", i18n (579, "Enter company: "));
+            R_dopromptf ("%s ", i18n (579, "Enter company: "));
             return ++status;
         case 211:
             wp.company = strdup ((char *) args);
-            M_print ("%s ", i18n (587, "Enter department: "));
+            R_dopromptf ("%s ", i18n (587, "Enter department: "));
             return ++status;
         case 212:
             wp.department = strdup ((char *) args);
-            M_print ("%s ", i18n (588, "Enter position: "));
+            R_dopromptf ("%s ", i18n (588, "Enter position: "));
             return ++status;
         case 213:
             wp.position = strdup ((char *) args);
-            M_print ("%s ", i18n (589, "Should the users be online?"));
+            R_dopromptf ("%s ", i18n (589, "Should the users be online?"));
             return ++status;
 /* A few more could be added here, but we're gonna make this
  the last one -KK */
@@ -1912,7 +1912,7 @@ JUMP_F(CmdUserWpSearch)
             else
             {
                 M_print ("%s\n", i18n (29, "Please enter YES or NO!"));
-                M_print ("%s ", i18n (589, "Should the users be online?"));
+                R_dopromptf ("%s ", i18n (589, "Should the users be online?"));
             }
             return status;
     }
@@ -1929,86 +1929,86 @@ JUMP_F(CmdUserUpdate)
     switch (status)
     {
         case 0:
-            M_print ("%s ", i18n (553, "Enter Your New Nickname:"));
+            R_dopromptf ("%s ", i18n (553, "Enter Your New Nickname:"));
             return 300;
         case 300:
             user.nick = strdup ((char *) args);
-            M_print ("%s ", i18n (554, "Enter your new first name:"));
+            R_dopromptf ("%s ", i18n (554, "Enter your new first name:"));
             return ++status;
         case 301:
             user.first = strdup ((char *) args);
-            M_print ("%s ", i18n (555, "Enter your new last name:"));
+            R_dopromptf ("%s ", i18n (555, "Enter your new last name:"));
             return ++status;
         case 302:
             user.last = strdup ((char *) args);
-            M_print ("%s ", i18n (556, "Enter your new email address:"));
+            R_dopromptf ("%s ", i18n (556, "Enter your new email address:"));
             return ++status;
         case 303:
             user.email = strdup ((char *) args);
-            M_print ("%s ", i18n (542, "Enter other email address:"));
+            R_dopromptf ("%s ", i18n (542, "Enter other email address:"));
             return ++status;
         case 304:
             user.email2 = strdup ((char *) args);
-            M_print ("%s ", i18n (543, "Enter old email address:"));
+            R_dopromptf ("%s ", i18n (543, "Enter old email address:"));
             return ++status;
         case 305:
             user.email3 = strdup ((char *) args);
-            M_print ("%s ", i18n (544, "Enter new city:"));
+            R_dopromptf ("%s ", i18n (544, "Enter new city:"));
             return ++status;
         case 306:
             user.city = strdup ((char *) args);
-            M_print ("%s ", i18n (545, "Enter new state:"));
+            R_dopromptf ("%s ", i18n (545, "Enter new state:"));
             return ++status;
         case 307:
             user.state = strdup ((char *) args);
-            M_print ("%s ", i18n (546, "Enter new phone number:"));
+            R_dopromptf ("%s ", i18n (546, "Enter new phone number:"));
             return ++status;
         case 308:
             user.phone = strdup ((char *) args);
-            M_print ("%s ", i18n (547, "Enter new fax number:"));
+            R_dopromptf ("%s ", i18n (547, "Enter new fax number:"));
             return ++status;
         case 309:
             user.fax = strdup ((char *) args);
-            M_print ("%s ", i18n (548, "Enter new street address:"));
+            R_dopromptf ("%s ", i18n (548, "Enter new street address:"));
             return ++status;
         case 310:
             user.street = strdup ((char *) args);
-            M_print ("%s ", i18n (549, "Enter new cellular number:"));
+            R_dopromptf ("%s ", i18n (549, "Enter new cellular number:"));
             return ++status;
         case 311:
             user.cellular = strdup ((char *) args);
-            M_print ("%s ", i18n (550, "Enter new zip code (must be numeric):"));
+            R_dopromptf ("%s ", i18n (550, "Enter new zip code (must be numeric):"));
             return ++status;
         case 312:
             user.zip = atoi ((char *) args);
-            M_print ("%s ", i18n (551, "Enter your country's phone ID number:"));
+            R_dopromptf ("%s ", i18n (551, "Enter your country's phone ID number:"));
             return ++status;
         case 313:
             user.country = atoi ((char *) args);
-            M_print ("%s ", i18n (552, "Enter your time zone (+/- 0-12):"));
+            R_dopromptf ("%s ", i18n (552, "Enter your time zone (+/- 0-12):"));
             return ++status;
         case 314:
             user.c_status = atoi ((char *) args);
             user.c_status <<= 1;
-            M_print ("%s ", i18n (557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
+            R_dopromptf ("%s ", i18n (557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
             return ++status;
         case 315:
             if (!strcasecmp (args, i18n (28, "NO")))
             {
                 user.auth = FALSE;
-                M_print ("%s ", i18n (622, "Do you want to apply these changes? (YES/NO)"));
+                R_dopromptf ("%s ", i18n (622, "Do you want to apply these changes? (YES/NO)"));
                 return ++status;
             }
             else if (!strcasecmp (args, i18n (27, "YES")))
             {
                 user.auth = TRUE;
-                M_print ("%s ", i18n (622, "Do you want to apply these changes? (YES/NO)"));
+                R_dopromptf ("%s ", i18n (622, "Do you want to apply these changes? (YES/NO)"));
                 return ++status;
             }
             else
             {
                 M_print ("%s\n", i18n (29, "Please enter YES or NO!"));
-                M_print ("%s ", i18n (557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
+                R_dopromptf ("%s ", i18n (557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
             }
             return status;
         case 316:
@@ -2032,7 +2032,7 @@ JUMP_F(CmdUserUpdate)
             else
             {
                 M_print ("%s\n", i18n (29, "Please enter YES or NO!"));
-                M_print ("%s ", i18n (622, "Do you want to apply these changes? (YES/NO)"));
+                R_dopromptf ("%s ", i18n (622, "Do you want to apply these changes? (YES/NO)"));
             }
             return status;
     }
@@ -2050,11 +2050,11 @@ JUMP_F(CmdUserOther)
     switch (status)
     {
         case 0:
-            M_print ("%s ", i18n (535, "Enter new age:"));
+            R_dopromptf ("%s ", i18n (535, "Enter new age:"));
             return 400;
         case 400:
             other.age = atoi (args);
-            M_print ("%s ", i18n (536, "Enter new sex:"));
+            R_dopromptf ("%s ", i18n (536, "Enter new sex:"));
             return ++status;
         case 401:
             if (!strncasecmp (args, i18n (528, "female"), 1))
@@ -2069,23 +2069,23 @@ JUMP_F(CmdUserOther)
             {
                 other.sex = 0;
             }
-            M_print ("%s ", i18n (537, "Enter new homepage:"));
+            R_dopromptf ("%s ", i18n (537, "Enter new homepage:"));
             return ++status;
         case 402:
             other.hp = strdup (args);
-            M_print ("%s ", i18n (538, "Enter new year of birth (4 digits):"));
+            R_dopromptf ("%s ", i18n (538, "Enter new year of birth (4 digits):"));
             return ++status;
         case 403:
             other.year = atoi (args) - 1900;
-            M_print ("%s ", i18n (539, "Enter new month of birth:"));
+            R_dopromptf ("%s ", i18n (539, "Enter new month of birth:"));
             return ++status;
         case 404:
             other.month = atoi (args);
-            M_print ("%s ", i18n (540, "Enter new day of birth:"));
+            R_dopromptf ("%s ", i18n (540, "Enter new day of birth:"));
             return ++status;
         case 405:
             other.day = atoi (args);
-            M_print ("%s ", i18n (534, "Enter a language by number or L for a list:"));
+            R_dopromptf ("%s ", i18n (534, "Enter a language by number or L for a list:"));
             return ++status;
         case 406:
             temp = atoi (args);
@@ -2098,7 +2098,7 @@ JUMP_F(CmdUserOther)
                 other.lang1 = temp;
                 status++;
             }
-            M_print ("%s ", i18n (534, "Enter a language by number or L for a list:"));
+            R_dopromptf ("%s ", i18n (534, "Enter a language by number or L for a list:"));
             return status;
         case 407:
             temp = atoi (args);
@@ -2111,14 +2111,14 @@ JUMP_F(CmdUserOther)
                 other.lang2 = temp;
                 status++;
             }
-            M_print ("%s ", i18n (534, "Enter a language by number or L for a list:"));
+            R_dopromptf ("%s ", i18n (534, "Enter a language by number or L for a list:"));
             return status;
         case 408:
             temp = atoi (args);
             if ((0 == temp) && (toupper (args[0]) == 'L'))
             {
                 TablePrintLang ();
-                M_print ("%s ", i18n (534, "Enter a language by number or L for a list:"));
+                R_dopromptf ("%s ", i18n (534, "Enter a language by number or L for a list:"));
                 return status;
             }
             other.lang3 = temp;

@@ -234,10 +234,10 @@ static void M_prints (const char *str)
                 }
                 break;
             case '\a':
-                if (uiG.Sound == SOUND_ON)
+                if (uiG.Sound == SOUND_CMD)
+                    ExecScript (uiG.Sound_Str, 0, 0, NULL);
+                else if (uiG.Sound == SOUND_ON)
                     printf ("\a");
-                else
-                    system (uiG.Sound_Str);
                 break;
             case '\x1b':
                 switch (*++p)
@@ -408,10 +408,10 @@ static void M_prints (char *str)
                 }
             }
         }
-        else if (SOUND_ON == uiG.Sound)
+        else if (uiG.Sound == SOUND_CMD)
+            ExecScript (uiG.Sound_Str, 0, 0, NULL);
+        else if (uiG.Sound == SOUND_ON)
             printf ("\a");
-        else if (SOUND_CMD == uiG.Sound)
-            system (uiG.Sound_Str);
     }
 }
 
