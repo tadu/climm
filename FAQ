@@ -102,6 +102,12 @@ A: Yes, partially. As of mICQ 0.4.10.2, you could use the change command to
    undocumented: you can "set" the options "webaware", "hideip", "dcauth"
    and "dccont", which then will also be saved to your micqrc.
 
+Q: mICQ claims my iconv() is broken, but doesn't detect my replacement libiconv. What do I do?
+
+A: Do ./configure LDFLAGS=-liconv instead. If your libiconv lib and includes
+   dir is not found, try ./configure "LDFLAGS=-liconv -L/path/to/libiconv/lib"
+   CPPFLAGS=-I/path/to/libiconv/include/" instead.
+
 Q: Are there any known bugs in 0.4.10?
 
 A: No, not yet.
