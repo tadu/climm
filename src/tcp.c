@@ -60,8 +60,8 @@ static Connection   *TCPReceiveInit2    (Connection *peer, Packet *pak);
 
 static Packet    *PacketTCPC         (Connection *peer, UDWORD cmd, UDWORD seq,
                                       UWORD type, UWORD flags, UWORD status, const char *msg);
-static void       TCPGreet           (Packet *pak, UWORD cmd, char *reason,
-                                      UWORD port, UDWORD len, char *msg);
+static void       TCPGreet           (Packet *pak, UWORD cmd, const char *reason,
+                                      UWORD port, UDWORD len, const char *msg);
 
 static void       TCPCallBackTimeout (Event *event);
 static void       TCPCallBackTOConn  (Event *event);
@@ -1215,7 +1215,7 @@ static Packet *PacketTCPC (Connection *peer, UDWORD cmd, UDWORD seq, UWORD type,
 /*
  * Append the "geeting" part to a packet.
  */
-static void TCPGreet (Packet *pak, UWORD cmd, char *reason, UWORD port, UDWORD len, char *msg)
+static void TCPGreet (Packet *pak, UWORD cmd, const char *reason, UWORD port, UDWORD len, const char *msg)
 {
     PacketWrite2     (pak, cmd);
     switch (cmd)
@@ -1454,7 +1454,7 @@ BOOL TCPGetAuto (Connection *list, UDWORD uin, UWORD which)
  * Sends a message via TCP.
  * Adds it to the resend queue until acked.
  */
-BOOL TCPSendMsg (Connection *list, UDWORD uin, char *msg, UWORD sub_cmd)
+BOOL TCPSendMsg (Connection *list, UDWORD uin, const char *msg, UWORD sub_cmd)
 {
     Contact *cont;
     Packet *pak;
@@ -1517,7 +1517,7 @@ BOOL TCPSendMsg (Connection *list, UDWORD uin, char *msg, UWORD sub_cmd)
  * Sends a message via TCP.
  * Adds it to the resend queue until acked.
  */
-BOOL TCPSendFiles (Connection *list, UDWORD uin, char *description, char **files, char **as, int count)
+BOOL TCPSendFiles (Connection *list, UDWORD uin, const char *description, const char **files, const char **as, int count)
 {
     Contact *cont;
     Packet *pak;

@@ -7,6 +7,7 @@
 #include "mreadline.h"
 #include "server.h"
 #include "util.h"
+#include "util_str.h"
 #include "icq_response.h"
 #include "cmd_pkt_v8_snac.h"
 #include "cmd_pkt_cmd_v5.h"
@@ -48,21 +49,15 @@ void Auto_Reply (Connection *conn, UDWORD uin)
     icq_sendmsg (conn, uin, temp, MSG_AUTO);
 }
 
-void icq_sendurl (Connection *conn, UDWORD uin, char *description, char *url)
+void icq_sendurl (Connection *conn, UDWORD uin, const char *description, const char *url)
 {
-    int len;
     char *buf;
 
-    len = strlen (url) + strlen (description) + 1;
-    buf = malloc (len + 1);
-    assert (buf);
-
-    snprintf (buf, len + 1, "%s%c%s", url, ConvSep (), description);
-    icq_sendmsg (conn, uin, buf, MSG_URL);
+    icq_sendmsg (conn, uin, buf = strdup (s_sprintf ("%s%c%s", url, ConvSep (), description)), MSG_URL);
     free (buf);
 }
 
-void icq_sendmsg (Connection *conn, UDWORD uin, char *text, UDWORD msg_type)
+void icq_sendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD msg_type)
 {
     char *old;
 

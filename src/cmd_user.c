@@ -778,7 +778,8 @@ static JUMP_F(CmdUserPeer)
             TCPDirectOff   (list, cont->uin);
         else if (!strcmp (arg1, "file"))
         {
-            char *files[1], *ass[1], *des = NULL, *file;
+            const char *files[1], *ass[1];
+            char *des = NULL, *file;
             
             if (!s_parse (&args, &file))
             {
@@ -795,7 +796,7 @@ static JUMP_F(CmdUserPeer)
             if (!TCPSendFiles (list, cont->uin, des, files, ass, 1))
                 M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
             
-            free (files[0]);
+            free (file);
             free (des);
         }
         else if (!strcmp (arg1, "files"))
@@ -825,7 +826,7 @@ static JUMP_F(CmdUserPeer)
                 M_print (i18n (2158, "No file given.\n"));
                 return 0;
             }
-            if (!TCPSendFiles (list, cont->uin, des, files, ass, count))
+            if (!TCPSendFiles (list, cont->uin, des, (const char **)files, (const char **)ass, count))
                 M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
             
             while (count--)
