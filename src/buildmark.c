@@ -1,7 +1,7 @@
 /*
  * Provides a build mark with the current version and current time of compilation.
  *
- * mICQ Copyright (C) © 2001,2002,2003 Rüdiger Kuhlmann
+ * mICQ Copyright (C) © 2001,2002,2003,2004 Rüdiger Kuhlmann
  *
  * mICQ is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
  * $Id$
  */
 
-#define MICQ_BUILD_NUM 0x00040b00
+#define MICQ_BUILD_NUM 0x00040c00
 
 #include "micq.h"
 #include "buildmark.h"
