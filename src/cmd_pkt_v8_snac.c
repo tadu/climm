@@ -787,7 +787,6 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             newevent = QueueEnqueueData (event->conn, QUEUE_ACKNOWLEDGE, seq1,
                          (time_t)-1, p, cont->uin, NULL, &SnacSrvCallbackSendack);
             SrvReceiveAdvanced (event->conn, event, pp, newevent);
-            PacketD (pp);
 
             /* TLV 1, 2(!), 3, 4, f ignored */
             break;
