@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.63.2.3 2003/04/08 15:28:43
+#  EN: __.i18n,v 1.63.2.6 2003/07/04 12:56:19
 1000:iso-8859-1
 1001:de
 1002:de_DE
@@ -55,7 +55,7 @@
 1064:Automatischer Statuswechsel nach %s.\n
 1072:User abgeklemmt:
 1073:User verbunden:
-1077:gewidmet Matthew D. Smith.
+1077.gewidmet Matthew D. Smith.
 1078:Keine Übersetzung verfügbar.
 1079:Übersetzung (%s, %s) von %s, zuletzt geändert am %s von %s, für mICQ %d.%d.%d%s.\n
 1080:Konnte Übersetzung "%s" nicht laden.\n
@@ -548,7 +548,7 @@
 1639:Die neue Benutzernummer ist %ld!\n
 1640:Aktualisieren der Informationen fehlgeschlagen.\n
 1641:Benutzerinformationen erfolgreich aktualisiert.\n
-1642:IP-Adresse
+1642:IP:
 1643:Bestätigt SRV_X1 0x021C Fertig mit Kontaktliste (?)\n
 1644:Bestätigt SRV_X2 0x00E6 Fertig mit alten Nachrichten (?)\n
 1645:Sie haben ein ungültiges Paßwort eingegeben.\n
@@ -977,7 +977,7 @@
 2207:Protokollfehler bei Kommando für alten ICQ-Server: %d.\n
 2208:UTF-8-Kodierung erkannt, allerdings wurde dieses mICQ ohne UTF-8-Unterstützung gebaut.\n
 2209:UTF-8-Kodierung erkannt.\n
-2210:%smICQ (Matts ICQ-Klon)%s Version %s%s%s (kompiliert am %s)\n
+2210.%smICQ (Matts ICQ-Klon)%s Version %s%s%s (kompiliert am %s)\n
 2211:Dein Status ist %s.\n
 2212:ist jetzt %s
 2213:hat sich eingeloggt (%s)
@@ -1086,3 +1086,15 @@
 2319:Akzeptiere eingehende Dateiübertragung von <uin> oder <nick>.
 2320:peer accept <nick> [<id>]\n                  - akzeptiere eine eingehende Dateiübertragung.\n
 2327:%smICQ (Matts ICQ-Klon)%s Version %s%s%s\n
+2328:Zu häufig eingeloggt, bitte 30 Minuten warten.\n
+2329:Syntax-Fehler
+2330:Entfernen eines Nicht-Kontaktes
+2331:unbekannt
+2332:Fehler %d (%s) beim Bearbeiten der Kontaktliste für %d Kontakte:
+2333:%s [show|load|save|set|get|rget] <contacts> - bearbeite Meta-Daten für Kontakte.\n
+2334:  show - zeige die aktuell bekannten Meta-Daten\n
+2335:  load - lade Meta-Daten aus einer Datei und zeige sie an\n
+2336:  save - speichere Meta-Daten in eine Datei\n
+2337:  set  - lade eigene Meta-Daten zum Server hoch\n
+2338:  get  - frage den Server nach Meta-Daten\n
+2339:  rget - frage den Server nach den Meta-Daten des letzten Kontaktes\n
