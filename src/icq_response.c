@@ -587,20 +587,20 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
     switch (type)
     {
         case INT_FILE_ACKED:
-            line = s_sprintf (i18n (9999, "File transfer %s to port %ld."),
-                              s_qquote (opt_text), opt_port);
+            line = s_sprintf (i18n (9999, "File transfer %s to port %s%ld%s."),
+                              s_qquote (opt_text), COLQUOTE, opt_port, COLNONE);
             break;
         case INT_FILE_REJED:
             line = s_sprintf (i18n (9999, "File transfer %s rejected by peer: %s."),
                               s_qquote (opt_text), s_wordquote (text));
             break;
         case INT_FILE_ACKING:
-            line = s_sprintf (i18n (9999, "Accepting file %s (%ld bytes)."),
-                              s_qquote (opt_text), opt_bytes);
+            line = s_sprintf (i18n (9999, "Accepting file %s (%s%ld%s bytes)."),
+                              s_qquote (opt_text), COLQUOTE, opt_bytes, COLNONE);
             break;
         case INT_FILE_REJING:
-            line = s_sprintf (i18n (9999, "Refusing file request %s (%ld bytes): %s."),
-                              s_qquote (opt_text), opt_bytes, s_wordquote (text));
+            line = s_sprintf (i18n (9999, "Refusing file request %s (%s%ld%s bytes): %s."),
+                              s_qquote (opt_text), COLQUOTE, opt_bytes, COLNONE, s_wordquote (text));
             break;
         case INT_CHAR_REJING:
             line = s_sprintf (i18n (9999, "Refusing chat request (%s/%s) from %s%s%s."),
@@ -824,8 +824,8 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, ContactOptions *op
                 opt_bytes = 0;
             if (!ContactOptionsGetVal (opt, CO_REF, &opt_ref))
                 opt_ref = 0;
-            M_printf (i18n (9999, "requests file transfer %s of %ld bytes (sequence %ld).\n"),
-                      s_qquote (cdata), opt_bytes, opt_ref);
+            M_printf (i18n (9999, "requests file transfer %s of %s%ld%s bytes (sequence %s%ld%s).\n"),
+                      s_qquote (cdata), COLQUOTE, opt_bytes, COLNONE, COLQUOTE, opt_ref, COLNONE);
             TCLEvent (cont, "file_request", s_sprintf ("{%s} %ld %ld", cdata, opt_bytes, opt_ref));
             break;
 
