@@ -29,7 +29,7 @@ void   CmdPktCmdExtInfoReq   (Connection *conn, UDWORD uin);
 void   CmdPktCmdStatusChange (Connection *conn, UDWORD status);
 void   CmdPktCmdUpdateInfo   (Connection *conn, const char *email, const char *nick, const char *first, const char *last, BOOL auth);
 void   CmdPktCmdRandSet      (Connection *conn, UDWORD group);
-void   CmdPktCmdRandSearch   (Connection *conn, UDWORD group);
+UDWORD CmdPktCmdRandSearch   (Connection *conn, UDWORD group);
 void   CmdPktCmdMetaGeneral  (Connection *conn, Contact *cont);
 void   CmdPktCmdMetaMore     (Connection *conn, Contact *cont);
 void   CmdPktCmdMetaAbout    (Connection *conn, const char *about);

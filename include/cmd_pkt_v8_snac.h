@@ -35,6 +35,7 @@ void   SnacCliReqofflinemsgs  (Connection *conn);
 void   SnacCliAckofflinemsgs  (Connection *conn);
 void   SnacCliRegisteruser    (Connection *conn);
 UDWORD SnacCliMetareqinfo     (Connection *conn, Contact *cont);
+UDWORD SnacCliMetareqmoreinfo (Connection *conn, Contact *cont);
 void   SnacCliMetasetabout    (Connection *conn, const char *text);
 void   SnacCliMetasetmore     (Connection *conn, Contact *cont);
 void   SnacCliMetasetgeneral  (Connection *conn, Contact *cont);
@@ -43,7 +44,7 @@ void   SnacCliSendsms         (Connection *conn, const char *target, const char 
 void   SnacCliSearchbypersinf (Connection *conn, const char *email, const char *nick, const char *name, const char *surname);
 void   SnacCliSearchbymail    (Connection *conn, const char *email);
 void   SnacCliSearchwp        (Connection *conn, const MetaWP *wp);
-void   SnacCliSearchrandom    (Connection *conn, UWORD group);
+UDWORD SnacCliSearchrandom    (Connection *conn, UWORD group);
 void   SnacCliSetrandom       (Connection *conn, UWORD group);
 
 #endif /* MICQ_ICQV8_SNAC_H */
