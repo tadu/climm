@@ -1,8 +1,17 @@
 # $Id$ (Croatian)
-#  EN: __.i18n,v 1.50 2002/09/30 17:45:07
+#  EN: __.i18n,v 1.51 2002/10/14 15:48:34
 #-#1010:User is Away [Auto-Message]
+#1001:<lang>
+#1002:<lang_cc>
+#1003:0
+#1004:<translation authors>
+#1005:<last editor>
+#1006:<last edit date>
+#1007:iso-8859-1
+#1010:User is away [Auto-Message]
 1011:User is not available [Auto-Message]
 #-#1012:User is Occupied [Auto-Message]
+#1012:User is occupied [Auto-Message]
 1013:User is offline
 1014:None
 1015:Jan
@@ -14,22 +23,32 @@
 1021:Jul
 1022:Aug
 #-#1023:Sept
+#1023:Sep
 1024:Oct
 1025:Nov
 1026:Dec
 1027:DA
 1028:NE
-#-#1029:Molim Vas unesite " YES_STR " or " NO_STR "¶
+#-#1029:Molim Vas unesite " YES_STR " or " NO_STR "\n
 #-#1030: logged off.
 #-#1031: logged on.
 #-#1032: - Instant Message
 #-#1033: - Instant " SERVCOL "Mass" NOCOL " Message
 #-#1035: changed status to 
+#1029:Please enter YES or NO!
+#1030:logged off.
+#1031:logged on
+#1032:debug: Doppeltes Packet #%04x vom Typ %04x (%s)\n
+#1033:Incoming v8 server packet:
+#1034:Maximum number of tries reached. Giving up.
+#1035:changed status to
 1036:Unknown command %s, type /help for help.
-1037:Poruka poslana pre nego $to je dostignuta maksimalna duzina poruke¶
-1038:Poruka je opozvana¶
-#-#1039:!¶
+1037:Poruka poslana pre nego $to je dostignuta maksimalna duzina poruke\n
+1038:Poruka je opozvana\n
+#-#1039:!\n
 #-#1040:Micq> 
+#1039:The server claims we're not connected.\n
+#1040:mICQ> 
 1041:Poruka> 
 1042:Poruka za sve> 
 1043:Svi korisnici pronadjeni.
@@ -39,23 +58,53 @@
 1047:Ekstra podaci
 #-#1048:SEQ
 #-#1049:Ver
+#1048:Error code: %d\n
+#1049:UIN: %d\n
 1050:Prijavljivanje je uspje$no!
-#-#1052:Couldn't establish connection¶
-1053:Connected to %s, waiting for response¶
+#-#1052:Couldn't establish connection\n
+1053:Connected to %s, waiting for response\n
 1055:Socket creation failed
-1056:Socket created attempting to connect¶
+1056:Socket created attempting to connect\n
 #-#1057:The hostname 
-#-#1058:%s was not found.¶
-1060:Nivo detaljnosti ispisa je %d.¶
-#-#1061:%s nije prepoznato kao nadimak¶
+#-#1058:%s was not found.\n
+1060:Nivo detaljnosti ispisa je %d.\n
+#-#1061:%s nije prepoznato kao nadimak\n
 #-#1062:Users ignored: 
 #-#1063:Enter password : 
-#-#1064:¶Auto-Changed status to 
+#-#1064:\nAuto-Changed status to 
+#1061:'%s' not recognized as a nick name.\n
+#1062:Users ignored:
+#1063:Enter password:
+#1064:Auto-Changed status to
 1065:Using intel byte ordering.
 1066:Using motorola byte ordering.
 #-#1071:Va$ status je 
 #-#1072:Korisnici koji nisu na vezi: 
 #-#1073:Korisnici koji su na vezi: 
+#1071:Your status is
+#1072:Users offline:
+#1073:Users online:
+#1074:mICQ (Matt's ICQ clone)
+#1075:version
+#1076:compiled on
+#1077:in dedication to Matthew D. Smith.
+#1078:No translation available.
+#1079:Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n
+#1080:Couldn't load "%s" internationalization.\n
+#1081:Successfully loaded en translation (%d entries).\n
+#1082:Trying to reconnect... [try %d out of %d]\n
+#1083:Sound cmd
+#1084:Sound
+#1085:on
+#1086:off
+#1089:Unloaded translation.
+#1093:Passwords did not match - please try again.
+#1094:SOCKS5 server:
+#1095:SOCKS5 port:
+#1096:SOCKS5 user name:
+#1097:SOCKS5 password:
+#1098:Display a list of nicknames that you can tab through.
+#1099:Unknown language.
 1100:None
 1101:Arabic
 1102:Bhojpuri
@@ -116,6 +165,41 @@
 1157:Persian
 1158:Albanian
 1159:Armenian
+#1161:Academic
+#1162:Administrative
+#1163:Art/Entertainmant
+#1164:College Student
+#1165:Computers
+#1166:Community & Social
+#1167:Education
+#1168:Engineering
+#1169:Financial Services
+#1170:Government
+#1171:High School Student
+#1172:Home
+#1173:ICQ - Providing Help
+#1174:Law
+#1175:Managerial
+#1176:Manufacturing
+#1177:Medical/Health
+#1178:Military
+#1179:Non-government Organization
+#1180:Professional
+#1181:Retail
+#1182:Retired
+#1183:Science & Research
+#1184:Sports
+#1185:Technical
+#1186:University Student
+#1187:Web Building
+#1188:Unrecognized command in rc file '%s', ignored.
+#1189:UIN = %ld\n
+#1190:port = %ld\n
+#1191:passwd = %s\n
+#1192:server = %s\n
+#1193:status = %ld\n
+#1196:Message_cmd = %s\n
+#1198:Other Services
 1200:Nije unijeto
 1201:Afganistan
 1202:Albanija
@@ -309,49 +393,93 @@
 1390:Zair
 1391:Zambia
 1392:Zimbabve
-#-#1400:		Shows locally stored info on user¶
-#-#1401:		Updates other user info like age and sex¶
-#-#1402:		Updates your about user info.¶
-#-#1403:		Displays the last message received from <nick>.¶			They must be in your Contact List.¶
-#-#1404:		Toggles ignoring/unignoring nick¶
-#-#1405:		Lists ignored nicks/uins¶
-#-#1406:	Toggles your visibility to a user when you're invisible.¶
-#-#1407:			Displays the current status of online people on your contact list¶
-#-#1408:		Mijenja Va$u $ifru u tajnu.¶
-#-#1409:		$alje poruku UIN-u¶
-#-#1410:	$alje URL i poruku UIN-u¶
-#-#1411:	$alje multilinijsku poruku svima sa liste.¶
-#-#1412:		$alje poruku posljednjoj osobi kojoj ste poslali poruku¶
-#-#1413:		Autorizire\a UIN da Vas ubaci na svoju listu¶
-#-#1414:		Odgovara osobi koja vam se posljednja obratila¶
-#-#1415:		Pronalazi slucajnog korisnika u navedenoj grupi ili izlista grupu.¶
-#-#1416:			Ispisuje trenutni status svih na Va$oj kontakt listi¶
-#-#1417:	Ova komanda Vam omogucava da promijenite Va$ set komandi u letu.¶
-#-#1418:			Postavlja nivo preglednosti ( podrazumijevano = 0 ).¶
-#-#1419:				Bri$e ekran.¶
-#-#1420:				Ukljucuje/Iskljucuje zvucni signal priliko primanja nove poruke.¶
-#-#1421:				Ukljucuje/Iskljucuje prikaz u boji.¶
-#-#1422:			Odlogiravanje i izlaz iz programa.¶
-#-#1423:				Prikazuje va$ autoodgovor status¶
-#-#1424:			Ukljucuje/Iskljucuje slanje poruka kada je va$ status DND, NA, itd.¶
-#-#1425:		Postavlja poruku koju ce poslati kao automatski odgovor na trenutni status¶
-#-#1426:	Kreira novi UIN (Univerzalni Identifikacijski Broj) sa navedenom $ifrom.¶
-#-#1427:	Mijenja Va$ status u status broj.¶		Bez navedenog broja ispisuje dozvoljene modove.¶
-#-#1428:	Dodaje UIN broj va$oj kontakt listi uz unos nadimka.¶
-#-#1429:	Pronalazi ICQ korisnika sa navedenom e-mail adresom.¶
-#-#1430:		Ispisuje osnovne informacije za navedeni UIN¶
-#-#1431:		Oznacava kao Online (Na vezi).¶
-#-#1432:		Oznacava kao Away (Odsutan).¶
-#-#1433:		Oznacava kao Not Available (Nije dostupan).¶
-#-#1434:		Oznacava kao Occupied (Zauzet).¶
-#-#1435:		Oznacava kao Do not Disturb (Ne uznemiravaj).¶
-#-#1436:		Oznacava kao Free for Chat (Raspolozen za cavrljanje).¶
-#-#1437:		Oznacava kao Invisible (Nevidljiv).¶
-#-#1438:		Korigira Va$e osnovne informacije (e-mail, nadimak, itd.)¶
-#-#1439:		Postavlja Va$u slucajnu korisnicku grupu.¶
+#-#1400:		Shows locally stored info on user\n
+#-#1401:		Updates other user info like age and sex\n
+#-#1402:		Updates your about user info.\n
+#-#1403:		Displays the last message received from <nick>.\n			They must be in your Contact List.\n
+#-#1404:		Toggles ignoring/unignoring nick\n
+#-#1405:		Lists ignored nicks/uins\n
+#-#1406:	Toggles your visibility to a user when you're invisible.\n
+#-#1407:			Displays the current status of online people on your contact list\n
+#-#1408:		Mijenja Va$u $ifru u tajnu.\n
+#-#1409:		$alje poruku UIN-u\n
+#-#1410:	$alje URL i poruku UIN-u\n
+#-#1411:	$alje multilinijsku poruku svima sa liste.\n
+#-#1412:		$alje poruku posljednjoj osobi kojoj ste poslali poruku\n
+#-#1413:		Autorizire\a UIN da Vas ubaci na svoju listu\n
+#-#1414:		Odgovara osobi koja vam se posljednja obratila\n
+#-#1415:		Pronalazi slucajnog korisnika u navedenoj grupi ili izlista grupu.\n
+#-#1416:			Ispisuje trenutni status svih na Va$oj kontakt listi\n
+#-#1417:	Ova komanda Vam omogucava da promijenite Va$ set komandi u letu.\n
+#-#1418:			Postavlja nivo preglednosti ( podrazumijevano = 0 ).\n
+#-#1419:				Bri$e ekran.\n
+#-#1420:				Ukljucuje/Iskljucuje zvucni signal priliko primanja nove poruke.\n
+#-#1421:				Ukljucuje/Iskljucuje prikaz u boji.\n
+#-#1422:			Odlogiravanje i izlaz iz programa.\n
+#-#1423:				Prikazuje va$ autoodgovor status\n
+#-#1424:			Ukljucuje/Iskljucuje slanje poruka kada je va$ status DND, NA, itd.\n
+#-#1425:		Postavlja poruku koju ce poslati kao automatski odgovor na trenutni status\n
+#-#1426:	Kreira novi UIN (Univerzalni Identifikacijski Broj) sa navedenom $ifrom.\n
+#-#1427:	Mijenja Va$ status u status broj.\n		Bez navedenog broja ispisuje dozvoljene modove.\n
+#-#1428:	Dodaje UIN broj va$oj kontakt listi uz unos nadimka.\n
+#-#1429:	Pronalazi ICQ korisnika sa navedenom e-mail adresom.\n
+#-#1430:		Ispisuje osnovne informacije za navedeni UIN\n
+#-#1431:		Oznacava kao Online (Na vezi).\n
+#-#1432:		Oznacava kao Away (Odsutan).\n
+#-#1433:		Oznacava kao Not Available (Nije dostupan).\n
+#-#1434:		Oznacava kao Occupied (Zauzet).\n
+#-#1435:		Oznacava kao Do not Disturb (Ne uznemiravaj).\n
+#-#1436:		Oznacava kao Free for Chat (Raspolozen za cavrljanje).\n
+#-#1437:		Oznacava kao Invisible (Nevidljiv).\n
+#-#1438:		Korigira Va$e osnovne informacije (e-mail, nadimak, itd.)\n
+#-#1439:		Postavlja Va$u slucajnu korisnicku grupu.\n
+#1393:successful
+#1394:unsuccessful
+#1400:Shows locally stored info on <uin> or <nick>, or on yourself.
+#1401:Updates more user info like age and sex.
+#1402:Updates your about user info.
+#1403:Displays the last message received from <uin> or <nick> or from everyone who who has send you at least one message.
+#1404:Toggles ignoring/unignoring <uin> or <nick>.
+#1405:Lists ignored nicks/uins.
+#1406:Toggles your visibility to <uin> or <nick> when you're invisible.
+#1407:Displays the current status of online people on your contact list.
+#1408:Changes your password to <password>.
+#1409:Sends a message to <uin> or <nick>.
+#1410:Sends a url and message to <uin> or <nick>.
+#1411:Sends a multiline message to everyone on your list.
+#1412:Sends a message to the last person you sent a message to.
+#1413:Authorize <uin> or <nick> to add you to their list.
+#1414:Replys to the last person to send you a message.
+#1415:Finds a random user in interest group <nr> or lists the groups.
+#1416:Displays the current status of everyone on your contact list.
+#1417:This command allows you to alter your command set on the fly.
+#1418:Set the verbosity level, or display verbosity level.
+#1419:Clears the screen.
+#1420:Switches beeping when receiving new messages on or off, sets a command for this event or displays current state of this option.
+#1422:Logs off and quits.
+#1424:Set whether autoreplying when not online, or displays setting.
+#1425:Sets the message to send as an auto reply for the status.
+#1426:Creates a new UIN with the specified password.
+#1427:Changes your status to the status number, or list the available modes.
+#1428:Adds <uin> as <new nick>, or add alias <new nick> for <uin> or <nick>.
+#1429:Searches for an ICQ user.
+#1430:Displays general info on <uin> or <nick>.
+#1431:Change status to Online.
+#1432:Mark as "away".
+#1433:Mark as "not available".
+#1434:Mark as "occupied".
+#1435:Mark as "do not disturb".
+#1436:Mark as "free for chat".
+#1437:Mark as "invisible".
+#1438:Updates your basic info (email, nickname, etc.).
+#1439:Sets your random user group.
+#1440:Random User:
+#1441:IP:
 1442:Molim Vas izaberite jedno od podrucja za pomoc ispod.
 #-#1443:Komande vezane za mICQ prikaz i konfiguriranje.
 #-#1444:Komande vezane za pronalazenje korisnika.
+#1443:Commands relating to mICQ displays and configuration.
+#1444:Commands relating to finding and seeing other users.
 1445:Komande vezane za Va$ ICQ nalog.
 1446:Komande vezane za slanje poruka.
 1447:Klijent
@@ -398,6 +526,92 @@
 #-#1538:Enter new year of birth (4 digits): 
 #-#1539:Enter new month of birth: 
 #-#1540:Enter new day of birth: 
+#1451:IP2:
+#1452:Status:
+#1453:TCP version:
+#1454:Connection:
+#1455:Art
+#1456:Cars
+#1457:Celebrity Fans
+#1458:Collections
+#1459:Computers
+#1460:Culture & Literature
+#1461:Fitness
+#1462:Games
+#1463:Hobbies
+#1465:Internet
+#1466:Lifestyle
+#1467:Movies/TV
+#1468:Music
+#1469:Outdoor Activities
+#1470:Parenting
+#1471:Pets/Animals
+#1472:Religion
+#1473:Science/Technology
+#1474:Skills
+#1475:Sports
+#1476:Web Design
+#1477:Nature and Environment
+#1478:News & Media
+#1479:Government
+#1480:Business & Economy
+#1481:Mystics
+#1482:Travel
+#1483:Astronomy
+#1484:Space
+#1485:Clothing
+#1486:Parties
+#1487:Women
+#1488:Social science
+#1489:60's
+#1490:70's
+#1491:80's
+#1492:50's
+#1493:Peer-to-Peer
+#1494:Server Only
+#1495:No Random User Found
+#1497:failed
+#1498:Info for
+#1499:Other
+#1500:Nickname:
+#1501:Name:
+#1502:Email:
+#1503:Other Email:
+#1504:Old Email:
+#1505:Location:
+#1506:Phone:
+#1507:Fax:
+#1508:Street:
+#1509:Cellular:
+#1510:Zip:
+#1511:Country:
+#1512:Country code:
+#1513:Work Country Code:
+#1514:Work Country:
+#1515:Work Homepage:
+#1516:Occupation:
+#1517:Job Position:
+#1518:Department:
+#1519:Company Name:
+#1520:Work Zip:
+#1521:Work Fax:
+#1522:Work Address:
+#1523:Work Phone:
+#1524:Work Location:
+#1525:About:
+#1528:female
+#1529:male
+#1530:not specified
+#1531:Homepage:
+#1532:Born:
+#1533:Languages:
+#1534:Enter a language by number or L for a list:
+#1535:Enter new age:
+#1536:Enter new sex:
+#1537:Enter new homepage:
+#1538:Enter new year of birth (4 digits):
+#1539:Enter new month of birth:
+#1540:Enter new day of birth:
 1541:About> 
 #-#1542:Enter other email address: 
 #-#1543:Enter old email address: 
@@ -415,6 +629,272 @@
 #-#1555:Unesite Va$e prezime : 
 #-#1556:Unesite va$ novi e-mail : 
 #-#1557:Da li zelite da korisnici trebaju zahtijevati od vas autorizaciju ? : 
+#1542:Enter other email address:
+#1543:Enter old email address:
+#1544:Enter new city:
+#1545:Enter new state:
+#1546:Enter new phone number:
+#1547:Enter new fax number:
+#1548:Enter new street address:
+#1549:Enter new cellular number:
+#1550:Enter new zip code (must be numeric):
+#1551:Enter your country's phone ID number:
+#1552:Enter your time zone (+/- 0-12):
+#1553:Enter Your New Nickname:
+#1554:Enter your new first name:
+#1555:Enter your new last name:
+#1556:Enter your new email address:
+#1557:Do you want to require Mirabilis users to request your authorization? (YES/NO)
+#1562:Info for
+#1564:First name:
+#1565:Last name:
+#1566:Email address:
+#1567:No authorization needed.
+#1568:Must request authorization.
+#1570:City:
+#1574:State:
+#1575:Age:
+#1578:Enter country's phone ID number:
+#1579:Enter company: 
+#1584:Warning! Script command '%s' failed with exit value %d\n
+#1587:Enter department: 
+#1592:<%s> emailed you a message:\n
+#1593:<%s> send you a web message:\n
+#1595:\nContact List.\n============================================\n%d Contacts\n
+#1596:[SOCKS] Can't find hostname %s: %s.
+#1597:[SOCKS] Socket creation failed\n
+#1598:[SOCKS] Connection request refused
+#1599:[SOCKS] Authentification method incorrect
+#1600:[SOCKS] Authorization failure
+#1601:[SOCKS] General SOCKS server failure
+#1602:Enter a state:
+#1603:Enter position: 
+#1604:Should the users be online?
+#1605:Do you want your status to be available on the web? (YES/NO)
+#1606:Got a bad session ID %08x (correct: %08x) with cmd %04x ignored.\n
+#1607:Usage: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]\n
+#1608:        -v   Turn on verbose Mode (useful for Debugging only)\n
+#1609:        -f   specifies an alternate Config File (default: ~/.micq/micqrc)\n
+#1610:        -l   specifies an alternate logfile resp. logdir\n
+#1611:        -?   gives this help screen\n\n
+#1612:This program was made without any help from Mirabilis or their consent.\n
+#1613:No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n
+#1614:Using config file "%s"\n
+#1615:Logging to "%s"\n
+#1617:<all>
+#1618:UIN:
+#1619:Warning:
+#1620:maximal number of contacts reached. Ask a wizard to enlarge me!
+#1621:users not returned.
+#1622:Do you want to apply these changes? (YES/NO)
+#1623:Doubled packet %04X\n
+#1624:Sorry, can't initialize Windows Sockets...
+#1632:\nConnection unstable. Exiting....
+#1634:ok.\n
+#1637:Can't bind socket to free port\n
+#1638:Couldn't create socket
+#1639:The new UIN is %ld!\n
+#1640:Failed to update info.\n
+#1641:User info successfully updated.\n
+#1642:IP
+#1643:Acknowleged SRV_X1 0x021C Done Contact list?\n
+#1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
+#1645:You entered an incorrect password.\n
+#1646:Server is busy.\n
+#1648:The response was %04X	
+#1649:The version was %X	
+#1650:\nThe SEQ was %04X	
+#1651:The size was %d\n
+#1653:Offline
+#1654:Online
+#1655:Enter the user's e-mail address:
+#1656:Enter the user's nick name:
+#1657:Enter the user's first name:
+#1658:Enter the user's last name:
+#1659:Unknown section %s in configuration file.
+#1660:Invalid Command: %s\n
+#1661:Shell commands have been disabled.\n
+#1666:Unignored %s.
+#1667:Ignoring %s.
+#1670:Normal visible to %s now.
+#1671:Always visible to %s now.
+#1672:%s's IP address is 
+#1673:The port is %d.\n
+#1674:The port is unknown.\n
+#1675:Ignored line:
+#1676:Need uin/nick to send to.\n
+#1678:Need URL please.\n
+#1679:Sorry saving your personal reply messages went wrong!\n
+#1680:Your personal settings have been saved!\n
+#1681:Last %d people you talked to:\n
+#1682:You have received messages from:\n
+#1687:mICQ has been running for
+#1688:days
+#1689:hours
+#1690:minutes
+#1691:seconds
+#1692:Contacts:
+#1696:Sex:
+#1700:%s is not a valid user in your list.\n
+#1703:Status modes:\n
+#1704:Groups:\n
+#1705:General
+#1706:Romance
+#1707:Games
+#1708:Students
+#1709:20 something
+#1710:30 something
+#1711:40 something
+#1712:50+
+#1713:Man chat requesting women
+#1714:Woman chat requesting men
+#1715:mICQ
+#1716:None
+#1717:! as the first character of a command will execute a shell command (e.g. "!ls"  "!dir" "!mkdir temp")
+#1719:Shows how long mICQ has been running.
+#1720:uin can be either a number or the nickname of the user.
+#1721:Sending a blank message will put the client into multiline mode.\nUse . on a line by itself to end message.\nUse # on a line by itself to cancel the message.
+#1724:Automatic replies are %s.\n
+#1727:The "do not disturb" message is:
+#1728:The "away" message is:
+#1729:The "not available" message is:
+#1730:The "occupied" message is:
+#1731:The "invisible" message is:
+#1735:Must give a message.\n
+#1738:Need a command to alter.\n
+#1741:Must receive a message first\n
+#1742:Must write one message first\n
+#1743:Size mismatch in packet lengths.\n
+#1744:server (v5)
+#1745:unknown
+#1746: nr type         sent/received packets/unique packets\n
+#1747:total
+#1754: Note: You need to 'save' to write new contact list to disc.\n
+#1755:has added you to their contact list.\n
+#1756:\nCreating Connection...\n
+#1757:Couldn't establish connection.\n
+#1758:Sending Request...\n
+#1759:Waiting for response....\n
+#1760:\nYour new UIN is %s%ld%s!\n
+#1761:unknown
+#1762:Your new UIN is: %d.\n
+#1763:The command '%s' has been renamed to '%s'.
+#1764:The command '%s' is unchanged.
+#1765:%s has UIN %d.
+#1766:Changing status to away resp. not available after idling %s%d%s seconds.\n
+#1767:Toggles auto cycling to away/not available.
+#1768:The command name '%s' is already being used.\n
+#1770:Resend your last message to <uin> or <nick>.
+#1771:You haven't sent a message to anyone yet!\n
+#1774:Incoming packet:
+#1775:Outgoing packet:
+#1777:Opening peer-to-peer connection at localhost:%d... 
+#1781:Your password for UIN %d:\n
+#1782:You need a password for your new UIN.\n
+#1783:To prevent typos, please enter your password again.\n
+#1784:If you are firewalled, you may need to use a SOCKS5 server. If you do, please enter its hostname or IP address. Otherwise, or if unsure, just press return.\n
+#1785:success.\n
+#1786:I also need the port the socks server listens on. If unsure, press return for the default port.\n
+#1787:You probably need to authentificate yourself to the socks server. If so, you need to enter the user name the administrator of the socks server gave you. Otherwise, just press return.\n
+#1788:Now I also need the password for this user.\n
+#1789:Received malformed packet: (%d)
+#1790:Setup wizard finished. Congratulations to your new UIN!\n
+#1791:Setup wizard finished. Congratulations!\n
+#1792:I'm sorry, AOL doesn't want to give us a new UIN, probably because of too many new UIN requests from this IP. Please try again later.\n
+#1793:No valid UIN found. The setup wizard will guide you through the process of setting one up.\n
+#1794:If you already have an UIN, please enter it. Otherwise, enter 0, and I will request one for you.\n
+#1795:Password:
+#1796:Setup wizard finished. Please wait until registration has finished.\n
+#1797:Finance and corporate
+#1798:Elementary School
+#1799:High School
+#1800:Change the working language to <lang> or display string <nr>.
+#1801:Displays a list of people on your contact list in a screen wide format.
+#1802:SoundOnline cmd
+#1803:SoundOffline cmd
+#1804:SoundOnline
+#1805:SoundOffline
+#1807:Cancelled incoming message (seq %04x) from %s\n
+#1808:College
+#1810:University
+#1812:Past Work Place
+#1813:Past Organization
+#1814:Sent auto-response message to %s%s%s.\n
+#1815:    funny: use funny messages for output.\n
+#1816:Unknown option %s to set command.\n
+#1817:ReceiveScript feature not enabled.\n
+#1818:Warning: Deprecated syntax found in rc file!\n    Please update or "save" the rc file and check for changes.\n
+#1820:%s <option> [on|off] - control simple options.\n
+#1822:    color: use colored text output.\n
+#1823:Incoming partial packet:
+#1825:Discarded a %04x (%s) packet
+#1826:Resending message %04x (%s) sequence %04x (attempt #%d, len %d).\n
+#1830:Discarding message to %s after %d send attempts.  Message content:\n
+#1833:Peer to peer TCP connection established.\n
+#1835:Error while writing to socket - %s (%d)\n
+#1841:Received malformed initialization acknowledgement packet.\n
+#1842:Closing socket %d to %s.\n
+#1843:Closing socket %d.\n
+#1844:TCP message %04x discarded after timeout.\n
+#1845:Nick %s unknown.\n
+#1846:Opens and closes direct (peer to peer) connections:\n
+#1847:peer open  <nick> - Opens direct connection.\n
+#1848:peer close <nick> - Closes/resets direct connection(s).\n
+#1849:Error on select: %s (%d)\n
+#1850:Timeout on connection with %s at %s:%d\n
+#1855:TCP connection to %s at %s:%d failed.\n
+#1856:Discarded a %04x (%s) packet from old session %08x (current: %08x).\n
+#1857:Do you want to hide your IP from other contacts? (YES/NO)
+#1864:Can't open rcfile %s.
+#1866:This version of mICQ is compiled without direct connection (peer to peer) support.\n
+#1867:Got a malformed (too short) packet - ignored.\n
+#1868:Got a malformed (to long subpacket) multi-packet - remainder ignored.\n
+#1869:Protocoll versions less than 5 are not supported anymore.\n
+#1870:peer off   <nick> - Closes direct connection(s) and don't try it again.\n
+#1871:Opening v8 connection to %s:%d... 
+#1872:failed: %s (%d)\n
+#1873:Work City:
+#1874:Work State:
+#1875:Personal interests:
+#1876:Personal past background:
+#1877:ok.\n
+#1878:Error while reading from socket: %s (%d)\n
+#1879:Affiliations:
+#1880:Incoming packet is not a FLAP: id is %d.\n
+#1881:FLAP channel 1 out of data.\n
+#1882:FLAP channel 1 cmd 1 extra data:\n
+#1883:FLAP channel 1 unknown command %d.\n
+#1884:FLAP with unknown channel %d received.\n
+#1885:Connection v8 timed out.\n
+#1887:Connections:
+#1888:Not webaware
+#1889:server
+#1890:peer-to-peer
+#1891:Connection %d is already open.\n
+#1892:conn               List available connections.\n
+#1893:conn login <nr>    Open connection <nr>.\n
+#1894:There is no connection number %d.\n
+#1895:Login failed:\n
+#1896:Server closed connection:\n
+#1897:Incomplete TLV %d, len %d of %d - ignoring.\n
+#1898:Redirect to server %s... 
+#1899:Unknown family requested: %d\n
+#1900:It's readonly.
+#1901:has authorized you to add them to your contact list.\n
+#1902:Opening v5 connection to %s:%d... 
+#1903:Outgoing v8 server packet:
+#1904:Server doesn't understand ver %d (only %d) for family %d!\n
+#1905:SNAC (%x,%x) [%s] flags %x ref %x\n
+#1907:Warning: Server thinks our UIN is %d, while it is %d.\n
+#1908:Received USERONLINE packet for non-contact.\n
+#1909:Received USEROFFLINE packet for non-contact.\n
+#1911:connecting
+#1912:closed
+#1914:Can't allocate connection structure.\n
+#1915:Server says we're at %s.\n
+#1918:Ignored server request for a minimum report interval of %d.\n
+#1919:UIN mismatch: %d vs %d.\n
+#1920:Registration of new UIN refused.\n
 1921:Na vezi
 1922:Ne uznemiravaj
 1923:Odsutan
@@ -423,3 +903,239 @@
 1926:Nevidljiv
 1927:Raspolozen za cavrljanje
 1929:User is DND [Auto-Message]
+#1931:Current session is closed. Try another or open this one.\n
+#1934:connected
+#1935:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x\n
+#1936:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
+#1937:Enter max age (22,29,39,49,59,120):
+#1938:Enter sex:
+#1939:Enter a city:
+#1940:Unknown Meta User result %x.\n
+#1941:Publish Email:
+#1942:Additional Email addresses:
+#1943:(no authorization needed)
+#1944:(must request authorization)
+#1945:Unknown Meta User response
+#1947:listener
+#1948:Can't find hostname %s: %s.
+#1949:failed:\n
+#1950:Couldn't set socket nonblocking
+#1951:Can't find hostname %s
+#1952:Couldn't open connection
+#1953:couldn't bind socket to free port
+#1954:unable to listen on socket
+#1955:Connection failed
+#1958:[SOCKS] Connection request refused (%d)
+#1960:Enter data to search user for. Enter '.' to start the search.\n
+#1961:URL: %s\n
+#1966: Conection Refused on port %d at %s\n
+#1967:More Info for
+#1968:User found
+#1969:offline
+#1970:online
+#1971:do not disturb
+#1972:away
+#1973:occupied
+#1974:not available
+#1975:invisible
+#1976:free for chat
+#1977:Audio and visual
+#1978:Sporting and athletic
+#1979:Publishing
+#1980:Home automation
+#1981:Alumni Org.
+#1982:Charity Org.
+#1983:Club/Social Org.
+#1984:Community Org.
+#1985:Cultural Org.
+#1986:Fan Clubs
+#1987:Fraternity/Sorority
+#1988:Hobbyists Org.
+#1989:International Org.
+#1990:Nature and Environment Org.
+#1991:Professional Org.
+#1992:Scientific/Technical Org.
+#1993:Self Improvement Group
+#1994:Spiritual/Religious Org.
+#1995:Sports Org.
+#1996:Support Org.
+#1997:Trade and Business Org.
+#1998:Union
+#1999:Volunteer Org.
+#2000:Entertainment
+#2001:Consumer electronics
+#2002:Retail stores
+#2003:Health and beauty
+#2004:Media
+#2005:Household products
+#2006:Mail order catalog
+#2007:Business services
+#2009:Found random chat partner UIN %d in chat group %d.\n
+#2011:You do not have a listening peer-to-peer connection.\n
+#2012:No password given.\n
+#2013:This command is v8 only.\n
+#2014:No number given.\n
+#2015:No message given.\n
+#2017:The user is online, but possibly invisible.\n
+#2018:    quiet: be quiet about status changes.\n
+#2020:Being visible to %s.
+#2021:Being invisible to %s.
+#2022:The user is offline.\n
+#2023:Direct connection closed by peer.\n
+#2024:Unknown protocol version %d for ICQ peer-to-peer protocol.\n
+#2026:TCP cookie:
+#2029:Protocol error on peer-to-peer connection
+#2031:Connecting failed too often, giving up.\n
+#2032:Scheduling v8 reconnect in %d seconds.\n
+#2033:born today
+#2034:Opening TCP connection at %s:%d... 
+#2035:Show uptime and some statistics.
+#2036:Save current preferences to disc.
+#2037:Open or close a peer-to-peer connection, or disable using peer-to-peer connections for <uin> or <nick>.
+#2038:Opens connection number <nr>, or the first server connection.
+#2039:Sends a message to a cell phone.
+#2040:Switches beeping for incoming contacts on or off, sets a command for this event or displays current state of this option.
+#2041:Switches beeping for offgoing contacts on or off, sets a command for this event or displays current state of this option.
+#2042:Displays a list of online people on your contact list in a screen wide format.
+#2043:Remove alias <alias> or <uin>, or removes contact.
+#2044:Set or clear an option.
+#2045:Toggles your visibility to <uin> or <nick> when you're online.
+#2046:You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n
+#2047:Creating directory %s.\n
+#2048:Saving preferences to %s.\n
+#2049:Receiving group "%s":\n
+#2050:Imported %d contacts.\n
+#2051:Error on socket: %s (%d)\n
+#2053:TCP %s seq %x type %x status %x flags %x: '%s'\n
+#2054:The "free for chat" message is:
+#2055:User is ffc and wants to chat about everything.
+#2056:peer auto  <nick> - Get the auto-response from the contact.\n
+#2057:peer away  <nick> - Get the auto-response for away from the contact.\n
+#2058:peer na    <nick> - Get the auto-response for not available from the contact.\n
+#2059:peer dnd   <nick> - Get the auto-response for do not disturb from the contact.\n
+#2060:peer ffc   <nick> - Get the auto-response for free for chat from the contact.\n
+#2063:You need to save your password in your ~/.micq/micqrc file.\n
+#2064:Refusing chat request (%s/%s/%s) from %s.\n
+#2065:Unknown TCP_MSG_GREET_ command %04x.\n
+#2066:Unknown TCP_MSG_ command %04x.\n
+#2067:file io
+#2068:Opening file transfer connection at %s:%d... \n
+#2069:File transfer '%s' rejected by peer (%x,%x): %s.\n
+#2070:File transfer '%s' to port %d.\n
+#2071:Couldn't stat file %s: %s (%d)\n
+#2072:File transfer #%d (%s) dropped because of closed connection.\n
+#2073:Memory usage: %d packets processing.\n
+#2078:Outgoing TCP packet (%d - %s): %s
+#2079:Incoming TCP packet (%d - %s): %s
+#2080:The server says about the SMS delivery:\n%s\n
+#2081:    at %p parent %p assoc %p\n
+#2082:Opening file listener connection at localhost:%d... 
+#2083:Cannot open file %s: %s (%d).\n
+#2084:Error while seeking to offset %d: %s (%d).\n
+#2086:Error while reading file %s: %s (%d).\n
+#2087:Finished sending file %s.\n
+#2088:Finished sending all %d files.\n
+#2089:file listener
+#2090:file peer-to-peer
+#2091:Queueing %s as %s for transfer.\n
+#2092:TCP message %s discarded - lost session.\n
+#2093:%02d %-12s version %d for %s (%x), at %s:%d %s\n
+#2094:conn login         Open first server connection.\n
+#2095:conn remove <nr>   Remove connection <nr>.\n
+#2096:Connection %d is not open.\n
+#2097:conn select <nr>   Select connection <nr> as server connection.\n
+#2098:Connection %d is not a server connection.\n
+#2099:Selected connection %d (version %d, UIN %d) as current connection.\n
+#2100:conn select <uin>  Select connection with UIN <uin> as server connection.\n
+#2101:Removing connection %d and its dependands completely.\n
+#2102:Connection %d is a configured connection.\n
+#2103:contact show    Show server side contact list.\n
+#2104:contact diff    Show server side contacts not on local contact list.\n
+#2105:contact import  Add server side contact list to local contact list.\n
+#2106:Last message from %s%s%s at %s:\n
+#2107:No messages received from %s%s%s.\n
+#2108:auto
+#2109:version
+#2110:peer files <nick> <file1> <as1> ... [<description>]\n
+#2111:                  - Send file1 as as1, ..., with description.\n
+#2112:                  - as = '/': strip path, as = '.': as is\n
+#2113:Unknown status '%s'.\n
+#2114:The command name '%s' does not exist.\n
+#2115:'%s' is not an integer.\n
+#2116:No new nick name given.\n
+#2117:%d added as %s.\n
+#2118:Out of memory.\n
+#2119:auth [grant] <nick>    - grant authorization.\n
+#2120:auth deny <nick> <msg> - refuse authorization.\n
+#2121:auth req  <nick> <msg> - request authorization.\n
+#2122: Note: You need to 'save' to write new password to disc.\n
+#2123:%sSyntax error%s: Too few arguments: '%s'\n
+#2124:%sSyntax error%s: Not an integer: '%s'\n
+#2126:User is offline, message (%s#%08lx:%08lx%s) queued.\n
+#2127:       URL: %s%s%s%s\n
+#2128: Description: %s%s%s\n
+#2129:         URL: %s%s%s\n
+#2130:Composing message to %sall%s:\n
+#2131:Composing message to %s%s%s:\n
+#2132:Composing message to %s%d%s:\n
+#2133:Color is %s%s%s.\n
+#2134:Funny messages are %s%s%s.\n
+#2135:Quiet output is %s%s%s.\n
+#2136:Password change was %s%s%s.\n
+#2137:About info change was %s%s%s.\n
+#2138:Info change was %s%s%s.\n
+#2139:Other info change was %s%s%s.\n
+#2140:Random chat group change was %s%s%s.\n
+#2141:Search %sfailed%s.\n
+#2142:Direct connection with %s not possible.\n
+#2143:refused authorization: %s%s%s\n
+#2144:requests authorization: %s%s%s\n
+#2145:auth add  <nick>       - authorized add.\n
+#2146:'%s' is already an alias for '%s' (%d).\n
+#2147:'%s' (%d) is already used as a nick.\n
+#2148:Added '%s' as an alias for '%s' (%d).\n
+#2149:Removed alias '%s' for '%s' (%d).\n
+#2150:Removed contact '%s' (%d).\n
+#2151:%d is not on your contact list anymore.\n
+#2156:conn close <nr>    Close connection <nr>.\n
+#2157:Moldova
+#2158:No file given.\n
+#2159:Some files.
+#2160:peer file  <nick> <file> [<description>]\n
+#2161:Receiving %d files with together %d bytes at speed %x from %s.\n
+#2162:Receiving file %s (%s) with %d bytes as %s.\n
+#2163:Sending file %d at offset %d.\n
+#2164:Error writing to file.\n
+#2165:The peer sent more bytes (%d) than file length (%d).\n
+#2166:Finished receiving file.\n
+#2167:Error - unknown packet.\n
+#2168:File transfer #%d (%s) dropped after %d attempts because of timeout.\n
+#2169:File transfer aborted by peer (%d).\n
+#2170:Sending with speed %x to %s.\n
+#2171:Advanced
+#2172:Commands for advanced features.
+#2173:Deny <uin> or <nick> to add you to their list.
+#2174:Request authorization from <uin> or <nick>.
+#2175:Tell <uin> or <nick> that you added them to your list.
+#2176:Displays verbose the current status of everyone on your contact list.
+#2177:Displays verbose the current status of online people on your contact list.
+#2178:Request auto reply message for <uin> or <nick>.
+#2179:Send <uin> or <nick> a single file.
+#2180:Send <uin> or <nick> several files.
+#2181:Closes or removes connection number <nr>.
+#2182:Select server connection number <nr> as current server connection.
+#2183:Check whether <uin> or <nick> is offline or invisible.
+#2184:%s%-10s%s - %s\n
+#2185:Closing connection %d.\n
+#2186:Accepting file '%s' (%d bytes).\n
+#2187:Refused file request '%s' (%d bytes) (unknown: %x, %x)\n
+#2188:You're sending data too fast - stop typing now, or the server will disconnect!\n
+#2189:Malformed instant message packet refused by server.\n
+#2190:The contact's client does not support type-2 messages.\n
+#2191:Instant message error: %d.\n
+#2192:Capabilities: 
+#2193:Directory %s does not exists.\n
+#2194:Don't know how to open this connection type.\n
+#2195:Obsolete number
+#2196:Obsolete text
+#2197:Obsolete byte

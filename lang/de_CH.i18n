@@ -1,6 +1,7 @@
 # $Id$
-#  EN: __.i18n,v 1.50 2002/09/30 17:45:07
+#  EN: __.i18n,v 1.51 2002/10/14 15:48:34
 #-#1001:de
+#1001:<lang>
 1002:de_CH
 1003:0-4-9-3
 1004:Guido Gloor
@@ -29,14 +30,15 @@
 1029:Bitte Iu oder Nei igä!
 1030:isch grad gschobe
 1031:het ds ICQ agworfe
-1032:debug: Dopplets Päckli #%04x vom Typ %04x (%s)¶
+1032:debug: Dopplets Päckli #%04x vom Typ %04x (%s)\n
 1033:Igehends Server-Päckli (Version 8):
 1034:I gloube es het ke Sinn me (ha z mängisch probiert...)
 1035:isch jtz 
 1036:Unbekannts Kommando %s, tue doch mau "help" tippe
-1037:Ha dini Nachricht mau zwüschegsändet - da hets so ne Puffer, dä isch vou gsi¶
-1038:Nachricht abbroche¶
-#-#1039:Irgend öpper het da öppis gäg üs - der Server meint mir sige offline¶
+1037:Ha dini Nachricht mau zwüschegsändet - da hets so ne Puffer, dä isch vou gsi\n
+1038:Nachricht abbroche\n
+#-#1039:Irgend öpper het da öppis gäg üs - der Server meint mir sige offline\n
+#1039:The server claims we're not connected.\n
 1040:mICQ> 
 1041:msg> 
 1042:msgAll> 
@@ -45,20 +47,21 @@
 1045:Fertig gsuecht.
 1046:Längi
 1047:Extra-Date
-1048:Fählercode: %d¶
-1049:UIN: %d¶
+1048:Fählercode: %d\n
+1049:UIN: %d\n
 1050:Login erfougrich!
-1053:Uf %s verbunde, warte uf Antwort.¶
+1053:Uf %s verbunde, warte uf Antwort.\n
 1055:Ha ke Socket chönne erschteue!
-1056:Socket becho, versueche z verbinde...¶
-1060:Usfüehrlechkeit isch %d.¶
-1061:"%s" isch ke Nickname.¶
+1056:Socket becho, versueche z verbinde...\n
+1060:Usfüehrlechkeit isch %d.\n
+1061:"%s" isch ke Nickname.\n
 1062:Ignorierti User:
 1063:Bitte Passwort igä: 
 1064:Auto-Schtatus-Wächsu nach:
 1065:Bytereihefoug: Intel.
 1066:Bytereihefoug: Motorola.
 #-#1071:Di Schtatus isch: 
+#1071:Your status is
 1072:User offline:
 1073:User online:
 1074:mICQ (Matts ICQ-Klon)
@@ -66,10 +69,10 @@
 1076:kompiliert am
 1077:Gwidmet em Matthew D. Smith.
 1078:Ke Übersetzig verfüegbar.
-1079:Übersetzig (%s, %s) vom %s, zletsch gänderet am %s vom %s, für mICQ %d.%d.%d%s.¶
-1080:Ha d'Übersetzig "%s" ned chönne lade.¶
-1081:Bärndütschi Übersetzig erfougrich glade (%d Iträg).¶
-1082:Versueche nomau z verbinde... [Versuech %d vo %d]¶
+1079:Übersetzig (%s, %s) vom %s, zletsch gänderet am %s vom %s, für mICQ %d.%d.%d%s.\n
+1080:Ha d'Übersetzig "%s" ned chönne lade.\n
+1081:Bärndütschi Übersetzig erfougrich glade (%d Iträg).\n
+1082:Versueche nomau z verbinde... [Versuech %d vo %d]\n
 1083:Klang-Befäu:
 1084:Klang isch
 1085:i
@@ -177,12 +180,12 @@
 1186:Schtudänt (Uni)
 1187:Webdesigner
 1188:Unbekannti Option '%s' ir Konfigurationsdatei ignoriert.
-1189:Usernummere = %ld¶
-1190:Port        = %ld¶
-1191:Passwort    = %s¶
-1192:Rächner     = %s¶
-1193:Schtatus    = %ld¶
-1196:Nachrichtcmd = %s¶
+1189:Usernummere = %ld\n
+1190:Port        = %ld\n
+1191:Passwort    = %s\n
+1192:Rächner     = %s\n
+1193:Schtatus    = %ld\n
+1196:Nachrichtcmd = %s\n
 1198:Angeri Dienschte
 ##
 ## Länder
@@ -199,6 +202,7 @@
 1209:Argentinen
 1210:Armenien
 1211:Aruba
+#1212:Ascention Island
 1213:Australien
 1214:Australisch-Antarktisches Gebiet
 1215:Öschtrich
@@ -217,6 +221,7 @@
 1228:Bosnie-Herzegovina
 1229:Botswana
 1230:Brasilien
+#1231:British Virgin Islands
 1232:Brunei
 1233:Bulgarien
 1234:Burkina Faso
@@ -224,10 +229,13 @@
 1236:Kambodscha
 1237:Kamerun
 1238:Kanada
+#1239:Cape Verde Islands
 1240:Kaiman-Insle
 1241:Zentral-Afrikanischi Republik
 1242:Tschad
 1243:Wiehnachtsinsle
+#1244:Cocos-Keeling Islands
+#1245:Comoros
 1246:Kongo
 1247:Cook-Insle
 1248:Chile
@@ -239,6 +247,9 @@
 1254:Zypere
 1255:Tschechischi Republik
 1256:Dänemark
+#1257:Diego Garcia
+#1258:Djibouti
+#1259:Dominica
 1260:Dominikanischi Republik
 1261:Äquador
 1262:Ägypte
@@ -248,6 +259,7 @@
 1266:Estland
 1267:Äthiopie
 1268:Ehemaligs Jugoslavie
+#1269:Faeroe Islands
 1270:Falkland-Insle
 1271:Vereinigti Schtaate vo Mikronesie
 1272:Fidschi
@@ -266,10 +278,12 @@
 1285:Griecheland
 1286:Grönland
 1287:Grenada
+#1288:Guadeloupe
 1289:Guam
 1290:Guantanomo Bucht
 1291:Guatemala
 1292:Guinea
+#1293:Guinea-Bissau
 1294:Guyana
 1295:Haiti
 1296:Honduras
@@ -278,6 +292,8 @@
 1299:Island
 1300:Indie
 1301:Indonesie
+#1302:INMARSAT
+#1303:INMARSAT Atlantic-East
 1304:Iran
 1305:Irak
 1306:Irland
@@ -294,6 +310,7 @@
 1317:Libye
 1318:Liechtenschtei
 1319:Luxemburg
+#1320:Malawi
 1321:Malaysie
 1322:Mali
 1323:Malta
@@ -319,8 +336,10 @@
 1343:Pole
 1344:Portugal
 1345:Puerto Rico
+#1346:Qatar
 1347:Rumänie
 1348:Russland
+#1349:Saipan
 1350:San Marino
 1351:Saudi-Arabie
 1352:Senegal
@@ -329,6 +348,7 @@
 1355:Süd-Afrika
 1356:Schpanie
 1357:Sri Lanka
+#1358:Suriname
 1359:Schwede
 1360:Schwiiz
 1361:Taiwan
@@ -352,6 +372,7 @@
 1379:USA
 1380:Uruguay
 1381:Uzbekistan
+#1382:Vanuatu
 1383:Vatikan (Schtadt)
 1384:Venezuela
 1385:Vietnam
@@ -368,21 +389,30 @@
 1393:erfougrich
 1394:erfouglos
 #-#1400:Zeigt zwüschegschpichereti Infos über der User.
+#1400:Shows locally stored info on <uin> or <nick>, or on yourself.
 1401:Änderet witeri Infos wie Auter u Geschlächt.
 1402:Änderet d "Über"-Info.
 #-#1403:Zeigt die letschti vo <contact> empfangeni Nachricht, oder e Lischte vo däne User, wo scho mau e Nachricht gschickt hei.
 #-#1404:Schautet der Schtatus vo <nick> uf der Ignorier-Lischte um.
+#1403:Displays the last message received from <uin> or <nick> or from everyone who who has send you at least one message.
+#1404:Toggles ignoring/unignoring <uin> or <nick>.
 1405:Lischtet ignorierti User.
 #-#1406:Änderet d Sichtbarkeit gägenüber <nick> im Schtatus "verschteckt".
+#1406:Toggles your visibility to <uin> or <nick> when you're invisible.
 1407:Zeigt der Schtatus vo au däne Lüt auf der Kontaktlischte a wo online si.
 #-#1408:Änderet ds Passwort i <secret>.
 #-#1409:Sändet e Nachricht a <uin|nick>.
 #-#1410:Sändet e Nachricht u URL a <uin|nick>.
+#1408:Changes your password to <password>.
+#1409:Sends a message to <uin> or <nick>.
+#1410:Sends a url and message to <uin> or <nick>.
 1411:Sändet e mehrziligi Nachricht a JEDE ir Kontaktlischte.
 1412:Sändet e Nachricht zr letschte Person, wo de ihre e Nachricht gschickt hesch.
 #-#1413:Erloubt <uin|nick> ds Hinzuefüege zu sinere Kontaktlischte.
+#1413:Authorize <uin> or <nick> to add you to their list.
 1414:Antwort uf die letschti Nachricht, wo de becho hesch.
 #-#1415:Findet e zufäuige User i der Interässegruppe <nr> oder lischtet aui Gruppene.
+#1415:Finds a random user in interest group <nr> or lists the groups.
 1416:Zeigt der momentani Schtatus vo aune User uf der Kontaktlischte.
 1417:Benennt ds Kommando <old cmd> nach <new cmd> um.
 1418:Setzt der Grad vor Usfüehrlichkeit uf <nr>, oder zeigt der Grad vor Usfüehrlichkeit a.
@@ -390,12 +420,17 @@
 1420:Schultet ds Piepse bim Erhaut vo Nachrichte i/us, setzt es Kommando für das Ereignis oder zeigt der aktuelli Schtatus vo däre Option a.
 1422:Loggt us u beändet mICQ.
 #-#1424:Aktiviert bzw. deaktiviert outomatischi Antworte.
+#1424:Set whether autoreplying when not online, or displays setting.
 1425:Änderet di outomatischi Antwort im Schtatus <status> uf <message>.
 1426:Erzügt e nöii Usernummere mit em Passwort <password>.
 #-#1427:Wächslet i Schtatus <nr> oder lischtet d Bedütig vo nes paar Schtatus-Nummere.
 #-#1428:Füegt <uin> zu dire Kontaktlischte mit em Nickname <nick> derzue oder benennt die UIN um.
 #-#1429:Suecht nach eme ICQ-User mit eMail-Adrässe <email>.
 #-#1430:Zeigt grundlegendi Infos über <uin> a.
+#1427:Changes your status to the status number, or list the available modes.
+#1428:Adds <uin> as <new nick>, or add alias <new nick> for <uin> or <nick>.
+#1429:Searches for an ICQ user.
+#1430:Displays general info on <uin> or <nick>.
 1431:-online-
 1432:-ned ume-
 1433:-wit wäg-
@@ -410,6 +445,7 @@
 1442:Bitte wäu eis vo de Hiufe-Theme us.
 1443:Kommandos zum Konfiguriere vo mICQ.
 #-#1444:Kommandos zum finge vo angerne User.
+#1444:Commands relating to finding and seeing other users.
 1445:Kommandos für dis ICQ-Account.
 1446:Kommandos wie me Nachrichte a angeri User schickt.
 1447:Client
@@ -532,55 +568,56 @@
 1575:Auter:
 1578:Landesvorwau:
 1579:Firma:
-1584:Warnig! Der Befäu "%s" isch mit Rückgabewärt %d fäugschlage¶
+1584:Warnig! Der Befäu "%s" isch mit Rückgabewärt %d fäugschlage\n
 1587:Abteilig:
-1592:<%s> schickt e Nachricht per eMail:¶
-1593:<%s> schickt e Nachricht per Web:¶
-1595:¶Kontaktlischte:¶============================================¶%d Kontakte.¶
+1592:<%s> schickt e Nachricht per eMail:\n
+1593:<%s> schickt e Nachricht per Web:\n
+1595:\nKontaktlischte:\n============================================\n%d Kontakte.\n
 1596:[SOCKS] Cha der Rächnername %s ned uflöse: %s.
-1597:[SOCKS] Cha ke Socket erzüge.¶
-1598:[SOCKS] Verbindig verweigeret.¶
-1599:[SOCKS] Outorisationsmethode ungüutig.¶
-1600:[SOCKS] Outorisierig fäugschlage.¶
-1601:[SOCKS] Augemeine SOCKS-Server-Fäuschlag.¶
+1597:[SOCKS] Cha ke Socket erzüge.\n
+1598:[SOCKS] Verbindig verweigeret.\n
+1599:[SOCKS] Outorisationsmethode ungüutig.\n
+1600:[SOCKS] Outorisierig fäugschlage.\n
+1601:[SOCKS] Augemeine SOCKS-Server-Fäuschlag.\n
 1602:Bitte der Schtaat igä:
 1603:Bitte d Position igä: 
 1604:Söu der User online si?
 1605:Söu di Schtatus im Web isehbar si? (Iu/Nei)
-1606:Ha ne fauschi Session ID %08x becho (korrekt wär: %08x) mit em Kommando %04x ignoriert.¶
-1607:Benutzig: micq [-v|-V] [-f|-F <KonfDatei>] [-l|-L <ProtDatei>] [-?|-h]¶
-1608:        -v   ausfüerleche Modus (nur zur Fählersuechi nützlech)¶
-1609:        -f   auternativi Konfigurationsdatei bruche (normalerwis ~/.micq/micqrc)¶
-1610:        -l   auternativi Protokou-Datei oder -Verzeichnis bruche¶
-1611:        -?   die Hiuf hie¶¶
-1612:Das Programm isch ohni Hiuf oder Zueschtimmig vo Mirabilis erschteut worde.¶
-1613:Derzue isch ke Programmcode vo Mirabilis zrüggentwicklet oder zrüggübersetzt worde.¶
-1614:Bruche d Konfigurationsdatei "%s".¶
-1615:Protokolliere nach "%s".¶
+1606:Ha ne fauschi Session ID %08x becho (korrekt wär: %08x) mit em Kommando %04x ignoriert.\n
+1607:Benutzig: micq [-v|-V] [-f|-F <KonfDatei>] [-l|-L <ProtDatei>] [-?|-h]\n
+1608:        -v   ausfüerleche Modus (nur zur Fählersuechi nützlech)\n
+1609:        -f   auternativi Konfigurationsdatei bruche (normalerwis ~/.micq/micqrc)\n
+1610:        -l   auternativi Protokou-Datei oder -Verzeichnis bruche\n
+1611:        -?   die Hiuf hie\n\n
+1612:Das Programm isch ohni Hiuf oder Zueschtimmig vo Mirabilis erschteut worde.\n
+1613:Derzue isch ke Programmcode vo Mirabilis zrüggentwicklet oder zrüggübersetzt worde.\n
+1614:Bruche d Konfigurationsdatei "%s".\n
+1615:Protokolliere nach "%s".\n
 1617:<aui>
 1618:UIN:
 1619:Warnig:
 1620:Maximali Azau vo Kontakte erreicht! Bitte e Magier dermit beuftrage, mi z vergrössere!
 1621:Suechergäbniss ned zrügggä.
 1622:Möchtisch die Änderige anwände? (Iu/Nei)
-1623:Dopplets Päckli %04X.¶
+1623:Dopplets Päckli %04X.\n
 1624:Sorry, cha d Windows Sockets ned initialisiere...
-1632:¶Verbindig inschtabil. Beände...
-#-#1634:OK¶
-1637:Cha der Socket zu kem freie Port verbinde¶
+1632:\nVerbindig inschtabil. Beände...
+#-#1634:OK\n
+#1634:ok.\n
+1637:Cha der Socket zu kem freie Port verbinde\n
 1638:Ha der Verbindigsändpunkt ned chönne erzüge
-1639:Di nöii Usernummere isch %ld!¶
-1640:Aktualisiere vo de Infos fäugschlage.¶
-1641:Userinformatione erfougrich aktualisiert.¶
+1639:Di nöii Usernummere isch %ld!\n
+1640:Aktualisiere vo de Infos fäugschlage.\n
+1641:Userinformatione erfougrich aktualisiert.\n
 1642:IP-Adrässe
-1643:Beschtätiget SRV_X1 0x021C Fertig mit Kontaktlischte (?)¶
-1644:Beschtätiget SRV_X2 0x00E6 Fertig mit aute Nachrichte (?)¶
-1645:Das Passwort isch ned richtig.¶
-1646:Der Server isch beschäftiget.¶
+1643:Beschtätiget SRV_X1 0x021C Fertig mit Kontaktlischte (?)\n
+1644:Beschtätiget SRV_X2 0x00E6 Fertig mit aute Nachrichte (?)\n
+1645:Das Passwort isch ned richtig.\n
+1646:Der Server isch beschäftiget.\n
 1648:D Antwort isch %04X gsi
 1649:D Version isch %X gsi
 1650:D Fougenummere isch %04X gsi
-1651:D Grössi isch %d gsi¶
+1651:D Grössi isch %d gsi\n
 1653:offline
 1654:online
 1655:Gib d eMail-Adrässe vom User i:
@@ -588,22 +625,24 @@
 1657:Gib der Vorname vom User i:
 1658:Gib der Nachname vom User i:
 1659:Unbekannte Abschnitt %s ir Konfigurationsdatei.
-1660:Ungüutigs Kommando: %s¶
-1661:Shell-Kommandos si abgschautet.¶
+1660:Ungüutigs Kommando: %s\n
+1661:Shell-Kommandos si abgschautet.\n
 1666:Ignoriere %s nümme.
 1667:Ignoriere %s.
 1670:Für %s jtz normau sichtbar.
 1671:Für %s jtz immer sichtbar.
 1672:%s sini IP-Adresse isch 
-#-#1673:, der Port isch %d.¶
-#-#1674:, der Port isch unbekannt.¶
+#-#1673:, der Port isch %d.\n
+#-#1674:, der Port isch unbekannt.\n
+#1673:The port is %d.\n
+#1674:The port is unknown.\n
 1675:Ignoriere d Zile:
-1676:I bruche d Usernummere/Nickname, wo nis söu häreschicke.¶
-1678:I bruche e URL.¶
-1679:Leider isch ds Schpichere vo dine persönleche Ischteuige fäugschlage!¶
-1680:Dini persönleche Ischteuige si gschpicheret!¶
-1681:Die letschte %d Lüt wo de mit ne gschnuret hesch:¶
-1682:Du hesch Nachrichte empfange vo:¶
+1676:I bruche d Usernummere/Nickname, wo nis söu häreschicke.\n
+1678:I bruche e URL.\n
+1679:Leider isch ds Schpichere vo dine persönleche Ischteuige fäugschlage!\n
+1680:Dini persönleche Ischteuige si gschpicheret!\n
+1681:Die letschte %d Lüt wo de mit ne gschnuret hesch:\n
+1682:Du hesch Nachrichte empfange vo:\n
 1687:mICQ louft sit
 1688:Täg
 1689:Schtunde
@@ -611,9 +650,9 @@
 1691:Sekunde
 1692:Kontakte:
 1696:Gschlächt:
-1700:%s isch ke güutige User i dire Kontaktlischte.¶
-1703:Schtatus-Modi:¶
-1704:Gruppe:¶
+1700:%s isch ke güutige User i dire Kontaktlischte.\n
+1703:Schtatus-Modi:\n
+1704:Gruppe:\n
 1705:Augemein
 1706:Romanze
 1707:Games
@@ -629,140 +668,156 @@
 1717:! cha me aus erschts Zeiche tippe zum es Shell-Kommando usfüehre (z.B. "!ls"  "!dir" "!mkdir temp").
 1719:Zeigt, wie lang mICQ scho louft.
 1720:<uin> cha d Usernummere oder der Nickname vo me User si.
-1721:Bire lääre Nachricht chöi mehreri Zile igä wärde.¶Derbi bedütet e Zile nume mit . ds Ändi vor Nachricht.¶E Zile nume mit # verwirft d Nachricht.
-1724:Automatischi Antworte sind %s.¶
+1721:Bire lääre Nachricht chöi mehreri Zile igä wärde.\nDerbi bedütet e Zile nume mit . ds Ändi vor Nachricht.\nE Zile nume mit # verwirft d Nachricht.
+1724:Automatischi Antworte sind %s.\n
 1727:D Nachricht für "bitte ned schtöre" isch:
 1728:D Nachricht für "ned ume" isch:
 1729:D Nachricht für "wit wäg" isch:
 1730:D Nachricht für "beschäftiget" isch:
 1731:D Nachricht für "verschteckt" isch:
-1735:Benötige e Nachricht.¶
-1738:Benötige es Kommando, wo söu umbenennt wärde.¶
-1741:Sorry, hesch no ke Nachricht becho.¶
-1742:Sorry, hesch no ke Nachricht verschickt.¶
-1743:Argl!!! Päckli hei die fauschi Grössi.¶
+1735:Benötige e Nachricht.\n
+1738:Benötige es Kommando, wo söu umbenennt wärde.\n
+1741:Sorry, hesch no ke Nachricht becho.\n
+1742:Sorry, hesch no ke Nachricht verschickt.\n
+1743:Argl!!! Päckli hei die fauschi Grössi.\n
 1744:Server (v5)
 1745:Unbekannt
+#1746: nr type         sent/received packets/unique packets\n
 1747:Gsamt
-1754: Hiwis: Die Änderig muesch mit "save" schpichere.¶
-1755:hat di zu sinere Kontaktlischte derzueta.¶
-1756:¶Erschteue Verbindig...¶
-1757:Ha ke Verbindig chönne härschteue.¶
-1758:Sände d Afrag...¶
-1759:Warte uf Antwort....¶
-1760:¶Dini nöii Usernummere isch %s%ld%s!¶
+1754: Hiwis: Die Änderig muesch mit "save" schpichere.\n
+1755:hat di zu sinere Kontaktlischte derzueta.\n
+1756:\nErschteue Verbindig...\n
+1757:Ha ke Verbindig chönne härschteue.\n
+1758:Sände d Afrag...\n
+1759:Warte uf Antwort....\n
+1760:\nDini nöii Usernummere isch %s%ld%s!\n
 1761:unbekannt
-1762:Dini nöii Usernummere isch: %d.¶
+1762:Dini nöii Usernummere isch: %d.\n
 1763:Ds Kommando "%s" isch nach  "%s" umbenannt worde.
 1764:Ds Kommando "%s" het no der urschprünglich Name.
 1765:%s het d Usernummere %d.
-1766:Outomatischi Schautig für ned ume / wit wäg nach %s%d%s Sekunde.¶
+1766:Outomatischi Schautig für ned ume / wit wäg nach %s%d%s Sekunde.\n
 1767:Schautet di outomatische Abwäseheitsschautig a oder ab oder setzt ds Timeout.
 1768:Der Name '%s' isch scho in Verwändig.
 #-#1770:Sändet die letschti Nachricht a ne nöie User.
-1771:No ke Nachricht a irgendöpper verschickt!¶
+#1770:Resend your last message to <uin> or <nick>.
+1771:No ke Nachricht a irgendöpper verschickt!\n
 1774:Igehends Päckli:
 1775:Usgehends Päckli:
 1777:Tue d Diräkt-Verbindig nach localhost uf:%d...
-1781:Bitte ds Passwort für d Usernummere %d igä:¶
-1782:Du bruchsch es Passwort für die nöii Usernummere.¶
-1783:Anti-Tippfähler-Massnahm: Bitte Passwort nomau igä.¶
-1784:We de hinger eme Firewall bisch muesch evtl. SOCKS5 bruche. Wenn ja, bitte gib der Rächnername oder d IP-Adrässe vom Firewall i. Süsch chasch eifach Enter drücke.¶
-1785:erfougrich.¶
-1786:I bruche der Port, wo der Socks-Server druf lost. We de dä ned weisch drück eifach Enter für der Schtandard-Port.¶
-1787:Vilich muesch di gägenüber em Server outhentifiziere. We das so isch muesch jtz der Username igä wo der Admin vom Socks-Server dir gä het. Süsch chasch eifach Enter drücke.¶
-1788:I nime a dä User het o nes Passwort? Bitte igä.¶
+1781:Bitte ds Passwort für d Usernummere %d igä:\n
+1782:Du bruchsch es Passwort für die nöii Usernummere.\n
+1783:Anti-Tippfähler-Massnahm: Bitte Passwort nomau igä.\n
+1784:We de hinger eme Firewall bisch muesch evtl. SOCKS5 bruche. Wenn ja, bitte gib der Rächnername oder d IP-Adrässe vom Firewall i. Süsch chasch eifach Enter drücke.\n
+1785:erfougrich.\n
+1786:I bruche der Port, wo der Socks-Server druf lost. We de dä ned weisch drück eifach Enter für der Schtandard-Port.\n
+1787:Vilich muesch di gägenüber em Server outhentifiziere. We das so isch muesch jtz der Username igä wo der Admin vom Socks-Server dir gä het. Süsch chasch eifach Enter drücke.\n
+1788:I nime a dä User het o nes Passwort? Bitte igä.\n
 1789:Fählerhafts Päckli empfange (%d).
-1790:Irichtigs-Assischtänt beändet. Härzleche Glückwunsch zu dire nöie Usernummere!¶
-1791:Irichtigs-Assischtänt beändet. Härzleche Glückwunsch!¶
-1792:Leider weigeret sech AOL, e nöii Usernummere z vergä, wahrschinlech wiu vo däre IP-Adrässe z viu Afrage für nöii Usernummere i z churzer Zyt cho si. Bitte schpäter nomau probiere.¶
-1793:Ke güutigi Usernummere gfunge. Der Irichtungs-Assischtänt wird dir derbi häufe, eini izrichte.¶
-1794:We de bereits e Usernummere hesch bitte igä. Süsch drück doch eifach Enter, i wirde eini für di beantrage.¶
+1790:Irichtigs-Assischtänt beändet. Härzleche Glückwunsch zu dire nöie Usernummere!\n
+1791:Irichtigs-Assischtänt beändet. Härzleche Glückwunsch!\n
+1792:Leider weigeret sech AOL, e nöii Usernummere z vergä, wahrschinlech wiu vo däre IP-Adrässe z viu Afrage für nöii Usernummere i z churzer Zyt cho si. Bitte schpäter nomau probiere.\n
+1793:Ke güutigi Usernummere gfunge. Der Irichtungs-Assischtänt wird dir derbi häufe, eini izrichte.\n
+1794:We de bereits e Usernummere hesch bitte igä. Süsch drück doch eifach Enter, i wirde eini für di beantrage.\n
 1795:Passwort:
-1796:Inrichtigs-Assischtänt beändet. Bitte wart doch schnäu, bis d Regischtrierig beändet isch.¶
+1796:Inrichtigs-Assischtänt beändet. Bitte wart doch schnäu, bis d Regischtrierig beändet isch.\n
 1797:Finanze u so
 1798:Grundschueu
 1799:High School
 #-#1800:Wäut d Schprach <lang> us.
+#1800:Change the working language to <lang> or display string <nr>.
 1801:Zeigt d Kontaktlischte im usfüehrleche Format a.
 1802:Klang-Befäu, we öpper verbindet:
 1803:Klang-Befäu, we öpper sech abmäudet:
 1804:Klang, we öpper verbindet:
 1805:Klang, we öpper sech abmäudet:
-1807:Igehendi Nachricht %04x vo %s abbroche.¶
+1807:Igehendi Nachricht %04x vo %s abbroche.\n
 1808:College
 1810:Universität
 1812:Früechere Arbeitsplatz
 1813:Früecheri Organisation
-1814:Ha grad e Auto-Response-Nachricht gschickt a %s%s%s.¶
-1815:    funny: Luschtigi Mäudige bruche.¶
-1816:Unbekannti Option %s vom set-Kommando.¶
-1817:Warnig: Ds Feature "ReceiveScript" isch deaktiviert!¶
-1818:Warnig: Verauteti Syntax ir Konfigurationsdatei gfunge!¶Bitte nöi erschteue oder mit "save" überschribe und uf Änderige prüefe.¶
-1820:%s <option> [igschaute|usgschaute] - eifach Optione ändere.¶
-1822:    color: Farb bruche.¶
+1814:Ha grad e Auto-Response-Nachricht gschickt a %s%s%s.\n
+1815:    funny: Luschtigi Mäudige bruche.\n
+1816:Unbekannti Option %s vom set-Kommando.\n
+1817:Ds Feature "ReceiveScript" isch deaktiviert!\n
+1818:Warnig: Verauteti Syntax ir Konfigurationsdatei gfunge!\nBitte nöi erschteue oder mit "save" überschribe und uf Änderige prüefe.\n
+1820:%s <option> [igschaute|usgschaute] - eifach Optione ändere.\n
+1822:    color: Farb bruche.\n
 1823:Igehends Unger-Päckli:
 1825:Schmeisse es Päckli vom Typ %04x (%s) wäg.
-1826:Schicke es Päckli vom Typ %04x (%s), Sequänz-Nummere %04x, nomau (Versuech #%d, Längi %d).¶
-1830:D Nachricht a %s ha ni nach %d Versueche wäggschmisse. Inhaut:¶
-1833:Diräkti Verbindig aufboue.¶
-1835:Fähler bim Schribe i Socket: %s (%d)¶
-1841:Ha es ausch formatierts initialization acknowledgement packet becho.¶
-1842:Tue d Verbindig (Verbindigsändpunkt Nr. %d) zu %s zue.¶
-1843:Tue der Verbindigsändpunkt Nr. %d zue.¶
-1844:Ha d TCP-Nachricht %04x nach eme Timeout wäggschmisse.¶
-1845:Der Nickname %s isch mir ned bekannt.¶
-#-#1846:Öffnet u schliest Diräkt-Verbindige:¶
-#-#1847:    open  <nick> - Öffnet e Diräkt-Verbindig.¶
-#-#1848:    close <nick> - Schliesst e Diräkt-Verbindig.¶
-1849:Fähler bim Uswähle: %s (%d)¶
-1850:Timeout bir Verbindig mit %s bi %s:%d¶
-1855:Diräkt-Verbidig zu %s bi %s:%d isch fäugschlage.¶
-1856:Ha es %04x (%s) Päckli vo re aute Sitzig %08x wäggschmisse (aktuelli Sitzig: %08x).¶
+1826:Schicke es Päckli vom Typ %04x (%s), Sequänz-Nummere %04x, nomau (Versuech #%d, Längi %d).\n
+1830:D Nachricht a %s ha ni nach %d Versueche wäggschmisse. Inhaut:\n
+1833:Diräkti Verbindig aufboue.\n
+1835:Fähler bim Schribe i Socket: %s (%d)\n
+1841:Ha es ausch formatierts initialization acknowledgement packet becho.\n
+1842:Tue d Verbindig (Verbindigsändpunkt Nr. %d) zu %s zue.\n
+1843:Tue der Verbindigsändpunkt Nr. %d zue.\n
+1844:Ha d TCP-Nachricht %04x nach eme Timeout wäggschmisse.\n
+1845:Der Nickname %s isch mir ned bekannt.\n
+#-#1846:Öffnet u schliest Diräkt-Verbindige:\n
+#-#1847:    open  <nick> - Öffnet e Diräkt-Verbindig.\n
+#-#1848:    close <nick> - Schliesst e Diräkt-Verbindig.\n
+#1846:Opens and closes direct (peer to peer) connections:\n
+#1847:peer open  <nick> - Opens direct connection.\n
+#1848:peer close <nick> - Closes/resets direct connection(s).\n
+1849:Fähler bim Uswähle: %s (%d)\n
+1850:Timeout bir Verbindig mit %s bi %s:%d\n
+1855:Diräkt-Verbidig zu %s bi %s:%d isch fäugschlage.\n
+1856:Ha es %04x (%s) Päckli vo re aute Sitzig %08x wäggschmisse (aktuelli Sitzig: %08x).\n
 1857:Möchtisch dini IP-Adrässe vor angerne Users verschtecke? (Iu/Nei)
 1864:Cha d Konfigurationsdatei "%s" ned uftue.
-#-#1866:Die Version vo mICQ isch ohni Ungerschtützig vo Diräkt-Verbindige kompiliert worde.¶
-1867:Ha es z churzes Päckli becho - ignoriert.¶
-1868:Ha es Multi-Päckli mit eme z länge Subpäckli becho - der Räscht wird ignoriert.¶
-1869:Versione unger 5 wärde nümme ungerschtützt.¶
-#-#1870:    off   <nick> - Schautet d Benutzig vo Diräkt-Verbindige ab.¶
+#-#1866:Die Version vo mICQ isch ohni Ungerschtützig vo Diräkt-Verbindige kompiliert worde.\n
+#1866:This version of mICQ is compiled without direct connection (peer to peer) support.\n
+1867:Ha es z churzes Päckli becho - ignoriert.\n
+1868:Ha es Multi-Päckli mit eme z länge Subpäckli becho - der Räscht wird ignoriert.\n
+1869:Versione unger 5 wärde nümme ungerschtützt.\n
+#-#1870:    off   <nick> - Schautet d Benutzig vo Diräkt-Verbindige ab.\n
+#1870:peer off   <nick> - Closes direct connection(s) and don't try it again.\n
 1871:Tue e Verbindig zum fougende v8-Server uf: %s:%d... 
-1872:fäugschlage: %s (%d).¶
+1872:fäugschlage: %s (%d).\n
 1873:Arbeitsschtadt:
 1874:Arbeitsschtaat:
 1875:Persönlechi Interässe:
 1876:Persönleche Hingergrund:
-1877:OK.¶
-1878:Fähler bim Läse vom Socket: %s (%d)¶
+1877:OK.\n
+1878:Fähler bim Läse vom Socket: %s (%d)\n
 1879:Verbindige:
-1880:Das Päckli isch ned es FLAP: sini id isch %d.¶
-1881:Der FLAP Channel 1 het kener Date me.¶
-1882:Der FLAP Channel 1 het Äxtradate (cmd 1):¶
-1883:Der FLAP Channel 1 het e unbekannte Befäu becho (%d).¶
-1884:I ha es FLAP mit em unbekannte Channel %d becho.¶
-1885:Zitüberschritig bir v8-Server-Verbindig.¶
+1880:Das Päckli isch ned es FLAP: sini id isch %d.\n
+1881:Der FLAP Channel 1 het kener Date me.\n
+1882:Der FLAP Channel 1 het Äxtradate (cmd 1):\n
+1883:Der FLAP Channel 1 het e unbekannte Befäu becho (%d).\n
+1884:I ha es FLAP mit em unbekannte Channel %d becho.\n
+1885:Zitüberschritig bir v8-Server-Verbindig.\n
 1887:Verbindige:
 1888:Ned Internetbewusst (not webaware)
 1889:Server
 1890:Diräktverbindig
-1891:Verbindig %d isch scho offe.¶
-1892:conn             Zeig au verfüegbare Verbindige a.¶
-1893:conn login <nr>  Tuet d Verbindig <nr> uf.¶
-1894:Es git ke Verbindig Nr. %d.¶
-1895:Login fäugschlage:¶
-1896:Der Server het d Verbindig zueta:¶
+1891:Verbindig %d isch scho offe.\n
+1892:conn             Zeig au verfüegbare Verbindige a.\n
+1893:conn login <nr>  Tuet d Verbindig <nr> uf.\n
+1894:Es git ke Verbindig Nr. %d.\n
+1895:Login fäugschlage:\n
+1896:Der Server het d Verbindig zueta:\n
+#1897:Incomplete TLV %d, len %d of %d - ignoring.\n
 1898:Witerleitig zum Server %s... 
+#1899:Unknown family requested: %d\n
 1900:Isch nume läsbar.
-#-#1901:het di outhorisiert, ihn zu dinere Kontaktlischte derzue z tue.¶
+#-#1901:het di outhorisiert, ihn zu dinere Kontaktlischte derzue z tue.\n
+#1901:has authorized you to add them to your contact list.\n
 1902:Tue e Verbindig zum v5-Server bei %s:%d uf... 
 1903:Usgehends v8-Server-Päckli:
-1907:Warnig: Der Server dänkt dini UIN sig %d, aber sie isch %d.¶
-1908:Igehends USERONLINE-Päckli für ned-Kontakt.¶
-1909:Igehends USEROFFLINE-Päckli für ned-Kontakt.¶
+#1904:Server doesn't understand ver %d (only %d) for family %d!\n
+#1905:SNAC (%x,%x) [%s] flags %x ref %x\n
+1907:Warnig: Der Server dänkt dini UIN sig %d, aber sie isch %d.\n
+1908:Igehends USERONLINE-Päckli für ned-Kontakt.\n
+1909:Igehends USEROFFLINE-Päckli für ned-Kontakt.\n
 1911:verbinde
 1912:zueta
-1915:Der Server het %s aus IP-Adresse ermittlet.¶
-1920:Beatragig vo re nöie Usernummere abglehnt.¶
+#1914:Can't allocate connection structure.\n
+1915:Der Server het %s aus IP-Adresse ermittlet.\n
+#1918:Ignored server request for a minimum report interval of %d.\n
+#1919:UIN mismatch: %d vs %d.\n
+1920:Beatragig vo re nöie Usernummere abglehnt.\n
 1921:online
 1922:ned schtöre
 1923:ned ume
@@ -771,13 +826,15 @@
 1926:verschteckt
 1927:wott chatte
 1929:[Outomatischi Nachricht] Bitte ned schtöre (Do Not Disturb)
-#-#1931:Ke Verbindig zum Server.¶
+#-#1931:Ke Verbindig zum Server.\n
+#1931:Current session is closed. Try another or open this one.\n
 1934:verbunde
+#1935:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x\n
 1936:Bitte Mindeschtauter igä (18-22,23-29,30-39,40-49,50-59,60-120):
 1937:Bitte Maximauauter igä (22,29,39,49,59,120):
 1938:Bitte Gschlächt igä:
 1939:Bitte Schtadt igä:
-1940:Komisches (unbekannts) Meta-User-Resultat %x.¶
+1940:Komisches (unbekannts) Meta-User-Resultat %x.\n
 1941:Outorisation:
 1942:Witeri eMail-Adrässe:
 1943:(ke outhorisation benötiget)
@@ -785,7 +842,7 @@
 1945:Komisches (unbekannts) Meta-User-Resulatat
 1947:Listener
 1948:Cha der Rächnername %s ned uflöse: %s.
-1949:Fäugschlage:¶
+1949:Fäugschlage:\n
 1950:Cha der Verbindigsändpunkt ned ned-blockierend mache
 1951:Cha der Rächnername %s ned uflöse
 1952:Cha d Verbindig ned ufboue
@@ -793,9 +850,9 @@
 1954:Cha ned uf eme freie Port lose
 1955:Verbindig fäugschlage
 1958:[SOCKS] Verbindig verweigeret (%d)
-1960:Bitte Suechdate igä. Zum Schtarte "." igä.¶
-1961:URL: %s¶
-1966:Verbindig bim Port %d für %s zrüggwise¶
+1960:Bitte Suechdate igä. Zum Schtarte "." igä.\n
+1961:URL: %s\n
+1966:Verbindig bim Port %d für %s zrüggwise\n
 1967:Me Infos für
 1968:Benutzer gfunge
 1969:offline
@@ -837,19 +894,22 @@
 2005:Hushautsware
 2006:Bschteukatalog
 2007:Gschäftlechi Dienschtleischtige
-2009:Zuefäuige Chatpartner gfunge: UIN %d ir Chatgruppe %d.¶
-2011:Ke Verbindigsannahme-Verbindig gfunge.¶
-2012:Kes Passwort agä.¶
-2013:Dä Befäu gits nume in v8.¶
-2014:Ke Zau agä.¶
-2015:Ke Nachricht agä.¶
-#-#2017:Der Benutzer isch eigentlech verbunde.¶
-2018:    quiet: ke Usgabe für Schtatuswächsu.¶
+2009:Zuefäuige Chatpartner gfunge: UIN %d ir Chatgruppe %d.\n
+2011:Ke Verbindigsannahme-Verbindig gfunge.\n
+2012:Kes Passwort agä.\n
+2013:Dä Befäu gits nume in v8.\n
+2014:Ke Zau agä.\n
+2015:Ke Nachricht agä.\n
+#-#2017:Der Benutzer isch eigentlech verbunde.\n
+#2017:The user is online, but possibly invisible.\n
+2018:    quiet: ke Usgabe für Schtatuswächsu.\n
 2020:Für %s jtz sichtbar.
 2021:Für %s jtz verschteckt.
-#-#2022:Der Benutzer isch eigentlech ned verbunde.¶
-2023:Diräkti Verbindig vom Verbindigspartner zueta.¶
-2024:Unbekannti Protokollversion %d für ds ICQ-Diräktverbindigsprotokoll.¶
+#-#2022:Der Benutzer isch eigentlech ned verbunde.\n
+#2022:The user is offline.\n
+2023:Diräkti Verbindig vom Verbindigspartner zueta.\n
+2024:Unbekannti Protokollversion %d für ds ICQ-Diräktverbindigsprotokoll.\n
+#2026:TCP cookie:
 2029:Protokoll-Fähler ire Diräktverbindig
 2031:Verbindig z hüfig fäugschlage, gibe uf.
 2032:Verbinde i %d Sekunde nöi.
@@ -859,19 +919,24 @@
 2036:Schpichere die aktuelle Ischteuige.
 #-#2037:Tue e Diräktverbindig entweder uf oder zue, oder schaute d Verwändig vo ere Diräktverbindig für uin|nick ab.
 #-#2038:Tue d Verbindig uf mit der Nummere <nr>
+#2037:Open or close a peer-to-peer connection, or disable using peer-to-peer connections for <uin> or <nick>.
+#2038:Opens connection number <nr>, or the first server connection.
 2039:Schickt es SMS
 2040:Schautet ds Piepse bi sech verbindende Kontakte i/us, setzt es Kommando für das Ereignis oder zeigt der aktuelli Schtatus vo däre Option a.
 2041:Schautet ds Piepse bi sech trennende Kontakten i/us, setzt es Kommando für das Ereignis oder zeigt der aktuelli Schtatus vo däre Option a.
 2042:Zeigt die verbundene Mitglieder vor Kontaktlischte im breite Format a.
 #-#2043:Entfärnt e Kontakt us der Kontaktlischte.
+#2043:Remove alias <alias> or <uin>, or removes contact.
 2044:Setzt oder löscht e Option.
 #-#2045:Setzt oder löscht d Unsichtbarkeit für <nick>.
-2046:Du söttisch d Version 8 (schtatt der Version 6) für Diräktverbindige wähle.¶
-2047:Erschteue ds Verzeichnis %s.¶
-2048:Schpichere d Ischteuige in %s.¶
-2049:Lade d Gruppe "%s" ache:¶
-2050:Importiere grad %d Kontakte.¶
-2051:Fähler am Socket: %s (%d)¶
+#2045:Toggles your visibility to <uin> or <nick> when you're online.
+2046:Du söttisch d Version 8 (schtatt der Version 6) für Diräktverbindige wähle.\n
+2047:Erschteue ds Verzeichnis %s.\n
+2048:Schpichere d Ischteuige in %s.\n
+2049:Lade d Gruppe "%s" ache:\n
+2050:Importiere grad %d Kontakte.\n
+2051:Fähler am Socket: %s (%d)\n
+#2053:TCP %s seq %x type %x status %x flags %x: '%s'\n
 2054:D Nachricht für "wott chatte" isch:
 2055:Dä User isch für Ploudereie frei u möcht gärn über aus quatsche
 #-#2056:    auto  <nick> - Hou die outomatischi Antwort vo däm Kontkat
@@ -879,73 +944,137 @@
 #-#2058:    na    <nick> - Hou die outomatischi Antwort für "wit wäg" vo däm Kontakt
 #-#2059:    dnd   <nick> - Hou die outomatischi Antwort für "ned schtöre" vo däm Kontakt
 #-#2060:    ffc   <nick> - Hou die outomatischi Antwort für "wott chatte" vo däm Kontakt
-2063:Du muesch dis Passwort i dim ~/.micq/micqrc schpichere.¶
-2064:Lehne e Plaudereianfrag (%s/%s/%s) vo %s ab.¶
+#2056:peer auto  <nick> - Get the auto-response from the contact.\n
+#2057:peer away  <nick> - Get the auto-response for away from the contact.\n
+#2058:peer na    <nick> - Get the auto-response for not available from the contact.\n
+#2059:peer dnd   <nick> - Get the auto-response for do not disturb from the contact.\n
+#2060:peer ffc   <nick> - Get the auto-response for free for chat from the contact.\n
+2063:Du muesch dis Passwort i dim ~/.micq/micqrc schpichere.\n
+2064:Lehne e Plaudereianfrag (%s/%s/%s) vo %s ab.\n
+#2065:Unknown TCP_MSG_GREET_ command %04x.\n
+#2066:Unknown TCP_MSG_ command %04x.\n
 2067:Datei I/O
-2068:Öffne Dateiübertragigsverbindig zu %s:%d... ¶
-2069:Dateiübertragig "%s" vom Gägenüber abglehnt (%x,%x): %s.¶
-2070:Dateiübertragig "%s" zu Aschluss %d.¶
-2071:Cha d Datei "%s" ned finge: %s (%d).¶
-#-#2072:Briche d Dateiübertragig %d (%s) wäge gschlossniger Verbindig ab.¶
-2073:Schpicherverbruch: %d Päckli.¶
+2068:Öffne Dateiübertragigsverbindig zu %s:%d... \n
+2069:Dateiübertragig "%s" vom Gägenüber abglehnt (%x,%x): %s.\n
+2070:Dateiübertragig "%s" zu Aschluss %d.\n
+2071:Cha d Datei "%s" ned finge: %s (%d).\n
+#-#2072:Briche d Dateiübertragig %d (%s) wäge gschlossniger Verbindig ab.\n
+#2072:File transfer #%d (%s) dropped because of closed connection.\n
+2073:Schpicherverbruch: %d Päckli.\n
 2078:Usgehends TCP-Päckli (%d - %s): %s
 2079:Igehends  TCP-Päckli (%d - %s): %s
-2080:Der Server mäudet über d Uslieferig vom SMS:¶%s¶
+2080:Der Server mäudet über d Uslieferig vom SMS:\n%s\n
+#2081:    at %p parent %p assoc %p\n
 2082:Tue der Socket für Dateiübertragige uf bi localhost:%d... 
-2083:Cha d Datei "%s" ned uftue: %s (%d).¶
-2084:Fähler bim Sueche vo %d. Byte: %s (%d).¶
-2086:Fähler bim Lesen vor Datei "%s": %s (%d).¶
-2087:Datei Nummere %d fertig gschickt.¶
-2088:Aui %d Dateie fertig gschickt.¶
+2083:Cha d Datei "%s" ned uftue: %s (%d).\n
+2084:Fähler bim Sueche vo %d. Byte: %s (%d).\n
+2086:Fähler bim Lesen vor Datei "%s": %s (%d).\n
+2087:Datei Nummere %d fertig gschickt.\n
+2088:Aui %d Dateie fertig gschickt.\n
 2089:Dateiannahm
 2090:Dateiübertragig
-2091:Reihe "%s" aus "%s" id Warteschlange für Dateiübertragig i.¶
-2092:TCP Nachricht %s wäggschmisse - ha d Sitzig verlore.¶
-2093:%02d %-12s Version %d für %s (%x), bi %s:%d %s¶
-2094:conn login         Erschti Serververbindig uftue.¶
-2095:conn remove <nr>   Verbindig Nummere <nr> zuetue.¶
-2096:D Verbindig %d isch ned offe.¶
-2097:conn select <nr>   Wäu d Verbindig Nummere <nr> aus Serververbindig.¶
-2098:D Verbindig %d isch ned e Serververbindig.¶
-2099:Verbindig %d (version %d, UIN %d) aus momentani Serververbindig gwäut.¶
-2100:conn select <uin>  D Verbindig mit der UIN <uin> aus Serververbindig wähle.¶
-2101:D Verbindig %d u ihri Abhängigkeite wärde komplett entfärnt.¶
-2102:D Verbindig %d isch e konfigurierti Verbindig.¶
-2103:contact show    Die serversitigi Kontaktlischte azeige.¶
-2104:contact diff    Aui serversitige Kontakte azeige wo ned uf der lokale Kontaktlischte si.¶
-2105:contact import  Aui serversitige Kontakte zur lokale Kontaktlischte derzuetue.¶
-2106:Letschti Nachricht vo %s%s%s um %s:¶
-2107:No keni Nachrichte vo %s%s%s empfange.¶
+2091:Reihe "%s" aus "%s" id Warteschlange für Dateiübertragig i.\n
+2092:TCP Nachricht %s wäggschmisse - ha d Sitzig verlore.\n
+2093:%02d %-12s Version %d für %s (%x), bi %s:%d %s\n
+2094:conn login         Erschti Serververbindig uftue.\n
+2095:conn remove <nr>   Verbindig Nummere <nr> zuetue.\n
+2096:D Verbindig %d isch ned offe.\n
+2097:conn select <nr>   Wäu d Verbindig Nummere <nr> aus Serververbindig.\n
+2098:D Verbindig %d isch ned e Serververbindig.\n
+2099:Verbindig %d (version %d, UIN %d) aus momentani Serververbindig gwäut.\n
+2100:conn select <uin>  D Verbindig mit der UIN <uin> aus Serververbindig wähle.\n
+2101:D Verbindig %d u ihri Abhängigkeite wärde komplett entfärnt.\n
+2102:D Verbindig %d isch e konfigurierti Verbindig.\n
+2103:contact show    Die serversitigi Kontaktlischte azeige.\n
+2104:contact diff    Aui serversitige Kontakte azeige wo ned uf der lokale Kontaktlischte si.\n
+2105:contact import  Aui serversitige Kontakte zur lokale Kontaktlischte derzuetue.\n
+2106:Letschti Nachricht vo %s%s%s um %s:\n
+2107:No keni Nachrichte vo %s%s%s empfange.\n
 2108:auto
 2109:version
-#-#2110:    file  <nick> <file1> <as1> ... <description>¶
-#-#2111:                 - Schicke vo file1 aus as1, ..., mit Beschribig.¶
-#-#2112:                 - as = "/": Pfad verbärge, as = ".": so wie lokal¶
-2113:Unbekannte Schtatus '%s'.¶
-2114:Der Befäu "%s" exischtiert ned.¶
-2115:"%s" isch ke ganzi Zau.¶
-2116:Ke nöie Nickname definiert.¶
-2117:%d aus %s derzuegfüegt.¶
-2118:Schpicher vou (out of memory).¶
-2119:auth [grant] <nick>    - Outhorisation gä.¶
-2120:auth deny <nick> <msg> - Outhorisation ablehne.¶
-2121:auth req  <nick> <msg> - Outhorisation beantrage.¶
-2122: Hiwis: Du muesch "save" zum ds nöie Passwort uf d Feschtplatte z schpichere.¶
-2123:%sSyntaxfähler%s: Z weni Argumänt: "%s"¶
-2124:%sSyntaxfähler%s: Ke ganzi Zau:    "%s"¶
-2126:Der User isch offline, d Nachricht (%s#%08lx:%08lx%s) isch ir Warteschlange.¶
-2127:       URL: %s%s%s%s¶
-2128: Beschriebig: %s%s%s¶
-2129:         URL: %s%s%s¶
-2130:Schribe e Nachricht a %saui%s:¶
-2131:Schribe e Nachricht a %s%s%s:¶
-2132:Schribe e Nachricht a %s%d%s:¶
-2133:D Farb isch %s%s%s.¶
-2134:Luschtigi Nachrichte si %s%s%s.¶
-2135:Lislige Output isch %s%s%s.¶
-2136:Passwortänderig isch %s%s%s gsi.¶
-2137:Modifikation vor "Über"-Info isch %s%s%s gsi.¶
-2138:Modifikation vor grundlegende Info isch %s%s%s gsi.¶
-2139:Modifikation vor süschtige Info isch %s%s%s gsi.¶
-2140:Wächsu zu re zuefällige Chatgruppe isch %s%s%s gsi.¶
-2141:Suechi %sfäugschlage%s.¶
+#-#2110:    file  <nick> <file1> <as1> ... <description>\n
+#-#2111:                 - Schicke vo file1 aus as1, ..., mit Beschribig.\n
+#-#2112:                 - as = "/": Pfad verbärge, as = ".": so wie lokal\n
+#2110:peer files <nick> <file1> <as1> ... [<description>]\n
+#2111:                  - Send file1 as as1, ..., with description.\n
+#2112:                  - as = '/': strip path, as = '.': as is\n
+2113:Unbekannte Schtatus '%s'.\n
+2114:Der Befäu "%s" exischtiert ned.\n
+2115:"%s" isch ke ganzi Zau.\n
+2116:Ke nöie Nickname definiert.\n
+2117:%d aus %s derzuegfüegt.\n
+2118:Schpicher vou (out of memory).\n
+2119:auth [grant] <nick>    - Outhorisation gä.\n
+2120:auth deny <nick> <msg> - Outhorisation ablehne.\n
+2121:auth req  <nick> <msg> - Outhorisation beantrage.\n
+2122: Hiwis: Du muesch "save" zum ds nöie Passwort uf d Feschtplatte z schpichere.\n
+2123:%sSyntaxfähler%s: Z weni Argumänt: "%s"\n
+2124:%sSyntaxfähler%s: Ke ganzi Zau:    "%s"\n
+2126:Der User isch offline, d Nachricht (%s#%08lx:%08lx%s) isch ir Warteschlange.\n
+2127:       URL: %s%s%s%s\n
+2128: Beschriebig: %s%s%s\n
+2129:         URL: %s%s%s\n
+2130:Schribe e Nachricht a %saui%s:\n
+2131:Schribe e Nachricht a %s%s%s:\n
+2132:Schribe e Nachricht a %s%d%s:\n
+2133:D Farb isch %s%s%s.\n
+2134:Luschtigi Nachrichte si %s%s%s.\n
+2135:Lislige Output isch %s%s%s.\n
+2136:Passwortänderig isch %s%s%s gsi.\n
+2137:Modifikation vor "Über"-Info isch %s%s%s gsi.\n
+2138:Modifikation vor grundlegende Info isch %s%s%s gsi.\n
+2139:Modifikation vor süschtige Info isch %s%s%s gsi.\n
+2140:Wächsu zu re zuefällige Chatgruppe isch %s%s%s gsi.\n
+2141:Suechi %sfäugschlage%s.\n
+#2142:Direct connection with %s not possible.\n
+#2143:refused authorization: %s%s%s\n
+#2144:requests authorization: %s%s%s\n
+#2145:auth add  <nick>       - authorized add.\n
+#2146:'%s' is already an alias for '%s' (%d).\n
+#2147:'%s' (%d) is already used as a nick.\n
+#2148:Added '%s' as an alias for '%s' (%d).\n
+#2149:Removed alias '%s' for '%s' (%d).\n
+#2150:Removed contact '%s' (%d).\n
+#2151:%d is not on your contact list anymore.\n
+#2156:conn close <nr>    Close connection <nr>.\n
+#2157:Moldova
+#2158:No file given.\n
+#2159:Some files.
+#2160:peer file  <nick> <file> [<description>]\n
+#2161:Receiving %d files with together %d bytes at speed %x from %s.\n
+#2162:Receiving file %s (%s) with %d bytes as %s.\n
+#2163:Sending file %d at offset %d.\n
+#2164:Error writing to file.\n
+#2165:The peer sent more bytes (%d) than file length (%d).\n
+#2166:Finished receiving file.\n
+#2167:Error - unknown packet.\n
+#2168:File transfer #%d (%s) dropped after %d attempts because of timeout.\n
+#2169:File transfer aborted by peer (%d).\n
+#2170:Sending with speed %x to %s.\n
+#2171:Advanced
+#2172:Commands for advanced features.
+#2173:Deny <uin> or <nick> to add you to their list.
+#2174:Request authorization from <uin> or <nick>.
+#2175:Tell <uin> or <nick> that you added them to your list.
+#2176:Displays verbose the current status of everyone on your contact list.
+#2177:Displays verbose the current status of online people on your contact list.
+#2178:Request auto reply message for <uin> or <nick>.
+#2179:Send <uin> or <nick> a single file.
+#2180:Send <uin> or <nick> several files.
+#2181:Closes or removes connection number <nr>.
+#2182:Select server connection number <nr> as current server connection.
+#2183:Check whether <uin> or <nick> is offline or invisible.
+#2184:%s%-10s%s - %s\n
+#2185:Closing connection %d.\n
+#2186:Accepting file '%s' (%d bytes).\n
+#2187:Refused file request '%s' (%d bytes) (unknown: %x, %x)\n
+#2188:You're sending data too fast - stop typing now, or the server will disconnect!\n
+#2189:Malformed instant message packet refused by server.\n
+#2190:The contact's client does not support type-2 messages.\n
+#2191:Instant message error: %d.\n
+#2192:Capabilities: 
+#2193:Directory %s does not exists.\n
+#2194:Don't know how to open this connection type.\n
+#2195:Obsolete number
+#2196:Obsolete text
+#2197:Obsolete byte

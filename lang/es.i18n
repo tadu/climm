@@ -1,5 +1,5 @@
 # $Id$ castellano (Spanish)
-#  EN: __.i18n,v 1.50 2002/09/30 17:45:07
+#  EN: __.i18n,v 1.51 2002/10/14 15:48:34
 1001:es
 1002:es
 1003:0-4-9-3
@@ -29,14 +29,14 @@
 1029:Por favor ingrese SI o NO!
 1030:se desconectó
 1031:se conectó
-1032:debug: Paquete doble #%04x del tipo %04x (%s)¶
+1032:debug: Paquete doble #%04x del tipo %04x (%s)\n
 1033:Paquete del server v8 entrante:
 1034:Se alcanzó el numero maximo de reintentos, descartando.
 1035:cambio el estado a
 1036:Comando %s desconocido, escribir /help para ver la ayuda.
 1037:Mensaje enviado antes de quedarnos sin espacio
 1038:Mensaje cancelado
-1039:El servidor dice que no estamos conectados.¶
+1039:El servidor dice que no estamos conectados.\n
 1040:mICQ> 
 1041:msj> 
 1042:msj todos> 
@@ -46,13 +46,13 @@
 1046:Longitud
 1047:Datos extra
 1048:Codigo de error %d
-1049:UIN: %d¶
+1049:UIN: %d\n
 1050:Usuario y clave validados
 1053:Conectado a %s, esperando respuesta
 1055:Error en la creación del socket
 1056:Socket creado, intentando conectar
 1060:El nivel de salida es %d
-1061:'%s' no es un nick reconocido.¶
+1061:'%s' no es un nick reconocido.\n
 1062:Usuarios ignorados:
 1063:Ingrese su clave:
 1064:Su estado se cambio automaticamente a
@@ -66,7 +66,7 @@
 1076:compilado en
 1077:dedicado a Matthew D. Smith.
 1078:No hay traducción disponible
-1079:Traducción (%s, %s) por %s, ultima modificación el %s por %s, para mICQ %d.%d.%d%s.¶
+1079:Traducción (%s, %s) por %s, ultima modificación el %s por %s, para mICQ %d.%d.%d%s.\n
 1080:No se pudo cargar la internacionalización "%s"
 1081:Traducción cargada correctamente (%d entradas).
 1082:Intentando reconectar... [intento %d de %d]
@@ -175,7 +175,7 @@
 1191:clave = %s
 1192:servidor = %s
 1193:estado = %ld
-1196:Message_cmd = %s¶
+1196:Message_cmd = %s\n
 1198:Otros servicios
 1200:No ingresado
 1201:Afganistan
@@ -535,13 +535,13 @@
 1575:Edad:
 1578:Ingresa el código telefónico de tu país:
 1579:Ingresa tu compañia: 
-1584:Alerta! El comando de script '%s' falló con valor %d¶
+1584:Alerta! El comando de script '%s' falló con valor %d\n
 1587:Ingresa tu departamento/area: 
-1592:<%s> te mando un mensaje por email:¶
-1593:<%s> te mando un mensaje por web:¶
-1595:¶Lista de contactos.¶============================================¶%d Contactos¶
+1592:<%s> te mando un mensaje por email:\n
+1593:<%s> te mando un mensaje por web:\n
+1595:\nLista de contactos.\n============================================\n%d Contactos\n
 1596:[SOCKS] No se puede encontrar el nombre del host %s: %s.
-1597:[SOCKS] No se pudo crear el socket¶
+1597:[SOCKS] No se pudo crear el socket\n
 1598:[SOCKS] Pedido de conexión rechazado
 1599:[SOCKS] Metodo de autenticación incorrecto
 1600:[SOCKS] Falla de autenticación
@@ -550,40 +550,40 @@
 1603:Ingresa tu posición/puesto: 
 1604:Deberian estar conectados los usuarios?
 1605:Queres que tu estado sea visible desde la web? (SI/NO)
-1606:Recibimos un session id mal: %08x (el correcto: %08x) con el comando %04x, se ignoro.¶
-1607:Usao: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]¶
-1608:        -v   Activa el modo verbose (solo util para debugging)¶
-1609:        -f   especifica un archivo de configuración alternativo (si no se especifica, ~/.micq/micqrc)¶
-1610:        -l   especifica un directorio de registro e historial alternativo¶
-1611:        -?   muestra esta ayuda¶¶
-1612:Este programa fue hecho sin ningun tipo de ayuda ni consentimiento por parte de Mirabilis.¶
-1613:No se utilizo ningun mecanismo de decompilación o ingenieria inversa de codigo de Mirabilis para realizar este programa.¶
-1614:Usando el archivo de configuración "%s"¶
-1615:Guardando registro en "%s"¶
+1606:Recibimos un session id mal: %08x (el correcto: %08x) con el comando %04x, se ignoro.\n
+1607:Usao: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]\n
+1608:        -v   Activa el modo verbose (solo util para debugging)\n
+1609:        -f   especifica un archivo de configuración alternativo (si no se especifica, ~/.micq/micqrc)\n
+1610:        -l   especifica un directorio de registro e historial alternativo\n
+1611:        -?   muestra esta ayuda\n\n
+1612:Este programa fue hecho sin ningun tipo de ayuda ni consentimiento por parte de Mirabilis.\n
+1613:No se utilizo ningun mecanismo de decompilación o ingenieria inversa de codigo de Mirabilis para realizar este programa.\n
+1614:Usando el archivo de configuración "%s"\n
+1615:Guardando registro en "%s"\n
 1617:<todos>
 1618:UIN:
 1619:Advertencia:
 1620:Se alcanzo el numero maximo de contactos.
 1621:usuarios no devueltos.
 1622:Queres aplicar los cambios? (SI/NO)
-1623:Paquete duplicado %04X¶
+1623:Paquete duplicado %04X\n
 1624:Imposible inicializar Windows Sockets...
-1632:¶Conecxión inestable, cerrando...
-1634:ok.¶
-1637:Can't bind socket to free port¶
+1632:\nConecxión inestable, cerrando...
+1634:ok.\n
+1637:Can't bind socket to free port\n
 1638:No se pudo crear el socket
-1639:El nuevo UIN es %ld!¶
-1640:Error actualizando la información.¶
-1641:La información se actualizó con exito.¶
+1639:El nuevo UIN es %ld!\n
+1640:Error actualizando la información.\n
+1641:La información se actualizó con exito.\n
 1642:IP
-1643:Confirmación SRV_X1 0x021C listo con la lista de contactos?¶
-1644:Confirmación SRV_X2 0x00E6 listo con los mensajes viejos?¶
-1645:Ingresaste una clave incorrecta.¶
-1646:El servidor se encuentra ocupado.¶
+1643:Confirmación SRV_X1 0x021C listo con la lista de contactos?\n
+1644:Confirmación SRV_X2 0x00E6 listo con los mensajes viejos?\n
+1645:Ingresaste una clave incorrecta.\n
+1646:El servidor se encuentra ocupado.\n
 1648:La respuesta fue %04X	
 1649:La versión fue %X	
-1650:¶El SEQ fue %04X	
-1651:El tamaño fue %d¶
+1650:\nEl SEQ fue %04X	
+1651:El tamaño fue %d\n
 1653:Desconectado
 1654:Conectado
 1655:Ingresa la dirección de e-mail del usuario:
@@ -591,22 +591,22 @@
 1657:Ingresa el nombre del usuario:
 1658:Ingresa el apellido del usuario:
 1659:Sección %s desconocida en el archivo de configuración.
-1660:Comando invalido: %s¶
-1661:Los comandos del shell han sido desactivados.¶
+1660:Comando invalido: %s\n
+1661:Los comandos del shell han sido desactivados.\n
 1666:Dejando de ignorar a %s.
 1667:Ignorando a %s.
 1670:Visible normalmente para %s.
 1671:Siempre visible para %s.
 1672:Dirección IP de %s: 
-1673:El puerto es %d.¶
-1674:Puerto desconocido.¶
+1673:El puerto es %d.\n
+1674:Puerto desconocido.\n
 1675:Linea ignorada:
-1676:Se necesita el UIN a quien enviar.¶
-1678:Se necesita el URL.¶
-1679:Error al grabar tus respuestas automaticas personales¶
-1680:Tu configuración personal ha sido grabada!¶
-1681:Ultima/s %d persona/s con quien hablaste:¶
-1682:Recibiste mensajes de:¶
+1676:Se necesita el UIN a quien enviar.\n
+1678:Se necesita el URL.\n
+1679:Error al grabar tus respuestas automaticas personales\n
+1680:Tu configuración personal ha sido grabada!\n
+1681:Ultima/s %d persona/s con quien hablaste:\n
+1682:Recibiste mensajes de:\n
 1687:mICQ ha estado corriendo por
 1688:dias
 1689:horas
@@ -614,9 +614,9 @@
 1691:segundos
 1692:Contactos:
 1696:Género:
-1700:%s no es un usuario valido de tu lista de contactos.¶
-1703:Estados posibles:¶
-1704:Grupos:¶
+1700:%s no es un usuario valido de tu lista de contactos.\n
+1703:Estados posibles:\n
+1704:Grupos:\n
 1705:General
 1706:Romance
 1707:Juegos
@@ -632,58 +632,58 @@
 1717:! como primer caracter de una linea la ejecutara como un comando de shell (por ejemplo "!ls"  "!dir" "!mkdir temp")
 1719:Muestra por cuanto tiempo ha estado corriendo mICQ.
 1720:uin puede sar tanto un numero como el nick de un usuario.
-1721:Enviar un mensaje en blanco pondra al programa en modo multilinea.¶Escribi . en una linea vacia para terminar el mensaje.¶Usa # en una linea vacia para cancelar el mensaje.
-1724:Las respuestas automáticas estan %s.¶
+1721:Enviar un mensaje en blanco pondra al programa en modo multilinea.\nEscribi . en una linea vacia para terminar el mensaje.\nUsa # en una linea vacia para cancelar el mensaje.
+1724:Las respuestas automáticas estan %s.\n
 1727:El mensaje de 'No molestar' es:
 1728:El mensaje de 'Lejos' es:
 1729:El mensaje de 'No disponible' es:
 1730:El mensaje de 'Ocupado' es:
 1731:El mensaje de 'Invisible' es:
-1735:Debe escribir un mensaje.¶
-1738:Necesito un comando que cambiar.¶
-1741:Tenes que recibir un comando primero¶
-1742:Tenes que mandar un comando primero¶
-1743:Los tamaños de los mensajes no concuerdan.¶
+1735:Debe escribir un mensaje.\n
+1738:Necesito un comando que cambiar.\n
+1741:Tenes que recibir un comando primero\n
+1742:Tenes que mandar un comando primero\n
+1743:Los tamaños de los mensajes no concuerdan.\n
 1744:servidor (v5)
 1745:desconocido
-1746: nr tipo         envi/reci     paquetes/paquetes unicos¶
+1746: nr tipo         envi/reci     paquetes/paquetes unicos\n
 1747:total
-1754: Nota: tenes que escribir 'save' para grabar los cambios de tu lista de contactos.¶
-1755:te agregó a su lista de contactos.¶
-1756:¶Creando conexión...¶
-1757:No se pudo establecer la conexión.¶
-1758:Enviando pedido...¶
-1759:Esperando respuesta...¶
-1760:¶Tu nuevo UIN es %s%ld%s!¶
+1754: Nota: tenes que escribir 'save' para grabar los cambios de tu lista de contactos.\n
+1755:te agregó a su lista de contactos.\n
+1756:\nCreando conexión...\n
+1757:No se pudo establecer la conexión.\n
+1758:Enviando pedido...\n
+1759:Esperando respuesta...\n
+1760:\nTu nuevo UIN es %s%ld%s!\n
 1761:desconocido
-1762:Tu nuevo UIN es: %d.¶
+1762:Tu nuevo UIN es: %d.\n
 1763:El comando '%s' ha sido renombrado a '%s'.
 1764:El comando '%s' no fue cambiado.
 1765:El UIN de %s es %d.
-1766:El cambio de estado automatico esta %s%d%s.¶
+1766:El cambio de estado automatico esta %s%d%s.\n
 1767:Cambia el cambio de estado automatico de 'lejos' a 'no disponible'.
-1768:El nombre de comando '%s' ya esta siendo utilizado.¶
+1768:El nombre de comando '%s' ya esta siendo utilizado.\n
 1770:Reenvia el ultimo mensaje a un nuevo <uin> o <nick>.
-1771:Todavia no le mandaste un mensaje a nadie!¶
+1771:Todavia no le mandaste un mensaje a nadie!\n
 1774:Paquete entrante:
 1775:Paquete saliente:
 1777:Abriendo conexión par-a-par contra localhost:%d... 
-1781:Tu clave para el UIN %d:¶
-1782:Necesitas una clave para tu nuevo UIN.¶
-1783:Para prevenir errores, por favor ingresa tu clave nuevamente.¶
-1784:Si estas detras de un firewall, probablemente necesites usar un servidor SOCKS5. De necesitarlo, por favor ingresa su nombre o dirección IP. Sino, o si no sabes, apreta enter.¶
-1785:realizado correctamente.¶
-1786:Tambien necesito el puerto en el que el servidor SOCKS espera conexiones. Nuevamente, si no sabes, apreta enter para usar el puerto predeterminado.¶
-1787:Probablemente necesites autenticar con el servidor SOCKS. Si es asi, por favor ingresa la el usuario que te dio el administrador del servidor; sino, apreta enter.¶
-1788:Ahora tambien necesito la clave para este usuario.¶
+1781:Tu clave para el UIN %d:\n
+1782:Necesitas una clave para tu nuevo UIN.\n
+1783:Para prevenir errores, por favor ingresa tu clave nuevamente.\n
+1784:Si estas detras de un firewall, probablemente necesites usar un servidor SOCKS5. De necesitarlo, por favor ingresa su nombre o dirección IP. Sino, o si no sabes, apreta enter.\n
+1785:realizado correctamente.\n
+1786:Tambien necesito el puerto en el que el servidor SOCKS espera conexiones. Nuevamente, si no sabes, apreta enter para usar el puerto predeterminado.\n
+1787:Probablemente necesites autenticar con el servidor SOCKS. Si es asi, por favor ingresa la el usuario que te dio el administrador del servidor; sino, apreta enter.\n
+1788:Ahora tambien necesito la clave para este usuario.\n
 1789:Recibi paquete deforme: (%d)
-1790:El asistente de configuración ha terminado. Felicitaciónes por tu nuevo UIN!¶
-1791:El asistente de configuración ha terminado. Felicitaciónes!¶
-1792:Lamentablemente AOL no nos quiere dar un nuevo UIN, probablemente porque ya hay demasiados pedidos de esta IP. Por favor volvé a intentar mas tarde.¶
-1793:No se encontro un UIN valido. El asistente de configuración te guiara en el proceso de creación de uno nuevo.¶
-1794:Si ya tenes un UIN, escribilo; sino pone 0 y pediré uno nuevo.¶
+1790:El asistente de configuración ha terminado. Felicitaciónes por tu nuevo UIN!\n
+1791:El asistente de configuración ha terminado. Felicitaciónes!\n
+1792:Lamentablemente AOL no nos quiere dar un nuevo UIN, probablemente porque ya hay demasiados pedidos de esta IP. Por favor volvé a intentar mas tarde.\n
+1793:No se encontro un UIN valido. El asistente de configuración te guiara en el proceso de creación de uno nuevo.\n
+1794:Si ya tenes un UIN, escribilo; sino pone 0 y pediré uno nuevo.\n
 1795:Clave:
-1796:El asistente ha terminado. Por favor espera mientras termina el proceso de registración.¶
+1796:El asistente ha terminado. Por favor espera mientras termina el proceso de registración.\n
 1797:Finanzas y corporaciones
 1798:Escuela primaria
 1799:Escuela secundaria/Polimodal
@@ -693,87 +693,87 @@
 1803:SoundOffline cmd
 1804:SoundOnline
 1805:SoundOffline
-1807:Mensaje (seq %04x) entrante de %s cancelado¶
+1807:Mensaje (seq %04x) entrante de %s cancelado\n
 1808:Colegio
 1810:Universidad
 1812:Lugar de trabajo anterior
 1813:Organización anterior
-1814:Mensaje de respuesta automática configurado a %s%s%s.¶
-1815:    funny: usa mensajes graciosos.¶
-1816:Opción %s desconocida para la configuración de comando.¶
-1817:Alerta: funcionalidad ReceiveScript no implementada!¶
-1818:Alerta: sintaxis en desuso encontrada en el archivo de configuración!¶    Por favor hace "save" y revisa los cambios.¶
-1820:%s <opcion> [on|off] - controla las opciones simples.¶
-1822:    color: usa colores en el texto.¶
+1814:Mensaje de respuesta automática configurado a %s%s%s.\n
+1815:    funny: usa mensajes graciosos.\n
+1816:Opción %s desconocida para la configuración de comando.\n
+1817:funcionalidad ReceiveScript no implementada!\n
+1818:Alerta: sintaxis en desuso encontrada en el archivo de configuración!\n    Por favor hace "save" y revisa los cambios.\n
+1820:%s <opcion> [on|off] - controla las opciones simples.\n
+1822:    color: usa colores en el texto.\n
 1823:Mensaje entrante parcial:
 1825:Se descarto un paquete %04x (%s)
-1826:Reenviando mensaje %04x (%s) secuencia %04x (intento numero %d, longitud %d).¶
-1830:Descartando envio de mensaje a %s luego de %d intentos. El contenido del mensaje es:¶
-1833:Conexión TCP par-a-par establecida.¶
-1835:Error escribiendo al socket - %s (%d)¶
-1841:Se recibio un paquete de confirmación de inicialización deforme.¶
-1842:Cerrando socket %d a %s.¶
-1843:Cerrando socket %d.¶
-1844:Mensaje TCP %04x descartado por timeout.¶
-1845:Nick %s desconocido.¶
-1846:Abre y cierra conexiones directas (par a par):¶
-1847: peer open  <nick> - Abre una conexión directa.¶
-1848: peer close <nick> - Cierra/reinicia una/s conexión/es directa/s.¶
-1849:Error en select: %s (%d)¶
-1850:Timeout en conexión con %s en %s:%d¶
-1855:La conexión TCP a %s en %s:%d falló.¶
-1856:Descartando un paquete %04x (%s) de una sesión vieja (%08x , actual: %08x).¶
+1826:Reenviando mensaje %04x (%s) secuencia %04x (intento numero %d, longitud %d).\n
+1830:Descartando envio de mensaje a %s luego de %d intentos. El contenido del mensaje es:\n
+1833:Conexión TCP par-a-par establecida.\n
+1835:Error escribiendo al socket - %s (%d)\n
+1841:Se recibio un paquete de confirmación de inicialización deforme.\n
+1842:Cerrando socket %d a %s.\n
+1843:Cerrando socket %d.\n
+1844:Mensaje TCP %04x descartado por timeout.\n
+1845:Nick %s desconocido.\n
+1846:Abre y cierra conexiones directas (par a par):\n
+1847: peer open  <nick> - Abre una conexión directa.\n
+1848: peer close <nick> - Cierra/reinicia una/s conexión/es directa/s.\n
+1849:Error en select: %s (%d)\n
+1850:Timeout en conexión con %s en %s:%d\n
+1855:La conexión TCP a %s en %s:%d falló.\n
+1856:Descartando un paquete %04x (%s) de una sesión vieja (%08x , actual: %08x).\n
 1857:Queres ocultar tu dirección IP de otros contactos? (SI/NO)
 1864:No se puede abrir el archivo de configuración %s.
-1866:Esta versión de mICQ fue compilada sin soporte para conexiones directas (par a par).¶
-1867:Ignorando paquete deforme (muy corto).¶
-1868:Ignorando sobrante de paquete deforme (sub-paquete muy largo).¶
-1869:Las versiónes de protocol anteriores a 5 no son mas soportadas.¶
-1870: peer off   <nick> - Cierra la/s conexión/es directa/s y no vuelve a intentar.¶
+1866:Esta versión de mICQ fue compilada sin soporte para conexiones directas (par a par).\n
+1867:Ignorando paquete deforme (muy corto).\n
+1868:Ignorando sobrante de paquete deforme (sub-paquete muy largo).\n
+1869:Las versiónes de protocol anteriores a 5 no son mas soportadas.\n
+1870: peer off   <nick> - Cierra la/s conexión/es directa/s y no vuelve a intentar.\n
 1871:Abriendo conexión v8 con %s:%d... 
-1872:fallo: %s (%d)¶
+1872:fallo: %s (%d)\n
 1873:Ciudad laboral:
 1874:Provincia laboral:
 1875:Intereses Personales:
 1876:Historia personal:
-1877:ok.¶
-1878:Error leyendo del socket: %s (%d)¶
+1877:ok.\n
+1878:Error leyendo del socket: %s (%d)\n
 1879:Afiliaciones:
-1880:Paquete entrante no es un FLAP: id es %d.¶
-1881:FLAP canal 1 fuera de datos.¶
-1882:FLAP canal 1 cmd 1 datos extra:¶
-1883:FLAP canal 1 comando desconocido %d.¶
-1884:FLAP recibido con canal %d desconocido.¶
-1885:Timeout en conexión v8.¶
+1880:Paquete entrante no es un FLAP: id es %d.\n
+1881:FLAP canal 1 fuera de datos.\n
+1882:FLAP canal 1 cmd 1 datos extra:\n
+1883:FLAP canal 1 comando desconocido %d.\n
+1884:FLAP recibido con canal %d desconocido.\n
+1885:Timeout en conexión v8.\n
 1887:Conexiónes:
 1888:No disponible en la web
 1889:server
 1890:par-a-par
-1891:Conexión %d ya esta abierta.¶
-1892:conn               Lista las conexiones disponibles.¶
-1893:conn login <nr>    Abre conexión <nr>.¶
-1894:No existe el numero de conexión %d.¶
-1895:Error validando usuario y clave:¶
-1896:El servidor ha cerrado la conexión:¶
-1897:Ignorando TLV incompleto %d, longitud %d de %d.¶
+1891:Conexión %d ya esta abierta.\n
+1892:conn               Lista las conexiones disponibles.\n
+1893:conn login <nr>    Abre conexión <nr>.\n
+1894:No existe el numero de conexión %d.\n
+1895:Error validando usuario y clave:\n
+1896:El servidor ha cerrado la conexión:\n
+1897:Ignorando TLV incompleto %d, longitud %d de %d.\n
 1898:Redirigiendo al servidor %s... 
-1899:Pedido de familia desconocida:: %d¶
+1899:Pedido de familia desconocida:: %d\n
 1900:Es de solo lectura.
-1901:te autorizó a agregarlo/a a tu lista de contactos.¶
+1901:te autorizó a agregarlo/a a tu lista de contactos.\n
 1902:Abriendo conexión v5 a %s:%d... 
 1903:Mensaje saliente v8 al servidor:
-1904:El servidor no comprende ver %d (solo %d) para la familia %d!¶
-1905:SNAC (%x,%x) [%s] flags %x ref %x¶
-1907:Alerta: el servidor cree que nuestro UIN is %d, cuando en realidad es %d.¶
-1908:Recepción de paquete USERONLINE para un no-contacto.¶
-1909:Recepción de paquete USEROFFLINE para un no-contacto.¶
+1904:El servidor no comprende ver %d (solo %d) para la familia %d!\n
+1905:SNAC (%x,%x) [%s] flags %x ref %x\n
+1907:Alerta: el servidor cree que nuestro UIN is %d, cuando en realidad es %d.\n
+1908:Recepción de paquete USERONLINE para un no-contacto.\n
+1909:Recepción de paquete USEROFFLINE para un no-contacto.\n
 1911:conectando
 1912:cerrado
-1914:No se pudo obtener memoria para la estructura de conexión.¶
-1915:El servidor dice que estamos en %s.¶
-1918:Se ignoro un pedido del servidor por un minimo intervalo de reportes de %d.¶
-1919:Error de UIN: %d vs %d.¶
-1920:Registración de un nuevo UIN rechazada.¶
+1914:No se pudo obtener memoria para la estructura de conexión.\n
+1915:El servidor dice que estamos en %s.\n
+1918:Se ignoro un pedido del servidor por un minimo intervalo de reportes de %d.\n
+1919:Error de UIN: %d vs %d.\n
+1920:Registración de un nuevo UIN rechazada.\n
 1921:Conectado
 1922:No molestar
 1923:Lejos
@@ -782,14 +782,14 @@
 1926:Invisible
 1927:Libre para hablar
 1929:El usuario no esta disponible [Mensaje automático]
-1931:La sesion actual se cerro. Intenta una nueva, o abri esta.¶
+1931:La sesion actual se cerro. Intenta una nueva, o abri esta.\n
 1934:conectado
-1935:    tipo %d socket %d ip %s (%d) en [%s,%s] id %x/%x/%x¶
+1935:    tipo %d socket %d ip %s (%d) en [%s,%s] id %x/%x/%x\n
 1936:Ingresa la edad minima (18-22,23-29,30-39,40-49,50-59,60-120):
 1937:Ingresa la edad maxima (22,29,39,49,59,120):
 1938:Ingresa el genero:
 1939:Ingresa una ciudad:
-1940:Resultado meta-user desconocido %x.¶
+1940:Resultado meta-user desconocido %x.\n
 1941:Publicar Email:
 1942:Emails adicionales:
 1943:(no necesita autorización)
@@ -797,7 +797,7 @@
 1945:Respuesta meta-user desconocida
 1947:conexión escucha
 1948:No se puede encontrar el hostname %s: %s.
-1949:falló:¶
+1949:falló:\n
 1950:No se pudo poner el socket en modo nonblocking
 1951:No se puede encontrar el hostname %s
 1952:No se pudo abrir una conexión
@@ -805,9 +805,9 @@
 1954:no se pudo poner el socket a esperar conexiones
 1955:Fallo en la conexión
 1958:[SOCKS] Pedido de conexión rechazado (%d)
-1960:Ingresa los datos del usuario a buscar. Ingresa '.' para iniciar la busqueda.¶
-1961:URL: %s¶
-1966: Conexión rechazada en el puerto %d en %s¶
+1960:Ingresa los datos del usuario a buscar. Ingresa '.' para iniciar la busqueda.\n
+1961:URL: %s\n
+1966: Conexión rechazada en el puerto %d en %s\n
 1967:Mas información personal
 1968:Se encontro un usuario
 1969:desconectado
@@ -849,23 +849,23 @@
 2005:Productos hogareños
 2006:Catalogos por correo
 2007:Servicios de negocios
-2009:Se encontro un compañero al azar, UIN %d, grupo %d.¶
-2011:No tenes una conexión par-a-par esperando.¶
-2012:No se ingreso una clave.¶
-2013:Este comando es solo para v8.¶
-2014:No se ingreso un numero.¶
-2015:No se ingreso un mensaje.¶
-2017:El usuario esta realmente conectado, pero posiblemente invisible.¶
-2018:    quiet: no informa acerca de cambios de estado.¶
+2009:Se encontro un compañero al azar, UIN %d, grupo %d.\n
+2011:No tenes una conexión par-a-par esperando.\n
+2012:No se ingreso una clave.\n
+2013:Este comando es solo para v8.\n
+2014:No se ingreso un numero.\n
+2015:No se ingreso un mensaje.\n
+2017:El usuario esta realmente conectado, pero posiblemente invisible.\n
+2018:    quiet: no informa acerca de cambios de estado.\n
 2020:Siendo visible para %s.
 2021:Siendo invisible para %s.
-2022:El usuario esta realmente desconectado.¶
-2023:La conexión directa fue cerrada por el par.¶
-2024:Versión de protocolo %d desconocida para protocolo par-a-par.¶
+2022:El usuario esta realmente desconectado.\n
+2023:La conexión directa fue cerrada por el par.\n
+2024:Versión de protocolo %d desconocida para protocolo par-a-par.\n
 2026:Cookie TCP:
 2029:Error de protocolo en conexión par-a-par
-2031:Los intentos de conexión fallan muy seguido, dejando de intentar.¶
-2032:Programando reconexión v9 para dentro de %d segundos.¶
+2031:Los intentos de conexión fallan muy seguido, dejando de intentar.\n
+2032:Programando reconexión v9 para dentro de %d segundos.\n
 2033:cumple años hoy
 2034:Abriendo conexión TCP a %s:%d... 
 2035:Muestra el uptime y algunas estadisticas.
@@ -879,118 +879,118 @@
 2043:Elimina un alias <alias> o <uin>, o elimina un contacto.
 2044:Activa o desactiva una opción.
 2045:Cambia tu visibilidad con <uin> o <nick> cuando estas conectado.
-2046:Probablemente quieras usar la versión 8 del protocolo para conexiones par-a-par.¶
-2047:Creando directorio %s.¶
-2048:Guardando preferencias en %s.¶
-2049:Recibiendo grupo "%s":¶
-2050:Se importaron %d contactos.¶
-2051:Error en socket: %s (%d)¶
-2053:TCP %s seq %x tipo %x estado %x flags %x: '%s'¶
+2046:Probablemente quieras usar la versión 8 del protocolo para conexiones par-a-par.\n
+2047:Creando directorio %s.\n
+2048:Guardando preferencias en %s.\n
+2049:Recibiendo grupo "%s":\n
+2050:Se importaron %d contactos.\n
+2051:Error en socket: %s (%d)\n
+2053:TCP %s seq %x tipo %x estado %x flags %x: '%s'\n
 2054:El mensaje del modo "libre para hablar" es:
 2055:El usuario esta "libre para hablar" y quiere hablar de cualquier cosa.
-2056:peer auto  <nick> - Obtiene la respuesta automatica del contacto.¶
-2057:peer away  <nick> - Obtiene la respuesta automatica del estado 'lejos' del contacto.¶
-2058:peer na    <nick> - Obtiene la respuesta automatica del estado 'no disponible' del contacto.¶
-2059:peer dnd   <nick> - Obtiene la respuesta automatica del estado 'no molestar' del contacto.¶
-2060:peer ffc   <nick> - Obtiene la respuesta automatica del estado 'libre para hablar' del contacto.¶
-2063:Necesitas guardar tu clave en tu archivo ~/.micq/micqrc.¶
-2064:Rechazando pedido de chat (%s/%s/%s) de %s.¶
-2065:Comando TCP_MSG_GREET_ desconocido: %04x.¶
-2066:Comando TCP_MSG_ desconocido: %04x.¶
+2056:peer auto  <nick> - Obtiene la respuesta automatica del contacto.\n
+2057:peer away  <nick> - Obtiene la respuesta automatica del estado 'lejos' del contacto.\n
+2058:peer na    <nick> - Obtiene la respuesta automatica del estado 'no disponible' del contacto.\n
+2059:peer dnd   <nick> - Obtiene la respuesta automatica del estado 'no molestar' del contacto.\n
+2060:peer ffc   <nick> - Obtiene la respuesta automatica del estado 'libre para hablar' del contacto.\n
+2063:Necesitas guardar tu clave en tu archivo ~/.micq/micqrc.\n
+2064:Rechazando pedido de chat (%s/%s/%s) de %s.\n
+2065:Comando TCP_MSG_GREET_ desconocido: %04x.\n
+2066:Comando TCP_MSG_ desconocido: %04x.\n
 2067:entrada y salida de archivos
-2068:Abriendo transferencia de archivo a %s:%d... ¶
-2069:La transferencia de archivo '%s' fue rechazada por el par (%x,%x): %s.¶
-2070:Transfiriendo archivo '%s' al port %d.¶
-2071:No se pudo efectuar stat sobre el archivo %s: %s (%d)¶
-2072:Cerrando la transferencia de archivos #%d (%s) debido a que se cerro la conexión.¶
-2073:Uso de memoria: %d paquetes en proceso.¶
+2068:Abriendo transferencia de archivo a %s:%d... \n
+2069:La transferencia de archivo '%s' fue rechazada por el par (%x,%x): %s.\n
+2070:Transfiriendo archivo '%s' al port %d.\n
+2071:No se pudo efectuar stat sobre el archivo %s: %s (%d)\n
+2072:Cerrando la transferencia de archivos #%d (%s) debido a que se cerro la conexión.\n
+2073:Uso de memoria: %d paquetes en proceso.\n
 2078:Paquete TCP saliente (%d - %s): %s
 2079:Paquete TCP entrante (%d - %s): %s
-2080:El servidor responde acerca del envio de mensaje SMS:¶%s¶
-2081:    en %p padre %p asoc %p¶
+2080:El servidor responde acerca del envio de mensaje SMS:\n%s\n
+2081:    en %p padre %p asoc %p\n
 2082:Abriendo conexion en espera de archivos en localhost:%d... 
-2083:No se pudo abrir el archivo %s: %s (%d).¶
-2084:Error moviendo al offset %d: %s (%d).¶
-2086:Error leyendo el archivo %s: %s (%d).¶
-2087:El envio del archivo %s ha finalizado.¶
-2088:El envio de los %d archivos ha finalizado.¶
+2083:No se pudo abrir el archivo %s: %s (%d).\n
+2084:Error moviendo al offset %d: %s (%d).\n
+2086:Error leyendo el archivo %s: %s (%d).\n
+2087:El envio del archivo %s ha finalizado.\n
+2088:El envio de los %d archivos ha finalizado.\n
 2089:conexión en espera de archivos
 2090:conexión par-a-par de archivos
-2091:Agregando %s como %s a la lista de transferencias.¶
-2092:Mensaje TCP %s descartado - sesión perdida.¶
-2093:%02d %-12s versión %d para %s (%x), et %s:%d %s¶
-2094:conn login         Abre la primer conexión con el servidor.¶
-2095:conn remove <nr>   Remueve la conexión numero <nr>.¶
-2096:La conexion %d no esta abierta.¶
-2097:conn select <nr>   Selecciona la conexion <nr> como la conexión contra el servidor.¶
-2098:La conexion %d no es una conexión con el servidor.¶
-2099:Se selecciono la conexion %d (versión %d, UIN %d) como la conexión actual.¶
-2100:conn select <uin>  Selecciona la conexión con el UIN <uin> como una conexión servidor.¶
-2101:Eliminando la conexión %d y todas sus dependencias.¶
-2102:La conexión %d es una conexión configurada.¶
-2103:contact show    Muestra la lista de contactos del lado del servidor.¶
-2104:contact diff    Muestra los contactos que estan en el servidor y no estan en nuestra lista local.¶
-2105:contact import  Agrega los contactos que estan en el servidor a nuestra lista local.¶
-2106:Ultimo mensaje de %s%s%s (%s):¶
-2107:No se recibieron mensajes de %s%s%s.¶
+2091:Agregando %s como %s a la lista de transferencias.\n
+2092:Mensaje TCP %s descartado - sesión perdida.\n
+2093:%02d %-12s versión %d para %s (%x), et %s:%d %s\n
+2094:conn login         Abre la primer conexión con el servidor.\n
+2095:conn remove <nr>   Remueve la conexión numero <nr>.\n
+2096:La conexion %d no esta abierta.\n
+2097:conn select <nr>   Selecciona la conexion <nr> como la conexión contra el servidor.\n
+2098:La conexion %d no es una conexión con el servidor.\n
+2099:Se selecciono la conexion %d (versión %d, UIN %d) como la conexión actual.\n
+2100:conn select <uin>  Selecciona la conexión con el UIN <uin> como una conexión servidor.\n
+2101:Eliminando la conexión %d y todas sus dependencias.\n
+2102:La conexión %d es una conexión configurada.\n
+2103:contact show    Muestra la lista de contactos del lado del servidor.\n
+2104:contact diff    Muestra los contactos que estan en el servidor y no estan en nuestra lista local.\n
+2105:contact import  Agrega los contactos que estan en el servidor a nuestra lista local.\n
+2106:Ultimo mensaje de %s%s%s (%s):\n
+2107:No se recibieron mensajes de %s%s%s.\n
 2108:auto
 2109:versión
-2110:peer files <nick> <file1> <as1> ... [<descripción>]¶
-2111:                  - Envia file1 como as1, ..., con la descripción.¶
-2112:                  - Si as = '/': se remueve el path del nombre del archivo, si as = '.': se envia tal cual¶
-2113:Estado desconocido: '%s'.¶
-2114:El nombre de comando '%s' no existe.¶
-2115:'%s' no es un entero.¶
-2116:No se dio un nuevo nick.¶
-2117:%d agregado como %s.¶
-2118:Memoria insuficiente.¶
-2119:auth [grant] <nick>    - otorga autorización.¶
-2120:auth deny <nick> <msg> - niega autorización.¶
-2121:auth req  <nick> <msg> - pide autorización.¶
-2122: Nota: necesitas grabar mediante el comando 'save' para guardar la nueva clave al disco.¶
-2123:%sError de sintaxis%s: muy pocos argumentos: '%s'¶
-2124:%sError de sintaxis%s: '%s' no es un entero¶
-2126:El usuario esta desconectado, el mensaje (%s#%08lx:%08lx%s) fue puesto en la cola de espera.¶
-2127:       URL: %s%s%s%s¶
-2128: Descripción: %s%s%s¶
+2110:peer files <nick> <file1> <as1> ... [<descripción>]\n
+2111:                  - Envia file1 como as1, ..., con la descripción.\n
+2112:                  - Si as = '/': se remueve el path del nombre del archivo, si as = '.': se envia tal cual\n
+2113:Estado desconocido: '%s'.\n
+2114:El nombre de comando '%s' no existe.\n
+2115:'%s' no es un entero.\n
+2116:No se dio un nuevo nick.\n
+2117:%d agregado como %s.\n
+2118:Memoria insuficiente.\n
+2119:auth [grant] <nick>    - otorga autorización.\n
+2120:auth deny <nick> <msg> - niega autorización.\n
+2121:auth req  <nick> <msg> - pide autorización.\n
+2122: Nota: necesitas grabar mediante el comando 'save' para guardar la nueva clave al disco.\n
+2123:%sError de sintaxis%s: muy pocos argumentos: '%s'\n
+2124:%sError de sintaxis%s: '%s' no es un entero\n
+2126:El usuario esta desconectado, el mensaje (%s#%08lx:%08lx%s) fue puesto en la cola de espera.\n
+2127:       URL: %s%s%s%s\n
+2128: Descripción: %s%s%s\n
 2129: URL:         %s%s%s
-2130:Escribiendo mensaje para %sall%s:¶
-2131:Escribiendo mensaje para %s%s%s:¶
-2132:Escribiendo mensaje para %s%d%s:¶
-2133:El color es %s%s%s.¶
-2134:Los mensajes graciosos estan %s%s%s.¶
-2135:La salida quiet esta %s%s%s.¶
-2136:El cambio de clave fue %s%s%s.¶
-2137:El cambio del texto personal fue %s%s%s.¶
-2138:El cambio de la información fue %s%s%s.¶
-2139:El cambio de la información adicional fue %s%s%s.¶
-2140:El cambio de grupo de usuarios al azar fue %s%s%s.¶
-2141:Busqueda %sfallida%s.¶
-2142:Conexión directa con %s no es posible.¶
-2143:Autorización rechazada: %s%s%s¶
-2144:Pedido de autorización: %s%s%s¶
-2145:auth add  <nick>       - agrega pidiendo autorizacion.¶
-2146:'%s' ya existe como un alias para '%s' (%d).¶
-2147:'%s' (%d) ya esta siendo usado como un nick.¶
-2148:Se agrego '%s' como un alias para '%s' (%d).¶
-2149:Se elimino el alias '%s' para '%s' (%d).¶
-2150:Se elimino el contacto '%s' (%d).¶
-2151:%d no esta mas en nuestra lista de contactos.¶
-2156:conn close <nr>    Cierra la conexión <nr>.¶
+2130:Escribiendo mensaje para %sall%s:\n
+2131:Escribiendo mensaje para %s%s%s:\n
+2132:Escribiendo mensaje para %s%d%s:\n
+2133:El color es %s%s%s.\n
+2134:Los mensajes graciosos estan %s%s%s.\n
+2135:La salida quiet esta %s%s%s.\n
+2136:El cambio de clave fue %s%s%s.\n
+2137:El cambio del texto personal fue %s%s%s.\n
+2138:El cambio de la información fue %s%s%s.\n
+2139:El cambio de la información adicional fue %s%s%s.\n
+2140:El cambio de grupo de usuarios al azar fue %s%s%s.\n
+2141:Busqueda %sfallida%s.\n
+2142:Conexión directa con %s no es posible.\n
+2143:Autorización rechazada: %s%s%s\n
+2144:Pedido de autorización: %s%s%s\n
+2145:auth add  <nick>       - agrega pidiendo autorizacion.\n
+2146:'%s' ya existe como un alias para '%s' (%d).\n
+2147:'%s' (%d) ya esta siendo usado como un nick.\n
+2148:Se agrego '%s' como un alias para '%s' (%d).\n
+2149:Se elimino el alias '%s' para '%s' (%d).\n
+2150:Se elimino el contacto '%s' (%d).\n
+2151:%d no esta mas en nuestra lista de contactos.\n
+2156:conn close <nr>    Cierra la conexión <nr>.\n
 2157:Moldova
-2158:No se menciono un archivo.¶
+2158:No se menciono un archivo.\n
 2159:Algunos archivos.
-2160:peer file  <nick> <archivo> [<descripción>]¶
-2161:Recibiendo %d archivos que suman %d bytes a una velocidad de %x de %s.¶
-2162:Receibiendo archivo %s (%s) de %d bytes como %s.¶
-2163:Enviando archivo %d en el offset %d.¶
-2164:Error escribiendo al archivo.¶
-2165:El par envio mas bytes (%d) que la longitud del archivo (%d).¶
-2166:Se completo la recepción del archivo.¶
-2167:Error - paquete desconocido.¶
-2168:Transmisión de archivos #%d (%s) cancelada luego de %d intentos, debido a timeout.¶
-2169:Transmisión de archivos cancelada por el par (%d).¶
-2170:Enviando con velocidad %x a %s.¶
+2160:peer file  <nick> <archivo> [<descripción>]\n
+2161:Recibiendo %d archivos que suman %d bytes a una velocidad de %x de %s.\n
+2162:Receibiendo archivo %s (%s) de %d bytes como %s.\n
+2163:Enviando archivo %d en el offset %d.\n
+2164:Error escribiendo al archivo.\n
+2165:El par envio mas bytes (%d) que la longitud del archivo (%d).\n
+2166:Se completo la recepción del archivo.\n
+2167:Error - paquete desconocido.\n
+2168:Transmisión de archivos #%d (%s) cancelada luego de %d intentos, debido a timeout.\n
+2169:Transmisión de archivos cancelada por el par (%d).\n
+2170:Enviando con velocidad %x a %s.\n
 2171:Avanzado
 2172:Comandos para caracteristicas avanzadas.
 2173:Niega a <uin> o <nick> el permiso de agregarte a su lista.
@@ -1004,13 +1004,17 @@
 2181:Cierra o remueve la conexión numero <nr>.
 2182:Selecciona la conexión con el servidor numero <nr> como la actual.
 2183:Revisa si <uin> o <nick> esta realmente conectado o desconectado.
-2184:%s%-10s%s - %s¶
-2185:Cerrando conexión %d.¶
-2186:Aceptando archivo '%s' (%d bytes).¶
-2187:Se rechazó el pedido de transferencia de archivos '%s' (%d bytes) (desconocido: %x, %x)¶
-2188:Estas enviando datos demasiado rapido, por favor para de escribir o el servidor te desconectará¶
-2189:Paquete de mensaje instantáneo deforme rechazado por el servidor.¶
-2190:El cliente de la lista de contactos no soporta mensajes tipo 2.¶
-2191:Error en mensaje instantáneo: %d.¶
+2184:%s%-10s%s - %s\n
+2185:Cerrando conexión %d.\n
+2186:Aceptando archivo '%s' (%d bytes).\n
+2187:Se rechazó el pedido de transferencia de archivos '%s' (%d bytes) (desconocido: %x, %x)\n
+2188:Estas enviando datos demasiado rapido, por favor para de escribir o el servidor te desconectará\n
+2189:Paquete de mensaje instantáneo deforme rechazado por el servidor.\n
+2190:El cliente de la lista de contactos no soporta mensajes tipo 2.\n
+2191:Error en mensaje instantáneo: %d.\n
 2192:Capacidades: 
-2193:No existe el directorio %s.¶
+2193:No existe el directorio %s.\n
+#2194:Don't know how to open this connection type.\n
+#2195:Obsolete number
+#2196:Obsolete text
+#2197:Obsolete byte
