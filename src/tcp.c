@@ -1343,7 +1343,7 @@ static int TCPSendMsgAck (Session *sess, UWORD seq, UWORD sub_cmd, BOOL accept)
     pak = PacketTCPC (sess, TCP_CMD_ACK, seq, sub_cmd, status, flags, msg);
     switch (sub_cmd)
     {
-        case 3:
+        case TCP_MSG_FILE:
             PacketWriteB2   (pak, sess->port);   /* port */
             PacketWrite2    (pak, 0);            /* padding */
             PacketWriteStr  (pak, "");           /* file name - empty */
@@ -1364,8 +1364,6 @@ static int TCPSendMsgAck (Session *sess, UWORD seq, UWORD sub_cmd, BOOL accept)
             /* no idea */
     }
     TCPSendPacket (pak, sess);
-
-    free (msg);
     return 1;
 }
 
@@ -1776,8 +1774,16 @@ static void TCPCallBackReceive (Event *event)
                     }
                     else
                     {
+                        Session *fsess;
                         M_print (i18n (2052, "Accepting file %s (%d bytes) from %s.\n"),
                                  tmp2, len, cont->nick);
+
+                        fsess = SessionFind (TYPE_FILE, event->sess->uin);
+                        fsess->port = 0;
+                        fsess->ip = 0;
+                        fsess->server = "";
+                        SessionInitFile (fsess);
+
                         TCPSendMsgAck (event->sess, seq, type, TRUE);
                     }
 #endif
