@@ -6,6 +6,7 @@
 #include "file_util.h"
 #include "tabs.h"
 #include "util.h"
+#include "cmd_user.h"
 #include "sendmsg.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -36,12 +37,24 @@
 
 /****/
 
-#define      ADD_STRING(a,b)     else if (!strcasecmp (tmp, a))   \
-                                       snprintf (b, sizeof (b), "%s", strtok (NULL, " \n\t"))
-#define      ADD_CMD(a,b)        else if (!strcasecmp (tmp, a))   \
-                                       snprintf (b, sizeof (b), "%s", strtok (NULL, "\n\t"))
+static char *fill (const char *fmt, const char *in);
+
+#define      ADD_ALTER(a,b)      else if (!strcasecmp (tmp, a))   \
+                                       CmdUser (0, fill ("¶alter quiet " #b " %s", strtok (NULL, " \n\t")))
+#define      ADD_CMD(a,b)        else if (!strcasecmp (tmp, a))     \
+                                 { char *stb;                        \
+                                   stb = strtok (NULL, "\n\t");       \
+                                   if (!stb) stb = "";                 \
+                                   snprintf (b, sizeof (b), "%s", stb); } else if (0) 
 
 static char rcfile[256];
+
+char *fill (const char *fmt, const char *in)
+{
+    char buf[1024];
+    snprintf (buf, sizeof (buf), fmt, in);
+    return strdup (buf);
+}
 
 void Set_rcfile (const char *name)
 {
@@ -195,41 +208,19 @@ static void Initalize_RC_File (void)
     Contacts[1].current_ip[3] = 0xff;
     Contacts[1].port = 0;
     Contacts[1].sok = (SOK_T) - 1L;
-
-    strcpy (clear_cmd, "clear");
-    strcpy (message_cmd, "msg");
-    strcpy (info_cmd, "info");
-    strcpy (add_cmd, "add");
-    strcpy (togvis_cmd, "togvis");
-    strcpy (quit_cmd, "q");
-    strcpy (reply_cmd, "r");
-    strcpy (again_cmd, "a");
-    strcpy (list_cmd, "w");
-    strcpy (online_list_cmd, "e");
-    strcpy (away_cmd, "away");
-    strcpy (na_cmd, "na");
-    strcpy (dnd_cmd, "dnd");
-    strcpy (online_cmd, "online");
-    strcpy (occ_cmd, "occ");
-    strcpy (ffc_cmd, "ffc");
-    strcpy (inv_cmd, "inv");
-    strcpy (status_cmd, "status");
-    strcpy (again_cmd, "a");
-    strcpy (auth_cmd, "auth");
-    strcpy (change_cmd, "change");
-    strcpy (auto_cmd, "auto");
-    strcpy (search_cmd, "search");
-    strcpy (save_cmd, "save");
-    strcpy (alter_cmd, "alter");
-    strcpy (msga_cmd, "msga");
-    strcpy (rand_cmd, "rand");
-    strcpy (about_cmd, "about");
-    strcpy (color_cmd, "color");
-    strcpy (sound_cmd, "sound");
-    strcpy (url_cmd, "url");
-    strcpy (update_cmd, "update");
-    strcpy (togig_cmd, "togig");
-    strcpy (iglist_cmd, "i");
+    Contacts[2].uin = 82274703;
+    strcpy (Contacts[2].nick, "Rüdiger (mICQ developer)");
+    Contacts[2].status = STATUS_OFFLINE;
+    Contacts[2].current_ip[0] = 0xff;
+    Contacts[2].current_ip[1] = 0xff;
+    Contacts[2].current_ip[2] = 0xff;
+    Contacts[2].current_ip[3] = 0xff;
+    Contacts[2].current_ip[0] = 0xff;
+    Contacts[2].current_ip[1] = 0xff;
+    Contacts[2].current_ip[2] = 0xff;
+    Contacts[2].current_ip[3] = 0xff;
+    Contacts[2].port = 0;
+    Contacts[2].sok = (SOK_T) - 1L;
 
     Current_Status = STATUS_ONLINE;
 
@@ -253,46 +244,11 @@ static void Read_RC_File (FD_T rcf)
     char buf[450];
     char *tmp;
     char *p;
-    int i;
+    int i, section;
     UDWORD tmp_uin;
     char *tab_nick_spool[TAB_SLOTS];
     int spooled_tab_nicks;
 
-    clear_cmd[0] = '\0';        /* for error checking later */
-    message_cmd[0] = '\0';      /* for error checking later */
-    quit_cmd[0] = '\0';         /* for error checking later */
-    info_cmd[0] = '\0';         /* for error checking later */
-    reply_cmd[0] = '\0';        /* for error checking later */
-    again_cmd[0] = '\0';        /* for error checking later */
-    add_cmd[0] = '\0';          /* for error checking later */
-    togvis_cmd[0] = '\0';       /* for error checking later */
-
-    list_cmd[0] = '\0';         /* for error checking later */
-    online_list_cmd[0] = '\0';  /* for error checking later */
-    away_cmd[0] = '\0';         /* for error checking later */
-    na_cmd[0] = '\0';           /* for error checking later */
-    dnd_cmd[0] = '\0';          /* for error checking later */
-    online_cmd[0] = '\0';       /* for error checking later */
-    occ_cmd[0] = '\0';          /* for error checking later */
-    ffc_cmd[0] = '\0';          /* for error checking later */
-    inv_cmd[0] = '\0';          /* for error checking later */
-    status_cmd[0] = '\0';       /* for error checking later */
-    auth_cmd[0] = '\0';         /* for error checking later */
-    auto_cmd[0] = '\0';         /* for error checking later */
-    change_cmd[0] = '\0';       /* for error checking later */
-    search_cmd[0] = '\0';       /* for error checking later */
-    save_cmd[0] = '\0';         /* for error checking later */
-    alter_cmd[0] = '\0';        /* for error checking later */
-    msga_cmd[0] = '\0';         /* for error checking later */
-    url_cmd[0] = '\0';          /* for error checking later */
-    update_cmd[0] = '\0';       /* for error checking later */
-    sound_cmd[0] = '\0';        /* for error checking later */
-    color_cmd[0] = '\0';        /* for error checking later */
-    rand_cmd[0] = '\0';         /* for error checking later */
-    Sound_Str[0] = '\0';        /* for error checking later */
-    togig_cmd[0] = '\0';        /* for error checking later */
-    iglist_cmd[0] = '\0';       /* for error checking later */
-    about_cmd[0] = '\0';        /* for error checking later */
     passwd[0] = 0;
     UIN = 0;
     away_time = default_away_time;
@@ -311,296 +267,329 @@ static void Read_RC_File (FD_T rcf)
 /* SOCKS5 stuff end */
 
     spooled_tab_nicks = 0;
-    Contact_List = FALSE;
-    for (i = 1; !Contact_List || buf == 0; i++)
+    for (section = 0; !M_fdnreadln (rcf, buf, sizeof (buf)); )
     {
-/*      M_print( "Starting Line " COLSERV " %d" COLNONE "\n", i );*/
-        M_fdnreadln (rcf, buf, sizeof (buf));
-        if ((buf[0] != '#') && (buf[0] != 0))
+        if (!buf[0] || (buf[0] == '#'))
+            continue;
+        if (buf[0] == '[')
         {
-            tmp = strtok (buf, " ");
-            if (!strcasecmp (tmp, "Server"))
+            if (!strcasecmp (buf, "[Contacts]"))
+                section = 1;
+            else if (!strcasecmp (buf, "[Strings]"))
+                section = 2;
+            else
             {
-                strcpy (server, strtok (NULL, " \n\t"));
+                M_print (COLERR "%s" COLNONE " ", i18n (733, "Warning:"));
+                M_print (i18n (659, "Unkown section %s in configuration file."), buf);
+                M_print ("\n");
+                section = -1;
             }
-            else if (!strcasecmp (tmp, "Password"))
-            {
-                strcpy (passwd, strtok (NULL, "\n\t"));
-            }
-            else if (!strcasecmp (tmp, "ReceiveScript"))
-#ifdef MSGEXEC
-            {
-                strcpy (receive_script, strtok (NULL, "\n\t"));
-            }
-#else
-            {
-                printf ("Warning: ReceiveScript Feature not enabled!\n");
-            }
-#endif
-
-
-/* SOCKS5 stuff begin */
-            else if (!strcasecmp (tmp, "s5_use"))
-            {
-                s5Use = atoi (strtok (NULL, " \n\t"));
-            }
-            else if (!strcasecmp (tmp, "s5_host"))
-            {
-                M_strcpy (s5Host, strtok (NULL, "\n\t"));
-            }
-            else if (!strcasecmp (tmp, "s5_port"))
-            {
-                s5Port = atoi (strtok (NULL, " \n\t"));
-            }
-            else if (!strcasecmp (tmp, "s5_auth"))
-            {
-                s5Auth = atoi (strtok (NULL, " \n\t"));
-            }
-            else if (!strcasecmp (tmp, "s5_name"))
-            {
-                M_strcpy (s5Name, strtok (NULL, "\n\t"));
-            }
-            else if (!strcasecmp (tmp, "s5_pass"))
-            {
-                M_strcpy (s5Pass, strtok (NULL, "\n\t"));
-            }
-/* SOCKS5 stuff end */
-
-            else if (!strcasecmp (tmp, "Russian"))
-            {
-                Russian = TRUE;
-            }
-            else if (!strcasecmp (tmp, "JapaneseEUC"))
-            {
-                JapaneseEUC = TRUE;
-            }
-            else if (!strcasecmp (tmp, "Hermit"))
-            {
-                Hermit = TRUE;
-            }
-            else if (!strcasecmp (tmp, "LogType"))
-            {
-                LogType = atoi (strtok (NULL, " \n\t"));
-            }
-            else if (!strcasecmp (tmp, "No_Log"))
-            {
-                LogType = 0;
-                M_print (i18n (98, COLCONTACT "\"No_Log\" is deprecated.\nUse \"LogType 0\" Instead.\n" COLNONE));
-                Logging = FALSE;
-            }
-            else if (!strcasecmp (tmp, "No_Color"))
-            {
-                Color = FALSE;
-            }
-            else if (!strcasecmp (tmp, "Last_UIN_Prompt"))
-            {
-                last_uin_prompt = TRUE;
-            }
-            else if (!strcasecmp (tmp, "Del_is_Del"))
-            {
-                del_is_bs = FALSE;
-            }
-            else if (!strcasecmp (tmp, "LineBreakType"))
-            {
-                line_break_type = atoi (strtok (NULL, " \n\t"));
-            }
-            else if (!strcasecmp (tmp, "UIN"))
-            {
-                UIN = atoi (strtok (NULL, " \n\t"));
-            }
-            else if (!strcasecmp (tmp, "port"))
-            {
-                remote_port = atoi (strtok (NULL, " \n\t"));
-            }
-            else if (!strcasecmp (tmp, "Status"))
-            {
-                set_status = atoi (strtok (NULL, " \n\t"));
-            }
-            else if (!strcasecmp (tmp, "Auto"))
-            {
-                auto_resp = TRUE;
-            }
-            ADD_CMD ("auto_rep_str_away", auto_rep_str_away);
-            ADD_CMD ("auto_rep_str_na", auto_rep_str_na);
-            ADD_CMD ("auto_rep_str_dnd", auto_rep_str_dnd);
-            ADD_CMD ("auto_rep_str_occ", auto_rep_str_occ);
-            ADD_CMD ("auto_rep_str_inv", auto_rep_str_inv);
-            else if (!strcasecmp (tmp, "LogDir"))
-            {
-                Set_Log_Dir (strtok (NULL, "\n"));
-            }
-            else if (!strcasecmp (tmp, "Sound"))
-            {
-                M_strcpy (Sound_Str, strtok (NULL, "\n\t"));
-                if (Sound_Str[0])
+            continue;
+        }
+        switch (section)
+        {
+            case -1:
+                M_print (COLERR "%s" COLNONE " ", i18n (733, "Warning:"));
+                M_print (i18n (675, "Ignored line:"));
+                M_print (" %s\n", buf);
+                break;
+            case 0:
+                tmp = strtok (buf, " ");
+                if (!strcasecmp (tmp, "Server"))
                 {
-                    Sound = SOUND_CMD;
+                    strcpy (server, strtok (NULL, " \n\t"));
                 }
-                else
+                else if (!strcasecmp (tmp, "Password"))
+                {
+                    strcpy (passwd, strtok (NULL, "\n\t"));
+                }
+                else if (!strcasecmp (tmp, "ReceiveScript"))
+                {
+#ifdef MSGEXEC
+                    strcpy (receive_script, strtok (NULL, "\n\t"));
+#else
+                    printf ("Warning: ReceiveScript Feature not enabled!\n");
+#endif
+                }
+                else if (!strcasecmp (tmp, "s5_use"))
+                {
+                    s5Use = atoi (strtok (NULL, " \n\t"));
+                }
+                else if (!strcasecmp (tmp, "s5_host"))
+                {
+                    M_strcpy (s5Host, strtok (NULL, "\n\t"));
+                }
+                else if (!strcasecmp (tmp, "s5_port"))
+                {
+                    s5Port = atoi (strtok (NULL, " \n\t"));
+                }
+                else if (!strcasecmp (tmp, "s5_auth"))
+                {
+                    s5Auth = atoi (strtok (NULL, " \n\t"));
+                }
+                else if (!strcasecmp (tmp, "s5_name"))
+                {
+                    M_strcpy (s5Name, strtok (NULL, "\n\t"));
+                }
+                else if (!strcasecmp (tmp, "s5_pass"))
+                {
+                    M_strcpy (s5Pass, strtok (NULL, "\n\t"));
+                }
+                else if (!strcasecmp (tmp, "Russian"))
+                {
+                    Russian = TRUE;
+                }
+                else if (!strcasecmp (tmp, "JapaneseEUC"))
+                {
+                    JapaneseEUC = TRUE;
+                }
+                else if (!strcasecmp (tmp, "Hermit"))
+                {
+                    Hermit = TRUE;
+                }
+                else if (!strcasecmp (tmp, "LogType"))
+                {
+                    LogType = atoi (strtok (NULL, " \n\t"));
+                }
+                else if (!strcasecmp (tmp, "No_Log"))
+                {
+                    LogType = 0;
+                    M_print (i18n (98, COLCONTACT "\"No_Log\" is deprecated.\nUse \"LogType 0\" Instead.\n" COLNONE));
+                    Logging = FALSE;
+                }
+                else if (!strcasecmp (tmp, "No_Color"))
+                {
+                    Color = FALSE;
+                }
+                else if (!strcasecmp (tmp, "Last_UIN_Prompt"))
+                {
+                    last_uin_prompt = TRUE;
+                }
+                else if (!strcasecmp (tmp, "Del_is_Del"))
+                {
+                    del_is_bs = FALSE;
+                }
+                else if (!strcasecmp (tmp, "LineBreakType"))
+                {
+                    line_break_type = atoi (strtok (NULL, " \n\t"));
+                }
+                else if (!strcasecmp (tmp, "UIN"))
+                {
+                    UIN = atoi (strtok (NULL, " \n\t"));
+                }
+                else if (!strcasecmp (tmp, "port"))
+                {
+                    remote_port = atoi (strtok (NULL, " \n\t"));
+                }
+                else if (!strcasecmp (tmp, "Status"))
+                {
+                    set_status = atoi (strtok (NULL, " \n\t"));
+                }
+                else if (!strcasecmp (tmp, "Auto"))
+                {
+                    auto_resp = TRUE;
+                }
+                ADD_CMD ("auto_rep_str_away", auto_rep_str_away);
+                ADD_CMD ("auto_rep_str_na", auto_rep_str_na);
+                ADD_CMD ("auto_rep_str_dnd", auto_rep_str_dnd);
+                ADD_CMD ("auto_rep_str_occ", auto_rep_str_occ);
+                ADD_CMD ("auto_rep_str_inv", auto_rep_str_inv);
+                else if (!strcasecmp (tmp, "LogDir"))
+                {
+                    Set_Log_Dir (strtok (NULL, "\n"));
+                }
+                else if (!strcasecmp (tmp, "Sound"))
+                {
+                    M_strcpy (Sound_Str, strtok (NULL, "\n\t"));
+                    if (Sound_Str[0])
+                    {
+                        Sound = SOUND_CMD;
+                    }
+                    else
+                    {
+                        Sound = SOUND_OFF;
+                    }
+                }
+                else if (!strcasecmp (tmp, "No_Sound"))
                 {
                     Sound = SOUND_OFF;
                 }
-            }
-            else if (!strcasecmp (tmp, "No_Sound"))
-            {
-                Sound = SOUND_OFF;
-            }
-            else if (!strcasecmp (tmp, "Auto_away"))
-            {
-                away_time = atoi (strtok (NULL, " \n\t"));
-            }
-            else if (!strcasecmp (tmp, "Screen_width"))
-            {
-                Max_Screen_Width = atoi (strtok (NULL, " \n\t"));
-            }
-            ADD_STRING ("clear_cmd", clear_cmd);
-            ADD_STRING ("message_cmd", message_cmd);
-            ADD_STRING ("info_cmd", info_cmd);
-            ADD_STRING ("rand_cmd", rand_cmd);
-            ADD_STRING ("color_cmd", color_cmd);
-            ADD_STRING ("sound_cmd", sound_cmd);
-            ADD_STRING ("quit_cmd", quit_cmd);
-            ADD_STRING ("reply_cmd", reply_cmd);
-            ADD_STRING ("again_cmd", again_cmd);
-            ADD_STRING ("list_cmd", list_cmd);
-            ADD_STRING ("away_cmd", away_cmd);
-            ADD_STRING ("na_cmd", na_cmd);
-            ADD_STRING ("dnd_cmd", dnd_cmd);
-            ADD_STRING ("togig_cmd", togig_cmd);
-            ADD_STRING ("iglist_cmd", iglist_cmd);
-            ADD_STRING ("online_cmd", online_cmd);
-            ADD_STRING ("occ_cmd", occ_cmd);
-            ADD_STRING ("ffc_cmd", ffc_cmd);
-            ADD_STRING ("inv_cmd", inv_cmd);
-            ADD_STRING ("status_cmd", status_cmd);
-            ADD_STRING ("auth_cmd", auth_cmd);
-            ADD_STRING ("auto_cmd", auto_cmd);
-            ADD_STRING ("change_cmd", change_cmd);
-            ADD_STRING ("add_cmd", add_cmd);
-            ADD_STRING ("togvis_cmd", togvis_cmd);
-            ADD_STRING ("search_cmd", search_cmd);
-            ADD_STRING ("save_cmd", save_cmd);
-            ADD_STRING ("alter_cmd", alter_cmd);
-            ADD_STRING ("online_list_cmd", online_list_cmd);
-            ADD_STRING ("msga_cmd", msga_cmd);
-            ADD_STRING ("update_cmd", update_cmd);
-            ADD_STRING ("url_cmd", url_cmd);
-            ADD_STRING ("about_cmd", about_cmd);
-            else if (!strcasecmp (tmp, "Tab"))
-            {
-                if (spooled_tab_nicks < TAB_SLOTS)
-                    tab_nick_spool[spooled_tab_nicks++] = strdup (strtok (NULL, "\n\t"));
-            }
-            else if (!strcasecmp (tmp, "Contacts"))
-            {
-                Contact_List = TRUE;
-            }
-            else
-            {
-                M_print (i18n (188, COLSERV "Unrecognized command in rc file '%s', ignored." COLNONE "\n"), tmp);
-            }
-        }
-    }
-    for (; !M_fdnreadln (rcf, buf, sizeof (buf));)
-    {
-        if (Num_Contacts == MAX_CONTACTS)
-            break;
+                else if (!strcasecmp (tmp, "Auto_away"))
+                {
+                    away_time = atoi (strtok (NULL, " \n\t"));
+                }
+                else if (!strcasecmp (tmp, "Screen_width"))
+                {
+                    Max_Screen_Width = atoi (strtok (NULL, " \n\t"));
+                }
+                ADD_ALTER ("clear_cmd", clear);
+                ADD_ALTER ("message_cmd", msg);
+                ADD_ALTER ("info_cmd", info);
+                ADD_ALTER ("rand_cmd", rand);
+                ADD_ALTER ("color_cmd", color);
+                ADD_ALTER ("sound_cmd", sound);
+                ADD_ALTER ("quit_cmd", q);
+                ADD_ALTER ("reply_cmd", r);
+                ADD_ALTER ("again_cmd", a);
+                ADD_ALTER ("list_cmd", w);
+                ADD_ALTER ("away_cmd", away);
+                ADD_ALTER ("na_cmd", na);
+                ADD_ALTER ("dnd_cmd", dnd);
+                ADD_ALTER ("togig_cmd", togig);
+                ADD_ALTER ("iglist_cmd", i);
+                ADD_ALTER ("online_cmd", online);
+                ADD_ALTER ("occ_cmd", occ);
+                ADD_ALTER ("ffc_cmd", ffc);
+                ADD_ALTER ("inv_cmd", inv);
+                ADD_ALTER ("status_cmd", status);
+                ADD_ALTER ("auth_cmd", auth);
+                ADD_ALTER ("auto_cmd", auto);
+                ADD_ALTER ("change_cmd", change);
+                ADD_ALTER ("add_cmd", add);
+                ADD_ALTER ("togvis_cmd", togvis);
+                ADD_ALTER ("search_cmd", search);
+                ADD_ALTER ("save_cmd", save);
+                ADD_ALTER ("alter_cmd", alter);
+                ADD_ALTER ("online_list_cmd", e);
+                ADD_ALTER ("msga_cmd", msga);
+                ADD_ALTER ("update_cmd", update);
+                ADD_ALTER ("url_cmd", url);
+                ADD_ALTER ("about_cmd", about);
+                else if (!strcasecmp (tmp, "Tab"))
+                {
+                    if (spooled_tab_nicks < TAB_SLOTS)
+                        tab_nick_spool[spooled_tab_nicks++] = strdup (strtok (NULL, "\n\t"));
+                }
+                else if (!strcasecmp (tmp, "Contacts"))
+                {
+                    section = 1;
+                }
+                else
+                {
+                    M_print (COLERR "%s" COLNONE " ", i18n (733, "Warning:"));
+                    M_print (i18n (188, "Unrecognized command in rc file '%s', ignored."), tmp);
+                    M_print ("\n");
+                }
+                break;
+            case 1:
+                if (Num_Contacts == MAX_CONTACTS)
+                {
+                    M_print (COLERR "%s" COLNONE " %s\n", i18n (733, "Warning:"),
+                             i18n (732, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
+                    section = -1;
+                    break;
+                }
 
-        p = buf;
+                p = buf;
 
-        while (*p == ' ')
-            p++;
+                while (*p == ' ')
+                    p++;
 
-        if (!*p || *p == '#' )
-            continue;
+                if (!*p || *p == '#' )
+                    continue;
 
-        if (isdigit ((int) *p))
-        {
-            Contacts[Num_Contacts].uin = atoi (strtok (p, " "));
-            Contacts[Num_Contacts].status = STATUS_OFFLINE;
-            Contacts[Num_Contacts].last_time = -1L;
-            Contacts[Num_Contacts].current_ip[0] = 0xff;
-            Contacts[Num_Contacts].current_ip[1] = 0xff;
-            Contacts[Num_Contacts].current_ip[2] = 0xff;
-            Contacts[Num_Contacts].current_ip[3] = 0xff;
-            tmp = strtok (NULL, "");
-            if (tmp != NULL)
-                memcpy (Contacts[Num_Contacts].nick, tmp, sizeof (Contacts->nick));
-            else
-                Contacts[Num_Contacts].nick[0] = 0;
-            if (Contacts[Num_Contacts].nick[19] != 0)
-                Contacts[Num_Contacts].nick[19] = 0;
-            if (Verbose > 2)
-                M_print ("%ld = %s\n", Contacts[Num_Contacts].uin, Contacts[Num_Contacts].nick);
-            Contacts[Num_Contacts].vis_list = FALSE;
-            Num_Contacts++;
-        }
-        else if (*p == '*')
-        {
-            for (p++; *p == ' '; p++) ;
-            Contacts[Num_Contacts].uin = atoi (strtok (p, " "));
-            Contacts[Num_Contacts].status = STATUS_OFFLINE;
-            Contacts[Num_Contacts].last_time = -1L;
-            Contacts[Num_Contacts].current_ip[0] = 0xff;
-            Contacts[Num_Contacts].current_ip[1] = 0xff;
-            Contacts[Num_Contacts].current_ip[2] = 0xff;
-            Contacts[Num_Contacts].current_ip[3] = 0xff;
-            tmp = strtok (NULL, "");
-            if (tmp != NULL)
-                memcpy (Contacts[Num_Contacts].nick, tmp, sizeof (Contacts->nick));
-            else
-                Contacts[Num_Contacts].nick[0] = 0;
-            if (Contacts[Num_Contacts].nick[19] != 0)
-                Contacts[Num_Contacts].nick[19] = 0;
-            if (Verbose > 2)
-                M_print ("%ld = %s\n", Contacts[Num_Contacts].uin, Contacts[Num_Contacts].nick);
-            Contacts[Num_Contacts].invis_list = FALSE;
-            Contacts[Num_Contacts].vis_list = TRUE;
-            Num_Contacts++;
-        }
-        else if (*p == '~')
-        {
-            for (p++; *p == ' '; p++) ;
-            Contacts[Num_Contacts].uin = atoi (strtok (p, " "));
-            Contacts[Num_Contacts].status = STATUS_OFFLINE;
-            Contacts[Num_Contacts].last_time = -1L;
-            Contacts[Num_Contacts].current_ip[0] = 0xff;
-            Contacts[Num_Contacts].current_ip[1] = 0xff;
-            Contacts[Num_Contacts].current_ip[2] = 0xff;
-            Contacts[Num_Contacts].current_ip[3] = 0xff;
-            tmp = strtok (NULL, "");
-            if (tmp != NULL)
-                memcpy (Contacts[Num_Contacts].nick, tmp, sizeof (Contacts->nick));
-            else
-                Contacts[Num_Contacts].nick[0] = 0;
-            if (Contacts[Num_Contacts].nick[19] != 0)
-                Contacts[Num_Contacts].nick[19] = 0;
-            if (Verbose > 2)
-                M_print ("%ld = %s\n", Contacts[Num_Contacts].uin, Contacts[Num_Contacts].nick);
-            Contacts[Num_Contacts].invis_list = TRUE;
-            Contacts[Num_Contacts].vis_list = FALSE;
-            Num_Contacts++;
-        }
-        else
-        {
-            tmp_uin = Contacts[Num_Contacts - 1].uin;
-            tmp = strtok (p, ", \t");     /* aliases may not have spaces */
-            for (; tmp != NULL; Num_Contacts++)
-            {
-                Contacts[Num_Contacts].uin = -tmp_uin;
-                Contacts[Num_Contacts].status = STATUS_OFFLINE;
-                Contacts[Num_Contacts].last_time = -1L;
-                Contacts[Num_Contacts].current_ip[0] = 0xff;
-                Contacts[Num_Contacts].current_ip[1] = 0xff;
-                Contacts[Num_Contacts].current_ip[2] = 0xff;
-                Contacts[Num_Contacts].current_ip[3] = 0xff;
-                Contacts[Num_Contacts].port = 0;
-                Contacts[Num_Contacts].sok = (SOK_T) - 1L;
-                Contacts[Num_Contacts].invis_list = FALSE;
-                Contacts[Num_Contacts].vis_list = FALSE;
-                memcpy (Contacts[Num_Contacts].nick, tmp, sizeof (Contacts->nick));
-                tmp = strtok (NULL, ", \t");
-            }
+                if (isdigit ((int) *p))
+                {
+                    Contacts[Num_Contacts].uin = atoi (strtok (p, " "));
+                    Contacts[Num_Contacts].status = STATUS_OFFLINE;
+                    Contacts[Num_Contacts].last_time = -1L;
+                    Contacts[Num_Contacts].current_ip[0] = 0xff;
+                    Contacts[Num_Contacts].current_ip[1] = 0xff;
+                    Contacts[Num_Contacts].current_ip[2] = 0xff;
+                    Contacts[Num_Contacts].current_ip[3] = 0xff;
+                    tmp = strtok (NULL, "");
+                    if (tmp != NULL)
+                        memcpy (Contacts[Num_Contacts].nick, tmp, sizeof (Contacts->nick));
+                    else
+                        Contacts[Num_Contacts].nick[0] = 0;
+                    if (Contacts[Num_Contacts].nick[19] != 0)
+                        Contacts[Num_Contacts].nick[19] = 0;
+                    if (Verbose > 2)
+                        M_print ("%ld = %s\n", Contacts[Num_Contacts].uin, Contacts[Num_Contacts].nick);
+                    Contacts[Num_Contacts].vis_list = FALSE;
+                    Num_Contacts++;
+                }
+                else if (*p == '*')
+                {
+                    for (p++; *p == ' '; p++) ;
+                    Contacts[Num_Contacts].uin = atoi (strtok (p, " "));
+                    Contacts[Num_Contacts].status = STATUS_OFFLINE;
+                    Contacts[Num_Contacts].last_time = -1L;
+                    Contacts[Num_Contacts].current_ip[0] = 0xff;
+                    Contacts[Num_Contacts].current_ip[1] = 0xff;
+                    Contacts[Num_Contacts].current_ip[2] = 0xff;
+                    Contacts[Num_Contacts].current_ip[3] = 0xff;
+                    tmp = strtok (NULL, "");
+                    if (tmp != NULL)
+                        memcpy (Contacts[Num_Contacts].nick, tmp, sizeof (Contacts->nick));
+                    else
+                        Contacts[Num_Contacts].nick[0] = 0;
+                    if (Contacts[Num_Contacts].nick[19] != 0)
+                        Contacts[Num_Contacts].nick[19] = 0;
+                    if (Verbose > 2)
+                        M_print ("%ld = %s\n", Contacts[Num_Contacts].uin, Contacts[Num_Contacts].nick);
+                    Contacts[Num_Contacts].invis_list = FALSE;
+                    Contacts[Num_Contacts].vis_list = TRUE;
+                    Num_Contacts++;
+                }
+                else if (*p == '~')
+                {
+                    for (p++; *p == ' '; p++) ;
+                    Contacts[Num_Contacts].uin = atoi (strtok (p, " "));
+                    Contacts[Num_Contacts].status = STATUS_OFFLINE;
+                    Contacts[Num_Contacts].last_time = -1L;
+                    Contacts[Num_Contacts].current_ip[0] = 0xff;
+                    Contacts[Num_Contacts].current_ip[1] = 0xff;
+                    Contacts[Num_Contacts].current_ip[2] = 0xff;
+                    Contacts[Num_Contacts].current_ip[3] = 0xff;
+                    tmp = strtok (NULL, "");
+                    if (tmp != NULL)
+                        memcpy (Contacts[Num_Contacts].nick, tmp, sizeof (Contacts->nick));
+                    else
+                        Contacts[Num_Contacts].nick[0] = 0;
+                    if (Contacts[Num_Contacts].nick[19] != 0)
+                        Contacts[Num_Contacts].nick[19] = 0;
+                    if (Verbose > 2)
+                        M_print ("%ld = %s\n", Contacts[Num_Contacts].uin, Contacts[Num_Contacts].nick);
+                    Contacts[Num_Contacts].invis_list = TRUE;
+                    Contacts[Num_Contacts].vis_list = FALSE;
+                    Num_Contacts++;
+                }
+                else
+                {
+                    tmp_uin = Contacts[Num_Contacts - 1].uin;
+                    tmp = strtok (p, ", \t");     /* aliases may not have spaces */
+                    for (; tmp != NULL; Num_Contacts++)
+                    {
+                        Contacts[Num_Contacts].uin = -tmp_uin;
+                        Contacts[Num_Contacts].status = STATUS_OFFLINE;
+                        Contacts[Num_Contacts].last_time = -1L;
+                        Contacts[Num_Contacts].current_ip[0] = 0xff;
+                        Contacts[Num_Contacts].current_ip[1] = 0xff;
+                        Contacts[Num_Contacts].current_ip[2] = 0xff;
+                        Contacts[Num_Contacts].current_ip[3] = 0xff;
+                        Contacts[Num_Contacts].port = 0;
+                        Contacts[Num_Contacts].sok = (SOK_T) - 1L;
+                        Contacts[Num_Contacts].invis_list = FALSE;
+                        Contacts[Num_Contacts].vis_list = FALSE;
+                        memcpy (Contacts[Num_Contacts].nick, tmp, sizeof (Contacts->nick));
+                        tmp = strtok (NULL, ", \t");
+                    }
+                }
+                break;
+            case 2:
+                tmp = strtok (buf, " ");
+                if (!strcasecmp (tmp, "alter"))
+                {
+                    CmdUser (0, fill ("¶alter quiet %s", strtok (NULL, "\n")));
+                }
+                else
+                {
+                    M_print (COLERR "%s" COLNONE " ", i18n (733, "Warning:"));
+                    M_print (i18n (188, "Unrecognized command in rc file '%s', ignored."), tmp);
+                    M_print ("\n");
+                }
+                break;
         }
     }
 
@@ -610,74 +599,6 @@ static void Read_RC_File (FD_T rcf)
         TabAddUIN (nick2uin (tab_nick_spool[i]));
         free (tab_nick_spool[i]);
     }
-
-    if (clear_cmd[0] == '\0')
-        strcpy (clear_cmd, "clear");
-    if (message_cmd[0] == '\0')
-        strcpy (message_cmd, "msg");
-    if (update_cmd[0] == '\0')
-        strcpy (update_cmd, "update");
-    if (info_cmd[0] == '\0')
-        strcpy (info_cmd, "info");
-    if (quit_cmd[0] == '\0')
-        strcpy (quit_cmd, "q");
-    if (reply_cmd[0] == '\0')
-        strcpy (reply_cmd, "r");
-    if (again_cmd[0] == '\0')
-        strcpy (again_cmd, "a");
-
-    if (list_cmd[0] == '\0')
-        strcpy (list_cmd, "w");
-    if (online_list_cmd[0] == '\0')
-        strcpy (online_list_cmd, "e");
-    if (away_cmd[0] == '\0')
-        strcpy (away_cmd, "away");
-    if (na_cmd[0] == '\0')
-        strcpy (na_cmd, "na");
-    if (dnd_cmd[0] == '\0')
-        strcpy (dnd_cmd, "dnd");
-    if (online_cmd[0] == '\0')
-        strcpy (online_cmd, "online");
-    if (occ_cmd[0] == '\0')
-        strcpy (occ_cmd, "occ");
-    if (ffc_cmd[0] == '\0')
-        strcpy (ffc_cmd, "ffc");
-    if (inv_cmd[0] == '\0')
-        strcpy (inv_cmd, "inv");
-    if (status_cmd[0] == '\0')
-        strcpy (status_cmd, "status");
-    if (add_cmd[0] == '\0')
-        strcpy (add_cmd, "add");
-    if (togvis_cmd[0] == '\0')
-        strcpy (togvis_cmd, "togvis");
-    if (auth_cmd[0] == '\0')
-        strcpy (auth_cmd, "auth");
-    if (auto_cmd[0] == '\0')
-        strcpy (auto_cmd, "auto");
-    if (search_cmd[0] == '\0')
-        strcpy (search_cmd, "search");
-    if (save_cmd[0] == '\0')
-        strcpy (save_cmd, "save");
-    if (alter_cmd[0] == '\0')
-        strcpy (alter_cmd, "alter");
-    if (msga_cmd[0] == '\0')
-        strcpy (msga_cmd, "msga");
-    if (url_cmd[0] == '\0')
-        strcpy (url_cmd, "url");
-    if (rand_cmd[0] == '\0')
-        strcpy (rand_cmd, "rand");
-    if (color_cmd[0] == '\0')
-        strcpy (color_cmd, "color");
-    if (sound_cmd[0] == '\0')
-        strcpy (sound_cmd, "sound");
-    if (togig_cmd[0] == '\0')
-        strcpy (togig_cmd, "togig");
-    if (iglist_cmd[0] == '\0')
-        strcpy (iglist_cmd, "i");
-    if (about_cmd[0] == '\0')
-        strcpy (about_cmd, "about");
-    if (change_cmd[0] == '\0')
-        strcpy (change_cmd, "change");
 
     if (!*auto_rep_str_dnd)
         strcpy (auto_rep_str_dnd, i18n (9, "User is DND [Auto-Message]"));
@@ -699,7 +620,7 @@ static void Read_RC_File (FD_T rcf)
         M_print (i18n (193, "status = %ld\n"), set_status);
         M_print (i18n (194, "# of contacts = %d\n"), Num_Contacts);
         M_print (i18n (195, "UIN of contact[0] = %ld\n"), Contacts[0].uin);
-        M_print (i18n (196, "Message_cmd = %s\n"), message_cmd);
+        M_print (i18n (196, "Message_cmd = %s\n"), CmdUserLookupName ("msg"));
     }
     if (UIN == 0)
     {
@@ -820,40 +741,6 @@ int Save_RC ()
     M_fdprint (rcf, "\n#For dumb terminals that don't wrap set this.");
     M_fdprint (rcf, "\nScreen_Width %d\n", Max_Screen_Width);
 
-    M_fdprint (rcf, "\n# Below are the commands which can be changed to most anything you want :)\n");
-    M_fdprint (rcf, "clear_cmd %s\n", clear_cmd);
-    M_fdprint (rcf, "message_cmd %s\n", message_cmd);
-    M_fdprint (rcf, "togig_cmd %s\n", togig_cmd);
-    M_fdprint (rcf, "iglist_cmd %s\n", iglist_cmd);
-    M_fdprint (rcf, "info_cmd %s\n", info_cmd);
-    M_fdprint (rcf, "quit_cmd %s\n", quit_cmd);
-    M_fdprint (rcf, "reply_cmd %s\n", reply_cmd);
-    M_fdprint (rcf, "again_cmd %s\n", again_cmd);
-    M_fdprint (rcf, "list_cmd %s\n", list_cmd);
-    M_fdprint (rcf, "online_list_cmd %s\n", online_list_cmd);
-    M_fdprint (rcf, "away_cmd %s\n", away_cmd);
-    M_fdprint (rcf, "na_cmd %s\n", na_cmd);
-    M_fdprint (rcf, "dnd_cmd %s\n", dnd_cmd);
-    M_fdprint (rcf, "online_cmd %s\n", online_cmd);
-
-    M_fdprint (rcf, "occ_cmd %s\n", occ_cmd);
-    M_fdprint (rcf, "ffc_cmd %s\n", ffc_cmd);
-    M_fdprint (rcf, "inv_cmd %s\n", inv_cmd);
-    M_fdprint (rcf, "search_cmd %s\n", search_cmd);
-    M_fdprint (rcf, "status_cmd %s\n", status_cmd);
-    M_fdprint (rcf, "auth_cmd %s\n", auth_cmd);
-    M_fdprint (rcf, "auto_cmd %s\n", auto_cmd);
-    M_fdprint (rcf, "add_cmd %s\n", add_cmd);
-    M_fdprint (rcf, "togvis_cmd %s\n", togvis_cmd);
-    M_fdprint (rcf, "change_cmd %s\n", change_cmd);
-    M_fdprint (rcf, "save_cmd %s\n", save_cmd);
-    M_fdprint (rcf, "alter_cmd %s\n", alter_cmd);
-    M_fdprint (rcf, "msga_cmd %s\n", msga_cmd);
-    M_fdprint (rcf, "url_cmd %s\n", url_cmd);
-    M_fdprint (rcf, "sound_cmd %s\n", sound_cmd);
-    M_fdprint (rcf, "update_cmd %s\n", update_cmd);
-    M_fdprint (rcf, "about_cmd %s\n", about_cmd);
-
     M_fdprint (rcf, "\n#Now auto response messages\n");
     M_fdprint (rcf, "auto_rep_str_away %s\n", auto_rep_str_away);
     M_fdprint (rcf, "auto_rep_str_na %s\n", auto_rep_str_na);
@@ -861,12 +748,21 @@ int Save_RC ()
     M_fdprint (rcf, "auto_rep_str_occ %s\n", auto_rep_str_occ);
     M_fdprint (rcf, "auto_rep_str_inv %s\n", auto_rep_str_inv);
 
+    M_fdprint (rcf, "\n# The strings section - runtime redefinable strings.\n");
+    M_fdprint (rcf, "# The alter command redefines command names.\n");
+    M_fdprint (rcf, "[Strings]\n");
+    {
+        jump_t *f;
+        for (f = CmdUserTable (); f->f; f++)
+            if (f->name && !strcmp (f->name, f->defname))
+                M_fdprint (rcf, "alter %s %s\n", f->defname, f->name);
+    }
 
-    M_fdprint (rcf, "\n# Ok now the contact list\n");
+    M_fdprint (rcf, "\n# The contact list section.\n");
     M_fdprint (rcf, "#  Use * in front of the number of anyone you want to see you while you're invisble.\n");
     M_fdprint (rcf, "#  Use ~ in front of the number of anyone you want to always see you as offline.\n");
     M_fdprint (rcf, "#  People in the second group won't show up in your list.\n");
-    M_fdprint (rcf, "Contacts\n");
+    M_fdprint (rcf, "[Contacts]\n");
     /* adding contacts to the rc file. */
     /* we start counting at zero in the index. */
 

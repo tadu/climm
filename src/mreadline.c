@@ -153,22 +153,23 @@ void R_process_input_delete (void)
 void R_process_input_tab (void)
 {
     UDWORD uin;
+    const char *msgcmd = CmdUserLookupName ("msg");
 
     if (strpbrk (s, UIN_DELIMS) && strpbrk (s, UIN_DELIMS) - s < strlen (s) - 1)
     {
         M_print ("\a");
         return;
     }
-    if (strncmp (s, message_cmd, strlen (s) < strlen (message_cmd) ? strlen (s) : strlen (message_cmd)))
+    if (strncmp (s, msgcmd, strlen (s) < strlen (msgcmd) ? strlen (s) : strlen (msgcmd)))
     {
         M_print ("\a");
         return;
     }
 
     if ((uin = TabGetNext ()))
-        sprintf (s, "%s %s/", message_cmd, UIN2Name (uin));
+        sprintf (s, "%s %s/", msgcmd, UIN2Name (uin));
     else
-        sprintf (s, "%s ", message_cmd);
+        sprintf (s, "%s ", msgcmd);
 
     clen = cpos = strlen (s);
     R_undraw ();

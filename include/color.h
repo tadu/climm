@@ -73,6 +73,7 @@
    #define CONTACTCOL      BRIGHT_MAGENTA
    #define CLIENTCOL       GREEN
    #define NOCOL           ESC "[0m"
+   #define ERRCOL          BRIGHT_RED
 #endif
 
 #define SENTCOL            MAGENTA BOLD
@@ -98,3 +99,5 @@
 #define COLCONTACT ESC COLSTR "4"
 #define COLSENT    ESC COLSTR "5"
 #define COLACK     ESC COLSTR "6"
+#define COLERR     ESC COLSTR "7"
+

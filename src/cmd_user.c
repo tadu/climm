@@ -48,6 +48,7 @@ static jump_f CmdUserWpSearch;
 static jump_f CmdUserUpdate;
 static jump_f CmdUserOther;
 static jump_f CmdUserAbout;
+static jump_f CmdUserQuit;
 
 static void CmdUserProcess (SOK_T sok, const char *command, int *idle_val, int *idle_flag);
 
@@ -59,10 +60,10 @@ static jump_t jump[] = {
     { &CmdUserTrans,         "trans",    NULL, 0,   0 },
     { &CmdUserAuto,          "auto",     NULL, 0,   0 },
     { &CmdUserAlter,         "alter",    NULL, 0,   0 },
-    { &CmdUserMessage,       "msg",      NULL, 0,   0 },
-    { &CmdUserMessage,       "r",        NULL, 0,   1 },
-    { &CmdUserMessage,       "a",        NULL, 0,   2 },
-    { &CmdUserMessage,       "msga",     NULL, 0,   3 },
+    { &CmdUserMessage,       "msg",      NULL, 0,   1 },
+    { &CmdUserMessage,       "r",        NULL, 0,   2 },
+    { &CmdUserMessage,       "a",        NULL, 0,   4 },
+    { &CmdUserMessage,       "msga",     NULL, 0,   8 },
     { &CmdUserVerbose,       "verbose",  NULL, 0,   0 },
     { &CmdUserIgnoreStatus,  "i",        NULL, 0,   0 },
     { &CmdUserStatus,        "status",   NULL, 2,   0 },
@@ -90,6 +91,7 @@ static jump_t jump[] = {
     { &CmdUserTabs,          "tabs",     NULL, 0,   0 },
     { &CmdUserLast,          "last",     NULL, 0,   0 },
     { &CmdUserUptime,        "uptime",   NULL, 0,   0 },
+    { &CmdUserQuit,          "q",        NULL, 0,   0 },
 
     { &CmdUserSearch,        "search",   NULL, 0,   0 },
     { &CmdUserWpSearch,      "wpsearch", NULL, 0,   0 },
@@ -100,9 +102,42 @@ static jump_t jump[] = {
     { NULL, NULL, NULL, 0 }
 };
 
+/*
+ * Returns a pointer to the jump table.
+ */
 jump_t *CmdUserTable (void)
 {
     return jump;
+}
+
+/*
+ * Looks up an entry in the jump table.
+ */
+jump_t *CmdUserLookup (const char *cmd, int flags)
+{
+    jump_t *j;
+    for (j = CmdUserTable (); j->f; j++)
+        if (   ((flags & CU_DEFAULT) && j->defname && !strcasecmp (cmd, j->defname))
+            || ((flags & CU_USER)    && j->name    && !strcasecmp (cmd, j->name)))
+            return j;
+    return NULL;
+}
+
+/*
+ * Looks up just the current command name.
+ */
+const char *CmdUserLookupName (const char *cmd)
+{
+    jump_t *j;
+
+    j = CmdUserLookup (cmd, CU_DEFAULT);
+    if (!j)
+        j = CmdUserLookup (cmd, CU_USER);
+    if (!j)
+        return "";
+    if (j->name)
+        return j->name;
+    return j->defname;
 }
 
 /*
@@ -224,21 +259,29 @@ JUMP_F(CmdUserHelp)
     {
         M_print (COLMESS "verbose <nr>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  i18n (418, "Set the verbosity level (default 0)."));
-        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", clear_cmd, 
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("clear"),
 		 i18n (419, "Clears the screen."));
-        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", sound_cmd,
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("sound"),
                  i18n (420, "Toggles beeping when recieving new messages."));
-        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", color_cmd,
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("color"),
                  i18n (421, "Toggles displaying colors."));
-        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", quit_cmd, 
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("q"),
 		 i18n (422, "Logs off and quits."));
-        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", auto_cmd,
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("auto"),
                  i18n (423, "Displays your autoreply status."));
-        M_print (COLMESS "%s [on|off]" COLNONE "\n\t\x1b«%s\x1b»\n", auto_cmd,
+        M_print (COLMESS "%s [on|off]" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("auto"),
                  i18n (424, "Toggles sending messages when your status is DND, NA, etc."));
-        M_print (COLMESS "%s <status> <message>" COLNONE "\n\t\x1b«%s\x1b»\n", auto_cmd,
+        M_print (COLMESS "%s <status> <message>" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("auto"),
                  i18n (425, "Sets the message to send as an auto reply for the status."));
-        M_print (COLMESS "%s <old cmd> <new cmd>" COLNONE "\n\t\x1b«%s\x1b»\n", alter_cmd,
+        M_print (COLMESS "%s <old cmd> <new cmd>" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("alter"),
                  i18n (417, "This command allows you to alter your command set on the fly."));
         M_print (COLMESS "%s <lang>" COLNONE "\n\t\x1b«%s\x1b»\n", "trans", 
                  i18n (800, "Change the working language to <lang>."));  
@@ -247,17 +290,23 @@ JUMP_F(CmdUserHelp)
     }
     else if (!strcasecmp (arg1, i18n (448, "Message")))
     {
-        M_print (COLMESS "%s <uin>" COLNONE "\n\t\x1b«%s\x1b»\n", auth_cmd,
+        M_print (COLMESS "%s <uin>" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("auth"),
                  i18n (413, "Authorize uin to add you to their list."));
-        M_print (COLMESS "%s <uin>/<message>" COLNONE "\n\t\x1b«%s\x1b»\n", message_cmd,
+        M_print (COLMESS "%s <uin>/<message>" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("msg"),
                  i18n (409, "Sends a message to uin."));
-        M_print (COLMESS "%s <uin> <url> <message>" COLNONE "\n\t\x1b«%s\x1b»\n", url_cmd,
+        M_print (COLMESS "%s <uin> <url> <message>" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("url"),
                  i18n (410, "Sends a url and message to uin."));
-        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", msga_cmd,
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("msga"),
                  i18n (411, "Sends a multiline message to everyone on your list."));
-        M_print (COLMESS "%s <message>" COLNONE "\n\t\x1b«%s\x1b»\n", again_cmd,
+        M_print (COLMESS "%s <message>" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("a"),
                  i18n (412, "Sends a message to the last person you sent a message to."));
-        M_print (COLMESS "%s <message>" COLNONE "\n\t\x1b«%s\x1b»\n", reply_cmd,
+        M_print (COLMESS "%s <message>" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("r"),
                  i18n (414, "Replys to the last person to send you a message."));
         M_print (COLMESS "%s <nick>" COLNONE "\n\t\x1b«%s\x1b»\n", "last",
                  i18n (403, "Displays the last message received from <nick>, or a list of who has send you at least one message."));
@@ -272,57 +321,76 @@ JUMP_F(CmdUserHelp)
     }
     else if (!strcasecmp (arg1, i18n (449, "User")))
     {
-        M_print (COLMESS "%s <nr>" COLNONE "\n\t\x1b«%s\x1b»\n", rand_cmd,
+        M_print (COLMESS "%s <nr>" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("rand"),
                  i18n (415, "Finds a random user in the specified group or lists the groups."));
         M_print (COLMESS "pass <secret>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  i18n (408, "Changes your password to secret."));
-        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", list_cmd,
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("w"),
                  i18n (416, "Displays the current status of everyone on your contact list."));
-        M_print (COLMESS "%s <user>" COLNONE "\n\t\x1b«%s\x1b»\n", status_cmd,
+        M_print (COLMESS "%s <user>" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("status"),
                  i18n (400, "Shows locally stored info on user."));
-        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", online_list_cmd,
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("e"),
                  i18n (407, "Displays the current status of online people on your contact list."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", "wide", 
                  i18n (801, "Displays a list of people on your contact list in a screen wide format.")); 
-        M_print (COLMESS "%s <uin>" COLNONE "\n\t\x1b«%s\x1b»\n", info_cmd,
+        M_print (COLMESS "%s <uin>" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("info"),
                  i18n (430, "Displays general info on uin."));
-        M_print (COLMESS "%s <nick>" COLNONE "\n\t\x1b«%s\x1b»\n", togig_cmd,
+        M_print (COLMESS "%s <nick>" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("togig"),
                  i18n (404, "Toggles ignoring/unignoring nick."));
-        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", iglist_cmd,
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("i"),
                  i18n (405, "Lists ignored nicks/uins."));
-        M_print (COLMESS "%s <email>" COLNONE "\n\t\x1b«%s\x1b»\n", search_cmd,
+        M_print (COLMESS "%s <email>" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("search"),
                  i18n (429, "Searches for a ICQ user."));
-        M_print (COLMESS "%s <uin> <nick>" COLNONE "\n\t\x1b«%s\x1b»\n", add_cmd,
+        M_print (COLMESS "%s <uin> <nick>" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("add"),
                  i18n (428, "Adds the uin number to your contact list with nickname."));
-        M_print (COLMESS "%s <nick>" COLNONE "\n\t\x1b«%s\x1b»\n", togvis_cmd,
+        M_print (COLMESS "%s <nick>" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("togvis"),
                  i18n (406, "Toggles your visibility to a user when you're invisible."));
     }
     else if (!strcasecmp (arg1, i18n (450, "Account")))
     {
-        M_print (COLMESS "%s <status>" COLNONE "\n\t\x1b«%s\x1b»\n", change_cmd,
+        M_print (COLMESS "%s <status>" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("change"),
                  i18n (427, "Changes your status to the status number. Without a number it lists the available modes."));
         M_print (COLMESS "reg <password>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  i18n (426, "Creates a new UIN with the specified password."));
         M_print (COLMESS "%s|%s|%s|%s|%s|%s|%s" COLNONE "\n\t\x1b«%s\n%s\n%s\n%s\n%s\n%s\n%s\x1b»\n", 
-		 online_cmd, away_cmd, na_cmd,occ_cmd,dnd_cmd,ffc_cmd, inv_cmd,
+		 CmdUserLookupName ("online"),
+		 CmdUserLookupName ("away"),
+		 CmdUserLookupName ("na"),
+		 CmdUserLookupName ("occ"),
+		 CmdUserLookupName ("dnd"),
+		 CmdUserLookupName ("ffc"),
+		 CmdUserLookupName ("inv"),
 		 i18n (431, "Change status to Online."),
-		 /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", away_cmd, */ 
+		 /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("online"), */ 
 		 i18n (432, "Mark as Away."),
-		 /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", na_cmd, */
+		 /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("away"), */
 		 i18n (433, "Mark as Not Available."),
-		 /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", occ_cmd, */
+		 /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("na"), */
 		 i18n (434, "Mark as Occupied."),
-		 /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", dnd_cmd, */
+		 /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("dnd"), */
 		 i18n (435, "Mark as Do not Disturb."),
-		 /*        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", ffc_cmd, */ 
+		 /*        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("ffc"), */ 
 		 i18n (436, "Mark as Free for Chat."),
-		 /*        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", inv_cmd, */
+		 /*        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("inv"), */
 		 i18n (437, "Mark as Invisible."));
-        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", update_cmd,
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("update"),
                  i18n (438, "Updates your basic info (email, nickname, etc.)."));
         M_print (COLMESS "other" COLNONE "\n\t\x1b«%s\x1b»\n",
                  i18n (401, "Updates other user info like age and sex."));
-        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", about_cmd,
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("about"),
                  i18n (402, "Updates your about user info."));
         M_print (COLMESS "set <nr>" COLNONE "\n\t\x1b«%s\x1b»\n", 
 		 i18n (439, "Sets your random user group."));
@@ -467,7 +535,7 @@ JUMP_F(CmdUserAuto)
             M_print (i18n (734, "Sorry wrong syntax, can't find a status somewhere.\r\n"));
             return 0;
         }
-        if (!strcasecmp (arg1, dnd_cmd))
+        if (!strcasecmp (arg1, CmdUserLookupName ("dnd")))
         {
             cmd = strtok (NULL, "");
             if (cmd == NULL)
@@ -477,7 +545,7 @@ JUMP_F(CmdUserAuto)
             }
             strcpy (auto_rep_str_dnd, cmd);
         }
-        else if (!strcasecmp (arg1, away_cmd))
+        else if (!strcasecmp (arg1, CmdUserLookupName ("away")))
         {
             cmd = strtok (NULL, "");
             if (cmd == NULL)
@@ -487,7 +555,7 @@ JUMP_F(CmdUserAuto)
             }
             strcpy (auto_rep_str_away, cmd);
         }
-        else if (!strcasecmp (arg1, na_cmd))
+        else if (!strcasecmp (arg1, CmdUserLookupName ("na")))
         {
             cmd = strtok (NULL, "");
             if (cmd == NULL)
@@ -497,7 +565,7 @@ JUMP_F(CmdUserAuto)
             }
             strcpy (auto_rep_str_na, cmd);
         }
-        else if (!strcasecmp (arg1, occ_cmd))
+        else if (!strcasecmp (arg1, CmdUserLookupName ("occ")))
         {
             cmd = strtok (NULL, "");
             if (cmd == NULL)
@@ -507,7 +575,7 @@ JUMP_F(CmdUserAuto)
             }
             strcpy (auto_rep_str_occ, cmd);
         }
-        else if (!strcasecmp (arg1, inv_cmd))
+        else if (!strcasecmp (arg1, CmdUserLookupName ("inv")))
         {
             cmd = strtok (NULL, "");
             if (cmd == NULL)
@@ -530,6 +598,8 @@ JUMP_F(CmdUserAuto)
 JUMP_F(CmdUserAlter)
 {
     char *cmd;
+    jump_t *j;
+    int quiet = 0;
 
     cmd = strtok (args, " ");
     if (cmd == NULL)
@@ -537,62 +607,41 @@ JUMP_F(CmdUserAlter)
         M_print (i18n (738, "Need a command to alter!\n"));
         return 0;
     }
-    if (!strcasecmp (cmd, auto_cmd))
-        strncpy (auto_cmd, strtok (NULL, " \n\t"), 16);
-    else if (!strcasecmp (cmd, message_cmd))
-        strncpy (message_cmd, strtok (NULL, " \n\t"), 16);
-    else if (!strcasecmp (cmd, add_cmd))
-        strncpy (add_cmd, strtok (NULL, " \n\t"), 16);
-    else if (!strcasecmp (cmd, togvis_cmd))
-        strncpy (togvis_cmd, strtok (NULL, " \n\t"), 16);
-    else if (!strcasecmp (cmd, info_cmd))
-        strncpy (info_cmd, strtok (NULL, " \n\t"), 16);
-    else if (!strcasecmp (cmd, togig_cmd))
-        strncpy (togig_cmd, strtok (NULL, " \n\t"), 16);
-    else if (!strcasecmp (cmd, iglist_cmd))
-        strncpy (iglist_cmd, strtok (NULL, " \n\t"), 16);
-    else if (!strcasecmp (cmd, quit_cmd))
-        strncpy (quit_cmd, strtok (NULL, " \n\t"), 16);
-    else if (!strcasecmp (cmd, reply_cmd))
-        strncpy (reply_cmd, strtok (NULL, " \n\t"), 16);
-    else if (!strcasecmp (cmd, again_cmd))
-        strncpy (again_cmd, strtok (NULL, " \n\t"), 16);
-    else if (!strcasecmp (cmd, list_cmd))
-        strncpy (list_cmd, strtok (NULL, " \n\t"), 16);
-    else if (!strcasecmp (cmd, online_list_cmd))
-        strncpy (online_list_cmd, strtok (NULL, " \n\t"), 16);
-    else if (!strcasecmp (cmd, away_cmd))
-        strncpy (away_cmd, strtok (NULL, " \n\t"), 16);
-    else if (!strcasecmp (cmd, na_cmd))
-        strncpy (na_cmd, strtok (NULL, " \n\t"), 16);
-    else if (!strcasecmp (cmd, dnd_cmd))
-        strncpy (dnd_cmd, strtok (NULL, " \t\n"), 16);
-    else if (!strcasecmp (cmd, online_cmd))
-        strncpy (online_cmd, strtok (NULL, " \n\t"), 16);
-    else if (!strcasecmp (cmd, occ_cmd))
-        strncpy (occ_cmd, strtok (NULL, " \t\n"), 16);
-    else if (!strcasecmp (cmd, ffc_cmd))
-        strncpy (ffc_cmd, strtok (NULL, " \t\n"), 16);
-    else if (!strcasecmp (cmd, inv_cmd))
-        strncpy (inv_cmd, strtok (NULL, " \t\n"), 16);
-    else if (!strcasecmp (cmd, status_cmd))
-        strncpy (status_cmd, strtok (NULL, " \t\n"), 16);
-    else if (!strcasecmp (cmd, auth_cmd))
-        strncpy (status_cmd, strtok (NULL, " \n\t"), 16);
-    else if (!strcasecmp (cmd, change_cmd))
-        strncpy (change_cmd, strtok (NULL, " \n\t"), 16);
-    else if (!strcasecmp (cmd, search_cmd))
-        strncpy (search_cmd, strtok (NULL, " \t\n"), 16);
-    else if (!strcasecmp (cmd, save_cmd))
-        strncpy (save_cmd, strtok (NULL, " \t\n"), 16);
-    else if (!strcasecmp (cmd, alter_cmd))
-        strncpy (alter_cmd, strtok (NULL, " \t\n"), 16);
-    else if (!strcasecmp (cmd, msga_cmd))
-        strncpy (msga_cmd, strtok (NULL, " \n\t"), 16);
-    else if (!strcasecmp (cmd, about_cmd))
-        strncpy (about_cmd, strtok (NULL, " \n\t"), 16);
-    else
+    
+    if (!strcasecmp ("quiet", cmd))
+    {
+        quiet = 1;
+        cmd = strtok (NULL, " ");
+    }
+        
+    j = CmdUserLookup (cmd, CU_DEFAULT);
+    if (!j)
+        j = CmdUserLookup (cmd, CU_USER);
+    if (!j)
+    {
         M_print (i18n (722, "Type help to see your current command, because this  one you typed wasn't one!\n"));
+    }
+    else
+    {
+        char *new = strtok (NULL, " ");
+        
+        if (new)
+        {
+            if (j->name)
+                free ((char *) j->name);
+            j->name = strdup (new);
+        }
+        
+        if (!quiet)
+        {
+            if (j->name)
+                M_print (i18n (763, "The command '%s' has been renamed to '%s'."), j->defname, j->name);
+            else
+                M_print (i18n (764, "The command '%s' has still it's original name."));
+            M_print ("\n");
+        }
+    }
+
     return 0;
 }
 
@@ -679,7 +728,7 @@ JUMP_F (CmdUserMessage)
     {
         switch (data)
         {
-            case 0:
+            case 1:
                 arg1 = strtok (args, UIN_DELIMS);
                 if (!arg1)
                 {
@@ -695,7 +744,7 @@ JUMP_F (CmdUserMessage)
                 }
                 arg1 = strtok (NULL, "");
                 break;
-            case 1:
+            case 2:
                 if (!last_recv_uin)
                 {
                     M_print (i18n (741, "Must receive a message first\n"));
@@ -704,7 +753,7 @@ JUMP_F (CmdUserMessage)
                 uin = last_recv_uin;
                 arg1 = strtok (args, "");
                 break;
-            case 2:
+            case 4:
                 if (!last_uin)
                 {
                     M_print (i18n (742, "Must write one message first\n"));
@@ -713,21 +762,21 @@ JUMP_F (CmdUserMessage)
                 uin = last_uin;
                 arg1 = strtok (args, "");
                 break;
-            case 3:
+            case 8:
                 uin = -1;
                 arg1 = strtok (args, "");
                 break;
             default:
                 assert (0);
         }
-        if (data != 3)
+        if (data != 8)
         {
             last_uin = uin;
             TabAddUIN (uin);
         }
         if (arg1)
         {
-            if (data == 3)
+            if (data == 8)
             {
                 int i;
                 char *temp;
@@ -756,9 +805,13 @@ JUMP_F (CmdUserMessage)
         else
             M_print (i18n (740, "Composing message to " COLCLIENT "%d" COLNONE ":\n"), uin);
         offset = 0;
+        status = data;
     }
-    R_doprompt (i18n (41, "msg> "));
-    return 1;
+    if (status == 8)
+        R_doprompt (i18n (42, "msg> "));
+    else
+        R_doprompt (i18n (41, "msg> "));
+    return status;
 }
 
 /*
@@ -1618,6 +1671,15 @@ JUMP_F(CmdUserUptime)
     return 0;
 }
 
+/*
+ * Exits mICQ.
+ */
+JUMP_F(CmdUserQuit)
+{
+    Quit = TRUE;
+    return 0;
+}
+
 /******************************************************************************
  *
  * Now the user command function requiring a call back.
@@ -2159,14 +2221,6 @@ void CmdUserProcess (SOK_T sok, const char *command, int *idle_val, int *idle_fl
             }
 
             /* goto's removed and code fixed by Paul Laufer. Enjoy! */
-            if (strcasecmp (cmd, "quit") == 0)
-            {
-                Quit = TRUE;
-            }
-            else if (strcasecmp (cmd, quit_cmd) == 0)
-            {
-                Quit = TRUE;
-            }
             else if (!strcasecmp (cmd, "reg"))
             {
                 arg1 = strtok (NULL, "");
@@ -2185,32 +2239,26 @@ void CmdUserProcess (SOK_T sok, const char *command, int *idle_val, int *idle_fl
             }
             else
             {
-                char *args, *argsd, *pcmd;
-                jump_t *j, *f = (jump_t *)NULL;
+                char *args, *argsd;
+                jump_t *j = (jump_t *)NULL;
                 
                 args = strtok (NULL, "\n");
                 if (!args)
                     args = "";
                 argsd = strdup (args);
-                pcmd = (*cmd == '¶' ? cmd + 1 : cmd);
 
-                for (j = CmdUserTable (); j->f && !f; j++)
-                    if (j->name && !strcasecmp (pcmd, j->name))
-                        f = j;
+                j = CmdUserLookup (*cmd == '¶' ? cmd + 1 : cmd, CU_DEFAULT);
+                if (!j && *cmd != '¶')
+                    j = CmdUserLookup (cmd, CU_USER);
 
-                if (*cmd != '¶')
-                    for (j = CmdUserTable (); j->f && !f; j++)
-                        if (j->defname && !strcasecmp (cmd, j->defname))
-                            f = j;
-
-                if (f)
+                if (j)
                 {
-                    if (f->unidle == 2)
+                    if (j->unidle == 2)
                         *idle_val = idle_save;
-                    else if (f->unidle == 1)
+                    else if (j->unidle == 1)
                         *idle_flag = 0;
-                    status = f->f (sok, argsd, f->data, 0);
-                    sticky = f->f;
+                    status = j->f (sok, argsd, j->data, 0);
+                    sticky = j->f;
                 }
                 else
                 {

@@ -1,4 +1,15 @@
 
+2001-06-25 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Add bright red color COLERR.
+	* New functions CmdUserLookup, CmdUserLookupName.
+	* Use them to replace <whatever>_cmd strings.
+	* Rewrote CmdUserAlter.
+	* Started to change config file format; I don't want a new
+	  config option for every possible command.
+	* Since micqrc reading now calls CmdUserAlter, added a quiet
+	  option to it.
+	* Don't have problems with empty auto response strings.
+
 2001-06-24 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* rename ui.(c|h) as cmd_user.(c|h) and rename all user functions
 	  as CmdUser<something>, turn some commands into explicit functions,

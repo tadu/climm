@@ -318,6 +318,9 @@ static void M_prints (const char *str)
                             case '6':
                                 printf ("%s", ACKCOL);
                                 break;
+                            case '7':
+                                printf ("%s", ERRCOL);
+                                break;
                             default:
                                 str--;
                         }
