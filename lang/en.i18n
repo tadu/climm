@@ -1,3 +1,4 @@
+i18n (67, ) 
 001:Online
 002:Do not disturb
 003:Away
@@ -64,7 +65,7 @@
 064:Auto-Changed status to
 065:Using intel byte ordering.
 066:Using motorola byte ordering.
-067:¶Ignored a message cmd  %04x¶
+067:Debug: Doppeltes Packet #%04x vom Typ %04x (%s)¶
 068: Online since %s
 069: Last online at %s
 070: Last on-line unknown.
@@ -630,7 +631,7 @@
 630: 
 631: 
 632:¶Connection unstable. Exiting....
-633:ACK!!! %d¶
+633:Do you want your status to be available on the web? (YES/NO)
 634: 
 635:You have encounterd a bug in my code :( I now own you a beer!¶Greetings Fryslan!¶
 636: 
@@ -848,9 +849,16 @@
 848:    close <nick> - Closes/resets TCP connection(s).¶
 849:Error on select: %s (%d)¶
 850:Timeout on connection with %s at %s:%d¶
-851:Debug: Queue: popping type %d seq %d¶
-852:Debug: Queue: enqueuing type %d seq %d¶
-853:Debug: Queue: couldn't dequeue type %d seq %d¶
-854:Debug: Queue: dequeue type %d seq %d¶
+851:popping type %d seq %08x at %p (body %p)
+852:enqueuing type %d seq %08x at %p (body %p)
+853:couldn't dequeue type %d seq %08x
+854:dequeue type %d seq %08x at %p (body %p)
 855:TCP connection to %s at %s:%d failed.¶
 856:Discarded a %04x (%s) packet from old session %08x (current: %08x).¶
+857:Do you want to hide your IP from other contacts? (YES/NO)
+858:sending packet
+859:freeing (ack'ed) packet
+860:freeing (is-ack) packet
+861:freeing (old) packet
+862:freeing (disc) packet
+863:creating new packet

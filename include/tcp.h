@@ -18,24 +18,24 @@ typedef struct
     struct Contact_t *cont;
 } tcpsock_t;
 
-void TCPInit (int port);
+void TCPInit           (Session *sess, int port);
 
-void TCPDirectOpen     (struct Contact_t *cont);
-void TCPDirectClose    (struct Contact_t *cont);
+void TCPDirectOpen     (Session *sess, struct Contact_t *cont);
+void TCPDirectClose    (               struct Contact_t *cont);
 
 void TCPAddSockets ();
-void TCPDispatch ();
+void TCPDispatch       (Session *sess);
 
 /* probably only internal */
 
-void TCPDirectReceive  (SOK_T sok);
-int  TCPConnect        (tcpsock_t *sok, int mode);
+void TCPDirectReceive  (Session *sess);
+int  TCPConnect        (Session *sess, tcpsock_t *sok, int mode);
 
-void TCPHandleComm  (struct Contact_t *cont, int mode);
-BOOL TCPSendMsg     (int srv_sok, UDWORD uin, char *msg, UWORD sub_cmd);
+void TCPHandleComm     (Session *sess, struct Contact_t *cont, int mode);
+BOOL TCPSendMsg        (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd);
 
 int Send_TCP_Ack (tcpsock_t *sok, UWORD seq, UWORD sub_cmd, BOOL accept);
-void Handle_TCP_Comm (UDWORD uin);
+void Handle_TCP_Comm (Session *sess, UDWORD uin);
 int Decrypt_Pak (UBYTE *pak, UDWORD size);
 void Encrypt_Pak (UBYTE *pak, UDWORD size);
 void Get_Auto_Resp (UDWORD uin);

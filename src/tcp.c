@@ -30,6 +30,7 @@
 #include "server.h"
 #include "contact.h"
 #include "tcp.h"
+#include "cmd_pkt_cmd_v5.h"
 
 #define BACKLOG 10
 
@@ -39,13 +40,13 @@ static int        TCPReceivePacket  (tcpsock_t *sok, void **pak);
 static void       TCPSendPacket     (tcpsock_t *sok, void *pak, UWORD size);
 static void       TCPClose          (tcpsock_t *sok);
 
-static void       TCPSendInit       (tcpsock_t *sok);
+static void       TCPSendInit       (Session *sess, tcpsock_t *sok);
 static void       TCPSendInitAck    (tcpsock_t *sok);
 static tcpsock_t *TCPReceiveInit    (tcpsock_t *sok);
 static void       TCPReceiveInitAck (tcpsock_t *sok);
 
-static void       TCPCallBackResend  (int srvsok, struct Event *event);
-static void       TCPCallBackReceive (int srvsok, struct Event *event);
+static void       TCPCallBackResend  (struct Event *event);
+static void       TCPCallBackReceive (struct Event *event);
 
 const UBYTE client_check_data[] = {
     "As part of this software beta version Mirabilis is "
@@ -57,20 +58,16 @@ const UBYTE client_check_data[] = {
     "ICQ Service and Information may\0"
 };
 
-struct Queue *tcp_rq = NULL;
-
 /* Initializes TCP socket for incoming connections on given port.
  * 0 = random port
  */
-void TCPInit (int port)
+void TCPInit (Session *sess, int port)
 {
     int length;
     struct sockaddr_in sin;
 
-    QueueInit (&tcp_rq);
-
-    ssG.tcpsok = socket (AF_INET, SOCK_STREAM, 0);
-    if (ssG.tcpsok == -1)
+    sess->tcpsok = socket (AF_INET, SOCK_STREAM, 0);
+    if (sess->tcpsok == -1)
     {
         perror ("Error creating TCP socket.");
         exit (1);
@@ -79,28 +76,28 @@ void TCPInit (int port)
     sin.sin_family = AF_INET;
     sin.sin_port = htons (port);
     sin.sin_addr.s_addr = INADDR_ANY;
-    ssG.seq_tcp = -1;
+    sess->seq_tcp = -1;
 
-    if (bind (ssG.tcpsok, (struct sockaddr*)&sin, sizeof (struct sockaddr)) < 0)
+    if (bind (sess->tcpsok, (struct sockaddr*)&sin, sizeof (struct sockaddr)) < 0)
     {
         perror ("Can't bind socket to free port.");
-        ssG.tcpsok = -1;
+        sess->tcpsok = -1;
         return;
     }
 
-    if (listen (ssG.tcpsok, BACKLOG) < 0)
+    if (listen (sess->tcpsok, BACKLOG) < 0)
     {
         perror ("Unable to listen on TCP socket");
-        ssG.tcpsok = -1;
+        sess->tcpsok = -1;
         return;
     }
 
     /* Get the port used -- needs to be sent in login packet to ICQ server */
     length = sizeof (struct sockaddr);
-    getsockname (ssG.tcpsok, (struct sockaddr *) &sin, &length);
-    ssG.our_port = ntohs (sin.sin_port);
+    getsockname (sess->tcpsok, (struct sockaddr *) &sin, &length);
+    sess->our_port = ntohs (sin.sin_port);
     M_print (i18n (777, "The port that will be used for tcp (partially implemented) is %d\n"),
-             ssG.our_port);
+             sess->our_port);
 }
 
 /*
@@ -110,7 +107,7 @@ void TCPAddSockets ()
 {
     Contact *cont;
 
-    M_Add_rsocket (ssG.tcpsok);
+//    M_Add_rsocket (sess->tcpsok);
     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
         if (cont->sok.state > 0)
         {
@@ -125,28 +122,28 @@ void TCPAddSockets ()
 /*
  * Dispatches on active sockets.
  */
-void TCPDispatch ()
+void TCPDispatch (Session *sess)
 {
     Contact *cont;
 
-    if (M_Is_Set (ssG.tcpsok))
-        TCPDirectReceive (ssG.tcpsok);
+//    if (M_Is_Set (sess->tcpsok))
+//        TCPDirectReceive (sess->tcpsok);
     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
         if (cont->sok.state > 0)
             if (M_Is_Set (cont->sok.sok))
-                TCPHandleComm (cont, M_Is_Set (cont->sok.sok));
+                TCPHandleComm (sess, cont, M_Is_Set (cont->sok.sok));
 }
 
 /*
  *  Starts establishing a TCP connection to given contact.
  */
-void TCPDirectOpen (Contact *cont)
+void TCPDirectOpen (Session *sess, Contact *cont)
 {
     if (cont->sok.state == TCP_STATE_ESTABLISHED)
         return;
 
     TCPClose (&cont->sok);
-    TCPConnect (&cont->sok, 0);
+    TCPConnect (sess, &cont->sok, 0);
 }
 
 /*
@@ -160,7 +157,7 @@ void TCPDirectClose (Contact *cont)
 /*
  * Handles timeout on TCP connect/send/read/whatever
  */
-void TCPCallBackTimeout (int srv_sok, struct Event *event)
+void TCPCallBackTimeout (struct Event *event)
 {
     tcpsock_t *sok;
     struct sockaddr_in sin;
@@ -176,7 +173,7 @@ void TCPCallBackTimeout (int srv_sok, struct Event *event)
         TCPClose (sok);
     }
     else
-        TCPConnect (sok, 0);
+        TCPConnect (event->sess, sok, 0);
 }
 
 /*
@@ -210,16 +207,15 @@ int TCPSocket (tcpsock_t *sok)
  *  Does the next step establishing a TCP connection to given contact.
  *  On error, returns -1.
  */
-int TCPConnect (tcpsock_t *sok, int mode)
+int TCPConnect (Session *sess, tcpsock_t *sok, int mode)
 {
     struct sockaddr_in sin;
     int flags, rc;
-    SDWORD tmp = -1;
     
     while (1)
     {
         if (uiG.Verbose)
-            M_print ("Debug: TCPConnect; Nick: %s mode: %d state: %d\n", sok->cont ? sok->cont->nick : "", mode, sok->state);
+            M_print ("debug: TCPConnect; Nick: %s mode: %d state: %d\n", sok->cont ? sok->cont->nick : "", mode, sok->state);
         switch (sok->state)
         {
             case -1:
@@ -230,7 +226,7 @@ int TCPConnect (tcpsock_t *sok, int mode)
 
                 sin.sin_family = AF_INET;
                 sin.sin_port = htons (sok->cont->port);
-                sin.sin_addr.s_addr = sok->ip = Chars_2_DW (&tmp); //sok->cont->current_ip);
+                sin.sin_addr.s_addr = sok->ip = Chars_2_DW (sok->cont->current_ip);
 
                 rc = connect (sok->sok, (struct sockaddr *) &sin, sizeof (struct sockaddr));
                 if (rc >= 0)
@@ -240,7 +236,7 @@ int TCPConnect (tcpsock_t *sok, int mode)
                 }
                 if ((rc = errno) == EINPROGRESS)
                 {
-                    QueueEnqueueData (queue, sok->ip, QUEUE_TYPE_TCP_TIMEOUT,
+                    QueueEnqueueData (queue, sess, sok->ip, QUEUE_TYPE_TCP_TIMEOUT,
                                       sok->cont->uin, time (NULL) + 10, 0,
                                       (UBYTE *)sok, NULL, &TCPCallBackTimeout);
                     sok->state = 1;
@@ -274,7 +270,7 @@ int TCPConnect (tcpsock_t *sok, int mode)
 
                 sin.sin_family = AF_INET;
                 sin.sin_port = htons (sok->cont->port);
-                sin.sin_addr.s_addr = sok->ip = Chars_2_DW (&tmp); //sok->cont->other_ip);
+                sin.sin_addr.s_addr = sok->ip = Chars_2_DW (sok->cont->other_ip);
 
                 rc = connect (sok->sok, (struct sockaddr *) &sin, sizeof (struct sockaddr));
                 if (rc >= 0)
@@ -284,7 +280,7 @@ int TCPConnect (tcpsock_t *sok, int mode)
                 }
                 if ((rc = errno) == EINPROGRESS)
                 {
-                    QueueEnqueueData (queue, sok->ip, QUEUE_TYPE_TCP_TIMEOUT,
+                    QueueEnqueueData (queue, sess, sok->ip, QUEUE_TYPE_TCP_TIMEOUT,
                                       sok->cont->uin, time (NULL) + 10, 0,
                                       (UBYTE *)sok, NULL, &TCPCallBackTimeout);
                     sok->state = 3;
@@ -307,41 +303,12 @@ int TCPConnect (tcpsock_t *sok, int mode)
                 QueueDequeue (queue, sok->ip, QUEUE_TYPE_TCP_TIMEOUT);
             case 4:
             {
-                /* swear you haven't seen this piece of code. swear! */
-
-                net_icq_pak pak;
-                UBYTE *buf;
-                int i,j;
-                
-                close (sok->sok);
-                sok->sok = 0;
-
-//                for (i=0;i<10;i++)
-                {
-                
-                Fill_Header (&pak, CMD_TCP_REQUEST);
-                buf = pak.data;
-                DW_2_Chars   (buf, sok->cont->uin);   buf += 4;
-                DW_2_Chars   (buf, ssG.our_ip);       buf += 4;
-                DW_2_Chars   (buf, ssG.our_port);     buf += 4;
-//                Word_2_Chars (buf, ssG.our_port);     buf += 2; /* junk according to licq */
-                *(buf++) = 0x06;
-                DW_2_Chars   (buf, sok->cont->port);  buf += 4;
-                DW_2_Chars   (buf, sok->cont->port);  buf += 4; /* junk according to licq */
-                
-//                for (j=0;j<i;j++)
-                {Word_2_Chars (buf, TCP_VER);          buf += 2;}
-
-                ssG.last_cmd[(ssG.seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
-                
-                SOCKWRITE (-1, &(pak.head.ver), sizeof (pak.head) - 2 + (buf - pak.data));
-                
-                }
-                
-                QueueEnqueueData (queue, sok->ip, QUEUE_TYPE_TCP_TIMEOUT,
+                CmdPktCmdTCPRequest (sess, sok->cont->uin, sok->cont->port);
+                QueueEnqueueData (queue, sess, sok->ip, QUEUE_TYPE_TCP_TIMEOUT,
                                   sok->cont->uin, time (NULL) + 30, 0,
                                   (UBYTE *)sok, NULL, &TCPCallBackTimeout);
-                
+                close (sok->sok);
+                sok->sok = 0;
                 sok->state = TCP_STATE_WAITING;
                 return 0;
             }
@@ -370,7 +337,7 @@ int TCPConnect (tcpsock_t *sok, int mode)
                     return -1;
                 }
                 sok->state = 7;
-                TCPSendInit (sok);
+                TCPSendInit (sess, sok);
                 return 0;
             case 7:
                 if (!mode)
@@ -398,7 +365,7 @@ int TCPConnect (tcpsock_t *sok, int mode)
             case 11:
                 sok->state = 12;
                 TCPSendInitAck (sok);
-                TCPSendInit (sok);
+                TCPSendInit (sess, sok);
                 return 0;
             case 12:
                 if (!mode)
@@ -548,7 +515,7 @@ void TCPSendPacket (tcpsock_t *sok, void *data, UWORD size)
 /*
  * Sends a TCP initialization packet.
  */
-void TCPSendInit (tcpsock_t *sok)
+void TCPSendInit (Session *sess, tcpsock_t *sok)
 {
     TCP_INIT_PAK pak;
 
@@ -568,12 +535,12 @@ void TCPSendInit (tcpsock_t *sok)
     Word_2_Chars (pak.rev, TCP_VER_REV);
     DW_2_Chars (pak.dest_uin, sok->cont->uin);
     bzero (pak.X1, 2);
-    DW_2_Chars (pak.port, ssG.our_port);
-    DW_2_Chars (pak.uin, ssG.UIN);
-    DW_2_Chars (pak.current_ip, htonl (ssG.our_outside_ip));
-    DW_2_Chars (pak.other_ip, htonl (ssG.our_ip));
+    DW_2_Chars (pak.port, sess->our_port);
+    DW_2_Chars (pak.uin, sess->uin);
+    DW_2_Chars (pak.current_ip, htonl (sess->our_outside_ip));
+    DW_2_Chars (pak.other_ip, htonl (sess->our_ip));
     pak.connection_type = TCP_OK_FLAG;
-    DW_2_Chars (pak.other_port, ssG.our_port);
+    DW_2_Chars (pak.other_port, sess->our_port);
     DW_2_Chars (pak.session_id, sok->sid);
 
     TCPSendPacket (sok, (void *) &pak, sizeof(pak));
@@ -712,7 +679,7 @@ void TCPClose (tcpsock_t *sok)
 /*
  * Accepts a new direct connection.
  */
-void TCPDirectReceive (SOK_T sok)
+void TCPDirectReceive (Session *sess)
 {
     tcpsock_t sock;
     struct sockaddr_in sin;
@@ -720,7 +687,7 @@ void TCPDirectReceive (SOK_T sok)
  
     tmp = sizeof (sin);
 
-    sock.sok   = accept (sok, (struct sockaddr *)&sin, &tmp);
+    sock.sok   = accept (sess->sok, (struct sockaddr *)&sin, &tmp);
     
     if (sock.sok <= 0)
         return;
@@ -729,21 +696,21 @@ void TCPDirectReceive (SOK_T sok)
     sock.sid   = 0;
     sock.cont  = NULL;
     
-    TCPConnect (&sock, 0);
+    TCPConnect (sess, &sock, 0);
 }
 
 /*
  * Handles activity on socket for given contact.
  */
-void TCPHandleComm (Contact *cont, int mode)
+void TCPHandleComm (Session *sess, Contact *cont, int mode)
 {
     if (cont->sok.state > 0 && cont->sok.state < TCP_STATE_ESTABLISHED)
-        TCPConnect (&cont->sok, mode);
+        TCPConnect (sess, &cont->sok, mode);
     else
     {
         if (uiG.Verbose) M_print ("Debug: TCPHandleComm: Nick: %s, mode: %d\n", cont?cont->nick:"",mode);
         if (mode&1)
-        Handle_TCP_Comm (cont->uin);
+        Handle_TCP_Comm (sess, cont->uin);
     }
 }
 
@@ -751,7 +718,7 @@ void TCPHandleComm (Contact *cont, int mode)
  * Sends a message via TCP.
  * Adds it to the resend queue until acked.
  */
-BOOL TCPSendMsg (SOK_T srvsok, UDWORD uin, char *msg, UWORD sub_cmd)
+BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
 {
     Contact *cont;
     TCP_MSG_PTR pak;
@@ -769,7 +736,7 @@ BOOL TCPSendMsg (SOK_T srvsok, UDWORD uin, char *msg, UWORD sub_cmd)
         return 0;
 
     if (!cont->sok.state)
-        TCPDirectOpen (cont);
+        TCPDirectOpen (sess, cont);
 
     paksize = sizeof(TCP_MSG_PAK) + strlen(msg) + 1 + 8; 
                     /*   header   +     msg  + null + footer */
@@ -781,7 +748,7 @@ BOOL TCPSendMsg (SOK_T srvsok, UDWORD uin, char *msg, UWORD sub_cmd)
     bzero (&(pak->checksum), 4);
     Word_2_Chars (pak->cmd, TCP_CMD_MESSAGE);
     DW_2_Chars (pak->X1, TCP_MSG_X1);
-    Word_2_Chars (pak->seq, ssG.seq_tcp);
+    Word_2_Chars (pak->seq, sess->seq_tcp);
     bzero (&(pak->X2), 12);                /* X2 X3 X4 all null */
     Word_2_Chars (pak->sub_cmd, sub_cmd);
     bzero (&(pak->status), 2);
@@ -823,7 +790,7 @@ BOOL TCPSendMsg (SOK_T srvsok, UDWORD uin, char *msg, UWORD sub_cmd)
     DW_2_Chars (((char *) pak) + paksize - 8, COL_FG);
     DW_2_Chars (((char *) pak) + paksize - 4, COL_BG);
 
-    QueueEnqueueData (queue, ssG.seq_tcp--, QUEUE_TYPE_TCP_RESEND,
+    QueueEnqueueData (queue, sess, sess->seq_tcp--, QUEUE_TYPE_TCP_RESEND,
                       cont->uin, time (NULL), paksize,
                       (UBYTE *)pak, strdup (MsgEllipsis (msg)), &TCPCallBackResend);
 
@@ -838,7 +805,7 @@ BOOL TCPSendMsg (SOK_T srvsok, UDWORD uin, char *msg, UWORD sub_cmd)
 /*
  * Resends TCP packets if necessary
  */
-void TCPCallBackResend (int srv_sok, struct Event *event)
+void TCPCallBackResend (struct Event *event)
 {
     TCP_MSG_PTR pak;
     Contact *cont;
@@ -873,8 +840,8 @@ void TCPCallBackResend (int srv_sok, struct Event *event)
     }
 
     if (event->attempts < MAX_RETRY_ATTEMPTS && Chars_2_Word (pak->cmd) == TCP_CMD_MESSAGE)
-        UDPSendMsg (srv_sok, cont->uin, event->body + TCP_MSG_OFFSET,
-                    Chars_2_Word (pak->msg_type));
+        CmdPktCmdSendMessage (event->sess, cont->uin, event->body + TCP_MSG_OFFSET,
+                              Chars_2_Word (pak->msg_type));
     else
         M_print (i18n (844, "TCP message %04x discarded after timeout.\n"), Chars_2_Word (pak->cmd));
     
@@ -890,7 +857,7 @@ void TCPCallBackResend (int srv_sok, struct Event *event)
  * Queues incoming packets, ignoring resends
  * and deleting CANCEL requests from the queue.
  */
-void Handle_TCP_Comm (UDWORD uin)
+void Handle_TCP_Comm (Session *sess, UDWORD uin)
 {
     Contact *cont;
     TCP_MSG_PTR pak;
@@ -935,7 +902,7 @@ void Handle_TCP_Comm (UDWORD uin)
                 switch (Chars_2_Word (pak->cmd))
                 {
                     case TCP_CMD_ACK:
-                        event = QueueDequeue (queue, seq_in, QUEUE_TYPE_TCP_RECEIVE);
+                        event = QueueDequeue (queue, seq_in, QUEUE_TYPE_TCP_RESEND);
                         if (!event)
                             break;
                         if (Chars_2_Word (pak->sub_cmd) == NORM_MESS)
@@ -959,7 +926,7 @@ void Handle_TCP_Comm (UDWORD uin)
                         break;
                     
                     case TCP_CMD_CANCEL:
-                        event = QueueDequeue (tcp_rq, seq_in, QUEUE_TYPE_TCP_RECEIVE);
+                        event = QueueDequeue (queue, seq_in, QUEUE_TYPE_TCP_RECEIVE);
                         if (!event)
                             break;
                         
@@ -974,11 +941,11 @@ void Handle_TCP_Comm (UDWORD uin)
 
                     default:
                         /* Store the event in the recv queue for handling later */            
-                        QueueEnqueueData (queue, seq_in, QUEUE_TYPE_TCP_RECEIVE,
+                        QueueEnqueueData (queue, sess, seq_in, QUEUE_TYPE_TCP_RECEIVE,
                                           0, 0, size,
                                           (UBYTE *)pak, (UBYTE *)cont, &TCPCallBackReceive);
 
-                        ssG.seq_tcp--;
+                        sess->seq_tcp--;
                     break;
                 }
             }
@@ -993,7 +960,7 @@ void Handle_TCP_Comm (UDWORD uin)
 /*
  * Handles a just received packet.
  */
-void TCPCallBackReceive (int srvsok, struct Event *event)
+void TCPCallBackReceive (struct Event *event)
 {
     Contact *cont;
     TCP_MSG_PTR pak;
@@ -1023,12 +990,12 @@ void TCPCallBackReceive (int srvsok, struct Event *event)
 
         /* Regular messages */
         default:
-            ssG.last_recv_uin = cont->uin;
+            event->sess->last_recv_uin = cont->uin;
             
             Time_Stamp ();
             M_print ("\a " CYAN BOLD "%10s" COLNONE " ", ContactFindName (cont->uin));
             
-            Do_Msg (cont->sok.sok, Chars_2_Word (pak->sub_cmd), Chars_2_Word (pak->size), 
+            Do_Msg (event->sess, Chars_2_Word (pak->sub_cmd), Chars_2_Word (pak->size), 
                     &((char *)pak)[TCP_MSG_OFFSET], cont->uin, 1);
 
             Send_TCP_Ack (&cont->sok, Chars_2_Word(pak->seq),

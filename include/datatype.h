@@ -34,7 +34,7 @@ typedef unsigned char  UIN8;
   #define SOCKCLOSE( s ) closesocket(s)
   #define strcasecmp(s,s1)  stricmp(s,s1)
   #define strncasecmp(s,s1,l)  strnicmp(s,s1,l)
-  #define Get_Config_Info() Get_Unix_Config_Info()
+  #define Get_Config_Info(x) Get_Unix_Config_Info(x)
 #else
   #ifndef __amigaos__
     typedef unsigned char BOOL;
@@ -57,7 +57,7 @@ typedef unsigned char  UIN8;
   #else
     #define SOCKCLOSE(s) close(s)
   #endif
-  #define Get_Config_Info() Get_Unix_Config_Info()
+  #define Get_Config_Info(x) Get_Unix_Config_Info(x)
   typedef int FD_T;
   typedef int SOK_T;
 #endif

@@ -1,5 +1,5 @@
 
-int   Save_RC();
-int   Add_User (SOK_T sok, UDWORD uin, char *name);
-void  Get_Unix_Config_Info (void);
+int   Save_RC(Session *sess);
+int   Add_User (Session *sess, UDWORD uin, char *name);
+void  Get_Unix_Config_Info (Session *sess);
 void  Set_rcfile (const char * name);

@@ -4,6 +4,7 @@
 #include "util.h"
 #include "util_ui.h"
 #include "util_table.h"
+#include "cmd_pkt_cmd_v5.h"
 #include "sendmsg.h"
 #include "tabs.h"
 #include "file_util.h"
@@ -28,7 +29,7 @@ static jump_f
     CmdUserUptime, CmdUserSearch, CmdUserWpSearch, CmdUserUpdate,
     CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserTCP;
 
-static void CmdUserProcess (SOK_T sok, const char *command, int *idle_val, int *idle_flag);
+static void CmdUserProcess (Session *sess, const char *command, int *idle_val, int *idle_flag);
 
 static jump_t jump[] = {
     { &CmdUserRandom,        "rand",         NULL, 0,   0 },
@@ -150,7 +151,7 @@ JUMP_F(CmdUserChange)
         }
         data = atoi (arg1);
     }
-    icq_change_status (sok, data);
+    CmdPktCmdStatusChange (sess, data);
     Time_Stamp ();
     M_print (" ");
     Print_Status (uiG.Current_Status);
@@ -183,7 +184,7 @@ JUMP_F(CmdUserRandom)
     }
     else
     {
-        icq_rand_user_req (sok, atoi (arg1));
+        CmdPktCmdRandSearch (sess, atoi (arg1));
     }
     return 0;
 }
@@ -214,7 +215,7 @@ JUMP_F(CmdUserRandomSet)
     }
     else
     {
-        icq_rand_set (sok, atoi (arg1));
+        CmdPktCmdRandSet (sess, atoi (arg1));
 /*      M_print ("\n" );*/
     }
     return 0;
@@ -425,7 +426,7 @@ JUMP_F(CmdUserInfo)
     }
     M_print (i18n (765, "%s has UIN %d."), arg1, uin);
     M_print ("\n");
-    send_info_req (sok, uin);
+    CmdPktCmdMetaReqInfo (sess, uin);
 /*   send_ext_info_req( sok, uin );*/
     return 0;
 }
@@ -510,7 +511,7 @@ JUMP_F(CmdUserTCP)
         if (nick)
             cont = ContactFind (ContactFindByNick (nick));
         if (cont)
-            TCPDirectOpen (cont);
+            TCPDirectOpen (sess, cont);
         else
             M_print (i18n (845, "Nick %s unknown.\n"), nick ? nick : "");
     }
@@ -702,7 +703,7 @@ JUMP_F (CmdUserResend)
     char *arg1, *temp;
 
     arg1 = strtok (args, UIN_DELIMS);
-    if (!ssG.last_message_sent) 
+    if (!sess->last_message_sent) 
     {
         M_print (i18n (771, "You haven't sent a message to anyone yet!\n"));
         return 0;
@@ -719,8 +720,8 @@ JUMP_F (CmdUserResend)
         M_print ("\n");
         return 0;
     }
-    temp = strdup (ssG.last_message_sent);
-    icq_sendmsg (sok, uin, temp, ssG.last_message_sent_type);
+    temp = strdup (sess->last_message_sent);
+    icq_sendmsg (sess, uin, temp, sess->last_message_sent_type);
     free (temp);
     last_uin = uin;
     return 0;
@@ -752,13 +753,13 @@ JUMP_F (CmdUserMessage)
                 for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
                 {
                     temp = strdup (msg);
-                    icq_sendmsg (sok, cont->uin, temp, MRNORM_MESS);
+                    icq_sendmsg (sess, cont->uin, temp, MRNORM_MESS);
                     free (temp);
                 }
             }
             else
             {
-                icq_sendmsg (sok, multi_uin, msg, NORM_MESS);
+                icq_sendmsg (sess, multi_uin, msg, NORM_MESS);
                 last_uin = multi_uin;
             }
             return 0;
@@ -786,13 +787,13 @@ JUMP_F (CmdUserMessage)
                     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
                     {
                         temp = strdup (msg);
-                        icq_sendmsg (sok, cont->uin, temp, MRNORM_MESS);
+                        icq_sendmsg (sess, cont->uin, temp, MRNORM_MESS);
                         free (temp);
                     }
                 }
                 else
                 {
-                    icq_sendmsg (sok, multi_uin, msg, NORM_MESS);
+                    icq_sendmsg (sess, multi_uin, msg, NORM_MESS);
                     last_uin = multi_uin;
                 }
                 return 0;
@@ -858,13 +859,13 @@ JUMP_F (CmdUserMessage)
                 for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
                 {
                     temp = strdup (arg1);
-                    icq_sendmsg (sok, cont->uin, temp, MRNORM_MESS);
+                    icq_sendmsg (sess, cont->uin, temp, MRNORM_MESS);
                     free (temp);
                 }
             }
             else
             {
-                icq_sendmsg (sok, uin, arg1, NORM_MESS);
+                icq_sendmsg (sess, uin, arg1, NORM_MESS);
                 last_uin = uin;
             }
             return 0;
@@ -1102,13 +1103,13 @@ JUMP_F(CmdUserIgnoreStatus)
 JUMP_F(CmdUserStatusWide)
 {
     Contact **Online;           /* definitely won't need more; could    */
-    Contact **Offline;          /* probably get away with less.    */
+    Contact **Offline = NULL;   /* probably get away with less.    */
     int MaxLen = 0;             /* legnth of longest contact name */
     int i;
     int OnIdx = 0;              /* for inserting and tells us how many there are */
     int OffIdx = 0;             /* for inserting and tells us how many there are */
     int NumCols;                /* number of columns to display on screen        */
-    Contact *cont;
+    Contact *cont = NULL;
 
     if (data)
     {
@@ -1235,7 +1236,7 @@ JUMP_F(CmdUserStatusSelf)
 {
     M_print (W_SEPERATOR);
     Time_Stamp ();
-    M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", ssG.UIN);
+    M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", sess->uin);
     M_print (i18n (71, "Your status is "));
     Print_Status (uiG.Current_Status);
     M_print ("\n");
@@ -1252,7 +1253,7 @@ JUMP_F(CmdUserStatusShort)
 
     M_print (W_SEPERATOR);
     Time_Stamp ();
-    M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", ssG.UIN);
+    M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", sess->uin);
     M_print (i18n (71, "Your status is "));
     Print_Status (uiG.Current_Status);
     M_print ("\n");
@@ -1405,34 +1406,34 @@ JUMP_F(CmdUserAutoaway)
     char *arg1;
     if ((arg1 = strtok (args, ""))) /* assign a value */
     {
-        if (ssG.away_time == 0 || ssG.away_time_prev == 0 || atoi (arg1) == 0)
+        if (sess->away_time == 0 || sess->away_time_prev == 0 || atoi (arg1) == 0)
         {
-            ssG.away_time_prev = ssG.away_time;
-            ssG.away_time = atoi (arg1);
+            sess->away_time_prev = sess->away_time;
+            sess->away_time = atoi (arg1);
         }
         else
         {
-            ssG.away_time = atoi (arg1);
+            sess->away_time = atoi (arg1);
         }
     }
     else                            /* toggle */
     {
-        if (ssG.away_time == 0 && ssG.away_time_prev == 0)
+        if (sess->away_time == 0 && sess->away_time_prev == 0)
         {
-            ssG.away_time = default_away_time;
+            sess->away_time = default_away_time;
         }
-        else if (ssG.away_time == 0)
+        else if (sess->away_time == 0)
         {
-            ssG.away_time = ssG.away_time_prev;
-            ssG.away_time_prev = 0;
+            sess->away_time = sess->away_time_prev;
+            sess->away_time_prev = 0;
         }
         else
         {
-            ssG.away_time_prev = ssG.away_time;
-            ssG.away_time = 0;
+            sess->away_time_prev = sess->away_time;
+            sess->away_time = 0;
         }
     }
-    M_print (i18n (766, "Auto_away is " COLMESS "%d" COLNONE ".\n"), ssG.away_time);
+    M_print (i18n (766, "Auto_away is " COLMESS "%d" COLNONE ".\n"), sess->away_time);
     return 0;
 }
 
@@ -1546,20 +1547,20 @@ JUMP_F(CmdUserTogIgnore)
                 if (bud->invis_list == TRUE)
                 {
                     bud->invis_list = FALSE;
-                    update_list (sok, uin, INV_LIST_UPDATE, FALSE);
+                    CmdPktCmdUpdateList (sess, uin, INV_LIST_UPDATE, FALSE);
                     M_print (i18n (666, "Unignored %s."), ContactFindNick (uin));
                 }
                 else
                 {
                     bud->vis_list = FALSE;
                     bud->invis_list = TRUE;
-                    update_list (sok, uin, INV_LIST_UPDATE, TRUE);
+                    CmdPktCmdUpdateList (sess, uin, INV_LIST_UPDATE, TRUE);
                     M_print (i18n (667, "Ignoring %s."), ContactFindNick (uin));
                 }
-                snd_contact_list (sok);
-                snd_invis_list (sok);
-                snd_vis_list (sok);
-                icq_change_status (sok, uiG.Current_Status);
+                CmdPktCmdContactList (sess);
+                CmdPktCmdInvisList (sess);
+                CmdPktCmdVisList (sess);
+                CmdPktCmdStatusChange (sess, uiG.Current_Status);
                 Time_Stamp ();
                 M_print (" ");
                 Print_Status (uiG.Current_Status);
@@ -1603,19 +1604,15 @@ JUMP_F(CmdUserTogVisible)
                 if (bud->vis_list == TRUE)
                 {
                     bud->vis_list = FALSE;
-                    update_list (sok, uin, VIS_LIST_UPDATE, FALSE);
+                    CmdPktCmdUpdateList (sess, uin, VIS_LIST_UPDATE, FALSE);
                     M_print (i18n (670, "Invisible to %s now."), ContactFindNick (uin));
                 }
                 else
                 {
                     bud->vis_list = TRUE;
-                    update_list (sok, uin, VIS_LIST_UPDATE, TRUE);
+                    CmdPktCmdUpdateList (sess, uin, VIS_LIST_UPDATE, TRUE);
                     M_print (i18n (671, "Visible to %s now."), ContactFindNick (uin));
                 }
-                 /*FIXME*/          /* 
-                snd_contact_list( sok );
-                snd_invis_list( sok );
-                snd_vis_list( sok ); */
             }
         }
     }
@@ -1640,7 +1637,7 @@ JUMP_F(CmdUserAdd)
     {
         uin = atoi (arg1);
         arg1 = strtok (NULL, "");
-        if (Add_User (sok, uin, arg1))
+        if (Add_User (sess, uin, arg1))
             M_print (i18n (669, "%s added."), arg1);
         else
             M_print (i18n (773, "%s could not be added."), arg1);
@@ -1664,7 +1661,7 @@ JUMP_F(CmdUserRInfo)
         M_print (i18n (673, "\tThe port is %d\n"), (UWORD) Get_Port (uiG.last_recv_uin));
     else
         M_print (i18n (674, "\tThe port is unknown\n"));
-    send_info_req (sok, uiG.last_recv_uin);
+    CmdPktCmdMetaReqInfo (sess, uiG.last_recv_uin);
 /*  send_ext_info_req( sok, uiG.last_recv_uin );*/
     return 0;
 }
@@ -1690,7 +1687,7 @@ JUMP_F(CmdUserAuth)
             M_print (i18n (665, "%s not recognized as a nick name."), arg1);
         }
         else
-            icq_sendauthmsg (sok, uin);
+            CmdPktCmdSendMessage (sess, uin, "\x03", AUTH_MESSAGE);
     }
     return 0;
 }
@@ -1700,7 +1697,7 @@ JUMP_F(CmdUserAuth)
  */
 JUMP_F(CmdUserSave)
 {
-    int i = Save_RC ();
+    int i = Save_RC (sess);
     if (i == -1)
         M_print (i18n (679, "Sorry saving your personal reply messages went wrong!\n"));
     else
@@ -1737,7 +1734,7 @@ JUMP_F(CmdUserURL)
                 arg2 = strtok (NULL, "");
                 if (!arg2)
                     arg2 = "";
-                icq_sendurl (sok, uin, arg1, arg2);
+                icq_sendurl (sess, uin, arg1, arg2);
                 Time_Stamp ();
                 M_print (" " COLCONTACT "%10s" COLNONE " " MSGSENTSTR "%s\n",
                          ContactFindName (last_uin), MsgEllipsis (arg1));
@@ -1847,15 +1844,15 @@ JUMP_F(CmdUserUptime)
         M_print (COLMESS "%02d" COLNONE "%s, ", Minutes, i18n (690, "minutes"));
     M_print (COLMESS "%02d" COLNONE "%s.\n", Seconds, i18n (691, "seconds"));
 /*    M_print ("%s " COLMESS "%d" COLNONE " / %d\n", i18n (692, "Contacts:"), uiG.Num_Contacts, MAX_CONTACTS); */
-    M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (693, "Packets sent:"), ssG.Packets_Sent);
-    M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (694, "Packets recieved:"), ssG.Packets_Recv);
-    if (ssG.Packets_Sent || ssG.Packets_Recv)
+    M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (693, "Packets sent:"), sess->Packets_Sent);
+    M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (694, "Packets recieved:"), sess->Packets_Recv);
+    if (sess->Packets_Sent || sess->Packets_Recv)
     {
         M_print ("%s " COLMESS "%2.2f" COLNONE "%%\n", i18n (695, "Lag:"),
-                 abs (ssG.Packets_Sent - ssG.Packets_Recv) * (200.0 / (ssG.Packets_Sent + ssG.Packets_Recv)));
+                 abs (sess->Packets_Sent - sess->Packets_Recv) * (200.0 / (sess->Packets_Sent + sess->Packets_Recv)));
     }
-    M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (697, "Distinct packets sent:"), ssG.real_packs_sent);
-    M_print ("%s " COLMESS "%d" COLNONE "\n", i18n (698, "Distinct packets recieved:"), ssG.real_packs_recv);
+    M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (697, "Distinct packets sent:"), sess->real_packs_sent);
+    M_print ("%s " COLMESS "%d" COLNONE "\n", i18n (698, "Distinct packets recieved:"), sess->real_packs_recv);
     return 0;
 }
 
@@ -1864,7 +1861,7 @@ JUMP_F(CmdUserUptime)
  */
 JUMP_F(CmdUserQuit)
 {
-    ssG.Quit = TRUE;
+    sess->Quit = TRUE;
     return 0;
 }
 
@@ -1879,33 +1876,37 @@ JUMP_F(CmdUserQuit)
  */
 JUMP_F(CmdUserSearch)
 {
-    static MORE_INFO_STRUCT user;
+    static char *email, *nick, *first, *last;
 
     switch (status)
     {
         case 0:
             if (*args)
             {
-                start_search (sok, args, "", "", "");
+                CmdPktCmdSearchUser (sess, args, "", "", "");
                 return 0;
             }
             R_dopromptf ("%s ", i18n (655, "Enter the user's e-mail address:"));
             return status = 101;
         case 101:
-            user.email = strdup ((char *) args);
+            email = strdup ((char *) args);
             R_dopromptf ("%s ", i18n (656, "Enter the user's nick name:"));
             return ++status;
         case 102:
-            user.nick = strdup ((char *) args);
+            nick = strdup ((char *) args);
             R_dopromptf ("%s ", i18n (657, "Enter the user's first name:"));
             return ++status;
         case 103:
-            user.first = strdup ((char *) args);
+            first = strdup ((char *) args);
             R_dopromptf ("%s", i18n (658, "Enter the user's last name:"));
             return ++status;
         case 104:
-            user.last = strdup ((char *) args);
-            start_search (sok, user.email, user.nick, user.first, user.last);
+            last = strdup ((char *) args);
+            CmdPktCmdSearchUser (sess, email, nick, first, last);
+            free (email);
+            free (nick);
+            free (first);
+            free (last);
             return 0;
     }
     return 0;
@@ -1917,7 +1918,7 @@ JUMP_F(CmdUserSearch)
 JUMP_F(CmdUserWpSearch)
 {
     int temp;
-    static WP_STRUCT wp;
+    static MetaWP wp;
 
     switch (status)
     {
@@ -2004,42 +2005,26 @@ JUMP_F(CmdUserWpSearch)
 /* A few more could be added here, but we're gonna make this
  the last one -KK */
         case 214:
-            if (!strcasecmp (args, i18n (28, "NO")))
-            {
-                wp.online = FALSE;
-                Search_WP (sok, &wp);
-                free (wp.nick);
-                free (wp.last);
-                free (wp.first);
-                free (wp.email);
-                free (wp.company);
-                free (wp.department);
-                free (wp.position);
-                free (wp.city);
-                free (wp.state);
-                return 0;
-            }
-            else if (!strcasecmp (args, i18n (27, "YES")))
-            {
-                wp.online = TRUE;
-                Search_WP (sok, &wp);
-                free (wp.nick);
-                free (wp.last);
-                free (wp.first);
-                free (wp.email);
-                free (wp.company);
-                free (wp.department);
-                free (wp.position);
-                free (wp.city);
-                free (wp.state);
-                return 0;
-            }
-            else
+            if (strcasecmp (args, i18n (28, "NO")) && strcasecmp (args, i18n (27, "YES")))
             {
                 M_print ("%s\n", i18n (29, "Please enter YES or NO!"));
                 R_dopromptf ("%s ", i18n (589, "Should the users be online?"));
+                return status;
             }
-            return status;
+            wp.online = strcasecmp (args, i18n (27, "YES")) ? FALSE : TRUE;
+
+            CmdPktCmdMetaSearchWP (sess, &wp);
+
+            free (wp.nick);
+            free (wp.last);
+            free (wp.first);
+            free (wp.email);
+            free (wp.company);
+            free (wp.department);
+            free (wp.position);
+            free (wp.city);
+            free (wp.state);
+            return 0;
     }
     return 0;
 }
@@ -2049,7 +2034,7 @@ JUMP_F(CmdUserWpSearch)
  */
 JUMP_F(CmdUserUpdate)
 {
-    static MORE_INFO_STRUCT user;
+    static MetaGeneral user;
 
     switch (status)
     {
@@ -2113,53 +2098,56 @@ JUMP_F(CmdUserUpdate)
             R_dopromptf ("%s ", i18n (552, "Enter your time zone (+/- 0-12):"));
             return ++status;
         case 314:
-            user.c_status = atoi ((char *) args);
-            user.c_status <<= 1;
+            user.tz = atoi ((char *) args);
+            user.tz <<= 1;
             R_dopromptf ("%s ", i18n (557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
             return ++status;
         case 315:
-            if (!strcasecmp (args, i18n (28, "NO")))
-            {
-                user.auth = FALSE;
-                R_dopromptf ("%s ", i18n (622, "Do you want to apply these changes? (YES/NO)"));
-                return ++status;
-            }
-            else if (!strcasecmp (args, i18n (27, "YES")))
-            {
-                user.auth = TRUE;
-                R_dopromptf ("%s ", i18n (622, "Do you want to apply these changes? (YES/NO)"));
-                return ++status;
-            }
-            else
+            if (strcasecmp (args, i18n (28, "NO")) && strcasecmp (args, i18n (27, "YES")))
             {
                 M_print ("%s\n", i18n (29, "Please enter YES or NO!"));
                 R_dopromptf ("%s ", i18n (557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
+                return status;
             }
-            return status;
+            user.auth = strcasecmp (args, i18n (27, "YES")) ? FALSE : TRUE;
+            R_dopromptf ("%s ", i18n (633, "Do you want your status to be available on the web? (YES/NO)"));
+            return ++status;
         case 316:
-            if (!strcasecmp (args, i18n (28, "NO")))
+            if (strcasecmp (args, i18n (28, "NO")) && strcasecmp (args, i18n (27, "YES")))
             {
-                free (user.nick);
-                free (user.last);
-                free (user.first);
-                free (user.email);
-                return 0;
+                M_print ("%s\n", i18n (29, "Please enter YES or NO!"));
+                R_dopromptf ("%s ", i18n (633, "Do you want your status to be available on the web? (YES/NO)"));
+                return status;
             }
-            else if (!strcasecmp (args, i18n (27, "YES")))
+            user.webaware = strcasecmp (args, i18n (27, "YES")) ? FALSE : TRUE;
+            R_dopromptf ("%s ", i18n (857, "Do you want to hide your IP from other contacts? (YES/NO)"));
+            return ++status;
+        case 317:
+            if (strcasecmp (args, i18n (28, "NO")) && strcasecmp (args, i18n (27, "YES")))
             {
-                Update_More_User_Info (sok, &user);
-                free (user.nick);
-                free (user.last);
-                free (user.first);
-                free (user.email);
-                return 0;
+                M_print ("%s\n", i18n (29, "Please enter YES or NO!"));
+                R_dopromptf ("%s ", i18n (857, "Do you want to hide your IP from other contacts? (YES/NO)"));
+                return status;
             }
-            else
+            user.hideip = strcasecmp (args, i18n (27, "YES")) ? FALSE : TRUE;
+            R_dopromptf ("%s ", i18n (622, "Do you want to apply these changes? (YES/NO)"));
+            return ++status;
+        case 318:
+            if (strcasecmp (args, i18n (28, "NO")) && strcasecmp (args, i18n (27, "YES")))
             {
                 M_print ("%s\n", i18n (29, "Please enter YES or NO!"));
                 R_dopromptf ("%s ", i18n (622, "Do you want to apply these changes? (YES/NO)"));
+                return status;
             }
-            return status;
+
+            if (!strcasecmp (args, i18n (27, "YES")))
+                CmdPktCmdMetaGeneral (sess, &user);
+
+            free (user.nick);
+            free (user.last);
+            free (user.first);
+            free (user.email);
+            return 0;
     }
     return 0;
 }
@@ -2169,7 +2157,7 @@ JUMP_F(CmdUserUpdate)
  */
 JUMP_F(CmdUserOther)
 {
-    static OTHER_INFO_STRUCT other;
+    static MetaMore other;
     int temp;
 
     switch (status)
@@ -2247,7 +2235,7 @@ JUMP_F(CmdUserOther)
                 return status;
             }
             other.lang3 = temp;
-            Update_Other (sok, &other);
+            CmdPktCmdMetaMore (sess, &other);
             free (other.hp);
             return 0;
     }
@@ -2267,7 +2255,7 @@ JUMP_F(CmdUserAbout)
         msg[offset] = 0;
         if (!strcmp (args, END_MSG_STR))
         {
-            Update_About (sok, msg);
+            CmdPktCmdMetaAbout (sess, msg);
             return 0;
         }
         else if (!strcmp (args, CANCEL_MSG_STR))
@@ -2284,7 +2272,7 @@ JUMP_F(CmdUserAbout)
             }
             else
             {
-                Update_About (sok, msg);
+                CmdPktCmdMetaAbout (sess, msg);
                 return 0;
             }
         }
@@ -2293,7 +2281,7 @@ JUMP_F(CmdUserAbout)
     {
         if (args && strlen (args))
         {
-            Update_About (sok, args);
+            CmdPktCmdMetaAbout (sess, args);
             return 0;
         }
         offset = 0;
@@ -2305,24 +2293,24 @@ JUMP_F(CmdUserAbout)
 /*
  * Process one command, but ignore idle times.
  */
-void CmdUser (SOK_T sok, const char *command)
+void CmdUser (Session *sess, const char *command)
 {
     int a, b;
-    CmdUserProcess (sok, command, &a, &b);
+    CmdUserProcess (sess, command, &a, &b);
 }
 
 /*
  * Get one line of input and process it.
  */
-void CmdUserInput (SOK_T sok, int *idle_val, int *idle_flag)
+void CmdUserInput (Session *sess, int *idle_val, int *idle_flag)
 {
-    CmdUserProcess (sok, NULL, idle_val, idle_flag);
+    CmdUserProcess (sess, NULL, idle_val, idle_flag);
 }
 
 /*
  * Process one line of command, get it if necessary.
  */
-void CmdUserProcess (SOK_T sok, const char *command, int *idle_val, int *idle_flag)
+void CmdUserProcess (Session *sess, const char *command, int *idle_val, int *idle_flag)
 {
     unsigned char buf[1024];    /* This is hopefully enough */
     char *cmd;
@@ -2355,7 +2343,7 @@ void CmdUserProcess (SOK_T sok, const char *command, int *idle_val, int *idle_fl
 
     if (status)
     {
-        status = (*sticky)(sok, buf, 0, status);
+        status = (*sticky)(sess, buf, 0, status);
     }
     else
     {
@@ -2405,13 +2393,13 @@ void CmdUserProcess (SOK_T sok, const char *command, int *idle_val, int *idle_fl
             {
                 arg1 = strtok (NULL, "");
                 if (arg1)
-                    reg_new_user (sok, arg1);
+                    CmdPktCmdRegNewUser (sess, arg1);
             }
             else if (!strcasecmp (cmd, "pass"))
             {
                 arg1 = strtok (NULL, "");
                 if (arg1)
-                    Change_Password (sok, arg1);
+                    CmdPktCmdMetaPass (sess, arg1);
             }
             else if (!strcasecmp (cmd, "ver"))
             {
@@ -2438,7 +2426,7 @@ void CmdUserProcess (SOK_T sok, const char *command, int *idle_val, int *idle_fl
                         *idle_val = idle_save;
                     else if (j->unidle == 1)
                         *idle_flag = 0;
-                    status = j->f (sok, argsd, j->data, 0);
+                    status = j->f (sess, argsd, j->data, 0);
                     sticky = j->f;
                 }
                 else
@@ -2450,6 +2438,6 @@ void CmdUserProcess (SOK_T sok, const char *command, int *idle_val, int *idle_fl
             }
         }
     }
-    if (!status && !ssG.Quit && !command)
+    if (!status && !sess->Quit && !command)
         Prompt ();
 }

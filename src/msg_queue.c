@@ -73,8 +73,8 @@ struct Event *QueuePop (struct Queue *queue)
             queue->due = INT_MAX;
         else
             queue->due = queue->head->event->due;
-        if (uiG.Verbose & 32)
-            M_print (i18n (851, "Debug: Queue: popping type %d seq %08x\n"), event->type, event->seq);
+        Debug (32, i18n (851, "popping type %d seq %08x at %p (body %p)"),
+               event->type, event->seq, event, event->body);
         return event;
     }
     return NULL;
@@ -98,8 +98,8 @@ void QueueEnqueue (struct Queue *queue, struct Event *event)
     entry->next = NULL;
     entry->event  = event;
 
-    if (uiG.Verbose & 32)
-        M_print (i18n (852, "Debug: Queue: enqueuing type %d seq %08x\n"), event->type, event->seq);
+    Debug (32, i18n (852, "enqueuing type %d seq %08x at %p (body %p)"),
+           event->type, event->seq, event, event->body);
 
     if (!queue->head)
     {
@@ -126,7 +126,7 @@ void QueueEnqueue (struct Queue *queue, struct Event *event)
 /*
  * Adds a new entry to the queue. Creates struct Event for you.
  */
-void QueueEnqueueData (struct Queue *queue, UDWORD seq, UDWORD type,
+void QueueEnqueueData (struct Queue *queue, Session *sess, UDWORD seq, UDWORD type,
                        UDWORD uin, time_t due, UDWORD len,
                        UBYTE *body, UBYTE *info, Queuef *callback)
 {
@@ -143,6 +143,7 @@ void QueueEnqueueData (struct Queue *queue, UDWORD seq, UDWORD type,
     event->body = body;
     event->info = info;
     event->callback = callback;
+    event->sess = sess;
     
     QueueEnqueue (queue, event);
 }
@@ -160,8 +161,7 @@ struct Event *QueueDequeue (struct Queue *queue, UDWORD seq, UDWORD type)
 
     if (!queue->head)
     {
-        if (uiG.Verbose & 32)
-            M_print (i18n (853, "Debug: Queue: couldn't dequeue type %d seq %08x\n"), type, seq);
+        Debug (32, i18n (853, "couldn't dequeue type %d seq %08x"), type, seq);
         return NULL;
     }
 
@@ -177,8 +177,8 @@ struct Event *QueueDequeue (struct Queue *queue, UDWORD seq, UDWORD type)
         else
             queue->due = queue->head->event->due;
 
-        if (uiG.Verbose & 32)
-            M_print (i18n (854, "Debug: Queue: dequeue type %d seq %08x\n"), type, seq);
+        Debug (32, i18n (854, "dequeue type %d seq %08x at %p (body %p)"),
+               type, seq, event, event->body);
         return event;
     }
     for (iter = queue->head; iter->next; iter = iter->next)
@@ -189,13 +189,12 @@ struct Event *QueueDequeue (struct Queue *queue, UDWORD seq, UDWORD type)
             event = tmp->event;
             iter->next=iter->next->next;
             free (tmp);
-            if (uiG.Verbose & 32)
-                M_print (i18n (854, "Debug: Queue: dequeue type %d seq %08x\n"), type, seq);
+            Debug (32, i18n (854, "dequeue type %d seq %08x at %p (body %p)"),
+                   type, seq, event, event->body);
             return event;
         }
     }
-    if (uiG.Verbose & 32)
-        M_print (i18n (853, "Debug: Queue: couldn't dequeue type %d seq %08x\n"), type, seq);
+    Debug (32, i18n (853, "couldn't dequeue type %d seq %08x"), type, seq);
     return NULL;
 }
 
@@ -204,7 +203,7 @@ struct Event *QueueDequeue (struct Queue *queue, UDWORD seq, UDWORD type)
  * function.
  * Callback function may re-enqueue them with a later due time.
  */
-void QueueRun (struct Queue *queue, SOK_T srvsok)
+void QueueRun (struct Queue *queue)
 {
     time_t now = time (NULL);
     struct Event *event;
@@ -213,6 +212,6 @@ void QueueRun (struct Queue *queue, SOK_T srvsok)
     {
         event = QueuePop (queue);
         if (event->callback)
-            event->callback (srvsok, event);
+            event->callback (event);
     }
 }

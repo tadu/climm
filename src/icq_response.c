@@ -9,6 +9,8 @@
 #include "util.h"
 #include "sendmsg.h"
 #include "conv.h"
+#include "packet.h"
+#include "cmd_pkt_cmd_v5.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -76,7 +78,7 @@ static void Handle_Interest (UBYTE count, UBYTE * data)
     }
 }
 
-void Meta_User (SOK_T sok, UBYTE * data, UDWORD len, UDWORD uin)
+void Meta_User (Session *sess, UBYTE * data, UDWORD len, UDWORD uin)
 {
     UWORD subcmd;
     UDWORD zip;
@@ -382,7 +384,7 @@ void Meta_User (SOK_T sok, UBYTE * data, UDWORD len, UDWORD uin)
     }
 }
 
-void Display_Rand_User (SOK_T sok, UBYTE * data, UDWORD len)
+void Display_Rand_User (Session *sess, UBYTE * data, UDWORD len)
 {
     if (len == 37)
     {
@@ -400,8 +402,7 @@ void Display_Rand_User (SOK_T sok, UBYTE * data, UDWORD len)
             M_print ("\n");
             Hex_Dump (data, len);
         }
-        send_info_req (sok, Chars_2_DW (data));
-/*        send_ext_info_req( sok, Chars_2_DW( data ) );*/
+        CmdPktCmdMetaReqInfo (sess, Chars_2_DW (data));
     }
     else
     {
@@ -409,7 +410,7 @@ void Display_Rand_User (SOK_T sok, UBYTE * data, UDWORD len)
     }
 }
 
-void Recv_Message (int sok, UBYTE * pak)
+void Recv_Message (Session *sess, UBYTE * pak)
 {
     RECV_MESSAGE_PTR r_mesg;
 
@@ -418,7 +419,7 @@ void Recv_Message (int sok, UBYTE * pak)
     M_print (i18n (496, "%02d/%02d/%04d"), r_mesg->month, r_mesg->day, Chars_2_Word (r_mesg->year));
     M_print (" %02d:%02d UTC \a" CYAN BOLD "%10s" COLNONE " ",
              r_mesg->hour, r_mesg->minute, ContactFindName (Chars_2_DW (r_mesg->uin)));
-    Do_Msg (sok, Chars_2_Word (r_mesg->type), Chars_2_Word (r_mesg->len),
+    Do_Msg (sess, Chars_2_Word (r_mesg->type), Chars_2_Word (r_mesg->len),
             (r_mesg->len + 2), uiG.last_recv_uin, 0);
 }
 
@@ -426,7 +427,7 @@ void Recv_Message (int sok, UBYTE * pak)
 /************************************************
 This is called when a user goes offline
 *************************************************/
-void User_Offline (int sok, UBYTE * pak)
+void User_Offline (Session *sess, UBYTE * pak)
 {
     Contact *con;
     int remote_uin;
@@ -479,7 +480,7 @@ static void UserOnlineSetVersion (Contact *con, UDWORD tstamp)
     con->version = strlen (buf) ? strdup (buf) : NULL;
 }
 
-void User_Online (int sok, UBYTE * pak)
+void User_Online (Session *sess, UBYTE * pak)
 {
     Contact *con;
     int remote_uin, new_status;
@@ -488,7 +489,7 @@ void User_Online (int sok, UBYTE * pak)
 
     new_status = Chars_2_DW (&pak[17]);
 
-    if (ssG.Done_Login)
+    if (sess->Done_Login)
     {
 
         if (uiG.SoundOnline == SOUND_CMD)
@@ -550,7 +551,7 @@ void User_Online (int sok, UBYTE * pak)
     }
 }
 
-void Status_Update (int sok, UBYTE * pak)
+void Status_Update (Session *sess, UBYTE * pak)
 {
     Contact *cont;
     int remote_uin, new_status;
@@ -577,77 +578,7 @@ void Status_Update (int sok, UBYTE * pak)
     M_print ("\n");
 }
 
-/* This procedure logs into the server with UIN and pass
-    on the socket sok and gives our ip and port.
-    It does NOT wait for any kind of a response.            */
-void Login (int sok, int UIN, char *pass, int ip, int port, UDWORD status)
-{
-    net_icq_pak pak;
-    login_1 s1;
-    login_2 s2;
-
-    int size;
-    UWORD passlen;
-
-    Word_2_Chars (pak.head.ver, ICQ_VER);
-    Word_2_Chars (pak.head.cmd, CMD_LOGIN);
-    Word_2_Chars (pak.head.seq, ssG.seq_num++);
-    DW_2_Chars   (pak.head.UIN, UIN);
-
-    passlen = (strlen (pass) > 8 ? 8 : strlen (pass));
-
-    DW_2_Chars   (s1.port, port);
-    Word_2_Chars (s1.len, passlen + 1);
-    DW_2_Chars   (s1.time, time (NULL));
-
-    DW_2_Chars   (s2.ip, htonl (ip));
-    DW_2_Chars   (s2.status, status);
-    DW_2_Chars   (s2.X1, LOGIN_X1_DEF);
-    s2.flags[0] = 0x04; /* 1=firewall | 2=proxy | 4=tcp */
-    DW_2_Chars   (s2.tcpver, TCP_VER);
-    DW_2_Chars   (s2.X4, LOGIN_X4_DEF);
-    DW_2_Chars   (s2.X5, LOGIN_X5_DEF);
-    DW_2_Chars   (s2.X6, LOGIN_X6_DEF);
-    DW_2_Chars   (s2.X7, LOGIN_X7_DEF);
-    DW_2_Chars   (s2.build, BUILD_MICQ | MICQ_VERSION_NUM);
-
-    memcpy (pak.data, &s1, sizeof (s1));
-    size = sizeof (s1);
-    memcpy (&pak.data[size], pass, passlen);
-    size += passlen;
-    pak.data[size++] = '\0';
-    memcpy (&pak.data[size], &s2, sizeof (s2));
-    size += sizeof (s2);
-
-#if ICQ_VER == 0x0004
-    ssG.last_cmd[ssG.seq_num - 1] = Chars_2_Word (pak.head.cmd);
-#elif ICQ_VER == 0x0005
-    ssG.last_cmd[ssG.seq_num - 1] = Chars_2_Word (pak.head.cmd);
-#else
-    ssG.last_cmd[ssG.seq_num - 2] = Chars_2_Word (pak.head.cmd);
-#endif
-    SOCKWRITE (sok, &pak.head.ver, size + sizeof (pak.head) - 2);
-}
-
-/*
- * This routine sends the aknowlegement cmd to the
- * server it appears that this must be done after
- * everything the server sends us
- */
-void ack_srv (SOK_T sok, UDWORD seq)
-{
-    net_icq_pak pak;
-
-    Word_2_Chars (pak.head.ver, ICQ_VER);
-    Word_2_Chars (pak.head.cmd, CMD_ACK);
-    DW_2_Chars (pak.head.seq2, seq);
-    DW_2_Chars (pak.head.UIN, ssG.UIN);
-    DW_2_Chars (pak.data, rand ());
-
-    SOCKWRITE (sok, &(pak.head.ver), sizeof (pak.head) - 2 + 4);
-}
-
-void Display_Info_Reply (int sok, UBYTE * pak)
+void Display_Info_Reply (Session *sess, UBYTE * pak)
 {
     char *tmp;
     int len;
@@ -680,7 +611,7 @@ void Display_Info_Reply (int sok, UBYTE * pak)
 /*    ack_srv( sok, Chars_2_Word( pak.head.seq ) ); */
 }
 
-void Display_Ext_Info_Reply (int sok, UBYTE * pak)
+void Display_Ext_Info_Reply (Session *sess, UBYTE * pak)
 {
     unsigned char *tmp;
     int len;
@@ -723,7 +654,7 @@ void Display_Ext_Info_Reply (int sok, UBYTE * pak)
 /*    ack_srv( sok, Chars_2_Word( pak.head.seq ) ); */
 }
 
-void Display_Search_Reply (int sok, UBYTE * pak)
+void Display_Search_Reply (Session *sess, UBYTE * pak)
 {
     char *tmp;
     int len;
@@ -754,7 +685,7 @@ void Display_Search_Reply (int sok, UBYTE * pak)
     }
 }
 
-void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin, BOOL tcp)
+void Do_Msg (Session *sess, UDWORD type, UWORD len, char *data, UDWORD uin, BOOL tcp)
 {
     char *tmp = NULL;
     int x, m;

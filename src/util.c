@@ -21,6 +21,7 @@ Changes :
 #include "micq.h"
 #include "util.h"
 #include "sendmsg.h"
+#include "cmd_pkt_cmd_v5.h"
 #include "contact.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -138,7 +139,7 @@ void Print_Status (UDWORD new_status)
  * message, possibly using ellipsis.
  **********************************************/
 
-char *MsgEllipsis (char *msg)
+char *MsgEllipsis (const char *msg)
 {
     static char buff[MSGID_LENGTH + 2];
     int screen_width, msgid_length;
@@ -154,7 +155,8 @@ char *MsgEllipsis (char *msg)
 
     if (strchr (msg, '\n') || strchr (msg, '\r'))
     {
-        char *p, *q;
+        const char *p;
+        char *q;
         int i;
         for (p = msg, q = buff, i = 0; *p && i <= MSGID_LENGTH; i++, q++, p++)
         {
@@ -171,7 +173,10 @@ char *MsgEllipsis (char *msg)
 
 
     if (strlen (msg) <= msgid_length)
-        return msg;
+    {
+        strncpy (buff, msg, sizeof (buff) - 1);
+        return buff;
+    }
     if (buff != msg)
         strncpy (buff, msg, msgid_length - 3);
     buff[msgid_length - 3] = '\0';
@@ -182,9 +187,8 @@ char *MsgEllipsis (char *msg)
 /**************************************************
 Automates the process of creating a new user.
 ***************************************************/
-void Init_New_User (void)
+void Init_New_User (Session *sess)
 {
-    SOK_T sok;
     srv_net_icq_pak pak;
     int s;
     struct timeval tv;
@@ -205,14 +209,14 @@ void Init_New_User (void)
     }
 #endif
     M_print (i18n (756, "\nCreating Connection...\n"));
-    sok = Connect_Remote (ssG.server, ssG.remote_port, STDERR);
-    if ((sok == -1) || (sok == 0))
+    sess->sok = Connect_Remote (sess->server, sess->remote_port, STDERR);
+    if ((sess->sok == -1) || (sess->sok == 0))
     {
         M_print (i18n (757, "Couldn't establish connection\n"));
         exit (1);
     }
     M_print (i18n (758, "Sending Request...\n"));
-    reg_new_user (sok, ssG.passwd);
+    CmdPktCmdRegNewUser (sess, sess->passwd);
     for (;;)
     {
 #ifdef _WIN32
@@ -224,18 +228,18 @@ void Init_New_User (void)
 #endif
 
         FD_ZERO (&readfds);
-        FD_SET (sok, &readfds);
+        FD_SET (sess->sok, &readfds);
 
         /* don't care about writefds and exceptfds: */
-        select (sok + 1, &readfds, NULL, NULL, &tv);
+        select (sess->sok + 1, &readfds, NULL, NULL, &tv);
         M_print (i18n (759, "Waiting for response....\n"));
-        if (FD_ISSET (sok, &readfds))
+        if (FD_ISSET (sess->sok, &readfds))
         {
-            s = SOCKREAD (sok, &pak.head.ver, sizeof (pak) - 2);
+            s = SOCKREAD (sess, &pak.head.ver, sizeof (pak) - 2);
             if (Chars_2_Word (pak.head.cmd) == SRV_NEW_UIN)
             {
-                ssG.UIN = Chars_2_DW (pak.head.UIN);
-                M_print (i18n (760, "\nYour new UIN is %s%ld%s!\n"), COLSERV, ssG.UIN, COLNONE);
+                sess->uin = Chars_2_DW (pak.head.UIN);
+                M_print (i18n (760, "\nYour new UIN is %s%ld%s!\n"), COLSERV, sess->uin, COLNONE);
                 return;
             }
             else
@@ -243,7 +247,7 @@ void Init_New_User (void)
 /*                Hex_Dump( &pak.head.ver, s);*/
             }
         }
-        reg_new_user (sok, ssG.passwd);
+        CmdPktCmdRegNewUser (sess, sess->passwd);
     }
 }
 

@@ -7,8 +7,8 @@
 #define CU_DEFAULT 1
 #define CU_USER    2
 
-typedef int (jump_f)(SOK_T sok, char *args, int data, int status);
-#define JUMP_F(f) int f (SOK_T sok, char *args, int data, int status)
+typedef int (jump_f)(Session *sess, char *args, int data, int status);
+#define JUMP_F(f) int f (Session *sess, char *args, int data, int status)
 
 struct jumpstr {
     jump_f *f;
@@ -24,8 +24,8 @@ jump_t *CmdUserTable (void);
 jump_t *CmdUserLookup (const char *command, int flags);
 const char *CmdUserLookupName (const char *command);
 
-void CmdUser (SOK_T sok, const char *command);
-void CmdUserInput (SOK_T sok, int *idle_val, int *idle_flag);
+void CmdUser (Session *sess, const char *command);
+void CmdUserInput (Session *sess, int *idle_val, int *idle_flag);
 
 
 extern UDWORD last_uin;

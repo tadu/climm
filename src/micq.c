@@ -5,7 +5,7 @@
 #include "file_util.h"
 #include "util.h"
 #include "buildmark.h"
-#include "sendmsg.h"
+#include "cmd_pkt_cmd_v5.h"
 #include "network.h"
 #include "cmd_user.h"
 #include "cmd_pkt_server.h"
@@ -49,7 +49,7 @@
 extern int h_error;
 
 user_interface_state uiG;
-session_state        ssG;
+Session              ssG; /* one global session for now */
 socks5_state         s5G;
 
 /*** auto away values ***/
@@ -343,7 +343,7 @@ void Check_Endian (void)
 Idle checking function
 added by Warn Kitchen 1/23/99
 ******************************/
-void Idle_Check (SOK_T sok)
+void Idle_Check (Session *sess)
 {
     int tm;
 
@@ -353,7 +353,7 @@ void Idle_Check (SOK_T sok)
     if ((uiG.Current_Status == STATUS_AWAY || uiG.Current_Status == STATUS_NA)
         && tm < ssG.away_time && idle_flag == 1)
     {
-        icq_change_status (sok, STATUS_ONLINE);
+        CmdPktCmdStatusChange (sess, STATUS_ONLINE);
         Time_Stamp ();
         M_print (" %s ", i18n (64, "Auto-Changed status to"));
         Print_Status (uiG.Current_Status);
@@ -363,7 +363,7 @@ void Idle_Check (SOK_T sok)
     }
     if ((uiG.Current_Status == STATUS_AWAY) && (tm >= (ssG.away_time * 2)) && (idle_flag == 1))
     {
-        icq_change_status (sok, STATUS_NA);
+        CmdPktCmdStatusChange (sess, STATUS_NA);
         Time_Stamp ();
         M_print (" %s ", i18n (64, "Auto-Changed status to"));
         Print_Status (uiG.Current_Status);
@@ -376,7 +376,7 @@ void Idle_Check (SOK_T sok)
     }
     if (tm >= ssG.away_time)
     {
-        icq_change_status (sok, STATUS_AWAY);
+        CmdPktCmdStatusChange (sess, STATUS_AWAY);
         Time_Stamp ();
         M_print (" %s ", i18n (64, "Auto-Changed status to"));
         Print_Status (uiG.Current_Status);
@@ -403,7 +403,6 @@ in a loop waiting for server responses.
 ******************************/
 int main (int argc, char *argv[])
 {
-    int sok;
     int i, j, rc;
     int next;
     int time_delay = 120;
@@ -467,7 +466,7 @@ int main (int argc, char *argv[])
         }
     }
 
-    Get_Config_Info ();
+    Get_Config_Info (&ssG);
     srand (time (NULL));
     if (!strcmp (ssG.passwd, ""))
     {
@@ -497,28 +496,28 @@ int main (int argc, char *argv[])
 #endif
 
 #ifdef TCP_COMM
-    TCPInit (TCP_PORT);
+    TCPInit (&ssG, TCP_PORT);
 #endif
 
-    sok = Connect_Remote (ssG.server, ssG.remote_port, STDERR);
+    ssG.sok = Connect_Remote (ssG.server, ssG.remote_port, STDERR);
 
 #ifdef __BEOS__
-    if (sok == -1)
+    if (ssG.sok == -1)
 #else
-    if ((sok == -1) || (sok == 0))
+    if ((ssG.sok == -1) || (ssG.sok == 0))
 #endif
     {
         M_print (i18n (52, "Couldn't establish connection\n"));
         exit (1);
     }
-    Login (sok, ssG.UIN, &ssG.passwd[0], ssG.our_ip, ssG.our_port, ssG.set_status);
+    CmdPktCmdLogin (&ssG);
     next = time (NULL) + 120;
     idle_val = time (NULL);
     R_init ();
     Prompt ();
     while (!ssG.Quit)
     {
-        Idle_Check (sok);
+        Idle_Check (&ssG);
 #if _WIN32 || defined(__BEOS__)
         M_set_timeout (0, 100000);
 #else
@@ -526,7 +525,7 @@ int main (int argc, char *argv[])
 #endif
 
         M_select_init ();
-        M_Add_rsocket (sok);
+        M_Add_rsocket (ssG.sok);
 #ifndef _WIN32
         M_Add_rsocket (STDIN);
 #endif
@@ -549,25 +548,25 @@ int main (int argc, char *argv[])
 #endif
 #endif
             if (R_process_input ())
-                CmdUserInput (sok, &idle_val, &idle_flag);
+                CmdUserInput (&ssG, &idle_val, &idle_flag);
 
         R_undraw ();
 
-        if (M_Is_Set (sok))
-            CmdPktSrvRead (sok);
+        if (M_Is_Set (ssG.sok))
+            CmdPktSrvRead (&ssG);
 
 #ifdef TCP_COMM
-        TCPDispatch ();
+        TCPDispatch (&ssG);
 #endif
 
 
         if (time (NULL) > next)
         {
             next = time (NULL) + time_delay;
-            Keep_Alive (sok);
+            CmdPktCmdKeepAlive (&ssG);
         }
 
-        QueueRun (queue, sok);
+        QueueRun (queue);
 
 #if HAVE_FORK
         while (waitpid (-1, NULL, WNOHANG) > 0);        /* clean up child processes */
@@ -578,6 +577,6 @@ int main (int argc, char *argv[])
     Be_Stop ();
 #endif
 
-    Quit_ICQ (sok);
+    CmdPktCmdSendTextCode (&ssG, "B_USER_DISCONNECTED");
     return 0;
 }

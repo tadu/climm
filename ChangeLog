@@ -1,4 +1,7 @@
 
+2002-01-29 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Lots o' stuff. No v7 yet. TCP should work.
+
 2001-12-18 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Change mselect.c to also do select()ing on exceptfds; use
 	  M_Add_xsocket() to add. I'm not sure if we need it, but anyway.

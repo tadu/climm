@@ -1,13 +1,12 @@
 
-void Meta_User (SOK_T sok, UBYTE * data, UDWORD len, UDWORD uin);
-void Display_Rand_User (SOK_T sok, UBYTE * data, UDWORD len);
-void Recv_Message (int sok, UBYTE * pak);
-void User_Offline (int sok, UBYTE * pak);
-void User_Online (int sok, UBYTE * pak);
-void Status_Update (int sok, UBYTE * pak);
-void Login (int sok, int UIN, char *pass, int ip, int port, UDWORD status);
-void ack_srv (SOK_T sok, UDWORD seq);
-void Display_Info_Reply (int sok, UBYTE * pak);
-void Display_Ext_Info_Reply (int sok, UBYTE * pak);
-void Display_Search_Reply (int sok, UBYTE * pak);
-void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin, BOOL tcp);
+void Meta_User (Session *sess, UBYTE * data, UDWORD len, UDWORD uin);
+void Display_Rand_User (Session *sess, UBYTE * data, UDWORD len);
+void Recv_Message (Session *sess, UBYTE * pak);
+void User_Offline (Session *sess, UBYTE * pak);
+void User_Online (Session *sess, UBYTE * pak);
+void Status_Update (Session *sess, UBYTE * pak);
+void ack_srv (Session *sess, UDWORD seq);
+void Display_Info_Reply (Session *sess, UBYTE * pak);
+void Display_Ext_Info_Reply (Session *sess, UBYTE * pak);
+void Display_Search_Reply (Session *sess, UBYTE * pak);
+void Do_Msg (Session *sess, UDWORD type, UWORD len, char *data, UDWORD uin, BOOL tcp);

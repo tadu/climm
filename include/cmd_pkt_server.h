@@ -1,7 +1,7 @@
 
 
-typedef void (jump_srv_f)(SOK_T sok, UBYTE *data, int len, UWORD cmd, UWORD ver, UDWORD seq, UDWORD uin);
-#define JUMP_SRV_F(f) void f (SOK_T sok, UBYTE *data, int len, UWORD cmd, \
+typedef void (jump_srv_f)(Session *sess, UBYTE *data, int len, UWORD cmd, UWORD ver, UDWORD seq, UDWORD uin);
+#define JUMP_SRV_F(f) void f (Session *sess, UBYTE *data, int len, UWORD cmd, \
                               UWORD ver, UDWORD seq, UDWORD uin)
 
 struct jumpsrvstr {
@@ -13,5 +13,5 @@ struct jumpsrvstr {
 typedef struct jumpsrvstr jump_srv_t;
 
 const char *CmdPktSrvName (int cmd);
-void CmdPktSrvRead (SOK_T sok);
+void CmdPktSrvRead (Session *sess);
 JUMP_SRV_F(CmdPktSrvProcess);

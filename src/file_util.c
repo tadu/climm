@@ -20,7 +20,7 @@
 #include "tcp.h"
 #include "util.h"
 #include "cmd_user.h"
-#include "sendmsg.h"
+#include "cmd_pkt_cmd_v5.h"
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -43,7 +43,7 @@
 static char *fill (const char *fmt, const char *in);
 
 #define      ADD_ALTER(a,b)      else if (!strcasecmp (tmp, a))   \
-                                       CmdUser (0, fill ("¶alter quiet " #b " %s", strtok (NULL, " \n\t")))
+                                       CmdUser (sess, fill ("¶alter quiet " #b " %s", strtok (NULL, " \n\t")))
 #define      ADD_CMD(a,b)        else if (!strcasecmp (tmp, a))     \
                                  { char *stb;                        \
                                    stb = strtok (NULL, "\n\t");       \
@@ -116,28 +116,28 @@ static void M_strcpy (char *dest, char *src)
         *dest = '\0';
 }
 
-static void Initalize_RC_File (void)
+static void Initalize_RC_File (Session *sess)
 {
     FD_T rcf;
-    char passwd2[sizeof (ssG.passwd)];
-    strcpy (ssG.server, "icq1.mirabilis.com");
-    ssG.remote_port = 4000;
+    char passwd2[sizeof (sess->passwd)];
+    strcpy (sess->server, "icq1.mirabilis.com");
+    sess->remote_port = 4000;
 
-    ssG.away_time = default_away_time;
+    sess->away_time = default_away_time;
 
     M_print ("%s ", i18n (88, "Enter UIN or 0 for new UIN:"));
     fflush (stdout);
-    scanf ("%ld", &ssG.UIN);
+    scanf ("%ld", &sess->uin);
   password_entry:
     M_print ("%s ", i18n (63, "Enter password:"));
     fflush (stdout);
-    memset (ssG.passwd, 0, sizeof (ssG.passwd));
+    memset (sess->passwd, 0, sizeof (sess->passwd));
     Echo_Off ();
-    M_fdnreadln (STDIN, ssG.passwd, sizeof (ssG.passwd));
+    M_fdnreadln (STDIN, sess->passwd, sizeof (sess->passwd));
     Echo_On ();
-    if (ssG.UIN == 0)
+    if (sess->uin == 0)
     {
-        if (0 == ssG.passwd[0])
+        if (0 == sess->passwd[0])
         {
             M_print ("\n%s\n", i18n (91, "Must enter password!"));
             goto password_entry;
@@ -146,14 +146,14 @@ static void Initalize_RC_File (void)
         fflush (stdout);
         memset (passwd2, 0, sizeof (passwd2));
         Echo_Off ();
-        M_fdnreadln (STDIN, passwd2, sizeof (ssG.passwd));
+        M_fdnreadln (STDIN, passwd2, sizeof (sess->passwd));
         Echo_On ();
-        if (strcmp (ssG.passwd, passwd2))
+        if (strcmp (sess->passwd, passwd2))
         {
             M_print ("\n%s\n", i18n (93, "Passwords did not match - please reenter."));
             goto password_entry;
         }
-        Init_New_User ();
+        Init_New_User (sess);
     }
 
 /* SOCKS5 stuff begin */
@@ -188,7 +188,7 @@ static void Initalize_RC_File (void)
         s5G.s5Use = 0;
 /* SOCKS5 stuff end */
 
-    ssG.set_status = STATUS_ONLINE;
+    sess->set_status = STATUS_ONLINE;
 
     ContactAdd (11290140, "mICQ author (dead)");
     ContactAdd (99798577, "Rico \"mc\" Glöckner");
@@ -206,27 +206,27 @@ static void Initalize_RC_File (void)
     }
     close (rcf);
 
-    if (Save_RC () == -1)
+    if (Save_RC (sess) == -1)
     {
         perror ("Error creating config file ");
         exit (1);
     }
 }
 
-static void Read_RC_File (FD_T rcf)
+static void Read_RC_File (Session *sess, FD_T rcf)
 {
     char buf[450];
     char *tmp;
     char *p;
     Contact *cont;
-    int i, section, dep;
+    int i, section, dep = 0;
     UDWORD uin;
     char *tab_nick_spool[TAB_SLOTS];
     int spooled_tab_nicks;
 
-    ssG.passwd[0] = 0;
-    ssG.UIN = 0;
-    ssG.away_time = default_away_time;
+    sess->passwd[0] = 0;
+    sess->uin = 0;
+    sess->away_time = default_away_time;
 
 #ifdef MSGEXEC
     uiG.receive_script[0] = '\0';
@@ -272,11 +272,11 @@ static void Read_RC_File (FD_T rcf)
                 tmp = strtok (buf, " ");
                 if (!strcasecmp (tmp, "Server"))
                 {
-                    strcpy (ssG.server, strtok (NULL, " \n\t"));
+                    strcpy (sess->server, strtok (NULL, " \n\t"));
                 }
                 else if (!strcasecmp (tmp, "Password"))
                 {
-                    strcpy (ssG.passwd, strtok (NULL, "\n\t"));
+                    strcpy (sess->passwd, strtok (NULL, "\n\t"));
                 }
                 else if (!strcasecmp (tmp, "ReceiveScript"))
                 {
@@ -367,15 +367,15 @@ static void Read_RC_File (FD_T rcf)
                 }
                 else if (!strcasecmp (tmp, "UIN"))
                 {
-                    ssG.UIN = atoi (strtok (NULL, " \n\t"));
+                    sess->uin = atoi (strtok (NULL, " \n\t"));
                 }
                 else if (!strcasecmp (tmp, "port"))
                 {
-                    ssG.remote_port = atoi (strtok (NULL, " \n\t"));
+                    sess->remote_port = atoi (strtok (NULL, " \n\t"));
                 }
                 else if (!strcasecmp (tmp, "Status"))
                 {
-                    ssG.set_status = atoi (strtok (NULL, " \n\t"));
+                    sess->set_status = atoi (strtok (NULL, " \n\t"));
                 }
                 else if (!strcasecmp (tmp, "Auto"))
                 {
@@ -456,7 +456,7 @@ static void Read_RC_File (FD_T rcf)
                 }
                 else if (!strcasecmp (tmp, "Auto_away"))
                 {
-                    ssG.away_time = atoi (strtok (NULL, " \n\t"));
+                    sess->away_time = atoi (strtok (NULL, " \n\t"));
                 }
                 else if (!strcasecmp (tmp, "Screen_width"))
                 {
@@ -506,7 +506,7 @@ static void Read_RC_File (FD_T rcf)
                 }
                 else if (!strcasecmp (tmp, "set"))
                 {
-                    CmdUser (0, fill ("@set quiet %s", strtok (NULL, "\n")));
+                    CmdUser (sess, fill ("@set quiet %s", strtok (NULL, "\n")));
                 }
                 else if (!strcasecmp (tmp, "logging"))
                 {
@@ -593,7 +593,7 @@ static void Read_RC_File (FD_T rcf)
                 tmp = strtok (buf, " ");
                 if (!strcasecmp (tmp, "alter"))
                 {
-                    CmdUser (0, fill ("¶alter quiet %s", strtok (NULL, "\n")));
+                    CmdUser (sess, fill ("¶alter quiet %s", strtok (NULL, "\n")));
                 }
                 else
                 {
@@ -632,14 +632,14 @@ static void Read_RC_File (FD_T rcf)
 
     if (uiG.Verbose)
     {
-        M_print (i18n (189, "UIN = %ld\n"), ssG.UIN);
-        M_print (i18n (190, "port = %ld\n"), ssG.remote_port);
-        M_print (i18n (191, "passwd = %s\n"), ssG.passwd);
-        M_print (i18n (192, "server = %s\n"), ssG.server);
-        M_print (i18n (193, "status = %ld\n"), ssG.set_status);
+        M_print (i18n (189, "UIN = %ld\n"), sess->uin);
+        M_print (i18n (190, "port = %ld\n"), sess->remote_port);
+        M_print (i18n (191, "passwd = %s\n"), sess->passwd);
+        M_print (i18n (192, "server = %s\n"), sess->server);
+        M_print (i18n (193, "status = %ld\n"), sess->set_status);
         M_print (i18n (196, "Message_cmd = %s\n"), CmdUserLookupName ("msg"));
     }
-    if (ssG.UIN == 0)
+    if (sess->uin == 0)
     {
         fprintf (stderr, "Bad .micqrc file.  No UIN found aborting.\a\n");
         exit (1);
@@ -653,7 +653,7 @@ static void Read_RC_File (FD_T rcf)
  *   NOTE: the code isn't really neat yet, I hope to change that soon.
  *   Added on 6-20-98 by Fryslan
  ***********************************************/
-int Save_RC ()
+int Save_RC (Session *sess)
 {
     FD_T rcf;
     time_t t;
@@ -667,9 +667,9 @@ int Save_RC ()
     t = time (NULL);
     M_fdprint (rcf, "# This file was generated on %s", ctime (&t));
     M_fdprint (rcf, "# Micq version " MICQ_VERSION "\n");
-    M_fdprint (rcf, "\n\nUIN %d\n", ssG.UIN);
+    M_fdprint (rcf, "\n\nUIN %d\n", sess->uin);
     M_fdprint (rcf, "# Remove the entire below line if you want to be prompted for your password.\n");
-    M_fdprint (rcf, "Password %s\n", ssG.passwd);
+    M_fdprint (rcf, "Password %s\n", sess->passwd);
     M_fdprint (rcf, "\n#Partial list of status you can use here.  (more from the change command )\n");
     M_fdprint (rcf, "#    0 Online\n");
     M_fdprint (rcf, "#   32 Free for Chat\n");
@@ -757,7 +757,7 @@ int Save_RC ()
     else
         M_fdprint (rcf, "\n#Automatic responses off.\n#Auto\n");
 
-    M_fdprint (rcf, "\n#in seconds\nAuto_Away %d\n", ssG.away_time);
+    M_fdprint (rcf, "\n#in seconds\nAuto_Away %d\n", sess->away_time);
     M_fdprint (rcf, "\n#For dumb terminals that don't wrap set this.");
     M_fdprint (rcf, "\nScreen_Width %d\n", uiG.Max_Screen_Width);
 
@@ -816,7 +816,7 @@ int Save_RC ()
 Gets config info from the rc file in the users home 
 directory.
 ********************************************************/
-void Get_Unix_Config_Info (void)
+void Get_Unix_Config_Info (Session *sess)
 {
     FD_T rcf;
 
@@ -834,7 +834,7 @@ void Get_Unix_Config_Info (void)
     {
         if (errno == ENOENT)    /* file not found */
         {
-            Initalize_RC_File ();
+            Initalize_RC_File (sess);
         }
         else
         {
@@ -844,11 +844,11 @@ void Get_Unix_Config_Info (void)
     }
     else
     {
-        Read_RC_File (rcf);
+        Read_RC_File (sess, rcf);
     }
 }
 
-int Add_User (SOK_T sok, UDWORD uin, char *name)
+int Add_User (Session *sess, UDWORD uin, char *name)
 {
     FD_T rcf;
 
@@ -866,6 +866,6 @@ int Add_User (SOK_T sok, UDWORD uin, char *name)
 
     ContactAdd (uin, name);
 
-    snd_contact_list (sok);
+    CmdPktCmdContactList (sess);
     return 1;
 }

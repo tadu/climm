@@ -61,10 +61,6 @@
 #include "icq_v5.h"
 #include "icq_tcp.h"
 
-#ifndef login_1
-#error Strange ICQ_VER version
-#endif
-
 typedef ICQ_pak *ICQ_PAK_PTR;
 typedef SRV_ICQ_pak *SRV_ICQ_PAK_PTR;
 
@@ -142,66 +138,12 @@ typedef struct
    BOOL auth;
 } USER_INFO_STRUCT, *USER_INFO_PTR;
 
-typedef struct
-{
-   char *nick;
-   char *first;
-   char *last;
-   char *email;
-   char *email2;
-   char *email3;
-   char *city;
-   char *state;
-   char *phone;
-   char *fax;
-   char *street;
-   char *cellular;
-   UDWORD zip;
-   UWORD country;
-   UBYTE c_status;
-   BOOL hide_email;
-   BOOL auth;
-} MORE_INFO_STRUCT, *MORE_INFO_PTR;
-
-typedef struct
-{
-   char *nick;
-   char *first;
-   char *last;
-   char *email;
-   UWORD minage;
-   UWORD maxage;
-   UBYTE sex;
-   UBYTE language;
-   char *city;
-   char *state;
-   UWORD country;
-   char *company;
-   char *department;
-   char *position;
-   UBYTE online;
-   BOOL auth;
-   
-} WP_STRUCT, *WP_PTR;
-
-typedef struct {
-	UWORD age;
-	UBYTE sex;
-	char *hp;
-	UBYTE year;
-	UBYTE month;
-	UBYTE day;
-	UBYTE lang1;
-	UBYTE lang2;
-	UBYTE lang3;
-} OTHER_INFO_STRUCT, *OTHER_INFO_PTR;
-
 /*
  * Should you decide to move a global variable from one struct to another,
  * change it manually in the header file, and then in the src directory
  * the following incantation can be handy (assuming you want to move, say,
- * Hermit, from uiG to ssG):
- * perl -pi -e 's/(\W)uiG\.(Hermit)(\W)/$1ssG.$2$3/g;' *.c
+ * Hermit, from uiG to ss G):
+ * perl -pi -e 's/(\W)uiG\.(Hermit)(\W)/$1ss G.$2$3/g;' *.c
  */
 
 /* user interface global state variables */
@@ -256,44 +198,6 @@ typedef struct {
 } user_interface_state;
 
 extern user_interface_state uiG;
-
-/* session global state variables */
-typedef struct {
-        UDWORD UIN; /* current User Id Number */
-
-/******* should use & 0x3ff in the indexing of all references to last_cmd */
-        UWORD last_cmd[1024];   /* command issued for the first */
-                                /* 1024 SEQ #'s                 */
-
-        BOOL serv_mess[1024];   /* used so that we don't get duplicate */
-                                /* messages with the same SEQ          */
-
-        UWORD seq_num;  /* current sequence number */
-#ifdef TCP_COMM
-        UWORD seq_tcp;  /*** TCP: tcp sequence number ***/
-        SOK_T tcpsok;
-#endif
-        UDWORD our_ip;
-        UDWORD our_outside_ip ;
-        UDWORD our_port; /* the port to make tcp connections on */
-        BOOL Quit;
-        char passwd[100];
-        char server[100];
-        UDWORD remote_port;
-        UDWORD set_status;
-        UDWORD our_session;
-        BOOL Done_Login;
-        unsigned int away_time, away_time_prev;
-        UDWORD real_packs_sent;
-        UDWORD real_packs_recv;
-        UDWORD Packets_Sent;
-        UDWORD Packets_Recv;
-        char*  last_message_sent;
-        UDWORD last_message_sent_type;
-        UDWORD last_recv_uin;
-} session_state;
-
-extern session_state ssG;
 
 /* SOCKS5 stuff begin*/
 /* SOCKS5 global state variables */

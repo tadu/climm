@@ -18,7 +18,7 @@ BOOL Is_Repeat_Packet (UWORD this_seq)
     {
         if (i > MAX_SEQ_DEPTH)
         {
-            i = -1;
+            i = 0;
         }
         if (recv_packs[i] == this_seq)
         {

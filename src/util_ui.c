@@ -454,6 +454,29 @@ void M_print (char *str, ...)
 }
 #endif
 
+void Debug (UDWORD level, const char *str, ...)
+{
+    va_list args;
+    char buf[2048];
+    char buf2[3072];
+
+    if (!(uiG.Verbose & level))
+        return;
+
+    va_start (args, str);
+    vsnprintf (buf, sizeof (buf), str, args);
+    va_end (args);
+
+    snprintf (buf2, sizeof (buf2), "Debug: [%s] %s\n",
+              level == 32 ? "Queue" : 
+              level == 64 ? "Packet" : "unknown",
+              buf);
+    
+    M_prints (buf2);
+}
+
+
+
 /***********************************************************
 Reads a line of input from the file descriptor fd into buf
 an entire line is read but no more than len bytes are 
@@ -463,7 +486,7 @@ int M_fdnreadln (FD_T fd, char *buf, size_t len)
 {
     int i, j;
     char tmp;
-    static char buff[20] = "\0";
+/*    static char buff[20] = "\0";  */
 
 
     assert (buf != NULL);

@@ -63,33 +63,6 @@ typedef struct
 
 #endif
 
-#define CMD_ACK               	0x000A 
-#define CMD_SENDM             	0x010E
-#define CMD_TCP_REQUEST		0x015E
-#define CMD_LOGIN             	0x03E8
-#define CMD_REG_NEW_USER      	0x03FC
-#define CMD_CONT_LIST         	0x0406
-#define CMD_SEARCH_UIN        	0x041a
-#define CMD_SEARCH_USER       	0x0424
-#define CMD_KEEP_ALIVE        	0x042e
-#define CMD_SEND_TEXT_CODE    	0x0438
-#define CMD_ACK_MESSAGES      	0x0442
-#define CMD_LOGIN_1           	0x044c
-#define CMD_MSG_TO_NEW_USER   	0x0456
-#define CMD_REQ_ADD_LIST      	0X0456
-#define CMD_INFO_REQ          	0x0460
-#define CMD_EXT_INFO_REQ      	0x046a
-#define CMD_CHANGE_PW         	0x049c
-#define CMD_NEW_USER_INFO     	0x04A6
-#define CMD_UPDATE_EXT_INFO   	0X04B0
-#define CMD_QUERY_SERVERS     	0X04BA
-#define CMD_QUERY_ADDONS      	0X04C4
-#define CMD_STATUS_CHANGE     	0x04d8
-#define CMD_NEW_USER_1        	0X04EC
-#define CMD_UPDATE_INFO       	0x050A
-#define CMD_LOGIN_2           	0x0528
-#define CMD_ADD_TO_LIST       	0X053C
-
 #define SRV_ACK            	0x000A
 #define SRV_NEW_UIN        	0x0046
 #define SRV_LOGIN_REPLY    	0x005A

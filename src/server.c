@@ -76,7 +76,7 @@ char *Get_Auto_Reply ()
     }
 }
 
-void Auto_Reply (SOK_T sok, SIMPLE_MESSAGE_PTR s_mesg)
+void Auto_Reply (Session *sess, SIMPLE_MESSAGE_PTR s_mesg)
 {
     char *temp;
 
@@ -115,7 +115,7 @@ void Auto_Reply (SOK_T sok, SIMPLE_MESSAGE_PTR s_mesg)
                     M_print (i18n (635, "You have encounterd a bug in my code :( I now own you a beer!\nGreetings Fryslan!\n"));
             }
 
-            icq_sendmsg (sok, Chars_2_DW (s_mesg->uin), temp, NORM_MESS);
+            icq_sendmsg (sess, Chars_2_DW (s_mesg->uin), temp, NORM_MESS);
             free (temp);
 
             if (ContactFindNick (uiG.last_recv_uin) != NULL)
