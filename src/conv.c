@@ -358,7 +358,7 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
 {
     static char *t = NULL;
     static UDWORD size = 0;
-    const unsigned char *in = inn;
+    const unsigned char *in = (const unsigned char *)inn;
     UDWORD i;
 #if 0
     unsigned char x, y;
@@ -367,7 +367,7 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
     if (!inn)
         return "";
     
-    t = s_catf (t, &size, "%*s", (int)strlen (in) * 3, "");
+    t = s_catf (t, &size, "%*s", (int)strlen ((const char *)in) * 3, "");
     *t = '\0';
     
     for (*t = '\0'; *in; in++)
@@ -450,7 +450,7 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
 {
     static char *t = NULL;
     static UDWORD size = 0;
-    const unsigned char *in = inn;
+    const unsigned char *in = (const unsigned char *)inn;
     UDWORD val, i;
 #if 0
     unsigned char x, y;
@@ -459,7 +459,7 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
     if (!inn)
         return "";
 
-    t = s_catf (t, &size, "%*s", (int)strlen (in) * 3, "");
+    t = s_catf (t, &size, "%*s", (int)strlen ((const char *)in) * 3, "");
     *t = '\0';
     
     for (*t = '\0'; *in; in++)

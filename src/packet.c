@@ -178,11 +178,11 @@ void PacketWriteCapID (Packet *pak, UBYTE id)
     {
         if (id == CAP_MICQ)
         {
-            PacketWriteData (pak, caps[id].cap, 12);
+            PacketWriteData (pak, (const char *)caps[id].cap, 12);
             PacketWriteB4   (pak, BuildVersionNum);
         }
         else
-            PacketWriteData (pak, caps[id].cap, 16);
+            PacketWriteData (pak, (const char *)caps[id].cap, 16);
         return;
     }
 
@@ -191,7 +191,7 @@ void PacketWriteCapID (Packet *pak, UBYTE id)
             break;
     
     i %= CAP_MAX;
-    PacketWriteData (pak, caps[i].cap, 16);
+    PacketWriteData (pak, (const char *)caps[i].cap, 16);
 }
 
 void PacketWriteCap (Packet *pak, Cap *cap)
@@ -199,7 +199,7 @@ void PacketWriteCap (Packet *pak, Cap *cap)
     assert (pak);
     assert (cap);
 
-    PacketWriteData (pak, cap->var ? cap->var : cap->cap, 16);
+    PacketWriteData (pak, (const char *)(cap->var ? cap->var : cap->cap), 16);
 }
 
 void PacketWriteData (Packet *pak, const char *data, UWORD len)
@@ -492,7 +492,7 @@ Cap *PacketReadCap (Packet *pak)
                         {
                             if (caps[id].len != 16)
                             {
-                                s_free (caps[id].var);
+                                s_free ((char *)caps[id].var);
                                 caps[id].var = malloc (16);
                                 memcpy (caps[id].var, cap, 16);
                             }
@@ -512,7 +512,7 @@ Cap *PacketReadCap (Packet *pak)
     memcpy (p, cap, 16);
 
     caps[id].id = id;
-    caps[id].cap = p;
+    caps[id].cap = (const UBYTE *)p;
     caps[id].len = 16;
     caps[id].name = strdup (s_sprintf ("CAP_UNK_%d", id));
     return &caps[id];

@@ -1685,7 +1685,10 @@ static JUMP_F(CmdUserStatusDetail)
 {
     ContactGroup *cg = NULL, *tcg = NULL;
     UDWORD uin = 0, tuin = 0;
-    int i, j, k, l;
+    int i, j, k;
+#ifdef CONFIG_UNDERLINE
+    int l;
+#endif
     int lenuin = 0, lennick = 0, lenstat = 0, lenid = 0, totallen = 0;
     Contact *cont = NULL, *alias = NULL;
     Connection *peer;
@@ -1780,7 +1783,9 @@ static JUMP_F(CmdUserStatusDetail)
     {
         if (k != -1 && (cg == conn->contacts || cg == tcg))
             continue;
+#ifdef CONFIG_UNDERLINE
         l = 0;
+#endif
         if (!uin)
         {
             M_print (COLMESSAGE);
