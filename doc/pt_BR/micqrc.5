@@ -1,5 +1,5 @@
 .\" $Id$ -*- nroff -*-
-.\"  EN: micqrc.5,v 1.23.2.5 2003/01/21 16:01:54
+.\"  EN: micqrc.5,v 1.23.2.8 2003/09/03 19:00:59
 .TH MICQRC 5 mICQ PT_BR
 .SH NOME
 .B ~/.micq/micqrc
@@ -131,8 +131,8 @@ FIFOs de controle remoto n\(~ao usam estas configura\(,c\(~oes.
 A se\(,c\(~ao
 .B General
 (geral) inclui as op\(,c\(~oes para SOCKS 5 (que poder\(~ao no futuro ganhar
-sua pr\('opria se\(,c\(~ao), op\(,c\(~oes gerais, e algumas strings
-espec\('ificas.
+sua pr\('opria se\(,c\(~ao), op\(,c\(~oes gerais, defini\(,c\(~oes iniciais
+para script TCL e algumas strings a superp\(^or.
 .TP
 .BI s5_use \ n\('umero
 Use
@@ -162,18 +162,31 @@ Efetuar a autentica\(,c\(~ao com a senha
 .I senha
 no servidor proxy SOCKS 5.
 .PP
+Defini\(,c\(~oes iniciais TCL:
+.TP
+.BI tcl \ comando
+Executar comando TCL
+.I comando
+na inicializa\(,c\(~ao. Pode ser definido diversas vezes.
+.TP
+.BI tclscript \ arquivo
+Executar script TCL do arquivo
+.I arquivo
+na inicializa\(,c\(~ao. Pode ser definido diversas vezes.
+.PP
 Algumas op\(,c\(~oes "book-keeping" normalmente est\(~ao no in\('icio do
 arquivo micqrc:
 .TP
-.BI encoding\ file \ codifica\(,c\(~ao
-Ajusta a codifica\(,c\(~ao que ser\('a usada para estes textos para
+.BI encoding\ file\  codifica\(,c\(~ao
+Ajusta a codifica\(,c\(~ao que ser\('a usada para textos neste arquivo para
 .IR codifica\(,c\(~ao .
-Se utf8 estiver hablitado, ser\('a ajustado para utf8, de outro modo para o
-"locale" atual. Se utf8 estiver desabilitado, mICQ se recusar\('a a ler o
-arquivo se o "locale" dado nesta op\(,c\(~ao n\(~ao concordar com o atual.
+mICQ tentar\('a escrever este arquivo em utf8 se utf8 estiver habilitado, do
+contr\('ario na codifica\(,c\(~ao local atual. Se utf8 estiver desabilidata,
+mICQ se recusar\('a a ler o arquivo se a codifica\(,c\(~ao dada por esta
+op\(,c\(~ao n\(~ao concordar com o atual.
 .TP
-.BI encoding\ locale \ codifica\(,c\(~ao
-Ajusta a codifica\(,c\(~ao que o usu\('ario atualmente usa para
+.BI encoding\ local\ codifica\(,c\(~ao
+Ajusta a codifica\(,c\(~ao do terminal do usu\('ario atualmente para
 .IR codifica\(,c\(~ao .
 Isto sobrep\(~oe a codifica\(,c\(~ao obtida das vari\('aveis de ambiente.
 .TP

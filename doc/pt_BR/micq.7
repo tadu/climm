@@ -1,5 +1,5 @@
 .\" $Id$ -*- nroff -*-
-.\"  EN: micq.7,v 1.36.2.2 2003/01/21 16:01:54
+.\"  EN: micq.7,v 1.36.2.10 2003/09/23 12:14:21
 .TH MICQ 7 mICQ PT_BR
 .SH NOME
 mICQ - comandos interativos
@@ -264,9 +264,13 @@ do transporte usado.
 .B \(Fo\(Fo\(Fo
 e
 .B \(Fc\(Fc\(Fc
-marcam mensagens enviadas atrav\('es de uma conex\(~ao direta; se uma mensagem
-sendo enviada n\(~ao for reconhecida pelo ponto (peer) por algum tempo, ela
-\('e impressa marcada com
+marcam mensagens enviadas atrav\('es de uma conex\(~ao direta. Se a extens\(~ao
+SSL foi compilada e esta conex\(~ao direta tiver SSL estabelecida,
+.B \(Fo%\(Fo
+e
+.B \(Fc%\(Fc
+\('e usado ao inv\('es. Se uma mensagem sendo enviada sendo enviada n\(~ao for
+reconhecida pelo ponto (peer) por algum tempo, ela \('e impressa marcada com
 .BR === .
 .B \(Fo<<
 e
@@ -281,6 +285,8 @@ e
 .B >>>
 marcam mensagens icq5, que podem ser tanto as mensagens chamadas tipo-1, tipo-4
 ou offline. Estes tipos de mensagens n\(~ao s\(~ao reconhecidas.
+Note que em ``locales'' que n\(~ao possu\('irem os caracteres \Fo e \Fc,
+{ e } ser\(~ao usados ao inv\('es.
 .br
 Uma mensagem \('e primeiro tentada ser enviada por uma conex\(~ao direta pr\('e-
 existente; se nenhuma for estabelecida, uma \('e iniciada em segundo plano para
@@ -431,6 +437,9 @@ estiver vazia, outra coluna ser\('a mostrada no primeiro contato para todos
 aqueles comandos a menos que seja
 .BR ^ .
 .TP
+.B %
+A extens\(~ao SSL est\('a compilada, e uma conex\(~ao direta usando SSL para
+este contato est\('a estabelecida.
 .B &
 Uma conex\(~ao direta para este contato est\('a estabelecida.
 .TP
@@ -705,36 +714,38 @@ Alias para
 .BR peer\ file .
 Novo para 0.4.10.
 .TP
-.BI peer \ comando\ uin|nick
-Opera comando
-.I comando
-no usu\('ario dado por UIN
-.I uin
-ou nick name
-.IR nick .
+.BI accept \ [...]
+Alias para
+.BR peer\ accept .
+Novo para 0.4.10.4.
+.TP
+.BI peer \ comando\ argumentos
+Manipula conex\(~oes diretas (peer to peer).
 .RS
 .TP
-.B open
-Abre conex\(~ao peer to peer atrav\('es de TCP com o usu\('ario.
+.B open <contato>...
+Abre conex\(~ao peer to peer atrav\('es de TCP para estes usu\('arios.
 .TP
-.B close
-Fecha e reseta conex\(~ao peer to peer com o usu\('ario.
+.B close <contato>...
+Fecha e reseta conex\(~ao peer to peer para estes usu\('arios.
 .TP
-.B off
+.B off <contato>...
 Desiste de tentar estabelecer uma conex\(~ao para enviar
 mensagens at\('e que seja explicitamente aberta ou resetada.
 .TP
-.BI file \ arquivo\ descri\(,c\(~ao
+.BI file <contato> \ arquivo\ descri\(,c\(~ao
 Envia arquivo
 .I arquivo
 com descri\(,c\(~ao
 .IR descri\(,c\(~ao .
 .TP
-.BI files \ [arquivo\ como]...\ descri\(,c\(~ao
-Envia arquivos para o usu\('ario. Podem haver arbitrariamente tantos
-pares de um nome de um arquivo f\('isico
+.BI files <contato> \ [arquivo\ como]...\ descri\(,c\(~ao
+Envia arbitrariamente diversos arquivos para um contato. Para cada par de
+um arquivo f\('isico com nome
 .I arquivo
-e como deve ser apresentado ao ponto (peer),
+e o nome
+.IR como
+a ser apresentado ao ponto (peer) devem ser dados.
 .IR como .
 Se
 .IR como
@@ -743,7 +754,34 @@ for
 o nome do arquivo sem o caminho \('e enviado, e se for
 .RB ' . '
 o mesmo nome \('e enviado.
+.TP
+.BR accept \ [<contato>]\ [<id>]
+Aceita um pedido para receber arquivo de
+.IR contato
+com o ID dado
+.IR id .
+Se houver somente um pedido para receber arquivo pendente, os argumentos
+.IR contato \ e\  id
+podem ser omitidos, do contr\('ario \('e indefinido qual pedido de arquivo \('e
+respondido quando diversos s\(~ao encontrados.
+.TP
+.BR deny \ [<contato>]\ [<id>]\ [<raz\(~ao>]
+Rejeita um pedido para receber arquivo de
+.IR contato
+com o ID dado
+.IR id
+pela raz\(~ao
+.IR raz\(~ao .
+.TP
+.BR ssl \ <contato>...
+Requere encripta\(,c\(~ao SSL para cada
+.IR contato .
 .RE
+.TP
+.BI login \ [...]
+Alias para
+.BR conn\ login .
+Novo para 0.4.10.4.
 .TP
 .BI conn \ [comando\ nr]
 Lista todas as conex\(~oes, ou opera
@@ -791,8 +829,159 @@ Ainda n\(~ao h\('a upload de lista ainda.
 Checa quando
 .I nick
 est\('a online ou n\(~ao. Abusa de um bug no protocolo ICQ para isto;
-nenhuma informa\(,c\(~ao adicional exceto onlne ou offline pode ser encontrada
+nenhuma informa\(,c\(~ao adicional exceto online ou offline pode ser encontrada
 desta maneira.
+.SH COMANDOS PARA TCL SCRIPTING
+.TP
+.BI tcl \ <comando>
+Executa um comando
+.IR comando
+TCL. Exemplo: tcl puts "hello world"
+.TP
+.BI tclscript \ <arquivo>
+Executa um script TCL do arquivo
+.IR arquivo .
+.PP
+Os seguintes comandos TCL s\(~ao introduzidos pelo mICQ para deixar voc\(^e
+controlar mICQ de dentro de um ambiente TCL. Para evitar a polui\(,c\(~ao do
+espa\(,co de nomes com os comandos originais TCL, todos os comandos mICQ TCL
+s\(~ao um subcomando do comando TCL 'micq'. Isto significa, por exemplo, 'micq
+receive R\(:udiger myproc' instalar\('a um la\(,co para recep\(,c\(~ao de
+mensagens de R\(:udiger. Todos os seguintes comandos devem ser precedidos por
+'micq'.
+.TP
+.BI receive \ <comando>\ [<contato>]
+Instala um la\(,co para recep\(,c\(~ao de mensagens de texto.
+.I comando
+\('e o comando TCL a ser executado na recep\(,c\(~ao da mensagem.
+.I contato
+\('e um filtro opcional. Se voc\(^e n\(~ao especificar um filtro, o la\(,co
+coletar\('a todas as mensagens recebidas. Voc\(^e pode instalar quantos la\(,cos
+de mensagens quanto quizer. Se um la\(,co j\('a existe para um contato, o
+la\(,co existente \('e atualizado e o procedimento retorna do comando anterior.
+.sp
+Apenas mensagens de texto simples s\(~ao processadas. Use o la\(,co de eventos
+para recep\(,c\(~ao de outros tipos de mensagens.
+.sp
+Sempre que uma mensagem \('e recebida pelo mICQ, o comando dado ser\('a
+executado com dois argumentos dados: o UIN do remetente e o texto da mensagem.
+.sp
+Nota: esta fun\(,c\(~ao \('e dada para conveni\(^encia. La\(,cos de eventos
+(descritos abaixo) podem fazer o mesmo servi\(,co de um modo gen\('erico, mas
+n\(~ao possuem propriedade de filtro.
+.TP
+.BI unreceive \ [<contato>]
+Remove um la\(,co instalado com filtro para
+.IR contato .
+Se este la\(,co existia seu comando ser\('a retornado.
+.BI event \ <comando>
+Instala la\(,co de evento.
+.I comando
+\('e o comando TCL a ser executado no evento. Se um la\(,co de evento j\('a
+existia seu comando ser\('a retornado. Chamadas consecutivas ir\(~ao sobrepor o
+la\(,co antigo.
+.sp
+O comando ser\('a executado com um n\('umero vari\('avel de argumentos dados. O
+primeiro argumento sempre ser\('a o tipo de evento encontrado. Os demais
+argumentos depender\(~ao do tipo de evento. A lista seguinte explica todos os
+eventos. A palavra em negrito \('e o tipo de evento e os argumentos em
+it\('alico descrevem os detalhes do evento.
+.RS
+.TP
+.BI status \ <uin>\ <estado>
+Usu\('ario alterou seu estado.
+.TP
+.BI message \ <uin>\ <menssagem>
+Mensagem recebida.
+.TP
+.BI mail \ <uin>\ <conte\('udo>
+Email recebido.
+.TP
+.BI web \ <uin>\ <url>
+mensagem URL.
+.TP
+.BI file_request \ <uin>\ <nome_arquivo>\ <tamanho>\ seq\(:u\(^encia
+Pedido de transmiss\(~ao de arquivo recebido.
+.TP
+.BI contactlistadded \ <uin>
+Algu\('em o adicionaou em sua lista de contatos.
+.TP
+.BI authorization \ <uin>\  \fR{\fPrequest\fR,\fPrefused\fR,\fPgranted\fR}\fP
+Estado de autoriza\(,c\(~ao.
+.TP
+.BI ssl \ <uin> \ <estado> \ [<raz\(~ao>]
+Encripta\(,c\(~ao SSL estabelecida ou falha com
+.IR uin .
+.I estado
+\('e
+.B ok
+ou
+.BR falhou .
+.I raz\(~ao
+pode ser:
+.RS
+.TP
+.BI precondition
+SSL j\('a falhou formalmente. Ent\(~ao n\(~ao tente novamente.
+.TP
+.BI key
+Falha no ajuste da chave SSL.
+.TP
+.BI incapable
+Ponto enviou resposta "SSL not suported".
+.TP
+.BI handshake
+Falha SSL handshake.
+.TP
+.RB { candidate , no_candidate }
+Indica quando
+.I uin
+\('e um candidado capaz de SSL
+.RE
+.RE
+.TP
+.BI unevent
+Desinstala um la\(,co de evento. Retorna o comando do la\(,co anterior.
+.TP
+.BI hooks
+Retorna uma lista de todos os la\(,cos instalados. Cada elemento da lista \('e
+um la\(,co e consiste de uma lista de dois elementos: o filtro e o comando.
+.TP
+.BI exec \ <comando>
+Executa um comando mICQ e retorna sua sa\('ida para um texto simples.
+Seq\(:u\(^encias de escape ANSI ser\(~ao removidas .TP
+.BI nick \ <uin>
+Procura nick para um dado UIN se ele j\('a for conhecido.
+Dica: use 'exec finger' para UINs que n\(~ao estejam na sua lista de contatos.
+.TP
+.BI help
+D\('a um breve resumo de todos os comandos TCL espec\('ificos mICQ.
+.PP
+Estas vari\('aveis TCL s\(~ao definidas. Voc\(^e pode sobrescrev\(^e-las mas perder\('a o seu valor original:
+.TP
+.BI micq_version
+Texto com a vers\(~ao mICQ.
+.TP
+.BI micq_basedir
+Diret\('orio base (mesmo da op\(,c\(~ao \-b do mICQ)
+.TP
+.BI micq_uin
+Lista de seus contatos conhecidos
+.PP
+.nf
+.ta 4n 19n 31n
+Exemplo simples de um la\(,co de eventos:
+
+# in\('icio do script TCL
+proc temos_um_evento { tipo args } {
+    puts "tipo='$tipo' args=[join $args {,}]"
+    # fazer outras a\(,c\(~oes ...
+}
+# instalar o la\(,co no contexto principal
+micq event temos_um_evento
+# fim do script TCL
+.ta
+.fi
 .SH VEJA TAMB\('EM
 .BR micq (1),
 .BR micqrc (5)
