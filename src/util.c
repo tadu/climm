@@ -491,10 +491,6 @@ UDWORD UtilCheckUIN (Session *sess, UDWORD uin)
         cont = ContactAdd (uin, ContactFindName (uin));
         if (cont)
             cont->flags |= CONT_TEMPORARY;
-        if (sess->ver > 6)
-            SnacCliAddcontact (sess, uin);
-        else
-            CmdPktCmdContactList (sess);
     }
     return uin;
 }

@@ -1810,11 +1810,15 @@ JUMP_F(CmdUserAdd)
     if ((cont = ContactFind (uin)))
     {
         if (!arg2)
-            arg2 = ContactFindName (uin);
+            arg2 = strdup (cont->nick);
         if (cont->flags & CONT_TEMPORARY)
         {
             M_print (i18n (1669, "%s added.\n"), arg1);
             M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
+            if (sess->ver > 6)
+                SnacCliAddcontact (sess, uin);
+            else
+                CmdPktCmdContactList (sess);
         }
         else
         {
