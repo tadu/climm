@@ -888,6 +888,7 @@ BOOL UtilIOSendTCP (Connection *conn, Packet *pak)
     if (conn->error && conn->error (conn, rc, CONNERR_WRITE))
         return TRUE;
 
+    conn->outgoing = NULL;
     PacketD (pak);
 
     if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
