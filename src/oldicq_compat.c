@@ -322,8 +322,8 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             cont->updated |= UPF_GENERAL_C;
             
             UtilUIDisplayMeta (cont);
-            if (subtype == META_SRV_WP_LAST_USER && (dwdata = PacketRead4 (pak)))
-                rl_printf ("%lu %s\n", dwdata, i18n (1621, "users not returned."));
+            if (subtype == META_SRV_WP_LAST_USER && (wdata = PacketRead2 (pak)))
+                rl_printf ("%u %s\n", wdata, i18n (1621, "users not returned."));
             break;
         case META_SRV_RANDOM:
             uin = PacketRead4 (pak);
