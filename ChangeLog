@@ -1,3 +1,61 @@
+2002-10-22 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Last minute fixes for 0.4.9.4:
+	+ always ack type-2
+	+ fix sound preferences
+	+ fix timezone type configure test
+	* new functions:
+	+ move syntax dump to new util_syntax.c, improve syntax
+	+ ConvUTF8(): convert a single code point
+	+ ConvToUTF8(), ConvFromUTF8(): convert string from or to utf8
+	+ s_strlen(): UTF string length
+	+ s_offset(): byte offset of character offset
+	+ s_strnlen(): count characers within at most n bytes
+	+ PrefLogName(): was init_log()
+	* obsolete stuff:
+	+ get rid of UIN_DELIM, get rid of unused SOCKREAD
+	+ get rid of ConvWinUnix(), ConvUnixWin() and conv_rus.c, conv_jp.c
+	* renames:
+	+ rename CAP_IS_2002 to CAP_UTF8
+	+ rename Session to Connection
+	* implement UTF-8:
+	+ add configure option --enable-utf8 (until it is default)
+	+ input, output, type-2 and dc UTF-8 messages
+	+ implement config option "encoding local" and "encoding remote" for encodings
+	+ Use ^u or ^p or ESC u to input an arbitrary Unicode 16bit codepoint
+	+ add EUC<->UTF8<->SJIS pseudo-conversions
+	+ load bla_bla.UTF-8.i18n if UTF-8 is used
+	* fixes:
+	+ fix soundoffline cmd
+	+ fix initial contact import
+	+ fix passwords with null-encoded bytes
+	+ fix order LC_* are checked
+	+ compile fixes for --disable-p2p
+	+ fixes for i18n issues
+	+ fix wrong port used in second attempt on file transfer
+	* other changes:
+	+ change logo to a flower
+	+ return success if opening the config file succeeded
+	+ add UAE workaround when compiling for AmigaOS
+	+ remove instead of just close incoming connection if accept() fails
+	+ clear errno before select()
+	+ use ISO date, add UTC time zone
+	+ notify user of offline user (but only once)
+	+ interpret obsolete meta response
+	+ use \n instead of ¶ in i18n files
+	+ Debian merge
+	+ improve argument parsing
+	+ implement GNU style options as well, add option for setting the base dir
+	+ new nice mICQ ASCII art logo
+	+ preliminarily fix login trouble by ignoring error message
+	+ bind to next free port if specified port is already in use
+	+ support for shorter capabilities, detect sim version with this,
+	  add mICQ version capability
+	  NOTE: The complete version detection code from mICQ was stolen
+	        from the sim developers and used without any attribution,
+	        thus infringing on my copyright. The same is true for the
+	        capabilities table, as you can see from the #defines used.
+	+ fix check for unknown capability
+
 2002-10-03 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* add error message for missing file reception directory
 	* web page: add blurb for misconfigured browsers
