@@ -38,10 +38,11 @@ extern int reconn;
 
 static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd,
     SnacSrvRates, SnacSrvReplyicbm, SnacSrvReplybuddy, SnacSrvReplybos,
-    SnacSrvReplyinfo, SnacSrvReplylocation, SnacSrvUseronline, SnacSrvRegrefused,
-    SnacSrvUseroffline, SnacSrvRecvmsg, SnacSrvUnknown, SnacSrvFromicqsrv,
-    SnacSrvAddedyou, SnacSrvNewuin, SnacSrvSetinterval, SnacSrvSrvackmsg, SnacSrvAckmsg,
-    SnacSrvAuthreq, SnacSrvAuthreply, SnacSrvIcbmerr, SnacSrvReplyroster,
+    SnacSrvReplyinfo, SnacSrvReplylocation, SnacSrvUseronline,
+    SnacSrvRegrefused, SnacSrvUseroffline, SnacSrvRecvmsg, SnacSrvUnknown,
+    SnacSrvFromicqsrv, SnacSrvAddedyou, SnacSrvToicqerr, SnacSrvNewuin,
+    SnacSrvSetinterval, SnacSrvSrvackmsg, SnacSrvAckmsg, SnacSrvAuthreq,
+    SnacSrvAuthreply, SnacSrvIcbmerr, SnacSrvReplyroster,
     SnacSrvRateexceeded;
 
 static SNAC SNACv[] = {
@@ -92,7 +93,7 @@ static SNAC SNACS[] = {
     { 19, 25, "uB",       "SRV_AUTHREQ",         SnacSrvAuthreq},
     { 19, 27, "ubBW",     "SRV_AUTHREPLY",       SnacSrvAuthreply},
     { 19, 28, "u",        "SRV_ADDEDYOU",        SnacSrvAddedyou},
-    { 21,  1, "Wt-",      "SRV_TOICQERR",        NULL},
+    { 21,  1, "Wt-",      "SRV_TOICQERR",        SnacSrvToicqerr},
     { 21,  3, "t[1wDw[2010ww[270bbwLb]]]-",
                           "SRV_FROMICQSRV",      SnacSrvFromicqsrv},
     { 23,  1, "Wt[33DdWDDDD]-",
@@ -106,7 +107,7 @@ static SNAC SNACS[] = {
     {  1, 30, "t[12DDbWDWWWWDDDW]-",
                           "CLI_SETSTATUS",       NULL},
     {  2,  2, "",         "CLI_REQLOCATION",     NULL},
-    {  2,  4, "C-",       "CLI_SETUSERINFO",     NULL},
+    {  2,  4, "t[5C-]-",  "CLI_SETUSERINFO",     NULL},
     {  3,  2, "",         "CLI_REQBUDDY",        NULL},
     {  3,  4, "u-",       "CLI_ADDCONTACT",      NULL},
     {  3,  5, "u-",       "CLI_REMCONTACT",      NULL},
@@ -133,7 +134,8 @@ static SNAC SNACS[] = {
     { 19, 20, "uD",       "CLI_GRANTAUTH?",      NULL},
     { 19, 24, "uBW",      "CLI_REQAUTH",         NULL},
     { 19, 26, "ubBW",     "CLI_AUTHORIZE",       NULL},
-    { 21,  2, "t-",       "CLI_TOICQSRV",        NULL},
+    { 21,  2, "t[1wdww]-",
+                          "CLI_TOICQSRV",        NULL},
     { 23,  4, "t[1DDDDDDDDDDLDDW]-",
                           "CLI_REGISTERUSER",    NULL},
     {  0,  0, "",         "unknown",             NULL}
@@ -1015,6 +1017,34 @@ static JUMP_SNAC_F(SnacSrvAddedyou)
     UtilCheckUIN (event->conn, uin);
     IMSrvMsg (ContactFind (uin), event->conn, NOW, MSG_AUTH_ADDED, "", STATUS_ONLINE);
 }
+
+/*
+ * SRV_TOICQERR - SNAC(15,1)
+ */
+static JUMP_SNAC_F(SnacSrvToicqerr)
+{
+    Packet *pak = event->pak;
+    if ((pak->id & 0xffff) == 0x4231)
+    {
+        M_print (i18n (2206, "The server doesn't want to give us offline messages.\n"));
+        SnacCliSetrandom (event->conn, prG->chat);
+
+        event->conn->connect = CONNECT_OK | CONNECT_SELECT_R;
+        reconn = 0;
+        CmdUser ("¶e");
+        
+        QueueEnqueueData (event->conn, QUEUE_SRV_KEEPALIVE, 0,
+                          event->conn->uin, time (NULL) + 30,
+                          NULL, NULL, &SrvCallBackKeepalive);
+    }
+    else
+    {
+        UWORD err = PacketReadB2 (pak);
+        M_printf (i18n (2207, "Protocol error in command to old ICQ server: %d.\n"), err);
+        M_print (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
+    }
+}
+
 /*
  * SRV_FROMOLDICQ - SNAC(15,3)
  */
@@ -1583,13 +1613,13 @@ void SnacCliAuthorize (Connection *conn, UDWORD uin, BOOL accept, const char *ms
 /*
  * Create meta request package.
  */
-Packet *SnacMetaC (Connection *conn, UWORD sub, UWORD type, UDWORD ref)
+Packet *SnacMetaC (Connection *conn, UWORD sub, UWORD type, UWORD ref)
 {
     Packet *pak;
 
-    conn->our_seq3 = conn->our_seq3 ? conn->our_seq3 + 1 : 2;
+    conn->our_seq3 = conn->our_seq3 ? (conn->our_seq3 + 1) % 0x7fff : 2;
     
-    pak = SnacC (conn, 21, 2, 0, ref ? ref : rand () % 0xffffff);
+    pak = SnacC (conn, 21, 2, 0, (ref ? ref : rand () % 0x7fff) + (conn->our_seq3 << 16));
     PacketWriteTLV (pak, 1);
     PacketWriteLen     (pak);
     PacketWrite4  (pak, conn->uin);
@@ -1618,7 +1648,7 @@ void SnacCliReqofflinemsgs (Connection *conn)
 {
     Packet *pak;
 
-    pak = SnacMetaC (conn, 60, 0, 0);
+    pak = SnacMetaC (conn, 60, 0, 0x4231);
     SnacMetaSend    (conn, pak);
 }
 
@@ -1765,7 +1795,7 @@ void SnacCliSetrandom (Connection *conn, UWORD group)
 {
     Packet *pak;
 
-    pak = SnacMetaC (conn, 2000, META_SET_RANDOM, conn->connect & CONNECT_OK ? 0 : 0x42424242);
+    pak = SnacMetaC (conn, 2000, META_SET_RANDOM, conn->connect & CONNECT_OK ? 0 : 0x4242);
     PacketWrite2    (pak, group);
     if (group)
     {
