@@ -681,7 +681,8 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                     break;
                 j = TLVGet (tlv, 305);
                 assert (j < 200 || j == (UWORD)-1);
-                nick = (j != (UWORD)-1 ? tlv[j].str : name);
+                nick = strdup (j != (UWORD)-1 ? tlv[j].str : name);
+                ConvWinUnix (nick);
                    
                 switch (data)
                 {
@@ -698,6 +699,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                     case 1:
                         M_print ("  %10d %s\n", atoi (name), nick);
                 }
+                free (nick);
                 break;
             case 4:
             case 9:
