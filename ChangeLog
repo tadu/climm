@@ -1,5 +1,155 @@
 -*- coding: utf-8 -*-
 
+2003-08-10 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* remove obsolete commands: w-old, e-old, msg-old, alter
+	* remove obsolete code, don't write compatibility section in micqrc anymore
+	* remove unmaintained, unsecure non-WORD_WRAP code
+
+2003-08-09 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
+	* fix those freakin' \x## parsing
+	* add zh_TW translation from Kenneth Chan
+
+2003-08-09 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* fix COLMESSAGE abuse by introducing COLQUOTE for quotes/options
+	* optimize color handling and get rid of CX* macros
+	* actually use the contact's settings for incoming/ack/message color
+	* show and edit only options relevant to contact/contact group/global
+	* update opt command to use more COLQUOTE
+	* add specialised commands optglobal, optgroup, optcontact
+	* fix segfault introduced by last sucky setlocale() workaround
+	* fix segfault if contact group name is empty
+	* fix \x## output
+	* fix segfault due to uninitialized string for type-1 messages
+	* fix double Warning when no locale is given at all
+	* fix warning message for C locale
+	* make COLCONTACT per-contact
+	* escape more US-ASCII control codes
+	* bring back possibility to not load any translation by using the
+	  en_US.US-ASCII locale
+	* fix the opt command for undefining strings
+	* re-implement and fix CmdUserStatusWide(), remove obsolete MAX_CONTACTS #define
+	* a few contact management and CmdUserStatusDetail() fixes/changes
+
+2003-08-08 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* fix \x## decoding; quote empty string as "" in s_cquote
+	* keep color through line breaks
+	* use nl_langinfo() from langinfo.h
+	* change i18nInit() and i18nOpen() to always access the global preferences:
+	  thus, a reload of the translation may change the output encoding used
+	* make sure my name is transliterated if the umlaut is not supported in the given locale
+	* split ENC_AUTO #define into ENC_AUTO (no encoding yet found) and ENC_FAUTO
+	  (flag for autodetected encoding) to allow to have an auto-detected ASCII encoding
+	* use US-ASCII as default instead of LATIN1
+	* use ENC_* macros instead of hard-coded array indices
+	* fix unset return string length of iconv_*_iconv()
+	* change translation search order: first check for file with current encoding in it's name, then without
+	* use shifted indices for funny messages instead of seperate translation file
+	* fix long-name command line parameters
+	* issue big, fat warnings if setlocale() doesn't understand the locale,
+	  if no locale is set, or C or POSIX is used as a locale
+	* add *.m4 files from gettext that were used for the iconv() check
+	* work-around for even more buggy iconv() implementation
+	  (those that return de_DE with iso-8859-1 when de_DE.UTF-8 was requested, but unknown)
+
+2003-08-05 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* change iconv() configure test - check the correct name of the standard encodings at runtime
+	* allow fallbacks for standard encodings to be compiled in depending on iconv() or all by demand
+	* re-implement iconv() fallbacks as seperate function each and compile only the needed ones
+	* select iconv() vs fallback in a new initialization function ConvInit()
+	* split ConvToUTF8() into ConvFrom() and ConvFromSplit()
+	* rename ConvFromUTF8() to ConvTo(), macro c_in_to_0 to ConvFromCont,
+	  macro c_in_to to c_in_to_split, macro c_in to ConvFromServ
+	* use strc_t for the arguments/returns of those
+	* change UtilIOReadline to return a strc_t as well
+	* conv_error external to report unknown encodings
+	* add a huge warning if neither iconv() nor fallback of standard encodings are available
+	* make s_parse fill in a strc_t instead of a char *
+	* use s_parsekey() instead of some adventurous constructs in some places
+	* transcode an file input line before parsing it to reduce number of conversion calls
+	* fix s_parse() \\x.. parsing
+	* ... and fix uncountably many calls to changed functions.
+	* up buildmark and version number
+	* new s_cquote(): quote a string, hex-encoding control characters, adding quotes and color
+	* new s_mquote(): ^-encoding control characters (except maybe \n), skip \r and trailing \n, add color
+	* use s_cquote()/s_mquote() in some places, in particular for displaying contact meta data
+
+2003-04-08 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
+	* update it.i18n 
+
+2003-04-08 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* src/contactopts.c, include/contactopt.h: new file to cope with contact options,
+	  which can be flags or strings; currently intimate,hidefrom,ignore,auto*
+	* use them in contacts, contact groups and globally
+	* allow for arbitrarely many connections
+	* replace contact structure for aliases by a linked list of char *, obsoletes CONT_ALIAS
+	* do not report back the nick used on the command line from s_parsenick();
+	  always display main nick for messages
+	* get rid of CONT_TEMPORARY by having a global list of noncontacts
+	* split ContactGroupFind() into ContactGroupC() and ContactGroupFind()
+	* make ContactUIN() a function (fixes failed assertion)
+	* split PrefParse() into PrefParseVal() and PrefParseStr(),
+	  ContactOptionsGet() into ContactOptionsGetVal() and ContactOptionsGetStr(),
+	  ContactOptionsSet() into ContactOptionsSetVal(), ContactOptionsSetStr() and ContactOptionsUndef()
+	* implement numeric options, allow debugging and fix implementation
+	* implement color options
+	* new ContactOptionsC2S() and ContactOptionsS2C() to convert between escape sequence and color description
+	* turn 'encoding remote', 'b_enc', 'auto(away,na,...)', 'hermit', 'log', 'logonoff',
+	  'quiet', 'quiet complete', 'color *' into contact options
+	* don't hide unset webaware/hideip/dcauth/dccont options anymore
+
+2003-07-22 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+	* fix mem leak, fix handling of failed malloc()
+	* fix handling if uname()/gethostname() fails
+	* fix crash if too many tlvs
+	* these bugs were reportet by Robert Lemmon
+
+2003-07-04 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+	* update Japanese ja.UTF-8.i18n
+	* fix sound command, mark auto replies as such, add missing translations
+	* update  de.i18n en.i18n
+	* fix i18n-template to use stable branch only
+
+2003-07-04 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* using UTF-8 internally is now mandatory
+	* str_t-ify PacketCreate(), fix incorrect text termination
+	* use macros ContactPref(),ContactPrefSet() to access contact flags
+	* have a contact group associated to each contact
+	* have contact flags for contact groups and global also;
+	  query by ContactPref(), set by ContactPrefSet(), ContactGroupPrefSet(), PrefContactSet()
+	* put contact groups and contacts into a seperate config file
+	* save/load contact flags for contacts group and gloabl, fix slight mem leak
+	* useless variable renaming (t->str) for better readability
+	* deprecate the -f option - use -b instead
+	* be safer in util_str.c to make sure "txt" member is never NULL
+	* make sure prG->rcfile and prG->statfile are set
+	* add functions to parse for keywords and contact groups
+	* fix options saving for contact groups
+	* new user command opt to set/clear/undef contact options
+
+2003-05-29 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* apply str_t string type patch
+	* fix: contact list loading; fix setup wizard; fix compile warnings (+stable-0-4-10)
+	* use str_t everywhere where possible
+	* fix possible segfault when connection fails (+stable-0-4-10)
+	* try to recognize GAIM better
+	* fix --nocolor flag (+stable-0-4-10)
+	* fix buildmark format string
+	* fix auto-away for Windows (stable)
+	
+2003-05-14 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+	* add UCS-2BE, drop CP1257 from list of required encodings
+	* fix verbosity getting set to 0x8000
+	* test for UCS-2BE as well
+	* fix silent acception in DND/OCC state
+	* don't send UCS-2BE type-1 to offline clients
+	* show type-2 auto messages
+	* add libiconv question to FAQ
+	* fix yet another typo in iconv() check
+	* don't regenerate *.i18n from *-UTF-8.i18n during build; fix compile error
+	* interpret trailing \ as itself, fixes trailing \ on msg command
+	* don't show status as offline for auto-responses
+	* don't double-unquote the input line
+
 2003-05-13 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
 	* activate code using new strings: better display of used locale, add one missing help text
 	* remove unused beos.[ch]
@@ -32,7 +182,7 @@
 	* make sure contacts don't tunnel to other connections via the global list
 	* new undocumented command "as" to run a command on a different connection
 	* add i18n string: version without build date
-	* make copyright visible so that thos blind Debian/Mandrake/Red Hat guys realize that mICQ is GPLv2
+	* make copyright visible so that those blind Debian/Mandrake/Red Hat guys realize that mICQ is GPLv2
 	* add numeric build platform id, use
 	* add loads of GPLv2 notices
 	* fix iconv() configure check (s/none/buildin)
@@ -70,6 +220,9 @@
 	* fix spec file to include man pages
 	* add ru@fun
 	* add cp-1257 for type-1
+
+2003-03-11 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* add first traces of contact list upload, still unusable
 
 2003-03-07 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
 	* fix endless resend stuff
