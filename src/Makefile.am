@@ -4,7 +4,6 @@ bin_PROGRAMS = micq
 
 AM_CFLAGS = -DPKGDATADIR=\"$(pkgdatadir)\"
 
-# If BeOS, add 'beos.c'
 micq_SOURCES = conv.c file_util.c icq_response.c micq.c \
        server.c util.c  util_ui.c mreadline.c mselect.c network.c \
        msg_queue.c tabs.c i18n.c util_table.c contact.c tcp.c packet.c \
@@ -35,7 +34,7 @@ buildmark.o: .cvsupdate
 .cvsupdate: force
 	grep Id: *.c ../include/*.h | sed "s,.*\(20../../.. ..:..:..\).*,#define CVSUPDATE \"\1 UTC\"," \
 	    | sort | tail -1 | tr / - > .cvsupdate
-	date "+#define BUILDDATE \"%Y-%d-%m %T %Z\"" >> .cvsupdate
+	date "+#define BUILDDATE \"%Y-%m-%d %T %Z\"" >> .cvsupdate
 
 force:
 
