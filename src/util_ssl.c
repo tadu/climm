@@ -209,7 +209,7 @@ int SSLInit ()
     gnutls_anon_set_server_dh_params (server_cred, dh_parm);
 
 #else /* ENABLE_GNUTLS */
-
+    DH *dh;
     SSL_library_init();
     gSSL_CTX = SSL_CTX_new (TLSv1_method ());
 #if OPENSSL_VERSION_NUMBER >= 0x00905000L
@@ -221,7 +221,7 @@ int SSLInit ()
     if (prG->verbose & DEB_SSL)
         SSL_CTX_set_info_callback (gSSL_CTX, (void (*)())openssl_info_callback);
 
-    DH *dh = get_dh512 ();
+    dh = get_dh512 ();
     if (!dh)
         return -1;
     SSL_CTX_set_tmp_dh (gSSL_CTX, dh);
@@ -371,8 +371,10 @@ int ssl_handshake (Connection *conn)
         const char *file = "";
         int line = -1;
         switch (err_j) {
-            case SSL_ERROR_WANT_CONNECT:
+#ifdef SSL_ERROR_WANT_ACCEPT
             case SSL_ERROR_WANT_ACCEPT:
+#endif
+            case SSL_ERROR_WANT_CONNECT:
             case SSL_ERROR_WANT_WRITE:
             case SSL_ERROR_WANT_READ:
             case SSL_ERROR_WANT_X509_LOOKUP:
