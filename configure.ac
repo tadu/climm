@@ -319,7 +319,7 @@ AC_FUNC_MEMMOVE
 AC_CHECK_FUNCS([localtime_r timegm atexit memset memcmp mkdir strcasecmp uname fcntl \
                 wcwidth iswalnum iswspace \
                 strchr memchr strdup strncasecmp strpbrk strrchr strstr strtol strtok_r \
-                symlink chmod tcgetattr gettimeofday setlocale nl_langinfo select atoll])
+                symlink chmod tcgetattr gettimeofday setlocale nl_langinfo select atoll sigprocmask])
 
 for f in memset mkdir atexit \
          strcasecmp strchr memchr strdup strncasecmp strpbrk strrchr strstr strtol; do

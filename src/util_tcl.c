@@ -319,6 +319,17 @@ void TCLInit ()
     tcl_pref_p pref;
     int i, result;
     Connection *conn;
+#if HAVE_SIGPROCMASK
+    sigset_t sigs;
+
+    sigemptyset (&sigs);
+    sigaddset (&sigs, SIGINT);
+    sigprocmask (SIG_BLOCK, &sigs, NULL);
+#endif
+    tinterp = Tcl_CreateInterp ();
+#if HAVE_SIGPROCMASK
+    sigprocmask (SIG_UNBLOCK, &sigs, NULL);
+#endif
 
     tinterp = Tcl_CreateInterp ();   
 
