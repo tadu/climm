@@ -328,7 +328,7 @@ void QueueRetry (Session *sess, UDWORD type, UDWORD uin)
         }
     
     if (event)
-        event = QueueDequeue (event->sess, event->seq, type);
+        event = QueueDequeue (event->sess, type, event->seq);
     
     if (event && event->callback)
     {

@@ -594,7 +594,7 @@ static void TCPDispatchPeer (Session *peer)
             switch (cmd)
             {
                 case TCP_CMD_CANCEL:
-                    event = QueueDequeue (peer, seq_in, QUEUE_TCP_RECEIVE);
+                    event = QueueDequeue (peer, QUEUE_TCP_RECEIVE, seq_in);
                     if (!event)
                         break;
                     
@@ -1008,7 +1008,7 @@ static Session *TCPReceiveInit (Session *peer, Packet *pak)
                 return NULL;
             }
             if ((peer2->connect & CONNECT_MASK) == (UDWORD)TCP_STATE_WAITING)
-                QueueDequeue (peer2, peer2->ip, QUEUE_TCP_TIMEOUT);
+                QueueDequeue (peer2, QUEUE_TCP_TIMEOUT, peer2->ip);
             if (peer2->sok != -1)
                 TCPClose (peer2);
             peer->len = peer2->len;
@@ -1775,7 +1775,7 @@ static void TCPCallBackReceive (Event *event)
     switch (cmd)
     {
         case TCP_CMD_ACK:
-            event = QueueDequeue (event->sess, seq, QUEUE_TCP_RESEND);
+            event = QueueDequeue (event->sess, QUEUE_TCP_RESEND, seq);
             if (!event)
                 break;
             switch (type)
