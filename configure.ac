@@ -189,7 +189,7 @@ fi
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([locale.h sys/select.h arpa/inet.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h winsock2.h conio.h])
+AC_CHECK_HEADERS([locale.h sys/select.h arpa/inet.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -230,14 +230,6 @@ fi
 # Checks for library functions.
 AC_PROG_GCC_TRADITIONAL
 
-AC_CHECK_DECLS(h_errno,,,[$ac_includes_default
-#ifdef HAVE_NETDB_H
-#include <netdb.h>
-#endif
-#ifdef HAVE_WINSOCK2_H
-#include <winsock2.h>
-#endif])
-
 AC_TYPE_SIGNAL
 
 AC_STRUCT_TIMEZONE
@@ -255,20 +247,12 @@ else
   fi
 fi
 
-AC_CHECK_TYPES(socklen_t,,,[$ac_includes_default
-#ifdef HAVE_SYS_SOCKET_H
-#include <sys/socket.h>
-#endif
-#ifdef HAVE_NETDB_H
-#include <netdb.h>
-#endif])
 AC_FUNC_VPRINTF
 AC_FUNC_SNPRINTF
 AC_FUNC_MEMMOVE
 AC_CHECK_FUNCS([atexit memset mkdir strcasecmp uname fcntl \
                 strchr strdup strncasecmp strpbrk strrchr strstr strtol strtok_r \
-                symlink chmod tcgetattr gettimeofday setlocale \
-                select socket gethostbyname hstrerror ioctlsocket])
+                symlink chmod tcgetattr gettimeofday setlocale select])
 
 for f in memset mkdir atexit \
          strcasecmp strchr strdup strncasecmp strpbrk strrchr strstr strtol; do
@@ -277,7 +261,8 @@ for f in memset mkdir atexit \
     fi
 done
 
-if test "x$ac_cv_func_select$ac_cv_func_socket" != "xyesyes"; then
+if test "x$ac_cv_func_select" != "xyes"; then
+    AC_CHECK_HEADERS([winsock2.h conio.h])
     my_old_LIBS=$LIBS
     LIBS="-lws2_32 $LIBS"
     AC_CACHE_CHECK(for library containing select, ac_cv_search_select,
@@ -331,10 +316,30 @@ if test "x$ac_cv_func_select$ac_cv_func_socket" != "xyesyes"; then
     fi
 fi
 
+AC_CHECK_FUNCS([select socket gethostbyname hstrerror ioctlsocket])
+
 if test "x$ac_cv_func_gethostbyname" != "xyes"; then
     AC_MSG_WARN([Function gethostbyname() not found; you will need to specify all host names as IP addresses.])
 fi
 
+AC_CHECK_DECLS(h_errno,,,[$ac_includes_default
+#ifdef HAVE_NETDB_H
+#include <netdb.h>
+#endif
+#ifdef HAVE_WINSOCK2_H
+#include <winsock2.h>
+#endif])
+
+AC_CHECK_TYPES(socklen_t,,,[$ac_includes_default
+#ifdef HAVE_SYS_SOCKET_H
+#include <sys/socket.h>
+#endif
+#ifdef HAVE_NETDB_H
+#include <netdb.h>
+#endif
+#ifdef WINSOCK2_H
+#include <winsock2.h>
+#endif])
 # Optimize.
 
 if test "x$GCC" = xyes; then
