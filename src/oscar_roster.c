@@ -197,8 +197,6 @@ JUMP_SNAC_F(SnacSrvReplyroster)
         else
             re->nick = NULL;
         
-        rl_printf ("#Found %s %d %d %d\n", re->name, re->type, re->tag, re->id);
-
         switch (re->type)
         {
             case 1:
@@ -222,9 +220,10 @@ JUMP_SNAC_F(SnacSrvReplyroster)
             case 4:
             case 9:
             case 17:
+                break;
             default:
                 rref = NULL;
-                rl_printf ("#Unknown type %d.\n", re->type);
+                rl_printf ("#Unknown type %d: %s %d %d.\n", re->type, re->name, re->tag, re->id);
         }
         
         if (rref)

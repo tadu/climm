@@ -1416,7 +1416,7 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
               cont->dc->ip_rem && ~cont->dc->ip_rem ? '^' : ' ',
              COLNONE, ul, (int)__lenuin, cont->uin);
 
-    rl_printf ("%s%s%c%s%s%-*s%s%s %s%s%-*s%s%s %-*s%s%s%s\n",
+    rl_printf ("%s%s%c%c%s%s%-*s%s%s %s%s%-*s%s%s %-*s%s%s%s\n",
              COLSERVER, ul, data & 2                       ? ' ' :
              !cont->group                       ? '#' :
              ContactPrefVal (cont, CO_INTIMATE) ? '*' :
@@ -1429,6 +1429,9 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
              peer->connect & CONNECT_OK         ? '&' :
              peer->connect & CONNECT_FAIL       ? '|' :
              peer->connect & CONNECT_MASK       ? ':' : '.' ,
+             ContactPrefVal (cont, CO_WANTSBL)  ? 
+               (ContactPrefVal (cont, CO_ISSBL) ? 'S' : '.') :
+                ContactPrefVal (cont, CO_ISSBL) ? 's' : ' ',
              COLCONTACT, ul, (int)__lennick + s_delta (cont->nick), cont->nick,
              COLNONE, ul, COLQUOTE, ul, (int)__lenstat + 2 + s_delta (stat), stat,
              COLNONE, ul, (int)__lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
@@ -1502,6 +1505,8 @@ static JUMP_F(CmdUserStatusDetail)
                 free (t1);
                 free (t2);
             }
+            if (cont->group != conn->contacts && cont->group->name)
+                rl_printf (i18n (9999, "Group: %s\n"), cont->group->name);
             for (j = id = 0; id < CAP_MAX; id++)
                 if (cont->caps & (1 << id))
                 {
@@ -2473,10 +2478,27 @@ static JUMP_F(CmdUserAdd)
                     rl_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, cont->nick);
                 }
                 if (ContactHas (cg, cont))
-                    rl_printf (i18n (2244, "Contact group '%s' already has contact '%s' (%ld).\n"),
-                              cg->name, cont->nick, cont->uin);
+                {
+                    if (cont->group != cg)
+                    {
+                        rl_printf (i18n (9999, "Primary contact group for contact '%s' is now '%s'.\n"),
+                                   cont->nick, cg->name);
+                        cont->group = cg;
+                    }
+                    else
+                    {
+                        rl_printf (i18n (2244, "Contact group '%s' already has contact '%s' (%ld).\n"),
+                                   cg->name, cont->nick, cont->uin);
+                        return 0;
+                    }
+                }
                 else if (ContactAdd (cg, cont))
+                {
                     rl_printf (i18n (2241, "Added '%s' to contact group '%s'.\n"), cont->nick, cg->name);
+                    rl_printf (i18n (9999, "Primary contact group for contact '%s' is now '%s'.\n"),
+                               cont->nick, cg->name);
+                    cont->group = cg;
+                }
                 else
                     rl_print (i18n (2118, "Out of memory.\n"));
             }

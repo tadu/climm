@@ -232,8 +232,9 @@ void Initialize_RC_File ()
 
     prG->logplace  = strdup ("history" _OS_PATHSEPSTR);
     prG->chat      = 49;
+    prG->autoupdate = AUTOUPDATE_CURRENT;
     prG->status = STATUS_ONLINE;
-    prG->flags = FLAG_DELBS | FLAG_AUTOSAVE | FLAG_AUTOFINGER;
+    prG->flags = FLAG_DELBS | FLAG_AUTOSAVE;
 #ifdef ANSI_TERM
     prG->flags |= FLAG_COLOR;
 #endif
@@ -243,6 +244,7 @@ void Initialize_RC_File ()
     OptSetVal (&prG->copts, CO_LOGCHANGE,  1);
     OptSetVal (&prG->copts, CO_SHOWONOFF,  1);
     OptSetVal (&prG->copts, CO_SHOWCHANGE, 1);
+    OptSetVal (&prG->copts, CO_WANTSBL,    1);
 
     OptSetStr (&prG->copts, CO_AUTODND,  i18n (1929, "User is dnd [Auto-Message]"));
     OptSetStr (&prG->copts, CO_AUTOAWAY, i18n (1010, "User is away [Auto-Message]"));
@@ -485,6 +487,11 @@ int Read_RC_File (FILE *rcf)
                 {
                     PrefParseInt (i);
                     prG->chat = i;
+                }
+                else if (!strcasecmp (cmd, "autoupdate"))
+                {
+                    PrefParseInt (i);
+                    prG->autoupdate = i;
                 }
                 else if (!strcasecmp (cmd, "color") || !strcasecmp (cmd, "colour"))
                 {
@@ -1275,7 +1282,11 @@ void PrefReadStat (FILE *stf)
                     else
                         cont = ContactFind (cg->serv->contacts, 0, uin, NULL);
                     if (cg != cg->serv->contacts)
+                    {
                         ContactAdd (cg, cont);
+                        if (cont->group == cg->serv->contacts)
+                            cont->group = cg;
+                    }
 
                     while ((par = s_parse (&args)))
                         ContactAddAlias (cont, par->txt);
@@ -1625,8 +1636,11 @@ int PrefWriteConfFile (void)
     
     fprintf (rcf, "%s\n\n", OptString (&prG->copts));
 
-    fprintf (rcf, "chat %d          # random chat group; -1 to disable, 49 for mICQ\n\n",
+    fprintf (rcf, "chat %d          # random chat group; -1 to disable, 49 for mICQ\n",
                   prG->chat);
+
+    fprintf (rcf, "autoupdate %d    # level of automatic preference updates\n\n",
+                  prG->autoupdate);
 
     fprintf (rcf, "logplace %s      # the file or (distinct files in) dir to log to\n\n",
                   prG->logplace ? s_quote (prG->logplace) : "");

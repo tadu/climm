@@ -115,7 +115,7 @@ void CmdPktCmdLogin (Connection *conn)
                        conn->assoc->port : 0);
     PacketWriteLNTS (pak, c_out (conn->passwd));
     PacketWrite4 (pak, 0x000000d5);
-    PacketWrite4 (pak, prG->flags & FLAG_HIDEIP ? 0 : conn->our_local_ip);
+    PacketWrite4 (pak, conn->our_local_ip);
     PacketWrite1 (pak, conn->assoc && conn->assoc->connect & CONNECT_OK ?
                        conn->assoc->status : 0);         /* 1=firewall | 2=proxy | 4=tcp */
     PacketWrite4 (pak, prG->status);

@@ -60,6 +60,7 @@ void PreferencesInit (Preferences *pref)
     OptImport (&pref->copts, PrefSetColorScheme (4));
     OptSetVal (&pref->copts, CO_SHOWCHANGE, 1);
     OptSetVal (&pref->copts, CO_SHOWONOFF, 1);
+    OptSetVal (&pref->copts, CO_WANTSBL, 1);
 }
 
 /*
@@ -173,7 +174,7 @@ BOOL PrefLoad (Preferences *pref)
     if (rcf)
     {
         i = Read_RC_File (rcf);
-        if (i == 2)
+        if (i >= 2)
         {
             stf = PrefOpenStat (pref);
             if (stf)
@@ -184,8 +185,18 @@ BOOL PrefLoad (Preferences *pref)
     }
     else
         ok = FALSE;
+    
     for (i = 0; (cont = ContactIndex (NULL, i)); i++)
         ContactMetaLoad (cont);
+    
+    switch (pref->autoupdate)
+    {
+        case 0:
+            pref->flags &= ~FLAG_AUTOFINGER;
+        default:
+            pref->autoupdate = AUTOUPDATE_CURRENT;
+    }
+    
     return ok;
 }
 

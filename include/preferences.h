@@ -39,6 +39,7 @@ struct Preferences_s
     char  *event_cmd;   /* the command to execute for events */
     
     SBYTE  chat;
+    SBYTE  autoupdate;
 
 #ifdef ENABLE_TCL
     tcl_pref_p tclscript;
@@ -60,6 +61,8 @@ const char *PrefSetColorScheme (UBYTE scheme);
 const char *PrefUserDirReal (Preferences *pref);
 const char *PrefLogNameReal (Preferences *pref);
 
+#define AUTOUPDATE_CURRENT 1
+
 #define FLAG_DELBS      (1 <<  0)
 #define FLAG_DEP_CONVRUSS   (1 <<  1)
 #define FLAG_DEP_CONVEUC    (1 <<  2)
@@ -76,10 +79,6 @@ const char *PrefLogNameReal (Preferences *pref);
 #define FLAG_DEP_ULTRAQUIET (1 << 13)
 #define FLAG_AUTOSAVE   (1 << 14)
 #define FLAG_AUTOFINGER (1 << 15)
-#define FLAG_WEBAWARE   (1 << 16)
-#define FLAG_HIDEIP     (1 << 17)
-#define FLAG_DC_AUTH    (1 << 18)
-#define FLAG_DC_CONT    (1 << 19)
 /*      FLAG_S5
  *      FLAG_S5_USE
  */
