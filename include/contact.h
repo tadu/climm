@@ -29,6 +29,7 @@ struct Contact_s
    UBYTE  connection_type;
    UDWORD cookie;
    time_t id1, id2, id3;
+   UWORD  caps;
 
    /* statistic data */
 

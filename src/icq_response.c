@@ -610,6 +610,9 @@ void IMOnline (Contact *cont, Session *sess, UDWORD status)
 {
     UDWORD old;
 
+    if (!cont)
+        return;
+
     cont->seen_time = time (NULL);
     UtilUISetVersion (cont);
 
@@ -619,6 +622,9 @@ void IMOnline (Contact *cont, Session *sess, UDWORD status)
     old = cont->status;
     cont->status = status;
     cont->flags &= ~CONT_SEENAUTO;
+    
+    if (~old)
+        cont->caps = 0;
 
     putlog (sess, NOW, cont->uin, status, ~old ? LOG_CHANGE : LOG_ONLINE, 
         0xFFFF, "");
@@ -659,6 +665,9 @@ void IMOnline (Contact *cont, Session *sess, UDWORD status)
  */
 void IMOffline (Contact *cont, Session *sess)
 {
+    if (!cont)
+        return;
+
     putlog (sess, NOW, cont->uin, STATUS_OFFLINE, LOG_OFFLINE, 0xFFFF, "");
 
     cont->status = STATUS_OFFLINE;

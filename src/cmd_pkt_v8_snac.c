@@ -462,6 +462,19 @@ static JUMP_SNAC_F(SnacSrvUseronline)
     /* TLV 1, d, f, 2, 3 ignored */
 
     IMOnline (cont, event->sess, tlv[6].len ? tlv[6].nr : 0);
+#ifdef WIP
+    if (tlv[13].len)
+    {
+        p = PacketCreate (tlv[12].str, tlv[12].len);
+        
+        while (PacketReadLeft (p))
+        {
+            Cap *cap = PacketReadCap (p);
+            IMSrvMsg (cont, event->sess, NOW, 33, cap->name, STATUS_OFFLINE);
+            cont->caps |= 1 << cap->id;
+        }
+    }
+#endif
 }
 
 /*
@@ -577,6 +590,13 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                    PacketReadB4 (p); /* MID-RANDOM */
             cap1 = PacketReadCap (p);
             tlv = TLVRead (p, PacketReadLeft (p));
+#ifdef WIP
+            if (cap1->id)
+            {
+                IMSrvMsg (cont, event->sess, NOW, 33, cap1->name, STATUS_OFFLINE);
+                cont->caps |= 1 << cap1->id;
+            }
+#endif
             if ((i = TLVGet (tlv, 0x2711)) == (UWORD)-1)
             {
                 PacketD (p);
@@ -610,8 +630,11 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             if (!strlen (text) && unk == 0x12)
             {
 #ifdef WIP
-                IMSrvMsg (cont, event->sess, NOW, 33, cap2->name,
-                          tlv[6].len ? tlv[6].nr : STATUS_OFFLINE);
+                if (cap2->id)
+                {
+                    IMSrvMsg (cont, event->sess, NOW, 33, cap2->name, STATUS_OFFLINE);
+                    cont->caps |= 1 << cap2->id;
+                }
 #endif
                 s_free (text);
                 return;

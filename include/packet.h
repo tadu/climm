@@ -20,13 +20,15 @@ struct Packet_s
 
 typedef struct { UBYTE id; const char *cap; const char *name; } Cap;
 
-#define CAP_NONE     1
-#define CAP_ISICQ    2
-#define CAP_SRVRELAY 3
-#define CAP_RTFMSGS  4
-#define CAP_UNK_2001 5
-#define CAP_UNK_2002 6
-#define CAP_MICQ     7
+#define CAP_NONE     0
+#define CAP_ISICQ    1
+#define CAP_SRVRELAY 2
+#define CAP_RTFMSGS  3
+#define CAP_UNK_2001 4
+#define CAP_UNK_2002 5
+#define CAP_STR_2001 6
+#define CAP_STR_2002 7
+#define CAP_MICQ     8
                     
 Packet *PacketC        (void);
 Packet *PacketCreate   (const char *data, UDWORD len);
@@ -83,6 +85,7 @@ UWORD       PacketWritePos    (const Packet *pak);
 UWORD       PacketReadPos     (const Packet *pak);
 int         PacketReadLeft    (const Packet *pak);
 
+Cap        *PacketCap         (UBYTE id);
 const char *PacketDump        (      Packet *pak, const char *syntax);
 
 #define PacketWriteTLV2(pak,tlv,data)        do { PacketWriteB2 (pak, tlv); PacketWriteB2   (pak, 2);   PacketWriteB2 (pak, data);        } while (0)

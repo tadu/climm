@@ -604,7 +604,7 @@ static JUMP_F(CmdUserInfo)
         return 0;
     }
     M_printf (i18n (1672, "%s's IP address is "), cont->nick);
-    M_printf ("%s", contr->outside_ip == -1 ? i18n (1761, "unknown") : s_ip (contr->outside_ip));
+    M_print  (contr->outside_ip == -1 ? i18n (1761, "unknown") : s_ip (contr->outside_ip));
     M_print ("\t");
 
     if (contr->port != (UWORD) 0xffff)
@@ -1427,6 +1427,9 @@ static JUMP_F(CmdUserStatusDetail)
     if (uin)
     {
         char *t1, *t2;
+#ifdef WIP
+        UBYTE id;
+#endif
         if (!contr)
             return 0;
 
@@ -1438,6 +1441,20 @@ static JUMP_F(CmdUserStatusDetail)
                  contr->connection_type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),
                  contr->connection_type);
         M_printf ("%-15s %08x\n", i18n (2026, "TCP cookie:"), contr->cookie);
+#ifdef WIP
+        for (i = id = 0; id < 16; id++)
+            if (contr->caps && (1 << id))
+            {
+                Caps *cap = PacketCap (id);
+                if (i++)
+                    M_print (", ");
+                else
+                    M_print (i18n (9999, "Capabilities: "));
+                M_print (cap->name);
+            }
+        if (i)
+            M_print ("\n");
+#endif
         free (t1);
         free (t2);
         return 0;
@@ -2186,12 +2203,13 @@ static JUMP_F(CmdUserAuth)
         s_parse (&args, &msg);
         if (!strcmp (cmd, "req"))
         {
-/* FIXME: v8 packets seem to cause trouble */
             if (!msg)         /* FIXME: let it untranslated? */
                 msg = "Please authorize my request and add me to your Contact List\n";
-/*            if (sess->type == TYPE_SERVER && sess->ver >= 8)
+#ifdef WIP
+            if (sess->type == TYPE_SERVER && sess->ver >= 8)
                 SnacCliReqauth (sess, cont->uin, msg);
-            else */ if (sess->type == TYPE_SERVER)
+#endif
+            else if (sess->type == TYPE_SERVER)
                 SnacCliSendmsg (sess, cont->uin, msg, MSG_AUTH_REQ, 0);
             else
                 CmdPktCmdSendMessage (sess, cont->uin, msg, MSG_AUTH_REQ);
@@ -2202,9 +2220,11 @@ static JUMP_F(CmdUserAuth)
         {
             if (!msg)         /* FIXME: let it untranslated? */
                 msg = "Authorization refused\n";
-/*            if (sess->type == TYPE_SERVER && sess->ver >= 8)
+#ifdef WIP
+            if (sess->type == TYPE_SERVER && sess->ver >= 8)
                 SnacCliAuthorize (sess, cont->uin, 0, msg);
-            else */ if (sess->type == TYPE_SERVER)
+#endif
+            else if (sess->type == TYPE_SERVER)
                 SnacCliSendmsg (sess, cont->uin, msg, MSG_AUTH_DENY, 0);
             else
                 CmdPktCmdSendMessage (sess, cont->uin, msg, MSG_AUTH_DENY);
@@ -2213,9 +2233,11 @@ static JUMP_F(CmdUserAuth)
         }
         else if (!strcmp (cmd, "add"))
         {
-/*            if (sess->type == TYPE_SERVER && sess->ver >= 8)
+#ifdef WIP
+            if (sess->type == TYPE_SERVER && sess->ver >= 8)
                 SnacCliGrantauth (sess, cont->uin);
-            else */ if (sess->type == TYPE_SERVER)
+#endif
+            else if (sess->type == TYPE_SERVER)
                 SnacCliSendmsg (sess, cont->uin, "\x03", MSG_AUTH_ADDED, 0);
             else
                 CmdPktCmdSendMessage (sess, cont->uin, "\x03", MSG_AUTH_ADDED);
@@ -2230,10 +2252,12 @@ static JUMP_F(CmdUserAuth)
         free (cmd);
         return 0;
     }
-        
-/*    if (sess->type == TYPE_SERVER && sess->ver >= 8)
+
+#ifdef WIP
+    if (sess->type == TYPE_SERVER && sess->ver >= 8)
         SnacCliAuthorize (sess, cont->uin, 1, NULL);
-    else */ if (sess->type == TYPE_SERVER)
+#endif
+    else if (sess->type == TYPE_SERVER)
         SnacCliSendmsg (sess, cont->uin, "\x03", MSG_AUTH_GRANT, 0);
     else
         CmdPktCmdSendMessage (sess, cont->uin, "\x03", MSG_AUTH_GRANT);
