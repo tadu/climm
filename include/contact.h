@@ -52,19 +52,22 @@ struct ContactMetaObsolete_s
     UBYTE  given, empty;
 };
 
-struct ContactGroup_s
-{
-    ContactGroup *more;
-    UWORD         id;
-    Contact      *contacts[16];
-};
-
 struct ContactDC_s
 {
     time_t id1, id2, id3;
     UDWORD ip_loc, ip_rem, port;
     UWORD  version, cookie;
     UBYTE  type;
+};
+
+struct ContactGroup_s
+{
+    ContactGroup *more;
+    Connection   *serv;
+    char         *name;
+    UDWORD        uins[32];
+    UWORD         id;
+    UBYTE         used;
 };
 
 struct Contact_s
@@ -96,6 +99,10 @@ struct Contact_s
 Contact    *ContactAdd (UDWORD uin, const char *nick);
 void        ContactRem (Contact *cont);
 
+ContactGroup *ContactGroupFind (UWORD id, Connection *serv, const char *name, BOOL create);
+BOOL          ContactGroupAdd (ContactGroup *group, Contact *cont);
+BOOL          ContactGroupRem (ContactGroup *group, Contact *cont);
+
 Contact    *ContactByUIN (UDWORD uin, BOOL create);
 Contact    *ContactByNick (const char *nick, BOOL create);
 Contact    *ContactFindAlias (UDWORD uin, const char *nick);
@@ -106,8 +113,6 @@ BOOL        ContactHasNext (Contact *cont);
 
 void        ContactSetCap (Contact *cont, Cap *cap);
 void        ContactSetVersion (Contact *cont);
-
-#define ContactFind(uin) ContactByUIN (uin, 0)
 
 #define CONTACT_GENERAL(cont)     ((cont)->meta_general     ? (cont)->meta_general     : ((cont)->meta_general     = calloc (1, sizeof (MetaGeneral))))
 #define CONTACT_WORK(cont)        ((cont)->meta_work        ? (cont)->meta_work        : ((cont)->meta_work        = calloc (1, sizeof (MetaWork))))
@@ -139,7 +144,5 @@ void        ContactSetVersion (Contact *cont);
 #define UPF_OBSOLETE    0x200
 
 #define UP_INFO         0x3ff
-
-
 
 #endif /* MICQ_CONTACT_H */

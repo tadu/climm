@@ -97,7 +97,7 @@ UBYTE PeerFileRequested (Connection *peer, const char *files, UDWORD bytes)
     if (peer->ver < 6)
         return 0;
     
-    cont = ContactFind (peer->uin);
+    cont = ContactByUIN (peer->uin, 1);
     assert (cont);
     
     if (cont->flags & CONT_TEMPORARY)
@@ -223,7 +223,7 @@ void PeerFileDispatch (Connection *fpeer)
     if (prG->verbose & DEB_PACKTCP)
         TCPPrint (pak, fpeer, FALSE);
 
-    cont = ContactFind (fpeer->uin);
+    cont = ContactByUIN (fpeer->uin, 1);
     assert (cont);
 
     switch (PacketRead1 (pak))
@@ -468,7 +468,7 @@ void PeerFileResend (Event *event)
     
     ASSERT_FILEDIRECT (fpeer);
 
-    cont = ContactFind (event->uin);
+    cont = ContactByUIN (event->uin, 1);
     assert (cont);
     
     e_msg_text = ExtraGetS (event->extra, EXTRA_MESSAGE);

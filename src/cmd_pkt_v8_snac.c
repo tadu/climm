@@ -425,7 +425,7 @@ static JUMP_SNAC_F(SnacSrvUseronline)
     TLV *tlv;
     
     pak = event->pak;
-    cont = ContactFind (PacketReadUIN (pak));
+    cont = ContactByUIN (PacketReadUIN (pak), 0);
     if (!cont)
     {
         if (prG->verbose & DEB_PROTOCOL)
@@ -486,7 +486,7 @@ static JUMP_SNAC_F(SnacSrvUseroffline)
     Packet *pak;
     
     pak = event->pak;
-    cont = ContactFind (PacketReadUIN (pak));
+    cont = ContactByUIN (PacketReadUIN (pak), 0);
     if (!cont)
     {
         if (prG->verbose & DEB_PROTOCOL)
@@ -946,7 +946,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                     case 3:
                         if (ContactFindAlias (atoi (name), nick))
                             break;
-                        if (!ContactFind (atoi (name)))
+                        if (!ContactByUIN (atoi (name), 0))
                             SnacCliAddcontact (event->conn, atoi (name));
                         ContactAdd (atoi (name), nick);
                         k++;

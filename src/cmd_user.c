@@ -1549,7 +1549,7 @@ static JUMP_F(CmdUserStatusDetail)
             if (uin && cont->uin != uin)
                 continue;
 
-            contr = ContactFind (cont->uin);
+            contr = ContactByUIN (cont->uin, 0);
             if (!contr)
                 continue;
 
@@ -2358,11 +2358,11 @@ static JUMP_F(CmdUserRem)
         ContactRem (cont);
         if (all)
         {
-            while ((cont = ContactFind (uin)))
+            while ((cont = ContactByUIN (uin, 0)))
                 ContactRem (cont);
         }
         
-        if ((cont = ContactFind (uin)))
+        if ((cont = ContactByUIN (uin, 0)))
         {
             M_printf (i18n (2149, "Removed alias '%s' for '%s' (%ld).\n"),
                      alias, cont->nick, uin);

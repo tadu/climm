@@ -176,7 +176,7 @@ void TCPDirectOff (Connection *list, UDWORD uin)
     
     ASSERT_MSGLISTEN (list);
     peer = ConnectionFind (TYPE_MSGDIRECT, uin, list);
-    cont = ContactFind (uin);
+    cont = ContactByUIN (uin, 1);
     
     if (!peer && cont)
         peer = ConnectionC ();
@@ -212,7 +212,7 @@ void TCPDispatchReconn (Connection *peer)
     {
         Contact *cont;
         
-        if (!(cont = ContactFind (peer->uin)))
+        if (!(cont = ContactByUIN (peer->uin, 1)))
             return;
         M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
         M_print  (i18n (2023, "Direct connection closed by peer.\n"));
@@ -325,7 +325,7 @@ void TCPDispatchConn (Connection *peer)
 
     while (1)
     {
-        cont = ContactFind (peer->uin);
+        cont = ContactByUIN (peer->uin, 1);
         if (!cont || !cont->dc)
         {
             TCPClose (peer);
@@ -576,7 +576,7 @@ static void TCPDispatchPeer (Connection *peer)
     
     ASSERT_MSGDIRECT (peer);
     
-    cont = ContactFind (peer->uin);
+    cont = ContactByUIN (peer->uin, 1);
     if (!cont)
     {
         TCPClose (peer);
@@ -844,7 +844,7 @@ static void TCPSendInit (Connection *peer)
     {
         Contact *cont;
 
-        cont = ContactFind (peer->uin);
+        cont = ContactByUIN (peer->uin, 1);
         if (!cont || !cont->dc)
         {
             TCPClose (peer);
@@ -983,7 +983,7 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
         if (uin  == peer->parent->parent->uin)
             FAIL (6);
         
-        if (!(cont = ContactFind (uin)))
+        if (!(cont = ContactByUIN (uin, 1)))
             FAIL (7);
 
         if (!CONTACT_DC (cont))
@@ -1408,7 +1408,7 @@ BOOL TCPGetAuto (Connection *list, UDWORD uin, UWORD which)
         return FALSE;
     if (uin == list->parent->uin)
         return FALSE;
-    cont = ContactFind (uin);
+    cont = ContactByUIN (uin, 1);
     if (!cont || !cont->dc)
         return FALSE;
     if (!(list->connect & CONNECT_MASK))
@@ -1479,7 +1479,7 @@ BOOL TCPSendMsg (Connection *list, UDWORD uin, const char *msg, UWORD sub_cmd)
         return FALSE;
     if (uin == list->parent->uin)
         return FALSE;
-    cont = ContactFind (uin);
+    cont = ContactByUIN (uin, 1);
     if (!cont || !cont->dc)
         return FALSE;
     if (!(list->connect & CONNECT_MASK))
@@ -1598,7 +1598,7 @@ BOOL TCPSendFiles (Connection *list, UDWORD uin, const char *description, const 
         return FALSE;
     if (uin == list->parent->uin)
         return FALSE;
-    cont = ContactFind (uin);
+    cont = ContactByUIN (uin, 1);
     if (!cont || !cont->dc)
         return FALSE;
     if (!(list->connect & CONNECT_MASK))

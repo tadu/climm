@@ -555,7 +555,7 @@ BOOL s_parsenick_s (char **input, Contact **parsed, char *sep, Contact **parsedr
         {
             if (parsedr)
             {
-                *parsedr = ContactFind ((*parsed)->uin);
+                *parsedr = ContactByUIN ((*parsed)->uin, 0);
                 if (!*parsedr)
                 {
                     *parsed = NULL;
@@ -599,7 +599,7 @@ BOOL s_parsenick_s (char **input, Contact **parsed, char *sep, Contact **parsedr
     {
         if (parsedr)
         {
-            *parsedr = ContactFind ((*parsed)->uin);
+            *parsedr = ContactByUIN ((*parsed)->uin, 0);
             if (!*parsedr)
             {
                 *parsed = NULL;

@@ -18,8 +18,11 @@
 #include "packet.h"    /* for capabilities */
 #include "buildmark.h" /* for versioning */
 
-static int cnt_number = 0;
-static Contact cnt_contacts[MAX_CONTACTS];
+#define MAX_GROUPS 32
+
+static int          cnt_number = 0;
+static Contact      cnt_contacts[MAX_CONTACTS];
+static ContactGroup cnt_groups[MAX_GROUPS];
 
 #define BUILD_MIRANDA  0xffffffffL
 #define BUILD_STRICQ   0xffffff8fL
@@ -38,6 +41,80 @@ static Contact cnt_contacts[MAX_CONTACTS];
 #define BUILD_LIBICQ2K_ID1  0x3aa773ee
 #define BUILD_LIBICQ2K_ID2  0x3aa66380
 #define BUILD_LIBICQ2K_ID3  0x3a877a42
+
+/*
+ * Finds and/or creates a contact group.
+ */
+ContactGroup *ContactGroupFind (UWORD id, Connection *serv, const char *name, BOOL create)
+{
+    int i, j;
+    
+    for (i = 0; i < MAX_GROUPS; i++)
+        if (    cnt_groups[i].name
+            && (!id   || cnt_groups[i].id   == id)
+            && (!serv || cnt_groups[i].serv == serv)
+            && (!name || !strcmp (cnt_groups[i].name, name)))
+        {
+            return &cnt_groups[i];
+        }
+    if (!create || !serv || !name)
+        return NULL;
+    for (i = 0; i < MAX_GROUPS; i++)
+        if (!cnt_groups[i].name)
+            break;
+    if (i == MAX_GROUPS)
+        return NULL;
+    cnt_groups[i].id = id;
+    cnt_groups[i].serv = serv;
+    cnt_groups[i].name = strdup (name);
+    cnt_groups[i].more = NULL;
+    cnt_groups[i].used = 0;
+    for (j = 0; j < 32; j++)
+        cnt_groups[i].uins[j] = 0;
+    return &cnt_groups[i];
+}
+
+/*
+ * Adds a contact to a contact group.
+ */
+BOOL ContactGroupAdd (ContactGroup *group, Contact *cont)
+{
+    if (!group || !cont || !group->serv)
+        return FALSE;
+    while (group->used == 32 && group->more)
+        group = group->more;
+    if (group->used == 32)
+    {
+        group->more = calloc (1, sizeof (ContactGroup));
+        if (!group->more)
+            return FALSE;
+        group = group->more;
+    }
+    group->uins[group->used++] = cont->uin;
+    return TRUE;
+}
+
+/*
+ * removes a contact from a contact group.
+ */
+BOOL ContactGroupRem (ContactGroup *group, Contact *cont)
+{
+    int i;
+
+    if (!group || !cont || !group->serv)
+        return FALSE;
+    while (group)
+        for (i = 0; i < group->used; i++)
+            if (group->uins[i] == cont->uin)
+            {
+                group->uins[i] = group->uins[--group->used];
+                group->uins[group->used] = 0;
+                return TRUE;
+            }
+    return FALSE;
+}
+
+
 
 /*
  * Adds a new contact list entry.
@@ -153,7 +230,7 @@ Contact *ContactByNick (const char *nick, BOOL create)
             return NULL;
         }
     }
-    if ((cont = ContactFind (atoi (nick))))
+    if ((cont = ContactByUIN (atoi (nick), 0)))
         return cont;
     
     if (!create)
