@@ -58,7 +58,6 @@ typedef int FD_T;
 typedef int SOK_T;
 
 #ifdef _WIN32
-  typedef unsigned int ssize_t;
   #define sockread(s,p,l)  recv (s, (char *) p, l, 0)
   #define sockwrite(s,p,l) send (s, (char *) p, l, 0)
   #define sockclose(s)     closesocket(s)
