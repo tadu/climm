@@ -25,6 +25,7 @@
 #include "packet.h"
 #include "tcp.h"
 #include "util_str.h"
+#include "util_syntax.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_v8_snac.h"
 
@@ -1168,78 +1169,20 @@ void TCPPrint (Packet *pak, Connection *peer, BOOL out)
 
     M_printf ("%s " COLINDENT "%s", s_now, out ? COLCLIENT : COLSERVER);
     M_printf (out ? i18n (2078, "Outgoing TCP packet (%d - %s): %s")
-                 : i18n (2079, "Incoming TCP packet (%d - %s): %s"),
-             peer->sok, ContactFindName (peer->uin), TCPCmdName (cmd));
+                  : i18n (2079, "Incoming TCP packet (%d - %s): %s"),
+              peer->sok, ContactFindName (peer->uin), TCPCmdName (cmd));
     M_print (COLNONE "\n");
-    if (peer->connect & CONNECT_OK && peer->type == TYPE_MSGDIRECT && cmd == 2)
+
+    if (peer->connect & CONNECT_OK && peer->type == TYPE_MSGDIRECT && peer->ver == 6)
     {
-        UWORD seq, typ;
-        UDWORD sta, fla;
-        char *msg, *cmsg;
-
-        cmd = PacketRead1 (pak);
-              PacketRead4 (pak);
-        cmd = PacketRead2 (pak);
-              PacketRead2 (pak);
-        seq = PacketRead2 (pak);
-              PacketRead4 (pak);
-              PacketRead4 (pak);
-              PacketRead4 (pak);
-        typ = PacketRead2 (pak);
-        sta = PacketRead2 (pak);
-        fla = PacketRead2 (pak);
-        cmsg = PacketReadLNTS (pak);
-        
-        msg = strdup (c_in (cmsg));
-        free (cmsg);
-        
-        M_printf (i18n (2053, "TCP %s seq %x type %x status %x flags %x: '%s'\n"),
-                 TCPCmdName (cmd), seq, typ, sta, fla, msg);
-        free (msg);
-        if (typ == TCP_MSG_GREETING)
-        {
-            UDWORD id1, id2, id3, id4, un1, un2, un3, un4;
-            UWORD emp, port, pad, port2, len, flen;
-            char *ctext, *text, *reason, *name;
-
-            cmd  = PacketRead2 (pak);
-            id1  = PacketReadB4 (pak);
-            id2  = PacketReadB4 (pak);
-            id3  = PacketReadB4 (pak);
-            id4  = PacketReadB4 (pak);
-            emp  = PacketRead2 (pak);
-            ctext= PacketReadDLStr (pak);
-            un1  = PacketReadB4 (pak);
-            un2  = PacketReadB4 (pak);
-            un3  = PacketReadB4 (pak);
-            un4  = PacketReadB2 (pak) << 8;
-            un4 |= PacketRead1 (pak);
-            len  = PacketRead4 (pak);
-            len = len + pak->rpos - pak->len;
-            reason=PacketReadDLStr (pak);
-            port = PacketReadB2 (pak);
-            pad  = PacketRead2 (pak);
-            name = PacketReadLNTS (pak);
-            flen = PacketRead4 (pak);
-            port2= PacketRead4 (pak);
-            
-            text = strdup (c_in (ctext));
-            free (ctext);
-            
-            M_printf ("GREET %s (empty: %d) text '%s' lendiff %d reason '%s' port %d pad %x name '%s' flen %d port2 %d\n",
-                     TCPCmdName (cmd), emp, text, len, reason, port, pad, c_in (name), flen, port2);
-            M_printf ("   ID %08x %08x %08x %08x\n", id1, id2, id3, id4);
-            M_printf ("  UNK %08x %08x %08x %06x\n", un1, un2, un3, un4);
-            free (name);
-            free (text);
-            free (reason);
-        }
-        Hex_Dump (pak->data + pak->rpos, pak->len - pak->rpos);
-        M_print ("---\n");
+        cmd = 2;
+        pak->rpos --;
     }
-    if (cmd != 6)
-        if (prG->verbose & DEB_PACKTCPDATA)
-            Hex_Dump (pak->data, pak->len);
+
+    if (prG->verbose & DEB_PACKTCPDATA)
+        if (cmd != 6)
+            M_print (PacketDump (pak, peer->type == TYPE_MSGDIRECT ? "gpeer" : "gfile"));
+
     M_print (COLEXDENT "\r");
 }
 

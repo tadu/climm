@@ -106,7 +106,6 @@ UWORD       PacketReadPos     (const Packet *pak);
 int         PacketReadLeft    (const Packet *pak);
 
 Cap        *PacketCap         (UBYTE id);
-const char *PacketDump        (      Packet *pak, const char *syntax);
 
 #define PacketWriteTLV2(pak,tlv,data)        do { PacketWriteB2 (pak, tlv); PacketWriteB2   (pak, 2);   PacketWriteB2 (pak, data);        } while (0)
 #define PacketWriteTLV4(pak,tlv,data)        do { PacketWriteB2 (pak, tlv); PacketWriteB2   (pak, 4);   PacketWriteB4 (pak, data);        } while (0)
