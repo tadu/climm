@@ -27,8 +27,9 @@
 ** not only true contacts but aliases to your contacts also. */
 #define MAX_CONTACTS 1024
 
-/* You want this unless your terminal *REALLY* sucks */
-#define ANSI_COLOR
+/* Set this if your terminal is an ANSI terminal. Note: you can use color even
+   if this is unset. */
+#define ANSI_TERM
 
 /* If you change this things will probably come out formated badly.
 ** But you can change the tab stops if you so desire */

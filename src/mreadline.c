@@ -69,7 +69,7 @@ static int cpos = 0;
 static int clen = 0;
 static int istat = 0;
 
-#ifndef ANSI_COLOR
+#ifndef ANSI_TERM
 static char bsbuf[HISTORY_LINE_LEN];
 #endif
 
@@ -78,7 +78,7 @@ void R_init (void)
     int k;
     static int inited = 0;
     
-#ifndef ANSI_COLOR
+#ifndef ANSI_TERM
     for (k = 0; k < HISTORY_LINE_LEN; k++)
         bsbuf[k] = '\b';
 #endif
@@ -128,7 +128,7 @@ void R_resume (void)
  */
 void R_goto (int pos)
 {
-#ifdef ANSI_COLOR
+#ifdef ANSI_TERM
     int scr, off;
 #endif
 
@@ -137,7 +137,7 @@ void R_goto (int pos)
     if (pos == cpos)
         return;
         
-#ifdef ANSI_COLOR
+#ifdef ANSI_TERM
     scr = Get_Max_Screen_Width ();
     off = M_pos ();
     while ((off + pos) / scr < (off + cpos) / scr)
@@ -167,7 +167,7 @@ void R_goto (int pos)
 
 void R_rlap (const char *s, const char *add, BOOL clear)
 {
-#ifdef ANSI_COLOR
+#ifdef ANSI_TERM
     int pos;
 
     printf ("%s%s%s%s", add, s, clear ? ESC "[J" : "",
@@ -283,7 +283,7 @@ int R_process_input (void)
                     strcpy (s, y);
                     clen = cpos = strlen (s);
                     break;
-#ifdef ANSI_COLOR
+#ifdef ANSI_TERM
                 case 27:       /* ESC */
                     istat = 1;
                     break;
@@ -337,7 +337,7 @@ int R_process_input (void)
         }
         return 0;
     }
-#ifdef ANSI_COLOR
+#ifdef ANSI_TERM
     switch (istat)
     {
         case 1:                /* ESC */

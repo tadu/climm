@@ -377,7 +377,7 @@ int log_event (UDWORD uin, int type, char *str, ...)
 **************************************************/
 void clrscr (void)
 {
-#ifdef ANSI_COLOR
+#ifdef ANSI_TERM
     printf ("\x1b[H\x1b[J");
 #else
     M_print ("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");

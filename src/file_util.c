@@ -221,7 +221,11 @@ void Initalize_RC_File ()
     sesst->ver = 6;
 
     prG->status = STATUS_ONLINE;
+#ifdef ANSI_TERM
     prG->flags = FLAG_COLOR | FLAG_LOG | FLAG_LOG_ONOFF | FLAG_DELBS;
+#else
+    prG->flags =              FLAG_LOG | FLAG_LOG_ONOFF | FLAG_DELBS;
+#endif
     prG->auto_dnd  = strdup (i18n (1929, "User is DND [Auto-Message]"));
     prG->auto_away = strdup (i18n (1010, "User is Away [Auto-Message]"));
     prG->auto_na   = strdup (i18n (1011, "User is not available [Auto-Message]"));
