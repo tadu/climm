@@ -10,6 +10,10 @@ current Maintainer:
 
 
 Contributors:
+
+	Ruediger Kuhlmann	<>
+	    submitted many Patches, added i18n support
+
 	Frederic Lamorce	<flamorce@dataradio.com>
 	    added Socks5 Support
 	    
@@ -26,4 +30,5 @@ Contributors:
 	Taneli Huuskonen
 	    finnish Translation
 	    
-	
+	Cawko Xakep 		<xakep@snark.ukma.kiev.ua>
+	    ukrainan translator

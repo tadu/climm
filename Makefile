@@ -2,7 +2,7 @@
 #
 # Toplevel Directory Makefile for mICQ
 
-DIR = src
+DIR = src lang
 
 all:	
 	@for i in $(DIR); do \

@@ -1,3 +1,7 @@
+2001-04-18 Rico "mc" Gloeckner <mc@verdinet.de>
+	* added Makefile for lang/
+	* AUTHORS file complemented
+
 2001-04-17 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* include/*.h, src/*.c:
 	  Move prototypes to proper place. Remove lang.h.
