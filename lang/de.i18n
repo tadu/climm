@@ -180,7 +180,7 @@
 1191:Paßwort = %s¶
 1192:Rechner = %s¶
 1193:Status  = %ld¶
-#1196:Message_cmd = %s¶
+1196:Kommando= %s¶
 1198:Andere Dienste
 ##
 ## Länder
@@ -198,7 +198,7 @@
 1209:Argentinen
 1210:Armenien
 1211:Aruba
-#1212:Ascention Island
+1212:Ascention-Inseln
 1213:Australien
 1214:Australisch-Antarktisches Gebiet
 1215:Österreich
@@ -230,8 +230,8 @@
 1241:Zentral-Afrikanische Republik
 1242:Tschad
 1243:Weihnachtsinseln
-#1244:Cocos-Keeling Islands
-#1245:Comoros
+1244:Cocos-Keeling-Inseln
+1245:Komoren
 1246:Kongo
 1247:Cook-Inseln
 1248:Chile
@@ -244,7 +244,7 @@
 1255:Tschechische Republik
 1256:Dänemark
 #1257:Diego Garcia
-#1258:Djibouti
+1258:Djibouti
 #1259:Dominica
 1260:Dominikanische Republik
 1261:Äquador
@@ -274,12 +274,12 @@
 1285:Griechenland
 1286:Grönland
 1287:Grenada
-#1288:Guadeloupe
+1288:Guadeloupe
 1289:Guam
-#1290:Guantanomo Bay
+1290:Guantanomo-Bucht
 1291:Guatemala
 1292:Guinea
-#1293:Guinea-Bissau
+1293:Guinea-Bissau
 1294:Guyana
 1295:Haiti
 1296:Honduras
@@ -350,7 +350,7 @@
 1361:Taiwan
 1362:Tansania
 1363:Thailand
-#1364:Tinian Island
+1364:Tinian-Insel
 1365:Togo
 1366:Tokelau
 1367:Tonga
@@ -358,7 +358,7 @@
 1369:Tunesien
 1370:Türkei
 1371:Turkmenistan
-#1372:Turks and Caicos Islands
+1372:Turks- und Caicos-Inseln
 1373:Tuvalu
 1374:Uganda
 1375:Ukraine
@@ -372,7 +372,7 @@
 1383:Vatikan (Stadt)
 1384:Venezuela
 1385:Vietnam
-#1386:Wallis and Futuna Islands
+1386:Wallis und Fortuna-Inseln
 1387:West-Samoa
 1388:Jemen
 1389:Jugoslavien
@@ -584,7 +584,7 @@
 1621:Suchergebnisse nicht zurückgegeben.
 1622:Möchten Sie die Änderungen anwenden? (JA/NEIN)
 1623:Doppeltes Paket %04X.¶
-#1624:Sorry, can't initialize Windows Sockets...
+1624:Kann den Windows-Socket leider nicht initialisieren...
 1632:¶Verbindung instabil. Beende...
 1634:ok.¶
 1637:Kann Kommunikationsendpunkt nicht mit einem freien Anschluß verknüpfen.¶
@@ -740,7 +740,7 @@
 1846:Öffnet und schließt Direkt-Verbindungen:¶
 1847:peer open  <nick> - Öffnet eine Direkt-Verbindung.¶
 1848:peer close <nick> - Schließt Direkt-Verbindung.¶
-#1849:Error on select: %s (%d)¶
+1849:Fehler beim Warten auf Eingabe: %s (%d)¶
 1850:Zeitüberschreibtung bei Verbindung mit %s zu %s:%d.¶
 1855:Direkt-Verbindung zu %s bei %s:%d ist fehlgeschlagen.¶
 1856:Werfe ein Paket vom Typ %04x (%s) von alter Sitzung %08x (aktuell: %08x) weg.¶
@@ -767,7 +767,7 @@
 1884:FLAP auf unbekannten Kanal %d empfangen.¶
 1885:Zeitüberschreitung bei v8-Server-Verbindung.¶
 1887:Verbindungen:
-#1888:Not webaware
+1888:nicht webaware
 1889:Server
 1890:Direktverbindung
 1891:Verbindung %d ist bereits geöffnet.¶
@@ -784,7 +784,7 @@
 1902:Öffne Verbindung zu v5-Server bei %s:%d... 
 1903:Ausgehendes v8-Server-Paket:
 1904:Der Server versteht Version %d (nur Version %d) für Familie %d!¶
-#1905:SNAC (%x,%x) [%s] flags %x ref %x¶
+1905:SNAC (%x,%x) [%s] flags %x ref %x¶
 1907:Warnung: Der Server hält unsere Benutzernummer für %d, obwohl sie %d ist.¶
 1908:Eingehendes USERONLINE-Paket für nicht-Kontakt.¶
 1909:Eingehendes USEROFFLINE-Paket für nicht-Kontakt.¶
@@ -805,7 +805,7 @@
 1929:[Automatische Nachricht] Bitte nicht stören (Do Not Disturb)
 1931:Die aktuelle Verbindung ist geschlossen; bitte eine andere wählen oder diese öffnen.¶
 1934:verbunden
-#1935:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x¶
+1935:    Typ %d Socket %d IP %s (%d) auf [%s,%s] Kennung %x/%x/%x¶
 1936:Bitte Mindestalter eingeben (18-22,23-29,30-39,40-49,50-59,60-120):
 1937:Bitte Maximalalter eingeben (22,29,39,49,59,120):
 1938:Bitte Geschlecht eingeben:
@@ -907,7 +907,7 @@
 2050:Importiere %d Kontakte.¶
 2051:Fehler am Kommunikationsendpunkt: %s (%d)¶
 2052.Akzeptiere Dateiübertragung "%s" (%d Bytes) von %s.¶
-#2053:TCP %s seq %x type %x status %x flags %x: '%s'¶
+2053:TCP %s Sequenz %x Typ %x Status %x Optionen %x: '%s'¶
 2054:Die für-Plaudereien-frei-Nachricht ist:
 2055:Der Benutzer ist für Plauereien frei und möchte über alles plaudern.
 2056:peer auto  <nick> - Hole die automatische Antwort von diesem Kontakt.¶
@@ -930,7 +930,7 @@
 2078:Ausgehendes TCP-Paket (%d - %s): %s
 2079:Eingehendes TCP-Paket (%d - %s): %s
 2080:Der Server meldet über die Auslieferung der SMS:¶%s¶
-#2081:    at %p parent %p assoc %p¶
+2081:    Adresse %p, abhängig von: %p, zugeordnet: %p¶
 2082:Öffne Kommunikationsendpunkt für Dateiübertragungen auf localhost:%d... 
 2083:Kann Datei "%s" nicht öffnen: %s (%d).¶
 2084:Fehler beim Suchen vom %d. Byte: %s (%d).¶
