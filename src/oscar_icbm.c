@@ -869,7 +869,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     Contact *cont = inc_event->cont;
     Opt *opt = inc_event->opt, *opt2;
     Packet *ack_pak = ack_event->pak;
-    const char *txt, *ack_msg;
+    const char *txt, *ack_msg, *tauto;
     strc_t text, cname, ctext, reason, cctmp;
     char *name;
     UDWORD tmp, cmd, flen;
@@ -899,13 +899,13 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     accept = FALSE;
 
     if      (serv->status & STATUSF_DND)
-        ack_msg = ContactPrefStr (cont, CO_AUTODND);
+        ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTODND))  && *tauto ? tauto : ContactPrefStr (cont, CO_AUTODND);
     else if (serv->status & STATUSF_OCC)
-        ack_msg = ContactPrefStr (cont, CO_AUTOOCC);
+        ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTOOCC))  && *tauto ? tauto : ContactPrefStr (cont, CO_AUTOOCC);
     else if (serv->status & STATUSF_NA)
-        ack_msg = ContactPrefStr (cont, CO_AUTONA);
+        ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTONA))   && *tauto ? tauto : ContactPrefStr (cont, CO_AUTONA);
     else if (serv->status & STATUSF_AWAY)
-        ack_msg = ContactPrefStr (cont, CO_AUTOAWAY);
+        ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTOAWAY)) && *tauto ? tauto : ContactPrefStr (cont, CO_AUTOAWAY);
     else
         ack_msg = "";
 

@@ -88,6 +88,13 @@ extern struct OptEntry_s OptList[];
 #define CO_AUTOFFC       (COF_STRING  | CO_CONTACT | 0x14UL) /* the free for chat auto reply message  */
 #define CO_AUTOINV       (COF_STRING  | CO_CONTACT | 0x15UL) /* the invisible auto reply message      */
 
+#define CO_TAUTOAWAY     (COF_STRING  | CO_CONTACT | 0x20UL) /* the temp away auto reply message           */
+#define CO_TAUTONA       (COF_STRING  | CO_CONTACT | 0x21UL) /* the temp not available auto reply message  */
+#define CO_TAUTOOCC      (COF_STRING  | CO_CONTACT | 0x22UL) /* the temp occupied auto reply message       */
+#define CO_TAUTODND      (COF_STRING  | CO_CONTACT | 0x23UL) /* the temp do not disturb auto reply message */
+#define CO_TAUTOFFC      (COF_STRING  | CO_CONTACT | 0x24UL) /* the temp free for chat auto reply message  */
+#define CO_TAUTOINV      (COF_STRING  | CO_CONTACT | 0x25UL) /* the temp invisible auto reply message      */
+
 #define CO_COLORNONE     (COF_COLOR   | CO_GLOBAL  | 0x80UL) /* the escape sequence to print for no color              */
 #define CO_COLORSERVER   (COF_COLOR   | CO_GLOBAL  | 0x81UL) /* the escape sequence to print for server message        */
 #define CO_COLORCLIENT   (COF_COLOR   | CO_GLOBAL  | 0x82UL) /* the escape sequence to print for client stuff          */

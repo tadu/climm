@@ -336,15 +336,15 @@ static JUMP_F(CmdUserChange)
         }
     }
 
-    if ((arg1 = s_parserem (&args)))
-    {
-        if      (data & STATUSF_DND)  OptSetStr (&prG->copts, CO_AUTODND,  arg1);
-        else if (data & STATUSF_OCC)  OptSetStr (&prG->copts, CO_AUTOOCC,  arg1);
-        else if (data & STATUSF_NA)   OptSetStr (&prG->copts, CO_AUTONA,   arg1);
-        else if (data & STATUSF_AWAY) OptSetStr (&prG->copts, CO_AUTOAWAY, arg1);
-        else if (data & STATUSF_FFC)  OptSetStr (&prG->copts, CO_AUTOFFC,  arg1);
-        else if (data & STATUSF_INV)  OptSetStr (&prG->copts, CO_AUTOINV,  arg1);
-    }
+    if (!(arg1 = s_parserem (&args)))
+        arg1 = "";
+
+    if      (data & STATUSF_DND)  OptSetStr (&prG->copts, CO_TAUTODND,  arg1);
+    else if (data & STATUSF_OCC)  OptSetStr (&prG->copts, CO_TAUTOOCC,  arg1);
+    else if (data & STATUSF_NA)   OptSetStr (&prG->copts, CO_TAUTONA,   arg1);
+    else if (data & STATUSF_AWAY) OptSetStr (&prG->copts, CO_TAUTOAWAY, arg1);
+    else if (data & STATUSF_FFC)  OptSetStr (&prG->copts, CO_TAUTOFFC,  arg1);
+    else if (data & STATUSF_INV)  OptSetStr (&prG->copts, CO_TAUTOINV,  arg1);
 
     if (~conn->connect & CONNECT_OK)
         conn->status = data;

@@ -24,17 +24,31 @@ void Auto_Reply (Connection *conn, Contact *cont)
         return;
 
           if (conn->status & STATUSF_DND)
-         temp = ContactPrefStr (cont, CO_AUTODND);
+         temp = ContactPrefStr (cont, CO_TAUTODND);
      else if (conn->status & STATUSF_OCC)
-         temp = ContactPrefStr (cont, CO_AUTOOCC);
+         temp = ContactPrefStr (cont, CO_TAUTOOCC);
      else if (conn->status & STATUSF_NA)
-         temp = ContactPrefStr (cont, CO_AUTONA);
+         temp = ContactPrefStr (cont, CO_TAUTONA);
      else if (conn->status & STATUSF_AWAY)
-         temp = ContactPrefStr (cont, CO_AUTOAWAY);
+         temp = ContactPrefStr (cont, CO_TAUTOAWAY);
      else if (conn->status & STATUSF_INV)
-         temp = ContactPrefStr (cont, CO_AUTOINV);
+         temp = ContactPrefStr (cont, CO_TAUTOINV);
      else
          return;
+    
+    if (!temp || !*temp)
+    {
+              if (conn->status & STATUSF_DND)
+             temp = ContactPrefStr (cont, CO_AUTODND);
+         else if (conn->status & STATUSF_OCC)
+             temp = ContactPrefStr (cont, CO_AUTOOCC);
+         else if (conn->status & STATUSF_NA)
+             temp = ContactPrefStr (cont, CO_AUTONA);
+         else if (conn->status & STATUSF_AWAY)
+             temp = ContactPrefStr (cont, CO_AUTOAWAY);
+         else if (conn->status & STATUSF_INV)
+             temp = ContactPrefStr (cont, CO_AUTOINV);
+    }
 
     IMCliMsg (conn, cont, OptSetVals (NULL, CO_MSGTYPE, MSG_AUTO, CO_MSGTEXT, temp, 0));
 }
