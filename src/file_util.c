@@ -148,7 +148,7 @@ void Initalize_RC_File ()
         prG->s5Name = NULL;
 
         M_print ("\n");
-        M_print (i18n (1787, "You probably need to authentificate yourself to the socks server. If so, you need to enter the user name the administrator of the socks server gave you. Otherwise, just press return.\n"));
+        M_print (i18n (1787, "You probably need to authenticate yourself to the socks server. If so, you need to enter the user name the administrator of the socks server gave you. Otherwise, just press return.\n"));
         M_printf ("%s ", i18n (1096, "SOCKS5 user name:"));
         fflush (stdout);
         M_fdnreadln (stdin, input, sizeof (input));
@@ -1180,7 +1180,7 @@ int Save_RC ()
     else
         fprintf (rcf, "s5_host %s\n", s_quote (prG->s5Host));
     fprintf (rcf, "s5_port %d\n", prG->s5Port);
-    fprintf (rcf, "# If you need authentification, put 1 for s5_auth and fill your name/password\n");
+    fprintf (rcf, "# If you need authentication, put 1 for s5_auth and fill your name/password\n");
     fprintf (rcf, "s5_auth %d\n", prG->s5Auth);
     if (!prG->s5Name)
         fprintf (rcf, "s5_name [none]\n");

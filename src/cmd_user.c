@@ -640,7 +640,7 @@ static JUMP_F(CmdUserHelp)
                   i18n (2306, "Request server side contact list and show all or new contacts or import."));
         M_printf (COLMESSAGE "%s <contacts>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                   CmdUserLookupName ("peek"),
-                  i18n (2183, "Check all <contacts> whether it is offline or invisible."));
+                  i18n (2183, "Check all <contacts> whether they are offline or invisible."));
     }
     return 0;
 }
@@ -714,7 +714,7 @@ static JUMP_F(CmdUserSMS)
     }
     if (arg1[0] != '+' || arg1[1] == '0')
     {
-        M_printf (i18n (2250, "Number '%s' is not of the format +<coutrycode><cellprovider><number>.\n"), arg1);
+        M_printf (i18n (2250, "Number '%s' is not of the format +<countrycode><cellprovider><number>.\n"), arg1);
         if (contr && contr->meta_general)
             s_repl (&contr->meta_general->cellular, NULL);
         return 0;
@@ -2036,7 +2036,7 @@ static JUMP_F(CmdUserIgnoreStatus)
     int i;
     ANYCONN;
 
-    M_printf ("%s%s\n", W_SEPERATOR, i18n (1062, "Users ignored:"));
+    M_printf ("%s%s\n", W_SEPARATOR, i18n (1062, "Users ignored:"));
     cg = conn->contacts;
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
     {
@@ -2056,7 +2056,7 @@ static JUMP_F(CmdUserIgnoreStatus)
             }
         }
     }
-    M_print (W_SEPERATOR);
+    M_print (W_SEPARATOR);
     return 0;
 }
 
@@ -2215,14 +2215,14 @@ static JUMP_F(CmdUserStatusShort)
     int i;
     OPENCONN;
 
-    M_print  (W_SEPERATOR);
+    M_print  (W_SEPARATOR);
     M_printf ("%s " COLCONTACT "%10lu" COLNONE " ", s_now, conn->uin);
     M_printf (i18n (2211, "Your status is %s.\n"), s_status (conn->status));
 
     cg = conn->contacts;
     if (data)
     {
-        M_printf ("%s%s\n", W_SEPERATOR, i18n (1072, "Users offline:"));
+        M_printf ("%s%s\n", W_SEPARATOR, i18n (1072, "Users offline:"));
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
         {
             if (~cont->flags & CONT_ALIAS && ~cont->flags & CONT_IGNORE)
@@ -2241,7 +2241,7 @@ static JUMP_F(CmdUserStatusShort)
         }
     }
 
-    M_printf ("%s%s\n", W_SEPERATOR, i18n (1073, "Users online:"));
+    M_printf ("%s%s\n", W_SEPARATOR, i18n (1073, "Users online:"));
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
     {
         if (~cont->flags & CONT_ALIAS && ~cont->flags & CONT_IGNORE)
@@ -2263,7 +2263,7 @@ static JUMP_F(CmdUserStatusShort)
             }
         }
     }
-    M_print (W_SEPERATOR);
+    M_print (W_SEPARATOR);
     return 0;
 }
 
