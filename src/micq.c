@@ -104,16 +104,16 @@ void Idle_Check (Connection *conn)
                         return;
                     new = (conn->status & STATUSF_INV) | STATUS_ONLINE;
                     break;
-                case 2: /* no scrren saver, but locked workstation */
-                    if ((conn->status & (STATUSF_AWAY | STATUSF_NA)) == STATUS_AWAY)
-                        return;
-                    new = (conn->status & STATUSF_INV) | STATUS_AWAY;
-                    break;
-                case 1: /* screen saver */
+                case 2: /* locked workstation */
                 case 3:
                     if (conn->status & STATUS_NA)
                         return;
                     new = (conn->status & STATUSF_INV) | STATUS_NA;
+                    break;
+                case 1: /* screen saver only */
+                    if ((conn->status & (STATUSF_AWAY | STATUSF_NA)) == STATUS_AWAY)
+                        return;
+                    new = (conn->status & STATUSF_INV) | STATUS_AWAY;
                     break;
             }
 
