@@ -305,17 +305,10 @@ int Read_RC_File (FILE *rcf)
             else if (!strcasecmp (args, "[Group]"))
             {
                 section = 4;
-                if (format < 2)
-                {
-                    cg = ContactGroupC (NULL, 0, NULL);
-                    ContactOptionsSetVal (&cg->copts, CO_IGNORE, 0);
-                    for (i = 0; (conn = ConnectionNr (i)); i++)
-                        if (conn->flags & CONN_AUTOLOGIN && conn->type & TYPEF_ANY_SERVER)
-                        {
-                            cg->serv = conn;
-                            break;
-                        }
-                }
+                cg = ContactGroupC (NULL, 0, NULL);
+                ContactOptionsSetVal (&cg->copts, CO_IGNORE, 0);
+                if ((conn = ConnectionFind (TYPEF_SERVER, NULL, NULL)))
+                    cg->serv = conn;
             }
             else
             {
@@ -1032,12 +1025,13 @@ int Read_RC_File (FILE *rcf)
                     PrefParseInt (uin);
                     
                     if ((conn = ConnectionFindUIN (type, uin)))
-                    {
-                        if (cg->serv && cg->serv->contacts == cg)
-                            cg->serv->contacts = NULL;
                         cg->serv = conn;
-                        cg->serv->contacts = cg;
-                    }
+                }
+                else if (!cg->serv)
+                {
+                    M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                    M_printf (i18n (9999, "Contact group %s (id %s%d%s) not associated to server connection.\n"),
+                              s_wordquote (cg->name ? cg->name : ""), COLQUOTE, cg->id, COLNONE);
                 }
                 else if (!strcasecmp (cmd, "entry"))
                 {
@@ -1046,8 +1040,8 @@ int Read_RC_File (FILE *rcf)
                     PrefParseInt (i);
                     PrefParseInt (uin);
                     
-                    cont = ContactFindCreate (conn->contacts, i, uin, s_sprintf ("%ld", uin));
-                    if (cont && cg != conn->contacts)
+                    cont = ContactFindCreate (cg->serv->contacts, i, uin, s_sprintf ("%ld", uin));
+                    if (cont && cg != cg->serv->contacts)
                         ContactAdd (cg, cont);
                 }
                 else
