@@ -35,6 +35,8 @@
 #endif
 #endif
 
+#define ENABLE_DEBUG
+
 struct Queue_s;
 struct Event_s;
 struct Contact_s;
