@@ -47,8 +47,8 @@ JUMP_SNAC_F(SnacSrvContacterr)
     
     switch (err)
     {
-        case 0x0e: errtxt = i18n (2329, "syntax error");
-        case 0x14: errtxt = i18n (2330, "removing non-contact");
+        case 0x0e: errtxt = i18n (2329, "syntax error"); break;
+        case 0x14: errtxt = i18n (2330, "removing non-contact"); break;
         default:   errtxt = i18n (2331, "unknown");
     }
 
