@@ -36,4 +36,7 @@ void R_goto (int pos);                       /* go to position in input line */
 #define R_goto ()           {}
 
 #endif /* USE_MREADLINE */
+
+void R_clrscr (void);
+
 #endif /* MICQ_MREADLINE_H */

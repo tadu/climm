@@ -1941,7 +1941,7 @@ static JUMP_F(CmdUserSet)
  */
 static JUMP_F(CmdUserClear)
 {
-    clrscr ();
+    R_clrscr ();
     return 0;
 }
 

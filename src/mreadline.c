@@ -101,6 +101,19 @@ void R_init (void)
     R_resetprompt ();
 }
 
+/*
+ * Clear the screen.
+ */
+void R_clrscr (void)
+{
+#ifdef ANSI_TERM
+    printf ("\x1b[H\x1b[J");
+#else
+    printf ("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+#endif
+}
+
+
 static RETSIGTYPE micq_ttystop_handler (int a)
 {
     tty_restore ();
@@ -146,9 +159,6 @@ void R_goto (int pos)
     if (!t)
         t = strdup ("");
     *t = '\0';
-#ifdef WIP
-    fprintf (stderr, "Goto: from %d to %d (with %d)", curpos, pos, Get_Max_Screen_Width ());
-#endif
 
 #ifdef ANSI_TERM
     scr = Get_Max_Screen_Width ();
@@ -197,9 +207,6 @@ void R_goto (int pos)
     curpos = pos;
 #ifdef ENABLE_UTF8
     bytepos = s_offset (s, curpos);
-#endif
-#ifdef WIP
-    fprintf (stderr, "byte %d '%s' out of '%s'\n", bytepos, t, s);
 #endif
     printf ("%s", t);
 }
@@ -472,7 +479,7 @@ int R_process_input (void)
                     return 1;
                 case 12:       /* ^L */
                     R_remprompt ();
-                    system ("clear");
+                    R_clrscr ();
                     break;
                 case '\t':
                     R_process_input_tab ();
@@ -658,9 +665,12 @@ int R_process_input (void)
 #ifdef ENABLE_UTF8
         case 10:
             istat++;
+#ifndef WIP
             if (ENC(enc_loc) != ENC_UTF8)
                 istat = 0;
-            else if (ch >= '0' && ch <= '9')
+            else
+#endif
+            if (ch >= '0' && ch <= '9')
                 inp = ch - '0';
             else if (ch >= 'a' && ch <= 'f')
                 inp = ch - 'a' + 10;

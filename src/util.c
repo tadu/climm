@@ -359,18 +359,6 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
     return 0;
 }
 
-/*************************************************
- clears the screen 
-**************************************************/
-void clrscr (void)
-{
-#ifdef ANSI_TERM
-    printf ("\x1b[H\x1b[J");
-#else
-    M_print ("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-#endif
-}
-
 /*
  * Displays a hex dump of buf on the screen.
  */
