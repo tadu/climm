@@ -1840,6 +1840,7 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
             str = ConvTo (text, enc);
             s_init (&bstr, "", str->len + 2);
             memcpy (bstr.txt, str->txt, str->len + 1);
+            bstr->len = str->len;
             if (bstr.len > 450)
             {
                 bstr.len = 450;
