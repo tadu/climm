@@ -27,6 +27,7 @@
 #include "packet.h"
 #include "preferences.h"
 #include "util_ui.h"
+#include "contact.h"
 #include "buildmark.h"
 #include <assert.h>
 #include <stdio.h>
@@ -284,11 +285,11 @@ void PacketWriteLLNTS (Packet *pak, const char *data)
     PacketWrite1 (pak, 0);
 }
 
-void PacketWriteUIN (Packet *pak, UDWORD uin)
+void PacketWriteCont (Packet *pak, Contact *cont)
 {
     const char *str;
     
-    str = s_sprintf ("%ld", uin);
+    str = s_sprintf ("%ld", cont->uin);
     PacketWrite1 (pak, strlen (str));
     PacketWriteData (pak, str, strlen (str));
 }
@@ -674,7 +675,20 @@ strc_t PacketReadL4Str (Packet *pak, str_t str)
     return str;
 }
 
-UDWORD PacketReadUIN (Packet *pak)
+strc_t PacketReadUIN (Packet *pak)
+{
+    UBYTE len = PacketRead1 (pak);
+    str_t str;
+
+    packetstrind %= 4;
+    str = &packetstr[packetstrind++];
+    s_init (str, "", len + 2);
+    PacketReadData (pak, str, len);
+    str->txt[len] = '\0';
+    return str;
+}
+
+Contact *PacketReadCont (Packet *pak, Connection *serv)
 {
     UBYTE len = PacketRead1 (pak);
     UDWORD uin;
@@ -684,7 +698,7 @@ UDWORD PacketReadUIN (Packet *pak)
     str.txt[len] = '\0';
     uin = atoi (str.txt);
     s_done (&str);
-    return uin;
+    return ContactUIN (serv, uin);
 }
 
 UWORD PacketReadPos (const Packet *pak)

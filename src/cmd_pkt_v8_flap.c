@@ -65,7 +65,7 @@ static void FlapChannel4 (Connection *conn, Packet *pak);
 
 void SrvCallBackFlap (Event *event)
 {
-    assert (event->type == QUEUE_FLAP);
+    Connection *conn;
 
     if (!event->conn)
     {
@@ -73,17 +73,22 @@ void SrvCallBackFlap (Event *event)
         return;
     }
     
+    assert (event->type == QUEUE_FLAP);
+    ASSERT_SERVER (event->conn);
+    
+    conn = event->conn;
+
     event->pak->tpos = event->pak->rpos;
     event->pak->cmd = PacketRead1 (event->pak);
     event->pak->id  = PacketReadB2 (event->pak);
                       PacketReadB2 (event->pak);
     
-    event->conn->stat_pak_rcvd++;
-    event->conn->stat_real_pak_rcvd++;
+    conn->stat_pak_rcvd++;
+    conn->stat_real_pak_rcvd++;
     switch (event->pak->cmd)
     {
         case 1: /* Client login */
-            FlapChannel1 (event->conn, event->pak);
+            FlapChannel1 (conn, event->pak);
             break;
         case 2: /* SNAC packets */
             SnacCallback (event);
@@ -91,7 +96,7 @@ void SrvCallBackFlap (Event *event)
         case 3: /* Errors */
             break;
         case 4: /* Logoff */
-            FlapChannel4 (event->conn, event->pak);
+            FlapChannel4 (conn, event->pak);
             break;
         case 5: /* Ping */
         default:

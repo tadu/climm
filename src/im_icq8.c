@@ -34,7 +34,7 @@ UBYTE IMRoster (Connection *conn, int mode)
         case IMROSTER_SYNC:
         case IMROSTER_SHOW:
         case IMROSTER_DIFF:
-            QueueEnqueueData (conn, QUEUE_REQUEST_ROSTER, 0, 0x7fffffffL, NULL, mode, NULL, NULL);
+            QueueEnqueueData (conn, QUEUE_REQUEST_ROSTER, mode, 0x7fffffffL, NULL, NULL, NULL, NULL);
             SnacCliCheckroster (conn);
             return RET_OK;
     }

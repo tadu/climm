@@ -162,7 +162,7 @@ char *PacketDump (Packet *pak, const char *syntax)
             case 'u':
                 nr = PacketReadAt1 (pak, pak->rpos);
                 s_cat  (&str, s_dumpnd (pak->data + pak->rpos, nr + 1));
-                s_catf (&str, " %sUIN      %ld%s\n", COLDEBUG, PacketReadUIN (pak), COLNONE);
+                s_catf (&str, " %sUIN      %s%s\n", COLDEBUG, PacketReadUIN (pak)->txt, COLNONE);
                 continue;
             case 'B':
                 nr = PacketReadAtB2 (pak, pak->rpos);

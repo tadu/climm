@@ -74,7 +74,7 @@ void ConnectionInitServer (Connection *conn)
         conn->status = conn->spref->status;
     QueueEnqueueData (conn, conn->connect, conn->our_seq,
                       time (NULL) + 10,
-                      NULL, conn->uin, NULL, &SrvCallBackTimeout);
+                      NULL, ContactUIN (conn, conn->uin), NULL, &SrvCallBackTimeout);
     UtilIOConnectTCP (conn);
 }
 
@@ -84,8 +84,7 @@ static void SrvCallBackReconn (Connection *conn)
     Contact *cont;
     int i;
 
-    cont = ContactUIN (conn, conn->uin);
-    if (!cont)
+    if (!(cont = ContactUIN (conn, conn->uin)))
         return;
 
     M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
@@ -93,7 +92,7 @@ static void SrvCallBackReconn (Connection *conn)
     if (reconn < 5)
     {
         M_printf (i18n (2032, "Scheduling v8 reconnect in %d seconds.\n"), 10 << reconn);
-        QueueEnqueueData (conn, /* FIXME: */ 0, 0, time (NULL) + (10 << reconn), NULL, conn->uin, NULL, &SrvCallBackDoReconn);
+        QueueEnqueueData (conn, /* FIXME: */ 0, 0, time (NULL) + (10 << reconn), NULL, cont, NULL, &SrvCallBackDoReconn);
         reconn++;
     }
     else
@@ -107,7 +106,7 @@ static void SrvCallBackReconn (Connection *conn)
 
 static void SrvCallBackDoReconn (Event *event)
 {
-    if (event->conn)
+    if (event->conn && event->type == TYPE_SERVER)
         ConnectionInitServer (event->conn);
     EventD (event);
 }
@@ -121,6 +120,7 @@ static void SrvCallBackTimeout (Event *event)
         EventD (event);
         return;
     }
+    ASSERT_SERVER (conn);
     
     if ((conn->connect & CONNECT_MASK) && !(conn->connect & CONNECT_OK))
     {
@@ -207,7 +207,7 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
 {
     Connection *new;
     
-    new = ConnectionC ();
+    new = ConnectionC (TYPE_SERVER);
     if (!new)
         return NULL;
     new->spref = PreferencesConnectionC ();
@@ -230,7 +230,6 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
         new->spref->port = 5190;
     }
     new->spref->passwd = strdup (pass);
-    new->type    = TYPE_SERVER;
     new->flags   = 0;
     new->ver  = new->spref->version;
     new->server = strdup (new->spref->server);
@@ -333,7 +332,7 @@ void SrvMsgGreet (Packet *pak, UWORD cmd, const char *reason, UWORD port, UDWORD
 void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Event *ack_event)
 {
     Connection *flist;
-    Contact *cont = ContactUIN (serv, inc_event->uin);
+    Contact *cont = inc_event->cont;
     Extra *extra = inc_event->extra;
     Packet *ack_pak = ack_event->pak;
     Event *e1, *e2;
@@ -426,9 +425,9 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                 ExtraSet (extra, EXTRA_REF, ack_event->seq, NULL);
                 IMSrvMsg (cont, serv, NOW, ExtraClone (extra));
                 e1 = QueueEnqueueData (serv, QUEUE_ACKNOWLEDGE, ack_event->seq, time (NULL) + 60,
-                                       NULL, inc_event->uin, NULL, NULL);
+                                       NULL, inc_event->cont, NULL, NULL);
                 e2 = QueueEnqueueData (inc_event->conn, inc_event->type, ack_event->seq,
-                                       time (NULL) + 62, inc_event->pak, inc_event->uin, extra, inc_event->callback);
+                                       time (NULL) + 62, inc_event->pak, inc_event->cont, extra, inc_event->callback);
                 e1->rel = e2;
                 e2->rel = e1;
                 inc_event->pak->rpos = inc_event->pak->tpos;
@@ -507,9 +506,9 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                             ExtraSet (extra, EXTRA_MESSAGE, MSG_FILE, name);
                             IMSrvMsg (cont, serv, NOW, ExtraClone (extra));
                             e1 = QueueEnqueueData (serv, QUEUE_ACKNOWLEDGE, ack_event->seq, time (NULL) + 60,
-                                                   NULL, inc_event->uin, NULL, NULL);
+                                                   NULL, inc_event->cont, NULL, NULL);
                             e2 = QueueEnqueueData (inc_event->conn, inc_event->type, ack_event->seq,
-                                                   time (NULL) + 62, inc_event->pak, inc_event->uin, extra, inc_event->callback);
+                                                   time (NULL) + 62, inc_event->pak, inc_event->cont, extra, inc_event->callback);
                             e1->rel = e2;
                             e2->rel = e1;
                             inc_event->pak->rpos = inc_event->pak->tpos;
@@ -543,10 +542,10 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                     case 0x002d:
                         if (id[0] == (char)0xbf)
                         {
-                            IMSrvMsg (cont, serv->assoc, NOW, ExtraClone (extra));
-                            IMSrvMsg (cont, serv->assoc, NOW, ExtraSet (ExtraClone (extra),
+                            IMSrvMsg (cont, serv, NOW, ExtraClone (extra));
+                            IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraClone (extra),
                                       EXTRA_MESSAGE, MSG_CHAT, name));
-                            IMSrvMsg (cont, serv->assoc, NOW, ExtraSet (ExtraClone (extra),
+                            IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraClone (extra),
                                       EXTRA_MESSAGE, MSG_CHAT, reason->txt));
                             PacketWrite2    (ack_pak, TCP_ACK_REFUSE);
                             PacketWrite2    (ack_pak, ack_flags);

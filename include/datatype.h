@@ -88,8 +88,6 @@ typedef int SOK_T;
 
 #endif
 
-#define Get_Config_Info(x) Get_Unix_Config_Info(x)
-
 #ifndef TRUE
   #define TRUE 1
 #endif

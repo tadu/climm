@@ -76,7 +76,7 @@ void        PacketWriteStr    (      Packet *pak,           const char *data);
 void        PacketWriteLNTS   (      Packet *pak,           const char *data);
 void        PacketWriteDLStr  (      Packet *pak,           const char *data);
 void        PacketWriteLLNTS  (      Packet *pak,           const char *data);
-void        PacketWriteUIN    (      Packet *pak, UDWORD uin);
+void        PacketWriteCont   (      Packet *pak, Contact *cont);
 void        PacketWriteTLV    (      Packet *pak, UDWORD type);
 void        PacketWriteTLVDone(      Packet *pak);
 void        PacketWriteLen    (      Packet *pak);
@@ -101,7 +101,8 @@ void        PacketReadData    (      Packet *pak, str_t str, UWORD len);
 strc_t      PacketReadB2Str   (      Packet *pak, str_t str);
 strc_t      PacketReadL2Str   (      Packet *pak, str_t str);
 strc_t      PacketReadL4Str   (      Packet *pak, str_t str);
-UDWORD      PacketReadUIN     (      Packet *pak);
+strc_t      PacketReadUIN     (      Packet *pak);
+Contact    *PacketReadCont    (      Packet *pak, Connection *serv);
 
 UBYTE       PacketReadAt1     (const Packet *pak, UWORD at);
 UWORD       PacketReadAt2     (const Packet *pak, UWORD at);

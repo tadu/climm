@@ -43,6 +43,8 @@
 #endif
 
 #define s_read(s) s_repl (&s, ConvFromCont (PacketReadL2Str (pak, NULL), cont))
+void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg);
+
 
 static BOOL Meta_Read_List (Packet *pak, Extra **list, Contact *cont)
 {
@@ -150,19 +152,15 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
                 M_printf ("FIXME: meta reply ref %lx not found.\n", pak->ref);
             return;
         }
-        if (event->uin)
-        {
-            cont = ContactUIN (event->conn, event->uin);
-            if (!cont)
-                return;
-        }
+        if (event->cont)
+            cont = event->cont;
     }
 
     switch (subtype)
     {
         strc_t data;
         UWORD wdata, i, j;
-        UDWORD dwdata;
+        UDWORD dwdata, uin;
         MetaGeneral *mg;
         MetaMore *mm;
         MetaEmail *me;
@@ -351,8 +349,8 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
                 M_printf ("%lu %s\n", dwdata, i18n (1621, "users not returned."));
             break;
         case META_SRV_RANDOM:
-            event->uin = PacketRead4 (pak);
-            cont = ContactUIN (event->conn, event->uin);
+            uin = PacketRead4 (pak);
+            event->cont = cont = ContactUIN (event->conn, uin);
             wdata = PacketRead2 (pak);
             M_printf (i18n (2009, "Found random chat partner UIN %ld in chat group %d.\n"),
                       cont->uin, wdata);
@@ -360,7 +358,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
                 break;
             if (~cont->updated & UP_INFO)
             {
-                if (conn->ver > 6)
+                if (conn->type == TYPE_SERVER)
                     event->seq = SnacCliMetareqinfo (conn, cont);
                 else
                     event->seq = CmdPktCmdMetaReqInfo (conn, cont);
@@ -482,7 +480,7 @@ void Recv_Message (Connection *conn, Packet *pak)
     else
         text = c_in_to_split (ctext, cont);
 
-    uiG.last_rcvd_uin = uin;
+    uiG.last_rcvd = cont;
     IMSrvMsg (cont, conn, mktime (&stamp),
               ExtraSet (NULL, EXTRA_MESSAGE, type, text));
 }
@@ -669,8 +667,6 @@ struct History_s
 typedef struct History_s History;
 
 static History hist[50];
-void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg);
-
 /*
  * History
  */
@@ -760,7 +756,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
 
     if (uiG.idle_flag)
     {
-        if ((cont->uin != uiG.last_rcvd_uin) || !uiG.idle_uins || !uiG.idle_msgs)
+        if ((cont != uiG.last_rcvd) || !uiG.idle_uins || !uiG.idle_msgs)
             s_repl (&uiG.idle_uins, s_sprintf ("%s %s", uiG.idle_uins && uiG.idle_msgs ? uiG.idle_uins : "", cont->nick));
 
         uiG.idle_msgs++;
@@ -788,7 +784,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
     if (prG->verbose > 1)
         M_printf ("<%ld> ", e_msg_type);
 
-    uiG.last_rcvd_uin = cont->uin;
+    uiG.last_rcvd = cont;
     if (cont)
     {
         s_repl (&cont->last_message, cdata);

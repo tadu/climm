@@ -21,9 +21,8 @@ BOOL TCPSendFiles      (Connection *list, Contact *cont, const char *description
 BOOL TCPGetAuto        (Connection *list, Contact *cont, UWORD which);
 
 Connection *PeerFileCreate    (Connection *serv);
-UBYTE       PeerFileRequested (Connection *peer, const char *files, UDWORD bytes);
 BOOL        PeerFileAccept    (Connection *peer, UWORD status, UDWORD port);
-UBYTE       PeerFileIncAccept (Connection *serv, Event *event);
+UBYTE       PeerFileIncAccept (Connection *list, Event *event);
 
 void PeerFileResend (Event *event);
 void PeerFileDispatchIncoming (Connection *fpeer);

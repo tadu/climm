@@ -406,8 +406,8 @@ void UtilIOConnectTCP (Connection *conn)
             if (prG->s5Use)
             {
                 QueueEnqueueData (conn, QUEUE_CON_TIMEOUT, conn->ip,
-                                  time (NULL) + 10,
-                                  NULL, conn->uin, NULL, &UtilIOTOConn);
+                                  time (NULL) + 10, NULL,
+                                  ContactUIN (conn, conn->uin), NULL, &UtilIOTOConn);
                 conn->dispatch = &UtilIOConnectCallback;
                 conn->connect |= CONNECT_SOCKS_ADD;
                 UtilIOConnectCallback (conn);
@@ -432,8 +432,8 @@ void UtilIOConnectTCP (Connection *conn)
                 if (M_pos () > 0)
                     M_print ("\n");
             QueueEnqueueData (conn, QUEUE_CON_TIMEOUT, conn->ip,
-                              time (NULL) + 10,
-                              NULL, conn->uin, NULL, &UtilIOTOConn);
+                              time (NULL) + 10, NULL,
+                              ContactUIN (conn, conn->uin), NULL, &UtilIOTOConn);
             conn->utilio   = conn->dispatch;
             conn->dispatch = &UtilIOConnectCallback;
             conn->connect |= CONNECT_SELECT_W | CONNECT_SELECT_X;

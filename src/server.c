@@ -27,34 +27,7 @@
 #include <assert.h>
 #include <limits.h>
 
-void icq_sendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD msg_type)
-{
-    char *old;
-    Contact *cont = ContactUIN (conn, uin);
-    
-    if (!cont)
-        return;
-
-    putlog (conn, NOW, cont, STATUS_ONLINE, 
-        msg_type == MSG_AUTO ? LOG_AUTO : LOG_SENT, msg_type, text);
-#ifdef ENABLE_PEER2PEER
-    if (!conn->assoc || !TCPSendMsg (conn->assoc, cont, text, msg_type))
-#endif
-    {
-        if (~conn->connect & CONNECT_OK)
-            return;
-        if (conn->type == TYPE_SERVER)
-            SnacCliSendmsg (conn, cont, text, msg_type, 0);
-        else
-            CmdPktCmdSendMessage (conn, cont, text, msg_type);
-    }
-
-    old = uiG.last_message_sent;
-    uiG.last_message_sent      = strdup (text);
-    uiG.last_message_sent_type = msg_type;
-    if (old)
-        free (old);
-}
+static void CallbackMeta (Event *event);
 
 UBYTE IMCliMsg (Connection *conn, Contact *cont, Extra *extra)
 {
@@ -109,35 +82,35 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, Extra *extra)
     return RET_FAIL;
 }
 
-static void CallbackMeta (Event *event);
-
 void IMCliInfo (Connection *conn, Contact *cont, int group)
 {
     UDWORD ref;
     if (cont)
     {
         cont->updated = 0;
-        if (conn->ver > 6)
+        if (conn->type == TYPE_SERVER)
             ref = SnacCliMetareqinfo (conn, cont);
         else
             ref = CmdPktCmdMetaReqInfo (conn, cont);
     }
     else
     {
-        if (conn->ver > 6)
+        if (conn->type == TYPE_SERVER)
             ref = SnacCliSearchrandom (conn, group);
         else
             ref = CmdPktCmdRandSearch (conn, group);
     }
     QueueEnqueueData (conn, QUEUE_REQUEST_META, ref, time (NULL) + 60, NULL,
-                      cont ? cont->uin : 0, NULL, &CallbackMeta);
+                      cont, NULL, &CallbackMeta);
 }
 
 static void CallbackMeta (Event *event)
 {
     Contact *cont;
     
-    cont = ContactUIN (event->conn, event->uin);
+    assert (event->conn && event->conn->type & TYPEF_ANY_SERVER);
+
+    cont = event->cont;
     if (cont->updated != UP_INFO && !event->flags & QUEUE_FLAG_CONSIDERED)
         QueueEnqueue (event);
     else
@@ -150,4 +123,3 @@ static void CallbackMeta (Event *event)
         EventD (event);
     }
 }
-

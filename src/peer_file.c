@@ -95,7 +95,6 @@ Connection *PeerFileCreate (Connection *serv)
     s_repl (&flist->server, NULL);
     flist->ip          = 0;
     flist->dispatch    = &TCPDispatchMain;
-    flist->reconnect   = &TCPDispatchReconn;
     flist->close       = &PeerFileDispatchClose;
     
     UtilIOConnectTCP (flist);
@@ -118,7 +117,7 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
     ASSERT_MSGLISTEN(list);
     
     serv  = list->parent;
-    cont  = ContactUIN (serv, event->uin);
+    cont  = event->cont;
     flist = PeerFileCreate (serv);
 
     extra = ExtraSet (NULL, 0, bytes, files);
@@ -137,11 +136,12 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
     fpeer->ip      = 0;
     fpeer->connect = 0;
     s_repl (&fpeer->server, NULL);
-    fpeer->uin     = event->uin;
+    fpeer->uin     = event->cont->uin;
     fpeer->len     = bytes;
     fpeer->done    = 0;
     fpeer->close   = &PeerFileDispatchDClose;
-    IMIntMsg (cont, list, NOW, STATUS_OFFLINE, INT_FILE_ACKING, "", extra);
+    fpeer->reconnect = &TCPDispatchReconn;
+    IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_FILE_ACKING, "", extra);
     
     return TRUE;
 }
@@ -154,7 +154,7 @@ BOOL PeerFileAccept (Connection *peer, UWORD status, UDWORD port)
     Connection *flist, *fpeer;
     
     flist = PeerFileCreate (peer->parent->parent);
-    fpeer = ConnectionFind (TYPE_FILEDIRECT, peer->uin, flist);
+    fpeer = ConnectionFindUIN (TYPE_FILEDIRECT, peer->uin, flist);
     
     if (!flist || !fpeer || !port || (status == TCP_ACK_REFUSE))
     {
@@ -169,13 +169,13 @@ BOOL PeerFileAccept (Connection *peer, UWORD status, UDWORD port)
     ASSERT_FILEDIRECT(fpeer);
     
     fpeer->connect  = 0;
-    fpeer->type     = TYPE_FILEDIRECT;
     fpeer->flags    = 0;
     fpeer->our_seq  = 0;
     fpeer->port     = port;
     fpeer->ip       = peer->ip;
     s_repl (&fpeer->server, s_ip (fpeer->ip));
     fpeer->close    = &PeerFileDispatchDClose;
+    fpeer->reconnect = &TCPDispatchReconn;
     
     if (prG->verbose)
         M_printf (i18n (9999, "Opening file transfer connection to %s:%s%ld%s... \n"),
@@ -195,7 +195,7 @@ BOOL PeerFileAccept (Connection *peer, UWORD status, UDWORD port)
 static void PeerFileDispatchClose (Connection *flist)
 {
     flist->connect = 0;
-    PeerFileClose (flist);
+    flist->close (flist);
 }
 
 /*
@@ -280,7 +280,7 @@ void PeerFileDispatch (Connection *fpeer)
             M_printf (i18n (2170, "Sending file at speed %lx to %s.\n"), speed, ConvFromCont (name, cont));
             
             fpeer->our_seq = 1;
-            QueueRetry (fpeer, QUEUE_PEER_FILE, fpeer->uin);
+            QueueRetry (fpeer, QUEUE_PEER_FILE, ContactUIN (fpeer->parent->parent, fpeer->uin));
             return;
             
         case 2:
@@ -372,7 +372,7 @@ void PeerFileDispatch (Connection *fpeer)
             fpeer->assoc->done = off;
             fpeer->assoc->connect = CONNECT_OK;
             
-            QueueRetry (fpeer, QUEUE_PEER_FILE, fpeer->uin);
+            QueueRetry (fpeer, QUEUE_PEER_FILE, ContactUIN (fpeer->parent->parent, fpeer->uin));
             return;
             
         case 4:
@@ -449,7 +449,7 @@ static void PeerFileDispatchW (Connection *fpeer)
     if (!UtilIOSendTCP (fpeer, pak))
         TCPClose (fpeer);
     
-    QueueRetry (fpeer, QUEUE_PEER_FILE, fpeer->uin);
+    QueueRetry (fpeer, QUEUE_PEER_FILE, ContactUIN (fpeer->parent->parent, fpeer->uin));
 }
 
 static BOOL PeerFileError (Connection *fpeer, UDWORD rc, UDWORD flags)
@@ -494,7 +494,7 @@ void PeerFileResend (Event *event)
     
     ASSERT_FILEDIRECT (fpeer);
 
-    cont = ContactUIN (event->conn, event->uin);
+    cont = event->cont;
     assert (cont);
     
     e_msg_text = ExtraGetS (event->extra, EXTRA_MESSAGE);
@@ -622,7 +622,7 @@ void PeerFileResend (Event *event)
             if (event2)
             {
                 QueueEnqueue (event2);
-                QueueRetry (fpeer, QUEUE_PEER_FILE, fpeer->uin);
+                QueueRetry (fpeer, QUEUE_PEER_FILE, ContactUIN (fpeer->parent->parent, fpeer->uin));
                 return;
             }
             else

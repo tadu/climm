@@ -53,7 +53,7 @@ static ConnectionList slist = { NULL, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
  * Creates a new session.
  * Returns NULL if not enough memory available.
  */
-Connection *ConnectionC (void)
+Connection *ConnectionC (UWORD type)
 {
     ConnectionList *cl;
     Connection *conn;
@@ -85,8 +85,9 @@ Connection *ConnectionC (void)
     conn->our_outside_ip = 0x7f000001;
     conn->status = STATUS_OFFLINE;
     conn->sok = -1;
+    conn->type = type;
 
-    Debug (DEB_CONNECT, "<=== %p[%d] create", conn, j);
+    Debug (DEB_CONNECT, "<=== %p[%d] create %d", conn, j, type);
 
     return cl->conn[i] = conn;
 }
@@ -99,7 +100,7 @@ Connection *ConnectionClone (Connection *conn, UWORD type)
 {
     Connection *child;
     
-    child = ConnectionC ();
+    child = ConnectionC (type);
     if (!child)
         return NULL;
 
@@ -109,7 +110,6 @@ Connection *ConnectionClone (Connection *conn, UWORD type)
     child->sok      = -1;
     child->connect  = 0;
     child->incoming = NULL;
-    child->type     = type;
     child->open     = NULL;
     child->server   = NULL;
     child->contacts = NULL;
@@ -140,7 +140,57 @@ Connection *ConnectionNr (int i)
  * Actually, you may specify TYPEF_* here that must all be set.
  * The parent is the session this one has to have as parent.
  */
-Connection *ConnectionFind (UWORD type, UDWORD uin, const Connection *parent)
+Connection *ConnectionFind (UWORD type, const Contact *cont, const Connection *parent)
+{
+    ConnectionList *cl;
+    Connection *conn;
+    int i;
+    
+    if (parent)
+    {
+        if (cont)
+        {
+            for (cl = &slist; cl; cl = cl->more)
+                for (i = 0; i < ConnectionListLen; i++)
+                    if ((conn = cl->conn[i]) && (conn->type & type) == type && conn->uin == cont->uin && conn->parent == parent)
+                        return conn;
+        }
+        else
+            for (cl = &slist; cl; cl = cl->more)
+                for (i = 0; i < ConnectionListLen; i++)
+                    if ((conn = cl->conn[i]) && (conn->type & type) == type && (conn->connect & CONNECT_OK) && conn->parent == parent)
+                        return conn;
+    }
+    else
+    {
+        if (cont)
+        {
+            for (cl = &slist; cl; cl = cl->more)
+                for (i = 0; i < ConnectionListLen; i++)
+                    if ((conn = cl->conn[i]) && (conn->type & type) == type && conn->uin == cont->uin)
+                        return conn;
+        }
+        else
+        {
+            for (cl = &slist; cl; cl = cl->more)
+                for (i = 0; i < ConnectionListLen; i++)
+                    if ((conn = cl->conn[i]) && (conn->type & type) == type && (conn->connect & CONNECT_OK))
+                        return conn;
+            for (cl = &slist; cl; cl = cl->more)
+                for (i = 0; i < ConnectionListLen; i++)
+                    if ((conn = cl->conn[i]) && (conn->type & type) == type)
+                        return conn;
+        }
+    }
+    return NULL;
+}
+
+/*
+ * Finds a session of given type and/or given uin.
+ * Actually, you may specify TYPEF_* here that must all be set.
+ * The parent is the session this one has to have as parent.
+ */
+Connection *ConnectionFindUIN (UWORD type, UDWORD uin, const Connection *parent)
 {
     ConnectionList *cl;
     Connection *conn;

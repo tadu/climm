@@ -144,20 +144,20 @@ typedef struct Extra_s                 Extra;
 /* user interface global state variables */
 typedef struct
 {
-        UDWORD last_rcvd_uin;
-        UDWORD last_sent_uin;
-        char*  last_message_sent;
-        UDWORD last_message_sent_type;
-        time_t start_time;
-        UDWORD away_time_prev;
-        UBYTE  reconnect_count;
-        BOOL   quit;
-        UDWORD packets;
-        time_t idle_val;
-        UDWORD idle_msgs;
-        UBYTE  idle_flag;
-        char * idle_uins;
-        int    nick_len;   /* this *must* be an int */
+    Contact *last_rcvd;
+    Contact *last_sent;
+    char    *last_message_sent;
+    UDWORD   last_message_sent_type;
+    time_t   start_time;
+    UDWORD   away_time_prev;
+    UBYTE    reconnect_count;
+    BOOL     quit;
+    UDWORD   packets;
+    time_t   idle_val;
+    UDWORD   idle_msgs;
+    UBYTE    idle_flag;
+    char    *idle_uins;
+    int      nick_len;   /* this *must* be an int */
 } user_interface_state;
 
 extern user_interface_state uiG;

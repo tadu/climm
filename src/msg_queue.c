@@ -29,6 +29,7 @@
 #include "micq.h"
 #include "msg_queue.h"
 #include "util_ui.h"
+#include "contact.h" /* for cont->uin */
 #include "util_extra.h"
 #include "preferences.h"
 #include "icq_response.h" /* yuck */
@@ -99,7 +100,8 @@ Event *QueuePop ()
         else
             queue->due = queue->head->event->due;
         Debug (DEB_QUEUE, STR_DOT STR_DOT STR_DOT "> %s %p: %08lx %p %ld @ %p",
-               QueueType (event->type), event, event->seq, event->pak, event->uin, event->conn);
+               QueueType (event->type), event, event->seq, event->pak,
+               event->cont ? event->cont->uin : 0, event->conn);
         return event;
     }
     return NULL;
@@ -122,7 +124,8 @@ void QueueEnqueue (Event *event)
     entry->event  = event;
 
     Debug (DEB_QUEUE, "<" STR_DOT STR_DOT STR_DOT " %s %p: %08lx %p %ld %x @ %p t %ld",
-           QueueType (event->type), event, event->seq, event->pak, event->uin, event->flags, event->conn, (long)event->due);
+           QueueType (event->type), event, event->seq, event->pak,
+           event->cont ? event->cont->uin : 0, event->flags, event->conn, (long)event->due);
 
     if (!queue->head)
     {
@@ -154,7 +157,7 @@ void QueueEnqueue (Event *event)
  * Adds a new entry to the queue. Creates Event for you.
  */
 Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD id,
-                         time_t due, Packet *pak, UDWORD uin,
+                         time_t due, Packet *pak, Contact *cont,
                          Extra *extra, Queuef *callback)
 {
     Event *event = calloc (sizeof (Event), 1);
@@ -165,14 +168,15 @@ Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD id,
     event->type = type;
     event->seq  = id;
     event->attempts = 1;
-    event->uin  = uin;
+    event->cont  = cont;
     event->due  = due;
     event->pak = pak;
     event->extra = extra;
     event->callback = callback;
     
     Debug (DEB_EVENT, "<+" STR_DOT STR_DOT " %s %p: %08lx %p %ld %x @ %p",
-           QueueType (event->type), event, event->seq, event->pak, event->uin, event->flags, event->conn);
+           QueueType (event->type), event, event->seq, event->pak,
+           event->cont ? event->cont->uin : 0, event->flags, event->conn);
     QueueEnqueue (event);
 
     return event;
@@ -254,7 +258,7 @@ Event *QueueDequeue (Connection *conn, UDWORD type, UDWORD seq)
     {
         event = q_QueueDequeueEvent (queue->head->event, NULL);
         Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08lx %p %ld",
-               QueueType (type), event, seq, event->pak, event->uin);
+               QueueType (type), event, seq, event->pak, event->cont ? event->cont->uin : 0);
         return event;
     }
     for (iter = queue->head; iter->next; iter = iter->next)
@@ -265,7 +269,7 @@ Event *QueueDequeue (Connection *conn, UDWORD type, UDWORD seq)
         {
             event = q_QueueDequeueEvent (iter->next->event, iter);
             Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08lx %p %ld",
-                   QueueType (type), event, seq, event->pak, event->uin);
+                   QueueType (type), event, seq, event->pak, event->cont ? event->cont->uin : 0);
             return event;
         }
     }
@@ -276,7 +280,7 @@ Event *QueueDequeue (Connection *conn, UDWORD type, UDWORD seq)
 /*
  * Removes and returns an event given by type, and sequence number and/or UIN.
  */
-Event *QueueDequeue2 (Connection *conn, UDWORD type, UDWORD seq, UDWORD uin)
+Event *QueueDequeue2 (Connection *conn, UDWORD type, UDWORD seq, Contact *cont)
 {
     Event *event;
     struct QueueEntry *iter;
@@ -285,18 +289,19 @@ Event *QueueDequeue2 (Connection *conn, UDWORD type, UDWORD seq, UDWORD uin)
 
     if (!queue->head)
     {
-        Debug (DEB_QUEUE, STR_DOT "??" STR_DOT " %s %08lx %ld", QueueType (type), seq, uin);
+        Debug (DEB_QUEUE, STR_DOT "??" STR_DOT " %s %08lx %ld", QueueType (type), seq, cont ? cont->uin : 0);
         return NULL;
     }
 
     if (   queue->head->event->conn == conn
         && queue->head->event->type == type
         && (!seq || queue->head->event->seq == seq)
-        && (!uin || queue->head->event->uin == uin))
+        && (!cont || queue->head->event->cont == cont))
     {
         event = q_QueueDequeueEvent (queue->head->event, NULL);
         Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08lx %p %ld",
-               QueueType (type), event, event->seq, event->pak, event->uin);
+               QueueType (type), event, event->seq, event->pak,
+               event->cont ? event->cont->uin : 0);
         return event;
     }
     for (iter = queue->head; iter->next; iter = iter->next)
@@ -304,16 +309,17 @@ Event *QueueDequeue2 (Connection *conn, UDWORD type, UDWORD seq, UDWORD uin)
         if (   iter->next->event->conn == conn
             && iter->next->event->type == type
             && (!seq || iter->next->event->seq  == seq)
-            && (!uin || iter->next->event->uin == uin))
+            && (!cont || iter->next->event->cont == cont))
         {
             event = q_QueueDequeueEvent (iter->next->event, iter);
             Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08lx %p %ld",
-                   QueueType (type), event, event->seq, event->pak, event->uin);
+                   QueueType (type), event, event->seq, event->pak,
+                   event->cont ? event->cont->uin : 0);
             return event;
         }
     }
     Debug (DEB_QUEUE, STR_DOT "??" STR_DOT " %s %08lx %ld @ %p",
-           QueueType (type), seq, uin, conn);
+           QueueType (type), seq, cont ? cont->uin : 0, conn);
     return NULL;
 }
 
@@ -324,7 +330,8 @@ void EventD (Event *event)
     if (q_QueueDequeueEvent (event, NULL))
         M_printf ("FIXME: Deleting still queued event %p!\n", event);
     Debug (DEB_EVENT, STR_DOT STR_DOT ">> %s %p: %08lx %p %ld",
-           QueueType (event->type), event, event->seq, event->pak, event->uin);
+           QueueType (event->type), event, event->seq, event->pak,
+           event->cont ? event->cont->uin : 0);
     if (event->pak)
         PacketD (event->pak);
     ExtraD (event->extra);
@@ -348,7 +355,8 @@ void QueueCancel (Connection *conn)
     {
         event = q_QueueDequeueEvent (queue->head->event, NULL);
         Debug (DEB_QUEUE, STR_DOT STR_DOT "!> %s %p %p: %08lx %p %ld",
-               QueueType (event->type), conn, event, event->seq, event->pak, event->uin);
+               QueueType (event->type), conn, event, event->seq, event->pak,
+               event->cont ? event->cont->uin : 0);
         event->conn = NULL;
         if (event->callback)
             event->callback (event);
@@ -363,7 +371,8 @@ void QueueCancel (Connection *conn)
         {
             event = q_QueueDequeueEvent (iter->next->event, iter);
             Debug (DEB_QUEUE, STR_DOT STR_DOT "!> %s %p %p: %08lx %p %ld",
-                   QueueType (event->type), conn, event, event->seq, event->pak, event->uin);
+                   QueueType (event->type), conn, event, event->seq, event->pak,
+                   event->cont ? event->cont->uin : 0);
             event->conn = NULL;
             if (event->callback)
                 event->callback (event);
@@ -403,7 +412,7 @@ void QueueRun ()
  * Checks whether there is an event waiting for uin of that type,
  * and delivers the event with the lowest sequence number
  */
-void QueueRetry (Connection *conn, UDWORD type, UDWORD uin)
+void QueueRetry (Connection *conn, UDWORD type, Contact *cont)
 {
     struct QueueEntry *iter;
     Event *event = NULL;
@@ -412,7 +421,7 @@ void QueueRetry (Connection *conn, UDWORD type, UDWORD uin)
     for (iter = queue->head; iter; iter = iter->next)
         if (iter->event->conn == conn
             && iter->event->type == type
-            && iter->event->uin == uin)
+            && iter->event->cont == cont)
         {
             if (!event || event->seq > iter->event->seq)
                 event = iter->event;
@@ -428,7 +437,7 @@ void QueueRetry (Connection *conn, UDWORD type, UDWORD uin)
             event->callback (event);
     }
     else
-        Debug (DEB_QUEUE, STR_DOT STR_DOT "s" STR_DOT " %ld %s", uin, QueueType (type));
+        Debug (DEB_QUEUE, STR_DOT STR_DOT "s" STR_DOT " %ld %s", cont ? cont->uin : 0, QueueType (type));
 }
 
 /*

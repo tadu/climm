@@ -58,11 +58,14 @@ void Initialize_RC_File ()
 {
     strc_t line;
     char *pwd;
-    Connection *conn, *connt;
-    Contact *cont;
+    Connection *conn;
+#ifdef ENABLE_PEER2PEER
+    Connection *connt;
+#endif
 #ifdef ENABLE_REMOTECONTROL
     Connection *conns;
 #endif
+    Contact *cont;
     char *passwd;
     char *t;
     UDWORD uin;
@@ -185,7 +188,7 @@ void Initialize_RC_File ()
     else
     {
         M_print (i18n (1791, "Setup wizard finished. Congratulations!\n"));
-        conn = ConnectionC ();
+        conn = ConnectionC (TYPE_SERVER);
         conn->open = &ConnectionInitServer;
         conn->spref = PreferencesConnectionC ();
         
@@ -210,7 +213,7 @@ void Initialize_RC_File ()
     }
     
 #ifdef ENABLE_PEER2PEER
-    connt = ConnectionC ();
+    connt = ConnectionC (TYPE_MSGLISTEN);
     connt->open = &ConnectionInitPeer;
     connt->spref = PreferencesConnectionC ();
 
@@ -227,11 +230,10 @@ void Initialize_RC_File ()
 #endif
 
 #ifdef ENABLE_REMOTECONTROL
-    conns = ConnectionC ();
+    conns = ConnectionC (TYPE_REMOTE);
     conns->open = &RemoteOpen;
     conns->spref = PreferencesConnectionC ();
     
-    conns->parent = NULL;
     conns->spref->type = TYPE_REMOTE;
     conns->spref->flags = CONN_AUTOLOGIN;
     conns->spref->server = strdup ("remote-control");
@@ -289,7 +291,7 @@ int Read_RC_File (FILE *rcf)
     Contact *cont = NULL, *lastcont = NULL;
     Connection *oldconn = NULL, *conn = NULL, *tconn;
 #ifdef ENABLE_REMOTECONTROL
-    Connection *conns = NULL;
+    Connection *connr = NULL;
 #endif
     ContactGroup *cg = NULL;
     int section, dep = 0;
@@ -314,7 +316,7 @@ int Read_RC_File (FILE *rcf)
             {
                 section = 3;
                 oldconn = conn;
-                conn = ConnectionC ();
+                conn = ConnectionC (0);
                 conn->spref = PreferencesConnectionC ();
             }
             else if (!strcasecmp (args, "[Group]"))
@@ -325,7 +327,7 @@ int Read_RC_File (FILE *rcf)
                     cg = ContactGroupC (NULL, 0, NULL);
                     ContactOptionsSetVal (&cg->copts, CO_IGNORE, 0);
                     for (i = 0; (conn = ConnectionNr (i)); i++)
-                        if (conn->flags & CONN_AUTOLOGIN)
+                        if (conn->flags & CONN_AUTOLOGIN && conn->type & TYPEF_ANY_SERVER)
                         {
                             cg->serv = conn;
                             break;
@@ -814,7 +816,7 @@ int Read_RC_File (FILE *rcf)
                 
                 for (i = j = 0; (tconn = ConnectionNr (i)); i++)
                 {
-                    if (!tconn->contacts)
+                    if (~tconn->type & TYPEF_ANY_SERVER)
                         continue;
 
                     if ((cont = ContactFind (tconn->contacts, 0, uin, NULL)))
@@ -979,6 +981,7 @@ int Read_RC_File (FILE *rcf)
                 PrefParse (cmd);
                 if (!strcasecmp (cmd, "label") && !cg->used)
                 {
+                    Connection *conn;
                     PrefParse (tmp);
                     s_repl (&cg->name, tmp);
                     if (!strncmp (cg->name, "contacts-", 9))
@@ -988,25 +991,21 @@ int Read_RC_File (FILE *rcf)
                         
                         if      (!strncmp (cg->name + 9, "icq5-", 5)) type = TYPE_SERVER_OLD;
                         else if (!strncmp (cg->name + 9, "icq8-", 5)) type = TYPE_SERVER;
-                        uin = atoi (cg->name + 14);
                         
-                        for (i = 0; (conn = ConnectionNr (i)); i++)
-                            if (conn->spref && conn->spref->type == type && conn->spref->uin == uin)
+                        if (type)
+                        {
+                            uin = atoi (cg->name + 14);
+                        
+                            if ((conn = ConnectionFindUIN (type, uin, NULL)))
                             {
                                 cg->serv = conn;
                                 cg->serv->contacts = cg;
-                                break;
                             }
                     }
-                    else if (!cg->serv)
-                    {
-                        for (i = 0; (conn = ConnectionNr (i)); i++)
-                            if (conn->spref && conn->spref->type & TYPEF_SERVER)
-                            {
-                                cg->serv = conn;
-                                break;
-                            }
                     }
+                    if (!cg->serv)
+                        if ((conn = ConnectionFind (TYPEF_SERVER, NULL, NULL)))
+                            cg->serv = conn;
                 }
                 else if (!strcasecmp (cmd, "id") && !cg->used)
                 {
@@ -1015,23 +1014,24 @@ int Read_RC_File (FILE *rcf)
                 }
                 else if (!strcasecmp (cmd, "server") && !cg->used)
                 {
+                    Connection *conn;
                     UWORD type = 0;
                     UDWORD uin = 0;
                     
                     PrefParse (tmp);
                     if      (!strcasecmp (tmp, "icq5")) type = TYPE_SERVER_OLD;
                     else if (!strcasecmp (tmp, "icq8")) type = TYPE_SERVER;
+                    else
+                        ERROR;
                     
                     PrefParseInt (uin);
                     
-                    for (i = 0; (conn = ConnectionNr (i)); i++)
-                        if (conn->type == type && conn->uin == uin)
+                    if ((conn = ConnectionFindUIN (type, uin, NULL)))
                         {
-                            if (cg->serv->contacts == cg)
+                            if (cg->serv && cg->serv->contacts == cg)
                                 cg->serv->contacts = NULL;
                             cg->serv = conn;
                             cg->serv->contacts = cg;
-                            break;
                         }
                 }
                 else if (!strcasecmp (cmd, "entry"))
@@ -1091,7 +1091,7 @@ int Read_RC_File (FILE *rcf)
 #ifdef ENABLE_REMOTECONTROL
             case TYPE_REMOTE:
                 conn->open = &RemoteOpen;
-                conns = conn;
+                connr = conn;
                 break;
 #endif
             default:
@@ -1108,16 +1108,16 @@ int Read_RC_File (FILE *rcf)
     }
 
 #ifdef ENABLE_REMOTECONTROL
-    if (!conns)
+    if (!connr)
     {
-        conns = ConnectionC ();
-        conns->open = &RemoteOpen;
-        conns->spref = PreferencesConnectionC ();
-        conns->spref->server = strdup ("remote-control");
-        conns->parent = NULL;
-        conns->spref->type = TYPE_REMOTE;
-        conns->type  = conns->spref->type;
-        conns->server = strdup (conns->spref->server);
+        connr = ConnectionC (TYPE_REMOTE);
+        connr->open = &RemoteOpen;
+        connr->spref = PreferencesConnectionC ();
+        connr->spref->server = strdup ("remote-control");
+        connr->parent = NULL;
+        connr->spref->type = TYPE_REMOTE;
+        connr->type  = connr->spref->type;
+        connr->server = strdup (connr->spref->server);
         dep = 22;
     }
 #endif
@@ -1162,12 +1162,8 @@ void PrefReadStat (FILE *stf)
                 section = 4;
                 cg = ContactGroupC (NULL, 0, NULL);
                 ContactOptionsSetVal (&cg->copts, CO_IGNORE, 0);
-                for (i = 0; (conn = ConnectionNr (i)); i++)
-                    if (conn->flags & CONN_AUTOLOGIN)
-                    {
-                        cg->serv = conn;
-                        break;
-                    }
+                if ((conn = ConnectionFind (TYPEF_ANY_SERVER, NULL, NULL)))
+                    cg->serv = conn;
             }
             else if (!strcasecmp (args, "[Contacts]"))
                 section = 5;
@@ -1216,25 +1212,19 @@ void PrefReadStat (FILE *stf)
                         
                         if      (!strncmp (cg->name + 9, "icq5-", 5)) type = TYPE_SERVER_OLD;
                         else if (!strncmp (cg->name + 9, "icq8-", 5)) type = TYPE_SERVER;
-                        uin = atoi (cg->name + 14);
+                        else
+                            break;
                         
-                        for (i = 0; (conn = ConnectionNr (i)); i++)
-                            if (conn->spref && conn->spref->type == type && conn->spref->uin == uin)
+                        uin = atoi (cg->name + 14);
+                        if ((conn = ConnectionFindUIN (type, uin, NULL)))
                             {
                                 cg->serv = conn;
                                 cg->serv->contacts = cg;
-                                break;
                             }
                     }
                     if (!cg->serv)
-                    {
-                        for (i = 0; (conn = ConnectionNr (i)); i++)
-                            if (conn->spref && conn->spref->type & TYPEF_SERVER)
-                            {
+                        if ((conn = ConnectionFind (TYPEF_SERVER, NULL, NULL)))
                                 cg->serv = conn;
-                                break;
-                            }
-                    }
                 }
                 else if (!strcasecmp (cmd, "id") && !cg->used)
                 {
@@ -1249,15 +1239,12 @@ void PrefReadStat (FILE *stf)
                     PrefParse (cmd);
                     if      (!strcasecmp (cmd, "icq5")) type = TYPE_SERVER_OLD;
                     else if (!strcasecmp (cmd, "icq8")) type = TYPE_SERVER;
+                    else
+                        ERROR;
                     
                     PrefParseInt (uin);
-                    
-                    for (i = 0; (conn = ConnectionNr (i)); i++)
-                        if (conn->type == type && conn->uin == uin)
-                        {
-                            cg->serv = conn;
-                            break;
-                        }
+                    if ((conn = ConnectionFindUIN (type, uin, NULL)))
+                        cg->serv = conn;
                 }
                 else if (!strcasecmp (cmd, "entry"))
                 {
@@ -1293,7 +1280,8 @@ void PrefReadStat (FILE *stf)
                     
                     for (i = uinconts = 0; (conn = ConnectionNr (i)); i++)
                     {
-                        if (conn->contacts && (cont = ContactFind (conn->contacts, 0, uin, NULL)) && uinconts < 20)
+                        if (conn->type & TYPEF_ANY_SERVER && conn->contacts && uinconts < 20
+                            && (cont = ContactFind (conn->contacts, 0, uin, NULL)))
                         {
                             uincont[uinconts++] = cont;
                             ContactAddAlias (cont, cmd);
@@ -1422,7 +1410,9 @@ int Save_RC ()
 
     for (k = 0; (ss = ConnectionNr (k)); k++)
     {
-        if (!ss->spref || (!ss->spref->uin && ss->spref->type == TYPE_SERVER)
+        if (!ss->spref)
+            continue;
+        if ((!ss->spref->uin && ss->spref->type == TYPE_SERVER)
             || (ss->spref->type != TYPE_SERVER && ss->spref->type != TYPE_SERVER_OLD
                 && ss->spref->type != TYPE_MSGLISTEN && ss->spref->type != TYPE_REMOTE)
             || (ss->spref->type == TYPE_MSGLISTEN && ss->parent && !ss->parent->spref->uin))

@@ -165,6 +165,8 @@ void SnacCallback (Event *event)
     SNAC *s;
     UWORD family;
     
+    ASSERT_SERVER(event->conn);
+    
     family     = PacketReadB2 (pak);
     pak->cmd   = PacketReadB2 (pak);
     pak->flags = PacketReadB2 (pak);
@@ -190,7 +192,7 @@ void SnacCallback (Event *event)
  */
 static void SrvCallBackKeepalive (Event *event)
 {
-    if (event->conn && event->conn->connect & CONNECT_OK)
+    if (event->conn && event->conn->connect & CONNECT_OK && event->conn->type == TYPE_SERVER)
     {
         FlapCliKeepalive (event->conn);
         event->due = time (NULL) + 30;
@@ -359,7 +361,8 @@ static JUMP_SNAC_F(SnacServerpause)
 
 static void SrvCallbackTodoEg (Event *event)
 {
-    CmdUser (s_sprintf ("\\as %ld eg", event->conn->uin));
+    if (event && event->conn && event->conn->uin && event->conn->type == TYPE_SERVER)
+        CmdUser (s_sprintf ("\\as %ld eg", event->conn->uin));
 }
 
 /*
@@ -367,16 +370,17 @@ static void SrvCallbackTodoEg (Event *event)
  */
 static JUMP_SNAC_F(SnacSrvReplyinfo)
 {
+    Contact *cont;
     Packet *pak;
     TLV *tlv;
-    UDWORD uin, status;
+    UDWORD status;
     
     pak = event->pak;
-    uin = PacketReadUIN (pak);
+    cont = PacketReadCont (pak, event->conn);
     
-    if (uin != event->conn->uin)
+    if (cont->uin != event->conn->uin)
         M_printf (i18n (1907, "Warning: Server thinks our UIN is %ld, when it is %ld.\n"),
-                 uin, event->conn->uin);
+                  cont->uin, event->conn->uin);
     PacketReadB2 (pak);
     PacketReadB2 (pak);
     tlv = TLVRead (pak, PacketReadLeft (pak));
@@ -406,7 +410,7 @@ static JUMP_SNAC_F(SnacSrvReplyinfo)
         event->conn->connect = CONNECT_OK | CONNECT_SELECT_R;
         reconn = 0;
         QueueEnqueueData (event->conn, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
-                          NULL, event->conn->uin, NULL, &SrvCallBackKeepalive);
+                          NULL, event->cont, NULL, &SrvCallBackKeepalive);
         QueueEnqueueData (event->conn, QUEUE_TODO_EG, 0, time (NULL) + 3,
                           NULL, 0, NULL, &SrvCallbackTodoEg);
     }
@@ -450,14 +454,14 @@ static JUMP_SNAC_F(SnacSrvMotd)
     if (event->conn->flags & CONN_WIZARD)
     {
         SnacCliReqroster  (event->conn);
-        QueueEnqueueData (event->conn, QUEUE_REQUEST_ROSTER, 0, 0x7fffffffL,
-                          NULL, IMROSTER_IMPORT, NULL, NULL);
+        QueueEnqueueData (event->conn, QUEUE_REQUEST_ROSTER, IMROSTER_IMPORT, 0x7fffffffL,
+                          NULL, NULL, NULL, NULL);
     }
     else
     {
         SnacCliCheckroster  (event->conn);
-        QueueEnqueueData (event->conn, QUEUE_REQUEST_ROSTER, 0, 0x7fffffffL,
-                          NULL, IMROSTER_DIFF, NULL, NULL);
+        QueueEnqueueData (event->conn, QUEUE_REQUEST_ROSTER, IMROSTER_DIFF, 0x7fffffffL,
+                          NULL, NULL, NULL, NULL);
     }
     SnacCliReqlocation  (event->conn);
     SnacCliBuddy        (event->conn);
@@ -479,7 +483,6 @@ static JUMP_SNAC_F(SnacSrvReplylocation)
 static JUMP_SNAC_F(SnacSrvContacterr)
 {
     UWORD err, cnt;
-    UDWORD uin;
     Contact *cont;
     char first = 0, empty = 0;
     const char *errtxt;
@@ -498,15 +501,13 @@ static JUMP_SNAC_F(SnacSrvContacterr)
 
     while (empty < 3)
     {
-        if ((uin = PacketReadUIN (event->pak)))
+        if ((cont = PacketReadCont (event->pak, event->conn)))
         {
-            cont = ContactUIN (event->conn, uin);
             if (first)
                 M_print (", ");
             if (cont)
                 M_printf ("%s (%ld)", cont->nick, cont->uin);
-            else
-                M_printf ("%ld", cont->uin);
+            first = 1;
         }
         else
             empty++;
@@ -527,12 +528,9 @@ static JUMP_SNAC_F(SnacSrvReplybuddy)
  */
 static JUMP_SNAC_F(SnacSrvContrefused)
 {
-    UDWORD uin;
     Contact *cont;
     
-    uin = PacketReadUIN (event->pak);
-    cont = ContactUIN (event->conn, uin);
-    
+    cont = PacketReadCont (event->pak, event->conn);
     if (cont)
         M_printf (i18n (2315, "Cannot watch status of %s - too many watchers.\n"), cont->nick);
 }
@@ -547,7 +545,7 @@ static JUMP_SNAC_F(SnacSrvUseronline)
     TLV *tlv;
     
     pak = event->pak;
-    cont = ContactUIN (event->conn, PacketReadUIN (pak));
+    cont = PacketReadCont (pak, event->conn);
 
     PacketReadB2 (pak);
     PacketReadB2 (pak);
@@ -601,7 +599,7 @@ static JUMP_SNAC_F(SnacSrvUseroffline)
     Packet *pak;
     
     pak = event->pak;
-    cont = ContactUIN (event->conn, PacketReadUIN (pak));
+    cont = PacketReadCont (pak, event->conn);
 
     IMOffline (cont, event->conn);
 }
@@ -641,7 +639,7 @@ static JUMP_SNAC_F(SnacSrvReplyicbm)
 
 static JUMP_SNAC_F(SnacSrvAckmsg)
 {
-    UDWORD /*midtime, midrand,*/ uin;
+    /* UDWORD midtime, midrand; */
     UWORD msgtype, seq_dc;
     Contact *cont;
     Packet *pak;
@@ -652,7 +650,7 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
     /*midtime*/PacketReadB4 (pak);
     /*midrand*/PacketReadB4 (pak);
               PacketReadB2 (pak);
-    uin     = PacketReadUIN (pak);
+    cont =    PacketReadCont (pak, event->conn);
               PacketReadB2 (pak);
               PacketReadData (pak, NULL, PacketRead2 (pak));
               PacketRead2 (pak);
@@ -665,7 +663,6 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
               PacketRead2 (pak);
     ctext   = PacketReadL2Str (pak, NULL);
     
-    cont = ContactUIN (event->conn, uin);
     if (!cont)
         return;
     
@@ -694,7 +691,7 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
 
 static void SnacSrvCallbackSendack (Event *event)
 {
-    if (event && event->conn && event->pak)
+    if (event && event->conn && event->pak && event->conn->type == TYPE_SERVER)
     {
         SnacSend (event->conn, event->pak);
         event->pak = NULL;
@@ -713,7 +710,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     Packet *p = NULL, *pp = NULL, *pak;
     Extra *extra = NULL;
     TLV *tlv;
-    UDWORD midtim, midrnd, midtime, midrand, uin, unk, tmp, type1enc;
+    UDWORD midtim, midrnd, midtime, midrand, unk, tmp, type1enc;
     UWORD seq1, tcpver, len, i, msgtyp, type;
     const char *txt = NULL;
     strc_t ctext;
@@ -724,11 +721,10 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     midtime = PacketReadB4 (pak);
     midrand = PacketReadB4 (pak);
     type    = PacketReadB2 (pak);
-    uin     = PacketReadUIN (pak);
+    cont    = PacketReadCont (pak, event->conn);
               PacketReadB2 (pak); /* WARNING */
               PacketReadB2 (pak); /* COUNT */
     
-    cont = ContactUIN (event->conn, uin);
     if (!cont)
         return;
 
@@ -736,7 +732,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
 
 #ifdef WIP
     if (tlv[6].str.len && tlv[6].nr != cont->status)
-        M_printf ("FIXMEWIP: status for %ld embedded in message 0x%08lx different from server status 0x%08lx.\n", uin, tlv[6].nr, cont->status);
+        M_printf ("FIXMEWIP: status for %ld embedded in message 0x%08lx different from server status 0x%08lx.\n", cont->uin, tlv[6].nr, cont->status);
 #endif
 
     if (tlv[6].str.len)
@@ -859,7 +855,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                         sver = PacketRead2  (pp);
                                PacketRead4  (pp);
 #endif
-                        if (suin != uin)
+                        if (suin != cont->uin)
                         {
                             SnacSrvUnknown (event);
                             TLVD (tlv);
@@ -893,7 +889,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                     PacketWriteB4 (p, midtim);
                     PacketWriteB4 (p, midrnd);
                     PacketWriteB2 (p, 2);
-                    PacketWriteUIN (p, cont->uin);
+                    PacketWriteCont (p, cont);
                     PacketWriteB2 (p, 3);
 
                     len    = PacketRead2 (pp);      PacketWrite2 (p, len);
@@ -908,9 +904,9 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                     ContactSetVersion (cont);
                     
                     event->extra = ExtraSet (extra, EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL);
-                    event->uin = cont->uin;
+                    event->cont = cont;
                     newevent = QueueEnqueueData (event->conn, QUEUE_ACKNOWLEDGE, seq1,
-                                 (time_t)-1, p, cont->uin, NULL, &SnacSrvCallbackSendack);
+                                 (time_t)-1, p, cont, NULL, &SnacSrvCallbackSendack);
                     SrvReceiveAdvanced (event->conn, event, pp, newevent);
                     PacketD (pp);
                     TLVD (tlv);
@@ -927,7 +923,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             p = PacketCreate (&tlv[5].str);
             unk  = PacketRead4 (p);
             msgtyp = PacketRead2 (p);
-            if (unk != uin)
+            if (unk != cont->uin)
             {
                 PacketD (p);
                 SnacSrvUnknown (event);
@@ -959,7 +955,7 @@ static JUMP_SNAC_F(SnacSrvSrvackmsg)
 {
     Packet *pak;
     Contact *cont;
-    UDWORD uin /*, mid1, mid2*/;
+    /* UDWORD mid1, mid2; */
     UWORD type;
 
     pak = event->pak;
@@ -968,9 +964,8 @@ static JUMP_SNAC_F(SnacSrvSrvackmsg)
     /*mid2=*/PacketReadB4 (pak);
     type = PacketReadB2 (pak);
 
-    uin = PacketReadUIN (pak);
+    cont = PacketReadCont (pak, event->conn);
     
-    cont = ContactUIN (event->conn, uin);
     if (!cont)
         return;
     
@@ -1168,7 +1163,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
     pak = event->pak;
     
     event2 = QueueDequeue (event->conn, QUEUE_REQUEST_ROSTER, 0);
-    data = event2 ? event2->uin : 1;
+    data = event2 ? event2->seq : 1;
 
     PacketRead1 (pak);
 
@@ -1311,7 +1306,7 @@ static JUMP_SNAC_F(SnacSrvUpdateack)
     
     event2 = QueueDequeue (event->conn, QUEUE_CHANGE_ROSTER, event->pak->ref);
     if (event2)
-        cont = ContactUIN (event->conn, event2->uin);
+        cont = event->cont;
     err = PacketReadB2 (event->pak);
     
     if (cont)
@@ -1347,13 +1342,11 @@ static JUMP_SNAC_F(SnacSrvAuthreq)
     Contact *cont;
     strc_t ctext;
     char *text;
-    UDWORD uin;
 
     pak   = event->pak;
-    uin   = PacketReadUIN (pak);
+    cont  = PacketReadCont (pak, event->conn);
     ctext = PacketReadB2Str (pak, NULL);
     
-    cont = ContactUIN (event->conn, uin);
     if (!cont)
         return;
     
@@ -1375,15 +1368,13 @@ static JUMP_SNAC_F(SnacSrvAuthreply)
     Contact *cont;
     strc_t ctext;
     char *text;
-    UDWORD uin;
     UBYTE acc;
 
     pak = event->pak;
-    uin   = PacketReadUIN  (pak);
+    cont  = PacketReadCont (pak, event->conn);
     acc   = PacketRead1    (pak);
     ctext = PacketReadB2Str (pak, NULL);
     
-    cont = ContactUIN (event->conn, uin);
     if (!cont)
         return;
     
@@ -1401,13 +1392,13 @@ static JUMP_SNAC_F(SnacSrvAuthreply)
  */
 static JUMP_SNAC_F(SnacSrvAddedyou)
 {
+    Contact *cont;
     Packet *pak;
-    UDWORD uin;
 
     pak = event->pak;
-    uin = PacketReadUIN (pak);
+    cont = PacketReadCont (pak, event->conn);
 
-    IMSrvMsg (ContactUIN (event->conn, uin), event->conn, NOW, ExtraSet (ExtraSet (NULL,
+    IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (NULL,
               EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
               EXTRA_MESSAGE, MSG_AUTH_ADDED, ""));
 }
@@ -1517,9 +1508,11 @@ static JUMP_SNAC_F(SnacSrvRegrefused)
  */
 static JUMP_SNAC_F(SnacSrvNewuin)
 {
-    event->conn->uin = event->conn->spref->uin = PacketReadAt4 (event->pak, 6 + 10 + 46);
-    M_printf (i18n (1762, "Your new UIN is: %ld.\n"), event->conn->uin);
+    Contact *cont;
 
+    cont = ContactUIN (event->conn, PacketReadAt4 (event->pak, 6 + 10 + 46));
+    event->conn->uin = event->conn->spref->uin = cont->uin;
+    M_printf (i18n (1762, "Your new UIN is: %ld.\n"), cont->uin);
     if (event->conn->flags & CONN_WIZARD)
     {
         assert (event->conn->spref);
@@ -1531,13 +1524,11 @@ static JUMP_SNAC_F(SnacSrvNewuin)
         event->conn->spref->flags |= CONN_AUTOLOGIN;
         event->conn->assoc->spref->flags |= CONN_AUTOLOGIN;
 
-        s_repl (&event->conn->contacts->name, s_sprintf ("contacts-icq8-%ld", event->conn->uin));
+        s_repl (&event->conn->contacts->name, s_sprintf ("contacts-icq8-%ld", cont->uin));
         M_print (i18n (1790, "Setup wizard finished. Congratulations to your new UIN!\n"));
 
         if (Save_RC () == -1)
-        {
             M_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
-        }
         event->conn->assoc->open (event->conn->assoc);
         event->conn->open (event->conn);
     }
@@ -1704,7 +1695,7 @@ void SnacCliAddcontact (Connection *conn, Contact *cont)
     cg = conn->contacts;
     pak = SnacC (conn, 3, 4, 0, 0);
     if (cont)
-        PacketWriteUIN (pak, cont->uin);
+        PacketWriteCont (pak, cont);
     else
     {
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
@@ -1714,7 +1705,7 @@ void SnacCliAddcontact (Connection *conn, Contact *cont)
                 SnacSend (conn, pak);
                 pak = SnacC (conn, 3, 4, 0, 0);
             }
-            PacketWriteUIN (pak, cont->uin);
+            PacketWriteCont (pak, cont);
             
         }
     }
@@ -1731,7 +1722,7 @@ void SnacCliRemcontact (Connection *conn, Contact *cont)
     if (!cont)
         return;
     pak = SnacC (conn, 3, 5, 0, 0);
-    PacketWriteUIN (pak, cont->uin);
+    PacketWriteCont (pak, cont);
     SnacSend (conn, pak);
 }
 
@@ -1807,7 +1798,7 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
     PacketWriteB4 (pak, mtime);
     PacketWriteB4 (pak, mid);
     PacketWriteB2 (pak, format);
-    PacketWriteUIN (pak, cont->uin);
+    PacketWriteCont (pak, cont);
     
     switch (format)
     {
@@ -1898,7 +1889,7 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
 
 static void SnacCallbackType2Ack (Event *event)
 {
-    Contact *cont = ContactUIN (event->conn, event->uin);
+    Contact *cont = event->cont;
     Connection *serv = event->conn;
     Event *aevent;
 
@@ -1923,7 +1914,7 @@ static void SnacCallbackType2Ack (Event *event)
 
 static void SnacCallbackType2 (Event *event)
 {
-    Contact *cont = ContactUIN (event->conn, event->uin);
+    Contact *cont = event->cont;
     Connection *serv = event->conn;
     Packet *pak = event->pak;
 
@@ -1950,7 +1941,7 @@ static void SnacCallbackType2 (Event *event)
             /* allow more time for the peer's ack than the server's ack */
             event->due = time (NULL) + RETRY_DELAY_TYPE2 + 5;
             QueueEnqueueData (serv, QUEUE_TYPE2_RESEND_ACK, pak->ref,
-                              time (NULL) + RETRY_DELAY_TYPE2, NULL, cont->uin,
+                              time (NULL) + RETRY_DELAY_TYPE2, NULL, cont,
                               ExtraSet (NULL, EXTRA_REF, event->seq, NULL),
                               &SnacCallbackType2Ack);
         }
@@ -2011,7 +2002,7 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
     PacketWriteB4 (pak, mtime);
     PacketWriteB4 (pak, mid);
     PacketWriteB2 (pak, 2);
-    PacketWriteUIN (pak, cont->uin);
+    PacketWriteCont (pak, cont);
     
     PacketWriteTLV     (pak, 5);
      PacketWrite2       (pak, 0);
@@ -2048,7 +2039,7 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
     }
     else
         QueueEnqueueData (conn, QUEUE_TYPE2_RESEND, conn->our_seq_dc,
-                          time (NULL), pak, cont->uin, extra, &SnacCallbackType2);
+                          time (NULL), pak, cont, extra, &SnacCallbackType2);
     return RET_INPR;
 }
 
@@ -2072,11 +2063,11 @@ void SnacCliAddvisible (Connection *conn, Contact *cont)
     cg = conn->contacts;
     pak = SnacC (conn, 9, 5, 0, 0);
     if (cont)
-        PacketWriteUIN (pak, cont->uin);
+        PacketWriteCont (pak, cont);
     else
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
             if (ContactPrefVal (cont, CO_INTIMATE))
-                PacketWriteUIN (pak, cont->uin);
+                PacketWriteCont (pak, cont);
     SnacSend (conn, pak);
 }
 
@@ -2090,7 +2081,7 @@ void SnacCliRemvisible (Connection *conn, Contact *cont)
     if (!cont)
         return;
     pak = SnacC (conn, 9, 6, 0, 0);
-    PacketWriteUIN (pak, cont->uin);
+    PacketWriteCont (pak, cont);
     SnacSend (conn, pak);
 }
 
@@ -2106,11 +2097,11 @@ void SnacCliAddinvis (Connection *conn, Contact *cont)
     pak = SnacC (conn, 9, 7, 0, 0);
     cg = conn->contacts;
     if (cont)
-        PacketWriteUIN (pak, cont->uin);
+        PacketWriteCont (pak, cont);
     else
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
             if (ContactPrefVal (cont, CO_HIDEFROM))
-                PacketWriteUIN (pak, cont->uin);
+                PacketWriteCont (pak, cont);
     SnacSend (conn, pak);
 }
 
@@ -2124,7 +2115,7 @@ void SnacCliReminvis (Connection *conn, Contact *cont)
     if (!cont)
         return;
     pak = SnacC (conn, 9, 8, 0, 0);
-    PacketWriteUIN (pak, cont->uin);
+    PacketWriteCont (pak, cont);
     SnacSend (conn, pak);
 }
 
@@ -2207,7 +2198,7 @@ void SnacCliRosteradd (Connection *conn, ContactGroup *cg, Contact *cont)
             PacketWriteTLVDone (pak);
         }
         PacketWriteBLenDone (pak);
-        QueueEnqueueData (conn, QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont->uin, NULL, NULL);
+        QueueEnqueueData (conn, QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
     }
     else
     {
@@ -2337,7 +2328,7 @@ void SnacCliGrantauth (Connection *conn, Contact *cont)
     if (!cont)
         return;
     pak = SnacC (conn, 19, 20, 0, 0);
-    PacketWriteUIN  (pak, cont->uin);
+    PacketWriteCont (pak, cont);
     PacketWrite4    (pak, 0);
     SnacSend (conn, pak);
 }
@@ -2352,7 +2343,7 @@ void SnacCliReqauth (Connection *conn, Contact *cont, const char *msg)
     if (!cont)
         return;
     pak = SnacC (conn, 19, 24, 0, 0);
-    PacketWriteUIN  (pak, cont->uin);
+    PacketWriteCont (pak, cont);
     PacketWriteStrB (pak, c_out_to (msg, cont));
     PacketWrite2    (pak, 0);
     SnacSend (conn, pak);
@@ -2368,7 +2359,7 @@ void SnacCliAuthorize (Connection *conn, Contact *cont, BOOL accept, const char 
     if (!cont)
         return;
     pak = SnacC (conn, 19, 26, 0, 0);
-    PacketWriteUIN  (pak, cont->uin);
+    PacketWriteCont (pak, cont);
     PacketWrite1    (pak, accept ? 1 : 0);
     PacketWriteStrB (pak, accept ? "" : c_out_to (msg, cont));
     SnacSend (conn, pak);

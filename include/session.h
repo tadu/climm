@@ -65,13 +65,14 @@ struct Connection_s
 #define CONNECT_SOCKS_ADD  0x1000
 #define CONNECT_SOCKS      0xf000
 
-Connection    *ConnectionC      (void);
-Connection    *ConnectionClone  (Connection *conn, UWORD type);
-Connection    *ConnectionNr     (int i);
-Connection    *ConnectionFind   (UWORD type, UDWORD uin, const Connection *parent);
-UDWORD         ConnectionFindNr (Connection *conn);
-void           ConnectionClose  (Connection *conn);
-const char    *ConnectionType   (Connection *conn);
+Connection    *ConnectionC       (UWORD type);
+Connection    *ConnectionClone   (Connection *conn, UWORD type);
+Connection    *ConnectionNr      (int i);
+Connection    *ConnectionFind    (UWORD type, const Contact *cont, const Connection *parent);
+Connection    *ConnectionFindUIN (UWORD type, UDWORD uin, const Connection *parent);
+UDWORD         ConnectionFindNr  (Connection *conn);
+void           ConnectionClose   (Connection *conn);
+const char    *ConnectionType    (Connection *conn);
 
 /*
                             TYPE_SERVER
@@ -119,6 +120,7 @@ const char    *ConnectionType   (Connection *conn);
 
 #define ASSERT_ANY_SERVER(s)  (assert (s), assert ((s)->type & TYPEF_ANY_SERVER))
 #define ASSERT_SERVER(s)      (assert (s), assert ((s)->type == TYPE_SERVER))
+#define ASSERT_SERVER_OLD(s)  (assert (s), assert ((s)->type == TYPE_SERVER_OLD))
 #define ASSERT_ANY_LISTEN(s)  (assert (s), assert ((s)->type & TYPEF_ANY_LISTEN), ASSERT_ANY_SERVER ((s)->parent))
 #define ASSERT_ANY_DIRECT(s)  (assert (s), assert ((s)->type & TYPEF_ANY_DIRECT), ASSERT_ANY_LISTEN ((s)->parent))
 #define ASSERT_MSGLISTEN(s)   (assert (s), assert ((s)->type == TYPE_MSGLISTEN), assert ((s)->parent->assoc == (s)), ASSERT_ANY_SERVER ((s)->parent))

@@ -1418,8 +1418,7 @@ void ReadLinePromptUpdate (const char *prompt)
 void ReadLinePromptReset (void)
 {
     Contact *cont;
-    if (prG->flags & FLAG_UINPROMPT && uiG.last_sent_uin &&
-        (cont = ContactFind (NULL, 0, uiG.last_sent_uin, NULL)))
+    if (prG->flags & FLAG_UINPROMPT && (cont = uiG.last_sent))
         ReadLinePromptSet (s_sprintf ("[%s]", cont->nick));
     else
         ReadLinePromptSet (i18n (9999, "mICQ>"));

@@ -274,7 +274,7 @@ Contact *ContactUIN (Connection *conn, UDWORD uin)
 {
     Contact *cont;
     
-    if (!conn || !conn->contacts)
+    if (!conn || !conn->contacts || !uin)
         return NULL;
 
     if (!cnt_groups)

@@ -23,6 +23,7 @@
 #include "conv.h"
 #include <string.h>
 #include <stdio.h>
+#include <assert.h>
 
 static void CmdPktSrvCallBackKeepAlive (Event *event);
 
@@ -169,6 +170,7 @@ static void CmdPktSrvCallBackKeepAlive (Event *event)
 {
     if (event->conn)
     {
+        ASSERT_SERVER_OLD (event->conn);
         CmdPktCmdKeepAlive (event->conn);
         event->due = time (NULL) + 120;
         QueueEnqueue (event);
@@ -500,7 +502,7 @@ static JUMP_SRV_F (CmdPktSrvAck)
         if (!(cont = ContactUIN (conn, PacketReadAt4 (event->pak, CMD_v5_OFF_PARAM))))
             return;
 
-        IMIntMsg (cont, event->conn, NOW, STATUS_OFFLINE, INT_MSGACK_V5,
+        IMIntMsg (cont, conn, NOW, STATUS_OFFLINE, INT_MSGACK_V5,
                   c_in_to_split (PacketReadAtL2Str (event->pak, 30, NULL), cont), NULL);
     }
     

@@ -194,6 +194,7 @@ void CallBackServerInitV5 (Event *event)
         EventD (event);
         return;
     }
+    ASSERT_SERVER_OLD (conn);
 
     if (conn->assoc && !(conn->assoc->connect & CONNECT_OK))
     {
@@ -372,28 +373,30 @@ void Auto_Reply (Connection *conn, Contact *cont)
  */
 void UDPCallBackResend (Event *event)
 {
+    Connection *conn = event->conn;
     Packet *pak = event->pak;
     UWORD  cmd;
     UDWORD session;
 
     assert (pak);
 
-    cmd     = PacketReadAt2 (pak, CMD_v5_OFF_CMD);
-    session = PacketReadAt4 (pak, CMD_v5_OFF_SESS);
-
     if (!event->conn)
     {
         EventD (event);
         return;
     }
+    ASSERT_SERVER_OLD (conn);
+
+    cmd     = PacketReadAt2 (pak, CMD_v5_OFF_CMD);
+    session = PacketReadAt4 (pak, CMD_v5_OFF_SESS);
 
     event->attempts++;
 
-    if (session != event->conn->our_session)
+    if (session != conn->our_session)
     {
         M_printf (i18n (1856, "Discarded a %04x (%s) packet from old session %08lx (current: %08lx).\n"),
                  cmd, CmdPktSrvName (cmd),
-                 session, event->conn->our_session);
+                 session, conn->our_session);
         EventD (event);
     }
     else if (event->attempts <= MAX_RETRY_ATTEMPTS)
@@ -404,7 +407,7 @@ void UDPCallBackResend (Event *event)
                      cmd, CmdPktCmdName (cmd),
                      event->seq >> 16, event->attempts, pak->len);
         }
-        PacketSendv5 (pak, event->conn);
+        PacketSendv5 (pak, conn);
         event->due = time (NULL) + 10;
         QueueEnqueue (event);
     }
@@ -414,7 +417,7 @@ void UDPCallBackResend (Event *event)
         {
             UWORD  type = PacketReadAt2 (pak, CMD_v5_OFF_PARAM + 4);
             UDWORD tuin = PacketReadAt4 (pak, CMD_v5_OFF_PARAM);
-            Contact *cont = ContactUIN (event->conn, tuin);
+            Contact *cont = ContactUIN (conn, tuin);
             char *data = (char *) &pak->data[CMD_v5_OFF_PARAM + 8];
 
             M_print ("\n");
