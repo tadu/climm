@@ -3,18 +3,21 @@
 
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.53)
-AC_INIT(micq, 0.4.9.4)
+AC_PREREQ(2.56)
+AC_INIT([micq], [0.4.9.5])
 AC_CONFIG_SRCDIR([include/micq.h])
+AC_CONFIG_LIBOBJ_DIR(replace)
+AC_CONFIG_HEADER(include/config.h)
 AC_CANONICAL_HOST
 
+AC_CHECK_PROG(AUTOMAKE, automake-1.7, automake-1.7)
 AC_CHECK_PROG(AUTOMAKE, automake-1.6, automake-1.6)
+AC_CHECK_PROG(ACLOCAL, aclocal-1.7, aclocal-1.7)
 AC_CHECK_PROG(ACLOCAL, aclocal-1.6, aclocal-1.6)
 AC_CHECK_PROG(AUTOHEADER, autoheader, autoheader)
 AC_CHECK_PROG(AUTOCONF, autoconf, autoconf)
 
 AM_INIT_AUTOMAKE(1.6)
-AM_CONFIG_HEADER(include/config.h)
 AM_MAINTAINER_MODE
 
 AC_DEFINE(MICQ_VERSION,VERSION,[mICQ's current version])
@@ -26,10 +29,9 @@ AC_PROG_LN_S
 
 # Check for arguments.
 
-
-AC_ARG_ENABLE(peer2peer, AC_HELP_STRING([--disable-peer2peer], [disable peer to peer connections]),
+AC_ARG_ENABLE([peer2peer], AC_HELP_STRING([--disable-peer2peer], [disable peer to peer connections]),
               ac_arg_use_peer2peer=$enableval, ac_arg_use_peer2peer=yes)
-AC_ARG_ENABLE(utf8, AC_HELP_STRING([--disable-utf8], [disnable use of UTF-8 internally]),
+AC_ARG_ENABLE([utf8], AC_HELP_STRING([--disable-utf8], [disnable use of UTF-8 internally]),
               ac_arg_use_utf8=$enableval, ac_arg_use_utf8=yes)
 AC_ARG_ENABLE([iconv], AC_HELP_STRING([--enable-iconv], [use libiconv for character conversion]),
               ac_arg_use_iconv=$enableval, ac_arg_use_iconv=auto)
@@ -51,18 +53,18 @@ if test "x$ac_arg_use_iconv" != "xno"; then
     fi
   fi
   AC_CACHE_CHECK(for iconv declaration, ac_cv_iconv_const,
-    [AC_TRY_LINK([#include <stdlib.h>
-                  #include <iconv.h>],
-                 [#ifdef __cplusplus
+    [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
+                  #include <iconv.h>]],
+                 [[#ifdef __cplusplus
                   "C"
                   #endif
                   #if defined(__STDC__) || defined(__cplusplus)
                   size_t iconv (iconv_t cd, char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);
                   #else
                   size_t iconv();
-                  #endif],
-        ac_cv_iconv_const=no-const,
-        ac_cv_iconv_const=const)
+                  #endif]])],
+        [ac_cv_iconv_const=no-const],
+        [ac_cv_iconv_const=const])
   ])
   if test $ac_cv_iconv_const = const; then
      AC_DEFINE([ICONV_CONST], const, [Define as const if the declaration of iconv() needs const.])
@@ -103,7 +105,7 @@ fi
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([sys/select.h arpa/inet.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h])
+AC_CHECK_HEADERS([locale.h sys/select.h arpa/inet.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -153,9 +155,8 @@ AC_TYPE_SIGNAL
 
 AC_STRUCT_TIMEZONE
 AC_CACHE_CHECK(for timezone external, ac_cv_var_timezone,
-[  AC_TRY_LINK([#include <time.h>], [int x = - timezone;],
-      ac_cv_var_timezone=yes,
-      ac_cv_var_timezone=no)
+[  AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <time.h>]], [[int x = - timezone;]])],
+      [ac_cv_var_timezone=yes], [ac_cv_var_timezone=no])
 ])
 if test $ac_cv_var_timezone = yes; then
    AC_DEFINE([HAVE_TIMEZONE], 1,
@@ -174,10 +175,10 @@ AC_FUNC_SNPRINTF
 AC_FUNC_MEMMOVE
 AC_CHECK_FUNCS([atexit gethostbyname memset mkdir select socket strcasecmp \
                 strchr strdup strncasecmp strpbrk strrchr strstr strtol strtok_r \
-                symlink chmod tcgetattr hstrerror gettimeofday])
+                symlink chmod tcgetattr hstrerror gettimeofday setlocale])
 
 
-# vprintf stat malloc \
+# vprintf stat malloc
 for f in memset mkdir select socket atexit \
          strcasecmp strchr strdup strncasecmp strpbrk strrchr strstr strtol; do
     if eval test "x\$ac_cv_func_$f" != "xyes"; then
@@ -188,10 +189,6 @@ done
 if test "x$ac_cv_func_gethostbyname" != "xyes"; then
     AC_MSG_WARN([Function gethostbyname() not found; you will need to specify all host names as IP addresses.])
 fi
-
-# Checks for headers.
-
-AC_CHECK_HEADERS(arpa/inet.h)
 
 # Optimize.
 
