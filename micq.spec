@@ -29,6 +29,9 @@ Authors: Matthew D. Smith (dead)
          Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 
 %changelog
+* Tue Aug 26 2002 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+- new upstream release 0.4.9.3
+
 * Tue Aug 08 2002 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 - new upstream release
 
