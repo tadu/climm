@@ -54,10 +54,8 @@ static Session   *TCPReceiveInit2    (Session *sess, Packet *pak);
 
 static Packet    *PacketTCPC         (Session *peer, UDWORD cmd, UDWORD seq,
                                       UWORD type, UWORD flags, UWORD status, const char *msg);
-#ifdef WIP
 static void       TCPGreet           (Packet *pak, UWORD cmd, char *reason,
                                       UWORD port, UDWORD len, char *msg);
-#endif
 
 static void       TCPCallBackTimeout (Event *event);
 static void       TCPCallBackTOConn  (Event *event);
@@ -337,7 +335,6 @@ void TCPDispatchConn (Session *peer)
                 UtilIOConnectTCP (peer);
                 return;
             case 3:
-#ifdef WIP
                 if (peer->type == TYPE_FILEDIRECT)
                 {
                     sockclose (peer->sok);
@@ -345,7 +342,6 @@ void TCPDispatchConn (Session *peer)
                     peer->connect = 0;
                     return;
                 }
-#endif
                 if (!cont->local_ip || !cont->port)
                 {
                     peer->connect = CONNECT_FAIL;
@@ -529,11 +525,9 @@ void TCPDispatchShake (Session *peer)
                     M_print (i18n (1833, "Peer to peer TCP connection established.\n"), cont->nick);
                 }
                 peer->connect = CONNECT_OK | CONNECT_SELECT_R;
-#ifdef WIP
                 if (peer->type == TYPE_FILEDIRECT)
                     peer->dispatch = &PeerFileDispatch;
                 else
-#endif
                     peer->dispatch = &TCPDispatchPeer;
                 QueueRetry (peer->uin, QUEUE_TCP_RESEND);
                 return;
@@ -1073,6 +1067,16 @@ void TCPClose (Session *peer)
 {
     assert (peer);
     
+    if (peer->assoc && peer->assoc->type == TYPE_FILE)
+    {
+        if (peer->assoc->sok != -1)
+        {
+            close (peer->assoc->sok);
+            peer->assoc->sok = -1;
+        }
+        SessionClose (peer->assoc);
+    }
+    
     if (peer->sok != -1)
     {
         if (peer->connect & CONNECT_MASK && prG->verbose)
@@ -1096,6 +1100,9 @@ void TCPClose (Session *peer)
         PacketD (peer->incoming);
         peer->incoming = NULL;
     }
+    
+    if (peer->type == TYPE_FILEDIRECT)
+        SessionClose (peer);
 }
 
 static const char *TCPCmdName (UWORD cmd)
@@ -1140,7 +1147,6 @@ void TCPPrint (Packet *pak, Session *peer, BOOL out)
                  : i18n (2079, "Incoming TCP packet (%d - %s): %s"),
              peer->sok, ContactFindName (peer->uin), TCPCmdName (cmd));
     M_print (COLNONE "\n");
-#ifdef WIP
     if (peer->connect & CONNECT_OK && peer->type == TYPE_MSGDIRECT && cmd == 2)
     {
         UWORD seq, typ;
@@ -1199,9 +1205,7 @@ void TCPPrint (Packet *pak, Session *peer, BOOL out)
         Hex_Dump (pak->data + pak->rpos, pak->len - pak->rpos);
         M_print ("---\n");
     }
-/*    else   */
-#endif
-    if (cmd != 6)
+    else if (cmd != 6)
         if (prG->verbose & DEB_PACKTCPDATA)
             Hex_Dump (pak->data, pak->len);
     M_print (ESC "»\r");
@@ -1515,7 +1519,6 @@ BOOL TCPSendMsg (Session *list, UDWORD uin, char *msg, UWORD sub_cmd)
     return 1;
 }
 
-#ifdef WIP
 /*
  * Sends a message via TCP.
  * Adds it to the resend queue until acked.
@@ -1639,7 +1642,6 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
                       uin, time (NULL), pak, strdup (description), &TCPCallBackResend);
     return 1;
 }
-#endif
 
 /*
  * Resends TCP packets if necessary
@@ -1768,7 +1770,6 @@ static void TCPCallBackReceive (Event *event)
                              cont->nick, tmp2, tmp);
                     break;
 
-#ifdef WIP
                 case TCP_MSG_FILE:
                     port = PacketReadB2 (pak);
                     if (PeerFileAccept (event->sess, status, port))
@@ -1826,7 +1827,6 @@ static void TCPCallBackReceive (Event *event)
                         break;
 
                     /* fall through */
-#endif
                 default:
                     Debug (DEB_TCP, "ACK %d uin %d nick %s pak %p peer %d seq %04x",
                                      event->sess->sok, event->sess->uin, ContactFindName (event->sess->uin), event->pak, event->sess, seq);
@@ -1857,7 +1857,6 @@ static void TCPCallBackReceive (Event *event)
                     break;
 
                 case TCP_MSG_FILE:
-#ifdef WIP
                     cmd  = PacketRead4 (pak);
                     tmp3 = PacketReadLNTS (pak);
                     len  = PacketRead4 (pak);
@@ -1877,9 +1876,7 @@ static void TCPCallBackReceive (Event *event)
                     }
                     free (tmp3);
                     break;
-#endif
                 case TCP_MSG_GREETING:
-#ifdef WIP
                     {
                         UWORD port, port2, flen, pad;
                         char *text, *reason, *name;
@@ -1932,7 +1929,6 @@ static void TCPCallBackReceive (Event *event)
                         free (reason);
                     }
                     break;
-#endif
                 default:
                     if (prG->verbose & DEB_PROTOCOL)
                         M_print (i18n (2066, "Unknown TCP_MSG_ command %04x.\n"), type);
@@ -2075,8 +2071,4 @@ static int Decrypt_Pak (UBYTE *pak, UDWORD size)
 
     return (1);
 }
-
-#ifdef WIP
-#endif /* WIP */
-
 #endif /* TCP_COMM */

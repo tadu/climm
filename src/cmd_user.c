@@ -702,7 +702,6 @@ static JUMP_F(CmdUserTCP)
             TCPDirectClose (      uin);
         else if (!strcmp (cmd, "off"))
             TCPDirectOff   (      uin);
-#ifdef WIP
         else if (!strcmp (cmd, "file"))
         {
             char *files[10], *ass[10], *des = NULL, *as;
@@ -728,6 +727,7 @@ static JUMP_F(CmdUserTCP)
             }
             TCPSendFiles (sess, uin, des, files, ass, count);
         }
+#ifdef WIP
         else if (!strcmp (cmd, "ver"))
             TCPGetAuto     (sess, uin, TCP_MSG_GET_VER);
 #endif

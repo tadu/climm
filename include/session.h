@@ -35,7 +35,7 @@ struct Session_s
         UDWORD    stat_pak_rcvd;
 
         PreferencesSession *spref; /* preferences for this session */
-        Session            *assoc; /* associated UDP <-> TCP or parent TCP session */
+        Session            *assoc; /* associated server <-> listener or file io <-> file transfer */
         Session            *parent;/* parent session */
         
         jump_sess_f *dispatch;     /* function to call on select() */

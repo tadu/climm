@@ -235,9 +235,11 @@ void PeerFileDispatch (Session *fpeer)
                     int rc = errno;
                     M_print (i18n (9999, "Cannot open file %s: %s (%d).\n"),
                              buf, strerror (rc), rc);
-                    TCPClose (fpeer);
+                    SessionClose (fpeer);
+                    free (name);
+                    return;
                 }
-                fpeer->connect &= ~1;
+                ffile->connect = CONNECT_OK;
 
                 M_print ("Starting receiving %s (%s), len %d as %s\n",
                          name, text, len, buf);
@@ -272,7 +274,7 @@ void PeerFileDispatch (Session *fpeer)
                 TCPClose (fpeer);
                 return;
             }
-            fpeer->connect |= 1;
+            fpeer->assoc->connect = CONNECT_OK;
             
             QueueRetry (fpeer->uin, QUEUE_PEER_FILE);
             return;
@@ -372,11 +374,9 @@ void PeerFileResend (Event *event)
                     SessionClose (ffile);
                     return;
                 }
-                fpeer->connect &= ~1;
-
                 return;
             }
-            else if (fpeer->connect & 1)
+            else if (fpeer->assoc && fpeer->assoc->connect == CONNECT_OK)
             {
                 int len = 0;
 
@@ -395,7 +395,7 @@ void PeerFileResend (Event *event)
                     pak->len += len;
                     TCPSendPacket (pak, fpeer);
                     PacketD (pak);
-                    event->due++;
+/*                    event->due++;   */
 
                     if (len == 2048)
                     {
