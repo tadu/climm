@@ -175,7 +175,7 @@ JUMP_SNAC_F(SnacSrvReplyroster)
         return;
     
     event2 = QueueDequeue2 (serv, QUEUE_REQUEST_ROSTER, 0, 0);
-    if (!event2)
+    if (!event2 || !event2->callback)
     {
         DebugH (DEB_PROTOCOL, "Unrequested roster packet received.\n");
         return;
@@ -284,6 +284,67 @@ JUMP_SNAC_F(SnacSrvReplyroster)
  */
 
 /* implemented as macro */
+
+/*
+ * CLI_ADDBUDDY - SNAC(13,8)
+ */
+void SnacCliRosterbulkadd (Connection *serv, ContactGroup *cs)
+{
+    Packet *pak;
+    Contact *cont;
+    ContactGroup *cg;
+    UWORD type;
+    int i;
+    
+    for (i = 0; (cont = ContactIndex (cs, i)); i++)
+    {
+        if (cont->group && !ContactGroupPrefVal (cont->group, CO_ISSBL))
+        {
+            SnacCliRosteradd (serv, cont->group, NULL);
+            OptSetVal (&cont->group->copts, CO_ISSBL, 1);
+        }
+    }
+    
+    SnacCliAddstart (serv);
+    pak = SnacC (serv, 19, 8, 0, 0);
+
+    for (i = 0; (cont = ContactIndex (cs, i)); i++)
+    {
+        if (!(cg = cont->group))
+            continue;
+        
+        if (i && !(i % 64))
+        {
+            SnacSend (serv, pak);
+            pak = SnacC (serv, 19, 8, 0, 0);
+        }
+        
+        if (ContactPrefVal (cont, CO_HIDEFROM))
+            type = 3;
+        else if (ContactPrefVal (cont, CO_INTIMATE))
+            type = 2;
+        else
+            type = 0;
+
+/*        SnacCliGrantauth (serv, cont);  */
+        PacketWriteStrB     (pak, s_sprintf ("%ld", cont->uin));
+        PacketWriteB2       (pak, ContactGroupID (cg));
+        PacketWriteB2       (pak, ContactID (cont));
+        PacketWriteB2       (pak, type);
+        PacketWriteBLen     (pak);
+        PacketWriteTLVStr   (pak, 305, cont->nick);
+        if (cont->oldflags & CONT_REQAUTH)
+        {
+            PacketWriteTLV     (pak, 102);
+            PacketWriteTLVDone (pak);
+        }
+        PacketWriteBLenDone (pak);
+        QueueEnqueueData (serv, QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
+    }
+
+    SnacSend (serv, pak);
+    SnacCliAddend (serv);
+}
 
 /*
  * CLI_ADDBUDDY - SNAC(13,8)
@@ -484,45 +545,59 @@ JUMP_SNAC_F(SnacSrvUpdateack)
     Event *event2;
     UWORD err;
     
-    event2 = QueueDequeue (serv, QUEUE_CHANGE_ROSTER, event->pak->ref);
-    if (event2)
-        cont = event2->cont;
-    err = PacketReadB2 (event->pak);
-    
-    switch (err)
+    while (PacketReadLeft (event->pak))
     {
-        case 0xe:
-            if (cont)
-            {
-                cont->oldflags |= CONT_REQAUTH;
-                OptSetVal (&cont->copts, CO_ISSBL, 0);
-                SnacCliRosteradd (serv, serv->contacts, cont);
-            }
-            break;
-        case 10:
-            if (cont)
-            {
-                cont->oldflags |= CONT_REQAUTH;
-                OptSetVal (&cont->copts, CO_ISSBL, 0);
-            }
-            rl_printf (i18n (2537, "Contact upload failed, authorization required.\n"));
-            break;
-        case 3:
-            if (cont)
-                cont->id = 0;
-            rl_printf (i18n (2538, "Contact upload failed, already on server.\n"));
-            break;
-        case 0:
-            if (cont)
-                OptSetVal (&cont->copts, CO_ISSBL, 1);
-            rl_printf (i18n (2539, "Contact upload succeeded.\n"));
-            break;
-        default:
-            rl_printf (i18n (2325, "Warning: server based contact list change failed with error code %d.\n"), err);
+        event2 = QueueDequeue (serv, QUEUE_CHANGE_ROSTER, event->pak->ref);
+        cont = event2 ? event2->cont : NULL;
+        err = PacketReadB2 (event->pak);
+        
+        switch (err)
+        {
+            case 0xe:
+                if (cont)
+                {
+                    cont->oldflags |= CONT_REQAUTH;
+                    OptSetVal (&cont->copts, CO_ISSBL, 0);
+                    SnacCliRosteradd (serv, serv->contacts, cont);
+                }
+                break;
+            case 10:
+                if (cont)
+                {
+                    cont->oldflags |= CONT_REQAUTH;
+                    OptSetVal (&cont->copts, CO_ISSBL, 0);
+                    rl_printf (i18n (2565, "Contact upload for %s%s%s failed, authorization required.\n"),
+                              COLCONTACT, s_quote (cont->nick), COLNONE);
+                }
+                else
+                    rl_printf (i18n (2537, "Contact upload failed, authorization required.\n"));
+                break;
+            case 3:
+                if (cont)
+                {
+                    cont->id = 0;
+                    rl_printf (i18n (2566, "Contact upload for %s%s%s failed, already on server.\n"),
+                               COLCONTACT, s_quote (cont->nick), COLNONE);
+                }
+                else
+                    rl_printf (i18n (2538, "Contact upload failed, already on server.\n"));
+                break;
+            case 0:
+                if (cont)
+                {
+                    OptSetVal (&cont->copts, CO_ISSBL, 1);
+                    rl_printf (i18n (2567, "Contact upload for %s%s%s succeeded.\n"),
+                               COLCONTACT, s_quote (cont->nick), COLNONE);
+                }
+                else
+                    rl_printf (i18n (2539, "Contact upload succeeded.\n"));
+                break;
+            default:
+                rl_printf (i18n (2325, "Warning: server based contact list change failed with error code %d.\n"), err);
+        }
+        if (event2)
+            EventD (event2);
     }
-    
-    if (event2)
-        EventD (event2);
 }
 
 /*
@@ -531,6 +606,56 @@ JUMP_SNAC_F(SnacSrvUpdateack)
 JUMP_SNAC_F(SnacSrvRosterok)
 {
     /* ignore */
+    Connection *serv;
+    Packet *pak;
+    Event *event2;
+    Roster *roster;
+    UWORD count;
+    time_t stmp;
+
+    if (!event)
+        return;
+
+    serv = event->conn;
+    if (!serv)
+        return;
+
+    pak = event->pak;
+    if (!pak)
+        return;
+    
+    event2 = QueueDequeue2 (serv, QUEUE_REQUEST_ROSTER, 0, 0);
+    if (!event2 || !event2->callback)
+    {
+        DebugH (DEB_PROTOCOL, "Unrequested roster packet received.\n");
+        return;
+    }
+
+    roster = event2->data;
+    if (!roster)
+    {
+        roster = OscarRosterC ();
+        event2->data = roster;
+    }
+    
+    PacketRead1 (pak);
+    count = PacketReadB2 (pak);          /* COUNT */
+    stmp = PacketReadB4 (pak);
+
+    if (!roster->import)
+    {
+        time_t now = time (NULL);
+        UDWORD da = now;
+        SnacCliRosterentryadd (serv, "ImportTime", 0, 1, 19, 212, &da, 4);
+    }
+    if (!roster->ICQTIC)
+        SnacCliRosterentryadd (serv, "ICQTIC", 0, 2, 9, 205, "3608,0,0,0,60,null", 18);
+    event2->callback (event2);
+    if (ContactGroupPrefVal (serv->contacts, CO_OBEYSBL))
+    {
+        rl_printf ("#\n# Server side contact list activated, authorization restrictions apply.\n#\n");
+        SnacCliRosterack (serv);
+    }
 }
 
 /*
