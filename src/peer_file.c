@@ -451,7 +451,7 @@ void PeerFileDispatch (Connection *fpeer)
             if (len + 1 != pak->len)
             {
                 rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                rl_printf (i18n (9999, "Error writing to file (%lu bytes written out of %u).\n"), len, pak->len - 1);
+                rl_printf (i18n (2575, "Error writing to file (%lu bytes written out of %u).\n"), len, pak->len - 1);
                 PacketD (pak);
                 TCPClose (fpeer);
                 return;
