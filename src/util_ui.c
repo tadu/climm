@@ -525,7 +525,8 @@ char *UtilUITime (time_t *t)
  * input is avdanced to point after the parsed argument,
  *   or to the next non-whitespace or end of string if not found.
  * parsed is cleared (0, NULL) if no suitable argument found.
- * parsed must not be free()ed.
+ * parsed must not be free()ed and is valid till the next call
+ *   to any UtilUIParse*().
  */
 
 /*
@@ -540,13 +541,18 @@ BOOL UtilUIParse (char **input, char **parsed)
     
     while (*p && strchr (" \t\r\n", *p))
         p++;
-    
+    if (*p == '#')
+    {
+        while (*p)
+            p++;
+    }
     *input = p;
     if (!*p)
     {
         *parsed = NULL;
         return FALSE;
     }
+
     if (t)
         free (t);
     *parsed = q = t = strdup (p);
@@ -574,7 +580,7 @@ BOOL UtilUIParse (char **input, char **parsed)
             *input = p + 1;
             return TRUE;
         }
-        if (strchr (" \r\t\n", *p))
+        if (!s && strchr (" \r\t\n", *p))
             break;
         *(q++) = *(p++);
     }
@@ -594,7 +600,6 @@ BOOL UtilUIParseNick (char **input, Contact **parsed, Session *serv)
     
     while (*p && strchr (" \t\r\n", *p))
         p++;
-    
     *input = p;
     if (!*p)
     {
@@ -602,16 +607,18 @@ BOOL UtilUIParseNick (char **input, Contact **parsed, Session *serv)
         return FALSE;
     }
     
-    if (*p == '"')
+    t = NULL;
+    if (UtilUIParse (&p, &t))
     {
-        t = NULL;
-        if (UtilUIParse (&p, &t))
+        *parsed = ContactFindContact (t);
+        if (*parsed)
         {
-            *parsed = ContactFindContact (t);
             *input = p;
             return TRUE;
         }
     }
+    p = *input;
+
     if (strchr ("0123456789", *p))
     {
         l = 0;
@@ -652,23 +659,34 @@ BOOL UtilUIParseNick (char **input, Contact **parsed, Session *serv)
 BOOL UtilUIParseRemainder (char **input, char **parsed)
 {
     static char *t = NULL;
-    char *p = *input, *q;
+    char *p = *input, *q, s = 0;
     
     while (*p && strchr (" \t\r\n", *p))
         p++;
-    
+    if (*p == '#')
+    {
+        while (*p)
+            p++;
+    }
     *input = p;
     if (!*p)
     {
         *parsed = NULL;
         return FALSE;
     }
-    
+
+    if (*p == '"')
+    {
+        s = 1;
+        p++;
+    }
     if (t)
         free (t);
     *parsed = q = t = strdup (p);
     q = q + strlen (q) - 1;
     while (strchr (" \t\r\n", *q))
+        *(q--) = '\0';
+    if (s && *q == '"')
         *(q--) = '\0';
     return TRUE;
 }
@@ -683,13 +701,21 @@ BOOL UtilUIParseInt (char **input, UDWORD *parsed)
     
     while (*p && strchr (" \t\r\n", *p))
         p++;
-    
-    nr = 0;
+    if (*p == '#')
+    {
+        while (*p)
+            p++;
+    }
+    *input = p;
     if (!*p || !strchr ("0123456789+-", *p))
     {
         *parsed = 0;
         return FALSE;
     }
+
+    nr = 0;
+    sig = 1;
+
     if (*p == '+')
         p++;
     if (*p == '-')
@@ -697,8 +723,7 @@ BOOL UtilUIParseInt (char **input, UDWORD *parsed)
         sig = -1;
         p++;
     }
-    else
-        sig = 1;
+
     while (*p && *p >= '0' && *p <= '9')
     {
         nr = nr * 10 + (*p - '0');
