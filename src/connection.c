@@ -118,7 +118,7 @@ Connection *ConnectionNr (int i)
 {
     ConnectionList *cl;
     
-    for (cl = &slist; cl && i > ConnectionListLen; cl = cl->more)
+    for (cl = &slist; cl && i >= ConnectionListLen; cl = cl->more)
         i -= ConnectionListLen;
     
     if (!cl)
