@@ -83,18 +83,29 @@ void PrefLoad (Preferences *pref);
  *      FLAG_S5_USE
  */
 
-#define SFLAG_BEEP        1
-#define SFLAG_CMD         2
-#define SFLAG_ON_BEEP     4
-#define SFLAG_ON_CMD      8
-#define SFLAG_OFF_BEEP   16
-#define SFLAG_OFF_CMD    32
+#define SFLAG_BEEP          1
+#define SFLAG_CMD           2
+#define SFLAG_ON_BEEP       4
+#define SFLAG_ON_CMD        8
+#define SFLAG_OFF_BEEP     16
+#define SFLAG_OFF_CMD      32
 
-#define TYPE_SERVER_OLD   1  /* v5 server connection            */
-#define TYPE_SERVER       2  /* v7/v8 server connection         */
-#define TYPE_LISTEN       3  /* listener fpr direct connections */
-#define TYPE_DIRECT       4  /* direct connection               */
-#define TYPE_FILE         5  /* file transfer                   */
+#define TYPEF_ANY_SERVER    1  /* any server connection  */
+#define TYPEF_SERVER_OLD    2  /* " && ver == 5          */
+#define TYPEF_SERVER        4  /* " && var > 6           */
+#define TYPEF_ANY_PEER      8  /* any peer connection    */
+#define TYPEF_ANY_DIRECT   16  /* " && established       */
+#define TYPEF_ANY_LISTEN   32  /* " && listening         */
+#define TYPEF_ANY_MSG      64  /* " && for messages      */
+#define TYPEF_ANY_FILE    128  /* " && for file transfer */
+#define TYPEF_ANY_CHAT    256  /* " && for chat          */
+#define TYPEF_FILE        512  /* any file io            */
+
+#define TYPE_SERVER_OLD   (TYPEF_ANY_SERVER | TYPEF_SERVER_OLD)   /* v5 server connection             */
+#define TYPE_SERVER       (TYPEF_ANY_SERVER | TYPEF_SERVER)       /* v7/v8 server connection          */
+#define TYPE_LISTEN       (TYPEF_ANY_PEER | TYPEF_ANY_LISTEN)     /* listener for direct message conn */
+#define TYPE_DIRECT       (TYPEF_ANY_PEER | TYPEF_ANY_DIRECT)     /* direct connection                */
+#define TYPE_FILE         TYPEF_FILE
 
 #define CONN_AUTOLOGIN   1
 #define CONN_WIZARD      2

@@ -94,7 +94,7 @@ Session *SessionNr (int i)
 /*
  * Finds a session of given type and/or given uin.
  */
-Session *SessionFind (UBYTE type, UDWORD uin)
+Session *SessionFind (UWORD type, UDWORD uin)
 {
     int i;
     
