@@ -2619,7 +2619,15 @@ static JUMP_F(CmdUserOpt)
             return 0;
         }
         
-        if (flag & COF_STRING)
+        if (!strcasecmp (par->txt, "undef"))
+        {
+            ContactOptionsUndef (copts, flag);
+            M_printf (data == COF_CONTACT ? i18n (9999, "Undefining option %s for contact %s.\n") :
+                      data == COF_GROUP   ? i18n (9999, "Undefining option %s for contact group %s.\n")
+                                          : i18n (9999, "Undefining global option %s%s.\n"),
+                      coptname, coptobj);
+        }
+        else if (flag & COF_STRING)
         {
             ContactOptionsSetStr (copts, flag, par->txt);
             M_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s to %s.\n") :
@@ -2659,14 +2667,6 @@ static JUMP_F(CmdUserOpt)
             M_printf (data == COF_CONTACT ? i18n (9999, "Clearing option %s for contact %s.\n") :
                       data == COF_GROUP   ? i18n (9999, "Clearing option %s for contact group %s.\n")
                                           : i18n (9999, "Clearing option %s%s globally.\n"),
-                      coptname, coptobj);
-        }
-        else if (!strcasecmp (par->txt, "undef"))
-        {
-            ContactOptionsUndef (copts, flag);
-            M_printf (data == COF_CONTACT ? i18n (9999, "Undefining option %s for contact %s.\n") :
-                      data == COF_GROUP   ? i18n (9999, "Undefining option %s for contact group %s.\n")
-                                          : i18n (9999, "Clearing global option %s%s.\n"),
                       coptname, coptobj);
         }
         else
