@@ -1471,6 +1471,11 @@ static JUMP_F(CmdUserVerbose)
 
     if (s_parseint (&args, &i))
         prG->verbose = i;
+    else if (s_parsekey (&args, "sane"))
+        prG->verbose = DEB_PROTOCOL | DEB_CONNECT | DEB_EVENT
+            | DEB_PACK5DATA | DEB_PACK8 | DEB_PACK8DATA | DEB_PACK8SAVE
+            | DEB_PACKTCP | DEB_PACKTCPDATA | DEB_PACKTCPSAVE 
+            | DEB_TCP | DEB_IO | DEB_SSL;
     else if (*args)
     {
         rl_printf (i18n (2115, "'%s' is not an integer.\n"), args);
