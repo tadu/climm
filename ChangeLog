@@ -1,5 +1,13 @@
 -*- coding: utf-8 -*-
 
+2003-01-22 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+	* fix remgroup command
+	* fix url/msg order
+	* fix typos (thanks, David Krause)
+	* fix segfault caused by printf-interpolation for type-1 messages
+	* remove usage of sprintf
+	* add serbian web pages
+
 2003-01-19 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
 	* fix tab handling for real
 	* fix segfault when UTF-8 is enabled, but not used
