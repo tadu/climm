@@ -5,153 +5,8 @@
 mICQ - interactive commands
 .SH DESCRIPTION
 This manual page describes the commands that can be used within micq.  This
-page holds the same information as the online help.
-.SH COMMANDS
-.TP
-.BI trans \ [lang|nr]\ ...
-Switch to the language 
-.IR lang ,
-given by iso code, or output translation string number
-.IR nr .
-To select the default language given by the environment
-variables
-.BR LANG ,
-.B LC_ALL
-and
-.BR LC_MESSAGES ,
-use
-.BR ! ,
-.B auto
-or
-.BR default .
-To select no translation at all, use
-.BR . ,
-.B none
-or
-.BR unload .
-To get debugging information, prefix it with
-.BR debug .
-To get funny messages, postfix it with
-.BR _fun .
-.sp
-The files from ~/.micq/i18n/*.i18n take precedence over the global
-ones, while the "funny" ones take precedence over the standard ones.
-.sp
-Actually you may specify as many arguments as you wish, e.g. to print
-string number 117 in German and then switch back to default language,
-use "trans de 117 default".
-.TP
-.B tabs 
-Shows of a list of users you can tab through.
-.TP
-.B save
-Saves current settings in the configuration file, which is
-.IR ~/.micq/micqrc ,
-unless specified otherwise.
-Beware, it will clobber any comments in this file.
-.TP
-.BI msg \ uin|nickname\ [message]
-Send a message to
-.IR uin|nickname .
-Without
-.I message
-multi-line message mode is enabled.  To send the multi-line message, put
-a period
-.RB ( . )
-on a line of its own.  To cancel the message, put a hash sign
-.RB ( # )
-on a line of its own.
-Outgoing and incoming messages are marked differently depending of the transport
-used.
-.br
-.B \(Fo\(Fo\(Fo
-and
-.B \(Fc\(Fc\(Fc
-mark messages sent via a direct connection; if an outgoing message is not
-acknowledged by the peer for some time, it is printed marked
-.BR === .
-.B \(Fo<<
-and
-.B >>\(Fc
-mark icq8 (also called type-2) messages; if an outgoing message is not
-acknowledged by the peer for some time, it is printed marked
-.BR --= .
-Lastly,
-.B <<<
-and
-.B >>>
-mark icq5 messages, which can be so called type-1, type-4 or offline
-message. These kind of messages are not acknowledged.
-.br
-A message is first tried to be sent via a pre-existing direct connection; if
-none is established, one is initiated in the background for further
-messages. If no direct connection is open, or if the message is not
-acknowledged after some time, the connection will be failed and the next
-transport tried: sending as type-2 message. This step will be skipped if the
-peer does not set the required capabilities to signal its ability to receive
-them. If this is skipped, times out or returns an error, e.g. the peer has
-gone offline in the time between, the message is sent as an ordinary type-4
-message.
-.br
-If the peer signals its ability to accept them and support for them has not
-been disabled at compile time, messages are sent UTF-8 encoded and
-appropriately tagged. Otherwise, the message is sent encoded in the peer's
-configured encoding, or, if unset, the default assumed remote encoding.
-type-1, type-4 and offline messages can not be tagged with their encoding,
-so successfull transmission of 8bit characters relies on correct
-configuration.
-.TP
-.BI r \ [message]
-Reply to last message received. See
-.B msg
-for more details.
-.TP
-.BI a \ [message]
-Send a message to the last person you sent a message to.  See
-.B msg
-for more details.
-.TP
-.BI url \ uin|nickname\ url\ message
-Send a
-.I message
-regarding an
-.I url
-to
-.IR uin|nickname .
-.TP
-.BI sms \ cell\ message
-Send an SMS message
-.I message
-to cell phone number
-.IR cell ,
-which looks like +<country code><number>.
-.TP
-.B msga
-Send a multiple line message to everyone on your list.  Use a period
-.RI ( . )
-on a line of its own to send the message, or a hash sign
-.RI ( # )
-on a line of its own to cancel the message.
-.TP
-.BI resend \ uin|nickname \fR...
-Resend the last message to the new
-.I uin
-or
-.IR nickname .
-The argument may be repeated as often as needed.
-.TP
-.B uptime
-Show the time mICQ has been running, plus some statistics.
-.TP
-.BI last \ [contact]
-Show the last message 
-received from
-.IR contact ,
-which can be a
-.I uin
-or a
-.IR nickname ,
-or from everyone who already sent a message.
+page holds the same information as the online help, but more precise and longer.
+.SH COMMANDS CONCERNING THE MICQ CLIENT
 .TP
 .BI verbose \ [verb]
 Set verbosity of mICQ to
@@ -197,9 +52,7 @@ Show peer-to-peer handshake.
 .TP
 .B 4194304
 Show I/O connection setup.
-.RE
-
-.RS
+.PP
 However, any non-zero verbose level will cause more information to be printed,
 and any level greater than 1 even more.
 .RE
@@ -216,11 +69,264 @@ or call the
 .B event
 script for beeps. New syntax for 0.4.9.5.
 .TP
+.BI autoaway \ [timeout|on|off]
+Set the timeout to
+.IR timeout ,
+or switch auto away
+.I on
+using the last used or default auto away time, or switch auto away
+.I off
+saving the current used auto away time. A timeout of 0 is equivalent to
+.IR off .
+If no argument is given, the current setting is displayed.
+.TP
+.BI auto \ [on|off]
+Turn auto reply messages on or off. If neither on or off is given
+the auto reply messages are displayed.
+.TP
+.BI auto \ status\ message
+Change auto reply message for status
+.I status
+to
+.IR message .
+.TP
+.BI alias \ [alias\ expansion]
+Make a new alias named
+.I alias
+which is substituted with
+.IR expansion .
+If no arguments are given, all current aliases are listed. If the
+string %s is present in
+.IR expansion ,
+it is replaced with the given arguments when the alias is invoked,
+otherwise they will be appended. 
+New for 0.4.9.5.
+.TP
+.BI unalias \ alias
+Delete the alias named
+.IR alias .
+New for 0.4.9.5.
+.TP
+.BI alter \ command\ new
+Make command initially or previously known as
+.I command
+from now on known as
+.IR new .
+This command is obsoleted by the
+.B alias
+command as of mICQ 0.4.9.5.
+.TP
+.BI trans \ [lang|nr]\ ...
+Switch to the language 
+.IR lang ,
+given by iso code, or output translation string number
+.IR nr .
+To select the default language given by the environment
+variables
+.BR LANG ,
+.B LC_ALL
+and
+.BR LC_MESSAGES ,
+use
+.BR ! ,
+.B auto
+or
+.BR default .
+To select no translation at all, use
+.BR . ,
+.B none
+or
+.BR unload .
+To get debugging information, prefix it with
+.BR debug .
+To get funny messages, postfix it with
+.BR _fun .
+.sp
+The files from ~/.micq/i18n/*.i18n take precedence over the global
+ones, while the "funny" ones take precedence over the standard ones.
+.sp
+Actually you may specify as many arguments as you wish, e.g. to print
+string number 117 in German and then switch back to default language,
+use "trans de 117 default".
+.TP
+.B uptime
+Show the time mICQ has been running, plus some statistics.
+.TP
+.BI set \ option\ value
+Set option
+.I option
+to either
+.I on
+or
+.IR off ,
+or an
+.I option
+specific set of
+.IR value s.
+.I option
+can be:
+.RS
+.TP
+.BR hermit :
+ignore all non-contacts,
+.TP
+.BR delbs :
+interpret delete characters as backspace,
+.TP
+.BR log :
+do logging,
+.TP
+.BR logonoff :
+also log status changes,
+.TP
+.BR auto :
+send auto-replies when you're e.g. away,
+.TP
+.BR uinprompt :
+have the last nick in the prompt,
+.TP
+.BR autosave :
+automatically save the micqrc,
+.TP
+.BR autofinger :
+automatically finger new UINs,
+.TP
+.BR linebreak :
+set the style for line-breaking messages to
+.BR simple ,
+to simply print the message after the nick and wrap,
+.BR break ,
+to add a line break before printing each incoming message,
+.BR indent ,
+to indent all lines of a message to the level after the nick, or
+.BR smart ,
+to add a line break only if the message wouldn't fit on the line;
+.TP
+.BR tabs :
+set the style for tab-handling to
+.BR simple ,
+to tab through a list of last nick sent to and received from,
+.BR cycle ,
+to cycle through all online contacts, doing auto-completion,
+or
+.BR cycleall ,
+to cycle through all (even offline) contacts, doing auto-completion;
+.TP
+.BR silence :
+suppress some output :
+.BR off ,
+.BR on ,
+to suppress status changes, or
+.BR complete ,
+to suppress status changes, logins and logoffs.
+.PP
+New options for 0.4.9.5.
+.RE
+.TP
+.B save
+Saves current settings in the configuration file, which is
+.IR ~/.micq/micqrc ,
+unless specified otherwise.
+Beware, it will clobber any comments in this file.
+.TP
 .B q[uit]
 .TP
 .B exit
 Quit mICQ.
 Aliases quit and exit new for 0.4.9.5.
+.SH COMMANDS CONCERNING MESSAGE SENDING
+A
+.I <contacts>
+argument denotes a comma seperated list of contacts, that is, of UINs and
+nick names. If it is the last argument, the contacts may also be seperated by spaces.
+.TP
+.BI msg \ <contacts>\ [message]
+Send a message to all
+.IR contacts .
+Without
+.I message
+multi-line message mode is enabled.  To send the multi-line message, put
+a period
+.RB ( . )
+on a line of its own.  To cancel the message, put a hash sign
+.RB ( # )
+on a line of its own.
+.br
+Outgoing and incoming messages are marked differently depending of the transport
+used.
+.B \(Fo\(Fo\(Fo
+and
+.B \(Fc\(Fc\(Fc
+mark messages sent via a direct connection; if an outgoing message is not
+acknowledged by the peer for some time, it is printed marked
+.BR === .
+.B \(Fo<<
+and
+.B >>\(Fc
+mark icq8 (also called type-2) messages; if an outgoing message is not
+acknowledged by the peer for some time, it is printed marked
+.BR --= .
+Lastly,
+.B <<<
+and
+.B >>>
+mark icq5 messages, which can be so called type-1, type-4 or offline
+message. These kind of messages are not acknowledged.
+.br
+A message is first tried to be sent via a pre-existing direct connection; if
+none is established, one is initiated in the background for further
+messages. If no direct connection is open, or if the message is not
+acknowledged after some time, the connection will be failed and the next
+transport tried: sending as type-2 message. This step will be skipped if the
+peer does not set the required capabilities to signal its ability to receive
+them. If this is skipped, times out or returns an error, e.g. the peer has
+gone offline in the time between, the message is sent as an ordinary type-4
+message.
+.br
+If the peer signals its ability to accept them and support for them has not
+been disabled at compile time, messages are sent UTF-8 encoded and
+appropriately tagged. Otherwise, the message is sent encoded in the peer's
+configured encoding, or, if unset, the default assumed remote encoding.
+type-1, type-4 and offline messages can not be tagged with their encoding,
+so successfull transmission of 8bit characters relies on correct
+configuration.
+.TP
+.BI a \ [message]
+Send a message to the last person you sent a message to.  See
+.B msg
+for more details.
+.TP
+.BI r \ [message]
+Reply to last message received. See
+.B msg
+for more details.
+.TP
+.BI url \ <contacts>\ url\ message
+Send a
+.I message
+regarding an
+.I url
+to all
+.IR contacts .
+.TP
+.BI sms \ [nick]\ [cell]\ message
+Send an SMS message
+.I message
+to cell phone number
+.IR cell ,
+which looks like +<country code><number>,
+or to the cell phone number of
+.IR nick ,
+which will be set to
+.IR cell
+if unset. You may not specify
+.IR cell
+if
+.IR nick
+already has a cell phone number given. Invalid cell phone numbers
+will be removed from the
+.IR nick 's
+meta data.
 .TP
 .BI getauto \ [auto|away|na|dnd|occ|ffc]\ [contacts]
 Requests auto message from
@@ -242,171 +348,48 @@ is fetched for their respective status. Contacts not in any of those
 status will be skipped.
 New for 0.4.9.5.
 .TP
-.BI auto \ [on|off]
-Turn auto reply messages on or off. If neither on or off is given
-the auto reply messages are displayed.
-.TP
-.BI auto \ status\ message
-Change auto reply message for status
-.I status
-to
-.IR message .
-.TP
-.BI autoaway \ [timeout|on|off]
-Set the timeout to
-.IR timeout ,
-or switch auto away
-.I on
-using the last used or default auto away time, or switch auto away
-.I off
-saving the current used auto away time. A timeout of 0 is equivalent to
-.IR off .
-If no argument is given, the current setting is displayed.
-.TP
-.BI alter \ command\ new
-Make command initially or previously known as
-.I command
-from now on known as
-.IR new .
-.TP
-.BI alias \ [alias\ expansion]
-Make a new alias named
-.I alias
-which is substituted with
-.IR expansion .
-If no arguments are given, all current aliases are listed. If the
-string %s is present in
-.IR expansion ,
-it is replaced with the given arguments when the alias is invoked,
-otherwise they will be appended. 
-New for 0.4.9.5.
-.TP
-.BI unalias \ alias
-Delete the alias named
-.IR alias .
-New for 0.4.9.5.
-.TP
-.BI auth \ [req|grant|deny|add]\ uin|nickname
-Grant or deny
-.I uin|nickname
-to add you to their list, request
-.I uin|nickname
+.BI auth \ [req|grant|deny|add]\ <contacts>
+Grant or deny all
+.I contacts
+to add you to their list, request from all
+.I contacts
 to allow you to add them to your contact list, or tell
-.I uin|nickname
-that you added hem to your contact list.
+.I contacts
+that you added them to your contact list.
+.TP
+.BI resend \ <contacts>
+Resend the last message to more
+.IR contacts .
+.TP
+.BI last \ [<contacts>]
+Show the last message 
+received from
+.IR contact ,
+which can be a
+.I uin
+or a
+.IR nickname ,
+or from everyone who already sent a message.
+.TP
+.B tabs 
+Shows of a list of users you can tab through. This list is only used
+in the
+.B simple
+tab style. See the
+.I tabs
+option of the
+.B set
+command.
+.SH COMMANDS CONCERNING FINDING AND SEEING OTHER USERS
 .TP
 .BI rand \ number
 Find a random user in interest group
 .IR number .
 .TP
-.BI pass \ password
-Changes your icq password to
-.IR password . 
-.br
-Note: you need to
-.B save
-to make this persistent in case you save your password in your
-.I ~/.micq/micqrc
-file (see
-.BR micqrc (7)),
-or you will get a mismatched password
-on your next login.
-.TP
-.B search
-.TP
-.BI search \ email
-.TP
-.BI search \ nick
-.TP
-.BI search \ first\ last
-Search for a user with
-.I email
-as their email address, with
-.I nick
-as their nick (which mustn't contain an @), or with
-.I first
-as their first and
-.I last
-as their last name. If no argument is given, ask for
-nick name, first name, last name, email address and a whole bunch of other data
-to search for.
-.TP
-.BI add[group] \ group [nicklist]
-Add all nicks in
-.IR nicklist
-to the contact group
-.IR group ,
-which is created if it doesn't exist and the command is given as
-.BI addgroup .
-New for 0.4.9.5.
-.br
-Note: you need to
-.B save
-to make this persistent.
-.TP
-.BI add[alias] \ nickname\ alias
-.TP
-.BI add[alias] \ uin\ nickname
-Add
-.I uin
-to your contact list as
-.IR nickname ,
-or add alias
-.IR alias
-for
-.IR nickname .
-New (addalias) for 0.4.9.5.
-.br
-Note: you need to
-.B save
-to make this persistent.
-.TP
-.BI rem[group] \ [all]\ group
-.TP
-.BI rem[group] \ group\ nicklist
-Remove all contacts in
-.IR nicklist
-from the contact group
-.IR group ,
-or remove the contact group completely if
-.B all
-is given.
-New for 0.4.9.5.
-Note: you need to
-.B save
-to make this persistent.
-.TP
-.BI rem[alias] \ [all]\ nicklist
-Remove the aliases in
-.IR nicklist .
-If any nick is the last alias for this contact, or if
-.B all
-is given, remove the contact completely.
-.br
-New (remalias) for 0.4.9.5.
-Note: you need to
-.B save
-to make this persistent.
-.TP
-.BI togvis \ nickname
-Toggles whether
-.I nickname
-can see you even if you are invisible.
-.TP
-.BI toginvis \ nickname
-Toggles whether you will be hidden for
-.IR nickname .
-.TP
-.BI togig \ nickname
-Toggles whether
-.I nickname's
-messages and status changes are ignored.
-.TP
-.BI f[inger] \ uin|nickname
-.TP
-.BI info \ uin|nickname
-Show all white page info for
-.IR uin|nickname .
+.B s \ [<contacts>]
+Show your current status, or of all given
+.I contacts 
+in detail, including all aliases.
 .TP
 .BR e ,\  w ,\  ee ,\  ww ,\  eg ,\  wg ,\  eeg ,\  wwg
 List parts of your contact list. The following flags are displayed in the first column:
@@ -477,17 +460,11 @@ List all people who are online in your contact list with more details, sorted by
 .B wwg
 List all people in your contact list with more details. Also shows all aliases, sorted by contact groups. New for 0.4.9.5.
 .TP
-.B wide
-List all people who are in your contact list in a screen wide format.
-.TP
 .B ewide
 List all people who are online in your contact list in a screen wide format.
 .TP
-.B s \ [nickname]
-Show your current status, or the given nickname's in detail, including all aliases.
-.TP
-.B i
-List all the people on your ignore list.
+.B wide
+List all people who are in your contact list in a screen wide format.
 .TP
 .BI status \ [nickname]
 Show the status of
@@ -501,9 +478,125 @@ or
 .B ww
 instead.
 .TP
+.BI f[inger] \ uin|nickname
+.TP
+.BI info \ uin|nickname
+Show all white page info for
+.IR uin|nickname .
+.TP
+.B i
+List all the people on your ignore list.
+.TP
+.B search
+.TP
+.BI search \ em@il
+.TP
+.BI search \ nick
+.TP
+.BI search \ first\ last
+Search for a user with
+.I em@il
+as their email address, with
+.I nick
+as their nick (which mustn't contain an @), or with
+.I first
+as their first and
+.I last
+as their last name. If no argument is given, ask for
+nick name, first name, last name, email address and a whole bunch of other data
+to search for.
+.TP
+.BI add[group] \ group\ [contacts]
+Add all contacts in
+.IR contacts
+to the contact group
+.IR group ,
+which is created if it doesn't exist and the command is given as
+.BI addgroup .
+New for 0.4.9.5.
+.br
+Note: you need to
+.B save
+to make this persistent.
+.TP
+.BI add[alias] \ nickname\ alias
+.TP
+.BI add[alias] \ uin\ nickname
+Add
+.I uin
+to your contact list as
+.IR nickname ,
+or add alias
+.IR alias
+for
+.IR nickname .
+New (addalias) for 0.4.9.5.
+.br
+Note: you need to
+.B save
+to make this persistent.
+.TP
+.BI rem[group] \ [all]\ group
+.TP
+.BI rem[group] \ group\ contacts
+Remove all contacts in
+.IR contacts
+from the contact group
+.IR group ,
+or remove the contact group completely if
+.B all
+is given.
+New for 0.4.9.5.
+Note: you need to
+.B save
+to make this persistent.
+.TP
+.BI rem[alias] \ [all]\ contacts
+Remove the aliases in
+.IR contacts .
+If any nick is the last alias for this contact, or if
+.B all
+is given, remove the contact completely.
+.br
+New (remalias) for 0.4.9.5.
+Note: you need to
+.B save
+to make this persistent.
+.TP
+.BI togig \ contacts
+Toggles whether
+.IR contact 's
+messages and status changes are ignored.
+.TP
+.BI toginv \ contacts
+Toggles whether you will be hidden for
+.IR contacts .
+.TP
+.BI togvis \ contacts
+Toggles whether
+.I contacts
+can see you even if you are invisible.
+.SH COMMANDS CONCERNING YOUR ICQ ACCOUNT
+.TP
 .BI reg \ password
 Creates a new user account with password
 .IR password .
+.TP
+.BI pass \ password
+Changes your icq password to
+.IR password . 
+.br
+Note: your password may not start with \('o (the byte
+0xf3).
+.br
+Note: you need to
+.B save
+to make this persistent in case you save your password in your
+.I ~/.micq/micqrc
+file (see
+.BR micqrc (7)),
+or you will get a mismatched password
+on your next login.
 .TP
 .BI change \ [number\ [message]]
 Changes your status to
@@ -547,73 +640,45 @@ Updates other user information like age and sex.
 .B about
 Updates your about user information.
 .TP
-.BI set \ option\ value
-Set option
-.I option
-to either
-.I on
-or
-.IR off ,
-or an
-.I option
-specific set of
-.IR value s.
-.I option
-can be
-.BR hermit :
-ignore all non-contacts,
-.BR delbs :
-interpret delete characters as backspace,
-.BR log :
-do logging,
-.BR logonoff :
-also log status changes,
-.BR auto :
-send auto-replies when you're e.g. away,
-.BR uinprompt :
-have the last nick in the prompt,
-.BR autosave :
-automatically save the micqrc,
-.BR autofinger :
-automatically finger new UINs,
-.BR linebreak :
-set the style for line-breaking messages to
-.BR simple ,
-to simply print the message after the nick and wrap,
-.BR break ,
-to add a line break before printing each incoming message,
-.BR indent ,
-to indent all lines of a message to the level after the nick, or
-.BR smart ,
-to add a line break only if the message wouldn't fit on the line;
-.BR tabs :
-set the style for tab-handling to
-.BR simple ,
-to tab through a list of last nick sent to and received from,
-.BR cycle ,
-to cycle through all online contacts, doing auto-completion,
-or
-.BR cycleall ,
-to cycle through all (even offline) contacts, doing auto-completion;
-.BR silence :
-suppress some output :
-.BR off ,
-.BR on ,
-to suppress status changes, or
-.BR complete ,
-to suppress status changes, logins and logoffs.
-New options for 0.4.9.5.
-.TP
-.BI peek \ nick
-Check whether
-.I nick
-is actually online or not. Abuses a bug in the ICQ protocol to figure this out;
-no additional information except online or offline can be found out this way.
-.TP
 .BI setr \ [number]
 Sets your random user group to
 .IR number .
 Without argument, lists possible interest groups.
+.SH COMMANDS CONCERNING ADVANCED FEATURES
+.TP
+.BI meta \ [show|load|save|set|get|rget]\ <contacts>
+Handle meta data of contacts. The following subcommands are known:
+.RS
+.TP
+.B show
+Shows the meta data of all
+.I contacts
+given.
+.TP
+.B load
+Loads the meta data for all
+.I contacts
+given from disc and shows them.
+.TP
+.B save
+Saves the meta data for all
+.I contacts
+given to disc.
+.TP
+.B set
+Uploads your meta data to the server.
+.TP
+.B get
+Gets the meta data for all
+.I contacts
+from the server and shows them.
+.TP
+.B getr
+Gets the meta data for the contact the last message was received
+from from the server and shows it.
+.PP
+New for 0.4.9.5.
+.RE
 .TP
 .BI file \ [...]
 Alias for
@@ -698,8 +763,15 @@ in the local contact list.
 .TP
 .B import
 Download the server side contact list and add all contacts to the local one.
+.PP
+There is no contact list upload yet.
 .RE
-
+.TP
+.BI peek \ nick
+Check whether
+.I nick
+is actually online or not. Abuses a bug in the ICQ protocol to figure this out;
+no additional information except online or offline can be found out this way.
 .SH SEE ALSO
 .BR micq (1),
 .BR micqrc (5)
