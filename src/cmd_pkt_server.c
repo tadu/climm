@@ -280,21 +280,21 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
         case SRV_USER_ONLINE:
             uin = PacketRead4 (pak);
             cont = ContactByUIN (uin, 1);
-            if (!cont)
-                return;
             cont->seen_time = time (NULL);
-            cont->outside_ip      = PacketRead4 (pak);
-            cont->port            = PacketRead4 (pak);
-            cont->local_ip        = PacketRead4 (pak);
-            cont->connection_type = PacketRead1 (pak);
-            status                = PacketRead4 (pak);
-            cont->TCP_version     = PacketRead4 (pak);
-                                    PacketRead4 (pak);
-                                    PacketRead4 (pak);
-                                    PacketRead4 (pak);
-            cont->id1             = PacketRead4 (pak);
-            cont->id2             = PacketRead4 (pak);
-            cont->id3             = PacketRead4 (pak);
+            if (!cont || !CONTACT_DC (cont))
+                return;
+            cont->dc->ip_rem  = PacketRead4 (pak);
+            cont->dc->port    = PacketRead4 (pak);
+            cont->dc->ip_loc  = PacketRead4 (pak);
+            cont->dc->type    = PacketRead1 (pak);
+            status            = PacketRead4 (pak);
+            cont->dc->version = PacketRead4 (pak);
+                                PacketRead4 (pak);
+                                PacketRead4 (pak);
+                                PacketRead4 (pak);
+            cont->dc->id1     = PacketRead4 (pak);
+            cont->dc->id2     = PacketRead4 (pak);
+            cont->dc->id3     = PacketRead4 (pak);
             ContactSetVersion (cont);
             IMOnline (cont, conn, status);
             break;

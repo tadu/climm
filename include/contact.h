@@ -91,10 +91,6 @@ struct Contact_s
 
     UWORD  updated; /* which meta_* has been updated */
 
-    UDWORD outside_ip, local_ip, port;
-    UDWORD id1, id2, id3, cookie;
-    UWORD  TCP_version, connection_type;
-
     ContactDC       *dc;
     MetaGeneral     *meta_general;
     MetaWork        *meta_work;

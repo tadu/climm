@@ -45,6 +45,8 @@ Contact *ContactAdd (UDWORD uin, const char *nick)
     if (cnt_number == MAX_CONTACTS)
         return NULL;
 
+    memset (cont, 0, sizeof (Contact));
+
     cont->uin = uin;
     if (!nick)
     {
@@ -61,10 +63,6 @@ Contact *ContactAdd (UDWORD uin, const char *nick)
     cont->status = STATUS_OFFLINE;
     cont->seen_time = -1L;
     cont->seen_micq_time = -1L;
-    cont->local_ip = 0xffffffff;
-    cont->outside_ip = 0xffffffff;
-    cont->port = 0;
-    cont->version = 0;
 
     return cont;
 }
@@ -278,15 +276,24 @@ void ContactSetVersion (Contact *cont)
 {
     char buf[100];
     char *new = NULL, *tail = NULL;
-    unsigned int ver = cont->id1 & 0xffff;
-
+    unsigned int ver;
+    ContactDC *dc;
+    
+    if (!(dc = cont->dc))
+    {
+        s_repl (&cont->version, NULL);
+        return;
+    }
+    
+    ver = dc->id1 & 0xffff;
+    
     if (!HAS_CAP (cont->caps, CAP_SIM) && !HAS_CAP (cont->caps, CAP_MICQ))
         cont->v1 = cont->v2 = cont->v3 = cont->v4 = 0;
 
-    if ((cont->id1 & 0xff7f0000) == BUILD_LICQ && ver > 1000)
+    if ((dc->id1 & 0xff7f0000) == BUILD_LICQ && ver > 1000)
     {
         new = "licq";
-        if (cont->id1 & BUILD_SSL)
+        if (dc->id1 & BUILD_SSL)
             tail = "/SSL";
         cont->v1 = ver / 1000;
         cont->v2 = (ver / 10) % 100;
@@ -294,31 +301,31 @@ void ContactSetVersion (Contact *cont)
         cont->v4 = 0;
     }
 #ifdef WIP
-    else if ((cont->id1 & 0xff7f0000) == BUILD_MICQ || (cont->id1 & 0xff7f0000) == BUILD_LICQ)
+    else if ((dc->id1 & 0xff7f0000) == BUILD_MICQ || (dc->id1 & 0xff7f0000) == BUILD_LICQ)
     {
         new = "mICQ";
         cont->v1 = ver / 10000;
         cont->v2 = (ver / 100) % 100;
         cont->v3 = (ver / 10) % 10;
         cont->v4 = ver % 10;
-        if (ver >= 489 && cont->id2)
-            cont->id1 = BUILD_MICQ;
+        if (ver >= 489 && dc->id2)
+            dc->id1 = BUILD_MICQ;
     }
 #endif
 
-    else if ((cont->id1 & 0xffff0000) == 0xffff0000)
+    else if ((dc->id1 & 0xffff0000) == 0xffff0000)
     {
-        cont->v1 = (cont->id2 & 0x7f000000) >> 24;
-        cont->v2 = (cont->id2 &   0xff0000) >> 16;
-        cont->v3 = (cont->id2 &     0xff00) >> 8;
-        cont->v4 =  cont->id2 &       0xff;
-        switch (cont->id1)
+        cont->v1 = (dc->id2 & 0x7f000000) >> 24;
+        cont->v2 = (dc->id2 &   0xff0000) >> 16;
+        cont->v3 = (dc->id2 &     0xff00) >> 8;
+        cont->v4 =  dc->id2 &       0xff;
+        switch (dc->id1)
         {
             case BUILD_MIRANDA:
-                if (cont->id2 <= 0x00010202 && cont->TCP_version >= 8)
-                    cont->TCP_version = 7;
+                if (dc->id2 <= 0x00010202 && dc->version >= 8)
+                    dc->version = 7;
                 new = "Miranda";
-                if (cont->id2 & 0x80000000)
+                if (dc->id2 & 0x80000000)
                     tail = " cvs";
                 break;
             case BUILD_STRICQ:
@@ -337,21 +344,21 @@ void ContactSetVersion (Contact *cont)
                 new = "&RQ";
                 break;
             default:
-                snprintf (buf, sizeof (buf), "%08lx", cont->id1);
+                snprintf (buf, sizeof (buf), "%08lx", dc->id1);
                 new = buf;
         }
     }
-    else if (cont->id1 == BUILD_VICQ)
+    else if (dc->id1 == BUILD_VICQ)
     {
         cont->v1 = 0;
         cont->v2 = 43;
-        cont->v3 =  cont->id2 &     0xffff;
-        cont->v4 = (cont->id2 & 0x7fff0000) >> 16;
+        cont->v3 =  dc->id2 &     0xffff;
+        cont->v4 = (dc->id2 & 0x7fff0000) >> 16;
         new = "vICQ";
     }
-    else if (cont->id1 == BUILD_TRILLIAN_ID1 &&
-             cont->id2 == BUILD_TRILLIAN_ID2 &&
-             cont->id3 == BUILD_TRILLIAN_ID3)
+    else if (dc->id1 == BUILD_TRILLIAN_ID1 &&
+             dc->id2 == BUILD_TRILLIAN_ID2 &&
+             dc->id3 == BUILD_TRILLIAN_ID3)
     {
         new = "Trillian";
     }
@@ -368,11 +375,11 @@ void ContactSetVersion (Contact *cont)
     }
     else if (HAS_CAP (cont->caps, CAP_MICQ))
         new = "mICQ";
-    else if (cont->id1 == cont->id2 && cont->id2 == cont->id3 && cont->id1 == 0xffffffff)
+    else if (dc->id1 == dc->id2 && dc->id2 == dc->id3 && dc->id1 == 0xffffffff)
         new = "vICQ/GAIM(?)";
-    else if (cont->TCP_version == 7 && HAS_CAP (cont->caps, CAP_IS_WEB))
+    else if (dc->version == 7 && HAS_CAP (cont->caps, CAP_IS_WEB))
         new = "ICQ2go";
-    else if (cont->TCP_version == 9 && HAS_CAP (cont->caps, CAP_IS_WEB))
+    else if (dc->version == 9 && HAS_CAP (cont->caps, CAP_IS_WEB))
         new = "ICQ Lite";
     else if (HAS_CAP (cont->caps, CAP_STR_2002) && HAS_CAP (cont->caps, CAP_UTF8))
         new = "ICQ 2002";
@@ -380,13 +387,13 @@ void ContactSetVersion (Contact *cont)
         new = "ICQ 2001";
     else if (HAS_CAP (cont->caps, CAP_MACICQ))
         new = "ICQ for Mac";
-    else if (cont->TCP_version == 8 && HAS_CAP (cont->caps, CAP_UTF8))
+    else if (dc->version == 8 && HAS_CAP (cont->caps, CAP_UTF8))
         new = "ICQ 2002 (?)";
-    else if (cont->TCP_version == 8 && HAS_CAP (cont->caps, CAP_IS_2001))
+    else if (dc->version == 8 && HAS_CAP (cont->caps, CAP_IS_2001))
         new = "ICQ 2001 (?)";
     else if (HAS_CAP (cont->caps, CAP_AIM_CHAT))
         new = "AIM(?)";
-    else if (cont->TCP_version == 7 && !HAS_CAP (cont->caps, CAP_RTFMSGS))
+    else if (dc->version == 7 && !HAS_CAP (cont->caps, CAP_RTFMSGS))
         new = "ICQ 2000 (?)";
     
     if (new)

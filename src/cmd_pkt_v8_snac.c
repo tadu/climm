@@ -432,28 +432,28 @@ static JUMP_SNAC_F(SnacSrvUseronline)
     PacketReadB2 (pak);
     PacketReadB2 (pak);
     tlv = TLVRead (pak, PacketReadLeft (pak));
-    if (tlv[10].len)
-        cont->outside_ip = tlv[10].nr;
+    if (tlv[10].len && CONTACT_DC (cont))
+        cont->dc->ip_rem = tlv[10].nr;
     
-    if (tlv[12].len)
+    if (tlv[12].len && CONTACT_DC (cont))
     {
         UDWORD ip;
         p = PacketCreate (tlv[12].str, tlv[12].len);
         
-                           ip = PacketReadB4 (p);
-        cont->port            = PacketReadB4 (p);
-        cont->connection_type = PacketRead1 (p);
-        cont->TCP_version     = PacketReadB2 (p);
-        cont->cookie          = PacketReadB4 (p);
-        if (ip)
-            cont->local_ip = ip;
-        PacketReadB4 (p);
-        PacketReadB4 (p);
-        cont->id1 = PacketReadB4 (p);
-        cont->id2 = PacketReadB4 (p);
-        cont->id3 = PacketReadB4 (p);
+                       ip = PacketReadB4 (p);
+        cont->dc->port    = PacketReadB4 (p);
+        cont->dc->type    = PacketRead1  (p);
+        cont->dc->version = PacketReadB2 (p);
+        cont->dc->cookie  = PacketReadB4 (p);
+                            PacketReadB4 (p);
+                            PacketReadB4 (p);
+        cont->dc->id1     = PacketReadB4 (p);
+        cont->dc->id2     = PacketReadB4 (p);
+        cont->dc->id3     = PacketReadB4 (p);
         /* remainder ignored */
         PacketD (p);
+        if (ip && ~ip)
+            cont->dc->ip_loc = ip;
     }
     /* TLV 1, d, f, 2, 3 ignored */
     if (!~cont->status)
@@ -653,8 +653,8 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                 UDWORD sp2  = PacketRead4  (pp);
                 UWORD  sver = PacketRead2  (pp);
                 UDWORD sunk = PacketRead4  (pp);
-                if (suin != uin || sip != cont->outside_ip || sp1 != cont->port
-                    || scon != cont->connection_type || sver != cont->TCP_version
+                if (suin != uin || !CONTACT_DC (cont) || sip != cont->dc->ip_rem || sp1 != cont->dc->port
+                    || scon != cont->dc->type || sver != cont->dc->version
                     || sp1 != sp2 || (event->conn->assoc && sop != event->conn->assoc->port))
                 {
                     SnacSrvUnknown (event);
@@ -712,7 +712,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             txt = text;
 #endif
             PacketD (pp);
-            cont->TCP_version = tcpver;
+            cont->dc->version = tcpver;
 
             ContactSetCap (cont, cap1);
             ContactSetCap (cont, cap2);

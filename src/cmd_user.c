@@ -620,11 +620,12 @@ static JUMP_F(CmdUserInfo)
             args++;
 
         M_printf (i18n (1672, "%s's IP address is "), cont->nick);
-        M_print  (contr->outside_ip == -1 ? i18n (1761, "unknown") : s_ip (contr->outside_ip));
+        M_print  (!contr->dc || !contr->dc->ip_rem || !~contr->dc->ip_rem
+                  ? i18n (1761, "unknown") : s_ip (contr->dc->ip_rem));
         M_print ("\t");
 
-        if (contr->port != (UWORD) 0xffff)
-            M_printf (i18n (1673, "The port is %d.\n"), contr->port);
+        if (contr->dc && contr->dc->port && ~contr->dc->port)
+            M_printf (i18n (1673, "The port is %d.\n"), contr->dc->port);
         else
             M_print (i18n (1674, "The port is unknown.\n"));
 
@@ -1415,9 +1416,9 @@ static JUMP_F(CmdUserStatusDetail)
             stat = strdup (s_sprintf ("(%s)", s_status (contr->status)));
             if (contr->version)
                 ver  = strdup (s_sprintf ("[%s]", contr->version));
-            if (prG->verbose)
-                ver2 = strdup (s_sprintf (" <%08x:%08x:%08x>", (unsigned int)cont->id1,
-                                           (unsigned int)cont->id2, (unsigned int)cont->id3));
+            if (prG->verbose && cont->dc)
+                ver2 = strdup (s_sprintf (" <%08x:%08x:%08x>", (unsigned int)cont->dc->id1,
+                                           (unsigned int)cont->dc->id2, (unsigned int)cont->dc->id3));
 
             if (data & 2)
                 M_printf (COLSERVER "%c%c%c%1.1d%c" COLNONE " %*ld",
@@ -1426,13 +1427,13 @@ static JUMP_F(CmdUserStatusDetail)
                      contr->flags & CONT_INTIMATE  ? '*' :
                       contr->flags & CONT_HIDEFROM ? '-' : ' ',
                      contr->flags & CONT_IGNORE    ? '^' : ' ',
-                     contr->TCP_version,
+                     contr->dc ? contr->dc->version : 0,
                      peer ? (
                       peer->connect & CONNECT_OK   ? '&' :
                       peer->connect & CONNECT_FAIL ? '|' :
                       peer->connect & CONNECT_MASK ? ':' : '.' ) :
-                      contr->TCP_version && contr->port &&
-                      contr->outside_ip && ~contr->outside_ip ? '^' : ' ',
+                      contr->dc && contr->dc->version && contr->dc->port && ~contr->dc->port &&
+                      contr->dc->ip_rem && ~contr->dc->ip_rem ? '^' : ' ',
                      lenuin, cont->uin);
 
             M_printf (COLSERVER "%c" COLCONTACT "%-*s" COLNONE " " COLMESSAGE "%-*s" COLNONE " %-*s%s %s",
@@ -1463,14 +1464,19 @@ static JUMP_F(CmdUserStatusDetail)
         if (!contr)
             return 0;
 
-        M_printf ("%-15s %s/%s:%d\n", i18n (1441, "IP:"),
-                 t1 = strdup (s_ip (contr->outside_ip)),
-                 t2 = strdup (s_ip (contr->local_ip)), contr->port);
-        M_printf ("%-15s %d\n", i18n (1453, "TCP version:"), contr->TCP_version);
-        M_printf ("%-15s %s (%d)\n", i18n (1454, "Connection:"),
-                 contr->connection_type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),
-                 contr->connection_type);
-        M_printf ("%-15s %08x\n", i18n (2026, "TCP cookie:"), contr->cookie);
+        if (contr->dc)
+        {
+            M_printf ("%-15s %s/%s:%d\n", i18n (1441, "IP:"),
+                      t1 = strdup (s_ip (contr->dc->ip_rem)),
+                      t2 = strdup (s_ip (contr->dc->ip_loc)), contr->dc->port);
+            M_printf ("%-15s %d\n", i18n (1453, "TCP version:"), contr->dc->version);
+            M_printf ("%-15s %s (%d)\n", i18n (1454, "Connection:"),
+                      contr->dc->type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),
+                      contr->dc->type);
+            M_printf ("%-15s %08x\n", i18n (2026, "TCP cookie:"), contr->dc->cookie);
+            free (t1);
+            free (t2);
+        }
         for (i = id = 0; id < CAP_MAX; id++)
             if (contr->caps & (1 << id))
             {
@@ -1488,8 +1494,6 @@ static JUMP_F(CmdUserStatusDetail)
             }
         if (i)
             M_print ("\n");
-        free (t1);
-        free (t2);
         return 0;
     }
     M_print (COLMESSAGE);
@@ -2231,14 +2235,17 @@ static JUMP_F(CmdUserRInfo)
         return 0;
     }
     
-    M_printf (i18n (1672, "%s's IP address is "), cont->nick);
-    M_print (cont->outside_ip == -1 ? i18n (1761, "unknown") : s_ip (cont->outside_ip));
-    M_print ("\t");
+    if (CONTACT_DC (cont))
+    {
+        M_printf (i18n (1672, "%s's IP address is "), cont->nick);
+        M_print (cont->dc->ip_rem == -1 ? i18n (1761, "unknown") : s_ip (cont->dc->ip_rem));
+        M_print ("\t");
 
-    if (cont->port != (UWORD) 0xffff)
-        M_printf (i18n (1673, "The port is %d.\n"), cont->port);
-    else
-        M_print (i18n (1674, "The port is unknown.\n"));
+        if (cont->dc->port != (UWORD) 0xffff)
+            M_printf (i18n (1673, "The port is %d.\n"), cont->dc->port);
+        else
+            M_print (i18n (1674, "The port is unknown.\n"));
+    }
     
     if (conn->ver > 6)
         SnacCliMetareqinfo (conn, uiG.last_rcvd_uin);

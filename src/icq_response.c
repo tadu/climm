@@ -417,17 +417,17 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *p)
             wdata = PacketRead2 (p);
             M_printf (i18n (2009, "Found random chat partner UIN %d in chat group %d.\n"),
                      uin, wdata);
+            if (!cont || !CONTACT_DC (cont))
+                break;
             if (conn->ver > 6)
                 SnacCliMetareqinfo (conn, uin);
             else
                 CmdPktCmdMetaReqInfo (conn, uin);
-            if (!cont)
-                break;
-            cont->outside_ip      = PacketReadB4 (p);
-            cont->port            = PacketRead4  (p);
-            cont->local_ip        = PacketReadB4 (p);
-            cont->connection_type = PacketRead1  (p);
-            cont->TCP_version     = PacketRead2  (p);
+            cont->dc->ip_rem  = PacketReadB4 (p);
+            cont->dc->port    = PacketRead4  (p);
+            cont->dc->ip_loc  = PacketReadB4 (p);
+            cont->dc->type    = PacketRead1  (p);
+            cont->dc->version = PacketRead2  (p);
             /* 14 unknown bytes ignored */
             break;
         case META_SRV_UNKNOWN_270:
@@ -669,13 +669,13 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
         M_printf (" (%s)", i18n (2033, "born today"));
     M_print (".\n");
 
-    if (prG->verbose && !~old)
+    if (prG->verbose && !~old && cont->dc)
     {
-        M_printf ("%-15s %s\n", i18n (1441, "IP:"), s_ip (cont->outside_ip));
-        M_printf ("%-15s %s\n", i18n (1451, "IP2:"), s_ip (cont->local_ip));
-        M_printf ("%-15s %d\n", i18n (1453, "TCP version:"), cont->TCP_version);
+        M_printf ("%-15s %s\n", i18n (1441, "remote IP:"), s_ip (cont->dc->ip_rem));
+        M_printf ("%-15s %s\n", i18n (1451, "local  IP:"), s_ip (cont->dc->ip_loc));
+        M_printf ("%-15s %d\n", i18n (1453, "TCP version:"), cont->dc->version);
         M_printf ("%-15s %s\n", i18n (1454, "Connection:"),
-                 cont->connection_type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"));
+                 cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"));
     }
 }
 

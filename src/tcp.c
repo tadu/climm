@@ -120,7 +120,7 @@ BOOL TCPDirectOpen (Connection *list, UDWORD uin)
         return FALSE;
 
     cont = ContactByUIN (uin, 1);
-    if (!cont || cont->TCP_version < 6)
+    if (!cont || !cont->dc || cont->dc->version < 6)
         return FALSE;
 
     if ((peer = ConnectionFind (TYPE_MSGDIRECT, uin, list)))
@@ -140,7 +140,7 @@ BOOL TCPDirectOpen (Connection *list, UDWORD uin)
     peer->spref  = NULL;
     peer->parent = list;
     peer->assoc  = NULL;
-    peer->ver    = list->ver <= cont->TCP_version ? list->ver : cont->TCP_version;
+    peer->ver    = list->ver <= cont->dc->version ? list->ver : cont->dc->version;
     peer->close  = &PeerDispatchClose;
 
     TCPDispatchConn (peer);
@@ -319,51 +319,51 @@ void TCPDispatchConn (Connection *peer)
     while (1)
     {
         cont = ContactFind (peer->uin);
-        if (!cont)
+        if (!cont || !cont->dc)
         {
             TCPClose (peer);
             return;
         }
         
-        Debug (DEB_TCP, "Conn: uin %d nick %s state %x", peer->uin, ContactFindName (peer->uin), peer->connect);
+        Debug (DEB_TCP, "Conn: uin %d nick %s state %x", peer->uin, cont->nick, peer->connect);
 
         switch (peer->connect & CONNECT_MASK)
         {
             case 0:
-                if (!cont->outside_ip)
+                if (!cont->dc->ip_rem || !cont->dc->port)
                 {
                     peer->connect = 3;
                     break;
                 }
                 if (peer->type == TYPE_MSGDIRECT)
-                    peer->port    = cont->port;
+                    peer->port = cont->dc->port;
                 peer->server  = NULL;
-                peer->ip      = cont->outside_ip;
+                peer->ip      = cont->dc->ip_rem;
                 peer->connect = 1;
                 
                 if (prG->verbose)
                 {
-                    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (ContactFindName (peer->uin)), ContactFindName (peer->uin), COLNONE);
+                    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
                     M_printf (i18n (2034, "Opening TCP connection at %s:%d... "),
                              s_ip (peer->ip), peer->port);
                 }
                 UtilIOConnectTCP (peer);
                 return;
             case 3:
-                if (!cont->local_ip || !cont->port)
+                if (!cont->dc->ip_loc || !cont->dc->port)
                 {
                     peer->connect = CONNECT_FAIL;
                     return;
                 }
                 if (peer->type == TYPE_MSGDIRECT)
-                    peer->port    = cont->port;
+                    peer->port = cont->dc->port;
                 peer->server  = NULL;
-                peer->ip      = cont->local_ip;
+                peer->ip      = cont->dc->ip_loc;
                 peer->connect = 3;
                 
                 if (prG->verbose)
                 {
-                    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (ContactFindName (peer->uin)), ContactFindName (peer->uin), COLNONE);
+                    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
                     M_printf (i18n (2034, "Opening TCP connection at %s:%d... "),
                              s_ip (peer->ip), peer->port);
                 }
@@ -373,7 +373,7 @@ void TCPDispatchConn (Connection *peer)
             {
                 if (peer->parent && peer->parent->parent && peer->parent->parent->ver < 7)
                 {
-                    CmdPktCmdTCPRequest (peer->parent->parent, cont->uin, cont->port);
+                    CmdPktCmdTCPRequest (peer->parent->parent, cont->uin, cont->dc->port);
                     QueueEnqueueData (peer, QUEUE_TCP_TIMEOUT, peer->ip,
                                       cont->uin, time (NULL) + 30,
                                       NULL, NULL, &TCPCallBackTOConn);
@@ -438,9 +438,6 @@ void TCPDispatchShake (Connection *peer)
     {
         if (!peer)
             return;
-
-        Debug (DEB_TCP, "HS %d uin %d nick %s state %d pak %p peer %d",
-                        peer->sok, peer->uin, ContactFindName (peer->uin), peer->connect, pak, peer);
 
         cont = ContactFind (peer->uin);
         if (!cont && (peer->connect & CONNECT_MASK) != 16)
@@ -833,12 +830,12 @@ static void TCPSendInit (Connection *peer)
         Contact *cont;
 
         cont = ContactFind (peer->uin);
-        if (!cont)
+        if (!cont || !cont->dc)
         {
             TCPClose (peer);
             return;
         }
-        peer->our_session = cont->cookie;
+        peer->our_session = cont->dc->cookie;
     }
 
     peer->stat_real_pak_sent++;
@@ -974,10 +971,16 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
         if (!(cont = ContactFind (uin)))
             FAIL (7);
 
+        if (!CONTACT_DC (cont))
+            FAIL (10);
+        
+        if (port && port2 && port != port2)
+            FAIL (11);
+
         peer->ver = (peer->ver > nver ? nver : peer->ver);
 
         if (!peer->our_session)
-            peer->our_session = peer->ver > 6 ? cont->cookie : sid;
+            peer->our_session = peer->ver > 6 ? cont->dc->cookie : sid;
         if (sid  != peer->our_session)
             FAIL (8);
 
@@ -987,14 +990,13 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
         /* okay, the connection seems not to be faked, so update using the following information. */
 
         peer->uin = uin;
-        if (port2)    cont->port = port2;
-        if (port)     cont->port = port;
-        if (oip)      cont->outside_ip = oip;
-        if (iip)      cont->local_ip = iip;
-        if (tcpflag)  cont->connection_type = tcpflag;
+        if (port)     cont->dc->port = port;
+        if (oip)      cont->dc->ip_rem = oip;
+        if (iip)      cont->dc->ip_loc = iip;
+        if (tcpflag)  cont->dc->type = tcpflag;
 
         Debug (DEB_TCP, "HS %d uin %d nick %s init pak %p peer %d: ver %04x:%04x port %d uin %d SID %08x type %x",
-                        peer->sok, peer->uin, ContactFindName (peer->uin), pak, peer, peer->ver, len, port, uin, sid, peer->type);
+                        peer->sok, peer->uin, cont->nick, pak, peer, peer->ver, len, port, uin, sid, peer->type);
 
         for (i = 0; (peer2 = ConnectionNr (i)); i++)
             if (     peer2->type == peer->type && peer2->parent == peer->parent
@@ -1384,13 +1386,13 @@ BOOL TCPGetAuto (Connection *list, UDWORD uin, UWORD which)
     if (uin == list->parent->uin)
         return FALSE;
     cont = ContactFind (uin);
-    if (!cont)
+    if (!cont || !cont->dc)
         return FALSE;
     if (!(list->connect & CONNECT_MASK))
         return FALSE;
-    if (!cont->port)
+    if (!cont->dc->port)
         return FALSE;
-    if (!cont->local_ip && !cont->outside_ip)
+    if (!cont->dc->ip_loc && !cont->dc->ip_rem)
         return FALSE;
 
     ASSERT_MSGLISTEN(list);
@@ -1456,13 +1458,13 @@ BOOL TCPSendMsg (Connection *list, UDWORD uin, const char *msg, UWORD sub_cmd)
     if (uin == list->parent->uin)
         return FALSE;
     cont = ContactFind (uin);
-    if (!cont)
+    if (!cont || !cont->dc)
         return FALSE;
     if (!(list->connect & CONNECT_MASK))
         return FALSE;
-    if (!cont->port)
+    if (!cont->dc->port)
         return FALSE;
-    if (!cont->local_ip && !cont->outside_ip)
+    if (!cont->dc->ip_loc && !cont->dc->ip_rem)
         return FALSE;
 
     ASSERT_MSGLISTEN(list);
@@ -1525,13 +1527,13 @@ BOOL TCPSendFiles (Connection *list, UDWORD uin, const char *description, const 
     if (uin == list->parent->uin)
         return FALSE;
     cont = ContactFind (uin);
-    if (!cont)
+    if (!cont || !cont->dc)
         return FALSE;
     if (!(list->connect & CONNECT_MASK))
         return FALSE;
-    if (!cont->port)
+    if (!cont->dc->port)
         return FALSE;
-    if (!cont->local_ip && !cont->outside_ip)
+    if (!cont->dc->ip_loc && !cont->dc->ip_rem)
         return FALSE;
 
     ASSERT_MSGLISTEN(list);
