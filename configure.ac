@@ -134,7 +134,7 @@ if test "x$WIP" != "x"; then
     AC_DEFINE(WIP,1,[Include probably buggy work-in-progress code])
 fi
 
-if text "x$MICQ_EXTRAVERSION" != "x"; then
+if test "x$MICQ_EXTRAVERSION" != "x"; then
     AC_DEFINE(EXTRAVERSION,$MICQ_EXTRAVERSION,[Extra version information like the distribution used])
 else
     AC_DEFINE(EXTRAVERSION,["hand compiled"])
