@@ -441,11 +441,11 @@ const char *s_realpath (const char *path)
     if (strchr (path, ':') && (!strchr (path, '/') || strchr (path, '/') > strchr (path, ':')))
         return path;
 #endif
-    path = strdup (s_sprintf ("%s%s", PrefUserDir (prG), path));
+    path = s_sprintf ("%s%s", PrefUserDir (prG), f = strdup (path));
+    free (f);
     if (*path != '~' || path[1] != '/' || !getenv ("HOME"))
         return path;
-    f = strdup (path);
-    path = s_sprintf ("%s%s", getenv ("HOME"), f + 1);
+    path = s_sprintf ("%s%s", getenv ("HOME"), (f = strdup (path)) + 1);
     free (f);
     return path;
 }

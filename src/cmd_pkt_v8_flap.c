@@ -43,8 +43,7 @@ void SrvCallBackFlap (Event *event)
 
     if (!event->conn)
     {
-        PacketD (event->pak);
-        free (event);
+        EventD (event);
         return;
     }
     
@@ -67,8 +66,7 @@ void SrvCallBackFlap (Event *event)
         default:
             M_printf (i18n (1884, "FLAP with unknown channel %d received.\n"), event->pak->cmd);
     }
-    PacketD (event->pak);
-    free (event);
+    EventD (event);
 }
 
 /***********************************************/

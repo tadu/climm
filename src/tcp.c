@@ -103,6 +103,7 @@ void ConnectionInitPeer (Connection *list)
     list->ip          = 0;
     list->server      = NULL;
     list->port        = list->spref->port;
+    list->uin         = list->parent ? list->parent->uin : -1;
 
     UtilIOConnectTCP (list);
 }
@@ -487,7 +488,11 @@ void TCPDispatchShake (Connection *peer)
             case 6:
                 peer->connect = 7 | CONNECT_SELECT_R;
                 if (peer->ver > 6 && peer->type == TYPE_MSGDIRECT)
+                {
                     peer = TCPReceiveInit2 (peer, pak);
+                    PacketD (pak);
+                    pak = NULL;
+                }
                 continue;
             case 7:
                 peer->connect = 48 | CONNECT_SELECT_R;
@@ -529,7 +534,7 @@ void TCPDispatchShake (Connection *peer)
                     TCPSendInit2 (peer);
                 continue;
             case 48:
-                QueueDequeue (peer, QUEUE_TCP_TIMEOUT, peer->ip);
+                EventD (QueueDequeue (peer, QUEUE_TCP_TIMEOUT, peer->ip));
                 if (prG->verbose)
                 {
                     M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
@@ -608,8 +613,7 @@ static void TCPDispatchPeer (Connection *peer)
                         M_printf (i18n (1807, "Cancelled incoming message (seq %04x) from %s\n"),
                                  seq_in, cont->nick);
                     }
-                    PacketD (event->pak);
-                    free (event);
+                    EventD (event);
                     PacketD (pak);
                     break;
 
@@ -641,7 +645,7 @@ static void TCPCallBackTimeout (Event *event)
     
     if (!peer)
     {
-        free (event);
+        EventD (event);
         return;
     }
     
@@ -657,7 +661,7 @@ static void TCPCallBackTimeout (Event *event)
                       cont->nick, s_ip (peer->ip), peer->port);
         TCPClose (peer);
     }
-    free (event);
+    EventD (event);
 }
 
 /*
@@ -667,7 +671,7 @@ static void TCPCallBackTOConn (Event *event)
 {
     if (!event->conn)
     {
-        free (event);
+        EventD (event);
         return;
     }
 
@@ -675,7 +679,7 @@ static void TCPCallBackTOConn (Event *event)
 
     event->conn->connect += 2;
     TCPDispatchConn (event->conn);
-    free (event);
+    EventD (event);
 }
 
 /*
@@ -1021,7 +1025,7 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
                 return NULL;
             }
             if ((peer2->connect & CONNECT_MASK) == (UDWORD)TCP_STATE_WAITING)
-                QueueDequeue (peer2, QUEUE_TCP_TIMEOUT, peer2->ip);
+                EventD (QueueDequeue (peer2, QUEUE_TCP_TIMEOUT, peer2->ip));
             if (peer2->sok != -1)
                 TCPClose (peer2);
             peer->len = peer2->len;
@@ -1173,6 +1177,7 @@ void TCPPrint (Packet *pak, Connection *peer, BOOL out)
 {
     UWORD cmd;
     Contact *cont;
+    char *f;
     
     ASSERT_ANY_DIRECT(peer);
     
@@ -1194,7 +1199,10 @@ void TCPPrint (Packet *pak, Connection *peer, BOOL out)
 
     if (prG->verbose & DEB_PACKTCPDATA)
         if (cmd != 6)
-            M_print (PacketDump (pak, peer->type == TYPE_MSGDIRECT ? "gpeer" : "gfile"));
+        {
+            M_print (f = PacketDump (pak, peer->type == TYPE_MSGDIRECT ? "gpeer" : "gfile"));
+            free (f);
+        }
 
     M_print (COLEXDENT "\r");
 }
@@ -1744,14 +1752,17 @@ static void TCPCallBackResend (Event *event)
     }
 
     peer->connect = CONNECT_FAIL;
+    event->extra = ExtraSet (event->extra, EXTRA_TRANS, e_trans & ~EXTRA_TRANS_DC, NULL);
     delta = (peer->ver > 6 ? 1 : 0);
     if (PacketReadAt2 (pak, 4 + delta) == TCP_CMD_MESSAGE)
+    {
         IMCliMsg (peer->parent->parent, cont, event->extra);
+        event->extra = NULL;
+    }
     else
         M_printf (i18n (1844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4 + delta));
     
-    PacketD (event->pak);
-    free (event);
+    EventD (event);
 }
 
 
@@ -1773,8 +1784,7 @@ static void TCPCallBackReceive (Event *event)
 
     if (!event->conn)
     {
-        PacketD (event->pak);
-        free (event);
+        EventD (event);
         return;
     }
     
@@ -1892,9 +1902,8 @@ static void TCPCallBackReceive (Event *event)
                     Debug (DEB_TCP, "ACK %d uin %d nick %s pak %p peer %d seq %04x",
                                      aevent->conn->sok, aevent->conn->uin, cont->nick, aevent->pak, aevent->conn, seq);
             }
-            PacketD (event->pak);
-            free (event);
-            return;
+            EventD (aevent);
+            break;
         
         case TCP_CMD_MESSAGE:
             switch (type)
@@ -2035,10 +2044,9 @@ static void TCPCallBackReceive (Event *event)
             /* ignore */
             break;
     }
-    PacketD (pak);
     free (ctmp);
     free (tmp);
-    free (event);
+    EventD (event);
 }
 
 

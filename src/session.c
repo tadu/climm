@@ -66,6 +66,7 @@ Connection *ConnectionClone (Connection *conn, UWORD type)
     child->incoming = NULL;
     child->type     = type;
     child->open     = NULL;
+    child->server   = NULL;
     
     Debug (DEB_CONNECT, "<=*= %p (%s) clone from %p (%s)", child, ConnectionType (child), conn, ConnectionType (conn));
 
@@ -162,6 +163,9 @@ void ConnectionClose (Connection *conn)
     conn->connect = 0;
     conn->type    = 0;
     conn->parent  = NULL;
+    if (conn->server)
+        free (conn->server);
+    conn->server  = NULL;
 
     for (j = 0; j < listlen; j++)
         if (slist[j] && slist[j]->assoc == conn)

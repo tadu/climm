@@ -278,8 +278,8 @@ void UtilIOConnectUDP (Connection *conn)
 #endif
 #define CONN_FAIL(s)  { const char *t = s;      \
                         if (t) if (prG->verbose || conn->type & TYPEF_ANY_SERVER) \
-                            M_printf ("%s [%d]\n", t, __LINE__);  \
-                        QueueDequeue (conn, QUEUE_CON_TIMEOUT, conn->ip); \
+                            M_printf    ("%s [%d]\n", t, __LINE__);  \
+                        EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, conn->ip)); \
                         if (conn->sok > 0)          \
                           sockclose (conn->sok);     \
                         conn->sok = -1;               \
@@ -295,10 +295,10 @@ void UtilIOConnectUDP (Connection *conn)
                           if (rc == EAGAIN) return;             \
                           CONN_CHECK_EXTRA                       \
                           CONN_FAIL (s_sprintf  ("%s: %s (%d).", s, strerror (rc), rc)) } }
-#define CONN_OK         { conn->connect++;                         \
-                          QueueDequeue (conn, QUEUE_CON_TIMEOUT, conn->ip); \
-                          conn->dispatch = conn->utilio;             \
-                          conn->dispatch (conn);                      \
+#define CONN_OK         { conn->connect++;                          \
+                          EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, conn->ip)); \
+                          conn->dispatch = conn->utilio;               \
+                          conn->dispatch (conn);                        \
                           return; }
 
 /*
@@ -577,7 +577,7 @@ static void UtilIOConnectCallback (Connection *conn)
                     conn->connect &= ~CONNECT_SOCKS;
                     conn->connect |= 8 * CONNECT_SOCKS_ADD;
                     conn->dispatch = conn->utilio;
-                    QueueDequeue (conn, QUEUE_CON_TIMEOUT, conn->ip);
+                    EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, conn->ip));
                     UtilIOConnectTCP (conn);
                     return;
                 }
@@ -618,7 +618,7 @@ void UtilIOSocksAccept (Connection *conn)
 static void UtilIOTOConn (Event *event)
 {
      Connection *conn = event->conn;
-     free (event);
+     EventD (event);
      if (conn)
          CONN_FAIL (s_sprintf ("%s: %s (%d).", i18n (1955, "Connection failed"),
                     strerror (ETIMEDOUT), ETIMEDOUT));
@@ -923,13 +923,15 @@ actually stored
 ************************************************************/
 int M_fdnreadln (FILE *fd, char *buf, size_t len)
 {
+    int i;
+
+    buf[0] = '\0';
     if (!fgets (buf, len, fd))
         return -1;
     
-    if (buf[strlen(buf) - 1] == '\n')
-        buf[strlen(buf) - 1] = '\0';
-    if (buf[strlen(buf) - 1] == '\r')
-        buf[strlen(buf) - 1] = '\0';
+    for (i = strlen (buf); i--; buf[i] = '\0')
+        if (buf[i] != '\n' && buf[i] != '\r')
+            break;
     return 0;
 }
 

@@ -462,7 +462,7 @@ void PeerFileResend (Event *event)
     
     if (!fpeer)
     {
-        free (event);
+        EventD (event);
         return;
     }
     
@@ -611,7 +611,7 @@ void PeerFileResend (Event *event)
             }
         }
     }
-    free (event);
+    EventD (event);
 }
 
 #endif /* ENABLE_PEER2PEER */

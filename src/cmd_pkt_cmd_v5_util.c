@@ -118,6 +118,7 @@ void PacketEnqueuev5 (Packet *pak, Connection *conn)
 
     if (prG->verbose & DEB_PACK5DATA)
     {
+        char *f;
         pak->rpos = 0;
         M_printf ("%s " COLINDENT COLCLIENT "", s_now);
         M_print  (i18n (1775, "Outgoing packet:"));
@@ -125,7 +126,8 @@ void PacketEnqueuev5 (Packet *pak, Connection *conn)
                  PacketReadAt2 (pak, CMD_v5_OFF_VER), PacketReadAt4 (pak, CMD_v5_OFF_SESS),
                  PacketReadAt4 (pak, CMD_v5_OFF_SEQ), PacketReadAt2 (pak, CMD_v5_OFF_SEQ2),
                  CmdPktCmdName (PacketReadAt2 (pak, CMD_v5_OFF_CMD)), pak);
-        M_print  (PacketDump (pak, "gv5cp"));
+        M_print  (f = PacketDump (pak, "gv5cp"));
+        free (f);
         M_print  (COLEXDENT "\r");
     }
 
@@ -186,7 +188,7 @@ void CallBackServerInitV5 (Event *event)
 
     if (!conn)
     {
-        free (event);
+        EventD (event);
         return;
     }
 
@@ -196,7 +198,7 @@ void CallBackServerInitV5 (Event *event)
         QueueEnqueue (event);
         return;
     }
-    free (event);
+    EventD (event);
     
     M_printf (i18n (1902, "Opening v5 connection to %s:%d... "), conn->server, conn->port);
     
@@ -377,8 +379,7 @@ void UDPCallBackResend (Event *event)
 
     if (!event->conn)
     {
-        PacketD (pak);
-        free (event);
+        EventD (event);
         return;
     }
 
@@ -389,8 +390,7 @@ void UDPCallBackResend (Event *event)
         M_printf (i18n (1856, "Discarded a %04x (%s) packet from old session %08x (current: %08x).\n"),
                  cmd, CmdPktSrvName (cmd),
                  session, event->conn->our_session);
-        PacketD (pak);
-        free (event);
+        EventD (event);
     }
     else if (event->attempts <= MAX_RETRY_ATTEMPTS)
     {
@@ -448,8 +448,6 @@ void UDPCallBackResend (Event *event)
             }
         }
         M_print ("\n");
-
-        PacketD (event->pak);
-        free (event);
+        EventD (event);
     }
 }

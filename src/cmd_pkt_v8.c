@@ -83,7 +83,7 @@ static void SrvCallBackDoReconn (Event *event)
 {
     if (event->conn)
         ConnectionInitServer (event->conn);
-    free (event);
+    EventD (event);
 }
 
 static void SrvCallBackTimeout (Event *event)
@@ -92,7 +92,7 @@ static void SrvCallBackTimeout (Event *event)
     
     if (!conn)
     {
-        free (event);
+        EventD (event);
         return;
     }
     
@@ -115,7 +115,7 @@ static void SrvCallBackTimeout (Event *event)
             return;
         }
     }
-    free (event);
+    EventD (event);
 }
 
 void SrvCallBackReceive (Connection *conn)

@@ -617,7 +617,10 @@ static void CallbackMeta (Event *event)
     if (cont->updated != UP_INFO && !event->flags & QUEUE_FLAG_CONSIDERED)
         QueueEnqueue (event);
     else
+    {
         UtilUIDisplayMeta (cont);
+        EventD (event);
+    }
 }
 
 /*

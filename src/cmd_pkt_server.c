@@ -85,6 +85,7 @@ void CmdPktSrvRead (Connection *conn)
 {
     Packet *pak;
     int s;
+    char *f;
     UDWORD session, uin, id;
     UWORD cmd, seq, seq2;
 
@@ -112,7 +113,8 @@ void CmdPktSrvRead (Connection *conn)
                  pak->ver, session, seq2, seq, cmd, CmdPktSrvName (cmd));
 #if ICQ_VER == 5
         pak->rpos = 0;
-        M_print  (PacketDump (pak, "gv5sp"));
+        M_print  (f = PacketDump (pak, "gv5sp"));
+        free (f);
         pak->rpos = rpos;
 #else
         M_print  (s_dump (pak->data, s));
@@ -168,7 +170,7 @@ static void CmdPktSrvCallBackKeepAlive (Event *event)
         QueueEnqueue (event);
     }
     else
-        free (event);
+        EventD (event);
 }
 
 /*
@@ -414,6 +416,7 @@ static JUMP_SRV_F (CmdPktSrvMulti)
     Packet *npak;
     UDWORD session /*,uin*/;
     UWORD /*cmd, seq,*/ seq2;
+    char *f;
 
     num_pack = PacketRead1 (pak);
 
@@ -450,7 +453,8 @@ static JUMP_SRV_F (CmdPktSrvMulti)
                      ver, session, seq2, seq, cmd, CmdPktSrvName (cmd));
 #if ICQ_VER == 5
             pak->rpos = 0;
-            M_print  (PacketDump (pak, "gv5sp"));
+            M_print  (f = PacketDump (pak, "gv5sp"));
+            free (f);
             pak->rpos = rpos;
 #else
             M_print  (s_dump (pak->data, llen));
@@ -497,5 +501,5 @@ static JUMP_SRV_F (CmdPktSrvAck)
     }
     
     PacketD (pak);
-    free (event);
+    EventD (event);
 }

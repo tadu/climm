@@ -158,8 +158,7 @@ void SnacCallback (Event *event)
     else
         SnacSrvUnknown (event);
 
-    PacketD (pak);
-    free (event);
+    EventD (event);
 }
 
 /*
@@ -174,7 +173,7 @@ void SrvCallBackKeepalive (Event *event)
         QueueEnqueue (event);
         return;
     }
-    free (event);
+    EventD (event);
 }
 
 /*
@@ -235,8 +234,9 @@ void SnacPrint (Packet *pak)
 
     if (prG->verbose & DEB_PACK8DATA || ~prG->verbose & DEB_PACK8)
     {
-        char *syn = strdup (s_sprintf ("gs%dx%ds", fam, cmd));
-        M_print (PacketDump (pak, syn));
+        char *f, *syn = strdup (s_sprintf ("gs%dx%ds", fam, cmd));
+        M_print (f = PacketDump (pak, syn));
+        free (f);
         free (syn);
     }
 
@@ -349,6 +349,7 @@ static JUMP_SNAC_F(SnacSrvReplyinfo)
         }
     }
     /* TLV 1 c f 2 3 ignored */
+    TLVD (tlv);
 }
 
 /*
@@ -427,6 +428,7 @@ static JUMP_SNAC_F(SnacSrvUseronline)
     {
         if (prG->verbose & DEB_PROTOCOL)
             M_print (i18n (1908, "Received USERONLINE packet for non-contact.\n"));
+        PacketD (pak);
         return;
     }
     
@@ -466,9 +468,11 @@ static JUMP_SNAC_F(SnacSrvUseronline)
         
         while (PacketReadLeft (p))
             ContactSetCap (cont, PacketReadCap (p));
+        PacketD (p);
     }
     ContactSetVersion (cont);
     IMOnline (cont, event->conn, tlv[6].len ? tlv[6].nr : 0);
+    TLVD (tlv);
 }
 
 /*
@@ -714,6 +718,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                 txt = isutf8 ? text : c_in (text);
                 tmp = strdup (txt);
                 free (text);
+                free (gid);
                 txt = text = tmp;
             }
 #else
@@ -878,7 +883,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
     if (event2)
     {
         data = event2->uin;
-        free (event2);
+        EventD (event2);
     }
     else
         data = 1;
@@ -1053,6 +1058,7 @@ static JUMP_SNAC_F(SnacSrvFromicqsrv)
     if (tlv[1].len < 10)
     {
         SnacSrvUnknown (event);
+        TLVD (tlv);
         return;
     }
     p = PacketCreate (tlv[1].str, tlv[1].len);
@@ -1068,6 +1074,7 @@ static JUMP_SNAC_F(SnacSrvFromicqsrv)
             M_printf (i18n (1919, "UIN mismatch: %d vs %d.\n"), event->conn->uin, uin);
             SnacSrvUnknown (event);
         }
+        TLVD (tlv);
         PacketD (p);
         return;
     }
@@ -1078,10 +1085,12 @@ static JUMP_SNAC_F(SnacSrvFromicqsrv)
             M_print (i18n (1743, "Size mismatch in packet lengths.\n"));
             SnacSrvUnknown (event);
         }
+        TLVD (tlv);
         PacketD (p);
         return;
     }
 
+    TLVD (tlv);
     switch (type)
     {
         case 65:

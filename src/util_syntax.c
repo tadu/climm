@@ -87,7 +87,7 @@ static const char *syntable[] = {
     NULL,      NULL
 };
 
-const char *PacketDump (Packet *pak, const char *syntax)
+char *PacketDump (Packet *pak, const char *syntax)
 {
     Packet *p = NULL;
     UDWORD size, nr, len, val, i, mem1, mem2, oldrpos;
@@ -242,11 +242,12 @@ const char *PacketDump (Packet *pak, const char *syntax)
                     
                     t = s_cat  (t, &size, s_dumpnd (pak->data + pak->rpos, 4));
                     t = s_catf (t, &size, " " COLDEBUG "TLV (% 2x) \"%s\"" COLNONE "\n", nr, sub);
-                    t = s_cat  (t, &size, s_ind (PacketDump (p, sub)));
+                    t = s_cat  (t, &size, s_ind (tmp = PacketDump (p, sub)));
                     
                     PacketD (p);
                     p = NULL;
                     free (sub);
+                    free (tmp);
                 }
                 else
                 {
@@ -263,7 +264,10 @@ const char *PacketDump (Packet *pak, const char *syntax)
                 t = s_catf (t, &size, " " COLDEBUG "DWORD.L  \"%s\"" COLNONE "\n", f);
                 p = PacketCreate (pak->data + pak->rpos + 2, len);
                 pak->rpos += len + 2;
-                t = s_cat  (t, &size, s_ind (PacketDump (p, ++f)));
+                t = s_cat  (t, &size, s_ind (tmp = PacketDump (p, ++f)));
+                PacketD (p);
+                free (tmp);
+                p = NULL;
                 for (lev = 1; *f && lev; f++)
                 {
                     if (strchr ("()", *f))

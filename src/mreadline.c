@@ -1137,6 +1137,7 @@ void M_print (const char *org)
                 {
                     printf ("%s...%s", USECOLOR (CXCONTACT), USECOLOR (col));
                     CharCount = 0;
+                    free (fstr);
                     return;
                 }
                 CharCount = 0;
@@ -1147,6 +1148,7 @@ void M_print (const char *org)
                 {
                     printf ("%s...%s\n", USECOLOR (CXCONTACT), USECOLOR (col));
                     CharCount = 0;
+                    free (fstr);
                     return;
                 }
                 printf ("\n%s%*s", M_getlogo (), IndentCount, "");
@@ -1167,6 +1169,7 @@ void M_print (const char *org)
                 printf ("%s¶..",USECOLOR (CXCONTACT));
             printf ("%s\n",USECOLOR (col));
             CharCount = 0;
+            free (fstr);
             return;
         }
         if (*str == '\n' || *str == '\r' || (*str == '\t' && !isline))
@@ -1176,6 +1179,7 @@ void M_print (const char *org)
                 printf ("%s\n", USECOLOR (CXNONE));
                 CharCount = 0;
                 IndentCount = 0;
+                free (fstr);
                 return;
             }
         }
@@ -1272,6 +1276,7 @@ void M_print (const char *org)
                         {
                             printf ("%s\n", USECOLOR (col));
                             CharCount = IndentCount = 0;
+                            free (fstr);
                             return;
                         }
                         str++;
