@@ -145,7 +145,7 @@ void SrvCallBackKeepalive (struct Event *event)
 {
     if (event->sess->connect & CONNECT_OK)
     {
-        SnacCliReqofflinemsgs (event->sess);
+        SnacCliAckofflinemsgs (event->sess);
         event->due = time (NULL) + 30;
         QueueEnqueue (queue, event);
         return;
