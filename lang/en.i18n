@@ -1,10 +1,10 @@
-001: 
-002: 
-003: 
-004: 
-005: 
-006: 
-007: 
+001:en
+002:en_US
+003:486
+004:Rüdiger Kuhlmann
+005:Rüdiger Kuhlmann
+006:2002-05-02
+007:iso-8859-1
 008: 
 009: 
 010:User is Away [Auto-Message]
@@ -49,13 +49,13 @@
 049:UIN: %d¶
 050:Login successful!
 051:URL: %s¶
-052:Opening v5 connection to %s:%d... 
+052: 
 053:Connected to %s, waiting for response¶
 054: Conection Refused on port %d at %s¶
 055:Socket creation failed
 056:Socket created attempting to connect¶
-057:Outgoing v8 server packet:
-058:SNAC (%x,%x) [%s] flags %x ref %x¶
+057: 
+058: 
 059:©1Incoming v8 server packet:
 060:Verbosity level is %d.¶
 061:%s not recognized as a nick name
@@ -64,7 +64,7 @@
 064:Auto-Changed status to
 065:Using intel byte ordering.
 066:Using motorola byte ordering.
-067:Warning: Server thinks our UIN is %d, while it is %d.¶
+067: 
 068: Online since %s
 069: Last online at %s
 070: Last on-line unknown.
@@ -85,7 +85,7 @@
 085:on
 086:off
 087:Ignoring garbage after number.
-088:Can't send this (%x) yet.¶
+088: 
 089:Unloaded translation.
 090:%s is a UIN, not a nick name.
 091: 
@@ -191,7 +191,7 @@
 191:passwd = %s¶
 192:server = %s¶
 193:status = %ld¶
-194:Need uin to ask for.¶
+194: 
 195:Color is ©3%s©0.¶
 196:Message_cmd = %s¶
 197:Password change was ©2%s©0.¶
@@ -396,7 +396,7 @@
 396:Info change was ©2%s©0.¶
 397:Other info change was ©2%s©0.¶
 398:Search ©2failed©0.
-399:Unknown Meta User response
+399: 
 400:Shows locally stored info on user.
 401:Updates other user info like age and sex.
 402:Updates your about user info.
@@ -440,7 +440,7 @@
 440:Random User:
 441:IP:
 442:Please select one of the help topics below.
-443:Commands relating to micq displays and configuration.
+443:Commands relating to mICQ displays and configuration.
 444:Commands relating to finding other users.
 445:Commands relating to your ICQ account.
 446:Commands relating to sending messages.
@@ -524,7 +524,7 @@
 524:Work Location:
 525:About:
 526:Not Entered
-527:Received server acknowledge for %s#%08lx:%08lx%s sent to %s%s%s.¶
+527: 
 528:female
 529:male
 530:not specified
@@ -555,10 +555,10 @@
 555:Enter your new last name:
 556:Enter your new email address:
 557:Do you want to require Mirabilis users to request your authorization? (YES/NO)
-558:connected
-559:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x¶
-560:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
-561:Enter max age (22,29,39,49,59,120):
+558: 
+559: 
+560: 
+561: 
 562:©1Info for %ld¶
 563:Nick name:
 564:First name:
@@ -585,9 +585,9 @@
 585:Ack!!!!!!!  Bad packet
 586:©4¶%s©0 has added you to their contact list.¶
 587:Enter department: 
-588:Enter sex:
-589:Enter a city:
-590:©4¶%s©0 has requested your authorization to be added to their contact list.¶
+588: 
+589: 
+590:©4%10s©0 has requested your authorization to be added to their contact list.¶
 591:Reason:
 592:<%s> emailed you a message:¶
 593:<%s> send you a web message:¶
@@ -630,7 +630,7 @@
 630:dequeue type %d seq %08x at %p (pak %p)
 631:Opening TCP connection to %s%s%s at %s:%d... 
 632:¶Connection unstable. Exiting....
-633:failed:¶
+633: 
 634:ok¶
 635:You have encounterd a bug in my code :( I now own you a beer!¶Greetings Fryslan!¶
 636:Auto-response message for %s:¶
@@ -659,8 +659,8 @@
 659:Unknown section %s in configuration file.
 660:Invalid Command: %s¶
 661:Shell commands have been disabled.¶
-662:Can't find hostname %s: %s.
-663:Couldn't set socket nonblocking
+662: 
+663: 
 664:Composing message to ©4all©0:¶
 665:%s not recognized as a nick name.
 666:Unignored %s.
@@ -680,7 +680,7 @@
 680:Your personal settings have been saved!¶
 681:Last %d people you talked to:¶
 682:You have received messages from:¶
-683:%s is neither a nick nor a UIN.¶
+683: 
 684:%s is not on your contact list.¶
 685:Last message from ©4%s©0:¶
 686:No messages received from ©4%s©0¶
@@ -698,8 +698,8 @@
 698: 
 699:Must give a valid uin/nickname¶
 700:%s is not a valid user in your list.¶
-701:Can't find hostname %s
-702:Couldn't open connection
+701: 
+702: 
 703:©2Status modes: ¶
 704:©2Groups: ¶
 705:General                    1¶
@@ -715,22 +715,22 @@
 715:mICQ                      49 (might not work but try it)
 716:None                      -1¶
 717:! as the first character of a command will execute a shell command (e.g. "!ls"  "!dir" "!mkdir temp")
-718:couldn't bind socket to free port
+718: 
 719:Shows how long mICQ has been running.
 720:uin can be either a number or the nickname of the user.
 721:Sending a blank message will put the client into multiline mode.¶Use . on a line by itself to end message.¶Use # on a line by itself to cancel the message.
 722:Type help to see your current command, because this one you typed wasn't one!
 723:%s's IP address is 
 724:Automatic replies are %s.¶
-725:Received USERONLINE packet for non-contact.¶
-726:Received USEROFFLINE packet for non-contact.¶
+725: 
+726: 
 727:The Do not disturb message is:
 728:The Away message is:
 729:The Not available message is:
 730:The Occupied message is:
 731:The Invisible message is:
-732:listener
-733:UIN mismatch: %d vs %d.¶
+732: 
+733: 
 734:Sorry wrong syntax, can't find a status somewhere.\r¶
 735:Must give a message.¶
 736:Sorry wrong syntax. Read tha help man!¶
@@ -769,7 +769,7 @@
 769:Displays your current online status.
 770:Resend your last message to a new uin.
 771:You haven't sent a message to anyone yet!¶
-772:unable to listen on socket
+772: 
 773:%s could not be added.¶
 774:Incoming packet:
 775:Outgoing packet:
@@ -777,7 +777,7 @@
 777:Opening peer-to-peer connection at localhost:%d... 
 778:Incoming TCP packet:
 779:Opening TCP connection to %s at %s:%d... 
-780:Registration of new UIN refused.¶
+780: 
 781:Your password for UIN %d:¶
 782:You need a password for your new UIN.¶
 783:To prevent typos, please enter your password again.¶
@@ -816,7 +816,7 @@
 816:Unknown option %s to set command.¶
 817:Warning: ReceiveScript feature not enabled!¶
 818:Warning: Deprecated syntax found in rc file!¶    Please update or "save" the rc file and check for changes.¶
-819:Other
+819: 
 820:%s <option> [on|off] - control simple options.¶
 821:Funny messages are ©3%s©0.¶
 822:    color: use colored text output.¶
@@ -825,13 +825,13 @@
 825:Discarded a %04x (%s) packet
 826:Resending message %04x (%s) sequence %04x (attempt #%d, len %d).¶
 827:Unknown client
-828:Connection failed
-829:[SOCKS] General SOCKS server failure
+828: 
+829: 
 830:Discarding message to %s after %d send attempts.  Message content:¶
 831:[SOCKS] Authentification method incorrect
-832:[SOCKS] Authorization failure
+832: 
 833:Client-to-client TCP connection to %s established.¶
-834:[SOCKS] Connection request refused (%d)
+834: 
 835:Error while writing to socket - %s (%d)¶
 836:Sending TCP direct connection initialization packet.¶
 837:Acknowledging TCP direct connection initialization packet.¶
@@ -848,22 +848,22 @@
 848:    close <nick> - Closes/resets TCP connection(s).¶
 849:Error on select: %s (%d)¶
 850:Timeout on connection with %s at %s:%d¶
-851:Ignored server request for a minimum report interval of %d.¶
-852:Couldn't find server connection.¶
-853:Unknown Meta User result %x.¶
-854:Publish Email:
+851: 
+852: 
+853: 
+854: 
 855:TCP connection to %s at %s:%d failed.¶
 856:Discarded a %04x (%s) packet from old session %08x (current: %08x).¶
 857:Do you want to hide your IP from other contacts? (YES/NO)
 858:sending packet
-859:Additional Email addresses:
-860:freeing packet
-861:(no authorization needed)
-862:(must request authorization)
+859: 
+860: 
+861: 
+862: 
 863:creating new packet
 864:Can't open rcfile %s.
 865:cloning existing packet
-866:This version of micq is compiled without TCP support.¶
+866:This version of mICQ is compiled without TCP support.¶
 867:Got a malformed (too short) packet - ignored.¶
 868:Got a malformed (to long subpacket) multi-packet - remainder ignored.¶
 869:Protocoll versions less than 5 are not supported anymore.¶
@@ -898,15 +898,26 @@
 898:Redirect to server %s... 
 899:Unknown family requested: %d¶
 900:It's readonly.
+901:has authorized you to add them to your contact list.
+902:Opening v5 connection to %s:%d... 
+903:Outgoing v8 server packet:
 904:Server doesn't understand ver %d (only %d) for family %d!¶
+905:SNAC (%x,%x) [%s] flags %x ref %x¶
 906:This command operates only on connections of type %s.¶
+907:Warning: Server thinks our UIN is %d, while it is %d.¶
+908:Received USERONLINE packet for non-contact.¶
+909:Received USEROFFLINE packet for non-contact.¶
 910:FLAP seq %08x length %04x channel %d©0¶
 911:connecting
 912:closed
+913:Received server acknowledge for %s#%08lx:%08lx%s sent to %s%s%s.¶
 914:Can't allocate connection structure.¶
 915:Server says we're at %s.¶
 916:Need a nick or uin.¶
 917:%-12s version %d for %s (%x), at %s:%d %s¶
+918:Ignored server request for a minimum report interval of %d.¶
+919:UIN mismatch: %d vs %d.¶
+920:Registration of new UIN refused.¶
 921:Online
 922:Do not disturb
 923:Away
@@ -916,3 +927,33 @@
 927:Free for chat
 928:Offline
 929:User is DND [Auto-Message]
+930:Can't send this (%x) yet.¶
+931:Couldn't find server connection.¶
+932:Need uin to ask for.¶
+933:%s is neither a nick nor a UIN.¶
+934:connected
+935:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x¶
+936:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
+937:Enter max age (22,29,39,49,59,120):
+938:Enter sex:
+939:Enter a city:
+940:Unknown Meta User result %x.¶
+941:Publish Email:
+942:Additional Email addresses:
+943:(no authorization needed)
+944:(must request authorization)
+945:Unknown Meta User response
+946:freeing packet
+947:listener
+948:Can't find hostname %s: %s.
+949:failed:¶
+950:Couldn't set socket nonblocking
+951:Can't find hostname %s
+952:Couldn't open connection
+953:couldn't bind socket to free port
+954:unable to listen on socket
+955:Connection failed
+956:[SOCKS] General SOCKS server failure
+957:[SOCKS] Authorization failure
+958:[SOCKS] Connection request refused (%d)
+959:Other

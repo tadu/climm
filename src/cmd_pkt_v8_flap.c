@@ -188,7 +188,7 @@ void FlapSend (Session *sess, Packet *pak)
     if (prG->verbose & 128)
     {
         Time_Stamp ();
-        M_print (" " ESC "«" COLCLIENT "%s ", i18n (57, "Outgoing v8 server packet:"));
+        M_print (" " ESC "«" COLCLIENT "%s ", i18n (903, "Outgoing v8 server packet:"));
         FlapPrint (pak);
         M_print (ESC "»\r");
     }

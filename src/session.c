@@ -142,7 +142,7 @@ const char *SessionType (Session *sess)
         case TYPE_SERVER_OLD:
             return i18n (744, "server (v5)");
         case TYPE_PEER:
-            return i18n (732, "listener");
+            return i18n (947, "listener");
         case TYPE_DIRECT:
             return i18n (890, "peer-to-peer");
         case TYPE_UNKNOWN:

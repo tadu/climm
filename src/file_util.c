@@ -81,7 +81,7 @@ void Initalize_RC_File ()
     
     prG->away_time = default_away_time;
 
-    M_print ("\n"); /* i18n (91, " ") i18n (92, " ") */
+    M_print ("\n");
     M_print (i18n (793, "No valid UIN found. The setup wizard will guide you through the process of setting one up.\n"));
     M_print (i18n (794, "If you already have an UIN, please enter it. Otherwise, enter 0, and I will request one for you.\n"));
     M_print ("%s ", i18n (618, "UIN:"));

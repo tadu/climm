@@ -325,7 +325,7 @@ int log_event (UDWORD uin, int type, char *str, ...)
     va_list args;
     int k;
     char buf[2048];             /* this should big enough - This holds the message to be logged */
-    char buffer[256];
+    char buffer[256], *b;
     time_t timeval;
     struct stat statbuf;
 
@@ -363,6 +363,8 @@ int log_event (UDWORD uin, int type, char *str, ...)
         if (ContactFindNick (uin))
         {
             sprintf (symbuf, "%s%s.log", prG->logplace, ContactFindNick (uin));
+            for (b = symbuf + strlen (prG->logplace); (b = strchr (b, '/')); )
+                *b = '_';
             symlink (buffer, symbuf);
         }
 #endif

@@ -400,7 +400,7 @@
 395:Bytet av information ©2%s©0.¶
 396:Bytet av information ©2%s©0.¶
 397:Uppdateringen av informationen ©2%s©0.¶
-398:Sökningen ©2failed©0.¶
+398:Sökningen ©2failed©0.
 #399:Unknown Meta User response ©1%04X©0¶
 400:Visar lokal infomation om användaren.
 401:Uppdaterar information som ålder och kön.
@@ -445,7 +445,7 @@
 440:Slumpmässig användare:
 441:IP:
 442:Var vänlig välj ett ämne ur hjälpen.
-443:Kommandon relaterade till micq.se's uppvisning och konfiguration.
+443:Kommandon relaterade till mICQ.se's uppvisning och konfiguration.
 444:Kommandon relaterade till att hitta andra användare.
 445:Kommandon relaterade till ditt ICQ konto.
 446:Kommandon relaterade till att skicka meddelanden.
@@ -596,7 +596,7 @@
 587:Ange avdelning: 
 #588:Enter sex:
 #589:Enter a city:
-590:©4¶%s©0 har begärt ditt tillstånd att lägga till dig på sin lista.¶
+590:©4%10s©0 har begärt ditt tillstånd att lägga till dig på sin lista.¶
 591:Anledning:
 592:<%s> skickade ett meddelande med e-post:¶
 593:<%s> skickade dig en webadress:¶
@@ -616,8 +616,7 @@
 #606:Got a bad session ID %08x (correct: %08x) with cmd %04x ignored.¶
 607:Användning: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]¶
 608:        -v   aktiverar debugläge (endast användbart vid debug)¶
-#-#609:        -f   anger en alternativ inställningsfil (standard: ~/.micqrc)¶
-#609:        -f   specifies an alternate Config File (default: ~/.micq/micqrc)¶
+609:        -f   anger en alternativ inställningsfil (standard: ~/.micq/micqrc)¶
 610:        -l   anger en alternativ logfil¶
 611:        -?   visar denna hjälptext¶
 612:Detta program har utvecklats helt utan hjälp från Mirabilis.¶
@@ -678,7 +677,7 @@
 666:Slutar ignornera %s.
 667:Ignorerar %s.
 668:Du måste ange ett namn.
-669:Lade till %s.
+669:Lade till %s.¶
 670:Osynlig för %s nu.
 671:Synlig för %s nu.
 #-#672:'s IP adress är

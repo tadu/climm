@@ -30,7 +30,7 @@ Packet *PacketC (void)
 
 void PacketD (Packet *pak)
 {
-    Debug (64, "--> %p %s", pak, i18n (860, "freeing packet"));
+    Debug (64, "--> %p %s", pak, i18n (946, "freeing packet"));
     free (pak);
 }
 

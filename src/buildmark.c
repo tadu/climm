@@ -7,6 +7,8 @@
  * $Id$
  */
 
+#define MICQ_BUILD_NUM 486
+
 #include <string.h>
 #include <stdio.h>
 
@@ -32,4 +34,16 @@ const char *BuildVersion (void)
     return ver;
 }
 
-const int BuildVersionNum = 486;
+const int BuildVersionNum = MICQ_BUILD_NUM;
+
+/*
+ i18n (1, "en")               locale
+ i18n (2, "en_US")            locale 
+ i18n (3, "486")              MICQ_BUILD_NUM
+ i18n (4, "Rüdiger Kuhlmann") all contributors
+ i18n (5, "Rüdiger Kuhlmann") last contributor
+ i18n (6, "2002-05-02")       last change
+ i18n (7, "iso-8859-1")       charset used. must be iso-8859-1 if possible
+
+
+ */

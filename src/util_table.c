@@ -197,7 +197,7 @@ static const char *TablePast[] = {
     _i18n (811, "Military"),
     _i18n (812, "Past Work Place"),
     _i18n (813, "Past Organization"),
-    _i18n (819, "Other"),
+    _i18n (959, "Other"),
     NULL
 };
 #define TablePastSize sizeof (TablePast) / sizeof (const char *)
@@ -290,3 +290,20 @@ const char *TableGetInterest (UWORD code)
 
     return i18n (-1, TableInterest[code]);
 }
+
+/*
+Never reuse i18n numbers till the next release. Dump them here.
+
+i18n (693, " ") i18n (694, " ") i18n (695, " ") i18n (697, " ") i18n (698, " ")
+i18n (91, " ") i18n (92, " ")
+i18n (8, " ") i18n (9, " ")
+i18n (52, " ") i18n (57, " ") i18n (058, " ") i18n (67, " ") i18n (88, " ")
+i18n (194, " ") i18n (399, " ") i18n (527, " ") i18n (558, " ") i18n (559, " ")
+i18n (560, " ") i18n (561, " ") i18n (588, " ") i18n (589, " ") i18n (633, " ")
+i18n (662, " ") i18n (663, " ") i18n (683, " ") i18n (701, " ") i18n (702, " ")
+i18n (718, " ") i18n (725, " ") i18n (726, " ") i18n (732, " ") i18n (733, " ")
+i18n (772, " ") i18n (780, " ") i18n (819, " ") i18n (828, " ") i18n (829, " ")
+i18n (832, " ") i18n (834, " ") i18n (851, " ") i18n (852, " ") i18n (853, " ")
+i18n (854, " ") i18n (859, " ") i18n (860, " ") i18n (861, " ") i18n (862, " ")
+*/
+

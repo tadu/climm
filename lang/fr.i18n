@@ -404,7 +404,7 @@
 395:Changement des informations a ©2%s©0.¶
 396:Changement des informations supplémentaires a ©2%s©0.¶
 397:Changement des informations de l'utilisateur a ©2%s©0.¶
-398:Recherche ©2échouée©0.¶
+398:Recherche ©2échouée©0.
 399:Réponse "Meta User" inconnue: ©1%04X©0¶
 400:Montre les informations sur la situation locale de l'utilisateur.
 401:Met à jour les autres informations sur l'utilisateur (age, sexe, etc).
@@ -428,7 +428,7 @@
 419:Efface l'écran.
 420:Activer/Désactiver le bip d'annonce de réception de nouveaux messages.
 421:Changer les couleurs de la mise en page.
-422:Quitte micq.
+422:Quitte mICQ.
 423:Affiche le status des réponses automatiques.
 424:Change les message envoyés lorsque votre status est OCC, DND ou NA.
 425:Donne à votre message à envoyer un status de réponse automatique.
@@ -449,7 +449,7 @@
 440:Utilisateur choisi au hasard:
 441:IP:
 442:Svp sélectionnez un des thèmes d'aide ci-dessous: 'help <thème>'
-443:Commandes relatives à micq et à sa configuration.
+443:Commandes relatives à mICQ et à sa configuration.
 444:Commandes pour trouver un autre utilisateur.
 445:Commandes relatives à votre compte ICQ.
 446:Commandes relatives à l'envoi de messages.
@@ -596,7 +596,7 @@
 #587:Enter department: 
 #588:Enter sex:
 #589:Enter a city:
-590:©4¶%s©0 demande votre autorisation.
+590:©4%10s©0 demande votre autorisation.
 591:Raison:
 592:<%s> vous a envoyé un email:¶
 593:<%s> vous a envoyé un message par le web:¶
@@ -621,8 +621,7 @@
 #606:Got a bad session ID %08x (correct: %08x) with cmd %04x ignored.¶
 607:Usage: micq [-v|-V] [-f|-F <fichier-rc>] [-l|-L <fichier-journal>] [-?|-h]¶
 608:        -v   mode verbeuse¶
-#-#609:        -f   fichier de configuration alternatif (défaut: ~/.micqrc)¶
-#609:        -f   specifies an alternate Config File (default: ~/.micq/micqrc)¶
+609:        -f   fichier de configuration alternatif (défaut: ~/.micq/micqrc)¶
 610:        -l   fichier du journal alternatif¶
 611:        -?   cet écran-ci¶¶
 612:Ce logiciel a été réalisé sans aide ni consentement de Mirabilis.¶

@@ -183,7 +183,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
         {
             if (prG->verbose)
             {
-                M_print (i18n (662, "Can't find hostname %s: %s."), hostname, hstrerror (h_errno));
+                M_print (i18n (948, "Can't find hostname %s: %s."), hostname, hstrerror (h_errno));
                 M_print ("\n");
             }
             return -1;
@@ -239,7 +239,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
                         sess->dispatch (sess);            \
                         return; }
 #define CONN_FAIL_RC(s) { int rc = errno;                   \
-                          M_print (i18n (633, "failed:\n")); \
+                          M_print (i18n (949, "failed:\n")); \
                           CONN_FAIL (UtilFill   ("%s: %s (%d).", s, strerror (rc), rc)) }
 #define CONN_CHECK(s) { if (rc == -1) { rc = errno;          \
                           if (rc == EAGAIN) return;             \
@@ -277,7 +277,7 @@ void UtilIOConnectTCP (Session *sess)
     if (rc != -1)
         rc = fcntl (sess->sok, F_SETFL, rc | O_NONBLOCK);
     if (rc == -1)
-        CONN_FAIL_RC (i18n (663, "Couldn't set socket nonblocking"));
+        CONN_FAIL_RC (i18n (950, "Couldn't set socket nonblocking"));
 
     if (sess->server || sess->ip || prG->s5Use)
     {
@@ -302,7 +302,7 @@ void UtilIOConnectTCP (Session *sess)
             if (!host)
             {
                 rc = h_errno;
-                CONN_FAIL (UtilFill (i18n (701, "Can't find hostname %s"), sess->server, hstrerror (rc), rc));
+                CONN_FAIL (UtilFill (i18n (951, "Can't find hostname %s"), sess->server, hstrerror (rc), rc));
             }
             sin.sin_addr = *((struct in_addr *) host->h_addr);
             sess->ip = ntohl (sin.sin_addr.s_addr);
@@ -355,7 +355,7 @@ void UtilIOConnectTCP (Session *sess)
             sess->connect |= CONNECT_SELECT_W | CONNECT_SELECT_X;
             return;
         }
-        CONN_FAIL_RC (i18n (702, "Couldn't open connection"));
+        CONN_FAIL_RC (i18n (952, "Couldn't open connection"));
     }
     else
     {
@@ -364,10 +364,10 @@ void UtilIOConnectTCP (Session *sess)
         sin.sin_addr.s_addr = INADDR_ANY;
 
         if (bind (sess->sok, (struct sockaddr*)&sin, sizeof (struct sockaddr)) < 0)
-            CONN_FAIL_RC (i18n (718, "couldn't bind socket to free port"));
+            CONN_FAIL_RC (i18n (953, "couldn't bind socket to free port"));
 
         if (listen (sess->sok, BACKLOG) < 0)
-            CONN_FAIL_RC (i18n (772, "unable to listen on socket"));
+            CONN_FAIL_RC (i18n (954, "unable to listen on socket"));
 
         flags = sizeof (struct sockaddr);
         getsockname (sess->sok, (struct sockaddr *) &sin, &flags);
@@ -400,7 +400,7 @@ void UtilIOConnectCallback (Session *sess)
                 if (getsockopt (sess->sok, SOL_SOCKET, SO_ERROR, &rc, &flags) < 0)
                     rc = errno;
                 if (rc)
-                    CONN_FAIL (UtilFill      ("%s: %s (%d).", i18n (828, "Connection failed"), strerror (rc), rc));
+                    CONN_FAIL (UtilFill      ("%s: %s (%d).", i18n (955, "Connection failed"), strerror (rc), rc));
 
                 sess->connect += CONNECT_SOCKS_ADD;
             case 1:
@@ -414,7 +414,7 @@ void UtilIOConnectCallback (Session *sess)
                 return;
             case 2:
                 rc = sockread (sess->sok, buf, 2);
-                CONN_CHECK (i18n (829, "[SOCKS] General SOCKS server failure"));
+                CONN_CHECK (i18n (956, "[SOCKS] General SOCKS server failure"));
                 if (buf[0] != 5 || !(buf[1] == 0 || (buf[1] == 2 && prG->s5Auth)))
                     CONN_FAIL (i18n (831, "[SOCKS] Authentification method incorrect"));
 
@@ -430,9 +430,9 @@ void UtilIOConnectCallback (Session *sess)
                 continue;
             case 3:
                 rc = sockread (sess->sok, buf, 2);
-                CONN_CHECK (i18n (829, "[SOCKS] General SOCKS server failure"));
+                CONN_CHECK (i18n (956, "[SOCKS] General SOCKS server failure"));
                 if (rc != 2 || buf[1])
-                    CONN_FAIL  (i18n (832, "[SOCKS] Authorization failure"));
+                    CONN_FAIL  (i18n (957, "[SOCKS] Authorization failure"));
             case 4:
                 if (sess->server)
                     snprintf (buf, sizeof (buf), "%c%c%c%c%c%s%c%c%n", 5, 1, 0, 3, strlen (sess->server),
@@ -450,9 +450,9 @@ void UtilIOConnectCallback (Session *sess)
                 return;
             case 5:
                 rc = sockread (sess->sok, buf, 10);
-                CONN_CHECK (i18n (829, "[SOCKS] General SOCKS server failure"));
+                CONN_CHECK (i18n (956, "[SOCKS] General SOCKS server failure"));
                 if (rc != 10 || buf[3] != 1)
-                    CONN_FAIL (i18n (829, "[SOCKS] General SOCKS server failure"));
+                    CONN_FAIL (i18n (956, "[SOCKS] General SOCKS server failure"));
                 if (buf[1] == 4 && sess->port && !(eno & 8))
                 {
                     sess->connect &= ~CONNECT_SOCKS;
@@ -463,7 +463,7 @@ void UtilIOConnectCallback (Session *sess)
                     return;
                 }
                 if (buf[1])
-                    CONN_FAIL (UtilFill (i18n (834, "[SOCKS] Connection request refused (%d)"), buf[1]));
+                    CONN_FAIL (UtilFill (i18n (958, "[SOCKS] Connection request refused (%d)"), buf[1]));
                 if (!sess->server && !sess->ip)
                 {
                     sess->assoc->our_local_ip = ntohl (*(UDWORD *)(&buf[4]));
@@ -487,9 +487,9 @@ void UtilIOSocksAccept(Session *sess)
     int rc;
 
     rc = sockread (sess->sok, buf, 10);
-    CONN_CHECK (i18n (829, "[SOCKS] General SOCKS server failure"));
+    CONN_CHECK (i18n (956, "[SOCKS] General SOCKS server failure"));
     if (rc != 10 || buf[3] != 1)
-        CONN_FAIL (i18n (829, "[SOCKS] General SOCKS server failure"));
+        CONN_FAIL (i18n (956, "[SOCKS] General SOCKS server failure"));
 }
 
 /*
@@ -499,7 +499,7 @@ void UtilIOTOConn (struct Event *event)
 {
      Session *sess = event->sess;
      free (event);
-     CONN_FAIL (UtilFill ("%s: %s (%d).", i18n (828, "Connection failed"),
+     CONN_FAIL (UtilFill ("%s: %s (%d).", i18n (955, "Connection failed"),
                 strerror (ETIMEDOUT), ETIMEDOUT));
 }
 

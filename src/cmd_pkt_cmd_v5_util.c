@@ -175,7 +175,7 @@ void CallBackServerInitV5 (struct Event *event)
         return;
     }
     
-    M_print (i18n (52, "Opening v5 connection to %s:%d... "), sess->server, sess->port);
+    M_print (i18n (902, "Opening v5 connection to %s:%d... "), sess->server, sess->port);
     
     if (sess->sok < 0)
     {

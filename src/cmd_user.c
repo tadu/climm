@@ -105,7 +105,7 @@ static jump_t jump[] = {
 };
 
 #define SERVER_SESSION Session *sess; if (!(sess = SessionFind (TYPE_SERVER, 0))) sess = SessionFind (TYPE_SERVER_OLD, 0); \
-    if (!sess) { M_print (i18n (852, "Couldn't find server connection.\n")); return 0; }
+    if (!sess) { M_print (i18n (931, "Couldn't find server connection.\n")); return 0; }
 
 #define SESSION_TYPE(type) Session *sess; sess = SessionFind (type, 0); \
     if (!sess) { M_print (i18n (906, "This command operates only on connections of type %s.\n"), #type); return 0; }
@@ -265,7 +265,7 @@ JUMP_F(CmdUserHelp)
     {
         M_print (COLCLIENT "%s\n", i18n (442, "Please select one of the help topics below."));
         M_print ("%s\t-\t%s\n", i18n (447, "Client"),
-                 i18n (443, "Commands relating to micq displays and configuration."));
+                 i18n (443, "Commands relating to mICQ displays and configuration."));
         M_print ("%s\t-\t%s\n", i18n (448, "Message"),
                  i18n (446, "Commands relating to sending messages."));
         M_print ("%s\t-\t%s\n", i18n (449, "User"),
@@ -437,7 +437,7 @@ JUMP_F(CmdUserInfo)
     arg1 = strtok (args, "");
     if (arg1 == NULL)
     {
-        M_print (i18n (194, "Need uin to ask for.\n"));
+        M_print (i18n (932, "Need uin to ask for.\n"));
         return 0;
     }
     uin = ContactFindByNick (arg1);
@@ -575,7 +575,7 @@ JUMP_F(CmdUserTCP)
         M_print (i18n (870, "    off   <nick> - Closes TCP connection(s) and don't try TCP again.\n"));
     }
 #else
-    M_print (i18n (866, "This version of micq is compiled without TCP support.\n"));
+    M_print (i18n (866, "This version of mICQ is compiled without TCP support.\n"));
 #endif
     return 0;
 }
@@ -1973,7 +1973,7 @@ JUMP_F(CmdUserLast)
     else
     {
         if ((uin = ContactFindByNick (arg1)) == -1)
-            M_print (i18n (683, "%s is neither a nick nor a UIN.\n"), arg1);
+            M_print (i18n (933, "%s is neither a nick nor a UIN.\n"), arg1);
         else
         {
             if (ContactFind (uin) == NULL)
@@ -2025,8 +2025,6 @@ JUMP_F(CmdUserUptime)
     M_print (COLMESS "%02d" COLNONE " %s.\n", Seconds, i18n (691, "seconds"));
 /*    M_print ("%s " COLMESS "%d" COLNONE " / %d\n", i18n (692, "Contacts:"), uiG.Num_Contacts, MAX_CONTACTS); */
 
-/* i18n (693, " ") i18n (694, " ") i18n (695, " ") i18n (697, " ") i18n (698, " ") i18n */
-
     M_print (i18n (746, " nr type         sent/received packets/unique packets\n"));
     for (i = 0; (sess = SessionNr (i)); i++)
     {
@@ -2065,10 +2063,10 @@ JUMP_F(CmdUserConn)
                      SessionType (sess), sess->ver, ContactFindName (sess->uin), sess->status,
                      sess->server ? sess->server : UtilIOIP (sess->ip), sess->port,
                      sess->connect & CONNECT_FAIL ? i18n (497, "failed") :
-                     sess->connect & CONNECT_OK   ? i18n (558, "connected") :
+                     sess->connect & CONNECT_OK   ? i18n (934, "connected") :
                      sess->connect & CONNECT_MASK ? i18n (911, "connecting") : i18n (912, "closed"));
             if (prG->verbose)
-            M_print (i18n (559, "    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x\n"),
+            M_print (i18n (935, "    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x\n"),
                      sess->type, sess->sok, UtilIOIP (sess->ip),
                      sess->connect, UtilIOIP (sess->our_local_ip), UtilIOIP (sess->our_outside_ip),
                      sess->our_session, sess->our_seq, sess->our_seq2);
@@ -2198,15 +2196,15 @@ JUMP_F(CmdUserWpSearch)
             return ++status;
         case 203:
             wp.email = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (560, "Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):"));
+            R_dopromptf ("%s ", i18n (936, "Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):"));
             return ++status;
         case 204:
             wp.minage = atoi (args);
-            R_dopromptf ("%s ", i18n (561, "Enter max age (22,29,39,49,59,120):"));
+            R_dopromptf ("%s ", i18n (937, "Enter max age (22,29,39,49,59,120):"));
             return ++status;
         case 205:
             wp.maxage = atoi (args);
-            R_doprompt (i18n (588, "Enter sex:"));
+            R_doprompt (i18n (938, "Enter sex:"));
             return ++status;
         case 206:
             if (!strncasecmp (args, i18n (528, "female"), 1))
@@ -2234,7 +2232,7 @@ JUMP_F(CmdUserWpSearch)
             {
                 wp.language = temp;
                 status++;
-                R_dopromptf ("%s ", i18n (589, "Enter a city:"));
+                R_dopromptf ("%s ", i18n (939, "Enter a city:"));
             }
             return status;
         case 208:

@@ -408,7 +408,7 @@
 395:Änderung der "Über"-Information war ©2%s©0.¶
 396:Änderung der grundlegenden Informationen war ©2%s©0.¶
 397:Änderung der sonstigen Informationen war ©2%s©0.¶
-398:Suche ©2fehlgeschlagen©0.¶
+398:Suche ©2fehlgeschlagen©0.
 399:Unbekannte "Meta User"-Antwort ©1%04X©0.¶
 400:Zeigt zwischengespeicherte Informationen über Benutzer.
 401:Ändert sonstige Informationen wie Alter und Geschlecht.
@@ -603,7 +603,7 @@
 587:Abteilung:
 #588:Enter sex:
 #589:Enter a city:
-590:©4¶%s©0 bittet um Autorisierung, Sie auf seine Kontaktliste zu setzen.¶
+590:©4%10s©0 bittet um Autorisierung, Sie auf seine Kontaktliste zu setzen.¶
 591:Grund:
 592:<%s> schickt eine Nachricht per eMail:¶
 593:<%s> schickt eine Nachricht per Web:¶
@@ -683,7 +683,7 @@
 666:Ignoriere %s nicht mehr.
 667:Ignoriere %s.
 668:Sie müssen einen Spitznamen angeben.
-669:%s hinzugefügt.
+669:%s hinzugefügt.¶
 670:Für %s jetzt unsichtbar.
 671:Für %s jetzt sichtbar.
 672:%ss IP-Adresse ist 

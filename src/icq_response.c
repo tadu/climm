@@ -72,7 +72,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
         case 0x0A:
             break;
         default:
-            M_print (i18n (853, "Unknown Meta User result %x.\n"), result);
+            M_print (i18n (940, "Unknown Meta User result %x.\n"), result);
             return;
     }
 
@@ -160,7 +160,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             M_print ("(UTC %+05d)\n", -100 * (tz / 2) + 30 * (tz % 2));
             wdata = PacketRead1 (p); /* publish email, 01: yes, 00: no */
             M_print (COLSERV "%-15s" COLNONE " %s\n", 
-                i18n (854, "Publish Email:"), wdata 
+                i18n (941, "Publish Email:"), wdata 
                 ? i18n (567, "No authorization needed." COLNONE " ")
                 : i18n (568, "Must request authorization." COLNONE " "));
             /* one unknown word ignored according to v7 doc */
@@ -215,14 +215,14 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
         case 0xEB: /* more-email-info */
             if ((i = PacketRead1 (p)))
                 M_print (COLSERV "%-15s" COLNONE "\n", 
-                    i18n (859, "Additional Email addresses:"));
+                    i18n (942, "Additional Email addresses:"));
             for (; i > 0; i--)
             {
                 wdata = PacketRead1 (p);
                 if (*(data = PacketReadLNTS (p)))
                     M_print ("  %s %s\n", data, 
-                        wdata == 1 ? i18n (861, "(no authorization needed)") 
-                        : wdata == 0 ? i18n (862, "(must request authorization)")
+                        wdata == 1 ? i18n (943, "(no authorization needed)") 
+                        : wdata == 0 ? i18n (944, "(must request authorization)")
                         : "");
             }
             break;
@@ -350,8 +350,8 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             if (*data)
                 M_print (COLSERV "%-15s" COLNONE " %s\t%s\n", 
                     i18n (566, "Email address:"), data,
-                    wdata == 1 ? i18n (861, "(no authorization needed)")
-                    : i18n (862, "(must request authorization)"));
+                    wdata == 1 ? i18n (943, "(no authorization needed)")
+                    : i18n (944, "(must request authorization)"));
 
             switch ((wdata = PacketRead2 (p))) {
                 case 0:
@@ -395,7 +395,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                 break;
         default:
             M_print ("%s: " COLSERV "%04X" COLNONE "\n", 
-                i18n (399, "Unknown Meta User response"), subtype);
+                i18n (945, "Unknown Meta User response"), subtype);
             Hex_Dump (p->data + p->rpos, p->len - p->rpos);
             break;
     }
@@ -639,7 +639,7 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
         case AUTH_REQ_MESS:
             tmp = strchr (cdata, '\xFE');
             *tmp = 0;
-            M_print (i18n (590, COLCONTACT "\n%s" COLNONE " has requested your authorization to be added to their contact list.\n"), cdata);
+            M_print (i18n (590, COLCONTACT "%10s" COLNONE " has requested your authorization to be added to their contact list.\n"), cdata);
             tmp++;
             cdata = tmp;
             tmp = strchr (tmp, '\xFE');
