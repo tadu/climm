@@ -521,7 +521,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     Contact *cont;
     Packet *p = NULL, *pp = NULL, *pak;
     TLV *tlv;
-    UDWORD uin;
+    UDWORD uin, unk;
     UWORD i, type;
     int t;
     char *text = NULL;
@@ -539,6 +539,9 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     
     UtilCheckUIN (event->sess, uin);
     cont = ContactFind (uin);
+    if (!cont)
+        return;
+
     tlv = TLVRead (pak, PacketReadLeft (pak));
 
     if (tlv[6].len && cont && cont->status != STATUS_OFFLINE)
@@ -595,7 +598,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             PacketRead1 (pp); PacketRead2 (pp); /* UNKNOWN */
             PacketReadB4 (pp); /* UNKNOWN */
             PacketReadB2 (pp); /* SEQ1 */
-            PacketReadB2 (pp); /* UNKNOWN */
+            unk = PacketReadB2 (pp); /* UNKNOWN */
             PacketReadB2 (pp); /* SEQ2 */
             PacketRead4 (pp); PacketRead4 (pp); PacketRead4 (pp); /* UNKNOWN */
             type = PacketRead2 (pp); /* MSGTYPE & MSGFLAGS */
@@ -603,13 +606,37 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             PacketReadB2 (pp); /* UNKNOWN */
             txt = text = PacketReadLNTS (pp);
             PacketD (pp);
+            if (!strlen (text) && unk == 0x12)
+            {
+                s_free (text);
+                return;
+            }
+            if ((type & MSGF_GETAUTO) == MSGF_GETAUTO)
+            {
+                switch (type & 0xff)
+                {
+                    case MSG_GET_AWAY:
+                    case MSG_GET_OCC:
+                    case MSG_GET_NA:
+                    case MSG_GET_DND:
+                    case MSG_GET_FFC:
+                    case MSG_GET_VER:
+                }
+                /* FIXME: send appropriate acknowledge */
+            }
             /* FOREGROUND / BACKGROUND ignored */
             /* TLV 1, 2(!), 3, 4, f ignored */
             break;
         case 4:
             p = PacketCreate (tlv[5].str, tlv[5].len);
-            uin  = PacketRead4 (p);
+            unk  = PacketRead4 (p);
             type = PacketRead2 (p);
+            if (unk != uin)
+            {
+                PacketD (p);
+                SnacSrvUnknown (event);
+                return;
+            }
             txt = text = PacketReadLNTS (p);
             PacketD (p);
             /* FOREGROUND / BACKGROUND ignored */
@@ -620,9 +647,8 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             return;
     }
 
-    UtilCheckUIN (event->sess, uin);
-    IMSrvMsg (ContactFind (uin), event->sess, NOW, type, txt,
-            tlv[6].len ? tlv[6].nr : STATUS_OFFLINE);
+    IMSrvMsg (cont, event->sess, NOW, type, txt,
+              tlv[6].len ? tlv[6].nr : STATUS_OFFLINE);
     Auto_Reply (event->sess, uin);
 
     s_free (text);
@@ -1085,12 +1111,11 @@ void SnacCliSetuserinfo (Session *sess)
     Packet *pak;
     
     pak = SnacC (sess, 2, 4, 0, 0);
-    PacketWriteTLVData (pak, 5,
-        AIM_CAPS_ICQSERVERRELAY AIM_CAPS_UNK AIM_CAPS_ICQRTF AIM_CAPS_ICQ, 64);
-
-/*      AIM_CAPS_ICQSERVERRELAY AIM_CAPS_ICQRTF 
- *     "\x2E\x7A\x64\x75\xFA\xDF\x4D\xC8\x88\x6F\xEA\x35\x95\xFD\xB6\xDF"
- *      AIM_CAPS_ICQ, 64);  */
+    PacketWriteTLV     (pak, 5);
+    PacketWriteCap     (pak, CAP_SRVRELAY);
+    PacketWriteCap     (pak, CAP_UNK_2002);
+    PacketWriteCap     (pak, CAP_ISICQ);
+    PacketWriteTLVDone (pak);
     SnacSend (sess, pak);
 }
 
@@ -1223,17 +1248,14 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, const char *text, UDWORD type, U
              PacketWrite2       (pak, 0);
              PacketWriteB4      (pak, mtime);
              PacketWriteB4      (pak, mid);
-             PacketWriteData    (pak, AIM_CAPS_ICQSERVERRELAY, 16);
+             PacketWriteCap     (pak, CAP_SRVRELAY);
              PacketWriteTLV2    (pak, 10, 1);
              PacketWriteB4      (pak, 0x000f0000); /* empty TLV(15) */
              PacketWriteTLV     (pak, 10001);
               PacketWriteLen     (pak);
                PacketWrite2       (pak, sess->assoc && sess->assoc->connect & CONNECT_OK
                                      ? sess->assoc->ver : 0);
-               PacketWriteB4      (pak, 0); /* capability */
-               PacketWriteB4      (pak, 0);
-               PacketWriteB4      (pak, 0);
-               PacketWriteB4      (pak, 0);
+               PacketWriteCap     (pak, CAP_NONE);
                PacketWrite2       (pak, 0);
                PacketWrite4       (pak, 3);
                PacketWrite1       (pak, 0);

@@ -18,6 +18,15 @@ struct Packet_s
     UBYTE    data[PacketMaxData];
 };
 
+typedef struct { UBYTE id; const char *cap; const char *name; } Cap;
+
+#define CAP_NONE     1
+#define CAP_ISICQ    2
+#define CAP_SRVRELAY 3
+#define CAP_RTFMSGS  4
+#define CAP_UNK_2001 5
+#define CAP_UNK_2002 6
+                    
 Packet *PacketC        (void);
 Packet *PacketCreate   (const char *data, UDWORD len);
 Packet *PacketClone    (const Packet *pak);
@@ -28,6 +37,7 @@ void        PacketWrite2      (      Packet *pak,           UWORD  data);
 void        PacketWriteB2     (      Packet *pak,           UWORD  data);
 void        PacketWrite4      (      Packet *pak,           UDWORD data);
 void        PacketWriteB4     (      Packet *pak,           UDWORD data);
+void        PacketWriteCap    (      Packet *pak,           UBYTE id);
 void        PacketWriteData   (      Packet *pak,           const char *data, UWORD len);
 void        PacketWriteStr    (      Packet *pak,           const char *data);
 void        PacketWriteLNTS   (      Packet *pak,           const char *data);
@@ -52,6 +62,7 @@ UWORD       PacketRead2       (      Packet *pak);
 UWORD       PacketReadB2      (      Packet *pak);
 UDWORD      PacketRead4       (      Packet *pak);
 UDWORD      PacketReadB4      (      Packet *pak);
+Cap        *PacketReadCap     (      Packet *pak);
 void        PacketReadData    (      Packet *pak,           char  *data, UWORD len);
 char       *PacketReadStrB    (      Packet *pak);
 char       *PacketReadLNTS    (      Packet *pak);

@@ -19,6 +19,18 @@
 #include <stdio.h>
 #include <string.h>
 
+static Cap caps[20] =
+{
+    { 0,            "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", "out of memory"},
+    { CAP_NONE,     "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", "CAP_NONE"     },
+    { CAP_ISICQ,    "\x09\x46\x13\x44\x4c\x7f\x11\xd1\x82\x22\x44\x45\x53\x54\x00\x00", "CAP_ISICQ"    },
+    { CAP_SRVRELAY, "\x09\x46\x13\x49\x4c\x7f\x11\xd1\x82\x22\x44\x45\x53\x54\x00\x00", "CAP_SRVRELAY" },
+    { CAP_RTFMSGS,  "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x92", "CAP_RTFMSGS"  },
+    { CAP_UNK_2001, "\x2E\x7A\x64\x75\xFA\xDF\x4D\xC8\x88\x6F\xEA\x35\x95\xFD\xB6\xDF", "CAP_UNK_2001" },
+    { CAP_UNK_2002, "\x09\x46\x13\x4e\x4c\x7f\x11\xd1\x82\x22\x44\x45\x53\x54\x00\x00", "CAP_UNK_2002" },
+    { 0, NULL, NULL }
+};
+
 Packet *PacketC (void)
 {
     Packet *pak;
@@ -129,6 +141,27 @@ void PacketWriteB4 (Packet *pak, UDWORD data)
         pak->len = pak->wpos;
 }
 
+void PacketWriteCap (Packet *pak, UBYTE id)
+{
+    UBYTE i;
+
+    assert (pak);
+    assert (id < 20);
+    
+    if (caps[id].id == id)
+    {
+        PacketWriteData (pak, caps[id].cap, 16);
+        return;
+    }
+
+    for (i = 0; i < 20; i++)
+        if (caps[i].id == id)
+            break;
+    
+    i %= 20;
+    PacketWriteData (pak, caps[i].cap, 16);
+}
+
 void PacketWriteData (Packet *pak, const char *data, UWORD len)
 {
     assert (pak);
@@ -196,9 +229,9 @@ void PacketWriteLLNTS (Packet *pak, const char *data)
 
 void PacketWriteUIN (Packet *pak, UDWORD uin)
 {
-    char str[15];
+    const char *str;
     
-    snprintf (str, sizeof (str), "%ld", uin);
+    str = s_sprintf ("%ld", uin);
     PacketWrite1 (pak, strlen (str));
     PacketWriteData (pak, str, strlen (str));
 }
@@ -389,6 +422,55 @@ UDWORD PacketReadB4 (Packet *pak)
     data |= pak->data[pak->rpos++] << 8;
     data |= pak->data[pak->rpos++];
     return data;
+}
+
+Cap *PacketReadCap (Packet *pak)
+{
+    const char *cap;
+    char *p;
+    UBYTE id;
+    
+    assert (pak);
+    
+    if (pak->rpos + 16 > PacketMaxData)
+        return &caps[0];
+
+    cap = pak->data + pak->rpos;
+    pak->rpos += 16;
+
+    for (id = 0; id < 20; id++)
+        if (caps[id].cap)
+        {
+#ifdef HAVE_MEMCMP
+            if (!memcmp (cap, caps[id].cap, 16)
+                return &caps[id];
+#else
+            {
+                const char *p, *q;
+                int i;
+                for (p = cap, q = caps[id].cap, i = 0; i < 16; i++)
+                    if (*p++ != *q++)
+                        break;
+                    else
+                        if (i == 15)
+                            return &caps[id];
+            }
+#endif
+        }
+        else
+            if (id == 19)
+                return &caps[0];
+            else
+                break;
+    
+    p = malloc (16);
+    assert (p);
+    memcpy (p, cap, 16);
+
+    caps[id].id = id;
+    caps[id].cap = p;
+    caps[id].name = strdup (s_sprintf ("CAP_UNK_%d", id));
+    return &caps[id];
 }
 
 void PacketReadData (Packet *pak, char *buf, UWORD len)
@@ -636,8 +718,7 @@ const char *PacketDump (Packet *pak, const char *syntax)
             case 'C':
                 if (pak->len < pak->rpos + 16) break;
                 t = s_cat  (t, &size, s_dumpnd (pak->data + pak->rpos, 16));
-                t = s_catf (t, &size, " " COLDEBUG "CAP" COLNONE "\n");
-                pak->rpos += 16;
+                t = s_catf (t, &size, " " COLDEBUG "%s" COLNONE "\n", PacketReadCap (pak)->name);
                 continue;
             case 'D':
                 if (pak->len < pak->rpos + 4) break;
