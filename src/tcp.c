@@ -252,10 +252,10 @@ void TCPDispatchMain (Session *list)
             sockclose (list->sok);
         return;
     }
-    peer->type = list->type == TYPE_LISTEN ? TYPE_DIRECT : TYPE_FILEDIRECT;
+    peer->type = (list->type == TYPE_LISTEN ? TYPE_DIRECT : TYPE_FILEDIRECT);
 
 #ifdef WIP
-    M_print ("New incoming direct (%d)\n", list->sok);
+    M_print ("New incoming direct(?) (%d) %x,%x\n", list->sok, list->type, peer->type);
 #endif
 
     peer->flags = 0;
@@ -437,6 +437,7 @@ void TCPDispatchShake (Session *peer)
             Time_Stamp ();
             M_print (" [%d %p %p] %s State: %d\n", peer->sok, pak, peer, ContactFindName (peer->uin), peer->connect);
         }
+        M_print ("->type %d\n", peer->type);
 
         cont = ContactFind (peer->uin);
         if (!cont && (peer->connect & CONNECT_MASK) != 16)
@@ -518,7 +519,8 @@ void TCPDispatchShake (Session *peer)
                 continue;
             case 21:
                 peer->connect = 48 | CONNECT_SELECT_R;
-                TCPSendInit2 (peer);
+                if (peer->ver > 6 && peer->type == TYPE_DIRECT)
+                    TCPSendInit2 (peer);
                 continue;
             case 48:
                 QueueDequeue (peer->ip, QUEUE_TYPE_TCP_TIMEOUT);
@@ -1076,7 +1078,7 @@ static Session *TCPReceiveInit2 (Session *peer, Packet *pak)
  */
 void TCPClose (Session *peer)
 {
-    ASSERT_ANY_DIRECT (peer);
+    assert (peer);
     
     if (peer->sok != -1)
     {
@@ -1094,7 +1096,6 @@ void TCPClose (Session *peer)
     peer->sok     = -1;
     peer->connect = (peer->connect & CONNECT_MASK && !(peer->connect & CONNECT_OK)) ? CONNECT_FAIL : 0;
     peer->our_session = 0;
-    /* TODO: is this robust? */
     if (!peer->uin)
         SessionClose (peer);
     if (peer->incoming)
@@ -1334,7 +1335,7 @@ static int TCPSendMsgAck (Session *peer, UWORD seq, UWORD type, BOOL accept)
     if (peer->status & STATUSF_INV)  flags |= TCP_MSGF_INV;
     flags ^= TCP_MSGF_LIST;
 
-    pak = PacketTCPC (peer, TCP_CMD_ACK, seq, type, status, flags, msg);
+    pak = PacketTCPC (peer, TCP_CMD_ACK, seq, type, flags, status, msg);
     switch (type)
     {
         case TCP_MSG_FILE:
@@ -1390,8 +1391,11 @@ static int TCPSendGreetAck (Session *peer, UWORD seq, UWORD cmd, BOOL accept)
     if (peer->status & STATUSF_INV)  flags |= TCP_MSGF_INV;
     flags ^= TCP_MSGF_LIST;
 
-    pak = PacketTCPC (peer, TCP_CMD_ACK, seq, TCP_MSG_GREETING, status, flags, "");
-    flist = SessionFind (TYPE_FILELISTEN, peer->uin, NULL);
+    flist = PeerFileCreate (peer->parent->parent);
+    if (!flist)
+        status = TCP_STAT_REFUSE;
+
+    pak = PacketTCPC (peer, TCP_CMD_ACK, seq, TCP_MSG_GREETING, flags, status, "");
     TCPGreet (pak, cmd, "", flist ? flist->port : 0, 0, "");
     TCPSendPacket (pak, peer);
     return 1;
@@ -1498,7 +1502,7 @@ BOOL TCPSendMsg (Session *list, UDWORD uin, char *msg, UWORD sub_cmd)
     if (!peer)
         return 0;
 
-    pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, sub_cmd, list->parent->status, 0, msg);
+    pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, sub_cmd, 0, list->parent->status, msg);
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
 
@@ -1519,7 +1523,7 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
 {
     Contact *cont;
     Packet *pak;
-    Session *peer, *fpeer;
+    Session *peer, *flist, *fpeer;
     int i, rc, sumlen = 0, sum = 0;
 
     if (!count)
@@ -1553,15 +1557,18 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
 
     if (!peer)
         return 0;
+    
+    flist = PeerFileCreate (peer->parent->parent);
+    if (!flist)
+        return 0;
 
-    fpeer = SessionClone (peer);
+    fpeer = SessionClone (flist);
     
     assert (fpeer);
     
-    fpeer->parent = peer->parent;
-    fpeer->uin = uin;
+    fpeer->uin     = uin;
     fpeer->connect = 77;
-    fpeer->type = TYPE_FILEDIRECT;
+    fpeer->type    = TYPE_FILEDIRECT;
         
     for (i = 0; i < count; i++)
     {
@@ -1609,7 +1616,7 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
         
     if (peer->ver < 8)
     {
-        pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, TCP_MSG_FILE, list->parent->status, 0, description);
+        pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, TCP_MSG_FILE, 0, list->parent->status, description);
         PacketWrite2 (pak, 0);
         PacketWrite2 (pak, 0);
         PacketWriteLNTS (pak, "many, really many, files");
@@ -1618,7 +1625,7 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
     }
     else
     {
-        pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, TCP_MSG_GREETING, list->parent->status, 0, "");
+        pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, TCP_MSG_GREETING, 0, list->parent->status, "");
         TCPGreet (pak, 0x29, description, 0, 12345, "many, really many files");
     }
 
@@ -1741,32 +1748,15 @@ static void TCPCallBackReceive (Event *event)
 
 #ifdef WIP
                 case TCP_MSG_FILE:
+                    port = PacketReadB2 (pak);
+                    if (PeerFileAccept (event->sess, status, port))
                     {
-                        Session *flist, *fpeer;
-                        UDWORD port;
-                        
-                        flist = PeerFileCreate (event->sess->parent->parent);
-                        fpeer = SessionFind (TYPE_FILEDIRECT, event->sess->uin, flist);
-                        
-                        if (!flist || !fpeer)
-                            break;
-
-                        if (status)
-                        {
-                            M_print (i18n (2069, "File transfer '%s' rejected by peer (%x,%x): %s.\n"),
-                                     event->info, status, flags, tmp);
-                        }
-                        else
-                        {
-                            port = PacketReadB2 (pak);
-                            M_print (i18n (2070, "File transfer '%s' to port %d.\n"), event->info, port);
-                            
-                            fpeer->port   = port;
-                            fpeer->ip     = event->sess->ip;
-                            fpeer->server = NULL;
-
-                            PeerFileStart (fpeer);
-                        }
+                        M_print (i18n (2070, "File transfer '%s' to port %d.\n"), event->info, port);
+                    }
+                    else
+                    {
+                        M_print (i18n (2069, "File transfer '%s' rejected by peer (%x,%x): %s.\n"),
+                                 event->info, status, flags, tmp);
                     }
                     break;
 
@@ -1793,30 +1783,14 @@ static void TCPCallBackReceive (Event *event)
                     switch (cmd)
                     {
                         case 0x0029:
+                            if (PeerFileAccept (event->sess, status, port))
                             {
-                                Session *flist, *fpeer;
-                                
-                                flist = PeerFileCreate (event->sess->parent->parent);
-                                fpeer = SessionFind (TYPE_FILEDIRECT, event->sess->uin, flist);
-                                
-                                if (!flist || !fpeer)
-                                    break;
-
-                                if (status)
-                                {
-                                    M_print (i18n (2069, "File transfer '%s' rejected by peer (%x,%x): %s.\n"),
-                                             event->info, status, flags, tmp);
-                                }
-                                else
-                                {
-                                    M_print (i18n (2070, "File transfer '%s' to port %d.\n"), event->info, port);
-                                    
-                                    fpeer->port   = port;
-                                    fpeer->ip     = event->sess->ip;
-                                    fpeer->server = NULL;
-
-                                    PeerFileStart (fpeer);
-                                }
+                                M_print (i18n (2070, "File transfer '%s' to port %d.\n"), event->info, port);
+                            }
+                            else
+                            {
+                                M_print (i18n (2069, "File transfer '%s' rejected by peer (%x,%x): %s.\n"),
+                                         event->info, status, flags, tmp);
                             }
                             break;
                             
@@ -1870,13 +1844,13 @@ static void TCPCallBackReceive (Event *event)
 
                     if (PeerFileRequested (event->sess, tmp3, len))
                     {
-                        M_print (i18n (2052, "Accepting file %s (%d bytes) from %s.\n"),
+                        M_print (i18n (2052, "Accepting file '%s' (%d bytes) from %s.\n"),
                                  tmp3, len, cont->nick);
                         TCPSendMsgAck (event->sess, seq, TCP_MSG_FILE, TRUE);
                     }
                     else
                     {
-                        M_print (i18n (2061, "Refused file request %s (%d bytes) from %s (unknown: %x, %x)\n"),
+                        M_print (i18n (2061, "Refused file request '%s' (%d bytes) from %s (unknown: %x, %x)\n"),
                                  tmp3, len, cont->nick, cmd, type);
                         TCPSendMsgAck (event->sess, seq, TCP_MSG_FILE, FALSE);
                     }
@@ -1907,13 +1881,13 @@ static void TCPCallBackReceive (Event *event)
                             case 0x0029:
                                 if (PeerFileRequested (event->sess, name, flen))
                                 {
-                                    M_print (i18n (2052, "Accepting file %s (%d bytes) from %s.\n"),
+                                    M_print (i18n (2052, "Accepting file '%s' (%d bytes) from %s.\n"),
                                              name, flen, cont->nick);
                                     TCPSendGreetAck (event->sess, seq, cmd, TRUE);
                                 }
                                 else
                                 {
-                                    M_print (i18n (2061, "Refused file request %s (%d bytes) from %s (unknown: %x, %x)\n"),
+                                    M_print (i18n (2061, "Refused file request '%s' (%d bytes) from %s (unknown: %x, %x)\n"),
                                              name, flen, cont->nick, cmd, type);
                                     TCPSendGreetAck (event->sess, seq, cmd, FALSE);
                                 }

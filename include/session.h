@@ -105,13 +105,14 @@ const char *SessionType  (Session *sess);
 #define TYPE_CHATDIRECT   (TYPEF_ANY_PEER | TYPEF_ANY_CHAT | TYPEF_ANY_DIRECT)
 #define TYPE_FILE         TYPEF_FILE
 
-#define ASSERT_LISTEN(s)      (assert (s), assert ((s)->type == TYPE_LISTEN))
-#define ASSERT_DIRECT(s)      (assert (s), assert ((s)->type == TYPE_DIRECT))
-#define ASSERT_FILEDIRECT(s)  (assert (s), assert ((s)->type == TYPE_FILEDIRECT))
-#define ASSERT_FILE(s)        (assert (s), assert ((s)->type == TYPE_FILE))
+#define ASSERT_LISTEN(s)      (assert (s), assert ((s)->type == TYPE_LISTEN), assert ((s)->parent->assoc == (s)), ASSERT_ANY_SERVER ((s)->parent))
+#define ASSERT_DIRECT(s)      (assert (s), assert ((s)->type == TYPE_DIRECT), ASSERT_LISTEN ((s)->parent))
+#define ASSERT_FILEDIRECT(s)  (assert (s), assert ((s)->type == TYPE_FILEDIRECT), ASSERT_FILELISTEN ((s)->parent))
+#define ASSERT_FILELISTEN(s)  (assert (s), assert ((s)->type == TYPE_FILELISTEN), ASSERT_ANY_SERVER ((s)->parent))
+#define ASSERT_FILE(s)        (assert (s), assert ((s)->type == TYPE_FILE), assert ((s)->parent->assoc == (s)), ASSERT_FILEDIRECT ((s)->parent))
 #define ASSERT_SERVER(s)      (assert (s), assert ((s)->type == TYPE_SERVER))
-#define ASSERT_ANY_LISTEN(s)  (assert (s), assert ((s)->type & TYPEF_ANY_LISTEN))
+#define ASSERT_ANY_LISTEN(s)  (assert (s), assert ((s)->type & TYPEF_ANY_LISTEN), ASSERT_ANY_SERVER ((s)->parent))
 #define ASSERT_ANY_SERVER(s)  (assert (s), assert ((s)->type & TYPEF_ANY_SERVER))
-#define ASSERT_ANY_DIRECT(s)  (assert (s), assert ((s)->type & TYPEF_ANY_DIRECT))
+#define ASSERT_ANY_DIRECT(s)  (assert (s), assert ((s)->type & TYPEF_ANY_DIRECT), ASSERT_ANY_LISTEN ((s)->parent))
 
 #endif

@@ -21,8 +21,8 @@ Session *TCPPeer (UDWORD uin);
 
 Session *PeerFileCreate (Session *serv);
 BOOL     PeerFileRequested (Session *peer, const char *files, UDWORD bytes);
+BOOL     PeerFileAccept (Session *peer, UWORD status, UDWORD port);
 
-void PeerFileStart (Session *fpeer);
 void PeerFileResend (Event *event);
 void PeerFileDispatchIncoming (Session *fpeer);
 void PeerFileResend (Event *event);

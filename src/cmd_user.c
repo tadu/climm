@@ -2319,10 +2319,13 @@ static JUMP_F(CmdUserConn)
                      sess->connect & CONNECT_OK   ? i18n (1934, "connected") :
                      sess->connect & CONNECT_MASK ? i18n (1911, "connecting") : i18n (1912, "closed"));
             if (prG->verbose)
-            M_print (i18n (1935, "    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x\n"),
+            {
+                M_print (i18n (1935, "    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x\n"),
                      sess->type, sess->sok, UtilIOIP (sess->ip),
                      sess->connect, UtilIOIP (sess->our_local_ip), UtilIOIP (sess->our_outside_ip),
                      sess->our_session, sess->our_seq, sess->our_seq2);
+                M_print (i18n (9999, "    at %p parent %p assoc %p\n"), sess, sess->parent, sess->assoc);
+            }
         } 
         M_print (ESC "»\r");
     }

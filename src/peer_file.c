@@ -58,6 +58,9 @@ Session *PeerFileCreate (Session *serv)
     flist->flags       = 0;
     flist->our_seq     = -1;
     flist->our_session = 0;
+    flist->port        = serv->assoc->spref->port;
+    flist->server      = NULL;
+    flist->ip          = 0;
     flist->type        = TYPE_FILELISTEN;
     flist->dispatch    = &TCPDispatchMain;
     flist->reconnect   = &TCPDispatchReconn;
@@ -87,12 +90,11 @@ BOOL PeerFileRequested (Session *peer, const char *files, UDWORD bytes)
         return 0;
 
     flist = PeerFileCreate (peer->parent->parent);
-    
     if (!flist)
         return 0;
+    ASSERT_FILELISTEN (flist);
     
     fpeer = SessionClone (flist);
-    
     if (!fpeer)
         return 0;
 
@@ -108,20 +110,38 @@ BOOL PeerFileRequested (Session *peer, const char *files, UDWORD bytes)
 }
 
 /*
- * Opens a new outgoing file transfer connection.
+ * Checks the file request response.
  */
-void PeerFileStart (Session *fpeer)
+BOOL PeerFileAccept (Session *peer, UWORD status, UDWORD port)
 {
+    Session *flist, *fpeer;
+    
+    flist = PeerFileCreate (peer->parent->parent);
+    fpeer = SessionFind (TYPE_FILEDIRECT, peer->uin, flist);
+    
+    if (!flist || !fpeer || !port || status)
+    {
+        if (fpeer)
+            TCPClose (fpeer);
+
+        return 0;
+    }
+
     if (prG->verbose)
-        M_print (i18n (2068, "Opening file transfer connection at %s:%d... "),
-                 fpeer->ip ? fpeer->server = strdup (UtilIOIP (fpeer->ip)) : "localhost", fpeer->port);
+        M_print (i18n (2068, "Opening file transfer connection at %s:%d... \n"),
+                 fpeer->server = strdup (UtilIOIP (fpeer->ip)), fpeer->port);
 
     fpeer->connect  = 0;
     fpeer->type     = TYPE_FILEDIRECT;
     fpeer->flags    = 0;
     fpeer->our_seq  = 0;
+    fpeer->port     = port;
+    fpeer->ip       = peer->ip;
+    fpeer->server   = NULL;
     
     TCPDispatchConn (fpeer);
+    
+    return 1;
 }
 
 #define FAIL(x) { err = x; break; }
@@ -419,6 +439,7 @@ void PeerFileResend (Event *event)
     free (event);
 }
 
+#if 0
 /*
  * Accepts a new incoming file transfer connection.
  */
@@ -482,4 +503,4 @@ void PeerFileDispatchIncoming (Session *fpeer)
     fpeer->sok = sok;
     fpeer->connect = 16 | CONNECT_SELECT_R;
 }
-
+#endif
