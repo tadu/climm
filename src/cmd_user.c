@@ -2371,7 +2371,7 @@ static JUMP_F(CmdUserAutoaway)
  */
 static JUMP_F(CmdUserSet)
 {
-    int quiet = 0;
+    int quiet = 0, setstatus = 0;
     char *arg1 = NULL;
     const char *str = "";
     
@@ -2392,10 +2392,10 @@ static JUMP_F(CmdUserSet)
         else if (!strcasecmp (arg1, "linebreak"))  data = -1;
         else if (!strcasecmp (arg1, "tabs"))       data = -2;
         else if (!strcasecmp (arg1, "silent"))     data = -3;
-        else if (!strcasecmp (arg1, "webaware"))   data = FLAG_WEBAWARE;
-        else if (!strcasecmp (arg1, "hideip"))     data = FLAG_HIDEIP;
-        else if (!strcasecmp (arg1, "dcauth"))     data = FLAG_DC_AUTH;
-        else if (!strcasecmp (arg1, "dccont"))     data = FLAG_DC_CONT;
+        else if (!strcasecmp (arg1, "webaware"))   { data = FLAG_WEBAWARE; setstatus = 1; }
+        else if (!strcasecmp (arg1, "hideip"))     { data = FLAG_HIDEIP;   setstatus = 1; }
+        else if (!strcasecmp (arg1, "dcauth"))     { data = FLAG_DC_AUTH;  setstatus = 1; }
+        else if (!strcasecmp (arg1, "dccont"))     { data = FLAG_DC_CONT;  setstatus = 1; }
         else if (!strcasecmp (arg1, "quiet"))
         {
             quiet = 1;
@@ -2420,6 +2420,8 @@ static JUMP_F(CmdUserSet)
                 data = 0;
             if (!quiet && str)
                 M_printf (str, COLMESSAGE, prG->flags & data ? i18n (1085, "on") : i18n (1086, "off"), COLNONE);
+            if (setstatus && currconn && currconn->type == TYPE_SERVER)
+                SnacCliSetstatus (currconn, currconn->status & 0xffff, 3);
             break;
         case -1:
             prG->flags &= ~FLAG_LIBR_BR & ~FLAG_LIBR_INT;
