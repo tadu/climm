@@ -763,7 +763,7 @@ i18n (1079, "Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %
 1763:The command '%s' has been renamed to '%s'.
 1764:The command '%s' is unchanged.
 1765:%s has UIN %d.
-1766:Auto_away is ©3%d©0.¶
+1766:Auto_away is %s%d%s.¶
 1767:Toggles auto cycling to away/not available.
 1768:The label '%s' is already being used.
 1769:Displays your current online status.

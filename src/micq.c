@@ -62,6 +62,7 @@ void init_global_defaults () {
   uiG.last_rcvd_uin = 0;
   uiG.quit = FALSE;
   uiG.last_message_sent = NULL;
+  uiG.away_time_prev = 0;
   uiG.last_sent_uin  = 0;
   uiG.reconnect_count = 0;
 }

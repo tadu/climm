@@ -762,7 +762,7 @@
 1763:El comando '%s' ha sido renombrado a '%s'.
 1764:El comando '%s' no fue cambiado.
 1765:El UIN de %s es %d.
-1766:El cambio de estado automatico esta ©3%d©0.¶
+1766:El cambio de estado automatico esta %s%d%s.¶
 1767:Cambia el cambio de estado automatico de 'lejos' a 'no disponible'.
 1768:La etiqueta '%s' ya esta siendo utilizada.
 1769:Muestra tu estado de conexión actual.

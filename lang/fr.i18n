@@ -773,7 +773,7 @@
 1763:La commande '%s' a été renommée en '%s'.
 1764:La commande '%s' est inchangée.
 1765:%s a cet UIN %d.
-1766:Le message d'auto-away est ©3%d©0.¶
+1766:Le message d'auto-away est %s%d%s.¶
 1767:Changement automatique de l'état away à not available.
 #1768:The label '%s' is already being used.
 1769:Affiche votre état online actuel.

@@ -1618,7 +1618,7 @@ static JUMP_F(CmdUserAutoaway)
 
     if ((arg1 = strtok (args, " \t\n")))
     {
-        if (!strcmp (arg1, i18n (1085, "on"))  || !strcmp (arg1, "on"))
+        if      (!strcmp (arg1, i18n (1085, "on"))  || !strcmp (arg1, "on"))
         {
             prG->away_time = uiG.away_time_prev ? uiG.away_time_prev : default_away_time;
         }

@@ -778,7 +778,7 @@
 1763:Das Kommando "%s" wurde in "%s" umbenannt.
 1764:Das Kommando "%s" hat noch den ursprünglichen Namen.
 1765:%s hat die Benutzernummer %d.
-1766:Automatische Abwesenheit nach ©3%d©0 Sekunden.¶
+1766:Automatische Abwesenheit bzw. Nichtverfügbarkeit nach %s%d%s Sekunden.¶
 1767:Schaltet die automatische Abwesenheitsschaltung an oder ab.
 1768:Der Bezeichner '%s' ist schon in Verwendung.
 1769:Zeigt Deinen aktuellen Verbindungsstatus.
