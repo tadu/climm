@@ -264,7 +264,7 @@ static Contact *ContactC (UWORD id, UDWORD uin, const char *nick)
     s_repl (&cont->nick, nick ? nick : s_sprintf ("%ld", uin));
 
     Debug (DEB_CONTACT, "new   #%d %ld '%s' %p", id, uin, nick, cont);
-    ContactAdd (NULL, cont);
+    ContactAdd (CONTACTGROUP_GLOBAL, cont);
     return cont;
 }
 
@@ -396,9 +396,8 @@ void ContactD (Contact *cont)
     cont->alias = NULL;
     s_repl (&cont->nick, s_sprintf ("%ld", cont->uin));
     
-    for (i = 1; (cg = ContactGroupIndex (i)); i++)
-        if (cg != cont->group->serv->contacts)
-            ContactRem (cg, cont);
+    for (i = 0; (cg = ContactGroupIndex (i)); i++)
+        ContactRem (cg, cont);
     ContactAdd (CONTACTGROUP_NONCONTACTS, cont);
     cont->group = NULL;
     Debug (DEB_CONTACT, "del   #%d %ld %p", cont->id, cont->uin, cont);

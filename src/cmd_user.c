@@ -1626,6 +1626,117 @@ static UDWORD __status (Contact *cont)
     return STATUS_ONLINE;
 }
 
+static int __tuin, __lenuin, __lennick, __lenstat, __lenid, __totallen, __l;
+
+static void __initcheck (void)
+{
+    __tuin = __lenuin = __lennick = __lenstat = __lenid = __l = 0;
+}
+
+static void __checkcontact (Contact *cont, UWORD data)
+{
+    ContactAlias *alias;
+
+    if (cont->uin > __tuin)
+        __tuin = cont->uin;
+    if (s_strlen (cont->nick) > __lennick)
+        __lennick = s_strlen (cont->nick);
+    if (data & 2)
+        for (alias = cont->alias; alias; alias = alias->more)
+            if (s_strlen (alias->alias) > __lennick)
+                __lennick = s_strlen (alias->alias);
+    if (s_strlen (s_status (cont->status)) > __lenstat)
+        __lenstat = s_strlen (s_status (cont->status));
+    if (cont->version && s_strlen (cont->version) > __lenid)
+        __lenid = s_strlen (cont->version);
+}
+
+static void __donecheck (UWORD data)
+{
+    if (__lennick > uiG.nick_len)
+        uiG.nick_len = __lennick;
+    while (__tuin)
+        __lenuin++, __tuin /= 10;
+    __totallen = 1 + __lennick + 1 + __lenstat + 3 + __lenid + 2;
+    if (prG->verbose)
+        __totallen += 29;
+    if (data & 2)
+        __totallen += 2 + 3 + 1 + 1 + __lenuin + 19;
+
+}
+
+static void __showcontact (Connection *conn, Contact *cont, UWORD data)
+{
+    Connection *peer;
+    ContactAlias *alias;
+    char *stat, *ver = NULL, *ver2 = NULL;
+    const char *ul = "";
+    char tbuf[100];
+    
+    peer = (conn && conn->assoc) ? ConnectionFind (TYPE_MSGDIRECT, cont->uin, conn->assoc) : NULL;
+    
+    stat = strdup (s_sprintf ("(%s)", s_status (cont->status)));
+    if (cont->version)
+        ver  = strdup (s_sprintf ("[%s]", cont->version));
+    if (prG->verbose && cont->dc)
+        ver2 = strdup (s_sprintf (" <%08x:%08x:%08x>", (unsigned int)cont->dc->id1,
+                                   (unsigned int)cont->dc->id2, (unsigned int)cont->dc->id3));
+
+    if (cont->seen_time != -1L && data & 2)
+        strftime (tbuf, sizeof (tbuf), " %Y-%m-%d %H:%M:%S", localtime (&cont->seen_time));
+    else if (data & 2)
+        strcpy (tbuf, "                    ");
+    else
+        tbuf[0] = '\0';
+    
+#ifdef CONFIG_UNDERLINE
+    if (!(++__l % 5))
+        ul = ESC "[4m";
+#endif
+    if (data & 2)
+        M_printf (COLSERVER "%s%c%c%c%1.1d%c" COLNONE "%s %*ld", ul,
+             !cont->group                        ? '#' : ' ',
+             ContactPrefVal (cont,  CO_INTIMATE) ? '*' :
+              ContactPrefVal (cont, CO_HIDEFROM) ? '-' : ' ',
+             ContactPrefVal (cont,  CO_IGNORE)   ? '^' : ' ',
+             cont->dc ? cont->dc->version : 0,
+             peer ? (
+              peer->connect & CONNECT_OK         ? '&' :
+              peer->connect & CONNECT_FAIL       ? '|' :
+              peer->connect & CONNECT_MASK       ? ':' : '.' ) :
+              cont->dc && cont->dc->version && cont->dc->port && ~cont->dc->port &&
+              cont->dc->ip_rem && ~cont->dc->ip_rem ? '^' : ' ',
+             ul, (int)__lenuin, cont->uin);
+
+    M_printf (COLSERVER "%s%c%s%s%-*s" COLNONE "%s " COLQUOTE "%s%-*s" COLNONE "%s %-*s%s%s" COLNONE "\n",
+             ul, data & 2                       ? ' ' :
+             !cont->group                       ? '#' :
+             ContactPrefVal (cont, CO_INTIMATE) ? '*' :
+             ContactPrefVal (cont, CO_HIDEFROM) ? '-' :
+             ContactPrefVal (cont, CO_IGNORE)   ? '^' :
+             !peer                              ? ' ' :
+             peer->connect & CONNECT_OK         ? '&' :
+             peer->connect & CONNECT_FAIL       ? '|' :
+             peer->connect & CONNECT_MASK       ? ':' : '.' ,
+             COLCONTACT, ul, __lennick + s_delta (cont->nick), cont->nick,
+             ul, ul, __lenstat + 2 + s_delta (stat), stat,
+             ul, __lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
+             ver2 ? ver2 : "", tbuf);
+
+    for (alias = cont->alias; alias && (data & 2); alias = alias->more)
+    {
+        M_printf (COLSERVER "%s+     %*ld", ul, (int)__lenuin, cont->uin);
+        M_printf (COLSERVER "%s %s%s%-*s" COLNONE "%s " COLQUOTE "%s%-*s" COLNONE "%s %-*s%s%s" COLNONE "\n",
+                 ul, COLCONTACT, ul, __lennick + s_delta (alias->alias), alias->alias,
+                 ul, ul, __lenstat + 2 + s_delta (stat), stat,
+                 ul, __lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
+                 ver2 ? ver2 : "", tbuf);
+    }
+    free (stat);
+    s_free (ver);
+    s_free (ver2);
+}
+
 /*
  * Shows the contact list in a very detailed way.
  *
@@ -1639,15 +1750,8 @@ static UDWORD __status (Contact *cont)
 static JUMP_F(CmdUserStatusDetail)
 {
     ContactGroup *cg = NULL, *tcg = NULL;
-    UDWORD uin = 0, tuin = 0;
     int i, j, k;
-#ifdef CONFIG_UNDERLINE
-    int l;
-#endif
-    int lenuin = 0, lennick = 0, lenstat = 0, lenid = 0, totallen = 0;
     Contact *cont = NULL;
-    ContactAlias *alias;
-    Connection *peer;
     strc_t par;
     UDWORD stati[] = { 0xfffffffe, STATUS_OFFLINE, STATUS_DND,    STATUS_OCC, STATUS_NA,
                                    STATUS_AWAY,    STATUS_ONLINE, STATUS_FFC, STATUSF_BIRTH };
@@ -1656,7 +1760,7 @@ static JUMP_F(CmdUserStatusDetail)
     if (!data)
         s_parseint (&args, &data);
 
-    if (~data & 32)
+    if (~data & 16)
     {
         const char *argst = args;
         if (s_parse (&argst, &par))
@@ -1671,195 +1775,14 @@ static JUMP_F(CmdUserStatusDetail)
     }
 
     if (cont)
-        uin = cont->uin;
-
-    if (data & 32)
-    {
-        if (!(tcg = ContactGroupC (conn, 0, NULL)))
-        {
-            M_print (i18n (2118, "Out of memory.\n"));
-            return 0;
-        }
-        while ((cont = ContactIndex (tcg, 0)))
-            ContactRem (tcg, cont);
-        cg = conn->contacts;
-        for (j = 0; (cont = ContactIndex (cg, j)); j++)
-            if (!ContactFind (tcg, 0, cont->uin, NULL))
-                ContactAdd (tcg, cont);
-        for (i = 0; (cg = ContactGroupIndex (i)); i++)
-            if (cg->serv == conn && cg != conn->contacts && cg != tcg)
-                for (j = 0; (cont = ContactIndex (cg, j)); j++)
-                    ContactRem (tcg, cont);
-        cg = conn->contacts;
-    }
-
-    if (!cg)
-        cg = conn->contacts;
-
-    for (i = 0; (cont = ContactIndex (tcg && ~data & 32 ? tcg : cg, i)); i++)
-    {
-        if (uin && cont->uin != uin)
-            continue;
-        if (!cont->group && ~data & 2)
-            continue;
-        if (cont->uin > tuin)
-            tuin = cont->uin;
-        if (s_strlen (cont->nick) > lennick)
-            lennick = s_strlen (cont->nick);
-        if (data & 2)
-            for (alias = cont->alias; alias; alias = alias->more)
-                if (s_strlen (alias->alias) > lennick)
-                    lennick = s_strlen (alias->alias);
-        if (s_strlen (s_status (cont->status)) > lenstat)
-            lenstat = s_strlen (s_status (cont->status));
-        if (cont->version && s_strlen (cont->version) > lenid)
-            lenid = s_strlen (cont->version);
-    }
-
-    if (lennick > uiG.nick_len)
-        uiG.nick_len = lennick;
-    while (tuin)
-        lenuin++, tuin /= 10;
-    totallen = 1 + lennick + 1 + lenstat + 3 + lenid + 2;
-    if (prG->verbose)
-        totallen += 29;
-    if (data & 2)
-        totallen += 2 + 3 + 1 + 1 + lenuin + 19;
-
-    if (data & 4 && !uin)
-    {
-        if (conn)
-        {
-            M_printf ("%s %s%10lu" COLNONE " ", s_now, COLCONTACT, conn->uin);
-            M_printf (i18n (2211, "Your status is %s.\n"), s_status (conn->status));
-        }
-        if (data & 16)
-            return 0;
-    }
-    for (k = -1; (k == -1) ? (tcg ? (cg = tcg) : cg) : (cg = ContactGroupIndex (k)); k++)
-    {
-        if (k != -1 && (cg == conn->contacts || cg == tcg))
-            continue;
-        if (cg->serv != conn)
-            continue;
-#ifdef CONFIG_UNDERLINE
-        l = 0;
-#endif
-        if (!uin)
-        {
-            M_print (COLQUOTE);
-            if (cg != tcg && cg != conn->contacts)
-            {
-                if (totallen > c_strlen (cg->name) + 1)
-                {
-                    for (i = j = (totallen - c_strlen (cg->name) - 1) / 2; i >= 20; i -= 20)
-                        M_print ("====================");
-                    M_printf ("%.*s", (int)i, "====================");
-                    M_printf (" %s%s" COLQUOTE " ", COLCONTACT, cg->name);
-                    for (i = totallen - j - c_strlen (cg->name) - 2; i >= 20; i -= 20)
-                        M_print ("====================");
-                }
-                else
-                    M_printf (" %s%s" COLQUOTE " ", COLCONTACT, cg->name);
-            }
-            else
-                for (i = totallen; i >= 20; i -= 20)
-                    M_print ("====================");
-            M_printf ("%.*s" COLNONE "\n", (int)i, "====================");
-        }
-        for (i = (data & 1 ? 2 : 0); i < 9; i++)
-        {
-            status = stati[i];
-            for (j = 0; (cont = ContactIndex (cg, j)); j++)
-            {
-                char *stat, *ver = NULL, *ver2 = NULL;
-                const char *ul = "";
-                char tbuf[100];
-                
-                if (uin && cont->uin != uin)
-                    continue;
-                if (__status (cont) != status)
-                    continue;
-
-                cont = ContactFind (conn->contacts, 0, cont->uin, NULL);
-                if (!cont)
-                    continue;
-
-                peer = (conn && conn->assoc) ? ConnectionFind (TYPE_MSGDIRECT, cont->uin, conn->assoc) : NULL;
-                
-                stat = strdup (s_sprintf ("(%s)", s_status (cont->status)));
-                if (cont->version)
-                    ver  = strdup (s_sprintf ("[%s]", cont->version));
-                if (prG->verbose && cont->dc)
-                    ver2 = strdup (s_sprintf (" <%08x:%08x:%08x>", (unsigned int)cont->dc->id1,
-                                               (unsigned int)cont->dc->id2, (unsigned int)cont->dc->id3));
-
-                if (cont->seen_time != -1L && data & 2)
-                    strftime (tbuf, sizeof (tbuf), " %Y-%m-%d %H:%M:%S", localtime (&cont->seen_time));
-                else if (data & 2)
-                    strcpy (tbuf, "                    ");
-                else
-                    tbuf[0] = '\0';
-                
-#ifdef CONFIG_UNDERLINE
-                if (!(++l % 5))
-                    ul = ESC "[4m";
-#endif
-                if (data & 2)
-                    M_printf (COLSERVER "%s%c%c%c%1.1d%c" COLNONE "%s %*ld", ul,
-                         !cont->group                        ? '#' : ' ',
-                         ContactPrefVal (cont,  CO_INTIMATE) ? '*' :
-                          ContactPrefVal (cont, CO_HIDEFROM) ? '-' : ' ',
-                         ContactPrefVal (cont,  CO_IGNORE)   ? '^' : ' ',
-                         cont->dc ? cont->dc->version : 0,
-                         peer ? (
-                          peer->connect & CONNECT_OK         ? '&' :
-                          peer->connect & CONNECT_FAIL       ? '|' :
-                          peer->connect & CONNECT_MASK       ? ':' : '.' ) :
-                          cont->dc && cont->dc->version && cont->dc->port && ~cont->dc->port &&
-                          cont->dc->ip_rem && ~cont->dc->ip_rem ? '^' : ' ',
-                         ul, (int)lenuin, cont->uin);
-
-                M_printf (COLSERVER "%s%c%s%s%-*s" COLNONE "%s " COLQUOTE "%s%-*s" COLNONE "%s %-*s%s%s" COLNONE "\n",
-                         ul, data & 2                       ? ' ' :
-                         !cont->group                       ? '#' :
-                         ContactPrefVal (cont, CO_INTIMATE) ? '*' :
-                         ContactPrefVal (cont, CO_HIDEFROM) ? '-' :
-                         ContactPrefVal (cont, CO_IGNORE)   ? '^' :
-                         !peer                              ? ' ' :
-                         peer->connect & CONNECT_OK         ? '&' :
-                         peer->connect & CONNECT_FAIL       ? '|' :
-                         peer->connect & CONNECT_MASK       ? ':' : '.' ,
-                         COLCONTACT, ul, lennick + s_delta (cont->nick), cont->nick,
-                         ul, ul, lenstat + 2 + s_delta (stat), stat,
-                         ul, lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
-                         ver2 ? ver2 : "", tbuf);
-
-                for (alias = cont->alias; alias && (data & 2); alias = alias->more)
-                {
-                    M_printf (COLSERVER "%s+     %*ld", ul, (int)lenuin, cont->uin);
-                    M_printf (COLSERVER "%s %s%s%-*s" COLNONE "%s " COLQUOTE "%s%-*s" COLNONE "%s %-*s%s%s" COLNONE "\n",
-                             ul, COLCONTACT, ul, lennick + s_delta (alias->alias), alias->alias,
-                             ul, ul, lenstat + 2 + s_delta (stat), stat,
-                             ul, lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
-                             ver2 ? ver2 : "", tbuf);
-                }
-                free (stat);
-                s_free (ver);
-                s_free (ver2);
-            }
-        }
-        if (~data & 32)
-            break;
-    }
-    if (data & 32)
-        ContactGroupD (tcg);
-    if (uin)
     {
         char *t1, *t2;
         UBYTE id;
-        if (!(cont = ContactFind (conn->contacts, 0, uin, NULL)))
-            return 0;
+
+        __initcheck ();
+        __checkcontact (cont, data);
+        __donecheck (data);
+        __showcontact (conn, cont, data);
 
         if (cont->dc)
         {
@@ -1870,16 +1793,6 @@ static JUMP_F(CmdUserStatusDetail)
                   cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer")
                     : i18n (1494, "Server Only"), cont->dc->type,
                   i18n (2026, "TCP cookie:"), cont->dc->cookie);
-#if 0
-            M_printf ("%-15s %s/%s:%ld\n", i18n (1642, "IP:"),
-                      t1 = strdup (s_ip (cont->dc->ip_rem)),
-                      t2 = strdup (s_ip (cont->dc->ip_loc)), cont->dc->port);
-            M_printf ("%-15s %d\n", i18n (1453, "TCP version:"), cont->dc->version);
-            M_printf ("%-15s %s (%d)\n", i18n (1454, "Connection:"),
-                      cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),
-                      cont->dc->type);
-            M_printf ("%-15s %08lx\n", i18n (2026, "TCP cookie:"), cont->dc->cookie);
-#endif
             free (t1);
             free (t2);
         }
@@ -1902,8 +1815,90 @@ static JUMP_F(CmdUserStatusDetail)
             M_print ("\n");
         return 0;
     }
+
+    if (data & 32)
+    {
+        if (!(tcg = ContactGroupC (conn, 0, NULL)))
+        {
+            M_print (i18n (2118, "Out of memory.\n"));
+            return 0;
+        }
+        cg = conn->contacts;
+        for (j = 0; (cont = ContactIndex (cg, j)); j++)
+            if (!ContactFind (tcg, 0, cont->uin, NULL))
+                ContactAdd (tcg, cont);
+        for (i = 0; (cg = ContactGroupIndex (i)); i++)
+            if (cg->serv == conn && cg != conn->contacts && cg != tcg)
+                for (j = 0; (cont = ContactIndex (cg, j)); j++)
+                    ContactRem (tcg, cont);
+        cg = conn->contacts;
+    }
+
+    if (!cg)
+        cg = conn->contacts;
+
+    __initcheck ();
+    for (i = 0; (cont = ContactIndex (tcg && ~data & 32 ? tcg : cg, i)); i++)
+        __checkcontact (cont, data);
+    __donecheck (data);
+
+    if (data & 4)
+    {
+        if (conn)
+        {
+            M_printf ("%s %s%10lu" COLNONE " ", s_now, COLCONTACT, conn->uin);
+            M_printf (i18n (2211, "Your status is %s.\n"), s_status (conn->status));
+        }
+        if (data & 16)
+            return 0;
+    }
+
+    for (k = -1; (k == -1) ? (tcg ? (cg = tcg) : cg) : (cg = ContactGroupIndex (k)); k++)
+    {
+        if (k != -1 && (cg == conn->contacts || cg == tcg))
+            continue;
+        if (cg->serv != conn)
+            continue;
+#ifdef CONFIG_UNDERLINE
+        __l = 0;
+#endif
+        M_print (COLQUOTE);
+        if (cg != tcg && cg != conn->contacts)
+        {
+            if (__totallen > c_strlen (cg->name) + 1)
+            {
+                for (i = j = (__totallen - c_strlen (cg->name) - 1) / 2; i >= 20; i -= 20)
+                    M_print ("====================");
+                M_printf ("%.*s", (int)i, "====================");
+                M_printf (" %s%s" COLQUOTE " ", COLCONTACT, cg->name);
+                for (i = __totallen - j - c_strlen (cg->name) - 2; i >= 20; i -= 20)
+                    M_print ("====================");
+            }
+            else
+                M_printf (" %s%s" COLQUOTE " ", COLCONTACT, cg->name);
+        }
+        else
+            for (i = __totallen; i >= 20; i -= 20)
+                M_print ("====================");
+        M_printf ("%.*s" COLNONE "\n", (int)i, "====================");
+
+        for (i = (data & 1 ? 2 : 0); i < 9; i++)
+        {
+            status = stati[i];
+            for (j = 0; (cont = ContactIndex (cg, j)); j++)
+            {
+                if (__status (cont) != status)
+                    continue;
+                __showcontact (conn, cont, data);
+            }
+        }
+        if (~data & 32)
+            break;
+    }
+    if (data & 32)
+        ContactGroupD (tcg);
     M_print (COLQUOTE);
-    for (i = totallen; i >= 20; i -= 20)
+    for (i = __totallen; i >= 20; i -= 20)
         M_print ("====================");
     M_printf ("%.*s" COLNONE "\n", (int)i, "====================");
     return 0;

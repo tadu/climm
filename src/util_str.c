@@ -666,7 +666,7 @@ BOOL s_parsenick_s (const char **input, Contact **parsed, const char *sep, Conne
     if (strchr ("0123456789", *p))
     {
         l = 0;
-        if (s_parseint_s (&p, &max, sep))
+        if (s_parseint_s (&p, &max, sep) && max)
         {
             if ((r = ContactUIN (serv, max)))
             {
