@@ -23,6 +23,9 @@
 #define BUILD_TRILLIAN_ID2  0x3bae70b6
 #define BUILD_TRILLIAN_ID3  0x3b744adb
 
+#define BUILD_LIBICQ2K_ID1  0x3aa773ee
+#define BUILD_LIBICQ2K_ID2  0x3aa66380
+#define BUILD_LIBICQ2K_ID3  0x3a877a42
 
 const        char  *BuildVersion (void);
 const        char  *BuildAttribution (void);

@@ -292,6 +292,12 @@ void ContactSetVersion (Contact *cont)
     {
         new = "Trillian";
     }
+    else if (dc->id1 == BUILD_LIBICQ2K_ID1 &&
+             dc->id2 == BUILD_LIBICQ2K_ID2 &&
+             dc->id3 == BUILD_LIBICQ2K_ID3)
+    {
+        new = "libicq2000";
+    }
     else if (HAS_CAP (cont->caps, CAP_TRILL_CRYPT | CAP_TRILL_2))
         new = "Trillian";
     else if (HAS_CAP (cont->caps, CAP_LICQ))
