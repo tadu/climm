@@ -11,6 +11,7 @@ void FlapCliHello (Session *sess);
 void FlapCliIdent (Session *sess);
 void FlapCliCookie (Session *sess, const char *cookie, UWORD len);
 void FlapCliGoodbye (Session *sess);
+void FlapCliKeepalive (Session *sess);
 
 void SrvCallBackFlap (struct Event *event);
 

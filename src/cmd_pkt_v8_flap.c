@@ -314,3 +314,8 @@ void FlapCliGoodbye (Session *sess)
     sess->sok = -1;
     sess->connect = 0;
 }
+
+void FlapCliKeepalive (Session *sess)
+{
+    FlapSend (sess, FlapC (5));
+}
