@@ -284,7 +284,7 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
     }
 #ifdef WIP
     fprintf (stderr, "=> '%s'\n", t);
-#ifdef WIP
+#endif
 
     return t;
 }
