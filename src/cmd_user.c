@@ -640,7 +640,7 @@ static JUMP_F(CmdUserPeek)
     if (!s_parsenick (&args, &cont, NULL, sess))
         M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
     else
-        SnacCliSendmsg (sess, cont->uin, "", 0xe8, 0);
+        SnacCliSendmsg (sess, cont->uin, "", MSG_GET_AWAY, -1);
     return 0;
 }
 
@@ -1344,7 +1344,7 @@ static JUMP_F(CmdUserStatusDetail)
 
     while (tuin)
         lenuin++, tuin /= 10;
-    totallen = 1 + lennick + 1 + lenstat + 2 + 1 + lenid + 2;
+    totallen = 1 + lennick + 1 + lenstat + 3 + lenid + 2;
     if (data & 2)
         totallen += 2 + 3 + 1 + 1 + lenuin + 24;
 
@@ -1386,7 +1386,7 @@ static JUMP_F(CmdUserStatusDetail)
 
             peer = (sess && sess->assoc) ? SessionFind (TYPE_MSGDIRECT, cont->uin, sess->assoc) : NULL;
 
-            snprintf (statbuf, sizeof (statbuf), "(%s) ", s_status (contr->status));
+            snprintf (statbuf, sizeof (statbuf), "(%s)", s_status (contr->status));
             if (contr->version)
                 snprintf (verbuf,  sizeof (verbuf), "[%s]", contr->version);
             else
@@ -2205,9 +2205,9 @@ static JUMP_F(CmdUserAuth)
 /*            if (sess->type == TYPE_SERVER && sess->ver >= 8)
                 SnacCliAuthorize (sess, cont->uin, 0, msg);
             else */ if (sess->type == TYPE_SERVER)
-                SnacCliSendmsg (sess, cont->uin, "\x03", MSG_AUTH_DENY, 0);
+                SnacCliSendmsg (sess, cont->uin, msg, MSG_AUTH_DENY, 0);
             else
-                CmdPktCmdSendMessage (sess, cont->uin, "\x03", MSG_AUTH_DENY);
+                CmdPktCmdSendMessage (sess, cont->uin, msg, MSG_AUTH_DENY);
             free (cmd);
             return 0;
         }

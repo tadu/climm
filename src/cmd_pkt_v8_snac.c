@@ -1164,14 +1164,15 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, const char *text, UDWORD type, U
 {
     Packet *pak;
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
+    BOOL peek = (format == 0xff && type == MSG_GET_AWAY);
     
-    if (type != 0xe8)
+    if (!peek)
         M_print ("%s " COLACK "%10s" COLNONE " " MSGSENTSTR "%s\n",
                  s_now, ContactFindName (uin), MsgEllipsis (text));
     
-    if (!format)
+    if (!format || format == 0xff)
     {
-        switch (type)
+        switch (type & 0xff)
         {
             default:
             case MSG_AUTO:
@@ -1185,14 +1186,18 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, const char *text, UDWORD type, U
             case MSG_NORM:
                 format = 1;
                 break;
-            case 0xe8:
+            case MSG_GET_AWAY:
+            case MSG_GET_DND:
+            case MSG_GET_OCC:
+            case MSG_GET_FFC:
+            case MSG_GET_NA:
                 format = 2;
                 break;
                 return;
         }
     }
     
-    pak = SnacC (sess, 4, 6, 0, format == 2 && type == 0xe8 ? 0x1771 : 0);
+    pak = SnacC (sess, 4, 6, 0, peek ? 0x1771 : 0);
     PacketWriteB4 (pak, mtime);
     PacketWriteB4 (pak, mid);
     PacketWriteB2 (pak, format);
@@ -1247,6 +1252,8 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, const char *text, UDWORD type, U
               PacketWriteB4      (pak, 0);
               PacketWriteB4      (pak, 0xffffff00);
              PacketWriteTLVDone (pak);
+             if (peek)
+                 PacketWriteB4  (pak, 0x00030000);
             PacketWriteTLVDone (pak);
             PacketWriteB4      (pak, 0x00030000); /* empty TLV(3) */
             break;
