@@ -199,7 +199,7 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
         utctime->tm_year + 1900, utctime->tm_mon + 1, 
         utctime->tm_mday, utctime->tm_hour, utctime->tm_min, 
         utctime->tm_sec, stamp != -1 ? "/" : "", 
-        stamp != NOW ? stamp - now : 0);
+        stamp != NOW ? stamp - now : 0L);
 
     pos = strchr (cont->nick, ' ') ? "\"" : "";
     

@@ -453,8 +453,8 @@ BOOL ContactMetaSave (Contact *cont)
         fprintf (f, "b_alias    %s\n", s_quote (alias->nick));
     fprintf (f, "b_flags    %ld\n", cont->flags);
     fprintf (f, "b_enc      %s\n", s_quote (ConvEncName (cont->encoding)));
-    fprintf (f, "b_seen     %ld\n", cont->seen_time);
-    fprintf (f, "b_micq     %ld\n", cont->seen_micq_time);
+    fprintf (f, "b_seen     %ld\n", (long)cont->seen_time);
+    fprintf (f, "b_micq     %ld\n", (long)cont->seen_micq_time);
     if (cont->meta_about)
         fprintf (f, "b_about    %s\n", s_quote (cont->meta_about));
     if (cont->meta_general)
@@ -810,7 +810,7 @@ void ContactSetVersion (Contact *cont)
                 new = "alicq";
                 break;
             default:
-                snprintf (buf, sizeof (buf), "%08lx", dc->id1);
+                snprintf (buf, sizeof (buf), "%08lx", (long)dc->id1);
                 new = buf;
         }
     }
@@ -841,7 +841,7 @@ void ContactSetVersion (Contact *cont)
     else if (HAS_CAP (cont->caps, CAP_SIM))
     {
         if (cont->v1 || cont->v2)
-            new = "sim";
+            new = "SIM";
         else
             new = "Kopete";
     }

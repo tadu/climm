@@ -109,7 +109,7 @@ void QueueEnqueue (Event *event)
     entry->event  = event;
 
     Debug (DEB_QUEUE, "<" STR_DOT STR_DOT STR_DOT " %s %p: %08lx %p %ld %x @ %p t %ld",
-           QueueType (event->type), event, event->seq, event->pak, event->uin, event->flags, event->conn, event->due);
+           QueueType (event->type), event, event->seq, event->pak, event->uin, event->flags, event->conn, (long)event->due);
 
     if (!queue->head)
     {

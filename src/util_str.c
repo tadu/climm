@@ -174,16 +174,21 @@ const char *s_time (time_t *stamp)
     struct tm now;
     struct tm *thetime;
     static char tbuf[40];
+    time_t nowsec;
 
 #ifdef HAVE_GETTIMEOFDAY
     if (gettimeofday (&p, NULL) == -1)
 #endif
     {
         p.tv_usec = 0L;
-        p.tv_sec = time (NULL);
+        nowsec = time (NULL);
     }
+#ifdef HAVE_GETTIMEOFDAY
+    else
+        nowsec = p.tv_sec;
+#endif
 
-    now = *localtime (&p.tv_sec);
+    now = *localtime (&nowsec);
 
     thetime = (!stamp || *stamp == NOW) ? &now : localtime (stamp);
 
