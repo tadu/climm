@@ -298,6 +298,19 @@ void TCPDispatchMain (Connection *list)
             ConnectionD (peer);
             return;
         }
+#if HAVE_FCNTL
+        rc = fcntl (peer->sok, F_GETFL, 0);
+        if (rc != -1)
+            rc = fcntl (peer->sok, F_SETFL, rc | O_NONBLOCK);
+#elif HAVE_IOCTLSOCKET
+        origip = 1;
+        rc = ioctlsocket (peer->sok, FIONBIO, &origip);
+#endif
+        if (rc == -1)
+        {
+            ConnectionD (peer);
+            return;
+        }
     }
 
     peer->connect = 16 | CONNECT_SELECT_R;
@@ -1517,7 +1530,7 @@ static void PeerCallbackReceiveAdvanced (Event *event)
     DebugH (DEB_TCP, "%p %p %p\n", event, event ? event->conn : NULL, event ? event->pak : NULL);
     if (event && event->conn && event->pak && event->conn->type & TYPEF_ANY_DIRECT)
         PeerPacketSend (event->conn, event->pak);
-#ifdef ENABLE_SSL
+#if ENABLE_SSL
     switch (event->conn->ssl_status)
     {
         case SSL_STATUS_INIT:
@@ -1528,8 +1541,10 @@ static void PeerCallbackReceiveAdvanced (Event *event)
              * That's why we do a simple close.
              */
             if (event->conn->close)
-                event->conn->close(event->conn);
+                event->conn->close (event->conn);
             break;
+        default:
+            DebugH (DEB_SSL, "SSL state on receive %d\n", event->conn->ssl_status);
     }
 #endif /* ENABLE_SSL */
     EventD (event);

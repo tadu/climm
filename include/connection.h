@@ -3,8 +3,21 @@
 #ifndef MICQ_UTIL_CONNECTION_H
 #define MICQ_UTIL_CONNECTION_H
 
-#ifdef ENABLE_SSL
+#if ENABLE_SSL
+typedef enum {
+    SSL_STATUS_NA,       /* unknown / nothing done yet       */
+    SSL_STATUS_FAILED,   /* SSL handshake with peer failed   */
+    SSL_STATUS_OK,       /* SSL up and running               */
+    SSL_STATUS_INIT,     /* SSL handshake may start          */
+    SSL_STATUS_CLOSE,    /* SSL session to be terminated     */
+    SSL_STATUS_REQUEST,  /* SSL session has been requested   */
+    SSL_STATUS_HANDSHAKE /* SSL session handshake is ongoing */
+} ssl_status_t;
+#if ENABLE_GNUTLS
 #include <gnutls/gnutls.h>
+#else
+#include <openssl/ssl.h>
+#endif
 #endif
 
 typedef void (jump_conn_f)(Connection *conn);
@@ -37,9 +50,13 @@ struct Connection_s
     
     ContactGroup *contacts;   /* The contacts for this connection         */
 
-#ifdef ENABLE_SSL
-    gnutls_session ssl;       /* The SSL data structure                   */
-    UBYTE     ssl_status;     /* SSL status (INIT,OK,FAILED,...)          */
+#if ENABLE_SSL
+#if ENABLE_GNUTLS
+    gnutls_session ssl;       /* The SSL data structure for GnuTLS        */
+#else
+    SSL *ssl;                 /* SSL session struct for OpenSSL           */
+#endif
+    ssl_status_t ssl_status;  /* SSL status (INIT,OK,FAILED,...)          */
 #endif
 
     UDWORD    our_local_ip;   /* LAN-internal IP (host byte order)        */

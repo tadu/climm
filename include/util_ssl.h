@@ -31,20 +31,16 @@ BOOL TCPSendSSLReq (Connection *list, Contact *cont);
 #define ssl_connect(c,i)  ssl_connect(c,i DEBUGARGS)
 #define ssl_handshake(c)  ssl_handshake(c DEBUGARGS)
 
-#define SSL_STATUS_NA       0       /* unknown */
-#define SSL_STATUS_FAILED   1       /* SSL handshake with peer failed */
-#define SSL_STATUS_OK       2       /* SSL up and running */
-#define SSL_STATUS_INIT     3       /* SSL handshake may start */
-#define SSL_STATUS_CLOSE    4       /* SSL session to be terminated */
-#define SSL_STATUS_REQUEST  5       /* SSL session to be requested */
-#define SSL_STATUS_HANDSHAKE 6      /* SSL session is being hand shaked */
-
 #define LICQ_WITHSSL        0x7D800000  /* taken from licq 1.2.7 */
 
 #define dc_write    ssl_write
 #define dc_read     ssl_read
 #define dc_close    ssl_close
+#if ENABLE_GNUTLS
 #define dc_strerror gnutls_strerror
+#else
+#define dc_strerror(e) "OpenSSL error"
+#endif
 
 #endif /* MICQ_UTIL_SSL_H */
 #else
