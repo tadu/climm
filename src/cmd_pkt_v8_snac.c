@@ -1439,17 +1439,24 @@ void SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD t
     switch (format)
     {
         case 1:
+            {
+            char buf[451];
+            snprintf (buf, sizeof (buf), c_out_to (text, cont));
             PacketWriteTLV     (pak, 2);
             PacketWriteTLV     (pak, 1281);
             PacketWrite1       (pak, 1);
             PacketWriteTLVDone (pak);
             PacketWriteTLV     (pak, 257);
             PacketWrite4       (pak, 0);
-            PacketWriteStr     (pak, c_out_to (text, cont));
+            PacketWriteStr     (pak, buf);
             PacketWriteTLVDone (pak);
             PacketWriteTLVDone (pak);
             PacketWriteB2 (pak, 6);
             PacketWriteB2 (pak, 0);
+            SnacSend (conn, pak);
+            if (strlen (text) > 450)
+                SnacCliSendmsg (conn, cont, text + 450, type, format);
+            }
             break;
         case 4:
             PacketWriteTLV     (pak, 5);
@@ -1460,8 +1467,8 @@ void SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD t
             PacketWriteTLVDone (pak);
             PacketWriteB2 (pak, 6);
             PacketWriteB2 (pak, 0);
+            SnacSend (conn, pak);
     }
-    SnacSend (conn, pak);
 }
 
 void SnacCallbackType2Ack (Event *event)
