@@ -682,6 +682,9 @@ void IMOffline (Contact *cont, Connection *conn)
 {
     if (!cont)
         return;
+    
+    if (cont->status == STATUS_OFFLINE)
+        return;
 
     putlog (conn, NOW, cont->uin, STATUS_OFFLINE, LOG_OFFLINE, 0xFFFF, "");
 
