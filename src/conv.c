@@ -80,6 +80,7 @@ typedef struct { const char *enca; const char *encb; const char *encc; const cha
 
 static int conv_nr = 0;
 static enc_t *conv_encs = NULL;
+static const char *Utf8Name = "UTF-8";
 
 UBYTE conv_error = 0;
 
@@ -90,40 +91,47 @@ UBYTE conv_error = 0;
 static BOOL iconv_check (UBYTE enc)
 {
 #ifdef ENABLE_TRANSLIT
-    conv_encs[enc].ito = iconv_open (s_sprintf ("%s//TRANSLIT", conv_encs[enc].enca), "UTF-8");
+    conv_encs[enc].ito = iconv_open (s_sprintf ("%s//TRANSLIT", conv_encs[enc].enca), Utf8Name);
     if (conv_encs[enc].ito == (iconv_t)-1)
 #endif
-        conv_encs[enc].ito = iconv_open (conv_encs[enc].enca, "UTF-8");
-    conv_encs[enc].iof = iconv_open ("UTF-8", conv_encs[enc].enca);
+        conv_encs[enc].ito = iconv_open (conv_encs[enc].enca, Utf8Name);
+    conv_encs[enc].iof = iconv_open (Utf8Name, conv_encs[enc].enca);
     if ((conv_encs[enc].ito == (iconv_t)-1 || conv_encs[enc].iof == (iconv_t)-1)
         && conv_encs[enc].encb)
     {
 #ifdef ENABLE_TRANSLIT
-        conv_encs[enc].ito = iconv_open (s_sprintf ("%s//TRANSLIT", conv_encs[enc].encb), "UTF-8");
+        conv_encs[enc].ito = iconv_open (s_sprintf ("%s//TRANSLIT", conv_encs[enc].encb), Utf8Name);
         if (conv_encs[enc].ito == (iconv_t)-1)
 #endif
-            conv_encs[enc].ito = iconv_open (conv_encs[enc].encb, "UTF-8");
-        conv_encs[enc].iof = iconv_open ("UTF-8", conv_encs[enc].encb);
+            conv_encs[enc].ito = iconv_open (conv_encs[enc].encb, Utf8Name);
+        conv_encs[enc].iof = iconv_open (Utf8Name, conv_encs[enc].encb);
     }
     if ((conv_encs[enc].ito == (iconv_t)-1 || conv_encs[enc].iof == (iconv_t)-1)
         && conv_encs[enc].encc)
     {
 #ifdef ENABLE_TRANSLIT
-        conv_encs[enc].ito = iconv_open (s_sprintf ("%s//TRANSLIT", conv_encs[enc].encc), "UTF-8");
+        conv_encs[enc].ito = iconv_open (s_sprintf ("%s//TRANSLIT", conv_encs[enc].encc), Utf8Name);
         if (conv_encs[enc].ito == (iconv_t)-1)
 #endif
-            conv_encs[enc].ito = iconv_open (conv_encs[enc].encc, "UTF-8");
-        conv_encs[enc].iof = iconv_open ("UTF-8", conv_encs[enc].encc);
+            conv_encs[enc].ito = iconv_open (conv_encs[enc].encc, Utf8Name);
+        conv_encs[enc].iof = iconv_open (Utf8Name, conv_encs[enc].encc);
     }
     if ((conv_encs[enc].ito == (iconv_t)-1 || conv_encs[enc].iof == (iconv_t)-1)
         && conv_encs[enc].encd)
     {
 #ifdef ENABLE_TRANSLIT
-        conv_encs[enc].ito = iconv_open (s_sprintf ("%s//TRANSLIT", conv_encs[enc].encd), "UTF-8");
+        conv_encs[enc].ito = iconv_open (s_sprintf ("%s//TRANSLIT", conv_encs[enc].encd), Utf8Name);
         if (conv_encs[enc].ito == (iconv_t)-1)
 #endif
-            conv_encs[enc].ito = iconv_open (conv_encs[enc].encd, "UTF-8");
-        conv_encs[enc].iof = iconv_open ("UTF-8", conv_encs[enc].encd);
+            conv_encs[enc].ito = iconv_open (conv_encs[enc].encd, Utf8Name);
+        conv_encs[enc].iof = iconv_open (Utf8Name, conv_encs[enc].encd);
+    }
+    if (enc == ENC_LATIN1 && conv_encs[enc].ito == (iconv_t)-1)
+    {
+        conv_encs[enc].ito = iconv_open (conv_encs[enc].encc, "utf8");
+        conv_encs[enc].iof = iconv_open ("utf8", conv_encs[enc].encc);
+        if (conv_encs[enc].ito != (iconv_t)-1 && conv_encs[enc].iof != (iconv_t)-1)
+            Utf8Name = "utf8";
     }
     if (conv_encs[enc].ito != (iconv_t)-1 && conv_encs[enc].iof != (iconv_t)-1)
     {
@@ -145,11 +153,10 @@ void ConvInit (void)
     conv_encs[ENC_ASCII].enca = "US-ASCII";
     conv_encs[ENC_ASCII].encb = "USASCII";
     conv_encs[ENC_ASCII].encc = "ANSI_X3.4-1968";
-    conv_encs[ENC_ASCII].encc = "us-ascii";
     conv_encs[ENC_UTF8].enca = "UTF-8";
     conv_encs[ENC_LATIN1].enca = "ISO-8859-1";
     conv_encs[ENC_LATIN1].encb = "ISO8859-1";
-    conv_encs[ENC_LATIN1].encc = "iso8859_1";
+    conv_encs[ENC_LATIN1].encc = "iso8859_1"; /* don't re-sort */
     conv_encs[ENC_LATIN1].encd = "LATIN1";
     conv_encs[ENC_LATIN9].enca = "ISO-8859-15";
     conv_encs[ENC_LATIN9].encb = "ISO8859-15";
@@ -163,7 +170,6 @@ void ConvInit (void)
     conv_encs[ENC_WIN1251].encc = "CP-1251";
     conv_encs[ENC_UCS2BE].enca = "UCS-2BE";
     conv_encs[ENC_UCS2BE].encb = "UNICODEBIG";
-    conv_encs[ENC_UCS2BE].encc = "ucs2";
     conv_encs[ENC_WIN1257].enca = "CP1257";
     conv_encs[ENC_WIN1257].encb = "WINDOWS-1257";
     conv_encs[ENC_WIN1257].encc = "CP-1257";
@@ -296,17 +302,18 @@ UBYTE ConvEnc (const char *enc)
     
     if (nr == conv_nr - 1)
     {
-        enc_t *new = realloc (conv_encs, sizeof (enc_t) * (conv_nr + 10));
-        if (!new)
+        enc_t *newc = realloc (conv_encs, sizeof (enc_t) * (conv_nr + 8));
+        if (!newc)
             return 0;
-        conv_nr += 10;
-        conv_encs = new;
+        conv_nr += 8;
+        conv_encs = newc;
     }
     if (!conv_encs[nr].enca)
     {
         char *p;
         for (conv_encs[nr].enca = p = strdup (enc); *p; p++)
             *p = toupper (*p);
+        conv_encs[nr].encb = strdup (enc);
         conv_encs[nr + 1].enca = NULL;
     }
 #if HAVE_ICONV
