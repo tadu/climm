@@ -63,6 +63,7 @@ struct ContactGroup_s
     Opt            copts;
     UWORD          id;
     UBYTE          used;
+    UBYTE          temp;
 };
 
 struct ContactAlias_s
