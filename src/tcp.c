@@ -1073,7 +1073,7 @@ static void TCPClose (Session *sess)
     }
 
     if (sess->sok != -1)
-        close (sess->sok);
+        sockclose (sess->sok);
     sess->sok     = -1;
     sess->connect = 0;
     sess->our_session = 0;

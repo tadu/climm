@@ -43,6 +43,8 @@ static jump_f
 
 static void CmdUserProcess (const char *command, int *idle_val, int *idle_flag);
 
+/* 1 = do not apply idle stuff next time           v
+   2 = count this line as being idle               v */
 static jump_t jump[] = {
     { &CmdUserRandom,        "rand",         NULL, 0,   0 },
     { &CmdUserRandomSet,     "setr",         NULL, 0,   0 },

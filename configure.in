@@ -51,7 +51,28 @@ AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([atexit gethostbyname memmove memset mkdir select socket strcasecmp \
                 strchr strdup strncasecmp strpbrk strrchr strstr strtol \
-                symlink chmod tcgetattr hstrerror])
+                symlink chmod tcgetattr hstrerror snprintf vsnprintf])
+
+if test "x$ac_cv_func_snprintf" != "xyes"; then
+    AC_CHECK_FUNCS(__snprintf)
+    if test "x$ac_cv_func___snprintf" != "xyes"; then
+        AC_MSG_ERROR([Required function snprintf is missing. Sorry.])
+    fi
+    AC_DEFINE(snprintf,__snprintf,[Define to __snprintf if only the latter is provided])
+fi
+
+if test "x$ac_cv_func_vsnprintf" != "xyes"; then
+    AC_CHECK_FUNCS(_vsnprintf)
+    if test "x$ac_cv_func__vsnprintf" != "xyes"; then
+        AC_CHECK_FUNCS(__vsnprintf)
+        if test "x$ac_cv_func__vsnprintf" != "xyes"; then
+            AC_MSG_ERROR([Required function vsnprintf is missing. Sorry.])
+        fi
+        AC_DEFINE(vsnprintf,__vsnprintf,[Define to __vsnprintf ot _vsnprintf if only the latter is provided])
+    else
+        AC_DEFINE(snprintf,_vsnprintf)
+    fi
+fi
 
 # vprintf stat malloc \
 for f in memset memmove mkdir select socket atexit \

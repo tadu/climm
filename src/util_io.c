@@ -146,7 +146,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
             {
                 M_print (i18n (1599, "[SOCKS] Authentification method incorrect"));
                 M_print (".\n");
-                close (s5Sok);
+                sockclose (s5Sok);
                 return -1;
             }
             buf[0] = 1;         /* version of subnegotiation */
@@ -160,7 +160,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
             {
                 M_print (i18n (1600, "[SOCKS] Authorization failure"));
                 M_print (".\n");
-                close (s5Sok);
+                sockclose (s5Sok);
                 return -1;
             }
         }
@@ -170,7 +170,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
             {
                 M_print (i18n (1599, "[SOCKS] Authentification method incorrect"));
                 M_print (".\n");
-                close (s5Sok);
+                sockclose (s5Sok);
                 return -1;
             }
         }
@@ -190,7 +190,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
         {
             M_print (i18n (1601, "[SOCKS] General SOCKS server failure"));
             M_print (".\n");
-            close (s5Sok);
+            sockclose (s5Sok);
             return -1;
         }
     }

@@ -20,6 +20,8 @@
 #include "msg_queue.h"
 #include "util_io.h"
 #include "cmd_pkt_v8.h"
+#include "cmd_pkt_v8_flap.h"
+#include "cmd_pkt_v8_snac.h"
 #include "cmd_pkt_cmd_v5_util.h"
 
 #include <stdio.h>
@@ -45,7 +47,6 @@
 #endif
 
 user_interface_state uiG;
-Session *ssG;
 Preferences *prG;
 PreferencesSession *psG;
 
@@ -95,56 +96,51 @@ void Check_Endian (void)
     M_print ("\n");
 }
 
-/******************************
-Idle checking function
-added by Warn Kitchen 1/23/99
-******************************/
 void Idle_Check (Session *sess)
 {
-    int tm;
+    int delta;
+    UDWORD new = -1;
 
     if (prG->away_time == 0 || !(sess->connect & CONNECT_OK))
         return;
+    if (sess->status & (STATUSF_DND | STATUSF_OCC | STATUSF_FFC))
+        return;
     if (!idle_val)
-    {
         idle_val = time (NULL);
-        return;
-    }
-    tm = (time (NULL) - idle_val);
-    if ((sess->status == STATUS_AWAY || sess->status == STATUS_NA)
-        && tm < prG->away_time && idle_flag == 1)
+
+    delta = (time (NULL) - idle_val);
+    if (idle_flag)
     {
-        CmdPktCmdStatusChange (sess, STATUS_ONLINE);
-        Time_Stamp ();
-        M_print (" %s ", i18n (1064, "Auto-Changed status to"));
-        Print_Status (sess->status);
-        M_print ("\n");
-        idle_flag = 0;
-        return;
+        if (sess->status & STATUSF_NA)
+        {
+            if (delta < prG->away_time)
+            {
+                new = (sess->status & STATUSF_INV) | STATUS_ONLINE;
+                idle_flag = 0;
+                idle_val = 0;
+            }
+        }
+        else if (sess->status & STATUSF_AWAY)
+        {
+            if (delta >= 2 * prG->away_time)
+                new = (sess->status & STATUSF_INV) | STATUS_NA;
+        }
     }
-    if ((sess->status == STATUS_AWAY) && (tm >= (prG->away_time * 2)) && (idle_flag == 1))
+    else if (delta >= prG->away_time && !(sess->status & (STATUSF_AWAY | STATUSF_NA)))
     {
-        CmdPktCmdStatusChange (sess, STATUS_NA);
-        Time_Stamp ();
-        M_print (" %s ", i18n (1064, "Auto-Changed status to"));
-        Print_Status (sess->status);
-        M_print ("\n");
-        idle_val = time (NULL);
-        return;
-    }
-    if (sess->status != STATUS_ONLINE && sess->status != STATUS_FFC)
-    {
-        return;
-    }
-    if (tm >= prG->away_time)
-    {
-        CmdPktCmdStatusChange (sess, STATUS_AWAY);
-        Time_Stamp ();
-        M_print (" %s ", i18n (1064, "Auto-Changed status to"));
-        Print_Status (sess->status);
-        M_print ("\n");
+        new = (sess->status & STATUSF_INV) | STATUS_AWAY;
         idle_flag = 1;
-        idle_val = time (NULL);
+    }
+    if (new != -1)
+    {
+        if (sess->type & TYPE_SERVER)
+            SnacCliSetstatus (sess, new, 1);
+        else
+            CmdPktCmdStatusChange (sess, new);
+        Time_Stamp ();
+        M_print (" %s ", i18n (1064, "Auto-Changed status to"));
+        Print_Status (new);
+        M_print ("\n");
     }
     return;
 }
@@ -233,15 +229,9 @@ int main (int argc, char *argv[])
     if (argverb) prG->verbose = 0;
     }
     
-    ssG = SessionNr (0);
-    prG->sess = ssG;
+    prG->sess = SessionNr (0);
     
     srand (time (NULL));
-
-//#ifdef __BEOS__
-//    Be_Start ();
-//    M_print (i18n (1616, "Started BeOS InputThread\n\r"));
-//#endif
 
     Check_Endian ();
 
@@ -263,8 +253,7 @@ int main (int argc, char *argv[])
     Prompt ();
     while (!uiG.quit)
     {
-        if (ssG)
-            Idle_Check (ssG);
+
 #if _WIN32 || defined(__BEOS__)
         M_set_timeout (0, 1000);
 #else
@@ -274,6 +263,8 @@ int main (int argc, char *argv[])
         M_select_init ();
         for (i = 0; (sess = SessionNr (i)); i++)
         {
+            if (sess->connect & CONNECT_OK)
+                Idle_Check (sess);
             if (sess->sok < 0 || !sess->dispatch)
                 continue;
             if (sess->connect & CONNECT_SELECT_R)
@@ -309,11 +300,15 @@ int main (int argc, char *argv[])
         QueueRun (queue);
     }
 
-//#ifdef __BEOS__
-//    Be_Stop ();
-//#endif
-
-    if (ssG->ver < 6)
-        CmdPktCmdSendTextCode (ssG, "B_USER_DISCONNECTED");
+    for (i = 0; (sess = SessionNr (i)); i++)
+    {
+        if (sess->connect & CONNECT_OK)
+        {
+            if (sess->type & TYPE_SERVER)
+                FlapCliGoodbye (sess);
+            else if (sess->type & TYPE_SERVER_OLD)
+                CmdPktCmdSendTextCode (sess, "B_USER_DISCONNECTED");
+        }
+    }
     return 0;
 }
