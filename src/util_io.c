@@ -268,28 +268,34 @@ void UtilIOConnectUDP (Session *sess)
         M_printf (i18n (1053, "Connected to %s, waiting for response\n"), sess->server);
 }
 
-#define CONN_FAIL(s)  { const char *t = s;        \
+#ifdef __AMIGA__
+#define CONN_CHECK_EXTRA   if (rc == 11) return;  /* UAE sucks */
+#else
+#define CONN_CHECK_EXTRA   
+#endif
+#define CONN_FAIL(s)  { const char *t = s;      \
                         if (t) if (prG->verbose || sess->type & TYPEF_ANY_SERVER) \
                             M_printf ("%s [%d]\n", t, __LINE__);  \
                         QueueDequeue (sess, QUEUE_CON_TIMEOUT, sess->ip); \
-                        if (sess->sok > 0)           \
-                          sockclose (sess->sok);      \
-                        sess->sok = -1;                \
-                        sess->connect += 2;             \
-                        sess->dispatch = sess->utilio;   \
-                        sess->dispatch (sess);            \
+                        if (sess->sok > 0)          \
+                          sockclose (sess->sok);     \
+                        sess->sok = -1;               \
+                        sess->connect += 2;            \
+                        sess->dispatch = sess->utilio;  \
+                        sess->dispatch (sess);           \
                         return; }
-#define CONN_FAIL_RC(s) { int rc = errno;                   \
+#define CONN_FAIL_RC(s) { int rc = errno;                  \
                           if (prG->verbose || sess->type & TYPEF_ANY_SERVER) \
                           M_print (i18n (1949, "failed:\n"));\
                           CONN_FAIL (s_sprintf  ("%s: %s (%d).", s, strerror (rc), rc)) }
 #define CONN_CHECK(s) { if (rc == -1) { rc = errno;            \
                           if (rc == EAGAIN) return;             \
+                          CONN_CHECK_EXTRA                       \
                           CONN_FAIL (s_sprintf  ("%s: %s (%d).", s, strerror (rc), rc)) } }
-#define CONN_OK         { sess->connect++;                        \
+#define CONN_OK         { sess->connect++;                         \
                           QueueDequeue (sess, QUEUE_CON_TIMEOUT, sess->ip); \
-                          sess->dispatch = sess->utilio;            \
-                          sess->dispatch (sess);                     \
+                          sess->dispatch = sess->utilio;             \
+                          sess->dispatch (sess);                      \
                           return; }
 
 /*
@@ -384,7 +390,12 @@ void UtilIOConnectTCP (Session *sess)
             CONN_OK
         }
 
+#ifndef __AMIGA__
         if ((rc = errno) == EINPROGRESS)
+#else
+        rc = errno;
+        if (rc == EINPROGRESS || rc == 115) /* UAE sucks */
+#endif
         {
             M_print ("");
             if (prG->verbose || sess->type & TYPEF_ANY_SERVER)
@@ -604,6 +615,10 @@ Packet *UtilIOReceiveTCP (Session *sess)
                 rc = errno;
             if (rc == EAGAIN)
                 return NULL;
+#ifdef __AMIGA__
+            if (rc == 11)         /* UAE sucks */
+                return NULL;
+#endif
             if (!rc)
                 rc = ECONNRESET;
             break;
