@@ -35,6 +35,7 @@
 #include "cmd_pkt_v8_flap.h"
 #include "cmd_pkt_v8_snac.h"
 #include "util_str.h"
+#include "util_ssl.h"
 #include "tcp.h"
 #include <string.h>
 #include <unistd.h>
@@ -338,7 +339,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     const char *txt, *ack_msg;
     char *text, *ctext, *cname, *name, *cctmp;
     UDWORD tmp, cmd, flen;
-    UWORD unk, seq, msgtype, /*unk2,*/ pri;
+    UWORD unk, seq, msgtype, unk2, pri;
     UWORD ack_flags, ack_status, accept;
 
     unk     = PacketRead2    (inc_pak);  PacketWrite2 (ack_pak, unk);
@@ -348,7 +349,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     tmp     = PacketRead4    (inc_pak);  PacketWrite4 (ack_pak, tmp);
     msgtype = PacketRead2    (inc_pak);  PacketWrite2 (ack_pak, msgtype);
 
-    /*unk2=*/ PacketRead2    (inc_pak);
+    unk2    = PacketRead2    (inc_pak);
     pri     = PacketRead2    (inc_pak);
     text    = PacketReadLNTS (inc_pak);
     
@@ -583,6 +584,28 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                 accept = -1;
             }
             break;
+#ifdef ENABLE_SSL            
+        case MSG_SSL_OPEN:  /* Licq compatible SSL handshake */
+            if (!unk2)
+            {
+                PacketWrite2     (ack_pak, ack_status);
+                PacketWrite2     (ack_pak, ack_flags);
+                PacketWriteLNTS  (ack_pak, c_out ("1"));
+                accept = -1;
+                ack_event->conn->ssl_status = SSL_STATUS_INIT;
+            }
+            break;
+        case MSG_SSL_CLOSE:
+            if (!unk2)
+            {
+                PacketWrite2     (ack_pak, ack_status);
+                PacketWrite2     (ack_pak, ack_flags);
+                PacketWriteLNTS  (ack_pak, c_out (""));
+                accept = -1;
+                ack_event->conn->ssl_status = SSL_STATUS_CLOSE;
+            }
+            break;
+#endif /* ENABLE_SSL */
         default:
             if (prG->verbose & DEB_PROTOCOL)
                 M_printf (i18n (2066, "Unknown TCP_MSG_ command %04x.\n"), msgtype);

@@ -29,14 +29,16 @@ AC_PROG_LN_S
 
 AC_ARG_ENABLE([peer2peer], AC_HELP_STRING([--disable-peer2peer], [disable peer to peer connections]),
               ac_arg_use_peer2peer=$enableval, ac_arg_use_peer2peer=yes)
-AC_ARG_ENABLE([utf8], AC_HELP_STRING([--disable-utf8], [disnable use of UTF-8 internally]),
+AC_ARG_ENABLE([utf8], AC_HELP_STRING([--disable-utf8], [disable use of UTF-8 internally]),
               ac_arg_use_utf8=$enableval, ac_arg_use_utf8=yes)
 AC_ARG_ENABLE([iconv], AC_HELP_STRING([--disable-iconv], [do not use iconv() at all]),
               ac_arg_use_iconv=$enableval, ac_arg_use_iconv=auto)
 AC_ARG_ENABLE([remote], AC_HELP_STRING([--disable-remote], [disable remote control FIFO]),
               ac_arg_use_remote=$enableval, ac_arg_use_remote=auto)
-AC_ARG_ENABLE([tcl], AC_HELP_STRING([--enable-tcl], [enable Tcl scripting]),
+AC_ARG_ENABLE([tcl], AC_HELP_STRING([--enable-tcl], [enable Tcl scripting (EXPERIMENTAL)]),
               ac_arg_use_tcl=$enableval, ac_arg_use_tcl=no)
+AC_ARG_ENABLE([ssl], AC_HELP_STRING([--enable-ssl], [enable SSL encryption (EXPERIMENTAL BROKEN)]),
+              ac_arg_use_ssl=$enableval, ac_arg_use_ssl=no)
 
 # Checks for libraries.
 AC_CHECK_FUNCS([inet_ntoa getpeername])
@@ -50,6 +52,18 @@ fi
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([locale.h sys/select.h arpa/inet.h ctype.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h])
+
+if test "x$ac_arg_use_ssl" != "xno"; then
+  AM_PATH_LIBGNUTLS(0.8.8, ac_arg_use_ssl=yes, AC_MSG_ERROR([[
+***
+*** libgnutls was not found. You may want to get it from
+*** ftp://ftp.gnutls.org/pub/gnutls/
+]]))
+  if test "x$ac_arg_use_ssl" = "xyes"; then
+    LIBS="$LIBGNUTLS_LIBS $LIBS"
+    CFLAGS="$LIBGNUTLS_CFLAGS $CLFAGS"
+  fi
+fi
 
 if test "x$ac_arg_use_tcl" != "xno"; then
   AC_CHECK_HEADER([tcl.h], [ac_arg_use_tcl=header], [ac_arg_use_tcl=no])
@@ -253,9 +267,16 @@ AC_MSG_CHECKING([whether to enable remote control FIFO])
 AC_MSG_RESULT([$ac_arg_use_remote])
 AC_MSG_CHECKING([whether to enable Tcl scripting])
 AC_MSG_RESULT([$ac_arg_use_tcl])
+AC_MSG_CHECKING([whether to enable SSL/TLS support])
+AC_MSG_RESULT([$ac_arg_use_ssl])
+
 
 if test "x$ac_arg_use_tcl" = "xyes"; then
   AC_DEFINE(ENABLE_TCL, 1, [Whether to support Tcl scripting])
+fi
+
+if test "x$ac_arg_use_ssl" = "xyes"; then
+  AC_DEFINE(ENABLE_SSL, 1, [Whether to enable SSL/TLS support])
 fi
 
 if test "x$ac_arg_use_utf8" = "xyes"; then

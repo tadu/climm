@@ -93,6 +93,12 @@
 #define EV_TCL
 #endif
 
+#ifdef ENABLE_SSL
+#define EV_SSL "SSL "
+#else
+#define EV_SSL
+#endif
+
 #ifdef ENABLE_UTF8
 #define EV_UTF8 "UTF8 "
 #else
@@ -105,7 +111,7 @@
 #define EV_ICONV
 #endif
 
-#define EV EV_P2P EV_TCL EV_UTF8 EV_ICONV
+#define EV EV_P2P EV_TCL EV_SSL EV_UTF8 EV_ICONV
 
 const UDWORD BuildPlatformID = BUILD_PLATFORM;
 

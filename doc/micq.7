@@ -875,7 +875,41 @@ Someone added you to his contact list.
 .TP
 .BI authorization \ uin\ {request,refused,granted}
 Authorization status.
+.TP
+.BI ssl \ uin \ status \ [reason]
+SSL encryption established or failed with
+.IR uin .
+.I status
+is
+.B ok
+or
+.BR failed .
+.RS
+.I reason
+can be:
+.RS
+.TP
+.BI precondition 
+SSL already failed formerly. So don't retry.
+.TP
+.BI init
+SSL library init failure.
+.TP
+.BI key
+SSL key setup failure.
+.TP
+.BI incapable
+Peer sent "SSL not supported" resonse.
+.TP
+.BI handshake
+SSL handshake failure.
 .RE
+.RE
+.TP
+.BI ssl \ uin\ {candidate,no_candidate}
+Indicates whether
+.I uin
+is a SSL capable candidate.
 .TP
 .BI unevent
 Uninstall event hook. Returns command of former hook.

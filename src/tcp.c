@@ -27,6 +27,7 @@
 #include "tcp.h"
 #include "util_str.h"
 #include "util_syntax.h"
+#include "util_ssl.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_v8_snac.h"
 #include "cmd_pkt_v8.h"
@@ -409,6 +410,12 @@ void TCPDispatchConn (Connection *peer)
                                   NULL, cont->uin, NULL, &TCPCallBackTimeout);
                 peer->connect = 1 | CONNECT_SELECT_R;
                 peer->dispatch = &TCPDispatchShake;
+#ifdef ENABLE_SSL
+                /* We only set that status from here since we don't initialize
+                 * SSL for incoming connections.
+                 */
+                peer->ssl_status = SSL_STATUS_REQUEST;
+#endif
                 TCPDispatchShake (peer);
                 return;
             case TCP_STATE_WAITING:
@@ -557,6 +564,12 @@ void TCPDispatchShake (Connection *peer)
                     peer->dispatch = &TCPDispatchPeer;
                     QueueRetry (peer, QUEUE_TCP_RESEND, peer->uin);
                 }
+#ifdef ENABLE_SSL
+                /* outgoing peer connection established */
+                if (ssl_supported (peer) && peer->ssl_status == SSL_STATUS_REQUEST)
+                    if (!TCPSendSSLReq (peer->parent, cont)) 
+                        M_printf (i18n (2372, "Could not send SSL request to %s\n"), cont->nick);
+#endif /* ENABLE_SSL */
                 return;
             case 0:
                 return;
@@ -1106,6 +1119,9 @@ static Connection *TCPReceiveInit2 (Connection *peer, Packet *pak)
 static void PeerDispatchClose (Connection *conn)
 {
     conn->connect = 0;
+#ifdef ENABLE_SSL
+    ssl_sockclose (conn);
+#endif /* ENABLE_SSL */
     TCPClose (conn);
 }
 
@@ -1562,6 +1578,21 @@ static void PeerCallbackReceiveAdvanced (Event *event)
         PeerPacketSend (event->conn, event->pak);
         event->pak = NULL;
     }
+#ifdef ENABLE_SSL    
+    switch (event->conn->ssl_status)
+    {
+        case SSL_STATUS_INIT:
+            ssl_connect (event->conn, 0);
+            break;
+        case SSL_STATUS_CLOSE:
+            /* Could not figure out how to say good bye to licq correctly.
+             * That's why we do a simple close.
+             */
+            if (event->conn->close)
+                event->conn->close(event->conn);
+            break;    
+    }
+#endif /* ENABLE_SSL */
     EventD (event);
 }
 
@@ -1657,7 +1688,22 @@ static void TCPCallBackReceive (Event *event)
                     else
                         IMIntMsg (cont, peer, NOW, status, INT_FILE_REJED, tmp, ExtraSet (NULL, 0, port, e_msg_text));
                     break;
-
+#ifdef ENABLE_SSL                    
+                /* We never stop SSL connections on our own. That's why 
+                 * MSG_SSL_CLOSE is not handled here.
+                 */
+                case MSG_SSL_OPEN:
+                    if (!status && !strcmp (tmp, "1"))
+                        ssl_connect (peer, 1);
+                    else
+                    {
+                        Debug (DEB_SSL, "%s (%ld) is not SSL capable", cont->nick, cont->uin);
+#ifdef ENABLE_TCL
+                        TCLEvent ("ssl", s_sprintf ("%lu incapable", cont->uin));
+#endif
+                    }
+                    break;
+#endif /* ENABLE_SSL */
                 case MSG_EXTENDED:
                     cmd    = PacketRead2 (pak); 
                              PacketReadB4 (pak);   /* ID */

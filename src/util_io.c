@@ -49,6 +49,7 @@ extern int h_errno;
 #include "util_ui.h"
 #include "util_io.h"
 #include "util_str.h"
+#include "util_ssl.h"
 #include "conv.h"
 #include "util.h"
 #include "contact.h"
@@ -714,7 +715,11 @@ Packet *UtilIOReceiveTCP (Connection *conn)
 #if defined(SIGPIPE)
         signal (SIGPIPE, SIG_IGN);
 #endif
+#ifdef ENABLE_SSL
+        rc = ssl_sockread (conn, pak->data + pak->len, len - pak->len);
+#else
         rc = sockread (conn->sok, pak->data + pak->len, len - pak->len);
+#endif /* ENABLE_SSL */        
         if (rc <= 0)
         {
             if (!rc)
@@ -749,7 +754,11 @@ Packet *UtilIOReceiveTCP (Connection *conn)
         return NULL;
 
     PacketD (pak);
+#ifdef ENABLE_SSL
+    ssl_sockclose (conn);
+#else
     sockclose (conn->sok);
+#endif /* ENABLE SSL */
     conn->sok = -1;
     conn->incoming = NULL;
 
@@ -762,6 +771,11 @@ Packet *UtilIOReceiveTCP (Connection *conn)
             if ((cont = ContactUIN (conn, conn->uin)))
             {
                 M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+#ifdef ENABLE_SSL
+                if(conn->ssl_status == SSL_STATUS_OK)
+                    M_printf (i18n (2373, "Error while reading from socket (SSL): %s (%d)\n"), ssl_strerror (rc), rc);
+                else    
+#endif /* ENABLE SSL */
                 M_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
             }
         }
@@ -870,7 +884,11 @@ BOOL UtilIOSendTCP (Connection *conn, Packet *pak)
 
         for ( ; pak->len > pak->rpos; pak->rpos += bytessend)
         {
+#ifdef ENABLE_SSL
+            bytessend = ssl_sockwrite (conn, data + pak->rpos, pak->len - pak->rpos);
+#else
             bytessend = sockwrite (conn->sok, data + pak->rpos, pak->len - pak->rpos);
+#endif /* ENABLE_SSL */      
             if (bytessend <= 0)
                 break;
         }

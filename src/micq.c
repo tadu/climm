@@ -27,6 +27,7 @@
 #include "cmd_pkt_cmd_v5_util.h"
 #include "util_str.h"
 #include "util_tcl.h"
+#include "util_ssl.h"
 #include "os.h"
 
 #include <stdio.h>
@@ -361,6 +362,11 @@ int main (int argc, char *argv[])
 #endif
 
     R_init ();
+
+#ifdef ENABLE_SSL
+    if (SSLInit ())
+        M_printf (i18n (2371, "SSL init failed.\n"));
+#endif /* ENABLE_SSL */
 
 #ifdef ENABLE_TCL
     TCLInit ();

@@ -22,6 +22,7 @@ BOOL   Debug (UDWORD level, const char *str, ...) __attribute__ ((format (__prin
 #define DEB_PACKTCPSAVE   0x00040000L
 #define DEB_TCP           0x00200000L
 #define DEB_IO            0x00400000L
+#define DEB_SSL           0x00800000L
 
 #define AVPFMT COLSERVER "%-15s" COLNONE " %s\n"
 

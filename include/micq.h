@@ -126,6 +126,9 @@ typedef struct Extra_s                 Extra;
 #define MSG_GET_FFC       0xec
 #define MSG_GET_PEEK      0xf0
 #define MSG_GET_VER       0xf4
+/* Licq extension */
+#define MSG_SSL_CLOSE     0xee
+#define MSG_SSL_OPEN      0xef
 
 #define INV_LIST_UPDATE         0x01
 #define VIS_LIST_UPDATE         0x02
