@@ -1402,7 +1402,10 @@ static JUMP_F (CmdUserMessage)
                 IMCliMsg (conn, cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, arg1, 0));
                 uiG.last_sent = cont;
                 if (tab)
+                {
                     TabAddOut (cont);
+                    OptSetVal (&cont->copts, CO_TALKEDTO, 1);
+                }
             }
             ContactGroupD (cg);
             return 0;
@@ -1440,7 +1443,10 @@ static JUMP_F (CmdUserMessage)
             IMCliMsg (conn, cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, t.txt, 0));
             uiG.last_sent = cont;
             if (tab)
+            {
                 TabAddOut (cont);
+                OptSetVal (&cont->copts, CO_TALKEDTO, 1);
+            }
         }
         ReadLinePromptReset ();
         ContactGroupD (cg);
@@ -2721,8 +2727,11 @@ static JUMP_F(CmdUserAdd)
         return 0;
     }
 
-    if (cmd)
+    if (cmd && *cmd)
     {
+        i = strlen (cmd);
+        while (i > 1 && strchr (" \r\n\t", cmd[i-1]))
+            cmd[i---1] = 0;
         if (!cont->group)
         {
             rl_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, cmd);
