@@ -1,5 +1,5 @@
 1001:<lang>
-1002:<lang_lang>
+1002:<lang_cc>
 1003:0
 1004:<translation authors>
 1005:<last editor>
@@ -613,7 +613,7 @@
 1613:No reverse engineering or decompilation of any Mirabilis code took place to make this program.¶
 1614:Using config file "%s"¶
 1615:Logging to "%s"¶
-1616:Started BeOS InputThread¶\r
+1616: 
 1617:<all>
 1618:UIN:
 1619:Warning:
@@ -1044,3 +1044,5 @@
 2044:Set or clear an option.
 2045:Toggles your visibility to a user when you're online.
 2046:You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.¶
+2047:Creating directory %s.¶
+2048:Saving preferences to %s.¶

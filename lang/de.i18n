@@ -4,7 +4,7 @@
 1003:489
 1004:Rico -mc- Glöckner, Rüdiger Kuhlmann
 1005:Rüdiger Kuhlmann
-1006:7. Juni 2002
+1006:27. Juni 2002
 1007:iso-8859-1
 #1008: 
 #1009: 
@@ -1032,8 +1032,8 @@
 2017:Der Benutzer ist in Wirklichkeit verbunden.¶
 2018:    quiet: keine Ausgabe für Statuswechsel.¶
 2019:Verringerte Ausgabe ist ©3%s©0.¶
-#2020:Being visible to %s.
-#2021:Being invisible to %s.
+2020:Für %s jetzt sichtbar.
+2021:Für %s jetzt unsichtbar.
 2022:Der Benutzer ist in Wirklichkeit nicht verbunden.¶
 2023:Direkte Verbindung von Verbindungspartner geschlossen.¶
 #2024:Unknown protocol version %d for ICQ peer-to-peer protocol.¶
@@ -1059,3 +1059,5 @@
 2044:Setzt oder löscht eine Option.
 2045:Setzt oder löscht die Unsichtbarkeit für andere Benutzer.
 2046:Sie sollten die Version 8 (statt Version 6) für Direktverbindungen wählen.¶
+2047:Erzeuge Verzeichnis %s.¶
+2048:Speichere Einstellungen in %s.¶
