@@ -126,6 +126,10 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
     const unsigned char *in = inn;
     UDWORD i;
     
+#ifdef WIP
+    fprintf (stderr, "Converting '%s' in %d to utf ", in, enc);
+#endif
+    
     t = s_catf (t, &size, "%*s", strlen (in) * 3, "");
     *t = '\0';
     
@@ -145,6 +149,9 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
                     continue;
                 }
                 GET_UTF8 (in, i);
+#ifdef WIP
+                fprintf (stderr, "U+%04x ", i);
+#endif
                 in--;
                 PUT_UTF8 (i);
                 continue;
@@ -178,6 +185,10 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
                 t = s_cat (t, &size, "?");
         }
     }
+#ifdef WIP
+    fprintf (stderr, "=> '%s'\n", t);
+#endif
+    
     return t;
 }
 
@@ -187,6 +198,10 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
     static UDWORD size = 0;
     const unsigned char *in = inn;
     UDWORD val, i;
+
+#ifdef WIP
+    fprintf (stderr, "Converting '%s' from utf to %d ", in, enc);
+#endif
     
     t = s_catf (t, &size, "%*s", strlen (in) * 3, "");
     *t = '\0';
@@ -206,6 +221,9 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
         val = '?';
         GET_UTF8 (in,val);
         in--;
+#ifdef WIP
+        fprintf (stderr, "U+%04x ", val);
+#endif
         if (val == '?')
         {
             t = s_catf (t, &size, "·");
@@ -264,5 +282,9 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
                 t = s_cat (t, &size, "?");
         }
     }
+#ifdef WIP
+    fprintf (stderr, "=> '%s'\n", t);
+#ifdef WIP
+
     return t;
 }
