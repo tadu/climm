@@ -72,7 +72,7 @@ static iconv_func iconv_from_ucs2be, iconv_to_ucs2be;
 #if ENABLE_FALLBACK_WCHART
 static iconv_func iconv_from_wchart, iconv_to_wchart;
 #endif
-typedef struct { const char *enca; const char *encb; const char *encc;
+typedef struct { const char *enca; const char *encb; const char *encc; const char *encd;
 #if HAVE_ICONV
                  iconv_t     iof; iconv_t      ito;
 #endif
@@ -115,6 +115,16 @@ static BOOL iconv_check (UBYTE enc)
             conv_encs[enc].ito = iconv_open (conv_encs[enc].encc, "UTF-8");
         conv_encs[enc].iof = iconv_open ("UTF-8", conv_encs[enc].encc);
     }
+    if ((conv_encs[enc].ito == (iconv_t)-1 || conv_encs[enc].iof == (iconv_t)-1)
+        && conv_encs[enc].encd)
+    {
+#ifdef ENABLE_TRANSLIT
+        conv_encs[enc].ito = iconv_open (s_sprintf ("%s//TRANSLIT", conv_encs[enc].encd), "UTF-8");
+        if (conv_encs[enc].ito == (iconv_t)-1)
+#endif
+            conv_encs[enc].ito = iconv_open (conv_encs[enc].encd, "UTF-8");
+        conv_encs[enc].iof = iconv_open ("UTF-8", conv_encs[enc].encd);
+    }
     if (conv_encs[enc].ito != (iconv_t)-1 && conv_encs[enc].iof != (iconv_t)-1)
     {
         conv_encs[enc].fof = &iconv_from_iconv;
@@ -135,13 +145,16 @@ void ConvInit (void)
     conv_encs[ENC_ASCII].enca = "US-ASCII";
     conv_encs[ENC_ASCII].encb = "USASCII";
     conv_encs[ENC_ASCII].encc = "ANSI_X3.4-1968";
+    conv_encs[ENC_ASCII].encc = "us-ascii";
     conv_encs[ENC_UTF8].enca = "UTF-8";
     conv_encs[ENC_LATIN1].enca = "ISO-8859-1";
     conv_encs[ENC_LATIN1].encb = "ISO8859-1";
-    conv_encs[ENC_LATIN1].encc = "LATIN1";
+    conv_encs[ENC_LATIN1].encc = "iso8859_1";
+    conv_encs[ENC_LATIN1].encd = "LATIN1";
     conv_encs[ENC_LATIN9].enca = "ISO-8859-15";
     conv_encs[ENC_LATIN9].encb = "ISO8859-15";
-    conv_encs[ENC_LATIN9].encc = "LATIN9";
+    conv_encs[ENC_LATIN9].encc = "iso8859_15";
+    conv_encs[ENC_LATIN9].encd = "LATIN9";
     conv_encs[ENC_KOI8].enca = "KOI8-U";
     conv_encs[ENC_KOI8].encb = "KOI8-R";
     conv_encs[ENC_KOI8].encc = "KOI8";
@@ -150,6 +163,7 @@ void ConvInit (void)
     conv_encs[ENC_WIN1251].encc = "CP-1251";
     conv_encs[ENC_UCS2BE].enca = "UCS-2BE";
     conv_encs[ENC_UCS2BE].encb = "UNICODEBIG";
+    conv_encs[ENC_UCS2BE].encc = "ucs2"
     conv_encs[ENC_WIN1257].enca = "CP1257";
     conv_encs[ENC_WIN1257].encb = "WINDOWS-1257";
     conv_encs[ENC_WIN1257].encc = "CP-1257";
@@ -265,7 +279,8 @@ UBYTE ConvEnc (const char *enc)
     for (nr = 0; conv_encs[nr].enca; nr++)
         if (!strcasecmp (conv_encs[nr].enca, enc) ||
             (conv_encs[nr].encb && !strcasecmp (conv_encs[nr].encb, enc)) ||
-            (conv_encs[nr].encc && !strcasecmp (conv_encs[nr].encc, enc)))
+            (conv_encs[nr].encc && !strcasecmp (conv_encs[nr].encc, enc)) ||
+            (conv_encs[nr].encc && !strcasecmp (conv_encs[nr].encd, enc)))
         {
 #if HAVE_ICONV
             if (!conv_encs[nr].ito || !conv_encs[nr].iof)
