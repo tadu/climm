@@ -708,8 +708,22 @@ int R_process_input (void)
                         break;
                     R_goto (curpos - 1);
                     break;
+                case 'H':
+                    R_goto (0);
+                    break;
+                case 'F':
+                    R_goto (curlen);
+                    break;
                 case '3':      /* ESC [ 3 ~ = Delete */
                     istat = 3;
+                    break;
+                case '1':
+                case '7':
+                    istat = 4; /* ESC [ 7 ~ = ESC [ 1 ~ = Home */
+                    break;
+                case '4':
+                case '8':
+                    istat = 5; /* ESC [ 8 ~ = ESC [ 4 ~ = End */
                     break;
                 default:
                     printf ("\a");
@@ -717,14 +731,24 @@ int R_process_input (void)
             break;
         case 3:                /* Del Key */
             istat = 0;
-            switch (ch)
-            {
-                case '~':      /* Del Key */
-                    R_process_input_delete ();
-                    break;
-                default:
-                    printf ("\a");
-            }
+            if (ch == '~')
+                R_process_input_delete ();
+            else
+                printf ("\a");
+            break;
+        case 4:
+            istat = 0;
+            if (ch == '~')
+                R_goto (curlen);
+            else
+                printf ("\a");
+            break;
+        case 5:
+            istat = 0;
+            if (ch == '~')
+                R_goto (0);
+            else
+                printf ("\a");
             break;
 #ifdef ENABLE_UTF8
         case 10:
