@@ -751,20 +751,6 @@ static JUMP_F(CmdUserInfo)
             if (!contr)
                 return 0;
         }
-
-        M_printf (i18n (1672, "%s's IP address is "), cont->nick);
-        M_print  (!contr->dc || !contr->dc->ip_rem || !~contr->dc->ip_rem
-                  ? i18n (1761, "unknown") : s_ip (contr->dc->ip_rem));
-        M_print ("\t");
-
-        if (contr->dc && contr->dc->port && ~contr->dc->port)
-            M_printf (i18n (1673, "The port is %ld.\n"), contr->dc->port);
-        else
-            M_print (i18n (1674, "The port is unknown.\n"));
-
-        M_printf (i18n (1765, "%s has UIN %ld."), cont->nick, cont->uin);
-        M_print ("\n");
-        
         IMCliInfo (conn, cont, 0);
     }
     return 0;

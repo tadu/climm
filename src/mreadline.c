@@ -258,7 +258,7 @@ void R_goto (int pos)
     }
     curpos = pos;
 #ifdef ENABLE_UTF8
-    bytepos = s_offset (s, curpos);
+    bytepos = c_offset (s, curpos);
 #endif
     printf ("%s", t);
 }
@@ -1079,10 +1079,8 @@ void M_logo_clear ()
 
 #ifdef ENABLE_UTF8
 #define chardiff(aa,bb)  (ENC(enc_loc) == ENC_UTF8 ? s_strnlen ((bb), (aa) - (bb)) : (aa) - (bb))
-#define charoff(str,off) (ENC(enc_loc) == ENC_UTF8 ? s_offset ((str), (off))      : (off))
 #else
 #define chardiff(aa,bb)  ((aa) - (bb))
-#define charoff(str,off) (off)
 #endif
 
 #define USECOLOR(c)  ((prG->flags & FLAG_COLOR) && prG->colors[c] ? prG->colors[c] : "")
@@ -1153,8 +1151,8 @@ void M_print (const char *org)
         {
             while (chardiff (test, str) > sw) /* word is longer than line, print till end of line */
             {
-                printf ("%.*s%*s", (int) charoff (str, sw - CharCount), str, IndentCount, "");
-                str += charoff (str, sw - CharCount);
+                printf ("%.*s%*s", (int) c_offset (str, sw - CharCount), str, IndentCount, "");
+                str += c_offset (str, sw - CharCount);
                 if (isline)
                 {
                     printf ("%s...%s", USECOLOR (CXCONTACT), USECOLOR (col));

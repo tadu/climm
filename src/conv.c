@@ -39,8 +39,8 @@ UBYTE ConvEnc (const char *enc)
         conv_encs[2].enc = strdup ("iso-8859-1");
         conv_encs[3].enc = strdup ("iso-8859-15");
         conv_encs[4].enc = strdup ("koi8-u");
-        conv_encs[5].enc = strdup ("cp-1251");
-        conv_encs[6].enc = strdup ("iso-8859-1"); /* this is dupe (!) */
+        conv_encs[5].enc = strdup ("cp1251");      /* NOT cp-1251, NOT windows* */
+        conv_encs[6].enc = strdup ("iso-8859-1");  /* this is dupe (!) */
         conv_encs[7].enc = strdup ("euc-jp");
         conv_encs[8].enc = strdup ("shift-jis");
     }

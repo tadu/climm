@@ -3,10 +3,10 @@
 1000:iso-8859-2
 1001:ro
 1002:ro_RO
-1003:0-4-9-3
+1003:0-4-10
 1004:Digor Dumitru, Alina Pelin
 1005:Alina Pelin
-1006:05-09-2002
+1006:18-01-2003
 1007.iso-8859-2
 1010:Utilizatorul e plecat [Auto-Message]
 1011:Utilizatorul nu e disponibil [Auto-Message]
@@ -33,14 +33,9 @@
 1033:Pachet server v8 care vine:
 1034:Numarul maxim de incercari a fost atins. Cedez.
 1036:%s comanda necunoscuta, tastati /help pentru ajutor.
-#-#1037:Mesaj trimis pana la ultima linie (buffer plin)\n
-#+#1037:Message sent before last line buffer is full\n
-#-#1038:Mesajul a fost intrerupt\n
-#+#1038:Message canceled\n
-#-#1039:Serverul afirma ca nu sintem conectati.\n
-#1037:Message partially sent.\n
-#1038:Message canceled.\n
-#1039:The server claims we're not connected.\n
+1037:Mesajul a fost trimis partial.\n
+1038:Mesajul a fost anulat.\n
+1039:Serverul afirma ca nu sintem conectati.\n
 1040:mICQ> 
 1041:msg> 
 1043:Toti utilizatorii au fost gasiti.
@@ -48,33 +43,23 @@
 1045:Cautare Terminata.
 1046:Lungime
 1047:Date suplimentare
-#-#1048:Cod eroare: %d\n
-#+#1048:Error code: %d\n
-#1048:Error code: %ld\n
+1048:Cod eroare: %ld\n
 1050:Conectare reusita!
 1053:Conectat la %s, asteptam raspuns\n
 1055:Crearea socketului a esuat
-#-#1056:Socket-ul a fost creat incercam sa ne conectam\n
-#+#1056:Socket created attempting to connect\n
-#-#1060:Nivelul detalizarii mesajelor e %d.\n
-#+#1060:Verbosity level is %d.\n
-#1056:Socket created, attempting to connect.\n
-#1060:Verbosity level is %ld.\n
+1056:Un socket a fost creat; incercam sa ne conectam.\n
+1060:Nivelul detalizarii mesajelor e %ld.\n
 1061:'%s' nu pare a fi nick name.\n
 1062:Utilizatori ignorati:
 1063:Introduceti parola:
-#-#1064:Starea a fost automat schimbata in
-#+#1064:Auto-Changed status to
-#1064:Automatically changed status to %s.\n
+1064:Starea a fost automat schimbata in %s.\n
 1072:Utilizatori indisponibili:
 1073:Utilizatori accesibili:
 1077:consacrat lui Matthew D. Smith.
 1078:Traducere nu exista.
 1079:Traducere (%s, %s) din %s, ultima modificare facuta la %s de %s, pentru mICQ %d.%d.%d%s.\n
 1080:N-am reusit sa incarc internationalizarea "%s".\n
-#-#1081:Am incarcat cu succes traducerea romana (%d inregistrari).\n
-#+#1081:Successfully loaded en translation (%d entries).\n
-#1081:Successfully loaded en translation (%ld entries).\n
+1081:Am incarcat cu succes traducerea romaneasca (%ld inregistrari).\n
 1082:Incerc sa ma reconectez... [incercarea %d din %d]\n
 #1085:on
 #1086:off
@@ -173,9 +158,9 @@
 1185:Tehnica
 1186:Student la universitate
 1187:Constructie de web-site-uri
-#1188:Unrecognized command in rc file '%s', ignored.
-#1198:Other Services
-#1200:not entered
+1188:'%s' e comanda necunoscuta in fisierul de configurare; ignorata.
+1198:Alte servicii
+1200:neintrodus(a)
 #1201:Afghanistan
 #1202:Albania
 #1203:Algeria
@@ -359,9 +344,6 @@
 #1381:Uzbekistan
 #1382:Vanuatu
 1383:Vatican 
-#-#1414:Raspundeti la ultimul mesaj.
-#+#1414:Replys to the last person to send you a message.
-#-#1415:Gaseste o persoana aliatoare in grupul/grupurile indicat(e).
 #1384:Venezuela
 #1385:Vietnam
 #1386:Wallis and Futuna Islands
@@ -371,22 +353,22 @@
 #1390:Zaire
 #1391:Zambia
 #1392:Zimbabwe
-#1393:successful
-#1394:unsuccessful
-#1400:Shows locally stored info on <uin> or <nick>, or on yourself.
-#1401:Updates more user info like age and sex.
-#1402:Updates your about user info.
-#1403:Displays the last message received from <contacts> or from everyone.
-#1404:Toggles ignoring/unignoring the <contacts>.
-#1405:Lists ignored nicks/uins.
-#1406:Toggles your visibility to <contacts> when you're invisible.
-#1407:Displays the current status of online people on your contact list.
-#1408:Changes your password to <password>.
-#1409:Sends a message to <contacts>.
-#1410:Sends a url and message to <contacts>.
-#1412:Sends a message to the last person you sent a message to.
-#1414:Replies to the last person to send you a message.
-#1415:Finds a random user in interest group <nr> or lists the groups.
+1393:cu succes
+1394:fara succes
+1400:Arata informatia stocata local despre <uin> sau <nick>, sau despre dvs.
+1401:Innoieste mai multa informatie referitoare la utilizator, cum ar fi varsta si sexul.
+1402:Innoieste informatia despre dvs.
+1403:Afiseaza ultimul mesaj primit de la <contacts> sau de la toti.
+1404:Ignora sau nu <contacts>.
+1405:Listeaza nickuri/uinuri ignorate.
+1406:Fiti vizibil(a) sau nu pentru <contacts> cand sinteti invizibil(a).
+1407:Afiseaza starea curenta a oamenilor conectati din lista dvs. de contacte.
+1408:Schimba parola dvs. in <password>.
+1409:Trimite un mesaj catre <contacts>.
+1410:Trimite un URL si un mesaj catre <contacts>.
+1412:Trimite un mesaj catre ultima persoana careia i-ati scris.
+1414:Raspunde ultimei persoane care v-a trimis mesaj.
+1415:Gaseste un utilizator aleatoriu in grupul de interese <nr> sau listeaza grupurile.
 1416:Arata starea tuturor din lista de contacte.
 1418:Setarea sau tiparirea nivelului de limbutie.
 1419:Sterge ecranul.
@@ -394,58 +376,34 @@
 #+#1420:Switches beeping when receiving new messages on or off, sets a command for this event or displays current state of this option.
 #1420:Switches beeping when receiving new messages on or off, or using the event script.
 1422:Deconectare de la server si iesire din mICQ.
-#-#1424:Schimba starea trimiterii mesajelor in timpul starii DND, NA, s.a.m.d.
-#1424:Set whether autoreplying when not online, or displays setting.
+1424:Se seteaza daca se raspunde automat cand nu sinteti conectat sau arata setarea.
 1425:Seteaza mesajul ca raspuns a autoresponderului.
 1426:Creeaza un nou uin cu parola specificata.
-#-#1427:Schimba statusul d-stra intr-un numar. Fara numar- arata modurile posibile.
-#-#1428:Adauga numarul uin-ului cu un nickname in lista d-stra de contacte sau ii schimba numele.
-#-#1429:Cauta un utilizator al ICQ-ului.
-#-#1430:Arata informatia generala despre uin.
-#-#1431:Schimba starea in "conectat".
-#+#1431:Change status to Online.
-#-#1432:Marcheaza ca "plecat".
-#+#1432:Mark as "away".
-#-#1433:Marcheaza ca "inaccesibil".
-#+#1433:Mark as "not available".
-#-#1434:Marcheaza ca "ocupat".
-#+#1434:Mark as "occupied".
-#-#1435:Marcheaza ca "sa nu ma deranjati".
-#+#1435:Mark as "do not disturb".
-#-#1436:Marcheaza ca "liber pentru discutie".
-#+#1436:Mark as "free for chat".
-#-#1437:Marcheaza ca "invizibil".
-#+#1437:Mark as "invisible".
-#1427:Changes your status to the status number, or list the available modes.
-#1428:Adds all contacts in <contacts> to contact group <group>.
-#1429:Searches for an ICQ user.
-#1430:Displays general info on <uin> or <nick>.
-#1431:Set status to "online".
-#1432:Set status to "away".
-#1433:Set status to "not available".
-#1434:Set status to "occupied".
-#1435:Set status to "do not disturb".
-#1436:Set status to "free for chat".
-#1437:Set status to "invisible".
+1427:Schimba starea dvs. in starea cu numarul indicat sau listeaza starile posibile.
+1428:Adauga pe toti din <contacts> in grupul <group>.
+1429:Cauta un utilizator ICQ.
+1430:Afiseaza informatii generale despre <uin> sau <nick>.
+1431:Seteaza starea la "conectat".
+1432:Seteaza starea la "plecat".
+1433:Seteaza starea la "indisponibil".
+1434:Seteaza starea la "ocupat".
+1435:Seteaza starea la "nu ma deranjati".
+1436:Seteaza starea la "disponibil pentru discutii".
+1437:Seteaza starea la "invizibil".
 1438:Reinnoieste informatia d-stra de baza (emailul, nickname-ul, etc.).
 1439:Indicati grupa d-stra pentru utilizatori aliatori.
 1440:Utilizator aliator:
-#-#1441:IP:
-#+#1441:IP:
-#1441:remote IP:
+1441:IP indepartat:
 1442:Va rugam sa alegeti una din temele de ajutor propuse mai jos.
 1443:Comenzi ce tin de display si configurare.
-#-#1444:Comenzi ce tin de cautarea altor utilizatori.
-#1444:Commands relating to finding and seeing other users.
+1444:Comenzi ce tin de gasirea si vederea altor utilizatori.
 1445:Comenzi ce tin de contul d-stra ICQ.
 1446:Comenzi ce tin de trimiterea mesajelor.
 1447:Client
 1448:Mesaj
 1449:Utilizator
 1450:Cont
-#-#1451:IP2:
-#+#1451:IP2:
-#1451:local  IP:
+1451:IP local:
 1452:Stare:
 1453:Versiunea TCP:
 1454:Conectare:
@@ -487,9 +445,9 @@
 1491:Anii '80
 1492:Anii '50
 #1493:Peer-to-Peer
-#1494:Server Only
-#1495:No Random User Found
-#1497:failed
+1494:Doar prin intermediul serverului
+1495:Nici un utilizator aleatoriu nu a fost gasit
+1497:esec
 1499:Altele
 1500:Nickname:
 1501:Numele:
@@ -503,9 +461,9 @@
 1512:Codul tarii:
 1513:Codul tarii unde lucrati:
 1514:Tara unde lucrati:
-#1515:Work Homepage:
+1515:Pagina de la serviciu:
 1516:Ocupatia:
-#1517:Job Position:
+1517:Postul ocupat:
 1518:Departmentul:
 1519:Numele companiei:
 1520:Codul postal de la servicul d-stra:
@@ -541,6 +499,7 @@
 1554:Introduceti numele d-stra:
 1555:Introduceti prenumele d-stra:
 1556:Introduceti adresa d-stra email noua:
+1557:Doriti utilizatorii Mirabilis sa va ceara autorizarea? (DA/NU)
 #1557:Do you want to require Mirabilis users to request your authorization? (YES/NO)
 1564:Numele:
 1565:Prenumele:
@@ -553,49 +512,43 @@
 1587:Introduceti departamentul:
 1592:<%s> v-a trimis mesaj prin email:\n
 1593:<%s> va trimite un mesaj web:\n
-#1595:\nContact List.\n============================================\n%d Contacts\n
-#1596:[SOCKS] Can't find hostname %s: %s.
-#1597:[SOCKS] Socket creation failed\n
-#1598:[SOCKS] Connection request refused
-#1599:[SOCKS] Authentication method incorrect
-#1600:[SOCKS] Authorization failure
+1595:\nLista de contacte.\n============================================\n%d Contacte\n
+1596:[SOCKS] Nu pot gasi numele hostului %s: %s.
+1597:[SOCKS] Crearea socketului a esuat\n
+1598:[SOCKS] Conexiunea a fost refuzata
+1599:[SOCKS] Metoda de autentificare nu e corecta
+1600:[SOCKS] Autorizare esuata
 #1601:[SOCKS] General SOCKS server failure
-#1602:Enter a state:
+1602:Introduceti un stat:
 #1603:Enter position: 
-#1604:Should the users be online?
-#1605:Do you want your status to be available on the web? (YES/NO)
-#1606:Received a bad session ID %08lx (correct: %08lx) with cmd %04x ignored.\n
-#1607:Usage: micq [-h] [-c] [-i <locale>] [-b <basedir>] \n            [-f <configfile>] [-v[<level>]] [-l <logplace>]\n
-#1612:This program was made without any help from Mirabilis or their consent.\n
-#1613:No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n
+1604:E necesar utilizatorii sa fie conectati?
+1605:Doriti starea sa va fie aratata pe web? (DA/NU)
+1606:A fost primit un ID de sesiune rau %08lx (corect: %08lx) cu cmd %04x ignorat.\n
+1607:Utilizare: micq [-h] [-c] [-i <localizare>] [-b <mapadebaza>] \n            [-f <fisierconfig>] [-v[<nivel>]] [-l <locloguri>]\n
+1612:Acest program a fost creata fara vre-un ajutor de la Mirabilis si fara acordul lor.\n
+1613:Nu s-a utilizat cod de la Mirabilis pentru crearea acestui program.\n
 1618:UIN:
 1619:NB!:
 1620:numarul maximal de contacte a fost atins. Rugati vrajitorul sa v-o mareasca!
-#1621:users not returned.
-#1622:Do you want to apply these changes? (YES/NO)
-#1623:Doubled packet %04X\n
-#1624:Sorry, can't initialize Windows Sockets...
-#1632:\nConnection unstable. Exiting....
-#1634:ok.\n
-#1637:Can't bind socket to free port\n
-#1638:Couldn't create socket
-#1639:The new UIN is %ld!\n
-#1640:Failed to update info.\n
-#1641:User info successfully updated.\n
-#1642:IP
+1621:nu au fost intorsi utilizatori.
+1622:Doriti sa aplicati aceste schimbari? (DA/NU)
+1623:%04X pachet dublat\n
+1624:Din pacate Windows Sockets nu a putut fi initializat...
+1632:\nConexiune instabila. Iesire....
+1634:ok.\n
+1637:socketul nu poate fi legat de un port liber\n
+1638:N-am putut crea un socket
+1639:Noul UIN este %ld!\n
+1640:Innoirea informatiei a esuat.\n
+1641:Informatia utilizatorului innoita cu succes.\n
+1642:IP
 #1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
 #1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
 1645:Ati introdus gresit parola.\n
 1646:Serverul este ocupat.\n
-#-#1648:Raspunsul a fost %04X	
-#+#1648:The response was %04X	
-#-#1649:Versiunea a fost %X	
-#+#1649:The version was %X	
-#-#1650:\nSEQ a fost %04X	
-#+#1650:\nThe SEQ was %04X	
-#1648:The response was %04x	
-#1649:The version was %x	
-#1650:\nThe SEQ was %04lx	
+1648:Raspunsul a fost %04x	
+1649:Versiunea a fost %x	
+1650:\nSEQ a fost %04lx	
 1651:Marimea a fost %d\n
 1653:Deconectat
 1654:Conectat
@@ -603,30 +556,22 @@
 1656:Introduceti nickname-ul utilizatorului:
 1657:Introduceti numele utilizatorului:
 1658:Introduceti prenumele utilizatorului:
-#-#1666: %s neignorat.
-#+#1666:Unignored %s.
-#-#1667: %s ignorat:
-#+#1667:Ignoring %s.
-#-#1670:Invizibil pentru %s.
-#+#1670:Normal visible to %s now.
-#-#1671:Mereu vizibil pentru %s.
-#+#1671:Always visible to %s now.
-#1659:Unknown section %s in configuration file.
-#1660:Invalid Command: %s\n
-#1661:Shell commands have been disabled.\n
-#1666:Unignored %s.\n
-#1667:Ignoring %s.\n
-#1670:Normal visible to %s now.\n
-#1671:Always visible to %s now.\n
+1659:Sectiunea %s din fisierul de configurare este necunoscuta.
+1660:Comanda invalida: %s\n
+1661:Comenzile shellului au fost deactivate.\n
+1666:%s nu mai este ignorat(a).\n
+1667:%s este ignorat(a).\n
+1670:Vizibil normal pentru %s de acum.\n
+1671:Mereu vizibil pentru %s de acum.\n
 1672:Adresa IP a lui %s este:
-#1673:The port is %ld.\n
-#1674:The port is unknown.\n
+1673:Portul este %ld.\n
+1674:Portul este necunoscut.\n
 1675:Rand ignorat:
 1676:E nevoide de uin/nick pentru a trimite.\n
 1678:Specificati si un URL va rog.\n
 #1679:Sorry saving your personal reply messages went wrong!\n
-#1680:Your personal settings have been saved!\n
-#1681:Last %d people you talked to:\n
+1680:Setarile dvs. personale au fost salvate!\n
+1681:Ultimele %d persoane carora le-ati scris:\n
 1682:Ati primit mesaj de la:\n
 1687:mICQ lucreaza 
 1688:zile
@@ -642,44 +587,34 @@
 1706:Romantic
 1707:Jocuri
 1708:Studenti
-#-#1719:Arata de cat timp e lansat mICQ.
-#+#1719:Shows how long mICQ has been running.
-#-#1720:uin poate fi atat un numar cat si un nickname al utilizatorului.
-#+#1720:uin can be either a number or the nickname of the user.
-#1709:20 something
-#1710:30 something
-#1711:40 something
+1709:20 si ceva
+1710:30 si ceva
+1711:40 si ceva
 #1712:50+
-#1713:Seeking women
-#1714:Seeking men
+1713:In cautare de femei
+1714:In cautare de barbati
 #1715:mICQ
-#1716:None
-#1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
-#1719:Shows how long mICQ has been running and some statistics.
-#1720:<contacts> is a comma seperated list of UINs and nick names of users.
-#1721:Sending a blank message will put the client into multiline mode.\nUse . on a line by itself to end message.\nUse # on a line by itself to cancel the message.
-#1724:Automatic replies are %s.\n
+1716:Nimic
+1717:daca '!' este primul caracter al unei comenzi, se executa comanda shell (exemple: '!ls', '!dir', '!mkdir temp')
+1719:Arata de cat timp ruleaza mICQ si ceva statistica.
+1720:<contacts> este o lista de UINuri si nickuri separate prin virgula.
+1721:Trimiterea unui mesaj fara continut va trece clientul in regim de\nmai multe randuri.\nUtilizati . singur intr-un rand pentru a termina mesajul.\nUtilizati # singur intr-un rand pentru a anula mesajul.
+1724:Raspunsurile automate sint %s.\n
 1727:Mesajul pentru "sa nu ma deranjati"  este:
 1728:Mesajul pentru "plecat" este:
 1729:Mesajul pentru "inaccesibil" este:
 1730:Mesajul pentru "ocupat" este:
 1731:Mesajul pentru "invizibil" este:
 1735:Este necesar sa fie specificat un mesaj.\n
-#-#1741:La inceput este necesar sa fie primit un mesaj\n
-#+#1741:Must receive a message first\n
-#-#1742:La inceput este necesar sa fie scris un mesaj\n
-#+#1742:Must write one message first\n
-#1738:Need a command to alter.\n
-#1741:Must receive a message first.\n
-#1742:Must write a message first.\n
+1738:E nevoie de o comanda pentru a fi alterata.\n
+1741:E necesar sa primiti un mesaj inainte.\n
+1742:E necesar sa scrieti un mesaj inainte.\n
 1743:Marimea nu se incadreaza in limita lungimii pachetului.\n
 1744:server (v5)
 1745:necunoscut
-#1746: nr type         sent/received packets/unique packets\n
+1746: nr tip         trimise/primite pachete/unice pachete\n
 1747:total
-#-#1754: Nota: trebuie sa tastati 'save' pentru a scrie noua lista de contacte pe disk.\n
-#+#1754: Note: You need to 'save' to write new contact list to disc.\n
-#1754:Note: You need to 'save' to write new contact list to disc.\n
+1754:Nota: E necesar sa tastati 'save' pentru a scrie noua lista de contacte pe disc.\n
 1755:v-a adaugat in lista sa de contacte.\n
 1756:\nAre loc conectarea...\n
 1757:Conectarea nu reuseste sa fie facuta.\n
@@ -687,34 +622,27 @@
 1759:In asteptarea raspunsului....\n
 1760:\n UIN-ul d-stra nou este  %s%ld%s!\n
 1761:necunoscut
-#-#1762:UIN-ul d-stra nou este : %d.\n
-#+#1762:Your new UIN is: %d.\n
-#1762:Your new UIN is: %ld.\n
+1762:UINul dvs. este: %ld.\n
 1763:Numele comenzii  '%s' a fost schimbat in   '%s'.
 1764:Comanda '%s' nu a fost schimbata.
-#-#1765:%s are UIN-ul %d.
-#+#1765:%s has UIN %d.
-#1765:%s has UIN %ld.
-#1766:Changing status to away/not available after idling %s%ld%s seconds.\n
+1765:%s are UINul %ld.
+1766:Starea a fost schimbata in plecat/indisponibil dupa %s%ld%s secunde lipsite de activitate.\n
 #1767:Toggles auto cycling to away/not available.
 1768:Numele comenzii '%s' este deja utilizat.\n
-#-#1770:Trimite ultimul d-stra mesaj la un nou UIN.
-#1770:Resend your last message to <contacts>.
+1770:Trimite ultimul mesaj catre <contacts>.
 1771:D-stra pana ce nu ati trimis nici un mesaj nimanui!\n
 1774:Pachetul primit:
 1775:Pachetul trimis:
-#-#1781:Parola d-stra pentru  UIN %d:\n
-#+#1781:Your password for UIN %d:\n
-#1777:Opening peer-to-peer connection at localhost:%ld... 
-#1781:Your password for UIN %ld:\n
+1777:Deschiderea unei conexiuni peer-to-peer la localhost:%ld... 
+1781:Parola pentru UIN %ld:\n
 1782:Este necesara o parola pentru UIN-ul d-stra nou.\n
 1783:Pentru a preveni erori, va rugam sa introduceti inca o data parola d-stra \n 
-#1784:If you are firewalled, you may need to use a SOCKS5 server. If you do, please enter its hostname or IP address. Otherwise, or if unsure, just press return.\n
+1784:Daca sunteti dupa firewall, posibil sa aveti nevoie de a utiliza un server SOCKS5. Daca il utilizati, introduceti va rog IPul sau hostname-ul lui. In caz contrar sau in caz de incertitudine, pur si simplu apasati return.\n
 1785:succes.\n
-#1786:I also need the port the socks server listens on. If unsure, press return for the default port.\n
-#1787:You probably need to authenticate yourself to the socks server. If so, you need to enter the user name the administrator of the socks server gave you. Otherwise, just press return.\n
+1786:Mai e nevoie si de portul la care serverul socks asculta. In caz de incertitudine, apasati return pentru portul implicit.\n
+1787:Posibil sa fie necasara autentificarea la server. In caz afirmativ, e necesar sa introduceti numele de utilizator dat de administratorul serverului socks. In caz contrar, apasati return.\n
 1788:Acum am nevoie de parola pentru acest utilizator.\n
-#1789:Received malformed packet: (%d)
+1789:Am primit un pachet rau: (%d)
 1790:Vrajitorul de configurare si-a terminat executia. Felicitari pentru noul d-stra UIN!\n
 1791:Vrajitorul de configurare si-a terminat executia. Felicitari!\n
 1792:Imi cer scuze, insa AOL nu doreste sa ne ofere un UIN nou, probabil din cauza ca sunt prea multe cereri pentru UINuri noi de la acest IP .\n
@@ -725,92 +653,88 @@
 1797:Finante si corporatii
 1798:Scoala generala
 1799:Scoala suprema
-#-#1800:Schimba limba curenta in <lang>.
-#1800:Change the working language to <lang> or display string <nr>.
-#1801:Displays a list of people on your contact list in a screen wide format.
-#1807:Cancelled incoming message (seq %04x) from %s\n
+1800:Schimba limba curenta in <lang> sau afiseaza sirul <nr>.
+1801:Afiseaza o lista a oamenilor din lista de contacte intr-un format de ecran larg.
+1807:Am anulat un mesaj care vine (seq %04x) de la %s\n
 1808:Colegiu
 1810:Universitate
 1812:Locul precedent de munca
 1813:organizatia precedenta
 1814:Trimite automat raspuns la %s%s%s.\n
-#-#1815:    hazliu: foloseste mesaje hazlii pentru a trimite.\n
-#+#1815:    funny: use funny messages for output.\n
-#1815:    funny:      use funny messages for output.\n
-#1817:The event scripting feature is disabled.\n
+1815:    hazliu:      utilizeaza mesaje hazlii la iesire.\n
+1817:Functia de script pentru evenimente dezactivata.\n
 #1818:Warning: Deprecated syntax found in rc file!\n    Please update or "save" the rc file and check for changes.\n
-#1820:%s <option> [on|off|<value>] - control simple options.\n
-#1822:    color:      use colored text output.\n
-#1823:Incoming partial packet:
-#1825:Discarded a %04x (%s) packet
-#1826:Resending message %04x (%s) sequence %04lx (attempt #%ld, len %d).\n
-#1830:Discarding message to %s after %ld send attempts.  Message content:\n
-#1833:Peer to peer TCP connection established.\n
-#1835:Error while writing to socket - %s (%d)\n
-#1841:Received malformed initialization acknowledgement packet.\n
-#1842:Closing socket %d to %s.\n
-#1843:Closing socket %d.\n
-#1844:TCP message %04x discarded after timeout.\n
+1820:%s <optiune> [on|off|<valoare>] - controleaza optiuni simple.\n
+1822:    color:      afiseaza textul utilizand culori.\n
+1823:Pachet partial care vine:
+1825:Am ignorat un pachet %04x (%s)
+1826:Trimit din nou mesajul %04x (%s) secventa %04lx (incercare #%ld, lungime %d).\n
+1830:Ignor mesaj pentru %s dupa %ld incercari de a trimite.  Continutul mesajului:\n
+1833:Conexiune TCP "Peer to peer" stabilita.\n
+1835:Eroare la scrierea in socket - %s (%d)\n
+1841:Am primit un pachet rau de initializare a confirmarii.\n
+1842:Inchidere socket %d catre %s.\n
+1843:Inchidere socket %d.\n
+1844:Mesajul TCP %04x ignorat in urma expirarii termenului.\n
 1845:Nickul %s este necunoscut.\n
-#-#1846:Creaza si distruge conectari TCP :\n
-#1846:Opens and closes direct (peer to peer) connections:\n
-#1847:peer open  <nick> - Opens direct connection.\n
-#1848:peer close <nick> - Closes/resets direct connection(s).\n
+1846:Deschide si inchide conexiunile directe (peer to peer):\n
+1847:peer open  <nick> - Deschide conexiune directa.\n
+1848:peer close <nick> - Inchide/reseteaza conexiune/conexiuni direct(e).\n
 1849:Greseala la alegere: %s (%d)\n
-#1850:Timeout on connection with %s at %s:%ld\n
-#1855:TCP connection to %s at %s:%ld failed.\n
-#1856:Discarded a %04x (%s) packet from old session %08lx (current: %08lx).\n
+1850:Timpul conexiunii cu %s a expirat la %s:%ld\n
+1855:Conexiunea TCP catre %s la %s:%ld a esuat.\n
+1856:Un pachet %04x (%s) din sesiunea veche %08lx (curenta: %08lx) a fost ignorat.\n
 1857:Doriti sa ascundeti Ip-ul d-stra de alte contacte? (DA/NU)
-#1864:Can't open rcfile %s.
-#1866:This version of mICQ is compiled without direct connection (peer to peer) support.\n
-#1867:Received a malformed (too short) packet - ignored.\n
-#1868:Got a malformed (to long subpacket) multi-packet - remainder ignored.\n
-#1869:Protocol versions less than 5 are not supported anymore.\n
-#1870:peer off   <nick> - Closes direct connection(s) and don't try it again.\n
-#1871:Opening v8 connection to %s:%ld... 
-#1872:failed: %s (%d)\n
-#1873:Work City:
-#1874:Work State:
+1864:Nu pot deschide fisierul de configurare %s.
+1866:Aceasta versiune de mICQ e compilata fara suport de conexiuni directe (peer to peer).\n
+1867:Am primit un pachet rau (prea scurt) - l-am ignorat.\n
+1868:Am primit un pachet rau (subpachet prea lung) multi-pachet - restul ignorat.\n
+1869:Protocoalele cu versiunile mai mici de 5 nu mai sunt suportate.\n
+1870:peer off   <nick> - Inchide conexiunea/conexiunile directa/directe si nu o/le mai incerca.\n
+1871:Deschid conexiune v8 catre %s:%ld... 
+1872:esec: %s (%d)\n
+1873:Orasul unde lucrati:
+1874:Statul in care lucrati:
 1875:Interese personale:
-#1876:Personal past background:
+1876:Trecut personal:
 1877:bine.\n
-#1878:Error while reading from socket: %s (%d)\n
+1878:Eroare la citirea din socket: %s (%d)\n
 #1879:Affiliations:
-#1880:Incoming packet is not a FLAP: id is %d.\n
-#1881:FLAP channel 1 out of data.\n
-#1882:FLAP channel 1 cmd 1 extra data:\n
-#1883:FLAP channel 1 unknown command %d.\n
-#1884:FLAP with unknown channel %ld received.\n
-#1885:Connection v8 timed out.\n
+1880:Pachetul care a venit nu este FLAP: IDul e %d.\n
+1881:canalul FLAP 1 nu are date.\n
+1882:canalul FLAP 1 cmd 1 date suplimentare:\n
+1883:canalul FLAP 1 comanda necunoscuta %d.\n
+1884:FLAP cu canalul necunoscut %ld a fost primit.\n
+1885:Conexiune v8 cu timpul expirat.\n
 1887:Conectari:
-#1888:not webaware
-#1889:server
+1888:nu stie de web
+1889:server
 #1890:peer-to-peer
-#1891:Connection %ld is already open.\n
-#1892:conn               List available connections.\n
-#1893:conn login <nr>    Open connection <nr>.\n
-#1894:There is no connection number %ld.\n
+1891:Conexiunea %ld e deja deschisa.\n
+1892:conn               Listeaza conexiunile disponibile.\n
+1893:conn login <nr>    Deschide conexiunea <nr>.\n
+1894:Nu exista conexiunea cu nr %ld.\n
 #1895:Login failed:\n
-#1896:Server closed connection:\n
-#1897:Incomplete TLV %d, len %ld of %d - ignoring.\n
-#1898:Redirect to server %s... 
+1896:Serverul a inchis conexiunea:\n
+1897:TLV incomplet %d, len %ld of %d - ignor.\n
+1898:Redirectionare la serverul %s... 
 1899:A fost ceruta familie necunoscuta: %d\n
-#1900:It's readonly.
+1900:E doar pentru citire.
 1901:v-a autorizat ca sa poata fi introdus in lista d-stra de contacte.\n
-#1902:Opening v5 connection to %s:%ld... 
-#1903:Outgoing v8 server packet:
-#1904:Server doesn't understand ver %d (only %d) for family %d!\n
+1902:Deschid conexiune v5 catre %s:%ld... 
+1903:Pachet de server v8 ce pleaca:
+1904:Serverul nu intelege ver %d (doar %d) pentru familia %d!\n
 #1905:SNAC (%x,%x) [%s] flags %x ref %lx\n
-#1907:Warning: Server thinks our UIN is %ld, when it is %ld.\n
-#1908:Received USERONLINE packet for non-contact.\n
-#1909:Received USEROFFLINE packet for non-contact.\n
-#1911:connecting
-#1912:closed
-#1914:Can't allocate connection structure.\n
-#1915:Server says we're at %s.\n
-#1918:Ignored server request for a minimum report interval of %d.\n
+1907:Preintampinare: Serverul crede ca UINul nostru e %ld, cand e %ld.\n
+1908:Am primit pachet USERONLINE pentru non-contact.\n
+1909:Am primit pachet USEROFFLINE pentru non-contact.\n
+1911:ma conectez
+1912:inchis
+1914:N-am reusit sa aloc structura de conectare.\n
+1915:Serverul zice ca suntem la %s.\n
+1918:Cererile serverului au fost ignorate pentru intervalul minim de %d.\n
 #1919:UIN mismatch: %ld vs %ld.\n
-#1920:Registration of new UIN refused.\n
+1920:Inregistrarea unui UIN nou a fost refuzata.\n
 1921:Conectat
 1922:Nu ma deranjati
 1923:Plecat
@@ -819,7 +743,7 @@
 1926:Invizibil
 1927:Liber pentru discutii
 1929:Utilizatorul este NMD[Mesaj automatic]
-#1931:Current session is closed. Try another or open this one.\n
+1931:Sesiunea curenta este inchisa. Incercati alta sau deschideti-o pe aceasta.\n
 1934:conectat
 #1935:    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n
 1936:Introduceti varsta minimala (18-22,23-29,30-39,40-49,50-59,60-120):
@@ -832,22 +756,20 @@
 1944:(autorizarea este necesara)
 #1945:Unknown Meta User response
 1947:ascultator
-#1948:Can't find hostname %s: %s.
-#1949:failed:\n
-#1950:Couldn't set socket nonblocking
-#1951:Can't find hostname %s: %s (%d).
+1948:Nu pot gasi hostname-ul %s: %s.
+1949:esec:\n
+1950:N-am putut seta socketul nonblocking
+1951:Nu pot gasi hostname-ul %s: %s (%d).
 1952:Conexiunea nu poate fi creata
-#1953:couldn't bind socket to free port
-#1954:unable to listen on socket
-#1955:Connection failed
-#1958:[SOCKS] Connection request refused (%d)
+1953:n-am putut lega socketul de un port liber
+1954:nu pot asculta la socket
+1955:Conexiune esuata
+1958:[SOCKS] Cererea conexiunii refuzata (%d)
 1960:Introduceti date pentru cautarea utilizatorului. Introduceti '.' pentru a incepe cautarea.\n
 #1961:URL: %s\n
-#1966: Connection refused on port %ld at %s\n
+1966: Conexiune la portul %ld la %s refuzata\n
 1967:Mai multa informatie pentru
-#-#1968:Utilizator gasit
-#+#1968:User found
-#1968:User found:\n
+1968:Utilizator gasit:\n
 1969:deconectat
 1970:conectat
 1971:nu ma deranjati
@@ -859,7 +781,7 @@
 1977:Audio si vizual
 1978:Sport si atletica
 1979:Publicitatea
-#1980:Home automation
+1980:Automatizari casnice
 #1981:Alumni Org.
 1982:Organizatii de binefacere
 1983:Organizatii sociale/cluburi
@@ -875,8 +797,8 @@
 #1993:Self Improvement Group
 1994:Organizatii spirituale/religioase
 1995:Organizatii sportive
-#1996:Support Org.
-#1997:Trade and Business Org.
+1996:Organizatii de suport
+1997:Organizatii de comert si business
 1998:Uniune
 1999:Organizatii voluntare
 2000:Distractii
@@ -887,281 +809,267 @@
 2005:Produse pentru casa
 #2006:Mail order catalog
 2007:Business servicii
-#2009:Found random chat partner UIN %ld in chat group %d.\n
-#2011:You do not have a listening peer-to-peer connection.\n
+2009:Am gasit un partener aleatoriu pentru discutii cu UINul %ld in grupul de discutii %d.\n
+2011:Nu aveti o conexiune peer-to-peer ce asculta.\n
 2012:Parola neindicata.\n
-#2013:This command is v8 only.\n
+2013:Aceasta este o doar o comanda v8.\n
 2014:Numar neindicat.\n
 2015:Mesaj neindicat.\n
-#-#2017:Actualmente utilizatorul este conectat.\n
-#-#2020:A fi vizibil pentru %s.
-#+#2020:Being visible to %s.
-#-#2021:A fi invizibil pentru %s.
-#+#2021:Being invisible to %s.
-#-#2022:Utilizatorul este chiar deconectat.\n
-#2017:The user is online, but possibly invisible.\n
-#2020:Being visible to %s.\n
-#2021:Being invisible to %s.\n
-#2022:The user is offline.\n
-#2023:Direct connection closed by peer.\n
-#2024:Unknown protocol version %d for ICQ peer-to-peer protocol.\n
+2017:Utilizatorul e disponibil, dar posibil invizibil.\n
+2020:Vizibil pentru %s.\n
+2021:Invizibil pentru %s.\n
+2022:Utilizatorul e deconectat.\n
+2023:Conexiune directa inchisa de partener.\n
+2024:Versiunea %d a protocolului ICQ peer-to-peer e necunoscuta.\n
 #2026:TCP cookie:
-#2029:Protocol error on peer-to-peer connection
-#2031:Connecting failed too often, giving up.\n
-#2032:Scheduling v8 reconnect in %d seconds.\n
+2029:Eroare de protocol la conexiune peer-to-peer
+2031:Prea des au esuat conexiuni, cedez.\n
+2032:Programez reconectare v8 in %d secunde.\n
 2033:nascut astazi
-#-#2039:Trimite un mesaj la telefonul mobil.
-#+#2039:Sends a message to a cell phone.
-#-#2043:Elimina contactul din lista d-stra de contacte.
-#-#2044:Seteaza sau curata o optiune.
-#+#2044:Set or clear an option.
-#2034:Opening TCP connection at %s:%ld... 
-#2036:Save current preferences to disc.
-#2037:Open or close a peer-to-peer connection, or disable using peer-to-peer connections for <uin> or <nick>.
-#2038:Opens connection number <nr>, or the first server connection.
-#2039:Sends a message to a (<nick>'s) <cell> phone.
-#2042:Displays a list of online people on your contact list in a screen wide format.
-#2043:Remove all contacts in <contacts> from contact group <group>.
-#2044:Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
-#2045:Toggles your visibility to <contacts> when you're online.
-#2046:You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n
-#2047:Creating directory %s.\n
-#2048:Saving preferences to %s.\n
-#2049:Receiving group "%s":\n
-#2051:Error on socket: %s (%d)\n
+2034:Deschid conexiune TCP catre %s:%ld... 
+2036:Salveaza preferinte curente pe disc.
+2037:Deschide sau inchide o conexiune peer-to-peer, sau inceteaza utilizarea conexiunilor peer-to-peer pentru <uin> sau <nick>.
+2038:Deschide conexiunea <nr>, sau prima conexiune server.
+2039:Trimite un mesaj catre numarul <cell> (al <nick>).
+2042:Afiseaza o lista a oamenilor conectati intr-un format ecran larg.
+2043:Sterge toate contactele <contacts> din grupul de contacte <group>.
+2044:Seteaza, sterge sau afiseaza o <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
+2045:Schimba starea vizibilitatii dvs. pentru <contacts> cand sunteti conectat.
+2046:Posibil sa doriti utilizarea protocolului cu versiunea 8 pentru protocolul ICQ peer-to-peer.\n
+2047:Creez mapa %s.\n
+2048:Salvez preferintele in %s.\n
+2049:Primesc grupul "%s":\n
+2051:Eroare la socket: %s (%d)\n
 2054:Mesajul pentru "liber pentru discutii" este:
 2055:Utilizatorul este LPD si ar dori sa vorbeasca despre orice.
-#2056:getauto [auto] <nick> - Get the auto-response from the contact.\n
-#2057:getauto away   <nick> - Get the auto-response for away from the contact.\n
-#2058:getauto na     <nick> - Get the auto-response for not available from the contact.\n
-#2059:getauto dnd    <nick> - Get the auto-response for do not disturb from the contact.\n
-#2060:getauto ffc    <nick> - Get the auto-response for free for chat from the contact.\n
-#2063:You need to save your password in your ~/.micq/micqrc file.\n
-#2065:Unknown TCP_MSG_GREET_ command %04x.\n
-#2066:Unknown TCP_MSG_ command %04x.\n
+2056:getauto [auto] <nick> - Ia raspunsul automat de la contact.\n
+2057:getauto away   <nick> - Ia raspunsul automat pentru plecat de la contact.\n
+2058:getauto na     <nick> - Ia raspunsul automat pentru indisponibil de la contact.\n
+2059:getauto dnd    <nick> - Ia raspunsul automat pentru nu ma deranjati de la contact.\n
+2060:getauto ffc    <nick> - Ia raspunsul automat pentru disponibil pentru discutii de la contact.\n
+2063:E necesar sa va salvati parola in fisierul ~/.micq/micqrc.\n
+2065:Comanda TCP_MSG_GREET_ %04x necunoscuta.\n
+2066:Comanda TCP_MSG_ %04x necunoscuta.\n
 #2067:file io
-#2068:Opening file transfer connection to %s:%ld... \n
-#2070:File transfer '%s' to port %ld.\n
-#2071:Couldn't stat file %s: %s (%d)\n
-#2072:File transfer #%ld (%s) canceled because of closed connection.\n
-#2073:Memory usage: %ld packets processing.\n
-#2078:Outgoing TCP packet (%d - %s): %s
-#2079:Incoming TCP packet (%d - %s): %s
+2068:Deschid conexiune de transfer fisiere catre %s:%ld... \n
+2070:Transfer fisiere '%s' la portul %ld.\n
+2071:Nu pot gasi fisierul %s: %s (%d)\n
+2072:Transfer fisiere #%ld (%s) intrerupt din cauza conexiunii inchise.\n
+2073:Utilizare memorie: %ld procesare pachete.\n
+2078:Pachet TCP ce pleaca (%d - %s): %s
+2079:Pachet TCP ce vine (%d - %s): %s
 #2080:Server SMS delivery response:\n%s\n
 #2081:    at %p parent %p assoc %p\n
-#2082:Opening file listener connection at localhost:%ld... 
-#2083:Cannot open file %s: %s (%d).\n
+2082:Deschid conexiune de ascultare fisiere la localhost:%ld... 
+2083:Nu pot deschide fisierul %s: %s (%d).\n
 #2084:Error while seeking to offset %ld: %s (%ld).\n
-#2086:Error while reading file %s: %s (%d).\n
-#2087:Finished sending file %s.\n
-#2088:Finished sending all %d files.\n
+2086:Eroare la citirea fisierului %s: %s (%d).\n
+2087:Am terminat trimiterea fisierului %s.\n
+2088:Am terminat trimiterea tuturor celor %d fisiere.\n
 #2089:file listener
 #2090:file peer-to-peer
-#2091:Queueing %s as %s for transfer.\n
-#2092:TCP message %s discarded - lost session.\n
+2091:Pun pe %s in coada ca %s pentru transfer.\n
+2092:Mesajul TCP %s ignorat - sesiune pierduta.\n
 #2093:%02d %-12s version %d for %s (%lx), at %s:%ld %s\n
-#2094:conn login         Open first server connection.\n
-#2095:conn remove <nr>   Remove connection <nr>.\n
-#2096:Connection %ld is not open.\n
-#2097:conn select <nr>   Select connection <nr> as server connection.\n
-#2098:Connection %ld is not a server connection.\n
-#2099:Selected connection %ld (version %d, UIN %ld) as current connection.\n
-#2100:conn select <uin>  Select connection with UIN <uin> as server connection.\n
-#2101:Removing connection %ld and its dependents completely.\n
-#2102:Connection %ld is a configured connection.\n
-#2103:contact show    Show server side contact list.\n
-#2104:contact diff    Show server side contacts not on local contact list.\n
-#2105:contact import  Add server side contact list to local contact list.\n
+2094:conn login         Deschide prima conexiune server.\n
+2095:conn remove <nr>   Sterge conexiunea <nr>.\n
+2096:Conexiunea %ld nu e deschisa.\n
+2097:conn select <nr>   Selecteaza conexiunea <nr> pentru a fi conexiune server.\n
+2098:Conexiunea %ld nu e conexiune la server.\n
+2099:Conexiunea selectata %ld (versiunea %d, UIN %ld) va fi curenta.\n
+2100:conn select <uin>  Selectaza conexiunea cu UINul <uin> pentru a fi server.\n
+2101:Sterg complet conexiunea %ld si cele ce depind de ea.\n
+2102:Conexiunea %ld e una configurata.\n
+2103:contact show    Arata lista de contacte de pe server.\n
+2104:contact diff    Arata lista de contacte de pe server ce nu-s prezente in lista locala.\n
+2105:contact import  Adauga lista de contacte de pe server in lista locala.\n
 2106:Ultimul mesaj de la %s%s%s la %s:\n
 2107:Nici un mesaj primit de la %s%s%s.\n
 #2108:auto
 2109:versiune
-#2110:peer files <nick> <file1> <as1> ... [<description>]\n
-#2111:                  - Send file1 as as1, ..., with description.\n
+2110:peer files <nick> <fisier1> <as1> ... [<descriere>]\n
+2111:                  - Trimite fisier1 ca as1, ..., cu descriere.\n
 #2112:                  - as = '/': strip path, as = '.': as is\n
 2113:Stare necunoscuta '%s'.\n
 2114:Numele  '%s' pentru comanda este inexistibil.\n
-#2115:'%s' is not an integer.\n
+2115:'%s' nu este un intreg.\n
 2116:Nu a fost introdus un nou nickname.\n
-#-#2117:%d este adaugat ca %s.\n
-#+#2117:%d added as %s.\n
-#2117:%ld added as %s.\n
+2117:%ld adaugat ca %s.\n
 2118:Memoria este plina.\n
-#2119:auth [grant] <nick>    - grant authorization.\n
-#2120:auth deny <nick> <msg> - refuse authorization.\n
-#2121:auth req  <nick> <msg> - request authorization.\n
-#2122:Note: You need to 'save' to write new password to disc.\n
+2119:auth [grant] <nick>    - autorizeaza.\n
+2120:auth deny <nick> <msg> - refuza autorizare.\n
+2121:auth req  <nick> <msg> - cere autorizare.\n
+2122:Nota: Trebuie sa tastati 'save' pentru a scrie noua parola pe disc.\n
 2123:%sGreseala sintactica%s: Prea putine argumente: '%s'\n
-#2124:%sSyntax error%s: Not an integer: '%s'\n
-#2126:is offline, message queued on server.\n
+2124:%sEroare de sintaxa%s: Nu e intreg: '%s'\n
+2126:e deconectat, mesaj pus in coada pe server.\n
 #2127:       URL: %s %s%s%s\n
 2128: Descriere: %s%s%s\n
 #2129:         URL: %s%s%s\n
-#2130:Composing message to %sall%s:\n
-#2131:Composing message to %s%s%s:\n
+2130:Compunere mesaj catre %stoti%s:\n
+2131:Compunere mesaj catre%s%s%s:\n
 2133:Culoarea este %s%s%s.\n
 2134:Mesajele hazlii sunt %s%s%s.\n
 #2135:Quiet output is %s%s%s.\n
 2136:Schimbarea parolei a fost %s%s%s.\n
-#2137:About info change was %s%s%s.\n
+2137:Schimbarea informatiei despre a fost %s%s%s.\n
 2138:Schimbarea informatiei a fost %s%s%s.\n
 2139:Alta schimbare a informatiei a fost %s%s%s.\n
-#2140:Random chat group change was %s%s%s.\n
-#2141:Search %sfailed%s.\n
-#2142:Direct connection with %s not possible.\n
-#2145:auth add  <nick>       - authorized add.\n
-#2146:'%s' is already an alias for '%s' (%ld).\n
-#2147:'%s' (%ld) is already used as a nick.\n
-#2148:Added '%s' as an alias for '%s' (%ld).\n
-#2149:Removed alias '%s' for '%s' (%ld).\n
-#2150:Removed contact '%s' (%ld).\n
-#2156:conn close <nr>    Close connection <nr>.\n
-#2157:Moldova
-#2158:No file given.\n
-#2159:Some files.
-#2160:peer file  <nick> <file> [<description>]\n
-#2161:Receiving %ld files with together %ld bytes at speed %lx from %s.\n
-#2162:Receiving file %s (%s) with %ld bytes as %s.\n
-#2163:Sending file %ld at offset %ld.\n
-#2164:Error writing to file.\n
-#2165:The peer sent more bytes (%ld) than file length (%ld).\n
-#2166:Finished receiving file.\n
-#2167:Error - unknown packet.\n
-#2168:File transfer #%ld (%s) dropped after %ld attempts because of timeout.\n
-#2169:File transfer aborted by peer (%d).\n
-#2170:Sending with speed %lx to %s.\n
-#2171:Advanced
-#2172:Commands for advanced features.
-#2176:Displays verbose the current status of everyone on your contact list.
-#2177:Displays verbose the current status of online people on your contact list.
-#2179:Send all <contacts> a single file.
-#2180:Send <uin> or <nick> several files.
-#2181:Closes or removes connection number <nr>.
-#2182:Select server connection number <nr> as current server connection.
-#2183:Check all <contacts> whether they are offline or invisible.
+2140:Schimbarea grupului aleatoriu de discutii a fost %s%s%s.\n
+2141:Cautare %sesuata%s.\n
+2142:Conexiunea directa cu %s e imposibila.\n
+2145:auth add  <nick>       - adaugat cu autorizare.\n
+2146:'%s' e deja alias pentru '%s' (%ld).\n
+2147:'%s' (%ld) deja se foloseste ca nick.\n
+2148:Adaugat '%s' ca alias pentru '%s' (%ld).\n
+2149:Am sters aliasul '%s' pentru '%s' (%ld).\n
+2150:Am sters contactul '%s' (%ld).\n
+2156:conn close <nr>    Inchide conexiunea <nr>.\n
+2157:Moldova
+2158:Nici un fisier indicat.\n
+2159:Niste fisiere.
+2160:peer file  <nick> <fisier> [<descriere>]\n
+2161:Receptionez %ld fisiere total acumuland %ld bytes la viteza %lx de la %s.\n
+2162:Receptionez fisierul %s (%s) de %ld bytes ca %s.\n
+2163:Trimit fisierul %ld la offsetul %ld.\n
+2164:Eroare la scrierea in fisier.\n
+2165:Partenerul a trimis mai multi bytes (%ld) decat lungimea fisierului (%ld).\n
+2166:Am terminat receptionarea fisierului.\n
+2167:Eroare - pachet necunoscut.\n
+2168:Transferul de fisiere #%ld (%s) lasat balta dupa %ld incercari din cauza expirarii timpului.\n
+2169:Transferul de fisiere intrerupt de partener (%d).\n
+2170:Trimit cu viteza %lx catre %s.\n
+2171:Avansat
+2172:Comenzi pentru facilitati avansate.
+2176:Afiseaza cu detalii starea curenta a fiecarui din lista de contacte.
+2177:Afiseaza cu detalii starea curenta a fiecaruia conectat din lista de contacte.
+2179:Trimite la toti <contacts> un singur fisier.
+2180:Trimite la <uin> sau <nick> mai multe fisiere.
+2181:Inchide sau sterge conexiunea cu numarul <nr>.
+2182:Selecteaza conexiunea server cu numarul <nr> pentru a fi conexiune server curenta.
+2183:Verifica toate <contacts> daca sint deconectati sau invizibili.
 #2184:%s%-10s%s - %s\n
-#2185:Closing connection %ld.\n
-#2186:Accepting file '%s' (%ld bytes).\n
-#2188:You're sending data too fast - stop typing now, or the server will disconnect!\n
-#2191:Instant message error: %d.\n
-#2192:Capabilities: 
-#2194:Don't know how to open this connection type.\n
-#2195:Obsolete number:
-#2196:Obsolete text:
-#2197:Obsolete byte
-#2198:Unsuitable password '%s' - may not start with byte 0xf3.\n
-#2199:  -h, --help     gives this help text\n
-#2200:  -v, --verbose  set (or increase) verbosity (mostly for debugging)\n
-#2201:  -b, --basedir  use given BASE dir (default: %s)\n
-#2202:  -f, --config   use given configuration file (default: %s)\n
-#2203:  -l, --logplace use given log file/dir (default: %s)\n
-#2204:  -i, --i18n     use given locale (default: auto-detected)\n
-#2205:  -c, --nocolor  disable colors\n
-#2206:The server doesn't want to give us offline messages.\n
-#2207:Protocol error in command to old ICQ server: %d.\n
-#2208:Detected UTF-8 encoding, however, this mICQ was compiled without UTF-8 support.\n
-#2209:Detected UTF-8 encoding.\n
-#2210:%smICQ (Matt's ICQ clone)%s version %s%s%s (compiled on %s)\n
-#2211:Your status is %s.\n
-#2212:changed status to %s
-#2213:logged on (%s)
-#2214:Info for %s%lu%s:\n
-#2215:This mICQ can't convert between SJIS or EUC and unicode.\n
-#2216:This mICQ doesn't know the '%s' encoding.\n
-#2217:This mICQ can't convert between '%s' and unicode.\n
+2185:Inchid conexiunea %ld.\n
+2186:Accept fisierul '%s' (%ld octeti).\n
+2188:Trimiti date prea repede - inceteaza sa tapezi sau serverul se va deconecta!\n
+2191:Eroare mesaj instantaneu: %d.\n
+2192:Capabilitati: 
+2194:Nu stiu cum sa deschid acest tip de conexiune.\n
+2195:Numar invalid:
+2196:Text invalid:
+2197:Octet invalid
+2198:Parola nepotrivita '%s' - nu poate sa inceapa cu octetul 0xf3.\n
+2199:  -h, --help     afiseaza acest text de ajutor\n
+2200:  -v, --verbose  seteaza (sau creste) detaliile (mai mult pentru depanare)\n
+2201:  -b, --basedir  foloseste mapa de baza specificata (implicit: %s)\n
+2202:  -f, --config   foloseste fisierul de configurare specificat (implicit: %s)\n
+2203:  -l, --logplace foloseste fisierul/mapa de loguri specificata (implicit: %s)\n
+2204:  -i, --i18n     foloseste localizarea specificata (implicit: auto-detectare)\n
+2205:  -c, --nocolor  dezactiveaza culorile\n
+2206:Serverul nu doreste sa ne dea mesajele acumulate in timp ce erati deconectat.\n
+2207:Eroare de protocol in comanda catre ICQ serverul vechi: %d.\n
+2208:S-a detectat codificare UTF-8, insa, acest mICQ e compilat fara suport UTF-8.\n
+2209:S-a detectat codificare UTF-8.\n
+2210:%smICQ (ICQ clonul lui Matt)%s versiunea %s%s%s (compilat la %s)\n
+2211:Starea dvs. este %s.\n
+2212:am schimbat starea in %s
+2213:conectat la (%s)
+2214:Info pentru %s%lu%s:\n
+2215:Acest mICQ nu poate converti din SJIS sau EUC in unicode si invers.\n
+2216:Acest mICQ nu stie de codificarea '%s'.\n
+2217:Acest mICQ nu poate converti din '%s' in unicode si invers.\n
 #2218:UIN: %s\n
 #2220:several
-#2221:Removed temporary contact '%s' (%ld).\n
-#2222:Script command '%s' failed: %s (%d).\n
-#2223:Opening remote control FIFO at %s... 
+2221:Am sters contactul temporar '%s' (%ld).\n
+2222:Comanda din script '%s' a esuat: %s (%d).\n
+2223:Deschid FIFO de ghidare de la distantza la %s... 
 #2225:remote control
-#2226:Couldn't create FIFO
-#2227:Couldn't open FIFO
-#2228:Couldn't set FIFO nonblocking
-#2229:Refusing file request '%s' (%ld bytes): %s.\n
-#2230:Refusing chat request (%s/%s) from %s.\n
-#2231:File transfer '%s' rejected by peer: %s.\n
-#2232:requests authorization: %s%s\n
-#2233:refused authorization: %s%s\n
-#2234:Message %s discarded - lost session.\n
-#2235:No nick name given.\n
-#2236:Information for %s%s%s (%ld):\n
-#2237:Webaware:
-#2238:Hide IP:
+2226:N-am putut crea FIFO
+2227:N-am putut deschide FIFO
+2228:N-am putut seta FIFO nonblocking
+2229:Cererea fisierului '%s' (%ld bytes) a fost refuzata: %s.\n
+2230:Cererea chatului (%s/%s) de la %s a fost refuzata.\n
+2231:Transferul de fisiere '%s' a fost refuzat de partener: %s.\n
+2232:cere autorizare: %s%s\n
+2233:a refuzat autorizarea: %s%s\n
+2234:Mesajul %s a fost ignorat - conexiune pierduta.\n
+2235:Nu s-a specificat nici un nick name.\n
+2236:Informatie despre %s%s%s (%ld):\n
+2237:Stie de Web:
+2238:Ascunde IP:
 #2239:Unknown more:
-#2240:No contact group given.\n
-#2241:Added '%s' to contact group '%s'.\n
-#2242:Imported %d new contacts, added %d times to a contact group.\n
-#2243:Removed contact '%s' from group '%s'.\n
-#2244:Contact group '%s' already has contact '%s' (%ld).\n
-#2245:Added contact group '%s'.\n
-#2246:Contact '%s' is not in group '%s'.\n
-#2247:Couldn't load meta data for '%s' (%ld).\n
-#2248:Saved meta data for '%s' (%ld).\n
-#2249:Couldn't save meta data for '%s' (%ld).\n
-#2250:Number '%s' is not of the format +<countrycode><cellprovider><number>.\n
-#2251:Error:
-#2252:A beep is generated by %sbeep%sing.\n
-#2253:A beep is generated by running the %sevent%s script.\n
-#2254:A beep is never generated.
-#2255:A beep for oncoming contacts is always generated by running the %sevent%s script.\n
-#2256:A beep for offgoing contacts is always generated by running the %sevent%s script.\n
-#2257:Encoding:
-#2258:No pending incoming file transfer request for %s with (sequence %ld) found.\n
-#2259:requests file transfer '%s' of %ld bytes (sequence %ld).\n
-#2260:Please try the getauto command instead.\n
-#2261:Hermit is %s%s%s.\n
-#2262:Interpreting a delete character as backspace is %s%s%s.\n
-#2263:Logging is %s%s%s.\n
-#2264:Logging of status changes is %s%s%s.\n
-#2265:Automatic replies are %s%s%s.\n
-#2266:Having the last nick in the prompt is %s%s%s.\n
-#2267:Automatic saves are %s%s%s.\n
-#2268:Automatic fingering of new UINs is %s%s%s.\n
+2240:Nu s-a specificat nici un grup de contacte.\n
+2241:Am adaugat '%s' in grupul de contacte '%s'.\n
+2242:Am importat %d contacte noi, adaugate de %d ori la un grup de contacte.\n
+2243:Removed contact '%s' from group '%s'.\n
+2244:Grupul de contacte '%s' deja contine contactul '%s' (%ld).\n
+2245:Am adaugat grupul de contacte '%s'.\n
+2246:Contactul '%s' nu e in grupul '%s'.\n
+2247:Nu am putut incarca meta date pentru '%s' (%ld).\n
+2248:Meta datele pentru '%s' (%ld) au fost salvate.\n
+2249:Meta datele pentru '%s' (%ld) nu au putut fi salvate.\n
+2250:Numarul '%s' nu are formatul +<codtara><operatorcelulare><numar>.\n
+2251:Eroare:
+2252:Un beep e generat prin %sbeep%suire.\n
+2253:Un beep e generat prin executarea scripturilor pentru %sevenimente%s.\n
+2254:Niciodata nu se genereaza un beep.
+2255:Un beep pentru contacte ce vin e mereu generat de scriptul pentru %sevenimente%s.\n
+2256:Un beep pentru contacte ce vin e mereu generat de scriptul pentrU %sevenimente%s.\n
+2257:Codificare:
+2258:Nu au fost gasite transferuri de fisier in asteptare ce vin pentru %s cu (secventa %ld).\n
+2259:cere transfer de fisiere '%s' de %ld octeti (secventa %ld).\n
+2260:Incercati va rog comanda getauto.\n
+2261:Hermit este %s%s%s.\n
+2262:Interpretarea unui caracter delete ca backspace este %s%s%s.\n
+2263:Logarea este %s%s%s.\n
+2264:Logarea schimbarii starii este %s%s%s.\n
+2265:Raspunsurile automate sint %s%s%s.\n
+2266:Prezenta ultimului nick in prompt este %s%s%s.\n
+2267:Salvarile automate sunt %s%s%s.\n
+2268:Finger-ul automat la UINurile noi este %s%s%s.\n
 #2269:break
 #2270:simple
 #2271:indent
 #2272:smart
 #2273:cycle
 #2274:cycleall
-#2275:Tab style is %s%s%s.\n
+2275:Ciclul cu Tab este %s%s%s.\n
 #2276:complete
-#2277:    hermit:     ignore all non-contacts.\n
-#2278:    delbs:      interpret delete characters as backspace.\n
-#2279:    log:        do logging.\n
-#2280:    logonoff:   also log status changes.\n
-#2281:    auto:       send auto-replies.\n
-#2282:    uinprompt:  have the last nick in the prompt.\n
-#2283:    autosave:   automatically save the micqrc.\n
-#2284:    autofinger: automatically finger new UINs.\n
-#2285:    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n
-#2286:    tabs:       style for tab-handling: simple, cycle, cycleall.\n
+2277:    hermit:     ignora pe totzi care nu-s in lista de contacte.\n
+2278:    delbs:      interpreteaza caracterul del ca bs.\n
+2279:    log:        fa loguri.\n
+2280:    logonoff:   de asemenea fa log la schimbarile de stare.\n
+2281:    auto:       trimite raspunsuri automate.\n
+2282:    uinprompt:  ultimul nick sa fie in prompt.\n
+2283:    autosave:   automat salveaza micqrc.\n
+2284:    autofinger: automat fa finger la UINurile noi.\n
+2286:    tabs:       stil pentru lucrul cu tab-ul: simple, cycle, cycleall.\n
 #2287:    silent:     suppress some output: off, on, complete.\n
 #2288:Indentation style is %s%s%s.\n
-#2289:»»»
-#2290:«««
-#2291:>>»
-#2292:«<<
-#2293:--=
-#2294:===
-#2295:>>>
-#2296:<<<
-#2297:Alias to what?\n
-#2298:Remove which alias?\n
-#2299:Alias doesn't exist.\n
-#2300:Set an alias or list current aliases.
-#2301:Delete an alias.
-#2302:Too many levels of alias expansion; probably an infinite loop.\n
-#2303:Invalid character 0x%x in alias name.\n
-#2304:Get automatic reply from all <contacts> for current status, away, not available, do not disturb, occupied, or free for chat.
-#2305:Handle meta data of contacts.
-#2306:Request server side contact list and show all or new contacts or import.
-#2307:Displays the current status of online people on your contact list, sorted by contact group.
-#2308:Displays the current status of everyone on your contact list, sorted by contact group.
-#2309:Displays verbose the current status of online people on your contact list, sorted by contact group.
-#2310:Displays verbose the current status of everyone on your contact list, sorted by contact group.
-#2311:Adds <uin> as <new nick>, or add alias <new nick> for <uin> or <nick>.
-#2312:Remove all aliases in <contacts>, removes contact if 'all' is given.
+2289:}}}
+2290:{{{
+2291:>>}
+2292:{<<
+2293:--=
+2294:===
+2295:>>>
+2296:<<<
+2297:Alias la ce?\n
+2298:Care alias sa sterg?\n
+2299:Alias-ul nu exista.\n
+2300:Creaza un alias sau listeaza-le pe cele curente.
+2301:Sterge un alias.
+2302:Prea multe nivele de desfacere a aliasurilor; probabil e ciclu infinit.\n
+2303:0x%x e caracter invalid in numele aliasului.\n
+2304:Ia raspunsul automat de la toate <contacts> pentru starea curenta, plecat, indisponibil, nu ma deranjati, ocupat, sau disponibil pentru discutii.
+2305:Lucreaza cu meta datele contactelor.
+2306:Cere lista de contacte de la server si arata toate contactele sau pe cele noi sau importa.
+2307:Afiseaza starea curenta a oamenilor conectati, sortati dupa grup.
+2308:Afiseaza starea curenta a fiecaruia din lista de contacte, sortate dupa grup.
+2309:Afiseaza cu detalii starea curenta a oamenilor din lista de contacte, sortare dupa grup.
+2310:Afiseaza cu detalii starea curenta a fiecaruia din lista de contacte, sortare dupa grup.
+2311:Adauga <uin> ca <new nick> sau adauga alias <new nick> pentru <uin> sau <nick>.
+2312:Sterge toate aliasurile din <contacts>, sterge contactul daca 'all' e specificat.
 #2313:Grant, deny, request or acknowledge authorization from/to <contacts> to you/them to their/your contact list.
-#2314:These are advanced commands. Be sure to have read the manual pages for complete information.\n
-#2315:Cannot watch status of %s - too many watchers.\n
+2314:Acestea sunt comenzi avansate. Asigurati-va ca ati citit paginile de manual pentru informatie completa.\n
+2315:Nu pot privi starea lui %s - prea multi privesc.\n

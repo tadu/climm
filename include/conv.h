@@ -17,6 +17,7 @@ const char *ConvFromUTF8   (const char *in, UBYTE enc);
 #define     c_out_to(t,c)  ConvFromUTF8 (t, (c) && (c)->encoding ? (c)->encoding : prG->enc_rem)
 #define     c_in_to(t,c)   ConvToUTF8   (t, (c) && (c)->encoding ? (c)->encoding : prG->enc_rem)
 #define     c_strlen(t)    (ENC(enc_loc) == ENC_UTF8 ? s_strlen (t) : strlen (t))
+#define     c_offset(t,o)  (ENC(enc_loc) == ENC_UTF8 ? s_offset (t, o) : (o))
 #define     c_delta(t)     (int)(ENC(enc_loc) == ENC_UTF8 ? strlen (t) - s_strlen (t) : 0)
 #define     s_delta(t)     (int)strlen (t) - (int)s_strlen (t)
 #else
@@ -26,6 +27,7 @@ const char *ConvFromUTF8   (const char *in, UBYTE enc);
 #define     c_out_to(t,c)  t
 #define     c_in_to(t,c)   t
 #define     c_strlen(t)    strlen (t)
+#define     c_offset(t,o)  o
 #define     c_delta(t)     0
 #define     s_delta(t)     0
 #define     ConvToUTF8(i,e)   i
