@@ -1,0 +1,29 @@
+$Id$
+
+
+mICQ's original Author was:
+	Matthew D. Smith
+
+
+current Maintainer:
+	Rico Gloeckner		<mc@verdinet.de>		#
+
+
+Contributors:
+	Frederic Lamorce	<flamorce@dataradio.com>
+	    added Socks5 Support
+	    
+	Lalo Martins		
+	    various patches and Features
+	    brazil translation
+	
+	Sergey Shkonda		<serg@bcs.zp.ua>
+	    mreadline Translation
+	    
+	Valerie Dachev		<v.dachev@mail.com>
+	    bulgarian Translation
+	
+	Taneli Huuskonen
+	    finnish Translation
+	    
+	

@@ -650,8 +650,7 @@ int main( int argc, char *argv[] )
    {
       for ( i=1; i< argc; i++ )
       {
-         if ( argv[i][0] != '-' )
-         ;
+         if ( argv[i][0] != '-' ) { ; }
          else if ( (argv[i][1] == 'v' ) || (argv[i][1] == 'V' ) )
          {
             Verbose++;

@@ -750,7 +750,7 @@ void Do_Msg( SOK_T sok, DWORD type, WORD len, char * data, DWORD uin )
         else
         {
             who = (char*)malloc(20);
-            sprintf(who, "%ld", uin);
+            snprintf(who, sizeof(who), "%ld", uin);
         }
 
         cmd = (char*)malloc(strlen(receive_script) +
@@ -758,7 +758,7 @@ void Do_Msg( SOK_T sok, DWORD type, WORD len, char * data, DWORD uin )
                             strlen(who)            +
                             20);
 
-        sprintf(cmd, "%s %s %ld '%s'",
+        snprintf(cmd, sizeof(cmd), "%s %s %ld '%s'",
                 receive_script,
                 who,
                 type,
@@ -766,7 +766,8 @@ void Do_Msg( SOK_T sok, DWORD type, WORD len, char * data, DWORD uin )
         script_exit_status = system(cmd);
         if(script_exit_status != 0)
         {
-            M_print( "Script command %s failed with %d exit value",
+            M_print( "Warning! Script command '%s' failed with exit value %d\n",
+		     receive_script,
                      script_exit_status);
         }
     }
