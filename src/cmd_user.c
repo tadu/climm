@@ -2190,11 +2190,18 @@ static JUMP_F(CmdUserOpt)
         }
         else if (flag & COF_STRING)
         {
-            ContactOptionsSetStr (copts, flag, par->txt);
+            res = par->txt;
+            if (flag == CO_ENCODINGSTR)
+            {
+                UWORD enc = ConvEnc (par->txt) & ~ENC_FAUTO;
+                ContactOptionsSetVal (copts, CO_ENCODING, enc);
+                res = ConvEncName (enc);
+            }
+            ContactOptionsSetStr (copts, flag, res);
             M_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s to %s.\n") :
                       data == COF_GROUP   ? i18n (9999, "Setting option %s for contact group %s to %s.\n")
                                           : i18n (9999, "Setting option %s%s globally to %s.\n"),
-                      coptname, coptobj, s_cquote (par->txt, COLQUOTE));
+                      coptname, coptobj, s_cquote (res, COLQUOTE));
         }
         else if (flag & COF_COLOR)
         {
@@ -2208,6 +2215,8 @@ static JUMP_F(CmdUserOpt)
         }
         else if (flag & COF_NUMERIC)
         {
+            if (flag == CO_CSCHEME)
+                ContactOptionsImport (copts, PrefSetColorScheme (val));
             ContactOptionsSetVal (copts, flag, atoi (par->txt));
             M_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s to %s%d%s.\n") :
                       data == COF_GROUP   ? i18n (9999, "Setting option %s for contact group %s to %s%d%s.\n")
