@@ -86,13 +86,9 @@ void Idle_Check (Connection *conn)
     }
     
     now = time (NULL);
+    delta = uiG.idle_val ? now - uiG.idle_val : 0;
 
-    if (!uiG.idle_val)
-        uiG.idle_val = now;
-
-    delta = now - uiG.idle_val;
-
-    if (!prG->away_time && delta > 10)
+    if (!prG->away_time && delta > 10 && uiG.idle_val)
     {
         saver = os_DetectLockedWorkstation();
         
@@ -127,7 +123,10 @@ void Idle_Check (Connection *conn)
     if (!prG->away_time && !uiG.idle_flag)
         return;
 
-    if (uiG.idle_flag && new != 0xffffffffL)
+    if (!uiG.idle_val)
+        uiG.idle_val = now;
+
+    if (uiG.idle_flag && new == 0xffffffffL)
     {
         if (conn->status & STATUSF_NA)
         {
