@@ -11,6 +11,7 @@
 #include "preferences.h"
 #include "buildmark.h"
 #include "util_str.h"
+#include "packet.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -451,110 +452,4 @@ BOOL Debug (UDWORD level, const char *str, ...)
         M_print ("\n");
 
     return 1;
-}
-
-/*
- * Guess the contacts client from time stamps.
- */
-void UtilUISetVersion (Contact *cont)
-{
-    char buf[100];
-    char *new = NULL;
-    unsigned int ver = cont->id1 & 0xffff, ssl = 0;
-    unsigned char v1 = 0, v2 = 0, v3 = 0, v4 = 0;
-
-    if ((cont->id1 & 0xff7f0000) == BUILD_LICQ && ver > 1000)
-    {
-        new = "licq";
-        if (cont->id1 & BUILD_SSL)
-            ssl = 1;
-        v1 = ver / 1000;
-        v2 = (ver / 10) % 100;
-        v3 = ver % 10;
-        v4 = 0;
-    }
-#ifdef WIP
-    else if ((cont->id1 & 0xff7f0000) == BUILD_MICQ || (cont->id1 & 0xff7f0000) == BUILD_LICQ)
-    {
-        new = "mICQ";
-        v1 = ver / 10000;
-        v2 = (ver / 100) % 100;
-        v3 = (ver / 10) % 10;
-        v4 = ver % 10;
-        if (ver >= 489 && cont->id2)
-            cont->id1 = BUILD_MICQ;
-    }
-#endif
-    else if (cont->id1 == cont->id2 && cont->id2 == cont->id3 && cont->id1 == 0xffffffff)
-        new = "vICQ/GAIM(?)";
-
-    if ((cont->id1 & 0xffff0000) == 0xffff0000)
-    {
-        v1 = (cont->id2 & 0x7f000000) >> 24;
-        v2 = (cont->id2 &   0xff0000) >> 16;
-        v3 = (cont->id2 &     0xff00) >> 8;
-        v4 =  cont->id2 &       0xff;
-        switch (cont->id1)
-        {
-            case BUILD_MIRANDA:
-                if (cont->id2 <= 0x00010202 && cont->TCP_version >= 8)
-                    cont->TCP_version = 7;
-                new = "Miranda";
-                break;
-            case BUILD_STRICQ:
-                new = "StrICQ";
-                break;
-            case BUILD_MICQ:
-                cont->seen_micq_time = time (NULL);
-                new = "mICQ";
-                break;
-            case BUILD_YSM:
-                new = "YSM";
-                if ((v1 | v2 | v3 | v4) & 0x80)
-                    v1 = v2 = v3 = v4 = 0;
-                break;
-            case BUILD_ARQ:
-                new = "&RQ";
-                break;
-            default:
-                snprintf (buf, sizeof (buf), "%08lx", cont->id1);
-                new = buf;
-        }
-    }
-    else if (cont->id1 == BUILD_VICQ)
-    {
-        v1 = 0;
-        v2 = 43;
-        v3 =  cont->id2 &     0xffff;
-        v4 = (cont->id2 & 0x7fff0000) >> 16;
-        new = "vICQ";
-    }
-    else if (cont->id1 == BUILD_TRILLIAN_ID1 &&
-             cont->id2 == BUILD_TRILLIAN_ID2 &&
-             cont->id3 == BUILD_TRILLIAN_ID3)
-    {
-        new = "Trillian 0.73/0.74/Pro 1.0";
-    }
-    
-    if (new)
-    {
-        if (new != buf)
-            strcpy (buf, new);
-        if (v1 || v2 || v3 || v4)
-        {
-            strcat (buf, " ");
-                          sprintf (buf + strlen (buf), "%d.%d", v1, v2);
-            if (v3 || v4) sprintf (buf + strlen (buf), ".%d", v3);
-            if (v4)       sprintf (buf + strlen (buf), ".%d", v4);
-        }
-        if (ssl) strcat (buf, "/SSL");
-    }
-    else
-        buf[0] = '\0';
-
-    if (prG->verbose)
-        sprintf (buf + strlen (buf), " <%08x:%08x:%08x>", (unsigned int)cont->id1,
-                 (unsigned int)cont->id2, (unsigned int)cont->id3);
-
-    s_repl (&cont->version, strlen (buf) ? buf : NULL);
 }

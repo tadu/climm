@@ -9,8 +9,6 @@ void   M_printf (const char *str, ...);
 int    M_pos ();
 BOOL   Debug (UDWORD level, const char *str, ...);
 
-void   UtilUISetVersion (Contact *cont);
-
 #define DEB_PROTOCOL      0x00000008L
 #define DEB_PACKET        0x00000010L
 #define DEB_QUEUE         0x00000020L

@@ -297,6 +297,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             cont->id1             = PacketRead4 (pak);
             cont->id2             = PacketRead4 (pak);
             cont->id3             = PacketRead4 (pak);
+            ContactSetVersion (cont);
             IMOnline (cont, sess, status);
             break;
         case SRV_STATUS_UPDATE:

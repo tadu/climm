@@ -1392,6 +1392,9 @@ static JUMP_F(CmdUserStatusDetail)
                 snprintf (verbuf,  sizeof (verbuf), "[%s]", contr->version);
             else
                 verbuf[0] = '\0';
+            if (prG->verbose)
+                M_printf ("<%08x:%08x:%08x>", (unsigned int)cont->id1,
+                          (unsigned int)cont->id2, (unsigned int)cont->id3);
 
             if (data & 2)
                 M_printf (COLSERVER "%c%c%c%1.1d%c" COLNONE " %*ld",

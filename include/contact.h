@@ -52,5 +52,6 @@ UDWORD      ContactFindByNick (const char *nick);
 Contact    *ContactStart ();
 Contact    *ContactNext (Contact *cont);
 BOOL        ContactHasNext (Contact *cont);
+void        ContactSetVersion (Contact *cont);
 
 #endif

@@ -479,6 +479,7 @@ static JUMP_SNAC_F(SnacSrvUseronline)
             }
         }
     }
+    ContactSetVersion (cont);
     IMOnline (cont, event->sess, tlv[6].len ? tlv[6].nr : 0);
 }
 
@@ -597,11 +598,14 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             tlv = TLVRead (p, PacketReadLeft (p));
             if (cap1->id)
             {
-#ifdef WIP
                 if (~cont->caps & (1 << cap1->id))
+                {
+                    ContactSetVersion (cont);
+#ifdef WIP
                     IMSrvMsg (cont, event->sess, NOW, 33, cap1->name, STATUS_OFFLINE);
 #endif
-                cont->caps |= 1 << cap1->id;
+                    cont->caps |= 1 << cap1->id;
+                }
             }
             if ((i = TLVGet (tlv, 0x2711)) == (UWORD)-1)
             {
@@ -637,11 +641,14 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             {
                 if (cap2->id)
                 {
-#ifdef WIP
                     if (~cont->caps & (1 << cap2->id))
+                    {
+                        ContactSetVersion (cont);
+#ifdef WIP
                         IMSrvMsg (cont, event->sess, NOW, 33, cap2->name, STATUS_OFFLINE);
 #endif
-                    cont->caps |= 1 << cap2->id;
+                        cont->caps |= 1 << cap2->id;
+                    }
                 }
                 s_free (text);
                 return;

@@ -614,7 +614,6 @@ void IMOnline (Contact *cont, Session *sess, UDWORD status)
         return;
 
     cont->seen_time = time (NULL);
-    UtilUISetVersion (cont);
 
     if (status == cont->status)
         return;
@@ -691,10 +690,6 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
     
     if (!cont)
         return;
-    if (cont->flags & CONT_IGNORE)
-        return;
-    if ((cont->flags & CONT_TEMPORARY) && (prG->flags & FLAG_HERMIT))
-        return;
 
     cdata = strdup (text);
     assert (cdata);
@@ -703,12 +698,17 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
 
     carr = sess->type & TYPEF_ANY_SERVER ? MSGRECSTR : MSGTCPRECSTR;
 
-    TabAddUIN (cont->uin);            /* Adds <uin> to the tab-list */
-
     putlog (sess, stamp, cont->uin, tstatus, 
         type == MSG_AUTH_ADDED ? LOG_ADDED : LOG_RECVD, type,
         *cdata ? "%s\n" : "%s", cdata);
     
+    TabAddUIN (cont->uin);            /* Adds <uin> to the tab-list */
+
+    if (cont->flags & CONT_IGNORE)
+        return;
+    if ((cont->flags & CONT_TEMPORARY) && (prG->flags & FLAG_HERMIT))
+        return;
+
     if (uiG.idle_flag)
     {
         char buf[2048];
