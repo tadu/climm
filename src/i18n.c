@@ -183,7 +183,7 @@ static int i18nAdd (FILE *i18nf, int debug, int *res)
 
         i = strtol (buf, &p, 10) - i18nOffset;
 
-        if (i == 7)
+        if (i == 7 || !i)
         {
             if      (!strcasecmp (p + 1, "iso-8859-1")) enc = ENC_LATIN1;
             else if (!strcasecmp (p + 1, "koi8-r"))     enc = ENC_KOI8;
