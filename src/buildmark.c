@@ -20,7 +20,7 @@
  * $Id$
  */
 
-#define MICQ_BUILD_NUM 0x80040a5d
+#define MICQ_BUILD_NUM 0x80046303
 
 #include <string.h>
 #include <stdio.h>
