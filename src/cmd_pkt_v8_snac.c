@@ -41,7 +41,7 @@ extern int reconn;
 
 static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd,
     SnacSrvRates, SnacSrvReplyicbm, SnacSrvReplybuddy, SnacSrvReplybos,
-    SnacSrvReplyinfo, SnacSrvReplylocation, SnacSrvUseronline,
+    SnacSrvReplyinfo, SnacSrvReplylocation, SnacSrvUseronline, SnacSrvContacterr,
     SnacSrvRegrefused, SnacSrvUseroffline, SnacSrvRecvmsg, SnacSrvUnknown,
     SnacSrvFromicqsrv, SnacSrvAddedyou, SnacSrvToicqerr, SnacSrvNewuin,
     SnacSrvSetinterval, SnacSrvSrvackmsg, SnacSrvAckmsg, SnacSrvAuthreq,
@@ -74,7 +74,7 @@ static SNAC SNACS[] = {
     {  1, 19, "SRV_MOTD",            SnacSrvMotd},
     {  1, 24, "SRV_FAMILIES2",       SnacSrvFamilies2},
     {  2,  3, "SRV_REPLYLOCATION",   SnacSrvReplylocation},
-    {  3,  1, "SRV_CONTACTERR",      NULL},
+    {  3,  1, "SRV_CONTACTERR",      SnacSrvContacterr},
     {  3,  3, "SRV_REPLYBUDDY",      SnacSrvReplybuddy},
     {  3, 11, "SRV_USERONLINE",      SnacSrvUseronline},
     {  3, 10, "SRV_REFUSE",          SnacSrvContrefused},
@@ -443,6 +443,47 @@ static JUMP_SNAC_F(SnacSrvMotd)
 static JUMP_SNAC_F(SnacSrvReplylocation)
 {
     /* ignore all data, do nothing */
+}
+
+/*
+ * SRV_CONTACTERR - SNAC(3,1)
+ */
+static JUMP_SNAC_F(SnacSrvContacterr)
+{
+    UWORD err, cnt;
+    UDWORD uin;
+    Contact *cont;
+    char first = 0, empty = 0;
+    const char *errtxt;
+    
+    err = PacketReadB2 (event->pak);
+    cnt = PacketReadB2 (event->pak);
+    
+    switch (err)
+    {
+        case 0x0e: errtxt = "FIXME: syntax error";
+        case 0x14: errtxt = "FIXME: removing non-contact";
+        default:   errtxt = "FIXME: unknown";
+    }
+
+    M_printf ("FIXME: Contact error %d (%s) for %d contacts: ", err, errtxt, cnt);
+
+    while (empty < 3)
+    {
+        if ((uin = PacketReadUIN (event->pak)))
+        {
+            cont = ContactUIN (event->conn, uin);
+            if (first)
+                M_print (", ");
+            if (cont)
+                M_printf ("%s (%ld)", cont->nick, cont->uin);
+            else
+                M_printf ("%ld", cont->uin);
+        }
+        else
+            empty++;
+    }
+    M_print ("\n");
 }
 
 /*
