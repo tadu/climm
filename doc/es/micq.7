@@ -1,5 +1,5 @@
 .\" $Id$ -*- nroff -*-
-.\"  EN: micq.7,v 1.20 2002/08/26 19:53:42
+.\"  EN: micq.7,v 1.28 2002/09/30 21:26:12
 .\"      ^^ <version of English man page this is in sync with>
 .TH MICQ 7 mICQ ES
 .SH NOMBRE
@@ -105,13 +105,13 @@ Pueden especificarse cuantos remitentes se necesiten.
 Muestra el tiempo que mICQ ha estado corriendo, y algunas estadisticas.
 .TP
 .BI last \ [contacto]
-Muestra una lista de usuarios que te enviaron mensajes, o el ultimo mensaje
-recibido de
+Muestra el ultimo mensaje recibido de
 .IR contacto ,
 el cual puede ser un
 .I uin
 o un
-.IR nickname .
+.IR nickname ,
+o de todos los que te enviaron mensajes.
 .TP
 .BI verbose \ [verb]
 Configura el nivel de salida de mICQ a
@@ -210,10 +210,14 @@ Cambia un comando, conocido internamente o anteriormente como
 por uno ahora conocido como
 .IR new .
 .TP
-.BI auth \ uin|nickname
-Da permiso a
+.BI auth \ [req|grant|deny|add]\ uin|nickname
+Concede o niega el permiso a
 .I uin|nickname
-para agregarte a su lista de contactos.
+para agregarte a su lista de contactos, pide a
+.I uin|nickname
+autorizacion para agregarlos a tu lista, o le dice a
+.I uin|nickname
+que los agregaste a tu lista.
 .TP
 .BI rand \ number
 Encuentra un usuario al azar en el grupo de interes numero
@@ -251,16 +255,17 @@ como su apellido. Si no se dan argumentos, se pregunta por un nick, un nombre,
 un apellido, una direccion de email y otros datos adicionales que utilizar como
 parametros para la busqueda.
 .TP
+.BI add \ nickname\ alias
+.TP
 .BI add \ uin\ [nickname]
-Agrega
+Agrega a
 .I uin
-a tu lista de contactos con
+a tu lista de contactos como
 .IR nickname ,
-como su nick, o renombra a
-.I uin
-con
-.I nickname 
-como nuevo nick.
+o agrega un alias
+.IR alias
+para
+.IR nickname .
 Si no se da un
 .I nickname
 is not given, use
@@ -271,10 +276,12 @@ Nota: tenes que grabar (con
 .BR save )
 para hacer este cambio persistente.
 .TP
-.BI rem \ nick
-Remueve a
-.I nick
-de tu lista de contactos.
+.BI rem \ alias
+Remueve de tu lista de contactos a
+.IR alias .
+Si
+.IR alias
+es el ultimo alias para este contacto, remueve el contacto completamente.
 .br
 Nota: tenes que grabar (con
 .BR save )
@@ -295,6 +302,8 @@ Cambia la configuracion que hace que los cambios de estado y los mensajes del us
 .I nickname
 sean ignorados.
 .TP
+.BI f[inger] \ uin|nickname
+.TP
 .BI info \ uin|nickname
 Muestra la informacion del usuario
 .IR uin|nickname .
@@ -311,6 +320,7 @@ mayor detalle.
 .TP
 .B ww
 Muestra todas las personas de tu lista de contactos, con mayor detalle.
+Tambien muestra los alias.
 .TP
 .B wide
 Muestra todas las personas de tu lista de contactos en formato ancho.
@@ -320,7 +330,7 @@ Muestra todas las personas de tu lista de contactos que estan conectadas en
 formato ancho.
 .TP
 .B s \ [nickname]
-Muestra tu estado actual, o el del nick dado, en detalle.
+Muestra tu estado actual, o el del nick dado, en detalle, incluyendo los alias.
 .TP
 .B i
 Muestra las personas que estan siendo ignoradas.
@@ -352,27 +362,27 @@ respuesta automatica a
 .B online
 Cambia tu estado a "online".
 .TP
-.B away \ [mensaje]
+.BI away \ [mensaje]
 Cambia tu estado a "away" (lejos). Opcionalmente cambia el mensaje de
 respuesta automatica a
 .IR mensaje .
 .TP
-.B na \ [mensaje]
+.BI na \ [mensaje]
 Cambia tu estado a "not available" (no disponible). Opcionalmente cambia el
 mensaje de respuesta automatica a
 .IR mensaje .
 .TP
-.B occ \ [mensaje]  
+.BI occ \ [mensaje]  
 Cambia tu estado a "occupied" (ocupado). Opcionalmente cambia el mensaje de
 respuesta automatica a
 .IR mensaje .
 .TP
-.B dnd \ [mensaje]
+.BI dnd \ [mensaje]
 Cambia tu estado a "do not disturb" (no molestar). Opcionalmente cambia el
 mensaje de respuesta automatica a
 .IR mensaje .
 .TP
-.B ffc \ [mensaje] 
+.BI ffc \ [mensaje] 
 Cambia tu estado a "free for chat" (libre para hablar). Opcionalmente cambia
 el mensaje de respuesta automatica a
 .IR mensaje .
@@ -416,7 +426,7 @@ Configura tu grupo de usuarios al azar al grupo determinado por el
 .I numero
 indicado. Sin argumentos, lista los posibles grupos con sus respectivos numeros.
 .TP
-.BI tcp \ comando\ uin|nick
+.BI peer \ comando\ uin|nick
 Opera el 
 .I comando
 sobre el usuario determinado por el
@@ -443,7 +453,13 @@ o
 .B ffc
 para obtener la respuesta automatica del usuario para tal estado.
 .TP
-.BI file \ [file\ as]...\ descripcion
+.BI file \ file\ description
+Envia el archivo
+.I file
+con la descripcion
+.IR description .
+.TP
+.BI files \ [file\ as]...\ description
 Envia archvios al usuario. Puede haber, arbitrariamente, muchos pares de
 nombres de un mismo archivo de nombre 
 .I file
@@ -456,9 +472,6 @@ es
 se utilizara el nombre del archivo sin el path, y si es
 .RB ' . '
 se utilizara el mismo nombre, completo.
-.sp
-Nota: Los nombres de los archivos y las descripciones no pueden contener
-espacios.
 .RE
 .TP
 .BI conn \ [comando\ nr]
@@ -473,6 +486,9 @@ Abre la conexion dada, o la primer conexion con el servidor.
 .TP
 .B login
 Abre la conexion dada, o la primer conexion con el servidor.
+.TP
+.B close
+Cierra la conexion dada. Esto tambien remueve las conexiones temporarias.
 .TP
 .B remove
 Cierra y remueve la conexion dada (temporaria).
