@@ -27,7 +27,7 @@ void SnacCliAddvisible   (Session *sess, UDWORD uin);
 void SnacCliRemvisible   (Session *sess, UDWORD uin);
 void SnacCliAddinvis     (Session *sess, UDWORD uin);
 void SnacCliReminvis     (Session *sess, UDWORD uin);
-void SnacCliSendmsg      (Session *sess, UDWORD uin, const char *text, UDWORD type);
+void SnacCliSendmsg      (Session *sess, UDWORD uin, const char *text, UDWORD type, UBYTE format);
 void SnacCliReqofflinemsgs  (Session *sess);
 void SnacCliAckofflinemsgs  (Session *sess);
 void SnacCliRegisteruser    (Session *sess);

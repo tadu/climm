@@ -1108,38 +1108,39 @@ void SnacCliReqicbm (Session *sess)
 /*
  * CLI_SENDMSG - SNAC(4,6)
  */
-void SnacCliSendmsg (Session *sess, UDWORD uin, const char *text, UDWORD type)
+void SnacCliSendmsg (Session *sess, UDWORD uin, const char *text, UDWORD type, UBYTE format)
 {
     Packet *pak;
-    UBYTE format;
     UDWORD mtime = 0, mid = 0;
     
     if (type != 0xe8)
         M_print ("%s " COLACK "%10s" COLNONE " " MSGSENTSTR "%s\n",
                  s_now, ContactFindName (uin), MsgEllipsis (text));
     
-    switch (type)
+    if (!format)
     {
-        case MSG_URL:
-        case MSG_AUTH_REQ:
-        case MSG_AUTH_GRANT:
-        case MSG_AUTH_DENY:
-        case MSG_AUTH_ADDED:
-            format = 4;
-            break;
-        case MSG_AUTO:
-        case MSG_NORM:
-            format = 1;
-            break;
-        case 0xe8:
-            format = 2;
-            break;
-        default:
-            M_print (i18n (1930, "Can't send this (%x) yet.\n"), type);
-            return;
+        switch (type)
+        {
+            default:
+            case MSG_AUTO:
+            case MSG_URL:
+            case MSG_AUTH_REQ:
+            case MSG_AUTH_GRANT:
+            case MSG_AUTH_DENY:
+            case MSG_AUTH_ADDED:
+                format = 4;
+                break;
+            case MSG_NORM:
+                format = 1;
+                break;
+            case 0xe8:
+                format = 2;
+                break;
+                return;
+        }
     }
     
-    pak = SnacC (sess, 4, 6, 0, format == 2 ? 0x1771 : 0);
+    pak = SnacC (sess, 4, 6, 0, format == 2 && type == 0xe8 ? 0x1771 : 0);
     PacketWriteB4 (pak, mtime);
     PacketWriteB4 (pak, mid);
     PacketWriteB2 (pak, format);

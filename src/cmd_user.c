@@ -42,7 +42,7 @@ static jump_f
     CmdUserAuth, CmdUserURL, CmdUserSave, CmdUserTabs, CmdUserLast,
     CmdUserUptime, CmdUserOldSearch, CmdUserSearch, CmdUserUpdate, CmdUserPass,
     CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserPeer, CmdUserConn,
-    CmdUserContact;
+    CmdUserContact, CmdUserAnyMess;
 
 static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag);
 
@@ -59,6 +59,7 @@ static jump_t jump[] = {
     { &CmdUserTrans,         "trans",        NULL, 0,   0 },
     { &CmdUserAuto,          "auto",         NULL, 0,   0 },
     { &CmdUserAlter,         "alter",        NULL, 0,   0 },
+    { &CmdUserAnyMess,       "message",      NULL, 0,   0 },
     { &CmdUserMessage,       "msg",          NULL, 0,   1 },
     { &CmdUserMessage,       "r",            NULL, 0,   2 },
     { &CmdUserMessage,       "a",            NULL, 0,   4 },
@@ -639,7 +640,7 @@ static JUMP_F(CmdUserPeek)
     if (!s_parsenick (&args, &cont, NULL, sess))
         M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
     else
-        SnacCliSendmsg (sess, cont->uin, "", 0xe8);
+        SnacCliSendmsg (sess, cont->uin, "", 0xe8, 0);
     return 0;
 }
 
@@ -1031,6 +1032,63 @@ static JUMP_F (CmdUserResend)
             return 0;
         }
     }
+}
+
+/*
+ * Send an instant message of any kind.
+ */
+static JUMP_F (CmdUserAnyMess)
+{
+#ifdef WIP
+    Contact *cont;
+    char *arg1 = NULL;
+    UDWORD i, f;
+    ASESSION;
+
+    if (!(data & 3))
+    {
+        if (!s_parse (&args, &arg1))
+            return 0;
+        if (!strcmp (arg1, "peer"))
+            data |= 1;
+        else if (!strcmp (arg1, "srv"))
+        {
+            if (!s_parseint (&args, &f))
+                return 0;
+            data |= 2;
+        }
+        else
+            return 0;
+    }
+    if (!(data & ~3))
+    {
+        if (!s_parseint (&args, &i))
+            return 0;
+        data |= i << 2;
+    }
+    if (!s_parsenick (&args, &cont, NULL, sess))
+        return 0;
+    if (!s_parse (&args, &arg1))
+        return 0;
+
+    if (data & 1)
+    {
+        if (!sess->assoc || !TCPDirectOpen  (sess->assoc, cont->uin))
+        {
+            M_print (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
+            return 0;
+        }
+        TCPSendMsg (sess->assoc, cont->uin, arg1, data >> 2);
+    }
+    else
+    {
+        if (sess->type == TYPE_SERVER)
+            SnacCliSendmsg (sess, cont->uin, arg1, data >> 2, f);
+        else
+            CmdPktCmdSendMessage (sess, cont->uin, arg1, data >> 2);
+    }
+#endif
+    return 0;
 }
 
 /*
@@ -1518,7 +1576,7 @@ static JUMP_F(CmdUserStatusWide)
     M_print (COLMESSAGE);
 
     stat = strdup (s_status (sess->status));
-    StatusLen = strlen (i18n (1071, "Your status is ")) + strlen (stat) + 12;
+    StatusLen = strlen (i18n (1071, "Your status is")) + strlen (stat) + 13;
     for (i = 0; 2 * i + StatusLen + strlen (i18n (1654, "Online")) < Get_Max_Screen_Width (); i++)
     {
         M_print ("=");
@@ -1530,8 +1588,8 @@ static JUMP_F(CmdUserStatusWide)
     }
 
    /* Print our status */
-    M_print (" " COLCONTACT "%10lu" COLNONE " %s%s",
-             sess->uin, i18n (1071, "Your status is "), stat);
+    M_print (" " COLCONTACT "%10lu" COLNONE " %s %s",
+             sess->uin, i18n (1071, "Your status is"), stat);
     free (stat);
     
     M_print (COLNONE "\n");
@@ -2134,7 +2192,7 @@ static JUMP_F(CmdUserAuth)
 /*            if (sess->type == TYPE_SERVER && sess->ver >= 8)
                 SnacCliReqauth (sess, cont->uin, msg);
             else */ if (sess->type == TYPE_SERVER)
-                SnacCliSendmsg (sess, cont->uin, msg, MSG_AUTH_REQ);
+                SnacCliSendmsg (sess, cont->uin, msg, MSG_AUTH_REQ, 0);
             else
                 CmdPktCmdSendMessage (sess, cont->uin, msg, MSG_AUTH_REQ);
             free (cmd);
@@ -2147,7 +2205,7 @@ static JUMP_F(CmdUserAuth)
 /*            if (sess->type == TYPE_SERVER && sess->ver >= 8)
                 SnacCliAuthorize (sess, cont->uin, 0, msg);
             else */ if (sess->type == TYPE_SERVER)
-                SnacCliSendmsg (sess, cont->uin, "\x03", MSG_AUTH_DENY);
+                SnacCliSendmsg (sess, cont->uin, "\x03", MSG_AUTH_DENY, 0);
             else
                 CmdPktCmdSendMessage (sess, cont->uin, "\x03", MSG_AUTH_DENY);
             free (cmd);
@@ -2158,7 +2216,7 @@ static JUMP_F(CmdUserAuth)
 /*            if (sess->type == TYPE_SERVER && sess->ver >= 8)
                 SnacCliGrantauth (sess, cont->uin);
             else */ if (sess->type == TYPE_SERVER)
-                SnacCliSendmsg (sess, cont->uin, "\x03", MSG_AUTH_ADDED);
+                SnacCliSendmsg (sess, cont->uin, "\x03", MSG_AUTH_ADDED, 0);
             else
                 CmdPktCmdSendMessage (sess, cont->uin, "\x03", MSG_AUTH_ADDED);
             free (cmd);
@@ -2176,7 +2234,7 @@ static JUMP_F(CmdUserAuth)
 /*    if (sess->type == TYPE_SERVER && sess->ver >= 8)
         SnacCliAuthorize (sess, cont->uin, 1, NULL);
     else */ if (sess->type == TYPE_SERVER)
-        SnacCliSendmsg (sess, cont->uin, "\x03", MSG_AUTH_GRANT);
+        SnacCliSendmsg (sess, cont->uin, "\x03", MSG_AUTH_GRANT, 0);
     else
         CmdPktCmdSendMessage (sess, cont->uin, "\x03", MSG_AUTH_GRANT);
     return 0;

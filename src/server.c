@@ -75,7 +75,7 @@ void icq_sendmsg (Session *sess, UDWORD uin, char *text, UDWORD msg_type)
         if (~sess->connect & CONNECT_OK)
             return;
         if (sess->type == TYPE_SERVER)
-            SnacCliSendmsg (sess, uin, text, msg_type);
+            SnacCliSendmsg (sess, uin, text, msg_type, 0);
         else
             CmdPktCmdSendMessage (sess, uin, text, msg_type);
     }
