@@ -904,8 +904,8 @@
 2218:UIN: %s\n
 2220:several
 2222:Script command '%s' failed: %s (%d).\n
-2223:Opening remote control FIFO at %s... 
-2225:remote control
+2223:Opening scripting FIFO at %s... 
+2225:scripting
 2226:Couldn't create FIFO
 2227:Couldn't open FIFO
 2228:Couldn't set FIFO nonblocking
@@ -1199,3 +1199,6 @@
 2562:Execute <cmd> with connection <nr> or connection for uin <uin> as current server connection.
 2563:Set or display connection options.\n
 2564:The user couldn't be detected to be online.\n
+2565:Contact upload for %s%s%s failed, authorization required.\n
+2566:Contact upload for %s%s%s failed, already on server.\n
+2567:Contact upload for %s%s%s succeeded.\n
