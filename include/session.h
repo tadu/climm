@@ -37,6 +37,7 @@ struct Session_s
         Session            *assoc; /* associated UDP <-> TCP or parent TCP session */
         
         jump_sess_f *dispatch;     /* function to call on select() */
+        jump_sess_f *reconnect;    /* function to call for reconnect */
         jump_sess_f *utilio;       /* private to util_io.c */
 };
 

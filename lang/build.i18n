@@ -632,7 +632,7 @@
 1632:¶Connection unstable. Exiting....
 1633: 
 1634:ok¶
-1635:You have encounterd a bug in my code :( I now own you a beer!¶Greetings Fryslan!¶
+1635: 
 1636: 
 1637:Can't bind socket to free port¶
 1638:Couldn't create socket
@@ -1028,3 +1028,5 @@
 2028:Wrong argument count.¶
 2029:Protocol error on peer-to-peer connection
 2030:%04d-%02d-%02d %02d:%02d UTC
+2031:Connecting failed too often, giving up.¶
+2032:Scheduling v8 reconnect in %d seconds.¶

@@ -34,6 +34,7 @@
 
 #ifdef TCP_COMM
 
+static void       TCPDispatchReconn  (Session *sess);
 static void       TCPDispatchMain    (Session *sess);
 static void       TCPDispatchConn    (Session *sess);
 static void       TCPDispatchShake   (Session *sess);
@@ -85,6 +86,7 @@ void SessionInitPeer (Session *sess)
     sess->type        = TYPE_LISTEN;
     sess->flags       = 0;
     sess->dispatch    = &TCPDispatchMain;
+    sess->reconnect   = &TCPDispatchReconn;
     sess->our_session = 0;
 
     UtilIOConnectTCP (sess);
@@ -170,6 +172,16 @@ void TCPDirectOff (UDWORD uin)
 }
 
 /**************************************************/
+
+/*
+ * Reconnect hook. Actually, just inform the user.
+ */
+void TCPDispatchReconn (Session *sess)
+{
+    Time_Stamp ();
+    M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
+    M_print (i18n (2023, "Direct connection closed by peer.\n"));
+}
 
 /*
  * Accepts a new direct connection.

@@ -30,6 +30,8 @@ typedef void (jump_snac_f)(struct Event *);
 typedef struct { UWORD fam; UWORD cmd; const char *name; jump_snac_f *f; } SNAC;
 #define JUMP_SNAC_F(f) void f (struct Event *event)
 
+extern int reconn;
+
 static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd,
     SnacSrvRates, SnacSrvReplyicbm, SnacSrvReplybuddy, SnacSrvReplybos,
     SnacSrvReplyinfo, SnacSrvReplylocation, SnacSrvUseronline, SnacSrvRegrefused,
@@ -613,6 +615,7 @@ JUMP_SNAC_F(SnacSrvReplybos)
     SnacCliAddcontact (event->sess, 0);
 
     event->sess->connect = CONNECT_OK | CONNECT_SELECT_R;
+    reconn = 0;
     
     QueueEnqueueData (queue, event->sess, event->sess->connect, QUEUE_TYPE_SRV_KEEPALIVE,
                       event->sess->uin, time (NULL) + 30,

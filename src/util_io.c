@@ -574,17 +574,21 @@ Packet *UtilIOReceiveTCP (Session *sess)
         }
         return pak;
     }
-    Time_Stamp ();
-    M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
-    if ((rc && rc != ETIMEDOUT) || sess->type != TYPE_DIRECT)
-        M_print (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
-    else
-        M_print (i18n (2023, "Direct connection closed by peer.\n"));
+
+    PacketD (pak);
     sess->connect = 0;
     sockclose (sess->sok);
     sess->sok = -1;
-    PacketD (pak);
     sess->incoming = NULL;
+
+    if ((rc && rc != ECONNRESET) || !sess->reconnect)
+    {
+        Time_Stamp ();
+        M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
+        M_print (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
+    }
+    else
+        sess->reconnect (sess);
     return NULL;
 }
 

@@ -12,6 +12,7 @@
 #include "util.h"
 #include "util_ui.h"
 #include "util_io.h"
+#include "contact.h"
 #include "preferences.h"
 #include "cmd_pkt_v8_flap.h"
 #include "cmd_pkt_v8_snac.h"
@@ -23,7 +24,11 @@
 #include <assert.h>
 
 jump_sess_f SrvCallBackReceive;
+static jump_sess_f SrvCallBackReconn;
 static void SrvCallBackTimeout (struct Event *event);
+static void SrvCallBackDoReconn (struct Event *event);
+
+int reconn = 0;
 
 void SessionInitServer (Session *sess)
 {
@@ -35,6 +40,7 @@ void SessionInitServer (Session *sess)
     sess->our_seq  = rand () & 0x7fff;
     sess->connect  = 0;
     sess->dispatch = &SrvCallBackReceive;
+    sess->reconnect= &SrvCallBackReconn;
     sess->server   = strdup (sess->spref->server);
     sess->type     = TYPE_SERVER;
     sess->flags    = 0;
@@ -42,6 +48,35 @@ void SessionInitServer (Session *sess)
                       sess->uin, time (NULL) + 10,
                       NULL, NULL, &SrvCallBackTimeout);
     UtilIOConnectTCP (sess);
+}
+
+void SrvCallBackReconn (Session *sess)
+{
+    Contact *cont;
+
+    Time_Stamp ();
+    M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
+    if (reconn < 5)
+    {
+        M_print (i18n (2032, "Scheduling v8 reconnect in %d seconds.\n"), 10 << reconn);
+        QueueEnqueueData (queue, sess, 0, 0, sess->uin, time (NULL) + (10 << reconn), NULL, NULL, &SrvCallBackDoReconn);
+        reconn++;
+    }
+    else
+    {
+        M_print (i18n (2031, "Connecting failed too often, giving up.\n"));
+        reconn = 0;
+    }
+    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+    {
+        cont->status = STATUS_OFFLINE;
+    }
+}
+
+void SrvCallBackDoReconn (struct Event *event)
+{
+    SessionInitServer (event->sess);
+    free (event);
 }
 
 void SrvCallBackTimeout (struct Event *event)
@@ -56,6 +91,7 @@ void SrvCallBackTimeout (struct Event *event)
             sess->connect = 0;
             sockclose (sess->sok);
             sess->sok = -1;
+            SrvCallBackReconn (sess);
         }
         else
         {
