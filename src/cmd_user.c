@@ -2870,8 +2870,9 @@ static JUMP_F(CmdUserAuth)
 #if 0
                 if (conn->type == TYPE_SERVER && conn->version >= 8)
                     SnacCliAuthorize (conn, cont, 0, msg);
+                else
 #endif
-                else if (conn->type == TYPE_SERVER)
+                if (conn->type == TYPE_SERVER)
                     SnacCliSendmsg (conn, cont, msg, MSG_AUTH_DENY, 0);
                 else
                     CmdPktCmdSendMessage (conn, cont, msg, MSG_AUTH_DENY);
@@ -2882,8 +2883,9 @@ static JUMP_F(CmdUserAuth)
 #if 0
                 if (conn->type == TYPE_SERVER && conn->version >= 8)
                     SnacCliReqauth (conn, cont, msg);
+                else
 #endif
-                else if (conn->type == TYPE_SERVER)
+                if (conn->type == TYPE_SERVER)
                     SnacCliSendmsg (conn, cont, msg, MSG_AUTH_REQ, 0);
                 else
                     CmdPktCmdSendMessage (conn, cont, msg, MSG_AUTH_REQ);
@@ -2892,8 +2894,9 @@ static JUMP_F(CmdUserAuth)
 #if 0
                 if (conn->type == TYPE_SERVER && conn->version >= 8)
                     SnacCliGrantauth (conn, cont);
+                else
 #endif
-                else if (conn->type == TYPE_SERVER)
+                if (conn->type == TYPE_SERVER)
                     SnacCliSendmsg (conn, cont, "\x03", MSG_AUTH_ADDED, 0);
                 else
                     CmdPktCmdSendMessage (conn, cont, "\x03", MSG_AUTH_ADDED);
@@ -2902,8 +2905,9 @@ static JUMP_F(CmdUserAuth)
 #if 0
                 if (conn->type == TYPE_SERVER && conn->version >= 8)
                     SnacCliAuthorize (conn, cont, 1, NULL);
+                else
 #endif
-                else if (conn->type == TYPE_SERVER)
+                if (conn->type == TYPE_SERVER)
                     SnacCliSendmsg (conn, cont, "\x03", MSG_AUTH_GRANT, 0);
                 else
                     CmdPktCmdSendMessage (conn, cont, "\x03", MSG_AUTH_GRANT);
