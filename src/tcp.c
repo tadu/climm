@@ -683,7 +683,7 @@ void TCPSendPacket (Packet *pak, Session *sess)
         {
             Time_Stamp ();
             M_print (" \x1b«" COLCLIENT "");
-            M_print (i18n (1776, "Outgoing TCP packet:"));
+            M_print (i18n (1776, "Outgoing TCP packet (%d):"), sess->sok);
             M_print (COLNONE "*\n");
             Hex_Dump (data, tpak->len);
             M_print (ESC "»\r");

@@ -773,9 +773,9 @@
 1773:%s could not be added.¶
 1774:Incoming packet:
 1775:Outgoing packet:
-1776:Outgoing TCP packet:
+1776:Outgoing TCP packet (%d):
 1777:Opening peer-to-peer connection at localhost:%d... 
-1778:Incoming TCP packet:
+1778:Incoming TCP packet: (%d)
 1779: 
 1780: 
 1781:Your password for UIN %d:¶
