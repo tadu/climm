@@ -2,7 +2,7 @@
 
 bin_PROGRAMS = micq
 
-AM_CFLAGS = -DDATADIR=\"$(datadir)\"
+AM_CFLAGS = -DPKGDATADIR=\"$(pkgdatadir)\"
 
 # If BeOS, add 'beos.c'
 micq_SOURCES = conv.c conv_rus.c conv_jp.c file_util.c icq_response.c micq.c \
