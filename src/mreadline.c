@@ -4,21 +4,7 @@
  * mreadline - small line editing and history code
  * Copyright (C) 1998 Sergey Shkonda (serg@bcs.zp.ua)
  * This file may be distributed under version 2 of the GPL licence.
- *
- * This software is provided AS IS to be used in
- * whatever way you see fit and is placed in the
- * public domain.
- *
- * Author : Sergey Shkonda Nov 27, 1998
- * Changes:
- * * Lalo Martins (lalo@webcom.com) Feb 26, 1999
- *   added tab completion (added get_tab() and changed
- *   R_process_input()
- * * Lalo Martins (lalo@webcom.com) Feb 26, 1999
- *   added more editing commands: delete (as VEOF),
- *   ^A, ^E, ^K, ^U and ^Y, all in R_process_input()
- * * Prompt handling rewritten by Rüdiger Kuhlmann.
- * * signal handlers by Rüdiger Kuhlmann.
+ * Originally placed in the public domain by Sergey Shkonda Nov 27, 1998
  *****************************************************/
 
 #include "micq.h"
