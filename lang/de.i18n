@@ -1,10 +1,10 @@
 # Deutsch (German)
 1001:de
 1002:de_DE
-1003:486
+1003:489
 1004:Rico -mc- Glöckner, Rüdiger Kuhlmann
 1005:Rüdiger Kuhlmann
-1006:2. Mai 2002
+1006:7. Juni 2002
 1007:iso-8859-1
 #1008: 
 #1009: 
@@ -49,14 +49,15 @@
 1048:Fehlerkode: %d¶
 1049:UIN: %d¶
 1050:Login erfolgreich!
-1051:URL: %s¶
+1051: 
 1052:Öffne Version-5-Verbindung nach %s:%d... 
 1053: Auf %s verbunden, warte auf Antwort.¶
-1054: Verbindung verweigert auf Port: %d, Server: %s¶
+1054: 
 1055:Konnte keinen Socket erstellen!
 1056:Socket erhalten, versuche zu verbinden...¶
 1057:Ausgehendes Server-Paket (Version 8):
 1058:SNAC (%x,%x) [%s] Flags %x Referenz %x¶
+#1059: 
 1060:Ausführlichkeit is %d.¶
 1061:%s ist kein Spitzname.¶
 1062:ignorierte User:
@@ -409,7 +410,7 @@
 1398:Suche ©2fehlgeschlagen©0.
 1399:Unbekannte "Meta User"-Antwort ©1%04X©0.¶
 1400:Zeigt zwischengespeicherte Informationen über Benutzer.
-1401:Ändert sonstige Informationen wie Alter und Geschlecht.
+1401:Ändert weitere Informationen wie Alter und Geschlecht.
 1402:Ändert "Über"-Informationen.
 1403:Zeigt die letzte von <nick> empfangene Nachricht, oder eine Liste derjenigen Benutzer, die schon einmal eine Nachricht geschickt haben.
 1404:Setzt auf bzw. entfernt <nick> von der Ignorier-Liste.
@@ -417,26 +418,26 @@
 1406:Ändere Sichtbarkeit gegenüber <nick> im Status "unsichtbar".
 1407:Zeigt den Online-Status der Leute auf der Kontaktliste an.
 1408:Ändert das Passwort in <secret>.
-1409:Sendet eine Nachricht an <uin>.
+1409:Sendet eine Nachricht an uin bzw. nick.
 1410:Sendet eine Nachricht und URL an <uin>.
 1411:Sendet eine mehrzeilige Nachricht an JEDEN in der Kontaktliste.
 1412:Sendet eine Nachricht zu der letzten Person, zu der du eine Nachricht geschickt hast.
-1413:Erlaubt <uin>, dich zu seiner Kontaktliste hinzuzufügen.
+1413:Erlaubt uin bzw. nick das Hinzufügen zu seiner Kontaktliste.
 1414:Antwort auf die letzte Nachricht, die du bekommen hast.
 1415:Findet einen zufälligen User in der Interessengruppe <nr> oder listet alle Gruppen.
 1416:Zeigt den momentanen Status aller Benutzer auf der Kontaktliste.
 1417:Benennt Kommando <old cmd> in <new cmd> um.
-1418:Setzt die Ausführlichkeit auf <nr> (Vorgabe: 0).
+1418:Setzt den Grad der Ausführlichkeit auf <nr>, oder zeigt Grad der Ausführlichkeit an.
 1419:Löscht den Bildschirm.
-1420:Schaltet das Piepsen beim Erhalt von Nachrichten an/aus.
-1421:Schaltet die Anzeige von Farben um.
+1420:Schaltet das Piepsen beim Erhalt von Nachrichten an/aus, setzt ein Kommando für dieses Ereignis oder zeigt den aktuellen Status dieser Option an.
+1421: 
 1422:Logt aus und beendet mICQ.
 1423:Zeigt on, ob und welche automatischen Antwortet gegeben werden.
 1424:Aktiviert bzw. deaktiviert automatische Antworten.
 1425:Ändert die automatische Antwort im Status <status> auf <message>.
 1426:Erzeugt eine neue Benutzernummer mit dem Paßwort <password>.
 1427:Wechselt in den Status <nr> oder listet die Bedeutung einiger Status-Nummern.
-1428:Fügt <uin> zu deiner Kontaktliste mit Spitzname <nick> hinzu.
+1428:Fügt uin zu deiner Kontaktliste mit Spitzname nick hinzu oder nennt es um.
 1429:Sucht nach einem ICQ-Benutzer mit eMail-Adresse <email>.
 1430:Zeigt grundlegende Informationen über <uin> an.
 1431:-verbunden-
@@ -507,9 +508,9 @@
 1493:Benutzer-zu-Benutzer
 1494:Nur Server
 1495:Kein zufälliger Benutzer gefunden
-1496:%02d/%02d/%04d
+1496: 
 1497:fehlgeschlagen
-1498:Information über:
+1498:Information über
 1499:Anderes
 1500:Spitzname:
 1501:Name:
@@ -573,28 +574,28 @@
 1559:    Typ %d Verbindungsendpunkt %d IP %s (%d) [%s,%s] ID %x/%x/%x¶
 1560:Gebe das Mindestalter ein (18-22,23-29,30-39,40-49,50-59,60-120):
 1561:Gebe das Maximalalter ein (22,29,39,49,59,120):
-1562:©1Information für %ld¶
-1563:Spitzname:
+1562:Information für
+1563: 
 1564:Vorname:
 1565:Nachname:
 1566:eMail-Adresse:
 1567:Keine Autorisation erforderlich.©0 
 1568:Autorisation erforderlich.©0 
-1569:©1Mehr Informationen für %ld¶
+1569: 
 1570:Stadt:
 1571:Land:
 1572:Landescode:
-1573:Zeitzone:
+1573: 
 1574:Bundesstaat:
 1575:Alter:
-1576:nicht angegeben
+1576: 
 1577:nicht angegeben
 1578:Landesvorwahl:
 1579:Firma:
-1580:Telephonnummer:
+1580: 
 1581:Internetseite:
 1582:Über:
-1583:©1Benutzer %ld gefunden¶
+1583: 
 1584:Warnung! Befehl "%s" mit Rückgabewert %d fehlgeschlagen¶
 1585:Arrgghh!!!!!!!  Schlechtes Paket.
 1586:©4¶%s©0 hat Sie auf seine Kontaktliste gesetzt.¶
@@ -636,18 +637,18 @@
 1622:Möchten Sie die Änderungen anwenden? (JA/NEIN)
 1623:Doppeltes Paket %04X.¶
 #1624:Sorry, can't initialize Windows Sockets...
-#1625:popping type %d seq %08x at %p (pak %p)
+#1625: 
 #1626:enqueuing type %d seq %08x at %p (pak %p)
-#1627:couldn't dequeue type %d seq %08x
+#1627: 
 1628: Beschreibung: ©3%s©0¶
 1629: URL:          ©3%s©0 
 #1630:dequeue type %d seq %08x at %p (pak %p)
-1631:Öffne Verbindung zu %s%s%s bei %s:%d... 
+1631: 
 1632:¶Verbindung instabil. Beende...
 #1633: 
 #1634:ok¶
-1635:Du bist auf einen Fehler in meinem Programmcode gestoßen :(. Jetzt schulde ich Dir ein Bier! Grüße, Fryslan!¶
-#1636:Auto-response message for %s:¶
+#1635: 
+#1636: 
 #1637:Can't bind socket to free port¶
 1638:Konnte Verbindungsendpunkt nicht erzeugen
 1639:Die neue Benutzernummer ist %ld!¶
@@ -658,7 +659,7 @@
 1644:Bestätigt SRV_X2 0x00E6 Fertig mit alten Nachrichten (?)¶
 1645:©3Sie haben ein ungültiges Paßwort eingegeben.©0¶
 1646:©3Der Server ist beschäftigt.¶
-1647: Typ: %04x	
+#1647: 
 1648: ©2Die Antwort war %04X	
 1649:Die Version war %X	
 1650:¶Die Folgenummer war %04X	
@@ -681,8 +682,8 @@
 1667:Ignoriere %s.
 1668:Sie müssen einen Spitznamen angeben.
 1669:%s hinzugefügt.¶
-1670:Für %s jetzt unsichtbar.
-1671:Für %s jetzt sichtbar.
+1670:Für %s jetzt normal sichtbar.
+1671:Für %s jetzt immer sichtbar.
 1672:%ss IP-Adresse ist 
 1673:	Der Port ist %d.¶
 1674:	Der Port ist unbekannt.¶
@@ -787,9 +788,9 @@
 1773:Konnte Nick %s nicht hinzufügen.
 1774:Eingehendes Paket:
 1775:Ausgehendes Paket:
-1776:Ausgehendes TCP-Paket:
+1776:Ausgehendes TCP-Paket (%d):
 1777:Öffne Direkt-Verbindung auf localhost:%d...
-1778:Eingehendes TCP-Paket:
+1778:Eingehendes TCP-Paket (%d):
 1779:Öffne TCP-Verbindung zu %s auf %s:%d... 
 #1780: 
 1781:Bitte Paßwort für Benutzernummer %d eingeben:¶
@@ -800,7 +801,7 @@
 1786:Ich benötige den Port, auf den der Socks-Server hört. wenn Sie sich unsicher sind, drücken Sie die Eingabetaste für den Standard-Port.¶
 1787:Möglicherweise müssen Sie sich gegenüber dem Server authentifizieren. Wenn dem so ist, müssen Sie den Benutzernamen eingeben, den Ihnen der Administrator des Socks-Servers gegeben hat. Andernfalls drücken Sie einfach die Eingabetaste.¶
 1788:Dann benötige ich natürlich auch das Paßwort für diesen Benutzernamen.¶
-1789:Fehlerhaftes Paket empfangen.
+1789:Fehlerhaftes Paket empfangen (%d).
 1790:Einrichtungs-Assistent beendet. Herzlichen Glückwunsch zu Ihrer neuen Benutzernummer!¶
 1791:Einrichtungs-Assistent beendet. Herzlichen Glückwunsch!¶
 1792:Leider weigert sich AOL, eine neue Benutzernummer zu vergeben, vermutlich, weil zu viele Anfragen nach einer neuen Benutzernummer in zu kurzer Zeit von dieser IP-Adresse kamen. Bitte v ersuchen Sie es später noch einmal.¶
@@ -808,7 +809,7 @@
 1794:Wenn Sie bereits eine Benutzernummer besitzen, geben Sie diese bitte ein. Andernfalls drücken Sie die Eingabetaste, und ich werde eine für Sie beantragen.¶
 1795:Paßwort:
 1796:Einrichtungs-Assistent beendet. Bitte warten Sie, bis die Registrierung beendet ist.¶
-#1797:Sports Club
+#1797:Finance and corporate
 1798:Grundschule
 #1799:High School
 1800:Wählt die Sprache <lang> aus.
@@ -822,7 +823,7 @@
 #1808:College
 #1809:Unable to retrieve auto-response message for %s.
 1810:Universität
-#1811:Military
+#1811: 
 #1812:Past Work Place
 #1813:Past Organization
 #1814:Sent auto-response message to %s%s%s.¶
@@ -844,14 +845,14 @@
 #1830:Discarding message to %s after %d send attempts.  Message content:¶
 1831:[SOCKS] Autorisationsmethode ungültig.
 #1832: 
-1833:Direkte Verbindung zu %s aufgebaut.¶
+1833:Direkte Verbindung aufgebaut.¶
 #1834: 
 #1835:Error while writing to socket - %s (%d)¶
 #1836:Sending TCP direct connection initialization packet.¶
 #1837:Acknowledging TCP direct connection initialization packet.¶
 #1838:Received direct connection initialization.¶
 #1839:Version %04x:%04x, Port %d, UIN %d, session %08x¶
-#1840:Received malformed direct connection initialization.¶
+#1840: 
 #1841:Received malformed initialization acknowledgement packet.¶
 1842:Schließe Verbindung (Verbindungsendpunkt Nr. %d) zu %s.¶
 1843:Schließe Verbindungsendpunkt Nr. %d.¶
@@ -887,17 +888,17 @@
 #1873:Work City:
 #1874:Work State:
 #1875:Personal interests:
-#1876:Background:
+#1876:Personal past background:
 #1877:ok.¶
 #1878:Error while reading from socket: %s (%d)¶
-#1879:Personal Past:
+#1879:Affiliations:
 #1880:Incoming packet is not a FLAP: id is %d.¶
 #1881:FLAP channel 1 out of data.¶
 #1882:FLAP channel 1 cmd 1 extra data:¶
 #1883:FLAP channel 1 unknown command %d.¶
 #1884:FLAP with unknown channel %d received.¶
-#1885:Connection v8 timed out.¶
-#1886:Status:
+1885:Zeitüberschreitung bei v8-Server-Verbindung.¶
+#1886: 
 #1887:Connections:
 #1888:Not webaware
 1889:Server
@@ -905,25 +906,25 @@
 1891:Verbindung %d ist bereits geöffnet.¶
 1892:conn             Liste verfügbare Verbindungen auf.¶
 1893:conn login <nr>  Öffnet Verbindung <nr>.¶
-#1894:There is no connection number %d.¶
+1894:Es gibt keine Verbindung Nummer %d.¶
 1895:Login fehlgeschlagen:¶
-#1896:Server closed connection:¶
+1896:Der Server hat die VErbindung geschlossen:¶
 #1897:Incomplete TLV %d, len %d of %d - ignoring.¶
 1898:Weiterleitung zu Server %s... 
 #1899:Unknown family requested: %d¶
 #1900:It's readonly.
-#1901:has authorized you to add them to your contact list.
+1901:hat Dich authorisiert, ihn zu Deiner Kontaktliste hinzuzufügen.
 1902:Öffne Verbindung zu v5-Server bei %s:%d... 
 #1903:Outgoing v8 server packet:
 #1904:Server doesn't understand ver %d (only %d) for family %d!¶
 #1905:SNAC (%x,%x) [%s] flags %x ref %x¶
-#1906:This command operates only on connections of type %s.¶
+#1906: 
 #1907:Warning: Server thinks our UIN is %d, while it is %d.¶
 #1908:Received USERONLINE packet for non-contact.¶
 #1909:Received USEROFFLINE packet for non-contact.¶
 #1910:FLAP seq %08x length %04x channel %d©0¶
-#1911:connecting
-#1912:closed
+1911:verbinde
+1912:geschlossen
 #1913:Received server acknowledge for %s#%08lx:%08lx%s sent to %s%s%s.¶
 #1914:Can't allocate connection structure.¶
 #1915:Server says we're at %s.¶
@@ -944,8 +945,8 @@
 #1930:Can't send this (%x) yet.¶
 #1931:Couldn't find server connection.¶
 #1932:Need uin to ask for.¶
-#1933:%s is neither a nick nor a UIN.¶
-#1934:connected
+1933:%s ist weder ein Spitzname oder eine Benutzernummer.¶
+1934:verbunden
 #1935:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x¶
 #1936:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
 #1937:Enter max age (22,29,39,49,59,120):
@@ -959,15 +960,101 @@
 #1945:Unknown Meta User response
 #1946:freeing packet
 #1947:listener
-#1948:Can't find hostname %s: %s.
-#1949:failed:¶
+1948:Kann den Rechnernamen %s nicht auflösen: %s.
+1949:fehlgeschlagen:¶
 #1950:Couldn't set socket nonblocking
-#1951:Can't find hostname %s
-#1952:Couldn't open connection
-#1953:couldn't bind socket to free port
-#1954:unable to listen on socket
-#1955:Connection failed
+1951:Kann den Rechnernamen %s nicht auflösen
+1952:Kann Verbindung nicht aufbauen
+1953:Kann nicht mit einem freien Port verknüpfen
+1954:Kann nicht auf einem freien Port horchen
+1955:Verbindung fehlgeschlagen
 1956:[SOCKS] Allgemeiner SOCKS-Server-Fehler
 1957:[SOCKS] Authorisierung fehlgeschlagen
 1958:[SOCKS] Verbindung verweigert (%d)
-#1959:Other
+#1959: 
+#1960:Enter data to search user for. Enter \'.\' to start the search.¶
+#1961:URL: %s¶
+#1962: 
+#1963:popping type %d seq %08x at %p (pak %p)
+#1964:couldn't dequeue type %d seq %08x
+#1965:Auto-response message for %s:¶
+#1966: Conection Refused on port %d at %s¶
+#1967:More Info for
+#1968:User found
+1969:nicht verbunden
+1970:verbunden
+1971:nicht stören
+1972:abwesend
+1973:beschäftigt
+1974:nicht verfügbar
+1975:unsichtbar
+1976:frei für Plaudereien
+#1977:Audio and visual
+#1978:Sporting and athletic
+#1979:Publishing
+#1980:Home automation
+#1981:Alumni Org.
+#1982:Charity Org.
+#1983:Club/Social Org.
+#1984:Community Org.
+#1985:Cultural Org.
+#1986:Fan Clubs
+#1987:Fraternity/Sorority
+#1988:Hobbyists Org.
+#1989:International Org.
+#1990:Nature and Environment Org.
+#1991:Professional Org.
+#1992:Scientific/Technical Org.
+#1993:Self Improvement Group
+#1994:Spiritual/Religious Org.
+#1995:Sports Org.
+#1996:Support Org.
+#1997:Trade and Business Org.
+#1998:Union
+#1999:Volunteer Org.
+#2000:Entertainment
+#2001:Consumer electronics
+#2002:Retail stores
+#2003:Health and beauty
+#2004:Media
+#2005:Household products
+#2006:Mail order catalog
+#2007:Business services
+#2008:Random chat group change was ©2%s©0.¶
+#2009:Found random chat partner UIN %d in chat group %d.¶
+#2010:None                       0¶
+#2011:You do not have a listening peer-to-peer connection.¶
+#2012:No password given.¶
+#2013:This command is v8 only.¶
+#2014:No number given.¶
+#2015:No message given.¶
+#2016:The server says about the SMS delivery:¶%s
+2017:Der Benutzer ist in Wirklichkeit verbunden.¶
+2018:    quiet: keine Ausgabe für Statuswechsel.¶
+2019:Verringerte Ausgabe ist ©3%s©0.¶
+#2020:Being visible to %s.
+#2021:Being invisible to %s.
+2022:Der Benutzer ist in Wirklichkeit nicht verbunden.¶
+2023:Direkte Verbindung von Verbindungspartner geschossen.¶
+#2024:Unknown protocol version %d for ICQ peer-to-peer protocol.¶
+#2025:Sending v8 TCP direct connection initialization packet.¶
+#2026:TCP cookie:
+#2027:Sending third TCP direct connection packet.¶
+#2028:Wrong argument count.¶
+2029:Protokoll-Fehler einer Direktverbindung
+#2030:%04d-%02d-%02d %02d:%02d UTC
+2031:Verbindung zu oft fehlgeschlagen, gebe auf.¶
+2032:Verbinde in %d Sekunden neu.¶
+2033:Geburtstagskind
+2034:Öffne Direktverbindung auf %s:%d... 
+2035:Zeige Betriebszeit und einige Statistiken an.
+2036:Speichere die aktuellen Einstellungen.
+2037:Öffne oder schließe eine Direktverbindung, oder schalte die Verwendung einer Direktverbindung für uin|nick ab.
+2038:Öffne Verbindung Nummer nr.
+2039:Sende eine Nachricht an ein Handy.
+2040:Schaltet das Piepsen bei sich verbindenden Kontakten an/aus, setzt ein Kommando für dieses Ereignis oder zeigt den aktuellen Status dieser Option an.
+2041:Schaltet das Piepsen bei sich trennenden Kontakten an/aus, setzt ein Kommando für dieses Ereignis oder zeigt den aktuellen Status dieser Option an.
+2042:Zeigt die verbundenen Mitglieder der Kontaktliste im ausführlichen Format an.
+2043:Entfernt einen Kontakt aus der Kontaktliste.
+2044:Setzt oder löscht eine Option.
+2045:Setzt oder löscht die Unsichtbarkeit für andere Benutzer.
