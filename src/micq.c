@@ -161,8 +161,8 @@ static void Idle_Check (Connection *conn)
         else
             CmdPktCmdStatusChange (conn, new);
         conn->status = new;
-        M_printf ("%s ", s_now);
-        M_printf (i18n (1064, "Automatically changed status to %s.\n"), s_status (new));
+        rl_printf ("%s ", s_now);
+        rl_printf (i18n (1064, "Automatically changed status to %s.\n"), s_status (new));
     }
     return;
 }
@@ -304,59 +304,59 @@ static void Init (int argc, char *argv[])
     
     if (prG->flags & FLAG_COLOR)
     {
-        M_logo (MICQ_ICON_1 "\n" MICQ_ICON_2);
-        M_logo (MICQ_ICON_3);
-        M_logo (MICQ_ICON_4);
-        M_logo (MICQ_ICON_5);
-        M_logo (MICQ_ICON_6);
-        M_logo (MICQ_ICON_7);
+        rl_logo (MICQ_ICON_1 "\n" MICQ_ICON_2);
+        rl_logo (MICQ_ICON_3);
+        rl_logo (MICQ_ICON_4);
+        rl_logo (MICQ_ICON_5);
+        rl_logo (MICQ_ICON_6);
+        rl_logo (MICQ_ICON_7);
     }
     else
     {
-        M_logo (MICQ_ICON_NOCOLOR_1 "\n" MICQ_ICON_NOCOLOR_2);
-        M_logo (MICQ_ICON_NOCOLOR_3);
-        M_logo (MICQ_ICON_NOCOLOR_4);
-        M_logo (MICQ_ICON_NOCOLOR_5);
-        M_logo (MICQ_ICON_NOCOLOR_6);
-        M_logo (MICQ_ICON_NOCOLOR_7);
+        rl_logo (MICQ_ICON_NOCOLOR_1 "\n" MICQ_ICON_NOCOLOR_2);
+        rl_logo (MICQ_ICON_NOCOLOR_3);
+        rl_logo (MICQ_ICON_NOCOLOR_4);
+        rl_logo (MICQ_ICON_NOCOLOR_5);
+        rl_logo (MICQ_ICON_NOCOLOR_6);
+        rl_logo (MICQ_ICON_NOCOLOR_7);
     }
 
-    M_print (BuildVersion ());
-    M_print (BuildAttribution ());
-    M_print (i18n (1612, "This program was made without any help from Mirabilis or their consent.\n"));
-    M_print (i18n (1613, "No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n"));
+    rl_print (BuildVersion ());
+    rl_print (BuildAttribution ());
+    rl_print (i18n (1612, "This program was made without any help from Mirabilis or their consent.\n"));
+    rl_print (i18n (1613, "No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n"));
 
-    M_logo_clear ();
+    rl_logo_clear ();
 
     if (arg_h)
     {
-        M_print  (i18n (9999, "Usage: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n"));
-        M_print  (i18n (9999, "            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n"));
-        M_print  (i18n (2199, "  -h, --help     gives this help text\n"));
-        M_print  (i18n (2205, "  -c, --nocolor  disable colors\n"));
-        M_printf (i18n (2201, "  -b, --basedir  use given BASE dir (default: %s)\n"), "$HOME" _OS_PATHSEPSTR ".micq" _OS_PATHSEPSTR);
-        M_print  (i18n (2204, "  -i, --i1" "8n     use given locale (default: auto-detected)\n"));
-        M_print  (i18n (2200, "  -v, --verbose  set (or increase) verbosity (mostly for debugging)\n"));
-        M_printf (i18n (2203, "  -l, --logplace use given log file/dir (default: %s)\n"), "BASE" _OS_PATHSEPSTR "history" _OS_PATHSEPSTR);
-        M_print  (i18n (9999, "  -u, --uin      login with this UIN instead of those configured\n"));
-        M_print  (i18n (9999, "  -p, --passwd   ... and override password\n"));
-        M_print  (i18n (9999, "  -s, --status   ... and override status\n"));
-        M_print  (i18n (9999, "  -C, --cmd      ... and execute mICQ command\n"));
+        rl_print  (i18n (9999, "Usage: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n"));
+        rl_print  (i18n (9999, "            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n"));
+        rl_print  (i18n (2199, "  -h, --help     gives this help text\n"));
+        rl_print  (i18n (2205, "  -c, --nocolor  disable colors\n"));
+        rl_printf (i18n (2201, "  -b, --basedir  use given BASE dir (default: %s)\n"), "$HOME" _OS_PATHSEPSTR ".micq" _OS_PATHSEPSTR);
+        rl_print  (i18n (2204, "  -i, --i1" "8n     use given locale (default: auto-detected)\n"));
+        rl_print  (i18n (2200, "  -v, --verbose  set (or increase) verbosity (mostly for debugging)\n"));
+        rl_printf (i18n (2203, "  -l, --logplace use given log file/dir (default: %s)\n"), "BASE" _OS_PATHSEPSTR "history" _OS_PATHSEPSTR);
+        rl_print  (i18n (9999, "  -u, --uin      login with this UIN instead of those configured\n"));
+        rl_print  (i18n (9999, "  -p, --passwd   ... and override password\n"));
+        rl_print  (i18n (9999, "  -s, --status   ... and override status\n"));
+        rl_print  (i18n (9999, "  -C, --cmd      ... and execute mICQ command\n"));
         exit (0);
     }
     
     if (conv_error)
     {
-        M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-        M_printf (i18n (9999, "Encoding %s%s%s is not supported by this mICQ.\n"), COLQUOTE, ConvEncName (conv_error), COLNONE);
+        rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+        rl_printf (i18n (9999, "Encoding %s%s%s is not supported by this mICQ.\n"), COLQUOTE, ConvEncName (conv_error), COLNONE);
         if (save_conv_error)
         {
-            M_print  (i18n (9999, "Please recompile using the '--enable-iconvrepl' configure option.\n"));
+            rl_print  (i18n (9999, "Please recompile using the '--enable-iconvrepl' configure option.\n"));
             if (conv_error <= prG->enc_loc)
             {
-                M_print  ("Warning: ");
-                M_printf ("Encoding %s is not supported by this mICQ.\n", ConvEncName (conv_error));
-                M_print  ("Please recompile using the '--enable-iconvrepl' configure option.\n");
+                rl_print  ("Warning: ");
+                rl_printf ("Encoding %s is not supported by this mICQ.\n", ConvEncName (conv_error));
+                rl_print  ("Please recompile using the '--enable-iconvrepl' configure option.\n");
             }
         }
         conv_error = 0;
@@ -366,55 +366,55 @@ static void Init (int argc, char *argv[])
     {
         if (!*arg_i || !strcasecmp (arg_i, "C") || !strcasecmp (arg_i, "POSIX"))
         {
-            M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-            M_printf (i18n (9999, "Manual locale setting %s ignored - use a real locale instead.\n"), s_qquote (arg_i));
+            rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+            rl_printf (i18n (9999, "Manual locale setting %s ignored - use a real locale instead.\n"), s_qquote (arg_i));
         }
     }
     else
     {
         if (!prG->locale_orig)
         {
-            M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-            M_printf (i18n (9999, "Your locale is unset. Please use the %s--i1" "8n%s command line option or set one of the environment variables %sLC_ALL%s, %sLC_MESSAGES%s, or %sLANG%s to your current locale.\n"),
+            rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+            rl_printf (i18n (9999, "Your locale is unset. Please use the %s--i1" "8n%s command line option or set one of the environment variables %sLC_ALL%s, %sLC_MESSAGES%s, or %sLANG%s to your current locale.\n"),
                       COLQUOTE, COLNONE, COLQUOTE, COLNONE, COLQUOTE, COLNONE, COLQUOTE, COLNONE);
         }
         else if (!*prG->locale_orig || !strcasecmp (prG->locale_orig, "C") || !strcasecmp (prG->locale_orig, "POSIX"))
         {
-            M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-            M_printf (i18n (9999, "Locale setting %s ignored - use a real locale instead.\n"), s_qquote (prG->locale_orig));
+            rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+            rl_printf (i18n (9999, "Locale setting %s ignored - use a real locale instead.\n"), s_qquote (prG->locale_orig));
         }
         if (prG->locale_full && prG->locale_broken)
         {
-            M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-            M_printf (i18n (9999, "Your system doesn't know the %s locale - try %siconv --list%s.\n"),
+            rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+            rl_printf (i18n (9999, "Your system doesn't know the %s locale - try %siconv --list%s.\n"),
                       s_qquote (prG->locale_full), COLQUOTE, COLNONE);
         }
     }
 
     if (!loaded && arg_l)
     {
-        M_printf (i18n (9999, "Could not open configuration file %s%s%s."), COLQUOTE, prG->rcfile, COLNONE);
+        rl_printf (i18n (9999, "Could not open configuration file %s%s%s."), COLQUOTE, prG->rcfile, COLNONE);
         exit (20);
     }
 
     if (arg_f)
     {
-        M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-        M_printf (i18n (9999, "Deprecated option -f used. Please use the similar -b instead.\n"));
+        rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+        rl_printf (i18n (9999, "Deprecated option -f used. Please use the similar -b instead.\n"));
     }
 
-    M_printf (i18n (9999, "This console uses encoding %s.\n"), s_qquote (ConvEncName (prG->enc_loc)));
+    rl_printf (i18n (9999, "This console uses encoding %s.\n"), s_qquote (ConvEncName (prG->enc_loc)));
     if (i == -1)
     {
-        M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-        M_printf (i18n (9999, "Translation %s%s%s not found. Would you like to translate mICQ into your language?\n"),
+        rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+        rl_printf (i18n (9999, "Translation %s%s%s not found. Would you like to translate mICQ into your language?\n"),
                   COLQUOTE, s_qquote (prG->locale), COLNONE);
     }
     else if (i)
-        M_printf (i18n (9999, "English (%s) translation loaded (%s%d%s entries).\n"),
+        rl_printf (i18n (9999, "English (%s) translation loaded (%s%d%s entries).\n"),
                   s_qquote (prG->locale), COLQUOTE, i, COLNONE);
     else
-        M_printf ("No translation requested. You live in nowhereland, eh?\n");
+        rl_printf ("No translation requested. You live in nowhereland, eh?\n");
 
 #ifdef _WIN32
     if (WSAStartup (0x0101, &wsaData))
@@ -430,7 +430,7 @@ static void Init (int argc, char *argv[])
 
 #ifdef ENABLE_SSL
     if (SSLInit ())
-        M_printf (i18n (2371, "SSL init failed.\n"));
+        rl_printf (i18n (2371, "SSL init failed.\n"));
 #endif
 
 #ifdef ENABLE_TCL
@@ -537,7 +537,6 @@ in a loop waiting for server responses.
 int main (int argc, char *argv[])
 {
     Connection *conn;
-    UDWORD rc;
     int i;
     
 
@@ -545,18 +544,17 @@ int main (int argc, char *argv[])
     while (!uiG.quit)
     {
 
-        M_select_init ();
 #if INPUT_BY_POLL
-        M_set_timeout (0, 1000);
+        UtilIOSelectInit (0, 1000);
 #else
         i = QueueTime ();
         if (!i)
-            M_set_timeout (0, 100);
+            UtilIOSelectInit (0, 100);
         else if (i <= 2)
-            M_set_timeout (i, 0);
+            UtilIOSelectInit (i, 0);
         else
-            M_set_timeout (2, 500000);
-        M_Add_rsocket (STDIN_FILENO);
+            UtilIOSelectInit (2, 500000);
+        UtilIOSelectAdd (STDIN_FILENO, READFDS);
 #endif
 
         for (i = 0; (conn = ConnectionNr (i)); i++)
@@ -566,18 +564,18 @@ int main (int argc, char *argv[])
             if (conn->sok < 0 || !conn->dispatch)
                 continue;
             if (conn->connect & CONNECT_SELECT_R)
-                M_Add_rsocket (conn->sok);
+                UtilIOSelectAdd (conn->sok, READFDS);
             if (conn->connect & CONNECT_SELECT_W)
-                M_Add_wsocket (conn->sok);
+                UtilIOSelectAdd (conn->sok, WRITEFDS);
             if (conn->connect & CONNECT_SELECT_X)
-                M_Add_xsocket (conn->sok);
+                UtilIOSelectAdd (conn->sok, EXCEPTFDS);
         }
 
 
         if (conv_error)
         {
-            M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-            M_printf (i18n (9999, "Encoding %s%s%s is not supported by this mICQ.\n"), COLQUOTE, ConvEncName (conv_error), COLNONE);
+            rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+            rl_printf (i18n (9999, "Encoding %s%s%s is not supported by this mICQ.\n"), COLQUOTE, ConvEncName (conv_error), COLNONE);
             conv_error = 0;
         }
         
@@ -589,8 +587,7 @@ int main (int argc, char *argv[])
 
         ReadLinePrompt ();
 
-        rc = M_select ();
-        assert (~rc & 0x80000000L);
+        UtilIOSelect ();
 
         if (__os_has_input)
         {
@@ -610,7 +607,8 @@ int main (int argc, char *argv[])
 
         for (i = 0; (conn = ConnectionNr (i)); i++)
         {
-            if (conn->sok < 0 || !conn->dispatch || !M_Is_Set (conn->sok))
+            if (conn->sok < 0 || !conn->dispatch
+                || !UtilIOSelectIs (conn->sok, READFDS | WRITEFDS | EXCEPTFDS))
                 continue;
             conn->dispatch (conn);
         }

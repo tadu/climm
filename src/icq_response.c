@@ -63,18 +63,18 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
     if (prG->event_cmd && *prG->event_cmd)
         EventExec (cont, prG->event_cmd, !~old ? 2 : 5, status, NULL);
 
-    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-    M_printf (~old ? i18n (2212, "changed status to %s") : i18n (2213, "logged on (%s)"), s_status (status));
+    rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+    rl_printf (~old ? i18n (2212, "changed status to %s") : i18n (2213, "logged on (%s)"), s_status (status));
     if (cont->version && !~old)
-        M_printf (" [%s]", cont->version);
+        rl_printf (" [%s]", cont->version);
     if ((status & STATUSF_BIRTH) && (!(old & STATUSF_BIRTH) || !~old))
-        M_printf (" (%s)", i18n (2033, "born today"));
-    M_print (".\n");
+        rl_printf (" (%s)", i18n (2033, "born today"));
+    rl_print (".\n");
 
     if (prG->verbose && !~old && cont->dc)
     {
-        M_printf ("    %s %s / ", i18n (1642, "IP:"), s_ip (cont->dc->ip_rem));
-        M_printf ("%s:%ld    %s %d    %s (%d)\n", s_ip (cont->dc->ip_loc),
+        rl_printf ("    %s %s / ", i18n (1642, "IP:"), s_ip (cont->dc->ip_rem));
+        rl_printf ("%s:%ld    %s %d    %s (%d)\n", s_ip (cont->dc->ip_loc),
             cont->dc->port, i18n (1453, "TCP version:"), cont->dc->version,
             cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),
             cont->dc->type);
@@ -107,7 +107,7 @@ void IMOffline (Contact *cont, Connection *conn)
     if (prG->event_cmd && *prG->event_cmd)
         EventExec (cont, prG->event_cmd, 3, old, NULL);
  
-    M_printf ("%s %s%*s%s %s\n",
+    rl_printf ("%s %s%*s%s %s\n",
              s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick,
              COLNONE, i18n (1030, "logged off."));
     TCLEvent (cont, "status", "logged_off");
@@ -199,20 +199,20 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
     }
 
     if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || !cont->group))
-        M_printf ("(%s) ", s_status (tstatus));
+        rl_printf ("(%s) ", s_status (tstatus));
     
-    M_printf ("%s ", s_time (&stamp));
+    rl_printf ("%s ", s_time (&stamp));
     if (cont)
-        M_printf ("%s%*s%s ", col, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+        rl_printf ("%s%*s%s ", col, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
     
     if (prG->verbose > 1)
-        M_printf ("<%d> ", type);
+        rl_printf ("<%d> ", type);
 
     for (p = q = strdup (line); *q; q++)
         if (*q == (char)0xfe)
             *q = '*';
-    M_print (p);
-    M_print ("\n");
+    rl_print (p);
+    rl_print ("\n");
     free (p);
 
     OptD (opt);
@@ -270,7 +270,7 @@ void HistShow (Contact *cont)
     
     for (i = 0; i < 50; i++)
         if (hist[i].conn && (!cont || hist[i].cont == cont))
-            M_printf ("%s%s %s%*s%s %s" COLMSGINDENT "%s\n",
+            rl_printf ("%s%s %s%*s%s %s" COLMSGINDENT "%s\n",
                       COLDEBUG, s_time (&hist[i].stamp), COLINCOMING, uiG.nick_len + s_delta (hist[i].cont->nick),
                       hist[i].cont->nick, COLNONE, COLMESSAGE, hist[i].msg);
 }
@@ -344,13 +344,13 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
     if (prG->event_cmd && *prG->event_cmd)
         EventExec (cont, prG->event_cmd, 1, opt_type, opt_text);
 #endif
-    M_printf ("\a%s %s%*s%s ", s_time (&stamp), COLINCOMING, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+    rl_printf ("\a%s %s%*s%s ", s_time (&stamp), COLINCOMING, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
     
     if (OptGetVal (opt, CO_STATUS, &opt_status) && (!cont || cont->status != opt_status || !cont->group))
-        M_printf ("(%s) ", s_status (opt_status));
+        rl_printf ("(%s) ", s_status (opt_status));
 
     if (prG->verbose > 1)
-        M_printf ("<%ld> ", opt_type);
+        rl_printf ("<%ld> ", opt_type);
 
     uiG.last_rcvd = cont;
     if (cont)
@@ -364,16 +364,16 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
         case MSGF_MASS: /* not reached here, but quiets compiler warning */
         while (1)
         {
-            M_printf ("(?%lx?) %s" COLMSGINDENT "%s\n", opt_type, COLMESSAGE, opt_text);
-            M_printf ("    '");
+            rl_printf ("(?%lx?) %s" COLMSGINDENT "%s\n", opt_type, COLMESSAGE, opt_text);
+            rl_printf ("    '");
             for (j = 0; j < strlen (opt_text); j++)
-                M_printf ("%c", ((cdata[j] & 0xe0) && (cdata[j] != 127)) ? cdata[j] : '.');
-            M_print ("'\n");
+                rl_printf ("%c", ((cdata[j] & 0xe0) && (cdata[j] != 127)) ? cdata[j] : '.');
+            rl_print ("'\n");
             break;
 
         case MSG_NORM:
         default:
-            M_printf ("%s %s" COLMSGINDENT "%s\n", carr, COLMESSAGE, cdata);
+            rl_printf ("%s %s" COLMSGINDENT "%s\n", carr, COLMESSAGE, cdata);
             HistMsg (conn, cont, stamp == NOW ? time (NULL) : stamp, cdata);
             TCLEvent (cont, "message", s_sprintf ("{%s}", cdata));
             TCLMessage (cont, cdata);
@@ -384,45 +384,45 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
                 opt_bytes = 0;
             if (!OptGetVal (opt, CO_REF, &opt_ref))
                 opt_ref = 0;
-            M_printf (i18n (9999, "requests file transfer %s of %s%ld%s bytes (sequence %s%ld%s).\n"),
+            rl_printf (i18n (9999, "requests file transfer %s of %s%ld%s bytes (sequence %s%ld%s).\n"),
                       s_qquote (cdata), COLQUOTE, opt_bytes, COLNONE, COLQUOTE, opt_ref, COLNONE);
             TCLEvent (cont, "file_request", s_sprintf ("{%s} %ld %ld", cdata, opt_bytes, opt_ref));
             break;
 
         case MSG_AUTO:
-            M_printf ("<%s> %s" COLMSGINDENT "%s\n", i18n (2108, "auto"), COLMESSAGE, cdata);
+            rl_printf ("<%s> %s" COLMSGINDENT "%s\n", i18n (2108, "auto"), COLMESSAGE, cdata);
             break;
 
         case MSGF_GETAUTO | MSG_GET_AWAY: 
-            M_printf ("<%s> %s" COLMSGINDENT "%s\n", i18n (1972, "away"), COLMESSAGE, cdata);
+            rl_printf ("<%s> %s" COLMSGINDENT "%s\n", i18n (1972, "away"), COLMESSAGE, cdata);
             break;
 
         case MSGF_GETAUTO | MSG_GET_OCC:
-            M_printf ("<%s> %s" COLMSGINDENT "%s\n", i18n (1973, "occupied"), COLMESSAGE, cdata);
+            rl_printf ("<%s> %s" COLMSGINDENT "%s\n", i18n (1973, "occupied"), COLMESSAGE, cdata);
             break;
 
         case MSGF_GETAUTO | MSG_GET_NA:
-            M_printf ("<%s> %s" COLMSGINDENT "%s\n", i18n (1974, "not available"), COLMESSAGE, cdata);
+            rl_printf ("<%s> %s" COLMSGINDENT "%s\n", i18n (1974, "not available"), COLMESSAGE, cdata);
             break;
 
         case MSGF_GETAUTO | MSG_GET_DND:
-            M_printf ("<%s> %s" COLMSGINDENT "%s\n", i18n (1971, "do not disturb"), COLMESSAGE, cdata);
+            rl_printf ("<%s> %s" COLMSGINDENT "%s\n", i18n (1971, "do not disturb"), COLMESSAGE, cdata);
             break;
 
         case MSGF_GETAUTO | MSG_GET_FFC:
-            M_printf ("<%s> %s" COLMSGINDENT "%s\n", i18n (1976, "free for chat"), COLMESSAGE, cdata);
+            rl_printf ("<%s> %s" COLMSGINDENT "%s\n", i18n (1976, "free for chat"), COLMESSAGE, cdata);
             break;
 
         case MSGF_GETAUTO | MSG_GET_VER:
-            M_printf ("<%s> %s" COLMSGINDENT "%s\n", i18n (2109, "version"), COLMESSAGE, cdata);
+            rl_printf ("<%s> %s" COLMSGINDENT "%s\n", i18n (2109, "version"), COLMESSAGE, cdata);
             break;
 
         case MSG_URL:
             tmp  = s_msgtok (cdata); if (!tmp)  continue;
             tmp2 = s_msgtok (NULL);  if (!tmp2) continue;
             
-            M_printf ("%s %s\n%s", carr, s_msgquote (tmp), s_now);
-            M_printf (i18n (2127, "       URL: %s %s\n"), carr, s_wordquote (tmp2));
+            rl_printf ("%s %s\n%s", carr, s_msgquote (tmp), s_now);
+            rl_printf (i18n (2127, "       URL: %s %s\n"), carr, s_wordquote (tmp2));
             break;
 
         case MSG_AUTH_REQ:
@@ -443,28 +443,28 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
                 tmp = NULL;
             }
 
-            M_printf (i18n (9999, "requests authorization: %s\n"), s_msgquote (tmp6));
+            rl_printf (i18n (9999, "requests authorization: %s\n"), s_msgquote (tmp6));
             
             if (tmp && strlen (tmp))
-                M_printf ("%-15s %s\n", "???1:", s_wordquote (tmp));
+                rl_printf ("%-15s %s\n", "???1:", s_wordquote (tmp));
             if (tmp2 && strlen (tmp2))
-                M_printf ("%-15s %s\n", i18n (1564, "First name:"), s_wordquote (tmp2));
+                rl_printf ("%-15s %s\n", i18n (1564, "First name:"), s_wordquote (tmp2));
             if (tmp3 && strlen (tmp3))
-                M_printf ("%-15s %s\n", i18n (1565, "Last name:"), s_wordquote (tmp3));
+                rl_printf ("%-15s %s\n", i18n (1565, "Last name:"), s_wordquote (tmp3));
             if (tmp4 && strlen (tmp4))
-                M_printf ("%-15s %s\n", i18n (1566, "Email address:"), s_wordquote (tmp4));
+                rl_printf ("%-15s %s\n", i18n (1566, "Email address:"), s_wordquote (tmp4));
             if (tmp5 && strlen (tmp5))
-                M_printf ("%-15s %s\n", "???5:", s_wordquote (tmp5));
+                rl_printf ("%-15s %s\n", "???5:", s_wordquote (tmp5));
             TCLEvent (cont, "authorization", "request");
             break;
 
         case MSG_AUTH_DENY:
-            M_printf (i18n (2233, "refused authorization: %s%s%s\n"), COLMESSAGE, COLMSGINDENT, cdata);
+            rl_printf (i18n (2233, "refused authorization: %s%s%s\n"), COLMESSAGE, COLMSGINDENT, cdata);
             TCLEvent (cont, "authorization", "refused");
             break;
 
         case MSG_AUTH_GRANT:
-            M_print (i18n (1901, "has authorized you to add them to your contact list.\n"));
+            rl_print (i18n (1901, "has authorized you to add them to your contact list.\n"));
             TCLEvent (cont, "authorization", "granted");
             break;
 
@@ -472,7 +472,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
             tmp = s_msgtok (cdata);
             if (!tmp)
             {
-                M_print (i18n (1755, "has added you to their contact list.\n"));
+                rl_print (i18n (1755, "has added you to their contact list.\n"));
                 TCLEvent (cont, "contactlistadded", "");
                 break;
             }
@@ -480,11 +480,11 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
             tmp3 = s_msgtok (NULL); if (!tmp3) continue;
             tmp4 = s_msgtok (NULL); if (!tmp4) continue;
 
-            M_printf ("%s ", s_cquote (tmp, COLCONTACT));
-            M_print  (i18n (1755, "has added you to their contact list.\n"));
-            M_printf ("%-15s %s\n", i18n (1564, "First name:"), s_wordquote (tmp2));
-            M_printf ("%-15s %s\n", i18n (1565, "Last name:"), s_wordquote (tmp3));
-            M_printf ("%-15s %s\n", i18n (1566, "Email address:"), s_wordquote (tmp4));
+            rl_printf ("%s ", s_cquote (tmp, COLCONTACT));
+            rl_print  (i18n (1755, "has added you to their contact list.\n"));
+            rl_printf ("%-15s %s\n", i18n (1564, "First name:"), s_wordquote (tmp2));
+            rl_printf ("%-15s %s\n", i18n (1565, "Last name:"), s_wordquote (tmp3));
+            rl_printf ("%-15s %s\n", i18n (1566, "Email address:"), s_wordquote (tmp4));
             TCLEvent (cont, "contactlistadded", "");
             break;
 
@@ -496,28 +496,28 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
             tmp4 = s_msgtok (NULL);  if (!tmp4) continue;
             tmp5 = s_msgtok (NULL);  if (!tmp5) continue;
 
-            M_printf ("\n%s ", s_wordquote (tmp));
-            M_printf ("\n??? %s", s_wordquote (tmp2));
-            M_printf ("\n??? %s", s_wordquote (tmp3));
+            rl_printf ("\n%s ", s_wordquote (tmp));
+            rl_printf ("\n??? %s", s_wordquote (tmp2));
+            rl_printf ("\n??? %s", s_wordquote (tmp3));
 
             if (opt_type == MSG_EMAIL)
             {
-                M_printf (i18n (1592, "<%s> emailed you a message:\n"), s_cquote (tmp4, COLCONTACT));
+                rl_printf (i18n (1592, "<%s> emailed you a message:\n"), s_cquote (tmp4, COLCONTACT));
                 TCLEvent (cont, "mail", s_sprintf ("{%s}", tmp4));
             }
             else
             {
-                M_printf (i18n (1593, "<%s> send you a web message:\n"), s_cquote (tmp4, COLCONTACT));
+                rl_printf (i18n (1593, "<%s> send you a web message:\n"), s_cquote (tmp4, COLCONTACT));
                 TCLEvent (cont, "web", s_sprintf ("{%s}", tmp4));
             }
 
-            M_printf ("%s\n", s_msgquote (tmp5));
+            rl_printf ("%s\n", s_msgquote (tmp5));
             break;
 
         case MSG_CONTACT:
             tmp = s_msgtok (cdata); if (!tmp) continue;
 
-            M_printf (i18n (1595, "\nContact List.\n============================================\n%d Contacts\n"),
+            rl_printf (i18n (1595, "\nContact List.\n============================================\n%d Contacts\n"),
                      i = atoi (tmp));
 
             while (i--)
@@ -525,8 +525,8 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
                 tmp2 = s_msgtok (NULL); if (!tmp2) continue;
                 tmp3 = s_msgtok (NULL); if (!tmp3) continue;
                 
-                M_print  (s_cquote (tmp2, COLCONTACT));
-                M_printf ("\t\t\t%s\n", s_msgquote (tmp3));
+                rl_print  (s_cquote (tmp2, COLCONTACT));
+                rl_printf ("\t\t\t%s\n", s_msgquote (tmp3));
             }
             break;
         }

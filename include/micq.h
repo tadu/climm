@@ -90,9 +90,8 @@ typedef struct Extra_s        Extra;
 #define Debug DebugReal
 #endif
 
-#include "mreadline.h"
 #include "msg_queue.h"
-#include "mselect.h"
+#include "mreadline.h"
 #include "color.h"
 
 #define SOUND_ON 1

@@ -98,10 +98,10 @@ void Initialize_RC_File ()
     
     prG->away_time = default_away_time;
 
-    M_print ("\n");
-    M_print (i18n (1793, "No valid UIN found. The setup wizard will guide you through the process of setting one up.\n"));
-    M_print (i18n (1794, "If you already have an UIN, please enter it. Otherwise, enter 0, and I will request one for you.\n"));
-    M_printf ("%s ", i18n (1618, "UIN:"));
+    rl_print ("\n");
+    rl_print (i18n (1793, "No valid UIN found. The setup wizard will guide you through the process of setting one up.\n"));
+    rl_print (i18n (1794, "If you already have an UIN, please enter it. Otherwise, enter 0, and I will request one for you.\n"));
+    rl_printf ("%s ", i18n (1618, "UIN:"));
     fflush (stdout);
     line = UtilIOReadline (stdin);
     tmpuin = 0;
@@ -109,26 +109,26 @@ void Initialize_RC_File ()
         sscanf (line->txt, "%ld", &tmpuin);
     uin = tmpuin;
 
-    M_print ("\n");
+    rl_print ("\n");
     if (uin)
-        M_printf (i18n (1781, "Your password for UIN %ld:\n"), uin);
+        rl_printf (i18n (1781, "Your password for UIN %ld:\n"), uin);
     else
-        M_print (i18n (1782, "You need a password for your new UIN.\n"));
+        rl_print (i18n (1782, "You need a password for your new UIN.\n"));
     while (1)
     {
-        M_printf ("%s ", i18n (1795, "Password:"));
+        rl_printf ("%s ", i18n (1795, "Password:"));
         fflush (stdout);
         Echo_Off ();
         line = UtilIOReadline (stdin);
         Echo_On ();
         if (!line)
             continue;
-        M_print ("\n");
+        rl_print ("\n");
         if (uin)
             break;
 
-        M_print (i18n (1783, "To prevent typos, please enter your password again.\n"));
-        M_printf ("%s ", i18n (1795, "Password:"));
+        rl_print (i18n (1783, "To prevent typos, please enter your password again.\n"));
+        rl_printf ("%s ", i18n (1795, "Password:"));
         fflush (stdout);
         Echo_Off ();
         pwd = strdup (line->txt);
@@ -136,10 +136,10 @@ void Initialize_RC_File ()
         Echo_On ();
         if (!line)
             continue;
-        M_print ("\n");
+        rl_print ("\n");
         if (strcmp (pwd, line->txt))
         {
-            M_printf ("\n%s\n", i18n (1093, "Passwords did not match - please try again."));
+            rl_printf ("\n%s\n", i18n (1093, "Passwords did not match - please try again."));
             free (pwd);
             continue;
         }
@@ -151,9 +151,9 @@ void Initialize_RC_File ()
     prG->s5Use = 0;
     prG->s5Port = 0;
 
-    M_print ("\n");
-    M_print (i18n (1784, "If you are firewalled, you may need to use a SOCKS5 server. If you do, please enter its hostname or IP address. Otherwise, or if unsure, just press return.\n"));
-    M_printf ("%s ", i18n (1094, "SOCKS5 server:"));
+    rl_print ("\n");
+    rl_print (i18n (1784, "If you are firewalled, you may need to use a SOCKS5 server. If you do, please enter its hostname or IP address. Otherwise, or if unsure, just press return.\n"));
+    rl_printf ("%s ", i18n (1094, "SOCKS5 server:"));
     fflush (stdout);
     line = UtilIOReadline (stdin);
     if (line && line->len)
@@ -168,8 +168,8 @@ void Initialize_RC_File ()
         else
         {
             prG->s5Host = strdup (line->txt);
-            M_print (i18n (1786, "I also need the port the socks server listens on. If unsure, press return for the default port.\n"));
-            M_printf ("%s ", i18n (1095, "SOCKS5 port:"));
+            rl_print (i18n (1786, "I also need the port the socks server listens on. If unsure, press return for the default port.\n"));
+            rl_printf ("%s ", i18n (1095, "SOCKS5 port:"));
             fflush (stdout);
             line = UtilIOReadline (stdin);
             if (line)
@@ -183,28 +183,28 @@ void Initialize_RC_File ()
         prG->s5Pass = NULL;
         prG->s5Name = NULL;
 
-        M_print ("\n");
-        M_print (i18n (1787, "You probably need to authenticate yourself to the socks server. If so, you need to enter the user name the administrator of the socks server gave you. Otherwise, just press return.\n"));
-        M_printf ("%s ", i18n (1096, "SOCKS5 user name:"));
+        rl_print ("\n");
+        rl_print (i18n (1787, "You probably need to authenticate yourself to the socks server. If so, you need to enter the user name the administrator of the socks server gave you. Otherwise, just press return.\n"));
+        rl_printf ("%s ", i18n (1096, "SOCKS5 user name:"));
         fflush (stdout);
         line = UtilIOReadline (stdin);
         if (line && line->len)
         {
             prG->s5Auth = 1;
             prG->s5Name = strdup (line->txt);
-            M_print (i18n (1788, "Now I also need the password for this user.\n"));
-            M_printf ("%s ", i18n (1097, "SOCKS5 password:"));
+            rl_print (i18n (1788, "Now I also need the password for this user.\n"));
+            rl_printf ("%s ", i18n (1097, "SOCKS5 password:"));
             fflush (stdout);
             line = UtilIOReadline (stdin);
             if (line && line->len)
                 prG->s5Pass = strdup (line->txt);
         }
     }
-    M_print ("\n");
+    rl_print ("\n");
 
     if (!uin)
     {
-        M_print (i18n (1796, "Setup wizard finished. Please wait until registration has finished.\n"));
+        rl_print (i18n (1796, "Setup wizard finished. Please wait until registration has finished.\n"));
         conn = SrvRegisterUIN (NULL, passwd);
         conn->open = &ConnectionInitServer;
         conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%ld", uin));
@@ -217,7 +217,7 @@ void Initialize_RC_File ()
     else
     {
         conn = PrefNewConnection (uin, passwd);
-        M_print (i18n (1791, "Setup wizard finished. Congratulations!\n"));
+        rl_print (i18n (1791, "Setup wizard finished. Congratulations!\n"));
     }
     
     conn->flags |= CONN_WIZARD;
@@ -256,8 +256,8 @@ void Initialize_RC_File ()
     free (passwd);
 }
 
-#define PrefParse(x)          switch (1) { case 1: if (!(par = s_parse (&args))) { M_printf (i18n (2123, "%sSyntax error%s: Too few arguments: %s\n"), COLERROR, COLNONE, s_qquote (line->txt)); continue; } x = par->txt; }
-#define PrefParseInt(i)       switch (1) { case 1: if (!s_parseint (&args, &i))  { M_printf (i18n (2124, "%sSyntax error%s: Not an integer: %s\n"), COLERROR, COLNONE, s_qquote (line->txt)); continue; }}
+#define PrefParse(x)          switch (1) { case 1: if (!(par = s_parse (&args))) { rl_printf (i18n (2123, "%sSyntax error%s: Too few arguments: %s\n"), COLERROR, COLNONE, s_qquote (line->txt)); continue; } x = par->txt; }
+#define PrefParseInt(i)       switch (1) { case 1: if (!s_parseint (&args, &i))  { rl_printf (i18n (2124, "%sSyntax error%s: Not an integer: %s\n"), COLERROR, COLNONE, s_qquote (line->txt)); continue; }}
 #define ERROR continue;
 
 /*
@@ -308,9 +308,9 @@ int Read_RC_File (FILE *rcf)
             }
             else
             {
-                M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                M_printf (i18n (1659, "Unknown section '%s' in configuration file."), args);
-                M_print ("\n");
+                rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                rl_printf (i18n (1659, "Unknown section '%s' in configuration file."), args);
+                rl_print ("\n");
                 section = -1;
             }
             continue;
@@ -318,9 +318,9 @@ int Read_RC_File (FILE *rcf)
         switch (section)
         {
             case -1:
-                M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                M_print  (i18n (1675, "Ignored line:"));
-                M_printf (" %s\n", args);
+                rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                rl_print  (i18n (1675, "Ignored line:"));
+                rl_printf (" %s\n", args);
                 break;
             case 0:
                 if (!(par = s_parse (&args)))
@@ -363,8 +363,8 @@ int Read_RC_File (FILE *rcf)
 
                     if (!what)
                     {
-                        M_printf ("%s%s%s ", COLERROR, i18n (2251, "Error:"), COLNONE);
-                        M_printf (i18n (2216, "This mICQ doesn't know the '%s' encoding.\n"), cmd);
+                        rl_printf ("%s%s%s ", COLERROR, i18n (2251, "Error:"), COLNONE);
+                        rl_printf (i18n (2216, "This mICQ doesn't know the '%s' encoding.\n"), cmd);
                         ERROR;
                     }
                     if (what & ENC_FAUTO)
@@ -373,10 +373,10 @@ int Read_RC_File (FILE *rcf)
                         {
                             if ((which == 3 && (what ^ prG->enc_loc) & ~ENC_FAUTO)
                                 || (which == 2 && (what ^ enc) & ~ENC_FAUTO))
-                                M_printf ("%s%s%s ", COLERROR, i18n (2251, "Error:"), COLNONE);
+                                rl_printf ("%s%s%s ", COLERROR, i18n (2251, "Error:"), COLNONE);
                             else
-                                M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                            M_printf (i18n (2217, "This mICQ can't convert between '%s' and unicode.\n"), cmd);
+                                rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                            rl_printf (i18n (2217, "This mICQ can't convert between '%s' and unicode.\n"), cmd);
                         }
                         what &= ~ENC_FAUTO;
                     }
@@ -429,8 +429,8 @@ int Read_RC_File (FILE *rcf)
                     {
                         prG->event_cmd = strdup (tmp);
 #ifndef MSGEXEC
-                        M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                        M_printf (i18n (1817, "The event scripting feature is disabled.\n"));
+                        rl_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                        rl_printf (i18n (1817, "The event scripting feature is disabled.\n"));
 #endif
                     }
                 }
@@ -591,8 +591,8 @@ int Read_RC_File (FILE *rcf)
                 {
                     dep = 234;
                     PrefParse (tmp);
-                    M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                    M_printf (i18n (9999, "Can't tab spool %s; type \"%sopt %s tabspool 1%s\" manually.\n"),
+                    rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                    rl_printf (i18n (9999, "Can't tab spool %s; type \"%sopt %s tabspool 1%s\" manually.\n"),
                               s_qquote (tmp), COLQUOTE, tmp, COLNONE);
                 }
                 else if (!strcasecmp (cmd, "set"))
@@ -660,8 +660,8 @@ int Read_RC_File (FILE *rcf)
                                 OptSetVal (&prG->copts, CO_ENCODING, ENC_SJIS);
                                 OptSetStr (&prG->copts, CO_ENCODINGSTR, ConvEncName (ENC_SJIS));
 #ifndef ENABLE_ICONV
-                                M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                                M_print (i18n (2215, "This mICQ can't convert between SJIS or EUC and unicode.\n"));
+                                rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                                rl_print (i18n (2215, "This mICQ can't convert between SJIS or EUC and unicode.\n"));
 #endif
                             }
                             else if (which == FLAG_DEP_LOG)
@@ -764,9 +764,9 @@ int Read_RC_File (FILE *rcf)
                 }
                 else
                 {
-                    M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
-                    M_print ("\n");
+                    rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                    rl_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
+                    rl_print ("\n");
                 }
                 break;
             case 1:
@@ -840,7 +840,7 @@ int Read_RC_File (FILE *rcf)
                         break;
                     if (!(cont = ContactFindCreate (tconn->contacts, 0, uin, cmd)))
                     {
-                        M_printf ("%s%s%s %s\n", COLERROR, i18n (1619, "Warning:"), COLNONE,
+                        rl_printf ("%s%s%s %s\n", COLERROR, i18n (1619, "Warning:"), COLNONE,
                                  i18n (1620, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
                         section = -1;
                         break;
@@ -879,9 +879,9 @@ int Read_RC_File (FILE *rcf)
                 }
                 else
                 {
-                    M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
-                    M_print ("\n");
+                    rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                    rl_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
+                    rl_print ("\n");
                 }
                 break;
             case 3:
@@ -913,8 +913,8 @@ int Read_RC_File (FILE *rcf)
                         }
                         else
                         {
-                            M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                            M_printf (i18n (9999, "Peer-to-peer connection not associated to server connection, discarding.\n"));
+                            rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                            rl_printf (i18n (9999, "Peer-to-peer connection not associated to server connection, discarding.\n"));
                             conn->type = 0;
                             section = -1;
                         }
@@ -970,9 +970,9 @@ int Read_RC_File (FILE *rcf)
                 }
                 else
                 {
-                    M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
-                    M_print ("\n");
+                    rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                    rl_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
+                    rl_print ("\n");
                 }
                 break;
             case 4: /* contact groups */
@@ -1032,8 +1032,8 @@ int Read_RC_File (FILE *rcf)
                 }
                 else if (!cg->serv)
                 {
-                    M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                    M_printf (i18n (9999, "Contact group %s (id %s%d%s) not associated to server connection.\n"),
+                    rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                    rl_printf (i18n (9999, "Contact group %s (id %s%d%s) not associated to server connection.\n"),
                               s_wordquote (cg->name ? cg->name : ""), COLQUOTE, cg->id, COLNONE);
                 }
                 else if (!strcasecmp (cmd, "entry"))
@@ -1049,9 +1049,9 @@ int Read_RC_File (FILE *rcf)
                 }
                 else
                 {
-                    M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
-                    M_print ("\n");
+                    rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                    rl_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
+                    rl_print ("\n");
                 }
                 break;
         }
@@ -1118,9 +1118,9 @@ int Read_RC_File (FILE *rcf)
                            
     if (dep || !format)
     {
-        M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-        M_printf (i18n (9999, "Deprecated syntax found in configuration file '%s'!\n    Please update or \"save\" the configuration file and check for changes.\n"), prG->rcfile);
-        M_printf ("FIXME: dep %d\n", dep);
+        rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+        rl_printf (i18n (9999, "Deprecated syntax found in configuration file '%s'!\n    Please update or \"save\" the configuration file and check for changes.\n"), prG->rcfile);
+        rl_printf ("FIXME: dep %d\n", dep);
     }
     fclose (rcf);
     return format;
@@ -1163,9 +1163,9 @@ void PrefReadStat (FILE *stf)
                 section = 5;
             else
             {
-                M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                M_printf (i18n (1659, "Unknown section '%s' in configuration file."), args);
-                M_print ("\n");
+                rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                rl_printf (i18n (1659, "Unknown section '%s' in configuration file."), args);
+                rl_print ("\n");
                 section = -1;
             }
             continue;
@@ -1173,9 +1173,9 @@ void PrefReadStat (FILE *stf)
         switch (section)
         {
             case -1:
-                M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                M_print  (i18n (1675, "Ignored line:"));
-                M_printf (" %s\n", args);
+                rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                rl_print  (i18n (1675, "Ignored line:"));
+                rl_printf (" %s\n", args);
                 break;
             case 0:
                 PrefParse (cmd);
@@ -1188,9 +1188,9 @@ void PrefReadStat (FILE *stf)
                 }
                 else
                 {
-                    M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
-                    M_print ("\n");
+                    rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                    rl_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
+                    rl_print ("\n");
                 }
                 break;
             case 4: /* contact groups */
@@ -1258,9 +1258,9 @@ void PrefReadStat (FILE *stf)
                 }
                 else
                 {
-                    M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
-                    M_print ("\n");
+                    rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                    rl_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
+                    rl_print ("\n");
                 }
                 break;
             case 5:
@@ -1294,9 +1294,9 @@ void PrefReadStat (FILE *stf)
                 }
                 else
                 {
-                    M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
-                    M_print ("\n");
+                    rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                    rl_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
+                    rl_print ("\n");
                 }
                 break;
         }
@@ -1319,8 +1319,8 @@ void PrefReadStat (FILE *stf)
 
     if (dep || !format)
     {
-        M_printf (i18n (1818, "Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or \"save\" the configuration file and check for changes.\n"), prG->statfile);
-        M_printf ("FIXME: dep %d\n", dep);
+        rl_printf (i18n (1818, "Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or \"save\" the configuration file and check for changes.\n"), prG->statfile);
+        rl_printf ("FIXME: dep %d\n", dep);
     }
     fclose (stf);
 }
@@ -1344,7 +1344,7 @@ int Save_RC ()
 
     if (!prG->rcfile)
         prG->rcfile = strdup (s_sprintf ("%smicqrc", PrefUserDir (prG)));
-    M_printf (i18n (2048, "Saving preferences to %s.\n"), prG->rcfile);
+    rl_printf (i18n (2048, "Saving preferences to %s.\n"), prG->rcfile);
     rcf = fopen (prG->rcfile, "w");
     if (!rcf)
     {
@@ -1354,7 +1354,7 @@ int Save_RC ()
             char *tmp = strdup (PrefUserDir (prG));
             if (tmp[strlen (tmp) - 1] == '/')
                 tmp[strlen (tmp) - 1] = '\0';
-            M_printf (i18n (2047, "Creating directory %s.\n"), tmp);
+            rl_printf (i18n (2047, "Creating directory %s.\n"), tmp);
             k = mkdir (tmp, 0700);
             if (!k)
                 rcf = fopen (prG->rcfile, "w");
@@ -1363,7 +1363,7 @@ int Save_RC ()
             free (tmp);
         }
         if (!rcf)
-            M_printf (i18n (1872, "failed: %s (%d)\n"), strerror (rc), rc);
+            rl_printf (i18n (1872, "failed: %s (%d)\n"), strerror (rc), rc);
     }
     if (!rcf)
         return -1;
@@ -1380,7 +1380,7 @@ int Save_RC ()
             char *tmp = strdup (PrefUserDir (prG));
             if (tmp[strlen (tmp) - 1] == '/')
                 tmp[strlen (tmp) - 1] = '\0';
-            M_printf (i18n (2047, "Creating directory %s.\n"), tmp);
+            rl_printf (i18n (2047, "Creating directory %s.\n"), tmp);
             k = mkdir (tmp, 0700);
             if (!k)
                 rcf = fopen (prG->statfile, "w");
@@ -1389,7 +1389,7 @@ int Save_RC ()
             free (tmp);
         }
         if (!stf)
-            M_printf (i18n (1872, "failed: %s (%d)\n"), strerror (rc), rc);
+            rl_printf (i18n (1872, "failed: %s (%d)\n"), strerror (rc), rc);
     }
     if (!stf)
         return -1;

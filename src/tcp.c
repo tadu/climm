@@ -96,14 +96,14 @@ Event *ConnectionInitPeer (Connection *list)
     
     if (list->version < 6 || list->version > 8)
     {
-        M_printf (i18n (2024, "Unknown protocol version %d for ICQ peer-to-peer protocol.\n"), list->version);
+        rl_printf (i18n (2024, "Unknown protocol version %d for ICQ peer-to-peer protocol.\n"), list->version);
         return NULL;
     }
 
     if (list->version == 6)
-        M_print (i18n (2046, "You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n"));
+        rl_print (i18n (2046, "You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n"));
 
-    M_printf (i18n (9999, "Opening peer-to-peer connection at %slocalhost%s:%s%ld%s... "),
+    rl_printf (i18n (9999, "Opening peer-to-peer connection at %slocalhost%s:%s%ld%s... "),
               COLQUOTE, COLNONE, COLQUOTE, list->port, COLNONE);
 
     list->connect     = 0;
@@ -208,8 +208,8 @@ void TCPDispatchReconn (Connection *peer)
     {
         Contact *cont = peer->cont;
 
-        M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-        M_print  (i18n (2023, "Direct connection closed by peer.\n"));
+        rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+        rl_print  (i18n (2023, "Direct connection closed by peer.\n"));
     }
     if (peer->close)
         peer->close (peer);
@@ -234,7 +234,7 @@ void TCPDispatchMain (Connection *list)
         if ((rc = UtilIOError (list)))
         {
 #ifndef __BEOS__
-            M_printf (i18n (2051, "Error on socket: %s (%d)\n"), strerror (rc), rc);
+            rl_printf (i18n (2051, "Error on socket: %s (%d)\n"), strerror (rc), rc);
             if (list->sok > 0)
                 sockclose (list->sok);
             list->sok = -1;
@@ -267,7 +267,7 @@ void TCPDispatchMain (Connection *list)
     
     if (!peer)
     {
-        M_print (i18n (1914, "Can't allocate connection structure.\n"));
+        rl_print (i18n (1914, "Can't allocate connection structure.\n"));
         list->connect = 0;
         if (list->sok)
             sockclose (list->sok);
@@ -275,7 +275,7 @@ void TCPDispatchMain (Connection *list)
     }
 
     if (list->version == 6)
-        M_print (i18n (2046, "You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n"));
+        rl_print (i18n (2046, "You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n"));
 
     peer->our_session = 0;
     peer->dispatch    = &TCPDispatchShake;
@@ -341,8 +341,8 @@ void TCPDispatchConn (Connection *peer)
                 
                 if (prG->verbose)
                 {
-                    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                    M_printf (i18n (9999, "Opening TCP connection at %s:%s%ld%s... "),
+                    rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                    rl_printf (i18n (9999, "Opening TCP connection at %s:%s%ld%s... "),
                               s_wordquote (s_ip (peer->ip)), COLQUOTE, peer->port, COLNONE);
                 }
                 UtilIOConnectTCP (peer);
@@ -361,8 +361,8 @@ void TCPDispatchConn (Connection *peer)
                 
                 if (prG->verbose)
                 {
-                    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                    M_printf (i18n (9999, "Opening TCP connection at %s:%s%ld%s... "),
+                    rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                    rl_printf (i18n (9999, "Opening TCP connection at %s:%s%ld%s... "),
                               s_wordquote (s_ip (peer->ip)), COLQUOTE, peer->port, COLNONE);
                 }
                 UtilIOConnectTCP (peer);
@@ -386,10 +386,10 @@ void TCPDispatchConn (Connection *peer)
             case 4:
                 if (prG->verbose)
                 {
-                    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                    M_printf (i18n (9999, "Opening TCP connection at %s:%s%ld%s... "),
+                    rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                    rl_printf (i18n (9999, "Opening TCP connection at %s:%s%ld%s... "),
                               s_wordquote (s_ip (peer->ip)), COLQUOTE, peer->port, COLNONE);
-                    M_print (i18n (1785, "success.\n"));
+                    rl_print (i18n (1785, "success.\n"));
                 }
                 QueueEnqueueData (peer, QUEUE_TCP_TIMEOUT, peer->ip, time (NULL) + 10,
                                   NULL, cont, NULL, &TCPCallBackTimeout);
@@ -406,7 +406,7 @@ void TCPDispatchConn (Connection *peer)
             case TCP_STATE_WAITING:
             case TCP_STATE_WAITING + 2:
                 if (prG->verbose)
-                    M_printf (i18n (1855, "TCP connection to %s at %s:%ld failed.\n"),
+                    rl_printf (i18n (1855, "TCP connection to %s at %s:%ld failed.\n"),
                              cont->nick, s_ip (peer->ip), peer->port);
                 peer->connect = CONNECT_FAIL;
                 peer->sok = -1;
@@ -531,8 +531,8 @@ void TCPDispatchShake (Connection *peer)
                 EventD (QueueDequeue (peer, QUEUE_TCP_TIMEOUT, peer->ip));
                 if (prG->verbose)
                 {
-                    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                    M_print  (i18n (1833, "Peer to peer TCP connection established.\n"));
+                    rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                    rl_print  (i18n (1833, "Peer to peer TCP connection established.\n"));
                 }
                 peer->connect = CONNECT_OK | CONNECT_SELECT_R;
                 if (peer->type == TYPE_FILEDIRECT)
@@ -549,7 +549,7 @@ void TCPDispatchShake (Connection *peer)
                 /* outgoing peer connection established */
                 if (ssl_supported (peer) && peer->ssl_status == SSL_STATUS_REQUEST)
                     if (!TCPSendSSLReq (peer->parent, cont)) 
-                        M_printf (i18n (2372, "Could not send SSL request to %s\n"), cont->nick);
+                        rl_printf (i18n (2372, "Could not send SSL request to %s\n"), cont->nick);
 #endif
                 return;
             case 0:
@@ -583,7 +583,7 @@ static void TCPDispatchPeer (Connection *peer)
 
     /* Recv all packets before doing anything else.
          The objective is to delete any packets CANCELLED by the remote user. */
-    while (M_Is_Set (peer->sok) && i++ <= TCP_MSG_QUEUE)
+    while (UtilIOSelectIs (peer->sok, READFDS) && i++ <= TCP_MSG_QUEUE)
     {
         if (!(pak = TCPReceivePacket (peer)))
             return;
@@ -609,7 +609,7 @@ static void TCPDispatchPeer (Connection *peer)
                     
                     if (prG->verbose)
                     {
-                        M_printf (i18n (1807, "Cancelled incoming message (seq %04x) from %s\n"),
+                        rl_printf (i18n (1807, "Cancelled incoming message (seq %04x) from %s\n"),
                                  seq_in, cont->nick);
                     }
                     EventD (event);
@@ -626,10 +626,9 @@ static void TCPDispatchPeer (Connection *peer)
             }
         }
 
-        M_select_init();
-        M_set_timeout (0, 100000);
-        M_Add_rsocket (peer->sok);
-        M_select();
+        UtilIOSelectInit(0, 100000);
+        UtilIOSelectAdd (peer->sok, READFDS);
+        UtilIOSelect();
     }
 }
 
@@ -655,7 +654,7 @@ static void TCPCallBackTimeout (Event *event)
         Contact *cont;
         
         if ((cont = peer->cont))
-            M_printf (i18n (1850, "Timeout on connection with %s at %s:%ld\n"),
+            rl_printf (i18n (1850, "Timeout on connection with %s at %s:%ld\n"),
                       cont->nick, s_ip (peer->ip), peer->port);
         TCPClose (peer);
     }
@@ -714,11 +713,11 @@ static Packet *TCPReceivePacket (Connection *peer)
         {
             if (prG->verbose & DEB_TCP)
             {
-                M_printf ("%s " COLINDENT "%s", s_now, COLSERVER);
-                M_printf (i18n (1789, "Received malformed packet: (%d)"), peer->sok);
-                M_printf ("%s\n", COLNONE);
-                M_print  (s_dump (pak->data, pak->len));
-                M_print  (COLEXDENT "\r");
+                rl_printf ("%s " COLINDENT "%s", s_now, COLSERVER);
+                rl_printf (i18n (1789, "Received malformed packet: (%d)"), peer->sok);
+                rl_printf ("%s\n", COLNONE);
+                rl_print  (s_dump (pak->data, pak->len));
+                rl_print  (COLEXDENT "\r");
 
             }
             TCPClose (peer);
@@ -1046,7 +1045,7 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
         return peer;
     }
     if ((prG->verbose & DEB_TCP) && err)
-        M_printf ("%s %s: %d\n", s_now, i18n (2029, "Protocol error on peer-to-peer connection"), err);
+        rl_printf ("%s %s: %d\n", s_now, i18n (2029, "Protocol error on peer-to-peer connection"), err);
 
     TCPClose (peer);
     return NULL;
@@ -1098,7 +1097,7 @@ static Connection *TCPReceiveInit2 (Connection *peer, Packet *pak)
     }
 
     if (err && (prG->verbose & (DEB_TCP | DEB_PROTOCOL)))
-        M_printf ("%s %s: %d\n", s_now, i18n (2029, "Protocol error on peer-to-peer connection"), err);
+        rl_printf ("%s %s: %d\n", s_now, i18n (2029, "Protocol error on peer-to-peer connection"), err);
     else
         peer->connect = 0;
     TCPClose (peer);
@@ -1132,11 +1131,11 @@ void TCPClose (Connection *peer)
         if (peer->connect & CONNECT_MASK && prG->verbose)
         {
             Contact *cont = peer->cont;
-            M_printf ("%s ", s_now);
+            rl_printf ("%s ", s_now);
             if (cont)
-                M_printf (i18n (1842, "Closing socket %d to %s.\n"), peer->sok, cont->nick);
+                rl_printf (i18n (1842, "Closing socket %d to %s.\n"), peer->sok, cont->nick);
             else
-                M_printf (i18n (1843, "Closing socket %d.\n"), peer->sok);
+                rl_printf (i18n (1843, "Closing socket %d.\n"), peer->sok);
         }
         sockclose (peer->sok);
     }
@@ -1200,11 +1199,11 @@ void TCPPrint (Packet *pak, Connection *peer, BOOL out)
     cmd = *pak->data;
     cont = peer->cont;
 
-    M_printf ("%s " COLINDENT "%s", s_now, out ? COLCLIENT : COLSERVER);
-    M_printf (out ? i18n (2078, "Outgoing TCP packet (%d - %s): %s")
+    rl_printf ("%s " COLINDENT "%s", s_now, out ? COLCLIENT : COLSERVER);
+    rl_printf (out ? i18n (2078, "Outgoing TCP packet (%d - %s): %s")
                   : i18n (2079, "Incoming TCP packet (%d - %s): %s"),
               peer->sok, cont ? cont->nick : "", TCPCmdName (cmd));
-    M_printf ("%s\n", COLNONE);
+    rl_printf ("%s\n", COLNONE);
 
     if (peer->connect & CONNECT_OK && peer->type == TYPE_MSGDIRECT && peer->version == 6)
     {
@@ -1215,11 +1214,11 @@ void TCPPrint (Packet *pak, Connection *peer, BOOL out)
     if (prG->verbose & DEB_PACKTCPDATA)
         if (cmd != 6)
         {
-            M_print (f = PacketDump (pak, peer->type == TYPE_MSGDIRECT ? "gpeer" : "gfile", COLDEBUG, COLNONE));
+            rl_print (f = PacketDump (pak, peer->type == TYPE_MSGDIRECT ? "gpeer" : "gfile", COLDEBUG, COLNONE));
             free (f);
         }
 
-    M_print (COLEXDENT "\r");
+    rl_print (COLEXDENT "\r");
 }
 
 /*
@@ -1368,14 +1367,14 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
         if (stat (files[i], &fstat))
         {
             rc = errno;
-            M_printf (i18n (2071, "Couldn't stat file %s: %s (%d)\n"),
+            rl_printf (i18n (2071, "Couldn't stat file %s: %s (%d)\n"),
                      files[i], strerror (rc), rc);
         }
         else
         {
-            M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick),
+            rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick),
                       cont->nick, COLNONE);
-            M_printf (i18n (2091, "Queueing %s as %s for transfer.\n"), files[i], as[i]);
+            rl_printf (i18n (2091, "Queueing %s as %s for transfer.\n"), files[i], as[i]);
             if (sum)
                 s_catn (&filenames, ", ", 2);
             s_cat (&filenames, as[i]);
@@ -1460,7 +1459,7 @@ static void TCPCallBackResend (Event *event)
     if (!peer || !cont)
     {
         if (!peer)
-            M_printf (i18n (2092, "TCP message %s discarded - lost session.\n"), opt_text);
+            rl_printf (i18n (2092, "TCP message %s discarded - lost session.\n"), opt_text);
         EventD (event);
         return;
     }
@@ -1501,7 +1500,7 @@ static void TCPCallBackResend (Event *event)
             event->opt = NULL;
         }
         else
-            M_printf (i18n (1844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4 + delta));
+            rl_printf (i18n (1844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4 + delta));
     }
     EventD (event);
 }
@@ -1587,7 +1586,7 @@ static void TCPCallBackReceive (Event *event)
             if (opt_type != type && type != MSG_EXTENDED)
             {
                 /* D'oh! */
-                M_printf ("FIXME: message type mismatch: %d vs %ld\n", type, opt_type); /* FIXME */
+                rl_printf ("FIXME: message type mismatch: %d vs %ld\n", type, opt_type); /* FIXME */
                 EventD (oldevent);
                 break;
             }

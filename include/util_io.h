@@ -15,6 +15,15 @@ BOOL    UtilIOSendTCP    (Connection *conn, Packet *pak);
 void    UtilIOSendUDP    (Connection *conn, Packet *pak);
 strc_t  UtilIOReadline   (FILE *fd);
 
+void    UtilIOSelectInit (int sec, int usec);
+void    UtilIOSelectAdd  (FD_T sok, int nr);
+BOOL    UtilIOSelectIs   (FD_T sok, int nr);
+void    UtilIOSelect     (void);
+
+#define READFDS   1
+#define WRITEFDS  2
+#define EXCEPTFDS 4
+
 #define UtilIOConnectTCP(c) UtilIOConnectTCP(c DEBUGARGS)
 
 #endif /* MICQ_UTIL_IO_H */

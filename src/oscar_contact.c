@@ -52,22 +52,22 @@ JUMP_SNAC_F(SnacSrvContacterr)
         default:   errtxt = i18n (2331, "unknown");
     }
 
-    M_printf (i18n (2332, "Contact error %d (%s) for %d contacts: "), err, errtxt, cnt);
+    rl_printf (i18n (2332, "Contact error %d (%s) for %d contacts: "), err, errtxt, cnt);
 
     while (empty < 3)
     {
         if ((cont = PacketReadCont (event->pak, serv)))
         {
             if (first)
-                M_print (", ");
+                rl_print (", ");
             if (cont)
-                M_printf ("%s (%ld)", cont->nick, cont->uin);
+                rl_printf ("%s (%ld)", cont->nick, cont->uin);
             first = 1;
         }
         else
             empty++;
     }
-    M_print ("\n");
+    rl_print ("\n");
 }
 
 /*
@@ -137,7 +137,7 @@ JUMP_SNAC_F(SnacSrvContrefused)
     
     cont = PacketReadCont (event->pak, serv);
     if (cont)
-        M_printf (i18n (2315, "Cannot watch status of %s - too many watchers.\n"), cont->nick);
+        rl_printf (i18n (2315, "Cannot watch status of %s - too many watchers.\n"), cont->nick);
 }
 
 /*

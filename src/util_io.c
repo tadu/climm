@@ -37,6 +37,12 @@
 #if HAVE_WINSOCK2_H
 #include <winsock2.h>
 #endif
+#if HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#ifdef HAVE_SYS_SELECT_H
+#include <sys/select.h>
+#endif
 #if !HAVE_DECL_H_ERRNO
 extern int h_errno;
 #endif
@@ -97,14 +103,14 @@ void UtilIOConnectUDP (Connection *conn)
     {
         if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
         {
-            M_print (i18n (1055, "Socket creation failed"));
-            M_print (".\n");
+            rl_print (i18n (1055, "Socket creation failed"));
+            rl_print (".\n");
         }
         conn->sok = -1;
         return;
     }
     if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
-        M_print (i18n (1056, "Socket created, attempting to connect.\n"));
+        rl_print (i18n (1056, "Socket created, attempting to connect.\n"));
 
     if (prG->s5Use)
     {
@@ -115,7 +121,7 @@ void UtilIOConnectUDP (Connection *conn)
         if (bind (conn->sok, (struct sockaddr *) &sin, sizeof (struct sockaddr)) < 0)
         {
             if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
-                M_print (i18n (1637, "Can't bind socket to free port\n"));
+                rl_print (i18n (1637, "Can't bind socket to free port\n"));
             conn->sok = -1;
             return;
         }
@@ -132,8 +138,8 @@ void UtilIOConnectUDP (Connection *conn)
             {
                 if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
                 {
-                    M_printf (i18n (1596, "[SOCKS] Can't find hostname %s: %s."), prG->s5Host, hstrerror (h_errno));
-                    M_print ("\n");
+                    rl_printf (i18n (1596, "[SOCKS] Can't find hostname %s: %s."), prG->s5Host, hstrerror (h_errno));
+                    rl_print ("\n");
                 }
                 conn->sok = -1;
                 return;
@@ -146,7 +152,7 @@ void UtilIOConnectUDP (Connection *conn)
         if (s5Sok < 0)
         {
             if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
-                M_print (i18n (1597, "[SOCKS] Socket creation failed\n"));
+                rl_print (i18n (1597, "[SOCKS] Socket creation failed\n"));
             conn->sok = -1;
             return;
         }
@@ -155,8 +161,8 @@ void UtilIOConnectUDP (Connection *conn)
         {
             if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
             {
-                M_print (i18n (1598, "[SOCKS] Connection request refused"));
-                M_print (".\n");
+                rl_print (i18n (1598, "[SOCKS] Connection request refused"));
+                rl_print (".\n");
             }
             conn->sok = -1;
             return;
@@ -175,8 +181,8 @@ void UtilIOConnectUDP (Connection *conn)
             {
                 if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
                 {
-                    M_print (i18n (1599, "[SOCKS] Authentication method incorrect"));
-                    M_print (".\n");
+                    rl_print (i18n (1599, "[SOCKS] Authentication method incorrect"));
+                    rl_print (".\n");
                 }
                 sockclose (s5Sok);
                 conn->sok = -1;
@@ -193,8 +199,8 @@ void UtilIOConnectUDP (Connection *conn)
             {
                 if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
                 {
-                    M_print (i18n (1600, "[SOCKS] Authorization failure"));
-                    M_print (".\n");
+                    rl_print (i18n (1600, "[SOCKS] Authorization failure"));
+                    rl_print (".\n");
                 }
                 sockclose (s5Sok);
                 conn->sok = -1;
@@ -207,8 +213,8 @@ void UtilIOConnectUDP (Connection *conn)
             {
                 if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
                 {
-                    M_print (i18n (1599, "[SOCKS] Authentication method incorrect"));
-                    M_print (".\n");
+                    rl_print (i18n (1599, "[SOCKS] Authentication method incorrect"));
+                    rl_print (".\n");
                 }
                 sockclose (s5Sok);
                 conn->sok = -1;
@@ -231,8 +237,8 @@ void UtilIOConnectUDP (Connection *conn)
         {
             if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
             {
-                M_print (i18n (1601, "[SOCKS] General SOCKS server failure"));
-                M_print (".\n");
+                rl_print (i18n (1601, "[SOCKS] General SOCKS server failure"));
+                rl_print (".\n");
             }
             sockclose (s5Sok);
             conn->sok = -1;
@@ -248,8 +254,8 @@ void UtilIOConnectUDP (Connection *conn)
         {
             if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
             {
-                M_printf (i18n (1948, "Can't find hostname %s: %s."), conn->server, hstrerror (h_errno));
-                M_print ("\n");
+                rl_printf (i18n (1948, "Can't find hostname %s: %s."), conn->server, hstrerror (h_errno));
+                rl_print ("\n");
             }
             conn->sok = -1;
             return;
@@ -273,7 +279,7 @@ void UtilIOConnectUDP (Connection *conn)
     if (conct == -1)            /* did we connect ? */
     {
         if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
-            M_printf (i18n (1966, " Connection refused on port %ld at %s\n"), conn->port, conn->server);
+            rl_printf (i18n (1966, " Connection refused on port %ld at %s\n"), conn->port, conn->server);
         conn->sok = -1;
         return;
     }
@@ -283,7 +289,7 @@ void UtilIOConnectUDP (Connection *conn)
     conn->our_local_ip = ntohl (sin.sin_addr.s_addr);
 
     if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
-        M_printf (i18n (1053, "Connected to %s, waiting for response\n"), conn->server);
+        rl_printf (i18n (1053, "Connected to %s, waiting for response\n"), conn->server);
 }
 
 #ifdef __AMIGA__
@@ -293,7 +299,7 @@ void UtilIOConnectUDP (Connection *conn)
 #endif
 #define CONN_FAIL(s)  { const char *t = s;      \
                         if (t) if (prG->verbose || conn->type & TYPEF_ANY_SERVER) \
-                            M_printf    ("%s [%d]\n", t, __LINE__);  \
+                            rl_printf    ("%s [%d]\n", t, __LINE__);  \
                         EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, conn->ip)); \
                         if (conn->sok > 0)          \
                           sockclose (conn->sok);     \
@@ -304,7 +310,7 @@ void UtilIOConnectUDP (Connection *conn)
                         return; }
 #define CONN_FAIL_RC(s) { int rc = errno;                  \
                           if (prG->verbose || conn->type & TYPEF_ANY_SERVER) \
-                          M_print (i18n (1949, "failed:\n"));\
+                          rl_print (i18n (1949, "failed:\n"));\
                           CONN_FAIL (s_sprintf  ("%s: %s (%d).", s, strerror (rc), rc)) }
 #define CONN_CHECK(s) { if (rc == -1) { rc = errno;            \
                           if (rc == EAGAIN) return;             \
@@ -398,10 +404,10 @@ void UtilIOConnectTCP (Connection *conn DEBUGPARAM)
 
         if (rc >= 0)
         {
-            M_print ("");
+            rl_print ("");
             if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
-                if (M_pos () > 0)
-                     M_print (i18n (1634, "ok.\n"));
+                if (rl_pos () > 0)
+                     rl_print (i18n (1634, "ok.\n"));
             if (prG->s5Use)
             {
                 QueueEnqueueData (conn, QUEUE_CON_TIMEOUT, conn->ip,
@@ -426,10 +432,10 @@ void UtilIOConnectTCP (Connection *conn DEBUGPARAM)
         if (0)
 #endif
         {
-            M_print ("");
+            rl_print ("");
             if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
-                if (M_pos () > 0)
-                    M_print ("\n");
+                if (rl_pos () > 0)
+                    rl_print ("\n");
             QueueEnqueueData (conn, QUEUE_CON_TIMEOUT, conn->ip,
                               time (NULL) + 10, NULL,
                               conn->cont, NULL, &UtilIOTOConn);
@@ -477,16 +483,16 @@ void UtilIOConnectTCP (Connection *conn DEBUGPARAM)
         conn->port = ntohs (sin.sin_port);
         s_repl (&conn->server, "localhost");
         if (prG->verbose || conn->type == TYPE_MSGLISTEN)
-            if (M_pos () > 0)
-                M_print (i18n (1634, "ok.\n"));
+            if (rl_pos () > 0)
+                rl_print (i18n (1634, "ok.\n"));
         CONN_OK
     }
 }
 
 #define CONNS_FAIL_RC(s) { int rc = errno;            \
                            const char *t = s_sprintf ("%s: %s (%d).", s, strerror (rc), rc); \
-                           M_print (i18n (1949, "failed:\n"));  \
-                           M_printf ("%s [%d]\n", t, __LINE__);  \
+                           rl_print (i18n (1949, "failed:\n"));  \
+                           rl_printf ("%s [%d]\n", t, __LINE__);  \
                            if (conn->sok > 0)             \
                                sockclose (conn->sok);      \
                            conn->sok = -1;                  \
@@ -523,8 +529,8 @@ void UtilIOConnectF (Connection *conn)
     if (rc == -1)
         CONNS_FAIL_RC (i18n (2228, "Couldn't set FIFO nonblocking"));
 
-    if (M_pos () > 0)
-        M_print (i18n (1634, "ok.\n"));
+    if (rl_pos () > 0)
+        rl_print (i18n (1634, "ok.\n"));
 
     conn->connect = CONNECT_OK;
 }
@@ -759,8 +765,8 @@ Packet *UtilIOReceiveTCP (Connection *conn)
             
             if ((cont = conn->cont))
             {
-                M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                M_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), dc_strerror (rc), rc);
+                rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                rl_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), dc_strerror (rc), rc);
             }
         }
         conn->connect = 0;
@@ -837,8 +843,8 @@ Packet *UtilIOReceiveF (Connection *conn)
             Contact *cont;
             if ((cont = conn->cont))
             {
-                M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                M_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
+                rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                rl_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
             }
         }
         conn->connect = 0;
@@ -900,8 +906,8 @@ BOOL UtilIOSendTCP (Connection *conn, Packet *pak)
             
             if ((cont = conn->cont))
             {
-                M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                M_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), dc_strerror (rc), rc);
+                rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                rl_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), dc_strerror (rc), rc);
             }
         }
         conn->connect = 0;
@@ -1001,4 +1007,52 @@ strc_t UtilIOReadline (FILE *fd)
         str.len = strlen (str.txt);
     }
     return &str;
+}
+
+static struct timeval tv;
+static fd_set fds[3];
+static int maxfd;
+
+void UtilIOSelectInit (int sec, int usec)
+{
+    FD_ZERO (&fds[0]);
+    FD_ZERO (&fds[1]);
+    FD_ZERO (&fds[2]);
+    tv.tv_sec = sec;
+    tv.tv_usec = usec;
+    maxfd = 0;
+}
+
+void UtilIOSelectAdd (FD_T sok, int nr)
+{
+    FD_SET (sok, &fds[nr & 3]);
+    if (sok > maxfd)
+        maxfd = sok;
+}
+
+BOOL UtilIOSelectIs (FD_T sok, int nr)
+{
+    return ((nr & READFDS)   && FD_ISSET (sok, &fds[READFDS & 3]))
+        || ((nr & WRITEFDS)  && FD_ISSET (sok, &fds[WRITEFDS & 3]))
+        || ((nr & EXCEPTFDS) && FD_ISSET (sok, &fds[EXCEPTFDS & 3]));
+}
+
+void UtilIOSelect (void)
+{
+    int res, rc;
+
+    errno = 0;
+    res = select (maxfd + 1, &fds[READFDS & 3], &fds[WRITEFDS & 3], &fds[EXCEPTFDS & 3], &tv);
+    rc = errno;
+    if (res == -1)
+    {
+        FD_ZERO (&fds[READFDS & 3]);
+        FD_ZERO (&fds[WRITEFDS & 3]);
+        FD_ZERO (&fds[EXCEPTFDS & 3]);
+        if (rc != EINTR || rc != EAGAIN)
+        {
+            printf (i18n (1849, "Error on select: %s (%d)\n"), strerror (rc), rc);
+            exit (0);
+        }
+    }
 }

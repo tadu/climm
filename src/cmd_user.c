@@ -189,11 +189,11 @@ static Connection *conn = NULL;
 #define OPENCONN \
     if (!conn) conn = ConnectionFind (TYPEF_ANY_SERVER, 0, NULL); \
     if (!conn || ~conn->connect & CONNECT_OK) \
-    { M_print (i18n (1931, "Current session is closed. Try another or open this one.\n")); return 0; } \
+    { rl_print (i18n (1931, "Current session is closed. Try another or open this one.\n")); return 0; } \
 
 /* Try to have any server connection ready. */
 #define ANYCONN if (!conn) conn = ConnectionFind (TYPEF_ANY_SERVER, 0, NULL); \
-    if (!conn) { M_print (i18n (9999, "No server session found.\n")); return 0; }
+    if (!conn) { rl_print (i18n (9999, "No server session found.\n")); return 0; }
 
 /*
  * Returns a pointer to the jump table.
@@ -310,14 +310,14 @@ static JUMP_F(CmdUserChange)
     {
         if (!s_parseint (&args, &data))
         {
-            M_print (i18n (1703, "Status modes:\n"));
-            M_printf ("  %-20s %d\n", i18n (1921, "Online"),         STATUS_ONLINE);
-            M_printf ("  %-20s %d\n", i18n (1923, "Away"),           STATUS_AWAY);
-            M_printf ("  %-20s %d\n", i18n (1922, "Do not disturb"), STATUS_DND);
-            M_printf ("  %-20s %d\n", i18n (1924, "Not Available"),  STATUS_NA);
-            M_printf ("  %-20s %d\n", i18n (1927, "Free for chat"),  STATUS_FFC);
-            M_printf ("  %-20s %d\n", i18n (1925, "Occupied"),       STATUS_OCC);
-            M_printf ("  %-20s %d\n", i18n (1926, "Invisible"),      STATUS_INV);
+            rl_print (i18n (1703, "Status modes:\n"));
+            rl_printf ("  %-20s %d\n", i18n (1921, "Online"),         STATUS_ONLINE);
+            rl_printf ("  %-20s %d\n", i18n (1923, "Away"),           STATUS_AWAY);
+            rl_printf ("  %-20s %d\n", i18n (1922, "Do not disturb"), STATUS_DND);
+            rl_printf ("  %-20s %d\n", i18n (1924, "Not Available"),  STATUS_NA);
+            rl_printf ("  %-20s %d\n", i18n (1927, "Free for chat"),  STATUS_FFC);
+            rl_printf ("  %-20s %d\n", i18n (1925, "Occupied"),       STATUS_OCC);
+            rl_printf ("  %-20s %d\n", i18n (1926, "Invisible"),      STATUS_INV);
             return 0;
         }
     }
@@ -339,7 +339,7 @@ static JUMP_F(CmdUserChange)
     else
     {
         CmdPktCmdStatusChange (conn, data);
-        M_printf ("%s %s\n", s_now, s_status (conn->status));
+        rl_printf ("%s %s\n", s_now, s_status (conn->status));
     }
     return 0;
 }
@@ -354,18 +354,18 @@ static JUMP_F(CmdUserRandom)
     
     if (!s_parseint (&args, &arg1))
     {
-        M_print (i18n (1704, "Groups:\n"));
-        M_printf ("  %2d %s\n",  1, i18n (1705, "General"));
-        M_printf ("  %2d %s\n",  2, i18n (1706, "Romance"));
-        M_printf ("  %2d %s\n",  3, i18n (1707, "Games"));
-        M_printf ("  %2d %s\n",  4, i18n (1708, "Students"));
-        M_printf ("  %2d %s\n",  6, i18n (1709, "20 something"));
-        M_printf ("  %2d %s\n",  7, i18n (1710, "30 something"));
-        M_printf ("  %2d %s\n",  8, i18n (1711, "40 something"));
-        M_printf ("  %2d %s\n",  9, i18n (1712, "50+"));
-        M_printf ("  %2d %s\n", 10, i18n (1713, "Seeking women"));
-        M_printf ("  %2d %s\n", 11, i18n (1714, "Seeking men"));
-        M_printf ("  %2d %s\n", 49, i18n (1715, "mICQ"));
+        rl_print (i18n (1704, "Groups:\n"));
+        rl_printf ("  %2d %s\n",  1, i18n (1705, "General"));
+        rl_printf ("  %2d %s\n",  2, i18n (1706, "Romance"));
+        rl_printf ("  %2d %s\n",  3, i18n (1707, "Games"));
+        rl_printf ("  %2d %s\n",  4, i18n (1708, "Students"));
+        rl_printf ("  %2d %s\n",  6, i18n (1709, "20 something"));
+        rl_printf ("  %2d %s\n",  7, i18n (1710, "30 something"));
+        rl_printf ("  %2d %s\n",  8, i18n (1711, "40 something"));
+        rl_printf ("  %2d %s\n",  9, i18n (1712, "50+"));
+        rl_printf ("  %2d %s\n", 10, i18n (1713, "Seeking women"));
+        rl_printf ("  %2d %s\n", 11, i18n (1714, "Seeking men"));
+        rl_printf ("  %2d %s\n", 49, i18n (1715, "mICQ"));
     }
     else
         IMCliInfo (conn, NULL, arg1);
@@ -382,19 +382,19 @@ static JUMP_F(CmdUserRandomSet)
     
     if (!s_parseint (&args, &arg1))
     {
-        M_print (i18n (1704, "Groups:\n"));
-        M_printf ("  %2d %s\n", conn->version > 6 ? 0 : -1, i18n (1716, "None"));
-        M_printf ("  %2d %s\n",  1, i18n (1705, "General"));
-        M_printf ("  %2d %s\n",  2, i18n (1706, "Romance"));
-        M_printf ("  %2d %s\n",  3, i18n (1707, "Games"));
-        M_printf ("  %2d %s\n",  4, i18n (1708, "Students"));
-        M_printf ("  %2d %s\n",  6, i18n (1709, "20 something"));
-        M_printf ("  %2d %s\n",  7, i18n (1710, "30 something"));
-        M_printf ("  %2d %s\n",  8, i18n (1711, "40 something"));
-        M_printf ("  %2d %s\n",  9, i18n (1712, "50+"));
-        M_printf ("  %2d %s\n", 10, i18n (1713, "Seeking women"));
-        M_printf ("  %2d %s\n", 11, i18n (1714, "Seeking men"));
-        M_printf ("  %2d %s\n", 49, i18n (1715, "mICQ"));
+        rl_print (i18n (1704, "Groups:\n"));
+        rl_printf ("  %2d %s\n", conn->version > 6 ? 0 : -1, i18n (1716, "None"));
+        rl_printf ("  %2d %s\n",  1, i18n (1705, "General"));
+        rl_printf ("  %2d %s\n",  2, i18n (1706, "Romance"));
+        rl_printf ("  %2d %s\n",  3, i18n (1707, "Games"));
+        rl_printf ("  %2d %s\n",  4, i18n (1708, "Students"));
+        rl_printf ("  %2d %s\n",  6, i18n (1709, "20 something"));
+        rl_printf ("  %2d %s\n",  7, i18n (1710, "30 something"));
+        rl_printf ("  %2d %s\n",  8, i18n (1711, "40 something"));
+        rl_printf ("  %2d %s\n",  9, i18n (1712, "50+"));
+        rl_printf ("  %2d %s\n", 10, i18n (1713, "Seeking women"));
+        rl_printf ("  %2d %s\n", 11, i18n (1714, "Seeking men"));
+        rl_printf ("  %2d %s\n", 49, i18n (1715, "mICQ"));
     }
     else
     {
@@ -428,19 +428,19 @@ static JUMP_F(CmdUserHelp)
     if (!what)
     {
         const char *fmt = i18n (2184, "%s%-10s%s - %s\n");
-        M_printf ("%s\n", i18n (1442, "Please select one of the help topics below."));
-        M_printf (fmt, COLQUOTE, i18n (1448, "Message"), COLNONE,
+        rl_printf ("%s\n", i18n (1442, "Please select one of the help topics below."));
+        rl_printf (fmt, COLQUOTE, i18n (1448, "Message"), COLNONE,
                   i18n (1446, "Commands relating to sending messages."));
-        M_printf (fmt, COLQUOTE, i18n (1447, "Client"), COLNONE,
+        rl_printf (fmt, COLQUOTE, i18n (1447, "Client"), COLNONE,
                   i18n (1443, "Commands relating to mICQ displays and configuration."));
-        M_printf (fmt, COLQUOTE, i18n (1449, "User"), COLNONE,
+        rl_printf (fmt, COLQUOTE, i18n (1449, "User"), COLNONE,
                   i18n (1444, "Commands relating to finding and seeing other users."));
-        M_printf (fmt, COLQUOTE, i18n (1450, "Account"), COLNONE,
+        rl_printf (fmt, COLQUOTE, i18n (1450, "Account"), COLNONE,
                   i18n (1445, "Commands relating to your ICQ account."));
-        M_printf (fmt, COLQUOTE, i18n (2171, "Advanced"), COLNONE,
+        rl_printf (fmt, COLQUOTE, i18n (2171, "Advanced"), COLNONE,
                   i18n (2172, "Commands for advanced features."));
 #ifdef ENABLE_TCL
-        M_printf (fmt, COLQUOTE, i18n (2342, "Scripting"), COLNONE,
+        rl_printf (fmt, COLQUOTE, i18n (2342, "Scripting"), COLNONE,
                   i18n (2343, "Scripting extensions."));
 #endif
     }
@@ -519,7 +519,7 @@ static JUMP_F(CmdUserHelp)
     }
     else if (what == 5)
     {
-        M_printf (i18n (2314, "These are advanced commands. Be sure to have read the manual pages for complete information.\n"));
+        rl_printf (i18n (2314, "These are advanced commands. Be sure to have read the manual pages for complete information.\n"));
         CMD_USER_HELP  ("meta [show|load|save|set|get|rget] <contacts>", i18n (2305, "Handle meta data of contacts."));
         CMD_USER_HELP  ("peer open|close|off <uin|nick>...", i18n (2037, "Open or close a peer-to-peer connection, or disable using peer-to-peer connections for <uin> or <nick>."));
         CMD_USER_HELP  ("peer file <contacts> <file> <description>", i18n (2179, "Send all <contacts> a single file."));
@@ -538,7 +538,7 @@ static JUMP_F(CmdUserHelp)
 #ifdef ENABLE_TCL
     else if (what == 6)
     {
-        M_printf (i18n (2314, "These are advanced commands. Be sure to have read the manual pages for complete information.\n"));
+        rl_printf (i18n (2314, "These are advanced commands. Be sure to have read the manual pages for complete information.\n"));
         CMD_USER_HELP  ("tclscript <file>", i18n (2344, "Execute Tcl script from <file>."));
         CMD_USER_HELP  ("tcl <string>", i18n (2345, "Execute Tcl script in <string>."));
     }
@@ -555,12 +555,12 @@ static JUMP_F(CmdUserPass)
     OPENCONN;
     
     if (!(arg1 = s_parserem (&args)))
-        M_print (i18n (2012, "No password given.\n"));
+        rl_print (i18n (2012, "No password given.\n"));
     else
     {
         if (*arg1 == '\xc3' && arg1[1] == '\xb3')
         {
-            M_printf (i18n (2198, "Unsuitable password '%s' - may not start with byte 0xf3.\n"), arg1);
+            rl_printf (i18n (2198, "Unsuitable password '%s' - may not start with byte 0xf3.\n"), arg1);
             return 0;
         }
         if (conn->type == TYPE_SERVER)
@@ -570,7 +570,7 @@ static JUMP_F(CmdUserPass)
         conn->passwd = strdup (arg1);
         if (conn->pref_passwd && strlen (conn->pref_passwd))
         {
-            M_print (i18n (2122, "Note: You need to 'save' to write new password to disc.\n"));
+            rl_print (i18n (2122, "Note: You need to 'save' to write new password to disc.\n"));
             conn->pref_passwd = strdup (arg1);
         }
     }
@@ -591,7 +591,7 @@ static JUMP_F(CmdUserSMS)
     
     if (conn->type != TYPE_SERVER)
     {
-        M_print (i18n (2013, "This command is v8 only.\n"));
+        rl_print (i18n (2013, "This command is v8 only.\n"));
         return 0;
     }
     if ((cont = s_parsenick (&args, conn)))
@@ -610,21 +610,21 @@ static JUMP_F(CmdUserSMS)
     {
         if (!(par = s_parse (&args)))
         {
-            M_print (i18n (2014, "No number given.\n"));
+            rl_print (i18n (2014, "No number given.\n"));
             return 0;
         }
         cell = par->txt;
     }
     if (cell[0] != '+' || cell[1] == '0')
     {
-        M_printf (i18n (2250, "Number '%s' is not of the format +<countrycode><cellprovider><number>.\n"), cell);
+        rl_printf (i18n (2250, "Number '%s' is not of the format +<countrycode><cellprovider><number>.\n"), cell);
         if (cont && cont->meta_general)
             s_repl (&cont->meta_general->cellular, NULL);
         return 0;
     }
     cellv = strdup (cell);
     if (!(text = s_parserem (&args)))
-        M_print (i18n (2015, "No message given.\n"));
+        rl_print (i18n (2015, "No message given.\n"));
     else
         SnacCliSendsms (conn, cellv, text);
     free (cellv);
@@ -666,7 +666,7 @@ static JUMP_F(CmdUserPeek)
     
     if (conn->type != TYPE_SERVER)
     {
-        M_print (i18n (2013, "This command is v8 only.\n"));
+        rl_print (i18n (2013, "This command is v8 only.\n"));
         return 0;
     }
     
@@ -694,7 +694,7 @@ static JUMP_F(CmdUserTrans)
 
         if (s_parseint (&args, &j))
         {
-            M_printf ("%3ld:%s\n", j, i18n (j, i18n (1078, "No translation available.")));
+            rl_printf ("%3ld:%s\n", j, i18n (j, i18n (1078, "No translation available.")));
             one = 1;
             continue;
         }
@@ -708,7 +708,7 @@ static JUMP_F(CmdUserTrans)
                     if (p)
                     {
                         l = i;
-                        M_printf ("%3d:%s\n", i, p);
+                        rl_printf ("%3d:%s\n", i, p);
                     }
                 }
             }
@@ -719,15 +719,15 @@ static JUMP_F(CmdUserTrans)
                 {
                     t = strdup (i18n (1089, "Unloaded translation."));
                     i18nClose ();
-                    M_printf ("%s\n", t);
+                    rl_printf ("%s\n", t);
                     free (t);
                     continue;
                 }
                 i = i18nOpen (par->txt);
                 if (i == -1)
-                    M_printf (i18n (2316, "Translation %s not found.\n"), par->txt);
+                    rl_printf (i18n (2316, "Translation %s not found.\n"), par->txt);
                 else
-                    M_printf (i18n (9999, "No translation (%s) loaded (%d entries).\n"), par->txt, i);
+                    rl_printf (i18n (9999, "No translation (%s) loaded (%d entries).\n"), par->txt, i);
             }
             one = 1;
         }
@@ -750,7 +750,7 @@ static JUMP_F(CmdUserTrans)
             s_parseint (&arg2, &v4);
             
             /* i18n (1079, "Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n") */
-            M_printf (i18n (-1, s),
+            rl_printf (i18n (-1, s),
                      i18n (1001, "<lang>"), i18n (1002, "<lang_cc>"), i18n (1004, "<translation authors>"),
                      i18n (1006, "<last edit date>"), i18n (1005, "<last editor>"),
                      v1, v2, v3, v4 ? s_sprintf (".%ld", v4) : "");
@@ -804,11 +804,11 @@ static JUMP_F(CmdUserGetAuto)
 
     if (data || one)
         return 0;
-    M_print (i18n (2056, "getauto [auto] <nick> - Get the auto-response from the contact.\n"));
-    M_print (i18n (2057, "getauto away   <nick> - Get the auto-response for away from the contact.\n"));
-    M_print (i18n (2058, "getauto na     <nick> - Get the auto-response for not available from the contact.\n"));
-    M_print (i18n (2059, "getauto dnd    <nick> - Get the auto-response for do not disturb from the contact.\n"));
-    M_print (i18n (2060, "getauto ffc    <nick> - Get the auto-response for free for chat from the contact.\n"));
+    rl_print (i18n (2056, "getauto [auto] <nick> - Get the auto-response from the contact.\n"));
+    rl_print (i18n (2057, "getauto away   <nick> - Get the auto-response for away from the contact.\n"));
+    rl_print (i18n (2058, "getauto na     <nick> - Get the auto-response for not available from the contact.\n"));
+    rl_print (i18n (2059, "getauto dnd    <nick> - Get the auto-response for do not disturb from the contact.\n"));
+    rl_print (i18n (2060, "getauto ffc    <nick> - Get the auto-response for free for chat from the contact.\n"));
     return 0;
 }
 
@@ -828,7 +828,7 @@ static JUMP_F(CmdUserPeer)
 
     if (!conn || !(list = conn->assoc))
     {
-        M_print (i18n (2011, "You do not have a listening peer-to-peer connection.\n"));
+        rl_print (i18n (2011, "You do not have a listening peer-to-peer connection.\n"));
         return 0;
     }
 
@@ -852,18 +852,18 @@ static JUMP_F(CmdUserPeer)
         else if (s_parsekey (&args, "ffc"))    data = 14;
         else
         {
-            M_print (i18n (1846, "Opens and closes direct (peer to peer) connections:\n"));
-            M_print (i18n (1847, "peer open  <nick> - Opens direct connection.\n"));
-            M_print (i18n (1848, "peer close <nick> - Closes/resets direct connection(s).\n"));
-            M_print (i18n (1870, "peer off   <nick> - Closes direct connection(s) and don't try it again.\n"));
-            M_print (i18n (2160, "peer file  <nick> <file> [<description>]\n"));
-            M_print (i18n (2110, "peer files <nick> <file1> <as1> ... [<description>]\n"));
-            M_print (i18n (2111, "                  - Send file1 as as1, ..., with description.\n"));
-            M_print (i18n (2112, "                  - as = '/': strip path, as = '.': as is\n"));
-            M_print (i18n (2320, "peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n"));
-            M_print (i18n (2368, "peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n"));
+            rl_print (i18n (1846, "Opens and closes direct (peer to peer) connections:\n"));
+            rl_print (i18n (1847, "peer open  <nick> - Opens direct connection.\n"));
+            rl_print (i18n (1848, "peer close <nick> - Closes/resets direct connection(s).\n"));
+            rl_print (i18n (1870, "peer off   <nick> - Closes direct connection(s) and don't try it again.\n"));
+            rl_print (i18n (2160, "peer file  <nick> <file> [<description>]\n"));
+            rl_print (i18n (2110, "peer files <nick> <file1> <as1> ... [<description>]\n"));
+            rl_print (i18n (2111, "                  - Send file1 as as1, ..., with description.\n"));
+            rl_print (i18n (2112, "                  - as = '/': strip path, as = '.': as is\n"));
+            rl_print (i18n (2320, "peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n"));
+            rl_print (i18n (2368, "peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n"));
 #ifdef ENABLE_SSL
-            M_print (i18n (2378, "peer ssl <nick>   - initiate SSL handshake."));
+            rl_print (i18n (2378, "peer ssl <nick>   - initiate SSL handshake."));
 #endif
             return 0;
         }
@@ -876,7 +876,7 @@ static JUMP_F(CmdUserPeer)
             case 1:
                 for (i = 0; (cont = ContactIndex (cg, i)); i++)
                     if (!TCPDirectOpen  (list, cont))
-                        M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
+                        rl_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
                 break;
             case 2:
                 for (i = 0; (cont = ContactIndex (cg, i)); i++)
@@ -894,7 +894,7 @@ static JUMP_F(CmdUserPeer)
                     
                     if (!(par = s_parse (&args)))
                     {
-                        M_print (i18n (2158, "No file name given.\n"));
+                        rl_print (i18n (2158, "No file name given.\n"));
                         break;
                     }
                     files[0] = file = strdup (par->txt);
@@ -906,7 +906,7 @@ static JUMP_F(CmdUserPeer)
                     
                     for (i = 0; (cont = ContactIndex (cg, i)); i++)
                         if (!TCPSendFiles (list, cont, des, files, ass, 1))
-                            M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
+                            rl_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
                     
                     free (file);
                     free (des);
@@ -939,12 +939,12 @@ static JUMP_F(CmdUserPeer)
                     if (!count)
                     {
                         free (des);
-                        M_print (i18n (2158, "No file name given.\n"));
+                        rl_print (i18n (2158, "No file name given.\n"));
                         break;
                     }
                     for (i = 0; (cont = ContactIndex (cg, i)); i++)
                         if (!TCPSendFiles (list, cont, des, (const char **)files, (const char **)ass, count))
-                            M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
+                            rl_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
                     
                     while (count--)
                     {
@@ -979,7 +979,7 @@ static JUMP_F(CmdUserPeer)
             case 12:
             case 13:
             case 14:
-                M_printf (i18n (2260, "Please try the getauto command instead.\n"));
+                rl_printf (i18n (2260, "Please try the getauto command instead.\n"));
         }
     }
     return 0;
@@ -991,8 +991,8 @@ static JUMP_F(CmdUserPeer)
  */
 static JUMP_F(CmdUserAuto)
 {
-    M_printf (i18n (9999, "Auto reply messages are now contact options, see the %s command.\n"), s_wordquote ("opt"));
-    M_printf (i18n (9999, "The global auto reply flag is handled by the %s command.\n"), s_wordquote ("set"));
+    rl_printf (i18n (9999, "Auto reply messages are now contact options, see the %s command.\n"), s_wordquote ("opt"));
+    rl_printf (i18n (9999, "The global auto reply flag is handled by the %s command.\n"), s_wordquote ("set"));
     return 0;
 }
 
@@ -1010,14 +1010,14 @@ static JUMP_F(CmdUserAlias)
         alias_t *node;
 
         for (node = aliases; node; node = node->next)
-            M_printf ("alias %s %s\n", node->name, node->expansion);
+            rl_printf ("alias %s %s\n", node->name, node->expansion);
         
         return 0;
     }
     
     if ((exp = strpbrk (name->txt, " \t\r\n")))
     {
-        M_printf (i18n (2303, "Invalid character 0x%x in alias name.\n"), *exp);
+        rl_printf (i18n (2303, "Invalid character 0x%x in alias name.\n"), *exp);
         return 0;
     }
 
@@ -1035,11 +1035,11 @@ static JUMP_F(CmdUserAlias)
         for (node = aliases; node; node = node->next)
             if (!strcasecmp (node->name, nname))
             {
-                M_printf ("alias %s %s\n", node->name, node->expansion);
+                rl_printf ("alias %s %s\n", node->name, node->expansion);
                 free (nname);
                 return 0;
             }
-        M_print (i18n (2297, "Alias to what?\n"));
+        rl_print (i18n (2297, "Alias to what?\n"));
     }
     free (nname);
     return 0;
@@ -1054,9 +1054,9 @@ static JUMP_F(CmdUserUnalias)
     strc_t par;
 
     if (!(par = s_parse (&args)))
-        M_print (i18n (2298, "Remove which alias?\n"));
+        rl_print (i18n (2298, "Remove which alias?\n"));
     else if (!CmdUserRemoveAlias (par->txt))
-        M_print (i18n (2299, "Alias doesn't exist.\n"));
+        rl_print (i18n (2299, "Alias doesn't exist.\n"));
     
     return 0;
 }
@@ -1073,7 +1073,7 @@ static JUMP_F (CmdUserResend)
 
     if (!uiG.last_message_sent) 
     {
-        M_print (i18n (1771, "You haven't sent a message to anyone yet!\n"));
+        rl_print (i18n (1771, "You haven't sent a message to anyone yet!\n"));
         return 0;
     }
 
@@ -1138,7 +1138,7 @@ static JUMP_F (CmdUserAnyMess)
 #ifdef ENABLE_PEER2PEER
         if (!conn->assoc || !TCPDirectOpen  (conn->assoc, cont))
         {
-            M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
+            rl_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
             return 0;
         }
         PeerSendMsg (conn->assoc, cont, OptSetVals (NULL, CO_MSGTYPE, data >> 2, CO_MSGTEXT, t.txt, 0));
@@ -1184,7 +1184,7 @@ static JUMP_F (CmdUserMessage)
             case 2:
                 if (!uiG.last_rcvd)
                 {
-                    M_print (i18n (1741, "Must receive a message first.\n"));
+                    rl_print (i18n (1741, "Must receive a message first.\n"));
                     return 0;
                 }
                 cg = ContactGroupC (NULL, 0, NULL);
@@ -1193,7 +1193,7 @@ static JUMP_F (CmdUserMessage)
             case 4:
                 if (!uiG.last_sent)
                 {
-                    M_print (i18n (1742, "Must write a message first.\n"));
+                    rl_print (i18n (1742, "Must write a message first.\n"));
                     return 0;
                 }
                 cg = ContactGroupC (NULL, 0, NULL);
@@ -1218,9 +1218,9 @@ static JUMP_F (CmdUserMessage)
             return 0;
         }
         if (!ContactIndex (cg, 1))
-            M_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLCONTACT, ContactIndex (cg, 0)->nick, COLNONE);
+            rl_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLCONTACT, ContactIndex (cg, 0)->nick, COLNONE);
         else
-            M_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLQUOTE, i18n (2220, "several"), COLNONE);
+            rl_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLQUOTE, i18n (2220, "several"), COLNONE);
         s_init (&t, "", 100);
         if (arg1)
         {
@@ -1233,7 +1233,7 @@ static JUMP_F (CmdUserMessage)
     }
     else if (status == -1 || !strcmp (args, CANCEL_MSG_STR))
     {
-        M_print (i18n (1038, "Message canceled.\n"));
+        rl_print (i18n (1038, "Message canceled.\n"));
         ReadLinePromptReset ();
         ContactGroupD (cg);
         return 0;
@@ -1276,10 +1276,10 @@ static JUMP_F(CmdUserVerbose)
         prG->verbose = i;
     else if (*args)
     {
-        M_printf (i18n (2115, "'%s' is not an integer.\n"), args);
+        rl_printf (i18n (2115, "'%s' is not an integer.\n"), args);
         return 0;
     }
-    M_printf (i18n (1060, "Verbosity level is %ld.\n"), prG->verbose);
+    rl_printf (i18n (1060, "Verbosity level is %ld.\n"), prG->verbose);
     return 0;
 }
 
@@ -1381,7 +1381,7 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
         ul = ESC "[4m";
 #endif
     if (data & 2)
-        M_printf ("%s%s%c%c%c%1.1d%c%s%s %*ld", COLSERVER, ul,
+        rl_printf ("%s%s%c%c%c%1.1d%c%s%s %*ld", COLSERVER, ul,
              !cont->group                        ? '#' : ' ',
              ContactPrefVal (cont,  CO_INTIMATE) ? '*' :
               ContactPrefVal (cont, CO_HIDEFROM) ? '-' : ' ',
@@ -1398,7 +1398,7 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
               cont->dc->ip_rem && ~cont->dc->ip_rem ? '^' : ' ',
              COLNONE, ul, (int)__lenuin, cont->uin);
 
-    M_printf ("%s%s%c%s%s%-*s%s%s %s%s%-*s%s%s %-*s%s%s%s\n",
+    rl_printf ("%s%s%c%s%s%-*s%s%s %s%s%-*s%s%s %-*s%s%s%s\n",
              COLSERVER, ul, data & 2                       ? ' ' :
              !cont->group                       ? '#' :
              ContactPrefVal (cont, CO_INTIMATE) ? '*' :
@@ -1418,8 +1418,8 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
 
     for (alias = cont->alias; alias && (data & 2); alias = alias->more)
     {
-        M_printf ("%s%s+     %*ld", COLSERVER, ul, (int)__lenuin, cont->uin);
-        M_printf ("%s%s %s%s%-*s%s%s %s%s%-*s%s%s %-*s%s%s%s\n",
+        rl_printf ("%s%s+     %*ld", COLSERVER, ul, (int)__lenuin, cont->uin);
+        rl_printf ("%s%s %s%s%-*s%s%s %s%s%-*s%s%s %-*s%s%s%s\n",
                   COLSERVER, ul, COLCONTACT, ul, (int)__lennick + s_delta (alias->alias), alias->alias,
                   COLNONE, ul, COLQUOTE, ul, (int)__lenstat + 2 + s_delta (stat), stat,
                   COLNONE, ul, (int)__lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
@@ -1474,7 +1474,7 @@ static JUMP_F(CmdUserStatusDetail)
 
             if (cont->dc)
             {
-                M_printf ("    %-15s %s / %s:%ld\n    %s %d    %s (%d)    %s %08lx\n",
+                rl_printf ("    %-15s %s / %s:%ld\n    %s %d    %s (%d)    %s %08lx\n",
                       i18n (1642, "IP:"), t1 = strdup (s_ip (cont->dc->ip_rem)),
                       t2 = strdup (s_ip (cont->dc->ip_loc)), cont->dc->port,
                       i18n (1453, "TCP version:"), cont->dc->version,
@@ -1489,18 +1489,18 @@ static JUMP_F(CmdUserStatusDetail)
                 {
                     Cap *cap = PacketCap (id);
                     if (j++)
-                        M_print (", ");
+                        rl_print (", ");
                     else
-                        M_printf ("    %s", i18n (2192, "Capabilities: "));
-                    M_print (cap->name);
+                        rl_printf ("    %s", i18n (2192, "Capabilities: "));
+                    rl_print (cap->name);
                     if (cap->name[4] == 'U' && cap->name[5] == 'N')
                     {
-                        M_print (": ");
-                        M_print (s_dump ((const UBYTE *)cap->cap, 16));
+                        rl_print (": ");
+                        rl_print (s_dump ((const UBYTE *)cap->cap, 16));
                     }
                 }
             if (j)
-                M_print ("\n");
+                rl_print ("\n");
         }
         return 0;
     }
@@ -1509,7 +1509,7 @@ static JUMP_F(CmdUserStatusDetail)
     {
         if (!(tcg = ContactGroupC (conn, 0, NULL)))
         {
-            M_print (i18n (2118, "Out of memory.\n"));
+            rl_print (i18n (2118, "Out of memory.\n"));
             return 0;
         }
         cg = conn->contacts;
@@ -1535,8 +1535,8 @@ static JUMP_F(CmdUserStatusDetail)
     {
         if (conn)
         {
-            M_printf ("%s %s%10lu%s ", s_now, COLCONTACT, conn->uin, COLNONE);
-            M_printf (i18n (2211, "Your status is %s.\n"), s_status (conn->status));
+            rl_printf ("%s %s%10lu%s ", s_now, COLCONTACT, conn->uin, COLNONE);
+            rl_printf (i18n (2211, "Your status is %s.\n"), s_status (conn->status));
         }
         if (data & 16)
             return 0;
@@ -1551,25 +1551,25 @@ static JUMP_F(CmdUserStatusDetail)
 #ifdef CONFIG_UNDERLINE
         __l = 0;
 #endif
-        M_print (COLQUOTE);
+        rl_print (COLQUOTE);
         if (cg != tcg && cg != conn->contacts && cg->name)
         {
             if (__totallen > c_strlen (cg->name) + 1)
             {
                 for (i = j = (__totallen - c_strlen (cg->name) - 1) / 2; i >= 20; i -= 20)
-                    M_print ("====================");
-                M_printf ("%.*s", (int)i, "====================");
-                M_printf (" %s%s%s ", COLCONTACT, cg->name, COLQUOTE);
+                    rl_print ("====================");
+                rl_printf ("%.*s", (int)i, "====================");
+                rl_printf (" %s%s%s ", COLCONTACT, cg->name, COLQUOTE);
                 for (i = __totallen - j - c_strlen (cg->name) - 2; i >= 20; i -= 20)
-                    M_print ("====================");
+                    rl_print ("====================");
             }
             else
-                M_printf (" %s%s%s ", COLCONTACT, cg->name, COLQUOTE);
+                rl_printf (" %s%s%s ", COLCONTACT, cg->name, COLQUOTE);
         }
         else
             for (i = __totallen; i >= 20; i -= 20)
-                M_print ("====================");
-        M_printf ("%.*s%s\n", (int)i, "====================", COLNONE);
+                rl_print ("====================");
+        rl_printf ("%.*s%s\n", (int)i, "====================", COLNONE);
 
         for (i = (data & 1 ? 2 : 0); i < 9; i++)
         {
@@ -1586,10 +1586,10 @@ static JUMP_F(CmdUserStatusDetail)
     }
     if (tcg)
         ContactGroupD (tcg);
-    M_print (COLQUOTE);
+    rl_print (COLQUOTE);
     for (i = __totallen; i >= 20; i -= 20)
-        M_print ("====================");
-    M_printf ("%.*s%s\n", (int)i, "====================", COLNONE);
+        rl_print ("====================");
+    rl_printf ("%.*s%s\n", (int)i, "====================", COLNONE);
     return 0;
 }
 
@@ -1613,13 +1613,13 @@ static JUMP_F(CmdUserStatusMeta)
         else if (s_parsekey (&args, "rget")) data = 6;
         else
         {
-            M_printf (i18n (2333, "%s [show|load|save|set|get|rget] <contacts> - handle meta data for contacts.\n"), "meta");
-            M_print  (i18n (2334, "  show - show current known meta data\n"));
-            M_print  (i18n (2335, "  load - load from file and show meta data\n"));
-            M_print  (i18n (2336, "  save - save meta data to file\n"));
-            M_print  (i18n (2337, "  set  - upload own meta data to server\n"));
-            M_print  (i18n (2338, "  get  - query server for meta data\n"));
-            M_print  (i18n (2339, "  rget - query server for last sender's meta data\n"));
+            rl_printf (i18n (2333, "%s [show|load|save|set|get|rget] <contacts> - handle meta data for contacts.\n"), "meta");
+            rl_print  (i18n (2334, "  show - show current known meta data\n"));
+            rl_print  (i18n (2335, "  load - load from file and show meta data\n"));
+            rl_print  (i18n (2336, "  save - save meta data to file\n"));
+            rl_print  (i18n (2337, "  set  - upload own meta data to server\n"));
+            rl_print  (i18n (2338, "  get  - query server for meta data\n"));
+            rl_print  (i18n (2339, "  rget - query server for last sender's meta data\n"));
             return 0;
         }
     }
@@ -1638,7 +1638,7 @@ static JUMP_F(CmdUserStatusMeta)
                     if (ContactMetaLoad (cont))
                         UtilUIDisplayMeta (cont);
                     else
-                        M_printf (i18n (9999, "Couldn't load meta data for %s (%ld).\n"),
+                        rl_printf (i18n (9999, "Couldn't load meta data for %s (%ld).\n"),
                                   s_wordquote (cont->nick), cont->uin);
                 }
                 break;
@@ -1646,10 +1646,10 @@ static JUMP_F(CmdUserStatusMeta)
                 for (i = 0; (cont = ContactIndex (cg, i)); i++)
                 {
                     if (ContactMetaSave (cont))
-                        M_printf (i18n (2248, "Saved meta data for '%s' (%ld).\n"),
+                        rl_printf (i18n (2248, "Saved meta data for '%s' (%ld).\n"),
                                   cont->nick, cont->uin);
                     else
-                        M_printf (i18n (2249, "Couldn't save meta data for '%s' (%ld).\n"),
+                        rl_printf (i18n (2249, "Couldn't save meta data for '%s' (%ld).\n"),
                                   cont->nick, cont->uin);
                 }
                 break;
@@ -1693,24 +1693,24 @@ static JUMP_F(CmdUserIgnoreStatus)
     int i;
     ANYCONN;
 
-    M_printf ("%s%s%s%s%s\n", W_SEPARATOR, i18n (1062, "Users ignored:"));
+    rl_printf ("%s%s%s%s%s\n", W_SEPARATOR, i18n (1062, "Users ignored:"));
     cg = conn->contacts;
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
     {
         if (ContactPrefVal (cont, CO_IGNORE))
         {
             if (ContactPrefVal (cont, CO_INTIMATE))
-                M_printf ("%s*%s", COLSERVER, COLNONE);
+                rl_printf ("%s*%s", COLSERVER, COLNONE);
             else if (ContactPrefVal (cont, CO_HIDEFROM))
-                M_printf ("%s~%s", COLSERVER, COLNONE);
+                rl_printf ("%s~%s", COLSERVER, COLNONE);
             else
-                M_print (" ");
+                rl_print (" ");
 
-            M_printf ("%s%-20s\t%s(%s)%s\n", COLCONTACT, cont->nick,
+            rl_printf ("%s%-20s\t%s(%s)%s\n", COLCONTACT, cont->nick,
                       COLQUOTE, s_status (cont->status), COLNONE);
         }
     }
-    M_printf ("%s%s%s%s", W_SEPARATOR);
+    rl_printf ("%s%s%s%s", W_SEPARATOR);
     return 0;
 }
 
@@ -1729,7 +1729,7 @@ static JUMP_F(CmdUserStatusWide)
 
     if (data && !(cgoff = ContactGroupC (conn, 0, "")))
     {
-        M_print (i18n (2118, "Out of memory.\n"));
+        rl_print (i18n (2118, "Out of memory.\n"));
         return 0;
     }
     
@@ -1737,7 +1737,7 @@ static JUMP_F(CmdUserStatusWide)
     {
         if (data)
             ContactGroupD (cgon);
-        M_print (i18n (2118, "Out of memory.\n"));
+        rl_print (i18n (2118, "Out of memory.\n"));
         return 0;
     }
 
@@ -1767,35 +1767,35 @@ static JUMP_F(CmdUserStatusWide)
     if (data)
     {
         colleft = (rl_columns - s_strlen (i18n (1653, "Offline"))) / 2 - 1;
-        M_print (COLQUOTE);
+        rl_print (COLQUOTE);
         for (i = 0; i < colleft; i++)
-            M_print ("=");
-        M_printf (" %s%s%s ", COLCLIENT, i18n (1653, "Offline"), COLQUOTE);
+            rl_print ("=");
+        rl_printf (" %s%s%s ", COLCLIENT, i18n (1653, "Offline"), COLQUOTE);
         colright = rl_columns - i - s_strlen (i18n (1653, "Offline")) - 2;
         for (i = 0; i < colright; i++)
-            M_print ("=");
-        M_print (COLNONE);
+            rl_print ("=");
+        rl_print (COLNONE);
         for (i = 0; (cont = ContactIndex (cgoff, i)); i++)
         {
             if (!(i % columns))
-                M_print ("\n");
-            M_printf ("  %s%-*s%s ", COLCONTACT, lennick + s_delta (cont->nick), cont->nick, COLNONE);
+                rl_print ("\n");
+            rl_printf ("  %s%-*s%s ", COLCONTACT, lennick + s_delta (cont->nick), cont->nick, COLNONE);
         }
-        M_print ("\n");
+        rl_print ("\n");
         ContactGroupD (cgoff);
     }
 
     cont = conn->cont;
-    M_printf ("%s%ld%s %s", COLCONTACT, cont->uin, COLNONE, COLQUOTE);
+    rl_printf ("%s%ld%s %s", COLCONTACT, cont->uin, COLNONE, COLQUOTE);
     colleft = (rl_columns - s_strlen (i18n (1654, "Online"))) / 2 - s_strlen (s_sprintf ("%ld", cont->uin)) - 2;
     for (i = 0; i < colleft; i++)
-        M_print ("=");
-    M_printf (" %s%s%s ", COLCLIENT, i18n (1654, "Online"), COLQUOTE);
+        rl_print ("=");
+    rl_printf (" %s%s%s ", COLCLIENT, i18n (1654, "Online"), COLQUOTE);
     i += 3 + s_strlen (i18n (1654, "Online")) + s_strlen (s_sprintf ("%ld", cont->uin));
     colright = rl_columns - i - s_strlen (s_status (conn->status)) - 3;
     for (i = 0; i < colright; i++)
-        M_print ("=");
-    M_printf (" %s(%s)%s", COLQUOTE, s_status (conn->status), COLNONE);
+        rl_print ("=");
+    rl_printf (" %s(%s)%s", COLQUOTE, s_status (conn->status), COLNONE);
     for (i = 0; (cont = ContactIndex (cgon, i)); i++)
     {
         char ind = s_status (cont->status)[0];
@@ -1803,14 +1803,14 @@ static JUMP_F(CmdUserStatusWide)
             ind = ' ';
 
         if (!(i % columns))
-            M_print ("\n");
-        M_printf ("%c %s%-*s%s ", ind, COLCONTACT, lennick + s_delta (cont->nick), cont->nick, COLNONE);
+            rl_print ("\n");
+        rl_printf ("%c %s%-*s%s ", ind, COLCONTACT, lennick + s_delta (cont->nick), cont->nick, COLNONE);
     }
-    M_printf ("\n%s", COLQUOTE);
+    rl_printf ("\n%s", COLQUOTE);
     colleft = rl_columns;
     for (i = 0; i < colleft; i++)
-        M_print ("=");
-    M_printf ("%s\n", COLNONE);
+        rl_print ("=");
+    rl_printf ("%s\n", COLNONE);
     ContactGroupD (cgon);
 
     return 0;
@@ -1821,7 +1821,7 @@ static JUMP_F(CmdUserStatusWide)
  */
 static JUMP_F(CmdUserSound)
 {
-    M_printf (i18n (9999, "This flag is handled by the %s command.\n"), s_wordquote ("set"));
+    rl_printf (i18n (9999, "This flag is handled by the %s command.\n"), s_wordquote ("set"));
     return 0;
 }
 
@@ -1830,7 +1830,7 @@ static JUMP_F(CmdUserSound)
  */
 static JUMP_F(CmdUserSoundOnline)
 {
-    M_printf (i18n (2255, "A beep for oncoming contacts is always generated by running the %sevent%s script.\n"), COLSERVER, COLNONE);
+    rl_printf (i18n (2255, "A beep for oncoming contacts is always generated by running the %sevent%s script.\n"), COLSERVER, COLNONE);
     return 0;
 }
 
@@ -1839,7 +1839,7 @@ static JUMP_F(CmdUserSoundOnline)
  */
 static JUMP_F(CmdUserSoundOffline)
 {
-    M_printf (i18n (2256, "A beep for offgoing contacts is always generated by running the %sevent%s script.\n"), COLSERVER, COLNONE);
+    rl_printf (i18n (2256, "A beep for offgoing contacts is always generated by running the %sevent%s script.\n"), COLSERVER, COLNONE);
     return 0;
 }
 
@@ -1870,7 +1870,7 @@ static JUMP_F(CmdUserAutoaway)
             prG->away_time = 0;
         }
     }
-    M_printf (i18n (1766, "Changing status to away/not available after idling %s%ld%s seconds.\n"),
+    rl_printf (i18n (1766, "Changing status to away/not available after idling %s%ld%s seconds.\n"),
               COLQUOTE, prG->away_time, COLNONE);
     return 0;
 }
@@ -1923,7 +1923,7 @@ static JUMP_F(CmdUserSet)
                     data = 0;
             }
             if (!quiet && str)
-                M_printf (str, COLQUOTE, prG->flags & data ? i18n (1085, "on") : i18n (1086, "off"), COLNONE);
+                rl_printf (str, COLQUOTE, prG->flags & data ? i18n (1085, "on") : i18n (1086, "off"), COLNONE);
             break;
         case -1:
             if (par)
@@ -1941,7 +1941,7 @@ static JUMP_F(CmdUserSet)
                     data = 0;
             }
             if (!quiet)
-                M_printf (i18n (2288, "Indentation style is %s%s%s.\n"), COLQUOTE,
+                rl_printf (i18n (2288, "Indentation style is %s%s%s.\n"), COLQUOTE,
                           ~prG->flags & FLAG_LIBR_BR ? (~prG->flags & FLAG_LIBR_INT ? i18n (2270, "simple") : i18n (2271, "indent")) :
                           ~prG->flags & FLAG_LIBR_INT ? i18n (2269, "break") : i18n (2272, "smart"), COLNONE);
             break;
@@ -1958,25 +1958,25 @@ static JUMP_F(CmdUserSet)
             if (!quiet)
             {
                 if (prG->sound == SFLAG_BEEP)
-                    M_printf (i18n (2252, "A beep is generated by %sbeep%sing.\n"), COLSERVER, COLNONE);
+                    rl_printf (i18n (2252, "A beep is generated by %sbeep%sing.\n"), COLSERVER, COLNONE);
                 else if (prG->sound == SFLAG_EVENT)
-                    M_printf (i18n (2253, "A beep is generated by running the %sevent%s script.\n"), COLSERVER, COLNONE);
+                    rl_printf (i18n (2253, "A beep is generated by running the %sevent%s script.\n"), COLSERVER, COLNONE);
                 else
-                    M_print (i18n (2254, "A beep is never generated.\n"));
+                    rl_print (i18n (2254, "A beep is never generated.\n"));
             }
             break;
     }
     if (!data)
     {
-        M_printf (i18n (1820, "%s <option> [on|off|<value>] - control simple options.\n"), "set");
-        M_print (i18n (1822, "    color:      use colored text output.\n"));
-        M_print (i18n (2278, "    delbs:      interpret delete characters as backspace.\n"));
-        M_print (i18n (1815, "    funny:      use funny messages for output.\n"));
-        M_print (i18n (2281, "    auto:       send auto-replies.\n"));
-        M_print (i18n (2282, "    uinprompt:  have the last nick in the prompt.\n"));
-        M_print (i18n (2283, "    autosave:   automatically save the micqrc.\n"));
-        M_print (i18n (2284, "    autofinger: automatically finger new UINs.\n"));
-        M_print (i18n (2285, "    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n"));
+        rl_printf (i18n (1820, "%s <option> [on|off|<value>] - control simple options.\n"), "set");
+        rl_print (i18n (1822, "    color:      use colored text output.\n"));
+        rl_print (i18n (2278, "    delbs:      interpret delete characters as backspace.\n"));
+        rl_print (i18n (1815, "    funny:      use funny messages for output.\n"));
+        rl_print (i18n (2281, "    auto:       send auto-replies.\n"));
+        rl_print (i18n (2282, "    uinprompt:  have the last nick in the prompt.\n"));
+        rl_print (i18n (2283, "    autosave:   automatically save the micqrc.\n"));
+        rl_print (i18n (2284, "    autofinger: automatically finger new UINs.\n"));
+        rl_print (i18n (2285, "    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n"));
     }
     return 0;
 }
@@ -2041,35 +2041,35 @@ static JUMP_F(CmdUserOpt)
             switch (data)
             {
                 case COF_GROUP:
-                    M_printf (i18n (9999, "%s is not a contact group.\n"), s_qquote (par->txt));
+                    rl_printf (i18n (9999, "%s is not a contact group.\n"), s_qquote (par->txt));
                     break;
                 case COF_CONTACT:
-                    M_printf (i18n (9999, "%s is not a contact.\n"), s_qquote (par->txt));
+                    rl_printf (i18n (9999, "%s is not a contact.\n"), s_qquote (par->txt));
                     break;
                 default:
-                    M_printf (i18n (9999, "%s is neither a contact, nor a contact group, nor the %sglobal%s keyword.\n"),
+                    rl_printf (i18n (9999, "%s is neither a contact, nor a contact group, nor the %sglobal%s keyword.\n"),
                               s_qquote (par->txt), colquote, colnone);
             }
         }
         else
         {
             if (!data)
-                M_printf (i18n (9999, "opt - short hand for optglobal, optgroup or optcontact.\n"));
+                rl_printf (i18n (9999, "opt - short hand for optglobal, optgroup or optcontact.\n"));
             if (!data || data == COF_GLOBAL)
-                M_printf (i18n (9999, "optglobal            [<option> [<value>]] - set global option.\n"));
+                rl_printf (i18n (9999, "optglobal            [<option> [<value>]] - set global option.\n"));
             if (!data)
-                M_printf (i18n (9999, "optconnection        {<option> [<value>]] - set connection option.\n"));
+                rl_printf (i18n (9999, "optconnection        {<option> [<value>]] - set connection option.\n"));
             if (!data || data == COF_GROUP)
-                M_printf (i18n (9999, "optgroup   <group>   [<option> [<value>]] - set contact group option.\n"));
+                rl_printf (i18n (9999, "optgroup   <group>   [<option> [<value>]] - set contact group option.\n"));
             if (!data || data == COF_CONTACT)
-                M_printf (i18n (9999, "optcontact <contact> [<option> [<value>]] - set contact option.\n"));
+                rl_printf (i18n (9999, "optcontact <contact> [<option> [<value>]] - set contact option.\n"));
         }
         return 0;
     }
     
     if (!*args)
     {
-        M_printf (data == COF_CONTACT ? i18n (9999, "Options for contact %s:\n") :
+        rl_printf (data == COF_CONTACT ? i18n (9999, "Options for contact %s:\n") :
                   data == COF_GROUP   ? i18n (9999, "Options for contact group %s:\n")
                                       : i18n (9999, "Global options:\n"),
                   coptobj);
@@ -2084,51 +2084,51 @@ static JUMP_F(CmdUserOpt)
             {
                 case COF_BOOL:
                     if (data == COF_CONTACT)
-                        M_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, colquote,
+                        rl_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, colquote,
                                   OptGetVal (copts, flag, &val)
                                     ? val ? i18n (1085, "on") : i18n (1086, "off")
                                     : i18n (9999, "undefined"), colnone, i18n (9999, "effectivly"), colquote,
                                   ContactPrefVal (cont, flag)
                                     ? i18n (1085, "on") : i18n (1086, "off"), colnone);
                     else
-                        M_printf ("    %-15s  %s%s%s\n", optname, colquote,
+                        rl_printf ("    %-15s  %s%s%s\n", optname, colquote,
                                   OptGetVal (copts, flag, &val)
                                     ? val  ? i18n (1085, "on") : i18n (1086, "off")
                                     : i18n (9999, "undefined"), colnone);
                     break;
                 case COF_NUMERIC:
                     if (data == COF_CONTACT)
-                        M_printf ("    %-15s  %s%-15s%s  (%s %s%ld%s)\n", optname, colquote,
+                        rl_printf ("    %-15s  %s%-15s%s  (%s %s%ld%s)\n", optname, colquote,
                                   OptGetVal (copts, flag, &val)
                                     ? s_sprintf ("%ld", val)
                                     : i18n (9999, "undefined"), colnone, i18n (9999, "effectivly"), colquote,
                                   ContactPrefVal (cont, flag), colnone);
                     else
-                        M_printf ("    %-15s  %s%s%s\n", optname, colquote,
+                        rl_printf ("    %-15s  %s%s%s\n", optname, colquote,
                                   OptGetVal (copts, flag, &val)
                                     ? s_sprintf ("%ld", val)
                                     : i18n (9999, "undefined"), colnone);
                     break;
                 case COF_STRING:
                     if (data == COF_CONTACT)
-                        M_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, colquote,
+                        rl_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, colquote,
                                   OptGetStr (copts, flag, &res)
                                     ? res : i18n (9999, "undefined"), colnone, i18n (9999, "effectivly"), colquote,
                                   ContactPrefStr (cont, flag), colnone);
                     else
-                        M_printf ("    %-15s  %s%s%s\n", optname, colquote,
+                        rl_printf ("    %-15s  %s%s%s\n", optname, colquote,
                                   OptGetStr (copts, flag, &res)
                                     ? res : i18n (9999, "undefined"), colnone);
                     break;
                 case COF_COLOR:
                     if (data == COF_CONTACT)
-                        M_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, colquote,
+                        rl_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, colquote,
                                   OptGetStr (copts, flag, &res)
                                     ? OptS2C (res) : i18n (9999, "undefined"), colnone,
                                   i18n (9999, "effectivly"), colquote,
                                   OptS2C (ContactPrefStr (cont, flag)), colnone);
                     else
-                        M_printf ("    %-15s  %s%s%s\n", optname, colquote,
+                        rl_printf ("    %-15s  %s%s%s\n", optname, colquote,
                                   OptGetStr (copts, flag, &res)
                                     ? OptS2C (res) : i18n (9999, "undefined"), colnone);
                     break;
@@ -2154,7 +2154,7 @@ static JUMP_F(CmdUserOpt)
         
         if (!optname)
         {
-            M_printf (i18n (9999, "Unknown option %s.\n"), s_qquote (par->txt));
+            rl_printf (i18n (9999, "Unknown option %s.\n"), s_qquote (par->txt));
             continue;
         }
         coptname = strdup (s_qquote (optname));
@@ -2165,18 +2165,18 @@ static JUMP_F(CmdUserOpt)
             val_t val;
 
             if (!OptGetVal (copts, flag, &val) || ((flag & (COF_STRING | COF_COLOR)) && !OptGetStr (copts, flag, &res)))
-                M_printf (data == COF_CONTACT ? i18n (9999, "Option %s for contact %s is undefined.\n") :
+                rl_printf (data == COF_CONTACT ? i18n (9999, "Option %s for contact %s is undefined.\n") :
                           data == COF_GROUP   ? i18n (9999, "Option %s for contact group %s is undefined.\n")
                                               : i18n (9999, "Option %s%s has no global value.\n"),
                           coptname, coptobj);
             else if (flag & (COF_BOOL | COF_NUMERIC))
-                M_printf (data == COF_CONTACT ? i18n (9999, "Option %s for contact %s is %s%s%s.\n") :
+                rl_printf (data == COF_CONTACT ? i18n (9999, "Option %s for contact %s is %s%s%s.\n") :
                           data == COF_GROUP   ? i18n (9999, "Option %s for contact group %s is %s%s%s.\n")
                                               : i18n (9999, "Option %s%s is globally %s%s%s.\n"),
                           coptname, coptobj, colquote, flag & COF_NUMERIC ? s_sprintf ("%ld", val)
                           : val ? i18n (1085, "on") : i18n (1086, "off"), colnone);
             else
-                M_printf (data == COF_CONTACT ? i18n (9999, "Option %s for contact %s is %s.\n") :
+                rl_printf (data == COF_CONTACT ? i18n (9999, "Option %s for contact %s is %s.\n") :
                           data == COF_GROUP   ? i18n (9999, "Option %s for contact group %s is %s.\n")
                                               : i18n (9999, "Option %s%s is globally %s.\n"),
                           coptname, coptobj, s_qquote (flag & COF_STRING  ? res : OptS2C (res)));
@@ -2189,7 +2189,7 @@ static JUMP_F(CmdUserOpt)
                 OptSetStr (copts, flag, NULL);
             else
                 OptUndef (copts, flag);
-            M_printf (data == COF_CONTACT ? i18n (9999, "Undefining option %s for contact %s.\n") :
+            rl_printf (data == COF_CONTACT ? i18n (9999, "Undefining option %s for contact %s.\n") :
                       data == COF_GROUP   ? i18n (9999, "Undefining option %s for contact group %s.\n")
                                           : i18n (9999, "Undefining global option %s%s.\n"),
                       coptname, coptobj);
@@ -2204,7 +2204,7 @@ static JUMP_F(CmdUserOpt)
                 res = ConvEncName (enc);
             }
             OptSetStr (copts, flag, res);
-            M_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s to %s.\n") :
+            rl_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s to %s.\n") :
                       data == COF_GROUP   ? i18n (9999, "Setting option %s for contact group %s to %s.\n")
                                           : i18n (9999, "Setting option %s%s globally to %s.\n"),
                       coptname, coptobj, s_qquote (res));
@@ -2213,7 +2213,7 @@ static JUMP_F(CmdUserOpt)
         {
             res = OptC2S (col = strdup (par->txt));
             OptSetStr (copts, flag, res);
-            M_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s to %s.\n") :
+            rl_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s to %s.\n") :
                       data == COF_GROUP   ? i18n (9999, "Setting option %s for contact group %s to %s.\n")
                                           : i18n (9999, "Setting option %s%s' globally to %s.\n"),
                       coptname, coptobj, s_qquote (col));
@@ -2224,7 +2224,7 @@ static JUMP_F(CmdUserOpt)
             if (flag == CO_CSCHEME)
                 OptImport (copts, PrefSetColorScheme (val));
             OptSetVal (copts, flag, atoi (par->txt));
-            M_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s to %s%d%s.\n") :
+            rl_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s to %s%d%s.\n") :
                       data == COF_GROUP   ? i18n (9999, "Setting option %s for contact group %s to %s%d%s.\n")
                                           : i18n (9999, "Setting option %s%s globally to %s%d%s.\n"),
                       coptname, coptobj, colquote, atoi (par->txt), colnone);
@@ -2232,7 +2232,7 @@ static JUMP_F(CmdUserOpt)
         else if (!strcasecmp (par->txt, "on")  || !strcasecmp (par->txt, i18n (1085, "on")))
         {
             OptSetVal (copts, flag, 1);
-            M_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s.\n") :
+            rl_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s.\n") :
                       data == COF_GROUP   ? i18n (9999, "Setting option %s for contact group %s.\n")
                                           : i18n (9999, "Setting option %s%s globally.\n"),
                       coptname, coptobj);
@@ -2240,14 +2240,14 @@ static JUMP_F(CmdUserOpt)
         else if (!strcasecmp (par->txt, "off") || !strcasecmp (par->txt, i18n (1086, "off")))
         {
             OptSetVal (copts, flag, 0);
-            M_printf (data == COF_CONTACT ? i18n (9999, "Clearing option %s for contact %s.\n") :
+            rl_printf (data == COF_CONTACT ? i18n (9999, "Clearing option %s for contact %s.\n") :
                       data == COF_GROUP   ? i18n (9999, "Clearing option %s for contact group %s.\n")
                                           : i18n (9999, "Clearing option %s%s globally.\n"),
                       coptname, coptobj);
         }
         else
         {
-            M_printf (i18n (9999, "Invalid value %s for boolean option %s.\n"), s_qquote (par->txt), coptname);
+            rl_printf (i18n (9999, "Invalid value %s for boolean option %s.\n"), s_qquote (par->txt), coptname);
             continue;
         }
         if (flag & COF_GROUP && ~flag & COF_CONTACT && data == COF_GROUP && connl)
@@ -2285,7 +2285,7 @@ static JUMP_F(CmdUserRegister)
             CmdPktCmdRegNewUser (conn, par->txt);     /* TODO */
     }
     else
-        M_print (i18n (9999, "No new password given.\n"));
+        rl_print (i18n (9999, "No new password given.\n"));
     return 0;
 }
 
@@ -2305,12 +2305,12 @@ static JUMP_F(CmdUserTogIgnore)
             if (ContactPrefVal (cont, CO_IGNORE))
             {
                 OptSetVal (&cont->copts, CO_IGNORE, 0);
-                M_printf (i18n (1666, "Unignored %s.\n"), cont->nick);
+                rl_printf (i18n (1666, "Unignored %s.\n"), cont->nick);
             }
             else
             {
                 OptSetVal (&cont->copts, CO_IGNORE, 1);
-                M_printf (i18n (1667, "Ignoring %s.\n"), cont->nick);
+                rl_printf (i18n (1667, "Ignoring %s.\n"), cont->nick);
             }
         }
     return 0;
@@ -2336,7 +2336,7 @@ static JUMP_F(CmdUserTogInvis)
                     SnacCliReminvis (conn, cont);
                 else
                     CmdPktCmdUpdateList (conn, cont, INV_LIST_UPDATE, FALSE);
-                M_printf (i18n (2020, "Being visible to %s.\n"), cont->nick);
+                rl_printf (i18n (2020, "Being visible to %s.\n"), cont->nick);
             }
             else
             {
@@ -2346,7 +2346,7 @@ static JUMP_F(CmdUserTogInvis)
                     SnacCliAddinvis (conn, cont);
                 else
                     CmdPktCmdUpdateList (conn, cont, INV_LIST_UPDATE, TRUE);
-                M_printf (i18n (2021, "Being invisible to %s.\n"), cont->nick);
+                rl_printf (i18n (2021, "Being invisible to %s.\n"), cont->nick);
             }
             if (conn->type != TYPE_SERVER)
             {
@@ -2379,7 +2379,7 @@ static JUMP_F(CmdUserTogVisible)
                     SnacCliRemvisible (conn, cont);
                 else
                     CmdPktCmdUpdateList (conn, cont, VIS_LIST_UPDATE, FALSE);
-                M_printf (i18n (1670, "Normal visible to %s now.\n"), cont->nick);
+                rl_printf (i18n (1670, "Normal visible to %s now.\n"), cont->nick);
             }
             else
             {
@@ -2389,7 +2389,7 @@ static JUMP_F(CmdUserTogVisible)
                     SnacCliAddvisible (conn, cont);
                 else
                     CmdPktCmdUpdateList (conn, cont, VIS_LIST_UPDATE, TRUE);
-                M_printf (i18n (1671, "Always visible to %s now.\n"), cont->nick);
+                rl_printf (i18n (1671, "Always visible to %s now.\n"), cont->nick);
             }
         }
     return 0;
@@ -2418,19 +2418,19 @@ static JUMP_F(CmdUserAdd)
     {
         if (cg)
         {
-            M_printf (i18n (9999, "Contact group '%s' already exists\n"), cg->name);
+            rl_printf (i18n (9999, "Contact group '%s' already exists\n"), cg->name);
             return 0;
         }
         if (!(par = s_parse (&args)))
         {
-            M_print (i18n (2240, "No contact group given.\n"));
+            rl_print (i18n (2240, "No contact group given.\n"));
             return 0;
         }
         if ((cg = ContactGroupC (conn, 0, par->txt)))
-            M_printf (i18n (2245, "Added contact group '%s'.\n"), par->txt);
+            rl_printf (i18n (2245, "Added contact group '%s'.\n"), par->txt);
         else
         {
-            M_print (i18n (2118, "Out of memory.\n"));
+            rl_print (i18n (2118, "Out of memory.\n"));
             return 0;
         }
     }
@@ -2448,30 +2448,30 @@ static JUMP_F(CmdUserAdd)
                         SnacCliAddcontact (conn, cont);
                     else
                         CmdPktCmdContactList (conn);
-                    M_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, cont->nick);
+                    rl_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, cont->nick);
                 }
                 if (ContactHas (cg, cont))
-                    M_printf (i18n (2244, "Contact group '%s' already has contact '%s' (%ld).\n"),
+                    rl_printf (i18n (2244, "Contact group '%s' already has contact '%s' (%ld).\n"),
                               cg->name, cont->nick, cont->uin);
                 else if (ContactAdd (cg, cont))
-                    M_printf (i18n (2241, "Added '%s' to contact group '%s'.\n"), cont->nick, cg->name);
+                    rl_printf (i18n (2241, "Added '%s' to contact group '%s'.\n"), cont->nick, cg->name);
                 else
-                    M_print (i18n (2118, "Out of memory.\n"));
+                    rl_print (i18n (2118, "Out of memory.\n"));
             }
-            M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
+            rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
         }
         return 0;
     }
 
     if (!(cont = s_parsenick (&args, conn)))
     {
-        M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
+        rl_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
     }
 
     if (!(cmd = s_parserem (&args)))
     {
-        M_print (i18n (2116, "No new nick name given.\n"));
+        rl_print (i18n (2116, "No new nick name given.\n"));
         return 0;
     }
 
@@ -2479,8 +2479,8 @@ static JUMP_F(CmdUserAdd)
     {
         if (!cont->group)
         {
-            M_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, cmd);
-            M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
+            rl_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, cmd);
+            rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
             if (c_strlen (cmd) > (UDWORD)uiG.nick_len)
                 uiG.nick_len = c_strlen (cmd);
             ContactFindCreate (conn->contacts, 0, cont->uin, cmd);
@@ -2492,20 +2492,20 @@ static JUMP_F(CmdUserAdd)
         else
         {
             if ((cont2 = ContactFind (conn->contacts, 0, cont->uin, cmd)))
-                M_printf (i18n (2146, "'%s' is already an alias for '%s' (%ld).\n"),
+                rl_printf (i18n (2146, "'%s' is already an alias for '%s' (%ld).\n"),
                          cont2->nick, cont->nick, cont->uin);
             else if ((cont2 = ContactFind (conn->contacts, 0, 0, cmd)))
-                M_printf (i18n (2147, "'%s' (%ld) is already used as a nick.\n"),
+                rl_printf (i18n (2147, "'%s' (%ld) is already used as a nick.\n"),
                          cont2->nick, cont2->uin);
             else
             {
                 if (!(cont2 = ContactFindCreate (conn->contacts, 0, cont->uin, cmd)))
-                    M_print (i18n (2118, "Out of memory.\n"));
+                    rl_print (i18n (2118, "Out of memory.\n"));
                 else
                 {
-                    M_printf (i18n (2148, "Added '%s' as an alias for '%s' (%ld).\n"),
+                    rl_printf (i18n (2148, "Added '%s' as an alias for '%s' (%ld).\n"),
                              cont2->nick, cont->nick, cont->uin);
-                    M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
+                    rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
                 }
             }
         }
@@ -2533,7 +2533,7 @@ static JUMP_F(CmdUserRemove)
     
     if (!(cg = s_parsecg (&args, conn)) && data == 2)
     {
-        M_print (i18n (2240, "No contact group given.\n"));
+        rl_print (i18n (2240, "No contact group given.\n"));
         return 0;
     }
 
@@ -2544,7 +2544,7 @@ static JUMP_F(CmdUserRemove)
     
     if (all && cg && cg->serv->contacts != cg)
     {
-        M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
+        rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
         return 0;
     }
 
@@ -2555,10 +2555,10 @@ static JUMP_F(CmdUserRemove)
             if (cg)
             {
                 if (ContactRem (cg, cont))
-                    M_printf (i18n (2243, "Removed contact '%s' from group '%s'.\n"),
+                    rl_printf (i18n (2243, "Removed contact '%s' from group '%s'.\n"),
                               cont->nick, cg->name);
                 else
-                    M_printf (i18n (2246, "Contact '%s' is not in group '%s'.\n"),
+                    rl_printf (i18n (2246, "Contact '%s' is not in group '%s'.\n"),
                               cont->nick, cg->name);
             }
             else
@@ -2580,19 +2580,19 @@ static JUMP_F(CmdUserRemove)
                 if (all || !cont->alias)
                 {
                     ContactD (cont);
-                    M_printf (i18n (2150, "Removed contact '%s' (%ld).\n"),
+                    rl_printf (i18n (2150, "Removed contact '%s' (%ld).\n"),
                               alias, uin);
                 }
                 else
                 {
                     ContactRemAlias (cont, alias);
-                    M_printf (i18n (2149, "Removed alias '%s' for '%s' (%ld).\n"),
+                    rl_printf (i18n (2149, "Removed alias '%s' for '%s' (%ld).\n"),
                              alias, cont->nick, uin);
                 }
                 free (alias);
             }
         }
-        M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
+        rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
     }
     return 0;
 }
@@ -2617,10 +2617,10 @@ static JUMP_F(CmdUserAuth)
     }
     if (!*args && !data)
     {
-        M_print (i18n (2119, "auth [grant] <contacts>    - grant authorization.\n"));
-        M_print (i18n (2120, "auth deny <contacts> <msg> - refuse authorization.\n"));
-        M_print (i18n (2121, "auth req  <contacts> <msg> - request authorization.\n"));
-        M_print (i18n (2145, "auth add  <contacts>       - authorized add.\n"));
+        rl_print (i18n (2119, "auth [grant] <contacts>    - grant authorization.\n"));
+        rl_print (i18n (2120, "auth deny <contacts> <msg> - refuse authorization.\n"));
+        rl_print (i18n (2121, "auth req  <contacts> <msg> - request authorization.\n"));
+        rl_print (i18n (2145, "auth add  <contacts>       - authorized add.\n"));
         return 0;
     }
     if (!(cg = s_parselist (&args, conn)))
@@ -2678,9 +2678,9 @@ static JUMP_F(CmdUserSave)
 {
     int i = Save_RC ();
     if (i == -1)
-        M_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
+        rl_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
     else
-        M_print (i18n (1680, "Your personal settings have been saved!\n"));
+        rl_print (i18n (1680, "Your personal settings have been saved!\n"));
     return 0;
 }
 
@@ -2702,7 +2702,7 @@ static JUMP_F(CmdUserURL)
     
     if (!(par = s_parse (&args)))
     {
-        M_print (i18n (1678, "No URL given.\n"));
+        rl_print (i18n (1678, "No URL given.\n"));
         return 0;
     }
 
@@ -2736,19 +2736,19 @@ static JUMP_F(CmdUserTabs)
 
     for (i = 0; TabGetOut (i); i++)
         ;
-    M_printf (i18n (1681, "Last %d people you talked to:\n"), i);
+    rl_printf (i18n (1681, "Last %d people you talked to:\n"), i);
     for (i = 0; (cont = TabGetOut (i)); i++)
     {
-        M_printf ("    %s", cont->nick);
-        M_printf (" %s(%s)%s\n", COLQUOTE, s_status (cont->status), COLNONE);
+        rl_printf ("    %s", cont->nick);
+        rl_printf (" %s(%s)%s\n", COLQUOTE, s_status (cont->status), COLNONE);
     }
     for (i = 0; TabGetIn (i); i++)
         ;
-    M_printf (i18n (9999, "Last %d people that talked to you:\n"), i);
+    rl_printf (i18n (9999, "Last %d people that talked to you:\n"), i);
     for (i = 0; (cont = TabGetIn (i)); i++)
     {
-        M_printf ("    %s", cont->nick);
-        M_printf (" %s(%s)%s\n", COLQUOTE, s_status (cont->status), COLNONE);
+        rl_printf ("    %s", cont->nick);
+        rl_printf (" %s(%s)%s\n", COLQUOTE, s_status (cont->status), COLNONE);
     }
     return 0;
 }
@@ -2768,10 +2768,10 @@ static JUMP_F(CmdUserLast)
         HistShow (NULL);
 
 /*        cg = conn->contacts;
-        M_print (i18n (1682, "You have received messages from:\n"));
+        rl_print (i18n (1682, "You have received messages from:\n"));
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
             if (cont->last_message)
-                M_printf ("  " COLCONTACT "%s" COLNONE " %s " COLQUOTE "%s" COLNONE "\n",
+                rl_printf ("  " COLCONTACT "%s" COLNONE " %s " COLQUOTE "%s" COLNONE "\n",
                          cont->nick, s_time (&cont->last_time), cont->last_message);*/
         return 0;
     }
@@ -2780,13 +2780,13 @@ static JUMP_F(CmdUserLast)
     {
 /*        if (cont->last_message)
         {
-            M_printf (i18n (2106, "Last message from %s%s%s at %s:\n"),
+            rl_printf (i18n (2106, "Last message from %s%s%s at %s:\n"),
                      COLCONTACT, cont->nick, COLNONE, s_time (&cont->last_time));
-            M_printf (COLQUOTE "%s" COLNONE "\n", cont->last_message);
+            rl_printf (COLQUOTE "%s" COLNONE "\n", cont->last_message);
         }
         else
         {
-            M_printf (i18n (2107, "No messages received from %s%s%s.\n"),
+            rl_printf (i18n (2107, "No messages received from %s%s%s.\n"),
                      COLCONTACT, cont->nick, COLNONE);
         }*/
         HistShow (cont);
@@ -2815,19 +2815,19 @@ static JUMP_F(CmdUserUptime)
     TimeDiff = TimeDiff / 24.0;
     Days = TimeDiff;
 
-    M_printf ("%s ", i18n (1687, "mICQ has been running for"));
+    rl_printf ("%s ", i18n (1687, "mICQ has been running for"));
     if (Days != 0)
-        M_printf ("%s%02d%s %s, ", COLQUOTE, Days, COLNONE, i18n (1688, "days"));
+        rl_printf ("%s%02d%s %s, ", COLQUOTE, Days, COLNONE, i18n (1688, "days"));
     if (Hours != 0)
-        M_printf ("%s%02d%s %s, ", COLQUOTE, Hours, COLNONE, i18n (1689, "hours"));
+        rl_printf ("%s%02d%s %s, ", COLQUOTE, Hours, COLNONE, i18n (1689, "hours"));
     if (Minutes != 0)
-        M_printf ("%s%02d%s %s, ", COLQUOTE, Minutes, COLNONE, i18n (1690, "minutes"));
-    M_printf ("%s%02d%s %s.\n", COLQUOTE, Seconds, COLQUOTE, i18n (1691, "seconds"));
+        rl_printf ("%s%02d%s %s, ", COLQUOTE, Minutes, COLNONE, i18n (1690, "minutes"));
+    rl_printf ("%s%02d%s %s.\n", COLQUOTE, Seconds, COLQUOTE, i18n (1691, "seconds"));
 
-    M_print (i18n (1746, " nr type         sent/received packets/unique packets\n"));
+    rl_print (i18n (1746, " nr type         sent/received packets/unique packets\n"));
     for (i = 0; (connl = ConnectionNr (i)); i++)
     {
-        M_printf ("%3d %-12s %7ld %7ld %7ld %7ld\n",
+        rl_printf ("%3d %-12s %7ld %7ld %7ld %7ld\n",
                  i + 1, ConnectionType (connl), connl->stat_pak_sent, connl->stat_pak_rcvd,
                  connl->stat_real_pak_sent, connl->stat_real_pak_rcvd);
         pak_sent += connl->stat_pak_sent;
@@ -2835,10 +2835,10 @@ static JUMP_F(CmdUserUptime)
         real_pak_sent += connl->stat_real_pak_sent;
         real_pak_rcvd += connl->stat_real_pak_rcvd;
     }
-    M_printf ("    %-12s %7d %7d %7d %7d\n",
+    rl_printf ("    %-12s %7d %7d %7d %7d\n",
              i18n (1747, "total"), pak_sent, pak_rcvd,
              real_pak_sent, real_pak_rcvd);
-    M_printf (i18n (2073, "Memory usage: %ld packets processing.\n"), uiG.packets);
+    rl_printf (i18n (2073, "Memory usage: %ld packets processing.\n"), uiG.packets);
     return 0;
 }
 
@@ -2868,24 +2868,24 @@ static JUMP_F(CmdUserConn)
     switch (data)
     {
         case 0:
-            M_print (i18n (1892, "conn               List available connections.\n"));
-            M_print (i18n (2094, "conn login         Open first server connection.\n"));
-            M_print (i18n (1893, "conn login <nr>    Open connection <nr>.\n"));
-            M_print (i18n (2156, "conn close <nr>    Close connection <nr>.\n"));
-            M_print (i18n (2095, "conn remove <nr>   Remove connection <nr>.\n"));
-            M_print (i18n (2097, "conn select <nr>   Select connection <nr> as server connection.\n"));
-            M_print (i18n (2100, "conn select <uin>  Select connection with UIN <uin> as server connection.\n"));
+            rl_print (i18n (1892, "conn               List available connections.\n"));
+            rl_print (i18n (2094, "conn login         Open first server connection.\n"));
+            rl_print (i18n (1893, "conn login <nr>    Open connection <nr>.\n"));
+            rl_print (i18n (2156, "conn close <nr>    Close connection <nr>.\n"));
+            rl_print (i18n (2095, "conn remove <nr>   Remove connection <nr>.\n"));
+            rl_print (i18n (2097, "conn select <nr>   Select connection <nr> as server connection.\n"));
+            rl_print (i18n (2100, "conn select <uin>  Select connection with UIN <uin> as server connection.\n"));
             break;
 
         case 1:
-            M_print (i18n (1887, "Connections:"));
-            M_print ("\n  " COLINDENT);
+            rl_print (i18n (1887, "Connections:"));
+            rl_print ("\n  " COLINDENT);
             
             for (i = 0; (connl = ConnectionNr (i)); i++)
             {
                 Contact *cont = connl->cont;
 
-                M_printf (i18n (9999, "%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n"),
+                rl_printf (i18n (9999, "%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n"),
                           i + 1, ConnectionType (connl), connl->version,
 #ifdef ENABLE_SSL
                           connl->ssl_status == SSL_STATUS_OK ? " SSL" : "",
@@ -2900,24 +2900,24 @@ static JUMP_F(CmdUserConn)
                 if (prG->verbose)
                 {
                     char *t1, *t2, *t3;
-                    M_printf (i18n (1935, "    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n"),
+                    rl_printf (i18n (1935, "    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n"),
                          connl->type, connl->sok, t1 = strdup (s_ip (connl->ip)),
                          connl->connect, t2 = strdup (s_ip (connl->our_local_ip)),
                          t3 = strdup (s_ip (connl->our_outside_ip)),
                          connl->our_session, connl->our_seq, connl->our_seq2);
 #ifdef ENABLE_SSL
-                    M_printf (i18n (9999, "    at %p parent %p assoc %p ssl %d\n"), connl, connl->parent, connl->assoc, connl->ssl_status);
+                    rl_printf (i18n (9999, "    at %p parent %p assoc %p ssl %d\n"), connl, connl->parent, connl->assoc, connl->ssl_status);
 #else
-                    M_printf (i18n (2081, "    at %p parent %p assoc %p\n"), connl, connl->parent, connl->assoc);
+                    rl_printf (i18n (2081, "    at %p parent %p assoc %p\n"), connl, connl->parent, connl->assoc);
 #endif
-                    M_printf (i18n (9999, "    open %p reconn %p close %p err %p dispatch %p\n"),
+                    rl_printf (i18n (9999, "    open %p reconn %p close %p err %p dispatch %p\n"),
                               connl->open, connl->reconnect, connl->close, connl->error, connl->dispatch);
                     free (t1);
                     free (t2);
                     free (t3);
                 }
             } 
-            M_print (COLEXDENT "\r");
+            rl_print (COLEXDENT "\r");
             break;
             
         case 2:
@@ -2927,17 +2927,17 @@ static JUMP_F(CmdUserConn)
             connl = ConnectionNr (nr - 1);
             if (!connl)
             {
-                M_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
+                rl_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
                 return 0;
             }
             if (connl->connect & CONNECT_OK)
             {
-                M_printf (i18n (1891, "Connection %ld is already open.\n"), nr);
+                rl_printf (i18n (1891, "Connection %ld is already open.\n"), nr);
                 return 0;
             }
             if (!connl->open)
             {
-                M_printf (i18n (2194, "Don't know how to open this connection type.\n"));
+                rl_printf (i18n (2194, "Don't know how to open this connection type.\n"));
                 return 0;
             }
             connl->open (connl);
@@ -2949,16 +2949,16 @@ static JUMP_F(CmdUserConn)
             connl = ConnectionNr (nr - 1);
             if (!connl && !(connl = ConnectionFindUIN (TYPEF_SERVER, nr)))
             {
-                M_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
+                rl_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
                 return 0;
             }
             if (~connl->type & TYPEF_SERVER)
             {
-                M_printf (i18n (2098, "Connection %ld is not a server connection.\n"), nr);
+                rl_printf (i18n (2098, "Connection %ld is not a server connection.\n"), nr);
                 return 0;
             }
             conn = connl;
-            M_printf (i18n (2099, "Selected connection %ld (version %d, UIN %ld) as current connection.\n"),
+            rl_printf (i18n (2099, "Selected connection %ld (version %d, UIN %ld) as current connection.\n"),
                       nr, connl->version, connl->uin);
             break;
         
@@ -2969,15 +2969,15 @@ static JUMP_F(CmdUserConn)
             connl = ConnectionNr (nr - 1);
             if (!connl)
             {
-                M_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
+                rl_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
                 return 0;
             }
             if (connl->flags & CONN_CONFIGURED)
             {
-                M_printf (i18n (2102, "Connection %ld is a configured connection.\n"), nr);
+                rl_printf (i18n (2102, "Connection %ld is a configured connection.\n"), nr);
                 return 0;
             }
-            M_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), nr);
+            rl_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), nr);
             ConnectionD (connl);
             break;
         
@@ -2988,17 +2988,17 @@ static JUMP_F(CmdUserConn)
             connl = ConnectionNr (nr - 1);
             if (!connl)
             {
-                M_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
+                rl_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
                 return 0;
             }
             if (connl->close)
             {
-                M_printf (i18n (2185, "Closing connection %ld.\n"), nr);
+                rl_printf (i18n (2185, "Closing connection %ld.\n"), nr);
                 connl->close (connl);
             }
             else
             {
-                M_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), nr);
+                rl_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), nr);
                 ConnectionD (connl);
             }
     }
@@ -3015,7 +3015,7 @@ static JUMP_F(CmdUserContact)
 
     if (conn->type != TYPE_SERVER)
     {
-        M_print (i18n (2326, "Server side contact list only supported for ICQ v8.\n"));
+        rl_print (i18n (2326, "Server side contact list only supported for ICQ v8.\n"));
         return 0;
     }
 
@@ -3036,13 +3036,13 @@ static JUMP_F(CmdUserContact)
         IMRoster (conn, data);
     else
     {
-        M_print (i18n (2103, "contact show    Show server based contact list.\n"));
-        M_print (i18n (2104, "contact diff    Show server based contacts not on local contact list.\n"));
-        M_print (i18n (2321, "contact add     Add server based contact list to local contact list.\n"));
-        M_print (i18n (2105, "contact import  Import server based contact list as local contact list.\n"));
-        M_print (i18n (2322, "contact sync    Import server based contact list if appropriate.\n"));
-        M_print (i18n (2323, "contact export  Export local contact list to server based list.\n"));
-        M_print (i18n (2324, "contact upload  Add local contacts to server based contact list.\n"));
+        rl_print (i18n (2103, "contact show    Show server based contact list.\n"));
+        rl_print (i18n (2104, "contact diff    Show server based contacts not on local contact list.\n"));
+        rl_print (i18n (2321, "contact add     Add server based contact list to local contact list.\n"));
+        rl_print (i18n (2105, "contact import  Import server based contact list as local contact list.\n"));
+        rl_print (i18n (2322, "contact sync    Import server based contact list if appropriate.\n"));
+        rl_print (i18n (2323, "contact export  Export local contact list to server based list.\n"));
+        rl_print (i18n (2324, "contact upload  Add local contacts to server based contact list.\n"));
     }
     return 0;
 }
@@ -3080,13 +3080,13 @@ static JUMP_F(CmdUserAsSession)
     if (!tmpconn && !(tmpconn = ConnectionFindUIN (TYPEF_SERVER, nr)))
     {
         if (!quiet)
-            M_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
+            rl_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
         return 0;
     }
     if (~tmpconn->type & TYPEF_SERVER)
     {
         if (!quiet)
-            M_printf (i18n (2098, "Connection %ld is not a server connection.\n"), nr);
+            rl_printf (i18n (2098, "Connection %ld is not a server connection.\n"), nr);
         return 0;
     }
     conn = tmpconn;
@@ -3179,7 +3179,7 @@ static JUMP_F(CmdUserSearch)
         case 0:
             if (!(par = s_parse (&args)))
             {
-                M_print (i18n (1960, "Enter data to search user for. Enter '.' to start the search.\n"));
+                rl_print (i18n (1960, "Enter data to search user for. Enter '.' to start the search.\n"));
                 ReadLinePromptSet (i18n (1656, "Enter the user's nick name:"));
                 return 200;
             }
@@ -3228,7 +3228,7 @@ static JUMP_F(CmdUserSearch)
         case 204:
             if (strcasecmp (args, i18n (1028, "NO")) && strcasecmp (args, i18n (1027, "YES")))
             {
-                M_printf ("%s\n", i18n (1029, "Please enter YES or NO!"));
+                rl_printf ("%s\n", i18n (1029, "Please enter YES or NO!"));
                 ReadLinePromptSet (i18n (1604, "Should the users be online?"));
                 return status;
             }
@@ -3412,7 +3412,7 @@ static JUMP_F(CmdUserUpdate)
         case 315:
             if (strcasecmp (args, i18n (1028, "NO")) && strcasecmp (args, i18n (1027, "YES")))
             {
-                M_printf ("%s\n", i18n (1029, "Please enter YES or NO!"));
+                rl_printf ("%s\n", i18n (1029, "Please enter YES or NO!"));
                 ReadLinePromptSet (i18n (1557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
                 return status;
             }
@@ -3422,7 +3422,7 @@ static JUMP_F(CmdUserUpdate)
         case 316:
             if (strcasecmp (args, i18n (1028, "NO")) && strcasecmp (args, i18n (1027, "YES")))
             {
-                M_printf ("%s\n", i18n (1029, "Please enter YES or NO!"));
+                rl_printf ("%s\n", i18n (1029, "Please enter YES or NO!"));
                 ReadLinePromptSet (i18n (1605, "Do you want your status to be available on the web? (YES/NO)"));
                 return status;
             }
@@ -3432,7 +3432,7 @@ static JUMP_F(CmdUserUpdate)
         case 317:
             if (strcasecmp (args, i18n (1028, "NO")) && strcasecmp (args, i18n (1027, "YES")))
             {
-                M_printf ("%s\n", i18n (1029, "Please enter YES or NO!"));
+                rl_printf ("%s\n", i18n (1029, "Please enter YES or NO!"));
                 ReadLinePromptSet (i18n (1857, "Do you want to hide your IP from other contacts? (YES/NO)"));
                 return status;
             }
@@ -3442,7 +3442,7 @@ static JUMP_F(CmdUserUpdate)
         case 318:
             if (strcasecmp (args, i18n (1028, "NO")) && strcasecmp (args, i18n (1027, "YES")))
             {
-                M_printf ("%s\n", i18n (1029, "Please enter YES or NO!"));
+                rl_printf ("%s\n", i18n (1029, "Please enter YES or NO!"));
                 ReadLinePromptSet (i18n (1622, "Do you want to apply these changes? (YES/NO)"));
                 return status;
             }
@@ -3655,7 +3655,7 @@ static int CmdUserProcessAlias (const char *cmd, const char *argsd,
 
     if (recurs_level > 10)
     {
-        M_print (i18n (2302, "Too many levels of alias expansion; probably an infinite loop.\n"));
+        rl_print (i18n (2302, "Too many levels of alias expansion; probably an infinite loop.\n"));
         return TRUE;
     }
     
@@ -3717,7 +3717,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
     *idle_val = time (NULL);
 
     snprintf (buf, sizeof (buf), "%s", command);
-    M_print ("\r");
+    rl_print ("\r");
     buf[1023] = 0;
 
     if (!conn || !(ConnectionFindNr (conn) + 1))
@@ -3743,11 +3743,11 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
                 ReadLineTtyUnset ();
 #ifdef SHELL_COMMANDS
                 if (((unsigned char)buf[1] < 31) || (buf[1] & 128))
-                    M_printf (i18n (1660, "Invalid Command: %s\n"), &buf[1]);
+                    rl_printf (i18n (1660, "Invalid Command: %s\n"), &buf[1]);
                 else
                     system (&buf[1]);
 #else
-                M_print (i18n (1661, "Shell commands have been disabled.\n"));
+                rl_print (i18n (1661, "Shell commands have been disabled.\n"));
 #endif
                 ReadLineTtySet ();
                 if (!command)
@@ -3779,8 +3779,8 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
 
             else if (!strcasecmp (cmd, "ver"))
             {
-                M_print (BuildVersion ());
-                M_print (BuildVersionText);
+                rl_print (BuildVersion ());
+                rl_print (BuildVersionText);
             }
             else
             {
@@ -3803,7 +3803,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
                     sticky = j->f;
                 }
                 else
-                    M_printf (i18n (9999, "Unknown command %s, type %shelp%s for help.\n"),
+                    rl_printf (i18n (9999, "Unknown command %s, type %shelp%s for help.\n"),
                               s_qquote (cmd), COLQUOTE, COLNONE);
                 free (cmd);
                 free (argsd);

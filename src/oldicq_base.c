@@ -19,7 +19,7 @@ Event *ConnectionInitServerV5 (Connection *conn)
 {
     if (conn->version < 5)
     {
-        M_print (i18n (1869, "Protocol versions less than 5 are not supported anymore.\n"));
+        rl_print (i18n (1869, "Protocol versions less than 5 are not supported anymore.\n"));
         return NULL;
     }
     
@@ -32,7 +32,7 @@ Event *ConnectionInitServerV5 (Connection *conn)
     if (!conn->passwd || !*conn->passwd)
     {
         strc_t pwd;
-        M_printf ("%s ", i18n (1063, "Enter password:"));
+        rl_printf ("%s ", i18n (1063, "Enter password:"));
         Echo_Off ();
         pwd = UtilIOReadline (stdin);
         Echo_On ();
@@ -72,7 +72,7 @@ void CallBackServerInitV5 (Event *event)
     }
     EventD (event);
     
-    M_printf (i18n (9999, "Opening v5 connection to %s:%s%ld%s... "),
+    rl_printf (i18n (9999, "Opening v5 connection to %s:%s%ld%s... "),
               s_wordquote (conn->server), COLQUOTE, conn->port, COLNONE);
     
     if (conn->sok < 0)
@@ -86,13 +86,13 @@ void CallBackServerInitV5 (Event *event)
 #endif
         {
             rc = errno;
-            M_printf (i18n (1872, "failed: %s (%d)\n"), strerror (rc), rc);
+            rl_printf (i18n (1872, "failed: %s (%d)\n"), strerror (rc), rc);
             conn->connect = 0;
             conn->sok = -1;
             return;
         }
     }
-    M_print (i18n (1877, "ok.\n"));
+    rl_print (i18n (1877, "ok.\n"));
     conn->our_seq2    = 0;
     conn->connect = 1 | CONNECT_SELECT_R;
     conn->dispatch = &CmdPktSrvRead;

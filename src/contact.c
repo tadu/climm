@@ -850,7 +850,7 @@ BOOL ContactMetaLoad (Contact *cont)
         }
 #ifdef WIP
         if ((par = s_parse (&line)))
-            M_printf ("FIXMEWIP: Ignored trailing stuff: '%s' from '%s'.\n", par->txt, line);
+            rl_printf ("FIXMEWIP: Ignored trailing stuff: '%s' from '%s'.\n", par->txt, line);
 #endif
     }
     if (fclose (f))

@@ -121,15 +121,15 @@ void PacketEnqueuev5 (Packet *pak, Connection *conn)
     {
         char *f;
         pak->rpos = 0;
-        M_printf ("%s " COLINDENT "%s", s_now, COLCLIENT);
-        M_print  (i18n (1775, "Outgoing packet:"));
-        M_printf (" %04x %08lx:%08lx %04x (%s) @%p%s\n",
+        rl_printf ("%s " COLINDENT "%s", s_now, COLCLIENT);
+        rl_print  (i18n (1775, "Outgoing packet:"));
+        rl_printf (" %04x %08lx:%08lx %04x (%s) @%p%s\n",
                  PacketReadAt2 (pak, CMD_v5_OFF_VER), PacketReadAt4 (pak, CMD_v5_OFF_SESS),
                  PacketReadAt4 (pak, CMD_v5_OFF_SEQ), PacketReadAt2 (pak, CMD_v5_OFF_SEQ2),
                  CmdPktCmdName (PacketReadAt2 (pak, CMD_v5_OFF_CMD)), pak, COLNONE);
-        M_print  (f = PacketDump (pak, "gv5cp", COLDEBUG, COLNONE));
+        rl_print  (f = PacketDump (pak, "gv5cp", COLDEBUG, COLNONE));
         free (f);
-        M_print  (COLEXDENT "\r");
+        rl_print  (COLEXDENT "\r");
     }
 
     if (cmd != CMD_ACK)
@@ -284,7 +284,7 @@ void UDPCallBackResend (Event *event)
 
     if (session != conn->our_session)
     {
-        M_printf (i18n (1856, "Discarded a %04x (%s) packet from old session %08lx (current: %08lx).\n"),
+        rl_printf (i18n (1856, "Discarded a %04x (%s) packet from old session %08lx (current: %08lx).\n"),
                  cmd, CmdPktSrvName (cmd),
                  session, conn->our_session);
         EventD (event);
@@ -293,7 +293,7 @@ void UDPCallBackResend (Event *event)
     {
         if (prG->verbose & 32)
         {
-            M_printf (i18n (1826, "Resending message %04x (%s) sequence %04lx (attempt #%ld, len %d).\n"),
+            rl_printf (i18n (1826, "Resending message %04x (%s) sequence %04lx (attempt #%ld, len %d).\n"),
                      cmd, CmdPktCmdName (cmd),
                      event->seq >> 16, event->attempts, pak->len);
         }
@@ -310,8 +310,8 @@ void UDPCallBackResend (Event *event)
             Contact *cont = ContactUIN (conn, tuin);
             char *data = (char *) &pak->data[CMD_v5_OFF_PARAM + 8];
 
-            M_print ("\n");
-            M_printf (i18n (1830, "Discarding message to %s after %ld send attempts.  Message content:\n"),
+            rl_print ("\n");
+            rl_printf (i18n (1830, "Discarding message to %s after %ld send attempts.  Message content:\n"),
                       cont ? cont->nick : s_sprintf ("%ld", tuin), event->attempts - 1);
 
             if ((type & ~MSGF_MASS) == MSG_URL)
@@ -331,8 +331,8 @@ void UDPCallBackResend (Event *event)
                     cdata.len = strlen (tmp);
                     url_data = ConvFromCont (&cdata, cont);
 
-                    M_printf (i18n (2128, " Description: %s%s%s\n"), COLMESSAGE, url_desc, COLNONE);
-                    M_printf (i18n (2129, "         URL: %s%s%s\n"), COLMESSAGE, url_data, COLNONE);
+                    rl_printf (i18n (2128, " Description: %s%s%s\n"), COLMESSAGE, url_desc, COLNONE);
+                    rl_printf (i18n (2129, "         URL: %s%s%s\n"), COLMESSAGE, url_data, COLNONE);
                     
                     free (url_desc);
                 }
@@ -342,20 +342,20 @@ void UDPCallBackResend (Event *event)
                 str_s cdata = { NULL, 0, 0 };
                 cdata.txt = data;
                 cdata.len = strlen (data);
-                M_printf ("%s%s%s ", COLMESSAGE, ConvFromCont (&cdata, cont), COLNONE);
+                rl_printf ("%s%s%s ", COLMESSAGE, ConvFromCont (&cdata, cont), COLNONE);
             }
         }
         else
         {
-            M_printf (i18n (1825, "Discarded a %04x (%s) packet"), cmd, CmdPktSrvName (cmd));
+            rl_printf (i18n (1825, "Discarded a %04x (%s) packet"), cmd, CmdPktSrvName (cmd));
             if (cmd == CMD_LOGIN || cmd == CMD_KEEP_ALIVE)
             {
-                M_print ("\a");
-                M_print (i18n (1632, "\nConnection unstable. Exiting...."));
+                rl_print ("\a");
+                rl_print (i18n (1632, "\nConnection unstable. Exiting...."));
                 uiG.quit = TRUE;
             }
         }
-        M_print ("\n");
+        rl_print ("\n");
         EventD (event);
     }
 }

@@ -55,9 +55,9 @@ JUMP_SNAC_F(SnacSrvIcbmerr)
     if ((event->pak->ref & 0xffff) == 0x1771 && (err == 0xe || err == 0x4))
     {
         if (err == 0xe)
-            M_print (i18n (2017, "The user is online, but possibly invisible.\n"));
+            rl_print (i18n (2017, "The user is online, but possibly invisible.\n"));
         else
-            M_print (i18n (2022, "The user is offline.\n"));
+            rl_print (i18n (2022, "The user is offline.\n"));
         return;
     }
 
@@ -65,9 +65,9 @@ JUMP_SNAC_F(SnacSrvIcbmerr)
     if (event && event->callback)
         event->callback (event);
     else if (err == 4)
-        M_print (i18n (2022, "The user is offline.\n"));
+        rl_print (i18n (2022, "The user is offline.\n"));
     else if (err != 0xd)
-        M_printf (i18n (2191, "Instant message error: %d.\n"), err);
+        rl_printf (i18n (2191, "Instant message error: %d.\n"), err);
 }
 
 /*
@@ -322,7 +322,7 @@ static void SnacCallbackType2 (Event *event)
     if (!serv || !cont)
     {
         if (!serv && opt_text)
-            M_printf (i18n (2234, "Message %s discarded - lost session.\n"), opt_text);
+            rl_printf (i18n (2234, "Message %s discarded - lost session.\n"), opt_text);
         EventD (event);
         return;
     }
@@ -494,7 +494,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
 
 #ifdef WIP
     if (tlv[6].str.len && tlv[6].nr != cont->status)
-        M_printf ("FIXMEWIP: status for %ld embedded in message 0x%08lx different from server status 0x%08lx.\n", cont->uin, tlv[6].nr, cont->status);
+        rl_printf ("FIXMEWIP: status for %ld embedded in message 0x%08lx different from server status 0x%08lx.\n", cont->uin, tlv[6].nr, cont->status);
 #endif
 
     if (tlv[6].str.len)
@@ -582,8 +582,8 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
 #ifdef WIP
                 else
                 {
-                    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                    M_printf ("FIXMEWIP: tlv(b)-only packet.\n");
+                    rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                    rl_printf ("FIXMEWIP: tlv(b)-only packet.\n");
                 }
 #endif
                 TLVD (tlv);
@@ -625,7 +625,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
                         }
                         
 #ifdef WIP
-                        M_printf ("%s %*s FIXMEWIP: updates dc to %s:%ld|%ld|%ld v%d %d seq %ld\n",
+                        rl_printf ("%s %*s FIXMEWIP: updates dc to %s:%ld|%ld|%ld v%d %d seq %ld\n",
                                   s_now, uiG.nick_len + s_delta (cont->nick), cont->nick,
                                   s_ip (sip), sp1, sp2, sop, sver, scon, sunk);
 #endif
@@ -738,8 +738,8 @@ JUMP_SNAC_F(SnacSrvSrvackmsg)
         case 4:
             IMOffline (cont, serv);
 
-            M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-            M_print  (i18n (2126, "is offline, message queued on server.\n"));
+            rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+            rl_print  (i18n (2126, "is offline, message queued on server.\n"));
 
 /*          cont->status = STATUS_OFFLINE;
             putlog (serv, NOW, cont, STATUS_OFFLINE, LOG_ACK, 0xFFFF, 
@@ -872,7 +872,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     
 #ifdef WIP
     if (prG->verbose)
-    M_printf ("FIXMEWIP: Starting advanced message: events %p, %p; type %d, seq %x.\n",
+    rl_printf ("FIXMEWIP: Starting advanced message: events %p, %p; type %d, seq %x.\n",
               inc_event, ack_event, msgtype, seq);
 #endif
  
@@ -917,8 +917,8 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
         case MSGF_GETAUTO | MSG_GET_VER:   ack_msg = BuildVersionText;
             } while (0);
 #ifdef WIP
-            M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-            M_printf (i18n (1814, "Sent auto-response message to %s%s%s.\n"),
+            rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+            rl_printf (i18n (1814, "Sent auto-response message to %s%s%s.\n"),
                      COLCONTACT, cont->nick, COLNONE);
 #endif
             accept = TRUE;
@@ -964,7 +964,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                 EventD (ack_event);
                 free (name);
 #ifdef WIP
-                M_printf ("FIXMEWIP: Delaying advanced message: events %p, %p.\n", inc_event, ack_event);
+                rl_printf ("FIXMEWIP: Delaying advanced message: events %p, %p.\n", inc_event, ack_event);
 #endif
                 return;
             }
@@ -1060,7 +1060,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                             free (name);
                             free (gtext);
 #ifdef WIP
-                            M_printf ("FIXMEWIP: Delaying advanced message: events %p, %p.\n", inc_event, ack_event);
+                            rl_printf ("FIXMEWIP: Delaying advanced message: events %p, %p.\n", inc_event, ack_event);
 #endif
                             return;
                         }
@@ -1121,7 +1121,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                     case 0x0032:
                     default:
                         if (prG->verbose & DEB_PROTOCOL)
-                            M_printf (i18n (2065, "Unknown TCP_MSG_GREET_ command %04x.\n"), msgtype);
+                            rl_printf (i18n (2065, "Unknown TCP_MSG_GREET_ command %04x.\n"), msgtype);
                         PacketWrite2    (ack_pak, TCP_ACK_REFUSE);
                         PacketWrite2    (ack_pak, ack_flags);
                         PacketWriteLNTS (ack_pak, "");
@@ -1158,7 +1158,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
 #endif
         default:
             if (prG->verbose & DEB_PROTOCOL)
-                M_printf (i18n (2066, "Unknown TCP_MSG_ command %04x.\n"), msgtype);
+                rl_printf (i18n (2066, "Unknown TCP_MSG_ command %04x.\n"), msgtype);
             /* fall-through */
         case MSG_CHAT:
             /* chat ist not implemented, so reject chat requests */
@@ -1210,7 +1210,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     }
 #ifdef WIP
     if (prG->verbose)
-    M_printf ("FIXMEWIP: Finishing advanced message: events %p, %p.\n", inc_event, ack_event);
+    rl_printf ("FIXMEWIP: Finishing advanced message: events %p, %p.\n", inc_event, ack_event);
 #endif
     QueueDequeueEvent (ack_event);
     ack_event->callback (ack_event);

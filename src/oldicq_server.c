@@ -81,7 +81,7 @@ static BOOL Is_Repeat_Packet (UWORD this_seq)
         if (recv_packs[i] == this_seq)
         {
             if (prG->verbose & DEB_PROTOCOL)
-                M_printf (i18n (1623, "Double packet %04x.\n"), this_seq);
+                rl_printf (i18n (1623, "Double packet %04x.\n"), this_seq);
             return TRUE;
         }
     }
@@ -150,31 +150,31 @@ void CmdPktSrvRead (Connection *conn)
     if (prG->verbose & DEB_PACK5DATA)
     {
         UDWORD rpos = pak->rpos;
-        M_printf ("%s " COLINDENT "%s", s_now, COLSERVER);
-        M_print  (i18n (1774, "Incoming packet:"));
-        M_printf (" %04x %08lx:%04x%04x %04x (%s)%s\n",
+        rl_printf ("%s " COLINDENT "%s", s_now, COLSERVER);
+        rl_print  (i18n (1774, "Incoming packet:"));
+        rl_printf (" %04x %08lx:%04x%04x %04x (%s)%s\n",
                  pak->ver, session, seq2, seq, cmd, CmdPktSrvName (cmd), COLNONE);
 #if ICQ_VER == 5
         pak->rpos = 0;
-        M_print  (f = PacketDump (pak, "gv5sp", COLDEBUG, COLNONE));
+        rl_print  (f = PacketDump (pak, "gv5sp", COLDEBUG, COLNONE));
         free (f);
         pak->rpos = rpos;
 #else
-        M_print  (s_dump (pak->data, s));
+        rl_print  (s_dump (pak->data, s));
 #endif
-        M_print  (COLEXDENT "\r");
+        rl_print  (COLEXDENT "\r");
     }
     if (pak->len < 21)
     {
         if (prG->verbose & DEB_PROTOCOL)
-            M_print (i18n (1867, "Received a malformed (too short) packet - ignored.\n"));
+            rl_print (i18n (1867, "Received a malformed (too short) packet - ignored.\n"));
         return;
     }
     if (session != conn->our_session)
     {
         if (prG->verbose & DEB_PROTOCOL)
         {
-            M_printf (i18n (1606, "Received a bad session ID %08lx (correct: %08lx) with cmd %04x ignored.\n"),
+            rl_printf (i18n (1606, "Received a bad session ID %08lx (correct: %08lx) with cmd %04x ignored.\n"),
                      session, conn->our_session, cmd);
         }
         return;
@@ -185,7 +185,7 @@ void CmdPktSrvRead (Connection *conn)
         {
             if (prG->verbose & DEB_PROTOCOL)
             {
-                M_printf (i18n (1032, "debug: double packet #%04lx type %04x (%s)\n"),
+                rl_printf (i18n (1032, "debug: double packet #%04lx type %04x (%s)\n"),
                          id, cmd, CmdPktSrvName (cmd));
             }
             CmdPktCmdAck (conn, id);       /* LAGGGGG!! */ 
@@ -249,16 +249,16 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             Meta_User (conn, cont, pak);
             break;
         case SRV_NEW_UIN:
-            M_printf (i18n (1639, "The new UIN is %ld!\n"), cont->uin);
+            rl_printf (i18n (1639, "The new UIN is %ld!\n"), cont->uin);
             break;
         case SRV_UPDATE_FAIL:
-            M_print (i18n (1640, "Failed to update info.\n"));
+            rl_print (i18n (1640, "Failed to update info.\n"));
             break;
         case SRV_UPDATE_SUCCESS:
-            M_print (i18n (1641, "User info successfully updated.\n"));
+            rl_print (i18n (1641, "User info successfully updated.\n"));
             break;
         case SRV_LOGIN_REPLY:
-            M_printf ("%s %s%10lu%s %s\n", s_now, COLCONTACT, cont->uin, COLNONE, i18n (1050, "Login successful!"));
+            rl_printf ("%s %s%10lu%s %s\n", s_now, COLCONTACT, cont->uin, COLNONE, i18n (1050, "Login successful!"));
             CmdPktCmdLogin1 (conn);
             CmdPktCmdContactList (conn);
             CmdPktCmdInvisList (conn);
@@ -280,7 +280,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             ip[1] = PacketRead1 (pak);
             ip[2] = PacketRead1 (pak);
             ip[3] = PacketRead1 (pak);
-            M_printf ("%s %s%*s%s %s %u.%u.%u.%u\n",
+            rl_printf ("%s %s%*s%s %s %u.%u.%u.%u\n",
                 s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick,
                 COLNONE, i18n (1642, "IP:"), ip[0], ip[1], ip[2], ip[3]);
             QueueEnqueueData (conn, QUEUE_UDP_KEEPALIVE, 0, time (NULL) + 120,
@@ -291,20 +291,20 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             break;
         case SRV_X1:
             if (prG->verbose & DEB_PROTOCOL)
-                M_print (i18n (1643, "Acknowledged SRV_X1 0x021C Done Contact list?\n"));
+                rl_print (i18n (1643, "Acknowledged SRV_X1 0x021C Done Contact list?\n"));
             CmdUser ("\\e");
             conn->connect |= CONNECT_OK;
             break;
         case SRV_X2:
             if (prG->verbose & DEB_PROTOCOL)
-                M_print (i18n (1644, "Acknowledged SRV_X2 0x00E6 Done old messages?\n"));
+                rl_print (i18n (1644, "Acknowledged SRV_X2 0x00E6 Done old messages?\n"));
             CmdPktCmdAckMessages (conn);
             break;
         case SRV_INFO_REPLY:
             uin = PacketRead4 (pak);
             if (!uin || !(cont = ContactUIN (conn, uin)))
                 break;
-            M_printf (i18n (2214, "Info for %s%lu%s:\n"), COLSERVER, uin, COLNONE);
+            rl_printf (i18n (2214, "Info for %s%lu%s:\n"), COLSERVER, uin, COLNONE);
             Display_Info_Reply (cont, pak, IREP_HASAUTHFLAG);
             break;
         case SRV_EXT_INFO_REPLY:
@@ -316,20 +316,20 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
                 IMOffline (cont, conn);
             break;
         case SRV_BAD_PASS:
-            M_print (i18n (1645, "You entered an incorrect password.\n"));
+            rl_print (i18n (1645, "You entered an incorrect password.\n"));
             exit (1);
             break;
         case SRV_TRY_AGAIN:
-            M_printf ("%s %s" , s_now, COLSERVER);
-            M_print  (i18n (1646, "Server is busy.\n"));
+            rl_printf ("%s %s" , s_now, COLSERVER);
+            rl_print  (i18n (1646, "Server is busy.\n"));
             uiG.reconnect_count++;
             if (uiG.reconnect_count >= MAX_RECONNECT_ATTEMPTS)
             {
-                M_printf ("%s\n", i18n (1034, "Maximum number of tries reached. Giving up."));
+                rl_printf ("%s\n", i18n (1034, "Maximum number of tries reached. Giving up."));
                 uiG.quit = TRUE;
                 break;
             }
-            M_printf (i18n (1082, "Trying to reconnect... [try %d out of %d]\n"), uiG.reconnect_count, MAX_RECONNECT_ATTEMPTS);
+            rl_printf (i18n (1082, "Trying to reconnect... [try %d out of %d]\n"), uiG.reconnect_count, MAX_RECONNECT_ATTEMPTS);
             QueueEnqueueData (conn, /* FIXME: */ 0, 0, time (NULL) + 5, NULL, 0, NULL, &CallBackServerInitV5); 
             break;
         case SRV_USER_ONLINE:
@@ -361,44 +361,44 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             break;
         case SRV_GO_AWAY:
         case SRV_NOT_CONNECTED:
-            M_printf ("%s %s\n", s_now, i18n (1039, "The server claims we're not connected.\n"));
+            rl_printf ("%s %s\n", s_now, i18n (1039, "The server claims we're not connected.\n"));
             uiG.reconnect_count++;
             if (uiG.reconnect_count >= MAX_RECONNECT_ATTEMPTS)
             {
-                M_printf ("%s\n", i18n (1034, "Maximum number of tries reached. Giving up."));
+                rl_printf ("%s\n", i18n (1034, "Maximum number of tries reached. Giving up."));
                 uiG.quit = TRUE;
                 break;
             }
-            M_printf (i18n (1082, "Trying to reconnect... [try %d out of %d]\n"), uiG.reconnect_count, MAX_RECONNECT_ATTEMPTS);
+            rl_printf (i18n (1082, "Trying to reconnect... [try %d out of %d]\n"), uiG.reconnect_count, MAX_RECONNECT_ATTEMPTS);
             QueueEnqueueData (conn, /* FIXME: */ 0, 0, time (NULL) + 5, NULL, 0, NULL, &CallBackServerInitV5);
             break;
         case SRV_END_OF_SEARCH:
-            M_print (i18n (1045, "Search Done."));
+            rl_print (i18n (1045, "Search Done."));
             if (PacketReadLeft (pak) >= 1)
             {
-                M_print ("\t");
+                rl_print ("\t");
                 if (PacketRead1 (pak) == 1)
-                    M_print (i18n (1044, "Too many users found."));
+                    rl_print (i18n (1044, "Too many users found."));
                 else
-                    M_print (i18n (1043, "All users found."));
+                    rl_print (i18n (1043, "All users found."));
             }
-            M_print ("\n");
+            rl_print ("\n");
             break;
         case SRV_USER_FOUND:
             uin = PacketRead4 (pak);
             if (!uin || !(cont = ContactUIN (conn, uin)))
                 break;
-            M_printf (i18n (1968, "User found:\n"));
+            rl_printf (i18n (1968, "User found:\n"));
             Display_Info_Reply (cont, pak, IREP_HASAUTHFLAG);
             break;
         case SRV_RAND_USER:
             if (PacketReadLeft (pak) != 37)
             {
-                M_printf ("%s\n", i18n (1495, "No Random User Found"));
+                rl_printf ("%s\n", i18n (1495, "No Random User Found"));
                 return;
             }
 
-            M_print (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
+            rl_print (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
 
             if (!(cont = ContactUIN (conn, PacketRead4 (pak))))
                 return;
@@ -412,14 +412,14 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             cont->status      = PacketRead4  (pak);
             cont->dc->version = PacketRead2  (pak);
 
-            M_printf ("%-15s %lu\n", i18n (1440, "Random User:"), cont->uin);
-            M_printf ("%-15s %s:%lu\n", i18n (1441, "remote IP:"), 
+            rl_printf ("%-15s %lu\n", i18n (1440, "Random User:"), cont->uin);
+            rl_printf ("%-15s %s:%lu\n", i18n (1441, "remote IP:"), 
                       s_ip (cont->dc->ip_rem), cont->dc->port);
-            M_printf ("%-15s %s\n", i18n (1451, "local  IP:"),  s_ip (cont->dc->ip_loc));
-            M_printf ("%-15s %s\n", i18n (1454, "Connection:"), cont->dc->type == 4
+            rl_printf ("%-15s %s\n", i18n (1451, "local  IP:"),  s_ip (cont->dc->ip_loc));
+            rl_printf ("%-15s %s\n", i18n (1454, "Connection:"), cont->dc->type == 4
                       ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"));
-            M_printf ("%-15s %s\n", i18n (1452, "Status:"), s_status (cont->status));
-            M_printf ("%-15s %d\n", i18n (1453, "TCP version:"), cont->dc->version);
+            rl_printf ("%-15s %s\n", i18n (1452, "Status:"), s_status (cont->status));
+            rl_printf ("%-15s %d\n", i18n (1453, "TCP version:"), cont->dc->version);
         
             CmdPktCmdMetaReqInfo (conn, cont);
             break;
@@ -441,13 +441,13 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
         case SRV_AUTH_UPDATE:
             break;
         default:               /* commands we dont handle yet */
-            M_printf ("%s %s", s_now, COLCLIENT);
-            M_printf (i18n (1648, "The response was %04x\t"), cmd);
-            M_printf (i18n (1649, "The version was %x\t"), ver);
-            M_printf (i18n (1650, "\nThe SEQ was %04lx\t"), seq);
-            M_printf (i18n (1651, "The size was %d\n"), pak->len - pak->rpos);
-            M_print  (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
-            M_printf ("%s\n", COLNONE);
+            rl_printf ("%s %s", s_now, COLCLIENT);
+            rl_printf (i18n (1648, "The response was %04x\t"), cmd);
+            rl_printf (i18n (1649, "The version was %x\t"), ver);
+            rl_printf (i18n (1650, "\nThe SEQ was %04lx\t"), seq);
+            rl_printf (i18n (1651, "The size was %d\n"), pak->len - pak->rpos);
+            rl_print  (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
+            rl_printf ("%s\n", COLNONE);
             break;
     }
 }
@@ -472,7 +472,7 @@ static JUMP_SRV_F (CmdPktSrvMulti)
         if (pak->rpos + llen > pak->len)
         {
             if (prG->verbose & DEB_PROTOCOL)
-                M_print (i18n (1868, "Got a malformed (to long subpacket) multi-packet - remainder ignored.\n"));
+                rl_print (i18n (1868, "Got a malformed (to long subpacket) multi-packet - remainder ignored.\n"));
             return;
         }
         
@@ -493,19 +493,19 @@ static JUMP_SRV_F (CmdPktSrvMulti)
         if (prG->verbose & DEB_PACK5DATA)
         {
             UDWORD rpos = pak->rpos;
-            M_printf ("%s " COLINDENT "%s", s_now, COLSERVER);
-            M_print  (i18n (1823, "Incoming partial packet:"));
-            M_printf (" %04x %08lx:%04x%04lx %04x (%s)%s\n",
+            rl_printf ("%s " COLINDENT "%s", s_now, COLSERVER);
+            rl_print  (i18n (1823, "Incoming partial packet:"));
+            rl_printf (" %04x %08lx:%04x%04lx %04x (%s)%s\n",
                      ver, session, seq2, seq, cmd, CmdPktSrvName (cmd), COLNONE);
 #if ICQ_VER == 5
             pak->rpos = 0;
-            M_print  (f = PacketDump (pak, "gv5sp", COLDEBUG, COLNONE));
+            rl_print  (f = PacketDump (pak, "gv5sp", COLDEBUG, COLNONE));
             free (f);
             pak->rpos = rpos;
 #else
-            M_print  (s_dump (pak->data, llen));
+            rl_print  (s_dump (pak->data, llen));
 #endif
-            M_print (COLEXDENT "\n");
+            rl_print (COLEXDENT "\n");
         }
 
         CmdPktSrvProcess (conn, ContactUIN (conn, uin), npak, cmd, ver, seq << 16 | seq2);
@@ -525,7 +525,7 @@ static JUMP_SRV_F (CmdPktSrvAck)
 
     if (pak->rpos < pak->len && (prG->verbose & DEB_PROTOCOL))
     {
-        M_printf ("%s %s %d\n", i18n (1047, "Extra Data"), i18n (1046, "Length"), pak->len - pak->rpos);
+        rl_printf ("%s %s %d\n", i18n (1047, "Extra Data"), i18n (1046, "Length"), pak->len - pak->rpos);
     }
     
     ccmd = PacketReadAt2 (event->pak, CMD_v5_OFF_CMD);

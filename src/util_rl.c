@@ -221,8 +221,8 @@ void ReadLineTtyUnset (void)
 
     if (tcsetattr (STDIN_FILENO, TCSAFLUSH, &tty_saved_attr) != 0)
     {
-        M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-        M_printf (i18n (9999, "Can't restore terminal modes.\n"));
+        rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+        rl_printf (i18n (9999, "Can't restore terminal modes.\n"));
     }
     else
         tty_saved = 0;
@@ -237,8 +237,8 @@ void ReadLineTtySet (void)
 #if HAVE_TCGETATTR
     if (tcgetattr (STDIN_FILENO, &tty_attr) != 0)
     {
-        M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-        M_printf (i18n (9999, "Can't read terminal modes.\n"));
+        rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+        rl_printf (i18n (9999, "Can't read terminal modes.\n"));
         return;
     }
     if (!tty_saved)
@@ -249,15 +249,15 @@ void ReadLineTtySet (void)
     tty_attr.c_lflag &= ~(ECHO | ICANON);
     if (tcsetattr (STDIN_FILENO, TCSAFLUSH, &tty_attr) != 0)
     {
-        M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-        M_printf (i18n (9999, "Can't modify terminal modes.\n"));
+        rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+        rl_printf (i18n (9999, "Can't modify terminal modes.\n"));
         return;
     }
     tty_attr.c_cc[VMIN] = 1;
     if (tcsetattr (STDIN_FILENO, TCSAFLUSH, &tty_attr) != 0)
     {
-        M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-        M_printf (i18n (9999, "Can't modify terminal modes.\n"));
+        rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+        rl_printf (i18n (9999, "Can't modify terminal modes.\n"));
     }
 #endif
 }
@@ -326,7 +326,7 @@ void ReadLineHandleSig (void)
             rl_key_end ();
             printf ("%s", rl_operate.txt);
             printf (" %s^C%s\n", COLERROR, COLNONE);
-            M_print ("\r");
+            rl_print ("\r");
             rl_prompt_stat = 0;
             rl_tab_state = 0;
             rl_historyadd ();
@@ -339,7 +339,7 @@ void ReadLineHandleSig (void)
         if (sig & 4)
         {
             ReadLineTtySet ();
-            M_print ("\r");
+            rl_print ("\r");
             ReadLinePrompt ();
         }
         if (sig & 8)
@@ -1665,9 +1665,9 @@ void ReadLinePrompt ()
     printf ("%s", rl_operate.txt);
     if (rl_prompt_stat == 0)
     {
-        M_print ("\r");
-        M_print (rl_prompt.txt);
-        rl_prompt_len = M_pos ();
+        rl_print ("\r");
+        rl_print (rl_prompt.txt);
+        rl_prompt_len = rl_pos ();
         rl_prompt_stat = 1;
         rl_colpos = 0;
     }
@@ -1695,7 +1695,7 @@ void ReadLinePromptHide ()
     printf ("%s", rl_operate.txt);
     rl_prompt_stat = 0;
     rl_colpos = pos;
-    M_print ("\r");
+    rl_print ("\r");
 }
 
 /*

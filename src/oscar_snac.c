@@ -192,20 +192,20 @@ void SnacPrint (Packet *pak)
     ref  = PacketReadB4 (pak);
     len  = PacketReadAtB2 (pak, pak->rpos);
 
-    M_printf ("%s %sSNAC     (%x,%x) [%s] flags %x ref %lx",
+    rl_printf ("%s %sSNAC     (%x,%x) [%s] flags %x ref %lx",
              s_dumpnd (pak->data + 6, flag & 0x8000 ? 10 + len : 10),
              COLDEBUG, fam, cmd, SnacName (fam, cmd), flag, ref);
     if (flag & 0x8000)
     {
-        M_printf (" extra (%ld)", len);
+        rl_printf (" extra (%ld)", len);
         pak->rpos += len + 2;
     }
-    M_printf ("%s\n", COLNONE);
+    rl_printf ("%s\n", COLNONE);
 
     if (prG->verbose & DEB_PACK8DATA || ~prG->verbose & DEB_PACK8)
     {
         char *f, *syn = strdup (s_sprintf ("gs%dx%ds", fam, cmd));
-        M_print (f = PacketDump (pak, syn, COLDEBUG, COLNONE));
+        rl_print (f = PacketDump (pak, syn, COLDEBUG, COLNONE));
         free (f);
         free (syn);
     }
@@ -220,9 +220,9 @@ JUMP_SNAC_F(SnacSrvUnknown)
 {
     if (!(prG->verbose & DEB_PACK8))
     {
-        M_printf ("%s " COLINDENT "%s%s ", s_now, COLSERVER, i18n (1033, "Incoming v8 server packet:"));
+        rl_printf ("%s " COLINDENT "%s%s ", s_now, COLSERVER, i18n (1033, "Incoming v8 server packet:"));
         FlapPrint (event->pak);
-        M_print (COLEXDENT "\n");
+        rl_print (COLEXDENT "\n");
     }
 }
 
@@ -237,6 +237,6 @@ JUMP_SNAC_F(SnacSrvSetinterval)
     pak = event->pak;
     interval = PacketReadB2 (pak);
     if (prG->verbose & DEB_PROTOCOL)
-        M_printf (i18n (1918, "Ignored server request for a minimum report interval of %d.\n"), 
+        rl_printf (i18n (1918, "Ignored server request for a minimum report interval of %d.\n"), 
             interval);
 }

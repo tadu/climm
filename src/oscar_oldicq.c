@@ -76,7 +76,7 @@ JUMP_SNAC_F(SnacSrvToicqerr)
     Packet *pak = event->pak;
     if ((pak->ref & 0xffff) == 0x4231)
     {
-        M_print (i18n (2206, "The server doesn't want to give us offline messages.\n"));
+        rl_print (i18n (2206, "The server doesn't want to give us offline messages.\n"));
     }
     else
     {
@@ -85,19 +85,19 @@ JUMP_SNAC_F(SnacSrvToicqerr)
 
         if ((oevent = QueueDequeue (event->conn, QUEUE_REQUEST_META, pak->ref)))
         {
-            M_printf (i18n (2207, "Protocol error in command to old ICQ server: %d.\n"), err);
+            rl_printf (i18n (2207, "Protocol error in command to old ICQ server: %d.\n"), err);
             if (err == 2)
-                M_printf (i18n (9999, "You queried already too many users today - come back tomorrow.\n"));
+                rl_printf (i18n (9999, "You queried already too many users today - come back tomorrow.\n"));
             else if (err == 5)
-                M_printf (i18n (9999, "The query got stuck. Or somesuch. Try again later.\n"));
+                rl_printf (i18n (9999, "The query got stuck. Or somesuch. Try again later.\n"));
             else
-                M_printf (i18n (9999, "I'm out of wisdom about the server's problem. It just didn't work out.\n"));
+                rl_printf (i18n (9999, "I'm out of wisdom about the server's problem. It just didn't work out.\n"));
             EventD (oevent);
         }
         else
         {
-            M_printf (i18n (2207, "Protocol error in command to old ICQ server: %d.\n"), err);
-            M_print (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
+            rl_printf (i18n (2207, "Protocol error in command to old ICQ server: %d.\n"), err);
+            rl_print (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
         }
     }
 }
@@ -422,7 +422,7 @@ JUMP_SNAC_F(SnacSrvFromicqsrv)
     {
         if (prG->verbose & DEB_PROTOCOL)
         {
-            M_printf (i18n (1919, "UIN mismatch: %ld vs %ld.\n"), serv->uin, uin);
+            rl_printf (i18n (1919, "UIN mismatch: %ld vs %ld.\n"), serv->uin, uin);
             SnacSrvUnknown (event);
         }
         TLVD (tlv);
@@ -433,7 +433,7 @@ JUMP_SNAC_F(SnacSrvFromicqsrv)
     {
         if (prG->verbose & DEB_PROTOCOL)
         {
-            M_print (i18n (1743, "Size mismatch in packet lengths.\n"));
+            rl_print (i18n (1743, "Size mismatch in packet lengths.\n"));
             SnacSrvUnknown (event);
         }
         TLVD (tlv);

@@ -82,7 +82,7 @@ void SrvCallBackFlap (Event *event)
             break;
         case 5: /* Ping */
         default:
-            M_printf (i18n (1884, "FLAP with unknown channel %ld received.\n"), event->pak->cmd);
+            rl_printf (i18n (1884, "FLAP with unknown channel %ld received.\n"), event->pak->cmd);
     }
     EventD (event);
 }
@@ -95,7 +95,7 @@ static void FlapChannel1 (Connection *conn, Packet *pak)
 
     if (PacketReadLeft (pak) < 4)
     {
-        M_print (i18n (1881, "FLAP channel 1 out of data.\n"));
+        rl_print (i18n (1881, "FLAP channel 1 out of data.\n"));
         return;
     }
     i = PacketReadB4 (pak);
@@ -104,8 +104,8 @@ static void FlapChannel1 (Connection *conn, Packet *pak)
         case 1:
             if (PacketReadLeft (pak))
             {
-                M_print (i18n (1882, "FLAP channel 1 cmd 1 extra data:\n"));
-                M_print (s_dump (pak->data + pak->rpos, PacketReadLeft (pak)));
+                rl_print (i18n (1882, "FLAP channel 1 cmd 1 extra data:\n"));
+                rl_print (s_dump (pak->data + pak->rpos, PacketReadLeft (pak)));
                 break;
             }
             if (!conn->uin)
@@ -126,7 +126,7 @@ static void FlapChannel1 (Connection *conn, Packet *pak)
                 FlapCliIdent (conn);
             break;
         default:
-            M_printf (i18n (1883, "FLAP channel 1 unknown command %d.\n"), i);
+            rl_printf (i18n (1883, "FLAP channel 1 unknown command %d.\n"), i);
     }
 }
 
@@ -137,20 +137,20 @@ static void FlapChannel4 (Connection *conn, Packet *pak)
     tlv = TLVRead (pak, PacketReadLeft (pak));
     if (!tlv[5].str.len)
     {
-        M_printf ("%s " COLINDENT, s_now);
+        rl_printf ("%s " COLINDENT, s_now);
         if (!(conn->connect & CONNECT_OK))
-            M_print (i18n (1895, "Login failed:\n"));
+            rl_print (i18n (1895, "Login failed:\n"));
         else
-            M_print (i18n (1896, "Server closed connection:\n"));
-        M_printf (i18n (1048, "Error code: %ld\n"), tlv[9].nr ? tlv[9].nr : tlv[8].nr);
+            rl_print (i18n (1896, "Server closed connection:\n"));
+        rl_printf (i18n (1048, "Error code: %ld\n"), tlv[9].nr ? tlv[9].nr : tlv[8].nr);
         if (tlv[1].str.len && (UDWORD)atoi (tlv[1].str.txt) != conn->uin)
-            M_printf (i18n (2218, "UIN: %s\n"), tlv[1].str.txt);
+            rl_printf (i18n (2218, "UIN: %s\n"), tlv[1].str.txt);
         if (tlv[4].str.len)
-            M_printf (i18n (1961, "URL: %s\n"), tlv[4].str.txt);
-        M_print (COLEXDENT "\n");
+            rl_printf (i18n (1961, "URL: %s\n"), tlv[4].str.txt);
+        rl_print (COLEXDENT "\n");
         
         if (tlv[8].nr == 24)
-            M_print (i18n (2328, "You logged in too frequently, please wait 30 minutes before trying again.\n"));
+            rl_print (i18n (2328, "You logged in too frequently, please wait 30 minutes before trying again.\n"));
 
         if ((conn->connect & CONNECT_MASK) && conn->sok != -1)
             sockclose (conn->sok);
@@ -169,7 +169,7 @@ static void FlapChannel4 (Connection *conn, Packet *pak)
         s_repl (&conn->server, tlv[5].str.txt);
         conn->ip = 0;
 
-        M_printf (i18n (9999, "Redirect to server %s:%s%ld%s... "),
+        rl_printf (i18n (9999, "Redirect to server %s:%s%ld%s... "),
                   s_wordquote (conn->server), COLQUOTE, conn->port, COLNONE);
 
         conn->connect = 8;
@@ -192,14 +192,14 @@ void FlapPrint (Packet *pak)
     seq = PacketReadB2 (pak);
     len = PacketReadB2 (pak);
 
-    M_printf (COLEXDENT "%s\n  " COLINDENT "%s %sFLAP  ch %d seq %08x length %04x%s\n",
+    rl_printf (COLEXDENT "%s\n  " COLINDENT "%s %sFLAP  ch %d seq %08x length %04x%s\n",
               COLNONE, s_dumpnd (pak->data, 6), COLDEBUG, ch, seq, len, COLNONE);
 
     if (ch == 2)
         SnacPrint (pak);
     else
         if (prG->verbose & DEB_PACK8DATA || ~prG->verbose & DEB_PACK8)
-            M_print (s_dump (pak->data + 6, pak->len - 6));
+            rl_print (s_dump (pak->data + 6, pak->len - 6));
 
     pak->rpos = opos;
 }
@@ -261,9 +261,9 @@ void FlapSend (Connection *conn, Packet *pak)
     
     if (prG->verbose & DEB_PACK8)
     {
-        M_printf ("%s " COLINDENT "%s%s ", s_now, COLCLIENT, i18n (1903, "Outgoing v8 server packet:"));
+        rl_printf ("%s " COLINDENT "%s%s ", s_now, COLCLIENT, i18n (1903, "Outgoing v8 server packet:"));
         FlapPrint (pak);
-        M_print (COLEXDENT "\r");
+        rl_print (COLEXDENT "\r");
     }
     if (prG->verbose & DEB_PACK8SAVE)
         FlapSave (pak, FALSE);
@@ -298,9 +298,9 @@ void FlapCliIdent (Connection *conn)
     {
         strc_t pwd;
 #ifdef __BEOS__
-        M_print (i18n (2063, "You need to save your password in your ~/.micq/micqrc file.\n"));
+        rl_print (i18n (2063, "You need to save your password in your ~/.micq/micqrc file.\n"));
 #else
-        M_printf ("%s ", i18n (1063, "Enter password:"));
+        rl_printf ("%s ", i18n (1063, "Enter password:"));
         Echo_Off ();
         pwd = UtilIOReadline (stdin);
         Echo_On ();
@@ -402,7 +402,7 @@ Event *ConnectionInitServer (Connection *conn)
         event = QueueEnqueueData (conn, QUEUE_DEP_OSCARLOGIN, 0, time (NULL) + 12,
                                   NULL, conn->cont, NULL, &SrvCallBackTimeout);
 
-    M_printf (i18n (9999, "Opening v8 connection to %s:%s%ld%s for %s%s%s... "),
+    rl_printf (i18n (9999, "Opening v8 connection to %s:%s%ld%s for %s%s%s... "),
               s_wordquote (conn->server), COLQUOTE, conn->port, COLNONE,
               COLCONTACT, cont->nick ? cont->nick : s_sprintf ("%ld", cont->uin), COLNONE);
 
@@ -427,17 +427,17 @@ static void SrvCallBackReconn (Connection *conn)
     }
     
     conn->connect = 0;
-    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+    rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
     if (event->attempts < 5)
     {
-        M_printf (i18n (2032, "Scheduling v8 reconnect in %d seconds.\n"), 10 << event->attempts);
+        rl_printf (i18n (2032, "Scheduling v8 reconnect in %d seconds.\n"), 10 << event->attempts);
         event->due = time (NULL) + (10 << event->attempts);
         event->callback = &SrvCallBackDoReconn;
         QueueEnqueue (event);
     }
     else
     {
-        M_print (i18n (2031, "Connecting failed too often, giving up.\n"));
+        rl_print (i18n (2031, "Connecting failed too often, giving up.\n"));
         EventD (event);
     }
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
@@ -470,7 +470,7 @@ static void SrvCallBackTimeout (Event *event)
     {
         if (conn->connect == event->seq)
         {
-            M_print (i18n (1885, "Connection v8 timed out.\n"));
+            rl_print (i18n (1885, "Connection v8 timed out.\n"));
             conn->connect = 0;
             sockclose (conn->sok);
             conn->sok = -1;
@@ -500,7 +500,7 @@ void SrvCallBackReceive (Connection *conn)
             case 0:
                 if (conn->assoc && (~conn->assoc->connect & CONNECT_OK) && (conn->assoc->flags & CONN_AUTOLOGIN))
                 {
-                    M_printf ("FIXME: avoiding deadlock\n");
+                    rl_printf ("FIXME: avoiding deadlock\n");
                     conn->connect &= ~CONNECT_SELECT_R;
                 }
                 else
@@ -535,10 +535,10 @@ void SrvCallBackReceive (Connection *conn)
     
     if (prG->verbose & DEB_PACK8)
     {
-        M_printf ("%s " COLINDENT "%s%s ",
+        rl_printf ("%s " COLINDENT "%s%s ",
                  s_now, COLSERVER, i18n (1033, "Incoming v8 server packet:"));
         FlapPrint (pak);
-        M_print (COLEXDENT "\r");
+        rl_print (COLEXDENT "\r");
     }
     if (prG->verbose & DEB_PACK8SAVE)
         FlapSave (pak, TRUE);

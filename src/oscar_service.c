@@ -113,7 +113,7 @@ JUMP_SNAC_F(SnacSrvFamilies)
                 break;
         if (!s->fam)
         {
-            M_printf (i18n (1899, "Unknown family requested: %d\n"), fam);
+            rl_printf (i18n (1899, "Unknown family requested: %d\n"), fam);
             continue;
         }
     }
@@ -156,7 +156,7 @@ JUMP_SNAC_F(SnacSrvRates)
  */
 JUMP_SNAC_F(SnacSrvRateexceeded)
 {
-    M_print (i18n (2188, "You're sending data too fast - stop typing now, or the server will disconnect!\n"));
+    rl_print (i18n (2188, "You're sending data too fast - stop typing now, or the server will disconnect!\n"));
 }
 
 /*
@@ -171,7 +171,7 @@ JUMP_SNAC_F(SnacServerpause)
     int i;
 
 #ifdef WIP
-    M_printf ("%s WIP: reconnecting because of serverpause.\n", s_time (NULL));
+    rl_printf ("%s WIP: reconnecting because of serverpause.\n", s_time (NULL));
 #endif
     ConnectionInitServer(serv);
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
@@ -201,7 +201,7 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
     cont = PacketReadCont (pak, serv);
     
     if (cont->uin != serv->uin)
-        M_printf (i18n (1907, "Warning: Server thinks our UIN is %ld, when it is %ld.\n"),
+        rl_printf (i18n (1907, "Warning: Server thinks our UIN is %ld, when it is %ld.\n"),
                   cont->uin, serv->uin);
     PacketReadB2 (pak);
     PacketReadB2 (pak);
@@ -210,7 +210,7 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
     {
         serv->our_outside_ip = tlv[10].nr;
         if (prG->verbose)
-            M_printf (i18n (1915, "Server says we're at %s.\n"), s_ip (serv->our_outside_ip));
+            rl_printf (i18n (1915, "Server says we're at %s.\n"), s_ip (serv->our_outside_ip));
         if (serv->assoc)
             serv->assoc->our_outside_ip = serv->our_outside_ip;
     }
@@ -220,7 +220,7 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
         if (status != serv->status)
         {
             serv->status = status;
-            M_printf ("%s %s\n", s_now, s_status (serv->status));
+            rl_printf ("%s %s\n", s_now, s_status (serv->status));
         }
     }
     /* TLV 1 c f 2 3 ignored */
@@ -282,7 +282,7 @@ JUMP_SNAC_F(SnacSrvFamilies2)
         if (!s->fam)
             continue;
         if (s->cmd > ver)
-            M_printf (i18n (1904, "Server doesn't understand ver %d (only %d) for family %d!\n"), s->cmd, ver, fam);
+            rl_printf (i18n (1904, "Server doesn't understand ver %d (only %d) for family %d!\n"), s->cmd, ver, fam);
     }
 
     if (!(serv->connect & CONNECT_OK))

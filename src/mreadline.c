@@ -33,7 +33,7 @@ static const char *logos[LOGOS] = { NULL };
 static UBYTE logoc = 0;
 static UBYTE first = 0;
 
-void M_logo (const char *logo)
+void rl_logo (const char *logo)
 {
     if (logoc != LOGOS)
         logos[logoc++] = logo;
@@ -54,13 +54,13 @@ static const char *M_getlogo (void)
     return ConvTo (logo, prG->enc_loc)->txt;
 }
 
-void M_logo_clear ()
+void rl_logo_clear ()
 {
     first = 1;
     puts ("");
     while (logoc)
         puts (M_getlogo ());
-    M_print ("\r");
+    rl_print ("\r");
     first = 0;
 }
 
@@ -71,7 +71,7 @@ void M_logo_clear ()
 /*
  * Print a string to the output, interpreting color and indenting codes.
  */
-void M_print (const char *org)
+void rl_print (const char *org)
 {
     const char *test, *save, *temp, *str, *para;
     char *fstr;
@@ -331,21 +331,21 @@ void M_print (const char *org)
  * codes.
  * Note: does not use the same static buffer as s_sprintf().
  */
-void M_printf (const char *str, ...)
+void rl_printf (const char *str, ...)
 {
     va_list args;
     char buf[8 * 1024];
 
     va_start (args, str);
     vsnprintf (buf, sizeof (buf), str, args);
-    M_print (buf);
+    rl_print (buf);
     va_end (args);
 }
 
 /*
  * Returns current horizontal position
  */
-int M_pos ()
+int rl_pos ()
 {
     return CharCount;
 }

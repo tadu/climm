@@ -161,7 +161,7 @@ JUMP_SNAC_F(SnacSrvReplyroster)
                         s_repl (&cg->name, name);
                         cg->id = tag;
                     }
-                    M_printf ("FIXME: Group #%08d '%s'\n", tag, name);
+                    rl_printf ("FIXME: Group #%08d '%s'\n", tag, name);
                 }
                 break;
             case 2:
@@ -209,13 +209,13 @@ JUMP_SNAC_F(SnacSrvReplyroster)
                             ContactAdd (cg, cont);
                             l++;
                         }
-                        M_printf (" #%d %10d %s\n", id, atoi (name), nick);
+                        rl_printf (" #%d %10d %s\n", id, atoi (name), nick);
                         break;
                     case 2:
                         if ((cont = ContactFind (serv->contacts, id, atoi (name), nick)))
                             break;
                     case 1:
-                        M_printf (" #%08d %10d %s\n", id, atoi (name), nick);
+                        rl_printf (" #%08d %10d %s\n", id, atoi (name), nick);
                 }
                 free (nick);
                 break;
@@ -236,14 +236,14 @@ JUMP_SNAC_F(SnacSrvReplyroster)
 
     if (k || l)
     {
-        M_printf (i18n (2242, "Imported %d new contacts, added %d times to a contact group.\n"), k, l);
+        rl_printf (i18n (2242, "Imported %d new contacts, added %d times to a contact group.\n"), k, l);
         if (serv->flags & CONN_WIZARD)
         {
             if (Save_RC () == -1)
-                M_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
+                rl_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
         }
         else
-            M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
+            rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
     }
 //    SnacCliRosterack (serv);
 }
@@ -411,7 +411,7 @@ JUMP_SNAC_F(SnacSrvUpdateack)
         }
     }
     
-    M_printf (i18n (2325, "Warning: server based contact list change failed with error code %d.\n"), err);
+    rl_printf (i18n (2325, "Warning: server based contact list change failed with error code %d.\n"), err);
     if (event2)
         EventD (event2);
 }

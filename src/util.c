@@ -207,7 +207,7 @@ void EventExec (Contact *cont, const char *script, UBYTE type, UDWORD msgtype, c
 
     rc = system (cmd);
     if (rc)
-        M_printf (i18n (2222, "Script command '%s' failed: %s (%d).\n"),
+        rl_printf (i18n (2222, "Script command '%s' failed: %s (%d).\n"),
                  myscript, strerror (rc), rc);
     free (mynick);
     free (mytext);

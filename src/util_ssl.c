@@ -46,7 +46,7 @@
 #define SSL_FAIL(s, e)    { const char *t = s; \
                             if (prG->verbose & DEB_SSL || \
                                 e != GNUTLS_E_UNEXPECTED_PACKET_LENGTH) \
-                                  M_printf (i18n (2374, "SSL error: %s [%d]\n"), \
+                                  rl_printf (i18n (2374, "SSL error: %s [%d]\n"), \
                                     t ? t : "unknown", __LINE__);  \
                        }    
                         
@@ -310,8 +310,8 @@ int ssl_handshake (Connection *conn DEBUGPARAM)
     conn->connect = CONNECT_OK | CONNECT_SELECT_R;
     if (prG->verbose)
     {
-        M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-        M_printf (i18n (2375, "SSL handshake ok\n"));
+        rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+        rl_printf (i18n (2375, "SSL handshake ok\n"));
     }
     TCLEvent (cont, "ssl", "ok");
 

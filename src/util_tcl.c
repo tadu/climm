@@ -94,7 +94,7 @@ TCL_COMMAND (TCL_command_help)
 {
     if (argc <= 2)
     {
-        M_printf (i18n (2346, "The following Tcl commands are supported:\n"));
+        rl_printf (i18n (2346, "The following Tcl commands are supported:\n"));
         CMD_USER_HELP ("micq receive <script> [<contact>]", i18n (2348, "Install hook to receive messages from UIN or nick, or all if omitted."));
         CMD_USER_HELP ("micq unreceive [<contact>]", i18n (2351, "Uninstall message hook for UIN or nick."));
         CMD_USER_HELP ("micq event <script>", i18n (2353, "Install event hook. Callback arguments: type ..."));
@@ -272,7 +272,7 @@ void TCLEvent (Contact *cont, const char *type, const char *data)
         Tcl_Eval (tinterp, s_sprintf ("%s {%s} %lu %s", tcl_events->cmd, type, cont->uin, cdata));
         result = Tcl_GetStringResult (tinterp);
         if (strlen (result) > 0)
-            M_printf ("%s\n", Tcl_GetStringResult (tinterp));
+            rl_printf ("%s\n", Tcl_GetStringResult (tinterp));
         s_free (cdata);
     }
 }
@@ -305,7 +305,7 @@ void TCLMessage (Contact *from, const char *text)
 
     result = Tcl_GetStringResult (tinterp);
     if (strlen (result) > 0)
-        M_printf ("%s\n", Tcl_GetStringResult (tinterp));
+        rl_printf ("%s\n", Tcl_GetStringResult (tinterp));
     s_free (uin);
 }
 
@@ -340,13 +340,13 @@ void TCLInit ()
         result = pref->type == TCL_FILE ? Tcl_EvalFile (tinterp, pref->file) : 
                     Tcl_Eval (tinterp, pref->file);
         if (result != TCL_OK)
-            M_printf (i18n (2366, "TCL error in file %s: %s\n"), 
+            rl_printf (i18n (2366, "TCL error in file %s: %s\n"), 
                      pref->file, Tcl_GetStringResult (tinterp));
         else
         {
             const char *r = Tcl_GetStringResult (tinterp);
             if (strlen (r) > 0)
-                M_printf ("%s", r);
+                rl_printf ("%s", r);
         }
         pref = pref->next;
     }
@@ -358,12 +358,12 @@ JUMP_F (CmdUserTclScript)
 
     result = data ? Tcl_Eval (tinterp, args) : Tcl_EvalFile (tinterp, args);
     if (result != TCL_OK)
-        M_printf (i18n (2367, "TCL error: %s\n"), Tcl_GetStringResult (tinterp));
+        rl_printf (i18n (2367, "TCL error: %s\n"), Tcl_GetStringResult (tinterp));
     else
     {
         const char *r = Tcl_GetStringResult (tinterp);
         if (strlen (r) > 0) 
-            M_printf ("%s", r);
+            rl_printf ("%s", r);
     }
     return 0;
 }

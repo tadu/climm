@@ -91,7 +91,7 @@ typedef int SOK_T;
   #define sockclose(s)     close (s)
   #undef INPUT_BY_POLL
   #undef INPUT_BY_GETCH
-  #define __os_has_input M_Is_Set (STDIN_FILENO)
+  #define __os_has_input UtilIOSelectIs (STDIN_FILENO, READFDS)
   #define _OS_PREFPATH   "/PROGDIR/"
   #define _OS_PATHSEP    '/'
   #define _OS_PATHSEPSTR "/"
@@ -102,7 +102,7 @@ typedef int SOK_T;
   #define sockclose(s)     close (s)
   #undef INPUT_BY_POLL
   #undef INPUT_BY_GETCH
-  #define __os_has_input M_Is_Set (STDIN_FILENO)
+  #define __os_has_input UtilIOSelectIs (STDIN_FILENO, READFDS)
   #define _OS_PREFPATH   NULL
   #define _OS_PATHSEP    '/'
   #define _OS_PATHSEPSTR "/"

@@ -74,28 +74,28 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
     switch (subtype)
     {
         case META_SRV_PASS_UPDATE:
-            M_printf (i18n (2136, "Password change was %s%s%s.\n"),
+            rl_printf (i18n (2136, "Password change was %s%s%s.\n"),
                      COLCLIENT, result == META_SUCCESS ? i18n (1393, "successful")
                      : i18n (1394, "unsuccessful"), COLNONE);
             break;
         case META_SRV_ABOUT_UPDATE:
-            M_printf (i18n (2137, "About info change was %s%s%s.\n"),
+            rl_printf (i18n (2137, "About info change was %s%s%s.\n"),
                      COLCLIENT, result == META_SUCCESS ? i18n (1393, "successful")
                      : i18n (1394, "unsuccessful"), COLNONE);
             break;
         case META_SRV_GEN_UPDATE:
-            M_printf (i18n (2138, "Info change was %s%s%s.\n"),
+            rl_printf (i18n (2138, "Info change was %s%s%s.\n"),
                      COLCLIENT, result == META_SUCCESS ? i18n (1393, "successful")
                      : i18n (1394, "unsuccessful"), COLNONE);
             break;
         case META_SRV_OTHER_UPDATE:
-            M_printf (i18n (2139, "Other info change was %s%s%s.\n"),
+            rl_printf (i18n (2139, "Other info change was %s%s%s.\n"),
                      COLCLIENT, result == META_SUCCESS ? i18n (1393, "successful")
                      : i18n (1394, "unsuccessful"), COLNONE);
             break;
         case META_SRV_RANDOM_UPDATE:
             if ((pak->ref & 0xffff) != 0x4242)
-                M_printf (i18n (2140, "Random chat group change was %s%s%s.\n"),
+                rl_printf (i18n (2140, "Random chat group change was %s%s%s.\n"),
                          COLCLIENT, result == META_SUCCESS ? i18n (1393, "successful")
                          : i18n (1394, "unsuccessful"), COLNONE);
             break;
@@ -107,19 +107,19 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
         case 0x14:
             if ((event = QueueDequeue (conn, QUEUE_REQUEST_META, pak->ref)))
                 EventD (event);
-            M_printf ("%s ", s_now);
-            M_printf (i18n (2141, "Search %sfailed%s.\n"), COLCLIENT, COLNONE);
+            rl_printf ("%s ", s_now);
+            rl_printf (i18n (2141, "Search %sfailed%s.\n"), COLCLIENT, COLNONE);
             return;
         case META_READONLY:
-            M_printf ("%s %s\n", s_now, i18n (1900, "It's readonly."));
+            rl_printf ("%s %s\n", s_now, i18n (1900, "It's readonly."));
             return;
         case META_SUCCESS:
             break;
         case 0x46:
-            M_printf ("%s\n", pak->data + pak->rpos);
+            rl_printf ("%s\n", pak->data + pak->rpos);
             return;
         default:
-            M_printf (i18n (1940, "Unknown Meta User result %lx.\n"), result);
+            rl_printf (i18n (1940, "Unknown Meta User result %lx.\n"), result);
             return;
     }
 
@@ -144,7 +144,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             if (!(event = QueueDequeue (conn, QUEUE_REQUEST_META, pak->ref)) || !event->callback)
             {
                 if (prG->verbose)
-                    M_printf ("FIXME: meta reply ref %lx not found.\n", pak->ref);
+                    rl_printf ("FIXME: meta reply ref %lx not found.\n", pak->ref);
                 return;
             }
             if (event->cont)
@@ -166,7 +166,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
                    PacketRead2 (pak);
                    PacketReadB2Str (pak, NULL);
             data = PacketReadB2Str (pak, NULL);
-            M_printf (i18n (2080, "Server SMS delivery response:\n%s\n"), ConvFromServ (data));
+            rl_printf (i18n (2080, "Server SMS delivery response:\n%s\n"), ConvFromServ (data));
             break;
         case META_SRV_INFO:
             Display_Info_Reply (cont, pak, 0);
@@ -293,7 +293,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
         case META_SRV_WP_LAST_USER:
             if (PacketRead2 (pak) < 19)
             {
-                M_printf (i18n (2141, "Search %sfailed%s.\n"), COLCLIENT, COLNONE);
+                rl_printf (i18n (2141, "Search %sfailed%s.\n"), COLCLIENT, COLNONE);
                 break;
             }
             cont = ContactUIN (conn, PacketRead4 (pak));
@@ -309,13 +309,13 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             
             UtilUIDisplayMeta (cont);
             if (subtype == META_SRV_WP_LAST_USER && (dwdata = PacketRead4 (pak)))
-                M_printf ("%lu %s\n", dwdata, i18n (1621, "users not returned."));
+                rl_printf ("%lu %s\n", dwdata, i18n (1621, "users not returned."));
             break;
         case META_SRV_RANDOM:
             uin = PacketRead4 (pak);
             event->cont = cont = ContactUIN (event->conn, uin);
             wdata = PacketRead2 (pak);
-            M_printf (i18n (2009, "Found random chat partner UIN %ld in chat group %d.\n"),
+            rl_printf (i18n (2009, "Found random chat partner UIN %ld in chat group %d.\n"),
                       cont->uin, wdata);
             if (!cont || !CONTACT_DC (cont))
                 break;
@@ -350,9 +350,9 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             event->callback (event);
             break;
         default:
-            M_printf ("%s: %s%04x%s\n", 
+            rl_printf ("%s: %s%04x%s\n", 
                      i18n (1945, "Unknown Meta User response"), COLSERVER, subtype, COLNONE);
-            M_print  (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
+            rl_print  (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
             break;
     }
 }

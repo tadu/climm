@@ -260,13 +260,13 @@ void TablePrintLang (void)
     {
         p = i18n (-1, TableLang[i]);
 
-        M_printf ("%2d. %-7s", i, p);
+        rl_printf ("%2d. %-7s", i, p);
         if ((i + 1) & 3)
-            M_print ("\t");
+            rl_print ("\t");
         else
-            M_print ("\n");
+            rl_print ("\n");
     }
-    M_print ("\n");
+    rl_print ("\n");
 }
 
 const char *TableGetCountry (UWORD code)

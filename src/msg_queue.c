@@ -391,7 +391,7 @@ void EventD (Event *event DEBUGPARAM)
     if (!event)
         return;
     if (q_QueueDequeueEvent (event, NULL))
-        M_printf ("FIXME: Deleting still queued event %p!\n", event);
+        rl_printf ("FIXME: Deleting still queued event %p!\n", event);
     Debug (DEB_EVENT, STR_DOT STR_DOT ">> %s %p: %08lx %p %ld",
            QueueType (event->type), event, event->seq, event->pak,
            event->cont ? event->cont->uin : 0);
@@ -538,11 +538,11 @@ void QueuePrint (void)
     int i = 0;
     
     for (iter = queue->head; iter; iter = iter->next)
-        M_printf ("%02u %08lx %p %-15s conn %p cont %p pak %p seq %ld att %ld call %p dep %p\n",
+        rl_printf ("%02u %08lx %p %-15s conn %p cont %p pak %p seq %ld att %ld call %p dep %p\n",
                   i++, iter->event->due, iter->event, QueueType (iter->event->type),
                   iter->event->conn, iter->event->cont, iter->event->pak,
                   iter->event->seq, iter->event->attempts, iter->event->callback, iter->event->wait);
-    M_printf ("Total: %d events of %ld queued.\n", i, uiG.events);
+    rl_printf ("Total: %d events of %ld queued.\n", i, uiG.events);
 }
 #endif
 
