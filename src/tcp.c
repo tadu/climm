@@ -1703,14 +1703,15 @@ BOOL TCPSendFiles (Connection *list, UDWORD uin, const char *description, const 
  */
 static void TCPCallBackResend (Event *event)
 {
-    Contact *cont;
+    Contact *cont = ContactByUIN (event->uin, 1);
     Connection *peer = event->conn;
     Packet *pak = event->pak;
     int delta;
     
-    if (!peer)
+    if (!peer || !cont)
     {
-        M_printf (i18n (2092, "TCP message %s discarded - lost session.\n"), event->info);
+        if (!peer)
+            M_printf (i18n (2092, "TCP message %s discarded - lost session.\n"), event->info);
         PacketD (event->pak);
         free (event->info);
         free (event);
@@ -1720,12 +1721,6 @@ static void TCPCallBackResend (Event *event)
     ASSERT_MSGDIRECT (peer);
     assert (pak);
     
-    delta = (peer->ver > 6 ? 1 : 0);
-
-    cont = ContactByUIN (event->uin, 1);
-    if (!cont)
-        return;
-
     if (event->attempts >= MAX_RETRY_ATTEMPTS)
         TCPClose (peer);
 
@@ -1734,10 +1729,11 @@ static void TCPCallBackResend (Event *event)
         if (peer->connect & CONNECT_OK)
         {
             if (event->attempts > 1)
-                M_printf ("%s " COLACK "%*s" COLNONE " %s%s\n", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, MSGTCPSENTSTR, event->info);
+                IMIntMsg (cont, peer, NOW, STATUS_OFFLINE, INT_MSGTRY_DC, event->info, NULL);
 
-            if ((event->attempts++) < 2)
+/*          if (event->attempts < 2) */
                 PeerPacketSend (peer, pak);
+            event->attempts++;
             event->due = time (NULL) + 10;
         }
         else
@@ -1747,9 +1743,11 @@ static void TCPCallBackResend (Event *event)
     }
 
     peer->connect = CONNECT_FAIL;
-
+    delta = (peer->ver > 6 ? 1 : 0);
     if (PacketReadAt2 (pak, 4 + delta) == TCP_CMD_MESSAGE)
-        icq_sendmsg (peer->parent->parent, cont->uin, event->info, PacketReadAt2 (pak, 22 + delta));
+        IMCliMsg (peer->parent->parent, cont, event->info,
+                  PacketReadAt2 (pak, 22 + delta),
+                  ExtraSet (NULL, EXTRA_TRANS, EXTRA_TRANS_ANY & ~EXTRA_TRANS_DC, NULL));
     else
         M_printf (i18n (1844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4 + delta));
     
@@ -1810,8 +1808,7 @@ static void TCPCallBackReceive (Event *event)
             switch (type)
             {
                 case MSG_NORM:
-                    M_printf ("%s " COLACK "%*s" COLNONE " " MSGTCPACKSTR COLSINGLE "%s\n",
-                              s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, event->info);
+                    IMIntMsg (cont, event->conn, NOW, STATUS_OFFLINE, INT_MSGACK_DC, event->info, NULL);
                     if (~cont->flags & CONT_SEENAUTO && strlen (tmp))
                     {
                         IMSrvMsg (cont, event->conn, NOW, status, MSG_NORM, tmp, 0);
@@ -1829,11 +1826,11 @@ static void TCPCallBackReceive (Event *event)
                     break;
 
                 case TCP_MSG_FILE:
-                    event->attempts = PacketReadB2 (pak); /* port */
-                    if (PeerFileAccept (event->conn, status, event->attempts))
-                        IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_FILE | 0x100, tmp, event);
+                    port = PacketReadB2 (pak);
+                    if (PeerFileAccept (event->conn, status, port))
+                        IMIntMsg (cont, event->conn, NOW, status, INT_FILE_ACKED, tmp, ExtraSet (NULL, 0, port, event->info));
                     else
-                        IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_FILE | 0x200, tmp, event);
+                        IMIntMsg (cont, event->conn, NOW, status, INT_FILE_REJED, tmp, ExtraSet (NULL, 0, port, event->info));
                     break;
 
                 case TCP_MSG_GREETING:
@@ -1865,11 +1862,10 @@ static void TCPCallBackReceive (Event *event)
                     switch (cmd)
                     {
                         case 0x0029:
-                            event->attempts = port;
                             if (PeerFileAccept (event->conn, status, port))
-                                IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_FILE | 0x100, tmp, event);
+                                IMIntMsg (cont, event->conn, NOW, status, INT_FILE_ACKED, tmp, ExtraSet (NULL, 0, port, event->info));
                             else
-                                IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_FILE | 0x200, tmp, event);
+                                IMIntMsg (cont, event->conn, NOW, status, INT_FILE_REJED, tmp, ExtraSet (NULL, 0, port, event->info));
                             break;
                             
                         default:
@@ -1920,15 +1916,14 @@ static void TCPCallBackReceive (Event *event)
                     tmp3 = strdup (c_in (ctmp));
                     free (ctmp);
 
-                    event->attempts = len;
                     if (PeerFileRequested (event->conn, event->info, len))
                     {
-                        IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_FILE | 0x300, "", event);
+                        IMIntMsg (cont, event->conn, NOW, status, INT_FILE_ACKING, "", ExtraSet (NULL, 0, len, event->info));
                         TCPSendMsgAck (event->conn, event->seq, TCP_MSG_FILE, TRUE);
                     }
                     else
                     {
-                        IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_FILE | 0x400, "auto-refused", event);
+                        IMIntMsg (cont, event->conn, NOW, status, INT_FILE_REJING, "auto-refused", ExtraSet (NULL, 0, len, event->info));
                         TCPSendMsgAck (event->conn, event->seq, TCP_MSG_FILE, FALSE);
                     }
                     free (tmp3);
@@ -1961,16 +1956,12 @@ static void TCPCallBackReceive (Event *event)
                             case 0x0029:
                                 if (PeerFileRequested (event->conn, name, flen))
                                 {
-                                    event->attempts = flen;
-                                    s_repl (&event->info, name);
-                                    IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_FILE | 0x300, "", event);
+                                    IMIntMsg (cont, event->conn, NOW, status, INT_FILE_ACKING, "", ExtraSet (NULL, 0, flen, name));
                                     TCPSendGreetAck (event->conn, seq, cmd, TRUE);
                                 }
                                 else
                                 {
-                                    event->attempts = flen;
-                                    s_repl (&event->info, name);
-                                    IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_FILE | 0x400, "auto-refused", event);
+                                    IMIntMsg (cont, event->conn, NOW, status, INT_FILE_REJING, "auto-refused", ExtraSet (NULL, 0, flen, name));
                                     TCPSendGreetAck (event->conn, seq, cmd, FALSE);
                                 }
                                 break;

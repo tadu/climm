@@ -1365,17 +1365,15 @@ void SnacCliSendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD type
         type = MSG_GET_AWAY;
     }
     
-    if (!peek)
-    {
-        M_printf ("%s " COLACK "%*s" COLNONE " " MSGSENTSTR COLSINGLE "%s\n",
-                  s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, text);
-    }
     if (format == 2)
     {
         SnacCliSendmsg2 (conn, cont, text, type, NULL);
         return;
     }
     
+    if (!peek)
+        IMIntMsg (cont, conn, NOW, STATUS_OFFLINE, INT_MSGACK_V8, text, NULL);
+        
     if (!format || format == 0xff)
     {
         switch (type & 0xff)

@@ -491,9 +491,8 @@ static JUMP_SRV_F (CmdPktSrvAck)
         if (!(cont = ContactByUIN (PacketReadAt4 (event->pak, CMD_v5_OFF_PARAM), 1)))
             return;
 
-        M_printf ("%s " COLACK "%*s" COLNONE " %s" COLSINGLE "%s\n",
-                  s_now, uiG.nick_len + s_delta (cont->nick), cont->nick,
-                  MSGACKSTR, c_in (tmp = PacketReadAtLNTS (event->pak, 30)));
+        IMIntMsg (cont, event->conn, NOW, STATUS_OFFLINE, INT_MSGACK_V5,
+                  c_in (tmp = PacketReadAtLNTS (event->pak, 30)), NULL);
         free (tmp);
     }
     

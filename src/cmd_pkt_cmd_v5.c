@@ -17,6 +17,7 @@
 #include "preferences.h"
 #include "util.h"
 #include "conv.h"
+#include "icq_response.h"
 #include "util_ui.h"
 #include "buildmark.h"
 #include "util_str.h"
@@ -46,12 +47,10 @@ void CmdPktCmdSendMessage (Connection *conn, UDWORD uin, const char *text, UDWOR
     cont = ContactByUIN (uin, 1);
     if (!cont)
         return;
-
-    pak = PacketCv5 (conn, CMD_SEND_MESSAGE);
     
-    M_printf ("%s " COLSENT "%*s" COLNONE " " MSGSENTSTR COLSINGLE "%s\n",
-              s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, text);
-
+    IMIntMsg (cont, conn, NOW, STATUS_OFFLINE, INT_MSGACK_V8, text, NULL);
+                    
+    pak = PacketCv5 (conn, CMD_SEND_MESSAGE);
     PacketWrite4    (pak, uin);
     PacketWrite2    (pak, type);
     PacketWriteLNTS (pak, c_out (text));

@@ -554,11 +554,17 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
     if (!cont)
         return;
 
-    cont->seen_time = time (NULL);
-
     if (status == cont->status)
         return;
     
+    if (status == STATUS_OFFLINE)
+    {
+        IMOffline (cont, conn);
+        return;
+    }
+    
+    cont->seen_time = time (NULL);
+
     old = cont->status;
     cont->status = status;
     cont->flags &= ~CONT_SEENAUTO;
@@ -626,6 +632,78 @@ void IMOffline (Contact *cont, Connection *conn)
 }
 
 /*
+ * Central entry point for protocol triggered output.
+ */
+void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UWORD type, const char *text, MetaList *extra)
+{
+    const char *line;
+    const char *col = COLCONTACT; 
+
+    if (cont)
+    {
+        if (cont->flags & CONT_IGNORE || ((cont->flags & CONT_TEMPORARY) && (prG->flags & FLAG_HERMIT)))
+        {
+            ExtraFree (extra);
+            return;
+        }
+    }
+
+    switch (type)
+    {
+        case INT_FILE_ACKED:
+            line = s_sprintf (i18n (2070, "File transfer '%s' to port %d.\n"), extra->description, extra->data);
+            break;
+        case INT_FILE_REJED:
+            line = s_sprintf (i18n (2231, "File transfer '%s' rejected by peer: %s.\n"), extra->description, text);
+            break;
+        case INT_FILE_ACKING:
+            line = s_sprintf (i18n (2186, "Accepting file '%s' (%d bytes).\n"), extra->description, extra->data);
+            break;
+        case INT_FILE_REJING:
+            line = s_sprintf (i18n (2229, "Refusing file request '%s' (%d bytes): %s.\n"), extra->description, extra->data, text);
+            break;
+        case INT_CHAR_REJING:
+            line = s_sprintf (i18n (2230, "Refusing chat request (%s/%s) from %s.\n"), extra->description, text, cont->nick);
+            break;
+        case INT_MSGTRY_TYPE2:
+            line = s_sprintf ("%s%s\n", "--= " COLSINGLE, text);
+            break;
+        case INT_MSGTRY_DC:
+            line = s_sprintf ("%s%s\n", MSGTCPSENTSTR COLSINGLE, text);
+            break;
+        case INT_MSGACK_TYPE2:
+            col = COLACK;
+            line = s_sprintf ("%s%s\n", ">>» " COLSINGLE, text);
+            break;
+        case INT_MSGACK_DC:
+            col = COLACK;
+            line = s_sprintf ("%s%s\n", MSGTCPACKSTR COLSINGLE, text);
+            break;
+        case INT_MSGACK_V8:
+        case INT_MSGACK_V5:
+            col = COLACK;
+            line = s_sprintf ("%s%s\n", MSGSENTSTR COLSINGLE, text);
+            break;
+        default:
+            line = s_sprintf ("\n");
+    }
+
+    if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
+        M_printf ("(%s) ", s_status (tstatus));
+
+    M_printf ("\a%s ", s_time (&stamp));
+    if (cont)
+        M_printf ("%s%*s" COLNONE " ", col, uiG.nick_len + s_delta (cont->nick), cont->nick);
+    
+    if (prG->verbose > 1)
+        M_printf ("<%d> ", type);
+    M_print (line);
+
+    ExtraFree (extra);
+}    
+
+
+/*
  * Central entry point for incoming messages.
  */
 void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UWORD type, const char *text, Event *event)
@@ -673,17 +751,13 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
 #ifdef MSGEXEC
     if (prG->event_cmd && strlen (prG->event_cmd))
         EventExec (cont, prG->event_cmd, 1, type, cdata);
-    else
 #endif
-    if (prG->sound & SFLAG_BEEP)
-        printf ("\a");
-
-    M_printf ("%s " COLINCOMING "%*s" COLNONE " ", s_time (&stamp), uiG.nick_len + s_delta (cont->nick), cont->nick);
+    M_printf ("\a%s " COLINCOMING "%*s" COLNONE " ", s_time (&stamp), uiG.nick_len + s_delta (cont->nick), cont->nick);
     
     if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
         M_printf ("(%s) ", s_status (tstatus));
 
-    if (prG->verbose)
+    if (prG->verbose > 1)
         M_printf ("<%d> ", type);
 
     uiG.last_rcvd_uin = cont->uin;
@@ -693,40 +767,6 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
         cont->last_time = time (NULL);
     }
 
-    if (event)
-    {
-        switch (type)
-        {
-            while (1)
-            {
-                M_printf ("?%x? %s%s\n", type, COLMSGINDENT, text);
-                M_printf ("    ");
-                for (i = 0; i < strlen (text); i++)
-                    M_printf ("%c", cdata[i] ? cdata[i] : '.');
-                M_print ("'\n");
-                break;
-
-            case TCP_MSG_FILE | 0x100:
-                M_printf (i18n (2070, "File transfer '%s' to port %d.\n"), event->info, event->attempts);
-                break;
-            case TCP_MSG_FILE | 0x200:
-                M_printf (i18n (2231, "File transfer '%s' rejected by peer: %s.\n"), event->info, cdata);
-                break;
-            case TCP_MSG_FILE | 0x300:
-                M_printf (i18n (2186, "Accepting file '%s' (%d bytes).\n"), event->info, event->attempts);
-                break;
-            case TCP_MSG_FILE | 0x400:
-                M_printf (i18n (2229, "Refusing file request '%s' (%d bytes): %s.\n"), event->info, event->attempts, cdata);
-                break;
-            case TCP_MSG_CHAT:
-                M_printf (i18n (2230, "Refusing chat request (%s/%s) from %s.\n"), event->info, cdata, cont->nick);
-                break;
-            }
-        }
-        free (cdata);
-        return;
-    }
-    
     switch (type & ~MSGF_MASS)
     {
         while (1)
