@@ -630,7 +630,7 @@
 614:Die Konfigurationsdatei dieser Sitzung ist "%s".¶
 615:Das Protokoll-Verzechnis dieser Sitzung ist "%s".¶
 616:BeOS "InputThread" gestartet.¶
-617:Speicher erschöpft!\a¶
+617:Speicher erschöpft!¶
 618:¶Insgesamt %d Einträge.¶
 619:Folgenummer = %04x	Kommando = %04x	Versuche = %d	Länge = %d¶
 620:Entferne Nachricht mit Folgenummer %04X und Kommando 
@@ -645,7 +645,7 @@
 629: URL:          ©3%s©0 
 630:Habe ein 
 631:Paket weggeworfen.
-632:¶Verbindung instabil. Beende...
+632:¶Verbindung instabil. Beende...
 633:Bestätigung! %d¶
 634:¶Sende Am-Leben-Erhalte-Paket an den Server.¶
 635:Du bist auf einen Fehler in meinem Programmcode gestoßen :(. Jetzt schulde ich Dir ein Bier! Grüße, Fryslan!¶
@@ -775,7 +775,7 @@
 759:Warte auf Antwort....¶
 760:¶Ihre neue Benutzernummer ist %s%ld%s!¶
 761:unbekannt
-762:Bestätigt!!!!!!  %d\a¶
+762:Bestätigt!!!!!!  %d¶
 763:Das Kommando "%s" wurde in "%s" umbenannt.
 764:Das Kommando "%s" hat noch den ursprünglichen Namen.
 800:Wählt die Sprache <lang> aus.

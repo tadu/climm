@@ -616,7 +616,7 @@
 #614:The config file for this session is "%s"¶
 #615:The logging directory for this session is "%s"¶
 #616:Started BeOS InputThread¶\r
-#617:Memory exhausted!!\a¶
+#617:Memory exhausted!!¶
 #618:¶Total entries %d¶
 #619:SEQ = %04x	CMD = %04x	attempts = %d	len = %d¶
 #620:Removed message with SEQ %04X CMD 
@@ -631,7 +631,7 @@
 #629: URL:         ©3%s©0
 #630:Discarded a 
 #631: packet.
-#632:¶\aConnection unstable. Exiting....
+#632:¶Connection unstable. Exiting....
 #633:ACK!!! %d¶
 #634:¶Send Keep_Alive packet to the server¶
 #635:You have encounterd a bug in my code :( I now own you a beer!¶Greetings Fryslan!¶
@@ -658,7 +658,7 @@
 #656:Enter the user's nick name:
 #657:Enter the user's first name:
 #658:Enter the user's last name:
-#659:Unkown section %s in configuration file.
+#659:Unknown section %s in configuration file.
 #660:Invalid Command: %s¶
 #661:Shell commands have been disabled.¶
 #662:Color is ©3%s©0.¶
@@ -761,7 +761,7 @@
 #759:Waiting for response....¶
 #760:¶Your new UIN is %s%ld%s!¶
 #761:unknown
-#762:Ack!!!!!!  %d\a¶
+#762:Ack!!!!!!  %d¶
 #763:The command '%s' has been renamed to '%s'.
 #764:The command '%s' has still it's original name.
 #800:Change the working language to <lang>.

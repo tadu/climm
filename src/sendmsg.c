@@ -24,8 +24,6 @@ Author : zed@mentasm.com
 #include "util.h"
 #include "conv.h"
 
-/*unsigned int ssG.next_resend;*/
-
 static size_t SOCKWRITE_LOW (SOK_T sok, void *ptr, size_t len);
 static void Fill_Header (net_icq_pak * pak, UWORD cmd);
 static void info_req_99 (SOK_T sok, UDWORD uin);

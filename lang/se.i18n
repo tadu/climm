@@ -622,7 +622,7 @@
 614:Konfigurationsfilen för denna session är "%s"¶
 615:Katalogen med logfilerna denna session är "%s"¶
 #616:Started BeOS InputThread¶\r
-#617:Memory exhausted!!\a¶
+#617:Memory exhausted!!¶
 #618:¶Total entries %d¶
 #619:SEQ = %04x	CMD = %04x	attempts = %d	len = %d¶
 #620:Removed message with SEQ %04X CMD 
@@ -637,7 +637,7 @@
 629: URL:         ©3%s©0
 630:Avbröt ett
 631: paket.
-632:¶\aAnslutningen instabil. Avbryter...
+632:¶Anslutningen instabil. Avbryter...
 #633:ACK!!! %d¶
 #634:¶Send Keep_Alive packet to the server¶
 #635:You have encounterd a bug in my code :( I now own you a beer!¶Greetings Fryslan!¶
@@ -664,7 +664,7 @@
 656:Ange namn:
 657:Ange förnamn:
 658:Ange efternamn:
-#659:Unkown section %s in configuration file.
+#659:Unknown section %s in configuration file.
 660:Felaktigt kommando: %s¶
 661:Skalkommandor är avstängda.¶
 662:Color is ©3%s©0.¶
@@ -767,7 +767,7 @@
 759:Väntar på stav...¶
 760:¶Ditt nya nummer är %s%ld%s!¶
 761:okänt
-#762:Ack!!!!!!  %d\a¶
+#762:Ack!!!!!!  %d¶
 #763:The command '%s' has been renamed to '%s'.
 #764:The command '%s' has still it's original name.
 #800:Change the working language to <lang>.

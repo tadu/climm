@@ -617,7 +617,7 @@
 614:Le fichier de configuration est "%s"¶
 615:Le repertoire du journal est "%s"¶
 616:InputThread de BeOS lancé¶\r
-617:Il n'y a plus de mémoire !\a¶
+617:Il n'y a plus de mémoire !¶
 618:¶Données total: %d¶
 619:SEQ = %04x	CMD = %04x	essais = %d	longeur = %d¶
 620:Le serveur a acquitté le message avec SEQ %04X CMD 
@@ -632,7 +632,7 @@
 629: URL:         ©3%s©0
 630:Abandonnant un packet 
 631:.
-632:¶\aConnexion instable. Quittant....
+632:¶Connexion instable. Quittant....
 633:ACK!!! %d¶
 634:¶Packet "keep-alive" envoyé au serveur¶
 635:Vous avez découvert un erreur dans mon code:( Je vous doit une bière !¶
@@ -659,7 +659,7 @@
 656:Entrez le surnom de l'utilisateur:
 657:Entrez le prénom de l'utilisateur:
 658:Entrez le nom de famille de l'utilisateur:
-#659:Unkown section %s in configuration file.
+#659:Unknown section %s in configuration file.
 660:Commande inconnue: %s¶
 661:Les commandes shell sont interdites.¶
 662:Le couleur est ©3%s©0.¶
@@ -763,7 +763,7 @@
 759:Attendant une réponse....¶
 760:¶Votre nouveau UIN est %s%ld%s !¶
 761:inconnu
-762:Ack !!!!!!  %d\a¶
+762:Ack !!!!!!  %d¶
 #763:The command '%s' has been renamed to '%s'.
 #764:The command '%s' has still it's original name.
 #800:Change the working language to <lang>.
