@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.54 2002/11/08 03:36:53
+#  EN: __.i18n,v 1.55 2002/11/12 17:03:45
 1001:de
 1002:de_DE
 1003:0-4-9-3
@@ -29,7 +29,7 @@
 1029:Bitte Ja oder Nein eingeben!
 1030:hat sich ausgeloggt.
 1031.hat sich eingeloggt
-1032:debug: Doppeltes Packet #%04x vom Typ %04x (%s)\n
+1032:debug: Doppeltes Packet #%04lx vom Typ %04x (%s)\n
 1033:Eingehendes Server-Paket (Version 8):
 1034:Maximale Anzahl an Versuchen erreicht - gebe auf.
 1035.ist jetzt
@@ -45,13 +45,13 @@
 1045:Suche beendet.
 1046:Länge
 1047:Extra-Daten
-1048:Fehlerkode: %d\n
+1048:Fehlerkode: %ld\n
 1049.UIN: %d\n
 1050:Login erfolgreich!
 1053:Nach %s verbunden, warte auf Antwort.\n
 1055:Konnte keinen Socket erstellen.
 1056:Socket erhalten, versuche zu verbinden.\n
-1060:Ausführlichkeit is %d.\n
+1060:Ausführlichkeit is %ld.\n
 1061:"%s" ist kein Spitzname.\n
 1062:ignorierte User:
 1063:Bitte Passwort eingeben: 
@@ -68,7 +68,7 @@
 1078:Keine Übersetzung verfügbar.
 1079:Übersetzung (%s, %s) von %s, zuletzt geändert am %s von %s, für mICQ %d.%d.%d%s.\n
 1080:Konnte Übersetzung "%s" nicht laden.\n
-1081:Deutsche Übersetzung erfolgreich geladen (%d Einträge).\n
+1081:Deutsche Übersetzung erfolgreich geladen (%ld Einträge).\n
 1082:Versuche, neu zu verbinden... [Versuch %d von %d]\n
 1083:Klang-Befehl:
 1084:Klang ist
@@ -562,7 +562,7 @@
 1603:Bitte Position eingeben: 
 1604:Soll der Benutzer online sein?
 1605:Soll Ihr Status im Web einsehbar sein? (Ja/Nein)
-1606:Paket mit falscher Sitzungskennung ID %08x (richtig: %08x) mit Kommando %04x ignoriert.\n
+1606:Paket mit falscher Sitzungskennung ID %08lx (richtig: %08lx) mit Kommando %04x ignoriert.\n
 1607:Benutzung: micq [-h] [-v[level]] [-f <KonfDatei>] [-l <ProtDatei>]\n
 1608.        -v   ausführlicher Modus (nur zur Fehlersuche nützlich)\n
 1609.        -f   alternative Konfigurationsdatei verwenden (normalerweise ~/.micq/micqrc)\n
@@ -592,9 +592,9 @@
 1644:Bestätigt SRV_X2 0x00E6 Fertig mit alten Nachrichten (?)\n
 1645:Sie haben ein ungültiges Paßwort eingegeben.\n
 1646:Der Server ist beschäftigt.\n
-1648:Die Antwort war %04X	
-1649:Die Version war %X	
-1650:\nDie Folgenummer war %04X	
+1648:Die Antwort war %04x	
+1649:Die Version war %x	
+1650:\nDie Folgenummer war %04x	
 1651:Die Größe war %d\n
 1653:Abgeklemmt
 1654:Verbunden
@@ -610,7 +610,7 @@
 1670:Für %s jetzt normal sichtbar.\n
 1671:Für %s jetzt immer sichtbar.\n
 1672:%ss IP-Adresse ist 
-1673:Der Port ist %d.\n
+1673:Der Port ist %ld.\n
 1674:Der Port ist unbekannt.\n
 1675:Ignoriere Zeile:
 1676:Benötige Benutzernummer/Spitzname, an die ich schicken soll.\n
@@ -668,19 +668,19 @@
 1759:Warte auf Antwort....\n
 1760:\nIhre neue Benutzernummer ist %s%ld%s!\n
 1761:unbekannt
-1762:Ihre neue Benutzernummer ist: %d.\n
+1762:Ihre neue Benutzernummer ist: %ld.\n
 1763:Das Kommando "%s" wurde in "%s" umbenannt.
 1764:Das Kommando "%s" hat noch den ursprünglichen Namen.
-1765:%s hat die Benutzernummer %d.
-1766:Automatische Abwesenheit bzw. Nichtverfügbarkeit nach %s%d%s Sekunden.\n
+1765:%s hat die Benutzernummer %ld.
+1766:Automatische Abwesenheit bzw. Nichtverfügbarkeit nach %s%ld%s Sekunden.\n
 1767:Schaltet die automatische Abwesenheitsschaltung an oder ab.
 1768:Der Bezeichner '%s' ist schon in Verwendung.\n
 1770:Sendet die letzte Nachricht an <uin> bzw. <nick>.
 1771:Noch keine Nachricht an irgendwen verschickt!\n
 1774:Eingehendes Paket:
 1775:Ausgehendes Paket:
-1777:Öffne Direkt-Verbindung auf localhost:%d...
-1781:Bitte Paßwort für Benutzernummer %d eingeben:\n
+1777:Öffne Direkt-Verbindung auf localhost:%ld...
+1781:Bitte Paßwort für Benutzernummer %ld eingeben:\n
 1782:Sie benötigen ein Paßwort für Ihre neue Benutzernummer.\n
 1783:Um Tippfehler zu vermeiden, geben Sie Ihr Paßwort bitte erneut ein.\n
 1784:Wenn Sie sich hinter einer Firewall befinden, müssen Sie eventuell SOCKS5 verwenden. Wenn ja, geben Sie bitte dessen Rechnernamen oder IP-Adresse ein. Andernfalls drücken Sie einfach die Eingabetaste.\n
@@ -719,8 +719,8 @@
 1822:    color: Farbe verwenden.\n
 1823:Eingehendes Unter-Paket:
 1825:Werfe ein Paket vom Typ %04x (%s) weg.
-1826:Sende Paket vom Typ %04x (%s), Sequenz-Nummer %04x, erneut (Versuch #%d, Länge %d).\n
-1830:Werfe Nachricht an %s nach %d Versuchen weg. Inhalt der Nachricht:\n
+1826:Sende Paket vom Typ %04x (%s), Sequenz-Nummer %04lx, erneut (Versuch #%ld, Länge %d).\n
+1830:Werfe Nachricht an %s nach %ld Versuchen weg. Inhalt der Nachricht:\n
 1833:Direkte Verbindung aufgebaut.\n
 1835:Fehler beim Schreiben in den Kommunikationsendpunkt: %s (%d)\n
 1841:Empfange fehlerhaftes Initialisierungsbestätigungspaket.\n
@@ -732,9 +732,9 @@
 1847:peer open  <nick> - Öffnet eine Direkt-Verbindung.\n
 1848:peer close <nick> - Schließt Direkt-Verbindung.\n
 1849:Fehler beim Warten auf Eingabe: %s (%d)\n
-1850:Zeitüberschreibtung bei Verbindung mit %s zu %s:%d.\n
-1855:Direkt-Verbindung zu %s bei %s:%d ist fehlgeschlagen.\n
-1856:Werfe ein Paket vom Typ %04x (%s) von alter Sitzung %08x (aktuell: %08x) weg.\n
+1850:Zeitüberschreibtung bei Verbindung mit %s zu %s:%ld.\n
+1855:Direkt-Verbindung zu %s bei %s:%ld ist fehlgeschlagen.\n
+1856:Werfe ein Paket vom Typ %04x (%s) von alter Sitzung %08lx (aktuell: %08lx) weg.\n
 1857:Möchten Sie Ihre IP-Adresse vor anderen Benutzern verbergen? (Ja/Nein)
 1864:Kann Konfigurationsdatei "%s" nicht öffnen.
 1866:Diese Version von mICQ ist ohne Unterstützung von Direkt-Verbindungen übersetzt worden.\n
@@ -742,7 +742,7 @@
 1868:Empfange fehlerhaftes (zu kurzes Unterpaket) Mehrfach-Paket - Rest ignoriert.\n
 1869:Versionen kleiner als 5 werden nicht mehr unterstützt.\n
 1870:peer off   <nick> - Schaltet die Benutzung von Direkt-Verbindungen ab.\n
-1871:Öffne Verbindung zu v8-Server bei %s:%d... 
+1871:Öffne Verbindung zu v8-Server bei %s:%ld... 
 1872:fehlgeschlagen: %s (%d).\n
 1873:Arbeits-Stadt:
 1874:Arbeits-Staat:
@@ -755,28 +755,28 @@
 1881:FLAP auf Kanal 1 hat zu wenig Daten.\n
 1882:FLAP auf Kanal 1 Kommando 1 mit weiteren Daten:\n
 1883:FLAP auf Kanal 1 mit unbekanntem Kommando %d.\n
-1884:FLAP auf unbekannten Kanal %d empfangen.\n
+1884:FLAP auf unbekannten Kanal %ld empfangen.\n
 1885:Zeitüberschreitung bei v8-Server-Verbindung.\n
 1887:Verbindungen:
 1888:nicht webaware
 1889:Server
 1890:Direktverbindung
-1891:Verbindung %d ist bereits geöffnet.\n
+1891:Verbindung %ld ist bereits geöffnet.\n
 1892:conn               Liste verfügbare Verbindungen auf.\n
 1893:conn login <nr>    Öffnet Verbindung <nr>.\n
-1894:Es gibt keine Verbindung Nummer %d.\n
+1894:Es gibt keine Verbindung Nummer %ld.\n
 1895:Login fehlgeschlagen:\n
 1896:Der Server hat die Verbindung geschlossen:\n
-1897:Unvollständiges TLV %d, Länge %d von %d - wird ignoriert.\n
+1897:Unvollständiges TLV %d, Länge %ld von %d - wird ignoriert.\n
 1898:Weiterleitung zu Server %s... 
 1899:Unbekannte Befehlsfamilie angefordert: %d.\n
 1900:Nur lesbar.
 1901:hat die Autorisierung erteilt.\n
-1902:Öffne Verbindung zu v5-Server bei %s:%d... 
+1902:Öffne Verbindung zu v5-Server bei %s:%ld... 
 1903:Ausgehendes v8-Server-Paket:
 1904:Der Server versteht Version %d (nur Version %d) für Familie %d!\n
-1905:SNAC (%x,%x) [%s] flags %x ref %x\n
-1907:Warnung: Der Server hält unsere Benutzernummer für %d, obwohl sie %d ist.\n
+1905:SNAC (%x,%x) [%s] flags %x ref %lx\n
+1907:Warnung: Der Server hält unsere Benutzernummer für %ld, obwohl sie %ld ist.\n
 1908:Eingehendes USERONLINE-Paket für nicht-Kontakt.\n
 1909:Eingehendes USEROFFLINE-Paket für nicht-Kontakt.\n
 1911:verbinde
@@ -784,7 +784,7 @@
 1914:Kann Verbindungs-Datenstruktur nicht allokieren.\n
 1915:Der Server hat %s als IP-Adresse ermittelt.\n
 1918:Ignoriere Anfrage des Servers für eine Mindestwartezeit von %d.\n
-1919:Benutzernummern stimmen nicht überein: %d gegenüber %d.\n
+1919:Benutzernummern stimmen nicht überein: %ld gegenüber %ld.\n
 1920:Beantragung einer neuen Benutzernummer abgelehnt.\n
 1921:Verbunden
 1922:Nicht stören
@@ -796,12 +796,12 @@
 1929:[Automatische Nachricht] Bitte nicht stören (Do Not Disturb)
 1931:Die aktuelle Verbindung ist geschlossen; bitte eine andere wählen oder diese öffnen.\n
 1934:verbunden
-1935:    Typ %d Socket %d IP %s (%d) auf [%s,%s] Kennung %x/%x/%x\n
+1935:    Typ %d Socket %d IP %s (%d) auf [%s,%s] Kennung %lx/%x/%x\n
 1936:Bitte Mindestalter eingeben (18-22,23-29,30-39,40-49,50-59,60-120):
 1937:Bitte Maximalalter eingeben (22,29,39,49,59,120):
 1938:Bitte Geschlecht eingeben:
 1939:Bitte Stadt eingeben:
-1940:Unbekanntes Benutzerinformations-Ergebnis %x.\n
+1940:Unbekanntes Benutzerinformations-Ergebnis %lx.\n
 1941.eMail-adresse publizieren:
 1942:Weitere eMail-Adressen:
 1943:(keine Autorisierung erforderlich)
@@ -811,7 +811,7 @@
 1948:Kann den Rechnernamen %s nicht auflösen: %s.
 1949:fehlgeschlagen:\n
 1950:Kann Verbindungsendpunkt nicht nicht-blockierend machen
-1951:Kann den Rechnernamen %s nicht auflösen
+1951:Kann den Rechnernamen %s nicht auflösen: %s (%d).
 1952:Kann Verbindung nicht aufbauen
 1953:Kann nicht mit einem freien Port verknüpfen
 1954:Kann nicht auf einem freien Port horchen
@@ -819,7 +819,7 @@
 1958:[SOCKS] Verbindung verweigert (%d)
 1960:Bitte Suchdaten eingeben. Zum Starten "." eingeben.\n
 1961:URL: %s\n
-1966: Verbindung verweigert zu Anschluß %d zu %s.\n
+1966: Verbindung verweigert zu Anschluß %ld zu %s.\n
 1967:Mehr Information für
 1968:Benutzer gefunden:\n
 1969:nicht verbunden
@@ -861,7 +861,7 @@
 2005:Haushaltsprodukte
 2006:Versandhauskatalog
 2007:Geschäftsdienste
-2009:Zufälligen Plauderpartner mit Benutzernummer %d in Interessengruppe %d gefunden.\n
+2009:Zufälligen Plauderpartner mit Benutzernummer %ld in Interessengruppe %d gefunden.\n
 2011:Keine Verbindungsannahme-Verbindung gefunden.\n
 2012:Kein Paßwort angegeben.\n
 2013:Dieses Kommando ist nur für Version 7 oder neuer gültig.\n
@@ -879,7 +879,7 @@
 2031:Verbindung zu oft fehlgeschlagen, gebe auf.\n
 2032:Verbinde in %d Sekunden neu.\n
 2033:Geburtstagskind
-2034:Öffne Direktverbindung auf %s:%d... 
+2034:Öffne Direktverbindung auf %s:%ld... 
 2035:Zeige Betriebszeit und einige Statistiken an.
 2036:Speichere die aktuellen Einstellungen.
 2037:Öffne oder schließe eine Direktverbindung, oder schalte die Verwendung einer Direktverbindung für <uin> bzw. <nick> ab.
@@ -910,19 +910,19 @@
 2065:Unbekanntes TCP_MSG_GREET_-Kommando %04x.\n
 2066:Unbekanntes TCP_MSG_-Kommando %04x.\n
 2067:Dateiein-/ausgabe
-2068:Öffne Dateiübertragungsverbindung zu %s:%d... \n
+2068:Öffne Dateiübertragungsverbindung zu %s:%ld... \n
 2069.Dateiübertragung "%s" vom Gegenüber abgelehnt (%x,%x): %s.\n
-2070:Dateiübertragung "%s" zu Anschluß %d.\n
+2070:Dateiübertragung "%s" zu Anschluß %ld.\n
 2071:Kann Datei "%s" nicht finden: %s (%d).\n
-2072:Dateiübertragung Nummer %d (%s) wegen geschlossener Verbindung abgebrochen.\n
-2073:Speicherverbrauch: %d Pakete.\n
+2072:Dateiübertragung Nummer %ld (%s) wegen geschlossener Verbindung abgebrochen.\n
+2073:Speicherverbrauch: %ld Pakete.\n
 2078:Ausgehendes TCP-Paket (%d - %s): %s
 2079:Eingehendes TCP-Paket (%d - %s): %s
 2080:Der Server meldet über die Auslieferung der SMS:\n%s\n
 2081:    Adresse %p, abhängig von: %p, zugeordnet: %p\n
-2082:Öffne Kommunikationsendpunkt für Dateiübertragungen auf localhost:%d... 
+2082:Öffne Kommunikationsendpunkt für Dateiübertragungen auf localhost:%ld... 
 2083:Kann Datei "%s" nicht öffnen: %s (%d).\n
-2084:Fehler beim Suchen vom %d. Byte: %s (%d).\n
+2084:Fehler beim Suchen vom %ld. Byte: %s (%ld).\n
 2086:Fehler beim Lesen der Datei "%s": %s (%d).\n
 2087:Datei "%s" fertig gesendet.\n
 2088:Alle %d Dateien fertig gesendet.\n
@@ -930,16 +930,16 @@
 2090:Dateiübertragung
 2091:Sende "%s" als "%s".\n
 2092:Direktverbindungsnachricht %s weggeworfen - Verbindung verschwunden.\n
-2093:%02d %-20s Version %d für %s (%x) zu %s:%d %s\n
+2093:%02d %-20s Version %d für %s (%lx) zu %s:%ld %s\n
 2094:conn login         Öffne erste Server-Verbindung.\n
 2095:conn remove <nr>   Entferne Verbindung <nr>.\n
-2096:Verbindung %d ist nicht offen.\n
+2096:Verbindung %ld ist nicht offen.\n
 2097:conn select <nr>   Wähle Verbindung <nr> als aktuelle Server-Verbindung aus.\n
-2098:Verbindung %d ist keine Server-Verbindung.\n
-2099:Wähle Verbindung %d (Version %d, Benutzernummer %d) als aktuelle Server-Verbindung.\n
+2098:Verbindung %ld ist keine Server-Verbindung.\n
+2099:Wähle Verbindung %ld (Version %d, Benutzernummer %ld) als aktuelle Server-Verbindung.\n
 2100:conn select <uin>  Wähle Verbindung mit Benutzernummer <uin> als aktive Server-Verbindung.\n
-2101:Entferne Verbindung %d und davon abhängige Verbindungen vollständig.\n
-2102:Verbindung %d ist eine konfigurierte Verbindung.\n
+2101:Entferne Verbindung %ld und davon abhängige Verbindungen vollständig.\n
+2102:Verbindung %ld ist eine konfigurierte Verbindung.\n
 2103:contact show    Zeige Server-seitige Kontaktliste.\n
 2104:contact diff    Zeige Server-seitige Kontakte, die nicht auf der lokalen Kontaktliste sind.\n
 2105:contact import  Füge Server-seitige Kontaktliste zur lokalen Kontaktliste hinzu.\n
@@ -954,7 +954,7 @@
 2114:Der Befehlsname "%s" existiert nicht.\n
 2115:"%s" ist keine ganze Zahl.\n
 2116:Kein neuer Spitzname gegeben.\n
-2117:%d als %s hinzugefügt.\n
+2117:%ld als %s hinzugefügt.\n
 2118:Kein Speicher mehr vorhanden.\n
 2119:auth [grant] <Spitz>      - autorisieren.\n
 2120:auth deny <Spitz> <Warum> - Autorisierung ablehnen.\n
@@ -982,27 +982,27 @@
 2143.hat die Autorisierung abgelehnt: %s%s\n
 2144.fragt Autorisierung an: %s%s\n
 2145:auth add  <Spitz>         - Nach Autorisierung hinzugefügt.\n
-2146:"%s" ist bereits ein Zweit-Name für "%s" (%d).\n
-2147:"%s" (%d) wird bereits als Spitzname verwendet.\n
-2148:"%s" ist jetzt ein Zweit-Name für "%s" (%d).\n
-2149:Entferne Zweit-Name "%s" für "%s" (%d).\n
-2150:Entferne Kontakt "%s" (%d).\n
+2146:"%s" ist bereits ein Zweit-Name für "%s" (%ld).\n
+2147:"%s" (%ld) wird bereits als Spitzname verwendet.\n
+2148:"%s" ist jetzt ein Zweit-Name für "%s" (%ld).\n
+2149:Entferne Zweit-Name "%s" für "%s" (%ld).\n
+2150:Entferne Kontakt "%s" (%ld).\n
 2151.Es gibt keinen Kontakt mit Benutzernummer %d mehr auf der Kontaktliste.\n
 2156:conn close <nr>    Schließe Verbindung <nr>.\n
 2157:Moldavien
 2158:Keine Datei angegeben.\n
 2159:Ein paar Dateien.
 2160:peer file  <Spitz> <Datei> [<Beschreibung>]\n
-2161:Empfange %d Dateien mit zusammen %d Bytes in Geschwindigkeit %x von %s.\n
-2162:Empfange Datei %s (%s) mit %d Bytes als %s.\n
-2163:Sende Datei %d, setze nach %d Bytes fort.\n
+2161:Empfange %ld Dateien mit zusammen %ld Bytes in Geschwindigkeit %lx von %s.\n
+2162:Empfange Datei %s (%s) mit %ld Bytes als %s.\n
+2163:Sende Datei %ld, setze nach %ld Bytes fort.\n
 2164:Fehler beim Schreiben in die Datei.\n
-2165:Das Gegenüber hat mehr Bytes (%d) gesendet als vorher angegeben (%d).\n
+2165:Das Gegenüber hat mehr Bytes (%ld) gesendet als vorher angegeben (%ld).\n
 2166:Datei erfolgreich empfangen.\n
 2167:Fehler - unbekanntes Paket.\n
-2168:Dateiübertragung Nummer #%d (%s) nach %d Versuchen wegen Zeitüberschreitung abgebrochen.\n
+2168:Dateiübertragung Nummer #%ld (%s) nach %ld Versuchen wegen Zeitüberschreitung abgebrochen.\n
 2169:Dateiübertragung von Gegenüber abgebrochen (%d).\n
-2170:Sende mit Geschwindigkeit %x zu %s.\n
+2170:Sende mit Geschwindigkeit %lx zu %s.\n
 2171:Weiteres
 2172:Kommandos für Fortgeschrittenes.
 2173:Lehne Autorisierungsanfrage von <uin> bzw. <nick> ab.
@@ -1017,12 +1017,12 @@
 2182:Wählt <nr> als aktuelle Server-Verbindung.
 2183:Überprüft, ob <uin> bzw. <nick> nur unsichtbar oder nicht verbunden ist.
 2184:%s%-10s%s - %s\n
-2185:Schließe Verbindung %d.\n
-2186:Akzeptiere Datei "%s" (%d Bytes).\n
+2185:Schließe Verbindung %ld.\n
+2186:Akzeptiere Datei "%s" (%ld Bytes).\n
 2187.Lehne Dateianfrage "%s" (%d Bytes) ab (Unbekannte Daten: %x, %x).\n
 2188:Sende Daten zu schnell - erstmal keine weiteren Befehle eingeben, oder der Server wird die Verbindung unterbrechen.\n
-2189:Fehlerhaftes Nachrichten-Paket vom Server abgelehnt.\n
-2190:Das ICQ-Programm des Kontaktes unterstützt keine Typ-2-Nachrichten.\n
+2189.Fehlerhaftes Nachrichten-Paket vom Server abgelehnt.\n
+2190.Das ICQ-Programm des Kontaktes unterstützt keine Typ-2-Nachrichten.\n
 2191:Fehler beim Versenden einer Nachricht: %d.\n
 2192:Fähigkeiten: 
 2193:Verzeichnis %s existiert nicht.\n
@@ -1030,7 +1030,7 @@
 2195:Veraltete Nummer:
 2196:Veralteter Text:
 2197:Veraltetes Byte
-2198:Ungeeignetes Paßwort '%s' - darf nicht mit ó beginnen.\n
+2198:Ungeeignetes Paßwort '%s' - darf nicht mit Zeichen 0xf3 beginnen.\n
 2199:  -h, --help     gibt diesen hilfe-Text aus\n
 2200:  -v, --verbose  setzt (oder erhöht) Ausführlichkeit (zur Fehlersuche)\n
 2201:  -b, --basedir  anderes BASIS-Verzeichnis verwenden (Standard: %s)\n
@@ -1051,23 +1051,22 @@
 2216:Dieses mICQ kennt die Kodierung "%s" nicht.\n
 2217:Dieses mICQ kann nicht zwischen "%s" und Unicode konvertieren.\n
 2218:UIN: %s\n
-#2219:'empty' message with unknown 0x%08x = %d.\n
 2220:mehrere
-2221:Entferne temporären Kontakt '%s' (%d).\n
+2221:Entferne temporären Kontakt '%s' (%ld).\n
 2222:Skript-Kommando "%s" fehlgeschlagen: %s (%d).\n
 2223:Öffne Fernbedienungskanal auf %s... 
 2225:Fernbedienung
 2226:Konnte FIFO nicht erschaffen
 2227:Konnte FIFO nicht öffnen
 2228:Konnte FIFO nicht nicht-blockieren machen
-2229:Lehne Dateiübertragung '%s' ab (%d bytes): %s.\n
+2229:Lehne Dateiübertragung '%s' ab (%ld bytes): %s.\n
 2230:Lehne Chatanfrage ab (%s/%s) from %s.\n
 2231:Dateiübertragung '%s' vom Gegenüber abgelehnt: %s.\n
 2232:fragt die Autorisierung an: %s%s\n
 2233:hat die Autorisierung abgelehnt: %s%s\n
 2234:Nachricht "%s" weggeworfen - die Verbindung ist verschwunden.\n
 2235:Kein Spitzname angegeben.\n
-2236:Informationen über %s%s%s (%d):\n
+2236:Informationen über %s%s%s (%ld):\n
 2237:Webaware:
 2238:IP verstecken:
 2239:Unbekanntes:
