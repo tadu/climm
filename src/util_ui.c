@@ -608,7 +608,8 @@ BOOL UtilUIParseNick (char **input, Contact **parsed, Contact **parsedr, Session
     if (!*p)
     {
         *parsed = NULL;
-        *parsedr = NULL;
+        if (parsedr)
+            *parsedr = NULL;
         return FALSE;
     }
     
