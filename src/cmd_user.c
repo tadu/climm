@@ -693,7 +693,7 @@ static JUMP_F(CmdUserPeek)
         if (*args == ',')
             args++;
 
-        SnacCliSendmsg2 (conn, cont, "", MSG_GET_PEEK, NULL);
+        SnacCliSendmsg2 (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_GET_PEEK, ""));
     }
     return 0;
 }
@@ -1171,6 +1171,11 @@ static JUMP_F (CmdUserMessageNG)
         switch (data)
         {
             case 1:
+                if (!*args)
+                {
+                    M_print (i18n (2235, "No nick name given.\n"));
+                    return 0;
+                }
                 for (i = 0; *args; args++)
                 {
                     if (!s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
@@ -1213,7 +1218,7 @@ static JUMP_F (CmdUserMessageNG)
             {
                 if (!(cont = ContactByUIN (uinlist[i], 1)))
                     continue;
-                IMCliMsg (conn, cont, arg1, MSG_NORM, NULL);
+                IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_NORM, arg1));
                 TabAddUIN (cont->uin);
             }
             return 0;
@@ -1237,7 +1242,7 @@ static JUMP_F (CmdUserMessageNG)
             {
                 if (!(cont = ContactByUIN (uinlist[i], 1)))
                     continue;
-                IMCliMsg (conn, cont, msg, MSG_NORM, NULL);
+                IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_NORM, msg));
                 TabAddUIN (cont->uin);
             }
             return 0;
@@ -1348,6 +1353,11 @@ static JUMP_F (CmdUserMessage)
         {
             case 1:
                 i = 0;
+                if (!*args)
+                {
+                    M_print (i18n (2235, "No nick name given.\n"));
+                    return 0;
+                }
                 while (*args)
                 {
                     if (!s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))

@@ -1745,9 +1745,9 @@ static void TCPCallBackResend (Event *event)
     peer->connect = CONNECT_FAIL;
     delta = (peer->ver > 6 ? 1 : 0);
     if (PacketReadAt2 (pak, 4 + delta) == TCP_CMD_MESSAGE)
-        IMCliMsg (peer->parent->parent, cont, event->info,
-                  PacketReadAt2 (pak, 22 + delta),
-                  ExtraSet (NULL, EXTRA_TRANS, EXTRA_TRANS_ANY & ~EXTRA_TRANS_DC, NULL));
+        IMCliMsg (peer->parent->parent, cont, ExtraSet (ExtraSet (NULL,
+                  EXTRA_MESSAGE, PacketReadAt2 (pak, 22 + delta), event->info),
+                  EXTRA_TRANS, EXTRA_TRANS_ANY & ~EXTRA_TRANS_DC, NULL));
     else
         M_printf (i18n (1844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4 + delta));
     

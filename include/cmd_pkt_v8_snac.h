@@ -31,7 +31,6 @@ void   SnacCliRemvisible   (Connection *conn, UDWORD uin);
 void   SnacCliAddinvis     (Connection *conn, UDWORD uin);
 void   SnacCliReminvis     (Connection *conn, UDWORD uin);
 void   SnacCliSendmsg      (Connection *conn, UDWORD uin, const char *text, UDWORD type, UBYTE format);
-UBYTE  SnacCliSendmsg2     (Connection *conn, Contact *cont, const char *text, UDWORD type, MetaList *extra);
 void   SnacCliReqofflinemsgs  (Connection *conn);
 void   SnacCliAckofflinemsgs  (Connection *conn);
 void   SnacCliRegisteruser    (Connection *conn);
@@ -47,5 +46,7 @@ void   SnacCliSearchbymail    (Connection *conn, const char *email);
 void   SnacCliSearchwp        (Connection *conn, const MetaWP *wp);
 UDWORD SnacCliSearchrandom    (Connection *conn, UWORD group);
 void   SnacCliSetrandom       (Connection *conn, UWORD group);
+
+UBYTE  SnacCliSendmsg2     (Connection *conn, Contact *cont, MetaList *extra);
 
 #endif /* MICQ_ICQV8_SNAC_H */

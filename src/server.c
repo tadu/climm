@@ -52,8 +52,9 @@ void icq_sendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD msg_typ
         free (old);
 }
 
-UBYTE IMCliMsg (Connection *conn, Contact *cont, const char *text, UDWORD msg_type, MetaList *extra)
+UBYTE IMCliMsg (Connection *conn, Contact *cont, MetaList *extra)
 {
+    MetaList *extra_message;
     char *old;
     UBYTE ret;
 
@@ -71,33 +72,41 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, const char *text, UDWORD msg_ty
         tmp->more = extra;
         extra = tmp;
     }
+    for (extra_message = extra; extra_message; extra_message = extra_message->more)
+        if (extra_message->tag == EXTRA_MESSAGE)
+            break;
+    if (!extra_message)
+    {
+        ExtraFree (extra);
+        return RET_FAIL;
+    }
 
     old = uiG.last_message_sent;
-    uiG.last_message_sent      = strdup (text);
-    uiG.last_message_sent_type = msg_type;
-    text = uiG.last_message_sent;
+    uiG.last_message_sent      = strdup (extra_message->description);
+    uiG.last_message_sent_type = extra_message->data;
+    extra_message->description = uiG.last_message_sent;
     if (old)
         free (old);
 
     putlog (conn, NOW, cont->uin, STATUS_ONLINE, 
-            msg_type == MSG_AUTO ? LOG_AUTO : LOG_SENT, msg_type, "%s\n", text);
+            extra_message->data == MSG_AUTO ? LOG_AUTO : LOG_SENT, extra_message->data, "%s\n", extra_message->description);
 
 #ifdef ENABLE_PEER2PEER
     if (extra->data & EXTRA_TRANS_DC)
         if (conn->assoc)
-            if (RET_IS_OK (ret = PeerSendMsg (conn->assoc, cont, text, msg_type, extra)))
+            if (RET_IS_OK (ret = PeerSendMsg (conn->assoc, cont, extra_message->description, extra_message->data, extra)))
                 return ret;
     extra->data &= ~EXTRA_TRANS_DC;
 #endif
     if (extra->data & EXTRA_TRANS_TYPE2)
         if (conn->type == TYPE_SERVER && HAS_CAP (cont->caps, CAP_ISICQ) && HAS_CAP (cont->caps, CAP_SRVRELAY))
-            if (RET_IS_OK (ret = SnacCliSendmsg2 (conn, cont, text, msg_type, extra)))
+            if (RET_IS_OK (ret = SnacCliSendmsg2 (conn, cont, extra)))
                 return ret;
     extra->data &= ~EXTRA_TRANS_TYPE2;
     if (extra->data & EXTRA_TRANS_ICQv8)
         if (conn->connect & CONNECT_OK && conn->type == TYPE_SERVER)
         {
-            SnacCliSendmsg (conn, cont->uin, text, msg_type, 0);
+            SnacCliSendmsg (conn, cont->uin, extra_message->description, extra_message->data, 0);
             ExtraFree (extra);
             return RET_OK;
         }
@@ -105,7 +114,7 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, const char *text, UDWORD msg_ty
     if (extra->data & EXTRA_TRANS_ICQv5)
         if (conn->connect & CONNECT_OK && conn->type == TYPE_SERVER_OLD)
         {
-            CmdPktCmdSendMessage (conn, cont->uin, text, msg_type);
+            CmdPktCmdSendMessage (conn, cont->uin, extra_message->description, extra_message->data);
             ExtraFree (extra);
             return RET_OK;
         }

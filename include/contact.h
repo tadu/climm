@@ -148,12 +148,15 @@ void        ContactSetVersion (Contact *cont);
 
 #define UP_INFO         0x3ff
 
-#define EXTRA_TRANS        0x1
+#define EXTRA_TRANS        0x11
+#define EXTRA_MESSAGE      0x23
 
 #define EXTRA_TRANS_DC     0x1
 #define EXTRA_TRANS_TYPE2  0x2
 #define EXTRA_TRANS_ICQv8  0x4
 #define EXTRA_TRANS_ICQv5  0x8
 #define EXTRA_TRANS_ANY    0xf
+
+
 
 #endif /* MICQ_CONTACT_H */

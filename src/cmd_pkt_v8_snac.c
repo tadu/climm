@@ -557,6 +557,8 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
     else if (event)
     {
         IMIntMsg (cont, event->conn, NOW, STATUS_OFFLINE, INT_MSGACK_TYPE2, event->info, event->extra);
+        s_free (event->info);
+        PacketD (event->pak);
         free (event);
     }
     free (text);
@@ -1361,25 +1363,17 @@ void SnacCliSendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD type
     Packet *pak;
     Contact *cont = ContactByUIN (uin, 1);
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
-    BOOL peek = 0;
     
     if (!cont)
         return;
     
-    if (type == MSG_GET_PEEK)
+    if (format == 2 || type == MSG_GET_PEEK)
     {
-        peek = 1;
-        type = MSG_GET_AWAY;
-    }
-    
-    if (format == 2)
-    {
-        SnacCliSendmsg2 (conn, cont, text, type, NULL);
+        SnacCliSendmsg2 (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, type, text));
         return;
     }
     
-    if (!peek)
-        IMIntMsg (cont, conn, NOW, STATUS_OFFLINE, INT_MSGACK_V8, text, NULL);
+    IMIntMsg (cont, conn, NOW, STATUS_OFFLINE, INT_MSGACK_V8, text, NULL);
         
     if (!format || format == 0xff)
     {
@@ -1407,7 +1401,7 @@ void SnacCliSendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD type
         }
     }
     
-    pak = SnacC (conn, 4, 6, 0, peek ? 0x1771 : 0);
+    pak = SnacC (conn, 4, 6, 0, 0);
     PacketWriteB4 (pak, mtime);
     PacketWriteB4 (pak, mid);
     PacketWriteB2 (pak, format);
@@ -1460,7 +1454,7 @@ static void SnacCallbackType2 (Event *event)
     ASSERT_SERVER (serv);
     assert (pak);
 
-    if (event->attempts < MAX_RETRY_ATTEMPTS && serv->connect & CONNECT_MASK)
+    if (event->attempts < MAX_RETRY_ATTEMPTS && serv->connect & CONNECT_MASK && (*event->info || event->attempts < 2))
     {
         if (serv->connect & CONNECT_OK)
         {
@@ -1476,20 +1470,35 @@ static void SnacCallbackType2 (Event *event)
         return;
     }
     
-    IMCliMsg (serv, cont, event->info, 1 /* FIXME */,
-              ExtraSet (NULL, EXTRA_TRANS, EXTRA_TRANS_ANY & ~EXTRA_TRANS_DC & ~EXTRA_TRANS_TYPE2, NULL));
+    if (*event->info)
+        IMCliMsg (serv, cont, ExtraSet (ExtraSet (NULL,
+                  EXTRA_TRANS, EXTRA_TRANS_ANY & ~EXTRA_TRANS_DC & ~EXTRA_TRANS_TYPE2, NULL),
+                  EXTRA_MESSAGE, 1 /* FIXME */, event->info));
 }
 
 /*
- * CLI_SENDMSG - SNAC(4,6)
+ * CLI_SENDMSG - SNAC(4,6) - type2
  */
-UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, const char *text, UDWORD type, MetaList *extra)
+UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, MetaList *extra)
 {
+    MetaList *extra_message;
     Packet *pak;
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
     BOOL peek = 0;
+    UDWORD type;
+    const char *text;
     
     if (!cont)
+        return RET_DEFER;
+    
+    for (extra_message = extra; extra_message; extra_message = extra_message->more)
+        if (extra_message->tag == EXTRA_MESSAGE)
+        {
+            type = extra_message->data;
+            text = extra_message->description;
+            break;
+        }
+    if (!extra_message)
         return RET_DEFER;
     
     if (type == MSG_GET_PEEK)
@@ -1550,7 +1559,6 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, const char *text, UDWORD
     QueueEnqueueData (conn, QUEUE_TYPE2_RESEND, conn->our_seq_dc,
                       cont->uin, time (NULL),
                       pak, strdup (text), &SnacCallbackType2);
-    
     return RET_INPR;
 }
 
