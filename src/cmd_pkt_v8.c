@@ -189,8 +189,8 @@ void SrvCallBackReceive (Connection *conn)
     
     if (prG->verbose & DEB_PACK8)
     {
-        M_printf ("%s " COLINDENT COLSERVER "%s ",
-                 s_now, i18n (1033, "Incoming v8 server packet:"));
+        M_printf ("%s " COLINDENT "%s%s ",
+                 s_now, COLSERVER, i18n (1033, "Incoming v8 server packet:"));
         FlapPrint (pak);
         M_print (COLEXDENT "\r");
     }

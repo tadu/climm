@@ -29,6 +29,7 @@
 #include "preferences.h"
 #include "session.h"
 #include "packet.h"
+#include "contact.h"
 #include "file_util.h"
 #include "cmd_pkt_v8_tlv.h"
 #include "conv.h"
@@ -204,8 +205,8 @@ void FlapPrint (Packet *pak)
     seq = PacketReadB2 (pak);
     len = PacketReadB2 (pak);
 
-    M_printf (COLEXDENT COLNONE "\n  " COLINDENT "%s " COLDEBUG "FLAP  ch %d seq %08x length %04x" COLNONE "\n",
-             s_dumpnd (pak->data, 6), ch, seq, len);
+    M_printf (COLEXDENT "%s\n  " COLINDENT "%s %sFLAP  ch %d seq %08x length %04x%s\n",
+              COLNONE, s_dumpnd (pak->data, 6), COLDEBUG, ch, seq, len, COLNONE);
 
     if (ch == 2)
         SnacPrint (pak);
@@ -270,7 +271,7 @@ void FlapSend (Connection *conn, Packet *pak)
     
     if (prG->verbose & DEB_PACK8)
     {
-        M_printf ("%s " COLINDENT COLCLIENT "%s ", s_now, i18n (1903, "Outgoing v8 server packet:"));
+        M_printf ("%s " COLINDENT "%s%s ", s_now, COLCLIENT, i18n (1903, "Outgoing v8 server packet:"));
         FlapPrint (pak);
         M_print (COLEXDENT "\r");
     }

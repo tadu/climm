@@ -24,6 +24,6 @@ BOOL   Debug (UDWORD level, const char *str, ...) __attribute__ ((format (__prin
 #define DEB_TCP           0x00200000L
 #define DEB_IO            0x00400000L
 
-#define AVPFMT COLSERVER "%-15s" COLNONE " %s\n"
+#define AVPFMT "%s%-15s%s %s\n"
 
 #endif /* MICQ_UTIL_UI_H */

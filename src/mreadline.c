@@ -898,9 +898,9 @@ void R_resetprompt (void)
     Contact *cont;
     if (prG->flags & FLAG_UINPROMPT && uiG.last_sent_uin
         && (cont = ContactFind (NULL, 0, uiG.last_sent_uin, NULL)))
-        R_setpromptf (COLSERVER "[%s]" COLNONE " ", cont->nick);
+        R_setpromptf ("%s[%s]%s ", COLSERVER, cont->nick, COLNONE);
     else
-        R_setpromptf (COLSERVER "%s" COLNONE, i18n (1040, "mICQ> "));
+        R_setpromptf ("%s%s%s", COLSERVER, i18n (1040, "mICQ> "), COLNONE);
 }
 
 /*
@@ -1322,21 +1322,6 @@ void M_print (const char *org)
                             CharCount = IndentCount = 0;
                             free (fstr);
                             return;
-                        }
-                        str++;
-                        break;
-                    case COLCHR:
-                        if (!(prG->flags & FLAG_COLOR))
-                        {
-                            str += 2;
-                            break;
-                        }
-                        test++;
-                        if (*test >= '0' && *test <= '0' + CXCOUNT)
-                        {
-                            USECOLOR (*test - '0');
-                            printf ("%s", col);
-                            str++;
                         }
                         str++;
                         break;

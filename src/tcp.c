@@ -722,9 +722,9 @@ static Packet *TCPReceivePacket (Connection *peer)
         {
             if (prG->verbose & DEB_TCP)
             {
-                M_printf ("%s " COLINDENT COLSERVER "", s_now);
+                M_printf ("%s " COLINDENT "%s", s_now, COLSERVER);
                 M_printf (i18n (1789, "Received malformed packet: (%d)"), peer->sok);
-                M_print  (COLNONE "\n");
+                M_printf ("%s\n", COLNONE);
                 M_print  (s_dump (pak->data, pak->len));
                 M_print  (COLEXDENT "\r");
 
@@ -1196,7 +1196,7 @@ void TCPPrint (Packet *pak, Connection *peer, BOOL out)
     M_printf (out ? i18n (2078, "Outgoing TCP packet (%d - %s): %s")
                   : i18n (2079, "Incoming TCP packet (%d - %s): %s"),
               peer->sok, peer->uin && cont ? cont->nick : "", TCPCmdName (cmd));
-    M_print (COLNONE "\n");
+    M_printf ("%s\n", COLNONE);
 
     if (peer->connect & CONNECT_OK && peer->type == TYPE_MSGDIRECT && peer->ver == 6)
     {
@@ -1425,7 +1425,8 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
         }
         else
         {
-            M_printf ("%s %s%*s" COLNONE " ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick);
+            M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick),
+                      cont->nick, COLNONE);
             M_printf (i18n (2091, "Queueing %s as %s for transfer.\n"), files[i], as[i]);
             sum++;
             sumlen += fstat.st_size;

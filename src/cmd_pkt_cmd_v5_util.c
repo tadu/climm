@@ -124,12 +124,12 @@ void PacketEnqueuev5 (Packet *pak, Connection *conn)
     {
         char *f;
         pak->rpos = 0;
-        M_printf ("%s " COLINDENT COLCLIENT "", s_now);
+        M_printf ("%s " COLINDENT "%s", s_now, COLCLIENT);
         M_print  (i18n (1775, "Outgoing packet:"));
-        M_printf (" %04x %08lx:%08lx %04x (%s) @%p" COLNONE "\n",
+        M_printf (" %04x %08lx:%08lx %04x (%s) @%p%s\n",
                  PacketReadAt2 (pak, CMD_v5_OFF_VER), PacketReadAt4 (pak, CMD_v5_OFF_SESS),
                  PacketReadAt4 (pak, CMD_v5_OFF_SEQ), PacketReadAt2 (pak, CMD_v5_OFF_SEQ2),
-                 CmdPktCmdName (PacketReadAt2 (pak, CMD_v5_OFF_CMD)), pak);
+                 CmdPktCmdName (PacketReadAt2 (pak, CMD_v5_OFF_CMD)), pak, COLNONE);
         M_print  (f = PacketDump (pak, "gv5cp"));
         free (f);
         M_print  (COLEXDENT "\r");
@@ -445,7 +445,7 @@ void UDPCallBackResend (Event *event)
             else if ((type & ~MSGF_MASS) == MSG_NORM)
             {
                 str_s cdata = { data, strlen (data), 0 };
-                M_printf ("%s%s" COLNONE " ", COLMESSAGE, ConvFromCont (&cdata, cont));
+                M_printf ("%s%s%s ", COLMESSAGE, ConvFromCont (&cdata, cont), COLNONE);
             }
         }
         else

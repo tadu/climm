@@ -18,18 +18,13 @@
 #define BOLD            ESC "[1m"
 #define UL              ESC "[4m"
 
-#define COLCHR '!'
-#define COLSTR "!"
-
-#define CXCOUNT         7
-
-#define COLNONE         ESC COLSTR "0"
-#define COLSERVER       ESC COLSTR "1"
-#define COLCLIENT       ESC COLSTR "2"
-#define COLINVCHAR      ESC COLSTR "3"
-#define COLERROR        ESC COLSTR "4"
-#define COLDEBUG        ESC COLSTR "5"
-#define COLQUOTE        ESC COLSTR "6"
+#define COLNONE         ContactPrefStr (NULL, CO_COLORNONE)
+#define COLSERVER       ContactPrefStr (NULL, CO_COLORSERVER)
+#define COLCLIENT       ContactPrefStr (NULL, CO_COLORCLIENT)
+#define COLINVCHAR      ContactPrefStr (NULL, CO_COLORINVCHAR)
+#define COLERROR        ContactPrefStr (NULL, CO_COLORERROR)
+#define COLDEBUG        ContactPrefStr (NULL, CO_COLORDEBUG)
+#define COLQUOTE        ContactPrefStr (NULL, CO_COLORQUOTE)
 #define COLMESSAGE      ContactPrefStr (cont, CO_COLORMESSAGE)
 #define COLSENT         ContactPrefStr (cont, CO_COLORSENT)
 #define COLACK          ContactPrefStr (cont, CO_COLORACK)

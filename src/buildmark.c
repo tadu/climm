@@ -28,6 +28,7 @@
 #include "micq.h"
 #include "buildmark.h"
 #include "conv.h"
+#include "contact.h"
 #include "preferences.h"
 #include ".cvsupdate"
 
@@ -105,12 +106,14 @@ const char *BuildVersion (void)
 const char *BuildAttribution (void)
 {
     if (ConvHaveUe (prG->enc_loc))
-    return ("\xc2\xa9 1998-2000 " COLQUOTE "Matthew D. Smith" COLNONE ", "
-            "\xc2\xa9 2001-2003 " COLQUOTE "R\xc3\xbc" "diger Kuhlmann" COLNONE ",\n"
-            "released under version 2 of the GNU General Public License (" COLQUOTE "GPLv2" COLNONE ").\n");
-    return ("\xc2\xa9 1998-2000 " COLQUOTE "Matthew D. Smith" COLNONE ", "
-            "\xc2\xa9 2001-2003 " COLQUOTE "Ruediger Kuhlmann" COLNONE ",\n"
-            "released under version 2 of the GNU General Public License (" COLQUOTE "GPLv2" COLNONE ").\n");
+    return (s_sprintf ("\xc2\xa9 1998-2000 %sMatthew D. Smith%s, "
+            "\xc2\xa9 2001-2003 %sR\xc3\xbc" "diger Kuhlmann%s,\n"
+            "released under version 2 of the GNU General Public License (%sGPLv2%s).\n",
+            COLQUOTE, COLNONE, COLQUOTE, COLNONE, COLQUOTE, COLNONE));
+    return (s_sprintf ("\xc2\xa9 1998-2000 %sMatthew D. Smith%s, "
+            "\xc2\xa9 2001-2003 %sRuediger Kuhlmann%s,\n"
+            "released under version 2 of the GNU General Public License (%sGPLv2%s).\n",
+            COLQUOTE, COLNONE, COLQUOTE, COLNONE, COLQUOTE, COLNONE));
 }                  
 
 const UDWORD BuildVersionNum = MICQ_BUILD_NUM;

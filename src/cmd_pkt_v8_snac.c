@@ -241,15 +241,15 @@ void SnacPrint (Packet *pak)
     ref  = PacketReadB4 (pak);
     len  = PacketReadAtB2 (pak, pak->rpos);
 
-    M_printf ("%s " COLDEBUG "SNAC     (%x,%x) [%s] flags %x ref %lx",
+    M_printf ("%s %sSNAC     (%x,%x) [%s] flags %x ref %lx",
              s_dumpnd (pak->data + 6, flag & 0x8000 ? 10 + len : 10),
-             fam, cmd, SnacName (fam, cmd), flag, ref);
+             COLDEBUG, fam, cmd, SnacName (fam, cmd), flag, ref);
     if (flag & 0x8000)
     {
         M_printf (" extra (%ld)", len);
         pak->rpos += len + 2;
     }
-    M_print (COLNONE "\n");
+    M_printf ("%s\n", COLNONE);
 
     if (prG->verbose & DEB_PACK8DATA || ~prG->verbose & DEB_PACK8)
     {
@@ -269,7 +269,7 @@ static JUMP_SNAC_F(SnacSrvUnknown)
 {
     if (!(prG->verbose & DEB_PACK8))
     {
-        M_printf ("%s " COLINDENT COLSERVER "%s ", s_now, i18n (1033, "Incoming v8 server packet:"));
+        M_printf ("%s " COLINDENT "%s%s ", s_now, COLSERVER, i18n (1033, "Incoming v8 server packet:"));
         FlapPrint (event->pak);
         M_print (COLEXDENT "\n");
     }
@@ -973,7 +973,7 @@ static JUMP_SNAC_F(SnacSrvSrvackmsg)
         case 4:
             IMOffline (cont, event->conn);
 
-            M_printf ("%s %s%*s" COLNONE " ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick);
+            M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
             M_print  (i18n (2126, "is offline, message queued on server.\n"));
 
 /*          cont->status = STATUS_OFFLINE;

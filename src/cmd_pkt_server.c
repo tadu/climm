@@ -111,10 +111,10 @@ void CmdPktSrvRead (Connection *conn)
     if (prG->verbose & DEB_PACK5DATA)
     {
         UDWORD rpos = pak->rpos;
-        M_printf ("%s " COLINDENT COLSERVER "", s_now);
+        M_printf ("%s " COLINDENT "%s", s_now, COLSERVER);
         M_print  (i18n (1774, "Incoming packet:"));
-        M_printf (" %04x %08lx:%04x%04x %04x (%s)" COLNONE "\n",
-                 pak->ver, session, seq2, seq, cmd, CmdPktSrvName (cmd));
+        M_printf (" %04x %08lx:%04x%04x %04x (%s)%s\n",
+                 pak->ver, session, seq2, seq, cmd, CmdPktSrvName (cmd), COLNONE);
 #if ICQ_VER == 5
         pak->rpos = 0;
         M_print  (f = PacketDump (pak, "gv5sp"));
@@ -218,7 +218,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             M_print (i18n (1641, "User info successfully updated.\n"));
             break;
         case SRV_LOGIN_REPLY:
-            M_printf ("%s %s%10lu" COLNONE " %s\n", s_now, COLCONTACT, cont->uin, i18n (1050, "Login successful!"));
+            M_printf ("%s %s%10lu%s %s\n", s_now, COLCONTACT, cont->uin, COLNONE, i18n (1050, "Login successful!"));
             CmdPktCmdLogin1 (conn);
             CmdPktCmdContactList (conn);
             CmdPktCmdInvisList (conn);
@@ -240,9 +240,9 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             ip[1] = PacketRead1 (pak);
             ip[2] = PacketRead1 (pak);
             ip[3] = PacketRead1 (pak);
-            M_printf ("%s %s%*s" COLNONE " %s: %u.%u.%u.%u\n",
-                s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, i18n (1642, "IP:"),
-                ip[0], ip[1], ip[2], ip[3]);
+            M_printf ("%s %s%*s%s %s %u.%u.%u.%u\n",
+                s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick,
+                COLNONE, i18n (1642, "IP:"), ip[0], ip[1], ip[2], ip[3]);
             QueueEnqueueData (conn, QUEUE_UDP_KEEPALIVE, 0, time (NULL) + 120,
                               NULL, 0, NULL, &CmdPktSrvCallBackKeepAlive);
             break;
@@ -280,7 +280,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             exit (1);
             break;
         case SRV_TRY_AGAIN:
-            M_printf ("%s " COLSERVER, s_now);
+            M_printf ("%s %s" , s_now, COLSERVER);
             M_print  (i18n (1646, "Server is busy.\n"));
             uiG.reconnect_count++;
             if (uiG.reconnect_count >= MAX_RECONNECT_ATTEMPTS)
@@ -401,13 +401,13 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
         case SRV_AUTH_UPDATE:
             break;
         default:               /* commands we dont handle yet */
-            M_printf ("%s " COLCLIENT, s_now);
+            M_printf ("%s %s", s_now, COLCLIENT);
             M_printf (i18n (1648, "The response was %04x\t"), cmd);
             M_printf (i18n (1649, "The version was %x\t"), ver);
             M_printf (i18n (1650, "\nThe SEQ was %04lx\t"), seq);
             M_printf (i18n (1651, "The size was %d\n"), pak->len - pak->rpos);
             M_print  (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
-            M_print  (COLNONE "\n");
+            M_printf ("%s\n", COLNONE);
             break;
     }
 }
@@ -453,10 +453,10 @@ static JUMP_SRV_F (CmdPktSrvMulti)
         if (prG->verbose & DEB_PACK5DATA)
         {
             UDWORD rpos = pak->rpos;
-            M_printf ("%s " COLINDENT COLSERVER "", s_now);
+            M_printf ("%s " COLINDENT "%s", s_now, COLSERVER);
             M_print  (i18n (1823, "Incoming partial packet:"));
-            M_printf (" %04x %08lx:%04x%04lx %04x (%s)" COLNONE "\n",
-                     ver, session, seq2, seq, cmd, CmdPktSrvName (cmd));
+            M_printf (" %04x %08lx:%04x%04lx %04x (%s)%s\n",
+                     ver, session, seq2, seq, cmd, CmdPktSrvName (cmd), COLNONE);
 #if ICQ_VER == 5
             pak->rpos = 0;
             M_print  (f = PacketDump (pak, "gv5sp"));

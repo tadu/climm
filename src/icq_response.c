@@ -388,8 +388,8 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             event->callback (event);
             break;
         default:
-            M_printf ("%s: " COLSERVER "%04x" COLNONE "\n", 
-                     i18n (1945, "Unknown Meta User response"), subtype);
+            M_printf ("%s: %s%04x%s\n", 
+                     i18n (1945, "Unknown Meta User response"), COLSERVER, subtype, COLNONE);
             M_print  (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
             break;
     }
@@ -530,7 +530,7 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
     if (prG->event_cmd && *prG->event_cmd)
         EventExec (cont, prG->event_cmd, !~old ? 2 : 5, status, NULL);
 
-    M_printf ("%s %s%*s" COLNONE " ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick);
+    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
     M_printf (~old ? i18n (2212, "changed status to %s") : i18n (2213, "logged on (%s)"), s_status (status));
     if (cont->version && !~old)
         M_printf (" [%s]", cont->version);
@@ -573,8 +573,9 @@ void IMOffline (Contact *cont, Connection *conn)
     if (prG->event_cmd && *prG->event_cmd)
         EventExec (cont, prG->event_cmd, 3, old, NULL);
  
-    M_printf ("%s %s%*s" COLNONE " %s\n",
-             s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, i18n (1030, "logged off."));
+    M_printf ("%s %s%*s%s %s\n",
+             s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick,
+             COLNONE, i18n (1030, "logged off."));
 }
 
 #define i19n i18n
@@ -643,7 +644,7 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
     
     M_printf ("%s ", s_time (&stamp));
     if (cont)
-        M_printf ("%s%*s" COLNONE " ", col, uiG.nick_len + s_delta (cont->nick), cont->nick);
+        M_printf ("%s%*s%s ", col, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
     
     if (prG->verbose > 1)
         M_printf ("<%d> ", type);
@@ -710,9 +711,9 @@ void HistShow (Connection *conn, Contact *cont)
     
     for (i = 0; i < 50; i++)
         if (hist[i].conn && (!cont || hist[i].cont == cont))
-            M_printf (COLDEBUG "%s %s%*s" COLNONE " %s" COLMSGINDENT "%s\n",
-                      s_time (&hist[i].stamp), COLINCOMING, uiG.nick_len + s_delta (hist[i].cont->nick),
-                      hist[i].cont->nick, COLMESSAGE, hist[i].msg);
+            M_printf ("%s%s %s%*s%s %s" COLMSGINDENT "%s\n",
+                      COLDEBUG, s_time (&hist[i].stamp), COLINCOMING, uiG.nick_len + s_delta (hist[i].cont->nick),
+                      hist[i].cont->nick, COLNONE, COLMESSAGE, hist[i].msg);
 }
 
 /*
@@ -757,17 +758,13 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
 
     if (uiG.idle_flag)
     {
-        char buf[2048];
-
         if ((cont->uin != uiG.last_rcvd_uin) || !uiG.idle_uins || !uiG.idle_msgs)
-        {
-            snprintf (buf, sizeof (buf), "%s %s", uiG.idle_uins && uiG.idle_msgs ? uiG.idle_uins : "", cont->nick);
-            s_repl (&uiG.idle_uins, buf);
-        }
+            s_repl (&uiG.idle_uins, s_sprintf ("%s %s", uiG.idle_uins && uiG.idle_msgs ? uiG.idle_uins : "", cont->nick));
 
         uiG.idle_msgs++;
-        R_setpromptf ("[%s%ld%s" COLNONE "] " COLSERVER "%s" COLNONE "",
-                      COLINCOMING, uiG.idle_msgs, uiG.idle_uins, i18n (1040, "mICQ> "));
+        R_setpromptf ("[%s%ld%s%s]%s%s",
+                           COLINCOMING, uiG.idle_msgs, uiG.idle_uins,
+                           COLNONE, COLSERVER, i18n (1040, "mICQ> "));
     }
 
     if (prG->flags & FLAG_AUTOFINGER && ~cont->updated & UPF_AUTOFINGER &&
@@ -781,7 +778,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
     if (prG->event_cmd && *prG->event_cmd)
         EventExec (cont, prG->event_cmd, 1, e_msg_type, e_msg_text);
 #endif
-    M_printf ("\a%s %s%*s" COLNONE " ", s_time (&stamp), COLINCOMING, uiG.nick_len + s_delta (cont->nick), cont->nick);
+    M_printf ("\a%s %s%*s%s ", s_time (&stamp), COLINCOMING, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
     
     if ((e = ExtraFind (extra, EXTRA_STATUS)) && (!cont || cont->status != e->data || !cont->group))
         M_printf ("(%s) ", s_status (e->data));
@@ -851,7 +848,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             tmp  = s_msgtok (cdata); if (!tmp)  continue;
             tmp2 = s_msgtok (NULL);  if (!tmp2) continue;
             
-            M_printf ("%s %s%s" COLNONE "\n%s", carr, COLMESSAGE, tmp, s_now);
+            M_printf ("%s %s%s%s\n%s", carr, COLMESSAGE, tmp, s_now, COLNONE);
             M_printf (i18n (2127, "       URL: %s %s%s%s\n"), carr, COLMESSAGE, tmp2, COLNONE);
             break;
 
@@ -877,15 +874,15 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
                       COLMESSAGE, COLMSGINDENT, tmp6);
             
             if (tmp && strlen (tmp))
-                M_printf ("%-15s %s%s" COLNONE "\n", "???1:", COLMESSAGE, tmp);
+                M_printf ("%-15s %s%s%s\n", "???1:", COLMESSAGE, tmp, COLNONE);
             if (tmp2 && strlen (tmp2))
-                M_printf ("%-15s %s%s" COLNONE "\n", i18n (1564, "First name:"), COLMESSAGE, tmp2);
+                M_printf ("%-15s %s%s%s\n", i18n (1564, "First name:"), COLMESSAGE, tmp2, COLNONE);
             if (tmp3 && strlen (tmp3))
-                M_printf ("%-15s %s%s" COLNONE "\n", i18n (1565, "Last name:"), COLMESSAGE, tmp3);
+                M_printf ("%-15s %s%s%s\n", i18n (1565, "Last name:"), COLMESSAGE, tmp3, COLNONE);
             if (tmp4 && strlen (tmp4))
-                M_printf ("%-15s %s%s" COLNONE "\n", i18n (1566, "Email address:"), COLMESSAGE, tmp4);
+                M_printf ("%-15s %s%s%s\n", i18n (1566, "Email address:"), COLMESSAGE, tmp4, COLNONE);
             if (tmp5 && strlen (tmp5))
-                M_printf ("%-15s %s%s" COLNONE "\n", "???5:", COLMESSAGE, tmp5);
+                M_printf ("%-15s %s%s%s\n", "???5:", COLMESSAGE, tmp5, COLNONE);
             M_print (COLMSGEXDENT);
             break;
 
@@ -908,11 +905,11 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             tmp3 = s_msgtok (NULL); if (!tmp3) continue;
             tmp4 = s_msgtok (NULL); if (!tmp4) continue;
 
-            M_printf ("\n%s%s" COLNONE " ", COLCONTACT, tmp);
+            M_printf ("\n%s%s%s ", COLCONTACT, tmp, COLNONE);
             M_print  (i18n (1755, "has added you to their contact list.\n"));
-            M_printf ("%-15s %s%s" COLNONE "\n", i18n (1564, "First name:"), COLMESSAGE, tmp2);
-            M_printf ("%-15s %s%s" COLNONE "\n", i18n (1565, "Last name:"), COLMESSAGE, tmp3);
-            M_printf ("%-15s %s%s" COLNONE "\n", i18n (1566, "Email address:"), COLMESSAGE, tmp4);
+            M_printf ("%-15s %s%s%s\n", i18n (1564, "First name:"), COLMESSAGE, tmp2, COLNONE);
+            M_printf ("%-15s %s%s%s\n", i18n (1565, "Last name:"), COLMESSAGE, tmp3, COLNONE);
+            M_printf ("%-15s %s%s%s\n", i18n (1566, "Email address:"), COLMESSAGE, tmp4, COLNONE);
             break;
 
         case MSG_EMAIL:
@@ -932,7 +929,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             else
                 M_printf (i18n (1593, "<%s> send you a web message:\n"), tmp4);
 
-            M_printf ("%s%s" COLNONE "\n", COLMESSAGE, tmp5);
+            M_printf ("%s%s%s\n", COLMESSAGE, tmp5, COLNONE);
             break;
 
         case MSG_CONTACT:
@@ -947,7 +944,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
                 tmp3 = s_msgtok (NULL); if (!tmp3) continue;
                 
                 M_printf ("%s%s\t\t\t", COLCONTACT, tmp2);
-                M_printf ("%s%s" COLNONE "\n", COLMESSAGE, tmp3);
+                M_printf ("%s%s%s\n", COLMESSAGE, tmp3, COLNONE);
             }
             break;
         }

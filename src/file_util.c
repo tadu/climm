@@ -339,7 +339,7 @@ int Read_RC_File (FILE *rcf)
             }
             else
             {
-                M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
                 M_printf (i18n (1659, "Unknown section '%s' in configuration file."), args);
                 M_print ("\n");
                 section = -1;
@@ -349,7 +349,7 @@ int Read_RC_File (FILE *rcf)
         switch (section)
         {
             case -1:
-                M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
                 M_print  (i18n (1675, "Ignored line:"));
                 M_printf (" %s\n", args);
                 break;
@@ -394,7 +394,7 @@ int Read_RC_File (FILE *rcf)
 
                     if (!what)
                     {
-                        M_printf (COLERROR "%s" COLNONE " ", i18n (2251, "Error:"));
+                        M_printf ("%s%s%s ", COLERROR, i18n (2251, "Error:"), COLNONE);
                         M_printf (i18n (2216, "This mICQ doesn't know the '%s' encoding.\n"), cmd);
                         ERROR;
                     }
@@ -404,9 +404,9 @@ int Read_RC_File (FILE *rcf)
                         {
                             if ((which == 3 && (what ^ prG->enc_loc) & ~ENC_FAUTO)
                                 || (which == 2 && (what ^ enc) & ~ENC_FAUTO))
-                                M_printf (COLERROR "%s" COLNONE " ", i18n (2251, "Error:"));
+                                M_printf ("%s%s%s ", COLERROR, i18n (2251, "Error:"), COLNONE);
                             else
-                                M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                                M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
                             M_printf (i18n (2217, "This mICQ can't convert between '%s' and unicode.\n"), cmd);
                         }
                         what &= ~ENC_FAUTO;
@@ -677,11 +677,8 @@ int Read_RC_File (FILE *rcf)
                                 ContactOptionsSetVal (&prG->copts, CO_ENCODING, ENC_SJIS);
                                 ContactOptionsSetStr (&prG->copts, CO_ENCODINGSTR, ConvEncName (ENC_SJIS));
 #ifndef ENABLE_ICONV
-                                if (prG->enc_loc == ENC_UTF8)
-                                {
-                                    M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                                    M_print (i18n (2215, "This mICQ can't convert between SJIS or EUC and unicode.\n"));
-                                }
+                                M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                                M_print (i18n (2215, "This mICQ can't convert between SJIS or EUC and unicode.\n"));
 #endif
                             }
                             else if (which == FLAG_DEP_LOG)
@@ -772,7 +769,7 @@ int Read_RC_File (FILE *rcf)
                 }
                 else
                 {
-                    M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                    M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
                     M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
                     M_print ("\n");
                 }
@@ -848,7 +845,7 @@ int Read_RC_File (FILE *rcf)
                         break;
                     if (!(cont = ContactFindCreate (tconn->contacts, 0, uin, cmd)))
                     {
-                        M_printf (COLERROR "%s" COLNONE " %s\n", i18n (1619, "Warning:"),
+                        M_printf ("%s%s%s %s\n", COLERROR, i18n (1619, "Warning:"), COLNONE,
                                  i18n (1620, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
                         section = -1;
                         break;
@@ -887,7 +884,7 @@ int Read_RC_File (FILE *rcf)
                 }
                 else
                 {
-                    M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                    M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
                     M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
                     M_print ("\n");
                 }
@@ -981,7 +978,7 @@ int Read_RC_File (FILE *rcf)
                 }
                 else
                 {
-                    M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                    M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
                     M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
                     M_print ("\n");
                 }
@@ -1061,7 +1058,7 @@ int Read_RC_File (FILE *rcf)
                 }
                 else
                 {
-                    M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                    M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
                     M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
                     M_print ("\n");
                 }
@@ -1195,7 +1192,7 @@ void PrefReadStat (FILE *stf)
                 section = 5;
             else
             {
-                M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
                 M_printf (i18n (1659, "Unknown section '%s' in configuration file."), args);
                 M_print ("\n");
                 section = -1;
@@ -1205,7 +1202,7 @@ void PrefReadStat (FILE *stf)
         switch (section)
         {
             case -1:
-                M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
                 M_print  (i18n (1675, "Ignored line:"));
                 M_printf (" %s\n", args);
                 break;
@@ -1220,7 +1217,7 @@ void PrefReadStat (FILE *stf)
                 }
                 else
                 {
-                    M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                    M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
                     M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
                     M_print ("\n");
                 }
@@ -1299,7 +1296,7 @@ void PrefReadStat (FILE *stf)
                 }
                 else
                 {
-                    M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                    M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
                     M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
                     M_print ("\n");
                 }
@@ -1334,7 +1331,7 @@ void PrefReadStat (FILE *stf)
                 }
                 else
                 {
-                    M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                    M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
                     M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
                     M_print ("\n");
                 }
