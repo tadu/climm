@@ -394,6 +394,40 @@ const char *ConvUTF8 (UDWORD ucs)
     return b;
 }
 
+UDWORD ConvGetUTF8 (strc_t in, int *off)
+{
+     UDWORD ucs = 0;
+     int i, continuations = 1;
+     UBYTE  c = in->txt[(*off)++];
+
+     if (~c & 0x80)
+         return c;
+
+     if (~c & 0x40)
+         return CHAR_BROKEN;
+
+     while (c & 0x20)
+     {
+         continuations++;
+         c <<= 1;
+     }
+
+     c &= 0x3f;
+     c >>= continuations - 1;
+
+     for (i = 0, ucs = c; i < continuations; i++)
+     {
+         if (((c = in->txt[*off + i]) & 0xc0) != 0x80)
+             return c ? CHAR_BROKEN : CHAR_INCOMPLETE;
+
+         c &= 0x3f;
+         ucs <<= 6;
+         ucs |= c;
+     }
+     *off += continuations;
+     return ucs;
+}
+
 strc_t ConvFrom (strc_t text, UBYTE enc)
 {
     enc &= ~ENC_FAUTO;
@@ -582,40 +616,6 @@ strc_t iconv_usascii (strc_t in, UBYTE enc)
 #if ENABLE_FALLBACK_ASCII || ENABLE_FALLBACK_UCS2BE || ENABLE_FALLBACK_WIN1251 || ENABLE_FALLBACK_KOI8 \
   || ENABLE_FALLBACK_LATIN9 || ENABLE_FALLBACK_LATIN1 || ENABLE_FALLBACK_UTF8 || ENABLE_FALLBACK_WCHART
 
-static UDWORD iconv_get_utf8 (strc_t in, int *off)
-{
-     UDWORD ucs = 0;
-     int i, continuations = 1;
-     UBYTE  c = in->txt[(*off)++];
-
-     if (~c & 0x80)
-         return c;
-
-     if (~c & 0x40)
-         return CHAR_BROKEN;
-
-     while (c & 0x20)
-     {
-         continuations++;
-         c <<= 1;
-     }
-
-     c &= 0x3f;
-     c >>= continuations - 1;
-
-     for (i = 0, ucs = c; i < continuations; i++)
-     {
-         if (((c = in->txt[*off + i]) & 0xc0) != 0x80)
-             return c ? CHAR_BROKEN : CHAR_INCOMPLETE;
-
-         c &= 0x3f;
-         ucs <<= 6;
-         ucs |= c;
-     }
-     *off += continuations;
-     return ucs;
-}
-
 #if ENABLE_FALLBACK_ASCII
 static strc_t iconv_from_usascii (strc_t in, UBYTE enc)
 {
@@ -641,7 +641,7 @@ static strc_t iconv_to_usascii (strc_t in, UBYTE enc)
     s_init (&str, "", in->len);
     for (off = 0; off < in->len; )
     {
-        ucs = iconv_get_utf8 (in, &off);
+        ucs = ConvGetUTF8 (in, &off);
         s_catc (&str, ucs & 0x80 ? CHAR_NOT_AVAILABLE : ucs);
     }
     return &str;
@@ -657,7 +657,7 @@ strc_t iconv_utf8_buf (str_t out, strc_t in, UBYTE enc)
     s_init (out, "", in->len);
     for (off = 0; off < in->len; )
     {
-        ucs = iconv_get_utf8 (in, &off);
+        ucs = ConvGetUTF8 (in, &off);
         s_cat (out, ConvUTF8 (ucs));
     }
     return out;
@@ -697,7 +697,7 @@ static strc_t iconv_to_latin1 (strc_t in, UBYTE enc)
     s_init (&str, "", in->len);
     for (off = 0; off < in->len; )
     {
-        ucs = iconv_get_utf8 (in, &off);
+        ucs = ConvGetUTF8 (in, &off);
         s_catc (&str, ucs & 0xffffff00 ? CHAR_NOT_AVAILABLE : ucs);
     }
     return &str;
@@ -742,7 +742,7 @@ static strc_t iconv_to_latin9 (strc_t in, UBYTE enc)
     s_init (&str, "", in->len);
     for (off = 0; off < in->len; )
     {
-        ucs = iconv_get_utf8 (in, &off);
+        ucs = ConvGetUTF8 (in, &off);
         if (!(ucs & 0xffffff00))
         {
             switch (ucs)
@@ -816,7 +816,7 @@ static strc_t iconv_to_koi8 (strc_t in, UBYTE enc)
     s_init (&str, "", in->len);
     for (off = 0; off < in->len; )
     {
-        ucs = iconv_get_utf8 (in, &off);
+        ucs = ConvGetUTF8 (in, &off);
         if (ucs & 0xffffff80)
         {
             for (c = 0; ~c & 0x80; c++)
@@ -875,7 +875,7 @@ static strc_t iconv_to_win1251 (strc_t in, UBYTE enc)
     s_init (&str, "", in->len);
     for (off = 0; off < in->len; )
     {
-        ucs = iconv_get_utf8 (in, &off);
+        ucs = ConvGetUTF8 (in, &off);
         if (ucs & 0xffffff80)
         {
             for (c = 0; ~c & 0x80; c++)
@@ -926,7 +926,7 @@ static strc_t iconv_to_ucs2be (strc_t in, UBYTE enc)
     s_init (&str, "", in->len);
     for (off = 0; off < in->len; )
     {
-        ucs = iconv_get_utf8 (in, &off);
+        ucs = ConvGetUTF8 (in, &off);
         if (ucs & 0xffff0000)
         {
             s_catc (&str, 0);
@@ -978,7 +978,7 @@ static strc_t iconv_to_wchart (strc_t in, UBYTE enc)
     s_init (&str, "", in->len);
     for (off = 0; off < in->len; )
     {
-        ucs = iconv_get_utf8 (in, &off);
+        ucs = ConvGetUTF8 (in, &off);
         if ((ucs & 0xf800) == 0xd800)
             s_catc (&str, CHAR_BROKEN);
         else if (   (sizeof (wchar_t) <= 1 && ucs & 0xffffff00)

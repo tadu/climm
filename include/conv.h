@@ -10,6 +10,7 @@ void        ConvInit       (void);
 UBYTE       ConvEnc        (const char *enc);
 const char *ConvEncName    (UBYTE enc);
 const char *ConvUTF8       (UDWORD codepoint);
+UDWORD      ConvGetUTF8    (strc_t in, int *off);
 const char *ConvCrush0xFE  (const char *in);
 #define     Conv0xFE       (char)0xfe
 BOOL        ConvFits           (const char *in, UBYTE enc);
