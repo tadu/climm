@@ -16,12 +16,12 @@
    #define S_IRUSR        _S_IREAD
    #define S_IWUSR        _S_IWRITE
 #else
-    #ifndef __BEOS__
-    	#include <arpa/inet.h>
-    #endif
-    #include <sys/time.h>
-    #include <netinet/in.h>
-    #include <termios.h>
+   #include <sys/time.h>
+   #include <netinet/in.h>
+   #include <termios.h>
+   #ifndef __BEOS__
+      #include <arpa/inet.h>
+   #endif
 #endif
 
 #ifdef UNIX

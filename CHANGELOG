@@ -1,4 +1,8 @@
 
+2001-03-24 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* src/file_util.c: Changed order of included files to cure
+	  warnings on FreeBSD.
+
 2001-03-23 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* src/file_util.c, src/micq.c, include/micq.h: Add config option
 	  "Del_is_Del" tied to global BOOL del_is_bs, (default TRUE).
