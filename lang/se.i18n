@@ -1,5 +1,5 @@
 # $Id$ (Swedish)
-#  EN: __.i18n,v 1.63.2.1 2003/01/09 18:00:20
+#  EN: __.i18n,v 1.63.2.2 2003/01/10 15:57:15
 1000:iso-8859-1
 1001:sv
 1002:sv_SE
@@ -231,6 +231,7 @@
 1261:Ecuador
 1262:Egypten
 1263:El Salvador
+#1264:Equatorial Guinea
 1265:Eritrea
 1266:Estland
 1267:Etiopien
@@ -382,7 +383,7 @@
 1419:Rensa skärmen.
 1420:Ändrar om det piper när du får meddelande.
 1422:Loggar av och avslutar.
-1423:Visar din automatiskasvarsstatus.
+1423.Visar din automatiskasvarsstatus.
 1424:Ändrar om du skickar automatiska svar när du är DND, NA, och så vidare.
 1425:Ställer in dina automatiska svar för en viss status.
 1426:Skapar en ny ICQ-användare med detta lösenord.
@@ -395,6 +396,7 @@
 1433:Ändra status till ej tillgänglig.
 1434:Ändra status till upptagen.
 1435:Ändra status till stör ej.
+#1436:Set status to "free for chat".
 1437:Ändra status till osynlig.
 1438:Uppdaterar informationen om dig själv.
 1439:Ställer in din slumpmässiga användargrupp.
