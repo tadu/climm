@@ -70,12 +70,6 @@ struct timeval
 };
 #endif
 
-#ifndef SYS_NMLN
-#define SYS_NMLN 200
-#endif
-
-static char username[L_cuserid + SYS_NMLN] = "";
-
 /**********************************************
  * Returns at most MSGID_LENGTH characters of a
  * message, possibly using ellipsis.
@@ -194,12 +188,9 @@ void Init_New_User (Connection *conn)
 #define LOG_MAX_PATH 255
 #define DSCSIZ 192 /* Maximum length of log file descriptor lines. */
 
-/*************************************************************************
- *        Function: putlog
- *        Purpose: Log the event provided to the log with a time stamp.
- *        Andrew Frolov dron@ilm.net
- *        6-20-98 Added names to the logs. Fryslan
- *************************************************************************/
+/*
+ * Log the event provided to the log with a time stamp.
+ */
 int putlog (Connection *conn, time_t stamp, UDWORD uin, 
             UDWORD status, enum logtype level, UWORD type, char *str, ...)
 {
@@ -208,6 +199,7 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
         symbuf[LOG_MAX_PATH + 1];                     /* path of a sym link */
     char *target = buffer;                        /* Target of the sym link */
     const char *nick = ContactFindNick (uin);
+    const char *username = PrefLogName ();
     FILE *logfile;
     int fd;
     va_list args;
@@ -279,12 +271,12 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
             break;
         case TYPE_MSGLISTEN:
         case TYPE_MSGDIRECT:
-            snprintf (buf + l, DSCSIZ - l, "%s %s %s%s%s[tcp:%lu+%lX]", username, 
-                indic, pos, nick ? nick : "", pos, uin, status);
+            snprintf (buf + l, DSCSIZ - l, "%s %s %s%s%s[tcp:%lu+%lX]",
+                      username, indic, pos, nick ? nick : "", pos, uin, status);
             break;
         default:
-            snprintf (buf + l, DSCSIZ - l, "%s %s %s%s%s[tcp:%lu+%lX]", username, 
-                indic, pos, nick ? nick : "", pos, uin, status);
+            snprintf (buf + l, DSCSIZ - l, "%s %s %s%s%s[tcp:%lu+%lX]",
+                      username, indic, pos, nick ? nick : "", pos, uin, status);
             break;
     }
     l += strlen (buf + l);
@@ -307,7 +299,7 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
 
     if (!prG->logplace)
     {
-        register const char *userdir = PrefUserDir ();
+        const char *userdir = PrefUserDir ();
         prG->logplace = strcat (strcpy (malloc (strlen (userdir) 
             + sizeof (deflogdir)), userdir), deflogdir);
     }
@@ -366,38 +358,6 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
     fclose (logfile);
 
     return 0;
-}
-
-void init_log (void)
-{
-    const char *me = getenv ("LOGNAME");
-    char *hostname = username;
-#ifndef HAVE_GETHOSTNAME
-    struct utsname name;
-#endif
-
-    if (me != NULL)
-    {
-        strncpy (username, me, sizeof (username));
-        username[sizeof (username) - 1] = '\0';
-        hostname += strlen (username);
-    }
-
-    hostname++;
-#ifdef HAVE_GETHOSTNAME
-    if (gethostname (hostname, username + sizeof (username) - hostname) == 0)
-        hostname[-1] = '@';
-#else
-    if (uname (&name) == 0)
-    {
-        strncpy (hostname, name.nodename, 
-            username + sizeof (username) - hostname);
-        username[sizeof (username) - 1] = '\0';
-        hostname[-1] = '@';
-    }
-#endif
-
-    tzset ();
 }
 
 /*************************************************

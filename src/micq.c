@@ -180,7 +180,6 @@ int main (int argc, char *argv[])
     prG = PreferencesC ();
     psG = PreferencesConnectionC ();
     init_global_defaults ();
-    init_log ();
 
     i = i18nOpen ("!");
 

@@ -16,6 +16,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
+#include <sys/utsname.h>
 #include "file_util.h"
 #include "preferences.h"
 #include "util_ui.h"
@@ -66,35 +67,25 @@ PreferencesConnection *PreferencesConnectionC ()
 #endif
 
 static const char *userbasedir = NULL;
+static const char *userlogname = NULL;
 
 /*
  * Open preference file.
  */
 static FILE *PrefOpenRC (Preferences *pref)
 {
-    char def[200];
     FILE *rcf;
     
     if (pref->rcfile)
     {
         rcf = fopen (pref->rcfile, "r");
-        if (rcf)
-            return rcf;
-        M_printf (i18n (1864, "Can't open rcfile %s."), pref->rcfile);
-        exit (20);
-    }
-    
-    strcpy (def, PrefUserDir ());
-    strcat (def, "micqrc");
-    pref->rcfile = strdup (def);
-
-    rcf = fopen (pref->rcfile, "r");
-    if (rcf)
-    {
-        pref->rcisdef = 1;
         return rcf;
     }
-    return NULL;
+    
+    pref->rcfile = strdup (s_sprintf ("%smicqrc", PrefUserDir()));
+
+    rcf = fopen (pref->rcfile, "r");
+    return rcf;
 }
 
 /*
@@ -104,7 +95,7 @@ const char *PrefUserDir ()
 {
     if (!userbasedir)
     {
-        char *home, *path, def[200];
+        char *home, *path;
         
         path = _OS_PREFPATH;
         home = getenv ("HOME");
@@ -112,12 +103,10 @@ const char *PrefUserDir ()
         {
             if (!home)
                 home = "";
-            assert (strlen (home) < 180);
-            strcpy (def, home);
-            if (strlen (def) > 0 && def[strlen (def) - 1] != _OS_PATHSEP)
-                strcat (def, _OS_PATHSEPSTR);
-            strcat (def, ".micq" _OS_PATHSEPSTR);
-            userbasedir = strdup (def);
+            if (*home && home[strlen (home) - 1] != _OS_PATHSEP)
+                userbasedir = strdup (s_sprintf ("%s%c.micq%c", home, _OS_PATHSEP, _OS_PATHSEP));
+            else
+                userbasedir = strdup (s_sprintf ("%s.micq%c", home, _OS_PATHSEP));
         }
         else
             userbasedir = strdup (path);
@@ -125,19 +114,63 @@ const char *PrefUserDir ()
     return userbasedir;
 }
 
+#ifndef SYS_NMLN
+#define SYS_NMLN 200
+#endif
+
+const char *PrefLogName ()
+{
+    if (!userlogname)
+    {
+        const char *me;
+        char *hostname;
+#ifndef HAVE_GETHOSTNAME
+        struct utsname name;
+#endif
+        char username[L_cuserid + SYS_NMLN] = "";
+
+        hostname = username + 1;
+        me = getenv ("LOGNAME");
+        if (!me)
+            me = getenv ("USER");
+        if (me != NULL)
+        {
+            snprintf (username, sizeof (username), "%s", me);
+            hostname += strlen (username);
+        }
+
+#ifdef HAVE_GETHOSTNAME
+        if (!gethostname (hostname, username + sizeof (username) - hostname))
+            hostname[-1] = '@';
+#else
+        if (!uname (&name))
+        {
+            snprintf (hostname, username + sizeof (username) - hostname, "%s", name.nodename);
+            hostname[-1] = '@';
+        }
+#endif
+        userlogname = strdup (username);
+    }
+    return userlogname;
+}
+
 /*
  * Load the preferences into *pref
  */
-void PrefLoad (Preferences *pref)
+BOOL PrefLoad (Preferences *pref)
 {
     FILE *rcf;
+    BOOL ok = FALSE;
     
     pref->away_time = default_away_time;
     pref->tabs = TABS_SIMPLE;
 
     rcf = PrefOpenRC (pref);
     if (rcf)
+    {
+        ok = TRUE;
         Read_RC_File (rcf);
+    }
 
 #ifdef WIP
     {
@@ -147,9 +180,13 @@ void PrefLoad (Preferences *pref)
         strcat (extra, "contacts");
         rcf = fopen (extra, "r");
         if (rcf)
+        {
+            ok = TRUE;
             Read_RC_File (rcf);
+        }
     }
 #endif
+    return ok;
 }
 
 /*

@@ -6,7 +6,6 @@
 struct Preferences_s
 {
     char  *rcfile;      /* the preference file to load */
-    BOOL   rcisdef;     /* whether this is the default location */
 
     UDWORD verbose;     /* verbosity to use on startup */
     UWORD  sound;       /* flags for sound output */
@@ -18,6 +17,7 @@ struct Preferences_s
     
     UBYTE  enc_rem;     /* The (assumed) remote encoding */
     UBYTE  enc_loc;     /* The local character encoding */
+    char  *locale;      /* The used locale */
     
     char  *logplace;
 
@@ -63,7 +63,9 @@ Preferences        *PreferencesC (void);
 PreferencesConnection *PreferencesConnectionC (void);
 
 const char *PrefUserDir ();
-void        PrefLoad (Preferences *pref);
+const char *PrefLogName ();
+
+BOOL        PrefLoad (Preferences *pref);
 
 void        PrefSetColorScheme (Preferences *pref, UBYTE scheme);
 
