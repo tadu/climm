@@ -2,6 +2,7 @@
 	* fix SOCKS5 authorization
 	* document resend command, let it take arbitrarely many arguments
 	* change behaviour of autoaway command
+	* hopefully fix reconnect loops this time
 
 2002-06<24 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* fix auto-away
