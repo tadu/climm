@@ -251,11 +251,14 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             CmdPktCmdAckMessages (conn);
             break;
         case SRV_INFO_REPLY:
-            Display_Info_Reply (conn, pak, i18n (2214, "Info for %s%lu%s:\n"), IREP_HASAUTHFLAG);
+            uin = PacketRead4 (pak);
+            if (!uin || !(cont = ContactByUIN (uin, 1)))
+                break;
+            M_printf (i18n (2214, "Info for %s%lu%s:\n"), COLSERVER, uin, COLNONE);
+            Display_Info_Reply (conn, cont, pak, IREP_HASAUTHFLAG);
             break;
         case SRV_EXT_INFO_REPLY:
-            Display_Ext_Info_Reply (conn, pak, i18n (1967, "More Info for"));
-            M_print ("\n");
+            Display_Ext_Info_Reply (conn, pak);
             break;
         case SRV_USER_OFFLINE:
             uin = PacketRead4 (pak);
@@ -331,8 +334,11 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             M_print ("\n");
             break;
         case SRV_USER_FOUND:
-            Display_Info_Reply (conn, pak, i18n (1968, "User found:\n"), IREP_HASAUTHFLAG);
-            M_print ("\n");
+            uin = PacketRead4 (pak);
+            if (!uin || !(cont = ContactByUIN (uin, 1)))
+                break;
+            M_printf (i18n (1968, "User found:\n"));
+            Display_Info_Reply (conn, cont, pak, IREP_HASAUTHFLAG);
             break;
         case SRV_RAND_USER:
             Display_Rand_User (conn, pak);

@@ -34,15 +34,45 @@
 #include <string.h>
 #include <assert.h>
 
-/* Attribute-value-pair format string */
-#define AVPFMT COLSERVER "%-15s" COLNONE " %s\n"
+#define s_read(s) do { char *data = PacketReadLNTS (pak); s_repl (&s, c_in (data)); free (data); } while (0)
 
-void Meta_User (Connection *conn, UDWORD uin, Packet *p)
+static BOOL Meta_Read_List (Packet *pak, MetaList **list)
+{
+    MetaList *tmp;
+    UBYTE i, j;
+    
+    i = PacketRead1 (pak);
+    for (j = 0; j < i; j++)
+    {
+        if (!CONTACT_LIST (list))
+            return FALSE;
+        (*list)->type = PacketRead2 (pak);
+        s_read ((*list)->description);
+        if ((*list)->type || *(*list)->description)
+            list = &(*list)->meta_list;
+    }
+    while (*list)
+    {
+        tmp = (*list)->meta_list;
+        s_free ((*list)->description);
+        free (*list);
+        *list = tmp;
+    }
+    return TRUE;
+}
+
+void Meta_User (Connection *conn, UDWORD uin, Packet *pak)
 {
     UDWORD subtype, result;
+    Event *event = NULL;
+    Contact *cont;
 
-    subtype = PacketRead2 (p);
-    result  = PacketRead1 (p);
+    cont = ContactByUIN (uin, 1);
+    if (!cont)
+        return;
+
+    subtype = PacketRead2 (pak);
+    result  = PacketRead1 (pak);
 
     switch (subtype)
     {
@@ -67,7 +97,7 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *p)
                      : i18n (1394, "unsuccessful"), COLNONE);
             break;
         case META_SRV_RANDOM_UPDATE:
-            if ((p->id & 0xffff) != 0x4242)
+            if ((pak->id & 0xffff) != 0x4242)
                 M_printf (i18n (2140, "Random chat group change was %s%s%s.\n"),
                          COLCLIENT, result == META_SUCCESS ? i18n (1393, "successful")
                          : i18n (1394, "unsuccessful"), COLNONE);
@@ -87,7 +117,7 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *p)
         case META_SUCCESS:
             break;
         case 0x46:
-            M_printf ("%s\n", p->data + p->rpos);
+            M_printf ("%s\n", pak->data + pak->rpos);
             return;
         default:
             M_printf (i18n (1940, "Unknown Meta User result %x.\n"), result);
@@ -96,285 +126,359 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *p)
 
     switch (subtype)
     {
-        Contact *cont;
-        const char *tabd;
-        char *data, *data2;
-        UWORD wdata, day, month, i;
-        UDWORD dwdata, uin;
-        int tz;
-
         case META_SRV_ABOUT_UPDATE:
         case META_SRV_OTHER_UPDATE:
         case META_SRV_GEN_UPDATE:
         case META_SRV_PASS_UPDATE:
         case META_SRV_RANDOM_UPDATE:
-            break;
+            return;
+        case META_SRV_INFO:
+        case META_SRV_GEN:
+        case META_SRV_MORE:
+        case META_SRV_MOREEMAIL:
+        case META_SRV_WORK:
+        case META_SRV_ABOUT:
+        case META_SRV_INTEREST:
+        case META_SRV_BACKGROUND:
+        case META_SRV_UNKNOWN_270:
+        cont = ContactByUIN (uin, 1);
+        if (!cont)
+            return;
+    }
+
+    switch (subtype)
+    {
+        const char *tabd;
+        char *data, *data2;
+        UWORD wdata, i, j;
+        UDWORD dwdata, uin;
+        MetaGeneral *mg;
+        MetaMore *mm;
+        MetaEmail *me;
+        MetaWork *mw;
+        MetaList *ml;
+        MetaObsolete *mo;
+
         case META_SRV_SMS_OK:
-                    PacketRead4 (p);
-                    PacketRead2 (p);
-            data  = PacketReadStrB (p);
-            data2 = PacketReadStrB (p);
+                    PacketRead4 (pak);
+                    PacketRead2 (pak);
+            data  = PacketReadStrB (pak);
+            data2 = PacketReadStrB (pak);
             M_printf (i18n (2080, "The server says about the SMS delivery:\n%s\n"), c_in (data2));
             free (data);
             free (data2);
             break;
         case META_SRV_INFO:
-            Display_Info_Reply (conn, p, NULL, 0);
+            Display_Info_Reply (conn, cont, pak, 0);
             /* 3 unknown bytes ignored */
+            event->callback (event);
             break;
         case META_SRV_GEN:
-            Display_Info_Reply (conn, p, NULL, 0);
+            Display_Info_Reply (conn, cont, pak, 0);
 
             if (conn->type == TYPE_SERVER_OLD)
             {
-                if (*(data = PacketReadLNTS (p)))
-                    M_printf (AVPFMT, i18n (1503, "Other Email:"), c_in (data));
-                free (data);
-                if (*(data = PacketReadLNTS (p)))
-                    M_printf (AVPFMT, i18n (1504, "Old Email:"), c_in (data));
-                free (data);
+                if (!CONTACT_EMAIL (cont) || !CONTACT_EMAIL (cont->meta_email))
+                    break;
+
+                s_read (cont->meta_email->email);
+                s_read (cont->meta_email->meta_email->email);
             }
 
-            data2 = PacketReadLNTS (p); data = strdup (c_in (data2)); free (data2);
-            data2 = PacketReadLNTS (p);
-            if (*data && *data2)
-                M_printf (COLSERVER "%-15s" COLNONE " %s, %s\n", 
-                         i18n (1505, "Location:"), data, c_in (data2));
-            else if (*data)
-                M_printf (AVPFMT, i18n (1570, "City:"), data);
-            else if (*data2)
-                M_printf (AVPFMT, i18n (1574, "State:"), c_in (data2));
-            free (data);
-            free (data2);
-
-            if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1506, "Phone:"), c_in (data));
-            free (data);
-            if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1507, "Fax:"), c_in (data));
-            free (data);
-            if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1508, "Street:"), c_in (data));
-            free (data);
-            if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1509, "Cellular:"), c_in (data));
-            free (data);
-
+            if (!(mg = CONTACT_GENERAL (cont)))
+                break;
+            
+            s_read (mg->city);
+            s_read (mg->state);
+            s_read (mg->phone);
+            s_read (mg->fax);
+            s_read (mg->street);
+            s_read (mg->cellular);
             if (conn->type == TYPE_SERVER)
+                s_read (mg->zip);
+            else
             {
-                if (*(data = PacketReadLNTS (p)))
-                    M_printf (AVPFMT, i18n (1510, "Zip:"), c_in (data));
-                free (data);
+                dwdata = PacketRead4 (pak);
+                s_repl (&mg->zip, dwdata ? s_sprintf ("%ld", dwdata) : "");
             }
-            else if ((dwdata = PacketRead4 (p)))
-                M_printf (COLSERVER "%-15s" COLNONE " %05lu\n", 
-                         i18n (1510, "Zip:"), dwdata);
+            mg->country = PacketRead2 (pak);
+            mg->tz      = PacketRead1 (pak);
+            mg->auth    = PacketRead1 (pak);
+            /* one unknown word ignored according to v7 doc */
+            /* probably more security settings? */
+            cont->updated |= UPF_GENERAL_B;
+            event->callback (event);
 
-            wdata = PacketRead2 (p);
-            if ((tabd = TableGetCountry (wdata)) != NULL)
+            if (*mg->city && *mg->state)
+                M_printf (COLSERVER "%-15s" COLNONE " %s, %s\n",
+                         i18n (1505, "Location:"), mg->city, mg->state);
+            else if (*mg->city)
+                M_printf (AVPFMT, i18n (1570, "City:"), mg->city);
+            else if (*mg->state)
+                M_printf (AVPFMT, i18n (1574, "State:"), mg->state);
+
+            if (*mg->phone)
+                M_printf (AVPFMT, i18n (1506, "Phone:"), mg->phone);
+            if (*mg->fax)
+                M_printf (AVPFMT, i18n (1507, "Fax:"), mg->fax);
+            if (*mg->street)
+                M_printf (AVPFMT, i18n (1508, "Street:"), mg->street);
+            if (*mg->cellular)
+                M_printf (AVPFMT, i18n (1509, "Cellular:"), mg->cellular);
+            if (*mg->zip)
+                M_printf (AVPFMT, i18n (1510, "Zip:"), mg->zip);
+
+            if ((tabd = TableGetCountry (mg->country)) != NULL)
                 M_printf (COLSERVER "%-15s" COLNONE " %s\t", 
                          i18n (1511, "Country:"), tabd);
             else
                 M_printf (COLSERVER "%-15s" COLNONE " %d\t", 
-                         i18n (1512, "Country code:"), wdata);
-            tz = (signed char) PacketRead1 (p);
-            M_printf ("(UTC %+05d)\n", -100 * (tz / 2) + 30 * (tz % 2));
-            wdata = PacketRead1 (p); /* publish email, 01: yes, 00: no */
+                         i18n (1512, "Country code:"), mg->country);
+
+            M_printf ("(UTC %+05d)\n", -100 * (mg->tz / 2) + 30 * (mg->tz % 2));
             M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
-                i18n (1941, "Publish Email:"), wdata 
+                i18n (1941, "Publish Email:"), mg->auth
                 ? i18n (1567, "No authorization needed.")
                 : i18n (1568, "Must request authorization."));
-            /* one unknown word ignored according to v7 doc */
+            
+            if (conn->type == TYPE_SERVER_OLD)
+            {
+                if (*cont->meta_email->email)
+                    M_printf (AVPFMT, i18n (1503, "Other Email:"), cont->meta_email->email);
+                if (*cont->meta_email->meta_email->email)
+                    M_printf (AVPFMT, i18n (1504, "Old Email:"), cont->meta_email->meta_email->email);
+            }
             break;
         case META_SRV_MORE:
-            wdata = PacketRead2 (p);
-            if (wdata != 0xffff && wdata != 0)
+            if (!(mm = CONTACT_MORE (cont)))
+                break;
+            
+            mm->age = PacketRead2 (pak);
+            mm->sex = PacketRead1 (pak);
+            s_read (mm->homepage);
+            if (conn->type == TYPE_SERVER_OLD)
+                mm->year = PacketRead1 (pak) + 1900;
+            else
+                mm->year = PacketRead2 (pak);
+            mm->month = PacketRead1 (pak);
+            mm->day   = PacketRead1 (pak);
+            mm->lang1 = PacketRead1 (pak);
+            mm->lang2 = PacketRead1 (pak);
+            mm->lang3 = PacketRead1 (pak);
+            /* one unknown word ignored according to v7 doc */
+            cont->updated |= UPF_MORE;
+            event->callback (event);
+
+            if (mm->age && ~mm->age)
                 M_printf (COLSERVER "%-15s" COLNONE " %d\n", 
-                         i18n (1575, "Age:"), wdata);
+                         i18n (1575, "Age:"), mm->age);
             else
                 M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
                          i18n (1575, "Age:"), i18n (1200, "Not entered"));
 
-            wdata = PacketRead1 (p);
             M_printf (COLSERVER "%-15s" COLNONE " %s\n", i18n (1696, "Sex:"),
-                       wdata == 1 ? i18n (1528, "female")
-                     : wdata == 2 ? i18n (1529, "male")
-                     :              i18n (1530, "not specified"));
+                       mm->sex == 1 ? i18n (1528, "female")
+                     : mm->sex == 2 ? i18n (1529, "male")
+                     :                i18n (1530, "not specified"));
 
-            if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1531, "Homepage:"), c_in (data));
-            free (data);
+            if (*mm->homepage)
+                M_printf (AVPFMT, i18n (1531, "Homepage:"), mm->homepage);
 
-            if (conn->type == TYPE_SERVER_OLD)
-                wdata = PacketRead1 (p) + 1900;
-            else
-                wdata = PacketRead2 (p);
-            month = PacketRead1 (p);
-            day = PacketRead1 (p);
-
-            if (month >= 1 && month <= 12 && day && day < 32 && wdata)
+            if (mm->month >= 1 && mm->month <= 12 && mm->day && mm->day < 32 && mm->year)
                 M_printf (COLSERVER "%-15s" COLNONE " %02d. %s %4d\n", 
-                    i18n (1532, "Born:"), day, TableGetMonth (month), 
-                    wdata);
-            M_printf (COLSERVER "%-15s" COLNONE " ", 
-                i18n (1533, "Languages:"));
-            if ((tabd = TableGetLang (wdata = PacketRead1 (p))) != NULL)
+                    i18n (1532, "Born:"), mm->day, TableGetMonth (mm->month), mm->year);
+
+            M_printf (COLSERVER "%-15s" COLNONE " ", i18n (1533, "Languages:"));
+            if ((tabd = TableGetLang (mm->lang1)))
                 M_printf (tabd);
             else
-                M_printf ("%X", wdata);
-            if ((tabd = TableGetLang (wdata = PacketRead1 (p))) != NULL)
+                M_printf ("%x", mm->lang1);
+            if ((tabd = TableGetLang (mm->lang2)))
                 M_printf (", %s", tabd);
             else
-                M_printf (", %X", wdata);
-            if ((tabd = TableGetLang (wdata = PacketRead1 (p))) != NULL)
-                M_printf (", %s", tabd);
+                M_printf (", %x", mm->lang2);
+            if ((tabd = TableGetLang (mm->lang3)))
+                M_printf (", %s.\n", tabd);
             else
-                M_printf (", %X", wdata);
-            M_print ("\n");
-
-            /* one unknown word ignored according to v7 doc */
+                M_printf (", %x.\n", mm->lang3);
             break;
         case META_SRV_MOREEMAIL:
-            if ((i = PacketRead1 (p)))
-                M_printf (COLSERVER "%-15s" COLNONE "\n", 
-                         i18n (1942, "Additional Email addresses:"));
-            for (; i > 0; i--)
+            if (!CONTACT_EMAIL (cont) || !CONTACT_EMAIL (cont->meta_email))
+                break;
+            
+            i = PacketRead1 (pak);
+            for (me = cont->meta_email, j = 0; j < i; j++)
             {
-                wdata = PacketRead1 (p);
-                if (*(data = PacketReadLNTS (p)))
-                    M_printf ("  %s %s\n", c_in (data),
-                               wdata == 1 ? i18n (1943, "(no authorization needed)") 
-                             : wdata == 0 ? i18n (1944, "(must request authorization)")
+                if (!CONTACT_EMAIL (me->meta_email))
+                    break;
+                me = me->meta_email;
+                me->auth = PacketRead1 (pak);
+                s_read (me->email);
+            }
+            
+            if (j < i)
+                break;
+            
+            while (me->meta_email)
+            {
+                MetaEmail *met = me->meta_email;
+                s_free (met->email);
+                me->meta_email = met->meta_email;
+                free (met);
+            }
+            cont->updated |= UPF_EMAIL;
+            event->callback (event);
+            
+            if (!i)
+                break;
+
+            M_printf (COLSERVER "%-15s" COLNONE "\n", 
+                      i18n (1942, "Additional Email addresses:"));
+
+            for (me = cont->meta_email->meta_email, i = 2; me; me = me->meta_email, i++)
+            {
+                if (*me->email)
+                    M_printf (" %02d %s %s\n", i, me->email,
+                               me->auth == 1 ? i18n (1943, "(no authorization needed)") 
+                             : me->auth == 0 ? i18n (1944, "(must request authorization)")
                              : "");
-                free (data);
             }
             break;
         case META_SRV_WORK:
-            data2 = PacketReadLNTS (p); data = strdup (c_in (data2)); free (data2);
-            data2 = PacketReadLNTS (p);
-            if (*data && *data2)
-                M_printf (COLSERVER "%-15s" COLNONE " %s, %s\n", 
-                         i18n (1524, "Work Location:"), data, c_in (data2));
-            else if (*data)
-                M_printf (AVPFMT, i18n (1873, "Work City:"), data);
-            else if (*data2)
-                M_printf (AVPFMT, i18n (1874, "Work State:"), c_in (data2));
-            free (data);
-            free (data2);
-
-            if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1523, "Work Phone:"), c_in (data));
-            free (data);
-            if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1521, "Work Fax:"), c_in (data));
-            free (data);
-            if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1522, "Work Address:"), c_in (data));
-            free (data);
-
+            if (!(mw = CONTACT_WORK (cont)))
+                break;
+            
+            s_read (mw->wcity);
+            s_read (mw->wstate);
+            s_read (mw->wphone);
+            s_read (mw->wfax);
+            s_read (mw->waddress);
             if (conn->type == TYPE_SERVER)
-            {  
-                if (*(data = PacketReadLNTS (p)))
-                    M_printf (AVPFMT, i18n (1520, "Work Zip:"), c_in (data));
-                free (data);
-            }
-            else if ((dwdata = PacketRead4 (p)))
-                M_printf (COLSERVER "%-15s" COLNONE " %lu\n", 
-                         i18n (1520, "Work Zip:"), dwdata);
-
-            if ((wdata = PacketRead2 (p)))
+                s_read (mw->wzip);
+            else
             {
-                if ((tabd = TableGetCountry (wdata)))
+                dwdata = PacketRead4 (pak);
+                s_repl (&mw->wzip, dwdata ? s_sprintf ("%ld", dwdata) : "");
+            }
+            mw->wcountry = PacketRead2 (pak);
+            s_read (mw->wcompany);
+            s_read (mw->wdepart);
+            s_read (mw->wposition);
+            mw->woccupation = PacketRead2 (pak);
+            s_read (mw->whomepage);
+            
+            cont->updated |= UPF_WORK;
+            event->callback (event);
+
+            if (*mw->wcity && *mw->wstate)
+                M_printf (COLSERVER "%-15s" COLNONE " %s, %s\n", 
+                         i18n (1524, "Work Location:"), mw->wcity, mw->wstate);
+            else if (*mw->wcity)
+                M_printf (AVPFMT, i18n (1873, "Work City:"), mw->wcity);
+            else if (*mw->wstate)
+                M_printf (AVPFMT, i18n (1874, "Work State:"), mw->wstate);
+
+            if (*mw->wphone)
+                M_printf (AVPFMT, i18n (1523, "Work Phone:"), mw->wphone);
+            if (*mw->wfax)
+                M_printf (AVPFMT, i18n (1521, "Work Fax:"), mw->wfax);
+            if (*mw->waddress)
+                M_printf (AVPFMT, i18n (1522, "Work Address:"), mw->waddress);
+            if (*mw->wzip)
+                M_printf (AVPFMT, i18n (1520, "Work Zip:"), mw->wzip);
+
+            if (mw->wcountry)
+            {
+                if ((tabd = TableGetCountry (mw->wcountry)))
                     M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
                              i18n (1514, "Work Country:"), tabd);
                 else
                     M_printf (COLSERVER "%-15s" COLNONE " %d\n", 
-                             i18n (1513, "Work Country Code:"), wdata);
+                             i18n (1513, "Work Country Code:"), mw->wcountry);
             }
-            if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1519, "Company Name:"), c_in (data));
-            free (data);
-            if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1518, "Department:"), c_in (data));
-            free (data);
-            if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1517, "Job Position:"), c_in (data));
-            free (data);
-            if ((wdata = PacketRead2 (p))) 
+            if (*mw->wcompany)
+                M_printf (AVPFMT, i18n (1519, "Company Name:"), mw->wcompany);
+            if (*mw->wdepart)
+                M_printf (AVPFMT, i18n (1518, "Department:"), mw->wdepart);
+            if (*mw->wposition)
+                M_printf (AVPFMT, i18n (1517, "Job Position:"), mw->wposition);
+            if (mw->woccupation)
                 M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
-                         i18n (1516, "Occupation:"), TableGetOccupation (wdata));
-            if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1515, "Work Homepage:"), c_in (data));
-            free (data);
-
+                          i18n (1516, "Occupation:"), TableGetOccupation (mw->woccupation));
+            if (*mw->whomepage)
+                M_printf (AVPFMT, i18n (1515, "Work Homepage:"), mw->whomepage);
             break;
         case META_SRV_ABOUT:
-            if (*(data = PacketReadLNTS (p)))
-                M_printf (COLSERVER "%-15s" COLNONE "\n " COLCLIENT "%s" COLNONE "\n",
-                         i18n (1525, "About:"), c_in (data));
-            free (data);
+            s_free (cont->meta_about);
+            cont->meta_about = PacketReadLNTS (pak);
+            cont->updated |= UPF_ABOUT;
+            event->callback (event);
+            
+            if (*cont->meta_about)
+                M_printf (COLSERVER "%-15s" COLNONE "\n%s\n",
+                          i18n (1525, "About:"), s_ind (cont->meta_about));
             break;
         case META_SRV_INTEREST:
-            if ((i = PacketRead1 (p)))
+            if (!Meta_Read_List (pak, &cont->meta_interest))
+                break;
+            cont->updated |= UPF_INTEREST;
+            event->callback (event);
+
+           if (cont->meta_interest)
                 M_printf (COLSERVER "%-15s" COLNONE "\n",
-                         i18n (1875, "Personal interests:"));
-            for (; i > 0; i--)
+                          i18n (1875, "Personal interests:"));
+            for (ml = cont->meta_interest; ml; ml = ml->meta_list)
             {
-                wdata = PacketRead2 (p);
-                if (*(data = PacketReadLNTS (p)))
-                {
-                    if ((tabd = TableGetInterest (wdata)))
-                        M_printf ("  %s: %s\n", tabd, c_in (data));
-                    else
-                        M_printf ("  %d: %s\n", wdata, c_in (data));
-                }
-                free (data);
+                if ((tabd = TableGetInterest (ml->type)))
+                    M_printf ("  %s: %s\n", tabd, ml->description);
+                else
+                    M_printf ("  %d: %s\n", ml->type, ml->description);
             }
             break;
         case META_SRV_BACKGROUND:
-            if ((i = PacketRead1 (p)))
-                M_printf (COLSERVER "%-15s" COLNONE "\n", 
-                         i18n (1876, "Personal past background:"));
-            for (; i > 0; i--)
-            {
-                wdata = PacketRead2 (p);
-                if (*(data = PacketReadLNTS (p)))
-                {
-                    if ((tabd = TableGetPast (wdata)))
-                        M_printf ("  %s: %s\n", tabd, c_in (data));
-                    else
-                        M_printf ("  %d: %s\n", wdata, c_in (data));
-                }
-                free (data);
-            }
-            if ((i = PacketRead1 (p)))
-                M_printf (COLSERVER "%-15s" COLNONE "\n", 
-                         i18n (1879, "Affiliations:"));
-            for (; i > 0; i--)
-            {
-                wdata = PacketRead2 (p);
-                if (*(data = PacketReadLNTS (p)))
-                {
-                    if ((tabd = TableGetAffiliation (wdata)))
-                        M_printf ("  %s: %s\n", tabd, c_in (data));
-                    else
-                        M_printf ("  %d: %s\n", wdata, c_in (data));
-                }
-                free (data);
-            }
+            if (!Meta_Read_List (pak, &cont->meta_background))
+                break;
+            if (!Meta_Read_List (pak, &cont->meta_affiliation))
+                break;
+            cont->updated |= UPF_BACKGROUND | UPF_AFFILIATION;
+            event->callback (event);
 
+            if (cont->meta_background)
+                M_printf (COLSERVER "%-15s" COLNONE "\n",
+                          i18n (1876, "Personal past background:"));
+            for (ml = cont->meta_background; ml; ml = ml->meta_list)
+            {
+                if ((tabd = TableGetPast (ml->type)))
+                    M_printf ("  %s: %s\n", tabd, ml->description);
+                else
+                    M_printf ("  %d: %s\n", ml->type, ml->description);
+            }
+            if (cont->meta_affiliation)
+                M_printf (COLSERVER "%-15s" COLNONE "\n",
+                          i18n (1879, "Affiliations:"));
+            for (ml = cont->meta_affiliation; ml; ml = ml->meta_list)
+            {
+                if ((tabd = TableGetAffiliation (ml->type)))
+                    M_printf ("  %s: %s\n", tabd, ml->description);
+                else
+                    M_printf ("  %d: %s\n", ml->type, ml->description);
+            }
             break;
         case META_SRV_WP_FOUND:
         case META_SRV_WP_LAST_USER:
-            if (PacketRead2 (p) < 19)
+            if (PacketRead2 (pak) < 19)
             {
                 M_printf (i18n (2141, "Search %sfailed%s.\n"), COLCLIENT, COLNONE);
                 break;
             }
+            cont = ContactByUIN (PacketRead4 (pak), 1);
+            if (!cont)
+                break;
+            M_printf (i18n (2214, "Info for %s%lu%s:\n"), COLSERVER, cont->uin, COLNONE);
 
-            Display_Info_Reply (conn, p, i18n (2214, "Info for %s%lu%s:\n"), IREP_HASAUTHFLAG);
+            Display_Info_Reply (conn, cont, pak, IREP_HASAUTHFLAG);
 
-            switch ((wdata = PacketRead2 (p)))
+            switch ((wdata = PacketRead2 (pak)))
             {
                 case 0:
                     M_printf (COLSERVER "%-15s" COLNONE " %s\n", i18n (1452, "Status:"),
@@ -394,13 +498,13 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *p)
                     break;
             }
 
-            wdata = PacketRead1 (p);
+            wdata = PacketRead1 (pak);
             M_printf (COLSERVER "%-15s" COLNONE " %s\n", i18n (1696, "Sex:"),
                        wdata == 1 ? i18n (1528, "female")
                      : wdata == 2 ? i18n (1529, "male")
                      :              i18n (1530, "not specified"));
 
-            wdata = PacketRead1 (p);
+            wdata = PacketRead1 (pak);
             if (wdata != 0xff && wdata != 0)
                 M_printf (COLSERVER "%-15s" COLNONE " %d\n", 
                          i18n (1575, "Age:"), wdata);
@@ -408,56 +512,64 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *p)
                 M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
                          i18n (1575, "Age:"), i18n (1200, "Not entered"));
 
-            if (subtype == META_SRV_WP_LAST_USER && (dwdata = PacketRead4 (p)))
+            if (subtype == META_SRV_WP_LAST_USER && (dwdata = PacketRead4 (pak)))
                 M_printf ("%lu %s\n", dwdata, i18n (1621, "users not returned."));
             break;
         case META_SRV_RANDOM:
-            uin = PacketRead4 (p);
+            uin = PacketRead4 (pak);
             cont = ContactByUIN (uin, 1);
-            wdata = PacketRead2 (p);
+            wdata = PacketRead2 (pak);
             M_printf (i18n (2009, "Found random chat partner UIN %d in chat group %d.\n"),
                      uin, wdata);
             if (!cont || !CONTACT_DC (cont))
                 break;
             if (conn->ver > 6)
-                SnacCliMetareqinfo (conn, uin);
+                SnacCliMetareqinfo (conn, cont->uin);
             else
-                CmdPktCmdMetaReqInfo (conn, uin);
-            cont->dc->ip_rem  = PacketReadB4 (p);
-            cont->dc->port    = PacketRead4  (p);
-            cont->dc->ip_loc  = PacketReadB4 (p);
-            cont->dc->type    = PacketRead1  (p);
-            cont->dc->version = PacketRead2  (p);
+                CmdPktCmdMetaReqInfo (conn, cont->uin);
+            cont->dc->ip_rem  = PacketReadB4 (pak);
+            cont->dc->port    = PacketRead4  (pak);
+            cont->dc->ip_loc  = PacketReadB4 (pak);
+            cont->dc->type    = PacketRead1  (pak);
+            cont->dc->version = PacketRead2  (pak);
             /* 14 unknown bytes ignored */
             break;
         case META_SRV_UNKNOWN_270:
             /* ignored - obsoleted as of ICQ 2002 */
-            if (PacketRead1 (p))
+            if (!(mo = CONTACT_OBSOLETE (cont)))
+                break;
+
+            if ((mo->given = PacketRead1 (pak)))
             {
-                UWORD nr = PacketReadB2 (p);
-                char *text = PacketReadLNTS (p);
-                M_printf ("%s: " COLSERVER "%04x = %d" COLNONE "\n",
-                          i18n (2195, "Obsolete number"), nr, nr);
-                M_printf ("%s: " COLSERVER "%s" COLNONE "\n",
-                          i18n (2196, "Obsolete text"), text);
-                free (text);
+                mo->unknown = PacketReadB2 (pak);
+                s_read (mo->description);
             }
-            if ((i = PacketRead1 (p)))
+            mo->empty = PacketRead1 (pak);
+            cont->updated |= UPF_OBSOLETE;
+            event->callback (event);
+            
+            if (mo->given)
+            {
+                M_printf ("%s: " COLSERVER "%04x = %d" COLNONE "\n",
+                          i18n (2195, "Obsolete number"), mo->unknown, mo->unknown);
+                M_printf ("%s: " COLSERVER "%s" COLNONE "\n",
+                          i18n (2196, "Obsolete text"), mo->description);
+            }
+            if (mo->empty)
                 M_printf ("%s: " COLSERVER "%d" COLNONE "\n",
-                          i18n (2197, "Obsolete byte"), i);
+                          i18n (2197, "Obsolete byte"), mo->empty);
             break;
         default:
             M_printf ("%s: " COLSERVER "%04x" COLNONE "\n", 
                      i18n (1945, "Unknown Meta User response"), subtype);
-            M_print  (s_dump (p->data + p->rpos, p->len - p->rpos));
+            M_print  (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
             break;
     }
 }
 
 void Display_Rand_User (Connection *conn, Packet *pak)
 {
-    UDWORD uin;
-    unsigned char ip[4];
+    Contact *cont;
 
     if (PacketReadLeft (pak) != 37)
     {
@@ -467,26 +579,134 @@ void Display_Rand_User (Connection *conn, Packet *pak)
 
     M_print (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
 
-    uin = PacketRead4 (pak);
-    M_printf ("%-15s %lu\n", i18n (1440, "Random User:"), uin);
-    ip[0] = PacketRead1 (pak);
-    ip[1] = PacketRead1 (pak);
-    ip[2] = PacketRead1 (pak);
-    ip[3] = PacketRead1 (pak);
-    M_printf ("%-15s %u.%u.%u.%u : %lu\n", i18n (1441, "IP:"), 
-        ip[0], ip[1], ip[2], ip[3], PacketRead4 (pak));
-    ip[0] = PacketRead1 (pak);
-    ip[1] = PacketRead1 (pak);
-    ip[2] = PacketRead1 (pak);
-    ip[3] = PacketRead1 (pak);
-    M_printf ("%-15s %u.%u.%u.%u\n", i18n (1451, "IP2:"), 
-        ip[0], ip[1], ip[2], ip[3]);
-    M_printf ("%-15s %s\n", i18n (1454, "Connection:"), PacketRead1 (pak) == 4
-        ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"));
-    M_printf ("%-15s %s\n", i18n (1452, "Status:"), s_status (PacketRead4 (pak)));
-    M_printf ("%-15s %d\n", i18n (1453, "TCP version:"), 
-        PacketRead2 (pak));
-    CmdPktCmdMetaReqInfo (conn, uin);
+    if (!(cont = ContactByUIN (PacketRead4 (pak), 1)))
+        return;
+    if (!CONTACT_DC (cont))
+        return;
+
+    cont->dc->ip_rem  = PacketReadB4 (pak);
+    cont->dc->port    = PacketRead4  (pak);
+    cont->dc->ip_loc  = PacketReadB4 (pak);
+    cont->dc->type    = PacketRead1  (pak);
+    cont->status      = PacketRead4  (pak);
+    cont->dc->version = PacketRead2  (pak);
+
+    M_printf ("%-15s %lu\n", i18n (1440, "Random User:"), cont->uin);
+    M_printf ("%-15s %s:%lu\n", i18n (1441, "IP:"), 
+              s_ip (cont->dc->ip_rem), cont->dc->port);
+    M_printf ("%-15s %s\n", i18n (1451, "IP2:"),  s_ip (cont->dc->ip_loc));
+    M_printf ("%-15s %s\n", i18n (1454, "Connection:"), cont->dc->type == 4
+              ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"));
+    M_printf ("%-15s %s\n", i18n (1452, "Status:"), s_status (cont->status));
+    M_printf ("%-15s %d\n", i18n (1453, "TCP version:"), cont->dc->version);
+
+    CmdPktCmdMetaReqInfo (conn, cont->uin);
+}
+
+void Display_Info_Reply (Connection *conn, Contact *cont, Packet *pak, UBYTE flags)
+{
+    MetaGeneral *mg;
+    
+    if (!(mg = CONTACT_GENERAL (cont)))
+        return;
+
+    s_read (mg->nick);
+    s_read (mg->first);
+    s_read (mg->last);
+    s_read (mg->email);
+    mg->auth = (flags & IREP_HASAUTHFLAG) ? PacketRead1 (pak) : 0;
+    
+    cont->updated |= UPF_GENERAL_A;
+
+    if (*mg->nick)
+        M_printf (COLSERVER "%-15s" COLNONE " " COLCONTACT "%s" COLNONE "\n",
+                 i18n (1500, "Nickname:"), mg->nick);
+    if (*mg->first && *mg->last)
+        M_printf (COLSERVER "%-15s" COLNONE " %s\t %s\n",
+                 i18n (1501, "Name:"), mg->first, mg->last);
+    else if (*mg->first)
+        M_printf (AVPFMT, i18n (1564, "First name:"), mg->first);
+    else if (*mg->last)
+        M_printf (AVPFMT, i18n (1565, "Last name:"), mg->last);
+
+/*    if (*mg->email)
+    {
+        if (flags & IREP_HASAUTHFLAG)
+            M_printf (COLSERVER "%-15s" COLNONE " %s\t%s\n", 
+                     i18n (1566, "Email address:"), mg->email,
+                     mg->auth == 1 ? i18n (1943, "(no authorization needed)")
+                                   : i18n (1944, "(must request authorization)"));
+        else
+            M_printf (AVPFMT, i18n (1502, "Email:"), mg->email);
+    } */
+}
+
+void Display_Ext_Info_Reply (Connection *conn, Packet *pak)
+{
+    const char *tabd;
+    Contact *cont;
+    MetaGeneral *mg;
+    MetaMore *mo;
+
+    if (!(cont = ContactByUIN (PacketRead4 (pak), 1)))
+        return;
+    
+    if (!(mg = CONTACT_GENERAL (cont)) || !(mo = CONTACT_MORE (cont)))
+        return;
+
+    /* Unfortunatly this is a bit different from any structure 
+     * in meta user format, so it cannot be reused there. 
+     */
+
+    M_printf ("%s " COLSERVER "%lu" COLNONE "\n", i18n (1967, "More Info for"));
+
+    s_read (mg->city);
+    mg->country = PacketRead2 (pak);
+    mg->tz      = PacketRead1 (pak);
+    s_read (mg->state);
+    mo->age     = PacketRead2 (pak);
+    mo->sex     = PacketRead1 (pak);
+    s_read (mg->phone);
+    s_read (mg->fax);
+    s_read (mo->homepage);
+    s_read (cont->meta_about);
+
+    if (*mg->city && *mg->state)
+        M_printf (COLSERVER "%-15s" COLNONE " %s, %s\n",
+                 i18n (1505, "Location:"), mg->city, mg->state);
+    else if (*mg->city)
+        M_printf (AVPFMT, i18n (1570, "City:"), mg->city);
+    else if (*mg->state)
+        M_printf (AVPFMT, i18n (1574, "State:"), mg->state);
+
+    if ((tabd = TableGetCountry (mg->country)))
+        M_printf (COLSERVER "%-15s" COLNONE " %s\t", 
+                 i18n (1511, "Country:"), tabd);
+    else
+        M_printf (COLSERVER "%-15s" COLNONE " %d\t", 
+                 i18n (1512, "Country code:"), mg->country);
+
+    M_printf ("(UTC %+05d)\n", -100 * (mg->tz / 2) + 30 * (mg->tz % 2));
+
+    if (mo->age && ~mo->age)
+        M_printf (COLSERVER "%-15s" COLNONE " %d\n", 
+                 i18n (1575, "Age:"), mo->age);
+    else
+        M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
+                 i18n (1575, "Age:"), i18n (1200, "Not entered"));
+
+    M_printf (COLSERVER "%-15s" COLNONE " %s\n", i18n (1696, "Sex:"),
+               mo->sex == 1 ? i18n (1528, "female")
+             : mo->sex == 2 ? i18n (1529, "male")
+             :                i18n (1530, "not specified"));
+
+    if (*mg->phone)
+        M_printf (AVPFMT, i18n (1506, "Phone:"), mg->phone);
+    if (*mo->homepage)
+        M_printf (AVPFMT, i18n (1531, "Homepage:"), mo->homepage);
+    if (*cont->meta_about)
+        M_printf (COLSERVER "%-15s" COLNONE "\n%s\n",
+                 i18n (1525, "About:"), s_ind (cont->meta_about));
 }
 
 void Recv_Message (Connection *conn, Packet *pak)
@@ -518,115 +738,8 @@ void Recv_Message (Connection *conn, Packet *pak)
     free (ctext);
 
     uiG.last_rcvd_uin = uin;
-    IMSrvMsg (ContactByUIN (uin, 1), conn, mktime (&stamp), STATUS_ONLINE, type, text, NULL);
+    IMSrvMsg (ContactByUIN (uin, 1), conn, mktime (&stamp), STATUS_ONLINE, type, text, 0);
     free (text);
-}
-
-void Display_Info_Reply (Connection *conn, Packet *pak, const char *uinline,
-    unsigned int flags)
-{
-    char *data, *data2;
-    UWORD wdata;
-
-    if (uinline)
-        M_printf (uinline, COLSERVER, PacketRead4 (pak), COLNONE);
-
-    if (*(data = PacketReadLNTS (pak)))
-        M_printf (COLSERVER "%-15s" COLNONE " " COLCONTACT "%s" COLNONE "\n",
-                 i18n (1500, "Nickname:"), c_in (data));
-    free (data);
-
-    data2 = PacketReadLNTS (pak); data = strdup (c_in (data2)); free (data2);
-    data2 = PacketReadLNTS (pak);
-    if (*data && *data2)
-        M_printf (COLSERVER "%-15s" COLNONE " %s\t %s\n",
-                 i18n (1501, "Name:"), data, c_in (data2));
-    else if (*data)
-        M_printf (AVPFMT, i18n (1564, "First name:"), data);
-    else if (*data2)
-        M_printf (AVPFMT, i18n (1565, "Last name:"), c_in (data2));
-    free (data);
-    free (data2);
-
-    data = PacketReadLNTS (pak);
-
-    if (flags & IREP_HASAUTHFLAG)
-    {
-        wdata = PacketRead1 (pak);
-        if (*data)
-            M_printf (COLSERVER "%-15s" COLNONE " %s\t%s\n", 
-                     i18n (1566, "Email address:"), c_in (data),
-                     wdata == 1 ? i18n (1943, "(no authorization needed)")
-                                : i18n (1944, "(must request authorization)"));
-    }
-    else if (*data)
-        M_printf (AVPFMT, i18n (1502, "Email:"), c_in (data));
-    free (data);
-}
-
-void Display_Ext_Info_Reply (Connection *conn, Packet *pak, const char *uinline)
-{
-    const char *tabd;
-    char *data, *data2;
-    UWORD wdata;
-    int tz;
-
-    /* Unfortunatly this is a bit different from any structure 
-     * in meta user format, so it cannot be reused there. 
-     */
-
-    if (uinline)
-        M_printf ("%s " COLSERVER "%lu" COLNONE "\n", uinline, 
-            PacketRead4 (pak));
-
-    data2 = PacketReadLNTS (pak); data = strdup (c_in (data2)); free (data2);
-    wdata = PacketRead2 (pak);
-    tz = (signed char) PacketRead1 (pak);
-    data2 = PacketReadLNTS (pak);
-
-    if (*data && *data2)
-        M_printf (COLSERVER "%-15s" COLNONE " %s, %s\n", 
-                 i18n (1505, "Location:"), data, c_in (data2));
-    else if (*data)
-        M_printf (AVPFMT, i18n (1570, "City:"), data);
-    else if (*data2)
-        M_printf (AVPFMT, i18n (1574, "State:"), c_in (data2));
-    free (data);
-    free (data2);
-
-    if ((tabd = TableGetCountry (wdata)) != NULL)
-        M_printf (COLSERVER "%-15s" COLNONE " %s\t", 
-                 i18n (1511, "Country:"), tabd);
-    else
-        M_printf (COLSERVER "%-15s" COLNONE " %d\t", 
-                 i18n (1512, "Country code:"), wdata);
-
-    M_printf ("(UTC %+05d)\n", -100 * (tz / 2) + 30 * (tz % 2));
-
-    wdata = PacketRead2 (pak);
-    if (wdata != 0xffff && wdata != 0)
-        M_printf (COLSERVER "%-15s" COLNONE " %d\n", 
-                 i18n (1575, "Age:"), wdata);
-    else
-        M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
-                 i18n (1575, "Age:"), i18n (1200, "Not entered"));
-
-    wdata = PacketRead1 (pak);
-    M_printf (COLSERVER "%-15s" COLNONE " %s\n", i18n (1696, "Sex:"),
-               wdata == 1 ? i18n (1528, "female")
-             : wdata == 2 ? i18n (1529, "male")
-             :              i18n (1530, "not specified"));
-
-    if (*(data = PacketReadLNTS (pak)))
-        M_printf (AVPFMT, i18n (1506, "Phone:"), c_in (data));
-    free (data);
-    if (*(data = PacketReadLNTS (pak)))
-        M_printf (AVPFMT, i18n (1531, "Homepage:"), c_in (data));
-    free (data);
-    if (*(data = PacketReadLNTS (pak)))
-        M_printf (COLSERVER "%-15s" COLNONE "\n " COLCLIENT "%s" COLNONE "\n",
-                 i18n (1525, "About:"), c_in (data));
-    free (data);
 }
 
 /*
