@@ -1062,7 +1062,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
 
     pak = event->pak;
     
-    event2 = QueueDequeue (serv, QUEUE_REQUEST_ROSTER, 0);
+    event2 = QueueDequeue2 (serv, QUEUE_REQUEST_ROSTER, 0, 0);
     data = event2 ? event2->seq : 1;
 
     PacketRead1 (pak);
