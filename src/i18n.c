@@ -1,7 +1,7 @@
 /*
  * Poor man's gettext; handles internationalization of texts.
  *
- * mICQ Copyright (C) © 2001,2002,2003 Rüdiger Kuhlmann
+ * mICQ Copyright (C) © 2001-2005 Rüdiger Kuhlmann
  *
  * mICQ is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by

@@ -1,7 +1,7 @@
 /*
  * TLS Diffie Hellmann extension.
  *
- * mICQ TLS extension Copyright (C) © 2003 Roman Hoog Antink
+ * mICQ TLS extension Copyright (C) © 2003-2005 Roman Hoog Antink
  *
  * This extension is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by

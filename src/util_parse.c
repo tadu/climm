@@ -5,7 +5,7 @@
  * to the next non-delimiter if no token could be successfully parsed.
  * All functions return pointer to static data which may not be freed.
  *
- * mICQ Copyright (C) © 2001,2002,2003 Rüdiger Kuhlmann
+ * mICQ Copyright (C) © 2001-2005 Rüdiger Kuhlmann
  *
  * mICQ is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
