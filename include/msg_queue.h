@@ -15,8 +15,10 @@ struct Event_s
     UDWORD      attempts;
     time_t      due;
     Packet     *pak;
-    Opt *opt;
+    Opt        *opt;
+    void       *data;
     Queuef     *callback;
+    Queuef     *cancel;
     UBYTE       flags;
 };
 
@@ -26,6 +28,8 @@ Event      *QueueDequeueEvent (Event *event DEBUGPARAM);
 void        QueueEnqueue      (Event *event DEBUGPARAM);
 Event      *QueueEnqueueData  (Connection *conn, UDWORD type, UDWORD seq, time_t due,
                                Packet *pak, Contact *cont, Opt *opt, Queuef *callback DEBUGPARAM);
+Event      *QueueEnqueueData2 (Connection *conn, UDWORD type, UDWORD ref, UDWORD wait,
+                               void *data, Queuef *callback, Queuef *cancel DEBUGPARAM);
 Event      *QueueEnqueueDep   (Connection *conn, UDWORD type, UDWORD seq, Event *dep,
                                Packet *pak, Contact *cont, Opt *opt, Queuef *callback DEBUGPARAM);
 Event      *QueueDequeue      (Connection *conn, UDWORD type, UDWORD seq DEBUGPARAM);
@@ -39,6 +43,7 @@ void        EventD            (Event *event DEBUGPARAM);
 #define QueueDequeueEvent(e)               QueueDequeueEvent(e DEBUGARGS)
 #define QueueEnqueue(e)                    QueueEnqueue(e DEBUGARGS)
 #define QueueEnqueueData(c,t,s,d,p,C,o,cb) QueueEnqueueData(c,t,s,d,p,C,o,cb DEBUGARGS)
+#define QueueEnqueueData2(c,t,s,d,D,cb,cc) QueueEnqueueData2(c,t,s,d,D,cb,cc DEBUGARGS)
 #define QueueEnqueueDep(c,t,s,d,p,C,o,cb)  QueueEnqueueDep(c,t,s,d,p,C,o,cb DEBUGARGS)
 #define QueueDequeue(c,t,s)                QueueDequeue(c,t,s DEBUGARGS)
 #define QueueDequeue2(c,t,s,C)             QueueDequeue2(c,t,s,C DEBUGARGS)

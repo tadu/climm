@@ -27,4 +27,5 @@ void    FlapSave (Packet *pak, BOOL in);
 Event *ConnectionInitServer (Connection *serv);
 Connection *SrvRegisterUIN (Connection *serv, const char *pass);
 
+
 #endif /* MICQ_ICQV8_FLAP_H */

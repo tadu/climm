@@ -2467,7 +2467,7 @@ static JUMP_F(CmdUserAdd)
                 {
                     ContactFindCreate (conn->contacts, 0, cont->uin, s_sprintf ("%ld", cont->uin));
                     if (conn->type == TYPE_SERVER)
-                        SnacCliAddcontact (conn, cont);
+                        SnacCliAddcontact (conn, cont, NULL);
                     else
                         CmdPktCmdContactList (conn);
                     rl_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, cont->nick);
@@ -2507,7 +2507,7 @@ static JUMP_F(CmdUserAdd)
                 uiG.nick_len = c_strlen (cmd);
             ContactFindCreate (conn->contacts, 0, cont->uin, cmd);
             if (conn->type == TYPE_SERVER)
-                SnacCliAddcontact (conn, cont);
+                SnacCliAddcontact (conn, cont, NULL);
             else
                 CmdPktCmdContactList (conn);
         }
@@ -2590,7 +2590,7 @@ static JUMP_F(CmdUserRemove)
                 if (all || !cont->alias)
                 {
                     if (conn->type == TYPE_SERVER)
-                        SnacCliRemcontact (conn, cont);
+                        SnacCliRemcontact (conn, cont, NULL);
                     else
                         CmdPktCmdContactList (conn);
                 }

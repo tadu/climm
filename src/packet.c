@@ -695,14 +695,14 @@ strc_t PacketReadUIN (Packet *pak)
 Contact *PacketReadCont (Packet *pak, Connection *serv)
 {
     UBYTE len = PacketRead1 (pak);
-    UDWORD uin;
+    Contact *cont;
     str_s str = { NULL, 0, 0 };
 
     PacketReadData (pak, &str, len);
     str.txt[len] = '\0';
-    uin = atoi (str.txt);
+    cont = ContactScreen (serv, str.txt);
     s_done (&str);
-    return ContactUIN (serv, uin);
+    return cont;
 }
 
 UWORD PacketReadPos (const Packet *pak)

@@ -51,7 +51,7 @@ static Queue *queue = &queued;
 static Event *q_QueueDequeueEvent (Event *event, struct QueueEntry *previous);
 static Event *q_EventDep (Event *event);
 static Event *q_QueuePop (DEBUG0PARAM);
-static void q_QueueEnqueue (Event *event);
+static void   q_QueueEnqueue (Event *event);
 
 /*
  * Create a new empty queue to use, or use the given queue instead.
@@ -181,11 +181,43 @@ Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD id,
     event->due  = due;
     event->pak = pak;
     event->opt = opt;
+    event->data = NULL;
     event->callback = callback;
+    event->cancel = NULL;
     
     Debug (DEB_EVENT, "<+" STR_DOT STR_DOT " %s %p: %08lx %p %ld %x @ %p",
            QueueType (event->type), event, event->seq, event->pak,
            event->cont ? event->cont->uin : 0, event->flags, event->conn);
+    q_QueueEnqueue (event);
+
+    return event;
+}
+
+/*
+ * Adds a new entry to the queue. Creates Event for you.
+ */
+#undef QueueEnqueueData2
+Event *QueueEnqueueData2 (Connection *conn, UDWORD type, UDWORD ref, UDWORD wait,
+                          void *data, Queuef *callback, Queuef *cancel DEBUGPARAM)
+{
+    Event *event = calloc (sizeof (Event), 1);
+    uiG.events++;
+    assert (event);
+    
+    event->conn = conn;
+    event->type = type;
+    event->seq  = ref;
+    event->attempts = 1;
+    event->cont  = NULL;
+    event->due  = time (NULL) + wait;
+    event->pak = NULL;
+    event->opt = NULL;
+    event->data = data;
+    event->callback = callback;
+    event->cancel = cancel;
+    
+    Debug (DEB_EVENT, "<+" STR_DOT STR_DOT " %s %p: %08lx %p @ %p",
+           QueueType (event->type), event, event->seq, event->data, event->conn);
     q_QueueEnqueue (event);
 
     return event;
@@ -446,9 +478,14 @@ void QueueCancel (Connection *conn DEBUGPARAM)
         Debug (DEB_QUEUE, STR_DOT STR_DOT "!> %s %p %p: %08lx %p %ld",
                QueueType (event->type), conn, event, event->seq, event->pak,
                event->cont ? event->cont->uin : 0);
-        event->conn = NULL;
-        if (event->callback)
-            event->callback (event);
+        if (event->cancel)
+            event->cancel (event);
+        else
+        {
+            event->conn = NULL;
+            if (event->callback)
+                event->callback (event);
+        }
     }
 
     if (!queue->head)
@@ -462,9 +499,14 @@ void QueueCancel (Connection *conn DEBUGPARAM)
             Debug (DEB_QUEUE, STR_DOT STR_DOT "!> %s %p %p: %08lx %p %ld",
                    QueueType (event->type), conn, event, event->seq, event->pak,
                    event->cont ? event->cont->uin : 0);
-            event->conn = NULL;
-            if (event->callback)
-                event->callback (event);
+            if (event->cancel)
+                event->cancel (event);
+            else
+            {
+                event->conn = NULL;
+                if (event->callback)
+                    event->callback (event);
+            }
         }
     }
 }

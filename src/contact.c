@@ -269,6 +269,40 @@ static Contact *ContactC (UWORD id, UDWORD uin, const char *nick DEBUGPARAM)
 /*
  * Finds a contact for a connection
  */
+#undef ContactScreen
+Contact *ContactScreen (Connection *conn, const char *screen DEBUGPARAM)
+{
+    Contact *cont;
+    UDWORD uin = atoi (screen);
+    
+    if (!conn || !conn->contacts || !uin)
+        return NULL;
+
+    if (!cnt_groups)
+        ContactGroupInit ();
+
+    if (uin && (cont = ContactFind (conn->contacts, 0, uin, NULL)))
+        return cont;
+    
+    if ((cont = ContactFind (conn->contacts, 0, uin, screen)))
+        return cont;
+    
+    if (uin && (cont = ContactFind (CONTACTGROUP_NONCONTACTS, 0, uin, NULL)))
+        return cont;
+
+    if ((cont = ContactFind (CONTACTGROUP_NONCONTACTS, 0, uin, screen)))
+        return cont;
+
+    if (!(cont = ContactC (0, uin, screen DEBUGFOR)))
+        return NULL;
+
+    ContactAdd (CONTACTGROUP_NONCONTACTS, cont);
+    return cont;
+}
+
+/*
+ * Finds a contact for a connection
+ */
 #undef ContactUIN
 Contact *ContactUIN (Connection *conn, UDWORD uin DEBUGPARAM)
 {
@@ -324,6 +358,19 @@ Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nic
     }
     return NULL;
 }
+
+#undef ContactCreate
+void ContactCreate (Connection *serv, Contact *cont DEBUGPARAM)
+{
+    if (!serv || !cont || cont->group)
+        return;
+
+    ContactRem (CONTACTGROUP_NONCONTACTS, cont);
+    ContactAdd (serv->contacts, cont);
+    cont->group = serv->contacts;
+    Debug (DEB_CONTACT, "accc  #%d %ld '%s' %p in %p", cont->id, cont->uin, cont->nick, cont, serv->contacts);
+}
+
 
 /*
  * Finds a contact on a contact group, possibly creating it
@@ -500,6 +547,9 @@ BOOL ContactAddAlias (Contact *cont, const char *nick DEBUGPARAM)
     ContactAlias **caref;
     ContactAlias *ca;
     
+    if (!nick)
+        return FALSE;
+
     if (!strcmp (cont->nick, nick))
         return TRUE;
     
@@ -858,6 +908,26 @@ BOOL ContactMetaLoad (Contact *cont)
         return FALSE;
     cont->updated |= UPF_DISC;
     return TRUE;
+}
+
+/*
+ * Query an option for a contact group.
+ */
+val_t ContactGroupPrefVal (ContactGroup *cg, UDWORD flag)
+{
+    val_t res = 0;
+    
+    if (cg)
+    {
+        if (OptGetVal (&cg->copts, flag, &res))
+            return res;
+        if (cg->serv && OptGetVal (&cg->serv->contacts->copts, flag, &res))
+            return res;
+    }
+
+    if (OptGetVal (&prG->copts, flag, &res))
+        return res;
+    return 0;
 }
 
 /*

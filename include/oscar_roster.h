@@ -2,10 +2,38 @@
 #ifndef MICQ_OSCAR_ROSTER_H
 #define MICQ_OSCAR_ROSTER_H
 
+#include "oscar_tlv.h"
+
 jump_snac_f SnacSrvReplylists, SnacSrvReplyroster, SnacSrvUpdateack,
     SnacSrvRosterok, SnacSrvAuthreq, SnacSrvAuthreply, SnacSrvAddedyou;
 
-void SnacCliCheckroster (Connection *serv);
+typedef struct RosterEntry_s RosterEntry;
+typedef struct Roster_s Roster;
+
+struct RosterEntry_s {
+  RosterEntry *next;
+  char  *name;
+  char  *nick;
+  TLV   *tlv;
+  UWORD  tag;
+  UWORD  id;
+  UWORD  type;
+};
+
+struct Roster_s {
+  RosterEntry *generic;
+  RosterEntry *groups;
+  RosterEntry *normal;
+  RosterEntry *visible;
+  RosterEntry *invisible;
+  RosterEntry *ignore;
+};
+
+Roster *OscarRosterC (void);
+void    OscarRosterD (Roster *roster);
+
+
+UDWORD SnacCliCheckroster (Connection *serv);
 void SnacCliRosteradd (Connection *serv, ContactGroup *cg, Contact *cont);
 void SnacCliRosterupdate (Connection *serv, ContactGroup *cg, Contact *cont);
 void SnacCliSetvisibility (Connection *serv);

@@ -87,13 +87,11 @@ JUMP_SNAC_F(SnacSrvReplybuddy)
 /*
  * CLI_ADDCONTACT - SNAC(3,4)
  */
-void SnacCliAddcontact (Connection *serv, Contact *cont)
+void SnacCliAddcontact (Connection *serv, Contact *cont, ContactGroup *cg)
 {
-    ContactGroup *cg;
     Packet *pak;
     int i;
     
-    cg = serv->contacts;
     pak = SnacC (serv, 3, 4, 0, 0);
     if (cont)
         PacketWriteCont (pak, cont);
@@ -116,14 +114,27 @@ void SnacCliAddcontact (Connection *serv, Contact *cont)
 /*
  * CLI_REMCONTACT - SNAC(3,5)
  */
-void SnacCliRemcontact (Connection *serv, Contact *cont)
+void SnacCliRemcontact (Connection *serv, Contact *cont, ContactGroup *cg)
 {
     Packet *pak;
+    int i;
     
-    if (!cont)
-        return;
     pak = SnacC (serv, 3, 5, 0, 0);
-    PacketWriteCont (pak, cont);
+    if (cont)
+        PacketWriteCont (pak, cont);
+    else
+    {
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
+        {
+            if (i && !(i % 256))
+            {
+                SnacSend (serv, pak);
+                pak = SnacC (serv, 3, 5, 0, 0);
+            }
+            PacketWriteCont (pak, cont);
+            
+        }
+    }
     SnacSend (serv, pak);
 }
 

@@ -117,7 +117,9 @@ void          ContactGroupD       (ContactGroup *group DEBUGPARAM);
 
 /* NULL ContactGroup accesses global list */
 Contact      *ContactIndex        (ContactGroup *group, int i);
-Contact      *ContactUIN          (Connection *conn, UDWORD uin DEBUGPARAM);
+Contact      *ContactUIN          (Connection *serv, UDWORD uin DEBUGPARAM);
+Contact      *ContactScreen       (Connection *serv, const char *screen DEBUGPARAM);
+void          ContactCreate       (Connection *serv, Contact *cont DEBUGPARAM);
 Contact      *ContactFind         (ContactGroup *group, UWORD id, UDWORD uin, const char *nick);
 Contact      *ContactFindCreate   (ContactGroup *group, UWORD id, UDWORD uin, const char *nick DEBUGPARAM);
 BOOL          ContactAdd          (ContactGroup *group, Contact *cont DEBUGPARAM);
@@ -131,7 +133,9 @@ BOOL          ContactRemAlias     (Contact *cont, const char *nick DEBUGPARAM);
 #define ContactGroupC(s,i,n)       ContactGroupC(s,i,n DEBUGARGS)
 #define ContactGroupD(g)           ContactGroupD(g DEBUGARGS)
 #define ContactUIN(c,u)            ContactUIN(c,u DEBUGARGS)
+#define ContactScreen(c,s)         ContactScreen(c,s DEBUGARGS)
 #define ContactFindCreate(g,i,u,n) ContactFindCreate(g,i,u,n DEBUGARGS)
+#define ContactCreate(g,c)         ContactCreate(g,c DEBUGARGS)
 #define ContactAdd(g,c)            ContactAdd(g,c DEBUGARGS)
 #define ContactRem(g,c)            ContactRem(g,c DEBUGARGS)
 #define ContactD(c)                ContactD(c DEBUGARGS)
@@ -146,6 +150,8 @@ void          ContactMetaD        (ContactMeta *m);
 void          ContactMetaAdd      (ContactMeta **m, UWORD val, const char *text);
 BOOL          ContactMetaSave     (Contact *cont);
 BOOL          ContactMetaLoad     (Contact *cont);
+
+val_t         ContactGroupPrefVal (ContactGroup *cg, UDWORD flag);
 
 const char   *ContactPrefStr      (Contact *cont, UDWORD flag);
 val_t         ContactPrefVal      (Contact *cont, UDWORD flag);
