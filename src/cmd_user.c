@@ -266,6 +266,9 @@ JUMP_F(CmdUserRandomSet)
 /*
  * Displays help.
  */
+
+/* TODO: needs updateing */
+
 JUMP_F(CmdUserHelp)
 {
     char *arg1;
@@ -443,7 +446,7 @@ JUMP_F(CmdUserPass)
     char *arg1;
     SESSION;
     
-    arg1 = strtok (args, "");
+    arg1 = strtok (args, "\n");
     if (!arg1)
         M_print (i18n (2012, "No password given.\n"));
     else
@@ -477,7 +480,7 @@ JUMP_F(CmdUserSMS)
         M_print (i18n (2014, "No number given.\n"));
     else
     {
-        arg2 = strtok (NULL, "");
+        arg2 = strtok (NULL, "\n");
         if (!arg2)
             M_print (i18n (2015, "No message given.\n"));
 
@@ -495,7 +498,7 @@ JUMP_F(CmdUserInfo)
     UDWORD uin;
     SESSION;
 
-    arg1 = strtok (args, "");
+    arg1 = strtok (args, "\n");
     if (arg1 == NULL)
     {
         M_print (i18n (1932, "Need uin to ask for.\n"));
@@ -559,7 +562,7 @@ JUMP_F(CmdUserTrans)
     const char *arg1;
     int ver;
 
-    arg1 = strtok (args, " \t");
+    arg1 = strtok (args, " \t\n");
     if (!arg1)
     {
         ver = atoi (i18n (1003, "0"));
@@ -632,7 +635,7 @@ JUMP_F(CmdUserTCP)
     cmd = strtok (args, " \t\n");
     if (cmd)
     {
-        nick = strtok (NULL, "");
+        nick = strtok (NULL, "\n");
         if (!nick)
         {
             M_print (i18n (1916, "Need a nick or uin.\n"));
@@ -682,7 +685,7 @@ JUMP_F(CmdUserAuto)
     char *cmd;
     char *arg1;
 
-    cmd = strtok (args, "");
+    cmd = strtok (args, "\n");
     if (cmd == NULL)
     {
         M_print (i18n (1724, "Automatic replies are %s.\n"),
@@ -706,7 +709,7 @@ JUMP_F(CmdUserAuto)
     }
     else
     {
-        arg1 = strtok (cmd, " ");
+        arg1 = strtok (cmd, " \t\n");
         if (arg1 == NULL)
         {
             M_print (i18n (1734, "Sorry wrong syntax, can't find a status somewhere.\r\n"));
@@ -714,7 +717,7 @@ JUMP_F(CmdUserAuto)
         }
         if (!strcasecmp (arg1, CmdUserLookupName ("dnd")))
         {
-            cmd = strtok (NULL, "");
+            cmd = strtok (NULL, "\n");
             if (cmd == NULL)
             {
                 M_print (i18n (1735, "Must give a message.\n"));
@@ -724,7 +727,7 @@ JUMP_F(CmdUserAuto)
         }
         else if (!strcasecmp (arg1, CmdUserLookupName ("away")))
         {
-            cmd = strtok (NULL, "");
+            cmd = strtok (NULL, "\n");
             if (cmd == NULL)
             {
                 M_print (i18n (1735, "Must give a message.\n"));
@@ -734,7 +737,7 @@ JUMP_F(CmdUserAuto)
         }
         else if (!strcasecmp (arg1, CmdUserLookupName ("na")))
         {
-            cmd = strtok (NULL, "");
+            cmd = strtok (NULL, "\n");
             if (cmd == NULL)
             {
                 M_print (i18n (1735, "Must give a message.\n"));
@@ -744,7 +747,7 @@ JUMP_F(CmdUserAuto)
         }
         else if (!strcasecmp (arg1, CmdUserLookupName ("occ")))
         {
-            cmd = strtok (NULL, "");
+            cmd = strtok (NULL, "\n");
             if (cmd == NULL)
             {
                 M_print (i18n (1735, "Must give a message.\n"));
@@ -754,7 +757,7 @@ JUMP_F(CmdUserAuto)
         }
         else if (!strcasecmp (arg1, CmdUserLookupName ("inv")))
         {
-            cmd = strtok (NULL, "");
+            cmd = strtok (NULL, "\n");
             if (cmd == NULL)
             {
                 M_print (i18n (1735, "Must give a message.\n"));
@@ -778,12 +781,12 @@ JUMP_F(CmdUserAlter)
     jump_t *j;
     int quiet = 0;
 
-    cmd = strtok (args, " ");
+    cmd = strtok (args, " \t\n");
 
     if (cmd && !strcasecmp ("quiet", cmd))
     {
         quiet = 1;
-        cmd = strtok (NULL, " ");
+        cmd = strtok (NULL, " \t\n");
     }
         
     if (cmd == NULL)
@@ -802,7 +805,7 @@ JUMP_F(CmdUserAlter)
     }
     else
     {
-        char *new = strtok (NULL, " ");
+        char *new = strtok (NULL, " \t\n");
         
         if (new)
         {
@@ -985,7 +988,7 @@ JUMP_F (CmdUserMessage)
                     }
                     uin = ContactFindByNick (p);
                 }
-                arg1 = strtok (NULL, "");
+                arg1 = strtok (NULL, "\n");
                 break;
             case 2:
                 if (!uiG.last_rcvd_uin)
@@ -994,7 +997,7 @@ JUMP_F (CmdUserMessage)
                     return 0;
                 }
                 uin = uiG.last_rcvd_uin;
-                arg1 = strtok (args, "");
+                arg1 = strtok (args, "\n");
                 break;
             case 4:
                 if (!uiG.last_sent_uin)
@@ -1003,11 +1006,11 @@ JUMP_F (CmdUserMessage)
                     return 0;
                 }
                 uin = uiG.last_sent_uin;
-                arg1 = strtok (args, "");
+                arg1 = strtok (args, "\n");
                 break;
             case 8:
                 uin = -1;
-                arg1 = strtok (args, "");
+                arg1 = strtok (args, "\n");
                 break;
             default:
                 assert (0);
@@ -1061,7 +1064,7 @@ JUMP_F(CmdUserVerbose)
 {
     char *arg1;
 
-    arg1 = strtok (args, "");
+    arg1 = strtok (args, "\n");
     if (arg1 != NULL)
     {
         prG->verbose = atoi (arg1);
@@ -1077,7 +1080,7 @@ JUMP_F(CmdUserStatusDetail)
 {
     UDWORD num;
     Contact *cont;
-    char *name = strtok (args, "");
+    char *name = strtok (args, "\n");
     SESSION;
 
     if (name)
@@ -1480,7 +1483,7 @@ JUMP_F(CmdUserSound)
 {
     char *arg1;
     
-    if ((arg1 = strtok (args, "")))
+    if ((arg1 = strtok (args, "\n")))
     {
         prG->sound &= ~SFLAG_BEEP & ~SFLAG_CMD;
         if (!strcasecmp (arg1, i18n (1085, "on")))
@@ -1508,7 +1511,7 @@ JUMP_F(CmdUserSoundOnline)
 {
     char *arg1;
     
-    if ((arg1 = strtok (args, "")))
+    if ((arg1 = strtok (args, "\n")))
     {
         prG->sound &= ~SFLAG_ON_BEEP & ~SFLAG_ON_CMD;
         if (!strcasecmp (arg1, i18n (1085, "on")))
@@ -1536,7 +1539,7 @@ JUMP_F(CmdUserSoundOffline)
 {
     char *arg1;
     
-    if ((arg1 = strtok (args, "")))
+    if ((arg1 = strtok (args, "\n")))
     {
         prG->sound &= ~SFLAG_OFF_BEEP & ~SFLAG_OFF_CMD;
         if (!strcasecmp (arg1, i18n (1085, "on")))
@@ -1563,7 +1566,7 @@ JUMP_F(CmdUserSoundOffline)
 JUMP_F(CmdUserAutoaway) 
 {
     char *arg1;
-    if ((arg1 = strtok (args, ""))) /* assign a value */
+    if ((arg1 = strtok (args, "\n"))) /* assign a value */
     {
         if (prG->away_time == 0 || uiG.away_time_prev == 0 || atoi (arg1) == 0)
         {
@@ -1604,7 +1607,7 @@ JUMP_F(CmdUserSet)
     int quiet = 0;
     char *arg1;
     
-    arg1 = strtok (args, " \t");
+    arg1 = strtok (args, " \t\n");
     
     if (!arg1 || !strcmp (arg1, "help") || !strcmp (arg1, "?"))
     {
@@ -1704,7 +1707,7 @@ JUMP_F(CmdUserRegister)
 {
     char *arg1;
     
-    arg1 = strtok (args, "");
+    arg1 = strtok (args, "\n");
     if (arg1)
     {
         Session *sess;
@@ -1838,7 +1841,7 @@ JUMP_F(CmdUserTogVisible)
     UDWORD uin;
     SESSION;
 
-    arg1 = strtok (args, " \n");
+    arg1 = strtok (args, "\n");
     if (!arg1)
     {
         M_print (i18n (1668, "You must specify a nick name."));
@@ -1895,7 +1898,7 @@ JUMP_F(CmdUserAdd)
     UDWORD uin;
     SESSION;
 
-    arg1 = strtok (args, " \t");
+    arg1 = strtok (args, " \t\n");
     if (!arg1)
     {
         M_print (i18n (1753, "You must specify UIN and new nick name.\n"));
@@ -1903,7 +1906,7 @@ JUMP_F(CmdUserAdd)
     }
     
     uin = atoi (arg1);
-    arg2 = strtok (NULL, "");
+    arg2 = strtok (NULL, "\n");
     if (!uin)
     {
         M_print (i18n (1748, "No UIN given.\n"));
@@ -1958,7 +1961,7 @@ JUMP_F(CmdUserRem)
     UDWORD uin;
     SESSION;
 
-    arg1 = strtok (args, "\t\n");
+    arg1 = strtok (args, "\n");
     if (arg1)
     {
         uin = ContactFindByNick (arg1);
@@ -2011,7 +2014,7 @@ JUMP_F(CmdUserAuth)
     UDWORD uin;
     SESSION;
 
-    arg1 = strtok (args, "");
+    arg1 = strtok (args, "\n");
     if (!arg1)
     {
         M_print (i18n (1676, "Need uin to send to.\n"));
@@ -2052,7 +2055,7 @@ JUMP_F(CmdUserURL)
     UDWORD uin;
     SESSION;
 
-    arg1 = strtok (args, " ");
+    arg1 = strtok (args, " \t\n");
     if (!arg1)
     {
         M_print (i18n (1676, "Need uin to send to.\n"));
@@ -2066,11 +2069,11 @@ JUMP_F(CmdUserURL)
         }
         else
         {
-            arg1 = strtok (NULL, " ");
+            arg1 = strtok (NULL, " \t\n");
             uiG.last_sent_uin = uin;
             if (arg1)
             {
-                arg2 = strtok (NULL, "");
+                arg2 = strtok (NULL, "\n");
                 if (!arg2)
                     arg2 = "";
                 icq_sendurl (sess, uin, arg1, arg2);
@@ -2120,7 +2123,7 @@ JUMP_F(CmdUserLast)
     UDWORD uin;
     Contact *cont;
 
-    arg1 = strtok (args, "\t\n");
+    arg1 = strtok (args, "\n");
     if (!arg1)
     {
         M_print (i18n (1682, "You have received messages from:\n"));
@@ -2340,7 +2343,7 @@ JUMP_F(CmdUserSearch)
             if (args)
                 arg1 = strtok (args, " \t\n");
             if (arg1)
-                arg2 = strtok (NULL, "");
+                arg2 = strtok (NULL, "\n");
             if (arg2)
             {
                 if (sess->ver > 6)
@@ -2848,7 +2851,7 @@ void CmdUserProcess (const char *command, int *idle_val, int *idle_flag)
                     Prompt ();
                 return;
             }
-            cmd = strtok (buf, " \n\t");
+            cmd = strtok (buf, " \t\n");
 
             if (!cmd)
             {
