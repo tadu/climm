@@ -50,7 +50,7 @@
 1055:Socket creation failed
 1056:Socket created attempting to connect¶
 1060:Verbosity level is %d.¶
-1061:%s not recognized as a nick name.¶
+1061:'%s' not recognized as a nick name.¶
 1062:Users ignored:
 1063:Enter password:
 1064:Auto-Changed status to
@@ -72,9 +72,7 @@
 1084:Sound
 1085:on
 1086:off
-1087:Ignoring garbage after number.
 1089:Unloaded translation.
-1090:%s is a UIN, not a nick name.
 1093:Passwords did not match - please try again.
 1094:SOCKS5 server:
 1095:SOCKS5 port:
@@ -612,21 +610,18 @@
 1664:Composing message to ©4all©0:¶
 1666:Unignored %s.
 1667:Ignoring %s.
-1668:You must specify a nick name.
-1669:%s added.¶
 1670:Normal visible to %s now.
 1671:Always visible to %s now.
 1672:%s's IP address is 
 1673:	The port is %d¶
 1674:	The port is unknown¶
 1675:Ignored line:
-1676:Need uin to send to.¶
+1676:Need uin/nick to send to.¶
 1678:Need URL please.¶
 1679:Sorry saving your personal reply messages went wrong!¶
 1680:Your personal settings have been saved!¶
 1681:Last %d people you talked to:¶
 1682:You have received messages from:¶
-1684:%s is not on your contact list.¶
 1687:mICQ has been running for
 1688:days
 1689:hours
@@ -634,38 +629,33 @@
 1691:seconds
 1692:Contacts:
 1696:Sex:
-1699:Must give a valid uin/nickname¶
 1700:%s is not a valid user in your list.¶
 1703:©2Status modes: ¶
 1704:©2Groups: ¶
-1705:General                    1¶
-1706:Romance                    2¶
-1707:Games                      3¶
-1708:Students                   4¶
-1709:20 something               6¶
-1710:30 something               7¶
-1711:40 something               8¶
-1712:50+                        9¶
-1713:Man chat requesting women 10¶
-1714:Woman chat requesting men 11¶
-1715:mICQ                      49 (might not work but try it)
-1716:None                      -1¶
+1705:General
+1706:Romance
+1707:Games
+1708:Students
+1709:20 something
+1710:30 something
+1711:40 something
+1712:50+
+1713:Man chat requesting women
+1714:Woman chat requesting men
+1715:mICQ
+1716:None
 1717:! as the first character of a command will execute a shell command (e.g. "!ls"  "!dir" "!mkdir temp")
 1719:Shows how long mICQ has been running.
 1720:uin can be either a number or the nickname of the user.
 1721:Sending a blank message will put the client into multiline mode.¶Use . on a line by itself to end message.¶Use # on a line by itself to cancel the message.
-1722:Type help to see your current command, because this one you typed wasn't one!
 1724:Automatic replies are %s.¶
 1727:The "do not disturb" message is:
 1728:The "away" message is:
 1729:The "not available" message is:
 1730:The "occupied" message is:
 1731:The "invisible" message is:
-1734:Sorry wrong syntax, can't find a status somewhere.\r¶
 1735:Must give a message.¶
-1736:Sorry wrong syntax. Read tha help man!¶
-1737:Automatic reply setting¶
-1738:Need a command to alter!¶
+1738:Need a command to alter.¶
 1739:Composing message to ©4%s©0:¶
 1740:Composing message to ©2%d©0:¶
 1741:Must receive a message first¶
@@ -675,12 +665,8 @@
 1745:unknown
 1746: nr type         sent/received packets/unique packets¶
 1747:total
-1748:No UIN given.¶
 1749:UIN %d renamed to %s.¶
-1750:Nick %s not in contact list.¶
 1751:Nick %s removed.
-1752:No nick given.¶
-1753:You must specify UIN and new nick name.¶
 1754: Note: You need to 'save' to write new contact list to disc.¶
 1755:added you to their contact list.¶
 1756:¶Creating Connection...¶
@@ -695,11 +681,10 @@
 1765:%s has UIN %d.
 1766:Changing status to away resp. not available after idling %s%d%s seconds.¶
 1767:Toggles auto cycling to away/not available.
-1768:The label '%s' is already being used.
+1768:The command name '%s' is already being used.¶
 1769:Displays your current online status.
 1770:Resend your last message to a new uin.
 1771:You haven't sent a message to anyone yet!¶
-1773:%s could not be added.¶
 1774:Incoming packet:
 1775:Outgoing packet:
 1777:Opening peer-to-peer connection at localhost:%d... 
@@ -809,7 +794,6 @@
 1913:Received server acknowledge for %s#%08lx:%08lx%s sent to %s%s%s.¶
 1914:Can't allocate connection structure.¶
 1915:Server says we're at %s.¶
-1916:Need a nick or uin.¶
 1918:Ignored server request for a minimum report interval of %d.¶
 1919:UIN mismatch: %d vs %d.¶
 1920:Registration of new UIN refused.¶
@@ -823,8 +807,6 @@
 1929:User is dnd [Auto-Message]
 1930:Can't send this (%x) yet.¶
 1931:Couldn't find server connection.¶
-1932:Need uin to ask for.¶
-1933:%s is neither a nick nor a UIN.¶
 1934:connected
 1935:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x¶
 1936:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
@@ -893,7 +875,6 @@
 2007:Business services
 2008:Random chat group change was ©2%s©0.¶
 2009:Found random chat partner UIN %d in chat group %d.¶
-2010:None                       0¶
 2011:You do not have a listening peer-to-peer connection.¶
 2012:No password given.¶
 2013:This command is v8 only.¶
@@ -908,7 +889,6 @@
 2023:Direct connection closed by peer.¶
 2024:Unknown protocol version %d for ICQ peer-to-peer protocol.¶
 2026:TCP cookie:
-2028:Wrong argument count.¶
 2029:Protocol error on peer-to-peer connection
 2030:%04d-%02d-%02d %02d:%02d UTC
 2031:Connecting failed too often, giving up.¶
@@ -985,3 +965,16 @@
 2107:No messages received from %s%s%s.¶
 2108:auto
 2109:version
+2110:    file  <nick> <file1> <as1> ... <description>¶
+2111:                 - Send file1 as as1, ..., with description.¶
+2112:                 - as = '/': strip path, as = '.': as is¶
+2113:Unknown status '%s'.¶
+2114:The command name '%s' does not exist.¶
+2115:'%s' is not an integer.¶
+2116:No new nick name given.¶
+2117:%d added as %s.¶
+2118:Out of memory.¶
+2119:auth [grant] <nick>    - grant authorization.¶
+2120:auth deny <nick> <msg> - refuse authorization.¶
+2121:auth req  <nick> <msg> - request authorization.¶
+2122: Note: You need to 'save' to write new password to disc.¶

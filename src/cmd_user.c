@@ -927,7 +927,7 @@ static JUMP_F (CmdUserResend)
     if (!UtilUIParseNick (&args, &cont))
     {
         if (*args)
-            M_print (i18n (1061, "%s not recognized as a nick name.\n"), args);
+            M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         else
             M_print (i18n (1676, "Need uin/nick to send to.\n"));
         return 0;
@@ -940,7 +940,7 @@ static JUMP_F (CmdUserResend)
         if (!UtilUIParseNick (&args, &cont))
         {
             if (*args)
-                M_print (i18n (1061, "%s not recognized as a nick name.\n"), args);
+                M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
             return 0;
         }
     }
@@ -1044,7 +1044,7 @@ static JUMP_F (CmdUserMessage)
             case 1:
                 if (!UtilUIParseNick (&args, &cont))
                 {
-                    M_print (i18n (1061, "%s not recognized as a nick name.\n"), args);
+                    M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
                     return 0;
                 }
                 uin = cont->uin;
@@ -1760,7 +1760,7 @@ static JUMP_F(CmdUserTogIgnore)
 
     if (!UtilUIParseNick (&args, &cont))
     {
-        M_print (i18n (1061, "%s not recognized as a nick name.\n"), args);
+        M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
     }
 
@@ -1832,7 +1832,7 @@ static JUMP_F(CmdUserTogVisible)
 
     if (!UtilUIParseNick (&args, &cont))
     {
-        M_print (i18n (1061, "%s not recognized as a nick name.\n"), args);
+        M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
     }
 
