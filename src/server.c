@@ -59,28 +59,27 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, Extra *extra)
     char *old;
     UBYTE ret;
 
-    if (!cont)
+    if (!cont || !conn)
     {
         ExtraD (extra);
         return RET_FAIL;
     }
     
-    if (!(e_trans = ExtraFind (extra, EXTRA_TRANS)))
-    {
-        extra = ExtraSet (extra, EXTRA_TRANS, EXTRA_TRANS_ANY, NULL);
-        e_trans = ExtraFind (extra, EXTRA_TRANS);
-    }
     if (!(e_msg = ExtraFind (extra, EXTRA_MESSAGE)))
     {
         ExtraD (extra);
         return RET_FAIL;
+    }
+    if (!(e_trans = ExtraFind (extra, EXTRA_TRANS)))
+    {
+        extra = ExtraSet (extra, EXTRA_TRANS, EXTRA_TRANS_ANY, NULL);
+        e_trans = ExtraFind (extra, EXTRA_TRANS);
     }
 
     old = uiG.last_message_sent;
     uiG.last_message_sent      = strdup (e_msg->text);
     uiG.last_message_sent_type = e_msg->data;
     uiG.last_sent_uin          = cont->uin;
-    e_msg->text = strdup (e_msg->text);
     if (old)
         free (old);
 

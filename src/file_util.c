@@ -832,7 +832,7 @@ void Read_RC_File (FILE *rcf)
                 else if (!strcasecmp (cmd, "server"))
                 {
                     PrefParse (tmp);
-                    conn->spref->server = strdup (tmp);
+                    s_repl (&conn->spref->server, tmp);
                 }
                 else if (!strcasecmp (cmd, "port"))
                 {
@@ -896,7 +896,7 @@ void Read_RC_File (FILE *rcf)
         assert (conn->spref);
 
         conn->port   = conn->spref->port;
-        conn->server = conn->spref->server;
+        s_repl (&conn->server, conn->spref->server);
         conn->passwd = conn->spref->passwd;
         conn->status = conn->spref->status;
         conn->uin    = conn->spref->uin;

@@ -101,7 +101,7 @@ void ConnectionInitPeer (Connection *list)
     list->close       = &PeerDispatchClose;
     list->our_session = 0;
     list->ip          = 0;
-    list->server      = NULL;
+    s_repl (&list->server, NULL);
     list->port        = list->spref->port;
     list->uin         = list->parent ? list->parent->uin : -1;
 
@@ -343,7 +343,7 @@ void TCPDispatchConn (Connection *peer)
                 }
                 if (peer->type == TYPE_MSGDIRECT)
                     peer->port = cont->dc->port;
-                peer->server  = NULL;
+                s_repl (&peer->server, NULL);
                 peer->ip      = cont->dc->ip_rem;
                 peer->connect = 1;
                 
@@ -363,7 +363,7 @@ void TCPDispatchConn (Connection *peer)
                 }
                 if (peer->type == TYPE_MSGDIRECT)
                     peer->port = cont->dc->port;
-                peer->server  = NULL;
+                s_repl (&peer->server, NULL);
                 peer->ip      = cont->dc->ip_loc;
                 peer->connect = 3;
                 
@@ -1357,6 +1357,7 @@ int TCPSendMsgAck (Connection *peer, UWORD seq, UWORD type, BOOL accept)
             break;
     }
     PeerPacketSend (peer, pak);
+    PacketD (pak);
     return 1;
 }
 

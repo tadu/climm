@@ -46,7 +46,7 @@ void ConnectionInitServer (Connection *conn)
     conn->dispatch = &SrvCallBackReceive;
     conn->reconnect= &SrvCallBackReconn;
     conn->close    = &FlapCliGoodbye;
-    conn->server   = strdup (conn->spref->server);
+    s_repl (&conn->server, conn->spref->server);
     conn->type     = TYPE_SERVER;
     QueueEnqueueData (conn, conn->connect, conn->our_seq,
                       time (NULL) + 10,

@@ -644,7 +644,9 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             
             if ((i = TLVGet (tlv, 0x2711)) == (UWORD)-1)
             {
+#ifndef WIP
                 if (TLVGet (tlv, 11) == (UWORD)-1)
+#endif
                     SnacSrvUnknown (event);
                 TLVD (tlv);
                 return;
@@ -738,6 +740,9 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
 
             if (!strlen (text) && unk == 0x12)
             {
+#ifdef WIP
+                SnacSrvUnknown (event);
+#endif
                 PacketD (p);
                 TLVD (tlv);
                 s_free (text);
@@ -759,6 +764,9 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                         PacketWrite2 (p, 0);
                         PacketWrite2 (p, pri);
                         PacketWriteLNTS (p, c_out (resp));
+#ifdef WIP
+                        SnacSrvUnknown (event);
+#endif
                         SnacSend (event->conn, p);
                         TLVD (tlv);
                         s_free (text);

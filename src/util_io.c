@@ -443,7 +443,7 @@ void UtilIOConnectTCP (Connection *conn)
         length = sizeof (struct sockaddr);
         getsockname (conn->sok, (struct sockaddr *) &sin, &length);
         conn->port = ntohs (sin.sin_port);
-        conn->server = strdup ("localhost");
+        s_repl (&conn->server, "localhost");
         if (prG->verbose || conn->type == TYPE_MSGLISTEN)
             if (M_pos () > 0)
                 M_print (i18n (1634, "ok.\n"));

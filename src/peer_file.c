@@ -71,7 +71,7 @@ Connection *PeerFileCreate (Connection *serv)
     flist->our_seq     = -1;
     flist->our_session = 0;
     flist->port        = serv->assoc->spref->port;
-    flist->server      = NULL;
+    s_repl (&flist->server, NULL);
     flist->ip          = 0;
     flist->dispatch    = &TCPDispatchMain;
     flist->reconnect   = &TCPDispatchReconn;
@@ -123,7 +123,7 @@ UBYTE PeerFileRequested (Connection *peer, const char *files, UDWORD bytes)
     fpeer->port    = 0;
     fpeer->ip      = 0;
     fpeer->connect = 0;
-    fpeer->server  = NULL;
+    s_repl (&fpeer->server, NULL);
     fpeer->uin     = peer->uin;
     fpeer->len     = bytes;
     fpeer->done    = 0;
@@ -160,12 +160,12 @@ BOOL PeerFileAccept (Connection *peer, UWORD status, UDWORD port)
     fpeer->our_seq  = 0;
     fpeer->port     = port;
     fpeer->ip       = peer->ip;
-    fpeer->server   = NULL;
+    s_repl (&fpeer->server, s_ip (fpeer->ip));
     fpeer->close    = &PeerFileDispatchDClose;
     
     if (prG->verbose)
         M_printf (i18n (2068, "Opening file transfer connection at %s:%d... \n"),
-                 fpeer->server = strdup (s_ip (fpeer->ip)), fpeer->port);
+                  fpeer->server, fpeer->port);
 
     TCPDispatchConn (fpeer);
     

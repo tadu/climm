@@ -148,7 +148,7 @@ static void FlapChannel4 (Connection *conn, Packet *pak)
 
         conn->port = atoi (strchr (tlv[5].str, ':') + 1);
         *strchr (tlv[5].str, ':') = '\0';
-        conn->server = strdup (tlv[5].str);
+        s_repl (&conn->server, tlv[5].str);
         conn->ip = 0;
 
         conn->connect = 8;
@@ -268,6 +268,7 @@ static char *_encryptpw (const char *pw)
 void FlapCliIdent (Connection *conn)
 {
     Packet *pak;
+    char *f;
 
     if (!conn->passwd || !strlen (conn->passwd))
     {
@@ -291,7 +292,7 @@ void FlapCliIdent (Connection *conn)
     pak = FlapC (1);
     PacketWriteB4 (pak, CLI_HELLO);
     PacketWriteTLVStr  (pak, 1, s_sprintf ("%d", conn->uin));
-    PacketWriteTLVData (pak, 2, _encryptpw (conn->passwd), strlen (conn->passwd));
+    PacketWriteTLVData (pak, 2, f = _encryptpw (conn->passwd), strlen (conn->passwd));
     PacketWriteTLVStr  (pak, 3, "ICQ Inc. - Product of ICQ (TM).2002a.5.37.1.3728.85");
     PacketWriteTLV2    (pak, 22, 266);
     PacketWriteTLV2    (pak, 23, FLAP_VER_MAJOR);
@@ -302,6 +303,7 @@ void FlapCliIdent (Connection *conn)
     PacketWriteTLVStr  (pak, 15, "de");  /* en */
     PacketWriteTLVStr  (pak, 14, "de");  /* en */
     FlapSend (conn, pak);
+    free (f);
 }
 
 void FlapCliCookie (Connection *conn, const char *cookie, UWORD len)

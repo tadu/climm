@@ -155,7 +155,7 @@ void ConnectionInitServerV5 (Connection *conn)
     conn->close = &CallBackClosev5;
     conn->flags = 0;
     if (!conn->server || !strlen (conn->server))
-        conn->server = "icq.icq.com";
+        s_repl (&conn->server, "icq.icq.com");
     if (!conn->port)
         conn->port = 4000;
     if (!conn->passwd || !strlen (conn->passwd))
