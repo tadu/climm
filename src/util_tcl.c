@@ -68,7 +68,7 @@ char *RemEscapes (const char *s)
                 if (!d)
                     c += 2;
                 else
-                    c = d;
+                    c = d + 1;
             }
             else if (c[1] == '!' && c[2])
                 c += 3;
