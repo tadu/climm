@@ -101,10 +101,17 @@ void PrefLoad (Preferences *pref);
 #define TYPEF_ANY_CHAT    256  /* " && for chat          */
 #define TYPEF_FILE        512  /* any file io            */
 
-#define TYPE_SERVER_OLD   (TYPEF_ANY_SERVER | TYPEF_SERVER_OLD)   /* v5 server connection             */
-#define TYPE_SERVER       (TYPEF_ANY_SERVER | TYPEF_SERVER)       /* v7/v8 server connection          */
-#define TYPE_LISTEN       (TYPEF_ANY_PEER | TYPEF_ANY_LISTEN)     /* listener for direct message conn */
-#define TYPE_DIRECT       (TYPEF_ANY_PEER | TYPEF_ANY_DIRECT)     /* direct connection                */
+/* any sess->type may be only any of those values:
+ * do not use the flags above unless you _really_ REALLY know what you're doing
+ */
+#define TYPE_SERVER_OLD   (TYPEF_ANY_SERVER | TYPEF_SERVER_OLD)
+#define TYPE_SERVER       (TYPEF_ANY_SERVER | TYPEF_SERVER)
+#define TYPE_LISTEN       (TYPEF_ANY_PEER | TYPEF_ANY_MSG  | TYPEF_ANY_LISTEN)
+#define TYPE_DIRECT       (TYPEF_ANY_PEER | TYPEF_ANY_MSG  | TYPEF_ANY_DIRECT)
+#define TYPE_FILELISTEN   (TYPEF_ANY_PEER | TYPEF_ANY_FILE | TYPEF_ANY_LISTEN)
+#define TYPE_FILEDIRECT   (TYPEF_ANY_PEER | TYPEF_ANY_FILE | TYPEF_ANY_DIRECT)
+#define TYPE_CHATLISTEN   (TYPEF_ANY_PEER | TYPEF_ANY_CHAT | TYPEF_ANY_LISTEN)
+#define TYPE_CHATDIRECT   (TYPEF_ANY_PEER | TYPEF_ANY_CHAT | TYPEF_ANY_DIRECT)
 #define TYPE_FILE         TYPEF_FILE
 
 #define CONN_AUTOLOGIN   1

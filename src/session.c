@@ -93,18 +93,19 @@ Session *SessionNr (int i)
 
 /*
  * Finds a session of given type and/or given uin.
+ * Actually, you may specify TYPEF_* here that must all be set.
  */
 Session *SessionFind (UWORD type, UDWORD uin)
 {
     int i;
     
     for (i = 0; i < listlen; i++)
-        if (slist[i] && (slist[i]->type == type) && (slist[i]->uin == uin) && uin)
+        if (slist[i] && ((slist[i]->type & type) == type) && (slist[i]->uin == uin) && uin)
             return slist[i];
     if (uin)
         return NULL;
     for (i = 0; i < listlen; i++)
-        if (slist[i] && (slist[i]->type == type) && (slist[i]->connect & CONNECT_OK))
+        if (slist[i] && ((slist[i]->type & type) == type) && (slist[i]->connect & CONNECT_OK))
             return slist[i];
     return NULL;
 }

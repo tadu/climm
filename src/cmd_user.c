@@ -116,8 +116,8 @@ static jump_t jump[] = {
     { NULL, NULL, NULL, 0 }
 };
 
-#define SESSION Session *sess; if (!(sess = SessionFind (TYPE_SERVER, 0))) sess = SessionFind (TYPE_SERVER_OLD, 0); \
-    if (!sess) { M_print (i18n (1931, "Couldn't find server connection.\n")); return 0; }
+#define SESSION Session *sess; if (!(sess = SessionFind (TYPEF_ANY_SERVER, 0))) \
+    { M_print (i18n (1931, "Couldn't find server connection.\n")); return 0; }
 
 /*
  * Returns a pointer to the jump table.

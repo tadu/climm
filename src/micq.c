@@ -140,7 +140,7 @@ void Idle_Check (Session *sess)
     }
     if (new != -1 && new != sess->status)
     {
-        if (sess->type & TYPE_SERVER)
+        if (sess->type == TYPE_SERVER)
             SnacCliSetstatus (sess, new, 1);
         else
             CmdPktCmdStatusChange (sess, new);
