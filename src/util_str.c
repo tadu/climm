@@ -40,11 +40,9 @@ const char *s_sprintf (const char *fmt, ...)
  */
 const char *s_ip (UDWORD ip)
 {
-    static char buf[20];
     struct sockaddr_in sin;
     sin.sin_addr.s_addr = htonl (ip);
-    snprintf (buf, sizeof (buf), "%s", inet_ntoa (sin.sin_addr));
-    return buf;
+    return s_sprintf ("%s", inet_ntoa (sin.sin_addr));
 }
 
 /*
@@ -108,9 +106,11 @@ const char *s_time (time_t *stamp)
         ? "%X" : "%a %b %d %X %Y", thetime);
 
     if (prG->verbose > 7)
-        snprintf (tbuf + strlen (tbuf), sizeof (tbuf) - strlen (tbuf), ".%.06ld", p.tv_usec);
+        snprintf (tbuf + strlen (tbuf), sizeof (tbuf) - strlen (tbuf),
+                  ".%.06ld", *stamp == NOW ? p.tv_usec : 0);
     else if (prG->verbose > 1)
-        snprintf (tbuf + strlen (tbuf), sizeof (tbuf) - strlen (tbuf), ".%.03ld", p.tv_usec / 1000);
+        snprintf (tbuf + strlen (tbuf), sizeof (tbuf) - strlen (tbuf),
+                  ".%.03ld", *stamp == NOW ? p.tv_usec / 1000 : 0);
     
     return tbuf;
 }
