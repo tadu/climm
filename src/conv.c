@@ -80,11 +80,11 @@ typedef struct { const char *enca; const char *encb; const char *encc; const cha
 
 static int conv_nr = 0;
 static enc_t *conv_encs = NULL;
-static const char *Utf8Name = "UTF-8";
 
 UBYTE conv_error = 0;
 
 #if HAVE_ICONV
+static const char *Utf8Name = "UTF-8";
 /*
  * Check whether iconv() can handle it.
  */
