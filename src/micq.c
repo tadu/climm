@@ -506,8 +506,6 @@ static void Init (int argc, char *argv[])
             s_cat (&arg_C, s_quote (targv[i]));
         }
     }
-    s_done (&arg_C);
-    free (targv);
     
     for (i = 0; (conn = ConnectionNr (i)); i++)
         if (conn->open && conn->flags & CONN_AUTOLOGIN)
@@ -521,12 +519,14 @@ static void Init (int argc, char *argv[])
                 }
                 if ((loginevent = conn->open (conn)))
                      QueueEnqueueDep (conn, QUEUE_MICQ_COMMAND, 0, loginevent, NULL, conn->cont,
-                                      OptSetVals (NULL, CO_MICQCOMMAND, "eg", 0),
+                                      OptSetVals (NULL, CO_MICQCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
                                       &CmdUserCallbackTodo);
             }
             else
                 conn->open (conn);
         }
+    s_done (&arg_C);
+    free (targv);
 }
 
 /******************************
