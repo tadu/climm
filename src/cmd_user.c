@@ -36,7 +36,7 @@
 
 static jump_f
     CmdUserChange, CmdUserRandom, CmdUserHelp, CmdUserInfo, CmdUserTrans,
-    CmdUserAuto, CmdUserAlter, CmdUserMessage, CmdUserResend, CmdUserPeek,
+    CmdUserAuto, CmdUserAlter, CmdUserMessage, CmdUserMessageNG, CmdUserResend, CmdUserPeek,
     CmdUserVerbose, CmdUserRandomSet, CmdUserIgnoreStatus, CmdUserSMS,
     CmdUserStatusDetail, CmdUserStatusWide, CmdUserStatusShort,
     CmdUserSound, CmdUserSoundOnline, CmdUserRegister, CmdUserStatusMeta,
@@ -65,6 +65,7 @@ static jump_t jump[] = {
     { &CmdUserAuto,          "auto",         NULL, 0,   0 },
     { &CmdUserAlter,         "alter",        NULL, 0,   0 },
     { &CmdUserAnyMess,       "message",      NULL, 0,   0 },
+    { &CmdUserMessageNG,     "nmsg",         NULL, 0,   1 },
     { &CmdUserMessage,       "msg",          NULL, 0,   1 },
     { &CmdUserMessage,       "r",            NULL, 0,   2 },
     { &CmdUserMessage,       "a",            NULL, 0,   4 },
@@ -1150,6 +1151,110 @@ static JUMP_F (CmdUserAnyMess)
             CmdPktCmdSendMessage (conn, cont->uin, arg1, data >> 2);
     }
     return 0;
+}
+
+/*
+ * Send an instant message.
+ */
+static JUMP_F (CmdUserMessageNG)
+{
+    static UDWORD size = 0;
+    static char *msg = NULL;
+    static UDWORD uinlist[20] = { 0 };
+    char *arg1 = NULL;
+    UDWORD i;
+    Contact *cont = NULL;
+    OPENCONN;
+
+    if (!status)
+    {
+        switch (data)
+        {
+            case 1:
+                for (i = 0; *args; args++)
+                {
+                    if (!s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
+                    {
+                        M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
+                        return 0;
+                    }
+                    uinlist[i++] = cont->uin;
+                    if (*args != ',')
+                        break;
+                }
+                uinlist[i] = 0;
+                break;
+            case 2:
+                if (!uiG.last_rcvd_uin)
+                {
+                    M_print (i18n (1741, "Must receive a message first.\n"));
+                    return 0;
+                }
+                uinlist[0] = uiG.last_rcvd_uin;
+                uinlist[1] = 0;
+                break;
+            case 4:
+                if (!uiG.last_sent_uin)
+                {
+                    M_print (i18n (1742, "Must write a message first.\n"));
+                    return 0;
+                }
+                uinlist[0] = uiG.last_sent_uin;
+                uinlist[1] = 0;
+                break;
+            default:
+                assert (0);
+        }
+        if (!s_parserem (&args, &arg1))
+            arg1 = NULL;
+        if (arg1)
+        {
+            for (i = 0; uinlist[i]; i++)
+            {
+                if (!(cont = ContactByUIN (uinlist[i], 1)))
+                    continue;
+                IMCliMsg (conn, cont, arg1, MSG_NORM, NULL);
+                TabAddUIN (cont->uin);
+            }
+            return 0;
+        }
+        if (!uinlist[1])
+            M_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLCONTACT, ContactByUIN (uinlist[0], 1)->nick, COLNONE);
+        else
+            M_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLMESSAGE, i18n (2220, "several"), COLNONE);
+        msg = s_cat (msg, &size, "");
+        *msg = 0;
+        status = 1;
+    }
+    else
+    {
+        if (!strcmp (args, END_MSG_STR))
+        {
+            arg1 = msg + strlen (msg) - 1;
+            while (*msg && strchr ("\r\n\t ", *arg1))
+                *arg1-- = '\0';
+            for (i = 0; uinlist[i]; i++)
+            {
+                if (!(cont = ContactByUIN (uinlist[i], 1)))
+                    continue;
+                IMCliMsg (conn, cont, msg, MSG_NORM, NULL);
+                TabAddUIN (cont->uin);
+            }
+            return 0;
+        }
+        else if (!strcmp (arg1, CANCEL_MSG_STR))
+        {
+            M_print (i18n (1038, "Message canceled.\n"));
+            return 0;
+        }
+        else
+        {
+            msg = s_cat (msg, &size, args);
+            msg = s_cat (msg, &size, "\r\n");
+        }
+    }
+    R_setprompt (i18n (1041, "msg> "));
+    return status;
 }
 
 /*
@@ -2400,10 +2505,14 @@ static JUMP_F(CmdUserURL)
     if (!s_parserem (&args, &msg))
         msg = "";
 
-    uiG.last_sent_uin = cont->uin;
-    icq_sendurl (conn, cont->uin, url, msg);
-    free (url);
+    msg = strdup (s_sprintf ("%s%c%s", url, ConvSep (), msg));
 
+    uiG.last_sent_uin = cont->uin;
+    
+    icq_sendmsg (conn, cont->uin, msg, MSG_URL);
+
+    free (msg);
+    free (url);
     return 0;
 }
 

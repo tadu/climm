@@ -37,5 +37,7 @@ TODO:
  : allow uinlist parameters instead of single uins only
  : implement more server message types, unify handling
  : use ASCII art for setup wizard
- : implement UTF-8 input
  : use type-2 outgoing messages, unify code with peer2peer messages
+ : replace all UDWORD uin parameters by Contact *
+ : check sending UTF-8 directly
+ 

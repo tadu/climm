@@ -443,7 +443,7 @@ void TCPDispatchShake (Connection *peer)
         if (!peer)
             return;
 
-        cont = ContactFind (peer->uin);
+        cont = ContactByUIN (peer->uin, 1);
         if (!cont && (peer->connect & CONNECT_MASK) != 16)
         {
             TCPClose (peer);
@@ -452,15 +452,9 @@ void TCPDispatchShake (Connection *peer)
                 PacketD (pak);
             return;
         }
-        if (!cont)
-        {
-            cont = ContactByUIN (peer->uin, 1);
-            if (!cont)
-                return;
-        }
         
         Debug (DEB_TCP, "HS %d uin %d nick %s state %d pak %p peer %d",
-                        peer->sok, peer->uin, cont->nick, peer->connect, pak, peer);
+                        peer->sok, peer->uin, cont ? cont->nick : "<>", peer->connect, pak, peer);
 
         switch (peer->connect & CONNECT_MASK)
         {
@@ -1505,11 +1499,7 @@ BOOL TCPSendMsg (Connection *list, UDWORD uin, const char *msg, UWORD sub_cmd)
     ASSERT_MSGDIRECT(peer);
 
     pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
-#ifdef ENABLE_UTF8
-    SrvMsgAdvanced   (pak, peer->our_seq, sub_cmd, 0, list->parent->status, CONT_UTF8 (cont) ? msg : c_out (msg));
-#else
-    SrvMsgAdvanced   (pak, peer->our_seq, sub_cmd, 0, list->parent->status, msg);
-#endif
+    SrvMsgAdvanced   (pak, peer->our_seq, sub_cmd, 0, list->parent->status, c_out_for (msg, cont));
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
 #ifdef ENABLE_UTF8
@@ -1523,6 +1513,57 @@ BOOL TCPSendMsg (Connection *list, UDWORD uin, const char *msg, UWORD sub_cmd)
                       uin, time (NULL),
                       pak, strdup (msg), &TCPCallBackResend);
     return 1;
+}
+
+/*
+ * Sends a message via TCP.
+ * Adds it to the resend queue until acked.
+ */
+UBYTE PeerSendMsg (Connection *list, Contact *cont, const char *msg, UWORD sub_cmd, MetaList *extra)
+{
+    Packet *pak;
+    Connection *peer;
+
+    if (!list || !list->parent || !cont || !cont->dc || !cont->dc->port)
+        return RET_DEFER;
+    if (cont->uin == list->parent->uin || !(list->connect & CONNECT_MASK))
+        return RET_DEFER;
+    if (!cont->dc->ip_loc && !cont->dc->ip_rem)
+        return RET_DEFER;
+
+    ASSERT_MSGLISTEN(list);
+    
+    peer = ConnectionFind (TYPE_MSGDIRECT, cont->uin, list);
+    if (peer)
+    {
+        if (peer->connect & CONNECT_FAIL)
+            return RET_DEFER;
+        if (~peer->connect & CONNECT_OK)
+            peer = NULL;
+    }
+    if (!peer)
+    {
+       TCPDirectOpen (list, cont->uin);
+       return RET_DEFER;
+    }
+
+    ASSERT_MSGDIRECT(peer);
+
+    pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
+    SrvMsgAdvanced   (pak, peer->our_seq, sub_cmd, 0, list->parent->status, c_out_for (msg, cont));
+    PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
+    PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
+#ifdef ENABLE_UTF8
+    if (CONT_UTF8 (cont))
+        PacketWriteDLStr (pak, CAP_GID_UTF8);
+#endif
+
+    peer->stat_real_pak_sent++;
+
+    QueueEnqueueData (peer, QUEUE_TCP_RESEND, peer->our_seq--,
+                      cont->uin, time (NULL),
+                      pak, strdup (msg), &TCPCallBackResend);
+    return RET_INPR;
 }
 
 /*

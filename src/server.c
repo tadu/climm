@@ -16,6 +16,7 @@
 #include "session.h"
 #include "preferences.h"
 #include "tcp.h"
+#include "packet.h"
 #include "conv.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,37 +26,6 @@
 #include <ctype.h>
 #include <assert.h>
 #include <limits.h>
-
-void Auto_Reply (Connection *conn, UDWORD uin)
-{
-    char *temp;
-
-    if (!(prG->flags & FLAG_AUTOREPLY))
-        return;
-    
-          if (conn->status & STATUSF_DND)
-         temp = prG->auto_dnd;
-     else if (conn->status & STATUSF_OCC)
-         temp = prG->auto_occ;
-     else if (conn->status & STATUSF_NA)
-         temp = prG->auto_na;
-     else if (conn->status & STATUSF_AWAY)
-         temp = prG->auto_away;
-     else if (conn->status & STATUSF_INV)
-         temp = prG->auto_inv;
-     else
-         return;
-    
-    icq_sendmsg (conn, uin, temp, MSG_AUTO);
-}
-
-void icq_sendurl (Connection *conn, UDWORD uin, const char *description, const char *url)
-{
-    char *buf;
-
-    icq_sendmsg (conn, uin, buf = strdup (s_sprintf ("%s%c%s", url, ConvSep (), description)), MSG_URL);
-    free (buf);
-}
 
 void icq_sendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD msg_type)
 {
@@ -80,4 +50,65 @@ void icq_sendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD msg_typ
     uiG.last_message_sent_type = msg_type;
     if (old)
         free (old);
+}
+
+UBYTE IMCliMsg (Connection *conn, Contact *cont, const char *text, UDWORD msg_type, MetaList *extra)
+{
+    char *old;
+    UBYTE ret;
+
+    if (!cont)
+    {
+        Meta_Free (extra);
+        return RET_FAIL;
+    }
+    
+    if (!extra || extra->tag != EXTRA_TRANS)
+    {
+        MetaList *tmp = calloc (1, sizeof (MetaList));
+        tmp->tag  = EXTRA_TRANS;
+        tmp->data = EXTRA_TRANS_ANY;
+        tmp->more = extra;
+        extra = tmp;
+    }
+
+    old = uiG.last_message_sent;
+    uiG.last_message_sent      = strdup (text);
+    uiG.last_message_sent_type = msg_type;
+    text = uiG.last_message_sent;
+    if (old)
+        free (old);
+
+    putlog (conn, NOW, cont->uin, STATUS_ONLINE, 
+            msg_type == MSG_AUTO ? LOG_AUTO : LOG_SENT, msg_type, "%s\n", text);
+
+#ifdef ENABLE_PEER2PEER
+    if (extra->data & EXTRA_TRANS_DC)
+        if (conn->assoc)
+            if (RET_IS_OK (ret = PeerSendMsg (conn->assoc, cont, text, msg_type, extra)))
+                return ret;
+    extra->data &= ~EXTRA_TRANS_DC;
+#endif
+    if (extra->data & EXTRA_TRANS_TYPE2)
+        if (conn->type == TYPE_SERVER && HAS_CAP (cont->caps, CAP_ISICQ) && HAS_CAP (cont->caps, CAP_SRVRELAY))
+            if (RET_IS_OK (ret = SnacCliSendmsg2 (conn, cont, text, msg_type, extra)))
+                return ret;
+    extra->data &= ~EXTRA_TRANS_TYPE2;
+    if (extra->data & EXTRA_TRANS_ICQv8)
+        if (conn->connect & CONNECT_OK && conn->type == TYPE_SERVER)
+        {
+            SnacCliSendmsg (conn, cont->uin, text, msg_type, 0);
+            Meta_Free (extra);
+            return RET_OK;
+        }
+    extra->data &= ~EXTRA_TRANS_ICQv8;
+    if (extra->data & EXTRA_TRANS_ICQv5)
+        if (conn->connect & CONNECT_OK && conn->type == TYPE_SERVER_OLD)
+        {
+            CmdPktCmdSendMessage (conn, cont->uin, text, msg_type);
+            Meta_Free (extra);
+            return RET_OK;
+        }
+    Meta_Free (extra);
+    return RET_FAIL;
 }

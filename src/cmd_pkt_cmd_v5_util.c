@@ -19,6 +19,7 @@
 #include "cmd_pkt_server.h"
 #include "preferences.h"
 #include "contact.h"
+#include "server.h"
 #include "util_str.h"
 #include "util_io.h"
 #include <string.h>
@@ -334,6 +335,29 @@ void PacketSendv5 (const Packet *pak, Connection *conn)
     cpak = Wrinkle (pak);
     UtilIOSendUDP (conn, cpak);
     PacketD (cpak);
+}
+
+void Auto_Reply (Connection *conn, UDWORD uin)
+{
+    char *temp;
+
+    if (!(prG->flags & FLAG_AUTOREPLY))
+        return;
+
+          if (conn->status & STATUSF_DND)
+         temp = prG->auto_dnd;
+     else if (conn->status & STATUSF_OCC)
+         temp = prG->auto_occ;
+     else if (conn->status & STATUSF_NA)
+         temp = prG->auto_na;
+     else if (conn->status & STATUSF_AWAY)
+         temp = prG->auto_away;
+     else if (conn->status & STATUSF_INV)
+         temp = prG->auto_inv;
+     else
+         return;
+
+    icq_sendmsg (conn, uin, temp, MSG_AUTO);
 }
 
 /*

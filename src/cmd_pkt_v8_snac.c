@@ -1354,14 +1354,26 @@ void SnacCliSendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD type
     Packet *pak;
     Contact *cont = ContactByUIN (uin, 1);
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
-    BOOL peek = (format == 0xff && type == MSG_GET_AWAY);
+    BOOL peek = 0;
     
     if (!cont)
         return;
+    
+    if (type == MSG_GET_PEEK)
+    {
+        peek = 1;
+        type = MSG_GET_AWAY;
+    }
+    
     if (!peek)
     {
         M_printf ("%s " COLACK "%*s" COLNONE " " MSGSENTSTR COLSINGLE "%s\n",
                   s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, text);
+    }
+    if (format == 2)
+    {
+        SnacCliSendmsg2 (conn, cont, text, type, NULL);
+        return;
     }
     
     if (!format || format == 0xff)
@@ -1386,8 +1398,6 @@ void SnacCliSendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD type
             case MSG_GET_FFC:
             case MSG_GET_NA:
             case MSG_GET_VER:
-                format = 2;
-                break;
                 return;
         }
     }
@@ -1413,41 +1423,6 @@ void SnacCliSendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD type
             PacketWriteB2 (pak, 6);
             PacketWriteB2 (pak, 0);
             break;
-        case 2:
-            PacketWriteTLV     (pak, 5);
-             PacketWrite2       (pak, 0);
-             PacketWriteB4      (pak, mtime);
-             PacketWriteB4      (pak, mid);
-             PacketWriteCapID   (pak, CAP_SRVRELAY);
-             PacketWriteTLV2    (pak, 10, 1);
-             PacketWriteB4      (pak, 0x000f0000); /* empty TLV(15) */
-             PacketWriteTLV     (pak, 10001);
-              PacketWriteLen     (pak);
-               PacketWrite2       (pak, conn->assoc && conn->assoc->connect & CONNECT_OK
-                                     ? conn->assoc->ver : 0);
-               PacketWriteCapID   (pak, CAP_NONE);
-               PacketWrite2       (pak, 0);
-               PacketWrite4       (pak, 3);
-               PacketWrite1       (pak, 0);
-               PacketWrite2       (pak, -1);
-              PacketWriteLenDone (pak);
-#ifdef ENABLE_UTF8
-              SrvMsgAdvanced     (pak, -1, type, 1, 0, CONT_UTF8 (cont) ? text : c_out (text));
-#else
-              SrvMsgAdvanced     (pak, -1, type, 1, 0, text);
-#endif
-              PacketWriteB4      (pak, 0);
-              PacketWriteB4      (pak, 0xffffff00);
-#ifdef ENABLE_UTF8
-              if (CONT_UTF8 (cont))
-                  PacketWriteDLStr     (pak, CAP_GID_UTF8);
-#endif
-             PacketWriteTLVDone (pak);
-             if (peek)
-                 PacketWriteB4  (pak, 0x00030000);
-            PacketWriteTLVDone (pak);
-            PacketWriteB4      (pak, 0x00030000); /* empty TLV(3) */
-            break;
         case 4:
             PacketWriteTLV     (pak, 5);
             PacketWrite4       (pak, conn->uin);
@@ -1459,6 +1434,74 @@ void SnacCliSendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD type
             PacketWriteB2 (pak, 0);
     }
     SnacSend (conn, pak);
+}
+
+/*
+ * CLI_SENDMSG - SNAC(4,6)
+ */
+UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, const char *text, UDWORD type, MetaList *extra)
+{
+    Packet *pak;
+    UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
+    BOOL peek = 0;
+    
+    if (!cont)
+        return RET_DEFER;
+    
+    if (type == MSG_GET_PEEK)
+    {
+        peek = 1;
+        type = MSG_GET_AWAY;
+    }
+    
+    switch (type & 0xff)
+    {
+        case MSG_AUTO:
+        case MSG_URL:
+        case MSG_AUTH_REQ:
+        case MSG_AUTH_GRANT:
+        case MSG_AUTH_DENY:
+        case MSG_AUTH_ADDED:
+            return RET_DEFER;
+    }
+    
+    pak = SnacC (conn, 4, 6, 0, 0);
+    PacketWriteB4 (pak, mtime);
+    PacketWriteB4 (pak, mid);
+    PacketWriteB2 (pak, 2);
+    PacketWriteUIN (pak, cont->uin);
+    
+    PacketWriteTLV     (pak, 5);
+     PacketWrite2       (pak, 0);
+     PacketWriteB4      (pak, mtime);
+     PacketWriteB4      (pak, mid);
+     PacketWriteCapID   (pak, CAP_SRVRELAY);
+     PacketWriteTLV2    (pak, 10, 1);
+     PacketWriteB4      (pak, 0x000f0000); /* empty TLV(15) */
+     PacketWriteTLV     (pak, 10001);
+      PacketWriteLen     (pak);
+       PacketWrite2       (pak, conn->assoc && conn->assoc->connect & CONNECT_OK
+                              ? conn->assoc->ver : 0);
+       PacketWriteCapID   (pak, CAP_NONE);
+       PacketWrite2       (pak, 0);
+       PacketWrite4       (pak, 3);
+       PacketWrite1       (pak, 0);
+       PacketWrite2       (pak, -1);
+      PacketWriteLenDone (pak);
+      SrvMsgAdvanced     (pak, -1, type, 1, 0, c_out_for (text, cont));
+      PacketWrite4       (pak, TCP_COL_FG);
+      PacketWrite4       (pak, TCP_COL_BG);
+#ifdef ENABLE_UTF8
+      if (CONT_UTF8 (cont))
+          PacketWriteDLStr     (pak, CAP_GID_UTF8);
+#endif
+     PacketWriteTLVDone (pak);
+     if (peek) /* make a syntax error */
+         PacketWriteB4  (pak, 0x00030000);
+    PacketWriteTLVDone (pak);
+    PacketWriteB4      (pak, 0x00030000); /* empty TLV(3) */
+    SnacSend (conn, pak);
+    return RET_INPR;
 }
 
 /*

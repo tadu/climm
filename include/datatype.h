@@ -68,4 +68,11 @@ typedef int SOK_T;
   #define FALSE 0
 #endif
 
+#define RET_FAIL  0
+#define RET_OK    1
+#define RET_DEFER 2
+#define RET_INPR  3
+
+#define RET_IS_OK(x) ((x) & 1)
+
 #endif /* MICQ_DATATYPE_H */

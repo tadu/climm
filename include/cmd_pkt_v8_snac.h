@@ -31,6 +31,7 @@ void   SnacCliRemvisible   (Connection *conn, UDWORD uin);
 void   SnacCliAddinvis     (Connection *conn, UDWORD uin);
 void   SnacCliReminvis     (Connection *conn, UDWORD uin);
 void   SnacCliSendmsg      (Connection *conn, UDWORD uin, const char *text, UDWORD type, UBYTE format);
+UBYTE  SnacCliSendmsg2     (Connection *conn, Contact *cont, const char *text, UDWORD type, MetaList *extra);
 void   SnacCliReqofflinemsgs  (Connection *conn);
 void   SnacCliAckofflinemsgs  (Connection *conn);
 void   SnacCliRegisteruser    (Connection *conn);

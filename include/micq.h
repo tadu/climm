@@ -110,6 +110,7 @@ typedef struct ContactMetaList_s       MetaList;
 #define MSG_GET_NA        0xea
 #define MSG_GET_DND       0xeb
 #define MSG_GET_FFC       0xec
+#define MSG_GET_PEEK      0xf0
 #define MSG_GET_VER       0xf4
 
 #define MSG_INT_CAP       0x40

@@ -15,6 +15,7 @@ struct Event_s
     time_t      due;
     Packet     *pak;
     char       *info;
+    MetaList   *extra;
     Queuef     *callback;
     UBYTE       flags;
 };
