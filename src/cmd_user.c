@@ -651,7 +651,7 @@ JUMP_F(CmdUserTCP)
         {
             Session *sess;
             
-            sess = SessionFind (TYPE_PEER, 0);
+            sess = SessionFind (TYPE_LISTEN, 0);
             if (!sess)
                 M_print (i18n (2011, "You do not have a listening peer-to-peer connection.\n"));
             else

@@ -102,11 +102,6 @@ typedef struct PreferencesSession_s PreferencesSession;
 #define CONTACT_MESS		0x0013
 #define MRCONTACT_MESS		0x8013
 
-/*** TCP: tcp mess  ***/
-#define CHAT_MESS               0x0002
-#define FILE_MESS               0x0003
-/*** TCP: end tcp mess  ***/
-
 #define INV_LIST_UPDATE 	0x01
 #define VIS_LIST_UPDATE 	0x02
 #define CONT_LIST_UPDATE 	0x00

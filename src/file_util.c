@@ -213,7 +213,7 @@ void Initalize_RC_File ()
 
     sesst->assoc = sess;
     sess->assoc = sesst;
-    sesst->spref->type = TYPE_PEER;
+    sesst->spref->type = TYPE_LISTEN;
     sesst->spref->flags = CONN_AUTOLOGIN;
     sesst->type = sesst->spref->type;
     sesst->flags = sesst->spref->flags;
@@ -611,7 +611,7 @@ void Read_RC_File (FILE *rcf)
                     }
                     else if (!strcasecmp (tmp, "peer"))
                     {
-                        sess->spref->type = TYPE_PEER;
+                        sess->spref->type = TYPE_LISTEN;
                         sess->spref->flags = 0;
                         if (oldsess->spref->type == TYPE_SERVER || oldsess->spref->type == TYPE_SERVER_OLD)
                         {
@@ -747,9 +747,9 @@ int Save_RC ()
     
     for (k = 0; (ss = SessionNr (k)); k++)
     {
-        if (!ss->spref || (ss->spref->type != TYPE_SERVER && ss->spref->type != TYPE_SERVER_OLD && ss->spref->type != TYPE_PEER)
+        if (!ss->spref || (ss->spref->type != TYPE_SERVER && ss->spref->type != TYPE_SERVER_OLD && ss->spref->type != TYPE_LISTEN)
             || (!ss->spref->uin && ss->spref->type == TYPE_SERVER)
-            || (ss->assoc && !ss->assoc->spref->uin && ss->spref->type == TYPE_PEER))
+            || (ss->assoc && !ss->assoc->spref->uin && ss->spref->type == TYPE_LISTEN))
             continue;
 
         fprintf (rcf, "[Connection]\n");

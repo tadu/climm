@@ -4,7 +4,6 @@
 
 #include "contact.h"
 
-#define TCP_STATE_CONNECTED    16
 #define TCP_STATE_WAITING      32
 
 void SessionInitPeer   (Session *sess);

@@ -14,4 +14,6 @@ various people:
    : server side contact list
    : contact groups
    : history of messages
- : tab completion
+ : tab completion (check)
+ : configurable colors
+ : alias for commands

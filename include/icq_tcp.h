@@ -9,10 +9,14 @@
 
 #define TCP_OK_FLAG	0x04
 
-/* Commands */
-#define TCP_CMD_INIT		0x00FF
-#define TCP_CMD_INIT_ACK	0x0001
+/* packets */
 
+#define PEER_INIT        0xff
+#define PEER_INITACK     0x01
+#define PEER_INIT2       0x03
+#define PEER_MSG         0x02
+
+/* Commands */
 #define TCP_CMD_CANCEL		0x07D0
 #define TCP_CMD_ACK		0x07DA
 #define TCP_CMD_MESSAGE		0x07EE 
@@ -56,7 +60,6 @@
 #define TCP_STAT_NA		0x000E
 
 /* Miscellaneous */
-#define TCP_MSG_OFFSET  30
 #define TCP_MSG_X1      0x000E
 #define TCP_COL_FG      0x00000000	/* Foreground colour in msg body */
 #define TCP_COL_BG      0x00FFFFFF	/* Background colour in msg boxy */

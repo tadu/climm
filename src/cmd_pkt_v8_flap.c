@@ -103,7 +103,7 @@ void FlapChannel1 (Session *sess, Packet *pak)
 void FlapChannel4 (Session *sess, Packet *pak)
 {
     tlv = TLVRead (pak);
-    if (tlv[8].len)
+    if (!tlv[5].len)
     {
         Time_Stamp ();
         M_print (" " ESC "«");
@@ -127,20 +127,19 @@ void FlapChannel4 (Session *sess, Packet *pak)
     }
     else
     {
-        if (tlv[5].len)
-        {
-            assert (strchr (tlv[5].str, ':'));
+        assert (strchr (tlv[5].str, ':'));
 
-            M_print (i18n (1898, "Redirect to server %s... "), tlv[5].str);
+        M_print (i18n (1898, "Redirect to server %s... "), tlv[5].str);
 
-            sess->port = atoi (strchr (tlv[5].str, ':') + 1);
-            *strchr (tlv[5].str, ':') = '\0';
-            sess->server = strdup (tlv[5].str);
-            sess->ip = 0;
+        FlapCliGoodbye (sess);
 
-            sess->connect = 8;
-            UtilIOConnectTCP (sess);
-        }
+        sess->port = atoi (strchr (tlv[5].str, ':') + 1);
+        *strchr (tlv[5].str, ':') = '\0';
+        sess->server = strdup (tlv[5].str);
+        sess->ip = 0;
+
+        sess->connect = 8;
+        UtilIOConnectTCP (sess);
     }
 }
 
@@ -228,7 +227,7 @@ void FlapSend (Session *sess, Packet *pak)
     sess->stat_real_pak_sent++;
     
     sockwrite (sess->sok, pak->data, pak->len);
-    PacketD (pak);
+/*    PacketD (pak);  TODO */
 }
 
 /***********************************************/
@@ -281,7 +280,7 @@ void FlapCliIdent (Session *sess)
 void FlapCliCookie (Session *sess, const char *cookie, UWORD len)
 {
     Packet *pak;
-    
+
     pak = FlapC (1);
     PacketWriteB4 (pak, CLI_HELLO);
     PacketWriteTLVData (pak, 6, cookie, len);

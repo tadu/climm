@@ -90,7 +90,7 @@ void PrefLoad (Preferences *pref);
 
 #define TYPE_SERVER_OLD   1
 #define TYPE_SERVER       2
-#define TYPE_PEER         3
+#define TYPE_LISTEN       3
 #define TYPE_DIRECT       4
 
 #define CONN_AUTOLOGIN   1
@@ -100,7 +100,7 @@ void PrefLoad (Preferences *pref);
 #define TABS_CYCLE       2
 #define TABS_CYCLEALL    3
 
-#define ASSERT_PEER(s)   (assert (s), assert (s->type == TYPE_PEER))
+#define ASSERT_LISTEN(s) (assert (s), assert (s->type == TYPE_LISTEN))
 #define ASSERT_DIRECT(s) (assert (s), assert (s->type == TYPE_DIRECT))
 
 #endif
