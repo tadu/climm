@@ -845,11 +845,14 @@ static JUMP_F(CmdUserTrans)
                 }
                 i = i18nOpen (arg1, prG->enc_loc);
                 if (i == -1)
-                    M_printf (i18n (1080, "Couldn't load \"%s\" internationalization.\n"), arg1);
+                    M_printf (i18n (2316, "Translation %s not found.\n"), arg1);
                 else if (i)
-                    M_printf (i18n (1081, "Successfully loaded en translation (%ld entries).\n"), i);
+                    {
+                        s_repl (&prG->locale, arg1);
+                        M_printf (i18n (2318, "English (%s) translation loaded (%ld entries).\n"), arg1, i);
+                    }
                 else
-                    M_print ("No internationalization requested.\n");
+                    M_print ("No translation required.\n");
             }
             one = 1;
         }

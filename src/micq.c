@@ -282,21 +282,19 @@ int main (int argc, char *argv[])
 
     if (!rc && arg_l)
     {
-        M_printf (i18n (1864, "Can't open rcfile %s."), prG->rcfile);
+        M_printf (i18n (1864, "Could not open configuration file %s."), prG->rcfile);
         exit (20);
     }
 
     if (i == -1)
-        M_print ("Couldn't load internationalization. Maybe you want to do some translation work?\n");
+        M_printf (i18n (2317, "Translation %s not found. Would you like to translate mICQ into your language?\n"), prG->locale_full);
     else if (i)
-        M_printf (i18n (1081, "Successfully loaded en translation (%ld entries).\n"), i);
+        M_printf (i18n (2318, "English (%s) translation loaded (%ld entries).\n"), prG->locale_full, i);
     else
-        M_print ("No internationalization requested.\n");
+        M_print ("No translation requested.\n");
 
+#ifndef ENABLE_UTF8
     if (ENC(enc_loc) == ENC_UTF8)
-#ifdef ENABLE_UTF8
-        M_print (i18n (2209, "Detected UTF-8 encoding.\n"));
-#else
         M_print (i18n (2208, "Detected UTF-8 encoding, however, this mICQ was compiled without UTF-8 support.\n"));
 #endif
 
