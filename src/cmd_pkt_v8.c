@@ -347,9 +347,10 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     else
         ack_msg = "";
 
-    if (serv->status & STATUSF_DND)  ack_status  = TCP_STAT_DND;   else
-    if (serv->status & STATUSF_OCC)  ack_status  = TCP_STAT_OCC;   else
-    if (serv->status & STATUSF_NA)   ack_status  = TCP_STAT_NA;    else
+    if (pri & 4)                     ack_status  = TCP_STAT_ONLINE; else
+    if (serv->status & STATUSF_DND)  ack_status  = TCP_STAT_DND;    else
+    if (serv->status & STATUSF_OCC)  ack_status  = TCP_STAT_OCC;    else
+    if (serv->status & STATUSF_NA)   ack_status  = TCP_STAT_NA;     else
     if (serv->status & STATUSF_AWAY) ack_status  = TCP_STAT_AWAY;
     else                             ack_status  = TCP_STAT_ONLINE;
 
