@@ -29,17 +29,18 @@ AC_SYS_LARGEFILE
 # Check for arguments.
 
 AC_ARG_ENABLE([peer2peer], AC_HELP_STRING([--disable-peer2peer], [disable peer to peer connections]),
-              ac_arg_use_peer2peer=$enableval, ac_arg_use_peer2peer=yes)
+              ac_arg_use_dc=$enableval, ac_arg_use_dc=yes)
 AC_ARG_ENABLE([utf8], AC_HELP_STRING([--disable-utf8], [disable use of UTF-8 internally]),
               ac_arg_use_utf8=$enableval, ac_arg_use_utf8=yes)
 AC_ARG_ENABLE([iconv], AC_HELP_STRING([--disable-iconv], [do not use iconv() at all]),
               ac_arg_use_iconv=$enableval, ac_arg_use_iconv=auto)
 AC_ARG_ENABLE([remote], AC_HELP_STRING([--disable-remote], [disable remote control FIFO]),
               ac_arg_use_remote=$enableval, ac_arg_use_remote=auto)
-AC_ARG_ENABLE([tcl], AC_HELP_STRING([--enable-tcl], [enable Tcl scripting (EXPERIMENTAL)]),
+AC_ARG_ENABLE([tcl], AC_HELP_STRING([--disble-tcl], [disable Tcl scripting (EXPERIMENTAL)]),
               ac_arg_use_tcl=$enableval, ac_arg_use_tcl=auto)
-AC_ARG_ENABLE([ssl], AC_HELP_STRING([--enable-ssl], [enable SSL encryption (EXPERIMENTAL)]),
-              ac_arg_use_ssl=$enableval, ac_arg_use_ssl=auto)
+AC_ARG_ENABLE([ssl], AC_HELP_STRING([--disable-ssl], [disable SSL encryption (EXPERIMENTAL)]),
+              [ac_arg_use_ssl=$enableval], ac_arg_use_ssl=auto)
+AC_ARG_ENABLE([ssl], AC_HELP_STRING([[[[--enable-ssl=gnutls,openssl]]]], [choose SSL library]))
 
 # Checks for libraries.
 AC_CHECK_FUNCS([inet_ntoa getpeername])
@@ -54,19 +55,33 @@ fi
 AC_HEADER_STDC
 AC_CHECK_HEADERS([locale.h sys/select.h arpa/inet.h ctype.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h])
 
-if test "x$ac_arg_use_peer2peer" != "xno"; then
+if test "x$ac_arg_use_dc" != "xno"; then
   if test "x$ac_arg_use_ssl" != "xno"; then
-    AM_PATH_LIBGNUTLS(0.8.8, ac_use_ssl=yes, ac_use_ssl=no)
-    if test "x$ac_use_ssl$ac_arg_use_ssl" = "xnoyes"; then
-      AC_MSG_FAILURE([cannot find a suitable SSL library])
+    ac_use_ssl=no
+    if test "x$ac_arg_use_ssl" != "xopenssl"; then
+      AM_PATH_LIBGNUTLS(0.8.8, ac_use_ssl=gnutls)
+      if test "x$ac_use_ssl" = "xgnutls"; then
+        LIBS="$LIBGNUTLS_LIBS $LIBS"
+        CFLAGS="$LIBGNUTLS_CFLAGS $CFLAGS"
+        AC_CHECK_FUNC(gnutls_dh_params_generate2, [AC_DEFINE(HAVE_DH_GENPARAM2, 1, [Whether new DH prime generator is available])],)
+      fi
     fi
-    if test "x$ac_use_ssl$ac_arg_use_ssl" = "xnoauto"; then
-      AC_MSG_WARN([cannot find a suitable SSL library -- enctypted connection support disabled])
+    if test "x$ac_use_ssl" = "xno"; then
+      if test "x$ac_arg_use_ssl" != "xgnutls"; then
+        AC_CHECK_HEADERS([openssl/ssl.h], [ac_use_ssl=openssl])
+        temp_LIBS="$LIBS"
+        AC_CHECK_LIB([crypto], [DH_free], , [ac_use_ssl=no])
+        AC_CHECK_LIB([ssl], [SSL_new], , [ac_use_ssl=no
+                                          LIBS="$temp_LIBS"])
+      fi
     fi
-    if test "x$ac_use_ssl" = "xyes"; then
-      LIBS="$LIBGNUTLS_LIBS $LIBS"
-      CFLAGS="$LIBGNUTLS_CFLAGS $CFLAGS"
-      AC_CHECK_FUNC(gnutls_dh_params_generate2, [AC_DEFINE(HAVE_DH_GENPARAM2, 1, [Whether new DH prime generator is available])],)
+    if test "x$ac_use_ssl" = "xno"; then
+      case "$ac_arg_use_ssl" in
+        gnutls)  AC_MSG_FAILURE([cannot find GnuTLS library]) ;;
+        openssl) AC_MSG_FAILURE([cannot find OpenSSL library]) ;;
+        yes)     AC_MSG_FAILURE([cannot find any SSL library]) ;;
+        *)       AC_MSG_WARN([cannot find a suitable SSL library -- encrypted connection support disabled]) ;;
+      esac
     fi
     ac_arg_use_ssl=$ac_use_ssl
   fi
@@ -76,7 +91,7 @@ fi
 
 if test "x$ac_arg_use_tcl" != "xno"; then
   ac_use_tcl=no
-  AC_CHECK_HEADERS([tcl8.4/tcl.h tcl8.3/tcl.h tcl.h] , [ac_use_tcl=yes
+  AC_CHECK_HEADERS([tcl8.4/tcl.h tcl8.3/tcl.h tcl.h], [ac_use_tcl=yes
                                                         break])
   if test "x$ac_use_tcl" = "xyes"; then
     AC_SEARCH_LIBS([Tcl_CreateInterp], [tcl8.4 tcl8.3], [ac_use_tcl=yes], [ac_use_tcl=no])
@@ -277,7 +292,7 @@ AC_MSG_RESULT([$ac_arg_use_utf8])
 AC_MSG_CHECKING([whether to enable iconv and which iconv lib to use])
 AC_MSG_RESULT([$ac_arg_use_iconv])
 AC_MSG_CHECKING([whether to enable peer to peer connections])
-AC_MSG_RESULT([$ac_arg_use_peer2peer])
+AC_MSG_RESULT([$ac_arg_use_dc])
 AC_MSG_CHECKING([whether to enable remote control FIFO])
 AC_MSG_RESULT([$ac_arg_use_remote])
 AC_MSG_CHECKING([whether to enable Tcl scripting])
@@ -290,8 +305,14 @@ if test "x$ac_arg_use_tcl" = "xyes"; then
   AC_DEFINE(ENABLE_TCL, 1, [Whether to support Tcl scripting])
 fi
 
-if test "x$ac_arg_use_ssl" = "xyes"; then
+if test "x$ac_arg_use_ssl" = "xgnutls"; then
   AC_DEFINE(ENABLE_SSL, 1, [Whether to enable SSL/TLS support])
+  AC_DEFINE(ENABLE_GNUTLS, 1, [Whether to use GnuTLS for SSL/TLS support])
+else
+  if test "x$ac_arg_use_ssl" = "xopenssl"; then
+    AC_DEFINE(ENABLE_SSL, 1, [Whether to enable SSL/TLS support])
+  fi
+  AC_DEFINE(ENABLE_GNUTLS, 0)
 fi
 
 if test "x$ac_arg_use_utf8" = "xyes"; then
@@ -302,7 +323,7 @@ if test "x$ac_arg_use_iconv" != "xbuiltin"; then
   AC_DEFINE_UNQUOTED(ENABLE_ICONV, "$ac_arg_use_iconv", [Which lib to use for iconv() functions])
 fi
 
-if test "x$ac_arg_use_peer2peer" = "xyes"; then
+if test "x$ac_arg_use_dc" = "xyes"; then
   AC_DEFINE(ENABLE_PEER2PEER, 1, [Whether to enable peer to peer connections])
 fi
 

@@ -315,6 +315,19 @@ void TCPDispatchMain (Connection *list)
             ConnectionClose (peer);
             return;
         }
+#if HAVE_FCNTL
+        rc = fcntl (peer->sok, F_GETFL, 0);
+        if (rc != -1)
+            rc = fcntl (peer->sok, F_SETFL, rc | O_NONBLOCK);
+#elif defined(HAVE_IOCTLSOCKET)
+        origip = 1;
+        rc = ioctlsocket (peer->sok, FIONBIO, &origip);
+#endif
+        if (rc == -1)
+        {
+            ConnectionClose (peer);
+            return;
+        }
     }
 
     peer->connect = 16 | CONNECT_SELECT_R;
@@ -1593,8 +1606,10 @@ static void PeerCallbackReceiveAdvanced (Event *event)
              * That's why we do a simple close.
              */
             if (event->conn->close)
-                event->conn->close(event->conn);
+                event->conn->close (event->conn);
             break;    
+        default:
+            Debug (DEB_SSL, "SSL state on receive %d\n", event->conn->ssl_status);
     }
 #endif /* ENABLE_SSL */
     EventD (event);
