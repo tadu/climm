@@ -41,17 +41,17 @@ typedef int SOK_T;
     typedef unsigned char BOOL;
   #endif
 
-//  #ifdef __BEOS__
-//    #define sockread(s,p,l) recv(s,p,l,0)
-//    #define sockwrite(s,p,l) send(s,p,l,0)
-//    #define sockclose(s) closesocket(s)
-//    #define __os_has_input Be_TextReady ()
-//  #else
+  #ifdef __BEOS__
+    #define sockread(s,p,l) recv(s,p,l,0)
+    #define sockwrite(s,p,l) send(s,p,l,0)
+    #define sockclose(s) closesocket(s)
+    #define __os_has_input 1
+  #else
     #define sockread(s,p,l) read(s,p,l)
     #define sockwrite(s,p,l) write(s,p,l)
     #define sockclose(s) close(s)
-    #define __os_has_input M_Is_Set (STDIN)
-//  #endif
+    #define __os_has_input M_Is_Set (STDIN_FILENO)
+  #endif
 
   #define Get_Config_Info(x) Get_Unix_Config_Info(x)
 #endif

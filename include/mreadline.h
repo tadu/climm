@@ -34,7 +34,7 @@ void R_goto (int pos);                  /* go to position in input line */
 #define R_doprompt M_print
 #define R_dopromptf M_print
 #define R_process_input() 1
-#define R_getline(buf,len) M_fdnreadln(STDIN,buf,len)
+#define R_getline(buf,len) M_fdnreadln(STDIN_FILENO,buf,len)
 #define R_undraw() {M_print("\n");}
 #define R_redraw() { Prompt(); }
 #define R_pause() {}
