@@ -56,9 +56,9 @@ BOOL ContactOptionsGetVal (const ContactOptions *opt, UWORD flag, UWORD *res)
 
     if (flag & COF_DIRECT)
     {
-        if ((flag & ~COF_DIRECT) & opt->set)
+        if (flag & CO_FLAGS & opt->set)
         {
-            *res = ((flag & ~COF_DIRECT) & opt->val) ? 1 : 0;
+            *res = (flag & CO_FLAGS & opt->val) ? 1 : 0;
             Debug (DEB_OPTS, "(%p,%x) = %d", opt, flag, *res);
             return TRUE;
         }
@@ -118,7 +118,7 @@ BOOL ContactOptionsSetVal (ContactOptions *opt, UWORD flag, UWORD val)
 
     if (flag & COF_DIRECT)
     {
-        flag &= ~COF_DIRECT;
+        flag &= CO_FLAGS;
         opt->set |= flag;
         if (val)
             opt->val |= flag;

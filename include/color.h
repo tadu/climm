@@ -21,29 +21,19 @@
 #define COLCHR '!'
 #define COLSTR "!"
 
-#define CXNONE          0  /* "default" color */
-#define CXSERVER        1  /* server messages */
-#define CXCLIENT        2  /* client stuff    */
-#define CXMESSAGE       3  /* messages        */
-#define CXCONTACT       4  /* contacts        */
-#define CXSENT          5  /* sent messages   */
-#define CXACK           6  /* ack'ed messages */
-#define CXERROR         7  /* errors          */
-#define CXINCOMING      8  /* incoming msgs   */
-#define CXDEBUG         9  /* debug messages  */
-#define CXCOUNT         11
+#define CXCOUNT         7
 
 #define COLNONE         ESC COLSTR "0"
 #define COLSERVER       ESC COLSTR "1"
 #define COLCLIENT       ESC COLSTR "2"
-#define COLMESSAGE      ESC COLSTR "3"
-#define COLCONTACT      ESC COLSTR "4"
-#define COLSENT         ESC COLSTR "5"
-#define COLACK          ESC COLSTR "6"
-#define COLERROR        ESC COLSTR "7"
-#define COLINCOMING     ESC COLSTR "8"
-#define COLDEBUG        ESC COLSTR "9"
-#define COLQUOTE        ESC COLSTR ":"
+#define COLCONTACT      ESC COLSTR "3"
+#define COLERROR        ESC COLSTR "4"
+#define COLDEBUG        ESC COLSTR "5"
+#define COLQUOTE        ESC COLSTR "6"
+#define COLMESSAGE      ContactPrefStr (cont, CO_COLORMESSAGE)
+#define COLSENT         ContactPrefStr (cont, CO_COLORSENT)
+#define COLACK          ContactPrefStr (cont, CO_COLORACK)
+#define COLINCOMING     ContactPrefStr (cont, CO_COLORINCOMING)
 
 #define COLINDENT       ESC "v"
 #define COLEXDENT       ESC "^"

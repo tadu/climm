@@ -98,6 +98,9 @@ static jump_t jump[] = {
     { &CmdUserStatusWide,    "ewide",        NULL, 2,   0 },
     { &CmdUserSet,           "set",          NULL, 0,   0 },
     { &CmdUserOpt,           "opt",          NULL, 0,   0 },
+    { &CmdUserOpt,           "optglobal",    NULL, 0, COF_GLOBAL  },
+    { &CmdUserOpt,           "optgroup",     NULL, 0, COF_GROUP   },
+    { &CmdUserOpt,           "optcontact",   NULL, 0, COF_CONTACT },
     { &CmdUserSound,         "sound",        NULL, 2,   0 },
     { &CmdUserSoundOnline,   "soundonline",  NULL, 2,   0 },
     { &CmdUserSoundOffline,  "soundoffline", NULL, 2,   0 },
@@ -2432,104 +2435,151 @@ static JUMP_F(CmdUserOpt)
     ContactGroup *cg = NULL;
     Contact *cont = NULL;
     const char *optname = NULL, *res = NULL, *optobj = NULL;
+    char *coptname, *coptobj, *col;
     ContactOptions *copts = NULL;
-    int opttype = 0, i;
+    int i;
     UWORD flag = 0, val;
     strc_t par;
     ANYCONN;
 
-    if (!*args)
+    if (!data && s_parsekey (&args, "global"))
     {
-        M_printf (i18n (9999, "opt [[<contact>|<contact group>|global] <option> <value>] - set an option for a contact group, a contact or global.\n"));
-        M_printf (i18n (9999, "  <option> can be: hidefrom, ignore, intimate.\n"));
-        M_printf (i18n (9999, "  <value> can be: on, off, undef.\n"));
-        return 0;
+        copts = &prG->copts;
+        data = COF_GLOBAL;
+        optobj = "";
+        coptobj = strdup ("");
     }
-
-    if (s_parsekey (&args, "global"))           { copts = &prG->copts;  opttype = 0; optobj = ""; }
-    else if (s_parsecg (&args, &cg, conn))      { copts = &cg->copts;   opttype = 1; optobj = cg->name; }
-    else if (s_parsenick (&args, &cont, conn))  { copts = &cont->copts; opttype = 2; optobj = cont->nick; }
-    else if (s_parse (&args, &par))
+    else if ((!data || data == COF_GROUP) && s_parsecg (&args, &cg, conn))
     {
-        M_printf (i18n (9999, "Could not find contact or contact group name in %s.\n"), args);
+        copts = &cg->copts;
+        data = COF_GROUP;
+        optobj = cg->name;
+        coptobj = strdup (s_cquote (optobj, COLQUOTE));
+    }
+    else if ((!data || data == COF_CONTACT) && s_parsenick (&args, &cont, conn))
+    {
+        copts = &cont->copts;
+        data = COF_CONTACT;
+        optobj = cont->nick;
+        coptobj = strdup (s_cquote (optobj, COLQUOTE));
+    }
+    else if (data == COF_GLOBAL)
+    {
+        copts = &prG->copts;
+        optobj = "";
+        coptobj = strdup ("");
+    }
+    else
+    {
+        if (s_parse (&args, &par))
+        {
+            switch (data)
+            {
+                case COF_GROUP:
+                    M_printf (i18n (9999, "%s is not a contact group.\n"), s_cquote (par->txt, COLQUOTE));
+                    break;
+                case COF_CONTACT:
+                    M_printf (i18n (9999, "%s is not a contact.\n"), s_cquote (par->txt, COLQUOTE));
+                    break;
+                default:
+                    M_printf (i18n (9999, "%s is neither a contact, nor a contact group, nor the %sglobal%s keyword.\n"),
+                              s_cquote (par->txt, COLQUOTE), COLQUOTE, COLNONE);
+            }
+        }
+        else
+        {
+            if (!data)
+                M_printf (i18n (9999, "opt - short hand for optglobal, optgroup or optcontact.\n"));
+            if (!data || data == COF_GLOBAL)
+                M_printf (i18n (9999, "optglobal            [<option> [<value>]] - set global option.\n"));
+            if (!data || data == COF_GROUP)
+                M_printf (i18n (9999, "optgroup   <group>   [<option> [<value>]] - set contact group option.\n"));
+            if (!data || data == COF_CONTACT)
+                M_printf (i18n (9999, "optcontact <contact> [<option> [<value>]] - set contact option.\n"));
+        }
         return 0;
     }
     
     if (!*args)
     {
-        M_printf (opttype == 2 ? i18n (9999, "Options for contact '%s%s%s':\n") :
-                  opttype == 1 ? i18n (9999, "Options for contact group '%s%s%s':\n")
-                               : i18n (9999, "Global options:\n"),
-                  COLMESSAGE, optobj, COLNONE);
+        M_printf (data == COF_CONTACT ? i18n (9999, "Options for contact %s:\n") :
+                  data == COF_GROUP   ? i18n (9999, "Options for contact group %s:\n")
+                                      : i18n (9999, "Global options:\n"),
+                  coptobj);
         
         for (i = 0; (optname = ContactOptionsList[i].name); i++)
         {
             UWORD flag = ContactOptionsList[i].flag;
             
+            if (~flag & data)
+                continue;
+            
             switch (flag & (COF_BOOL | COF_NUMERIC | COF_STRING | COF_COLOR))
             {
                 case COF_BOOL:
-                    if (opttype == 2)
-                        M_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, COLMESSAGE,
+                    if (data == COF_CONTACT)
+                        M_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, COLQUOTE,
                                   ContactOptionsGetVal (copts, flag, &val)
                                     ? val ? i18n (1085, "on") : i18n (1086, "off")
-                                    : i18n (9999, "undefined"), COLNONE, i18n (9999, "effectivly"), COLMESSAGE,
+                                    : i18n (9999, "undefined"), COLNONE, i18n (9999, "effectivly"), COLQUOTE,
                                   ContactPrefVal (cont, flag)
                                     ? i18n (1085, "on") : i18n (1086, "off"), COLNONE);
                     else
-                        M_printf ("    %-15s  %s%s%s\n", optname, COLMESSAGE,
+                        M_printf ("    %-15s  %s%s%s\n", optname, COLQUOTE,
                                   ContactOptionsGetVal (copts, flag, &val)
                                     ? val  ? i18n (1085, "on") : i18n (1086, "off")
                                     : i18n (9999, "undefined"), COLNONE);
                     break;
                 case COF_NUMERIC:
-                    if (opttype == 2)
-                        M_printf ("    %-15s  %s%-15s%s  (%s %s%d%s)\n", optname, COLMESSAGE,
+                    if (data == COF_CONTACT)
+                        M_printf ("    %-15s  %s%-15s%s  (%s %s%d%s)\n", optname, COLQUOTE,
                                   ContactOptionsGetVal (copts, flag, &val)
                                     ? s_sprintf ("%d", val)
-                                    : i18n (9999, "undefined"), COLNONE, i18n (9999, "effectivly"), COLMESSAGE,
+                                    : i18n (9999, "undefined"), COLNONE, i18n (9999, "effectivly"), COLQUOTE,
                                   ContactPrefVal (cont, flag), COLNONE);
                     else
-                        M_printf ("    %-15s  %s%s%s\n", optname, COLMESSAGE,
+                        M_printf ("    %-15s  %s%s%s\n", optname, COLQUOTE,
                                   ContactOptionsGetVal (copts, flag, &val)
                                     ? s_sprintf ("%d", val)
                                     : i18n (9999, "undefined"), COLNONE);
                     break;
                 case COF_STRING:
-                    if (opttype == 2)
-                        M_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, COLMESSAGE,
+                    if (data == COF_CONTACT)
+                        M_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, COLQUOTE,
                                   ContactOptionsGetStr (copts, flag, &res)
-                                    ? res : i18n (9999, "undefined"), COLNONE, i18n (9999, "effectivly"), COLMESSAGE,
+                                    ? res : i18n (9999, "undefined"), COLNONE, i18n (9999, "effectivly"), COLQUOTE,
                                   ContactPrefStr (cont, flag), COLNONE);
                     else
-                        M_printf ("    %-15s  %s%s%s\n", optname, COLMESSAGE,
+                        M_printf ("    %-15s  %s%s%s\n", optname, COLQUOTE,
                                   ContactOptionsGetStr (copts, flag, &res)
                                     ? res : i18n (9999, "undefined"), COLNONE);
                     break;
                 case COF_COLOR:
-                    if (opttype == 2)
-                        M_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, COLMESSAGE,
+                    if (data == COF_CONTACT)
+                        M_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, COLQUOTE,
                                   ContactOptionsGetStr (copts, flag, &res)
                                     ? ContactOptionsS2C (res) : i18n (9999, "undefined"), COLNONE,
-                                  i18n (9999, "effectivly"), COLMESSAGE,
+                                  i18n (9999, "effectivly"), COLQUOTE,
                                   ContactOptionsS2C (ContactPrefStr (cont, flag)), COLNONE);
                     else
-                        M_printf ("    %-15s  %s%s%s\n", optname, COLMESSAGE,
+                        M_printf ("    %-15s  %s%s%s\n", optname, COLQUOTE,
                                   ContactOptionsGetStr (copts, flag, &res)
                                     ? ContactOptionsS2C (res) : i18n (9999, "undefined"), COLNONE);
                     break;
             }
-        }        
+        }
+        free (coptobj);
         return 0;
     }
     
     while (*args)
     {
         if (!s_parse (&args, &par))
-            return 0;
+            break;
         
+        optname = NULL;
         for (i = 0; ContactOptionsList[i].name; i++)
-            if (!strcmp (par->txt, ContactOptionsList[i].name))
+            if (ContactOptionsList[i].flag & data && !strcmp (par->txt, ContactOptionsList[i].name))
             {
                 optname = ContactOptionsList[i].name;
                 flag = ContactOptionsList[i].flag;
@@ -2538,9 +2588,10 @@ static JUMP_F(CmdUserOpt)
         
         if (!optname)
         {
-            M_printf (i18n (9999, "Unknown option '%s'.\n"), par->txt);
+            M_printf (i18n (9999, "Unknown option %s.\n"), s_cquote (par->txt, COLQUOTE));
             continue;
         }
+        coptname = strdup (s_cquote (optname, COLQUOTE));
         
         if (!s_parse (&args, &par))
         {
@@ -2548,78 +2599,82 @@ static JUMP_F(CmdUserOpt)
             UWORD val;
 
             if (!ContactOptionsGetVal (copts, flag, &val) || ((flag & (COF_STRING | COF_COLOR)) && !ContactOptionsGetStr (copts, flag, &res)))
-                M_printf (opttype == 2 ? i18n (9999, "Option '%s' for contact '%s' is undefined.\n") :
-                          opttype == 1 ? i18n (9999, "Option '%s' for contact group '%s' is undefined.\n")
-                                       : i18n (9999, "Option '%s%s' has no global value.\n"),
-                          optname, optobj);
+                M_printf (data == COF_CONTACT ? i18n (9999, "Option %s for contact %s is undefined.\n") :
+                          data == COF_GROUP   ? i18n (9999, "Option %s for contact group %s is undefined.\n")
+                                              : i18n (9999, "Option %s%s has no global value.\n"),
+                          coptname, coptobj);
             else if (flag & (COF_BOOL | COF_NUMERIC))
-                M_printf (opttype == 2 ? i18n (9999, "Option '%s' for contact '%s' is '%s'.\n") :
-                          opttype == 1 ? i18n (9999, "Option '%s' for contact group '%s' is '%s'.\n")
-                                       : i18n (9999, "Option '%s%s' is globally '%s'.\n"),
-                          optname, optobj, flag & COF_NUMERIC ? s_sprintf ("%d", val) :
-                                           val ? i18n (1085, "on") : i18n (1086, "off"));
+                M_printf (data == COF_CONTACT ? i18n (9999, "Option %s for contact %s is %s%s%s.\n") :
+                          data == COF_GROUP   ? i18n (9999, "Option %s for contact group %s is %s%s%s.\n")
+                                              : i18n (9999, "Option %s%s is globally %s%s%s.\n"),
+                          coptname, coptobj, COLQUOTE, flag & COF_NUMERIC ? s_sprintf ("%d", val)
+                          : val ? i18n (1085, "on") : i18n (1086, "off"), COLNONE);
             else
-                M_printf (opttype == 2 ? i18n (9999, "Option '%s' for contact '%s' is '%s'.\n") :
-                          opttype == 1 ? i18n (9999, "Option '%s' for contact group '%s' is '%s'.\n")
-                                       : i18n (9999, "Option '%s%s' is globally '%s'.\n"),
-                          optname, optobj, flag & COF_STRING  ? res : ContactOptionsS2C (res));
+                M_printf (data == COF_CONTACT ? i18n (9999, "Option %s for contact %s is %s.\n") :
+                          data == COF_GROUP   ? i18n (9999, "Option %s for contact group %s is %s.\n")
+                                              : i18n (9999, "Option %s%s is globally %s.\n"),
+                          coptname, coptobj, s_cquote (flag & COF_STRING  ? res : ContactOptionsS2C (res), COLQUOTE));
             return 0;
         }
         
         if (flag & COF_STRING)
         {
             ContactOptionsSetStr (copts, flag, par->txt);
-            M_printf (opttype == 2 ? i18n (9999, "Setting option '%s' for contact '%s' to '%s'.\n") :
-                      opttype == 1 ? i18n (9999, "Setting option '%s' for contact group '%s' to '%s'.\n")
-                                   : i18n (9999, "Setting option '%s%s' globally to '%s'.\n"),
-                      optname, optobj, par->txt);
+            M_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s to %s.\n") :
+                      data == COF_GROUP   ? i18n (9999, "Setting option %s for contact group %s to %s.\n")
+                                          : i18n (9999, "Setting option %s%s globally to %s.\n"),
+                      coptname, coptobj, s_cquote (par->txt, COLQUOTE));
         }
         else if (flag & COF_COLOR)
         {
-            ContactOptionsSetStr (copts, flag, ContactOptionsC2S (par->txt));
-            M_printf (opttype == 2 ? i18n (9999, "Setting option '%s' for contact '%s' to '%s'.\n") :
-                      opttype == 1 ? i18n (9999, "Setting option '%s' for contact group '%s' to '%s'.\n")
-                                   : i18n (9999, "Setting option '%s%s' globally to '%s'.\n"),
-                      optname, optobj, par->txt);
+            res = ContactOptionsC2S (col = strdup (par->txt));
+            ContactOptionsSetStr (copts, flag, res);
+            M_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s to %s.\n") :
+                      data == COF_GROUP   ? i18n (9999, "Setting option %s for contact group %s to %s.\n")
+                                          : i18n (9999, "Setting option %s%s' globally to %s.\n"),
+                      coptname, coptobj, s_cquote (col, COLQUOTE));
+            free (col);
         }
         else if (flag & COF_NUMERIC)
         {
             ContactOptionsSetVal (copts, flag, atoi (par->txt));
-            M_printf (opttype == 2 ? i18n (9999, "Setting option '%s' for contact '%s' to '%d'.\n") :
-                      opttype == 1 ? i18n (9999, "Setting option '%s' for contact group '%s' to '%d'.\n")
-                                   : i18n (9999, "Setting option '%s%s' globally to '%d'.\n"),
-                      optname, optobj, atoi (par->txt));
+            M_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s to %s%d%s.\n") :
+                      data == COF_GROUP   ? i18n (9999, "Setting option %s for contact group %s to %s%d%s.\n")
+                                          : i18n (9999, "Setting option %s%s globally to %s%d%s.\n"),
+                      coptname, coptobj, COLQUOTE, atoi (par->txt), COLNONE);
         }
         else if (!strcasecmp (par->txt, "on")  || !strcasecmp (par->txt, i18n (1085, "on")))
         {
             ContactOptionsSetVal (copts, flag, 1);
-            M_printf (opttype == 2 ? i18n (9999, "Setting option '%s' for contact '%s'.\n") :
-                      opttype == 1 ? i18n (9999, "Setting option '%s' for contact group '%s'.\n")
-                                   : i18n (9999, "Setting option '%s%s' globally.\n"),
-                      optname, optobj);
+            M_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s.\n") :
+                      data == COF_GROUP   ? i18n (9999, "Setting option %s for contact group %s.\n")
+                                          : i18n (9999, "Setting option %s%s globally.\n"),
+                      coptname, coptobj);
         }
         else if (!strcasecmp (par->txt, "off") || !strcasecmp (par->txt, i18n (1086, "off")))
         {
             ContactOptionsSetVal (copts, flag, 0);
-            M_printf (opttype == 2 ? i18n (9999, "Clearing option '%s' for contact '%s'.\n") :
-                      opttype == 1 ? i18n (9999, "Clearing option '%s' for contact group '%s'.\n")
-                                   : i18n (9999, "Clearing option '%s%s' globally.\n"),
-                      optname, optobj);
+            M_printf (data == COF_CONTACT ? i18n (9999, "Clearing option %s for contact %s.\n") :
+                      data == COF_GROUP   ? i18n (9999, "Clearing option %s for contact group %s.\n")
+                                          : i18n (9999, "Clearing option %s%s globally.\n"),
+                      coptname, coptobj);
         }
         else if (!strcasecmp (par->txt, "undef"))
         {
             ContactOptionsUndef (copts, flag);
-            M_printf (opttype == 2 ? i18n (9999, "Undefining option '%s' for contact '%s'.\n") :
-                      opttype == 1 ? i18n (9999, "Undefining option '%s' for contact group '%s'.\n")
-                                   : i18n (9999, "Clearing global option '%s%s'.\n"),
-                      optname, optobj);
+            M_printf (data == COF_CONTACT ? i18n (9999, "Undefining option %s for contact %s.\n") :
+                      data == COF_GROUP   ? i18n (9999, "Undefining option %s for contact group %s.\n")
+                                          : i18n (9999, "Clearing global option %s%s.\n"),
+                      coptname, coptobj);
         }
         else
         {
-            M_printf (i18n (9999, "Invalid value '%s' for boolean option '%s'.\n"), par->txt, optname);
+            M_printf (i18n (9999, "Invalid value %s for boolean option %s.\n"), s_cquote (par->txt, COLQUOTE), coptname);
             continue;
         }
+        free (coptname);
     }
+    free (coptobj);
     return 0;
 }
 
