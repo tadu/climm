@@ -595,20 +595,22 @@ static JUMP_F(CmdUserInfo)
 {
     Contact *cont = NULL;
     OPENCONN;
-
-    while (*args || data)
+    
+    if (data)
     {
-        if (!data && !s_parsenick_s (&args, &cont, MULTI_SEP, conn))
-        {
-            M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
-            return 0;
-        }
+        if ((cont = uiG.last_rcvd))
+            IMCliInfo (conn, cont, 0);
+        return 0;
+    }
+
+    while (s_parsenick_s (&args, &cont, MULTI_SEP, conn))
+    {
         if (*args == ',')
             args++;
-        if (data && !(cont = uiG.last_rcvd))
-            return 0;
         IMCliInfo (conn, cont, 0);
     }
+    if (*args)
+        M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
     return 0;
 }
 
