@@ -594,7 +594,6 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     UWORD seq1, seq2, tcpver, len, i, msgtyp, type, /*status,*/ pri;
     char *text = NULL;
     const char *resp, *txt = NULL;
-    UBYTE isutf8 = 0;
 
     pak = event->pak;
 
@@ -691,16 +690,17 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                      PacketRead4 (pp); /* FOREGROUND */
                      PacketRead4 (pp); /* BACKGROUND */
 #ifdef ENABLE_UTF8
-            isutf8 = 0;
-            if (PacketReadLeft (pp) >= 38)
             {
+                UBYTE isutf8 = 0;
                 char *gid = PacketReadDLStr (pp);
+                char *tmp;
                 if (!strcmp (gid, CAP_GID_UTF8))
                     isutf8 = 1;
+                txt = isutf8 ? text : c_in (text);
+                tmp = strdup (txt);
+                free (text);
+                txt = text = tmp;
             }
-            txt = isutf8 ? text : c_in (text);
-            free (text);
-            txt = text = strdup (txt);
 #else
             txt = text;
 #endif
