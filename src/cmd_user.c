@@ -1266,12 +1266,12 @@ static JUMP_F(CmdUserStatusDetail)
                 verbuf[0] = '\0';
 
             if (data & 2)
-                M_print (COLSERV "%c%c%c" COLNONE " %*ld",
+                M_print (COLSERV "%c%c%c%d" COLNONE " %*ld",
                      cont->flags & CONT_TEMPORARY ? '#' : ' ',
                      cont->flags & CONT_INTIMATE  ? '*' :
                       cont->flags & CONT_HIDEFROM ? '-' : ' ',
                      cont->flags & CONT_IGNORE    ? '^' : ' ',
-                     lenuin, cont->uin);
+                     cont->TCP_version, lenuin, cont->uin);
 
             M_print (" " COLCONTACT "%-*s" COLNONE " " COLMESS "%-*s" COLNONE " %-*s %s",
                      lennick, cont->nick, lenstat + 2, statbuf, lenid + 2, verbuf,
