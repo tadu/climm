@@ -119,7 +119,7 @@ static const char *TableCountry[] = {
                                 _i18n (1384, "Venezuela"),                     _i18n (1385, "Vietnam"),     
     _i18n (1386, "Wallis and Futuna Islands"), _i18n (1387, "Western Samoa"),   _i18n (1388, "Yemen"),
                                 _i18n (1389, "Yugoslavia"),                    _i18n (1390, "Zaire"),       
-    _i18n (1391, "Zambia"),      _i18n (1392, "Zimbabwe"),
+    _i18n (1391, "Zambia"),     _i18n (1392, "Zimbabwe"),                      _i18n (2157, "Moldova"),
     0
 };
 #define TableCountrySize sizeof (TableCountry) / sizeof (const char *)
@@ -145,7 +145,7 @@ static UWORD TableCountryCodes[] = {
     886,   255,    66,  6702,   228,        690,   676,   117,   216,    90,
     709,   118,   688,   256,   380,        971,    44,   101,     1,   123,
     598,   711,   678,   378,   379,         58,    84,   681,   685,   967,
-    381,   243, /*  260,  263, */
+    381,   243,   373,
     0
 };
 #define TableCountryCodesSize sizeof (TableCountryCodes) / sizeof (UWORD)
@@ -270,7 +270,7 @@ const char *TableGetCountry (UWORD code)
         if (TableCountryCodes[i] == code)
             return i18n (-1, TableCountry[i]);
 
-    return i18n (1199, "Unknown country");
+    return NULL;
 }
 
 const char *TableGetAffiliation (UWORD code)
