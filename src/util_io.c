@@ -24,6 +24,7 @@
 #include "util_ui.h"
 #include "util_io.h"
 #include "util.h"
+#include "contact.h"
 
 extern int h_errno;
 #define BACKLOG 10
@@ -566,8 +567,11 @@ Packet *UtilIOReceiveTCP (Session *sess)
         return pak;
     }
     Time_Stamp ();
-    M_print (" ");
-    M_print (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
+    M_print (" %s%s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
+    if (rc || sess->type != TYPE_DIRECT)
+        M_print (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
+    else
+        M_print (i18n (2023, "Direct connection closed by peer.\n"));
     sess->connect = 0;
     sockclose (sess->sok);
     sess->sok = -1;
