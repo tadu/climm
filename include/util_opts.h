@@ -73,16 +73,17 @@ extern struct OptEntry_s OptList[];
 #define CO_DCCONT        (COF_BOOL    | CO_GROUP   | 0x004002UL) /* this connection: dc only for contacts */
 #define CO_ISSBL         (COF_BOOL    | CO_CONTACT | 0x010002UL) /* is on sbl                    */
 #define CO_WANTSBL       (COF_BOOL    | CO_CONTACT | 0x040002UL) /* want it to be on sbl         */
-#define CO_SHADOW        (COF_BOOL    | CO_CONTACT | 0x100002UL) /* don't display in contact list         */
+#define CO_SHADOW        (COF_BOOL    | CO_CONTACT | 0x100002UL) /* don't display in contact list          */
+#define CO_LOCAL         (COF_BOOL    | CO_CONTACT | 0x000103UL) /* do not request status changes for this */
 
-#define CO_ENCODING      (COF_NUMERIC | CO_CONTACT | 0x03UL) /* the default encoding for this contact */
-#define CO_ENCODINGSTR   (COF_STRING  | CO_CONTACT | 0x04UL) /* the default encoding for this contact */
-#define CO_CSCHEME       (COF_NUMERIC | CO_GLOBAL  | 0x05UL) /* the color scheme to use               */
-#define CO_TABSPOOL      (COF_NUMERIC | CO_CONTACT | 0x06UL) /* spool contact into tab list           */
+#define CO_ENCODING      (COF_NUMERIC | CO_CONTACT | 0x04UL) /* the default encoding for this contact */
+#define CO_ENCODINGSTR   (COF_STRING  | CO_CONTACT | 0x05UL) /* the default encoding for this contact */
+#define CO_CSCHEME       (COF_NUMERIC | CO_GLOBAL  | 0x06UL) /* the color scheme to use               */
+#define CO_TABSPOOL      (COF_NUMERIC | CO_CONTACT | 0x07UL) /* spool contact into tab list           */
 
-#define CO_TIMESEEN      (COF_NUMERIC | COF_CONTACT| 0x07UL) /* time contact was last seen            */
-#define CO_TIMEONLINE    (COF_NUMERIC | COF_CONTACT| 0x08UL) /* time since contact is online          */
-#define CO_TIMEMICQ      (COF_NUMERIC | COF_CONTACT| 0x09UL) /* time contact last used mICQ           */
+#define CO_TIMESEEN      (COF_NUMERIC | COF_CONTACT| 0x08UL) /* time contact was last seen            */
+#define CO_TIMEONLINE    (COF_NUMERIC | COF_CONTACT| 0x09UL) /* time since contact is online          */
+#define CO_TIMEMICQ      (COF_NUMERIC | COF_CONTACT| 0x0aUL) /* time contact last used mICQ           */
 
 #define CO_AUTOAWAY      (COF_STRING  | CO_CONTACT | 0x10UL) /* the away auto reply message           */
 #define CO_AUTONA        (COF_STRING  | CO_CONTACT | 0x11UL) /* the not available auto reply message  */

@@ -26,6 +26,7 @@ struct OptEntry_s OptList[] = {
   { "showchange",    CO_SHOWCHANGE    },
   { "wantsbl",       CO_WANTSBL       },
   { "shadow",        CO_SHADOW        },
+  { "local",         CO_LOCAL         },
   { "webaware",      CO_WEBAWARE      },
   { "hideip",        CO_HIDEIP        },
   { "dcauth",        CO_DCAUTH        },

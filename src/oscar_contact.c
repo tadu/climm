@@ -92,6 +92,9 @@ void SnacCliAddcontact (Connection *serv, Contact *cont, ContactGroup *cg)
     Packet *pak;
     int i;
     
+    if (cont && ContactPrefVal (cont, CO_LOCAL))
+        return;
+    
     pak = SnacC (serv, 3, 4, 0, 0);
     if (cont)
         PacketWriteCont (pak, cont);
@@ -99,6 +102,8 @@ void SnacCliAddcontact (Connection *serv, Contact *cont, ContactGroup *cg)
     {
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
         {
+            if (ContactPrefVal (cont, CO_LOCAL))
+                continue;
             if (i && !(i % 256))
             {
                 SnacSend (serv, pak);
