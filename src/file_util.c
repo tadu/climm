@@ -46,15 +46,6 @@
 /****/
 
 
-#define      ADD_ALTER(a,b)      else if (!strcasecmp (tmp, a))    \
-                                       CmdUser (NULL, UtilFill ("¶alter quiet " #b " %s", strtok (NULL, " \n\t")))
-#define      ADD_CMD(a,b)        else if (!strcasecmp (tmp, a))        \
-                                       { prG->b = strtok (NULL, "\n");\
-                                         if (!prG->b) prG->b = ""; \
-                                         while (*prG->b == ' ' || *prG->b == '\t') prG->b++; \
-                                         prG->b = strdup (prG->b);     \
-                                         } else if (0)
-
 /************************************************************************
  Copies src string into dest.  If src is NULL dest becomes ""
 *************************************************************************/
@@ -67,11 +58,6 @@ static void M_strcpy (char *dest, char *src)
         *dest = '\0';
 }
 */
-
-static char *M_strdup (char *src)
-{
-    return strdup (src ? src : "");
-}
 
 void Initalize_RC_File ()
 {
@@ -251,15 +237,27 @@ void Initalize_RC_File ()
     ContactAdd (82274703, "mICQ maintainer");
 }
 
+#define PrefParse(x)          switch (1) { case 1: if (!UtilUIParse          (&args, &x)) { M_print (i18n (2123, "%sSyntax error%s: Too few arguments: '%s'\n"), COLERROR, COLNONE, buf); continue; }}
+#define PrefParseInt(i)       switch (1) { case 1: if (!UtilUIParseInt       (&args, &i)) { M_print (i18n (2124, "%sSyntax error%s: Not an integer: '%s'\n"), COLERROR, COLNONE, buf); continue; }}
+#define PrefParseRemainder(x) switch (1) { case 1: if (!UtilUIParseRemainder (&args, &x)) { M_print (i18n (2123, "%sSyntax error%s: Too few arguments: '%s'\n"), COLERROR, COLNONE, buf); continue; }}
+
+#define ADD_CMD(a,b)     else if (!strcasecmp (tmp, a))       \
+                                 { PrefParseRemainder (tmp);   \
+                                   prG->b = strdup (tmp); } else if (0)
+#define ERROR
+
+/*
+ * Reads in a configuration file.
+ */
 void Read_RC_File (FILE *rcf)
 {
     char buf[450];
-    char *tmp;
-    char *p;
+    char *tmp = NULL, *cmd = NULL;
+    char *p, *args;
     Contact *cont = NULL, *lastcont = NULL;
     Session *oldsess = NULL, *sess = NULL;
-    int i, section, dep = 0;
-    UDWORD uin;
+    int section, dep = 0;
+    UDWORD uin, i;
     UWORD flags;
     char *tab_nick_spool[TAB_SLOTS];
     int spooled_tab_nicks;
@@ -293,6 +291,7 @@ void Read_RC_File (FILE *rcf)
             }
             continue;
         }
+        args = buf;
         switch (section)
         {
             case -1:
@@ -301,99 +300,110 @@ void Read_RC_File (FILE *rcf)
                 M_print (" %s\n", buf);
                 break;
             case 0:
-                tmp = strtok (buf, " ");
-                if (!strcasecmp (tmp, "ReceiveScript"))
+                if (!UtilUIParse (&args, &cmd))
+                    continue;
+
+                if (!strcasecmp (cmd, "receivescript"))
                 {
-#ifdef MSGEXEC
-                    prG->event_cmd = M_strdup (strtok (NULL, "\n"));
-#else
+                    if (!UtilUIParseRemainder (&args, &tmp))
+                    {
+                        dep = 1;
+                        continue;
+                    }
+                    prG->event_cmd = strdup (tmp);
+#ifndef MSGEXEC
                     printf (i18n (1817, "Warning: ReceiveScript feature not enabled!\n"));
 #endif
                 }
-                else if (!strcasecmp (tmp, "s5_use"))
+                else if (!strcasecmp (cmd, "s5_use"))
                 {
-                    prG->s5Use = atoi (strtok (NULL, " \n\t"));
+                    PrefParseInt (i);
+                    prG->s5Use = i;
                 }
-                else if (!strcasecmp (tmp, "s5_host"))
+                else if (!strcasecmp (cmd, "s5_host"))
                 {
-                    prG->s5Host = M_strdup (strtok (NULL, "\n\t"));
+                    PrefParse (tmp);
+                    prG->s5Host = strdup (tmp);
                 }
-                else if (!strcasecmp (tmp, "s5_port"))
+                else if (!strcasecmp (cmd, "s5_port"))
                 {
-                    prG->s5Port = atoi (strtok (NULL, " \n\t"));
+                    PrefParseInt (i);
+                    prG->s5Port = i;
                 }
-                else if (!strcasecmp (tmp, "s5_auth"))
+                else if (!strcasecmp (cmd, "s5_auth"))
                 {
-                    prG->s5Auth = atoi (strtok (NULL, " \n\t"));
+                    PrefParseInt (i);
+                    prG->s5Auth = i;
                 }
-                else if (!strcasecmp (tmp, "s5_name"))
+                else if (!strcasecmp (cmd, "s5_name"))
                 {
-                    prG->s5Name = M_strdup (strtok (NULL, "\n\t"));
+                    PrefParse (tmp);
+                    prG->s5Name = strdup (tmp);
                 }
-                else if (!strcasecmp (tmp, "s5_pass"))
+                else if (!strcasecmp (cmd, "s5_pass"))
                 {
-                    prG->s5Pass = M_strdup (strtok (NULL, "\n\t"));
+                    PrefParse (tmp);
+                    prG->s5Pass = strdup (tmp);
                 }
-                else if (!strcasecmp (tmp, "verbose"))
+                else if (!strcasecmp (cmd, "verbose"))
                 {
+                    PrefParseInt (i);
                     if (!prG->verbose)
-                        prG->verbose = atoi (strtok (NULL, "\n"));
+                        prG->verbose = i;
                 }
-                else if (!strcasecmp (tmp, "logplace"))
+                else if (!strcasecmp (cmd, "logplace"))
                 {
+                    PrefParse (tmp);
                     if (!prG->logplace) /* don't overwrite command line arg */
-                        prG->logplace = strdup (strtok (NULL, " \t\n"));
+                        prG->logplace = strdup (tmp);
                 }
-                else if (!strcasecmp (tmp, "color"))
+                else if (!strcasecmp (cmd, "color"))
                 {
-                    int i;
-                    
-                    tmp = strtok (NULL, " \t\n");
-                    if (!tmp)
-                        continue;
-                    
-                    if      (!strcasecmp (tmp, "none"))     i = 0;
-                    else if (!strcasecmp (tmp, "server"))   i = 1;
-                    else if (!strcasecmp (tmp, "client"))   i = 2;
-                    else if (!strcasecmp (tmp, "message"))  i = 3;
-                    else if (!strcasecmp (tmp, "contact"))  i = 4;
-                    else if (!strcasecmp (tmp, "sent"))     i = 5;
-                    else if (!strcasecmp (tmp, "ack"))      i = 6;
-                    else if (!strcasecmp (tmp, "error"))    i = 7;
-                    else if (!strcasecmp (tmp, "incoming")) i = 8;
-                    else if (!strcasecmp (tmp, "scheme"))   i = -1;
-                    else i = atoi (tmp);
+                    if (!UtilUIParseInt (&args, &i))
+                    {
+                        PrefParse (tmp);
+                        
+                        if      (!strcasecmp (tmp, "none"))     i = 0;
+                        else if (!strcasecmp (tmp, "server"))   i = 1;
+                        else if (!strcasecmp (tmp, "client"))   i = 2;
+                        else if (!strcasecmp (tmp, "message"))  i = 3;
+                        else if (!strcasecmp (tmp, "contact"))  i = 4;
+                        else if (!strcasecmp (tmp, "sent"))     i = 5;
+                        else if (!strcasecmp (tmp, "ack"))      i = 6;
+                        else if (!strcasecmp (tmp, "error"))    i = 7;
+                        else if (!strcasecmp (tmp, "incoming")) i = 8;
+                        else if (!strcasecmp (tmp, "scheme"))   i = -1;
+                        else continue;
+                    }
                     
                     if (i == -1)
                     {
-                        tmp = strtok (NULL, " \t\n");
-                        if (!tmp)
-                            continue;
-                        PrefSetColorScheme (prG, atoi (tmp));
+                        PrefParseInt (i);
+                        PrefSetColorScheme (prG, i);
                     }
                     else
                     {
                         char buf[200], *c;
 
+                        if (i >= CXCOUNT)
+                            continue;
                         if (prG->colors[i])
                             free (prG->colors[i]);
-                        if (i < -1 || i >= CXCOUNT)
-                            continue;
                         buf[0] = '\0';
 
-                        while ((tmp = strtok (NULL, " \t\n")))
+                        while (UtilUIParse (&args, &cmd))
                         {
-                            if      (!strcasecmp (tmp, "black"))   c = BLACK;
-                            else if (!strcasecmp (tmp, "red"))     c = RED;
-                            else if (!strcasecmp (tmp, "green"))   c = GREEN;
-                            else if (!strcasecmp (tmp, "yellow"))  c = YELLOW;
-                            else if (!strcasecmp (tmp, "blue"))    c = BLUE;
-                            else if (!strcasecmp (tmp, "magenta")) c = MAGENTA;
-                            else if (!strcasecmp (tmp, "cyan"))    c = CYAN;
-                            else if (!strcasecmp (tmp, "white"))   c = WHITE;
-                            else if (!strcasecmp (tmp, "none"))    c = SGR0;
-                            else if (!strcasecmp (tmp, "bold"))    c = BOLD;
-                            else c = tmp;
+                            if      (!strcasecmp (cmd, "black"))   c = BLACK;
+                            else if (!strcasecmp (cmd, "red"))     c = RED;
+                            else if (!strcasecmp (cmd, "green"))   c = GREEN;
+                            else if (!strcasecmp (cmd, "yellow"))  c = YELLOW;
+                            else if (!strcasecmp (cmd, "blue"))    c = BLUE;
+                            else if (!strcasecmp (cmd, "magenta")) c = MAGENTA;
+                            else if (!strcasecmp (cmd, "cyan"))    c = CYAN;
+                            else if (!strcasecmp (cmd, "white"))   c = WHITE;
+                            else if (!strcasecmp (cmd, "none"))    c = SGR0;
+                            else if (!strcasecmp (cmd, "bold"))    c = BOLD;
+                            else c = cmd;
                             
                             snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", c);
                         }
@@ -401,20 +411,26 @@ void Read_RC_File (FILE *rcf)
                         prG->colors[i] = strdup (buf);
                     }
                 }
-                else if (!strcasecmp (tmp, "linebreaktype"))
+                else if (!strcasecmp (cmd, "linebreaktype"))
                 {
-                    i = atoi (strtok (NULL, " \n\t"));
+                    PrefParseInt (i);
+
                     prG->flags &= ~FLAG_LIBR_BR & ~FLAG_LIBR_INT;
                     if (!i || i == 3)
                         prG->flags |= FLAG_LIBR_BR;
                     if (i & 2)
                         prG->flags |= FLAG_LIBR_INT;
                 }
-                else if (!strcasecmp (tmp, "auto"))
+                else if (!strcasecmp (cmd, "auto"))
                 {
-                    tmp = strtok (NULL, " \t\n");
+                    if (!UtilUIParse (&args, &tmp))
+                    {
+                        dep = 1;
+                        prG->flags |= FLAG_AUTOREPLY;
+                        continue;
+                    }
                     
-                    if (!tmp || !strcasecmp (tmp, "on"))
+                    if (!strcasecmp (tmp, "on"))
                         prG->flags |= FLAG_AUTOREPLY;
                     else if (!strcasecmp (tmp, "off"))
                         prG->flags &= ~FLAG_AUTOREPLY;
@@ -425,12 +441,11 @@ void Read_RC_File (FILE *rcf)
                     ADD_CMD ("inv",  auto_inv);
                     ADD_CMD ("ffc",  auto_ffc);
                     else
-                        prG->flags |= FLAG_AUTOREPLY;
+                        ERROR;
                 }
-                else if (!strcasecmp (tmp, "sound"))
+                else if (!strcasecmp (cmd, "sound"))
                 {
-                    tmp = strtok (NULL, "\n\t");
-                    if (!tmp)
+                    if (!UtilUIParseRemainder (&args, &tmp))
                     {
                         prG->sound |= SFLAG_BEEP;
                         dep |= 1;
@@ -439,17 +454,15 @@ void Read_RC_File (FILE *rcf)
                     prG->sound &= ~SFLAG_BEEP & ~SFLAG_CMD;
                     if (!strcasecmp (tmp, "on"))
                         prG->sound |= SFLAG_BEEP;
-                    else if (!strcasecmp (tmp, "off")) ;
-                    else
+                    else if (strcasecmp (tmp, "off"))
                     {
                         prG->sound |= SFLAG_CMD;
-                        prG->sound_cmd = strdup (tmp);
+                        prG->sound_cmd = strdup (cmd);
                     }
                 }
-                else if (!strcasecmp (tmp, "soundonline"))
+                else if (!strcasecmp (cmd, "soundonline"))
                 {
-                    tmp = strtok (NULL, "\n\t");
-                    if (!tmp)
+                    if (!UtilUIParseRemainder (&args, &tmp))
                     {
                         prG->sound |= SFLAG_ON_BEEP;
                         dep |= 1;
@@ -458,17 +471,15 @@ void Read_RC_File (FILE *rcf)
                     prG->sound &= ~SFLAG_ON_BEEP & ~SFLAG_ON_CMD;
                     if (!strcasecmp (tmp, "on"))
                         prG->sound |= SFLAG_ON_BEEP;
-                    else if (!strcasecmp (tmp, "off")) ;
-                    else
+                    else if (strcasecmp (tmp, "off"))
                     {
                         prG->sound |= SFLAG_ON_CMD;
-                        prG->sound_on_cmd = strdup (tmp);
+                        prG->sound_on_cmd = strdup (cmd);
                     }
                 }
-                else if (!strcasecmp (tmp, "soundoffline"))
+                else if (!strcasecmp (cmd, "soundoffline"))
                 {
-                    tmp = strtok (NULL, "\n\t");
-                    if (!tmp)
+                    if (!UtilUIParseRemainder (&args, &tmp))
                     {
                         prG->sound |= SFLAG_OFF_BEEP;
                         dep |= 1;
@@ -477,74 +488,76 @@ void Read_RC_File (FILE *rcf)
                     prG->sound &= ~SFLAG_OFF_BEEP & ~SFLAG_OFF_CMD;
                     if (!strcasecmp (tmp, "on"))
                         prG->sound |= SFLAG_OFF_BEEP;
-                    else if (!strcasecmp (tmp, "off")) ;
-                    else
+                    else if (strcasecmp (tmp, "off"))
                     {
                         prG->sound |= SFLAG_OFF_CMD;
-                        prG->sound_on_cmd = strdup (tmp);
+                        prG->sound_on_cmd = strdup (cmd);
                     }
                 }
-                else if (!strcasecmp (tmp, "auto_away"))
+                else if (!strcasecmp (cmd, "auto_away"))
                 {
-                    prG->away_time = atoi (strtok (NULL, " \n\t"));
+                    PrefParseInt (i);
+                    prG->away_time = i;
                 }
-                else if (!strcasecmp (tmp, "screen_width"))
+                else if (!strcasecmp (cmd, "screen_width"))
                 {
-                    prG->screen = atoi (strtok (NULL, " \n\t"));
+                    PrefParseInt (i);
+                    prG->screen = i;
                 }
-                else if (!strcasecmp (tmp, "tab"))
+                else if (!strcasecmp (cmd, "tab"))
                 {
+                    PrefParseRemainder (tmp);
                     if (spooled_tab_nicks < TAB_SLOTS)
-                        tab_nick_spool[spooled_tab_nicks++] = M_strdup (strtok (NULL, "\n\t"));
+                        tab_nick_spool[spooled_tab_nicks++] = strdup (tmp);
                 }
-                else if (!strcasecmp (tmp, "set"))
+                else if (!strcasecmp (cmd, "set"))
                 {
                     int which = 0;
-                    tmp = strtok (NULL, " \t\n");
-                    if (!tmp)
-                        continue;
-                    if (!strcasecmp (tmp, "color"))
+                    
+                    PrefParse (cmd);
+
+                    if (!strcasecmp (cmd, "color"))
                         which = FLAG_COLOR;
-                    else if (!strcasecmp (tmp, "hermit"))
+                    else if (!strcasecmp (cmd, "hermit"))
                         which = FLAG_HERMIT;
-                    else if (!strcasecmp (tmp, "delbs"))
+                    else if (!strcasecmp (cmd, "delbs"))
                         which = FLAG_DELBS;
-                    else if (!strcasecmp (tmp, "russian"))
+                    else if (!strcasecmp (cmd, "russian"))
                         which = FLAG_CONVRUSS;
-                    else if (!strcasecmp (tmp, "japanese"))
+                    else if (!strcasecmp (cmd, "japanese"))
                         which = FLAG_CONVEUC;
-                    else if (!strcasecmp (tmp, "funny"))
+                    else if (!strcasecmp (cmd, "funny"))
                         which = FLAG_FUNNY;
-                    else if (!strcasecmp (tmp, "log"))
+                    else if (!strcasecmp (cmd, "log"))
                         which = FLAG_LOG;
-                    else if (!strcasecmp (tmp, "loglevel"))
+                    else if (!strcasecmp (cmd, "loglevel"))
                         which = -1;
-                    else if (!strcasecmp (tmp, "logonoff"))
+                    else if (!strcasecmp (cmd, "logonoff"))
                         which = FLAG_LOG_ONOFF;
-                    else if (!strcasecmp (tmp, "auto"))
+                    else if (!strcasecmp (cmd, "auto"))
                         which = FLAG_AUTOREPLY;
-                    else if (!strcasecmp (tmp, "uinprompt"))
+                    else if (!strcasecmp (cmd, "uinprompt"))
                         which = FLAG_UINPROMPT;
-                    else if (!strcasecmp (tmp, "linebreak"))
+                    else if (!strcasecmp (cmd, "linebreak"))
                         which = -2;
-                    else if (!strcasecmp (tmp, "tabs"))
+                    else if (!strcasecmp (cmd, "tabs"))
                         which = -3;
                     else
                         continue;
                     if (which > 0)
                     {
-                        tmp = strtok (NULL, " \t\n");
-                        if (!tmp || !strcasecmp (tmp, "on"))
+                        PrefParse (cmd);
+                        if (!strcasecmp (cmd, "on"))
                             prG->flags |= which;
-                        else
+                        else if (!strcasecmp (cmd, "off"))
                             prG->flags &= ~which;
+                        else
+                            ERROR;
                     }
                     else if (which == -1)
                     {
-                        tmp = strtok (NULL, " \t\n");
-                        if (!tmp)
-                            continue;
-                        i = atoi (tmp);
+                        PrefParseInt (i);
+
                         prG->flags &= ~FLAG_LOG & ~FLAG_LOG_ONOFF;
                         if (i)
                             prG->flags |= FLAG_LOG;
@@ -553,31 +566,37 @@ void Read_RC_File (FILE *rcf)
                     }
                     else if (which == -2)
                     {
-                        tmp = strtok (NULL, " \t\n");
+                        PrefParse (cmd);
+
                         prG->flags &= ~FLAG_LIBR_BR & ~FLAG_LIBR_INT;
-                        if (!strcasecmp (tmp, "break"))
+                        if (!strcasecmp (cmd, "break"))
                             prG->flags |= FLAG_LIBR_BR;
-                        else if (!strcasecmp (tmp, "simple"))
+                        else if (!strcasecmp (cmd, "simple"))
                             ;
-                        else if (!strcasecmp (tmp, "indent"))
+                        else if (!strcasecmp (cmd, "indent"))
                             prG->flags |= FLAG_LIBR_INT;
-                        else if (!strcasecmp (tmp, "smart"))
+                        else if (!strcasecmp (cmd, "smart"))
                             prG->flags |= FLAG_LIBR_BR | FLAG_LIBR_INT;
+                        else
+                            ERROR;
                     }
                     else if (which == -3)
                     {
-                        tmp = strtok (NULL, " \t\n");
+                        PrefParse (cmd);
+
                         prG->tabs = TABS_SIMPLE;
-                        if (!strcasecmp (tmp, "cycle"))
+                        if (!strcasecmp (cmd, "cycle"))
                             prG->tabs = TABS_CYCLE;
-                        else if (!strcasecmp (tmp, "cycleall"))
+                        else if (!strcasecmp (cmd, "cycleall"))
                             prG->tabs = TABS_CYCLEALL;
+                        else if (strcasecmp (cmd, "simple"))
+                            dep = 1;
                     }
                 }
                 else
                 {
                     M_print (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                    M_print (i18n (1188, "Unrecognized command in rc file '%s', ignored."), tmp);
+                    M_print (i18n (1188, "Unrecognized command in rc file '%s', ignored."), cmd);
                     M_print ("\n");
                 }
                 break;
@@ -614,24 +633,19 @@ void Read_RC_File (FILE *rcf)
 
                 if (isdigit (*p))
                 {
-                    tmp = strtok (p, " ");
-                    if (!tmp)
-                        continue;
-                    uin = atoi (tmp);
-                    tmp = strtok (NULL, "");
-                    if (!tmp)
-                        continue;
+                    PrefParseInt (uin);
+                    PrefParseRemainder (cmd);
                 }
                 else
                 {
                     if (!lastcont)     /* ignore noise */
                         continue;
                     uin = lastcont->uin;
-                    tmp = strtok (NULL, "");
+                    PrefParseRemainder (cmd);
                 }
                 
                 
-                if (!(cont = ContactAdd (uin, tmp)))
+                if (!(cont = ContactAdd (uin, cmd)))
                 {
                     M_print (COLERROR "%s" COLNONE " %s\n", i18n (1619, "Warning:"),
                              i18n (1620, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
@@ -644,33 +658,35 @@ void Read_RC_File (FILE *rcf)
                     M_print ("%ld = %s %x | %p\n", cont->uin, cont->nick, cont->flags, cont);
                 break;
             case 2:
-                tmp = strtok (buf, " ");
-                if (!strcasecmp (tmp, "alter"))
+                PrefParse (cmd);
+
+                if (!strcasecmp (cmd, "alter"))
                 {
-                    CmdUser (UtilFill ("¶alter quiet %s", strtok (NULL, "\n")));
+                    PrefParseRemainder (tmp);
+                    CmdUser (UtilFill ("¶alter quiet %s", tmp));
                 }
                 else
                 {
                     M_print (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                    M_print (i18n (1188, "Unrecognized command in rc file '%s', ignored."), tmp);
+                    M_print (i18n (1188, "Unrecognized command in rc file '%s', ignored."), cmd);
                     M_print ("\n");
                 }
                 break;
             case 3:
-                tmp = strtok (buf, " ");
-                if (!strcasecmp (tmp, "type"))
+                PrefParse (cmd);
+
+                if (!strcasecmp (cmd, "type"))
                 {
-                    tmp = strtok (NULL, " ");
-                    if (!tmp)
-                        continue;
-                    if (!strcasecmp (tmp, "server"))
+                    PrefParse (cmd);
+
+                    if (!strcasecmp (cmd, "server"))
                     {
                         sess->spref->type =
                             (sess->spref->version ? (sess->spref->version > 6 
                                ? TYPE_SERVER : TYPE_SERVER_OLD) : 0);
                         sess->spref->flags = 0;
                     }
-                    else if (!strcasecmp (tmp, "peer"))
+                    else if (!strcasecmp (cmd, "peer"))
                     {
                         sess->spref->type = TYPE_MSGLISTEN;
                         sess->spref->flags = 0;
@@ -682,16 +698,18 @@ void Read_RC_File (FILE *rcf)
                         sess->spref->status = TCP_OK_FLAG;
                     }
                     else 
-                        continue;
-                    tmp = strtok (NULL, " ");
-                    if (!tmp)
-                        continue;
-                    if (!strcasecmp (tmp, "auto"))
-                        sess->spref->flags |= CONN_AUTOLOGIN;
+                        ERROR;
+                    if (UtilUIParse (&args, &cmd))
+                    {
+                        if (!strcasecmp (cmd, "auto"))
+                            sess->spref->flags |= CONN_AUTOLOGIN;
+                    }
                 }
-                else if (!strcasecmp (tmp, "version"))
+                else if (!strcasecmp (cmd, "version"))
                 {
-                    sess->spref->version = atoi (strtok (NULL, " \n\t"));
+                    PrefParseInt (i);
+
+                    sess->spref->version = i;
                     if (!sess->spref->type)
                     {
                         if (sess->spref->version > 6)
@@ -700,28 +718,37 @@ void Read_RC_File (FILE *rcf)
                             sess->spref->type = TYPE_SERVER_OLD;
                     }
                 }
-                else if (!strcasecmp (tmp, "server"))
+                else if (!strcasecmp (cmd, "server"))
                 {
-                    sess->spref->server = M_strdup (strtok (NULL, " \n\t"));
+                    PrefParse (tmp);
+                    sess->spref->server = strdup (tmp);
                 }
-                else if (!strcasecmp (tmp, "port"))
+                else if (!strcasecmp (cmd, "port"))
                 {
-                    sess->spref->port = atoi (strtok (NULL, " \n\t"));
+                    PrefParseInt (i);
+                    sess->spref->port = i;
                 }
-                else if (!strcasecmp (tmp, "uin"))
+                else if (!strcasecmp (cmd, "uin"))
                 {
-                    sess->spref->uin = atoi (strtok (NULL, " \n\t"));
+                    PrefParseInt (i);
+                    sess->spref->uin = i;
                 }
-                else if (!strcasecmp (tmp, "password"))
+                else if (!strcasecmp (cmd, "password"))
                 {
-                    sess->spref->passwd = M_strdup (strtok (NULL, "\n\t"));
+                    PrefParse (tmp);
+                    sess->spref->passwd = strdup (tmp);
                 }
-                else if (!strcasecmp (tmp, "status"))
+                else if (!strcasecmp (cmd, "status"))
                 {
-                    sess->spref->status = atoi (strtok (NULL, " \n\t"));
+                    PrefParseInt (i);
+                    sess->spref->status = i;
                 }
                 else
-                    printf ("Bad line in section 3: %s\n", buf);
+                {
+                    M_print (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                    M_print (i18n (1188, "Unrecognized command in rc file '%s', ignored."), cmd);
+                    M_print ("\n");
+                }
         }
     }
     
@@ -962,7 +989,10 @@ int Save_RC ()
     fprintf (rcf, "soundoffline %s\n\n", prG->sound & SFLAG_OFF_BEEP ? "on" :
                                            prG->sound & SFLAG_OFF_CMD && prG->sound_off_cmd ?
                                            prG->sound_off_cmd : "off");
-    fprintf (rcf, "receivescript %s\n\n", prG->event_cmd ? prG->event_cmd : "");
+    if (prG->event_cmd)
+         fprintf (rcf, "receivescript %s\n\n", prG->event_cmd);
+    else
+         fprintf (rcf, "#receivescript\n\n");
 
     fprintf (rcf, "\n# automatic responses\n");
     fprintf (rcf, "auto away %s\n", prG->auto_away);
