@@ -520,21 +520,21 @@ static JUMP_SNAC_F(SnacSrvReplyicbm)
 
 static JUMP_SNAC_F(SnacSrvAckmsg)
 {
-    UDWORD /*midtime, midrand,*/ uin;
-    UWORD msgtype;
+    UDWORD midtime, midrand, uin;
+    UWORD msgtype, seq_dc;
     Contact *cont;
     Packet *pak;
     char *text, *ctext;
     
     pak = event->pak;
-    /*midtime=*/PacketReadB4 (pak);
-    /*midrand=*/PacketReadB4 (pak);
+    midtime = PacketReadB4 (pak);
+    midrand = PacketReadB4 (pak);
               PacketReadB2 (pak);
     uin     = PacketReadUIN (pak);
               PacketReadB2 (pak);
               PacketReadData (pak, NULL, PacketRead2 (pak));
               PacketRead2 (pak);
-              PacketRead2 (pak);
+    seq_dc  = PacketRead2 (pak);
               PacketRead4 (pak);
               PacketRead4 (pak);
               PacketRead4 (pak);
@@ -549,9 +549,16 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
     cont = ContactByUIN (uin, 1);
     if (!cont)
         return;
-    if ((msgtype & 0x300) != 0x300)
-        return;
-    IMSrvMsg (cont, event->conn, NOW, STATUS_OFFLINE, msgtype, text, 0);
+    
+    event = QueueDequeue (event->conn, QUEUE_TYPE2_RESEND, seq_dc);
+
+    if ((msgtype & 0x300) == 0x300)
+        IMSrvMsg (cont, event->conn, NOW, STATUS_OFFLINE, msgtype, text, 0);
+    else if (event)
+    {
+        IMIntMsg (cont, event->conn, NOW, STATUS_OFFLINE, INT_MSGACK_TYPE2, event->info, event->extra);
+        free (event);
+    }
     free (text);
 }
 
@@ -585,11 +592,11 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     tlv = TLVRead (pak, PacketReadLeft (pak));
 
 #ifdef WIP
-    if (tlv[6].nr != cont->status)
-        M_printf ("FIXME: status embedded in message 0x%08x different from server status 0x%08x.\n", tlv[6].nr, cont->status);
+    if (tlv[6].len && tlv[6].nr != cont->status)
+        M_printf ("FIXME: status for %d embedded in message 0x%08x different from server status 0x%08x.\n", uin, tlv[6].nr, cont->status);
 #endif
 
-    if (tlv[6].len && cont && cont->status != STATUS_OFFLINE)
+    if (tlv[6].len && tlv[6].nr != cont->status && cont->status != STATUS_OFFLINE)
         IMOnline (cont, event->conn, tlv[6].nr);
 
     /* tlv[2] may be there twice - ignore the member since time(NULL). */
@@ -1434,6 +1441,45 @@ void SnacCliSendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD type
     SnacSend (conn, pak);
 }
 
+static void SnacCallbackType2 (Event *event)
+{
+    Contact *cont = ContactByUIN (event->uin, 1);
+    Connection *serv = event->conn;
+    Packet *pak = event->pak;
+
+    if (!serv || !cont)
+    {
+        if (!serv)
+            M_printf (i18n (2234, "Message %s discarded - lost session.\n"), event->info);
+        PacketD (event->pak);
+        free (event->info);
+        free (event);
+        return;
+    }
+
+    ASSERT_SERVER (serv);
+    assert (pak);
+
+    if (event->attempts < MAX_RETRY_ATTEMPTS && serv->connect & CONNECT_MASK)
+    {
+        if (serv->connect & CONNECT_OK)
+        {
+            if (event->attempts > 1)
+                IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGTRY_TYPE2, event->info, NULL);
+            SnacSend (serv, PacketClone (pak));
+            event->attempts++;
+            event->due = time (NULL) + 10;
+        }
+        else
+            event->due = time (NULL) + 1;
+        QueueEnqueue (event);
+        return;
+    }
+    
+    IMCliMsg (serv, cont, event->info, 1 /* FIXME */,
+              ExtraSet (NULL, EXTRA_TRANS, EXTRA_TRANS_ANY & ~EXTRA_TRANS_DC & ~EXTRA_TRANS_TYPE2, NULL));
+}
+
 /*
  * CLI_SENDMSG - SNAC(4,6)
  */
@@ -1462,6 +1508,8 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, const char *text, UDWORD
         case MSG_AUTH_ADDED:
             return RET_DEFER;
     }
+
+    conn->our_seq_dc--;
     
     pak = SnacC (conn, 4, 6, 0, 0);
     PacketWriteB4 (pak, mtime);
@@ -1484,9 +1532,9 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, const char *text, UDWORD
        PacketWrite2       (pak, 0);
        PacketWrite4       (pak, 3);
        PacketWrite1       (pak, 0);
-       PacketWrite2       (pak, -1);
+       PacketWrite2       (pak, conn->our_seq_dc);
       PacketWriteLenDone (pak);
-      SrvMsgAdvanced     (pak, -1, type, 1, 0, c_out_for (text, cont));
+      SrvMsgAdvanced     (pak, conn->our_seq_dc, type, 1, 0, c_out_for (text, cont));
       PacketWrite4       (pak, TCP_COL_FG);
       PacketWrite4       (pak, TCP_COL_BG);
 #ifdef ENABLE_UTF8
@@ -1498,7 +1546,11 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, const char *text, UDWORD
          PacketWriteB4  (pak, 0x00030000);
     PacketWriteTLVDone (pak);
     PacketWriteB4      (pak, 0x00030000); /* empty TLV(3) */
-    SnacSend (conn, pak);
+    
+    QueueEnqueueData (conn, QUEUE_TYPE2_RESEND, conn->our_seq_dc,
+                      cont->uin, time (NULL),
+                      pak, strdup (text), &SnacCallbackType2);
+    
     return RET_INPR;
 }
 

@@ -39,6 +39,7 @@ const char *QueueType   (UDWORD type);
 #define QUEUE_PEER_FILE     60
 #define QUEUE_UDP_RESEND    43
 #define QUEUE_TCP_RESEND    42
+#define QUEUE_TYPE2_RESEND  41
 #define QUEUE_TCP_TIMEOUT   72
 #define QUEUE_CON_TIMEOUT   77
 #define QUEUE_TCP_RECEIVE   32

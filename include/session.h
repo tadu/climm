@@ -28,6 +28,7 @@ struct Connection_s
         UDWORD    our_outside_ip; /* the IP address the server sees from us   */
 
         UDWORD    our_session;    /* session ID                               */
+        UWORD     our_seq_dc;     /* sequence number for dc and type-2        */
         UWORD     our_seq;        /* current primary sequence number          */
         UWORD     our_seq2;       /* current secondary sequence number        */
         UDWORD    our_seq3;       /* current old-ICQ sequence number          */
