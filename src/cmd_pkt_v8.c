@@ -354,7 +354,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     
 #ifdef WIP
     if (prG->verbose)
-    M_printf ("FIXME: Starting advanced message: events %p, %p; type %d, seq %x.\n",
+    M_printf ("FIXMEWIP: Starting advanced message: events %p, %p; type %d, seq %x.\n",
               inc_event, ack_event, msgtype, seq);
 #endif
  
@@ -437,7 +437,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                 free (text);
                 free (name);
 #ifdef WIP
-                M_printf ("FIXME: Delaying advanced message: events %p, %p.\n", inc_event, ack_event);
+                M_printf ("FIXMEWIP: Delaying advanced message: events %p, %p.\n", inc_event, ack_event);
 #endif
                 return;
             }
@@ -521,7 +521,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                             free (gtext);
                             free (reason);
 #ifdef WIP
-                            M_printf ("FIXME: Delaying advanced message: events %p, %p.\n", inc_event, ack_event);
+                            M_printf ("FIXMEWIP: Delaying advanced message: events %p, %p.\n", inc_event, ack_event);
 #endif
                             return;
                         }
@@ -639,7 +639,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     free (text);
 #ifdef WIP
     if (prG->verbose)
-    M_printf ("FIXME: Finishing advanced message: events %p, %p.\n", inc_event, ack_event);
+    M_printf ("FIXMEWIP: Finishing advanced message: events %p, %p.\n", inc_event, ack_event);
 #endif
     QueueDequeueEvent (ack_event);
     ack_event->callback (ack_event);

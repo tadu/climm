@@ -5,6 +5,8 @@ echo "Extracting translations to C.i18n."
 touch C.i18n
 mv C.i18n C.i18n~
 
+export LC_ALL=C
+
 bla="\$I"
 
 (echo "# ${bla}d: $ strings extracted from mICQ sources"; cat ../src/*.c \

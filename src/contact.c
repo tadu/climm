@@ -711,7 +711,7 @@ BOOL ContactMetaLoad (Contact *cont)
         }
 #ifdef WIP
         if (s_parse (&line, &cmd))
-            M_printf ("FIXME: Ignored trailing stuff: '%s' from '%s'.\n", ConvToUTF8 (cmd, enc, -1, 0), line);
+            M_printf ("FIXMEWIP: Ignored trailing stuff: '%s' from '%s'.\n", ConvToUTF8 (cmd, enc, -1, 0), line);
 #endif
     }
     if (fclose (f))

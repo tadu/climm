@@ -474,12 +474,12 @@ static JUMP_SNAC_F(SnacSrvContacterr)
     
     switch (err)
     {
-        case 0x0e: errtxt = "FIXME: syntax error";
-        case 0x14: errtxt = "FIXME: removing non-contact";
-        default:   errtxt = "FIXME: unknown";
+        case 0x0e: errtxt = i18n (2329, "syntax error");
+        case 0x14: errtxt = i18n (2330, "removing non-contact");
+        default:   errtxt = i18n (2331, "unknown");
     }
 
-    M_printf ("FIXME: Contact error %d (%s) for %d contacts: ", err, errtxt, cnt);
+    M_printf (i18n (2332, "Contact error %d (%s) for %d contacts: "), err, errtxt, cnt);
 
     while (empty < 3)
     {
@@ -681,7 +681,7 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
         {
             IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (NULL,
                       EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
-                      EXTRA_MESSAGE, MSG_NORM, text));
+                      EXTRA_MESSAGE, MSG_AUTO, text));
             cont->flags |= CONT_SEENAUTO;
         }
     }
@@ -732,7 +732,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
 
 #ifdef WIP
     if (tlv[6].len && tlv[6].nr != cont->status)
-        M_printf ("FIXME: status for %ld embedded in message 0x%08lx different from server status 0x%08lx.\n", uin, tlv[6].nr, cont->status);
+        M_printf ("FIXMEWIP: status for %ld embedded in message 0x%08lx different from server status 0x%08lx.\n", uin, tlv[6].nr, cont->status);
 #endif
 
     if (tlv[6].len)
@@ -821,7 +821,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                 else
                 {
                     M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-                    M_printf ("FIXME: tlv(b)-only packet.\n");
+                    M_printf ("FIXMEWIP: tlv(b)-only packet.\n");
                 }
 #endif
                 TLVD (tlv);
@@ -863,7 +863,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                         }
                         
 #ifdef WIP
-                        M_printf ("%s %*s FIXME: updates dc to %s:%ld|%ld|%ld v%d %d seq %ld\n",
+                        M_printf ("%s %*s FIXMEWIP: updates dc to %s:%ld|%ld|%ld v%d %d seq %ld\n",
                                   s_now, uiG.nick_len + s_delta (cont->nick), cont->nick,
                                   s_ip (sip), sp1, sp2, sop, sver, scon, sunk);
 #endif
