@@ -172,7 +172,9 @@ int ssl_connect (Connection *conn, BOOL is_client)
 {
     int ret;
     int kx_prio[2] = { GNUTLS_KX_ANON_DH, 0 };
+#ifdef ENABLE_TCL
     Contact *contact = ContactUIN (conn, conn->uin);    
+#endif
 
     Debug (DEB_SSL, "ssl_connect");
     if (!ssl_init_ok || (conn->ssl_status != SSL_STATUS_NA && conn->ssl_status != SSL_STATUS_INIT && conn->ssl_status != SSL_STATUS_REQUEST))

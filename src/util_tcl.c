@@ -31,7 +31,13 @@
 #include "cmd_user.h"
 #include "util_str.h"
 #include "color.h"
+#if HAVE_TCL8_4_TCL_H
+#include <tcl8.4/tcl.h>
+#elif HAVE_TCL8_3_TCL_H
+#include <tcl8.3/tcl.h>
+#else
 #include <tcl.h>
+#endif
 #include <string.h>
 
 
@@ -142,9 +148,9 @@ TCL_COMMAND (TCL_command_micq)
 
     if (!strcmp (argv[1], "receive"))
     {
-        TCL_CHECK_PARMS (1);
         tcl_hook_p hook = tcl_msgs;
         const char *filter = argc > 3 ? argv[3] : "";
+        TCL_CHECK_PARMS (1);
         while (hook)
         {
             if (!strcmp (hook->filter, filter))
@@ -189,8 +195,8 @@ TCL_COMMAND (TCL_command_micq)
     }
     else if (!strcmp (argv[1], "event"))
     {
-        TCL_CHECK_PARMS (1);
         tcl_hook_p hook = tcl_events;
+        TCL_CHECK_PARMS (1);
         if (hook)
         {
             Tcl_SetResult (interp, hook->cmd, TCL_VOLATILE);
@@ -249,10 +255,10 @@ TCL_COMMAND (TCL_command_micq)
     }
     else if (!strcmp (argv[1], "nick"))
     {
-        TCL_CHECK_PARMS (1);
         Connection *tconn;
         Contact *cont;
         UDWORD uin = atol (argv[2]);
+        TCL_CHECK_PARMS (1);
         
         if (!(tconn = ConnectionFind (TYPEF_ANY_SERVER, 0, NULL)))
         {

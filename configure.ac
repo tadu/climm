@@ -67,13 +67,13 @@ if test "x$ac_arg_use_ssl" != "xno"; then
 fi
 
 if test "x$ac_arg_use_tcl" != "xno"; then
-  AC_CHECK_HEADER([tcl.h], [ac_arg_use_tcl=header], [ac_arg_use_tcl=no])
+  AC_CHECK_HEADERS([tcl8.4/tcl.h tcl8.3/tcl.h tcl.h] , [ac_arg_use_tcl=header
+                                                        break])
   if test "x$ac_arg_use_tcl" = "xheader"; then
-    AC_CHECK_LIB([tcl8.4], [Tcl_CreateInterp], [ac_arg_use_tcl=yes], [ac_arg_use_tcl=no]) 
+    AC_SEARCH_LIBS([Tcl_CreateInterp], [tcl8.4 tcl8.3], [ac_arg_use_tcl=yes], [ac_arg_use_tcl=no])
+  else
+    ac_arg_use_tcl=no
   fi
-fi
-if test "x$ac_arg_use_tcl" = "xyes"; then
-      LIBS="-ltcl8.4 $LIBS"
 fi
 
 if test "x$ac_arg_use_utf8" = "xno"; then
