@@ -51,7 +51,7 @@ char *s_cat (char *str, UDWORD *size, const char *add)
     
     nsize = strlen (nstr = str) + strlen (add) + 1;
     if (nsize > *size)
-        nstr = realloc (str, nsize);
+        nstr = realloc (str, nsize += 64);
     if (nstr)
         *size = nsize;
     else
@@ -80,7 +80,7 @@ char *s_catf (char *str, UDWORD *size, const char *fmt, ...)
     
     nsize = strlen (nstr = str) + 1024;
     if (nsize > *size)
-        nstr = realloc (str, nsize);
+        nstr = realloc (str, nsize += 64);
     if (nstr)
         *size = nsize;
     else
@@ -285,6 +285,12 @@ UDWORD s_offset  (const char *str, UDWORD offset)
     return off;
 }
 
+#ifdef ENABLE_UTF8
+#define noctl(x) ((((x & 0x60) && x != 0x7f)) ? ConvUTF8 (x) : ".")
+#else
+#define noctl(x) ((((x & 0x60) && x != 0x7f)) ? x : '.')
+#endif
+
 /*
  * Hex dump to a string with ASCII.
  */
@@ -296,23 +302,32 @@ const char *s_dump (const UBYTE *data, UWORD len)
     const unsigned char *d = (const unsigned char *)data;
     
     t = s_catf (t, &size, "");
-    if (t)
-        *t = 0;
+    *t = '\0';
     while (len >= 16)
     {
         t = s_catf (t, &size, "%02x %02x %02x %02x %02x %02x %02x %02x  "
                               "%02x %02x %02x %02x %02x %02x %02x %02x  ",
                     d[0], d[1],  d[2],  d[3],  d[4],  d[5],  d[6],  d[7],
                     d[8], d[9], d[10], d[11], d[12], d[13], d[14], d[15]);
+#ifdef ENABLE_UTF8
+        t = s_cat (t, &size, "\"");
+        t = s_cat (t, &size, noctl  (d[0]));  t = s_cat (t, &size, noctl  (d[1]));
+        t = s_cat (t, &size, noctl  (d[2]));  t = s_cat (t, &size, noctl  (d[3]));
+        t = s_cat (t, &size, noctl  (d[4]));  t = s_cat (t, &size, noctl  (d[5]));
+        t = s_cat (t, &size, noctl  (d[6]));  t = s_cat (t, &size, noctl  (d[7]));
+        t = s_cat (t, &size, " ");
+        t = s_cat (t, &size, noctl  (d[8]));  t = s_cat (t, &size, noctl  (d[9]));
+        t = s_cat (t, &size, noctl (d[10]));  t = s_cat (t, &size, noctl (d[11]));
+        t = s_cat (t, &size, noctl (d[12]));  t = s_cat (t, &size, noctl (d[13]));
+        t = s_cat (t, &size, noctl (d[14]));  t = s_cat (t, &size, noctl (d[15]));
+        t = s_cat (t, &size, "'\n");
+#else
         t = s_catf (t, &size, "'%c%c%c%c%c%c%c%c %c%c%c%c%c%c%c%c'\n",
-                    isalnum  (d[0]) ?  d[0] : '.', isalnum  (d[1]) ?  d[1] : '.',
-                    isalnum  (d[2]) ?  d[2] : '.', isalnum  (d[3]) ?  d[3] : '.',
-                    isalnum  (d[4]) ?  d[4] : '.', isalnum  (d[5]) ?  d[5] : '.',
-                    isalnum  (d[6]) ?  d[6] : '.', isalnum  (d[7]) ?  d[7] : '.',
-                    isalnum  (d[8]) ?  d[8] : '.', isalnum  (d[9]) ?  d[9] : '.',
-                    isalnum (d[10]) ? d[10] : '.', isalnum (d[11]) ? d[11] : '.',
-                    isalnum (d[12]) ? d[12] : '.', isalnum (d[13]) ? d[13] : '.',
-                    isalnum (d[14]) ? d[14] : '.', isalnum (d[15]) ? d[15] : '.');
+                    noctl  (d[0]), noctl  (d[1]), noctl  (d[2]), noctl  (d[3]),
+                    noctl  (d[4]), noctl  (d[5]), noctl  (d[6]), noctl  (d[7]),
+                    noctl  (d[8]), noctl  (d[9]), noctl (d[10]), noctl (d[11]),
+                    noctl (d[12]), noctl (d[13]), noctl (d[14]), noctl (d[15]));
+#endif
         len -= 16;
         d += 16;
     }
@@ -335,7 +350,11 @@ const char *s_dump (const UBYTE *data, UWORD len)
     t = s_catf (t, &size, " '");
     while (off)
     {
-        t = s_catf (t, &size, "%c", isalnum (*(d - off)) ? *(d - off) : '.');
+#ifdef ENABLE_UTF8
+        t = s_catf (t, &size, "%s", noctl (*(d - off)));
+#else
+        t = s_catf (t, &size, "%c", noctl (*(d - off)));
+#endif
         off--;
     }
     t = s_catf (t, &size, "'\n");
