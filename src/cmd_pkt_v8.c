@@ -565,8 +565,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
             free (cctmp);
 #endif
             if (*text)
-            IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraClone (extra),
-                      EXTRA_STATUS, status, NULL));
+            IMSrvMsg (cont, serv, NOW, ExtraClone (extra));
             PacketWrite2     (ack_pak, ack_status);
             PacketWrite2     (ack_pak, ack_flags);
             PacketWriteLNTS  (ack_pak, c_out (ack_msg));
