@@ -867,6 +867,14 @@ void ContactSetVersion (Contact *cont)
         new = "AIM(?)";
     else if (dc->version == 7 && !HAS_CAP (cont->caps, CAP_RTFMSGS))
         new = "ICQ 2000 (?)";
+    else if (!dc->version && HAS_CAP (cont->caps, CAP_UTF8))
+        new = "ICQ 2002 (?)";
+    else if (!dc->version && HAS_CAP (cont->caps, CAP_IS_2001))
+        new = "ICQ 2001 (?)";
+    else if (HAS_CAP (cont->caps, CAP_AIM_CHAT))
+        new = "AIM(?)";
+    else if (!dc->version && !HAS_CAP (cont->caps, CAP_RTFMSGS))
+        new = "ICQ 2000 (?)";
     
     if (new)
     {
