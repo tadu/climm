@@ -12,8 +12,6 @@
 #include "preferences.h"
 #include "connection.h"
 
-void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg);
-
 #ifndef ENABLE_TCL
 #define TCLMessage(from, text)
 #define TCLEvent(from, type, data)
@@ -216,7 +214,10 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
     free (p);
 
     OptD (opt);
+    HistMsg (conn, cont, stamp == NOW ? time (NULL) : stamp, text, HIST_OUT);
 }
+
+#define HISTSIZE 100
 
 struct History_s
 {
@@ -224,26 +225,28 @@ struct History_s
     Contact *cont;
     time_t stamp;
     char *msg;
+    UWORD inout;
 };
 typedef struct History_s History;
 
-static History hist[50];
+static History hist[HISTSIZE];
+
 /*
  * History
  */
-void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg)
+void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg, UWORD inout)
 {
     int i, j, k;
 
-    if (hist[49].conn && hist[0].conn)
+    if (hist[HISTSIZE - 1].conn && hist[0].conn)
     {
         free (hist[0].msg);
-        for (i = 0; i < 49; i++)
+        for (i = 0; i < HISTSIZE - 1; i++)
             hist[i] = hist[i + 1];
-        hist[49].conn = NULL;
+        hist[HISTSIZE - 1].conn = NULL;
     }
 
-    for (i = k = j = 0; j < 49 && hist[j].conn; j++)
+    for (i = k = j = 0; j < HISTSIZE - 1 && hist[j].conn; j++)
         if (cont == hist[j].cont)
         {
             if (!k)
@@ -251,9 +254,9 @@ void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg)
             if (++k == 10)
             {
                 free (hist[i].msg);
-                for ( ; i < 49; i++)
+                for ( ; i < HISTSIZE - 1; i++)
                     hist[i] = hist[i + 1];
-                hist[49].conn = NULL;
+                hist[HISTSIZE - 1].conn = NULL;
                 j--;
             }
         }
@@ -262,6 +265,7 @@ void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg)
     hist[j].cont = cont;
     hist[j].stamp = stamp;
     hist[j].msg = strdup (msg);
+    hist[j].inout = inout;
 }
 
 void HistShow (Contact *cont)
@@ -270,9 +274,12 @@ void HistShow (Contact *cont)
     
     for (i = 0; i < 50; i++)
         if (hist[i].conn && (!cont || hist[i].cont == cont))
-            rl_printf ("%s%s %s%*s%s %s" COLMSGINDENT "%s\n",
-                      COLDEBUG, s_time (&hist[i].stamp), COLINCOMING, uiG.nick_len + s_delta (hist[i].cont->nick),
-                      hist[i].cont->nick, COLNONE, COLMESSAGE, hist[i].msg);
+            rl_printf ("%s%s %s%*s %c%s %s" COLMSGINDENT "%s\n",
+                       COLDEBUG, s_time (&hist[i].stamp),
+                       hist[i].inout == HIST_IN ? COLINCOMING : COLACK,
+                       uiG.nick_len + s_delta (hist[i].cont->nick),
+                       hist[i].cont->nick, hist[i].inout == HIST_IN ? '<' : '>',
+                       COLNONE, COLMESSAGE, hist[i].msg);
 }
 
 /*
@@ -374,7 +381,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
         case MSG_NORM:
         default:
             rl_printf ("%s %s" COLMSGINDENT "%s\n", carr, COLMESSAGE, cdata);
-            HistMsg (conn, cont, stamp == NOW ? time (NULL) : stamp, cdata);
+            HistMsg (conn, cont, stamp == NOW ? time (NULL) : stamp, cdata, HIST_IN);
             TCLEvent (cont, "message", s_sprintf ("{%s}", cdata));
             TCLMessage (cont, cdata);
             break;
@@ -423,6 +430,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
             
             rl_printf ("%s %s\n%s", carr, s_msgquote (tmp), s_now);
             rl_printf (i18n (2127, "       URL: %s %s\n"), carr, s_wordquote (tmp2));
+            HistMsg (conn, cont, stamp == NOW ? time (NULL) : stamp, cdata, HIST_IN);
             break;
 
         case MSG_AUTH_REQ:
