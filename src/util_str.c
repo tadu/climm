@@ -881,7 +881,7 @@ ContactGroup *s_parselist_s (const char **input, BOOL rem, Connection *serv)
     
     if (scg)
         ContactGroupD (scg);
-    scg = ContactGroupC (serv, 0, "");
+    scg = ContactGroupC (NULL, 0, "");
     while (*p)
     {
         while (*p && strchr (DEFAULT_SEP, *p))
