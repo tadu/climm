@@ -1,5 +1,5 @@
 # $Id$ Romana (Romanian)
-#  EN: __.i18n,v 1.32 2002/08/23 14:00:42
+#  EN: __.i18n,v 1.44 2002/09/19 00:36:27
 1001:ro
 1002:ro_RO
 1003:0-4-9-3
@@ -30,11 +30,11 @@
 1030:s-a deconectat.
 1031:s-a conectat.
 #1032:debug: Doppeltes Packet #%04x vom Typ %04x (%s)¶
-#1033:Incoming v8 server packet:
+1033:Pachet server v8 care vine:
 1034:Numarul maxim de incercari a fost atins. Ma predau.
 1035:a schimbat starea in
 1036:%s comanda necunoscuta, tastati /help pentru ajutor.
-#1037:Mesajul a fost trimis cand bufferul a ajuns la limita¶
+1037:Mesaj trimis pana la ultima linie (buffer plin)¶
 1038:Mesajul a fost intrerupt¶
 1039:Serverul afirma ca nu sintem conectati.¶
 1040:mICQ> 
@@ -51,8 +51,8 @@
 1053:Conectat la %s, asteptam raspuns¶
 1055:Crearea socketului a esuat
 1056:Socket-ul a fost creat incercam sa ne conectam¶
-#1060:Verbosity level is %d.¶
-1061:%s nu pare a fi nick name.¶
+1060:Nivelul detalizarii mesajelor e %d.¶
+#1061:'%s' nu pare a fi nick name.¶
 1062:Utilizatori ignorati:
 1063:Introduceti parola:
 1064:Starea a fost automat schimbata in
@@ -65,13 +65,14 @@
 1075:versiunea
 1076:compilat
 #1077:in dedication to Matthew D. Smith.
+1077:consacrat lui Matthew D. Smith.
 1078:Traducere nu exista.
-#1079:Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.¶
+1079:Traducere (%s, %s) din %s, ultima modificare facuta la %s de %s, pentru mICQ %d.%d.%d%s.¶
 1080:N-am reusit sa incarc internationalizarea "%s".¶
 1081:Am incarcat cu succes traducerea romana (%d inregistrari).¶
 1082:Incerc sa ma reconectez... [incercarea %d din %d]¶
 #1083:Sound cmd
-#1084:Sound
+1084:Sunet
 #1085:on
 #1086:off
 #1089:Unloaded translation.
@@ -141,6 +142,7 @@
 #1156:Bosnian
 1157:Persana
 1158:Albaneza
+#-#1195:Culoarea e %s%s%s.¶
 #1159:Armenian
 #1161:Academic
 #1162:Administrative
@@ -169,18 +171,16 @@
 #1185:Technical
 #1186:University Student
 #1187:Web Building
-#1188:Unrecognized command in rc file '%s', ignored.
-#1189:UIN = %ld¶
-#1190:port = %ld¶
-#1191:passwd = %s¶
-#1192:server = %s¶
-#1193:status = %ld¶
-#-#1195:Culoarea e %s%s%s.¶
+1188:Comanda necunoscuta in fisierul de configurare '%s'; ignorata.
+1189:UIN = %ld¶
+1190:port = %ld¶
+1191:parola = %s¶
+1192:server = %s¶
+1193:stare = %ld¶
 #1196:Message_cmd = %s¶
-#1197:Password change was ©2%s©0.¶
 1198:Alte servicii
 1199:Tara necunoscuta
-#1200:Not entered
+1200:Neintrodusa
 1201:Afganistan
 1202:Albania
 #1203:Algeria
@@ -327,22 +327,22 @@
 #1344:Portugal
 #1345:Puerto Rico
 #1346:Qatar
-#1347:Romania
-#1348:Russia
-#1349:Saipan
-#1350:San Marino
-#1351:Saudia Arabia
-#1352:Senegal
+1347:Romania
+1348:Rusia
+1349:Spania
+1350:San Marino
+1351:Arabia Saudita
+1352:Senegal
 #1353:Singapore
-#1354:Slovakia
-#1355:South Africa
-#1356:Spain
-#1357:Sri Lanka
-#1358:Suriname
-#1359:Sweden
-#1360:Switzerland
-#1361:Taiwan
-#1362:Tanzania
+1354:Slovacia
+1355:Africa de Sud
+1356:Spania
+1357:Sri Lanka
+1358:Suriname
+1359:Suedia
+1360:Elvetia
+1361:Taiwan
+1362:Tanzania
 #1363:Thailand
 #1364:Tinian Island
 #1365:Togo
@@ -355,50 +355,46 @@
 #1372:Turks and Caicos Islands
 #1373:Tuvalu
 #1374:Uganda
-#1375:Ukraine
-#1376:United Arab Emirates
-#1377:UK
+1375:Ucraina
+1376:Emiratele Arabe Unite
+1377:Regatul Unit
 #1378:United States Virgin Islands
 1379:SUA
-#1380:Uruguay
-#1381:Uzbekistan
+1380:Uruguay
+1381:Uzbekistan
 #1382:Vanuatu
 #1383:Vatican City
 #1384:Venezuela
 1385:Vietnam
 #1386:Wallis and Futuna Islands
 #1387:Western Samoa
-#1388:Yemen
-#1389:Yugoslavia
+1388:Yemen
+1389:Yugoslavia
 1390:Zair
-#1391:Zambia
-#1392:Zimbabwe
+1391:Zambia
+1392:Zimbabwe
 1393:cu succes
 1394:fara succes
-#1395:About info change was ©2%s©0.¶
-#1396:Info change was ©2%s©0.¶
-#1397:Other info change was ©2%s©0.¶
-#1398:Search ©2failed©0.
-#1400:Shows locally stored info on user.
-#1401:Updates more user info like age and sex.
-#1402:Updates your about user info.
-#1403:Displays the last message received from <nick>, or a list of who has send you at least one message.
+1400:Arata informatia stocata local despre utilizator.
+1401:Actualizeaza mai multe date despre utilizator, cum ar fi varsta, sex.
+1402:Actualizeaza informatia personala "despre".
+1403:Afiseaza ultimul mesaj primit de la <nick>, sau o lista a celor care v-au trimis cel putin un mesaj.
 #1404:Toggles ignoring/unignoring nick.
-#1405:Lists ignored nicks/uins.
+1405:Afiseaza nick-uri/uin-uri ignorate.
 #1406:Toggles your visibility to a user when you're invisible.
-#1407:Displays the current status of online people on your contact list.
+1407:Afiseaza starea curenta a oamenilor conectati din lista de contacte.
 #1408:Changes your password to secret.
-#1409:Sends a message to uin or nick.
-#1410:Sends a url and message to uin.
-#1411:Sends a multiline message to everyone on your list.
-#1412:Sends a message to the last person you sent a message to.
-#1413:Authorize uin or nick to add you to their list.
+1409:Trimite un mesaj la uin sau nick.
+1410:Trimite un url si un mesaj la uin.
+1411:Trimite un mesaj din mai multe randuri tuturor din lista de contacte.
+1412:Trimite un mesaj ultimei persoane careia i-ati mai trimis mesaje.
+1413:Autorizeaza UIN sau nick sa va adauge in lista lor.
 #1414:Replys to the last person to send you a message.
 #1415:Finds a random user in the specified group or lists the groups.
 #1416:Displays the current status of everyone on your contact list.
 #1417:This command allows you to alter your command set on the fly.
 #1418:Set the verbosity level, or display verbosity level.
-#1419:Clears the screen.
+1419:Curata ecranul.
 #1420:Switches beeping when receiving new messages on or off, sets a command for this event or displays current state of this option.
 #1422:Logs off and quits.
 #1423:Displays your autoreply status.
@@ -536,23 +532,18 @@
 #1564:First name:
 #1565:Last name:
 #1566:Email address:
-#1567:No authorization needed.©0 
-#1568:Must request authorization.©0 
+#1567:No authorization needed.
+#1568:Must request authorization.
 #1570:City:
 #1574:State:
 #1575:Age:
 #1578:Enter country's phone ID number:
 #1579:Enter company: 
 #1584:Warning! Script command '%s' failed with exit value %d¶
-#1585:Ack!!!!!!!  Bad packet¶
-#1586:©4¶%s©0 has added you to their contact list.¶
 #1587:Enter department: 
-#1590:©4%10s©0 has requested your authorization to be added to their contact list.¶
-#1591:Reason:
 #1592:<%s> emailed you a message:¶
 #1593:<%s> send you a web message:¶
-#1594:        URL: %s©3%s©0¶
-#1595:¶Contact List.¶©3============================================¶©0%d Contacts¶
+#1595:¶Contact List.¶============================================¶%d Contacts¶
 #1596:[SOCKS] Can't find hostname %s: %s.
 #1597:[SOCKS] Socket creation failed¶
 #1598:[SOCKS] Connection request refused
@@ -581,8 +572,6 @@
 #1622:Do you want to apply these changes? (YES/NO)
 #1623:Doubled packet %04X¶
 #1624:Sorry, can't initialize Windows Sockets...
-#1628: Description: ©3%s©0¶
-#1629: URL:         ©3%s©0
 #1632:¶Connection unstable. Exiting....
 #1634:ok¶
 #1637:Can't bind socket to free port¶
@@ -593,9 +582,9 @@
 #1642:IP
 #1643:Acknowleged SRV_X1 0x021C Done Contact list?¶
 #1644:Acknowleged SRV_X2 0x00E6 Done old messages?¶
-#1645:©3You entered an incorrect password.©0¶
-#1646:©3Server is busy.¶
-#1648: ©2The response was %04X	
+#1645:You entered an incorrect password.¶
+#1646:Server is busy.¶
+#1648:The response was %04X	
 #1649:The version was %X	
 #1650:¶The SEQ was %04X	
 #1651:The size was %d¶
@@ -609,7 +598,6 @@
 #1659:Unknown section %s in configuration file.
 #1660:Invalid Command: %s¶
 #1661:Shell commands have been disabled.¶
-#1664:Composing message to ©4all©0:¶
 #1666:Unignored %s.
 #1667:Ignoring %s.
 #1670:Normal visible to %s now.
@@ -632,8 +620,8 @@
 #1692:Contacts:
 #1696:Sex:
 #1700:%s is not a valid user in your list.¶
-#1703:©2Status modes: ¶
-#1704:©2Groups: ¶
+#1703:Status modes:¶
+#1704:Groups:¶
 #1705:General
 #1706:Romance
 #1707:Games
@@ -658,8 +646,6 @@
 #1731:The "invisible" message is:
 #1735:Must give a message.¶
 #1738:Need a command to alter.¶
-#1739:Composing message to ©4%s©0:¶
-#1740:Composing message to ©2%d©0:¶
 #1741:Must receive a message first¶
 #1742:Must write one message first¶
 #1743:Size mismatch in packet lengths.¶
@@ -670,7 +656,7 @@
 #1749:UIN %d renamed to %s.¶
 #1751:Nick %s removed.
 #1754: Note: You need to 'save' to write new contact list to disc.¶
-#1755:added you to their contact list.¶
+#1755:has added you to their contact list.¶
 #1756:¶Creating Connection...¶
 #1757:Couldn't establish connection.¶
 #1758:Sending Request...¶
@@ -726,7 +712,6 @@
 #1817:Warning: ReceiveScript feature not enabled!¶
 #1818:Warning: Deprecated syntax found in rc file!¶    Please update or "save" the rc file and check for changes.¶
 #1820:%s <option> [on|off] - control simple options.¶
-#1821:Funny messages are ©3%s©0.¶
 #1822:    color: use colored text output.¶
 #1823:Incoming partial packet:
 #1825:Discarded a %04x (%s) packet
@@ -782,7 +767,7 @@
 #1898:Redirect to server %s... 
 #1899:Unknown family requested: %d¶
 #1900:It's readonly.
-#1901:has authorized you to add them to your contact list.
+#1901:has authorized you to add them to your contact list.¶
 #1902:Opening v5 connection to %s:%d... 
 #1903:Outgoing v8 server packet:
 #1904:Server doesn't understand ver %d (only %d) for family %d!¶
@@ -790,10 +775,9 @@
 #1907:Warning: Server thinks our UIN is %d, while it is %d.¶
 #1908:Received USERONLINE packet for non-contact.¶
 #1909:Received USEROFFLINE packet for non-contact.¶
-#1910:FLAP seq %08x length %04x channel %d©0¶
+#1910:FLAP seq %08x length %04x channel %d¶
 #1911:connecting
 #1912:closed
-#1913:Received server acknowledge for %s#%08lx:%08lx%s sent to %s%s%s.¶
 #1914:Can't allocate connection structure.¶
 #1915:Server says we're at %s.¶
 #1918:Ignored server request for a minimum report interval of %d.¶
@@ -875,7 +859,6 @@
 #2005:Household products
 #2006:Mail order catalog
 #2007:Business services
-#2008:Random chat group change was ©2%s©0.¶
 #2009:Found random chat partner UIN %d in chat group %d.¶
 #2011:You do not have a listening peer-to-peer connection.¶
 #2012:No password given.¶
@@ -884,7 +867,6 @@
 #2015:No message given.¶
 #2017:The user is actually online.¶
 #2018:    quiet: be quiet about status changes.¶
-#2019:Quiet output is ©3%s©0.¶
 #2020:Being visible to %s.
 #2021:Being invisible to %s.
 #2022:The user is indeed offline.¶
@@ -892,7 +874,6 @@
 #2024:Unknown protocol version %d for ICQ peer-to-peer protocol.¶
 #2026:TCP cookie:
 #2029:Protocol error on peer-to-peer connection
-#2030:%04d-%02d-%02d %02d:%02d UTC
 #2031:Connecting failed too often, giving up.¶
 #2032:Scheduling v8 reconnect in %d seconds.¶
 #2033:born today
@@ -980,5 +961,25 @@
 #2120:auth deny <nick> <msg> - refuse authorization.¶
 #2121:auth req  <nick> <msg> - request authorization.¶
 #2122: Note: You need to 'save' to write new password to disc.¶
-#2123:%sSyntax error%s: Too few arguments. %s¶
-#2124:%sSyntax error%s: Not an integer.    %s¶
+#2123:%sSyntax error%s: Too few arguments: '%s'¶
+#2124:%sSyntax error%s: Not an integer: '%s'¶
+#2126:User is offline, message (%s#%08lx:%08lx%s) queued.¶
+#2127:       URL: %s%s%s%s¶
+#2128: Description: %s%s%s¶
+#2129:         URL: %s%s%s¶
+#2130:Composing message to %sall%s:¶
+#2131:Composing message to %s%s%s:¶
+#2132:Composing message to %s%d%s:¶
+#2133:Color is %s%s%s.¶
+#2134:Funny messages are %s%s%s.¶
+#2135:Quiet output is %s%s%s.¶
+#2136:Password change was %s%s%s.¶
+#2137:About info change was %s%s%s.¶
+#2138:Info change was %s%s%s.¶
+#2139:Other info change was %s%s%s.¶
+#2140:Random chat group change was %s%s%s.¶
+#2141:Search %sfailed%s.¶
+#2142:Direct connection with %s not possible.¶
+#2143:refused authorization: %s%s%s¶
+#2144:requests authorization: %s%s%s¶
+#2145:auth add  <nick>       - authorized add.¶
