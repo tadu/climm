@@ -77,7 +77,7 @@
 #define iswalnum(ucs) (!(ucs & 0xffffff00L) && isalnum (ucs))
 #endif
 
-#define rl_ucs_at(str,pos) (((UDWORD)((str)->txt[2 * (pos) + 1])) | (((UDWORD)((str)->txt[2 * (pos)]) << 8)))
+#define rl_ucs_at(str,pos) (((UDWORD)(UBYTE)((str)->txt[2 * (pos) + 1])) | (((UDWORD)(UBYTE)((str)->txt[2 * (pos)])) << 8))
 
 #if HAVE_TCGETATTR
 static struct termios tty_attr;
@@ -743,9 +743,15 @@ static void rl_linecompress (str_t line, UDWORD from, UDWORD to)
     for (i = from; i < to; i++)
     {
         ucs = rl_ucs_at (&rl_ucs, i);
-        if ((ucs != 0xffff) && (ucs != (UDWORD)-1))
+#if DEBUG_RL
+        fprintf (stderr, "ucs %x\n", ucs);
+#endif
+        if ((ucs != (UDWORD)0xffff) && (ucs != (UDWORD)-1))
             s_cat (line, ConvUTF8 (ucs));
     }
+#if DEBUG_RL
+    fprintf (stderr, "compress %s\n", s_qquote (line->txt));
+#endif
 }
 
 /*
