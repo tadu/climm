@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.51 2002/10/14 15:48:34
+#  EN: __.i18n,v 1.52 2002/10/21 01:09:44
 1001:de
 1002:de_DE
 1003:0-4-9-3
@@ -28,13 +28,13 @@
 1028:Nein
 1029:Bitte Ja oder Nein eingeben!
 1030:hat sich ausgeloggt.
-1031:hat sich eingeloggt
+1031.hat sich eingeloggt
 1032:debug: Doppeltes Packet #%04x vom Typ %04x (%s)\n
 1033:Eingehendes Server-Paket (Version 8):
 1034:Maximale Anzahl an Versuchen erreicht - gebe auf.
-1035:ist jetzt
+1035.ist jetzt
 1036:Unbekanntes Kommando %s, tippe "help" für Hilfe.
-1037:Nachricht gesendet, bevor der letzte Puffer voll war\n
+1037:Nachricht teilweise gesendet.\n
 1038:Nachricht abgebrochen\n
 1039:Der Server behauptet, wir wären nicht verbunden.\n
 1040:mICQ> 
@@ -50,20 +50,20 @@
 1050:Login erfolgreich!
 1053:Nach %s verbunden, warte auf Antwort.\n
 1055:Konnte keinen Socket erstellen.
-1056:Socket erhalten, versuche zu verbinden...\n
+1056:Socket erhalten, versuche zu verbinden.\n
 1060:Ausführlichkeit is %d.\n
 1061:"%s" ist kein Spitzname.\n
 1062:ignorierte User:
 1063:Bitte Passwort eingeben: 
-1064:Auto-Status-Wechsel nach:
-1065:Bytereihenfolge: Intel.
-1066:Bytereihenfolge: Motorola.
-1071:Dein Status ist:
+1064:Automatischer Statuswechsel nach %s.\n
+1065.Bytereihenfolge: Intel.
+1066.Bytereihenfolge: Motorola.
+1071.Dein Status ist:
 1072:User abgeklemmt:
 1073:User verbunden:
-1074:mICQ (Matts ICQ-Klon)
-1075:Version
-1076:kompiliert am
+1074.mICQ (Matts ICQ-Klon)
+1075.Version
+1076.kompiliert am
 1077:gewidmet Matthew D. Smith.
 1078:Keine Übersetzung verfügbar.
 1079:Übersetzung (%s, %s) von %s, zuletzt geändert am %s von %s, für mICQ %d.%d.%d%s.\n
@@ -397,7 +397,7 @@
 1411:Sendet eine mehrzeilige Nachricht an JEDEN in der Kontaktliste.
 1412:Sendet eine Nachricht zu der letzten Person, zu der du eine Nachricht geschickt hast.
 1413:Erlaubt <uin> bzw. <nick> das Hinzufügen zu seiner Kontaktliste.
-1414:Antwort auf die letzte Nachricht, die du bekommen hast.
+1414:Antwort auf die letzte Nachricht, die man bekommen hat.
 1415:Findet einen zufälligen User in der Interessengruppe <nr> oder listet alle Gruppen.
 1416:Zeigt den Status aller Kontakte an.
 1417:Benennt Kommando <old cmd> in <new cmd> um.
@@ -478,7 +478,7 @@
 1494:Nur Server
 1495:Kein zufälliger Benutzer gefunden
 1497:fehlgeschlagen
-1498:Information über
+1498.Information über
 1499:Anderes
 1500:Spitzname:
 1501:Name:
@@ -536,7 +536,7 @@
 1555:Dein neuer Nachname:
 1556:Deine Email-Adresse:
 1557:Möchtest Du, daß Mirabilis-User Deine Autorisierung brauchen?
-1562:Information für
+1562.Information für
 1564:Vorname:
 1565:Nachname:
 1566:eMail-Adresse:
@@ -563,15 +563,15 @@
 1604:Soll der Benutzer online sein?
 1605:Soll Ihr Status im Web einsehbar sein? (Ja/Nein)
 1606:Paket mit falscher Sitzungskennung ID %08x (richtig: %08x) mit Kommando %04x ignoriert.\n
-1607:Benutzung: micq [-v|-V] [-f|-F <KonfDatei>] [-l|-L <ProtDatei>] [-?|-h]\n
-1608:        -v   ausführlicher Modus (nur zur Fehlersuche nützlich)\n
-1609:        -f   alternative Konfigurationsdatei verwenden (normalerweise ~/.micq/micqrc)\n
-1610:        -l   alternative Protokoll-Datei oder -Verzeichnis verwenden\n
-1611:        -?   diese Hilfe\n\n
+1607:Benutzung: micq [-h] [-v[level]] [-f <KonfDatei>] [-l <ProtDatei>]\n
+1608.        -v   ausführlicher Modus (nur zur Fehlersuche nützlich)\n
+1609.        -f   alternative Konfigurationsdatei verwenden (normalerweise ~/.micq/micqrc)\n
+1610.        -l   alternative Protokoll-Datei oder -Verzeichnis verwenden\n
+1611.        -?   diese Hilfe\n\n
 1612:Dieses Programm wurde ohne Hilfe oder Zustimmung von Mirabilis erstellt.\n
 1613:Dazu wurde kein Programmcode von Mirabilis zurückentwickelt oder zurückübersetzt.\n
-1614:Benutze Konfigurationsdatei "%s".\n
-1615:Protokolliere nach "%s".\n
+1614.Benutze Konfigurationsdatei "%s".\n
+1615.Protokolliere nach "%s".\n
 1617:<alle>
 1618:Benutzernummer:
 1619:Warnung:
@@ -691,7 +691,7 @@
 1789:Fehlerhaftes Paket empfangen (%d).
 1790:Einrichtungs-Assistent beendet. Herzlichen Glückwunsch zu Ihrer neuen Benutzernummer!\n
 1791:Einrichtungs-Assistent beendet. Herzlichen Glückwunsch!\n
-1792:Leider weigert sich AOL, eine neue Benutzernummer zu vergeben, vermutlich, weil zu viele Anfragen nach einer neuen Benutzernummer in zu kurzer Zeit von dieser IP-Adresse kamen. Bitte v ersuchen Sie es später noch einmal.\n
+1792:Leider weigert sich AOL, eine neue Benutzernummer zu vergeben, vermutlich, weil zu viele Anfragen nach einer neuen Benutzernummer in zu kurzer Zeit von dieser IP-Adresse kamen. Bitte versuchen Sie es später noch einmal.\n
 1793:Keine gültige Benutzernummer gefunden. Der Einrichtungs-Assistent wird Ihnen dabei helfen, eine einzurichten.\n
 1794:Wenn Sie bereits eine Benutzernummer besitzen, geben Sie diese bitte ein. Andernfalls drücken Sie die Eingabetaste, und ich werde eine für Sie beantragen.\n
 1795:Paßwort:
@@ -821,7 +821,7 @@
 1961:URL: %s\n
 1966: Verbindung verweigert zu Anschluß %d zu %s.\n
 1967:Mehr Information für
-1968:Benutzer gefunden
+1968:Benutzer gefunden:\n
 1969:nicht verbunden
 1970:verbunden
 1971:nicht stören
@@ -897,7 +897,7 @@
 2049:Lade Gruppe "%s" herunter:\n
 2050:Importiere %d Kontakte.\n
 2051:Fehler am Kommunikationsendpunkt: %s (%d)\n
-2053:TCP %s Sequenz %x Typ %x Status %x Optionen %x: '%s'\n
+2053.TCP %s Sequenz %x Typ %x Status %x Optionen %x: '%s'\n
 2054:Die für-Plaudereien-frei-Nachricht ist:
 2055:Der Benutzer ist für Plauereien frei und möchte über alles plaudern.
 2056:peer auto  <nick> - Hole die automatische Antwort von diesem Kontakt.\n
@@ -1026,7 +1026,24 @@
 2191:Fehler beim Versenden einer Nachricht: %d.\n
 2192:Fähigkeiten: 
 2193:Verzeichnis %s existiert nicht.\n
-#2194:Don't know how to open this connection type.\n
-#2195:Obsolete number
-#2196:Obsolete text
-#2197:Obsolete byte
+2194:Kann Verbindungen dieses Typs nicht ohne weiteres öffnen.\n
+2195:Veraltete Nummer
+2196:Veralteter Text
+2197:Veraltetes Byte
+2198:Ungeeignetes Paßwort '%s' - darf nicht mit ó beginnen.\n
+2199:  -h, --help     gibt diesen hilfe-Text aus\n
+2200:  -v, --verbose  setzt (oder erhöht) Ausführlichkeit (zur Fehlersuche)\n
+2201:  -b, --basedir  anderes BASIS-Verzeichnis verwenden (Standard: %s)\n
+2202:  -f, --config   andere Konfigurationsdatei verwenden (Standard: %s)\n
+2203:  -l, --logplace andere Logdatei/Logverzeichnis verwenden (Standard: %s)\n
+2204:  -i, --i18n     andere Lokalisierung verwenden (Standard: automatisch erkannt)\n
+2205:  -c, --nocolor  keine Farben verwenden\n
+2206:Der Server weigert sich, gespeicherte Nachrichten auszuliefern.\n
+2207:Protokollfehler bei Kommando für alten ICQ-Server: %d.\n
+2208:UTF-8-Kodierung erkannt, allerdings wurde dieses mICQ ohne UTF-8-Unterstützung gebaut.\n
+2209:UTF-8-Kodierung erkannt.\n
+2210:%smICQ (Matts ICQ-Klon)%s Version %s%s%s (kompiliert am %s)\n
+2211:Dein Status ist %s.\n
+2212:ist jetzt %s
+2213:hat sich eingeloggt (%s)
+2214:Informationen über %s%lu%s:\n
