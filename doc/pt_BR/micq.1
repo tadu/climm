@@ -1,5 +1,5 @@
 .\" $Id$ -*- nroff -*-
-.\"  EN: micq.1,v 1.15.2.2 2003/01/21 16:01:54
+.\"  EN: micq.1,v 1.20 2005/01/09 16:01:55
 .TH MICQ 1 mICQ PT_BR
 .SH NOME
 .B mICQ
@@ -8,15 +8,18 @@
 .B micq
 .I [\-h]
 .I [\-c]
+.I [\-b <diret\('orio base>>]
 .I [\-i <locale>]
-.I [\-b <diret\('orio>>]
-.I [\-f <arquivo>]
 .I [\-v[n\('ivel]]
 .I [\-l <logplace>]
+.I [\-u <UIN>]
+.I [\-p <senha>]
+.I [\-s <estado>]
+.I [\-C <comandos>]
 .SH DESCRI\(,C\(~AO
 .B mICQ
 \('e um cliente ICQ em modo texto que possui muitos dos recursos providos pelos
-clientes de ICQ da Mirabilis. mICQ permite que se mude a senha do usu\('ario,
+clientes de ICQ da Mirabillis. mICQ permite que se mude a senha do usu\('ario,
 crie novas contas, atualize as informa\(,c\(~oes pessoais, procure por outros
 usu\('arios, envie SMS, abra conex\(~oes diretas, envie mensagens conhecidas,
 transfira arquivos, detecte o cliente de outros usu\('arios, envie mensagens
@@ -30,38 +33,83 @@ Mostra uma curta mensagem de ajuda e encerra.
 .BI \-c|\-\-nocolor
 Desabilita o uso de cores.
 .TP
-.BI \-i|\-\-i18n \ <locale>
-Usa o local
-.I locale
-ao inv\('es do obtido pelas vari\('aveis do ambiente.
-.TP
 .BI \-b|\-\-basedir \ <diret\('orio>
 Especifica um
 .I diret\('orio
 como o diret\('orio base onde mICQ procurar\('a seus arquivos, em particular
 seu arquivo micqrc.
 .TP
-.BI \-f|\-\-config \ <arquivo>
-Use
-.I arquivo
-como um arquivo de configura\(,c\(~ao.
+.BI \-i|\-\-i18n \ <locale>
+Usa o locale
+.I locale
+ao inv\('es do obtido pelas vari\('aveis do ambiente.
 .TP
 .BI \-v|\-\-verbose [n\('ivel]
 Inicia ou ajusta o n\('ivel de informa\(,c\(~ao verbal para
 .IR n\('ivel .
 .TP
-.BI \-l|\-\-logplace \ arquivo|dir
+.BI \-l|\-\-logplace \ <arquivo>|<dir>
 Usa
 .I arquivo
 como um arquivo de log, ou use
 .I dir
 como um diret\('orio para criar os logs por usu\('ario individual.
+.TP
+.BI \-u|\-\-uin \ <uin>
+Logar como
+.I uin
+apenas. Pode repetir.
+.TP
+.BI \-p|\-\-passwd \ <senha>
+Logar com
+.I senha
+como senha. Pode repetir para cada op\(,c\(~ao
+.I \-u
+, ou uma \('unica vez.
+.TP
+.BI \-s|\-\-status \ <estado>
+Logar com
+.I estado
+como estado, que pode ser dado numericamente ou
+.BR inv ,
+.BR dnd ,
+.BR occ ,
+.BR na ,
+.BR away ,
+.BR ffc ,
+ou
+.BR off[line] .
+.TP
+.BI \-C|\-\-cmd \ <comandos>
+Executar comandos do mICQ
+.I cmds
+ap\('os o login ao invés do comando padr\(~ao
+.I eg
+.SH USO
+Na primeira inicializa\(,c\(~ao (para o diret\('orio base dado), mICQ
+perguntar\('a por um UIN, ou criar\('a um novo. Ap\('os o primeiro login, a
+lista de contatos baseada no servidor ser\('a importada automaticamente.
+.br
+Comandos b\('asicos incluem
+.I msg
+para comunicar-se com outros contatos (tente pressionar a tecla <tab> diversas
+vezes em uma linha de entrada vazia para trazer comandos msg para comunicar-se
+com contatos recentemente falados),
+.I add
+para adicionar novos contatos,
+.IR update ,\  other ,\ and\  about
+para alterar seus meta dados no servidor ICQ, e, \('e claro,
+.I help
+para ajuda online. Uma lista completa de comandos est\('a dispon\('ivel na
+p\('agina de manual
+.BR micq (7)
+.
 .SH RECURSOS
 .B mICQ
 \('e muito port\('avel e funciona em Linux, DOS, OS/2, Win32, BeOS, AmigaOS,
 GNU HURD e quaisquer outros sistemas Unix modernos.
 Sabe-se que
-.B mICQ vers\(~ao 0.4.10
+.B mICQ vers\(~ao 0.5
 roda em Linux, AIX, HPUX, Tru64, AmigaOS, parcialmente BeOS
 e outros sabores de Unix.
 No entanto, os outros sabores de Unix podem ou n\(~ao funcionar, e qualquer
@@ -107,16 +155,32 @@ Antigo arquivo de configura\(,c\(~ao do mICQ \- obsoleto.
 Diret\('orio padr\(~ao onde mICQ procura por seus arquivos.
 .TP
 .I BASE/micqrc
-Arquivo de configura\(,c\(~ao do mICQ.
+Arquivo de configura\(,c\(~ao do mICQ. Cont\('em a configura\(,c\(~ao global.
+.TP
+.I BASE/status
+Arquivo de configura\(,c\(~ao do mICQ. Cont\('em a lista de contatos e
+op\(,c\(~oes para os contatos.
 .TP
 .I BASE/i18n/*.i18n
-Arquivo de Internacionaliza\(,c\(~ao local que sobrep\(~oe os arquivos de Internacionaliza\(,c\(~ao do mICQ.
+Arquivo de Internacionaliza\(,c\(~ao local que sobrep\(~oe os arquivos de
+Internacionaliza\(,c\(~ao do mICQ.
+.TP
+.I ~/.micq/i18n/*.i18n
+Arquivo de Internacionaliza\(,c\(~ao local que sobrep\(~oe os arquivos de
+Internacionaliza\(,c\(~ao do mICQ.
 .TP
 .I BASE/history
 Diret\('orio padr\(~ao para os arquivos de log do mICQ.
 .TP
 .I BASE/files
 Diret\('orio onde arquivos de transfer\(^encia recebidos s\(~ao salvos.
+.TP
+.I BASE/remote-control
+Antigo local padrão para o FIFO usado para scripting. Renomeado pois confundia
+usu\('arios.
+.TP
+.I BASE/scripting
+Local padrão para o FIFO usado para scripting.
 .TP
 .I PREFIXO/share/micq/*.i18n
 Arquivos de Internacionaliza\(,c\(~ao contendo tradu\(,c\(~oes das mensagens e
@@ -130,7 +194,8 @@ Esta man-page foi derivada por James Morrison
 .I <ja2morrison@student.math.uwaterloo.ca>
 da p\('agina original m\('inima escrita por Jordi Mallach
 .I <jordi@sindominio.net>
-para o sistema Debian GNU/Linux.
+para o sistema Debian GNU/Linux e posteriormente atualizado por
+.IR <micq@ruediger\-kuhlmann.de>
 Traduzido por Deives Michellis
 .IR <dmichellis@yahoo.com> ,
 e atualizado por Leonardo Rosa
