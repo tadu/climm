@@ -29,11 +29,13 @@ Changes :
 #include "preferences.h"
 #include "packet.h"
 #include "util_str.h"
+#include "cmd_user.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <assert.h>
 #include <string.h>
+#include <signal.h>
 #include <ctype.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -42,6 +44,7 @@ Changes :
 #include <sys/utsname.h>
 #include <fcntl.h>
 #include <util_ui.h>
+#include <wait.h>
 #ifdef _WIN32
 #include <io.h>
 #define S_IRUSR          _S_IREAD
@@ -451,12 +454,112 @@ void ExecScript (char *script, UDWORD uin, long num, char *data)
     rc = system (cmd);
     if (rc)
     {
-        M_printf (i18n (1584, "Warning! Script command '%s' failed with exit value %d\n"),
+        M_printf (i18n (1584, "Script command '%s' failed with exit value %d.\n"),
                  script, rc);
     }
     free (cmd);
     free (mydata);
     free (who);
+}
+
+/*
+ * Executes a program and feeds some shell-proof information data into it
+ */
+void EventExec (Contact *cont, const char *script, UBYTE type, UDWORD msgtype, const char *text)
+{
+    static int rc;
+    char *mytext, *mynick, *myuin, *mymsgtype, *mytype, *myscript, *tmp;
+    const char *cmd;
+    int fds[2];
+    pid_t pid;
+
+    mytext = strdup (text ? text : "");
+    mynick = strdup (cont->nick);
+    myuin  = strdup (s_sprintf ("icq-%ld", cont->uin));
+    mymsgtype = strdup (s_sprintf ("%ld", msgtype));
+    mytype = strdup (type == 1 ? "msg" : type == 2 ? "on" : type == 3 ? "off" : "other");
+    myscript = strdup (*script == '~' && getenv ("HOME") ? s_sprintf ("%s%s", getenv ("HOME"), script + 1) : script);
+
+    for (tmp = mytext; *tmp; tmp++)
+        if (*tmp == '\'' || *tmp == '\\')
+            *tmp = '"';
+    for (tmp = mynick; *tmp; tmp++)
+        if (*tmp == '\'' || *tmp == '\\')
+            *tmp = '"';
+
+    M_print ("");
+
+    cmd = s_sprintf ("%s %s '%s' %s %ld '%s'",
+                     myscript, myuin, mynick, mytype, msgtype, mytext);
+
+    rc = 0;
+    signal (SIGCHLD, SIG_IGN);
+    if (pipe (fds) < 0)
+    {
+        rc = system (cmd);
+    }
+    else if ((pid = fork ()) == -1)
+    {
+        close (fds[0]);
+        close (fds[1]);
+        rc = system (cmd);
+    }
+    else if (pid == 0)
+    {
+        close (fds[0]);
+        dup2 (fds[1], STDOUT_FILENO);
+        close (fds[1]);
+        execlp (myscript, myscript, myuin, mynick, mytype, mymsgtype, mytext, NULL);
+        rc = errno;
+        _exit(1);
+    }
+    else
+    {
+        char buf[1024];
+        int pos = 0, len, try;
+
+        close (fds[1]);
+        while (1)
+        {
+            fd_set readfds;
+            struct timeval tv;
+            
+            FD_ZERO (&readfds);
+            FD_SET (fds[0], &readfds);
+            tv.tv_sec = 0;
+            tv.tv_usec = 1000;
+            
+            if (select (fds[0] + 1, &readfds, NULL, NULL, &tv) < 0)
+                break;
+            if (FD_ISSET (fds[0], &readfds))
+            {
+                len = read (fds[0], buf + pos, sizeof (buf) - pos - 1);
+                if (len <= 0)
+                    break;
+                pos += len;
+            }
+        }
+        buf[pos] = '\0';
+        waitpid (pid, NULL, 0);
+        for (len = try = 0; len < pos; len++)
+        {
+            if (buf[len] == '\n' || buf[len] == '\r')
+            {
+                buf[len] = '\0';
+                if (buf[try])
+                    CmdUser (buf + try);
+                try = len + 1;
+            }
+        }
+    }
+    if (rc)
+        M_printf (i18n (2222, "Script command '%s' failed: %s (%d).\n"),
+                 myscript, strerror (rc), rc);
+    free (mynick);
+    free (mytext);
+    free (myuin);
+    free (mymsgtype);
+    free (mytype);
 }
 
 UDWORD UtilCheckUIN (Connection *conn, UDWORD uin)

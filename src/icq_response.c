@@ -493,6 +493,12 @@ void Recv_Message (Connection *conn, Packet *pak)
     UWORD type;
     char *text, *ctext;
 
+#ifdef HAVE_TIMEZONE
+    stamp.tm_sec   = -timezone;
+#else
+    stamp = *localtime ();
+    stamp.tm_sec   = -stamp.tm_gmtoff;
+#endif
     uin            = PacketRead4 (pak);
     stamp.tm_year  = PacketRead2 (pak) - 1900;
     stamp.tm_mon   = PacketRead1 (pak) - 1;
@@ -500,11 +506,6 @@ void Recv_Message (Connection *conn, Packet *pak)
     stamp.tm_hour  = PacketRead1 (pak);
     stamp.tm_min   = PacketRead1 (pak);
     /* kludge to convert that strange UTC-DST time to time_t */
-#ifdef HAVE_TIMEZONE
-    stamp.tm_sec   = -timezone;
-#else
-    stamp.tm_sec   = -stamp.tm_gmtoff;
-#endif
     /* FIXME: The following probably only works correctly in Europe. */
     stamp.tm_isdst = -1;
     type           = PacketRead2 (pak);
@@ -653,7 +654,7 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
     if (!~old)
     {
         if (prG->sound & SFLAG_ON_CMD)
-            ExecScript (prG->sound_on_cmd, cont->uin, 0, NULL);
+            EventExec (cont, prG->sound_on_cmd, 2, 0, NULL);
         else if (prG->sound & SFLAG_ON_BEEP)
             printf ("\a");
     }
@@ -695,7 +696,7 @@ void IMOffline (Contact *cont, Connection *conn)
         return;
 
     if (prG->sound & SFLAG_OFF_CMD)
-        ExecScript (prG->sound_off_cmd, cont->uin, 0, NULL);
+        EventExec (cont, prG->sound_off_cmd, 3, 0, NULL);
     else if (prG->sound & SFLAG_OFF_BEEP)
         printf ("\a");
  
@@ -750,12 +751,12 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, UWORD type, const 
 
 #ifdef MSGEXEC
         if (prG->event_cmd && strlen (prG->event_cmd))
-            ExecScript (prG->event_cmd, cont->uin, type, cdata);
+            EventExec (cont, prG->event_cmd, 1, type, cdata);
 #endif
 
         if (prG->sound & SFLAG_CMD)
             ExecScript (prG->sound_cmd, cont->uin, 0, NULL);
-        if (prG->sound & SFLAG_BEEP)
+        else if (prG->sound & SFLAG_BEEP)
             printf ("\a");
     }
 
