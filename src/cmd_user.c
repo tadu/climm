@@ -1501,18 +1501,48 @@ static JUMP_F(CmdUserVerbose)
 {
     UDWORD i = 0;
 
-    if (s_parseint (&args, &i))
-        prG->verbose = i;
-    else if (s_parsekey (&args, "sane"))
-        prG->verbose = DEB_PROTOCOL | DEB_CONNECT | DEB_EVENT
-            | DEB_PACK5DATA | DEB_PACK8 | DEB_PACK8DATA | DEB_PACK8SAVE
-            | DEB_PACKTCP | DEB_PACKTCPDATA | DEB_PACKTCPSAVE 
-            | DEB_TCP | DEB_IO | DEB_SSL;
-    else if (*args)
+    while (args && *args)
     {
-        rl_printf (i18n (2115, "'%s' is not an integer.\n"), args);
-        return 0;
+        if      (s_parsekey (&args, "sane"))
+            i = DEB_PROTOCOL | DEB_CONNECT | DEB_EVENT
+                | DEB_PACK5DATA | DEB_PACK8 | DEB_PACK8DATA | DEB_PACK8SAVE
+                | DEB_PACKTCP | DEB_PACKTCPDATA | DEB_PACKTCPSAVE 
+                | DEB_TCP | DEB_IO | DEB_SSL;
+        else if (s_parseint (&args, &i))
+            break;
+#if WIP
+        else if (s_parsekey (&args, "SSL"))     i |= DEB_SSL;
+        else if (s_parsekey (&args, "PRO"))     i |= DEB_PROTOCOL;
+        else if (s_parsekey (&args, "PAK"))     i |= DEB_PACKET;
+        else if (s_parsekey (&args, "QUE"))     i |= DEB_QUEUE;
+        else if (s_parsekey (&args, "CON"))     i |= DEB_CONNECT;
+        else if (s_parsekey (&args, "EVE"))     i |= DEB_EVENT;
+        else if (s_parsekey (&args, "EXT"))     i |= DEB_EXTRA;
+        else if (s_parsekey (&args, "CTC"))     i |= DEB_CONTACT;
+        else if (s_parsekey (&args, "OPT"))     i |= DEB_OPTS;
+        else if (s_parsekey (&args, "5PD"))     i |= DEB_PACK5DATA;
+        else if (s_parsekey (&args, "8PK"))     i |= DEB_PACK8;
+        else if (s_parsekey (&args, "8PD"))     i |= DEB_PACK8DATA;
+        else if (s_parsekey (&args, "8PS"))     i |= DEB_PACK8SAVE;
+        else if (s_parsekey (&args, "TCP"))     i |= DEB_TCP;
+        else if (s_parsekey (&args, "I/O"))     i |= DEB_IO;
+        else if (s_parsekey (&args, "TPK"))     i |= DEB_PACKTCP;
+        else if (s_parsekey (&args, "TPD"))     i |= DEB_PACKTCPDATA;
+        else if (s_parsekey (&args, "TPS"))     i |= DEB_PACKTCPSAVE;
+        else if (strlen (args) == 3)
+        {
+            rl_printf ("### numeric, or keywords: SSL PRO PAK QUE CON EVE EXT CTC OPT 5PD 8PK 8PD 8PS TCP I/O TPK TPD TPS\n");
+            return 0;
+        }
+#endif
+        else if (*args)
+        {
+            rl_printf (i18n (2115, "'%s' is not an integer.\n"), args);
+            return 0;
+        }
+        rl_printf ("### %d\n",i);
     }
+    prG->verbose = i;
     rl_printf (i18n (1060, "Verbosity level is %ld.\n"), prG->verbose);
     return 0;
 }
