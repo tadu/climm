@@ -402,6 +402,9 @@ void R_process_input_tab (void)
         return;
     msgcmd = CmdUserLookupName ("msg");
 
+    if (!*s)
+        tabstate = 2;
+
     if (bytelen < strlen (msgcmd) &&
         !strncmp (s, msgcmd, bytelen < strlen (msgcmd) ? bytelen : strlen (msgcmd)))
     {
@@ -412,7 +415,7 @@ void R_process_input_tab (void)
 #endif
     }
 
-    if (prG->tabs == TABS_SIMPLE)
+    if (prG->tabs == TABS_SIMPLE || tabstate == 2)
     {
         if (strncmp (s, msgcmd, strlen (s) < strlen (msgcmd) ? strlen (s) : strlen (msgcmd)))
         {
