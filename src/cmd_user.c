@@ -1488,7 +1488,7 @@ JUMP_F(CmdUserAuth)
     char *arg1;
     UDWORD uin;
 
-    arg1 = strtok (NULL, "");
+    arg1 = strtok (args, "");
     if (!arg1)
     {
         M_print (i18n (676, "Need uin to send to.\n"));
