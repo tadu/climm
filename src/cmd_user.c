@@ -767,7 +767,8 @@ static JUMP_F(CmdUserTrans)
             }
             else
             {
-                if (!strcmp (par->txt, ".") || !strcmp (par->txt, "none") || !strcmp (par->txt, "unload"))
+                if (!strcmp (par->txt, "en_US.US-ASCII") || !strcmp (par->txt, ".")
+                    || !strcmp (par->txt, "none") || !strcmp (par->txt, "unload"))
                 {
                     t = strdup (i18n (1089, "Unloaded translation."));
                     i18nClose ();
@@ -779,7 +780,7 @@ static JUMP_F(CmdUserTrans)
                 if (i == -1)
                     M_printf (i18n (2316, "Translation %s not found.\n"), par->txt);
                 else
-                    M_printf (i18n (2318, "English (%s) translation loaded (%ld entries).\n"), par->txt, i);
+                    M_printf (i18n (2318, "No translation (%s) loaded (%ld entries).\n"), par->txt, i);
             }
             one = 1;
         }

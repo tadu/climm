@@ -377,9 +377,11 @@ int main (int argc, char *argv[])
         M_printf (i18n (9999, "Translation %s%s%s not found. Would you like to translate mICQ into your language?\n"),
                   COLQUOTE, s_cquote (prG->locale, COLQUOTE), COLNONE);
     }
-    else
+    else if (i)
         M_printf (i18n (9999, "English (%s) translation loaded (%s%ld%s entries).\n"),
                   s_cquote (prG->locale, COLQUOTE), COLQUOTE, i, COLNONE);
+    else
+        M_printf ("No translation requested. You live in nowhereland, eh?\n");
 
     if (!rc)
         Initialize_RC_File ();

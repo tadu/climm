@@ -158,6 +158,15 @@ int i18nOpen (const char *loc)
     char *floc = NULL, *p;
     FILE *i18nf;
 
+    if (!strcmp (loc, "en_US.US-ASCII"))
+    {
+        i18nClose ();
+        s_repl (&prG->locale, "en_US.US-ASCII");
+        if (prG->enc_loc & ENC_FAUTO)
+            prG->enc_loc = ENC_FAUTO | ENC_ASCII;
+        return 0;
+    }
+    
     if (*loc == '+')
     {
         res = 0;
