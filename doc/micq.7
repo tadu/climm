@@ -269,6 +269,23 @@ Make command initially or previously known as
 from now on known as
 .IR new .
 .TP
+.BI alias \ [alias\ expansion]
+Make a new alias named
+.I alias
+which is substituted with
+.IR expansion .
+If no arguments are given, all current aliases are listed. If the
+string %s is present in
+.IR expansion ,
+it is replaced with the given arguments when the alias is invoked,
+otherwise they will be appended. 
+New for 0.4.9.5.
+.TP
+.BI unalias \ alias
+Delete the alias named
+.IR alias .
+New for 0.4.9.5.
+.TP
 .BI auth \ [req|grant|deny|add]\ uin|nickname
 Grant or deny
 .I uin|nickname

@@ -1,14 +1,14 @@
-$Id$
+$Id$ -*- utf-8 -*-
 
 mICQ's original Author was:
 	Matthew D. Smith
 
 current Maintainer:
-	Rüdiger Kuhlmann	<micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	RÃ¼diger Kuhlmann	<micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 
 Contributors:
 
-	Rico Gloeckner		<mc@ukeer.de>
+	Rico GlÃ¶ckner		<mc@ukeer.de>
 	    hosts micq.org and the mailinglist
 
         Peter Backes            <rtc@helen.PLASMA.Xg8.DE>
@@ -16,6 +16,9 @@ Contributors:
 
 	Michel Oosterhof	<micheloo@xs4all.nl>
 	    auto{conf,make} support
+
+        Per Olofsson		<pelle@dsv.su.se>
+	    alias support (GPL >= v2)
 
 	Frederic Lamorce	<flamorce@dataradio.com>
 	    added Socks5 Support (for v5)
@@ -71,7 +74,7 @@ Former Translators:
 	Dmitri Lukyanov		<ldv@sdsl-64-7-10-170.dsl.iad.megapath.net>
 	    (update) russian translation
 
-	Björn Hansson		<hansson@netera.se>
+	BjÃ¶rn Hansson		<hansson@netera.se>
 	    (update) swedish translation
 
 	Benjamin Michotte <binny@baby-linux.net>

@@ -3,6 +3,8 @@
  *
  * Copyright: This file may be distributed under version 2 of the GPL licence.
  *
+ * alias stuff GPL >= v2
+ *
  * $Id$
  */
 
@@ -37,7 +39,8 @@
 
 static jump_f
     CmdUserChange, CmdUserRandom, CmdUserHelp, CmdUserInfo, CmdUserTrans,
-    CmdUserAuto, CmdUserAlter, CmdUserMessage, CmdUserMessageNG, CmdUserResend, CmdUserPeek,
+    CmdUserAuto, CmdUserAlter, CmdUserAlias, CmdUserUnalias, CmdUserMessage,
+    CmdUserMessageNG, CmdUserResend, CmdUserPeek,
     CmdUserVerbose, CmdUserRandomSet, CmdUserIgnoreStatus, CmdUserSMS,
     CmdUserStatusDetail, CmdUserStatusWide, CmdUserStatusShort,
     CmdUserSound, CmdUserSoundOnline, CmdUserRegister, CmdUserStatusMeta,
@@ -64,6 +67,8 @@ static jump_t jump[] = {
     { &CmdUserTrans,         "trans",        NULL, 0,   0 },
     { &CmdUserAuto,          "auto",         NULL, 0,   0 },
     { &CmdUserAlter,         "alter",        NULL, 0,   0 },
+    { &CmdUserAlias,         "alias",        NULL, 0,   0 },
+    { &CmdUserUnalias,       "unalias",      NULL, 0,   0 },
     { &CmdUserAnyMess,       "message",      NULL, 0,   0 },
     { &CmdUserMessageNG,     "msg",          NULL, 0,   1 },
     { &CmdUserMessageNG,     "r",            NULL, 0,   2 },
@@ -145,6 +150,8 @@ static jump_t jump[] = {
     { NULL, NULL, NULL, 0 }
 };
 
+static alias_t *aliases = NULL;
+
 static Connection *currconn = NULL;
 
 /* Have an opened server connection ready. */
@@ -193,6 +200,90 @@ const char *CmdUserLookupName (const char *cmd)
     if (j->name)
         return j->name;
     return j->defname;
+}
+
+/*
+ * Returns the alias list.
+ */
+alias_t *CmdUserAliases (void)
+{
+    return aliases;
+}
+
+/*
+ * Looks up an alias.
+ */
+alias_t *CmdUserLookupAlias (const char *name)
+{
+    alias_t *node;
+
+    for (node = aliases; node; node = node->next)
+        if (!strcasecmp (name, node->name))
+            break;
+
+    return node;
+}
+
+/*
+ * Sets an alias.
+ */
+alias_t *CmdUserSetAlias (const char *name, const char *expansion)
+{
+    alias_t *alias;
+
+    alias = CmdUserLookupAlias (name);
+
+    if (!alias)
+    {
+        alias = malloc (sizeof (alias_t));
+        memset (alias, 0, sizeof (alias_t));
+        
+        if (aliases)
+        {
+            alias_t *node;
+            
+            for (node = aliases; node->next; node = node->next)
+                ;
+
+            node->next = alias;
+        }
+        else
+            aliases = alias;
+    }
+
+    s_repl (&alias->name, name);
+    s_repl (&alias->expansion, expansion);
+
+    return alias;
+}
+
+/*
+ * Removes an alias.
+ */
+int CmdUserRemoveAlias (const char *name)
+{
+    alias_t *node, *prev_node = NULL;
+
+    for (node = aliases; node; node = node->next)
+    {
+        if (!strcasecmp (name, node->name))
+            break;
+        prev_node = node;
+    }
+
+    if (node)
+    {
+        if (prev_node)
+            prev_node->next = node->next;
+        else
+            aliases = node->next;
+        free (node->name);
+        free (node->expansion);
+        free (node);
+        return TRUE;
+    }
+    else
+        return FALSE;
 }
 
 /*
@@ -364,6 +455,12 @@ static JUMP_F(CmdUserHelp)
         M_printf (COLMESSAGE "%s <old cmd> <new cmd>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("alter"),
                  i18n (1417, "This command allows you to alter your command set on the fly."));
+        M_printf (COLMESSAGE "%s [<alias> <expansion>]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                  CmdUserLookupName ("alias"),
+                  i18n (2300, "Set an alias or list current aliases."));
+        M_printf (COLMESSAGE "%s <alias>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                  CmdUserLookupName ("unalias"),
+                  i18n (2301, "Delete an alias."));
         M_printf (COLMESSAGE "%s [<lang|nr>...]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("trans"), 
                  i18n (1800, "Change the working language to <lang> or display string <nr>."));  
@@ -1075,8 +1172,6 @@ static JUMP_F(CmdUserAuto)
  * Relabels commands.
  */
 
-/* FIXME: write an alias system. */
-
 static JUMP_F(CmdUserAlter)
 {
     char *arg1 = NULL, *arg2 = NULL;
@@ -1126,6 +1221,79 @@ static JUMP_F(CmdUserAlter)
             M_printf (i18n (1764, "The command '%s' is unchanged."), j->defname);
         M_print ("\n");
     }
+    return 0;
+}
+
+/*
+ * Add an alias.
+ */
+
+static JUMP_F(CmdUserAlias)
+{
+    char *name = NULL, *exp = NULL;
+
+    s_parse_s (&args, &name, " \t\r\n=");
+
+    if (!name)
+    {
+        alias_t *node;
+
+        for (node = aliases; node; node = node->next)
+            M_printf ("alias %s %s\n", node->name, node->expansion);
+        
+        return 0;
+    }
+    
+    if ((exp = strpbrk (name, " \t\r\n")))
+    {
+        M_printf (i18n (2303, "Invalid character 0x%x in alias name.\n"), *exp);
+        return 0;
+    }
+
+    if (*args == '=')
+        args++;
+    
+    name = strdup (name);
+    s_parserem (&args, &exp);
+
+    if (!exp)
+    {
+        alias_t *node;
+
+        for (node = aliases; node; node = node->next)
+            if (!strcasecmp (node->name, name))
+            {
+                M_printf ("alias %s %s\n", node->name, node->expansion);
+                free (name);
+                return 0;
+            }
+
+        free (name);
+        M_print (i18n (2297, "Alias to what?\n"));
+        return 0;
+    }
+    
+    CmdUserSetAlias (name, exp);
+
+    free (name);
+    return 0;
+}
+
+/*
+ * Remove an alias.
+ */
+
+static JUMP_F(CmdUserUnalias)
+{
+    char *arg = NULL;
+
+    s_parse (&args, &arg);
+
+    if (!arg)
+        M_print (i18n (2298, "Remove which alias?\n"));
+    else if (!CmdUserRemoveAlias (arg))
+        M_print (i18n (2299, "Alias doesn't exist.\n"));
+    
     return 0;
 }
 
@@ -3629,6 +3797,55 @@ void CmdUserInput (time_t *idle_val, UBYTE *idle_flag)
 }
 
 /*
+ * Process an alias.
+ */
+static int CmdUserProcessAlias (const char *cmd, const char *argsd,
+                                time_t *idle_val, UBYTE *idle_flag)
+{
+    alias_t *alias;
+    static int recurs_level = 0;
+
+    if (recurs_level > 10)
+    {
+        M_print (i18n (2302, "Too many levels of alias expansion; probably an infinite loop.\n"));
+        return TRUE;
+    }
+    
+    alias = CmdUserLookupAlias (cmd);
+
+    if (alias)
+    {
+        char *cmdline = malloc (strlen (alias->expansion)
+                                + strlen (argsd) + 2);
+
+        if (strstr (alias->expansion, "%s"))
+        {
+            char *exp, *ptr;
+
+            exp = strdup (alias->expansion);
+            ptr = strstr (exp, "%s");
+            *ptr = '\0';
+            
+            sprintf (cmdline, "%s%s%s", exp, argsd, ptr + 2);
+
+            free (exp);
+        }
+        else
+            sprintf (cmdline, "%s %s", alias->expansion, argsd);
+
+        recurs_level++;
+        CmdUserProcess (cmdline, idle_val, idle_flag);
+        recurs_level--;
+        
+        free (cmdline);
+
+        return TRUE;
+    }
+    else
+        return FALSE;
+}
+
+/*
  * Process one line of command, get it if necessary.
  */
 static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag)
@@ -3712,6 +3929,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
             {
                 char *argsd;
                 jump_t *j = (jump_t *)NULL;
+                int is_alias = FALSE;
                 
                 cmd = strdup (cmd);
                 if (!s_parserem (&args, &argsd))
@@ -3719,8 +3937,13 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
                 argsd = strdup (argsd);
 
                 if (*cmd != '\xb6')
+                {
+                    if (CmdUserProcessAlias (cmd, argsd, &idle_save, idle_flag))
+                        is_alias = TRUE;
+                    else
                     j = CmdUserLookup (cmd, CU_USER);
-                if (!j)
+                }
+                if (!is_alias && !j)
                     j = CmdUserLookup (*cmd == '\xb6' ? cmd + 1 : cmd, CU_DEFAULT);
 
                 if (j)
@@ -3734,8 +3957,11 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
                 }
                 else
                 {
-                    M_printf (i18n (1036, "Unknown command %s, type /help for help."), cmd);
-                    M_print ("\n");
+                    if (!is_alias)
+                    {
+                        M_printf (i18n (1036, "Unknown command %s, type /help for help."), cmd);
+                        M_print ("\n");
+                    }
                 }
                 free (cmd);
                 free (argsd);

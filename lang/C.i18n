@@ -1060,3 +1060,10 @@
 2294:===
 2295:>>>
 2296:<<<
+2297:Alias to what?\n
+2298:Remove which alias?\n
+2299:Alias doesn't exist.\n
+2300:Set an alias or list current aliases.
+2301:Delete an alias.
+2302:Too many levels of alias expansion; probably an infinite loop.\n
+2303:Invalid character 0x%x in alias name.\n

@@ -420,6 +420,17 @@ name.
 For posible command names, see
 .BR micq (7).
 This option may be repeated as desired.
+.TP
+.BI alias \ alias\ expansion
+Define an alias named
+.I alias
+which is substituted with
+.IR expansion .
+If the string %s is present in
+.IR expansion ,
+it is replaced with the given arguments when the alias is invoked,
+otherwise they will be appended.
+New for 0.4.9.5.
 
 .SH GROUP
 The

@@ -805,6 +805,12 @@ void Read_RC_File (FILE *rcf)
                     CmdUser (cmd = strdup (s_sprintf ("\xb6" "alter quiet %s", ConvToUTF8 (tmp, enc))));
                     free (cmd);
                 }
+                else if (!strcasecmp (cmd, "alias"))
+                {
+                    PrefParseRemainder (tmp);
+                    CmdUser (cmd = strdup (s_sprintf ("\xb6" "alias quiet %s", ConvToUTF8 (tmp, enc))));
+                    free (cmd);
+                }
                 else
                 {
                     M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
@@ -1289,6 +1295,12 @@ int Save_RC ()
         for (f = CmdUserTable (); f->f; f++)
             if (f->name && strcmp (f->name, f->defname))
                 fprintf (rcf, "alter %s %s\n", f->defname, s_quote (f->name));
+    }
+    {
+        alias_t *node;
+        for (node = CmdUserAliases (); node; node = node->next)
+            fprintf (rcf, "alias %s %s\n", node->name,
+                     s_quote (node->expansion));
     }
 
     fprintf (rcf, "\n# Contact groups.");

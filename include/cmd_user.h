@@ -23,9 +23,20 @@ struct jumpstr {
 
 typedef struct jumpstr jump_t;
 
+struct aliasstr {
+    char *name;
+    char *expansion;
+    struct aliasstr *next;
+};
+
+typedef struct aliasstr alias_t;
+	
+
 jump_t *CmdUserTable (void);
 jump_t *CmdUserLookup (const char *command, int flags);
 const char *CmdUserLookupName (const char *command);
+
+alias_t *CmdUserAliases (void);
 
 void CmdUser (const char *command);
 void CmdUserInput (time_t *idle_val, UBYTE *idle_flag);
