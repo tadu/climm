@@ -6,6 +6,7 @@
 #include "util_ui.h"
 #include "util_io.h"
 #include "util.h"
+#include "conv.h"
 #include "contact.h"
 #include "session.h"
 #include "preferences.h"
@@ -118,57 +119,72 @@ UWORD Get_Max_Screen_Width ()
 static int CharCount = 0;       /* number of characters printed on line. */
 static int IndentCount = 0;
 
+#ifdef ENABLE_UTF8
+#define chardiff(aa,bb)  (prG->enc_loc == ENC_UTF8 ? s_strnlen ((bb), (aa) - (bb)) : (aa) - (bb))
+#define charoff(str,off) (prG->enc_loc == ENC_UTF8 ? s_offset ((str), (off))      : (off))
+#else
+#define chardiff(aa,bb)  ((aa) - (bb))
+#define charoff(str,off) (off)
+#endif
+
 /*
  * Print a string to the output, interpreting color and indenting codes.
  */
-void M_print (const char *str)
+void M_print (const char *org)
 {
-    const char *p, *s, *t;
+    const char *test, *save, *temp, *str;
     int i;
     int sw = Get_Max_Screen_Width () - IndentCount;
+    
+#ifdef ENABLE_UTF8
+    char *fstr = strdup (ConvFromUTF8 (org, prG->enc_loc));
+    str = fstr;
+#else
+    str = org;
+#endif
 
     R_remprompt ();
     for (; *str; str++)
     {
-        for (p = s = str; *p; p++)
+        for (test = save = str; *test; test++)
         {
-            if (strchr ("\n\r\t\a\x1b", *p))
+            if (strchr ("\n\r\t\a\x1b", *test))
             {
-                if (s != str)
-                    p = s;
+                if (save != str)
+                    test = save;
                 break;
             }
-            if (strchr ("-.,_:;!?/ ", *p))
+            if (strchr ("-.,_:;!?/ ", *test))
             {
-                t = p + 1;
-                if (t - str <= sw - CharCount)
-                    s = t;
+                temp = test + 1;
+                if (chardiff (temp, str) <= sw - CharCount)
+                    save = temp;
                 else
                 {
-                    if (s != str)
-                        p = s;
+                    if (save != str)
+                        test = save;
                     else
-                        p = t;
+                        test = temp;
                     break;
                 }
             }
         }
-        if (p != str)           /* Print out (block of) word(s) */
+        if (test != str)           /* Print out (block of) word(s) from str to test*/
         {
-            while (p - str > sw)
+            while (chardiff (test, str) > sw)
             {
-                printf ("%.*s%*s", sw - CharCount, str, IndentCount, "");
-                str += sw - CharCount;
+                printf ("%.*s%*s", (int) charoff (str, sw - CharCount), str, IndentCount, "");
+                str += charoff (str, sw - CharCount);
                 CharCount = 0;
             }
-            if (p - str > sw - CharCount)
+            if (chardiff (test, str) > sw - CharCount)
             {
                 printf ("\n%*s", IndentCount, "");
                 CharCount = 0;
             }
-            printf ("%.*s", (int)(p - str), str);
-            CharCount += p - str;
-            str = p;
+            printf ("%.*s", (int)charoff (str, test - str), str);
+            CharCount += charoff (str, test - str);
+            str = test;
         }
         switch (*str)           /* Take care of specials */
         {
@@ -204,7 +220,7 @@ void M_print (const char *str)
                     printf ("\a");
                 break;
             case '\x1b':
-                switch (*++p)
+                switch (*++test)
                 {
                     case '<':
                         switch (prG->flags & (FLAG_LIBR_BR | FLAG_LIBR_INT))
@@ -219,8 +235,8 @@ void M_print (const char *str)
                                 CharCount = 0;
                                 break;
                             case FLAG_LIBR_BR | FLAG_LIBR_INT:
-                                s = strstr (str, "\x1b»");
-                                if (s && s - str - 2 > sw - CharCount)
+                                save = strstr (str, "\x1b»");
+                                if (save && chardiff (save, str) - 2 > sw - CharCount)
                                 {
                                     printf ("\n");
                                     CharCount = 0;
@@ -259,11 +275,11 @@ void M_print (const char *str)
                             str += 2;
                             break;
                         }
-                        p++;
-                        if (*p >= '0' && *p <= '0' + CXCOUNT)
+                        test++;
+                        if (*test >= '0' && *test <= '0' + CXCOUNT)
                         {
-                            if (prG->colors[*p - '0'])
-                                printf ("%s", prG->colors[*p - '0']);
+                            if (prG->colors[*test - '0'])
+                                printf ("%s", prG->colors[*test - '0']);
                             else
                                 /* FIXME */;
                             str++;
@@ -271,12 +287,12 @@ void M_print (const char *str)
                         str++;
                         break;
                     default:
-                        s = strchr (p, 'm');
-                        if (s)
+                        save = strchr (test, 'm');
+                        if (save)
                         {
                             if (prG->flags & FLAG_COLOR)
-                                printf ("%.*s", (int)(s - str + 1), str);
-                            str = s;
+                                printf ("%.*s", (int)(save - str + 1), str);
+                            str = save;
                         }
                         break;
                 }
@@ -285,6 +301,9 @@ void M_print (const char *str)
                 str--;
         }
     }
+#ifdef ENABLE_UTF8
+    free (fstr);
+#endif
 }
 
 /*
