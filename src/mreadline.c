@@ -520,14 +520,11 @@ int R_process_input (void)
     static UDWORD inp = 0;
 #endif
 
-#if INPUT_BY_POLL
+#if INPUT_BY_GETCH
     ch = getch ();
 #else
-    if (!read (STDIN_FILENO, &ch, 1))
-        return 0;
-#endif
-#ifdef __BEOS__
-    if (ch == (char)0x80)
+    k = read (STDIN_FILENO, &ch, 1);
+    if (!k || k == -1)
         return 0;
 #endif
     interrupted &= ~1;

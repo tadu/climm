@@ -44,6 +44,7 @@ typedef int SOK_T;
   
   #define mkdir(a,b) mkdir(a)
   #define INPUT_BY_POLL 1
+  #define INPUT_BY_GETCH 1
   #define _OS_PREFPATH   ".\\"
   #define _OS_PATHSEP    '\\'
   #define _OS_PATHSEPSTR "\\"
@@ -53,7 +54,8 @@ typedef int SOK_T;
   #define sockwrite(s,p,l) send(s,p,l,0)
   #define sockclose(s) closesocket(s)
   #define __os_has_input 1
-  #undef INPUT_BY_POLL
+  #define INPUT_BY_POLL 1
+  #undef  INPUT_BY_GETCH
   #define _OS_PREFPATH   NULL
   #define _OS_PATHSEP    '/'
   #define _OS_PATHSEPSTR "/"
@@ -62,6 +64,7 @@ typedef int SOK_T;
   #define sockwrite(s,p,l) write(s,p,l)
   #define sockclose(s) close(s)
   #undef INPUT_BY_POLL
+  #undef INPUT_BY_GETCH
   #define __os_has_input M_Is_Set (STDIN_FILENO)
   #define _OS_PREFPATH   "/PROGDIR/"
   #define _OS_PATHSEP    '/'
@@ -72,6 +75,7 @@ typedef int SOK_T;
   #define sockwrite(s,p,l) write(s,p,l)
   #define sockclose(s) close(s)
   #undef INPUT_BY_POLL
+  #undef INPUT_BY_GETCH
   #define __os_has_input M_Is_Set (STDIN_FILENO)
   #define _OS_PREFPATH   NULL
   #define _OS_PATHSEP    '/'

@@ -47,6 +47,9 @@ if test "x$ac_arg_use_iconv" != "xno"; then
     if test "x$ac_arg_use_iconv" = "xbuiltin"; then
       AC_CHECK_LIB([iconv], [libiconv], [ac_arg_use_iconv=libiconv])
     fi
+    if test "x$ac_arg_use_iconv" != "xbuiltin"; then
+      LIBS="-liconv $LIBS"
+    fi
   fi
 else
   ac_arg_use_iconv=builtin
