@@ -422,14 +422,18 @@ int M_pos ()
  */
 static const char *DebugStr (UDWORD level)
 {
-    if (level & DEB_PACKET)     return "Packet";
-    if (level & DEB_QUEUE)      return "Queue";
-    if (level & DEB_PACKDATA)   return "Packet data";
-    if (level & DEB_PACK8DATA)  return "Packet v8 data";
-    if (level & DEB_PACK8SAVE)  return "Packet v8 save";
-    if (level & DEB_PROTOCOL)   return "Protocol";
-    if (level & DEB_TCP)        return "TCP";
-    if (level & DEB_IO)         return "IO";
+    if (level & DEB_PACKET)      return "Packet";
+    if (level & DEB_QUEUE)       return "Queue ";
+    if (level & DEB_PACK5DATA)   return "v5data";
+    if (level & DEB_PACK8)       return "v8pack";
+    if (level & DEB_PACK8DATA)   return "v8data";
+    if (level & DEB_PACK8SAVE)   return "v8save";
+    if (level & DEB_PACKTCP)     return "TCPpac";
+    if (level & DEB_PACKTCPDATA) return "TCPdat";
+    if (level & DEB_PACKTCPSAVE) return "TCPsav";
+    if (level & DEB_PROTOCOL)    return "Proto ";
+    if (level & DEB_TCP)         return "TCP   ";
+    if (level & DEB_IO)          return "I/O   ";
     return "unknown";
 }
 

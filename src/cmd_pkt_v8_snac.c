@@ -194,7 +194,7 @@ Packet *SnacC (Session *sess, UWORD fam, UWORD cmd, UWORD flags, UDWORD ref)
  */
 static JUMP_SNAC_F(SnacSrvUnknown)
 {
-    if (!(prG->verbose & DEB_PACK8DATA))
+    if (!(prG->verbose & DEB_PACK8))
     {
         Time_Stamp ();
         M_print (" " ESC "«");

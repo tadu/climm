@@ -108,7 +108,7 @@ void PacketEnqueuev5 (Packet *pak, Session *sess)
 
     PacketSendv5 (pak, sess);
 
-    if (prG->verbose & DEB_PACKDATA)
+    if (prG->verbose & DEB_PACK5DATA)
     {
         Time_Stamp ();
         M_print (" \x1b«" COLCLIENT "");

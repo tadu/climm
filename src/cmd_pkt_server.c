@@ -103,7 +103,7 @@ void CmdPktSrvRead (Session *sess)
     id = seq2 << 16 | seq;
     s = pak->len;
     
-    if (prG->verbose & DEB_PACKDATA)
+    if (prG->verbose & DEB_PACK5DATA)
     {
         Time_Stamp ();
         M_print (" \x1b«" COLSERV "");
@@ -405,7 +405,7 @@ static JUMP_SRV_F (CmdPktSrvMulti)
         uin       = PacketRead4 (npak);
                     PacketRead4 (npak); /* check */
 
-        if (prG->verbose & DEB_PACKDATA)
+        if (prG->verbose & DEB_PACK5DATA)
         {
             Time_Stamp ();
             M_print (" \x1b«" COLSERV "");

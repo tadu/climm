@@ -1,3 +1,6 @@
+2002-08-01 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* More verbosity flags.
+
 2002-07-22 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* detect sizeof() of types (for 64bit systems)
 	* document tab completion option
@@ -7,6 +10,8 @@
 	* fix deletion of UINs: fix test for whether UIN exists
 	  and don't delete anything else
 	* implement server side contact list download
+	* free file descriptor for micqrc after read
+	* free sent packets
 
 2002-06-26 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* fix SOCKS5 authorization

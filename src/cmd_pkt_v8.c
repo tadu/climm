@@ -150,7 +150,7 @@ void SrvCallBackReceive (Session *sess)
     pak->id =  PacketReadB2 (pak);
                PacketReadB2 (pak);
     
-    if (prG->verbose & DEB_PACK8DATA)
+    if (prG->verbose & DEB_PACK8)
     {
         Time_Stamp ();
         M_print (" " ESC "«" COLSERV "%s ", i18n (1033, "Incoming v8 server packet:"));

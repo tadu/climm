@@ -152,15 +152,19 @@ void FlapPrint (Packet *pak)
     M_print (i18n (1910, "FLAP seq %08x length %04x channel %d" COLNONE "\n"),
              PacketReadAtB2 (pak, 2), pak->len - 6, PacketReadAt1 (pak, 1));
     if (PacketReadAt1 (pak, 1) != 2)
-        Hex_Dump (pak->data + 6, pak->len - 6);
-    else
+    {
+        if (prG->verbose & DEB_PACK8DATA)
+            Hex_Dump (pak->data + 6, pak->len - 6);
+    }
+    else 
     {
         M_print (i18n (1905, "SNAC (%x,%x) [%s] flags %x ref %x\n"),
                  PacketReadAtB2 (pak, 6), PacketReadAtB2 (pak, 8),
                  SnacName (PacketReadAtB2 (pak, 6), PacketReadAtB2 (pak, 8)),
                  PacketReadAtB2 (pak, 10), PacketReadAtB4 (pak, 12));
         M_print (COLNONE);
-        Hex_Dump (pak->data + 16, pak->len - 16);
+        if (prG->verbose & DEB_PACK8DATA)
+            Hex_Dump (pak->data + 16, pak->len - 16);
     }
 }
 
@@ -216,7 +220,7 @@ void FlapSend (Session *sess, Packet *pak)
     PacketWriteAtB2 (pak, 2, pak->id = sess->our_seq);
     PacketWriteAtB2 (pak, 4, pak->len - 6);
     
-    if (prG->verbose & DEB_PACK8DATA)
+    if (prG->verbose & DEB_PACK8)
     {
         Time_Stamp ();
         M_print (" " ESC "«" COLCLIENT "%s ", i18n (1903, "Outgoing v8 server packet:"));
