@@ -1436,7 +1436,7 @@ static JUMP_F (CmdUserMessageNG)
         }
         if (!s_parserem (&args, &arg1))
             arg1 = NULL;
-        if (arg1)
+        if (arg1 && (arg1[strlen (arg1) - 1] != '\\'))
         {
             for (i = 0; uinlist[i]; i++)
             {
@@ -1453,6 +1453,12 @@ static JUMP_F (CmdUserMessageNG)
             M_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLMESSAGE, i18n (2220, "several"), COLNONE);
         msg = s_cat (msg, &size, "");
         *msg = 0;
+        if (arg1)
+        {
+            arg1[strlen (arg1) - 1] = '\0';
+            msg = s_cat (msg, &size, arg1);
+            msg = s_cat (msg, &size, "\r\n");
+        }
         status = 1;
     }
     else
