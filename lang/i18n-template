@@ -125,7 +125,7 @@ while ($uname = shift)
     $ver = $ver + 0;
     
     system "cvs diff -u0 -r i18n-$ver build.i18n | grep \"^-[0-9]\" | sed \"s,^-,,\" | sort -n -t : -k 1,1 -u -o build.tainted";
-    ReadTainted ("build.tainted");
+    ReadTainted ("build");
 
     $name = $pref . $uname;
     stat "$name~" && next;
