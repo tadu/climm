@@ -470,12 +470,14 @@ void CmdPktCmdMetaPass (Connection *conn, char *pass)
 /*
  * CMD_META_USER : META_REQ_INFO - request information on user.
  */
-void CmdPktCmdMetaReqInfo (Connection *conn, UDWORD uin)
+UDWORD CmdPktCmdMetaReqInfo (Connection *conn, Contact *cont)
 {
     Packet *pak = PacketCv5 (conn, CMD_META_USER);
+    UDWORD ref = pak->ref;
     PacketWrite2 (pak, META_REQ_INFO_v5);
-    PacketWrite4 (pak, uin);
+    PacketWrite4 (pak, cont->uin);
     PacketEnqueuev5 (pak, conn);
+    return ref;
 }
 
 /*

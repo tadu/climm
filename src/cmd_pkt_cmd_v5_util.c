@@ -82,6 +82,7 @@ Packet *PacketCv5 (Connection *conn, UWORD cmd)
     pak->cmd = cmd;
     pak->ver = conn->ver;
     pak->id  = (seq2 << 16) + seq;
+    pak->ref = seq;
 
     PacketWrite2 (pak, conn->ver);  /* 5 */
     PacketWrite4 (pak, 0);

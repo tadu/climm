@@ -22,6 +22,7 @@
 #include "tabs.h"
 #include "session.h"
 #include "tcp.h"
+#include "icq_response.h"
 #include "conv.h"
 #include "file_util.h"
 #include "buildmark.h"
@@ -38,9 +39,9 @@ static jump_f
     CmdUserAuto, CmdUserAlter, CmdUserMessage, CmdUserResend, CmdUserPeek,
     CmdUserVerbose, CmdUserRandomSet, CmdUserIgnoreStatus, CmdUserSMS,
     CmdUserStatusDetail, CmdUserStatusWide, CmdUserStatusShort,
-    CmdUserSound, CmdUserSoundOnline, CmdUserRegister,
+    CmdUserSound, CmdUserSoundOnline, CmdUserRegister, CmdUserStatusMeta,
     CmdUserSoundOffline, CmdUserAutoaway, CmdUserSet, CmdUserClear,
-    CmdUserTogIgnore, CmdUserTogInvis, CmdUserTogVisible, CmdUserAdd, CmdUserRem, CmdUserRInfo,
+    CmdUserTogIgnore, CmdUserTogInvis, CmdUserTogVisible, CmdUserAdd, CmdUserRem,
     CmdUserAuth, CmdUserURL, CmdUserSave, CmdUserTabs, CmdUserLast,
     CmdUserUptime, CmdUserOldSearch, CmdUserSearch, CmdUserUpdate, CmdUserPass,
     CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserPeer, CmdUserConn,
@@ -57,6 +58,7 @@ static jump_t jump[] = {
     { &CmdUserInfo,          "f",            NULL, 0,   0 },
     { &CmdUserInfo,          "finger",       NULL, 0,   0 },
     { &CmdUserInfo,          "info",         NULL, 0,   0 },
+    { &CmdUserInfo,          "rinfo",        NULL, 0,   1 },
     { &CmdUserTrans,         "lang",         NULL, 0,   0 },
     { &CmdUserTrans,         "trans",        NULL, 0,   0 },
     { &CmdUserAuto,          "auto",         NULL, 0,   0 },
@@ -76,6 +78,7 @@ static jump_t jump[] = {
     { &CmdUserStatusDetail,  "e",            NULL, 2,   5 },
     { &CmdUserStatusDetail,  "s",            NULL, 2,  30 },
     { &CmdUserStatusDetail,  "s-any",        NULL, 2,   0 },
+    { &CmdUserStatusMeta,    "ss",           NULL, 2,   0 },
     { &CmdUserStatusShort,   "w-old",        NULL, 2,   1 },
     { &CmdUserStatusShort,   "e-old",        NULL, 2,   0 },
     { &CmdUserStatusWide,    "wide",         NULL, 2,   1 },
@@ -100,7 +103,6 @@ static jump_t jump[] = {
     { &CmdUserAdd,           "add",          NULL, 0,   0 },
     { &CmdUserRem,           "rem",          NULL, 0,   0 },
     { &CmdUserRegister,      "reg",          NULL, 0,   0 },
-    { &CmdUserRInfo,         "rinfo",        NULL, 0,   0 },
     { &CmdUserAuth,          "auth",         NULL, 0,   0 },
     { &CmdUserURL,           "url",          NULL, 0,   0 },
     { &CmdUserSave,          "save",         NULL, 0,   0 },
@@ -601,23 +603,42 @@ static JUMP_F(CmdUserSMS)
     return 0;
 }
 
+static void CallbackMeta (Event *event)
+{
+    Contact *cont;
+    
+    cont = ContactByUIN (event->uin, 1);
+    M_printf ("FIXME: Updated: %x.\n", cont->updated);
+    if (cont->updated != UP_INFO && !event->flags & QUEUE_FLAG_CONSIDERED)
+        QueueEnqueue (event);
+    else
+        UtilUIDisplayMeta (cont);
+}
+
 /*
  * Queries basic info of a user
  */
 static JUMP_F(CmdUserInfo)
 {
     Contact *cont = NULL, *contr = NULL;
+    UDWORD ref;
     OPENCONN;
 
-    while (*args)
+    while (*args || data)
     {
-        if (!s_parsenick_s (&args, &cont, MULTI_SEP, &contr, conn))
+        if (!data && !s_parsenick_s (&args, &cont, MULTI_SEP, &contr, conn))
         {
             M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
             return 0;
         }
         if (*args == ',')
             args++;
+        if (data)
+        {
+            contr = ContactByUIN (uiG.last_rcvd_uin, 1);
+            if (!contr)
+                return 0;
+        }
 
         M_printf (i18n (1672, "%s's IP address is "), cont->nick);
         M_print  (!contr->dc || !contr->dc->ip_rem || !~contr->dc->ip_rem
@@ -631,11 +652,15 @@ static JUMP_F(CmdUserInfo)
 
         M_printf (i18n (1765, "%s has UIN %d."), cont->nick, cont->uin);
         M_print ("\n");
-
+        
+        cont->updated = 0;
+        
         if (conn->ver > 6)
-            SnacCliMetareqinfo (conn, cont->uin);
+            ref = SnacCliMetareqinfo (conn, cont);
         else
-            CmdPktCmdMetaReqInfo (conn, cont->uin);
+            ref = CmdPktCmdMetaReqInfo (conn, cont);
+        
+        QueueEnqueueData (conn, QUEUE_REQUEST_META, ref, cont->uin, time (NULL) + 10, NULL, NULL, &CallbackMeta);
     }
     return 0;
 }
@@ -1504,6 +1529,30 @@ static JUMP_F(CmdUserStatusDetail)
 }
 
 /*
+ * Show meta information remembered from a contact.
+ */
+static JUMP_F(CmdUserStatusMeta)
+{
+    Contact *cont, *contr;
+    ANYCONN;
+                                                
+    if (conn && !s_parsenick (&args, &cont, &contr, conn) && *args)
+    {
+        M_printf (i18n (1700, "%s is not a valid user in your list.\n"), args);
+        return 0;
+    }
+    
+    if (!contr)
+        contr = ContactByUIN (conn->uin, 1);
+    if (!contr)
+        return 0;
+    
+    UtilUIDisplayMeta (contr);
+    
+    return 0;
+}
+
+/*
  * Shows the ignored user on the contact list.
  */
 static JUMP_F(CmdUserIgnoreStatus)
@@ -2216,41 +2265,6 @@ static JUMP_F(CmdUserRem)
     }
 
     M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
-    return 0;
-}
-
-/*
- * Basic information on last user a message was received from.
- */
-static JUMP_F(CmdUserRInfo)
-{
-    Contact *cont;
-    OPENCONN;
-
-    cont = ContactFind (uiG.last_rcvd_uin);
-    if (!cont)
-    {
-        M_printf (i18n (2151, "%d is not on your contact list anymore.\n"),
-                 uiG.last_rcvd_uin);
-        return 0;
-    }
-    
-    if (CONTACT_DC (cont))
-    {
-        M_printf (i18n (1672, "%s's IP address is "), cont->nick);
-        M_print (cont->dc->ip_rem == -1 ? i18n (1761, "unknown") : s_ip (cont->dc->ip_rem));
-        M_print ("\t");
-
-        if (cont->dc->port != (UWORD) 0xffff)
-            M_printf (i18n (1673, "The port is %d.\n"), cont->dc->port);
-        else
-            M_print (i18n (1674, "The port is unknown.\n"));
-    }
-    
-    if (conn->ver > 6)
-        SnacCliMetareqinfo (conn, uiG.last_rcvd_uin);
-    else
-        CmdPktCmdMetaReqInfo (conn, uiG.last_rcvd_uin);
     return 0;
 }
 

@@ -141,7 +141,7 @@ void QueueEnqueue (Event *event)
 /*
  * Adds a new entry to the queue. Creates Event for you.
  */
-void QueueEnqueueData (Connection *conn, UDWORD type, UDWORD seq,
+Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD seq,
                        UDWORD uin, time_t due,
                        Packet *pak, char *info, Queuef *callback)
 {
@@ -159,6 +159,8 @@ void QueueEnqueueData (Connection *conn, UDWORD type, UDWORD seq,
     event->callback = callback;
     
     QueueEnqueue (event);
+
+    return event;
 }
 
 /*
@@ -334,7 +336,7 @@ void QueueRetry (Connection *conn, UDWORD type, UDWORD uin)
         }
     
     if (event)
-        event = QueueDequeue (event->conn, type, event->seq);
+        event = QueueDequeueEvent (event, NULL);
     
     if (event && event->callback)
     {

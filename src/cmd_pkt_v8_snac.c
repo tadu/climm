@@ -143,7 +143,7 @@ void SnacCallback (Event *event)
     family     = PacketReadB2 (pak);
     pak->cmd   = PacketReadB2 (pak);
     pak->flags = PacketReadB2 (pak);
-    pak->id    = PacketReadB4 (pak);
+    pak->ref   = PacketReadB4 (pak);
     
     if (pak->flags & 0x8000)
         PacketReadData (pak, NULL, PacketReadB2 (pak));
@@ -203,7 +203,7 @@ Packet *SnacC (Connection *conn, UWORD fam, UWORD cmd, UWORD flags, UDWORD ref)
     PacketWriteB2 (pak, fam);
     PacketWriteB2 (pak, cmd);
     PacketWriteB2 (pak, flags);
-    PacketWriteB4 (pak, ref /*? ref : conn->our_seq++*/);
+    PacketWriteB4 (pak, pak->ref = ref);
     return pak;
 }
 
@@ -497,7 +497,7 @@ static JUMP_SNAC_F(SnacSrvIcbmerr)
     UWORD err = PacketReadB2 (event->pak);
     if (err == 0xe)
     {
-        if (event->pak->id == 0x1771)
+        if ((event->pak->ref & 0xffff) == 0x1771)
             M_print (i18n (2017, "The user is online, but possibly invisible.\n"));
         else
             M_print (i18n (2189, "Malformed instant message packet refused by server.\n"));
@@ -712,7 +712,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             txt = text;
 #endif
             PacketD (pp);
-            cont->dc->version = tcpver;
+/*          cont->dc->version = tcpver; */
 
             ContactSetCap (cont, cap1);
             ContactSetCap (cont, cap2);
@@ -1011,7 +1011,7 @@ static JUMP_SNAC_F(SnacSrvAddedyou)
 static JUMP_SNAC_F(SnacSrvToicqerr)
 {
     Packet *pak = event->pak;
-    if ((pak->id & 0xffff) == 0x4231)
+    if ((pak->ref & 0xffff) == 0x4231)
     {
         M_print (i18n (2206, "The server doesn't want to give us offline messages.\n"));
         SnacCliSetrandom (event->conn, prG->chat);
@@ -1049,7 +1049,7 @@ static JUMP_SNAC_F(SnacSrvFromicqsrv)
         return;
     }
     p = PacketCreate (tlv[1].str, tlv[1].len);
-    p->id = pak->id; /* copy reference */
+    p->ref = pak->ref; /* copy reference */
     len = PacketRead2 (p);
     uin = PacketRead4 (p);
     type= PacketRead2 (p);
@@ -1748,13 +1748,16 @@ void SnacCliMetasetpass (Connection *conn, const char *newpass)
 /*
  * CLI_METAREQINFO - SNAC(15,2) - 2000/1232
  */
-void SnacCliMetareqinfo (Connection *conn, UDWORD uin)
+UDWORD SnacCliMetareqinfo (Connection *conn, Contact *cont)
 {
     Packet *pak;
+    UDWORD ref;
 
     pak = SnacMetaC (conn, 2000, META_REQ_INFO, 0);
-    PacketWrite4    (pak, uin);
+    ref = pak->ref;
+    PacketWrite4    (pak, cont->uin);
     SnacMetaSend    (conn, pak);
+    return ref;
 }
 
 /*

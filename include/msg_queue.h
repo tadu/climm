@@ -21,7 +21,7 @@ struct Event_s
 
 void        QueueInit        (Queue **queue);
 void        QueueEnqueue     (Event *event);
-void        QueueEnqueueData (Connection *conn, UDWORD type, UDWORD seq,
+Event      *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD seq,
                               UDWORD uin, time_t due,
                               Packet *pak, char *info, Queuef *callback);
 Event      *QueueDequeue     (Connection *conn, UDWORD type, UDWORD seq);
@@ -45,6 +45,7 @@ const char *QueueType   (UDWORD type);
 #define QUEUE_SRV_KEEPALIVE 21
 #define QUEUE_FLAP          34
 #define QUEUE_REQUEST_ROSTER  90
+#define QUEUE_REQUEST_META    91
 
 #define QUEUE_FLAG_CONSIDERED     1 /* this event has been considered and won't
                                        be tried again in this queue run */
