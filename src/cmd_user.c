@@ -2149,6 +2149,7 @@ static JUMP_F(CmdUserRem)
     }
 
     M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
+    free (alias);
     return 0;
 }
 
