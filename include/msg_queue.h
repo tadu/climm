@@ -37,6 +37,6 @@ Event      *QueuePop         ();
 #define QUEUE_TYPE_TCP_RECEIVE   32
 #define QUEUE_TYPE_UDP_KEEPALIVE 23
 #define QUEUE_TYPE_SRV_KEEPALIVE 21
-#define QUEUE_TYPE_FLAC          34
+#define QUEUE_TYPE_FLAP          34
 
 #endif

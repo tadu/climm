@@ -38,7 +38,7 @@ static void FlapChannel4 (Session *sess, Packet *pak);
 
 void SrvCallBackFlap (Event *event)
 {
-    assert (event->type == QUEUE_TYPE_FLAC);
+    assert (event->type == QUEUE_TYPE_FLAP);
     
     event->sess->stat_pak_rcvd++;
     event->sess->stat_real_pak_rcvd++;
