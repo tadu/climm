@@ -106,7 +106,7 @@ void Print_Status (UDWORD status)
 {
     if (status != STATUS_OFFLINE && status & STATUS_INVISIBLE)
         M_print ("%s-", i18n (1975, "invisible"));
-    M_print (Convert_Status_2_Str (status));
+    M_print (Convert_Status_2_Str (status & ~STATUS_INVISIBLE));
     if (prG->verbose)
         M_print (" %08x", status);
 }
