@@ -442,7 +442,7 @@ void PeerFileDispatch (Connection *fpeer)
                 TCPClose (fpeer);
                 return;
             }
-            if (pak->len > 1)
+            if (pak->len <= 1)
             {
                 PacketD (pak);
                 return;
