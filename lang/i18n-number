@@ -42,6 +42,7 @@ sub NewNumber ()
             $last = $neu + 1;
         }
     }
+    $neu = 0;
     return $last;
 }}
 
@@ -72,6 +73,7 @@ while ($uname = shift)
     next if not $match;
 
     print "$uname ";
+    $nl = "\n";
     rename ($name, "$name~");
     open IN, "<$name~" || die;
     open OUT, ">$name" || die;
@@ -79,7 +81,7 @@ while ($uname = shift)
     while (<IN>)
     {
         $k = $_;
-        while ($k =~ m/i18n \(###, "(([^"]*(\")*)*)"\)/)
+        while ($k =~ m/i18n \(###,((("(([^\"]*(\\.)*)*)")*(COL(NONE|CONTACT|CLIENT|MESS|SERV|ACK|SENT))* *)*)\)/)
         {
             $new = $1;
             $new =~ s/\\/\\\\/g;
@@ -89,21 +91,35 @@ while ($uname = shift)
             $new =~ s/\[/\\[/g;
             $new =~ s/\]/\\]/g;
             $new =~ s/\|/\\|/g;
+            $new =~ s/\+/\\+/g;
+            $new =~ s/\*/\\*/g;
+            $new =~ s/\?/\\?/g;
             $new =~ s/\"/"/g;
-            print "\n";
+            print $nl;
+            $nl = "";
             if (not defined $defstr{$new})
             {
                 $i = NewNumber ();
                 $defstr{$new} = $i;
                 print ("New translation: $i:$new\n");
             }
+            $l = $k;
             foreach $i (keys %defstr)
             {
-                $k =~ s/i18n \(###, "($i)"\)/i18n ($defstr{$i}, "$1")/g;
+                $k =~ s/i18n \(###,($i)\)/i18n ($defstr{$i},$1)/g;
             }
-            print "Line is: $k";
+            if (not $k cmp $l)
+            {
+                print "Line loops: $k";
+                last;
+            }
+            else
+            {
+                print "Line was:   $l";
+                print "Line is:    $k";
+            }
         }
         print OUT $k;
     }
 }
-print "\nFinished.\n";
+print $nl . "Finished.\n";

@@ -1,6 +1,73 @@
 #!/usr/bin/perl
 
-my %nrval, $nr, $val, $ignored, $preserved, $added, $ignerr, $found, $uname, $name, $pref;
+my %nrval, $max, $ignored, $preserved, $added, $ignerr, $uname, $name, $pref;
+
+sub ReadTrans($)
+{
+    my $nr, $val, $found, $name;
+    
+    $found = 0;
+    $name = shift;
+    $name .= ".i18n";
+
+    open TMPL, "<$name" || die "Could not open file $name.";
+    while (<TMPL>)
+    {
+       if (m/^([0-9]{3}):(.*)/)
+       {
+           $nr = $1;
+           $max = $nr;
+           $val = $2;
+           $nrval{$nr}=$val;
+           $found++;
+       }
+       elsif (m/^#/)
+       {
+       }
+       else
+       {
+           print "Can't understand: $_\n";
+       }
+    }
+    print "Updating translation to $found strings.\n";
+}
+
+sub ProcessLine($)
+{
+    my $line = shift;
+    
+    if ($line =~ m/^#[0-9]{3}:/)
+    {
+    }
+    elsif ($line =~ m/^#/)
+    {
+       print OUT "$line\n";
+       $ignored++;
+    }
+    elsif ($line =~ m/^([0-9]{3}):/)
+    {
+        $neu = $1;
+        for ($last++ ; $last < $neu; $last++)
+        {
+            $last = "0$last" if $last < 100;
+            $last = "0$last" if $last < 10;
+            next unless defined $nrval{$last};
+            print OUT "#$last:$nrval{$last}\n";
+            $added++;
+        }
+        if ($neu != 999)
+        {
+            print OUT "$line\n";
+            $preserved++;
+        }
+        $last = $neu;
+    }
+    else
+    {
+        print OUT "#$line\n";
+        $ignerr++;
+    }
+}
 
 if (stat "lang/en.i18n")
 {
@@ -13,81 +80,35 @@ if (stat "../lang/en.i18n")
     $pref = "../src/";
 }
 
-open TMPL, "<en.i18n" || die;
-
-$found = 0;
-while (<TMPL>)
-{
-   if (m/^([0-9]{3}):(.*)/)
-   {
-       $nr = $1;
-       $val = $2;
-       $nrval{$nr}=$val;
-       $found++;
-   }
-   elsif (m/^#/)
-   {
-   }
-   else
-   {
-       print "Can't understand: $_\n";
-   }
-}
-print "Updating translation to $found strings.\n";
-
 if ($#ARGV == -1)
 {
     @ARGV = glob "*.i18n";
     $pref = "";
 }
 
+ReadTrans ("en");
+
+print "File		Comments Junk	Old	Untranslated\n";
 while ($uname = shift)
 {
-   $name = $pref . $uname;
-   stat "$name~" && next;
-   rename ($name, "$name~");
-   open IN, "<$name~" || die;
-   open OUT, ">$name" || die;
-   
-   $ignored = 0;
-   $preserved = 0;
-   $added = 0;
-   $ignerr = 0;
-   $last = -1;
-   while (<IN>)
-   {
-      chomp;
-      if (m/^#[0-9]{3}:/)
-      {
-      }
-      elsif (m/^#/)
-      {
-         print OUT "$_\n";
-         $ignored++;
-      }
-      elsif (m/^([0-9]{3}):/)
-      {
-          $neu = $1;
-          for ($last++ ; $last < $neu; $last++)
-          {
-              $last = "0$last" if $last < 100;
-              $last = "0$last" if $last < 10;
-              next unless defined $nrval{$last};
-              print OUT "#$last:$nrval{$last}\n";
-              $added++;
-          }
-          print OUT "$_\n";
-          $preserved++;
-          $last = $neu;
-      }
-      else
-      {
-          print OUT "#$_\n";
-          $ignerr++;
-      }
-   }
-   print "Ignored $ignored comments, commented out $ignerr lines of junk,\n";
-   print "preserved $preserved strings, added $added strings to translate for $name.\n";
+    $name = $pref . $uname;
+    stat "$name~" && next;
+    rename ($name, "$name~");
+    open IN, "<$name~" || die;
+    open OUT, ">$name" || die;
+    
+    $ignored = 0;
+    $preserved = 0;
+    $added = 0;
+    $ignerr = 0;
+    $last = -1;
+    while (<IN>)
+    {
+        chomp;
+        ProcessLine ($_);
+    }
+    ProcessLine ("999:");
+    print "$name 	$ignored	 $ignerr	$preserved	$added\n";
 }
 print "Finished.\n";
 

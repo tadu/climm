@@ -9,7 +9,25 @@ mv en.i18n en.i18n~
 
 cat ../src/*.c \
     | sed "s,i18n,üi18n,g" | tr ü "\n" | grep "i18n ([0-9#]" \
-    | sed 's¹i18n (\([0-9#]*\), "\(.*\)").*¹\1:\2¹;s¹^\([0-9]\):¹00\1:¹;s¹^\([0-9][0-9]\):¹0\1:¹' \
+    | sed 's, *COLNONE *,"©0",g;s, *COLSERV *,"©1",g;s, *COLCLIENT *,"©2",g;s, *COLMESS *,"©3",g;' \
+    | sed 's, *COLCONTACT *,"©4",g;s, *COLSENT *,"©5",g;s, *COLACK *,"©6",g;' \
+    | sed 's,"",,g' \
+    | sed 's¹i18n *(\([0-9#]*\), *"\(\([^\"]*\(\\.\)*\)*\)").*¹\1:\2¹;s¹^\([0-9]\):¹00\1:¹;s¹^\([0-9][0-9]\):¹0\1:¹' \
     | sed 's¹\\n¹¶¹g;s¹\\t¹	¹g;s¹\\"¹"¹g' | sort -n | uniq > en.i18n
 
-diff -u en.i18n~ en.i18n || true
+cat ../src/*.c \
+    | sed "s,i18n,üi18n,g" | tr ü "\n" | grep "i18n ([0-9#]" \
+    | sed 's¹i18n *(\([0-9#]*\),.*¹\1:¹;s¹^\([0-9]\):¹00\1:¹;s¹^\([0-9][0-9]\):¹0\1:¹' \
+    | sort -n | uniq > en.i18n.num
+
+cat en.i18n | grep "^[0-9#]*:" | sed 's¹\([0-9#]*:\).*¹\1¹' | sort -n > en.i18n.exnum
+
+echo -n "Strings used in files:"
+cat en.i18n.num | wc -l
+echo -n "Strings extracted ok:"
+cat en.i18n.exnum | wc -l
+diff -u en.i18n.num en.i18n.exnum | uniq
+
+rm en.i18n.num en.i18n.exnum
+
+diff -u en.i18n~ en.i18n | tr '' '[' || true
