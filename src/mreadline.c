@@ -164,7 +164,7 @@ void M_print (const char *org)
                 if (isline)
                 {
                     USECOLORINVCHAR;
-                    printf ("%s...%s\n", colinvchar, col);
+                    printf ("%s...%s", colinvchar, col);
                     CharCount = 0;
                     free (fstr);
                     return;
@@ -188,7 +188,7 @@ void M_print (const char *org)
                 USECOLORINVCHAR;
                 printf ("%s%s..", colinvchar, para);
             }
-            printf ("%s\n", col);
+            printf ("%s", col);
             CharCount = 0;
             free (fstr);
             return;
@@ -295,7 +295,7 @@ void M_print (const char *org)
                         sw -= 3;
                         if (sw <= CharCount)
                         {
-                            printf ("%s\n", col);
+                            printf ("%s", col);
                             CharCount = IndentCount = 0;
                             free (fstr);
                             return;
