@@ -3,6 +3,7 @@
 #ifndef MICQ_UTIL_UI_H
 #define MICQ_UTIL_UI_H
 
+void UtilUIDisplayMeta (Contact *cont);
 BOOL   Debug (UDWORD level, const char *str, ...);
 
 #define DEB_PROTOCOL      0x00000008L
@@ -18,5 +19,7 @@ BOOL   Debug (UDWORD level, const char *str, ...);
 #define DEB_PACKTCPSAVE   0x00040000L
 #define DEB_TCP           0x00200000L
 #define DEB_IO            0x00400000L
+
+#define AVPFMT COLSERVER "%-15s" COLNONE " %s\n"
 
 #endif /* MICQ_UTIL_UI_H */

@@ -57,3 +57,211 @@ BOOL Debug (UDWORD level, const char *str, ...)
 
     return 1;
 }
+
+/*
+ * Display all meta information regarding a given contact.
+ */
+void UtilUIDisplayMeta (Contact *cont)
+{
+    MetaGeneral *mg;
+    MetaMore *mm;
+    MetaEmail *me;
+    MetaWork *mw;
+    MetaList *ml;
+    MetaObsolete *mo;
+    const char *tabd;
+
+    if (!cont)
+        return;
+
+    M_printf (i18n (9999, "Information for %s%s%s (%d):\n"),
+              COLCONTACT, cont->nick, COLNONE, cont->uin);
+    
+    if ((mg = cont->meta_general))
+    {
+        if (mg->nick && *mg->nick)
+            M_printf (COLSERVER "%-15s" COLNONE " " COLCONTACT "%s" COLNONE "\n",
+                     i18n (1500, "Nickname:"), mg->nick);
+        if (mg->first && *mg->first && mg->last && *mg->last)
+            M_printf (COLSERVER "%-15s" COLNONE " %s\t %s\n",
+                     i18n (1501, "Name:"), mg->first, mg->last);
+        else if (mg->first && *mg->first)
+            M_printf (AVPFMT, i18n (1564, "First name:"), mg->first);
+        else if (mg->first && *mg->last)
+            M_printf (AVPFMT, i18n (1565, "Last name:"), mg->last);
+        M_printf (COLSERVER "%-15s" COLNONE " %s\t%s\n", 
+                  i18n (1566, "Email address:"), mg->email,
+                  mg->auth == 1 ? i18n (1943, "(no authorization needed)")
+                                : i18n (1944, "(must request authorization)"));
+        if (mg->city && *mg->city && mg->state && *mg->state)
+            M_printf (COLSERVER "%-15s" COLNONE " %s, %s\n",
+                     i18n (1505, "Location:"), mg->city, mg->state);
+        else if (mg->city && *mg->city)
+            M_printf (AVPFMT, i18n (1570, "City:"), mg->city);
+        else if (mg->state && *mg->state)
+            M_printf (AVPFMT, i18n (1574, "State:"), mg->state);
+        if (mg->phone && *mg->phone)
+            M_printf (AVPFMT, i18n (1506, "Phone:"), mg->phone);
+        if (mg->fax && *mg->fax)
+            M_printf (AVPFMT, i18n (1507, "Fax:"), mg->fax);
+        if (mg->street && *mg->street)
+            M_printf (AVPFMT, i18n (1508, "Street:"), mg->street);
+        if (mg->cellular && *mg->cellular)
+            M_printf (AVPFMT, i18n (1509, "Cellular:"), mg->cellular);
+        if (mg->zip && *mg->zip)
+            M_printf (AVPFMT, i18n (1510, "Zip:"), mg->zip);
+        if ((tabd = TableGetCountry (mg->country)) != NULL)
+            M_printf (COLSERVER "%-15s" COLNONE " %s\t", 
+                     i18n (1511, "Country:"), tabd);
+        else
+            M_printf (COLSERVER "%-15s" COLNONE " %d\t", 
+                     i18n (1512, "Country code:"), mg->country);
+        M_printf ("(UTC %+05d)\n", -100 * (mg->tz / 2) + 30 * (mg->tz % 2));
+        M_printf (COLSERVER "%-15s" COLNONE " %d\n", i18n (9999, "Webaware:"), mg->webaware);
+        M_printf (COLSERVER "%-15s" COLNONE " %d\n", i18n (9999, "Hide IP:"), mg->hideip);
+
+    }
+    if ((me = cont->meta_email))
+    {
+        M_printf (COLSERVER "%-15s" COLNONE "\n", 
+                  i18n (1942, "Additional Email addresses:"));
+
+        for ( ; me; me = me->meta_email)
+        {
+            if (me->email && *me->email)
+                M_printf (" %s %s\n", me->email,
+                           me->auth == 1 ? i18n (1943, "(no authorization needed)") 
+                         : me->auth == 0 ? i18n (1944, "(must request authorization)")
+                         : "");
+        }
+    }
+    if ((mm = CONTACT_MORE (cont)))
+    {
+        if (mm->age && ~mm->age)
+            M_printf (COLSERVER "%-15s" COLNONE " %d\n", 
+                     i18n (1575, "Age:"), mm->age);
+        else
+            M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
+                     i18n (1575, "Age:"), i18n (1200, "Not entered"));
+
+        M_printf (COLSERVER "%-15s" COLNONE " %s\n", i18n (1696, "Sex:"),
+                   mm->sex == 1 ? i18n (1528, "female")
+                 : mm->sex == 2 ? i18n (1529, "male")
+                 :                i18n (1530, "not specified"));
+
+        if (mm->homepage && *mm->homepage)
+            M_printf (AVPFMT, i18n (1531, "Homepage:"), mm->homepage);
+
+        if (mm->month >= 1 && mm->month <= 12 && mm->day && mm->day < 32 && mm->year)
+            M_printf (COLSERVER "%-15s" COLNONE " %02d. %s %4d\n", 
+                i18n (1532, "Born:"), mm->day, TableGetMonth (mm->month), mm->year);
+
+        M_printf (COLSERVER "%-15s" COLNONE " ", i18n (1533, "Languages:"));
+        if ((tabd = TableGetLang (mm->lang1)))
+            M_printf (tabd);
+        else
+            M_printf ("%x", mm->lang1);
+        if ((tabd = TableGetLang (mm->lang2)))
+            M_printf (", %s", tabd);
+        else
+            M_printf (", %x", mm->lang2);
+        if ((tabd = TableGetLang (mm->lang3)))
+            M_printf (", %s.\n", tabd);
+        else
+            M_printf (", %x.\n", mm->lang3);
+        if (mm->unknown)
+            M_printf (COLSERVER "%-15s" COLNONE " %d\n", i18n (9999, "Unknown more:"), mm->unknown);
+    }
+    if ((mw = CONTACT_WORK (cont)))
+    {
+        if (mw->wcity && *mw->wcity && mw->wstate && *mw->wstate)
+            M_printf (COLSERVER "%-15s" COLNONE " %s, %s\n", 
+                     i18n (1524, "Work Location:"), mw->wcity, mw->wstate);
+        else if (mw->wcity && *mw->wcity)
+            M_printf (AVPFMT, i18n (1873, "Work City:"), mw->wcity);
+        else if (mw->wstate && *mw->wstate)
+            M_printf (AVPFMT, i18n (1874, "Work State:"), mw->wstate);
+        if (mw->wphone && *mw->wphone)
+            M_printf (AVPFMT, i18n (1523, "Work Phone:"), mw->wphone);
+        if (mw->wfax && *mw->wfax)
+            M_printf (AVPFMT, i18n (1521, "Work Fax:"), mw->wfax);
+        if (mw->waddress && *mw->waddress)
+            M_printf (AVPFMT, i18n (1522, "Work Address:"), mw->waddress);
+        if (mw->wzip && *mw->wzip)
+            M_printf (AVPFMT, i18n (1520, "Work Zip:"), mw->wzip);
+        if (mw->wcountry)
+        {
+            if ((tabd = TableGetCountry (mw->wcountry)))
+                M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
+                         i18n (1514, "Work Country:"), tabd);
+            else
+                M_printf (COLSERVER "%-15s" COLNONE " %d\n", 
+                         i18n (1513, "Work Country Code:"), mw->wcountry);
+        }
+        if (mw->wcompany && *mw->wcompany)
+            M_printf (AVPFMT, i18n (1519, "Company Name:"), mw->wcompany);
+        if (mw->wdepart && *mw->wdepart)
+            M_printf (AVPFMT, i18n (1518, "Department:"), mw->wdepart);
+        if (mw->wposition && *mw->wposition)
+            M_printf (AVPFMT, i18n (1517, "Job Position:"), mw->wposition);
+        if (mw->woccupation)
+            M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
+                      i18n (1516, "Occupation:"), TableGetOccupation (mw->woccupation));
+        if (mw->whomepage && *mw->whomepage)
+            M_printf (AVPFMT, i18n (1515, "Work Homepage:"), mw->whomepage);
+    }
+    if ((ml = cont->meta_interest))
+    {
+        M_printf (COLSERVER "%-15s" COLNONE "\n", i18n (1875, "Personal interests:"));
+        for ( ; ml; ml = ml->meta_list)
+        {
+            if (!ml->description)
+                continue;
+            if ((tabd = TableGetInterest (ml->type)))
+                M_printf ("  %s: %s\n", tabd, ml->description);
+            else
+                M_printf ("  %d: %s\n", ml->type, ml->description);
+        }
+    }
+    if ((ml = cont->meta_background))
+    {
+        M_printf (COLSERVER "%-15s" COLNONE "\n", i18n (1876, "Personal past background:"));
+        for ( ; ml; ml = ml->meta_list)
+        {
+            if (!ml->description)
+                continue;
+            if ((tabd = TableGetPast (ml->type)))
+                M_printf ("  %s: %s\n", tabd, ml->description);
+            else
+                M_printf ("  %d: %s\n", ml->type, ml->description);
+        }
+    }
+    if ((ml = cont->meta_affiliation))
+    {
+        M_printf (COLSERVER "%-15s" COLNONE "\n", i18n (1879, "Affiliations:"));
+        for ( ; ml; ml = ml->meta_list)
+        {
+            if (!ml->description)
+                continue;
+            if ((tabd = TableGetAffiliation (ml->type)))
+                M_printf ("  %s: %s\n", tabd, ml->description);
+            else
+                M_printf ("  %d: %s\n", ml->type, ml->description);
+        }
+    }
+    if ((mo = CONTACT_OBSOLETE (cont)))
+    {
+        if (mo->unknown)
+            M_printf (COLSERVER "%-15s" COLNONE " %04x = %d\n",
+                      i18n (2195, "Obsolete number:"), mo->unknown, mo->unknown);
+        if (mo->description && *mo->description)
+            M_printf (COLSERVER "%-15s" COLNONE " %s\n",
+                      i18n (2196, "Obsolete text:"), mo->description);
+        if (mo->empty)
+            M_printf (COLSERVER "%-15s" COLNONE "%d\n",
+                      i18n (2197, "Obsolete byte"), mo->empty);
+    }
+    if (cont->meta_about && *cont->meta_about)
+        M_printf (COLSERVER "%-15s" COLNONE "\n%s\n",
+                  i18n (1525, "About:"), s_ind (cont->meta_about));
+}
