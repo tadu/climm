@@ -644,13 +644,13 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
             IMSrvMsg (cont, serv, NOW, ExtraClone (extra));
             PacketWrite2     (ack_pak, ack_status);
             PacketWrite2     (ack_pak, ack_flags);
-            PacketWriteLNTS  (ack_pak, c_out_for (ack_msg, cont, type));
+            PacketWriteLNTS  (ack_pak, c_out_for (ack_msg, cont, msgtype));
             if (msgtype == MSG_NORM)
             {
                 PacketWrite4 (ack_pak, TCP_COL_FG);
                 PacketWrite4 (ack_pak, TCP_COL_BG);
             }
-            if (CONT_UTF8 (cont, type))
+            if (CONT_UTF8 (cont, msgtype))
                 PacketWriteDLStr     (ack_pak, CAP_GID_UTF8);
             accept = -1;
             break;
