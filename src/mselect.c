@@ -31,6 +31,7 @@ Changes :
 #include <unistd.h>
 #include <netinet/in.h>
 #include <sys/stat.h>
+#include <sys/select.h>
 #include <sys/socket.h>
 
 #ifndef __BEOS__

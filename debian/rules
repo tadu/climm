@@ -52,9 +52,9 @@ binary-arch: build install
 	
 	dh_installchangelogs ChangeLog
 	
-	dh_installman doc/micq.1
-	dh_installman doc/micq.7
-	dh_installman doc/micqrc.5
+#	dh_installman doc/micq.1
+#	dh_installman doc/micq.7
+#	dh_installman doc/micqrc.5
 	
 	dh_strip
 	dh_compress

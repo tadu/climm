@@ -601,7 +601,7 @@ JUMP_F(CmdUserTrans)
         ver = atoi (i18n (1003, "0"));
         /* i18n (1079, "Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n") */
         M_print (i18n (-1, "1079:No translation; using compiled-in strings.¶"),
-                 i18n (1001, "<lang>"), i18n (1002, "<lang_lang>"), i18n (1004, "<translation authors>"),
+                 i18n (1001, "<lang>"), i18n (1002, "<lang_cc>"), i18n (1004, "<translation authors>"),
                  i18n (1006, "<last edit date>"), i18n (1005, "<last editor>"),
                  ver / 1000, (ver / 100) % 10, (ver / 10) % 10, ver % 10 ? UtilFill (".pl%d", ver % 10) : "");
         return 0;

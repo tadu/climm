@@ -42,11 +42,6 @@ make
 
 %install
 %makeinstall
-for mancat in 1 5 7; do
-        %{__mkdir_p} "${RPM_BUILD_ROOT}%{_mandir}/man${mancat}"
-        %{__install} -m0644 doc/*.${mancat} \
-                "${RPM_BUILD_ROOT}%{_mandir}/man${mancat}/"
-done
 %{__mkdir_p} $RPM_BUILD_ROOT/usr/lib/menu
 cat << EOF > $RPM_BUILD_ROOT/usr/lib/menu/micq
 ?package(micq):needs=text section=Networking/ICQ \

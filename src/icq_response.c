@@ -486,6 +486,9 @@ void UserOnlineSetVersion (Contact *con, time_t tstamp, time_t tstamp2, time_t t
             case BUILD_MICQ:
                 new = "mICQ";
                 break;
+            case BUILD_YSM:
+                new = "YSM";
+                break;
             default:
                 snprintf (buf, sizeof (buf), "%08lx", tstamp);
                 new = buf;

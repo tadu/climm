@@ -233,22 +233,23 @@ void FlapSend (Session *sess, Packet *pak)
 
 /***********************************************/
 
+static char *_encryptpw (const char *pw)
+{
+    char *cpw = strdup (pw), *p;
+    const char *tb = "\xf3\x26\x81\xc4\x39\x86\xdb\x92"
+                     "\x71\xa3\xb9\xe6\x53\x7a\x95\x7c";
+    int i = 0;
+    for (p = cpw; *p; p++, i++)
+        *p ^= tb[i % 16];
+    return cpw;
+}
+
+    
 void FlapCliIdent (Session *sess)
 {
     Packet *pak;
     UWORD flags = prG->flags;
 
-    char *_encryptpw (const char *pw)
-    {
-        char *cpw = strdup (pw), *p;
-        const char *tb = "\xf3\x26\x81\xc4\x39\x86\xdb\x92"
-                         "\x71\xa3\xb9\xe6\x53\x7a\x95\x7c";
-        int i = 0;
-        for (p = cpw; *p; p++, i++)
-            *p ^= tb[i % 16];
-        return cpw;
-    }
-    
     prG->flags &= ~FLAG_CONVRUSS & ~FLAG_CONVEUC;
     if (!sess->passwd || !strlen (sess->passwd))
     {

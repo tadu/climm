@@ -1,3 +1,8 @@
+2002-07-12 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* compile fixes
+	* recognize YSM
+	* actually install man pages
+
 2002-07-10 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* es translation by Alberto  Bertogli (albertogli@telpin.com.ar)
 	* lower requirement for gethostbyname() for BeOS

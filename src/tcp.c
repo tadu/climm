@@ -664,7 +664,7 @@ Packet *TCPReceivePacket (Session *sess)
 void TCPSendPacket (Packet *pak, Session *sess)
 {
     Packet *tpak;
-    void *data;
+    UBYTE *data;
     UBYTE buf[2];
     int rc, todo, bytessend = 0;
     

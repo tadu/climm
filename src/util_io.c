@@ -26,8 +26,6 @@
 #include "util.h"
 #include "contact.h"
 
-extern int h_errno;
-
 #ifndef HAVE_HSTRERROR
 const char *hstrerror (int rc)
 {
@@ -610,7 +608,7 @@ size_t SOCKREAD (Session *sess, void *ptr, size_t len)
     if (prG->s5Use)
     {
         sz -= 10;
-        memcpy (ptr, ptr + 10, sz);
+        memcpy (ptr, (UBYTE *)ptr + 10, sz);
     }
 /* SOCKS5 stuff end */
 

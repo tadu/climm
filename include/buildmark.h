@@ -6,6 +6,7 @@
 #define BUILD_MICQ_OLD 0x7d0001ea
 #define BUILD_MIRANDA  0xffffffff
 #define BUILD_STRICQ   0xffffff8f
+#define BUILD_YSM      0xffffffab
 
 #define BUILD_LICQ     0x7d000000
 #define BUILD_SSL      0x00800000
