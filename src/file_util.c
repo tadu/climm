@@ -554,24 +554,26 @@ void Read_RC_File (FILE *rcf)
                     {
                         PrefParse (cmd);
                         if (!strcasecmp (cmd, "on"))
+                        {
+                            if (which == FLAG_CONVRUSS)
+                            {
+                                dep = 1;
+                                prG->enc_rem = ENC_WIN1251;
+                                prG->enc_loc = ENC_KOI8;
+                            }
+                            else if (which == FLAG_CONVEUC)
+                            {
+                                dep = 1;
+                                prG->enc_rem = ENC_SJIS;
+                                prG->enc_loc = ENC_EUC;
+                                M_print ("FIXME: conversion to/from SJIS and EUC has not yet been implemented.\n");
+                            }
                             prG->flags |= which;
+                        }
                         else if (!strcasecmp (cmd, "off"))
                             prG->flags &= ~which;
                         else
                             ERROR;
-                        if (which == FLAG_CONVRUSS)
-                        {
-                            dep = 1;
-                            prG->enc_rem = ENC_WIN1251;
-                            prG->enc_loc = ENC_KOI8;
-                        }
-                        else if (which == FLAG_CONVEUC)
-                        {
-                            dep = 1;
-                            prG->enc_rem = ENC_SJIS;
-                            prG->enc_loc = ENC_EUC;
-                            M_print ("FIXME: conversion to/from SJIS and EUC has not yet been implemented.\n");
-                        }
                     }
                     else if (which == -1)
                     {
