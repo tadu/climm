@@ -285,7 +285,7 @@ void Read_RC_File (FILE *rcf)
             }
             else
             {
-                M_print (COLERR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                M_print (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
                 M_print (i18n (1659, "Unknown section %s in configuration file."), buf);
                 M_print ("\n");
                 section = -1;
@@ -295,7 +295,7 @@ void Read_RC_File (FILE *rcf)
         switch (section)
         {
             case -1:
-                M_print (COLERR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                M_print (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
                 M_print (i18n (1675, "Ignored line:"));
                 M_print (" %s\n", buf);
                 break;
@@ -343,7 +343,64 @@ void Read_RC_File (FILE *rcf)
                     if (!prG->logplace) /* don't overwrite command line arg */
                         prG->logplace = strdup (strtok (NULL, " \t\n"));
                 }
-                else if (!strcasecmp (tmp, "LineBreakType"))
+                else if (!strcasecmp (tmp, "color"))
+                {
+                    int i;
+                    
+                    tmp = strtok (NULL, " \t\n");
+                    if (!tmp)
+                        continue;
+                    
+                    if      (!strcasecmp (tmp, "none"))     i = 0;
+                    else if (!strcasecmp (tmp, "server"))   i = 1;
+                    else if (!strcasecmp (tmp, "client"))   i = 2;
+                    else if (!strcasecmp (tmp, "message"))  i = 3;
+                    else if (!strcasecmp (tmp, "contact"))  i = 4;
+                    else if (!strcasecmp (tmp, "sent"))     i = 5;
+                    else if (!strcasecmp (tmp, "ack"))      i = 6;
+                    else if (!strcasecmp (tmp, "error"))    i = 7;
+                    else if (!strcasecmp (tmp, "incoming")) i = 8;
+                    else if (!strcasecmp (tmp, "scheme"))   i = -1;
+                    else i = atoi (tmp);
+                    
+                    if (i == -1)
+                    {
+                        tmp = strtok (NULL, " \t\n");
+                        if (!tmp)
+                            continue;
+                        PrefSetColorScheme (prG, atoi (tmp));
+                    }
+                    else
+                    {
+                        char buf[200], *c;
+
+                        if (prG->colors[i])
+                            free (prG->colors[i]);
+                        if (i < -1 || i >= CXCOUNT)
+                            continue;
+                        buf[0] = '\0';
+
+                        while ((tmp = strtok (NULL, " \t\n")))
+                        {
+                            if      (!strcasecmp (tmp, "black"))   c = BLACK;
+                            else if (!strcasecmp (tmp, "red"))     c = RED;
+                            else if (!strcasecmp (tmp, "green"))   c = GREEN;
+                            else if (!strcasecmp (tmp, "yellow"))  c = YELLOW;
+                            else if (!strcasecmp (tmp, "blue"))    c = BLUE;
+                            else if (!strcasecmp (tmp, "magenta")) c = MAGENTA;
+                            else if (!strcasecmp (tmp, "cyan"))    c = CYAN;
+                            else if (!strcasecmp (tmp, "white"))   c = WHITE;
+                            else if (!strcasecmp (tmp, "none"))    c = SGR0;
+                            else if (!strcasecmp (tmp, "bold"))    c = BOLD;
+                            else c = tmp;
+                            
+                            snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", c);
+                        }
+                        prG->scheme = -1;
+                        prG->colors[i] = strdup (buf);
+                    }
+                }
+                else if (!strcasecmp (tmp, "linebreaktype"))
                 {
                     i = atoi (strtok (NULL, " \n\t"));
                     prG->flags &= ~FLAG_LIBR_BR & ~FLAG_LIBR_INT;
@@ -369,7 +426,7 @@ void Read_RC_File (FILE *rcf)
                     else
                         prG->flags |= FLAG_AUTOREPLY;
                 }
-                else if (!strcasecmp (tmp, "Sound"))
+                else if (!strcasecmp (tmp, "sound"))
                 {
                     tmp = strtok (NULL, "\n\t");
                     if (!tmp)
@@ -388,7 +445,7 @@ void Read_RC_File (FILE *rcf)
                         prG->sound_cmd = strdup (tmp);
                     }
                 }
-                else if (!strcasecmp (tmp, "SoundOnline"))
+                else if (!strcasecmp (tmp, "soundonline"))
                 {
                     tmp = strtok (NULL, "\n\t");
                     if (!tmp)
@@ -407,7 +464,7 @@ void Read_RC_File (FILE *rcf)
                         prG->sound_on_cmd = strdup (tmp);
                     }
                 }
-                else if (!strcasecmp (tmp, "SoundOffline"))
+                else if (!strcasecmp (tmp, "soundoffline"))
                 {
                     tmp = strtok (NULL, "\n\t");
                     if (!tmp)
@@ -518,7 +575,7 @@ void Read_RC_File (FILE *rcf)
                 }
                 else
                 {
-                    M_print (COLERR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                    M_print (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
                     M_print (i18n (1188, "Unrecognized command in rc file '%s', ignored."), tmp);
                     M_print ("\n");
                 }
@@ -575,7 +632,7 @@ void Read_RC_File (FILE *rcf)
                 
                 if (!(cont = ContactAdd (uin, tmp)))
                 {
-                    M_print (COLERR "%s" COLNONE " %s\n", i18n (1619, "Warning:"),
+                    M_print (COLERROR "%s" COLNONE " %s\n", i18n (1619, "Warning:"),
                              i18n (1620, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
                     section = -1;
                     break;
@@ -593,7 +650,7 @@ void Read_RC_File (FILE *rcf)
                 }
                 else
                 {
-                    M_print (COLERR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                    M_print (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
                     M_print (i18n (1188, "Unrecognized command in rc file '%s', ignored."), tmp);
                     M_print ("\n");
                 }
@@ -844,9 +901,49 @@ int Save_RC ()
                     prG->tabs == TABS_CYCLE ? "cycle" : "cycleall");
 
 
-    fprintf (rcf, "logplace %s      # the file or (dstinct files in) dir to log to\n",
-                    prG->logplace ? prG->logplace : "");
+    fprintf (rcf, "# Colors. color scheme 0|1|2|3 or color <use> <color>");
+    {
+        int i, l;
+        char *t, *c;
 
+        for (i = 0; i < CXCOUNT; i++)
+        {
+            switch (i)
+            {
+                case 0: c = "none    "; break;
+                case 1: c = "server  "; break;
+                case 2: c = "client  "; break;
+                case 3: c = "message "; break;
+                case 4: c = "contact "; break;
+                case 5: c = "sent    "; break;
+                case 6: c = "ack     "; break;
+                case 7: c = "error   "; break;
+                case 8: c = "incoming"; break;
+                default: assert (0);
+            }
+            fprintf (rcf, "\ncolor %s", c);
+            for (t = strdup (prG->colors[i]); *t; t += l)
+            {
+                if      (!strncmp (BLACK,   t, l = strlen (BLACK)))   c = "black  ";
+                else if (!strncmp (RED,     t, l = strlen (RED)))     c = "red    ";
+                else if (!strncmp (GREEN,   t, l = strlen (GREEN)))   c = "green  ";
+                else if (!strncmp (YELLOW,  t, l = strlen (YELLOW)))  c = "yellow ";
+                else if (!strncmp (BLUE,    t, l = strlen (BLUE)))    c = "blue   ";
+                else if (!strncmp (MAGENTA, t, l = strlen (MAGENTA))) c = "magenta";
+                else if (!strncmp (CYAN,    t, l = strlen (CYAN)))    c = "cyan   ";
+                else if (!strncmp (WHITE,   t, l = strlen (WHITE)))   c = "white  ";
+                else if (!strncmp (SGR0,    t, l = strlen (SGR0)))    c = "none   ";
+                else if (!strncmp (BOLD,    t, l = strlen (BOLD)))    c = "bold   ";
+                else c = t, l = strlen (t);
+                fprintf (rcf, " %s", c);
+            }
+        }
+    }
+    if (prG->scheme != (UBYTE)-1)
+        fprintf (rcf, "\ncolor scheme   %d", prG->scheme);
+
+    fprintf (rcf, "\n\nlogplace %s      # the file or (dstinct files in) dir to log to\n",
+                    prG->logplace ? prG->logplace : "");
 
     fprintf (rcf, "# Define to a program which is executed to play sound when a message is received.\n");
     fprintf (rcf, "sound %s\n\n", prG->sound & SFLAG_BEEP ? "on" :

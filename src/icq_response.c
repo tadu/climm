@@ -32,7 +32,7 @@
 #include <assert.h>
 
 /* Attribute-value-pair format string */
-#define AVPFMT COLSERV "%-15s" COLNONE " %s\n"
+#define AVPFMT COLSERVER "%-15s" COLNONE " %s\n"
 
 void Meta_User (Session *sess, UDWORD uin, Packet *p)
 {
@@ -127,7 +127,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             data = PacketReadLNTS (p);
             data2 = PacketReadLNTS (p);
             if (*data && *data2)
-                M_print (COLSERV "%-15s" COLNONE " %s, %s\n", 
+                M_print (COLSERVER "%-15s" COLNONE " %s, %s\n", 
                     i18n (1505, "Location:"), data, data2);
             else if (*data)
                 M_print (AVPFMT, i18n (1570, "City:"), data);
@@ -156,20 +156,20 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                 free (data);
             }
             else if ((dwdata = PacketRead4 (p)))
-                M_print (COLSERV "%-15s" COLNONE " %05lu\n", 
+                M_print (COLSERVER "%-15s" COLNONE " %05lu\n", 
                     i18n (1510, "Zip:"), dwdata);
 
             wdata = PacketRead2 (p);
             if ((tabd = TableGetCountry (wdata)) != NULL)
-                M_print (COLSERV "%-15s" COLNONE " %s\t", 
+                M_print (COLSERVER "%-15s" COLNONE " %s\t", 
                     i18n (1511, "Country:"), tabd);
             else
-                M_print (COLSERV "%-15s" COLNONE " %d\t", 
+                M_print (COLSERVER "%-15s" COLNONE " %d\t", 
                     i18n (1512, "Country code:"), wdata);
             tz = (signed char) PacketRead1 (p);
             M_print ("(UTC %+05d)\n", -100 * (tz / 2) + 30 * (tz % 2));
             wdata = PacketRead1 (p); /* publish email, 01: yes, 00: no */
-            M_print (COLSERV "%-15s" COLNONE " %s\n", 
+            M_print (COLSERVER "%-15s" COLNONE " %s\n", 
                 i18n (1941, "Publish Email:"), wdata 
                 ? i18n (1567, "No authorization needed." COLNONE " ")
                 : i18n (1568, "Must request authorization." COLNONE " "));
@@ -178,14 +178,14 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
         case META_SRV_MORE:
             wdata = PacketRead2 (p);
             if (wdata != 0xffff && wdata != 0)
-                M_print (COLSERV "%-15s" COLNONE " %d\n", 
+                M_print (COLSERVER "%-15s" COLNONE " %d\n", 
                     i18n (1575, "Age:"), wdata);
             else
-                M_print (COLSERV "%-15s" COLNONE " %s\n", 
+                M_print (COLSERVER "%-15s" COLNONE " %s\n", 
                     i18n (1575, "Age:"), i18n (1200, "Not entered"));
 
             wdata = PacketRead1 (p);
-            M_print (COLSERV "%-15s" COLNONE " %s\n", i18n (1696, "Sex:"),
+            M_print (COLSERVER "%-15s" COLNONE " %s\n", i18n (1696, "Sex:"),
                        wdata == 1 ? i18n (1528, "female")
                      : wdata == 2 ? i18n (1529, "male")
                      :              i18n (1530, "not specified"));
@@ -202,10 +202,10 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             day = PacketRead1 (p);
 
             if (month >= 1 && month <= 12 && day && day < 32 && wdata)
-                M_print (COLSERV "%-15s" COLNONE " %02d. %s %4d\n", 
+                M_print (COLSERVER "%-15s" COLNONE " %02d. %s %4d\n", 
                     i18n (1532, "Born:"), day, TableGetMonth (month), 
                     wdata);
-            M_print (COLSERV "%-15s" COLNONE " ", 
+            M_print (COLSERVER "%-15s" COLNONE " ", 
                 i18n (1533, "Languages:"));
             if ((tabd = TableGetLang (wdata = PacketRead1 (p))) != NULL)
                 M_print ("%s", tabd);
@@ -225,7 +225,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             break;
         case META_SRV_MOREEMAIL:
             if ((i = PacketRead1 (p)))
-                M_print (COLSERV "%-15s" COLNONE "\n", 
+                M_print (COLSERVER "%-15s" COLNONE "\n", 
                     i18n (1942, "Additional Email addresses:"));
             for (; i > 0; i--)
             {
@@ -242,7 +242,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             data = PacketReadLNTS (p);
             data2 = PacketReadLNTS (p);
             if (*data && *data2)
-                M_print (COLSERV "%-15s" COLNONE " %s, %s\n", 
+                M_print (COLSERVER "%-15s" COLNONE " %s, %s\n", 
                     i18n (1524, "Work Location:"), data, data2);
             else if (*data)
                 M_print (AVPFMT, i18n (1873, "Work City:"), data);
@@ -268,16 +268,16 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                 free (data);
             }
             else if ((dwdata = PacketRead4 (p)))
-                M_print (COLSERV "%-15s" COLNONE " %lu\n", 
+                M_print (COLSERVER "%-15s" COLNONE " %lu\n", 
                     i18n (1520, "Work Zip:"), dwdata);
 
             if ((wdata = PacketRead2 (p)))
             {
                 if ((tabd = TableGetCountry (wdata)))
-                    M_print (COLSERV "%-15s" COLNONE " %s\n", 
+                    M_print (COLSERVER "%-15s" COLNONE " %s\n", 
                         i18n (1514, "Work Country:"), tabd);
                 else
-                    M_print (COLSERV "%-15s" COLNONE " %d\n", 
+                    M_print (COLSERVER "%-15s" COLNONE " %d\n", 
                         i18n (1513, "Work Country Code:"), wdata);
             }
             if (*(data = PacketReadLNTS (p)))
@@ -290,7 +290,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                 M_print (AVPFMT, i18n (1517, "Job Position:"), data);
             free (data);
             if ((wdata = PacketRead2 (p))) 
-                M_print (COLSERV "%-15s" COLNONE " %s\n", 
+                M_print (COLSERVER "%-15s" COLNONE " %s\n", 
                     i18n (1516, "Occupation:"), TableGetOccupation (wdata));
             if (*(data = PacketReadLNTS (p)))
                 M_print (AVPFMT, i18n (1515, "Work Homepage:"), data);
@@ -299,13 +299,13 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             break;
         case META_SRV_ABOUT:
             if (*(data = PacketReadLNTS (p)))
-                M_print (COLSERV "%-15s" COLNONE "\n " COLCLIENT 
+                M_print (COLSERVER "%-15s" COLNONE "\n " COLCLIENT 
                     "%s" COLNONE "\n", i18n (1525, "About:"), data);
             free (data);
             break;
         case META_SRV_INTEREST:
             if ((i = PacketRead1 (p)))
-                M_print (COLSERV "%-15s" COLNONE "\n",
+                M_print (COLSERVER "%-15s" COLNONE "\n",
                     i18n (1875, "Personal interests:"));
             for (; i > 0; i--)
             {
@@ -322,7 +322,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             break;
         case META_SRV_BACKGROUND:
             if ((i = PacketRead1 (p)))
-                M_print (COLSERV "%-15s" COLNONE "\n", 
+                M_print (COLSERVER "%-15s" COLNONE "\n", 
                     i18n (1876, "Personal past background:"));
             for (; i > 0; i--)
             {
@@ -337,7 +337,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                 free (data);
             }
             if ((i = PacketRead1 (p)))
-                M_print (COLSERV "%-15s" COLNONE "\n", 
+                M_print (COLSERVER "%-15s" COLNONE "\n", 
                     i18n (1879, "Affiliations:"));
             for (; i > 0; i--)
             {
@@ -367,35 +367,35 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
 
             switch ((wdata = PacketRead2 (p))) {
                 case 0:
-                    M_print (COLSERV "%-15s" COLNONE " %s\n", i18n (1452, "Status:"),
+                    M_print (COLSERVER "%-15s" COLNONE " %s\n", i18n (1452, "Status:"),
                         i18n (1653, "Offline"));
                     break;
                 case 1:
-                    M_print (COLSERV "%-15s" COLNONE " %s\n", i18n (1452, "Status:"),
+                    M_print (COLSERVER "%-15s" COLNONE " %s\n", i18n (1452, "Status:"),
                         i18n (1654, "Online"));
                     break;
                 case 2:
-                    M_print (COLSERV "%-15s" COLNONE " %s\n", i18n (1452, "Status:"),
+                    M_print (COLSERVER "%-15s" COLNONE " %s\n", i18n (1452, "Status:"),
                         i18n (1888, "Not webaware"));
                     break;
                 default:
-                    M_print (COLSERV "%-15s" COLNONE " %d\n", i18n (1452, "Status:"), 
+                    M_print (COLSERVER "%-15s" COLNONE " %d\n", i18n (1452, "Status:"), 
                         wdata);
                     break;
             }
 
             wdata = PacketRead1 (p);
-            M_print (COLSERV "%-15s" COLNONE " %s\n", i18n (1696, "Sex:"),
+            M_print (COLSERVER "%-15s" COLNONE " %s\n", i18n (1696, "Sex:"),
                        wdata == 1 ? i18n (1528, "female")
                      : wdata == 2 ? i18n (1529, "male")
                      :              i18n (1530, "not specified"));
 
             wdata = PacketRead1 (p);
             if (wdata != 0xff && wdata != 0)
-                M_print (COLSERV "%-15s" COLNONE " %d\n", 
+                M_print (COLSERVER "%-15s" COLNONE " %d\n", 
                     i18n (1575, "Age:"), wdata);
             else
-                M_print (COLSERV "%-15s" COLNONE " %s\n", 
+                M_print (COLSERVER "%-15s" COLNONE " %s\n", 
                     i18n (1575, "Age:"), i18n (1200, "Not entered"));
 
             if (subtype == META_SRV_WP_LAST_USER && (dwdata = PacketRead4(p)))
@@ -425,7 +425,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             if (!PacketRead2 (p))
                 break;
         default:
-            M_print ("%s: " COLSERV "%04X" COLNONE "\n", 
+            M_print ("%s: " COLSERVER "%04X" COLNONE "\n", 
                 i18n (1945, "Unknown Meta User response"), subtype);
             Hex_Dump (p->data + p->rpos, p->len - p->rpos);
             break;
@@ -559,18 +559,18 @@ void Display_Info_Reply (Session *sess, Packet *pak, const char *uinline,
     UWORD wdata;
 
     if (uinline)
-        M_print ("%s " COLSERV "%lu" COLNONE "\n", uinline, 
+        M_print ("%s " COLSERVER "%lu" COLNONE "\n", uinline, 
             PacketRead4 (pak));
 
     if (*(data = PacketReadLNTS (pak)))
-        M_print (COLSERV "%-15s" COLNONE " " COLCONTACT "%s" 
+        M_print (COLSERVER "%-15s" COLNONE " " COLCONTACT "%s" 
             COLNONE "\n", i18n (1500, "Nickname:"), data);
                 free (data);
 
     data = PacketReadLNTS (pak);
     data2 = PacketReadLNTS (pak);
     if (*data && *data2)
-        M_print (COLSERV "%-15s" COLNONE " %s\t %s\n", 
+        M_print (COLSERVER "%-15s" COLNONE " %s\t %s\n", 
             i18n (1501, "Name:"), data, data2);
     else if (*data)
         M_print (AVPFMT, i18n (1564, "First name:"), data);
@@ -585,7 +585,7 @@ void Display_Info_Reply (Session *sess, Packet *pak, const char *uinline,
     {
         wdata = PacketRead1 (pak);
         if (*data)
-            M_print (COLSERV "%-15s" COLNONE " %s\t%s\n", 
+            M_print (COLSERVER "%-15s" COLNONE " %s\t%s\n", 
                 i18n (1566, "Email address:"), data,
                 wdata == 1 ? i18n (1943, "(no authorization needed)")
                 : i18n (1944, "(must request authorization)"));
@@ -607,7 +607,7 @@ void Display_Ext_Info_Reply (Session *sess, Packet *pak, const char *uinline)
      */
 
     if (uinline)
-        M_print ("%s " COLSERV "%lu" COLNONE "\n", uinline, 
+        M_print ("%s " COLSERVER "%lu" COLNONE "\n", uinline, 
             PacketRead4 (pak));
 
     data = PacketReadLNTS (pak);
@@ -616,7 +616,7 @@ void Display_Ext_Info_Reply (Session *sess, Packet *pak, const char *uinline)
     data2 = PacketReadLNTS (pak);
 
     if (*data && *data2)
-        M_print (COLSERV "%-15s" COLNONE " %s, %s\n", 
+        M_print (COLSERVER "%-15s" COLNONE " %s, %s\n", 
             i18n (1505, "Location:"), data, data2);
     else if (*data)
         M_print (AVPFMT, i18n (1570, "City:"), data);
@@ -626,24 +626,24 @@ void Display_Ext_Info_Reply (Session *sess, Packet *pak, const char *uinline)
     free (data2);
 
     if ((tabd = TableGetCountry (wdata)) != NULL)
-        M_print (COLSERV "%-15s" COLNONE " %s\t", 
+        M_print (COLSERVER "%-15s" COLNONE " %s\t", 
             i18n (1511, "Country:"), tabd);
     else
-        M_print (COLSERV "%-15s" COLNONE " %d\t", 
+        M_print (COLSERVER "%-15s" COLNONE " %d\t", 
             i18n (1512, "Country code:"), wdata);
 
     M_print ("(UTC %+05d)\n", -100 * (tz / 2) + 30 * (tz % 2));
 
     wdata = PacketRead2 (pak);
     if (wdata != 0xffff && wdata != 0)
-        M_print (COLSERV "%-15s" COLNONE " %d\n", 
+        M_print (COLSERVER "%-15s" COLNONE " %d\n", 
             i18n (1575, "Age:"), wdata);
     else
-        M_print (COLSERV "%-15s" COLNONE " %s\n", 
+        M_print (COLSERVER "%-15s" COLNONE " %s\n", 
             i18n (1575, "Age:"), i18n (1200, "Not entered"));
 
     wdata = PacketRead1 (pak);
-    M_print (COLSERV "%-15s" COLNONE " %s\n", i18n (1696, "Sex:"),
+    M_print (COLSERVER "%-15s" COLNONE " %s\n", i18n (1696, "Sex:"),
                wdata == 1 ? i18n (1528, "female")
              : wdata == 2 ? i18n (1529, "male")
              :              i18n (1530, "not specified"));
@@ -655,7 +655,7 @@ void Display_Ext_Info_Reply (Session *sess, Packet *pak, const char *uinline)
         M_print (AVPFMT, i18n (1531, "Homepage:"), data);
     free (data);
     if (*(data = PacketReadLNTS (pak)))
-        M_print (COLSERV "%-15s" COLNONE "\n " COLCLIENT 
+        M_print (COLSERVER "%-15s" COLNONE "\n " COLCLIENT 
             "%s" COLNONE "\n", i18n (1525, "About:"), data);
     free (data);
 }
@@ -698,7 +698,7 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
         }
 
         uiG.idle_msgs++;
-        R_setpromptf ("[" CYAN BOLD "%d%s" COLNONE "] " COLSERV "%s" COLNONE "",
+        R_setpromptf ("[" CYAN BOLD "%d%s" COLNONE "] " COLSERVER "%s" COLNONE "",
                       uiG.idle_msgs, uiG.idle_uins, i18n (1040, "mICQ> "));
     }
 
@@ -751,7 +751,7 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
                 return;
             }
             *tmp = 0;
-            M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (1564, "First name:"), cdata);
+            M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1564, "First name:"), cdata);
             tmp++;
             cdata = tmp;
             tmp = strchr (tmp, sep);
@@ -761,12 +761,12 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
                 return;
             }
             *tmp = 0;
-            M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (1565, "Last name:"), cdata);
+            M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1565, "Last name:"), cdata);
             tmp++;
             cdata = tmp;
             tmp = strchr (tmp, sep);
             *tmp = 0;
-            M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (1566, "Email address:"), cdata);
+            M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1566, "Email address:"), cdata);
             break;
         case AUTH_REQ_MESS:
             tmp = strchr (cdata, sep);
@@ -781,7 +781,7 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
                 return;
             }
             *tmp = 0;
-            M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (1564, "First name:"), cdata);
+            M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1564, "First name:"), cdata);
             tmp++;
             cdata = tmp;
             tmp = strchr (tmp, sep);
@@ -791,7 +791,7 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
                 return;
             }
             *tmp = 0;
-            M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (1565, "Last name:"), cdata);
+            M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1565, "Last name:"), cdata);
             tmp++;
             cdata = tmp;
             tmp = strchr (tmp, sep);
@@ -801,7 +801,7 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
                 return;
             }
             *tmp = 0;
-            M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (1566, "Email address:"), cdata);
+            M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1566, "Email address:"), cdata);
             tmp++;
             cdata = tmp;
             tmp = strchr (tmp, sep);
@@ -820,7 +820,7 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
                 return;
             }
             *tmp = 0;
-            M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (1591, "Reason:"), cdata);
+            M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1591, "Reason:"), cdata);
             break;
         case EMAIL_MESS:
         case WEB_MESS:
@@ -853,7 +853,7 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
             }
             tmp++;
             cdata = tmp;
-            M_print (COLMESS "%s" COLNONE "\n", cdata);
+            M_print (COLMESSAGE "%s" COLNONE "\n", cdata);
             break;
         case URL_MESS:
         case MRURL_MESS:
@@ -870,16 +870,16 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
                 url_url++;
             }
 
-            M_print ("%s" COLMESS "%s" COLNONE "\n", tcp ? MSGTCPRECSTR : MSGRECSTR, url_desc);
+            M_print ("%s" COLMESSAGE "%s" COLNONE "\n", tcp ? MSGTCPRECSTR : MSGRECSTR, url_desc);
             Time_Stamp ();
-            M_print (i18n (1594, "        URL: %s" COLMESS "%s" COLNONE "\n"),
+            M_print (i18n (1594, "        URL: %s" COLMESSAGE "%s" COLNONE "\n"),
                      tcp ? MSGTCPRECSTR : MSGRECSTR, url_url);
             break;
         case CONTACT_MESS:
         case MRCONTACT_MESS:
             tmp = strchr (cdata, sep);
             *tmp = 0;
-            M_print (i18n (1595, "\nContact List.\n" COLMESS "============================================\n" COLNONE "%d Contacts\n"),
+            M_print (i18n (1595, "\nContact List.\n" COLMESSAGE "============================================\n" COLNONE "%d Contacts\n"),
                      atoi (cdata));
             tmp++;
             m = atoi (cdata);
@@ -893,14 +893,14 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
                 cdata = tmp;
                 tmp = strchr (tmp, sep);
                 *tmp = 0;
-                M_print (COLMESS "%s" COLNONE "\n", cdata);
+                M_print (COLMESSAGE "%s" COLNONE "\n", cdata);
                 tmp++;
             }
             break;
         default:
             while (*cdata && (cdata[strlen (cdata) - 1] == '\n' || cdata[strlen (cdata) - 1] == '\r'))
                 cdata[strlen (cdata) - 1] = '\0';
-            M_print ("%s" COLMESS "\x1b<%s" COLNONE "\x1b>\n", tcp ? MSGTCPRECSTR : MSGRECSTR, cdata);
+            M_print ("%s" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", tcp ? MSGTCPRECSTR : MSGRECSTR, cdata);
             break;
     }
 }

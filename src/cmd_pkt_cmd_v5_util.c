@@ -112,14 +112,14 @@ void PacketEnqueuev5 (Packet *pak, Session *sess)
     if (prG->verbose & DEB_PACK5DATA)
     {
         Time_Stamp ();
-        M_print (" \x1b«" COLCLIENT "");
+        M_print (" " COLINDENT COLCLIENT "");
         M_print (i18n (1775, "Outgoing packet:"));
         M_print (" %04x %08x:%08x %04x (%s) @%p" COLNONE "\n",
                  PacketReadAt2 (pak, CMD_v5_OFF_VER), PacketReadAt4 (pak, CMD_v5_OFF_SESS),
                  PacketReadAt4 (pak, CMD_v5_OFF_SEQ), PacketReadAt2 (pak, CMD_v5_OFF_SEQ2),
                  CmdPktCmdName (PacketReadAt2 (pak, CMD_v5_OFF_CMD)), pak);
         Hex_Dump (&pak->data, pak->len);
-        M_print (ESC "»\r");
+        M_print (COLEXDENT "\r");
     }
 
     if (cmd != CMD_ACK)
@@ -395,14 +395,14 @@ void UDPCallBackResend (Event *event)
                     ConvUnixWin (data);
                     strcpy (url_data, data);
 
-                    M_print (i18n (1628, " Description: " COLMESS "%s" COLNONE "\n"), url_desc);
-                    M_print (i18n (1629, " URL:         " COLMESS "%s" COLNONE), url_data);
+                    M_print (i18n (1628, " Description: " COLMESSAGE "%s" COLNONE "\n"), url_desc);
+                    M_print (i18n (1629, " URL:         " COLMESSAGE "%s" COLNONE), url_data);
                 }
             }
             else if (type == NORM_MESS || type == MRNORM_MESS)
             {
                 ConvUnixWin (data);
-                M_print (COLMESS "%s", data);
+                M_print (COLMESSAGE "%s", data);
                 M_print (COLNONE " ");
             }
         }

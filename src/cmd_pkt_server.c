@@ -108,7 +108,7 @@ void CmdPktSrvRead (Session *sess)
     if (prG->verbose & DEB_PACK5DATA)
     {
         Time_Stamp ();
-        M_print (" \x1b«" COLSERV "");
+        M_print (" " COLINDENT COLSERVER "");
         M_print (i18n (1774, "Incoming packet:"));
         M_print (" %04x %08x:%04x%04x %04x (%s)" COLNONE "\n",
                  pak->ver, session, seq2, seq, cmd, CmdPktSrvName (cmd));
@@ -120,7 +120,7 @@ void CmdPktSrvRead (Session *sess)
 #else
         Hex_Dump (pak->data, s);
 #endif
-        M_print (ESC "»\r");
+        M_print (COLEXDENT "\r");
     }
     if (pak->len < 21)
     {
@@ -266,13 +266,13 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
                 UtilUIUserOffline (sess, cont);
             break;
         case SRV_BAD_PASS:
-            M_print (i18n (1645, COLMESS "You entered an incorrect password." COLNONE "\n"));
+            M_print (i18n (1645, COLMESSAGE "You entered an incorrect password." COLNONE "\n"));
             exit (1);
             break;
         case SRV_TRY_AGAIN:
             Time_Stamp ();
             M_print (" ");
-            M_print (i18n (1646, COLMESS "Server is busy.\n"));
+            M_print (i18n (1646, COLMESSAGE "Server is busy.\n"));
             uiG.reconnect_count++;
             if (uiG.reconnect_count >= MAX_RECONNECT_ATTEMPTS)
             {
@@ -415,7 +415,7 @@ static JUMP_SRV_F (CmdPktSrvMulti)
         if (prG->verbose & DEB_PACK5DATA)
         {
             Time_Stamp ();
-            M_print (" \x1b«" COLSERV "");
+            M_print (" " COLINDENT COLSERVER "");
             M_print (i18n (1823, "Incoming partial packet:"));
             M_print (" %04x %08x:%04x%04x %04x (%s)" COLNONE "\n",
                      ver, session, seq2, seq, cmd, CmdPktSrvName (cmd));
@@ -427,7 +427,7 @@ static JUMP_SRV_F (CmdPktSrvMulti)
 #else
             Hex_Dump (pak->data, llen);
 #endif
-            M_print ("\x1b»\n");
+            M_print (COLEXDENT "\n");
         }
 
         CmdPktSrvProcess (sess, npak, cmd, ver, seq << 16 | seq2, uin);

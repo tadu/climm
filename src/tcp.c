@@ -701,11 +701,11 @@ static Packet *TCPReceivePacket (Session *peer)
             if (prG->verbose & DEB_TCP)
             {
                 Time_Stamp ();
-                M_print (" \x1b«" COLSERV "");
+                M_print (" " COLINDENT COLSERVER "");
                 M_print (i18n (1789, "Received malformed packet: (%d)"), peer->sok);
                 M_print (COLNONE "\n");
                 Hex_Dump (pak->data, pak->len);
-                M_print (ESC "»\r");
+                M_print (COLEXDENT "\r");
 
             }
             TCPClose (peer);
@@ -1167,7 +1167,7 @@ void TCPPrint (Packet *pak, Session *peer, BOOL out)
     cmd = *pak->data;
 
     Time_Stamp ();
-    M_print (out ? " \x1b«" COLCLIENT "" : " \x1b«" COLSERV "");
+    M_print (out ? " " COLINDENT COLCLIENT "" : " " COLINDENT COLSERVER "");
     M_print (out ? i18n (2078, "Outgoing TCP packet (%d - %s): %s")
                  : i18n (2079, "Incoming TCP packet (%d - %s): %s"),
              peer->sok, ContactFindName (peer->uin), TCPCmdName (cmd));
@@ -1233,7 +1233,7 @@ void TCPPrint (Packet *pak, Session *peer, BOOL out)
     if (cmd != 6)
         if (prG->verbose & DEB_PACKTCPDATA)
             Hex_Dump (pak->data, pak->len);
-    M_print (ESC "»\r");
+    M_print (COLEXDENT "\r");
 }
 
 /*

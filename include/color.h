@@ -20,58 +20,30 @@
 #define COLCHR '©'
 #define COLSTR "©"
 
+#define CXNONE          0  /* "default" color */
+#define CXSERVER        1  /* server messages */
+#define CXCLIENT        2  /* client stuff    */
+#define CXMESSAGE       3  /* messages        */
+#define CXCONTACT       4  /* contacts        */
+#define CXSENT          5  /* sent messages   */
+#define CXACK           6  /* ack'ed messages */
+#define CXERROR         7  /* errors          */
+#define CXINCOMING      8  /* incoming msgs   */
+#define CXCOUNT         9
+
 #define COLNONE         ESC COLSTR "0"
-#define COLSERV         ESC COLSTR "1"
+#define COLSERVER       ESC COLSTR "1"
 #define COLCLIENT       ESC COLSTR "2"
-#define COLMESS         ESC COLSTR "3"
+#define COLMESSAGE      ESC COLSTR "3"
 #define COLCONTACT      ESC COLSTR "4"
 #define COLSENT         ESC COLSTR "5"
 #define COLACK          ESC COLSTR "6"
-#define COLERR          ESC COLSTR "7"
+#define COLERROR        ESC COLSTR "7"
+#define COLINCOMING     ESC COLSTR "8"
 
-/*********  Leeched from Xicq :) xtrophy@it.dk ********/
-/*********  changed to use escape codes like you should :) ***/
-/*********  changed colors ***********************************/
-/* Last 2 digit number selects the color */
-/* Experiment and let me know if you come up with */
-/* A better scheme */
-/* these were done by Cherrycoke */
-#ifdef COLOR_SCHEME_A
-   #define SERVCOL         BLUE BOLD
-   #define MESSCOL         BLUE BOLD
-   #define CONTACTCOL      GREEN
-   #define CLIENTCOL       RED BOLD
-   #define NOCOL           SGR0
-   #define SENTCOL         MAGENTA BOLD
-   #define ACKCOL          GREEN BOLD
-   #define ERRCOL          RED BOLD
-#elif defined (COLOR_SCHEME_B)
-   #define SERVCOL         MAGENTA
-   #define MESSCOL         CYAN
-   #define CONTACTCOL      CYAN
-   #define CLIENTCOL       CYAN
-   #define NOCOL           SGR0
-   #define SENTCOL         MAGENTA BOLD
-   #define ACKCOL          GREEN BOLD
-   #define ERRCOL          RED BOLD
-#elif defined (COLOR_SCHEME_M)
-   #define SERVCOL         SGR0
-   #define MESSCOL         GREEN
-   #define CONTACTCOL      GREEN BOLD
-   #define CLIENTCOL       GREEN
-   #define NOCOL           GREEN
-   #define SENTCOL         MAGENTA BOLD
-   #define ACKCOL          GREEN BOLD
-   #define ERRCOL          RED BOLD
-#else
-   #define SERVCOL         RED
-   #define MESSCOL         BLUE BOLD
-   #define CONTACTCOL      MAGENTA BOLD
-   #define CLIENTCOL       GREEN
-   #define NOCOL           SGR0
-   #define SENTCOL         MAGENTA BOLD
-   #define ACKCOL          GREEN BOLD
-   #define ERRCOL          RED BOLD
-#endif
+#define COLINDENT       ESC "«"
+#define COLEXDENT       ESC "»"
+#define COLMSGINDENT    ESC "<"
+#define COLMSGEXDENT    ESC ">"
 
 #endif

@@ -29,6 +29,9 @@ struct Preferences_s
     char  *auto_inv;
     char  *auto_dnd;
     char  *auto_ffc;
+    
+    char  *colors[CXCOUNT];
+    UBYTE  scheme;
 
     BOOL   s5Use;
     char  *s5Host;
@@ -56,11 +59,13 @@ struct PreferencesSession_s
     char     *passwd;
 };
 
-Preferences *PreferencesC (void);
+Preferences        *PreferencesC (void);
 PreferencesSession *PreferencesSessionC (void);
 
 const char *PrefUserDir ();
-void PrefLoad (Preferences *pref);
+void        PrefLoad (Preferences *pref);
+
+void        PrefSetColorScheme (Preferences *pref, UBYTE scheme);
 
 #define VERB_PACK         4
 #define VERB_PACK_DEBUG   8

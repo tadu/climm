@@ -120,7 +120,7 @@ static void FlapChannel4 (Session *sess, Packet *pak)
     if (!tlv[5].len)
     {
         Time_Stamp ();
-        M_print (" " ESC "«");
+        M_print (" " COLINDENT);
         if (!(sess->connect & CONNECT_OK))
             M_print (i18n (1895, "Login failed:\n"));
         else
@@ -130,7 +130,7 @@ static void FlapChannel4 (Session *sess, Packet *pak)
             M_print (i18n (1049, "UIN: %d\n"), tlv[1].nr);
         if (tlv[4].len)
             M_print (i18n (1961, "URL: %s\n"), tlv[4].str);
-        M_print (ESC "»\n");
+        M_print (COLEXDENT "\n");
 
         if ((sess->connect & CONNECT_MASK) && sess->sok != -1)
             sockclose (sess->sok);
@@ -236,9 +236,9 @@ void FlapSend (Session *sess, Packet *pak)
     if (prG->verbose & DEB_PACK8)
     {
         Time_Stamp ();
-        M_print (" " ESC "«" COLCLIENT "%s ", i18n (1903, "Outgoing v8 server packet:"));
+        M_print (" " COLINDENT COLCLIENT "%s ", i18n (1903, "Outgoing v8 server packet:"));
         FlapPrint (pak);
-        M_print (ESC "»\r");
+        M_print (COLEXDENT "\r");
     }
     if (prG->verbose & DEB_PACK8SAVE)
         FlapSave (pak, FALSE);

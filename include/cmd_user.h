@@ -1,9 +1,9 @@
 /* $Id$ */
 
-#define UIN_DELIMS " :|/"
-#define END_MSG_STR "."
+#define UIN_DELIMS     " :|/"
+#define END_MSG_STR    "."
 #define CANCEL_MSG_STR "#"
-#define W_SEPERATOR MESSCOL "============================================" NOCOL "\n"
+#define W_SEPERATOR COLMESSAGE "============================================" COLNONE "\n"
 
 #define CU_DEFAULT 1
 #define CU_USER    2
@@ -27,6 +27,5 @@ const char *CmdUserLookupName (const char *command);
 
 void CmdUser (const char *command);
 void CmdUserInput (time_t *idle_val, UBYTE *idle_flag);
-
 
 extern UDWORD last_uin;

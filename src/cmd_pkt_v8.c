@@ -162,9 +162,9 @@ void SrvCallBackReceive (Session *sess)
     if (prG->verbose & DEB_PACK8)
     {
         Time_Stamp ();
-        M_print (" " ESC "«" COLSERV "%s ", i18n (1033, "Incoming v8 server packet:"));
+        M_print (" " COLINDENT COLSERVER "%s ", i18n (1033, "Incoming v8 server packet:"));
         FlapPrint (pak);
-        M_print (ESC "»\r");
+        M_print (COLEXDENT "\r");
     }
     if (prG->verbose & DEB_PACK8SAVE)
         FlapSave (pak, TRUE);

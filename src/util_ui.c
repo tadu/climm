@@ -252,36 +252,16 @@ static void M_prints (const char *str)
                             str += 2;
                             break;
                         }
-                        switch (*++p)
+                        p++;
+                        if (*p >= '0' && *p <= '0' + CXCOUNT)
                         {
-                            case '0':
-                                printf ("%s", NOCOL);
-                                break;
-                            case '1':
-                                printf ("%s", SERVCOL);
-                                break;
-                            case '2':
-                                printf ("%s", CLIENTCOL);
-                                break;
-                            case '3':
-                                printf ("%s", MESSCOL);
-                                break;
-                            case '4':
-                                printf ("%s", CONTACTCOL);
-                                break;
-                            case '5':
-                                printf ("%s", SENTCOL);
-                                break;
-                            case '6':
-                                printf ("%s", ACKCOL);
-                                break;
-                            case '7':
-                                printf ("%s", ERRCOL);
-                                break;
-                            default:
-                                str--;
+                            if (prG->colors[*p - '0'])
+                                printf ("%s", prG->colors[*p - '0']);
+                            else
+                                /* FIXME */;
+                            str++;
                         }
-                        str += 2;
+                        str++;
                         break;
                     default:
                         s = strchr (p, 'm');

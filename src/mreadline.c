@@ -553,9 +553,9 @@ void R_resetprompt (void)
 {
     printf ("\r" ESC "[J");
     if (prG->flags & FLAG_UINPROMPT && uiG.last_sent_uin)
-        R_setpromptf (COLSERV "[%s]" COLNONE " ", ContactFindName (uiG.last_sent_uin));
+        R_setpromptf (COLSERVER "[%s]" COLNONE " ", ContactFindName (uiG.last_sent_uin));
     else
-        R_setpromptf (COLSERV "%s" COLNONE, i18n (1040, "mICQ> "));
+        R_setpromptf (COLSERVER "%s" COLNONE, i18n (1040, "mICQ> "));
 }
 
 /*

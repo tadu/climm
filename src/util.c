@@ -240,7 +240,7 @@ void Init_New_User (Session *sess)
             if (PacketReadAt2 (pak, 7) == SRV_NEW_UIN)
             {
                 sess->uin = PacketReadAt4 (pak, 13);
-                M_print (i18n (1760, "\nYour new UIN is %s%ld%s!\n"), COLSERV, sess->uin, COLNONE);
+                M_print (i18n (1760, "\nYour new UIN is %s%ld%s!\n"), COLSERVER, sess->uin, COLNONE);
                 return;
             }
         }

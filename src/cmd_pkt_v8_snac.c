@@ -200,10 +200,9 @@ static JUMP_SNAC_F(SnacSrvUnknown)
     if (!(prG->verbose & DEB_PACK8))
     {
         Time_Stamp ();
-        M_print (" " ESC "«");
-        M_print (" " ESC "«" COLSERV "%s ", i18n (1033, "Incoming v8 server packet:"));
+        M_print (" " COLINDENT COLSERVER "%s ", i18n (1033, "Incoming v8 server packet:"));
         FlapPrint (event->pak);
-        M_print (ESC "»\n");
+        M_print (COLEXDENT "\n");
     }
 }
 
@@ -600,7 +599,7 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
     Time_Stamp ();
     M_print (" ");
     M_print (i18n (1913, "Received server acknowledge for %s#%08lx:%08lx%s sent to %s%s%s.\n"),
-             COLSERV, mid1, mid2, COLNONE, COLCONTACT, ContactFindName (uin), COLNONE);
+             COLSERVER, mid1, mid2, COLNONE, COLCONTACT, ContactFindName (uin), COLNONE);
     log_event (uin, LOG_EVENT, "Received ACK for #%08lx%08lx to %s\n",
                mid1, mid2, ContactFindName (uin));
 }
@@ -717,7 +716,7 @@ static JUMP_SNAC_F(SnacSrvAuthreq)
     Time_Stamp ();
     M_print (i18n (1590, COLCONTACT "%10s" COLNONE " has requested your authorization to be added to their contact list.\n"),
              ContactFindName (uin));
-    M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (1591, "Reason:"), text);
+    M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1591, "Reason:"), text);
     free (text);
     if (prG->sound & SFLAG_CMD)
         ExecScript (prG->sound_cmd, uin, 0, NULL);
