@@ -9,6 +9,9 @@
 	* add CVS id to *.i18n files, change script to remove old strings
 	* rework prompt stuff: eliminate dead code, more sensibel names
 	* note in prompt number and nicks of messages received during auto-away
+	* allow selection of current connection, remove connections
+	* make colors customizable
+	* fix contact list download, improve contact command
 
 2002-08-17 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* auto-extend TLV array

@@ -20,7 +20,7 @@ various people:
  : add missing v8 pieces
  : server side contact list:
    + contact groups
-   + fix contact list download segfault
+   + fix contact list download segfault (fixed)
  : history of messages:
    + It would be nice to know just how many messages a person has sent while
      one was away - regarding the 'last' function. (fixed)

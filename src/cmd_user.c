@@ -64,6 +64,8 @@ static jump_t jump[] = {
     { &CmdUserVerbose,       "verbose",      NULL, 0,   0 },
     { &CmdUserIgnoreStatus,  "i",            NULL, 0,   0 },
     { &CmdUserStatusDetail,  "status",       NULL, 2,  10 },
+    { &CmdUserStatusDetail,  "ww",           NULL, 2,  10 },
+    { &CmdUserStatusDetail,  "ee",           NULL, 2,  11 },
     { &CmdUserStatusDetail,  "w",            NULL, 2,   4 },
     { &CmdUserStatusDetail,  "e",            NULL, 2,   5 },
     { &CmdUserStatusDetail,  "s",            NULL, 2,  20 },
@@ -1200,6 +1202,7 @@ static UDWORD __status (UDWORD status)
 /*
  * Shows the contact list in a very detailed way.
  *
+ * data & 16: show _only_ own status
  * data & 8: show only given nick
  * data & 4: show own status
  * data & 2: be verbose
@@ -1207,7 +1210,7 @@ static UDWORD __status (UDWORD status)
  */
 static JUMP_F(CmdUserStatusDetail)
 {
-    UDWORD uin = 0, i, lenuin = 0, lennick = 0, lenstat = 0, lenid = 0;
+    UDWORD uin = 0, i, lenuin = 0, lennick = 0, lenstat = 0, lenid = 0, totallen = 0;
     Contact *cont = NULL;
     UDWORD stati[] = { STATUS_OFFLINE, STATUS_DND,    STATUS_OCC, STATUS_NA,
                        STATUS_AWAY,    STATUS_ONLINE, STATUS_FFC, STATUSF_BIRTH };
@@ -1246,18 +1249,26 @@ static JUMP_F(CmdUserStatusDetail)
         }
         while (uin)
             lenuin++, uin /= 10;
+        totallen = 1 + lennick + 1 + lenstat + 2 + 1 + lenid + 2;
+        if (data & 2)
+            totallen += 1 + 3 + 1 + 1 + lenuin + 24;
     }
     if (data & 4)
     {
-        M_print (W_SEPERATOR);
         Time_Stamp ();
         M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", sess->uin);
         M_print (i18n (1071, "Your status is "));
         Print_Status (sess->status);
         M_print ("\n");
-        M_print (W_SEPERATOR);
         if (data & 16)
             return 0;
+    }
+    if (!uin)
+    {
+        M_print (COLMESSAGE);
+        for (i = totallen; i >= 20; i -= 20)
+            M_print ("====================");
+        M_print ("%.*s" COLNONE "\n", i, "====================");
     }
     for (i = data & 1; i < 8; i++)
     {
@@ -1281,14 +1292,15 @@ static JUMP_F(CmdUserStatusDetail)
                 verbuf[0] = '\0';
 
             if (data & 2)
-                M_print (COLSERVER "%c%c%c%d" COLNONE " %*ld",
+                M_print (COLSERVER "%c%c%c%1.1d" COLNONE " %*ld",
                      cont->flags & CONT_TEMPORARY ? '#' : ' ',
                      cont->flags & CONT_INTIMATE  ? '*' :
                       cont->flags & CONT_HIDEFROM ? '-' : ' ',
                      cont->flags & CONT_IGNORE    ? '^' : ' ',
                      cont->TCP_version, lenuin, cont->uin);
 
-            M_print ("%c" COLCONTACT "%-*s" COLNONE " " COLMESSAGE "%-*s" COLNONE " %-*s %s",
+            M_print (COLCONTACT "%c%-*s" COLNONE " " COLMESSAGE "%-*s" COLNONE " %-*s %s",
+                     data & 2                     ? ' ' :
                      cont->flags & CONT_TEMPORARY ? '#' :
                      cont->flags & CONT_INTIMATE  ? '*' :
                      cont->flags & CONT_HIDEFROM  ? '-' :
@@ -1308,6 +1320,10 @@ static JUMP_F(CmdUserStatusDetail)
             }
         }
     }
+    M_print (COLMESSAGE);
+    for (i = totallen; i >= 20; i -= 20)
+        M_print ("====================");
+    M_print ("%.*s" COLNONE "\n", i, "====================");
     return 0;
 }
 
