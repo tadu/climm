@@ -191,7 +191,7 @@ int i18nOpen (const char *loc, UBYTE enc)
  */
 static int i18nAdd (FILE *i18nf, int debug, int *res)
 {
-    char buf[2048];
+    char *line;
     int j = 0;
     UBYTE enc = 0;
     
@@ -200,12 +200,12 @@ static int i18nAdd (FILE *i18nf, int debug, int *res)
         i18nClose ();
         *res = 0;
     }
-    while (M_fdnreadln (i18nf, buf, sizeof (buf)) != -1)
+    while ((line = UtilIOReadline (i18nf)))
     {
         int i;
         char *p;
 
-        i = strtol (buf, &p, 10) - i18nOffset;
+        i = strtol (line, &p, 10) - i18nOffset;
 
         if (i == 7 || !i)
         {
@@ -218,10 +218,10 @@ static int i18nAdd (FILE *i18nf, int debug, int *res)
                 prG->enc_loc = ENC_AUTO | enc;
         }
 
-        if (p == buf || i < 0 || i >= i18nSLOTS || i18nStrings[i])
+        if (p == line || i < 0 || i >= i18nSLOTS || i18nStrings[i])
             continue;
         
-        p = debug ? buf : p + 1;
+        p = debug ? line : p + 1;
 #ifdef ENABLE_UTF8
         i18nStrings[i] = p = strdup (ConvToUTF8 (p, enc ? enc : ENC_LATIN1, -1, 0));
 #else

@@ -294,16 +294,14 @@ void FlapCliIdent (Connection *conn)
 #ifdef __BEOS__
         M_print (i18n (2063, "You need to save your password in your ~/.micq/micqrc file.\n"));
 #else
-        char pwd[20];
-        pwd[0] = '\0';
         M_printf ("%s ", i18n (1063, "Enter password:"));
         Echo_Off ();
-        M_fdnreadln (stdin, pwd, sizeof (pwd));
+        f = UtilIOReadline (stdin);
         Echo_On ();
 #ifdef ENABLE_UTF8
-        conn->passwd = strdup (ConvToUTF8 (pwd, prG->enc_loc, -1, 0));
+        conn->passwd = strdup (f ? ConvToUTF8 (f, prG->enc_loc, -1, 0) : "");
 #else
-        conn->passwd = strdup (pwd);
+        conn->passwd = strdup (f ? f : "");
 #endif
 #endif
     }
