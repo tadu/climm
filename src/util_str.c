@@ -14,6 +14,7 @@
 #include <arpa/inet.h>
 #endif
 #include <string.h>
+#include <ctype.h>
 #include "util_str.h"
 #include "preferences.h"
 #include "contact.h"
@@ -33,6 +34,38 @@ const char *s_sprintf (const char *fmt, ...)
     va_end (args);
 
     return buf;
+}
+
+/*
+ * Appends to a dynamically allocated string.
+ */
+char *s_catf (char *str, UDWORD *size, const char *fmt, ...)
+{
+    va_list args;
+    UDWORD nsize;
+    char *nstr;
+    
+    if (!str)
+        str = strdup ("");
+    if (!size)
+        return str;
+    
+    nsize = strlen (nstr = str) + 1024;
+    if (nsize > *size)
+        nstr = realloc (str, nsize);
+    if (nstr)
+        *size = nsize;
+    else
+    {
+        nstr = str;
+        nsize = *size;
+    }
+    
+    va_start (args, fmt);
+    vsnprintf (nstr + strlen (nstr), nsize - strlen (nstr), fmt, args);
+    va_end (args);
+    
+    return nstr;
 }
 
 /*
@@ -139,6 +172,109 @@ const char *s_msgtok (char *txt)
     else
     {
         str = NULL;
+    }
+    return t;
+}
+
+/*
+ * Hex dump to a string with ASCII.
+ */
+const char *s_dump (const char *data, UWORD len)
+{
+    static char *t = NULL;
+    static UDWORD size = 0;
+    UDWORD i, off;
+    const unsigned char *d = data;
+    
+    if (t)
+        *t = 0;
+    while (len >= 16)
+    {
+        t = s_catf (t, &size, "%02x %02x %02x %02x %02x %02x %02x %02x  "
+                              "%02x %02x %02x %02x %02x %02x %02x %02x  ",
+                    d[0], d[1],  d[2],  d[3],  d[4],  d[5],  d[6],  d[7],
+                    d[8], d[9], d[10], d[11], d[12], d[13], d[14], d[15]);
+        t = s_catf (t, &size, "'%c%c%c%c%c%c%c%c %c%c%c%c%c%c%c%c'\n",
+                    isalnum  (d[0]) ?  d[0] : '.', isalnum  (d[1]) ?  d[1] : '.',
+                    isalnum  (d[2]) ?  d[2] : '.', isalnum  (d[3]) ?  d[3] : '.',
+                    isalnum  (d[4]) ?  d[4] : '.', isalnum  (d[5]) ?  d[5] : '.',
+                    isalnum  (d[6]) ?  d[6] : '.', isalnum  (d[7]) ?  d[7] : '.',
+                    isalnum  (d[8]) ?  d[8] : '.', isalnum  (d[9]) ?  d[9] : '.',
+                    isalnum (d[10]) ? d[10] : '.', isalnum (d[11]) ? d[11] : '.',
+                    isalnum (d[12]) ? d[12] : '.', isalnum (d[13]) ? d[13] : '.',
+                    isalnum (d[14]) ? d[14] : '.', isalnum (d[15]) ? d[15] : '.');
+        len -= 16;
+        d += 16;
+    }
+    if (!len)
+        return (t);
+    for (off = i = 0; i <= 16; i++)
+    {
+        if (len)
+        {
+            t = s_catf (t, &size, "%02x ", *d++);
+            len--;
+            off++;
+        }
+        else if (i != 16)
+            t = s_catf (t, &size, "   ");
+        if (i == 7)
+            t = s_catf (t, &size, " ");
+        
+    }
+    t = s_catf (t, &size, " '");
+    while (off)
+    {
+        t = s_catf (t, &size, "%c", isalnum (*(d - off)) ? *(d - off) : '.');
+        off--;
+    }
+    t = s_catf (t, &size, "'\n");
+    return t;
+}
+
+/*
+ * Hex dump to a string without ASCII.
+ */
+const char *s_dumpnd (const char *data, UWORD len)
+{
+    static char *t = NULL;
+    static UDWORD size = 0;
+    UDWORD i;
+    const unsigned char *d = data;
+    
+    if (t)
+        *t = 0;
+    while (len > 16)
+    {
+        t = s_catf (t, &size, "%02x %02x %02x %02x %02x %02x %02x %02x  "
+                              "%02x %02x %02x %02x %02x %02x %02x %02x\\\n",
+                    d[0], d[1],  d[2],  d[3],  d[4],  d[5],  d[6],  d[7],
+                    d[8], d[9], d[10], d[11], d[12], d[13], d[14], d[15]);
+        len -= 16;
+        d += 16;
+    }
+    if (len > 10)
+    {
+        for (i = 0; i < len--; i++)
+        {
+            t = s_catf (t, &size, "%02x ", *d++);
+            if (i == 7)
+                t = s_catf (t, &size, " ");
+        }
+        t = s_catf (t, &size, "\n                               ");
+        return t;
+    }
+    for (i = 0; i < 10; i++)
+    {
+        if (len)
+        {
+            t = s_catf (t, &size, "%02x ", *d++);
+            len--;
+        }
+        else
+            t = s_catf (t, &size, "   ");
+        if (i == 7)
+            t = s_catf (t, &size, " ");
     }
     return t;
 }
