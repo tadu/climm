@@ -1313,7 +1313,9 @@ static int TCPSendMsgAck (Session *sess, UWORD seq, UWORD sub_cmd, BOOL accept)
         case TCP_MSG_GET_NA:    msg = prG->auto_na;   break;
         case TCP_MSG_GET_DND:   msg = prG->auto_dnd;  break;
         case TCP_MSG_GET_FFC:   msg = prG->auto_ffc;  break;
-        case TCP_MSG_GET_VER:   msg = "...";          break;
+        case TCP_MSG_GET_VER:
+            msg = "mICQ " VERSION " " __DATE__ " " __TIME__;
+            break;
         default:
             if (sess->status & STATUSF_DND)
                 msg = prG->auto_dnd;
