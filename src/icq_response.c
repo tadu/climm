@@ -168,50 +168,53 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
             free (q);
             break;
         case INT_MSGTRY_TYPE2:
-            line = s_sprintf ("%s%s %s", i18n (2293, "--="), COLSINGLE, text);
+            line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", i18n (2293, "--="), COLSINGLE, text);
             break;
         case INT_MSGTRY_DC:
-            line = s_sprintf ("%s%s %s", i18n (2294, "==="), COLSINGLE, text);
+            line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", i18n (2294, "==="), COLSINGLE, text);
             break;
         case INT_MSGACK_TYPE2:
             col = COLACK;
-            line = s_sprintf ("%s%s %s", MSGTYPE2ACKSTR, COLSINGLE, text);
+            line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", MSGTYPE2ACKSTR, COLSINGLE, text);
             break;
         case INT_MSGACK_DC:
             col = COLACK;
-            line = s_sprintf ("%s%s %s", MSGTCPACKSTR, COLSINGLE, text);
+            line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", MSGTCPACKSTR, COLSINGLE, text);
             break;
 #ifdef ENABLE_SSL
         case INT_MSGACK_SSL:
             col = COLACK;
-            line = s_sprintf ("%s%s %s", MSGSSLACKSTR, COLSINGLE, text);
+            line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", MSGSSLACKSTR, COLSINGLE, text);
             break;
 #endif
         case INT_MSGACK_V8:
         case INT_MSGACK_V5:
             col = COLACK;
-            line = s_sprintf ("%s%s %s", MSGICQACKSTR, COLSINGLE, text);
+            line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", MSGICQACKSTR, COLSINGLE, text);
             break;
         default:
             line = "";
     }
 
-    if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || !cont->group))
-        rl_printf ("(%s) ", s_status (tstatus));
-    
-    rl_printf ("%s ", s_time (&stamp));
-    if (cont)
-        rl_printf ("%s%*s%s ", col, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-    
-    if (prG->verbose > 1)
-        rl_printf ("<%d> ", type);
+    if (line)
+    {
+        if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || !cont->group))
+            rl_printf ("(%s) ", s_status (tstatus));
+        
+        rl_printf ("%s ", s_time (&stamp));
+        if (cont)
+            rl_printf ("%s%*s%s ", col, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+        
+        if (prG->verbose > 1)
+            rl_printf ("<%d> ", type);
 
-    for (p = q = strdup (line); *q; q++)
-        if (*q == (char)0xfe)
-            *q = '*';
-    rl_print (p);
-    rl_print ("\n");
-    free (p);
+        for (p = q = strdup (line); *q; q++)
+            if (*q == (char)0xfe)
+                *q = '*';
+        rl_print (p);
+        rl_print ("\n");
+        free (p);
+    }
 
     OptD (opt);
     HistMsg (conn, cont, stamp == NOW ? time (NULL) : stamp, text, HIST_OUT);
