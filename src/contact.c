@@ -936,7 +936,7 @@ void ContactSetCap (Contact *cont, Cap *cap)
         UBYTE ver;
         
         ver = cap->var[15];
-        if (ver >> 6) /* SchlIMm */
+        if (ver >> 6) /* old SIM */
         {
             cont->v1 = (ver >> 6) - 1;
             cont->v2 = ver & 0x1f;
@@ -944,7 +944,7 @@ void ContactSetCap (Contact *cont, Cap *cap)
             if (ver <= 0x48)
                 cont->caps &= ~(1 << CAP_UTF8);
         }
-        else /* KOtzPEKE */
+        else /* old KOPETE */
         {
             cont->v1 = 0;
             cont->v3 = ver & 0x1f;
@@ -953,7 +953,7 @@ void ContactSetCap (Contact *cont, Cap *cap)
                 cont->caps &= ~(1 << CAP_UTF8);
         }
     }
-    else if (cap->var && (cap->id == CAP_MICQ || cap->id == CAP_SIMNEW))
+    else if (cap->var && (cap->id == CAP_MICQ || cap->id == CAP_SIMNEW || cap->id == CAP_KOPETE))
     {
         cont->v1 = cap->var[12];
         cont->v2 = cap->var[13];
@@ -981,7 +981,8 @@ void ContactSetVersion (Contact *cont)
     
     ver = dc->id1 & 0xffff;
     
-    if (!HAS_CAP (cont->caps, CAP_SIM) && !HAS_CAP (cont->caps, CAP_MICQ) && !HAS_CAP (cont->caps, CAP_SIMNEW))
+    if (!HAS_CAP (cont->caps, CAP_SIM) && !HAS_CAP (cont->caps, CAP_MICQ)
+        && !HAS_CAP (cont->caps, CAP_SIMNEW) && !HAS_CAP (cont->caps, CAP_KOPETE))
         cont->v1 = cont->v2 = cont->v3 = cont->v4 = 0;
 
     if ((dc->id1 & 0xff7f0000) == BUILD_LICQ && ver > 1000)
@@ -1100,6 +1101,8 @@ void ContactSetVersion (Contact *cont)
     }
     else if (HAS_CAP (cont->caps, CAP_SIMNEW))
         new = "SIM";
+    else if (HAS_CAP (cont->caps, CAP_KOPETE))
+        new = "Kopete";
     else if (dc->id1 == dc->id2 && dc->id2 == dc->id3 && dc->id1 == -1)
         new = "vICQ/GAIM(?)";
     else if (dc->version == 7 && HAS_CAP (cont->caps, CAP_IS_WEB))

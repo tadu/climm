@@ -67,6 +67,7 @@ static Cap caps[CAP_MAX] =
     { CAP_MACICQ,      16, "\xdd\x16\xf2\x02\x84\xe6\x11\xd4\x90\xdb\x00\x10\x4b\x9b\x4b\x7d", "CAP_MACICQ",      NULL },
     { CAP_MICQ,        12, "mICQ \xa9 R.K. \x00\x00\x00\x00",   "CAP_MICQ",        NULL },
     { CAP_KXICQ,       16, "\x09\x49\x13\x44" cap_mid cap_id,   "CAP_KXICQ",       NULL },
+    { CAP_KOPETE,      12, "Kopete ICQ  \x00\x00\x00\x00",      "CAP_KOPETE",      NULL },
     { 0, 0, NULL, NULL, NULL }
 };
 
