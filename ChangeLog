@@ -1,4 +1,7 @@
 
+2002-06-03 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Fix Russian/Japanese.
+
 2002-05-25 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* tcp.c: s/TYPE_PEER/TYPE_LISTEN; get rid of assert()s; mem leaks;
 	  timeout fixes; more #define cleanup; more gratious on changed

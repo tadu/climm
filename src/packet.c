@@ -352,7 +352,7 @@ void PacketReadData (Packet *pak, char *buf, UWORD len)
 char *PacketReadStrB (Packet *pak)
 {
     UWORD len;
-    char *str;
+    char *str, *t;
     
     len = PacketReadB2 (pak);
 
@@ -361,7 +361,9 @@ char *PacketReadStrB (Packet *pak)
     
     PacketReadData (pak, str, len);
     str[len] = '\0';
-    ConvWinUnix (str);
+    
+    for (t = str; t - str < len; t+= strlen (t) + 1)
+        ConvWinUnix (t);
 
     return str;
 }

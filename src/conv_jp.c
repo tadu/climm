@@ -19,7 +19,7 @@
 /*********************************
  Shift-JIS(Win) -> EUC(Unix)
 *********************************/
-void ConvSjisEuc (unsigned char *pszDest)
+void ConvSjisEuc (char *pszDest)
 {
     unsigned char *psz1st;
     unsigned char *psz2nd;
@@ -102,7 +102,7 @@ void ConvSjisEuc (unsigned char *pszDest)
 /*********************************
  EUC(Unix) -> Shift-JIS(Win)
 *********************************/
-void ConvEucSjis (unsigned char *pszDest)
+void ConvEucSjis (char *pszDest)
 {
     unsigned char *psz1st;
     unsigned char *psz2nd;
