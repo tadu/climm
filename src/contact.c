@@ -55,10 +55,12 @@ void ContactRem (UDWORD uin)
             break;
     if (i == cnt_number)
         return;
-    for (j = i + 1; cnt_contacts[j].uin; j++)
-        ;
-    cnt_contacts[i] = cnt_contacts[j];
-    cnt_contacts[j].uin = 0;
+    cnt_number--;
+    while (i < cnt_number)
+    {
+        cnt_contacts[i] = cnt_contacts[i + 1];
+        i++;
+    }
 }
 
 /*

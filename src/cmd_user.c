@@ -2006,7 +2006,7 @@ static JUMP_F(CmdUserRem)
     if (arg1)
     {
         uin = ContactFindByNick (arg1);
-        if (uin <= 0)
+        if (uin == -1)
             M_print (i18n (1750, "Nick %s not in contact list.\n"), arg1);
         else
         {
