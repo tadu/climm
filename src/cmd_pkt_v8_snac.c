@@ -515,7 +515,7 @@ static JUMP_SNAC_F(SnacSrvIcbmerr)
     if (err == 0xe)
     {
         if (event->pak->id == 0x1771)
-            M_print (i18n (2017, "The user is invisible.\n"));
+            M_print (i18n (2017, "The user is online, but possibly invisible.\n"));
         else
             M_print (i18n (2189, "Malformed instant message packet refused by server.\n"));
     }
