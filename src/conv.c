@@ -85,6 +85,7 @@ char ConvSep ()
     return conv = ConvFromUTF8 (ConvToUTF8 ("\xfe", prG->enc_rem), prG->enc_loc)[0];
 }
 
+#ifdef ENABLE_UTF8
 /*
  * Convert a single unicode code point to UTF-8
  */
@@ -505,3 +506,4 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
 }
 
 #endif /* ENABLE_ICONV */
+#endif /* ENABLE_UTF8 */

@@ -8,23 +8,18 @@
  */
 
 #include "micq.h"
+#include <string.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include "i18n.h"
 #include "util.h"
 #include "util_ui.h"
 #include "util_io.h"
 #include "preferences.h"
 #include "util_str.h"
-#include <string.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-
-#ifdef ENABLE_UTF8
 #include "conv.h"
-#else
-#define ConvToUTF8(in,enc) in
-#endif
 
 /* use numbers 1000 ... 2999 */
 #define i18nSLOTS  2000
