@@ -138,6 +138,7 @@ BOOL          ContactMetaLoad   (Contact *cont);
 #define CONT_TEMPORARY  8UL /* no status display for this contact. */
 #define CONT_ALIAS     16UL /* is an alias entry. */
 #define CONT_SEENAUTO  32UL /* has seen auto response. */
+#define CONT_ISEDITED  64UL /* meta data was edited by hand. */
 
 #define UPF_GENERAL_A   0x0001
 #define UPF_GENERAL_B   0x0002
