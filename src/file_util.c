@@ -1,6 +1,7 @@
 /* $Id$ */
 /* Copyright: This file may be distributed under version 2 of the GPL licence. */
 
+#include "micq.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -28,7 +29,6 @@
 #include <arpa/inet.h>
 #endif
 
-#include "micq.h"
 #include "buildmark.h"
 #include "util_ui.h"
 #include "file_util.h"

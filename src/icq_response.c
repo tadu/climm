@@ -612,7 +612,8 @@ void IMOffline (Contact *cont, Connection *conn)
 void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UWORD type, const char *text, Extra *extra)
 {
     const char *line;
-    const char *col = COLCONTACT; 
+    const char *col = COLCONTACT;
+    char *p, *q;
 
     if (cont)
     {
@@ -665,14 +666,19 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
 
     if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
         M_printf ("(%s) ", s_status (tstatus));
-
+    
     M_printf ("%s ", s_time (&stamp));
     if (cont)
         M_printf ("%s%*s" COLNONE " ", col, uiG.nick_len + s_delta (cont->nick), cont->nick);
     
     if (prG->verbose > 1)
         M_printf ("<%d> ", type);
-    M_print (line);
+
+    for (p = q = strdup (line); *q; q++)
+        if (*q == (char)0xfe)
+            *q = '*';
+    M_print (p);
+    free (p);
 
     ExtraD (extra);
 }    

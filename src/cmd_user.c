@@ -1307,6 +1307,8 @@ static JUMP_F (CmdUserResend)
     while (1)
     {
         IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, uiG.last_message_sent_type, uiG.last_message_sent));
+        uiG.last_sent_uin = cont->uin;
+
         if (*args == ',')
             args++;
         if (!s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
@@ -1438,11 +1440,14 @@ static JUMP_F (CmdUserMessageNG)
             arg1 = NULL;
         if (arg1 && (arg1[strlen (arg1) - 1] != '\\'))
         {
+            s_repl (&uiG.last_message_sent, arg1);
+            uiG.last_message_sent_type = MSG_NORM;
             for (i = 0; uinlist[i]; i++)
             {
                 if (!(cont = ContactUIN (conn, uinlist[i])))
                     continue;
                 IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_NORM, arg1));
+                uiG.last_sent_uin = cont->uin;
                 TabAddUIN (cont->uin);
             }
             return 0;
@@ -1468,11 +1473,14 @@ static JUMP_F (CmdUserMessageNG)
             arg1 = msg + strlen (msg) - 1;
             while (*msg && strchr ("\r\n\t ", *arg1))
                 *arg1-- = '\0';
+            s_repl (&uiG.last_message_sent, msg);
+            uiG.last_message_sent_type = MSG_NORM;
             for (i = 0; uinlist[i]; i++)
             {
                 if (!(cont = ContactUIN (conn, uinlist[i])))
                     continue;
                 IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_NORM, msg));
+                uiG.last_sent_uin = cont->uin;
                 TabAddUIN (cont->uin);
             }
             return 0;
@@ -2946,6 +2954,7 @@ static JUMP_F(CmdUserSave)
 static JUMP_F(CmdUserURL)
 {
     char *url, *msg;
+    const char *cmsg;
     Contact *cont = NULL;
     OPENCONN;
 
@@ -2966,8 +2975,12 @@ static JUMP_F(CmdUserURL)
     if (!s_parserem (&args, &msg))
         msg = "";
 
-    IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_URL,
-              s_sprintf ("%s%c%s", msg, ConvSep (), url)));
+    cmsg = s_sprintf ("%s%c%s", msg, ConvSep (), url);
+    s_repl (&uiG.last_message_sent, cmsg);
+    uiG.last_message_sent_type = MSG_URL;
+    uiG.last_sent_uin = cont->uin;
+
+    IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_URL, cmsg));
 
     free (url);
     return 0;
