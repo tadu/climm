@@ -660,7 +660,7 @@ static JUMP_F(CmdUserPeek)
         if (*args == ',')
             args++;
 
-        SnacCliSendmsg2 (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, MSG_GET_PEEK, 0));
+        SnacCliSendmsg2 (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, MSG_GET_PEEK, CO_MSGTEXT, "", 0));
     }
     return 0;
 }
