@@ -2,7 +2,7 @@
 
 aclocal && \
 (autoheader || autoheader-2.50) && \
-automake -ac && \
+(automake -ac || automake -a) && \
 (autoconf || autoconf-2.50) && \
 echo "Maintainer scripts ran fine." || \
 echo "Maintainer scripts failed."
