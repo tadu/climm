@@ -36,7 +36,7 @@ void TabAddUIN (UDWORD uin)
 {
     int found;
 
-    if (!ContactFind (NULL, 0, uin, NULL, 0))
+    if (!ContactFind (NULL, 0, uin, NULL))
         return ;
 
     for (found = 0; found < TAB_SLOTS; found++)

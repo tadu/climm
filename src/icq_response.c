@@ -514,7 +514,7 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
     
     putlog (conn, NOW, cont, status, ~old ? LOG_CHANGE : LOG_ONLINE, 0xFFFF, "");
  
-    if (((cont->oldflags & CONT_TEMPORARY) && ContactPref (cont, CO_IGNORE))
+    if ((cont->group == conn->noncontacts) || ContactPref (cont, CO_IGNORE)
         || (prG->flags & FLAG_ULTRAQUIET)
         || ((prG->flags & FLAG_QUIET) && (old != STATUS_OFFLINE))
         || (~conn->connect & CONNECT_OK))
@@ -567,7 +567,7 @@ void IMOffline (Contact *cont, Connection *conn)
     cont->status = STATUS_OFFLINE;
     cont->seen_time = time (NULL);
 
-    if (cont->oldflags & CONT_TEMPORARY || ContactPref (cont, CO_IGNORE) || (prG->flags & FLAG_ULTRAQUIET))
+    if ((cont->group == conn->noncontacts) || ContactPref (cont, CO_IGNORE) || (prG->flags & FLAG_ULTRAQUIET))
         return;
 
     if (prG->event_cmd && *prG->event_cmd)
@@ -594,7 +594,7 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
 
     if (cont)
     {
-        if (ContactPref (cont, CO_IGNORE) || ((cont->oldflags & CONT_TEMPORARY) && (prG->flags & FLAG_HERMIT)))
+        if (ContactPref (cont, CO_IGNORE) || ((cont->group == conn->noncontacts) && (prG->flags & FLAG_HERMIT)))
         {
             ExtraD (extra);
             return;
@@ -641,7 +641,7 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
             line = s_sprintf ("\n");
     }
 
-    if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || cont->oldflags & CONT_TEMPORARY))
+    if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || cont->group == conn->noncontacts))
         M_printf ("(%s) ", s_status (tstatus));
     
     M_printf ("%s ", s_time (&stamp));
@@ -749,7 +749,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
         e_msg_type == MSG_AUTH_ADDED ? LOG_ADDED : LOG_RECVD, e_msg_type,
         cdata);
     
-    if (ContactPref (cont, CO_IGNORE) || ((cont->oldflags & CONT_TEMPORARY) && (prG->flags & FLAG_HERMIT)))
+    if (ContactPref (cont, CO_IGNORE) || ((cont->group == conn->noncontacts) && (prG->flags & FLAG_HERMIT)))
     {
         ExtraD (extra);
         return;
@@ -785,7 +785,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
 #endif
     M_printf ("\a%s " COLINCOMING "%*s" COLNONE " ", s_time (&stamp), uiG.nick_len + s_delta (cont->nick), cont->nick);
     
-    if ((e = ExtraFind (extra, EXTRA_STATUS)) && (!cont || cont->status != e->data || cont->oldflags & CONT_TEMPORARY))
+    if ((e = ExtraFind (extra, EXTRA_STATUS)) && (!cont || cont->status != e->data || cont->group == conn->noncontacts))
         M_printf ("(%s) ", s_status (e->data));
 
     if (prG->verbose > 1)

@@ -651,7 +651,7 @@ BOOL s_parsenick_s (const char **input, Contact **parsed, const char *sep, Conne
     t = NULL;
     if (s_parse_s (&p, &t, sep))
     {
-        *parsed = ContactFind (serv->contacts, 0, 0, t, 0);
+        *parsed = ContactFind (serv->contacts, 0, 0, t);
         if (*parsed)
         {
             *input = p;

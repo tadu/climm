@@ -118,7 +118,8 @@ void          ContactGroupD       (ContactGroup *group);
 
 /* NULL ContactGroup accesses global list */
 Contact      *ContactIndex        (ContactGroup *group, int i);
-Contact      *ContactFind         (ContactGroup *group, UWORD id, UDWORD uin, const char *nick, BOOL create);
+Contact      *ContactFind         (ContactGroup *group, UWORD id, UDWORD uin, const char *nick);
+Contact      *ContactFindCreate   (ContactGroup *group, UWORD id, UDWORD uin, const char *nick);
 BOOL          ContactAdd          (ContactGroup *group, Contact *cont);
 BOOL          ContactRem          (ContactGroup *group, Contact *cont);
 void          ContactD            (Contact *cont);
@@ -135,7 +136,7 @@ BOOL          ContactMetaLoad     (Contact *cont);
 
 const char   *ContactPref         (Contact *cont, UWORD flag);
 
-#define ContactUIN(conn,uin)   ContactFind ((conn)->contacts, 0, uin, NULL, 1)
+#define ContactUIN(conn,uin)   ContactFindCreate ((conn)->contacts, 0, uin, NULL)
 
 #define CONTACT_GENERAL(cont)  ((cont)->meta_general  ? (cont)->meta_general  : ((cont)->meta_general  = calloc (1, sizeof (MetaGeneral))))
 #define CONTACT_WORK(cont)     ((cont)->meta_work     ? (cont)->meta_work     : ((cont)->meta_work     = calloc (1, sizeof (MetaWork))))
@@ -146,7 +147,6 @@ const char   *ContactPref         (Contact *cont, UWORD flag);
 
 #define CONT_UTF8(cont,mt) (((cont)->caps & (1 << CAP_UTF8)) && (((mt) == 1) || ((cont)->caps & (1 << CAP_MICQ))))
 
-#define CONT_TEMPORARY  8UL /* no status display for this contact. */
 #define CONT_SEENAUTO  32UL /* has seen auto response. */
 #define CONT_ISEDITED  64UL /* meta data was edited by hand. */
 

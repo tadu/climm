@@ -541,13 +541,7 @@ static JUMP_SNAC_F(SnacSrvUseronline)
     TLV *tlv;
     
     pak = event->pak;
-    cont = ContactFind (event->conn->contacts, 0, PacketReadUIN (pak), NULL, 0);
-    if (!cont)
-    {
-        if (prG->verbose & DEB_PROTOCOL)
-            M_print (i18n (1908, "Received USERONLINE packet for non-contact.\n"));
-        return;
-    }
+    cont = ContactUIN (event->conn, PacketReadUIN (pak));
 
     PacketReadB2 (pak);
     PacketReadB2 (pak);
@@ -601,13 +595,8 @@ static JUMP_SNAC_F(SnacSrvUseroffline)
     Packet *pak;
     
     pak = event->pak;
-    cont = ContactFind (event->conn->contacts, 0, PacketReadUIN (pak), NULL, 0);
-    if (!cont)
-    {
-        if (prG->verbose & DEB_PROTOCOL)
-            M_print (i18n (1909, "Received USEROFFLINE packet for non-contact.\n"));
-        return;
-    }
+    cont = ContactUIN (event->conn, PacketReadUIN (pak));
+
     IMOffline (cont, event->conn);
 }
 
@@ -1091,17 +1080,16 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
                 switch (data)
                 {
                     case 3:
-                        if (j != (UWORD)-1 || !(cont = ContactFind (event->conn->contacts, 0, atoi (name), NULL, 0))
-                                           || cont->oldflags & CONT_TEMPORARY)
+                        if (j != (UWORD)-1 || !(cont = ContactFind (event->conn->contacts, 0, atoi (name), NULL)))
                         {
-                            cont = ContactFind (event->conn->contacts, id, atoi (name), nick, 1);
+                            cont = ContactFindCreate (event->conn->contacts, id, atoi (name), nick);
                             SnacCliAddcontact (event->conn, cont);
                             k++;
                         }
                         if (!cont)
                             break;
-                        if (!ContactFind (event->conn->contacts, 0, atoi (name), nick, 0))
-                            ContactFind (event->conn->contacts, id, atoi (name), nick, 1);
+                        if (!ContactFind (event->conn->contacts, 0, atoi (name), nick))
+                            ContactFindCreate (event->conn->contacts, id, atoi (name), nick);
                         cont->id = id;   /* FIXME: should be in ContactGroup? */
                         if (type == 2)
                         {
@@ -1115,7 +1103,7 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
                         }
                         else if (type == 14)
                             ContactOptionsSet (&cont->copts, CO_IGNORE, "+");
-                        if (!ContactFind (cg, 0, cont->uin, NULL, 0))
+                        if (!ContactFind (cg, 0, cont->uin, NULL))
                         {
                             ContactAdd (cg, cont);
                             l++;
@@ -1123,8 +1111,7 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
                         M_printf (" #%d %10d %s\n", id, atoi (name), nick);
                         break;
                     case 2:
-                        if ((cont = ContactFind (event->conn->contacts, id, atoi (name), nick, 0))
-                            && ~cont->oldflags & CONT_TEMPORARY)
+                        if ((cont = ContactFind (event->conn->contacts, id, atoi (name), nick)))
                             break;
                     case 1:
                         M_printf (" #%08d %10d %s\n", id, atoi (name), nick);
@@ -1240,17 +1227,16 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                 switch (data)
                 {
                     case 3:
-                        if (j != (UWORD)-1 || !(cont = ContactFind (event->conn->contacts, 0, atoi (name), NULL, 0))
-                                           || cont->oldflags & CONT_TEMPORARY)
+                        if (j != (UWORD)-1 || !(cont = ContactFind (event->conn->contacts, 0, atoi (name), NULL)))
                         {
-                            cont = ContactFind (event->conn->contacts, id, atoi (name), nick, 1);
+                            cont = ContactFindCreate (event->conn->contacts, id, atoi (name), nick);
                             SnacCliAddcontact (event->conn, cont);
                             k++;
                         }
                         if (!cont)
                             break;
-                        if (!ContactFind (event->conn->contacts, 0, atoi (name), nick, 0))
-                            ContactFind (event->conn->contacts, id, atoi (name), nick, 1);
+                        if (!ContactFind (event->conn->contacts, 0, atoi (name), nick))
+                            ContactFindCreate (event->conn->contacts, id, atoi (name), nick);
                         cont->id = id;   /* FIXME: should be in ContactGroup? */
                         if (type == 2)
                         {
@@ -1264,7 +1250,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                         }
                         else if (type == 14)
                             ContactOptionsSet (&cont->copts, CO_IGNORE, "+");
-                        if (!ContactFind (cg, 0, cont->uin, NULL, 0))
+                        if (!ContactFind (cg, 0, cont->uin, NULL))
                         {
                             ContactAdd (cg, cont);
                             l++;
@@ -1272,8 +1258,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                         M_printf (" #%d %10d %s\n", id, atoi (name), nick);
                         break;
                     case 2:
-                        if ((cont = ContactFind (event->conn->contacts, id, atoi (name), nick, 0))
-                            && !~cont->oldflags & CONT_TEMPORARY)
+                        if ((cont = ContactFind (event->conn->contacts, id, atoi (name), nick)))
                             break;
                     case 1:
                         M_printf (" #%08d %10d %s\n", id, atoi (name), nick);

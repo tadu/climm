@@ -239,11 +239,11 @@ Contact *ContactIndex (ContactGroup *group, int i)
 }
 
 /*
- * Finds a contact on a contact group, possibly creating it
+ * Finds a contact on a contact group
  */
-Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nick, BOOL create)
+Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nick)
 {
-    ContactGroup *tmp, *fr = NULL;
+    ContactGroup *tmp;
     ContactAlias *ca;
     Contact *cont;
     int i;
@@ -251,78 +251,82 @@ Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nic
     if (!group && !cnt_groups)
         ContactGroupInit ();
 
-    if (nick && create)
+    for (tmp = group ? group : CONTACTGROUP_GLOBAL; tmp; tmp = tmp->more)
     {
-        assert (id || uin);
-        if ((cont = ContactFind (group, id, uin, NULL, 0)))
+        for (i = 0; i < tmp->used; i++)
         {
-            if (cont->oldflags & CONT_TEMPORARY)
+            cont = tmp->contacts[i];
+            if ((!uin  || uin == cont->uin) &&
+                (!id   || id == cont->id))
             {
-                s_repl (&cont->nick, nick);
-                cont->group = group ? group : CONTACTGROUP_GLOBAL;
-                cont->oldflags &= ~CONT_TEMPORARY;
-                Debug (DEB_CONTACT, "new   #%d %ld '%s' %p in %p was temporary", id, uin, nick, cont, group);
-                return cont;
-            }
-            ContactAddAlias (cont, nick);
-            return cont;
-        }
-    }
-
-    {
-        for (tmp = group ? group : CONTACTGROUP_GLOBAL; tmp; tmp = tmp->more)
-        {
-            if (tmp->used < MAX_ENTRIES)
-                fr = tmp;
-            for (i = 0; i < tmp->used; i++)
-            {
-                cont = tmp->contacts[i];
-                if ((!uin  || uin == cont->uin) &&
-                    (!id   || id == cont->id))
-                {
-                    if (!nick || !strcmp (nick, cont->nick))
+                if (!nick || !strcmp (nick, cont->nick))
+                    return cont;
+                for (ca = cont->alias; ca; ca = ca->more)
+                    if (!strcmp (nick, ca->alias))
                         return cont;
-                    for (ca = cont->alias; ca; ca = ca->more)
-                        if (!strcmp (nick, ca->alias))
-                            return cont;
-                }
-            }
-            if (!tmp->more)
-            {
-                fr = tmp;
-                break;
             }
         }
     }
-    if (!create)
-        return NULL;
+    return NULL;
+}
+
+/*
+ * Finds a contact on a contact group, possibly creating it
+ */
+Contact *ContactFindCreate (ContactGroup *group, UWORD id, UDWORD uin, const char *nick)
+{
+    Contact *cont;
+    
+    if (!group && !cnt_groups)
+        ContactGroupInit ();
+
+    assert (id || uin);
+    assert (group);
+
+    if ((cont = ContactFind (group, id, uin, NULL)))
+    {
+        if (nick)
+            ContactAddAlias (cont, nick);
+        return cont;
+    }
+    
+    if ((cont = ContactFind (group->serv->noncontacts, id, uin, NULL)))
+    {
+        if (!nick)
+            return cont;
+        ContactRem (group->serv->noncontacts, cont);
+        ContactAdd (group, cont);
+        s_repl (&cont->nick, nick);
+        cont->group = group;
+        Debug (DEB_CONTACT, "new   #%d %ld '%s' %p in %p was non-contact", id, uin, nick, cont, group);
+        return cont;
+    }
+    
     cont = calloc (1, sizeof (Contact));
     if (!cont)
         return NULL;
     cont->uin = uin;
     cont->id = id;
-    if (!nick)
-    {
-        cont->oldflags |= CONT_TEMPORARY;
-        s_repl (&cont->nick, s_sprintf ("%ld", uin));
-    }
-    else
-        s_repl (&cont->nick, nick);
     cont->status = STATUS_OFFLINE;
     cont->seen_time = -1L;
     cont->seen_micq_time = -1L;
-    cont->group = group ? group : CONTACTGROUP_GLOBAL;
-    if (fr->used == MAX_ENTRIES)
-        fr = fr->more = calloc (1, sizeof (ContactGroup));
-    if (!fr)
-        return NULL;
-    fr->contacts[fr->used++] = cont;
+    
     if (nick)
-        Debug (DEB_CONTACT, "new   #%d %ld '%s' %p in %p", id, uin, nick, cont, group);
+    {
+        s_repl (&cont->nick, nick);
+        cont->group = group;
+        ContactAdd (group, cont);
+        Debug (DEB_CONTACT, "new   #%d %ld '%s' %p", id, uin, nick, cont);
+    }
     else
-        Debug (DEB_CONTACT, "temp  #%d %ld '' %p in %p", id, uin, cont, group);
-    if (group)
-        ContactAdd (NULL, cont);
+    {
+        s_repl (&cont->nick, s_sprintf ("%ld", uin));
+        cont->group = group->serv->noncontacts;
+        ContactAdd (group->serv->noncontacts, cont);
+        Debug (DEB_CONTACT, "temp  #%d %ld %p", id, uin, cont);
+    }
+
+    ContactAdd (NULL, cont);
     return cont;
 }
 
@@ -349,7 +353,8 @@ void ContactD (Contact *cont)
     for (i = 1; (cg = ContactGroupIndex (i)); i++)
         if (cg != cont->group->serv->contacts)
             ContactRem (cg, cont);
-    cont->oldflags |= CONT_TEMPORARY;
+    ContactAdd (cont->group->serv->noncontacts, cont);
+    cont->group = cont->group->serv->noncontacts;
 }
 
 
@@ -420,12 +425,18 @@ BOOL ContactAddAlias (Contact *cont, const char *nick)
     ContactAlias **caref;
     ContactAlias *ca;
     
+    if (!strcmp (cont->nick, nick))
+        return TRUE;
+    
     for (caref = &cont->alias; *caref; caref = &(*caref)->more)
         if (!strcmp ((*caref)->alias, nick))
-        {
-            Debug (DEB_CONTACT, "addal #%d %ld '%s' a'%s'", cont->id, cont->uin, cont->nick, nick);
             return TRUE;
-        }
+    
+    if (!strcmp (cont->nick, s_sprintf ("%ld", cont->uin)))
+    {
+        s_repl (&cont->nick, nick);
+        return TRUE;
+    }
     
     ca = calloc (1, sizeof (ContactAlias));
     if (!ca)

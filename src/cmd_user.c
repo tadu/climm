@@ -1690,7 +1690,8 @@ static JUMP_F(CmdUserVerbose)
 static UDWORD __status (Contact *cont)
 {
     if (ContactPref (cont, CO_IGNORE))      return 0xfffffffe;
-    if (cont->oldflags & CONT_TEMPORARY)    return 0xfffffffe;
+    if (cont->group == cont->group->serv->noncontacts)
+                                            return 0xfffffffe;
     if (cont->status == STATUS_OFFLINE)     return STATUS_OFFLINE;
     if (cont->status  & STATUSF_BIRTH)      return STATUSF_BIRTH;
     if (cont->status  & STATUSF_DND)        return STATUS_DND;
@@ -1759,9 +1760,8 @@ static JUMP_F(CmdUserStatusDetail)
             ContactRem (tcg, cont);
         cg = conn->contacts;
         for (j = 0; (cont = ContactIndex (cg, j)); j++)
-            if (~cont->oldflags & CONT_TEMPORARY)
-                if (!ContactFind (tcg, 0, cont->uin, NULL, 0))
-                    ContactAdd (tcg, cont);
+            if (!ContactFind (tcg, 0, cont->uin, NULL))
+                ContactAdd (tcg, cont);
         for (i = 0; (cg = ContactGroupIndex (i)); i++)
             if (cg->serv == conn && cg != conn->contacts && cg != tcg)
                 for (j = 0; (cont = ContactIndex (cg, j)); j++)
@@ -1776,7 +1776,7 @@ static JUMP_F(CmdUserStatusDetail)
     {
         if (uin && cont->uin != uin)
             continue;
-        if ((cont->oldflags & CONT_TEMPORARY) && ~data & 2)
+        if ((cont->group == conn->noncontacts) && ~data & 2)
             continue;
         if (cont->uin > tuin)
             tuin = cont->uin;
@@ -1857,7 +1857,7 @@ static JUMP_F(CmdUserStatusDetail)
                 if (__status (cont) != status)
                     continue;
 
-                cont = ContactFind (conn->contacts, 0, cont->uin, NULL, 0);
+                cont = ContactFind (conn->contacts, 0, cont->uin, NULL);
                 if (!cont)
                     continue;
 
@@ -1883,7 +1883,7 @@ static JUMP_F(CmdUserStatusDetail)
 #endif
                 if (data & 2)
                     M_printf (COLSERVER "%s%c%c%c%1.1d%c" COLNONE "%s %*ld", ul,
-                         cont->oldflags & CONT_TEMPORARY  ? '#' : ' ',
+                         cont->group == conn->noncontacts ? '#' : ' ',
                          ContactPref (cont,  CO_INTIMATE) ? '*' :
                           ContactPref (cont, CO_HIDEFROM) ? '-' : ' ',
                          ContactPref (cont,  CO_IGNORE)   ? '^' : ' ',
@@ -1898,7 +1898,7 @@ static JUMP_F(CmdUserStatusDetail)
 
                 M_printf (COLSERVER "%s%c" COLCONTACT "%s%-*s" COLNONE "%s " COLMESSAGE "%s%-*s" COLNONE "%s %-*s%s%s" COLNONE "\n",
                          ul, data & 2                     ? ' ' :
-                         cont->oldflags & CONT_TEMPORARY  ? '#' :
+                         cont->group == conn->noncontacts ? '#' :
                          ContactPref (cont, CO_INTIMATE)  ? '*' :
                          ContactPref (cont, CO_HIDEFROM)  ? '-' :
                          ContactPref (cont, CO_IGNORE)    ? '^' :
@@ -1934,7 +1934,7 @@ static JUMP_F(CmdUserStatusDetail)
     {
         char *t1, *t2;
         UBYTE id;
-        if (!(cont = ContactFind (conn->contacts, 0, uin, NULL, 0)))
+        if (!(cont = ContactFind (conn->contacts, 0, uin, NULL)))
             return 0;
 
         if (cont->dc)
@@ -2866,9 +2866,9 @@ static JUMP_F(CmdUserAdd)
         {
             while (s_parsenick_s (&args, &cont, MULTI_SEP, conn))
             {
-                if (cont->oldflags & CONT_TEMPORARY)
+                if (cont->group == conn->noncontacts)
                     M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), cont->nick);
-                else if (!ContactFind (cg, 0, cont->uin, 0, 0))
+                else if (!ContactFind (cg, 0, cont->uin, 0))
                 {
                     if (ContactAdd (cg, cont))
                         M_printf (i18n (2241, "Added '%s' to contact group '%s'.\n"), cont->nick, cg->name);
@@ -2901,31 +2901,29 @@ static JUMP_F(CmdUserAdd)
 
     if (arg1)
     {
-        if (cont->oldflags & CONT_TEMPORARY)
+        if (cont->group == conn->noncontacts)
         {
             M_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, arg1);
             M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
             if (c_strlen (arg1) > uiG.nick_len)
                 uiG.nick_len = c_strlen (arg1);
-            ContactFind (conn->contacts, 0, cont->uin, cont->nick, 1);
+            ContactFindCreate (conn->contacts, 0, cont->uin, arg1);
             if (conn->ver > 6)
                 SnacCliAddcontact (conn, cont);
             else
                 CmdPktCmdContactList (conn);
-            s_repl (&cont->nick, arg1);
-            cont->oldflags &= ~CONT_TEMPORARY;
         }
         else
         {
-            if ((cont2 = ContactFind (conn->contacts, 0, cont->uin, arg1, 0)))
+            if ((cont2 = ContactFind (conn->contacts, 0, cont->uin, arg1)))
                 M_printf (i18n (2146, "'%s' is already an alias for '%s' (%ld).\n"),
                          cont2->nick, cont->nick, cont->uin);
-            else if ((cont2 = ContactFind (conn->contacts, 0, 0, arg1, 0)))
+            else if ((cont2 = ContactFind (conn->contacts, 0, 0, arg1)))
                 M_printf (i18n (2147, "'%s' (%ld) is already used as a nick.\n"),
                          cont2->nick, cont2->uin);
             else
             {
-                if (!(cont2 = ContactFind (conn->contacts, 0, cont->uin, arg1, 1)))
+                if (!(cont2 = ContactFindCreate (conn->contacts, 0, cont->uin, arg1)))
                     M_print (i18n (2118, "Out of memory.\n"));
                 else
                 {
@@ -3009,13 +3007,8 @@ static JUMP_F(CmdUserRemove)
         }
         else
         {
-            if (cont->oldflags & CONT_TEMPORARY)
-            {
-                M_printf (i18n (2221, "Removed temporary contact '%s' (%ld).\n"),
-                          cont->nick, cont->uin);
-                ContactRem (conn->contacts, cont);
+            if (cont->group == conn->noncontacts)
                 continue;
-            }
 
             if (all || !cont->alias)
             {
@@ -3205,7 +3198,7 @@ static JUMP_F(CmdUserTabs)
         UDWORD uin = TabGetNext ();
         Contact *cont;
         
-        cont = ContactFind (NULL, 0, uin, NULL, 1);
+        cont = ContactFindCreate (NULL, 0, uin, NULL);
         if (!cont)
             continue;
         M_printf ("    %s", cont->nick);

@@ -253,9 +253,9 @@ void Initialize_RC_File ()
     prG->chat      = 49;
 
     conn->contacts = ContactGroupFind (0, conn, s_sprintf ("contacts-icq8-%ld", uin), 1);
-    ContactFind (conn->contacts, 0, 82274703, "R\xc3\xbc" "diger Kuhlmann", 1);
-    ContactFind (conn->contacts, 0, 82274703, "mICQ maintainer", 1);
-    ContactFind (conn->contacts, 0, 82274703, "Tadu", 1);
+    ContactFindCreate (conn->contacts, 0, 82274703, "R\xc3\xbc" "diger Kuhlmann");
+    ContactFindCreate (conn->contacts, 0, 82274703, "mICQ maintainer");
+    ContactFindCreate (conn->contacts, 0, 82274703, "Tadu");
 
     if (uin)
         Save_RC ();
@@ -819,16 +819,14 @@ int Read_RC_File (FILE *rcf)
                 
                 for (i = j = 0; (tconn = ConnectionNr (i)); i++)
                 {
-                    if (tconn->contacts && (cont = ContactFind (tconn->contacts, 0, uin, NULL, 0)))
+                    if (!tconn->contacts)
+                        continue;
+
+                    if ((cont = ContactFind (tconn->contacts, 0, uin, NULL)))
                     {
                         j = 1;
-                        if (~cont->oldflags & CONT_TEMPORARY)
-                            ContactFind (tconn->contacts, 0, uin, ConvToUTF8 (cmd, enc, -1, 0), 1);
-                        else
-                        {
-                            s_repl (&cont->nick, ConvToUTF8 (cmd, enc, -1, 0));
-                            ContactOptionsSet (&cont->copts, flags, "+"); /* FIXME */
-                        }
+                        ContactAddAlias (cont, ConvToUTF8 (cmd, enc, -1, 0));
+                        ContactOptionsSet (&cont->copts, flags, "+"); /* FIXME */
                     }
                 }
                 if (!j)
@@ -839,7 +837,7 @@ int Read_RC_File (FILE *rcf)
                             break;
                     if (!tconn)
                         break;
-                    if (!(cont = ContactFind (tconn->contacts, 0, uin, ConvToUTF8 (cmd, enc, -1, 0), 1)))
+                    if (!(cont = ContactFindCreate (tconn->contacts, 0, uin, ConvToUTF8 (cmd, enc, -1, 0))))
                     {
                         M_printf (COLERROR "%s" COLNONE " %s\n", i18n (1619, "Warning:"),
                                  i18n (1620, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
@@ -1048,10 +1046,9 @@ int Read_RC_File (FILE *rcf)
                     PrefParseInt (i);
                     PrefParseInt (uin);
                     
-                    cont = ContactFind (conn->contacts, i, uin, s_sprintf ("%ld", uin), 1);
-                    if (cg != conn->contacts)
+                    cont = ContactFindCreate (conn->contacts, i, uin, s_sprintf ("%ld", uin));
+                    if (cont && cg != conn->contacts)
                         ContactAdd (cg, cont);
-                    cont->oldflags |= CONT_TEMPORARY;
                 }
                 else
                 {
@@ -1066,7 +1063,7 @@ int Read_RC_File (FILE *rcf)
     /* now tab the nicks we may have spooled earlier */
     for (i = 0; i < spooled_tab_nicks; i++)
     {
-        Contact *cont = ContactFind (NULL, 0, 0, tab_nick_spool[i], 0);
+        Contact *cont = ContactFind (NULL, 0, 0, tab_nick_spool[i]);
         if (cont)
             TabAddUIN (cont->uin);
         free (tab_nick_spool[i]);
@@ -1120,7 +1117,7 @@ int Read_RC_File (FILE *rcf)
             conn->contacts = cg = ContactGroupFind (0, conn, s_sprintf ("contacts-%s-%ld",
                                 conn->type == TYPE_SERVER ? "icq8" : "icq5", conn->uin), 1);
             for (i = 0; (cont = ContactIndex (NULL, i)); i++)
-                ContactFind (cg, 0, cont->uin, cont->nick, 1);
+                ContactFindCreate (cg, 0, cont->uin, cont->nick);
             dep = 21;
         }
     }
@@ -1282,10 +1279,9 @@ void PrefReadStat (FILE *stf)
                     PrefParseInt (i);
                     PrefParseInt (uin);
                     
-                    cont = ContactFind (cg->serv->contacts, i, uin, s_sprintf ("%ld", uin), 1);
+                    cont = ContactFindCreate (cg->serv->contacts, i, uin, s_sprintf ("%ld", uin));
                     if (cg != cg->serv->contacts)
                         ContactAdd (cg, cont);
-                    cont->oldflags |= CONT_TEMPORARY;
                 }
                 else if (!strcasecmp (cmd, "options"))
                 {
@@ -1310,22 +1306,16 @@ void PrefReadStat (FILE *stf)
                     
                     for (i = uinconts = 0; (conn = ConnectionNr (i)); i++)
                     {
-                        if (conn->contacts && (cont = ContactFind (conn->contacts, 0, uin, NULL, 0)) && uinconts < 20)
+                        if (conn->contacts && (cont = ContactFind (conn->contacts, 0, uin, NULL)) && uinconts < 20)
                         {
                             uincont[uinconts++] = cont;
-                            if (~cont->oldflags & CONT_TEMPORARY)
-                                ContactFind (cont->group, 0, uin, ConvToUTF8 (cmd, ENC_UTF8, -1, 0), 1);
-                            else
-                            {
-                                s_repl (&cont->nick, ConvToUTF8 (cmd, ENC_UTF8, -1, 0));
-                                cont->oldflags &= ~CONT_TEMPORARY;
-                            }
+                            ContactAddAlias (cont, ConvToUTF8 (cmd, ENC_UTF8, -1, 0));
                         }
                     }
                     while (s_parse (&args, &cmd))
                     {
                         for (i = 0; i < uinconts; i++)
-                            ContactFind (uincont[i]->group, 0, uin, ConvToUTF8 (cmd, ENC_UTF8, -1, 0), 1);
+                            ContactAddAlias (uincont[i], ConvToUTF8 (cmd, ENC_UTF8, -1, 0));
                     }
                 }
                 else if (!strcasecmp (cmd, "options"))
@@ -1629,13 +1619,9 @@ int Save_RC ()
             fprintf (rcf, "#server <icq5|icq8> <uin>\n");
         fprintf (rcf, "label %s\n", s_quote (cg->name));
         fprintf (rcf, "id %d\n", cg->id);
-        while (cg)
-        {
-            for (i = 0; i < cg->used; i++)
-                if (~(cont = cg->contacts[i])->oldflags & CONT_TEMPORARY)
-                    fprintf (rcf, "entry 0 %ld\n", cont->uin);
-            cg = cg->more;
-        }
+        
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            fprintf (rcf, "entry 0 %ld\n", cont->uin);
     }
     fprintf (rcf, "\n# The contact list section. This is a compatibily section and ignored for mICQ 0.5.x.\n");
     fprintf (rcf, "#  Use * in front of the number of anyone you want to see you while you're invisible.\n");
@@ -1644,16 +1630,13 @@ int Save_RC ()
     fprintf (rcf, "[Contacts]\n");
     for (i = 0; (cont = ContactIndex (0, i)); i++)
     {
-        if (~cont->oldflags & CONT_TEMPORARY)
-        {
-            ContactAlias *alias;
-            if (ContactOptionsGet (&cont->copts, CO_INTIMATE, &res) && res) fprintf (rcf, "*"); else fprintf (rcf, " ");
-            if (ContactOptionsGet (&cont->copts, CO_HIDEFROM, &res) && res) fprintf (rcf, "~"); else fprintf (rcf, " ");
-            if (ContactOptionsGet (&cont->copts, CO_IGNORE, &res) && res)   fprintf (rcf, "^"); else fprintf (rcf, " ");
-            fprintf (rcf, "%9ld %s\n", cont->uin, s_quote (cont->nick));
-            for (alias = cont->alias; alias; alias = alias->more)
-                fprintf (rcf, "   %9ld %s\n", cont->uin, s_quote (alias->alias));
-        }
+        ContactAlias *alias;
+        if (ContactOptionsGet (&cont->copts, CO_INTIMATE, &res) && res) fprintf (rcf, "*"); else fprintf (rcf, " ");
+        if (ContactOptionsGet (&cont->copts, CO_HIDEFROM, &res) && res) fprintf (rcf, "~"); else fprintf (rcf, " ");
+        if (ContactOptionsGet (&cont->copts, CO_IGNORE, &res) && res)   fprintf (rcf, "^"); else fprintf (rcf, " ");
+        fprintf (rcf, "%9ld %s\n", cont->uin, s_quote (cont->nick));
+        for (alias = cont->alias; alias; alias = alias->more)
+            fprintf (rcf, "   %9ld %s\n", cont->uin, s_quote (alias->alias));
     }
     fprintf (rcf, "\n");
 #endif
@@ -1672,13 +1655,8 @@ int Save_RC ()
         if ((res = ContactOptionsString (&cg->copts)))
             fprintf (stf, "options%s\n", res);
 
-        while (cg)
-        {
-            for (i = 0; i < cg->used; i++)
-                if (~(cont = cg->contacts[i])->oldflags & CONT_TEMPORARY)
-                    fprintf (stf, "entry 0 %ld\n", cont->uin);
-            cg = cg->more;
-        }
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            fprintf (stf, "entry %d %ld\n", cont->id, cont->uin);
     }
 
     fprintf (stf, "\n# The contact list section.\n");
@@ -1686,7 +1664,7 @@ int Save_RC ()
 
     for (i = 0; (cont = ContactIndex (0, i)); i++)
     {
-        if (~(cont->oldflags & CONT_TEMPORARY))
+        if (cont->group != cont->group->serv->noncontacts)
         {
             ContactAlias *alias;
             fprintf (stf, "entry %9ld %s", cont->uin, s_quote (cont->nick));
