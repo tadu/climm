@@ -8,9 +8,73 @@
  */
 
 #include "micq.h"
+#include <string.h>
+#include <errno.h>
 #include "conv.h"
 #include "preferences.h"
 #include "util_str.h"
+
+#ifdef ENABLE_ICONV
+#include <iconv.h>
+typedef struct { const char *enc; iconv_t to; iconv_t from; } enc_t;
+#else
+typedef struct { const char *enc; } enc_t;
+#endif
+
+static int conv_nr = 0;
+static enc_t *conv_encs = NULL;
+
+/*
+ * Give an ID for the given encoding name
+ */
+UBYTE ConvEnc (const char *enc)
+{
+    UBYTE nr;
+
+    if (!conv_encs || !conv_nr)
+    {
+        conv_encs = calloc (sizeof (enc_t), conv_nr = 10);
+        conv_encs[0].enc = strdup ("none");
+        conv_encs[1].enc = strdup ("utf-8");
+        conv_encs[2].enc = strdup ("iso-8859-1");
+        conv_encs[3].enc = strdup ("iso-8859-15");
+        conv_encs[4].enc = strdup ("koi8-u");
+        conv_encs[5].enc = strdup ("windows-1251");
+        conv_encs[6].enc = strdup ("euc-jp");
+        conv_encs[7].enc = strdup ("shift-jis");
+    }
+    for (nr = 0; conv_encs[nr].enc; nr++)
+        if (!strcasecmp (conv_encs[nr].enc, enc))
+            return nr;
+    
+#ifdef ENABLE_ICONV
+    if (nr == conv_nr - 1)
+    {
+        enc_t *new = realloc (conv_encs, sizeof (const char*) * conv_nr + 10);
+        if (!new)
+            return 0;
+        conv_nr += 10;
+        conv_encs = new;
+    }
+    conv_encs[nr].to   = iconv_open ("utf-8", enc);
+    conv_encs[nr].from = iconv_open (enc, "utf-8");
+    if (conv_encs[nr].to == (iconv_t)(-1) || conv_encs[nr].from == (iconv_t)(-1))
+        return 0;
+    conv_encs[nr].enc = strdup (enc);
+    conv_encs[nr + 1].enc = NULL;
+    return nr;
+#else
+    return 0;
+#endif
+}
+
+/*
+ * Give the encoding name for a given ID
+ */
+const char *ConvEncName (UBYTE enc)
+{
+    return conv_encs[enc & ~ENC_AUTO].enc;
+}
 
 char ConvSep ()
 {
@@ -21,9 +85,12 @@ char ConvSep ()
     return conv = ConvFromUTF8 (ConvToUTF8 ("\xfe", prG->enc_rem), prG->enc_loc)[0];
 }
 
+/*
+ * Convert a single unicode code point to UTF-8
+ */
 const char *ConvUTF8 (UDWORD x)
 {
-    static char b[8];
+    static char b[7];
     
     if      (!(x & 0xffffff80))
     {
@@ -45,11 +112,16 @@ const char *ConvUTF8 (UDWORD x)
     }
     else if (!(x) & 0xffe00000)
     {
+        b[0] = 0xf0 | ( x               >> 18);
+        b[1] = 0x80 | ((x &    0x3f000) >> 12);
+        b[2] = 0x80 | ((x &      0xfc0) >>  6);
+        b[3] = 0x80 |  (x &       0x3f);
+        b[4] = '\0';
     }
     else if (!(x) & 0xfc000000)
     {
         b[0] = 0xf8 | ( x               >> 24);
-        b[1] = 0xf0 | ((x &   0xfc0000) >> 18);
+        b[1] = 0x80 | ((x &   0xfc0000) >> 18);
         b[2] = 0x80 | ((x &    0x3f000) >> 12);
         b[3] = 0x80 | ((x &      0xfc0) >>  6);
         b[4] = 0x80 |  (x &       0x3f);
@@ -58,8 +130,8 @@ const char *ConvUTF8 (UDWORD x)
     else if (!(x) & 0x80000000)
     {
         b[0] = 0xfc | ( x               >> 30);
-        b[1] = 0xf8 | ((x & 0x3f000000) >> 24);
-        b[2] = 0xf0 | ((x &   0xfc0000) >> 18);
+        b[1] = 0x80 | ((x & 0x3f000000) >> 24);
+        b[2] = 0x80 | ((x &   0xfc0000) >> 18);
         b[3] = 0x80 | ((x &    0x3f000) >> 12);
         b[4] = 0x80 | ((x &      0xfc0) >>  6);
         b[5] = 0x80 |  (x &       0x3f);
@@ -70,6 +142,123 @@ const char *ConvUTF8 (UDWORD x)
     return b;
 }
 
+#ifdef ENABLE_ICONV
+
+const char *ConvToUTF8 (const char *inn, UBYTE enc)
+{
+    static char *t = NULL;
+    static UDWORD size = 0;
+    size_t inleft, outleft;
+    char *in, *out, *tmp;
+
+    t = s_catf (t, &size, "%*s", 100, "");
+    *t = '\0';
+    
+    enc &= ~ENC_AUTO;
+    if (!conv_nr)
+        ConvEnc ("utf-8");
+    if (enc >= conv_nr || !enc)
+        return s_sprintf ("<invalid encoding %d>", enc);
+    if (!conv_encs[enc].to)
+    {
+        conv_encs[enc].to = iconv_open ("utf-8", conv_encs[enc].enc);
+        if (conv_encs[enc].to == (iconv_t)(-1))
+            return "<invalid encoding unsupported>";
+    }
+    iconv (conv_encs[enc].to, NULL, NULL, NULL, NULL);
+    in = (char *)inn;
+    out = t;
+    inleft = strlen (in);
+    outleft = size - 1;
+    while (iconv (conv_encs[enc].to, &in, &inleft, &out, &outleft) == (size_t)(-1))
+    {
+        UDWORD rc = errno;
+        if (outleft < 10 || rc == E2BIG)
+        {
+            UDWORD done = out - t;
+            tmp = realloc (t, size + 50);
+            if (!tmp)
+                break;
+            t = tmp;
+            size += 50;
+            outleft += 50;
+            out = t + done;
+        }
+        else if (rc == EILSEQ)
+        {
+            *out++ = (*in == (char)0xfe) ? 0xfe : '?';
+            outleft--;
+            in++;
+            inleft++;
+        }
+        else /* EINVAL */
+        {
+            *out++ = '?';
+            break;
+        }
+    }
+    *out = '\0';
+    return t;
+}
+
+const char *ConvFromUTF8 (const char *inn, UBYTE enc)
+{
+    static char *t = NULL;
+    static UDWORD size = 0;
+    size_t inleft, outleft;
+    char *in, *out, *tmp;
+
+    t = s_catf (t, &size, "%*s", 100, "");
+    *t = '\0';
+    
+    enc &= ~ENC_AUTO;
+    if (!conv_nr)
+        ConvEnc ("utf-8");
+    if (enc >= conv_nr || !enc)
+        return s_sprintf ("<invalid encoding %d>", enc);
+    if (!conv_encs[enc].from)
+    {
+        conv_encs[enc].from = iconv_open (conv_encs[enc].enc, "utf-8");
+        if (conv_encs[enc].from == (iconv_t)(-1))
+            return "<invalid encoding unsupported>";
+    }
+    iconv (conv_encs[enc].from, NULL, NULL, NULL, NULL);
+    in = (char *)inn;
+    out = t;
+    inleft = strlen (in);
+    outleft = size - 1;
+    while (iconv (conv_encs[enc].from, &in, &inleft, &out, &outleft) == (size_t)(-1))
+    {
+        UDWORD rc = errno;
+        if (outleft < 10 || rc == E2BIG)
+        {
+            UDWORD done = out - t;
+            tmp = realloc (t, size + 50);
+            if (!tmp)
+                break;
+            t = tmp;
+            size += 50;
+            outleft += 50;
+            out = t + done;
+        }
+        else if (rc == EILSEQ)
+        {
+            *out++ = (*in == (char)0xfe) ? 0xfe : '?';
+            outleft--;
+            in++;
+            inleft++;
+        }
+        else /* EINVAL */
+        {
+            *out++ = '?';
+            break;
+        }
+    }
+    *out = '\0';
+    return t;
+}
+
+#else
 
 #define PUT_UTF8(x) t = s_cat (t, &size, ConvUTF8 (x))
 
@@ -127,10 +316,6 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
     UDWORD i;
     unsigned char x, y;
     
-#ifdef WIP
-    fprintf (stderr, "Converting '%s' in %d to utf ", in, enc);
-#endif
-    
     t = s_catf (t, &size, "%*s", strlen (in) * 3, "");
     *t = '\0';
     
@@ -150,9 +335,6 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
                     continue;
                 }
                 GET_UTF8 (in, i);
-#ifdef WIP
-                fprintf (stderr, "U+%04x ", i);
-#endif
                 in--;
                 PUT_UTF8 (i);
                 continue;
@@ -207,10 +389,6 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
                 t = s_cat (t, &size, "?");
         }
     }
-#ifdef WIP
-    fprintf (stderr, "=> '%s'\n", t);
-#endif
-    
     return t;
 }
 
@@ -222,10 +400,6 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
     UDWORD val, i;
     unsigned char x, y;
 
-#ifdef WIP
-    fprintf (stderr, "Converting '%s' from utf to %d ", in, enc);
-#endif
-    
     t = s_catf (t, &size, "%*s", strlen (in) * 3, "");
     *t = '\0';
     
@@ -244,9 +418,6 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
         val = '?';
         GET_UTF8 (in,val);
         in--;
-#ifdef WIP
-        fprintf (stderr, "U+%04x ", val);
-#endif
         if (val == '?')
         {
             t = s_catf (t, &size, "·");
@@ -330,9 +501,7 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
                 t = s_cat (t, &size, "?");
         }
     }
-#ifdef WIP
-    fprintf (stderr, "=> '%s'\n", t);
-#endif
-
     return t;
 }
+
+#endif /* ENABLE_ICONV */

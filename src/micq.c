@@ -7,6 +7,7 @@
 #include "util_ui.h"
 #include "file_util.h"
 #include "util.h"
+#include "conv.h"
 #include "buildmark.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "network.h"

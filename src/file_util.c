@@ -567,14 +567,18 @@ void Read_RC_File (FILE *rcf)
                             {
                                 dep = 1;
                                 prG->enc_rem = ENC_WIN1251;
-                                prG->enc_loc = ENC_KOI8;
                             }
                             else if (which == FLAG_CONVEUC)
                             {
                                 dep = 1;
                                 prG->enc_rem = ENC_SJIS;
-                                prG->enc_loc = ENC_EUC;
-                                M_print ("FIXME: conversion to/from SJIS and EUC has not yet been implemented.\n");
+#ifndef ENABLE_ICONV
+                                if (prG->enc_loc == ENC_UTF8)
+                                {
+                                    M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                                    M_print (i18n (2215, "This mICQ can't convert between SJIS or EUC and unicode.\n"));
+                                }
+#endif
                             }
                             prG->flags |= which;
                         }
@@ -643,22 +647,36 @@ void Read_RC_File (FILE *rcf)
                         what = ENC_LATIN1;
                     else if (!strcasecmp (cmd, "latin9"))
                         what = ENC_LATIN9;
-                    else if (!strcasecmp (cmd, "euc"))
-                        what = ENC_EUC;
-                    else if (!strcasecmp (cmd, "sjis"))
-                        what = ENC_SJIS;
                     else if (!strcasecmp (cmd, "koi8"))
                         what = ENC_KOI8;
                     else if (!strcasecmp (cmd, "win1251"))
                         what = ENC_WIN1251;
+                    else if (!strcasecmp (cmd, "euc"))
+                        what = ENC_EUC;
+                    else if (!strcasecmp (cmd, "sjis"))
+                        what = ENC_SJIS;
                     else
+                    {
+                        what = ConvEnc (cmd);
+                        if (!what)
+                        {
+                            M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                            M_printf (i18n (2216, "This mICQ doesn't know the '%s' encoding.\n"), cmd);
+                            ERROR;
+                        }
+                    }
+#ifndef ENABLE_ICONV
+                    if (what > ENC_SJIS || (what >= ENC_EUC && prG->enc_loc == ENC_UTF8))
+                    {
+                        M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                        M_printf (i18n (2217, "This mICQ can't convert between '%s' and unicode.\n"), cmd);
                         ERROR;
+                    }
+#endif
                     if (which == 1)
                         prG->enc_rem = what;
                     else
                         prG->enc_loc = what;
-                    if (what == ENC_EUC || what == ENC_SJIS)
-                        M_print ("FIXME: conversion to/from SJIS and EUC has not yet been implemented.\n");
                 }
                 else
                 {
@@ -1024,22 +1042,12 @@ int Save_RC ()
                     prG->tabs == TABS_SIMPLE ? "simple" :
                     prG->tabs == TABS_CYCLE ? "cycle" : "cycleall");
 
-    fprintf (rcf, "# Character encodings.\nencoding local %s\n",
-                  prG->enc_loc == ENC_UTF8    ? "utf8"    :
-                  prG->enc_loc == ENC_LATIN1  ? "latin1"  :
-                  prG->enc_loc == ENC_LATIN9  ? "latin2"  :
-                  prG->enc_loc == ENC_EUC     ? "euc"     :
-                  prG->enc_loc == ENC_SJIS    ? "sjis"    :
-                  prG->enc_loc == ENC_KOI8    ? "koi8"    :
-                  prG->enc_loc == ENC_WIN1251 ? "win1251" : "auto");
-    fprintf (rcf, "encoding remote %s\n\n",
-                  prG->enc_rem == ENC_UTF8    ? "utf8"    :
-                  prG->enc_rem == ENC_LATIN1  ? "latin1"  :
-                  prG->enc_rem == ENC_LATIN9  ? "latin2"  :
-                  prG->enc_rem == ENC_EUC     ? "euc"     :
-                  prG->enc_rem == ENC_SJIS    ? "sjis"    :
-                  prG->enc_rem == ENC_KOI8    ? "koi8"    :
-                  prG->enc_rem == ENC_WIN1251 ? "win1251" : "auto");
+    fprintf (rcf, "# Character encodings: auto, iso-8859-1, koi8-u, ...\n");
+    fprintf (rcf, "%sencoding local %s\n",
+             prG->enc_loc & ENC_AUTO ? "#" : "", ConvEncName (prG->enc_loc));
+    fprintf (rcf, "%sencoding remote %s\n\n",
+             prG->enc_rem & ENC_AUTO ? "#" : "", ConvEncName (prG->enc_rem));
+
     fprintf (rcf, "# Colors. color scheme 0|1|2|3 or color <use> <color>");
     {
         int i, l;
