@@ -365,9 +365,9 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             cont->dc->version = PacketRead2  (pak);
 
             M_printf ("%-15s %lu\n", i18n (1440, "Random User:"), cont->uin);
-            M_printf ("%-15s %s:%lu\n", i18n (1441, "IP:"), 
+            M_printf ("%-15s %s:%lu\n", i18n (1441, "remote IP:"), 
                       s_ip (cont->dc->ip_rem), cont->dc->port);
-            M_printf ("%-15s %s\n", i18n (1451, "IP2:"),  s_ip (cont->dc->ip_loc));
+            M_printf ("%-15s %s\n", i18n (1451, "local  IP:"),  s_ip (cont->dc->ip_loc));
             M_printf ("%-15s %s\n", i18n (1454, "Connection:"), cont->dc->type == 4
                       ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"));
             M_printf ("%-15s %s\n", i18n (1452, "Status:"), s_status (cont->status));

@@ -671,7 +671,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
                 M_printf (i18n (2070, "File transfer '%s' to port %d.\n"), event->info, event->attempts);
                 break;
             case TCP_MSG_FILE | 0x200:
-                M_printf (i18n (2069, "File transfer '%s' rejected by peer: %s.\n"), event->info, cdata);
+                M_printf (i18n (2231, "File transfer '%s' rejected by peer: %s.\n"), event->info, cdata);
                 break;
             case TCP_MSG_FILE | 0x300:
                 M_printf (i18n (2186, "Accepting file '%s' (%d bytes).\n"), event->info, event->attempts);

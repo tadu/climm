@@ -1494,7 +1494,7 @@ static JUMP_F(CmdUserStatusDetail)
 
         if (contr->dc)
         {
-            M_printf ("%-15s %s/%s:%d\n", i18n (1441, "IP:"),
+            M_printf ("%-15s %s/%s:%d\n", i18n (1441, "remote IP:"),
                       t1 = strdup (s_ip (contr->dc->ip_rem)),
                       t2 = strdup (s_ip (contr->dc->ip_loc)), contr->dc->port);
             M_printf ("%-15s %d\n", i18n (1453, "TCP version:"), contr->dc->version);
