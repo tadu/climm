@@ -1177,7 +1177,7 @@ void M_print (const char *org)
                 printf ("\n%s%*s", M_getlogo (), IndentCount, "");
                 CharCount = 0;
             }
-            printf ("%.*s", test - str, str);
+            printf ("%.*s", (int)(test - str), str);
             CharCount += chardiff (test, str);
             str = test;
         }

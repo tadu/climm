@@ -130,32 +130,32 @@ int i18nOpen (const char *loc, UBYTE enc)
                 i18nTry (s_sprintf ("%s/i18n/%s.UTF-8@fun.i18n", PrefUserDir (prG), loc));
             i18nTry (s_sprintf ("%s/i18n/%s@fun.i18n", PrefUserDir (prG), loc));
             if (strchr (loc, '_') && utf8)
-                i18nTry (s_sprintf ("%s/i18n/%.*s.UTF-8@fun.i18n", PrefUserDir (prG), strchr (loc, '_') - loc, loc));
+                i18nTry (s_sprintf ("%s/i18n/%.*s.UTF-8@fun.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
             if (strchr (loc, '_'))
-                i18nTry (s_sprintf ("%s/i18n/%.*s@fun.i18n", PrefUserDir (prG), strchr (loc, '_') - loc, loc));
+                i18nTry (s_sprintf ("%s/i18n/%.*s@fun.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
             if (utf8)
                 i18nTry (s_sprintf (PKGDATADIR "/%s.UTF-8@fun.i18n", loc));
             i18nTry (s_sprintf (PKGDATADIR "/%s@fun.i18n", loc));
             if (strchr (loc, '_') && utf8)
-                i18nTry (s_sprintf (PKGDATADIR "/%.*s.UTF-8@fun.i18n", strchr (loc, '_') - loc, loc));
+                i18nTry (s_sprintf (PKGDATADIR "/%.*s.UTF-8@fun.i18n", (int)(strchr (loc, '_') - loc), loc));
             if (strchr (loc, '_'))
-                i18nTry (s_sprintf (PKGDATADIR "/%.*s@fun.i18n", strchr (loc, '_') - loc, loc));
+                i18nTry (s_sprintf (PKGDATADIR "/%.*s@fun.i18n", (int)(strchr (loc, '_') - loc), loc));
         }
 
         if (utf8)
             i18nTry (s_sprintf ("%s/i18n/%s.UTF-8.i18n", PrefUserDir (prG), loc));
         i18nTry (s_sprintf ("%s/i18n/%s.i18n", PrefUserDir (prG), loc));
         if (strchr (loc, '_') && utf8)
-            i18nTry (s_sprintf ("%s/i18n/%.*s.UTF-8.i18n", PrefUserDir (prG), strchr (loc, '_') - loc, loc));
+            i18nTry (s_sprintf ("%s/i18n/%.*s.UTF-8.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
         if (strchr (loc, '_'))
-            i18nTry (s_sprintf ("%s/i18n/%.*s.i18n", PrefUserDir (prG), strchr (loc, '_') - loc, loc));
+            i18nTry (s_sprintf ("%s/i18n/%.*s.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
         if (utf8)
             i18nTry (s_sprintf (PKGDATADIR "/%s.UTF-8.i18n", loc));
         i18nTry (s_sprintf (PKGDATADIR "/%s.i18n", loc));
         if (strchr (loc, '_') && utf8)
-            i18nTry (s_sprintf (PKGDATADIR "/%.*s.UTF-8.i18n", strchr (loc, '_') - loc, loc));
+            i18nTry (s_sprintf (PKGDATADIR "/%.*s.UTF-8.i18n", (int)(strchr (loc, '_') - loc), loc));
         if (strchr (loc, '_'))
-            i18nTry (s_sprintf (PKGDATADIR "/%.*s.i18n", strchr (loc, '_') - loc, loc));
+            i18nTry (s_sprintf (PKGDATADIR "/%.*s.i18n", (int)(strchr (loc, '_') - loc), loc));
     }
     s_free (floc);
 

@@ -56,7 +56,10 @@
 void Initalize_RC_File ()
 {
     char pwd1[20], pwd2[20], input[200];
-    Connection *conn, *connt, *conns;
+    Connection *conn, *connt;
+#ifdef ENABLE_REMOTECONTROL
+    Connection *conns;
+#endif
     char *passwd;
     char *t;
     UDWORD uin;

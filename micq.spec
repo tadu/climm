@@ -68,7 +68,7 @@ rm -rf "${RPM_BUILD_ROOT}"
 %files
 %defattr(-,root,root,0755)
 %doc NEWS AUTHORS FAQ README TODO
-%doc doc/README.i18n doc/icq091.txt doc/icqv7.txt
+%doc doc/README.i18n doc/README.logformat doc/icq091.txt doc/icqv7.txt
 %{_bindir}/*
 %{_datadir}/micq
 /usr/lib/menu/micq

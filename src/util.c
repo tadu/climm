@@ -225,7 +225,7 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
     }
 
     if ((lcnt += *mylog != '\0') != 0)
-        t = s_catf (t, &size, " +%u", lcnt);
+        t = s_catf (t, &size, " +%u", (unsigned)lcnt);
 
     if (type != 0xFFFF && type != MSG_NORM)
         t = s_catf (t, &size, " (%u)", type);
