@@ -723,10 +723,10 @@ BOOL ContactMetaLoad (Contact *cont)
     cont->meta_background = NULL;
     cont->meta_affiliation = NULL;
     
-    enc = 0;
+    enc = ENC_UTF8;
     while ((lline = UtilIOReadline (f)))
     {
-        if (!lline->len || (lline->txt[1] == '#'))
+        if (!lline->len || (lline->txt[0] == '#'))
             continue;
         line = ConvFrom (lline, enc)->txt;
         if (!(par = s_parse (&line)))
