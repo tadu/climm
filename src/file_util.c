@@ -221,6 +221,7 @@ void Initalize_RC_File ()
     sesst->ver = 6;
 
     prG->status = STATUS_ONLINE;
+    prG->tabs = TABS_SIMPLE;
 #ifdef ANSI_TERM
     prG->flags = FLAG_COLOR | FLAG_LOG | FLAG_LOG_ONOFF | FLAG_DELBS;
 #else
@@ -260,6 +261,7 @@ void Read_RC_File (FILE *rcf)
     int spooled_tab_nicks;
 
     prG->away_time = default_away_time;
+    prG->tabs = TABS_SIMPLE;
 
     spooled_tab_nicks = 0;
     for (section = 0; !M_fdnreadln (rcf, buf, sizeof (buf)); )
@@ -466,6 +468,8 @@ void Read_RC_File (FILE *rcf)
                         which = FLAG_UINPROMPT;
                     else if (!strcasecmp (tmp, "linebreak"))
                         which = -2;
+                    else if (!strcasecmp (tmp, "tabs"))
+                        which = -3;
                     else
                         continue;
                     if (which > 0)
@@ -488,7 +492,7 @@ void Read_RC_File (FILE *rcf)
                         if (i & 2)
                             prG->flags |= FLAG_LOG_ONOFF;
                     }
-                    else
+                    else if (which == -2)
                     {
                         tmp = strtok (NULL, " \t\n");
                         prG->flags &= ~FLAG_LIBR_BR & ~FLAG_LIBR_INT;
@@ -500,6 +504,15 @@ void Read_RC_File (FILE *rcf)
                             prG->flags |= FLAG_LIBR_INT;
                         else if (!strcasecmp (tmp, "smart"))
                             prG->flags |= FLAG_LIBR_BR | FLAG_LIBR_INT;
+                    }
+                    else if (which == -3)
+                    {
+                        tmp = strtok (NULL, " \t\n");
+                        prG->tabs = TABS_SIMPLE;
+                        if (!strcasecmp (tmp, "cycle"))
+                            prG->tabs = TABS_CYCLE;
+                        else if (!strcasecmp (tmp, "cycleall"))
+                            prG->tabs = TABS_CYCLEALL;
                     }
                 }
                 else
@@ -803,10 +816,13 @@ int Save_RC ()
                     prG->flags & FLAG_AUTOREPLY ? "on " : "off");
     fprintf (rcf, "set uinprompt %s # if the prompt should contain the last uin a message was received from\n",
                     prG->flags & FLAG_UINPROMPT ? "on " : "off");
-    fprintf (rcf, "set linebreak %s # the line break type to be used (simple, break, indent, smart)\n\n",
+    fprintf (rcf, "set linebreak %s # the line break type to be used (simple, break, indent, smart)\n",
                     prG->flags & FLAG_LIBR_INT 
                     ? prG->flags & FLAG_LIBR_BR ? "smart " : "indent"
                     : prG->flags & FLAG_LIBR_BR ? "break " : "simple");
+    fprintf (rcf, "set tabs %s # type of tab completion (simple, cycle, cycleall)\n\n",
+                    prG->tabs == TABS_SIMPLE ? "simple" :
+                    prG->tabs == TABS_CYCLE ? "cycle" : "cycleall");
 
 
     fprintf (rcf, "logplace %s      # the file or (dstinct files in) dir to log to\n",

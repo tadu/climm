@@ -202,30 +202,117 @@ void R_process_input_delete (void)
     R_rlap (s + cpos, "", TRUE);
 }
 
+/* tab completion
+
+Originally, when the user pressed the tab key, mICQ would cycle through all
+contacts that messages had been sent to or received from.  This is now
+called simple tab completion.  (set tabs simple in micqrc)
+
+Now, there's the new cycling tab completion that makes the tab key work
+just like in a couple of popular IRC clients.  Each press of the tab key
+will cycle through the nicks in the current contact list that begin with the
+word that the cursor is standing on or immediately after on the command
+line.  This is called cycle tab completion.
+
+set tabs cycle in micqrc will make mICQ search only online contacts, or
+set tabs cycleall to have mICQ search the entire contact list, including
+offline contacts. */
+
+static int tabstate = 0;
+/* set to 1 on first tab, reset to 0 on any other key in R_process_input */
+
+static char tabword[20];
+/* word that the cursor was on or immediately after at first tab */
+
+static int tabwlen;
+/* length of tabword */
+
+static Contact *tabcont;
+/* current contact in contact list cycle */
+
+static char *tabwstart;
+static char *tabwend;
+/* position of tabword on the command line, needed to handle nicks
+containing spaces */
+
 void R_process_input_tab (void)
 {
     UDWORD uin;
     const char *msgcmd = CmdUserLookupName ("msg");
+    int nicklen = 0;
+    int gotmatch = 0;
 
-    if (strncmp (s, msgcmd, strlen (s) < strlen (msgcmd) ? strlen (s) : strlen (msgcmd)))
+    if (prG->tabs == TABS_SIMPLE)
     {
-        M_print ("\a");
-        return;
-    }
-    if (strpbrk (s, UIN_DELIMS) && strpbrk (s, UIN_DELIMS) - s < strlen (s) - 1
-        && !strchr (UIN_DELIMS, s[strlen (s) - 1]))
-    {
-        M_print ("\a");
-        return;
-    }
+        if (strncmp (s, msgcmd, strlen (s) < strlen (msgcmd) ? strlen (s) : strlen (msgcmd)))
+        {
+            M_print ("\a");
+            return;
+        }
+        if (strpbrk (s, UIN_DELIMS) && strpbrk (s, UIN_DELIMS) - s < strlen (s) - 1
+            && !strchr (UIN_DELIMS, s[strlen (s) - 1]))
+        {
+            M_print ("\a");
+            return;
+        }
 
-    if ((uin = TabGetNext ()))
-        sprintf (s, "%s %s/", msgcmd, ContactFindName (uin));
+        if ((uin = TabGetNext ()))
+            sprintf (s, "%s %s/", msgcmd, ContactFindName (uin));
+        else
+            sprintf (s, "%s ", msgcmd);
+
+        R_print ();
+        clen = cpos = strlen (s);
+    }
     else
-        sprintf (s, "%s ", msgcmd);
-
-    R_print ();
-    clen = cpos = strlen (s);
+    {
+        if (tabstate == 0)
+        {
+            tabcont = ContactStart ();
+            tabwstart = s + cpos;
+            if (*tabwstart == ' ' && tabwstart > s) tabwstart --;
+            while (*tabwstart != ' ' && tabwstart >= s) tabwstart --;
+            tabwstart ++;
+            if (!(tabwend = strchr (tabwstart, ' ')))
+                tabwend = s + clen;
+            tabwlen = sizeof (tabword) < tabwend - tabwstart ? sizeof (tabword) : tabwend - tabwstart;
+            strncpy (tabword, tabwstart, tabwlen);
+        }
+        else
+            tabcont = ContactHasNext (tabcont) ? ContactNext (tabcont) : ContactStart ();
+        if (prG->tabs == TABS_CYCLE)
+            while (tabcont->status == STATUS_OFFLINE && ContactHasNext (tabcont))
+                tabcont = ContactNext (tabcont);
+        while (!gotmatch)
+        {
+            while (!gotmatch && ContactHasNext (tabcont))
+            {
+                nicklen = strlen(tabcont->nick);
+                if (((prG->tabs == TABS_CYCLE && tabcont->status != STATUS_OFFLINE) || prG->tabs == TABS_CYCLEALL)
+                    && nicklen >= tabwlen && !strncasecmp (tabword, tabcont->nick, tabwlen))
+                    gotmatch = 1;
+                else
+                    tabcont = ContactNext (tabcont);
+            }
+            if (!gotmatch)
+            {
+                if (tabstate == 0)
+                {
+                    M_print ("\a");
+                    return;
+                }
+                else
+                    tabcont = ContactStart ();
+            }
+        }
+        memmove (tabwstart + nicklen, tabwend, strlen (tabwend) + 1);
+        tabwend = tabwstart + nicklen;
+        strncpy (tabwstart, tabcont->nick, nicklen);
+        R_print ();
+        clen = strlen (s);
+        cpos = tabwstart - s + nicklen;
+        tabstate = 1;
+    }
 }
 
 int R_process_input (void)
@@ -237,6 +324,8 @@ int R_process_input (void)
         return 0;
     if (!istat)
     {
+        if (prG->tabs != TABS_SIMPLE && ch != '\t')
+            tabstate = 0;
         if ((ch >= 0 && ch < ' ') || ch == 127)
         {
             switch (ch)

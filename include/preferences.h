@@ -13,6 +13,7 @@ struct Preferences_s
     UWORD  screen;      /* manual maximum screen width; 0 = auto */
     UWORD  flags;       /* flags for output */
     UDWORD away_time;   /* time after which to be away automatically; 0 = disable */
+    UWORD  tabs;        /* type of tab completion */
     
     char  *logplace;
 
@@ -94,6 +95,10 @@ void PrefLoad (Preferences *pref);
 
 #define CONN_AUTOLOGIN   1
 #define CONN_WIZARD      2
+
+#define TABS_SIMPLE      1
+#define TABS_CYCLE       2
+#define TABS_CYCLEALL    3
 
 #define ASSERT_PEER(s)   (assert (s), assert (s->type == TYPE_PEER))
 #define ASSERT_DIRECT(s) (assert (s), assert (s->type == TYPE_DIRECT))
