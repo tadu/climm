@@ -2,7 +2,7 @@
 
 2003-03-07 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
 	* fix endless resend stuff
-	* ignore empty nick names on ocntact list import
+	* ignore empty nick names on contact list import
 	* fix documentation glitches in man pages
 	* update de man pages
 	* uppercase encoding names
