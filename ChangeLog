@@ -1,3 +1,7 @@
+2002-07-22 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* detect sizeof() of types (for 64bit systems)
+	* document tab completion option
+
 2002-06-26 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* fix SOCKS5 authorization
 	* document resend command, let it take arbitrarely many arguments

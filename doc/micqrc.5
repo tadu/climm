@@ -163,6 +163,23 @@ to have a line break before each message,
 to have a line break and indent the message and
 .Ic smart
 to have a line break only if the message doesn't fit on the current line.
+.It Ic set tabs simple|cycle|cycleall
+Selects the style of tab cycling. Older versions of mICQ only knew
+.Ic simple ,
+which would only work with the
+.Ic msg
+command and would complete the command and cycle through all contacts that
+messages had been sent to or received from. Already typed text after the
+nick name was lost.
+.Ic cycle
+however cycles through all online contacts on your contact list. It keeps all
+other input text intact, however it also doesn't add the default
+.Ic msg
+command.
+.Ic cycleall
+is like
+.Ic cycle ,
+it just cycles through all, and not only online, contacts.
 .El
 .sp
 At last, some strings can be defined:

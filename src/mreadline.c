@@ -258,7 +258,7 @@ void R_process_input_tab (void)
         }
 
         if ((uin = TabGetNext ()))
-            sprintf (s, "%s %s/", msgcmd, ContactFindName (uin));
+            sprintf (s, "%s %s ", msgcmd, ContactFindName (uin));
         else
             sprintf (s, "%s ", msgcmd);
 
