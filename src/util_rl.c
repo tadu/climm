@@ -118,7 +118,9 @@ static void rl_historyback (void);
 static void rl_historyforward (void);
 static void rl_historyadd (void);
 
+#if defined(SIGWINCH)
 static volatile int rl_columns_cur = 0;
+#endif
 volatile UBYTE rl_signal = 0;
 
 UDWORD rl_columns = 0;
@@ -314,7 +316,6 @@ static RETSIGTYPE tty_int_handler (int i)
 void ReadLineHandleSig (void)
 {
     UBYTE sig;
-    int gpos;
     
     while ((sig = (rl_signal & 30)))
     {
@@ -337,6 +338,8 @@ void ReadLineHandleSig (void)
 #if defined(SIGTSTP) && defined(SIGCONT)
         if (sig & 4)
         {
+            int gpos;
+
             ReadLineTtySet ();
             M_print ("\r");
             ReadLinePrompt ();
@@ -374,10 +377,8 @@ static int rl_getcolumns ()
 {
 #if defined(SIGWINCH)
     struct winsize ws;
-#endif
     int width = rl_columns_cur;
 
-#if defined(SIGWINCH)
     rl_columns_cur = 0;
     ioctl (STDIN_FILENO, TIOCGWINSZ, &ws);
     rl_columns_cur = ws.ws_col;

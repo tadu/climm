@@ -22,6 +22,9 @@
 
 #include "micq.h"
 #include <assert.h>
+#if HAVE_WINSOCK2_H
+#include <winsock2.h>
+#endif
 #include "util_ui.h"
 #include "util_io.h"
 #include "util_ssl.h"

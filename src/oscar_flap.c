@@ -25,6 +25,9 @@
 #if HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
+#if HAVE_WINSOCK2_H
+#include <winsock2.h>
+#endif
 #include "util_ui.h"
 #include "util_io.h"
 #include "util_syntax.h"
