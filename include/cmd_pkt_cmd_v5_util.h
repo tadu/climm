@@ -51,13 +51,19 @@ void CallBackServerInitV5 (struct Event *event);
 #define CMD_VIS_LIST            1710
 #define CMD_UPDATE_LIST         1720
 
-#define META_SET_GENERAL_INFO   1001 /* 1000? */
-#define META_SET_WORK_INFO      1011 /* */
-#define META_SET_MORE_INFO      1021 /* 1020? */ 
-#define META_SET_ABOUT_INFO     1030
-#define META_INFO_SECURE        1060 /* ?? */
-#define META_SET_PASS           1070
-#define META_REQ_INFO           1200
-#define META_SEARCH_WP          1331
-#define META_SET_WEB_PRESENCE   2000 /* */
+#define META_SET_GENERAL_INFO_v5 1001
+#define META_SET_GENERAL_INFO    1002
+#define META_SET_WORK_INFO       1011 /* */
+#define META_SET_MORE_INFO       1021
+#define META_SET_ABOUT_INFO      1030
+#define META_INFO_SECURE         1060 /* ?? */
+#define META_SET_PASS            1070
+#define META_REQ_INFO_v5         1200
+#define META_REQ_INFO            1232
+#define META_SEARCH_WP           1331
+#define META_SEARCH_PERSINFO     1375
+#define META_SEARCH_EMAIL        1395
+#define META_SEARCH_RANDOM       1870
+#define META_SET_RANDOM          1880
+#define META_SET_WEB_PRESENCE    2000 /* */
 

@@ -348,7 +348,7 @@ void CmdPktCmdRandSearch (Session *sess, UDWORD group)
 void CmdPktCmdMetaGeneral (Session *sess, MetaGeneral *user)
 {
     Packet *pak = PacketCv5 (sess, CMD_META_USER);
-    PacketWrite2      (pak, META_SET_GENERAL_INFO);
+    PacketWrite2      (pak, META_SET_GENERAL_INFO_v5);
     PacketWriteStrCUW (pak, user->nick);
     PacketWriteStrCUW (pak, user->first);
     PacketWriteStrCUW (pak, user->last);
@@ -428,7 +428,7 @@ void CmdPktCmdMetaPass (Session *sess, char *pass)
 void CmdPktCmdMetaReqInfo (Session *sess, UDWORD uin)
 {
     Packet *pak = PacketCv5 (sess, CMD_META_USER);
-    PacketWrite2 (pak, META_REQ_INFO);
+    PacketWrite2 (pak, META_REQ_INFO_v5);
     PacketWrite4 (pak, uin);
     PacketEnqueuev5 (pak, sess);
 }

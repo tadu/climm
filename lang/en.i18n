@@ -903,7 +903,6 @@ i18n (1079, "Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %
 1903:Outgoing v8 server packet:
 1904:Server doesn't understand ver %d (only %d) for family %d!¶
 1905:SNAC (%x,%x) [%s] flags %x ref %x¶
-1906:This command operates only on connections of type %s.¶
 1907:Warning: Server thinks our UIN is %d, while it is %d.¶
 1908:Received USERONLINE packet for non-contact.¶
 1909:Received USEROFFLINE packet for non-contact.¶

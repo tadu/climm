@@ -1,4 +1,8 @@
 
+2002-05-07 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Introduce a lot of missing #defines for the META handling.
+	* Implement random chat group setting and requesting.
+
 2002-05-06 Peter Backes <rtc@gmx.de>
 	* Implement contact flags differently.
 

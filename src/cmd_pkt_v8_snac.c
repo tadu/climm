@@ -15,6 +15,7 @@
 #include "contact.h"
 #include "preferences.h"
 #include "icq_response.h"
+#include "cmd_pkt_cmd_v5_util.h"
 #include "cmd_pkt_v8_snac.h"
 #include "cmd_pkt_v8_flap.h"
 #include "cmd_pkt_v8_tlv.h"
@@ -723,7 +724,7 @@ JUMP_SNAC_F(SnacSrvFromoldicq)
     }
     switch (type)
     {
-        case 0x41:
+        case 65:
         {
             UDWORD year, mon, mday, hour, min, flags;
             if (len < 14)
@@ -743,10 +744,10 @@ JUMP_SNAC_F(SnacSrvFromoldicq)
             Do_Msg (event->sess, flags, strlen (text), text, uin, 0);
             return;
         }
-        case 0x42:
+        case 66:
             SnacCliAckofflinemsgs (event->sess);
             return;
-        case 0x7DA:
+        case 2010:
             Meta_User (event->sess, uin, p);
 
             return;
@@ -1173,7 +1174,7 @@ void SnacCliMetasetgeneral (Session *sess, const MetaGeneral *user)
     PacketWrite4       (pak, sess->uin);
     PacketWrite2       (pak, 2000);
     PacketWrite2       (pak, 2);
-    PacketWrite2       (pak, 1002);
+    PacketWrite2       (pak, META_SET_GENERAL_INFO);
     PacketWriteLNTS    (pak, user->nick);
     PacketWriteLNTS    (pak, user->first);
     PacketWriteLNTS    (pak, user->last);
@@ -1204,9 +1205,9 @@ void SnacCliMetasetabout (Session *sess, const char *text)
     PacketWriteTLV     (pak, 1);
     PacketWriteLen     (pak);
     PacketWrite4       (pak, sess->uin);
-    PacketWrite2       (pak, 2000); /* Command: request information */
+    PacketWrite2       (pak, 2000);
     PacketWrite2       (pak, 2);
-    PacketWrite2       (pak, 1030); /* Type: user info */
+    PacketWrite2       (pak, META_SET_ABOUT_INFO);
     PacketWriteLNTS    (pak, text);
     PacketWriteLenDone (pak);
     PacketWriteTLVDone (pak);
@@ -1226,7 +1227,7 @@ void SnacCliMetasetmore (Session *sess, const MetaMore *user)
     PacketWrite4       (pak, sess->uin);
     PacketWrite2       (pak, 2000);
     PacketWrite2       (pak, 2);
-    PacketWrite2       (pak, 1021);
+    PacketWrite2       (pak, META_SET_MORE_INFO);
     PacketWrite2       (pak, user->age);
     PacketWrite1       (pak, user->sex);
     PacketWriteLNTS    (pak, user->hp);
@@ -1254,7 +1255,7 @@ void SnacCliMetareqinfo (Session *sess, UDWORD uin)
     PacketWrite4       (pak, sess->uin);
     PacketWrite2       (pak, 2000);
     PacketWrite2       (pak, 2);
-    PacketWrite2       (pak, 1232);
+    PacketWrite2       (pak, META_REQ_INFO);
     PacketWrite4       (pak, uin);
     PacketWriteLenDone (pak);
     PacketWriteTLVDone (pak);
@@ -1272,9 +1273,9 @@ void SnacCliSearchbypersinf (Session *sess, const char *email, const char *nick,
     PacketWriteTLV (pak, 1);
     PacketWriteLen (pak);
     PacketWrite4  (pak, sess->uin);
-    PacketWrite2  (pak, 2000); /* Command: request information */
+    PacketWrite2  (pak, 2000);
     PacketWrite2  (pak, 2);
-    PacketWrite2  (pak, 1375); /* search user in 2001b */
+    PacketWrite2  (pak, META_SEARCH_PERSINFO);
     PacketWrite2  (pak, 320); /* key: first name */
     PacketWriteLLNTS (pak, name);
     PacketWrite2  (pak, 330); /* key: last name */
@@ -1299,31 +1300,20 @@ void SnacCliSearchbymail (Session *sess, const char *email)
     PacketWriteTLV (pak, 1);
     PacketWriteLen (pak);
     PacketWrite4  (pak, sess->uin);
-    PacketWrite2  (pak, 2000); /* Command: request information */
+    PacketWrite2  (pak, 2000);
     PacketWrite2  (pak, 2);
-#ifndef USE_OLD_PROTO
-    PacketWrite2  (pak, 1395); /* search uin by email in 2001b */
+    PacketWrite2  (pak, META_SEARCH_EMAIL);
     PacketWrite2  (pak, 350); /* key: email address */
     PacketWriteLLNTS (pak, email);
-#else
-    PacketWrite2  (pak, 1231); /* Type: search by email */
-    PacketWriteLNTS (pak, email);
-    /* Doesn't work (yields search failed).  Tried with length 
-     * prefixed as above, then the search doesn't fail completely
-     * but very strange data is returned.    --rtc
-     */
-#endif
     PacketWriteLenDone (pak);
     PacketWriteTLVDone (pak);
     SnacSend (sess, pak);
 }
 
 /*
- * CLI_RANDSEARCH - SNAC(15,2) - 2000/1390
- *
- * Unfortunately this does not work.
+ * CLI_SEARCHRANDOM - SNAC(15,2) - 2000/1870
  */
-void SnacCliRandsearch (Session *sess, UDWORD group)
+void SnacCliSearchrandom (Session *sess, UWORD group)
 {
     Packet *pak;
 
@@ -1331,17 +1321,50 @@ void SnacCliRandsearch (Session *sess, UDWORD group)
     PacketWriteTLV (pak, 1);
     PacketWriteLen (pak);
     PacketWrite4  (pak, sess->uin);
-    PacketWrite2  (pak, 2000); /* Command: request information */
+    PacketWrite2  (pak, 2000);
     PacketWrite2  (pak, 2);
-    PacketWrite2  (pak, 1390); /* search uin by group */
-    PacketWrite4  (pak, group);
+    PacketWrite2  (pak, META_SEARCH_RANDOM);
+    PacketWrite2  (pak, group);
     PacketWriteLenDone (pak);
     PacketWriteTLVDone (pak);
     SnacSend (sess, pak);
 }
 
 /*
- * CLI_SEARCHWP - SNAC(15,2) - 2000/3305
+ * CLI_SETRANDOM - SNAC(15,2) - 2000/1880
+ */
+void SnacCliSetrandom (Session *sess, UWORD group)
+{
+    Packet *pak;
+
+    pak = SnacC (sess, 21, 2, 0, 0);
+    PacketWriteTLV (pak, 1);
+    PacketWriteLen (pak);
+    PacketWrite4  (pak, sess->uin);
+    PacketWrite2  (pak, 2000);
+    PacketWrite2  (pak, 2);
+    PacketWrite2  (pak, META_SET_RANDOM);
+    PacketWrite2  (pak, group);
+    if (group)
+    {
+        PacketWriteB4 (pak, 0x00000220);
+        PacketWriteB4 (pak, 0);
+        PacketWriteB4 (pak, 0);
+        PacketWriteB4 (pak, 0);
+        PacketWrite1  (pak, 0x04);
+        PacketWrite2  (pak, TCP_VER);
+        PacketWriteB4 (pak, 0);
+        PacketWriteB4 (pak, 0x00005000);
+        PacketWriteB4 (pak, 0x00000300);
+        PacketWrite2  (pak, 0);
+    }
+    PacketWriteLenDone (pak);
+    PacketWriteTLVDone (pak);
+    SnacSend (sess, pak);
+}
+
+/*
+ * CLI_SEARCHWP - SNAC(15,2) - 2000/1331
  */
 void SnacCliSearchwp (Session *sess, const MetaWP *wp)
 {
@@ -1353,7 +1376,7 @@ void SnacCliSearchwp (Session *sess, const MetaWP *wp)
     PacketWrite4       (pak, sess->uin);
     PacketWrite2       (pak, 2000);
     PacketWrite2       (pak, 2);
-    PacketWrite2       (pak, 1331);
+    PacketWrite2       (pak, META_SEARCH_WP);
     PacketWriteLNTS    (pak, wp->first);
     PacketWriteLNTS    (pak, wp->last);
     PacketWriteLNTS    (pak, wp->nick);

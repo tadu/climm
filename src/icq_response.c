@@ -12,6 +12,7 @@
 #include "conv.h"
 #include "packet.h"
 #include "cmd_pkt_cmd_v5.h"
+#include "cmd_pkt_v8_snac.h"
 #include "preferences.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -42,19 +43,23 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
     {
         case META_SRV_PASS:
             M_print (i18n (1197, "Password change was " COLCLIENT "%s" COLNONE ".\n"),
-                     result == 0xA ? i18n (1393, "successful") : i18n (1394, "unsuccessful"));
+                     result == META_SUCCESS ? i18n (1393, "successful") : i18n (1394, "unsuccessful"));
             break;
         case META_SRV_ABOUT_UPDATE:
             M_print (i18n (1395, "About info change was " COLCLIENT "%s" COLNONE ".\n"),
-                     result == 0xA ? i18n (1393, "successful") : i18n (1394, "unsuccessful"));
+                     result == META_SUCCESS ? i18n (1393, "successful") : i18n (1394, "unsuccessful"));
             break;
         case META_SRV_GEN_UPDATE:
             M_print (i18n (1396, "Info change was " COLCLIENT "%s" COLNONE ".\n"),
-                     result == 0xA ? i18n (1393, "successful") : i18n (1394, "unsuccessful"));
+                     result == META_SUCCESS ? i18n (1393, "successful") : i18n (1394, "unsuccessful"));
             break;
         case META_SRV_OTHER_UPDATE:
             M_print (i18n (1397, "Other info change was " COLCLIENT "%s" COLNONE ".\n"),
-                     result == 0xA ? i18n (1393, "successful") : i18n (1394, "unsuccessful"));
+                     result == META_SUCCESS ? i18n (1393, "successful") : i18n (1394, "unsuccessful"));
+            break;
+        case META_SRV_RANDOM_UPDATE:
+            M_print (i18n (2008, "Random chat group change was " COLCLIENT "%s" COLNONE ".\n"),
+                     result == META_SUCCESS ? i18n (1393, "successful") : i18n (1394, "unsuccessful"));
             break;
     }
 
@@ -65,11 +70,11 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             Time_Stamp ();
             M_print (" %s\n", i18n (1398, "Search " COLCLIENT "failed" COLNONE "."));
             return;
-        case 0x1E:
+        case META_READONLY:
             Time_Stamp ();
             M_print (" %s\n", i18n (1900, "It's readonly."));
             return;
-        case 0x0A:
+        case META_SUCCESS:
             break;
         default:
             M_print (i18n (1940, "Unknown Meta User result %x.\n"), result);
@@ -78,21 +83,23 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
 
     switch (subtype)
     {
+        Contact *cont;
         const char *tabd, *data, *data2;
         UWORD wdata, day, month, i;
-        UDWORD len, dwdata;
+        UDWORD len, dwdata, uin;
         int tz;
 
         case META_SRV_ABOUT_UPDATE:
         case META_SRV_OTHER_UPDATE:
         case META_SRV_GEN_UPDATE:
         case META_SRV_PASS:
+        case META_SRV_RANDOM_UPDATE:
             break;
-        case 0x0104: /* 2001-short-info */
+        case META_SRV_INFO:
             Display_Info_Reply (sess, p, NULL, 0);
             /* 3 unknown bytes ignored */
             break;
-        case META_SRV_GEN: /* 0x00C8, main-home-info */
+        case META_SRV_GEN:
             Display_Info_Reply (sess, p, NULL, 0);
 
             if (sess->type == TYPE_SERVER_OLD)
@@ -147,7 +154,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                 : i18n (1568, "Must request authorization." COLNONE " "));
             /* one unknown word ignored according to v7 doc */
             break;
-        case META_SRV_MORE: /* 0x00DC, homepage-more-info */
+        case META_SRV_MORE:
             wdata = PacketRead2 (p);
             if (wdata != 0xffff && wdata != 0)
                 M_print (COLSERV "%-15s" COLNONE " %d\n", 
@@ -194,7 +201,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
 
             /* one unknown word ignored according to v7 doc */
             break;
-        case 0xEB: /* more-email-info */
+        case META_SRV_MOREEMAIL:
             if ((i = PacketRead1 (p)))
                 M_print (COLSERV "%-15s" COLNONE "\n", 
                     i18n (1942, "Additional Email addresses:"));
@@ -208,7 +215,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                         : "");
             }
             break;
-        case META_SRV_WORK: /* 0x00D2, work-info */
+        case META_SRV_WORK:
             data = PacketReadLNTS (p);
             data2 = PacketReadLNTS (p);
             if (*data && *data2)
@@ -257,12 +264,12 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                 M_print (AVPFMT, i18n (1515, "Work Homepage:"), data);
 
             break;
-        case META_SRV_ABOUT: /* 0x00E6, about */
+        case META_SRV_ABOUT:
             if (*(data = PacketReadLNTS (p)))
                 M_print (COLSERV "%-15s" COLNONE "\n " COLCLIENT 
                     "%s" COLNONE "\n", i18n (1525, "About:"), data);
             break;
-        case 0x00F0: /* personal-interests-info */
+        case META_SRV_INTEREST:
             if ((i = PacketRead1 (p)))
                 M_print (COLSERV "%-15s" COLNONE "\n",
                     i18n (1875, "Personal interests:"));
@@ -278,7 +285,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                 }
             }
             break;
-        case 0x00FA: /* past-background-info */
+        case META_SRV_BACKGROUND:
             if ((i = PacketRead1 (p)))
                 M_print (COLSERV "%-15s" COLNONE "\n", 
                     i18n (1876, "Personal past background:"));
@@ -310,8 +317,8 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             }
 
             break;
-        case META_SRV_WP_FOUND: /* 0x01A4, wp-info + lasting */
-        case META_SRV_WP_LAST_USER: /* 0x01AE, wp-info */
+        case META_SRV_WP_FOUND:
+        case META_SRV_WP_LAST_USER:
             if ((len = PacketRead2 (p)) < 19)
             {
                 M_print (i18n (1398, "Search " COLCLIENT "failed" COLNONE "."));
@@ -358,7 +365,26 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             if (subtype == META_SRV_WP_LAST_USER && (dwdata = PacketRead4(p)))
                 M_print ("%lu %s\n", dwdata, i18n (1621, "users not returned."));
             break;
-        case 0x010E:
+        case META_SRV_RANDOM:
+            UtilCheckUIN (sess, uin = PacketRead4 (p));
+            wdata = PacketRead2 (p);
+            M_print (i18n (2009, "Found random chat partner UIN %d in chat group %d.\n"),
+                     uin, wdata);
+            if (sess->ver > 6)
+                SnacCliMetareqinfo (sess, uin);
+            else
+                CmdPktCmdMetaReqInfo (sess, uin);
+            cont = ContactFind (uin);
+            if (!cont)
+                break;
+            cont->outside_ip      = PacketReadB4 (p);
+            cont->port            = PacketRead4  (p);
+            cont->local_ip        = PacketReadB4 (p);
+            cont->connection_type = PacketRead1  (p);
+            cont->TCP_version     = PacketRead2  (p);
+            /* 14 unknown bytes ignored */
+            break;
+        case META_SRV_UNKNOWN_270:
             /* 0, counter like more-email-info? */
             if (!PacketRead2 (p))
                 break;

@@ -34,4 +34,5 @@ void SnacCliMetasetgeneral  (Session *sess, const MetaGeneral *user);
 void SnacCliSearchbypersinf (Session *sess, const char *email, const char *nick, const char *name, const char *surname);
 void SnacCliSearchbymail    (Session *sess, const char *email);
 void SnacCliSearchwp        (Session *sess, const MetaWP *wp);
-void SnacCliRandsearch      (Session *sess, UDWORD group);
+void SnacCliSearchrandom    (Session *sess, UWORD group);
+void SnacCliSetrandom       (Session *sess, UWORD group);

@@ -903,7 +903,7 @@
 1903:Outgoing v8 server packet:
 1904:Server doesn't understand ver %d (only %d) for family %d!¶
 1905:SNAC (%x,%x) [%s] flags %x ref %x¶
-1906:This command operates only on connections of type %s.¶
+1906: 
 1907:Warning: Server thinks our UIN is %d, while it is %d.¶
 1908:Received USERONLINE packet for non-contact.¶
 1909:Received USEROFFLINE packet for non-contact.¶
@@ -956,7 +956,7 @@
 1956: 
 1957: 
 1958:[SOCKS] Connection request refused (%d)
-1959:Other
+1959: 
 1960:Enter data to search user for. Enter \'.\' to start the search.¶
 1961:URL: %s¶
 1962:%04d-%02d-%02d
@@ -1005,3 +1005,7 @@
 2005:Household products
 2006:Mail order catalog
 2007:Business services
+2008:Random chat group change was ©2%s©0.¶
+2009:Found random chat partner UIN %d in chat group %d.¶
+2010:None                       0¶
+2011:You do not have a listening peer-to-peer connection.¶

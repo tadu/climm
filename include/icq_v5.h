@@ -17,14 +17,24 @@
 #define SRV_RAND_USER      	0x024E
 #define SRV_META_USER      	0x03DE
 
-#define META_SRV_GEN        	0x00C8
-#define META_SRV_MORE       	0x00DC
-#define META_SRV_WORK       	0x00D2
-#define META_SRV_ABOUT      	0x00E6
-#define META_SRV_PASS       	0x00AA
-#define META_SRV_GEN_UPDATE 	0x0064
-#define META_SRV_ABOUT_UPDATE 	0x082
-#define META_SRV_OTHER_UPDATE 	0x078
+#define META_SRV_GEN_UPDATE 	100
+#define META_SRV_OTHER_UPDATE 	120
+#define META_SRV_ABOUT_UPDATE 	130
+#define META_SRV_PASS       	170
+#define META_SRV_GEN        	200
+#define META_SRV_WORK       	210
+#define META_SRV_MORE       	220
+#define META_SRV_ABOUT      	230
+#define META_SRV_INTEREST       240
+#define META_SRV_BACKGROUND     250
+#define META_SRV_MOREEMAIL      235
+#define META_SRV_INFO           260
+#define META_SRV_UNKNOWN_270    270
+#define META_SRV_WP_FOUND	420
+#define META_SRV_WP_LAST_USER	430
+#define META_SRV_RANDOM         870
+#define META_SRV_RANDOM_UPDATE  880
 
-#define META_SRV_WP_FOUND	0x01A4
-#define META_SRV_WP_LAST_USER	0x01AE
+#define META_SUCCESS            10
+#define META_FAIL               ??
+#define META_READONLY           30
