@@ -132,9 +132,10 @@ static jump_t jump[] = {
     { &CmdUserTabs,          "tabs",         0,   0 },
     { &CmdUserLast,          "last",         0,   0 },
     { &CmdUserUptime,        "uptime",       0,   0 },
-    { &CmdUserQuit,          "q",            0,   0 },
-    { &CmdUserQuit,          "quit",         0,   0 },
-    { &CmdUserQuit,          "exit",         0,   0 },
+    { &CmdUserQuit,          "q",            0,   1 },
+    { &CmdUserQuit,          "quit",         0,   1 },
+    { &CmdUserQuit,          "x",            0,   2 },
+    { &CmdUserQuit,          "exit",         0,   1 },
     { &CmdUserPass,          "pass",         0,   0 },
     { &CmdUserSMS,           "sms",          0,   0 },
     { &CmdUserPeek,          "peek",         0,   0 },
@@ -3037,7 +3038,7 @@ static JUMP_F(CmdUserContact)
  */
 static JUMP_F(CmdUserQuit)
 {
-    uiG.quit = TRUE;
+    uiG.quit = data;
     return 0;
 }
 

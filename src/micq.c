@@ -518,7 +518,7 @@ int main (int argc, char *argv[])
         if (conn->close)
             conn->close (conn);
     QueueRun ();
-    if (prG->flags & FLAG_AUTOSAVE)
+    if (prG->flags & FLAG_AUTOSAVE && uiG.quit == 1)
     {
         int i, j;
         Contact *cont;
