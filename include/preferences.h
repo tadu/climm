@@ -16,6 +16,9 @@ struct Preferences_s
     UDWORD away_time;   /* time after which to be away automatically; 0 = disable */
     UWORD  tabs;        /* type of tab completion */
     
+    UBYTE  enc_rem;     /* The (assumed) remote encoding */
+    UBYTE  enc_loc;     /* The local character encoding */
+    
     char  *logplace;
 
     char  *sound_cmd;

@@ -31,6 +31,7 @@
 #include "util_str.h"
 #include "util.h"
 #include "tcp.h"
+#include "conv.h"
 
 static void PeerFileDispatchClose   (Connection *ffile);
 static void PeerFileDispatchDClose  (Connection *ffile);
@@ -236,7 +237,7 @@ void PeerFileDispatch (Connection *fpeer)
             
             M_printf ("%s " COLCONTACT "%10s" COLNONE " ", s_now, cont->nick);
             M_printf (i18n (2161, "Receiving %d files with together %d bytes at speed %x from %s.\n"),
-                     nr, len, speed, name);
+                     nr, len, speed, c_in (name));
             
             if (len != fpeer->len)
             {
@@ -259,7 +260,7 @@ void PeerFileDispatch (Connection *fpeer)
             PacketD (pak);
             
             M_printf ("%s " COLCONTACT "%10s" COLNONE " ", s_now, cont->nick);
-            M_printf (i18n (2170, "Sending with speed %x to %s.\n"), speed, name);
+            M_printf (i18n (2170, "Sending with speed %x to %s.\n"), speed, c_in (name));
             
             fpeer->our_seq = 1;
             QueueRetry (fpeer, QUEUE_PEER_FILE, fpeer->uin);
@@ -269,7 +270,7 @@ void PeerFileDispatch (Connection *fpeer)
             
         case 2:
                    PacketRead1 (pak); /* EMPTY */
-            name = strdup (PacketReadLNTS (pak));
+            name = PacketReadLNTS (pak);
             text = PacketReadLNTS (pak);
             len  = PacketRead4 (pak);
                    PacketRead4 (pak); /* EMPTY */
@@ -284,10 +285,10 @@ void PeerFileDispatch (Connection *fpeer)
                 struct stat finfo;
 
                 assert (ffile);
-                snprintf (buf, sizeof (buf), "%s/files/%ld/%n%s", PrefUserDir (), fpeer->uin, &pos, name);
+                snprintf (buf, sizeof (buf), "%s/files/%ld/%n%s", PrefUserDir (), fpeer->uin, &pos, c_in (name));
                 for (p = buf + pos; *p; p++)
-                    if (*p == '/' || *p == '\x80' || (p[0] == 'À' && p[1] == '¯'))
-                        *p = '_';    /* ^ kill misencoded UTF-8-/ */
+                    if (*p == '/')
+                        *p = '_';
                 finfo.st_size = 0;
                 if (!stat (buf, &finfo))
                     if (finfo.st_size < len)

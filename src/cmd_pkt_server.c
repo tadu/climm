@@ -19,6 +19,7 @@
 #include "contact.h"
 #include "util_io.h"
 #include "util_str.h"
+#include "conv.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -178,7 +179,7 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
     jump_srv_t *t;
     static int loginmsg = 0;
     unsigned char ip[4];
-    char *text;
+    char *text, *ctext;
     UWORD wdata;
     Contact *cont;
     UDWORD status;
@@ -342,7 +343,10 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
         case SRV_SYS_DELIVERED_MESS:
             uin   = PacketRead4 (pak);
             wdata = PacketRead2 (pak);
-            text  = PacketReadLNTS (pak);
+            ctext = PacketReadLNTS (pak);
+            
+            text = strdup (c_in (ctext));
+            free (ctext);
 
             UtilCheckUIN (conn, uin);
             if ((cont = ContactFind (uin)))
@@ -450,7 +454,7 @@ static JUMP_SRV_F (CmdPktSrvAck)
         char *tmp;
         M_printf ("%s " COLACK "%10s" COLNONE " %s%s\n",
                  s_now, ContactFindName (PacketReadAt4 (event->pak, CMD_v5_OFF_PARAM)),
-                 MSGACKSTR, MsgEllipsis (tmp = PacketReadAtLNTS (event->pak, 30)));
+                 MSGACKSTR, MsgEllipsis (c_in (tmp = PacketReadAtLNTS (event->pak, 30))));
         free (tmp);
     }
     

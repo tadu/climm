@@ -16,6 +16,7 @@
 #include "cmd_pkt_cmd_v5_util.h"
 #include "preferences.h"
 #include "util.h"
+#include "conv.h"
 #include "util_ui.h"
 #include "buildmark.h"
 #include "util_str.h"
@@ -48,7 +49,7 @@ void CmdPktCmdSendMessage (Connection *conn, UDWORD uin, const char *text, UDWOR
 
     PacketWrite4    (pak, uin);
     PacketWrite2    (pak, type);
-    PacketWriteLNTS (pak, text);
+    PacketWriteLNTS (pak, c_out (text));
     PacketEnqueuev5 (pak, conn);
 }
 
@@ -94,7 +95,7 @@ void CmdPktCmdLogin (Connection *conn)
     PacketWrite4 (pak, time (NULL));
     PacketWrite4 (pak, conn->assoc && conn->assoc->connect & CONNECT_OK ?
                        conn->assoc->port : 0);
-    PacketWriteLNTS (pak, conn->passwd);
+    PacketWriteLNTS (pak, c_out (conn->passwd));
     PacketWrite4 (pak, 0x000000d5);
     PacketWrite4 (pak, conn->our_local_ip);
     PacketWrite1 (pak, conn->assoc && conn->assoc->connect & CONNECT_OK ?
@@ -120,7 +121,7 @@ void CmdPktCmdRegNewUser (Connection *conn, const char *pass)
     assert (strlen (pass) <= 9);
 
     PacketWriteAt4  (pak, CMD_v5_OFF_UIN, 0); /* no UIN */
-    PacketWriteLNTS (pak, pass);
+    PacketWriteLNTS (pak, c_out (pass));
     PacketWrite4    (pak, 0xA0);
     PacketWrite4    (pak, 0x2461);
     PacketWrite4    (pak, 0xA00000);
@@ -179,10 +180,10 @@ void CmdPktCmdSearchUser (Connection *conn, const char *email, const char *nick,
                                          const char *first, const char *last)
 {
     Packet *pak = PacketCv5 (conn, CMD_SEARCH_USER);
-    PacketWriteLNTS (pak, nick);
-    PacketWriteLNTS (pak, first);
-    PacketWriteLNTS (pak, last);
-    PacketWriteLNTS (pak, email);
+    PacketWriteLNTS (pak, c_out (nick));
+    PacketWriteLNTS (pak, c_out (first));
+    PacketWriteLNTS (pak, c_out (last));
+    PacketWriteLNTS (pak, c_out (email));
     PacketEnqueuev5 (pak, conn);
 }
 
@@ -207,7 +208,7 @@ void CmdPktCmdKeepAlive (Connection *conn)
 void CmdPktCmdSendTextCode (Connection *conn, const char *text)
 {
     Packet *pak = PacketCv5 (conn, CMD_SEND_TEXT_CODE);
-    PacketWriteLNTS (pak, text);
+    PacketWriteLNTS (pak, c_out (text));
     PacketWrite1    (pak, 5);
     PacketWrite1    (pak, 0);
     PacketEnqueuev5 (pak, conn);
@@ -294,10 +295,10 @@ void CmdPktCmdUpdateInfo (Connection *conn, const char *email, const char *nick,
                                          const char *first, const char *last, BOOL auth)
 {
     Packet *pak = PacketCv5 (conn, CMD_UPDATE_INFO);
-    PacketWriteLNTS (pak, nick);
-    PacketWriteLNTS (pak, first);
-    PacketWriteLNTS (pak, last);
-    PacketWriteLNTS (pak, email);
+    PacketWriteLNTS (pak, c_out (nick));
+    PacketWriteLNTS (pak, c_out (first));
+    PacketWriteLNTS (pak, c_out (last));
+    PacketWriteLNTS (pak, c_out (email));
     PacketEnqueuev5 (pak, conn);
 
     pak = PacketCv5 (conn, CMD_AUTH_UPDATE);
@@ -348,18 +349,18 @@ void CmdPktCmdMetaGeneral (Connection *conn, MetaGeneral *user)
 {
     Packet *pak = PacketCv5 (conn, CMD_META_USER);
     PacketWrite2    (pak, META_SET_GENERAL_INFO_v5);
-    PacketWriteLNTS (pak, user->nick);
-    PacketWriteLNTS (pak, user->first);
-    PacketWriteLNTS (pak, user->last);
-    PacketWriteLNTS (pak, user->email);
-    PacketWriteLNTS (pak, user->email2);
-    PacketWriteLNTS (pak, user->email3);
-    PacketWriteLNTS (pak, user->city);
-    PacketWriteLNTS (pak, user->state);
-    PacketWriteLNTS (pak, user->phone);
-    PacketWriteLNTS (pak, user->fax);
-    PacketWriteLNTS (pak, user->street);
-    PacketWriteLNTS (pak, user->cellular);
+    PacketWriteLNTS (pak, c_out (user->nick));
+    PacketWriteLNTS (pak, c_out (user->first));
+    PacketWriteLNTS (pak, c_out (user->last));
+    PacketWriteLNTS (pak, c_out (user->email));
+    PacketWriteLNTS (pak, c_out (user->email2));
+    PacketWriteLNTS (pak, c_out (user->email3));
+    PacketWriteLNTS (pak, c_out (user->city));
+    PacketWriteLNTS (pak, c_out (user->state));
+    PacketWriteLNTS (pak, c_out (user->phone));
+    PacketWriteLNTS (pak, c_out (user->fax));
+    PacketWriteLNTS (pak, c_out (user->street));
+    PacketWriteLNTS (pak, c_out (user->cellular));
     PacketWrite4    (pak, user->zip);
     PacketWrite2    (pak, user->country);
     PacketWrite1    (pak, user->tz);
@@ -382,7 +383,7 @@ void CmdPktCmdMetaMore (Connection *conn, MetaMore *info)
     PacketWrite2    (pak, META_SET_MORE_INFO);
     PacketWrite2    (pak, info->age);
     PacketWrite1    (pak, info->sex);
-    PacketWriteLNTS (pak, info->hp);
+    PacketWriteLNTS (pak, c_out (info->hp));
     PacketWrite2    (pak, info->year);
     PacketWrite2    (pak, info->month);
     PacketWrite2    (pak, info->day);
@@ -399,7 +400,7 @@ void CmdPktCmdMetaAbout (Connection *conn, const char *about)
 {
     Packet *pak = PacketCv5 (conn, CMD_META_USER);
     PacketWrite2    (pak, META_SET_ABOUT_INFO);
-    PacketWriteLNTS (pak, about);
+    PacketWriteLNTS (pak, c_out (about));
     PacketEnqueuev5 (pak, conn);
 }
 
@@ -417,7 +418,7 @@ void CmdPktCmdMetaPass (Connection *conn, char *pass)
     assert (strlen (pass) <= 9);
 
     PacketWrite2    (pak, META_SET_PASS);
-    PacketWriteLNTS (pak, pass);
+    PacketWriteLNTS (pak, c_out (pass));
     PacketEnqueuev5 (pak, conn);
 }
 
@@ -439,20 +440,20 @@ void CmdPktCmdMetaSearchWP (Connection *conn, MetaWP *user)
 {
     Packet *pak = PacketCv5 (conn, CMD_META_USER);
     PacketWrite2    (pak, META_SEARCH_WP);
-    PacketWriteLNTS (pak, user->first);
-    PacketWriteLNTS (pak, user->last);
-    PacketWriteLNTS (pak, user->nick);
-    PacketWriteLNTS (pak, user->email);
+    PacketWriteLNTS (pak, c_out (user->first));
+    PacketWriteLNTS (pak, c_out (user->last));
+    PacketWriteLNTS (pak, c_out (user->nick));
+    PacketWriteLNTS (pak, c_out (user->email));
     PacketWrite2    (pak, user->minage);
     PacketWrite2    (pak, user->maxage);
     PacketWrite1    (pak, user->sex);
     PacketWrite2    (pak, user->language);
-    PacketWriteLNTS (pak, user->city);
-    PacketWriteLNTS (pak, user->state);
+    PacketWriteLNTS (pak, c_out (user->city));
+    PacketWriteLNTS (pak, c_out (user->state));
     PacketWrite2    (pak, user->country);
-    PacketWriteLNTS (pak, user->company);
-    PacketWriteLNTS (pak, user->department);
-    PacketWriteLNTS (pak, user->position);
+    PacketWriteLNTS (pak, c_out (user->company));
+    PacketWriteLNTS (pak, c_out (user->department));
+    PacketWriteLNTS (pak, c_out (user->position));
 
 /*  Now it gets REALLY shakey, as I don't know even what
     these particular bits of information are.

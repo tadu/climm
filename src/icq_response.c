@@ -9,6 +9,7 @@
 #include "contact.h"
 #include "util_table.h"
 #include "util.h"
+#include "conv.h"
 #include "packet.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_v8_snac.h"
@@ -110,7 +111,7 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *p)
                     PacketRead2 (p);
             data  = PacketReadStrB (p);
             data2 = PacketReadStrB (p);
-            M_printf (i18n (2080, "The server says about the SMS delivery:\n%s\n"), data2);
+            M_printf (i18n (2080, "The server says about the SMS delivery:\n%s\n"), c_in (data2));
             free (data);
             free (data2);
             break;
@@ -124,42 +125,42 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *p)
             if (conn->type == TYPE_SERVER_OLD)
             {
                 if (*(data = PacketReadLNTS (p)))
-                    M_printf (AVPFMT, i18n (1503, "Other Email:"), data);
+                    M_printf (AVPFMT, i18n (1503, "Other Email:"), c_in (data));
                 free (data);
                 if (*(data = PacketReadLNTS (p)))
-                    M_printf (AVPFMT, i18n (1504, "Old Email:"), data);
+                    M_printf (AVPFMT, i18n (1504, "Old Email:"), c_in (data));
                 free (data);
             }
 
-            data = PacketReadLNTS (p);
+            data2 = PacketReadLNTS (p); data = strdup (c_in (data2)); free (data2);
             data2 = PacketReadLNTS (p);
             if (*data && *data2)
                 M_printf (COLSERVER "%-15s" COLNONE " %s, %s\n", 
-                         i18n (1505, "Location:"), data, data2);
+                         i18n (1505, "Location:"), data, c_in (data2));
             else if (*data)
                 M_printf (AVPFMT, i18n (1570, "City:"), data);
             else if (*data2)
-                M_printf (AVPFMT, i18n (1574, "State:"), data2);
+                M_printf (AVPFMT, i18n (1574, "State:"), c_in (data2));
             free (data);
             free (data2);
 
             if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1506, "Phone:"), data);
+                M_printf (AVPFMT, i18n (1506, "Phone:"), c_in (data));
             free (data);
             if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1507, "Fax:"), data);
+                M_printf (AVPFMT, i18n (1507, "Fax:"), c_in (data));
             free (data);
             if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1508, "Street:"), data);
+                M_printf (AVPFMT, i18n (1508, "Street:"), c_in (data));
             free (data);
             if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1509, "Cellular:"), data);
+                M_printf (AVPFMT, i18n (1509, "Cellular:"), c_in (data));
             free (data);
 
             if (conn->type == TYPE_SERVER)
             {
                 if (*(data = PacketReadLNTS (p)))
-                    M_printf (AVPFMT, i18n (1510, "Zip:"), data);
+                    M_printf (AVPFMT, i18n (1510, "Zip:"), c_in (data));
                 free (data);
             }
             else if ((dwdata = PacketRead4 (p)))
@@ -198,7 +199,7 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *p)
                      :              i18n (1530, "not specified"));
 
             if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1531, "Homepage:"), data);
+                M_printf (AVPFMT, i18n (1531, "Homepage:"), c_in (data));
             free (data);
 
             if (conn->type == TYPE_SERVER_OLD)
@@ -238,7 +239,7 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *p)
             {
                 wdata = PacketRead1 (p);
                 if (*(data = PacketReadLNTS (p)))
-                    M_printf ("  %s %s\n", data, 
+                    M_printf ("  %s %s\n", c_in (data),
                                wdata == 1 ? i18n (1943, "(no authorization needed)") 
                              : wdata == 0 ? i18n (1944, "(must request authorization)")
                              : "");
@@ -246,32 +247,32 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *p)
             }
             break;
         case META_SRV_WORK:
-            data = PacketReadLNTS (p);
+            data2 = PacketReadLNTS (p); data = strdup (c_in (data2)); free (data2);
             data2 = PacketReadLNTS (p);
             if (*data && *data2)
                 M_printf (COLSERVER "%-15s" COLNONE " %s, %s\n", 
-                         i18n (1524, "Work Location:"), data, data2);
+                         i18n (1524, "Work Location:"), data, c_in (data2));
             else if (*data)
                 M_printf (AVPFMT, i18n (1873, "Work City:"), data);
             else if (*data2)
-                M_printf (AVPFMT, i18n (1874, "Work State:"), data2);
+                M_printf (AVPFMT, i18n (1874, "Work State:"), c_in (data2));
             free (data);
             free (data2);
 
             if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1523, "Work Phone:"), data);
+                M_printf (AVPFMT, i18n (1523, "Work Phone:"), c_in (data));
             free (data);
             if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1521, "Work Fax:"), data);
+                M_printf (AVPFMT, i18n (1521, "Work Fax:"), c_in (data));
             free (data);
             if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1522, "Work Address:"), data);
+                M_printf (AVPFMT, i18n (1522, "Work Address:"), c_in (data));
             free (data);
 
             if (conn->type == TYPE_SERVER)
             {  
                 if (*(data = PacketReadLNTS (p)))
-                    M_printf (AVPFMT, i18n (1520, "Work Zip:"), data);
+                    M_printf (AVPFMT, i18n (1520, "Work Zip:"), c_in (data));
                 free (data);
             }
             else if ((dwdata = PacketRead4 (p)))
@@ -288,26 +289,26 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *p)
                              i18n (1513, "Work Country Code:"), wdata);
             }
             if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1519, "Company Name:"), data);
+                M_printf (AVPFMT, i18n (1519, "Company Name:"), c_in (data));
             free (data);
             if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1518, "Department:"), data);
+                M_printf (AVPFMT, i18n (1518, "Department:"), c_in (data));
             free (data);
             if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1517, "Job Position:"), data);
+                M_printf (AVPFMT, i18n (1517, "Job Position:"), c_in (data));
             free (data);
             if ((wdata = PacketRead2 (p))) 
                 M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
                          i18n (1516, "Occupation:"), TableGetOccupation (wdata));
             if (*(data = PacketReadLNTS (p)))
-                M_printf (AVPFMT, i18n (1515, "Work Homepage:"), data);
+                M_printf (AVPFMT, i18n (1515, "Work Homepage:"), c_in (data));
             free (data);
 
             break;
         case META_SRV_ABOUT:
             if (*(data = PacketReadLNTS (p)))
                 M_printf (COLSERVER "%-15s" COLNONE "\n " COLCLIENT "%s" COLNONE "\n",
-                         i18n (1525, "About:"), data);
+                         i18n (1525, "About:"), c_in (data));
             free (data);
             break;
         case META_SRV_INTEREST:
@@ -320,9 +321,9 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *p)
                 if (*(data = PacketReadLNTS (p)))
                 {
                     if ((tabd = TableGetInterest (wdata)))
-                        M_printf ("  %s: %s\n", tabd, data);
+                        M_printf ("  %s: %s\n", tabd, c_in (data));
                     else
-                        M_printf ("  %d: %s\n", wdata, data);
+                        M_printf ("  %d: %s\n", wdata, c_in (data));
                 }
                 free (data);
             }
@@ -337,9 +338,9 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *p)
                 if (*(data = PacketReadLNTS (p)))
                 {
                     if ((tabd = TableGetPast (wdata)))
-                        M_printf ("  %s: %s\n", tabd, data);
+                        M_printf ("  %s: %s\n", tabd, c_in (data));
                     else
-                        M_printf ("  %d: %s\n", wdata, data);
+                        M_printf ("  %d: %s\n", wdata, c_in (data));
                 }
                 free (data);
             }
@@ -352,9 +353,9 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *p)
                 if (*(data = PacketReadLNTS (p)))
                 {
                     if ((tabd = TableGetAffiliation (wdata)))
-                        M_printf ("  %s: %s\n", tabd, data);
+                        M_printf ("  %s: %s\n", tabd, c_in (data));
                     else
-                        M_printf ("  %d: %s\n", wdata, data);
+                        M_printf ("  %d: %s\n", wdata, c_in (data));
                 }
                 free (data);
             }
@@ -478,7 +479,7 @@ void Recv_Message (Connection *conn, Packet *pak)
     struct tm stamp;
     UDWORD uin;
     UWORD type;
-    char *text;
+    char *text, *ctext;
 
     uin            = PacketRead4 (pak);
     stamp.tm_year  = PacketRead2 (pak) - 1900;
@@ -495,7 +496,10 @@ void Recv_Message (Connection *conn, Packet *pak)
     /* FIXME: The following probably only works correctly in Europe. */
     stamp.tm_isdst = -1;
     type           = PacketRead2 (pak);
-    text           = PacketReadLNTS (pak);
+    ctext          = PacketReadLNTS (pak);
+    
+    text = strdup (c_in (ctext));
+    free (ctext);
 
     UtilCheckUIN (conn, uiG.last_rcvd_uin = uin);
     IMSrvMsg (ContactFind (uin), conn, mktime (&stamp), type, text, STATUS_ONLINE);
@@ -514,18 +518,18 @@ void Display_Info_Reply (Connection *conn, Packet *pak, const char *uinline,
 
     if (*(data = PacketReadLNTS (pak)))
         M_printf (COLSERVER "%-15s" COLNONE " " COLCONTACT "%s" COLNONE "\n",
-                 i18n (1500, "Nickname:"), data);
+                 i18n (1500, "Nickname:"), c_in (data));
     free (data);
 
-    data = PacketReadLNTS (pak);
+    data2 = PacketReadLNTS (pak); data = strdup (c_in (data2)); free (data2);
     data2 = PacketReadLNTS (pak);
     if (*data && *data2)
         M_printf (COLSERVER "%-15s" COLNONE " %s\t %s\n",
-                 i18n (1501, "Name:"), data, data2);
+                 i18n (1501, "Name:"), data, c_in (data2));
     else if (*data)
         M_printf (AVPFMT, i18n (1564, "First name:"), data);
     else if (*data2)
-        M_printf (AVPFMT, i18n (1565, "Last name:"), data2);
+        M_printf (AVPFMT, i18n (1565, "Last name:"), c_in (data2));
     free (data);
     free (data2);
 
@@ -536,12 +540,12 @@ void Display_Info_Reply (Connection *conn, Packet *pak, const char *uinline,
         wdata = PacketRead1 (pak);
         if (*data)
             M_printf (COLSERVER "%-15s" COLNONE " %s\t%s\n", 
-                     i18n (1566, "Email address:"), data,
+                     i18n (1566, "Email address:"), c_in (data),
                      wdata == 1 ? i18n (1943, "(no authorization needed)")
                                 : i18n (1944, "(must request authorization)"));
     }
     else if (*data)
-        M_printf (AVPFMT, i18n (1502, "Email:"), data);
+        M_printf (AVPFMT, i18n (1502, "Email:"), c_in (data));
     free (data);
 }
 
@@ -560,18 +564,18 @@ void Display_Ext_Info_Reply (Connection *conn, Packet *pak, const char *uinline)
         M_printf ("%s " COLSERVER "%lu" COLNONE "\n", uinline, 
             PacketRead4 (pak));
 
-    data = PacketReadLNTS (pak);
+    data2 = PacketReadLNTS (pak); data = strdup (c_in (data2)); free (data2);
     wdata = PacketRead2 (pak);
     tz = (signed char) PacketRead1 (pak);
     data2 = PacketReadLNTS (pak);
 
     if (*data && *data2)
         M_printf (COLSERVER "%-15s" COLNONE " %s, %s\n", 
-                 i18n (1505, "Location:"), data, data2);
+                 i18n (1505, "Location:"), data, c_in (data2));
     else if (*data)
         M_printf (AVPFMT, i18n (1570, "City:"), data);
     else if (*data2)
-        M_printf (AVPFMT, i18n (1574, "State:"), data2);
+        M_printf (AVPFMT, i18n (1574, "State:"), c_in (data2));
     free (data);
     free (data2);
 
@@ -599,14 +603,14 @@ void Display_Ext_Info_Reply (Connection *conn, Packet *pak, const char *uinline)
              :              i18n (1530, "not specified"));
 
     if (*(data = PacketReadLNTS (pak)))
-        M_printf (AVPFMT, i18n (1506, "Phone:"), data);
+        M_printf (AVPFMT, i18n (1506, "Phone:"), c_in (data));
     free (data);
     if (*(data = PacketReadLNTS (pak)))
-        M_printf (AVPFMT, i18n (1531, "Homepage:"), data);
+        M_printf (AVPFMT, i18n (1531, "Homepage:"), c_in (data));
     free (data);
     if (*(data = PacketReadLNTS (pak)))
         M_printf (COLSERVER "%-15s" COLNONE "\n " COLCLIENT "%s" COLNONE "\n",
-                 i18n (1525, "About:"), data);
+                 i18n (1525, "About:"), c_in (data));
     free (data);
 }
 

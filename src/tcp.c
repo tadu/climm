@@ -15,6 +15,7 @@
 #include "util.h"
 #include "buildmark.h"
 #include "network.h"
+#include "conv.h"
 #include "cmd_user.h"
 #include "icq_response.h"
 #include "preferences.h"
@@ -1174,7 +1175,7 @@ void TCPPrint (Packet *pak, Connection *peer, BOOL out)
     {
         UWORD seq, typ;
         UDWORD sta, fla;
-        char *msg;
+        char *msg, *cmsg;
 
         cmd = PacketRead1 (pak);
               PacketRead4 (pak);
@@ -1187,7 +1188,11 @@ void TCPPrint (Packet *pak, Connection *peer, BOOL out)
         typ = PacketRead2 (pak);
         sta = PacketRead2 (pak);
         fla = PacketRead2 (pak);
-        msg = PacketReadLNTS (pak);
+        cmsg = PacketReadLNTS (pak);
+        
+        msg = strdup (c_in (cmsg));
+        free (cmsg);
+        
         M_printf (i18n (2053, "TCP %s seq %x type %x status %x flags %x: '%s'\n"),
                  TCPCmdName (cmd), seq, typ, sta, fla, msg);
         free (msg);
@@ -1195,7 +1200,7 @@ void TCPPrint (Packet *pak, Connection *peer, BOOL out)
         {
             UDWORD id1, id2, id3, id4, un1, un2, un3, un4;
             UWORD emp, port, pad, port2, len, flen;
-            char *text, *reason, *name;
+            char *ctext, *text, *reason, *name;
 
             cmd  = PacketRead2 (pak);
             id1  = PacketReadB4 (pak);
@@ -1203,7 +1208,7 @@ void TCPPrint (Packet *pak, Connection *peer, BOOL out)
             id3  = PacketReadB4 (pak);
             id4  = PacketReadB4 (pak);
             emp  = PacketRead2 (pak);
-            text = PacketReadDLStr (pak);
+            ctext= PacketReadDLStr (pak);
             un1  = PacketReadB4 (pak);
             un2  = PacketReadB4 (pak);
             un3  = PacketReadB4 (pak);
@@ -1217,8 +1222,12 @@ void TCPPrint (Packet *pak, Connection *peer, BOOL out)
             name = PacketReadLNTS (pak);
             flen = PacketRead4 (pak);
             port2= PacketRead4 (pak);
+            
+            text = strdup (c_in (ctext));
+            free (ctext);
+            
             M_printf ("GREET %s (empty: %d) text '%s' lendiff %d reason '%s' port %d pad %x name '%s' flen %d port2 %d\n",
-                     TCPCmdName (cmd), emp, text, len, reason, port, pad, name, flen, port2);
+                     TCPCmdName (cmd), emp, text, len, reason, port, pad, c_in (name), flen, port2);
             M_printf ("   ID %08x %08x %08x %08x\n", id1, id2, id3, id4);
             M_printf ("  UNK %08x %08x %08x %06x\n", un1, un2, un3, un4);
             free (name);
@@ -1254,7 +1263,7 @@ static Packet *PacketTCPC (Connection *peer, UDWORD cmd, UDWORD seq, UWORD type,
     PacketWrite2      (pak, type);       /* message type               */
     PacketWrite2      (pak, status);     /* flags                      */
     PacketWrite2      (pak, flags);      /* status                     */
-    PacketWriteLNTS   (pak, msg);        /* the message                */
+    PacketWriteLNTS   (pak, c_out (msg));/* the message                */
     
     return pak;
 }
@@ -1301,10 +1310,10 @@ static void TCPGreet (Packet *pak, UWORD cmd, char *reason, UWORD port, UDWORD l
     PacketWriteB4    (pak, 0);
     PacketWriteB4    (pak, 0);
     PacketWriteLen4  (pak);
-    PacketWriteDLStr (pak, reason);
+    PacketWriteDLStr (pak, c_out (reason));
     PacketWriteB2    (pak, port);
     PacketWriteB2    (pak, 0);
-    PacketWriteLNTS  (pak, msg);
+    PacketWriteLNTS  (pak, c_out (msg));
     PacketWrite4     (pak, len);
     if (cmd != 0x2d)
         PacketWrite4     (pak, port);
@@ -1634,7 +1643,7 @@ BOOL TCPSendFiles (Connection *list, UDWORD uin, char *description, char **files
             sumlen += fstat.st_size;
             pak = PeerPacketC (fpeer, 2);
             PacketWrite1 (pak, 0);
-            PacketWriteLNTS (pak, as[i]);
+            PacketWriteLNTS (pak, c_out (as[i]));
             PacketWriteLNTS (pak, "");
             PacketWrite4 (pak, fstat.st_size);
             PacketWrite4 (pak, 0);
@@ -1748,7 +1757,7 @@ static void TCPCallBackReceive (Event *event)
 {
     Contact *cont;
     Packet *pak;
-    char *tmp, *tmp3, *text, *reason, *name;
+    char *tmp, *ctmp, *tmp3, *ctext, *text, *reason, *name, *cname;
     UWORD cmd, type, seq, port;
     UDWORD len, status, flags;
 
@@ -1774,8 +1783,11 @@ static void TCPCallBackReceive (Event *event)
     type   = PacketRead2 (pak);
     status = PacketRead2 (pak);
     flags  = PacketRead2 (pak);
-    tmp    = PacketReadLNTS (pak);
+    ctmp   = PacketReadLNTS (pak);
     /* fore/background color ignored */
+    
+    tmp = strdup (c_in (ctmp));
+    free (ctmp);
     
     switch (cmd)
     {
@@ -1824,7 +1836,7 @@ static void TCPCallBackReceive (Event *event)
                              PacketReadB4 (pak);
                              PacketReadB4 (pak);
                              PacketRead2 (pak);    /* EMPTY */
-                    text   = PacketReadDLStr (pak);
+                    ctext  = PacketReadDLStr (pak);
                              PacketReadB4 (pak);   /* UNKNOWN */
                              PacketReadB4 (pak);
                              PacketReadB4 (pak);
@@ -1834,9 +1846,15 @@ static void TCPCallBackReceive (Event *event)
                     reason = PacketReadDLStr (pak);
                     port   = PacketReadB2 (pak);
                              PacketRead2 (pak);    /* PAD */
-                    name   = PacketReadLNTS (pak);
+                    cname  = PacketReadLNTS (pak);
                     len    = PacketRead4 (pak);
                              /* PORT2 ignored */
+
+                    text = strdup (c_in (ctext));
+                    free (ctext);
+                    name = strdup (c_in (cname));
+                    free (cname);
+
                     switch (cmd)
                     {
                         case 0x0029:
@@ -1892,9 +1910,12 @@ static void TCPCallBackReceive (Event *event)
 
                 case TCP_MSG_FILE:
                     cmd  = PacketRead4 (pak);
-                    tmp3 = PacketReadLNTS (pak);
+                    ctmp = PacketReadLNTS (pak);
                     len  = PacketRead4 (pak);
                     type = PacketRead4 (pak);
+                    
+                    tmp3 = strdup (c_in (ctmp));
+                    free (ctmp);
 
                     if (PeerFileRequested (event->conn, tmp3, len))
                     {
@@ -1920,15 +1941,20 @@ static void TCPCallBackReceive (Event *event)
                         cmd    = PacketRead2 (pak);
                                  PacketReadData (pak, NULL, 16);
                                  PacketRead2 (pak);
-                        text   = PacketReadDLStr (pak);
+                        ctext  = PacketReadDLStr (pak);
                                  PacketReadData (pak, NULL, 15);
                                  PacketRead4 (pak);
                         reason = PacketReadDLStr (pak);
                         /*port=*/PacketReadB2 (pak);
                         /*pad=*/ PacketRead2 (pak);
-                        name   = PacketReadLNTS (pak);
+                        cname  = PacketReadLNTS (pak);
                         flen   = PacketRead4 (pak);
                         /*port2*/PacketRead4 (pak);
+                        
+                        text = strdup (c_in (ctext));
+                        free (ctext);
+                        name = strdup (c_in (cname));
+                        free (name);
                         
                         switch (cmd)
                         {
