@@ -3,4 +3,5 @@
 2002-06-10: Finally 0.4.9 is released, featuring full v8 support.
 2002-08-08: Many fixes, including most memory leaks.
 2002-08-26: 0.4.9.3: file transfer, Trillian bug fix, more translations, colors customizable, ~-expansion for logplace
-
+2002-10-??: 0.4.9.4: fix/improve file transfer, Peter Backes' new log file format, recognize most clients,
+                     capabilities support, dump packets following a syntax definition, allow quoting of parameters
