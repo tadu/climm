@@ -1,6 +1,13 @@
-micq (0.4.8.pl5-0) unstable; urgency=low
+micq (0.4.8.pl6-0) unstable; urgency=high
 
   * New upstream.
+  * There is no automatic reconnect in v8 yet. Server and listening
+    port can be chosen. Closes: #119513, #92611
+  * New setup wizard. Closes: #144422, #143038
+    (since when is having to setup your conf file yourself RC???)
+  * New "rem" command. Closes: #92606
+  * No response to moreinfo. Closes: #107562
+  * No bugs left in BTS.
 
  -- Ruediger Kuhlmann <Ruediger.Kuhlmann@stud.uni-karlsruhe.de>  Wed, 27 Apr 2002 12:00:00 +0100
 
