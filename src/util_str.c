@@ -661,6 +661,7 @@ BOOL s_parserem_s (char **input, char **parsed, char *sep)
         else
             (*parsed)--;
     }
+    *input = p + strlen (p);
     return TRUE;
 }
 
