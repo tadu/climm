@@ -139,7 +139,7 @@ static void CallbackMeta (Event *event)
     Contact *cont;
     
     cont = ContactUIN (event->conn, event->uin);
-    if (cont->updated != UP_INFO && !event->flags & QUEUE_FLAG_CONSIDERED)
+    if ((cont->updated & UP_INFO) != UP_INFO && !(event->flags & QUEUE_FLAG_CONSIDERED))
         QueueEnqueue (event);
     else
     {
