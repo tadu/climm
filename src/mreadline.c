@@ -23,6 +23,7 @@
 #include "mreadline.h"
 #include "util_ui.h"
 #include "ui.h"
+#include "tabs.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -135,8 +136,8 @@ void R_process_input_tab (void)
     }
     else
     {
-        if (strncmp (s, message_cmd, strlen (message_cmd)) ||
-           (strpbrk (s, UIN_DELIMS) && strpbrk (s, UIN_DELIMS) - s < strlen (s) - 1))
+        if (*s && (strncmp (s, message_cmd, strlen (message_cmd)) ||
+                  (strpbrk (s, UIN_DELIMS) && strpbrk (s, UIN_DELIMS) - s < strlen (s) - 1)))
         {
             M_print ("\a");
             return;
