@@ -486,7 +486,7 @@ void UserOnlineSetVersion (Contact *con, time_t tstamp, time_t tstamp2, time_t t
         v4 =  tstamp2 &       0xff;
     }
     else if (tstamp == tstamp2 && tstamp2 == tstamp3)
-        new = "vICQ(?)";
+        new = "vICQ/GAIM(?)";
     else if ((tstamp & 0xffff0000) == 0xffff0000)
     {
         snprintf (buf, sizeof (buf), "%08lx", tstamp);
@@ -643,6 +643,9 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
     if (prG->event_cmd && strlen (prG->event_cmd))
         ExecScript (prG->event_cmd, uin, type, cdata);
 #endif
+
+    if (sess->flags & SFLAG_BEEP)
+        printf ("\a");
 
     if (timestr)
         M_print ("%s", timestr);
