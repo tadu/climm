@@ -357,9 +357,10 @@ void TCPDispatchConn (Connection *peer)
                     peer->connect = CONNECT_FAIL;
                     return;
                 }
+                if (peer->type == TYPE_MSGDIRECT)
+                    peer->port    = cont->port;
                 peer->server  = NULL;
                 peer->ip      = cont->local_ip;
-                peer->port    = cont->port;
                 peer->connect = 3;
                 
                 if (prG->verbose)
@@ -994,8 +995,8 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
         if (iip)      cont->local_ip = iip;
         if (tcpflag)  cont->connection_type = tcpflag;
 
-        Debug (DEB_TCP, "HS %d uin %d nick %s init pak %p peer %d: ver %04x:%04x port %d uin %d SID %08x",
-                        peer->sok, peer->uin, ContactFindName (peer->uin), pak, peer, peer->ver, len, port, uin, sid);
+        Debug (DEB_TCP, "HS %d uin %d nick %s init pak %p peer %d: ver %04x:%04x port %d uin %d SID %08x type %x",
+                        peer->sok, peer->uin, ContactFindName (peer->uin), pak, peer, peer->ver, len, port, uin, sid, peer->type);
 
         for (i = 0; (peer2 = ConnectionNr (i)); i++)
             if (     peer2->type == peer->type && peer2->parent == peer->parent
@@ -1270,6 +1271,7 @@ static int TCPSendMsgAck (Connection *peer, UWORD seq, UWORD type, BOOL accept)
 {
     Packet *pak;
     const char *msg;
+    char *cmsg;
     UWORD status, flags;
     Connection *flist;
 
@@ -1309,7 +1311,9 @@ static int TCPSendMsgAck (Connection *peer, UWORD seq, UWORD type, BOOL accept)
     if (peer->parent->parent->status & STATUSF_INV)  flags |= TCP_MSGF_INV;
     flags ^= TCP_MSGF_LIST;
 
-    pak = PacketTCPC (peer, TCP_CMD_ACK, seq, type, flags, status, c_out (msg));
+    cmsg = strdup (c_out (msg));
+    pak = PacketTCPC (peer, TCP_CMD_ACK, seq, type, flags, status, cmsg);
+    free (cmsg);
     switch (type)
     {
         case TCP_MSG_FILE:
@@ -1902,7 +1906,7 @@ static void TCPCallBackReceive (Event *event)
                         text = strdup (c_in (ctext));
                         free (ctext);
                         name = strdup (c_in (cname));
-                        free (name);
+                        free (cname);
                         
                         switch (cmd)
                         {
