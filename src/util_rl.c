@@ -305,6 +305,7 @@ static RETSIGTYPE tty_int_handler (int i)
     rl_prompt_stat = 0;
     rl_tab_state = 0;
     rl_historyadd ();
+    s_init (&rl_input, "", 0);
     ReadLinePromptReset ();
     ReadLinePrompt ();
 
@@ -1063,7 +1064,10 @@ str_t ReadLine (UBYTE newbyte)
     
     input = ConvFrom (&rl_input, prG->enc_loc);
     if (input->txt[0] == CHAR_INCOMPLETE)
-        return NULL;
+    {
+        if (strcmp (rl_input.txt, ConvTo (input->txt, prG->enc_loc)->txt))
+            return NULL;
+    }
     
     rl_inputdone = 0;
     rl_interrupted = 0;
