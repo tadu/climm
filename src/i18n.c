@@ -98,6 +98,7 @@ void i18nInit (const char *arg)
             prG->locale_broken = TRUE;
     }
 #endif
+
     if (!earg)
     {
         earg = getenv ("LC_ALL");
@@ -105,8 +106,6 @@ void i18nInit (const char *arg)
         {
             if (!prG->locale_orig)
                 s_repl (&prG->locale_orig, earg);
-            if (!*earg || !strcasecmp (earg, "C") || !strcasecmp (earg, "POSIX"))
-                earg = NULL;
         }
         if (!earg)
         {
@@ -115,8 +114,6 @@ void i18nInit (const char *arg)
             {
                 if (!prG->locale_orig)
                     s_repl (&prG->locale_orig, earg);
-                if (!*earg || !strcasecmp (earg, "C") || !strcasecmp (earg, "POSIX"))
-                    earg = NULL;
             }
             if (!earg)
             {
@@ -125,15 +122,13 @@ void i18nInit (const char *arg)
                 {
                     if (!prG->locale_orig)
                         s_repl (&prG->locale_orig, earg);
-                    if (!*earg || !strcasecmp (earg, "C") || !strcasecmp (earg, "POSIX"))
-                        earg = NULL;
                 }
             }
         }
         if (earg && !prG->locale_full)
             s_repl (&prG->locale_full, earg);
         if (!earg)
-            earg = "en_US.US-ASCII";
+            earg = "C";
         if (strchr (earg, '.') && arg && !strchr (arg, '.'))
         {
             arg = earg;
@@ -170,10 +165,10 @@ int i18nOpen (const char *loc)
     char *floc = NULL, *p;
     FILE *i18nf;
 
-    if (!strcmp (loc, "en_US.US-ASCII"))
+    if (!strcmp (loc, "en_US.US-ASCII") || !strcmp (loc, "C") || !strcmp (loc, "C"))
     {
         i18nClose ();
-        s_repl (&prG->locale, "en_US.US-ASCII");
+        s_repl (&prG->locale, "C");
         if (prG->enc_loc & ENC_FAUTO)
             prG->enc_loc = ENC_FAUTO | ENC_ASCII;
         return 0;
