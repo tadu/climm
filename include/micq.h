@@ -1,24 +1,8 @@
-/*********************************************
+/*
  * $Id$
  *
- * Header file for ICQ protocol structres and
- * constants
- *
- * This software is provided AS IS to be used in
- * whatever way you see fit and is placed in the
- * public domain.
- * 
- * Author : Matthew Smith April 19, 1998
- * Contributors : Lalo Martins Febr 26, 1999
- * 
- * Changes :
- *  4-21-98 Increase the size of data associtated
- *           with the packets to enable longer messages. mds
- *  4-22-98 Added function prototypes and extern variables mds
- *  4-22-98 Added SRV_GO_AWAY code for bad passwords etc.
- *  (I assume Matt did a lot of unrecorded changes after these - Lalo)
- *  2-26-99 Added TAB_SLOTS, tab_array, add_tab() and get_tab() (Lalo)
- **********************************************/
+ * structures and includes used by all mICQ source files
+ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -78,8 +62,6 @@ typedef struct PreferencesSession_s PreferencesSession;
 #define STDIN 0
 #define STDOUT 1
 #define STDERR 2
-
-
 
 #include "icq_v2.h"
 #include "icq_v4.h"
@@ -178,6 +160,5 @@ enum logtype
     LOG_LIST,    /* added someone to the contact list */
     LOG_EVENT    /* other event */
 };
-
 
 #include "i18n.h"

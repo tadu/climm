@@ -28,7 +28,7 @@ TODO:
  : history of messages
  : alias for commands
  : tab completion (improve)
- : saving personal information
+ : save meta info about contacts, save to file
  : finish implementing file transfer (fixed?)
    + add receive command
    + add better syntax (a bit fixed, awaiting user feedback)
@@ -38,3 +38,4 @@ TODO:
  : implement more server message types, unify handling
  : use ASCII art for setup wizard
  : implement UTF-8 input
+ : use type-2 outgoing messages, unify code with peer2peer messages

@@ -1,9 +1,7 @@
 $Id$
 
-
 mICQ's original Author was:
 	Matthew D. Smith
-
 
 current Maintainer:
 	Rüdiger Kuhlmann	<micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
@@ -13,24 +11,42 @@ Contributors:
 	Rico Gloeckner		<mc@ukeer.de>
 	    hosts micq.org and the mailinglist
 
-	Frederic Lamorce	<flamorce@dataradio.com>
-	    added Socks5 Support (for v5)
-	    
-	Lalo Martins		
-	    various patches and Features
-	    brazil translation
-	
 	Michel Oosterhof	<micheloo@xs4all.nl>
 	    auto{conf,make} support
 
         Peter Backes            <rtc@helen.PLASMA.Xg8.DE>
             v8: info stuff; code cleanup
 
+	Frederic Lamorce	<flamorce@dataradio.com>
+	    added Socks5 Support (for v5)
+	    
 	Sergey Shkonda		<serg@bcs.zp.ua>
 	    mreadline
 
+	Lalo Martins		
+	    various patches and Features
+	    brazil translation
 
-Translators:
+Current Translators:
+
+	Alberto Bertogli	<albertogli@telpin.com.ar>
+	    spanish (es.i18n) translation 0.4.9.3
+	    spanish man pages, spanish web page
+	
+	"Pest"			<pezt@mail.ru>
+	    update russian (ru.i18n) translation to 0.4.9.3
+	    russian man pages, russian web page
+
+	Guillaume Coqueblin	<esquimo_2ooo@caramail.com>
+	    (update) french (fr.i18n) translation to >= 0.4.8pl9
+	
+	Julien Gilli		<jgilli@nerim.fr>
+	    french man pages, french web pages
+	
+	Guido Gloor		<haslo@haslo.ch>
+	    swiss-german (de_CH.i18n) translation to 0.4.9.3
+
+Former Translators:
 
 	Valerie Dachev		<v.dachev@mail.com>
 	    bulgarian translation
@@ -44,25 +60,9 @@ Translators:
 	Dmitri Lukyanov		<ldv@sdsl-64-7-10-170.dsl.iad.megapath.net>
 	    (update) russian translation
 
-	"Pest"			<pezt@mail.ru>
-	    update russian (ru.i18n) translation to 0.4.9.3
-	    russian man pages, russian web page
-
 	Björn Hansson		<hansson@netera.se>
 	    (update) swedish translation
 
 	Benjamin Michotte <binny@baby-linux.net>
 	    (update) french translation
 	
-	Alberto Bertogli	<albertogli@telpin.com.ar>
-	    spanish (es.i18n) translation 0.4.9.3
-	    spanish man pages, spanish web page
-	
-	Guillaume Coqueblin	<esquimo_2ooo@caramail.com>
-	    (update) french (fr.i18n) translation to >= 0.4.8pl9
-	
-	Julien Gilli		<jgilli@nerim.fr>
-	    french man pages, french web pages
-	
-	Guido Gloor		<haslo@haslo.ch>
-	    swiss-german (de_CH.i18n) translation 0.4.9.3
