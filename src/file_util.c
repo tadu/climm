@@ -46,20 +46,6 @@
 
 /****/
 
-
-/************************************************************************
- Copies src string into dest.  If src is NULL dest becomes ""
-*************************************************************************/
-/*
-static void M_strcpy (char *dest, char *src)
-{
-    if (src)
-        strcpy (dest, src);
-    else
-        *dest = '\0';
-}
-*/
-
 #define WAND1 " · · "
 #define WAND2 "· o ·"
 #define WAND3 " · \\ "
@@ -241,9 +227,9 @@ void Initalize_RC_File ()
     ContactAdd (82274703, "mICQ maintainer");
 }
 
-#define PrefParse(x)          switch (1) { case 1: if (!UtilUIParse          (&args, &x)) { M_print (i18n (2123, "%sSyntax error%s: Too few arguments: '%s'\n"), COLERROR, COLNONE, buf); continue; }}
-#define PrefParseInt(i)       switch (1) { case 1: if (!UtilUIParseInt       (&args, &i)) { M_print (i18n (2124, "%sSyntax error%s: Not an integer: '%s'\n"), COLERROR, COLNONE, buf); continue; }}
-#define PrefParseRemainder(x) switch (1) { case 1: if (!UtilUIParseRemainder (&args, &x)) { M_print (i18n (2123, "%sSyntax error%s: Too few arguments: '%s'\n"), COLERROR, COLNONE, buf); continue; }}
+#define PrefParse(x)          switch (1) { case 1: if (!s_parse    (&args, &x)) { M_print (i18n (2123, "%sSyntax error%s: Too few arguments: '%s'\n"), COLERROR, COLNONE, buf); continue; }}
+#define PrefParseInt(i)       switch (1) { case 1: if (!s_parseint (&args, &i)) { M_print (i18n (2124, "%sSyntax error%s: Not an integer: '%s'\n"), COLERROR, COLNONE, buf); continue; }}
+#define PrefParseRemainder(x) switch (1) { case 1: if (!s_parserem (&args, &x)) { M_print (i18n (2123, "%sSyntax error%s: Too few arguments: '%s'\n"), COLERROR, COLNONE, buf); continue; }}
 
 #define ADD_CMD(a,b)     else if (!strcasecmp (tmp, a))       \
                                  { PrefParseRemainder (tmp);   \
@@ -304,12 +290,12 @@ void Read_RC_File (FILE *rcf)
                 M_print (" %s\n", buf);
                 break;
             case 0:
-                if (!UtilUIParse (&args, &cmd))
+                if (!s_parse (&args, &cmd))
                     continue;
 
                 if (!strcasecmp (cmd, "receivescript"))
                 {
-                    if (!UtilUIParseRemainder (&args, &tmp))
+                    if (!s_parserem (&args, &tmp))
                     {
                         dep = 1;
                         prG->event_cmd = NULL;
@@ -374,7 +360,7 @@ void Read_RC_File (FILE *rcf)
                 }
                 else if (!strcasecmp (cmd, "color"))
                 {
-                    if (!UtilUIParseInt (&args, &i))
+                    if (!s_parseint (&args, &i))
                     {
                         PrefParse (tmp);
                         
@@ -405,7 +391,7 @@ void Read_RC_File (FILE *rcf)
                             continue;
                         buf[0] = '\0';
 
-                        while (UtilUIParse (&args, &cmd))
+                        while (s_parse (&args, &cmd))
                         {
                             if      (!strcasecmp (cmd, "black"))   c = BLACK;
                             else if (!strcasecmp (cmd, "red"))     c = RED;
@@ -437,7 +423,7 @@ void Read_RC_File (FILE *rcf)
                 }
                 else if (!strcasecmp (cmd, "auto"))
                 {
-                    if (!UtilUIParse (&args, &tmp))
+                    if (!s_parse (&args, &tmp))
                     {
                         dep = 1;
                         prG->flags |= FLAG_AUTOREPLY;
@@ -459,7 +445,7 @@ void Read_RC_File (FILE *rcf)
                 }
                 else if (!strcasecmp (cmd, "sound"))
                 {
-                    if (!UtilUIParseRemainder (&args, &tmp))
+                    if (!s_parserem (&args, &tmp))
                     {
                         prG->sound |= SFLAG_BEEP;
                         dep |= 1;
@@ -476,7 +462,7 @@ void Read_RC_File (FILE *rcf)
                 }
                 else if (!strcasecmp (cmd, "soundonline"))
                 {
-                    if (!UtilUIParseRemainder (&args, &tmp))
+                    if (!s_parserem (&args, &tmp))
                     {
                         prG->sound |= SFLAG_ON_BEEP;
                         dep |= 1;
@@ -493,7 +479,7 @@ void Read_RC_File (FILE *rcf)
                 }
                 else if (!strcasecmp (cmd, "soundoffline"))
                 {
-                    if (!UtilUIParseRemainder (&args, &tmp))
+                    if (!s_parserem (&args, &tmp))
                     {
                         prG->sound |= SFLAG_OFF_BEEP;
                         dep |= 1;
@@ -716,7 +702,7 @@ void Read_RC_File (FILE *rcf)
                     }
                     else 
                         ERROR;
-                    if (UtilUIParse (&args, &cmd))
+                    if (s_parse (&args, &cmd))
                     {
                         if (!strcasecmp (cmd, "auto"))
                             sess->spref->flags |= CONN_AUTOLOGIN;

@@ -13,7 +13,6 @@
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_v8_snac.h"
 #include "preferences.h"
-#include "conv.h"
 #include "session.h"
 #include "util_str.h"
 #include <stdlib.h>
@@ -605,40 +604,11 @@ void Display_Ext_Info_Reply (Session *sess, Packet *pak, const char *uinline)
 }
 
 /*
- * strtok()/strsep() replacement
- */
-static char *_septok (char *txt)
-{
-    static char *str = NULL;
-    static char sep = '\0';
-    char *p, *t;
-    
-    if (txt)
-        str = txt;
-    if (!sep)
-        sep = ConvSep ();
-    if (!str)
-        return NULL;
-    p = strchr (t = str, sep);
-    if (p)
-    {
-        *p = '\0';
-        str = p + 1;
-    }
-    else
-    {
-        str = NULL;
-    }
-    return t;
-}
-
-/*
  * Central entry point for incoming messages.
  */
 void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const char *text, UDWORD tstatus)
 {
     char *cdata, *carr;
-    char sep[2];
     
     if (!cont)
         return;
@@ -652,8 +622,6 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
     while (*cdata && strchr ("\n\r", cdata[strlen (cdata) - 1]))
         cdata[strlen (cdata) - 1] = '\0';
 
-    sep[0] = ConvSep ();
-    sep[1] = '\0';
     carr = sess->type & TYPEF_ANY_SERVER ? MSGRECSTR : MSGTCPRECSTR;
 
     TabAddUIN (cont->uin);            /* Adds <uin> to the tab-list */
@@ -701,7 +669,7 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
 
     switch (type & ~MSGF_MASS)
     {
-        char *tmp, *tmp2, *tmp3, *tmp4, *tmp5, *tmp6;
+        const char *tmp, *tmp2, *tmp3, *tmp4, *tmp5, *tmp6;
         int i;
 
         while (1) {
@@ -753,24 +721,24 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
             break;
 
         case MSG_URL:
-            tmp  = _septok (cdata); if (!tmp)  continue;
-            tmp2 = _septok (NULL);  if (!tmp2) continue;
+            tmp  = s_msgtok (cdata); if (!tmp)  continue;
+            tmp2 = s_msgtok (NULL);  if (!tmp2) continue;
             
             M_print ("%s" COLMESSAGE "%s" COLNONE "\n%s", carr, tmp, s_now);
             M_print (i18n (2127, "       URL: %s%s%s%s\n"), carr, COLMESSAGE, tmp2, COLNONE);
             break;
 
         case MSG_AUTH_REQ:
-            tmp = _septok (cdata); if (!tmp) continue;
-            tmp2 = _septok (NULL);
+            tmp = s_msgtok (cdata); if (!tmp) continue;
+            tmp2 = s_msgtok (NULL);
             tmp3 = tmp4 = tmp5 = tmp6 = NULL;
             
             if (tmp2)
             {
-                tmp3 = _septok (NULL); if (!tmp3) continue;
-                tmp4 = _septok (NULL); if (!tmp4) continue;
-                tmp5 = _septok (NULL); if (!tmp5) continue;
-                tmp6 = _septok (NULL); if (!tmp6) continue;
+                tmp3 = s_msgtok (NULL); if (!tmp3) continue;
+                tmp4 = s_msgtok (NULL); if (!tmp4) continue;
+                tmp5 = s_msgtok (NULL); if (!tmp5) continue;
+                tmp6 = s_msgtok (NULL); if (!tmp6) continue;
             }
             else
             {
@@ -804,15 +772,15 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
             break;
 
         case MSG_AUTH_ADDED:
-            tmp = _septok (cdata);
+            tmp = s_msgtok (cdata);
             if (!tmp)
             {
                 M_print (i18n (1755, "has added you to their contact list.\n"));
                 break;
             }
-            tmp2 = _septok (NULL); if (!tmp2) continue;
-            tmp3 = _septok (NULL); if (!tmp3) continue;
-            tmp4 = _septok (NULL); if (!tmp4) continue;
+            tmp2 = s_msgtok (NULL); if (!tmp2) continue;
+            tmp3 = s_msgtok (NULL); if (!tmp3) continue;
+            tmp4 = s_msgtok (NULL); if (!tmp4) continue;
 
             M_print ("\n" COLCONTACT "%s" COLNONE " ", tmp);
             M_print (i18n (1755, "has added you to their contact list.\n"));
@@ -823,11 +791,11 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
 
         case MSG_EMAIL:
         case MSG_WEB:
-            tmp  = _septok (cdata); if (!tmp)  continue;
-            tmp2 = _septok (NULL);  if (!tmp2) continue;
-            tmp3 = _septok (NULL);  if (!tmp3) continue;
-            tmp4 = _septok (NULL);  if (!tmp4) continue;
-            tmp5 = _septok (NULL);  if (!tmp5) continue;
+            tmp  = s_msgtok (cdata); if (!tmp)  continue;
+            tmp2 = s_msgtok (NULL);  if (!tmp2) continue;
+            tmp3 = s_msgtok (NULL);  if (!tmp3) continue;
+            tmp4 = s_msgtok (NULL);  if (!tmp4) continue;
+            tmp5 = s_msgtok (NULL);  if (!tmp5) continue;
 
             M_print ("\n%s ", tmp);
             M_print ("\n??? %s", tmp2);
@@ -842,15 +810,15 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
             break;
 
         case MSG_CONTACT:
-            tmp = _septok (cdata); if (!tmp) continue;
+            tmp = s_msgtok (cdata); if (!tmp) continue;
 
             M_print (i18n (1595, "\nContact List.\n============================================\n%d Contacts\n"),
                      i = atoi (cdata));
 
             while (i--)
             {
-                tmp2 = _septok (NULL); if (!tmp2) continue;
-                tmp3 = _septok (NULL); if (!tmp3) continue;
+                tmp2 = s_msgtok (NULL); if (!tmp2) continue;
+                tmp3 = s_msgtok (NULL); if (!tmp3) continue;
                 
                 M_print (COLCONTACT "%s\t\t\t", tmp2);
                 M_print (COLMESSAGE "%s" COLNONE "\n", tmp3);

@@ -8,11 +8,6 @@ void   M_print (const char *str, ...);
 int    M_pos ();
 BOOL   Debug (UDWORD level, const char *str, ...);
 
-BOOL   UtilUIParse          (char **input, char **parsed);
-BOOL   UtilUIParseNick      (char **input, Contact **parsed, Contact **parsedr, Session *serv);
-BOOL   UtilUIParseInt       (char **input, UDWORD *parsed);
-BOOL   UtilUIParseRemainder (char **input, char **parsed);
-/* ... */
 void   UtilUIUserOnline  (Session *sess, Contact *cont, UDWORD status);
 void   UtilUIUserOffline (Session *sess, Contact *cont);
 void   UtilUISetVersion (Contact *cont);

@@ -186,7 +186,7 @@ static JUMP_F(CmdUserChange)
 
     if (data == -1)
     {
-        if (!UtilUIParseInt (&args, &data))
+        if (!s_parseint (&args, &data))
         {
             M_print (i18n (1703, "Status modes:\n"));
             M_print ("  %-20s %d\n", i18n (1921, "Online"),         STATUS_ONLINE);
@@ -199,7 +199,7 @@ static JUMP_F(CmdUserChange)
             return 0;
         }
     }
-    if (UtilUIParseRemainder (&args, &arg1))
+    if (s_parserem (&args, &arg1))
     {
         if      (data & STATUSF_DND)  s_repl (&prG->auto_dnd,  arg1);
         else if (data & STATUSF_OCC)  s_repl (&prG->auto_occ,  arg1);
@@ -226,7 +226,7 @@ static JUMP_F(CmdUserRandom)
     UDWORD arg1 = 0;
     OSESSION;
     
-    if (!UtilUIParseInt (&args, &arg1))
+    if (!s_parseint (&args, &arg1))
     {
         M_print (i18n (1704, "Groups:\n"));
         M_print ("  %2d %s\n",  1, i18n (1705, "General"));
@@ -259,7 +259,7 @@ static JUMP_F(CmdUserRandomSet)
     UDWORD arg1 = 0;
     OSESSION;
     
-    if (!UtilUIParseInt (&args, &arg1))
+    if (!s_parseint (&args, &arg1))
     {
         M_print (i18n (1704, "Groups:\n"));
         M_print ("  %2d %s\n", sess->ver > 6 ? 0 : -1, i18n (1716, "None"));
@@ -296,7 +296,7 @@ static JUMP_F(CmdUserHelp)
     char *arg1 = NULL;
     char what;
 
-    UtilUIParse (&args, &arg1);
+    s_parse (&args, &arg1);
 
     if (!arg1) what = 0;
     else if (!strcasecmp (arg1, i18n (1447, "Client"))   || !strcasecmp (arg1, "Client"))   what = 1;
@@ -544,7 +544,7 @@ static JUMP_F(CmdUserPass)
     char *arg1 = NULL;
     OSESSION;
     
-    if (!UtilUIParseRemainder (&args, &arg1))
+    if (!s_parserem (&args, &arg1))
         M_print (i18n (2012, "No password given.\n"));
     else
     {
@@ -575,12 +575,12 @@ static JUMP_F(CmdUserSMS)
         M_print (i18n (2013, "This command is v8 only.\n"));
         return 0;
     }
-    if (!UtilUIParse (&args, &arg1))
+    if (!s_parse (&args, &arg1))
         M_print (i18n (2014, "No number given.\n"));
     else
     {
         arg1 = strdup (arg1);
-        if (!UtilUIParseRemainder (&args, &arg2))
+        if (!s_parserem (&args, &arg2))
             M_print (i18n (2015, "No message given.\n"));
         else
             SnacCliSendsms (sess, arg1, arg2);
@@ -597,7 +597,7 @@ static JUMP_F(CmdUserInfo)
     Contact *cont = NULL, *contr = NULL;
     OSESSION;
 
-    if (!UtilUIParseNick (&args, &cont, &contr, sess))
+    if (!s_parsenick (&args, &cont, &contr, sess))
     {
         M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
@@ -636,7 +636,7 @@ static JUMP_F(CmdUserPeek)
         return 0;
     }
 
-    if (!UtilUIParseNick (&args, &cont, NULL, sess))
+    if (!s_parsenick (&args, &cont, NULL, sess))
         M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
     else
         SnacCliSendmsg (sess, cont->uin, "", 0xe8);
@@ -657,13 +657,13 @@ static JUMP_F(CmdUserTrans)
     {
         UDWORD i, l = 0;
 
-        if (UtilUIParseInt (&args, &i))
+        if (s_parseint (&args, &i))
         {
             M_print ("%3d:%s\n", i, i18n (i, i18n (1078, "No translation available.")));
             one = 1;
             continue;
         }
-        if (UtilUIParse (&args, &arg1))
+        if (s_parse (&args, &arg1))
         {
             if (!strcmp (arg1, "all"))
             {
@@ -707,10 +707,10 @@ static JUMP_F(CmdUserTrans)
             for (t = arg1; *t; t++)
                 if (*t == '-')
                     *t = ' ';
-            UtilUIParseInt (&arg1, &v1);
-            UtilUIParseInt (&arg1, &v2);
-            UtilUIParseInt (&arg1, &v3);
-            UtilUIParseInt (&arg1, &v4);
+            s_parseint (&arg1, &v1);
+            s_parseint (&arg1, &v2);
+            s_parseint (&arg1, &v3);
+            s_parseint (&arg1, &v4);
             
             /* i18n (1079, "Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n") */
             M_print (i18n (-1, "1079:No translation; using compiled-in strings.¶"),
@@ -741,12 +741,12 @@ static JUMP_F(CmdUserPeer)
             return 0;
         }
 
-        if (!UtilUIParse (&args, &arg1))
+        if (!s_parse (&args, &arg1))
             break;
         
         arg1 = strdup (arg1);
 
-        if (!UtilUIParseNick (&args, &cont, NULL, sess))
+        if (!s_parsenick (&args, &cont, NULL, sess))
         {
             M_print (i18n (1845, "Nick %s unknown.\n"), args);
             free (arg1);
@@ -768,13 +768,13 @@ static JUMP_F(CmdUserPeer)
         {
             char *files[1], *ass[1], *des = NULL, *file;
             
-            if (!UtilUIParse (&args, &file))
+            if (!s_parse (&args, &file))
             {
                 M_print (i18n (2158, "No file given.\n"));
                 return 0;
             }
             files[0] = file = strdup (file);
-            if (!UtilUIParse (&args, &des))
+            if (!s_parse (&args, &des))
                 des = file;
             des = strdup (des);
 
@@ -793,13 +793,13 @@ static JUMP_F(CmdUserPeer)
             
             for (count = 0; count < 10; count++)
             {
-                if (!UtilUIParse (&args, &des))
+                if (!s_parse (&args, &des))
                 {
                     des = strdup (i18n (2159, "Some files."));
                     break;
                 }
                 files[count] = des = strdup (des);
-                if (!UtilUIParse (&args, &as))
+                if (!s_parse (&args, &as))
                     break;
                 if (*as == '/' && !*(as + 1))
                     as = (strchr (des, '/')) ? strrchr (des, '/') + 1 : des;
@@ -886,7 +886,7 @@ static JUMP_F(CmdUserAuto)
 {
     char *arg1 = NULL, *arg2 = NULL;
 
-    if (!UtilUIParse (&args, &arg1))
+    if (!s_parse (&args, &arg1))
     {
         M_print (i18n (1724, "Automatic replies are %s.\n"),
                  prG->flags & FLAG_AUTOREPLY ? i18n (1085, "on") : i18n (1086, "off"));
@@ -914,7 +914,7 @@ static JUMP_F(CmdUserAuto)
     
     arg1 = strdup (arg1);
 
-    if (!UtilUIParseRemainder (&args, &arg2))
+    if (!s_parserem (&args, &arg2))
     {
         M_print (i18n (1735, "Must give a message.\n"));
         free (arg1);
@@ -951,12 +951,12 @@ static JUMP_F(CmdUserAlter)
     jump_t *j;
     int quiet = 0;
 
-    UtilUIParse (&args, &arg1);
+    s_parse (&args, &arg1);
 
     if (arg1 && !strcasecmp ("quiet", arg1))
     {
         quiet = 1;
-        UtilUIParse (&args, &arg1);
+        s_parse (&args, &arg1);
     }
         
     if (!arg1)
@@ -974,7 +974,7 @@ static JUMP_F(CmdUserAlter)
         return 0;
     }
     
-    if (UtilUIParse (&args, &arg2))
+    if (s_parse (&args, &arg2))
     {
         if (CmdUserLookup (arg2, CU_USER))
         {
@@ -1011,7 +1011,7 @@ static JUMP_F (CmdUserResend)
         return 0;
     }
 
-    if (!UtilUIParseNick (&args, &cont, NULL, sess))
+    if (!s_parsenick (&args, &cont, NULL, sess))
     {
         if (*args)
             M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
@@ -1024,7 +1024,7 @@ static JUMP_F (CmdUserResend)
     {
         icq_sendmsg (sess, uiG.last_sent_uin = cont->uin,
                      uiG.last_message_sent, uiG.last_message_sent_type);
-        if (!UtilUIParseNick (&args, &cont, NULL, sess))
+        if (!s_parsenick (&args, &cont, NULL, sess))
         {
             if (*args)
                 M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
@@ -1129,13 +1129,13 @@ static JUMP_F (CmdUserMessage)
         switch (data)
         {
             case 1:
-                if (!UtilUIParseNick (&args, &cont, NULL, sess))
+                if (!s_parsenick (&args, &cont, NULL, sess))
                 {
                     M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
                     return 0;
                 }
                 uin = cont->uin;
-                UtilUIParseRemainder (&args, &arg1);
+                s_parserem (&args, &arg1);
                 break;
             case 2:
                 if (!uiG.last_rcvd_uin)
@@ -1144,7 +1144,7 @@ static JUMP_F (CmdUserMessage)
                     return 0;
                 }
                 uin = uiG.last_rcvd_uin;
-                UtilUIParseRemainder (&args, &arg1);
+                s_parserem (&args, &arg1);
                 break;
             case 4:
                 if (!uiG.last_sent_uin)
@@ -1153,11 +1153,11 @@ static JUMP_F (CmdUserMessage)
                     return 0;
                 }
                 uin = uiG.last_sent_uin;
-                UtilUIParseRemainder (&args, &arg1);
+                s_parserem (&args, &arg1);
                 break;
             case 8:
                 uin = -1;
-                UtilUIParseRemainder (&args, &arg1);
+                s_parserem (&args, &arg1);
                 break;
             default:
                 assert (0);
@@ -1211,7 +1211,7 @@ static JUMP_F(CmdUserVerbose)
 {
     UDWORD i = 0;
 
-    if (UtilUIParseInt (&args, &i))
+    if (s_parseint (&args, &i))
         prG->verbose = i;
     else if (*args)
     {
@@ -1255,9 +1255,9 @@ static JUMP_F(CmdUserStatusDetail)
     ASESSION;
 
     if (!data)
-        UtilUIParseInt (&args, &data);
+        s_parseint (&args, &data);
 
-    if ((data & 8) && (!sess || !UtilUIParseNick (&args, &cont, NULL, sess)) && *args)
+    if ((data & 8) && (!sess || !s_parsenick (&args, &cont, NULL, sess)) && *args)
     {
         M_print (i18n (1700, "%s is not a valid user in your list.\n"), args);
         return 0;
@@ -1713,13 +1713,13 @@ static JUMP_F(CmdUserAutoaway)
     char *arg1 = NULL;
     UDWORD i = 0;
 
-    if (UtilUIParseInt (&args, &i))
+    if (s_parseint (&args, &i))
     {
         if (prG->away_time)
             uiG.away_time_prev = prG->away_time;
         prG->away_time = i;
     }
-    else if (UtilUIParse (&args, &arg1))
+    else if (s_parse (&args, &arg1))
     {
         if      (!strcmp (arg1, i18n (1085, "on"))  || !strcmp (arg1, "on"))
         {
@@ -1745,7 +1745,7 @@ static JUMP_F(CmdUserSet)
     int quiet = 0;
     char *arg1 = NULL;
     
-    if (!UtilUIParse (&args, &arg1) || !strcmp (arg1, "help") || !strcmp (arg1, "?"))
+    if (!s_parse (&args, &arg1) || !strcmp (arg1, "help") || !strcmp (arg1, "?"))
     {
         M_print (i18n (1820, "%s <option> [on|off] - control simple options.\n"), CmdUserLookupName ("set"));
         M_print (i18n (1822, "    color: use colored text output.\n"));
@@ -1754,7 +1754,7 @@ static JUMP_F(CmdUserSet)
     }
     else if (!strcmp (arg1, "color"))
     {
-        if (UtilUIParse (&args, &arg1))
+        if (s_parse (&args, &arg1))
         {
             if (!strcmp (arg1, "on") || !strcmp (arg1, i18n (1085, "on")))
             {
@@ -1778,7 +1778,7 @@ static JUMP_F(CmdUserSet)
     }
     else if (!strcmp (arg1, "funny"))
     {
-        if (UtilUIParse (&args, &arg1))
+        if (s_parse (&args, &arg1))
         {
             if (!strcmp (arg1, "on") || !strcmp (arg1, i18n (1085, "on")))
             {
@@ -1802,7 +1802,7 @@ static JUMP_F(CmdUserSet)
     }
     else if (!strcmp (arg1, "quiet"))
     {
-        if (UtilUIParse (&args, &arg1))
+        if (s_parse (&args, &arg1))
         {
             if (!strcmp (arg1, "on") || !strcmp (arg1, i18n (1085, "on")))
             {
@@ -1866,7 +1866,7 @@ static JUMP_F(CmdUserTogIgnore)
     Contact *cont = NULL, *contr = NULL;
     OSESSION;
 
-    if (!UtilUIParseNick (&args, &cont, &contr, sess))
+    if (!s_parsenick (&args, &cont, &contr, sess))
     {
         M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
@@ -1894,7 +1894,7 @@ static JUMP_F(CmdUserTogInvis)
     Contact *cont = NULL, *contr = NULL;
     OSESSION;
 
-    if (!UtilUIParseNick (&args, &cont, &contr, sess))
+    if (!s_parsenick (&args, &cont, &contr, sess))
     {
         M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
@@ -1938,7 +1938,7 @@ static JUMP_F(CmdUserTogVisible)
     Contact *cont = NULL, *contr = NULL;
     OSESSION;
 
-    if (!UtilUIParseNick (&args, &cont, &contr, sess))
+    if (!s_parsenick (&args, &cont, &contr, sess))
     {
         M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
@@ -1977,13 +1977,13 @@ static JUMP_F(CmdUserAdd)
     char *arg1;
     OSESSION;
 
-    if (!UtilUIParseNick (&args, &cont, NULL, sess))
+    if (!s_parsenick (&args, &cont, NULL, sess))
     {
         M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
     }
 
-    if (!UtilUIParseRemainder (&args, &arg1))
+    if (!s_parserem (&args, &arg1))
     {
         M_print (i18n (2116, "No new nick name given.\n"));
         return 0;
@@ -2041,7 +2041,7 @@ static JUMP_F(CmdUserRem)
     char *alias;
     OSESSION;
 
-    if (!UtilUIParseNick (&args, &cont, NULL, sess))
+    if (!s_parsenick (&args, &cont, NULL, sess))
     {
         M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
@@ -2113,7 +2113,7 @@ static JUMP_F(CmdUserAuth)
     OSESSION;
 
     argsb = args;
-    if (!UtilUIParse (&args, &cmd))
+    if (!s_parse (&args, &cmd))
     {
         M_print (i18n (2119, "auth [grant] <nick>    - grant authorization.\n"));
         M_print (i18n (2120, "auth deny <nick> <msg> - refuse authorization.\n"));
@@ -2123,9 +2123,9 @@ static JUMP_F(CmdUserAuth)
     }
     cmd = strdup (cmd);
 
-    if (UtilUIParseNick (&args, &cont, NULL, sess))
+    if (s_parsenick (&args, &cont, NULL, sess))
     {
-        UtilUIParse (&args, &msg);
+        s_parse (&args, &msg);
         if (!strcmp (cmd, "req"))
         {
 /* FIXME: v8 packets seem to cause trouble */
@@ -2165,7 +2165,7 @@ static JUMP_F(CmdUserAuth)
             return 0;
         }
     }
-    if ((strcmp (cmd, "grant") && !UtilUIParseNick (&argsb, &cont, NULL, sess)) || !cont)
+    if ((strcmp (cmd, "grant") && !s_parsenick (&argsb, &cont, NULL, sess)) || !cont)
     {
         M_print (i18n (1061, "'%s' not recognized as a nick name.\n"),
                  strcmp (cmd, "grant") && strcmp (cmd, "req") && strcmp (cmd, "deny") ? argsb : args);
@@ -2204,13 +2204,13 @@ static JUMP_F(CmdUserURL)
     Contact *cont = NULL;
     OSESSION;
 
-    if (!UtilUIParseNick (&args, &cont, NULL, sess))
+    if (!s_parsenick (&args, &cont, NULL, sess))
     {
         M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
     }
 
-    if (!UtilUIParse (&args, &url))
+    if (!s_parse (&args, &url))
     {
         M_print (i18n (1678, "Need URL please.\n"));
         return 0;
@@ -2218,7 +2218,7 @@ static JUMP_F(CmdUserURL)
 
     url = strdup (url);
 
-    if (!UtilUIParseRemainder (&args, &msg))
+    if (!s_parserem (&args, &msg))
         msg = "";
 
     uiG.last_sent_uin = cont->uin;
@@ -2259,7 +2259,7 @@ static JUMP_F(CmdUserLast)
     Contact *cont = NULL, *contr = NULL;
     OSESSION;
 
-    if (!UtilUIParseNick (&args, &cont, &contr, sess))
+    if (!s_parsenick (&args, &cont, &contr, sess))
     {
         M_print (i18n (1682, "You have received messages from:\n"));
         for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
@@ -2339,7 +2339,7 @@ static JUMP_F(CmdUserConn)
     int i;
     Session *sess;
 
-    if (!UtilUIParse (&args, &arg1))
+    if (!s_parse (&args, &arg1))
     {
         M_print (i18n (1887, "Connections:"));
         M_print ("\n  " COLINDENT);
@@ -2372,7 +2372,7 @@ static JUMP_F(CmdUserConn)
     {
         UDWORD i = 0, j;
 
-        if (!UtilUIParseInt (&args, &i))
+        if (!s_parseint (&args, &i))
             for (j = 0; (sess = SessionNr (j)); j++)
                 if (sess->type & TYPEF_SERVER)
                 {
@@ -2398,7 +2398,7 @@ static JUMP_F(CmdUserConn)
     {
         UDWORD i = 0;
 
-        if (!UtilUIParseInt (&args, &i))
+        if (!s_parseint (&args, &i))
             i = SessionFindNr (currsess) + 1;
 
         sess = SessionNr (i - 1);
@@ -2425,7 +2425,7 @@ static JUMP_F(CmdUserConn)
     {
         UDWORD i = 0;
 
-        UtilUIParseInt (&args, &i);
+        s_parseint (&args, &i);
 
         sess = SessionNr (i - 1);
         if (!sess)
@@ -2445,7 +2445,7 @@ static JUMP_F(CmdUserConn)
     {
         UDWORD i = 0;
 
-        UtilUIParseInt (&args, &i);
+        s_parseint (&args, &i);
 
         sess = SessionNr (i - 1);
         if (!sess)
@@ -2490,7 +2490,7 @@ static JUMP_F(CmdUserContact)
 
     if (!data)
     {
-        if (!UtilUIParse (&args, &tmp))       data = 0;
+        if (!s_parse (&args, &tmp))           data = 0;
         else if (!strcasecmp (tmp, "show"))   data = 1;
         else if (!strcasecmp (tmp, "diff"))   data = 2;
         else if (!strcasecmp (tmp, "add"))    data = 3;
@@ -2591,14 +2591,14 @@ static JUMP_F(CmdUserSearch)
     switch (status)
     {
         case 0:
-            if (!UtilUIParse (&args, &arg1))
+            if (!s_parse (&args, &arg1))
             {
                 M_print (i18n (1960, "Enter data to search user for. Enter '.' to start the search.\n"));
                 R_setpromptf ("%s ", i18n (1656, "Enter the user's nick name:"));
                 return 200;
             }
             arg1 = strdup (arg1);
-            if (UtilUIParse (&args, &arg2))
+            if (s_parse (&args, &arg2))
             {
                 if (sess->ver > 6)
                     SnacCliSearchbypersinf (sess, NULL, NULL, arg1, arg2);
@@ -3097,7 +3097,7 @@ void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag)
                 return;
             }
             args = buf;
-            if (!UtilUIParse (&args, &cmd))
+            if (!s_parse (&args, &cmd))
             {
                 if (!command)
                     R_resetprompt ();
@@ -3128,7 +3128,7 @@ void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag)
                 jump_t *j = (jump_t *)NULL;
                 
                 cmd = strdup (cmd);
-                if (!UtilUIParseRemainder (&args, &argsd))
+                if (!s_parserem (&args, &argsd))
                     argsd = "";
                 argsd = strdup (argsd);
 

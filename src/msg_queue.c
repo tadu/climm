@@ -16,6 +16,7 @@
 #include "micq.h"
 #include "msg_queue.h"
 #include "util_ui.h"
+#include "util_str.h"
 
 struct QueueEntry
 {
@@ -42,7 +43,7 @@ void QueueInit (Queue **myqueue)
 {
     assert (myqueue);
     
-    if (myqueue)
+    if (*myqueue)
         queue = *myqueue;
     else
     {
@@ -335,7 +336,6 @@ void QueueRetry (UDWORD uin, UDWORD type)
  */
 const char *QueueType (UDWORD type)
 {
-    static char buf[10];
     switch (type)
     {
         case QUEUE_FLAP:          return "FLAP";
@@ -349,7 +349,6 @@ const char *QueueType (UDWORD type)
         case QUEUE_PEER_FILE:     return "PEER_FILE";
         case QUEUE_PEER_RESEND:   return "PEER_RESEND";
     }
-    snprintf (buf, sizeof (buf), "%lx", type);
-    return buf;
+    return s_sprintf ("%lx", type);
 }
 
