@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.55 2002/11/12 17:03:45
+#  EN: __.i18n,v 1.57 2002/12/09 12:48:07
 1001:de
 1002:de_DE
 1003:0-4-9-3
@@ -39,7 +39,7 @@
 1039:Der Server behauptet, wir wären nicht verbunden.\n
 1040:mICQ> 
 1041:msg> 
-1042:msgAll> 
+1042.msgAll> 
 1043:Alle Benutzer gefunden.
 1044:Zu viele Benutzer gefunden.
 1045:Suche beendet.
@@ -70,8 +70,8 @@
 1080:Konnte Übersetzung "%s" nicht laden.\n
 1081:Deutsche Übersetzung erfolgreich geladen (%ld Einträge).\n
 1082:Versuche, neu zu verbinden... [Versuch %d von %d]\n
-1083:Klang-Befehl:
-1084:Klang ist
+1083.Klang-Befehl:
+1084.Klang ist
 1085:an
 1086:aus
 1089:Entferne Übersetzung aus dem Speicher.
@@ -174,7 +174,7 @@
 1185:Techniker
 1186:Student (Uni)
 1187:Webdesigner
-1188:Unbekannte Option '%s' in der Konfigurationsdatei ignoriert.
+1188:Unbekannte Option "%s" in der Konfigurationsdatei ignoriert.
 1189.Benutzernummer = %ld\n
 1190.Port    = %ld\n
 1191.Paßwort = %s\n
@@ -594,7 +594,7 @@
 1646:Der Server ist beschäftigt.\n
 1648:Die Antwort war %04x	
 1649:Die Version war %x	
-1650:\nDie Folgenummer war %04x	
+1650:\nDie Folgenummer war %04lx	
 1651:Die Größe war %d\n
 1653:Abgeklemmt
 1654:Verbunden
@@ -660,7 +660,7 @@
 1745:Unbekannt
 1746: Nr Type                aus/eingehend Pakete/identische Pakete\n
 1747:Gesamt
-1754: Hinweis: Sie müssen diese Änderung mit "save" abspeichern.\n
+1754:Hinweis: Sie müssen diese Änderung mit "save" abspeichern.\n
 1755:hat Sie zu seiner Kontaktliste hinzugefügt.\n
 1756:\nErstelle Verbindung...\n
 1757:Konnte keine Verbindung herstellen.\n
@@ -674,7 +674,7 @@
 1765:%s hat die Benutzernummer %ld.
 1766:Automatische Abwesenheit bzw. Nichtverfügbarkeit nach %s%ld%s Sekunden.\n
 1767:Schaltet die automatische Abwesenheitsschaltung an oder ab.
-1768:Der Bezeichner '%s' ist schon in Verwendung.\n
+1768:Der Bezeichner "%s" ist schon in Verwendung.\n
 1770:Sendet die letzte Nachricht an <uin> bzw. <nick>.
 1771:Noch keine Nachricht an irgendwen verschickt!\n
 1774:Eingehendes Paket:
@@ -701,10 +701,10 @@
 1799:weiterführende Schule
 1800:Wählt die Sprache <lang> aus, oder zeigt Text <nr> an.
 1801:Zeigt den Status aller Kontakte im breiten Format an.
-1802:Klang-Befehl, wenn jemand verbindet:
-1803:Klang-Befehl, wenn jemand sich abmeldet:
-1804:Klang, wenn jemand verbindet:
-1805:Klang, wenn sich jemand abmeldet:
+1802.Klang-Befehl, wenn jemand verbindet:
+1803.Klang-Befehl, wenn jemand sich abmeldet:
+1804.Klang, wenn jemand verbindet:
+1805.Klang, wenn sich jemand abmeldet:
 1807:Eingehende Nachricht %04x von %s abgebrochen.\n
 1808:Gymnasium
 1810:Universität
@@ -713,7 +713,7 @@
 1814:Versende automatische Antwort an %s%s%s.\n
 1815:    funny: Lustige Meldungen verwenden.\n
 1816:Unbekannte Option %s des set-Kommandos.\n
-1817:"ReceiveScript"-Eigenschaft wurde entfernt.\n
+1817:Die FÃ¤higkeit, auf Ereignisse mit einem Skript zu reagieren, ist abgeschaltet.\n
 1818:Warnung: Veraltete Syntax in der Konfigurationsdatei gefunden!\nBitte neu erstellen oder mit "save" überschreiben und auf Änderungen prüfen.\n
 1820:%s <option> [an|aus] - einfach Optionen ändern.\n
 1822:    color: Farbe verwenden.\n
@@ -895,9 +895,9 @@
 2047:Erzeuge Verzeichnis %s.\n
 2048:Speichere Einstellungen in %s.\n
 2049:Lade Gruppe "%s" herunter:\n
-2050:Importiere %d Kontakte.\n
+2050.Importiere %d Kontakte.\n
 2051:Fehler am Kommunikationsendpunkt: %s (%d)\n
-2053.TCP %s Sequenz %x Typ %x Status %x Optionen %x: '%s'\n
+2053.TCP %s Sequenz %x Typ %x Status %x Optionen %x: "%s"\n
 2054:Die für-Plaudereien-frei-Nachricht ist:
 2055:Der Benutzer ist für Plauereien frei und möchte über alles plaudern.
 2056:peer auto  <nick> - Hole die automatische Antwort von diesem Kontakt.\n
@@ -959,9 +959,9 @@
 2119:auth [grant] <Spitz>      - autorisieren.\n
 2120:auth deny <Spitz> <Warum> - Autorisierung ablehnen.\n
 2121:auth req  <Spitz> <Warum> - Autorisierung anfragen.\n
-2122: Hinweis: Die Paßwort-Änderung muß mittels "save" abgespeichert werden.\n
-2123:%sSyntax-Fehler%s: Zu wenige Argumente: '%s'\n
-2124:%sSyntax-Fehler%s: Keine ganze Zahl: '%s'\n
+2122:Hinweis: Die Paßwort-Änderung muß mittels "save" abgespeichert werden.\n
+2123:%sSyntax-Fehler%s: Zu wenige Argumente: "%s"\n
+2124:%sSyntax-Fehler%s: Keine ganze Zahl: "%s"\n
 2126:Der Benutzer ist nicht verbunden, die Nachricht (%s#%08lx:%08lx%s) wird eingereiht.\n
 2127:       URL: %s%s%s%s\n
 2128: Beschreibung: %s%s%s\n
@@ -1025,12 +1025,12 @@
 2190.Das ICQ-Programm des Kontaktes unterstützt keine Typ-2-Nachrichten.\n
 2191:Fehler beim Versenden einer Nachricht: %d.\n
 2192:Fähigkeiten: 
-2193:Verzeichnis %s existiert nicht.\n
+2193.Verzeichnis %s existiert nicht.\n
 2194:Kann Verbindungen dieses Typs nicht ohne weiteres öffnen.\n
 2195:Veraltete Nummer:
 2196:Veralteter Text:
 2197:Veraltetes Byte
-2198:Ungeeignetes Paßwort '%s' - darf nicht mit Zeichen 0xf3 beginnen.\n
+2198:Ungeeignetes Paßwort "%s" - darf nicht mit Zeichen 0xf3 beginnen.\n
 2199:  -h, --help     gibt diesen hilfe-Text aus\n
 2200:  -v, --verbose  setzt (oder erhöht) Ausführlichkeit (zur Fehlersuche)\n
 2201:  -b, --basedir  anderes BASIS-Verzeichnis verwenden (Standard: %s)\n
@@ -1052,16 +1052,16 @@
 2217:Dieses mICQ kann nicht zwischen "%s" und Unicode konvertieren.\n
 2218:UIN: %s\n
 2220:mehrere
-2221:Entferne temporären Kontakt '%s' (%ld).\n
+2221:Entferne temporären Kontakt "%s" (%ld).\n
 2222:Skript-Kommando "%s" fehlgeschlagen: %s (%d).\n
 2223:Öffne Fernbedienungskanal auf %s... 
 2225:Fernbedienung
 2226:Konnte FIFO nicht erschaffen
 2227:Konnte FIFO nicht öffnen
 2228:Konnte FIFO nicht nicht-blockieren machen
-2229:Lehne Dateiübertragung '%s' ab (%ld bytes): %s.\n
+2229:Lehne Dateiübertragung "%s" ab (%ld bytes): %s.\n
 2230:Lehne Chatanfrage ab (%s/%s) from %s.\n
-2231:Dateiübertragung '%s' vom Gegenüber abgelehnt: %s.\n
+2231:Dateiübertragung "%s" vom Gegenüber abgelehnt: %s.\n
 2232:fragt die Autorisierung an: %s%s\n
 2233:hat die Autorisierung abgelehnt: %s%s\n
 2234:Nachricht "%s" weggeworfen - die Verbindung ist verschwunden.\n
@@ -1070,3 +1070,23 @@
 2237:Webaware:
 2238:IP verstecken:
 2239:Unbekanntes:
+2240:Keine Kontaktgruppe angegeben.\n
+2241:Füge "%s" zur Kontaktgruppe "%s" hinzu.\n
+2242:Importiere %d neue Kontakte, insgesamt %d Hinzufügungen zu Kontaktgruppen.\n
+2243:Entferne Kontakt "%s" von Kontaktgruppe "%s".\n
+2244:Kontaktgruppe "%s" hat bereits den Kontakt "%s" (%ld).\n
+2245:Erzeuge neue Kontaktgruppe "%s".\n
+2246:Kontakt "%s" ist nicht in Gruppe "%s".\n
+2247:Konnte Metadaten für "%s" (%ld) nicht laden.\n
+2248:Metadaten für "%s" (%ld) gespeichert.\n
+2249:Konnte Metadaten für "%s" (%ld) nicht speichern.\n
+2250:Die Nummer "%s" ist nicht vom Format +<Landeskode><Provider><Nummer>.\n
+2251:Fehler:
+2252:Um einen Pieps zu erzeugen, wird gepiepst (%sbeep%s).\n
+2253:Um einen Pieps zu erzeugen, wird das Ereignis-Skript gestartet (%sevent%s).\n
+2254:Um einen Pieps zu erzeugen, wird nichts getan.
+2255:Um einen Pieps für sich einloggende Kontakte zu erzeugen, wird immer das Eregnis-Skript gestartet (%sevent%s).\n
+2256:Um einen Pieps für sich ausloggende Kontakte zu erzeugen, wird immer das Eregnis-Skript gestartet (%sevent%s).\n
+2257:Kodierung:
+2258:Keine wartende Dateiübertragung für %s (mit der Sequenz %ld) gefunden.\n
+2259:möchte eine Dateiübertragung "%s" von insgesamt %ld Bytes starten (Sequenz %ld).\n
