@@ -443,7 +443,8 @@ void UDPCallBackResend (Event *event)
             M_printf (i18n (1825, "Discarded a %04x (%s) packet"), cmd, CmdPktSrvName (cmd));
             if (cmd == CMD_LOGIN || cmd == CMD_KEEP_ALIVE)
             {
-                M_print (i18n (1632, "\n\aConnection unstable. Exiting...."));
+                M_print ("\a");
+                M_print (i18n (1632, "\nConnection unstable. Exiting...."));
                 uiG.quit = TRUE;
             }
         }

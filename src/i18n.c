@@ -41,9 +41,9 @@ void i18nInit (char **loc, UBYTE *enc, const char *arg)
     char *p, *q;
 
 #ifdef HAVE_SETLOCALE
+    setlocale (LC_ALL, "");
     if (!arg)
     {
-        setlocale (LC_ALL, "");
         arg = setlocale (LC_MESSAGES, NULL);
         if (arg && *arg == 'C' && !arg[1])
             arg = NULL;
@@ -58,8 +58,8 @@ void i18nInit (char **loc, UBYTE *enc, const char *arg)
     if (!arg || !*arg)
         arg = "en";
 
-    if(!prG->locale_full)
-        prG->locale_full = strdup(arg);
+    if (!prG->locale_full)
+        prG->locale_full = strdup (arg);
 
     *loc = q = strdup (arg);
 

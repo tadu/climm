@@ -257,7 +257,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             break;
         case SRV_X2:
             if (prG->verbose & DEB_PROTOCOL)
-                M_print (i18n (1644, "Acknowleged SRV_X2 0x00E6 Done old messages?\n"));
+                M_print (i18n (1644, "Acknowledged SRV_X2 0x00E6 Done old messages?\n"));
             CmdPktCmdAckMessages (conn);
             break;
         case SRV_INFO_REPLY:

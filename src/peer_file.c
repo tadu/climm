@@ -233,7 +233,7 @@ void PeerFileDispatch (Connection *fpeer)
             PacketD (pak);
             
             M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-            M_printf (i18n (2161, "Receiving %ld files with together %ld bytes at speed %lx from %s.\n"),
+            M_printf (i18n (2161, "Receiving %ld files with total size %ld bytes at speed %lx from %s.\n"),
                      nr, len, speed, c_in_to (name, cont));
             
             if (len != fpeer->len)
@@ -258,7 +258,7 @@ void PeerFileDispatch (Connection *fpeer)
             PacketD (pak);
             
             M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-            M_printf (i18n (2170, "Sending with speed %lx to %s.\n"), speed, c_in_to (name, cont));
+            M_printf (i18n (2170, "Sending file at speed %lx to %s.\n"), speed, c_in_to (name, cont));
             
             fpeer->our_seq = 1;
             QueueRetry (fpeer, QUEUE_PEER_FILE, fpeer->uin);
@@ -389,7 +389,7 @@ void PeerFileDispatch (Connection *fpeer)
             if (fpeer->assoc->done > fpeer->assoc->len)
             {
                 M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-                M_printf (i18n (2165, "The peer sent more bytes (%ld) than file length (%ld).\n"),
+                M_printf (i18n (2165, "The peer sent more bytes (%ld) than the file length (%ld).\n"),
                          fpeer->assoc->done, fpeer->assoc->len);
                 PacketD (pak);
                 TCPClose (fpeer);
