@@ -2658,12 +2658,9 @@ static JUMP_F(CmdUserAuth)
         {
             if (!msg)         /* FIXME: let it untranslated? */
                 msg = "Please authorize my request and add me to your Contact List\n";
-#ifdef WIP
             if (conn->type == TYPE_SERVER && conn->version >= 8)
                 SnacCliReqauth (conn, cont, msg);
-            else
-#endif
-            if (conn->type == TYPE_SERVER)
+            else if (conn->type == TYPE_SERVER)
                 SnacCliSendmsg (conn, cont, msg, MSG_AUTH_REQ, 0);
             else
                 CmdPktCmdSendMessage (conn, cont, msg, MSG_AUTH_REQ);
@@ -2674,12 +2671,9 @@ static JUMP_F(CmdUserAuth)
         {
             if (!msg)         /* FIXME: let it untranslated? */
                 msg = "Authorization refused\n";
-#ifdef WIP
             if (conn->type == TYPE_SERVER && conn->version >= 8)
                 SnacCliAuthorize (conn, cont, 0, msg);
-            else
-#endif
-            if (conn->type == TYPE_SERVER)
+            else if (conn->type == TYPE_SERVER)
                 SnacCliSendmsg (conn, cont, msg, MSG_AUTH_DENY, 0);
             else
                 CmdPktCmdSendMessage (conn, cont, msg, MSG_AUTH_DENY);
@@ -2688,12 +2682,9 @@ static JUMP_F(CmdUserAuth)
         }
         else if (!strcmp (cmd, "add"))
         {
-#ifdef WIP
             if (conn->type == TYPE_SERVER && conn->version >= 8)
                 SnacCliGrantauth (conn, cont);
-            else
-#endif
-            if (conn->type == TYPE_SERVER)
+            else if (conn->type == TYPE_SERVER)
                 SnacCliSendmsg (conn, cont, "\x03", MSG_AUTH_ADDED, 0);
             else
                 CmdPktCmdSendMessage (conn, cont, "\x03", MSG_AUTH_ADDED);
@@ -2709,12 +2700,9 @@ static JUMP_F(CmdUserAuth)
         return 0;
     }
 
-#ifdef WIP
     if (conn->type == TYPE_SERVER && conn->version >= 8)
         SnacCliAuthorize (conn, cont, 1, NULL);
-    else
-#endif
-    if (conn->type == TYPE_SERVER)
+    else if (conn->type == TYPE_SERVER)
         SnacCliSendmsg (conn, cont, "\x03", MSG_AUTH_GRANT, 0);
     else
         CmdPktCmdSendMessage (conn, cont, "\x03", MSG_AUTH_GRANT);
@@ -3235,7 +3223,7 @@ static JUMP_F(CmdUserSearch)
             }
             else
             {
-                if (conn->type == TYPE_SERVER_OLD)
+                if (conn->type == TYPE_SERVER)
                     SnacCliSearchbypersinf (conn, NULL, arg1, NULL, NULL);
                 else
                     CmdPktCmdSearchUser (conn, NULL, arg1, NULL, NULL);
