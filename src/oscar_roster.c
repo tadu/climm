@@ -276,6 +276,9 @@ void SnacCliRosteradd (Connection *serv, ContactGroup *cg, Contact *cont)
         }
         PacketWriteBLenDone (pak);
         QueueEnqueueData (serv, QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
+
+        SnacSend (serv, pak);
+        SnacCliAddend (serv);
     }
     else
     {
@@ -286,8 +289,8 @@ void SnacCliRosteradd (Connection *serv, ContactGroup *cg, Contact *cont)
         PacketWriteB2       (pak, 1);
         PacketWriteBLen     (pak);
         PacketWriteBLenDone (pak);
+        SnacSend (serv, pak);
     }
-    SnacSend (serv, pak);
 }
 
 /*
