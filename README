@@ -1,19 +1,18 @@
 micq - a portable ICQ Console Client
 $Id$
 
-current Version: 0.4.9
+current Version: 0.4.9.2
 ====================================
 
-a) about mICQ
+a) About mICQ
 
-mICQ is a very portable ICQ Console Client originally
-written by "Matthew D. Smith". mICQ is known to compile
-on many systems, including (but not limited to) Linux,
-BSD, BeOS, Windows and Amiga.
+mICQ is a very portable ICQ Console Client originally written by Matthew D.
+Smith. mICQ is known to compile on many systems, including (but not limited
+to) Linux, BSD, AIX, HPUX, BeOS, Windows and AmigaOS.
 
-When the Author passed away 2001-01-05, some of us Users
-overtook the "leadership" of the project and its now
-actively developed by some of us freaks.
+When the Author passed away 2001-01-05, some of us users overtook the
+"leadership" of the project and its now actively developed by some of us
+freaks.
 
 For some time, Rico Gloeckner <rg@micq.org> maintained the code. He also set
 up the mailinglist and hosts www.micq.org.
@@ -21,9 +20,44 @@ up the mailinglist and hosts www.micq.org.
 Right now, Rüdiger Kuhlmann maintains the code. All code to implement the
 new v8 ICQ protocol is from him.
 
+b) Features
 
+Features of mICQ include:
 
-b) Mailinglist
+   * login          - login with both the old v6 and the new v8 protocol
+   * register       - register new uins and setup configuration with an easy to
+                      use setup wizard
+   * password       - changing password
+   * reconnect      - reconnects when kicked by server
+   * contact list   - complete contact list with several ways for a concise
+                      display of online/offline users
+   * status         - set status arbitrarely
+   * messages       - send and receive messages and urls
+   * sms            - send SMS to user's cell phone
+   * user info      - request and update all user an dpersonal information
+   * search         - easy search command, can search by (nearly) any information
+   * visibility     - be visible to certain users even when invisible, or
+                      be invisible to certain users at any time
+   * ignore         - ignore certain users completely
+   * chat group     - request user from interest group and set own's interest group
+   * events         - can beep or execute arbitrarely commands when other users go online,
+                      offline or send a message.
+   * connections    - can show a users connection info and last seen online time
+   * peek           - check whether someone is offline or just invisible
+   * tcp            - full support of v8 direct connections
+   * auto messages  - auto replys if away, request and send auto messages
+   * identification - recognizes mICQ, licq, Miranda, StrICQ including version
+                      number, and YSM
+   * history        - writes a log of all messages to and from a user
+   * debugging      - easy debugging by selecting what data to display, including
+                      concise packet monitor
+   * i18n           - translations include English, German, Russian, French,
+                      partially Spanish, Polish, Swedish, Hungarian.
+   * transcoding    - transcode texts for Russian and Japanese users.
+   * birthday flag  - show if it is user's birthday
+   * socks5         - supports connections via socks5
+
+c) Mailinglist
 
 They are hosted by <rg@micq.org>.
 
@@ -38,56 +72,55 @@ An Archive might be found at:
 <http://micq.org/pipermail/micq-list/>
 
 
-c) Download
+d) Download
 
 Primary Mirror
     http://www.micq.org/
 
 CVS (do that only if you know what cvs is):
 
-cvs -d :pserver:anonymous@micq.ukeer.de:/usr/local/cvsroot co micq
-[hit enter] (=empty Password)
+cvs -d :pserver:anonymous@www.micq.org:/usr/local/cvsroot co micq
 
-To prepare the maintainer generated files:
+To prepare the maintainer generated files (only for CVS):
 
 $ ./prepare
 
-This will run aclocal, autoheader, automake -a and autoconf. It requires
-autoconf 2.50.
+This will run aclocal, autoheader, automake -ac and autoconf. It requires
+autoconf 2.50 or greater.
 
 
-d) Compile
+e) Compile
 
 $ ./configure --help
     Please read the help carefully. Particulary, if you are not "root",
-    please watch the --prefix Parameter.
+    please watch the --prefix parameter.
 $ ./configure 
 $ make
 $ su
 # make install
 
 
-e) Usage
+f) Usage
 
-just type 'micq'
-It will ask you for an UID (if you have none, just type '0') and a
-Password.
+Although mICQ has some command line options, for a quick start just type
+'micq'. If you don't have a valid configuration, the setup wizard will guide
+you through the process of creating one for you.
 
 
-h) Docs
+g) Docs
 
 You'll find original docs in the doc/ subdirectory. This also contains a
-dump of http://maipm.mathematik.uni-karlsruhe.de/~kuhlmann/ICQ/ , which
-features a database of the ICQ protocl.
+dump of http://www.stud.uni-karlsruhe.de/~uck4/ICQ/ , which
+features a database of the ICQ protocol.
 
+h) Future
+
+Planned features for the future include v8 file transfer (no other client
+can do that as of yet).
 
 i) NOTE!
 
-mICQ is in a Phase of being re-organized, thus things may change
-very fast. When in Doubt, have a Look at http://micq.org/ or
+mICQ is in a phase of being re-organized, thus things may change
+very fast. When in doubt, have a Look at http://micq.org/ or
 email mc@verdinet.de or...
 However, look out for announcements on Freshmeat.net.
-
-We will see how the Future of mICQ looks.
-
-		- Rico Gloeckner <rg@micq.org> 2000-05-23
