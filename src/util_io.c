@@ -48,6 +48,7 @@ extern int h_errno;
 #include "preferences.h"
 #include "util_ui.h"
 #include "util_io.h"
+#include "util_ssl.h"
 #include "conv.h"
 #include "util.h"
 #include "contact.h"
@@ -713,7 +714,7 @@ Packet *UtilIOReceiveTCP (Connection *conn)
 #if defined(SIGPIPE)
         signal (SIGPIPE, SIG_IGN);
 #endif
-        rc = sockread (conn->sok, pak->data + pak->len, len - pak->len);
+        rc = dc_read (conn, pak->data + pak->len, len - pak->len);
         if (rc <= 0)
         {
             if (!rc)
@@ -748,7 +749,7 @@ Packet *UtilIOReceiveTCP (Connection *conn)
         return NULL;
 
     PacketD (pak);
-    sockclose (conn->sok);
+    dc_close (conn);
     conn->sok = -1;
     conn->incoming = NULL;
 
@@ -761,7 +762,7 @@ Packet *UtilIOReceiveTCP (Connection *conn)
             if ((cont = conn->cont))
             {
                 M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                M_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
+                M_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), dc_strerror (rc), rc);
             }
         }
         conn->connect = 0;
@@ -868,7 +869,7 @@ BOOL UtilIOSendTCP (Connection *conn, Packet *pak)
 
         for ( ; pak->len > pak->rpos; pak->rpos += bytessend)
         {
-            bytessend = sockwrite (conn->sok, data + pak->rpos, pak->len - pak->rpos);
+            bytessend = dc_write (conn, data + pak->rpos, pak->len - pak->rpos);
             if (bytessend <= 0)
                 break;
         }

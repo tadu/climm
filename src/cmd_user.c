@@ -33,6 +33,8 @@
 #include "buildmark.h"
 #include "contact.h"
 #include "server.h"
+#include "util_tcl.h"
+#include "util_ssl.h"
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
@@ -154,6 +156,10 @@ static jump_t jump[] = {
     { &CmdUserAbout,         "about",        0,   0 },
     { &CmdUserConn,          "conn",         0,   0 },
     { &CmdUserConn,          "login",        0,   2 },
+#ifdef ENABLE_TCL
+    { &CmdUserTclScript,     "tclscript",    0,   0 },
+    { &CmdUserTclScript,     "tcl",          0,   1 },
+#endif
 
     { NULL, NULL, 0, 0 }
 };
@@ -389,11 +395,14 @@ static JUMP_F(CmdUserHelp)
     char what;
 
     if (!s_parse (&args, &par)) what = 0;
-    else if (!strcasecmp (par->txt, i18n (1447, "Client"))   || !strcasecmp (par->txt, "Client"))   what = 1;
-    else if (!strcasecmp (par->txt, i18n (1448, "Message"))  || !strcasecmp (par->txt, "Message"))  what = 2;
-    else if (!strcasecmp (par->txt, i18n (1449, "User"))     || !strcasecmp (par->txt, "User"))     what = 3;
-    else if (!strcasecmp (par->txt, i18n (1450, "Account"))  || !strcasecmp (par->txt, "Account"))  what = 4;
-    else if (!strcasecmp (par->txt, i18n (2171, "Advanced")) || !strcasecmp (par->txt, "Advanced")) what = 5;
+    else if (!strcasecmp (par->txt, i18n (1447, "Client"))    || !strcasecmp (par->txt, "Client"))    what = 1;
+    else if (!strcasecmp (par->txt, i18n (1448, "Message"))   || !strcasecmp (par->txt, "Message"))   what = 2;
+    else if (!strcasecmp (par->txt, i18n (1449, "User"))      || !strcasecmp (par->txt, "User"))      what = 3;
+    else if (!strcasecmp (par->txt, i18n (1450, "Account"))   || !strcasecmp (par->txt, "Account"))   what = 4;
+    else if (!strcasecmp (par->txt, i18n (2171, "Advanced"))  || !strcasecmp (par->txt, "Advanced"))  what = 5;
+#ifdef ENABLE_TCL
+    else if (!strcasecmp (par->txt, i18n (2342, "Scripting")) || !strcasecmp (par->txt, "Scripting")) what = 6;
+#endif
     else what = 0;
 
     if (!what)
@@ -401,15 +410,19 @@ static JUMP_F(CmdUserHelp)
         const char *fmt = i18n (2184, "%s%-10s%s - %s\n");
         M_printf ("%s\n", i18n (1442, "Please select one of the help topics below."));
         M_printf (fmt, COLQUOTE, i18n (1448, "Message"), COLNONE,
-                 i18n (1446, "Commands relating to sending messages."));
+                  i18n (1446, "Commands relating to sending messages."));
         M_printf (fmt, COLQUOTE, i18n (1447, "Client"), COLNONE,
-                 i18n (1443, "Commands relating to mICQ displays and configuration."));
+                  i18n (1443, "Commands relating to mICQ displays and configuration."));
         M_printf (fmt, COLQUOTE, i18n (1449, "User"), COLNONE,
-                 i18n (1444, "Commands relating to finding and seeing other users."));
+                  i18n (1444, "Commands relating to finding and seeing other users."));
         M_printf (fmt, COLQUOTE, i18n (1450, "Account"), COLNONE,
-                 i18n (1445, "Commands relating to your ICQ account."));
+                  i18n (1445, "Commands relating to your ICQ account."));
         M_printf (fmt, COLQUOTE, i18n (2171, "Advanced"), COLNONE,
-                 i18n (2172, "Commands for advanced features."));
+                  i18n (2172, "Commands for advanced features."));
+#ifdef ENABLE_TCL
+        M_printf (fmt, COLQUOTE, i18n (2342, "Scripting"), COLNONE,
+                  i18n (2343, "Scripting extensions."));
+#endif
     }
     else if (what == 1)
     {
@@ -492,17 +505,28 @@ static JUMP_F(CmdUserHelp)
     {
         M_printf (i18n (2314, "These are advanced commands. Be sure to have read the manual pages for complete information.\n"));
         CMD_USER_HELP  ("meta [show|load|save|set|get|rget] <contacts>", i18n (2305, "Handle meta data of contacts."));
-        CMD_USER_HELP  ("peer open|close|off <uin|nick>", i18n (2037, "Open or close a peer-to-peer connection, or disable using peer-to-peer connections for <uin> or <nick>."));
+        CMD_USER_HELP  ("peer open|close|off <uin|nick>...", i18n (2037, "Open or close a peer-to-peer connection, or disable using peer-to-peer connections for <uin> or <nick>."));
         CMD_USER_HELP  ("peer file <contacts> <file> <description>", i18n (2179, "Send all <contacts> a single file."));
         CMD_USER_HELP  ("peer files <uin|nick> <file1> <as1> ... <fileN> <asN> <description>", i18n (2180, "Send <uin> or <nick> several files."));
         CMD_USER_HELP  ("peer accept [<uin|nick>] [<id>]", i18n (2319, "Accept an incoming file transfer from <uin> or <nick>."));
         CMD_USER_HELP  ("peer deny [<uin|nick>] [<id>] [<reason>]", i18n (2369, "Refuse an incoming file transfer from <uin> or <nick>."));
+#ifdef ENABLE_SSL
+        CMD_USER_HELP  ("peer ssl <uin|nick>...", i18n (9999, "Request SSL connection."));
+#endif
         CMD_USER_HELP  ("conn open|login [<nr>]", i18n (2038, "Opens connection number <nr>, or the first server connection."));
         CMD_USER_HELP  ("conn close|remove <nr>", i18n (2181, "Closes or removes connection number <nr>."));
         CMD_USER_HELP  ("conn select [<nr>]", i18n (2182, "Select server connection number <nr> as current server connection."));
         CMD_USER_HELP  ("contact [show|diff|import]", i18n (2306, "Request server side contact list and show all or new contacts or import."));
         CMD_USER_HELP  ("peek <contacts>", i18n (2183, "Check all <contacts> whether they are offline or invisible."));
     }
+#ifdef ENABLE_TCL
+    else if (what == 6)
+    {
+        M_printf (i18n (2314, "These are advanced commands. Be sure to have read the manual pages for complete information.\n"));
+        CMD_USER_HELP  ("tclscript <file>", i18n (2344, "Execute Tcl script from <file>."));
+        CMD_USER_HELP  ("tcl <string>", i18n (2345, "Execute Tcl script in <string>."));
+    }
+#endif
     return 0;
 }
 
@@ -814,6 +838,9 @@ static JUMP_F(CmdUserPeer)
         else if (!strcmp (par->txt, "files"))  data = 5;
         else if (!strcmp (par->txt, "accept")) data = 16 + 6;
         else if (!strcmp (par->txt, "deny"))   data = 16 + 7;
+#ifdef ENABLE_SSL
+        else if (!strcmp (par->txt, "ssl"))    data = 8;
+#endif
         else if (!strcmp (par->txt, "auto"))   data = 10;
         else if (!strcmp (par->txt, "away"))   data = 11;
         else if (!strcmp (par->txt, "na"))     data = 12;
@@ -927,6 +954,11 @@ static JUMP_F(CmdUserPeer)
                     return 0;
                 }
                 break;
+#ifdef ENABLE_SSL
+            case 8:
+                TCPSendSSLReq (list, cont);
+                break;
+#endif /* ENABLE_SSL */
             case 10:
             case 11:
             case 12:
@@ -952,9 +984,12 @@ static JUMP_F(CmdUserPeer)
     M_print (i18n (2112, "                  - as = '/': strip path, as = '.': as is\n"));
     M_print (i18n (2320, "peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n"));
     M_print (i18n (2368, "peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n"));
+#ifdef ENABLE_SSL
+    M_print (i18n (2378, "peer ssl <nick>   - initiate SSL handshake."));
+#endif
 #else
     M_print (i18n (1866, "This version of mICQ is compiled without direct connection (peer to peer) support.\n"));
-#endif
+#endif /* ENABLE_PEER2PEER */
     return 0;
 }
 
@@ -1391,6 +1426,9 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
              ContactPrefVal (cont,  CO_IGNORE)   ? '^' : ' ',
              cont->dc ? cont->dc->version : 0,
              peer ? (
+#ifdef ENABLE_SSL
+              peer->connect & CONNECT_OK && peer->ssl_status == SSL_STATUS_OK ? '%' :
+#endif
               peer->connect & CONNECT_OK         ? '&' :
               peer->connect & CONNECT_FAIL       ? '|' :
               peer->connect & CONNECT_MASK       ? ':' : '.' ) :
@@ -1405,6 +1443,9 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
              ContactPrefVal (cont, CO_HIDEFROM) ? '-' :
              ContactPrefVal (cont, CO_IGNORE)   ? '^' :
              !peer                              ? ' ' :
+#ifdef ENABLE_SSL
+             peer->connect & CONNECT_OK && peer->ssl_status == SSL_STATUS_OK ? '%' :
+#endif
              peer->connect & CONNECT_OK         ? '&' :
              peer->connect & CONNECT_FAIL       ? '|' :
              peer->connect & CONNECT_MASK       ? ':' : '.' ,
@@ -2920,8 +2961,14 @@ static JUMP_F(CmdUserConn)
             {
                 Contact *cont = connl->cont;
 
-                M_printf (i18n (2093, "%02d %-15s version %d for %s (%lx), at %s:%ld %s\n"),
-                         i + 1, ConnectionType (connl), connl->version, cont ? cont->nick : "", connl->status,
+                M_printf (i18n (2093, "%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n"),
+                         i + 1, ConnectionType (connl), connl->version,
+#ifdef ENABLE_SSL
+                         conn->ssl_status == SSL_STATUS_OK ? " SSL" : "",
+#else
+                         "",
+#endif
+                         cont ? cont->nick : "", connl->status,
                          connl->server ? connl->server : s_ip (connl->ip), connl->port,
                          connl->connect & CONNECT_FAIL ? i18n (1497, "failed") :
                          connl->connect & CONNECT_OK   ? i18n (1934, "connected") :

@@ -4,6 +4,7 @@
 #define MICQ_PREFERENCES_H
 
 #include "contactopts.h"
+#include "util_tcl.h"
 
 struct Preferences_s
 {
@@ -38,6 +39,11 @@ struct Preferences_s
     char  *event_cmd;   /* the command to execute for events */
     
     SBYTE  chat;
+
+#ifdef ENABLE_TCL
+    tcl_pref_p tclscript;
+    tcl_callback *tclout;
+#endif
 
     /* Much more stuff to go here - %TODO% */
 };

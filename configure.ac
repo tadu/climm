@@ -4,7 +4,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT([micq], [0.4.99.3])
+AC_INIT([micq], [0.4.99.5])
 AC_CONFIG_SRCDIR([include/micq.h])
 AC_CONFIG_LIBOBJ_DIR(replace)
 AC_CONFIG_HEADER(include/config.h)
@@ -35,6 +35,50 @@ AC_ARG_ENABLE([iconvrepl], AC_HELP_STRING([--enable-iconvrepl], [compile in icon
               ac_arg_use_iconvrepl=$enableval, ac_arg_use_iconvrepl=no)
 AC_ARG_ENABLE([remote], AC_HELP_STRING([--disable-remote], [disable remote control FIFO]),
               ac_arg_use_remote=$enableval, ac_arg_use_remote=auto)
+AC_ARG_ENABLE([tcl], AC_HELP_STRING([--disable-tcl], [disable Tcl scripting]),
+              ac_arg_use_tcl=$enableval, ac_arg_use_tcl=yes)
+AC_ARG_ENABLE([ssl], AC_HELP_STRING([--disable-ssl], [disable SSL encryption]),
+              ac_arg_use_ssl=$enableval, ac_arg_use_ssl=yes)
+
+
+# Checks for libraries.
+AC_CHECK_FUNCS([inet_ntoa getpeername])
+if test "x$ac_cv_func_inet_ntoa" = "xno"; then
+  AC_CHECK_LIB(nsl, inet_ntoa)
+fi
+if test "x$ac_cv_func_getpeername" = "xno"; then
+  AC_CHECK_LIB(socket, getpeername)
+fi
+
+# Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS([locale.h langinfo.h sys/select.h arpa/inet.h ctype.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h wchar.h wctype.h])
+
+if test "x$ac_arg_use_ssl" != "xno"; then
+  AM_PATH_LIBGNUTLS(0.8.8, ac_use_ssl=yes, ac_use_ssl=no)
+  if test "x$ac_use_ssl$ac_arg_use_ssl" = "xnoyes"; then
+    AC_MSG_FAILURE([cannot find a suitable SSL library])
+  fi
+  if test "x$ac_use_ssl" = "xyes"; then
+    LIBS="$LIBGNUTLS_LIBS $LIBS"
+    CFLAGS="$LIBGNUTLS_CFLAGS $CLFAGS"
+    AC_CHECK_FUNCS([gnutls_dh_params_generate2])
+  fi
+  ac_arg_use_ssl=$ac_use_ssl
+fi
+
+if test "x$ac_arg_use_tcl" != "xno"; then
+  ac_use_tcl=no
+  AC_CHECK_HEADERS([tcl8.4/tcl.h tcl8.3/tcl.h tcl.h] , [ac_use_tcl=yes
+                                                        break])
+  if test "x$ac_use_tcl" = "xyes"; then
+    AC_SEARCH_LIBS([Tcl_CreateInterp], [tcl8.4 tcl8.3], [ac_use_tcl=yes], [ac_use_tcl=no])
+  fi
+  if test "x$ac_usl_tcl$ac_arg_use_tcl" = "xnoyes"; then
+    AC_MSG_FAILURE([cannot find a suitable Tcl interpreter library])
+  fi
+  ac_arg_use_tcl=$ac_use_tcl;
+fi
 
 if test "x$ac_arg_use_iconv" != "xno"; then
   AM_ICONV
@@ -144,7 +188,6 @@ if false; then
  AC_DEFINE(ENABLE_FALLBACK_TRANSLIT, 0, transliteration is _not_ supported)
 fi
 
-rm -f include/iconvfb.h
 for enc in DUMMY $ac_cv_iconv_fb; do
   AC_DEFINE_UNQUOTED(ENABLE_FALLBACK_$enc, 1, enable fallback function for $enc)
 done
@@ -197,6 +240,10 @@ AC_MSG_CHECKING([whether to enable peer to peer connections])
 AC_MSG_RESULT([$ac_arg_use_peer2peer])
 AC_MSG_CHECKING([whether to enable remote control FIFO])
 AC_MSG_RESULT([$ac_arg_use_remote])
+AC_MSG_CHECKING([whether to enable Tcl scripting])
+AC_MSG_RESULT([$ac_arg_use_tcl])
+AC_MSG_CHECKING([whether to enable SSL/TLS support])
+AC_MSG_RESULT([$ac_arg_use_ssl])
 
 if test "x$ac_arg_use_peer2peer" = "xyes"; then
   AC_DEFINE(ENABLE_PEER2PEER, 1, [Whether to enable peer to peer connections])
@@ -205,19 +252,6 @@ fi
 if test "x$ac_arg_use_remote" = "xyes"; then
   AC_DEFINE(ENABLE_REMOTECONTROL, 1, [Whether to enable remote control FIFO])
 fi
-
-# Checks for libraries.
-AC_CHECK_FUNCS([inet_ntoa getpeername])
-if test "x$ac_cv_func_inet_ntoa" = "xno"; then
-  AC_CHECK_LIB(nsl, inet_ntoa)
-fi
-if test "x$ac_cv_func_getpeername" = "xno"; then
-  AC_CHECK_LIB(socket, getpeername)
-fi
-
-# Checks for header files.
-AC_HEADER_STDC
-AC_CHECK_HEADERS([locale.h langinfo.h sys/select.h arpa/inet.h ctype.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h wchar.h wctype.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -394,5 +428,5 @@ fi
 
 AC_CONFIG_FILES([src/Makefile Makefile lang/Makefile doc/Makefile])
 AC_CONFIG_FILES([doc/de/Makefile doc/ru/Makefile doc/fr/Makefile doc/es/Makefile doc/uk/Makefile])
-AC_CONFIG_FILES([doc/pt_BR/Makefile doc/sr/Makefile])
+AC_CONFIG_FILES([doc/pt_BR/Makefile doc/sr/Makefile doc/it/Makefile])
 AC_OUTPUT

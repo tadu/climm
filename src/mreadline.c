@@ -1,7 +1,6 @@
 /* $Id$ */
 
 /*****************************************************
- * mreadline - small line editing and history code
  * Copyright (C) 1998 Sergey Shkonda (serg@bcs.zp.ua)
  * This file may be distributed under version 2 of the GPL licence.
  * Originally placed in the public domain by Sergey Shkonda Nov 27, 1998
@@ -109,17 +108,27 @@ void M_print (const char *org)
     }
 
     ReadLinePromptHide ();
+
+#ifdef ENABLE_TCL
+    if (prG->tclout)
+    {
+        prG->tclout (fstr);
+        free (fstr);
+        return;
+    }
+#endif
+
     for (; *str; str++)
     {
         for (test = save = str; *test; test++)
         {
-            if (!(*test & 0xe0)) /* special character reached - emit text till last saved position */
+            if (!(*test & 0xe0) || (*test == 127)) /* special character reached - emit text till last saved position */
             {
                 if (save != str)
                     test = save;
                 break;
             }
-            if (strchr ("-.,_:;!?/ ", *test)) /* punctuation found - save position after it */
+            else if (strchr ("-.,_:;!?/ ", *test)) /* punctuation found - save position after it */
             {
                 temp = test + 1;
                 if (chardiff (temp, str) <= sw - CharCount)

@@ -20,7 +20,7 @@
  * $Id$
  */
 
-#define MICQ_BUILD_NUM 0x80046304
+#define MICQ_BUILD_NUM 0x80046305
 
 #include <string.h>
 #include <stdio.h>
@@ -89,7 +89,19 @@
 #define EV_P2P
 #endif
 
-#define EV EV_P2P
+#ifdef ENABLE_TCL
+#define EV_TCL "TCL "
+#else
+#define EV_TCL
+#endif
+
+#ifdef ENABLE_SSL
+#define EV_SSL "SSL "
+#else
+#define EV_SSL
+#endif
+
+#define EV EV_SSL EV_TCL EV_P2P
 
 const UDWORD BuildPlatformID = BUILD_PLATFORM;
 

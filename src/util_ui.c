@@ -35,6 +35,7 @@ static const char *DebugStr (UDWORD level)
     if (level & DEB_IO)          return "In/Out ";
     if (level & DEB_CONNECT)     return "Connect";
     if (level & DEB_CONTACT)     return "Contact";
+    if (level & DEB_SSL)         return "SSL    ";
     return "unknown";
 }
 

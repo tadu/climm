@@ -35,6 +35,7 @@
 #include "cmd_pkt_v8_flap.h"
 #include "cmd_pkt_v8_snac.h"
 #include "cmd_pkt_v8.h"
+#include "util_ssl.h"
 #include "tcp.h"
 #include <string.h>
 #include <unistd.h>
@@ -270,7 +271,8 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
 void SrvMsgAdvanced (Packet *pak, UDWORD seq, UWORD msgtype, UWORD status,
                      UDWORD deststatus, UWORD flags, const char *msg)
 {
-    if      (status == (UWORD)STATUS_OFFLINE) /* keep */ ;
+    if (msgtype == MSG_SSL_OPEN)       status = 0;
+    else if (status == (UWORD)STATUS_OFFLINE) /* keep */ ;
     else if (status & STATUSF_DND)     status = STATUSF_DND  | (status & STATUSF_INV);
     else if (status & STATUSF_OCC)     status = STATUSF_OCC  | (status & STATUSF_INV);
     else if (status & STATUSF_NA)      status = STATUSF_NA   | (status & STATUSF_INV);
@@ -367,7 +369,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     strc_t text, cname, ctext, reason, cctmp;
     char *name;
     UDWORD tmp, cmd, flen;
-    UWORD unk, seq, msgtype, /*unk2,*/ pri;
+    UWORD unk, seq, msgtype, unk2, pri;
     UWORD ack_flags, ack_status, accept;
 
     unk     = PacketRead2    (inc_pak);  PacketWrite2 (ack_pak, unk);
@@ -377,7 +379,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     tmp     = PacketRead4    (inc_pak);  PacketWrite4 (ack_pak, tmp);
     msgtype = PacketRead2    (inc_pak);  PacketWrite2 (ack_pak, msgtype);
 
-    /*unk2=*/ PacketRead2    (inc_pak);
+    unk2    = PacketRead2    (inc_pak);
     pri     = PacketRead2    (inc_pak);
     text    = PacketReadL2Str (inc_pak, NULL);
     
@@ -607,6 +609,28 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                 accept = -1;
             }
             break;
+#ifdef ENABLE_SSL            
+        case MSG_SSL_OPEN:  /* Licq compatible SSL handshake */
+            if (!unk2)
+            {
+                PacketWrite2     (ack_pak, ack_status);
+                PacketWrite2     (ack_pak, ack_flags);
+                PacketWriteLNTS  (ack_pak, c_out ("1"));
+                accept = -1;
+                ack_event->conn->ssl_status = SSL_STATUS_INIT;
+            }
+            break;
+        case MSG_SSL_CLOSE:
+            if (!unk2)
+            {
+                PacketWrite2     (ack_pak, ack_status);
+                PacketWrite2     (ack_pak, ack_flags);
+                PacketWriteLNTS  (ack_pak, c_out (""));
+                accept = -1;
+                ack_event->conn->ssl_status = SSL_STATUS_CLOSE;
+            }
+            break;
+#endif
         default:
             if (prG->verbose & DEB_PROTOCOL)
                 M_printf (i18n (2066, "Unknown TCP_MSG_ command %04x.\n"), msgtype);

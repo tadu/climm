@@ -26,6 +26,7 @@ void IMOffline (Contact *cont, Connection *conn);
 #define INT_MSGTRY_V8     8
 #define INT_MSGTRY_V5     9
 #define INT_MSGACK_DC    10
+#define INT_MSGACK_SSL   14
 #define INT_MSGACK_TYPE2 11
 #define INT_MSGACK_V8    12
 #define INT_MSGACK_V5    13

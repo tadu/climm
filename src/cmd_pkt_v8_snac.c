@@ -678,13 +678,13 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
         IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraSet (NULL,
                   EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
                   EXTRA_MESSAGE, msgtype, text));
-    else if (event)
+    else
     {
         IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGACK_TYPE2, ExtraGetS (event->extra, EXTRA_MESSAGE), NULL);
-        if ((~cont->oldflags & CONT_SEENAUTO) && strlen (text))
+        if ((~cont->oldflags & CONT_SEENAUTO) && strlen (text) && strcmp (text, ExtraGetS (event->extra, EXTRA_MESSAGE)))
         {
             IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraSet (NULL,
-                      EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
+                      EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
                       EXTRA_MESSAGE, MSG_AUTO, text));
             cont->oldflags |= CONT_SEENAUTO;
         }

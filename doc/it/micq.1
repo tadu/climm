@@ -1,0 +1,138 @@
+.\" $Id$ -*- nroff -*-
+.\"  EN: micq.1,v 1.15.2.3
+.TH MICQ 1 mICQ IT
+.SH NOME
+.B mICQ
+\- un piccolo client ICQ testuale
+.SH SINTASSI
+.B micq
+.I [\-h]
+.I [\-c]
+.I [\-i <locale>]
+.I [\-b <basedir>]
+.I [\-f <configfile>]
+.I [\-v[level]]
+.I [\-l <logplace>]
+.SH DESCRIZIONE
+.B mICQ
+\(`e un client testuale per il protocollo ICQ che supporta molte delle caratteristiche 
+fornite dal client di Mirabilis. mICQ permette di cambiare la password dell'utente,
+creare nuovi account, aggiornare le informazioni dell'utente, cercare altri utenti,
+inviare SMS, aprire connessioni dirette, inviare messaggi di consenso,
+trasferire files, scoprire quali client usano gli altri utenti, inviare messaggi
+codificati con UTF-8, eseguire qualsivoglia comando per qualsisasi evento, ecc.
+.SH OPZIONI
+.TP
+.BI \-h|\-\-help
+Mostra un breve testo di aiuto ed esce.
+.TP
+.BI \-c|\-\-nocolor
+Disabilita l'utilizzo dei colori.
+.TP
+.BI \-i|\-\-i18n \ <locale>
+Utilizza la traduzione
+.I locale 
+invece di quella derivata dalle variabili d'ambiente.
+.TP
+.BI \-b|\-\-basedir \ <basedir>
+Specifica
+.I basedir
+come la directory di base dove mICQ cercher\(`a i suoi file, in particolare
+il suo file micqrc.
+.TP
+.BI \-f|\-\-config \ <configfile>
+Specifica
+.I configfile
+come il file di configurazione da usare.
+.TP
+.BI \-v|\-\-verbose [level]
+Imposta la modalit\(`a prolissa, o imposta la prolissità al grado
+.IR level.
+.TP
+.BI \-l|\-\-logplace \ file|dir
+Utilizza
+.I file
+come logfile per scriverci le registrazioni, o utilizza
+.I dir
+come directory per creare logfile per ciascun utente.
+.SH CARATTERISTICHE
+.B mICQ
+\(`e portabilissimo e gira su Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD e molti
+altri sistemi unix moderni. E' risaputo che la
+.B versione 0.4.10 di mICQ 
+giri su Linux, AIX, HPUX, Tru64, AmigaOS, parzialmente su BeOS e altri sistemi unix.
+Tuttavia, gli altri adattamenti (ports)
+potrebbero funzionare oppure no e chiunque voglia collaudarli \(`e il benvenuto.
+.SH STORIA
+.TP
+16 Ago 1998
+Matthew D. Smith rende pubblico micq
+seguito da 12 uscite datate fino al 25 Settembre 1998.
+.TP
+05 Gen 2001
+Matthew D. Smith muore in un incidente automobilistico.
+Gli utenti proseguono il lavoro di Matthew da dove egli lo lasci\(`o, formalizzano mICQ sotto
+la licenza BSD e riniziarono lo sviluppo di
+.BR mICQ .
+.TP
+10 Giu 2002
+La versione 0.4.9 viene rilasciata sotto la licenza GPL, implementando infine
+la nuova versione 8 del protocollo ICQ, implementazione fatta
+da R\(:udiger Kuhlmann.
+.SH MAILING-LIST
+La mailing list di mICQ \(`e
+.IR micq\-list@micq.org .
+Le informazioni circa la sottoscrizione e l'archivio sono disponibili a
+.IR http://www.micq.org/pipermail/micq\-list/ .
+.SH DOWNLOAD
+Via HTTP da
+.IR http://www.micq.org/download .
+.br
+Per ottenere la versione pi\(`u nuova con il sistema CVS, digitare:
+.br
+cvs \-d:pserver:anonymous@micq.org:/var/lib/cvs co micq
+.br
+.SH VEDI ANCHE
+.BR micqrc (5),
+.BR micq (7)
+.SH FILE
+.TP
+.I ~/.micqrc
+Vecchio file di configurazione per mICQ \- obsoleto.
+.TP
+.I ~/.micq/
+La directory di base predefinita dove mICQ ricerca i suoi file.
+.TP
+.I BASE/micqrc
+File di configurazione per mICQ.
+.TP
+.I BASE/i18n/*.i18n
+File di traduzione di mICQ per ignorare le impostazioni locali.
+.TP
+.I BASE/contacts/
+Directory dove i meta dati per i contatti sono conservati.
+.TP
+.I BASE/history/
+Directory predefinita per i file di registro (logfile).
+.TP
+.I BASE/files/
+Directory dove i file in recezione vengono salvati.
+.TP
+.I BASE/remote-control
+Locazione predefinita del FIFO usato per il controllo remoto.
+.TP
+.I PREFISSO/share/micq/*.i18n
+File di internazionalizzazione contenente la traduzione di tutte le stringhe
+che mICQ mostra.
+.SH DIFETTI (BUGS)
+Invia i resoconti dei difetti (bug reports) o commenti a R\(:udiger Kuhlmann
+.I <micq@ruediger\-kuhlmann.de>
+(in Tedesco o in Inglese).
+.SH AUTORI
+L'autore di questa pagina di manuale \(`e James Morrison 
+.I <ja2morrison@student.math.uwaterloo.ca> 
+ed \(`e derivata dalla pagina di manuale minimale scritta da Jordi Mallach
+.I <jordi@sindominio.net>
+per il sistema Debian GNU/Linux.
+Questa pagina di manuale \(`e stata tradotta in italiano da Fabio Venturi
+.IR <fabio.venturi@studenti.unipr.it> .

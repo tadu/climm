@@ -1,3 +1,9 @@
+micq-cvs (0.4.99.4-0cvs-2003-09-23) unstable; urgency=low
+
+  * CVS build
+
+ -- Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>  Mon, 13 May 2003 18:00:08 +0200
+
 micq (1:0.4.10.3-1.1) unstable; urgency=low
 
   * New upstream bug fix release

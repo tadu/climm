@@ -26,6 +26,7 @@
 #include "packet.h"
 #include "tcp.h"
 #include "util_syntax.h"
+#include "util_ssl.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_v8_snac.h"
 #include "cmd_pkt_v8.h"
@@ -51,6 +52,12 @@
 #endif
 #if HAVE_WINSOCK2_H
 #include <winsock2.h>
+#endif
+
+#ifdef ENABLE_SSL
+#define EXTRA_ORIGIN_dcssl (peer->ssl_status == SSL_STATUS_OK ? EXTRA_ORIGIN_ssl : EXTRA_ORIGIN_dc)
+#else
+#define EXTRA_ORIGIN_dcssl EXTRA_ORIGIN_dc
 #endif
 
 #ifdef ENABLE_PEER2PEER
@@ -390,6 +397,12 @@ void TCPDispatchConn (Connection *peer)
                                   NULL, cont, NULL, &TCPCallBackTimeout);
                 peer->connect = 1 | CONNECT_SELECT_R;
                 peer->dispatch = &TCPDispatchShake;
+#ifdef ENABLE_SSL
+                /* We only set that status from here since we don't initialize
+                 * SSL for incoming connections.
+                 */
+                peer->ssl_status = SSL_STATUS_REQUEST;
+#endif
                 TCPDispatchShake (peer);
                 return;
             case TCP_STATE_WAITING:
@@ -534,6 +547,12 @@ void TCPDispatchShake (Connection *peer)
                     peer->dispatch = &TCPDispatchPeer;
                     QueueRetry (peer, QUEUE_TCP_RESEND, cont);
                 }
+#ifdef ENABLE_SSL
+                /* outgoing peer connection established */
+                if (ssl_supported (peer) && peer->ssl_status == SSL_STATUS_REQUEST)
+                    if (!TCPSendSSLReq (peer->parent, cont)) 
+                        M_printf (i18n (2372, "Could not send SSL request to %s\n"), cont->nick);
+#endif
                 return;
             case 0:
                 return;
@@ -601,8 +620,9 @@ static void TCPDispatchPeer (Connection *peer)
 
                 default:
                     /* Store the event in the recv queue for handling later */            
-                    QueueEnqueueData (peer, QUEUE_TCP_RECEIVE, seq_in,
-                                      0, pak, cont, NULL, &TCPCallBackReceive);
+                    QueueEnqueueData (peer, QUEUE_TCP_RECEIVE, seq_in, 0, pak, cont,
+                                      ExtraSet (NULL, EXTRA_ORIGIN, EXTRA_ORIGIN_dcssl, NULL),
+                                      &TCPCallBackReceive);
                     peer->our_seq--;
                 break;
             }
@@ -1081,6 +1101,9 @@ static Connection *TCPReceiveInit2 (Connection *peer, Packet *pak)
 static void PeerDispatchClose (Connection *conn)
 {
     conn->connect = 0;
+#ifdef ENABLE_SSL
+    ssl_close (conn);
+#endif
     TCPClose (conn);
 }
 
@@ -1407,7 +1430,8 @@ static void TCPCallBackResend (Event *event)
     Connection *peer = event->conn;
     Packet *pak = event->pak;
     UWORD delta, e_trans;
-    char isfile = ExtraGet (event->extra, EXTRA_MESSAGE) == MSG_FILE;
+    int msgtype = ExtraGet (event->extra, EXTRA_MESSAGE);
+    char isfile = msgtype == MSG_FILE || msgtype == MSG_SSL_OPEN;
 
     if (!peer || !cont)
     {
@@ -1466,6 +1490,21 @@ static void PeerCallbackReceiveAdvanced (Event *event)
         PeerPacketSend (event->conn, event->pak);
         event->pak = NULL;
     }
+#ifdef ENABLE_SSL
+    switch (event->conn->ssl_status)
+    {
+        case SSL_STATUS_INIT:
+            ssl_connect (event->conn, 0);
+            break;
+        case SSL_STATUS_CLOSE:
+            /* Could not figure out how to say good bye to licq correctly.
+             * That's why we do a simple close.
+             */
+            if (event->conn->close)
+                event->conn->close(event->conn);
+            break;
+    }
+#endif /* ENABLE_SSL */
     EventD (event);
 }
 
@@ -1483,6 +1522,7 @@ static void TCPCallBackReceive (Event *event)
     UWORD cmd, type, seq, port /*, unk*/;
     UDWORD /*len,*/ status /*, flags, xtmp1, xtmp2, xtmp3*/;
     const char *e_msg_text;
+    int origin = ExtraGet (event->extra, EXTRA_ORIGIN);
 /*    UWORD e_msg_type;*/
 
     if (!(peer = event->conn))
@@ -1531,11 +1571,11 @@ static void TCPCallBackReceive (Event *event)
             {
                 case MSG_NORM:
                 case MSG_URL:
-                    IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGACK_DC, e_msg_text, NULL);
-                    if ((~cont->oldflags & CONT_SEENAUTO) && strlen (tmp))
+                    IMIntMsg (cont, peer, NOW, STATUS_OFFLINE, origin == EXTRA_ORIGIN_dc ? INT_MSGACK_DC : INT_MSGACK_SSL, e_msg_text, NULL);
+                    if (~cont->oldflags & CONT_SEENAUTO && strlen (tmp) && strcmp (tmp, e_msg_text))
                     {
                         IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraSet (NULL,
-                                  EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
+                                  EXTRA_ORIGIN, origin, NULL),
                                   EXTRA_MESSAGE, MSG_AUTO, tmp));
                         cont->oldflags |= CONT_SEENAUTO;
                     }
@@ -1548,7 +1588,7 @@ static void TCPCallBackReceive (Event *event)
                 case MSGF_GETAUTO | MSG_GET_FFC:
                 case MSGF_GETAUTO | MSG_GET_VER:
                     IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraSet (ExtraSet (NULL,
-                              EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
+                              EXTRA_ORIGIN, origin, NULL),
                               EXTRA_STATUS, status & ~MSGF_GETAUTO, NULL),
                               EXTRA_MESSAGE, type, tmp));
                     break;
@@ -1560,7 +1600,22 @@ static void TCPCallBackReceive (Event *event)
                     else
                         IMIntMsg (cont, serv, NOW, status, INT_FILE_REJED, tmp, ExtraSet (NULL, 0, port, e_msg_text));
                     break;
-
+#ifdef ENABLE_SSL                    
+                /* We never stop SSL connections on our own. That's why 
+                 * MSG_SSL_CLOSE is not handled here.
+                 */
+                case MSG_SSL_OPEN:
+                    if (!status && !strcmp (tmp, "1"))
+                        ssl_connect (peer, 1);
+                    else
+                    {
+                        Debug (DEB_SSL, "%s (%ld) is not SSL capable", cont->nick, cont->uin);
+#ifdef ENABLE_TCL
+                        TCLEvent (cont, "ssl", "incapable");
+#endif
+                    }
+                    break;
+#endif
                 case MSG_EXTENDED:
                     cmd    = PacketRead2 (pak); 
                              PacketReadB4 (pak);   /* ID */
@@ -1613,7 +1668,7 @@ static void TCPCallBackReceive (Event *event)
 
         case TCP_CMD_MESSAGE:
             ack_pak = PacketTCPC (peer, TCP_CMD_ACK);
-            event->extra = ExtraSet (event->extra, EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL);
+            event->extra = ExtraSet (event->extra, EXTRA_ORIGIN, origin, NULL);
             oldevent = QueueEnqueueData (event->conn, QUEUE_ACKNOWLEDGE, rand () % 0xff,
                          (time_t)-1, ack_pak, cont, NULL, &PeerCallbackReceiveAdvanced);
             SrvReceiveAdvanced (serv, event, event->pak, oldevent);
@@ -1621,8 +1676,6 @@ static void TCPCallBackReceive (Event *event)
     }
     EventD (event);
 }
-
-
 
 /*
  *

@@ -3,6 +3,10 @@
 #ifndef MICQ_UTIL_CONNECTION_H
 #define MICQ_UTIL_CONNECTION_H
 
+#ifdef ENABLE_SSL
+#include <gnutls/gnutls.h>
+#endif
+
 typedef void (jump_conn_f)(Connection *conn);
 typedef BOOL (jump_conn_err_f)(Connection *conn, UDWORD rc, UDWORD flags);
 
@@ -31,6 +35,11 @@ struct Connection_s
     Packet   *outgoing;       /* packet we're sending                     */
     
     ContactGroup *contacts;   /* The contacts for this connection         */
+
+#ifdef ENABLE_SSL
+    gnutls_session ssl;       /* The SSL data structure                   */
+    UBYTE     ssl_status;     /* SSL status (INIT,OK,FAILED,...)          */
+#endif
 
     UDWORD    our_local_ip;   /* LAN-internal IP (host byte order)        */
     UDWORD    our_outside_ip; /* the IP address the server sees from us   */

@@ -28,6 +28,8 @@
 #include "cmd_pkt_v8_flap.h"
 #include "cmd_pkt_v8_snac.h"
 #include "cmd_pkt_cmd_v5_util.h"
+#include "util_tcl.h"
+#include "util_ssl.h"
 #include "os.h"
 
 #include <stdio.h>
@@ -400,6 +402,15 @@ int main (int argc, char *argv[])
 #endif
 
     TabInit ();
+
+#ifdef ENABLE_SSL
+    if (SSLInit ())
+        M_printf (i18n (2371, "SSL init failed.\n"));
+#endif
+
+#ifdef ENABLE_TCL
+    TCLInit ();
+#endif
 
     for (i = 0; (conn = ConnectionNr (i)); i++)
         if ((conn->flags & CONN_AUTOLOGIN) && conn->open)

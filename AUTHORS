@@ -1,35 +1,35 @@
 $Id$ -*- coding: utf-8 -*-
 
 Authors:
-	Matthew D. Smith
-	    micq development up to 0.4.7
+        Matthew D. Smith
+            micq development up to 0.4.7
 
-	Rüdiger Kuhlmann	<info__at__ruediger-kuhlmann.de>
-	    mICQ development since 0.4.8
+        Rüdiger Kuhlman        <info__at__ruediger-kuhlmann.de>
+            mICQ development since 0.4.8
 
 Contributors:
 
-	Rico Glöckner		<mc__at__ukeer.de>
-	    hosts micq.org and the mailinglist
+        Rico Glöckner          <mc__at__ukeer.de>
+            hosts micq.org and the mailinglist
 
         Peter Backes            <rtc__at__helen.PLASMA.Xg8.DE>
             v8: info stuff; code cleanup; log file format and helper scripts
 
-	Michel Oosterhof	<micheloo__at__xs4all.nl>
-	    initial auto{conf,make} support
+        Roman Hoog Antink       <roman__at__rs3.ch>
+            SSL and TCL extensions
 
-        Per Olofsson		<pelle__at__dsv.su.se>
-	    alias support (GPL >= v2)
+        Michel Oosterhof        <micheloo__at__xs4all.nl>
+            initial auto{conf,make} support
+
+        Per Olofsson            <pelle__at__dsv.su.se>
+            alias support (GPL >= v2)
 	
-	Lutz Rossa		<rossa__at__hmi.de>
-	    win32 screensaver/lock detection
+        Lutz Rossa              <rossa__at__hmi.de>
+            win32 screensaver/lock detection
 
-	Sergey Shkonda		<serg__at__bcs.zp.ua>
-	    mreadline
-
-	Frédéric Lamorce	<fred__at__bemail.org>	BeDevId #15453
-	    added UDP Socks5 support (for v5)
-	    /* BeDevId #15453, http://www.colba.net/~tiange/ */
+        Frédéric Lamorce	<fred__at__bemail.org>	BeDevId #15453
+            added UDP Socks5 support (for v5)
+            /* BeDevId #15453, http://www.colba.net/~tiange/ */
 
 Current Translators:
 

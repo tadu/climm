@@ -111,7 +111,7 @@ static void CallbackMeta (Event *event)
     assert (event->conn && event->conn->type & TYPEF_ANY_SERVER);
 
     cont = event->cont;
-    if (cont->updated != UP_INFO && !event->flags & QUEUE_FLAG_CONSIDERED)
+    if ((cont->updated != UP_INFO) && !(event->flags & QUEUE_FLAG_CONSIDERED))
         QueueEnqueue (event);
     else
     {

@@ -10,6 +10,7 @@
 #include "contact.h"
 #include "server.h"
 #include "util_table.h"
+#include "util_tcl.h"
 #include "util.h"
 #include "conv.h"
 #include "packet.h"
@@ -44,6 +45,11 @@
 
 #define s_read(s) s_repl (&s, ConvFromCont (PacketReadL2Str (pak, NULL), cont))
 void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg);
+
+#ifndef ENABLE_TCL
+#define TCLMessage(from, text)
+#define TCLEvent(from, type, data)
+#endif
 
 
 static BOOL Meta_Read_List (Packet *pak, Extra **list, Contact *cont)
@@ -476,7 +482,7 @@ void Recv_Message (Connection *conn, Packet *pak)
     if (len == ctext->len + 1 && ConvIsUTF8 (ctext->txt))
         text = ConvFrom (ctext, ENC_UTF8)->txt;
     else if (len == ctext->len + 10)
-        text = c_in_to_split (ctext, cont);
+        text = c_in_to_split (ctext, cont); /* work around bug in Miranda < 0.3.1 */
     else if (len != ctext->len + 1 && type == MSG_NORM && len & 1)
         text = ConvFrom (ctext, ENC_UCS2BE)->txt;
     else
@@ -541,12 +547,13 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
 
     if (prG->verbose && !~old && cont->dc)
     {
-        M_printf ("    %s: %s / ", i18n (1642, "IP:"), s_ip (cont->dc->ip_rem));
+        M_printf ("    %s %s / ", i18n (1642, "IP:"), s_ip (cont->dc->ip_rem));
         M_printf ("%s:%ld    %s %d    %s (%d)\n", s_ip (cont->dc->ip_loc),
             cont->dc->port, i18n (1453, "TCP version:"), cont->dc->version,
             cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),
             cont->dc->type);
     }
+    TCLEvent (cont, "status", s_status (status));
 }
 
 /*
@@ -577,11 +584,14 @@ void IMOffline (Contact *cont, Connection *conn)
     M_printf ("%s %s%*s%s %s\n",
              s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick,
              COLNONE, i18n (1030, "logged off."));
+    TCLEvent (cont, "status", "logged_off");
 }
 
 #define i19n i18n
 #define MSGTCPACKSTR   i19n (2289, "Â»Â»Â»")  /* i18n (2289, "»»»") */
 #define MSGTCPRECSTR   i19n (2290, "Â«Â«Â«")  /* i18n (2290, "«««") */
+#define MSGSSLACKSTR   i19n (2289, "Â»%Â»")  /* i18n (2379, "%") */
+#define MSGSSLRECSTR   i19n (2290, "Â»%Â«")  /* i18n (237380, "% */
 #define MSGTYPE2ACKSTR i19n (2291, ">>Â»")    /* i18n (2291, ">>»") */
 #define MSGTYPE2RECSTR i19n (2292, "Â«<<")    /* i18n (2292, "«<<") */
 
@@ -639,6 +649,12 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
             col = COLACK;
             line = s_sprintf ("%s%s %s\n", MSGTCPACKSTR, COLSINGLE, text);
             break;
+#ifdef ENABLE_SSL
+        case INT_MSGACK_SSL:
+            col = COLACK;
+            line = s_sprintf ("%s%s %s\n", MSGSSLACKSTR, COLSINGLE, text);
+            break;
+#endif
         case INT_MSGACK_V8:
         case INT_MSGACK_V5:
             col = COLACK;
@@ -665,7 +681,7 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
     free (p);
 
     ExtraD (extra);
-}    
+}
 
 struct History_s
 {
@@ -749,7 +765,11 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
     e_msg_type = ExtraGet (extra, EXTRA_MESSAGE);
 
     carr = ExtraGet (extra, EXTRA_ORIGIN) == EXTRA_ORIGIN_dc ? MSGTCPRECSTR :
-           ExtraGet (extra, EXTRA_ORIGIN) == EXTRA_ORIGIN_v8 ? MSGTYPE2RECSTR : i18n (2296, "<<<");
+           ExtraGet (extra, EXTRA_ORIGIN) == EXTRA_ORIGIN_v8 ? MSGTYPE2RECSTR :
+#ifdef ENABLE_SSL
+           ExtraGet (extra, EXTRA_ORIGIN) == EXTRA_ORIGIN_ssl ? MSGSSLRECSTR :
+#endif
+           i18n (2296, "<<<");
 
     putlog (conn, stamp, cont,
         (e = ExtraFind (extra, EXTRA_STATUS)) ? e->data : STATUS_OFFLINE, 
@@ -817,11 +837,16 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
         default:
             M_printf ("%s %s" COLMSGINDENT "%s\n", carr, COLMESSAGE, cdata);
             HistMsg (conn, cont, stamp == NOW ? time (NULL) : stamp, cdata);
+            TCLEvent (cont, "message", s_sprintf ("{%s}", cdata));
+            TCLMessage (cont, cdata);
             break;
 
         case MSG_FILE:
             M_printf (i18n (9999, "requests file transfer %s of %ld bytes (sequence %ld).\n"),
                       s_qquote (cdata), ExtraGet (extra, EXTRA_FILETRANS), ExtraGet (extra, EXTRA_REF));
+            TCLEvent (cont, "file_request", s_sprintf ("{%s} %ld %ld", cdata
+                      ExtraGet (extra, EXTRA_FILETRANS),
+                      ExtraGet (extra, EXTRA_REF)));
             break;
 
         case MSG_AUTO:
@@ -890,14 +915,17 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
                 M_printf ("%-15s %s\n", i18n (1566, "Email address:"), s_wordquote (tmp4));
             if (tmp5 && strlen (tmp5))
                 M_printf ("%-15s %s\n", "???5:", s_wordquote (tmp5));
+            TCLEvent (cont, "authorization", "request");
             break;
 
         case MSG_AUTH_DENY:
             M_printf (i18n (2233, "refused authorization: %s%s%s\n"), COLMESSAGE, COLMSGINDENT, cdata);
+            TCLEvent (cont, "authorization", "refused");
             break;
 
         case MSG_AUTH_GRANT:
             M_print (i18n (1901, "has authorized you to add them to your contact list.\n"));
+            TCLEvent (cont, "authorization", "granted");
             break;
 
         case MSG_AUTH_ADDED:
@@ -905,6 +933,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             if (!tmp)
             {
                 M_print (i18n (1755, "has added you to their contact list.\n"));
+                TCLEvent (cont, "contactlistadded", "");
                 break;
             }
             tmp2 = s_msgtok (NULL); if (!tmp2) continue;
@@ -916,6 +945,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             M_printf ("%-15s %s\n", i18n (1564, "First name:"), s_wordquote (tmp2));
             M_printf ("%-15s %s\n", i18n (1565, "Last name:"), s_wordquote (tmp3));
             M_printf ("%-15s %s\n", i18n (1566, "Email address:"), s_wordquote (tmp4));
+            TCLEvent (cont, "contactlistadded", "");
             break;
 
         case MSG_EMAIL:
@@ -931,9 +961,15 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             M_printf ("\n??? %s", s_wordquote (tmp3));
 
             if (e_msg_type == MSG_EMAIL)
+            {
                 M_printf (i18n (1592, "<%s> emailed you a message:\n"), s_cquote (tmp4, COLCONTACT));
+                TCLEvent (cont, "mail", s_sprintf ("{%s}", tmp4));
+            }
             else
+            {
                 M_printf (i18n (1593, "<%s> send you a web message:\n"), s_cquote (tmp4, COLCONTACT));
+                TCLEvent (cont, "web", s_sprintf ("{%s}", tmp4));
+            }
 
             M_printf ("%s\n", s_msgquote (tmp5));
             break;
