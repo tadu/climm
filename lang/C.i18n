@@ -158,7 +158,7 @@
 1187:Web Building
 1188:Unrecognized command in rc file '%s', ignored.
 1198:Other Services
-1200:Not entered
+1200:not entered
 1201:Afghanistan
 1202:Albania
 1203:Algeria
@@ -624,7 +624,7 @@
 1763:The command '%s' has been renamed to '%s'.
 1764:The command '%s' is unchanged.
 1765:%s has UIN %ld.
-1766:Changing status to away resp. not available after idling %s%ld%s seconds.\n
+1766:Changing status to away/not available after idling %s%ld%s seconds.\n
 1767:Toggles auto cycling to away/not available.
 1768:The command name '%s' is already being used.\n
 1770:Resend your last message to <uin> or <nick>.
@@ -659,12 +659,11 @@
 1812:Past Work Place
 1813:Past Organization
 1814:Sent auto-response message to %s%s%s.\n
-1815:    funny: use funny messages for output.\n
-1816:Unknown option %s to set command.\n
+1815:    funny:      use funny messages for output.\n
 1817:The event scripting feature is disabled.\n
 1818:Warning: Deprecated syntax found in rc file!\n    Please update or "save" the rc file and check for changes.\n
-1820:%s <option> [on|off] - control simple options.\n
-1822:    color: use colored text output.\n
+1820:%s <option> [on|off|<value>] - control simple options.\n
+1822:    color:      use colored text output.\n
 1823:Incoming partial packet:
 1825:Discarded a %04x (%s) packet
 1826:Resending message %04x (%s) sequence %04lx (attempt #%ld, len %d).\n
@@ -815,7 +814,6 @@
 2014:No number given.\n
 2015:No message given.\n
 2017:The user is online, but possibly invisible.\n
-2018:    quiet: be quiet about status changes.\n
 2020:Being visible to %s.\n
 2021:Being invisible to %s.\n
 2022:The user is offline.\n
@@ -845,11 +843,11 @@
 2051:Error on socket: %s (%d)\n
 2054:The "free for chat" message is:
 2055:User is ffc and wants to chat about everything.
-2056:peer auto  <nick> - Get the auto-response from the contact.\n
-2057:peer away  <nick> - Get the auto-response for away from the contact.\n
-2058:peer na    <nick> - Get the auto-response for not available from the contact.\n
-2059:peer dnd   <nick> - Get the auto-response for do not disturb from the contact.\n
-2060:peer ffc   <nick> - Get the auto-response for free for chat from the contact.\n
+2056:getauto [auto] <nick> - Get the auto-response from the contact.\n
+2057:getauto away   <nick> - Get the auto-response for away from the contact.\n
+2058:getauto na     <nick> - Get the auto-response for not available from the contact.\n
+2059:getauto dnd    <nick> - Get the auto-response for do not disturb from the contact.\n
+2060:getauto ffc    <nick> - Get the auto-response for free for chat from the contact.\n
 2063:You need to save your password in your ~/.micq/micqrc file.\n
 2065:Unknown TCP_MSG_GREET_ command %04x.\n
 2066:Unknown TCP_MSG_ command %04x.\n
@@ -905,7 +903,7 @@
 2122:Note: You need to 'save' to write new password to disc.\n
 2123:%sSyntax error%s: Too few arguments: '%s'\n
 2124:%sSyntax error%s: Not an integer: '%s'\n
-2126:User is offline, message (%s#%08lx:%08lx%s) queued.\n
+2126:is offline, message queued on server.\n
 2127:       URL: %s%s%s%s\n
 2128: Description: %s%s%s\n
 2129:         URL: %s%s%s\n
@@ -1025,3 +1023,32 @@
 2257:Encoding:
 2258:No pending incoming file transfer request for %s with (sequence %ld) found.\n
 2259:requests file transfer '%s' of %ld bytes (sequence %ld).\n
+2260:Please try the getauto command instead.\n
+2261:Hermit is %s%s%s.\n
+2262:Interpreting a delete character as backspace is %s%s%s.\n
+2263:Logging is %s%s%s.\n
+2264:Logging of status changes is %s%s%s.\n
+2265:Automatic replies are %s%s%s.\n
+2266:Having the last nick in the prompt is %s%s%s.\n
+2267:Automatic saves are %s%s%s.\n
+2268:Automatic fingering of new UINs is %s%s%s.\n
+2269:break
+2270:simple
+2271:indent
+2272:smart
+2273:cycle
+2274:cycleall
+2275:Tab style is %s%s%s.\n
+2276:complete
+2277:    hermit:     ignore all non-contacts.\n
+2278:    delbs:      interpret delete characters as backspace.\n
+2279:    log:        do logging.\n
+2280:    logonoff:   also log status changes.\n
+2281:    auto:       send auto-replies.\n
+2282:    uinprompt:  have the last nick in the prompt.\n
+2283:    autosave:   automatically save the micqrc.\n
+2284:    autofinger: automatically finger new UINs.\n
+2285:    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n
+2286:    tabs:       style for tab-handling: simple, cycle, cycleall.\n
+2287:    silence:    suppress some output: off, on, complete.\n
+2288:Indentation style is %s%s%s.\n
