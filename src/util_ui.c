@@ -308,7 +308,7 @@ void M_print (const char *str, ...)
     va_list args;
     char buf[2048];
 
-    R_print ();
+    R_remprompt ();
     va_start (args, str);
 #ifndef CURSES_UI
     vsnprintf (buf, sizeof (buf), str, args);
@@ -478,50 +478,9 @@ BOOL Debug (UDWORD level, const char *str, ...)
     return 1;
 }
 
-
-/*****************************************************
-Disables the printing of the next prompt.
-useful for multipacket messages.
-******************************************************/
-void Kill_Prompt (void)
-{
-}
-
-/*****************************************************
-Displays the mICQ prompt.  Maybe someday this will be 
-configurable
-******************************************************/
-void Prompt (void)
-{
-    static char buff[200];
-    printf ("\r" ESC "[J");
-    if (prG->flags & FLAG_UINPROMPT && uiG.last_sent_uin)
-    {
-        snprintf (buff, sizeof (buff), COLSERV "[%s]" COLNONE " ", ContactFindName (uiG.last_sent_uin));
-        R_doprompt (buff);
-    }
-    else
-    {
-        snprintf (buff, sizeof (buff), COLSERV "%s" COLNONE, i18n (1040, "mICQ> "));
-        R_doprompt (buff);
-    }
-#ifndef USE_MREADLINE
-    fflush (stdout);
-#endif
-}
-
-/*****************************************************
-Displays the mICQ prompt.  Maybe someday this will be 
-configurable
-******************************************************/
-void Soft_Prompt (void)
-{
-    static char buff[200];
-    printf ("\r" ESC "[J");
-    snprintf (buff, sizeof (buff), COLSERV "%s" COLNONE, i18n (1040, "mICQ> "));
-    R_doprompt (buff);
-}
-
+/*
+ * Output the current time. Add µs for high enough debug level.
+ */
 void Time_Stamp (void)
 {
     struct timeval tv;

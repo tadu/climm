@@ -263,7 +263,7 @@ int main (int argc, char *argv[])
             SessionInit (sess);
 
     R_init ();
-    Prompt ();
+    R_resetprompt ();
     while (!uiG.quit)
     {
 

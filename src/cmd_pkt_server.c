@@ -430,7 +430,6 @@ static JUMP_SRV_F (CmdPktSrvMulti)
             M_print ("\x1b»\n");
         }
 
-        Kill_Prompt ();
         CmdPktSrvProcess (sess, npak, cmd, ver, seq << 16 | seq2, uin);
     }
 }

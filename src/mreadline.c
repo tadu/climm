@@ -17,6 +17,8 @@
  * * Lalo Martins (lalo@webcom.com) Feb 26, 1999
  *   added more editing commands: delete (as VEOF),
  *   ^A, ^E, ^K, ^U and ^Y, all in R_process_input()
+ * * Prompt handling rewritten by Rüdiger Kuhlmann.
+ * * signal handlers by Rüdiger Kuhlmann.
  *****************************************************/
 
 #include "micq.h"
@@ -262,7 +264,7 @@ void R_process_input_tab (void)
         else
             sprintf (s, "%s ", msgcmd);
 
-        R_print ();
+        R_remprompt ();
         clen = cpos = strlen (s);
     }
     else
@@ -309,13 +311,16 @@ void R_process_input_tab (void)
         memmove (tabwstart + nicklen, tabwend, strlen (tabwend) + 1);
         tabwend = tabwstart + nicklen;
         strncpy (tabwstart, tabcont->nick, nicklen);
-        R_print ();
+        R_remprompt ();
         clen = strlen (s);
         cpos = tabwstart - s + nicklen;
         tabstate = 1;
     }
 }
 
+/*
+ * Read a character of input and process it.
+ */
 int R_process_input (void)
 {
     char ch;
@@ -366,14 +371,14 @@ int R_process_input (void)
                             strcpy (history[k], history[k - 1]);
                     return 1;
                 case 12:       /* ^L */
-                    R_print ();
+                    R_remprompt ();
                     system ("clear");
                     break;
                 case '\t':
                     R_process_input_tab ();
                     break;
                 case 25:       /* ^Y */
-                    R_print ();
+                    R_remprompt ();
                     strcpy (s, y);
                     clen = cpos = strlen (s);
                     break;
@@ -404,7 +409,7 @@ int R_process_input (void)
                     }
                     if (ch == t_attr.c_cc[VKILL] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
                     {
-                        R_print ();
+                        R_remprompt ();
                         strcpy (y, s);
                         s[0] = '\0';
                         cpos = clen = 0;
@@ -413,7 +418,7 @@ int R_process_input (void)
 #ifdef    VREPRINT
                     if (ch == t_attr.c_cc[VREPRINT] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
                     {
-                        R_print ();
+                        R_remprompt ();
                         return 0;
                     }
 #endif /* VREPRINT */
@@ -457,7 +462,7 @@ int R_process_input (void)
                         history_cur--;
                     if (history[history_cur][0] || history_cur == 0)
                     {
-                        R_print ();
+                        R_remprompt ();
                         strcpy (s, history[history_cur]);
                         cpos = clen = strlen (s);
                     }
@@ -498,6 +503,9 @@ int R_process_input (void)
     return 0;
 }
 
+/*
+ * Return and delete the inputted line.
+ */
 void R_getline (char *buf, int len)
 {
     strncpy (buf, s, len);
@@ -506,20 +514,62 @@ void R_getline (char *buf, int len)
 
 static const char *curprompt = NULL;
 static int prstat = 0;
-/* 0 = prompt da 1 = prompt kann entfern werden 2 = prompt entfernt */
+/* 0 = prompt printed
+ * 1 = prompt printed, but "virtually" removed
+ * 2 = prompt removed
+ */
 
-
+/*
+ * Sets and displays the prompt.
+ */
 void R_setprompt (const char *prompt)
 {
     if (curprompt)
         free ((char *)curprompt);
     curprompt = strdup (prompt);
+    R_undraw ();
+    R_remprompt ();
 }
 
+/*
+ * Formats, sets and displays the prompt.
+ */
+void R_setpromptf (const char *prompt, ...)
+{
+    va_list args;
+    char buf[2048];
+    
+    va_start (args, prompt);
+    vsnprintf (buf, sizeof (buf), prompt, args);
+    va_end (args);
+
+    R_setprompt (buf);
+}
+
+/*
+ * Resets the prompt to the standard one.
+ */
+void R_resetprompt (void)
+{
+    static char buff[200];
+    printf ("\r" ESC "[J");
+    if (prG->flags & FLAG_UINPROMPT && uiG.last_sent_uin)
+        R_setpromptf (COLSERV "[%s]" COLNONE " ", ContactFindName (uiG.last_sent_uin));
+    else
+        R_setpromptf (COLSERV "%s" COLNONE, i18n (1040, "mICQ> "));
+}
+
+/*
+ * Re-displays prompt.
+ */
 void R_prompt (void)
 {
     int pos = cpos;
-    prstat = 2;
+    if (prstat != 2)
+    {
+        prstat = 1;
+        R_remprompt ();
+    }
     if (curprompt)
         M_print (curprompt);
     prstat = 0;
@@ -528,11 +578,18 @@ void R_prompt (void)
     R_goto (pos);
 }
 
+/*
+ * Virtually hides the prompt.
+ */
 void R_undraw ()
 {
-    prstat = 1;
+    if (!prstat)
+        prstat = 1;
 }
 
+/*
+ * Virtually re-displays prompt.
+ */
 void R_redraw ()
 {
     if (prstat == 1)
@@ -541,16 +598,14 @@ void R_redraw ()
         return;
     }
     prstat = 0;
-    R_print ();
+    R_remprompt ();
     R_prompt ();
 }
 
-void R_show ()
-{
-    prstat = 2;
-}
-
-void R_print ()
+/*
+ * Physically removes virtually removed prompt.
+ */
+void R_remprompt ()
 {
     int pos;
     
@@ -562,23 +617,7 @@ void R_print ()
     cpos = pos;
     M_print ("\r");             /* for tab stop reasons */
     printf (ESC "[J");
-}
-
-void R_doprompt (const char *prompt)
-{
-    R_setprompt (prompt);
-}
-
-void R_dopromptf (const char *prompt, ...)
-{
-    va_list args;
-    char buf[2048];
-    
-    va_start (args, prompt);
-    vsnprintf (buf, sizeof (buf), prompt, args);
-    va_end (args);
-
-    R_setprompt (buf);
+    prstat = 2;
 }
 
 static struct termios saved_attr;
