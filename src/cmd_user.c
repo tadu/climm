@@ -1436,7 +1436,7 @@ static JUMP_F(CmdUserStatusDetail)
                      peer->connect & CONNECT_FAIL  ? '|' :
                      peer->connect & CONNECT_MASK  ? ':' : '.' ,
                      lennick + s_delta (cont->nick), cont->nick,
-                     lenstat + s_delta (stat), stat,
+                     lenstat + 2 + s_delta (stat), stat,
                      lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
                      ver2 ? ver2 : "",
                      contr->seen_time != -1L && data & 2 ? ctime ((time_t *) &contr->seen_time) : "\n");
