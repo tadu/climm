@@ -45,8 +45,13 @@ Contact *ContactAdd (UDWORD uin, const char *nick)
         return NULL;
 
     cont->uin = uin;
-    strncpy (cont->nick, nick, 20);
-    cont->nick[19] = '\0';
+    if (nick)
+    {
+        strncpy (cont->nick, nick, 20);
+        cont->nick[19] = '\0';
+    }
+    else
+        snprintf (cont->nick, sizeof (cont->nick), "%d", uin);
     (cont + 1)->uin = 0;
 
     cont->flags = flags;

@@ -321,7 +321,7 @@ UWORD Chars_2_Word (UBYTE * buf)
  *        6-20-98 Added names to the logs. Fryslan
  *************************************************************************/
 int putlog (Session *sess, time_t stamp, UDWORD uin, 
-    UDWORD status, enum logtype level, UWORD type, char *str, ...)
+            UDWORD status, enum logtype level, UWORD type, char *str, ...)
 {
     static const char deflogdir[] = "history/";
     char buffer[LOG_MAX_PATH + 1],                   /* path to the logfile */
@@ -346,20 +346,20 @@ int putlog (Session *sess, time_t stamp, UDWORD uin,
 
     switch (level)
     {
-        case LOG_MISC: indic = "--"; break;
-        case LOG_SENT: indic = "->"; break;
-        case LOG_AUTO: indic = "=>"; break;
-        case LOG_RECVD: indic = "<-"; break;
-        case LOG_CHANGE: indic = "::"; break;
-        case LOG_REPORT: indic = ":!"; break;
-        case LOG_GUESS: indic = ":?"; break;
-        case LOG_ONLINE: indic = ":+"; break;
+        case LOG_MISC:    indic = "--"; break;
+        case LOG_SENT:    indic = "->"; break;
+        case LOG_AUTO:    indic = "=>"; break;
+        case LOG_RECVD:   indic = "<-"; break;
+        case LOG_CHANGE:  indic = "::"; break;
+        case LOG_REPORT:  indic = ":!"; break;
+        case LOG_GUESS:   indic = ":?"; break;
+        case LOG_ONLINE:  indic = ":+"; break;
         case LOG_OFFLINE: indic = ":-"; break;
-        case LOG_ACK: indic = "<#"; break;
-        case LOG_ADDED: indic = "<*"; break;
-        case LOG_LIST: indic = "*>"; break;
-        case LOG_EVENT: indic = "<="; break;
-        default: indic = "=="; break;
+        case LOG_ACK:     indic = "<#"; break;
+        case LOG_ADDED:   indic = "<*"; break;
+        case LOG_LIST:    indic = "*>"; break;
+        case LOG_EVENT:   indic = "<="; break;
+        default:          indic = "=="; break;
     }
     
     pos = buf + DSCSIZ;
@@ -637,7 +637,7 @@ UDWORD UtilCheckUIN (Session *sess, UDWORD uin)
     {
         Contact *cont;
         
-        cont = ContactAdd (uin, ContactFindName (uin));
+        cont = ContactAdd (uin, NULL);
         if (cont)
             cont->flags |= CONT_TEMPORARY;
     }
