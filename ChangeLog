@@ -1,5 +1,24 @@
 -*- coding: utf-8 -*-
 
+2004-11-14 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* remove obsolete TODO
+	* re-enable peek, with huge warning
+	* 0.4.12
+
+2004-11-09 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* fix double-free found by Ralf Kutschenreiter
+	* ru man page update
+
+2004-10-23 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* add OpenSSL exemption to licence
+
+2004-08-14 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* work-around another offline-encoding-problem
+
+2004-08-04 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* fix include order for 64bit platforms
+	* add sk.i18n from Ján Stanik
+	* add sk micq.1
 
 2004-06-16 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
 	* fix segfault in initialization found by Robert Csok

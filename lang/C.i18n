@@ -1135,3 +1135,11 @@
 2394: %I:%M %p
 2395:View your messages of <contact> since <date>.
 2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n
+2397:The user seems offline. %sNote:%s users can be detected only with a lot of luck.\n
+2398:OpenSSL internal error: %s:%i\n
+2399:OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n
+2400:SSL handshake failed
+2401:OpenSSL read error: %s\n
+2402:OpenSSL read error %d (unknown)\n
+2403:OpenSSL write error: %s\n
+2404:OpenSSL write error %d (unknown)\n
