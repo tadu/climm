@@ -69,13 +69,15 @@ char *s_cat (char *str, UDWORD *size, const char *add)
     
     nsize = strlen (nstr = str) + strlen (add) + 1;
     if (nsize > *size)
-        nstr = realloc (str, nsize += 64);
-    if (nstr)
-        *size = nsize;
-    else
     {
-        nstr = str;
-        nsize = *size;
+        nstr = realloc (str, nsize += 64);
+        if (nstr)
+            *size = nsize;
+        else
+        {
+            nstr = str;
+            nsize = *size;
+        }
     }
     strcat (nstr, add);
     return nstr;
@@ -98,13 +100,15 @@ char *s_catf (char *str, UDWORD *size, const char *fmt, ...)
     
     nsize = strlen (nstr = str) + 1024;
     if (nsize > *size)
-        nstr = realloc (str, nsize += 64);
-    if (nstr)
-        *size = nsize;
-    else
     {
-        nstr = str;
-        nsize = *size;
+        nstr = realloc (str, nsize += 64);
+        if (nstr)
+            *size = nsize;
+        else
+        {
+            nstr = str;
+            nsize = *size;
+        }
     }
     
     va_start (args, fmt);
