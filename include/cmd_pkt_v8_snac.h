@@ -42,3 +42,9 @@ void SnacCliSearchbymail    (Session *sess, const char *email);
 void SnacCliSearchwp        (Session *sess, const MetaWP *wp);
 void SnacCliSearchrandom    (Session *sess, UWORD group);
 void SnacCliSetrandom       (Session *sess, UWORD group);
+
+#define AIM_CAPS_ICQSERVERRELAY "\x09\x46\x13\x49\x4c\x7f\x11\xd1\x82\x22\x44\x45\x53\x54\x00\x00"
+#define AIM_CAPS_ICQRTF         "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x92"
+#define AIM_CAPS_ICQ            "\x09\x46\x13\x44\x4c\x7f\x11\xd1\x82\x22\x44\x45\x53\x54\x00\x00"
+#define AIM_CAPS_UNK            "\x09\x46\x13\x4e\x4c\x7f\x11\xd1\x82\x22\x44\x45\x53\x54\x00\x00"
+

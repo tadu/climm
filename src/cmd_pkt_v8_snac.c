@@ -46,7 +46,7 @@ static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd,
 
 static SNAC SNACv[] = {
     {  1,  3, NULL, NULL},
-    { 19,  2, NULL, NULL},
+    { 19,  4, NULL, NULL},
     {  2,  1, NULL, NULL},
     {  3,  1, NULL, NULL},
     { 21,  1, NULL, NULL},
@@ -1034,11 +1034,12 @@ void SnacCliSetuserinfo (Session *sess)
     Packet *pak;
     
     pak = SnacC (sess, 2, 4, 0, 0);
-    PacketWriteTLVData (pak, 4,
-       "\x09\x46\x13\x49\x4C\x7F\x11\xD1\x82\x22\x44\x45\x53\x54\x00\x00"
-       "\x97\xB1\x27\x51\x24\x3C\x43\x34\xAD\x22\xD6\xAB\xF7\x3F\x14\x92"
-       "\x2E\x7A\x64\x75\xFA\xDF\x4D\xC8\x88\x6F\xEA\x35\x95\xFD\xB6\xDF"
-       "\x09\x46\x13\x44\x4C\x7F\x11\xD1\x82\x22\x44\x45\x53\x54\x00\x00", 64);
+    PacketWriteTLVData (pak, 5,
+        AIM_CAPS_ICQSERVERRELAY AIM_CAPS_UNK AIM_CAPS_ICQRTF AIM_CAPS_ICQ, 64);
+
+/*      AIM_CAPS_ICQSERVERRELAY AIM_CAPS_ICQRTF 
+ *     "\x2E\x7A\x64\x75\xFA\xDF\x4D\xC8\x88\x6F\xEA\x35\x95\xFD\xB6\xDF"
+ *      AIM_CAPS_ICQ, 64);  */
     SnacSend (sess, pak);
 }
 
@@ -1111,7 +1112,7 @@ void SnacCliReqicbm (Session *sess)
 void SnacCliSendmsg (Session *sess, UDWORD uin, const char *text, UDWORD type, UBYTE format)
 {
     Packet *pak;
-    UDWORD mtime = 0, mid = 0;
+    UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
     
     if (type != 0xe8)
         M_print ("%s " COLACK "%10s" COLNONE " " MSGSENTSTR "%s\n",
@@ -1163,42 +1164,40 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, const char *text, UDWORD type, U
             break;
         case 2:
             PacketWriteTLV     (pak, 5);
-            PacketWrite2       (pak, 0);
-            PacketWriteB4      (pak, mtime);
-            PacketWriteB4      (pak, mid);
-            PacketWriteB4      (pak, 0x09461349); /* capability */
-            PacketWriteB4      (pak, 0x4c7f11d1);
-            PacketWriteB4      (pak, 0x82224445);
-            PacketWriteB4      (pak, 0x53540000);
-            PacketWriteTLV2    (pak, 10, 1);
-            PacketWriteB4      (pak, 0x000f0000); /* empty TLV(5) */
-            PacketWriteTLV     (pak, 10001);
-            PacketWrite1       (pak, 27);
-            PacketWriteB2      (pak, sess->assoc && sess->assoc->connect & CONNECT_OK
+             PacketWrite2       (pak, 0);
+             PacketWriteB4      (pak, mtime);
+             PacketWriteB4      (pak, mid);
+             PacketWriteData    (pak, AIM_CAPS_ICQSERVERRELAY, 16);
+             PacketWriteTLV2    (pak, 10, 1);
+             PacketWriteB4      (pak, 0x000f0000); /* empty TLV(15) */
+             PacketWriteTLV     (pak, 10001);
+              PacketWriteLen     (pak);
+               PacketWrite2       (pak, sess->assoc && sess->assoc->connect & CONNECT_OK
                                      ? sess->assoc->ver : 0);
-            PacketWrite1       (pak, 0);
-            PacketWriteB4      (pak, 0); /* capability */
-            PacketWriteB4      (pak, 0);
-            PacketWriteB4      (pak, 0);
-            PacketWriteB4      (pak, 0);
-            PacketWrite2       (pak, 0);
-            PacketWrite1       (pak, 0);
-            PacketWrite4       (pak, 0);
-            PacketWrite2       (pak, -1);
-            PacketWrite2       (pak, 14);
-            PacketWrite2       (pak, -1);
-            PacketWrite4       (pak, 0);
-            PacketWrite4       (pak, 0);
-            PacketWrite4       (pak, 0);
-            PacketWrite2       (pak, type);
-            PacketWrite2       (pak, 0);
-            PacketWrite2       (pak, 1);
-            PacketWriteLNTS    (pak, text);
-            PacketWriteB4      (pak, 0);
-            PacketWriteB4      (pak, 0xffffff00);
+               PacketWriteB4      (pak, 0); /* capability */
+               PacketWriteB4      (pak, 0);
+               PacketWriteB4      (pak, 0);
+               PacketWriteB4      (pak, 0);
+               PacketWrite2       (pak, 0);
+               PacketWrite4       (pak, 3);
+               PacketWrite1       (pak, 0);
+               PacketWrite2       (pak, -1);
+              PacketWriteLenDone (pak);
+              PacketWriteLen     (pak);
+               PacketWrite2       (pak, -1);
+               PacketWrite4       (pak, 0);
+               PacketWrite4       (pak, 0);
+               PacketWrite4       (pak, 0);
+              PacketWriteLenDone (pak);
+              PacketWrite2       (pak, type);
+              PacketWrite2       (pak, 0);
+              PacketWrite2       (pak, 1);
+              PacketWriteLNTS    (pak, text);
+              PacketWriteB4      (pak, 0);
+              PacketWriteB4      (pak, 0xffffff00);
+             PacketWriteTLVDone (pak);
             PacketWriteTLVDone (pak);
             PacketWriteB4      (pak, 0x00030000); /* empty TLV(3) */
-            PacketWriteTLVDone (pak);
             break;
         case 4:
             PacketWriteTLV     (pak, 5);

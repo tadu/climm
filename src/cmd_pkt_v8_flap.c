@@ -289,7 +289,7 @@ void FlapCliIdent (Session *sess)
     PacketWriteB4 (pak, CLI_HELLO);
     PacketWriteTLVStr (pak, 1, s_sprintf ("%d", sess->uin));
     PacketWriteTLVStr (pak, 2, _encryptpw (sess->passwd));
-    PacketWriteTLVStr (pak, 3, "ICQ Inc. - Product of ICQ (TM).2001b.5.15.1.3638.85");
+    PacketWriteTLVStr (pak, 3, "ICQ Inc. - Product of ICQ (TM).2002a.5.37.1.3728.85");
     PacketWriteTLV2   (pak, 22, 266);
     PacketWriteTLV2   (pak, 23, FLAP_VER_MAJOR);
     PacketWriteTLV2   (pak, 24, FLAP_VER_MINOR);
