@@ -1,6 +1,17 @@
 
+2001-05-24 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	+ configure.in: prefer *-2.50 for autoconf, autoheader.
+	* configure.in: complain if necessary functions are missing.
+	* prepare: added to create generated files.
+	* Makefile.am: add cvsclean target.
+	* .cvsignore, */.cvsignore: added.
+
+2001-05-23 Michel Oosterhof <micheloo@xs4all.nl>
+	* add support for autoconf/automake
+	* src/*.c: Add cvs tag
+
 2001-05-20 Dmitri Lukyanov <ldv@sdsl-64-7-10-170.dsl.iad.megapath.net>
-	* lang/ru.i18n: Update language/counrtry name translations.
+	* lang/ru.i18n: Update language/country name translations.
 
 2001-05-12 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* lang/i18n-*: Mark changed translation strings.

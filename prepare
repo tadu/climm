@@ -1,0 +1,9 @@
+#!/bin/sh -e
+
+aclocal && \
+(autoheader-2.50 || autoheader) && \
+automake -a && \
+(autoconf-2.50 || autoconf) && \
+echo "Maintainer scripts ran fine." || \
+echo "Maintainer scripts failed."
+

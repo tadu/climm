@@ -9,18 +9,14 @@ AC_CONFIG_SRCDIR([include/micq.h])
 
 AC_CANONICAL_HOST
 
-AM_MISSING_PROG(AUTOCONF, autoconf-2.50, $missing_dir)
-if echo "$AUTOCONF" | grep -q >/dev/null 2>/dev/null missing; then
-  AM_MISSING_PROG(AUTOCONF, autoconf, $missing_dir)
-fi
-AM_MISSING_PROG(AUTOHEADER, autoheader-2.50, $missing_dir)
-if echo "$AUTOHEADER" | grep -q >/dev/null 2>/dev/null missing; then
-  AM_MISSING_PROG(AUTOHEADER, autoheader, $missing_dir)
-fi
-
 AM_INIT_AUTOMAKE(micq, 0.4.6)
 AM_CONFIG_HEADER(include/config.h)
 
+# prefer 2.50 auto{conf,header}
+AM_MISSING_PROG(AUTOCONFNG, autoconf-2.50, $missing_dir)
+AM_MISSING_PROG(AUTOHEADERNG, autoheader-2.50, $missing_dir)
+test "x$AUTOCONFNG"   = "xautoconf-2.50"   && AUTOCONF="$AUTOCONFNG";
+test "x$AUTOHEADERNG" = "xautoheader-2.50" && AUTOHEADER="$AUTOHEADERNG";
 
 # Checks for programs.
 AC_PROG_CC
@@ -54,6 +50,14 @@ AC_TYPE_SIGNAL
 AC_FUNC_STAT
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([atexit gethostbyname memset mkdir select socket strcasecmp strchr strdup strncasecmp strpbrk strrchr strstr strtol fork])
+
+# vprintf stat malloc \
+for f in gethostbyname memset mkdir select socket fork atexit \
+         strcasecmp strchr strdup strncasecmp strpbrk strrchr strstr strtol; do
+    if eval test "x\$ac_cv_func_$f" != "xyes"; then
+        AC_MSG_ERROR([Required function $f is missing. Sorry.])
+    fi
+done
 
 # autoconf 2.50 uses this syntax, but automake uses the vars in AC_OUTPUT
 # so this is commented out until automake is updated.
