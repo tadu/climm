@@ -459,7 +459,7 @@ void Read_RC_File (FILE *rcf)
                     else if (strcasecmp (tmp, "off"))
                     {
                         prG->sound |= SFLAG_CMD;
-                        prG->sound_cmd = strdup (cmd);
+                        prG->sound_cmd = strdup (tmp);
                     }
                 }
                 else if (!strcasecmp (cmd, "soundonline"))
@@ -476,7 +476,7 @@ void Read_RC_File (FILE *rcf)
                     else if (strcasecmp (tmp, "off"))
                     {
                         prG->sound |= SFLAG_ON_CMD;
-                        prG->sound_on_cmd = strdup (cmd);
+                        prG->sound_on_cmd = strdup (tmp);
                     }
                 }
                 else if (!strcasecmp (cmd, "soundoffline"))
@@ -493,7 +493,7 @@ void Read_RC_File (FILE *rcf)
                     else if (strcasecmp (tmp, "off"))
                     {
                         prG->sound |= SFLAG_OFF_CMD;
-                        prG->sound_on_cmd = strdup (cmd);
+                        prG->sound_on_cmd = strdup (tmp);
                     }
                 }
                 else if (!strcasecmp (cmd, "auto_away"))
