@@ -1035,7 +1035,7 @@
 #2020:Being visible to %s.
 #2021:Being invisible to %s.
 2022:Der Benutzer ist in Wirklichkeit nicht verbunden.¶
-2023:Direkte Verbindung von Verbindungspartner geschossen.¶
+2023:Direkte Verbindung von Verbindungspartner geschlossen.¶
 #2024:Unknown protocol version %d for ICQ peer-to-peer protocol.¶
 #2025:Sending v8 TCP direct connection initialization packet.¶
 #2026:TCP cookie:
