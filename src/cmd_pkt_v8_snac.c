@@ -636,9 +636,9 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
     Packet *pak;
     TLV *tlv;
 
-    int i, j, k;
+    int i, k;
     char *name, *nick;
-    UWORD count, type, tag, id, TLVlen;
+    UWORD count, type, tag, id, TLVlen, j, data;
 
     pak = event->pak;
     if (pak->flags & 0x8000)
@@ -646,6 +646,16 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
         PacketReadB4 (pak);
         PacketReadB4 (pak);
     }
+    
+    event = QueueDequeue (0, QUEUE_REQUEST_ROSTER);
+    if (event)
+    {
+        data = event->uin;
+        free (event);
+    }
+    else
+        data = 1;
+        
 
     PacketRead1 (pak);
     count = PacketReadB2 (pak);          /* COUNT */
@@ -670,12 +680,20 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                     break;
                 k++;
                 j = TLVGet (tlv, 305);
-                assert (j < 200);
-                nick = (j != -1 ? tlv[j].str : name);
+                assert (j < 200 || j == (UWORD)-1);
+                nick = (j != (UWORD)-1 ? tlv[j].str : name);
                    
-                if (event->sess->flags & CONN_WIZARD)
-                    ContactAdd (atoi (name), nick);
-                M_print ("  %10d %s\n", atoi (name), nick);
+                switch (data)
+                {
+                    case 3:
+                        ContactAdd (atoi (name), nick);
+                        break;
+                    case 2:
+                        if (ContactFindAlias (atoi (name), nick))
+                            break;
+                    case 1:
+                        M_print ("  %10d %s\n", atoi (name), nick);
+                }
                 break;
             case 4:
             case 9:

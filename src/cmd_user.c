@@ -41,7 +41,7 @@ static jump_f
     CmdUserAuth, CmdUserURL, CmdUserSave, CmdUserTabs, CmdUserLast,
     CmdUserUptime, CmdUserOldSearch, CmdUserSearch, CmdUserUpdate, CmdUserPass,
     CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserTCP, CmdUserConn,
-    CmdUserContactDL;
+    CmdUserContact;
 
 static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag);
 
@@ -104,7 +104,11 @@ static jump_t jump[] = {
     { &CmdUserPass,          "pass",         NULL, 0,   0 },
     { &CmdUserSMS,           "sms",          NULL, 0,   0 },
     { &CmdUserPeek,          "peek",         NULL, 0,   0 },
-    { &CmdUserContactDL,     "contactdl",    NULL, 0,   0 },
+    { &CmdUserContact,       "contact",      NULL, 0,   0 },
+    { &CmdUserContact,       "contactshow",  NULL, 0,   1 },
+    { &CmdUserContact,       "contactdiff",  NULL, 0,   2 },
+    { &CmdUserContact,       "contactadd",   NULL, 0,   3 },
+    { &CmdUserContact,       "contactdl",    NULL, 0,   1 },
 
     { &CmdUserOldSearch,     "oldsearch",    NULL, 0,   0 },
     { &CmdUserSearch,        "search",       NULL, 0,   0 },
@@ -2243,14 +2247,14 @@ static JUMP_F(CmdUserLast)
             {
                 if (cont->last_message)
                 {
-                    M_print (i18n (1685, "Last message from " COLCONTACT "%s" COLNONE " at %s\n"),
-                             ContactFind (uin)->nick, UtilUITime (&cont->last_time));
+                    M_print (i18n (2106, "Last message from %s%s%s at %s:\n"),
+                             COLCONTACT, ContactFind (uin)->nick, COLNONE, UtilUITime (&cont->last_time));
                     M_print (COLMESSAGE "%s" COLNONE "\n", ContactFind (uin)->last_message);
                 }
                 else
                 {
-                    M_print (i18n (1686, "No messages received from " COLCONTACT "%s" COLNONE ".\n"),
-                             ContactFind (uin)->nick);
+                    M_print (i18n (2107, "No messages received from %s%s%s.\n"),
+                             COLCONTACT, ContactFind (uin)->nick, COLNONE);
                 }
             }
         }
@@ -2259,7 +2263,7 @@ static JUMP_F(CmdUserLast)
 }
 
 /*
- * Shows micq's uptime.
+ * Shows mICQ's uptime.
  */
 static JUMP_F(CmdUserUptime)
 {
@@ -2409,7 +2413,7 @@ static JUMP_F(CmdUserConn)
         }
         if (sess->spref)
         {
-            M_print (i18n (2098, "Connection %d is a configured connection.\n"), i);
+            M_print (i18n (2102, "Connection %d is a configured connection.\n"), i);
             return 0;
         }
         M_print (i18n (2101, "Removing connection %d and its dependands completely.\n"), i);
@@ -2430,13 +2434,35 @@ static JUMP_F(CmdUserConn)
 /*
  * Download Contact List
  */
-static JUMP_F(CmdUserContactDL)
+static JUMP_F(CmdUserContact)
 {
+    char *tmp;
     SESSION;
 
-    if (sess->type == TYPE_SERVER)
-        SnacCliReqroster (sess);
+    if (sess->type != TYPE_SERVER)
+        return 0;
 
+    if (!data)
+    {
+        tmp = strtok (args, "\n");
+        if      (!tmp)                          data = 0;
+        else if (!strcasecmp ("tmp", "show"))   data = 1;
+        else if (!strcasecmp ("tmp", "diff"))   data = 2;
+        else if (!strcasecmp ("tmp", "add"))    data = 3;
+        else if (!strcasecmp ("tmp", "import")) data = 3;
+        else                                    data = 0;
+    }
+    if (data)
+    {
+        QueueEnqueueData (sess, 0, QUEUE_REQUEST_ROSTER, data, -1, NULL, NULL, NULL);
+        SnacCliReqroster (sess);
+    }
+    else
+    {
+        M_print (i18n (2103, "contact show    Show server side contact list.\n"));
+        M_print (i18n (2104, "contact diff    Show server side contacts not on local contact list.\n"));
+        M_print (i18n (2105, "contact import  Add server side contact list to local contact list.\n"));
+    }
     return 0;
 }
 

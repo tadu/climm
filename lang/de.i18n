@@ -641,8 +641,6 @@
 1681:Die letzten %d Leute, zu denen Sie gesprochen haben:¶
 1682:Sie haben Nachrichten empfangen von:¶
 1684:%s ist kein bekannter Kontakt.¶
-1685:Letzte Nachricht von ©4%s©0:¶
-1686:No messages received from ©4%s©0¶
 1687:mICQ läuft seit
 1688:Tagen
 1689:Stunden
@@ -986,3 +984,5 @@
 2090:Dateiübertragung
 2091:Reihe "%s" als "%s" in die Warteschlange für Dateiübertragung ein.¶
 #2092:TCP message %s discarded - lost session.¶
+2106:Letzte Nachricht von %s%s%s um %s Uhr:¶
+2107:Noch keine Nachrichten von %s%s%s empfangen.¶

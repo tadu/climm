@@ -692,8 +692,6 @@
 1682:Vous avez reçu des messages de ces contacts:¶
 1683:Contact inconnu: %s¶
 1684:%s n'est pas reconnu¶
-1685:Dernière message de ©4%s©0:¶
-1686:Vous n'avez pas reçu un message de ©4%s©0¶
 1687:Micq a été lancé il y a
 1688:jours
 1689:heures
@@ -1055,3 +1053,5 @@
 #2044:Set or clear an option.
 #2045:Toggles your visibility to a user when you're online.
 2080:Le serveur dit que la remise du SMS:¶%s¶
+2106:Dernière message de %s%s%s (%s):¶
+2107:Vous n'avez pas reçu un message de %s%s%s.¶

@@ -44,6 +44,7 @@ const char *QueueType   (UDWORD type);
 #define QUEUE_UDP_KEEPALIVE 23
 #define QUEUE_SRV_KEEPALIVE 21
 #define QUEUE_FLAP          34
+#define QUEUE_REQUEST_ROSTER  90
 
 #define QUEUE_FLAG_CONSIDERED     1 /* this event has been considered and won't
                                        be tried again in this queue run */

@@ -685,8 +685,6 @@
 1682:These people are being sociable today:¶
 #1683:Unknown Contact: %s¶
 #1684:%s is not a known Contact¶
-#1685:Last message from ©4%s©0:¶
-1686:©4%s©0 hasn't had anything intelligent to say today.¶
 #1687:mICQ has been running for
 #1688:days
 #1689:hours
@@ -862,3 +860,4 @@
 #1927:Free for chat
 #1928:Offline
 #1929:User is DND [Auto-Message]
+2107:%s%s%s hasn't had anything intelligent to say today.¶

@@ -90,7 +90,7 @@ UWORD TLVGet (TLV *tlv, UWORD nr)
         if (tlv[i].tlv == nr)
             return i;
 
-    return -1;
+    return (UWORD)-1;
 }
 
 /*

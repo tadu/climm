@@ -696,8 +696,6 @@
 1682:Du har mottagit meddelanden från:¶
 1683:Okänd kontakt: %s¶
 1684:%s är ej känd¶
-1685:Senaste meddelandet från ©4%s©0:¶
-1686:Du har inte fått nåt meddelande från ©4%s©0¶
 #-#1687:Micq har varit igång i
 #1687:mICQ has been running for
 #-#1688: dagar
@@ -888,3 +886,5 @@
 1927:Free for chat
 1928:ej inloggad
 #1929:User is DND [Auto-Message]
+2106:Senaste meddelandet från %s%s%s (%s):¶
+2107:Du har inte fått nåt meddelande från %s%s%s.¶

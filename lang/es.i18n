@@ -683,8 +683,6 @@
 1682:Recibiste mensajes de:¶
 #1683: 
 1684:%s no esta en tu lista de contactos.¶
-1685:Ultimo mensaje de ©4%s©0:¶
-1686:No se recibieron mensajes de ©4%s©0¶
 1687:mICQ ha estado corriendo por
 1688:dias
 1689:horas
@@ -1045,3 +1043,5 @@
 2045:Cambia tu visibilidad con un usuario cuando estas conectado.
 2046:Probablemente quieras usar la versión 8 del protocolo para conexiones par-a-par.¶
 2080:El servidor responde acerca del envio de mensaje SMS:¶%s¶
+2106:Ultimo mensaje de %s%s%s (%s):¶
+2107:No se recibieron mensajes de %s%s%s.¶

@@ -142,6 +142,20 @@ const char *ContactFindName (UDWORD uin)
 }
 
 /*
+ * Returns the given contact/alias.
+ */
+Contact *ContactFindAlias (UDWORD uin, const char *nick)
+{
+    int i;
+    
+    for (i = 0; i < cnt_number; i++)
+        if (cnt_contacts[i].uin == uin && !strcmp (cnt_contacts[i].nick, nick))
+            return &cnt_contacts[i];
+    return NULL;
+}
+
+
+/*
  * Returns the UIN of nick, which can be numeric, or -1.
  */
 UDWORD ContactFindByNick (const char *nick)

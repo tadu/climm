@@ -461,6 +461,21 @@ Select the given server connection as the current one.
 .I nr
 may be the connection number or the UIN used for the connection.
 .RE
+.TP
+.BI contact \ [command]
+Handle the server side contact list:
+.RS
+.TP
+.B show
+Download the server side contact list and just show it.
+.TP
+.B diff
+Download the server side contact list and show only contacts (uin/nick pairs) that are not
+in the local contact list.
+.TP
+.B import
+Download the server side contact list and add all contacts to the local one.
+.RE
 
 .SH SEE ALSO
 .BR micq (1),
