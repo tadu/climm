@@ -14,7 +14,6 @@ void Print_IP (UDWORD uin);
 char *MsgEllipsis (const char *msg);
 
 void Init_New_User (Session *sess);
-UDWORD Get_Port (UDWORD uin);
 
 int putlog (Session *sess, time_t stamp, UDWORD uin, 
             UDWORD status, enum logtype level, UWORD type, char *str, ...);

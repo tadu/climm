@@ -264,19 +264,6 @@ void Print_IP (UDWORD uin)
     M_print (UtilIOIP (cont->outside_ip));
 }
 
-/*
- * Gets the TCP port of the specified UIN
- */
-UDWORD Get_Port (UDWORD uin)
-{
-    Contact *cont;
-    
-    if (!(cont = ContactFind (uin)))
-        return -1L;
-
-    return cont->port;
-}
-
 /********************************************
 Converts an intel endian character sequence to
 a UDWORD

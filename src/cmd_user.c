@@ -554,11 +554,12 @@ static JUMP_F(CmdUserInfo)
     }
     M_print (i18n (1672, "%s's IP address is "), cont->nick);
     Print_IP (cont->uin); /* FIXME: static buffer helper instead of printer */
+    M_print ("\t");
 
-    if ((UWORD) Get_Port (cont->uin) != (UWORD) 0xffff)
-        M_print (i18n (1673, "\tThe port is %d\n"), (UWORD) Get_Port (cont->uin));
+    if (contr->port != (UWORD) 0xffff)
+        M_print (i18n (1673, "The port is %d.\n"), contr->port);
     else
-        M_print (i18n (1674, "\tThe port is unknown\n"));
+        M_print (i18n (1674, "The port is unknown.\n"));
 
     M_print (i18n (1765, "%s has UIN %d."), cont->nick, cont->uin);
     M_print ("\n");
@@ -1966,14 +1967,25 @@ static JUMP_F(CmdUserRem)
  */
 static JUMP_F(CmdUserRInfo)
 {
+    Contact *cont;
     SESSION;
 
-    M_print (i18n (1672, "%s's IP address is "), ContactFindName (uiG.last_rcvd_uin));
+    cont = ContactFind (uiG.last_rcvd_uin);
+    if (!cont)
+    {
+        M_print (i18n (2151, "%d is not on your contact list anymore.\n"),
+                 uiG.last_rcvd_uin);
+        return 0;
+    }
+    
+    M_print (i18n (1672, "%s's IP address is "), cont->nick);
     Print_IP (uiG.last_rcvd_uin);
-    if ((UWORD) Get_Port (uiG.last_rcvd_uin) != (UWORD) 0xffff)
-        M_print (i18n (1673, "\tThe port is %d\n"), (UWORD) Get_Port (uiG.last_rcvd_uin));
+    M_print ("\t");
+
+    if (cont->port != (UWORD) 0xffff)
+        M_print (i18n (1673, "The port is %d.\n"), cont->port);
     else
-        M_print (i18n (1674, "\tThe port is unknown\n"));
+        M_print (i18n (1674, "The port is unknown.\n"));
     
     if (sess->ver > 6)
         SnacCliMetareqinfo (sess, uiG.last_rcvd_uin);
