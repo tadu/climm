@@ -75,6 +75,7 @@ void        QueuePrint (void);
 #define QUEUE_UDP_KEEPALIVE     23
 #define QUEUE_SRV_KEEPALIVE     21
 #define QUEUE_FLAP              34
+#define QUEUE_TOGVIS            50
 #define QUEUE_REQUEST_ROSTER    90
 #define QUEUE_REQUEST_META      91
 #define QUEUE_CHANGE_ROSTER     92
