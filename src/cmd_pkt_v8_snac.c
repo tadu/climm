@@ -509,6 +509,7 @@ static JUMP_SNAC_F(SnacSrvIcbmerr)
             M_print (i18n (2017, "The user is online, but possibly invisible.\n"));
         else
             M_print (i18n (2022, "The user is offline.\n"));
+        return;
     }
 
     event = QueueDequeue (event->conn, QUEUE_TYPE2_RESEND_ACK, event->pak->ref);
@@ -647,10 +648,15 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             
             if ((i = TLVGet (tlv, 0x2711)) == (UWORD)-1)
             {
-#ifndef WIP
                 if (TLVGet (tlv, 11) == (UWORD)-1)
-#endif
                     SnacSrvUnknown (event);
+#ifdef WIP
+                else
+                {
+                    M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
+                    M_printf ("FIXME: tlv(b)-only packet.\n");
+                }
+#endif
                 TLVD (tlv);
                 return;
             }
