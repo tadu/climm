@@ -1381,7 +1381,7 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
         ul = ESC "[4m";
 #endif
     if (data & 2)
-        rl_printf ("%s%s%c%c%c%2.2d%c%s%s %*ld", COLSERVER, ul,
+        rl_printf ("%s%s%c%c%c%2d%c%s%s %*ld", COLSERVER, ul,
              !cont->group                        ? '#' : ' ',
              ContactPrefVal (cont,  CO_INTIMATE) ? '*' :
               ContactPrefVal (cont, CO_HIDEFROM) ? '-' : ' ',
@@ -1418,7 +1418,7 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
 
     for (alias = cont->alias; alias && (data & 2); alias = alias->more)
     {
-        rl_printf ("%s%s+     %*ld", COLSERVER, ul, (int)__lenuin, cont->uin);
+        rl_printf ("%s%s+      %s%*ld", COLSERVER, ul, COLNONE, (int)__lenuin, cont->uin);
         rl_printf ("%s%s %s%s%-*s%s%s %s%s%-*s%s%s %-*s%s%s%s\n",
                   COLSERVER, ul, COLCONTACT, ul, (int)__lennick + s_delta (alias->alias), alias->alias,
                   COLNONE, ul, COLQUOTE, ul, (int)__lenstat + 2 + s_delta (stat), stat,
