@@ -902,6 +902,9 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                     M_printf (i18n (2049, "Receiving group \"%s\":\n"), name);
                 }
                 break;
+            case 2:
+            case 3:
+            case 14:
             case 0:
                 cg = ContactGroupFind (tag, event->conn, NULL, 0);
                 if (!tag || (!cg && data == 3))
@@ -925,6 +928,18 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                         if (!ContactFind (event->conn->contacts, 0, atoi (name), nick, 0))
                             ContactFind (event->conn->contacts, id, atoi (name), nick, 1);
                         cont->id = id;   /* FIXME: should be in ContactGroup? */
+                        if (type == 2)
+                        {
+                            cont->flags |= CONT_INTIMATE;
+                            cont->flags &= CONT_HIDEFROM;
+                        }
+                        else if (type == 3)
+                        {
+                            cont->flags |= CONT_HIDEFROM;
+                            cont->flags &= CONT_INTIMATE;
+                        }
+                        else if (type == 14)
+                            cont->flags |= CONT_IGNORE;
                         if (!ContactFind (cg, 0, cont->uin, NULL, 0))
                         {
                             ContactAdd (cg, cont);
