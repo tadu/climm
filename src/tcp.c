@@ -596,9 +596,10 @@ static void TCPDispatchPeer (Connection *peer)
         return;
     }
 
+    peer->connect &= ~CONNECT_SELECT_W;
     /* Recv all packets before doing anything else.
          The objective is to delete any packets CANCELLED by the remote user. */
-    while (UtilIOSelectIs (peer->sok, READFDS) && i++ <= TCP_MSG_QUEUE)
+    while (UtilIOSelectIs (peer->sok, READFDS | WRITEFDS) && i++ <= TCP_MSG_QUEUE)
     {
         if (!(pak = TCPReceivePacket (peer)))
             return;
@@ -645,7 +646,6 @@ static void TCPDispatchPeer (Connection *peer)
         UtilIOSelectAdd (peer->sok, READFDS);
         UtilIOSelect();
     }
-    peer->connect &= ~CONNECT_SELECT_W;
 }
 
 /*********************************************/
