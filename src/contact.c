@@ -630,13 +630,13 @@ BOOL ContactMetaSave (Contact *cont)
         fprintf (f, "obsolete %u %u %u %s\n", cont->meta_obsolete->given,
                  cont->meta_obsolete->empty, cont->meta_obsolete->unknown,
                  s_quote (cont->meta_obsolete->description));
-    while ((m = cont->meta_email))
+    for (m = cont->meta_email; m; m = m->next)
         fprintf (f, "email %u %s\n", m->data, s_quote (m->text));
-    while ((m = cont->meta_interest))
+    for (m = cont->meta_interest; m; m = m->next)
         fprintf (f, "interest %u %s\n", m->data, s_quote (m->text));
-    while ((m = cont->meta_background))
+    for (m = cont->meta_background; m; m = m->next)
         fprintf (f, "background %u %s\n", m->data, s_quote (m->text));
-    while ((m = cont->meta_affiliation))
+    for (m = cont->meta_affiliation; m; m = m->next)
         fprintf (f, "affiliation %u %s\n", m->data, s_quote (m->text));
     if (fclose (f))
         return FALSE;
