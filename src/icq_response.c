@@ -55,6 +55,7 @@ static BOOL Meta_Read_List (Packet *pak, ContactMeta **list, Contact *cont)
     
     i = PacketRead1 (pak);
     ContactMetaD (*list);
+    *list = NULL;
     for (j = 0; j < i; j++)
     {
         data = PacketRead2 (pak);
