@@ -256,6 +256,7 @@ void ContactSetCap (Contact *cont, Cap *cap)
         ver = cap->var[15];
         cont->v1 = ver ? (ver >> 6) - 1 : 0;
         cont->v2 = ver & 0x1f;
+        cont->v3 = cont->v4 = 0;
     }
     else if (cap->id == CAP_MICQ && cap->var)
     {
