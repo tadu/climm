@@ -185,7 +185,6 @@
 ##
 ## Länder
 ##
-1199.Unbekanntes Land
 1200:Nicht angegeben
 1201:Afghanistan
 1202:Albanien
@@ -220,7 +219,6 @@
 1231:Britische Jungferninseln
 1232:Brunei
 1233:Bulgarien
-#1234:Burkina Faso
 1235:Burundi
 1236:Kambodscha
 1237:Kamerun
@@ -243,9 +241,7 @@
 1254:Zypern
 1255:Tschechische Republik
 1256:Dänemark
-#1257:Diego Garcia
 1258:Djibouti
-#1259:Dominica
 1260:Dominikanische Republik
 1261:Äquador
 1262:Ägypten
@@ -306,7 +302,6 @@
 1317:Libyen
 1318:Liechtenstein
 1319:Luxemburg
-#1320:Malawi
 1321:Malaysien
 1322:Mali
 1323:Malta
@@ -335,7 +330,6 @@
 1346:Katar
 1347:Rumänien
 1348:Russland
-#1349:Saipan
 1350:San Marino
 1351:Saudi-Arabien
 1352:Senegal
@@ -368,7 +362,6 @@
 1379:USA
 1380:Uruguay
 1381:Uzbekistan
-#1382:Vanuatu
 1383:Vatikan (Stadt)
 1384:Venezuela
 1385:Vietnam
@@ -406,7 +399,6 @@
 1419:Löscht den Bildschirm.
 1420:Schaltet das Piepsen beim Erhalt von Nachrichten an/aus, setzt ein Kommando für dieses Ereignis oder zeigt den aktuellen Status dieser Option an.
 1422:Logt aus und beendet mICQ.
-1423.Zeigt on, ob und welche automatischen Antwortet gegeben werden.
 1424:Aktiviert bzw. deaktiviert automatische Antworten.
 1425:Ändert die automatische Antwort im Status <status> auf <message>.
 1426:Erzeugt eine neue Benutzernummer mit dem Paßwort <password>.
@@ -550,10 +542,7 @@
 1578:Landesvorwahl:
 1579:Firma:
 1584:Warnung! Befehl "%s" mit Rückgabewert %d fehlgeschlagen¶
-1585.Arrgghh!!!!!!!  Schlechtes Paket.
 1587:Abteilung:
-1590.bittet um Autorisierung, Sie auf seine Kontaktliste zu setzen.
-1591.Grund:
 1592:<%s> schickt eine Nachricht per eMail:¶
 1593:<%s> schickt eine Nachricht per Web:¶
 1595:¶Kontaktliste:¶============================================¶%d Kontakte.¶
@@ -601,7 +590,6 @@
 1649:Die Version war %X	
 1650:¶Die Folgenummer war %04X	
 1651:Die Größe war %d¶
-1652.Ungenügend Speicher, um eine ausführliche Kontaktliste darzustellen.¶
 1653:Abgeklemmt
 1654:Verbunden
 1655:Geben Sie die eMail-Adresse des Benutzers ein:
@@ -666,8 +654,6 @@
 1745:Unbekannt
 1746: Nr Type                aus/eingehend Pakete/identische Pakete¶
 1747:Gesamt
-1749.Benutzernummer %d in %s umbenannt.¶
-1751.Spitzname %s entfernt.
 1754: Hinweis: Sie müssen diese Änderung mit "save" abspeichern.¶
 1755:hat Sie zu seiner Kontaktliste hinzugefügt.¶
 1756:¶Erstelle Verbindung...¶
@@ -683,7 +669,6 @@
 1766:Automatische Abwesenheit bzw. Nichtverfügbarkeit nach %s%d%s Sekunden.¶
 1767:Schaltet die automatische Abwesenheitsschaltung an oder ab.
 1768:Der Bezeichner '%s' ist schon in Verwendung.¶
-1769.Zeigt Deinen aktuellen Verbindungsstatus.
 1770:Sendet die letzte Nachricht an <uin> bzw. <nick>.
 1771:Noch keine Nachricht an irgendwen verschickt!¶
 1774:Eingehendes Paket:
@@ -906,7 +891,6 @@
 2049:Lade Gruppe "%s" herunter:¶
 2050:Importiere %d Kontakte.¶
 2051:Fehler am Kommunikationsendpunkt: %s (%d)¶
-2052.Akzeptiere Dateiübertragung "%s" (%d Bytes) von %s.¶
 2053:TCP %s Sequenz %x Typ %x Status %x Optionen %x: '%s'¶
 2054:Die für-Plaudereien-frei-Nachricht ist:
 2055:Der Benutzer ist für Plauereien frei und möchte über alles plaudern.
@@ -915,7 +899,6 @@
 2058:peer na    <nick> - Hole die automatische Antwort für "nicht verfügbar" von diesem Kontakt.¶
 2059:peer dnd   <nick> - Hole die automatische Antwort für "nicht stören" von diesem Kontakt.¶
 2060:peer ffc   <nick> - Hole die automatische Antwort für "für Plaudereien frei" von diesem Kontakt.¶
-2061.Lehne Dateiübertragung von "%s" (%d Bytes) ab %s (unbekannt: %x, %x),¶
 2063:Sie müssen Ihr Paßwort in Ihrem ~/.micq/micqrc speichern.¶
 2064:Lehne Plaudereianfrage (%s/%s/%s) von %s ab.¶
 2065:Unbekanntes TCP_MSG_GREET_-Kommando %04x.¶
@@ -934,7 +917,6 @@
 2082:Öffne Kommunikationsendpunkt für Dateiübertragungen auf localhost:%d... 
 2083:Kann Datei "%s" nicht öffnen: %s (%d).¶
 2084:Fehler beim Suchen vom %d. Byte: %s (%d).¶
-2085.Breche Dateiübertragung %d %d wegen Zeitüberschreitung ab.¶
 2086:Fehler beim Lesen der Datei "%s": %s (%d).¶
 2087:Datei "%s" fertig gesendet.¶
 2088:Alle %d Dateien fertig gesendet.¶
@@ -1000,10 +982,6 @@
 2149:Entferne Zweit-Name "%s" für "%s" (%d).¶
 2150:Entferne Kontakt "%s" (%d).¶
 2151:Es gibt keinen Kontakt mit Benutzernummer %d mehr auf der Kontaktliste.¶
-2152.Schließe Server-Verbindung (Version 5).¶
-2153.Schließe Server-Verbindung (Version 8).¶
-2154.Schließe Nachrichten-Annahme.¶
-2155.Schließe Direktverbindung.¶
 2156:conn close <nr>    Schließe Verbindung <nr>.¶
 2157:Moldavien
 2158:Keine Datei angegeben.¶

@@ -177,7 +177,6 @@
 1193:estado = %ld
 1196:Message_cmd = %s¶
 1198:Otros servicios
-1199.País desconocido
 1200:No ingresado
 1201:Afganistan
 1202:Albania
@@ -395,7 +394,6 @@
 1419:Limpia la pantalla.
 1420:Cambia entre hacer bip o no cuando llega un mensaje nuevo.
 1422:Se desconecta y sale.
-1423.Muestra el estado de tu auto-respuesta.
 1424:Cambia entre enviar o no mensajes cuando tu estado no es 'conectado', o muestra la configuracion.
 1425:Cambia el mensaje a enviar como una respuesta automatica.
 1426:Crea un nuevo UIN con la clave especificada.
@@ -538,10 +536,7 @@
 1578:Ingresa el código telefónico de tu país:
 1579:Ingresa tu compañia: 
 1584:Alerta! El comando de script '%s' falló con valor %d¶
-1585.Ack!!!!!!!  Paquete deforme¶
 1587:Ingresa tu departamento/area: 
-1590.te pidió autorización para agregarte a su lista de contactos.
-1591.Motivo:
 1592:<%s> te mando un mensaje por email:¶
 1593:<%s> te mando un mensaje por web:¶
 1595:¶Lista de contactos.¶============================================¶%d Contactos¶
@@ -589,7 +584,6 @@
 1649:La versión fue %X	
 1650:¶El SEQ fue %04X	
 1651:El tamaño fue %d¶
-1652.Memoria insuficiente para mostrar una lista de contactos ancha.¶
 1653:Desconectado
 1654:Conectado
 1655:Ingresa la dirección de e-mail del usuario:
@@ -654,8 +648,6 @@
 1745:desconocido
 1746: nr tipo         envi/reci     paquetes/paquetes unicos¶
 1747:total
-1749.UIN %d renombrado a to %s.¶
-1751.Nick %s eliminado.
 1754: Nota: tenes que escribir 'save' para grabar los cambios de tu lista de contactos.¶
 1755:te agregó a su lista de contactos.¶
 1756:¶Creando conexión...¶
@@ -671,7 +663,6 @@
 1766:El cambio de estado automatico esta %s%d%s.¶
 1767:Cambia el cambio de estado automatico de 'lejos' a 'no disponible'.
 1768:El nombre de comando '%s' ya esta siendo utilizado.¶
-1769.Muestra tu estado de conexión actual.
 1770:Reenvia el ultimo mensaje a un nuevo <uin> o <nick>.
 1771:Todavia no le mandaste un mensaje a nadie!¶
 1774:Paquete entrante:
@@ -776,7 +767,6 @@
 1907:Alerta: el servidor cree que nuestro UIN is %d, cuando en realidad es %d.¶
 1908:Recepción de paquete USERONLINE para un no-contacto.¶
 1909:Recepción de paquete USEROFFLINE para un no-contacto.¶
-1910.FLAP seq %08x longitud %04x canal %d¶
 1911:conectando
 1912:cerrado
 1914:No se pudo obtener memoria para la estructura de conexión.¶
@@ -792,7 +782,6 @@
 1926:Invisible
 1927:Libre para hablar
 1929:El usuario no esta disponible [Mensaje automático]
-1930.No se puede mandar esto (%x) todavia.¶
 1931:La sesion actual se cerro. Intenta una nueva, o abri esta.¶
 1934:conectado
 1935:    tipo %d socket %d ip %s (%d) en [%s,%s] id %x/%x/%x¶
@@ -896,7 +885,6 @@
 2049:Recibiendo grupo "%s":¶
 2050:Se importaron %d contactos.¶
 2051:Error en socket: %s (%d)¶
-2052.Aceptando archivo '%s' (%d bytes) de %s.¶
 2053:TCP %s seq %x tipo %x estado %x flags %x: '%s'¶
 2054:El mensaje del modo "libre para hablar" es:
 2055:El usuario esta "libre para hablar" y quiere hablar de cualquier cosa.
@@ -905,7 +893,6 @@
 2058:peer na    <nick> - Obtiene la respuesta automatica del estado 'no disponible' del contacto.¶
 2059:peer dnd   <nick> - Obtiene la respuesta automatica del estado 'no molestar' del contacto.¶
 2060:peer ffc   <nick> - Obtiene la respuesta automatica del estado 'libre para hablar' del contacto.¶
-2061.Pedido de transferencia del archivo '%s' (%d bytes) de %s (desconocido: %x, %x) rechazado¶
 2063:Necesitas guardar tu clave en tu archivo ~/.micq/micqrc.¶
 2064:Rechazando pedido de chat (%s/%s/%s) de %s.¶
 2065:Comando TCP_MSG_GREET_ desconocido: %04x.¶
@@ -924,7 +911,6 @@
 2082:Abriendo conexion en espera de archivos en localhost:%d... 
 2083:No se pudo abrir el archivo %s: %s (%d).¶
 2084:Error moviendo al offset %d: %s (%d).¶
-2085.Cerrando la transferencia de archivos debido a que se alcanzo el timeout: %d %d.¶
 2086:Error leyendo el archivo %s: %s (%d).¶
 2087:El envio del archivo %s ha finalizado.¶
 2088:El envio de los %d archivos ha finalizado.¶

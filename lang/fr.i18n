@@ -1,5 +1,5 @@
 # $Id$ français (French)
-#  EN: __.i18n,v 1.49 2002/09/24 23:43:37
+#  EN: __.i18n,v 1.50 2002/09/30 17:45:07
 1001:fr
 1002:fr_FR
 1003:0-4-8-9
@@ -177,7 +177,6 @@
 1193:status = %ld¶
 1196:cmd de message = %s¶
 1198:Autres services
-1199.Pays inconnue
 1200:Non référencé
 1201:Afghanistan
 1202:Albanie
@@ -391,11 +390,9 @@
 1415:Trouve un utilisateur aléatoirement dans un groupe spécifié ou dans la liste de tous les groupes.
 1416:Affiche le status courant de toutes les personnes de votre liste de contact.
 1417:Cette commande vous permet de modifier votre commande pour qu'elle prenne le nom d'une autre commande.
-#1418:Set the verbosity level, or display verbosity level.
 1419:Efface l'écran.
 1420:Activer/Désactiver le bip d'annonce de réception de nouveaux messages, etablit une commande pour cet évenement ou afiche l'etat actuel de cette option.
 1422:Quitte mICQ.
-1423.Affiche le status des réponses automatiques.
 1424:Change soit l'auto-reponse lorsque vous etes deconnecté ou affiche les parametres.
 1425:Donne à votre message à envoyer un status de réponse automatique.
 1426:Crée un nouvel UIN avec un mot de passe.
@@ -441,7 +438,6 @@
 1467:Films/télévision
 1468:Musique
 1469:Activités en plein air
-#1470:Parenting
 1471:Animaux
 1472:Religion
 1473:Sciences/Téchnologie
@@ -538,10 +534,7 @@
 1578:Entrez l'identifiant téléphonique de votre pays:
 1579:Entrez le nom de la société: 
 1584:Avis: La commande '%s' a échouée, donnant un valeur d'erreur %d¶
-1585.Ack ! Packet mutilé
 1587:Entrez le departement: 
-1590.©4%10s©0 demande votre autorisation.
-1591.Raison:
 1592:<%s> vous a envoyé un email:¶
 1593:<%s> vous a envoyé un message par le web:¶
 1595:¶Liste de contacts.¶============================================¶%d contacts¶
@@ -555,7 +548,6 @@
 1603:Entrez la position: 
 1604:L'utilisateur est-il connecté ?
 1605:Voulez vous que votre état  soit visible sur le Web? (OUI/NON)
-#1606:Got a bad session ID %08x (correct: %08x) with cmd %04x ignored.¶
 1607:Utilisation: micq [-v|-V] [-f|-F <fichier-rc>] [-l|-L <fichier-journal>] [-?|-h]¶
 1608:        -v   mode verbeuse¶
 1609:        -f   fichier de configuration alternatif (défaut: ~/.micq/micqrc)¶
@@ -589,7 +581,6 @@
 1649:La version était %X
 1650:¶La SEQ était %04X
 1651:La longueur était %d¶
-1652.Insuffisamment de mémoire.¶
 1653:Hors-ligne
 1654:En-ligne
 1655:Entrez l'email de l'utilisateur:
@@ -601,8 +592,6 @@
 1661:Les commandes shell sont interdites.¶
 1666:N'ignorant pas %s !¶
 1667:Ignorant %s !¶
-#1670:Normal visible to %s now.
-#1671:Always visible to %s now.
 1672:%s L'adresse IP est 
 1673:  Le port est: %d¶
 1674:	Le port est inconnu¶
@@ -621,8 +610,6 @@
 1692:Contacts:
 1696:Sexe:
 1700:%s ne se retrouve pas dans votre liste de contacts.¶
-#1703:Status modes:¶
-#1704:Groups:¶
 1705:Général
 1706:Romantique
 1707:Jeux
@@ -635,16 +622,7 @@
 1714:Femme desirant un homme
 1715:mICQ
 1716:Aucun
-#1717:! as the first character of a command will execute a shell command (e.g. "!ls"  "!dir" "!mkdir temp")
-#1719:Shows how long mICQ has been running.
-#1720:uin can be either a number or the nickname of the user.
-#1721:Sending a blank message will put the client into multiline mode.¶Use . on a line by itself to end message.¶Use # on a line by itself to cancel the message.
 1724:Les réponses automatiques sont %s.¶
-#1727:The "do not disturb" message is:
-#1728:The "away" message is:
-#1729:The "not available" message is:
-#1730:The "occupied" message is:
-#1731:The "invisible" message is:
 1735:Il faut entrer un message.¶
 1738:Il faut spécifier une commande pour modifier.¶
 1741:Il n'y a rien à répondre.¶
@@ -654,11 +632,7 @@
 1745:Liste de contacts
 1746:Liste de contacts invisibles
 1747:Liste de contacts visibles
-1749.Sélectionnement du groupe pour les recherches au hasard
-1751.Log fini
-1751.Séquence de connexion complétée
 1754:Demande de l'information
-#1755:has added you to their contact list.¶
 1756:¶Établissement de la connexion...¶
 1757:N'a pas pu établir la connexion¶
 1758:Envoyant la demande...¶
@@ -669,10 +643,8 @@
 1763:La commande '%s' a été renommée en '%s'.
 1764:La commande '%s' est inchangée.
 1765:%s a cet UIN %d.
-#1766:Changing status to away resp. not available after idling %s%d%s seconds.¶
 1767:Changement automatique de l'état absent à non disponible.
 1768:Le nom de la commande '%s' est deja en cours d'utilisation.¶
-1769.Affiche votre état online actuel.
 1770:Renvoie votre message a un nouvel UIN.
 1771:Vous n'avez encore envoyé de messages a personne!¶
 1774:Paquet entrant:
@@ -711,10 +683,8 @@
 1814:Auto-réponse envoyée à %s%s%s.¶
 1815:    marrant: utilise des messages amusants.¶
 1816:Option inconnue %s pour etablir la commande.¶
-#1817:Warning: ReceiveScript feature not enabled!¶
 1818:Attention: Syntaxe non valide dans le fichier rc!¶   Mettez a jour ou sauvegardez le fichier rc et vérifier les changements.¶
 1820:%s <option> [on|off] - controle les options simples.¶
-#1822:    color: use colored text output.¶
 1823:Paquet arrivant partiel:
 1825:Un paquet %04x (%s) a été jeté
 1826:Renvoie du message %04x (%s) sequence %04x (tentative #%d, long %d).¶
@@ -777,7 +747,6 @@
 1907:Attention: Le serveur pense que votre UIN est %d, alors que c'est %d.¶
 1908:Reçu un paquet USERONLINE pour non-contact.¶
 1909:Reçu un paquet USEROFFLINE pour non-contact.¶
-1910:FLAP seq %08x longueur %04x chaine %d¶
 1911:Connection en cours
 1912:Fermé
 1914:Ne peut pas allouer de structure de connection.¶
@@ -792,8 +761,6 @@
 1925:Occupé
 1926:Invisible
 1927:Libre pour chatter
-#1929:User is dnd [Auto-Message]
-1930:Ne peut pas envoyer ca (%x) pour le moment.¶
 1931:La session en cours est fermé. Essayez une autre pour ouvrir celle la.¶
 1934:connecté
 1935:    type %d socket %d ip %s (%d) sur [%s,%s] id %x/%x/%x¶
@@ -867,11 +834,11 @@
 2013:Cette commande est uniquement v8.¶
 2014:Aucun numéro donné.¶
 2015:Aucun message donné.¶
-2017:L'utilisateur est actuellement online.¶
+#-#2017:L'utilisateur est actuellement online.¶
 2018:    silence: etre silencieux lors du changement d'état.¶
 2020:être visible pour %s.
 2021:être invisible pour %s.
-2022:L'utilisateur est en fait déconnecté.¶
+2022:L'utilisateur est déconnecté.¶
 2023:Connection directe fermée par le pair.¶
 2024:Version de protocol inconnue %d pour le protocole peer-to-peer d'ICQ.¶
 2026:Cookie TCP:
