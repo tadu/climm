@@ -37,6 +37,7 @@ AC_MSG_RESULT([$ac_cv_have_working_snprintf])
 if test x$ac_cv_have_working_snprintf != "xyes"; then
   AC_LIBOBJ(snprintf)
   AC_MSG_WARN([Replacing missing/broken snprintf() with version from http://www.ijs.si/software/snprintf/.])
+  AC_DEFINE(PREFER_PORTABLE_SNPRINTF, 1, "enable replacement snprintf if system snprintf is broken")
 fi
 AC_MSG_CHECKING(for working vsnprintf)
 AC_CACHE_VAL(ac_cv_have_working_vsnprintf,

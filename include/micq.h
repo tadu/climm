@@ -36,6 +36,9 @@
   #endif
 #endif
 #include <stdio.h>
+#ifdef PREFER_PORTABLE_SNPRINTF
+  #include <snprintf.h>
+#endif
 
 struct Queue_s;
 struct Event_s;
