@@ -27,6 +27,9 @@
 #ifdef PREFER_PORTABLE_MEMMOVE
   #include <memmove.h>
 #endif
+#ifndef ___attributes__
+  #define __attributes__(x)
+#endif
 
 struct Queue_s;
 struct Event_s;
