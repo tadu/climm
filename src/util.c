@@ -323,7 +323,7 @@ int log_event (UDWORD uin, int type, char *str, ...)
     va_list args;
     int k;
     char buf[2048];             /* this should big enough - This holds the message to be logged */
-    char buffer[256], *b;
+    char buffer[256], *b, *home;
     time_t timeval;
     struct stat statbuf;
 
@@ -346,30 +346,33 @@ int log_event (UDWORD uin, int type, char *str, ...)
     vsprintf (&buf[strlen (buf)], str, args);
     va_end (args);
 
-    if (prG->logplace[strlen (prG->logplace) - 1] == '/')
+    if (prG->logplace[0] == '~' && prG->logplace[1] == '/' && (home = getenv ("HOME")))
+        snprintf (buffer, sizeof (buffer), "%s%s", home, prG->logplace + 1);
+    else
+        snprintf (buffer, sizeof (buffer), "%s", prG->logplace);
+    
+    if (buffer[strlen (buffer) - 1] == '/')
     {
-        if (stat (prG->logplace, &statbuf) == -1)
+        if (stat (buffer, &statbuf) == -1)
         {
             if (errno == ENOENT)
-                mkdir (prG->logplace, 0700);
+                mkdir (buffer, 0700);
             else
                 return -1;
         }
-        snprintf (buffer, sizeof (buffer), "%s%ld.log", prG->logplace, uin);
+        snprintf (buffer + strlen (buffer), sizeof (buffer) - strlen (buffer), "%ld.log", uin);
 
 #if HAVE_SYMLINK
         if (ContactFindNick (uin))
         {
-            snprintf (symbuf, sizeof (symbuf), "%snick-%s.log", prG->logplace, ContactFindNick (uin));
+            snprintf (symbuf, sizeof (symbuf), "%snick-%s.log", buffer, ContactFindNick (uin));
             snprintf (symbuf2, sizeof (symbuf2), "%ld.log", uin);
-            for (b = symbuf + strlen (prG->logplace); (b = strchr (b, '/')); )
+            for (b = symbuf + strlen (buffer); (b = strchr (b, '/')); )
                 *b = '_';
             symlink  (symbuf2, symbuf);
         }
 #endif
     }
-    else
-        strcpy (buffer, prG->logplace);
 
     if (!(msgfd = fopen (buffer, "a")))
     {
