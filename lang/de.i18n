@@ -533,7 +533,7 @@
 1604:Soll der Benutzer online sein?
 1605:Soll Ihr Status im Web einsehbar sein? (Ja/Nein)
 1606:Paket mit falscher Sitzungskennung ID %08lx (richtig: %08lx) mit Kommando %04x ignoriert.\n
-1607:Benutzung: micq [-h] [-c] [-i <locale>] [-b <basedir>] \n            [-f <configfile>] [-v[<level>]] [-l <logplace>]\n
+1607:Benutzung: micq [-h] [-c] [-i <locale>] [-b <basedir>] \n                [-f <configfile>] [-v[<level>]] [-l <logplace>]\n
 1612:Dieses Programm wurde ohne Hilfe oder Zustimmung von Mirabilis erstellt.\n
 1613:Dazu wurde kein Programmcode von Mirabilis zurückentwickelt oder zurückübersetzt.\n
 1618:Benutzernummer:
@@ -911,7 +911,7 @@
 2122:Hinweis: Die Paßwort-Änderung muß mittels "save" abgespeichert werden.\n
 2123:%sSyntax-Fehler%s: Zu wenige Argumente: "%s"\n
 2124:%sSyntax-Fehler%s: Keine ganze Zahl: "%s"\n
-2126:Der Benutzer ist nicht verbunden, die Nachricht wird auf dem Server eingereiht.\n
+2126:ist nicht verbunden, die Nachricht wird auf dem Server eingereiht.\n
 2127:       URL: %s %s%s%s\n
 2128: Beschreibung: %s%s%s\n
 2129:          URL: %s%s%s\n

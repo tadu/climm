@@ -82,7 +82,7 @@ void i18nInit (char **loc, UBYTE *enc, const char *arg)
     if (*q == 'C' && !q[1] && enc && *enc == ENC_AUTO)
     {
         s_repl (loc, "en_US");
-        *enc = ENC_LATIN1;
+        *enc = ENC_LATIN1 | ENC_AUTO;
     }
 }
 
@@ -138,33 +138,49 @@ int i18nOpen (const char *loc, UBYTE enc)
             if (utf8)
                 i18nTry (s_sprintf ("%s/i18n/%s.UTF-8@fun.i18n", PrefUserDir (prG), loc));
             i18nTry (s_sprintf ("%s/i18n/%s@fun.i18n", PrefUserDir (prG), loc));
+            if (!utf8)
+                i18nTry (s_sprintf ("%s/i18n/%s.UTF-8@fun.i18n", PrefUserDir (prG), loc));
             if (strchr (loc, '_') && utf8)
                 i18nTry (s_sprintf ("%s/i18n/%.*s.UTF-8@fun.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
             if (strchr (loc, '_'))
                 i18nTry (s_sprintf ("%s/i18n/%.*s@fun.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
+            if (strchr (loc, '_') && !utf8)
+                i18nTry (s_sprintf ("%s/i18n/%.*s.UTF-8@fun.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
             if (utf8)
                 i18nTry (s_sprintf (PKGDATADIR "/%s.UTF-8@fun.i18n", loc));
             i18nTry (s_sprintf (PKGDATADIR "/%s@fun.i18n", loc));
+            if (!utf8)
+                i18nTry (s_sprintf (PKGDATADIR "/%s.UTF-8@fun.i18n", loc));
             if (strchr (loc, '_') && utf8)
                 i18nTry (s_sprintf (PKGDATADIR "/%.*s.UTF-8@fun.i18n", (int)(strchr (loc, '_') - loc), loc));
             if (strchr (loc, '_'))
                 i18nTry (s_sprintf (PKGDATADIR "/%.*s@fun.i18n", (int)(strchr (loc, '_') - loc), loc));
+            if (strchr (loc, '_') && !utf8)
+                i18nTry (s_sprintf (PKGDATADIR "/%.*s.UTF-8@fun.i18n", (int)(strchr (loc, '_') - loc), loc));
         }
 
         if (utf8)
             i18nTry (s_sprintf ("%s/i18n/%s.UTF-8.i18n", PrefUserDir (prG), loc));
         i18nTry (s_sprintf ("%s/i18n/%s.i18n", PrefUserDir (prG), loc));
+        if (!utf8)
+            i18nTry (s_sprintf ("%s/i18n/%s.UTF-8.i18n", PrefUserDir (prG), loc));
         if (strchr (loc, '_') && utf8)
             i18nTry (s_sprintf ("%s/i18n/%.*s.UTF-8.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
         if (strchr (loc, '_'))
             i18nTry (s_sprintf ("%s/i18n/%.*s.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
+        if (strchr (loc, '_') && !utf8)
+            i18nTry (s_sprintf ("%s/i18n/%.*s.UTF-8.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
         if (utf8)
             i18nTry (s_sprintf (PKGDATADIR "/%s.UTF-8.i18n", loc));
         i18nTry (s_sprintf (PKGDATADIR "/%s.i18n", loc));
+        if (!utf8)
+            i18nTry (s_sprintf (PKGDATADIR "/%s.UTF-8.i18n", loc));
         if (strchr (loc, '_') && utf8)
             i18nTry (s_sprintf (PKGDATADIR "/%.*s.UTF-8.i18n", (int)(strchr (loc, '_') - loc), loc));
         if (strchr (loc, '_'))
             i18nTry (s_sprintf (PKGDATADIR "/%.*s.i18n", (int)(strchr (loc, '_') - loc), loc));
+        if (strchr (loc, '_') && !utf8)
+            i18nTry (s_sprintf (PKGDATADIR "/%.*s.UTF-8.i18n", (int)(strchr (loc, '_') - loc), loc));
     }
     s_free (floc);
 
@@ -198,7 +214,7 @@ static int i18nAdd (FILE *i18nf, int debug, int *res)
             else if (!strcasecmp (p + 1, "koi8-r"))     enc = ENC_KOI8;
             else if (!strcasecmp (p + 1, "koi8-u"))     enc = ENC_KOI8;
             else if (!strcasecmp (p + 1, "utf-8"))      enc = ENC_UTF8;
-            else                                        enc = ENC_LATIN1;
+            else                                        enc = ConvEnc (p + 1);
             if (prG->enc_loc == ENC_AUTO)
                 prG->enc_loc = ENC_AUTO | enc;
         }

@@ -1,5 +1,26 @@
 -*- coding: utf-8 -*-
 
+2003-01-15 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+	* fix auto-away prompt string (wasn't always cleared)
+	* fix stupid typo
+	* fix __attribute__ stuff for real
+	* add 1000: for encoding as well
+	* fix time format string for Cygwin
+	* fix setlocale() stuff to ignore empty LC_* variables
+	* save contact's meta data as well when autosaving
+	* fix setlocale handling
+	* fix i18n-extract,i18n-template to be 7bit only
+	* fix missing recoding of about text
+	* fix: don't pinpoint latin1 charset in micqrc when no locale is used
+	* use 1023 as default for PATH_MAX
+	* use int instead of unsigned int for socklen_t
+	* fix missing spaces and rephrase encoding options in micqrc.5
+	* also try .UTF-8 file even if utf-8 is not current locale, but only after the normal file
+	* fix encoding from i18n file
+	* add sr_YU.UTF-8.i18n (Serbian)
+	* add transcoded ja_JP.i18n and sr_YU.i18n
+	* update ja_JP.UTF-8.i18n, uk.i18n, de.i18n, AUTHORS
+
 2003-01-09 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
 	* add pt_BR micq.7
 	* fix compiler warnings (unused variables, UBYTE != char)
