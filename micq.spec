@@ -57,7 +57,7 @@ rm -rf "${RPM_BUILD_ROOT}"
 %files
 %defattr(-,root,root,0755)
 %doc NEWS README TODO
-%doc doc/README doc/README.SOCKS5 doc/icq091.txt doc/icqv7.txt
+%doc doc/README.SOCKS5 doc/icq091.txt doc/icqv7.txt
 %doc doc/html
 %{_bindir}/*
 %{_datadir}/micq
