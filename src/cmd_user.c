@@ -1137,15 +1137,17 @@ static JUMP_F(CmdUserVerbose)
     return 0;
 }
 
-static UDWORD __status (UDWORD status)
+static UDWORD __status (Contact *cont)
 {
-    if (status == STATUS_OFFLINE)  return STATUS_OFFLINE;
-    if (status  & STATUSF_BIRTH)   return STATUSF_BIRTH;
-    if (status  & STATUSF_DND)     return STATUS_DND;
-    if (status  & STATUSF_OCC)     return STATUS_OCC;
-    if (status  & STATUSF_NA)      return STATUS_NA;
-    if (status  & STATUSF_AWAY)    return STATUS_AWAY;
-    if (status  & STATUSF_FFC)     return STATUS_FFC;
+    if (cont->flags   & CONT_IGNORE)     return -2;
+    if (cont->flags   & CONT_TEMPORARY)  return -2;
+    if (cont->status == STATUS_OFFLINE)  return STATUS_OFFLINE;
+    if (cont->status  & STATUSF_BIRTH)   return STATUSF_BIRTH;
+    if (cont->status  & STATUSF_DND)     return STATUS_DND;
+    if (cont->status  & STATUSF_OCC)     return STATUS_OCC;
+    if (cont->status  & STATUSF_NA)      return STATUS_NA;
+    if (cont->status  & STATUSF_AWAY)    return STATUS_AWAY;
+    if (cont->status  & STATUSF_FFC)     return STATUS_FFC;
     return STATUS_ONLINE;
 }
 
@@ -1160,11 +1162,11 @@ static UDWORD __status (UDWORD status)
  */
 static JUMP_F(CmdUserStatusDetail)
 {
-    UDWORD uin = 0, i, lenuin = 0, lennick = 0, lenstat = 0, lenid = 0, totallen = 0;
-    Contact *cont = NULL;
+    UDWORD uin = 0, tuin = 0, i, lenuin = 0, lennick = 0, lenstat = 0, lenid = 0, totallen = 0;
+    Contact *cont = NULL, *contr = NULL;
     Session *peer;
-    UDWORD stati[] = { STATUS_OFFLINE, STATUS_DND,    STATUS_OCC, STATUS_NA,
-                       STATUS_AWAY,    STATUS_ONLINE, STATUS_FFC, STATUSF_BIRTH };
+    UDWORD stati[] = { -2, STATUS_OFFLINE, STATUS_DND,    STATUS_OCC, STATUS_NA,
+                           STATUS_AWAY,    STATUS_ONLINE, STATUS_FFC, STATUSF_BIRTH };
     SESSION;
 
     if (!data)
@@ -1175,29 +1177,34 @@ static JUMP_F(CmdUserStatusDetail)
         M_print (i18n (1700, "%s is not a valid user in your list.\n"), args);
         return 0;
     }
+
     if (cont)
         uin = cont->uin;
-    else
+
+    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
     {
-        for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
-        {
-            if (cont->flags & CONT_ALIAS)
-                continue;
-            if (cont->uin > uin)
-                uin = cont->uin;
-            if (strlen (cont->nick) > lennick)
-                lennick = strlen (cont->nick);
-            if (strlen (UtilStatus (cont->status)) > lenstat)
-                lenstat = strlen (UtilStatus (cont->status));
-            if (cont->version && strlen (cont->version) > lenid)
-                lenid = strlen (cont->version);
-        }
-        while (uin)
-            lenuin++, uin /= 10;
-        totallen = 1 + lennick + 1 + lenstat + 2 + 1 + lenid + 2;
-        if (data & 2)
-            totallen += 1 + 3 + 1 + 1 + lenuin + 24;
+        if (uin && cont->uin != uin)
+            continue;
+        if (cont->flags & CONT_ALIAS && ~data & 2)
+            continue;
+        if (cont->uin > tuin)
+            tuin = cont->uin;
+        if (strlen (cont->nick) > lennick)
+            lennick = strlen (cont->nick);
+        if (cont->flags & CONT_ALIAS)
+            continue;
+        if (strlen (UtilStatus (cont->status)) > lenstat)
+            lenstat = strlen (UtilStatus (cont->status));
+        if (cont->version && strlen (cont->version) > lenid)
+            lenid = strlen (cont->version);
     }
+
+    while (tuin)
+        lenuin++, tuin /= 10;
+    totallen = 1 + lennick + 1 + lenstat + 2 + 1 + lenid + 2;
+    if (data & 2)
+        totallen += 2 + 3 + 1 + 1 + lenuin + 24;
+
     if (data & 4 && !uin)
     {
         Time_Stamp ();
@@ -1215,67 +1222,77 @@ static JUMP_F(CmdUserStatusDetail)
             M_print ("====================");
         M_print ("%.*s" COLNONE "\n", i, "====================");
     }
-    for (i = data & 1; i < 8; i++)
+    for (i = (data & 1 ? 2 : 0); i < 9; i++)
     {
         status = stati[i];
-        for (cont = (uin ? cont : ContactStart ()); ContactHasNext (cont); cont = ContactNext (cont))
+        for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
         {
             char statbuf[100], verbuf[100];
             
-            if (!uin)
-            {
-                if (__status (cont->status) != status)
-                    continue;
-                if (cont->flags & CONT_ALIAS)
-                    continue;
-            }
+            contr = ContactFind (cont->uin);
+            if (!contr)
+                continue;
+
+            if (uin && cont->uin != uin)
+                continue;
+
+            if (__status (contr) != status)
+                continue;
+            if (cont->flags & CONT_ALIAS && (~data & 2 || data & 1))
+                continue;
+
             peer = sess->assoc ? SessionFind (TYPE_MSGDIRECT, cont->uin, sess->assoc) : NULL;
 
-            snprintf (statbuf, sizeof (statbuf), "(%s)", UtilStatus (cont->status));
-            if (cont->version)
-                snprintf (verbuf,  sizeof (verbuf), "[%s]", cont->version);
+            snprintf (statbuf, sizeof (statbuf), "(%s)", UtilStatus (contr->status));
+            if (contr->version)
+                snprintf (verbuf,  sizeof (verbuf), "[%s]", contr->version);
             else
                 verbuf[0] = '\0';
 
             if (data & 2)
                 M_print (COLSERVER "%c%c%c%1.1d%c" COLNONE " %*ld",
-                     cont->flags & CONT_TEMPORARY  ? '#' : ' ',
-                     cont->flags & CONT_INTIMATE   ? '*' :
-                      cont->flags & CONT_HIDEFROM  ? '-' : ' ',
-                     cont->flags & CONT_IGNORE     ? '^' : ' ',
-                     cont->TCP_version,
+                     cont->flags & CONT_ALIAS      ? '+' :
+                     contr->flags & CONT_TEMPORARY ? '#' : ' ',
+                     contr->flags & CONT_INTIMATE  ? '*' :
+                      contr->flags & CONT_HIDEFROM ? '-' : ' ',
+                     contr->flags & CONT_IGNORE    ? '^' : ' ',
+                     contr->TCP_version,
                      peer ? (
                       peer->connect & CONNECT_OK   ? '&' :
                       peer->connect & CONNECT_FAIL ? '|' :
                       peer->connect & CONNECT_MASK ? ':' : '.' ) :
-                      cont->TCP_version && cont->port &&
-                      cont->outside_ip && ~cont->outside_ip ? '^' : ' ',
+                      contr->TCP_version && contr->port &&
+                      contr->outside_ip && ~contr->outside_ip ? '^' : ' ',
                      lenuin, cont->uin);
 
             M_print (COLSERVER "%c" COLCONTACT "%-*s" COLNONE " " COLMESSAGE "%-*s" COLNONE " %-*s %s",
                      data & 2                      ? ' ' :
-                     cont->flags & CONT_TEMPORARY  ? '#' :
-                     cont->flags & CONT_INTIMATE   ? '*' :
-                     cont->flags & CONT_HIDEFROM   ? '-' :
-                     cont->flags & CONT_IGNORE     ? '^' :
+                     cont->flags  & CONT_ALIAS     ? '+' :
+                     contr->flags & CONT_TEMPORARY ? '#' :
+                     contr->flags & CONT_INTIMATE  ? '*' :
+                     contr->flags & CONT_HIDEFROM  ? '-' :
+                     contr->flags & CONT_IGNORE    ? '^' :
                      !peer                         ? ' ' :
-                     peer->connect & CONNECT_OK   ? '&' :
-                     peer->connect & CONNECT_FAIL ? '|' :
-                     peer->connect & CONNECT_MASK ? ':' : '.' ,
+                     peer->connect & CONNECT_OK    ? '&' :
+                     peer->connect & CONNECT_FAIL  ? '|' :
+                     peer->connect & CONNECT_MASK  ? ':' : '.' ,
                      lennick, cont->nick, lenstat + 2, statbuf, lenid + 2, verbuf,
-                     cont->seen_time != -1L && data & 2 ? ctime ((time_t *) &cont->seen_time) : "\n");
+                     contr->seen_time != -1L && data & 2 ? ctime ((time_t *) &contr->seen_time) : "\n");
             
-            if (uin)
-            {
-                M_print ("%-15s %s/%s:%d\n", i18n (1441, "IP:"), UtilIOIP (cont->outside_ip), UtilIOIP (cont->local_ip), cont->port);
-                M_print ("%-15s %d\n", i18n (1453, "TCP version:"), cont->TCP_version);
-                M_print ("%-15s %s (%d)\n", i18n (1454, "Connection:"),
-                         cont->connection_type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),
-                         cont->connection_type);
-                M_print ("%-15s %08x\n", i18n (2026, "TCP cookie:"), cont->cookie);
-                return 0;
-            }
         }
+    }
+    if (uin)
+    {
+        if (!contr)
+            return 0;
+
+        M_print ("%-15s %s/%s:%d\n", i18n (1441, "IP:"), UtilIOIP (contr->outside_ip), UtilIOIP (contr->local_ip), contr->port);
+        M_print ("%-15s %d\n", i18n (1453, "TCP version:"), contr->TCP_version);
+        M_print ("%-15s %s (%d)\n", i18n (1454, "Connection:"),
+                 contr->connection_type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),
+                 contr->connection_type);
+        M_print ("%-15s %08x\n", i18n (2026, "TCP cookie:"), contr->cookie);
+        return 0;
     }
     M_print (COLMESSAGE);
     for (i = totallen; i >= 20; i -= 20)
