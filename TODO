@@ -1,0 +1,8 @@
+Jeff Bearer <jbearer@tribweb.com>
+ : But the idea is to add PGP encryption to micq working with GNU Privacy
+ : Guard.  There is a plugin for ICQ that enables PGP that's where I got
+ : the idea.  As it stands right now you can't use micq to send messages
+ : encoded with GPG because the max message size isn't large enough to send
+ : your public key, etc.  After thinking about it, I was quickly in over my
+ : head.
+

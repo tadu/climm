@@ -175,6 +175,16 @@ int tab_pointer;
 time_t	MicqStartTime;
 /* end of aaron */
 
+#ifdef MSGEXEC
+ /*
+  *Ben Simon:
+  * receive_script -- a script that gets called anytime we receive
+  * a message
+  */
+ char receive_script[255];
+
+#endif
+
 /*/////////////////////////////////////////////
 // Connects to hostname on port port
 // hostname can be DNS or nnn.nnn.nnn.nnn

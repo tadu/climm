@@ -66,3 +66,6 @@
 
 /* remove this line to disable shell commands from within micq */
 #define SHELL_COMMANDS
+
+/* enables you to run a custom command when a message is received */
+#define MSGEXEC

@@ -1,6 +1,7 @@
-//-----------------------------------------------------------------------------
-//    --->  Contact mc@knuddel.com for the german translation  <---
-//-----------------------------------------------------------------------------
+/** $Id$
+***  by Rico Gloeckner <mc@verdinet.de>
+***/
+
 #define LOGGED_OFF_STR " logged off."
 #define LOGGED_ON_STR " logged on."
 #define INSTANT_MSG_STR " - Instant Message"

@@ -682,3 +682,9 @@ extern DWORD Packets_Recv;
    which shows how long Micq has been running.                               */
 extern time_t MicqStartTime;
 /* end of aaron */
+
+
+#ifdef MSGEXEC
+	extern char receive_script[255];
+#endif
+

@@ -283,6 +283,10 @@ static void Read_RC_File( FD_T rcf )
    passwd[0] = 0;
    UIN = 0;
    away_time = default_away_time;
+
+#ifdef MSGEXEC
+	receive_script[0] = '\0';
+#endif
  
 /* SOCKS5 stuff begin */
    s5Use = 0;
@@ -306,6 +310,11 @@ static void Read_RC_File( FD_T rcf )
             { strcpy( server, strtok( NULL, " \n\t" ) ); }
          else if ( ! strcasecmp( tmp, "Password" ) )
             { strcpy( passwd, strtok( NULL, "\n\t" ) ); }
+#ifdef MSGEXEC
+	 else if ( ! strcasecmp( tmp, "ReceiveScript") )
+	    { strcpy( receive_script, strtok( NULL, "\n\t" ) );}
+#endif
+
 
 /* SOCKS5 stuff begin */
          else if ( ! strcasecmp( tmp, "s5_use" ) )

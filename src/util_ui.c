@@ -425,60 +425,55 @@ void Time_Stamp( void )
    M_print( "%.02d:%.02d:%.02d",thetime->tm_hour,thetime->tm_min,thetime->tm_sec );
 }
 
-static void remove_tab( int index )
-{
-   int j;
 
-   if ( tab_array[ index ] != NULL ) {
-	free( tab_array[ index ] );
-   }
-   for ( j=index; j+1<TAB_SLOTS; j++ ) {
-	tab_array[ j ] = tab_array[ j+1 ];
-   }
-   tab_array[ TAB_SLOTS ] = NULL;
-}
-
+/***   adds <uin> to the tablist  ***/
 void add_tab( DWORD uin )
 {
-   int i, j;
-   char *new = NULL;
-   char *temp = NULL;
-   char *orig = NULL;
-   
-   for ( i=0; i < Num_Contacts; i++ )
-   {
-      if ( Contacts[i].uin == uin )
-      {
-         /* checking for repeated entry missing */
-         new = strdup( Contacts[i].nick );
-	 break;
+    int i, j;
+    char *new = NULL;
+    char *temp = NULL;
+    char *orig = NULL;
+
+    /** If the UIN is in the Userlist, add the nick **/
+    for ( i=0; i < Num_Contacts; i++ )
+    {
+	if ( Contacts[i].uin == uin )
+	{
+	    /* checking for repeated entry missing */
+	    new = strdup( Contacts[i].nick );
+	    break;
 	}
     }
-    if ( NULL == new ) {
+    
+    /** else, add the UIN only. **/
+    if ( NULL == new ) 
+    {
 	new = calloc( 1, 3 * sizeof( DWORD ) + 1 );
 	sprintf( new, "%ld", uin );
     }
+    
     orig = new;
-    for ( j=0; j<TAB_SLOTS; j++ ) {
+    
+    /** insert the new UIN at place [0]
+     ** place [0] into [1] (...) until 
+     ** (([n] == NULL) or ([0] == [n])) -> entry exists.
+    **/
+    for ( j=0; j<TAB_SLOTS; j++ ) 
+    {
         temp = tab_array[j];
-	tab_array[ j ] = new;
-        if ( temp == NULL ) break;
-        if ( ! strcasecmp( orig, temp ) ) {
-           break;
-	}
+	tab_array[j] = new;
+
+        if ( temp == NULL ) 
+	    break;
+
+        if ( ! strcasecmp( orig, temp ) )
+    	    break;
+
         new = temp;
     }
+    
+    /** Now, if the tab-list is full, throw the last entry out **/
     if ( temp != NULL )
 	    free( temp );
-/*       if ( !strcasecmp(tab_array[j], new ) )
-       {
-		remove_tab( j );
-               break;
-       }
-       for ( j--; j > 0; j-- )
-          tab_array[j] = tab_array[j-1];
-       tab_array[0] = i;
-       break;
-    }*/
-   /* if not found, just ignore it */
+
 }

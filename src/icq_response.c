@@ -729,7 +729,48 @@ void Do_Msg( SOK_T sok, DWORD type, WORD len, char * data, DWORD uin )
    char url_data[5120];
    char url_desc[5120];
 
-   add_tab( uin );
+#ifdef MSGEXEC
+    char *cmd = NULL, *who = NULL;
+    int script_exit_status = -1;
+#endif
+
+   add_tab( uin );	/* Adds <uin> to the tab-list */
+
+#ifdef MSGEXEC
+    /*
+     * run our script if we have one, but only
+     * if we have one (submitted by Benjamin Simon)
+     */
+    if(receive_script[0] != '\0')
+    {
+        if(UIN2nick( uin ) != NULL)
+        {
+            who = strdup(UIN2nick( uin ));
+        }
+        else
+        {
+            who = (char*)malloc(20);
+            sprintf(who, "%ld", uin);
+        }
+
+        cmd = (char*)malloc(strlen(receive_script) +
+                            strlen(data)           +
+                            strlen(who)            +
+                            20);
+
+        sprintf(cmd, "%s %s %ld '%s'",
+                receive_script,
+                who,
+                type,
+                data);
+        script_exit_status = system(cmd);
+        if(script_exit_status != 0)
+        {
+            M_print( "Script command %s failed with %d exit value",
+                     script_exit_status);
+        }
+    }
+#endif
 
    if ( type == USER_ADDED_MESS )
    {
