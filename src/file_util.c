@@ -4,6 +4,7 @@
 #include "file_util.h"
 #include "tabs.h"
 #include "util.h"
+#include "sendmsg.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -38,6 +39,8 @@
 
 #define      ADD_STRING(a,b)     else if (!strcasecmp (tmp, a))   \
                                        snprintf (b, sizeof (b), "%s", strtok (NULL, " \n\t"))
+#define      ADD_CMD(a,b)        else if (!strcasecmp (tmp, a))   \
+                                       snprintf (b, sizeof (b), "%s", strtok (NULL, "\n\t"))
 
 static char rcfile[256];
 
@@ -252,6 +255,7 @@ static void Read_RC_File (FD_T rcf)
 {
     char buf[450];
     char *tmp;
+    char *p;
     int i;
     UDWORD tmp_uin;
     char *tab_nick_spool[TAB_SLOTS];
@@ -420,11 +424,11 @@ static void Read_RC_File (FD_T rcf)
             {
                 auto_resp = TRUE;
             }
-            ADD_STRING ("auto_rep_str_away", auto_rep_str_away);
-            ADD_STRING ("auto_rep_str_na", auto_rep_str_na);
-            ADD_STRING ("auto_rep_str_dnd", auto_rep_str_dnd);
-            ADD_STRING ("auto_rep_str_occ", auto_rep_str_occ);
-            ADD_STRING ("auto_rep_str_inv", auto_rep_str_inv);
+            ADD_CMD ("auto_rep_str_away", auto_rep_str_away);
+            ADD_CMD ("auto_rep_str_na", auto_rep_str_na);
+            ADD_CMD ("auto_rep_str_dnd", auto_rep_str_dnd);
+            ADD_CMD ("auto_rep_str_occ", auto_rep_str_occ);
+            ADD_CMD ("auto_rep_str_inv", auto_rep_str_inv);
             else if (!strcasecmp (tmp, "LogDir"))
             {
                 Set_Log_Dir (strtok (NULL, "\n"));
@@ -505,93 +509,101 @@ static void Read_RC_File (FD_T rcf)
     {
         if (Num_Contacts == MAX_CONTACTS)
             break;
-        if ((buf[0] != '#') && (buf[0] != 0))
+
+        p = buf;
+
+        while (*p == ' ')
+            p++;
+
+        if (!*p || *p == '#' )
+            continue;
+
+        if (isdigit ((int) *p))
         {
-            if (isdigit ((int) buf[0]))
-            {
-                Contacts[Num_Contacts].uin = atoi (strtok (buf, " "));
-                Contacts[Num_Contacts].status = STATUS_OFFLINE;
-                Contacts[Num_Contacts].last_time = -1L;
-                Contacts[Num_Contacts].current_ip[0] = 0xff;
-                Contacts[Num_Contacts].current_ip[1] = 0xff;
-                Contacts[Num_Contacts].current_ip[2] = 0xff;
-                Contacts[Num_Contacts].current_ip[3] = 0xff;
-                tmp = strtok (NULL, "");
-                if (tmp != NULL)
-                    memcpy (Contacts[Num_Contacts].nick, tmp, sizeof (Contacts->nick));
-                else
-                    Contacts[Num_Contacts].nick[0] = 0;
-                if (Contacts[Num_Contacts].nick[19] != 0)
-                    Contacts[Num_Contacts].nick[19] = 0;
-                if (Verbose > 2)
-                    M_print ("%ld = %s\n", Contacts[Num_Contacts].uin, Contacts[Num_Contacts].nick);
-                Contacts[Num_Contacts].vis_list = FALSE;
-                Num_Contacts++;
-            }
-            else if (buf[0] == '*')
-            {
-                Contacts[Num_Contacts].uin = atoi (strtok (&buf[1], " "));
-                Contacts[Num_Contacts].status = STATUS_OFFLINE;
-                Contacts[Num_Contacts].last_time = -1L;
-                Contacts[Num_Contacts].current_ip[0] = 0xff;
-                Contacts[Num_Contacts].current_ip[1] = 0xff;
-                Contacts[Num_Contacts].current_ip[2] = 0xff;
-                Contacts[Num_Contacts].current_ip[3] = 0xff;
-                tmp = strtok (NULL, "");
-                if (tmp != NULL)
-                    memcpy (Contacts[Num_Contacts].nick, tmp, sizeof (Contacts->nick));
-                else
-                    Contacts[Num_Contacts].nick[0] = 0;
-                if (Contacts[Num_Contacts].nick[19] != 0)
-                    Contacts[Num_Contacts].nick[19] = 0;
-                if (Verbose > 2)
-                    M_print ("%ld = %s\n", Contacts[Num_Contacts].uin, Contacts[Num_Contacts].nick);
-                Contacts[Num_Contacts].invis_list = FALSE;
-                Contacts[Num_Contacts].vis_list = TRUE;
-                Num_Contacts++;
-            }
-            else if (buf[0] == '~')
-            {
-                Contacts[Num_Contacts].uin = atoi (strtok (&buf[1], " "));
-                Contacts[Num_Contacts].status = STATUS_OFFLINE;
-                Contacts[Num_Contacts].last_time = -1L;
-                Contacts[Num_Contacts].current_ip[0] = 0xff;
-                Contacts[Num_Contacts].current_ip[1] = 0xff;
-                Contacts[Num_Contacts].current_ip[2] = 0xff;
-                Contacts[Num_Contacts].current_ip[3] = 0xff;
-                tmp = strtok (NULL, "");
-                if (tmp != NULL)
-                    memcpy (Contacts[Num_Contacts].nick, tmp, sizeof (Contacts->nick));
-                else
-                    Contacts[Num_Contacts].nick[0] = 0;
-                if (Contacts[Num_Contacts].nick[19] != 0)
-                    Contacts[Num_Contacts].nick[19] = 0;
-                if (Verbose > 2)
-                    M_print ("%ld = %s\n", Contacts[Num_Contacts].uin, Contacts[Num_Contacts].nick);
-                Contacts[Num_Contacts].invis_list = TRUE;
-                Contacts[Num_Contacts].vis_list = FALSE;
-                Num_Contacts++;
-            }
+            Contacts[Num_Contacts].uin = atoi (strtok (p, " "));
+            Contacts[Num_Contacts].status = STATUS_OFFLINE;
+            Contacts[Num_Contacts].last_time = -1L;
+            Contacts[Num_Contacts].current_ip[0] = 0xff;
+            Contacts[Num_Contacts].current_ip[1] = 0xff;
+            Contacts[Num_Contacts].current_ip[2] = 0xff;
+            Contacts[Num_Contacts].current_ip[3] = 0xff;
+            tmp = strtok (NULL, "");
+            if (tmp != NULL)
+                memcpy (Contacts[Num_Contacts].nick, tmp, sizeof (Contacts->nick));
             else
+                Contacts[Num_Contacts].nick[0] = 0;
+            if (Contacts[Num_Contacts].nick[19] != 0)
+                Contacts[Num_Contacts].nick[19] = 0;
+            if (Verbose > 2)
+                M_print ("%ld = %s\n", Contacts[Num_Contacts].uin, Contacts[Num_Contacts].nick);
+            Contacts[Num_Contacts].vis_list = FALSE;
+            Num_Contacts++;
+        }
+        else if (*p == '*')
+        {
+            for (p++; *p == ' '; p++) ;
+            Contacts[Num_Contacts].uin = atoi (strtok (p, " "));
+            Contacts[Num_Contacts].status = STATUS_OFFLINE;
+            Contacts[Num_Contacts].last_time = -1L;
+            Contacts[Num_Contacts].current_ip[0] = 0xff;
+            Contacts[Num_Contacts].current_ip[1] = 0xff;
+            Contacts[Num_Contacts].current_ip[2] = 0xff;
+            Contacts[Num_Contacts].current_ip[3] = 0xff;
+            tmp = strtok (NULL, "");
+            if (tmp != NULL)
+                memcpy (Contacts[Num_Contacts].nick, tmp, sizeof (Contacts->nick));
+            else
+                Contacts[Num_Contacts].nick[0] = 0;
+            if (Contacts[Num_Contacts].nick[19] != 0)
+                Contacts[Num_Contacts].nick[19] = 0;
+            if (Verbose > 2)
+                M_print ("%ld = %s\n", Contacts[Num_Contacts].uin, Contacts[Num_Contacts].nick);
+            Contacts[Num_Contacts].invis_list = FALSE;
+            Contacts[Num_Contacts].vis_list = TRUE;
+            Num_Contacts++;
+        }
+        else if (*p == '~')
+        {
+            for (p++; *p == ' '; p++) ;
+            Contacts[Num_Contacts].uin = atoi (strtok (p, " "));
+            Contacts[Num_Contacts].status = STATUS_OFFLINE;
+            Contacts[Num_Contacts].last_time = -1L;
+            Contacts[Num_Contacts].current_ip[0] = 0xff;
+            Contacts[Num_Contacts].current_ip[1] = 0xff;
+            Contacts[Num_Contacts].current_ip[2] = 0xff;
+            Contacts[Num_Contacts].current_ip[3] = 0xff;
+            tmp = strtok (NULL, "");
+            if (tmp != NULL)
+                memcpy (Contacts[Num_Contacts].nick, tmp, sizeof (Contacts->nick));
+            else
+                Contacts[Num_Contacts].nick[0] = 0;
+            if (Contacts[Num_Contacts].nick[19] != 0)
+                Contacts[Num_Contacts].nick[19] = 0;
+            if (Verbose > 2)
+                M_print ("%ld = %s\n", Contacts[Num_Contacts].uin, Contacts[Num_Contacts].nick);
+            Contacts[Num_Contacts].invis_list = TRUE;
+            Contacts[Num_Contacts].vis_list = FALSE;
+            Num_Contacts++;
+        }
+        else
+        {
+            tmp_uin = Contacts[Num_Contacts - 1].uin;
+            tmp = strtok (p, ", \t");     /* aliases may not have spaces */
+            for (; tmp != NULL; Num_Contacts++)
             {
-                tmp_uin = Contacts[Num_Contacts - 1].uin;
-                tmp = strtok (buf, ", \t");     /* aliases may not have spaces */
-                for (; tmp != NULL; Num_Contacts++)
-                {
-                    Contacts[Num_Contacts].uin = -tmp_uin;
-                    Contacts[Num_Contacts].status = STATUS_OFFLINE;
-                    Contacts[Num_Contacts].last_time = -1L;
-                    Contacts[Num_Contacts].current_ip[0] = 0xff;
-                    Contacts[Num_Contacts].current_ip[1] = 0xff;
-                    Contacts[Num_Contacts].current_ip[2] = 0xff;
-                    Contacts[Num_Contacts].current_ip[3] = 0xff;
-                    Contacts[Num_Contacts].port = 0;
-                    Contacts[Num_Contacts].sok = (SOK_T) - 1L;
-                    Contacts[Num_Contacts].invis_list = FALSE;
-                    Contacts[Num_Contacts].vis_list = FALSE;
-                    memcpy (Contacts[Num_Contacts].nick, tmp, sizeof (Contacts->nick));
-                    tmp = strtok (NULL, ", \t");
-                }
+                Contacts[Num_Contacts].uin = -tmp_uin;
+                Contacts[Num_Contacts].status = STATUS_OFFLINE;
+                Contacts[Num_Contacts].last_time = -1L;
+                Contacts[Num_Contacts].current_ip[0] = 0xff;
+                Contacts[Num_Contacts].current_ip[1] = 0xff;
+                Contacts[Num_Contacts].current_ip[2] = 0xff;
+                Contacts[Num_Contacts].current_ip[3] = 0xff;
+                Contacts[Num_Contacts].port = 0;
+                Contacts[Num_Contacts].sok = (SOK_T) - 1L;
+                Contacts[Num_Contacts].invis_list = FALSE;
+                Contacts[Num_Contacts].vis_list = FALSE;
+                memcpy (Contacts[Num_Contacts].nick, tmp, sizeof (Contacts->nick));
+                tmp = strtok (NULL, ", \t");
             }
         }
     }
@@ -709,9 +721,9 @@ int Save_RC ()
 {
     FD_T rcf;
     time_t t;
-    int i, j;
+    int i, j, k;
 
-    rcf = open (rcfile, O_RDWR);
+    rcf = open (rcfile, O_WRONLY | O_CREAT | O_TRUNC);
     if (rcf == -1)
         return -1;
     M_fdprint (rcf, "# This file was generated by Micq of %s %s\n", __TIME__, __DATE__);
@@ -862,24 +874,22 @@ int Save_RC ()
     {
         if (!(Contacts[i].uin & 0x80000000L))
         {
-            if (Contacts[i].vis_list)
-            {
-                M_fdprint (rcf, "*");
-            }
-            if (Contacts[i].invis_list)
-            {
-                M_fdprint (rcf, "~");
-            }
-            M_fdprint (rcf, "%d %s\n", Contacts[i].uin, Contacts[i].nick);
+            M_fdprint (rcf, Contacts[i].vis_list ? "*" : Contacts[i].invis_list ? "~" : " ");
+            M_fdprint (rcf, "%9d %s\n", Contacts[i].uin, Contacts[i].nick);
 /*     M_fdprint( rcf, "#Begining of aliases for %s\n", Contacts[i].nick ); */
+            k = 0;
             for (j = 0; j < Num_Contacts; j++)
             {
                 if (Contacts[j].uin == -Contacts[i].uin)
                 {
-                    M_fdprint (rcf, "%s ", Contacts[j].nick);
+                    if (k)
+                        M_fdprint (rcf, " ");
+                    M_fdprint (rcf, "%s", Contacts[j].nick);
+                    k++;
                 }
             }
-            M_fdprint (rcf, "\n");
+            if (k)
+                M_fdprint (rcf, "\n");
 /*     M_fdprint( rcf, "\n#End of aliases for %s\n", Contacts[i].nick ); */
         }
     }

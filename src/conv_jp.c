@@ -3,21 +3,20 @@
 
  Japanese KANJI conversion
 
- sjis2euc, euc2sjis
-
  AYUHANA Tomonori <l@kondara.org>
 *********************************/
 #include <stdio.h>
 #include <string.h>
 
 #include "micq.h"
+#include "conv.h"
 
 #define JP_CONV_SIZE 10000
 
 /*********************************
  Shift-JIS(Win) -> EUC(Unix)
 *********************************/
-void sjis2euc (unsigned char *pszDest)
+void ConvSjisEuc (unsigned char *pszDest)
 {
     unsigned char *psz1st;
     unsigned char *psz2nd;
@@ -95,14 +94,12 @@ void sjis2euc (unsigned char *pszDest)
             pszSrcBuf += 2;
         }
     }
-
-    return;
 }
 
 /*********************************
  EUC(Unix) -> Shift-JIS(Win)
 *********************************/
-void euc2sjis (unsigned char *pszDest)
+void ConvEucSjis (unsigned char *pszDest)
 {
     unsigned char *psz1st;
     unsigned char *psz2nd;
@@ -170,28 +167,4 @@ void euc2sjis (unsigned char *pszDest)
             pszSrcBuf += 2;
         }
     }
-
-    return;
-}
-
-/*********************************
- wc : Shift-JIS(Win) -> EUC(Unix)
- cw : EUC(Unix) -> Shift-JIS(Win)
-*********************************/
-void jp_conv (unsigned char *fszType, unsigned char *pszText)
-{
-#ifndef _WIN32
-    if (JapaneseEUC)
-    {
-        if (strcmp (fszType, "wc") == 0)
-        {
-            sjis2euc (pszText);
-        }
-        else if (strcmp (fszType, "cw") == 0)
-        {
-            euc2sjis (pszText);
-        }
-    }
-#endif
-    return;
 }

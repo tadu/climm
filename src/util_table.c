@@ -29,7 +29,6 @@ static const char *TableLang[] = {
     _i18n (153, "Yiddish"),     _i18n (154, "Yoruba"),      _i18n (155, "Afrikaans"),       _i18n (156, "Bosnian"),
     _i18n (157, "Persian"),     _i18n (158, "Albanian"),    _i18n (159, "Armenian")
 };
-
 #define TableLangSize sizeof (TableLang) / sizeof (const char *)
 
 static const char *TableCountry[] = {
@@ -88,12 +87,13 @@ static const char *TableCountry[] = {
     _i18n (380, "Uruguay"),     _i18n (381, "Uzbekistan"),  _i18n (382, "Vanuatu"),     _i18n (383, "Vatican City"),
     _i18n (384, "Venezuela"),   _i18n (385, "Vietnam"),     _i18n (386, "Wallis and Futuna Islands"),
     _i18n (387, "Western Samoa"),                           _i18n (388, "Yemen"),       _i18n (389, "Yugoslavia"),
-    _i18n (390, "Zaire"),       _i18n (391, "Zambia"),      _i18n (392, "Zimbabwe")
+    _i18n (390, "Zaire"),       _i18n (391, "Zambia"),      _i18n (392, "Zimbabwe"),
+    0
 };
-
 #define TableCountrySize sizeof (TableCountry) / sizeof (const char *)
 
-static UWORD TableCountryCodes[] = { 0xffff,
+static UWORD TableCountryCodes[] = {
+    0xffff,
      93,   355,   213,   684,   376,        244,   101,   102,    54,   374,
     297,   274,    61,  6721,    43,        934,   103,   973,   880,   104,
     375,    32,   501,   229,   105,        975,   591,   387,   267,    55,
@@ -114,12 +114,42 @@ static UWORD TableCountryCodes[] = { 0xffff,
     709,   118,   688,   256,   380,        971,    44,     1,   123,   598,
     711,   678,   379,    58,    84,        681,   685,   967,   381,   243,
     260,  263,
-    0                                  /* *INDENT-ON* */
+    0
 };
+#define TableCountryCodesSize sizeof (TableCountryCodes) / sizeof (UWORD)
 
-#define TableCountryCodesSize sizeof (TableCountryCodes) / sizeof (const char *)
+static const char *TableOccupation[] = {
+    _i18n (160, "Not Entered"),
+    _i18n (161, "Academic"),                    _i18n (162, "Administrative"),        _i18n (163, "Art/Entertainmant"),
+    _i18n (164, "College Student"),             _i18n (165, "Computers"),             _i18n (166, "Community & Social"),
+    _i18n (167, "Education"),                   _i18n (168, "Engineering"),           _i18n (169, "Financial Services"),
+    _i18n (170, "Government"),                  _i18n (171, "High School Student"),   _i18n (172, "Home"),
+    _i18n (173, "ICQ - Providing Help"),        _i18n (174, "Law"),                   _i18n (175, "Managerial"),
+    _i18n (176, "Manufacturing"),               _i18n (177, "Medical/Health"),        _i18n (178, "Military"),
+    _i18n (179, "Non-government Organization"), _i18n (180, "Professional"),          _i18n (181, "Retail"),
+    _i18n (182, "Retired"),                     _i18n (183, "Science & Research"),    _i18n (184, "Sports"),
+    _i18n (185, "Technical"),                   _i18n (186, "University Student"),    _i18n (187, "Web Building")
+};
+#define TableOccupationSize sizeof (TableOccupation) / sizeof (const char *)
 
-const char *TableGetMonth (int code)
+static const char *TableInterest[] = {
+    _i18n (455, "Art               "),    _i18n (456, "Cars              "),    _i18n (457, "Celebrity Fans    "),
+    _i18n (458, "Collections       "),    _i18n (459, "Computers         "),    _i18n (460, "Culture & Literature "),
+    _i18n (461, "Fitness           "),    _i18n (462, "Games             "),    _i18n (463, "Hobbies           "),
+    _i18n (464, "ICQ - Providing Help "), _i18n (465, "Internet          "),    _i18n (466, "Lifestyle         "),
+    _i18n (467, "Movies/TV         "),    _i18n (468, "Music             "),    _i18n (469, "Outdoor Activities"),
+    _i18n (470, "Parenting         "),    _i18n (471, "Pets/Animals      "),    _i18n (472, "Religion          "),
+    _i18n (473, "Science/Technology"),    _i18n (474, "Skills            "),    _i18n (475, "Sports            "),
+    _i18n (476, "Web Design        "),    _i18n (477, "Nature and Environment"),_i18n (478, "News & Media      "),
+    _i18n (479, "Government        "),    _i18n (480, "Business & Economy"),    _i18n (481, "Mystics           "),
+    _i18n (482, "Travel            "),    _i18n (483, "Astronomy         "),    _i18n (484, "Space             "),
+    _i18n (485, "Clothing          "),    _i18n (486, "Parties           "),    _i18n (487, "Women             "),
+    _i18n (488, "Social science    "),    _i18n (489, "60's              "),    _i18n (490, "70's              "),
+    _i18n (491, "80's              "),    _i18n (492, "50's              "),
+};
+#define TableInterestSize sizeof (TableInterest) / sizeof (const char *)
+
+const char *TableGetMonth (int code)   /* *INDENT-ON* */
 {
     if (code > 12)
         code = 0;
@@ -139,13 +169,13 @@ void TablePrintLang (void)
 {
     int i;
     const char *p;
- 
-    for (i = 101; i - 100 < TableLangSize; i++)
+
+    for (i = 1; i < TableLangSize; i++)
     {
         p = i18n (-1, TableLang[i]);
- 
+
         M_print ("%2d. %-7s", i, p);
-        if (i & 3)
+        if ((i + 1) & 3)
             M_print ("\t");
         else
             M_print ("\n");
@@ -161,10 +191,33 @@ const char *TableGetCountry (UWORD code)
 
     if (!code)
         return i18n (-1, TableCountry[0]);
- 
+
     for (i = 0; TableCountryCodes[i]; i++)
         if (TableCountryCodes[i] == code)
             return i18n (-1, TableCountry[i]);
- 
+
     return i18n (199, "Unknown country");
+}
+
+const char *TableGetOccupation (UWORD code)
+{
+    if (code == 99)
+        return _i18n (198, "Other Services");
+
+    if (code >= TableOccupationSize)
+        code = 0;
+
+    return i18n (-1, TableOccupation[code]);
+}
+
+const char *TableGetInterest (UWORD code)
+{
+    code -= 100;
+    if (code == 99)
+        return _i18n (499, "Other             ");
+
+    if (code >= TableInterestSize)
+        return NULL;
+
+    return i18n (-1, TableInterest[code]);
 }

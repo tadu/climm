@@ -51,27 +51,6 @@
 #define COLOR_SCHEME_M
 */
 
-/* Language which micq will use. You will need to comment english
-** out if you want to use another one. */
-#define ENGLISH_LANG
-/* #define BULGARIAN_LANG
-#define POLISH_LANG
-#define SPANISH_LANG
-#define DUTCH_LANG
-#define GERMAN_LANG
-#define SWEDISH_LANG
-#define CHINESE_LANG
-#define BRAZIL_LANG
-#define RUSSIAN_LANG
-#define ITALIAN_LANG
-#define UKRAINIAN_LANG
-#define SERBOCROATIAN_LANG
-#define CROATIAN_LANG
-#define INDONESIAN_LANG
-#define FRENCH_LANG
-#define FINNISH_LANG
-*/
-
 /* Uncomment the below line for humorous messages*/
 /* #define FUNNY_MSGS */
 

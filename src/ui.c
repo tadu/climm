@@ -26,6 +26,7 @@ Changes :
 #include "file_util.h"
 #include "util_table.h"
 #include "buildmark.h"
+#include "sendmsg.h"
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef _WIN32
@@ -62,7 +63,6 @@ UDWORD last_uin = 0;
 
 static UDWORD multi_uin;
 static int status = 0;
-static void Show_Status (char *);
 static UDWORD uin;
 
 static void Change_Function (SOK_T sok);
@@ -77,6 +77,15 @@ static void Verbose_Function (void);
 static void Random_Function (SOK_T sok);
 static void Random_Set_Function (SOK_T sok);
 static void Show_Ignore_Status (void);
+static void Show_Status (char *);
+
+static void PrintContactWide ();
+static BOOL Do_Multiline (SOK_T sok, char *buf);
+static BOOL Do_Multiline_All (SOK_T sok, char *buf);
+static void Info_Other_Update (SOK_T sok, char *buf);
+static void Info_Update (SOK_T sok, char *buf);
+static BOOL About_Info (SOK_T sok, char *buf);
+static void User_Search (SOK_T sok, char *buf);
 
 #if 0
 char *strdup (const char *);
@@ -1445,7 +1454,7 @@ void Show_Quick_Status (void)
 /***************************************************************
 nice clean "i" display
 ****************************************************************/
-void Show_Ignore_Status (void)
+static void Show_Ignore_Status (void)
 {
     int i;
 

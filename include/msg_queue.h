@@ -25,11 +25,11 @@ struct msg_queue
     struct msg_queue_entry *tail;
 };
 
-void msg_queue_init( void );
-struct msg *msg_queue_peek( void );
-struct msg *msg_queue_pop( void );
-void msg_queue_push( struct msg *new_msg );
-void Check_Queue( UDWORD seq );
-void Dump_Queue( void );
+void        msg_queue_init (void);
+struct msg *msg_queue_peek (void);
+struct msg *msg_queue_pop (void);
+void        msg_queue_push (struct msg *new_msg);
+void        Check_Queue (UDWORD seq);
+void        Dump_Queue (void);
 
 #endif

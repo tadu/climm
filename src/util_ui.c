@@ -1,6 +1,7 @@
 #include "micq.h"
 #include "mreadline.h"
 #include "util_ui.h"
+#include "util.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>

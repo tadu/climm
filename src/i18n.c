@@ -13,7 +13,7 @@
 
 #define i18nSLOTS  600
 
-const char *i18nStrings[i18nSLOTS] = { 0 };
+char *i18nStrings[i18nSLOTS] = { 0 };
 
 /*
  * Opens and reads the localization file defined by parameter or the
@@ -36,13 +36,20 @@ int i18nOpen (const char *loc)
 
         i18nf = M_fdopen ("/usr/local/share/micq/%s.i18n", loc);
     if (i18nf == -1 && strchr (loc, '_'))
+        i18nf = M_fdopen ("/usr/local/share/micq/%.*s.i18n", strrchr (loc, '_') - loc, loc);
+    if (i18nf == -1 && strchr (loc, '_'))
         i18nf = M_fdopen ("/usr/local/share/micq/%.*s.i18n", strchr (loc, '_') - loc, loc);
     if (i18nf == -1)
         i18nf = M_fdopen ("%s/.micq/%s.i18n", getenv ("HOME") ? getenv ("HOME") : "", loc);
     if (i18nf == -1 && strchr (loc, '_'))
+        i18nf = M_fdopen ("%s/.micq/%.*s.i18n", getenv ("HOME") ? getenv ("HOME") : "", strrchr (loc, '_') - loc, loc);
+    if (i18nf == -1 && strchr (loc, '_'))
         i18nf = M_fdopen ("%s/.micq/%.*s.i18n", getenv ("HOME") ? getenv ("HOME") : "", strchr (loc, '_') - loc, loc);
     if (i18nf == -1)
-        return 0;
+        return -1;
+
+    if (i18nStrings[0])
+        i18nClose ();
 
     for (i = 0; i < i18nSLOTS; i++)
         i18nStrings[i] = NULL;
@@ -64,6 +71,20 @@ int i18nOpen (const char *loc)
     }
     close (i18nf);
     return j;
+}
+
+/*
+ * Frees all internationalization strings.
+ */
+void i18nClose (void)
+{
+    int i;
+    
+    for (i = 0; i < i18nSLOTS; i++)
+    {
+        free (i18nStrings[i]);
+        i18nStrings[i] = NULL;
+    }
 }
 
 /*

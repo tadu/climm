@@ -36,11 +36,12 @@ extern UDWORD last_uin;
 #define NEW_LANG2 1008
 #define NEW_LANG3 1009
 
-
-
-
 #define CHANGE_STATUS(a)    icq_change_status (sok, a); \
                             Time_Stamp (); \
                             M_print (" "); \
                             Print_Status (Current_Status); \
                             M_print ("\n");
+
+void Get_Input (SOK_T sok, int *idle_val, int *idle_flag);
+void Show_Quick_Status (void);
+void Show_Quick_Online_Status (void);

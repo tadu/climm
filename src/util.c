@@ -17,6 +17,8 @@ Changes :
 **********************************************
 **********************************************/
 #include "micq.h"
+#include "util.h"
+#include "sendmsg.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>

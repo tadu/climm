@@ -3,6 +3,11 @@
 #include "datatype.h"
 #include "mreadline.h"
 #include "msg_queue.h"
+#include "server.h"
+#include "sendmsg.h"
+#include "util.h"
+#include "icq_response.h"
+#include "ui.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -32,6 +37,10 @@
 #include <sys/wait.h>
 #include "mreadline.h"
 #endif
+
+static void Auto_Reply (SOK_T sok, SIMPLE_MESSAGE_PTR s_mesg);
+static void Multi_Packet (SOK_T sok, UBYTE * data);
+
 
 /*extern unsigned int next_resend;*/
 /*extern BOOL serv_mess[ 1024 ];  used so that we don't get duplicate messages with the same SEQ */
@@ -333,7 +342,7 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
                    if ( 0 == ( Chars_2_Word( s_mesg->type ) & MASS_MESS_MASK ) )
                    M_print (i18n (32, " - Instant Message"));
                    else
-                   M_print (i18n (33, " - Instant " SERVCOL "Mass" NOCOL " Message"));
+                   M_print (i18n (33, " - Instant Mass Message"));
                    M_print ("\a ");
                  */
                 if (Verbose)

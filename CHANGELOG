@@ -1,4 +1,18 @@
 
+2001-04-23 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* include/*.h, src/*.c:
+	  Finish moving prototypes to individual files. Make functions
+	  static that are supposed to.
+	* src/icq_response.c, src/util_table.c, lang/*.i18n:
+	  Move "Occupation" and "Interest" to a table, add i18n.
+	  Fixed table size.
+	* src/*conv*.c, src/icq_response.c, src/sendmsg.c:
+	  Renamed to conv.c, conv_jp.c, conv_rus.c and replace
+	  char_conv ("wc", ) resp.("cw", ) by seperate functions.
+	* src/file_utils.c:
+	  Overwrite rc file on save. Allow spaces before UINs in rc file.
+	  Align on output.
+
 2001-04-18 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* include/*.h, src/*.c:
 	  Rename DWORD, WORD, BYTE, S_DWORD, S_WORD, S_BYTE, INT32, INT16,
@@ -209,3 +223,9 @@ Revamped the logging function.
 Changed output functions to better manage screen space.
 fixed that stupid offline at startup bug. :)
 Improved help display so it doesn't scroll off the screen.
+
+6-17-1998 by Linux_Dude (rus_conv.c)
+ Moved initialization of table out front of 'if' block to prevent compiler
+ warning. Improved error message, and now return without performing string
+ conversion to prevent addressing memory out of range (table pointer would
+ previously have remained uninitialized ( = bad)).

@@ -15,12 +15,13 @@ CLIBS =
 #CLIBS= -lsocket
 #uncomment the line below if your using NeXT
 #CFLAGS += -posix
-OBJS =file_util.o icq_response.o micq.o msg_queue.o rus_conv.o sendmsg.o \
-      server.o  ui.o util.o  util_ui.o mreadline.o mselect.o network.o \
-      char_conv.o jp_conv.o tabs.o i18n.o buildmark.o util_table.o
+OBJS = conv.o conv_rus.o conv_jp.o file_util.o icq_response.o micq.o \
+       server.o  ui.o util.o  util_ui.o mreadline.o mselect.o network.o \
+       msg_queue.o sendmsg.o tabs.o i18n.o buildmark.o util_table.o
       
 HEADERS = config.h datatype.h micq.h ui.h msg_queue.h mreadline.h \
-          mselect.h util_ui.h tabs.h i18n.h buildmark.h util_table.h
+          mselect.h util_ui.h tabs.h i18n.h buildmark.h util_table.h \
+          conv.h
 
 INCLUDE = -I../include -I../lang
 

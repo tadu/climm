@@ -1,8 +1,12 @@
 
 #include "micq.h"
+#include "icq_response.h"
 #include "util_ui.h"
 #include "tabs.h"
 #include "util_table.h"
+#include "util.h"
+#include "sendmsg.h"
+#include "conv.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -17,160 +21,12 @@
 #include <time.h>
 #include <string.h>
 
+static BOOL Show_Short_String (UBYTE ** data, const char *str);
+static void Show_String (UBYTE ** data, const char *str);
+static void Show_String_A (UBYTE ** data, const char *fmt, ...);
+static void Handle_Interest (UBYTE count, UBYTE * data);
 
-char *Get_Occupation (UWORD x)
-{
-    switch (x)
-    {
-        case 1:
-            return "Academic";
-        case 2:
-            return "Administrative";
-        case 3:
-            return "Art/Entertainmant";
-        case 4:
-            return "College Student";
-        case 5:
-            return "Computers";
-        case 6:
-            return "Community & Social";
-        case 7:
-            return "Education";
-        case 8:
-            return "Engineering";
-        case 9:
-            return "Financial Services";
-        case 10:
-            return "Government";
-        case 11:
-            return "High School Student";
-        case 12:
-            return "Home";
-        case 13:
-            return "ICQ - Providing Help";
-        case 14:
-            return "Law";
-        case 15:
-            return "Managerial";
-        case 16:
-            return "Manufacturing";
-        case 17:
-            return "Medical/Health";
-        case 18:
-            return "Military";
-        case 19:
-            return "Non-government Organization";
-        case 20:
-            return "Professional";
-        case 21:
-            return "Retail";
-        case 22:
-            return "Retired";
-        case 23:
-            return "Science & Research";
-        case 24:
-            return "Sports";
-        case 25:
-            return "Technical";
-        case 26:
-            return "University Student";
-        case 27:
-            return "Web Building";
-        case 99:
-            return "Other Services";
-        default:
-            return "Not Entered";
-    }
-}
-
-char *Get_Interest_Name (UWORD x)
-{
-    switch (x)
-    {
-        case 100:
-            return "Art               ";
-        case 101:
-            return "Cars              ";
-        case 102:
-            return "Celebrity Fans    ";
-        case 103:
-            return "Collections       ";
-        case 104:
-            return "Computers         ";
-        case 105:
-            return "Culture & Literature ";
-        case 106:
-            return "Fitness           ";
-        case 107:
-            return "Games             ";
-        case 108:
-            return "Hobbies           ";
-        case 109:
-            return "ICQ - Providing Help ";
-        case 110:
-            return "Internet          ";
-        case 111:
-            return "Lifestyle         ";
-        case 112:
-            return "Movies/TV         ";
-        case 113:
-            return "Music             ";
-        case 114:
-            return "Outdoor Activities";
-        case 115:
-            return "Parenting         ";
-        case 116:
-            return "Pets/Animals      ";
-        case 117:
-            return "Religion          ";
-        case 118:
-            return "Science/Technology";
-        case 119:
-            return "Skills            ";
-        case 120:
-            return "Sports            ";
-        case 121:
-            return "Web Design        ";
-        case 122:
-            return "Nature and Environment";
-        case 123:
-            return "News & Media      ";
-        case 124:
-            return "Government        ";
-        case 125:
-            return "Business & Economy";
-        case 126:
-            return "Mystics           ";
-        case 127:
-            return "Travel            ";
-        case 128:
-            return "Astronomy         ";
-        case 129:
-            return "Space             ";
-        case 130:
-            return "Clothing          ";
-        case 131:
-            return "Parties           ";
-        case 132:
-            return "Women             ";
-        case 133:
-            return "Social science    ";
-        case 134:
-            return "60's              ";
-        case 135:
-            return "70's              ";
-        case 136:
-            return "80's              ";
-        case 137:
-            return "50's              ";
-        case 199:
-            return "Other             ";
-        default:
-            return NULL;
-    }
-}
-
-BOOL Show_Short_String (UBYTE ** data, const char *str)
+static BOOL Show_Short_String (UBYTE ** data, const char *str)
 {
     int len;
 
@@ -179,7 +35,7 @@ BOOL Show_Short_String (UBYTE ** data, const char *str)
     if (len != 1)
     {
         (*data)[len - 1] = 0;   /* be safe */
-        char_conv ("wc", *data);
+        ConvWinUnix (*data);
         M_print ("%s%s", str, *data);
         *data += len;
         return TRUE;
@@ -188,13 +44,13 @@ BOOL Show_Short_String (UBYTE ** data, const char *str)
     return FALSE;
 }
 
-void Show_String (UBYTE ** data, const char *str)
+static void Show_String (UBYTE ** data, const char *str)
 {
     if (Show_Short_String (data, str))
         M_print ("\n");
 }
 
-void Show_String_A (UBYTE ** data, const char *fmt, ...)
+static void Show_String_A (UBYTE ** data, const char *fmt, ...)
 {
     char buf[2048];
     va_list args;
@@ -207,20 +63,18 @@ void Show_String_A (UBYTE ** data, const char *fmt, ...)
         M_print ("\n");
 }
 
-void Handle_Interest (UBYTE count, UBYTE * data)
+static void Handle_Interest (UBYTE count, UBYTE * data)
 {
-    char *nomen;
+    const char *nomen;
     for (; count; count--)
     {
-        nomen = Get_Interest_Name (Chars_2_Word (data));
-        if (nomen == NULL)
-        {
-            M_print (SERVCOL "%d\t: " MESSCOL, Chars_2_Word (data));
-        }
+        nomen = TableGetInterest (Chars_2_Word (data));
+
+        if (nomen)
+            M_print (SERVCOL "%s\t: " MESSCOL, nomen);
         else
-        {
-            M_print (SERVCOL "%s\t: " MESSCOL, Get_Interest_Name (Chars_2_Word (data)));
-        }
+            M_print (SERVCOL "%d\t: " MESSCOL, Chars_2_Word (data));
+
         data += 2;
         Show_Short_String (&data, "");
         M_print (NOCOL "\n");
@@ -373,7 +227,7 @@ void Meta_User (SOK_T sok, UBYTE * data, UDWORD len, UDWORD uin)
             Show_String_A (&data, SERVCOL "%s", i18n (517, "Job Position : "));
             if (0 != Chars_2_Word (data))
                 M_print (SERVCOL "%s%s\n", i18n (516, "Occupation   : "),
-                         Get_Occupation (Chars_2_Word (data)));
+                         TableGetOccupation (Chars_2_Word (data)));
             data += 2;
             Show_String_A (&data, SERVCOL "%s", i18n (515, "Work Homepage: "));
             M_print (NOCOL);
@@ -509,7 +363,7 @@ void User_Offline (int sok, UBYTE * pak)
     Time_Stamp ();
     M_print (" ");
     Print_UIN_Name_10 (remote_uin);
-    M_print (" %s\n", i18n (30, " logged off."));
+    M_print (" %s\n", i18n (30, "logged off."));
     log_event (remote_uin, LOG_ONLINE, "User logged off %s\n", UIN2Name (remote_uin));
     if ((con = UIN2Contact (remote_uin)) != NULL)
     {
@@ -534,9 +388,9 @@ void User_Online (int sok, UBYTE * pak)
         Time_Stamp ();
         M_print (" ");
         Print_UIN_Name_10 (remote_uin);
-        M_print (" %s (", i18n (31, " logged on."));
+        M_print (" %s (", i18n (31, "logged on"));
         Print_Status (new_status);
-        M_print (")");
+        M_print (").");
 
         if ((con = UIN2Contact (remote_uin)))
         {
@@ -617,7 +471,7 @@ void Status_Update (int sok, UBYTE * pak)
     {
         Contacts[index].status = new_status;
     }
-    M_print (" %s", i18n (35, " changed status to "));
+    M_print (" %s ", i18n (35, "changed status to"));
     Print_Status (new_status);
     M_print ("\n");
 }
@@ -725,19 +579,19 @@ void Display_Info_Reply (int sok, UBYTE * pak)
 
     M_print (SERVCOL "Info for %ld\n", Chars_2_DW (&pak[0]));
     len = Chars_2_Word (&pak[4]);
-    char_conv ("wc", &pak[6]);
+    ConvWinUnix (&pak[6]);
     M_print ("Nick Name :\t%s\n", &pak[6]);
     tmp = &pak[6 + len];
     len = Chars_2_Word (tmp);
-    char_conv ("wc", tmp + 2);
+    ConvWinUnix (tmp + 2);
     M_print ("First name :\t%s\n", tmp + 2);
     tmp += len + 2;
     len = Chars_2_Word (tmp);
-    char_conv ("wc", tmp + 2);
+    ConvWinUnix (tmp + 2);
     M_print ("Last name :\t%s\n", tmp + 2);
     tmp += len + 2;
     len = Chars_2_Word (tmp);
-    char_conv ("wc", tmp + 2);
+    ConvWinUnix (tmp + 2);
     M_print ("Email Address :\t%s\n", tmp + 2);
     tmp += len + 2;
     if (*tmp == 1)
@@ -758,7 +612,7 @@ void Display_Ext_Info_Reply (int sok, UBYTE * pak)
 
     M_print (SERVCOL "More Info for %ld\n", Chars_2_DW (&pak[0]));
     len = Chars_2_Word (&pak[4]);
-    char_conv ("wc", &pak[6]);
+    ConvWinUnix (&pak[6]);
     M_print ("City            :\t%s\n", &pak[6]);
     if (TableGetCountry (Chars_2_Word (&pak[6 + len])) != NULL)
         M_print ("Country        :\t%s\n", TableGetCountry (Chars_2_Word (&pak[6 + len])));
@@ -767,7 +621,7 @@ void Display_Ext_Info_Reply (int sok, UBYTE * pak)
     M_print ("Time Zone     :\tGMT %+d\n", ((signed char) pak[len + 8]) >> 1);
     tmp = &pak[9 + len];
     len = Chars_2_Word (tmp);
-    char_conv ("wc", tmp + 2);
+    ConvWinUnix (tmp + 2);
     M_print ("State          :\t%s\n", tmp + 2);
     if (Chars_2_Word (tmp + 2 + len) != 0xffff)
         M_print ("Age             :\t%d\n", Chars_2_Word (tmp + 2 + len));
@@ -785,15 +639,15 @@ void Display_Ext_Info_Reply (int sok, UBYTE * pak)
 #endif
     tmp += len + 5;
     len = Chars_2_Word (tmp);
-    char_conv ("wc", tmp + 2);
+    ConvWinUnix (tmp + 2);
     M_print ("Phone Number :\t%s\n", tmp + 2);
     tmp += len + 2;
     len = Chars_2_Word (tmp);
-    char_conv ("wc", tmp + 2);
+    ConvWinUnix (tmp + 2);
     M_print ("Home Page     :\t%s\n", tmp + 2);
     tmp += len + 2;
     len = Chars_2_Word (tmp);
-    char_conv ("wc", tmp + 2);
+    ConvWinUnix (tmp + 2);
     M_print ("About          :\n%s", tmp + 2);
 /*    ack_srv( sok, Chars_2_Word( pak.head.seq ) ); */
 }
@@ -804,19 +658,19 @@ void Display_Search_Reply (int sok, UBYTE * pak)
     int len;
     M_print (SERVCOL "User found %ld\n", Chars_2_DW (&pak[0]));
     len = Chars_2_Word (&pak[4]);
-    char_conv ("wc", &pak[6]);
+    ConvWinUnix (&pak[6]);
     M_print ("Nick Name :\t%s\n", &pak[6]);
     tmp = &pak[6 + len];
     len = Chars_2_Word (tmp);
-    char_conv ("wc", tmp + 2);
+    ConvWinUnix (tmp + 2);
     M_print ("First name :\t%s\n", tmp + 2);
     tmp += len + 2;
     len = Chars_2_Word (tmp);
-    char_conv ("wc", tmp + 2);
+    ConvWinUnix (tmp + 2);
     M_print ("Last name :\t%s\n", tmp + 2);
     tmp += len + 2;
     len = Chars_2_Word (tmp);
-    char_conv ("wc", tmp + 2);
+    ConvWinUnix (tmp + 2);
     M_print ("Email Address :\t%s\n", tmp + 2);
     tmp += len + 2;
     if (*tmp == 1)
@@ -879,7 +733,7 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
             return;
         }
         *tmp = 0;
-        char_conv ("wc", data); /* By Kunia User's nick was not transcoded...;( */
+        ConvWinUnix (data); /* By Kunia User's nick was not transcoded...;( */
         M_print (CONTACTCOL "\n%s" NOCOL " has added you to their contact list.\n", data);
         tmp++;
         data = tmp;
@@ -890,7 +744,7 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
             return;
         }
         *tmp = 0;
-        char_conv ("wc", data);
+        ConvWinUnix (data);
         M_print ("First name     : " MESSCOL "%s" NOCOL "\n", data);
         tmp++;
         data = tmp;
@@ -901,13 +755,13 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
             return;
         }
         *tmp = 0;
-        char_conv ("wc", data);
+        ConvWinUnix (data);
         M_print ("Last name      : " MESSCOL "%s" NOCOL "\n", data);
         tmp++;
         data = tmp;
         tmp = strchr (tmp, '\xFE');
         *tmp = 0;
-        char_conv ("wc", data);
+        ConvWinUnix (data);
         M_print ("Email address : " MESSCOL "%s" NOCOL "\n", data);
     }
     else if (type == AUTH_REQ_MESS)
@@ -925,7 +779,7 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
             return;
         }
         *tmp = 0;
-        char_conv ("wc", data);
+        ConvWinUnix (data);
         M_print ("First name     : " MESSCOL "%s" NOCOL "\n", data);
         tmp++;
         data = tmp;
@@ -936,7 +790,7 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
             return;
         }
         *tmp = 0;
-        char_conv ("wc", data);
+        ConvWinUnix (data);
         M_print ("Last name      : " MESSCOL "%s" NOCOL "\n", data);
         tmp++;
         data = tmp;
@@ -947,7 +801,7 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
             return;
         }
         *tmp = 0;
-        char_conv ("wc", data);
+        ConvWinUnix (data);
         M_print ("Email address : " MESSCOL "%s" NOCOL "\n", data);
         tmp++;
         data = tmp;
@@ -967,7 +821,7 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
             return;
         }
         *tmp = 0;
-        char_conv ("wc", data);
+        ConvWinUnix (data);
         M_print ("Reason : " MESSCOL "%s" NOCOL "\n", data);
     }
     else if ((type == EMAIL_MESS) || (type == WEB_MESS))
@@ -1020,8 +874,8 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
             url_url++;
         }
 
-        char_conv ("wc", url_desc);
-        char_conv ("wc", url_url);
+        ConvWinUnix (url_desc);
+        ConvWinUnix (url_url);
 
         log_event (uin, LOG_MESS,
                    "You received URL message from %s\nDescription: %s\nURL: %s\n",
@@ -1056,7 +910,7 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
     }
     else
     {
-        char_conv ("wc", data);
+        ConvWinUnix (data);
         log_event (uin, LOG_MESS, "You received instant message from %s\n%s\n",
                    UIN2Name (uin), data);
         M_print (MSGRECSTR MESSCOL "\x1b«%s" NOCOL "\x1b»\n", data);
@@ -1074,7 +928,7 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
            it tries to write too much to the string even though I think I
            allocate the right amount. Oh well. It shouldn't be too much
            wasted space, I hope.                                                          */
-        char_conv ("wc", data);
+        ConvWinUnix (data);
         strcpy (UIN2Contact (last_recv_uin)->LastMessage, data);
     }
     /* end of aaron */

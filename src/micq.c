@@ -3,6 +3,11 @@
 #include "file_util.h"
 #include "util.h"
 #include "buildmark.h"
+#include "sendmsg.h"
+#include "network.h"
+#include "ui.h"
+#include "icq_response.h"
+#include "server.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -621,10 +626,12 @@ int main (int argc, char *argv[])
     M_print ("No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n");
 #endif
 
-    if (i)
-        M_print (i18n (0, "Successfully loaded translations (%d entries). No version.\n"), i);
-    else
+    if (i == -1)
         M_print ("Couldn't load internationalization.\n");
+    else if (i)
+        M_print (i18n (0, "Successfully loaded translations (%d entries).\n"), i);
+    else
+        M_print ("No internationalization requested.\n");
 
     /* and now we save the time that Micq was started, so that uptime will be
        able to appear semi intelligent.                                                                          */

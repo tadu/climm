@@ -22,6 +22,7 @@
 
 #include "mreadline.h"
 #include "util_ui.h"
+#include "util.h"
 #include "ui.h"
 #include "tabs.h"
 

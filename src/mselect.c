@@ -13,6 +13,7 @@ Changes :
 **********************************************
 **********************************************/
 #include "micq.h"
+#include "mselect.h"
 
 #include <stdio.h>
 #include <stdlib.h>
