@@ -29,8 +29,6 @@ AC_PROG_LN_S
 
 AC_ARG_ENABLE([peer2peer], AC_HELP_STRING([--disable-peer2peer], [disable peer to peer connections]),
               ac_arg_use_peer2peer=$enableval, ac_arg_use_peer2peer=yes)
-AC_ARG_ENABLE([utf8], AC_HELP_STRING([--disable-utf8], [disnable use of UTF-8 internally]),
-              ac_arg_use_utf8=$enableval, ac_arg_use_utf8=yes)
 AC_ARG_ENABLE([iconv], AC_HELP_STRING([--disable-iconv], [do not use iconv() at all]),
               ac_arg_use_iconv=$enableval, ac_arg_use_iconv=auto)
 AC_ARG_ENABLE([remote], AC_HELP_STRING([--disable-remote], [disable remote control FIFO]),
@@ -218,18 +216,12 @@ else
   ac_arg_use_remote=none
 fi
 
-AC_MSG_CHECKING([whether to enable usage of utf-8 internally])
-AC_MSG_RESULT([$ac_arg_use_utf8])
 AC_MSG_CHECKING([whether to enable iconv and which iconv lib to use])
 AC_MSG_RESULT([$ac_arg_use_iconv])
 AC_MSG_CHECKING([whether to enable peer to peer connections])
 AC_MSG_RESULT([$ac_arg_use_peer2peer])
 AC_MSG_CHECKING([whether to enable remote control FIFO])
 AC_MSG_RESULT([$ac_arg_use_remote])
-
-if test "x$ac_arg_use_utf8" = "xyes"; then
-  AC_DEFINE(ENABLE_UTF8, 1, [Whether to use UTF-8 internally])
-fi
 
 if test "x$ac_arg_use_iconv" != "xbuiltin"; then
   AC_DEFINE_UNQUOTED(ENABLE_ICONV, "$ac_arg_use_iconv", [Which lib to use for iconv() functions])

@@ -1691,12 +1691,7 @@ void SnacCliSetuserinfo (Connection *conn)
     PacketWriteTLV     (pak, 5);
     PacketWriteCapID   (pak, CAP_ISICQ);
     PacketWriteCapID   (pak, CAP_SRVRELAY);
-#if defined(ENABLE_UTF8)
-#ifndef HAVE_ICONV
-    if (ENC(enc_loc) != ENC_EUC && ENC(enc_loc) != ENC_SJIS)
-#endif
-        PacketWriteCapID   (pak, CAP_UTF8);
-#endif
+    PacketWriteCapID   (pak, CAP_UTF8);
     PacketWriteCapID   (pak, CAP_MICQ);
     PacketWriteTLVDone (pak);
     SnacSend (conn, pak);
@@ -1832,7 +1827,6 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
             
             remenc = cont->encoding ? cont->encoding : prG->enc_rem;
             
-#ifdef ENABLE_UTF8
             if (cont->status != STATUS_OFFLINE &&
                 HAS_CAP (cont->caps, CAP_UTF8) && cont->dc && cont->dc->version >= 7
                 && !(cont->dc->id1 == 0xffffff42 && cont->dc->id2 < 0x00040a03)) /* exclude old mICQ */
@@ -1841,7 +1835,6 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
                 icqenc = 0x20000;
             }
             else
-#endif
             {
                 /* too bad, there's nothing we can do */
                 enc = remenc;
@@ -2040,10 +2033,8 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
       SrvMsgAdvanced     (pak, conn->our_seq_dc, type, conn->status, cont->status, -1, c_out_for (text, cont, type));
       PacketWrite4       (pak, TCP_COL_FG);
       PacketWrite4       (pak, TCP_COL_BG);
-#ifdef ENABLE_UTF8
       if (CONT_UTF8 (cont, type))
           PacketWriteDLStr     (pak, CAP_GID_UTF8);
-#endif
      PacketWriteTLVDone (pak);
      if (peek) /* make a syntax error */
          PacketWriteB4  (pak, 0x00030000);

@@ -9,7 +9,6 @@ const char *ConvUTF8       (UDWORD codepoint);
 const char *ConvCrush0xFE  (const char *in);
 #define     Conv0xFE       (char)0xfe
 
-#ifdef ENABLE_UTF8
 BOOL        ConvIsUTF8     (const char *in);
 const char *ConvToUTF8     (const char *in, UBYTE enc, size_t totalin, UBYTE keep0xfe);
 const char *ConvFromUTF8   (const char *in, UBYTE enc, size_t *resultlen);
@@ -23,21 +22,6 @@ const char *ConvFromUTF8   (const char *in, UBYTE enc, size_t *resultlen);
 #define     c_offset(t,o)  (ENC(enc_loc) == ENC_UTF8 ? s_offset (t, o) : (o))
 #define     c_delta(t)     (int)(ENC(enc_loc) == ENC_UTF8 ? strlen (t) - s_strlen (t) : 0)
 #define     s_delta(t)     (int)strlen (t) - (int)s_strlen (t)
-#else
-#define     ConvToUTF8(i,e,l,k) i
-#define     ConvFromUTF8(i,e,x) i
-#define     ConvIsUTF8(i)  0
-#define     c_out_for(t,c,mt) t
-#define     c_out(t)       t
-#define     c_in(t)        t
-#define     c_out_to(t,c)  t
-#define     c_in_to(t,c)   t
-#define     c_in_to_0(t,c) t
-#define     c_strlen(t)    strlen (t)
-#define     c_offset(t,o)  o
-#define     c_delta(t)     0
-#define     s_delta(t)     0
-#endif
 
 #ifdef ENABLE_ICONV
 BOOL        ConvFits       (const char *in, UBYTE enc);

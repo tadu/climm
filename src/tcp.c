@@ -1272,10 +1272,8 @@ BOOL TCPSendMsg (Connection *list, Contact *cont, const char *msg, UWORD type)
                       cont->status, -1, c_out_for (msg, cont, type));
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
-#ifdef ENABLE_UTF8
     if (CONT_UTF8 (cont, type))
         PacketWriteDLStr (pak, CAP_GID_UTF8);
-#endif
 
     peer->stat_real_pak_sent++;
 
@@ -1343,10 +1341,8 @@ UBYTE PeerSendMsg (Connection *list, Contact *cont, Extra *extra)
                       cont->status, -1, c_out_for (e_msg_text, cont, e_msg_type));
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
-#ifdef ENABLE_UTF8
     if (CONT_UTF8 (cont, e_msg_type))
         PacketWriteDLStr (pak, CAP_GID_UTF8);
-#endif
 
     peer->stat_real_pak_sent++;
 

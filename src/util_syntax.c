@@ -28,11 +28,7 @@
 #include "util_str.h"
 #include "preferences.h"
 
-#ifdef ENABLE_UTF8
 #define c_pin(x) ConvToUTF8 (x, ENC_LATIN1, -1, 0)
-#else
-#define c_pin(x) x
-#endif
 
 static const char *syntable[] = {
     "s1x2s",   "W-",

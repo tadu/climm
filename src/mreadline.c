@@ -85,14 +85,8 @@ static int istat = 0;
 
 static int curpos;
 static int curlen;
-#ifdef ENABLE_UTF8
 static int bytepos;
 static int bytelen;
-#else
-#define bytepos curpos
-#define bytelen curlen
-#define charbytes 1
-#endif
 
 #ifndef ANSI_TERM
 static char bsbuf[HISTORY_LINE_LEN];
@@ -259,14 +253,12 @@ void R_goto (int pos)
 
     if (curpos < pos)
     {
-#ifdef ENABLE_UTF8
         if (ENC(enc_loc) == ENC_UTF8)
         {
             mypos = s_offset (s, curpos);
             mylen = s_offset (s, pos) - mypos;
         }
         else
-#endif
         {
             mypos = curpos;
             mylen = pos - curpos;
@@ -274,9 +266,7 @@ void R_goto (int pos)
         s_catf (&t, "%.*s", mylen, s + mypos);
     }
     curpos = pos;
-#ifdef ENABLE_UTF8
     bytepos = c_offset (s, curpos);
-#endif
     printf ("%s", t.txt);
 }
 
@@ -284,11 +274,7 @@ void R_rlap (const char *s, const char *add, BOOL clear)
 {
     int len;
     
-#ifdef ENABLE_UTF8
     len = (ENC(enc_loc) == ENC_UTF8) ? s_strlen (s) : strlen (s);
-#else
-    len = strlen (s);
-#endif
 #ifdef ANSI_TERM
     printf ("%s%s%s%s", add, s, clear ? ESC "[J" : "",
             (M_pos () + curpos) % Get_Max_Screen_Width() == 0 ? " \b" : "");
@@ -304,14 +290,11 @@ void R_rlap (const char *s, const char *add, BOOL clear)
 
 static void R_process_input_backspace (void)
 {
-#ifdef ENABLE_UTF8
     int charbytes;
-#endif
 
     if (!curpos)
         return;
     
-#ifdef ENABLE_UTF8
     if (ENC(enc_loc) == ENC_UTF8 && s[bytepos - 1] & 0x80)
     {
         charbytes = 0;
@@ -322,7 +305,6 @@ static void R_process_input_backspace (void)
     else
         charbytes = 1;
     bytelen -= charbytes;
-#endif
 
     curlen--;
     R_goto (curpos - 1);
@@ -332,14 +314,11 @@ static void R_process_input_backspace (void)
 
 static void R_process_input_delete (void)
 {
-#ifdef ENABLE_UTF8
     int charbytes;
-#endif
 
     if (curpos >= curlen)
         return;
 
-#ifdef ENABLE_UTF8
     if (ENC(enc_loc) == ENC_UTF8 && s[bytepos] & 0x80)
     {
         charbytes = 0;
@@ -350,7 +329,6 @@ static void R_process_input_delete (void)
     else
         charbytes = 1;
     bytelen -= charbytes;
-#endif
 
     curlen--;
 
@@ -411,9 +389,7 @@ void R_process_input_tab (void)
     {
         snprintf (s, sizeof (s), "%s ", msgcmd);
         bytepos = bytelen = strlen (s);
-#ifdef ENABLE_UTF8
         curpos = curlen = c_strlen (s);
-#endif
     }
 
     if (prG->tabs == TABS_SIMPLE)
@@ -442,9 +418,7 @@ void R_process_input_tab (void)
 
         R_remprompt ();
         bytelen = bytepos = strlen (s);
-#ifdef ENABLE_UTF8
         curlen = curpos = c_strlen (s);
-#endif
     }
     else
     {
@@ -500,10 +474,8 @@ void R_process_input_tab (void)
         R_remprompt ();
         bytelen = strlen (s);
         bytepos = tabwstart - s + nicklen;
-#ifdef ENABLE_UTF8
         curlen = c_strlen (s);
         curpos = ENC(enc_loc) ? s_strnlen (s, bytepos) : bytepos;
-#endif
         tabstate = 1;
     }
 }
@@ -573,18 +545,14 @@ int R_process_input (void)
                 case '\t':
                     R_process_input_tab ();
                     break;
-#ifdef ENABLE_UTF8
                 case 16:       /* ^P */
                     istat = 10;
                     break;
-#endif
                 case 25:       /* ^Y */
                     R_remprompt ();
                     strcpy (s, y);
                     bytelen = bytepos = strlen (s);
-#ifdef ENABLE_UTF8
                     curlen = curpos = (ENC(enc_loc) == ENC_UTF8) ? s_strlen (s) : bytelen;
-#endif
                     break;
 #ifdef ANSI_TERM
                 case 27:       /* ESC */
@@ -651,7 +619,6 @@ int R_process_input (void)
             static char buf[7] = "\0\0\0\0\0\0";
             static char todo = 0;
 
-#ifdef ENABLE_UTF8
             int charbytes;
             
             if (ENC(enc_loc) == ENC_UTF8 && ch & 0x80)
@@ -685,10 +652,6 @@ int R_process_input (void)
             charbytes = strlen (buf);
             curlen += 1;
             curpos += 1;
-#else
-            buf[0] = ch;
-            buf[1] = '\0';
-#endif
 
             bytelen += charbytes;
             memmove (s + bytepos + charbytes, s + bytepos, bytelen - bytepos);
@@ -732,9 +695,7 @@ int R_process_input (void)
                         R_remprompt ();
                         strcpy (s, history[history_cur]);
                         bytepos = bytelen = strlen (s);
-#ifdef ENABLE_UTF8
                         curpos = curlen = ENC(enc_loc) == ENC_UTF8 ? s_strlen (s) : bytepos;
-#endif
                     }
                     else
                         history_cur = k;
@@ -791,7 +752,6 @@ int R_process_input (void)
             else
                 printf ("\a");
             break;
-#ifdef ENABLE_UTF8
         case 10:
             istat++;
 #ifndef WIP
@@ -861,7 +821,6 @@ int R_process_input (void)
             break;
         default:
             istat = 0;
-#endif
     }
 #endif
     return 0;
@@ -872,11 +831,7 @@ int R_process_input (void)
  */
 void R_getline (char *buf, int len)
 {
-#ifdef ENABLE_UTF8
     strncpy (buf, ConvToUTF8 (s, prG->enc_loc, -1, 0), len);
-#else
-    strncpy (buf, s, len);
-#endif
     buf[len - 1] = '\0';
     s[0] = 0;
 }
@@ -993,9 +948,7 @@ void R_redraw ()
 void R_remprompt ()
 {
     int pos;
-#ifdef ENABLE_UTF8
     int bpos = bytepos;
-#endif
     
     if (prstat != 1 && prstat != 3)
         return;
@@ -1003,9 +956,7 @@ void R_remprompt ()
     prstat = 2;
     R_goto (0);
     curpos = pos;
-#ifdef ENABLE_UTF8
     bytepos = bpos;
-#endif
     M_print ("\r");             /* for tab stop reasons */
 #ifdef ANSI_TERM
     printf (ESC "[J");
@@ -1154,11 +1105,7 @@ void M_logo_clear ()
     first = 0;
 }
 
-#ifdef ENABLE_UTF8
 #define chardiff(aa,bb)  (ENC(enc_loc) == ENC_UTF8 ? s_strnlen ((bb), (aa) - (bb)) : (aa) - (bb))
-#else
-#define chardiff(aa,bb)  ((aa) - (bb))
-#endif
 
 #define USECOLOR(c)  ((prG->flags & FLAG_COLOR) && prG->colors[c] ? prG->colors[c] : "")
 
@@ -1173,11 +1120,7 @@ void M_print (const char *org)
     int i;
     int sw = Get_Max_Screen_Width () - IndentCount;
     
-#ifdef ENABLE_UTF8
     fstr = strdup (ConvFromUTF8 (org, prG->enc_loc, NULL));
-#else
-    fstr = strdup (org);
-#endif
     str = fstr;
     switch (ENC(enc_loc))
     {

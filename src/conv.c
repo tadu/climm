@@ -147,7 +147,6 @@ const char *ConvCrush0xFE (const char *inn)
     return t.txt;
 }
 
-#ifdef ENABLE_UTF8
 /*
  * Convert a single unicode code point to UTF-8
  */
@@ -643,4 +642,3 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc, size_t *resultlen)
 }
 
 #endif /* ENABLE_ICONV */
-#endif /* ENABLE_UTF8 */

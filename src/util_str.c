@@ -413,11 +413,7 @@ UDWORD s_offset  (const char *str, UDWORD offset)
     return off;
 }
 
-#ifdef ENABLE_UTF8
 #define noctl(x) ((((x & 0x60) && x != 0x7f)) ? ConvUTF8 (x) : ".")
-#else
-#define noctl(x) ((((x & 0x60) && x != 0x7f)) ? x : '.')
-#endif
 
 /*
  * Hex dump to a string with ASCII.
@@ -436,7 +432,6 @@ const char *s_dump (const UBYTE *data, UWORD len)
                               "%02x %02x %02x %02x %02x %02x %02x %02x  ",
                     d[0], d[1],  d[2],  d[3],  d[4],  d[5],  d[6],  d[7],
                     d[8], d[9], d[10], d[11], d[12], d[13], d[14], d[15]);
-#ifdef ENABLE_UTF8
         s_cat (&t, "\"");
         s_cat (&t, noctl  (d[0]));  s_cat (&t, noctl  (d[1]));
         s_cat (&t, noctl  (d[2]));  s_cat (&t, noctl  (d[3]));
@@ -448,16 +443,6 @@ const char *s_dump (const UBYTE *data, UWORD len)
         s_cat (&t, noctl (d[12]));  s_cat (&t, noctl (d[13]));
         s_cat (&t, noctl (d[14]));  s_cat (&t, noctl (d[15]));
         s_cat (&t, "'\n");
-#else
-        s_catc (&t, '\'');
-        for (i = 0; i < 8; i++)
-            s_catc (&t, noctl (d[i]));
-        s_catc (&t, ' ');
-        for ( ; i < 16; i++)
-            s_catc (&t, noctl (d[i]));
-        s_catc (&t, '\'');
-        s_catc (&t, '\n');
-#endif
         len -= 16;
         d += 16;
     }
@@ -481,11 +466,7 @@ const char *s_dump (const UBYTE *data, UWORD len)
     s_catc (&t, '\'');
     while (off)
     {
-#ifdef ENABLE_UTF8
         s_cat (&t, noctl (*(d - off)));
-#else
-        s_catc (&t, noctl (*(d - off)));
-#endif
         off--;
     }
     s_catf (&t, "'\n");

@@ -662,11 +662,7 @@ static JUMP_F(CmdUserPass)
         M_print (i18n (2012, "No password given.\n"));
     else
     {
-#ifdef ENABLE_UTF8
         if (*arg1 == '\xc3' && arg1[1] == '\xb3')
-#else
-        if (*arg1 == '\xf3')
-#endif
         {
             M_printf (i18n (2198, "Unsuitable password '%s' - may not start with byte 0xf3.\n"), arg1);
             return 0;

@@ -340,11 +340,6 @@ int main (int argc, char *argv[])
     else
         M_print ("No translation requested.\n");
 
-#ifndef ENABLE_UTF8
-    if (ENC(enc_loc) == ENC_UTF8)
-        M_print (i18n (2208, "Detected UTF-8 encoding, however, this mICQ was compiled without UTF-8 support.\n"));
-#endif
-
     if (!rc)
         Initialize_RC_File ();
 

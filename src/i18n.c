@@ -236,11 +236,7 @@ static int i18nAdd (FILE *i18nf, int debug, int *res)
             continue;
         
         p = debug ? line : p + 1;
-#ifdef ENABLE_UTF8
         i18nStrings[i] = p = strdup (ConvToUTF8 (p, enc ? enc : ENC_LATIN1, -1, 0));
-#else
-        i18nStrings[i] = p = strdup (p);
-#endif
         j++;
         for (; *p; p++)
             if (*p == '\\' && p[1] == 'n')

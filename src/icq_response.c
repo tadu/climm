@@ -575,18 +575,11 @@ void IMOffline (Contact *cont, Connection *conn)
              s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, i18n (1030, "logged off."));
 }
 
-#ifndef ENABLE_UTF8
-#define MSGTCPACKSTR   "\xbb\xbb\xbb"
-#define MSGTCPRECSTR   "\xab\xab\xab"
-#define MSGTYPE2ACKSTR ">>+"
-#define MSGTYPE2RECSTR "+<<"
-#else
 #define i19n i18n
 #define MSGTCPACKSTR   i19n (2289, "Â»Â»Â»")  /* i18n (2289, "»»»") */
 #define MSGTCPRECSTR   i19n (2290, "Â«Â«Â«")  /* i18n (2290, "«««") */
 #define MSGTYPE2ACKSTR i19n (2291, ">>Â»")    /* i18n (2291, ">>»") */
 #define MSGTYPE2RECSTR i19n (2292, "Â«<<")    /* i18n (2292, "«<<") */
-#endif
 
 /*
  * Central entry point for protocol triggered output.

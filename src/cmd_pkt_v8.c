@@ -597,13 +597,11 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
         case MSG_WEB:
         case MSG_EMAIL:
         case MSG_CONTACT:
-#ifdef ENABLE_UTF8
             /**/    PacketRead4 (inc_pak);
             /**/    PacketRead4 (inc_pak);
             cctmp = PacketReadL4Str (inc_pak, NULL)->txt;
             if (!strcmp (cctmp, CAP_GID_UTF8))
                 ExtraSet (extra, EXTRA_MESSAGE, msgtype, text);
-#endif
             if (*text)
                 IMSrvMsg (cont, serv, NOW, ExtraClone (extra));
             PacketWrite2     (ack_pak, ack_status);

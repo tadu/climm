@@ -456,11 +456,7 @@ BOOL ContactMetaSave (Contact *cont)
             return FALSE;
     }
     fprintf (f, "#\n# Meta data for contact %ld.\n#\n\n", cont->uin);
-#ifdef ENABLE_UTF8
     fprintf (f, "encoding UTF-8\n"); 
-#else
-    fprintf (f, "encoding %s\n", s_quote (ConvEncName (prG->enc_loc)));
-#endif
     fprintf (f, "format 1\n\n");
     fprintf (f, "b_uin      %ld\n", cont->uin);
     fprintf (f, "b_id       %d\n", cont->id);
@@ -583,13 +579,8 @@ BOOL ContactMetaLoad (Contact *cont)
             if (!s_parse (&line, &cmd))
                 return FALSE;
             enc = ConvEnc (cmd);
-#ifdef ENABLE_UTF8
             if (enc & ENC_AUTO && (enc ^ prG->enc_loc) & ~ENC_AUTO)
                 return FALSE;
-#else
-            if ((enc ^ prG->enc_loc) & ~ENC_AUTO)
-                return FALSE;
-#endif
             enc &= ~ENC_AUTO;
         }
         else if (!enc)

@@ -87,11 +87,7 @@
 #define EV_P2P
 #endif
 
-#ifdef ENABLE_UTF8
 #define EV_UTF8 "UTF8 "
-#else
-#define EV_UTF8
-#endif
 
 #ifdef ENABLE_ICONV
 #define EV_ICONV "ICONV(" ENABLE_ICONV ") "
@@ -115,13 +111,8 @@ const char *BuildVersion (void)
 
 const char *BuildAttribution (void)
 {
-#if ENABLE_UTF8
     return ("\xc2\xa9 1998,1999,2000 Matthew D. Smith, \xc2\xa9 2001,2002,2003 R\xc3\xbc" "diger Kuhlmann,\n"
             "released under version 2 of the GNU General Public License (GPL).\n");
-#else
-    return ("\xa9 1998,1999,2000 Matthew D. Smith, \xa9 2001,2002,2003 R\xfc" "diger Kuhlmann,\n"
-            "released under version 2 of the GNU General Public License (GPL).\n");
-#endif
 }                  
 
 const UDWORD BuildVersionNum = MICQ_BUILD_NUM;

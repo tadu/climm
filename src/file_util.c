@@ -114,11 +114,7 @@ void Initialize_RC_File ()
         free (pwd);
     }
     while (!*input);
-#ifdef ENABLE_UTF8
     passwd = strdup (c_out (input));
-#else
-    passwd = strdup (input);
-#endif
 
     prG->s5Use = 0;
     prG->s5Port = 0;
@@ -256,11 +252,7 @@ void Initialize_RC_File ()
     prG->chat      = 49;
 
     conn->contacts = ContactGroupFind (0, conn, s_sprintf ("contacts-icq8-%ld", uin), 1);
-#ifdef ENABLE_UTF8
     ContactFind (conn->contacts, 0, 82274703, "R\xc3\xbc" "diger Kuhlmann", 1);
-#else
-    ContactFind (conn->contacts, 0, 82274703, "R\xfc" "diger Kuhlmann", 1);
-#endif
     ContactFind (conn->contacts, 0, 82274703, "mICQ maintainer", 1);
     ContactFind (conn->contacts, 0, 82274703, "Tadu", 1);
 
@@ -1185,11 +1177,7 @@ int Save_RC ()
     fprintf (rcf, "# This file was generated on %s\n\n", ctime (&t));
     
     fprintf (rcf, "# Character encodings: auto, iso-8859-1, koi8-u, ...\n");
-#ifdef ENABLE_UTF8
     fprintf (rcf, "encoding file UTF-8\n");
-#else
-    fprintf (rcf, "encoding file %s\n", s_quote (ConvEncName (prG->enc_loc)));
-#endif
     fprintf (rcf, "%sencoding local %s%s\n",
              prG->enc_loc & ENC_AUTO ? "#" : "", s_quote (ConvEncName (prG->enc_loc)),
              prG->enc_loc & ENC_AUTO ? "" : " # please set your locale correctly instead");
