@@ -1347,6 +1347,7 @@ static JUMP_F (CmdUserMessage)
 {
     static str_s t;
     static ContactGroup *cg = NULL;
+    static int tab = 0;
     ContactGroup *tcg;
     Contact *cont = NULL;
     char *arg1 = NULL;
@@ -1355,6 +1356,10 @@ static JUMP_F (CmdUserMessage)
 
     if (!status)
     {
+        tab = 1;
+        if (s_parsekey (&args, "notab"))
+            tab = 0;
+
         switch (data)
         {
             case 1:
@@ -1396,7 +1401,8 @@ static JUMP_F (CmdUserMessage)
             {
                 IMCliMsg (conn, cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, arg1, 0));
                 uiG.last_sent = cont;
-                TabAddOut (cont);
+                if (tab)
+                    TabAddOut (cont);
             }
             ContactGroupD (cg);
             return 0;
@@ -1433,7 +1439,8 @@ static JUMP_F (CmdUserMessage)
         {
             IMCliMsg (conn, cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, t.txt, 0));
             uiG.last_sent = cont;
-            TabAddOut (cont);
+            if (tab)
+                TabAddOut (cont);
         }
         ReadLinePromptReset ();
         ContactGroupD (cg);
