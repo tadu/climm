@@ -25,6 +25,7 @@
 
 
 const        char  *BuildVersion (void);
+const        char  *BuildAttribution (void);
 extern const UDWORD BuildVersionNum;
 extern const char  *BuildVersionText;
 

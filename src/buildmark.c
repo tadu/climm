@@ -22,14 +22,18 @@ static const char *ver = 0;
 const char *BuildVersion (void)
 {
     if (!ver)
-        ver = strdup (s_sprintf ("%s%s%s %s %s%s%s (%s %s)\n%s\n",
+        ver = strdup (s_sprintf ("%s%s%s %s %s%s%s (%s %s)\n",
                   COLSERVER, i18n (1074, "mICQ (Matt's ICQ clone)"), COLNONE,
                   i18n (1075, "version"),
                   COLSERVER, MICQ_VERSION " cvs " CVSUPDATE, COLNONE,
-                  i18n (1076, "compiled on"), BUILDDATE,
-                  i18n (1077, "in dedication to Matthew D. Smith.")));
+                  i18n (1076, "compiled on"), BUILDDATE));
     return ver;
 }
+
+const char *BuildAttribution (void)
+{
+    return (s_sprintf ("%s\n", i18n (1077, "in dedication to Matthew D. Smith.")));
+}                  
 
 const UDWORD BuildVersionNum = MICQ_BUILD_NUM;
 const char  *BuildVersionText = "$VER: mICQ " VERSION " CVS " EXTRAVERSION " (" CVSUPDATE " build " BUILDDATE ")";
