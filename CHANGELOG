@@ -1,4 +1,27 @@
 
+2001-04-13 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* include/micq.h, src/msg_queue.c, src/server.c, src/util.c:
+	  ICQ# with 9 digits start showing up, so use 10 instead of 8 digits
+	  for UIN/nick. Thus, rename Print_UIN_Name_8 to Print_UIN_Name_10.
+	* src/file_util.c, src/util.c:
+	  _Really_ use PROGDIR: if $HOME is unset on AmigaOS.
+	* include/micq.h, src/file_util.c, src/micq.c:
+	  New config option "LineBreakType" tied to int "line_break_type".
+	* src/util_ui.c, src/icq_response.c, include/config.h:
+	  Rewrote line break code from scratch. Doesn't use a buffer, but
+	  printf %.*s stuff. Depending on line_break_type, can indent a text
+	  embraced by ESC « ... ESC » by: start it on a new line, ignore it,
+	  indent it to current column, or line break unless piece fits on
+	  current line. Start using it for received msgs.
+	* src/util.c: 
+	  In MsgEllipsis, strips text after \r or \n (add a ¶ instead) and
+	  print at most one line (assuming timestamp & UIN is printed
+	  before).
+	* include/ui.h, src/ui.c:
+	  More time stamp first work.
+	* src/file_util.c, src/micq.c, src/server.c, src/util_ui.c:
+	  Minor cleanups.
+
 2001-03-24 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* src/server.c: Send login message 2 only once.
 	* include/config.h: Add #defines MSGSENTSTR, MSGACKSTR, MSGRECSTR
@@ -10,7 +33,7 @@
 	  Modify to include timestamp at beginning of line.  Rewrite URL
 	  message reception code not to use superfluous fixed-size buffers
 	  anymore.
-	* Upped version to 0.4.6p2.
+	* include/micq.h: Upped version to 0.4.6p2.
 
 2001-03-24 Huub Reuver <theanaloguekid@tak.dhis.org>
 	* src/file_util.c: Changed order of included files to cure

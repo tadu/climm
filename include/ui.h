@@ -43,9 +43,11 @@ static DWORD uin;
 
 
 
-#define CHANGE_STATUS( a )  icq_change_status( sok, a ); \
-                           Print_Status( Current_Status ); \
-                            printf( "\n" );
+#define CHANGE_STATUS(a)    icq_change_status (sok, a); \
+                            Time_Stamp (); \
+                            M_print (" "); \
+                            Print_Status (Current_Status); \
+                            M_print ("\n");
 
 
 static void Change_Function( SOK_T sok );

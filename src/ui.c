@@ -178,7 +178,7 @@ BOOL Do_Multiline( SOK_T sok, char *buf )
    {
       icq_sendmsg( sok, multi_uin, msg, NORM_MESS );
       Time_Stamp ();
-      M_print (" " SENTCOL "%8s" NOCOL " " MSGSENTSTR "%s\n", UIN2Name (multi_uin), MsgEllipsis (msg));
+      M_print (" " SENTCOL "%10s" NOCOL " " MSGSENTSTR "%s\n", UIN2Name (multi_uin), MsgEllipsis (msg));
       last_uin = multi_uin;
       offset = 0;
       return FALSE;
@@ -202,7 +202,7 @@ BOOL Do_Multiline( SOK_T sok, char *buf )
       else
       {
          M_print( MESSAGE_BUFFER_FULL_STR );
-         M_print (" " SENTCOL "%8s" NOCOL " " MSGSENTSTR "%s\n", UIN2Name (multi_uin), MsgEllipsis (msg));
+         M_print (" " SENTCOL "%10s" NOCOL " " MSGSENTSTR "%s\n", UIN2Name (multi_uin), MsgEllipsis (msg));
          icq_sendmsg( sok, multi_uin, msg, NORM_MESS );
          last_uin = multi_uin;
          offset = 0;
@@ -928,7 +928,7 @@ void Get_Input( SOK_T sok , int *idle_val, int *idle_flag ) /* GRYN */
 					      icq_sendurl( sok, uin, arg1, arg2 );
 					      Time_Stamp ();
 					      M_print (" ");
-					      Print_UIN_Name_8 (last_uin);
+					      Print_UIN_Name_10 (last_uin);
 					      M_print (" " MSGSENTSTR "%s\n", MsgEllipsis (arg1));
 				      } else {
 					      M_print("Need URL please.\n");
@@ -1214,7 +1214,7 @@ void Show_Quick_Status( void )
    
    M_print( "" W_SEPERATOR );
    Time_Stamp ();
-   M_print( " " MAGENTA BOLD "%lu" NOCOL " ", UIN );
+   M_print( " " MAGENTA BOLD "%10lu" NOCOL " ", UIN );
    M_print( W_STATUS_STR );
    Print_Status( Current_Status );
    M_print( "\n" );
@@ -1308,7 +1308,7 @@ void Show_Quick_Online_Status( void )
    
    M_print( "" W_SEPERATOR );
    Time_Stamp ();
-   M_print (" " MAGENTA BOLD "%lu" NOCOL " ", UIN);
+   M_print (" " MAGENTA BOLD "%10lu" NOCOL " ", UIN);
    M_print( W_STATUS_STR );
    Print_Status( Current_Status );
    M_print( "\n" );
@@ -1361,9 +1361,11 @@ static void Change_Function( SOK_T sok )
    }
    else
    {
-      icq_change_status( sok, atoi( arg1 ) );
-      Print_Status( Current_Status );
-      M_print( "\n" );
+      icq_change_status (sok, atoi (arg1));
+      Time_Stamp ();
+      M_print (" ");
+      Print_Status (Current_Status);
+      M_print ("\n");
    }
 }
 
@@ -1713,7 +1715,7 @@ static void Message_Function( SOK_T sok )
    {
       icq_sendmsg( sok, uin, arg1, NORM_MESS );
       Time_Stamp();
-      M_print (" " SENTCOL "%8s" NOCOL " " MSGSENTSTR "%s\n", UIN2Name (last_uin), MsgEllipsis (arg1));
+      M_print (" " SENTCOL "%10s" NOCOL " " MSGSENTSTR "%s\n", UIN2Name (last_uin), MsgEllipsis (arg1));
    }
    else
    {
@@ -1751,7 +1753,7 @@ static void Reply_Function( SOK_T sok )
    {
       icq_sendmsg( sok, last_recv_uin, arg1, NORM_MESS );
       Time_Stamp ();
-      M_print (" " SENTCOL "%8s" NOCOL " " MSGSENTSTR "%s\n", UIN2Name (last_recv_uin), MsgEllipsis (arg1));
+      M_print (" " SENTCOL "%10s" NOCOL " " MSGSENTSTR "%s\n", UIN2Name (last_recv_uin), MsgEllipsis (arg1));
    }
    else
    {
@@ -1785,7 +1787,7 @@ static void Again_Function( SOK_T sok )
    {
       icq_sendmsg( sok, last_uin, arg1, NORM_MESS );
       Time_Stamp ();
-      M_print (" " SENTCOL "%8s" NOCOL " " MSGSENTSTR "%s\n", UIN2Name (last_uin), MsgEllipsis (arg1));
+      M_print (" " SENTCOL "%10s" NOCOL " " MSGSENTSTR "%s\n", UIN2Name (last_uin), MsgEllipsis (arg1));
    } else {
       status = 1;
       /* aaron

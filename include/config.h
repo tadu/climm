@@ -40,8 +40,9 @@
 #define MSGRECSTR  "<<< "
 
 /* Define how many characters to print when messages are sent
- * or acknowledged to identify a message. */
-#define MSGID_LENGTH 20
+ * or acknowledged to identify a message. At most the whole
+ * line is printed. */
+#define MSGID_LENGTH 1000
 
 /* Color schemes  leave them all commented out for the default */
 /*

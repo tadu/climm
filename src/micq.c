@@ -51,6 +51,7 @@ BOOL Logging = TRUE;  /* Do we log messages to ~/micq_log?  This should probably
 BOOL Color = TRUE; /* Do we use ANSI color? */
 BOOL del_is_bs = TRUE; /* del char is backspace */
 BOOL last_uin_prompt = FALSE; /* use last UIN's nick as prompt */
+int line_break_type = 0; /* See .rc file for modes */
 BOOL Quit = FALSE;    /* set when it's time to exit the program */
 BOOL Verbose = FALSE; /* this is displays extra debuging info */
 BOOL serv_mess[ 1024 ]; /* used so that we don't get duplicate messages with the same SEQ */
@@ -600,7 +601,7 @@ int main( int argc, char *argv[] )
    M_print( "No Mirabilis client was maimed, hacked, tortured, sodomized or otherwise harmed\nin the making of this utility.\n" );
 #else
    M_print( "This program was made without any help from Mirabilis or their consent.\n" );
-   M_print( "No reverse engineering or decompilation of any Mirabilis code took place\nto make this program.\n" );
+   M_print( "No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n" );
 #endif
 
    /* aaron

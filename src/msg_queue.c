@@ -138,7 +138,7 @@ void Check_Queue( DWORD seq )
 	   if ( Chars_2_Word( &queued_msg->body[CMD_OFFSET] ) == CMD_SENDM ) {
 		R_undraw();
 		Time_Stamp ();
-		M_print (" " ACKCOL "%8s" NOCOL " " MSGACKSTR "%s\n",
+		M_print (" " ACKCOL "%10s" NOCOL " " MSGACKSTR "%s\n",
 		  UIN2Name (Chars_2_DW (&queued_msg->body[PAK_DATA_OFFSET])),
 		  MsgEllipsis (&queued_msg->body[32]));
 		R_redraw();

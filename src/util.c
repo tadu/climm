@@ -28,6 +28,7 @@ Changes :
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <util_ui.h>
 #ifdef _WIN32
    #include <io.h>
    #define S_IRUSR        _S_IREAD
@@ -523,11 +524,40 @@ void Print_Status( DWORD new_status  )
 char *MsgEllipsis (char *msg)
 {
    static char buff[MSGID_LENGTH + 2];
+   int screen_width, msgid_length;
    
-   if (strlen (msg) <= MSGID_LENGTH)
+   screen_width = Get_Max_Screen_Width ();
+   if (screen_width < 10)
+     screen_width = 10;
+   msgid_length = screen_width - (strlen ("##:##:## .......... " MSGSENTSTR) % screen_width);
+   if (msgid_length < 5)
+     msgid_length += screen_width;
+   if (msgid_length > MSGID_LENGTH)
+     msgid_length = MSGID_LENGTH;
+   
+   if (strchr (msg, '\n') || strchr (msg, '\r'))
+   {
+      char *p, *q;
+      int i;
+      for (p = msg, q = buff, i = 0; *p && i <= MSGID_LENGTH; i++, q++, p++)
+      {
+         if (*p == '\r' || *p == '\n')
+         {
+            *(q++) = '¶';
+            break;
+         }
+         *q = *p;
+      }
+      *q = '\0';
+      msg = buff;
+   }
+
+   
+   if (strlen (msg) <= msgid_length)
       return msg;
-   strncpy (buff, msg, MSGID_LENGTH - 3);
-   buff[MSGID_LENGTH - 3] = '\0';
+   if (buff != msg)
+      strncpy (buff, msg, msgid_length - 3);
+   buff[msgid_length - 3] = '\0';
    strcat (buff, "...");
    return buff;
 }
@@ -590,7 +620,7 @@ int Print_UIN_Name( DWORD uin )
 Prints the name of a user or their UIN if name
 is not known, but use exactly 8 chars if possible.
 ***********************************************/
-int Print_UIN_Name_8 (DWORD uin)
+int Print_UIN_Name_10 (DWORD uin)
 {
    int i;
 
@@ -598,7 +628,7 @@ int Print_UIN_Name_8 (DWORD uin)
    {
       if (Contacts[i].uin == uin)
       {
-          M_print (CONTACTCOL "%8s" NOCOL, Contacts[i].nick);
+          M_print (CONTACTCOL "%10s" NOCOL, Contacts[i].nick);
           return i;
       }
    }
@@ -857,7 +887,7 @@ the path used is returned.
 char * Set_Log_Dir( const char *newpath )
 {
 	if ( NULL == newpath ) {
-	   char *path;
+	   char *path = 0;
 	   char *home;
 	   Normal_Log = TRUE;
 #ifdef _WIN32
@@ -870,11 +900,14 @@ char * Set_Log_Dir( const char *newpath )
 
 #ifdef UNIX
 	   home = getenv ("HOME");
-	   if (!home) home = "";
-	   path = malloc( strlen( home ) + 2 );
-	   strcpy( path, home );
-	   if ( path[ strlen( path ) - 1 ] != '/' )
-	      strcat( path, "/" );
+	   if (home || !path)
+	   {
+	      if (!home) home = "";
+	      path = malloc( strlen( home ) + 2 );
+	      strcpy( path, home );
+	      if ( path[ strlen( path ) - 1 ] != '/' )
+	         strcat( path, "/" );
+	   }
 #endif
 
 	   Log_Dir = path;
@@ -924,7 +957,7 @@ int log_event( DWORD uin, int type, char *str, ... )
    char buf[2048]; /* this should big enough - This holds the message to be logged */
    char    buffer[256];
    time_t  timeval;
-   char *path;
+   char *path = 0;
 /*   char *home; */
    struct stat statbuf;
 

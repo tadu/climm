@@ -388,7 +388,7 @@ void User_Offline( int sok, BYTE * pak )
 
    Time_Stamp();
    M_print (" ");
-   Print_UIN_Name_8 (remote_uin);
+   Print_UIN_Name_10 (remote_uin);
    M_print (" " LOGGED_OFF_STR "\n");
    log_event( remote_uin, LOG_ONLINE, "User logged off %s\n", UIN2Name (remote_uin));
    if ((con = UIN2Contact (remote_uin)) != NULL)
@@ -413,7 +413,7 @@ void User_Online( int sok, BYTE * pak )
       R_undraw();
       Time_Stamp();
       M_print (" ");
-      Print_UIN_Name_8 (remote_uin);
+      Print_UIN_Name_10 (remote_uin);
       M_print (" " LOGGED_ON_STR " (");
       Print_Status (new_status);
       M_print (")");
@@ -489,7 +489,7 @@ void Status_Update( int sok, BYTE * pak )
    }
    Time_Stamp();
    M_print (" ");
-   index = Print_UIN_Name_8 (remote_uin);
+   index = Print_UIN_Name_10 (remote_uin);
    if ( index != -1 )
    {
       Contacts[ index ].status = new_status;
@@ -936,8 +936,8 @@ void Do_Msg( SOK_T sok, DWORD type, WORD len, char * data, DWORD uin )
    else
    {
       char_conv ("wc", data);
-      log_event( uin, LOG_MESS, "You received instant message from %s\n%s\n", UIN2Name (uin), data);
-      M_print (MSGRECSTR MESSCOL "%s" NOCOL "\n", data );
+      log_event (uin, LOG_MESS, "You received instant message from %s\n%s\n", UIN2Name (uin), data);
+      M_print (MSGRECSTR MESSCOL "\x1b«%s" NOCOL "\x1b»\n", data );
    }
       /* aaron
          If we just received a message from someone on the contact list,

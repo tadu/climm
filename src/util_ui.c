@@ -141,102 +141,166 @@ WORD Get_Max_Screen_Width()
 
 #ifdef WORD_WRAP
 static int CharCount = 0;  /* number of characters printed on line. */
+static int IndentCount = 0;
 
-static void M_puts_wrap( char *str) 
+static void M_prints(const char *str)
 {
-	if ( strlen(str) <= Get_Max_Screen_Width() ) {
-		if ( ( strlen(str) + CharCount ) > Get_Max_Screen_Width() ) {
-			printf( "\n%s", str );
-			CharCount = strlen(str);
-		} else {
-			CharCount += strlen(str);
-			printf( "%s", str );
-		}
-	} else {
-		int i,old;
-		for ( i=0; str[i] != 0; i++ ) { 
-			old = str[i+1];
-			str[i+1] =0;
-			M_puts_wrap( str+i ); 
-			str[i+1] = old;
-		}
-	}
+   const char  *p, *s, *t;
+   int         i;
+   int         sw = Get_Max_Screen_Width () - IndentCount;
+
+   for ( ; *str; str++)
+   {
+      for (p = s = str; *p; p++)
+      {
+         if (strchr ("\n\r\t\a\x1b", *p))
+         {
+            if (s != str)
+               p = s;
+            break;
+         }
+         if (strchr ("-.,_:;!?/ ", *p))
+         {
+            t = p + 1;
+            if (t - str <= sw - CharCount)
+               s = t;
+            else
+            {
+               if (s != str)
+                  p = s;
+               else
+                  p = t;
+               break;
+            }
+         }
+      }
+      if (p != str)           /* Print out (block of) word(s) */
+      {
+         while (p - str > sw)
+         {
+            printf ("%.*s%*s", sw - CharCount, str, IndentCount, "");
+            str += sw - CharCount;
+            CharCount = 0;
+         }
+         if (p - str > sw - CharCount)
+         {
+            printf ("\n%*s", IndentCount, "");
+            CharCount = 0;
+         }
+         printf ("%.*s", p - str, str);
+         CharCount += p - str;
+         str = p;
+      }
+      switch (*str)            /* Take care of specials */
+      {
+         case '\n':
+            printf ("\n%*s", IndentCount, "");
+            CharCount = 0;
+            break;
+         case '\r':
+            putchar ('\r');
+            if (str[1] != '\n' && IndentCount)
+            {
+               printf ("\x1b[%dD", IndentCount);
+            }
+            CharCount = 0;
+            break;
+         case '\t':
+            i = TAB_STOP - (CharCount % TAB_STOP);
+            if (CharCount + i > sw)
+            {
+               printf ("\n%*s", IndentCount, "");
+               CharCount = 0;
+            }
+            else
+            {
+               printf ("%*s", i, "");
+               CharCount += i;
+            }
+            break;
+         case '\a':
+            if (Sound == SOUND_ON)
+               printf ("\a");
+            else
+               system (Sound_Str);
+            break;
+         case '\x1b':
+            switch (*++p)
+            {
+               case '«':
+                  switch (line_break_type)
+                  {
+                     case 0:
+                        printf ("\n");
+                        CharCount = 0;
+                        break;
+                     case 2:
+                        IndentCount = CharCount;
+                        sw -= IndentCount;
+                        CharCount = 0;
+                        break;
+                     case 3:
+                        s = strstr (str, "\x1b»");
+                        if (s && s - str - 2 > sw - CharCount)
+                        {
+                           printf ("\n");
+                           CharCount = 0;
+                           break;
+                        }
+                        break;
+                  }
+                  str++;
+                  break;
+               case '»':
+                  switch (line_break_type)
+                  {
+                     case 2:
+                        CharCount += IndentCount;
+                        sw += IndentCount;
+                        IndentCount = 0;
+                        break;
+                  }
+                  str++;
+                  break;
+               default:
+                  s = strchr (p, 'm');
+                  if (s)
+                  {
+                     if (Color) printf ("%.*s", s - str + 1, str);
+                     str = s;
+                  }
+                  break;
+            }
+            break;
+         default:
+            str--;
+      }
+   }
 }
 
-static void M_prints(char *str) {
-      int	i;
-      int	TabSize;
-      char	*Buffer;
-      int             BufIdx = 0;
-      int             BufSize = (strlen(str)+2 * sizeof(char));
-
-      if ( NULL == (Buffer = (char *)malloc( BufSize )) )
-              perror("Cannot allocate memory for print buffer!\n");
-      memset(Buffer, 0, BufSize);
-      for (i = 0; i < strlen(str)/*str[i] != 0*/; i++) {
-              if (str[i] != '\a') {
-                      switch ( str[i] ) {
-			case '\n' : {
-                              M_puts_wrap( Buffer );
-                              M_puts_wrap( "\n" );
-                              BufIdx = 0;
-                              memset(Buffer, 0, BufSize);
-                              CharCount = 0;
-                              break;
-                      	}
-			case '\r': {
-                              M_puts_wrap( Buffer );
-                              M_puts_wrap( "\r" );
-                              BufIdx = 0;
-                              memset(Buffer, 0, BufSize);
-                              CharCount = 0;
-			      break;
-                      }
-			case '\t': {
-                              M_puts_wrap( Buffer );
-                              BufIdx = 0;
-                              memset(Buffer, 0, BufSize);
-                              TabSize = (CharCount % TAB_STOP);
-                              for (TabSize = TAB_STOP-TabSize; TabSize != 0; TabSize--) {
-				      M_puts_wrap( " " );
-                              }  /* end for */
-                              BufIdx = 0;
-                              memset(Buffer, 0, BufSize);
-			      break;
-                      }
-			case '-':
-			case '.':
-			case '?':
-			case '!':
-			case ';':
-			case ':':
-			case ',':
-			case '/':
-			case ' ': {
-			      Buffer[ BufIdx++ ] = str[i];
-                              M_puts_wrap( Buffer );
-                              BufIdx = 0;
-                              memset(Buffer, 0, BufSize);
-				break;
-                      } 
-			default: 
-                              Buffer[BufIdx++] = str[i];
-                      }  /* end switch */
-              } else if (Sound == SOUND_ON)
-                      printf("\a");
-              else if (Sound == SOUND_CMD)
-                      system(Sound_Str);
-      }  /* end for */
-
-      M_puts_wrap( Buffer );
-
-      free(Buffer);
-}  /* end aaron's word-wrapping M_prints */
+/**************************************************************
+M_print with colors.
+***************************************************************/
+void M_print (char *str, ...)
+{
+   va_list args;
+   char buf[2048];
+   
+   va_start (args, str);
+#ifndef CURSES_UI
+   vsnprintf (buf, sizeof (buf), str, args);
+   M_prints (buf);
+#else
+   #error No curses support included yet.
+   #error You must add it yourself.
+#endif
+   va_end (args);
+}
 
 #else
 
 /************************************************************
-Prints the preformated sting to stdout.
+Prints the preformatted string to stdout.
 Plays sounds if appropriate.
 ************************************************************/
 static void M_prints( char *str )
@@ -280,25 +344,24 @@ static void M_prints( char *str )
      system ( Sound_Str );
    }
 }
-#endif
 
 /**************************************************************
 M_print with colors.
 ***************************************************************/
-void M_print( char *str, ... )
+void M_print (char *str, ...)
 {
    va_list args;
    char buf[2048];
    char *str1, *str2;
    
-   va_start( args, str );
+   va_start (args, str);
 #ifndef CURSES_UI
-   vsprintf( buf, str, args );
+   vsnprintf (buf, sizeof (buf), str, args);
    str2 = buf;
-   while ( (void *) NULL != ( str1 = strchr( str2, '\x1b' ) ) )
+   while ((str1 = strchr (str2, '\x1b')) != NULL)
    {
       str1[0] = 0;
-      M_prints( str2 );
+      M_prints (str2);
       str1[0] = 0x1B;
       str2 = strchr (str1, 'm');
       if (str2)
@@ -310,13 +373,14 @@ void M_print( char *str, ... )
       else
          str2 = str1 + 1;
    }
-   M_prints( str2 );
+   M_prints (str2);
 #else
    #error No curses support included yet.
    #error You must add it yourself.
 #endif
-   va_end( args );
+   va_end (args);
 }
+#endif
 
 /***********************************************************
 Reads a line of input from the file descriptor fd into buf

@@ -48,7 +48,7 @@ static char rcfile[256];
 
 void Set_rcfile( char * name )
 {
-   char *path;
+   char *path = 0;
    char *home;
 
 	if ( NULL == name ) {
@@ -63,11 +63,14 @@ void Set_rcfile( char * name )
 
 #ifdef UNIX
    home = getenv ("HOME");
-   if (!home) home = "";
-   path = malloc( strlen( home ) + 2 );
-   strcpy( path, home );
-   if ( path[ strlen( path ) - 1 ] != '/' )
-      strcat( path, "/" );
+   if (home || !path)
+   {
+      if (!home) home = "";
+      path = malloc (strlen (home) + 2);
+      strcpy (path, home);
+      if (path[strlen (path) - 1] != '/')
+         strcat (path, "/");
+   }
 #endif
 
    strcpy( rcfile, path );
@@ -360,6 +363,8 @@ static void Read_RC_File( FD_T rcf )
             { last_uin_prompt = TRUE; }
          else if ( ! strcasecmp (tmp, "Del_is_Del"))
             { del_is_bs = FALSE; }
+         else if ( ! strcasecmp (tmp, "LineBreakType"))
+            { line_break_type = atoi (strtok (NULL, " \n\t")); }
          else if ( ! strcasecmp( tmp, "UIN" ) )
             {  UIN = atoi( strtok( NULL, " \n\t" ) );         }
          else if ( ! strcasecmp( tmp, "port" ) )
@@ -630,7 +635,7 @@ static void Read_RC_File( FD_T rcf )
 
 /************************************************
  *   This function should save your auto reply messages in the rc file.
- *   NOTE: the code isn't realy neat yet, I hope to change that soon.
+ *   NOTE: the code isn't really neat yet, I hope to change that soon.
  *   Added on 6-20-98 by Fryslan
  ***********************************************/
 int Save_RC()
@@ -709,6 +714,11 @@ int Save_RC()
       M_fdprint (rcf, "Last_UIN_Prompt\n");
    else
       M_fdprint (rcf, "#Last_UIN_Prompt\n");
+   M_fdprint (rcf, "# 0 = Line break before message\n");
+   M_fdprint (rcf, "# 1 = Just word wrap message as usual\n");
+   M_fdprint (rcf, "# 2 = Indent message\n");
+   M_fdprint (rcf, "# 3 = Line break before message unless message fits on current line\n");
+   M_fdprint (rcf, "LineBreakType %d\n", line_break_type);
    if ( Russian )
       M_fdprint( rcf, "\nRussian\n#if you want KOI8-R/U to CP1251 Cyrillic translation uncomment the above line.\n" );
    else

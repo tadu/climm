@@ -169,18 +169,17 @@ void Server_Response( SOK_T sok, BYTE *data, DWORD len, WORD cmd, WORD ver, DWOR
 /*      UIN = Chars_2_DW( &pak.data[0] ); */
       R_undraw ();
       our_ip = Chars_2_DW( &data[0] );
-      M_print( LOGIN_SUCCESS_STR " UIN : %lu\n", uin );
       Time_Stamp();
-      M_print (" " MAGENTA BOLD "%lu" NOCOL " " LOGIN_SUCCESS_STR "\n", uin);
+      M_print (" " MAGENTA BOLD "%10lu" NOCOL " " LOGIN_SUCCESS_STR "\n", uin);
       if (loginmsg++)
         break;
       Time_Stamp ();
 #if ICQ_VER == 0x0002
-      M_print (" " MAGENTA BOLD "%8s" NOCOL " IP: %u.%u.%u.%u\n", UIN2Name (uin), data[4], data[5], data[6], data[7]);
+      M_print (" " MAGENTA BOLD "%10s" NOCOL " IP: %u.%u.%u.%u\n", UIN2Name (uin), data[4], data[5], data[6], data[7]);
 #elif ICQ_VER == 0x0004
-      M_print (" " MAGENTA BOLD "%8s" NOCOL " IP: %u.%u.%u.%u\n", UIN2Name (uin), data[0], data[1], data[2], data[3]);
+      M_print (" " MAGENTA BOLD "%10s" NOCOL " IP: %u.%u.%u.%u\n", UIN2Name (uin), data[0], data[1], data[2], data[3]);
 #else
-      M_print (" " MAGENTA BOLD "%8s" NOCOL " IP: %u.%u.%u.%u\n", UIN2Name (uin), data[12], data[13], data[14], data[15]);
+      M_print (" " MAGENTA BOLD "%10s" NOCOL " IP: %u.%u.%u.%u\n", UIN2Name (uin), data[12], data[13], data[14], data[15]);
 #endif
       R_redraw ();
       snd_login_1( sok );
@@ -315,7 +314,7 @@ void Server_Response( SOK_T sok, BYTE *data, DWORD len, WORD cmd, WORD ver, DWOR
       {
         last_recv_uin = Chars_2_DW( s_mesg->uin );
         Time_Stamp();
-        M_print ("\a " CYAN BOLD "%8s" NOCOL " ", UIN2Name (Chars_2_DW (s_mesg->uin)));
+        M_print ("\a " CYAN BOLD "%10s" NOCOL " ", UIN2Name (Chars_2_DW (s_mesg->uin)));
         /*
         if ( 0 == ( Chars_2_Word( s_mesg->type ) & MASS_MESS_MASK ) )
            M_print( INSTANT_MSG_STR "\a " );
