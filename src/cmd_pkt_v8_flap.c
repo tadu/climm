@@ -125,14 +125,11 @@ void FlapChannel4 (Session *sess, Packet *pak)
     }
     else
     {
-
-
         if (tlv[5].len)
         {
             assert (strchr (tlv[5].str, ':'));
 
-            if (prG->verbose)
-                M_print (i18n (898, "Redirect to server %s... "), tlv[5].str);
+            M_print (i18n (898, "Redirect to server %s... "), tlv[5].str);
 
             sess->port = atoi (strchr (tlv[5].str, ':') + 1);
             *strchr (tlv[5].str, ':') = '\0';

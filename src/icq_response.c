@@ -483,7 +483,7 @@ void UserOnlineSetVersion (Contact *con, UDWORD tstamp)
 void User_Online (Session *sess, Packet *pak)
 {
     Contact *con;
-    int uin;
+    int uin, status;
 
     uin = PacketRead4 (pak);
     con = ContactFind (uin);
@@ -497,13 +497,17 @@ void User_Online (Session *sess, Packet *pak)
     con->port            = PacketRead4 (pak);
     con->local_ip        = PacketRead4 (pak);
     con->connection_type = PacketRead1 (pak);
-    con->status          = PacketRead4 (pak);
+    status               = PacketRead4 (pak);
     con->TCP_version     = PacketRead4 (pak);
                            PacketRead4 (pak);
                            PacketRead4 (pak);
                            PacketRead4 (pak);
     UserOnlineSetVersion (con, PacketRead4 (pak));
 
+    if (status == con->status)
+        return;
+    
+    con->status = status;
     if (sess->connect & CONNECT_OK)
     {
 

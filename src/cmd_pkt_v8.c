@@ -32,11 +32,11 @@ void SessionInitServer (Session *sess)
 
     M_print (i18n (871, "Opening v8 connection to %s:%d... "), sess->server, sess->port);
 
-    sess->our_seq = rand () & 0x7fff;
-    sess->connect = 0;
+    sess->our_seq  = rand () & 0x7fff;
+    sess->connect  = 0;
     sess->dispatch = &SrvCallBackReceive;
-    sess->server = strdup (sess->spref->server);
-    sess->type = TYPE_SERVER;
+    sess->server   = strdup (sess->spref->server);
+    sess->type     = TYPE_SERVER;
     QueueEnqueueData (queue, sess, sess->our_seq, sess->connect,
                       sess->uin, time (NULL) + 10,
                       NULL, NULL, &SrvCallBackTimeout);
@@ -59,6 +59,7 @@ void SrvCallBackTimeout (struct Event *event)
         else
         {
             event->due = time (NULL) + 10;
+            sess->connect |= CONNECT_SELECT_R;
             event->type = sess->connect;
             QueueEnqueue (queue, event);
             return;
@@ -73,18 +74,28 @@ void SrvCallBackReceive (Session *sess)
 
     if (!(sess->connect & CONNECT_OK))
     {
-        switch (sess->connect & 3)
+        switch (sess->connect & 7)
         {
             case 1:
-                UtilIOAgain (sess);
+            case 5:
+                if (sess->assoc && !(sess->assoc->connect & CONNECT_OK))
+                {
+                    printf ("Buggy: avoiding deadlock\n");
+                    sess->connect &= ~CONNECT_SELECT_R;
+                }
+                else
+                    sess->connect |= 4 | CONNECT_SELECT_R;
+                sess->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X & ~3;
                 return;
             case 2:
-                sess->connect |= CONNECT_OK | CONNECT_SELECT_R;
-                return;
-            case 3:
+            case 6:
                 sess->connect = 0;
+                return;
+            case 4:
+                break;
+            default:
+                assert (0);
         }
-        return;
     }
 
     pak = UtilIOReceiveTCP (sess);

@@ -74,19 +74,9 @@ void SessionInitPeer (Session *sess)
     sess->connect = 0;
     sess->our_seq = -1;
     sess->type = 4;
+    sess->dispatch = &TCPDispatchMain;
 
     UtilIOConnectTCP (sess);
-    
-    if (!sess->connect)
-        return;
-
-    sess->dispatch = &TCPDispatchMain;
-    if (port)
-        while (port > 10)
-            M_print ("\b");
-    else
-        M_print ("\b");
-    M_print ("\b\b\b\b%d.\n", sess->port);
 }
 
 /*
@@ -141,19 +131,22 @@ void TCPDirectOff (UDWORD uin)
     Session *peer;
     
     peer = SessionFind (TYPE_DIRECT, uin);
-    if (peer)
-        UtilCheckUIN (peer->assoc, uin);
     cont = ContactFind (uin);
     
     if (!peer && cont)
-    {
         peer = SessionC ();
-        if (!peer)
-            return;
-    }
+
+    if (!peer)
+        return;
+
     peer->uin = cont->uin;
     peer->connect = CONNECT_FAIL;
     peer->type = TYPE_DIRECT;
+    if (peer->incoming)
+    {
+        PacketD (peer->incoming);
+        peer->incoming = NULL;
+    }
 }
 
 /**************************************************/
@@ -168,7 +161,26 @@ void TCPDispatchMain (Session *sess)
     int tmp;
  
     ASSERT_PEER (sess);
- 
+
+    if (!(sess->connect & CONNECT_OK))
+    {
+        switch (sess->connect & 3)
+        {
+            case 1:
+                sess->connect |= CONNECT_OK | CONNECT_SELECT_R;
+                sess->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X;
+                if (sess->assoc && (sess->assoc->connect & CONNECT_OK))
+                    SnacCliSetstatus (sess->assoc, 0, 2);
+                break;
+            case 2:
+                sess->connect = 0;
+                break;
+            default:
+                assert (0);
+        }
+        return;
+    }
+
     tmp = sizeof (sin);
     peer = SessionClone (sess);
     
@@ -183,19 +195,31 @@ void TCPDispatchMain (Session *sess)
 
     peer->type = TYPE_DIRECT;
     peer->spref = NULL;
-    peer->sok  = accept (sess->sok, (struct sockaddr *)&sin, &tmp);
-    
-    if (peer->sok <= 0)
+    peer->dispatch    = &TCPDispatchShake;
+
+    if (prG->s5Use)
     {
-        peer->connect = 0;
-        peer->sok = -1;
-        return;
+        peer->sok = sess->sok;
+        sess->sok = -1;
+        sess->connect = 0;
+        UtilIOSocksAccept (peer);
+        UtilIOConnectTCP (sess);
     }
-    
+    else
+    {
+        peer->sok  = accept (sess->sok, (struct sockaddr *)&sin, &tmp);
+        
+        if (peer->sok <= 0)
+        {
+            peer->connect = 0;
+            peer->sok = -1;
+            return;
+        }
+    }
+
     peer->connect     = 10 | CONNECT_SELECT_R;
     peer->our_session = 0;
     peer->uin         = 0;
-    peer->dispatch    = &TCPDispatchShake;
 }
 
 /*
@@ -217,7 +241,7 @@ void TCPDispatchConn (Session *sess)
         assert (cont);
         rc = 0;
         if (prG->verbose)
-            M_print ("debug: TCPDispatchConn; Nick: %s state: %d\n", ContactFindName (sess->uin), sess->connect);
+            M_print ("debug: TCPDispatchConn; Nick: %s state: %x\n", ContactFindName (sess->uin), sess->connect);
 
         switch (sess->connect & CONNECT_MASK)
         {
@@ -230,16 +254,12 @@ void TCPDispatchConn (Session *sess)
                 sess->server  = NULL;
                 sess->ip      = cont->outside_ip;
                 sess->port    = cont->port;
-                sess->connect = 0;
+                sess->connect = 1;
                 
                 M_print (i18n (631, "Opening TCP connection to %s%s%s at %s:%d... "),
                              COLCONTACT, cont->nick, COLNONE, UtilIOIP (sess->ip), sess->port);
-                if (!UtilIOConnectTCP (sess))
-                    return;
-                break;
-            case 1:
-                UtilIOAgain (sess);
-                break;
+                UtilIOConnectTCP (sess);
+                return;
             case 3:
                 if (!cont->local_ip || !cont->port)
                 {
@@ -253,14 +273,9 @@ void TCPDispatchConn (Session *sess)
                 
                 M_print (i18n (631, "Opening TCP connection to %s%s%s at %s:%d... "),
                              COLCONTACT, cont->nick, COLNONE, UtilIOIP (sess->ip), sess->port);
-
-                if (!UtilIOConnectTCP (sess))
-                    return;
-                break;
-            case 4:
-                UtilIOAgain (sess);
-                break;
-            case 6:
+                UtilIOConnectTCP (sess);
+                return;
+            case 5:
             {
                 if (sess->assoc && sess->assoc->assoc && sess->assoc->assoc->ver < 7)
                 {
@@ -277,7 +292,7 @@ void TCPDispatchConn (Session *sess)
                 return;
             }
             case 2:
-            case 5:
+            case 4:
             case TCP_STATE_CONNECTED:
                 if (prG->verbose)
                 {
@@ -805,6 +820,11 @@ void TCPClose (Session *sess)
     sess->our_session = 0;
     if (!sess->uin)
         SessionClose (sess);
+    if (sess->incoming)
+    {
+        PacketD (sess->incoming);
+        sess->incoming = NULL;
+    }
 }
 
 

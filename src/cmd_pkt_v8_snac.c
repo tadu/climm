@@ -255,7 +255,7 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
 {
     Packet *pak;
     TLV *tlv;
-    UDWORD uin;
+    UDWORD uin, status;
     
     pak = event->pak;
     if (PacketReadBAt2 (pak, 10) & 0x8000)
@@ -281,11 +281,15 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
     }
     if (tlv[6].len)
     {
-        event->sess->status = tlv[6].nr;
-        Time_Stamp ();
-        M_print (" ");
-        Print_Status (event->sess->status);
-        M_print ("\n");
+        status = tlv[6].nr;
+        if (status != event->sess->status)
+        {
+            event->sess->status = status;
+            Time_Stamp ();
+            M_print (" ");
+            Print_Status (event->sess->status);
+            M_print ("\n");
+        }
     }
     /* TLV 1 c f 2 3 ignored */
 }
@@ -566,7 +570,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
 JUMP_SNAC_F(SnacSrvReplybos)
 {
     SnacCliSetuserinfo (event->sess);
-    SnacCliSetstatus (event->sess, event->sess->spref->status);
+    SnacCliSetstatus (event->sess, event->sess->spref->status, 3);
     SnacCliReady (event->sess);
     SnacCliReqofflinemsgs (event->sess);
 /*    SnacCliReqroster (event->sess); */
@@ -749,16 +753,19 @@ void SnacCliReady (Session *sess)
 
 /*
  * CLI_SETSTATUS - SNAC(1,1E)
+ *
+ * action: 1 = send status 2 = send connection info (3 = both)
  */
-void SnacCliSetstatus (Session *sess, UWORD status)
+void SnacCliSetstatus (Session *sess, UWORD status, UWORD action)
 {
     Packet *pak;
     
-    if (status & STATUS_INVISIBLE)
+    if ((action & 1) && (status & STATUS_INVISIBLE))
         SnacCliAddvisible (sess, 0);
     pak = SnacC (sess, 1, 0x1e, 0, 0);
-    PacketWriteTLV4 (pak, 6, status);
-    if (!(status & 256) && !(sess->connect & CONNECT_OK))
+    if (action & 1)
+        PacketWriteTLV4 (pak, 6, status);
+    if (action & 2)
     {
         PacketWriteB2 (pak, 0x0c); /* TLV 0C */
         PacketWriteB2 (pak, 0x25);
@@ -780,10 +787,8 @@ void SnacCliSetstatus (Session *sess, UWORD status)
         PacketWriteTLV2 (pak, 8, 0);
     }
     SnacSend (sess, pak);
-    if (!(status & STATUS_INVISIBLE))
+    if ((action & 1) && !(status & STATUS_INVISIBLE))
         SnacCliAddinvis (sess, 0);
-    
-/*  sess->status = status;  Note: this will be set by SRV_REPLYINFO */
 }
 
 /*

@@ -631,11 +631,11 @@
 631:Opening TCP connection to %s%s%s at %s:%d... 
 632:¶Connection unstable. Exiting....
 633:failed:¶
-634:Connection failed: %s (%d)¶
+634:ok¶
 635:You have encounterd a bug in my code :( I now own you a beer!¶Greetings Fryslan!¶
 636:Auto-response message for %s:¶
 637:Can't bind socket to free port¶
-638:[SOCKS] Can't find hostname %s.
+638:Couldn't create socket
 639:The new UIN is %ld!¶
 640:Failed to update info.¶
 641:User info successfully updated.¶
@@ -660,7 +660,7 @@
 660:Invalid Command: %s¶
 661:Shell commands have been disabled.¶
 662:Can't find hostname %s: %s.
-663:Couldn't create socket: %s (%d).¶
+663:Couldn't set socket nonblocking
 664:Composing message to ©4all©0:¶
 665:%s not recognized as a nick name.
 666:Unignored %s.
@@ -698,8 +698,8 @@
 698: 
 699:Must give a valid uin/nickname¶
 700:%s is not a valid user in your list.¶
-701:Couldn't set socket nonblocking: %s (%d).¶
-702:Can't find hostname %s: %s (%d).
+701:Can't find hostname %s
+702:Couldn't open connection
 703:©2Status modes: ¶
 704:©2Groups: ¶
 705:General                    1¶
@@ -715,7 +715,7 @@
 715:mICQ                      49 (might not work but try it)
 716:None                      -1¶
 717:! as the first character of a command will execute a shell command (e.g. "!ls"  "!dir" "!mkdir temp")
-718:Can't find hostname %s: %d.
+718:couldn't bind socket to free port
 719:Shows how long mICQ has been running.
 720:uin can be either a number or the nickname of the user.
 721:Sending a blank message will put the client into multiline mode.¶Use . on a line by itself to end message.¶Use # on a line by itself to cancel the message.
@@ -769,7 +769,7 @@
 769:Displays your current online status.
 770:Resend your last message to a new uin.
 771:You haven't sent a message to anyone yet!¶
-772:Can't find hostname %s.
+772:unable to listen on socket
 773:%s could not be added.¶
 774:Incoming packet:
 775:Outgoing packet:
@@ -825,9 +825,13 @@
 825:Discarded a %04x (%s) packet
 826:Resending message %04x (%s) sequence %04x (attempt #%d, len %d).¶
 827:Unknown client
-828:[SOCKS] Connection request refused (%d)¶
+828:Connection failed
+829:[SOCKS] General SOCKS server failure
 830:Discarding message to %s after %d send attempts.  Message content:¶
+831:[SOCKS] Authentification method incorrect
+832:[SOCKS] Authorization failure
 833:Client-to-client TCP connection to %s established.¶
+834:[SOCKS] Connection request refused (%d)
 835:Error while writing to socket - %s (%d)¶
 836:Sending TCP direct connection initialization packet.¶
 837:Acknowledging TCP direct connection initialization packet.¶
@@ -859,7 +863,6 @@
 870:    off   <nick> - Closes TCP connection(s) and don't try TCP again.¶
 871:Opening v8 connection to %s:%d... 
 872:failed: %s (%d)¶
-873:ok.¶
 877:ok.¶
 878:Error while reading from socket: %s (%d)¶
 880:Incoming packet is not a FLAP: id is %d.¶
@@ -882,9 +885,6 @@
 899:Unknown family requested: %d¶
 904:Server doesn't understand ver %d (only %d) for family %d!¶
 906:This command operates only on connections of type %s.¶
-907:couldn't bind socket to free port: %s (%d).¶
-908:unable to listen on socket: %s (%d).¶
-909:Couldn't open connection: %s (%d)¶
 910:FLAP seq %08x length %04x channel %d©0¶
 911:connecting
 912:closed

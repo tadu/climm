@@ -38,6 +38,7 @@ struct Event *QueuePop         (struct Queue  *queue);
 #define QUEUE_TYPE_UDP_RESEND    23
 #define QUEUE_TYPE_TCP_RESEND    42
 #define QUEUE_TYPE_TCP_TIMEOUT   76
+#define QUEUE_TYPE_CON_TIMEOUT   77
 #define QUEUE_TYPE_TCP_RECEIVE   31
 #define QUEUE_TYPE_UDP_KEEPALIVE 20
 #define QUEUE_TYPE_FLAC          11

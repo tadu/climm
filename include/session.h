@@ -34,17 +34,18 @@ struct Session_s
         PreferencesSession *spref; /* preferences for this session */
         Session            *assoc; /* associated UDP <-> TCP or parent TCP session */
         
-        jump_sess_f *dispatch;
+        jump_sess_f *dispatch;     /* function to call on select() */
+        jump_sess_f *utilio;       /* private to util_io.c */
 };
 
-#define CONNECT_MASK       255
-#define CONNECT_OK         128
-#define CONNECT_FAIL       256
-#define CONNECT_SELECT_R  1024
-#define CONNECT_SELECT_W  2048
-#define CONNECT_SELECT_X  4096
-#define CONNECT_SOCKS_ADD 8192
-#define CONNECT_SOCKS    61440
+#define CONNECT_MASK       0x00ff
+#define CONNECT_OK         0x0080
+#define CONNECT_FAIL       0x0100
+#define CONNECT_SELECT_R   0x0200
+#define CONNECT_SELECT_W   0x0400
+#define CONNECT_SELECT_X   0x0800
+#define CONNECT_SOCKS_ADD  0x1000
+#define CONNECT_SOCKS      0xf000
 
 Session    *SessionC     (void);
 Session    *SessionClone (Session *sess);

@@ -12,7 +12,7 @@ void SnacCliBuddy        (Session *sess);
 void SnacCliReqicbm      (Session *sess);
 void SnacCliReqbos       (Session *sess);
 void SnacCliSetuserinfo  (Session *sess);
-void SnacCliSetstatus    (Session *sess, UWORD status);
+void SnacCliSetstatus    (Session *sess, UWORD status, UWORD action);
 void SnacCliReady        (Session *sess);
 void SnacCliSeticbm      (Session *sess);
 void SnacCliAddcontact   (Session *sess, UDWORD uin);

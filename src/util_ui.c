@@ -431,7 +431,9 @@ void Debug (UDWORD level, const char *str, ...)
     vsnprintf (buf, sizeof (buf), str, args);
     va_end (args);
 
-    snprintf (buf2, sizeof (buf2), "Debug: [%s] %s\n",
+    M_print ("Debug: ");
+    Time_Stamp ();
+    snprintf (buf2, sizeof (buf2), " [%s] %s\n",
               level == 32 ? "Queue" : 
               level == 64 ? "Packet" : "unknown",
               buf);

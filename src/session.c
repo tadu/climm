@@ -16,7 +16,7 @@
 #include <string.h>
 #include <assert.h>
 
-#define listlen 10
+#define listlen 40
 
 static Session *slist[listlen] = { 0 };
 

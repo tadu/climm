@@ -172,7 +172,7 @@ JUMP_F(CmdUserChange)
         data = atoi (arg1);
     }
     if (sess->ver > 6)
-        SnacCliSetstatus (sess, data);
+        SnacCliSetstatus (sess, data, 1);
     else
     {
         CmdPktCmdStatusChange (sess, data);
@@ -955,7 +955,7 @@ JUMP_F(CmdUserStatusDetail)
     UDWORD num;
     Contact *cont;
     char *name = strtok (args, "");
-    SESSION(TYPE_SERVER_OLD);
+    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
 
     if (name)
     {

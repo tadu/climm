@@ -29,6 +29,7 @@ extern int h_errno;
 #define BACKLOG 10
 
 static void UtilIOTOConn (struct Event *event);
+static void UtilIOConnectCallback (Session *sess);
 
 /*
  * Return a string consisting of the given IP.
@@ -94,11 +95,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
             host_struct = gethostbyname (prG->s5Host);
             if (!host_struct)
             {
-#ifdef HAVE_HSTRERROR
                 M_print (i18n (596, "[SOCKS] Can't find hostname %s: %s."), prG->s5Host, hstrerror (h_errno));
-#else
-                M_print (i18n (638, "[SOCKS] Can't find hostname %s."), prG->s5Host);
-#endif
                 M_print ("\n");
                 return -1;
             }
@@ -186,11 +183,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
         {
             if (prG->verbose)
             {
-#ifdef HAVE_HSTRERROR
                 M_print (i18n (662, "Can't find hostname %s: %s."), hostname, hstrerror (h_errno));
-#else
-                M_print (i18n (772, "Can't find hostname %s."), hostname);
-#endif
                 M_print ("\n");
             }
             return -1;
@@ -236,10 +229,34 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
     return sok;
 }
 
+#define CONN_FAIL(s)  { if (s) M_print ("%s\n", s);  \
+                        QueueDequeue (queue, sess->ip, QUEUE_TYPE_CON_TIMEOUT); \
+                        if (sess->sok > 0)           \
+                          sockclose (sess->sok);      \
+                        sess->sok = -1;                \
+                        sess->connect += 2;             \
+                        sess->dispatch = sess->utilio;   \
+                        sess->dispatch (sess);            \
+                        return; }
+#define CONN_FAIL_RC(s) { int rc = errno;                   \
+                          M_print (i18n (633, "failed:\n")); \
+                          CONN_FAIL (UtilFill   ("%s: %s (%d).", s, strerror (rc), rc)) }
+#define CONN_CHECK(s) { if (rc == -1) { rc = errno;          \
+                          if (rc == EAGAIN) return;             \
+                          CONN_FAIL (UtilFill      ("%s: %s (%d).", s, strerror (rc), rc)) } }
+#define CONN_OK         { sess->connect++;                        \
+                          QueueDequeue (queue, sess->ip, QUEUE_TYPE_CON_TIMEOUT); \
+                          sess->dispatch = sess->utilio;           \
+                          sess->dispatch (sess);                    \
+                          return; }
+
 /*
  * Connect to sess->server, or sess->ip, or opens port for listening
+ *
+ * Usage: sess->dispatch will be called with sess->connect++ if ok,
+ * sess->connect+=2 if fail.
  */
-BOOL UtilIOConnectTCP (Session *sess)
+void UtilIOConnectTCP (Session *sess)
 {
     int rc, flags;
     struct sockaddr_in sin;
@@ -247,32 +264,22 @@ BOOL UtilIOConnectTCP (Session *sess)
     char *origserver = NULL;
     UDWORD origport = 0, origip = 0;
     
+    sess->utilio   = sess->dispatch;
+
+    if (prG->verbose)
+        M_print ("Debug: UtilIOConnectCallback: %x\n", sess->connect);
+
     sess->sok = socket (AF_INET, SOCK_STREAM, 0);
     if (sess->sok <= 0)
-    {
-        sess->sok = -1;
-        sess->connect += 3;
-        rc = errno;
-        M_print (i18n (633, "failed:\n"));
-        M_print (i18n (663, "Couldn't create socket: %s (%d).\n"), strerror (rc), rc);
-        return -1;
-    }
+        CONN_FAIL_RC (i18n (638, "Couldn't create socket"));
     
-    flags = fcntl (sess->sok, F_GETFL, 0);
-    if (flags != -1)
-        flags = fcntl (sess->sok, F_SETFL, flags | O_NONBLOCK);
-    if (flags == -1)
-    {
-        rc = errno;
-        M_print (i18n (633, "failed:\n"));
-        M_print (i18n (701, "Couldn't set socket nonblocking: %s (%d).\n"), strerror (rc), rc);
-        sockclose (sess->sok);
-        sess->sok = -1;
-        sess->connect += 3;
-        return -1;
-    }
+    rc = fcntl (sess->sok, F_GETFL, 0);
+    if (rc != -1)
+        rc = fcntl (sess->sok, F_SETFL, rc | O_NONBLOCK);
+    if (rc == -1)
+        CONN_FAIL_RC (i18n (663, "Couldn't set socket nonblocking"));
 
-    if (sess->server || sess->ip)
+    if (sess->server || sess->ip || prG->s5Use)
     {
         if (prG->s5Use)
         {
@@ -295,31 +302,18 @@ BOOL UtilIOConnectTCP (Session *sess)
             if (!host)
             {
                 rc = h_errno;
-                M_print (i18n (633, "failed:\n"));
-#ifdef HAVE_HSTRERROR
-                M_print (i18n (702, "Can't find hostname %s: %s (%d)."), sess->server, hstrerror (rc), rc);
-#else
-                M_print (i18n (718, "Can't find hostname %s: %d."), sess->server, rc);
-#endif
-                M_print ("\n");
-                sockclose (sess->sok);
-                sess->sok = -1;
-                sess->connect += 3;
-                return -1;
+                CONN_FAIL (UtilFill (i18n (701, "Can't find hostname %s"), sess->server, hstrerror (rc), rc));
             }
             sin.sin_addr = *((struct in_addr *) host->h_addr);
             sess->ip = ntohl (sin.sin_addr.s_addr);
         }
         sin.sin_addr.s_addr = htonl (sess->ip);
         
-        sess->connect++;
-
         if (prG->s5Use)
         {
             sess->server = origserver;
             sess->port   = origport;
             sess->ip     = origip;
-            sess->connect &= ~CONNECT_SOCKS;
         }
 
         rc = connect (sess->sok, (struct sockaddr *) &sin, sizeof (struct sockaddr));
@@ -332,29 +326,36 @@ BOOL UtilIOConnectTCP (Session *sess)
 
         if (rc >= 0)
         {
-            sess->connect += (prG->s5Use ? CONNECT_SOCKS_ADD : 1);
-            sess->connect |= CONNECT_SELECT_R;
-            M_print (i18n (873, "ok.\n"));
+            M_print ("");
+            if (M_pos () > 0)
+                M_print (i18n (634, "ok\n"));
             if (prG->s5Use)
-                UtilIOAgain (sess);
-            return 1;
+            {
+                QueueEnqueueData (queue, sess, sess->ip, QUEUE_TYPE_CON_TIMEOUT,
+                                  sess->uin, time (NULL) + 10,
+                                  NULL, NULL, &UtilIOTOConn);
+                sess->dispatch = &UtilIOConnectCallback;
+                sess->connect |= CONNECT_SOCKS_ADD;
+                UtilIOConnectCallback (sess);
+                return;
+            }
+            CONN_OK
         }
 
         if ((rc = errno) == EINPROGRESS)
         {
-            sess->connect |= CONNECT_SELECT_W | CONNECT_SELECT_X;
-            QueueEnqueueData (queue, sess, sess->ip, QUEUE_TYPE_TCP_TIMEOUT,
+            M_print ("");
+            if (M_pos () > 0)
+                M_print ("\n");
+            QueueEnqueueData (queue, sess, sess->ip, QUEUE_TYPE_CON_TIMEOUT,
                               sess->uin, time (NULL) + 10,
                               NULL, NULL, &UtilIOTOConn);
-            M_print ("\n");
-            return 0;
+            sess->utilio   = sess->dispatch;
+            sess->dispatch = &UtilIOConnectCallback;
+            sess->connect |= CONNECT_SELECT_W | CONNECT_SELECT_X;
+            return;
         }
-        M_print (i18n (633, "failed:\n"));
-        M_print (i18n (909, "Couldn't open connection: %s (%d)\n"), strerror (rc), rc);
-        sess->connect += 2;
-        sockclose (sess->sok);
-        sess->sok = -1;
-        return -1;
+        CONN_FAIL_RC (i18n (702, "Couldn't open connection"));
     }
     else
     {
@@ -363,63 +364,60 @@ BOOL UtilIOConnectTCP (Session *sess)
         sin.sin_addr.s_addr = INADDR_ANY;
 
         if (bind (sess->sok, (struct sockaddr*)&sin, sizeof (struct sockaddr)) < 0)
-        {
-            rc = errno;
-            M_print (i18n (633, "failed:\n"));
-            M_print (i18n (907, "couldn't bind socket to free port: %s (%d).\n"), strerror (rc), rc);
-            sockclose (sess->sok);
-            sess->sok = -1;
-            return -1;
-        }
+            CONN_FAIL_RC (i18n (718, "couldn't bind socket to free port"));
 
         if (listen (sess->sok, BACKLOG) < 0)
-        {
-            rc = errno;
-            M_print (i18n (633, "failed:\n"));
-            M_print (i18n (908, "unable to listen on socket: %s (%d).\n"), strerror (rc), rc);
-            sockclose (sess->sok);
-            sess->sok = -1;
-            return -1;
-        }
+            CONN_FAIL_RC (i18n (772, "unable to listen on socket"));
+
         flags = sizeof (struct sockaddr);
         getsockname (sess->sok, (struct sockaddr *) &sin, &flags);
         sess->port = ntohs (sin.sin_port);
-        sess->connect = CONNECT_OK | CONNECT_SELECT_R;
         sess->server = strdup ("localhost");
-        return 1;
+        if (M_pos () > 0)
+            M_print (i18n (634, "ok\n"));
+        CONN_OK
     }
 }
 
 /*
  * Continue connecting.
  */
-void UtilIOAgain (Session *sess)
+void UtilIOConnectCallback (Session *sess)
 {
     int rc, eno, flags, len;
     char buf[60];
-    const char *err;
 
-    while (prG->s5Use)
+    while (1)
     {
         eno = 0;
-        switch (sess->connect / CONNECT_SOCKS_ADD)
+        rc = 0;
+        if (prG->verbose)
+            M_print ("Debug: UtilIOConnectCallback: %x\n", sess->connect);
+        switch ((eno = sess->connect / CONNECT_SOCKS_ADD) % 7)
         {
             case 0:
-                err = NULL;
-                break;
+                flags = sizeof (int);
+                if (getsockopt (sess->sok, SOL_SOCKET, SO_ERROR, &rc, &flags) < 0)
+                    rc = errno;
+                if (rc)
+                    CONN_FAIL (UtilFill      ("%s: %s (%d).", i18n (828, "Connection failed"), strerror (rc), rc));
+
+                sess->connect += CONNECT_SOCKS_ADD;
             case 1:
-                sess->connect &= ~CONNECT_SELECT_W;
+                if (!prG->s5Use)
+                    CONN_OK
+
+                sess->connect += CONNECT_SOCKS_ADD;
                 sess->connect |= CONNECT_SELECT_R;
+                sess->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X;
+                sockwrite (sess->sok, prG->s5Auth ? "\x05\x02\x02\x00" : "\x05\x01\x00", 3);
+                return;
+            case 2:
                 rc = sockread (sess->sok, buf, 2);
-                if (rc == -1)
-                    eno = errno;
-                if (eno == EAGAIN)
-                    return;
-                if (rc != 2 || buf[0] != 5 || (buf[1] != 0 && buf[1] != 2) || (buf[1] == 2 && !prG->s5Auth))
-                {
-                    err = i18n (599, "[SOCKS] Authentication method incorrect\n");
-                    break;
-                }
+                CONN_CHECK (i18n (829, "[SOCKS] General SOCKS server failure"));
+                if (buf[0] != 5 || !(buf[1] == 0 || (buf[1] == 2 && prG->s5Auth)))
+                    CONN_FAIL (i18n (831, "[SOCKS] Authentification method incorrect"));
+
                 sess->connect += CONNECT_SOCKS_ADD;
                 if (buf[1] == 2)
                 {
@@ -430,80 +428,68 @@ void UtilIOAgain (Session *sess)
                 }
                 sess->connect += CONNECT_SOCKS_ADD;
                 continue;
-            case 2:
-                rc = sockread (sess->sok, buf, 2);
-                if (rc == -1)
-                    eno = errno;
-                if (eno == EAGAIN)
-                    return;
-                if (rc != 2 || buf[1])
-                {
-                    err = i18n (600, "[SOCKS] Authorization failure\n");
-                    break;
-                }
             case 3:
+                rc = sockread (sess->sok, buf, 2);
+                CONN_CHECK (i18n (829, "[SOCKS] General SOCKS server failure"));
+                if (rc != 2 || buf[1])
+                    CONN_FAIL  (i18n (832, "[SOCKS] Authorization failure"));
+            case 4:
                 if (sess->server)
                     snprintf (buf, sizeof (buf), "%c%c%c%c%c%s%c%c%n", 5, 1, 0, 3, strlen (sess->server),
                               sess->server, (char)(sess->port >> 8), (char)(sess->port & 255), &len);
-                else
+                else if (sess->ip)
                     snprintf (buf, sizeof (buf), "%c%c%c%c%c%c%c%c%c%c%n", 5, 1, 0, 1, (char)(sess->ip >> 24),
                               (char)(sess->ip >> 16), (char)(sess->ip >> 8), (char)sess->ip,
                               (char)(sess->port >> 8), (char)(sess->port & 255), &len);
+                else
+                    snprintf (buf, sizeof (buf), "%c%c%c%c%c%c%c%c%c%c%n", 5, 2, 0, 1, 0,0,0,0,
+                              eno & 8 ? 0 : (char)(sess->port >> 8),
+                              eno & 8 ? 0 : (char)(sess->port & 255), &len); 
                 sockwrite (sess->sok, buf, len);
                 sess->connect += CONNECT_SOCKS_ADD;
                 return;
-            case 4:
+            case 5:
                 rc = sockread (sess->sok, buf, 10);
-                if (rc == -1)
-                    eno = errno;
-                if (eno == EAGAIN)
-                    return;
+                CONN_CHECK (i18n (829, "[SOCKS] General SOCKS server failure"));
                 if (rc != 10 || buf[3] != 1)
+                    CONN_FAIL (i18n (829, "[SOCKS] General SOCKS server failure"));
+                if (buf[1] == 4 && sess->port && !(eno & 8))
                 {
-                    err = i18n (601, "[SOCKS] General SOCKS server failure\n");
-                    break;
+                    sess->connect &= ~CONNECT_SOCKS;
+                    sess->connect |= 8 * CONNECT_SOCKS_ADD;
+                    sess->dispatch = sess->utilio;
+                    QueueDequeue (queue, sess->ip, QUEUE_TYPE_CON_TIMEOUT);
+                    UtilIOConnectTCP (sess);
+                    return;
                 }
                 if (buf[1])
+                    CONN_FAIL (UtilFill (i18n (834, "[SOCKS] Connection request refused (%d)"), buf[1]));
+                if (!sess->server && !sess->ip)
                 {
-                    err = UtilFill (i18n (828, "[SOCKS] Connection request refused (%d)\n"), buf[1]);
-                    break;
+                    sess->assoc->our_local_ip = ntohl (*(UDWORD *)(&buf[4]));
+                    sess->our_outside_ip = sess->assoc->our_local_ip;
+                    sess->port = ntohs (*(UWORD *)(&buf[8]));
                 }
-                sess->connect++;
-                return;
+                sess->connect &= ~CONNECT_SOCKS;
+                CONN_OK
             default:
                 assert (0);
-                return;
         }
-        if (!err)
-            break;
-        sockclose (sess->sok);
-        sess->sok = -1;
-        sess->connect += 2;
-        M_print (err);
-        return;
     }
-    
-    flags = sizeof (int);
-    if (getsockopt (sess->sok, SOL_SOCKET, SO_ERROR, &rc, &flags) < 0)
-        rc = errno;
-    
-/*    if (rc == EAGAIN)
-        return; */
+}
 
-    QueueDequeue (queue, sess->ip, QUEUE_TYPE_TCP_TIMEOUT);
-    if (rc)
-    {
-        M_print (i18n (634, "Connection failed: %s (%d)\n"), strerror (rc), rc);
-        sockclose (sess->sok);
-        sess->sok = -1;
-        sess->connect += 2;
-        return;
-    }
+/*
+ * Does SOCKS5 handshake for incoming connection
+ */
+void UtilIOSocksAccept(Session *sess)
+{
+    char buf[60];
+    int rc;
 
-    sess->connect += prG->s5Use ? CONNECT_SOCKS_ADD : 1;
-    
-    if (prG->s5Use)
-        sockwrite (sess->sok, prG->s5Auth ? "\x05\x02\x02\x00" : "\x05\x01\x00", 3);
+    rc = sockread (sess->sok, buf, 10);
+    CONN_CHECK (i18n (829, "[SOCKS] General SOCKS server failure"));
+    if (rc != 10 || buf[3] != 1)
+        CONN_FAIL (i18n (829, "[SOCKS] General SOCKS server failure"));
 }
 
 /*
@@ -511,12 +497,10 @@ void UtilIOAgain (Session *sess)
  */
 void UtilIOTOConn (struct Event *event)
 {
-     sockclose (event->sess->sok);
-     event->sess->sok = -1;
-     event->sess->connect += 2;
-     event->sess->dispatch (event->sess);
-     M_print (i18n (634, "Connection failed: %s (%d)\n"), strerror (ETIMEDOUT), ETIMEDOUT);
+     Session *sess = event->sess;
      free (event);
+     CONN_FAIL (UtilFill ("%s: %s (%d).", i18n (828, "Connection failed"),
+                strerror (ETIMEDOUT), ETIMEDOUT));
 }
 
 /*
@@ -559,6 +543,8 @@ Packet *UtilIOReceiveTCP (Session *sess)
             rc = errno;
             if (rc == EAGAIN)
                 return NULL;
+            if (!rc)
+                rc = ECONNRESET;
             break;
         }
         pak->len += rc;
@@ -581,7 +567,7 @@ Packet *UtilIOReceiveTCP (Session *sess)
     sockclose (sess->sok);
     sess->sok = -1;
     PacketD (pak);
-    pak = NULL;
+    sess->incoming = NULL;
     return NULL;
 }
 
