@@ -1,3 +1,20 @@
+2002-09-19 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* use version from build.i18n to tag *.i18n files
+	* don't physically drop old translations anymore automatically
+	* UtilUIParse* fixes, # as comment-character
+	* add ./configure option for enabling peer2peer connections
+	* add de_CH (funny?), de_fun translations
+	* several translation updates
+	* add UIN to SMS
+	* e,ee,w,ww,s: show temporary contacts as more offline than
+	  offline, show all aliases with s and ww
+	* fix a run-away-TCP-sending by giving TCPDirectOpen() a BOOL return
+	* TCP_MSG_* & *_MESS -> MSG_* unification
+	* fix url command I broke earlier
+	* some v5 related fixes
+	* auth add
+	* Do_Msg() rewrite
+
 2002-09-09 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Change translations not to contain ESC characters.
 	* add pt_BR micq.1

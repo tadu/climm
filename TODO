@@ -15,7 +15,10 @@ Jeff Bearer <jbearer@tribweb.com>
  : A couple of things have come up:
  : - All mode changes should be in a central system log and not each user
 
-various people:
+<e.hemmink@student.utwente.nl>: (refuses to do translation work)
+ : implement web aware feature
+
+TODO:
  : add https support
  : add missing v8 pieces
  : server side contact list:
@@ -26,13 +29,18 @@ various people:
  : saving personal information
  : fix memory leaks (most fixed)
  : finish implementing file transfer (fixed?)
+   + add prompt display
+   + add better user interface
  : Trillian bugaround (fixed?)
  : use old-style auth stuff as well :-/ (fixed?)
- : "" quoting of arguments
+ : "" quoting of arguments (fixed)
  : change add/rem-behaviour
  : connection killing
- : add UIN to SMS
- : remove color codes from i18n strings
- : do not show temporary/ignored contacts
- : do not interpret deny as authorize
+ : add UIN to SMS (fixed)
+ : remove color codes from i18n strings (fixed)
+ : do not show temporary/ignored contacts (fixed)
+ : do not interpret deny as authorize (fixed)
+ : give TCPOpenDirect a BOOL to return whether a new connection is now in progress (fixed)
+ : fix receivescript (done)
+ : rewrite Do_Msg (done)
 
