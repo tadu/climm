@@ -57,9 +57,9 @@ int i18nOpen (const char *loc)
     if (!strcmp (loc, "!") || !strcmp (loc, "auto") || !strcmp (loc, "default"))
         loc = NULL;
 
-    if (!loc)   loc = getenv ("LANG");
-    if (!loc)   loc = getenv ("LC_ALL");
     if (!loc)   loc = getenv ("LC_MESSAGES");
+    if (!loc)   loc = getenv ("LC_ALL");
+    if (!loc)   loc = getenv ("LANG");
     if (!loc)   return 0;
 
     if (!strcmp (loc, "C"))
@@ -83,25 +83,17 @@ int i18nOpen (const char *loc)
         {
             i18nTry ("%s/i18n/%s_fun.i18n", PrefUserDir (), loc, "");
             if (strchr (loc, '_'))
-                i18nTry ("%s/i18n/%.*s_fun.i18n", PrefUserDir (), strrchr (loc, '_') - loc, loc);
-            if (strchr (loc, '_') && strchr (loc, '_') != strrchr (loc, '_'))
-                i18nTry ("%s/i18n/%.*s_fun.i18n", PrefUserDir (), strchr (loc, '_') - loc, loc);
-            i18nTry (PKGDATADIR "/%s_fun.i18n", loc, "", "");
+                i18nTry ("%s/i18n/%.*s@fun.i18n", PrefUserDir (), strchr (loc, '_') - loc, loc);
+            i18nTry (PKGDATADIR "/%s@fun.i18n", loc, "", "");
             if (strchr (loc, '_'))
-                i18nTry (PKGDATADIR "/%.*s_fun.i18n", strrchr (loc, '_') - loc, loc, "");
-            if (strchr (loc, '_') && strchr (loc, '_') != strrchr (loc, '_'))
-                i18nTry (PKGDATADIR "/%.*s_fun.i18n", strchr (loc, '_') - loc, loc, "");
+                i18nTry (PKGDATADIR "/%.*s@fun.i18n", strchr (loc, '_') - loc, loc, "");
         }
 
         i18nTry ("%s/i18n/%s.i18n", PrefUserDir (), loc, "");
         if (strchr (loc, '_'))
-            i18nTry ("%s/i18n/%.*s.i18n", PrefUserDir (), strrchr (loc, '_') - loc, loc);
-        if (strchr (loc, '_') && strchr (loc, '_') != strrchr (loc, '_'))
             i18nTry ("%s/i18n/%.*s.i18n", PrefUserDir (), strchr (loc, '_') - loc, loc);
         i18nTry (PKGDATADIR "/%s.i18n", loc, "", "");
         if (strchr (loc, '_'))
-            i18nTry (PKGDATADIR "/%.*s.i18n", strrchr (loc, '_') - loc, loc, "");
-        if (strchr (loc, '_') && strchr (loc, '_') != strrchr (loc, '_'))
             i18nTry (PKGDATADIR "/%.*s.i18n", strchr (loc, '_') - loc, loc, "");
     }
 
@@ -115,9 +107,7 @@ static int i18nAdd (FILE *i18nf, int debug, int *res)
 {
     char buf[2048];
     int j = 0;
-#ifdef ENABLE_UTF8
     UBYTE enc = 0;
-#endif
     
     if (*res)
     {
@@ -135,8 +125,6 @@ static int i18nAdd (FILE *i18nf, int debug, int *res)
             continue;
         
         p = debug ? buf : ++p;
-        s_free (i18nStrings[i]);
-#ifdef ENABLE_UTF8
         if (i == 1007)
         {
             if      (!strcmp (buf, "iso-8859-1")) enc = ENC_LATIN1;
@@ -144,7 +132,10 @@ static int i18nAdd (FILE *i18nf, int debug, int *res)
             else if (!strcmp (buf, "koi8-u"))     enc = ENC_KOI8;
             else if (!strcmp (buf, "utf-8"))      enc = ENC_UTF8;
             else                                  enc = ENC_LATIN1;
+            if (prG->enc_loc == ENC_AUTO)
+                prG->enc_loc = ENC_AUTO | enc;
         }
+#ifdef ENABLE_UTF8
         i18nStrings[i] = p = strdup (ConvToUTF8 (p, enc ? enc : ENC_LATIN1));
 #else
         i18nStrings[i] = p = strdup (p);
