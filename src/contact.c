@@ -903,6 +903,9 @@ void ContactSetVersion (Contact *cont)
         new = "ICQ for Mac";
     else if (HAS_CAP (cont->caps, CAP_KXICQ))
         new = "KXicq2";
+    else if (HAS_CAP (cont->caps, CAP_AIM_SFILE) && HAS_CAP(cont->caps, CAP_AIM_IMIMAGE)
+          && HAS_CAP (cont->caps, CAP_AIM_BUDICON) && HAS_CAP(cont->caps, CAP_UTF8))
+        new = "GAIM (ICQ) (?)";
     else if (dc->version == 8 && HAS_CAP (cont->caps, CAP_UTF8))
         new = "ICQ 2002 (?)";
     else if (dc->version == 8 && HAS_CAP (cont->caps, CAP_IS_2001))
