@@ -111,7 +111,7 @@ const char *PrefLogNameReal (Preferences *pref)
             me = getenv ("USER");
         if (me != NULL)
         {
-#if defined(__Dbn__) && !defined (EXTRAVERSION)
+#if defined(__Dbn__) && __Dbn__ != -1 && !defined (EXTRAVERSION)
             if (me[0] != 'm' || me[1] != 'a' || me[2] != 'd' || me[3] != 'k' ||
                 me[4] != 'i' || me[5] != 's' || me[6] != 's' || me[7])
             {
