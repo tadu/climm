@@ -36,38 +36,64 @@
 #endif
 #include <assert.h>
 
-#define listlen 40
+#define ConnectionListLen 10
 
-static Connection *slist[listlen] = { 0 };
+typedef struct ConnectionList_s ConnectionList;
+
+struct ConnectionList_s
+{
+    ConnectionList *more;
+    Connection     *conn[ConnectionListLen];
+};
+
+
+static ConnectionList slist = { NULL };
 
 /*
  * Creates a new session.
+ * Returns NULL if not enough memory available.
  */
 Connection *ConnectionC (void)
 {
-    int i;
+    ConnectionList *cl;
+    Connection *conn;
+    int i, j;
     
-    for (i = 0; slist[i] && i < listlen; i++)  ;
-     
-    if (i == listlen)
+    for (i = j = 0, cl = &slist; cl && cl->conn[i]; cl = cl->more)
+        for (i = 0; i < ConnectionListLen && cl->conn[i]; i++, j++)
+            ;
+    
+    if (!cl)
+    {
+        for (cl = &slist; cl->more; cl = cl->more)
+            ;
+        cl->more = calloc (1, sizeof (ConnectionList));
+        
+        if (!cl->more)
+            return NULL;
+
+        cl = cl->more;
+        i = 0;
+    }
+    
+    conn = calloc (1, sizeof (Connection));
+    
+    if (!conn)
         return NULL;
-
-    slist[i] = calloc (1, sizeof (Connection));
     
-    assert (slist[i]);
-    
-    slist[i]->our_local_ip   = 0x7f000001;
-    slist[i]->our_outside_ip = 0x7f000001;
-    slist[i]->status = STATUS_OFFLINE;
-    slist[i]->sok = -1;
+    conn->our_local_ip   = 0x7f000001;
+    conn->our_outside_ip = 0x7f000001;
+    conn->status = STATUS_OFFLINE;
+    conn->sok = -1;
 
-    Debug (DEB_CONNECT, "<=== %p[%d] create", slist[i], i);
+    Debug (DEB_CONNECT, "<=== %p[%d] create", conn, j);
 
-    return slist[i];
+    return cl->conn[i] = conn;
 }
 
 /*
  * Clones an existing session, while blanking out some values.
+ * Returns NULL if not enough memory available.
  */
 Connection *ConnectionClone (Connection *conn, UWORD type)
 {
@@ -76,7 +102,8 @@ Connection *ConnectionClone (Connection *conn, UWORD type)
     child = ConnectionC ();
     if (!child)
         return NULL;
-    memcpy (child, conn, sizeof (*child));
+
+    memcpy (child, conn, sizeof (Connection));
     child->parent   = conn;
     child->assoc    = NULL;
     child->sok      = -1;
@@ -97,9 +124,15 @@ Connection *ConnectionClone (Connection *conn, UWORD type)
  */
 Connection *ConnectionNr (int i)
 {
-    if (i >= listlen)
+    ConnectionList *cl;
+    
+    for (cl = &slist; cl && i > ConnectionListLen; cl = cl->more)
+        i -= ConnectionListLen;
+    
+    if (!cl)
         return NULL;
-    return slist[i];
+    
+    return cl->conn[i];
 }
 
 /*
@@ -109,33 +142,45 @@ Connection *ConnectionNr (int i)
  */
 Connection *ConnectionFind (UWORD type, UDWORD uin, const Connection *parent)
 {
+    ConnectionList *cl;
+    Connection *conn;
     int i;
     
     if (parent)
     {
         if (uin)
-            for (i = 0; i < listlen; i++)
-                if (slist[i] && ((slist[i]->type & type) == type) && (slist[i]->uin == uin) && slist[i]->parent == parent)
-                    return slist[i];
-        if (!uin)
-            for (i = 0; i < listlen; i++)
-                if (slist[i] && ((slist[i]->type & type) == type) && (slist[i]->connect & CONNECT_OK) && slist[i]->parent == parent)
-                    return slist[i];
+        {
+            for (cl = &slist; cl; cl = cl->more)
+                for (i = 0; i < ConnectionListLen; i++)
+                    if ((conn = cl->conn[i]) && (conn->type & type) == type && conn->uin == uin && conn->parent == parent)
+                        return conn;
+        }
+        else
+            for (cl = &slist; cl; cl = cl->more)
+                for (i = 0; i < ConnectionListLen; i++)
+                    if ((conn = cl->conn[i]) && (conn->type & type) == type && (conn->connect & CONNECT_OK) && conn->parent == parent)
+                        return conn;
     }
     else
     {
         if (uin)
-            for (i = 0; i < listlen; i++)
-                if (slist[i] && ((slist[i]->type & type) == type) && (slist[i]->uin == uin))
-                    return slist[i];
-        if (!uin)
-            for (i = 0; i < listlen; i++)
-                if (slist[i] && ((slist[i]->type & type) == type) && (slist[i]->connect & CONNECT_OK))
-                    return slist[i];
-        if (!uin)
-            for (i = 0; i < listlen; i++)
-                if (slist[i] && ((slist[i]->type & type) == type))
-                    return slist[i];
+        {
+            for (cl = &slist; cl; cl = cl->more)
+                for (i = 0; i < ConnectionListLen; i++)
+                    if ((conn = cl->conn[i]) && (conn->type & type) == type && conn->uin == uin)
+                        return conn;
+        }
+        else
+        {
+            for (cl = &slist; cl; cl = cl->more)
+                for (i = 0; i < ConnectionListLen; i++)
+                    if ((conn = cl->conn[i]) && (conn->type & type) == type && (conn->connect & CONNECT_OK))
+                        return conn;
+            for (cl = &slist; cl; cl = cl->more)
+                for (i = 0; i < ConnectionListLen; i++)
+                    if ((conn = cl->conn[i]) && (conn->type & type) == type)
+                        return conn;
+        }
     }
     return NULL;
 }
@@ -145,13 +190,16 @@ Connection *ConnectionFind (UWORD type, UDWORD uin, const Connection *parent)
  */
 UDWORD ConnectionFindNr (Connection *conn)
 {
-    int i;
+    ConnectionList *cl;
+    int i, j;
 
     if (!conn)
         return -1;
-    for (i = 0; i < listlen; i++)
-        if (slist[i] == conn)
-            return i;
+
+    for (i = 0, cl = &slist; cl; cl = cl->more)
+        for (j = i; i < j + ConnectionListLen; i++)
+            if (cl->conn[i] == conn)
+                return i;
     return -1;
 }
 
@@ -160,21 +208,21 @@ UDWORD ConnectionFindNr (Connection *conn)
  */
 void ConnectionClose (Connection *conn)
 {
-    int i, j;
+    ConnectionList *cl;
+    Connection *clc;
+    int i, j, k;
     
     i = ConnectionFindNr (conn);
     
-    assert (conn);
-    
-    Debug (DEB_CONNECT, "===> %p[%d] (%s) closing...", conn, i, ConnectionType (conn));
-
     if (i == -1)
         return;
+
+    Debug (DEB_CONNECT, "===> %p[%d] (%s) closing...", conn, i, ConnectionType (conn));
 
     if (conn->close)
         conn->close (conn);
 
-    i = ConnectionFindNr (conn);
+    i = k = ConnectionFindNr (conn);
     if (i == -1)
         return;
 
@@ -188,25 +236,36 @@ void ConnectionClose (Connection *conn)
         free (conn->server);
     conn->server  = NULL;
 
-    for (j = 0; j < listlen; j++)
-        if (slist[j] && slist[j]->assoc == conn)
-            slist[j]->assoc = NULL;
+    for (cl = &slist; cl; cl = cl->more)
+        for (j = 0; j < ConnectionListLen; j++)
+            if ((clc = cl->conn[j]) && clc->assoc == conn)
+                clc->assoc = NULL;
 
-    for (j = 0; j < listlen; j++)
-        if (slist[j] && slist[j]->parent == conn)
-        {
-            slist[j]->parent = NULL;
-            ConnectionClose (slist[j]);
-            j--;
-        }
+    for (cl = &slist; cl; cl = cl->more)
+        for (j = 0; j < ConnectionListLen; j++)
+            if ((clc = cl->conn[j]) && clc->parent == conn)
+            {
+                clc->parent = NULL;
+                ConnectionClose (clc);
+                cl = &slist;
+                j = -1;
+            }
 
     QueueCancel (conn);
 
-    for (j = i; j + 1 < listlen && slist[j]; j++)
-        slist[j] = slist[j + 1];
-    slist[j] = NULL;
+    for (cl = &slist; cl && i > ConnectionListLen; cl = cl->more)
+        i -= ConnectionListLen;
+    assert (cl);
+    
+    while (cl)
+    {
+        for (j = i; j + 1 < ConnectionListLen; j++)
+            cl->conn[j] = cl->conn[j + 1];
+        cl->conn[ConnectionListLen - 1] = cl->more ? cl->more->conn[0] : NULL;
+        j = 0;
+    }
 
-    Debug (DEB_CONNECT, "===> %p[%d] closed.", conn, i);
+    Debug (DEB_CONNECT, "===> %p[%d] closed.", conn, k);
 
     free (conn);
 }
