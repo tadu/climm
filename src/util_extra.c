@@ -74,12 +74,14 @@ Extra *ExtraSet (Extra *extra, UWORD type, UDWORD value, const char *text)
     tmp = calloc (1, sizeof (Extra));
     if (!tmp)
         return extra;
-    Debug (DEB_EXTRA, "<*** %p (%04x: '%s' %08x)", tmp, type, text ? text : "", value);
     tmp->tag = type;
     tmp->data = value;
     tmp->text = text ? strdup (text) : NULL;
     if (!old)
+    {
+        Debug (DEB_EXTRA, "<*** %p (%04x: '%s' %08x)", tmp, type, tmp->text ? tmp->text : "", value);
         return tmp;
+    }
     old->more = tmp;
     return extra;
 }
