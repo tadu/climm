@@ -1861,7 +1861,11 @@ static JUMP_F(CmdUserStatusDetail)
         if (conn)
         {
             M_printf ("%s " COLCONTACT "%10lu" COLNONE " ", s_now, conn->uin);
-            M_printf (i18n (2211, "Your status is %s.\n"), s_status (conn->status));
+            if (~conn->connect & CONNECT_OK)
+                M_printf (i18n (2392, "Your status is %s (%s).\n"),
+                    i18n (1969, "offline"), s_status (conn->status));
+            else
+                M_printf (i18n (2211, "Your status is %s.\n"), s_status (conn->status));
         }
         if (data & 16)
             return 0;
