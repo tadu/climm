@@ -45,8 +45,6 @@ void CmdPktCmdSendMessage (Session *sess, UDWORD uin, const char *text, UDWORD t
     Time_Stamp ();
     M_print (" " COLSENT "%10s" COLNONE " " MSGSENTSTR "%s\n", ContactFindName (uin), MsgEllipsis (text));
 
-    log_event (uin, LOG_MESS, "You sent instant message to %s\n%s\n", ContactFindName (uin), text);
-
     PacketWrite4 (pak, uin);
     PacketWrite2 (pak, type);
     PacketWriteStrCUW (pak, text);

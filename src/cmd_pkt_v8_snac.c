@@ -349,7 +349,6 @@ JUMP_SNAC_F(SnacSrvUseronline)
     tlv = TLVRead (pak);
     if (tlv[10].len)
         cont->outside_ip = tlv[10].nr;
-    cont->status = tlv[6].len ? tlv[6].nr : 0;
     
     if (tlv[12].len)
     {
@@ -366,7 +365,7 @@ JUMP_SNAC_F(SnacSrvUseronline)
     }
     /* TLV 1, d, f, 2, 3 ignored */
 
-    UtilUIUserOnline (cont);
+    UtilUIUserOnline (cont, tlv[6].len ? tlv[6].nr : 0);
 }
 
 /*
@@ -427,13 +426,13 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
             PacketReadB2 (pak); /* COUNT */
             tlv = TLVRead (pak);
 
-            if (tlv[6].len && cont && (cont->status = tlv[6].nr) != oldstat)
-                UtilUIUserOnline (cont);
+            if (tlv[6].len && cont)
+                UtilUIUserOnline (cont, tlv[6].nr);
 
             if (tlv[2].len == 4)
             {
                 for (i = 16; i < 20; i++)
-                    if (tlv[i].tlv == i)
+                    if (tlv[i].tlv == 2)
                     {
                         int typ = tlv[i].tlv, len = tlv[i].len, nr = tlv[i].nr;
                         const char *str = tlv[i].str;
@@ -458,6 +457,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
                 M_print (" " CYAN BOLD "%10s" COLNONE " ",
                          ContactFindName (uin));
                 Do_Msg (event->sess, NORM_MESS, len - 4, text + 4, uin, 0);
+                free (text);
             }
             /* TLV 1, 2(!), 3, 4, f ignored */
             if (prG->sound & SFLAG_CMD)
@@ -664,7 +664,6 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, char *text, UDWORD type)
     
     Time_Stamp ();
     M_print (" " COLACK "%10s" COLNONE " " MSGACKSTR "%s\n", ContactFindName (uin), MsgEllipsis (text));
-    log_event (uin, LOG_MESS, "You sent instant message to %s\n%s\n", ContactFindName (uin), text);
     
     switch (type)
     {

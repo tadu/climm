@@ -87,7 +87,7 @@ static RETSIGTYPE micq_sigwinch_handler (int a)
     struct winsize ws;
 
     scrwd = 0;
-    ioctl (STDOUT, TIOCGWINSZ, &ws);
+    ioctl (STDIN, TIOCGWINSZ, &ws);
     scrwd = ws.ws_col;
 };
 
@@ -165,7 +165,6 @@ static void M_prints (const char *str)
         switch (*str)           /* Take care of specials */
         {
             case '\n':
-                R_show ();
                 printf ("\n%*s", IndentCount, "");
                 CharCount = 0;
                 break;
@@ -411,6 +410,14 @@ void M_print (char *str, ...)
 }
 #endif
 
+/*
+ * Returns current horizontal position
+ */
+int M_pos ()
+{
+    return CharCount;
+}
+
 void Debug (UDWORD level, const char *str, ...)
 {
     va_list args;
@@ -449,7 +456,7 @@ configurable
 void Prompt (void)
 {
     static char buff[200];
-    printf ("\r" ESC "[K");
+    printf ("\r" ESC "[J");
     if (prG->flags & FLAG_UINPROMPT && uiG.last_sent_uin)
     {
         snprintf (buff, sizeof (buff), COLSERV "[%s]" COLNONE " ", ContactFindName (uiG.last_sent_uin));
@@ -474,7 +481,7 @@ void Soft_Prompt (void)
 {
 #if 1
     static char buff[200];
-    printf ("\r" ESC "[K");
+    printf ("\r" ESC "[J");
     snprintf (buff, sizeof (buff), COLSERV "%s" COLNONE, i18n (40, "mICQ> "));
     R_doprompt (buff);
     No_Prompt = FALSE;
@@ -505,8 +512,11 @@ void Time_Stamp (void)
 /*
  * Inform that a user went online
  */
-void UtilUIUserOnline  (Contact *cont)
+void UtilUIUserOnline (Contact *cont, UDWORD status)
 {
+    if (status == cont->status)
+        return;
+    cont->status = status;
     if (prG->sound & SFLAG_ON_CMD)
         ExecScript (prG->sound_on_cmd, cont->uin, 0, NULL);
     else if (prG->sound & SFLAG_ON_BEEP)

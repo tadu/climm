@@ -331,7 +331,7 @@ int log_event (UDWORD uin, int type, char *str, ...)
     if (!(prG->flags & FLAG_LOG))
         return 0;
 
-    if (!(prG->flags & FLAG_LOG_ONOFF) && (type == LOG_ONLINE))
+    if (!(prG->flags & FLAG_LOG_ONOFF) && type == LOG_ONLINE)
         return 0;
 
     if (!prG->logplace)

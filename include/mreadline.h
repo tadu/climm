@@ -24,6 +24,7 @@ void R_print (void);			/* hide input */
 void R_show (void);			/* say "need new prompt" */
 void R_pause (void);			/* pause mreadline befor system () */
 void R_resume (void);			/* resume ... */
+void R_goto (int pos);                  /* go to position in input line */
 
 #else /* USE_MREADLINE */
 
@@ -38,5 +39,6 @@ void R_resume (void);			/* resume ... */
 #define R_redraw() { Prompt(); }
 #define R_pause() {}
 #define R_resume() {}
+#define R_goto () {}
 
 #endif /* USE_MREADLINE */

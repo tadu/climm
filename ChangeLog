@@ -1,3 +1,14 @@
+2002-04-25 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Rewrite mreadline.c: use new M_pos() in util_ui.h to get cursor
+	  position (prompt length) in new R_goto() to set cursor to given
+	  position by first stepping back as many lines as needed
+	* UtilUIUserOnline: give new status as arg, ignore if unchanged
+	* Do logging of outgoing messages in icq_sendmsg only
+	* Fix typo in TLV exchange; also free() incoming message text
+	* use ESC [J instead of ESC [K (Peter Backes)
+	* remove surplus brackets as requested by Peter Backes
+	* get window size from stdin terminal, not stdout
+
 2002-04-16 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* mention GPL-2 in COPYING
 	* UtilUIUserOnline, UtilUIUserOffline - notify another user's status change
