@@ -1543,33 +1543,20 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
             char buf[451];
             const char *p;
 
-            int enc = ENC_LATIN1, remenc, icqenc = 0x30000;
+            int enc = ENC_LATIN1, remenc, icqenc = 0;
             size_t len, olen;
             
             remenc = cont->encoding ? cont->encoding : prG->enc_rem;
             
 #ifdef ENABLE_UTF8
-            if (cont->status == STATUS_OFFLINE)
+            switch (remenc)
             {
-                /* encoding is stripped anyway */
+                case ENC_LATIN1:  icqenc = 0x30000; break;
+                case ENC_WIN1251: icqenc = 0x3ffff; break;
+                case ENC_WIN1257: icqenc = 0x3ffff; break;
+            }
+            if (icqenc && ConvFits (text, remenc))
                 enc = remenc;
-                icqenc = 0;
-            }
-            else if (remenc == ENC_LATIN1 && ConvFits (text, ENC_LATIN1))
-            {
-                enc = ENC_LATIN1;
-                icqenc = 0x30000;
-            }
-            else if (remenc == ENC_WIN1251 && ConvFits (text, ENC_WIN1251))
-            {
-                enc = ENC_WIN1251;
-                icqenc = 0x3ffff;
-            }
-            else if (remenc == ENC_WIN1257 && ConvFits (text, ENC_WIN1257))
-            {
-                enc = ENC_WIN1257;
-                icqenc = 0x3ffff;
-            }
             else if (HAS_CAP (cont->caps, CAP_UTF8) && cont->dc && cont->dc->version >= 8
                      && !(cont->dc->id1 == 0xffffff42 && cont->dc->id2 < 0x00040a03)) /* exclude old mICQ */
             {
