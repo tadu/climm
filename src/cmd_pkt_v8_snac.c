@@ -799,7 +799,6 @@ static JUMP_SNAC_F(SnacSrvFromoldicq)
 {
     TLV *tlv;
     Packet *p, *pak;
-    char *text;
     UDWORD len, uin, type /*, id*/;
     
     pak = event->pak;
@@ -821,6 +820,8 @@ static JUMP_SNAC_F(SnacSrvFromoldicq)
             M_print (i18n (1919, "UIN mismatch: %d vs %d.\n"), event->sess->uin, uin);
             SnacSrvUnknown (event);
         }
+        PacketD (p);
+        return;
     }
     else if (len != tlv[1].len - 2)
     {
@@ -829,32 +830,16 @@ static JUMP_SNAC_F(SnacSrvFromoldicq)
             M_print (i18n (1743, "Size mismatch in packet lengths.\n"));
             SnacSrvUnknown (event);
         }
+        PacketD (p);
+        return;
     }
-    else
+
     switch (type)
     {
         case 65:
-        {
-            UWORD year, mon, mday, hour, min, flags;
-            char buf[20];
+            if (len >= 14)
+                Recv_Message (event->sess, p);
 
-            if (len < 14)
-                break;
-            uin  = PacketRead4 (p);
-            year = PacketRead2 (p);
-            mon  = PacketRead1 (p);
-            mday = PacketRead1 (p);
-            hour = PacketRead1 (p);
-            min  = PacketRead1 (p);
-            flags= PacketRead2 (p);
-            text = PacketReadLNTS (p);
-            
-            snprintf (buf, sizeof (buf), "%04d-%02d-%02d %2d:%02d UTC", year, mon, mday, hour, min);
-
-            Do_Msg (event->sess, buf, flags, text, uin, STATUS_OFFLINE, 0);
-            free (text);
-            break;
-        }
         case 66:
             SnacCliAckofflinemsgs (event->sess);
 

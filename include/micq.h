@@ -119,27 +119,6 @@ typedef struct PreferencesSession_s PreferencesSession;
 #define VIS_LIST_UPDATE         0x02
 #define CONT_LIST_UPDATE        0x00
 
-typedef struct
-{
-   UBYTE uin[4];
-   UBYTE year[2];
-   UBYTE month;
-   UBYTE day;
-   UBYTE hour;
-   UBYTE minute;
-   UBYTE type[2];
-   UBYTE len[2];
-} RECV_MESSAGE, *RECV_MESSAGE_PTR;
-
-typedef struct
-{
-   char *nick;
-   char *first;
-   char *last;
-   char *email;
-   BOOL auth;
-} USER_INFO_STRUCT, *USER_INFO_PTR;
-
 /*
  * Should you decide to move a global variable from one struct to another,
  * change it manually in the header file, and then in the src directory

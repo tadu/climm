@@ -1,4 +1,8 @@
 
+2002-09-04 Peter Backes <rtc@gmx.de>
+	* Changed some remaining code to use the packet handling library
+	  instead of structure aliasing.
+
 2002-09-03 Tobias Bengtsson <tobbe@tobbe.nu>
 	* remove code duplication
 	* improve wide display

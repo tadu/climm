@@ -19,13 +19,6 @@
 #include <string.h>
 #include <stdio.h>
 
-typedef struct
-{
-   UBYTE uin[4];
-   UBYTE type[2];
-   UBYTE len[2];
-} *SIMPLE_MESSAGE_PTR;
-
 static void CmdPktSrvCallBackKeepAlive (Event *event);
 
 static jump_srv_f CmdPktSrvMulti, CmdPktSrvAck;
@@ -181,10 +174,9 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
                        UWORD ver, UDWORD seq, UDWORD uin)
 {
     jump_srv_t *t;
-    SIMPLE_MESSAGE_PTR s_mesg;
     static int loginmsg = 0;
-    UBYTE *data = pak->data + pak->rpos;
-    UWORD len = pak->len - pak->rpos;
+    unsigned char ip[4], *text;
+    UWORD wdata;
     Contact *cont;
     UDWORD status;
     
@@ -225,19 +217,25 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
                 break;
 
             Time_Stamp ();
-            M_print (" " MAGENTA BOLD "%10s" COLNONE " %s: %u.%u.%u.%u\n", ContactFindName (uin), i18n (1642, "IP"),
 #if ICQ_VER == 0x0002
-                     data[4], data[5], data[6], data[7]);
-#elif ICQ_VER == 0x0004
-                     data[0], data[1], data[2], data[3]);
-#else
-                     data[12], data[13], data[14], data[15]);
+            PacketRead4 (pak);
+#elif ICQ_VER != 0x0004
+            PacketRead4 (pak);
+            PacketRead4 (pak);
+            PacketRead4 (pak);
 #endif
+            ip[0] = PacketRead1 (pak);
+            ip[1] = PacketRead1 (pak);
+            ip[2] = PacketRead1 (pak);
+            ip[3] = PacketRead1 (pak);
+            M_print (" " MAGENTA BOLD "%10s" COLNONE 
+                " %s: %u.%u.%u.%u\n", ContactFindName (uin), i18n (1642, "IP"),
+                ip[0], ip[1], ip[2], ip[3]);
             QueueEnqueueData (sess, 0, QUEUE_UDP_KEEPALIVE, 0, time (NULL) + 120,
                               NULL, NULL, &CmdPktSrvCallBackKeepAlive);
             break;
         case SRV_RECV_MESSAGE:
-            Recv_Message (sess, data);
+            Recv_Message (sess, pak);
             break;
         case SRV_X1:
             if (prG->verbose & DEB_PROTOCOL)
@@ -324,17 +322,13 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             break;
         case SRV_END_OF_SEARCH:
             M_print (i18n (1045, "Search Done."));
-            if (len >= 1)
+            if (PacketReadLeft (pak) >= 1)
             {
                 M_print ("\t");
-                if (data[0] == 1)
-                {
+                if (PacketRead1 (pak) == 1)
                     M_print (i18n (1044, "Too many users found."));
-                }
                 else
-                {
                     M_print (i18n (1043, "All users found."));
-                }
             }
             M_print ("\n");
             break;
@@ -344,19 +338,21 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             M_print ("\n");
             break;
         case SRV_RAND_USER:
-            Display_Rand_User (sess, data, len);
+            Display_Rand_User (sess, pak);
             M_print ("\n");
             break;
         case SRV_SYS_DELIVERED_MESS:
-        /***  There are 2 places we get messages!! */
-        /*** Don't edit here unless you're sure you know the difference */
-        /*** Edit Do_Msg() in icq_response.c so you handle all messages */
-            s_mesg = (SIMPLE_MESSAGE_PTR) data;
-            if (!((NULL == ContactFind (Chars_2_DW (s_mesg->uin))) && (prG->flags & FLAG_HERMIT)))
+            uin = PacketRead4 (pak);
+            text = PacketReadLNTS (pak);
+
+            if (~prG->flags & FLAG_HERMIT || ContactFind (uin) != NULL)
             {
-                uiG.last_rcvd_uin = Chars_2_DW (s_mesg->uin);
-                Do_Msg (sess, NULL, Chars_2_Word (s_mesg->type), (char *)s_mesg->len + 2, uiG.last_rcvd_uin, STATUS_OFFLINE, 0);
-                Auto_Reply (sess, Chars_2_DW (s_mesg->uin));
+                uiG.last_rcvd_uin = uin;
+                wdata = PacketRead2 (pak);
+                Do_Msg (sess, NULL, wdata, text, uin, 
+                    STATUS_OFFLINE, 0);
+                Auto_Reply (sess, uin);
+                free (text);
             }
             break;
         case SRV_AUTH_UPDATE:
@@ -366,8 +362,8 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             M_print (i18n (1648, " " COLCLIENT "The response was %04X\t"), cmd);
             M_print (i18n (1649, "The version was %X\t"), ver);
             M_print (i18n (1650, "\nThe SEQ was %04X\t"), seq);
-            M_print (i18n (1651, "The size was %d\n"), len);
-            Hex_Dump (data, len);
+            M_print (i18n (1651, "The size was %d\n"), pak->len - pak->rpos);
+            Hex_Dump (pak->data + pak->rpos, pak->len - pak->rpos);
             M_print (COLNONE "\n");
             break;
     }

@@ -397,7 +397,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                 M_print (COLSERVER "%-15s" COLNONE " %s\n", 
                     i18n (1575, "Age:"), i18n (1200, "Not entered"));
 
-            if (subtype == META_SRV_WP_LAST_USER && (dwdata = PacketRead4(p)))
+            if (subtype == META_SRV_WP_LAST_USER && (dwdata = PacketRead4 (p)))
                 M_print ("%lu %s\n", dwdata, i18n (1621, "users not returned."));
             break;
         case META_SRV_RANDOM:
@@ -431,40 +431,63 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
     }
 }
 
-void Display_Rand_User (Session *sess, UBYTE *data, UDWORD len)
+void Display_Rand_User (Session *sess, Packet *pak)
 {
-    if (len == 37)
-    {
-        M_print ("%-15s %d\n", i18n (1440, "Random User:"), Chars_2_DW (&data[0]));
-        M_print ("%-15s %d.%d.%d.%d : %d\n", i18n (1441, "IP:"), data[4], data[5], data[6], data[7], Chars_2_DW (&data[8]));
-        M_print ("%-15s %d.%d.%d.%d\n", i18n (1451, "IP2:"), data[12], data[13], data[14], data[15]);
-        M_print ("%-15s ", i18n (1452, "Status:"));
-        Print_Status (Chars_2_DW (&data[17]));
-        M_print ("\n");
-        M_print ("%-15s %d\n", i18n (1453, "TCP version:"), Chars_2_Word (&data[21]));
-        M_print ("%-15s %s\n", i18n (1454, "Connection:"),
-                 data[16] == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"));
-        Hex_Dump (data, len);
-        CmdPktCmdMetaReqInfo (sess, Chars_2_DW (data));
-    }
-    else
+    UDWORD uin;
+    unsigned char ip[4];
+
+    if (PacketReadLeft (pak) != 37)
     {
         M_print ("%s\n", i18n (1495, "No Random User Found"));
+        return;
     }
+
+    Hex_Dump (pak->data + pak->rpos, pak->len - pak->rpos);
+
+    uin = PacketRead4 (pak);
+    M_print ("%-15s %lu\n", i18n (1440, "Random User:"), uin);
+    ip[0] = PacketRead1 (pak);
+    ip[1] = PacketRead1 (pak);
+    ip[2] = PacketRead1 (pak);
+    ip[3] = PacketRead1 (pak);
+    M_print ("%-15s %u.%u.%u.%u : %lu\n", i18n (1441, "IP:"), 
+        ip[0], ip[1], ip[2], ip[3], PacketRead4 (pak));
+    ip[0] = PacketRead1 (pak);
+    ip[1] = PacketRead1 (pak);
+    ip[2] = PacketRead1 (pak);
+    ip[3] = PacketRead1 (pak);
+    M_print ("%-15s %u.%u.%u.%u\n", i18n (1451, "IP2:"), 
+        ip[0], ip[1], ip[2], ip[3]);
+    M_print ("%-15s %s\n", i18n (1454, "Connection:"), PacketRead1 (pak) == 4
+        ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"));
+    M_print ("%-15s ", i18n (1452, "Status:"));
+    Print_Status (PacketRead4 (pak));
+    M_print ("\n");
+    M_print ("%-15s %d\n", i18n (1453, "TCP version:"), 
+        PacketRead2 (pak));
+    CmdPktCmdMetaReqInfo (sess, uin);
 }
 
-void Recv_Message (Session *sess, UBYTE * pak)
+void Recv_Message (Session *sess, Packet *pak)
 {
-    RECV_MESSAGE_PTR r_mesg;
-    char buf[100];
+    struct tm stamp;
+    UWORD type;
+    char buf[100], *text;
 
-    r_mesg = (RECV_MESSAGE_PTR) pak;
-    uiG.last_rcvd_uin = Chars_2_DW (r_mesg->uin);
+    uiG.last_rcvd_uin = PacketRead4 (pak);
+    stamp.tm_year     = PacketRead2 (pak) - 1900;
+    stamp.tm_mon      = PacketRead1 (pak) - 1;
+    stamp.tm_mday     = PacketRead1 (pak);
+    stamp.tm_hour     = PacketRead1 (pak);
+    stamp.tm_min      = PacketRead1 (pak);
+    type              = PacketRead2 (pak);
+    text              = PacketReadLNTS (pak);
+
     snprintf (buf, sizeof (buf), i18n (2030, "%04d-%02d-%02d %02d:%02d UTC"),
-              Chars_2_Word (r_mesg->year), r_mesg->month, r_mesg->day, r_mesg->hour, r_mesg->minute);
-    /* TODO: check if null-terminated */
-    Do_Msg (sess, buf, Chars_2_Word (r_mesg->type), (char *)r_mesg->len + 2,
-            uiG.last_rcvd_uin, STATUS_OFFLINE, 0);
+              stamp.tm_year + 1900, stamp.tm_mon + 1, stamp.tm_mday, 
+              stamp.tm_hour, stamp.tm_min);
+    Do_Msg (sess, buf, type, text, uiG.last_rcvd_uin, STATUS_OFFLINE, 0);
+    free (text);
 }
 
 void Display_Info_Reply (Session *sess, Packet *pak, const char *uinline,
