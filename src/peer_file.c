@@ -382,7 +382,7 @@ void PeerFileDispatch (Session *fpeer)
             {
                 R_resetprompt ();
                 M_printf ("%s " COLCONTACT "%10s" COLNONE " ", s_now, cont->nick);
-                M_print (i18n (2166, "Finished receiving file.\n"));
+                M_print  (i18n (2166, "Finished receiving file.\n"));
             }
             else if (fpeer->assoc->len)
             {
@@ -395,7 +395,7 @@ void PeerFileDispatch (Session *fpeer)
             return;
         default:
             M_printf ("%s " COLCONTACT "%10s" COLNONE " ", s_now, cont->nick);
-            M_print (i18n (2167, "Error - unknown packet.\n"));
+            M_print  (i18n (2167, "Error - unknown packet.\n"));
             Hex_Dump (pak->data, pak->len);
             PacketD (pak);
             PeerFileClose (fpeer);

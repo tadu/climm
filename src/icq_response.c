@@ -212,7 +212,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             M_printf (COLSERVER "%-15s" COLNONE " ", 
                 i18n (1533, "Languages:"));
             if ((tabd = TableGetLang (wdata = PacketRead1 (p))) != NULL)
-                M_printf ("%s", tabd);
+                M_printf (tabd);
             else
                 M_printf ("%X", wdata);
             if ((tabd = TableGetLang (wdata = PacketRead1 (p))) != NULL)
