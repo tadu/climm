@@ -22,5 +22,5 @@ clean:
 
 indent:
 	@for i in $(DIR); do \
-	cd $$i && make clean && cd ..; \
+	cd $$i && make indent && cd ..; \
 	done

@@ -1,3 +1,29 @@
+
+2001-04-18 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* include/*.h, src/*.c:
+	  Rename DWORD, WORD, BYTE, S_DWORD, S_WORD, S_BYTE, INT32, INT16,
+	  INT8, U_INT32, U_INT16, U_INT8 to UDWORD, UWORD, UBYTE, SDWORD,
+	  SWORD, SBYTE, SINT32, SINT16, SINT8, UINT32, UINT16, UINT8 since
+	  BYTE et al. are signed on AmigaOS.
+	* src/*.c:
+	  Let indent operate on it, plus removing some glitches by it.
+	* src/util_table.c:
+	  New. Move language and country and all further tables here.
+	* Makefile, lang/Makefile:
+	  Install internationalization files. Ooops, Rico was faster.
+	* src/buildmark.c, include/buildmark.h, src/Makefile:
+	  Move version information here and make sure this module is
+	  always rebuild before linking. Move CVS tag out of it.
+	* src/Makefile, src/.indent.pro:
+	  Move indent parameters to extra file.
+	* src/.cvsignore:
+	  Add.
+	* src/file_utils.c:
+	  Replace strncpy by snprintf, as only it ensures trailing \0.
+	  Don't add existing UINs.
+	* src/mreadline.c:
+	  Fix tab handling. Fix ^k.
+
 2001-04-18 Rico "mc" Gloeckner <mc@verdinet.de>
 	* added Makefile for lang/
 	* AUTHORS file complemented
@@ -17,7 +43,7 @@
 	  get_tab() to R_process_input_tab(); avoid clobbering of input.
 	* include/i18n.h, src/i18n.c, src/*.c:
 	  Implement simple internationalization functions and use them.
-	  Move some initialision from micq.c and add Show_String_A()
+	  Move some initialisation from micq.c and add Show_String_A()
 	  to aid using the new functions.
 	* src/*.c:
 	  Change indenting to 4 chars, no tabs whereever I came across.

@@ -1,25 +1,24 @@
 /*********************************************
-**********************************************
-Header file for ICQ protocol structres and
-constants
-
-This software is provided AS IS to be used in
-whatever way you see fit and is placed in the
-public domain.
-
-Author : Matthew Smith April 19, 1998
-Contributors : Lalo Martins Febr 26, 1999
-
-Changes :
-   4-21-98 Increase the size of data associtated
-            with the packets to enable longer messages. mds
-   4-22-98 Added function prototypes and extern variables mds
-   4-22-98 Added SRV_GO_AWAY code for bad passwords etc.
-   (I assume Matt did a lot of unrecorded changes after these - Lalo)
-   2-26-99 Added TAB_SLOTS, tab_array, add_tab() and get_tab() (Lalo)
-**********************************************
-**********************************************/
-#define MICQ_VERSION "0.4.6p3 ($Id$) \n in dedication to Matthew D. Smith.\t"
+ * ($Id$)
+ *
+ * Header file for ICQ protocol structres and
+ * constants
+ *
+ * This software is provided AS IS to be used in
+ * whatever way you see fit and is placed in the
+ * public domain.
+ * 
+ * Author : Matthew Smith April 19, 1998
+ * Contributors : Lalo Martins Febr 26, 1999
+ * 
+ * Changes :
+ *  4-21-98 Increase the size of data associtated
+ *           with the packets to enable longer messages. mds
+ *  4-22-98 Added function prototypes and extern variables mds
+ *  4-22-98 Added SRV_GO_AWAY code for bad passwords etc.
+ *  (I assume Matt did a lot of unrecorded changes after these - Lalo)
+ *  2-26-99 Added TAB_SLOTS, tab_array, add_tab() and get_tab() (Lalo)
+ **********************************************/
 
 #include "config.h"
 #include "datatype.h"
@@ -89,28 +88,28 @@ Changes :
 #if ICQ_VER == 0x0005
    typedef struct
    {
-      BYTE dummy[2]; /* to fix alignment problem */
-      BYTE ver[2];
-      BYTE zero[4];
-      BYTE  UIN[4];
-      BYTE session[4];
-      BYTE cmd[2];
-      BYTE seq2[2];
-      BYTE seq[2];
-      BYTE checkcode[4];
+      UBYTE dummy[2]; /* to fix alignment problem */
+      UBYTE ver[2];
+      UBYTE zero[4];
+      UBYTE  UIN[4];
+      UBYTE session[4];
+      UBYTE cmd[2];
+      UBYTE seq2[2];
+      UBYTE seq[2];
+      UBYTE checkcode[4];
    } ICQ_pak, *ICQ_PAK_PTR;
 
    typedef struct
    {
-      BYTE dummy[2]; /* to fix alignment problem */
-      BYTE ver[2];
-      BYTE zero;
-      BYTE session[4];
-      BYTE cmd[2];
-      BYTE seq[2];
-      BYTE seq2[2];
-      BYTE UIN[4];
-      BYTE check[4];
+      UBYTE dummy[2]; /* to fix alignment problem */
+      UBYTE ver[2];
+      UBYTE zero;
+      UBYTE session[4];
+      UBYTE cmd[2];
+      UBYTE seq[2];
+      UBYTE seq2[2];
+      UBYTE UIN[4];
+      UBYTE check[4];
    } SRV_ICQ_pak, *SRV_ICQ_PAK_PTR;
 
 #define CMD_OFFSET 14
@@ -123,45 +122,45 @@ Changes :
 
    typedef struct
    {
-      BYTE dummy[2]; /* to fix alignment problem */
-      BYTE ver[2];
-      BYTE rand[2];
-      BYTE zero[2];
-      BYTE cmd[2];
-      BYTE seq[2];
-      BYTE seq2[2];
-      BYTE  UIN[4];
-      BYTE checkcode[4];
+      UBYTE dummy[2]; /* to fix alignment problem */
+      UBYTE ver[2];
+      UBYTE rand[2];
+      UBYTE zero[2];
+      UBYTE cmd[2];
+      UBYTE seq[2];
+      UBYTE seq2[2];
+      UBYTE  UIN[4];
+      UBYTE checkcode[4];
    } ICQ_pak, *ICQ_PAK_PTR;
 
    typedef struct
    {
-      WORD dummy; /* to fix alignment problem */
-      BYTE ver[2];
-      BYTE cmd[2];
-      BYTE seq[2];
-      BYTE seq2[2];
-      BYTE UIN[4];
-      BYTE check[4];
+      UWORD dummy; /* to fix alignment problem */
+      UBYTE ver[2];
+      UBYTE cmd[2];
+      UBYTE seq[2];
+      UBYTE seq2[2];
+      UBYTE UIN[4];
+      UBYTE check[4];
    } SRV_ICQ_pak, *SRV_ICQ_PAK_PTR;
 
 #else /* ICQ_VER */
 
    typedef struct
    {
-      WORD dummy; /* to fix alignment problem */
-      BYTE ver[2];
-      BYTE cmd[2];
-      BYTE seq[2];
-      BYTE  UIN[4];
+      UWORD dummy; /* to fix alignment problem */
+      UBYTE ver[2];
+      UBYTE cmd[2];
+      UBYTE seq[2];
+      UBYTE  UIN[4];
    } ICQ_pak, *ICQ_PAK_PTR;
 
    typedef struct
    {
-      WORD dummy; /* to fix alignment problem */
-      BYTE ver[2];
-      BYTE cmd[2];
-      BYTE seq[2];
+      UWORD dummy; /* to fix alignment problem */
+      UBYTE ver[2];
+      UBYTE cmd[2];
+      UBYTE seq[2];
    } SRV_ICQ_pak, *SRV_ICQ_PAK_PTR;
 
 #endif  /* ICQ_VER */
@@ -293,24 +292,24 @@ typedef struct
 
    typedef struct
    {
-      BYTE time[4];
-      BYTE port[4];
-      BYTE len[2];
+      UBYTE time[4];
+      UBYTE port[4];
+      UBYTE len[2];
    } login_1, *LOGIN_1_PTR;
 
    typedef struct
    {
-      BYTE X1[4];
-      BYTE ip[4];
-      BYTE  X2[1];
-      BYTE  status[4];
-      BYTE X3[4];
-   /*   BYTE seq[2];*/
-      BYTE  X4[4];
-      BYTE X5[4];
-      BYTE X6[4];
-      BYTE X7[4];
-      BYTE X8[4];
+      UBYTE X1[4];
+      UBYTE ip[4];
+      UBYTE  X2[1];
+      UBYTE  status[4];
+      UBYTE X3[4];
+   /*   UBYTE seq[2];*/
+      UBYTE  X4[4];
+      UBYTE X5[4];
+      UBYTE X6[4];
+      UBYTE X7[4];
+      UBYTE X8[4];
    } login_2, *LOGIN_2_PTR;
 
    /* those behind the // are for the spec on
@@ -340,21 +339,21 @@ typedef struct
 
    typedef struct
    {
-      BYTE time[4];
-      BYTE port[4];
-      BYTE len[2];
+      UBYTE time[4];
+      UBYTE port[4];
+      UBYTE len[2];
    } login_1, *LOGIN_1_PTR;
 
    typedef struct
    {
-      BYTE X1[4];
-      BYTE ip[4];
-      BYTE  X2[1];
-      BYTE  status[4];
-      BYTE X3[4];
-   /*   BYTE seq[2];*/
-      BYTE  X4[4];
-      BYTE X5[4];
+      UBYTE X1[4];
+      UBYTE ip[4];
+      UBYTE  X2[1];
+      UBYTE  status[4];
+      UBYTE X3[4];
+   /*   UBYTE seq[2];*/
+      UBYTE  X4[4];
+      UBYTE X5[4];
    } login_2, *LOGIN_2_PTR;
 
    /* those behind the // are for the spec on
@@ -377,20 +376,20 @@ typedef struct
 
    typedef struct
    {
-      BYTE port[4];
-      BYTE len[2];
+      UBYTE port[4];
+      UBYTE len[2];
    } login_1, *LOGIN_1_PTR;
 
    typedef struct
    {
-      BYTE X1[4];
-      BYTE ip[4];
-      BYTE  X2[1];
-      BYTE  status[4];
-      BYTE X3[4];
-      BYTE seq[2];
-      BYTE  X4[4];
-      BYTE X5[4];
+      UBYTE X1[4];
+      UBYTE ip[4];
+      UBYTE  X2[1];
+      UBYTE  status[4];
+      UBYTE X3[4];
+      UBYTE seq[2];
+      UBYTE  X4[4];
+      UBYTE X5[4];
    } login_2, *LOGIN_2_PTR;
 
    /* those behind the // are for the spec on
@@ -412,37 +411,37 @@ typedef struct
 
 typedef struct
 {
-   BYTE   uin[4];
-   BYTE year[2];
-   BYTE  month;
-   BYTE  day;
-   BYTE  hour;
-   BYTE  minute;
-   BYTE type[2];
-   BYTE len[2];
+   UBYTE   uin[4];
+   UBYTE year[2];
+   UBYTE  month;
+   UBYTE  day;
+   UBYTE  hour;
+   UBYTE  minute;
+   UBYTE type[2];
+   UBYTE len[2];
 } RECV_MESSAGE, *RECV_MESSAGE_PTR;
 
 typedef struct
 {
-   BYTE uin[4];
-   BYTE type[2]; 
-   BYTE len[2];
+   UBYTE uin[4];
+   UBYTE type[2]; 
+   UBYTE len[2];
 } SIMPLE_MESSAGE, *SIMPLE_MESSAGE_PTR;
 
 typedef struct
 {
-   DWORD uin;
-   DWORD status;
-   DWORD last_time; /* last time online or when came online */
-   BYTE current_ip[4];
-   DWORD port;
+   UDWORD uin;
+   UDWORD status;
+   UDWORD last_time; /* last time online or when came online */
+   UBYTE current_ip[4];
+   UDWORD port;
    BOOL invis_list;
    BOOL vis_list;
    BOOL not_in_list;
    SOK_T sok;
-   WORD TCP_version;
-   BYTE connection_type;
-   BYTE other_ip[4];
+   UWORD TCP_version;
+   UBYTE connection_type;
+   UBYTE other_ip[4];
    /* aaron
     Pointer to a string containing the last message recieved from this
     person. If we haven't received a message from them, this pointer will
@@ -475,131 +474,118 @@ typedef struct
    char *fax;
    char *street;
    char *cellular;
-   DWORD zip;
-   WORD country;
-   BYTE c_status;
+   UDWORD zip;
+   UWORD country;
+   UBYTE c_status;
    BOOL hide_email;
    BOOL auth;
 } MORE_INFO_STRUCT, *MORE_INFO_PTR;
 
 typedef struct {
-	WORD age;
-	BYTE sex;
+	UWORD age;
+	UBYTE sex;
 	char *hp;
-	BYTE year;
-	BYTE month;
-	BYTE day;
-	BYTE lang1;
-	BYTE lang2;
-	BYTE lang3;
+	UBYTE year;
+	UBYTE month;
+	UBYTE day;
+	UBYTE lang1;
+	UBYTE lang2;
+	UBYTE lang3;
 } OTHER_INFO_STRUCT, *OTHER_INFO_PTR;
 
 #include "i18n.h"
-#include "tabs.h"
 void Keep_Alive( int sok );
 void snd_got_messages( int sok );
 void snd_contact_list( int sok );
 void snd_invis_list( int sok );
 void snd_vis_list( int sok );
 void snd_login_1( int sok );
-void Status_Update( int sok, BYTE * pak );
-void Login( int sok, int UIN, char *pass, int ip, int port, DWORD status );
-void ack_srv( SOK_T sok, DWORD seq );
-void User_Offline( int sok, BYTE * pak );
-int Save_RC();
-void User_Online( int sok, BYTE * pak );
-void Print_Status( DWORD new_status );
+void Status_Update( int sok, UBYTE * pak );
+void Login( int sok, int UIN, char *pass, int ip, int port, UDWORD status );
+void ack_srv( SOK_T sok, UDWORD seq );
+void User_Offline( int sok, UBYTE * pak );
+void User_Online( int sok, UBYTE * pak );
+void Print_Status( UDWORD new_status );
 void Get_Input( SOK_T sok , int *idle_val, int *idle_flag ); /* GRYN */
 void Quit_ICQ( SOK_T sok );
-void icq_sendmsg( SOK_T sok, DWORD uin, char *text, DWORD msg_type);
-void Recv_Message( SOK_T sok, BYTE * pak );
-int Print_UIN_Name( DWORD uin );
-int Print_UIN_Name_10 (DWORD uin);
+void icq_sendmsg( SOK_T sok, UDWORD uin, char *text, UDWORD msg_type);
+void Recv_Message( SOK_T sok, UBYTE * pak );
+int Print_UIN_Name( UDWORD uin );
+int Print_UIN_Name_10 (UDWORD uin);
 char *MsgEllipsis (char *msg);
-void icq_change_status( SOK_T sok, DWORD status );
-DWORD nick2uin( char * nick );
-S_DWORD Echo_On( void );
-S_DWORD Echo_Off( void );
-void send_info_req( SOK_T sok, DWORD uin );
-void Print_IP( DWORD uin );
-void Display_Info_Reply( int sok, BYTE * pak );
-WORD Chars_2_Word( unsigned char *buf );
-DWORD Chars_2_DW( unsigned char *buf );
-DWORD Get_Port( DWORD uin );
+void icq_change_status( SOK_T sok, UDWORD status );
+UDWORD nick2uin( char * nick );
+SDWORD Echo_On( void );
+SDWORD Echo_Off( void );
+void send_info_req( SOK_T sok, UDWORD uin );
+void Print_IP( UDWORD uin );
+void Display_Info_Reply( int sok, UBYTE * pak );
+UWORD Chars_2_Word( unsigned char *buf );
+UDWORD Chars_2_DW( unsigned char *buf );
+UDWORD Get_Port( UDWORD uin );
 void Show_Quick_Status( void );
 void Show_Quick_Online_Status( void );
-void icq_sendauthmsg( SOK_T sok, DWORD uin);
-void Do_Msg( SOK_T sok, DWORD type, WORD len, char * data, DWORD uin );
-void DW_2_Chars( unsigned char *buf, DWORD num );
-void Word_2_Chars( unsigned char *buf, WORD num );
+void icq_sendauthmsg( SOK_T sok, UDWORD uin);
+void Do_Msg( SOK_T sok, UDWORD type, UWORD len, char * data, UDWORD uin );
+void DW_2_Chars( unsigned char *buf, UDWORD num );
+void Word_2_Chars( unsigned char *buf, UWORD num );
 void Prompt( void );
 void Time_Stamp( void );
-void Add_User( SOK_T sok, DWORD uin, char *name );
 void start_search( SOK_T sok, char *email, char *nick, char* first, char* last );
-void Display_Search_Reply( int sok, BYTE * pak );
-/*int log_event(char    *desc,char    *msg,DWORD   uin);*/
-int log_event( DWORD uin, int type, char *str, ... );
+void Display_Search_Reply( int sok, UBYTE * pak );
+/*int log_event(char    *desc,char    *msg,UDWORD   uin);*/
+int log_event( UDWORD uin, int type, char *str, ... );
 void char_conv(char *,char *);
 void clrscr(void);
 void reg_new_user( SOK_T sok, char *pass);
-void send_ext_info_req( SOK_T sok, DWORD uin );
-void Display_Ext_Info_Reply( int sok, BYTE * pak );
-const char *Get_Country_Name( WORD code );
-const char *Get_Lang_Name( BYTE code );
+void send_ext_info_req( SOK_T sok, UDWORD uin );
+void Display_Ext_Info_Reply( int sok, UBYTE * pak );
 int Connect_Remote( char *hostname, int port, FD_T aux );
 void Update_More_User_Info( SOK_T sok, MORE_INFO_PTR user);
 void Update_User_Info( SOK_T sok, USER_INFO_PTR user);
 size_t SOCKWRITE( SOK_T sok, void * ptr, size_t len );
 size_t SOCKREAD( SOK_T sok, void * ptr, size_t len );
 void Hex_Dump( void *buffer, size_t len );
-void icq_sendurl( SOK_T sok, DWORD uin, char *description, char *url );
-void Server_Response( SOK_T sok, BYTE *data, DWORD len, WORD cmd, WORD ver, DWORD seq, DWORD uin );
-void icq_rand_user_req( SOK_T sok, DWORD group );
-void icq_rand_set( SOK_T sok, DWORD group );
-void Display_Rand_User( SOK_T sok, BYTE *data, DWORD len );
+void icq_sendurl( SOK_T sok, UDWORD uin, char *description, char *url );
+void Server_Response( SOK_T sok, UBYTE *data, UDWORD len, UWORD cmd, UWORD ver, UDWORD seq, UDWORD uin );
+void icq_rand_user_req( SOK_T sok, UDWORD group );
+void icq_rand_set( SOK_T sok, UDWORD group );
+void Display_Rand_User( SOK_T sok, UBYTE *data, UDWORD len );
 void Initialize_Msg_Queue( void );
 void Do_Resend( SOK_T sok );
-void Print_CMD( WORD cmd );
+void Print_CMD( UWORD cmd );
 void Change_Password( SOK_T sok, char *pass );
-void Meta_User( SOK_T sok, BYTE *data, DWORD len, DWORD uin );
+void Meta_User( SOK_T sok, UBYTE *data, UDWORD len, UDWORD uin );
 void Kill_Prompt( void );
 void Soft_Prompt( void );
-char *UIN2nick( DWORD uin);
-char *UIN2Name (DWORD uin);
+char *UIN2nick( UDWORD uin);
+char *UIN2Name (UDWORD uin);
 void Init_New_User( void );
-CONTACT_PTR UIN2Contact( DWORD uin );
-#ifdef UNIX 
-void Get_Unix_Config_Info( void );
-#endif
-void add_tab( DWORD uin );
-/*void get_tab( void );*/
-void update_list( int sok, DWORD uin, int which, BOOL add );
+CONTACT_PTR UIN2Contact( UDWORD uin );
+void update_list( int sok, UDWORD uin, int which, BOOL add );
 void Update_About( SOK_T sok, const char *about );
 void Update_Other( SOK_T sok, OTHER_INFO_PTR info );
-void Print_Lang_Numbers( void );
-void Set_rcfile( char * name );
-void Got_SEQ( WORD this_seq );
-BOOL Is_Repeat_Packet( WORD this_seq );
-char * Set_Log_Dir( const char *newpath );
+void Got_SEQ( UWORD this_seq );
+BOOL Is_Repeat_Packet( UWORD this_seq );
 
 extern Contact_Member Contacts[ MAX_CONTACTS ]; /* no more than 100 contacts max */
 extern int Num_Contacts;
-extern DWORD UIN; /* current User Id Number */
+extern UDWORD UIN; /* current User Id Number */
 extern BOOL Contact_List;
-extern WORD last_cmd[ 1024 ]; /* command issued for the first 1024 SEQ #'s */
+extern UWORD last_cmd[ 1024 ]; /* command issued for the first 1024 SEQ #'s */
 /******************** should use & 0x3ff on all references to this */
-extern WORD seq_num;  /* current sequence number */
-extern DWORD our_ip;
-extern DWORD our_port; /* the port to make tcp connections on */
+extern UWORD seq_num;  /* current sequence number */
+extern UDWORD our_ip;
+extern UDWORD our_port; /* the port to make tcp connections on */
 extern BOOL Quit;
 extern BOOL Verbose;
-extern BYTE Sound;
-extern DWORD Current_Status;
-extern DWORD last_recv_uin;
+extern UBYTE Sound;
+extern UDWORD Current_Status;
+extern UDWORD last_recv_uin;
 extern char passwd[100];
 extern char server[100];
-extern BYTE LogType;
-extern DWORD remote_port;
+extern UBYTE LogType;
+extern UDWORD remote_port;
 
 /* SOCKS5 stuff begin*/
 extern int s5Use;
@@ -612,14 +598,14 @@ extern unsigned long s5DestIP;
 extern unsigned short s5DestPort;
 /* SOCKS5 stuff end */
  
-extern DWORD set_status;
+extern UDWORD set_status;
 extern BOOL auto_resp;
 extern char auto_rep_str_na[450];
 extern char auto_rep_str_away[450];
 extern char auto_rep_str_occ[450];
 extern char auto_rep_str_inv[450];
 extern char auto_rep_str_dnd[450];
-extern BYTE Sound_Str[150];
+extern UBYTE Sound_Str[150];
 extern BOOL Done_Login;
 extern char clear_cmd[16];
 extern char message_cmd[16];
@@ -666,7 +652,7 @@ extern BOOL Logging;
 extern BOOL Color;
 
 extern unsigned int next_resend;
-extern DWORD our_session;
+extern UDWORD our_session;
 		
 #define LOG_MESS 1
 #define LOG_AUTO_MESS 2
@@ -675,11 +661,11 @@ extern DWORD our_session;
 extern unsigned int away_time;
 extern BOOL Hermit;
 
-extern WORD Max_Screen_Width;
-extern DWORD real_packs_sent;
-extern DWORD real_packs_recv;
-extern DWORD Packets_Sent;
-extern DWORD Packets_Recv;
+extern UWORD Max_Screen_Width;
+extern UDWORD real_packs_sent;
+extern UDWORD real_packs_recv;
+extern UDWORD Packets_Sent;
+extern UDWORD Packets_Recv;
 
 /* aaron
    Variable to hold the time that Micq is started, for the "uptime" command,

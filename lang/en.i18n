@@ -1,5 +1,5 @@
 # english
-#000: (Übersetzung erfolgreich geladen (%d Einträge). Version 0.1.¶)
+000:Successfully loaded translations (%d entries). Version 0.1.¶
 001:Online
 002:Do not disturb
 003:Away
@@ -22,23 +22,21 @@
 020:Jun
 021:Jul
 022:Aug
-023:Sept
+023:Sep
 024:Oct
 025:Nov
 026:Dec
 027:YES
 028:NO
-029:Please enter " YES_STR " or " NO_STR "¶
+029:Please enter YES or NO!¶
 030: logged off.
 031: logged on.
 032: - Instant Message
-033: - Instant " SERVCOL "Mass" NOCOL " Message
-#034: (Nachricht)
+033: - Instant MassMessage
 035: changed status to 
 036:Unknown command %s, type /help for help.
 037:Message sent before last line buffer is full¶
 038:Message canceled¶
-039:!¶
 040:Micq> 
 041:msg> 
 042:msg all> 
@@ -58,12 +56,12 @@
 056:Socket created attempting to connect¶
 057:The hostname 
 058:%s was not found.¶
-059:The port that will be used for tcp ( not yet implemented ) is %d¶
+059:The port that will be used for tcp (not yet implemented) is %d¶
 060:Verbosity level is %d.¶
 061:%s not recognized as a nick name
 062:Users ignored: 
 063:Enter password : 
-064:¶Auto-Changed status to 
+064:Auto-Changed status to 
 065:Using intel byte ordering.
 066:Using motorola byte ordering.
 067:¶Ignored a message cmd  %04x¶
@@ -73,7 +71,10 @@
 071:Your status is 
 072:Users offline: 
 073:Users online: 
-#099: (Unbekannte Sprache)
+074:Micq (Matt's ICQ clone)
+075:version
+076:compiled on
+099:Unknown language.
 100:None
 101:Arabic
 102:Bhojpuri
@@ -134,7 +135,7 @@
 157:Persian
 158:Albanian
 159:Armenian
-#199: (Unbekanntes Land)
+199:Unknown country
 200:Not entered
 201:Afghanistan
 202:Albania
@@ -368,8 +369,6 @@
 437:		Mark as Invisible.¶
 438:		Updates your basic info (email, nickname, etc.)¶
 439:		Sets your random user group.¶
-#440:PROMPT_HELP_STR (		Ändert den mICQ Prompt.¶)
-#441:GOTO_HELP_STR (				Öffnet die letzte erhaltene URL in Lynx¶)
 442:Please select one of the help topics below.
 443:Commands relating to micq displays and configuration.
 444:Commands relating to finding other users.

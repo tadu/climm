@@ -1,5 +1,8 @@
 #include "micq.h"
 #include "util_ui.h"
+#include "file_util.h"
+#include "util.h"
+#include "buildmark.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -11,81 +14,81 @@
 #include <assert.h>
 
 #ifdef _WIN32
- #include <conio.h>
- #include <io.h>
- #include <winsock2.h>
- #include <time.h>
+#include <conio.h>
+#include <io.h>
+#include <winsock2.h>
+#include <time.h>
 #else
- #include <sys/types.h>
- #include <unistd.h>
- #include <netinet/in.h>
- #include <sys/types.h>
- #include <sys/stat.h>
- #include <sys/socket.h>
-   #ifndef __BEOS__
-     #include <arpa/inet.h>
-   #endif
- #include <netdb.h>
- #include <sys/time.h>
- #include <sys/wait.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <netinet/in.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/socket.h>
+#ifndef __BEOS__
+#include <arpa/inet.h>
+#endif
+#include <netdb.h>
+#include <sys/time.h>
+#include <sys/wait.h>
 #endif
 
 #ifdef __BEOS__
-  #include "beos.h"
+#include "beos.h"
 #endif
 
 
 
-DWORD real_packs_sent = 0;
-DWORD real_packs_recv = 0;
+UDWORD real_packs_sent = 0;
+UDWORD real_packs_recv = 0;
 
-BYTE Sound = SOUND_ON; /* Beeps on by default */
-BYTE Sound_Str[150];   /* the command to run from the shell to play sound files */
+UBYTE Sound = SOUND_ON;          /* Beeps on by default */
+UBYTE Sound_Str[150];            /* the command to run from the shell to play sound files */
 BOOL Hermit = FALSE;
-BOOL Russian = FALSE;  /* Do we do kio8-r <->Cp1251 codeset translation? */
-BOOL JapaneseEUC = FALSE; /* Do we do Shift-JIS <->EUC codeset translation? */
-BYTE LogType = 2;      /* Currently 0 = no logging
-			       1 = old style ~/micq_log
-			       2 = new style ~/micq.log/uin.log
-		     *********************************************/
-BOOL Logging = TRUE;  /* Do we log messages to ~/micq_log?  This should probably have different levels */
-BOOL Color = TRUE; /* Do we use ANSI color? */
-BOOL del_is_bs = TRUE; /* del char is backspace */
-BOOL last_uin_prompt = FALSE; /* use last UIN's nick as prompt */
-int line_break_type = 0; /* See .rc file for modes */
-BOOL Quit = FALSE;    /* set when it's time to exit the program */
-BOOL Verbose = FALSE; /* this is displays extra debuging info */
-BOOL serv_mess[ 1024 ]; /* used so that we don't get duplicate messages with the same SEQ */
-WORD last_cmd[ 1024 ]; /* command issued for the first 1024 SEQ #'s */
+BOOL Russian = FALSE;           /* Do we do kio8-r <->Cp1251 codeset translation? */
+BOOL JapaneseEUC = FALSE;       /* Do we do Shift-JIS <->EUC codeset translation? */
+UBYTE LogType = 2;               /* Currently 0 = no logging
+                                   1 = old style ~/micq_log
+                                   2 = new style ~/micq.log/uin.log
+                                   ******************************************** */
+BOOL Logging = TRUE;            /* Do we log messages to ~/micq_log?  This should probably have different levels */
+BOOL Color = TRUE;              /* Do we use ANSI color? */
+BOOL del_is_bs = TRUE;          /* del char is backspace */
+BOOL last_uin_prompt = FALSE;   /* use last UIN's nick as prompt */
+int line_break_type = 0;        /* See .rc file for modes */
+BOOL Quit = FALSE;              /* set when it's time to exit the program */
+BOOL Verbose = FALSE;           /* this is displays extra debuging info */
+BOOL serv_mess[1024];           /* used so that we don't get duplicate messages with the same SEQ */
+UWORD last_cmd[1024];            /* command issued for the first 1024 SEQ #'s */
 /******************** if we have more than 1024 SEQ this will need some hacking */
-WORD seq_num = 1;  /* current sequence number */
-DWORD our_ip = 0x0100007f; /* localhost for some reason */
-DWORD our_port; /* the port to make tcp connections on */
+UWORD seq_num = 1;               /* current sequence number */
+UDWORD our_ip = 0x0100007f;      /* localhost for some reason */
+UDWORD our_port;                 /* the port to make tcp connections on */
 /************ We don't make tcp connections yet though :( */
-DWORD UIN; /* current User Id Number */
-BOOL Contact_List = FALSE; /* I think we always have a contact list now */
-Contact_Member Contacts[ MAX_CONTACTS ]; /* no more than this many contacts max */
-int Num_Contacts=0;
-DWORD Current_Status=STATUS_OFFLINE;
-DWORD last_recv_uin=0;
+UDWORD UIN;                      /* current User Id Number */
+BOOL Contact_List = FALSE;      /* I think we always have a contact list now */
+Contact_Member Contacts[MAX_CONTACTS];  /* no more than this many contacts max */
+int Num_Contacts = 0;
+UDWORD Current_Status = STATUS_OFFLINE;
+UDWORD last_recv_uin = 0;
 char passwd[100];
 char server[100];
-DWORD set_status;
-DWORD remote_port;
-BOOL Done_Login=FALSE;
+UDWORD set_status;
+UDWORD remote_port;
+BOOL Done_Login = FALSE;
 
 /* SOCKS5 stuff begin */
-int      s5Use;
-char     s5Host[100];
-WORD s5Port;
-int      s5Auth;
-char     s5Name[64];
-char     s5Pass[64];
-DWORD  s5DestIP;
-WORD s5DestPort;
+int s5Use;
+char s5Host[100];
+UWORD s5Port;
+int s5Auth;
+char s5Name[64];
+char s5Pass[64];
+UDWORD s5DestIP;
+UWORD s5DestPort;
 /* SOCKS5 stuff end */
 
-BOOL auto_resp=FALSE;
+BOOL auto_resp = FALSE;
 char auto_rep_str_dnd[450] = { 0 };
 char auto_rep_str_away[450] = { 0 };
 char auto_rep_str_na[450] = { 0 };
@@ -127,15 +130,15 @@ char color_cmd[16];
 char sound_cmd[16];
 
 /*** auto away values ***/
-int idle_val=0;
-int idle_flag=0;
+int idle_val = 0;
+int idle_flag = 0;
 unsigned int away_time;
 
 unsigned int next_resend;
 
 /* aaron
    Actual definition of the variable holding Micq's start time.				*/
-time_t	MicqStartTime;
+time_t MicqStartTime;
 /* end of aaron */
 
 #ifdef MSGEXEC
@@ -144,7 +147,7 @@ time_t	MicqStartTime;
   * receive_script -- a script that gets called anytime we receive
   * a message
   */
- char receive_script[255];
+char receive_script[255];
 
 #endif
 
@@ -152,191 +155,192 @@ time_t	MicqStartTime;
 // Connects to hostname on port port
 // hostname can be DNS or nnn.nnn.nnn.nnn
 // write out messages to the FD aux */
-SOK_T Connect_Remote( char *hostname, int port, FD_T aux )
+SOK_T Connect_Remote (char *hostname, int port, FD_T aux)
 {
 /* SOCKS5 stuff begin */
-   int res;
-   char buf[64];
-   struct sockaddr_in s5sin;
-   int s5Sok;
-   unsigned short s5OurPort;
-   unsigned long s5IP;
+    int res;
+    char buf[64];
+    struct sockaddr_in s5sin;
+    int s5Sok;
+    unsigned short s5OurPort;
+    unsigned long s5IP;
 /* SOCKS5 stuff end */
 
-   int conct, length;
-   int sok;
-   struct sockaddr_in sin;  /* used to store inet addr stuff */
-   struct hostent *host_struct; /* used in DNS lookup */
+    int conct, length;
+    int sok;
+    struct sockaddr_in sin;     /* used to store inet addr stuff */
+    struct hostent *host_struct;        /* used in DNS lookup */
 
-   sok = socket( AF_INET, SOCK_DGRAM, 0 );/* create the unconnected socket*/
+    sok = socket (AF_INET, SOCK_DGRAM, 0);      /* create the unconnected socket */
 
-   if (sok == -1) 
-   {
-      perror (i18n (55, "Socket creation failed"));
-      exit (1);
-   }   
-   if (Verbose)
-   {
-      M_fdprint (aux, i18n (56, "Socket created attempting to connect\n"));
-   }
-
-if( s5Use )
-{
-   sin.sin_addr.s_addr = INADDR_ANY;
-   sin.sin_family = AF_INET;
-   sin.sin_port = 0;
-
-   if(bind(sok, (struct sockaddr*)&sin, sizeof(struct sockaddr))<0) 
-   {
-     M_fdprint(aux, "Can't bind socket to free port\n");
-     return -1;
-   }
-
-  length = sizeof(sin);
-  getsockname(sok, (struct sockaddr*)&sin, &length);
-  s5OurPort = ntohs(sin.sin_port);
-
-  s5sin.sin_addr.s_addr = inet_addr(s5Host);
-  if(s5sin.sin_addr.s_addr  == (unsigned long)-1) /* name isn't n.n.n.n so must be DNS */
-  {
-    host_struct = gethostbyname(s5Host);
-    if(host_struct == 0L)
+    if (sok == -1)
     {
-      M_print("[SOCKS] Can't find hostname: %s\n", s5Host);
-      return -1;
+        perror (i18n (55, "Socket creation failed"));
+        exit (1);
     }
-    s5sin.sin_addr = *((struct in_addr*)host_struct->h_addr);
-  }
-  s5IP = ntohl(s5sin.sin_addr.s_addr);
-  s5sin.sin_family = AF_INET; /* we're using the inet not appletalk*/
-  s5sin.sin_port = htons(s5Port); /* port */
-  s5Sok = socket(AF_INET, SOCK_STREAM, 0);/* create the unconnected socket*/
-  if(s5Sok == -1)
-  {
-    M_print("[SOCKS] Socket creation failed\n");
-    return -1;
-  }
-  conct = connect(s5Sok, (struct sockaddr *) &s5sin, sizeof(s5sin));
-  if(conct == -1) /* did we connect ?*/
-  {
-    M_print("[SOCKS] Connection refused\n");
-    return -1;
-  }
-  buf[0] = 5; /* protocol version */
-  buf[1] = 1; /* number of methods */
-  if(!strlen(s5Name) || !strlen(s5Pass) || !s5Auth)
-    buf[2] = 0; /* no authorization required */
-  else
-    buf[2] = 2; /* method username/password */
-  send(s5Sok, buf, 3, 0);
-  res = recv(s5Sok, buf, 2, 0);
-  if(strlen(s5Name) && strlen(s5Pass) && s5Auth)
-  {
-    if(res != 2 || buf[0] != 5 || buf[1] != 2) /* username/password authentication*/
+    if (Verbose)
     {
-      M_print("[SOCKS] Authentication method incorrect\n");
-      close(s5Sok);
-      return -1;
+        M_fdprint (aux, i18n (56, "Socket created attempting to connect\n"));
     }
-    buf[0] = 1; /* version of subnegotiation */
-    buf[1] = strlen(s5Name);
-    memcpy(&buf[2], s5Name, buf[1]);
-    buf[2+buf[1]] = strlen(s5Pass);
-    memcpy(&buf[3+buf[1]], s5Pass, buf[2+buf[1]]);
-    send(s5Sok, buf, buf[1]+buf[2+buf[1]]+3, 0);
-    res = recv(s5Sok, buf, 2, 0);
-    if(res != 2 || buf[0] != 1 || buf[1] != 0)
+
+    if (s5Use)
     {
-      M_print("[SOCKS] Authorization failure\n");
-      close(s5Sok);
-      return -1;
-    }
-  }
-  else
-  {
-    if(res != 2 || buf[0] != 5 || buf[1] != 0) /* no authentication required */
-    {
-      M_print("[SOCKS] Authentication method incorrect\n");
-      close(s5Sok);
-      return -1;
-    }
-  }
-  buf[0] = 5; /* protocol version */
-  buf[1] = 3; /* command UDP associate */
-  buf[2] = 0; /* reserved */
-  buf[3] = 1; /* address type IP v4 */
-  buf[4] = (char)0;
-  buf[5] = (char)0;
-  buf[6] = (char)0;
-  buf[7] = (char)0;
-  *(unsigned short*)&buf[8] = htons(s5OurPort);
+        sin.sin_addr.s_addr = INADDR_ANY;
+        sin.sin_family = AF_INET;
+        sin.sin_port = 0;
+
+        if (bind (sok, (struct sockaddr *) &sin, sizeof (struct sockaddr)) < 0)
+        {
+            M_fdprint (aux, "Can't bind socket to free port\n");
+            return -1;
+        }
+
+        length = sizeof (sin);
+        getsockname (sok, (struct sockaddr *) &sin, &length);
+        s5OurPort = ntohs (sin.sin_port);
+
+        s5sin.sin_addr.s_addr = inet_addr (s5Host);
+        if (s5sin.sin_addr.s_addr == (unsigned long) -1)        /* name isn't n.n.n.n so must be DNS */
+        {
+            host_struct = gethostbyname (s5Host);
+            if (host_struct == 0L)
+            {
+                M_print ("[SOCKS] Can't find hostname: %s\n", s5Host);
+                return -1;
+            }
+            s5sin.sin_addr = *((struct in_addr *) host_struct->h_addr);
+        }
+        s5IP = ntohl (s5sin.sin_addr.s_addr);
+        s5sin.sin_family = AF_INET;     /* we're using the inet not appletalk */
+        s5sin.sin_port = htons (s5Port);        /* port */
+        s5Sok = socket (AF_INET, SOCK_STREAM, 0);       /* create the unconnected socket */
+        if (s5Sok == -1)
+        {
+            M_print ("[SOCKS] Socket creation failed\n");
+            return -1;
+        }
+        conct = connect (s5Sok, (struct sockaddr *) &s5sin, sizeof (s5sin));
+        if (conct == -1)        /* did we connect ? */
+        {
+            M_print ("[SOCKS] Connection refused\n");
+            return -1;
+        }
+        buf[0] = 5;             /* protocol version */
+        buf[1] = 1;             /* number of methods */
+        if (!strlen (s5Name) || !strlen (s5Pass) || !s5Auth)
+            buf[2] = 0;         /* no authorization required */
+        else
+            buf[2] = 2;         /* method username/password */
+        send (s5Sok, buf, 3, 0);
+        res = recv (s5Sok, buf, 2, 0);
+        if (strlen (s5Name) && strlen (s5Pass) && s5Auth)
+        {
+            if (res != 2 || buf[0] != 5 || buf[1] != 2) /* username/password authentication */
+            {
+                M_print ("[SOCKS] Authentication method incorrect\n");
+                close (s5Sok);
+                return -1;
+            }
+            buf[0] = 1;         /* version of subnegotiation */
+            buf[1] = strlen (s5Name);
+            memcpy (&buf[2], s5Name, buf[1]);
+            buf[2 + buf[1]] = strlen (s5Pass);
+            memcpy (&buf[3 + buf[1]], s5Pass, buf[2 + buf[1]]);
+            send (s5Sok, buf, buf[1] + buf[2 + buf[1]] + 3, 0);
+            res = recv (s5Sok, buf, 2, 0);
+            if (res != 2 || buf[0] != 1 || buf[1] != 0)
+            {
+                M_print ("[SOCKS] Authorization failure\n");
+                close (s5Sok);
+                return -1;
+            }
+        }
+        else
+        {
+            if (res != 2 || buf[0] != 5 || buf[1] != 0) /* no authentication required */
+            {
+                M_print ("[SOCKS] Authentication method incorrect\n");
+                close (s5Sok);
+                return -1;
+            }
+        }
+        buf[0] = 5;             /* protocol version */
+        buf[1] = 3;             /* command UDP associate */
+        buf[2] = 0;             /* reserved */
+        buf[3] = 1;             /* address type IP v4 */
+        buf[4] = (char) 0;
+        buf[5] = (char) 0;
+        buf[6] = (char) 0;
+        buf[7] = (char) 0;
+        *(unsigned short *) &buf[8] = htons (s5OurPort);
 /*     memcpy(&buf[8], &s5OurPort, 2); */
-  send(s5Sok, buf, 10, 0);
-  res = recv(s5Sok, buf, 10, 0);
-  if(res != 10 || buf[0] != 5 || buf[1] != 0)
-  {
-      M_print("[SOCKS] General SOCKS server failure\n");
-      close(s5Sok);
-      return -1;
-  }
-}
+        send (s5Sok, buf, 10, 0);
+        res = recv (s5Sok, buf, 10, 0);
+        if (res != 10 || buf[0] != 5 || buf[1] != 0)
+        {
+            M_print ("[SOCKS] General SOCKS server failure\n");
+            close (s5Sok);
+            return -1;
+        }
+    }
 
-   sin.sin_addr.s_addr = inet_addr( hostname ); 
-   if ( sin.sin_addr.s_addr  == -1 ) /* name isn't n.n.n.n so must be DNS */
-   {
-	   host_struct = gethostbyname( hostname );
-      if ( host_struct == NULL )
-      {
-         if ( Verbose )
-         {
-            M_fdprint (aux, i18n (57, "The hostname "));
-            M_fdprint (aux, i18n (58, "%s was not found.\n"), hostname);
-            /*herror( "Can't find hostname" );*/
-         }
-         return -1;
-      }
-      sin.sin_addr = *((struct in_addr *)host_struct->h_addr);
-   }
-   sin.sin_family = AF_INET; /* we're using the inet not appletalk*/
-   sin.sin_port = ntohs (port);
+    sin.sin_addr.s_addr = inet_addr (hostname);
+    if (sin.sin_addr.s_addr == -1)      /* name isn't n.n.n.n so must be DNS */
+    {
+        host_struct = gethostbyname (hostname);
+        if (host_struct == NULL)
+        {
+            if (Verbose)
+            {
+                M_fdprint (aux, i18n (57, "The hostname "));
+                M_fdprint (aux, i18n (58, "%s was not found.\n"), hostname);
+                /*herror( "Can't find hostname" ); */
+            }
+            return -1;
+        }
+        sin.sin_addr = *((struct in_addr *) host_struct->h_addr);
+    }
+    sin.sin_family = AF_INET;   /* we're using the inet not appletalk */
+    sin.sin_port = ntohs (port);
 
-	if( s5Use )
-	{
-	 s5DestIP = ntohl(sin.sin_addr.s_addr);
-	  memcpy(&sin.sin_addr.s_addr, &buf[4], 4);
-  
-	  sin.sin_family = AF_INET; /* we're using the inet not appletalk*/
-	  s5DestPort = port;
-	  memcpy(&sin.sin_port, &buf[8], 2);
-	}
+    if (s5Use)
+    {
+        s5DestIP = ntohl (sin.sin_addr.s_addr);
+        memcpy (&sin.sin_addr.s_addr, &buf[4], 4);
 
-   conct = connect( sok, (struct sockaddr *) &sin, sizeof( sin ) );
+        sin.sin_family = AF_INET;       /* we're using the inet not appletalk */
+        s5DestPort = port;
+        memcpy (&sin.sin_port, &buf[8], 2);
+    }
 
-   if (conct == -1)/* did we connect ?*/
-   {
-      if (Verbose)
-      {
-   	   M_fdprint (aux, i18n (54, " Conection Refused on port %d at %s\n"), port, hostname);
-         #ifdef FUNNY_MSGS
-            M_fdprint( aux, " D'oh!\n" );
-         #endif
-   	   perror ("connect");
-      }
-      return -1;
-   }
+    conct = connect (sok, (struct sockaddr *) &sin, sizeof (sin));
 
-   length = sizeof( sin ) ;
-   getsockname( sok, (struct sockaddr *) &sin, &length );
-   our_ip = ntohl(sin.sin_addr.s_addr);
-   our_port = ntohs(sin.sin_port);
+    if (conct == -1)            /* did we connect ? */
+    {
+        if (Verbose)
+        {
+            M_fdprint (aux, i18n (54, " Conection Refused on port %d at %s\n"), port, hostname);
+#ifdef FUNNY_MSGS
+            M_fdprint (aux, " D'oh!\n");
+#endif
+            perror ("connect");
+        }
+        return -1;
+    }
 
-   if (Verbose)
-   {
-      M_fdprint (aux, i18n (59, "The port that will be used for tcp ( not yet implemented ) is %d\n"), ntohs (sin.sin_port));
-      M_fdprint (aux, i18n (53, "Connected to %s, waiting for response\n"), hostname);
-   }
+    length = sizeof (sin);
+    getsockname (sok, (struct sockaddr *) &sin, &length);
+    our_ip = ntohl (sin.sin_addr.s_addr);
+    our_port = ntohs (sin.sin_port);
 
-   return sok;
+    if (Verbose)
+    {
+        M_fdprint (aux, i18n (59, "The port that will be used for tcp (not yet implemented) is %d\n"),
+                   ntohs (sin.sin_port));
+        M_fdprint (aux, i18n (53, "Connected to %s, waiting for response\n"), hostname);
+    }
+
+    return sok;
 }
 
 
@@ -344,234 +348,249 @@ if( s5Use )
 // Connects to hostname on port port
 // hostname can be DNS or nnn.nnn.nnn.nnn
 // write out messages to the FD aux */
-int Connect_Remote_Old( char *hostname, int port, FD_T aux )
+int Connect_Remote_Old (char *hostname, int port, FD_T aux)
 {
-   int conct, length;
-   int sok;
-   struct sockaddr_in sin;  /* used to store inet addr stuff */
-   struct hostent *host_struct; /* used in DNS lookup */
+    int conct, length;
+    int sok;
+    struct sockaddr_in sin;     /* used to store inet addr stuff */
+    struct hostent *host_struct;        /* used in DNS lookup */
 
 #if 1
-	sin.sin_addr.s_addr = inet_addr( hostname ); 
-  	if ( sin.sin_addr.s_addr  == -1 ) /* name isn't n.n.n.n so must be DNS */
+    sin.sin_addr.s_addr = inet_addr (hostname);
+    if (sin.sin_addr.s_addr == -1)      /* name isn't n.n.n.n so must be DNS */
 #else
 
-	if ( inet_aton( hostname, &sin.sin_addr )  == 0 ) /* checks for n.n.n.n notation */
+    if (inet_aton (hostname, &sin.sin_addr) == 0)       /* checks for n.n.n.n notation */
 #endif
-	{
-	   host_struct = gethostbyname( hostname );/* name isn't n.n.n.n so must be DNS */
-      if ( host_struct == NULL )
-      {
-         if ( Verbose )
-         {
-            M_fdprint (aux, i18n (57, "The hostname "));
-            M_fdprint (aux, i18n (58, "%s was not found.\n"), hostname);
-            /*herror( "Can't find hostname" );*/
-         }
-         return 0;
-      }
-	   sin.sin_addr = *((struct in_addr *)host_struct->h_addr);
-   }
-	sin.sin_family = AF_INET; /* we're using the inet not appletalk*/
-	sin.sin_port = htons( port );	/* port */
-	sok = socket( AF_INET, SOCK_DGRAM, 0 );/* create the unconnected socket*/
-   if (sok == -1) 
-   {
-      perror (i18n (55, "Socket creation failed"));
-      exit (1);
-   }   
-   if (Verbose)
-   {
-      M_fdprint (aux, i18n (56, "Socket created attempting to connect\n"));
-   }
-	conct = connect( sok, (struct sockaddr *) &sin, sizeof( sin ) );
-	if ( conct == -1 )/* did we connect ?*/
-	{
-      if (Verbose)
-      {
-   	   M_fdprint (aux,i18n (54, " Conection Refused on port %d at %s\n"), port, hostname);
-         #ifdef FUNNY_MSGS
-            M_fdprint( aux, " D'oh!\n" );
-         #endif
-   	   perror ("connect");
-      }
-	   return 0;
-	}
-   length = sizeof( sin ) ;
-   getsockname( sok, (struct sockaddr *) &sin, &length );
-   our_ip = sin.sin_addr.s_addr;
-   our_port = sin.sin_port;
-   if (Verbose)
-   {
-      M_fdprint (aux, i18n (59, "The port that will be used for tcp (not yet implemented) is %d\n"), ntohs (sin.sin_port));
-      M_fdprint (aux, i18n (53, "Connected to %s, waiting for response\n"), hostname);
-   }
-   return sok;
+    {
+        host_struct = gethostbyname (hostname); /* name isn't n.n.n.n so must be DNS */
+        if (host_struct == NULL)
+        {
+            if (Verbose)
+            {
+                M_fdprint (aux, i18n (57, "The hostname "));
+                M_fdprint (aux, i18n (58, "%s was not found.\n"), hostname);
+                /*herror( "Can't find hostname" ); */
+            }
+            return 0;
+        }
+        sin.sin_addr = *((struct in_addr *) host_struct->h_addr);
+    }
+    sin.sin_family = AF_INET;   /* we're using the inet not appletalk */
+    sin.sin_port = htons (port);        /* port */
+    sok = socket (AF_INET, SOCK_DGRAM, 0);      /* create the unconnected socket */
+    if (sok == -1)
+    {
+        perror (i18n (55, "Socket creation failed"));
+        exit (1);
+    }
+    if (Verbose)
+    {
+        M_fdprint (aux, i18n (56, "Socket created attempting to connect\n"));
+    }
+    conct = connect (sok, (struct sockaddr *) &sin, sizeof (sin));
+    if (conct == -1)            /* did we connect ? */
+    {
+        if (Verbose)
+        {
+            M_fdprint (aux, i18n (54, " Conection Refused on port %d at %s\n"), port, hostname);
+#ifdef FUNNY_MSGS
+            M_fdprint (aux, " D'oh!\n");
+#endif
+            perror ("connect");
+        }
+        return 0;
+    }
+    length = sizeof (sin);
+    getsockname (sok, (struct sockaddr *) &sin, &length);
+    our_ip = sin.sin_addr.s_addr;
+    our_port = sin.sin_port;
+    if (Verbose)
+    {
+        M_fdprint (aux, i18n (59, "The port that will be used for tcp (not yet implemented) is %d\n"),
+                   ntohs (sin.sin_port));
+        M_fdprint (aux, i18n (53, "Connected to %s, waiting for response\n"), hostname);
+    }
+    return sok;
 }
 
 
 /******************************************
 Handles packets that the server sends to us.
 *******************************************/
-void Handle_Server_Response( SOK_T sok )
+void Handle_Server_Response (SOK_T sok)
 {
-   srv_net_icq_pak pak;
-   static DWORD last_seq=-1;
-   int s;
-   
-   s = SOCKREAD( sok, &pak.head.ver, sizeof( pak ) - 2  );
-   if ( s < 0 )
-   	return;
+    srv_net_icq_pak pak;
+    static UDWORD last_seq = -1;
+    int s;
+
+    s = SOCKREAD (sok, &pak.head.ver, sizeof (pak) - 2);
+    if (s < 0)
+        return;
 
 //#if 0      
-if (Verbose) {
-   M_print( "Cmd : %04X\t",Chars_2_Word( pak.head.cmd ) );
-   M_print( "Ver : %04X\t",Chars_2_Word( pak.head.ver ) );
-   M_print( "Seq : %08X\t",Chars_2_DW( pak.head.seq ) );
-   M_print( "Ses : %08X\n",Chars_2_DW( pak.head.session ) );
-}
+    if (Verbose)
+    {
+        M_print ("Cmd : %04X\t", Chars_2_Word (pak.head.cmd));
+        M_print ("Ver : %04X\t", Chars_2_Word (pak.head.ver));
+        M_print ("Seq : %08X\t", Chars_2_DW (pak.head.seq));
+        M_print ("Ses : %08X\n", Chars_2_DW (pak.head.session));
+    }
 //#endif
 //    if ( pak.head.cmd != SRV_BAD_PASS ) {
-//	if ( Chars_2_Word( pak.head.ver ) != ICQ_VER ) {
-//		R_undraw();
-//	        M_print( "Invalid server response:\tVersion: %d\n", Chars_2_Word( pak.head.ver ) );
-//	    if ( Verbose ) {
-//		Hex_Dump( pak.head.ver, s );
-//	    }
-//	R_redraw();
-//	return;
+//      if ( Chars_2_Word( pak.head.ver ) != ICQ_VER ) {
+//              R_undraw();
+//              M_print( "Invalid server response:\tVersion: %d\n", Chars_2_Word( pak.head.ver ) );
+//          if ( Verbose ) {
+//              Hex_Dump( pak.head.ver, s );
+//          }
+//      R_redraw();
+//      return;
 //        }
 //    }
-  if ( Chars_2_DW( pak.head.session ) != our_session ) {
-     if ( Verbose ) {
-       	R_undraw();
-        M_print( "Got a bad session ID %08X with CMD %04X ignored.\n", 
-            Chars_2_DW( pak.head.session ), Chars_2_Word( pak.head.cmd ) );
-	R_redraw();
-     }
-     return;
-  }
-  /* !!! TODO make a check checksum routine to verify the packet further */
+    if (Chars_2_DW (pak.head.session) != our_session)
+    {
+        if (Verbose)
+        {
+            R_undraw ();
+            M_print ("Got a bad session ID %08X with CMD %04X ignored.\n",
+                     Chars_2_DW (pak.head.session), Chars_2_Word (pak.head.cmd));
+            R_redraw ();
+        }
+        return;
+    }
+    /* !!! TODO make a check checksum routine to verify the packet further */
 /*   if ( ( serv_mess[ Chars_2_Word( pak.head.seq2 ) ] ) && 
       ( Chars_2_Word( pak.head.cmd ) != SRV_NEW_UIN ) )*/
 /*   if ( ( last_seq == Chars_2_DW( pak.head.seq ) ) && 
       ( Chars_2_Word( pak.head.cmd ) != SRV_NEW_UIN ) ) */
-    if ( ( Chars_2_Word( pak.head.cmd ) != SRV_NEW_UIN ) &&
-	( Is_Repeat_Packet( Chars_2_Word( pak.head.seq ) ) ) )
+    if ((Chars_2_Word (pak.head.cmd) != SRV_NEW_UIN)
+        && (Is_Repeat_Packet (Chars_2_Word (pak.head.seq))))
     {
-      if ( Chars_2_Word( pak.head.seq ) == 0 ) {;} else {  /*yes ugly*/
-      if ( Chars_2_Word( pak.head.cmd ) != SRV_ACK ) /* ACKs don't matter */
-      {
-         if (Verbose) {
-       	    R_undraw();
-            M_print (i18n (67, "\nIgnored a message cmd  %04x\n"), Chars_2_Word (pak.head.cmd));
-	    R_redraw();
-	 }
-         ack_srv( sok, Chars_2_DW( pak.head.seq ) ); /* LAGGGGG!! */
-         return;
-      }
-      }
-   }
-   if ( Chars_2_Word( pak.head.cmd ) != SRV_ACK )
-   {
-      serv_mess[ Chars_2_Word( pak.head.seq2 ) ] = TRUE;
-      last_seq = Chars_2_DW( pak.head.seq );
-      Got_SEQ( Chars_2_DW( pak.head.seq ) );
-      ack_srv( sok, Chars_2_DW( pak.head.seq ) );
-	real_packs_recv++;
-   }
-   Server_Response( sok, pak.head.check + DATA_OFFSET , s - ( sizeof( pak.head ) - 2 ), 
-      Chars_2_Word( pak.head.cmd ), Chars_2_Word( pak.head.ver ),
-      Chars_2_DW( pak.head.seq ), Chars_2_DW( pak.head.UIN ) );
+        if (Chars_2_Word (pak.head.seq) == 0)
+        {;
+        }
+        else
+        {                       /*yes ugly */
+            if (Chars_2_Word (pak.head.cmd) != SRV_ACK) /* ACKs don't matter */
+            {
+                if (Verbose)
+                {
+                    R_undraw ();
+                    M_print (i18n (67, "\nIgnored a message cmd  %04x\n"),
+                             Chars_2_Word (pak.head.cmd));
+                    R_redraw ();
+                }
+                ack_srv (sok, Chars_2_DW (pak.head.seq));       /* LAGGGGG!! */
+                return;
+            }
+        }
+    }
+    if (Chars_2_Word (pak.head.cmd) != SRV_ACK)
+    {
+        serv_mess[Chars_2_Word (pak.head.seq2)] = TRUE;
+        last_seq = Chars_2_DW (pak.head.seq);
+        Got_SEQ (Chars_2_DW (pak.head.seq));
+        ack_srv (sok, Chars_2_DW (pak.head.seq));
+        real_packs_recv++;
+    }
+    Server_Response (sok, pak.head.check + DATA_OFFSET, s - (sizeof (pak.head) - 2),
+                     Chars_2_Word (pak.head.cmd), Chars_2_Word (pak.head.ver),
+                     Chars_2_DW (pak.head.seq), Chars_2_DW (pak.head.UIN));
 }
 
 /**********************************************
 Verifies that we are in the correct endian
 ***********************************************/
-void Check_Endian( void )
+void Check_Endian (void)
 {
-   int i;
-   char passwd[10];
-   
-   passwd[0] = 1;
-   passwd[1] = 0;
-   passwd[2] = 0;
-   passwd[3] = 0;
-   passwd[4] = 0;
-   passwd[5] = 0;
-   passwd[6] = 0;
-   passwd[7] = 0;
-   passwd[8] = 0;
-   passwd[9] = 0;
-   i = *  ( DWORD *) passwd;
-   if (i == 1)
-   {
-      M_print (i18n (65, "Using intel byte ordering."));
-   }
-   else
-   {
-      M_print (i18n (66, "Using motorola byte ordering."));
-   }
+    int i;
+    char passwd[10];
+
+    passwd[0] = 1;
+    passwd[1] = 0;
+    passwd[2] = 0;
+    passwd[3] = 0;
+    passwd[4] = 0;
+    passwd[5] = 0;
+    passwd[6] = 0;
+    passwd[7] = 0;
+    passwd[8] = 0;
+    passwd[9] = 0;
+    i = *(UDWORD *) passwd;
+    if (i == 1)
+    {
+        M_print (i18n (65, "Using intel byte ordering."));
+    }
+    else
+    {
+        M_print (i18n (66, "Using motorola byte ordering."));
+    }
 }
 
 /******************************
 Idle checking function
 added by Warn Kitchen 1/23/99
 ******************************/
-void Idle_Check( SOK_T sok )
+void Idle_Check (SOK_T sok)
 {
-   int tm;
+    int tm;
 
-   if ( away_time == 0 ) return;
-   tm = ( time( NULL ) - idle_val );
-   if ( ( Current_Status == STATUS_AWAY || Current_Status == STATUS_NA )
-           && tm < away_time && idle_flag == 1) {
-      icq_change_status(sok,STATUS_ONLINE);
-      R_undraw ();
-      M_print (i18n (64, "\nAuto-Changed status to "));
-      Print_Status (Current_Status);
-      M_print (" ");
-      Time_Stamp();
-      M_print ("\n");
-      R_redraw ();
-      idle_flag=0;
-      return;
-   }
-   if ( (Current_Status == STATUS_AWAY) && (tm >= (away_time*2)) && (idle_flag == 1) ) {
-      icq_change_status(sok,STATUS_NA);
-      R_undraw ();
-      M_print (i18n (64, "Auto-Changed status to "));
-      Print_Status (Current_Status);
-      M_print( " " );
-      Time_Stamp();
-      M_print( "\n" );
-      R_redraw ();
-      return;
-   }
-   if ( Current_Status != STATUS_ONLINE && Current_Status != STATUS_FREE_CHAT ) {
-      return;
-   }
-   if(tm>=away_time) {
-      icq_change_status(sok,STATUS_AWAY); 
-      R_undraw ();
-      M_print (i18n (64, "\nAuto-Changed status to "));
-      Print_Status (Current_Status);
-      M_print (" ");
-      Time_Stamp();
-      M_print ("\n");
-      R_redraw ();
-      idle_flag=1;
-   }
-   return;
+    if (away_time == 0)
+        return;
+    tm = (time (NULL) - idle_val);
+    if ((Current_Status == STATUS_AWAY || Current_Status == STATUS_NA)
+        && tm < away_time && idle_flag == 1)
+    {
+        icq_change_status (sok, STATUS_ONLINE);
+        R_undraw ();
+        M_print (i18n (64, "Auto-Changed status to "));
+        Print_Status (Current_Status);
+        M_print (" ");
+        Time_Stamp ();
+        M_print ("\n");
+        R_redraw ();
+        idle_flag = 0;
+        return;
+    }
+    if ((Current_Status == STATUS_AWAY) && (tm >= (away_time * 2)) && (idle_flag == 1))
+    {
+        icq_change_status (sok, STATUS_NA);
+        R_undraw ();
+        M_print (i18n (64, "Auto-Changed status to "));
+        Print_Status (Current_Status);
+        M_print (" ");
+        Time_Stamp ();
+        M_print ("\n");
+        R_redraw ();
+        return;
+    }
+    if (Current_Status != STATUS_ONLINE && Current_Status != STATUS_FREE_CHAT)
+    {
+        return;
+    }
+    if (tm >= away_time)
+    {
+        icq_change_status (sok, STATUS_AWAY);
+        R_undraw ();
+        M_print (i18n (64, "Auto-Changed status to "));
+        Print_Status (Current_Status);
+        M_print (" ");
+        Time_Stamp ();
+        M_print ("\n");
+        R_redraw ();
+        idle_flag = 1;
+    }
+    return;
 }
 
-void Usage()
+void Usage ()
 {
-    M_print("Usage: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]\n");
-    M_print("        -v   Turn on verbose Mode (useful for Debugging only)\n");
-    M_print("        -f   specifies an alternate Config File (default: ~/.micqrc)\n"); 
-    M_print("        -l   specifies an alternate LogFile\n");
-    M_print("        -?   gives this help screen\n\n");
+    M_print ("Usage: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]\n");
+    M_print ("        -v   Turn on verbose Mode (useful for Debugging only)\n");
+    M_print ("        -f   specifies an alternate Config File (default: ~/.micqrc)\n");
+    M_print ("        -l   specifies an alternate LogFile\n");
+    M_print ("        -?   gives this help screen\n\n");
     exit (0);
 }
 
@@ -580,172 +599,181 @@ Main function connects gets UIN
 and passwd and logins in and sits
 in a loop waiting for server responses.
 ******************************/
-int main( int argc, char *argv[] )
+int main (int argc, char *argv[])
 {
-   int sok;
-   int i;
-   int next;
-   int time_delay = 120;
+    int sok;
+    int i;
+    int next;
+    int time_delay = 120;
 #ifdef _WIN32
-   WSADATA wsaData;
+    WSADATA wsaData;
 #endif
 
-   i = i18nOpen (NULL);
+    i = i18nOpen (NULL);
 
-   setbuf (stdout, NULL); /* Don't buffer stdout */
-   M_print( SERVCOL "Matt's ICQ clone " NOCOL "compiled on %s %s\n" \
-            SERVCOL "Version " MICQ_VERSION NOCOL "\n",      \
-	    __TIME__, __DATE__ );
-	    
+    setbuf (stdout, NULL);      /* Don't buffer stdout */
+    M_print (BuildVersion ());
+
 #ifdef FUNNY_MSGS
-   M_print( "No Mirabilis client was maimed, hacked, tortured, sodomized or otherwise harmed\nin the making of this utility.\n" );
+    M_print ("No Mirabilis client was maimed, hacked, tortured, sodomized or otherwise harmed  in the making of this utility.\n");
 #else
-   M_print( "This program was made without any help from Mirabilis or their consent.\n" );
-   M_print( "No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n" );
+    M_print ("This program was made without any help from Mirabilis or their consent.\n");
+    M_print ("No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n");
 #endif
 
-   if (i)
-       M_print (i18n (0, "Successfully loaded translations (%d entries). No version.\n"), i);
-   else
-       M_print ("Couldn't load internationalization.\n");
+    if (i)
+        M_print (i18n (0, "Successfully loaded translations (%d entries). No version.\n"), i);
+    else
+        M_print ("Couldn't load internationalization.\n");
 
-   /* and now we save the time that Micq was started, so that uptime will be
-      able to appear semi intelligent.										*/
-   MicqStartTime = time(NULL);
-   /* end of aaron */
+    /* and now we save the time that Micq was started, so that uptime will be
+       able to appear semi intelligent.                                                                          */
+    MicqStartTime = time (NULL);
+    /* end of aaron */
 
-   Set_rcfile( NULL );
-   if (argc > 1 )
-   {
-      for ( i=1; i< argc; i++ )
-      {
-         if ( argv[i][0] != '-' ) { 
-	    ; 
-	 } else if ( (argv[i][1] == 'v' ) || (argv[i][1] == 'V' ) ) {
-            Verbose++;
-         } else if ( (argv[i][1] == 'f' ) || (argv[i][1] == 'F' ) ) {
-		i++; /* skip the argument to f */
-		Set_rcfile( argv[i] );
-		M_print( "The config file for this session is \"%s\"\n", argv[i]);
-         } else if ( (argv[i][1] == 'l' ) || (argv[i][1] == 'L' ) ) {
-		i++;
-		M_print( "The logging directory for this session is \"%s\"\n", Set_Log_Dir( argv[i] ) );
-         } else if ( (argv[i][1] == '?' ) || (argv[i][1] == 'h' ) ) {
-	        Usage();
-		/* One will never get here ... */
-	 }
-      }
-   }
-   
-   Get_Config_Info();
-   srand (time (NULL));
-   if (!strcmp (passwd, ""))
-   {
-      M_print( i18n (63, "Enter password : ") );
-      Echo_Off();
-      M_fdnreadln (STDIN, passwd, sizeof(passwd));
-      Echo_On();
-   }
-   memset( serv_mess, FALSE, 1024 );
+    Set_rcfile (NULL);
+    if (argc > 1)
+    {
+        for (i = 1; i < argc; i++)
+        {
+            if (argv[i][0] != '-')
+            {
+                ;
+            }
+            else if ((argv[i][1] == 'v') || (argv[i][1] == 'V'))
+            {
+                Verbose++;
+            }
+            else if ((argv[i][1] == 'f') || (argv[i][1] == 'F'))
+            {
+                i++;            /* skip the argument to f */
+                Set_rcfile (argv[i]);
+                M_print ("The config file for this session is \"%s\"\n", argv[i]);
+            }
+            else if ((argv[i][1] == 'l') || (argv[i][1] == 'L'))
+            {
+                i++;
+                M_print ("The logging directory for this session is \"%s\"\n",
+                         Set_Log_Dir (argv[i]));
+            }
+            else if ((argv[i][1] == '?') || (argv[i][1] == 'h'))
+            {
+                Usage ();
+                /* One will never get here ... */
+            }
+        }
+    }
+
+    Get_Config_Info ();
+    srand (time (NULL));
+    if (!strcmp (passwd, ""))
+    {
+        M_print (i18n (63, "Enter password : "));
+        Echo_Off ();
+        M_fdnreadln (STDIN, passwd, sizeof (passwd));
+        Echo_On ();
+    }
+    memset (serv_mess, FALSE, 1024);
 
 #ifdef __BEOS__
-   Be_Start();
-   M_print("Started BeOS InputThread\n\r");
+    Be_Start ();
+    M_print ("Started BeOS InputThread\n\r");
 #endif
 
-   Initialize_Msg_Queue();
-   Check_Endian();
-   
-   
+    Initialize_Msg_Queue ();
+    Check_Endian ();
+
+
 #ifdef _WIN32
-   i = WSAStartup( 0x0101, &wsaData );
-   if ( i != 0 ) {
+    i = WSAStartup (0x0101, &wsaData);
+    if (i != 0)
+    {
 #ifdef FUNNY_MSGS
-		perror("Windows Sockets broken blame Bill -");
+        perror ("Windows Sockets broken blame Bill -");
 #else
-		perror("Sorry, can't initialize Windows Sockets...");
+        perror ("Sorry, can't initialize Windows Sockets...");
 #endif
-	    exit(1);
-   }
+        exit (1);
+    }
 #endif
 
 
-   sok = Connect_Remote( server, remote_port, STDERR );
+    sok = Connect_Remote (server, remote_port, STDERR);
 
 #ifdef __BEOS__
-   if ( sok == -1 )
+    if (sok == -1)
 #else
-   if ( ( sok == -1 ) || ( sok == 0 ) )
+    if ((sok == -1) || (sok == 0))
 #endif
-   {
-   	M_print (i18n (52, "Couldn't establish connection\n"));
-   	exit (1);
-   }
-   Login( sok, UIN, &passwd[0], our_ip, our_port, set_status );
-   next = time( NULL );
-   idle_val = time( NULL );
-   next += 120;
-   next_resend = 10;
-   R_init ();
-   M_print ("\n");
-   Prompt();
-   for ( ; !Quit; )
-   {
-      Idle_Check( sok );
+    {
+        M_print (i18n (52, "Couldn't establish connection\n"));
+        exit (1);
+    }
+    Login (sok, UIN, &passwd[0], our_ip, our_port, set_status);
+    next = time (NULL);
+    idle_val = time (NULL);
+    next += 120;
+    next_resend = 10;
+    R_init ();
+    M_print ("\n");
+    Prompt ();
+    for (; !Quit;)
+    {
+        Idle_Check (sok);
 #ifdef UNIX
-      M_set_timeout( 2, 500000 );
+        M_set_timeout (2, 500000);
 #else
-      M_set_timeout( 0, 100000 );
+        M_set_timeout (0, 100000);
 #endif
 
 #ifdef __BEOS__
-      M_set_timeout( 0, 100000 );
+        M_set_timeout (0, 100000);
 #endif
- 
-      M_select_init();
-      M_Add_rsocket( sok );
+
+        M_select_init ();
+        M_Add_rsocket (sok);
 #ifndef _WIN32
-      M_Add_rsocket( STDIN );
+        M_Add_rsocket (STDIN);
 #endif
 
-      M_select();
+        M_select ();
 
-      if ( M_Is_Set( sok ) )
-          Handle_Server_Response( sok );
+        if (M_Is_Set (sok))
+            Handle_Server_Response (sok);
 #if _WIN32
-	  if (_kbhit())		/* sorry, this is a bit ugly...   [UH]*/
-#else      
-  #ifndef __BEOS__
-          if ( M_Is_Set( STDIN ) )
-  #else
-          if (Be_TextReady())
-  #endif
+        if (_kbhit ())          /* sorry, this is a bit ugly...   [UH] */
+#else
+#ifndef __BEOS__
+        if (M_Is_Set (STDIN))
+#else
+        if (Be_TextReady ())
 #endif
-      {
+#endif
+        {
 /*         idle_val = time( NULL );*/
-	 if (R_process_input ())
-		Get_Input( sok, &idle_val, &idle_flag );
-      }
+            if (R_process_input ())
+                Get_Input (sok, &idle_val, &idle_flag);
+        }
 
-      if ( time( NULL ) > next )
-      {
-         next = time( NULL ) + time_delay;
-         Keep_Alive( sok );
-      }
+        if (time (NULL) > next)
+        {
+            next = time (NULL) + time_delay;
+            Keep_Alive (sok);
+        }
 
-      if ( time( NULL ) > next_resend )
-      {
-        Do_Resend( sok );
-      }
+        if (time (NULL) > next_resend)
+        {
+            Do_Resend (sok);
+        }
 #ifdef UNIX
-      while(waitpid(-1, NULL, WNOHANG) > 0); /* clean up child processes */
+        while (waitpid (-1, NULL, WNOHANG) > 0);        /* clean up child processes */
 #endif
-   }
+    }
 
 #ifdef __BEOS__
-   Be_Stop();
+    Be_Stop ();
 #endif
 
-   Quit_ICQ( sok );
-   return 0;
+    Quit_ICQ (sok);
+    return 0;
 }

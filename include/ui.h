@@ -1,4 +1,4 @@
-extern DWORD last_uin;
+extern UDWORD last_uin;
 
 #define UIN_DELIMS ":|/" /* add space if you don't want your nick names to have spaces */
 #define END_MSG_STR "."

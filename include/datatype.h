@@ -4,20 +4,20 @@
    #include <unistd.h>
 #endif
 
-typedef unsigned long  DWORD;
+typedef unsigned long  UDWORD;
 #ifndef __amigaos__
-typedef unsigned short WORD;
-typedef unsigned char  BYTE;
+typedef unsigned short UWORD;
+typedef unsigned char  UBYTE;
 #endif
-typedef signed long    S_DWORD;
-typedef signed short   S_WORD;
-typedef signed char    S_BYTE;
-typedef signed long    INT32;
-typedef signed short   INT16;
-typedef signed char    INT8;
-typedef unsigned long  U_INT32;
-typedef unsigned short U_INT16;
-typedef unsigned char  U_INT8;
+typedef signed long    SDWORD;
+typedef signed short   SWORD;
+typedef signed char    SBYTE;
+typedef signed long    SINT32;
+typedef signed short   SINT16;
+typedef signed char    SINT8;
+typedef unsigned long  UINT32;
+typedef unsigned short UINT16;
+typedef unsigned char  UIN8;
 
 #ifdef _WIN32
 #define 	snprintf 	_snprintf

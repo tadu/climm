@@ -30,130 +30,66 @@ Changes :
 #include <fcntl.h>
 #include <util_ui.h>
 #ifdef _WIN32
-    #include <io.h>
-    #define S_IRUSR          _S_IREAD
-    #define S_IWUSR          _S_IWRITE
+#include <io.h>
+#define S_IRUSR          _S_IREAD
+#define S_IWUSR          _S_IWRITE
 #else
-    #include <sys/time.h>
-    #include <netinet/in.h>
-    #ifndef __BEOS__
-        #include <arpa/inet.h>
-    #endif
+#include <sys/time.h>
+#include <netinet/in.h>
+#ifndef __BEOS__
+#include <arpa/inet.h>
+#endif
 #endif
 #ifdef UNIX
-    #include <unistd.h>
-    #include <termios.h>
-    #include "mreadline.h"
+#include <unistd.h>
+#include <termios.h>
+#include "mreadline.h"
 #endif
 
 #ifdef _WIN32
-typedef struct {
+typedef struct
+{
     long tv_sec;
     long tv_usec;
-} timeval;
+}
+timeval;
 #endif
 
 static char *Log_Dir = NULL;
 static BOOL Normal_Log = TRUE;
 
-static WORD CountryCodes[] = {  0xffff,
-         93,   355,   213,   684,   376,        244,   101,   102,    54,   374,
-        297,   274,    61,  6721,    43,        934,   103,   973,   880,   104,
-        375,    32,   501,   229,   105,        975,   591,   387,   267,    55,
-        106,   673,   359,   226,   257,        855,   237,   107,   238,   108,
-        236,   235,   672,  6101,  2691,        242,   682,    56,    86,    57,
-        506,   385,    53,   357,    42,         45,   246,   253,   109,   110,
-        593,    20,   503,   240,   291,        372,   251,   389,   298,   500,
-        691,   679,   358,    33,   596,       5901,   594,   689,   241,   220,
-        995,    49,   233,   350,    30,        299,   111,   590,   671,  5399,
-        502,   224,   245,   592,   509,        504,   852,    36,   354,    91,
-         62,   870,   870,    98,   964,        353,   972,    39,   225,    81,
-        962,   705,   254,    82,   965,        231,   218,  4101,   352,   265,
-         60,   223,   356,    52,    33,        212,   264,   977,    31,   599,
-        687,    64,   505,   234,    47,        968,    92,   507,   675,   595,
-         51,    63,    48,   351,   121,        974,    40,     7,   670,    39,
-        966,   221,    65,    42,    27,         34,    94,   597,    46,    41,
-        886,   255,    66,  6702,   228,        690,   676,   117,   216,    90,
-        709,   118,   688,   256,   380,        971,    44,     1,   123,   598,
-        711,   678,   379,    58,    84,        681,   685,   967,   381,   243,
-        260,   263,
-        0
-};
-
-const char *Get_Country_Name (WORD code)
-{
-    int i;
-
-    if (!code)
-        return i18n (200, "No country");
-
-    for (i = 0; CountryCodes[i]; i++)
-        if (CountryCodes[i] == code)
-            return i18n (i + 200, "???");
-    
-    return i18n (199, "Unknown country");
-}
-
-const char *Get_Lang_Name (BYTE code)
-{
-    if (code > 59)
-         return i18n (99, "Unknown language.");
-
-    return i18n (code + 100, "???");
-}
-
-void Print_Lang_Numbers (void)
-{
-    int i;
-    const char *p;
-    
-    for (i = 101; 1; i++ )
-    {
-        p = i18n (i, "???");
-        if (!p)
-            break;
-
-        M_print ("%2d. %-7s", i, p);
-        if (i & 3)
-            M_print ("\t");
-        else
-            M_print ("\n");
-    }
-    M_print ("\n");
-}
-
 /********************************************
 returns a string describing the status or
 a NULL if no such string exists
 *********************************************/
-const char *Convert_Status_2_Str( DWORD status )
+const char *Convert_Status_2_Str (UDWORD status)
 {
-    if ( STATUS_OFFLINE == status ) /* this because -1 & 0xFFFF is not -1 */
+    if (STATUS_OFFLINE == status)       /* this because -1 & 0xFFFF is not -1 */
     {
         return i18n (8, "Offline");
     }
-    
-    switch ( status & 0x1ff )
+
+    switch (status & 0x1ff)
     {
-    case STATUS_ONLINE:
-        return i18n (1, "Online");
-    case STATUS_DND_99 :
-    case STATUS_DND:
-        return i18n (2, "Do not disturb");
-    case STATUS_AWAY:
-        return i18n (3, "Away");
-    case STATUS_OCCUPIED_MAC:
-    case STATUS_OCCUPIED:
-        return i18n (5, "Occupied");
-    case STATUS_NA:
-    case STATUS_NA_99:
-        return i18n (4, "Not Available");
-    case STATUS_INVISIBLE:
-        return i18n (6, "Invisible");
-    case STATUS_FREE_CHAT:
-        return i18n (7, "Free for chat");
-    default :
-        return NULL;
+        case STATUS_ONLINE:
+            return i18n (1, "Online");
+        case STATUS_DND_99:
+        case STATUS_DND:
+            return i18n (2, "Do not disturb");
+        case STATUS_AWAY:
+            return i18n (3, "Away");
+        case STATUS_OCCUPIED_MAC:
+        case STATUS_OCCUPIED:
+            return i18n (5, "Occupied");
+        case STATUS_NA:
+        case STATUS_NA_99:
+            return i18n (4, "Not Available");
+        case STATUS_INVISIBLE:
+            return i18n (6, "Invisible");
+        case STATUS_FREE_CHAT:
+            return i18n (7, "Free for chat");
+        default:
+            return NULL;
     }
 }
 
@@ -162,52 +98,52 @@ const char *Convert_Status_2_Str( DWORD status )
 Prints a informative string to the screen.
 describing the command
 *********************************************/
-void Print_CMD( WORD cmd )
+void Print_CMD (UWORD cmd)
 {
-    switch ( cmd )
+    switch (cmd)
     {
-    case CMD_KEEP_ALIVE:
-        M_print ("Keep Alive");
-        break;
-    case CMD_KEEP_ALIVE2:
-        M_print ("Secondary Keep Alive");
-        break;
-    case CMD_CONT_LIST:
-        M_print ("Contact List");
-        break;
-    case CMD_INVIS_LIST:
-        M_print ("Invisible List");
-        break;
-    case CMD_VIS_LIST:
-        M_print ("Visible List");
-        break;
-    case CMD_RAND_SEARCH:
-        M_print ("Random Search");
-        break;
-    case CMD_RAND_SET:
-        M_print ("Set Random");
-        break;
-    case CMD_ACK_MESSAGES:
-        M_print ("Delete Server Messages");
-        break;
-    case CMD_LOGIN_1:
-        M_print ("Finish Login");
-        break;
-    case CMD_LOGIN:
-        M_print ("Login");
-        break;
-    case CMD_SENDM:
-        M_print ("Send Message");
-        break;
-    case CMD_INFO_REQ:
-        M_print ("Info Request");
-        break;
-    case CMD_EXT_INFO_REQ:
-        M_print ("Extended Info Request");
-        break;
-    default :
-        M_print ("%04X", cmd);
-        break;
+        case CMD_KEEP_ALIVE:
+            M_print ("Keep Alive");
+            break;
+        case CMD_KEEP_ALIVE2:
+            M_print ("Secondary Keep Alive");
+            break;
+        case CMD_CONT_LIST:
+            M_print ("Contact List");
+            break;
+        case CMD_INVIS_LIST:
+            M_print ("Invisible List");
+            break;
+        case CMD_VIS_LIST:
+            M_print ("Visible List");
+            break;
+        case CMD_RAND_SEARCH:
+            M_print ("Random Search");
+            break;
+        case CMD_RAND_SET:
+            M_print ("Set Random");
+            break;
+        case CMD_ACK_MESSAGES:
+            M_print ("Delete Server Messages");
+            break;
+        case CMD_LOGIN_1:
+            M_print ("Finish Login");
+            break;
+        case CMD_LOGIN:
+            M_print ("Login");
+            break;
+        case CMD_SENDM:
+            M_print ("Send Message");
+            break;
+        case CMD_INFO_REQ:
+            M_print ("Info Request");
+            break;
+        case CMD_EXT_INFO_REQ:
+            M_print ("Extended Info Request");
+            break;
+        default:
+            M_print ("%04X", cmd);
+            break;
     }
 }
 
@@ -215,32 +151,35 @@ void Print_CMD( WORD cmd )
 prints out the status of new_status as a string
 if possible otherwise as a hex number
 *********************************************/
-void Print_Status (DWORD new_status)
+void Print_Status (UDWORD new_status)
 {
     BOOL inv = FALSE;
     if (STATUS_OFFLINE != new_status)
     {
         if (new_status & STATUS_INVISIBLE)
         {
-         inv = TRUE;
-                 new_status = new_status & (~STATUS_INVISIBLE);
+            inv = TRUE;
+            new_status = new_status & (~STATUS_INVISIBLE);
         }
     }
     if (Convert_Status_2_Str (new_status))
     {
-    if (inv)
-    {
-        M_print ("%s-%s", i18n (6, "Invisible"), Convert_Status_2_Str (new_status));
-        new_status = new_status | (STATUS_INVISIBLE);
-    } else {
-        M_print ("%s", Convert_Status_2_Str (new_status));
-    }
+        if (inv)
+        {
+            M_print ("%s-%s", i18n (6, "Invisible"), Convert_Status_2_Str (new_status));
+            new_status = new_status | (STATUS_INVISIBLE);
+        }
+        else
+        {
+            M_print ("%s", Convert_Status_2_Str (new_status));
+        }
         if (Verbose)
-            M_print (" %06X", (WORD) (new_status >> 8));
+            M_print (" %06X", (UWORD) (new_status >> 8));
     }
     else
     {
-        if (inv) new_status = new_status | (STATUS_INVISIBLE);
+        if (inv)
+            new_status = new_status | (STATUS_INVISIBLE);
         M_print ("%08lX", new_status);
     }
 }
@@ -254,16 +193,16 @@ char *MsgEllipsis (char *msg)
 {
     static char buff[MSGID_LENGTH + 2];
     int screen_width, msgid_length;
-    
+
     screen_width = Get_Max_Screen_Width ();
     if (screen_width < 10)
-      screen_width = 10;
+        screen_width = 10;
     msgid_length = screen_width - (strlen ("##:##:## .......... " MSGSENTSTR) % screen_width);
     if (msgid_length < 5)
-      msgid_length += screen_width;
+        msgid_length += screen_width;
     if (msgid_length > MSGID_LENGTH)
-      msgid_length = MSGID_LENGTH;
-    
+        msgid_length = MSGID_LENGTH;
+
     if (strchr (msg, '\n') || strchr (msg, '\r'))
     {
         char *p, *q;
@@ -281,7 +220,7 @@ char *MsgEllipsis (char *msg)
         msg = buff;
     }
 
-    
+
     if (strlen (msg) <= msgid_length)
         return msg;
     if (buff != msg)
@@ -295,14 +234,14 @@ char *MsgEllipsis (char *msg)
  * Returns the nick of a UIN if we know it else
  * it will return Unknown UIN
  **********************************************/
-char *UIN2nick( DWORD uin)
+char *UIN2nick (UDWORD uin)
 {
     int i;
-     
-    for ( i=0; i < Num_Contacts; i++ )
+
+    for (i = 0; i < Num_Contacts; i++)
     {
-      if ( Contacts[i].uin == uin )
-          return Contacts[i].nick;
+        if (Contacts[i].uin == uin)
+            return Contacts[i].nick;
     }
     return NULL;
 }
@@ -311,16 +250,16 @@ char *UIN2nick( DWORD uin)
  * Returns the nick of a UIN if we know it else
  * it will return UIN
  **********************************************/
-char *UIN2Name (DWORD uin)
+char *UIN2Name (UDWORD uin)
 {
     int i;
     char buff[100];
 
     for (i = 0; i < Num_Contacts; i++)
     {
-      if (Contacts[i].uin == uin)
-          return Contacts[i].nick;
-     }
+        if (Contacts[i].uin == uin)
+            return Contacts[i].nick;
+    }
     snprintf (buff, 98, "%lu", uin);
     return strdup (buff);
 }
@@ -329,10 +268,10 @@ char *UIN2Name (DWORD uin)
 Prints the name of a user or their UIN if name
 is not known.
 ***********************************************/
-int Print_UIN_Name( DWORD uin )
+int Print_UIN_Name (UDWORD uin)
 {
     int i;
-    
+
     for (i = 0; i < Num_Contacts; i++)
     {
         if (Contacts[i].uin == uin)
@@ -349,7 +288,7 @@ int Print_UIN_Name( DWORD uin )
 Prints the name of a user or their UIN if name
 is not known, but use exactly 8 chars if possible.
 ***********************************************/
-int Print_UIN_Name_10 (DWORD uin)
+int Print_UIN_Name_10 (UDWORD uin)
 {
     int i;
 
@@ -357,31 +296,31 @@ int Print_UIN_Name_10 (DWORD uin)
     {
         if (Contacts[i].uin == uin)
         {
-             M_print (CONTACTCOL "%10s" NOCOL, Contacts[i].nick);
-             return i;
+            M_print (CONTACTCOL "%10s" NOCOL, Contacts[i].nick);
+            return i;
         }
     }
 
     M_print (CLIENTCOL "%8lu" NOCOL, uin);
-    return -1 ;
- }
+    return -1;
+}
 
 /**********************************************
 Returns the contact list with uin
 ***********************************************/
-CONTACT_PTR UIN2Contact( DWORD uin )
+CONTACT_PTR UIN2Contact (UDWORD uin)
 {
     int i;
-    
-    for ( i=0; i < Num_Contacts; i++ )
+
+    for (i = 0; i < Num_Contacts; i++)
     {
-        if ( Contacts[i].uin == uin )
+        if (Contacts[i].uin == uin)
             break;
     }
 
-    if ( i == Num_Contacts )
+    if (i == Num_Contacts)
     {
-        return (CONTACT_PTR) NULL ;
+        return (CONTACT_PTR) NULL;
     }
     else
     {
@@ -393,48 +332,48 @@ CONTACT_PTR UIN2Contact( DWORD uin )
 Converts a nick name into a uin from the contact
 list.
 **********************************************/
-DWORD nick2uin( char *nick )
+UDWORD nick2uin (char *nick)
 {
     int i;
-    BOOL non_numeric=FALSE;
+    BOOL non_numeric = FALSE;
 
-    /*cut off whitespace at the end (i.e. \t or space*/
-    i = strlen(nick) - 1;
-    while (isspace(nick[i]))
-             i--;
-    nick[i+1] = '\0';
+    /*cut off whitespace at the end (i.e. \t or space */
+    i = strlen (nick) - 1;
+    while (isspace (nick[i]))
+        i--;
+    nick[i + 1] = '\0';
 
-    
-    for ( i=0; i< Num_Contacts; i++ )
+
+    for (i = 0; i < Num_Contacts; i++)
     {
-        if ( ! strncasecmp( nick, Contacts[i].nick, 19  ))
+        if (!strncasecmp (nick, Contacts[i].nick, 19))
         {
-            if ( (S_DWORD) Contacts[i].uin > 0 )
+            if ((SDWORD) Contacts[i].uin > 0)
                 return Contacts[i].uin;
             else
-                return -Contacts[i].uin; /* alias */
+                return -Contacts[i].uin;        /* alias */
         }
     }
-    for ( i=0; i < strlen( nick); i++ )
+    for (i = 0; i < strlen (nick); i++)
     {
-        if ( ! isdigit( (int) nick[i] ))
+        if (!isdigit ((int) nick[i]))
         {
-            non_numeric=TRUE;
+            non_numeric = TRUE;
             break;
         }
     }
-    if ( non_numeric )
-        return -1; /* not found and not a number */
+    if (non_numeric)
+        return -1;              /* not found and not a number */
     else
-        return atoi( nick);
+        return atoi (nick);
 }
 
 /**************************************************
 Automates the process of creating a new user.
 ***************************************************/
-void Init_New_User( void )
+void Init_New_User (void)
 {
-    SOK_T sok; 
+    SOK_T sok;
     srv_net_icq_pak pak;
     int s;
     struct timeval tv;
@@ -445,28 +384,29 @@ void Init_New_User( void )
 #else
     fd_set readfds;
 #endif
-        
+
 #ifdef _WIN32
-    i = WSAStartup( 0x0101, &wsaData);
-    if ( i != 0 ) {
+    i = WSAStartup (0x0101, &wsaData);
+    if (i != 0)
+    {
 #ifdef FUNNY_MSGS
-          perror("Windows Sockets broken blame Bill -");
+        perror ("Windows Sockets broken blame Bill -");
 #else
-          perror("Sorry, can't initialize Windows Sockets...");
+        perror ("Sorry, can't initialize Windows Sockets...");
 #endif
-          exit(1);
+        exit (1);
     }
 #endif
     M_print ("\nCreating Connection...\n");
-    sok = Connect_Remote( server, remote_port, STDERR);
-    if ( ( sok == -1 ) || ( sok == 0 )) 
+    sok = Connect_Remote (server, remote_port, STDERR);
+    if ((sok == -1) || (sok == 0))
     {
-         M_print ("Couldn't establish connection\n");
-         exit( 1);
+        M_print ("Couldn't establish connection\n");
+        exit (1);
     }
     M_print ("Sending Request...\n");
-    reg_new_user( sok, passwd);
-    for ( ; ; )
+    reg_new_user (sok, passwd);
+    for (;;)
     {
 #ifdef UNIX
         tv.tv_sec = 3;
@@ -476,19 +416,19 @@ void Init_New_User( void )
         tv.tv_usec = 100000;
 #endif
 
-        FD_ZERO(&readfds);
-        FD_SET(sok, &readfds);
+        FD_ZERO (&readfds);
+        FD_SET (sok, &readfds);
 
         /* don't care about writefds and exceptfds: */
-        select(sok+1, &readfds, NULL, NULL, &tv);
+        select (sok + 1, &readfds, NULL, NULL, &tv);
         M_print ("Waiting for response....\n");
-        if (FD_ISSET(sok, &readfds))
+        if (FD_ISSET (sok, &readfds))
         {
-            s = SOCKREAD( sok, &pak.head.ver, sizeof( pak ) - 2);
-            if ( Chars_2_Word( pak.head.cmd ) == SRV_NEW_UIN )
+            s = SOCKREAD (sok, &pak.head.ver, sizeof (pak) - 2);
+            if (Chars_2_Word (pak.head.cmd) == SRV_NEW_UIN)
             {
-                UIN = Chars_2_DW( pak.head.UIN);
-                M_print ("\nYour new UIN is %s%ld%s!\n",SERVCOL, UIN, NOCOL);
+                UIN = Chars_2_DW (pak.head.UIN);
+                M_print ("\nYour new UIN is %s%ld%s!\n", SERVCOL, UIN, NOCOL);
                 return;
             }
             else
@@ -496,28 +436,27 @@ void Init_New_User( void )
 /*                Hex_Dump( &pak.head.ver, s);*/
             }
         }
-        reg_new_user( sok, passwd);
+        reg_new_user (sok, passwd);
     }
 }
 
 
-void Print_IP( DWORD uin )
+void Print_IP (UDWORD uin)
 {
     int i;
 #if 0
     struct in_addr sin;
 #endif
-    
-    for ( i=0; i< Num_Contacts; i++ )
+
+    for (i = 0; i < Num_Contacts; i++)
     {
-        if ( Contacts[i].uin == uin )
+        if (Contacts[i].uin == uin)
         {
-            if ( * (DWORD *)Contacts[i].current_ip != -1L )
+            if (*(UDWORD *) Contacts[i].current_ip != -1L)
             {
-              M_print ("%d.%d.%d.%d", Contacts[i].current_ip[0],
-                                              Contacts[i].current_ip[1],
-                                              Contacts[i].current_ip[2],
-                                              Contacts[i].current_ip[3]);
+                M_print ("%d.%d.%d.%d", Contacts[i].current_ip[0],
+                         Contacts[i].current_ip[1], Contacts[i].current_ip[2],
+                         Contacts[i].current_ip[3]);
             }
             else
             {
@@ -532,13 +471,13 @@ void Print_IP( DWORD uin )
 /************************************************
 Gets the TCP port of the specified UIN
 ************************************************/
-DWORD Get_Port( DWORD uin )
+UDWORD Get_Port (UDWORD uin)
 {
     int i;
-    
-    for ( i=0; i< Num_Contacts; i++ )
+
+    for (i = 0; i < Num_Contacts; i++)
     {
-        if ( Contacts[i].uin == uin )
+        if (Contacts[i].uin == uin)
         {
             return Contacts[i].port;
         }
@@ -548,61 +487,61 @@ DWORD Get_Port( DWORD uin )
 
 /********************************************
 Converts an intel endian character sequence to
-a DWORD
+a UDWORD
 *********************************************/
-DWORD Chars_2_DW( BYTE *buf )
+UDWORD Chars_2_DW (UBYTE * buf)
 {
-    DWORD i;
-    
-    i= buf[3];
+    UDWORD i;
+
+    i = buf[3];
     i <<= 8;
-    i+= buf[2];
+    i += buf[2];
     i <<= 8;
-    i+= buf[1];
+    i += buf[1];
     i <<= 8;
-    i+= buf[0];
-    
+    i += buf[0];
+
     return i;
 }
 
 /********************************************
 Converts an intel endian character sequence to
-a WORD
+a UWORD
 *********************************************/
-WORD Chars_2_Word( BYTE *buf )
+UWORD Chars_2_Word (UBYTE * buf)
 {
-    WORD i;
-    
-    i= buf[1];
+    UWORD i;
+
+    i = buf[1];
     i <<= 8;
     i += buf[0];
-    
+
     return i;
 }
 
 /********************************************
-Converts a DWORD to
+Converts a UDWORD to
 an intel endian character sequence 
 *********************************************/
-void DW_2_Chars( BYTE *buf, DWORD num )
+void DW_2_Chars (UBYTE * buf, UDWORD num)
 {
-    buf[3] = ( unsigned char ) ((num)>>24)& 0x000000FF;
-    buf[2] = ( unsigned char ) ((num)>>16)& 0x000000FF;
-    buf[1] = ( unsigned char ) ((num)>>8)& 0x000000FF;
-    buf[0] = ( unsigned char ) (num) & 0x000000FF;
+    buf[3] = (unsigned char) ((num) >> 24) & 0x000000FF;
+    buf[2] = (unsigned char) ((num) >> 16) & 0x000000FF;
+    buf[1] = (unsigned char) ((num) >> 8) & 0x000000FF;
+    buf[0] = (unsigned char) (num) & 0x000000FF;
 }
 
 /********************************************
-Converts a WORD to
+Converts a UWORD to
 an intel endian character sequence 
 *********************************************/
-void Word_2_Chars( BYTE *buf, WORD num )
+void Word_2_Chars (UBYTE * buf, UWORD num)
 {
-    buf[1] = ( unsigned char ) (((unsigned)num)>>8) & 0x00FF;
-    buf[0] = ( unsigned char ) ((unsigned)num) & 0x00FF;
+    buf[1] = (unsigned char) (((unsigned) num) >> 8) & 0x00FF;
+    buf[0] = (unsigned char) ((unsigned) num) & 0x00FF;
 }
 
-BOOL Log_Dir_Normal( void )
+BOOL Log_Dir_Normal (void)
 {
     return Normal_Log;
 }
@@ -613,9 +552,10 @@ if newpath is null it will set it to a reasonable default
 if newpath doesn't end with a valid directory seperator one is added.
 the path used is returned.
 *************************************************************************/
-char * Set_Log_Dir( const char *newpath )
+const char *Set_Log_Dir (const char *newpath)
 {
-    if ( NULL == newpath ) {
+    if (NULL == newpath)
+    {
         char *path = 0;
         char *home;
         Normal_Log = TRUE;
@@ -631,28 +571,34 @@ char * Set_Log_Dir( const char *newpath )
         home = getenv ("HOME");
         if (home || !path)
         {
-            if (!home) home = "";
-            path = malloc( strlen( home ) + 2);
-            strcpy( path, home);
-            if ( path[ strlen( path ) - 1 ] != '/' )
-                strcat( path, "/");
+            if (!home)
+                home = "";
+            path = malloc (strlen (home) + 2);
+            strcpy (path, home);
+            if (path[strlen (path) - 1] != '/')
+                strcat (path, "/");
         }
 #endif
 
         Log_Dir = path;
         return path;
-    } else {
+    }
+    else
+    {
 #ifdef _WIN32
         char sep = '\\';
 #else
         char sep = '/';
 #endif
-        Normal_Log=FALSE;
-        if ( newpath[ strlen( newpath ) - 1 ] != sep ) {
-            Log_Dir = malloc( strlen( newpath ) + 2);
-            sprintf( Log_Dir, "%s%c", newpath, sep);
-        } else {
-            Log_Dir = strdup( newpath);
+        Normal_Log = FALSE;
+        if (newpath[strlen (newpath) - 1] != sep)
+        {
+            Log_Dir = malloc (strlen (newpath) + 2);
+            sprintf (Log_Dir, "%s%c", newpath, sep);
+        }
+        else
+        {
+            Log_Dir = strdup (newpath);
         }
         return Log_Dir;
     }
@@ -662,13 +608,11 @@ char * Set_Log_Dir( const char *newpath )
 Returns the current directory used for logging.  If none has been 
 specified it sets it tobe a reasonable default (~/)
 *************************************************************************/
-char * Get_Log_Dir( void )
+const char *Get_Log_Dir (void)
 {
-    if ( NULL == Log_Dir ) {
-        return Set_Log_Dir( NULL);
-    } else {
+    if (Log_Dir)
         return Log_Dir;
-    }
+    return Set_Log_Dir (NULL);
 }
 
 /*************************************************************************
@@ -677,133 +621,118 @@ char * Get_Log_Dir( void )
  *        Andrew Frolov dron@ilm.net
  *        6-20-98 Added names to the logs. Fryslan
  *************************************************************************/
-int log_event( DWORD uin, int type, char *str, ... )
+int log_event (UDWORD uin, int type, char *str, ...)
 {
-    char symbuf[256]; /* holds the path for a sym link */
-    FILE     *msgfd;
+    char symbuf[256];           /* holds the path for a sym link */
+    FILE *msgfd;
     va_list args;
     int k;
-    char buf[2048]; /* this should big enough - This holds the message to be logged */
-    char     buffer[256];
-    time_t  timeval;
-    char *path = 0;
+    char buf[2048];             /* this should big enough - This holds the message to be logged */
+    char buffer[256];
+    time_t timeval;
+    const char *path;
 /*    char *home; */
     struct stat statbuf;
 
-    if ( ! LogType )
+    if (!LogType)
         return 0;
 
-    if ( ( 3 == LogType  ) && ( LOG_ONLINE == type ))
+    if ((3 == LogType) && (LOG_ONLINE == type))
         return 0;
-    
-    timeval = time(0);
-    va_start( args, str);
-    sprintf( buf, "\n%-24.24s ", ctime(&timeval));
-    vsprintf( &buf[ strlen( buf ) ], str, args);
 
-/*************************************************        
-#ifdef _WIN32
-    path = ".\\";
-#endif
+    timeval = time (0);
+    va_start (args, str);
+    sprintf (buf, "\n%-24.24s ", ctime (&timeval));
+    vsprintf (&buf[strlen (buf)], str, args);
 
-#ifdef __amigaos__
-    path = "PROGDIR:";
-#endif
+    path = Get_Log_Dir ();
+    strcpy (buffer, path);
 
-#ifdef UNIX
-    home = getenv( "HOME");
-    if (!home) home = "";
-    path = malloc( strlen( home ) + 2);
-    strcpy( path, home);
-    if ( path[ strlen( path ) - 1 ] != '/' )
-        strcat( path, "/");
-#endif
-
-    strcpy( buffer, path);
-*************************************************/
-
-    path = Get_Log_Dir();
-    strcpy( buffer, path);
-
-switch (LogType) {
-    case 1:
-        strcat(buffer,"micq_log");
-        break;
-    case 2:
-    case 3:
-    default:
-        strcat( buffer, "micq.log");
-        if ( -1 == stat( buffer, &statbuf )) {
-        if ( errno == ENOENT ) {
-                   mkdir( buffer, 0700);
-                } else {
-                   return -1;
-                 }
-        }
-#ifdef _WIN32
-        strcat( buffer, "\\");
-#else
-       strcat( buffer, "/");
-#endif
-        strcpy( symbuf, buffer);
-        sprintf( &buffer[ strlen( buffer ) ], "%ld.log", uin);
-        
-#ifdef UNIX
-    if ( NULL != UIN2nick(uin)) {
-               sprintf( &symbuf[strlen(symbuf)],"%s.log",UIN2nick(uin));
-            symlink(buffer,symbuf);
-    }
-#endif          
-         
-
-        break;
-}
-    if( ( msgfd = fopen(buffer, "a")) == (FILE *) NULL ) 
+    switch (LogType)
     {
-              fprintf(stderr, "\nCouldn't open %s for logging\n",
-                                     buffer);
-              return(-1);
+        case 1:
+            strcat (buffer, "micq_log");
+            break;
+        case 2:
+        case 3:
+        default:
+            strcat (buffer, "micq.log");
+            if (-1 == stat (buffer, &statbuf))
+            {
+                if (errno == ENOENT)
+                {
+                    mkdir (buffer, 0700);
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+#ifdef _WIN32
+            strcat (buffer, "\\");
+#else
+            strcat (buffer, "/");
+#endif
+            strcpy (symbuf, buffer);
+            sprintf (&buffer[strlen (buffer)], "%ld.log", uin);
+
+#ifdef UNIX
+            if (NULL != UIN2nick (uin))
+            {
+                sprintf (&symbuf[strlen (symbuf)], "%s.log", UIN2nick (uin));
+                symlink (buffer, symbuf);
+            }
+#endif
+
+
+            break;
+    }
+    if ((msgfd = fopen (buffer, "a")) == (FILE *) NULL)
+    {
+        fprintf (stderr, "\nCouldn't open %s for logging\n", buffer);
+        return (-1);
     }
 /*     if ( ! strcasecmp(UIN2nick(uin),"Unknow UIN"))
          fprintf(msgfd, "\n%-24.24s %s %ld\n%s\n", ctime(&timeval), desc, uin, msg);
      else
          fprintf(msgfd, "\n%-24.24s %s %s\n%s\n", ctime(&timeval), desc, UIN2nick(uin), msg);*/
 
-    if ( strlen( buf )) {
-        fwrite( "<", 1, 1, msgfd);
-        k = fwrite( buf, 1, strlen( buf ), msgfd);
-        if ( k != strlen( buf ))
+    if (strlen (buf))
+    {
+        fwrite ("<", 1, 1, msgfd);
+        k = fwrite (buf, 1, strlen (buf), msgfd);
+        if (k != strlen (buf))
         {
-                 perror( "\nLog file write error\n");
-                return -1;
+            perror ("\nLog file write error\n");
+            return -1;
         }
-        fwrite( ">\n", 1, 2, msgfd);
+        fwrite (">\n", 1, 2, msgfd);
     }
-    va_end( args);
-      
-    fclose(msgfd);
+    va_end (args);
+
+    fclose (msgfd);
 #ifdef UNIX
-    chmod( buffer, 0600);
+    chmod (buffer, 0600);
 #endif
-    return(0);
+    return (0);
 }
 
 /*************************************************
  clears the screen 
 **************************************************/
-void clrscr(void)
+void clrscr (void)
 {
 #ifdef UNIX
-     system( "clear");
+    system ("clear");
 #else
 #ifdef _WIN32
-     system( "cls");
+    system ("cls");
 #else
-     int x;
-     char newline = '\n';     
+    int x;
+    char newline = '\n';
 
-      for(x = 0; x<=25; x++)
-          M_print("%c",newline);
+    for (x = 0; x <= 25; x++)
+        M_print ("%c", newline);
 #endif
 #endif
 }
@@ -811,56 +740,57 @@ void clrscr(void)
 /************************************************************
 Displays a hex dump of buf on the screen.
 *************************************************************/
-void Hex_Dump( void *buffer, size_t len )
+void Hex_Dump (void *buffer, size_t len)
 {
-        int i;
-        int j;
-        int k;
-        char *buf;
-        
-        buf = buffer;
-        assert( len > 0);
-        if ( ( len > 1000 )) {
-            M_print ("Ack!!!!!!  %d\a\n" , len);
-     return;
-        }
-        for ( i=0 ; i < len; i++ )
+    int i;
+    int j;
+    int k;
+    char *buf;
+
+    buf = buffer;
+    assert (len > 0);
+    if ((len > 1000))
+    {
+        M_print ("Ack!!!!!!  %d\a\n", len);
+        return;
+    }
+    for (i = 0; i < len; i++)
+    {
+        M_print ("%02x ", (unsigned char) buf[i]);
+        if ((i & 15) == 15)
         {
-            M_print ("%02x ", ( unsigned char ) buf[i]);
-            if ( ( i & 15 ) == 15 )
+            M_print ("  ");
+            for (j = 15; j >= 0; j--)
             {
-                M_print ("  ");
-                for ( j = 15; j >= 0; j-- )
-                {
-                    if ( buf[i-j] > 31 )
-                        M_print ("%c", buf[i-j]);
-                    else
-                        M_print (".");
-                    if ( ( (i-j) & 3 ) == 3 )
-                        M_print (" ");
-                }
-                M_print ("\n");
+                if (buf[i - j] > 31)
+                    M_print ("%c", buf[i - j]);
+                else
+                    M_print (".");
+                if (((i - j) & 3) == 3)
+                    M_print (" ");
             }
-            else if ( ( i & 7 ) == 7 )
-                M_print ("- ");
-            else if ( ( i & 3 ) == 3 )
-                M_print ("  ");
+            M_print ("\n");
         }
-        for ( k = i % 16; k <16; k++  )
-        {
-            M_print ("    ");
-            if ( ( k & 7 ) == 7 )
-                M_print ("  ");
-            else if ( ( k & 3 ) == 3 )
-                M_print ("  ");
-        }
-        for ( j = i % 16; j > 0; j-- )
-        {
-            if ( buf[i-j] > 31 )
-                M_print ("%c", buf[i-j]);
-            else
-                M_print (".");
-            if ( ( (i-j) & 3 ) == 3 )
-                M_print (" ");
-        }
+        else if ((i & 7) == 7)
+            M_print ("- ");
+        else if ((i & 3) == 3)
+            M_print ("  ");
+    }
+    for (k = i % 16; k < 16; k++)
+    {
+        M_print ("    ");
+        if ((k & 7) == 7)
+            M_print ("  ");
+        else if ((k & 3) == 3)
+            M_print ("  ");
+    }
+    for (j = i % 16; j > 0; j--)
+    {
+        if (buf[i - j] > 31)
+            M_print ("%c", buf[i - j]);
+        else
+            M_print (".");
+        if (((i - j) & 3) == 3)
+            M_print (" ");
+    }
 }

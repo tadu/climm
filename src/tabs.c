@@ -10,14 +10,14 @@
 #include "micq.h"
 #include "tabs.h"
 
-static DWORD tab_array[TAB_SLOTS + 1] = { 0 };
+static UDWORD tab_array[TAB_SLOTS + 1] = { 0 };
 static int tab_pointer = 0;
 
 /*
  * Appends an UIN to the list. A previous occurrence is deleted.
  * Last entry might get lost.
  */
-void TabAddUIN (DWORD uin)
+void TabAddUIN (UDWORD uin)
 {
     int i, found = 0;
 
@@ -56,7 +56,7 @@ int TabHasNext (void)
 /*
  * Returns next UIN, if the list is not empty; wraps around if necessary.
  */
-DWORD TabGetNext (void)
+UDWORD TabGetNext (void)
 {
     if (!tab_array[tab_pointer])
         tab_pointer = 0;

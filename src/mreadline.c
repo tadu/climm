@@ -32,20 +32,20 @@
 #include <ctype.h>
 
 #ifndef _WIN32
-    #include <termios.h>
+#include <termios.h>
 #endif
 
 #define HISTORY_LINES 10
 #define HISTORY_LINE_LEN 1024
 
 static struct termios t_attr;
-static void tty_prepare(void);
-static void tty_restore(void);
+static void tty_prepare (void);
+static void tty_restore (void);
 
 static void R_process_input_backspace (void);
 static void R_process_input_delete (void);
 
-static char *history[HISTORY_LINES+1];
+static char *history[HISTORY_LINES + 1];
 static int history_cur = 0;
 static char s[HISTORY_LINE_LEN];
 static char y[HISTORY_LINE_LEN];
@@ -55,12 +55,12 @@ static int istat = 0;
 
 void R_init (void)
 {
-    int    k;
+    int k;
     static int inited = 0;
 
     if (inited)
         return;
-    for (k = 0; k < HISTORY_LINES+1; k++)
+    for (k = 0; k < HISTORY_LINES + 1; k++)
     {
         history[k] = (char *) malloc (HISTORY_LINE_LEN);
         history[k][0] = 0;
@@ -92,7 +92,8 @@ void R_process_input_backspace (void)
         {
             int i;
             print ("\b%s", s + cpos);
-            for (i = clen - cpos; i; i--) print ("\b");
+            for (i = clen - cpos; i; i--)
+                print ("\b");
         }
 #else
         printf ("\b\033[K%s", s + cpos);
@@ -112,7 +113,8 @@ void R_process_input_delete (void)
         {
             int i;
             print (s + cpos);
-            for (i = clen - cpos; i; i--) print ("\b");
+            for (i = clen - cpos; i; i--)
+                print ("\b");
         }
 #else
         printf ("\033[K%s", s + cpos);
@@ -124,24 +126,17 @@ void R_process_input_delete (void)
 
 void R_process_input_tab (void)
 {
-    DWORD uin;
+    UDWORD uin;
 
-    if (*s && strlen (s) <= strlen (message_cmd))
+    if (strpbrk (s, UIN_DELIMS) && strpbrk (s, UIN_DELIMS) - s < strlen (s) - 1)
     {
-        if (strncmp (s, message_cmd, strlen (s)))
-        {
-            M_print ("\a");
-            return;
-        }
+        M_print ("\a");
+        return;
     }
-    else
+    if (strncmp (s, message_cmd, strlen (s) < strlen (message_cmd) ? strlen (s) : strlen (message_cmd)))
     {
-        if (*s && (strncmp (s, message_cmd, strlen (message_cmd)) ||
-                  (strpbrk (s, UIN_DELIMS) && strpbrk (s, UIN_DELIMS) - s < strlen (s) - 1)))
-        {
-            M_print ("\a");
-            return;
-        }
+        M_print ("\a");
+        return;
     }
 
     if ((uin = TabGetNext ()))
@@ -150,15 +145,15 @@ void R_process_input_tab (void)
         sprintf (s, "%s ", message_cmd);
 
     clen = cpos = strlen (s);
-    R_undraw();
-    R_redraw();
+    R_undraw ();
+    R_redraw ();
 }
 
 int R_process_input (void)
 {
-    char  ch;
-    int   k;
-    char  s1[HISTORY_LINE_LEN];
+    char ch;
+    int k;
+    char s1[HISTORY_LINE_LEN];
 
     if (!read (STDIN_FILENO, &ch, 1))
         return 0;
@@ -179,7 +174,7 @@ int R_process_input (void)
                 R_process_input_delete ();
                 return 0;
             }
-            strcpy (s,"q");
+            strcpy (s, "q");
             printf ("\n");
             return 1;
         }
@@ -199,7 +194,7 @@ int R_process_input (void)
             R_redraw ();
             return 0;
         }
-#endif    /* VREPRINT */
+#endif /* VREPRINT */
         if (ch == '\t' && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
         {
             R_process_input_tab ();
@@ -207,25 +202,26 @@ int R_process_input (void)
         }
         if (ch >= 0 && ch < ' ')
         {
-            switch (ch) {
-                case  1: /* ^A */
+            switch (ch)
+            {
+                case 1:        /* ^A */
                     printf ("\033[%dD", cpos);
                     cpos = 0;
                     break;
-                case  5: /* ^E */
-                    printf ("\033[%dC", clen-cpos);
+                case 5:        /* ^E */
+                    printf ("\033[%dC", clen - cpos);
                     cpos = clen;
                     break;
-                case  8: /* ^H = \b */
+                case 8:        /* ^H = \b */
                     R_process_input_backspace ();
                     return 0;
-                case 11: /* ^K, as requested by Bernhard Sadlowski */
-                    clen = cpos;
+                case 11:       /* ^K, as requested by Bernhard Sadlowski */
+                    clen = cpos - 1;
                     printf ("\033[K");
                     break;
                 case '\n':
                 case '\r':
-                    s[clen + 1] = 0; /* just to be sure */
+                    s[clen + 1] = 0;    /* just to be sure */
                     M_print ("\n");
                     history_cur = 0;
                     TabReset ();
@@ -234,19 +230,19 @@ int R_process_input (void)
                         return 1;
                     if (strcmp (s, history[1]))
                         for (k = HISTORY_LINES; k; k--)
-                            strcpy (history[k], history[k-1]);
+                            strcpy (history[k], history[k - 1]);
                     return 1;
-                case 12: /* ^L */
+                case 12:       /* ^L */
                     system ("clear");
                     R_redraw ();
                     break;
-                case 25: /* ^Y */
+                case 25:       /* ^Y */
                     strcpy (s, y);
                     clen = cpos = strlen (s);
                     R_undraw ();
                     R_redraw ();
 #ifdef ANSI_COLOR
-                case 27: /* ESC */
+                case 27:       /* ESC */
                     istat = 1;
                     break;
 #endif
@@ -258,9 +254,9 @@ int R_process_input (void)
 #ifdef ANSI_COLOR
             printf ("%s", s + cpos);
             strcpy (s1, s + cpos);
-            strcpy (s+cpos+1, s1);
+            strcpy (s + cpos + 1, s1);
             if (cpos < clen)
-                printf ("\033[%dD", clen-cpos);
+                printf ("\033[%dD", clen - cpos);
 #endif
             s[cpos++] = ch;
             clen++;
@@ -271,20 +267,20 @@ int R_process_input (void)
 #ifdef ANSI_COLOR
     switch (istat)
     {
-        case 1: /* ESC */
+        case 1:                /* ESC */
             if (ch == '[' || ch == 'O')
                 istat = 2;
             else
                 istat = 0;
             break;
-        case 2: /* CSI */
+        case 2:                /* CSI */
             istat = 0;
             switch (ch)
             {
-                case 'A': /* Up key */
-                case 'B': /* Down key */
-                    if ( (ch == 'A' && history_cur >= HISTORY_LINES) ||
-                         (ch == 'B' && history_cur == 0))
+                case 'A':      /* Up key */
+                case 'B':      /* Down key */
+                    if ((ch == 'A' && history_cur >= HISTORY_LINES)
+                        || (ch == 'B' && history_cur == 0))
                         break;
                     k = history_cur;
                     strcpy (history[history_cur], s);
@@ -294,7 +290,7 @@ int R_process_input (void)
                         history_cur--;
                     if (history[history_cur][0] || history_cur == 0)
                     {
-                        strcpy(s, history[history_cur]);
+                        strcpy (s, history[history_cur]);
                         cpos = clen = strlen (s);
                         R_undraw ();
                         R_redraw ();
@@ -304,30 +300,30 @@ int R_process_input (void)
                         history_cur = k;
                     }
                     break;
-                case 'C': /* Right key */
+                case 'C':      /* Right key */
                     if (cpos == clen)
                         break;
                     cpos++;
                     printf ("\033[C");
                     break;
-                case 'D': /* Left key */
+                case 'D':      /* Left key */
                     if (!cpos)
                         break;
                     cpos--;
                     printf ("\033[D");
                     break;
-                case '3': /* ESC [ 3 ~ = Delete */
+                case '3':      /* ESC [ 3 ~ = Delete */
                     istat = 3;
                     break;
                 default:
                     printf ("\007");
             }
             break;
-        case 3: /* Del Key */
+        case 3:                /* Del Key */
             istat = 0;
             switch (ch)
             {
-                case '~': /* Del Key */
+                case '~':      /* Del Key */
                     R_process_input_delete ();
                     break;
                 default:
@@ -344,7 +340,7 @@ void R_redraw (void)
     printf ("%s", s);
 #ifdef ANSI_COLOR
     if (cpos != clen)
-        printf ("\033[%dD", clen-cpos);
+        printf ("\033[%dD", clen - cpos);
 #endif
 }
 
@@ -377,7 +373,7 @@ void R_doprompt (const char *prompt)
 
 void R_undraw ()
 {
-    M_print("\r"); /* for tab stop reasons */
+    M_print ("\r");             /* for tab stop reasons */
     printf ("\033[K");
 }
 
@@ -388,7 +384,7 @@ static void tty_restore (void)
 {
     if (!attrs_saved)
         return;
-    if (tcsetattr(STDIN_FILENO,TCSAFLUSH,&saved_attr) != 0)
+    if (tcsetattr (STDIN_FILENO, TCSAFLUSH, &saved_attr) != 0)
         perror ("can't restore tty modes");
     else
         attrs_saved = 0;
@@ -397,14 +393,14 @@ static void tty_restore (void)
 static void tty_prepare (void)
 {
     istat = 0;
-    if (tcgetattr(STDIN_FILENO, &t_attr) != 0)
+    if (tcgetattr (STDIN_FILENO, &t_attr) != 0)
         return;
     saved_attr = t_attr;
     attrs_saved = 1;
 
-    t_attr.c_lflag &= ~(ECHO|ICANON);
+    t_attr.c_lflag &= ~(ECHO | ICANON);
     t_attr.c_cc[VMIN] = 1;
-    if (tcsetattr(STDIN_FILENO,TCSAFLUSH,&t_attr) != 0)
+    if (tcsetattr (STDIN_FILENO, TCSAFLUSH, &t_attr) != 0)
         perror ("can't change tty modes");
 }
 

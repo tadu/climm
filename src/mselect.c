@@ -19,24 +19,24 @@ Changes :
 #include <limits.h>
 
 #ifdef _WIN32
-    #include <conio.h>
-    #include <io.h>
-    #include <winsock2.h>
-    #include <time.h>
+#include <conio.h>
+#include <io.h>
+#include <winsock2.h>
+#include <time.h>
 #else
-    #include <sys/types.h>
-    #include <unistd.h>
-    #include <netinet/in.h>
-    #include <sys/stat.h>
-    #include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <netinet/in.h>
+#include <sys/stat.h>
+#include <sys/socket.h>
 
-    #ifndef __BEOS__
-        #include <arpa/inet.h>
-    #endif
+#ifndef __BEOS__
+#include <arpa/inet.h>
+#endif
 
-    #include <netdb.h>
-    #include <sys/time.h>
-    #include <sys/wait.h>
+#include <netdb.h>
+#include <sys/time.h>
+#include <sys/wait.h>
 #endif
 
 #include <fcntl.h>
@@ -52,37 +52,37 @@ static struct timeval tv;
 static fd_set readfds;
 static int max_fd;
 
-void M_select_init( void )
+void M_select_init (void)
 {
-      FD_ZERO(&readfds);
-      max_fd = 0;
+    FD_ZERO (&readfds);
+    max_fd = 0;
 }
 
-void M_set_timeout( DWORD sec, DWORD usec )
+void M_set_timeout (UDWORD sec, UDWORD usec)
 {
-   tv.tv_sec = sec;
-   tv.tv_usec = usec;
+    tv.tv_sec = sec;
+    tv.tv_usec = usec;
 }
 
-void M_Add_rsocket( FD_T sok )
+void M_Add_rsocket (FD_T sok)
 {
-      FD_SET(sok, &readfds);
-      if ( sok > max_fd )
-         max_fd = sok;
+    FD_SET (sok, &readfds);
+    if (sok > max_fd)
+        max_fd = sok;
 }
 
-BOOL M_Is_Set( FD_T sok )
+BOOL M_Is_Set (FD_T sok)
 {
-   return (FD_ISSET(sok, &readfds));
+    return (FD_ISSET (sok, &readfds));
 }
 
-int M_select( void )
+int M_select (void)
 {
-   int res;
+    int res;
 
-   /* don't care about writefds and exceptfds: */
-   res = select( max_fd+1, &readfds, NULL, NULL, &tv);
-   if (res == -1)
-      FD_ZERO (&readfds);
-   return res;
+    /* don't care about writefds and exceptfds: */
+    res = select (max_fd + 1, &readfds, NULL, NULL, &tv);
+    if (res == -1)
+        FD_ZERO (&readfds);
+    return res;
 }

@@ -51,14 +51,14 @@ int i18nOpen (const char *loc)
     {
         int i;
         char *p;
-        
+
         i = strtol (buf, &p, 10);
-        
+
         if (p == buf || i < 0 || i >= i18nSLOTS)
             continue;
         i18nStrings[i] = p = strdup (++p);
         j++;
-        for ( ; *p; p++)
+        for (; *p; p++)
             if (*p == '¶')
                 *p = '\n';
     }
@@ -82,10 +82,9 @@ const char *i18n (int i, const char *txt)
         txt = ++q;
     }
 
-    if (i >=  0 && i < i18nSLOTS)
+    if (i >= 0 && i < i18nSLOTS)
         if ((p = i18nStrings[i]))
             return p;
 
     return txt;
 }
-

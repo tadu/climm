@@ -1,7 +1,7 @@
 
 #define TAB_SLOTS 10
 
-void  TabAddUIN (DWORD uin);
-int   TabHasNext (void);
-DWORD TabGetNext (void);
-void  TabReset (void);
+void   TabAddUIN (UDWORD uin);
+int    TabHasNext (void);
+UDWORD TabGetNext (void);
+void   TabReset (void);
