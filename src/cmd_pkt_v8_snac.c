@@ -581,7 +581,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     Extra *extra = NULL;
     TLV *tlv;
     UDWORD midtim, midrnd, midtime, midrand, uin, unk, tmp;
-    UWORD seq1, seq2, tcpver, len, i, msgtyp, type, /*status,*/ pri;
+    UWORD seq1, seq2, tcpver, len, i, msgtyp, type, status, pri;
     char *text = NULL;
     const char *resp, *txt = NULL;
 
@@ -716,7 +716,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             tmp    = PacketRead4 (pp);      PacketWrite4 (p, tmp);
             tmp    = PacketRead4 (pp);      PacketWrite4 (p, tmp);
             msgtyp = PacketRead2 (pp);      PacketWrite2 (p, msgtyp);
-            /*status=*/PacketRead2 (pp);
+            status = PacketRead2 (pp);
             pri    = PacketRead2 (pp);
             text   = PacketReadLNTS (pp);
                      PacketRead4 (pp); /* FOREGROUND */
@@ -781,7 +781,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                         return;
                 }
             }
-            PacketWrite2 (p, 0);
+            PacketWrite2 (p, status);
             PacketWrite2 (p, pri);
             PacketWriteLNTS (p, "");
             SnacSend (event->conn, p);
