@@ -549,6 +549,8 @@ void UtilUIUserOnline (Session *sess, Contact *cont, UDWORD status)
         M_print (")");
     if (cont->version && !~old)
         M_print (" [%s]", cont->version);
+    if ((status & STATUSF_BIRTHDAY) && (!(old & STATUSF_BIRTHDAY) || !~old))
+        M_print (" (%s)", i18n (2033, "born today"));
     M_print (".\n");
 
     if (prG->verbose && !~old)

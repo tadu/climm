@@ -870,7 +870,7 @@ void SnacCliSetstatus (Session *sess, UWORD status, UWORD action)
     Packet *pak;
     
     pak = SnacC (sess, 1, 0x1e, 0, 0);
-    if ((action & 1) && (status & STATUS_INVISIBLE))
+    if ((action & 1) && (status & STATUSF_INVISIBLE))
         SnacCliAddvisible (sess, 0);
     if (action & 1)
         PacketWriteTLV4 (pak, 6, status);
@@ -904,7 +904,7 @@ void SnacCliSetstatus (Session *sess, UWORD status, UWORD action)
         PacketWriteTLV2 (pak, 8, 0);
     }
     SnacSend (sess, pak);
-    if ((action & 1) && !(status & STATUS_INVISIBLE))
+    if ((action & 1) && !(status & STATUSF_INVISIBLE))
         SnacCliAddinvis (sess, 0);
 }
 

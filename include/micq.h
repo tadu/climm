@@ -76,35 +76,36 @@ typedef struct PreferencesSession_s PreferencesSession;
 #include "icq_v5.h"
 #include "icq_tcp.h"
 
-#define STATUS_OFFLINE  	(-1L)
-#define STATUS_ONLINE  		0x00
-#define STATUS_INVISIBLE 	0x100
-#define STATUS_NA_99        	0x04
-#define STATUS_NA      		0x05
-#define STATUS_FREE_CHAT 	0x20
-#define STATUS_OCCUPIED_MAC 	0x10
-#define STATUS_OCCUPIED 	0x11
-#define STATUS_AWAY    		0x01
-#define STATUS_DND    		0x13
-#define STATUS_DND_99    	0x02
+#define STATUS_OFFLINE        0xffffffff
+#define STATUS_ONLINE               0x00
+#define STATUS_NA_99                0x04
+#define STATUS_NA                   0x05
+#define STATUS_FREE_CHAT            0x20
+#define STATUS_OCCUPIED_MAC         0x10
+#define STATUS_OCCUPIED             0x11
+#define STATUS_AWAY                 0x01
+#define STATUS_DND                  0x13
+#define STATUS_DND_99               0x02
+#define STATUSF_INVISIBLE     0x00000100
+#define STATUSF_BIRTHDAY      0x00080000
 
-#define AUTH_REQ_MESS 		0x0006
+#define AUTH_REQ_MESS           0x0006
 #define AUTH_REF_MESS           0x0007
-#define AUTH_OK_MESS  		0x0008
-#define USER_ADDED_MESS 	0x000C
-#define URL_MESS		0x0004
-#define WEB_MESS		0x000d
-#define EMAIL_MESS		0x000e
-#define MASS_MESS_MASK  	0x8000
-#define MRURL_MESS		0x8004
-#define NORM_MESS		0x0001
-#define MRNORM_MESS		0x8001
-#define CONTACT_MESS		0x0013
-#define MRCONTACT_MESS		0x8013
+#define AUTH_OK_MESS            0x0008
+#define USER_ADDED_MESS         0x000C
+#define URL_MESS                0x0004
+#define WEB_MESS                0x000d
+#define EMAIL_MESS              0x000e
+#define MASS_MESS_MASK          0x8000
+#define MRURL_MESS              0x8004
+#define NORM_MESS               0x0001
+#define MRNORM_MESS             0x8001
+#define CONTACT_MESS            0x0013
+#define MRCONTACT_MESS          0x8013
 
-#define INV_LIST_UPDATE 	0x01
-#define VIS_LIST_UPDATE 	0x02
-#define CONT_LIST_UPDATE 	0x00
+#define INV_LIST_UPDATE         0x01
+#define VIS_LIST_UPDATE         0x02
+#define CONT_LIST_UPDATE        0x00
 
 typedef struct
 {

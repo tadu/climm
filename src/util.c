@@ -69,7 +69,7 @@ a NULL if no such string exists
 *********************************************/
 const char *Convert_Status_2_Str (UDWORD status)
 {
-    if (STATUS_OFFLINE == (status | STATUS_INVISIBLE))       /* this because -1 & 0xFFFF is not -1 */
+    if (STATUS_OFFLINE == (status | STATUSF_INVISIBLE))       /* this because -1 & 0xFFFF is not -1 */
     {
         return i18n (1969, "offline");
     }
@@ -89,7 +89,7 @@ const char *Convert_Status_2_Str (UDWORD status)
         case STATUS_NA:
         case STATUS_NA_99:
             return i18n (1974, "not available");
-        case STATUS_INVISIBLE:
+        case STATUSF_INVISIBLE:
             return i18n (1975, "invisible");
         case STATUS_FREE_CHAT:
             return i18n (1976, "free for chat");
@@ -104,9 +104,9 @@ if possible otherwise as a hex number
 *********************************************/
 void Print_Status (UDWORD status)
 {
-    if (status != STATUS_OFFLINE && status & STATUS_INVISIBLE)
+    if (status != STATUS_OFFLINE && (status & STATUSF_INVISIBLE))
         M_print ("%s-", i18n (1975, "invisible"));
-    M_print (Convert_Status_2_Str (status & ~STATUS_INVISIBLE));
+    M_print (Convert_Status_2_Str (status & ~STATUSF_INVISIBLE));
     if (prG->verbose)
         M_print (" %08x", status);
 }

@@ -5,6 +5,7 @@
 	* Automatic responses.
 	* Automatic reconnects.
 	* Delay online status changes till own login is finished.
+	* Display birthday flag.
 
 2002-05-25 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* tcp.c: s/TYPE_PEER/TYPE_LISTEN; get rid of assert()s; mem leaks;

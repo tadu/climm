@@ -69,7 +69,7 @@ char *Get_Auto_Reply (Session *sess)
             return strdup (prG->auto_na);
             break;
 
-        case STATUS_INVISIBLE:
+        case STATUSF_INVISIBLE:
         case STATUS_ONLINE:
         case STATUS_FREE_CHAT:
         default:
@@ -98,7 +98,7 @@ void Auto_Reply (Session *sess, UDWORD uin)
         case STATUS_DND:
             temp = prG->auto_dnd;
             break;
-        case STATUS_INVISIBLE:
+        case STATUSF_INVISIBLE:
             temp = prG->auto_inv;
             break;
         case STATUS_NA:

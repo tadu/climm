@@ -1135,7 +1135,7 @@ BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
             status = TCP_MSGF_DND;
             break;
 
-        case STATUS_INVISIBLE:
+        case STATUSF_INVISIBLE:
             status = TCP_MSGF_INV;
             break;
 
@@ -1354,7 +1354,7 @@ void Get_Auto_Resp (Session *sess, UDWORD uin)
 
         case STATUS_OFFLINE:
         case STATUS_ONLINE:
-        case STATUS_INVISIBLE:
+        case STATUSF_INVISIBLE:
         default:
             sub_cmd = 0;
     }

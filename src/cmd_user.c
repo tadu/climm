@@ -170,7 +170,7 @@ JUMP_F(CmdUserChange)
             M_print ("  %-20s %d\n", i18n (1924, "Not Available"),  STATUS_NA);
             M_print ("  %-20s %d\n", i18n (1927, "Free for chat"),  STATUS_FREE_CHAT);
             M_print ("  %-20s %d\n", i18n (1925, "Occupied"),       STATUS_OCCUPIED);
-            M_print ("  %-20s %d",   i18n (1926, "Invisible"),      STATUS_INVISIBLE);
+            M_print ("  %-20s %d",   i18n (1926, "Invisible"),      STATUSF_INVISIBLE);
             M_print (COLNONE "\n");
             return 0;
         }
@@ -1467,6 +1467,8 @@ JUMP_F(CmdUserStatusShort)
                     M_print (")" COLNONE);
                     if (cont->version)
                        M_print (" [%s]", cont->version);
+                    if (cont->status & STATUSF_BIRTHDAY)
+                       M_print (" (%s)", i18n (2033, "born today"));
                     M_print ("\n");
                 }
             }
