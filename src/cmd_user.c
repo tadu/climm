@@ -3977,9 +3977,9 @@ static JUMP_F(CmdUserContact)
         rl_print (i18n (2103, "contact show    Show server based contact list.\n"));
         rl_print (i18n (2104, "contact diff    Show server based contacts not on local contact list.\n"));
         rl_print (i18n (2321, "contact add     Add server based contact list to local contact list.\n"));
-        rl_print (i18n (2105, "contact import  Import server based contact list as local contact list.\n"));
+/*        rl_print (i18n (2105, "contact import  Import server based contact list as local contact list.\n"));
         rl_print (i18n (2322, "contact sync    Import server based contact list if appropriate.\n"));
-        rl_print (i18n (2323, "contact export  Export local contact list to server based list.\n"));
+        rl_print (i18n (2323, "contact export  Export local contact list to server based list.\n")); */
         rl_print (i18n (2324, "contact upload  Add local contacts to server based contact list.\n"));
     }
     return 0;
