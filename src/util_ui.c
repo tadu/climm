@@ -41,7 +41,7 @@ static const char *DebugStr (UDWORD level)
 /*
  * Output a given string if the debug level is appropriate.
  */
-BOOL DebugReal (UDWORD level, const char *str, ...)
+BOOL Debug (UDWORD level, const char *str, ...)
 {
     va_list args;
     char buf[2048], c;
