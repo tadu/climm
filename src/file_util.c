@@ -99,14 +99,10 @@ void Set_rcfile (const char *name)
 *************************************************************************/
 static void M_strcpy (char *dest, char *src)
 {
-    if (NULL == src)
-    {
-        dest = "";
-    }
-    else
-    {
+    if (src)
         strcpy (dest, src);
-    }
+    else
+        *dest = '\0';
 }
 
 static void Initalize_RC_File (void)

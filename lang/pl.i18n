@@ -28,7 +28,6 @@
 027:TAK
 028:NIE
 #-#029:Wpisz " YES_STR " albo " NO_STR "¶
-#29:
 #029:Please enter YES or NO!
 #030:logged off.
 #031:logged on
@@ -57,15 +56,15 @@
 054: Odmowa po³±czenia na porcie %d z %s¶
 055:Nie uda³o siê otworzyæ gniazda
 056:Utworzono gniazdo przy próbie po³±czenia¶
-057:Nazwa serwera 
-058:%s nie zosta³a znaleziona.¶
+#-#057:Nazwa serwera 
+#-#058:%s nie zosta³a znaleziona.¶
+#057:[SOCKS] Can't find hostname %s.
+#058:Can't find hostname %s: %s.
 059:Portem do po³±czeñ TCP bêdzie (jeszcze niezaimplementowane) %d¶
 060:Stopieñ szczegó³owo¶ci komunikatów komunikacyjnych to %d.¶
 061:%s nie zosta³o rozpoznane jako ksywa
 #-#062:Ignorowani u¿ytkownicy: 
-#62:
 #-#063:Podaj has³o : 
-#63:
 #062:Users ignored:
 #063:Enter password:
 064:¶Automatyczna zmiana statusu na 
@@ -77,9 +76,7 @@
 070: Ostatnio obecny: nieznane.
 071:Twój status to 
 #-#072:Niepo³±czeni u¿ytkownicy: 
-#72:
 #-#073:Po³±czeni u¿ytkownicy: 
-#73:
 #072:Users offline:
 #073:Users online:
 #074:Micq (Matt's ICQ clone)
@@ -667,7 +664,7 @@
 #593:<%s> send you a web message:¶
 #594:        URL: %s©3%s©0¶
 #595:¶Contact List.¶©3============================================¶©0%d Contacts¶
-#596:[SOCKS] Can't find hostname: %s¶
+#596:[SOCKS] Can't find hostname %s: %s.
 #597:[SOCKS] Socket creation failed¶
 #598:[SOCKS] Connection refused¶
 #599:[SOCKS] Authentication method incorrect¶
@@ -843,6 +840,8 @@
 #769:Displays your current online status.
 #770:Resend your last message to a new uin.
 #771:You haven't sent a message to anyone yet!¶
+#772:Can't find hostname %s.
+#773:%s could not be added.
 #800:Change the working language to <lang>.
 #801:Displays a list of people on your contact list in a screen wide format.
 #802:SoundOnline cmd

@@ -28,7 +28,6 @@
 027:Si
 028:No
 #-#029:Per favore scrivi " YES_STR " o " NO_STR "¶
-#29:
 #029:Please enter YES or NO!
 030: logged off.
 031: logged on.
@@ -57,15 +56,15 @@
 054: Conection Refused on port %d at %s¶
 055:Socket creation failed
 056:Socket created attempting to connect¶
-057:The hostname 
-058:%s was not found.¶
+#-#057:The hostname 
+#-#058:%s was not found.¶
+#057:[SOCKS] Can't find hostname %s.
+#058:Can't find hostname %s: %s.
 059:The port that will be used for tcp ( not yet implemented ) is %d¶
 060:Il livello di verbosita' e' %d.¶
 061:%s non riconosciuto come nick name
 #-#062:Users ignored: 
-#62:
 #-#063:Enter password : 
-#63:
 #062:Users ignored:
 #063:Enter password:
 064:¶Auto-Changed status to 
@@ -77,9 +76,7 @@
 070: Non so quando e' stato in linea l'ultima volta.
 071:Il tuo stato e' 
 #-#072:Utenti non in linea: 
-#72:
 #-#073:Utenti in linea: 
-#73:
 #072:Users offline:
 #073:Users online:
 #074:Micq (Matt's ICQ clone)
@@ -700,7 +697,7 @@
 #593:<%s> send you a web message:¶
 #594:        URL: %s©3%s©0¶
 #595:¶Contact List.¶©3============================================¶©0%d Contacts¶
-#596:[SOCKS] Can't find hostname: %s¶
+#596:[SOCKS] Can't find hostname %s: %s.
 #597:[SOCKS] Socket creation failed¶
 #598:[SOCKS] Connection refused¶
 #599:[SOCKS] Authentication method incorrect¶
@@ -876,6 +873,8 @@
 #769:Displays your current online status.
 #770:Resend your last message to a new uin.
 #771:You haven't sent a message to anyone yet!¶
+#772:Can't find hostname %s.
+#773:%s could not be added.
 #800:Change the working language to <lang>.
 #801:Displays a list of people on your contact list in a screen wide format.
 #802:SoundOnline cmd

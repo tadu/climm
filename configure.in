@@ -9,8 +9,9 @@ AC_CONFIG_SRCDIR([include/micq.h])
 
 AC_CANONICAL_HOST
 
-AM_INIT_AUTOMAKE(micq, 0.4.6)
+AM_INIT_AUTOMAKE(micq, 0.4.7+cvs-2001-11-01)
 AM_CONFIG_HEADER(include/config.h)
+AC_DEFINE(MICQ_VERSION,VERSION,[mICQ's current version])
 
 # prefer 2.50 auto{conf,header}
 AM_MISSING_PROG(AUTOCONFNG, autoconf-2.50, $missing_dir)
@@ -51,7 +52,7 @@ dnl AC_FUNC_STAT
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([atexit gethostbyname memset mkdir select socket strcasecmp \
                 strchr strdup strncasecmp strpbrk strrchr strstr strtol fork \
-                symlink chmod tcgetattr])
+                symlink chmod tcgetattr hstrerror])
 
 # vprintf stat malloc \
 for f in gethostbyname memset mkdir select socket fork atexit \

@@ -41,6 +41,8 @@
 #include "beos.h"
 #endif
 
+extern int h_error;
+
 user_interface_state uiG;
 session_state        ssG;
 socks5_state         s5G;
@@ -155,9 +157,14 @@ SOK_T Connect_Remote (char *hostname, int port, FD_T aux)
         if (s5sin.sin_addr.s_addr == (unsigned long) -1)        /* name isn't n.n.n.n so must be DNS */
         {
             host_struct = gethostbyname (s5G.s5Host);
-            if (host_struct == 0L)
+            if (!host_struct)
             {
-                M_print (i18n (596, "[SOCKS] Can't find hostname: %s\n"), s5G.s5Host);
+#ifdef HAVE_HSTRERROR
+                M_print (i18n (596, "[SOCKS] Can't find hostname %s: %s."), s5G.s5Host, hstrerror (h_errno));
+#else
+                M_print (i18n (57, "[SOCKS] Can't find hostname %s."), s5G.s5Host);
+#endif
+                M_print ("\n");
                 return -1;
             }
             s5sin.sin_addr = *((struct in_addr *) host_struct->h_addr);
@@ -240,20 +247,23 @@ SOK_T Connect_Remote (char *hostname, int port, FD_T aux)
     if (sin.sin_addr.s_addr == -1)      /* name isn't n.n.n.n so must be DNS */
     {
         host_struct = gethostbyname (hostname);
-        if (host_struct == NULL)
+        if (!host_struct)
         {
             if (uiG.Verbose)
             {
-                M_fdprint (aux, i18n (57, "The hostname "));
-                M_fdprint (aux, i18n (58, "%s was not found.\n"), hostname);
-                /*herror( "Can't find hostname" ); */
+#ifdef HAVE_HSTRERROR
+                M_print (i18n (58, "Can't find hostname %s: %s."), hostname, hstrerror (h_errno));
+#else
+                M_print (i18n (772, "Can't find hostname %s."), hostname);
+#endif
+                M_print ("\n");
             }
             return -1;
         }
         sin.sin_addr = *((struct in_addr *) host_struct->h_addr);
     }
     sin.sin_family = AF_INET;   /* we're using the inet not appletalk */
-    sin.sin_port = ntohs (port);
+    sin.sin_port = htons (port);
 
     if (s5G.s5Use)
     {
@@ -317,9 +327,12 @@ int Connect_Remote_Old (char *hostname, int port, FD_T aux)
         {
             if (uiG.Verbose)
             {
-                M_fdprint (aux, i18n (57, "The hostname "));
-                M_fdprint (aux, i18n (58, "%s was not found.\n"), hostname);
-                /*herror( "Can't find hostname" ); */
+#ifdef HAVE_HSTRERROR
+                M_print (i18n (58, "Can't find hostname %s: %s."), hostname, hstrerror (h_errno));
+#else
+                M_print (i18n (772, "Can't find hostname %s."), hostname);
+#endif
+                M_print ("\n");
             }
             return 0;
         }

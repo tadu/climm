@@ -55,8 +55,8 @@
 054: Connection refusé sur le port %d à %s¶
 055:Échec de la création du socket
 056:Socket crée, tentative de connexion¶
-057:Le nom de domaine 
-058:%s n'a pas été trouvé.¶
+057:[SOCKS] Le nom de domaine %s n'a pas été trouvé.
+058:Le nom de domaine %s n'a pas été trouvé: %s.
 059:Le port qui sera utilisé pour tcp (non implimenté pour l'instant) est %d¶
 060:Le niveau d'info est %d.¶
 061:%s n'est pas reconnu comme surnom
@@ -596,7 +596,7 @@
 593:<%s> vous a envoyé un message par le web:¶
 594:        URL: %s©3%s©0¶
 595:¶Liste de contacts.¶©3============================================¶©0%d contacts¶
-596:[SOCKS] N'a pu pas trouver le nom de domaine: %s¶
+596:[SOCKS] Le nom de domaine %s n'a pas été trouvé: %s.
 597:[SOCKS] La création du socket a échouée¶
 598:[SOCKS] Connexion refusée¶
 599:[SOCKS] Méthode d'autorisation incorrecte¶
@@ -774,6 +774,8 @@
 #769:Displays your current online status.
 #770:Resend your last message to a new uin.
 #771:You haven't sent a message to anyone yet!¶
+#772:Can't find hostname %s.
+#773:%s could not be added.
 #800:Change the working language to <lang>.
 #801:Displays a list of people on your contact list in a screen wide format.
 #802:SoundOnline cmd

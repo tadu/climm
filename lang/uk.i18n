@@ -55,9 +55,9 @@
 054:В╕дмовлено в п╕д`╓днанн╕ до %s ╤
 055:Не вдалось створити Socket
 056:Для з`╓днання cтворено Socket╤
-057:Хоcт 
-058:%s Не знайдено.╤
-#059:The port that w╕ll be used for tcp ( not yet ╕mplemented ) ╕s %d╤
+057:[SOCKS] Хоcт %s Не знайдено.
+058:Хоcт %s Не знайдено: %s.
+#059:The port that will be used for tcp (not yet implemented) is %d╤
 060:Режим виведення на екран %d.╤
 061:%s не в╕домий у контакт-лист╕
 062:Кориcтувач╕, що ╕гноруються: 
@@ -95,13 +95,15 @@
 094:SOCKS5 сервер: ╕м'я чи IP (введ╕ть 0 якщо ви не хочете це використовувати):
 095:SOCKS5 порт (за звичай 1080):
 ##096:SOCKS5 username (type 0 if you don't need authentification):
+#096:SOCKS5 username (type 0 if you don't need authentification):
 097:SOCKS5 пароль:
 #098:╘4"No_Log" is deprecated.╤Use "LogType 0" Instead.╤╘0
 099:нев╕дома мова.
 100:бо-зна
 101:Арабська
 102:Bhojpur╕
-╕03:Болгарська
+#╕03:Болгарська
+#103:Bulgarian
 104:Б╕рманська
 105:Кантонський д╕алект
 106:Каталонська
@@ -159,7 +161,7 @@
 158:Албанcька
 159:Арменська
 160:Не задано
-#161:Acadеmic
+#161:Academic
 #162:Administrative
 #163:Art/Entertainmant
 #164:College Student
@@ -594,7 +596,7 @@
 593:<%s> над╕слав вам web-пов╕домлення:╤
 #594:        URL: %s╘3%s╘0╤
 #595:╤Contact List.╤╘3============================================╤╘0%d Contacts╤
-#596:[SOCKS] Can't find hostname: %s╤
+#596:[SOCKS] Can't find hostname %s: %s.
 #597:[SOCKS] Socket creation failed╤
 #598:[SOCKS] Connection refused╤
 #599:[SOCKS] Authentication method incorrect╤
@@ -720,7 +722,7 @@
 719:Показу╓ як довго працю╓ Micq + деяка статистику.
 #720:uin can be either a number or the nickname of the user.
 #721:Sending a blank message will put the client into multiline mode.╤Use . on a line by itself to end message.╤Use # on a line by itself to cancel the message.
-#722:Type help to see your current command, because this one you typed wasn't one!╤
+#722:Type help to see your current command, because this one you typed wasn't one!
 723:%s: IP адреса 
 724:Статус автов╕дпов╕дача: %s.╤
 #725:<all>
@@ -770,6 +772,8 @@
 #769:Displays your current online status.
 #770:Resend your last message to a new uin.
 #771:You haven't sent a message to anyone yet!╤
+#772:Can't find hostname %s.
+#773:%s could not be added.
 800:Зм╕нити переклад ╕нтерфейсу на <lang>.
 801:Виводить контакт-лист у широкоформатному режим╕.
 #802:SoundOnline cmd

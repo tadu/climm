@@ -55,8 +55,8 @@
 054: Verbindung verweigert auf Port: %d, Server: %s¶
 055: Konnte keinen Socket erstellen!"
 056: Socket erhalten, versuche zu verbinden...¶
-057:Der Hostname 
-058:%s wurde nicht gefunden.¶
+057:[SOCKS] Kann den Rechnernamen %s nicht auflösen.
+058:Kann den Rechnernamen %s nicht auflösen: %s.
 059:Verwende Port %d für TCP/IP (noch nicht implementiert).¶
 060:Ausführlichkeit is %d.¶
 #AusführlichkeitGeschwätzigkeitWortreichtumPlapperhaftigkeit
@@ -78,7 +78,7 @@
 076:kompiliert am
 077:gewidmet Matthew D. Smith.
 078:Keine Übersetzung verfügbar.
-079:Übersetzung von Rico -mc- Glöckner und Rüdiger Kuhlmann, zuletzt geändert am 27.4.2001.¶
+079:Übersetzung von Rico -mc- Glöckner und Rüdiger Kuhlmann, zuletzt geändert am 1.11.2001.¶
 080:Konnte Übersetzung "%s" nicht laden.¶
 081:Deutsche Übersetzung erfolgreich geladen (%d Einträge).¶
 082:Versuche, neu zu verbinden... [Versuch %d von %d]
@@ -609,7 +609,7 @@
 593:<%s> schickt eine Nachricht per Web:¶
 594:        URL: %s©3%s©0¶
 595:¶Kontaktliste:¶©3============================================¶©0%d Kontakte.¶
-596:[SOCKS] Kann Rechner %s nicht finden.¶
+596:[SOCKS] Kann den Rechnernamen %s nicht auflösen: %s.
 597:[SOCKS] Kann keinen Socket erzeugen.¶
 598:[SOCKS] Verbindung verweigert.¶
 599:[SOCKS] Autorisationsmethode ungültig.¶
@@ -785,6 +785,8 @@
 #769:Displays your current online status.
 #770:Resend your last message to a new uin.
 #771:You haven't sent a message to anyone yet!¶
+772:Kann Rechner %s nicht finden.
+773:Konnte Nick %s nicht hinzufügen.
 800:Wählt die Sprache <lang> aus.
 801:Zeigt die Kontaktliste im ausführlichen Format an.
 802:Klang-Befehl, wenn jemand verbindet:

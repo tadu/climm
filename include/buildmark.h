@@ -1,4 +1,5 @@
 
-#define MICQ_VERSION "0.4.7+cvs-2001-09-19"
+
+#define MICQ_VERSION VERSION
 
 const char *BuildVersion (void);

@@ -1581,6 +1581,8 @@ JUMP_F(CmdUserAdd)
         arg1 = strtok (NULL, "");
         if (Add_User (sok, uin, arg1))
             M_print (i18n (669, "%s added."), arg1);
+        else
+            M_print (i18n (773, "%s could not be added."), arg1);
     }
     else
     {

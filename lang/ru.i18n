@@ -55,8 +55,8 @@
 054: Отказано в соединении: порт %d на %s╤
 055:Не дали нам заделать сокет...
 056:Пытаемся соединить сокет с сервером╤
-057:Имя хоста 
-058:%s было не найдено.╤
+057:[SOCKS] Имя хоста %s было не найдено.
+058:Имя хоста %s было не найдено: %s.
 059:Порт, используемый для tcp ( недоделано ) %d╤
 060:Режим вывода на экран %d.╤
 061:%s не известен в контакт-листе
@@ -605,7 +605,7 @@
 #593:<%s> send you a web message:╤
 #594:        URL: %s╘3%s╘0╤
 #595:╤Contact List.╤╘3============================================╤╘0%d Contacts╤
-#596:[SOCKS] Can't find hostname: %s╤
+#596:[SOCKS] Can't find hostname %s: %s.
 #597:[SOCKS] Socket creation failed╤
 #598:[SOCKS] Connection refused╤
 #599:[SOCKS] Authentication method incorrect╤
@@ -781,6 +781,8 @@
 #769:Displays your current online status.
 #770:Resend your last message to a new uin.
 #771:You haven't sent a message to anyone yet!╤
+#772:Can't find hostname %s.
+#773:%s could not be added.
 #800:Change the working language to <lang>.
 #801:Displays a list of people on your contact list in a screen wide format.
 #802:SoundOnline cmd

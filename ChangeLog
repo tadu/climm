@@ -1,4 +1,12 @@
 
+2001-11-01 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Fix M_strcpy in src/file_utils.c.
+	* Use hstrerror() to print diagnostics if hostname lookup fails.
+	* Correct one ntohs() to htons().
+	* Everything suggested by Michel Oosterhof <micheloo@xs4all.nl>.
+	* Complain if adding a user fails.
+	* Break out protocol defs into include/icq_v[245].h.
+
 2001-09-20 Kaolin Fire <cognosco@tentacle.net>
 	* added "s" command -- display your current online status
 	* added "resend" command -- resend your last message to a new UIN

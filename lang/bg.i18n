@@ -55,8 +55,8 @@
 054:Връзката на порт %d на %s отказана.¶
 055:Не можах да създам сокет.
 056:Сокетът е създаден, опитвам се да се свържа.¶
-057:Хостът 
-058:%s не е намерен.¶
+057:[SOCKS] Хостът %s не е намерен.
+058:Хостът %s не е намерен: %s.
 059:Портът, който ще бъде използван за tcp ( още не е въведено ) е %d.¶
 060:Нивото на подробност е %d.¶
 061:%s не е разпознат като псевдоним
@@ -594,7 +594,7 @@
 #593:<%s> send you a web message:¶
 #594:        URL: %s©3%s©0¶
 #595:¶Contact List.¶©3============================================¶©0%d Contacts¶
-#596:[SOCKS] Can't find hostname: %s¶
+#596:[SOCKS] Can't find hostname %s: %s.
 #597:[SOCKS] Socket creation failed¶
 #598:[SOCKS] Connection refused¶
 #599:[SOCKS] Authentication method incorrect¶
@@ -770,6 +770,8 @@
 #769:Displays your current online status.
 #770:Resend your last message to a new uin.
 #771:You haven't sent a message to anyone yet!¶
+#772:Can't find hostname %s.
+#773:%s could not be added.
 #800:Change the working language to <lang>.
 #801:Displays a list of people on your contact list in a screen wide format.
 #802:SoundOnline cmd
