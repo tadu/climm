@@ -733,6 +733,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             ContactSetVersion (cont);
             
             event->extra = ExtraSet (event->extra, EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL);
+            event->uin = cont->uin;
             newevent = QueueEnqueueData (event->conn, QUEUE_ACKNOWLEDGE, seq1,
                          (time_t)-1, p, cont->uin, NULL, &SnacSrvCallbackSendack);
             SrvReceiveAdvanced (event->conn, event, pp, newevent);
