@@ -102,6 +102,7 @@ static jump_t jump[] = {
     { &CmdUserMessage,       "msg",          0,   1 },
     { &CmdUserMessage,       "r",            0,   2 },
     { &CmdUserMessage,       "a",            0,   4 },
+    { &CmdUserMessage,       "chat",         0,   8 },
     { &CmdUserGetAuto,       "getauto",      0,   0 },
     { &CmdUserResend,        "resend",       0,   0 },
     { &CmdUserVerbose,       "verbose",      0,   0 },
@@ -437,7 +438,7 @@ static JUMP_F(CmdUserHelp)
     struct { const char *category; const char *keyword; const char *help; const char *cmds; const char *warn; } myhelp[] = {
       { _i18n (1448, "Message"), "message",
         _i18n (1446, "Commands relating to sending messages."),
-        "msg, a, r, url, sms, getauto, auth, resend, last, h = history, historyd, find, finds, tabs", NULL },
+        "msg, a, r, url, sms, chat, getauto, auth, resend, last, h = history, historyd, find, finds, tabs", NULL },
       { _i18n (2541, "Status"), "status",
         _i18n (2542, "Commands to change your status."),
         "login, online, away, na, occ, dnd, ffc, inv, change", NULL },
@@ -518,6 +519,8 @@ static JUMP_F(CmdUserHelp)
             CMD_USER_HELP  ("url <contacts> <url> <message>", i18n (1410, "Sends a url and message to <contacts>."));
         else if (!strcasecmp (par->txt, "sms"))
             CMD_USER_HELP  ("sms <nick|cell> <message>", i18n (2039, "Sends a message to a (<nick>'s) <cell> phone."));
+        else if (!strcasecmp (par->txt, "chat"))
+            CMD_USER_HELP  ("chat <contacts> [<message>]", i18n (2569, "Send <message> and further messages to <contacts> until canceled."));
         else if (!strcasecmp (par->txt, "getauto"))
             CMD_USER_HELP  ("getauto [auto|away|na|dnd|occ|ffc] [<contacts>]", i18n (2304, "Get automatic reply from all <contacts> for current status, away, not available, do not disturb, occupied, or free for chat."));
         else if (!strcasecmp (par->txt, "auth"))
@@ -1366,6 +1369,7 @@ static JUMP_F (CmdUserMessage)
         switch (data)
         {
             case 1:
+            case 8:
                 if (!(cg = s_parselist (&args, conn)))
                     return 0;
                 tcg = ContactGroupC (NULL, 0, NULL);
@@ -1394,8 +1398,7 @@ static JUMP_F (CmdUserMessage)
             default:
                 assert (0);
         }
-        if (!(arg1 = s_parserem (&args)))
-            arg1 = NULL;
+        arg1 = s_parserem (&args);
         if (arg1 && (arg1[strlen (arg1) - 1] != '\\'))
         {
             s_repl (&uiG.last_message_sent, arg1);
@@ -1410,8 +1413,12 @@ static JUMP_F (CmdUserMessage)
                     OptSetVal (&cont->copts, CO_TALKEDTO, 1);
                 }
             }
-            ContactGroupD (cg);
-            return 0;
+            if (data != 8)
+            {
+                ContactGroupD (cg);
+                return 0;
+            }
+            arg1 = NULL;
         }
         if (!ContactIndex (cg, 1))
             rl_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLCONTACT, ContactIndex (cg, 0)->nick, COLNONE);
@@ -1425,14 +1432,25 @@ static JUMP_F (CmdUserMessage)
             s_catc (&t, '\r');
             s_catc (&t, '\n');
         }
-        status = 1;
+        status = 1 + (data & 8);
     }
     else if (status == -1 || !strcmp (args, CANCEL_MSG_STR))
     {
         rl_print (i18n (1038, "Message canceled.\n"));
-        ReadLinePromptReset ();
-        ContactGroupD (cg);
-        return 0;
+        if ((status & 8) && *t.txt)
+        {
+            if (!ContactIndex (cg, 1))
+                rl_printf (i18n (2570, "Continuing chat with %s%s%s:\n"), COLCONTACT, ContactIndex (cg, 0)->nick, COLNONE);
+            else
+                rl_printf (i18n (2570, "Continuing chat with %s%s%s:\n"), COLQUOTE, i18n (2220, "several"), COLNONE);
+            s_init (&t, "", 100);
+        }
+        else
+        {
+            ReadLinePromptReset ();
+            ContactGroupD (cg);
+            return 0;
+        }
     }
     else if (!strcmp (args, END_MSG_STR))
     {
@@ -1451,9 +1469,20 @@ static JUMP_F (CmdUserMessage)
                 OptSetVal (&cont->copts, CO_TALKEDTO, 1);
             }
         }
-        ReadLinePromptReset ();
-        ContactGroupD (cg);
-        return 0;
+        if (status & 8)
+        {
+            if (!ContactIndex (cg, 1))
+                rl_printf (i18n (2570, "Continuing chat with %s%s%s:\n"), COLCONTACT, ContactIndex (cg, 0)->nick, COLNONE);
+            else
+                rl_printf (i18n (2570, "Continuing chat with %s%s%s:\n"), COLQUOTE, i18n (2220, "several"), COLNONE);
+            s_init (&t, "", 100);
+        }
+        else
+        {
+            ReadLinePromptReset ();
+            ContactGroupD (cg);
+            return 0;
+        }
     }
     else
     {

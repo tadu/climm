@@ -84,7 +84,6 @@ Schickt eine Nachricht zur gleichen Person wie die letzte Nachricht.
 Siehe 
 .B msg
 f\(:ur weitere Details.
-.IR Nachricht .
 .TP
 .BI r \ [<Nachricht>]
 Antwortet auf die zuletzt empfangene Nachricht.
@@ -118,6 +117,21 @@ anzugeben, wenn
 bereits eine Handy-Nummer zugeordnet bekommen hat.
 Ung\(:ultige Handy-Nummern werden von den Meta-Daten eines
 Kontaktes entfernt.
+.TP
+.BI chat \ <Kontakte>\ [<Nachricht>]
+Sendet eine Nachricht
+.I Nachricht
+an Kontakte
+.I Kontakte
+genau wie bei dem
+.BR msg -
+Kommando. Nachdem die Nachricht gesendet (oder abgebrochen) wurde,
+wird der Mehr-Zeilen-Modus aktiviert und Nachrichten gesendet, bis
+eine leere Nachricht abgebrochen wurde. Wird eine nicht-leere
+Nachricht abgebrochen, dann wird nur diese Nachricht selber nicht
+gesendet, aber der Mehr-Zeilen-Modus bleibt aktiviert und weitere
+Nachrichten k\(:onnen gesendet werden.
+.TP
 .BI getauto \ [auto|away|na|dnd|occ|ffc]\ [<Kontakte>]
 Holt automatische Antworten aller
 .IR Kontakte

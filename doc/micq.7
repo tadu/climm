@@ -113,6 +113,18 @@ will be removed from the
 .IR nick \'s
 meta data.
 .TP
+.BI chat \ <contacts>\ [<message>]
+Sends a message
+.I message
+to contacts
+.I contacts
+just as the
+.B msg
+command. After the message is sent (or cancelled), multi-line mode
+is entered and messages sent until an empty message is cancelled.
+Cancelling a non-empty message will only cancel the message itself,
+and more messages in multi-line mode can be sent.
+.TP
 .BI getauto \ [auto|away|na|dnd|occ|ffc]\ [<contacts>]
 Requests auto message from
 .IR contacts
