@@ -327,7 +327,7 @@ const char *ContactOptionsC2S (const char *color)
 
     s_init (&str, "", 10);
 
-    while (s_parse (&color, &par))
+    while ((par = s_parse (&color)))
     {
         cmd = par->txt;
         if      (!strcasecmp (cmd, "black"))   c = BLACK;
@@ -431,7 +431,7 @@ int ContactOptionsImport (ContactOptions *opts, const char *args)
     argst = strdup (args);
     argstt = argst;
     
-    while (s_parse (&argstt, &par))
+    while ((par = s_parse (&argstt)))
     {
         for (i = 0; ContactOptionsList[i].name; i++)
             if (!strcmp (par->txt, ContactOptionsList[i].name))
@@ -446,7 +446,7 @@ int ContactOptionsImport (ContactOptions *opts, const char *args)
             break;
         }
         
-        if (!s_parse (&argstt, &par))
+        if (!(par = s_parse (&argstt)))
         {
             ret = 1;
             break;

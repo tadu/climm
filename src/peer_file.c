@@ -100,6 +100,31 @@ Connection *PeerFileCreate (Connection *serv)
 }
 
 /*
+ * Handles user reaction to incoming file request
+ */
+void PeerFileUser (UDWORD seq, Contact *cont, const char *reason, Connection *serv)
+{
+    Event *event, *revent = NULL;
+
+    if (!(event = QueueDequeue2 (serv, QUEUE_ACKNOWLEDGE, seq, cont)) || !(revent = event->rel) ||
+        !(revent = QueueDequeue2 (event->rel->conn, event->rel->type, event->rel->seq, event->rel->cont)))
+    {
+        M_printf (i18n (2258, "No pending incoming file transfer request for %s with (sequence %ld) found.\n"),
+                  cont ? cont->nick : "<?>", seq);
+    }
+    else
+    {
+        if (reason)
+            revent->opt = ContactOptionsSetVals (revent->opt, CO_FILEACCEPT, 1, CO_REFUSE, reason, 0);
+        else
+            revent->opt = ContactOptionsSetVals (revent->opt, CO_FILEACCEPT, 0, 0);
+        revent->callback (revent);
+    }
+    EventD (event);
+}
+
+
+/*
  * Handles an incoming file request.
  */
 UBYTE PeerFileIncAccept (Connection *list, Event *event)

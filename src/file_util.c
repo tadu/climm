@@ -246,8 +246,8 @@ void Initialize_RC_File ()
     free (passwd);
 }
 
-#define PrefParse(x)          switch (1) { case 1: if (!s_parse (&args, &par)) { M_printf (i18n (2123, "%sSyntax error%s: Too few arguments: %s\n"), COLERROR, COLNONE, s_qquote (line->txt)); continue; } x = par->txt; }
-#define PrefParseInt(i)       switch (1) { case 1: if (!s_parseint (&args, &i)) { M_printf (i18n (2124, "%sSyntax error%s: Not an integer: %s\n"), COLERROR, COLNONE, s_qquote (line->txt)); continue; }}
+#define PrefParse(x)          switch (1) { case 1: if (!(par = s_parse (&args))) { M_printf (i18n (2123, "%sSyntax error%s: Too few arguments: %s\n"), COLERROR, COLNONE, s_qquote (line->txt)); continue; } x = par->txt; }
+#define PrefParseInt(i)       switch (1) { case 1: if (!s_parseint (&args, &i))  { M_printf (i18n (2124, "%sSyntax error%s: Not an integer: %s\n"), COLERROR, COLNONE, s_qquote (line->txt)); continue; }}
 #define ERROR continue;
 
 /*
@@ -320,7 +320,7 @@ int Read_RC_File (FILE *rcf)
                 M_printf (" %s\n", args);
                 break;
             case 0:
-                if (!s_parse (&args, &par))
+                if (!(par = s_parse (&args)))
                     continue;
                 cmd = par->txt;
 
@@ -413,7 +413,7 @@ int Read_RC_File (FILE *rcf)
                 {
                     if (!strcasecmp (cmd, "receivescript"))
                         dep = 8;
-                    if (!s_parse (&args, &par))
+                    if (!(par = s_parse (&args)))
                     {
                         dep = 9;
                         prG->event_cmd = NULL;
@@ -504,7 +504,7 @@ int Read_RC_File (FILE *rcf)
                 }
                 else if (!strcasecmp (cmd, "auto"))
                 {
-                    if (!s_parse (&args, &par))
+                    if (!(par = s_parse (&args)))
                     {
                         dep = 10;
                         prG->flags |= FLAG_AUTOREPLY;
@@ -556,7 +556,7 @@ int Read_RC_File (FILE *rcf)
                 }
                 else if (!strcasecmp (cmd, "sound"))
                 {
-                    if (!s_parse (&args, &par))
+                    if (!(par = s_parse (&args)))
                     {
                         prG->sound = SFLAG_BEEP;
                         dep = 11;
@@ -914,7 +914,7 @@ int Read_RC_File (FILE *rcf)
                     else
                         ERROR;
 
-                    if (s_parse (&args, &par))
+                    if ((par = s_parse (&args)))
                     {
                         if (!strcasecmp (par->txt, "auto"))
                             conn->flags |= CONN_AUTOLOGIN;
@@ -1270,7 +1270,7 @@ void PrefReadStat (FILE *stf)
                             ContactAddAlias (cont, cmd);
                         }
                     }
-                    while (s_parse (&args, &par))
+                    while ((par = s_parse (&args)))
                     {
                         for (i = 0; i < uinconts; i++)
                             ContactAddAlias (uincont[i], par->txt);

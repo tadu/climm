@@ -28,6 +28,7 @@
 #include "tcp.h"
 #include "icq_response.h"
 #include "conv.h"
+#include "peer_file.h"
 #include "file_util.h"
 #include "buildmark.h"
 #include "contact.h"
@@ -131,10 +132,6 @@ static jump_t jump[] = {
     { &CmdUserTabs,          "tabs",         0,   0 },
     { &CmdUserLast,          "last",         0,   0 },
     { &CmdUserUptime,        "uptime",       0,   0 },
-    { &CmdUserPeer,          "peer",         0,   0 },
-    { &CmdUserPeer,          "tcp",          0,   0 },
-    { &CmdUserPeer,          "file",         0,   4 },
-    { &CmdUserPeer,          "accept",       0,  22 },
     { &CmdUserQuit,          "q",            0,   0 },
     { &CmdUserQuit,          "quit",         0,   0 },
     { &CmdUserQuit,          "exit",         0,   0 },
@@ -155,6 +152,12 @@ static jump_t jump[] = {
     { &CmdUserAbout,         "about",        0,   0 },
     { &CmdUserConn,          "conn",         0,   0 },
     { &CmdUserConn,          "login",        0,   2 },
+#ifdef ENABLE_PEER2PEER
+    { &CmdUserPeer,          "peer",         0,   0 },
+    { &CmdUserPeer,          "tcp",          0,   0 },
+    { &CmdUserPeer,          "file",         0,   4 },
+    { &CmdUserPeer,          "accept",       0,  22 },
+#endif
 #ifdef ENABLE_TCL
     { &CmdUserTclScript,     "tclscript",    0,   0 },
     { &CmdUserTclScript,     "tcl",          0,   1 },
@@ -303,7 +306,7 @@ static JUMP_F(CmdUserChange)
         }
     }
 
-    if (s_parserem (&args, &arg1))
+    if ((arg1 = s_parserem (&args)))
     {
         if      (data & STATUSF_DND)  ContactOptionsSetStr (&prG->copts, CO_AUTODND,  arg1);
         else if (data & STATUSF_OCC)  ContactOptionsSetStr (&prG->copts, CO_AUTOOCC,  arg1);
@@ -393,7 +396,7 @@ static JUMP_F(CmdUserHelp)
     strc_t par;
     char what;
 
-    if (!s_parse (&args, &par)) what = 0;
+    if (!(par = s_parse (&args))) what = 0;
     else if (!strcasecmp (par->txt, i18n (1447, "Client"))    || !strcasecmp (par->txt, "Client"))    what = 1;
     else if (!strcasecmp (par->txt, i18n (1448, "Message"))   || !strcasecmp (par->txt, "Message"))   what = 2;
     else if (!strcasecmp (par->txt, i18n (1449, "User"))      || !strcasecmp (par->txt, "User"))      what = 3;
@@ -533,7 +536,7 @@ static JUMP_F(CmdUserPass)
     char *arg1 = NULL;
     OPENCONN;
     
-    if (!s_parserem (&args, &arg1))
+    if (!(arg1 = s_parserem (&args)))
         M_print (i18n (2012, "No password given.\n"));
     else
     {
@@ -573,12 +576,12 @@ static JUMP_F(CmdUserSMS)
         M_print (i18n (2013, "This command is v8 only.\n"));
         return 0;
     }
-    if (s_parsenick (&args, &cont, conn))
+    if ((cont = s_parsenick (&args, conn)))
     {
         CONTACT_GENERAL (cont);
         cell = args;
         if ((!cont->meta_general->cellular || !cont->meta_general->cellular[0])
-            && s_parseint (&cell, &i) && s_parse (&args, &par))
+            && s_parseint (&cell, &i) && (par = s_parse (&args)))
         {
             s_repl (&cont->meta_general->cellular, par->txt);
             cont->updated = 0;
@@ -587,7 +590,7 @@ static JUMP_F(CmdUserSMS)
     }
     if (!cell || !cell)
     {
-        if (!s_parse (&args, &par))
+        if (!(par = s_parse (&args)))
         {
             M_print (i18n (2014, "No number given.\n"));
             return 0;
@@ -602,7 +605,7 @@ static JUMP_F(CmdUserSMS)
         return 0;
     }
     cellv = strdup (cell);
-    if (!s_parserem (&args, &text))
+    if (!(text = s_parserem (&args)))
         M_print (i18n (2015, "No message given.\n"));
     else
         SnacCliSendsms (conn, cellv, text);
@@ -615,7 +618,10 @@ static JUMP_F(CmdUserSMS)
  */
 static JUMP_F(CmdUserInfo)
 {
-    Contact *cont = NULL;
+    ContactGroup *cg;
+    Contact *cont;
+    strc_t par;
+    int i;
     OPENCONN;
     
     if (data)
@@ -625,15 +631,18 @@ static JUMP_F(CmdUserInfo)
         return 0;
     }
 
-    while (s_parsenick_s (&args, &cont, MULTI_SEP, conn))
+    while (1)
     {
-        if (*args == ',')
-            args++;
-        IMCliInfo (conn, cont, 0);
+        if ((cg = s_parselistrem (&args, conn)))
+        {
+            for (i = 0; (cont = ContactIndex (cg, i)); i++)
+                IMCliInfo (conn, cont, 0);
+            ContactGroupD (cg);
+        }
+        if (!(par = s_parse (&args)))
+            return 0;
+        M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
     }
-    if (*args)
-        M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
-    return 0;
 }
 
 /*
@@ -641,7 +650,10 @@ static JUMP_F(CmdUserInfo)
  */
 static JUMP_F(CmdUserPeek)
 {
-    Contact *cont = NULL;
+    ContactGroup *cg;
+    Contact *cont;
+    strc_t par;
+    int i;
     OPENCONN;
     
     if (conn->type != TYPE_SERVER)
@@ -650,19 +662,18 @@ static JUMP_F(CmdUserPeek)
         return 0;
     }
     
-    while (*args)
+    while (1)
     {
-        if (!s_parsenick_s (&args, &cont, MULTI_SEP, conn))
+        if ((cg = s_parselistrem (&args, conn)))
         {
-            M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
-            return 0;
+            for (i = 0; (cont = ContactIndex (cg, i)); i++)
+                SnacCliSendmsg2 (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, MSG_GET_PEEK, CO_MSGTEXT, "", 0));
+            ContactGroupD (cg);
         }
-        if (*args == ',')
-            args++;
-
-        SnacCliSendmsg2 (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, MSG_GET_PEEK, CO_MSGTEXT, "", 0));
+        if (!(par = s_parse (&args)))
+            return 0;
+        M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
     }
-    return 0;
 }
 
 /*
@@ -687,7 +698,7 @@ static JUMP_F(CmdUserTrans)
             one = 1;
             continue;
         }
-        if (s_parse (&args, &par))
+        if ((par = s_parse (&args)))
         {
             if (!strcmp (par->txt, "all"))
             {
@@ -753,48 +764,54 @@ static JUMP_F(CmdUserTrans)
  */
 static JUMP_F(CmdUserGetAuto)
 {
+    ContactGroup *cg;
     Contact *cont;
+    strc_t par;
+    int i;
     int one = 0;
     ANYCONN;
 
     if (!data)
     {
-        const char *argst = args;
-        strc_t par;
-        if (!s_parse (&args, &par))     data = 0;
-        else if (!strcmp (par->txt, "auto")) data = 0;
-        else if (!strcmp (par->txt, "away")) data = MSGF_GETAUTO | MSG_GET_AWAY;
-        else if (!strcmp (par->txt, "na"))   data = MSGF_GETAUTO | MSG_GET_NA;
-        else if (!strcmp (par->txt, "dnd"))  data = MSGF_GETAUTO | MSG_GET_DND;
-        else if (!strcmp (par->txt, "ffc"))  data = MSGF_GETAUTO | MSG_GET_FFC;
-        else if (!strcmp (par->txt, "occ"))  data = MSGF_GETAUTO | MSG_GET_OCC;
+        if      (s_parsekey (&args, "auto")) data = 0;
+        else if (s_parsekey (&args, "away")) data = MSGF_GETAUTO | MSG_GET_AWAY;
+        else if (s_parsekey (&args, "na"))   data = MSGF_GETAUTO | MSG_GET_NA;
+        else if (s_parsekey (&args, "dnd"))  data = MSGF_GETAUTO | MSG_GET_DND;
+        else if (s_parsekey (&args, "ffc"))  data = MSGF_GETAUTO | MSG_GET_FFC;
+        else if (s_parsekey (&args, "occ"))  data = MSGF_GETAUTO | MSG_GET_OCC;
 #ifdef WIP
-        else if (!strcmp (par->txt, "ver"))  data = MSGF_GETAUTO | MSG_GET_VER;
+        else if (s_parsekey (&args, "ver"))  data = MSGF_GETAUTO | MSG_GET_VER;
 #endif
-        else args = argst;
     }
-    while (s_parsenick_s (&args, &cont, MULTI_SEP, conn))
+    while (1)
     {
-        int cdata;
-        
-        one = 1;
-        if (!(cdata = data))
+        if ((cg = s_parselistrem (&args, conn)))
         {
-            if      (cont->status == STATUS_OFFLINE) continue;
-            else if (cont->status  & STATUSF_DND)    cdata = MSGF_GETAUTO | MSG_GET_DND;
-            else if (cont->status  & STATUSF_OCC)    cdata = MSGF_GETAUTO | MSG_GET_OCC;
-            else if (cont->status  & STATUSF_NA)     cdata = MSGF_GETAUTO | MSG_GET_NA;
-            else if (cont->status  & STATUSF_AWAY)   cdata = MSGF_GETAUTO | MSG_GET_AWAY;
-            else if (cont->status  & STATUSF_FFC)    cdata = MSGF_GETAUTO | MSG_GET_FFC;
-            else continue;
+            for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            {
+                int cdata;
+                
+                one = 1;
+                if (!(cdata = data))
+                {
+                    if      (cont->status == STATUS_OFFLINE) continue;
+                    else if (cont->status  & STATUSF_DND)    cdata = MSGF_GETAUTO | MSG_GET_DND;
+                    else if (cont->status  & STATUSF_OCC)    cdata = MSGF_GETAUTO | MSG_GET_OCC;
+                    else if (cont->status  & STATUSF_NA)     cdata = MSGF_GETAUTO | MSG_GET_NA;
+                    else if (cont->status  & STATUSF_AWAY)   cdata = MSGF_GETAUTO | MSG_GET_AWAY;
+                    else if (cont->status  & STATUSF_FFC)    cdata = MSGF_GETAUTO | MSG_GET_FFC;
+                    else continue;
+                }
+                IMCliMsg (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, cdata, 0));
+            }
+            ContactGroupD (cg);
         }
-        IMCliMsg (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, cdata, 0));
-        if (*args == ',')
-            args++;
+        if (!(par = s_parse (&args)))
+            break;
+        M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
     }
-    if (*args)
-        M_printf (i18n (1845, "Nick %s unknown.\n"), args);
-    if (data || *args || one)
+
+    if (data || one)
         return 0;
     M_print (i18n (2056, "getauto [auto] <nick> - Get the auto-response from the contact.\n"));
     M_print (i18n (2057, "getauto away   <nick> - Get the auto-response for away from the contact.\n"));
@@ -804,15 +821,18 @@ static JUMP_F(CmdUserGetAuto)
     return 0;
 }
 
+#ifdef ENABLE_PEER2PEER
 /*
  * Manually handles peer-to-peer (TCP) connections.
  */
 static JUMP_F(CmdUserPeer)
 {
-#ifdef ENABLE_PEER2PEER
-    Contact *cont = NULL;
+    ContactGroup *cg;
+    Contact *cont;
     Connection *list;
-    UDWORD seq = 0;
+    UDWORD seq;
+    char *reason;
+    int i;
     ANYCONN;
 
     if (!conn || !(list = conn->assoc))
@@ -823,39 +843,57 @@ static JUMP_F(CmdUserPeer)
 
     if (!data)
     {
-        strc_t par;
-        if (!s_parse (&args, &par)) data = 0;
-        else if (!strcmp (par->txt, "open"))   data = 1;
-        else if (!strcmp (par->txt, "close"))  data = 2;
-        else if (!strcmp (par->txt, "reset"))  data = 2;
-        else if (!strcmp (par->txt, "off"))    data = 3;
-        else if (!strcmp (par->txt, "file"))   data = 4;
-        else if (!strcmp (par->txt, "files"))  data = 5;
-        else if (!strcmp (par->txt, "accept")) data = 16 + 6;
-        else if (!strcmp (par->txt, "deny"))   data = 16 + 7;
+        if      (s_parsekey (&args, "open"))   data = 1;
+        else if (s_parsekey (&args, "close"))  data = 2;
+        else if (s_parsekey (&args, "reset"))  data = 2;
+        else if (s_parsekey (&args, "off"))    data = 3;
+        else if (s_parsekey (&args, "file"))   data = 4;
+        else if (s_parsekey (&args, "files"))  data = 5;
+        else if (s_parsekey (&args, "accept")) data = 16 + 6;
+        else if (s_parsekey (&args, "deny"))   data = 16 + 7;
 #ifdef ENABLE_SSL
-        else if (!strcmp (par->txt, "ssl"))    data = 8;
+        else if (s_parsekey (&args, "ssl"))    data = 8;
 #endif
-        else if (!strcmp (par->txt, "auto"))   data = 10;
-        else if (!strcmp (par->txt, "away"))   data = 11;
-        else if (!strcmp (par->txt, "na"))     data = 12;
-        else if (!strcmp (par->txt, "dnd"))    data = 13;
-        else if (!strcmp (par->txt, "ffc"))    data = 14;
+        else if (s_parsekey (&args, "auto"))   data = 10;
+        else if (s_parsekey (&args, "away"))   data = 11;
+        else if (s_parsekey (&args, "na"))     data = 12;
+        else if (s_parsekey (&args, "dnd"))    data = 13;
+        else if (s_parsekey (&args, "ffc"))    data = 14;
+        else
+        {
+            M_print (i18n (1846, "Opens and closes direct (peer to peer) connections:\n"));
+            M_print (i18n (1847, "peer open  <nick> - Opens direct connection.\n"));
+            M_print (i18n (1848, "peer close <nick> - Closes/resets direct connection(s).\n"));
+            M_print (i18n (1870, "peer off   <nick> - Closes direct connection(s) and don't try it again.\n"));
+            M_print (i18n (2160, "peer file  <nick> <file> [<description>]\n"));
+            M_print (i18n (2110, "peer files <nick> <file1> <as1> ... [<description>]\n"));
+            M_print (i18n (2111, "                  - Send file1 as as1, ..., with description.\n"));
+            M_print (i18n (2112, "                  - as = '/': strip path, as = '.': as is\n"));
+            M_print (i18n (2320, "peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n"));
+            M_print (i18n (2368, "peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n"));
+#ifdef ENABLE_SSL
+            M_print (i18n (2378, "peer ssl <nick>   - initiate SSL handshake."));
+#endif
+            return 0;
+        }
     }
-    while (data && (s_parsenick_s (&args, &cont, MULTI_SEP, conn) || (data & 16)))
+    if ((cg = s_parselist (&args, conn)) || (data & 16))
     {
         data &= 15;
         switch (data)
         {
             case 1:
-                if (!TCPDirectOpen  (list, cont))
-                    M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
+                for (i = 0; (cont = ContactIndex (cg, i)); i++)
+                    if (!TCPDirectOpen  (list, cont))
+                        M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
                 break;
             case 2:
-                TCPDirectClose (list, cont);
+                for (i = 0; (cont = ContactIndex (cg, i)); i++)
+                    TCPDirectClose (list, cont);
                 break;
             case 3:
-                TCPDirectOff   (list, cont);
+                for (i = 0; (cont = ContactIndex (cg, i)); i++)
+                    TCPDirectOff   (list, cont);
                 break;
             case 4:
                 {
@@ -863,25 +901,26 @@ static JUMP_F(CmdUserPeer)
                     const char *files[1], *ass[1];
                     char *des = NULL, *file;
                     
-                    if (!s_parse (&args, &par))
+                    if (!(par = s_parse (&args)))
                     {
                         M_print (i18n (2158, "No file name given.\n"));
-                        return 0;
+                        break;
                     }
                     files[0] = file = strdup (par->txt);
-                    if (!s_parserem (&args, &des))
+                    if (!(des = s_parserem (&args)))
                         des = file;
                     des = strdup (des);
 
                     ass[0] = (strchr (file, '/')) ? strrchr (file, '/') + 1 : file;
                     
-                    if (!TCPSendFiles (list, cont, des, files, ass, 1))
-                        M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
+                    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+                        if (!TCPSendFiles (list, cont, des, files, ass, 1))
+                            M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
                     
                     free (file);
                     free (des);
                 }
-                return 0;
+                break;
             case 5:
                 {
                     char *files[10], *ass[10], *des = NULL;
@@ -891,13 +930,13 @@ static JUMP_F(CmdUserPeer)
                     for (count = 0; count < 10; count++)
                     {
                         strc_t par;
-                        if (!s_parse (&args, &par))
+                        if (!(par = s_parse (&args)))
                         {
                             des = strdup (i18n (2159, "Some files."));
                             break;
                         }
                         files[count] = des = strdup (par->txt);
-                        if (!s_parse (&args, &par))
+                        if (!(par = s_parse (&args)))
                             break;
                         as = par->txt;
                         if (*as == '/' && !*(as + 1))
@@ -910,10 +949,11 @@ static JUMP_F(CmdUserPeer)
                     {
                         free (des);
                         M_print (i18n (2158, "No file name given.\n"));
-                        return 0;
+                        break;
                     }
-                    if (!TCPSendFiles (list, cont, des, (const char **)files, (const char **)ass, count))
-                        M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
+                    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+                        if (!TCPSendFiles (list, cont, des, (const char **)files, (const char **)ass, count))
+                            M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
                     
                     while (count--)
                     {
@@ -922,100 +962,47 @@ static JUMP_F(CmdUserPeer)
                     }
                     free (des);
                 }
-                return 0;
+                break;
             case 6:
             case 7:
-                {
-                    Event *event, *revent = NULL;
+                s_parseint (&args, &seq);
+                if (data == 6)
+                    reason = NULL;
+                else if (!(reason = s_parserem (&args)))
+                    reason = "refused";
 
-                    s_parseint (&args, &seq);
-                    if (!(event = QueueDequeue2 (conn, QUEUE_ACKNOWLEDGE, seq, cont)) || !(revent = event->rel) ||
-                        !(revent = QueueDequeue2 (event->rel->conn, event->rel->type, event->rel->seq, event->rel->cont)))
-                    {
-                        M_printf (i18n (2258, "No pending incoming file transfer request for %s with (sequence %ld) found.\n"),
-                                  cont ? cont->nick : "<?>", seq);
-                    }
-                    else
-                    {
-                        char *reason = NULL;
-                        
-                        if (data == 6)
-                            revent->opt = ContactOptionsSetVals (revent->opt, CO_FILEACCEPT, 1, 0);
-                        else if (s_parserem (&args, &reason))
-                            revent->opt = ContactOptionsSetVals (revent->opt, CO_FILEACCEPT, 1, CO_REFUSE, reason, 0);
-                        revent->callback (revent);
-                    }
-                    EventD (event);
-                    return 0;
-                }
+                if (!cg || !ContactIndex (cg, 0))
+                    PeerFileUser (seq, NULL, reason, conn);
+                else
+                    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+                        PeerFileUser (seq, cont, reason, conn);
                 break;
 #ifdef ENABLE_SSL
             case 8:
-                TCPSendSSLReq (list, cont);
+                for (i = 0; (cont = ContactIndex (cg, i)); i++)
+                    TCPSendSSLReq (list, cont);
                 break;
-#endif /* ENABLE_SSL */
+#endif
             case 10:
             case 11:
             case 12:
             case 13:
             case 14:
                 M_printf (i18n (2260, "Please try the getauto command instead.\n"));
-                return 0;
         }
-        if (*args == ',')
-            args++;
+        ContactGroupD (cg);
     }
-    if (*args)
-        M_printf (i18n (1845, "Nick %s unknown.\n"), args);
-    if (data || *args)
-        return 0;
-    M_print (i18n (1846, "Opens and closes direct (peer to peer) connections:\n"));
-    M_print (i18n (1847, "peer open  <nick> - Opens direct connection.\n"));
-    M_print (i18n (1848, "peer close <nick> - Closes/resets direct connection(s).\n"));
-    M_print (i18n (1870, "peer off   <nick> - Closes direct connection(s) and don't try it again.\n"));
-    M_print (i18n (2160, "peer file  <nick> <file> [<description>]\n"));
-    M_print (i18n (2110, "peer files <nick> <file1> <as1> ... [<description>]\n"));
-    M_print (i18n (2111, "                  - Send file1 as as1, ..., with description.\n"));
-    M_print (i18n (2112, "                  - as = '/': strip path, as = '.': as is\n"));
-    M_print (i18n (2320, "peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n"));
-    M_print (i18n (2368, "peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n"));
-#ifdef ENABLE_SSL
-    M_print (i18n (2378, "peer ssl <nick>   - initiate SSL handshake."));
-#endif
-#else
-    M_print (i18n (1866, "This version of mICQ is compiled without direct connection (peer to peer) support.\n"));
-#endif /* ENABLE_PEER2PEER */
     return 0;
 }
+#endif /* ENABLE_PEER2PEER */
 
 /*
- * Changes automatic reply messages.
+ * Obsolete.
  */
 static JUMP_F(CmdUserAuto)
 {
-    strc_t par;
-
-    if (!s_parse (&args, &par))
-    {
-        M_printf (i18n (1724, "Automatic replies are %s.\n"),
-                 prG->flags & FLAG_AUTOREPLY ? i18n (1085, "on") : i18n (1086, "off"));
-        return 0;
-    }
-
-    if      (!strcasecmp (par->txt, "on")  || !strcasecmp (par->txt, i18n (1085, "on")))
-    {
-        prG->flags |= FLAG_AUTOREPLY;
-        M_printf (i18n (1724, "Automatic replies are %s.\n"), i18n (1085, "on"));
-        return 0;
-    }
-    else if (!strcasecmp (par->txt, "off") || !strcasecmp (par->txt, i18n (1086, "off")))
-    {
-        prG->flags &= ~FLAG_AUTOREPLY;
-        M_printf (i18n (1724, "Automatic replies are %s.\n"), i18n (1086, "off"));
-        return 0;
-    }
-    M_printf (i18n (9999, "Auto reply messages are now contact options, see the 'opt' command.\n"));
-
+    M_printf (i18n (9999, "Auto reply messages are now contact options, see the %s command.\n"), s_wordquote ("opt"));
+    M_printf (i18n (9999, "The global auto reply flag is handled by the %s command.\n"), s_wordquote ("set"));
     return 0;
 }
 
@@ -1028,7 +1015,7 @@ static JUMP_F(CmdUserAlias)
     strc_t name;
     char *exp = NULL, *nname;
 
-    if (!s_parse_s (&args, &name, " \t\r\n="))
+    if (!(name = s_parse_s (&args, " \t\r\n=")))
     {
         alias_t *node;
 
@@ -1049,7 +1036,7 @@ static JUMP_F(CmdUserAlias)
     
     nname = strdup (name->txt);
     
-    if (s_parserem (&args, &exp))
+    if ((exp = s_parserem (&args)))
         CmdUserSetAlias (nname, exp);
     else
     {
@@ -1076,7 +1063,7 @@ static JUMP_F(CmdUserUnalias)
 {
     strc_t par;
 
-    if (!s_parse (&args, &par))
+    if (!(par = s_parse (&args)))
         M_print (i18n (2298, "Remove which alias?\n"));
     else if (!CmdUserRemoveAlias (par->txt))
         M_print (i18n (2299, "Alias doesn't exist.\n"));
@@ -1089,7 +1076,10 @@ static JUMP_F(CmdUserUnalias)
  */
 static JUMP_F (CmdUserResend)
 {
-    Contact *cont = NULL;
+    ContactGroup *cg;
+    Contact *cont;
+    strc_t par;
+    int i, one = 0;
     OPENCONN;
 
     if (!uiG.last_message_sent) 
@@ -1098,29 +1088,26 @@ static JUMP_F (CmdUserResend)
         return 0;
     }
 
-    if (!s_parsenick_s (&args, &cont, MULTI_SEP, conn))
-    {
-        if (*args)
-            M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
-        else
-            M_print (i18n (1676, "Need uin/nick to send to.\n"));
-        return 0;
-    }
-    
     while (1)
     {
-        IMCliMsg (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, uiG.last_message_sent_type, CO_MSGTEXT, uiG.last_message_sent, 0));
-        uiG.last_sent = cont;
-
-        if (*args == ',')
-            args++;
-        if (!s_parsenick_s (&args, &cont, MULTI_SEP, conn))
+        if ((cg = s_parselistrem (&args, conn)))
         {
-            if (*args)
-                M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
-            return 0;
+            for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            {
+                one = 1;
+                IMCliMsg (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, uiG.last_message_sent_type, CO_MSGTEXT, uiG.last_message_sent, 0));
+                uiG.last_sent = cont;
+            }
+            ContactGroupD (cg);
         }
+        if (!(par = s_parse (&args)))
+            return 0;
+        M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
+        one = 1;
     }
+    if (!one)
+        IMCliMsg (conn, uiG.last_sent, ContactOptionsSetVals (NULL, CO_MSGTYPE, uiG.last_message_sent_type, CO_MSGTEXT, uiG.last_message_sent, 0));
+    return 0;
 }
 
 /*
@@ -1136,7 +1123,7 @@ static JUMP_F (CmdUserAnyMess)
 
     if (!(data & 3))
     {
-        if (!s_parse (&args, &par))
+        if (!(par = s_parse (&args)))
             return 0;
         if (!strcmp (par->txt, "peer"))
             data |= 1;
@@ -1156,16 +1143,16 @@ static JUMP_F (CmdUserAnyMess)
         data |= i << 2;
     }
 
-    if (!s_parsenick (&args, &cont, conn))
+    if (!(cont = s_parsenick (&args, conn)))
         return 0;
     
-    if (!s_parse (&args, &par))
+    if (!(par = s_parse (&args)))
         return 0;
     
     s_init (&t, "", 0);
     s_catf (&t, "%s", par->txt);
 
-    while (s_parse (&args, &par))
+    while ((par = s_parse (&args)))
         s_catf (&t, "%c%s", Conv0xFE, par->txt);
         
     if (data & 1)
@@ -1197,10 +1184,11 @@ static JUMP_F (CmdUserAnyMess)
 static JUMP_F (CmdUserMessage)
 {
     static str_s t;
-    static ContactGroup *uinlist = NULL;
+    static ContactGroup *cg = NULL;
+    Contact *cont = NULL;
+    strc_t par;
     char *arg1 = NULL;
     UDWORD i;
-    Contact *cont = NULL;
     OPENCONN;
 
     if (!status)
@@ -1208,23 +1196,11 @@ static JUMP_F (CmdUserMessage)
         switch (data)
         {
             case 1:
-                if (!*args)
+                if (!(cg = s_parselist (&args, conn)))
                 {
-                    M_print (i18n (2235, "No nick name given.\n"));
+                    if ((par = s_parse (&args)))
+                        M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
                     return 0;
-                }
-                uinlist = ContactGroupC (NULL, 0, NULL);
-                for (i = 0; *args; args++)
-                {
-                    if (!s_parsenick_s (&args, &cont, MULTI_SEP, conn))
-                    {
-                        M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
-                        ContactGroupD (uinlist);
-                        return 0;
-                    }
-                    ContactAdd (uinlist, cont);
-                    if (*args != ',')
-                        break;
                 }
                 break;
             case 2:
@@ -1233,8 +1209,8 @@ static JUMP_F (CmdUserMessage)
                     M_print (i18n (1741, "Must receive a message first.\n"));
                     return 0;
                 }
-                uinlist = ContactGroupC (NULL, 0, NULL);
-                ContactAdd (uinlist, uiG.last_rcvd);
+                cg = ContactGroupC (NULL, 0, "");
+                ContactAdd (cg, uiG.last_rcvd);
                 break;
             case 4:
                 if (!uiG.last_sent)
@@ -1242,29 +1218,29 @@ static JUMP_F (CmdUserMessage)
                     M_print (i18n (1742, "Must write a message first.\n"));
                     return 0;
                 }
-                uinlist = ContactGroupC (NULL, 0, NULL);
-                ContactAdd (uinlist, uiG.last_sent);
+                cg = ContactGroupC (NULL, 0, NULL);
+                ContactAdd (cg, uiG.last_sent);
                 break;
             default:
                 assert (0);
         }
-        if (!s_parserem (&args, &arg1))
+        if (!(arg1 = s_parserem (&args)))
             arg1 = NULL;
         if (arg1 && (arg1[strlen (arg1) - 1] != '\\'))
         {
             s_repl (&uiG.last_message_sent, arg1);
             uiG.last_message_sent_type = MSG_NORM;
-            for (i = 0; (cont = ContactIndex (uinlist, i)); i++)
+            for (i = 0; (cont = ContactIndex (cg, i)); i++)
             {
                 IMCliMsg (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, arg1, 0));
                 uiG.last_sent = cont;
                 TabAddOut (cont);
             }
-            ContactGroupD (uinlist);
+            ContactGroupD (cg);
             return 0;
         }
-        if (!ContactIndex (uinlist, 1))
-            M_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLCONTACT, ContactIndex (uinlist, 0)->nick, COLNONE);
+        if (!ContactIndex (cg, 1))
+            M_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLCONTACT, ContactIndex (cg, 0)->nick, COLNONE);
         else
             M_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLQUOTE, i18n (2220, "several"), COLNONE);
         s_init (&t, "", 100);
@@ -1277,38 +1253,35 @@ static JUMP_F (CmdUserMessage)
         }
         status = 1;
     }
-    else if (status == -1 || (status && !strcmp (args, CANCEL_MSG_STR)))
+    else if (status == -1 || !strcmp (args, CANCEL_MSG_STR))
     {
         M_print (i18n (1038, "Message canceled.\n"));
         ReadLinePromptReset ();
-        ContactGroupD (uinlist);
+        ContactGroupD (cg);
+        return 0;
+    }
+    else if (!strcmp (args, END_MSG_STR))
+    {
+        arg1 = t.txt + t.len - 1;
+        while (*t.txt && strchr ("\r\n\t ", *arg1))
+            *arg1-- = '\0';
+        s_repl (&uiG.last_message_sent, t.txt);
+        uiG.last_message_sent_type = MSG_NORM;
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
+        {
+            IMCliMsg (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, t.txt, 0));
+            uiG.last_sent = cont;
+            TabAddOut (cont);
+        }
+        ReadLinePromptReset ();
+        ContactGroupD (cg);
         return 0;
     }
     else
     {
-        if (!strcmp (args, END_MSG_STR))
-        {
-            arg1 = t.txt + t.len - 1;
-            while (*t.txt && strchr ("\r\n\t ", *arg1))
-                *arg1-- = '\0';
-            s_repl (&uiG.last_message_sent, t.txt);
-            uiG.last_message_sent_type = MSG_NORM;
-            for (i = 0; (cont = ContactIndex (uinlist, i)); i++)
-            {
-                IMCliMsg (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, t.txt, 0));
-                uiG.last_sent = cont;
-                TabAddOut (cont);
-            }
-            ReadLinePromptReset ();
-            ContactGroupD (uinlist);
-            return 0;
-        }
-        else
-        {
-            s_cat (&t, args);
-            s_catc (&t, '\r');
-            s_catc (&t, '\n');
-        }
+        s_cat (&t, args);
+        s_catc (&t, '\r');
+        s_catc (&t, '\n');
     }
     ReadLinePromptSet (i18n (9999, "msg>"));
     return status;
@@ -1484,7 +1457,7 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
  *
  * data & 32: sort by groups
  * data & 16: show _only_ own status
- * data & 8: show only given nick
+ * data & 8: show only given nicks
  * data & 4: show own status
  * data & 2: be verbose
  * data & 1: do not show offline
@@ -1492,9 +1465,9 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
 static JUMP_F(CmdUserStatusDetail)
 {
     ContactGroup *cg = NULL, *tcg = NULL;
-    int i, j, k;
     Contact *cont = NULL;
     strc_t par;
+    int i, j, k;
     UDWORD stati[] = { 0xfffffffe, STATUS_OFFLINE, STATUS_DND,    STATUS_OCC, STATUS_NA,
                                    STATUS_AWAY,    STATUS_ONLINE, STATUS_FFC, STATUSF_BIRTH };
     ANYCONN;
@@ -1502,59 +1475,66 @@ static JUMP_F(CmdUserStatusDetail)
     if (!data)
         s_parseint (&args, &data);
 
-    if (~data & 16)
+    if (~data & 16 && !(cg = s_parsecg (&args, conn)))
+        tcg = cg = NULL;
+
+    if ((data & 8) && !cg && !conn)
     {
-        const char *argst = args;
-        if (s_parse (&argst, &par))
-            if ((tcg = cg = ContactGroupFind (conn, 0, par->txt)))
-                args = argst;
+        if ((cg = s_parselistrem (&args, conn)))
+            tcg = cg;
+        else
+        {
+            if ((par = s_parse (&args)))
+                M_printf (i18n (9999, "%s is not a valid user in your list.\n"), s_wordquote (par->txt));
+            return 0;
+        }
     }
 
-    if ((data & 8) && !cg && (!conn || !s_parsenick (&args, &cont, conn)) && *args)
-    {
-        M_printf (i18n (1700, "%s is not a valid user in your list.\n"), args);
-        return 0;
-    }
-
-    if (cont)
+    if (tcg)
     {
         char *t1, *t2;
         UBYTE id;
 
         __initcheck ();
-        __checkcontact (cont, data);
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            __checkcontact (cont, data);
         __donecheck (data);
-        __showcontact (conn, cont, data);
-
-        if (cont->dc)
+        
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
         {
-            M_printf ("    %-15s %s / %s:%ld\n    %s %d    %s (%d)    %s %08lx\n",
-                  i18n (1642, "IP:"), t1 = strdup (s_ip (cont->dc->ip_rem)),
-                  t2 = strdup (s_ip (cont->dc->ip_loc)), cont->dc->port,
-                  i18n (1453, "TCP version:"), cont->dc->version,
-                  cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer")
-                    : i18n (1494, "Server Only"), cont->dc->type,
-                  i18n (2026, "TCP cookie:"), cont->dc->cookie);
-            free (t1);
-            free (t2);
-        }
-        for (i = id = 0; id < CAP_MAX; id++)
-            if (cont->caps & (1 << id))
+            __showcontact (conn, cont, data);
+
+            if (cont->dc)
             {
-                Cap *cap = PacketCap (id);
-                if (i++)
-                    M_print (", ");
-                else
-                    M_printf ("    %s", i18n (2192, "Capabilities: "));
-                M_print (cap->name);
-                if (cap->name[4] == 'U' && cap->name[5] == 'N')
-                {
-                    M_print (": ");
-                    M_print (s_dump ((const UBYTE *)cap->cap, 16));
-                }
+                M_printf ("    %-15s %s / %s:%ld\n    %s %d    %s (%d)    %s %08lx\n",
+                      i18n (1642, "IP:"), t1 = strdup (s_ip (cont->dc->ip_rem)),
+                      t2 = strdup (s_ip (cont->dc->ip_loc)), cont->dc->port,
+                      i18n (1453, "TCP version:"), cont->dc->version,
+                      cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer")
+                        : i18n (1494, "Server Only"), cont->dc->type,
+                      i18n (2026, "TCP cookie:"), cont->dc->cookie);
+                free (t1);
+                free (t2);
             }
-        if (i)
-            M_print ("\n");
+            for (i = id = 0; id < CAP_MAX; id++)
+                if (cont->caps & (1 << id))
+                {
+                    Cap *cap = PacketCap (id);
+                    if (i++)
+                        M_print (", ");
+                    else
+                        M_printf ("    %s", i18n (2192, "Capabilities: "));
+                    M_print (cap->name);
+                    if (cap->name[4] == 'U' && cap->name[5] == 'N')
+                    {
+                        M_print (": ");
+                        M_print (s_dump ((const UBYTE *)cap->cap, 16));
+                    }
+                }
+            if (i)
+                M_print ("\n");
+        }
+        ContactGroupD (tcg);
         return 0;
     }
 
@@ -1567,7 +1547,7 @@ static JUMP_F(CmdUserStatusDetail)
         }
         cg = conn->contacts;
         for (j = 0; (cont = ContactIndex (cg, j)); j++)
-            if (!ContactFind (tcg, 0, cont->uin, NULL))
+            if (!ContactHas (tcg, cont))
                 ContactAdd (tcg, cont);
         for (i = 0; (cg = ContactGroupIndex (i)); i++)
             if (cg->serv == conn && cg != conn->contacts && cg != tcg)
@@ -1637,7 +1617,7 @@ static JUMP_F(CmdUserStatusDetail)
         if (~data & 32)
             break;
     }
-    if (data & 32)
+    if (tcg)
         ContactGroupD (tcg);
     M_print (COLQUOTE);
     for (i = __totallen; i >= 20; i -= 20)
@@ -1651,21 +1631,21 @@ static JUMP_F(CmdUserStatusDetail)
  */
 static JUMP_F(CmdUserStatusMeta)
 {
+    ContactGroup *cg = NULL;
     Contact *cont;
     strc_t par;
+    int i;
     ANYCONN;
 
     if (!data)
     {
-        if (!s_parse (&args, &par))     data = 0;
-        else if (!strcmp (par->txt, "show")) data = 1;
-        else if (!strcmp (par->txt, "load")) data = 2;
-        else if (!strcmp (par->txt, "save")) data = 3;
-        else if (!strcmp (par->txt, "set"))  data = 4;
-        else if (!strcmp (par->txt, "get"))  data = 5;
-        else if (!strcmp (par->txt, "rget")) data = 6;
-        
-        if (!data)
+        if      (s_parsekey (&args, "show")) data = 1;
+        else if (s_parsekey (&args, "load")) data = 2;
+        else if (s_parsekey (&args, "save")) data = 3;
+        else if (s_parsekey (&args, "set"))  data = 4;
+        else if (s_parsekey (&args, "get"))  data = 5;
+        else if (s_parsekey (&args, "rget")) data = 6;
+        else
         {
             M_printf (i18n (2333, "%s [show|load|save|set|get|rget] <contacts> - handle meta data for contacts.\n"), "meta");
             M_print  (i18n (2334, "  show - show current known meta data\n"));
@@ -1677,68 +1657,69 @@ static JUMP_F(CmdUserStatusMeta)
             return 0;
         }
     }
-
-    while (*args)
+    
+    while (1)
     {
-        if (data == 6)
-            cont = uiG.last_rcvd;
-        else if (data != 4 && conn && !s_parsenick (&args, &cont, conn) && *args)
+        if ((data == 4) || (cg = s_parselistrem (&args, conn)) || (data == 6))
         {
-            M_printf (i18n (1700, "%s is not a valid user in your list.\n"), args);
-            return 0;
-        }
-        
-        switch (data)
-        {
-            case 1:
-                UtilUIDisplayMeta (cont);
-                if (*args == ',')
-                    args++;
-                continue;
-            case 2:
-                if (ContactMetaLoad (cont))
-                    UtilUIDisplayMeta (cont);
-                else
-                    M_printf (i18n (2247, "Couldn't load meta data for '%s' (%ld).\n"),
-                              cont->nick, cont->uin);
-                if (*args == ',')
-                    args++;
-                continue;
-            case 3:
-                if (ContactMetaSave (cont))
-                    M_printf (i18n (2248, "Saved meta data for '%s' (%ld).\n"),
-                              cont->nick, cont->uin);
-                else
-                    M_printf (i18n (2249, "Couldn't save meta data for '%s' (%ld).\n"),
-                              cont->nick, cont->uin);
-                if (*args == ',')
-                    args++;
-                continue;
-            case 4:
-                if (!(cont = conn->cont))
+            switch (data)
+            {
+                case 1:
+                    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+                        UtilUIDisplayMeta (cont);
+                    break;
+                case 2:
+                    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+                    {
+                        if (ContactMetaLoad (cont))
+                            UtilUIDisplayMeta (cont);
+                        else
+                            M_printf (i18n (9999, "Couldn't load meta data for %s (%ld).\n"),
+                                      s_wordquote (cont->nick), cont->uin);
+                    }
+                    break;
+                case 3:
+                    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+                    {
+                        if (ContactMetaSave (cont))
+                            M_printf (i18n (2248, "Saved meta data for '%s' (%ld).\n"),
+                                      cont->nick, cont->uin);
+                        else
+                            M_printf (i18n (2249, "Couldn't save meta data for '%s' (%ld).\n"),
+                                      cont->nick, cont->uin);
+                    }
+                    break;
+                case 4:
+                    if (!(cont = conn->cont))
+                        return 0;
+                    if (conn->type == TYPE_SERVER)
+                    {
+                        SnacCliMetasetgeneral (conn, cont);
+                        SnacCliMetasetmore (conn, cont);
+                        SnacCliMetasetabout (conn, cont->meta_about);
+                    }
+                    else
+                    {
+                        CmdPktCmdMetaGeneral (conn, cont);
+                        CmdPktCmdMetaMore (conn, cont);
+                        CmdPktCmdMetaAbout (conn, cont->meta_about);
+                    }
                     return 0;
-                if (conn->type == TYPE_SERVER)
-                {
-                    SnacCliMetasetgeneral (conn, cont);
-                    SnacCliMetasetmore (conn, cont);
-                    SnacCliMetasetabout (conn, cont->meta_about);
-                }
-                else
-                {
-                    CmdPktCmdMetaGeneral (conn, cont);
-                    CmdPktCmdMetaMore (conn, cont);
-                    CmdPktCmdMetaAbout (conn, cont->meta_about);
-                }
-                return 0;
-            case 5:
-            case 6:
-                IMCliInfo (conn, cont, 0);
-                if (*args == ',')
-                    args++;
-                if (data == 6)
-                    return 0;
-                continue;
+                case 6:
+                    IMCliInfo (conn, uiG.last_rcvd, 0);
+                    if (!cg)
+                        continue;
+                case 5:
+                    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+                        IMCliInfo (conn, cont, 0);
+                    data = 5;
+                    break;
+            }
+            ContactGroupD (cg);
         }
+        if (!(par = s_parse (&args)))
+            break;
+        M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
     }
     return 0;
 }
@@ -1877,27 +1858,11 @@ static JUMP_F(CmdUserStatusWide)
 }
 
 /*
- * Toggles sound or changes sound command.
+ * Obsolete.
  */
 static JUMP_F(CmdUserSound)
 {
-    strc_t par;
-    
-    if (s_parse (&args, &par))
-    {
-        if (!strcasecmp (par->txt, "on") || !strcasecmp (par->txt, i18n (1085, "on")) || !strcasecmp (par->txt, "beep"))
-           prG->sound = SFLAG_BEEP;
-        else if (strcasecmp (par->txt, "off") && strcasecmp (par->txt, i18n (1086, "off")))
-           prG->sound = SFLAG_EVENT;
-        else
-           prG->sound = 0;
-    }
-    if (prG->sound == SFLAG_BEEP)
-        M_printf (i18n (2252, "A beep is generated by %sbeep%sing.\n"), COLSERVER, COLNONE);
-    else if (prG->sound == SFLAG_EVENT)
-        M_printf (i18n (2253, "A beep is generated by running the %sevent%s script.\n"), COLSERVER, COLNONE);
-    else
-        M_print (i18n (2254, "A beep is never generated.\n"));
+    M_printf (i18n (9999, "This flag is handled by the %s command.\n"), s_wordquote ("set"));
     return 0;
 }
 
@@ -1933,7 +1898,7 @@ static JUMP_F(CmdUserAutoaway)
             uiG.away_time_prev = prG->away_time;
         prG->away_time = i;
     }
-    else if (s_parse (&args, &par))
+    else if ((par = s_parse (&args)))
     {
         if      (!strcmp (par->txt, i18n (1085, "on"))  || !strcmp (par->txt, "on"))
         {
@@ -1962,7 +1927,7 @@ static JUMP_F(CmdUserSet)
     
     while (!data)
     {
-        if (!s_parse (&args, &par))                    break;
+        if (!(par = s_parse (&args)))                    break;
         else if (!strcasecmp (par->txt, "color"))      { data = FLAG_COLOR;      str = i18n (2133, "Color is %s%s%s.\n"); }
         else if (!strcasecmp (par->txt, "colour"))     { data = FLAG_COLOR;      str = i18n (2133, "Color is %s%s%s.\n"); }
         else if (!strcasecmp (par->txt, "delbs"))      { data = FLAG_DELBS;      str = i18n (2262, "Interpreting a delete character as backspace is %s%s%s.\n"); }
@@ -1972,6 +1937,7 @@ static JUMP_F(CmdUserSet)
         else if (!strcasecmp (par->txt, "autosave"))   { data = FLAG_AUTOSAVE;   str = i18n (2267, "Automatic saves are %s%s%s.\n"); }
         else if (!strcasecmp (par->txt, "autofinger")) { data = FLAG_AUTOFINGER; str = i18n (2268, "Automatic fingering of new UINs is %s%s%s.\n"); }
         else if (!strcasecmp (par->txt, "linebreak"))  data = -1;
+        else if (!strcasecmp (par->txt, "sound"))      data = -2;
         else if (!strcasecmp (par->txt, "quiet"))
         {
             quiet = 1;
@@ -1980,7 +1946,7 @@ static JUMP_F(CmdUserSet)
         break;
     }
     
-    if (data && !s_parse (&args, &par))
+    if (data && !(par = s_parse (&args)))
         par = NULL;
     
     switch (data)
@@ -2019,6 +1985,26 @@ static JUMP_F(CmdUserSet)
                 M_printf (i18n (2288, "Indentation style is %s%s%s.\n"), COLQUOTE,
                           ~prG->flags & FLAG_LIBR_BR ? (~prG->flags & FLAG_LIBR_INT ? i18n (2270, "simple") : i18n (2271, "indent")) :
                           ~prG->flags & FLAG_LIBR_INT ? i18n (2269, "break") : i18n (2272, "smart"), COLNONE);
+            break;
+        case -2:
+            if (par)
+            {
+                if (!strcasecmp (par->txt, "on") || !strcasecmp (par->txt, i18n (1085, "on")) || !strcasecmp (par->txt, "beep"))
+                   prG->sound = SFLAG_BEEP;
+                else if (strcasecmp (par->txt, "off") && strcasecmp (par->txt, i18n (1086, "off")))
+                   prG->sound = SFLAG_EVENT;
+                else
+                   prG->sound = 0;
+            }
+            if (!quiet)
+            {
+                if (prG->sound == SFLAG_BEEP)
+                    M_printf (i18n (2252, "A beep is generated by %sbeep%sing.\n"), COLSERVER, COLNONE);
+                else if (prG->sound == SFLAG_EVENT)
+                    M_printf (i18n (2253, "A beep is generated by running the %sevent%s script.\n"), COLSERVER, COLNONE);
+                else
+                    M_print (i18n (2254, "A beep is never generated.\n"));
+            }
             break;
     }
     if (!data)
@@ -2069,14 +2055,14 @@ static JUMP_F(CmdUserOpt)
         coptobj = strdup (optobj);
         connl = conn;
     }
-    else if ((!data || data == COF_GROUP) && s_parsecg (&args, &cg, conn))
+    else if ((!data || data == COF_GROUP) && (cg = s_parsecg (&args, conn)))
     {
         copts = &cg->copts;
         data = COF_GROUP;
         optobj = cg->name;
         coptobj = strdup (s_qquote (optobj));
     }
-    else if ((!data || data == COF_CONTACT) && s_parsenick (&args, &cont, conn))
+    else if ((!data || data == COF_CONTACT) && (cont = s_parsenick (&args, conn)))
     {
         copts = &cont->copts;
         data = COF_CONTACT;
@@ -2091,7 +2077,7 @@ static JUMP_F(CmdUserOpt)
     }
     else
     {
-        if (s_parse (&args, &par))
+        if ((par = s_parse (&args)))
         {
             switch (data)
             {
@@ -2195,7 +2181,7 @@ static JUMP_F(CmdUserOpt)
     
     while (*args)
     {
-        if (!s_parse (&args, &par))
+        if (!(par = s_parse (&args)))
             break;
         
         optname = NULL;
@@ -2214,7 +2200,7 @@ static JUMP_F(CmdUserOpt)
         }
         coptname = strdup (s_qquote (optname));
         
-        if (!s_parse (&args, &par))
+        if (!(par = s_parse (&args)))
         {
             const char *res = NULL;
             val_t val;
@@ -2330,7 +2316,7 @@ static JUMP_F(CmdUserRegister)
 {
     strc_t par;
 
-    if (s_parse (&args, &par))
+    if ((par = s_parse (&args)))
     {
         ANYCONN;
 
@@ -2349,29 +2335,34 @@ static JUMP_F(CmdUserRegister)
  */
 static JUMP_F(CmdUserTogIgnore)
 {
-    Contact *cont = NULL;
+    ContactGroup *cg;
+    Contact *cont;
+    strc_t par;
+    int i;
     OPENCONN;
 
-    while (*args)
+    while (1)
     {
-        if (!s_parsenick_s (&args, &cont, MULTI_SEP, conn))
+        if ((cg = s_parselistrem (&args, conn)))
         {
-            M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
-            return 0;
+            for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            {
+                if (ContactPrefVal (cont, CO_IGNORE))
+                {
+                    ContactOptionsSetVal (&cont->copts, CO_IGNORE, 0);
+                    M_printf (i18n (1666, "Unignored %s.\n"), cont->nick);
+                }
+                else
+                {
+                    ContactOptionsSetVal (&cont->copts, CO_IGNORE, 1);
+                    M_printf (i18n (1667, "Ignoring %s.\n"), cont->nick);
+                }
+            }
+            ContactGroupD (cg);
         }
-
-        if (ContactPrefVal (cont, CO_IGNORE))
-        {
-            ContactOptionsSetVal (&cont->copts, CO_IGNORE, 0);
-            M_printf (i18n (1666, "Unignored %s.\n"), cont->nick);
-        }
-        else
-        {
-            ContactOptionsSetVal (&cont->copts, CO_IGNORE, 1);
-            M_printf (i18n (1667, "Ignoring %s.\n"), cont->nick);
-        }
-        if (*args == ',')
-            args++;
+        if (!(par = s_parse (&args)))
+            break;
+        M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
     }
     return 0;
 }
@@ -2381,45 +2372,50 @@ static JUMP_F(CmdUserTogIgnore)
  */
 static JUMP_F(CmdUserTogInvis)
 {
-    Contact *cont = NULL;
+    ContactGroup *cg;
+    Contact *cont;
+    strc_t par;
+    int i;
     OPENCONN;
 
-    while (*args)
+    while (1)
     {
-        if (!s_parsenick_s (&args, &cont, MULTI_SEP, conn))
+        if ((cg = s_parselistrem (&args, conn)))
         {
-            M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
-            return 0;
+            for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            {
+                if (ContactPrefVal (cont, CO_HIDEFROM))
+                {
+                    ContactOptionsSetVal (&cont->copts, CO_HIDEFROM, 0);
+                    if (conn->type == TYPE_SERVER)
+                        SnacCliReminvis (conn, cont);
+                    else
+                        CmdPktCmdUpdateList (conn, cont, INV_LIST_UPDATE, FALSE);
+                    M_printf (i18n (2020, "Being visible to %s.\n"), cont->nick);
+                }
+                else
+                {
+                    ContactOptionsSetVal (&cont->copts, CO_INTIMATE, 0);
+                    ContactOptionsSetVal (&cont->copts, CO_HIDEFROM, 1);
+                    if (conn->type == TYPE_SERVER)
+                        SnacCliAddinvis (conn, cont);
+                    else
+                        CmdPktCmdUpdateList (conn, cont, INV_LIST_UPDATE, TRUE);
+                    M_printf (i18n (2021, "Being invisible to %s.\n"), cont->nick);
+                }
+                if (conn->type != TYPE_SERVER)
+                {
+                    CmdPktCmdContactList (conn);
+                    CmdPktCmdInvisList (conn);
+                    CmdPktCmdVisList (conn);
+                    CmdPktCmdStatusChange (conn, conn->status);
+                }
+            }
+            ContactGroupD (cg);
         }
-
-        if (ContactPrefVal (cont, CO_HIDEFROM))
-        {
-            ContactOptionsSetVal (&cont->copts, CO_HIDEFROM, 0);
-            if (conn->type == TYPE_SERVER)
-                SnacCliReminvis (conn, cont);
-            else
-                CmdPktCmdUpdateList (conn, cont, INV_LIST_UPDATE, FALSE);
-            M_printf (i18n (2020, "Being visible to %s.\n"), cont->nick);
-        }
-        else
-        {
-            ContactOptionsSetVal (&cont->copts, CO_INTIMATE, 0);
-            ContactOptionsSetVal (&cont->copts, CO_HIDEFROM, 1);
-            if (conn->type == TYPE_SERVER)
-                SnacCliAddinvis (conn, cont);
-            else
-                CmdPktCmdUpdateList (conn, cont, INV_LIST_UPDATE, TRUE);
-            M_printf (i18n (2021, "Being invisible to %s.\n"), cont->nick);
-        }
-        if (*args == ',')
-            args++;
-    }
-    if (conn->type != TYPE_SERVER)
-    {
-        CmdPktCmdContactList (conn);
-        CmdPktCmdInvisList (conn);
-        CmdPktCmdVisList (conn);
-        CmdPktCmdStatusChange (conn, conn->status);
+        if (!(par = s_parse (&args)))
+            break;
+        M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
     }
     return 0;
 }
@@ -2429,38 +2425,43 @@ static JUMP_F(CmdUserTogInvis)
  */
 static JUMP_F(CmdUserTogVisible)
 {
-    Contact *cont = NULL;
+    ContactGroup *cg;
+    Contact *cont;
+    strc_t par;
+    int i;
     OPENCONN;
 
-    while (*args)
+    while (1)
     {
-        if (!s_parsenick (&args, &cont, conn))
+        if ((cg = s_parselistrem (&args, conn)))
         {
-            M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
-            return 0;
+            for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            {
+                if (ContactPrefVal (cont, CO_INTIMATE))
+                {
+                    ContactOptionsSetVal (&cont->copts, CO_INTIMATE, 0);
+                    if (conn->type == TYPE_SERVER)
+                        SnacCliRemvisible (conn, cont);
+                    else
+                        CmdPktCmdUpdateList (conn, cont, VIS_LIST_UPDATE, FALSE);
+                    M_printf (i18n (1670, "Normal visible to %s now.\n"), cont->nick);
+                }
+                else
+                {
+                    ContactOptionsSetVal (&cont->copts, CO_HIDEFROM, 0);
+                    ContactOptionsSetVal (&cont->copts, CO_INTIMATE, 1);
+                    if (conn->type == TYPE_SERVER)
+                        SnacCliAddvisible (conn, cont);
+                    else
+                        CmdPktCmdUpdateList (conn, cont, VIS_LIST_UPDATE, TRUE);
+                    M_printf (i18n (1671, "Always visible to %s now.\n"), cont->nick);
+                }
+            }
+            ContactGroupD (cg);
         }
-
-        if (ContactPrefVal (cont, CO_INTIMATE))
-        {
-            ContactOptionsSetVal (&cont->copts, CO_INTIMATE, 0);
-            if (conn->type == TYPE_SERVER)
-                SnacCliRemvisible (conn, cont);
-            else
-                CmdPktCmdUpdateList (conn, cont, VIS_LIST_UPDATE, FALSE);
-            M_printf (i18n (1670, "Normal visible to %s now.\n"), cont->nick);
-        }
-        else
-        {
-            ContactOptionsSetVal (&cont->copts, CO_HIDEFROM, 0);
-            ContactOptionsSetVal (&cont->copts, CO_INTIMATE, 1);
-            if (conn->type == TYPE_SERVER)
-                SnacCliAddvisible (conn, cont);
-            else
-                CmdPktCmdUpdateList (conn, cont, VIS_LIST_UPDATE, TRUE);
-            M_printf (i18n (1671, "Always visible to %s now.\n"), cont->nick);
-        }
-        if (*args == ',')
-            args++;
+        if (!(par = s_parse (&args)))
+            break;
+        M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
     }
     return 0;
 }
@@ -2474,80 +2475,79 @@ static JUMP_F(CmdUserTogVisible)
  */
 static JUMP_F(CmdUserAdd)
 {
-    ContactGroup *cg = NULL;
+    ContactGroup *cg = NULL, *acg;
     Contact *cont = NULL, *cont2;
     char *cmd;
     strc_t par;
+    int i;
     OPENCONN;
 
-    if (data != 1)
-    {
-        const char *argst = args;
-        if (s_parse (&argst, &par))
-        {
-            if ((cg = ContactGroupFind (conn, 0, par->txt)))
-                args = argst;
-            else if (data == 2)
-            {
-                if ((cg = ContactGroupFind (conn, 0, par->txt)))
-                {
-                    M_printf (i18n (9999, "Contact group '%s' already exists\n"), par->txt);
-                    args = argst;
-                }
-                if ((cg = ContactGroupC (conn, 0, par->txt)))
-                {
-                    M_printf (i18n (2245, "Added contact group '%s'.\n"), par->txt);
-                    args = argst;
-                }
-                else
-                {
-                    M_print (i18n (2118, "Out of memory.\n"));
-                    return 0;
-                }
-            }
+    if (!data)
+        (cg = s_parsecg (&args, conn));
 
+    if (data == 2)
+    {
+        if (cg)
+        {
+            M_printf (i18n (9999, "Contact group '%s' already exists\n"), cg->name);
+            return 0;
         }
-        else if (data == 2)
+        if (!(par = s_parse (&args)))
         {
             M_print (i18n (2240, "No contact group given.\n"));
+            return 0;
+        }
+        if ((cg = ContactGroupC (conn, 0, par->txt)))
+            M_printf (i18n (2245, "Added contact group '%s'.\n"), par->txt);
+        else
+        {
+            M_print (i18n (2118, "Out of memory.\n"));
             return 0;
         }
     }
     
     if (cg)
     {
-        while (*args)
+        while (1)
         {
-            while (s_parsenick_s (&args, &cont, MULTI_SEP, conn))
+            if ((acg = s_parselistrem (&args, conn)))
             {
-                if (!cont->group)
-                    M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), cont->nick);
-                else if (!ContactFind (cg, 0, cont->uin, 0))
+                for (i = 0; (cont = ContactIndex (acg, i)); i++)
                 {
-                    if (ContactAdd (cg, cont))
+                    if (!cont->group)
+                    {
+                        ContactFindCreate (conn->contacts, 0, cont->uin, s_sprintf ("%ld", cont->uin));
+                        if (conn->type == TYPE_SERVER)
+                            SnacCliAddcontact (conn, cont);
+                        else
+                            CmdPktCmdContactList (conn);
+                        M_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, cont->nick);
+                    }
+                    if (ContactHas (cg, cont))
+                        M_printf (i18n (2244, "Contact group '%s' already has contact '%s' (%ld).\n"),
+                                  cg->name, cont->nick, cont->uin);
+                    else if (ContactAdd (cg, cont))
                         M_printf (i18n (2241, "Added '%s' to contact group '%s'.\n"), cont->nick, cg->name);
                     else
                         M_print (i18n (2118, "Out of memory.\n"));
                 }
-                else
-                    M_printf (i18n (2244, "Contact group '%s' already has contact '%s' (%ld).\n"),
-                              cg->name, cont->nick, cont->uin);
-                if (*args == ',')
-                    args++;
+                ContactGroupD (acg);
             }
-            if (s_parse (&args, &par) && *par->txt)
-                M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), par->txt);
+            if (!(par = s_parse (&args)))
+                break;
+            M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
         }
+        M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
         return 0;
     }
 
-    if (!s_parsenick (&args, &cont, conn))
+    if (!(cont = s_parsenick (&args, conn)))
     {
         M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
     }
 
-    if (!s_parserem (&args, &cmd))
+    if (!(cmd = s_parserem (&args)))
     {
         M_print (i18n (2116, "No new nick name given.\n"));
         return 0;
@@ -2600,26 +2600,20 @@ static JUMP_F(CmdUserAdd)
  */
 static JUMP_F(CmdUserRemove)
 {
-    ContactGroup *cg = NULL;
+    ContactGroup *cg = NULL, *acg;
     Contact *cont = NULL;
     UDWORD uin;
     strc_t par;
     char *alias;
     const char *argst;
     UBYTE all = 0;
+    int i;
     OPENCONN;
     
-    if (data != 1)
+    if (data == 2 && !(cg = s_parsecg (&args, conn)) && data == 2)
     {
-        argst = args;
-        if (s_parse (&argst, &par))
-            if ((cg = ContactGroupFind (conn, 0, par->txt)))
-                args = argst;
-        if (data == 2 && !cg)
-        {
-            M_print (i18n (2240, "No contact group given.\n"));
-            return 0;
-        }
+        M_print (i18n (2240, "No contact group given.\n"));
+        return 0;
     }
 
     if (s_parsekey (&argst, "all"))
@@ -2634,57 +2628,58 @@ static JUMP_F(CmdUserRemove)
         return 0;
     }
 
-    while (*args)
+    while (1)
     {
-        if (!s_parsenick_s (&args, &cont, MULTI_SEP, conn))
+        if ((acg = s_parselistrem (&args, conn)))
         {
-            M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
-            break;
-        }
-        if (*args == ',')
-            args++;
-        
-        if (cg)
-        {
-            if (ContactRem (cg, cont))
-                M_printf (i18n (2243, "Removed contact '%s' from group '%s'.\n"),
-                          cont->nick, cg->name);
-            else
-                M_printf (i18n (2246, "Contact '%s' is not in group '%s'.\n"),
-                          cont->nick, cg->name);
-        }
-        else
-        {
-            if (!cont->group)
-                continue;
-
-            if (all || !cont->alias)
+            for (i = 0; (cont = ContactIndex (cg, i)); i++)
             {
-                if (conn->type == TYPE_SERVER)
-                    SnacCliRemcontact (conn, cont);
+                if (cg)
+                {
+                    if (ContactRem (cg, cont))
+                        M_printf (i18n (2243, "Removed contact '%s' from group '%s'.\n"),
+                                  cont->nick, cg->name);
+                    else
+                        M_printf (i18n (2246, "Contact '%s' is not in group '%s'.\n"),
+                                  cont->nick, cg->name);
+                }
                 else
-                    CmdPktCmdContactList (conn);
-            }
+                {
+                    if (!cont->group)
+                        continue;
 
-            alias = strdup (cont->nick);
-            uin = cont->uin;
-            
-            if (all || !cont->alias)
-            {
-                ContactD (cont);
-                M_printf (i18n (2150, "Removed contact '%s' (%ld).\n"),
-                          alias, uin);
+                    if (all || !cont->alias)
+                    {
+                        if (conn->type == TYPE_SERVER)
+                            SnacCliRemcontact (conn, cont);
+                        else
+                            CmdPktCmdContactList (conn);
+                    }
+
+                    alias = strdup (cont->nick);
+                    uin = cont->uin;
+                    
+                    if (all || !cont->alias)
+                    {
+                        ContactD (cont);
+                        M_printf (i18n (2150, "Removed contact '%s' (%ld).\n"),
+                                  alias, uin);
+                    }
+                    else
+                    {
+                        ContactRemAlias (cont, alias);
+                        M_printf (i18n (2149, "Removed alias '%s' for '%s' (%ld).\n"),
+                                 alias, cont->nick, uin);
+                    }
+                    free (alias);
+                }
             }
-            else
-            {
-                ContactRemAlias (cont, alias);
-                M_printf (i18n (2149, "Removed alias '%s' for '%s' (%ld).\n"),
-                         alias, cont->nick, uin);
-            }
-            free (alias);
+            ContactGroupD (acg);
         }
+        if (!(par = s_parse (&args)))
+            break;
+        M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
     }
-
     M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
     return 0;
 }
@@ -2694,78 +2689,78 @@ static JUMP_F(CmdUserRemove)
  */
 static JUMP_F(CmdUserAuth)
 {
+    ContactGroup *cg;
+    Contact *cont;
     strc_t par;
-    char *cmd = NULL, *msg = NULL;
-    const char *argsb;
-    Contact *cont = NULL;
+    int i;
+    char *msg = NULL;
     OPENCONN;
 
-    argsb = args;
-    if (!s_parse (&args, &par))
+    if (!data)
     {
-        M_print (i18n (2119, "auth [grant] <nick>    - grant authorization.\n"));
-        M_print (i18n (2120, "auth deny <nick> <msg> - refuse authorization.\n"));
-        M_print (i18n (2121, "auth req  <nick> <msg> - request authorization.\n"));
-        M_print (i18n (2145, "auth add  <nick>       - authorized add.\n"));
+        if      (s_parsekey (&args, "deny"))  data = 2;
+        else if (s_parsekey (&args, "req"))   data = 3;
+        else if (s_parsekey (&args, "add"))   data = 4;
+        else if (s_parsekey (&args, "grant")) data = 5;
+    }
+    if (!*args && !data)
+    {
+        M_print (i18n (2119, "auth [grant] <contacts>    - grant authorization.\n"));
+        M_print (i18n (2120, "auth deny <contacts> <msg> - refuse authorization.\n"));
+        M_print (i18n (2121, "auth req  <contacts> <msg> - request authorization.\n"));
+        M_print (i18n (2145, "auth add  <contacts>       - authorized add.\n"));
         return 0;
     }
-    cmd = strdup (par->txt);
-
-    if (s_parsenick (&args, &cont, conn))
+    if (!(cg = s_parselist (&args, conn)))
     {
-        s_parserem (&args, &msg);
-        if (!strcmp (cmd, "req"))
-        {
-            if (!msg)         /* FIXME: let it untranslated? */
-                msg = "Please authorize my request and add me to your Contact List\n";
-            if (conn->type == TYPE_SERVER && conn->version >= 8)
-                SnacCliReqauth (conn, cont, msg);
-            else if (conn->type == TYPE_SERVER)
-                SnacCliSendmsg (conn, cont, msg, MSG_AUTH_REQ, 0);
-            else
-                CmdPktCmdSendMessage (conn, cont, msg, MSG_AUTH_REQ);
-            free (cmd);
-            return 0;
-        }
-        else if (!strcmp (cmd, "deny"))
-        {
-            if (!msg)         /* FIXME: let it untranslated? */
-                msg = "Authorization refused\n";
-            if (conn->type == TYPE_SERVER && conn->version >= 8)
-                SnacCliAuthorize (conn, cont, 0, msg);
-            else if (conn->type == TYPE_SERVER)
-                SnacCliSendmsg (conn, cont, msg, MSG_AUTH_DENY, 0);
-            else
-                CmdPktCmdSendMessage (conn, cont, msg, MSG_AUTH_DENY);
-            free (cmd);
-            return 0;
-        }
-        else if (!strcmp (cmd, "add"))
-        {
-            if (conn->type == TYPE_SERVER && conn->version >= 8)
-                SnacCliGrantauth (conn, cont);
-            else if (conn->type == TYPE_SERVER)
-                SnacCliSendmsg (conn, cont, "\x03", MSG_AUTH_ADDED, 0);
-            else
-                CmdPktCmdSendMessage (conn, cont, "\x03", MSG_AUTH_ADDED);
-            free (cmd);
-            return 0;
-        }
-    }
-    if ((strcmp (cmd, "grant") && !s_parsenick (&argsb, &cont, conn)) || !cont)
-    {
-        M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"),
-                 strcmp (cmd, "grant") && strcmp (cmd, "req") && strcmp (cmd, "deny") ? argsb : args);
-        free (cmd);
+        if ((par = s_parse (&args)))
+            M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
         return 0;
     }
-
-    if (conn->type == TYPE_SERVER && conn->version >= 8)
-        SnacCliAuthorize (conn, cont, 1, NULL);
-    else if (conn->type == TYPE_SERVER)
-        SnacCliSendmsg (conn, cont, "\x03", MSG_AUTH_GRANT, 0);
-    else
-        CmdPktCmdSendMessage (conn, cont, "\x03", MSG_AUTH_GRANT);
+    if (data & 2 && !(msg = s_parserem (&args)))
+        msg = NULL;
+    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+    {
+        switch (data)
+        {
+            case 2:
+                if (!msg)         /* FIXME: let it untranslated? */
+                    msg = "Authorization refused\n";
+                if (conn->type == TYPE_SERVER && conn->version >= 8)
+                    SnacCliAuthorize (conn, cont, 0, msg);
+                else if (conn->type == TYPE_SERVER)
+                    SnacCliSendmsg (conn, cont, msg, MSG_AUTH_DENY, 0);
+                else
+                    CmdPktCmdSendMessage (conn, cont, msg, MSG_AUTH_DENY);
+                break;
+            case 3:
+                if (!msg)         /* FIXME: let it untranslated? */
+                    msg = "Please authorize my request and add me to your Contact List\n";
+                if (conn->type == TYPE_SERVER && conn->version >= 8)
+                    SnacCliReqauth (conn, cont, msg);
+                else if (conn->type == TYPE_SERVER)
+                    SnacCliSendmsg (conn, cont, msg, MSG_AUTH_REQ, 0);
+                else
+                    CmdPktCmdSendMessage (conn, cont, msg, MSG_AUTH_REQ);
+                break;
+            case 4:
+                if (conn->type == TYPE_SERVER && conn->version >= 8)
+                    SnacCliGrantauth (conn, cont);
+                else if (conn->type == TYPE_SERVER)
+                    SnacCliSendmsg (conn, cont, "\x03", MSG_AUTH_ADDED, 0);
+                else
+                    CmdPktCmdSendMessage (conn, cont, "\x03", MSG_AUTH_ADDED);
+                break;
+            case 5:
+                if (conn->type == TYPE_SERVER && conn->version >= 8)
+                    SnacCliAuthorize (conn, cont, 1, NULL);
+                else if (conn->type == TYPE_SERVER)
+                    SnacCliSendmsg (conn, cont, "\x03", MSG_AUTH_GRANT, 0);
+                else
+                    CmdPktCmdSendMessage (conn, cont, "\x03", MSG_AUTH_GRANT);
+        }
+    }
+    ContactGroupD (cg);
     return 0;
 }
 
@@ -2787,37 +2782,44 @@ static JUMP_F(CmdUserSave)
  */
 static JUMP_F(CmdUserURL)
 {
+    ContactGroup *cg;
+    Contact *cont;
     char *url, *msg;
     const char *cmsg;
     strc_t par;
-    Contact *cont = NULL;
+    int i;
     OPENCONN;
 
-    if (!s_parsenick (&args, &cont, conn))
+    if (!(cg = s_parselist (&args, conn)))
     {
-        M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
+        if ((par = s_parse (&args)))
+            M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
         return 0;
     }
-
-    if (!s_parse (&args, &par))
+    
+    if (!(par = s_parse (&args)))
     {
-        M_print (i18n (1678, "Need URL please.\n"));
+        M_print (i18n (1678, "No URL given.\n"));
         return 0;
     }
 
     url = strdup (par->txt);
 
-    if (!s_parserem (&args, &msg))
+    if (!(msg = s_parserem (&args)))
         msg = "";
 
     cmsg = s_sprintf ("%s%c%s", msg, Conv0xFE, url);
     s_repl (&uiG.last_message_sent, cmsg);
     uiG.last_message_sent_type = MSG_URL;
-    uiG.last_sent = cont;
 
-    IMCliMsg (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, MSG_URL, CO_MSGTEXT, cmsg, 0));
+    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+    {
+        IMCliMsg (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, MSG_URL, CO_MSGTEXT, cmsg, 0));
+        uiG.last_sent = cont;
+    }
 
     free (url);
+    ContactGroupD (cg);
     return 0;
 }
 
@@ -2859,7 +2861,7 @@ static JUMP_F(CmdUserLast)
 /*    int i; */
     ANYCONN;
 
-    if (!s_parsenick (&args, &cont, conn))
+    if (!(cont = s_parsenick (&args, conn)))
     {
         HistShow (NULL);
 
@@ -2889,7 +2891,7 @@ static JUMP_F(CmdUserLast)
         if (*args == ',')
             args++;
     }
-    while (s_parsenick (&args, &cont, conn));
+    while ((cont = s_parsenick (&args, conn)));
     return 0;
 }
 
@@ -2950,7 +2952,7 @@ static JUMP_F(CmdUserConn)
 
     if (!data)
     {
-        if (!s_parse (&args, &par))            data = 1;
+        if (!(par = s_parse (&args)))            data = 1;
         else if (!strcmp (par->txt, "login"))  data = 2;
         else if (!strcmp (par->txt, "open"))   data = 2;
         else if (!strcmp (par->txt, "select")) data = 3;
@@ -3115,7 +3117,7 @@ static JUMP_F(CmdUserContact)
 
     if (!data)
     {
-        if (!s_parse (&args, &par))                  data = 0;
+        if (!(par = s_parse (&args)))                  data = 0;
         else if (!strcasecmp (par->txt, "show"))     data = IMROSTER_SHOW;
         else if (!strcasecmp (par->txt, "diff"))     data = IMROSTER_DIFF;
         else if (!strcasecmp (par->txt, "add"))      data = IMROSTER_DOWNLOAD;
@@ -3264,14 +3266,14 @@ static JUMP_F(CmdUserSearch)
     switch (status)
     {
         case 0:
-            if (!s_parse (&args, &par))
+            if (!(par = s_parse (&args)))
             {
                 M_print (i18n (1960, "Enter data to search user for. Enter '.' to start the search.\n"));
                 ReadLinePromptSet (i18n (1656, "Enter the user's nick name:"));
                 return 200;
             }
             arg1 = strdup (par->txt);
-            if (s_parse (&args, &par))
+            if ((par = s_parse (&args)))
             {
                 if (conn->type == TYPE_SERVER)
                     SnacCliSearchbypersinf (conn, NULL, NULL, arg1, par->txt);
@@ -3678,7 +3680,7 @@ static JUMP_F(CmdUserAbout)
         case -1:
             return 0;
         case 0:
-            if (s_parserem (&args, &arg))
+            if ((arg = s_parserem (&args)))
             {
                 if (conn->type == TYPE_SERVER)
                     SnacCliMetasetabout (conn, arg);
@@ -3821,7 +3823,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
                 return;
             }
             args = buf;
-            if (!s_parse (&args, &par))
+            if (!(par = s_parse (&args)))
             {
                 if (!command)
                     ReadLinePromptReset ();

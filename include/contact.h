@@ -121,6 +121,7 @@ Contact      *ContactUIN          (Connection *conn, UDWORD uin);
 Contact      *ContactFind         (ContactGroup *group, UWORD id, UDWORD uin, const char *nick);
 Contact      *ContactFindCreate   (ContactGroup *group, UWORD id, UDWORD uin, const char *nick);
 BOOL          ContactAdd          (ContactGroup *group, Contact *cont);
+BOOL          ContactHas          (ContactGroup *group, Contact *cont);
 BOOL          ContactRem          (ContactGroup *group, Contact *cont);
 void          ContactD            (Contact *cont);
 
