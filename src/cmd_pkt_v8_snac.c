@@ -705,22 +705,15 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             PacketReadData (p, text, len - 4);
             PacketD (p);
             /* TLV 1, 2(!), 3, 4, f ignored */
-            switch (type1enc)
+            switch (type1enc & 0xf0000)
             {
                 case 0x00020000:
                     txt = ConvToUTF8 (text, ENC_UCS2BE, len - 4, 0);
                     break;
                 case 0x00030000:
-                    txt = ConvToUTF8 (text, ENC_LATIN1, -1, 0);
-                    break;
-                case 0x0003ffff:
-                    if (prG->enc_loc == ConvEnc ("CP1257"))
-                        txt = ConvToUTF8 (text, ConvEnc ("CP1257"), -1, 0);
-                    else
-                        txt = ConvToUTF8 (text, ConvEnc ("CP1251"), -1, 0);
+                    txt = ConvToUTF8 (text, cont->encoding ? cont->encoding : prG->enc_rem, -1, 0);
                     break;
                 case 0x00000000:
-                case 0x0000ffff: /* vICQ sends them */
                     if (ConvIsUTF8 (text) && len - 4 == strlen (text))
                         txt = ConvToUTF8 (text, ENC_UTF8, -1, 0);
                     else
@@ -1549,16 +1542,8 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
             remenc = cont->encoding ? cont->encoding : prG->enc_rem;
             
 #ifdef ENABLE_UTF8
-            switch (remenc)
-            {
-                case ENC_LATIN1:  icqenc = 0x30000; break;
-                case ENC_WIN1251: icqenc = 0x3ffff; break;
-                case ENC_WIN1257: icqenc = 0x3ffff; break;
-            }
-            if (icqenc && ConvFits (text, remenc))
-                enc = remenc;
-            else if (HAS_CAP (cont->caps, CAP_UTF8) && cont->dc && cont->dc->version >= 8
-                     && !(cont->dc->id1 == 0xffffff42 && cont->dc->id2 < 0x00040a03)) /* exclude old mICQ */
+            if (HAS_CAP (cont->caps, CAP_UTF8) && cont->dc && cont->dc->version >= 8
+                && !(cont->dc->id1 == 0xffffff42 && cont->dc->id2 < 0x00040a03)) /* exclude old mICQ */
             {
                 enc = ENC_UCS2BE;
                 icqenc = 0x20000;
@@ -1569,6 +1554,11 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
                 /* too bad, there's nothing we can do */
                 enc = remenc;
                 icqenc = 0;
+            }
+            if (type != 1)
+            {
+                icqenc = type;
+                enc = ENC_LATIN9;
             }
 
             p = ConvFromUTF8 (text, enc, &len);
