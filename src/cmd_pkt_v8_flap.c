@@ -186,6 +186,7 @@ void FlapSave (Packet *pak, BOOL in)
                  PacketReadAtB2 (pak, 10), PacketReadAtB4 (pak, 12));
         fHexDump (logf, pak->data + 16, pak->len - 16);
     }
+    fclose (logf);
 }
 
 Packet *FlapC (UBYTE channel)
