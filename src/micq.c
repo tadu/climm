@@ -350,7 +350,7 @@ int main (int argc, char *argv[])
 #ifdef ENABLE_UTF8
         M_print (i18n (2209, "Detected UTF-8 encoding.\n"));
 #else
-        M_print (i18n (2208, "Detected UTF-8 encoding, however, this mICQ was compiled without UTF-8 support.\n"));
+        M_print (i18n (2208, "Detected UTF-8 encoding. However, this mICQ was compiled without UTF-8 support.\n"));
 #endif
 
     if (!rc)
