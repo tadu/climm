@@ -108,11 +108,11 @@ static void Initalize_RC_File (void)
 
     away_time = default_away_time;
 
-    M_print ("Enter UIN or 0 for new UIN: #");
+    M_print (i18n (88, "Enter UIN or 0 for new UIN: #"));
     fflush (stdout);
     scanf ("%ld", &UIN);
   password_entry:
-    M_print ("Enter password : ");
+    M_print (i18n (90, "Enter password : "));
     fflush (stdout);
     Echo_Off ();
     memset (passwd, 0, sizeof (passwd));
@@ -122,10 +122,10 @@ static void Initalize_RC_File (void)
     {
         if (0 == passwd[0])
         {
-            M_print ("\nMust enter password!\n");
+            M_print (i18n (91, "\nMust enter password!\n"));
             goto password_entry;
         }
-        M_print ("\nReenter password to verify: ");
+        M_print (i18n (92, "\nReenter password to verify: "));
         fflush (stdout);
         Echo_Off ();
         memset (passwd2, 0, sizeof (passwd2));
@@ -133,30 +133,30 @@ static void Initalize_RC_File (void)
         Echo_On ();
         if (strcmp (passwd, passwd2))
         {
-            M_print ("\nPasswords did not match reenter\n");
+            M_print (i18n (93, "\nPasswords did not match reenter\n"));
             goto password_entry;
         }
         Init_New_User ();
     }
 
 /* SOCKS5 stuff begin */
-    M_print ("\nSOCKS5 server hostname or IP (type 0 if you don't want to use this) : ");
+    M_print (i18n (94, "\nSOCKS5 server hostname or IP (type 0 if you don't want to use this) : "));
     fflush (stdout);
     scanf ("%s", s5Host);
     if (strlen (s5Host) > 1)
     {
         s5Use = 1;
-        M_print ("SOCKS5 port (in general 1080) : ");
+        M_print (i18n (95, "SOCKS5 port (in general 1080) : "));
         fflush (stdout);
         scanf ("%hu", &s5Port);
 
-        M_print ("SOCKS5 username (type 0 if you don't need authentification) : ");
+        M_print (i18n (96, "SOCKS5 username (type 0 if you don't need authentification) : "));
         fflush (stdout);
         scanf ("%s", s5Name);
         if (strlen (s5Name) > 1)
         {
             s5Auth = 1;
-            M_print ("SOCKS5 password : ");
+            M_print (i18n (97, "SOCKS5 password : "));
             fflush (stdout);
             scanf ("%s", s5Pass);
         }
@@ -317,7 +317,7 @@ static void Read_RC_File (FD_T rcf)
     Contact_List = FALSE;
     for (i = 1; !Contact_List || buf == 0; i++)
     {
-/*      M_print( "Starting Line " SERVCOL " %d" NOCOL "\n", i );*/
+/*      M_print( "Starting Line " COLSERV " %d" COLNONE "\n", i );*/
         M_fdnreadln (rcf, buf, sizeof (buf));
         if ((buf[0] != '#') && (buf[0] != 0))
         {
@@ -388,8 +388,7 @@ static void Read_RC_File (FD_T rcf)
             else if (!strcasecmp (tmp, "No_Log"))
             {
                 LogType = 0;
-                M_print (CONTACTCOL
-                         "\"No_Log\" is deprecated.\nUse \"LogType 0\" Instead.\n" NOCOL);
+                M_print (i18n (98, COLCONTACT "\"No_Log\" is deprecated.\nUse \"LogType 0\" Instead.\n" COLNONE));
                 Logging = FALSE;
             }
             else if (!strcasecmp (tmp, "No_Color"))
@@ -501,7 +500,7 @@ static void Read_RC_File (FD_T rcf)
             }
             else
             {
-                M_print (SERVCOL "Unrecognized command in rc file : %s, ignored." NOCOL "\n", tmp);
+                M_print (i18n (188, COLSERV "Unrecognized command in rc file : %s, ignored." COLNONE "\n"), tmp);
             }
         }
     }
@@ -696,14 +695,14 @@ static void Read_RC_File (FD_T rcf)
 
     if (Verbose)
     {
-        M_print ("UIN = %ld\n", UIN);
-        M_print ("port = %ld\n", remote_port);
-        M_print ("passwd = %s\n", passwd);
-        M_print ("server = %s\n", server);
-        M_print ("status = %ld\n", set_status);
-        M_print ("# of contacts = %d\n", Num_Contacts);
-        M_print ("UIN of contact[0] = %ld\n", Contacts[0].uin);
-        M_print ("Message_cmd = %s\n", message_cmd);
+        M_print (i18n (189, "UIN = %ld\n"), UIN);
+        M_print (i18n (190, "port = %ld\n"), remote_port);
+        M_print (i18n (191, "passwd = %s\n"), passwd);
+        M_print (i18n (192, "server = %s\n"), server);
+        M_print (i18n (193, "status = %ld\n"), set_status);
+        M_print (i18n (194, "# of contacts = %d\n"), Num_Contacts);
+        M_print (i18n (195, "UIN of contact[0] = %ld\n"), Contacts[0].uin);
+        M_print (i18n (196, "Message_cmd = %s\n"), message_cmd);
     }
     if (UIN == 0)
     {

@@ -74,7 +74,7 @@ void msg_queue_push (struct msg *new_msg)
     new_entry = malloc (sizeof (struct msg_queue_entry));
     if (new_entry == NULL)
     {
-        M_print ("Memory exhausted!!\a\n");
+        M_print (i18n (617, "Memory exhausted!!\a\n"));
         exit (-1);
     }
     new_entry->next = NULL;
@@ -101,11 +101,11 @@ void Dump_Queue (void)
     assert (queue != NULL);
     assert (0 <= queue->entries);
 
-    M_print ("\nTotal entries %d\n", queue->entries);
+    M_print (i18n (618, "\nTotal entries %d\n"), queue->entries);
     for (i = 0; i < queue->entries; i++)
     {
         queued_msg = msg_queue_pop ();
-        M_print ("SEQ = %04x\tCMD = %04x\tattempts = %d\tlen = %d\n",
+        M_print (i18n (619, "SEQ = %04x\tCMD = %04x\tattempts = %d\tlen = %d\n"),
                  (queued_msg->seq >> 16), Chars_2_Word (&queued_msg->body[CMD_OFFSET]),
                  queued_msg->attempts, queued_msg->len);
         if (Verbose)
@@ -135,18 +135,18 @@ void Check_Queue (UDWORD seq)
             if (Verbose)
             {
                 R_undraw ();
-                M_print ("\nRemoved message with SEQ %04X CMD ", queued_msg->seq >> 16);
+                M_print (i18n (620, "\nRemoved message with SEQ %04X CMD "), queued_msg->seq >> 16);
                 Print_CMD (Chars_2_Word (&queued_msg->body[CMD_OFFSET]));
-                M_print (" from resend queue because of ack.\n");
+                M_print (i18n (621, " from resend queue because of ack.\n"));
                 R_redraw ();
             }
             if (Chars_2_Word (&queued_msg->body[CMD_OFFSET]) == CMD_SENDM)
             {
                 R_undraw ();
                 Time_Stamp ();
-                M_print (" " ACKCOL "%10s" NOCOL " " MSGACKSTR "%s\n",
+                M_print (" " COLACK "%10s" COLNONE " %s%s\n",
                          UIN2Name (Chars_2_DW (&queued_msg->body[PAK_DATA_OFFSET])),
-                         MsgEllipsis (&queued_msg->body[32]));
+                         MSGACKSTR, MsgEllipsis (&queued_msg->body[32]));
                 R_redraw ();
             }
             free (queued_msg->body);

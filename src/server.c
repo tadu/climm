@@ -74,12 +74,12 @@ static void Auto_Reply (SOK_T sok, SIMPLE_MESSAGE_PTR s_mesg)
                     break;
                 default:
                     temp = strdup (auto_rep_str_occ);
-                    M_print ("You have encounterd a bug in my code :( I now own you a beer!\nGreetings Fryslan!\n");
+                    M_print (i18n (635, "You have encounterd a bug in my code :( I now own you a beer!\nGreetings Fryslan!\n"));
             }
 
             icq_sendmsg (sok, Chars_2_DW (s_mesg->uin), temp, NORM_MESS);
             free (temp);
-            M_print ("[ Sent auto-reply message to %d(%d)]\n", Chars_2_DW (s_mesg->uin),
+            M_print (i18n (636, "[ Sent auto-reply message to %d(%d)]\n"), Chars_2_DW (s_mesg->uin),
                      last_recv_uin);
 
             if (UIN2nick (last_recv_uin) != NULL)
@@ -109,7 +109,7 @@ static void Multi_Packet (SOK_T sok, UBYTE * data)
         memcpy (&pak, j, sizeof (pak));
         j += 2;
 #if 0
-        M_print ("\nPacket Number %d\n", i);
+        M_print (i18n (637, "\nPacket Number %d\n"), i);
         M_print ("%s %04X\n", i18n (46, "Length"), len);
         M_print (COMMAND_STR " %04X\n", Chars_2_Word (pak.head.cmd));
         M_print ("%s %04X\n", i18n (48, "SEQ"), Chars_2_Word (pak.head.seq));
@@ -140,7 +140,7 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
             {
                 M_print (i18n (51, "The server acknowledged the %04x command."),
                          last_cmd[seq >> 16]);
-                M_print ("\nThe SEQ was %04X\n", seq);
+                M_print (i18n (638, "\nThe SEQ was %04X\n"), seq);
             }
             Check_Queue (seq);
             if (Verbose)
@@ -166,17 +166,17 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
             break;
         case SRV_NEW_UIN:
             R_undraw ();
-            M_print ("The new UIN is %ld!\n", uin);
+            M_print (i18n (639, "The new UIN is %ld!\n"), uin);
             R_redraw ();
             break;
         case SRV_UPDATE_FAIL:
             R_undraw ();
-            M_print ("Failed to update info.\n");
+            M_print (i18n (640, "Failed to update info.\n"));
             R_redraw ();
             break;
         case SRV_UPDATE_SUCCESS:
             R_undraw ();
-            M_print ("User info successfully updated.\n");
+            M_print (i18n (641, "User info successfully updated.\n"));
             R_redraw ();
             break;
         case SRV_LOGIN_REPLY:
@@ -184,18 +184,16 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
             R_undraw ();
             our_ip = Chars_2_DW (&data[0]);
             Time_Stamp ();
-            M_print (" " MAGENTA BOLD "%10lu" NOCOL " %s\n", uin, i18n (50, "Login successful!"));
+            M_print (" " MAGENTA BOLD "%10lu" COLNONE " %s\n", uin, i18n (50, "Login successful!"));
             if (loginmsg++)
                 break;
             Time_Stamp ();
+            M_print (" " MAGENTA BOLD "%10s" COLNONE " %s: %u.%u.%u.%u\n", UIN2Name (uin), i18n (642, "IP"),
 #if ICQ_VER == 0x0002
-            M_print (" " MAGENTA BOLD "%10s" NOCOL " IP: %u.%u.%u.%u\n", UIN2Name (uin),
                      data[4], data[5], data[6], data[7]);
 #elif ICQ_VER == 0x0004
-            M_print (" " MAGENTA BOLD "%10s" NOCOL " IP: %u.%u.%u.%u\n", UIN2Name (uin),
                      data[0], data[1], data[2], data[3]);
 #else
-            M_print (" " MAGENTA BOLD "%10s" NOCOL " IP: %u.%u.%u.%u\n", UIN2Name (uin),
                      data[12], data[13], data[14], data[15]);
 #endif
             R_redraw ();
@@ -217,7 +215,7 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
             R_undraw ();
             if (Verbose)
             {
-                M_print ("Acknowleged SRV_X1 0x021C Done Contact list?\n");
+                M_print (i18n (643, "Acknowleged SRV_X1 0x021C Done Contact list?\n"));
             }
             Show_Quick_Online_Status ();
             /* Show_Quick_Status(); */
@@ -229,7 +227,7 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
             if (Verbose)
             {
                 R_undraw ();
-                M_print ("Acknowleged SRV_X2 0x00E6 Done old messages?\n");
+                M_print (i18n (644, "Acknowleged SRV_X2 0x00E6 Done old messages?\n"));
                 R_redraw ();
             }
             snd_got_messages (sok);
@@ -253,12 +251,12 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
             break;
         case SRV_BAD_PASS:
             R_undraw ();
-            M_print (MESSCOL "You entered an incorrect password." NOCOL "\n");
+            M_print (i18n (645, COLMESS "You entered an incorrect password." COLNONE "\n"));
             exit (1);
             break;
         case SRV_TRY_AGAIN:
             R_undraw ();
-            M_print (MESSCOL "Server is busy please try again.\nTrying again...\n");
+            M_print (i18n (646, COLMESS "Server is busy please try again.\nTrying again...\n"));
 #if defined (UNIX) && !defined (__BEOS__) && !defined (AMIGA)
             if (fork () == 0)
             {
@@ -349,7 +347,7 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
             {
                 last_recv_uin = Chars_2_DW (s_mesg->uin);
                 Time_Stamp ();
-                M_print ("\a " CYAN BOLD "%10s" NOCOL " ", UIN2Name (Chars_2_DW (s_mesg->uin)));
+                M_print ("\a " CYAN BOLD "%10s" COLNONE " ", UIN2Name (Chars_2_DW (s_mesg->uin)));
                 /*
                    if ( 0 == ( Chars_2_Word( s_mesg->type ) & MASS_MESS_MASK ) )
                    M_print (i18n (32, " - Instant Message"));
@@ -358,7 +356,7 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
                    M_print ("\a ");
                  */
                 if (Verbose)
-                    M_print (" Type = %04x\t", Chars_2_Word (s_mesg->type));
+                    M_print (i18n (647, " Type = %04x\t"), Chars_2_Word (s_mesg->type));
                 Do_Msg (sok, Chars_2_Word (s_mesg->type), Chars_2_Word (s_mesg->len),
                         s_mesg->len + 2, last_recv_uin);
                 Auto_Reply (sok, s_mesg);
@@ -370,16 +368,16 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
         default:               /* commands we dont handle yet */
             R_undraw ();
             Time_Stamp ();
-            M_print (" " CLIENTCOL "The response was %04X\t", cmd);
-            M_print ("The version was %X\t", ver);
-            M_print ("\nThe SEQ was %04X\t", seq);
-            M_print ("The size was %d\n", len);
+            M_print (i18n (648, " " COLCLIENT "The response was %04X\t"), cmd);
+            M_print (i18n (649, "The version was %X\t"), ver);
+            M_print (i18n (650, "\nThe SEQ was %04X\t"), seq);
+            M_print (i18n (651, "The size was %d\n"), len);
             if (Verbose)
             {
                 if (len > 0)
                     Hex_Dump (data, len);
             }
-            M_print (NOCOL "\n");
+            M_print (COLNONE "\n");
             R_redraw ();
             break;
     }

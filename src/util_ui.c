@@ -279,6 +279,37 @@ static void M_prints (const char *str)
                         }
                         str++;
                         break;
+                    case COLCHR:
+                        if (!Color)
+                            break;
+                        switch (*++p)
+                        {
+                            case '0':
+                                printf ("%s", NOCOL);
+                                break;
+                            case '1':
+                                printf ("%s", SERVCOL);
+                                break;
+                            case '2':
+                                printf ("%s", CLIENTCOL);
+                                break;
+                            case '3':
+                                printf ("%s", MESSCOL);
+                                break;
+                            case '4':
+                                printf ("%s", CONTACTCOL);
+                                break;
+                            case '5':
+                                printf ("%s", SENTCOL);
+                                break;
+                            case '6':
+                                printf ("%s", ACKCOL);
+                                break;
+                            default:
+                                str--;
+                        }
+                        str += 2;
+                        break;
                     default:
                         s = strchr (p, 'm');
                         if (s)
@@ -476,12 +507,12 @@ void Prompt (void)
     static char buff[200];
     if (last_uin_prompt && last_uin)
     {
-        snprintf (buff, sizeof (buff), SERVCOL "[%s]" NOCOL " ", UIN2Name (last_uin));
+        snprintf (buff, sizeof (buff), COLSERV "[%s]" COLNONE " ", UIN2Name (last_uin));
         R_doprompt (buff);
     }
     else
     {
-        snprintf (buff, sizeof (buff), SERVCOL "%s" NOCOL, i18n (40, "Micq> "));
+        snprintf (buff, sizeof (buff), COLSERV "%s" COLNONE, i18n (40, "Micq> "));
         R_doprompt (buff);
     }
     No_Prompt = FALSE;
@@ -498,13 +529,13 @@ void Soft_Prompt (void)
 {
 #if 1
     static char buff[200];
-    snprintf (buff, sizeof (buff), SERVCOL "%s" NOCOL, i18n (40, "Micq> "));
+    snprintf (buff, sizeof (buff), COLSERV "%s" COLNONE, i18n (40, "Micq> "));
     R_doprompt (buff);
     No_Prompt = FALSE;
 #else
     if (!No_Prompt)
     {
-        M_print (SERVCOL i18n (40, "Micq> ") NOCOL);
+        M_print (COLSERV "%s" COLNONE, i18n (40, "Micq> "));
         fflush (stdout);
     }
     else

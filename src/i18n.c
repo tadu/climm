@@ -11,7 +11,7 @@
 #include "util_ui.h"
 #include <string.h>
 
-#define i18nSLOTS  600
+#define i18nSLOTS  900
 
 char *i18nStrings[i18nSLOTS] = { 0 };
 
@@ -22,8 +22,14 @@ char *i18nStrings[i18nSLOTS] = { 0 };
 int i18nOpen (const char *loc)
 {
     char buf[2048];
-    int i, j = 0;
+    int i, j = 0, debug = 0;
     FD_T i18nf;
+
+    if (!strncmp (loc, "debug", 5))
+    {
+        debug = 1;
+        loc += 5;
+    }
 
     if (!strcmp (loc, "!") || !strcmp (loc, "auto") || !strcmp (loc, "default"))
         loc = NULL;
@@ -65,7 +71,10 @@ int i18nOpen (const char *loc)
 
         if (p == buf || i < 0 || i >= i18nSLOTS)
             continue;
-        i18nStrings[i] = p = strdup (++p);
+        if (debug)
+            i18nStrings[i] = p = strdup (buf);
+        else
+            i18nStrings[i] = p = strdup (++p);
         j++;
         for (; *p; p++)
             if (*p == '¶')

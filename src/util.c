@@ -105,43 +105,43 @@ void Print_CMD (UWORD cmd)
     switch (cmd)
     {
         case CMD_KEEP_ALIVE:
-            M_print ("Keep Alive");
+            M_print (i18n (743, "Keep Alive"));
             break;
         case CMD_KEEP_ALIVE2:
-            M_print ("Secondary Keep Alive");
+            M_print (i18n (744, "Secondary Keep Alive"));
             break;
         case CMD_CONT_LIST:
-            M_print ("Contact List");
+            M_print (i18n (745, "Contact List"));
             break;
         case CMD_INVIS_LIST:
-            M_print ("Invisible List");
+            M_print (i18n (746, "Invisible List"));
             break;
         case CMD_VIS_LIST:
-            M_print ("Visible List");
+            M_print (i18n (747, "Visible List"));
             break;
         case CMD_RAND_SEARCH:
-            M_print ("Random Search");
+            M_print (i18n (748, "Random Search"));
             break;
         case CMD_RAND_SET:
-            M_print ("Set Random");
+            M_print (i18n (749, "Set Random"));
             break;
         case CMD_ACK_MESSAGES:
-            M_print ("Delete Server Messages");
+            M_print (i18n (750, "Delete Server Messages"));
             break;
         case CMD_LOGIN_1:
-            M_print ("Finish Login");
+            M_print (i18n (751, "Finish Login"));
             break;
         case CMD_LOGIN:
-            M_print ("Login");
+            M_print (i18n (752, "Login"));
             break;
         case CMD_SENDM:
-            M_print ("Send Message");
+            M_print (i18n (753, "Send Message"));
             break;
         case CMD_INFO_REQ:
-            M_print ("Info Request");
+            M_print (i18n (754, "Info Request"));
             break;
         case CMD_EXT_INFO_REQ:
-            M_print ("Extended Info Request");
+            M_print (i18n (755, "Extended Info Request"));
             break;
         default:
             M_print ("%04X", cmd);
@@ -278,11 +278,11 @@ int Print_UIN_Name (UDWORD uin)
     {
         if (Contacts[i].uin == uin)
         {
-            M_print (CONTACTCOL "%s" NOCOL, Contacts[i].nick);
+            M_print (COLCONTACT "%s" COLNONE, Contacts[i].nick);
             return i;
         }
     }
-    M_print (CLIENTCOL "%lu" NOCOL, uin);
+    M_print (COLCLIENT "%lu" COLNONE, uin);
     return -1;
 }
 
@@ -298,12 +298,12 @@ int Print_UIN_Name_10 (UDWORD uin)
     {
         if (Contacts[i].uin == uin)
         {
-            M_print (CONTACTCOL "%10s" NOCOL, Contacts[i].nick);
+            M_print (COLCONTACT "%10s" COLNONE, Contacts[i].nick);
             return i;
         }
     }
 
-    M_print (CLIENTCOL "%8lu" NOCOL, uin);
+    M_print (COLCLIENT "%8lu" COLNONE, uin);
     return -1;
 }
 
@@ -399,14 +399,14 @@ void Init_New_User (void)
         exit (1);
     }
 #endif
-    M_print ("\nCreating Connection...\n");
+    M_print (i18n (756, "\nCreating Connection...\n"));
     sok = Connect_Remote (server, remote_port, STDERR);
     if ((sok == -1) || (sok == 0))
     {
-        M_print ("Couldn't establish connection\n");
+        M_print (i18n (757, "Couldn't establish connection\n"));
         exit (1);
     }
-    M_print ("Sending Request...\n");
+    M_print (i18n (758, "Sending Request...\n"));
     reg_new_user (sok, passwd);
     for (;;)
     {
@@ -423,14 +423,14 @@ void Init_New_User (void)
 
         /* don't care about writefds and exceptfds: */
         select (sok + 1, &readfds, NULL, NULL, &tv);
-        M_print ("Waiting for response....\n");
+        M_print (i18n (759, "Waiting for response....\n"));
         if (FD_ISSET (sok, &readfds))
         {
             s = SOCKREAD (sok, &pak.head.ver, sizeof (pak) - 2);
             if (Chars_2_Word (pak.head.cmd) == SRV_NEW_UIN)
             {
                 UIN = Chars_2_DW (pak.head.UIN);
-                M_print ("\nYour new UIN is %s%ld%s!\n", SERVCOL, UIN, NOCOL);
+                M_print (i18n (760, "\nYour new UIN is %s%ld%s!\n"), COLSERV, UIN, COLNONE);
                 return;
             }
             else
@@ -462,12 +462,12 @@ void Print_IP (UDWORD uin)
             }
             else
             {
-                M_print ("unknown");
+                M_print (i18n (761, "unknown"));
             }
             return;
         }
     }
-    M_print ("unknown");
+    M_print (i18n (761, "unknown"));
 }
 
 /************************************************
@@ -753,7 +753,7 @@ void Hex_Dump (void *buffer, size_t len)
     assert (len > 0);
     if ((len > 1000))
     {
-        M_print ("Ack!!!!!!  %d\a\n", len);
+        M_print (i18n (762, "Ack!!!!!!  %d\a\n"), len);
         return;
     }
     for (i = 0; i < len; i++)

@@ -59,7 +59,14 @@ indent:
 	done
 
 lang:
-	rm -f *.c~ ../lang/*.i18n~
-	@../lang/i18n-number
+	@rm -f *.c~ ../lang/*.i18n~
 	@../lang/i18n-extract
+	@../lang/i18n-number
+	@if grep -q "###" *.c; then \
+	   echo "Ooops, untranslated strings left."; \
+	   grep "###" *.c; \
+	   exit 1; fi; true
+	@rm -f *.c~ ../lang/*.i18n~
+	@../lang/i18n-extract
+	@rm -rf ../lang/*.i18n~
 	@../lang/i18n-template

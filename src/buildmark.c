@@ -13,7 +13,7 @@ const char *BuildVersion (void)
     {
         char buf[2048];
         
-        snprintf (buf, sizeof (buf), SERVCOL "%s" NOCOL " %s " SERVCOL MICQ_VERSION NOCOL " (%s " \
+        snprintf (buf, sizeof (buf), COLSERV "%s" COLNONE " %s " COLSERV MICQ_VERSION COLNONE " (%s " \
                                      __DATE__ " " __TIME__ ")\n%s\n",
                   i18n (74, "Micq (Matt's ICQ clone)"),
                   i18n (75, "version"),

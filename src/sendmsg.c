@@ -65,9 +65,9 @@ void Do_Resend (SOK_T sok)
             if (Verbose)
             {
                 R_undraw ();
-                M_print ("\nResending message with SEQ num %04x.\tCMD ", (queued_msg->seq >> 16));
+                M_print (i18n (624, "\nResending message with SEQ num %04x.\tCMD "), (queued_msg->seq >> 16));
                 Print_CMD (Chars_2_Word (&queued_msg->body[CMD_OFFSET]));
-                M_print ("(Attempt #%d.)", queued_msg->attempts);
+                M_print (i18n (625, "(Attempt #%d.)"), queued_msg->attempts);
                 M_print ("%d\n", queued_msg->len);
                 R_redraw ();
             }
@@ -92,9 +92,9 @@ void Do_Resend (SOK_T sok)
             if (CMD_SENDM == Chars_2_Word (pak.head.cmd))
             {
                 s_mesg = (SIMPLE_MESSAGE_PTR) pak.data;
-                M_print ("\nDiscarding message to ");
+                M_print (i18n (626, "\nDiscarding message to "));
                 Print_UIN_Name (Chars_2_DW (s_mesg->uin));
-                M_print (" after %d send attempts.  Message content:\n", queued_msg->attempts - 1);
+                M_print (i18n (627, " after %d send attempts.  Message content:\n"), queued_msg->attempts - 1);
 
                 type = Chars_2_Word (s_mesg->type);
                 data = s_mesg->len + 2;
@@ -111,26 +111,26 @@ void Do_Resend (SOK_T sok)
                         ConvUnixWin (data);
                         strcpy (url_data, data);
 
-                        M_print (" Description: " MESSCOL "%s" NOCOL "\n", url_desc);
-                        M_print (" URL        : " MESSCOL "%s" NOCOL " ", url_data);
+                        M_print (i18n (628, " Description: " COLMESS "%s" COLNONE "\n"), url_desc);
+                        M_print (i18n (629, " URL        : " COLMESS "%s" COLNONE " "), url_data);
                     }
                 }
                 else if (type == NORM_MESS || type == MRNORM_MESS)
                 {
                     ConvUnixWin (data);
-                    M_print (MESSCOL "%s", data);
-                    M_print (NOCOL " ");
+                    M_print (COLMESS "%s", data);
+                    M_print (COLNONE " ");
                 }
             }
             else
             {
-                M_print ("\nDiscarded a ");
+                M_print (i18n (630, "\nDiscarded a "));
                 Print_CMD (Chars_2_Word (pak.head.cmd));
-                M_print (" packet.");
+                M_print (i18n (631, " packet."));
                 if ((CMD_LOGIN == Chars_2_Word (pak.head.cmd))
                     || (CMD_KEEP_ALIVE == Chars_2_Word (pak.head.cmd)))
                 {
-                    M_print ("\n\aConnection unstable. Exiting....");
+                    M_print (i18n (632, "\n\aConnection unstable. Exiting...."));
                     Quit = TRUE;
                 }
             }
@@ -367,7 +367,7 @@ void snd_vis_list (int sok)
                 num_used++;
                 if (Contacts[i].invis_list)
                 {
-                    M_print ("ACK!!! %d\n", Contacts[i].uin);
+                    M_print (i18n (633, "ACK!!! %d\n"), Contacts[i].uin);
                 }
             }
         }
@@ -434,12 +434,7 @@ void Keep_Alive (int sok)
     if (Verbose)
     {
         R_undraw ();
-#ifdef FUNNY_MSGS
-        M_print ("\nIf you go to" MESSCOL " Z'Ha'Dum " NOCOL "you will die!!\n");
-        /* or if you don't send this packet */
-#else
-        M_print ("\nSend Keep_Alive packet to the server\n");
-#endif
+        M_print (i18n (634, "\nSend Keep_Alive packet to the server\n"));
         R_redraw ();
     }
 }

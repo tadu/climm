@@ -210,7 +210,7 @@ SOK_T Connect_Remote (char *hostname, int port, FD_T aux)
             host_struct = gethostbyname (s5Host);
             if (host_struct == 0L)
             {
-                M_print ("[SOCKS] Can't find hostname: %s\n", s5Host);
+                M_print (i18n (596, "[SOCKS] Can't find hostname: %s\n"), s5Host);
                 return -1;
             }
             s5sin.sin_addr = *((struct in_addr *) host_struct->h_addr);
@@ -221,13 +221,13 @@ SOK_T Connect_Remote (char *hostname, int port, FD_T aux)
         s5Sok = socket (AF_INET, SOCK_STREAM, 0);       /* create the unconnected socket */
         if (s5Sok == -1)
         {
-            M_print ("[SOCKS] Socket creation failed\n");
+            M_print (i18n (597, "[SOCKS] Socket creation failed\n"));
             return -1;
         }
         conct = connect (s5Sok, (struct sockaddr *) &s5sin, sizeof (s5sin));
         if (conct == -1)        /* did we connect ? */
         {
-            M_print ("[SOCKS] Connection refused\n");
+            M_print (i18n (598, "[SOCKS] Connection refused\n"));
             return -1;
         }
         buf[0] = 5;             /* protocol version */
@@ -242,7 +242,7 @@ SOK_T Connect_Remote (char *hostname, int port, FD_T aux)
         {
             if (res != 2 || buf[0] != 5 || buf[1] != 2) /* username/password authentication */
             {
-                M_print ("[SOCKS] Authentication method incorrect\n");
+                M_print (i18n (599, "[SOCKS] Authentication method incorrect\n"));
                 close (s5Sok);
                 return -1;
             }
@@ -255,7 +255,7 @@ SOK_T Connect_Remote (char *hostname, int port, FD_T aux)
             res = recv (s5Sok, buf, 2, 0);
             if (res != 2 || buf[0] != 1 || buf[1] != 0)
             {
-                M_print ("[SOCKS] Authorization failure\n");
+                M_print (i18n (600, "[SOCKS] Authorization failure\n"));
                 close (s5Sok);
                 return -1;
             }
@@ -264,7 +264,7 @@ SOK_T Connect_Remote (char *hostname, int port, FD_T aux)
         {
             if (res != 2 || buf[0] != 5 || buf[1] != 0) /* no authentication required */
             {
-                M_print ("[SOCKS] Authentication method incorrect\n");
+                M_print (i18n (599, "[SOCKS] Authentication method incorrect\n"));
                 close (s5Sok);
                 return -1;
             }
@@ -283,7 +283,7 @@ SOK_T Connect_Remote (char *hostname, int port, FD_T aux)
         res = recv (s5Sok, buf, 10, 0);
         if (res != 10 || buf[0] != 5 || buf[1] != 0)
         {
-            M_print ("[SOCKS] General SOCKS server failure\n");
+            M_print (i18n (601, "[SOCKS] General SOCKS server failure\n"));
             close (s5Sok);
             return -1;
         }
@@ -436,10 +436,10 @@ void Handle_Server_Response (SOK_T sok)
 //#if 0      
     if (Verbose)
     {
-        M_print ("Cmd : %04X\t", Chars_2_Word (pak.head.cmd));
-        M_print ("Ver : %04X\t", Chars_2_Word (pak.head.ver));
-        M_print ("Seq : %08X\t", Chars_2_DW (pak.head.seq));
-        M_print ("Ses : %08X\n", Chars_2_DW (pak.head.session));
+        M_print (i18n (602, "Cmd : %04X\t"), Chars_2_Word (pak.head.cmd));
+        M_print (i18n (603, "Ver : %04X\t"), Chars_2_Word (pak.head.ver));
+        M_print (i18n (604, "Seq : %08X\t"), Chars_2_DW (pak.head.seq));
+        M_print (i18n (605, "Ses : %08X\n"), Chars_2_DW (pak.head.session));
     }
 //#endif
 //    if ( pak.head.cmd != SRV_BAD_PASS ) {
@@ -458,7 +458,7 @@ void Handle_Server_Response (SOK_T sok)
         if (Verbose)
         {
             R_undraw ();
-            M_print ("Got a bad session ID %08X with CMD %04X ignored.\n",
+            M_print (i18n (606, "Got a bad session ID %08X with CMD %04X ignored.\n"),
                      Chars_2_DW (pak.head.session), Chars_2_Word (pak.head.cmd));
             R_redraw ();
         }
@@ -588,11 +588,11 @@ void Idle_Check (SOK_T sok)
 
 void Usage ()
 {
-    M_print ("Usage: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]\n");
-    M_print ("        -v   Turn on verbose Mode (useful for Debugging only)\n");
-    M_print ("        -f   specifies an alternate Config File (default: ~/.micqrc)\n");
-    M_print ("        -l   specifies an alternate LogFile\n");
-    M_print ("        -?   gives this help screen\n\n");
+    M_print (i18n (607, "Usage: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]\n"));
+    M_print (i18n (608, "        -v   Turn on verbose Mode (useful for Debugging only)\n"));
+    M_print (i18n (609, "        -f   specifies an alternate Config File (default: ~/.micqrc)\n"));
+    M_print (i18n (610, "        -l   specifies an alternate LogFile\n"));
+    M_print (i18n (611, "        -?   gives this help screen\n\n"));
     exit (0);
 }
 
@@ -616,12 +616,8 @@ int main (int argc, char *argv[])
     setbuf (stdout, NULL);      /* Don't buffer stdout */
     M_print (BuildVersion ());
 
-#ifdef FUNNY_MSGS
-    M_print ("No Mirabilis client was maimed, hacked, tortured, sodomized or otherwise harmed  in the making of this utility.\n");
-#else
-    M_print ("This program was made without any help from Mirabilis or their consent.\n");
-    M_print ("No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n");
-#endif
+    M_print (i18n (612, "This program was made without any help from Mirabilis or their consent.\n"));
+    M_print (i18n (613, "No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n"));
 
     if (i == -1)
         M_print ("Couldn't load internationalization.\n");
@@ -652,12 +648,12 @@ int main (int argc, char *argv[])
             {
                 i++;            /* skip the argument to f */
                 Set_rcfile (argv[i]);
-                M_print ("The config file for this session is \"%s\"\n", argv[i]);
+                M_print (i18n (614, "The config file for this session is \"%s\"\n"), argv[i]);
             }
             else if ((argv[i][1] == 'l') || (argv[i][1] == 'L'))
             {
                 i++;
-                M_print ("The logging directory for this session is \"%s\"\n",
+                M_print (i18n (615, "The logging directory for this session is \"%s\"\n"),
                          Set_Log_Dir (argv[i]));
             }
             else if ((argv[i][1] == '?') || (argv[i][1] == 'h'))
@@ -681,7 +677,7 @@ int main (int argc, char *argv[])
 
 #ifdef __BEOS__
     Be_Start ();
-    M_print ("Started BeOS InputThread\n\r");
+    M_print (i18n (616, "Started BeOS InputThread\n\r"));
 #endif
 
     Initialize_Msg_Queue ();

@@ -1,4 +1,23 @@
 
+2001-04-27 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Makefile, src/Makefile: Fixes.
+	* include/micq.h, include/color.h:
+	  Move color #defines to color.h, add #defines for COL*, which
+	  yield a string to be interpreted by M_print as color, but can
+	  be used in i18n files.
+	* src/util_ui.c: Implement the above in M_print ().
+	* src/*.c:
+	  Use COL* macros instead of *COL, apply i18n () to everything
+	  not running away fast enough.
+	* lang/i18n-*: Adopt scripts to work with some macros in the
+	  parameter to i18n ().
+	* lang/en.i18n: Regenerate.
+	* lang/de.i18n, lang/en_fun.i18n: Update.
+	* lang/*.i18n: Regenerate with more to-translate strings.
+	* src/i18n.c:
+	  Enlarge array for more i18n strings. Add debug option to also
+	  print string numbers.
+
 2001-04-26 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Makefile, src/Makefile, src/i18n.c, src/server.c,
 	  include/config.h:
