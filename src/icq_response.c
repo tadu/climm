@@ -46,14 +46,14 @@ static BOOL Meta_Read_List (Packet *pak, MetaList **list)
     {
         if (!CONTACT_LIST (list))
             return FALSE;
-        (*list)->type = PacketRead2 (pak);
+        (*list)->data = PacketRead2 (pak);
         s_read ((*list)->description);
-        if ((*list)->type || *(*list)->description)
-            list = &(*list)->meta_list;
+        if ((*list)->data || *(*list)->description)
+            list = &(*list)->more;
     }
     while (*list)
     {
-        tmp = (*list)->meta_list;
+        tmp = (*list)->more;
         s_free ((*list)->description);
         free (*list);
         *list = tmp;
@@ -482,7 +482,7 @@ void Recv_Message (Connection *conn, Packet *pak)
 #ifdef HAVE_TIMEZONE
     stamp.tm_sec   = -timezone;
 #else
-    stamp = *localtime (time (NULL)));
+    stamp = *localtime (time (NULL));
     stamp.tm_sec   = -stamp.tm_gmtoff;
 #endif
     uin            = PacketRead4 (pak);
