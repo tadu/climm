@@ -13,6 +13,7 @@
 #include "cmd_user.h"
 #include "contact.h"
 #include "preferences.h"
+#include "tcp.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>

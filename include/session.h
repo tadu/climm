@@ -44,12 +44,12 @@ struct Session_s
 #define CONNECT_SELECT_W 2048
 #define CONNECT_SELECT_X 4096
 
-Session *SessionC     (void);
-Session *SessionClone (Session *sess);
-void     SessionInit  (Session *sess);
-Session *SessionNr    (int i);
-Session *SessionFind  (UBYTE type, UDWORD uin);
-void     SessionClose (Session *sess);
-
+Session    *SessionC     (void);
+Session    *SessionClone (Session *sess);
+void        SessionInit  (Session *sess);
+Session    *SessionNr    (int i);
+Session    *SessionFind  (UBYTE type, UDWORD uin);
+void        SessionClose (Session *sess);
+const char *SessionType  (Session *sess);
 
 #endif

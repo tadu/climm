@@ -56,6 +56,7 @@
 /************************************************************************
  Copies src string into dest.  If src is NULL dest becomes ""
 *************************************************************************/
+/*
 static void M_strcpy (char *dest, char *src)
 {
     if (src)
@@ -63,6 +64,7 @@ static void M_strcpy (char *dest, char *src)
     else
         *dest = '\0';
 }
+*/
 
 static char *M_strdup (char *src)
 {
@@ -786,7 +788,7 @@ int Save_RC (Session *sess)
 
     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
     {
-        if (!(cont->uin & 0x80000000L))
+        if (!(cont->uin & 0x80000000L) && !cont->not_in_list)
         {
             Contact *cont2;
             fprintf (rcf, cont->vis_list ? "*" : cont->invis_list ? "~" : " ");
@@ -814,20 +816,10 @@ int Add_User (Session *sess, UDWORD uin, char *name)
 {
     FILE *rcf;
 
-    if (!uin)
-        return 0;
-
-    if (ContactFind (uin))
-            return 0;
-
     rcf = fopen (prG->rcfile, "a");
     if (!rcf)
         return 0;
     fprintf (rcf, "%ld %s\n", uin, name);
     fclose (rcf);
-
-    ContactAdd (uin, name);
-
-    CmdPktCmdContactList (sess);
     return 1;
 }

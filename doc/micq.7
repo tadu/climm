@@ -133,11 +133,32 @@ file (see
 Search for a user with
 .Ar email
 as their email address.
-.It Ic add Ar uin nickname
+.It Ic add Ar uin Op Ar nickname
 Add
 .Ar uin
 to your contact list as
+.Ar nickname ,
+or renames
+.Ar uin
+to
 .Ar nickname .
+If
+.Ar nickname
+is not given, use
+.Ar uin
+as nickname.
+.br
+Note: for renaming, you need to
+.Ar save
+to make this persist.
+.It Ic rem Ar nick
+Remove
+.Ar nick
+from your contact list.
+.br
+Note: you need to
+.Ar save
+to make this persist.
 .It Ic w
 List all people in your contact list.
 .It Ic e

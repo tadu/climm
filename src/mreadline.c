@@ -214,7 +214,6 @@ int R_process_input (void)
 {
     char ch;
     int k;
-    char s1[HISTORY_LINE_LEN];
 
     if (!read (STDIN_FILENO, &ch, 1))
         return 0;
@@ -309,7 +308,7 @@ int R_process_input (void)
         }
         else if (clen + 1 < HISTORY_LINE_LEN)
         {
-            memmove (s + cpos, s + cpos + 1, clen - cpos + 1);
+            memmove (s + cpos + 1, s + cpos, clen - cpos + 1);
             s[cpos++] = ch;
             clen++;
             s[clen] = 0;

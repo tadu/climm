@@ -38,6 +38,8 @@ void CmdPktCmdSendMessage (Session *sess, UDWORD uin, const char *text, UDWORD t
 {
     Packet *pak = PacketCv5 (sess, CMD_SEND_MESSAGE);
     
+    UtilCheckUIN (sess, uin);
+    
     if (uiG.last_message_sent) free (uiG.last_message_sent);
     uiG.last_message_sent = strdup (text);
     uiG.last_message_sent_type = type;

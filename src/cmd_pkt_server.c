@@ -353,8 +353,8 @@ JUMP_SRV_F (CmdPktSrvMulti)
 {
     int i, num_pack, llen;
     Packet *npak;
-    UDWORD session, uin, id;
-    UWORD cmd, seq, seq2;
+    UDWORD session, /*uin,*/ id;
+    UWORD /*cmd, seq,*/ seq2;
 
     num_pack = PacketRead1 (pak);
 

@@ -94,7 +94,7 @@ Session *SessionNr (int i)
  */
 Session *SessionFind (UBYTE type, UDWORD uin)
 {
-    int i, m;
+    int i;
     
     for (i = 0; i < listlen; i++)
         if (slist[i] && (slist[i]->type & type) && (slist[i]->uin == uin) && uin)
@@ -129,4 +129,20 @@ void SessionClose (Session *sess)
     if (sess->sok != -1)
         sockclose (sess->sok);
     free (sess);
+}
+
+/*
+ * Returns a string describing the session's type.
+ */
+const char *SessionType (Session *sess)
+{
+    if (sess->type & TYPE_SERVER)
+        return i18n (889, "server");
+    if (sess->type & TYPE_SERVER_OLD)
+        return i18n (744, "server (v5)");
+    if (sess->type & TYPE_PEER)
+        return i18n (732, "listener");
+    if (sess->type & TYPE_DIRECT)
+        return i18n (890, "peer-to-peer");
+    return i18n (745, "unknown");
 }

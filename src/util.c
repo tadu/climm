@@ -21,6 +21,7 @@ Changes :
 #include "micq.h"
 #include "util.h"
 #include "cmd_pkt_cmd_v5.h"
+#include "cmd_pkt_v8_snac.h"
 #include "contact.h"
 #include "util_io.h"
 #include "preferences.h"
@@ -356,7 +357,7 @@ int log_event (UDWORD uin, int type, char *str, ...)
             else
                 return -1;
         }
-        sprintf (buffer, "%s%ld.log", prG->logplace, uin);
+        sprintf (buffer, "%suin%ld.log", prG->logplace, uin);
 
 #if HAVE_SYMLINK
         if (ContactFindNick (uin))
@@ -502,4 +503,17 @@ const char *UtilFill (const char *fmt, ...)
     va_end (args);
 
     return strdup (buf);
+}
+
+UDWORD UtilCheckUIN (Session *sess, UDWORD uin)
+{
+    if (!ContactFind (uin))
+    {
+        ContactAdd (uin, ContactFindName (uin));
+        if (sess->ver > 6)
+            SnacCliAddcontact (sess, uin);
+        else
+            CmdPktCmdContactList (sess);
+    }
+    return uin;
 }

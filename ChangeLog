@@ -1,3 +1,14 @@
+2002-04-27 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Fix insert-char-deletes-2-other-chars-bug (switched arguments)
+	* Implement SNAC(9,5) SNAC(9,6) SNAC(9,7) SNAC(9,8) (visible/
+	  invisible lists add/remove) and SNAC(3,5) (contact remove)
+	* Send visible/invisible list if necessary on status change
+	* Implement togvis/togign.
+	* Add ContactRem() to remove contact list entry.
+	* Add UIN temporary to contact list for sent/received messages.
+	* Fix compiler warnings.
+	* Fix packet statistics (somewhat).
+
 2002-04-25 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Rewrite mreadline.c: use new M_pos() in util_ui.h to get cursor
 	  position (prompt length) in new R_goto() to set cursor to given

@@ -34,6 +34,8 @@ void SrvCallBackFlap (struct Event *event)
 {
     assert (event->type == QUEUE_TYPE_FLAC);
     
+    event->sess->stat_pak_rcvd++;
+    event->sess->stat_real_pak_rcvd++;
     switch (event->pak->cmd)
     {
         case 1: /* Client login */
@@ -183,6 +185,9 @@ void FlapSend (Session *sess, Packet *pak)
         FlapPrint (pak);
         M_print (ESC "»\r");
     }
+    
+    sess->stat_pak_sent++;
+    sess->stat_real_pak_sent++;
     
     sockwrite (sess->sok, pak->data, pak->len);
     PacketD (pak);

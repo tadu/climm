@@ -35,6 +35,7 @@ Contact *ContactAdd (UDWORD uin, const char *nick)
 
     cont->invis_list = FALSE;
     cont->vis_list = FALSE;
+    cont->not_in_list = FALSE;
     cont->status = STATUS_OFFLINE;
     cont->last_time = -1L;
     cont->local_ip = 0xffffffff;
@@ -43,6 +44,23 @@ Contact *ContactAdd (UDWORD uin, const char *nick)
     cont->version = NULL;
 
     return cont;
+}
+
+/*
+ * Removes a contact list entry.
+ */
+void ContactRem (UDWORD uin)
+{
+    int i, j;
+    for (i = 0; i < cnt_number; i++)
+        if (cnt_contacts[i].uin == uin)
+            break;
+    if (i == cnt_number)
+        return;
+    for (j = i + 1; cnt_contacts[j].uin; j++)
+        ;
+    cnt_contacts[i] = cnt_contacts[j];
+    cnt_contacts[j].uin = 0;
 }
 
 /*
@@ -56,20 +74,6 @@ Contact *ContactFind (UDWORD uin)
         if (cnt_contacts[i].uin == uin)
             return &cnt_contacts[i];
     return NULL;
-}
-
-/*
- * Returns the contact list entry for UIN, a new entry, or NULL.
- */
-Contact *ContactFindM (UDWORD uin)
-{
-    Contact *cont;
-    
-    cont = ContactFind (uin);
-    if (cont)
-        return cont;
-    ContactAdd (uin, ContactFindName (uin));
-    return ContactFind (uin);
 }
 
 /*

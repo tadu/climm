@@ -21,8 +21,8 @@ struct Contact_s
 };
 
 Contact    *ContactAdd (UDWORD uin, const char *nick);
+void        ContactRem (UDWORD uin);
 Contact    *ContactFind (UDWORD uin);
-Contact    *ContactFindM (UDWORD uin);
 const char *ContactFindNick (UDWORD uin);
 char       *ContactFindName (UDWORD uin);
 UDWORD      ContactFindByNick (const char *nick);

@@ -677,6 +677,7 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
     cdata = strdup (data);
 
     TabAddUIN (uin);            /* Adds <uin> to the tab-list */
+    UtilCheckUIN (sess, uin);
 
 #ifdef MSGEXEC
     if (prG->event_cmd && strlen (prG->event_cmd))

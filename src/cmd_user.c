@@ -36,7 +36,7 @@ static jump_f
     CmdUserStatusDetail, CmdUserStatusWide, CmdUserStatusShort,
     CmdUserStatusSelf, CmdUserSound, CmdUserSoundOnline,
     CmdUserSoundOffline, CmdUserAutoaway, CmdUserSet, CmdUserClear,
-    CmdUserTogIgnore, CmdUserTogVisible, CmdUserAdd, CmdUserRInfo,
+    CmdUserTogIgnore, CmdUserTogVisible, CmdUserAdd, CmdUserRem, CmdUserRInfo,
     CmdUserAuth, CmdUserURL, CmdUserSave, CmdUserTabs, CmdUserLast,
     CmdUserUptime, CmdUserSearch, CmdUserWpSearch, CmdUserUpdate,
     CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserTCP, CmdUserConn;
@@ -81,6 +81,7 @@ static jump_t jump[] = {
     { &CmdUserTogIgnore,     "togig",        NULL, 0,   0 },
     { &CmdUserTogVisible,    "togvis",       NULL, 0,   0 },
     { &CmdUserAdd,           "add",          NULL, 0,   0 },
+    { &CmdUserRem,           "rem",          NULL, 0,   0 },
     { &CmdUserRInfo,         "rinfo",        NULL, 0,   0 },
     { &CmdUserAuth,          "auth",         NULL, 0,   0 },
     { &CmdUserURL,           "url",          NULL, 0,   0 },
@@ -1570,55 +1571,65 @@ JUMP_F(CmdUserClear)
 JUMP_F(CmdUserTogIgnore)
 {
     char *arg1;
+    Contact *bud;
     UDWORD uin;
-    SESSION(TYPE_SERVER_OLD);
+    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
 
     arg1 = strtok (args, "\n");
-    if (arg1)
+    if (!arg1)
     {
-        uin = ContactFindByNick (arg1);
-        if (uin == -1)
-        {
-            M_print (i18n (665, "%s not recognized as a nick name."), arg1);
-        }
+        M_print (i18n (668, "You must specify a nick name."));
+        M_print ("\n");
+        return 0;
+    }
+
+    uin = ContactFindByNick (arg1);
+    if (uin == -1)
+    {
+        M_print (i18n (665, "%s not recognized as a nick name."), arg1);
+        M_print ("\n");
+        return 0;
+    }
+
+    bud =  ContactFind (uin);
+    if (!bud)
+    {
+        M_print (i18n (90, "%s is a UIN, not a nick name."), arg1);
+        M_print ("\n");
+        return 0;
+    }
+
+    if (bud->invis_list == TRUE)
+    {
+        bud->invis_list = FALSE;
+        if (sess->ver > 6)
+            SnacCliReminvis (sess, uin);
         else
-        {
-            Contact *bud =  ContactFind (uin);
-            if (!bud)
-            {
-                M_print (i18n (90, "%s is a UIN, not a nick name."), arg1);
-            }
-            else
-            {
-                if (bud->invis_list == TRUE)
-                {
-                    bud->invis_list = FALSE;
-                    CmdPktCmdUpdateList (sess, uin, INV_LIST_UPDATE, FALSE);
-                    M_print (i18n (666, "Unignored %s."), ContactFindNick (uin));
-                }
-                else
-                {
-                    bud->vis_list = FALSE;
-                    bud->invis_list = TRUE;
-                    CmdPktCmdUpdateList (sess, uin, INV_LIST_UPDATE, TRUE);
-                    M_print (i18n (667, "Ignoring %s."), ContactFindNick (uin));
-                }
-                CmdPktCmdContactList (sess);
-                CmdPktCmdInvisList (sess);
-                CmdPktCmdVisList (sess);
-                CmdPktCmdStatusChange (sess, sess->status);
-                Time_Stamp ();
-                M_print (" ");
-                Print_Status (sess->status);
-                M_print ("\n");
-            }
-        }
+            CmdPktCmdUpdateList (sess, uin, INV_LIST_UPDATE, FALSE);
+        M_print (i18n (666, "Unignored %s."), bud->nick);
     }
     else
     {
-        M_print (i18n (668, "You must specify a nick name."));
+        bud->vis_list = FALSE;
+        bud->invis_list = TRUE;
+        if (sess->ver > 6)
+            SnacCliAddinvis (sess, uin);
+        else
+            CmdPktCmdUpdateList (sess, uin, INV_LIST_UPDATE, TRUE);
+        M_print (i18n (667, "Ignoring %s."), bud->nick);
+    }
+    if (sess->ver < 6)
+    {
+        CmdPktCmdContactList (sess);
+        CmdPktCmdInvisList (sess);
+        CmdPktCmdVisList (sess);
+        CmdPktCmdStatusChange (sess, sess->status);
     }
     M_print ("\n");
+/*    Time_Stamp ();
+    M_print (" ");
+    Print_Status (sess->status);
+    M_print ("\n"); */
     return 0;
 }
 
@@ -1628,45 +1639,54 @@ JUMP_F(CmdUserTogIgnore)
 JUMP_F(CmdUserTogVisible)
 {
     char *arg1;
+    Contact *bud;
     UDWORD uin;
-    SESSION(TYPE_SERVER_OLD);
+    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
 
-    arg1 = strtok (args, " \t");
-    if (arg1)
+    arg1 = strtok (args, " \n");
+    if (!arg1)
     {
-        uin = ContactFindByNick (arg1);
-        if (uin == -1)
-        {
-            M_print (i18n (665, "%s not recognized as a nick name."), arg1);
-        }
+        M_print (i18n (668, "You must specify a nick name."));
+        M_print ("\n");
+        return 0;
+    }
+
+    uin = ContactFindByNick (arg1);
+    if (uin == -1)
+    {
+        M_print (i18n (665, "%s not recognized as a nick name."), arg1);
+        M_print ("\n");
+        return 0;
+    }
+
+    bud =  ContactFind (uin);
+    if (!bud)
+    {
+        M_print (i18n (90, "%s is a UIN, not a nick name."), arg1);
+        M_print ("\n");
+        return 0;
+    }
+
+    if (bud->vis_list == TRUE)
+    {
+        bud->vis_list = FALSE;
+        if (sess->ver > 6)
+            SnacCliRemvisible (sess, uin);
         else
-        {
-            Contact *bud = ContactFind (uin);
-            if (!bud)
-            {
-                M_print (i18n (90, "%s is a UIN, not a nick name."), arg1);
-            }
-            else
-            {
-                if (bud->vis_list == TRUE)
-                {
-                    bud->vis_list = FALSE;
-                    CmdPktCmdUpdateList (sess, uin, VIS_LIST_UPDATE, FALSE);
-                    M_print (i18n (670, "Invisible to %s now."), ContactFindNick (uin));
-                }
-                else
-                {
-                    bud->vis_list = TRUE;
-                    CmdPktCmdUpdateList (sess, uin, VIS_LIST_UPDATE, TRUE);
-                    M_print (i18n (671, "Visible to %s now."), ContactFindNick (uin));
-                }
-            }
-        }
+            CmdPktCmdUpdateList (sess, uin, VIS_LIST_UPDATE, FALSE);
+        M_print (i18n (670, "Invisible to %s now."), ContactFindNick (uin));
     }
     else
     {
-        M_print (i18n (668, "You must specify a nick name."));
+        bud->vis_list = TRUE;
+        bud->invis_list = FALSE;
+        if (sess-> ver > 6)
+            SnacCliAddvisible (sess, uin);
+        else
+            CmdPktCmdUpdateList (sess, uin, VIS_LIST_UPDATE, TRUE);
+        M_print (i18n (671, "Visible to %s now."), ContactFindNick (uin));
     }
+
     M_print ("\n");
     return 0;
 }
@@ -1676,25 +1696,89 @@ JUMP_F(CmdUserTogVisible)
  */
 JUMP_F(CmdUserAdd)
 {
+    Contact *cont;
+    char *arg1, *arg2;
+    UDWORD uin;
+    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
+
+    arg1 = strtok (args, " \t");
+    if (!arg1)
+    {
+        M_print (i18n (753, "You must specify UIN and new nick name.\n"));
+        return 0;
+    }
+    
+    uin = atoi (arg1);
+    arg2 = strtok (NULL, "");
+    if (!uin)
+    {
+        M_print (i18n (748, "No UIN given.\n"));
+        return 0;
+    }
+
+    if ((cont = ContactFind (uin)))
+    {
+        if (!arg2)
+            arg2 = ContactFindName (uin);
+        if (cont->not_in_list)
+        {
+            M_print (i18n (669, "%s added.\n"), arg1);
+            M_print (i18n (754, " Note: You need to 'save' to write new contact list to disc.\n"));
+        }
+        else
+        {
+            M_print (i18n (749, "UIN %d renamed to %s.\n"), uin, arg2);
+            M_print (i18n (754, " Note: You need to 'save' to write new contact list to disc.\n"));
+        }
+        cont->not_in_list = 0;
+        strncpy (cont->nick, arg2, 18);
+        cont->nick[19] = '\0';
+    }
+    else
+    {
+        if (!arg2)
+            arg2 = ContactFindName (uin);
+        if (Add_User (sess, uin, arg2))
+            M_print (i18n (669, "%s added.\n"), arg2);
+        else
+            M_print (i18n (773, "%s could not be added.\n"), arg2);
+        ContactAdd (uin, arg2);
+        if (sess->ver > 6)
+            SnacCliAddcontact (sess, uin);
+        else
+            CmdPktCmdContactList (sess);
+    }
+    return 0;
+}
+
+/*
+ * Remove a user from your contact list.
+ */
+JUMP_F(CmdUserRem)
+{
     char *arg1;
     UDWORD uin;
-    SESSION(TYPE_SERVER_OLD);
+    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
 
     arg1 = strtok (args, " \t");
     if (arg1)
     {
-        uin = atoi (arg1);
-        arg1 = strtok (NULL, "");
-        if (Add_User (sess, uin, arg1))
-            M_print (i18n (669, "%s added."), arg1);
+        uin = ContactFindByNick (arg1);
+        if (!uin)
+            M_print (i18n (750, "Nick %s not in contact list.\n"), arg1);
         else
-            M_print (i18n (773, "%s could not be added."), arg1);
+        {
+            ContactRem (uin);
+            if (sess->ver > 6)
+                SnacCliRemcontact (sess, uin);
+            else
+                CmdPktCmdContactList (sess);
+            M_print (i18n (751, "Nick %s removed."), arg1);
+            M_print (i18n (754, " Note: You need to 'save' to write new contact list to disc.\n"), arg1);
+        }
     }
     else
-    {
-        M_print (i18n (668, "You must specify a nick name."));
-    }
-    M_print ("\n");
+        M_print (i18n (752, "No nick given.\n"));
     return 0;
 }
 
@@ -1848,11 +1932,11 @@ JUMP_F(CmdUserLast)
     else
     {
         if ((uin = ContactFindByNick (arg1)) == -1)
-            M_print (i18n (683, "Unknown Contact: %s\n"), arg1);
+            M_print (i18n (683, "%s is neither a nick nor a UIN.\n"), arg1);
         else
         {
             if (ContactFind (uin) == NULL)
-                M_print (i18n (684, "%s is not a known Contact\n"), arg1);
+                M_print (i18n (684, "%s is not on your contact list.\n"), arg1);
             else
             {
                 if (ContactFind (uin)->LastMessage != NULL)
@@ -1878,8 +1962,9 @@ JUMP_F(CmdUserLast)
 JUMP_F(CmdUserUptime)
 {
     double TimeDiff = difftime (time (NULL), uiG.start_time);
-    int Days, Hours, Minutes, Seconds;
-    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
+    Session *sess;
+    int Days, Hours, Minutes, Seconds, i;
+    int pak_sent = 0, pak_rcvd = 0, real_pak_sent = 0, real_pak_rcvd = 0;
 
     Seconds = (int) TimeDiff % 60;
     TimeDiff = TimeDiff / 60.0;
@@ -1891,22 +1976,30 @@ JUMP_F(CmdUserUptime)
 
     M_print ("%s ", i18n (687, "mICQ has been running for"));
     if (Days != 0)
-        M_print (COLMESS "%02d" COLNONE "%s, ", Days, i18n (688, "days"));
+        M_print (COLMESS "%02d" COLNONE " %s, ", Days, i18n (688, "days"));
     if (Hours != 0)
-        M_print (COLMESS "%02d" COLNONE "%s, ", Hours, i18n (689, "hours"));
+        M_print (COLMESS "%02d" COLNONE " %s, ", Hours, i18n (689, "hours"));
     if (Minutes != 0)
-        M_print (COLMESS "%02d" COLNONE "%s, ", Minutes, i18n (690, "minutes"));
-    M_print (COLMESS "%02d" COLNONE "%s.\n", Seconds, i18n (691, "seconds"));
+        M_print (COLMESS "%02d" COLNONE " %s, ", Minutes, i18n (690, "minutes"));
+    M_print (COLMESS "%02d" COLNONE " %s.\n", Seconds, i18n (691, "seconds"));
 /*    M_print ("%s " COLMESS "%d" COLNONE " / %d\n", i18n (692, "Contacts:"), uiG.Num_Contacts, MAX_CONTACTS); */
-    M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (693, "Packets sent:"),     sess->stat_pak_sent);
-    M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (694, "Packets received:"), sess->stat_pak_rcvd);
-    if (sess->stat_pak_sent || sess->stat_pak_rcvd)
+
+/* i18n (693, " ") i18n (694, " ") i18n (695, " ") i18n (697, " ") i18n (698, " ") i18n */
+
+    M_print (i18n (746, " nr type         sent/received packets/unique packets\n"));
+    for (i = 0; (sess = SessionNr (i)); i++)
     {
-        M_print ("%s " COLMESS "%2.2f" COLNONE "%%\n", i18n (695, "Lag:"),
-                 abs (sess->stat_pak_sent - sess->stat_pak_rcvd) * (200.0 / (sess->stat_pak_sent + sess->stat_pak_rcvd)));
+        M_print ("%3d %-12s %7d %7d %7d %7d\n",
+                 i + 1, SessionType (sess), sess->stat_pak_sent, sess->stat_pak_rcvd,
+                 sess->stat_real_pak_sent, sess->stat_real_pak_rcvd);
+        pak_sent += sess->stat_pak_sent;
+        pak_rcvd += sess->stat_pak_rcvd;
+        real_pak_sent += sess->stat_real_pak_sent;
+        real_pak_rcvd += sess->stat_real_pak_rcvd;
     }
-    M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (697, "Distinct packets sent:"),     sess->stat_real_pak_sent);
-    M_print ("%s " COLMESS "%d" COLNONE "\n", i18n (698, "Distinct packets received:"), sess->stat_real_pak_rcvd);
+    M_print ("    %-12s %7d %7d %7d %7d\n",
+             i18n (747, "total"), pak_sent, pak_rcvd,
+             real_pak_sent, real_pak_rcvd);
     return 0;
 }
 
@@ -1928,9 +2021,7 @@ JUMP_F(CmdUserConn)
         for (i = 0; (sess = SessionNr (i)); i++)
         {
             M_print (i18n (917, "%-12s version %d for %s (%x), at %s:%d %s\n"),
-                     sess->type & (TYPE_SERVER | TYPE_SERVER_OLD) ? i18n (889, "server") : 
-                     sess->type & TYPE_PEER ? i18n (732, "listener") : i18n (890, "peer-to-peer"),
-                     sess->ver, ContactFindName (sess->uin), sess->status,
+                     SessionType (sess), sess->ver, ContactFindName (sess->uin), sess->status,
                      sess->server ? sess->server : UtilIOIP (sess->ip), sess->port,
                      sess->connect & CONNECT_FAIL ? i18n (497, "failed") :
                      sess->connect & CONNECT_OK   ? i18n (558, "connected") :

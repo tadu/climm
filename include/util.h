@@ -20,3 +20,5 @@ void ExecScript (char *script, UDWORD uin, long num, char *data);
 const char *GetUserBaseDir (void);
 const char *UtilFill (const char *fmt, ...);
 const char *UtilIP (UDWORD ip);
+
+UDWORD UtilCheckUIN (Session *sess, UDWORD uin);

@@ -74,11 +74,16 @@ static SNAC SNACS[] = {
     {  2,  2, "CLI_REQLOCATION",     NULL},
     {  2,  4, "CLI_SETUSERINFO",     NULL},
     {  3,  2, "CLI_REQBUDDY",        NULL},
-    {  3,  4, "CLI_SENDCONTACTLIST", NULL},
-    {  3,  6, "CLI_SENDMSG",         NULL},
+    {  3,  4, "CLI_ADDCONTACT",      NULL},
+    {  3,  5, "CLI_RREMCONTACT",     NULL},
     {  4,  2, "CLI_SETICBM",         NULL},
     {  4,  4, "CLI_REQICBM",         NULL},
+    {  4,  6, "CLI_SENDMSG",         NULL},
     {  9,  2, "CLI_REQBOS",          NULL},
+    {  9,  5, "CLI_ADDVISIBLE",      NULL},
+    {  9,  6, "CLI_REMVISIBLE",      NULL},
+    {  9,  7, "CLI_ADDINVIS",        NULL},
+    {  9,  8, "CLI_REMINVIS",        NULL},
     { 19,  2, "CLI_REQUNKNOWN",      NULL},
     { 19,  5, "CLI_REQROSTER",       NULL},
     { 19,  7, "CLI_UNKNOWN1",        NULL},
@@ -483,7 +488,7 @@ JUMP_SNAC_F(SnacSrvReplybos)
     SnacCliReady (event->sess);
     SnacCliReqOfflineMsgs (event->sess);
 /*    SnacCliReqroster (event->sess); */
-    SnacCliSendcontactlist (event->sess);
+    SnacCliAddcontact (event->sess, 0);
 
     event->sess->connect = CONNECT_OK | CONNECT_SELECT_R;
 }
@@ -583,6 +588,8 @@ void SnacCliSetstatus (Session *sess, UWORD status)
 {
     Packet *pak;
     
+    if (status & STATUS_INVISIBLE)
+        SnacCliAddvisible (sess, 0);
     pak = SnacC (sess, 1, 0x1e, 0, 0);
     PacketWriteTLV4 (pak, 6, status);
     if (!(status & 256) && !(sess->connect & CONNECT_OK))
@@ -607,6 +614,8 @@ void SnacCliSetstatus (Session *sess, UWORD status)
         PacketWriteTLV2 (pak, 8, 0);
     }
     SnacSend (sess, pak);
+    if (!(status & STATUS_INVISIBLE))
+        SnacCliAddinvis (sess, 0);
     
 /*  sess->status = status;  Note: this will be set by SRV_REPLYINFO */
 }
@@ -681,16 +690,31 @@ void SnacCliBuddy (Session *sess)
 }
 
 /*
- * CLI_SENDCONTACTLIST - SNAC(3,4)
+ * CLI_ADDCONTACT - SNAC(3,4)
  */
-void SnacCliSendcontactlist (Session *sess)
+void SnacCliAddcontact (Session *sess, UDWORD uin)
 {
     Packet *pak;
     Contact *cont;
     
     pak = SnacC (sess, 3, 4, 0, 0);
-    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
-        PacketWriteUIN (pak, cont->uin);
+    if (uin)
+        PacketWriteUIN (pak, uin);
+    else
+        for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+            PacketWriteUIN (pak, cont->uin);
+    SnacSend (sess, pak);
+}
+
+/*
+ * CLI_REMCONTACT - SNAC(3,5)
+ */
+void SnacCliRemcontact (Session *sess, UDWORD uin)
+{
+    Packet *pak;
+    
+    pak = SnacC (sess, 3, 5, 0, 0);
+    PacketWriteUIN (pak, uin);
     SnacSend (sess, pak);
 }
 
@@ -784,6 +808,66 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, char *text, UDWORD type)
 void SnacCliReqbos (Session *sess)
 {
     SnacSend (sess, SnacC (sess, 9, 2, 0, 0));
+}
+
+/*
+ * CLI_ADDVISIBLE - SNAC(9,5)
+ */
+void SnacCliAddvisible (Session *sess, UDWORD uin)
+{
+    Packet *pak;
+    Contact *cont;
+    
+    pak = SnacC (sess, 9, 5, 0, 0);
+    if (uin)
+        PacketWriteUIN (pak, uin);
+    else
+        for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+            if (cont->vis_list)
+                PacketWriteUIN (pak, cont->uin);
+    SnacSend (sess, pak);
+}
+
+/*
+ * CLI_REMVISIBLE - SNAC(9,6)
+ */
+void SnacCliRemvisible (Session *sess, UDWORD uin)
+{
+    Packet *pak;
+    
+    pak = SnacC (sess, 9, 6, 0, 0);
+    PacketWriteUIN (pak, uin);
+    SnacSend (sess, pak);
+}
+
+/*
+ * CLI_ADDINVIS - SNAC(9,7)
+ */
+void SnacCliAddinvis (Session *sess, UDWORD uin)
+{
+    Packet *pak;
+    Contact *cont;
+    
+    pak = SnacC (sess, 9, 7, 0, 0);
+    if (uin)
+        PacketWriteUIN (pak, uin);
+    else
+        for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+            if (cont->invis_list)
+                PacketWriteUIN (pak, cont->uin);
+    SnacSend (sess, pak);
+}
+
+/*
+ * CLI_REMINVIS - SNAC(9,8)
+ */
+void SnacCliReminvis (Session *sess, UDWORD uin)
+{
+    Packet *pak;
+    
+    pak = SnacC (sess, 9, 8, 0, 0);
+    PacketWriteUIN (pak, uin);
+    SnacSend (sess, pak);
 }
 
 /*

@@ -55,7 +55,7 @@ static void       TCPCallBackReceive (struct Event *event);
 static void       Encrypt_Pak        (Packet *pak);
 static int        Decrypt_Pak        (UBYTE *pak, UDWORD size);
 static int        Send_TCP_Ack (Session *sess, UWORD seq, UWORD sub_cmd, BOOL accept);
-static void       Get_Auto_Resp (Session *sess, UDWORD uin);
+/*static void       Get_Auto_Resp (Session *sess, UDWORD uin);*/
 
 /*********************************************/
 
@@ -138,7 +138,8 @@ void TCPDirectOff (UDWORD uin)
     Session *peer;
     
     peer = SessionFind (TYPE_DIRECT, uin);
-    cont = ContactFindM (uin);
+    UtilCheckUIN (peer->assoc, uin);
+    cont = ContactFind (uin);
     
     if (!peer && cont)
     {
@@ -207,6 +208,7 @@ void TCPDispatchConn (Session *sess)
 
     while (1)
     {
+        UtilCheckUIN (sess->assoc->assoc, sess->uin);
         cont = ContactFind (sess->uin);
         assert (cont);
         rc = 0;
@@ -593,6 +595,9 @@ Packet *TCPReceivePacket (Session *sess)
         M_print (ESC "»\r");
     }
     
+    sess->stat_pak_rcvd++;
+    sess->stat_real_pak_rcvd++;
+
     return pak;
 }
 
@@ -608,6 +613,8 @@ void TCPSendPacket (Packet *pak, Session *sess)
     int rc, todo, bytessend = 0;
     
     ASSERT_DIRECT (sess);
+    
+    sess->stat_pak_sent++;
     
     if (!(sess->connect & CONNECT_MASK))
         return;
@@ -689,6 +696,8 @@ void TCPSendInit (Session *sess)
     if (!(sess->connect & CONNECT_MASK))
         return;
 
+    sess->stat_real_pak_sent++;
+
     if (!sess->our_session)
         sess->our_session = rand ();
 
@@ -726,6 +735,8 @@ void TCPSendInitAck (Session *sess)
 
     if (prG->verbose)
         M_print (i18n (837, "Acknowledging TCP direct connection initialization packet.\n"));
+
+    sess->stat_real_pak_sent++;
 
     pak = PacketC ();
     PacketWrite2 (pak, TCP_CMD_INIT_ACK);
@@ -921,6 +932,8 @@ BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
 
+    peer->stat_real_pak_sent++;
+
     QueueEnqueueData (queue, peer, peer->our_seq--, QUEUE_TYPE_TCP_RESEND,
                       uin, time (NULL),
                       pak, strdup (MsgEllipsis (msg)), &TCPCallBackResend);
@@ -1043,11 +1056,12 @@ void TCPCallBackReceive (struct Event *event)
  * Requests the auto-response message
  * from remote user.
  */
+/*
 void Get_Auto_Resp (Session *sess, UDWORD uin)
 {
     Contact *cont;
     UWORD sub_cmd;
-    char *msg = "...";    /* seem to need something (anything!) in the msg */
+    char *msg = "...";    / * seem to need something (anything!) in the msg * /
 
     cont = ContactFind (uin);
     
@@ -1097,6 +1111,7 @@ void Get_Auto_Resp (Session *sess, UDWORD uin)
     else
         TCPSendMsg (sess, uin, msg, sub_cmd);
 }
+*/
 
 /*
  * Acks a TCP packet.
