@@ -1,0 +1,3 @@
+
+void RemoteOpen (Connection *remo);
+
