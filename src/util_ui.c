@@ -101,9 +101,10 @@ void UtilUIDisplayMeta (Contact *cont)
                   i18n (2257, "Encoding:"), ConvEncName (cont->encoding));
     if ((mg = cont->meta_general))
     {
-        if (mg->nick && *mg->nick)
-            M_printf (COLSERVER "%-15s" COLNONE " " COLCONTACT "%s" COLNONE "\n",
-                     i18n (1500, "Nickname:"), mg->nick);
+        M_printf (COLSERVER "%-15s" COLNONE " " COLCONTACT "%s" COLNONE "\t%s\n",
+                  i18n (1500, "Nickname:"), mg->nick ? mg->nick : "",
+                  mg->auth == 1 ? i18n (1943, "(no authorization needed)")
+                                : i18n (1944, "(must request authorization)"));
         if (mg->first && *mg->first && mg->last && *mg->last)
             M_printf (COLSERVER "%-15s" COLNONE " %s\t %s\n",
                      i18n (1501, "Name:"), mg->first, mg->last);
@@ -111,10 +112,9 @@ void UtilUIDisplayMeta (Contact *cont)
             M_printf (AVPFMT, i18n (1564, "First name:"), mg->first);
         else if (mg->first && *mg->last)
             M_printf (AVPFMT, i18n (1565, "Last name:"), mg->last);
-        M_printf (COLSERVER "%-15s" COLNONE " %s\t%s\n", 
-                  i18n (1566, "Email address:"), mg->email,
-                  mg->auth == 1 ? i18n (1943, "(no authorization needed)")
-                                : i18n (1944, "(must request authorization)"));
+        if (mg->email && *mg->email)
+            M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
+                      i18n (1566, "Email address:"), mg->email);
         if (mg->city && *mg->city && mg->state && *mg->state)
             M_printf (COLSERVER "%-15s" COLNONE " %s, %s\n",
                      i18n (1505, "Location:"), mg->city, mg->state);
