@@ -165,6 +165,13 @@ void SessionClose (Session *sess)
     
     Debug (DEB_SESSION, "===> %p[%d] (%s) closing...", sess, i, SessionType (sess));
 
+    if (sess->close)
+        sess->close (sess);
+
+    i = SessionFindNr (sess);
+    if (i == -1)
+        return;
+
     if (sess->sok != -1)
         sockclose (sess->sok);
     sess->sok     = -1;

@@ -43,6 +43,7 @@ void SessionInitServer (Session *sess)
     sess->connect  = 0;
     sess->dispatch = &SrvCallBackReceive;
     sess->reconnect= &SrvCallBackReconn;
+    sess->close    = &FlapCliGoodbye;
     sess->server   = strdup (sess->spref->server);
     sess->type     = TYPE_SERVER;
     QueueEnqueueData (sess, sess->our_seq, sess->connect,

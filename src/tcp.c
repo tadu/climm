@@ -41,6 +41,7 @@
 #ifdef ENABLE_PEER2PEER
 
 static void       TCPDispatchPeer    (Session *peer);
+static void       PeerDispatchClose  (Session *sess);
 
 static Packet    *TCPReceivePacket   (Session *peer);
 
@@ -92,6 +93,7 @@ void SessionInitPeer (Session *list)
     list->flags       = 0;
     list->dispatch    = &TCPDispatchMain;
     list->reconnect   = &TCPDispatchReconn;
+    list->close       = &PeerDispatchClose;
     list->our_session = 0;
     list->ip          = 0;
     list->server      = NULL;
@@ -136,6 +138,7 @@ BOOL TCPDirectOpen (Session *list, UDWORD uin)
     peer->parent = list;
     peer->assoc  = NULL;
     peer->ver    = list->ver <= cont->TCP_version ? list->ver : cont->TCP_version;
+    peer->close  = &PeerDispatchClose;
 
     TCPDispatchConn (peer);
 
@@ -205,7 +208,10 @@ void TCPDispatchReconn (Session *peer)
         M_print (" %s%10s%s ", COLCONTACT, ContactFindName (peer->uin), COLNONE);
         M_print (i18n (2023, "Direct connection closed by peer.\n"));
     }
-    TCPClose (peer);
+    if (peer->close)
+        peer->close (peer);
+    else
+        TCPClose (peer);
 }
 
 /*
@@ -1085,6 +1091,14 @@ static Session *TCPReceiveInit2 (Session *peer, Packet *pak)
     return NULL;
 }
 
+/*
+ * Quietly close connection.
+ */
+static void PeerDispatchClose (Session *sess)
+{
+    sess->connect = 0;
+    TCPClose (sess);
+}
 
 /*
  * Close socket and mark as inactive. If verbose, complain.
@@ -1094,14 +1108,7 @@ void TCPClose (Session *peer)
     assert (peer);
     
     if (peer->assoc && peer->assoc->type == TYPE_FILE)
-    {
-        if (peer->assoc->sok != -1)
-        {
-            close (peer->assoc->sok);
-            peer->assoc->sok = -1;
-        }
         SessionClose (peer->assoc);
-    }
     
     if (peer->sok != -1)
     {
@@ -1119,8 +1126,6 @@ void TCPClose (Session *peer)
     peer->sok     = -1;
     peer->connect = (peer->connect & CONNECT_MASK && !(peer->connect & CONNECT_OK)) ? CONNECT_FAIL : 0;
     peer->our_session = 0;
-    if (!peer->uin)
-        SessionClose (peer);
     if (peer->incoming)
     {
         PacketD (peer->incoming);
@@ -1132,8 +1137,11 @@ void TCPClose (Session *peer)
         peer->outgoing = NULL;
     }
     
-    if (peer->type == TYPE_FILEDIRECT)
+    if (peer->type == TYPE_FILEDIRECT || !peer->uin)
+    {
+        peer->close = NULL;
         SessionClose (peer);
+    }
 }
 
 static const char *TCPCmdName (UWORD cmd)

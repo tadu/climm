@@ -979,10 +979,6 @@
 2149:Removed alias '%s' for '%s' (%d).¶
 2150:Removed contact '%s' (%d).¶
 2151:%d is not on your contact list anymore.¶
-2152:Closing v5 server connection.¶
-2153:Closing v8 server connection.¶
-2154:Closing message listener.¶
-2155:Closing direct connection.¶
 2156:conn close <nr>    Close connection <nr>.¶
 2157:Moldova
 2158:No file given.¶
@@ -1012,3 +1008,4 @@
 2182:Select server connection number <nr> as current server connection.
 2183:Check whether <uin> or <nick> is offline or invisible.
 2184:%s%-10s%s - %s¶
+2185:Closing connection %d.¶

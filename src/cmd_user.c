@@ -2479,28 +2479,10 @@ static JUMP_F(CmdUserConn)
             M_print (i18n (1894, "There is no connection number %d.\n"), i);
             return 0;
         }
-        if (sess->type == TYPE_SERVER_OLD)
+        if (sess->close)
         {
-            M_print (i18n (2152, "Closing v5 server connection.\n"));
-            CmdPktCmdSendTextCode (sess, "B_USER_DISCONNECTED");
-        }
-        else if (sess->type == TYPE_SERVER)
-        {
-            M_print (i18n (2153, "Closing v8 server connection.\n"));
-            FlapCliGoodbye (sess);
-        }
-        else if (sess->type == TYPE_MSGLISTEN)
-        {
-            M_print (i18n (2154, "Closing message listener.\n"));
-            if (sess->sok != -1)
-                sockclose (sess->sok);
-            sess->sok = -1;
-            sess->connect = 0;
-        }
-        else if (sess->type == TYPE_MSGDIRECT)
-        {
-            M_print (i18n (2155, "Closing direct connection.\n"));
-            TCPClose (sess);
+            M_print (i18n (2185, "Closing connection %d.\n"), i);
+            sess->close (sess);
         }
         else
         {

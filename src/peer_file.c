@@ -31,6 +31,11 @@
 #include "util.h"
 #include "tcp.h"
 
+static void PeerFileDispatchClose   (Session *ffile);
+static void PeerFileDispatchDClose  (Session *ffile);
+static void PeerFileIODispatchClose (Session *ffile);
+
+
 /*
  * Create a new file listener unless one already exists.
  */
@@ -63,6 +68,7 @@ Session *PeerFileCreate (Session *serv)
     flist->ip          = 0;
     flist->dispatch    = &TCPDispatchMain;
     flist->reconnect   = &TCPDispatchReconn;
+    flist->close       = &PeerFileDispatchClose;
     
     UtilIOConnectTCP (flist);
     
@@ -104,6 +110,7 @@ BOOL PeerFileRequested (Session *peer, const char *files, UDWORD bytes)
     fpeer->uin     = peer->uin;
     fpeer->len     = bytes;
     fpeer->done    = 0;
+    fpeer->close   = &PeerFileDispatchDClose;
     
     return 1;
 }
@@ -137,6 +144,7 @@ BOOL PeerFileAccept (Session *peer, UWORD status, UDWORD port)
     fpeer->port     = port;
     fpeer->ip       = peer->ip;
     fpeer->server   = NULL;
+    fpeer->close    = &PeerFileDispatchDClose;
     
     if (prG->verbose)
         M_print (i18n (2068, "Opening file transfer connection at %s:%d... \n"),
@@ -149,6 +157,37 @@ BOOL PeerFileAccept (Session *peer, UWORD status, UDWORD port)
 
 #define FAIL(x) { err = x; break; }
 #define PeerFileClose TCPClose
+
+/*
+ * Close a file listener.
+ */
+static void PeerFileDispatchClose (Session *flist)
+{
+    flist->connect = 0;
+    PeerFileClose (flist);
+}
+
+/*
+ * Close a file transfer connection.
+ */
+static void PeerFileDispatchDClose (Session *fpeer)
+{
+    fpeer->connect = 0;
+    PeerFileClose (fpeer);
+    R_resetprompt ();
+}
+
+/*
+ * Close a file i/o connection.
+ */
+static void PeerFileIODispatchClose (Session *ffile)
+{
+    if (ffile->sok != -1)
+        close (ffile->sok);
+    ffile->sok = -1;
+    ffile->connect = 0;
+    R_resetprompt ();
+}
 
 /*
  * Dispatches incoming packets on the file transfer connection.
@@ -259,6 +298,7 @@ void PeerFileDispatch (Session *fpeer)
                 ffile->connect = CONNECT_OK;
                 ffile->len = len;
                 ffile->done = off;
+                ffile->close = &PeerFileIODispatchClose;
 
                 Time_Stamp ();
                 M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);
@@ -388,17 +428,20 @@ void PeerFileDispatchW (Session *fpeer)
 
 BOOL PeerFileError (Session *fpeer, UDWORD rc, UDWORD flags)
 {
-    if (flags != SESSERR_WRITE) return 0;
     switch (rc)
     {
         case EPIPE:
-            TCPClose (fpeer);
+            if (fpeer->close)
+                fpeer->close (fpeer);
             return 1;
         case EAGAIN:
-            fpeer->connect = CONNECT_OK | CONNECT_SELECT_W;
-            fpeer->dispatch = &PeerFileDispatchW;
-            fpeer->assoc->connect = CONNECT_OK | 1;
-            return 1;
+            if (flags == SESSERR_WRITE)
+            {
+                fpeer->connect = CONNECT_OK | CONNECT_SELECT_W;
+                fpeer->dispatch = &PeerFileDispatchW;
+                fpeer->assoc->connect = CONNECT_OK | 1;
+                return 1;
+            }
     }
     return 0;
 }
@@ -496,10 +539,11 @@ void PeerFileResend (Event *event)
             M_print (i18n (2083, "Cannot open file %s: %s (%d).\n"),
                      event->info, strerror (rc), rc);
             TCPClose (fpeer);
-            SessionClose (fpeer);
             SessionClose (ffile);
+            SessionClose (fpeer);
             return;
         }
+        ffile->close = &PeerFileIODispatchClose;
         return;
     }
     else if (!fpeer->assoc || fpeer->assoc->connect != CONNECT_OK)

@@ -28,6 +28,7 @@
 static UDWORD Gen_Checksum (const Packet *pak);
 static UDWORD Scramble_cc (UDWORD cc);
 static Packet *Wrinkle (const Packet *pak);
+static void CallBackClosev5 (Session *sess);
 
 typedef struct { UWORD cmd; const char *name; } jump_cmd_t;
 #define jump_el(x) { x, #x },
@@ -144,6 +145,7 @@ void SessionInitServerV5 (Session *sess)
     }
     
     sess->type = TYPE_SERVER_OLD;
+    sess->close = &CallBackClosev5;
     sess->flags = 0;
     if (!sess->server || !strlen (sess->server))
         sess->server = "icq.icq.com";
@@ -160,6 +162,16 @@ void SessionInitServerV5 (Session *sess)
         sess->passwd = strdup (pwd);
     }
     QueueEnqueueData (sess, 0, 0, 0, time (NULL), NULL, NULL, &CallBackServerInitV5);
+}
+
+static void CallBackClosev5 (Session *sess)
+{
+    sess->connect = 0;
+    if (sess->sok == -1)
+        return;
+    CmdPktCmdSendTextCode (sess, "B_USER_DISCONNECTED");
+    sockclose (sess->sok);
+    sess->sok = -1;
 }
 
 void CallBackServerInitV5 (Event *event)

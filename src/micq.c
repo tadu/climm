@@ -101,7 +101,7 @@ void Idle_Check (Session *sess)
     int delta;
     UDWORD new = -1;
 
-    if (sess->type != TYPE_SERVER && sess->type != TYPE_SERVER_OLD)
+    if (~sess->type & TYPEF_ANY_SERVER)
         return;
 
     if ((sess->status & (STATUSF_DND | STATUSF_OCC | STATUSF_FFC))
@@ -191,17 +191,6 @@ int main (int argc, char *argv[])
     i = i18nOpen ("!");
 
     setbuf (stdout, NULL);      /* Don't buffer stdout */
-    M_print (BuildVersion ());
-
-    M_print (i18n (1612, "This program was made without any help from Mirabilis or their consent.\n"));
-    M_print (i18n (1613, "No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n"));
-
-    if (i == -1)
-        M_print ("Couldn't load internationalization.\n");
-    else if (i)
-        M_print (i18n (1081, "Successfully loaded en translation (%d entries).\n"), i);
-    else
-        M_print ("No internationalization requested.\n");
 
     { int argverb = 0;
     if (argc > 1)
@@ -244,6 +233,18 @@ int main (int argc, char *argv[])
     if (argverb) prG->verbose = 0;
     }
     
+    M_print (BuildVersion ());
+
+    M_print (i18n (1612, "This program was made without any help from Mirabilis or their consent.\n"));
+    M_print (i18n (1613, "No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n"));
+
+    if (i == -1)
+        M_print ("Couldn't load internationalization.\n");
+    else if (i)
+        M_print (i18n (1081, "Successfully loaded en translation (%d entries).\n"), i);
+    else
+        M_print ("No internationalization requested.\n");
+
     prG->sess = SessionNr (0);
     
     srand (time (NULL));
@@ -287,7 +288,7 @@ int main (int argc, char *argv[])
         M_select_init ();
         for (i = 0; (sess = SessionNr (i)); i++)
         {
-            if (sess->connect & CONNECT_OK)
+            if (sess->connect & CONNECT_OK && sess->type & TYPEF_ANY_SERVER)
                 Idle_Check (sess);
             if (sess->sok < 0 || !sess->dispatch)
                 continue;
@@ -326,13 +327,10 @@ int main (int argc, char *argv[])
 
     for (i = 0; (sess = SessionNr (i)); i++)
     {
-        if (sess->connect & CONNECT_OK)
-        {
-            if (sess->type == TYPE_SERVER)
-                FlapCliGoodbye (sess);
-            else if (sess->type == TYPE_SERVER_OLD)
-                CmdPktCmdSendTextCode (sess, "B_USER_DISCONNECTED");
-        }
+        if (sess->close)
+            sess->close (sess);
     }
+    QueueRun ();
+    
     return 0;
 }
