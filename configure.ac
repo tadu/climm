@@ -118,7 +118,7 @@ if test "x$ac_arg_use_iconv" != "xbuiltin"; then
       [ac_cv_iconv_min=cross])
   ])
   if test $ac_cv_iconv_min != ok; then
-    ac_arg_use_iconv=none
+    ac_arg_use_iconv=buildin
     AC_DEFINE([ICONV_LATIN1_NAME], ["ISO-8859-1"],  [the name of the latin1 encoding])
     AC_DEFINE([ICONV_LATIN9_NAME], ["ISO-8859-15"], [the name of the latin9 encoding])
   else
