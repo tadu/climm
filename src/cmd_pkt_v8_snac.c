@@ -621,8 +621,6 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
 
     if (tlv[6].len)
         extra = ExtraSet (extra, EXTRA_STATUS, tlv[6].nr, NULL);
-    if (tlv[6].len && tlv[6].nr != cont->status && cont->status != STATUS_OFFLINE)
-        IMOnline (cont, event->conn, tlv[6].nr);
 
     /* tlv[2] may be there twice - ignore the member since time(NULL). */
     if (tlv[2].len == 4)
@@ -732,7 +730,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             ContactSetCap (cont, cap2);
             ContactSetVersion (cont);
             
-            event->extra = ExtraSet (event->extra, EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL);
+            event->extra = ExtraSet (extra, EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL);
             event->uin = cont->uin;
             newevent = QueueEnqueueData (event->conn, QUEUE_ACKNOWLEDGE, seq1,
                          (time_t)-1, p, cont->uin, NULL, &SnacSrvCallbackSendack);

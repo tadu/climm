@@ -729,7 +729,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
 #endif
     M_printf ("\a%s " COLINCOMING "%*s" COLNONE " ", s_time (&stamp), uiG.nick_len + s_delta (cont->nick), cont->nick);
     
-    if ((e = ExtraFind (extra, EXTRA_STATUS)) && (!cont || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
+    if ((e = ExtraFind (extra, EXTRA_STATUS)) && (!cont || cont->status != e->data || cont->flags & CONT_TEMPORARY))
         M_printf ("(%s) ", s_status (e->data));
 
     if (prG->verbose > 1)

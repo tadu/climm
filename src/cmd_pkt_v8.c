@@ -305,7 +305,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     const char *txt, *ack_msg;
     char *text, *ctext, *cname, *name, *cctmp;
     UDWORD tmp, cmd, flen;
-    UWORD unk, seq, msgtype, status, pri;
+    UWORD unk, seq, msgtype, unk2, pri;
     UWORD ack_type, ack_flags, ack_status, accept;
 
     unk     = PacketRead2    (inc_pak);  PacketWrite2 (ack_pak, unk);
@@ -315,14 +315,14 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     tmp     = PacketRead4    (inc_pak);  PacketWrite4 (ack_pak, tmp);
     msgtype = PacketRead2    (inc_pak);  PacketWrite2 (ack_pak, msgtype);
 
-    status  = PacketRead2    (inc_pak);
+    unk2    = PacketRead2    (inc_pak);
     pri     = PacketRead2    (inc_pak);
     text    = PacketReadLNTS (inc_pak);
     
 #ifdef WIP
     if (prG->verbose)
-    M_printf ("FIXME: Starting advanced message: events %p, %p; type %d, seq %x, status %x.\n",
-              inc_event, ack_event, msgtype, seq, status);
+    M_printf ("FIXME: Starting advanced message: events %p, %p; type %d, seq %x.\n",
+              inc_event, ack_event, msgtype, seq);
 #endif
  
     ExtraSet (extra, EXTRA_MESSAGE, msgtype, c_in_to (text, cont));
@@ -505,13 +505,10 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                         break;
 
                     case 0x002d:
+                        IMSrvMsg (cont, serv->assoc, NOW, ExtraClone (extra));
                         IMSrvMsg (cont, serv->assoc, NOW, ExtraSet (ExtraClone (extra),
-                                  EXTRA_STATUS, status, NULL));
-                        IMSrvMsg (cont, serv->assoc, NOW, ExtraSet (ExtraSet (ExtraClone (extra),
-                                  EXTRA_STATUS, status, NULL),
                                   EXTRA_MESSAGE, TCP_MSG_CHAT, name));
-                        IMSrvMsg (cont, serv->assoc, NOW, ExtraSet (ExtraSet (ExtraClone (extra),
-                                  EXTRA_STATUS, status, NULL),
+                        IMSrvMsg (cont, serv->assoc, NOW, ExtraSet (ExtraClone (extra),
                                   EXTRA_MESSAGE, TCP_MSG_CHAT, reason));
                         PacketWrite2    (ack_pak, TCP_STAT_REFUSE);
                         PacketWrite2    (ack_pak, ack_flags);
