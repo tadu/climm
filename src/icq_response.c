@@ -828,7 +828,7 @@ void Do_Msg (Session *sess, time_t stamp, UWORD type, const char *text, UDWORD u
                      sess->type & TYPEF_ANY_SERVER ? MSGRECSTR : MSGTCPRECSTR,
                      url_desc);
             Time_Stamp ();
-            M_print (i18n (2127, "    URL: %s%s%s%s\n"), 
+            M_print (i18n (2127, "       URL: %s%s%s%s\n"), 
                      sess->type & TYPEF_ANY_SERVER ? MSGRECSTR : MSGTCPRECSTR,
                      COLMESSAGE, url_url, COLNONE);
             break;
