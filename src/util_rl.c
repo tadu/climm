@@ -570,7 +570,7 @@ static void rl_insert (UWORD ucs)
 
     rl_analyze_ucs (ucs, &display, &columns);
     rl_insert_basic (ucs, display, strlen (display), columns);
-    if (columns && (rl_ucscol.len > rl_ucspos))
+    if (columns && ((rl_ucscol.len > rl_ucspos) || !((rl_prompt_len + rl_colpos) % rl_columns)))
         rl_recheck (FALSE);
 }
 
