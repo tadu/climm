@@ -659,7 +659,7 @@ BOOL UtilIOSendTCP (Session *sess, Packet *pak)
 
         for ( ; pak->len > pak->rpos; pak->rpos += bytessend)
         {
-            bytessend = sockwrite (sess->sok, data, pak->len - pak->rpos);
+            bytessend = sockwrite (sess->sok, data + pak->rpos, pak->len - pak->rpos);
             if (bytessend <= 0)
                 break;
         }
