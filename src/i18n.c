@@ -81,11 +81,11 @@ int i18nOpen (const char *loc)
                 i18nTry ("%s/i18n/%.*s_fun.i18n", PrefUserDir (), strrchr (loc, '_') - loc, loc);
             if (strchr (loc, '_') && strchr (loc, '_') != strrchr (loc, '_'))
                 i18nTry ("%s/i18n/%.*s_fun.i18n", PrefUserDir (), strchr (loc, '_') - loc, loc);
-            i18nTry (PREFIX "/share/micq/%s_fun.i18n", loc, "", "");
+            i18nTry (DATADIR "/%s_fun.i18n", loc, "", "");
             if (strchr (loc, '_'))
-                i18nTry (PREFIX "/share/micq/%.*s_fun.i18n", strrchr (loc, '_') - loc, loc, "");
+                i18nTry (DATADIR "/%.*s_fun.i18n", strrchr (loc, '_') - loc, loc, "");
             if (strchr (loc, '_') && strchr (loc, '_') != strrchr (loc, '_'))
-                i18nTry (PREFIX "/share/micq/%.*s_fun.i18n", strchr (loc, '_') - loc, loc, "");
+                i18nTry (DATADIR "/%.*s_fun.i18n", strchr (loc, '_') - loc, loc, "");
         }
 
         i18nTry ("%s/i18n/%s.i18n", PrefUserDir (), loc, "");
@@ -93,11 +93,11 @@ int i18nOpen (const char *loc)
             i18nTry ("%s/i18n/%.*s.i18n", PrefUserDir (), strrchr (loc, '_') - loc, loc);
         if (strchr (loc, '_') && strchr (loc, '_') != strrchr (loc, '_'))
             i18nTry ("%s/i18n/%.*s.i18n", PrefUserDir (), strchr (loc, '_') - loc, loc);
-        i18nTry (PREFIX "/share/micq/%s.i18n", loc, "", "");
+        i18nTry (DATADIR "/%s.i18n", loc, "", "");
         if (strchr (loc, '_'))
-            i18nTry (PREFIX "/share/micq/%.*s.i18n", strrchr (loc, '_') - loc, loc, "");
+            i18nTry (DATADIR "/%.*s.i18n", strrchr (loc, '_') - loc, loc, "");
         if (strchr (loc, '_') && strchr (loc, '_') != strrchr (loc, '_'))
-            i18nTry (PREFIX "/share/micq/%.*s.i18n", strchr (loc, '_') - loc, loc, "");
+            i18nTry (DATADIR "/%.*s.i18n", strchr (loc, '_') - loc, loc, "");
     }
 
     return j ? j : -1;
