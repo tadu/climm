@@ -1,8 +1,8 @@
 .\" $Id$ -*- nroff -*-
-.\"  EN: micq.7,v 1.16 2002/08/09 01:22:20
+.\"  EN: micq.7,v 1.20 2002/08/26 19:53:42
 .\"      ^^ <version of English man page this is in sync with>
 .TH MICQ 7 mICQ
-.SH Nombre
+.SH NOMBRE
 mICQ - comandos interactivos
 .SH DESCRIPCION
 Este manual describe los comandos que pueden ser utilizados dentro de micq. Esta
@@ -92,7 +92,6 @@ el cual debe ser de la forma +<codigo de pais><numero>.
 .TP
 .B msga
 Envia un mensaje multi-linea a todos en tu lista. Para ver el uso referirse al
-Send a multiple line message to everyone on your list.  Use a period
 .B r
 .TP
 .BI resend \ uin|nickname \fR...
@@ -120,16 +119,49 @@ Configura el nivel de salida de mICQ a
 o muestra el nivel actual. El nivel se compone de las siguientes flags:
 .RS
 .TP
-.B 128
-Hace un dump de los mensajes entrantes y salientes.
+.B 8
+Muestra errores del protocolo.
+.TP
+.B 16
+Muestra la creacion y eliminacion de paquetes.
+.TP
+.B 32
+Muestra los eventos de agregar y sacar de la cola.
+.TP
+.B 64
+Muestra las conexiones iniciadas y eliminadas.
 .TP
 .B 256
-Escribe los mensajes entrantes y salientes del server al disco en
-~/.micq/debug/packets.
+Muestra los paquetes v6 y sus datos.
+.TP
+.B 4096
+Muestra los paquetes v7/v8.
+.TP
+.B 8192
+Hace un dump hexadecimal de los paquetes v7/v8.
+.TP
+.B 16284
+Guarda dichos paquetes al disco.
+.TP
+.B 65536
+Muestra los paquetes par-a-par.
+.TP
+.B 131072
+Hace un dump hexadecimal de los paquetes par-a-par.
+.TP
+.B 262144
+Guarda dichos paquetes al disco.
+.TP
+.B 2097152
+Muestra el establecimiento de una conexion par-a-par.
+.TP
+.B 4194304
+Muestra el setup de la conexion I/O.
 .RE
 
 .RS
-Y algunos mas.
+De hecho, cualquier nivel distinto de cero causa que se muestre mas
+informacion, y en especial cualquier nivel mayor a 1.
 .RE
 .TP
 .BI clear
@@ -267,11 +299,18 @@ sean ignorados.
 Muestra la informacion del usuario
 .IR uin|nickname .
 .TP
+.B e
+Muestra todas las personas de tu lista de contactos que estan conectadas.
+.TP
 .B w
 Muestra todas las personas de tu lista de contactos.
 .TP
-.B e
-Muestra todas las personas de tu lista de contactos que estan conectadas.
+.B ee
+Muestra todas las personas de tu lista de contactos que estan conectadas, con
+mayor detalle.
+.TP
+.B ww
+Muestra todas las personas de tu lista de contactos, con mayor detalle.
 .TP
 .B wide
 Muestra todas las personas de tu lista de contactos en formato ancho.
@@ -280,8 +319,8 @@ Muestra todas las personas de tu lista de contactos en formato ancho.
 Muestra todas las personas de tu lista de contactos que estan conectadas en
 formato ancho.
 .TP
-.B s
-Muestra tu estado actual.
+.B s \ [nickname]
+Muestra tu estado actual, o el del nick dado, en detalle.
 .TP
 .B i
 Muestra las personas que estan siendo ignoradas.
@@ -292,33 +331,51 @@ Muestra el estado de
 Esto incluye la direccion IP, la version del protocolo ICQ y el tipo de
 conexion; o lista brevemente el UIN, el nick, el estado y la fecha y hora en la
 cual estuvieron conectados por ultima vez para todos tus contactos.
-.TP
-.BI change \ [numero]
-Cambia tu estado a
-.IR numero .
-Sin un numero, lista los modos disponibles.
+.sp
+Nota: Este comando es obsoleto, usa
+.B s
+o
+.B ww
+en cambio.
 .TP
 .BI reg \ password
-Crea una nueva cuenta con la clave 
+Crea una nueva cuenta con la clave
 .IR password .
+.TP
+.BI change \ [numero\ [mensaje]]
+Cambia tu estado a
+.IR numero .
+Sin un numero, lista los modos disponibles. Opcionalmente cambia el mensaje de
+respuesta automatica a
+.IR mensaje .
 .TP
 .B online
 Cambia tu estado a "online".
 .TP
-.B away
-Cambia tu estado a "away" (lejos).
+.B away \ [mensaje]
+Cambia tu estado a "away" (lejos). Opcionalmente cambia el mensaje de
+respuesta automatica a
+.IR mensaje .
 .TP
-.B na
-Cambia tu estado a "not available" (no disponible).
+.B na \ [mensaje]
+Cambia tu estado a "not available" (no disponible). Opcionalmente cambia el
+mensaje de respuesta automatica a
+.IR mensaje .
 .TP
-.B occ             
-Cambia tu estado a "occupied" (ocupado).
+.B occ \ [mensaje]  
+Cambia tu estado a "occupied" (ocupado). Opcionalmente cambia el mensaje de
+respuesta automatica a
+.IR mensaje .
 .TP
-.B dnd
-Cambia tu estado a "do not disturb" (no molestar).
+.B dnd \ [mensaje]
+Cambia tu estado a "do not disturb" (no molestar). Opcionalmente cambia el
+mensaje de respuesta automatica a
+.IR mensaje .
 .TP
-.B ffc
-Cambia tu estado a "free for chat" (libre para hablar).
+.B ffc \ [mensaje] 
+Cambia tu estado a "free for chat" (libre para hablar). Opcionalmente cambia
+el mensaje de respuesta automatica a
+.IR mensaje .
 .TP
 .B inv
 Cambia tu estado a "invisible".
@@ -386,17 +443,60 @@ o
 .B ffc
 para obtener la respuesta automatica del usuario para tal estado.
 .TP
+.BI file \ [file\ as]...\ descripcion
+Envia archvios al usuario. Puede haber, arbitrariamente, muchos pares de
+nombres de un mismo archivo de nombre 
+.I file
+y el nombre como el cual se le presentara a la otra punta,
+.IR as .
+Si
+.IR as
+es
+.RB ' / ',
+se utilizara el nombre del archivo sin el path, y si es
+.RB ' . '
+se utilizara el mismo nombre, completo.
+.sp
+Nota: Los nombres de los archivos y las descripciones no pueden contener
+espacios.
+.RE
+.TP
 .BI conn \ [comando\ nr]
 muestra las conexiones, u opera el
 .I comando
 en la conexion numero
 .IR nr .
-.I comando
-puede ser
+.RS
+.TP
 .B open
-o
+Abre la conexion dada, o la primer conexion con el servidor.
+.TP
 .B login
-para abrir esta conexion si no esta actualmente abierta.
+Abre la conexion dada, o la primer conexion con el servidor.
+.TP
+.B remove
+Cierra y remueve la conexion dada (temporaria).
+.TP
+.B select
+Selecciona la conexion dada como la conexion principal con el servidor.
+.I nr
+puede ser un numero de conexion o el UIN utilizado por la conexion.
+.RE
+.TP
+.BI contact \ [comando]
+Maneja la lista de contactos almacenada en el servidor:
+.RS
+.TP
+.B show
+Muestra la lista de contactos almacenada en el servidor.
+.TP
+.B diff
+Muestra los contactos que estan en el servidor y no estan en la lista local.
+.TP
+.B import
+Trae los contactos de la lista en el servidor y los agrega a la lista de
+contactos local.
+.RE
 
 .SH VER TAMBIEN
 .BR micq (1),
@@ -406,5 +506,6 @@ Este manual fue creado por James Morrison
 .I <ja2morrison@student.math.uwaterloo.ca>
 para referencia de todos los comandos interactivos en
 .BR mICQ .
-This man page was translated by Alberto Bertogli
+Este manual fue traducido por Alberto Bertogli
 .IR <albertogli@telpin.com.ar> .
+
