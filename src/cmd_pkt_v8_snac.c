@@ -62,11 +62,11 @@ static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd,
     SnacSrvRateexceeded, SnacSrvReplylists, SnacSrvUpdateack, SnacServerpause;
 
 static void SrvCallBackKeepalive (Event *event);
-static Packet *SnacC (Connection *conn, UWORD fam, UWORD cmd, UWORD flags, UDWORD ref);
+static Packet *SnacC (Connection *serv, UWORD fam, UWORD cmd, UWORD flags, UDWORD ref);
 static void SnacCallbackType2Ack (Event *event);
 static void SnacCallbackType2 (Event *event);
-static Packet *SnacMetaC (Connection *conn, UWORD sub, UWORD type, UWORD ref);
-static void SnacMetaSend (Connection *conn, Packet *pak);
+static Packet *SnacMetaC (Connection *serv, UWORD sub, UWORD type, UWORD ref);
+static void SnacMetaSend (Connection *serv, Packet *pak);
 
 static SNAC SNACv[] = {
     {  1,  3, NULL, NULL},
@@ -218,12 +218,12 @@ const char *SnacName (UWORD fam, UWORD cmd)
 /*
  * Creates a new SNAC.
  */
-static Packet *SnacC (Connection *conn, UWORD fam, UWORD cmd, UWORD flags, UDWORD ref)
+static Packet *SnacC (Connection *serv, UWORD fam, UWORD cmd, UWORD flags, UDWORD ref)
 {
     Packet *pak;
     
-    if (!conn->our_seq2)
-        conn->our_seq2 = rand () & 0x7fff;
+    if (!serv->our_seq2)
+        serv->our_seq2 = rand () & 0x7fff;
     if (!ref)
         ref = rand () & 0x7fff;
     
@@ -291,6 +291,7 @@ static JUMP_SNAC_F(SnacSrvUnknown)
  */
 static JUMP_SNAC_F(SnacSrvFamilies)
 {
+    Connection *serv = event->conn;
     Packet *pak;
     SNAC *s;
     UWORD fam;
@@ -309,7 +310,7 @@ static JUMP_SNAC_F(SnacSrvFamilies)
             continue;
         }
     }
-    SnacCliFamilies (event->conn);
+    SnacCliFamilies (serv);
 }
 
 /*
@@ -318,10 +319,11 @@ static JUMP_SNAC_F(SnacSrvFamilies)
  */
 static JUMP_SNAC_F(SnacSrvRates)
 {
+    Connection *serv = event->conn;
     UWORD nr, grp;
     Packet *pak;
     
-    pak = SnacC (event->conn, 1, 8, 0, 0);
+    pak = SnacC (serv, 1, 8, 0, 0);
     nr = PacketReadB2 (event->pak); /* ignore the remainder */
     while (nr--)
     {
@@ -329,7 +331,7 @@ static JUMP_SNAC_F(SnacSrvRates)
         event->pak->rpos += 33;
         PacketWriteB2 (pak, grp);
     }
-    SnacSend (event->conn, pak);
+    SnacSend (serv, pak);
 }
 
 
@@ -347,14 +349,15 @@ static JUMP_SNAC_F(SnacSrvRateexceeded)
  */
 static JUMP_SNAC_F(SnacServerpause)
 {
-    ContactGroup *cg = event->conn->contacts;
+    Connection *serv = event->conn;
+    ContactGroup *cg = serv->contacts;
     Contact *cont;
     int i;
 
 #ifdef WIP
     M_printf ("%s WIP: reconnecting because of serverpause.\n", s_time (NULL));
 #endif
-    ConnectionInitServer(event->conn);
+    ConnectionInitServer(serv);
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
         cont->status = STATUS_OFFLINE;
 }
@@ -370,49 +373,50 @@ static void SrvCallbackTodoEg (Event *event)
  */
 static JUMP_SNAC_F(SnacSrvReplyinfo)
 {
+    Connection *serv = event->conn;
     Contact *cont;
     Packet *pak;
     TLV *tlv;
     UDWORD status;
     
     pak = event->pak;
-    cont = PacketReadCont (pak, event->conn);
+    cont = PacketReadCont (pak, serv);
     
-    if (cont->uin != event->conn->uin)
+    if (cont->uin != serv->uin)
         M_printf (i18n (1907, "Warning: Server thinks our UIN is %ld, when it is %ld.\n"),
-                  cont->uin, event->conn->uin);
+                  cont->uin, serv->uin);
     PacketReadB2 (pak);
     PacketReadB2 (pak);
     tlv = TLVRead (pak, PacketReadLeft (pak));
     if (tlv[10].str.len)
     {
-        event->conn->our_outside_ip = tlv[10].nr;
+        serv->our_outside_ip = tlv[10].nr;
         if (prG->verbose)
-            M_printf (i18n (1915, "Server says we're at %s.\n"), s_ip (event->conn->our_outside_ip));
-        if (event->conn->assoc)
-            event->conn->assoc->our_outside_ip = event->conn->our_outside_ip;
+            M_printf (i18n (1915, "Server says we're at %s.\n"), s_ip (serv->our_outside_ip));
+        if (serv->assoc)
+            serv->assoc->our_outside_ip = serv->our_outside_ip;
     }
     if (tlv[6].str.len)
     {
         status = tlv[6].nr;
-        if (status != event->conn->status)
+        if (status != serv->status)
         {
-            event->conn->status = status;
-            M_printf ("%s %s\n", s_now, s_status (event->conn->status));
+            serv->status = status;
+            M_printf ("%s %s\n", s_now, s_status (serv->status));
         }
     }
     /* TLV 1 c f 2 3 ignored */
     TLVD (tlv);
     
-    if (~event->conn->connect & CONNECT_OK)
+    if (~serv->connect & CONNECT_OK)
     {
-        SnacCliSetrandom (event->conn, prG->chat);
-        event->conn->connect = CONNECT_OK | CONNECT_SELECT_R;
+        SnacCliSetrandom (serv, prG->chat);
+        serv->connect = CONNECT_OK | CONNECT_SELECT_R;
         reconn = 0;
-        QueueEnqueueData (event->conn, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
+        QueueEnqueueData (serv, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
                           NULL, event->cont, NULL, &SrvCallBackKeepalive);
-        QueueEnqueueData (event->conn, QUEUE_TODO_EG, 0, time (NULL) + 3,
-                          NULL, 0, NULL, &SrvCallbackTodoEg);
+        QueueEnqueueData (serv, QUEUE_TODO_EG, 0, time (NULL) + 3,
+                          NULL, NULL, NULL, &SrvCallbackTodoEg);
     }
 }
 
@@ -445,28 +449,29 @@ static JUMP_SNAC_F(SnacSrvFamilies2)
  */
 static JUMP_SNAC_F(SnacSrvMotd)
 {
-    if (!(event->conn->connect & CONNECT_OK))
-        event->conn->connect++;
+    Connection *serv = event->conn;
+    if (!(serv->connect & CONNECT_OK))
+        serv->connect++;
 
-    SnacCliRatesrequest (event->conn);
-    SnacCliReqinfo      (event->conn);
-    SnacCliReqlists     (event->conn);
-    if (event->conn->flags & CONN_WIZARD)
+    SnacCliRatesrequest (serv);
+    SnacCliReqinfo      (serv);
+    SnacCliReqlists     (serv);
+    if (serv->flags & CONN_WIZARD)
     {
-        SnacCliReqroster  (event->conn);
-        QueueEnqueueData (event->conn, QUEUE_REQUEST_ROSTER, IMROSTER_IMPORT, 0x7fffffffL,
+        SnacCliReqroster  (serv);
+        QueueEnqueueData (serv, QUEUE_REQUEST_ROSTER, IMROSTER_IMPORT, 0x7fffffffL,
                           NULL, NULL, NULL, NULL);
     }
     else
     {
-        SnacCliCheckroster  (event->conn);
-        QueueEnqueueData (event->conn, QUEUE_REQUEST_ROSTER, IMROSTER_DIFF, 0x7fffffffL,
+        SnacCliCheckroster  (serv);
+        QueueEnqueueData (serv, QUEUE_REQUEST_ROSTER, IMROSTER_DIFF, 0x7fffffffL,
                           NULL, NULL, NULL, NULL);
     }
-    SnacCliReqlocation  (event->conn);
-    SnacCliBuddy        (event->conn);
-    SnacCliReqicbm      (event->conn);
-    SnacCliReqbos       (event->conn);
+    SnacCliReqlocation  (serv);
+    SnacCliBuddy        (serv);
+    SnacCliReqicbm      (serv);
+    SnacCliReqbos       (serv);
 }
 
 /*
@@ -482,6 +487,7 @@ static JUMP_SNAC_F(SnacSrvReplylocation)
  */
 static JUMP_SNAC_F(SnacSrvContacterr)
 {
+    Connection *serv = event->conn;
     UWORD err, cnt;
     Contact *cont;
     char first = 0, empty = 0;
@@ -501,7 +507,7 @@ static JUMP_SNAC_F(SnacSrvContacterr)
 
     while (empty < 3)
     {
-        if ((cont = PacketReadCont (event->pak, event->conn)))
+        if ((cont = PacketReadCont (event->pak, serv)))
         {
             if (first)
                 M_print (", ");
@@ -528,9 +534,10 @@ static JUMP_SNAC_F(SnacSrvReplybuddy)
  */
 static JUMP_SNAC_F(SnacSrvContrefused)
 {
+    Connection *serv = event->conn;
     Contact *cont;
     
-    cont = PacketReadCont (event->pak, event->conn);
+    cont = PacketReadCont (event->pak, serv);
     if (cont)
         M_printf (i18n (2315, "Cannot watch status of %s - too many watchers.\n"), cont->nick);
 }
@@ -540,12 +547,13 @@ static JUMP_SNAC_F(SnacSrvContrefused)
  */
 static JUMP_SNAC_F(SnacSrvUseronline)
 {
+    Connection *serv = event->conn;
     Contact *cont;
     Packet *p, *pak;
     TLV *tlv;
     
     pak = event->pak;
-    cont = PacketReadCont (pak, event->conn);
+    cont = PacketReadCont (pak, serv);
 
     PacketReadB2 (pak);
     PacketReadB2 (pak);
@@ -586,7 +594,7 @@ static JUMP_SNAC_F(SnacSrvUseronline)
         PacketD (p);
     }
     ContactSetVersion (cont);
-    IMOnline (cont, event->conn, tlv[6].str.len ? tlv[6].nr : 0);
+    IMOnline (cont, serv, tlv[6].str.len ? tlv[6].nr : 0);
     TLVD (tlv);
 }
 
@@ -595,13 +603,14 @@ static JUMP_SNAC_F(SnacSrvUseronline)
  */
 static JUMP_SNAC_F(SnacSrvUseroffline)
 {
+    Connection *serv = event->conn;
     Contact *cont;
     Packet *pak;
     
     pak = event->pak;
-    cont = PacketReadCont (pak, event->conn);
+    cont = PacketReadCont (pak, serv);
 
-    IMOffline (cont, event->conn);
+    IMOffline (cont, serv);
 }
 
 /*
@@ -609,6 +618,7 @@ static JUMP_SNAC_F(SnacSrvUseroffline)
  */
 static JUMP_SNAC_F(SnacSrvIcbmerr)
 {
+    Connection *serv = event->conn;
     UWORD err = PacketReadB2 (event->pak);
 
     if ((event->pak->ref & 0xffff) == 0x1771 && (err == 0xe || err == 0x4))
@@ -620,7 +630,7 @@ static JUMP_SNAC_F(SnacSrvIcbmerr)
         return;
     }
 
-    event = QueueDequeue (event->conn, QUEUE_TYPE2_RESEND_ACK, event->pak->ref);
+    event = QueueDequeue (serv, QUEUE_TYPE2_RESEND_ACK, event->pak->ref);
     if (event && event->callback)
         event->callback (event);
     else if (err == 4)
@@ -639,6 +649,7 @@ static JUMP_SNAC_F(SnacSrvReplyicbm)
 
 static JUMP_SNAC_F(SnacSrvAckmsg)
 {
+    Connection *serv = event->conn;
     /* UDWORD midtime, midrand; */
     UWORD msgtype, seq_dc;
     Contact *cont;
@@ -650,7 +661,7 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
     /*midtime*/PacketReadB4 (pak);
     /*midrand*/PacketReadB4 (pak);
               PacketReadB2 (pak);
-    cont =    PacketReadCont (pak, event->conn);
+    cont =    PacketReadCont (pak, serv);
               PacketReadB2 (pak);
               PacketReadData (pak, NULL, PacketRead2 (pak));
               PacketRead2 (pak);
@@ -668,18 +679,18 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
     
     text = strdup (c_in_to_split (ctext, cont));
 
-    event = QueueDequeue (event->conn, QUEUE_TYPE2_RESEND, seq_dc);
+    event = QueueDequeue (serv, QUEUE_TYPE2_RESEND, seq_dc);
 
     if ((msgtype & 0x300) == 0x300)
-        IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (NULL,
+        IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraSet (NULL,
                   EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
                   EXTRA_MESSAGE, msgtype, text));
     else if (event)
     {
-        IMIntMsg (cont, event->conn, NOW, STATUS_OFFLINE, INT_MSGACK_TYPE2, ExtraGetS (event->extra, EXTRA_MESSAGE), NULL);
+        IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGACK_TYPE2, ExtraGetS (event->extra, EXTRA_MESSAGE), NULL);
         if ((~cont->oldflags & CONT_SEENAUTO) && strlen (text))
         {
-            IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (NULL,
+            IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraSet (NULL,
                       EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
                       EXTRA_MESSAGE, MSG_AUTO, text));
             cont->oldflags |= CONT_SEENAUTO;
@@ -704,6 +715,7 @@ static void SnacSrvCallbackSendack (Event *event)
  */
 static JUMP_SNAC_F(SnacSrvRecvmsg)
 {
+    Connection *serv = event->conn;
     Contact *cont;
     Event *newevent;
     Cap *cap1, *cap2;
@@ -721,7 +733,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     midtime = PacketReadB4 (pak);
     midrand = PacketReadB4 (pak);
     type    = PacketReadB2 (pak);
-    cont    = PacketReadCont (pak, event->conn);
+    cont    = PacketReadCont (pak, serv);
               PacketReadB2 (pak); /* WARNING */
               PacketReadB2 (pak); /* COUNT */
     
@@ -788,10 +800,10 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                     txt = ConvFromCont (&str, cont);
                     break;
             }
-            IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (extra,
+            IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraSet (extra,
                       EXTRA_ORIGIN, EXTRA_ORIGIN_v5, NULL),
                       EXTRA_MESSAGE, MSG_NORM, txt));
-            Auto_Reply (event->conn, cont);
+            Auto_Reply (serv, cont);
             s_done (&str);
             break;
         case 2:
@@ -885,7 +897,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                     }
                     pp = PacketCreate (&tlv[i].str);
 
-                    p = SnacC (event->conn, 4, 11, 0, 0);
+                    p = SnacC (serv, 4, 11, 0, 0);
                     PacketWriteB4 (p, midtim);
                     PacketWriteB4 (p, midrnd);
                     PacketWriteB2 (p, 2);
@@ -905,9 +917,9 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                     
                     event->extra = ExtraSet (extra, EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL);
                     event->cont = cont;
-                    newevent = QueueEnqueueData (event->conn, QUEUE_ACKNOWLEDGE, seq1,
+                    newevent = QueueEnqueueData (serv, QUEUE_ACKNOWLEDGE, seq1,
                                  (time_t)-1, p, cont, NULL, &SnacSrvCallbackSendack);
-                    SrvReceiveAdvanced (event->conn, event, pp, newevent);
+                    SrvReceiveAdvanced (serv, event, pp, newevent);
                     PacketD (pp);
                     TLVD (tlv);
                     return;
@@ -934,11 +946,11 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             /* FOREGROUND / BACKGROUND ignored */
             /* TLV 1, 2(!), 3, 4, f ignored */
 
-            IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (extra,
+            IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraSet (extra,
                       EXTRA_ORIGIN, EXTRA_ORIGIN_v5, NULL),
                       EXTRA_MESSAGE, msgtyp, msgtyp == MSG_NORM ?
                       ConvFromCont (ctext, cont) : c_in_to_split (ctext, cont)));
-            Auto_Reply (event->conn, cont);
+            Auto_Reply (serv, cont);
             break;
         default:
             SnacSrvUnknown (event);
@@ -953,6 +965,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
  */
 static JUMP_SNAC_F(SnacSrvSrvackmsg)
 {
+    Connection *serv = event->conn;
     Packet *pak;
     Contact *cont;
     /* UDWORD mid1, mid2; */
@@ -964,7 +977,7 @@ static JUMP_SNAC_F(SnacSrvSrvackmsg)
     /*mid2=*/PacketReadB4 (pak);
     type = PacketReadB2 (pak);
 
-    cont = PacketReadCont (pak, event->conn);
+    cont = PacketReadCont (pak, serv);
     
     if (!cont)
         return;
@@ -973,17 +986,17 @@ static JUMP_SNAC_F(SnacSrvSrvackmsg)
     {
         case 1:
         case 4:
-            IMOffline (cont, event->conn);
+            IMOffline (cont, serv);
 
             M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
             M_print  (i18n (2126, "is offline, message queued on server.\n"));
 
 /*          cont->status = STATUS_OFFLINE;
-            putlog (event->conn, NOW, cont, STATUS_OFFLINE, LOG_ACK, 0xFFFF, 
+            putlog (serv, NOW, cont, STATUS_OFFLINE, LOG_ACK, 0xFFFF, 
                 s_sprintf ("%08lx%08lx\n", mid1, mid2)); */
             break;
         case 2: /* msg was received by server */
-            EventD (QueueDequeue (event->conn, QUEUE_TYPE2_RESEND_ACK, pak->ref));
+            EventD (QueueDequeue (serv, QUEUE_TYPE2_RESEND_ACK, pak->ref));
             break;
     }
 }
@@ -993,11 +1006,12 @@ static JUMP_SNAC_F(SnacSrvSrvackmsg)
  */
 static JUMP_SNAC_F(SnacSrvReplybos)
 {
-    SnacCliSetuserinfo (event->conn);
-    SnacCliSetstatus (event->conn, event->conn->status, 3);
-    SnacCliReady (event->conn);
-    SnacCliAddcontact (event->conn, 0);
-    SnacCliReqofflinemsgs (event->conn);
+    Connection *serv = event->conn;
+    SnacCliSetuserinfo (serv);
+    SnacCliSetstatus (serv, serv->status, 3);
+    SnacCliReady (serv);
+    SnacCliAddcontact (serv, 0);
+    SnacCliReqofflinemsgs (serv);
 }
 
 /*
@@ -1025,6 +1039,7 @@ static JUMP_SNAC_F(SnacSrvReplylists)
 
 static JUMP_SNAC_F(SnacSrvReplyrosterexport)
 {
+    Connection *serv = event->conn;
     Packet *pak;
     ContactGroup *cg = NULL;
     Contact *cont;
@@ -1056,10 +1071,10 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
                     break;
                 if (!tag) /* meta list of groups */
                     break;
-                if (!(cg = ContactGroupFind (event->conn, tag, name)))
-                    if (!(cg = ContactGroupFind (event->conn, tag, NULL)))
-                        if (!(cg = ContactGroupFind (event->conn, 0, name)))
-                            if (!IMROSTER_ISDOWN (data) || !(cg = ContactGroupC (event->conn, tag, name)))
+                if (!(cg = ContactGroupFind (serv, tag, name)))
+                    if (!(cg = ContactGroupFind (serv, tag, NULL)))
+                        if (!(cg = ContactGroupFind (serv, 0, name)))
+                            if (!IMROSTER_ISDOWN (data) || !(cg = ContactGroupC (serv, tag, name)))
                                 break;
                 if (IMROSTER_ISDOWN (data))
                 {
@@ -1072,7 +1087,7 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
             case 3:
             case 14:
             case 0:
-                cg = ContactGroupFind (event->conn, tag, NULL);
+                cg = ContactGroupFind (serv, tag, NULL);
                 if (!tag || (!cg && data == IMROSTER_IMPORT))
                     break;
                 j = TLVGet (tlv, 305);
@@ -1082,16 +1097,16 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
                 switch (data)
                 {
                     case 3:
-                        if (j != (UWORD)-1 || !(cont = ContactFind (event->conn->contacts, 0, atoi (name), NULL)))
+                        if (j != (UWORD)-1 || !(cont = ContactFind (serv->contacts, 0, atoi (name), NULL)))
                         {
-                            cont = ContactFindCreate (event->conn->contacts, id, atoi (name), nick);
-                            SnacCliAddcontact (event->conn, cont);
+                            cont = ContactFindCreate (serv->contacts, id, atoi (name), nick);
+                            SnacCliAddcontact (serv, cont);
                             k++;
                         }
                         if (!cont)
                             break;
-                        if (!ContactFind (event->conn->contacts, 0, atoi (name), nick))
-                            ContactFindCreate (event->conn->contacts, id, atoi (name), nick);
+                        if (!ContactFind (serv->contacts, 0, atoi (name), nick))
+                            ContactFindCreate (serv->contacts, id, atoi (name), nick);
                         cont->id = id;   /* FIXME: should be in ContactGroup? */
                         if (type == 2)
                         {
@@ -1113,7 +1128,7 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
                         M_printf (" #%d %10d %s\n", id, atoi (name), nick);
                         break;
                     case 2:
-                        if ((cont = ContactFind (event->conn->contacts, id, atoi (name), nick)))
+                        if ((cont = ContactFind (serv->contacts, id, atoi (name), nick)))
                             break;
                     case 1:
                         M_printf (" #%08d %10d %s\n", id, atoi (name), nick);
@@ -1133,7 +1148,7 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
     if (k || l)
     {
         M_printf (i18n (2242, "Imported %d new contacts, added %d times to a contact group.\n"), k, l);
-        if (event->conn->flags & CONN_WIZARD)
+        if (serv->flags & CONN_WIZARD)
         {
             if (Save_RC () == -1)
                 M_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
@@ -1141,12 +1156,13 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
         else
             M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
     }
-    SnacCliRosterack (event->conn);
+    SnacCliRosterack (serv);
 }
 
 
 static JUMP_SNAC_F(SnacSrvReplyroster)
 {
+    Connection *serv = event->conn;
     Packet *pak, *p;
     TLV *tlv;
     Event *event2;
@@ -1162,7 +1178,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
 
     pak = event->pak;
     
-    event2 = QueueDequeue (event->conn, QUEUE_REQUEST_ROSTER, 0);
+    event2 = QueueDequeue (serv, QUEUE_REQUEST_ROSTER, 0);
     data = event2 ? event2->seq : 1;
 
     PacketRead1 (pak);
@@ -1191,17 +1207,17 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                         break;
                     p = PacketCreate (&tlv[j].str);
                     while ((id = PacketReadB2 (p)))
-                        if (!ContactGroupFind (event->conn, id, NULL))
+                        if (!ContactGroupFind (serv, id, NULL))
                             if (IMROSTER_ISDOWN (data))
-                                ContactGroupC (event->conn, id, s_sprintf ("<group #%d>", tag));
+                                ContactGroupC (serv, id, s_sprintf ("<group #%d>", tag));
                     PacketD (p);
                 }
                 else
                 {
-                    if (!(cg = ContactGroupFind (event->conn, tag, name)))
-                        if (!(cg = ContactGroupFind (event->conn, tag, NULL)))
-                            if (!(cg = ContactGroupFind (event->conn, 0, name)))
-                                if (!IMROSTER_ISDOWN (data) || !(cg = ContactGroupC (event->conn, tag, name)))
+                    if (!(cg = ContactGroupFind (serv, tag, name)))
+                        if (!(cg = ContactGroupFind (serv, tag, NULL)))
+                            if (!(cg = ContactGroupFind (serv, 0, name)))
+                                if (!IMROSTER_ISDOWN (data) || !(cg = ContactGroupC (serv, tag, name)))
                                     break;
                     if (IMROSTER_ISDOWN (data))
                     {
@@ -1215,11 +1231,11 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
             case 3:
             case 14:
             case 0:
-                cg = ContactGroupFind (event->conn, tag, NULL);
+                cg = ContactGroupFind (serv, tag, NULL);
                 if (!tag || (!cg && data == IMROSTER_IMPORT))
                     break;
-                if (!(cg = ContactGroupFind (event->conn, tag, NULL)))
-                    if (!(cg = ContactGroupC (event->conn, tag, s_sprintf ("<group #%d>", tag))))
+                if (!(cg = ContactGroupFind (serv, tag, NULL)))
+                    if (!(cg = ContactGroupC (serv, tag, s_sprintf ("<group #%d>", tag))))
                         break;
                 j = TLVGet (tlv, 305);
                 assert (j < 200 || j == (UWORD)-1);
@@ -1228,16 +1244,16 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                 switch (data)
                 {
                     case 3:
-                        if (j != (UWORD)-1 || !(cont = ContactFind (event->conn->contacts, 0, atoi (name), NULL)))
+                        if (j != (UWORD)-1 || !(cont = ContactFind (serv->contacts, 0, atoi (name), NULL)))
                         {
-                            cont = ContactFindCreate (event->conn->contacts, id, atoi (name), nick);
-                            SnacCliAddcontact (event->conn, cont);
+                            cont = ContactFindCreate (serv->contacts, id, atoi (name), nick);
+                            SnacCliAddcontact (serv, cont);
                             k++;
                         }
                         if (!cont)
                             break;
-                        if (!ContactFind (event->conn->contacts, 0, atoi (name), nick))
-                            ContactFindCreate (event->conn->contacts, id, atoi (name), nick);
+                        if (!ContactFind (serv->contacts, 0, atoi (name), nick))
+                            ContactFindCreate (serv->contacts, id, atoi (name), nick);
                         cont->id = id;   /* FIXME: should be in ContactGroup? */
                         if (type == 2)
                         {
@@ -1259,7 +1275,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                         M_printf (" #%d %10d %s\n", id, atoi (name), nick);
                         break;
                     case 2:
-                        if ((cont = ContactFind (event->conn->contacts, id, atoi (name), nick)))
+                        if ((cont = ContactFind (serv->contacts, id, atoi (name), nick)))
                             break;
                     case 1:
                         M_printf (" #%08d %10d %s\n", id, atoi (name), nick);
@@ -1284,7 +1300,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
     if (k || l)
     {
         M_printf (i18n (2242, "Imported %d new contacts, added %d times to a contact group.\n"), k, l);
-        if (event->conn->flags & CONN_WIZARD)
+        if (serv->flags & CONN_WIZARD)
         {
             if (Save_RC () == -1)
                 M_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
@@ -1292,7 +1308,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
         else
             M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
     }
-    SnacCliRosterack (event->conn);
+    SnacCliRosterack (serv);
 }
 
 /*
@@ -1300,11 +1316,12 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
  */
 static JUMP_SNAC_F(SnacSrvUpdateack)
 {
+    Connection *serv = event->conn;
     Contact *cont = NULL;
     Event *event2;
     UWORD err;
     
-    event2 = QueueDequeue (event->conn, QUEUE_CHANGE_ROSTER, event->pak->ref);
+    event2 = QueueDequeue (serv, QUEUE_CHANGE_ROSTER, event->pak->ref);
     if (event2)
         cont = event2->cont;
     err = PacketReadB2 (event->pak);
@@ -1316,7 +1333,7 @@ static JUMP_SNAC_F(SnacSrvUpdateack)
             case 0xe:
                 cont->oldflags |= CONT_REQAUTH;
                 cont->oldflags &= ~CONT_ISSBL;
-                SnacCliRosteradd (event->conn, event->conn->contacts, cont);
+                SnacCliRosteradd (serv, serv->contacts, cont);
                 EventD (event2);
                 return;
             case 0x3:
@@ -1338,13 +1355,14 @@ static JUMP_SNAC_F(SnacSrvUpdateack)
  */
 static JUMP_SNAC_F(SnacSrvAuthreq)
 {
+    Connection *serv = event->conn;
     Packet *pak;
     Contact *cont;
     strc_t ctext;
     char *text;
 
     pak   = event->pak;
-    cont  = PacketReadCont (pak, event->conn);
+    cont  = PacketReadCont (pak, serv);
     ctext = PacketReadB2Str (pak, NULL);
     
     if (!cont)
@@ -1352,7 +1370,7 @@ static JUMP_SNAC_F(SnacSrvAuthreq)
     
     text = strdup (c_in_to_split (ctext, cont));
     
-    IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (NULL,
+    IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraSet (NULL,
               EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
               EXTRA_MESSAGE, MSG_AUTH_REQ, text));
 
@@ -1364,6 +1382,7 @@ static JUMP_SNAC_F(SnacSrvAuthreq)
  */
 static JUMP_SNAC_F(SnacSrvAuthreply)
 {
+    Connection *serv = event->conn;
     Packet *pak;
     Contact *cont;
     strc_t ctext;
@@ -1371,7 +1390,7 @@ static JUMP_SNAC_F(SnacSrvAuthreply)
     UBYTE acc;
 
     pak = event->pak;
-    cont  = PacketReadCont (pak, event->conn);
+    cont  = PacketReadCont (pak, serv);
     acc   = PacketRead1    (pak);
     ctext = PacketReadB2Str (pak, NULL);
     
@@ -1380,7 +1399,7 @@ static JUMP_SNAC_F(SnacSrvAuthreply)
     
     text = strdup (c_in_to_split (ctext, cont));
 
-    IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (NULL,
+    IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraSet (NULL,
               EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
               EXTRA_MESSAGE, acc ? MSG_AUTH_GRANT : MSG_AUTH_DENY, text));
 
@@ -1392,13 +1411,14 @@ static JUMP_SNAC_F(SnacSrvAuthreply)
  */
 static JUMP_SNAC_F(SnacSrvAddedyou)
 {
+    Connection *serv = event->conn;
     Contact *cont;
     Packet *pak;
 
     pak = event->pak;
-    cont = PacketReadCont (pak, event->conn);
+    cont = PacketReadCont (pak, serv);
 
-    IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (NULL,
+    IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraSet (NULL,
               EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
               EXTRA_MESSAGE, MSG_AUTH_ADDED, ""));
 }
@@ -1426,6 +1446,7 @@ static JUMP_SNAC_F(SnacSrvToicqerr)
  */
 static JUMP_SNAC_F(SnacSrvFromicqsrv)
 {
+    Connection *serv = event->conn;
     TLV *tlv;
     Packet *p, *pak;
     UDWORD len, uin, type /*, id*/;
@@ -1444,11 +1465,11 @@ static JUMP_SNAC_F(SnacSrvFromicqsrv)
     uin = PacketRead4 (p);
     type= PacketRead2 (p);
 /*  id=*/ PacketRead2 (p);
-    if (uin != event->conn->uin)
+    if (uin != serv->uin)
     {
         if (prG->verbose & DEB_PROTOCOL)
         {
-            M_printf (i18n (1919, "UIN mismatch: %ld vs %ld.\n"), event->conn->uin, uin);
+            M_printf (i18n (1919, "UIN mismatch: %ld vs %ld.\n"), serv->uin, uin);
             SnacSrvUnknown (event);
         }
         TLVD (tlv);
@@ -1472,15 +1493,15 @@ static JUMP_SNAC_F(SnacSrvFromicqsrv)
     {
         case 65:
             if (len >= 14)
-                Recv_Message (event->conn, p);
+                Recv_Message (serv, p);
             break;
 
         case 66:
-            SnacCliAckofflinemsgs (event->conn);
+            SnacCliAckofflinemsgs (serv);
             break;
 
         case 2010:
-            Meta_User (event->conn, ContactUIN (event->conn, uin), p);
+            Meta_User (serv, ContactUIN (serv, uin), p);
             break;
 
         default:
@@ -1495,8 +1516,9 @@ static JUMP_SNAC_F(SnacSrvFromicqsrv)
  */
 static JUMP_SNAC_F(SnacSrvRegrefused)
 {
+    Connection *serv = event->conn;
     M_print (i18n (1920, "Registration of new UIN refused.\n"));
-    if (event->conn->flags & CONN_WIZARD)
+    if (serv->flags & CONN_WIZARD)
     {
         M_print (i18n (1792, "I'm sorry, AOL doesn't want to give us a new UIN, probably because of too many new UIN requests from this IP. Please try again later.\n"));
         exit (0);
@@ -1508,29 +1530,30 @@ static JUMP_SNAC_F(SnacSrvRegrefused)
  */
 static JUMP_SNAC_F(SnacSrvNewuin)
 {
+    Connection *serv = event->conn;
     Contact *cont;
 
-    cont = ContactUIN (event->conn, PacketReadAt4 (event->pak, 6 + 10 + 46));
-    event->conn->uin = event->conn->spref->uin = cont->uin;
+    cont = ContactUIN (serv, PacketReadAt4 (event->pak, 6 + 10 + 46));
+    serv->uin = serv->spref->uin = cont->uin;
     M_printf (i18n (1762, "Your new UIN is: %ld.\n"), cont->uin);
-    if (event->conn->flags & CONN_WIZARD)
+    if (serv->flags & CONN_WIZARD)
     {
-        assert (event->conn->spref);
-        assert (event->conn->assoc);
-        assert (event->conn->assoc->spref);
-        assert (event->conn->open);
-        assert (event->conn->assoc->open);
+        assert (serv->spref);
+        assert (serv->assoc);
+        assert (serv->assoc->spref);
+        assert (serv->open);
+        assert (serv->assoc->open);
 
-        event->conn->spref->flags |= CONN_AUTOLOGIN;
-        event->conn->assoc->spref->flags |= CONN_AUTOLOGIN;
+        serv->spref->flags |= CONN_AUTOLOGIN;
+        serv->assoc->spref->flags |= CONN_AUTOLOGIN;
 
-        s_repl (&event->conn->contacts->name, s_sprintf ("contacts-icq8-%ld", cont->uin));
+        s_repl (&serv->contacts->name, s_sprintf ("contacts-icq8-%ld", cont->uin));
         M_print (i18n (1790, "Setup wizard finished. Congratulations to your new UIN!\n"));
 
         if (Save_RC () == -1)
             M_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
-        event->conn->assoc->open (event->conn->assoc);
-        event->conn->open (event->conn);
+        serv->assoc->open (serv->assoc);
+        serv->open (serv);
     }
 }
 
@@ -1539,12 +1562,12 @@ static JUMP_SNAC_F(SnacSrvNewuin)
 /*
  * CLI_READY - SNAC(1,2)
  */
-void SnacCliReady (Connection *conn)
+void SnacCliReady (Connection *serv)
 {
     Packet *pak;
     SNAC *s;
 
-    pak = SnacC (conn, 1, 2, 0, 0);
+    pak = SnacC (serv, 1, 2, 0, 0);
     
     for (s = SNACv; s->fam; s++)
     {
@@ -1555,18 +1578,18 @@ void SnacCliReady (Connection *conn)
         PacketWriteB2 (pak, s->cmd);
         PacketWriteB4 (pak, s->fam == 2 ? 0x0101047B : 0x0110047B);
     }
-    SnacSend (conn, pak);
+    SnacSend (serv, pak);
 }
 
 /*
  * CLI_FAMILIES - SNAC(1,17)
  */
-void SnacCliFamilies (Connection *conn)
+void SnacCliFamilies (Connection *serv)
 {
     Packet *pak;
     SNAC *s;
 
-    pak = SnacC (conn, 1, 0x17, 0, 0);
+    pak = SnacC (serv, 1, 0x17, 0, 0);
     
     for (s = SNACv; s->fam; s++)
     {
@@ -1576,7 +1599,7 @@ void SnacCliFamilies (Connection *conn)
         PacketWriteB2 (pak, s->fam);
         PacketWriteB2 (pak, s->cmd);
     }
-    SnacSend (conn, pak);
+    SnacSend (serv, pak);
 }
 
 /*
@@ -1584,7 +1607,7 @@ void SnacCliFamilies (Connection *conn)
  *
  * action: 1 = send status 2 = send connection info (3 = both)
  */
-void SnacCliSetstatus (Connection *conn, UDWORD status, UWORD action)
+void SnacCliSetstatus (Connection *serv, UDWORD status, UWORD action)
 {
     Packet *pak;
     
@@ -1595,22 +1618,22 @@ void SnacCliSetstatus (Connection *conn, UDWORD status, UWORD action)
     if (prG->flags & FLAG_DC_CONT)
         status |= STATUSF_DC_CONT;
     
-    pak = SnacC (conn, 1, 0x1e, 0, 0);
+    pak = SnacC (serv, 1, 0x1e, 0, 0);
     if ((action & 1) && (status & STATUSF_INV))
-        SnacCliAddvisible (conn, 0);
+        SnacCliAddvisible (serv, 0);
     if (action & 1)
         PacketWriteTLV4 (pak, 6, status);
     if (action & 2)
     {
         PacketWriteB2 (pak, 0x0c); /* TLV 0C */
         PacketWriteB2 (pak, 0x25);
-        PacketWriteB4 (pak, prG->flags & FLAG_HIDEIP ? 0 : conn->our_local_ip);
-        if (conn->assoc && conn->assoc->connect & CONNECT_OK)
+        PacketWriteB4 (pak, prG->flags & FLAG_HIDEIP ? 0 : serv->our_local_ip);
+        if (serv->assoc && serv->assoc->connect & CONNECT_OK)
         {
-            PacketWriteB4 (pak, conn->assoc->port);
-            PacketWrite1  (pak, conn->assoc->status);
-            PacketWriteB2 (pak, conn->assoc->ver);
-            PacketWriteB4 (pak, conn->assoc->our_session);
+            PacketWriteB4 (pak, serv->assoc->port);
+            PacketWrite1  (pak, serv->assoc->status);
+            PacketWriteB2 (pak, serv->assoc->ver);
+            PacketWriteB4 (pak, serv->assoc->our_session);
         }
         else
         {
@@ -1629,71 +1652,71 @@ void SnacCliSetstatus (Connection *conn, UDWORD status, UWORD action)
         PacketWriteB2 (pak, 0);
         PacketWriteTLV2 (pak, 8, 0);
     }
-    SnacSend (conn, pak);
+    SnacSend (serv, pak);
     if ((action & 1) && !(status & STATUSF_INV))
-        SnacCliAddinvis (conn, 0);
+        SnacCliAddinvis (serv, 0);
 }
 
 /*
  * CLI_RATESREQUEST - SNAC(1,6)
  */
-void SnacCliRatesrequest (Connection *conn)
+void SnacCliRatesrequest (Connection *serv)
 {
-    SnacSend (conn, SnacC (conn, 1, 6, 0, 0));
+    SnacSend (serv, SnacC (serv, 1, 6, 0, 0));
 }
 
 /*
  * CLI_REQINFO - SNAC (1,E)
  */
-void SnacCliReqinfo (Connection *conn)
+void SnacCliReqinfo (Connection *serv)
 {
-    SnacSend (conn, SnacC (conn, 1, 0xE, 0, 0));
+    SnacSend (serv, SnacC (serv, 1, 0xE, 0, 0));
 }
 
 /*
  * CLI_REQLOCATION - SNAC(2,2)
  */
-void SnacCliReqlocation (Connection *conn)
+void SnacCliReqlocation (Connection *serv)
 {
-    SnacSend (conn, SnacC (conn, 2, 2, 0, 0));
+    SnacSend (serv, SnacC (serv, 2, 2, 0, 0));
 }
 
 /*
  * CLI_SETUSERINFO - SNAC(2,4)
  */
-void SnacCliSetuserinfo (Connection *conn)
+void SnacCliSetuserinfo (Connection *serv)
 {
     Packet *pak;
     
-    pak = SnacC (conn, 2, 4, 0, 0);
+    pak = SnacC (serv, 2, 4, 0, 0);
     PacketWriteTLV     (pak, 5);
     PacketWriteCapID   (pak, CAP_ISICQ);
     PacketWriteCapID   (pak, CAP_SRVRELAY);
     PacketWriteCapID   (pak, CAP_UTF8);
     PacketWriteCapID   (pak, CAP_MICQ);
     PacketWriteTLVDone (pak);
-    SnacSend (conn, pak);
+    SnacSend (serv, pak);
 }
 
 /*
  * CLI_REQBUDDY - SNAC(3,2)
  */
-void SnacCliBuddy (Connection *conn)
+void SnacCliBuddy (Connection *serv)
 {
-    SnacSend (conn, SnacC (conn, 3, 2, 0, 0));
+    SnacSend (serv, SnacC (serv, 3, 2, 0, 0));
 }
 
 /*
  * CLI_ADDCONTACT - SNAC(3,4)
  */
-void SnacCliAddcontact (Connection *conn, Contact *cont)
+void SnacCliAddcontact (Connection *serv, Contact *cont)
 {
     ContactGroup *cg;
     Packet *pak;
     int i;
     
-    cg = conn->contacts;
-    pak = SnacC (conn, 3, 4, 0, 0);
+    cg = serv->contacts;
+    pak = SnacC (serv, 3, 4, 0, 0);
     if (cont)
         PacketWriteCont (pak, cont);
     else
@@ -1702,38 +1725,38 @@ void SnacCliAddcontact (Connection *conn, Contact *cont)
         {
             if (i && !(i % 256))
             {
-                SnacSend (conn, pak);
-                pak = SnacC (conn, 3, 4, 0, 0);
+                SnacSend (serv, pak);
+                pak = SnacC (serv, 3, 4, 0, 0);
             }
             PacketWriteCont (pak, cont);
             
         }
     }
-    SnacSend (conn, pak);
+    SnacSend (serv, pak);
 }
 
 /*
  * CLI_REMCONTACT - SNAC(3,5)
  */
-void SnacCliRemcontact (Connection *conn, Contact *cont)
+void SnacCliRemcontact (Connection *serv, Contact *cont)
 {
     Packet *pak;
     
     if (!cont)
         return;
-    pak = SnacC (conn, 3, 5, 0, 0);
+    pak = SnacC (serv, 3, 5, 0, 0);
     PacketWriteCont (pak, cont);
-    SnacSend (conn, pak);
+    SnacSend (serv, pak);
 }
 
 /*
  * CLI_SETICBM - SNAC(4,2)
  */
-void SnacCliSeticbm (Connection *conn)
+void SnacCliSeticbm (Connection *serv)
 {
    Packet *pak;
    
-   pak = SnacC (conn, 4, 2, 0, 0);
+   pak = SnacC (serv, 4, 2, 0, 0);
    PacketWriteB2 (pak, 0);
    PacketWriteB2 (pak, 0);
    PacketWriteB2 (pak, 3);
@@ -1742,20 +1765,20 @@ void SnacCliSeticbm (Connection *conn)
    PacketWriteB2 (pak, 999);
    PacketWriteB2 (pak, 0);
    PacketWriteB2 (pak, 0);
-   SnacSend (conn, pak);
+   SnacSend (serv, pak);
 }
 /*
  * CLI_REQICBM - SNAC(4,4)
  */
-void SnacCliReqicbm (Connection *conn)
+void SnacCliReqicbm (Connection *serv)
 {
-    SnacSend (conn, SnacC (conn, 4, 4, 0, 0));
+    SnacSend (serv, SnacC (serv, 4, 4, 0, 0));
 }
 
 /*
  * CLI_SENDMSG - SNAC(4,6)
  */
-UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD type, UBYTE format)
+UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD type, UBYTE format)
 {
     Packet *pak;
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
@@ -1764,9 +1787,9 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
         return RET_DEFER;
     
     if (format == 2 || type == MSG_GET_PEEK)
-        return SnacCliSendmsg2 (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, type, text));
+        return SnacCliSendmsg2 (serv, cont, ExtraSet (NULL, EXTRA_MESSAGE, type, text));
     
-    IMIntMsg (cont, conn, NOW, STATUS_OFFLINE, INT_MSGACK_V8, text, NULL);
+    IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGACK_V8, text, NULL);
         
     if (!format || format == 0xff)
     {
@@ -1794,7 +1817,7 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
         }
     }
     
-    pak = SnacC (conn, 4, 6, 0, 0);
+    pak = SnacC (serv, 4, 6, 0, 0);
     PacketWriteB4 (pak, mtime);
     PacketWriteB4 (pak, mid);
     PacketWriteB2 (pak, format);
@@ -1857,9 +1880,9 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
             PacketWriteTLVDone (pak);
             PacketWriteB2 (pak, 6);
             PacketWriteB2 (pak, 0);
-            SnacSend (conn, pak);
+            SnacSend (serv, pak);
             if (bstr.len == 450) /* FIXME - message splitting */
-                return SnacCliSendmsg (conn, cont, text + 450, type, format);
+                return SnacCliSendmsg (serv, cont, text + 450, type, format);
             }
             break;
         case 4:
@@ -1867,7 +1890,7 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
             convtext = ConvTo (text, remenc)->txt;
             
             PacketWriteTLV     (pak, 5);
-            PacketWrite4       (pak, conn->uin);
+            PacketWrite4       (pak, serv->uin);
             PacketWrite1       (pak, type);
             PacketWrite1       (pak, 0);
 #if 0
@@ -1882,15 +1905,15 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
             PacketWriteTLVDone (pak);
             PacketWriteB2 (pak, 6);
             PacketWriteB2 (pak, 0);
-            SnacSend (conn, pak);
+            SnacSend (serv, pak);
     }
     return RET_OK;
 }
 
 static void SnacCallbackType2Ack (Event *event)
 {
-    Contact *cont = event->cont;
     Connection *serv = event->conn;
+    Contact *cont = event->cont;
     Event *aevent;
 
     if (!serv)
@@ -1914,8 +1937,8 @@ static void SnacCallbackType2Ack (Event *event)
 
 static void SnacCallbackType2 (Event *event)
 {
-    Contact *cont = event->cont;
     Connection *serv = event->conn;
+    Contact *cont = event->cont;
     Packet *pak = event->pak;
 
     if (!serv || !cont)
@@ -1959,7 +1982,7 @@ static void SnacCallbackType2 (Event *event)
 /*
  * CLI_SENDMSG - SNAC(4,6) - type2
  */
-UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
+UBYTE SnacCliSendmsg2 (Connection *serv, Contact *cont, Extra *extra)
 {
     Packet *pak;
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
@@ -1993,12 +2016,12 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
         }
     }
 
-    conn->our_seq_dc--;
+    serv->our_seq_dc--;
     
     e_trans = ExtraGet (extra, EXTRA_TRANS) & ~EXTRA_TRANS_TYPE2;
     extra = ExtraSet (extra, EXTRA_TRANS, e_trans, NULL);
 
-    pak = SnacC (conn, 4, 6, 0, peek ? 0x1771 : 0);
+    pak = SnacC (serv, 4, 6, 0, peek ? 0x1771 : 0);
     PacketWriteB4 (pak, mtime);
     PacketWriteB4 (pak, mid);
     PacketWriteB2 (pak, 2);
@@ -2013,15 +2036,15 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
      PacketWriteB4      (pak, 0x000f0000); /* empty TLV(15) */
      PacketWriteTLV     (pak, 10001);
       PacketWriteLen     (pak);
-       PacketWrite2       (pak, conn->assoc && conn->assoc->connect & CONNECT_OK
-                              ? conn->assoc->ver : 8);
+       PacketWrite2       (pak, serv->assoc && serv->assoc->connect & CONNECT_OK
+                              ? serv->assoc->ver : 8);
        PacketWriteCapID   (pak, CAP_NONE);
        PacketWrite2       (pak, 0);
        PacketWrite4       (pak, 3);
        PacketWrite1       (pak, 0);
-       PacketWrite2       (pak, conn->our_seq_dc);
+       PacketWrite2       (pak, serv->our_seq_dc);
       PacketWriteLenDone (pak);
-      SrvMsgAdvanced     (pak, conn->our_seq_dc, type, conn->status, cont->status, -1, c_out_for (text, cont, type));
+      SrvMsgAdvanced     (pak, serv->our_seq_dc, type, serv->status, cont->status, -1, c_out_for (text, cont, type));
       PacketWrite4       (pak, TCP_COL_FG);
       PacketWrite4       (pak, TCP_COL_BG);
       if (CONT_UTF8 (cont, type))
@@ -2034,11 +2057,11 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
     
     if (peek)
     {
-        SnacSend (conn, pak);
+        SnacSend (serv, pak);
         ExtraD (extra);
     }
     else
-        QueueEnqueueData (conn, QUEUE_TYPE2_RESEND, conn->our_seq_dc,
+        QueueEnqueueData (serv, QUEUE_TYPE2_RESEND, serv->our_seq_dc,
                           time (NULL), pak, cont, extra, &SnacCallbackType2);
     return RET_INPR;
 }
@@ -2046,146 +2069,146 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
 /*
  * CLI_REQBOS - SNAC(9,2)
  */
-void SnacCliReqbos (Connection *conn)
+void SnacCliReqbos (Connection *serv)
 {
-    SnacSend (conn, SnacC (conn, 9, 2, 0, 0));
+    SnacSend (serv, SnacC (serv, 9, 2, 0, 0));
 }
 
 /*
  * CLI_ADDVISIBLE - SNAC(9,5)
  */
-void SnacCliAddvisible (Connection *conn, Contact *cont)
+void SnacCliAddvisible (Connection *serv, Contact *cont)
 {
     ContactGroup *cg;
     Packet *pak;
     int i;
     
-    cg = conn->contacts;
-    pak = SnacC (conn, 9, 5, 0, 0);
+    cg = serv->contacts;
+    pak = SnacC (serv, 9, 5, 0, 0);
     if (cont)
         PacketWriteCont (pak, cont);
     else
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
             if (ContactPrefVal (cont, CO_INTIMATE))
                 PacketWriteCont (pak, cont);
-    SnacSend (conn, pak);
+    SnacSend (serv, pak);
 }
 
 /*
  * CLI_REMVISIBLE - SNAC(9,6)
  */
-void SnacCliRemvisible (Connection *conn, Contact *cont)
+void SnacCliRemvisible (Connection *serv, Contact *cont)
 {
     Packet *pak;
     
     if (!cont)
         return;
-    pak = SnacC (conn, 9, 6, 0, 0);
+    pak = SnacC (serv, 9, 6, 0, 0);
     PacketWriteCont (pak, cont);
-    SnacSend (conn, pak);
+    SnacSend (serv, pak);
 }
 
 /*
  * CLI_ADDINVIS - SNAC(9,7)
  */
-void SnacCliAddinvis (Connection *conn, Contact *cont)
+void SnacCliAddinvis (Connection *serv, Contact *cont)
 {
     ContactGroup *cg;
     Packet *pak;
     int i;
     
-    pak = SnacC (conn, 9, 7, 0, 0);
-    cg = conn->contacts;
+    pak = SnacC (serv, 9, 7, 0, 0);
+    cg = serv->contacts;
     if (cont)
         PacketWriteCont (pak, cont);
     else
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
             if (ContactPrefVal (cont, CO_HIDEFROM))
                 PacketWriteCont (pak, cont);
-    SnacSend (conn, pak);
+    SnacSend (serv, pak);
 }
 
 /*
  * CLI_REMINVIS - SNAC(9,8)
  */
-void SnacCliReminvis (Connection *conn, Contact *cont)
+void SnacCliReminvis (Connection *serv, Contact *cont)
 {
     Packet *pak;
     
     if (!cont)
         return;
-    pak = SnacC (conn, 9, 8, 0, 0);
+    pak = SnacC (serv, 9, 8, 0, 0);
     PacketWriteCont (pak, cont);
-    SnacSend (conn, pak);
+    SnacSend (serv, pak);
 }
 
 /*
  * CLI_REQLISTS - SNAC(13,2)
  */
-void SnacCliReqlists (Connection *conn)
+void SnacCliReqlists (Connection *serv)
 {
     Packet *pak;
     
-    pak = SnacC (conn, 19, 2, 0, 0);
-    SnacSend (conn, pak);
+    pak = SnacC (serv, 19, 2, 0, 0);
+    SnacSend (serv, pak);
 }
 
 /*
  * CLI_REQROSTER - SNAC(13,4)
  */
 
-void SnacCliReqroster (Connection *conn)
+void SnacCliReqroster (Connection *serv)
 {
     Packet *pak;
     
-    pak = SnacC (conn, 19, 4, 0, 0);
-    SnacSend (conn, pak);
+    pak = SnacC (serv, 19, 4, 0, 0);
+    SnacSend (serv, pak);
 }
 
 /*
  * CLI_CHECKROSTER - SNAC(13,5)
  */
-void SnacCliCheckroster (Connection *conn)
+void SnacCliCheckroster (Connection *serv)
 {
     ContactGroup *cg;
 /*    Contact *cont;*/
     Packet *pak;
     int i;
     
-    cg = conn->contacts;
-    pak = SnacC (conn, 19, 5, 0, 0);
+    cg = serv->contacts;
+    pak = SnacC (serv, 19, 5, 0, 0);
     for (i = 0; (/*cont =*/ ContactIndex (cg, i)); )
         i++;
 
     PacketWriteB4 (pak, 0);  /* last modification of server side contact list */
     PacketWriteB2 (pak, i);  /* # of entries */
-    SnacSend (conn, pak);
+    SnacSend (serv, pak);
 }
 
 /*
  * CLI_ROSTERACK - SNAC(13,7)
  */
-void SnacCliRosterack (Connection *conn)
+void SnacCliRosterack (Connection *serv)
 {
     Packet *pak;
     
-    pak = SnacC (conn, 19, 7, 0, 0);
-    SnacSend (conn, pak);
+    pak = SnacC (serv, 19, 7, 0, 0);
+    SnacSend (serv, pak);
 }
 
 /*
  * CLI_ADDBUDDY - SNAC(13,8)
  */
-void SnacCliRosteradd (Connection *conn, ContactGroup *cg, Contact *cont)
+void SnacCliRosteradd (Connection *serv, ContactGroup *cg, Contact *cont)
 {
     Packet *pak;
     
     if (cont)
     {
-/*        SnacCliGrantauth (conn, cont);  */
-        SnacCliAddstart (conn);
+/*        SnacCliGrantauth (serv, cont);  */
+        SnacCliAddstart (serv);
         
-        pak = SnacC (conn, 19, 8, 0, 0);
+        pak = SnacC (serv, 19, 8, 0, 0);
         PacketWriteStrB     (pak, s_sprintf ("%ld", cont->uin));
         PacketWriteB2       (pak, ContactGroupID (cg));
         PacketWriteB2       (pak, ContactID (cont));
@@ -2198,11 +2221,11 @@ void SnacCliRosteradd (Connection *conn, ContactGroup *cg, Contact *cont)
             PacketWriteTLVDone (pak);
         }
         PacketWriteBLenDone (pak);
-        QueueEnqueueData (conn, QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
+        QueueEnqueueData (serv, QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
     }
     else
     {
-        pak = SnacC (conn, 19, 8, 0, 0);
+        pak = SnacC (serv, 19, 8, 0, 0);
         PacketWriteStrB     (pak, cg->name);
         PacketWriteB2       (pak, ContactGroupID (cg));
         PacketWriteB2       (pak, 0);
@@ -2210,18 +2233,18 @@ void SnacCliRosteradd (Connection *conn, ContactGroup *cg, Contact *cont)
         PacketWriteBLen     (pak);
         PacketWriteBLenDone (pak);
     }
-    SnacSend (conn, pak);
+    SnacSend (serv, pak);
 }
 
 /*
  * CLI_ROSTERUPDATE - SNAC(12,9)
  */
-void SnacCliRosterupdate (Connection *conn, ContactGroup *cg, Contact *cont)
+void SnacCliRosterupdate (Connection *serv, ContactGroup *cg, Contact *cont)
 {
     Packet *pak;
     int i;
 
-    pak = SnacC (conn, 19, 9, 0, 0);
+    pak = SnacC (serv, 19, 9, 0, 0);
     if (cont)
     {
         PacketWriteStrB     (pak, s_sprintf ("%ld", cont->uin));
@@ -2250,11 +2273,11 @@ void SnacCliRosterupdate (Connection *conn, ContactGroup *cg, Contact *cont)
 /*
  * CLI_ROSTERUPDATE - SNAC(13,9)
  */
-void SnacCliSetvisibility (Connection *conn)
+void SnacCliSetvisibility (Connection *serv)
 {
     Packet *pak;
     
-    pak = SnacC (conn, 19, 9, 0, 0);
+    pak = SnacC (serv, 19, 9, 0, 0);
     PacketWriteStrB     (pak, "");
     PacketWriteB2       (pak, 0);
     PacketWriteB2       (pak, 0x4242);
@@ -2265,17 +2288,17 @@ void SnacCliSetvisibility (Connection *conn)
     PacketWrite1        (pak, 4);
     PacketWriteTLVDone  (pak);
     PacketWriteBLenDone (pak);
-    SnacSend (conn, pak);
+    SnacSend (serv, pak);
 }
 
 /*
  * CLI_ROSTERDELETE - SANC(12,a)
  */
-void SnacCliRosterdelete (Connection *conn, ContactGroup *cg, Contact *cont)
+void SnacCliRosterdelete (Connection *serv, ContactGroup *cg, Contact *cont)
 {
     Packet *pak;
 
-    pak = SnacC (conn, 19, 10, 0, 0);
+    pak = SnacC (serv, 19, 10, 0, 0);
     if (cont)
     {
         PacketWriteStrB     (pak, s_sprintf ("%ld", cont->uin));
@@ -2299,87 +2322,87 @@ void SnacCliRosterdelete (Connection *conn, ContactGroup *cg, Contact *cont)
 /*
  * CLI_ADDSTART - SNAC(13,11)
  */
-void SnacCliAddstart (Connection *conn)
+void SnacCliAddstart (Connection *serv)
 {
     Packet *pak;
     
-    pak = SnacC (conn, 19, 17, 0, 0);
-    SnacSend (conn, pak);
+    pak = SnacC (serv, 19, 17, 0, 0);
+    SnacSend (serv, pak);
 }
 
 /*
  * CLI_ADDEND - SNAC(13,12)
  */
-void SnacCliAddend (Connection *conn)
+void SnacCliAddend (Connection *serv)
 {
     Packet *pak;
 
-    pak = SnacC (conn, 19, 18, 0, 0);
-    SnacSend (conn, pak);
+    pak = SnacC (serv, 19, 18, 0, 0);
+    SnacSend (serv, pak);
 }
 
 /*
  * CLI_GRANTAUTH - SNAC(13,14)
  */
-void SnacCliGrantauth (Connection *conn, Contact *cont)
+void SnacCliGrantauth (Connection *serv, Contact *cont)
 {
     Packet *pak;
     
     if (!cont)
         return;
-    pak = SnacC (conn, 19, 20, 0, 0);
+    pak = SnacC (serv, 19, 20, 0, 0);
     PacketWriteCont (pak, cont);
     PacketWrite4    (pak, 0);
-    SnacSend (conn, pak);
+    SnacSend (serv, pak);
 }
 
 /*
  * CLI_REQAUTH - SNAC(13,18)
  */
-void SnacCliReqauth (Connection *conn, Contact *cont, const char *msg)
+void SnacCliReqauth (Connection *serv, Contact *cont, const char *msg)
 {
     Packet *pak;
     
     if (!cont)
         return;
-    pak = SnacC (conn, 19, 24, 0, 0);
+    pak = SnacC (serv, 19, 24, 0, 0);
     PacketWriteCont (pak, cont);
     PacketWriteStrB (pak, c_out_to (msg, cont));
     PacketWrite2    (pak, 0);
-    SnacSend (conn, pak);
+    SnacSend (serv, pak);
 }
 
 /*
  * CLI_AUTHORIZE - SNAC(13,1a)
  */
-void SnacCliAuthorize (Connection *conn, Contact *cont, BOOL accept, const char *msg)
+void SnacCliAuthorize (Connection *serv, Contact *cont, BOOL accept, const char *msg)
 {
     Packet *pak;
     
     if (!cont)
         return;
-    pak = SnacC (conn, 19, 26, 0, 0);
+    pak = SnacC (serv, 19, 26, 0, 0);
     PacketWriteCont (pak, cont);
     PacketWrite1    (pak, accept ? 1 : 0);
     PacketWriteStrB (pak, accept ? "" : c_out_to (msg, cont));
-    SnacSend (conn, pak);
+    SnacSend (serv, pak);
 }
 
 /*
  * Create meta request package.
  */
-static Packet *SnacMetaC (Connection *conn, UWORD sub, UWORD type, UWORD ref)
+static Packet *SnacMetaC (Connection *serv, UWORD sub, UWORD type, UWORD ref)
 {
     Packet *pak;
 
-    conn->our_seq3 = conn->our_seq3 ? (conn->our_seq3 + 1) % 0x7fff : 2;
+    serv->our_seq3 = serv->our_seq3 ? (serv->our_seq3 + 1) % 0x7fff : 2;
     
-    pak = SnacC (conn, 21, 2, 0, (ref ? ref : rand () % 0x7fff) + (conn->our_seq3 << 16));
+    pak = SnacC (serv, 21, 2, 0, (ref ? ref : rand () % 0x7fff) + (serv->our_seq3 << 16));
     PacketWriteTLV (pak, 1);
     PacketWriteLen (pak);
-    PacketWrite4   (pak, conn->uin);
+    PacketWrite4   (pak, serv->uin);
     PacketWrite2   (pak, sub);
-    PacketWrite2   (pak, conn->our_seq3);
+    PacketWrite2   (pak, serv->our_seq3);
     if (type)
         PacketWrite2 (pak, type);
 
@@ -2389,43 +2412,43 @@ static Packet *SnacMetaC (Connection *conn, UWORD sub, UWORD type, UWORD ref)
 /*
  * Complete & send meta request package.
  */
-static void SnacMetaSend (Connection *conn, Packet *pak)
+static void SnacMetaSend (Connection *serv, Packet *pak)
 {
     PacketWriteLenDone (pak);
     PacketWriteTLVDone (pak);
-    SnacSend (conn, pak);
+    SnacSend (serv, pak);
 }
 
 /*
  * CLI_REQOFFLINEMSGS - SNAC(15,2) - 60
  */
-void SnacCliReqofflinemsgs (Connection *conn)
+void SnacCliReqofflinemsgs (Connection *serv)
 {
     Packet *pak;
 
-    pak = SnacMetaC (conn, 60, 0, 0x4231);
-    SnacMetaSend    (conn, pak);
+    pak = SnacMetaC (serv, 60, 0, 0x4231);
+    SnacMetaSend    (serv, pak);
 }
 
 /*
  * CLI_ACKOFFLINEMSGS - SNAC(15,2) - 62
  */
-void SnacCliAckofflinemsgs (Connection *conn)
+void SnacCliAckofflinemsgs (Connection *serv)
 {
     Packet *pak;
 
-    pak = SnacMetaC (conn, 62, 0, 0);
-    SnacMetaSend    (conn, pak);
+    pak = SnacMetaC (serv, 62, 0, 0);
+    SnacMetaSend    (serv, pak);
 }
 
 /*
  * CLI_METASETGENERAL - SNAC(15,2) - 2000/1002
  */
-void SnacCliMetasetgeneral (Connection *conn, Contact *cont)
+void SnacCliMetasetgeneral (Connection *serv, Contact *cont)
 {
     Packet *pak;
 
-    pak = SnacMetaC (conn, 2000, META_SET_GENERAL_INFO, 0);
+    pak = SnacMetaC (serv, 2000, META_SET_GENERAL_INFO, 0);
     if (cont->meta_general)
     {
         PacketWriteLNTS (pak, c_out (cont->meta_general->nick));
@@ -2460,29 +2483,29 @@ void SnacCliMetasetgeneral (Connection *conn, Contact *cont)
         PacketWrite1    (pak, 0);
         PacketWrite1    (pak, 0);
     }
-    SnacMetaSend    (conn, pak);
+    SnacMetaSend    (serv, pak);
 }
 
 /*
  * CLI_METASETABOUT - SNAC(15,2) - 2000/1030
  */
-void SnacCliMetasetabout (Connection *conn, const char *text)
+void SnacCliMetasetabout (Connection *serv, const char *text)
 {
     Packet *pak;
 
-    pak = SnacMetaC (conn, 2000, META_SET_ABOUT_INFO, 0);
+    pak = SnacMetaC (serv, 2000, META_SET_ABOUT_INFO, 0);
     PacketWriteLNTS (pak, c_out (text));
-    SnacMetaSend    (conn, pak);
+    SnacMetaSend    (serv, pak);
 }
 
 /*
  * CLI_METASETMORE - SNAC(15,2) - 2000/1021
  */
-void SnacCliMetasetmore (Connection *conn, Contact *cont)
+void SnacCliMetasetmore (Connection *serv, Contact *cont)
 {
     Packet *pak;
     
-    pak = SnacMetaC (conn, 2000, META_SET_MORE_INFO, 0);
+    pak = SnacMetaC (serv, 2000, META_SET_MORE_INFO, 0);
     if (cont->meta_more)
     {
         PacketWrite2    (pak, cont->meta_more->age);
@@ -2507,59 +2530,59 @@ void SnacCliMetasetmore (Connection *conn, Contact *cont)
         PacketWrite1    (pak, 0);
         PacketWrite1    (pak, 0);
     }
-    SnacMetaSend    (conn, pak);
+    SnacMetaSend    (serv, pak);
 }
 
 /*
  * CLI_METASETPASS - SNAC(15,2) - 2000/1070
  */
-void SnacCliMetasetpass (Connection *conn, const char *newpass)
+void SnacCliMetasetpass (Connection *serv, const char *newpass)
 {
     Packet *pak;
     
-    pak = SnacMetaC (conn, 2000, 1070, 0);
+    pak = SnacMetaC (serv, 2000, 1070, 0);
     PacketWriteLNTS (pak, c_out (newpass));
-    SnacMetaSend    (conn, pak);
+    SnacMetaSend    (serv, pak);
 }
 
 /*
  * CLI_METAREQINFO - SNAC(15,2) - 2000/1202
  */
-UDWORD SnacCliMetareqmoreinfo (Connection *conn, Contact *cont)
+UDWORD SnacCliMetareqmoreinfo (Connection *serv, Contact *cont)
 {
     Packet *pak;
     UDWORD ref;
 
-    pak = SnacMetaC (conn, 2000, 1202, 0);
+    pak = SnacMetaC (serv, 2000, 1202, 0);
     ref = pak->ref;
     PacketWrite4    (pak, cont->uin);
-    SnacMetaSend    (conn, pak);
+    SnacMetaSend    (serv, pak);
     return ref;
 }
 
 /*
  * CLI_METAREQINFO - SNAC(15,2) - 2000/1232
  */
-UDWORD SnacCliMetareqinfo (Connection *conn, Contact *cont)
+UDWORD SnacCliMetareqinfo (Connection *serv, Contact *cont)
 {
     Packet *pak;
     UDWORD ref;
 
-    pak = SnacMetaC (conn, 2000, META_REQ_INFO, 0);
+    pak = SnacMetaC (serv, 2000, META_REQ_INFO, 0);
     ref = pak->ref;
     PacketWrite4    (pak, cont->uin);
-    SnacMetaSend    (conn, pak);
+    SnacMetaSend    (serv, pak);
     return ref;
 }
 
 /*
  * CLI_SEARCHBYPERSINF - SNAC(15,2) - 2000/1375
  */
-void SnacCliSearchbypersinf (Connection *conn, const char *email, const char *nick, const char *name, const char *surname)
+void SnacCliSearchbypersinf (Connection *serv, const char *email, const char *nick, const char *name, const char *surname)
 {
     Packet *pak;
 
-    pak = SnacMetaC  (conn, 2000, META_SEARCH_PERSINFO, 0);
+    pak = SnacMetaC  (serv, 2000, META_SEARCH_PERSINFO, 0);
     PacketWrite2     (pak, 320); /* key: first name */
     PacketWriteLLNTS (pak, c_out (name));
     PacketWrite2     (pak, 330); /* key: last name */
@@ -2568,45 +2591,45 @@ void SnacCliSearchbypersinf (Connection *conn, const char *email, const char *ni
     PacketWriteLLNTS (pak, c_out (nick));
     PacketWrite2     (pak, 350); /* key: email address */
     PacketWriteLLNTS (pak, c_out (email));
-    SnacMetaSend     (conn, pak);
+    SnacMetaSend     (serv, pak);
 }
 
 /*
  * CLI_SEARCHBYMAIL - SNAC(15,2) - 2000/{1395,1321}
  */
-void SnacCliSearchbymail (Connection *conn, const char *email)
+void SnacCliSearchbymail (Connection *serv, const char *email)
 {
     Packet *pak;
 
-    pak = SnacMetaC  (conn, 2000, META_SEARCH_EMAIL, 0);
+    pak = SnacMetaC  (serv, 2000, META_SEARCH_EMAIL, 0);
     PacketWrite2     (pak, 350); /* key: email address */
     PacketWriteLLNTS (pak, c_out (email));
-    SnacMetaSend     (conn, pak);
+    SnacMetaSend     (serv, pak);
 }
 
 /*
  * CLI_SEARCHRANDOM - SNAC(15,2) - 2000/1870
  */
-UDWORD SnacCliSearchrandom (Connection *conn, UWORD group)
+UDWORD SnacCliSearchrandom (Connection *serv, UWORD group)
 {
     Packet *pak;
     UDWORD ref;
 
-    pak = SnacMetaC (conn, 2000, META_SEARCH_RANDOM, 0);
+    pak = SnacMetaC (serv, 2000, META_SEARCH_RANDOM, 0);
     ref = pak->ref;
     PacketWrite2    (pak, group);
-    SnacMetaSend    (conn, pak);
+    SnacMetaSend    (serv, pak);
     return ref;
 }
 
 /*
  * CLI_SETRANDOM - SNAC(15,2) - 2000/1880
  */
-void SnacCliSetrandom (Connection *conn, UWORD group)
+void SnacCliSetrandom (Connection *serv, UWORD group)
 {
     Packet *pak;
 
-    pak = SnacMetaC (conn, 2000, META_SET_RANDOM, conn->connect & CONNECT_OK ? 0 : 0x4242);
+    pak = SnacMetaC (serv, 2000, META_SET_RANDOM, serv->connect & CONNECT_OK ? 0 : 0x4242);
     PacketWrite2    (pak, group);
     if (group)
     {
@@ -2614,26 +2637,26 @@ void SnacCliSetrandom (Connection *conn, UWORD group)
         PacketWriteB4 (pak, 0);
         PacketWriteB4 (pak, 0);
         PacketWriteB4 (pak, 0);
-        PacketWrite1  (pak, conn->assoc && conn->assoc->connect & CONNECT_OK
-                            ? conn->assoc->status : 0);
-        PacketWrite2  (pak, conn->assoc && conn->assoc->connect & CONNECT_OK
-                            ? conn->assoc->ver : 0);
+        PacketWrite1  (pak, serv->assoc && serv->assoc->connect & CONNECT_OK
+                            ? serv->assoc->status : 0);
+        PacketWrite2  (pak, serv->assoc && serv->assoc->connect & CONNECT_OK
+                            ? serv->assoc->ver : 0);
         PacketWriteB4 (pak, 0);
         PacketWriteB4 (pak, 0x00005000);
         PacketWriteB4 (pak, 0x00000300);
         PacketWrite2  (pak, 0);
     }
-    SnacMetaSend (conn, pak);
+    SnacMetaSend (serv, pak);
 }
 
 /*
  * CLI_SEARCHWP - SNAC(15,2) - 2000/1331
  */
-void SnacCliSearchwp (Connection *conn, const MetaWP *wp)
+void SnacCliSearchwp (Connection *serv, const MetaWP *wp)
 {
     Packet *pak;
 
-    pak = SnacMetaC (conn, 2000, META_SEARCH_WP, 0);
+    pak = SnacMetaC (serv, 2000, META_SEARCH_WP, 0);
     PacketWriteLNTS    (pak, c_out (wp->first));
     PacketWriteLNTS    (pak, c_out (wp->last));
     PacketWriteLNTS    (pak, c_out (wp->nick));
@@ -2658,13 +2681,13 @@ void SnacCliSearchwp (Connection *conn, const MetaWP *wp)
     PacketWriteB2      (pak, 0);    /* homepage category); */
     PacketWriteLNTS    (pak, NULL); /* description); */
     PacketWrite1       (pak, wp->online);
-    SnacMetaSend (conn, pak);
+    SnacMetaSend (serv, pak);
 }
 
 /*
  * CLI_SENDSMS - SNAC(15,2) - 2000/5250
  */
-void SnacCliSendsms (Connection *conn, const char *target, const char *text)
+void SnacCliSendsms (Connection *serv, const char *target, const char *text)
 {
     Packet *pak;
     char buf[2000], tbuf[100];
@@ -2675,9 +2698,9 @@ void SnacCliSendsms (Connection *conn, const char *target, const char *text)
              "<text>%s (%ld www.mICQ.org)</text><codepage>1252</codepage><senders_UIN>%ld</senders_UIN>"
              "<senders_name>%s</senders_name><delivery_receipt>Yes</delivery_receipt>"
              "<time>%s</time></icq_sms_message>",
-             target, text, conn->uin, conn->uin, "mICQ", tbuf);
+             target, text, serv->uin, serv->uin, "mICQ", tbuf);
 
-    pak = SnacMetaC (conn, 2000, META_SEND_SMS, 0);
+    pak = SnacMetaC (serv, 2000, META_SEND_SMS, 0);
     PacketWriteB2      (pak, 1);
     PacketWriteB2      (pak, 22);
     PacketWriteB4      (pak, 0);
@@ -2685,7 +2708,7 @@ void SnacCliSendsms (Connection *conn, const char *target, const char *text)
     PacketWriteB4      (pak, 0);
     PacketWriteB4      (pak, 0);
     PacketWriteTLVStr  (pak, 0, buf);
-    SnacMetaSend (conn, pak);
+    SnacMetaSend (serv, pak);
 }
 
 /*
@@ -2697,11 +2720,11 @@ void SnacCliSendsms (Connection *conn, const char *target, const char *text)
 #define REG_X1 0x28000300
 #define REG_X2 0x9e270000
 #define REG_X3 0x00000302
-void SnacCliRegisteruser (Connection *conn)
+void SnacCliRegisteruser (Connection *serv)
 {
     Packet *pak;
     
-    pak = SnacC (conn, 23, 4, 0, 0);
+    pak = SnacC (serv, 23, 4, 0, 0);
     PacketWriteTLV (pak, 1);
     PacketWriteB4 (pak, 0);
     PacketWriteB4 (pak, REG_X1);
@@ -2713,9 +2736,9 @@ void SnacCliRegisteruser (Connection *conn)
     PacketWriteB4 (pak, 0);
     PacketWriteB4 (pak, 0);
     PacketWriteB4 (pak, 0);
-    PacketWriteLNTS (pak, c_out (conn->passwd));
+    PacketWriteLNTS (pak, c_out (serv->passwd));
     PacketWriteB4 (pak, REG_X2);
     PacketWriteB4 (pak, REG_X3);
     PacketWriteTLVDone (pak);
-    SnacSend (conn, pak);
+    SnacSend (serv, pak);
 }
