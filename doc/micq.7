@@ -780,7 +780,7 @@ Example: tcl puts "hello world"
 .BI tclscript \ file
 Run TCL script from file
 .IR file .
-.TP
+.PP
 The following TCL commands are introduced by mICQ that let you control mICQ
 from within the TCL environment. To avoid namespace pollution with the
 original TCL commands all mICQ TCL commands are a subcommand of the TCL
@@ -797,13 +797,13 @@ is an optional filter. If you don't specify a filter, the hook will catch
 all incoming messages.  You can install as many reception hooks as you
 want. If a hook exists for the given contact already, the existing hook is
 updated and the procedure returns the former command.
-
+.sp
 Only simple text messages are processed. Use the event hook for reception
 of other message types.
-
+.sp
 Whenever a message is received by mICQ, the given command will be run with
 two arguments provided: the sender's UIN and the message text.
-
+.sp
 Note: This function is provided for convenience. Event hooks (described
 below) can do the same job in a more generic way, but they have no filter
 feature.
@@ -819,7 +819,7 @@ Install event hook.
 is the TCL command to be run upon events. If an event hook existed already
 it's command will be returned.  In contrary to message hooks only a single
 event hook can exist.  Consequent calls will override the old hook.
-
+.sp
 The command will be run with a variable number of arguments provided.  The
 first argument always is the type of event encountered. The next arguments
 depend on the event type. The following list explains all events. The bold
@@ -876,7 +876,7 @@ These TCL variables are defined. You can overwrite them but you will lose the or
 mICQ version string
 .TP
 .BI micq_basedir 
-Base directory (same as mICQ's -b switch)
+Base directory (same as mICQ's \-b switch)
 .TP
 .BI micq_uin
 List of your own UINs
