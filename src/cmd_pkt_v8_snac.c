@@ -1746,6 +1746,21 @@ void SnacCliMetasetpass (Connection *conn, const char *newpass)
 }
 
 /*
+ * CLI_METAREQINFO - SNAC(15,2) - 2000/1202
+ */
+UDWORD SnacCliMetareqmoreinfo (Connection *conn, Contact *cont)
+{
+    Packet *pak;
+    UDWORD ref;
+
+    pak = SnacMetaC (conn, 2000, 1202, 0);
+    ref = pak->ref;
+    PacketWrite4    (pak, cont->uin);
+    SnacMetaSend    (conn, pak);
+    return ref;
+}
+
+/*
  * CLI_METAREQINFO - SNAC(15,2) - 2000/1232
  */
 UDWORD SnacCliMetareqinfo (Connection *conn, Contact *cont)
@@ -1795,13 +1810,16 @@ void SnacCliSearchbymail (Connection *conn, const char *email)
 /*
  * CLI_SEARCHRANDOM - SNAC(15,2) - 2000/1870
  */
-void SnacCliSearchrandom (Connection *conn, UWORD group)
+UDWORD SnacCliSearchrandom (Connection *conn, UWORD group)
 {
     Packet *pak;
+    UDWORD ref;
 
     pak = SnacMetaC (conn, 2000, META_SEARCH_RANDOM, 0);
+    ref = pak->ref;
     PacketWrite2    (pak, group);
     SnacMetaSend    (conn, pak);
+    return ref;
 }
 
 /*

@@ -340,11 +340,13 @@ void CmdPktCmdRandSet (Connection *conn, UDWORD group)
 /*
  * CMD_RAND_SEARCH - search a random user from given chat group.
  */
-void CmdPktCmdRandSearch (Connection *conn, UDWORD group)
+UDWORD CmdPktCmdRandSearch (Connection *conn, UDWORD group)
 {
     Packet *pak = PacketCv5 (conn, CMD_RAND_SEARCH);
+    UDWORD ref = pak->ref;
     PacketWrite4 (pak, group);
     PacketEnqueuev5 (pak, conn);
+    return ref;
 }
 
 /*
