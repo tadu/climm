@@ -668,6 +668,46 @@ static void rl_analyze_ucs (wint_tt ucs, const char **display, UWORD *columns)
 }
 
 /*
+ * Determine width and correct display for given (UTF8) string
+ */
+strc_t ReadLineAnalyzeWidth (const char *text, UWORD *width)
+{
+    static str_s str = { NULL, 0, 0 };
+    wchar_tt ucs;
+    UWORD twidth, swidth = 0;
+    const char *dis;
+    int off = 0;
+    str_s in;
+    
+    in.txt = (char *)text;
+    in.len = strlen (text);
+    in.max = 0;
+    s_init (&str, "", 100);
+    
+    for (off = 0; off < in.len; )
+    {
+        ucs = ConvGetUTF8 (&in, &off);
+        rl_analyze_ucs (ucs, &dis, &twidth);
+        swidth += twidth;
+        s_cat (&str, dis);
+    }
+    *width = swidth;
+    return &str;
+}
+
+const char *ReadLinePrintWidth (const char *text, const char *left, const char *right, UWORD *width)
+{
+    UWORD pwidth = *width, twidth;
+    strc_t txt;
+    
+    txt = ReadLineAnalyzeWidth (text, &twidth);
+    if (twidth > pwidth)
+        *width = pwidth = twidth;
+    return s_sprintf ("%s%s%s%*.*s", left, txt->txt, right, pwidth - twidth, pwidth - twidth, "");
+}
+
+
+/*
  * Insert a given unicode codepoint
  */
 static void rl_insert (wint_tt ucs)
