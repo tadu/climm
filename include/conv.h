@@ -39,5 +39,6 @@ const char *ConvUTF8       (UDWORD codepoint);
 #define ENC_SJIS    0x05  /* Windows Shift-JIS */
 #define ENC_KOI8    0x06
 #define ENC_WIN1251 0x07  /* Windows code page 1251 */
+#define ENC_LATIN1b 0x08  /* also convert 0xfe */
 
 #endif /* MICQ_UTIL_CONV */

@@ -12,7 +12,7 @@
 #include "preferences.h"
 
 #ifdef ENABLE_UTF8
-#define c_pin(x) ConvToUTF8 (x, ENC_LATIN1)
+#define c_pin(x) ConvToUTF8 (x, ENC_LATIN1b)
 #else
 #define c_pin(x) x
 #endif

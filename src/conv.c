@@ -33,7 +33,7 @@ UBYTE ConvEnc (const char *enc)
 
     if (!conv_encs || !conv_nr)
     {
-        conv_encs = calloc (sizeof (enc_t), conv_nr = 10);
+        conv_encs = calloc (sizeof (enc_t), conv_nr = 15);
         conv_encs[0].enc = strdup ("none");
         conv_encs[1].enc = strdup ("utf-8");
         conv_encs[2].enc = strdup ("iso-8859-1");
@@ -42,6 +42,7 @@ UBYTE ConvEnc (const char *enc)
         conv_encs[5].enc = strdup ("windows-1251");
         conv_encs[6].enc = strdup ("euc-jp");
         conv_encs[7].enc = strdup ("shift-jis");
+        conv_encs[8].enc = strdup ("iso-8859-1"); /* this is dupe (!) */
     }
     for (nr = 0; conv_encs[nr].enc; nr++)
         if (!strcasecmp (conv_encs[nr].enc, enc))
@@ -50,7 +51,7 @@ UBYTE ConvEnc (const char *enc)
 #ifdef ENABLE_ICONV
     if (nr == conv_nr - 1)
     {
-        enc_t *new = realloc (conv_encs, sizeof (const char*) * conv_nr + 10);
+        enc_t *new = realloc (conv_encs, sizeof (enc_t) * (conv_nr + 10));
         if (!new)
             return 0;
         conv_nr += 10;
@@ -175,9 +176,9 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
     iconv (conv_encs[enc].to, NULL, NULL, NULL, NULL);
     in = (ICONV_CONST char *)inn;
     out = t;
-    inleft = strlen (in);
+    inleft = (enc != ENC_LATIN1b && strchr (in, 0xfe)) ? strchr (in, 0xfe) - in : strlen (in);
     outleft = size - 1;
-    while (iconv (conv_encs[enc].to, &in, &inleft, &out, &outleft) == (size_t)(-1))
+    while (iconv (conv_encs[enc].to, &in, &inleft, &out, &outleft) == (size_t)(-1) || *in == (char)0xfe)
     {
         UDWORD rc = errno;
         if (outleft < 10 || rc == E2BIG)
@@ -191,17 +192,24 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
             outleft += 50;
             out = t + done;
         }
-        else if (rc == EILSEQ)
+        else if (*in == (char)0xfe)
         {
-            *out++ = (*in == (char)0xfe) ? 0xfe : '?';
+            *out++ = 0xfe;
             outleft--;
             in++;
-            inleft++;
+            inleft = (enc != ENC_LATIN1b && strchr (in, 0xfe)) ? strchr (in, 0xfe) - in : strlen (in);
         }
-        else /* EINVAL */
+        else if (rc == EINVAL)
         {
             *out++ = '?';
             break;
+        }
+        else /* EILSEQ */
+        {
+            *out++ = '?';
+            outleft--;
+            in++;
+            inleft--;
         }
     }
     *out = '\0';
@@ -226,7 +234,7 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
         ConvEnc ("utf-8");
     if (enc >= conv_nr || !enc)
         return s_sprintf ("<invalid encoding %d>", enc);
-    if (!conv_encs[enc].from)
+    if (!conv_encs[enc].from || !~(long)conv_encs[enc].from)
     {
         conv_encs[enc].from = iconv_open (conv_encs[enc].enc, "utf-8");
         if (conv_encs[enc].from == (iconv_t)(-1))
@@ -235,9 +243,9 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
     iconv (conv_encs[enc].from, NULL, NULL, NULL, NULL);
     in = (ICONV_CONST char *)inn;
     out = t;
-    inleft = strlen (in);
+    inleft = strchr (in, 0xfe) ? strchr (in, 0xfe) - in : strlen (in);
     outleft = size - 1;
-    while (iconv (conv_encs[enc].from, &in, &inleft, &out, &outleft) == (size_t)(-1))
+    while (iconv (conv_encs[enc].from, &in, &inleft, &out, &outleft) == (size_t)(-1) || *in == (char)0xfe)
     {
         UDWORD rc = errno;
         if (outleft < 10 || rc == E2BIG)
@@ -251,17 +259,24 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
             outleft += 50;
             out = t + done;
         }
-        else if (rc == EILSEQ)
+        else if (*in == (char)0xfe)
         {
-            *out++ = (*in == (char)0xfe) ? 0xfe : '?';
+            *out++ = 0xfe;
             outleft--;
             in++;
-            inleft++;
+            inleft = strchr (in, 0xfe) ? strchr (in, 0xfe) - in : strlen (in);
         }
-        else /* EINVAL */
+        else if (rc == EINVAL)
         {
             *out++ = '?';
             break;
+        }
+        else /* EILSEQ */
+        {
+            *out++ = '?';
+            outleft--;
+            in++;
+            inleft--;
         }
     }
     *out = '\0';
