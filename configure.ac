@@ -40,9 +40,11 @@ if test "x$ac_arg_use_iconv" != "xno"; then
   if test "x$ac_arg_use_iconv" = "xauto"; then
     AC_CHECK_FUNC([iconv], [ac_arg_use_iconv=glibc], [ac_arg_use_iconv=none])
   else
-    AC_CHECK_LIB([iconv], [iconv], [ac_arg_use_iconv=iconv], [ac_arg_use_iconv=none])
+    ac_arg_use_iconv=iconv
+    AC_CHECK_LIB([iconv], [iconv],, [ac_arg_use_iconv=none])
     if test "x$ac_arg_use_iconv" = "xnone"; then
-      AC_CHECK_LIB([libiconv], [iconv], [ac_arg_use_iconv=libiconv])
+      ac_arg_use_iconv=libiconv
+      AC_CHECK_LIB([iconv], [libiconv],, [ac_arg_use_iconv=none])
     fi
     if test "x$ac_arg_use_iconv" = "xnone"; then
       AC_CHECK_FUNC([iconv], [ac_arg_use_iconv=glibc])
