@@ -75,9 +75,9 @@ typedef struct Extra_s                 Extra;
 #define DEBUG0PARAM  const char *debugfile, int debugline
 #define DEBUGFOR     , debugfile, debugline
 #define DEBUGNONE    , "", 0
-#define Debug(l,f,...) DebugReal (l, f " {%s:%d}<<{%s:%d}", ## __VA_ARGS__, \
+#define Debug(l,f,...) DebugReal (l, f " {%s:%d}<<{%s:%d}" , ## __VA_ARGS__, \
                                   __FILE__, __LINE__, debugfile, debugline)
-#define DebugH(l,f,...) DebugReal (l, f " {%s:%d}<|", ## __VA_ARGS__, \
+#define DebugH(l,f,...) DebugReal (l, f " {%s:%d}<|" , ## __VA_ARGS__, \
                                    __FILE__, __LINE__)
 #else
 #define DEBUGARGS
