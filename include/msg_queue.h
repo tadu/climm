@@ -16,6 +16,7 @@ struct Event_s
     UBYTE   *info;
     Queuef  *callback;
     Session *sess;
+    UBYTE    flags;
 };
 
 void        QueueInit        (Queue **queue);
@@ -25,6 +26,7 @@ void        QueueEnqueueData (Session *sess, UDWORD seq, UDWORD type,
                               Packet *pak, UBYTE *info, Queuef *callback);
 Event      *QueueDequeue     (UDWORD seq, UDWORD type);
 void        QueueRun         ();
+void        QueueRetry       (UDWORD uin, UDWORD type);
 
 Event      *QueuePeek        ();
 Event      *QueuePop         ();
@@ -41,5 +43,8 @@ const char *QueueType   (UDWORD type);
 #define QUEUE_TYPE_UDP_KEEPALIVE 23
 #define QUEUE_TYPE_SRV_KEEPALIVE 21
 #define QUEUE_TYPE_FLAP          34
+
+#define QUEUE_FLAG_CONSIDERED     1 /* this event has been considered and won't
+                                       be tried again in this queue run */
 
 #endif

@@ -545,6 +545,7 @@ static void TCPDispatchShake (Session *sess)
                 else
 #endif
                     sess->dispatch = &TCPDispatchPeer;
+                QueueRetry (sess->uin, QUEUE_TYPE_TCP_RESEND);
                 return;
             case 0:
                 return;

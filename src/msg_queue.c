@@ -116,11 +116,15 @@ void QueueEnqueue (Event *event)
     }
     else
     {
-        for (iter = queue->head; iter->next &&
-             event->due >= iter->next->event->due; iter = iter->next)
-        {
-           assert (iter->next);
-        }
+        for (iter = queue->head; iter->next; iter = iter->next)
+            if (event->due <= iter->next->event->due)
+                break;
+
+        if (event->flags & QUEUE_FLAG_CONSIDERED)
+            for ( ; iter->next; iter = iter->next)
+                if (event->due != iter->next->event->due)
+                    break;
+
         entry->next = iter->next;
         iter->next = entry;
     }
@@ -197,26 +201,59 @@ Event *QueueDequeue (UDWORD seq, UDWORD type)
             return event;
         }
     }
-    Debug (DEB_QUEUE, i18n (1964, "couldn't dequeue type %d seq %08x"), type, seq);
+    Debug (DEB_QUEUE, i18n (####, "couldn't dequeue type %s seq %08x"),
+           QueueType (type), seq);
     return NULL;
 }
 
 /*
- * Runs over the queue, removes all due events, and calls their callback
- * function.
- * Callback function may re-enqueue them with a later due time.
+ * Delivers all due events by removing them from the queue and calling their
+ * callback function.  Callback function may re-enqueue them, but the event
+ * is not reconsidered even if it is still due.
  */
 void QueueRun ()
 {
     time_t now = time (NULL);
     Event *event;
+    struct QueueEntry *iter;
+    
+    assert (queue);
+    
+    for (iter = queue->head; iter && iter->event->due <= now; iter = iter->next)
+        iter->event->flags &= ~QUEUE_FLAG_CONSIDERED;
     
     while (queue->due <= now)
     {
+        if (queue->head->event->flags & QUEUE_FLAG_CONSIDERED)
+            break;
+
         event = QueuePop ();
+        event->flags |= QUEUE_FLAG_CONSIDERED;
         if (event->callback)
             event->callback (event);
     }
+}
+
+/*
+ * Checks whether there is an event waiting for uin of that type,
+ * and delivers the event with the lowest sequence number
+ */
+void QueueRetry (UDWORD uin, UDWORD type)
+{
+    struct QueueEntry *iter;
+    Event *event = NULL;
+    
+    assert (queue);
+    for (iter = queue->head; iter; iter = iter->next)
+        if (iter->event->uin == uin && iter->event->type == type)
+            if (!event || event->seq > iter->event->seq)
+                event = iter->event;
+    
+    if (event)
+        event = QueueDequeue (event->seq, type);
+    
+    if (event && event->callback)
+        event->callback (event);
 }
 
 /*
