@@ -187,12 +187,12 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
     
     enc &= ~ENC_AUTO;
     if (!conv_nr)
-        ConvEnc ("utf-8");
+        ConvEnc ("UTF-8");
     if (enc >= conv_nr || !enc)
         return s_sprintf ("<invalid encoding %d>", enc);
     if (!conv_encs[enc].to || !~(long)conv_encs[enc].to)
     {
-        conv_encs[enc].to = iconv_open ("utf-8", conv_encs[enc].enc);
+        conv_encs[enc].to = iconv_open ("UTF-8", conv_encs[enc].enc);
         if (conv_encs[enc].to == (iconv_t)(-1))
             return "<invalid encoding unsupported>";
     }
@@ -254,12 +254,12 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
     
     enc &= ~ENC_AUTO;
     if (!conv_nr)
-        ConvEnc ("utf-8");
+        ConvEnc ("UTF-8");
     if (enc >= conv_nr || !enc)
         return s_sprintf ("<invalid encoding %d>", enc);
     if (!conv_encs[enc].from || !~(long)conv_encs[enc].from)
     {
-        conv_encs[enc].from = iconv_open (conv_encs[enc].enc, "utf-8");
+        conv_encs[enc].from = iconv_open (conv_encs[enc].enc, "UTF-8");
         if (conv_encs[enc].from == (iconv_t)(-1))
             return "<invalid encoding unsupported>";
     }
