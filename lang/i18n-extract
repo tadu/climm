@@ -8,15 +8,16 @@ echo "Extracting translations to en.i18n."
 mv en.i18n en.i18n~
 
 cat ../src/*.c \
-    | sed "s,i18n,üi18n,g" | tr ü "\n" | grep "i18n ([0-9#]" \
-    | sed 's, *COLNONE *,"©0",g;s, *COLSERV *,"©1",g;s, *COLCLIENT *,"©2",g;s, *COLMESS *,"©3",g;' \
-    | sed 's, *COLCONTACT *,"©4",g;s, *COLSENT *,"©5",g;s, *COLACK *,"©6",g;' \
-    | sed 's,"",,g' \
-    | sed 's¹i18n *(\([0-9#]*\), *"\(\([^\"]*\(\\.\)*\)*\)").*¹\1:\2¹;s¹^\([0-9]\):¹00\1:¹;s¹^\([0-9][0-9]\):¹0\1:¹' \
+    | sed "s¹i18n¹üi18n¹g" | tr ü "\n" | grep "^i18n ([0-9#]" \
+    | tee /tmp/bla \
+    | sed 's¹ *COLNONE *¹"©0"¹g;s¹ *COLSERV *¹"©1"¹g;s¹ *COLCLIENT *¹"©2"¹g;s¹ *COLMESS *¹"©3"¹g;' \
+    | sed 's¹ *COLCONTACT *¹"©4"¹g;s¹ *COLSENT *¹"©5"¹g;s¹ *COLACK *¹"©6"¹g;' \
+    | sed 's¹""¹¹g' \
+    | sed 's¹i18n *(\([0-9#]*\), *"\(\([^\"]\|\\.\)*\)").*¹\1:\2¹;s¹^\([0-9]\):¹00\1:¹;s¹^\([0-9][0-9]\):¹0\1:¹' \
     | sed 's¹\\n¹¶¹g;s¹\\a¹¹g;s¹\\t¹	¹g;s¹\\"¹"¹g' | sort -n | uniq > en.i18n
 
 cat ../src/*.c \
-    | sed "s,i18n,üi18n,g" | tr ü "\n" | grep "i18n ([0-9#]" \
+    | sed "s¹i18n¹üi18n¹g" | tr ü "\n" | grep "^i18n ([0-9#]" \
     | sed 's¹i18n *(\([0-9#]*\),.*¹\1:¹;s¹^\([0-9]\):¹00\1:¹;s¹^\([0-9][0-9]\):¹0\1:¹' \
     | sort -n | uniq > en.i18n.num
 

@@ -59,9 +59,6 @@ typedef struct
 timeval;
 #endif
 
-static char *Log_Dir = NULL;
-static BOOL Normal_Log = TRUE;
-
 /********************************************
 returns a string describing the status or
 a NULL if no such string exists
@@ -536,78 +533,6 @@ void Word_2_Chars (UBYTE * buf, UWORD num)
     buf[0] = (unsigned char) ((unsigned) num) & 0x00FF;
 }
 
-BOOL Log_Dir_Normal (void)
-{
-    return Normal_Log;
-}
-
-/************************************************************************
-Sets the Log directory to newpath 
-if newpath is null it will set it to a reasonable default
-if newpath doesn't end with a valid directory seperator one is added.
-the path used is returned.
-*************************************************************************/
-const char *Set_Log_Dir (const char *newpath)
-{
-    if (NULL == newpath)
-    {
-        char *path = 0;
-        char *home;
-        Normal_Log = TRUE;
-#ifdef _WIN32
-        path = ".\\";
-#endif
-
-#ifdef __amigaos__
-        path = "PROGDIR:";
-#endif
-
-        home = getenv ("HOME");
-        if (home || !path)
-        {
-            if (!home)
-                home = "";
-            path = malloc (strlen (home) + 2);
-            strcpy (path, home);
-            if (path[strlen (path) - 1] != '/')
-                strcat (path, "/");
-        }
-
-        Log_Dir = path;
-        return path;
-    }
-    else
-    {
-#ifdef _WIN32
-        char sep = '\\';
-#else
-        char sep = '/';
-#endif
-        Normal_Log = FALSE;
-        if (newpath[strlen (newpath) - 1] != sep)
-        {
-            Log_Dir = malloc (strlen (newpath) + 2);
-            sprintf (Log_Dir, "%s%c", newpath, sep);
-        }
-        else
-        {
-            Log_Dir = strdup (newpath);
-        }
-        return Log_Dir;
-    }
-}
-
-/************************************************************************
-Returns the current directory used for logging.  If none has been 
-specified it sets it tobe a reasonable default (~/)
-*************************************************************************/
-const char *Get_Log_Dir (void)
-{
-    if (Log_Dir)
-        return Log_Dir;
-    return Set_Log_Dir (NULL);
-}
-
 /*************************************************************************
  *        Function: log_event
  *        Purpose: Log the event provided to the log with a time stamp.
@@ -623,72 +548,54 @@ int log_event (UDWORD uin, int type, char *str, ...)
     char buf[2048];             /* this should big enough - This holds the message to be logged */
     char buffer[256];
     time_t timeval;
-    const char *path;
-/*    char *home; */
     struct stat statbuf;
 
-    if (!uiG.LogType)
+    if (!uiG.LogLevel)
         return 0;
 
-    if ((3 == uiG.LogType) && (LOG_ONLINE == type))
+    if ((uiG.LogLevel & 2) && (LOG_ONLINE == type))
         return 0;
+
+    if (!uiG.LogPlace)
+    {
+        uiG.LogPlace = malloc (strlen (GetUserBaseDir ()) + 10);
+        strcpy (uiG.LogPlace, GetUserBaseDir ());
+        strcat (uiG.LogPlace, "history/");
+    }
 
     timeval = time (0);
     va_start (args, str);
     sprintf (buf, "\n%-24.24s ", ctime (&timeval));
     vsprintf (&buf[strlen (buf)], str, args);
+    va_end (args);
 
-    path = Get_Log_Dir ();
-    strcpy (buffer, path);
-
-    switch (uiG.LogType)
+    if (uiG.LogPlace[strlen (uiG.LogPlace) - 1] == '/')
     {
-        case 1:
-            strcat (buffer, "micq_log");
-            break;
-        case 2:
-        case 3:
-        default:
-            strcat (buffer, "micq.log");
-            if (-1 == stat (buffer, &statbuf))
-            {
-                if (errno == ENOENT)
-                {
-                    mkdir (buffer, 0700);
-                }
-                else
-                {
-                    return -1;
-                }
-            }
-#ifdef _WIN32
-            strcat (buffer, "\\");
-#else
-            strcat (buffer, "/");
-#endif
-            strcpy (symbuf, buffer);
-            sprintf (&buffer[strlen (buffer)], "%ld.log", uin);
+        if (stat (buffer, &statbuf) == -1)
+        {
+            if (errno == ENOENT)
+                mkdir (buffer, 0700);
+            else
+                return -1;
+        }
+        sprintf (buffer, "%s%ld.log", uiG.LogPlace, uin);
 
 #if HAVE_SYMLINK
-            if (NULL != UIN2nick (uin))
-            {
-                sprintf (&symbuf[strlen (symbuf)], "%s.log", UIN2nick (uin));
-                symlink (buffer, symbuf);
-            }
+        if (UIN2nick (uin))
+        {
+            sprintf (symbuf, "%s%s.log", uiG.LogPlace, UIN2nick (uin));
+            symlink (buffer, symbuf);
+        }
 #endif
-
-
-            break;
     }
-    if ((msgfd = fopen (buffer, "a")) == (FILE *) NULL)
+    else
+        strcpy (buffer, uiG.LogPlace);
+
+    if (!(msgfd = fopen (buffer, "a")))
     {
         fprintf (stderr, "\nCouldn't open %s for logging\n", buffer);
-        return (-1);
+        return -1;
     }
-/*     if ( ! strcasecmp(UIN2nick(uin),"Unknown UIN"))
-         fprintf (msgfd, "\n%-24.24s %s %ld\n%s\n", ctime(&timeval), desc, uin, msg);
-     else
-         fprintf (msgfd, "\n%-24.24s %s %s\n%s\n", ctime(&timeval), desc, UIN2nick(uin), msg);*/
 
     if (strlen (buf))
     {
@@ -701,9 +608,8 @@ int log_event (UDWORD uin, int type, char *str, ...)
         }
         fwrite (">\n", 1, 2, msgfd);
     }
-    va_end (args);
-
     fclose (msgfd);
+
 #if HAVE_CHMOD
     chmod (buffer, 0600);
 #endif
@@ -806,4 +712,41 @@ void ExecScript (char *script, UDWORD uin, long num, char *data)
     free (cmd);
     free (who);
     free (mydata);
+}
+
+/*
+ * Get the base directory of user data.
+ */
+const char *GetUserBaseDir ()
+{
+    static char *dir = 0;
+    char *home;
+
+    if (dir)
+        return (dir);
+
+    home = getenv ("HOME");
+    if (home)
+    {
+        dir = malloc (strlen (home) + 2 + 6);
+        strcpy (dir, home);
+        if (dir[strlen (dir) - 1] != '/')
+            strcat (dir, "/");
+        if (strlen (home))
+            strcat (dir, ".micq/");
+        if (access (dir, R_OK))
+            dir = 0;
+    }
+    if (!dir)
+    {
+        dir = "";
+
+#ifdef _WIN32
+        dir = ".\\";
+#endif
+#if __amigaos__
+        dir = "PROGDIR:";
+#endif
+    }
+    return dir;
 }

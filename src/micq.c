@@ -57,8 +57,10 @@ socks5_state         s5G;
 static int idle_val = 0;
 static int idle_flag = 0;
 
-/*** TCP: message queue ***/
-struct msg_queue *queue = NULL, *tcp_rq = NULL, *tcp_sq = NULL;
+struct msg_queue *queue = NULL;
+#ifdef TCP_COMM
+struct msg_queue *tcp_rq = NULL, *tcp_sq = NULL;
+#endif
 
 void init_global_defaults () {
   /* Initialize User Interface global state */
@@ -72,8 +74,8 @@ void init_global_defaults () {
   uiG.Sound_Str_Online[0]  = 0;
   uiG.Sound_Str_Offline[0] = 0;
   uiG.Current_Status = STATUS_OFFLINE;
-  uiG.Logging  = TRUE;
-  uiG.LogType = 2;
+  uiG.LogLevel = 1;
+  uiG.LogPlace = NULL;
   uiG.auto_resp = FALSE;
   uiG.auto_rep_str_na[0] = 0;
   uiG.auto_rep_str_away[0] = 0;
@@ -88,6 +90,7 @@ void init_global_defaults () {
   uiG.Russian     = FALSE;
   uiG.JapaneseEUC = FALSE;
   uiG.Color       = TRUE;
+  uiG.Funny       = FALSE;
   uiG.Hermit      = FALSE;
   uiG.MicqStartTime = time (NULL);
 #ifdef MSGEXEC
@@ -117,6 +120,7 @@ void init_global_defaults () {
 }
 
 
+#ifdef TCP_COMM
 /* TCP: init function james -- initializes TCP socket for incoming
  * connections Set port to 0 for random port
  */
@@ -165,6 +169,7 @@ SOK_T Init_TCP (int port, FD_T aux)
 
     return sok;
 }
+#endif
 
 /* i18n (59, " ") i18n */
 
@@ -547,7 +552,7 @@ void Usage ()
     M_print (i18n (607, "Usage: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]\n"));
     M_print (i18n (608, "        -v   Turn on verbose Mode (useful for Debugging only)\n"));
     M_print (i18n (609, "        -f   specifies an alternate Config File (default: ~/.micqrc)\n"));
-    M_print (i18n (610, "        -l   specifies an alternate LogFile\n"));
+    M_print (i18n (610, "        -l   specifies an alternate logfile resp. logdir\n"));
     M_print (i18n (611, "        -?   gives this help screen\n\n"));
     exit (0);
 }
@@ -610,13 +615,13 @@ int main (int argc, char *argv[])
             {
                 i++;            /* skip the argument to f */
                 Set_rcfile (argv[i]);
-                M_print (i18n (614, "The config file for this session is \"%s\"\n"), argv[i]);
+                M_print (i18n (614, "Using config file \"%s\"\n"), argv[i]);
             }
             else if ((argv[i][1] == 'l') || (argv[i][1] == 'L'))
             {
                 i++;
-                M_print (i18n (615, "The logging directory for this session is \"%s\"\n"),
-                         Set_Log_Dir (argv[i]));
+                M_print (i18n (615, "Logging to \"%s\"\n"), argv[i]);
+                uiG.LogPlace = argv[i];
             }
             else if ((argv[i][1] == '?') || (argv[i][1] == 'h'))
             {

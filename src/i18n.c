@@ -9,6 +9,7 @@
 
 #include "micq.h"
 #include "i18n.h"
+#include "util.h"
 #include "util_ui.h"
 #include <string.h>
 
@@ -16,17 +17,22 @@
 
 char *i18nStrings[i18nSLOTS] = { 0 };
 
+static int i18nAdd (int i18nf, int debug, int *res);
+
 /*
  * Opens and reads the localization file defined by parameter or the
  * environment variables LANG, LC_ALL, LC_MESSAGES.
  */
 int i18nOpen (const char *loc)
 {
-    char buf[2048];
-    int i, j = 0, debug = 0;
+    int j = 0, debug = 0, res = 1;
     FD_T i18nf;
-    char *home;
 
+    if (*loc == '+')
+    {
+        res = 0;
+        loc++;
+    }
     if (!strncmp (loc, "debug", 5))
     {
         debug = 1;
@@ -36,14 +42,10 @@ int i18nOpen (const char *loc)
     if (!strcmp (loc, "!") || !strcmp (loc, "auto") || !strcmp (loc, "default"))
         loc = NULL;
 
-    if (!loc)
-        loc = getenv ("LANG");
-    if (!loc)
-        loc = getenv ("LC_ALL");
-    if (!loc)
-        loc = getenv ("LC_MESSAGES");
-    if (!loc)
-        return 0;
+    if (!loc)   loc = getenv ("LANG");
+    if (!loc)   loc = getenv ("LC_ALL");
+    if (!loc)   loc = getenv ("LC_MESSAGES");
+    if (!loc)   return 0;
 
     if (!strcmp (loc, "C"))
     {
@@ -51,24 +53,56 @@ int i18nOpen (const char *loc)
         return 0;
     }
 
-    home = getenv ("HOME") ? getenv ("HOME") : "";
+#define i18nTry(x,y,z,a) if ((i18nf = M_fdopen (x,y,z,a)) != -1) j += i18nAdd (i18nf, debug, &res);
 
-        i18nf = M_fdopen (PREFIX "/share/micq/%s.i18n", loc);
-    if (i18nf == -1)
-        i18nf = M_fdopen ("%s/.micq/%s.i18n", home, loc);
-    if (i18nf == -1 && strchr (loc, '_'))
-        i18nf = M_fdopen (PREFIX "/share/micq/%.*s.i18n", strrchr (loc, '_') - loc, loc);
-    if (i18nf == -1 && strchr (loc, '_'))
-        i18nf = M_fdopen ("%s/.micq/%.*s.i18n", home, strrchr (loc, '_') - loc, loc);
-    if (i18nf == -1 && strchr (loc, '_'))
-        i18nf = M_fdopen (PREFIX "/share/micq/%.*s.i18n", strchr (loc, '_') - loc, loc);
-    if (i18nf == -1 && strchr (loc, '_'))
-        i18nf = M_fdopen ("%s/.micq/%.*s.i18n", home, strchr (loc, '_') - loc, loc);
-    if (i18nf == -1)
-        return -1;
+    if (*loc == '/')
+    {
+        i18nTry (loc, "", "", "");
+    }
+    else
+    {
+        if (uiG.Funny)
+        {
+            i18nTry ("%s/i18n/%s_fun.i18n", GetUserBaseDir (), loc, "");
+            if (strchr (loc, '_'))
+                i18nTry ("%s/i18n/%.*s_fun.i18n", GetUserBaseDir (), strrchr (loc, '_') - loc, loc);
+            if (strchr (loc, '_') && strchr (loc, '_') != strrchr (loc, '_'))
+                i18nTry ("%s/i18n/%.*s_fun.i18n", GetUserBaseDir (), strchr (loc, '_') - loc, loc);
+            i18nTry (PREFIX "/share/micq/%s_fun.i18n", loc, "", "");
+            if (strchr (loc, '_'))
+                i18nTry (PREFIX "/share/micq/%.*s_fun.i18n", strrchr (loc, '_') - loc, loc, "");
+            if (strchr (loc, '_') && strchr (loc, '_') != strrchr (loc, '_'))
+                i18nTry (PREFIX "/share/micq/%.*s_fun.i18n", strchr (loc, '_') - loc, loc, "");
+        }
 
-    i18nClose ();
+        i18nTry ("%s/i18n/%s.i18n", GetUserBaseDir (), loc, "");
+        if (strchr (loc, '_'))
+            i18nTry ("%s/i18n/%.*s.i18n", GetUserBaseDir (), strrchr (loc, '_') - loc, loc);
+        if (strchr (loc, '_') && strchr (loc, '_') != strrchr (loc, '_'))
+            i18nTry ("%s/i18n/%.*s.i18n", GetUserBaseDir (), strchr (loc, '_') - loc, loc);
+        i18nTry (PREFIX "/share/micq/%s.i18n", loc, "", "");
+        if (strchr (loc, '_'))
+            i18nTry (PREFIX "/share/micq/%.*s.i18n", strrchr (loc, '_') - loc, loc, "");
+        if (strchr (loc, '_') && strchr (loc, '_') != strrchr (loc, '_'))
+            i18nTry (PREFIX "/share/micq/%.*s.i18n", strchr (loc, '_') - loc, loc, "");
+    }
 
+    return j ? j : -1;
+}
+
+/*
+ * Adds i18n strings from given file descriptor.
+ */
+int i18nAdd (int i18nf, int debug, int *res)
+{
+    char buf[2048];
+    int j = 0;
+    
+    if (*res)
+    {
+        i18nClose ();
+        *res = 0;
+    }
     while (M_fdnreadln (i18nf, buf, sizeof (buf)) != -1)
     {
         int i;
@@ -76,8 +110,9 @@ int i18nOpen (const char *loc)
 
         i = strtol (buf, &p, 10);
 
-        if (p == buf || i < 0 || i >= i18nSLOTS)
+        if (p == buf || i < 0 || i >= i18nSLOTS || i18nStrings[i])
             continue;
+        
         if (debug)
             i18nStrings[i] = p = strdup (buf);
         else

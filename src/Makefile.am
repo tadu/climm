@@ -21,7 +21,7 @@ lang:
 	@rm -f *.c~ ../lang/*.i18n~
 	@../lang/i18n-extract
 	@rm -rf ../lang/*.i18n~
-	@../lang/i18n-template
+#	@../lang/i18n-template
 
 buildmark.o: force
 

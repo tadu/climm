@@ -35,7 +35,7 @@ static jump_f CmdUserSound;
 static jump_f CmdUserSoundOnline;
 static jump_f CmdUserSoundOffline;
 static jump_f CmdUserAutoaway;
-static jump_f CmdUserColor;
+static jump_f CmdUserSet;
 static jump_f CmdUserClear;
 static jump_f CmdUserTogIgnore;
 static jump_f CmdUserTogVisible;
@@ -58,7 +58,7 @@ static void CmdUserProcess (SOK_T sok, const char *command, int *idle_val, int *
 
 static jump_t jump[] = {
     { &CmdUserRandom,        "rand",         NULL, 0,   0 },
-    { &CmdUserRandomSet,     "set",          NULL, 0,   0 },
+    { &CmdUserRandomSet,     "setr",         NULL, 0,   0 },
     { &CmdUserHelp,          "help",         NULL, 0,   0 },
     { &CmdUserInfo,          "info",         NULL, 0,   0 },
     { &CmdUserTrans,         "trans",        NULL, 0,   0 },
@@ -77,11 +77,11 @@ static jump_t jump[] = {
     { &CmdUserStatusShort,   "w",            NULL, 2,   1 },
     { &CmdUserStatusShort,   "e",            NULL, 2,   0 },
     { &CmdUserStatusSelf,    "s",            NULL, 0,   0 },
+    { &CmdUserSet,           "set",          NULL, 0,   0 },
     { &CmdUserSound,         "sound",        NULL, 2,   0 },
     { &CmdUserSoundOnline,   "soundonline",  NULL, 2,   0 },
     { &CmdUserSoundOffline,  "soundoffline", NULL, 2,   0 },
     { &CmdUserAutoaway,      "autoaway",     NULL, 2,   0 },
-    { &CmdUserColor,         "color",        NULL, 2,   0 },
     { &CmdUserChange,        "change",       NULL, 0,  -1 },
     { &CmdUserChange,        "online",       NULL, 1,   0 },
     { &CmdUserChange,        "away",         NULL, 1,   1 },
@@ -1422,21 +1422,78 @@ JUMP_F(CmdUserAutoaway)
     return 0;
 }
 
+/* i18n (98, " ") i18n */
 
 /*
- * Toggles color on/off.
+ * Toggles simple options.
  */
-JUMP_F(CmdUserColor)
+JUMP_F(CmdUserSet)
 {
-    uiG.Color = !uiG.Color;
-    if (uiG.Color)
+    int quiet = 0;
+    char *arg1;
+    
+    arg1 = strtok (args, " \t");
+    
+    if (arg1 && !strcmp (arg1, "quiet"))
     {
-        M_print (i18n (662, "Color is " COLMESS "%s" COLNONE ".\n"), i18n (85, "on"));
+        quiet = 1;
+        arg1 = strtok (NULL, " \t");
+    }
+    
+    if (!arg1 || !strcmp (arg1, "help") || !strcmp (arg1, "?"))
+    {
+        M_print (i18n (820, "%s <option> [on|off] - control simple options.\n"), CmdUserLookupName ("set"));
+        M_print (i18n (822, "    color: use colored text output.\n"));
+        M_print (i18n (815, "    funny: use funny messages for output.\n"));
+    }
+    else if (!strcmp (arg1, "color"))
+    {
+        arg1 = strtok (NULL, "\n");
+        if (arg1)
+        {
+            if (!strcmp (arg1, "on") || !strcmp (arg1, i18n (85, "on")))
+            {
+                uiG.Color = TRUE;
+            }
+            else if (!strcmp (arg1, "off") || !strcmp (arg1, i18n (86, "off")))
+            {
+                uiG.Color = FALSE;
+            }
+        }
+
+        if (!quiet)
+        {
+            if (uiG.Color)
+                M_print (i18n (662, "Color is " COLMESS "%s" COLNONE ".\n"), i18n (85, "on"));
+            else
+                M_print (i18n (662, "Color is " COLMESS "%s" COLNONE ".\n"), i18n (86, "off"));
+        }
+    }
+    else if (!strcmp (arg1, "funny"))
+    {
+        arg1 = strtok (NULL, "\n");
+        if (arg1)
+        {
+            if (!strcmp (arg1, "on") || !strcmp (arg1, i18n (85, "on")))
+            {
+                uiG.Funny = TRUE;
+            }
+            else if (!strcmp (arg1, "off") || !strcmp (arg1, i18n (86, "off")))
+            {
+                uiG.Funny = FALSE;
+            }
+        }
+        
+        if (!quiet)
+        {
+            if (uiG.Funny)
+                M_print (i18n (821, "Funny messages are " COLMESS "%s" COLNONE ".\n"), i18n (85, "on"));
+            else
+                M_print (i18n (821, "Funny messages are " COLMESS "%s" COLNONE ".\n"), i18n (86, "off"));
+        }
     }
     else
-    {
-        M_print (i18n (662, "Color is " COLMESS "%s" COLNONE ".\n"), i18n (86, "off"));
-    }
+        M_print (i18n (816, "Unknown option %s to set command.\n"), arg1);
     return 0;
 }
 

@@ -95,7 +95,7 @@
 095:SOCKS5 port (in general 1080):
 096:SOCKS5 username (type 0 if you don't need authentification):
 097:SOCKS5 password:
-098:©4"No_Log" is deprecated.¶Use "LogType 0" Instead.¶©0
+098: 
 099:Unknown language.
 100:None
 101:Arabic
@@ -607,12 +607,12 @@
 607:Usage: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]¶
 608:        -v   Turn on verbose Mode (useful for Debugging only)¶
 609:        -f   specifies an alternate Config File (default: ~/.micqrc)¶
-610:        -l   specifies an alternate LogFile¶
+610:        -l   specifies an alternate logfile resp. logdir¶
 611:        -?   gives this help screen¶¶
 612:This program was made without any help from Mirabilis or their consent.¶
 613:No reverse engineering or decompilation of any Mirabilis code took place to make this program.¶
-614:The config file for this session is "%s"¶
-615:The logging directory for this session is "%s"¶
+614:Using config file "%s"¶
+615:Logging to "%s"¶
 616:Started BeOS InputThread¶\r
 617:Memory exhausted!!¶
 618:¶Total entries %d¶
@@ -776,9 +776,47 @@
 776:Outgoing TCP packet:
 777:The port that will be used for tcp (partially implemented) is %d¶
 778:Incoming TCP packet:
+779:Opening TCP connection to %s.¶
+780:Error creating socket.¶
+781:Trying %s:%d...
+782: failure.¶Trying %s:%d...
+783: failure.¶
+784:Error connecting to remote user.¶
+785: success.¶
+786:Error establishing a direct TCP connection.¶
+787:Error sending TCP packet.¶
+788:Error receiving TCP packet.
+789:Received malformed packet.
+790:Sending init ACK...¶
+791:Error sending TCP packet.
+792:Establishing a direct TCP connection...¶
+793:Port: %lu¶
+794:Uin : %lu¶
+795:SID : 0x%08X¶
+796:Error initiating a TCP connection.¶
+797:User %s%s%s closed socket.¶
+798:Message sent direct to %s%s%s!¶
+799:Auto-response message for 
 800:Change the working language to <lang>.
 801:Displays a list of people on your contact list in a screen wide format.
 802:SoundOnline cmd
 803:SoundOffline cmd
 804:SoundOnline
 805:SoundOffline
+806:Received ACK for message (seq %04X) from %s
+807:Cancelled incoming message (seq %04X) from %s
+808: Typ    = %04x	
+809:Unable to retrieve auto-response message for 
+810:¶Resending TCP message with SEQ num %04X to %s.	
+811: (Attempt #%d.)
+812:¶TCP timeout; sending message to 
+813: after %d send attempts.
+814:Sent auto-response message to %s%s%s.¶
+815:    funny: use funny messages for output.¶
+816:Unknown option %s to set command.¶
+817:Warning: ReceiveScript Feature not enabled!¶
+818:Warning: Deprecated syntax found in rc file!¶    Please update or "save" the rc file and check for changes.¶
+819:Can't find rc file %s - using old location %s¶
+820:%s <option> [on|off] - control simple options.¶
+821:Funny messages are ©3%s©0.¶
+822:    color: use colored text output.¶

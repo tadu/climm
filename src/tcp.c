@@ -58,11 +58,11 @@ int Open_TCP_Connection (CONTACT_PTR cont)
     cont->sok = socket(AF_INET, SOCK_STREAM, 0);
   
     if (uiG.Verbose)
-        M_print ("Öffne TCP-Verbindung zu %s.\n", cont->nick);
+        M_print (i18n (779, "Opening TCP connection to %s.\n") , cont->nick);
 
     if (cont->sok <= 0)
     {
-        M_print ("Fehler: Konnte socket nicht erzeugen.\n");
+        M_print (i18n (780, "Error creating socket.\n"));
         return -1;
     }
 
@@ -73,7 +73,7 @@ int Open_TCP_Connection (CONTACT_PTR cont)
     sin.sin_addr.s_addr = Chars_2_DW (cont->current_ip);
 
     if (uiG.Verbose)
-        M_print ("Versuche es mit %s:%d...", inet_ntoa (sin.sin_addr), cont->port);
+        M_print (i18n (781, "Trying %s:%d..."), inet_ntoa (sin.sin_addr), cont->port);
 
     if (connect (cont->sok, (struct sockaddr *) &sin, 
                           sizeof (struct sockaddr)) < 0)
@@ -82,7 +82,7 @@ int Open_TCP_Connection (CONTACT_PTR cont)
         cont->sok = socket (AF_INET, SOCK_STREAM, 0);
         if (cont->sok <= 0)
         {
-            M_print ("Fehler: Konnte socket nicht erzeugen.\n");
+            M_print (i18n (780, "Error creating socket.\n"));
             return -1;
         }
     
@@ -91,20 +91,20 @@ int Open_TCP_Connection (CONTACT_PTR cont)
         sin.sin_addr.s_addr = Chars_2_DW (cont->other_ip);
 
         if (uiG.Verbose)
-            M_print (" fehlgeschlagen.\nVersuche es mit %s:%d...", inet_ntoa (sin.sin_addr), cont->port);
+            M_print (i18n (782, " failure.\nTrying %s:%d..."), inet_ntoa (sin.sin_addr), cont->port);
 
         if (connect (cont->sok, (struct sockaddr *) &sin,
                             sizeof (struct sockaddr)) < 0)
         {
              /* Internal didn't work either.. :(  */
              if (uiG.Verbose)
-                 M_print (" fehlgeschlagen.\n");
-             M_print("Fehler beim Aufbau der Verbindung zum fernen Benutzer.\n");
+                 M_print (i18n (783, " failure.\n"));
+             M_print (i18n (784, "Error connecting to remote user.\n"));
              return -1;
         }
     }
     if (uiG.Verbose)
-        M_print (" erfolgreich.\n");
+        M_print (i18n (785, " success.\n"));
     return 0;
 }
 
@@ -255,7 +255,7 @@ void Send_TCP_Init (UDWORD dest_uin)
     {
         if (Open_TCP_Connection (cont) == -1)
         {
-            M_print ("Fehler beim Aufbau der direkten TCP-Verbindung.\n");
+            M_print (i18n (786, "Error establishing a direct TCP connection.\n"));
             return;
         }
     }
@@ -263,7 +263,7 @@ void Send_TCP_Init (UDWORD dest_uin)
     if (Send_TCP_Pak (cont->sok, (void *) &pak, sizeof(pak)) < 0)
     {
         /* error; sok is dead */
-        M_print ("Fehler beim Verschicken des TCP-Paketes.\n");
+        M_print (i18n (787, "Error sending TCP packet.\n"));
         Save_Dead_Sok (cont);
         return;
     }            
@@ -286,13 +286,13 @@ int Wait_TCP_Init_Ack (SOK_T sok)
 
     if (Recv_TCP_Pak (sok, (void *) &pak) < 0)
     {
-        M_print ("Fehler beim Empfang eines TCP-Paketes.\n");
+        M_print (i18n (788, "Error receiving TCP packet."));
         return (-1);
     }
 
     if (pak->cmd != TCP_INIT_ACK)
     {
-        M_print ("Fehlerhaftes Paket empfangen.\n");
+        M_print (i18n (789, "Received malformed packet."));
         close (sok);
         return (-1);
     }
@@ -311,11 +311,11 @@ void TCP_Init_Ack (SOK_T sok)
     bzero (pak.X1, 3);
 
     if (uiG.Verbose)
-        M_print ("Sende Initialisierungsbestätigung...\n");
+        M_print (i18n (790, "Sending init ACK...\n"));
 
     if (Send_TCP_Pak (sok, (void *) &pak, sizeof(pak)) < 0)
     {
-        M_print ("Fehler beim Verschicken des TCP-Paketes.\n");
+        M_print (i18n (791, "Error sending TCP packet."));
     }
 }
 
@@ -334,7 +334,7 @@ void New_TCP (SOK_T sok)
     int sinSize;
  
     sinSize = sizeof (sin);
-    newSok = accept (sok, &sin, &sinSize);
+    newSok = accept (sok, (struct sockaddr *)&sin, &sinSize);
 
     Recv_TCP_Init (newSok);
 }
@@ -346,18 +346,18 @@ void Recv_TCP_Init (SOK_T sok)
 
     if (Recv_TCP_Pak (sok, (void *) &pak) < 0)
     {
-        M_print ("Fehler beim Empfang eines TCP-Paketes.\n");
+        M_print (i18n (788, "Error receiving TCP packet."));
     }
 
     if (uiG.Verbose)
     {
         R_undraw ();
-        M_print ("Baue direkte TCP-Verbindung auf...\n");
+        M_print (i18n (792, "Establishing a direct TCP connection...\n"));
         //M_print("Ver : 0x%04X\n", Chars_2_Word (pak->version));
         //M_print("Rev : 0x%04X\n", Chars_2_Word (pak->rev));
-        M_print ("Port:         %lu\n", Chars_2_DW (pak->port));
-        M_print ("Benutzer: %lu\n", Chars_2_DW (pak->uin));
-        M_print ("Sitzung:    0x%08X\n", Chars_2_DW (pak->session_id));
+        M_print (i18n (793, "Port: %lu\n") , Chars_2_DW (pak->port));
+        M_print (i18n (794, "Uin : %lu\n") , Chars_2_DW (pak->uin));
+        M_print (i18n (795, "SID : 0x%08X\n") , Chars_2_DW (pak->session_id));
         R_redraw ();
     }
 
@@ -384,7 +384,7 @@ void Recv_TCP_Init (SOK_T sok)
                 close (sok);
                 Save_Dead_Sok (cont);
                 if (uiG.Verbose)
-                    M_print ("Fehler beim Aufbau einer TCP-Verbindung.\n");
+                    M_print (i18n (796, "Error initiating a TCP connection.\n"));
             }
             else
             {
@@ -430,7 +430,7 @@ void Handle_TCP_Comm (UDWORD uin)
             if (uiG.Verbose)
             {
                 R_undraw ();
-                M_print ("Benutzer " CONTACTCOL "%s" NOCOL " hat die Verbindung beendet.\n", cont->nick);
+                M_print (i18n (797, "User %s%s%s closed socket.\n"), COLCONTACT, cont->nick, COLNONE);
                 R_redraw ();
             }
             Save_Dead_Sok (cont);
@@ -442,7 +442,7 @@ void Handle_TCP_Comm (UDWORD uin)
             {
                 /* Decryption error - wrong TCP version? */
                 R_undraw ();
-                M_print ("Fehlerhaftes Paket empfangen.\n");
+                M_print (i18n (789, "Received malformed packet."));
                 close (cont->sok);
                 Save_Dead_Sok (cont);
                 R_redraw ();
@@ -480,14 +480,14 @@ void Handle_TCP_Comm (UDWORD uin)
                         if (Chars_2_Word (pak->sub_cmd) == NORM_MESS)
                         {
                             R_undraw ();
-                            M_print ("Nachricht direkt zu ");
-                            M_print (CONTACTCOL "%s" NOCOL " verschickt!\n", cont->nick);
+                            M_print (i18n (798, "Message sent direct to %s%s%s!\n"),
+                                     COLCONTACT, cont->nick, COLNONE);
                             R_redraw ();
                         }
                         else if (Chars_2_Word (pak->sub_cmd) & TCP_AUTO_RESPONSE_MASK)
                         {
                             R_undraw ();
-                            M_print ("Automatische Antwortnachricht für ");
+                            M_print (i18n (799, "Auto-response message for "));
                             Print_UIN_Name (cont->uin);
                             M_print (":\n" MESSCOL "%s\n" NOCOL, ((UBYTE *)pak) + TCP_MSG_OFFSET);
                             R_redraw ();
@@ -495,7 +495,8 @@ void Handle_TCP_Comm (UDWORD uin)
                         if (uiG.Verbose)
                         {
                             R_undraw ();
-                            M_print ("Empfangsbestätigung für Nachricht (seq %04X) von %s", seq_in, cont->nick);
+                            M_print (i18n (806, "Received ACK for message (seq %04X) from %s"),
+                                     seq_in, cont->nick);
                             R_redraw ();
                         }
                         break;
@@ -506,7 +507,8 @@ void Handle_TCP_Comm (UDWORD uin)
                         if (uiG.Verbose)
                         {
                             R_undraw ();
-                            M_print ("Eingehende Nachtricht (seq %04X) von %s abgebrochen", seq_in, cont->nick);
+                            M_print (i18n (807, "Cancelled incoming message (seq %04X) from %s"),
+                                     seq_in, cont->nick);
                             R_redraw ();
                         }
                         break;
@@ -553,7 +555,8 @@ void Handle_TCP_Comm (UDWORD uin)
             case TCP_CMD_GET_NA:
             case TCP_CMD_GET_DND:
             case TCP_CMD_GET_FFC:
-                M_print ("Sende Automatische Antwortnachricht an " CONTACTCOL "%s" NOCOL ".\n", cont->nick);
+                M_print (i18n (814, "Sent auto-response message to %s%s%s.\n"),
+                         COLCONTACT, cont->nick, COLNONE);
                 Send_TCP_Ack (cont->sok, Chars_2_Word(pak->seq), Chars_2_Word(pak->sub_cmd), TRUE);
                 break;
 
@@ -576,9 +579,9 @@ void Handle_TCP_Comm (UDWORD uin)
                 else
                     M_print (" - Sofortmassennachricht \a ");
                 if (uiG.Verbose)
-                    M_print (" Typ    = %04x\t", Chars_2_Word(pak->msg_type));*/
+                    M_print (i18n (808, " Typ    = %04x\t"), Chars_2_Word (pak->msg_type));*/
     
-                Do_Msg (cont->sok, Chars_2_Word(pak->sub_cmd), Chars_2_Word(pak->size), 
+                Do_Msg (cont->sok, Chars_2_Word (pak->sub_cmd), Chars_2_Word (pak->size), 
                         &((char *)pak)[TCP_MSG_OFFSET], uin);
                 M_print ("\n");
 
@@ -703,7 +706,7 @@ void Send_TCP_Msg (SOK_T srv_sok, UDWORD uin, char *msg, UWORD sub_cmd)
         if (Send_TCP_Pak (cont->sok, pak, paksize) < 0 && srv_sok > 0)
         {
             /* Yuck... send it through the server */
-            M_print ("Fehler beim Senden eines TCP-Paketes.\n");
+            M_print (i18n (791, "Error sending TCP packet."));
             Check_Queue (ssG.seq_tcp + 1, tcp_sq);
             icq_sendmsg_srv (srv_sok, uin, msg, sub_cmd);
         }
@@ -761,7 +764,7 @@ void Get_Auto_Resp (UDWORD uin)
 
     if (sub_cmd == 0)
     {
-        M_print ("Kann keine automatische Antwortnachricht für ");        
+        M_print (i18n (809, "Unable to retrieve auto-response message for "));
         Print_UIN_Name (uin);
         M_print (" finden.\n");
     }
@@ -799,7 +802,7 @@ void Send_TCP_Ack (SOK_T sok, UWORD seq, UWORD sub_cmd, BOOL accept)
 
     Encrypt_Pak ((UBYTE *) pak, size);
     if (Send_TCP_Pak (sok, pak, size) < 0)
-        M_print ("Fehler beim Senden eine TCP-Paketes.\n");
+        M_print (i18n (791, "Error sending TCP packet."));
 
     free (msg);
 }
@@ -824,9 +827,9 @@ void Do_TCP_Resend (SOK_T srv_sok)
             if (uiG.Verbose)
             {
                 R_undraw ();
-                M_print ("\nSende TCP-Nachricht mit SEQ-Nummer %04X an %s erneut.\t",
+                M_print (i18n (810, "\nResending TCP message with SEQ num %04X to %s.\t"),
                          queued_msg->seq, cont->nick);
-                M_print ("(Versuch #%d.)", queued_msg->attempts);
+                M_print (i18n (811, " (Attempt #%d.)"), queued_msg->attempts);
                 R_redraw ();
             }
 
@@ -854,9 +857,9 @@ void Do_TCP_Resend (SOK_T srv_sok)
             if (TCP_CMD_MESSAGE    == Chars_2_Word (pak->cmd)) 
             {
                  R_undraw ();
-                 M_print ("\nTCP-Zeitüberlauf beim Senden einer nachricht an ");
+                 M_print (i18n (812, "\nTCP timeout; sending message to "));
                  Print_UIN_Name (cont->uin);
-                 M_print (" nach %d Versuchen.", queued_msg->attempts - 1);
+                 M_print (i18n (813, " after %d send attempts."), queued_msg->attempts - 1);
                  R_redraw ();
 
                  icq_sendmsg_srv (srv_sok, cont->uin,

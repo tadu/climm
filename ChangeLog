@@ -1,4 +1,25 @@
 
+2001-12-06 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Moved tcp packet defs to icq_tcp.h.
+	* Revamped Logging: now have LogLevel (>0 = on, &2 = omit on/off)
+	  and LogPlace (and no local stored path); log to dir iff
+	  trailing slash.
+	* Fix i18n-extract not to loop forever when i18n lacks a ).
+	* Do not regenerate *.i18n files with make lang, only en.i18n.
+	* new: CmdUserSet "set" to set a few options (currently color and
+	  funny); removed CmdUserColor. CmdUserRandomSet is now "setr".
+	* new: GetUserBaseDir() yielding $HOME/.micq/ or equivalent.
+	* rc file is now $HOME/.micq/micqrc instead of $HOME/.micqrc.
+	* local i18n files are now in $HOME/.micq/i18n.
+	* default log dir is now $HOME/.micq/history/.
+	* Warn about deprectated rc file options and rc file on old place.
+	* Rewrote i18n loading to load local i18n file, then add missing
+	  string from global one. Actually, first try all "funny"
+	  i18n files it funny is on; thus _fun.i18n has only the mod' strings.
+	* i18n: locales starting with a + are added; starting with a /
+	  are taken as absolut i18n file path names.
+	* tcp.c is i18n'ed now. What about patches that apply cleanly?
+
 2001-11-29 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Move sent message output to icq_sendmsg_srv and Send_TCP_Msg
 	  to have different output for TCP messages.

@@ -462,9 +462,12 @@ int M_fdnreadln (FD_T fd, char *buf, size_t len)
 {
     int i, j;
     char tmp;
+    static char buff[20] = "\0";
+
 
     assert (buf != NULL);
     assert (len > 0);
+    
     tmp = 0;
     len--;
     for (i = -1; (tmp != '\n');)

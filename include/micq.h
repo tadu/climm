@@ -133,51 +133,6 @@ typedef struct
    UBYTE len[2];
 } SIMPLE_MESSAGE, *SIMPLE_MESSAGE_PTR;
 
-
-/*** TCP: packet struct ***/
-#ifdef TCP_COMM
-#if TCP_VER == 6
-
-typedef struct
-{
-    UBYTE cmd;           /* 0xFF */
-    UBYTE version[2];  
-    UBYTE rev[2];     
-    UBYTE dest_uin[4];
-    UBYTE X1[2];         /* null */
-    UBYTE port[4];
-    UBYTE uin[4];
-    UBYTE current_ip[4];
-    UBYTE other_ip[4];
-    UBYTE connection_type;
-    UBYTE other_port[4];
-    UBYTE session_id[4];
-} TCP_INIT_PAK, *TCP_INIT_PTR;
-
-typedef struct
-{
-    UBYTE cmd;		/* 0x01 */
-    UBYTE X1[3];
-} TCP_INIT_ACK_PAK, *TCP_INIT_ACK_PTR;
-
-typedef struct
-{
-    UBYTE checksum[4];
-    UBYTE cmd[2];
-    UBYTE X1[2];
-    UBYTE seq[2];
-    UBYTE X2[4];
-    UBYTE X3[4];
-    UBYTE X4[4];
-    UBYTE sub_cmd[2];
-    UBYTE status[2];
-    UBYTE msg_type[2];
-    UBYTE size[2];
-} TCP_MSG_PAK, *TCP_MSG_PTR;
-#endif
-#endif
-/*** TCP: end packet struct ***/
-
 typedef struct
 {
    UDWORD uin;
@@ -288,10 +243,10 @@ typedef struct {
         UBYTE SoundOffline;    /* sound settng for users going offline */
         UDWORD Current_Status;
         UDWORD last_recv_uin;
-        UBYTE LogType;         /* Currently 0 = no logging
-                                            1 = old style ~/micq_log
-                                            2 = new style ~/micq.log/uin.log
-                                            ****************************** */
+        char *LogPlace;         /* Directory / file to log to */
+        UBYTE LogLevel;         /* &1 = enable logging
+                                 * &2 = omit online/offline messages
+                                 */
         BOOL auto_resp;
         char auto_rep_str_na[450];
         char auto_rep_str_away[450];
@@ -307,8 +262,7 @@ typedef struct {
 
         BOOL Russian;    /* Do we do koi8-r <->Cp1251 codeset translation? */
         BOOL JapaneseEUC;/* Do we do Shift-JIS <->EUC codeset translation? */
-        BOOL Logging;          /* Do we log messages to ~/micq_log? This */
-                               /* should probably have different levels  */
+        BOOL Funny;            /* Do we use supposed "funny" messages */
         BOOL Color;            /* Do we use ANSI color? */
         UWORD Max_Screen_Width;
         BOOL Hermit;
@@ -343,7 +297,6 @@ typedef struct {
 
         UWORD seq_num;  /* current sequence number */
 #ifdef TCP_COMM
-        //UWORD seq_tcp = 0xFFFF;  /*** TCP: tcp sequence number ***/
         UWORD seq_tcp;  /*** TCP: tcp sequence number ***/
 #endif
         UDWORD our_ip;

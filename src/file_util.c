@@ -48,6 +48,7 @@ static char *fill (const char *fmt, const char *in);
                                    snprintf (b, sizeof (b), "%s", stb); } else if (0) 
 
 static char rcfile[256];
+static int rcfiledef = 0;
 
 char *fill (const char *fmt, const char *in)
 {
@@ -61,8 +62,10 @@ void Set_rcfile (const char *name)
     char *path = 0;
     char *home;
 
-    if (NULL == name)
+    if (!name || !strlen (name))
     {
+        if (rcfiledef == 2)
+            return;
 
 #ifdef _WIN32
         path = ".\\";
@@ -77,20 +80,25 @@ void Set_rcfile (const char *name)
         {
             if (!home)
                 home = "";
-            path = malloc (strlen (home) + 2);
+            path = malloc (strlen (home) + 2 + 6);
             strcpy (path, home);
             if (path[strlen (path) - 1] != '/')
                 strcat (path, "/");
+            if (!name)
+                strcat (path, ".micq/");
         }
-
         strcpy (rcfile, path);
-        strcat (rcfile, ".micqrc");
-
+        if (name)
+            strcat (rcfile, ".micqrc");
+        else
+            strcat (rcfile, "micqrc");
+        rcfiledef = 1;
     }
     else
     {
         strncpy (rcfile, name, 256);
         rcfile[255] = 0;
+        rcfiledef = 2;
     }
 }
 
@@ -240,7 +248,7 @@ static void Read_RC_File (FD_T rcf)
     char buf[450];
     char *tmp;
     char *p;
-    int i, section;
+    int i, section, dep;
     UDWORD tmp_uin;
     char *tab_nick_spool[TAB_SLOTS];
     int spooled_tab_nicks;
@@ -304,7 +312,7 @@ static void Read_RC_File (FD_T rcf)
 #ifdef MSGEXEC
                     strcpy (uiG.receive_script, strtok (NULL, "\n\t"));
 #else
-                    printf ("Warning: ReceiveScript Feature not enabled!\n");
+                    printf (i18n (817, "Warning: ReceiveScript Feature not enabled!\n"));
 #endif
                 }
                 else if (!strcasecmp (tmp, "s5_use"))
@@ -345,17 +353,34 @@ static void Read_RC_File (FD_T rcf)
                 }
                 else if (!strcasecmp (tmp, "LogType"))
                 {
-                    uiG.LogType = atoi (strtok (NULL, " \n\t"));
+                    char *home = getenv ("HOME");
+                    if (!home) home = "";
+                    uiG.LogLevel = atoi (strtok (NULL, " \n\t"));
+                    switch (uiG.LogLevel)
+                    {
+                        case 1:
+                            uiG.LogPlace = malloc (strlen (home) + 10);
+                            strcpy (uiG.LogPlace, home);
+                            strcpy (uiG.LogPlace, "/micq_log");
+                            break;
+                        case 3:
+                        case 2:
+                            uiG.LogLevel--;
+                            uiG.LogPlace = malloc (strlen (home) + 10);
+                            strcpy (uiG.LogPlace, home);
+                            strcpy (uiG.LogPlace, "/micq.log/");
+                    }
+                    dep = 1;
                 }
                 else if (!strcasecmp (tmp, "No_Log"))
                 {
-                    uiG.LogType = 0;
-                    M_print (i18n (98, COLCONTACT "\"No_Log\" is deprecated.\nUse \"LogType 0\" Instead.\n" COLNONE));
-                    uiG.Logging = FALSE;
+                    uiG.LogLevel = 0;
+                    dep = 1;
                 }
                 else if (!strcasecmp (tmp, "No_Color"))
                 {
                     uiG.Color = FALSE;
+                    dep = 1;
                 }
                 else if (!strcasecmp (tmp, "Last_UIN_Prompt"))
                 {
@@ -392,7 +417,20 @@ static void Read_RC_File (FD_T rcf)
                 ADD_CMD ("auto_rep_str_inv", uiG.auto_rep_str_inv);
                 else if (!strcasecmp (tmp, "LogDir"))
                 {
-                    Set_Log_Dir (strtok (NULL, "\n"));
+                    char *tmp = strtok (NULL, "\n");
+                    if (!tmp) tmp = "";
+                    if (*tmp && tmp[strlen (tmp) - 1] == '/')
+                    {
+                        uiG.LogPlace = strdup (tmp);
+                    }
+                    else
+                    {
+                        uiG.LogPlace = malloc (strlen (tmp) + 2);
+                        strcpy (uiG.LogPlace, tmp);
+                        strcat (uiG.LogPlace, "/");
+                    }
+                    uiG.LogLevel |= 1;
+                    dep = 1;
                 }
                 else if (!strcasecmp (tmp, "Sound"))
                 {
@@ -494,6 +532,25 @@ static void Read_RC_File (FD_T rcf)
                 else if (!strcasecmp (tmp, "Contacts"))
                 {
                     section = 1;
+                }
+                else if (!strcasecmp (tmp, "set"))
+                {
+                    CmdUser (0, fill ("@set quiet %s", strtok (NULL, "\n")));
+                }
+                else if (!strcasecmp (tmp, "logging"))
+                {
+                    tmp = strtok (NULL, " \t\n");
+                    if (tmp)
+                    {
+                        uiG.LogLevel = atoi (tmp);
+                        tmp = strtok (NULL, "\n");
+                        if (tmp)
+                        {
+                            uiG.LogPlace = strdup (tmp);
+                            if (!strlen (uiG.LogPlace))
+                                uiG.LogPlace = NULL;
+                        }
+                    }
                 }
                 else
                 {
@@ -642,6 +699,13 @@ static void Read_RC_File (FD_T rcf)
     if (!*uiG.auto_rep_str_inv)
         strcpy (uiG.auto_rep_str_inv, i18n (13, "User is offline"));
 
+    if (uiG.LogLevel && !uiG.LogPlace)
+    {
+        uiG.LogPlace = malloc (strlen (GetUserBaseDir ()) + 10);
+        strcpy (uiG.LogPlace, GetUserBaseDir ());
+        strcat (uiG.LogPlace, "history/");
+    }
+
     if (uiG.Verbose)
     {
         M_print (i18n (189, "UIN = %ld\n"), ssG.UIN);
@@ -658,6 +722,8 @@ static void Read_RC_File (FD_T rcf)
         fprintf (stderr, "Bad .micqrc file.  No UIN found aborting.\a\n");
         exit (1);
     }
+    if (dep)
+        M_print (i18n (818, "Warning: Deprecated syntax found in rc file!\n    Please update or \"save\" the rc file and check for changes.\n"));
 }
 
 /************************************************
@@ -671,7 +737,7 @@ int Save_RC ()
     time_t t;
     int i, j, k;
 
-    rcf = open (rcfile, O_WRONLY | O_CREAT | O_TRUNC);
+    rcf = open (rcfile, O_WRONLY | O_CREAT | O_TRUNC, 0600);
     if (rcf == -1)
         return -1;
     M_fdprint (rcf, "# This file was generated by Micq of %s %s\n", __TIME__, __DATE__);
@@ -715,22 +781,6 @@ int Save_RC ()
     else
         M_fdprint (rcf, "Hermit\n\n");
 
-    M_fdprint (rcf, "# This is the location messages will be logged to\n");
-    if (Log_Dir_Normal ())
-    {
-        M_fdprint (rcf, "#");
-    }
-    M_fdprint (rcf, "LogDir %s\n", Get_Log_Dir ());
-    M_fdprint (rcf, "\n# LogType defines if we log events to an individual file (per UIN),\n");
-    M_fdprint (rcf, "# if we log everything to ~/micq.log or if we don't log at all.\n");
-    M_fdprint (rcf, "# Values are:\n# 0 - Don't Log\n");
-    M_fdprint (rcf, "# 1 - Log to ~/micq_log\n");
-    M_fdprint (rcf, "# 2 - Log to ~/micq.log/<uin>.log\n");
-    M_fdprint (rcf, "# 3 - Same as 2 but don't log online/offline changes\n");
-    M_fdprint (rcf, "# by Buanzox@usa.net\n");
-
-    M_fdprint (rcf, "LogType %d\n\n", uiG.LogType);
-
     M_fdprint (rcf, "# Define to a program which is executed to play sound when a message is received.\n");
     M_fdprint (rcf, "%sSound %s\n%sNo_Sound\n\n", uiG.Sound == SOUND_OFF ? "#" : "", 
                     uiG.Sound_Str, uiG.Sound == SOUND_OFF ? "" : "#");
@@ -743,10 +793,17 @@ int Save_RC ()
     M_fdprint (rcf, "%sSoundOffline %s\n%sNo_SoundOffline\n\n", uiG.SoundOffline == SOUND_OFF ? "#" : "",
                     uiG.Sound_Str_Offline, uiG.SoundOffline == SOUND_OFF ? "" : "#");
 
-    if (uiG.Color)
-        M_fdprint (rcf, "#No_Color\n");
-    else
-        M_fdprint (rcf, "No_Color\n");
+    M_fdprint (rcf, "# Set some simple options.\n");
+    M_fdprint (rcf, "set color %s\n", uiG.Color ? "on" : "off");
+    M_fdprint (rcf, "set funny %s\n\n", uiG.Funny ? "on" : "off");
+
+    M_fdprint (rcf, "# This defines the loglevel and the location of the logfile(s).\n");
+    M_fdprint (rcf, "# logging <level> <location>\n");
+    M_fdprint (rcf, "#     level != 0 means enable loggin\n");
+    M_fdprint (rcf, "#     level  & 2 means suppress on/offline changes\n");
+    M_fdprint (rcf, "#     location   file to log into, or directory to log log into seperate files for each UIN\n");
+    M_fdprint (rcf, "logging %d %s\n", uiG.LogLevel, uiG.LogPlace ? uiG.LogPlace : "");
+
     if (uiG.del_is_bs)
         M_fdprint (rcf, "#Del_is_Del\n");
     else
@@ -842,6 +899,15 @@ void Get_Unix_Config_Info (void)
     FD_T rcf;
 
     rcf = open (rcfile, O_RDONLY);
+    if (rcf == -1 && rcfiledef == 1)
+    {
+        char *tmp = strdup (rcfile);
+        Set_rcfile ("");
+        M_print (i18n (819, "Can't find rc file %s - using old location %s\n"),
+                 tmp, rcfile);
+        rcf = open (rcfile, O_RDONLY);
+        Set_rcfile (NULL);
+    }
     if (rcf == -1)
     {
         if (errno == ENOENT)    /* file not found */
