@@ -4112,7 +4112,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
 
                 if (*cmd != '\xb6')
                 {
-                    if (*argsd && CmdUserProcessAlias (cmd, argsd + 1, &idle_save, idle_flag))
+                    if (CmdUserProcessAlias (cmd, *argsd ? argsd + 1 : "", &idle_save, idle_flag))
                         is_alias = TRUE;
                     else
                         j = CmdUserLookup (cmd, CU_USER);
