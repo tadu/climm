@@ -1671,9 +1671,10 @@ void SnacCallbackType2 (Event *event)
                           ExtraGetS (event->extra, EXTRA_MESSAGE), NULL);
             SnacSend (serv, PacketClone (pak));
             event->attempts++;
-            event->due = time (NULL) + 15;
+            /* allow more time for the peer's ack than the server's ack */
+            event->due = time (NULL) + RETRY_DELAY_TYPE2 + 5;
             QueueEnqueueData (serv, QUEUE_TYPE2_RESEND_ACK, pak->ref,
-                              time (NULL) + 10, NULL, cont->uin,
+                              time (NULL) + RETRY_DELAY_TYPE2, NULL, cont->uin,
                               ExtraSet (NULL, EXTRA_REF, event->seq, NULL),
                               &SnacCallbackType2Ack);
         }

@@ -56,28 +56,28 @@
 
 #ifdef ENABLE_PEER2PEER
 
-static void       TCPDispatchPeer    (Connection *peer);
-static void       PeerDispatchClose  (Connection *conn);
+static void        TCPDispatchPeer    (Connection *peer);
+static void        PeerDispatchClose  (Connection *conn);
 
-static Packet    *TCPReceivePacket   (Connection *peer);
+static Packet     *TCPReceivePacket   (Connection *peer);
 
-static void       TCPSendInit        (Connection *peer);
-static void       TCPSendInitAck     (Connection *peer);
-static void       TCPSendInit2       (Connection *peer);
-static Connection   *TCPReceiveInit     (Connection *peer, Packet *pak);
-static void       TCPReceiveInitAck  (Connection *peer, Packet *pak);
-static Connection   *TCPReceiveInit2    (Connection *peer, Packet *pak);
+static void        TCPSendInit        (Connection *peer);
+static void        TCPSendInitAck     (Connection *peer);
+static void        TCPSendInit2       (Connection *peer);
+static Connection *TCPReceiveInit     (Connection *peer, Packet *pak);
+static void        TCPReceiveInitAck  (Connection *peer, Packet *pak);
+static Connection *TCPReceiveInit2    (Connection *peer, Packet *pak);
 
 
-static Packet    *PacketTCPC         (Connection *peer, UDWORD cmd);
+static Packet     *PacketTCPC         (Connection *peer, UDWORD cmd);
 
-static void       TCPCallBackTimeout (Event *event);
-static void       TCPCallBackTOConn  (Event *event);
-static void       TCPCallBackResend  (Event *event);
-static void       TCPCallBackReceive (Event *event);
+static void        TCPCallBackTimeout (Event *event);
+static void        TCPCallBackTOConn  (Event *event);
+static void        TCPCallBackResend  (Event *event);
+static void        TCPCallBackReceive (Event *event);
 
-static void       Encrypt_Pak        (Connection *peer, Packet *pak);
-static BOOL       Decrypt_Pak        (Connection *peer, Packet *pak);
+static void        Encrypt_Pak        (Connection *peer, Packet *pak);
+static BOOL        Decrypt_Pak        (Connection *peer, Packet *pak);
 
 /*********************************************/
 
@@ -1524,7 +1524,7 @@ static void TCPCallBackResend (Event *event)
             if (event->attempts < 2)
                 PeerPacketSend (peer, pak);
             event->attempts++;
-            event->due = time (NULL) + 10;
+            event->due = time (NULL) + QUEUE_P2P_RESEND_ACK;
         }
         else
             event->due = time (NULL) + 1;
