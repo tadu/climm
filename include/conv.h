@@ -37,8 +37,9 @@ strc_t      ConvFrom       (strc_t in, UBYTE enc);
 strc_t      ConvFromSplit  (strc_t in, UBYTE enc);
 strc_t      ConvTo         (const char *in, UBYTE enc);
 
-#define CHAR_NA '?'
-#define CHAR_BR '*'
+#define CHAR_NOT_AVAILABLE '?'
+#define CHAR_INCOMPLETE    '_'
+#define CHAR_BROKEN        '*'
 
 #define ENC_FAUTO   0x80
 #define ENC_AUTO    0xff

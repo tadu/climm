@@ -366,7 +366,7 @@ const char *ConvUTF8 (UDWORD ucs)
     }
     else
     {
-        b[0] = CHAR_BR;
+        b[0] = CHAR_BROKEN;
         b[1] = '\0';
     }
     return b;
@@ -406,12 +406,15 @@ strc_t ConvFromSplit (strc_t text, UBYTE enc)
 
 strc_t ConvTo (const char *ctext, UBYTE enc)
 {
-    str_s text = { (char *)ctext, strlen (ctext), 0 };
+    str_s text;
     enc &= ~ENC_FAUTO;
 #if HAVE_ICONV
     if ((enc < conv_nr) && !conv_encs[enc].ito)
         iconv_check (enc);
 #endif
+    text.txt = (char *)ctext;
+    text.len = strlen (ctext);
+    text.max = 0;
     if ((enc >= conv_nr) || (!conv_encs[enc].fto))
         enc = ENC_ASCII;
     return conv_encs[enc].fto (&text, enc);
@@ -426,9 +429,9 @@ BOOL ConvFits (const char *in, UBYTE enc)
     if (!inn)
         return 0;
     for (p = inn; *p; p++)
-        if (*p == Conv0xFE || *p == CHAR_NA || *p == CHAR_BR)
+        if (*p == Conv0xFE || *p == CHAR_NOT_AVAILABLE || *p == CHAR_INCOMPLETE || *p == CHAR_BROKEN)
             *p = ' ';
-    i = strpbrk (ConvTo (inn, enc)->txt, "?*") ? 0 : 1;
+    i = strpbrk (ConvFrom (ConvTo (inn, enc), enc)->txt, "?*_") ? 0 : 1;
     free (inn);
     return i;
 }
@@ -456,14 +459,21 @@ static strc_t iconv_from_iconv (strc_t text, UBYTE enc)
 
         if (outleft < 10 || rc == E2BIG)
             s_blow (&str, 50 + inleft);
+        else if (rc == EINVAL)
+        {
+            s_catc (&str, CHAR_INCOMPLETE);
+            str.txt[str.len] = '\0';
+            return &str;
+        }
         else
         {
-            s_catc (&str, CHAR_NA);
+            s_catc (&str, CHAR_NOT_AVAILABLE);
             in++;
             inleft--;
         }
         out = str.txt + str.len;
         outleft = str.max - str.len - 2;
+        iconv (conv_encs[enc].ito, NULL, NULL, NULL, NULL);
     }
     *out = '\0';
     str.len = out - str.txt;
@@ -492,14 +502,32 @@ static strc_t iconv_to_iconv (strc_t text, UBYTE enc)
 
         if (outleft < 10 || rc == E2BIG)
             s_blow (&str, 50 + inleft);
+        else if (rc == EINVAL)
+        {
+            char inc = CHAR_INCOMPLETE;
+            ICONV_CONST char *in = &inc;
+            size_t inleft = 1;
+            iconv (conv_encs[enc].ito, NULL, NULL, NULL, NULL);
+            iconv (conv_encs[enc].ito, &in, &inleft, &out, &outleft);
+            str.len = out - str.txt;
+            str.txt[str.len] = '\0';
+            return &str;
+        }
         else
         {
-            s_catc (&str, CHAR_NA);
+            char inc = CHAR_NOT_AVAILABLE;
+            ICONV_CONST char *inn = &inc;
+            size_t innleft = 1;
+            iconv (conv_encs[enc].ito, NULL, NULL, NULL, NULL);
+            iconv (conv_encs[enc].ito, &inn, &innleft, &out, &outleft);
             in++;
             inleft--;
+            iconv (conv_encs[enc].ito, NULL, NULL, NULL, NULL);
+            continue;
         }
         out = str.txt + str.len;
         outleft = str.max - str.len - 2;
+        iconv (conv_encs[enc].ito, NULL, NULL, NULL, NULL);
     }
     *out = '\0';
     str.len = out - str.txt;
@@ -517,7 +545,7 @@ strc_t iconv_usascii (strc_t in, UBYTE enc)
     
     for (off = 0; off < in->len; off++)
         if ((c = in->txt[off]) & 0x80)
-            str.txt[off] = CHAR_BR;
+            str.txt[off] = CHAR_BROKEN;
         else
             str.txt[off] = c;
     str.txt[off] = '\0';
@@ -539,7 +567,7 @@ static UDWORD iconv_get_utf8 (str_t in, int *off)
          return c;
 
      if (~c & 0x40)
-         return CHAR_BR;
+         return CHAR_BROKEN;
 
      while (c & 0x20)
      {
@@ -553,7 +581,7 @@ static UDWORD iconv_get_utf8 (str_t in, int *off)
      for (i = 0, ucs = c; i < continuations; i++)
      {
          if (((c = in->txt[*off + i]) & 0xc0) != 0x80)
-             return CHAR_BR;
+             return c ? CHAR_BROKEN : CHAR_INCOOMPLETE;
 
          c &= 0x3f;
          ucs <<= 6;
@@ -573,7 +601,7 @@ static strc_t iconv_from_usascii (strc_t in, UBYTE enc)
     
     for (off = 0; off < in->len; off++)
         if ((c = in->txt[off]) & 0x80)
-            s_catc (&str, CHAR_BR);
+            s_catc (&str, CHAR_BROKEN);
         else
             s_catc (&str, c);
     return &str;
@@ -589,7 +617,7 @@ static strc_t iconv_to_usascii (strc_t in, UBYTE enc)
     for (off = 0; off < in->len; )
     {
         ucs = iconv_get_utf8 (&str, &off);
-        s_catc (&str, ucs & 0x80 ? CHAR_NA : ucs);
+        s_catc (&str, ucs & 0x80 ? CHAR_NOT_AVAILABLE : ucs);
     }
     return &str;
 }
@@ -632,7 +660,7 @@ static strc_t iconv_to_latin1 (strc_t in, UBYTE enc)
     for (off = 0; off < in.len; )
     {
         ucs = iconv_get_utf8 (&str, &off);
-        s_catc (&str, ucs & 0xffffff00 ? CHAR_NA : ucs);
+        s_catc (&str, ucs & 0xffffff00 ? CHAR_NOT_AAVAILABLE : ucs);
     }
     return &str;
 }
@@ -681,7 +709,7 @@ static strc_t iconv_to_latin1 (strc_t in, UBYTE enc)
             {
                 case 0xa4: case 0xa6: case 0xa8: case 0xb4:
                 case 0xb8: case 0xbc: case 0xbd: case 0xbe:
-                    ucs = CHAR_NA;
+                    ucs = CHAR_NOT_AVAILABLE;
             }
             s_catc (&str, ucs);
         }
@@ -697,7 +725,7 @@ static strc_t iconv_to_latin1 (strc_t in, UBYTE enc)
                 case 0x0152: s_catc (&str, '\xbc'); /* OE */
                 case 0x0153: s_catc (&str, '\xbd'); /* SMALL OE */
                 case 0x0178: s_catc (&str, '\xbe'); /* Y DIAERESIS */
-                default:     s_catc (&str, CHAR_NA);
+                default:     s_catc (&str, CHAR_NOT_AVAILABLE);
             }
         }
     }
@@ -753,7 +781,7 @@ static strc_t iconv_to_koi8 (strc_t in, UBYTE enc)
                 if (koi8_utf8[c] == ucs)
                     break;
             
-            s_catc (&str, c & 0x80 ? CHAR_NA : c);
+            s_catc (&str, c & 0x80 ? CHAR_NOT_AVAILABLE : c);
         }
         else
             s_catc (&str, c);
@@ -808,7 +836,7 @@ static strc_t iconv_to_win1251 (strc_t in, UBYTE enc)
                 if (win1251_utf8[c] == ucs)
                     break;
             
-            s_catc (&str, c & 0x80 ? CHAR_NA : c);
+            s_catc (&str, c & 0x80 ? CHAR_NOT_AVAILABLE : c);
         }
         else
             s_catc (&str, c);
@@ -828,7 +856,7 @@ static strc_t iconv_from_ucs2be (strc_t in, UBYTE enc)
     {
         if (off + 1 == in.len)
         {
-            s_catc (&str, CHAR_BR);
+            s_catc (&str, CHAR_INCOMPLETE);
             break;
         }
 
@@ -838,14 +866,14 @@ static strc_t iconv_from_ucs2be (strc_t in, UBYTE enc)
         {
             if (off + 3 >= in.len)
             {
-                s_catc (&str, CHAR_BR);
+                s_catc (&str, CHAR_INCOMPLETE);
                 break;
             }
             ucs &= 0x4ff;
             ucs <<= 2;
             if (((c = in->txt[off++]) & 0xfc) != 0xc)
             {
-                s_catc (&str, CHAR_BR);
+                s_catc (&str, CHAR_BROKEN);
                 off++;
                 continue;
             }
@@ -867,12 +895,10 @@ static strc_t iconv_to_ucs2be (strc_t in, UBYTE enc)
     for (off = 0; off < in.len; )
     {
         ucs = iconv_get_utf8 (&str, &off);
-        if (ucs & 0xffff || (val & 0xf800) == 0xd800)
+        if (ucs & 0xffff0000)
         {
-            s_catc (&str, 0xd8 | ((ucs >> 18) & 0x3)));
-            s_catc (&str, (ucs >> 10) & 0xff);
-            s_catc (&str, 0xdc | ((ucs >> 8) & 0x3));
-            s_catc (&str, ucs & 0xff);
+            s_catc (&str, 0);
+            s_catc (&str, CHAR_NOT_AVAILABLE);
         }
         else
         {
