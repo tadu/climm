@@ -953,10 +953,6 @@
 2117:%ld %s として加えられた。\n
 2118:ない十分な記憶。\n
 2119:auth [grant] 「あだ名」    - grant authorization.\n
-#
-#
-#
-#
 #2120:auth deny <nick> <msg> - refuse authorization.\n
 #2121:auth req  <nick> <msg> - request authorization.\n
 #2122:Note: You need to 'save' to write new password to disc.\n
@@ -994,13 +990,13 @@
 #2163:Sending file %ld at offset %ld.\n
 #2164:Error writing to file.\n
 #2165:The peer sent more bytes (%ld) than file length (%ld).\n
-#2166:Finished receiving file.\n
-#2167:Error - unknown packet.\n
+2166:完成した受信ファイル。\n
+2167:エラー(未知のパケット)。\n
 #2168:File transfer #%ld (%s) dropped after %ld attempts because of timeout.\n
 #2169:File transfer aborted by peer (%d).\n
 #2170:Sending with speed %lx to %s.\n
 #2171:Advanced
-#2172:Commands for advanced features.
+2172:高度な特徴のためのコマンド。
 #2176:Displays verbose the current status of everyone on your contact list.
 #2177:Displays verbose the current status of online people on your contact list.
 #2179:Send all <contacts> a single file.
@@ -1009,11 +1005,15 @@
 #2182:Select server connection number <nr> as current server connection.
 #2183:Check all <contacts> whether they are offline or invisible.
 #2184:%s%-10s%s - %s\n
-#2185:Closing connection %ld.\n
-#2186:Accepting file '%s' (%ld bytes).\n
-#2188:You're sending data too fast - stop typing now, or the server will disconnect!\n
-#2191:Instant message error: %d.\n
-#2192:Capabilities: 
+2185:接続 %ld を閉じること。\n
+2186:ファイル「%s」の受理 (%ld バイト)。\n
+2187:拒絶されたファイル・リクエスト 「%s」 (%d バイト) (未知: %x, %x)
+2188:データを速く送りすぎています。今タイプすること、あるいはサーバーをやめてください、分離するだろう!\n
+2189:サーバーによって拒絶された悪いメッセージ・パケット。
+2190:ユーザのクライアントはタイプ-2メッセージを支援しません。
+2191:メッセージの間違いを送りなさい: %d。\n
+2192:機能:
+2193:ディレクトリー %s は存在しません。
 #2194:Don't know how to open this connection type.\n
 #2195:Obsolete number:
 #2196:Obsolete text:

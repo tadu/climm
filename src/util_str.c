@@ -194,7 +194,7 @@ const char *s_time (time_t *stamp)
 
     strftime(tbuf, sizeof (tbuf), thetime->tm_year == now.tm_year 
         && thetime->tm_mon == now.tm_mon && thetime->tm_mday == now.tm_mday
-        ? "%T" : "%a %b %d %X %Y", thetime);
+        ? "%H:%M:%S" : "%a %b %d %H:%M:%S %Y", thetime);
 
     if (prG->verbose > 7)
         snprintf (tbuf + strlen (tbuf), sizeof (tbuf) - strlen (tbuf),

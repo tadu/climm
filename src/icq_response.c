@@ -289,9 +289,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             event->callback (event);
             break;
         case META_SRV_ABOUT:
-            s_free (cont->meta_about);
-            cont->meta_about = PacketReadLNTS (pak);
-
+            s_read (cont->meta_about);
             cont->updated |= UPF_ABOUT;
             event->callback (event);
             break;
@@ -773,7 +771,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
     {
         char buf[2048];
 
-        if ((cont->uin != uiG.last_rcvd_uin) || !uiG.idle_uins)
+        if ((cont->uin != uiG.last_rcvd_uin) || !uiG.idle_uins || !uiG.idle_msgs)
         {
             snprintf (buf, sizeof (buf), "%s %s", uiG.idle_uins && uiG.idle_msgs ? uiG.idle_uins : "", cont->nick);
             s_repl (&uiG.idle_uins, buf);

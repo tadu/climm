@@ -380,13 +380,20 @@ int main (int argc, char *argv[])
     }
 
     for (i = 0; (conn = ConnectionNr (i)); i++)
-    {
         if (conn->close)
             conn->close (conn);
-    }
     QueueRun ();
     if (prG->flags & FLAG_AUTOSAVE)
+    {
+        int i, j;
+        Contact *cont;
+
+        for (i = 0; (conn = ConnectionNr (i)); i++)
+            if (conn->contacts)
+                for (j = 0; (cont = ContactIndex (conn->contacts, j)); j++)
+                    ContactMetaSave (cont);
         Save_RC ();
+    }
     
     return 0;
 }
