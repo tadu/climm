@@ -515,13 +515,13 @@ static void TCPDispatchShake (Session *sess)
                 sess->connect++;
                 TCPReceiveInitAck (sess, pak);
                 PacketD (pak);
-                if (sess->ver > 6)
+                if (sess->ver > 6 && sess->type == TYPE_DIRECT)
                     return;
                 pak = NULL;
                 continue;
             case 20:
                 sess->connect++;
-                if (sess->ver > 6)
+                if (sess->ver > 6 && sess->type == TYPE_DIRECT)
                 {
                     sess = TCPReceiveInit2 (sess, pak);
                     PacketD (pak);
@@ -1202,7 +1202,7 @@ static void TCPPrint (Packet *pak, Session *peer, BOOL out)
             name = PacketReadLNTSC (pak);
             flen = PacketRead4 (pak);
             port2= PacketRead4 (pak);
-            M_print ("GREET %s (empty: %d) text '%s' len %d reason '%s' port %d pad %x name '%s' flen %d port2 %d\n",
+            M_print ("GREET %s (empty: %d) text '%s' lendiff %d reason '%s' port %d pad %x name '%s' flen %d port2 %d\n",
                      TCPCmdName (cmd), emp, text, len, reason, port, pad, name, flen, port2);
             M_print ("   ID %08x %08x %08x %08x\n", id1, id2, id3, id4);
             M_print ("  UNK %08x %08x %08x %06x\n", un1, un2, un3, un4);
@@ -1292,6 +1292,7 @@ void TCPGreet (Packet *pak, UWORD cmd, char *reason, UWORD port, UDWORD len, cha
     PacketWrite4     (pak, len);
     if (cmd != 0x2d)
         PacketWrite4     (pak, port);
+    PacketWriteLen4Done (pak);
 }
 
 /*
@@ -1349,6 +1350,8 @@ static int TCPSendMsgAck (Session *sess, UWORD seq, UWORD type, BOOL accept)
             PacketWrite2    (pak, 0);            /* padding */
             PacketWriteStr  (pak, "");           /* file name - empty */
             PacketWrite4    (pak, 0);            /* file len - empty */
+            if (sess->ver > 6)
+                PacketWrite4 (pak, 0x20726f66);  /* unknown - strange - 'for ' */
             PacketWrite4    (pak, peer->port);   /* port again */
             break;
         case 0:
@@ -1364,6 +1367,35 @@ static int TCPSendMsgAck (Session *sess, UWORD seq, UWORD type, BOOL accept)
         case 0x1a:
             /* no idea */
     }
+    TCPSendPacket (pak, sess);
+    return 1;
+}
+
+/*
+ * Acks a TCP packet.
+ */
+static int TCPSendGreetAck (Session *sess, UWORD seq, UWORD cmd, BOOL accept)
+{
+    Packet *pak;
+    UWORD status, flags;
+    Session *peer;
+
+    ASSERT_DIRECT (sess);
+
+    if (sess->status & STATUSF_DND)  status  = TCP_STAT_DND;   else
+    if (sess->status & STATUSF_OCC)  status  = TCP_STAT_OCC;   else
+    if (sess->status & STATUSF_NA)   status  = TCP_STAT_NA;    else
+    if (sess->status & STATUSF_AWAY) status  = TCP_STAT_AWAY;
+    else                             status  = TCP_STAT_ONLINE;
+    if (!accept)                     status  = TCP_STAT_REFUSE;
+
+    flags = 0;
+    if (sess->status & STATUSF_INV)  flags |= TCP_MSGF_INV;
+    flags ^= TCP_MSGF_LIST;
+
+    pak = PacketTCPC (sess, TCP_CMD_ACK, seq, TCP_MSG_GREETING, status, flags, "");
+    peer = SessionFind (TYPE_FILE, sess->uin);
+    TCPGreet (pak, cmd, "", peer->port, 0, "");
     TCPSendPacket (pak, sess);
     return 1;
 }
@@ -1655,10 +1687,10 @@ static void TCPCallBackResend (Event *event)
 static void TCPCallBackReceive (Event *event)
 {
     Contact *cont;
-    const char *tmp, *tmp2;
-    UWORD cmd, type, seq;
-    UDWORD len, status, flags;
     Packet *pak;
+    const char *tmp, *tmp2, *text, *reason, *name;
+    UWORD cmd, type, seq, port;
+    UDWORD len, status, flags;
     
     ASSERT_DIRECT (event->sess);
     assert (event->pak);
@@ -1727,8 +1759,58 @@ static void TCPCallBackReceive (Event *event)
                         SessionInitFile (fsess);
                     }
                     break;
-#endif
 
+                case TCP_MSG_GREETING:
+                    cmd    = PacketRead2 (pak); 
+                             PacketReadB4 (pak);   /* ID */
+                             PacketReadB4 (pak);
+                             PacketReadB4 (pak);
+                             PacketReadB4 (pak);
+                             PacketRead2 (pak);    /* EMPTY */
+                    text   = PacketReadDLStr (pak);
+                             PacketReadB4 (pak);   /* UNKNOWN */
+                             PacketReadB4 (pak);
+                             PacketReadB4 (pak);
+                             PacketReadB2 (pak);
+                             PacketRead1 (pak);
+                             PacketRead4 (pak);    /* LEN */
+                    reason = PacketReadDLStr (pak);
+                    port   = PacketReadB2 (pak);
+                             PacketRead2 (pak);    /* PAD */
+                    name   = PacketReadLNTSC (pak);
+                    len    = PacketRead4 (pak);
+                             /* PORT2 ignored */
+                    switch (cmd)
+                    {
+                        case 0x0029:
+                            if (status)
+                            {
+                                M_print (i18n (2069, "File transfer %s rejected by peer (%x,%x): %s.\n"),
+                                         event->info, status, flags, tmp);
+                            }
+                            else
+                            {
+                                Session *fsess;
+                                
+                                M_print (i18n (2070, "File transfer to port %d.\n"), port);
+                                
+                                fsess = SessionFind (TYPE_FILE, event->sess->uin);
+                                fsess->port = port;
+                                fsess->ip = event->sess->ip;
+                                fsess->server = NULL;
+
+                                SessionInitFile (fsess);
+                            }
+                            break;
+                            
+                        default:
+                            cmd = 0;
+                    }
+                    if (cmd)
+                        break;
+
+                    /* fall through */
+#endif
                 default:
                     if (prG->verbose & DEB_TCP)
                         M_print (i18n (1806, "Received ACK for message (seq %04x) from %s\n"),
@@ -1798,6 +1880,7 @@ static void TCPCallBackReceive (Event *event)
                     {
                         UWORD port, port2, flen, pad;
                         const char *text, *reason, *name;
+                        Session *fsess;
                         
                         cmd    = PacketRead2 (pak);
                                  PacketReadData (pak, NULL, 16);
@@ -1815,17 +1898,27 @@ static void TCPCallBackReceive (Event *event)
                         switch (cmd)
                         {
                             case 0x0029:
-                                if (event->sess->ver < 8 || cont->flags & CONT_TEMPORARY)
+                                if (event->sess->ver < 6 || cont->flags & CONT_TEMPORARY)
                                 {
                                     M_print (i18n (2061, "Refused file request %s (%d bytes) from %s (unknown: %x, %x)\n"),
                                              name, flen, cont->nick, port, pad);
-                                    TCPSendMsgAck (event->sess, seq, type, FALSE);
+                                    TCPSendGreetAck (event->sess, seq, cmd, FALSE);
                                 }
                                 else
                                 {
                                     M_print (i18n (2052, "Accepting file %s (%d bytes) from %s.\n"),
                                              name, flen, cont->nick);
-                                    TCPSendMsgAck (event->sess, seq, type, TRUE);
+
+                                    fsess = SessionClone (event->sess);
+                                    assert (fsess);
+                                    fsess->port = 0;
+                                    fsess->ip = 0;
+                                    fsess->server = NULL;
+                                    fsess->type = TYPE_FILE;
+                                    fsess->assoc = event->sess->assoc;
+                                    SessionInitFile (fsess);
+
+                                    TCPSendGreetAck (event->sess, seq, cmd, TRUE);
                                 }
                                 break;
                             case 0x0032:
@@ -1833,12 +1926,12 @@ static void TCPCallBackReceive (Event *event)
                             case 0x002d:
                                 M_print (i18n (2064, "Refusing chat request (%s/%s/%s) from %s.\n"),
                                          text, reason, name, cont->nick);
-                                TCPSendMsgAck (event->sess, seq, type, FALSE);
+                                TCPSendGreetAck (event->sess, seq, cmd, FALSE);
 
                             default:
                                 if (prG->verbose & DEB_PROTOCOL)
                                     M_print (i18n (2065, "Unknown TCP_MSG_GREET_ command %04x.\n"), type);
-                                TCPSendMsgAck (event->sess, seq, type, FALSE);
+                                TCPSendGreetAck (event->sess, seq, cmd, FALSE);
                                 break;
                             
                         }
@@ -1848,6 +1941,7 @@ static void TCPCallBackReceive (Event *event)
                 default:
                     if (prG->verbose & DEB_PROTOCOL)
                         M_print (i18n (2066, "Unknown TCP_MSG_ command %04x.\n"), type);
+                    break;
 
                 /* Regular messages */
                 case TCP_MSG_AUTO:
@@ -1864,6 +1958,7 @@ static void TCPCallBackReceive (Event *event)
                     Do_Msg (event->sess, NULL, type, tmp, cont->uin, STATUS_OFFLINE, 1);
 
                     TCPSendMsgAck (event->sess, seq, type, TRUE);
+                    break;
             }
             break;
         default:
@@ -2103,7 +2198,7 @@ static void PeerFileResend (Event *event)
             }
             if (!event->seq)
                 event->attempts++;
-            event->due = time (NULL) + 3;
+            event->due = time (NULL) + 10;
             QueueEnqueue (event);
             return;
         }
