@@ -590,10 +590,10 @@ void IMOffline (Contact *cont, Connection *conn)
 #define i19n i18n
 #define MSGTCPACKSTR   i19n (2289, "Â»Â»Â»")  /* i18n (2289, "»»»") */
 #define MSGTCPRECSTR   i19n (2290, "Â«Â«Â«")  /* i18n (2290, "«««") */
-#define MSGSSLACKSTR   i19n (2289, "Â»%Â»")  /* i18n (2379, "%") */
-#define MSGSSLRECSTR   i19n (2290, "Â»%Â«")  /* i18n (237380, "% */
-#define MSGTYPE2ACKSTR i19n (2291, ">>Â»")    /* i18n (2291, ">>»") */
-#define MSGTYPE2RECSTR i19n (2292, "Â«<<")    /* i18n (2292, "«<<") */
+#define MSGSSLACKSTR   i19n (2279, "Â»%Â»")  /* i18n (2379, "»%»") */
+#define MSGSSLRECSTR   i19n (2380, "Â»%Â«")  /* i18n (2380, "«%«") */
+#define MSGTYPE2ACKSTR i19n (2291, ">>Â»")  /* i18n (2291, ">>»") */
+#define MSGTYPE2RECSTR i19n (2292, "Â«<<")  /* i18n (2292, "«<<") */
 
 /*
  * Central entry point for protocol triggered output.
