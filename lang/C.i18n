@@ -984,3 +984,5 @@
 2105:contact import  Add server side contact list to local contact list.¶
 2106:Last message from %s%s%s at %s:¶
 2107:No messages received from %s%s%s.¶
+2108:auto
+2109:version

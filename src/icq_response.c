@@ -578,10 +578,12 @@ void Display_Ext_Info_Reply (Session *sess, Packet *pak, const char *uinline)
 /*
  * Central entry point for incoming messages.
  */
-void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, UDWORD uin, UDWORD tstatus, BOOL tcp)
+void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, UDWORD uin, UDWORD tstatus, UBYTE origin)
 {
     char *cdata, *tmp = NULL;
     char *url_url, *url_desc;
+    const char *logstr;
+    char orgstr[20];
     char sep = ConvSep ();
     Contact *cont;
     int x, m;
@@ -591,8 +593,21 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
     TabAddUIN (uin);            /* Adds <uin> to the tab-list */
     UtilCheckUIN (sess, uin);
 
+    switch (origin)
+    {
+        default: snprintf (orgstr, sizeof (orgstr), "%s", MSGRECSTR);                        logstr = "inst"; break;
+        case 1:  snprintf (orgstr, sizeof (orgstr), "%s", MSGTCPRECSTR);                     logstr = "tcp "; break;
+        case 2:  snprintf (orgstr, sizeof (orgstr), "<%s> ", i18n (2108, "auto"));           logstr = "auto"; break;
+        case 3:  snprintf (orgstr, sizeof (orgstr), "<%s> ", i18n (1972, "away"));           logstr = "away"; break;
+        case 4:  snprintf (orgstr, sizeof (orgstr), "<%s> ", i18n (1973, "occupied"));       logstr = "occ "; break;
+        case 5:  snprintf (orgstr, sizeof (orgstr), "<%s> ", i18n (1974, "not available"));  logstr = "na  "; break;
+        case 6:  snprintf (orgstr, sizeof (orgstr), "<%s> ", i18n (1971, "do not disturb")); logstr = "dnd "; break;
+        case 7:  snprintf (orgstr, sizeof (orgstr), "<%s> ", i18n (1976, "free for chat"));  logstr = "ffc "; break;
+        case 8:  snprintf (orgstr, sizeof (orgstr), "<%s> ", i18n (2109, "version"));        logstr = "ver "; break;
+    }
+
     log_event (uin, LOG_MESS, "You received %s message type %x from %s\n%s\n",
-               tcp ? "TCP" : "instant", type, ContactFindName (uin), cdata);
+               logstr, type, ContactFindName (uin), cdata);
     
     cont = ContactFind (uin);
     if (cont && (cont->flags & CONT_IGNORE))
@@ -786,10 +801,10 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
                 url_url++;
             }
 
-            M_print ("%s" COLMESSAGE "%s" COLNONE "\n", tcp ? MSGTCPRECSTR : MSGRECSTR, url_desc);
+            M_print ("%s" COLMESSAGE "%s" COLNONE "\n", orgstr, url_desc);
             Time_Stamp ();
             M_print (i18n (1594, "        URL: %s" COLMESSAGE "%s" COLNONE "\n"),
-                     tcp ? MSGTCPRECSTR : MSGRECSTR, url_url);
+                     orgstr, url_url);
             break;
         case CONTACT_MESS:
         case MRCONTACT_MESS:
@@ -816,7 +831,7 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
         default:
             while (*cdata && (cdata[strlen (cdata) - 1] == '\n' || cdata[strlen (cdata) - 1] == '\r'))
                 cdata[strlen (cdata) - 1] = '\0';
-            M_print ("%s" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", tcp ? MSGTCPRECSTR : MSGRECSTR, cdata);
+            M_print ("%s" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", orgstr, cdata);
             break;
     }
 }

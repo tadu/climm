@@ -11,7 +11,7 @@ dnl exemption).
 dnl
 dnl @version $Id$
 dnl @author Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
-dnl
+dnl @copyright GPL-2
 
 AC_DEFUN([AC_FUNC_SNPRINTF],
 [AC_CHECK_FUNCS(snprintf vsnprintf)

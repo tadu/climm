@@ -1734,9 +1734,8 @@ static void TCPCallBackReceive (Event *event)
 {
     Contact *cont;
     Packet *pak;
-    const char *tmp2;
     char *tmp, *tmp3, *text, *reason, *name;
-    UWORD cmd, type, seq, port;
+    UWORD cmd, type, seq, port, i;
     UDWORD len, status, flags;
 
     if (!event->sess)
@@ -1776,23 +1775,23 @@ static void TCPCallBackReceive (Event *event)
                     Time_Stamp ();
                     M_print (" " COLACK "%10s" COLNONE " " MSGTCPACKSTR "%s\n",
                              cont->nick, event->info);
-                    if (~cont->flags & CONT_SEENAUTO)
+                    if (~cont->flags & CONT_SEENAUTO && strlen (tmp))
                     {
-                        Do_Msg (event->sess->parent, NULL, NORM_MESS, tmp, cont->uin, status, 1);
+                        Do_Msg (event->sess->parent->parent, NULL, NORM_MESS, tmp, cont->uin, status, 2);
                         cont->flags |= CONT_SEENAUTO;
                     }
                     break;
 
                     while (0) {  /* Duff-uesque */
-                case TCP_MSG_GET_AWAY:  tmp2 = i18n (1972, "away");           break;
-                case TCP_MSG_GET_OCC:   tmp2 = i18n (1973, "occupied");       break;
-                case TCP_MSG_GET_NA:    tmp2 = i18n (1974, "not available");  break;
-                case TCP_MSG_GET_DND:   tmp2 = i18n (1971, "do not disturb"); break;
-                case TCP_MSG_GET_FFC:   tmp2 = i18n (1976, "free for chat");  break;
-                case TCP_MSG_GET_VER:   tmp2 = i18n (2062, "version");  }
-                    Time_Stamp ();
-                    M_print (" " COLACK "%10s" COLNONE " <%s> %s\n",
-                             cont->nick, tmp2, tmp);
+                case TCP_MSG_GET_AWAY: i = 3; break;
+                case TCP_MSG_GET_OCC:  i = 4; break;
+                case TCP_MSG_GET_NA:   i = 5; break;
+                case TCP_MSG_GET_DND:  i = 6; break;
+                case TCP_MSG_GET_FFC:  i = 7; break;
+                case TCP_MSG_GET_VER:  i = 8; }
+                    Do_Msg (event->sess->parent->parent, NULL, NORM_MESS, tmp, cont->uin, status, i);
+                    break;
+                    
                     break;
 
                 case TCP_MSG_FILE:
@@ -1970,7 +1969,7 @@ static void TCPCallBackReceive (Event *event)
                 case TCP_MSG_WEB_PAGER:
                 case TCP_MSG_EMAIL_PAGER:
                 case TCP_MSG_ADDUIN:
-                    Do_Msg (event->sess, NULL, type, tmp, cont->uin, STATUS_OFFLINE, 1);
+                    Do_Msg (event->sess->parent->parent, NULL, type, tmp, cont->uin, STATUS_OFFLINE, 1);
 
                     TCPSendMsgAck (event->sess, seq, type, TRUE);
                     break;
