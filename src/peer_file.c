@@ -58,6 +58,7 @@ Session *PeerFileCreate (Session *serv)
     if (prG->verbose)
         M_print (i18n (2082, "Opening file listener connection at localhost:%d... "), serv->assoc->spref->port);
 
+    flist->spref       = NULL;
     flist->parent      = serv;
     flist->connect     = 0;
     flist->flags       = 0;
@@ -82,6 +83,8 @@ BOOL PeerFileRequested (Session *peer, const char *files, UDWORD bytes)
 {
     Session *flist, *fpeer;
     Contact *cont;
+    struct stat finfo;
+    char buf[300];
 
     ASSERT_MSGDIRECT(peer);
     
@@ -98,6 +101,10 @@ BOOL PeerFileRequested (Session *peer, const char *files, UDWORD bytes)
     if (!flist)
         return 0;
     ASSERT_FILELISTEN (flist);
+    
+    snprintf (buf, sizeof (buf), "%s/files/%ld", PrefUserDir (), peer->uin);
+    if (stat (buf, &finfo))
+        return 0;
     
     fpeer = SessionClone (flist, TYPE_FILEDIRECT);
     if (!fpeer)
@@ -474,8 +481,7 @@ void PeerFileResend (Event *event)
                  event->seq, event->info, event->attempts);
         TCPClose (fpeer);
     }
-
-    if (!(fpeer->connect & CONNECT_MASK))
+    else if (!(fpeer->connect & CONNECT_MASK))
     {
         Time_Stamp ();
         M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);

@@ -784,7 +784,7 @@ static JUMP_F(CmdUserPeer)
 
             ass[0] = (strchr (file, '/')) ? strrchr (file, '/') + 1 : file;
             
-            if (TCPSendFiles (list, cont->uin, des, files, ass, 1))
+            if (!TCPSendFiles (list, cont->uin, des, files, ass, 1))
                 M_print (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
             
             free (files[0]);

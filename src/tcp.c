@@ -332,12 +332,10 @@ void TCPDispatchConn (Session *peer)
                     peer->connect = 3;
                     break;
                 }
-                peer->server  = NULL;
                 if (peer->type == TYPE_MSGDIRECT)
-                {
-                    peer->ip      = cont->outside_ip;
                     peer->port    = cont->port;
-                }
+                peer->server  = NULL;
+                peer->ip      = cont->outside_ip;
                 peer->connect = 1;
                 
                 if (prG->verbose)
@@ -350,13 +348,6 @@ void TCPDispatchConn (Session *peer)
                 UtilIOConnectTCP (peer);
                 return;
             case 3:
-                if (peer->type == TYPE_FILEDIRECT)
-                {
-                    sockclose (peer->sok);
-                    peer->sok = -1;
-                    peer->connect = 0;
-                    return;
-                }
                 if (!cont->local_ip || !cont->port)
                 {
                     peer->connect = CONNECT_FAIL;
@@ -1022,6 +1013,7 @@ static Session *TCPReceiveInit (Session *peer, Packet *pak)
                 QueueDequeue (peer2->ip, QUEUE_TCP_TIMEOUT);
             if (peer2->sok != -1)
                 TCPClose (peer2);
+            peer->len = peer2->len;
             SessionClose (peer2);
         }
         return peer;
@@ -1335,7 +1327,7 @@ static int TCPSendMsgAck (Session *peer, UWORD seq, UWORD type, BOOL accept)
     Packet *pak;
     const char *msg;
     UWORD status, flags;
-    Session *fpeer, *flist;
+    Session *flist;
 
     ASSERT_MSGDIRECT (peer);
 
@@ -1378,17 +1370,17 @@ static int TCPSendMsgAck (Session *peer, UWORD seq, UWORD type, BOOL accept)
     {
         case TCP_MSG_FILE:
             flist = PeerFileCreate (peer->parent->parent);
-            fpeer = SessionFind (TYPE_FILEDIRECT, peer->uin, flist);
             
-            assert (flist && fpeer);
-            
-            PacketWriteB2   (pak, flist->port);  /* port */
-            PacketWrite2    (pak, 0);            /* padding */
-            PacketWriteStr  (pak, "");           /* file name - empty */
-            PacketWrite4    (pak, 0);            /* file len - empty */
-            if (peer->ver > 6)
-                PacketWrite4 (pak, 0x20726f66);  /* unknown - strange - 'for ' */
-            PacketWrite4    (pak, flist->port);  /* port again */
+            if (flist)
+            {
+                PacketWriteB2   (pak, accept ? flist->port : 0);     /* port */
+                PacketWrite2    (pak, 0);                            /* padding */
+                PacketWriteStr  (pak, accept ? "" : "auto-refused"); /* file name - empty */
+                PacketWrite4    (pak, 0);                            /* file len - empty */
+                if (peer->ver > 6)
+                    PacketWrite4 (pak, 0x20726f66);                  /* unknown - strange - 'for ' */
+                PacketWrite4    (pak, accept ? flist->port : 0);     /* port again */
+            }
             break;
         case 0:
         case 1:
@@ -1572,7 +1564,7 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
     Contact *cont;
     Packet *pak;
     Session *peer, *flist, *fpeer;
-    int i, rc, sumlen = 0, sum = 0;
+    int i, rc, sumlen, sum;
 
     if (!count)
         return TRUE;
@@ -1614,9 +1606,12 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
     
     flist = PeerFileCreate (peer->parent->parent);
     if (!flist)
-        return 0;
+        return FALSE;
     
     ASSERT_FILELISTEN(flist);
+
+    if (SessionFind (TYPE_FILEDIRECT, uin, flist))
+        return FALSE;
 
     fpeer = SessionClone (flist, TYPE_FILEDIRECT);
     
@@ -1625,7 +1620,7 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
     fpeer->uin     = uin;
     fpeer->connect = 77;
         
-    for (i = 0; i < count; i++)
+    for (sumlen = sum = i = 0; i < count; i++)
     {
         struct stat fstat;
         
@@ -1657,7 +1652,7 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
     if (!sum)
     {
         SessionClose (fpeer);
-        return 0;
+        return FALSE;
     }
     
     pak = PeerPacketC (fpeer, 0);
@@ -1688,7 +1683,7 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
 
     QueueEnqueueData (peer, peer->our_seq--, QUEUE_TCP_RESEND,
                       uin, time (NULL), pak, strdup (description), &TCPCallBackResend);
-    return 1;
+    return TRUE;
 }
 
 /*
@@ -1912,12 +1907,16 @@ static void TCPCallBackReceive (Event *event)
 
                     if (PeerFileRequested (event->sess, tmp3, len))
                     {
+                        Time_Stamp ();
+                        M_print (" " COLACK "%10s" COLNONE " ", cont->nick);
                         M_print (i18n (2052, "Accepting file '%s' (%d bytes) from %s.\n"),
                                  tmp3, len, cont->nick);
                         TCPSendMsgAck (event->sess, seq, TCP_MSG_FILE, TRUE);
                     }
                     else
                     {
+                        Time_Stamp ();
+                        M_print (" " COLACK "%10s" COLNONE " ", cont->nick);
                         M_print (i18n (2061, "Refused file request '%s' (%d bytes) from %s (unknown: %x, %x)\n"),
                                  tmp3, len, cont->nick, cmd, type);
                         TCPSendMsgAck (event->sess, seq, TCP_MSG_FILE, FALSE);
