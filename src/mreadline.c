@@ -596,8 +596,6 @@ void R_redraw ()
         prstat = 0;
         return;
     }
-    prstat = 0;
-    R_remprompt ();
     R_prompt ();
 }
 
