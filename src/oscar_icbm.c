@@ -274,6 +274,8 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
             PacketWriteData    (pak, str->txt, str->len);
             PacketWriteTLVDone (pak);
             PacketWriteTLVDone (pak);
+            PacketWriteB2 (pak, 3);
+            PacketWriteB2 (pak, 0);
             PacketWriteB2 (pak, 6);
             PacketWriteB2 (pak, 0);
             SnacSend (serv, pak);
@@ -761,17 +763,18 @@ JUMP_SNAC_F(SnacSrvSrvackmsg)
     switch (type)
     {
         case 1:
+            if (cont->status == STATUS_OFFLINE)
+                break;
         case 4:
-            IMOffline (cont, serv);
-
             rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
             rl_print  (i18n (2126, "is offline, message queued on server.\n"));
-
-/*          cont->status = STATUS_OFFLINE;
-            putlog (serv, NOW, cont, STATUS_OFFLINE, LOG_ACK, 0xFFFF, 
-                s_sprintf ("%08lx%08lx\n", mid1, mid2)); */
             break;
         case 2: /* msg was received by server */
+            if ((pak->ref & 0xffff) == 0x1771)
+            {
+                rl_print (i18n (2573, "The user is probably offline.\n"));
+                return;
+            }
             EventD (QueueDequeue (serv, QUEUE_TYPE2_RESEND_ACK, pak->ref));
             break;
     }
