@@ -47,9 +47,9 @@ sub ReadTainted($)
     open IN, "<$name" || return;
     while (<IN>)
     {
-        if (m/^([0-9]{4}):/)
+        if (m/^([0-9]{4}):(.*)$/)
         {
-            $tain{$1} = 1;
+            $tain{$1} = $2;
         }
     }
 }
@@ -63,6 +63,9 @@ sub ProcessLine($)
         print OUT "#  EN: __.i18n,v $version\n";
     }
     elsif ($line =~ m/^#[0-9][0-9]*:/)
+    {
+    }
+    elsif ($line =~ m/^# #[0-9][0-9]*:/)
     {
     }
     elsif ($line =~ m/^#/)
@@ -83,10 +86,11 @@ sub ProcessLine($)
         $last = sprintf ("%04d", $last);
         if (length ($nrval{$neu}))
         {
-            if ($tain{$neu})
+            if (length ($tain{$neu}))
             {
                 print OUT "#-#$line\n";
-                print OUT "#$last:$nrval{$last}\n";
+                print OUT "#+#$last:$tain{$neu}\n";
+                print OUT "# #$last:$nrval{$last}\n";
                 $tainted++;
             }
             else
