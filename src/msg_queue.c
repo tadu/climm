@@ -180,7 +180,13 @@ Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD id,
 
 Event *QueueDequeueEvent (Event *event)
 {
-    return q_QueueDequeueEvent (event, NULL);
+    Event *oevent = q_QueueDequeueEvent (queue->head->event, NULL);
+    if (oevent)
+        Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08lx %p %ld",
+               QueueType (oevent->type), oevent, oevent->seq, oevent->pak, oevent->uin);
+    else
+        Debug (DEB_QUEUE, STR_DOT "??" STR_DOT " %p", event);
+    return oevent;
 }
 
 /*
@@ -450,6 +456,11 @@ const char *QueueType (UDWORD type)
         case QUEUE_PEER_RESEND:   return "PEER_RESEND";
         case QUEUE_TYPE2_RESEND:  return "TYPE2_RESEND";
         case QUEUE_ACKNOWLEDGE:   return "ACKNOWLEDGE";
+        case QUEUE_REQUEST_ROSTER:   return "REQUEST_ROSTER";
+        case QUEUE_TYPE2_RESEND_ACK: return "TYPE2_RESEND_ACK";
+        case QUEUE_REQUEST_META:  return "REQUEST_META";
+        case QUEUE_TODO_EG:       return "TODO_EG";
+        case QUEUE_CACHE_MSG:     return "CACHE_MSG";
     }
     return s_sprintf ("%lx", type);
 }
