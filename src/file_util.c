@@ -970,7 +970,7 @@ int Read_RC_File (FILE *rcf)
                         {
                             uin = atoi (cg->name + 14);
                         
-                            if ((conn = ConnectionFindUIN (type, uin, NULL)))
+                            if ((conn = ConnectionFindUIN (type, uin)))
                             {
                                 cg->serv = conn;
                                 cg->serv->contacts = cg;
@@ -1000,7 +1000,7 @@ int Read_RC_File (FILE *rcf)
                     
                     PrefParseInt (uin);
                     
-                    if ((conn = ConnectionFindUIN (type, uin, NULL)))
+                    if ((conn = ConnectionFindUIN (type, uin)))
                     {
                         if (cg->serv && cg->serv->contacts == cg)
                             cg->serv->contacts = NULL;
@@ -1182,7 +1182,7 @@ void PrefReadStat (FILE *stf)
                             break;
                         
                         uin = atoi (cg->name + 14);
-                        if ((conn = ConnectionFindUIN (type, uin, NULL)))
+                        if ((conn = ConnectionFindUIN (type, uin)))
                         {
                             cg->serv = conn;
                             cg->serv->contacts = cg;
@@ -1209,7 +1209,7 @@ void PrefReadStat (FILE *stf)
                         ERROR;
                     
                     PrefParseInt (uin);
-                    if ((conn = ConnectionFindUIN (type, uin, NULL)))
+                    if ((conn = ConnectionFindUIN (type, uin)))
                         cg->serv = conn;
                 }
                 else if (!strcasecmp (cmd, "entry"))

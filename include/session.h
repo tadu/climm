@@ -74,7 +74,7 @@ Connection    *ConnectionC       (UWORD type);
 Connection    *ConnectionClone   (Connection *conn, UWORD type);
 Connection    *ConnectionNr      (int i);
 Connection    *ConnectionFind    (UWORD type, const Contact *cont, const Connection *parent);
-Connection    *ConnectionFindUIN (UWORD type, UDWORD uin, const Connection *parent);
+Connection    *ConnectionFindUIN (UWORD type, UDWORD uin);
 UDWORD         ConnectionFindNr  (Connection *conn);
 void           ConnectionClose   (Connection *conn);
 const char    *ConnectionType    (Connection *conn);

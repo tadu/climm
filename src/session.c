@@ -103,9 +103,9 @@ Connection *ConnectionClone (Connection *conn, UWORD type)
     if (!child)
         return NULL;
 
-    child->parent   = conn;
-    child->cont  = conn->cont;
-    child->flags = 0;
+    child->parent = conn;
+    child->cont   = conn->cont;
+    child->flags  = 0;
     
     Debug (DEB_CONNECT, "<=*= %p (%s) clone from %p (%s)", child, ConnectionType (child), conn, ConnectionType (conn));
 
@@ -183,48 +183,19 @@ Connection *ConnectionFind (UWORD type, const Contact *cont, const Connection *p
  * Actually, you may specify TYPEF_* here that must all be set.
  * The parent is the session this one has to have as parent.
  */
-Connection *ConnectionFindUIN (UWORD type, UDWORD uin, const Connection *parent)
+Connection *ConnectionFindUIN (UWORD type, UDWORD uin)
 {
     ConnectionList *cl;
     Connection *conn;
     int i;
     
-    if (parent)
-    {
-        if (uin)
-        {
-            for (cl = &slist; cl; cl = cl->more)
-                for (i = 0; i < ConnectionListLen; i++)
-                    if ((conn = cl->conn[i]) && (conn->type & type) == type && conn->uin == uin && conn->parent == parent)
-                        return conn;
-        }
-        else
-            for (cl = &slist; cl; cl = cl->more)
-                for (i = 0; i < ConnectionListLen; i++)
-                    if ((conn = cl->conn[i]) && (conn->type & type) == type && (conn->connect & CONNECT_OK) && conn->parent == parent)
-                        return conn;
-    }
-    else
-    {
-        if (uin)
-        {
-            for (cl = &slist; cl; cl = cl->more)
-                for (i = 0; i < ConnectionListLen; i++)
-                    if ((conn = cl->conn[i]) && (conn->type & type) == type && conn->uin == uin)
-                        return conn;
-        }
-        else
-        {
-            for (cl = &slist; cl; cl = cl->more)
-                for (i = 0; i < ConnectionListLen; i++)
-                    if ((conn = cl->conn[i]) && (conn->type & type) == type && (conn->connect & CONNECT_OK))
-                        return conn;
-            for (cl = &slist; cl; cl = cl->more)
-                for (i = 0; i < ConnectionListLen; i++)
-                    if ((conn = cl->conn[i]) && (conn->type & type) == type)
-                        return conn;
-        }
-    }
+    assert (type && uin);
+
+    for (cl = &slist; cl; cl = cl->more)
+        for (i = 0; i < ConnectionListLen; i++)
+            if ((conn = cl->conn[i]) && (conn->type & type) == type && conn->uin == uin)
+                return conn;
+
     return NULL;
 }
 

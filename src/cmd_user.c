@@ -2961,7 +2961,7 @@ static JUMP_F(CmdUserConn)
             i = ConnectionFindNr (conn) + 1;
 
         connl = ConnectionNr (i - 1);
-        if (!connl && !(connl = ConnectionFindUIN (TYPEF_SERVER, i, NULL)))
+        if (!connl && !(connl = ConnectionFindUIN (TYPEF_SERVER, i)))
         {
             M_printf (i18n (1894, "There is no connection number %ld.\n"), i);
             return 0;
@@ -3110,7 +3110,7 @@ static JUMP_F(CmdUserAsSession)
     }
 
     tmpconn = ConnectionNr (nr - 1);
-    if (!tmpconn && !(tmpconn = ConnectionFindUIN (TYPEF_SERVER, nr, NULL)))
+    if (!tmpconn && !(tmpconn = ConnectionFindUIN (TYPEF_SERVER, nr)))
     {
         if (!quiet)
             M_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
