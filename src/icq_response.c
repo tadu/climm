@@ -580,6 +580,18 @@ void IMOffline (Contact *cont, Connection *conn)
              s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, i18n (1030, "logged off."));
 }
 
+#ifndef ENABLE_UTF8
+#define MSGTCPACKSTR   "\xbb\xbb\xbb"
+#define MSGTCPRECSTR   "\xab\xab\xab"
+#define MSGTYPE2ACKSTR ">>+"
+#define MSGTYPE2RECSTR "+<<"
+#else
+#define MSGTCPACKSTR   i18n (2289, "»»»")
+#define MSGTCPRECSTR   i18n (2290, "«««")
+#define MSGTYPE2ACKSTR i18n (2291, ">>»")
+#define MSGTYPE2RECSTR i18n (2292, "«<<")
+#endif
+
 /*
  * Central entry point for protocol triggered output.
  */
@@ -615,23 +627,23 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
             line = s_sprintf (i18n (2230, "Refusing chat request (%s/%s) from %s.\n"), extra->text, text, cont->nick);
             break;
         case INT_MSGTRY_TYPE2:
-            line = s_sprintf ("%s%s\n", "--= " COLSINGLE, text);
+            line = s_sprintf ("%s%s %s\n", i18n (2293, "--="), COLSINGLE, text);
             break;
         case INT_MSGTRY_DC:
-            line = s_sprintf ("%s%s\n", MSGTCPSENTSTR COLSINGLE, text);
+            line = s_sprintf ("%s%s %s\n", i18n (2294, "==="), COLSINGLE, text);
             break;
         case INT_MSGACK_TYPE2:
             col = COLACK;
-            line = s_sprintf ("%s%s\n", MSGTYPE2SENTSTR COLSINGLE, text);
+            line = s_sprintf ("%s%s %s\n", MSGTYPE2ACKSTR, COLSINGLE, text);
             break;
         case INT_MSGACK_DC:
             col = COLACK;
-            line = s_sprintf ("%s%s\n", MSGTCPACKSTR COLSINGLE, text);
+            line = s_sprintf ("%s%s %s\n", MSGTCPACKSTR, COLSINGLE, text);
             break;
         case INT_MSGACK_V8:
         case INT_MSGACK_V5:
             col = COLACK;
-            line = s_sprintf ("%s%s\n", MSGSENTSTR COLSINGLE, text);
+            line = s_sprintf ("%s%s %s\n", i18n (2295, ">>>"), COLSINGLE, text);
             break;
         default:
             line = s_sprintf ("\n");
@@ -658,9 +670,9 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
 void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
 {
     const char *tmp, *tmp2, *tmp3, *tmp4, *tmp5, *tmp6;
-    char *cdata, *carr;
+    char *cdata;
     Extra *e;
-    const char *e_msg_text;
+    const char *e_msg_text, *carr;
     UDWORD e_msg_type;
     int i;
     
@@ -677,7 +689,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
     e_msg_type = ExtraGet (extra, EXTRA_MESSAGE);
 
     carr = ExtraGet (extra, EXTRA_ORIGIN) == EXTRA_ORIGIN_dc ? MSGTCPRECSTR :
-           ExtraGet (extra, EXTRA_ORIGIN) == EXTRA_ORIGIN_v8 ? MSGTYPE2RECSTR : MSGRECSTR;
+           ExtraGet (extra, EXTRA_ORIGIN) == EXTRA_ORIGIN_v8 ? MSGTYPE2RECSTR : i18n (2296, "<<<");
 
     putlog (conn, stamp, cont,
         (e = ExtraFind (extra, EXTRA_STATUS)) ? e->data : STATUS_OFFLINE, 
@@ -742,7 +754,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
 
         case MSG_NORM:
         default:
-            M_printf ("%s" COLMSGINDENT "%s\n", carr, cdata);
+            M_printf ("%s " COLMSGINDENT "%s\n", carr, cdata);
             break;
 
         case TCP_MSG_FILE:
@@ -782,8 +794,8 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             tmp  = s_msgtok (cdata); if (!tmp)  continue;
             tmp2 = s_msgtok (NULL);  if (!tmp2) continue;
             
-            M_printf ("%s" COLMESSAGE "%s" COLNONE "\n%s", carr, tmp, s_now);
-            M_printf (i18n (2127, "       URL: %s%s%s%s\n"), carr, COLMESSAGE, tmp2, COLNONE);
+            M_printf ("%s " COLMESSAGE "%s" COLNONE "\n%s", carr, tmp, s_now);
+            M_printf (i18n (2127, "       URL: %s %s%s%s\n"), carr, COLMESSAGE, tmp2, COLNONE);
             break;
 
         case MSG_AUTH_REQ:

@@ -44,26 +44,3 @@
 /* If you change this things will probably come out formated badly.
 ** But you can change the tab stops if you so desire */
 #define TAB_STOP 8
-
-#ifndef ENABLE_UTF8
-#define MSGSENTSTR      ">>> " /* Define what to output additionally when sending a message. */
-#define MSGACKSTR       "ok: " /* Define what to output additionally when a message is acknowledged. */
-#define MSGRECSTR       "<<< " /* Define what to output additionally when a message is received. */
-#define MSGTCPSENTSTR   "=== " /* Define what to output additionally when sending a tcp message. */
-#define MSGTCPACKSTR    "\xbb\xbb\xbb " /* Define what to output additionally when sending a tcp message. */
-#define MSGTCPRECSTR    "\xab\xab\xab " /* Define what to output additionally when a tcp message is received. */
-#define MSGTYPE2SENTSTR ">>+ " /* Define what to output additionally when a type-2 message is acknowledged. */
-#define MSGTYPE2RECSTR  "+<< " /* Define what to output additionally when a type-2 message is received. */
-#define STR_DOT         "\b7"
-#else
-#define MSGSENTSTR      ">>> "
-#define MSGACKSTR       "ok: "
-#define MSGRECSTR       "<<< "
-#define MSGTCPSENTSTR   "=== "
-#define MSGTCPACKSTR    "\xc2\xbb\xc2\xbb\xc2\xbb "
-#define MSGTCPRECSTR    "\xc2\xab\xc2\xab\xc2\xab "
-#define MSGTYPE2SENTSTR ">>\xc2\xbb "
-#define MSGTYPE2RECSTR  "\xc2\xab<< "
-#define STR_DOT "\xc2\xb7"
-#endif
-

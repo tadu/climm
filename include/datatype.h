@@ -75,4 +75,11 @@ typedef int SOK_T;
 
 #define RET_IS_OK(x) ((x) & 1)
 
+#ifndef ENABLE_UTF8
+#define STR_DOT        "\b7"
+#else
+#define STR_DOT        "\xc2\xb7"
+#endif
+
+
 #endif /* MICQ_DATATYPE_H */
