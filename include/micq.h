@@ -27,7 +27,7 @@
 #ifdef PREFER_PORTABLE_MEMMOVE
   #include <memmove.h>
 #endif
-#ifndef ___attribute__
+#ifndef __attribute__
   #define __attribute__(x)
 #endif
 
