@@ -555,7 +555,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                     case 0x0032:
                     default:
                         if (prG->verbose & DEB_PROTOCOL)
-                            M_printf (i18n (2065, "Unknown MSG_GREET_ command %04x.\n"), msgtype);
+                            M_printf (i18n (2065, "Unknown TCP_MSG_GREET_ command %04x.\n"), msgtype);
                         PacketWrite2    (ack_pak, TCP_ACK_REFUSE);
                         PacketWrite2    (ack_pak, ack_flags);
                         PacketWriteLNTS (ack_pak, "");

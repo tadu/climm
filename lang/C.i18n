@@ -620,7 +620,6 @@
 1762:Your new UIN is: %ld.\n
 1763:The command '%s' has been renamed to '%s'.
 1764:The command '%s' is unchanged.
-1765:%s has UIN %ld.
 1766:Changing status to away/not available after idling %s%ld%s seconds.\n
 1767:Toggles auto cycling to away/not available.
 1768:The command name '%s' is already being used.\n
@@ -1069,3 +1068,7 @@
 2313:Grant, deny, request or acknowledge authorization from/to <contacts> to you/them to their/your contact list.
 2314:These are advanced commands. Be sure to have read the manual pages for complete information.\n
 2315:Cannot watch status of %s - too many watchers.\n
+2317:Translation %s not found. Would you like to translate mICQ into your language?\n
+2318:English (%s) translation loaded (%ld entries).\n
+2319:Accept an incoming file transfer from <uin> or <nick>.
+2320:peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n

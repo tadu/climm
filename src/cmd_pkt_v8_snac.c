@@ -1536,13 +1536,14 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
             {
             char buf[451];
             const char *p;
+
             int enc = ENC_LATIN1, icqenc = 3;
             size_t len, olen;
             
             if (cont->status == STATUS_OFFLINE)
             {
-                enc = ENC_UTF8;
-                icqenc = 0;
+                enc = ENC_UCS2BE;
+                icqenc = 2;
             }
             else
                 for (p = text; *p; p++)
