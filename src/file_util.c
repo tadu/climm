@@ -44,13 +44,13 @@
 static char *fill (const char *fmt, const char *in);
 
 #define      ADD_ALTER(a,b)      else if (!strcasecmp (tmp, a))    \
-                                       CmdUser (sess, fill ("턠lter quiet " #b " %s", strtok (NULL, " \n\t")))
+                                       CmdUser (NULL, fill ("턠lter quiet " #b " %s", strtok (NULL, " \n\t")))
 #define      ADD_CMD_D(a,b)      else if (!strcasecmp (tmp, a))        \
                                        { prG->b = strtok (NULL, "\n");\
                                          if (!prG->b) prG->b = ""; \
                                          while (*prG->b == ' ' || *prG->b == '\t') prG->b++; \
                                          prG->b = strdup (prG->b);     \
-                                         dep = 1; } else if (0)
+                                         dep |= 1; } else if (0)
 #define      ADD_CMD(a,b)        else if (!strcasecmp (tmp, a))        \
                                        { prG->b = strtok (NULL, "\n");\
                                          if (!prG->b) prG->b = ""; \
@@ -180,19 +180,18 @@ void Initalize_RC_File (Session *sess)
     }
 }
 
-void Read_RC_File (Session *sess, FD_T rcf)
+void Read_RC_File (FD_T rcf)
 {
     char buf[450];
     char *tmp;
     char *p;
     Contact *cont;
+    Session *oldsess = NULL, *newsess = NULL;
     int i, section, dep = 0;
     UDWORD uin;
     char *tab_nick_spool[TAB_SLOTS];
     int spooled_tab_nicks;
 
-    sess->passwd = NULL;
-    sess->uin = 0;
     prG->away_time = default_away_time;
 
     spooled_tab_nicks = 0;
@@ -202,10 +201,19 @@ void Read_RC_File (Session *sess, FD_T rcf)
             continue;
         if (buf[0] == '[')
         {
-            if (!strcasecmp (buf, "[Contacts]"))
+            if (!strcasecmp (buf, "[General]"))
+                section = 0;
+            else if (!strcasecmp (buf, "[Contacts]"))
                 section = 1;
             else if (!strcasecmp (buf, "[Strings]"))
                 section = 2;
+            else if (!strcasecmp (buf, "[Connection]"))
+            {
+                section = 3;
+                oldsess = newsess;
+                newsess = SessionC ();
+                newsess->spref = PreferencesSessionC ();
+            }
             else
             {
                 M_print (COLERR "%s" COLNONE " ", i18n (733, "Warning:"));
@@ -226,11 +234,23 @@ void Read_RC_File (Session *sess, FD_T rcf)
                 tmp = strtok (buf, " ");
                 if (!strcasecmp (tmp, "Server"))
                 {
-                    sess->server = M_strdup (strtok (NULL, " \n\t"));
+                    if (!newsess)
+                    {
+                        newsess = SessionC ();
+                        newsess->spref = PreferencesSessionC ();
+                    }
+                    dep |= 2;
+                    newsess->spref->server = M_strdup (strtok (NULL, " \n\t"));
                 }
                 else if (!strcasecmp (tmp, "Password"))
                 {
-                    sess->passwd = M_strdup (strtok (NULL, "\n\t"));
+                    if (!newsess)
+                    {
+                        newsess = SessionC ();
+                        newsess->spref = PreferencesSessionC ();
+                    }
+                    dep |= 2;
+                    newsess->spref->passwd = M_strdup (strtok (NULL, "\n\t"));
                 }
                 else if (!strcasecmp (tmp, "ReceiveScript"))
                 {
@@ -266,23 +286,23 @@ void Read_RC_File (Session *sess, FD_T rcf)
                 }
                 else if (!strcasecmp (tmp, "verbose"))
                 {
-                    if (prG->verbose == (unsigned)-2)
+                    if (!prG->verbose)
                         prG->verbose = atoi (strtok (NULL, "\n"));
                 }
                 else if (!strcasecmp (tmp, "Russian"))
                 {
                     prG->flags |= FLAG_CONVRUSS;
-                    dep = 1;
+                    dep |= 1;
                 }
                 else if (!strcasecmp (tmp, "JapaneseEUC"))
                 {
                     prG->flags |= FLAG_CONVEUC;
-                    dep = 1;
+                    dep |= 1;
                 }
                 else if (!strcasecmp (tmp, "Hermit"))
                 {
                     prG->flags |= FLAG_HERMIT;
-                    dep = 1;
+                    dep |= 1;
                 }
                 else if (!strcasecmp (tmp, "logplace"))
                 {
@@ -310,27 +330,27 @@ void Read_RC_File (Session *sess, FD_T rcf)
                             strcpy (prG->logplace, home);
                             strcpy (prG->logplace, "/micq.log/");
                     }
-                    dep = 1;
+                    dep |= 1;
                 }
                 else if (!strcasecmp (tmp, "No_Log"))
                 {
                     prG->flags &= ~FLAG_LOG & ~FLAG_LOG_ONOFF;
-                    dep = 1;
+                    dep |= 1;
                 }
                 else if (!strcasecmp (tmp, "No_Color"))
                 {
                     prG->flags &= ~FLAG_COLOR;
-                    dep = 1;
+                    dep |= 1;
                 }
                 else if (!strcasecmp (tmp, "Last_UIN_Prompt"))
                 {
                     prG->flags |= FLAG_UINPROMPT;
-                    dep = 1;
+                    dep |= 1;
                 }
                 else if (!strcasecmp (tmp, "Del_is_Del"))
                 {
                     prG->flags &= ~FLAG_DELBS;
-                    dep = 1;
+                    dep |= 1;
                 }
                 else if (!strcasecmp (tmp, "LineBreakType"))
                 {
@@ -343,15 +363,33 @@ void Read_RC_File (Session *sess, FD_T rcf)
                 }
                 else if (!strcasecmp (tmp, "UIN"))
                 {
-                    sess->uin = atoi (strtok (NULL, " \n\t"));
+                    if (!newsess)
+                    {
+                        newsess = SessionC ();
+                        newsess->spref = PreferencesSessionC ();
+                    }
+                    dep |= 2;
+                    newsess->spref->uin = atoi (strtok (NULL, " \n\t"));
                 }
                 else if (!strcasecmp (tmp, "port"))
                 {
-                    sess->server_port = atoi (strtok (NULL, " \n\t"));
+                    if (!newsess)
+                    {
+                        newsess = SessionC ();
+                        newsess->spref = PreferencesSessionC ();
+                    }
+                    dep |= 2;
+                    newsess->spref->port = atoi (strtok (NULL, " \n\t"));
                 }
-                else if (!strcasecmp (tmp, "Status"))
+                else if (!strcasecmp (tmp, "status"))
                 {
-                    prG->status = atoi (strtok (NULL, " \n\t"));
+                    if (!newsess)
+                    {
+                        newsess = SessionC ();
+                        newsess->spref = PreferencesSessionC ();
+                    }
+                    dep |= 2;
+                    newsess->spref->status = atoi (strtok (NULL, " \n\t"));
                 }
                 ADD_CMD_D ("auto_rep_str_away", auto_away);
                 ADD_CMD_D ("auto_rep_str_na",   auto_na);
@@ -389,7 +427,7 @@ void Read_RC_File (Session *sess, FD_T rcf)
                         strcat (prG->logplace, "/");
                     }
                     prG->flags |= FLAG_LOG;
-                    dep = 1;
+                    dep |= 1;
                 }
                 else if (!strcasecmp (tmp, "Sound"))
                 {
@@ -397,7 +435,7 @@ void Read_RC_File (Session *sess, FD_T rcf)
                     if (!tmp)
                     {
                         prG->sound |= SFLAG_BEEP;
-                        dep = 1;
+                        dep |= 1;
                         continue;
                     }
                     prG->sound &= ~SFLAG_BEEP & ~SFLAG_CMD;
@@ -413,7 +451,7 @@ void Read_RC_File (Session *sess, FD_T rcf)
                 else if (!strcasecmp (tmp, "No_Sound"))
                 {
                     prG->sound &= ~SFLAG_BEEP & ~SFLAG_CMD;
-                    dep = 1;
+                    dep |= 1;
                 }
                 else if (!strcasecmp (tmp, "SoundOnline"))
                 {
@@ -421,7 +459,7 @@ void Read_RC_File (Session *sess, FD_T rcf)
                     if (!tmp)
                     {
                         prG->sound |= SFLAG_ON_BEEP;
-                        dep = 1;
+                        dep |= 1;
                         continue;
                     }
                     prG->sound &= ~SFLAG_ON_BEEP & ~SFLAG_ON_CMD;
@@ -437,7 +475,7 @@ void Read_RC_File (Session *sess, FD_T rcf)
                 else if (!strcasecmp (tmp, "No_SoundOnline"))
                 {
                     prG->sound &= ~SFLAG_ON_BEEP & ~SFLAG_ON_CMD;
-                    dep = 1;
+                    dep |= 1;
                 }
                 else if (!strcasecmp (tmp, "SoundOffline"))
                 {
@@ -445,7 +483,7 @@ void Read_RC_File (Session *sess, FD_T rcf)
                     if (!tmp)
                     {
                         prG->sound |= SFLAG_OFF_BEEP;
-                        dep = 1;
+                        dep |= 1;
                         continue;
                     }
                     prG->sound &= ~SFLAG_OFF_BEEP & ~SFLAG_OFF_CMD;
@@ -461,7 +499,7 @@ void Read_RC_File (Session *sess, FD_T rcf)
                 else if (!strcasecmp (tmp, "No_SoundOffline"))
                 {
                     prG->sound &= ~SFLAG_OFF_BEEP & ~SFLAG_OFF_CMD;
-                    dep = 1;
+                    dep |= 1;
                 }
                 else if (!strcasecmp (tmp, "Auto_away"))
                 {
@@ -512,7 +550,7 @@ void Read_RC_File (Session *sess, FD_T rcf)
                 else if (!strcasecmp (tmp, "Contacts"))
                 {
                     section = 1;
-                    dep = 1;
+                    dep |= 1;
                 }
                 else if (!strcasecmp (tmp, "set"))
                 {
@@ -542,8 +580,6 @@ void Read_RC_File (Session *sess, FD_T rcf)
                         which = FLAG_AUTOREPLY;
                     else if (!strcasecmp (tmp, "uinprompt"))
                         which = FLAG_UINPROMPT;
-                    else if (!strcasecmp (tmp, "autologin"))
-                        which = FLAG_AUTOLOGIN;
                     else if (!strcasecmp (tmp, "linebreak"))
                         which = -2;
                     else
@@ -571,7 +607,6 @@ void Read_RC_File (Session *sess, FD_T rcf)
                     else
                     {
                         tmp = strtok (NULL, " \t\n");
-                        printf ("type: %s\n", tmp);
                         prG->flags &= ~FLAG_LIBR_BR & ~FLAG_LIBR_INT;
                         if (!strcasecmp (tmp, "break"))
                             prG->flags |= FLAG_LIBR_BR;
@@ -585,7 +620,7 @@ void Read_RC_File (Session *sess, FD_T rcf)
                 }
                 else if (!strcasecmp (tmp, "logging"))
                 {
-                    dep = 1;
+                    dep |= 1;
                     tmp = strtok (NULL, " \t\n");
                     if (tmp)
                     {
@@ -674,7 +709,7 @@ void Read_RC_File (Session *sess, FD_T rcf)
                 tmp = strtok (buf, " ");
                 if (!strcasecmp (tmp, "alter"))
                 {
-                    CmdUser (sess, fill ("턠lter quiet %s", strtok (NULL, "\n")));
+                    CmdUser (NULL, fill ("턠lter quiet %s", strtok (NULL, "\n")));
                 }
                 else
                 {
@@ -683,7 +718,76 @@ void Read_RC_File (Session *sess, FD_T rcf)
                     M_print ("\n");
                 }
                 break;
+            case 3:
+                tmp = strtok (buf, " ");
+                if (!strcasecmp (tmp, "type"))
+                {
+                    tmp = strtok (NULL, " ");
+                    if (!tmp)
+                        continue;
+                    if (!strcasecmp (tmp, "server"))
+                        newsess->spref->type = TYPE_SERVER;
+                    else if (!strcasecmp (tmp, "peer"))
+                    {
+                        newsess->spref->type = TYPE_PEER;
+                        if (oldsess->spref->type & TYPE_SERVER)
+                        {
+                            oldsess->assoc = newsess;
+                            newsess->assoc = oldsess;
+                        }
+                    }
+                    else
+                        continue;
+                    tmp = strtok (NULL, " ");
+                    if (!tmp)
+                        continue;
+                    if (!strcasecmp (tmp, "auto"))
+                        newsess->spref->type |= TYPE_AUTOLOGIN;
+                }
+                else if (!strcasecmp (tmp, "version"))
+                {
+                    newsess->spref->version = atoi (strtok (NULL, " \n\t"));
+                }
+                else if (!strcasecmp (tmp, "server"))
+                {
+                    newsess->spref->server = M_strdup (strtok (NULL, " \n\t"));
+                }
+                else if (!strcasecmp (tmp, "port"))
+                {
+                    newsess->spref->port = atoi (strtok (NULL, " \n\t"));
+                }
+                else if (!strcasecmp (tmp, "uin"))
+                {
+                    newsess->spref->uin = atoi (strtok (NULL, " \n\t"));
+                }
+                else if (!strcasecmp (tmp, "password"))
+                {
+                    newsess->spref->passwd = M_strdup (strtok (NULL, "\n\t"));
+                }
+                else if (!strcasecmp (tmp, "status"))
+                {
+                    newsess->spref->status = atoi (strtok (NULL, " \n\t"));
+                }
+                else
+                    printf ("Bad line in section 3: %s\n", buf);
         }
+    }
+    
+    if (dep & 2)
+    {
+        mkdir (PrefUserDir (), 0755);
+        oldsess = newsess;
+        newsess = SessionC ();
+        newsess->spref = PreferencesSessionC ();
+        
+        oldsess->assoc = newsess;
+        newsess->assoc = oldsess;
+        
+        oldsess->spref->version = 5;
+        oldsess->spref->type = TYPE_SERVER | TYPE_AUTOLOGIN;
+        
+        newsess->spref->version = 6;
+        newsess->spref->type = TYPE_PEER | TYPE_AUTOLOGIN;
     }
 
     /* now tab the nicks we may have spooled earlier */
@@ -706,25 +810,23 @@ void Read_RC_File (Session *sess, FD_T rcf)
 
     if (prG->flags & FLAG_LOG && !prG->logplace)
     {
-        prG->logplace = malloc (strlen (GetUserBaseDir ()) + 10);
-        strcpy (prG->logplace, GetUserBaseDir ());
+        prG->logplace = malloc (strlen (PrefUserDir ()) + 10);
+        strcpy (prG->logplace, PrefUserDir ());
         strcat (prG->logplace, "history/");
     }
 
+    assert (newsess);
+    assert (newsess->spref);
+
     if (prG->verbose)
     {
-        M_print (i18n (189, "UIN = %ld\n"),    sess->uin);
-        M_print (i18n (190, "port = %ld\n"),   sess->server_port);
-        M_print (i18n (191, "passwd = %s\n"),  sess->passwd);
-        M_print (i18n (192, "server = %s\n"),  sess->server);
+        M_print (i18n (189, "UIN = %ld\n"),    newsess->spref->uin);
+        M_print (i18n (190, "port = %ld\n"),   newsess->spref->port);
+        M_print (i18n (191, "passwd = %s\n"),  newsess->spref->passwd);
+        M_print (i18n (192, "server = %s\n"),  newsess->spref->server);
         M_print (i18n (193, "status = %ld\n"), prG->status);
         M_print (i18n (196, "Message_cmd = %s\n"), CmdUserLookupName ("msg"));
         M_print ("flags: %08x\n", prG->flags);
-    }
-    if (sess->uin == 0)
-    {
-        fprintf (stderr, "Bad .micqrc file.  No UIN found aborting.\a\n");
-        exit (1);
     }
     if (dep)
         M_print (i18n (818, "Warning: Deprecated syntax found in rc file!\n    Please update or \"save\" the rc file and check for changes.\n"));
@@ -741,6 +843,7 @@ int Save_RC (Session *sess)
     time_t t;
     int k;
     Contact *cont;
+    Session *ss;
 
     rcf = open (prG->rcfile, O_WRONLY | O_CREAT | O_TRUNC, 0600);
     if (rcf == -1)
@@ -749,19 +852,33 @@ int Save_RC (Session *sess)
     t = time (NULL);
     M_fdprint (rcf, "# This file was generated on %s", ctime (&t));
     M_fdprint (rcf, "# Micq version " MICQ_VERSION "\n");
-    M_fdprint (rcf, "\n\nUIN %d\n", sess->uin);
-    M_fdprint (rcf, "# Remove the entire below line if you want to be prompted for your password.\n");
-    M_fdprint (rcf, "Password %s\n", sess->passwd);
-    M_fdprint (rcf, "\n#Partial list of status you can use here.  (more from the change command )\n");
-    M_fdprint (rcf, "#    0 Online\n");
-    M_fdprint (rcf, "#   32 Free for Chat\n");
-    M_fdprint (rcf, "#  256 Invisible\n");
-    M_fdprint (rcf, "Status %d\n", sess->status);
-    M_fdprint (rcf, "\nServer %s\n", "icq1.mirabilis.com");
-    M_fdprint (rcf, "Port %d\n", 4000);
-    M_fdprint (rcf, "\nverbose %d\n", prG->verbose);
+    M_fdprint (rcf, "\n");
+    
+    for (k = 0; (ss = SessionNr (k)); k++)
+    {
+        if (!(ss->spref) || !(ss->spref->type & (TYPE_SERVER | TYPE_PEER)))
+            continue;
 
-    M_fdprint (rcf, "\n# Support for SOCKS5 server\n");
+        M_fdprint (rcf, "[Connection]\n");
+        M_fdprint (rcf, "type %s%s\n",  ss->spref->type & TYPE_SERVER ? "server" : "peer",
+                                        ss->spref->type & TYPE_AUTOLOGIN ? " auto" : "");
+        M_fdprint (rcf, "version %d\n", ss->spref->version);
+        if (ss->spref->server)
+            M_fdprint (rcf, "server %s\n",  ss->spref->server);
+        if (ss->spref->port)
+            M_fdprint (rcf, "port %d\n",    ss->spref->port);
+        if (ss->spref->uin)
+            M_fdprint (rcf, "uin %d\n",     ss->spref->uin);
+        if (ss->spref->passwd)
+            M_fdprint (rcf, "password %s\n", ss->spref->passwd);
+        else if (!k)
+            M_fdprint (rcf, "# password\n");
+        if (ss->spref->status || !k)
+            M_fdprint (rcf, "status %d\n",  ss->spref->status);
+        M_fdprint (rcf, "\n");
+    }
+
+    M_fdprint (rcf, "\n[General]\n# Support for SOCKS5 server\n");
     M_fdprint (rcf, "s5_use %d\n", prG->s5Use);
     if (!prG->s5Host)
         M_fdprint (rcf, "s5_host [none]\n");
@@ -782,6 +899,7 @@ int Save_RC (Session *sess)
     M_fdprint (rcf, "\n#in seconds\nauto_away %d\n", prG->away_time);
     M_fdprint (rcf, "\n#For dumb terminals that don't wrap set this.");
     M_fdprint (rcf, "\nScreen_Width %d\n", prG->screen);
+    M_fdprint (rcf, "verbose %d\n\n", prG->verbose);
 
 
     M_fdprint (rcf, "# Set some simple options.\n");
@@ -805,8 +923,6 @@ int Save_RC (Session *sess)
                     prG->flags & FLAG_AUTOREPLY ? "on " : "off");
     M_fdprint (rcf, "set uinprompt %s # if the prompt should contain the last uin a message was received from\n",
                     prG->flags & FLAG_UINPROMPT ? "on " : "off");
-    M_fdprint (rcf, "set autologin %s # if you want to login automatically\n",
-                    prG->flags & FLAG_DELBS     ? "on " : "off");
     M_fdprint (rcf, "set linebreak %s # the line break type to be used (simple, break, indent, smart)\n\n",
                     prG->flags & FLAG_LIBR_INT 
                     ? prG->flags & FLAG_LIBR_BR ? "smart " : "indent"

@@ -33,12 +33,18 @@ struct Session_s
         UDWORD  stat_pak_sent;
         UDWORD  stat_pak_rcvd;
 
-        SessionPreferences *spref; /* preferences for this session */
-        struct Session_s   *assoc; /* associated UDP <-> TCP or parent TCP session */
+        PreferencesSession *spref; /* preferences for this session */
+        Session            *assoc; /* associated UDP <-> TCP or parent TCP session */
 
 };
 
 #define CONNECT_OK     128
 #define CONNECT_TCP    256
+
+Session *SessionC (void);
+void     SessionClose (Session *sess);
+Session *SessionFind (UBYTE type, UDWORD uin);
+
+Session *SessionNr (int i);
 
 #endif

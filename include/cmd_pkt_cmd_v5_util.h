@@ -4,6 +4,8 @@ void PacketEnqueuev5 (Packet *pak, Session *sess);
 void PacketSendv5 (const Packet *pak, Session *sess);
 void UDPCallBackResend (struct Event *event);
 const char *CmdPktCmdName (UWORD cmd);
+void SessionInitServerV5 (Session *sess);
+void CallBackServerInitV5 (struct Event *event);
 
 #define CMD_v5_OFF_VER    0
 #define CMD_v5_OFF_ZERO   2

@@ -132,6 +132,70 @@ void PacketEnqueuev5 (Packet *pak, Session *sess)
     }
 }
 
+void SessionInitServerV5 (Session *sess)
+{
+    if (sess->spref->version < 5)
+    {
+        M_print (i18n (869, "Protocoll versions less than 5 are not supported anymore.\n"));
+        return;
+    }
+    
+    sess->server      = sess->spref->server;
+    sess->server_port = sess->spref->port;
+    sess->uin         = sess->spref->uin;
+    sess->passwd      = sess->spref->passwd;
+    sess->ver         = sess->spref->version;
+
+    if (!sess->server || !strlen (sess->server))
+        sess->server = "icq.icq.com";
+    if (!sess->server_port)
+        sess->server_port = 4000;
+    if (!sess->passwd || !strlen (sess->passwd))
+    {
+        char pwd[20];
+        pwd[0] = '\0';
+        M_print ("%s ", i18n (63, "Enter password:"));
+        Echo_Off ();
+        M_fdnreadln (STDIN, pwd, sizeof (pwd));
+        Echo_On ();
+        sess->passwd = strdup (pwd);
+    }
+    QueueEnqueueData (queue, sess, 0, 0, 0, time (NULL), NULL, NULL, &CallBackServerInitV5);
+}
+
+void CallBackServerInitV5 (struct Event *event)
+{
+    Session *sess = event->sess;
+    free (event);
+    
+    if (sess->assoc && !sess->our_port)
+    {
+        event->due = time (NULL) + 1;
+        QueueEnqueue (queue, event);
+        return;
+    }
+    
+    if (sess->sok < 0)
+    {
+        sess->sok = UtilIOConnectUDP (sess->server, sess->server_port, STDERR);
+
+#ifdef __BEOS__
+        if (sess->sok == -1)
+#else
+        if (sess->sok == -1 || sess->sok == 0)
+#endif
+        {
+            M_print (i18n (52, "Couldn't establish connection for this session.\n"));
+            sess->sok = -1;
+            return;
+        }
+    }
+    sess->our_seq2    = 0;
+    CmdPktCmdLogin (sess);
+}
+
+
+
 
 /**
  ** Wrinkling the packet

@@ -42,7 +42,7 @@ struct SessionPreferences_s;
 
 typedef struct Session_s            Session;
 typedef struct Preferences_s        Preferences;
-typedef struct SessionPreferences_s SessionPreferences;
+typedef struct PreferencesSession_s PreferencesSession;
 
 #include "micqconfig.h"
 #include "datatype.h"
@@ -157,8 +157,6 @@ typedef struct
 extern user_interface_state uiG;
 extern struct Queue *queue;
 extern Preferences *prG;
-
-void CallBackLoginUDP (struct Event *Event);
 
 #define LOG_MESS 1
 #define LOG_AUTO_MESS 2

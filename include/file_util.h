@@ -5,4 +5,4 @@ void  Get_Unix_Config_Info (Session *sess);
 void  Set_rcfile (const char * name);
 
 void Initalize_RC_File (Session *sess);
-void Read_RC_File (Session *sess, FD_T rcf);
+void Read_RC_File (FD_T rcf);

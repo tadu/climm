@@ -51,8 +51,9 @@
 extern int h_error;
 
 user_interface_state uiG;
-Session ssG;
+Session *ssG;
 Preferences *prG;
+PreferencesSession *psG;
 
 /*** auto away values ***/
 static int idle_val = 0;
@@ -62,29 +63,12 @@ struct Queue *queue = NULL;
 
 void init_global_defaults () {
   /* Initialize User Interface global state */
-  ssG.status = STATUS_OFFLINE;
   uiG.start_time = time (NULL);
   uiG.last_rcvd_uin = 0;
   uiG.quit = FALSE;
   uiG.last_message_sent = NULL;
   uiG.last_sent_uin  = 0;
   uiG.reconnect_count = 0;
-
-  prG->verbose = -2;
-
-  /* Initialize ICQ session global state    */
-  ssG.our_seq2 = 0;  /* current sequence number */
-  ssG.our_local_ip = 0x0100007f; /* Intel-ism??? why little-endian? */
-  ssG.our_port = 0;
-  ssG.our_outside_ip = 0x0100007f;
-  ssG.passwd = NULL;
-  ssG.server = NULL;
-  ssG.connect = 0;
-  ssG.stat_pak_rcvd = 0;
-  ssG.stat_pak_sent = 0;
-  ssG.stat_real_pak_sent = 0;
-  ssG.stat_real_pak_rcvd = 0;
-  ssG.sok = -1;
 }
 
 /**********************************************
@@ -174,30 +158,6 @@ void Usage ()
     exit (0);
 }
 
-void CallBackLoginUDP (struct Event *event)
-{
-    Session *sess = event->sess;
-
-    free (event);
-    if (sess->sok < 0)
-    {
-        sess->sok = UtilIOConnectUDP (sess->server, sess->server_port, STDERR);
-
-#ifdef __BEOS__
-        if (sess->sok == -1)
-#else
-        if (sess->sok == -1 || sess->sok == 0)
-#endif
-        {
-            M_print (i18n (52, "Couldn't establish connection for this session.\n"));
-            sess->sok = -1;
-            return;
-        }
-    }
-    sess->our_seq2    = 0;
-    CmdPktCmdLogin (sess);
-}
-
 /******************************
 Main function connects gets UIN
 and passwd and logins in and sits
@@ -211,8 +171,10 @@ int main (int argc, char *argv[])
 #ifdef _WIN32
     WSADATA wsaData;
 #endif
+    Session *sess;
 
     prG = PreferencesC ();
+    psG = PreferencesSessionC ();
     init_global_defaults ();
 
     i = i18nOpen ("!");
@@ -230,7 +192,7 @@ int main (int argc, char *argv[])
     else
         M_print ("No internationalization requested.\n");
 
-    prG->sess = &ssG;
+    { int argverb = 0;
     if (argc > 1)
     {
         for (i = 1; i < argc; i++)
@@ -242,7 +204,9 @@ int main (int argc, char *argv[])
             else if ((argv[i][1] == 'v') || (argv[i][1] == 'V'))
             {
                 j = atol (argv[i] + 2);
-                prG->verbose = (j ? j : prG->verbose + 1);
+                prG->verbose = (strlen (argv[i] + 2) ? j : prG->verbose + 1);
+                if (!prG->verbose)
+                    argverb = 1;
             }
             else if ((argv[i][1] == 'f') || (argv[i][1] == 'F'))
             {
@@ -267,17 +231,13 @@ int main (int argc, char *argv[])
     QueueInit (&queue);
     PrefLoad (prG);
     
-    srand (time (NULL));
-    if (!strcmp (ssG.passwd, ""))
-    {
-        char pwd[20];
-        pwd[0] = '\0';
-        M_print ("%s ", i18n (63, "Enter password:"));
-        Echo_Off ();
-        M_fdnreadln (STDIN, pwd, sizeof (pwd));
-        Echo_On ();
-        ssG.passwd = strdup (pwd);
+    if (argverb) prG->verbose = 0;
     }
+    
+    ssG = SessionNr (0);
+    prG->sess = ssG;
+    
+    srand (time (NULL));
 
 #ifdef __BEOS__
     Be_Start ();
@@ -296,17 +256,18 @@ int main (int argc, char *argv[])
     }
 #endif
 
-#ifdef TCP_COMM
-    /* trigger TCP "login" (listening) */
-    QueueEnqueueData (queue, &ssG, 0, 0, 0, time (NULL), NULL, NULL, &CallBackLoginTCP);
-#endif
-
-    /* trigger UDP login */
-    QueueEnqueueData (queue, &ssG, 0, 0, 0, time (NULL), NULL, NULL, &CallBackLoginUDP);
-
-#ifdef ICQv8
-    QueueEnqueueData (queue, &ssG, 0, 0, 0, time (NULL), NULL, NULL, &CallBackLoginV8);
-#endif
+    for (i = 0; (sess = SessionNr (i)); i++)
+    {
+        if (sess->spref->type & TYPE_SERVER)
+        {
+            if (sess->spref->version <= 5)
+                SessionInitServerV5 (sess);
+            else
+                SessionInitServer (sess);
+        }
+        else
+            SessionInitPeer (sess);
+    }
 
     next = time (NULL) + 120;
     idle_val = time (NULL);
@@ -314,7 +275,8 @@ int main (int argc, char *argv[])
     Prompt ();
     while (!uiG.quit)
     {
-        Idle_Check (&ssG);
+        if (ssG)
+            Idle_Check (ssG);
 #if _WIN32 || defined(__BEOS__)
         M_set_timeout (0, 100000);
 #else
@@ -322,14 +284,16 @@ int main (int argc, char *argv[])
 #endif
 
         M_select_init ();
-        if (ssG.sok > 0)
-            M_Add_rsocket (ssG.sok);
+        for (i = 0; (sess = SessionNr (i)); i++)
+            if (sess->sok != -1)
+                M_Add_rsocket (sess->sok);
+
 #ifndef _WIN32
         M_Add_rsocket (STDIN);
 #endif
 
 #ifdef TCP_COMM
-        TCPAddSockets (&ssG);
+        TCPAddSockets (NULL);
 #endif
         R_redraw ();
 
@@ -346,22 +310,23 @@ int main (int argc, char *argv[])
 #endif
 #endif
             if (R_process_input ())
-                CmdUserInput (&ssG, &idle_val, &idle_flag);
+                CmdUserInput (ssG, &idle_val, &idle_flag);
 
         R_undraw ();
 
-        if (ssG.sok > 0 && M_Is_Set (ssG.sok))
-            CmdPktSrvRead (&ssG);
+        if (ssG && ssG->sok > 0 && M_Is_Set (ssG->sok))
+            CmdPktSrvRead (ssG);
 
 #ifdef TCP_COMM
-        TCPDispatch (&ssG);
+        if (ssG)
+            TCPDispatch (ssG);
 #endif
 
 
         if (time (NULL) > next)
         {
             next = time (NULL) + time_delay;
-            CmdPktCmdKeepAlive (&ssG);
+            CmdPktCmdKeepAlive (ssG);
         }
 
         QueueRun (queue);
@@ -375,6 +340,6 @@ int main (int argc, char *argv[])
     Be_Stop ();
 #endif
 
-    CmdPktCmdSendTextCode (&ssG, "B_USER_DISCONNECTED");
+    CmdPktCmdSendTextCode (ssG, "B_USER_DISCONNECTED");
     return 0;
 }

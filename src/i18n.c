@@ -64,11 +64,11 @@ int i18nOpen (const char *loc)
     {
         if (prG->flags & FLAG_FUNNY)
         {
-            i18nTry ("%s/i18n/%s_fun.i18n", GetUserBaseDir (), loc, "");
+            i18nTry ("%s/i18n/%s_fun.i18n", PrefUserDir (), loc, "");
             if (strchr (loc, '_'))
-                i18nTry ("%s/i18n/%.*s_fun.i18n", GetUserBaseDir (), strrchr (loc, '_') - loc, loc);
+                i18nTry ("%s/i18n/%.*s_fun.i18n", PrefUserDir (), strrchr (loc, '_') - loc, loc);
             if (strchr (loc, '_') && strchr (loc, '_') != strrchr (loc, '_'))
-                i18nTry ("%s/i18n/%.*s_fun.i18n", GetUserBaseDir (), strchr (loc, '_') - loc, loc);
+                i18nTry ("%s/i18n/%.*s_fun.i18n", PrefUserDir (), strchr (loc, '_') - loc, loc);
             i18nTry (PREFIX "/share/micq/%s_fun.i18n", loc, "", "");
             if (strchr (loc, '_'))
                 i18nTry (PREFIX "/share/micq/%.*s_fun.i18n", strrchr (loc, '_') - loc, loc, "");
@@ -76,11 +76,11 @@ int i18nOpen (const char *loc)
                 i18nTry (PREFIX "/share/micq/%.*s_fun.i18n", strchr (loc, '_') - loc, loc, "");
         }
 
-        i18nTry ("%s/i18n/%s.i18n", GetUserBaseDir (), loc, "");
+        i18nTry ("%s/i18n/%s.i18n", PrefUserDir (), loc, "");
         if (strchr (loc, '_'))
-            i18nTry ("%s/i18n/%.*s.i18n", GetUserBaseDir (), strrchr (loc, '_') - loc, loc);
+            i18nTry ("%s/i18n/%.*s.i18n", PrefUserDir (), strrchr (loc, '_') - loc, loc);
         if (strchr (loc, '_') && strchr (loc, '_') != strrchr (loc, '_'))
-            i18nTry ("%s/i18n/%.*s.i18n", GetUserBaseDir (), strchr (loc, '_') - loc, loc);
+            i18nTry ("%s/i18n/%.*s.i18n", PrefUserDir (), strchr (loc, '_') - loc, loc);
         i18nTry (PREFIX "/share/micq/%s.i18n", loc, "", "");
         if (strchr (loc, '_'))
             i18nTry (PREFIX "/share/micq/%.*s.i18n", strrchr (loc, '_') - loc, loc, "");

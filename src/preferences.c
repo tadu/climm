@@ -23,6 +23,14 @@ Preferences *PreferencesC ()
     return pref;
 }
 
+PreferencesSession *PreferencesSessionC ()
+{
+    PreferencesSession *pref = calloc (1, sizeof (PreferencesSession));
+    assert (pref);
+    
+    return pref;
+}
+
 #ifdef _WIN32
 #define _OS_PREFPATH ".\\"
 #define _OS_PATHSEP  '\\'
@@ -39,19 +47,12 @@ Preferences *PreferencesC ()
 #endif
 #endif
 
+static const char *userbasedir = NULL;
+
 FD_T PrefOpenRC (Preferences *pref)
 {
     char *home, *path, def[200], olddef[200];
     FD_T rcf;
-    
-    if (pref->rcfile)
-    {
-        rcf = open (pref->rcfile, O_RDONLY);
-        if (rcf > 0)
-            return rcf;
-        M_print (i18n (864, "Can't open rcfile %s."), pref->rcfile);
-        exit (20);
-    }
     
     path = _OS_PREFPATH;
     home = getenv ("HOME");
@@ -71,8 +72,19 @@ FD_T PrefOpenRC (Preferences *pref)
         strcpy (def, path);
         strcpy (olddef, path);
     }
+    userbasedir = strdup (def);
+
     strcat (def, "micqrc");
     strcat (olddef, ".micqrc");
+    
+    if (pref->rcfile)
+    {
+        rcf = open (pref->rcfile, O_RDONLY);
+        if (rcf > 0)
+            return rcf;
+        M_print (i18n (864, "Can't open rcfile %s."), pref->rcfile);
+        exit (20);
+    }
     
     pref->rcfile = strdup (def);
 
@@ -92,13 +104,18 @@ FD_T PrefOpenRC (Preferences *pref)
     return 0;
 }
 
+const char *PrefUserDir ()
+{
+    return userbasedir;
+}
+
 void PrefLoad (Preferences *pref)
 {
     FD_T rcf;
     
     rcf = PrefOpenRC (pref);
     if (rcf)
-        Read_RC_File (pref->sess, rcf);
+        Read_RC_File (rcf);
     else
         Initalize_RC_File (pref->sess);
 }

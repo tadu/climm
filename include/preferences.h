@@ -7,7 +7,7 @@ struct Preferences_s
     char  *rcfile;      /* the preference file to load */
     BOOL   rcisdef;     /* whether this is the default location */
 
-    UWORD  verbose;     /* verbosity to use on startup */
+    SWORD  verbose;     /* verbosity to use on startup */
     UWORD  sound;       /* flags for sound output */
     UDWORD status;      /* status to use when logging in */
     UWORD  screen;      /* manual maximum screen width; 0 = auto */
@@ -34,30 +34,28 @@ struct Preferences_s
     char  *s5Name;
     char  *s5Pass;
 
-    SessionPreferences  *sessions[4];
-
     UDWORD s5DestIP;    /* this doesn't belong here %TODO% */
     UDWORD s5DestPort;  /* neither this %TODO%             */
     Session *sess;      /* get rid of this ASAP  %TODO% */
 
     /* Much more stuff to go here - %TODO% */
-
 };
 
-struct SessionPreferences_s
+struct PreferencesSession_s
 {
+    UBYTE   type;
+    UBYTE   version;
     char   *server;
-    char   *passwd;
     UDWORD  port;
     UDWORD  uin;
-    UBYTE   ver;
-    UBYTE   type;
+    char   *passwd;
     UDWORD  status;
-    
 };
 
 Preferences *PreferencesC (void);
+PreferencesSession *PreferencesSessionC (void);
 
+const char *PrefUserDir ();
 void PrefLoad (Preferences *pref);
 
 #define VERB_PACK         4
@@ -76,7 +74,6 @@ void PrefLoad (Preferences *pref);
 #define FLAG_UINPROMPT   512
 #define FLAG_LIBR_BR    1024 /* 0, 3: posssible line break before message */
 #define FLAG_LIBR_INT   2048 /* 2, 3: indent if appropriate */
-#define FLAG_AUTOLOGIN  4096
 /*      FLAG_S5
  *      FLAG_S5_USE
  */
@@ -90,6 +87,7 @@ void PrefLoad (Preferences *pref);
 
 #define TYPE_SERVER       1
 #define TYPE_PEER         2
+#define TYPE_AUTOLOGIN    4
 
 #endif
 

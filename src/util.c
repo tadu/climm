@@ -337,8 +337,8 @@ int log_event (UDWORD uin, int type, char *str, ...)
 
     if (!prG->logplace)
     {
-        prG->logplace = malloc (strlen (GetUserBaseDir ()) + 10);
-        strcpy (prG->logplace, GetUserBaseDir ());
+        prG->logplace = malloc (strlen (PrefUserDir ()) + 10);
+        strcpy (prG->logplace, PrefUserDir ());
         strcat (prG->logplace, "history/");
     }
 
@@ -491,39 +491,3 @@ void ExecScript (char *script, UDWORD uin, long num, char *data)
     free (mydata);
 }
 
-/*
- * Get the base directory of user data.
- */
-const char *GetUserBaseDir ()
-{
-    static char *dir = 0;
-    char *home;
-
-    if (dir)
-        return (dir);
-
-    home = getenv ("HOME");
-    if (home)
-    {
-        dir = malloc (strlen (home) + 2 + 6);
-        strcpy (dir, home);
-        if (dir[strlen (dir) - 1] != '/')
-            strcat (dir, "/");
-        if (strlen (home))
-            strcat (dir, ".micq/");
-        if (access (dir, R_OK))
-            dir = 0;
-    }
-    if (!dir)
-    {
-        dir = "";
-
-#ifdef _WIN32
-        dir = ".\\";
-#endif
-#if __amigaos__
-        dir = "PROGDIR:";
-#endif
-    }
-    return dir;
-}

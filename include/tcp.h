@@ -40,6 +40,7 @@ void Handle_TCP_Comm (Session *sess, UDWORD uin);
 /*int Decrypt_Pak (UBYTE *pak, UDWORD size);
 void Encrypt_Pak (UBYTE *pak, UDWORD size);*/
 void Get_Auto_Resp (UDWORD uin);
+void SessionInitPeer (Session *sess);
 #if 0
 char * Get_Auto_Reply ( );
 #endif

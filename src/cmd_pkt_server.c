@@ -246,7 +246,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
                 break;
             }
             M_print (i18n (82, "Trying to reconnect... [try %d out of %d]\n"), uiG.reconnect_count, MAX_RECONNECT_ATTEMPTS);
-            QueueEnqueueData (queue, sess, 0, 0, 0, time (NULL) + 5, NULL, NULL, &CallBackLoginUDP);
+            QueueEnqueueData (queue, sess, 0, 0, 0, time (NULL) + 5, NULL, NULL, &CallBackServerInitV5); 
             break;
         case SRV_USER_ONLINE:
             User_Online (sess, data);
@@ -267,7 +267,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
                 break;
             }
             M_print (i18n (82, "Trying to reconnect... [try %d out of %d]\n"), uiG.reconnect_count, MAX_RECONNECT_ATTEMPTS);
-            QueueEnqueueData (queue, sess, 0, 0, 0, time (NULL) + 5, NULL, NULL, &CallBackLoginUDP);
+            QueueEnqueueData (queue, sess, 0, 0, 0, time (NULL) + 5, NULL, NULL, &CallBackServerInitV5);
             break;
         case SRV_END_OF_SEARCH:
             M_print (i18n (45, "Search Done."));

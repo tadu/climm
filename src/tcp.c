@@ -52,6 +52,12 @@ static void       Encrypt_Pak        (Packet *pak);
 static int        Decrypt_Pak        (UBYTE *pak, UDWORD size);
 
 
+void SessionInitPeer (Session *sess)
+{
+    /* NOTE: we still (ab)use the UDP (server) session!!! */
+    TCPInit (sess->assoc, sess->spref->port);
+}
+
 /*
  * Callback that triggers "login" - ehm, listening.
  */
@@ -95,6 +101,8 @@ void TCPInit (Session *sess, int port)
         return;
     }
 
+    /* At least copy the socket to the right Session, so it is listened to */
+    sess->assoc->sok = sess->tcpsok;
     /* Get the port used -- needs to be sent in login packet to ICQ server */
     length = sizeof (struct sockaddr);
     getsockname (sess->tcpsok, (struct sockaddr *) &sin, &length);
@@ -110,7 +118,6 @@ void TCPAddSockets (Session *sess)
 {
     Contact *cont;
 
-    M_Add_rsocket (sess->tcpsok);
     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
         if (cont->sok.state > 0)
         {
@@ -129,7 +136,7 @@ void TCPDispatch (Session *sess)
 {
     Contact *cont;
 
-    if (M_Is_Set (sess->tcpsok))
+    if (sess && M_Is_Set (sess->tcpsok))
         TCPDirectReceive (sess);
     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
         if (cont->sok.state > 0)

@@ -644,7 +644,7 @@ i18n (67, )
 643:Acknowleged SRV_X1 0x021C Done Contact list?¶
 644:Acknowleged SRV_X2 0x00E6 Done old messages?¶
 645:©3You entered an incorrect password.©0¶
-646:©3Server is busy please try again.¶Trying again...¶
+646:©3Server is busy.¶
 647: Type = %04x	
 648: ©2The response was %04X	
 649:The version was %X	
@@ -867,3 +867,4 @@ i18n (67, )
 866:This version of micq is compiled without TCP support.¶
 867:Got a malformed (too short) packet - ignored.¶
 868:Got a malformed (to long subpacket) multi-packet - remainder ignored.¶
+869:Protocoll versions less than 5 are not supported anymore.¶

@@ -31,7 +31,7 @@ typedef unsigned char  UIN8;
 
 /* use SOCKWRITE !!!!! */
   #define sockwrite(s,p,l) send(s,(char *) p,l,0)
-  #define SOCKCLOSE( s ) closesocket(s)
+  #define sockclose(s) closesocket(s)
   #define strcasecmp(s,s1)  stricmp(s,s1)
   #define strncasecmp(s,s1,l)  strnicmp(s,s1,l)
   #define Get_Config_Info(x) Get_Unix_Config_Info(x)
@@ -53,9 +53,9 @@ typedef unsigned char  UIN8;
   #endif
 
   #ifdef __BEOS__
-    #define SOCKCLOSE(s) closesocket(s)
+    #define sockclose(s) closesocket(s)
   #else
-    #define SOCKCLOSE(s) close(s)
+    #define sockclose(s) close(s)
   #endif
   #define Get_Config_Info(x) Get_Unix_Config_Info(x)
   typedef int FD_T;

@@ -1,4 +1,13 @@
 
+2002-02-10 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* fix verbose command line buglet
+	* new: session.c for connection management. TCP still (ab)uses
+	  the server (UDP) session^h^h^h^h^h^h^hconnection.
+	* Better transition to .micq/micqrc (create .micq); change
+	  rc file format to have arbitrarely many connections. The
+	  idea is to have a v5 and a v8 connection at the same time till
+	  the latter is usable.
+
 2002-02-06 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* finish big rename by moving stuff from session.h to uiG;
 	  realized that session is the wrong name...
