@@ -1,5 +1,5 @@
 # $Id$ English (English)
-#  EN: __.i18n,v 1.73 2005/01/24 21:17:30
+#  EN: __.i18n,v 1.75 2005/02/05 07:54:47
 1000:UTF-8
 1001:en
 1002:en_US
@@ -1322,3 +1322,6 @@
 2565:Contact upload for %s%s%s failed, authorization required.\n
 2566:Contact upload for %s%s%s failed, already on server.\n
 2567:Contact upload for %s%s%s succeeded.\n
+2568:Ignored request for auto-response from %s%s%s.\n
+2569:Send <message> and further messages to <contacts> until canceled.
+2570:Continuing chat with %s%s%s:\n
