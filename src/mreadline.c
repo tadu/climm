@@ -816,11 +816,7 @@ static time_t prlast = 0;
  */
 void R_setprompt (const char *prompt)
 {
-    time_t now = time (NULL);
-
-    if (now == prlast)
-        return;
-    prlast = now;
+    prlast = time (NULL);
     s_repl (&curprompt, prompt);
     R_undraw ();
     prstat = 3;
@@ -842,12 +838,29 @@ void R_setpromptf (const char *prompt, ...)
 }
 
 /*
+ * Formats, sets and displays the prompt.
+ */
+void R_settimepromptf (const char *prompt, ...)
+{
+    va_list args;
+    char buf[2048];
+    
+    if (prlast == time (NULL))
+        return;
+    
+    va_start (args, prompt);
+    vsnprintf (buf, sizeof (buf), prompt, args);
+    va_end (args);
+
+    R_setprompt (buf);
+}
+
+/*
  * Resets the prompt to the standard one.
  */
 void R_resetprompt (void)
 {
     Contact *cont = ContactFind (NULL, 0, uiG.last_sent_uin, NULL, 1);
-    prlast = 0;
     if (prG->flags & FLAG_UINPROMPT && uiG.last_sent_uin && cont)
         R_setpromptf (COLSERVER "[%s]" COLNONE " ", cont->nick);
     else
