@@ -180,7 +180,7 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
         ConvEnc ("utf-8");
     if (enc >= conv_nr || !enc)
         return s_sprintf ("<invalid encoding %d>", enc);
-    if (!conv_encs[enc].to)
+    if (!conv_encs[enc].to || !~(long)conv_encs[enc].to)
     {
         conv_encs[enc].to = iconv_open ("utf-8", conv_encs[enc].enc);
         if (conv_encs[enc].to == (iconv_t)(-1))
