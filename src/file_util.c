@@ -131,6 +131,7 @@ void Initalize_RC_File (Session *sess)
         sess->spref->passwd = strdup (pwd1);
         sess->passwd = strdup (pwd1);
         Init_New_User (sess);
+        sess->spref->uin = sess->uin;
     }
     
     sesst = SessionC ();
