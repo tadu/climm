@@ -1802,7 +1802,7 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
         case 1:
             {
             strc_t str;
-            str_s bstr;
+            str_s bstr = { NULL };
 
             int enc = ENC_LATIN1, icqenc = 0;
             
