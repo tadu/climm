@@ -597,8 +597,8 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
     uin = PacketReadUIN (pak);
     Time_Stamp ();
     M_print (" " COLCONTACT "%10s" COLNONE " ", ContactFindName (uin));
-    M_print (i18n (1913, "Received server acknowledge for %s#%08lx:%08lx%s sent to %s%s%s.\n"),
-             COLSERVER, mid1, mid2, COLNONE, COLCONTACT, ContactFindName (uin), COLNONE);
+    M_print (i18n (2126, "User is offline, message (%s#%08lx:%08lx%s) queued.\n"),
+             COLSERVER, mid1, mid2, COLNONE);
     putlog (event->sess, NOW, uin, STATUS_OFFLINE, LOG_ACK, 0xFFFF, 
         "%08lx%08lx\n", mid1, mid2);
 }
