@@ -1098,7 +1098,7 @@ static JUMP_SNAC_F(SnacSrvToicqerr)
 
         event->conn->connect = CONNECT_OK | CONNECT_SELECT_R;
         reconn = 0;
-        CmdUser ("\xb6" "e");
+        CmdUser ("\xb6" "eg");
         
         QueueEnqueueData (event->conn, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
                           NULL, event->conn->uin, NULL, &SrvCallBackKeepalive);
@@ -1171,7 +1171,7 @@ static JUMP_SNAC_F(SnacSrvFromicqsrv)
 
             event->conn->connect = CONNECT_OK | CONNECT_SELECT_R;
             reconn = 0;
-            CmdUser ("\xb6" "e");
+            CmdUser ("\xb6" "eg");
             
             QueueEnqueueData (event->conn, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
                               NULL, event->conn->uin, NULL, &SrvCallBackKeepalive);
