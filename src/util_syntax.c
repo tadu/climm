@@ -1,7 +1,7 @@
 /*
  * Dump packet according to syntax
  *
- * mICQ Copyright (C) © 2001,2002,2003 Rüdiger Kuhlmann
+ * mICQ Copyright (C) © 2001,2002,2003,2004 Rüdiger Kuhlmann
  *
  * mICQ is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ static const char *syntable[] = {
     "s1x2s",   "W-",
     "s1x3s",   "W-",
     "s1x6s",   "",
-    "s1x7s",   "",
+    "s1x7s",   "W,{WDDDDDDDDb}.{WW{D}}",
     "s1x8s",   "W-",
     "s1x10s",  "",
     "s1x14s",  "",
@@ -104,7 +104,8 @@ char *PacketDump (Packet *pak, const char *syntax, const char *coldebug, const c
 {
     Packet *p = NULL;
     str_s str = { NULL, 0, 0 };
-    UDWORD nr, len, val, i, mem1, mem2, oldrpos;
+    UDWORD count[3];
+    UDWORD nr, len, val, i, mem1, mem2, oldrpos, clev = -1;
     const char *f, *l, *last;
     char *sub, lev, *tmp;
     
@@ -270,6 +271,34 @@ char *PacketDump (Packet *pak, const char *syntax, const char *coldebug, const c
                     s_cat  (&str, s_ind (s_dump (pak->data + pak->rpos + 4, len)));
                 }
                 pak->rpos += len + 4;
+                continue;
+            case '{':
+                count[++clev] = nr;
+                if (!nr)
+                {
+                    for (lev = 1; *f && lev; f++)
+                    {
+                        if (strchr ("{}", *f))
+                            lev += (*f == '}' ? -1 : 1);
+                    }
+                    f--;
+                    continue;
+                }
+                continue;
+            case '}':
+                count[clev]--;
+                if (count[clev] > 0)
+                {
+                    f--;
+                    for (lev = 1; *f && lev; f--)
+                    {
+                        if (strchr ("{}", *f))
+                            lev += (*f == '{' ? -1 : 1);
+                    }
+                    f++;
+                }
+                else
+                    clev--;
                 continue;
             case '(':
             case '<':
