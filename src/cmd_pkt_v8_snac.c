@@ -1,4 +1,3 @@
-
 /*
  * Handles incoming and creates outgoing SNAC packets.
  *
@@ -519,6 +518,7 @@ static JUMP_SNAC_F(SnacSrvReplyicbm)
 static JUMP_SNAC_F(SnacSrvRecvmsg)
 {
     Contact *cont;
+    Cap *cap1, *cap2;
     Packet *p = NULL, *pp = NULL, *pak;
     TLV *tlv;
     UDWORD uin, unk;
@@ -575,7 +575,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             type = PacketReadB2 (p); /* ACKTYPE */
                    PacketReadB4 (p); /* MID-TIME */
                    PacketReadB4 (p); /* MID-RANDOM */
-                   PacketReadB4 (p); PacketReadB4 (p); PacketReadB4 (p); PacketReadB4 (p); /* CAP */
+            cap1 = PacketReadCap (p);
             tlv = TLVRead (p, PacketReadLeft (p));
             if ((i = TLVGet (tlv, 0x2711)) == (UWORD)-1)
             {
@@ -587,6 +587,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             PacketD (p);
             if (PacketRead1 (pp) != 0x1b)
             {
+                PacketD (pp);
                 SnacSrvUnknown (event);
                 return;
             }
@@ -594,11 +595,11 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             if (cont)
                 cont->TCP_version = t;
             PacketRead1 (pp); /* UNKNOWN */
-            PacketRead4 (pp); PacketRead4 (pp); PacketRead4 (pp); PacketRead4 (pp); /* CAP */
+            cap2 = PacketReadCap (pp);
             PacketRead1 (pp); PacketRead2 (pp); /* UNKNOWN */
             PacketReadB4 (pp); /* UNKNOWN */
             PacketReadB2 (pp); /* SEQ1 */
-            unk = PacketReadB2 (pp); /* UNKNOWN */
+            unk = PacketRead2 (pp); /* UNKNOWN */
             PacketReadB2 (pp); /* SEQ2 */
             PacketRead4 (pp); PacketRead4 (pp); PacketRead4 (pp); /* UNKNOWN */
             type = PacketRead2 (pp); /* MSGTYPE & MSGFLAGS */
@@ -608,6 +609,11 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             PacketD (pp);
             if (!strlen (text) && unk == 0x12)
             {
+#ifdef WIP
+                IMSrvMsg (cont, event->sess, NOW, 33, cap2->name,
+                          tlv[6].len ? tlv[6].nr : STATUS_OFFLINE);
+#endif
+                PacketD (pp);
                 s_free (text);
                 return;
             }
@@ -1115,6 +1121,9 @@ void SnacCliSetuserinfo (Session *sess)
     PacketWriteCap     (pak, CAP_SRVRELAY);
     PacketWriteCap     (pak, CAP_UNK_2002);
     PacketWriteCap     (pak, CAP_ISICQ);
+#ifdef WIP
+    PacketWriteCap     (pak, CAP_MICQ);
+#endif
     PacketWriteTLVDone (pak);
     SnacSend (sess, pak);
 }

@@ -26,6 +26,7 @@ typedef struct { UBYTE id; const char *cap; const char *name; } Cap;
 #define CAP_RTFMSGS  4
 #define CAP_UNK_2001 5
 #define CAP_UNK_2002 6
+#define CAP_MICQ     7
                     
 Packet *PacketC        (void);
 Packet *PacketCreate   (const char *data, UDWORD len);

@@ -755,15 +755,20 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
             M_print ("'" COLMSGEXDENT "\n");
             break;
 
-        case MSG_AUTO:
-            M_printf ("<%s> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n",
-                     i18n (2108, "auto"), cdata);
-            break;
-
         case MSG_NORM:
         default:
             M_printf ("%s" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n",
                      carr, cdata);
+            break;
+
+        case 33:
+            M_printf ("<cap> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n",
+                      cdata);
+            break;
+
+        case MSG_AUTO:
+            M_printf ("<%s> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n",
+                     i18n (2108, "auto"), cdata);
             break;
 
         case MSGF_GETAUTO | MSG_GET_AWAY: 
