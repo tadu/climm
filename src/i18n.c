@@ -63,9 +63,6 @@ void i18nInit (char **loc, UBYTE *enc, const char *arg)
 
     *loc = q = strdup (arg);
 
-    if (!prG->locale_full)
-        prG->locale_full = strdup (arg);
-
     if (*q == '/')
         return;
     if ((p = strrchr (q, '@')))

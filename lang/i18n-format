@@ -2,6 +2,9 @@
 
 test -f .C.i18n.fmt || test "x$1" = "xC.i18n" || ./i18n-format C.i18n
 
+LC_ALL=C
+# avoid crashes of GNU sed in *.UTF-8
+
 cat $1 | grep -a % | grep -a "^[0-9]" \
     | sed "s/%%//g;s/\\\\n/%n/g;s/^\(....\):/\1:END/;s/%[-0-9.]*\([nl*]*[npsduxX]\)/BEGIN%\1END/g" \
     | sed "s/END[^%]*BEGIN//g;s/END[^%]*$//" \
