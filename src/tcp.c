@@ -1119,9 +1119,10 @@ void TCPClose (Connection *peer)
     {
         if (peer->connect & CONNECT_MASK && prG->verbose)
         {
+            Contact *cont = ContactByUIN (peer->uin, 1);
             M_printf ("%s ", s_now);
-            if (peer->uin)
-                M_printf (i18n (1842, "Closing socket %d to %s.\n"), peer->sok, ContactByUIN (peer->uin, 1)->nick);
+            if (cont)
+                M_printf (i18n (1842, "Closing socket %d to %s.\n"), peer->sok, cont->nick);
             else
                 M_printf (i18n (1843, "Closing socket %d.\n"), peer->sok);
         }
@@ -1178,16 +1179,18 @@ static const char *TCPCmdName (UWORD cmd)
 void TCPPrint (Packet *pak, Connection *peer, BOOL out)
 {
     UWORD cmd;
+    Contact *cont;
     
     ASSERT_ANY_DIRECT(peer);
     
     pak->rpos = 0;
     cmd = *pak->data;
+    cont = ContactByUIN (peer->uin, 1);
 
     M_printf ("%s " COLINDENT "%s", s_now, out ? COLCLIENT : COLSERVER);
     M_printf (out ? i18n (2078, "Outgoing TCP packet (%d - %s): %s")
                   : i18n (2079, "Incoming TCP packet (%d - %s): %s"),
-              peer->sok, ContactByUIN (peer->uin, 1)->nick, TCPCmdName (cmd));
+              peer->sok, cont ? cont->nick : "", TCPCmdName (cmd));
     M_print (COLNONE "\n");
 
     if (peer->connect & CONNECT_OK && peer->type == TYPE_MSGDIRECT && peer->ver == 6)
