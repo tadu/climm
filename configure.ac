@@ -93,6 +93,18 @@ AC_CHECK_DECLS(h_errno,,,[$ac_includes_default
 #endif])
 
 AC_TYPE_SIGNAL
+
+AC_REQUIRE([AC_STRUCT_TIMEZONE])dnl
+AC_CACHE_CHECK(for timezone external, ac_cv_var_timezone,
+[  AC_TRY_LINK([#include <time.h>], [return (int)timezone;],
+      ac_cv_var_timezone=yes,
+      ac_cv_var_timezone=no)
+])
+if test $ac_cv_var_timezone = yes; then
+   AC_DEFINE([HAVE_TIMEZONE], 1,
+           [Define if you have the external 'timezone' variable.])
+fi
+
 AC_CHECK_TYPES(socklen_t,,,[$ac_includes_default
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
