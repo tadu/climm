@@ -2922,7 +2922,12 @@ static JUMP_F(CmdUserConn)
             
         case 2:
             if (!s_parseint (&args, &nr))
-                nr = 1 + ConnectionFindNr (ConnectionFind (TYPEF_SERVER, NULL, 0));
+            {
+                if (ConnectionFindNr (conn))
+                    nr = ConnectionFindNr (conn) + 1;
+                else
+                    nr = 1 + ConnectionFindNr (ConnectionFind (TYPEF_SERVER, NULL, 0));
+            }
 
             connl = ConnectionNr (nr - 1);
             if (!connl)
