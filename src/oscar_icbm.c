@@ -948,12 +948,18 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     {
         /* Requests for auto-response message */
         do  {
+                val_t val;
         case MSGF_GETAUTO | MSG_GET_AWAY:  ack_msg = ContactPrefStr (cont, CO_AUTOAWAY); break;
         case MSGF_GETAUTO | MSG_GET_OCC:   ack_msg = ContactPrefStr (cont, CO_AUTOOCC);  break;
         case MSGF_GETAUTO | MSG_GET_NA:    ack_msg = ContactPrefStr (cont, CO_AUTONA);   break;
         case MSGF_GETAUTO | MSG_GET_DND:   ack_msg = ContactPrefStr (cont, CO_AUTODND);  break;
         case MSGF_GETAUTO | MSG_GET_FFC:   ack_msg = ContactPrefStr (cont, CO_AUTOFFC);  break;
-        case MSGF_GETAUTO | MSG_GET_VER:   ack_msg = BuildVersionText;
+        case MSGF_GETAUTO | MSG_GET_VER:
+                if (!OptGetVal (&prG->copts, CO_ENCODING, &val))
+                    val = -1;
+                ack_msg = s_sprintf ("%s\nLocale: %s %s %s %s %d %s", BuildVersionText,
+                                     prG->locale, prG->locale_orig, prG->locale_full,
+                                     ConvEncName (prG->enc_loc), prG->locale_broken, ConvEncName (val));
             } while (0);
 
 #ifdef WIP

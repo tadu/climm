@@ -114,8 +114,6 @@
 
 const UDWORD BuildPlatformID = BUILD_PLATFORM;
 
-static const char *ver = 0;
-
 const char *BuildVersion (void)
 {
     return s_sprintf (i18n (2327, "%smICQ (Matt's ICQ clone)%s version %s%s%s\n"),
@@ -138,7 +136,7 @@ const char *BuildAttribution (void)
 }                  
 
 const UDWORD BuildVersionNum = MICQ_BUILD_NUM;
-const char  *BuildVersionText = "$VER: mICQ " VERSION " " EV EXTRAVERSION " (" CVSUPDATE " build " BUILDDATE ")";
+const char  *BuildVersionText = "$VER: mICQ " VERSION " " EV EXTRAVERSION "\n(" CVSUPDATE " build " BUILDDATE ")";
 
 /*
  i18n (1000, "UTF-8")            charset used

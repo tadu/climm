@@ -4762,6 +4762,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
             {
                 rl_print (BuildVersion ());
                 rl_print (BuildVersionText);
+                rl_print ("\n");
             }
             else
             {
