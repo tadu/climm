@@ -788,8 +788,8 @@
 1889:server
 1890:peer-to-peer
 1891:Connection %d is already open.¶
-1892:conn             List available connections.¶
-1893:conn login <nr>  Open connection <nr>.¶
+1892:conn               List available connections.¶
+1893:conn login <nr>    Open connection <nr>.¶
 1894:There is no connection number %d.¶
 1895:Login failed:¶
 1896:Server closed connection:¶
@@ -812,7 +812,6 @@
 1914:Can't allocate connection structure.¶
 1915:Server says we're at %s.¶
 1916:Need a nick or uin.¶
-1917:%-12s version %d for %s (%x), at %s:%d %s¶
 1918:Ignored server request for a minimum report interval of %d.¶
 1919:UIN mismatch: %d vs %d.¶
 1920:Registration of new UIN refused.¶
@@ -972,3 +971,11 @@
 2090:file peer-to-peer
 2091:Queueing %s as %s for transfer.¶
 2092:TCP message %s discarded - lost session.¶
+2093:%02d %-12s version %d for %s (%x), at %s:%d %s¶
+2094:conn login         Open first server connection.¶
+2095:conn close <nr>    Close connection <nr>.¶
+2096:Connection %d is not open.¶
+2097:conn select <nr>   Select connection <nr> as server connection.¶
+2098:Connection %d is not a server connection.¶
+2099:Selected connection %d (version %d, UIN %d) as current connection.¶
+2100:conn select <uin>  Select connection with UIN <uin> as server connection.¶

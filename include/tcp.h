@@ -7,34 +7,36 @@
 
 #define TCP_STATE_WAITING      32
 
-void SessionInitPeer   (Session *sess);
+void SessionInitPeer   (Session *list);
 
-void TCPDirectOpen     (Session *sess, UDWORD uin);
-void TCPDirectClose    (               UDWORD uin);
-void TCPDirectOff      (               UDWORD uin);
+/* Open, close, disallow connection of UIN with this listener */
+void TCPDirectOpen     (Session *list, UDWORD uin);
+void TCPDirectClose    (Session *list, UDWORD uin);
+void TCPDirectOff      (Session *list, UDWORD uin);
 
-BOOL TCPSendMsg        (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd);
-BOOL TCPSendFiles      (Session *sess, UDWORD uin, char *description, char **file, char **as, int count);
-BOOL TCPGetAuto        (Session *sess, UDWORD uin, UWORD which);
+/* Do the given peer2peer request */
+BOOL TCPSendMsg        (Session *list, UDWORD uin, char *msg, UWORD sub_cmd);
+BOOL TCPSendFiles      (Session *list, UDWORD uin, char *description, char **file, char **as, int count);
+BOOL TCPGetAuto        (Session *list, UDWORD uin, UWORD which);
 
 Session *TCPPeer (UDWORD uin);
 
-Session *PeerFileCreate (Session *serv);
+Session *PeerFileCreate    (Session *serv);
 BOOL     PeerFileRequested (Session *peer, const char *files, UDWORD bytes);
-BOOL     PeerFileAccept (Session *peer, UWORD status, UDWORD port);
+BOOL     PeerFileAccept    (Session *peer, UWORD status, UDWORD port);
 
 void PeerFileResend (Event *event);
 void PeerFileDispatchIncoming (Session *fpeer);
 void PeerFileResend (Event *event);
 void PeerFileDispatch (Session *);
 
-void       TCPDispatchShake   (Session *sess);
-void       TCPDispatchReconn  (Session *sess);
-void       TCPDispatchMain    (Session *sess);
-void       TCPDispatchConn    (Session *sess);
-void       TCPSendPacket      (Packet *pak, Session *sess);
-void       TCPClose           (Session *sess);
-void       TCPPrint           (Packet *pak, Session *sess, BOOL out);
+void       TCPDispatchShake   (Session *peer);
+void       TCPDispatchReconn  (Session *peer);
+void       TCPDispatchMain    (Session *peer);
+void       TCPDispatchConn    (Session *peer);
+void       TCPSendPacket      (Packet *pak, Session *peer);
+void       TCPClose           (Session *peer);
+void       TCPPrint           (Packet *pak, Session *peer, BOOL out);
 
 
 #endif

@@ -40,16 +40,16 @@
 
 #ifdef TCP_COMM
 
-static void       TCPDispatchPeer    (Session *sess);
+static void       TCPDispatchPeer    (Session *peer);
 
-static Packet    *TCPReceivePacket   (Session *sess);
+static Packet    *TCPReceivePacket   (Session *peer);
 
-static void       TCPSendInit        (Session *sess);
-static void       TCPSendInitAck     (Session *sess);
-static void       TCPSendInit2       (Session *sess);
-static Session   *TCPReceiveInit     (Session *sess, Packet *pak);
-static void       TCPReceiveInitAck  (Session *sess, Packet *pak);
-static Session   *TCPReceiveInit2    (Session *sess, Packet *pak);
+static void       TCPSendInit        (Session *peer);
+static void       TCPSendInitAck     (Session *peer);
+static void       TCPSendInit2       (Session *peer);
+static Session   *TCPReceiveInit     (Session *peer, Packet *pak);
+static void       TCPReceiveInitAck  (Session *peer, Packet *pak);
+static Session   *TCPReceiveInit2    (Session *peer, Packet *pak);
 
 
 static Packet    *PacketTCPC         (Session *peer, UDWORD cmd, UDWORD seq,
@@ -62,9 +62,9 @@ static void       TCPCallBackTOConn  (Event *event);
 static void       TCPCallBackResend  (Event *event);
 static void       TCPCallBackReceive (Event *event);
 
-static void       Encrypt_Pak        (Session *sess, Packet *pak);
+static void       Encrypt_Pak        (Session *peer, Packet *pak);
 static int        Decrypt_Pak        (UBYTE *pak, UDWORD size);
-static int        TCPSendMsgAck      (Session *sess, UWORD seq, UWORD sub_cmd, BOOL accept);
+static int        TCPSendMsgAck      (Session *peer, UWORD seq, UWORD sub_cmd, BOOL accept);
 
 /*********************************************/
 
@@ -140,26 +140,29 @@ void TCPDirectOpen (Session *list, UDWORD uin)
 /*
  * Closes TCP message/file connection(s) to given contact.
  */
-void TCPDirectClose (UDWORD uin)
+void TCPDirectClose (Session *list, UDWORD uin)
 {
-    Session *sess;
+    Session *peer;
     int i;
+
+    ASSERT_MSGLISTEN (list);
     
-    for (i = 0; (sess = SessionNr (i)); i++)
-        if (sess->uin == uin)
-            if (sess->type == TYPE_MSGDIRECT || sess->type == TYPE_FILEDIRECT)
-                TCPClose (sess);
+    for (i = 0; (peer = SessionNr (i)); i++)
+        if (peer->uin == uin && peer->parent == list)
+            if (peer->type == TYPE_MSGDIRECT || peer->type == TYPE_FILEDIRECT)
+                TCPClose (peer);
 }
 
 /*
  * Switchs off TCP for a given uin.
  */
-void TCPDirectOff (UDWORD uin)
+void TCPDirectOff (Session *list, UDWORD uin)
 {
     Contact *cont;
     Session *peer;
     
-    peer = SessionFind (TYPE_MSGDIRECT, uin, NULL);
+    ASSERT_MSGLISTEN (list);
+    peer = SessionFind (TYPE_MSGDIRECT, uin, list);
     cont = ContactFind (uin);
     
     if (!peer && cont)
@@ -186,17 +189,17 @@ void TCPDirectOff (UDWORD uin)
 /*
  * Reconnect hook. Actually, just inform the user.
  */
-void TCPDispatchReconn (Session *sess)
+void TCPDispatchReconn (Session *peer)
 {
-    ASSERT_ANY_DIRECT(sess);
+    ASSERT_ANY_DIRECT(peer);
 
     if (prG->verbose)
     {
         Time_Stamp ();
-        M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
+        M_print (" %s%10s%s ", COLCONTACT, ContactFindName (peer->uin), COLNONE);
         M_print (i18n (2023, "Direct connection closed by peer.\n"));
     }
-    TCPClose (sess);
+    TCPClose (peer);
 }
 
 /*

@@ -16,6 +16,7 @@ struct Session_s
         UDWORD    port;           /* the port the server is listening on      */
         char     *passwd;         /* the password for this user               */
         UDWORD    ip;             /* the remote ip (host byte order)          */
+        void     *tlv;            /* temporary during v8 connect              */
 
         SOK_T     sok;            /* socket for connection to server          */
         UWORD     connect;        /* connection setup status                  */
@@ -34,13 +35,13 @@ struct Session_s
         UDWORD    stat_pak_sent;
         UDWORD    stat_pak_rcvd;
 
-        PreferencesSession *spref; /* preferences for this session */
-        Session            *assoc; /* associated server <-> listener or file io <-> file transfer */
-        Session            *parent;/* parent session */
+        PreferencesSession *spref;  /* preferences for this session */
+        Session            *assoc;  /* associated session           */
+        Session            *parent; /* parent session               */
         
-        jump_sess_f *dispatch;     /* function to call on select() */
+        jump_sess_f *dispatch;     /* function to call on select()   */
         jump_sess_f *reconnect;    /* function to call for reconnect */
-        jump_sess_f *utilio;       /* private to util_io.c */
+        jump_sess_f *utilio;       /* private to util_io.c           */
 };
 
 #define CONNECT_MASK       0x00ff
@@ -52,13 +53,14 @@ struct Session_s
 #define CONNECT_SOCKS_ADD  0x1000
 #define CONNECT_SOCKS      0xf000
 
-Session    *SessionC     (void);
-Session    *SessionClone (Session *sess, UWORD type);
-void        SessionInit  (Session *sess);
-Session    *SessionNr    (int i);
-Session    *SessionFind  (UWORD type, UDWORD uin, const Session *parent);
-void        SessionClose (Session *sess);
-const char *SessionType  (Session *sess);
+Session    *SessionC      (void);
+Session    *SessionClone  (Session *sess, UWORD type);
+void        SessionInit   (Session *sess);
+Session    *SessionNr     (int i);
+Session    *SessionFind   (UWORD type, UDWORD uin, const Session *parent);
+UDWORD      SessionFindNr (Session *sess);
+void        SessionClose  (Session *sess);
+const char *SessionType   (Session *sess);
 
 /*
                             TYPE_SERVER

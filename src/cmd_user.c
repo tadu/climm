@@ -116,7 +116,9 @@ static jump_t jump[] = {
     { NULL, NULL, NULL, 0 }
 };
 
-#define SESSION Session *sess; if (!(sess = SessionFind (TYPEF_ANY_SERVER, 0, NULL))) \
+static Session *currsess = NULL;
+
+#define SESSION Session *sess = currsess; if (!sess && !(currsess = sess = SessionFind (TYPEF_ANY_SERVER, 0, NULL))) \
     { M_print (i18n (1931, "Couldn't find server connection.\n")); return 0; }
 
 /*
@@ -671,7 +673,8 @@ static JUMP_F(CmdUserTCP)
 #ifdef TCP_COMM
     char *cmd, *nick;
     UDWORD uin;
-    Session *sess;
+    Session *list;
+    SESSION;
 
     cmd = strtok (args, " \t\n");
     if (cmd)
@@ -688,20 +691,19 @@ static JUMP_F(CmdUserTCP)
             M_print (i18n (1845, "Nick %s unknown.\n"), nick);
             return 0;
         }
-        sess = SessionFind (TYPE_MSGLISTEN, 0, NULL);
-        if (!sess)
+        if (!(list = sess->assoc))
         {
             M_print (i18n (2011, "You do not have a listening peer-to-peer connection.\n"));
             return 0;
         }
         if (!strcmp (cmd, "open"))
-            TCPDirectOpen  (sess, uin);
+            TCPDirectOpen  (list, uin);
         else if (!strcmp (cmd, "close"))
-            TCPDirectClose (      uin);
+            TCPDirectClose (list, uin);
         else if (!strcmp (cmd, "reset"))
-            TCPDirectClose (      uin);
+            TCPDirectClose (list, uin);
         else if (!strcmp (cmd, "off"))
-            TCPDirectOff   (      uin);
+            TCPDirectOff   (list, uin);
         else if (!strcmp (cmd, "file"))
         {
             char *files[10], *ass[10], *des = NULL, *as;
@@ -725,22 +727,22 @@ static JUMP_F(CmdUserTCP)
                 files[count] = des;
                 ass[count] = as;
             }
-            TCPSendFiles (sess, uin, des, files, ass, count);
+            TCPSendFiles (list, uin, des, files, ass, count);
         }
 #ifdef WIP
         else if (!strcmp (cmd, "ver"))
-            TCPGetAuto     (sess, uin, TCP_MSG_GET_VER);
+            TCPGetAuto     (list, uin, TCP_MSG_GET_VER);
 #endif
         else if (!strcmp (cmd, "auto"))
-            TCPGetAuto     (sess, uin, 0);
+            TCPGetAuto     (list, uin, 0);
         else if (!strcmp (cmd, "away"))
-            TCPGetAuto     (sess, uin, TCP_MSG_GET_AWAY);
+            TCPGetAuto     (list, uin, TCP_MSG_GET_AWAY);
         else if (!strcmp (cmd, "na"))
-            TCPGetAuto     (sess, uin, TCP_MSG_GET_NA);
+            TCPGetAuto     (list, uin, TCP_MSG_GET_NA);
         else if (!strcmp (cmd, "dnd"))
-            TCPGetAuto     (sess, uin, TCP_MSG_GET_DND);
+            TCPGetAuto     (list, uin, TCP_MSG_GET_DND);
         else if (!strcmp (cmd, "ffc"))
-            TCPGetAuto     (sess, uin, TCP_MSG_GET_FFC);
+            TCPGetAuto     (list, uin, TCP_MSG_GET_FFC);
     }
     else
     {
@@ -2313,8 +2315,8 @@ static JUMP_F(CmdUserConn)
         
         for (i = 0; (sess = SessionNr (i)); i++)
         {
-            M_print (i18n (1917, "%-12s version %d for %s (%x), at %s:%d %s\n"),
-                     SessionType (sess), sess->ver, ContactFindName (sess->uin), sess->status,
+            M_print (i18n (2093, "%02d %-12s version %d for %s (%x), at %s:%d %s\n"),
+                     i + 1, SessionType (sess), sess->ver, ContactFindName (sess->uin), sess->status,
                      sess->server ? sess->server : UtilIOIP (sess->ip), sess->port,
                      sess->connect & CONNECT_FAIL ? i18n (1497, "failed") :
                      sess->connect & CONNECT_OK   ? i18n (1934, "connected") :
@@ -2332,10 +2334,19 @@ static JUMP_F(CmdUserConn)
     }
     else if (!strcmp (arg1, "login") || !strcmp (arg1, "open"))
     {
-        i = 0;
+        int i, j;
+
         arg1 = strtok (NULL, "\n");
         if (arg1)
             i = atoi (arg1);
+        else
+            for (i = j = 0; (sess = SessionNr (j)); j++)
+                if (sess->type & TYPEF_SERVER)
+                {
+                    i = j + 1;
+                    break;
+                }
+
         sess = SessionNr (i - 1);
         if (!sess)
         {
@@ -2350,10 +2361,41 @@ static JUMP_F(CmdUserConn)
 
         SessionInit (sess);
     }
+    else if (!strcmp (arg1, "select"))
+    {
+        int i;
+
+        arg1 = strtok (NULL, "\n");
+        i = arg1 ? atoi (arg1) : SessionFindNr (currsess) + 1;
+
+        sess = SessionNr (i - 1);
+        if (!sess && !(sess = SessionFind (TYPEF_SERVER, i, NULL)))
+        {
+            M_print (i18n (1894, "There is no connection number %d.\n"), i);
+            return 0;
+        }
+        if (~sess->type & TYPEF_SERVER)
+        {
+            M_print (i18n (2098, "Connection %d is not a server connection.\n"), i);
+            return 0;
+        }
+        if (~sess->connect & CONNECT_OK)
+        {
+            M_print (i18n (2096, "Connection %d is not open.\n"), i);
+            return 0;
+        }
+        currsess = sess;
+        M_print (i18n (2099, "Selected connection %d (version %d, UIN %d) as current connection.\n"),
+                 i, sess->ver, sess->uin);
+    }
     else
     {
-        M_print (i18n (1892, "conn             List available connections.\n"));
-        M_print (i18n (1893, "conn login <nr>  Open connection <nr>.\n"));
+        M_print (i18n (1892, "conn               List available connections.\n"));
+        M_print (i18n (2094, "conn login         Open first server connection.\n"));
+        M_print (i18n (1893, "conn login <nr>    Open connection <nr>.\n"));
+/*        M_print (i18n (2095, "conn close <nr>    Close connection <nr>.\n"));  */
+        M_print (i18n (2097, "conn select <nr>   Select connection <nr> as server connection.\n"));
+        M_print (i18n (2100, "conn select <uin>  Select connection with UIN <uin> as server connection.\n"));
     }
     return 0;
 }

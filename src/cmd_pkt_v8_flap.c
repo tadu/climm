@@ -32,7 +32,6 @@
 #endif
 #include <sys/stat.h>
 
-static TLV *tlv = NULL;
 static void FlapChannel1 (Session *sess, Packet *pak);
 static void FlapChannel4 (Session *sess, Packet *pak);
 
@@ -98,6 +97,8 @@ static void FlapChannel1 (Session *sess, Packet *pak)
             }
             else if (sess->connect & 8)
             {
+                TLV *tlv = sess->tlv;
+                
                 assert (tlv);
                 FlapCliCookie (sess, tlv[6].str, tlv[6].len);
                 TLVD (tlv);
@@ -113,6 +114,8 @@ static void FlapChannel1 (Session *sess, Packet *pak)
 
 static void FlapChannel4 (Session *sess, Packet *pak)
 {
+    TLV *tlv;
+    
     tlv = TLVRead (pak, PacketReadLeft (pak));
     if (!tlv[5].len)
     {
@@ -150,6 +153,7 @@ static void FlapChannel4 (Session *sess, Packet *pak)
         sess->ip = 0;
 
         sess->connect = 8;
+        sess->tlv = tlv;
         UtilIOConnectTCP (sess);
     }
 }

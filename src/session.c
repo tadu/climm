@@ -84,7 +84,7 @@ void SessionInit (Session *sess)
         SessionInitServer (sess);
     else if (sess->spref->type == TYPE_SERVER_OLD)
         SessionInitServerV5 (sess);
-    else
+    else if (sess->spref->type == TYPE_MSGLISTEN)
         SessionInitPeer (sess);
 }
 
@@ -133,16 +133,31 @@ Session *SessionFind (UWORD type, UDWORD uin, const Session *parent)
 }
 
 /*
+ * Finds the index of this session.
+ */
+UDWORD SessionFindNr (Session *sess)
+{
+    int i;
+
+    if (!sess)
+        return -1;
+    for (i = 0; i < listlen; i++)
+        if (slist[i] == sess)
+            return i;
+    return -1;
+}
+
+/*
  * Closes and removes a session.
  */
 void SessionClose (Session *sess)
 {
     int i, j;
     
-    for (i = 0; slist[i] != sess && i < listlen; i++)  ;
+    i = SessionFindNr (sess);
     
     assert (sess);
-    assert (i < listlen);
+    assert (i != -1);
     
     Debug (DEB_SESSION, "===> %p[%d] (%s) closing...", sess, i, SessionType (sess));
 

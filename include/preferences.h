@@ -46,8 +46,8 @@ struct Preferences_s
 
 struct PreferencesSession_s
 {
-    unsigned  type:4;
-    unsigned  flags:4;
+    UDWORD    type;
+    UBYTE     flags;
     UBYTE     version;
     UDWORD    uin;
     UDWORD    status;
