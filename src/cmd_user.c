@@ -72,7 +72,7 @@ static jump_t jump[] = {
     { &CmdUserSoundOnline,   "soundonline",  NULL, 2,   0 },
     { &CmdUserSoundOffline,  "soundoffline", NULL, 2,   0 },
     { &CmdUserAutoaway,      "autoaway",     NULL, 2,   0 },
-    { &CmdUserChange,        "change",       NULL, 0,  -1 },
+    { &CmdUserChange,        "change",       NULL, 1,  -1 },
     { &CmdUserChange,        "online",       NULL, 1,   0 },
     { &CmdUserChange,        "away",         NULL, 1,   1 },
     { &CmdUserChange,        "na",           NULL, 1,   5 },

@@ -102,10 +102,12 @@ void Idle_Check (Session *sess)
     int delta;
     UDWORD new = -1;
 
-    if (sess->status & (STATUSF_DND | STATUSF_OCC | STATUSF_FFC))
+    if ((sess->status & (STATUSF_DND | STATUSF_OCC | STATUSF_FFC))
+        || !(sess->connect & CONNECT_OK))
+    {
+        idle_val = 0;
         return;
-    if (!(sess->connect & CONNECT_OK))
-        return;
+    }
     if (!prG->away_time && !idle_flag)
         return;
     if (!idle_val)
