@@ -675,7 +675,17 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
                   EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
                   EXTRA_MESSAGE, msgtype, text));
     else if (event)
+    {
         IMIntMsg (cont, event->conn, NOW, STATUS_OFFLINE, INT_MSGACK_TYPE2, ExtraGetS (event->extra, EXTRA_MESSAGE), NULL);
+        if (~cont->flags & CONT_SEENAUTO && strlen (text))
+        {
+            IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (ExtraSet (NULL,
+                      EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
+                      EXTRA_STATUS, STATUS_OFFLINE, NULL),
+                      EXTRA_MESSAGE, MSG_NORM, text));
+            cont->flags |= CONT_SEENAUTO;
+        }
+    }
     EventD (event);
     free (text);
 }
@@ -834,11 +844,17 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                         UDWORD sip  = PacketReadB4 (pp);
                         UDWORD sp1  = PacketRead4  (pp);
                         UBYTE  scon = PacketRead1  (pp);
+#ifdef WIP
                         UDWORD sop  = PacketRead4  (pp);
                         UDWORD sp2  = PacketRead4  (pp);
                         UWORD  sver = PacketRead2  (pp);
                         UDWORD sunk = PacketRead4  (pp);
-                        
+#else
+                                      PacketRead4  (pp);
+                                      PacketRead4  (pp);
+                        UWORD  sver = PacketRead2  (pp);
+                                      PacketRead4  (pp);
+#endif
                         if (suin != uin)
                         {
                             SnacSrvUnknown (event);
@@ -1627,7 +1643,8 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
             remenc = cont->encoding ? cont->encoding : prG->enc_rem;
             
 #ifdef ENABLE_UTF8
-            if (HAS_CAP (cont->caps, CAP_UTF8) && cont->dc && cont->dc->version >= 7
+            if (cont->status != STATUS_OFFLINE &&
+                HAS_CAP (cont->caps, CAP_UTF8) && cont->dc && cont->dc->version >= 7
                 && !(cont->dc->id1 == 0xffffff42 && cont->dc->id2 < 0x00040a03)) /* exclude old mICQ */
             {
                 enc = ENC_UCS2BE;
