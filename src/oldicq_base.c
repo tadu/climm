@@ -12,6 +12,9 @@
 #include "oldicq_compat.h"
 #include "oldicq_client.h"
 #include "oldicq_server.h"
+#if HAVE_WINSOCK2_H
+#include <winsock2.h>
+#endif
 
 static void CallBackClosev5 (Connection *conn);
 
