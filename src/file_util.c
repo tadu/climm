@@ -553,8 +553,13 @@ void Read_RC_File (FILE *rcf)
 
                 if (isdigit (*p))
                 {
-                    uin = atoi (strtok (p, " "));
+                    tmp = strtok (p, " ");
+                    if (!tmp)
+                        continue;
+                    uin = atoi (tmp);
                     tmp = strtok (NULL, "");
+                    if (!tmp)
+                        continue;
                     if (ContactFind (uin))
                         flags |= CONT_ALIAS;
                 }

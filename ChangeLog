@@ -3,6 +3,7 @@
 	* document tab completion option
 	* don't auto-away on listening connections
 	* don't segfault on "conn login"
+	* don't segfault on missing nick in contact section
 
 2002-06-26 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* fix SOCKS5 authorization
