@@ -249,7 +249,7 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
                 enc = ENC_LATIN9;
             }
 
-            icqcol = atoi (text);
+            icqcol = atoi (text); /* FIXME FIXME WIXME */
             str = s_split (&text, enc, 450);
 
             PacketWriteTLV     (pak, 2);
@@ -1203,12 +1203,14 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
             inc_event->opt = NULL;
             PacketWrite2     (ack_pak, ack_status);
             PacketWrite2     (ack_pak, ack_flags);
-            PacketWriteLNTS  (ack_pak, c_out (ack_msg));
+            PacketWriteLNTS  (ack_pak, c_out_for (ack_msg, cont, msgtype));
             if (msgtype == MSG_NORM)
             {
                 PacketWrite4 (ack_pak, TCP_COL_FG);
                 PacketWrite4 (ack_pak, TCP_COL_BG);
             }
+            if (CONT_UTF8 (cont, msgtype))
+                PacketWriteDLStr     (ack_pak, CAP_GID_UTF8);
             accept = -1;
             break;
     }
