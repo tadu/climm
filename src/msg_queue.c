@@ -201,7 +201,7 @@ Event *QueueDequeue (UDWORD seq, UDWORD type)
             return event;
         }
     }
-    Debug (DEB_QUEUE, i18n (####, "couldn't dequeue type %s seq %08x"),
+    Debug (DEB_QUEUE, i18n (2076, "couldn't dequeue type %s seq %08x"),
            QueueType (type), seq);
     return NULL;
 }
