@@ -597,15 +597,15 @@ static void rl_insert_basic (wchar_tt ucs, const char *display, UDWORD len, UDWO
 static int rl_wcwidth (wint_tt ucs, const char *display)
 {
     wchar_t wc[20]; /* NOT wchar_tt */
-    int i, b, w;
+    int i, l, b, w;
     
     if (ucs != CHAR_NOT_AVAILABLE && *display == CHAR_NOT_AVAILABLE)
         return -1;
 
-    if ((b = mbstowcs (wc, display, 20)) <= 0)
+    if ((l = mbstowcs (wc, display, 20)) <= 0)
         return -1;
     
-    for (i = w = 0; i < b; i++)
+    for (i = w = 0; i < l; i++)
         if (!iswprint (wc[i]) || ((b = wcwidth (wc[i])) < 0))
             return -1;
         else
