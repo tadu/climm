@@ -45,7 +45,7 @@ void Auto_Reply (Session *sess, UDWORD uin)
      else
          return;
     
-    icq_sendmsg (sess, uin, temp, AUTO_MESS);
+    icq_sendmsg (sess, uin, temp, MSG_AUTO);
 }
 
 void icq_sendurl (Session *sess, UDWORD uin, char *description, char *url)
@@ -56,7 +56,7 @@ void icq_sendurl (Session *sess, UDWORD uin, char *description, char *url)
     assert (buf);
 
     snprintf (buf, sizeof (buf), "%s%c%s", url, ConvSep (), description);
-    icq_sendmsg (sess, uin, buf, URL_MESS);
+    icq_sendmsg (sess, uin, buf, MSG_URL);
     free (buf);
 }
 
@@ -65,7 +65,7 @@ void icq_sendmsg (Session *sess, UDWORD uin, char *text, UDWORD msg_type)
     char *old;
 
     putlog (sess, NOW, uin, STATUS_ONLINE, 
-        msg_type == AUTO_MESS ? LOG_AUTO : LOG_SENT, msg_type, "%s\n", text);
+        msg_type == MSG_AUTO ? LOG_AUTO : LOG_SENT, msg_type, "%s\n", text);
 #ifdef ENABLE_PEER2PEER
     if (!sess->assoc || !TCPSendMsg (sess->assoc, uin, text, msg_type))
 #endif

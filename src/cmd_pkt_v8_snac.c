@@ -502,7 +502,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             PacketReadB2 (p);
             text = PacketReadStrB (p);
             txt = text + 4;
-            type = NORM_MESS;
+            type = MSG_NORM;
             /* TLV 1, 2(!), 3, 4, f ignored */
             break;
         case 2:
@@ -785,7 +785,7 @@ static JUMP_SNAC_F(SnacSrvAddedyou)
     /* TLV 1 ignored */
     uin = PacketReadUIN (pak);
 
-    Do_Msg (event->sess, NOW, USER_ADDED_MESS, "", uin, STATUS_ONLINE);
+    Do_Msg (event->sess, NOW, MSG_AUTH_ADDED, "", uin, STATUS_ONLINE);
 }
 /*
  * SRV_FROMOLDICQ - SNAC(15,3)
@@ -1110,14 +1110,15 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, const char *text, UDWORD type)
     
     switch (type)
     {
-        case URL_MESS:
-        case AUTH_REQ_MESS:
-        case AUTH_OK_MESS:
-        case AUTH_REF_MESS:
+        case MSG_URL:
+        case MSG_AUTH_REQ:
+        case MSG_AUTH_GRANT:
+        case MSG_AUTH_DENY:
+        case MSG_AUTH_ADDED:
             format = 4;
             break;
-        case AUTO_MESS:
-        case NORM_MESS:
+        case MSG_AUTO:
+        case MSG_NORM:
             format = 1;
             break;
         case 0xe8:

@@ -1784,13 +1784,13 @@ static void TCPCallBackReceive (Event *event)
                 break;
             switch (type)
             {
-                case TCP_MSG_MESS:
+                case MSG_NORM:
                     Time_Stamp ();
                     M_print (" " COLACK "%10s" COLNONE " " MSGTCPACKSTR "%s\n",
                              cont->nick, event->info);
                     if (~cont->flags & CONT_SEENAUTO && strlen (tmp))
                     {
-                        Do_Msg (event->sess, NOW, type, tmp, cont->uin, status);
+                        Do_Msg (event->sess, NOW, MSG_NORM, tmp, cont->uin, status);
                         cont->flags |= CONT_SEENAUTO;
                     }
                     break;
@@ -1969,16 +1969,16 @@ static void TCPCallBackReceive (Event *event)
                     break;
 
                 /* Regular messages */
-                case TCP_MSG_AUTO:
-                case TCP_MSG_MESS:
-                case TCP_MSG_URL:
-                case TCP_MSG_REQ_AUTH:
-                case TCP_MSG_DENY_AUTH:
-                case TCP_MSG_GIVE_AUTH:
-                case TCP_MSG_ADDED:
-                case TCP_MSG_WEB_PAGER:
-                case TCP_MSG_EMAIL_PAGER:
-                case TCP_MSG_ADDUIN:
+                case MSG_AUTO:
+                case MSG_NORM:
+                case MSG_URL:
+                case MSG_AUTH_REQ:
+                case MSG_AUTH_DENY:
+                case MSG_AUTH_GRANT:
+                case MSG_AUTH_ADDED:
+                case MSG_WEB:
+                case MSG_EMAIL:
+                case MSG_CONTACT:
                     Do_Msg (event->sess, NOW, type, tmp, cont->uin, status);
 
                     TCPSendMsgAck (event->sess, seq, type, TRUE);

@@ -17,18 +17,8 @@
 #define TCP_CMD_MESSAGE         2030
 
 /* Message types */
-#define TCP_MSG_AUTO            0x0000
-#define TCP_MSG_MESS            0x0001
 #define TCP_MSG_CHAT            0x0002
 #define TCP_MSG_FILE            0x0003
-#define TCP_MSG_URL             0x0004
-#define TCP_MSG_REQ_AUTH        0x0006
-#define TCP_MSG_DENY_AUTH       0x0007
-#define TCP_MSG_GIVE_AUTH       0x0008
-#define TCP_MSG_ADDED           0x000C
-#define TCP_MSG_WEB_PAGER       0x000D
-#define TCP_MSG_EMAIL_PAGER     0x000E
-#define TCP_MSG_ADDUIN          0x0013
 #define TCP_MSG_GREETING        0x001A
 /* yes, those are really message types */
 #define TCP_MSG_GET_AWAY        1000

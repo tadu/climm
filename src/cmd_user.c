@@ -978,13 +978,13 @@ static JUMP_F (CmdUserMessage)
                 for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
                 {
                     temp = strdup (msg);
-                    icq_sendmsg (sess, cont->uin, temp, NORM_MESS | MESSF_MASS);
+                    icq_sendmsg (sess, cont->uin, temp, MSG_NORM | MSGF_MASS);
                     free (temp);
                 }
             }
             else
             {
-                icq_sendmsg (sess, multi_uin, msg, NORM_MESS);
+                icq_sendmsg (sess, multi_uin, msg, MSG_NORM);
                 uiG.last_sent_uin = multi_uin;
             }
             return 0;
@@ -1023,14 +1023,14 @@ static JUMP_F (CmdUserMessage)
                     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
                     {
                         temp = strdup (msg);
-                        icq_sendmsg (sess, cont->uin, temp, NORM_MESS | MESSF_MASS);
+                        icq_sendmsg (sess, cont->uin, temp, MSG_NORM | MSGF_MASS);
                         free (temp);
                     }
                 }
                 else
                 {
                     temp = strdup (msg);
-                    icq_sendmsg (sess, multi_uin, temp, NORM_MESS);
+                    icq_sendmsg (sess, multi_uin, temp, MSG_NORM);
                     free (temp);
                     uiG.last_sent_uin = multi_uin;
                 }
@@ -1094,13 +1094,13 @@ static JUMP_F (CmdUserMessage)
                 for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
                 {
                     temp = strdup (arg1);
-                    icq_sendmsg (sess, cont->uin, temp, NORM_MESS | MESSF_MASS);
+                    icq_sendmsg (sess, cont->uin, temp, MSG_NORM | MSGF_MASS);
                     free (temp);
                 }
             }
             else
             {
-                icq_sendmsg (sess, uin, arg1, NORM_MESS);
+                icq_sendmsg (sess, uin, arg1, MSG_NORM);
                 uiG.last_sent_uin = uin;
             }
             return 0;
@@ -2011,9 +2011,9 @@ static JUMP_F(CmdUserAuth)
             if (sess->type == TYPE_SERVER && sess->ver >= 8)
                 SnacCliReqauth (sess, cont->uin, msg);
             else if (sess->type == TYPE_SERVER)
-                SnacCliSendmsg (sess, cont->uin, msg, AUTH_REQ_MESS);
+                SnacCliSendmsg (sess, cont->uin, msg, MSG_AUTH_REQ);
             else
-                CmdPktCmdSendMessage (sess, cont->uin, msg, AUTH_REQ_MESS);
+                CmdPktCmdSendMessage (sess, cont->uin, msg, MSG_AUTH_REQ);
             free (cmd);
             return 0;
         }
@@ -2024,9 +2024,9 @@ static JUMP_F(CmdUserAuth)
             if (sess->type == TYPE_SERVER && sess->ver >= 8)
                 SnacCliAuthorize (sess, cont->uin, 0, msg);
             else if (sess->type == TYPE_SERVER)
-                SnacCliSendmsg (sess, cont->uin, "\x03", AUTH_REF_MESS);
+                SnacCliSendmsg (sess, cont->uin, "\x03", MSG_AUTH_DENY);
             else
-                CmdPktCmdSendMessage (sess, cont->uin, "\x03", AUTH_REF_MESS);
+                CmdPktCmdSendMessage (sess, cont->uin, "\x03", MSG_AUTH_DENY);
             free (cmd);
             return 0;
         }
@@ -2042,9 +2042,9 @@ static JUMP_F(CmdUserAuth)
     if (sess->type == TYPE_SERVER && sess->ver >= 8)
         SnacCliAuthorize (sess, cont->uin, 1, NULL);
     else if (sess->type == TYPE_SERVER)
-        SnacCliSendmsg (sess, cont->uin, "\x03", AUTH_OK_MESS);
+        SnacCliSendmsg (sess, cont->uin, "\x03", MSG_AUTH_GRANT);
     else
-        CmdPktCmdSendMessage (sess, cont->uin, "\x03", AUTH_OK_MESS);
+        CmdPktCmdSendMessage (sess, cont->uin, "\x03", MSG_AUTH_GRANT);
     return 0;
 }
 

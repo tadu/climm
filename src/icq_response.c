@@ -629,7 +629,7 @@ void Do_Msg (Session *sess, time_t stamp, UWORD type, const char *text, UDWORD u
     UtilCheckUIN (serv, uin);
 
     putlog (sess, stamp, uin, tstatus, 
-        type == USER_ADDED_MESS ? LOG_ADDED : LOG_RECVD, type,
+        type == MSG_AUTH_ADDED ? LOG_ADDED : LOG_RECVD, type,
         *cdata ? "%s\n" : "%s", cdata);
     
     cont = ContactFind (uin);
@@ -682,9 +682,9 @@ void Do_Msg (Session *sess, time_t stamp, UWORD type, const char *text, UDWORD u
         cont->last_time = time (NULL);
     }
 
-    switch (type & ~MESSF_MASS)
+    switch (type & ~MSGF_MASS)
     {
-        case USER_ADDED_MESS:
+        case MSG_AUTH_ADDED:
             if (*cdata)
             {
                 tmp = strchr (cdata, sep);
@@ -728,7 +728,7 @@ void Do_Msg (Session *sess, time_t stamp, UWORD type, const char *text, UDWORD u
             *tmp = 0;
             M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1566, "Email address:"), cdata);
             break;
-        case AUTH_REQ_MESS:
+        case MSG_AUTH_REQ:
             tmp = strchr (cdata, sep);
             *tmp = 0;
             M_print ("" COLCONTACT "%10s" COLNONE "%s\n", cdata,
@@ -783,8 +783,8 @@ void Do_Msg (Session *sess, time_t stamp, UWORD type, const char *text, UDWORD u
             *tmp = 0;
             M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1591, "Reason:"), cdata);
             break;
-        case EMAIL_MESS:
-        case WEB_MESS:
+        case MSG_EMAIL:
+        case MSG_WEB:
             tmp = strchr (cdata, sep);
             *tmp = 0;
             M_print ("\n%s ", cdata);
@@ -800,7 +800,7 @@ void Do_Msg (Session *sess, time_t stamp, UWORD type, const char *text, UDWORD u
 
             tmp = strchr (cdata, sep);
             *tmp = 0;
-            if (type == EMAIL_MESS)
+            if (type == MSG_EMAIL)
                 M_print (i18n (1592, "<%s> emailed you a message:\n"), cdata);
             else
                 M_print (i18n (1593, "<%s> send you a web message:\n"), cdata);
@@ -816,7 +816,7 @@ void Do_Msg (Session *sess, time_t stamp, UWORD type, const char *text, UDWORD u
             cdata = tmp;
             M_print (COLMESSAGE "%s" COLNONE "\n", cdata);
             break;
-        case URL_MESS:
+        case MSG_URL:
             url_desc = cdata;
             url_url = strchr (cdata, sep);
             if (url_url == NULL)
@@ -838,7 +838,7 @@ void Do_Msg (Session *sess, time_t stamp, UWORD type, const char *text, UDWORD u
                      sess->type & TYPEF_ANY_SERVER ? MSGRECSTR : MSGTCPRECSTR,
                      COLMESSAGE, url_url, COLNONE);
             break;
-        case CONTACT_MESS:
+        case MSG_CONTACT:
             tmp = strchr (cdata, sep);
             *tmp = 0;
             M_print (i18n (1595, "\nContact List.\n============================================\n%d Contacts\n"),
@@ -859,7 +859,7 @@ void Do_Msg (Session *sess, time_t stamp, UWORD type, const char *text, UDWORD u
                 tmp++;
             }
             break;
-        case TCP_MSG_AUTO:
+        case MSG_AUTO:
             M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
                 i18n (2108, "auto"), cdata);
             break;

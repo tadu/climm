@@ -415,7 +415,7 @@ int putlog (Session *sess, time_t stamp, UDWORD uin,
         l += strlen (buf + l);
     }
 
-    if (type != 0xFFFF && type != NORM_MESS)
+    if (type != 0xFFFF && type != MSG_NORM)
     {
         snprintf (buf + l, DSCSIZ - l, " (%u)", type);
         l += strlen (buf + l);
