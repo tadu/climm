@@ -674,7 +674,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                 if (!tag)
                     break;
                 k++;
-                nick = (j = TLVGet (tlv, 305)) ? tlv[j].str : name;
+                nick = ((j = TLVGet (tlv, 305)) != -1) ? tlv[j].str : name;
                    
                 if (event->sess->flags & CONN_WIZARD)
                     ContactAdd (atoi (name), nick);

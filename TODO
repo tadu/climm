@@ -17,4 +17,7 @@ various people:
  : alias for commands
  : tab completion (check)
  : configurable colors
+ : saving personal information
+ : fix memory leaks
+
 

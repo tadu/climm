@@ -26,7 +26,7 @@ TLV *TLVRead (Packet *pak, UDWORD TLVlen)
         len = PacketReadB2 (pak);
         if (TLVlen < len)
         {
-            M_print (i18n (1897, "Incomplete TLV %d, len %d of %d - ignoring.\n"), typ, PacketReadLeft (pak), len);
+            M_print (i18n (1897, "Incomplete TLV %d, len %d of %d - ignoring.\n"), typ, TLVlen, len);
             return tlv;
         }
         if (typ >= 16 || tlv[typ].len)
@@ -55,7 +55,7 @@ TLV *TLVRead (Packet *pak, UDWORD TLVlen)
 
 UWORD TLVGet (TLV *tlv, UWORD nr)
 {
-    int i;
+    UWORD i;
 
     for (i = 0; i < __maxTLV; i++)
         if (tlv[i].tlv == nr)
