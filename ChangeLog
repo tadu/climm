@@ -1,5 +1,69 @@
 -*- coding: utf-8 -*-
 
+2004-08-01 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* option 'local' for non-contacts
+	* send correct type to server when uploading contactst
+	* try to update group on server as well
+	* 
+
+2004-07-24 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* re-implement roster code, now does allow to upload contacts
+	* implement roster diff
+	* try to handle contact groups correctly, less output
+	* implement auto-update feature to fix some configuration values once on update
+	* ... and use to switch off autofingering once
+	* replace 9999 i18n numbers
+	* fix default i18n file encoding to UTF8
+	* make 1008 default local encoding
+	* import & update *.i18n files from stable
+	* fix some micqrc loading bugs
+	* fix potential segfault
+	* fix another segfault
+	* fix segfault for removed contacts
+	* extra check for NULL contact group name
+	* fix uninitialized value in roster code
+	* try to fix contact group handling in roster code
+	* add 'shadow' option to not display contact(s| groups) unless specificially mentioned
+
+2004-07-14 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* make optional arguments for status changes the temporary away-message,
+	  which is not saved
+	* fix wrong #ifdef spotted by Roman
+
+2004-07-04 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* fix segfault
+	* separate contacts from different server connections
+	* update spec once more
+
+2004-06-24 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* disallow tabbing when not in default prompt
+	* remove backslash handling on final arguments upon popular demand
+	* copy updated .spec
+	* do not add lines to history when tabs are disallowed (i.e. when prompt
+	  has been changed and a command requests input)
+	* corrected (hopefully) tabbing, add time stamps to tabs command
+
+2004-06-16 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* know about family 34
+	* fix segfault at setup
+	* Tcl fixes from Roman
+	* fix segfault found by Roman
+	* apply OpenSSL patch
+
+2004-03-11 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* apply Sebastian Felis' historyd command patch
+	* indent URL messages properly
+	* fix tabbing logic errors
+	* fix quoting in libgnutls.m4
+	* fix never disappearing special prompts
+	* fix parsing of broken micqrc
+	* try to fix client detection on 64bit platforms
+
+2004-01-17 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* detect ICQ2003(b)
+	* allow UTF-8 for non-normal messages
+	* improve 'last'-history by saving outgoing messages as well
+
 2004-01-15 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 	* change malloc()ed size as suggested by Sebastian Felis
 	* apply Sebastian Felis' history dump and search patch
