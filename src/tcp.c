@@ -19,6 +19,7 @@
 #include "contact.h"
 #include "tcp.h"
 #include "cmd_pkt_cmd_v5.h"
+#include "cmd_pkt_v8_snac.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -169,7 +170,8 @@ void TCPDispatchMain (Session *sess)
             case 1:
                 sess->connect |= CONNECT_OK | CONNECT_SELECT_R;
                 sess->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X;
-                if (sess->assoc && (sess->assoc->connect & CONNECT_OK))
+                if (sess->assoc && sess->assoc->ver > 6 &&
+                    (sess->assoc->connect & CONNECT_OK))
                     SnacCliSetstatus (sess->assoc, 0, 2);
                 break;
             case 2:
@@ -452,7 +454,7 @@ void TCPDispatchPeer (Session *sess)
                     else if (PacketReadAt2 (pak, 26) & TCP_AUTO_RESPONSE_MASK)
                     {
                         M_print (i18n (636, "Auto-response message for %s:\n"), cont->nick);
-                        M_print (MESSCOL "%s\n" NOCOL, PacketReadAtStrN (pak, 28));
+                        M_print (MESSCOL "%s\n" NOCOL, PacketReadAtLNTS (pak, 28));
                     }
                     if (prG->verbose && PacketReadAt2 (pak, 26) != NORM_MESS)
                     {
@@ -960,7 +962,7 @@ void TCPCallBackResend (struct Event *event)
     if (event->attempts < MAX_RETRY_ATTEMPTS && PacketReadAt2 (pak, 4) == TCP_CMD_MESSAGE)
     {
         peer->connect = CONNECT_FAIL;
-        icq_sendmsg (peer->assoc->assoc, cont->uin, strdup (PacketReadAtStrN (pak, 28)), PacketReadAt2 (pak, 22));
+        icq_sendmsg (peer->assoc->assoc, cont->uin, strdup (PacketReadAtLNTS (pak, 28)), PacketReadAt2 (pak, 22));
     }
     else
         M_print (i18n (844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4));
@@ -1013,7 +1015,7 @@ void TCPCallBackReceive (struct Event *event)
             Time_Stamp ();
             M_print ("\a " CYAN BOLD "%10s" COLNONE " ", ContactFindName (cont->uin));
             
-            tmp = PacketReadAtStrN (pak, 28);
+            tmp = PacketReadAtLNTS (pak, 28);
             Do_Msg (event->sess, PacketReadAt2 (pak, 24), strlen (tmp),
                     tmp, cont->uin, 1);
 

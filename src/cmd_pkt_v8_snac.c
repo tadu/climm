@@ -526,7 +526,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
                    PacketRead1 (p); /* FLAGS */
             PacketReadB2 (p); /* UNKNOWN */
             PacketReadB2 (p); /* UNKNOWN */
-            txt = PacketReadStrN (p);
+            txt = PacketReadLNTS (p);
             /* FOREGROUND / BACKGROUND ignored */
             
             Time_Stamp ();
@@ -544,7 +544,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
             uin  = PacketRead4 (p);
             type = PacketRead1 (p);
                    PacketRead1 (p);
-            txt  = PacketReadStrN (p);
+            txt  = PacketReadLNTS (p);
             /* FOREGROUND / BACKGROUND ignored */
             
             Time_Stamp ();
@@ -673,7 +673,7 @@ JUMP_SNAC_F(SnacSrvFromoldicq)
             hour = PacketRead1 (p);
             min  = PacketRead1 (p);
             flags= PacketRead2 (p);
-            text = PacketReadStrN (p);
+            text = PacketReadLNTS (p);
 
             M_print ("%04d-%02d-%02d %2d:%02d:%02d", year, mon, mday, hour, min, 0);
             M_print (" " CYAN BOLD "%10s" COLNONE " ",
@@ -966,7 +966,7 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, char *text, UDWORD type)
             PacketWrite4  (pak, sess->uin);
             PacketWrite1  (pak, type);
             PacketWrite1  (pak, 0);
-            PacketWriteStrN (pak, text);
+            PacketWriteLNTS (pak, text);
     }
     PacketWriteB2 (pak, 6);
     PacketWriteB2 (pak, 0);
@@ -1119,7 +1119,7 @@ void SnacCliRegisteruser (Session *sess)
     PacketWriteB4 (pak, 0);
     PacketWriteB4 (pak, 0);
     PacketWriteB4 (pak, 0);
-    PacketWriteStrN (pak, sess->passwd);
+    PacketWriteLNTS (pak, sess->passwd);
     PacketWriteB4 (pak, REG_X3);
     PacketWriteB4 (pak, REG_X4);
     SnacSend (sess, pak);

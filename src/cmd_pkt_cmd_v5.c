@@ -95,7 +95,7 @@ void CmdPktCmdLogin (Session *sess)
     PacketWrite4 (pak, time (NULL));
     PacketWrite4 (pak, sess->assoc && sess->assoc->connect & CONNECT_OK ?
                        sess->assoc->port : 0);
-    PacketWriteStrN (pak, sess->passwd);
+    PacketWriteLNTS (pak, sess->passwd);
     PacketWrite4 (pak, 0x000000d5);
     PacketWrite4 (pak, sess->our_local_ip);
     PacketWrite1 (pak, sess->assoc && sess->assoc->connect & CONNECT_OK ?
@@ -120,7 +120,7 @@ void CmdPktCmdRegNewUser (Session *sess, const char *pass)
     assert (strlen (pass) <= 9);
 
     PacketWriteAt4 (pak, CMD_v5_OFF_UIN, 0); /* no UIN */
-    PacketWriteStrN (pak, pass);
+    PacketWriteLNTS (pak, pass);
     PacketWrite4   (pak, 0xA0);
     PacketWrite4   (pak, 0x2461);
     PacketWrite4   (pak, 0xA00000);
@@ -179,10 +179,10 @@ void CmdPktCmdSearchUser (Session *sess, const char *email, const char *nick,
                                          const char *first, const char *last)
 {
     Packet *pak = PacketCv5 (sess, CMD_SEARCH_USER);
-    PacketWriteStrN (pak, nick);
-    PacketWriteStrN (pak, first);
-    PacketWriteStrN (pak, last);
-    PacketWriteStrN (pak, email);
+    PacketWriteLNTS (pak, nick);
+    PacketWriteLNTS (pak, first);
+    PacketWriteLNTS (pak, last);
+    PacketWriteLNTS (pak, email);
     PacketEnqueuev5 (pak, sess);
 }
 
@@ -207,7 +207,7 @@ void CmdPktCmdKeepAlive (Session *sess)
 void CmdPktCmdSendTextCode (Session *sess, const char *text)
 {
     Packet *pak = PacketCv5 (sess, CMD_SEND_TEXT_CODE);
-    PacketWriteStrN (pak, text);
+    PacketWriteLNTS (pak, text);
     PacketWrite1 (pak, 5);
     PacketWrite1 (pak, 0);
     PacketEnqueuev5 (pak, sess);
@@ -294,10 +294,10 @@ void CmdPktCmdUpdateInfo (Session *sess, const char *email, const char *nick,
                                          const char *first, const char *last, BOOL auth)
 {
     Packet *pak = PacketCv5 (sess, CMD_UPDATE_INFO);
-    PacketWriteStrN (pak, nick);
-    PacketWriteStrN (pak, first);
-    PacketWriteStrN (pak, last);
-    PacketWriteStrN (pak, email);
+    PacketWriteLNTS (pak, nick);
+    PacketWriteLNTS (pak, first);
+    PacketWriteLNTS (pak, last);
+    PacketWriteLNTS (pak, email);
     PacketEnqueuev5 (pak, sess);
 
     pak = PacketCv5 (sess, CMD_AUTH_UPDATE);
@@ -382,7 +382,7 @@ void CmdPktCmdMetaMore (Session *sess, MetaMore *info)
     PacketWrite2    (pak, META_SET_MORE_INFO);
     PacketWrite2    (pak, info->age);
     PacketWrite1    (pak, info->sex);
-    PacketWriteStrN  (pak, info->hp);
+    PacketWriteLNTS  (pak, info->hp);
     PacketWrite2    (pak, info->year);
     PacketWrite2    (pak, info->month);
     PacketWrite2    (pak, info->day);
@@ -417,7 +417,7 @@ void CmdPktCmdMetaPass (Session *sess, char *pass)
     assert (strlen (pass) <= 9);
 
     PacketWrite2 (pak, META_SET_PASS);
-    PacketWriteStrN (pak, pass);
+    PacketWriteLNTS (pak, pass);
     PacketEnqueuev5 (pak, sess);
 }
 

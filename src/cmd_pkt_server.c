@@ -438,7 +438,7 @@ JUMP_SRV_F (CmdPktSrvAck)
         Time_Stamp ();
         M_print (" " COLACK "%10s" COLNONE " %s%s\n",
                  ContactFindName (PacketReadAt4 (event->pak, CMD_v5_OFF_PARAM)),
-                 MSGACKSTR, MsgEllipsis (PacketReadAtStrN (event->pak, 30)));
+                 MSGACKSTR, MsgEllipsis (PacketReadAtLNTS (event->pak, 30)));
     }
     
     PacketD (pak);

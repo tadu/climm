@@ -124,7 +124,7 @@ void PacketWriteStrB(Packet *pak, const char *data)
     PacketWriteData (pak, data, strlen (data));
 }
 
-void PacketWriteStrN (Packet *pak, const char *data)
+void PacketWriteLNTS (Packet *pak, const char *data)
 {
     assert (pak);
     assert (pak->wpos + strlen (data) < PacketMaxData);
@@ -141,7 +141,7 @@ void PacketWriteStrCUW (Packet *pak, const char *data)
     
     strcpy (tmp, data);
     ConvUnixWin (tmp);
-    PacketWriteStrN (pak, tmp);
+    PacketWriteLNTS (pak, tmp);
     free (tmp);
 }
 
@@ -220,7 +220,9 @@ void PacketWriteBAt4 (Packet *pak, UWORD at, UDWORD data)
 UBYTE PacketRead1 (Packet *pak)
 {
     assert (pak);
-    assert (pak->rpos < PacketMaxData);
+    
+    if (pak->rpos + 1 > PacketMaxData)
+        return 0;
 
     return pak->data[pak->rpos++];
 }
@@ -230,7 +232,9 @@ UWORD PacketRead2 (Packet *pak)
     UWORD data;
 
     assert (pak);
-    assert (pak->rpos + 1 < PacketMaxData);
+
+    if (pak->rpos + 2 > PacketMaxData)
+        return 0;
 
     data  = pak->data[pak->rpos++];
     data |= pak->data[pak->rpos++] << 8;
@@ -242,7 +246,9 @@ UWORD PacketReadB2 (Packet *pak)
     UWORD data;
 
     assert (pak);
-    assert (pak->rpos + 1 < PacketMaxData);
+
+    if (pak->rpos + 2 > PacketMaxData)
+        return 0;
 
     data  = pak->data[pak->rpos++] << 8;
     data |= pak->data[pak->rpos++];
@@ -254,7 +260,9 @@ UDWORD PacketRead4 (Packet *pak)
     UDWORD data;
 
     assert (pak);
-    assert (pak->rpos + 3 < PacketMaxData);
+
+    if (pak->rpos + 4 > PacketMaxData)
+        return 0;
 
     data  = pak->data[pak->rpos++];
     data |= pak->data[pak->rpos++] << 8;
@@ -268,7 +276,9 @@ UDWORD PacketReadB4 (Packet *pak)
     UDWORD data;
 
     assert (pak);
-    assert (pak->rpos + 3 < PacketMaxData);
+
+    if (pak->rpos + 4 > PacketMaxData)
+        return 0;
 
     data  = pak->data[pak->rpos++] << 24;
     data |= pak->data[pak->rpos++] << 16;
@@ -277,20 +287,16 @@ UDWORD PacketReadB4 (Packet *pak)
     return data;
 }
 
-void PacketReadSkip (Packet *pak, UWORD len)
-{
-    assert (pak);
-    assert (pak->rpos + len < PacketMaxData);
-    
-    pak->rpos += len;
-}
-
 void PacketReadData (Packet *pak, char *buf, UWORD len)
 {
     assert (pak);
-    assert (pak->rpos + len < PacketMaxData);
     
-    memcpy (buf, pak->data + pak->rpos, len);
+    if (pak->rpos + len > PacketMaxData)
+        return;
+    
+    if (buf)
+        memcpy (buf, pak->data + pak->rpos, len);
+
     pak->rpos += len;
 }
 
@@ -299,39 +305,34 @@ char *PacketReadStrB (Packet *pak)
     UWORD len;
     char *str;
     
-    assert (pak);
-    assert (pak->rpos + 1 < PacketMaxData);
-    
     len = PacketReadB2 (pak);
-    str = malloc (len + 1);
-    
-    assert (str);
-    assert (pak->rpos + len < PacketMaxData);
 
-    memcpy (str, pak->data + pak->rpos, len);
-    str[len] = '\0';
+    str = malloc (len + 1);
+    assert (str);
     
-    pak->rpos += len;
+    PacketReadData (pak, str, len);
+    str[len] = '\0';
 
     return str;
 }
 
-const char *PacketReadStrN (Packet *pak)
+const char *PacketReadLNTS (Packet *pak)
 {
     UWORD len;
+    const char *str;
     
-    assert (pak);
-    assert (pak->rpos + 1 < PacketMaxData);
-    
-    len  = pak->data[pak->rpos++];
-    len += pak->data[pak->rpos++] << 8;
-    
-    assert (pak->rpos + len < PacketMaxData);
-    assert (!pak->data[pak->rpos + len - 1]);
+    len = PacketRead2 (pak);
+    str = pak->data + pak->rpos;
 
-    pak->rpos += len;
-
-    return &pak->data[pak->rpos - len];
+    if (!len)
+        return "";
+    
+    PacketReadData (pak, NULL, len);
+    
+    if (str [len - 1])
+        return "<invalid>";
+    
+    return str;
 }
 
 UDWORD PacketReadUIN (Packet *pak)
@@ -355,7 +356,9 @@ UWORD PacketReadPos (const Packet *pak)
 UBYTE PacketReadAt1 (const Packet *pak, UWORD at)
 {
     assert (pak);
-    assert (at < PacketMaxData);
+    
+    if (at + 1 > PacketMaxData)
+        return 0;
 
     return pak->data[at];
 }
@@ -365,7 +368,9 @@ UWORD PacketReadAt2 (const Packet *pak, UWORD at)
     UWORD data;
 
     assert (pak);
-    assert (at + 1 < PacketMaxData);
+
+    if (at + 2 > PacketMaxData)
+        return 0;
 
     data  = pak->data[at++];
     data |= pak->data[at] << 8;
@@ -377,7 +382,9 @@ UWORD PacketReadBAt2 (const Packet *pak, UWORD at)
     UWORD data;
 
     assert (pak);
-    assert (at + 1 < PacketMaxData);
+
+    if (at + 2 > PacketMaxData)
+        return 0;
 
     data  = pak->data[at++] << 8;
     data |= pak->data[at];
@@ -389,7 +396,9 @@ UDWORD PacketReadAt4 (const Packet *pak, UWORD at)
     UDWORD data;
 
     assert (pak);
-    assert (at + 3 < PacketMaxData);
+
+    if (at + 4 > PacketMaxData)
+        return 0;
 
     data  = pak->data[at++];
     data |= pak->data[at++] << 8;
@@ -403,7 +412,9 @@ UDWORD PacketReadBAt4 (const Packet *pak, UWORD at)
     UDWORD data;
 
     assert (pak);
-    assert (at + 3 < PacketMaxData);
+
+    if (at + 4 > PacketMaxData)
+        return 0;
 
     data  = pak->data[at++] << 24;
     data |= pak->data[at++] << 16;
@@ -415,46 +426,47 @@ UDWORD PacketReadBAt4 (const Packet *pak, UWORD at)
 void PacketReadAtData (const Packet *pak, UWORD at, char *buf, UWORD len)
 {
     assert (pak);
-    assert (at + len < PacketMaxData);
-    
+
+    if (at + len > PacketMaxData)
+        return;
+
     memcpy (buf, pak->data + at, len);
 }
 
-const char *PacketReadAtStrB (const Packet *pak, UWORD at)
+char *PacketReadAtStrB (const Packet *pak, UWORD at)
 {
     UWORD len;
     char *str;
     
-    assert (pak);
-    assert (at + 1 < PacketMaxData);
-    
-    len  = pak->data[at++] << 8;
-    len += pak->data[at++];
-    str = malloc (len + 1);
-    
-    assert (len);
-    assert (at + len < PacketMaxData);
+    len = PacketReadBAt2 (pak, at);
 
-    memcpy (str, pak->data + at, len);
-    str[len] = '\0';
+    if (!len)
+        return "";
     
+    str = malloc (len + 1);
+    assert (str);
+    
+    PacketReadAtData (pak, at + 2, str, len);
+    str[len] = '\0';
+
     return str;
 }
 
-const char *PacketReadAtStrN (const Packet *pak, UWORD at)
+const char *PacketReadAtLNTS (const Packet *pak, UWORD at)
 {
     UWORD len;
+    const char *str;
     
-    assert (pak);
-    assert (at + 1 < PacketMaxData);
-    
-    len  = pak->data[at++];
-    len += pak->data[at++] << 8;
-    
-    assert (at + len < PacketMaxData);
-    assert (!pak->data[at + len - 1]);
+    len = PacketReadAt2 (pak, at);
+    str = pak->data + at + 2;
 
-    return &pak->data[at];
+    if (!len)
+        return "";
+    
+    if (str [len - 1])
+        return "<invalid>";
+    
+    return str;
 }
 
 int PacketReadLeft  (const Packet *pak)
