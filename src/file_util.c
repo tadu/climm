@@ -493,7 +493,7 @@ void Read_RC_File (FILE *rcf)
                     else if (strcasecmp (tmp, "off"))
                     {
                         prG->sound |= SFLAG_OFF_CMD;
-                        prG->sound_on_cmd = strdup (tmp);
+                        prG->sound_off_cmd = strdup (tmp);
                     }
                 }
                 else if (!strcasecmp (cmd, "auto_away"))
