@@ -107,10 +107,10 @@ const char *s_time (time_t *stamp)
 
     if (prG->verbose > 7)
         snprintf (tbuf + strlen (tbuf), sizeof (tbuf) - strlen (tbuf),
-                  ".%.06ld", *stamp == NOW ? p.tv_usec : 0);
+                  ".%.06ld", !stamp || *stamp == NOW ? p.tv_usec : 0);
     else if (prG->verbose > 1)
         snprintf (tbuf + strlen (tbuf), sizeof (tbuf) - strlen (tbuf),
-                  ".%.03ld", *stamp == NOW ? p.tv_usec / 1000 : 0);
+                  ".%.03ld", !stamp || *stamp == NOW ? p.tv_usec / 1000 : 0);
     
     return tbuf;
 }
