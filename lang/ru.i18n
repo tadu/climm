@@ -469,7 +469,7 @@
 1522:Рабочий адрес:
 1523:Рабочий телефон:
 1524:Местонахождение работы:
-1525:Информация:
+1525:О себе:
 1528:Женский
 1529:Мужской
 1530:Не указан
@@ -1076,18 +1076,18 @@
 2319:Разрешить приём файла от <uin>а или <nick>а.
 2320:peer accept <nick> [<id>]\n                  - разрешить приём файла.\n
 2327:%smICQ (Matt's ICQ клон)%s версия %s%s%s\n
-#2328:You logged in too frequently, please wait 30 minutes before trying again.\n
-#2329:syntax error
+2328:Вы слишком часто подключались, подождите полчаса и попробуйте ещё.\n
+2329:ошибка синтаксиса
 #2330:removing non-contact
-#2331:unknown
+2331:неизвестный
 #2332:Contact error %d (%s) for %d contacts: 
 #2333:%s [show|load|save|set|get|rget] <contacts> - handle meta data for contacts.\n
-#2334:  show - show current known meta data\n
-#2335:  load - load from file and show meta data\n
-#2336:  save - save meta data to file\n
-#2337:  set  - upload own meta data to server\n
-#2338:  get  - query server for meta data\n
-#2339:  rget - query server for last sender's meta data\n
+2334:  show - показать текущие известные мета-данные\n
+2335:  load - загрузить из файла и показать мета-данные\n
+2336:  save - сохранить мета-данные в файл\n
+2337:  set  - загрузить свои мета-данные на сервер\n
+2338:  get  - запросить мета-данные с сервера\n
+2339:  rget - запросить с сервера мета-данные последнего отправителя\n
 2340:Передача файла "%s" отвергнута той стороной: %s%s.\n
 2341:Отклоняем файловый запрос "%s" (%ld байт): %s%s.\n
 #2342:Scripting
@@ -1112,14 +1112,14 @@
 #2361:Wrong number of arguments for command '%s %s'. Expected %d.\n
 #2362:Wrong number of arguments. Try 'help'.
 #2363:Error: recursive 'micq exec' not allowed.
-#2364:No connection found.
+2364:Не найдено соединений.
 #2365:unknown command: %s
 #2366:TCL error in file %s: %s\n
 #2367:TCL error: %s\n
-#2368:peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n
-#2369:Refuse an incoming file transfer from <uin> or <nick>.
+2368:peer deny <nick> [<id>] [<reason>]\n                  - запретить приём файла.\n
+2369:Отклонить приём файла от <uin> или <nick>.
 2370:%02d %-12s версия %d%s для %s (%lx), на %s:%ld %s\n
-#2371:SSL init failed.\n
+2371:Инициализация SSL неудачна.\n
 #2372:Could not send SSL request to %s\n
 #2373:Error while reading from socket (SSL): %s (%d)\n
 #2374:SSL error: %s [%d]\n
@@ -1129,5 +1129,5 @@
 #2378:peer ssl <nick>   - initiate SSL handshake.
 2379:}%}
 2380:{%{
-#2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
+2381:Я добавлю Вам автора mICQ в Ваш список контактов удобства ради. Не злоупотребляйте этим - пожалуйста, используйте команду help и изучите справочные руководства и FAQ, прежде чем задавать вопросы.\n
 #2382:Peer-to-peer connection not associated to server connection, discarding.\n
