@@ -22,6 +22,7 @@ endif
 ifeq (,$(MICQ_EXTRAVERSION))
 	MICQ_EXTRAVERSION = Debian
 endif
+export MICQ_EXTRAVERSION
 
 config.status: configure
 configure: configure-stamp

@@ -1,5 +1,5 @@
 %define name		micq
-%define version	0.4.9.3.1
+%define version	0.4.9.4
 %define release	0
 
 %define prefix	/usr
@@ -29,6 +29,9 @@ Authors: Matthew D. Smith (dead)
          Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 
 %changelog
+* Tue Oct 03 2002 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+- new upstream release 0.4.9.4
+
 * Tue Aug 26 2002 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 - new upstream release 0.4.9.3
 
@@ -51,8 +54,10 @@ make
 %{__mkdir_p} $RPM_BUILD_ROOT/usr/lib/menu
 cat << EOF > $RPM_BUILD_ROOT/usr/lib/menu/micq
 ?package(micq):needs=text section=Networking/ICQ \
-  title="mICQ" command="/usr/bin/micq"
+  title="mICQ" command="/usr/bin/micq" hints="Messenger"\
+  icon=/usr/X11R6/include/X11/pixmaps/micq.xpm
 EOF
+install -D -m 644 doc/micq.xpm $RPM_BUILD_ROOT/usr/X11R6/include/X11/pixmaps/micq.xpm
 
 %clean
 rm -rf "${RPM_BUILD_ROOT}"
@@ -61,7 +66,6 @@ rm -rf "${RPM_BUILD_ROOT}"
 %defattr(-,root,root,0755)
 %doc NEWS README TODO
 %doc doc/README.SOCKS5 doc/icq091.txt doc/icqv7.txt
-%doc doc/html
 %{_bindir}/*
 %{_datadir}/micq
 /usr/lib/menu/micq
