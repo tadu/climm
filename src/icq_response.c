@@ -330,7 +330,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             Display_Info_Reply (conn, cont, pak, IREP_HASAUTHFLAG);
             mg->webaware = PacketRead2 (pak);
             mm->sex = PacketRead1 (pak);
-            mm->age = PacketRead1 (pak);
+            mm->age = PacketRead2 (pak);
             
             UtilUIDisplayMeta (cont);
             if (subtype == META_SRV_WP_LAST_USER && (dwdata = PacketRead4 (pak)))
