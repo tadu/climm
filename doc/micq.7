@@ -1054,6 +1054,15 @@ no additional information except online or offline can be found out this way.
 .br
 Note: this doesn\'t work anymore in almost all cases.
 .TP
+.BI peek2 \ <contacts>
+Builtin alias for
+.B getauto\ away
+.IR contacts .
+Can be used to detect presence of users of some clients,
+but this itself can be detected by the other user's client.
+mICQ since 0.5 will not be detected by this, but will detect
+tries from other clients.
+.TP
 .BI as \ <nr|uin>\ <cmd>
 Execute mICQ command
 .I cmd

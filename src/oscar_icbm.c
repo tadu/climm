@@ -193,8 +193,6 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
     if (format == 2 || type == MSG_GET_PEEK)
         return SnacCliSendmsg2 (serv, cont, OptSetVals (NULL, CO_MSGTYPE, type, CO_MSGTEXT, text, 0));
     
-    IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGACK_V8, text, NULL);
-        
     if (!format || format == 0xff)
     {
         switch (type & 0xff)
@@ -221,6 +219,8 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
         }
     }
     
+    IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGACK_V8, text, NULL);
+
     pak = SnacC (serv, 4, 6, 0, 0);
     PacketWriteB4 (pak, mtime);
     PacketWriteB4 (pak, mid);
@@ -287,8 +287,8 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
             
             PacketWriteTLV     (pak, 5);
             PacketWrite4       (pak, serv->uin);
-            PacketWrite1       (pak, type);
-            PacketWrite1       (pak, 0);
+            PacketWrite1       (pak, type % 256);
+            PacketWrite1       (pak, type / 256);
 #if 0
             PacketWrite2 (pak, strlen (convtext) + strlen (ConvEncName (remenc)) + 2);
             PacketWriteData (pak, convtext, strlen (convtext));
@@ -942,11 +942,28 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
         case MSGF_GETAUTO | MSG_GET_FFC:   ack_msg = ContactPrefStr (cont, CO_AUTOFFC);  break;
         case MSGF_GETAUTO | MSG_GET_VER:   ack_msg = BuildVersionText;
             } while (0);
+
 #ifdef WIP
-            rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-            rl_printf (i18n (1814, "Sent auto-response message to %s%s%s.\n"),
-                     COLCONTACT, cont->nick, COLNONE);
+            if (1)
+#else
+            if (msgtype != 1012)
 #endif
+            {    
+                rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                if (((ack_flags & TCP_MSGF_INV) && !ContactPrefVal (cont, CO_INTIMATE)) || ContactPrefVal (cont, CO_HIDEFROM))
+                {
+                    rl_printf (i18n (2568, "Ignored request for auto-response from %s%s%s.\n"),
+                               COLCONTACT, cont->nick, COLNONE);
+                    ack_event->due = 0;
+                    ack_event->callback = NULL;
+                    QueueDequeueEvent (ack_event);
+                    EventD (ack_event);
+                    return;
+                }
+                rl_printf (i18n (1814, "Sent auto-response message to %s%s%s.\n"),
+                           COLCONTACT, cont->nick, COLNONE);
+            }
+
             accept = TRUE;
             ack_flags = pri;
             ack_status = 0;
