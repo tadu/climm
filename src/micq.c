@@ -450,6 +450,12 @@ int main (int argc, char *argv[])
             M_printf (i18n (9999, "Encoding %s%s%s is not supported by this mICQ.\n"), COLQUOTE, ConvEncName (conv_error), COLNONE);
             conv_error = 0;
         }
+        
+        if (rl_signal)
+        {
+            ReadLineHandleSig ();
+            CmdUser ("");
+        }
 
         ReadLinePrompt ();
 

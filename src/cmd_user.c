@@ -184,7 +184,7 @@ jump_t *CmdUserLookup (const char *cmd)
 {
     jump_t *j;
     for (j = CmdUserTable (); j->f; j++)
-        if (!strcasecmp (cmd, j->defname))
+        if (!strcasecmp (cmd, j->name))
             return j;
     return NULL;
 }
@@ -1182,7 +1182,7 @@ static JUMP_F (CmdUserMessage)
                     M_print (i18n (2235, "No nick name given.\n"));
                     return 0;
                 }
-                uinlist = ContactGroupC (conn, 0, NULL);
+                uinlist = ContactGroupC (NULL, 0, NULL);
                 for (i = 0; *args; args++)
                 {
                     if (!s_parsenick_s (&args, &cont, MULTI_SEP, conn))
@@ -1202,7 +1202,7 @@ static JUMP_F (CmdUserMessage)
                     M_print (i18n (1741, "Must receive a message first.\n"));
                     return 0;
                 }
-                uinlist = ContactGroupC (conn, 0, NULL);
+                uinlist = ContactGroupC (NULL, 0, NULL);
                 ContactAdd (uinlist, uiG.last_rcvd);
                 break;
             case 4:
@@ -1211,7 +1211,7 @@ static JUMP_F (CmdUserMessage)
                     M_print (i18n (1742, "Must write a message first.\n"));
                     return 0;
                 }
-                uinlist = ContactGroupC (conn, 0, NULL);
+                uinlist = ContactGroupC (NULL, 0, NULL);
                 ContactAdd (uinlist, uiG.last_sent);
                 break;
             default:
@@ -1229,6 +1229,7 @@ static JUMP_F (CmdUserMessage)
                 uiG.last_sent = cont;
                 TabAddOut (cont);
             }
+            ContactGroupD (uinlist);
             return 0;
         }
         if (!ContactIndex (uinlist, 1))
@@ -1245,6 +1246,13 @@ static JUMP_F (CmdUserMessage)
         }
         status = 1;
     }
+    else if (status == -1 || (status && !strcmp (args, CANCEL_MSG_STR)))
+    {
+        M_print (i18n (1038, "Message canceled.\n"));
+        ReadLinePromptReset ();
+        ContactGroupD (uinlist);
+        return 0;
+    }
     else
     {
         if (!strcmp (args, END_MSG_STR))
@@ -1260,13 +1268,8 @@ static JUMP_F (CmdUserMessage)
                 uiG.last_sent = cont;
                 TabAddOut (cont);
             }
+            ReadLinePromptReset ();
             ContactGroupD (uinlist);
-            return 0;
-        }
-        else if (!strcmp (args, CANCEL_MSG_STR))
-        {
-            ContactGroupD (uinlist);
-            M_print (i18n (1038, "Message canceled.\n"));
             return 0;
         }
         else
@@ -3175,6 +3178,8 @@ static JUMP_F(CmdUserOldSearch)
                 SnacCliSearchbypersinf (conn, email, nick, first, last);
             else
                 CmdPktCmdSearchUser (conn, email, nick, first, last);
+        case -1:
+            ReadLinePromptReset ();
             free (email);
             free (nick);
             free (first);
@@ -3335,7 +3340,7 @@ static JUMP_F(CmdUserSearch)
                 else
                     CmdPktCmdMetaSearchWP (conn, &wp);
             }
-
+        case -1:
             s_repl (&wp.nick,  NULL);
             s_repl (&wp.last,  NULL);
             s_repl (&wp.first, NULL);
@@ -3485,6 +3490,8 @@ static JUMP_F(CmdUserUpdate)
                 else
                     CmdPktCmdMetaGeneral (conn, cont);
             }
+        case -1:
+            break;
     }
     return 0;
 }
@@ -3573,7 +3580,8 @@ static JUMP_F(CmdUserOther)
                 SnacCliMetasetmore (conn, cont);
             else
                 CmdPktCmdMetaMore (conn, cont);
-            return 0;
+        case -1:
+            break;
     }
     return 0;
 }
@@ -3588,50 +3596,46 @@ static JUMP_F(CmdUserAbout)
     char *arg;
     OPENCONN;
 
-    if (status > 100)
+    switch (status)
     {
-        msg[offset] = 0;
-        if (!strcmp (args, END_MSG_STR))
-        {
-            if (conn->type == TYPE_SERVER)
-                SnacCliMetasetabout (conn, msg);
-            else
-                CmdPktCmdMetaAbout (conn, msg);
-            return 0;
-        }
-        else if (!strcmp (args, CANCEL_MSG_STR))
-        {
-            return 0;
-        }
-        else
-        {
-            if (offset + strlen (args) < 450)
-            {
-                strcat (msg, args);
-                strcat (msg, "\r\n");
-                offset += strlen (args) + 2;
-            }
-            else
+        case 400:
+            msg[offset] = 0;
+            if (!strcmp (args, END_MSG_STR))
             {
                 if (conn->type == TYPE_SERVER)
                     SnacCliMetasetabout (conn, msg);
                 else
                     CmdPktCmdMetaAbout (conn, msg);
+            }
+            else if (strcmp (args, CANCEL_MSG_STR))
+            {
+                if (offset + strlen (args) < 450)
+                {
+                    strcat (msg, args);
+                    strcat (msg, "\r\n");
+                    offset += strlen (args) + 2;
+                    break;
+                }
+                else
+                {
+                    if (conn->type == TYPE_SERVER)
+                        SnacCliMetasetabout (conn, msg);
+                    else
+                        CmdPktCmdMetaAbout (conn, msg);
+                }
+            }
+        case -1:
+            return 0;
+        case 0:
+            if (s_parserem (&args, &arg))
+            {
+                if (conn->type == TYPE_SERVER)
+                    SnacCliMetasetabout (conn, arg);
+                else
+                    CmdPktCmdMetaAbout (conn, arg);
                 return 0;
             }
-        }
-    }
-    else
-    {
-        if (s_parserem (&args, &arg))
-        {
-            if (conn->type == TYPE_SERVER)
-                SnacCliMetasetabout (conn, arg);
-            else
-                CmdPktCmdMetaAbout (conn, arg);
-            return 0;
-        }
-        offset = 0;
+            offset = 0;
     }
     ReadLinePromptSet (i18n (9999, "About>"));
     return 400;
@@ -3728,12 +3732,13 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
     *idle_val = time (NULL);
 
     snprintf (buf, sizeof (buf), "%s", command);
-    M_print ("\r");             /* reset char printed count for dumb terminals */
-    buf[1023] = 0;              /* be safe */
+    M_print ("\r");
+    buf[1023] = 0;
 
     if (isinterrupted)
     {
-        status = 0;
+        if (status)
+            status = (*sticky)(buf, 0, -1);
         isinterrupted = 0;
     }
     

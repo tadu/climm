@@ -107,8 +107,8 @@ static void rl_historyforward (void);
 static void rl_historyadd (void);
 static void rl_checkcolumns (void);
 
-static volatile int rl_interrupted = 0;
 static volatile int rl_columns_cur = 0;
+volatile UBYTE rl_signal = 0;
 
 UDWORD rl_columns = 0;
 static UDWORD rl_colpos, rl_ucspos, rl_bytepos;
@@ -248,11 +248,7 @@ void ReadLineTtySet (void)
  */
 static RETSIGTYPE tty_stop_handler (int i)
 {
-    rl_key_end ();
-    printf (" %s^Z%s", COLERROR, COLNONE);
-    ReadLineTtyUnset ();
-    signal (SIGTSTP, SIG_DFL);
-    raise (SIGTSTP);
+    rl_signal |= 8;
 }
 
 /*
@@ -260,9 +256,7 @@ static RETSIGTYPE tty_stop_handler (int i)
  */
 static RETSIGTYPE tty_cont_handler (int i)
 {
-    ReadLineTtySet ();
-    M_print ("\r");
-    ReadLinePrompt ();
+    rl_signal |= 4;
     signal (SIGTSTP, &tty_stop_handler);
     signal (SIGCONT, &tty_cont_handler);
 }
@@ -290,26 +284,61 @@ static RETSIGTYPE tty_int_handler (int i)
 {
     signal (SIGINT, SIG_IGN);
 
-    if (rl_interrupted & 1)
+    if (rl_signal & 1)
     {
         printf (" %s:-X%s\n", COLERROR, COLNONE);
         fflush (stdout);
         exit (1);
     }
-    rl_interrupted = 1;
-    CmdUserInterrupt ();
-    rl_key_end ();
-
-    printf (" %s^C%s\n", COLERROR, COLNONE);
-    M_print ("\r");
-    rl_prompt_stat = 0;
-    rl_tab_state = 0;
-    rl_historyadd ();
-    s_init (&rl_input, "", 0);
-    ReadLinePromptReset ();
-    ReadLinePrompt ();
-
+    rl_signal |= 3;
     signal (SIGINT, &tty_int_handler);
+}
+
+/*
+ * Really handle signals
+ */
+void ReadLineHandleSig (void)
+{
+    UBYTE sig;
+    int gpos;
+    
+    while ((sig = (rl_signal & 14)))
+    {
+        rl_signal &= 1;
+        if (sig & 2)
+        {
+            s_init (&rl_operate, "", 0);
+            rl_key_end ();
+            printf ("%s", rl_operate.txt);
+            printf (" %s^C%s\n", COLERROR, COLNONE);
+            M_print ("\r");
+            rl_prompt_stat = 0;
+            rl_tab_state = 0;
+            rl_historyadd ();
+            s_init (&rl_input, "", 0);
+            CmdUserInterrupt ();
+            ReadLinePromptReset ();
+            ReadLinePrompt ();
+        }
+        if (sig & 4)
+        {
+            ReadLineTtySet ();
+            M_print ("\r");
+            ReadLinePrompt ();
+        }
+        if (sig & 8)
+        {
+            s_init (&rl_operate, "", 0);
+            gpos = rl_colpos;
+            rl_key_end ();
+            rl_colpos = gpos;
+            printf ("%s", rl_operate.txt);
+            printf (" %s^Z%s", COLERROR, COLNONE);
+            ReadLineTtyUnset ();
+            signal (SIGTSTP, SIG_DFL);
+            raise (SIGTSTP);
+        }
+    }
 }
 
 /*
@@ -1070,7 +1099,7 @@ str_t ReadLine (UBYTE newbyte)
     }
     
     rl_inputdone = 0;
-    rl_interrupted = 0;
+    rl_signal &= ~1;
     inputucs = ConvTo (input->txt, ENC_UCS2BE);
     s_init (&rl_input, "", 0);
     s_init (&rl_operate, "", 0);

@@ -7,12 +7,12 @@
 #define CANCEL_MSG_STR "#"
 #define W_SEPARATOR COLQUOTE, "============================================", COLNONE, "\n"
 
-typedef int (jump_f)(const char *args, UDWORD data, UDWORD status);
-#define JUMP_F(f) int f (const char *args, UDWORD data, UDWORD status)
+typedef int (jump_f)(const char *args, UDWORD data, int status);
+#define JUMP_F(f) int f (const char *args, UDWORD data, int status)
 
 struct jumpstr {
     jump_f *f;
-    const char *defname;
+    const char *name;
     int unidle;
     int data;
 };
