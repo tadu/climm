@@ -976,7 +976,7 @@ static void tty_prepare (void)
 }
 
 /***************************************************************
-Turns keybord echo off for the password
+Turns keyboard echo off for the password
 ****************************************************************/
 SDWORD Echo_Off (void)
 {
@@ -997,7 +997,7 @@ SDWORD Echo_Off (void)
 
 
 /***************************************************************
-Turns keybord echo back on after the password
+Turns keyboard echo back on after the password
 ****************************************************************/
 SDWORD Echo_On (void)
 {

@@ -38,7 +38,7 @@ static const char *DebugStr (UDWORD level)
 }
 
 /*
- * Output a given string iff the debug level is appropriate.
+ * Output a given string if the debug level is appropriate.
  */
 BOOL Debug (UDWORD level, const char *str, ...)
 {

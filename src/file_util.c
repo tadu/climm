@@ -53,7 +53,7 @@
 #define WAND3 " \xb7 \\ "
 #define WAND4 "    \\"
 
-void Initalize_RC_File ()
+void Initialize_RC_File ()
 {
     char pwd1[20], pwd2[20], input[200];
     Connection *conn, *connt;

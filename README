@@ -64,7 +64,7 @@ Features of mICQ include:
                       partially Spanish, Polish, Swedish, Hungarian.
    * transcoding    - transcode texts into arbitrary character encodings,
                       in particular for Russian and Japanese users.
-   * utf-8          - can hande unicode input and output of arbitrary
+   * utf-8          - can handle unicode input and output of arbitrary
                       single-charactercell unicode characters
    * birthday flag  - show if it is user's birthday
    * socks5         - supports connections via socks5
@@ -126,7 +126,7 @@ generated files from a CVS snapshot to a CVS checkout like this:
 g) Compile
 
 $ ./configure --help
-    Please read the help carefully. Particulary, if you are not "root",
+    Please read the help carefully. Particularly, if you are not "root",
     please watch the --prefix parameter.
 $ ./configure 
 $ make

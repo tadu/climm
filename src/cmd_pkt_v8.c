@@ -1,6 +1,6 @@
 
 /*
- * Initialization and basic support for v8 of the ICQ protocl.
+ * Initialization and basic support for v8 of the ICQ protocol.
  *
  * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
  * version 2 of the GPL licence.
