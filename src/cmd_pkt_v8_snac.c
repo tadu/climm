@@ -110,6 +110,8 @@ static SNAC SNACS[] = {
     { 19,  9, "CLI_UPDATEGROUP",     NULL},
     { 19, 17, "CLI_ADDSTART",        NULL},
     { 19, 18, "CLI_ADDREND",         NULL},
+    { 19, 24, "CLI_REQAUTH",         NULL},
+    { 19, 26, "CLI_AUTHORIZE",       NULL},
     { 21,  2, "CLI_TOICQSRV",        NULL},
     { 23,  4, "CLI_REGISTERUSER",    NULL},
     {  0,  0, "unknown",             NULL}
@@ -1086,7 +1088,7 @@ void SnacCliReqicbm (Session *sess)
 /*
  * CLI_SENDMSG - SNAC(4,6)
  */
-void SnacCliSendmsg (Session *sess, UDWORD uin, char *text, UDWORD type)
+void SnacCliSendmsg (Session *sess, UDWORD uin, const char *text, UDWORD type)
 {
     Packet *pak;
     UBYTE format;
@@ -1273,6 +1275,34 @@ void SnacCliReqroster (Session *sess)
 
     PacketWriteB4 (pak, 0);  /* last modification of server side contact list */
     PacketWriteB2 (pak, i);  /* # of entries */
+    SnacSend (sess, pak);
+}
+
+/*
+ * CLI_REQAUTH - SNAC(13,18)
+ */
+void SnacCliReqauth (Session *sess, UDWORD uin, const char *msg)
+{
+    Packet *pak;
+    
+    pak = SnacC (sess, 19, 24, 0, 0);
+    PacketWriteUIN  (pak, uin);
+    PacketWriteStrB (pak, msg);
+    PacketWrite2    (pak, 0);
+    SnacSend (sess, pak);
+}
+
+/*
+ * CLI_AUTHORIZE - SNAC(13,1a)
+ */
+void SnacCliAuthorize (Session *sess, UDWORD uin, BOOL accept, const char *msg)
+{
+    Packet *pak;
+    
+    pak = SnacC (sess, 19, 26, 0, 0);
+    PacketWriteUIN  (pak, uin);
+    PacketWrite1    (pak, accept ? 1 : 0);
+    PacketWriteStrB (pak, accept ? "" : msg);
     SnacSend (sess, pak);
 }
 
