@@ -960,12 +960,12 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                         if (type == 2)
                         {
                             cont->flags |= CONT_INTIMATE;
-                            cont->flags &= CONT_HIDEFROM;
+                            cont->flags &= ~CONT_HIDEFROM;
                         }
                         else if (type == 3)
                         {
                             cont->flags |= CONT_HIDEFROM;
-                            cont->flags &= CONT_INTIMATE;
+                            cont->flags &= ~CONT_INTIMATE;
                         }
                         else if (type == 14)
                             cont->flags |= CONT_IGNORE;

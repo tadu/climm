@@ -28,7 +28,12 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#if HAVE_NETDB_H
 #include <netdb.h>
+#endif
+#if HAVE_WINSOCK2_H
+#include <winsock2.h>
+#endif
 #include <assert.h>
 
 jump_conn_f SrvCallBackReceive;
@@ -348,7 +353,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
 
     ack_flags = 0;
     if (serv->status & STATUSF_INV)  ack_flags |= TCP_MSGF_INV;
-    ack_flags ^= TCP_MSGF_LIST;
+/*    ack_flags ^= TCP_MSGF_LIST;   */
 
     switch (msgtype & ~MSGF_MASS)
     {

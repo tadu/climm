@@ -11,17 +11,32 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+#if HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+#if HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
+#endif
+#if HAVE_SYS_STAT_H
 #include <sys/stat.h>
+#endif
+#if HAVE_SYS_UN_H
 #include <sys/un.h>
+#endif
+#if HAVE_NETDB_H
 #include <netdb.h>
+#endif
 #include <fcntl.h>
 #include <unistd.h>
 #include <assert.h>
+#if HAVE_NETINET_IN_H
 #include <netinet/in.h>
-#ifdef HAVE_ARPA_INET_H
+#endif
+#if HAVE_ARPA_INET_H
 #include <arpa/inet.h>
+#endif
+#if HAVE_WINSOCK2_H
+#include <winsock2.h>
 #endif
 #if !HAVE_DECL_H_ERRNO
 extern int h_errno;
@@ -76,6 +91,7 @@ void UtilIOConnectUDP (Connection *conn)
     struct sockaddr_in sin;     /* used to store inet addr stuff */
     struct hostent *host_struct;        /* used in DNS lookup */
 
+    errno = 0;
     conn->sok = socket (AF_INET, SOCK_DGRAM, 0);      /* create the unconnected socket */
 
     if (conn->sok < 0)
@@ -309,7 +325,7 @@ void UtilIOConnectUDP (Connection *conn)
  */
 void UtilIOConnectTCP (Connection *conn)
 {
-    int rc;
+    int rc, rce;
     socklen_t length;
     struct sockaddr_in sin;
     struct hostent *host;
@@ -320,15 +336,20 @@ void UtilIOConnectTCP (Connection *conn)
 
     Debug (DEB_IO, "UtilIOConnectCallback: %x", conn->connect);
 
+    errno = 0;
     conn->sok = socket (AF_INET, SOCK_STREAM, 0);
     if (conn->sok < 0)
         CONN_FAIL_RC (i18n (1638, "Couldn't create socket"));
+#if HAVE_FCNTL
     rc = fcntl (conn->sok, F_GETFL, 0);
     if (rc != -1)
         rc = fcntl (conn->sok, F_SETFL, rc | O_NONBLOCK);
+#elif defined(HAVE_IOCTLSOCKET)
+    origip = 1;
+    rc = ioctlsocket (conn->sok, FIONBIO, &origip);
+#endif
     if (rc == -1)
         CONN_FAIL_RC (i18n (1950, "Couldn't set socket nonblocking"));
-
     if (conn->server || conn->ip || prG->s5Use)
     {
         if (prG->s5Use)
@@ -367,6 +388,7 @@ void UtilIOConnectTCP (Connection *conn)
         }
 
         rc = connect (conn->sok, (struct sockaddr *) &sin, sizeof (struct sockaddr));
+        rce = rc < 0 ? errno : 0;
 
         length = sizeof (struct sockaddr);
         getsockname (conn->sok, (struct sockaddr *) &sin, &length);
@@ -393,11 +415,15 @@ void UtilIOConnectTCP (Connection *conn)
             CONN_OK
         }
 
-#ifndef __AMIGA__
-        if ((rc = errno) == EINPROGRESS)
+#ifdef __AMIGA__
+        if (rce == EINPROGRESS || rce == 115) /* UAE sucks */
+#elif defined(EINPROGRESS)
+        if (rce == EINPROGRESS)
+#elif defined(WSAEINPROGRESS)
+        if (!rce || rce == WSAEINPROGRESS)
 #else
-        rc = errno;
-        if (rc == EINPROGRESS || rc == 115) /* UAE sucks */
+        rce = 1;
+        if (0)
 #endif
         {
             M_print ("");
@@ -412,7 +438,11 @@ void UtilIOConnectTCP (Connection *conn)
             conn->connect |= CONNECT_SELECT_W | CONNECT_SELECT_X;
             return;
         }
-        CONN_FAIL_RC (i18n (1952, "Couldn't open connection"));
+        else
+        {
+            errno = rce;
+            CONN_FAIL_RC (i18n (1952, "Couldn't open connection"));
+        }
     }
     else
     {
@@ -422,6 +452,7 @@ void UtilIOConnectTCP (Connection *conn)
 
         if (bind (conn->sok, (struct sockaddr*)&sin, sizeof (struct sockaddr)) < 0)
         {
+#if defined(EADDRINUSE)
             while ((rc = errno) == EADDRINUSE && conn->port)
             {
                 rc = 0;
@@ -430,6 +461,7 @@ void UtilIOConnectTCP (Connection *conn)
                     break;
                 rc = errno;
             }
+#endif
             if (rc)
             {
                 errno = rc;
@@ -461,6 +493,7 @@ void UtilIOConnectTCP (Connection *conn)
                            conn->connect = 0;                \
                            return; }
 
+#if ENABLE_REMOTECONTROL
 void UtilIOConnectF (Connection *conn)
 {
     int rc;
@@ -472,12 +505,21 @@ void UtilIOConnectF (Connection *conn)
     if (mkfifo (conn->server, 0600) < 0)
         CONNS_FAIL_RC (i18n (2226, "Couldn't create FIFO"));
 
+#if defined(O_NONBLOCK)
     if ((conn->sok = open (conn->server, O_RDWR /*ONLY*/ | O_NONBLOCK)) < 0)
+#else
+    if ((conn->sok = open (conn->server, O_RDWR)) < 0)
+#endif
         CONNS_FAIL_RC (i18n (2227, "Couldn't open FIFO"));
 
+#if HAVE_FCNTL
     rc = fcntl (conn->sok, F_GETFL, 0);
     if (rc != -1)
         rc = fcntl (conn->sok, F_SETFL, rc | O_NONBLOCK);
+#elif defined(HAVE_IOCTLSOCKET)
+    origip = 1;
+    rc = ioctlsocket(conn->sok, FIONBIO, &origip);
+#endif
     if (rc == -1)
         CONNS_FAIL_RC (i18n (2228, "Couldn't set FIFO nonblocking"));
 
@@ -486,6 +528,7 @@ void UtilIOConnectF (Connection *conn)
 
     conn->connect = CONNECT_OK;
 }
+#endif
 
 int UtilIOError (Connection *conn)
 {
@@ -620,9 +663,17 @@ static void UtilIOTOConn (Event *event)
      Connection *conn = event->conn;
      EventD (event);
      if (conn)
+#if defined (ETIMEDOUT)
          CONN_FAIL (s_sprintf ("%s: %s (%d).", i18n (1955, "Connection failed"),
                     strerror (ETIMEDOUT), ETIMEDOUT));
+#else
+         CONN_FAIL (s_sprintf ("%s: connection timed out", i18n (1955, "Connection failed")));
+#endif
 }
+
+#ifndef ECONNRESET
+#define ECONNRESET 0x424242
+#endif
 
 /*
  * Receive a packet via TCP.
@@ -658,7 +709,9 @@ Packet *UtilIOReceiveTCP (Connection *conn)
             rc = ENOMEM;
             break;
         }
+#if defined(SIGPIPE)
         signal (SIGPIPE, SIG_IGN);
+#endif
         rc = sockread (conn->sok, pak->data + pak->len, len - pak->len);
         if (rc <= 0)
         {
@@ -717,6 +770,7 @@ Packet *UtilIOReceiveTCP (Connection *conn)
     return NULL;
 }
 
+#if ENABLE_REMOTECONTROL
 /*
  * Receives a line from a FIFO socket.
  */
@@ -735,7 +789,9 @@ Packet *UtilIOReceiveF (Connection *conn)
     while (1)
     {
         errno = 0;
+#if defined(SIGPIPE)
         signal (SIGPIPE, SIG_IGN);
+#endif
         rc = sockread (conn->sok, pak->data + pak->len, sizeof (pak->data) - pak->len);
         if (rc <= 0)
         {
@@ -789,6 +845,7 @@ Packet *UtilIOReceiveF (Connection *conn)
         conn->reconnect (conn);
     return NULL;
 }
+#endif
 
 /*
  * Send packet via TCP. Consumes packet.
@@ -886,7 +943,7 @@ Packet *UtilIOReceiveUDP (Connection *conn)
     
     pak->len = sockread (conn->sok, prG->s5Use ? pak->socks : pak->data, sizeof (pak->data) + s5len);
     
-    if (pak->len <= 4 + s5len)
+    if (pak->len <= 4 + s5len || pak->len == (UWORD)-1)
     {
         PacketD (pak);
         return NULL;

@@ -22,7 +22,9 @@ typedef signed   SIZE_1_TYPE SBYTE;
 typedef signed   SIZE_4_TYPE SINT32;
 typedef signed   SIZE_2_TYPE SINT16;
 typedef signed   SIZE_1_TYPE SINT8;
+#ifndef _WIN32
 typedef unsigned SIZE_4_TYPE UINT32;
+#endif
 typedef unsigned SIZE_2_TYPE UINT16;
 typedef unsigned SIZE_1_TYPE UINT8;
 
@@ -38,27 +40,45 @@ typedef int SOK_T;
 
   #define strcasecmp(s,s1)  stricmp(s,s1)
   #define strncasecmp(s,s1,l)  strnicmp(s,s1,l)
-  #define Get_Config_Info(x) Get_Unix_Config_Info(x)
-  #define __os_has_input _kbhit ()
+  #define __os_has_input kbhit()
+  
+  #define mkdir(a,b) mkdir(a)
+  #define INPUT_BY_POLL 1
+  #define _OS_PREFPATH   ".\\"
+  #define _OS_PATHSEP    '\\'
+  #define _OS_PATHSEPSTR "\\"
+#elif defined(__BEOS__)
+  typedef unsigned char BOOL;
+  #define sockread(s,p,l) recv(s,p,l,0)
+  #define sockwrite(s,p,l) send(s,p,l,0)
+  #define sockclose(s) closesocket(s)
+  #define __os_has_input 1
+  #undef INPUT_BY_POLL
+  #define _OS_PREFPATH   NULL
+  #define _OS_PATHSEP    '/'
+  #define _OS_PATHSEPSTR "/"
+#elif defined(__amigaos__)
+  #define sockread(s,p,l) read(s,p,l)
+  #define sockwrite(s,p,l) write(s,p,l)
+  #define sockclose(s) close(s)
+  #undef INPUT_BY_POLL
+  #define __os_has_input M_Is_Set (STDIN_FILENO)
+  #define _OS_PREFPATH   "/PROGDIR/"
+  #define _OS_PATHSEP    '/'
+  #define _OS_PATHSEPSTR "/"
 #else
-  #ifndef __amigaos__
-    typedef unsigned char BOOL;
-  #endif
-
-  #ifdef __BEOS__
-    #define sockread(s,p,l) recv(s,p,l,0)
-    #define sockwrite(s,p,l) send(s,p,l,0)
-    #define sockclose(s) closesocket(s)
-    #define __os_has_input 1
-  #else
-    #define sockread(s,p,l) read(s,p,l)
-    #define sockwrite(s,p,l) write(s,p,l)
-    #define sockclose(s) close(s)
-    #define __os_has_input M_Is_Set (STDIN_FILENO)
-  #endif
-
-  #define Get_Config_Info(x) Get_Unix_Config_Info(x)
+  typedef unsigned char BOOL;
+  #define sockread(s,p,l) read(s,p,l)
+  #define sockwrite(s,p,l) write(s,p,l)
+  #define sockclose(s) close(s)
+  #undef INPUT_BY_POLL
+  #define __os_has_input M_Is_Set (STDIN_FILENO)
+  #define _OS_PREFPATH   NULL
+  #define _OS_PATHSEP    '/'
+  #define _OS_PATHSEPSTR "/"
 #endif
+
+#define Get_Config_Info(x) Get_Unix_Config_Info(x)
 
 #ifndef TRUE
   #define TRUE 1

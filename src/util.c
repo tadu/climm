@@ -26,6 +26,7 @@ Changes :
 #include "contact.h"
 #include "session.h"
 #include "util_io.h"
+#include "util_ui.h"
 #include "preferences.h"
 #include "packet.h"
 #include "util_str.h"
@@ -38,22 +39,26 @@ Changes :
 #include <signal.h>
 #include <ctype.h>
 #include <errno.h>
+#if HAVE_SYS_TYPES_H
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/utsname.h>
-#include <fcntl.h>
-#include <util_ui.h>
-#ifdef _WIN32
-#include <io.h>
-#define S_IRUSR          _S_IREAD
-#define S_IWUSR          _S_IWRITE
 #endif
+#if HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+#if HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#if HAVE_SYS_UTSNAME_H
+#include <sys/utsname.h>
+#endif
+#include <fcntl.h>
+#if HAVE_NETINET_IN_H
 #include <netinet/in.h>
-#ifdef HAVE_ARPA_INET_H
+#endif
+#if HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
-#ifdef HAVE_SYS_SELECT_H
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
 #if HAVE_UNISTD_H
@@ -62,15 +67,10 @@ Changes :
 #if HAVE_TERMIOS_H
 #include <termios.h>
 #endif
-#include "mreadline.h"
-
-#ifdef _WIN32
-struct timeval
-{
-    long tv_sec;
-    long tv_usec;
-};
+#if HAVE_WINSOCK2_H
+#include <winsock2.h>
 #endif
+#include "mreadline.h"
 
 /**************************************************
 Automates the process of creating a new user.
@@ -79,23 +79,20 @@ void Init_New_User (Connection *conn)
 {
     Packet *pak;
     struct timeval tv;
-#ifdef _WIN32
-    int i;
-    WSADATA wsaData;
-    FD_SET readfds;
-#else
     fd_set readfds;
-#endif
 
-    conn->ver = 5;
 #ifdef _WIN32
-    i = WSAStartup (0x0101, &wsaData);
-    if (i != 0)
+    int rc;
+    WSADATA wsaData;
+
+    if ((rc = WSAStartup (0x0101, &wsaData)))
     {
         perror (i18n (1624, "Sorry, can't initialize Windows Sockets..."));
         exit (1);
     }
 #endif
+
+    conn->ver = 5;
     M_print (i18n (1756, "\nCreating Connection...\n"));
     UtilIOConnectUDP (conn);
     if (conn->sok == -1)
@@ -146,9 +143,11 @@ void Init_New_User (Connection *conn)
 int putlog (Connection *conn, time_t stamp, Contact *cont, 
             UDWORD status, enum logtype level, UWORD type, const char *log)
 {
-    char buffer[LOG_MAX_PATH + 1],                   /* path to the logfile */
-        symbuf[LOG_MAX_PATH + 1];                     /* path of a sym link */
-    char *target = buffer;                        /* Target of the sym link */
+    char buffer[LOG_MAX_PATH + 1];                   /* path to the logfile */
+#if HAVE_SYMLINK
+    char symbuf[LOG_MAX_PATH + 1];                  /* path of a sym link */
+#endif
+    char *target = buffer;                         /* Target of the sym link */
     const char *username = PrefLogName (prG);
     FILE *logfile;
     int fd;
@@ -240,7 +239,7 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
     free (mylog);
 
     if (!prG->logplace)
-        prG->logplace = "history/";
+        prG->logplace = "history" _OS_PATHSEPSTR;
 
     /* Check for '/' below doesn't work for empty strings. */
     assert (*prG->logplace != '\0');
@@ -248,7 +247,7 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
     snprintf (buffer, sizeof (buffer), s_realpath (prG->logplace));
     target += strlen (buffer);
     
-    if (target[-1] == '/')
+    if (target[-1] == _OS_PATHSEP)
     {
         if (mkdir (buffer, S_IRWXU) == -1 && errno != EEXIST)
             return -1;
@@ -263,7 +262,7 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
             strncpy (symbuf, buffer, target - buffer);
             snprintf (b, symbuf + sizeof (symbuf) - b, "nick-%s.log", cont->nick);
 
-            while ((b = strchr (b, '/')) != NULL)
+            while ((b = strchr (b, _OS_PATHSEP)) != NULL)
                 *b = '_';
             symlink (target, symbuf);
         }

@@ -24,15 +24,28 @@
 #include <string.h>
 #include <fcntl.h>
 #include <errno.h>
+#if HAVE_NETDB_H
 #include <netdb.h>
+#endif
 #include <assert.h>
+#if HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+#if HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
+#endif
+#if HAVE_NETINET_IN_H
 #include <netinet/in.h>
-#ifdef HAVE_ARPA_INET_H
+#endif
+#if HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
+#if HAVE_SYS_STAT_H
 #include <sys/stat.h>
+#endif
+#if HAVE_WINSOCK2_H
+#include <winsock2.h>
+#endif
 
 static void FlapChannel1 (Connection *conn, Packet *pak);
 static void FlapChannel4 (Connection *conn, Packet *pak);
@@ -188,9 +201,9 @@ void FlapSave (Packet *pak, BOOL in)
     FILE *logf;
     char buf[200];
     
-    snprintf (buf, sizeof (buf), "%s/debug", PrefUserDir (prG));
+    snprintf (buf, sizeof (buf), "%sdebug", PrefUserDir (prG));
     mkdir (buf, 0700);
-    snprintf (buf, sizeof (buf), "%s/debug/packets", PrefUserDir (prG));
+    snprintf (buf, sizeof (buf), "%sdebug" _OS_PATHSEPSTR "packets", PrefUserDir (prG));
     if (!(logf = fopen (buf, "a")))
         return;
 

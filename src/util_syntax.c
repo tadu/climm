@@ -317,7 +317,8 @@ char *PacketDump (Packet *pak, const char *syntax)
         }
         break;
     }
-    t = s_cat (t, &size, s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
+    if (pak->len > pak->rpos)
+        t = s_cat (t, &size, s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
     pak->rpos = oldrpos;
     return t;
 }

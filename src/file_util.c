@@ -1,18 +1,34 @@
 /* $Id$ */
 /* Copyright: This file may be distributed under version 2 of the GPL licence. */
 
+#include "micq.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <assert.h>
-#include <sys/types.h>
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-#include <sys/stat.h>
 #include <fcntl.h>
+#if HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#if HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+#if HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#if HAVE_NETINET_IN_H
+#include <netinet/in.h>
+#endif
+#if HAVE_TERMIOS_H
+#include <termios.h>
+#endif
+#if HAVE_ARPA_INET_H
+#include <arpa/inet.h>
+#endif
 
-#include "micq.h"
 #include "buildmark.h"
 #include "util_ui.h"
 #include "file_util.h"
@@ -32,19 +48,6 @@
 #include "session.h"
 #include "util_str.h"
 
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#ifdef _WIN32
-#include <io.h>
-#else
-#include <netinet/in.h>
-#include <termios.h>
-#ifdef HAVE_ARPA_INET_H
-#include <arpa/inet.h>
-#endif
-#endif
 
 /****/
 
@@ -243,7 +246,7 @@ void Initialize_RC_File ()
     prG->auto_occ  = strdup (i18n (1012, "User is occupied [Auto-Message]"));
     prG->auto_inv  = strdup (i18n (1013, "User is offline"));
     prG->auto_ffc  = strdup (i18n (2055, "User is ffc and wants to chat about everything."));
-    prG->logplace  = strdup ("history/");
+    prG->logplace  = strdup ("history" _OS_PATHSEPSTR);
     prG->chat      = 49;
 
 #ifdef ENABLE_UTF8
@@ -1019,7 +1022,7 @@ void Read_RC_File (FILE *rcf)
         prG->auto_ffc  = strdup (i18n (2055, "User is ffc and wants to chat about everything."));
 
     if (prG->flags & FLAG_LOG && !prG->logplace)
-        prG->logplace = strdup ("history/");
+        prG->logplace = strdup ("history" _OS_PATHSEPSTR);
     
     if (!prG->chat)
         prG->chat = 49;

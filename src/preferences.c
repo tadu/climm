@@ -12,11 +12,17 @@
 #include "micq.h"
 #include <stdlib.h>
 #include <assert.h>
+#if HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+#if HAVE_SYS_STAT_H
 #include <sys/stat.h>
+#endif
 #include <fcntl.h>
 #include <string.h>
+#if HAVE_SYS_UTSNAME_H
 #include <sys/utsname.h>
+#endif
 #include "file_util.h"
 #include "preferences.h"
 #include "util_ui.h"
@@ -51,19 +57,6 @@ PreferencesConnection *PreferencesConnectionC ()
     return pref;
 }
 
-#ifdef _WIN32
-#define _OS_PREFPATH ".\\"
-#define _OS_PATHSEP  '\\'
-#else
-#ifdef __amigaos__
-#define _OS_PREFPATH "/PROGDIR/"
-#define _OS_PATHSEP  '/'
-#else
-#define _OS_PREFPATH NULL
-#define _OS_PATHSEP  '/'
-#endif
-#endif
-
 /*
  * Return the preference base directory
  */
@@ -93,6 +86,9 @@ const char *PrefUserDirReal (Preferences *pref)
 #ifndef SYS_NMLN
 #define SYS_NMLN 200
 #endif
+#ifndef L_cuserid
+#define L_cuserid 20
+#endif
 
 const char *PrefLogNameReal (Preferences *pref)
 {
@@ -100,7 +96,7 @@ const char *PrefLogNameReal (Preferences *pref)
     {
         const char *me;
         char *hostname;
-#ifndef HAVE_GETHOSTNAME
+#if HAVE_UNAME
         struct utsname name;
 #endif
         char username[L_cuserid + SYS_NMLN] = "";
@@ -143,15 +139,18 @@ const char *PrefLogNameReal (Preferences *pref)
             hostname += strlen (username);
         }
 
-#ifdef HAVE_GETHOSTNAME
+#if HAVE_GETHOSTNAME
         if (!gethostname (hostname, username + sizeof (username) - hostname))
             hostname[-1] = '@';
-#else
+#elif HAVE_UNAME
         if (!uname (&name))
         {
             snprintf (hostname, username + sizeof (username) - hostname, "%s", name.nodename);
             hostname[-1] = '@';
         }
+#else
+        snprintf (hostname, username + sizeof (username) - hostname, "(unknown)");
+        hostname[-1] = '@';
 #endif
         pref->logname = strdup (username);
     }

@@ -1,0 +1,43 @@
+
+Windows:
+  The binary was created by cross-compiling with the Debian-packaged
+  mingw-cross compiler version mingw32(3.2.1.20021201.3-1),
+  mingw32-binutils(2.13.90.20030111.1-1), mingw32-runtime(2.3-1).
+  ./configure was called as follows:
+  
+  ./configure --host=i586-mingw32msvc CFLAGS=-O4 --datadir=C:\\Windows\\Programme\\mICQ\\\0
+  
+  The binary was stripped afterwards.
+  
+  Note: this binary is HIGHLY EXPERIMENTAL.
+  It does, unfortunately, not run under WINE.
+
+  The following features do not work in Windows:
+  * only buildin iconv() support (no system iconv() available)
+  * no remote-control via a FIFO (no FIFOs on this platform)
+  * the socket is not(!) non-blocking - help is needed here
+  * the registry is not used to search for profile and system files - help is needed as well
+
+
+Playstation 2 / Linux:
+  The binary was contributed by J. Grant. Here's a note he wants to have displayed:
+  -
+  Sony PS2 GNU/Linux default locale is broken, please make file in your
+  home dir called .i18n with the following locale variables.  If you do
+  not correct his error you will only see "????" instead of Japanese.
+  LANG=ja
+  LC_CTYPE=ja
+  -
+
+AmigaOS:
+  The following features do not work in AmigaOS:
+  * only buildin iconv() support (no system iconv() available)
+  * no remote-control via a FIFO (no FIFOs on this platform)
+    - if you want to code an AREXX port instead, let me know
+
+BeOS:
+  TBD
+
+MacOS X:
+  This binary was contributed by Hans Fuchs.
+

@@ -44,9 +44,14 @@
 #if HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
+#if HAVE_NETINET_IN_H
 #include <netinet/in.h>
-#ifdef HAVE_ARPA_INET_H
+#endif
+#if HAVE_ARPA_INET_H
 #include <arpa/inet.h>
+#endif
+#if HAVE_CONIO_H
+#include <conio.h>
 #endif
 #ifdef HAVE_TCGETATTR
 struct termios sattr;
@@ -55,15 +60,21 @@ struct termios sattr;
 #define HISTORY_LINES 10
 #define HISTORY_LINE_LEN 1024
 
+#if HAVE_TCGETATTR
 static struct termios t_attr;
+static struct termios saved_attr;
+#endif
+static int attrs_saved = 0;
 static void tty_prepare (void);
 static void tty_restore (void);
 
 static void R_process_input_backspace (void);
 static void R_process_input_delete (void);
 
+#if defined(SIGTSTP) && defined(SIGCONT)
 static RETSIGTYPE micq_ttystop_handler (int);
 static RETSIGTYPE micq_cont_handler (int);
+#endif
 static RETSIGTYPE micq_int_handler (int);
 
 static char *history[HISTORY_LINES + 1];
@@ -108,9 +119,15 @@ void R_init (void)
     curpos = curlen = 0;
     bytepos = bytelen = 0;
     inited = 1;
+#if defined(SIGTSTP) && defined(SIGCONT)
     signal (SIGTSTP, &micq_ttystop_handler);
     signal (SIGCONT, &micq_cont_handler);
+#endif
+#ifndef __amigaos__
     signal (SIGINT, &micq_int_handler);
+#else
+    signal (SIGINT, SIG_IGN);
+#endif
     tty_prepare ();
     atexit (tty_restore);
     R_resetprompt ();
@@ -131,7 +148,7 @@ void R_clrscr (void)
 static int tabstate = 0;
 /* set to 1 on first tab, reset to 0 on any other key in R_process_input */
 
-
+#if defined(SIGTSTP) && defined(SIGCONT)
 static RETSIGTYPE micq_ttystop_handler (int a)
 {
     tty_restore ();
@@ -146,6 +163,7 @@ static RETSIGTYPE micq_cont_handler (int a)
     signal (SIGTSTP, &micq_ttystop_handler);
     signal (SIGCONT, &micq_cont_handler);
 }
+#endif
 
 volatile static UBYTE interrupted = 0;
 
@@ -439,7 +457,10 @@ void R_process_input_tab (void)
             while (*tabwstart != ' ' && tabwstart >= s) tabwstart --;
             tabwstart ++;
             if (!(tabwend = strchr (tabwstart, ' ')))
-                tabwend = s + curlen;
+            {
+                tabwend = s + bytelen;
+                *tabwend = '\0';
+            }
             tabwlen = sizeof (tabword) < tabwend - tabwstart ? sizeof (tabword) : tabwend - tabwstart;
             snprintf (tabword, sizeof (tabword), "%.*s", tabwend - tabwstart, tabwstart);
         }
@@ -474,6 +495,7 @@ void R_process_input_tab (void)
             }
         }
         *tabwstart = '\0';
+        nicklen = strlen (ConvFromUTF8 (tabcont->nick, prG->enc_loc));
         memmove (s, s_sprintf ("%s%s%s", s, ConvFromUTF8 (tabcont->nick, prG->enc_loc), tabwend), HISTORY_LINE_LEN);
         tabwend = tabwstart + nicklen;
         R_remprompt ();
@@ -494,10 +516,16 @@ int R_process_input (void)
 {
     char ch;
     int k;
+#ifdef ANSI_TERM
     static UDWORD inp = 0;
+#endif
 
+#if INPUT_BY_POLL
+    ch = getch ();
+#else
     if (!read (STDIN_FILENO, &ch, 1))
         return 0;
+#endif
 #ifdef __BEOS__
     if (ch == (char)0x80)
         return 0;
@@ -507,7 +535,7 @@ int R_process_input (void)
     {
         if (prG->tabs != TABS_SIMPLE && ch != '\t')
             tabstate = 0;
-        if ((ch > 0 && ch < ' ') || ch == 127 || !ch)
+        if ((ch > 0 && ch < ' ') || ch == (char)127 || !ch)
         {
             switch (ch)
             {
@@ -567,7 +595,15 @@ int R_process_input (void)
                     istat = 1;
                     break;
 #endif
+                case 127:      /* DEL */
+                    if (prG->flags & FLAG_DELBS)
+                        R_process_input_backspace ();
+                    else
+                        R_process_input_delete ();
+                    return 0;
                 default:
+#if HAVE_TCGETATTR
+#if defined(VERASE)
                     if (ch == t_attr.c_cc[VERASE] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
                     {
                         if (prG->flags & FLAG_DELBS)
@@ -576,6 +612,8 @@ int R_process_input (void)
                             R_process_input_delete ();
                         return 0;
                     }
+#endif
+#if defined(VEOF) && defined(VERASE)
                     if (ch == t_attr.c_cc[VEOF] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
                     {
                         if (curlen)
@@ -587,6 +625,8 @@ int R_process_input (void)
                         printf ("q\n");
                         return 1;
                     }
+#endif
+#if defined(VKILL) && defined(VERASE)
                     if (ch == t_attr.c_cc[VKILL] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
                     {
                         R_remprompt ();
@@ -596,15 +636,20 @@ int R_process_input (void)
                         bytepos = bytelen = 0;
                         return 0;
                     }
-#ifdef    VREPRINT
+#endif
+#if defined(VREPRINT) && defined(VERASE)
                     if (ch == t_attr.c_cc[VREPRINT] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
                     {
                         R_remprompt ();
                         return 0;
                     }
-#endif /* VREPRINT */
+#endif
+#endif
+                    /* silence warning */ ;
             }
         }
+        else if (ENC(enc_loc) == ENC_LATIN1 && ch == (char)0x9b)
+            istat = 2;
         else if (bytelen + 1 < HISTORY_LINE_LEN)
         {
             static char buf[7] = "\0\0\0\0\0\0";
@@ -966,12 +1011,14 @@ void R_remprompt ()
     bytepos = bpos;
 #endif
     M_print ("\r");             /* for tab stop reasons */
+#ifdef ANSI_TERM
     printf (ESC "[J");
+#else
+    printf ("%.*s", curpos, bsbuf);
+#endif
     prstat = 2;
 }
 
-static struct termios saved_attr;
-static int attrs_saved = 0;
 
 static void tty_restore (void)
 {
@@ -1038,6 +1085,8 @@ SDWORD Echo_On (void)
 }
 
 static volatile UDWORD scrwd = 0;
+
+#if defined(SIGWINCH)
 static RETSIGTYPE micq_sigwinch_handler (int a)
 {
     struct winsize ws;
@@ -1046,6 +1095,7 @@ static RETSIGTYPE micq_sigwinch_handler (int a)
     ioctl (STDIN_FILENO, TIOCGWINSZ, &ws);
     scrwd = ws.ws_col;
 }
+#endif
 
 UWORD Get_Max_Screen_Width ()
 {
@@ -1054,6 +1104,7 @@ UWORD Get_Max_Screen_Width ()
     if (scrwdtmp)
         return scrwdtmp;
 
+#if defined(SIGWINCH)
     micq_sigwinch_handler (0);
     if ((scrwdtmp = scrwd))
     {
@@ -1061,6 +1112,7 @@ UWORD Get_Max_Screen_Width ()
             scrwd = 0;
         return scrwdtmp;
     }
+#endif
     if (prG->screen)
         return prG->screen;
     return 80;                  /* a reasonable screen width default. */

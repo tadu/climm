@@ -22,28 +22,35 @@ Changes :
 #include <stdlib.h>
 #include <limits.h>
 
-#ifdef _WIN32
-#include <conio.h>
-#include <io.h>
-#include <winsock2.h>
-#else
+#if HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+#if HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+#if HAVE_NETINET_H
 #include <netinet/in.h>
+#endif
+#if HAVE_SYS_STAT_H
 #include <sys/stat.h>
-#include <sys/types.h>
+#endif
+#if HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
-
-#ifdef HAVE_ARPA_INET_H
+#endif
+#if HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
-
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
-
+#if HAVE_NETDB_H
 #include <netdb.h>
+#endif
+#if HAVE_SYS_WAIT_H
 #include <sys/wait.h>
+#endif
+#if HAVE_WINSOCK2_H
+#include <winsock2.h>
 #endif
 
 #include <fcntl.h>

@@ -1,5 +1,26 @@
 -*- coding: utf-8 -*-
 
+2003-02-14 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+	* fix set tabs command
+	* fix buildmark
+	* fix status code length (allows workaround for webaware)
+	* start multiline mode by trailing \ as well
+	* recognize several key codes for Home and End keys
+	* better guard #includes, use more configure test results to #ifdef
+	  around stuff that might be undefined on obscure platforms, use
+	  _OS_PATHSEPSTR and _OS_PATHSEP vs. "/" and '/'
+	* fix typos in micqrc.5
+	* special case around buggy SIM 0.8.x for UTF-8 messages
+	* use winsocks2; fix Windows terminal input
+	* removed another #ANSI_TERM-unconditionalized ESC-sequence
+	* fix 0xfe output for msg ack
+	* fix last_sent_uin code
+	* small fixes (mostly) for AmigaOS (CSI versus ESC [)
+	* fix tab handling in some border cases
+	* fix download of invisible/visible users
+	* be more safe when using v5
+	* hide winsock2.h and conio.h from Cygwin
+
 2003-01-24 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
 	* recognize kxICQ
 	* fix reception of mass messages

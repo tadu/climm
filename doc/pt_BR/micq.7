@@ -11,7 +11,7 @@ precisa e extensa.
 .TP
 .BI verbose \ [n\('ivel]
 Ajusta o n\('ivel de informa\(,c\(~ao verbal para
-.IR n\('ivel
+.IR n\('ivel ,
 ou mostra o n\('ivel atual. O n\('ivel de informa\(,c\(~ao verbal \('e um
 conjunto de "flags":
 .RS
@@ -35,7 +35,7 @@ Mostra pacotes v6 e seus dados.
 Mostra pacotes v7/v8.
 .TP
 .B 8192
-Mostra o hexdump de pacotes v7/v8.
+Mostra o valor hexadecimal ("hexdump") de pacotes v7/v8.
 .TP
 .B 16284
 Salva estes pacotes no disco.
@@ -47,17 +47,17 @@ Mostra pacotes peer-to-peer.
 Mostra o hexdump de pacotes peer-to-peer.
 .TP
 .B 262144
-Salva estes pacotes no disco.
+Salva aqueles pacotes no disco.
 .TP
 .B 2097152
 Mostra negocia\(,c\(~ao peer-to-peer.
 .TP
 .B 4194304
-Mostra a configura\(,c\(~ao da conex\(~ao I/O.
+Mostra a configura\(,c\(~ao de conex\(~oes I/O (Entrada/Sa\('ida).
 .PP
 Entretanto, qualquer n\('ivel de informa\(,c\(~ao verbal diferente de zero
-causar\('a mais informa\(,c\(~ao ser impressa, e quaisquer n\('iveis maiores
-que 1 mais ainda.
+causar\('a a impress\(~ao de mais informa\(,c\(~ao, e quaisquer n\('iveis
+maiores que 1 mais ainda.
 .RE
 .TP
 .B clear
@@ -66,18 +66,18 @@ Limpa a tela.
 .BI sound\ [on|off|event]
 Altera o som para
 .B on
-or
-.BR off ,
-ou chama o script
+(ligado) ou
+.B off
+(desligado), ou chama o script
 .B event
-para bips. Sintaxe nova para 0.4.10.
+para bipes. Sintaxe nova para 0.4.10.
 .TP
 .BI autoaway \ [tempo|on|off]
 Ajusta o tempo de inatividade para
 .IR tempo ,
 ou troca o tempo de inatividade para
 .I on
-usando o \('ultimo ou o tempo padr\(~ao de inatividade, ou troca auto away para
+usando o \('ultimo ou o tempo padr\(~ao de inatividade, ou troca "auto away" para
 .I off
 salvando o tempo atual usado para auto away. Um tempo de 0 \('e equivalente a
 .IR off .
@@ -93,9 +93,9 @@ Altera a mensagem de resposta autom\('atica para o status
 para
 .IR mensagem .
 .TP
-.BI alias \ [alias\ expans\(~ao]
-Cria um novo alias chamado
-.I alias
+.BI alias \ [apelido\ expans\(~ao]
+Cria um novo apelido chamado
+.I apelido
 que \('e substitu\('ido pela
 .IR expans\(~ao .
 Se nenhum argumento for dado, todos os aliases atuais s\(~ao listados. Se o
@@ -105,9 +105,9 @@ ele ser\('a substitu\('ido pelos argumentos dados quando o alias for invocado,
 de outra maneira eles ser\(~ao concatenados.
 Novo para 0.4.10.
 .TP
-.BI unalias \ alias
+.BI unalias \ apelido
 Remove o alias chamado
-.IR alias .
+.IR apelido .
 Novo para 0.4.10.
 .TP
 .BI alter \ comando\ novo
@@ -384,7 +384,7 @@ somente no estilo de tabula\(,c\~ao
 Veja a op\(,c\(~ao
 .I tabs
 do comando
-.B set .
+.BR set .
 .SH COMANDOS PARA ENCONTRAR E VER OUTROS USU\('ARIOS
 .TP
 .BI rand \ n\('umero
@@ -564,7 +564,6 @@ ou remove o grupo de contatos completamente se
 .B all
 for dado.
 Novo para 0.4.10.
-.br
 Nota: voc\(^e precisa salvar com
 .B save
 para tornar isto persistente.
@@ -577,7 +576,6 @@ Se qualquer nick for o \('ultimo alias para este contato, ou se
 for dado, remove o contato completamente.
 .br
 Novo (remalias) para 0.4.10.
-.br
 Nota: voc\(^e precisa salvar com
 .B save
 para tornar isto persistente.

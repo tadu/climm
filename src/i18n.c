@@ -40,7 +40,7 @@ void i18nInit (char **loc, UBYTE *enc, const char *arg)
 {
     char *p, *q;
 
-#ifdef HAVE_SETLOCALE
+#if HAVE_SETLOCALE && defined(LC_MESSAGES)
     setlocale (LC_ALL, "");
     if (!arg)
     {
@@ -136,51 +136,51 @@ int i18nOpen (const char *loc, UBYTE enc)
         if (prG->flags & FLAG_FUNNY)
         {
             if (utf8)
-                i18nTry (s_sprintf ("%s/i18n/%s.UTF-8@fun.i18n", PrefUserDir (prG), loc));
-            i18nTry (s_sprintf ("%s/i18n/%s@fun.i18n", PrefUserDir (prG), loc));
+                i18nTry (s_sprintf ("%si18n" _OS_PATHSEPSTR "%s.UTF-8@fun.i18n", PrefUserDir (prG), loc));
+            i18nTry (s_sprintf ("%si18n" _OS_PATHSEPSTR "%s@fun.i18n", PrefUserDir (prG), loc));
             if (!utf8)
-                i18nTry (s_sprintf ("%s/i18n/%s.UTF-8@fun.i18n", PrefUserDir (prG), loc));
+                i18nTry (s_sprintf ("%si18n" _OS_PATHSEPSTR "%s.UTF-8@fun.i18n", PrefUserDir (prG), loc));
             if (strchr (loc, '_') && utf8)
-                i18nTry (s_sprintf ("%s/i18n/%.*s.UTF-8@fun.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
+                i18nTry (s_sprintf ("%si18n" _OS_PATHSEPSTR "%.*s.UTF-8@fun.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
             if (strchr (loc, '_'))
-                i18nTry (s_sprintf ("%s/i18n/%.*s@fun.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
+                i18nTry (s_sprintf ("%si18n" _OS_PATHSEPSTR "%.*s@fun.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
             if (strchr (loc, '_') && !utf8)
-                i18nTry (s_sprintf ("%s/i18n/%.*s.UTF-8@fun.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
+                i18nTry (s_sprintf ("%si18n" _OS_PATHSEPSTR "%.*s.UTF-8@fun.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
             if (utf8)
-                i18nTry (s_sprintf (PKGDATADIR "/%s.UTF-8@fun.i18n", loc));
-            i18nTry (s_sprintf (PKGDATADIR "/%s@fun.i18n", loc));
+                i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%s.UTF-8@fun.i18n", PKGDATADIR, loc));
+            i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%s@fun.i18n", PKGDATADIR, loc));
             if (!utf8)
-                i18nTry (s_sprintf (PKGDATADIR "/%s.UTF-8@fun.i18n", loc));
+                i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%s.UTF-8@fun.i18n", PKGDATADIR, loc));
             if (strchr (loc, '_') && utf8)
-                i18nTry (s_sprintf (PKGDATADIR "/%.*s.UTF-8@fun.i18n", (int)(strchr (loc, '_') - loc), loc));
+                i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%.*s.UTF-8@fun.i18n", PKGDATADIR, (int)(strchr (loc, '_') - loc), loc));
             if (strchr (loc, '_'))
-                i18nTry (s_sprintf (PKGDATADIR "/%.*s@fun.i18n", (int)(strchr (loc, '_') - loc), loc));
+                i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%.*s@fun.i18n", PKGDATADIR, (int)(strchr (loc, '_') - loc), loc));
             if (strchr (loc, '_') && !utf8)
-                i18nTry (s_sprintf (PKGDATADIR "/%.*s.UTF-8@fun.i18n", (int)(strchr (loc, '_') - loc), loc));
+                i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%.*s.UTF-8@fun.i18n", PKGDATADIR, (int)(strchr (loc, '_') - loc), loc));
         }
 
         if (utf8)
-            i18nTry (s_sprintf ("%s/i18n/%s.UTF-8.i18n", PrefUserDir (prG), loc));
-        i18nTry (s_sprintf ("%s/i18n/%s.i18n", PrefUserDir (prG), loc));
+            i18nTry (s_sprintf ("%si18n" _OS_PATHSEPSTR "%s.UTF-8.i18n", PrefUserDir (prG), loc));
+        i18nTry (s_sprintf ("%si18n" _OS_PATHSEPSTR "%s.i18n", PrefUserDir (prG), loc));
         if (!utf8)
-            i18nTry (s_sprintf ("%s/i18n/%s.UTF-8.i18n", PrefUserDir (prG), loc));
+            i18nTry (s_sprintf ("%si18n" _OS_PATHSEPSTR "%s.UTF-8.i18n", PrefUserDir (prG), loc));
         if (strchr (loc, '_') && utf8)
-            i18nTry (s_sprintf ("%s/i18n/%.*s.UTF-8.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
+            i18nTry (s_sprintf ("%si18n" _OS_PATHSEPSTR "%.*s.UTF-8.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
         if (strchr (loc, '_'))
-            i18nTry (s_sprintf ("%s/i18n/%.*s.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
+            i18nTry (s_sprintf ("%si18n" _OS_PATHSEPSTR "%.*s.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
         if (strchr (loc, '_') && !utf8)
-            i18nTry (s_sprintf ("%s/i18n/%.*s.UTF-8.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
+            i18nTry (s_sprintf ("%si18n" _OS_PATHSEPSTR "%.*s.UTF-8.i18n", PrefUserDir (prG), (int)(strchr (loc, '_') - loc), loc));
         if (utf8)
-            i18nTry (s_sprintf (PKGDATADIR "/%s.UTF-8.i18n", loc));
-        i18nTry (s_sprintf (PKGDATADIR "/%s.i18n", loc));
+            i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%s.UTF-8.i18n", PKGDATADIR, loc));
+        i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%s.i18n", PKGDATADIR, loc));
         if (!utf8)
-            i18nTry (s_sprintf (PKGDATADIR "/%s.UTF-8.i18n", loc));
+            i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%s.UTF-8.i18n", PKGDATADIR, loc));
         if (strchr (loc, '_') && utf8)
-            i18nTry (s_sprintf (PKGDATADIR "/%.*s.UTF-8.i18n", (int)(strchr (loc, '_') - loc), loc));
+            i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%.*s.UTF-8.i18n", PKGDATADIR, (int)(strchr (loc, '_') - loc), loc));
         if (strchr (loc, '_'))
-            i18nTry (s_sprintf (PKGDATADIR "/%.*s.i18n", (int)(strchr (loc, '_') - loc), loc));
+            i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%.*s.i18n", PKGDATADIR, (int)(strchr (loc, '_') - loc), loc));
         if (strchr (loc, '_') && !utf8)
-            i18nTry (s_sprintf (PKGDATADIR "/%.*s.UTF-8.i18n", (int)(strchr (loc, '_') - loc), loc));
+            i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%.*s.UTF-8.i18n", PKGDATADIR, (int)(strchr (loc, '_') - loc), loc));
     }
     s_free (floc);
 

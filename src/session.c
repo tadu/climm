@@ -15,7 +15,12 @@
 #include "cmd_pkt_v8.h"
 #include "tcp.h"
 #include <string.h>
+#if HAVE_NETDB_H
 #include <netdb.h>
+#endif
+#if HAVE_WINSOCK2_H
+#include <winsock2.h>
+#endif
 #include <assert.h>
 
 #define listlen 40

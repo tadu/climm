@@ -173,7 +173,7 @@ This overrides the encoding derived from environment variables.
 .BI encoding\ remote\  encoding
 Set the encoding to use for meta data on the server,
 including the password, to
-.RI encoding .
+.IR encoding .
 This encoding is also used for communicating with other contacts
 whose client doesn't understand utf8 messages unless a specific
 encoding is set for this contact.
@@ -279,7 +279,7 @@ and status changes, logins and logouts for
 .TP
 .BI chat \ nr
 Set the random chat group to
-. IR nr .
+.IR nr .
 Use
 .B -1
 to disable, and
@@ -352,7 +352,7 @@ will call the script for events.
 .TP
 .BI event \ script
 Set the script to execute for events to
-.RI script .
+.IR script .
 It is called with the following arguments:
 .br
 1. The IM type, currently only
@@ -364,6 +364,7 @@ It is called with the following arguments:
 .br
 4. The string
 .BR global .
+.br
 5. The type of this event, which can be
 .BR msg ,
 .BR on ,

@@ -5,6 +5,8 @@
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
+#elif defined(__WIN32)
+#include "config.h.win32"
 #endif
 
 #include "micqconfig.h"

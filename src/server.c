@@ -60,7 +60,6 @@ void icq_sendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD msg_typ
 UBYTE IMCliMsg (Connection *conn, Contact *cont, Extra *extra)
 {
     Extra *e_msg, *e_trans;
-    char *old;
     UBYTE ret;
 
     if (!cont || !conn)
@@ -79,13 +78,6 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, Extra *extra)
         extra = ExtraSet (extra, EXTRA_TRANS, EXTRA_TRANS_ANY, NULL);
         e_trans = ExtraFind (extra, EXTRA_TRANS);
     }
-
-    old = uiG.last_message_sent;
-    uiG.last_message_sent      = strdup (e_msg->text);
-    uiG.last_message_sent_type = e_msg->data;
-    uiG.last_sent_uin          = cont->uin;
-    if (old)
-        free (old);
 
     putlog (conn, NOW, cont, STATUS_ONLINE, 
             e_msg->data == MSG_AUTO ? LOG_AUTO : LOG_SENT, e_msg->data, e_msg->text);
