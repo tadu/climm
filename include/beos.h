@@ -1,7 +1,9 @@
-/* BeOS port (c) catlettc@canvaslink.com */
+/* $ Id: $ */
 
-#ifndef __MICQ_BEOS_H__
-#define __MICQ_BEOS_H__
+/* old BeOS port (c) catlettc@canvaslink.com */
+
+#ifndef MICQ_BEOS_H
+#define MICQ_BEOS_H
 
 #include <KernelKit.h>
 

@@ -1,5 +1,7 @@
-#ifndef __MATT_DATATYPE__
-#define __MATT_DATATYPE__
+/* $ Id: $ */
+
+#ifndef MICQ_DATATYPE_H
+#define MICQ_DATATYPE_H
 #if HAVE_UNISTD_H
    #include <unistd.h>
 #endif

@@ -1,3 +1,5 @@
+/* $ Id: $ */
+
 #define IREP_HASAUTHFLAG 1
 
 void Meta_User (Session *sess, UDWORD uin, Packet *p);

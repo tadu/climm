@@ -1,3 +1,5 @@
+/* $ Id: $ */
+
 void M_select_init (void);
 void M_set_timeout (UDWORD sec, UDWORD usec);
 void M_Add_rsocket (FD_T sok);

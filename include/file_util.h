@@ -1,3 +1,4 @@
+/* $ Id: $ */
 
 int   Save_RC(void);
 int   Add_User (Session *sess, UDWORD uin, char *name);

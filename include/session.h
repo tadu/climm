@@ -1,3 +1,4 @@
+/* $ Id: $ */
 
 #ifndef MICQ_SESSION_H
 #define MICQ_SESSION_H

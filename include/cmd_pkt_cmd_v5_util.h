@@ -1,3 +1,4 @@
+/* $ Id: $ */
 
 Packet *PacketCv5 (Session *sess, UWORD cmd);
 void PacketEnqueuev5 (Packet *pak, Session *sess);

@@ -1,3 +1,4 @@
+/* $ Id: $ */
 
 #ifndef MICQ_TCP_H
 #define MICQ_TCP_H

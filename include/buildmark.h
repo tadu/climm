@@ -1,4 +1,7 @@
-
+/* $ Id: $
+ *
+ * mICQ version functions and ICQ client identifiers.
+ */
 
 #define MICQ_VERSION VERSION
 

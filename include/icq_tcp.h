@@ -1,16 +1,11 @@
+/* $ Id: $ */
 
-#define TCP_VER_REV      0
-
-/* TCP related constants */
 #ifdef TCP_COMM
 
-/* TCP port to listen on... 0 = random -- james */
-#define TCP_PORT 0 
-
+/* TCP related constants */
 #define TCP_OK_FLAG      0x04
 
-/* packets */
-
+/* Packets */
 #define PEER_INIT        0xff
 #define PEER_INITACK     0x01
 #define PEER_INIT2       0x03
@@ -40,7 +35,7 @@
 #define TCP_MSG_GET_NA          1002
 #define TCP_MSG_GET_DND         1003
 #define TCP_MSG_GET_FFC         1004
-#define TCP_AUTO_RESPONSE_MASK  0x03E0
+#define TCP_MSG_GET_VER         1012
 
 /* Status flags */
 #define TCP_MSGF_REAL           0x0010
@@ -63,9 +58,9 @@
 /* Miscellaneous */
 #define TCP_MSG_X1      0x000E
 #define TCP_COL_FG      0x00000000      /* Foreground colour in msg body */
-#define TCP_COL_BG      0x00FFFFFF      /* Background colour in msg boxy */
+#define TCP_COL_BG      0x00FFFFFF      /* Background colour in msg body */
 #define TCP_MSG_QUEUE   10
 
+#else
+#define TCP_OK_FLAG      0x00
 #endif
-
-

@@ -1,3 +1,5 @@
+/* $ Id: $ */
+
 const char *Convert_Status_2_Str (UDWORD status);
 
 UDWORD Chars_2_DW (UBYTE * buf);

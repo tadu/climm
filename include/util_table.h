@@ -1,3 +1,4 @@
+/* $ Id: $ */
 
 const char *TableGetMonth (int code);
 const char *TableGetLang (UBYTE code);

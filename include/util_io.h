@@ -1,3 +1,4 @@
+/* $ Id: $ */
 
 size_t SOCKREAD (Session *sess, void *ptr, size_t len);
 const char *UtilIOIP         (UDWORD ip);

@@ -1,5 +1,5 @@
 /*********************************************
- * ($Id$)
+ * $Id$
  *
  * Header file for ICQ protocol structres and
  * constants
@@ -164,6 +164,3 @@ extern Preferences *prG;
 #define LOG_EVENT 4
 
 #include "i18n.h"
-
-
-

@@ -1,3 +1,4 @@
+/* $ Id: $ */
 
 #define _i18n(i,s) #i ":" s
 
