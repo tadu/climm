@@ -68,6 +68,9 @@
 #else
 #include <ctype.h>
 #endif
+#ifndef WEOF
+#define WEOF (wchar_tt)-1
+#endif
 
 #undef DEBUG_RL
 
