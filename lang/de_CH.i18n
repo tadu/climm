@@ -28,7 +28,7 @@
 1028:Nei
 1029:Bitte Iu oder Nei igä!
 1030:isch grad gschobe
-1031:isch online cho
+1031:het ds ICQ agworfe
 1032:debug: Dopplets Päckli #%04x vom Typ %04x (%s)¶
 1033:Igehends Server-Päckli (Version 8):
 1034:I gloube es het ke Sinn me (ha z mängisch probiert...)
@@ -52,10 +52,10 @@
 1055:Ha ke Socket chönne erschteue!
 1056:Socket becho, versueche z verbinde...¶
 1060:Usfüehrlechkeit isch %d.¶
-1061:"%s" isch ke Spitzname.¶
+1061:"%s" isch ke Nickname.¶
 1062:Ignorierti User:
 1063:Bitte Passwort igä: 
-1064:Auto-Status-Wächsu nach:
+1064:Auto-Schtatus-Wächsu nach:
 1065:Bytereihefoug: Intel.
 1066:Bytereihefoug: Motorola.
 1071:Di Schtatus isch: 
@@ -64,7 +64,7 @@
 1074:mICQ (Matts ICQ-Klon)
 1075:Version
 1076:kompiliert am
-1077:gwidmet em Matthew D. Smith.
+1077:Gwidmet em Matthew D. Smith.
 1078:Ke Übersetzig verfüegbar.
 1079:Übersetzig (%s, %s) vom %s, zletsch gänderet am %s vom %s, für mICQ %d.%d.%d%s.¶
 1080:Ha d'Übersetzig "%s" ned chönne lade.¶
@@ -98,22 +98,22 @@
 1108:Kroatisch
 1109:Tschechisch
 1110:Dänisch
-1111:Niederländisch
-1112:Englisch
+1111:Niderländisch
+1112:Änglisch
 1113:Esperanto
 1114:Estnisch
 1115:Farsi
 1116:Finnisch
 1117:Französisch
 1118:Gälisch
-1119:Deutsch
+1119:Dütsch
 1120:Griechisch
 1121:Hebräisch
 1122:Hindi
 1123:Ungarisch
 1124:Isländisch
 1125:Indonesisch
-1126:Italienisch
+1126:Italiänisch
 1127:Japanisch
 1128:Khmer
 1129:Koreanisch
@@ -122,15 +122,15 @@
 1132:Littauisch
 1133:Malaysisch
 1134:Norwegisch
-1135:Polisch
-1136:Portugiesisch
+1135:Polnisch
+1136:Portugisisch
 1137:Rumänisch
 1138:Russisch
 1139:Serbo-Kroatisch
 1140:Slovakisch
 1141:Slovenisch
 1142:Somalisch
-1143:Spanisch
+1143:Schpanisch
 1144:Suaheli
 1145:Schwedisch
 1146:Tagalog
@@ -191,7 +191,7 @@
 ##
 ## Länder
 ##
-1199:Unbekannts Land
+1199:Wohär söu i das wüsse we är/sie/äs das ned gseit het?
 1200:Het dä/die/das ned gseit
 1201:Afghanistan
 1202:Albanien
@@ -396,7 +396,7 @@
 1403:Zeigt die letschti vo <contact> empfangeni Nachricht, oder e Lischte vo däne User, wo scho mau e Nachricht gschickt hei.
 1404:Schautet der Schtatus vo <nick> uf der Ignorier-Lischte um.
 1405:Lischtet ignorierti User.
-1406:Änderet d Sichtbarkeit gägenüber <nick> im Schtatus "unsichtbar".
+1406:Änderet d Sichtbarkeit gägenüber <nick> im Schtatus "verschteckt".
 1407:Zeigt der Schtatus vo au däne Lüt auf der Kontaktlischte a wo online si.
 1408:Änderet ds Passwort i <secret>.
 1409:Sändet e Nachricht a <uin|nick>.
@@ -426,7 +426,7 @@
 1434:-beschäftiget-
 1435:-ned schtöre-
 1436:-wott chatte-
-1437:-unsichtbar-
+1437:-verschteckt-
 1438:Änderet grundlegendi User-Infos (eMail-Adrässe, Nickname, usw).
 1439:Setzt die zufäuigi Usergruppe.
 1440:Zufäuige User:
@@ -515,11 +515,11 @@
 1523:Telefon (Arbeit):
 1524:Ort (Arbeit):
 1525:Über:
-1528:wiiblech
-1529:männlech
-1530:mbö
+1528:Wiblech
+1529:Männlech
+1530:Androgyn (het ämu weder Männlech no Wiblech gseit)
 1531:Internet-Site:
-1532:Gebore:
+1532:Geburi:
 1533:Schprache:
 1534:Gib bitte e Schprach aus Nummere i (L für e Lischte):
 1535:Nöis Auter:
@@ -630,11 +630,11 @@
 1670:Für %s jtz normau sichtbar.
 1671:Für %s jtz immer sichtbar.
 1672:%s sini IP-Adresse isch 
-1673:	Der Port isch %d.¶
-1674:	Der Port isch unbekannt.¶
+1673:, der Port isch %d.¶
+1674:, der Port isch unbekannt.¶
 1675:Ignoriere d Zile:
-1676:Benötige d Usernummere/Nickname, wo nis söu häreschicke.¶
-1678:Benötige e URL.¶
+1676:I bruche d Usernummere/Nickname, wo nis söu häreschicke.¶
+1678:I bruche e URL.¶
 1679:Leider isch ds Schpichere vo dine persönleche Ischteuige fäugschlage!¶
 1680:Dini persönleche Ischteuige si gschpicheret!¶
 1681:Die letschte %d Lüt wo de mit ne gschnuret hesch:¶
@@ -673,7 +673,7 @@
 1728:D Nachricht für "ned ume" isch:
 1729:D Nachricht für "wit wäg" isch:
 1730:D Nachricht für "beschäftiget" isch:
-1731:D Nachricht für "unsichtbar" isch:
+1731:D Nachricht für "verschteckt" isch:
 1734.Leider fauschi Syntax, cha ke Schtatus finge.¶
 1735:Benötige e Nachricht.¶
 1736.Leider fauschi Syntax. RTFM seit me doch da ;-)¶
@@ -721,7 +721,7 @@
 1783:Anti-Tippfähler-Massnahm: Bitte Passwort nomau igä.¶
 1784:We de hinger eme Firewall bisch muesch evtl. SOCKS5 bruche. Wenn ja, bitte gib der Rächnername oder d IP-Adrässe vom Firewall i. Süsch chasch eifach Enter drücke.¶
 1785:erfougrich.¶
-1786:Ich bruche der Port, wo der Socks-Server druf lost. We de dä ned weisch drück eifach Enter für der Schtandard-Port.¶
+1786:I bruche der Port, wo der Socks-Server druf lost. We de dä ned weisch drück eifach Enter für der Schtandard-Port.¶
 1787:Vilich muesch di gägenüber em Server outhentifiziere. We das so isch muesch jtz der Username igä wo der Admin vom Socks-Server dir gä het. Süsch chasch eifach Enter drücke.¶
 1788:I nime a dä User het o nes Passwort? Bitte igä.¶
 1789:Fählerhafts Päckli empfange (%d).
@@ -827,13 +827,13 @@
 #1918:Ignored server request for a minimum report interval of %d.¶
 #1919:UIN mismatch: %d vs %d.¶
 1920:Beatragig vo re nöie Usernummere abglehnt.¶
-1921:Online
-1922:Ned schtöre
-1923:Ned ume
-1924:Wit wäg
-1925:Beschäftiget
-1926:Unsichtbar
-1927:Wott chatte
+1921:online
+1922:ned schtöre
+1923:ned ume
+1924:wit wäg
+1925:beschäftiget
+1926:verschteckt
+1927:wott chatte
 1929:[Outomatischi Nachricht] Bitte ned schtöre (Do Not Disturb)
 1930:Cha das (%x) no ned schicke.¶
 1931:Ke Verbindig zum Server.¶
@@ -846,7 +846,7 @@
 1938:Bitte Gschlächt igä:
 1939:Bitte Schtadt igä:
 1940:Komisches (unbekannts) Meta-User-Resultat %x.¶
-1941:eMail publiziere:
+1941:Outorisation:
 1942:Witeri eMail-Adrässe:
 1943:(ke outhorisation benötiget)
 1944:(me mues outhorisation beatrage)
@@ -872,7 +872,7 @@
 1972:ned ume
 1973:beschäftiget
 1974:wit wäg
-1975:unsichtbar
+1975:verschteckt
 1976:wott chatte
 1977:Lose u Luege
 1978:Schport u Athletik
@@ -917,7 +917,7 @@
 2018:    quiet: ke Usgabe für Schtatuswächsu.¶
 2019.Verringereti Usgabe isch ©3%s©0.¶
 2020:Für %s jtz sichtbar.
-2021:Für %s jtz unsichtbar.
+2021:Für %s jtz verschteckt.
 2022:Der Benutzer isch eigentlech ned verbunde.¶
 2023:Diräkti Verbindig vom Verbindigspartner zueta.¶
 2024:Unbekannti Protokollversion %d für ds ICQ-Diräktverbindigsprotokoll.¶
