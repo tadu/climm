@@ -77,20 +77,22 @@ void Initalize_RC_File (Session *sess)
     
     sess = SessionC ();
     sess->spref = PreferencesSessionC ();
-    sess->spref->type = TYPE_SERVER_OLD | TYPE_AUTOLOGIN;
-    sess->spref->server = "icq.icq.com";
-    sess->spref->port = 4000;
+    sess->spref->type = TYPE_SERVER | TYPE_AUTOLOGIN;
+    sess->spref->server = "login.icq.com";
+    sess->spref->port = 5190;
     sess->spref->status = STATUS_ONLINE;
-    sess->spref->version = 5;
+    sess->spref->version = 8;
     
-    sess->server = "icq.icq.com";
-    sess->server_port = 4000;
+    sess->server = "login.icq.com";
+    sess->port   = 5190;
+    sess->type   = TYPE_SERVER | TYPE_AUTOLOGIN;
 
     prG->away_time = default_away_time;
 
     M_print ("%s ", i18n (88, "Enter UIN or 0 for new UIN:"));
     fflush (stdout);
-    scanf ("%ld", &sess->spref->uin);
+    M_fdnreadln (stdin, input, sizeof (input));
+    sscanf (input, "%ld", &sess->spref->uin);
   password_entry:
     M_print ("%s ", i18n (63, "Enter password:"));
     fflush (stdout);
@@ -190,6 +192,7 @@ void Initalize_RC_File (Session *sess)
         perror ("Error creating config file ");
         exit (1);
     }
+    M_print (i18n (913, "Wrote new config file %s. Exiting.\n"), prG->rcfile);
     exit (0);
 }
 
@@ -613,17 +616,16 @@ void Read_RC_File (FILE *rcf)
         strcat (prG->logplace, "history/");
     }
 
-    assert (sess);
-    assert (sess->spref);
-
     for (i = 0; (sess = SessionNr (i)); i++)
     {
-        sess->server_port = sess->spref->port;
+        assert (sess->spref);
+
+        sess->port   = sess->spref->port;
         sess->server = sess->spref->server;
         sess->passwd = sess->spref->passwd;
         sess->status = sess->spref->status;
-        sess->uin = sess->spref->uin;
-        sess->ver = sess->spref->version;
+        sess->uin    = sess->spref->uin;
+        sess->ver    = sess->spref->version;
         if (sess->spref->type & (TYPE_SERVER | TYPE_SERVER_OLD))
             oldsess = sess;
     }

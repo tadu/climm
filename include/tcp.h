@@ -4,45 +4,16 @@
 
 #include "contact.h"
 
-#define TCP_STATE_ESTABLISHED 32
-#define TCP_STATE_CONNECTED    6
-#define TCP_STATE_WAITING     -2
-#define TCP_STATE_FAILED      -1
+#define TCP_STATE_CONNECTED    16
+#define TCP_STATE_WAITING      32
 
-typedef struct
-{
-    SOK_T   sok;
-    int     state;
-    int     ip;
-    UDWORD  sid;
-    Contact *cont;
-} tcpsock_t;
+void SessionInitPeer   (Session *sess);
 
-void TCPInit           (Session *sess, int port);
-
-void TCPDirectOpen     (Session *sess, Contact *cont);
-void TCPDirectClose    (               Contact *cont);
-
-void TCPAddSockets     (Session *sess);
-void TCPDispatch       (Session *sess);
-
-/* probably only internal */
-
-void TCPDirectReceive  (Session *sess);
-int  TCPConnect        (Session *sess, tcpsock_t *sok, int mode);
-
-void TCPHandleComm     (Session *sess, Contact *cont, int mode);
+void TCPDirectOpen     (Session *sess, UDWORD uin);
+void TCPDirectClose    (               UDWORD uin);
+void TCPDirectOff      (               UDWORD uin);
 BOOL TCPSendMsg        (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd);
 
-void CallBackLoginTCP  (struct Event *event);
-int Send_TCP_Ack (Session *sess, tcpsock_t *sok, UWORD seq, UWORD sub_cmd, BOOL accept);
-void Handle_TCP_Comm (Session *sess, UDWORD uin);
-/*int Decrypt_Pak (UBYTE *pak, UDWORD size);
-void Encrypt_Pak (UBYTE *pak, UDWORD size);*/
-void Get_Auto_Resp (UDWORD uin);
-void SessionInitPeer (Session *sess);
-#if 0
-char * Get_Auto_Reply ( );
-#endif
+Session *TCPPeer (UDWORD uin);
 
 #endif

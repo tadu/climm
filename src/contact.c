@@ -40,14 +40,7 @@ Contact *ContactAdd (UDWORD uin, const char *nick)
     cont->local_ip = 0xffffffff;
     cont->outside_ip = 0xffffffff;
     cont->port = 0;
-#ifdef TCP_COMM
-    cont->sok.sok   = 0;
-    cont->sok.state = 0;
-    cont->sok.sid   = 0;
-    cont->sok.cont  = cont;
-#endif
     cont->version = NULL;
-    
 
     return cont;
 }
@@ -63,6 +56,20 @@ Contact *ContactFind (UDWORD uin)
         if (cnt_contacts[i].uin == uin)
             return &cnt_contacts[i];
     return NULL;
+}
+
+/*
+ * Returns the contact list entry for UIN, a new entry, or NULL.
+ */
+Contact *ContactFindM (UDWORD uin)
+{
+    Contact *cont;
+    
+    cont = ContactFind (uin);
+    if (cont)
+        return cont;
+    ContactAdd (uin, ContactFindName (uin));
+    return ContactFind (uin);
 }
 
 /*

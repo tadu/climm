@@ -9,9 +9,6 @@ int Print_UIN_Name_10 (UDWORD uin);
 void Print_IP (UDWORD uin);
 
 char *MsgEllipsis (const char *msg);
-char *UIN2nick (UDWORD uin);
-char *UIN2Name (UDWORD uin);
-UDWORD nick2uin (char *nick);
 
 void Init_New_User (Session *sess);
 UDWORD Get_Port (UDWORD uin);

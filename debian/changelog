@@ -1,4 +1,4 @@
-micq (0.4.8+cvs20020304-1) unstable; urgency=HIGH
+micq (0.4.8pl2-1) unstable; urgency=HIGH
 
   * Re-debianized; changelogs got lost due to mismaintainership
   * New upstream; does a tiny bit of v8 now.

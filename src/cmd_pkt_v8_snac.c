@@ -11,6 +11,7 @@
 #include "micq.h"
 #include "util.h"
 #include "util_ui.h"
+#include "util_io.h"
 #include "contact.h"
 #include "preferences.h"
 #include "cmd_pkt_v8_snac.h"
@@ -140,6 +141,7 @@ void SnacPrint (Packet *pak)
              PacketReadBAt2 (pak, 6), PacketReadBAt2 (pak, 8),
              SnacName (PacketReadBAt2 (pak, 6), PacketReadBAt2 (pak, 8)),
              PacketReadBAt2 (pak, 10), PacketReadBAt4 (pak, 12));
+    M_print (COLNONE);
     Hex_Dump (pak->data + 16, pak->len - 16);
 }
 
@@ -170,8 +172,7 @@ JUMP_SNAC_F(SnacSrvUnknown)
     {
         Time_Stamp ();
         M_print (" " ESC "«");
-        M_print (i18n (879, COLSERV "Incoming v8 server packet (SNAC): channel 2 seq %08x length %d" COLNONE "\n"),
-                 event->pak->id, event->pak->len - 6);
+        M_print (" " ESC "«" COLSERV "%s ", i18n (879, COLSERV "Incoming v8 server packet:"));
         SnacPrint (event->pak);
         M_print (ESC "»\n");
     }
@@ -257,7 +258,13 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
     PacketReadB2 (pak);
     tlv = TLVRead (pak);
     if (tlv[10].len)
+    {
         event->sess->our_outside_ip = tlv[10].nr;
+        if (prG->verbose)
+            M_print (i18n (915, "Server says we're at %s.\n"), UtilIOIP (event->sess->our_outside_ip));
+        if (event->sess->assoc)
+            event->sess->assoc->our_outside_ip = event->sess->our_outside_ip;
+    }
     if (tlv[6].len)
     {
         event->sess->status = tlv[6].nr;
@@ -367,8 +374,8 @@ JUMP_SNAC_F(SnacSrvUseronline)
     M_print (".\n");
     if (prG->verbose)
     {
-        M_print ("%-15s %s\n", i18n (441, "IP:"), UtilIP (cont->outside_ip));
-        M_print ("%-15s %s\n", i18n (451, "IP2:"), UtilIP (cont->local_ip));
+        M_print ("%-15s %s\n", i18n (441, "IP:"), UtilIOIP (cont->outside_ip));
+        M_print ("%-15s %s\n", i18n (451, "IP2:"), UtilIOIP (cont->local_ip));
         M_print ("%-15s %d\n", i18n (453, "TCP version:"), cont->TCP_version);
         M_print ("%-15s %s\n", i18n (454, "Connection:"),
                  cont->connection_type == 4 ? i18n (493, "Peer-to-Peer") : i18n (494, "Server Only"));
@@ -461,8 +468,10 @@ void SnacCliSetstatus (Session *sess, UWORD status)
         PacketWriteB2 (pak, 0x0c); /* TLV 0C */
         PacketWriteB2 (pak, 0x25);
         PacketWriteB4 (pak, sess->our_local_ip);
-        PacketWriteB4 (pak, sess->our_port);
-        PacketWrite1  (pak, 0x04);
+        PacketWriteB4 (pak, sess->assoc && sess->assoc->connect & CONNECT_OK 
+                            ? sess->assoc->port : 0);
+        PacketWrite1  (pak, sess->assoc && sess->assoc->connect & CONNECT_OK
+                            ? 0x04 : 0);
         PacketWriteB2 (pak, TCP_VER);
         PacketWriteB4 (pak, rand() % 0x7fff); /* TCP cookie */
         PacketWriteB2 (pak, 0);
@@ -609,7 +618,7 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, char *text, UDWORD type)
             format = 1;
             break;
         default:
-            M_print (i18n (901, "Can't send this yet.\n"));
+            M_print (i18n (901, "Can't send this (%x) yet.\n"), type);
             return;
     }
     

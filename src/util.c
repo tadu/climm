@@ -210,7 +210,7 @@ void Init_New_User (Session *sess)
     }
 #endif
     M_print (i18n (756, "\nCreating Connection...\n"));
-    sess->sok = UtilIOConnectUDP (sess->server, sess->server_port);
+    sess->sok = UtilIOConnectUDP (sess->server, sess->port);
     if ((sess->sok == -1) || (sess->sok == 0))
     {
         M_print (i18n (757, "Couldn't establish connection.\n"));
@@ -236,7 +236,7 @@ void Init_New_User (Session *sess)
         M_print (i18n (759, "Waiting for response....\n"));
         if (FD_ISSET (sess->sok, &readfds))
         {
-            pak = UtilIORecvUDP (sess);
+            pak = UtilIOReceiveUDP (sess);
             if (!pak)
                 continue;
             if (PacketReadAt2 (pak, 7) == SRV_NEW_UIN)
@@ -261,7 +261,7 @@ void Print_IP (UDWORD uin)
         return;
     }
     
-    M_print (UtilIP (cont->outside_ip));
+    M_print (UtilIOIP (cont->outside_ip));
 }
 
 /*
@@ -414,6 +414,9 @@ void Hex_Dump (void *buffer, size_t len)
     int i, j;
     unsigned char *buf = buffer;
 
+    if (!len)
+        return;
+
     assert (len >= 0);
 
     for (i = 0; i < ((len + 15) & ~15); i++)
@@ -428,7 +431,7 @@ void Hex_Dump (void *buffer, size_t len)
             for (j = 15; j >= 0; j--)
             {
                 if (i - j >= len)
-                    return;
+                    break;
                 if ((buf[i - j] & 0x7f) > 31)
                     M_print ("%c", buf[i - j]);
                 else
@@ -436,12 +439,12 @@ void Hex_Dump (void *buffer, size_t len)
                 if (((i - j) & 3) == 3)
                     M_print (" ");
             }
+            M_print ("\n");
             if (i > len)
                 return;
-            M_print ("\n");
             if (i > 1000)
             {
-                M_print ("...");
+                M_print ("...\n");
                 return;
             }
         }
@@ -499,13 +502,5 @@ const char *UtilFill (const char *fmt, ...)
     vsnprintf (buf, sizeof (buf), fmt, args);
     va_end (args);
 
-    return strdup (buf);
-}
-
-const char *UtilIP (UDWORD ip)
-{
-    char buf[20];
-    snprintf (buf, sizeof (buf), "%2d.%2d.%2d.%2d",
-              ip >> 24, (ip >> 16) & 0xff, (ip >> 8) & 0xff, ip & 0xff);
     return strdup (buf);
 }

@@ -43,30 +43,26 @@
 
 static BOOL No_Prompt = FALSE;
 
+#ifdef HAVE_TCGETATTR
+struct termios sattr;
+#endif
+
 /***************************************************************
 Turns keybord echo off for the password
 ****************************************************************/
 SDWORD Echo_Off (void)
 {
 #ifdef HAVE_TCGETATTR
-    struct termios attr;        /* used for getting and setting terminal
-                                   attributes */
+    struct termios attr;
 
-    /* Now turn off echo */
     if (tcgetattr (STDIN_FILENO, &attr) != 0)
         return (-1);
-    /* Start by getting current attributes.  This call copies
-       all of the terminal paramters into attr */
-
+    
+    memcpy (&sattr, &attr, sizeof (sattr));
+    
     attr.c_lflag &= ~(ECHO);
-    /* Turn off echo flag.  NOTE: We are careful not to modify any
-       bits except ECHO */
     if (tcsetattr (STDIN_FILENO, TCSAFLUSH, &attr) != 0)
         return (-2);
-    /* Wait for all of the data to be printed. */
-    /* Set all of the terminal parameters from the (slightly)
-       modified struct termios */
-    /* Discard any characters that have been typed but not yet read */
 #endif
     return 0;
 }
@@ -78,14 +74,7 @@ Turns keybord echo back on after the password
 SDWORD Echo_On (void)
 {
 #ifdef HAVE_TCGETATTR
-    struct termios attr;        /* used for getting and setting terminal
-                                   attributes */
-
-    if (tcgetattr (STDIN_FILENO, &attr) != 0)
-        return (-1);
-
-    attr.c_lflag |= ECHO;
-    if (tcsetattr (STDIN_FILENO, TCSANOW, &attr) != 0)
+    if (tcsetattr (STDIN_FILENO, TCSAFLUSH, &sattr) != 0)
         return (-1);
 #endif
     return 0;

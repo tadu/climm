@@ -118,7 +118,7 @@ void PacketEnqueuev5 (Packet *pak, Session *sess)
                  PacketReadAt4 (pak, CMD_v5_OFF_SEQ), PacketReadAt2 (pak, CMD_v5_OFF_SEQ2),
                  CmdPktCmdName (PacketReadAt2 (pak, CMD_v5_OFF_CMD)), pak);
         Hex_Dump (&pak->data, pak->len);
-        M_print ("\x1b»\n");
+        M_print (ESC "»\r");
     }
 
     if (cmd != CMD_ACK)
@@ -142,17 +142,18 @@ void SessionInitServerV5 (Session *sess)
         return;
     }
     
+    sess->type = TYPE_SERVER_OLD;
     if (!sess->server || !strlen (sess->server))
         sess->server = "icq.icq.com";
-    if (!sess->server_port)
-        sess->server_port = 4000;
+    if (!sess->port)
+        sess->port = 4000;
     if (!sess->passwd || !strlen (sess->passwd))
     {
         char pwd[20];
         pwd[0] = '\0';
         M_print ("%s ", i18n (63, "Enter password:"));
         Echo_Off ();
-        M_fdnreadln (STDIN, pwd, sizeof (pwd));
+        M_fdnreadln (stdin, pwd, sizeof (pwd));
         Echo_On ();
         sess->passwd = strdup (pwd);
     }
@@ -166,18 +167,18 @@ void CallBackServerInitV5 (struct Event *event)
 
     free (event);
     
-    if (sess->assoc && !sess->our_port)
+    if (sess->assoc && !(sess->connect & CONNECT_OK))
     {
         event->due = time (NULL) + 1;
         QueueEnqueue (queue, event);
         return;
     }
     
-    M_print (i18n (52, "Opening v5 connection to %s:%d... "), sess->server, sess->server_port);
+    M_print (i18n (52, "Opening v5 connection to %s:%d... "), sess->server, sess->port);
     
     if (sess->sok < 0)
     {
-        sess->sok = UtilIOConnectUDP (sess->server, sess->server_port);
+        sess->sok = UtilIOConnectUDP (sess->server, sess->port);
 
 #ifdef __BEOS__
         if (sess->sok == -1)
@@ -186,7 +187,7 @@ void CallBackServerInitV5 (struct Event *event)
 #endif
         {
             rc = errno;
-            M_print (i18n (876, "failed: %s (%d)\n"), strerror (rc), rc);
+            M_print (i18n (872, "failed: %s (%d)\n"), strerror (rc), rc);
             sess->connect = 0;
             sess->sok = -1;
             return;

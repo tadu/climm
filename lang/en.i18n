@@ -775,10 +775,10 @@ i18n (67, )
 774:Incoming packet:
 775:Outgoing packet:
 776:Outgoing TCP packet:
-777:The port that will be used for tcp (partially implemented) is %d¶
+777:Opening peer-to-peer connection at localhost:%d... 
 778:Incoming TCP packet:
 779:Opening TCP connection to %s at %s:%d... 
-780:Couldn't create socket: %s (%d).¶
+780:Opening TCP connection to %s%s%s at %s:%d... 
 781: 
 782: 
 783: 
@@ -826,13 +826,13 @@ i18n (67, )
 825:Discarded a %04x (%s) packet
 826:Resending message %04x (%s) sequence %04x (attempt #%d, len %d).¶
 827:Unknown client
-828:Warning: couldn't set socket nonblocking: %s (%d).¶
-829:Opening TCP connection to %s%s%s at %s:%d failed: %d (%s) (%d)¶
+828:failed:¶
+829:Connection failed: %s (%d)¶
 830:Discarding message to %s after %d send attempts.  Message content:¶
 831: 
-832:failure - couldn't set socket blocking.¶
+832:failed
 833:Client-to-client TCP connection to %s established.¶
-834:Error while reading from socket - %s (%d)¶
+834:connected
 835:Error while writing to socket - %s (%d)¶
 836:Sending TCP direct connection initialization packet.¶
 837:Acknowledging TCP direct connection initialization packet.¶
@@ -845,7 +845,7 @@ i18n (67, )
 844:TCP message %04x discarded after timeout.¶
 845:Nick %s unknown.¶
 846:Opens and closes TCP connections:¶
-847:    open <nick>  - Opens TCP connection.¶
+847:    open  <nick> - Opens TCP connection.¶
 848:    close <nick> - Closes/resets TCP connection(s).¶
 849:Error on select: %s (%d)¶
 850:Timeout on connection with %s at %s:%d¶
@@ -868,26 +868,25 @@ i18n (67, )
 867:Got a malformed (too short) packet - ignored.¶
 868:Got a malformed (to long subpacket) multi-packet - remainder ignored.¶
 869:Protocoll versions less than 5 are not supported anymore.¶
-870:    off <nick>   - Closes TCP connection(s) and don't try TCP again.¶
+870:    off   <nick> - Closes TCP connection(s) and don't try TCP again.¶
 871:Opening v8 connection to %s:%d... 
 872:failed: %s (%d)¶
 873:ok.¶
-874:failed: can't find hostname %s: %s.
-875:failed: can't find hostname %s.
-876:failed: %s (%d)¶
+874:Couldn't set socket nonblocking: %s (%d).¶
+875:Can't find hostname %s: %s (%d).
+876:Can't find hostname %s: %d.
 877:ok.¶
 878:Error while reading from socket: %s (%d)¶
-879:©1Incoming v8 server packet (FLAP): channel %d seq %08x length %d©0¶
-879:©1Incoming v8 server packet (SNAC): channel 2 seq %08x length %d©0¶
+879:©1Incoming v8 server packet:
 880:Incoming packet is not a FLAP: id is %d.¶
 881:FLAP channel 1 out of data.¶
 882:FLAP channel 1 cmd 1 extra data:¶
 883:FLAP channel 1 unknown command %d.¶
 884:FLAP with unknown channel %d received.¶
 885:Connection v8 timed out.¶
-886:Outgoing v8 server packet (FLAP): channel %d seq %08x length %d©0¶
+886:Outgoing v8 server packet:
 887:Connections:
-888:%s version %d for %d at %s:%d¶
+888:    type %d socket %d ip %s %12s (%d) on [%s,%s] id %x/%x/%x¶
 889:server
 890:peer-to-peer
 891:Connection %d is already open.¶
@@ -897,10 +896,23 @@ i18n (67, )
 895:Login failed:¶
 896:Server closed connection:¶
 897:Incomplete TLV %d, len %d of %d - ignoring.¶
-898:Redirect to server %s...¶
+898:Redirect to server %s... 
 899:Unknown family requested: %d¶
 900:Warning: Server thinks our UIN is %d, while it is %d.¶
 901:Can't send this yet.¶
+902:failed:¶
+903:Couldn't create socket: %s (%d).¶
 904:Server doesn't understand ver %d (only %d) for family %d!¶
 905:SNAC (%x,%x) [%s] flags %x ref %x¶
 906:This command operates only on connections of type %s.¶
+907:couldn't bind socket to free port: %s (%d).¶
+908:unable to listen on socket: %s (%d).¶
+909:Couldn't open connection: %s (%d)¶
+910:FLAP seq %08x length %04x channel %d©0¶
+911:connecting
+912:closed
+913:Wrote new config file %s. Exiting.¶
+914:Can't allocate connection structure.¶
+915:Server says we're at %s.¶
+916:Need a nick or uin.¶
+917:%12s version %d for %s (%d), at %s:%d %s¶

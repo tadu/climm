@@ -9,7 +9,7 @@ AC_CONFIG_SRCDIR([include/micq.h])
 
 AC_CANONICAL_HOST
 
-AM_INIT_AUTOMAKE(micq, 0.4.8+cvs-2002-03-02)
+AM_INIT_AUTOMAKE(micq, 0.4.8+cvs-2002-03-07)
 AM_CONFIG_HEADER(include/config.h)
 AC_DEFINE(MICQ_VERSION,VERSION,[mICQ's current version])
 AC_DEFINE(MICQ_VERSION_NUM,482,[mICQ's current version numerical])

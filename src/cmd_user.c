@@ -11,6 +11,7 @@
 #include "cmd_user.h"
 #include "util.h"
 #include "util_ui.h"
+#include "util_io.h"
 #include "util_table.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_cmd_v5_util.h"
@@ -18,6 +19,7 @@
 #include "cmd_pkt_v8_snac.h"
 #include "preferences.h"
 #include "tabs.h"
+#include "tcp.h"
 #include "file_util.h"
 #include "buildmark.h"
 #include "contact.h"
@@ -86,6 +88,7 @@ static jump_t jump[] = {
     { &CmdUserTabs,          "tabs",         NULL, 0,   0 },
     { &CmdUserLast,          "last",         NULL, 0,   0 },
     { &CmdUserUptime,        "uptime",       NULL, 0,   0 },
+    { &CmdUserTCP,           "peer",         NULL, 0,   0 },
     { &CmdUserTCP,           "tcp",          NULL, 0,   0 },
     { &CmdUserQuit,          "q",            NULL, 0,   0 },
 
@@ -521,53 +524,45 @@ JUMP_F(CmdUserTrans)
 }
 
 /*
- * Manually handles TCP connections.
+ * Manually handles peer-to-peer (TCP) connections.
  */
 JUMP_F(CmdUserTCP)
 {
 #ifdef TCP_COMM
     char *cmd, *nick;
-    Contact *cont = NULL;
-    SESSION(TYPE_PEER);
+    UDWORD uin;
 
     cmd = strtok (args, " \t\n");
-
-    if (!strcmp (cmd, "open"))
+    if (cmd)
     {
         nick = strtok (NULL, "");
-        if (nick)
-            cont = ContactFind (ContactFindByNick (nick));
-        if (cont)
-            TCPDirectOpen (sess->assoc, cont);
-        else
-            M_print (i18n (845, "Nick %s unknown.\n"), nick ? nick : "");
-    }
-    else if (!strcmp (cmd, "close"))
-    {
-        nick = strtok (NULL, "");
-        if (nick)
-            cont = ContactFind (ContactFindByNick (nick));
-        if (cont)
-            TCPDirectClose (cont);
-        else
-            M_print (i18n (845, "Nick %s unknown.\n"), nick ? nick : "");
-    }
-    else if (!strcmp (cmd, "off"))
-    {
-        nick = strtok (NULL, "");
-        if (nick)
-            cont = ContactFind (ContactFindByNick (nick));
-        if (cont)
-            cont->sok.state = -1;
-        else
-            M_print (i18n (845, "Nick %s unknown.\n"), nick ? nick : "");
+        if (!nick)
+        {
+            M_print (i18n (916, "Need a nick or uin.\n"));
+            return 0;
+        }
+        uin = ContactFindByNick (nick);
+        if (!uin)
+        {
+            M_print (i18n (845, "Nick %s unknown.\n"), nick);
+            return 0;
+        }
+        if (uin && !strcmp (cmd, "open"))
+        {
+            SESSION(TYPE_PEER);
+            TCPDirectOpen  (sess, uin);
+        }
+        else if (uin && !strcmp (cmd, "close"))
+            TCPDirectClose (      uin);
+        else if (uin && !strcmp (cmd, "off"))
+            TCPDirectOff   (      uin);
     }
     else
     {
         M_print (i18n (846, "Opens and closes TCP connections:\n"));
-        M_print (i18n (847, "    open <nick>  - Opens TCP connection.\n"));
+        M_print (i18n (847, "    open  <nick> - Opens TCP connection.\n"));
         M_print (i18n (848, "    close <nick> - Closes/resets TCP connection(s).\n"));
-        M_print (i18n (870, "    off <nick>   - Closes TCP connection(s) and don't try TCP again.\n"));
+        M_print (i18n (870, "    off   <nick> - Closes TCP connection(s) and don't try TCP again.\n"));
     }
 #else
     M_print (i18n (866, "This version of micq is compiled without TCP support.\n"));
@@ -1009,7 +1004,7 @@ JUMP_F(CmdUserStatusDetail)
                 M_print ("\n");
             }
         }
-        M_print ("%-15s %s:%d\n", i18n (441, "IP:"), UtilIP (cont->outside_ip), cont->port);
+        M_print ("%-15s %s:%d\n", i18n (441, "IP:"), UtilIOIP (cont->outside_ip), cont->port);
         M_print ("%-15s %d\n", i18n (453, "TCP version:"), cont->TCP_version);
         M_print ("%-15s %s\n", i18n (454, "Connection:"),
                  cont->connection_type == 4 ? i18n (493, "Peer-to-Peer") : i18n (494, "Server Only"));
@@ -1739,7 +1734,7 @@ JUMP_F(CmdUserAuth)
         if (-1 == uin)
             M_print (i18n (665, "%s not recognized as a nick name."), arg1);
         else
-            if (sess->spref->type & TYPE_SERVER)
+            if (sess->type & TYPE_SERVER)
                 SnacCliSendmsg (sess, uin, "\x03", AUTH_OK_MESS);
             else
                 CmdPktCmdSendMessage (sess, uin, "\x03", AUTH_OK_MESS);
@@ -1930,11 +1925,20 @@ JUMP_F(CmdUserConn)
         
         for (i = 0; (sess = SessionNr (i)); i++)
         {
-            M_print (i18n (888, "%s version %d for %d at %s:%d\n"),
-                     sess->spref->type & (TYPE_SERVER | TYPE_SERVER_OLD) ? i18n (889, "server") : i18n (890, "peer-to-peer"),
-                     sess->ver, sess->uin, sess->server, sess->server_port);
+            M_print (i18n (917, "%-12s version %d for %s (%x), at %s:%d %s\n"),
+                     sess->type & (TYPE_SERVER | TYPE_SERVER_OLD) ? i18n (889, "server") : i18n (890, "peer-to-peer"),
+                     sess->ver, ContactFindName (sess->uin), sess->status,
+                     sess->server ? sess->server : UtilIOIP (sess->ip), sess->port,
+                     sess->connect & CONNECT_FAIL ? i18n (832, "failed") :
+                     sess->connect & CONNECT_OK   ? i18n (834, "connected") :
+                     sess->connect & CONNECT_MASK ? i18n (911, "connecting") : i18n (912, "closed"));
+            if (prG->verbose)
+            M_print (i18n (888, "    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x\n"),
+                     sess->type, sess->sok, UtilIOIP (sess->ip),
+                     sess->connect, UtilIOIP (sess->our_local_ip), UtilIOIP (sess->our_outside_ip),
+                     sess->our_session, sess->our_seq, sess->our_seq2);
         } 
-        M_print (ESC "»\n");
+        M_print (ESC "»\r");
     }
     else if (!strcmp (arg1, "login") || !strcmp (arg1, "open"))
     {
@@ -1951,12 +1955,7 @@ JUMP_F(CmdUserConn)
             return 0;
         }
 
-        if (sess->spref->type & TYPE_SERVER)
-            SessionInitServer (sess);
-        else if (sess->spref->type & TYPE_SERVER_OLD)
-            SessionInitServerV5 (sess);
-        else
-            SessionInitPeer (sess);
+        SessionInit (sess);
     }
     else
     {

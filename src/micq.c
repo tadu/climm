@@ -34,24 +34,13 @@
 #include <io.h>
 #include <winsock2.h>
 #else
-#include <sys/types.h>
-#include <unistd.h>
-#include <netinet/in.h>
-#include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/socket.h>
-#ifndef __BEOS__
-#include <arpa/inet.h>
-#endif
-#include <netdb.h>
 #include <sys/wait.h>
 #endif
 
 #ifdef __BEOS__
 #include "beos.h"
 #endif
-
-extern int h_error;
 
 user_interface_state uiG;
 Session *ssG;
@@ -265,14 +254,7 @@ int main (int argc, char *argv[])
 #endif
 
     for (i = 0; (sess = SessionNr (i)); i++)
-    {
-        if (sess->spref->type & TYPE_SERVER)
-            SessionInitServer (sess);
-        else if (sess->spref->type & TYPE_SERVER_OLD)
-            SessionInitServerV5 (sess);
-        else
-            SessionInitPeer (sess);
-    }
+        SessionInit (sess);
 
     R_init ();
     Prompt ();
@@ -303,9 +285,6 @@ int main (int argc, char *argv[])
         M_Add_rsocket (STDIN);
 #endif
 
-#ifdef TCP_COMM
-        TCPAddSockets (NULL);
-#endif
         R_redraw ();
 
         rc = M_select ();
@@ -316,11 +295,6 @@ int main (int argc, char *argv[])
                 CmdUserInput (&idle_val, &idle_flag);
 
         R_undraw ();
-
-#ifdef TCP_COMM
-        if (ssG)
-            TCPDispatch (ssG);
-#endif
 
         for (i = 0; (sess = SessionNr (i)); i++)
         {

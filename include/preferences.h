@@ -45,11 +45,11 @@ struct PreferencesSession_s
 {
     UBYTE   type;
     UBYTE   version;
+    UDWORD  uin;
+    UDWORD  status;
     char   *server;
     UDWORD  port;
-    UDWORD  uin;
     char   *passwd;
-    UDWORD  status;
 };
 
 Preferences *PreferencesC (void);
@@ -88,7 +88,11 @@ void PrefLoad (Preferences *pref);
 #define TYPE_SERVER_OLD   1
 #define TYPE_SERVER       2
 #define TYPE_PEER         4
-#define TYPE_AUTOLOGIN    8
+#define TYPE_DIRECT       8
+#define TYPE_AUTOLOGIN    16
+
+#define ASSERT_PEER(s)   do { assert (s); assert (s->type & TYPE_PEER);   } while (0)
+#define ASSERT_DIRECT(s) do { assert (s); assert (s->type & TYPE_DIRECT); } while (0)
 
 #endif
 

@@ -9,6 +9,9 @@
 
 #include "micq.h"
 #include "session.h"
+#include "cmd_pkt_cmd_v5_util.h"
+#include "cmd_pkt_v8.h"
+#include "tcp.h"
 #include "preferences.h"
 #include <assert.h>
 
@@ -32,48 +35,97 @@ Session *SessionC (void)
     
     assert (slist[i]);
     
-    slist[i]->our_local_ip   = 0x0100007f;
-    slist[i]->our_outside_ip = 0x0100007f;
+    slist[i]->our_local_ip   = 0x7f000001;
+    slist[i]->our_outside_ip = 0x7f000001;
     slist[i]->status = STATUS_OFFLINE;
     slist[i]->sok = -1;
 
     return slist[i];
 }
 
+/*
+ * Clones an existing session, while blanking out some values.
+ */
+Session *SessionClone (Session *sess)
+{
+    Session *child;
+    
+    child = SessionC ();
+    if (!child)
+        return NULL;
+    memcpy (child, sess, sizeof (*child));
+    child->assoc = sess;
+    child->sok = -1;
+    child->connect = 0;
+    
+    return child;
+}
+
+/*
+ * Initializes a session.
+ */
+void SessionInit (Session *sess)
+{
+    if (sess->connect & CONNECT_OK)
+        return;
+    if (!sess->spref)
+        return;
+    if (sess->spref->type & TYPE_SERVER)
+        SessionInitServer (sess);
+    else if (sess->spref->type & TYPE_SERVER_OLD)
+        SessionInitServerV5 (sess);
+    else
+        SessionInitPeer (sess);
+}
+
+/*
+ * Returns the n-th session.
+ */
+Session *SessionNr (int i)
+{
+    if (i >= listlen)
+        return NULL;
+    return slist[i];
+}
+
+/*
+ * Finds a session of given type and/or given uin.
+ */
+Session *SessionFind (UBYTE type, UDWORD uin)
+{
+    int i, m;
+    
+    for (i = 0; i < listlen; i++)
+        if (slist[i] && (slist[i]->type & type) && (slist[i]->uin == uin) && uin)
+            return slist[i];
+    if (uin)
+        return NULL;
+    for (i = 0; i < listlen; i++)
+        if (slist[i] && (slist[i]->type & type) && (slist[i]->connect & CONNECT_OK))
+            return slist[i];
+    return (NULL);
+}
+
+/*
+ * Closes and removes a session.
+ */
 void SessionClose (Session *sess)
 {
     int i;
     
     for (i = 0; slist[i] != sess && i < listlen; i++)  ;
     
+    assert (sess);
     assert (i < listlen);
     
+    while (i + 1 < listlen && slist[i])
+    {
+        slist[i] = slist[i + 1];
+        i++;
+    }
     slist[i] = NULL;
 
     if (sess->sok != -1)
         sockclose (sess->sok);
     free (sess);
-}
-
-Session *SessionFind (UBYTE type, UDWORD uin)
-{
-    int i;
-    
-    for (i = 0; i < listlen; i++)
-        if (slist[i] && slist[i]->spref && slist[i]->spref->type & type
-                                        && slist[i]->spref->uin == uin)
-            return slist[i];
-    if (uin)
-        return NULL;
-    for (i = 0; i < listlen; i++)
-        if (slist[i] && slist[i]->spref && slist[i]->spref->type & type)
-            return slist[i];
-    return (NULL);
-}
-
-Session *SessionNr (int i)
-{
-    if (i >= listlen)
-        return NULL;
-    return slist[i];
 }

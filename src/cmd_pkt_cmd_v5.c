@@ -58,13 +58,18 @@ void CmdPktCmdSendMessage (Session *sess, UDWORD uin, const char *text, UDWORD t
  */
 void CmdPktCmdTCPRequest (Session *sess, UDWORD tuin, UDWORD port)
 {
-    Packet *pak = PacketCv5 (sess, CMD_TCP_REQUEST);
+    Packet *pak;
+
+    if (!sess->assoc || !(sess->assoc->connect & CONNECT_OK))
+        return;
+
+    pak = PacketCv5 (sess, CMD_TCP_REQUEST);
     PacketWrite4 (pak, tuin);
     PacketWrite4 (pak, sess->our_local_ip);
-    PacketWrite4 (pak, sess->our_port);
+    PacketWrite4 (pak, sess->assoc->port);
     PacketWrite1 (pak, 0x04);
     PacketWrite4 (pak, port);
-    PacketWrite4 (pak, sess->our_port);
+    PacketWrite4 (pak, sess->assoc->port);
     PacketWrite2 (pak, 2);
     PacketEnqueuev5 (pak, sess);
 }
@@ -88,18 +93,20 @@ void CmdPktCmdLogin (Session *sess)
     
     pak = PacketCv5 (sess, CMD_LOGIN);
     PacketWrite4 (pak, time (NULL));
-    PacketWrite4 (pak, sess->our_port);
+    PacketWrite4 (pak, sess->assoc && sess->assoc->connect & CONNECT_OK ?
+                       sess->assoc->port : 0);
     PacketWriteStrN (pak, sess->passwd);
     PacketWrite4 (pak, 0x000000d5);
     PacketWrite4 (pak, sess->our_local_ip);
-    PacketWrite1 (pak, 0x04);         /* 1=firewall | 2=proxy | 4=tcp */
+    PacketWrite1 (pak, sess->assoc && sess->assoc->connect & CONNECT_OK ?
+                       0x04 : 0);         /* 1=firewall | 2=proxy | 4=tcp */
     PacketWrite4 (pak, prG->status);
     PacketWrite2 (pak, TCP_VER);      /* 6 */
     PacketWrite2 (pak, 0);
     PacketWrite4 (pak, 0x822c01ec);   /* 0x00d50008, 0x00780008 */
     PacketWrite4 (pak, 0x00000050);
     PacketWrite4 (pak, 0x00000003);
-    PacketWrite4 (pak, BUILD_MICQ | MICQ_VERSION_NUM);
+    PacketWrite4 (pak, BUILD_LICQ | MICQ_VERSION_NUM);
     PacketEnqueuev5 (pak, sess);
 }
 

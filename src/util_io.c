@@ -9,9 +9,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <assert.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -20,8 +23,19 @@
 #include "preferences.h"
 #include "util_ui.h"
 
+extern int h_errno;
+#define BACKLOG 10
 
 
+/*
+ * Return a string consisting of the given IP.
+ */
+const char *UtilIOIP (UDWORD ip)
+{
+    struct sockaddr_in sin;
+    sin.sin_addr.s_addr = htonl (ip);
+    return strdup (inet_ntoa (sin.sin_addr));
+}
 
 /*
  * Connects to hostname on port port
@@ -181,6 +195,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
         }
         sin.sin_addr = *((struct in_addr *) host_struct->h_addr);
     }
+    prG->sess->ip = ntohl (sin.sin_addr.s_addr);
     sin.sin_family = AF_INET;
     sin.sin_port = htons (port);
 
@@ -219,6 +234,198 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
     return sok;
 }
 
+/*
+ * Connect to sess->server, or sess->ip, or opens port for listening
+ */
+void UtilIOConnectTCP (Session *sess)
+{
+    int rc, flags;
+    struct sockaddr_in sin;
+    struct hostent *host;
+    
+    sess->sok = socket (AF_INET, SOCK_STREAM, 0);
+    if (sess->sok <= 0)
+    {
+        sess->sok = -1;
+        sess->connect = 0;
+        rc = errno;
+        M_print (i18n (902, "failed:\n"));
+        M_print (i18n (903, "Couldn't create socket: %s (%d).\n"), strerror (rc), rc);
+        return;
+    }
+
+    flags = fcntl (sess->sok, F_GETFL, 0);
+    if (flags != -1)
+        flags = fcntl (sess->sok, F_SETFL, flags | O_NONBLOCK);
+    if (flags == -1 && prG->verbose)
+    {
+        rc = errno;
+        M_print (i18n (902, "failed:\n"));
+        M_print (i18n (874, "Couldn't set socket nonblocking: %s (%d).\n"), strerror (rc), rc);
+        sockclose (sess->sok);
+        sess->sok = -1;
+        sess->connect = 0;
+        return;
+    }
+
+    sin.sin_family = AF_INET;
+    sin.sin_port = htons (sess->port);
+
+    if (sess->server || sess->ip)
+    {
+        if (sess->server)
+            sess->ip = htonl (inet_addr (sess->server));
+        if (sess->ip == -1)
+        {
+            host = gethostbyname (sess->server);
+            if (!host)
+            {
+                rc = h_errno;
+                M_print (i18n (902, "failed:\n"));
+#ifdef HAVE_HSTRERROR
+                M_print (i18n (875, "Can't find hostname %s: %s (%d)."), sess->server, hstrerror (rc), rc);
+#else
+                M_print (i18n (876, "Can't find hostname %s: %d."), sess->server, rc);
+#endif
+                M_print ("\n");
+                sockclose (sess->sok);
+                sess->sok = -1;
+                sess->connect = 0;
+                return;
+            }
+            sin.sin_addr = *((struct in_addr *) host->h_addr);
+            sess->ip = ntohl (sin.sin_addr.s_addr);
+        }
+        sin.sin_addr.s_addr = htonl (sess->ip);
+        
+        sess->connect++;
+        sess->connect |= CONNECT_SELECT_R;
+
+        rc = connect (sess->sok, (struct sockaddr *) &sin, sizeof (struct sockaddr));
+
+        flags = sizeof (struct sockaddr);
+        getsockname (sess->sok, (struct sockaddr *) &sin, &flags);
+        sess->our_local_ip = ntohl (sin.sin_addr.s_addr);
+        if (sess->assoc && (sess->type & TYPE_SERVER))
+            sess->assoc->our_local_ip = sess->our_local_ip;
+
+        if (rc >= 0)
+        {
+            sess->connect++;
+            M_print (i18n (873, "ok.\n"));
+            return;
+        }
+
+        if ((rc = errno) == EINPROGRESS)
+        {
+            M_print ("\n");
+            return;
+        }
+        M_print (i18n (902, "failed:\n"));
+        M_print (i18n (909, "Couldn't open connection: %s (%d)\n"), strerror (rc), rc);
+        sess->connect = 0;
+        sockclose (sess->sok);
+        sess->sok = -1;
+    }
+    else
+    {
+        sin.sin_addr.s_addr = INADDR_ANY;
+
+        if (bind (sess->sok, (struct sockaddr*)&sin, sizeof (struct sockaddr)) < 0)
+        {
+            rc = errno;
+            M_print (i18n (902, "failed:\n"));
+            M_print (i18n (907, "couldn't bind socket to free port: %s (%d).\n"), strerror (rc), rc);
+            sockclose (sess->sok);
+            sess->sok = -1;
+            return;
+        }
+
+        if (listen (sess->sok, BACKLOG) < 0)
+        {
+            rc = errno;
+            M_print (i18n (902, "failed:\n"));
+            M_print (i18n (908, "unable to listen on socket: %s (%d).\n"), strerror (rc), rc);
+            sockclose (sess->sok);
+            sess->sok = -1;
+            return;
+        }
+        flags = sizeof (struct sockaddr);
+        getsockname (sess->sok, (struct sockaddr *) &sin, &flags);
+        sess->port = ntohs (sin.sin_port);
+        sess->connect = CONNECT_OK | CONNECT_SELECT_R;
+        sess->server = strdup ("localhost");
+    }
+}
+
+/*
+ * Receive a packet via TCP.
+ */
+Packet *UtilIOReceiveTCP (Session *sess)
+{
+    int off, len, rc;
+    Packet *pak;
+    
+    if (!(sess->connect & CONNECT_MASK))
+        return NULL;
+    
+    if (!(pak = sess->incoming))
+        sess->incoming = pak = PacketC ();
+    
+    if (sess->type & TYPE_SERVER)
+    {
+        len = off = 6;
+        if (pak->len >= off)
+            len = PacketReadBAt2 (pak, 4) + 6;
+    }
+    else
+    {
+        len = off = 2;
+        if (pak->len >= off)
+            len = PacketReadAt2 (pak, 0) + 2;
+    }
+    for (;;)
+    {
+        errno = 0;
+        if (len < 0 || len > PacketMaxData)
+        {
+            rc = ENOMEM;
+            break;
+        }
+        rc = sockread (sess->sok, pak->data + pak->len, len - pak->len);
+        printf ("deb red TCP: sess %p sok %d off %d len %d paklen %d rc %d\n",sess,sess->sok,off,len,pak->len,rc);
+        if (rc <= 0)
+        {
+            rc = errno;
+            if (rc == EAGAIN)
+                return NULL;
+            break;
+        }
+        pak->len += rc;
+        if (pak->len < len)
+            return NULL;
+        if (len == off)
+            return NULL;
+        sess->incoming = NULL;
+        printf (">deb red TCP: sok %d off %d len %d paklen %d rc %d\n",sess->sok,off,len,pak->len,rc);
+        if (off == 2)
+        {
+            pak->len -= 2;
+            memmove (pak->data, pak->data + 2, pak->len);
+        }
+        return pak;
+    }
+    Time_Stamp ();
+    M_print (" ");
+    M_print (i18n (878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
+    sess->connect = 0;
+    sockclose (sess->sok);
+    sess->sok = -1;
+    PacketD (pak);
+    pak = NULL;
+    return NULL;
+}
+
 size_t SOCKREAD (Session *sess, void *ptr, size_t len)
 {
     size_t sz;
@@ -239,7 +446,7 @@ size_t SOCKREAD (Session *sess, void *ptr, size_t len)
 
 /*
  * Send a given packet to the session's socket.
- * Use socks if requested.
+ * Use socks if requested. UDP only.
  */
 void UtilIOSend (Session *sess, Packet *pak)
 {
@@ -272,7 +479,7 @@ void UtilIOSend (Session *sess, Packet *pak)
  * Receive a single packet via UDP.
  * Note this won't work for TCP - UDP packets are always received in one part.
  */
-Packet *UtilIORecvUDP (Session *sess)
+Packet *UtilIOReceiveUDP (Session *sess)
 {
     Packet *pak;
     int s5len;

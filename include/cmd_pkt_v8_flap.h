@@ -12,5 +12,7 @@ void FlapCliCookie (Session *sess, const char *cookie, UWORD len);
 void FlapCliGoodbye (Session *sess);
 
 void SrvCallBackFlap (struct Event *event);
+
 Packet *FlapC (UBYTE channel);
-void FlapSend (Session *sess, Packet *pak);
+void    FlapSend (Session *sess, Packet *pak);
+void    FlapPrint (Packet *pak);

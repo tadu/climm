@@ -1,4 +1,11 @@
 
+2002-03-07 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Adopt tcp stuff to use connection that can be listed using conn.
+	* With this, make tcp event-driven - no DOS by simply connecting,
+	  sending "0xffff" as packet length and then waiting forever
+	* Moved some common code to util_io.c.
+	* Fix hugs bugs regarding entering passwords.
+
 2002-03-05 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* All files now have a Copyright mark; change files by me to GPL.
 	* Rewrote TLV handling.

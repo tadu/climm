@@ -4,6 +4,7 @@
 #include "micq.h"
 #include "icq_response.h"
 #include "util_ui.h"
+#include "util_io.h"
 #include "tabs.h"
 #include "contact.h"
 #include "util_table.h"
@@ -377,10 +378,7 @@ void Meta_User (Session *sess, UBYTE * data, UDWORD len, UDWORD uin)
         default:
             M_print (i18n (399, "Unknown Meta User response " COLSERV "%04X" COLNONE "\n"), subcmd);
             if (prG->verbose)
-            {
                 Hex_Dump (data, len);
-                M_print ("\n");
-            }
             break;
     }
 }
@@ -399,10 +397,7 @@ void Display_Rand_User (Session *sess, UBYTE * data, UDWORD len)
         M_print ("%-15s %s\n", i18n (454, "Connection:"),
                  data[16] == 4 ? i18n (493, "Peer-to-Peer") : i18n (494, "Server Only"));
         if (prG->verbose > 1)
-        {
-            M_print ("\n");
             Hex_Dump (data, len);
-        }
         CmdPktCmdMetaReqInfo (sess, Chars_2_DW (data));
     }
     else
@@ -527,8 +522,8 @@ void User_Online (Session *sess, Packet *pak)
         M_print (".\n");
         if (prG->verbose)
         {
-            M_print ("%-15s %s\n", i18n (441, "IP:"), UtilIP (con->outside_ip));
-            M_print ("%-15s %s\n", i18n (451, "IP2:"), UtilIP (con->local_ip));
+            M_print ("%-15s %s\n", i18n (441, "IP:"), UtilIOIP (con->outside_ip));
+            M_print ("%-15s %s\n", i18n (451, "IP2:"), UtilIOIP (con->local_ip));
             M_print ("%-15s %d\n", i18n (453, "TCP version:"), con->TCP_version);
             M_print ("%-15s %s\n", i18n (454, "Connection:"), con->connection_type == 4 
                                  ? i18n (493, "Peer-to-Peer") : i18n (494, "Server Only"));

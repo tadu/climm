@@ -220,6 +220,19 @@ to close and reset such a connection, or
 .Ic off
 to switch off trying to establish such a connection for sending
 messages until it is explicitly opened or reset.
+.It Ic conn Op Ar command Ar uin|nick
+List all connections, or operate
+.Ar command
+on user given by UIN
+.Ar uin
+or nick name
+.Ar nick .
+.Ar command
+can be
+.Ic open
+or
+.Ic login
+to open this connection if it is not currently open.
 .El
 .Sh SEE ALSO
 .Xr micq 1 ,

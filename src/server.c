@@ -8,6 +8,7 @@
 #include "server.h"
 #include "util.h"
 #include "icq_response.h"
+#include "cmd_pkt_v8_snac.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_user.h"
 #include "contact.h"
@@ -28,13 +29,10 @@
 #else
 #include <sys/types.h>
 #include <unistd.h>
-#include <netinet/in.h>
 #include <sys/stat.h>
-#include <sys/socket.h>
 #ifndef __BEOS__
 #include <arpa/inet.h>
 #endif
-#include <netdb.h>
 #include <sys/wait.h>
 #include "mreadline.h"
 #endif
@@ -143,10 +141,10 @@ void icq_sendurl (Session *sess, UDWORD uin, char *description, char *url)
 void icq_sendmsg (Session *sess, UDWORD uin, char *text, UDWORD msg_type)
 {
 #ifdef TCP_COMM
-    if (!sess->assoc || !TCPSendMsg (sess, uin, text, msg_type))
+    if (!sess->assoc || !TCPSendMsg (sess->assoc, uin, text, msg_type))
 #endif
     {
-        if (sess->spref->type & TYPE_SERVER)
+        if (sess->type & TYPE_SERVER)
             SnacCliSendmsg (sess, uin, text, msg_type);
         else
             CmdPktCmdSendMessage (sess, uin, text, msg_type);

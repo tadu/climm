@@ -81,7 +81,7 @@ void CmdPktSrvRead (Session *sess)
     UDWORD session, uin, id;
     UWORD cmd, seq, seq2;
 
-    pak = UtilIORecvUDP (sess);
+    pak = UtilIOReceiveUDP (sess);
     if (!pak)
         return;
 
@@ -104,14 +104,14 @@ void CmdPktSrvRead (Session *sess)
         M_print (" %04x %08x:%04x%04x %04x (%s)" COLNONE "\n",
                  pak->ver, session, seq2, seq, cmd, CmdPktSrvName (cmd));
 #if ICQ_VER == 5
-        Hex_Dump (pak->data, 3);                       M_print ("\n");
-        Hex_Dump (pak->data + 3, 6);                   M_print ("\n");
-        Hex_Dump (pak->data + 9, 12);      if (s > 21) M_print ("\n");
+        Hex_Dump (pak->data, 3);
+        Hex_Dump (pak->data + 3, 6);
+        Hex_Dump (pak->data + 9, 12);
         Hex_Dump (pak->data + 21, s - 21);
 #else
         Hex_Dump (pak->data, s);
 #endif
-        M_print ("\x1b»\n");
+        M_print (ESC "»\r");
     }
     if (pak->len < 21)
     {
@@ -391,9 +391,9 @@ JUMP_SRV_F (CmdPktSrvMulti)
             M_print (" %04x %08x:%04x%04x %04x (%s)" COLNONE "\n",
                      ver, session, seq2, seq, cmd, CmdPktSrvName (cmd));
 #if ICQ_VER == 5
-            Hex_Dump (pak->data, 3);                          M_print ("\n");
-            Hex_Dump (pak->data + 3, 6);                      M_print ("\n");
-            Hex_Dump (pak->data + 9, 12);      if (llen > 21) M_print ("\n");
+            Hex_Dump (pak->data, 3);
+            Hex_Dump (pak->data + 3, 6);
+            Hex_Dump (pak->data + 9, 12);
             Hex_Dump (pak->data + 21, llen - 21);
 #else
             Hex_Dump (pak->data, llen);

@@ -12,6 +12,7 @@
 #include "cmd_pkt_v8_snac.h"
 #include "util.h"
 #include "util_ui.h"
+#include "util_io.h"
 #include "preferences.h"
 #include "cmd_pkt_v8_tlv.h"
 #include <assert.h>
@@ -72,7 +73,6 @@ void FlapChannel1 (Session *sess, Packet *pak)
             {
                 M_print (i18n (882, "FLAP channel 1 cmd 1 extra data:\n"));
                 Hex_Dump (pak->data + pak->rpos, PacketReadLeft (pak));
-                M_print ("\n");
                 break;
             }
             if ((sess->connect & CONNECT_MASK) < 3)
@@ -91,10 +91,6 @@ void FlapChannel1 (Session *sess, Packet *pak)
 
 void FlapChannel4 (Session *sess, Packet *pak)
 {
-    int rc, flags;
-    struct sockaddr_in sin;
-    struct hostent *host;
-    
     tlv = TLVRead (pak);
     if (tlv[8].len)
     {
@@ -120,87 +116,40 @@ void FlapChannel4 (Session *sess, Packet *pak)
     }
     else
     {
-        assert ((sess->connect & CONNECT_MASK) == 2);
+        assert ((sess->connect & CONNECT_MASK) == 2 ||
+                (sess->connect & CONNECT_MASK) == 1);
         assert (tlv[5].len);
         assert (strchr (tlv[5].str, ':'));
 
         FlapCliGoodbye (sess);
 
         if (prG->verbose)
-            M_print (i18n (898, "Redirect to server %s...\n"), tlv[5].str);
+            M_print (i18n (898, "Redirect to server %s... "), tlv[5].str);
 
-        sess->server_port = atoi (strchr (tlv[5].str, ':') + 1);
+        sess->port = atoi (strchr (tlv[5].str, ':') + 1);
         *strchr (tlv[5].str, ':') = '\0';
         sess->server = strdup (tlv[5].str);
+        sess->ip = 0;
 
-        sess->sok = socket (AF_INET, SOCK_STREAM, 0);
-        if (sess->sok <= 0)
-        {
-            sess->sok = -1;
-            sess->connect = 0;
-            rc = errno;
-            M_print (i18n (872, "failed: %s (%d)\n"), strerror (rc), rc);
-            return;
-        }
-
-        flags = fcntl (sess->sok, F_GETFL, 0);
-        if (flags != -1)
-            flags = fcntl (sess->sok, F_SETFL, flags | O_NONBLOCK);
-        if (flags == -1 && prG->verbose)
-        {
-            rc = errno;
-            M_print (i18n (872, "failed: %s (%d)\n"), strerror (rc), rc);
-            sockclose (sess->sok);
-            sess->sok = -1;
-            sess->connect = 0;
-            return;
-        }
-
-        sin.sin_family = AF_INET;
-        sin.sin_port = htons (sess->server_port);
-
-        sin.sin_addr.s_addr = inet_addr (sess->server);
-        if (sin.sin_addr.s_addr == -1)
-        {
-            host = gethostbyname (sess->server);
-            if (!host)
-            {
-#ifdef HAVE_HSTRERROR
-                M_print (i18n (874, "failed: can't find hostname %s: %s."), sess->server, hstrerror (h_errno));
-#else
-                M_print (i18n (875, "failed: can't find hostname %s."), sess->server);
-#endif
-                M_print ("\n");
-                sockclose (sess->sok);
-                sess->sok = -1;
-                sess->connect = 0;
-                return;
-            }
-            sin.sin_addr = *((struct in_addr *) host->h_addr);
-        }
-        
-        sess->connect = 3 | CONNECT_SELECT_R;
-
-        rc = connect (sess->sok, (struct sockaddr *) &sin, sizeof (struct sockaddr));
-        if (rc >= 0)
-        {
-            M_print (i18n (873, "ok.\n"));
-            return;
-        }
-
-        if ((rc = errno) == EINPROGRESS)
-        {
-            M_print ("\n");
-            return;
-        }
-        M_print (i18n (872, "failed: %s (%d)\n"), strerror (rc), rc);
-        sess->connect = 0;
-        sockclose (sess->sok);
-        sess->sok = -1;
+        sess->connect = 2;
+        UtilIOConnectTCP (sess);
+        /* connect = 3, 4 */
     }
 }
 
 /***********************************************/
+
+void FlapPrint (Packet *pak)
+{
+    if (PacketReadAt1 (pak, 1) == 2)
+        SnacPrint (pak);
+    else
+    {
+        M_print (i18n (910, "FLAP seq %08x length %04x channel %d" COLNONE "\n"),
+                 PacketReadBAt2 (pak, 2), pak->len - 6, PacketReadAt1 (pak, 1));
+        Hex_Dump (pak->data + 6, pak->len - 6);
+    }
+}
 
 Packet *FlapC (UBYTE channel)
 {
@@ -230,17 +179,9 @@ void FlapSend (Session *sess, Packet *pak)
     if (prG->verbose & 128)
     {
         Time_Stamp ();
-        M_print (" " ESC "«" COLCLIENT "");
-        M_print (i18n (886, "Outgoing v8 server packet (FLAP): channel %d seq %08x length %d" COLNONE "\n"),
-                 pak->cmd, pak->id, pak->len);
-        if (pak->len > 6)
-        {
-            if (pak->cmd == 2 && pak->len >= 16)
-                SnacPrint (pak);
-            else
-                Hex_Dump (pak->data + 6, pak->len - 6);
-        }
-        M_print (ESC "»\n");
+        M_print (" " ESC "«" COLCLIENT "%s ", i18n (886, "Outgoing v8 server packet:"));
+        FlapPrint (pak);
+        M_print (ESC "»\r");
     }
     
     sockwrite (sess->sok, pak->data, pak->len);
@@ -263,7 +204,18 @@ void FlapCliIdent (Session *sess)
             *p ^= tb[i % 16];
         return cpw;
     }
-             
+    
+    if (!sess->passwd || !strlen (sess->passwd))
+    {
+        char pwd[20];
+        pwd[0] = '\0';
+        M_print ("%s ", i18n (63, "Enter password:"));
+        Echo_Off ();
+        M_fdnreadln (stdin, pwd, sizeof (pwd));
+        Echo_On ();
+        sess->passwd = strdup (pwd);
+    }
+    
     pak = FlapC (1);
     PacketWriteB4 (pak, CLI_HELLO);
     PacketWriteTLVStr (pak, 1, UtilFill ("%d", sess->uin));
@@ -294,7 +246,7 @@ void FlapCliGoodbye (Session *sess)
 {
     Packet *pak;
     
-    if (!(sess->connect & (CONNECT_MASK | CONNECT_OK)))
+    if (!(sess->connect & CONNECT_MASK))
         return;
     
     pak = FlapC (4);
