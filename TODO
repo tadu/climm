@@ -1,5 +1,8 @@
 $Id$
 
+Note:
+  This file is totally out of date. Just ignore it ;)
+
 Feature requests:
 
 Jeff Bearer <jbearer@tribweb.com>
@@ -12,20 +15,7 @@ Jeff Bearer <jbearer@tribweb.com>
 21:47:57  m:1126630 <<< Hello,
  : - All mode changes should be in a central system log and not each user
 
-
-TODO:
- : delay login eg on each incoming oncoming contact (done)
- : replace all UDWORD uin parameters by Contact * (done)
- : implement web aware feature (done right)
- : merge extra* and contactopts* stuff (done)
- : implement mixing contacts and contact groups when contacts are requested on the command line (done)
- : fix cursor position at end of line && string (done)
- : command line option for initial status (done)
- : fix finger timeout, handle error codes (done)
- : fix file transfer (done)
- : implement event dependancies (done)
- : history of messages (partially done)
- : alias for commands (partially done)
+Other stuff:
  : command to display _all_ settings (partially done: opt and set)
  : add https support
  : add missing v8 pieces
@@ -36,7 +26,7 @@ TODO:
  : implement more server message types
  : use (contact)options for more message types
  : server side contact list:
-   + contact list upload
+   + contact list upload (initial version)
  : better meta data change functions
  : internal: use string lib
  : fix insertion before a double width character when the newly added character would
@@ -44,7 +34,6 @@ TODO:
    width character being double width
  : implement wait-for-connection TCP transport
  : implement AIM compatibility
- : rewrite M_print() as well
  : rearrange file names
  : implement rate control
  : implement proper callback for password requests

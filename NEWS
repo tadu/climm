@@ -12,5 +12,10 @@
 2003-03-07: 0.4.10.2: bug fix release
 2003-05-13: 0.4.10.3: bug fix release, support unicode type-1 messages, tweaks for multi-UIN use,
                       win32 screensaver/lock detection
-2003-09-22: 0.4.01.4: buf fix release, fixes remote DoS, SSL support a la licq,
+2003-09-22: 0.4.10.4: buf fix release, fixes remote DoS, SSL support a la licq,
                       TCL scripting, fixes a few file transfer glitches
+2003-10-06: 0.4.10.5: fixes a bunch of annoying yet easy to fix bugs
+2004-01-17: 0.4.11:   history seach/dump, avoid deleted new registered UINs by initializing ICQ meta data,
+                      bug fixes
+2004-11-14: 0.4.12:   more history (by Sebastian Felis), OpenSSL support (by Roman Hoog Antink)
+2004-12-05: 0.4.99.9: beta release
