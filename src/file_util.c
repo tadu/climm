@@ -1014,8 +1014,16 @@ int Read_RC_File (FILE *rcf)
                         
                             if ((conn = ConnectionFindUIN (type, uin)))
                             {
-                                cg->serv = conn;
-                                cg->serv->contacts = cg;
+                                if (conn->contacts && conn->contacts != cg) /* Duplicate! */
+                                {
+                                    ContactGroupD (cg);
+                                    cg = conn->contacts;
+                                }
+                                else
+                                {
+                                    cg->serv = conn;
+                                    cg->serv->contacts = cg;
+                                }
                             }
                         }
                     }
@@ -1235,10 +1243,18 @@ void PrefReadStat (FILE *stf)
                             break;
                         
                         uin = atoi (cg->name + 14);
-                        if ((conn = ConnectionFindUIN (type, uin)) && conn->contacts && conn->contacts != cg)
+                        if ((conn = ConnectionFindUIN (type, uin)))
                         {
-                            ContactGroupD (cg);
-                            cg = conn->contacts;
+                            if (conn->contacts && conn->contacts != cg)
+                            {
+                                ContactGroupD (cg);
+                                cg = conn->contacts;
+                            }
+                            else
+                            {
+                                conn->contacts = cg;
+                                cg->serv = conn;
+                            }
                         }
                     }
                     if (!cg->serv)
@@ -1278,7 +1294,7 @@ void PrefReadStat (FILE *stf)
                     
                     if (!cg->serv->contacts)
                     {
-                        cg->serv->contacts = ContactGroupC (NULL, 0, NULL);
+                        cg->serv->contacts = ContactGroupC (NULL, 0, s_sprintf ("contacts-icq8-%ld", uin));
                         OptSetVal (&cg->serv->contacts->copts, CO_IGNORE, 0);
                         cg->serv->contacts->serv = cg->serv;
                     }
