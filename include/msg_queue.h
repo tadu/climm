@@ -63,12 +63,14 @@ void        QueuePrint (void);
 #define NOW   (time_t)-1
 #define NEVER (time_t)0x7fffffff
 
-#define QUEUE_PEER_RESEND       45
+#define QUEUE_PEER_RESEND       46
 #define QUEUE_PEER_FILE         60
 #define QUEUE_UDP_RESEND        43
 #define QUEUE_TCP_RESEND        42
 #define QUEUE_TYPE2_RESEND      41
 #define QUEUE_TYPE2_RESEND_ACK  40
+#define QUEUE_TYPE1_RESEND_ACK  44
+#define QUEUE_TYPE4_RESEND_ACK  45
 #define QUEUE_TCP_TIMEOUT       72
 #define QUEUE_CON_TIMEOUT       77
 #define QUEUE_TCP_RECEIVE       32

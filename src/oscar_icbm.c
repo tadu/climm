@@ -219,8 +219,6 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
         }
     }
     
-    IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGACK_V8, text, NULL);
-
     pak = SnacC (serv, 4, 6, 0, 0);
     PacketWriteB4 (pak, mtime);
     PacketWriteB4 (pak, mid);
@@ -257,6 +255,11 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
                 icqenc = type;
                 enc = ENC_LATIN9;
             }
+
+            QueueEnqueueData (serv, QUEUE_TYPE1_RESEND_ACK, pak->ref,
+                              time (NULL) + 120, NULL, cont,
+                              OptSetVals (NULL, CO_MSGTEXT, text, 0),
+                              NULL);
 
             icqcol = atoi (text); /* FIXME FIXME WIXME */
             str = s_split (&text, enc, 450);
@@ -303,6 +306,10 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
             PacketWriteTLVDone (pak);
             PacketWriteB2 (pak, 6);
             PacketWriteB2 (pak, 0);
+            QueueEnqueueData (serv, QUEUE_TYPE4_RESEND_ACK, pak->ref,
+                              time (NULL) + 120, NULL, cont,
+                              OptSetVals (NULL, CO_MSGTYPE, type, CO_MSGTEXT, text, 0),
+                              NULL);
             SnacSend (serv, pak);
     }
     return RET_OK;
@@ -744,7 +751,9 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
 JUMP_SNAC_F(SnacSrvSrvackmsg)
 {
     Connection *serv = event->conn;
+    Event *event2 = NULL;
     Packet *pak;
+    const char *text;
     Contact *cont;
     /* UDWORD mid1, mid2; */
     UWORD type;
@@ -760,24 +769,30 @@ JUMP_SNAC_F(SnacSrvSrvackmsg)
     if (!cont)
         return;
     
+    
     switch (type)
     {
         case 1:
-            if (cont->status == STATUS_OFFLINE)
-                break;
+            event2 = QueueDequeue (serv, QUEUE_TYPE1_RESEND_ACK, pak->ref);
+            if (event2 && OptGetStr (event2->opt, CO_MSGTEXT, &text))
+                IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGACK_V8, text, NULL);
+            break;
         case 4:
-            rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-            rl_print  (i18n (2126, "is offline, message queued on server.\n"));
+            event2 = QueueDequeue (serv, QUEUE_TYPE4_RESEND_ACK, pak->ref);
+            if (event2 && OptGetStr (event2->opt, CO_MSGTEXT, &text))
+                IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGACK_V8, text, NULL);
             break;
         case 2: /* msg was received by server */
+            event2 = QueueDequeue (serv, QUEUE_TYPE2_RESEND_ACK, pak->ref);
             if ((pak->ref & 0xffff) == 0x1771)
             {
                 rl_print (i18n (2573, "The user is probably offline.\n"));
                 return;
             }
-            EventD (QueueDequeue (serv, QUEUE_TYPE2_RESEND_ACK, pak->ref));
             break;
     }
+    if (event2)
+        EventD (event2);
 }
 
 void SrvMsgAdvanced (Packet *pak, UDWORD seq, UWORD msgtype, UWORD status,

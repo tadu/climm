@@ -112,6 +112,7 @@ void IMOffline (Contact *cont, Connection *conn)
 }
 
 #define MSGICQACKSTR   ">>>"
+#define MSGICQ5ACKSTR  "> >"
 #define MSGICQRECSTR   "<<<"
 #define MSGTCPACKSTR   ConvTranslit ("\xc2\xbb\xc2\xbb\xc2\xbb", "}}}")
 #define MSGTCPRECSTR   ConvTranslit ("\xc2\xab\xc2\xab\xc2\xab", "{{{")
@@ -123,7 +124,7 @@ void IMOffline (Contact *cont, Connection *conn)
 /*
  * Central entry point for protocol triggered output.
  */
-void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UWORD type, const char *text, Opt *opt)
+void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, int_msg_t type, const char *text, Opt *opt)
 {
     const char *line, *opt_text;
     const char *col = COLCONTACT;
@@ -188,9 +189,12 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
             break;
 #endif
         case INT_MSGACK_V8:
-        case INT_MSGACK_V5:
             col = COLACK;
             line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", MSGICQACKSTR, COLSINGLE, text);
+            break;
+        case INT_MSGACK_V5:
+            col = COLACK;
+            line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", MSGICQ5ACKSTR, COLSINGLE, text);
             break;
         default:
             line = "";

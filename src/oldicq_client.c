@@ -69,7 +69,7 @@ void CmdPktCmdSendMessage (Connection *conn, Contact *cont, const char *text, UD
     if (!cont)
         return;
     
-    IMIntMsg (cont, conn, NOW, STATUS_OFFLINE, INT_MSGACK_V8, text, NULL);
+    IMIntMsg (cont, conn, NOW, STATUS_OFFLINE, INT_MSGACK_V5, text, NULL);
                     
     pak = PacketCv5 (conn, CMD_SEND_MESSAGE);
     PacketWrite4    (pak, cont->uin);
