@@ -21,6 +21,10 @@
 #include "util_str.h"
 #include "conv.h"
 
+#ifdef HAVE_LOCALE_H
+  #include <locale.h>
+#endif
+
 /* use numbers 1000 ... 2999 */
 #define i18nSLOTS  2000
 #define i18nOffset 1000
@@ -36,6 +40,10 @@ void i18nInit (char **loc, UBYTE *enc, const char *arg)
 {
     char *p, *q;
 
+#ifdef HAVE_SETLOCALE
+    if (!arg)
+        arg = setlocale (LC_ALL, "");
+#endif
     if (!arg)
         arg = getenv ("LC_ALL");
     if (!arg)
