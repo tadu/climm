@@ -42,7 +42,8 @@ static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd,
     SnacSrvReplyinfo, SnacSrvReplylocation, SnacSrvUseronline, SnacSrvRegrefused,
     SnacSrvUseroffline, SnacSrvRecvmsg, SnacSrvUnknown, SnacSrvFromicqsrv,
     SnacSrvAddedyou, SnacSrvNewuin, SnacSrvSetinterval, SnacSrvAckmsg,
-    SnacSrvAuthreq, SnacSrvAuthreply, SnacSrvIcbmerr, SnacSrvReplyroster;
+    SnacSrvAuthreq, SnacSrvAuthreply, SnacSrvIcbmerr, SnacSrvReplyroster,
+    SnacSrvRateexceeded;
 
 static SNAC SNACv[] = {
     {  1,  3, NULL, NULL},
@@ -63,6 +64,7 @@ static SNAC SNACv[] = {
 static SNAC SNACS[] = {
     {  1,  3, "SRV_FAMILIES",        SnacSrvFamilies},
     {  1,  7, "SRV_RATES",           SnacSrvRates},
+    {  1, 10, "SRV_RATEEXCEEDED",    SnacSrvRateexceeded},
     {  1, 15, "SRV_REPLYINFO",       SnacSrvReplyinfo},
     {  1, 19, "SRV_MOTD",            SnacSrvMotd},
     {  1, 24, "SRV_FAMILIES2",       SnacSrvFamilies2},
@@ -74,7 +76,7 @@ static SNAC SNACS[] = {
     {  4,  1, "SRV_ICBMERR",         SnacSrvIcbmerr},
     {  4,  5, "SRV_REPLYICBM",       SnacSrvReplyicbm},
     {  4,  7, "SRV_RECVMSG",         SnacSrvRecvmsg},
-    {  4, 12, "SRV_ACKMSG",          SnacSrvAckmsg},
+    {  4, 12, "SRV_SRVACKMSG",       SnacSrvAckmsg},
     {  9,  3, "SRV_REPLYBOS",        SnacSrvReplybos},
     { 11,  2, "SRV_SETINTERVAL",     SnacSrvSetinterval},
     { 19,  3, "SRV_REPLYLISTS",      NULL},
@@ -260,6 +262,15 @@ static JUMP_SNAC_F(SnacSrvRates)
     SnacSend (event->sess, pak);
 }
 
+
+/*
+ * SRV_RATEEXCEEDED - SNAC(1,10)
+ */
+static JUMP_SNAC_F(SnacSrvRateexceeded)
+{
+    M_print (i18n (2188, "You're sending data too fast - stop typing now, or the server will disconnect!\n"));
+}
+
 /*
  * SRV_REPLYINFO - SNAC(1,15)
  */
@@ -426,9 +437,6 @@ static JUMP_SNAC_F(SnacSrvUseroffline)
             M_print (i18n (1909, "Received USEROFFLINE packet for non-contact.\n"));
         return;
     }
-
-    cont->status = STATUS_OFFLINE;
-    
     IMOffline (cont, event->sess);
 }
 
@@ -437,14 +445,20 @@ static JUMP_SNAC_F(SnacSrvUseroffline)
  */
 static JUMP_SNAC_F(SnacSrvIcbmerr)
 {
-    if (event->pak->id == 0x1771)
+    UWORD err = PacketReadB2 (event->pak);
+    if (err == 0xe)
     {
-        UWORD err = PacketReadB2 (event->pak);
-        if (err == 0xe)
-            M_print (i18n (2017, "The user is actually online.\n"));
-        else if (err == 0x4)
-            M_print (i18n (2022, "The user is indeed offline.\n"));
+        if (event->pak->id == 0x1771)
+            M_print (i18n (2017, "The user is invisible.\n"));
+        else
+            M_print (i18n (2189, "Malformed instant message packet refused by server.\n"));
     }
+    else if (err == 0x4)
+        M_print (i18n (2022, "The user is offline.\n"));
+    else if (err == 0x9)
+        M_print (i18n (2190, "The contact's client does not support type-2 messages.\n"));
+    else
+        M_print (i18n (2191, "Instant message error: %d.\n"), err);
 }
 
 /*
@@ -464,8 +478,8 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     Packet *p = NULL, *pp = NULL, *pak;
     TLV *tlv;
     UDWORD uin;
-    UWORD i;
-    int type, t;
+    UWORD i, type;
+    int t;
     char *text = NULL;
     const char *txt = NULL;
 
@@ -537,8 +551,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             PacketReadB2 (pp); /* UNKNOWN */
             PacketReadB2 (pp); /* SEQ2 */
             PacketRead4 (pp); PacketRead4 (pp); PacketRead4 (pp); /* UNKNOWN */
-            type = PacketRead1 (pp);
-                   PacketRead1 (pp); /* FLAGS */
+            type = PacketRead2 (pp); /* MSGTYPE & MSGFLAGS */
             PacketReadB2 (pp); /* UNKNOWN */
             PacketReadB2 (pp); /* UNKNOWN */
             txt = text = PacketReadLNTS (pp);
@@ -548,8 +561,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
         case 4:
             p = TLVPak (tlv + 5);
             uin  = PacketRead4 (p);
-            type = PacketRead1 (p);
-                   PacketRead1 (p);
+            type = PacketRead2 (p);
             txt = text = PacketReadLNTS (p);
             /* FOREGROUND / BACKGROUND ignored */
             /* TLV 1, 2(!), 3, 4, f ignored */
@@ -586,13 +598,13 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
     Packet *pak;
     Contact *cont;
     UDWORD uin, mid1, mid2;
-/*  UWORD vers; */
+    UWORD type;
 
     pak = event->pak;
 
     mid1 = PacketReadB4 (pak);
     mid2 = PacketReadB4 (pak);
-/*  vers=*/PacketReadB2 (pak);
+    type = PacketReadB2 (pak);
 
     uin = PacketReadUIN (pak);
     
@@ -600,13 +612,23 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
     cont = ContactFind (uin);
     if (!cont)
         return;
-    cont->status = STATUS_OFFLINE;
+    
+    switch (type)
+    {
+        case 4:
+            IMOffline (cont, event->sess);
 
-    M_print ("%s " COLCONTACT "%10s" COLNONE " ", s_now, cont->nick);
-    M_print (i18n (2126, "User is offline, message (%s#%08lx:%08lx%s) queued.\n"),
-             COLSERVER, mid1, mid2, COLNONE);
-    putlog (event->sess, NOW, uin, STATUS_OFFLINE, LOG_ACK, 0xFFFF, 
-        "%08lx%08lx\n", mid1, mid2);
+            M_print ("%s " COLCONTACT "%10s" COLNONE " ", s_now, cont->nick);
+            M_print (i18n (2126, "User is offline, message (%s#%08lx:%08lx%s) queued.\n"),
+                     COLSERVER, mid1, mid2, COLNONE);
+
+/*          cont->status = STATUS_OFFLINE;
+            putlog (event->sess, NOW, uin, STATUS_OFFLINE, LOG_ACK, 0xFFFF, 
+                "%08lx%08lx\n", mid1, mid2); */
+            break;
+        case 2:
+            /* msg was received by server */
+    }
 }
 
 /*

@@ -733,6 +733,9 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
     if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
         M_print ("(%s) ", s_status (tstatus));
 
+    if (prG->verbose)
+        M_print ("<%d> ", type);
+
     uiG.last_rcvd_uin = cont->uin;
     if (cont)
     {
@@ -753,7 +756,7 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
             break;
 
         case MSG_AUTO:
-            M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n",
+            M_print ("<%s> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n",
                      i18n (2108, "auto"), cdata);
             break;
 
@@ -763,33 +766,33 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
                      carr, cdata);
             break;
 
-        case TCP_MSG_GET_AWAY: 
-            M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
+        case MSGF_GETAUTO | MSG_GET_AWAY: 
+            M_print ("<%s> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
                      i18n (1972, "away"), cdata);
             break;
 
-        case TCP_MSG_GET_OCC:
-            M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
+        case MSGF_GETAUTO | MSG_GET_OCC:
+            M_print ("<%s> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
                      i18n (1973, "occupied"), cdata);
             break;
 
-        case TCP_MSG_GET_NA:
-            M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
+        case MSGF_GETAUTO | MSG_GET_NA:
+            M_print ("<%s> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
                      i18n (1974, "not available"), cdata);
             break;
 
-        case TCP_MSG_GET_DND:
-            M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
+        case MSGF_GETAUTO | MSG_GET_DND:
+            M_print ("<%s> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
                      i18n (1971, "do not disturb"), cdata);
             break;
 
-        case TCP_MSG_GET_FFC:
-            M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
+        case MSGF_GETAUTO | MSG_GET_FFC:
+            M_print ("<%s> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
                      i18n (1976, "free for chat"), cdata);
             break;
 
-        case TCP_MSG_GET_VER:
-            M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
+        case MSGF_GETAUTO | MSG_GET_VER:
+            M_print ("<%s> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
                      i18n (2109, "version"), cdata);
             break;
 

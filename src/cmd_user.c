@@ -827,7 +827,7 @@ static JUMP_F(CmdUserPeer)
 #ifdef WIP
         else if (!strcmp (arg1, "ver"))
         {
-            if (!TCPGetAuto     (list, cont->uin, TCP_MSG_GET_VER))
+            if (!TCPGetAuto     (list, cont->uin, MSGF_GETAUTO | MSG_GET_VER))
                 M_print (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
         }
 #endif
@@ -838,22 +838,22 @@ static JUMP_F(CmdUserPeer)
         }
         else if (!strcmp (arg1, "away"))
         {
-            if (!TCPGetAuto     (list, cont->uin, TCP_MSG_GET_AWAY))
+            if (!TCPGetAuto     (list, cont->uin, MSGF_GETAUTO | MSG_GET_AWAY))
                 M_print (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
         }
         else if (!strcmp (arg1, "na"))
         {
-            if (!TCPGetAuto     (list, cont->uin, TCP_MSG_GET_NA))
+            if (!TCPGetAuto     (list, cont->uin, MSGF_GETAUTO | MSG_GET_NA))
                 M_print (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
         }
         else if (!strcmp (arg1, "dnd"))
         {
-            if (!TCPGetAuto     (list, cont->uin, TCP_MSG_GET_DND))
+            if (!TCPGetAuto     (list, cont->uin, MSGF_GETAUTO | MSG_GET_DND))
                 M_print (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
         }
         else if (!strcmp (arg1, "ffc"))
         {
-            if (!TCPGetAuto     (list, cont->uin, TCP_MSG_GET_FFC))
+            if (!TCPGetAuto     (list, cont->uin, MSGF_GETAUTO | MSG_GET_FFC))
                 M_print (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
         }
         else

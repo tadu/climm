@@ -20,13 +20,7 @@
 #define TCP_MSG_CHAT            0x0002
 #define TCP_MSG_FILE            0x0003
 #define TCP_MSG_GREETING        0x001A
-/* yes, those are really message types */
-#define TCP_MSG_GET_AWAY        1000
-#define TCP_MSG_GET_OCC         1001
-#define TCP_MSG_GET_NA          1002
-#define TCP_MSG_GET_DND         1003
-#define TCP_MSG_GET_FFC         1004
-#define TCP_MSG_GET_VER         1012
+/* see also micq.h */
 
 /* Status flags */
 #define TCP_MSGF_REAL           0x0010

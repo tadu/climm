@@ -107,17 +107,25 @@ typedef struct PreferencesSession_s PreferencesSession;
 #define NOW -1
 
 #define MSGF_MASS         0x8000
+#define MSGF_GETAUTO      0x0300
 
-#define MSG_AUTO          0x0000
-#define MSG_NORM          0x0001
-#define MSG_URL           0x0004
-#define MSG_AUTH_REQ      0x0006
-#define MSG_AUTH_DENY     0x0007
-#define MSG_AUTH_GRANT    0x0008
-#define MSG_AUTH_ADDED    0x000c
-#define MSG_WEB           0x000d
-#define MSG_EMAIL         0x000e
-#define MSG_CONTACT       0x0013
+#define MSG_AUTO          0x00
+#define MSG_NORM          0x01
+#define MSG_URL           0x04
+#define MSG_AUTH_REQ      0x06
+#define MSG_AUTH_DENY     0x07
+#define MSG_AUTH_GRANT    0x08
+#define MSG_AUTH_ADDED    0x0c
+#define MSG_WEB           0x0d
+#define MSG_EMAIL         0x0e
+#define MSG_CONTACT       0x13
+#define MSG_SMS           0x1a
+#define MSG_GET_AWAY      0xe8
+#define MSG_GET_OCC       0xe9
+#define MSG_GET_NA        0xea
+#define MSG_GET_DND       0xeb
+#define MSG_GET_FFC       0xec
+#define MSG_GET_VER       0xf4
 
 #define INV_LIST_UPDATE         0x01
 #define VIS_LIST_UPDATE         0x02

@@ -1324,12 +1324,12 @@ static int TCPSendMsgAck (Session *peer, UWORD seq, UWORD type, BOOL accept)
 
     switch (type)
     {
-        case TCP_MSG_GET_AWAY:  msg = prG->auto_away; break;
-        case TCP_MSG_GET_OCC:   msg = prG->auto_occ;  break;
-        case TCP_MSG_GET_NA:    msg = prG->auto_na;   break;
-        case TCP_MSG_GET_DND:   msg = prG->auto_dnd;  break;
-        case TCP_MSG_GET_FFC:   msg = prG->auto_ffc;  break;
-        case TCP_MSG_GET_VER:
+        case MSGF_GETAUTO | MSG_GET_AWAY:  msg = prG->auto_away; break;
+        case MSGF_GETAUTO | MSG_GET_OCC:   msg = prG->auto_occ;  break;
+        case MSGF_GETAUTO | MSG_GET_NA:    msg = prG->auto_na;   break;
+        case MSGF_GETAUTO | MSG_GET_DND:   msg = prG->auto_dnd;  break;
+        case MSGF_GETAUTO | MSG_GET_FFC:   msg = prG->auto_ffc;  break;
+        case MSGF_GETAUTO | MSG_GET_VER:
             msg = BuildVersionText;
             break;
         default:
@@ -1467,15 +1467,15 @@ BOOL TCPGetAuto (Session *list, UDWORD uin, UWORD which)
     if (!which)
     {
         if (cont->status & STATUSF_DND)
-            which = TCP_MSG_GET_DND;
+            which = MSGF_GETAUTO | MSG_GET_DND;
         else if (cont->status & STATUSF_OCC)
-            which = TCP_MSG_GET_OCC;
+            which = MSGF_GETAUTO | MSG_GET_OCC;
         else if (cont->status & STATUSF_NA)
-            which = TCP_MSG_GET_NA;
+            which = MSGF_GETAUTO | MSG_GET_NA;
         else if (cont->status & STATUSF_AWAY)
-            which = TCP_MSG_GET_AWAY;
+            which = MSGF_GETAUTO | MSG_GET_AWAY;
         else if (cont->status & STATUSF_FFC)
-            which = TCP_MSG_GET_FFC;
+            which = MSGF_GETAUTO | MSG_GET_FFC;
         else
             return 0;
     }
@@ -1790,12 +1790,12 @@ static void TCPCallBackReceive (Event *event)
                     }
                     break;
 
-                case TCP_MSG_GET_AWAY:
-                case TCP_MSG_GET_OCC:
-                case TCP_MSG_GET_NA:
-                case TCP_MSG_GET_DND:
-                case TCP_MSG_GET_FFC:
-                case TCP_MSG_GET_VER:
+                case MSGF_GETAUTO | MSG_GET_AWAY:
+                case MSGF_GETAUTO | MSG_GET_OCC:
+                case MSGF_GETAUTO | MSG_GET_NA:
+                case MSGF_GETAUTO | MSG_GET_DND:
+                case MSGF_GETAUTO | MSG_GET_FFC:
+                case MSGF_GETAUTO | MSG_GET_VER:
                     IMSrvMsg (cont, event->sess, NOW, type, tmp, status);
                     break;
 
@@ -1868,14 +1868,14 @@ static void TCPCallBackReceive (Event *event)
             switch (type)
             {
                 /* Requests for auto-response message */
-                case TCP_MSG_GET_AWAY:
-                case TCP_MSG_GET_OCC:
-                case TCP_MSG_GET_NA:
-                case TCP_MSG_GET_DND:
-                case TCP_MSG_GET_FFC:
+                case MSGF_GETAUTO | MSG_GET_AWAY:
+                case MSGF_GETAUTO | MSG_GET_OCC:
+                case MSGF_GETAUTO | MSG_GET_NA:
+                case MSGF_GETAUTO | MSG_GET_DND:
+                case MSGF_GETAUTO | MSG_GET_FFC:
                     M_print (i18n (1814, "Sent auto-response message to %s%s%s.\n"),
                              COLCONTACT, cont->nick, COLNONE);
-                case TCP_MSG_GET_VER:
+                case MSGF_GETAUTO | MSG_GET_VER:
                     TCPSendMsgAck (event->sess, seq, type, TRUE);
                     break;
 
