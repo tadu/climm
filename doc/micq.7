@@ -698,37 +698,33 @@ Alias for
 .BR peer\ accept .
 New for 0.4.10.4.
 .TP
-.BI peer \ command\ uin|nick
-Operate command
-.I command
-on user given by UIN
-.I uin
-or nick name
-.IR nick .
+.BI peer \ command\ arguments
+Handle direct (peer to peer) connections.
 .RS
 .TP
-.B open
-Open a peer to peer connection over TCP to the user.
+.B open <contact>...
+Open a peer to peer connection over TCP to these users.
 .TP
-.B close
-Close and reset a peer to peer connection to the user.
+.B close <contact>...
+Close and reset a peer to peer connection to these users.
 .TP
-.B off
+.B off <contact>...
 Switch off trying to establish such a connection for sending
 messages until it is explicitly opened or reset.
 .TP
-.BI file \ file\ description
+.BI file <contact> \ <file>\ <description>
 Send file
 .I file
 with description
 .IR description .
 .TP
-.BI files \ [file\ as]...\ description
-Send files to the user. There may be arbitrarily many
-pairs of a physical file name
+.BI files <contact> \ [<file>\ <as>]...\ [<description>]
+Send arbitrarely many files to a contact. For each a pair of 
+of the file's physical name
 .I file
-and the name to be presented to the peer,
-.IR as .
+and the name
+.IR as
+to be presented to the peer needs to be given.
 If
 .IR as
 is
@@ -737,7 +733,7 @@ the file name without the path is sent, and if it is
 .RB ' . '
 the same name is sent.
 .TP
-.BR accept \ [contact]\ [id]
+.BR accept \ [<contact>]\ [<id>]
 Accept an incoming file request from
 .IR contact
 with the given ID
@@ -747,7 +743,7 @@ If there is only one pending incoming file request, the
 arguments may be omitted, otherwise it is undefined which file request
 is answered when several match.
 .TP
-.BR deny \ [contact]\ [id]\ [reason]
+.BR deny \ [<contact>]\ [<id>]\ [<reason>]
 Deny an incoming file request from
 .IR contact
 with the given ID
@@ -755,8 +751,8 @@ with the given ID
 with the reason
 .IR reason .
 .TP
-.BR ssl \ contact
-Request SSL encryption from
+.BR ssl \ <contact>...
+Request SSL encryption from each
 .IR contact .
 .RE
 .TP
@@ -814,12 +810,12 @@ is actually online or not. Abuses a bug in the ICQ protocol to figure this out;
 no additional information except online or offline can be found out this way.
 .SH COMMANDS CONCERNING TCL SCRIPTING
 .TP
-.BI tcl \ command
+.BI tcl \ <command>
 Run TCL command
 .IR command .
 Example: tcl puts "hello world"
 .TP
-.BI tclscript \ file
+.BI tclscript \ <file>
 Run TCL script from file
 .IR file .
 .PP
@@ -830,7 +826,7 @@ command 'micq'. This means for example 'micq receive R\(:udiger myproc' will
 install a hook for message reception from R\(:udiger. All the following
 commands must be preceded by 'micq'.
 .TP
-.BI receive \ command\ [contact]
+.BI receive \ <command>\ [<contact>]
 Install hook for text message reception. 
 .I command 
 is the TCL command to be run upon message reception. 
@@ -850,12 +846,12 @@ Note: This function is provided for convenience. Event hooks (described
 below) can do the same job in a more generic way, but they have no filter
 feature.
 .TP
-.BI unreceive \ contact
+.BI unreceive \ [<contact>]
 Remove installed hook with filter
 .IR contact . 
 If this hook existed it's command will be returned.
 .TP
-.BI event \ command
+.BI event \ <command>
 Install event hook. 
 .I command
 is the TCL command to be run upon events. If an event hook existed already
@@ -865,32 +861,32 @@ event hook can exist.  Consequent calls will override the old hook.
 The command will be run with a variable number of arguments provided.  The
 first argument always is the type of event encountered. The next arguments
 depend on the event type. The following list explains all events. The bold
-word is the event's type and the underlined arguments describe the event's
+word is the event's type and the italics arguments describe the event's
 details.
 .RS
 .TP
-.BI status \ uin\ status
+.BI status \ <uin>\ <status>
 User changed status.
 .TP
-.BI message \ uin\ text
+.BI message \ <uin>\ <text>
 Message received.
 .TP
-.BI mail \ uin\ content
+.BI mail \ <uin>\ <content>
 Incoming mail message.
 .TP
-.BI web \ uin\ url
+.BI web \ <uin>\ <url>
 URL message.
 .TP
-.BI file_request \ uin\ filename\ size\ sequence
+.BI file_request \ <uin>\ <filename>\ <size>\ sequence
 Incoming file transmission request.
 .TP
-.BI contactlistadded \ uin
+.BI contactlistadded \ <uin>
 Someone added you to his contact list.
 .TP
-.BI authorization \ uin\ {request,refused,granted}
+.BI authorization \ <uin>\  \fR{\fPrequest\fR,\fPrefused\fR,\fPgranted\fR}\fP
 Authorization status.
 .TP
-.BI ssl \ uin \ status \ [reason]
+.BI ssl \ <uin> \ <status> \ [<reason>]
 SSL encryption established or failed with
 .IR uin .
 .I status
@@ -898,7 +894,6 @@ is
 .B ok
 or
 .BR failed .
-.RS
 .I reason
 can be:
 .RS
@@ -920,7 +915,7 @@ SSL handshake failure.
 .RE
 .RE
 .TP
-.BI ssl \ uin\ {candidate,no_candidate}
+.BI ssl \ <uin>\  \fR{\fPcandidate\fR,\fPno_candidate\fR}\fP
 Indicates whether
 .I uin
 is a SSL capable candidate.
@@ -932,13 +927,13 @@ Uninstall event hook. Returns command of former hook.
 Returns list of all installed hooks. Every list element is a hook and
 consists of a list of two elements: the filter and the command.
 .TP
-.BI exec \ command
+.BI exec \ <command>
 Run a mICQ command and returns its output as a single string. ANSI escape
 sequences will be removed.
 .TP
-.BI nick \ nick
-Lookup nick from given UIN. This works for UINs from your contact list
-only. Hint: use 'exec finger' for UINs not in your contact list.
+.BI nick \ <uin>
+Lookup nick from given UIN if it is already known.
+Hint: use 'exec finger' for UINs not in your contact list.
 .TP
 .BI help
 Gives small summary of all available mICQ specific TCL commands.
