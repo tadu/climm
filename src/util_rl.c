@@ -1,4 +1,3 @@
-
 /*
  * Line editing code.
  *
@@ -61,9 +60,13 @@
 #if HAVE_CONIO_H
 #include <conio.h>
 #endif
-#ifdef HAVE_TCGETATTR
-struct termios sattr;
+#if HAVE_WCHAR_H
+/* glibc sucks */
+#define __USE_XOPEN 1
+#include <wchar.h>
 #endif
+
+#undef DEBUG_RL
 
 #if HAVE_TCGETATTR
 static struct termios tty_attr;
@@ -85,9 +88,9 @@ static void rl_recheck (BOOL clear);
 static void rl_insert_basic (UWORD ucs, const char *display, UDWORD len, UDWORD collen);
 static void rl_analyze_ucs (UWORD ucs, const char **display, UWORD *columns);
 static void rl_insert (UWORD ucs);
-static int rl_delete (void);
-static int rl_left (UDWORD i);
-static int rl_right (UDWORD i);
+static int  rl_delete (void);
+static int  rl_left (UDWORD i);
+static int  rl_right (UDWORD i);
 static const Contact *rl_tab_getnext (strc_t common);
 static void rl_tab_accept (void);
 static void rl_tab_cancel (void);
@@ -105,7 +108,6 @@ static void rl_lineexpand (char *hist);
 static void rl_historyback (void);
 static void rl_historyforward (void);
 static void rl_historyadd (void);
-static void rl_checkcolumns (void);
 
 static volatile int rl_columns_cur = 0;
 volatile UBYTE rl_signal = 0;
@@ -172,21 +174,28 @@ void ReadLineInit ()
     ConvTo ("", ENC_UCS2BE);
 }
 
+#ifdef DEBUG_RL
 /*
  * Debugging function
- */ /*
+ */
 static void rl_dump_line (void)
 {
     int i, bp;
-    fprintf (stderr, "colpos %d ucspos %d bytepos %d\n", rl_colpos, rl_ucspos, rl_bytepos);
+    fprintf (stderr, "colpos %ld ucspos %ld bytepos %ld\n", rl_colpos, rl_ucspos, rl_bytepos);
     for (i = bp = 0; i < rl_ucscol.len; i++)
     {
-        fprintf (stderr, "ucs %02x%02x col %d bytes %d string '%s'\n",
-                 rl_ucs.txt[2 * i], rl_ucs.txt[2 * i + 1], rl_ucscol.txt[i], rl_ucsbytes.txt[i],
-                 s_wordquote (s_sprintf ("%.*s", rl_ucsbytes.txt[i], rl_display.txt + bp)));
+        char *p;
+        fprintf (stderr, " %02x%02x %d/%d %s",
+                 (UBYTE)rl_ucs.txt[2 * i], (UBYTE)rl_ucs.txt[2 * i + 1], rl_ucscol.txt[i], rl_ucsbytes.txt[i],
+                 s_qquote (p = strndup (rl_display.txt + bp, rl_ucsbytes.txt[i])));
         bp += rl_ucsbytes.txt[i];
+        free (p);
     }
-} */
+    fprintf (stderr, "\n");
+}
+#else
+#define rl_dump_line()
+#endif
 
 /*** low-level tty stuff ***/
 
@@ -242,6 +251,16 @@ void ReadLineTtySet (void)
 #endif
 }
 
+#if defined(SIGWINCH)
+/*
+ * Handle a window resize
+ */
+static RETSIGTYPE tty_sigwinch_handler (int i)
+{
+    rl_signal |= 16;
+}
+#endif
+
 #if defined(SIGTSTP) && defined(SIGCONT)
 /*
  * Handle a ^Z terminal stop signal
@@ -259,20 +278,6 @@ static RETSIGTYPE tty_cont_handler (int i)
     rl_signal |= 4;
     signal (SIGTSTP, &tty_stop_handler);
     signal (SIGCONT, &tty_cont_handler);
-}
-#endif
-
-#if defined(SIGWINCH)
-/*
- * Handle a window resize
- */
-static RETSIGTYPE tty_sigwinch_handler (int i)
-{
-    struct winsize ws;
-
-    rl_columns_cur = 0;
-    ioctl (STDIN_FILENO, TIOCGWINSZ, &ws);
-    rl_columns_cur = ws.ws_col;
 }
 #endif
 
@@ -302,7 +307,7 @@ void ReadLineHandleSig (void)
     UBYTE sig;
     int gpos;
     
-    while ((sig = (rl_signal & 14)))
+    while ((sig = (rl_signal & 30)))
     {
         rl_signal &= 1;
         if (sig & 2)
@@ -340,6 +345,16 @@ void ReadLineHandleSig (void)
             raise (SIGTSTP);
         }
 #endif
+#if defined(SIGWINCH)
+        if (sig & 16)
+        {
+            if (rl_columns != rl_getcolumns ())
+            {
+                ReadLinePromptHide ();
+                rl_columns = rl_getcolumns ();
+            }
+        }
+#endif
     }
 }
 
@@ -348,13 +363,15 @@ void ReadLineHandleSig (void)
  */
 static int rl_getcolumns ()
 {
+#if defined(SIGWINCH)
+    struct winsize ws;
+#endif
     int width = rl_columns_cur;
 
-    if (rl_columns_cur)
-        return rl_columns_cur;
-
 #if defined(SIGWINCH)
-    tty_sigwinch_handler (0);
+    rl_columns_cur = 0;
+    ioctl (STDIN_FILENO, TIOCGWINSZ, &ws);
+    rl_columns_cur = ws.ws_col;
     if ((width = rl_columns_cur))
     {
         if (signal (SIGWINCH, &tty_sigwinch_handler) == SIG_ERR)
@@ -365,19 +382,6 @@ static int rl_getcolumns ()
     if (prG->screen)
         return prG->screen;
     return 80;                  /* a reasonable screen width default. */
-}
-
-/*
- * Recheck whether number of columns changed and cause a redraw
- */
-static void rl_checkcolumns ()
-{
-    UDWORD w;
-
-    if ((w = rl_getcolumns ()) == rl_columns)
-        return;
-    rl_columns = w;
-    ReadLinePromptHide ();
 }
 
 /*
@@ -448,6 +452,11 @@ static void rl_goto (UDWORD pos)
         rl_bytepos += rl_ucsbytes.txt[rl_ucspos];
         rl_ucspos++;
     }
+    if (!((rl_prompt_len + rl_colpos) % rl_columns))
+    {
+        s_catn (&rl_operate, rl_display.txt + rl_bytepos, rl_ucsbytes.txt[rl_ucspos]);
+        s_catc (&rl_operate, '\r');
+    }
     assert (rl_colpos == pos);
 }
 
@@ -466,15 +475,14 @@ static void rl_recheck (BOOL clear)
         {
             s_delc (&rl_ucs, 2 * rl_ucspos);
             s_delc (&rl_ucs, 2 * rl_ucspos);
-            s_delc (&rl_ucscol, rl_ucspos);
+            s_delc (&rl_ucsbytes, rl_ucspos);
             s_delc (&rl_ucscol, rl_ucspos);
             s_delc (&rl_display, rl_bytepos);
         }
         else if (((rl_prompt_len + rl_colpos) % rl_columns)
                  + (UBYTE)rl_ucscol.txt[rl_ucspos] > rl_columns)
         {
-            for (i = ((rl_prompt_len + rl_colpos) % rl_columns)
-                 + (UBYTE)rl_ucscol.txt[rl_ucspos] - rl_columns; i > 0; i--)
+            for (i = (rl_columns - ((rl_prompt_len + rl_colpos) % rl_columns)); i > 0; i--)
             {
                 s_insc (&rl_ucs, 2 * rl_ucspos, -1);
                 s_insc (&rl_ucs, 2 * rl_ucspos, -1);
@@ -513,7 +521,7 @@ static void rl_insert_basic (UWORD ucs, const char *display, UDWORD len, UDWORD 
     
     if (((rl_prompt_len + rl_colpos) % rl_columns) + collen > rl_columns)
     {
-        for (i = ((rl_prompt_len + rl_colpos) % rl_columns) + collen - rl_columns; i > 0; i--)
+        for (i = (rl_columns - ((rl_prompt_len + rl_colpos) % rl_columns)); i > 0; i--)
         {
             s_insc (&rl_ucs, 2 * rl_ucspos, -1);
             s_insc (&rl_ucs, 2 * rl_ucspos, -1);
@@ -540,26 +548,74 @@ static void rl_insert_basic (UWORD ucs, const char *display, UDWORD len, UDWORD 
  */
 static void rl_analyze_ucs (UWORD ucs, const char **display, UWORD *columns)
 {
-   if (ucs < 32 || ucs == 127) /* control code */
+   char *utf = NULL;
+#if HAVE_WCWIDTH
+   int width;
+#if ENABLE_TRANSLIT
+   char *trans = NULL;
+   strc_t wstr;
+#endif
+#endif
+  
+   utf = strdup (ConvUTF8 (ucs));
+   *display = ConvTo (utf, ENC(enc_loc))->txt;
+
+   if (ucs < 32 || ucs == 127 || ucs == 173) /* control code */
     {
-        *display = s_sprintf ("%s%c%s", COLINVCHAR, (ucs - 1 + 'A') & 0x7f, COLNONE);
+        *display = s_sprintf ("%s^%c%s", COLINVCHAR, (ucs - 1 + 'A') & 0x7f, COLNONE);
+        *columns = 2;
+    }
+#if HAVE_WCWIDTH
+    else if (!prG->locale_broken && (width = wcwidth (ucs)) != -1)
+    {
+        *display = ConvTo (utf, ENC(enc_loc))->txt;
+        *columns = width;
+    }
+#if ENABLE_TRANSLIT
+    else if (!prG->locale_broken && (trans = strdup (ConvFrom (ConvTo (utf, ENC(enc_loc)), ENC(enc_loc))->txt))
+             && strcmp (utf, trans) && (wstr = ConvTo (trans, ENC_WCHART))
+             && (width = wcswidth ((const wchar_t *)(wstr->txt), wstr->len / sizeof (wchar_t))) != -1)
+    {
+        *display = ConvTo (utf, ENC(enc_loc))->txt;
+        *columns = width;
+    }
+#endif
+    else if (ucs < 127)
+#else
+    else if (ucs < 127 || ucs >= 160) /* no way I'll hard-code double-width or combining marks here */
+#endif
+    {
+        *display = ConvTo (utf, ENC(enc_loc))->txt;
         *columns = 1;
     }
-    else if (ucs >= 128 && ucs < 160) /* more control code */
+    else if (!(ucs & 0xffff0000)) /* more control code, or unknown */
     {
-        *display = s_sprintf ("%s%c%c%c%c%s", COLINVCHAR,
+        *display = s_sprintf ("%s\\u%c%c%c%c%s", COLINVCHAR,
            ((ucs / 4096) & 0xf) <= 9 ? '0' + ((ucs / 4096) & 0xf) : 'a' - 10 + ((ucs / 4096) & 0xf),
            ((ucs /  256) & 0xf) <= 9 ? '0' + ((ucs /  256) & 0xf) : 'a' - 10 + ((ucs /  256) & 0xf),
            ((ucs /   16) & 0xf) <= 9 ? '0' + ((ucs /   16) & 0xf) : 'a' - 10 + ((ucs /   16) & 0xf),
            ( ucs         & 0xf) <= 9 ? '0' + ( ucs         & 0xf) : 'a' - 10 + ( ucs         & 0xf),
            COLNONE);
-        *columns = 4;
+        *columns = 6;
     }
-    else
+    else /* unknown stellar planes */
     {
-        *display = ConvTo (ConvUTF8 (ucs), ENC(enc_loc))->txt;
-        *columns = 1; /* FIXME: combining marks, double-width characters, undisplayable stuff, ... */
+        *display = s_sprintf ("%s\\U%c%c%c%c%c%c%c%c%s", COLINVCHAR,
+           ((ucs / 268435456) & 0xf) <= 9 ? '0' + ((ucs / 268435456) & 0xf) : 'a' - 10 + ((ucs / 268435456) & 0xf),
+           ((ucs /  16777216) & 0xf) <= 9 ? '0' + ((ucs /  16777216) & 0xf) : 'a' - 10 + ((ucs /  16777216) & 0xf),
+           ((ucs /   1048576) & 0xf) <= 9 ? '0' + ((ucs /   1048576) & 0xf) : 'a' - 10 + ((ucs /   1048576) & 0xf),
+           ((ucs /     65536) & 0xf) <= 9 ? '0' + ((ucs /     65536) & 0xf) : 'a' - 10 + ((ucs /     65536) & 0xf),
+           ((ucs /      4096) & 0xf) <= 9 ? '0' + ((ucs /      4096) & 0xf) : 'a' - 10 + ((ucs /      4096) & 0xf),
+           ((ucs /       256) & 0xf) <= 9 ? '0' + ((ucs /       256) & 0xf) : 'a' - 10 + ((ucs /       256) & 0xf),
+           ((ucs /        16) & 0xf) <= 9 ? '0' + ((ucs /        16) & 0xf) : 'a' - 10 + ((ucs /        16) & 0xf),
+           ( ucs              & 0xf) <= 9 ? '0' + ( ucs              & 0xf) : 'a' - 10 + ( ucs              & 0xf),
+           COLNONE);
+        *columns = 10;
     }
+    free (utf);
+#if HAVE_WCWIDTH && ENABLE_TRANSLIT
+    s_free (trans);
+#endif
 }
 
 /*
@@ -584,6 +640,15 @@ static int rl_delete (void)
     if (rl_ucspos >= rl_ucscol.len)
         return FALSE;
     
+    while ((rl_ucs.txt[2 * rl_ucspos] == -1) && (rl_ucs.txt[2 * rl_ucspos + 1] == -1))
+    {
+        s_deln (&rl_display,  rl_bytepos, rl_ucsbytes.txt[rl_ucspos]);
+        s_delc (&rl_ucscol,   rl_ucspos);
+        s_delc (&rl_ucsbytes, rl_ucspos);
+        s_delc (&rl_ucs,  2 * rl_ucspos);
+        s_delc (&rl_ucs,  2 * rl_ucspos);
+    }
+
     s_deln (&rl_display,  rl_bytepos, rl_ucsbytes.txt[rl_ucspos]);
     s_delc (&rl_ucscol,   rl_ucspos);
     s_delc (&rl_ucsbytes, rl_ucspos);
@@ -637,10 +702,10 @@ static int rl_right (UDWORD i)
     gpos = rl_colpos;
     for ( ; i > 0; i--)
     {
-        while (rl_ucspos < rl_ucscol.len && (!rl_ucscol.txt[rl_ucspos] || 
-               (rl_ucs.txt[2 * rl_ucspos] != -1 && rl_ucs.txt[2 * rl_ucspos + 1] == -1)))
-            gpos += rl_ucscol.txt[rl_ucspos++];
         if (rl_ucspos < rl_ucscol.len)
+            gpos += rl_ucscol.txt[rl_ucspos++];
+        while (rl_ucspos < rl_ucscol.len && (!rl_ucscol.txt[rl_ucspos] || 
+               (rl_ucs.txt[2 * rl_ucspos] == -1 && rl_ucs.txt[2 * rl_ucspos + 1] == -1)))
             gpos += rl_ucscol.txt[rl_ucspos++];
     }
     rl_goto (gpos);
@@ -657,12 +722,15 @@ static void rl_linecompress (str_t line, UDWORD from, UDWORD to)
 {
     UDWORD i, ucs;
     
-    if (to + 1 == 0)
+    if (to == (UDWORD)-1)
         to = rl_ucscol.len;
     s_init (line, "", 0);
     for (i = from; i < to; i++)
-        if ((ucs = ((UBYTE)rl_ucs.txt[2 * i + 1]) | (((UBYTE)rl_ucs.txt[2 * i]) << 8)) != 0x0000ffffL)
+    {
+        ucs = ((UBYTE)rl_ucs.txt[2 * i + 1]) | (((UBYTE)rl_ucs.txt[2 * i]) << 8);
+        if ((ucs != 0xffff) && (ucs != (UDWORD)-1))
             s_cat (line, ConvUTF8 (ucs));
+    }
 }
 
 /*
@@ -1090,7 +1158,7 @@ str_t ReadLine (UBYTE newbyte)
     static UWORD ucsesc;
     UWORD ucs;
 
-    rl_checkcolumns ();
+    ReadLineHandleSig ();
     s_catc (&rl_input, newbyte);
     
     input = ConvFrom (&rl_input, prG->enc_loc);
@@ -1102,12 +1170,15 @@ str_t ReadLine (UBYTE newbyte)
     
     rl_inputdone = 0;
     rl_signal &= ~1;
+
     inputucs = ConvTo (input->txt, ENC_UCS2BE);
+    ucs = ((UBYTE)inputucs->txt[1])  | (((UBYTE)inputucs->txt[0]) << 8);
+
     s_init (&rl_input, "", 0);
     s_init (&rl_operate, "", 0);
     
+    rl_dump_line ();
     ReadLinePrompt ();
-    ucs = ((UBYTE)inputucs->txt[1])  | (((UBYTE)inputucs->txt[0]) << 8);
     
     switch (rl_stat)
     {
@@ -1353,6 +1424,10 @@ str_t ReadLine (UBYTE newbyte)
     }
 #endif
     
+#if DEBUG_RL
+    fprintf (stderr, "oper: %s\n", s_qquote (rl_operate.txt));
+#endif
+    rl_dump_line ();
     if (rl_operate.len)
         printf ("%s", rl_operate.txt);
     
@@ -1374,6 +1449,9 @@ void ReadLinePrompt ()
 
     if (rl_prompt_stat == 1)
         return;
+#if DEBUG_RL
+    fprintf (stderr, "killoper: %s\n", s_qquote (rl_operate.txt));
+#endif
     s_init (&rl_operate, "", 0);
     if (rl_prompt_stat == 2)
         rl_goto (0);
@@ -1385,6 +1463,9 @@ void ReadLinePrompt ()
 #endif
         rl_prompt_stat = 0;
     }
+#if DEBUG_RL
+    fprintf (stderr, "oper(rm): %s\n", s_qquote (rl_operate.txt));
+#endif
     printf ("%s", rl_operate.txt);
     if (rl_prompt_stat == 0)
     {
@@ -1406,7 +1487,7 @@ void ReadLinePrompt ()
 void ReadLinePromptHide ()
 {
     int pos = rl_colpos;
-    rl_checkcolumns ();
+    ReadLineHandleSig ();
     if (rl_prompt_stat == 0)
         return;
     s_init (&rl_operate, "", 0);
