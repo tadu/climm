@@ -923,7 +923,7 @@ int Save_RC ()
                 case 6: c = "ack     "; break;
                 case 7: c = "error   "; break;
                 case 8: c = "incoming"; break;
-                default: assert (0);
+                default: c = ""; assert (0);
             }
             fprintf (rcf, "\ncolor %s", c);
             for (t = strdup (prG->colors[i]); *t; t += l)

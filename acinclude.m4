@@ -34,11 +34,6 @@ int main(void)
     exit(0);
 }], ac_cv_have_working_snprintf=yes, ac_cv_have_working_snprintf=no, ac_cv_have_working_snprintf=cross)])
 AC_MSG_RESULT([$ac_cv_have_working_snprintf])
-if test x$ac_cv_have_working_snprintf != "xyes"; then
-  AC_LIBOBJ(snprintf)
-  AC_MSG_WARN([Replacing missing/broken snprintf() with version from http://www.ijs.si/software/snprintf/.])
-  AC_DEFINE(PREFER_PORTABLE_SNPRINTF, 1, "enable replacement snprintf if system snprintf is broken")
-fi
 AC_MSG_CHECKING(for working vsnprintf)
 AC_CACHE_VAL(ac_cv_have_working_vsnprintf,
 [AC_TRY_RUN(
@@ -69,7 +64,8 @@ int main(void)
     exit(0);
 }], ac_cv_have_working_vsnprintf=yes, ac_cv_have_working_vsnprintf=no, ac_cv_have_working_vsnprintf=cross)])
 AC_MSG_RESULT([$ac_cv_have_working_vsnprintf])
-if test x$ac_cv_have_working_vsnprintf != "xyes"; then
+if test x$ac_cv_have_working_snprintf$ac_cv_have_working_vsnprintf != "xyesyes"; then
   AC_LIBOBJ(snprintf)
-  AC_MSG_WARN([Replacing missing/broken vsnprintf() with version from http://www.ijs.si/software/snprintf/.])
+  AC_MSG_WARN([Replacing missing/broken (v)snprintf() with version from http://www.ijs.si/software/snprintf/.])
+  AC_DEFINE(PREFER_PORTABLE_SNPRINTF, 1, "enable replacement (v)snprintf if system (v)snprintf is broken")
 fi])

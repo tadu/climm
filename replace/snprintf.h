@@ -4,6 +4,11 @@
 #define PORTABLE_SNPRINTF_VERSION_MAJOR 2
 #define PORTABLE_SNPRINTF_VERSION_MINOR 2
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include <stdarg.h>
 #ifdef HAVE_SNPRINTF
 #include <stdio.h>
 #else

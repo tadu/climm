@@ -13,6 +13,9 @@ micq_SOURCES = conv.c conv_rus.c conv_jp.c file_util.c icq_response.c micq.c \
        cmd_pkt_v8.c cmd_pkt_v8_flap.c cmd_pkt_v8_tlv.c cmd_pkt_v8_snac.c \
        buildmark.c
 
+micq_LDADD = @LIBOBJS@
+$(micq_SOURCES): snprintf.h
+
 lang:
 	@rm -f *.c~ ../lang/*.i18n~
 	@../lang/i18n-extract
@@ -26,12 +29,16 @@ lang:
 	@rm -rf ../lang/*.i18n~
 
 snprintf.c:
-	ln -s ../replace/snprintf.c ../replace/snprintf.h . \
-	|| cp ../replace/snprintf.c ../replace/snprintf.h .
-
-distclean:
 	rm -f snprintf.c
+	ln -s ../replace/snprintf.c . || cp ../replace/snprintf.c .
 
-buildmark.o: @LIBOBJS@ force
+snprintf.h:
+	rm -f snprintf.h
+	ln -s ../replace/snprintf.h . || cp ../replace/snprintf.h .
+
+clean:
+	rm -f snprintf.c snprintf.h
+
+buildmark.o: force
 
 force:

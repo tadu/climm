@@ -184,7 +184,6 @@
  *		  not used;
  */
 
-
 /* Define HAVE_SNPRINTF if your system already has snprintf and vsnprintf.
  *
  * If HAVE_SNPRINTF is defined this module will not produce code for
@@ -323,6 +322,8 @@
 #include <stdarg.h>
 #include <assert.h>
 #include <errno.h>
+#include "snprintf.h"
+
 
 #ifdef isdigit
 #undef isdigit
