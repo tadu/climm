@@ -1,6 +1,5 @@
 .\" $Id$ -*- nroff -*-
-.\"  EN: micq.7,v 1.36.2.2
-.\"        nearly 1.42
+.\"  EN: micq.7,v 1.42
 .TH MICQ 7 mICQ DE
 .SH NAME
 .B mICQ
@@ -86,6 +85,7 @@ Siehe
 .B msg
 f\(:ur weitere Details.
 .IR Nachricht .
+.TP
 .BI r \ [<Nachricht>]
 Antwortet auf die zuletzt empfangene Nachricht.
 Siehe 
@@ -256,6 +256,7 @@ Zeigt alle Meta-Daten \(:uber alle
 .BI ss \ <Kontakte>
 Zeigt alle lokal gespeicherten Meta-Daten \(:uber alle
 .IR Kontakte .
+.TP
 .B i
 Zeigt alle Kontakte auf der Ignorieren-Liste.
 .TP
@@ -691,194 +692,225 @@ stattdessen.
 .RE
 .TP
 .BI opt \ [<contact>|<contact\ group>|connection|global\ [<option>\ [<value>]]]
-Set option
+Setze die Option
 .I option
-for contact
+für Kontakt
 .IR contact ,
-contact group
+Kontaktgruppe
 .IR contact\ group ,
-for the current connection or globally to the value
+für die aktuelle Verbindung oder global auf den Wert
 .IR value ,
-or display the current value, or display all options and their settings.
+oder zeige den aktuellen Wert, oder zeige alle Optionen und ihren Wert.
 .br
-When resolving options for contacts, the option for the contact itself will be used,
-if set; otherwise, if the contact belongs to a group, the option for that group, if set;
-otherwise, if the contact belongs to a server connection (i.e. is not yet removed),
-the option for the server connection; otherwise the global option, if set. Otherwise,
-0 for integer options, FALSE for boolean options, the color string for "no color"
-unless this color string is requested, or the empty string for string options.
+Wenn Optionen von Kontakten aufgel\(:ost werden, wird zuerst die Option
+vom Kontakt selber benutzt, falls diese gesetzt ist; andernfalls wird,
+wenn der Kontakt zu einer Gruppe geh\(:ort, die Option dieser Gruppe
+benutzt, falls diese gesetzt ist; andernfalls wird, wenn der Kontakt zu
+einer Server-Verbindung geh\(:ort (d.h. wenn er noch nicht entfernt wurde),
+die Option von der Server-Verbindung benutzt, falls diese gesetzt ist;
+andernfalls wird die globale Option benutzt, falls diese gesetzt ist.
+Andernfalls wird 0 angenommen, wenn es eine Ganzzahl-Option ist, falsch
+f\(:ur eine An-/Aus-Option, die Farbzeichenkette f\(:ur "keine Farbe",
+falls nicht gerade nach selbiger gesucht wurde, oder andernfalls
+die leere Zeichenkette f\(:ur Zeichenkettenoptionen.
 .br
-When resolving options for contact groups, the same is done except for the
-first step; options for connections are taken from the connection, then
-globally; and global options, of course, only globally.
+Wenn Optionen von Kontaktgruppen aufgel\(:ost werden, wird das
+gleiche getan, au\(sser dem ersten Schritt; Optionen von
+Verbindungen werden zuerst von der Verbindung, andernfalls
+global genommen; und globale Optionen nat\(:urlich nur global.
 .br
-The following options currently exist, with type and applicability:
+Die folgenden Optionen existieren, angegeben mit Typ und Anwendbarkeit:
 .RS
 .TP
-.BI colorscheme \ integer\ global
-The number of the color scheme to use. Set to 0 to disable and use the
-colors defined below.
+.BI colorscheme \ Ganzzahl\ global
+Die Nummer des Farbschemas, das benutzt werden soll. Ist dies
+auf 0 gesetzt, dann (und nur dann) werden die unten definierten
+Farben verwendet.
 .TP
-.BI colornone \ color\ global
-The color string to use for normal text. The keywords
-.BR black ,
-.BR red ,
-.BR green ,
-.BR yellow ,
-.BR blue ,
-.BR magenta ,
-.BR cyan ,
-.BR white ,
-.BR none ,
-and
-.BR bold
-are understood and replaced by their ANSI control sequences.
-Note that any color already includes
-.BR none ,
-so specify
-.B bold
-always after the color. Any other text is interpreted as control characters
-to output verbatim.
+.BI colornone \ Farbzeichenkette\ global
+Die Farbzeichenkette, um normalen Text auszuw\(:ahlen.
+Die Schl\(:usselw\(:orter
+.BR black (schwarz),
+.BR red (rot),
+.BR green (gr\(:un),
+.BR yellow (gelb),
+.BR blue (blau),
+.BR magenta (magenta),
+.BR cyan (cyan),
+.BR white (wei\(ss),
+.BR none (keine),
+und
+.BR bold (fett)
+werden jeweils durch die entsprechende ANSI-Kontrollsequenz ersetzt.
+Jede Farbe enth\(:alt implizit bereits
+.BR none (keine),
+deshalb mu\(ss
+.BR bold (fett)
+immer nach einer Farbe angegeben werden. Jeder andere Text wird als
+Kontrollsequenz interpretiert, die unver\(:andert auszugeben ist.
 .TP
-.BI colorserver \ color\ global
-The color string to use for server stuff.
+.BI colorserver \ Farbzeichenkette\ global
+Die Farbzeichenkette f\(:ur Dinge, die den Server betreffen.
 .TP
-.BI colorclient \ color\ global
-The color string to use for client stuff.
+.BI colorclient \ Farbzeichenkette\ global
+Die Farbzeichenkette f\(:ur Dinge, die mICQ selber betreffen.
 .TP
-.BI colorinvchar \ color\ global
-The color string to use when displaying byte\-sequences invalid for the
-given encoding.
+.BI colorinvchar \ Farbzeichenkette\ global
+Die Farbzeichenkette f\(:ur die Anzeige von Bytesequenzen, die
+in der aktuellen Zeichenkodierung keinen Sinn haben.
 .TP
-.BI colorerror \ color\ global
-The color string to use for errors.
+.BI colorerror \ Farbzeichenkette\ global
+Die Farbzeichenkette f\(:ur die Anzeige von Fehlern.
 .TP
-.BI colordebug \ color\ global
-The color string to use for debug output.
+.BI colordebug \ Farbzeichenkette\ global
+Die Farbzeichenkette f\(:ur die Ausgabe von Debug-Meldungen.
 .TP
-.BI colorquote \ color\ global
-The color string to use for quoted text.
+.BI colorquote \ Farbzeichenkette\ global
+Die Farbzeichenkette f\(:ur die Ausgabe von zitiertem Text.
 .TP
-.BI webaware \ boolean\ connection
-Whether the current status should be visible on the web.
+.BI webaware \ An/Aus\ Verbindung
+Gibt an, ob der aktuelle Status \(:uber das Web einsehbar sein soll.
 .TP
-.BI hideip \ boolean\ connection
-Whether to hide the (local) IP address.
+.BI hideip \ An/Aus\ Verbindung
+Gibt an, ob die (lokale) IP-Adresse versteckt werden soll.
 .TP
-.BI dcauth \ boolean\ connection
-Whether authorized contacts can see the (remote) IP address.
+.BI dcauth \ An/Aus\ Verbindung
+Gibt an, ob nur autorisierte Kontakte die (entfernte)
+IP-Adresse sehen d\(:urfen.
 .TP
-.BI dccont \ boolean\ connection
-Whether contacts can see the (remote) IP address.
+.BI dccont \ An/Aus\ Verbindung
+Gibt an, ob Kontakte die (entferne)
+IP-Adresse sehen d\(:urfen.
 .TP
-.BI obeysbl \ boolean\ connection
-Whether to load the server\-based contact list upon login. This will
-enforce required authorizations, which will be ignored for local
-contact lists.
+.BI obeysbl \ An/Aus\ Verbindung
+Gibt an, ob die Server-basierte Kontaktliste beim Einloggen
+geladen werden soll. Die f\(:uhrt dazu, da\(ss Autorisierungen
+durchgesetzt werden, welche bei der lokalen Kontaktliste
+noch ignoriert werden.
 .TP
-.BI ignore \ boolean\ contact
-Whether to ignore all messages from this contact.
+.BI ignore \ An/Aus\ Kontakt
+Gibt an, ob alle Nachrichten von diesem Kontakt ignoriert
+werden sollen.
 .TP
-.BI hidefrom \ boolean\ contact
-Whether to be invisible for this contact.
+.BI hidefrom \ An/Aus\ Kontakt
+Gibt an, ob man gegen\(:uber diesem Kontakt immer unsichtbar ist.
 .TP
-.BI intimate \ boolean\ contact
-Whether to be allways visible for this contact.
+.BI intimate \ An/Aus\ Kontakt
+Gibt an, ob man gegen\(:uber diesem Kontakt immer sichtbar ist.
 .TP
-.BI logonoff \ boolean\ contact
-Whether to log when this contacts goes online or offline.
+.BI logonoff \ An/Aus\ Kontakt
+Gibt an, ob mitgeloggt werden soll, wenn sich dieser Kontakt
+einloggt oder wieder verschwindet.
 .TP
-.BI logchange \ boolean\ contact
-Whether to log status changes for this contact.
+.BI logchange \ An/Aus\ Kontakt
+Gibt an, ob Statuswechsel dieses Kontaktes mitgeloggt werden sollen.
 .TP
-.BI logmess \ boolean\ contact
-Whether to log messages for this contact.
+.BI logmess \ An/Aus\ Kontakt
+Gibt an, ob Nachrichten dieses Kontaktes mitgeloggt werden sollen.
 .TP
-.BI showonoff \ boolean\ contact
-Whether to show when this contact goes online or offline.
+.BI showonoff \ An/Aus\ Kontakt
+Gibt an, ob angezeigt werden soll, wenn sich dieser Kontakt
+einloggt oder wieder verschwindet.
 .TP
-.BI showchange \ boolean\ contact
-Whether to show status changes for this contact.
+.BI showchange \ An/Aus\ Kontakt
+Gibt an, ob Statuswechsel dieses Kontaktes angezeigt werden sollen.
 .TP
-.BI hideack \ boolean\ contact
-Whether to hide acknowledges for messages to this contact.
+.BI hideack \ An/Aus\ Kontakt
+Gibt an, ob Best\(:atigungen zu Nachrichten dieses Kontaktes
+versteckt werden sollen.
 .br
-Note: using this is a really bad idea, as you'll miss when messages
-are resent without acknowledge.
+Hinweis: dies zu benutzen ist eine wirklich schlechte Idee,
+da dadurch nicht angezeigt wird, wenn Nachrichten als
+unbest\(:atigte Nachrichten erneut versendet werden.
 .TP
-.BI wantsbl \ boolean\ contact
-Whether you want this contact to be on the server side contact list.
+.BI wantsbl \ An/Aus\ Kontakt
+Gibt an, ob dieser Kontakt auf die Server-seitige Kontaktliste soll.
 .TP
-.BI shadow \ boolean\ contact
-Whether you want to hide this contact in contact list displays as
-long as none of the *v commands is used.
+.BI shadow \ An/Aus\ Kontakt
+Gibt an, ob dieser Kontakt in der kontaktliste nicht angezeigt werden
+soll, wenn nicht eines der auf v endenden Kommandos verwendet wird.
 .TP
-.BI local \ boolean\ contact
-Whether this contact is not a real contact, but just a nick for a number.
+.BI local \ An/Aus\ Kontakt
+Gibt an, ob dieser Kontakt kein richtiger Kontakt ist, sondern
+nur ein Spitzname f\(:ur die betreffende Nummer.
 .TP
-.BI encoding \ string\ contact
-The encoding to assume for messages whose encoding is undefined,
-in particular meta data on the server.
+.BI encoding \ Zeichenkette\ Kontakt
+Die Zeichenkodierung, in der zu sein eine Nachricht angenommen wird,
+wenn die Zeichenkodierung nicht definiert ist. Das betrifft insbesondere
+die Metadaten auf dem Server.
 .TP
-.BI tabspool \ integer\ contact
-Whether to add a contact to the tabs list upon startup.
+.BI tabspool \ Ganzzahl\ Kontakt
+Gibt an, ob dieser Kontakt beim Starten in die Liste der mittels
+der Tabulator-Taste aufrufbaren Kontakte aufgenommen werden soll.
 .TP
-.BI autoaway \ string\ contact
-The autoaway string for status away to return to this contact.
+.BI autoaway \ Zeichenkette\ Kontakt
+Die Abwesenheitsmeldung f\(:ur den Status "abwesend", die an
+diesen Kontakt zur\(:uckgegeben werden soll.
 .TP
-.BI autona \ string\ contact
-The autoaway string for status na to return to this contact.
+.BI autona \ Zeichenkette\ Kontakt
+Die Abwesenheitsmeldung f\(:ur den Status "nicht verf\(:ugbar", die an
+diesen Kontakt zur\(:uckgegeben werden soll.
 .TP
-.BI autoocc \ string\ contact
-The autoaway string for status occ to return to this contact.
+.BI autoocc \ Zeichenkette\ Kontakt
+Die Abwesenheitsmeldung f\(:ur den Status "besch\(:aftigt", die an
+diesen Kontakt zur\(:uckgegeben werden soll.
 .TP
-.BI autodnd \ string\ contact
-The autoaway string for status dnd to return to this contact.
+.BI autodnd \ Zeichenkette\ Kontakt
+Die Abwesenheitsmeldung f\(:ur den Status "nicht st\(:oren", die an
+diesen Kontakt zur\(:uckgegeben werden soll.
 .TP
-.BI autoffc \ string\ contact
-The autoaway string for status ffc to return to this contact.
+.BI autoffc \ Zeichenkette\ Kontakt
+Die Abwesenheitsmeldung f\(:ur den Status "frei f\(:ur Plaudereien", die an
+diesen Kontakt zur\(:uckgegeben werden soll.
 .TP
-.BI colormessage \ string\ contact
-The color string to use for messages of this contact.
+.BI colormessage \ Farbzeichenkette\ Kontakt
+Die Farbzeichenkette, die f\(:ur Nachrichten dieses Kontakts verwendet werden soll.
 .TP
-.BI colorsent \ string\ contact
-The color string to use for the nick when messages are sent.
+.BI colorsent \ Farbzeichenkette\ Kontakt
+Die Farbzeichenkette, die f\(:ur den Spitznamen dieses Kontakts verwendet werden soll,
+wenn Nachrichten verschickt werden.
 .TP
-.BI colorack \ string\ contact
-The color string to use for the nick when messages are acknowledged.
+.BI colorack \ Farbzeichenkette\ Kontakt
+Die Farbzeichenkette, die f\(:ur den Spitznamen dieses Kontakts verwendet werden soll,
+wenn Nachrichten best\(:atigt werden.
 .TP
-.BI colorincoming \ string\ contact
-The color string to use for the nick when messages are received.
+.BI colorincoming \ Farbzeichenkette\ Kontakt
+Die Farbzeichenkette, die f\(:ur den Spitznamen dieses Kontakts verwendet werden soll,
+wenn Nachrichten empfangen werden.
 .TP
-.BI colorcontact \ string\ contact
-The color string to use for the nick otherwise.
+.BI colorcontact \ Farbzeichenkette\ Kontakt
+Die Farbzeichenkette, die ansonsten f\(:ur den Spitznamen dieses Kontakts verwendet werden soll.
 .PP
-New for 0.5.
+Neu seit 0.5.
 .RE
 .TP
 .BI optcontact \ <contact>\ [<option>\ [<value>]]
-Set or display option
+Setze oder zeige die Option
 .I option
-or all options of contact
-.IR contact .
-New for 0.5.
+oder alle Optionen des Kontaktes
+.IR contact
+an.
+Neu seit 0.5.
 .TP
 .BI optgroup \ <group>\ [<option>\ [<value>]]
-Set or display option
+Setze oder zeige die Option
 .I option
-or all options of contact group
-.IR group .
-New for 0.5.
+oder alle Optionen der Kontaktgruppe
+.IR group 
+an.
+Neu seit 0.5.
 .TP
 .BI optconnection \ [<option>\ [<value>]]
-Set or display connection option
-.IR option .
-New for 0.5.
+Setze oder zeige die Option
+.IR option 
+der aktuellen Verbindung an.
+Neu seit 0.5.
 .TP
 .BI optglobal \ [<option>\ [<value>]]
-Set or display global option
-.IR option .
-New for 0.5.
+Setze oder zeige die globale Option
+.IR option
+an.
+Neu seit 0.5.
 .TP
 .B save
 Speichert die aktuellen Einstellungen in der Kon\(figurationsdatei ab,
@@ -977,22 +1009,24 @@ is, dann gebe den Dateinamen ohne den Pfad an, wenn
 ist, dann gebe den richtigen Dateinamen an.
 .TP
 .BR accept \ [<contact>]\ [<id>]
-Accept an incoming file request from
+Akzeptiert eine eingehende Datei\(:ubertragung von Kontakt
 .IR contact
-with the given ID
+mit der Kennung
 .IR id .
-If there is only one pending incoming file request, the
-.IR contact \ and\  id
-arguments may be omitted, otherwise it is undefined which file request
-is answered when several match.
+Wenn es nur eine ausstehende eingehende Datei\(:ubertragung gibt,
+dann k\(:onnen die
+.IR contact -\ und\  id -
+Argumente weggelassen werden, andernfalls ist es undefiniert, welche
+Datei\(:ubertragung gemeint ist, falls mehrere passen.
 .TP
 .BR deny \ [<contact>]\ [<id>]\ [<reason>]
-Deny an incoming file request from
+Lehnt eine einkommende Datei\(:ubertragung von Kontakt
 .IR contact
-with the given ID
+mit der Kennung
 .IR id
-with the reason
-.IR reason .
+mit dem Grund
+.IR reason
+ab.
 .RE
 .TP
 .BI login \ [...]
@@ -1063,26 +1097,27 @@ dies herauszu\(finden; es kann nur herausgefunden werden, ob verbunden oder nich
 Dieser Befehl hat nur noch in den seltensten F\(:allen den gew\(:unschten Effekt.
 .TP
 .BI as \ <nr|uin>\ <cmd>
-Execute mICQ command
+F\(:uhre den mICQ-Befehl
 .I cmd
-as if the connection number
+aus als ob die Verbindung mit der Nummer
 .I nr
-or for the UIN
+oder f\(:ur die UIN
 .I uin
-would be the current one.
-.SH COMMANDS FOR SCRIPTING
+die aktuelle w\(:are.
+.SH KOMMANDOS F\(:UR SKRIPTE
 .TP
 .BI tclscript \ <file>
-Execute the tcl script
-.IR file ,
-which may be given relative to the mICQ base directory.
+F\(:uhre das tcl-Skript
+.IR file 
+aus, wobei der Pfad relativ zum mICQ-Basis-Verzeichnis
+angegeben werden kann.
 .TP
 .BI tcl \ <string>
-Execute the tcl command
-.IR string .
-Type
+F\(:uhre den tcl-Befehl
+.IR string
+aus. Mit
 .I tcl micq help
-to get a list of mICQ\-specific tcl commands.
+wird eine Liste der mICQ\-spezifischen tcl-Befehle ausgegeben.
 .SH SIEHE AUCH
 .BR micq (1),
 .BR micqrc (5)
