@@ -915,11 +915,14 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                     ContactSetCap (cont, cap2);
                     ContactSetVersion (cont);
                     
-                    event->extra = ExtraSet (extra, EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL);
-                    event->uin = cont->uin;
-                    newevent = QueueEnqueueData (event->conn, QUEUE_ACKNOWLEDGE, seq1,
-                                 (time_t)-1, p, cont->uin, NULL, &SnacSrvCallbackSendack);
-                    SrvReceiveAdvanced (event->conn, event, pp, newevent);
+                    if (cap2->id != CAP_STR_2001 && cap2->id != CAP_STR_2001)
+                    {
+                        event->extra = ExtraSet (extra, EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL);
+                        event->uin = cont->uin;
+                        newevent = QueueEnqueueData (event->conn, QUEUE_ACKNOWLEDGE, seq1,
+                                     (time_t)-1, p, cont->uin, NULL, &SnacSrvCallbackSendack);
+                        SrvReceiveAdvanced (event->conn, event, pp, newevent);
+                    }
                     PacketD (pp);
                     TLVD (tlv);
                     return;
