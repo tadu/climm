@@ -1809,12 +1809,17 @@ static JUMP_F(CmdUserStatusDetail)
             M_print (COLMESSAGE);
             if (cg != tcg && cg != conn->contacts)
             {
-                for (i = j = (totallen - c_strlen (cg->name) - 1) / 2; i >= 20; i -= 20)
-                    M_print ("====================");
-                M_printf ("%.*s", (int)i, "====================");
-                M_printf (" " COLCONTACT "%s" COLMESSAGE " ", cg->name);
-                for (i = totallen - j - c_strlen (cg->name) - 2; i >= 20; i -= 20)
-                    M_print ("====================");
+                if (totallen > c_strlen (cg->name) + 1)
+                {
+                    for (i = j = (totallen - c_strlen (cg->name) - 1) / 2; i >= 20; i -= 20)
+                        M_print ("====================");
+                    M_printf ("%.*s", (int)i, "====================");
+                    M_printf (" " COLCONTACT "%s" COLMESSAGE " ", cg->name);
+                    for (i = totallen - j - c_strlen (cg->name) - 2; i >= 20; i -= 20)
+                        M_print ("====================");
+                }
+                else
+                    M_printf (" " COLCONTACT "%s" COLMESSAGE " ", cg->name);
             }
             else
                 for (i = totallen; i >= 20; i -= 20)
@@ -3225,11 +3230,13 @@ static JUMP_F(CmdUserConn)
             M_printf (i18n (2098, "Connection %ld is not a server connection.\n"), i);
             return 0;
         }
+#if 0
         if (~conn->connect & CONNECT_OK)
         {
             M_printf (i18n (2096, "Connection %ld is not open.\n"), i);
             return 0;
         }
+#endif
         currconn = conn;
         M_printf (i18n (2099, "Selected connection %ld (version %d, UIN %ld) as current connection.\n"),
                  i, conn->ver, conn->uin);

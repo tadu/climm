@@ -118,7 +118,7 @@ ContactGroup *ContactGroupFind (UWORD id, Connection *serv, const char *name, BO
     cnt_groups[i] = calloc (1, sizeof (ContactGroup));
     if (!cnt_groups[i])
         return NULL;
-    Debug (DEB_CONTACT, "grpadd #%d %p", i, cnt_groups[i]);
+    Debug (DEB_CONTACT, "grpadd #%d %p %p", i, cnt_groups[i], serv);
     cnt_groups[i]->id = id;
     cnt_groups[i]->serv = serv;
     cnt_groups[i]->name = strdup (name ? name : "");
@@ -264,12 +264,6 @@ Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nic
         Debug (DEB_CONTACT, "new   #%d %ld '%s' %p in %p was temporary", id, uin, nick, alias, group);
         return alias;
     }
-    if (group)
-    {
-        if ((cont = ContactFind (NULL, id, uin, nick, 1)))
-            ContactAdd (group, cont);
-        return cont;
-    }
     cont = calloc (1, sizeof (Contact));
     if (!cont)
         return NULL;
@@ -304,6 +298,8 @@ Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nic
         Debug (DEB_CONTACT, "new   #%d %ld '%s' %p in %p", id, uin, nick, cont, group);
     else
         Debug (DEB_CONTACT, "temp  #%d %ld '' %p in %p", id, uin, cont, group);
+    if (group)
+        ContactAdd (NULL, cont);
     return cont;
 }
 

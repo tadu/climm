@@ -281,13 +281,13 @@ void Read_RC_File (FILE *rcf)
     char *tmp = NULL, *tmp2 = NULL, *cmd = NULL;
     char *p, *line, *args;
     Contact *cont = NULL, *lastcont = NULL;
-    Connection *oldconn = NULL, *conn = NULL;
+    Connection *oldconn = NULL, *conn = NULL, *tconn;
 #ifdef ENABLE_REMOTECONTROL
     Connection *conns = NULL;
 #endif
     ContactGroup *cg = NULL;
     int section, dep = 0;
-    UDWORD uin, i;
+    UDWORD uin, i, j;
     UWORD flags;
     UBYTE enc = ENC_LATIN1, format = 0;
     char *tab_nick_spool[TAB_SLOTS];
@@ -804,18 +804,37 @@ void Read_RC_File (FILE *rcf)
                     PrefParse (cmd);
                 }
                 
-                
-                if (!(cont = ContactFind (NULL, 0, uin, ConvToUTF8 (cmd, enc, -1, 0), 1)))
+                for (i = j = 0; (tconn = ConnectionNr (i)); i++)
                 {
-                    M_printf (COLERROR "%s" COLNONE " %s\n", i18n (1619, "Warning:"),
-                             i18n (1620, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
-                    section = -1;
-                    break;
+                    if (tconn->contacts && (cont = ContactFind (tconn->contacts, 0, uin, NULL, 0)))
+                    {
+                        j = 1;
+                        if (cont->flags & CONT_ALIAS)
+                            ContactFind (tconn->contacts, 0, uin, ConvToUTF8 (cmd, enc, -1, 0), 1);
+                        else
+                        {
+                            s_repl (&cont->nick, ConvToUTF8 (cmd, enc, -1, 0));
+                            cont->flags = flags;
+                        }
+                    }
                 }
-                if (~cont->flags & CONT_ALIAS)
-                    cont->flags = flags;
-                if ((prG->verbose & 0x7fff) > 2)
-                    M_printf ("%ld = %s %lx | %p\n", cont->uin, cont->nick, cont->flags, cont);
+                if (!j)
+                {
+                    dep = 1;
+                    for (i = 0; (tconn = ConnectionNr (i)) && (~tconn->type & TYPEF_ANY_SERVER); i++)
+                        ;
+                    if (!tconn)
+                        break;
+                    if (!(cont = ContactFind (tconn->contacts, 0, uin, ConvToUTF8 (cmd, enc, -1, 0), 1)))
+                    {
+                        M_printf (COLERROR "%s" COLNONE " %s\n", i18n (1619, "Warning:"),
+                                 i18n (1620, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
+                        section = -1;
+                        break;
+                    }
+                    if (~cont->flags & CONT_ALIAS)
+                        cont->flags = flags;
+                }
                 break;
             case 2:
                 PrefParse (cmd);
@@ -1013,7 +1032,8 @@ void Read_RC_File (FILE *rcf)
                     PrefParseInt (i);
                     PrefParseInt (uin);
                     
-                    ContactFind (cg, i, uin, NULL, 1);
+                    cont = ContactFind (conn->contacts, i, uin, s_sprintf ("%ld", uin), 1);
+                    ContactAdd (cg, cont);
                 }
                 else
                 {
@@ -1028,7 +1048,7 @@ void Read_RC_File (FILE *rcf)
     /* now tab the nicks we may have spooled earlier */
     for (i = 0; i < spooled_tab_nicks; i++)
     {
-        Contact *cont = ContactFind (NULL, 0, 0, tab_nick_spool[i], 1);
+        Contact *cont = ContactFind (NULL, 0, 0, tab_nick_spool[i], 0);
         if (cont)
             TabAddUIN (cont->uin);
         free (tab_nick_spool[i]);
