@@ -433,9 +433,10 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
     Packet *p, *pak;
     TLV *tlv;
     UDWORD uin;
-    int i, len, type, t;
+    int i, type, t;
     char *text = NULL;
     const char *txt;
+    UDWORD old;
 
     pak = event->pak;
 
@@ -479,7 +480,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
             PacketReadB2 (p);
             PacketReadData (p, NULL, PacketReadB2 (p));
             PacketReadB2 (p);
-            len = PacketReadBAt2 (p, PacketReadPos (p));
+            PacketReadBAt2 (p, PacketReadPos (p));
             text = PacketReadStrB (p);
             txt = text + 4;
             type = NORM_MESS;
@@ -540,18 +541,15 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
             return;
     }
 
-    Time_Stamp ();
-    M_print (" " CYAN BOLD "%10s" COLNONE " ", ContactFindName (uin));
-
     if (tlv[6].len)
     {
-        UDWORD old = STATUS_OFFLINE;
-        
-        if (cont)
-            old = cont->status;
+        old = cont && !cont->not_in_list ? cont->status : STATUS_OFFLINE;
 
         if (cont)
             UtilUIUserOnline (cont, tlv[6].nr);
+
+        Time_Stamp ();
+        M_print (" " CYAN BOLD "%10s" COLNONE " ", ContactFindName (uin));
 
         if (old != tlv[6].nr)
         {
@@ -560,6 +558,12 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
             M_print (") ");
         }
     }
+    else
+    {
+        Time_Stamp ();
+        M_print (" " CYAN BOLD "%10s" COLNONE " ", ContactFindName (uin));
+    }
+
 
     Do_Msg (event->sess, type, strlen (txt), txt, uin, 0);
 
@@ -1271,7 +1275,7 @@ void SnacCliMetareqinfo (Session *sess, UDWORD uin)
 /*
  * CLI_SEARCHBYPERSINF - SNAC(15,2) - 2000/1375
  */
-void SnacCliSearchbypersinf (Session *sess, const char *email, const char *nick, const char *name, char *surname)
+void SnacCliSearchbypersinf (Session *sess, const char *email, const char *nick, const char *name, const char *surname)
 {
     Packet *pak;
 

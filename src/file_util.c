@@ -213,11 +213,8 @@ void Initalize_RC_File ()
 
     sesst->assoc = sess;
     sess->assoc = sesst;
-    if (uin)
-    {
-        sesst->spref->type = TYPE_PEER;
-        sesst->spref->flags = CONN_AUTOLOGIN;
-    }
+    sesst->spref->type = TYPE_PEER;
+    sesst->spref->flags = CONN_AUTOLOGIN;
     sesst->type = sesst->spref->type;
     sesst->flags = sesst->spref->flags;
     sesst->spref->version = 6;

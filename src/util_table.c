@@ -178,18 +178,41 @@ static const char *TableInterest[] = {
     _i18n (1485, "Clothing"),              _i18n (1486, "Parties"),               _i18n (1487, "Women"),             
     _i18n (1488, "Social science"),        _i18n (1489, "60's"),                  _i18n (1490, "70's"),              
     _i18n (1491, "80's"),                  _i18n (1492, "50's"),              
+    _i18n (1797, "Finance and corporate"), _i18n (2000, "Entertainment"),
+    _i18n (2001, "Consumer electronics"),  _i18n (2002, "Retail stores"),
+    _i18n (2003, "Health and beauty"),     _i18n (2004, "Media"),
+    _i18n (2005, "Household products"),    _i18n (2006, "Mail order catalog"),
+    _i18n (2007, "Business services"),     _i18n (1977, "Audio and visual"),
+    _i18n (1978, "Sporting and athletic"), _i18n (1979, "Publishing"),
+    _i18n (1980, "Home automation")
 };
 #define TableInterestSize sizeof (TableInterest) / sizeof (const char *)
 
-static UWORD TablePastCodes[] = {
-    214,
-    300, 301, 302, 303, 304, 305, 306, 399,
-    0
+static const char *TableAffiliation[] = {
+    _i18n (1981, "Alumni Org."),
+    _i18n (1982, "Charity Org."),
+    _i18n (1983, "Club/Social Org."),
+    _i18n (1984, "Community Org."),
+    _i18n (1985, "Cultural Org."),
+    _i18n (1986, "Fan Clubs"),
+    _i18n (1987, "Fraternity/Sorority"),
+    _i18n (1988, "Hobbyists Org."),
+    _i18n (1989, "International Org."),
+    _i18n (1990, "Nature and Environment Org."),
+    _i18n (1991, "Professional Org."),
+    _i18n (1992, "Scientific/Technical Org."),
+    _i18n (1993, "Self Improvement Group"),
+    _i18n (1994, "Spiritual/Religious Org."),
+    _i18n (1995, "Sports Org."),
+    _i18n (1996, "Support Org."),
+    _i18n (1997, "Trade and Business Org."),
+    _i18n (1998, "Union"),
+    _i18n (1999, "Volunteer Org."),
 };
-#define TablePastCodesSize sizeof (TablePastCodes) / sizeof (UWORD)
+
+#define TableAffiliationSize sizeof (TableAffiliation) / sizeof (const char *)
 
 static const char *TablePast[] = {
-    _i18n (1797, "Sports Club"), /* unsure  --rtc */
     _i18n (1798, "Elementary School"),
     _i18n (1799, "High School"),
     _i18n (1808, "College"),
@@ -197,8 +220,7 @@ static const char *TablePast[] = {
     _i18n (1178, "Military"),
     _i18n (1812, "Past Work Place"),
     _i18n (1813, "Past Organization"),
-    _i18n (1959, "Other"),
-    NULL
+    _i18n (1959, "Other")
 };
 #define TablePastSize sizeof (TablePast) / sizeof (const char *)
 
@@ -252,20 +274,29 @@ const char *TableGetCountry (UWORD code)
     return i18n (1199, "Unknown country");
 }
 
-const char *TableGetPast (UWORD code)
+const char *TableGetAffiliation (UWORD code)
 {
-    int i;
+    code -= 200;
+    if (code == 99)
+        return _i18n (1499, "Other");
 
-    assert (TablePastCodesSize == TablePastSize);
-
-    if (!code)
+    if (code >= TableAffiliationSize)
         return NULL;
 
-    for (i = 0; TablePastCodes[i]; i++)
-        if (TablePastCodes[i] == code)
-            return i18n (-1, TablePast[i]);
+    return i18n (-1, TableAffiliation[code]);
+}
 
-    return NULL;
+
+const char *TableGetPast (UWORD code)
+{
+    code -= 300;
+    if (code == 99)
+        return _i18n (1499, "Other");
+
+    if (code >= TablePastSize)
+        return NULL;
+
+    return i18n (-1, TablePast[code]);
 }
 
 const char *TableGetOccupation (UWORD code)

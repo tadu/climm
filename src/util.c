@@ -71,28 +71,28 @@ const char *Convert_Status_2_Str (UDWORD status)
 {
     if (STATUS_OFFLINE == status)       /* this because -1 & 0xFFFF is not -1 */
     {
-        return i18n (1653, "Offline");
+        return i18n (1969, "offline");
     }
 
     switch (status & 0x1ff)
     {
         case STATUS_ONLINE:
-            return i18n (1654, "Online");
+            return i18n (1970, "online");
         case STATUS_DND_99:
         case STATUS_DND:
-            return i18n (1922, "Do not disturb");
+            return i18n (1971, "do not disturb");
         case STATUS_AWAY:
-            return i18n (1923, "Away");
+            return i18n (1972, "away");
         case STATUS_OCCUPIED_MAC:
         case STATUS_OCCUPIED:
-            return i18n (1925, "Occupied");
+            return i18n (1973, "occupied");
         case STATUS_NA:
         case STATUS_NA_99:
-            return i18n (1924, "Not Available");
+            return i18n (1974, "not available");
         case STATUS_INVISIBLE:
-            return i18n (1926, "Invisible");
+            return i18n (1975, "invisible");
         case STATUS_FREE_CHAT:
-            return i18n (1927, "Free for chat");
+            return i18n (1976, "free for chat");
         default:
             return NULL;
     }
@@ -102,38 +102,13 @@ const char *Convert_Status_2_Str (UDWORD status)
 prints out the status of new_status as a string
 if possible otherwise as a hex number
 *********************************************/
-void Print_Status (UDWORD new_status)
+void Print_Status (UDWORD status)
 {
-    BOOL inv = FALSE;
-    
-    if (STATUS_OFFLINE != new_status)
-    {
-        if (new_status & STATUS_INVISIBLE)
-        {
-            inv = TRUE;
-            new_status = new_status & (~STATUS_INVISIBLE);
-        }
-    }
-    if (Convert_Status_2_Str (new_status))
-    {
-        if (inv)
-        {
-            M_print ("%s-%s", i18n (1926, "Invisible"), Convert_Status_2_Str (new_status));
-            new_status = new_status | (STATUS_INVISIBLE);
-        }
-        else
-        {
-            M_print ("%s", Convert_Status_2_Str (new_status));
-        }
-        if (prG->verbose)
-            M_print (" %08x", new_status);
-    }
-    else
-    {
-        if (inv)
-            new_status = new_status | (STATUS_INVISIBLE);
-        M_print ("%08lX", new_status);
-    }
+    if (status != STATUS_OFFLINE && status & STATUS_INVISIBLE)
+        M_print ("%s-", i18n (1975, "invisible"));
+    M_print (Convert_Status_2_Str (status));
+    if (prG->verbose)
+        M_print (" %08x", status);
 }
 
 /**********************************************
@@ -511,7 +486,11 @@ UDWORD UtilCheckUIN (Session *sess, UDWORD uin)
 {
     if (!ContactFind (uin))
     {
-        ContactAdd (uin, ContactFindName (uin));
+        Contact *cont;
+        
+        cont = ContactAdd (uin, ContactFindName (uin));
+        if (cont)
+            cont->not_in_list = 1;
         if (sess->ver > 6)
             SnacCliAddcontact (sess, uin);
         else

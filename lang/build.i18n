@@ -794,7 +794,7 @@
 1794:If you already have an UIN, please enter it. Otherwise, enter 0, and I will request one for you.¶
 1795:Password:
 1796:Setup wizard finished. Please wait until registration has finished.¶
-1797:Sports Club
+1797:Finance and corporate
 1798:Elementary School
 1799:High School
 1800:Change the working language to <lang>.
@@ -873,10 +873,10 @@
 1873:Work City:
 1874:Work State:
 1875:Personal interests:
-1876:Background:
+1876:Personal past background:
 1877:ok.¶
 1878:Error while reading from socket: %s (%d)¶
-1879:Personal Past:
+1879:Affiliations:
 1880:Incoming packet is not a FLAP: id is %d.¶
 1881:FLAP channel 1 out of data.¶
 1882:FLAP channel 1 cmd 1 extra data:¶
@@ -966,3 +966,42 @@
 1966: Conection Refused on port %d at %s¶
 1967:More Info for
 1968:User found
+1969:offline
+1970:online
+1971:do not disturb
+1972:away
+1973:occupied
+1974:not available
+1975:invisible
+1976:free for chat
+1977:Audio and visual
+1978:Sporting and athletic
+1979:Publishing
+1980:Home automation
+1981:Alumni Org.
+1982:Charity Org.
+1983:Club/Social Org.
+1984:Community Org.
+1985:Cultural Org.
+1986:Fan Clubs
+1987:Fraternity/Sorority
+1988:Hobbyists Org.
+1989:International Org.
+1990:Nature and Environment Org.
+1991:Professional Org.
+1992:Scientific/Technical Org.
+1993:Self Improvement Group
+1994:Spiritual/Religious Org.
+1995:Sports Org.
+1996:Support Org.
+1997:Trade and Business Org.
+1998:Union
+1999:Volunteer Org.
+2000:Entertainment
+2001:Consumer electronics
+2002:Retail stores
+2003:Health and beauty
+2004:Media
+2005:Household products
+2006:Mail order catalog
+2007:Business services

@@ -165,17 +165,20 @@ void R_goto (int pos)
     cpos = pos;
 }
 
-void R_rlap (const char *s, BOOL clear)
+void R_rlap (const char *s, const char *add, BOOL clear)
 {
 #ifdef ANSI_COLOR
     char buf[20];
+    int pos;
 
     snprintf (buf, sizeof (buf), ESC "[%dD", strlen (s));
-    printf ("%s%s%s%s", s, clear ? ESC "[J" : "",
-            (M_pos () + cpos) % Get_Max_Screen_Width() == 0 ? " \b" : "",
-            strlen (s) ? buf : "");
+    printf ("%s%s%s%s", add, s, clear ? ESC "[J" : "",
+            (M_pos () + cpos) % Get_Max_Screen_Width() == 0 ? " \b" : "");
+    pos = cpos;
+    cpos += strlen (s);
+    R_goto (pos);
 #else
-    printf ("%s%s%.*s", s, clear ? " \b" : "", strlen (s), bsbuf);
+    printf ("%s%s%s%.*s", add, s, clear ? " \b" : "", strlen (s), bsbuf);
 #endif
 }
 
@@ -188,7 +191,7 @@ void R_process_input_backspace (void)
     clen--;
     R_goto (cpos - 1);
     memmove (s + cpos, s + cpos + 1, clen - cpos + 1);
-    R_rlap (s + cpos, TRUE);
+    R_rlap (s + cpos, "", TRUE);
 }
 
 void R_process_input_delete (void)
@@ -198,7 +201,7 @@ void R_process_input_delete (void)
 
     clen--;
     memmove (s + cpos, s + cpos + 1, clen - cpos + 1);
-    R_rlap (s + cpos, TRUE);
+    R_rlap (s + cpos, "", TRUE);
 }
 
 void R_process_input_tab (void)
@@ -257,9 +260,9 @@ int R_process_input (void)
                 case '\n':
                 case '\r':
                     s[clen] = 0;
+                    R_goto (clen);
                     cpos = 0;
                     clen = 0;
-                    R_goto (clen);
                     printf ("\n");
                     history_cur = 0;
                     TabReset ();
@@ -326,12 +329,13 @@ int R_process_input (void)
         }
         else if (clen + 1 < HISTORY_LINE_LEN)
         {
+            char buf[2] = "\0\0";
             memmove (s + cpos + 1, s + cpos, clen - cpos + 1);
             s[cpos++] = ch;
             clen++;
             s[clen] = 0;
-            printf ("%c", ch);
-            R_rlap (s + cpos, FALSE);
+            buf[0] = ch;
+            R_rlap (s + cpos, buf, FALSE);
         }
         return 0;
     }

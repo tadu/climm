@@ -281,7 +281,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
         case 0x00FA: /* past-background-info */
             if ((i = PacketRead1 (p)))
                 M_print (COLSERV "%-15s" COLNONE "\n", 
-                    i18n (1876, "Background:")); /* XXX unsure */
+                    i18n (1876, "Personal past background:"));
             for (; i > 0; i--)
             {
                 wdata = PacketRead2 (p);
@@ -296,13 +296,13 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             }
             if ((i = PacketRead1 (p)))
                 M_print (COLSERV "%-15s" COLNONE "\n", 
-                    i18n (1879, "Personal Past:")); /* unsure XXX */
+                    i18n (1879, "Affiliations:"));
             for (; i > 0; i--)
             {
                 wdata = PacketRead2 (p);
                 if (*(data = PacketReadLNTS (p)))
                 {
-                    if ((tabd = TableGetPast (wdata)))
+                    if ((tabd = TableGetAffiliation (wdata)))
                         M_print ("  %s: %s\n", tabd, data);
                     else
                         M_print ("  %d: %s\n", wdata, data);

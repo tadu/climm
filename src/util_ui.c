@@ -527,6 +527,9 @@ void UtilUIUserOnline (Contact *cont, UDWORD status)
 
     log_event (cont->uin, LOG_ONLINE, "User logged on %s (%08lx)\n", ContactFindName (cont->uin), status);
  
+    if (cont->not_in_list)
+        return;
+
     if (~old)
     {
         if (prG->sound & SFLAG_ON_CMD)
