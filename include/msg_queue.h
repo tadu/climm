@@ -25,6 +25,7 @@ void        QueueEnqueueData (Session *sess, UDWORD seq, UDWORD type,
                               UDWORD uin, time_t due,
                               Packet *pak, UBYTE *info, Queuef *callback);
 Event      *QueueDequeue     (UDWORD seq, UDWORD type);
+Event      *QueueDangling    (Session *sess);
 void        QueueRun         ();
 void        QueueRetry       (UDWORD uin, UDWORD type);
 

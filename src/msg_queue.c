@@ -32,6 +32,8 @@ struct Queue_s
 static Queue queued = { NULL, INT_MAX };
 static Queue *queue = &queued;
 
+static Event *QueueDequeueEvent (Event *event, struct QueueEntry *previous);
+
 /*
  * Create a new empty queue to use, or use the given queue instead.
  * Do not call unless you have several message queues.
@@ -102,8 +104,8 @@ void QueueEnqueue (Event *event)
     entry->next = NULL;
     entry->event  = event;
 
-    Debug (DEB_QUEUE, i18n (2075, "enqueuing type %s seq %08x at %p (pak %p)"),
-           QueueType (event->type), event->seq, event, event->pak);
+    Debug (DEB_QUEUE, i18n (2082, "enqueuing type %s seq %08x at %p (pak %p) %x"),
+           QueueType (event->type), event->seq, event, event->pak, event->flags);
 
     if (!queue->head)
     {
@@ -155,13 +157,61 @@ void QueueEnqueueData (Session *sess, UDWORD seq, UDWORD type,
 }
 
 /*
+ * Removes and returns a given event.
+ */
+Event *QueueDequeueEvent (Event *event, struct QueueEntry *previous)
+{
+    struct QueueEntry *iter;
+    struct QueueEntry *tmp;
+    
+    if (!queue->head)
+        return NULL;
+
+    if (queue->head->event == event)
+    {
+        tmp = queue->head;
+        queue->head = queue->head->next;
+        free (tmp);
+
+        if (!queue->head)
+            queue->due = INT_MAX;
+        else
+            queue->due = queue->head->event->due;
+
+        return event;
+    }
+    if (previous)
+    {
+        assert (previous->next->event == event);
+        
+        tmp = previous->next;
+        previous->next = previous->next->next;
+        free (tmp);
+
+        return event;
+    }
+    for (iter = queue->head; iter->next; iter = iter->next)
+    {
+        if (iter->next->event == event)
+        {
+            tmp = iter->next;
+            event = tmp->event;
+            iter->next = iter->next->next;
+            free (tmp);
+
+            return event;
+        }
+    }
+    return NULL;
+}
+
+/*
  * Removes and returns an event given by sequence number and type.
  */
 Event *QueueDequeue (UDWORD seq, UDWORD type)
 {
     Event *event;
     struct QueueEntry *iter;
-    struct QueueEntry *tmp;
 
     assert (queue);
 
@@ -174,16 +224,7 @@ Event *QueueDequeue (UDWORD seq, UDWORD type)
 
     if (queue->head->event->seq == seq && queue->head->event->type == type)
     {
-        tmp = queue->head;
-        event = tmp->event;
-        queue->head = queue->head->next;
-        free (tmp);
-
-        if (!queue->head)
-            queue->due = INT_MAX;
-        else
-            queue->due = queue->head->event->due;
-
+        event = QueueDequeueEvent (queue->head->event, NULL);
         Debug (DEB_QUEUE, i18n (2077, "dequeue type %s seq %08x at %p (pak %p)"),
                QueueType (type), seq, event, event->pak);
         return event;
@@ -192,10 +233,7 @@ Event *QueueDequeue (UDWORD seq, UDWORD type)
     {
         if (iter->next->event->seq == seq && iter->next->event->type == type)
         {
-            tmp = iter->next;
-            event = tmp->event;
-            iter->next=iter->next->next;
-            free (tmp);
+            event = QueueDequeueEvent (iter->next->event, iter);
             Debug (DEB_QUEUE, i18n (2077, "dequeue type %s seq %08x at %p (pak %p)"),
                    QueueType (type), seq, event, event->pak);
             return event;
@@ -203,6 +241,39 @@ Event *QueueDequeue (UDWORD seq, UDWORD type)
     }
     Debug (DEB_QUEUE, i18n (2076, "couldn't dequeue type %s seq %08x"),
            QueueType (type), seq);
+    return NULL;
+}
+
+/*
+ * Removes and returns an event for a given (to be removed) session.
+ */
+Event *QueueDangling (Session *sess)
+{
+    Event *event;
+    struct QueueEntry *iter;
+
+    assert (queue);
+
+    if (!queue->head)
+        return NULL;
+
+    if (queue->head->event->sess == sess)
+    {
+        event = QueueDequeueEvent (queue->head->event, NULL);
+        Debug (DEB_QUEUE, i18n (2081, "dangling type %s seq %08x at %p (pak %p)"),
+               QueueType (event->type), event->seq, event, event->pak);
+        return event;
+    }
+    for (iter = queue->head; iter->next; iter = iter->next)
+    {
+        if (iter->next->event->sess == sess)
+        {
+            event = QueueDequeueEvent (iter->next->event, iter);
+            Debug (DEB_QUEUE, i18n (2081, "dangling type %s seq %08x at %p (pak %p)"),
+                   QueueType (event->type), event->seq, event, event->pak);
+            return event;
+        }
+    }
     return NULL;
 }
 
