@@ -1,5 +1,5 @@
 # $Id$ Italiano (Italian)
-#  EN: __.i18n,v 1.63.2.6 2003/07/04 12:56:19
+#  EN: __.i18n,v 1.63.2.7 2003/08/31 18:50:54
 1000:iso-8859-1
 1001:it
 1002:it_IT
@@ -984,9 +984,9 @@
 2226:Non riesco a creare FIFO
 2227:Non riesco ad aprire FIFO
 2228:Non riesco ad impostare FIFO in non bloccaggio
-2229:Rifiuto la richiesta di file '%s' (%ld bytes): %s.\n
+2229.Rifiuto la richiesta di file '%s' (%ld bytes): %s.\n
 2230:Rifiuto la richiesta di chat (%s/%s) da %s. \n
-2231:Trasferimento file '%s' respinto dal nodo: %s.\n
+2231.Trasferimento file '%s' respinto dal nodo: %s.\n
 2232:richiesta autorizzazione: %s%s\n
 2233:autorizzazione rifiutata: %s%s\n
 2234:Messaggio %s scartato - sessione persa.\n
@@ -1088,3 +1088,5 @@
 2337: set  - carica i propri meta dati sul server\n
 2338: get  - richiedi al server i meta dati\n
 2339: rget - richiedi al server i meta dati dell'ultimo mittente\n
+2340:Trasferimento file '%s' respinto dal nodo: %s%s.\n
+2341:Rifiuto la richiesta di file '%s' (%ld bytes): %s%s.\n

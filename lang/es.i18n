@@ -1,5 +1,5 @@
 # $Id$ castellano (Spanish)
-#  EN: __.i18n,v 1.63.2.3 2003/04/08 15:28:43
+#  EN: __.i18n,v 1.63.2.7 2003/08/31 18:50:54
 1000:iso-8859-1
 1001:es
 1002:es
@@ -55,7 +55,7 @@
 1064:Su estado se cambio automaticamente a %s.\n
 1072:Usuarios desconectados:
 1073:Usuarios conectados:
-1077:dedicado a Matthew D. Smith.
+1077.dedicado a Matthew D. Smith.
 1078:No hay traducción disponible
 1079:Traducción (%s, %s) por %s, ultima modificación el %s por %s, para mICQ %d.%d.%d%s.\n
 1080:No se pudo cargar la internacionalización "%s\n
@@ -556,7 +556,7 @@
 1639:El nuevo UIN es %ld!\n
 1640:Error actualizando la información.\n
 1641:La información se actualizó con exito.\n
-1642:IP
+1642:IP:
 1643:Confirmación SRV_X1 0x021C Listo con la lista de contactos?\n
 1644:Confirmación SRV_X2 0x00E6 listo con los mensajes viejos?\n
 1645:Ingresaste una clave incorrecta.\n
@@ -1021,7 +1021,7 @@
 2207:Error de protocolo en un comando debido a un server ICQ viejo: %d.\n
 2208:Encoding UTF-8 detectado; sin embargo este mICQ fue compilado sin soporte para UTF-8.\n
 2209:Encoding UTF-8 detectado.\n
-2210:%smICQ (Clon de ICQ de Matt)%s versión %s%s%s (compilado en %s)\n
+2210.%smICQ (Clon de ICQ de Matt)%s versión %s%s%s (compilado en %s)\n
 2211:Tu estado es %s.\n
 2212:cambio de estado a %s
 2213:se conecto (%s)
@@ -1038,9 +1038,9 @@
 2226:No se pudo crear el FIFO
 2227:No se pudo abrir el FIFO
 2228:No se pudo configurar el FIFO a nonblocking.
-2229:Rechazando el pedido de archivo '%s' (%ld bytes): %s.\n
+2229.Rechazando el pedido de archivo '%s' (%ld bytes): %s.\n
 2230:Rechazando el pedido de chat (%s/%s) de %s.\n
-2231:Transferencia de archivos '%s' rechazada por el par: %s.\n
+2231.Transferencia de archivos '%s' rechazada por el par: %s.\n
 2232:pide autorizacion: %s%s\n
 2233:rechazó autorizacion: %s%s\n
 2234:Mensaje %s descartado - se perdió la sesión.\n
@@ -1130,3 +1130,19 @@
 #2319:Accept an incoming file transfer from <uin> or <nick>.
 #2320:peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n
 2327:%smICQ (Clon de ICQ de Matt)%s versión %s%s%s\n
+#2328:You logged in too frequently, please wait 30 minutes before trying again.\n
+#2329:syntax error
+#2330:removing non-contact
+#2331:unknown
+#2332:Contact error %d (%s) for %d contacts: 
+#2333:%s [show|load|save|set|get|rget] <contacts> - handle meta data for contacts.\n
+#2334:  show - show current known meta data\n
+#2335:  load - load from file and show meta data\n
+#2336:  save - save meta data to file\n
+#2337:  set  - upload own meta data to server\n
+#2338:  get  - query server for meta data\n
+#2339:  rget - query server for last sender's meta data\n
+#2340:File transfer '%s' rejected by peer: %s%s.\n
+#2341:Refusing file request '%s' (%ld bytes): %s%s.\n
+2340:Transferencia de archivos '%s' rechazada por el par: %s%s.\n
+2341:Rechazando el pedido de archivo '%s' (%ld bytes): %s%s.\n

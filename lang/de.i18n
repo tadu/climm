@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.63.2.6 2003/07/04 12:56:19
+#  EN: __.i18n,v 1.63.2.7 2003/08/31 18:50:54
 1000:iso-8859-1
 1001:de
 1002:de_DE
@@ -994,9 +994,9 @@
 2226:Konnte FIFO nicht erschaffen
 2227:Konnte FIFO nicht öffnen
 2228:Konnte FIFO nicht nicht-blockieren machen
-2229:Lehne Dateiübertragung "%s" ab (%ld bytes): %s.\n
+2229.Lehne Dateiübertragung "%s" ab (%ld bytes): %s.\n
 2230:Lehne Chatanfrage ab (%s/%s) from %s.\n
-2231:Dateiübertragung "%s" vom Gegenüber abgelehnt: %s.\n
+2231.Dateiübertragung "%s" vom Gegenüber abgelehnt: %s.\n
 2232:fragt die Autorisierung an: %s%s\n
 2233:hat die Autorisierung abgelehnt: %s%s\n
 2234:Nachricht "%s" weggeworfen - die Verbindung ist verschwunden.\n
@@ -1098,3 +1098,5 @@
 2337:  set  - lade eigene Meta-Daten zum Server hoch\n
 2338:  get  - frage den Server nach Meta-Daten\n
 2339:  rget - frage den Server nach den Meta-Daten des letzten Kontaktes\n
+2340:Dateiübertragung "%s" vom Gegenüber abgelehnt: %s%s.\n
+2341:Lehne Dateiübertragung "%s" ab (%ld bytes): %s%s.\n

@@ -1,5 +1,5 @@
 # $Id$ (Indonesian)
-#  EN: __.i18n,v 1.63.2.2 2003/01/10 15:57:15
+#  EN: __.i18n,v 1.63.2.7 2003/08/31 18:50:54
 1000:iso-8859-1
 1001:id
 1002:id_ID
@@ -54,7 +54,7 @@
 1064:Otomatis berubah status menjadi %s.\n
 1072:User-user offline:
 1073:User-user online:
-1077:didedikasikan kepada Matthew D. Smith.
+1077.didedikasikan kepada Matthew D. Smith.
 1078:Tidak ada terjemahan yang tersedia.
 1079:Terjemahan (%s, %s) dari %s, terakhir di perbaiki pada %s oleh %s, untuk mICQ %d.%d.%d%s.\n
 1080:Tidak dapat memuat peng-internasionalan "%s".\n
@@ -537,7 +537,7 @@
 1639:UIN baru adalah %ld!\n
 1640:Gagal untuk memperbaharui informasi.\n
 1641:Informasi user berhasil diperbaharui.\n
-1642:IP
+1642:IP:
 1643:Telah diketahui SRV_X1 0x021C Daftar kontak selesai?\n
 1644:Telah diketahui SRV_X2 0x00E6 Pesan lama selesai?\n
 1645:Anda memasukkan password yang salah.\n
@@ -621,7 +621,7 @@
 1762:UIN baru Anda adalah: %ld.\n
 1763:Perintah '%s' telah diubah menjadi '%s'.
 1764:Perintah '%s' tidak berubah.
-1765:%s UIN-nya %ld.
+1765.%s UIN-nya %ld.
 1766:Mengubah status ke jauh/tidak ditempat setelah nganggur selama %s%ld%s detik.\n
 1767:Menganti perputaran otomatis ke jauh/tidak ditempat.
 1768:Nama perintah '%s' telah digunakan.\n
@@ -966,7 +966,7 @@
 2207:Kesalahan protokol pada perintah kepada server ICQ tua: %d.\n
 2208:Terdeteksi pengkodean UTF-8, bagaimanapun juga, mICQ ini dkompile tanpa dukungan UTF-8.\n
 2209:Terdeteksi pengkodean UTF-8.\n
-2210:%smICQ (Matt's ICQ clone)%s versi %s%s%s (dikompilasi pada %s)\n
+2210.%smICQ (Matt's ICQ clone)%s versi %s%s%s (dikompilasi pada %s)\n
 2211:Status Anda adalah %s.\n
 2212:berubah status menjadi %s
 2213:masuk (%s)
@@ -983,9 +983,9 @@
 2226:Tidak dapat membuat FIFO
 2227:Tidak dapat membuka FIFO
 2228:Tidak dapat men-set FIFO nonblocking
-2229:Menolak permintan file '%s' (%ld byte): %s.\n
+2229.Menolak permintan file '%s' (%ld byte): %s.\n
 2230:Menolak permintaan bicara (%s/%s) dari %s.\n
-2231:Transfer file '%s' ditolak oleh peer: %s.\n
+2231.Transfer file '%s' ditolak oleh peer: %s.\n
 2232:meminta otorisasi: %s%s\n
 2233:otorisasi yang ditolak: %s%s\n
 2234:Pesan %s dihilangkan - sesi telah hilang.\n
@@ -1075,3 +1075,17 @@
 2319:Menerima transfer file yang datang dari <uin> atau <nick>.
 2320:peer accept <nick> [<id>]\n                  - menerima transfer file yang datang.\n
 2327:%smICQ (Matt's ICQ clone)%s versi %s%s%s\n
+#2328:You logged in too frequently, please wait 30 minutes before trying again.\n
+#2329:syntax error
+#2330:removing non-contact
+#2331:unknown
+#2332:Contact error %d (%s) for %d contacts: 
+#2333:%s [show|load|save|set|get|rget] <contacts> - handle meta data for contacts.\n
+#2334:  show - show current known meta data\n
+#2335:  load - load from file and show meta data\n
+#2336:  save - save meta data to file\n
+#2337:  set  - upload own meta data to server\n
+#2338:  get  - query server for meta data\n
+#2339:  rget - query server for last sender's meta data\n
+2340:Transfer file '%s' ditolak oleh peer: %s%s.\n
+2341:Menolak permintan file '%s' (%ld byte): %s%s.\n

@@ -1,5 +1,5 @@
 # $Id$ Romana (Romanian)
-#  EN: __.i18n,v 1.63.2.3 2003/04/08 15:28:43
+#  EN: __.i18n,v 1.63.2.7 2003/08/31 18:50:54
 1000:iso-8859-2
 1001:ro
 1002:ro_RO
@@ -55,7 +55,7 @@
 1064:Starea a fost automat schimbata in %s.\n
 1072:Utilizatori indisponibili:
 1073:Utilizatori accesibili:
-1077:consacrat lui Matthew D. Smith.
+1077.consacrat lui Matthew D. Smith.
 1078:Traducere nu exista.
 1079:Traducere (%s, %s) din %s, ultima modificare facuta la %s de %s, pentru mICQ %d.%d.%d%s.\n
 1080:N-am reusit sa incarc internationalizarea "%s".\n
@@ -540,7 +540,7 @@
 1639:Noul UIN este %ld!\n
 1640:Innoirea informatiei a esuat.\n
 1641:Informatia utilizatorului innoita cu succes.\n
-1642:IP
+1642:IP:
 #1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
 #1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
 1645:Ati introdus gresit parola.\n
@@ -969,7 +969,7 @@
 2207:Eroare de protocol in comanda catre ICQ serverul vechi: %d.\n
 2208:S-a detectat codificare UTF-8, insa, acest mICQ e compilat fara suport UTF-8.\n
 2209:S-a detectat codificare UTF-8.\n
-2210:%smICQ (ICQ clonul lui Matt)%s versiunea %s%s%s (compilat la %s)\n
+2210.%smICQ (ICQ clonul lui Matt)%s versiunea %s%s%s (compilat la %s)\n
 2211:Starea dvs. este %s.\n
 2212:am schimbat starea in %s
 2213:conectat la (%s)
@@ -986,9 +986,9 @@
 2226:N-am putut crea FIFO
 2227:N-am putut deschide FIFO
 2228:N-am putut seta FIFO nonblocking
-2229:Cererea fisierului '%s' (%ld bytes) a fost refuzata: %s.\n
+2229.Cererea fisierului '%s' (%ld bytes) a fost refuzata: %s.\n
 2230:Cererea chatului (%s/%s) de la %s a fost refuzata.\n
-2231:Transferul de fisiere '%s' a fost refuzat de partener: %s.\n
+2231.Transferul de fisiere '%s' a fost refuzat de partener: %s.\n
 2232:cere autorizare: %s%s\n
 2233:a refuzat autorizarea: %s%s\n
 2234:Mesajul %s a fost ignorat - conexiune pierduta.\n
@@ -1078,3 +1078,17 @@
 #2319:Accept an incoming file transfer from <uin> or <nick>.
 #2320:peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n
 2327:%smICQ (ICQ clonul lui Matt)%s versiunea %s%s%s\n
+#2328:You logged in too frequently, please wait 30 minutes before trying again.\n
+#2329:syntax error
+#2330:removing non-contact
+#2331:unknown
+#2332:Contact error %d (%s) for %d contacts: 
+#2333:%s [show|load|save|set|get|rget] <contacts> - handle meta data for contacts.\n
+#2334:  show - show current known meta data\n
+#2335:  load - load from file and show meta data\n
+#2336:  save - save meta data to file\n
+#2337:  set  - upload own meta data to server\n
+#2338:  get  - query server for meta data\n
+#2339:  rget - query server for last sender's meta data\n
+2340:Transferul de fisiere '%s' a fost refuzat de partener: %s%s.\n
+2341:Cererea fisierului '%s' (%ld bytes) a fost refuzata: %s%s.\n

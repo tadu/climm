@@ -1,5 +1,5 @@
 # $Id$ (Dutch)
-#  EN: __.i18n,v 1.63.2.3 2003/04/08 15:28:43
+#  EN: __.i18n,v 1.63.2.7 2003/08/31 18:50:54
 #-#1010:Gebruiker is weg [Automatisch bericht]
 #1000:iso-8859-1
 #1001:<lang>
@@ -85,7 +85,6 @@
 #1064:Automatically changed status to %s.\n
 #1072:Users offline:
 #1073:Users online:
-#1077:in dedication to Matthew D. Smith.
 #1078:No translation available.
 #1079:Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n
 #1080:Couldn't load "%s" internationalization.\n
@@ -668,7 +667,7 @@
 #1639:The new UIN is %ld!\n
 #1640:Failed to update info.\n
 #1641:User info successfully updated.\n
-#1642:IP
+#1642:IP:
 #1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
 #1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
 #1645:You entered an incorrect password.\n
@@ -1096,7 +1095,6 @@
 #2207:Protocol error in command to old ICQ server: %d.\n
 #2208:Detected UTF-8 encoding, however, this mICQ was compiled without UTF-8 support.\n
 #2209:Detected UTF-8 encoding.\n
-#2210:%smICQ (Matt's ICQ clone)%s version %s%s%s (compiled on %s)\n
 #2211:Your status is %s.\n
 #2212:changed status to %s
 #2213:logged on (%s)
@@ -1113,9 +1111,7 @@
 #2226:Couldn't create FIFO
 #2227:Couldn't open FIFO
 #2228:Couldn't set FIFO nonblocking
-#2229:Refusing file request '%s' (%ld bytes): %s.\n
 #2230:Refusing chat request (%s/%s) from %s.\n
-#2231:File transfer '%s' rejected by peer: %s.\n
 #2232:requests authorization: %s%s\n
 #2233:refused authorization: %s%s\n
 #2234:Message %s discarded - lost session.\n
@@ -1204,3 +1200,18 @@
 2318:Dutch (%s) translation loaded (%ld entries).\n
 #2319:Accept an incoming file transfer from <uin> or <nick>.
 #2320:peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n
+#2327:%smICQ (Matt's ICQ clone)%s version %s%s%s\n
+#2328:You logged in too frequently, please wait 30 minutes before trying again.\n
+#2329:syntax error
+#2330:removing non-contact
+#2331:unknown
+#2332:Contact error %d (%s) for %d contacts: 
+#2333:%s [show|load|save|set|get|rget] <contacts> - handle meta data for contacts.\n
+#2334:  show - show current known meta data\n
+#2335:  load - load from file and show meta data\n
+#2336:  save - save meta data to file\n
+#2337:  set  - upload own meta data to server\n
+#2338:  get  - query server for meta data\n
+#2339:  rget - query server for last sender's meta data\n
+#2340:File transfer '%s' rejected by peer: %s%s.\n
+#2341:Refusing file request '%s' (%ld bytes): %s%s.\n

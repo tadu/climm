@@ -1,5 +1,5 @@
 # $Id$ English (English)
-#  EN: __.i18n,v 1.63.2.6 2003/07/04 12:56:19
+#  EN: __.i18n,v 1.63.2.7 2003/08/31 18:50:54
 1000:iso-8859-1
 1001:en
 1002:en_US
@@ -984,9 +984,9 @@
 2226:Couldn't create FIFO
 2227:Couldn't open FIFO
 2228:Couldn't set FIFO nonblocking
-2229:Refusing file request '%s' (%ld bytes): %s.\n
+2229.Refusing file request '%s' (%ld bytes): %s.\n
 2230:Refusing chat request (%s/%s) from %s.\n
-2231:File transfer '%s' rejected by peer: %s.\n
+2231.File transfer '%s' rejected by peer: %s.\n
 2232:requests authorization: %s%s\n
 2233:refused authorization: %s%s\n
 2234:Message %s discarded - lost session.\n
@@ -1088,3 +1088,5 @@
 2337:  set  - upload own meta data to server\n
 2338:  get  - query server for meta data\n
 2339:  rget - query server for last sender's meta data\n
+2340:File transfer '%s' rejected by peer: %s%s.\n
+2341:Refusing file request '%s' (%ld bytes): %s%s.\n

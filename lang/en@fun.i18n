@@ -1,7 +1,7 @@
 # $Id$ English - funny (English - funny)
-#  EN: __.i18n,v 1.50 2002/09/30 17:45:07
-1081:Successfully loaded English (funny) translation (%ld entries).¶\n
-1082:But hey, let's just poke the server again... [try %d out of %d]¶\n
-1612:No Mirabilis client was maimed, hacked, tortured, sodomized or otherwise harmed in the making of this utility.
-1682:These people are being sociable today:¶
-2107:%s%s%s hasn't had anything intelligent to say today.¶\n
+#  EN: __.i18n,v 1.63.2.7 2003/08/31 18:50:54
+1081:Successfully loaded English (funny) translation (%ld entries).\n
+1082:But hey, let's just poke the server again... [try %d out of %d]\n
+1612:No Mirabilis client was maimed, hacked, tortured, sodomized or otherwise harmed in the making of this utility.\n
+1682:These people are being sociable today:\n
+2107:%s%s%s hasn't had anything intelligent to say today.\n
