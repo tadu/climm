@@ -27,9 +27,6 @@ echo -n "Strings extracted ok:"
 cat build.i18n.exnum | wc -l
 diff -u build.i18n.num build.i18n.exnum | uniq
 
-diff -u0 build.i18n~ build.i18n | grep "^-[0-9]" | sed "s,^-,," >> build.tainted
-sort -n -t : -k 1,1 -u -o build.tainted build.tainted
-
 rm build.i18n.num build.i18n.exnum
 
 diff -u build.i18n~ build.i18n | tr '' '[' || true

@@ -36,6 +36,7 @@ sub ReadTainted($)
 {
     my $name = shift;
     
+    %tain = {};
     $name .= ".tainted";
     open IN, "<$name" || return;
     while (<IN>)
@@ -112,12 +113,20 @@ if ($#ARGV == -1)
 }
 
 ReadTrans ("build");
-ReadTainted ("build");
 
 print "File		Comments Junk	Old	Changed	New\n";
 while ($uname = shift)
 {
-    next unless $uname cmp "en.i18n";
+    next unless $uname cmp "build.i18n";
+
+    $ver = `grep ^1003 $uname`;
+    $ver =~ s/^1003://;
+    chomp $ver;
+    $ver = $ver + 0;
+    
+    system "cvs diff -u0 -r i18n-$ver build.i18n | grep \"^-[0-9]\" | sed \"s,^-,,\" | sort -n -t : -k 1,1 -u -o build.tainted";
+    ReadTainted ("build.tainted");
+
     $name = $pref . $uname;
     stat "$name~" && next;
     rename ($name, "$name~");
