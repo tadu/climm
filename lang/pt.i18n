@@ -1075,3 +1075,4 @@
 2318:Tradução portuguesa (%s) carregada (%ld entradas).\n
 2319:Aceita um arquivo vindo de <uin> ou <nick>.
 2320:peer accept <nick> [<id>]\n                  - aceita uma transferência de arquivo chegando.\n
+2327:%smICQ (clone ICQ do Matt)%s versão %s%s%s\n

@@ -1,5 +1,76 @@
 -*- coding: utf-8 -*-
 
+2003-05-13 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+	* activate code using new strings: better display of used locale, add one missing help text
+	* remove unused beos.[ch]
+	* compile fix for ConvFits()
+	* detect screensaver/locks on WIN32
+	* hide meta ref error
+	* change 'message' (undocumented) behaviour
+	* fix temporary contacts
+	* fix auto-away
+	* use #defines for message timeouts
+	* implement webaware, hideip, dcauth, dccont, but undocumented
+	* don't set unicode byte flag for non-unicode
+	* make -v0 effective during micqrc loading
+	* fix meta load output
+	* s/dead/deceased
+	* new function UtilIOReadline() do read a line into a dynamic buffer; use everywhere
+	* don't show groups of inactive connections
+	* fix compile error when UTF-8 is disabled
+	* understand dc update packets
+	* automatically re-set status whenwebaware/hideip/dcauth/dccont is changed
+	* reduce scrolling on logons when verbose
+	* know that error 4 = offline for blocked messages
+	* output dumb message for turboing lusers
+	* FAQ: add question about encodings, add question about libiconv
+	* recognize hex numbers when parsing integers
+	* message sending tweak: use type-2 for URLs, but don't send UTF-8 except to mICQ
+	* less timeout for peer2peer
+	* silence compiler warning
+	* implement preliminary contact error display
+	* make sure contacts don't tunnel to other connections via the global list
+	* new undocumented command "as" to run a command on a different connection
+	* add i18n string: version without build date
+	* make copyright visible so that thos blind Debian/Mandrake/Red Hat guys realize that mICQ is GPLv2
+	* add numeric build platform id, use
+	* add loads of GPLv2 notices
+	* fix iconv() configure check (s/none/buildin)
+	* release as 0.4.10.3
+
+2003-04-22 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+	* fix sending to DND and OCC, fix embedded status
+	* fix pixmap location
+	* fix assertion
+	* BeOS fixes
+	* fix missing -liconv in $LIBS
+	* added missing string conversion to v8 user search (rtc)
+	* corrected age parsing in search results (rtc)
+	* moved authorization type display from the email to the nick name
+	  field to match the meaning in a better way. (rtc)
+	* corrected 'additional email addresses' meta info handling (rtc)
+	* cleaned up MetaMore variables for uniformity (rtc)
+	* added missing check for memcmp (rtc)
+	* fixed fax not being displayed in Display_Ext_Info_Reply (rtc)
+	* fixed UtilUIDisplayMeta() so it doesn't reserve empty meta info records when displaying them (rtc)
+	* increased meta search grace time to one minute (rtc)
+	* UtilUIDisplayMeta() usage in Display_Ext_Info_Reply() instead of extra code (rtc)
+	* only display the information in UtilUIDisplayMeta() which is really available (eg white-page searching) (rtc)
+	* remove auto-generated INSTALL from cvs
+	* finish Indonesian translation
+	* implement UCS-2BE; send/receive encoding-typed type-1 messages
+	* fix TCPFLAGS to 1 for disabled
+	* don't require open connection for the 'last' command
+	* don't remove quotes from final arguments, but interpret \x as well
+	* fix segfaulting when incoming type-2 messages were delayed the right way
+	* change: for -b, take relative to cwd when it starts with ./,
+	  otherwise relative to default base dir
+	* rename TCP_MSG_* to MSG_* and TCP_MSG_GREETING to MSG_EXTENDED
+	* understand ICQ2003 contact lists via extended messages
+	* fix spec file to include man pages
+	* add ru@fun
+	* add cp-1257 for type-1
+
 2003-03-07 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
 	* fix endless resend stuff
 	* ignore empty nick names on contact list import

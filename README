@@ -1,7 +1,7 @@
 micq - a portable ICQ Console Client
 $Id$ -*- coding: utf-8 -*-
 
-current Version: 0.4.10.2
+current Version: 0.4.10.3
 ====================================
 
 a) About mICQ
@@ -38,7 +38,7 @@ Features of mICQ include:
    * status         - set status arbitrarily
    * messages       - send and receive messages and urls
    * utf-8 messages - first non-official client to support sending and receiving
-                      of utf-8 encoded messages
+                      of unicode encoded messages (acknowledged _AND_ non-acknoledged)
    * sms            - send SMS to user's cell phone
    * user info      - request and update all user an dpersonal information
    * search         - easy search command, can search by (nearly) any information
@@ -84,24 +84,24 @@ Currently you:
                                            <micq-list@micq.org>
 
     subscribe, unsubscribe, help
-                   <http://micq.org/mailman/listinfo/micq-list>
+                   <URL:http://micq.org/mailman/listinfo/micq-list>
 
     An Archive might be found at:
-                   <http://micq.org/pipermail/micq-list/>
+                   <URL:http://micq.org/pipermail/micq-list/>
 
 
 e) Download
 
 Download mICQ sources and binaries from
 
-    <http://www.micq.org/>
+    <URL:http://www.micq.org/>
 
 f) CVS
 
 Required is the cvs client, autoconf 2.57 or greater and automake 1.7 or
 greater. automake 1.7.2 is recommended, however.
 
-cvs -d :pserver:anonymous@micq.org:/var/lib/cvs co micq
+cvs -d :pserver:anonymous@micq.org:/var/lib/cvs co -r stable-0-4-10 micq
 
 To prepare the maintainer generated files:
 

@@ -56,28 +56,28 @@
 
 #ifdef ENABLE_PEER2PEER
 
-static void       TCPDispatchPeer    (Connection *peer);
-static void       PeerDispatchClose  (Connection *conn);
+static void        TCPDispatchPeer    (Connection *peer);
+static void        PeerDispatchClose  (Connection *conn);
 
-static Packet    *TCPReceivePacket   (Connection *peer);
+static Packet     *TCPReceivePacket   (Connection *peer);
 
-static void       TCPSendInit        (Connection *peer);
-static void       TCPSendInitAck     (Connection *peer);
-static void       TCPSendInit2       (Connection *peer);
-static Connection   *TCPReceiveInit     (Connection *peer, Packet *pak);
-static void       TCPReceiveInitAck  (Connection *peer, Packet *pak);
-static Connection   *TCPReceiveInit2    (Connection *peer, Packet *pak);
+static void        TCPSendInit        (Connection *peer);
+static void        TCPSendInitAck     (Connection *peer);
+static void        TCPSendInit2       (Connection *peer);
+static Connection *TCPReceiveInit     (Connection *peer, Packet *pak);
+static void        TCPReceiveInitAck  (Connection *peer, Packet *pak);
+static Connection *TCPReceiveInit2    (Connection *peer, Packet *pak);
 
 
-static Packet    *PacketTCPC         (Connection *peer, UDWORD cmd);
+static Packet     *PacketTCPC         (Connection *peer, UDWORD cmd);
 
-static void       TCPCallBackTimeout (Event *event);
-static void       TCPCallBackTOConn  (Event *event);
-static void       TCPCallBackResend  (Event *event);
-static void       TCPCallBackReceive (Event *event);
+static void        TCPCallBackTimeout (Event *event);
+static void        TCPCallBackTOConn  (Event *event);
+static void        TCPCallBackResend  (Event *event);
+static void        TCPCallBackReceive (Event *event);
 
-static void       Encrypt_Pak        (Connection *peer, Packet *pak);
-static BOOL       Decrypt_Pak        (Connection *peer, Packet *pak);
+static void        Encrypt_Pak        (Connection *peer, Packet *pak);
+static BOOL        Decrypt_Pak        (Connection *peer, Packet *pak);
 
 /*********************************************/
 
@@ -1233,7 +1233,7 @@ static Packet *PacketTCPC (Connection *peer, UDWORD cmd)
  * Sends a message via TCP.
  * Adds it to the resend queue until acked.
  */
-BOOL TCPSendMsg (Connection *list, Contact *cont, const char *msg, UWORD sub_cmd)
+BOOL TCPSendMsg (Connection *list, Contact *cont, const char *msg, UWORD type)
 {
     Packet *pak;
     Connection *peer;
@@ -1268,12 +1268,12 @@ BOOL TCPSendMsg (Connection *list, Contact *cont, const char *msg, UWORD sub_cmd
     ASSERT_MSGDIRECT(peer);
 
     pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
-    SrvMsgAdvanced   (pak, peer->our_seq, sub_cmd, list->parent->status,
-                      cont->status, -1, c_out_for (msg, cont));
+    SrvMsgAdvanced   (pak, peer->our_seq, type, list->parent->status,
+                      cont->status, -1, c_out_for (msg, cont, type));
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
 #ifdef ENABLE_UTF8
-    if (CONT_UTF8 (cont))
+    if (CONT_UTF8 (cont, type))
         PacketWriteDLStr (pak, CAP_GID_UTF8);
 #endif
 
@@ -1340,11 +1340,11 @@ UBYTE PeerSendMsg (Connection *list, Contact *cont, Extra *extra)
     
     pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
     SrvMsgAdvanced   (pak, peer->our_seq, e_msg_type, list->parent->status,
-                      cont->status, -1, c_out_for (e_msg_text, cont));
+                      cont->status, -1, c_out_for (e_msg_text, cont, e_msg_type));
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
 #ifdef ENABLE_UTF8
-    if (CONT_UTF8 (cont))
+    if (CONT_UTF8 (cont, e_msg_type))
         PacketWriteDLStr (pak, CAP_GID_UTF8);
 #endif
 
@@ -1509,7 +1509,7 @@ static void TCPCallBackResend (Event *event)
     
     e_trans = ExtraGet (event->extra, EXTRA_TRANS);
     
-    if (event->attempts >= MAX_RETRY_ATTEMPTS)
+    if (event->attempts >= MAX_RETRY_P2P_ATTEMPTS)
     {
         if (ExtraGet (event->extra, EXTRA_MESSAGE) != MSG_FILE)
             TCPClose (peer);
@@ -1524,7 +1524,7 @@ static void TCPCallBackResend (Event *event)
             if (event->attempts < 2)
                 PeerPacketSend (peer, pak);
             event->attempts++;
-            event->due = time (NULL) + 10;
+            event->due = time (NULL) + QUEUE_P2P_RESEND_ACK;
         }
         else
             event->due = time (NULL) + 1;
@@ -1623,9 +1623,8 @@ static void TCPCallBackReceive (Event *event)
                     IMIntMsg (cont, peer, NOW, STATUS_OFFLINE, INT_MSGACK_DC, e_msg_text, NULL);
                     if (~cont->flags & CONT_SEENAUTO && strlen (tmp))
                     {
-                        IMSrvMsg (cont, peer, NOW, ExtraSet (ExtraSet (ExtraSet (NULL,
+                        IMSrvMsg (cont, peer, NOW, ExtraSet (ExtraSet (NULL,
                                   EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
-                                  EXTRA_STATUS, status, NULL),
                                   EXTRA_MESSAGE, MSG_NORM, tmp));
                         cont->flags |= CONT_SEENAUTO;
                     }

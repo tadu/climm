@@ -1,8 +1,22 @@
 /*
  * This file handles character conversions.
  *
- * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
- * version 2 of the GPL licence.
+ * mICQ Copyright (C) © 2001,2002,2003 Rüdiger Kuhlmann
+ *
+ * mICQ is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 dated June, 1991.
+ *
+ * mICQ is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this package; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
+ *
  *
  * $Id$
  */
@@ -47,7 +61,7 @@ UBYTE ConvEnc (const char *enc)
         conv_encs[3].enc = strdup (ICONV_LATIN9_NAME);
         conv_encs[4].enc = strdup ("KOI8-U");
         conv_encs[5].enc = strdup ("CP1251");      /* NOT cp-1251, NOT windows* */
-        conv_encs[6].enc = strdup ("UCS-2BE");
+        conv_encs[6].enc = strdup (ICONV_UCS2BE_NAME);
         conv_encs[7].enc = strdup ("CP1257");
         conv_encs[8].enc = strdup ("EUC-JP");
         conv_encs[9].enc = strdup ("SHIFT-JIS");
@@ -60,6 +74,9 @@ UBYTE ConvEnc (const char *enc)
         enc = ICONV_LATIN1_NAME;
     if (!strcasecmp (enc, "ISO-8859-15") || !strcasecmp (enc, "ISO8859-15") || !strcasecmp (enc, "LATIN9"))
         enc = ICONV_LATIN9_NAME;
+    if (!strcasecmp (enc, "UCS-2BE") || !strcasecmp (enc, "UNICODEBIG"))
+        enc = ICONV_UCS2BE_NAME;
+
 #ifndef ENABLE_ICONV
     if (!strncasecmp (enc, "KOI8", 4))
         enc = "KOI8-U";
@@ -112,6 +129,25 @@ const char *ConvEncName (UBYTE enc)
     if (!conv_encs)
         ConvEnc ("none");
     return conv_encs[enc & ~ENC_AUTO].enc;
+}
+
+const char *ConvCrush0xFE (const char *inn)
+{
+    static char *t = NULL;
+    static UDWORD size = 0;
+    char *p;
+    
+    if (!inn || !*inn)
+        return "";
+    
+    t = s_catf (t, &size, "%*s", 100, "");
+    *t = '\0';
+    
+    t = s_catf (t, &size, "%s", inn);
+    for (p = t; *p; p++)
+        if (*p == Conv0xFE)
+            *p = '*';
+    return t;
 }
 
 #ifdef ENABLE_UTF8
@@ -190,25 +226,6 @@ BOOL ConvIsUTF8 (const char *in)
     return 1;
 }
 
-
-const char *ConvCrush0xFE (const char *inn)
-{
-    static char *t = NULL;
-    static UDWORD size = 0;
-    char *p;
-    
-    if (!inn || !*inn)
-        return "";
-    
-    t = s_catf (t, &size, "%*s", 100, "");
-    *t = '\0';
-    
-    t = s_catf (t, &size, "%s", inn);
-    for (p = t; *p; p++)
-        if (*p == Conv0xFE)
-            *p = '*';
-    return t;
-}
 
 #ifdef ENABLE_ICONV
 
@@ -435,7 +452,7 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc, size_t totalin, UBYTE keep0x
     totalin = (enc == ENC_UCS2BE ? (totalin == -1 ? strlen (in) : totalin) : 0);
     /* obey totalin _only_ for UCS-2BE */
 
-    t = s_catf (t, &size, "%*s", totalin * 3, "");
+    t = s_catf (t, &size, "%*s", (int)(totalin * 3), "");
     *t = '\0';
     
     for (*t = '\0'; *in || totalin; in++)

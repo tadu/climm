@@ -1,8 +1,8 @@
 %define name		micq
-%define version	0.4.10.2
-%define release	2
+%define version	0.4.10.3
+%define release	1
 
-Summary:		text based ICQ client with many features
+Summary:		text/line based ICQ client with many features
 Name:			%{name}
 Version:		%{version}
 Release:		%{release}
@@ -16,17 +16,25 @@ Prefix:			%{_prefix}
 
 %description
 mICQ is a portable, small, yet powerful console based ICQ client. It
-supports password changing, auto-away, creation of new accounts, and other
-features that makes it a very complete yet simple client supporting the
-current ICQ v8 protocol.
+supports password changing, auto-away, creation of new accounts, searching,
+file transfer, acknowledged messages, SMS, client identification, logging,
+scripting, transcoding, multi-UIN usage and other features that makes it a
+very complete yet simple internationalized client supporting the current
+ICQ v8 protocol.
+
+It has leading support for (ICQ2002+/ICQ Lite/ICQ2go) unicode encoded
+messages unreached by other ICQ clones.
 
 A lot of other ICQ clients are based in spirit on mICQ, nevertheless
 mICQ is still _the_ console based ICQ client.
       
-Authors: Matthew D. Smith (dead)
+Authors: Matthew D. Smith (deceased)
          Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 
 %changelog
+* Mon May 13 2003 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+- new upstream bug fix release 0.4.10.3
+
 * Tue Feb 27 2003 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 - new upstream bug fix release 0.4.10.2
 
@@ -73,7 +81,7 @@ rm -rf "${RPM_BUILD_ROOT}"
 
 %files
 %defattr(-,root,root,0755)
-%doc NEWS AUTHORS FAQ README TODO
+%doc NEWS AUTHORS FAQ README TODO COPYING
 %doc doc/README.i18n doc/README.logformat doc/icq091.txt doc/icqv7.txt
 %{_bindir}/*
 %{_datadir}/micq

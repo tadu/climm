@@ -16,13 +16,13 @@ Jeff Bearer <jbearer@tribweb.com>
  : - All mode changes should be in a central system log and not each user
 
 ICQ#135584591: (refuses to do translation work)
- : implement web aware feature
+ : implement web aware feature (done, but undocumented)
 
 TODO:
  : add https support
  : add missing v8 pieces
    + figure out v8 reverse connection
- : history of messages
+ : history of messages (partially done)
  : alias for commands (partially done)
  : tab completion (improve)
  : use ASCII art for setup wizard
@@ -39,3 +39,5 @@ TODO:
  : better meta data change functions
  : pressing tab in a msg composition ">" area, inserts a nick, tab should be ignored in msg composition
  : delay login eg on each incoming oncoming contact (done)
+ : internal: use string lib
+ : have preferences relative to connection (or: session)

@@ -7,39 +7,43 @@
    #include <unistd.h>
 #endif
 
+#ifdef HAVE_WINDEF_H
+#include <windef.h>
+#endif
+
 #if !HAVE_SOCKLEN_T
 typedef int socklen_t;
 #endif
 
+#if !HAVE_BOOL
+typedef unsigned char BOOL;
+#endif
+
+#if !HAVE_UDWORD
 typedef unsigned SIZE_4_TYPE UDWORD;
-#ifndef __amigaos__
+#endif
+#if !HAVE_UWORD
 typedef unsigned SIZE_2_TYPE UWORD;
+#endif
+#if !HAVE_UBYTE
 typedef unsigned SIZE_1_TYPE UBYTE;
 #endif
+
 typedef signed   SIZE_4_TYPE SDWORD;
 typedef signed   SIZE_2_TYPE SWORD;
 typedef signed   SIZE_1_TYPE SBYTE;
-typedef signed   SIZE_4_TYPE SINT32;
-typedef signed   SIZE_2_TYPE SINT16;
-typedef signed   SIZE_1_TYPE SINT8;
-#ifndef _WIN32
-typedef unsigned SIZE_4_TYPE UINT32;
-#endif
-typedef unsigned SIZE_2_TYPE UINT16;
-typedef unsigned SIZE_1_TYPE UINT8;
 
 typedef int FD_T;
 typedef int SOK_T;
 
 #ifdef _WIN32
   typedef unsigned int ssize_t;
-  typedef int BOOL;
-  #define sockread(s,p,l) recv(s,(char *) p,l,0)
-  #define sockwrite(s,p,l) send(s,(char *) p,l,0)
-  #define sockclose(s) closesocket(s)
+  #define sockread(s,p,l)  recv (s, (char *) p, l, 0)
+  #define sockwrite(s,p,l) send (s, (char *) p, l, 0)
+  #define sockclose(s)     closesocket(s)
 
-  #define strcasecmp(s,s1)  stricmp(s,s1)
-  #define strncasecmp(s,s1,l)  strnicmp(s,s1,l)
+  #define strcasecmp(s,s1)     stricmp (s, s1)
+  #define strncasecmp(s,s1,l)  strnicmp (s, s1, l)
   #define __os_has_input kbhit()
   
   #define mkdir(a,b) mkdir(a)
@@ -48,38 +52,40 @@ typedef int SOK_T;
   #define _OS_PREFPATH   ".\\"
   #define _OS_PATHSEP    '\\'
   #define _OS_PATHSEPSTR "\\"
+
 #elif defined(__BEOS__)
-  typedef unsigned char BOOL;
-  #define sockread(s,p,l) recv(s,p,l,0)
-  #define sockwrite(s,p,l) send(s,p,l,0)
-  #define sockclose(s) closesocket(s)
+  #define sockread(s,p,l)  recv (s, p, l, 0)
+  #define sockwrite(s,p,l) send (s, p, l, 0)
+  #define sockclose(s)     closesocket (s)
   #define __os_has_input 1
   #define INPUT_BY_POLL 1
   #undef  INPUT_BY_GETCH
   #define _OS_PREFPATH   NULL
   #define _OS_PATHSEP    '/'
   #define _OS_PATHSEPSTR "/"
+
 #elif defined(__amigaos__)
-  #define sockread(s,p,l) read(s,p,l)
-  #define sockwrite(s,p,l) write(s,p,l)
-  #define sockclose(s) close(s)
+  #define sockread(s,p,l)  read (s, p, l)
+  #define sockwrite(s,p,l) write (s, p, l)
+  #define sockclose(s)     close (s)
   #undef INPUT_BY_POLL
   #undef INPUT_BY_GETCH
   #define __os_has_input M_Is_Set (STDIN_FILENO)
   #define _OS_PREFPATH   "/PROGDIR/"
   #define _OS_PATHSEP    '/'
   #define _OS_PATHSEPSTR "/"
+
 #else
-  typedef unsigned char BOOL;
-  #define sockread(s,p,l) read(s,p,l)
-  #define sockwrite(s,p,l) write(s,p,l)
-  #define sockclose(s) close(s)
+  #define sockread(s,p,l)  read (s, p, l)
+  #define sockwrite(s,p,l) write (s, p, l)
+  #define sockclose(s)     close (s)
   #undef INPUT_BY_POLL
   #undef INPUT_BY_GETCH
   #define __os_has_input M_Is_Set (STDIN_FILENO)
   #define _OS_PREFPATH   NULL
   #define _OS_PATHSEP    '/'
   #define _OS_PATHSEPSTR "/"
+
 #endif
 
 #define Get_Config_Info(x) Get_Unix_Config_Info(x)

@@ -26,6 +26,7 @@
 #include "cmd_pkt_v8_snac.h"
 #include "cmd_pkt_cmd_v5_util.h"
 #include "util_str.h"
+#include "os.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -70,7 +71,8 @@ Preferences *prG;
 
 void Idle_Check (Connection *conn)
 {
-    int delta;
+    int delta, saver = -1;
+    time_t now;
     UDWORD new = 0xffffffffL;
 
     if (~conn->type & TYPEF_ANY_SERVER)
@@ -82,13 +84,49 @@ void Idle_Check (Connection *conn)
         uiG.idle_val = 0;
         return;
     }
+    
+    now = time (NULL);
+    delta = uiG.idle_val ? now - uiG.idle_val : 0;
+
+    if (!prG->away_time && delta > 10 && uiG.idle_val)
+    {
+        saver = os_DetectLockedWorkstation();
+        
+        if (saver >= 0 && saver <= 3)
+        {
+            switch (saver)
+            {
+                case 0: /* no screen saver, not locked */
+                    if (!(conn->status & (STATUSF_AWAY | STATUSF_NA)))
+                        return;
+                    new = (conn->status & STATUSF_INV) | STATUS_ONLINE;
+                    break;
+                case 2: /* locked workstation */
+                case 3:
+                    if (conn->status & STATUS_NA)
+                        return;
+                    new = (conn->status & STATUSF_INV) | STATUS_NA;
+                    break;
+                case 1: /* screen saver only */
+                    if ((conn->status & (STATUSF_AWAY | STATUSF_NA)) == STATUS_AWAY)
+                        return;
+                    new = (conn->status & STATUSF_INV) | STATUS_AWAY;
+                    break;
+            }
+
+            uiG.idle_val = 0;
+            uiG.idle_flag = 1;
+            delta = 0;
+        }
+    }
+
     if (!prG->away_time && !uiG.idle_flag)
         return;
-    if (!uiG.idle_val)
-        uiG.idle_val = time (NULL);
 
-    delta = (time (NULL) - uiG.idle_val);
-    if (uiG.idle_flag)
+    if (!uiG.idle_val)
+        uiG.idle_val = now;
+
+    if (uiG.idle_flag && new == 0xffffffffL)
     {
         if (conn->status & STATUSF_NA)
         {
@@ -111,7 +149,7 @@ void Idle_Check (Connection *conn)
             }
         }
     }
-    else if (delta >= prG->away_time && !(conn->status & (STATUSF_AWAY | STATUSF_NA)))
+    else if (!uiG.idle_flag && delta >= prG->away_time && !(conn->status & (STATUSF_AWAY | STATUSF_NA)))
     {
         new = (conn->status & STATUSF_INV) | STATUS_AWAY;
         uiG.idle_flag = 1;
@@ -200,7 +238,7 @@ int main (int argc, char *argv[])
     }
 
     prG = PreferencesC ();
-    prG->verbose  = arg_vv;
+    prG->verbose  = arg_vv | 0x8000;
     prG->rcfile   = arg_f ? strdup (arg_f) : NULL;
     prG->logplace = arg_l ? strdup (arg_l) : NULL;
     prG->flags |= arg_c ? 0 : FLAG_COLOR;
@@ -224,6 +262,7 @@ int main (int argc, char *argv[])
     
     prG->enc_loc = prG->enc_rem = ENC_AUTO;
     i18nInit (&prG->locale, &prG->enc_loc, arg_i);
+    prG->verbose &= ~0x8000;
     
     rc = arg_h ? 0 : PrefLoad (prG);
 

@@ -58,7 +58,7 @@
 
 void Initialize_RC_File ()
 {
-    char pwd1[20], pwd2[20], input[200];
+    char *pwd, *input;
     Connection *conn, *connt;
 #ifdef ENABLE_REMOTECONTROL
     Connection *conns;
@@ -75,7 +75,7 @@ void Initialize_RC_File ()
     M_print (i18n (1794, "If you already have an UIN, please enter it. Otherwise, enter 0, and I will request one for you.\n"));
     M_printf ("%s ", i18n (1618, "UIN:"));
     fflush (stdout);
-    M_fdnreadln (stdin, input, sizeof (input));
+    input = UtilIOReadline (stdin);
     tmpuin = 0;
     sscanf (input, "%ld", &tmpuin);
     uin = tmpuin;
@@ -85,13 +85,13 @@ void Initialize_RC_File ()
         M_printf (i18n (1781, "Your password for UIN %ld:\n"), uin);
     else
         M_print (i18n (1782, "You need a password for your new UIN.\n"));
-    memset (pwd1, 0, sizeof (pwd1));
-    while (!pwd1[0])
+    while (!*input)
     {
         M_printf ("%s ", i18n (1795, "Password:"));
         fflush (stdout);
         Echo_Off ();
-        M_fdnreadln (stdin, pwd1, sizeof (pwd1));
+        input = UtilIOReadline (stdin);
+        assert (input);
         Echo_On ();
         M_print ("\n");
         if (uin)
@@ -100,21 +100,23 @@ void Initialize_RC_File ()
         M_print (i18n (1783, "To prevent typos, please enter your password again.\n"));
         M_printf ("%s ", i18n (1795, "Password:"));
         fflush (stdout);
-        memset (pwd2, 0, sizeof (pwd2));
         Echo_Off ();
-        M_fdnreadln (stdin, pwd2, sizeof (pwd2));
+        pwd = strdup (input);
+        input = UtilIOReadline (stdin);
+        assert (input);
         Echo_On ();
         M_print ("\n");
-        if (strcmp (pwd1, pwd2))
+        if (strcmp (pwd, input))
         {
             M_printf ("\n%s\n", i18n (1093, "Passwords did not match - please try again."));
-            pwd1[0] = '\0';
+            *input = 0;
         }
+        free (pwd);
     }
 #ifdef ENABLE_UTF8
-    passwd = strdup (c_out (pwd1));
+    passwd = strdup (c_out (input));
 #else
-    passwd = strdup (pwd1);
+    passwd = strdup (input);
 #endif
 
     prG->s5Use = 0;
@@ -124,8 +126,8 @@ void Initialize_RC_File ()
     M_print (i18n (1784, "If you are firewalled, you may need to use a SOCKS5 server. If you do, please enter its hostname or IP address. Otherwise, or if unsure, just press return.\n"));
     M_printf ("%s ", i18n (1094, "SOCKS5 server:"));
     fflush (stdout);
-    M_fdnreadln (stdin, input, sizeof (input));
-    if (strlen (input) > 1)
+    input = UtilIOReadline (stdin);
+    if (input && strlen (input) > 1)
     {
         if ((t = strchr (input, ':')))
         {
@@ -139,8 +141,9 @@ void Initialize_RC_File ()
             M_print (i18n (1786, "I also need the port the socks server listens on. If unsure, press return for the default port.\n"));
             M_printf ("%s ", i18n (1095, "SOCKS5 port:"));
             fflush (stdout);
-            M_fdnreadln (stdin, input, sizeof (input));
-            sscanf (input, "%hu", &prG->s5Port);
+            input = UtilIOReadline (stdin);
+            if (input)
+                sscanf (input, "%hu", &prG->s5Port);
         }
         if (!prG->s5Port)
             prG->s5Port = 1080;
@@ -154,16 +157,17 @@ void Initialize_RC_File ()
         M_print (i18n (1787, "You probably need to authenticate yourself to the socks server. If so, you need to enter the user name the administrator of the socks server gave you. Otherwise, just press return.\n"));
         M_printf ("%s ", i18n (1096, "SOCKS5 user name:"));
         fflush (stdout);
-        M_fdnreadln (stdin, input, sizeof (input));
-        if (strlen (input) > 1)
+        input = UtilIOReadline (stdin);
+        if (input && strlen (input) > 1)
         {
             prG->s5Auth = 1;
             prG->s5Name = strdup (input);
             M_print (i18n (1788, "Now I also need the password for this user.\n"));
             M_printf ("%s ", i18n (1097, "SOCKS5 password:"));
             fflush (stdout);
-            M_fdnreadln (stdin, input, sizeof (input));
-            prG->s5Pass = strdup (input);
+            input = UtilIOReadline (stdin);
+            if (input)
+                prG->s5Pass = strdup (input);
         }
     }
 
@@ -265,8 +269,8 @@ void Initialize_RC_File ()
     free (passwd);
 }
 
-#define PrefParse(x)          switch (1) { case 1: if (!s_parse    (&args, &x)) { M_printf (i18n (2123, "%sSyntax error%s: Too few arguments: '%s'\n"), COLERROR, COLNONE, buf); continue; }}
-#define PrefParseInt(i)       switch (1) { case 1: if (!s_parseint (&args, &i)) { M_printf (i18n (2124, "%sSyntax error%s: Not an integer: '%s'\n"), COLERROR, COLNONE, buf); continue; }}
+#define PrefParse(x)          switch (1) { case 1: if (!s_parse    (&args, &x)) { M_printf (i18n (2123, "%sSyntax error%s: Too few arguments: '%s'\n"), COLERROR, COLNONE, line); continue; }}
+#define PrefParseInt(i)       switch (1) { case 1: if (!s_parseint (&args, &i)) { M_printf (i18n (2124, "%sSyntax error%s: Not an integer: '%s'\n"), COLERROR, COLNONE, line); continue; }}
 #define ERROR continue;
 
 /*
@@ -274,43 +278,42 @@ void Initialize_RC_File ()
  */
 void Read_RC_File (FILE *rcf)
 {
-    char buf[450];
     char *tmp = NULL, *tmp2 = NULL, *cmd = NULL;
-    char *p, *args;
+    char *p, *line, *args;
     Contact *cont = NULL, *lastcont = NULL;
-    Connection *oldconn = NULL, *conn = NULL;
+    Connection *oldconn = NULL, *conn = NULL, *tconn;
 #ifdef ENABLE_REMOTECONTROL
     Connection *conns = NULL;
 #endif
     ContactGroup *cg = NULL;
     int section, dep = 0;
-    UDWORD uin, i;
+    UDWORD uin, i, j;
     UWORD flags;
     UBYTE enc = ENC_LATIN1, format = 0;
     char *tab_nick_spool[TAB_SLOTS];
     int spooled_tab_nicks;
 
     spooled_tab_nicks = 0;
-    for (section = 0; !M_fdnreadln (rcf, buf, sizeof (buf)); )
+    for (section = 0; (line = UtilIOReadline (rcf)); )
     {
-        if (!buf[0] || (buf[0] == '#'))
+        if (!*line || (*line == '#'))
             continue;
-        if (buf[0] == '[')
+        if (*line == '[')
         {
-            if (!strcasecmp (buf, "[General]"))
+            if (!strcasecmp (line, "[General]"))
                 section = 0;
-            else if (!strcasecmp (buf, "[Contacts]"))
+            else if (!strcasecmp (line, "[Contacts]"))
                 section = 1;
-            else if (!strcasecmp (buf, "[Strings]"))
+            else if (!strcasecmp (line, "[Strings]"))
                 section = 2;
-            else if (!strcasecmp (buf, "[Connection]"))
+            else if (!strcasecmp (line, "[Connection]"))
             {
                 section = 3;
                 oldconn = conn;
                 conn = ConnectionC ();
                 conn->spref = PreferencesConnectionC ();
             }
-            else if (!strcasecmp (buf, "[Group]"))
+            else if (!strcasecmp (line, "[Group]"))
             {
                 section = 4;
                 cg = ContactGroupFind (0, (Connection *)(-1), "", 1);
@@ -325,19 +328,19 @@ void Read_RC_File (FILE *rcf)
             else
             {
                 M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                M_printf (i18n (1659, "Unknown section %s in configuration file."), ConvToUTF8 (buf, enc, -1, 0));
+                M_printf (i18n (1659, "Unknown section %s in configuration file."), ConvToUTF8 (line, enc, -1, 0));
                 M_print ("\n");
                 section = -1;
             }
             continue;
         }
-        args = buf;
+        args = line;
         switch (section)
         {
             case -1:
                 M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
                 M_print  (i18n (1675, "Ignored line:"));
-                M_printf (" %s\n", ConvToUTF8 (buf, enc, -1, 0));
+                M_printf (" %s\n", ConvToUTF8 (args, enc, -1, 0));
                 break;
             case 0:
                 if (!s_parse (&args, &cmd))
@@ -657,6 +660,14 @@ void Read_RC_File (FILE *rcf)
                         which = -3;
                     else if (!strcasecmp (cmd, "silent"))
                         which = -4;
+                    else if (!strcasecmp (cmd, "webaware"))
+                        which = FLAG_WEBAWARE;
+                    else if (!strcasecmp (cmd, "hideip"))
+                        which = FLAG_HIDEIP;
+                    else if (!strcasecmp (cmd, "dcauth"))
+                        which = FLAG_DC_AUTH;
+                    else if (!strcasecmp (cmd, "dccont"))
+                        which = FLAG_DC_CONT;
                     else
                         ERROR;
                     if (which > 0)
@@ -750,7 +761,7 @@ void Read_RC_File (FILE *rcf)
             case 1:
                 flags = 0;
                 
-                for (p = buf; *p && *p != '#'; p++)
+                for (p = args; *p && *p != '#'; p++)
                 {
                     if (!*p || *p == '#' || isdigit ((int) *p))
                         break;
@@ -793,18 +804,38 @@ void Read_RC_File (FILE *rcf)
                     PrefParse (cmd);
                 }
                 
-                
-                if (!(cont = ContactFind (NULL, 0, uin, ConvToUTF8 (cmd, enc, -1, 0), 1)))
+                for (i = j = 0; (tconn = ConnectionNr (i)); i++)
                 {
-                    M_printf (COLERROR "%s" COLNONE " %s\n", i18n (1619, "Warning:"),
-                             i18n (1620, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
-                    section = -1;
-                    break;
+                    if (tconn->contacts && (cont = ContactFind (tconn->contacts, 0, uin, NULL, 0)))
+                    {
+                        j = 1;
+                        if (cont->flags & CONT_ALIAS)
+                            ContactFind (tconn->contacts, 0, uin, ConvToUTF8 (cmd, enc, -1, 0), 1);
+                        else
+                        {
+                            s_repl (&cont->nick, ConvToUTF8 (cmd, enc, -1, 0));
+                            cont->flags = flags;
+                        }
+                    }
                 }
-                if (~cont->flags & CONT_ALIAS)
-                    cont->flags = flags;
-                if (prG->verbose > 2)
-                    M_printf ("%ld = %s %lx | %p\n", cont->uin, cont->nick, cont->flags, cont);
+                if (!j)
+                {
+                    dep = 1;
+                    for (i = 0; (tconn = ConnectionNr (i)); i++)
+                        if (tconn->spref->type & TYPEF_ANY_SERVER)
+                            break;
+                    if (!tconn)
+                        break;
+                    if (!(cont = ContactFind (tconn->contacts, 0, uin, ConvToUTF8 (cmd, enc, -1, 0), 1)))
+                    {
+                        M_printf (COLERROR "%s" COLNONE " %s\n", i18n (1619, "Warning:"),
+                                 i18n (1620, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
+                        section = -1;
+                        break;
+                    }
+                    if (~cont->flags & CONT_ALIAS)
+                        cont->flags = flags;
+                }
                 break;
             case 2:
                 PrefParse (cmd);
@@ -1002,7 +1033,9 @@ void Read_RC_File (FILE *rcf)
                     PrefParseInt (i);
                     PrefParseInt (uin);
                     
-                    ContactFind (cg, i, uin, NULL, 1);
+                    cont = ContactFind (conn->contacts, i, uin, s_sprintf ("%ld", uin), 1);
+                    if (cg != conn->contacts)
+                        ContactAdd (cg, cont);
                 }
                 else
                 {
@@ -1017,7 +1050,7 @@ void Read_RC_File (FILE *rcf)
     /* now tab the nicks we may have spooled earlier */
     for (i = 0; i < spooled_tab_nicks; i++)
     {
-        Contact *cont = ContactFind (NULL, 0, 0, tab_nick_spool[i], 1);
+        Contact *cont = ContactFind (NULL, 0, 0, tab_nick_spool[i], 0);
         if (cont)
             TabAddUIN (cont->uin);
         free (tab_nick_spool[i]);
@@ -1246,6 +1279,14 @@ int Save_RC ()
     fprintf (rcf, "set tabs       %s # type of tab completion (simple, cycle, cycleall)\n\n",
                     prG->tabs == TABS_SIMPLE ? "simple" :
                     prG->tabs == TABS_CYCLE ? "cycle" : "cycleall");
+    if (prG->flags & FLAG_WEBAWARE)
+        fprintf (rcf, "set webaware   %s # whether to be globally webaware\n", "on");
+    if (prG->flags & FLAG_HIDEIP)
+        fprintf (rcf, "set hideip     %s # whether to hide the local IP globally\n", "on");
+    if (prG->flags & FLAG_DC_AUTH)
+        fprintf (rcf, "set dcauth     %s # whether to allow dc only from authorized contacts\n", "on");
+    if (prG->flags & FLAG_DC_CONT)
+        fprintf (rcf, "set dccont     %s # whether to allow dc only from contacts\n", "on");
 
     fprintf (rcf, "# Colors. color scheme 0|1|2|3 or color <use> <color>\n");
     {
@@ -1287,7 +1328,7 @@ int Save_RC ()
         }
     }
     if (prG->scheme != (UBYTE)-1)
-        fprintf (rcf, "color scheme   %d\n\n", prG->scheme);
+        fprintf (rcf, "color scheme   %d # comment out if above are changed\n\n", prG->scheme);
     else
         fprintf (rcf, "# color scheme <0,1,2,3>\n\n");
     
@@ -1342,7 +1383,8 @@ int Save_RC ()
         while (cg)
         {
             for (i = 0; i < cg->used; i++)
-                fprintf (rcf, "entry 0 %ld\n", cg->contacts[i]->uin);
+                if (!((cont = cg->contacts[i])->flags & (CONT_TEMPORARY | CONT_ALIAS)))
+                    fprintf (rcf, "entry 0 %ld\n", cont->uin);
             cg = cg->more;
         }
     }

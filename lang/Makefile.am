@@ -10,11 +10,11 @@ lang_DATA = C.i18n \
 
 maintainer: sr.i18n ja.i18n
 
-sr.i18n: sr.UTF-8.i18n Makefile
+sr.i18n: sr.UTF-8.i18n
 	sed < $< 's/«/\{/g;s/»/\}/g' | grep -v ^1007 \
 	  | iconv  -f utf-8 -t iso-8859-5 | sed s/^1000:.*/1000:iso-8859-5/ > $@
 
-ja.i18n: ja.UTF-8.i18n Makefile
+ja.i18n: ja.UTF-8.i18n
 	sed < $< 's/«/\{/g;s/»/\}/g' | grep -v ^1007 | grep -v ^# | grep -v ^1849 | grep -v ^2084 \
 	  | iconv -f utf-8 -t eucjp | sed s/^1000:.*/1000:eucjp/ > $@
 

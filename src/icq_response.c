@@ -146,7 +146,8 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
         case META_SRV_RANDOM:
         if (!(event = QueueDequeue (conn, QUEUE_REQUEST_META, pak->ref)) || !event->callback)
         {
-            M_printf ("FIXME: meta reply ref %lx not found.\n", pak->ref);
+            if (prG->verbose)
+                M_printf ("FIXME: meta reply ref %lx not found.\n", pak->ref);
             return;
         }
         if (event->uin)
@@ -541,11 +542,11 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
 
     if (prG->verbose && !~old && cont->dc)
     {
-        M_printf ("%-15s %s\n", i18n (1441, "remote IP:"), s_ip (cont->dc->ip_rem));
-        M_printf ("%-15s %s\n", i18n (1451, "local  IP:"), s_ip (cont->dc->ip_loc));
-        M_printf ("%-15s %d\n", i18n (1453, "TCP version:"), cont->dc->version);
-        M_printf ("%-15s %s\n", i18n (1454, "Connection:"),
-                 cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"));
+        M_printf ("    %s: %s / ", i18n (1642, "IP:"), s_ip (cont->dc->ip_rem));
+        M_printf ("%s:%ld    %s %d    %s (%d)\n", s_ip (cont->dc->ip_loc),
+            cont->dc->port, i18n (1453, "TCP version:"), cont->dc->version,
+            cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),
+            cont->dc->type);
     }
 }
 
@@ -808,6 +809,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
 
     switch (e_msg_type & ~MSGF_MASS)
     {
+        case MSGF_MASS: /* not reached here, but quiets compiler warning */
         while (1)
         {
             M_printf ("?%lx? %s%s\n", e_msg_type, COLMSGINDENT, e_msg_text);

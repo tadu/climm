@@ -2,8 +2,21 @@
 /*
  * Send ICQ commands, using protocol version 5.
  *
- * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
- * version 2 of the GPL licence.
+ * mICQ Copyright (C) © 2001,2002,2003 Rüdiger Kuhlmann
+ *
+ * mICQ is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 dated June, 1991.
+ *
+ * mICQ is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this package; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
  *
  * $Id$
  */
@@ -101,11 +114,7 @@ void CmdPktCmdLogin (Connection *conn)
                        conn->assoc->port : 0);
     PacketWriteLNTS (pak, c_out (conn->passwd));
     PacketWrite4 (pak, 0x000000d5);
-#ifdef HIDELANIP
-    PacketWrite4 (pak, 0);
-#else
-    PacketWrite4 (pak, conn->our_local_ip);
-#endif
+    PacketWrite4 (pak, prG->flags & FLAG_HIDEIP ? 0 : conn->our_local_ip);
     PacketWrite1 (pak, conn->assoc && conn->assoc->connect & CONNECT_OK ?
                        conn->assoc->status : 0);         /* 1=firewall | 2=proxy | 4=tcp */
     PacketWrite4 (pak, prG->status);

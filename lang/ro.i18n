@@ -1077,3 +1077,4 @@
 2318:Romanian (%s) translation loaded (%ld entries).\n
 #2319:Accept an incoming file transfer from <uin> or <nick>.
 #2320:peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n
+2327:%smICQ (ICQ clonul lui Matt)%s versiunea %s%s%s\n

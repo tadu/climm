@@ -532,7 +532,7 @@
 1605:Soll Ihr Status im Web einsehbar sein? (Ja/Nein)
 1606:Paket mit falscher Sitzungskennung ID %08lx (richtig: %08lx) mit Kommando %04x ignoriert.\n
 1607:Benutzung: micq [-h] [-c] [-i <locale>] [-b <basedir>] \n                [-f <configfile>] [-v[<level>]] [-l <logplace>]\n
-1612:Dieses Programm wurde ohne Hilfe oder Zustimmung von Mirabilis erstellt.\n
+1612:Dieses Programm wurde ohne Hilfe / Zustimmung von Mirabilis erstellt.\n
 1613:Dazu wurde kein Programmcode von Mirabilis zurückentwickelt oder zurückübersetzt.\n
 1618:Benutzernummer:
 1619:Warnung:
@@ -966,11 +966,11 @@
 2196:Veralteter Text:
 2197:Veraltetes Byte
 2198:Ungeeignetes Paßwort "%s" - darf nicht mit Zeichen 0xf3 beginnen.\n
-2199:  -h, --help     gibt diesen hilfe-Text aus\n
-2200:  -v, --verbose  setzt (oder erhöht) Ausführlichkeit (zur Fehlersuche)\n
+2199:  -h, --help     diesen Hilfe-Text ausgeben\n
+2200:  -v, --verbose  Ausführlichkeit setzen (oder erhöhen) (zur Fehlersuche)\n
 2201:  -b, --basedir  anderes BASIS-Verzeichnis verwenden (Standard: %s)\n
 2202:  -f, --config   andere Konfigurationsdatei verwenden (Standard: %s)\n
-2203:  -l, --logplace andere Logdatei/Logverzeichnis verwenden (Standard: %s)\n
+2203:  -l, --logplace andere Logdatei/verzeichnis verwenden (Standard: %s)\n
 2204:  -i, --i18n     andere Lokalisierung verwenden (Standard: automatisch erkannt)\n
 2205:  -c, --nocolor  keine Farben verwenden\n
 2206:Der Server weigert sich, gespeicherte Nachrichten auszuliefern.\n
@@ -1085,3 +1085,4 @@
 2318:Deutsche Übersetzung (%s) geladen (%ld Einträge).\n
 2319:Akzeptiere eingehende Dateiübertragung von <uin> oder <nick>.
 2320:peer accept <nick> [<id>]\n                  - akzeptiere eine eingehende Dateiübertragung.\n
+2327:%smICQ (Matts ICQ-Klon)%s Version %s%s%s\n

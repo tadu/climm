@@ -41,7 +41,7 @@
 static jump_f
     CmdUserChange, CmdUserRandom, CmdUserHelp, CmdUserInfo, CmdUserTrans,
     CmdUserAuto, CmdUserAlter, CmdUserAlias, CmdUserUnalias, CmdUserMessage,
-    CmdUserMessageNG, CmdUserResend, CmdUserPeek,
+    CmdUserMessageNG, CmdUserResend, CmdUserPeek, CmdUserAsSession,
     CmdUserVerbose, CmdUserRandomSet, CmdUserIgnoreStatus, CmdUserSMS,
     CmdUserStatusDetail, CmdUserStatusWide, CmdUserStatusShort,
     CmdUserSound, CmdUserSoundOnline, CmdUserRegister, CmdUserStatusMeta,
@@ -135,6 +135,7 @@ static jump_t jump[] = {
     { &CmdUserPass,          "pass",         NULL, 0,   0 },
     { &CmdUserSMS,           "sms",          NULL, 0,   0 },
     { &CmdUserPeek,          "peek",         NULL, 0,   0 },
+    { &CmdUserAsSession,     "as",           NULL, 0,   0 },
     { &CmdUserContact,       "contact",      NULL, 0,   0 },
     { &CmdUserContact,       "contactshow",  NULL, 0,   1 },
     { &CmdUserContact,       "contactdiff",  NULL, 0,   2 },
@@ -1335,7 +1336,9 @@ static JUMP_F (CmdUserAnyMess)
 {
     Contact *cont;
     char *arg1 = NULL;
-    UDWORD i, f;
+    UDWORD i, f = 0;
+    static UDWORD size;
+    static char *t = NULL;
     ANYCONN;
 
     if (!(data & 3))
@@ -1359,11 +1362,21 @@ static JUMP_F (CmdUserAnyMess)
             return 0;
         data |= i << 2;
     }
+    if (!t)
+        t = s_catf (t, &size, " ");
+    *t = 0;
+
     if (!s_parsenick (&args, &cont, NULL, conn))
         return 0;
-    if (!s_parserem (&args, &arg1))
+    
+    if (!s_parse (&args, &arg1))
         return 0;
+    
+    t = s_catf (t, &size, "%s", arg1);
 
+    while (s_parse (&args, &arg1))
+        t = s_catf (t, &size, "%c<%s>", Conv0xFE, arg1);
+        
     if (data & 1)
     {
 #ifdef ENABLE_PEER2PEER
@@ -1372,17 +1385,17 @@ static JUMP_F (CmdUserAnyMess)
             M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
             return 0;
         }
-        TCPSendMsg (conn->assoc, cont, arg1, data >> 2);
+        TCPSendMsg (conn->assoc, cont, t, data >> 2);
     }
 #endif
     else
     {
         if (conn->type != TYPE_SERVER)
-            CmdPktCmdSendMessage (conn, cont, arg1, data >> 2);
+            CmdPktCmdSendMessage (conn, cont, t, data >> 2);
         else if (f != 2)
-            SnacCliSendmsg (conn, cont, arg1, data >> 2, f);
+            SnacCliSendmsg (conn, cont, t, data >> 2, f);
         else
-            SnacCliSendmsg2 (conn, cont, ExtraSet (ExtraSet (NULL, EXTRA_FORCE, 1, NULL), EXTRA_MESSAGE, data >> 2, arg1));
+            SnacCliSendmsg2 (conn, cont, ExtraSet (ExtraSet (NULL, EXTRA_FORCE, 1, NULL), EXTRA_MESSAGE, data >> 2, t));
     }
     return 0;
 }
@@ -1737,7 +1750,7 @@ static JUMP_F(CmdUserStatusDetail)
         cg = conn->contacts;
         for (j = 0; (cont = ContactIndex (cg, j)); j++)
             if (~cont->flags & CONT_TEMPORARY && ~cont->flags & CONT_ALIAS)
-                if(!ContactFind (tcg, 0, cont->uin, NULL, 0))
+                if (!ContactFind (tcg, 0, cont->uin, NULL, 0))
                     ContactAdd (tcg, cont);
         for (i = 0; (cg = ContactGroupIndex (i)); i++)
             if (cg->serv == conn && cg != conn->contacts && cg != tcg)
@@ -1791,6 +1804,8 @@ static JUMP_F(CmdUserStatusDetail)
     {
         if (k != -1 && (cg == conn->contacts || cg == tcg))
             continue;
+        if (cg->serv != conn)
+            continue;
 #ifdef CONFIG_UNDERLINE
         l = 0;
 #endif
@@ -1799,12 +1814,17 @@ static JUMP_F(CmdUserStatusDetail)
             M_print (COLMESSAGE);
             if (cg != tcg && cg != conn->contacts)
             {
-                for (i = j = (totallen - c_strlen (cg->name) - 1) / 2; i >= 20; i -= 20)
-                    M_print ("====================");
-                M_printf ("%.*s", (int)i, "====================");
-                M_printf (" " COLCONTACT "%s" COLMESSAGE " ", cg->name);
-                for (i = totallen - j - c_strlen (cg->name) - 2; i >= 20; i -= 20)
-                    M_print ("====================");
+                if (totallen > c_strlen (cg->name) + 1)
+                {
+                    for (i = j = (totallen - c_strlen (cg->name) - 1) / 2; i >= 20; i -= 20)
+                        M_print ("====================");
+                    M_printf ("%.*s", (int)i, "====================");
+                    M_printf (" " COLCONTACT "%s" COLMESSAGE " ", cg->name);
+                    for (i = totallen - j - c_strlen (cg->name) - 2; i >= 20; i -= 20)
+                        M_print ("====================");
+                }
+                else
+                    M_printf (" " COLCONTACT "%s" COLMESSAGE " ", cg->name);
             }
             else
                 for (i = totallen; i >= 20; i -= 20)
@@ -1905,7 +1925,15 @@ static JUMP_F(CmdUserStatusDetail)
 
         if (cont->dc)
         {
-            M_printf ("%-15s %s/%s:%ld\n", i18n (1441, "remote IP:"),
+            M_printf ("    %-15s %s / %s:%ld\n    %s %d    %s (%d)    %s %08lx\n",
+                  i18n (1642, "IP:"), t1 = strdup (s_ip (cont->dc->ip_rem)),
+                  t2 = strdup (s_ip (cont->dc->ip_loc)), cont->dc->port,
+                  i18n (1453, "TCP version:"), cont->dc->version,
+                  cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer")
+                    : i18n (1494, "Server Only"), cont->dc->type,
+                  i18n (2026, "TCP cookie:"), cont->dc->cookie);
+#if 0
+            M_printf ("%-15s %s/%s:%ld\n", i18n (1642, "IP:"),
                       t1 = strdup (s_ip (cont->dc->ip_rem)),
                       t2 = strdup (s_ip (cont->dc->ip_loc)), cont->dc->port);
             M_printf ("%-15s %d\n", i18n (1453, "TCP version:"), cont->dc->version);
@@ -1913,6 +1941,7 @@ static JUMP_F(CmdUserStatusDetail)
                       cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),
                       cont->dc->type);
             M_printf ("%-15s %08lx\n", i18n (2026, "TCP cookie:"), cont->dc->cookie);
+#endif
             free (t1);
             free (t2);
         }
@@ -1923,7 +1952,7 @@ static JUMP_F(CmdUserStatusDetail)
                 if (i++)
                     M_print (", ");
                 else
-                    M_print (i18n (2192, "Capabilities: "));
+                    M_printf ("    %s", i18n (2192, "Capabilities: "));
                 M_print (cap->name);
                 if (cap->name[4] == 'U' && cap->name[5] == 'N')
                 {
@@ -2358,7 +2387,7 @@ static JUMP_F(CmdUserAutoaway)
  */
 static JUMP_F(CmdUserSet)
 {
-    int quiet = 0;
+    int quiet = 0, setstatus = 0;
     char *arg1 = NULL;
     const char *str = "";
     
@@ -2379,6 +2408,10 @@ static JUMP_F(CmdUserSet)
         else if (!strcasecmp (arg1, "linebreak"))  data = -1;
         else if (!strcasecmp (arg1, "tabs"))       data = -2;
         else if (!strcasecmp (arg1, "silent"))     data = -3;
+        else if (!strcasecmp (arg1, "webaware"))   { data = FLAG_WEBAWARE; setstatus = 1; }
+        else if (!strcasecmp (arg1, "hideip"))     { data = FLAG_HIDEIP;   setstatus = 1; }
+        else if (!strcasecmp (arg1, "dcauth"))     { data = FLAG_DC_AUTH;  setstatus = 1; }
+        else if (!strcasecmp (arg1, "dccont"))     { data = FLAG_DC_CONT;  setstatus = 1; }
         else if (!strcasecmp (arg1, "quiet"))
         {
             quiet = 1;
@@ -2403,6 +2436,8 @@ static JUMP_F(CmdUserSet)
                 data = 0;
             if (!quiet && str)
                 M_printf (str, COLMESSAGE, prG->flags & data ? i18n (1085, "on") : i18n (1086, "off"), COLNONE);
+            if (setstatus && currconn && currconn->type == TYPE_SERVER)
+                SnacCliSetstatus (currconn, currconn->status & 0xffff, 3);
             break;
         case -1:
             prG->flags &= ~FLAG_LIBR_BR & ~FLAG_LIBR_INT;
@@ -3197,11 +3232,13 @@ static JUMP_F(CmdUserConn)
             M_printf (i18n (2098, "Connection %ld is not a server connection.\n"), i);
             return 0;
         }
+#if 0
         if (~conn->connect & CONNECT_OK)
         {
             M_printf (i18n (2096, "Connection %ld is not open.\n"), i);
             return 0;
         }
+#endif
         currconn = conn;
         M_printf (i18n (2099, "Selected connection %ld (version %d, UIN %ld) as current connection.\n"),
                  i, conn->ver, conn->uin);
@@ -3312,6 +3349,51 @@ static JUMP_F(CmdUserQuit)
     uiG.quit = TRUE;
     return 0;
 }
+
+
+/*
+ * Runs a command using temporarely a different current connection
+ */
+static JUMP_F(CmdUserAsSession)
+{
+    Connection *saveconn, *tmpconn;
+    char *q = NULL;
+    UDWORD quiet = 0, nr;
+    
+    saveconn = currconn;
+    if (!s_parseint (&args, &nr))
+    {
+        if (!s_parse (&args, &q))
+            /* syntax error */
+            return 0;
+        if (!strcmp (q, "quiet"))
+            /* syntax error */
+            return 0;
+        quiet = 1;
+        if (!s_parseint (&args, &nr))
+            /* syntax error */
+            return 0;
+    }
+
+    tmpconn = ConnectionNr (nr - 1);
+    if (!tmpconn && !(tmpconn = ConnectionFind (TYPEF_SERVER, nr, NULL)))
+    {
+        if (!quiet)
+            M_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
+        return 0;
+    }
+    if (~tmpconn->type & TYPEF_SERVER)
+    {
+        if (!quiet)
+            M_printf (i18n (2098, "Connection %ld is not a server connection.\n"), nr);
+        return 0;
+    }
+    currconn = tmpconn;
+    CmdUser (args);
+    currconn = saveconn;
+    return 0;
+}
+
 
 /******************************************************************************
  *
@@ -3972,9 +4054,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
                 int is_alias = FALSE;
                 
                 cmd = strdup (cmd);
-                if (!s_parserem (&args, &argsd))
-                    argsd = "";
-                argsd = strdup (argsd);
+                argsd = strdup (args);
 
                 if (*cmd != '\xb6')
                 {

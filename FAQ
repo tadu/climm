@@ -87,13 +87,34 @@ A: The former are used when a direct connection to the contact is
    when the message is sent through the server (as a non-acknowledged
    message). '>>»' and '«<<' are used for acknowledged messages.
 
+Q: How can I set a specific encoding for a given user?
+
+A: In the file BASEDIR/contacts/icq-<ICQ#>, edit the line "b_enc none" into
+   "b_enc <encoding>". Note that mICQ may overwrite this file on exit.  You
+   can force mICQ to save the file with "meta save <ICQ#>". To make the
+   change active, type "meta load <ICQ#>" to load the file.
+
+Q: Does mICQ support the webaware feature?
+
+A: Yes, partially. As of mICQ 0.4.10.2, you could use the change command to
+   set your status, with the appropriate flags 0x10000 set, and then use
+   aliases for these values. As of mICQ 0.4.10.3, it is supported, but yet
+   undocumented: you can "set" the options "webaware", "hideip", "dcauth"
+   and "dccont", which then will also be saved to your micqrc.
+
+Q: mICQ claims my iconv() is broken, but doesn't detect my replacement libiconv. What do I do?
+
+A: Do ./configure LDFLAGS=-liconv instead. If your libiconv lib and includes
+   dir is not found, try ./configure "LDFLAGS=-liconv -L/path/to/libiconv/lib"
+   CPPFLAGS=-I/path/to/libiconv/include/" instead.
+
 Q: Are there any known bugs in 0.4.10?
 
 A: No, not yet.
 
 Q: Are there known bugs in older versions of mICQ?
 
-A: Of course. It takes time to clean up all the mess.
+A: Of course. It takes time to clean up all the mess. ;-)
 
   * 0.4.9.4: Removing the canonical name of a contact (and not an alias of
     it) will remove the contact's status information.  Workaround: refresh

@@ -165,13 +165,12 @@ void ConnectionInitServerV5 (Connection *conn)
         conn->port = 4000;
     if (!conn->passwd || !*conn->passwd)
     {
-        char pwd[20];
-        pwd[0] = '\0';
+        char *pwd;
         M_printf ("%s ", i18n (1063, "Enter password:"));
         Echo_Off ();
-        M_fdnreadln (stdin, pwd, sizeof (pwd));
+        pwd = UtilIOReadline (stdin);
         Echo_On ();
-        conn->passwd = strdup (pwd);
+        conn->passwd = strdup (pwd ? pwd : "");
     }
     QueueEnqueueData (conn, /* FIXME: */ 0, 0, time (NULL), NULL, 0, NULL, &CallBackServerInitV5);
 }

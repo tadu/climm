@@ -1,8 +1,21 @@
 /*
  * Handles incoming and creates outgoing SNAC packets.
  *
- * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
- * version 2 of the GPL licence.
+ * mICQ Copyright (C) © 2001,2002,2003 Rüdiger Kuhlmann
+ *
+ * mICQ is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 dated June, 1991.
+ *
+ * mICQ is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this package; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
  *
  * $Id$
  */
@@ -42,7 +55,7 @@ extern int reconn;
 
 static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd,
     SnacSrvRates, SnacSrvReplyicbm, SnacSrvReplybuddy, SnacSrvReplybos,
-    SnacSrvReplyinfo, SnacSrvReplylocation, SnacSrvUseronline,
+    SnacSrvReplyinfo, SnacSrvReplylocation, SnacSrvUseronline, SnacSrvContacterr,
     SnacSrvRegrefused, SnacSrvUseroffline, SnacSrvRecvmsg, SnacSrvUnknown,
     SnacSrvFromicqsrv, SnacSrvAddedyou, SnacSrvToicqerr, SnacSrvNewuin,
     SnacSrvSetinterval, SnacSrvSrvackmsg, SnacSrvAckmsg, SnacSrvAuthreq,
@@ -75,7 +88,7 @@ static SNAC SNACS[] = {
     {  1, 19, "SRV_MOTD",            SnacSrvMotd},
     {  1, 24, "SRV_FAMILIES2",       SnacSrvFamilies2},
     {  2,  3, "SRV_REPLYLOCATION",   SnacSrvReplylocation},
-    {  3,  1, "SRV_CONTACTERR",      NULL},
+    {  3,  1, "SRV_CONTACTERR",      SnacSrvContacterr},
     {  3,  3, "SRV_REPLYBUDDY",      SnacSrvReplybuddy},
     {  3, 11, "SRV_USERONLINE",      SnacSrvUseronline},
     {  3, 10, "SRV_REFUSE",          SnacSrvContrefused},
@@ -340,7 +353,7 @@ static JUMP_SNAC_F(SnacServerpause)
 
 static void SrvCallbackTodoEg (Event *event)
 {
-    CmdUser ("\xb6" "eg");
+    CmdUser (s_sprintf ("\xb6" "as %ld eg", event->conn->uin));
 }
 
 /*
@@ -388,7 +401,7 @@ static JUMP_SNAC_F(SnacSrvReplyinfo)
         reconn = 0;
         QueueEnqueueData (event->conn, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
                           NULL, event->conn->uin, NULL, &SrvCallBackKeepalive);
-        QueueEnqueueData (event->conn, QUEUE_TODO_EG, 0, time (NULL) + 2,
+        QueueEnqueueData (event->conn, QUEUE_TODO_EG, 0, time (NULL) + 3,
                           NULL, 0, NULL, &SrvCallbackTodoEg);
     }
 }
@@ -452,6 +465,47 @@ static JUMP_SNAC_F(SnacSrvMotd)
 static JUMP_SNAC_F(SnacSrvReplylocation)
 {
     /* ignore all data, do nothing */
+}
+
+/*
+ * SRV_CONTACTERR - SNAC(3,1)
+ */
+static JUMP_SNAC_F(SnacSrvContacterr)
+{
+    UWORD err, cnt;
+    UDWORD uin;
+    Contact *cont;
+    char first = 0, empty = 0;
+    const char *errtxt;
+    
+    err = PacketReadB2 (event->pak);
+    cnt = PacketReadB2 (event->pak);
+    
+    switch (err)
+    {
+        case 0x0e: errtxt = "FIXME: syntax error";
+        case 0x14: errtxt = "FIXME: removing non-contact";
+        default:   errtxt = "FIXME: unknown";
+    }
+
+    M_printf ("FIXME: Contact error %d (%s) for %d contacts: ", err, errtxt, cnt);
+
+    while (empty < 3)
+    {
+        if ((uin = PacketReadUIN (event->pak)))
+        {
+            cont = ContactUIN (event->conn, uin);
+            if (first)
+                M_print (", ");
+            if (cont)
+                M_printf ("%s (%ld)", cont->nick, cont->uin);
+            else
+                M_printf ("%ld", cont->uin);
+        }
+        else
+            empty++;
+    }
+    M_print ("\n");
 }
 
 /*
@@ -576,6 +630,8 @@ static JUMP_SNAC_F(SnacSrvIcbmerr)
     event = QueueDequeue (event->conn, QUEUE_TYPE2_RESEND_ACK, event->pak->ref);
     if (event && event->callback)
         event->callback (event);
+    else if (err == 4)
+        M_print (i18n (2022, "The user is offline.\n"));
     else if (err != 0xd)
         M_printf (i18n (2191, "Instant message error: %d.\n"), err);
 }
@@ -627,7 +683,16 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
                   EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
                   EXTRA_MESSAGE, msgtype, text));
     else if (event)
+    {
         IMIntMsg (cont, event->conn, NOW, STATUS_OFFLINE, INT_MSGACK_TYPE2, ExtraGetS (event->extra, EXTRA_MESSAGE), NULL);
+        if (~cont->flags & CONT_SEENAUTO && strlen (text))
+        {
+            IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (NULL,
+                      EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
+                      EXTRA_MESSAGE, MSG_NORM, text));
+            cont->flags |= CONT_SEENAUTO;
+        }
+    }
     EventD (event);
     free (text);
 }
@@ -713,19 +778,15 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             PacketReadData (p, text, len - 4);
             PacketD (p);
             /* TLV 1, 2(!), 3, 4, f ignored */
-            switch (type1enc)
+            switch (type1enc & 0xf0000)
             {
                 case 0x00020000:
                     txt = ConvToUTF8 (text, ENC_UCS2BE, len - 4, 0);
                     break;
                 case 0x00030000:
-                    txt = ConvToUTF8 (text, ENC_LATIN1, -1, 0);
-                    break;
-                case 0x0003ffff:
-                    txt = ConvToUTF8 (text, ConvEnc ("CP1257"), -1, 0);
+                    txt = ConvToUTF8 (text, cont->encoding ? cont->encoding : prG->enc_rem, -1, 0);
                     break;
                 case 0x00000000:
-                case 0x0000ffff: /* vICQ sends them */
                     if (ConvIsUTF8 (text) && len - 4 == strlen (text))
                         txt = ConvToUTF8 (text, ENC_UTF8, -1, 0);
                     else
@@ -748,6 +809,15 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             midrnd = PacketReadB4 (p);
             cap1   = PacketReadCap (p);
             TLVD (tlv);
+            
+            ContactSetCap (cont, cap1);
+            if (midtim != midtime || midrnd != midrand)
+            {
+                SnacSrvUnknown (event);
+                PacketD (p);
+                return;
+            }
+
             tlv = TLVRead (p, PacketReadLeft (p));
             PacketD (p);
             
@@ -766,71 +836,95 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                 return;
             }
             
-            if (midtim != midtime || midrnd != midrand ||
-                (tlv[i].str[0] != 0x1b && tlv[i].len != 0x1b))
+            switch (cap1->id)
             {
-                SnacSrvUnknown (event);
-                TLVD (tlv);
-                return;
-            }
-
-            pp = PacketCreate (tlv[i].str, tlv[i].len);
-
-            if (tlv[i].str[0] != 0x1b)
-            {
-                UDWORD suin = PacketRead4  (pp);
-                UDWORD sip  = PacketReadB4 (pp);
-                UDWORD sp1  = PacketRead4  (pp);
-                UBYTE  scon = PacketRead1  (pp);
-                UDWORD sop  = PacketRead4  (pp);
-                UDWORD sp2  = PacketRead4  (pp);
-                UWORD  sver = PacketRead2  (pp);
-                if (suin != uin || !CONTACT_DC (cont) || sip != cont->dc->ip_rem || sp1 != cont->dc->port
-                    || scon != cont->dc->type || sver != cont->dc->version
-                    || sp1 != sp2 || (event->conn->assoc && sop != event->conn->assoc->port))
-                {
-                    SnacSrvUnknown (event);
-                }
-                else
-                {
+                case CAP_ISICQ:
+                    if (tlv[i].len != 0x1b)
+                    {
+                        SnacSrvUnknown (event);
+                        TLVD (tlv);
+                        return;
+                    }
+                    pp = PacketCreate (tlv[i].str, tlv[i].len);
+                    {
+                        UDWORD suin = PacketRead4  (pp);
+                        UDWORD sip  = PacketReadB4 (pp);
+                        UDWORD sp1  = PacketRead4  (pp);
+                        UBYTE  scon = PacketRead1  (pp);
 #ifdef WIP
-                    UDWORD sunk = PacketRead4  (pp);
-                    M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-                    M_printf ("FIXME: 'empty' message with sequence 0x%08lx = %ld.\n", sunk, sunk);
+                        UDWORD sop  = PacketRead4  (pp);
+                        UDWORD sp2  = PacketRead4  (pp);
+                        UWORD  sver = PacketRead2  (pp);
+                        UDWORD sunk = PacketRead4  (pp);
+#else
+                        UWORD sver;
+                               PacketRead4  (pp);
+                               PacketRead4  (pp);
+                        sver = PacketRead2  (pp);
+                               PacketRead4  (pp);
 #endif
-                    /* yeah, we're on his contact list */
-                }
-                PacketD (pp);
-                TLVD (tlv);
-                return;
+                        if (suin != uin)
+                        {
+                            SnacSrvUnknown (event);
+                            TLVD (tlv);
+                            return;
+                        }
+                        
+#ifdef WIP
+                        M_printf ("%s %*s FIXME: updates dc to %s:%ld|%ld|%ld v%d %d seq %ld\n",
+                                  s_now, uiG.nick_len + s_delta (cont->nick), cont->nick,
+                                  s_ip (sip), sp1, sp2, sop, sver, scon, sunk);
+#endif
+                        CONTACT_DC (cont)->ip_rem = sip;
+                        cont->dc->port = sp1;
+                        cont->dc->type = scon;
+                        cont->dc->version = sver;
+                    }
+                    PacketD (pp);
+                    TLVD (tlv);
+                    return;
+
+                case CAP_SRVRELAY:
+                    if (tlv[i].str[0] != 0x1b)
+                    {
+                        SnacSrvUnknown (event);
+                        TLVD (tlv);
+                        return;
+                    }
+                    pp = PacketCreate (tlv[i].str, tlv[i].len);
+
+                    p = SnacC (event->conn, 4, 11, 0, 0);
+                    PacketWriteB4 (p, midtim);
+                    PacketWriteB4 (p, midrnd);
+                    PacketWriteB2 (p, 2);
+                    PacketWriteUIN (p, cont->uin);
+                    PacketWriteB2 (p, 3);
+
+                    len    = PacketRead2 (pp);      PacketWrite2 (p, len);
+                    tcpver = PacketRead2 (pp);      PacketWrite2 (p, tcpver);
+                    cap2   = PacketReadCap (pp);    PacketWriteCap (p, cap2);
+                    tmp    = PacketRead2 (pp);      PacketWrite2 (p, tmp);
+                    tmp    = PacketRead4 (pp);      PacketWrite4 (p, tmp);
+                    tmp    = PacketRead1 (pp);      PacketWrite1 (p, tmp);
+                    seq1   = PacketRead2 (pp);      PacketWrite2 (p, seq1);
+
+                    ContactSetCap (cont, cap2);
+                    ContactSetVersion (cont);
+                    
+                    event->extra = ExtraSet (extra, EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL);
+                    event->uin = cont->uin;
+                    newevent = QueueEnqueueData (event->conn, QUEUE_ACKNOWLEDGE, seq1,
+                                 (time_t)-1, p, cont->uin, NULL, &SnacSrvCallbackSendack);
+                    SrvReceiveAdvanced (event->conn, event, pp, newevent);
+                    PacketD (pp);
+                    TLVD (tlv);
+                    return;
+
+                default:
+                    SnacSrvUnknown (event);
+                    TLVD (tlv);
+                    return;
             }
-
-            p = SnacC (event->conn, 4, 11, 0, 0);
-            PacketWriteB4 (p, midtim);
-            PacketWriteB4 (p, midrnd);
-            PacketWriteB2 (p, 2);
-            PacketWriteUIN (p, cont->uin);
-            PacketWriteB2 (p, 3);
-
-            len    = PacketRead2 (pp);      PacketWrite2 (p, len);
-            tcpver = PacketRead2 (pp);      PacketWrite2 (p, tcpver);
-            cap2   = PacketReadCap (pp);    PacketWriteCap (p, cap2);
-            tmp    = PacketRead2 (pp);      PacketWrite2 (p, tmp);
-            tmp    = PacketRead4 (pp);      PacketWrite4 (p, tmp);
-            tmp    = PacketRead1 (pp);      PacketWrite1 (p, tmp);
-            seq1   = PacketRead2 (pp);      PacketWrite2 (p, seq1);
-
-            ContactSetCap (cont, cap1);
-            ContactSetCap (cont, cap2);
-            ContactSetVersion (cont);
-            
-            event->extra = ExtraSet (extra, EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL);
-            event->uin = cont->uin;
-            newevent = QueueEnqueueData (event->conn, QUEUE_ACKNOWLEDGE, seq1,
-                         (time_t)-1, p, cont->uin, NULL, &SnacSrvCallbackSendack);
-            SrvReceiveAdvanced (event->conn, event, pp, newevent);
-            PacketD (pp);
-
             /* TLV 1, 2(!), 3, 4, f ignored */
             break;
         case 4:
@@ -1517,6 +1611,13 @@ void SnacCliSetstatus (Connection *conn, UDWORD status, UWORD action)
 {
     Packet *pak;
     
+    if (prG->flags & FLAG_WEBAWARE)
+        status |= STATUSF_WEBAWARE;
+    if (prG->flags & FLAG_DC_AUTH)
+        status |= STATUSF_DC_AUTH;
+    if (prG->flags & FLAG_DC_CONT)
+        status |= STATUSF_DC_CONT;
+    
     pak = SnacC (conn, 1, 0x1e, 0, 0);
     if ((action & 1) && (status & STATUSF_INV))
         SnacCliAddvisible (conn, 0);
@@ -1526,11 +1627,7 @@ void SnacCliSetstatus (Connection *conn, UDWORD status, UWORD action)
     {
         PacketWriteB2 (pak, 0x0c); /* TLV 0C */
         PacketWriteB2 (pak, 0x25);
-#ifdef HIDELANIP
-        PacketWriteB4 (pak, 0);
-#else
-        PacketWriteB4 (pak, conn->our_local_ip);
-#endif
+        PacketWriteB4 (pak, prG->flags & FLAG_HIDEIP ? 0 : conn->our_local_ip);
         if (conn->assoc && conn->assoc->connect & CONNECT_OK)
         {
             PacketWriteB4 (pak, conn->assoc->port);
@@ -1551,7 +1648,7 @@ void SnacCliSetstatus (Connection *conn, UDWORD status, UWORD action)
         PacketWriteB2 (pak, 3);
         PacketWriteB4 (pak, BUILD_MICQ);
         PacketWriteB4 (pak, BuildVersionNum);
-        PacketWriteB4 (pak, time (NULL));
+        PacketWriteB4 (pak, BuildPlatformID);
         PacketWriteB2 (pak, 0);
         PacketWriteTLV2 (pak, 8, 0);
     }
@@ -1723,35 +1820,23 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
     
     switch (format)
     {
+        const char *convtext;
+        int remenc;
+
         case 1:
             {
             char buf[451];
             const char *p;
 
-            int enc = ENC_LATIN1, remenc, icqenc = 0x30000;
+            int enc = ENC_LATIN1, icqenc = 0;
             size_t len, olen;
             
             remenc = cont->encoding ? cont->encoding : prG->enc_rem;
             
 #ifdef ENABLE_UTF8
-            if (cont->status == STATUS_OFFLINE)
-            {
-                /* encoding is stripped anyway */
-                enc = remenc;
-                icqenc = 0;
-            }
-            else if (remenc == ENC_LATIN1 && ConvFits (text, ENC_LATIN1))
-            {
-                enc = ENC_LATIN1;
-                icqenc = 0x30000;
-            }
-            else if (remenc == ENC_WIN1257 && ConvFits (text, ENC_WIN1257))
-            {
-                enc = ENC_WIN1257;
-                icqenc = 0x3ffff;
-            }
-            else if (HAS_CAP (cont->caps, CAP_UTF8) && cont->dc && cont->dc->version >= 8
-                     && !(cont->dc->id1 == 0xffffff42 && cont->dc->id2 < 0x00040a03)) /* exclude old mICQ */
+            if (cont->status != STATUS_OFFLINE &&
+                HAS_CAP (cont->caps, CAP_UTF8) && cont->dc && cont->dc->version >= 7
+                && !(cont->dc->id1 == 0xffffff42 && cont->dc->id2 < 0x00040a03)) /* exclude old mICQ */
             {
                 enc = ENC_UCS2BE;
                 icqenc = 0x20000;
@@ -1761,7 +1846,12 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
             {
                 /* too bad, there's nothing we can do */
                 enc = remenc;
-                icqenc = 0;
+                icqenc = 0x30000;
+            }
+            if (type != 1)
+            {
+                icqenc = type;
+                enc = ENC_LATIN9;
             }
 
             p = ConvFromUTF8 (text, enc, &len);
@@ -1772,7 +1862,7 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
 
             PacketWriteTLV     (pak, 2);
             PacketWriteTLV     (pak, 1281);
-            if (icqenc)
+            if (icqenc == 0x20000)
                 PacketWriteB2  (pak, 0x0106);
             else
                 PacketWrite1   (pak, 0x01);
@@ -1790,11 +1880,22 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
             }
             break;
         case 4:
+            remenc = cont->encoding ? cont->encoding : prG->enc_rem;
+            convtext = ConvFromUTF8 (text, remenc, NULL);
+            
             PacketWriteTLV     (pak, 5);
             PacketWrite4       (pak, conn->uin);
             PacketWrite1       (pak, type);
             PacketWrite1       (pak, 0);
+#if 0
+            PacketWrite2 (pak, strlen (convtext) + strlen (ConvEncName (remenc)) + 2);
+            PacketWriteData (pak, convtext, strlen (convtext));
+            PacketWrite1 (pak, 0);
+            PacketWriteData (pak, ConvEncName (remenc), strlen (ConvEncName (remenc)));
+            PacketWrite1 (pak, 0);
+#else
             PacketWriteLNTS    (pak, c_out_to (text, cont));
+#endif
             PacketWriteTLVDone (pak);
             PacketWriteB2 (pak, 6);
             PacketWriteB2 (pak, 0);
@@ -1854,9 +1955,10 @@ void SnacCallbackType2 (Event *event)
                           ExtraGetS (event->extra, EXTRA_MESSAGE), NULL);
             SnacSend (serv, PacketClone (pak));
             event->attempts++;
-            event->due = time (NULL) + 15;
+            /* allow more time for the peer's ack than the server's ack */
+            event->due = time (NULL) + RETRY_DELAY_TYPE2 + 5;
             QueueEnqueueData (serv, QUEUE_TYPE2_RESEND_ACK, pak->ref,
-                              time (NULL) + 10, NULL, cont->uin,
+                              time (NULL) + RETRY_DELAY_TYPE2, NULL, cont->uin,
                               ExtraSet (NULL, EXTRA_REF, event->seq, NULL),
                               &SnacCallbackType2Ack);
         }
@@ -1895,15 +1997,17 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
         (HAS_CAP (cont->caps, CAP_SRVRELAY) && HAS_CAP (cont->caps, CAP_ISICQ))))
         return RET_DEFER;
     
-    switch (type & 0xff)
+    if (!ExtraGet (extra, EXTRA_FORCE))
     {
-        case MSG_AUTO:
-        case MSG_URL:
-        case MSG_AUTH_REQ:
-        case MSG_AUTH_GRANT:
-        case MSG_AUTH_DENY:
-        case MSG_AUTH_ADDED:
-            return RET_DEFER;
+        switch (type & 0xff)
+        {
+            case MSG_AUTO:
+            case MSG_AUTH_REQ:
+            case MSG_AUTH_GRANT:
+            case MSG_AUTH_DENY:
+            case MSG_AUTH_ADDED:
+                return RET_DEFER;
+        }
     }
 
     conn->our_seq_dc--;
@@ -1934,11 +2038,11 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
        PacketWrite1       (pak, 0);
        PacketWrite2       (pak, conn->our_seq_dc);
       PacketWriteLenDone (pak);
-      SrvMsgAdvanced     (pak, conn->our_seq_dc, type, conn->status, cont->status, -1, c_out_for (text, cont));
+      SrvMsgAdvanced     (pak, conn->our_seq_dc, type, conn->status, cont->status, -1, c_out_for (text, cont, type));
       PacketWrite4       (pak, TCP_COL_FG);
       PacketWrite4       (pak, TCP_COL_BG);
 #ifdef ENABLE_UTF8
-      if (CONT_UTF8 (cont))
+      if (CONT_UTF8 (cont, type))
           PacketWriteDLStr     (pak, CAP_GID_UTF8);
 #endif
      PacketWriteTLVDone (pak);

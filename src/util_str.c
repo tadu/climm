@@ -1,14 +1,30 @@
 /*
  * This file contains static string helper functions.
  *
- * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
- * version 2 of the GPL licence.
+ * mICQ Copyright (C) © 2001,2002,2003 Rüdiger Kuhlmann
+ *
+ * mICQ is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 dated June, 1991.
+ *
+ * mICQ is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this package; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
  *
  * $Id$
  */
 
 #include "micq.h"
 #include <stdarg.h>
+#if HAVE_NETDB_H
+#include <netdb.h>
+#endif
 #if HAVE_NETINET_IN_H
 #include <netinet/in.h>
 #endif
@@ -533,7 +549,6 @@ BOOL s_parse_s (char **input, char **parsed, char *sep)
         if (*p == '"' && s)
         {
             *q = '\0';
-            *parsed++;
             *input = p + 1;
             return TRUE;
         }
@@ -671,6 +686,8 @@ BOOL s_parserem_s (char **input, char **parsed, char *sep)
             }
             else if (*p)
                 *(q++) = *(p++);
+            else
+                *(q++) = '\\';
         }
         else
             *(q++) = *(p++);
@@ -717,6 +734,15 @@ BOOL s_parseint_s (char **input, UDWORD *parsed, char *sep)
     {
         nr = nr * 10 + (*p - '0');
         p++;
+    }
+    if (!nr && *p == 'x')
+    {
+        p++;
+        while (*p && ((*p >= '0' && *p <= '9') || (*p >= 'a' && *p <= 'f') || (*p >= 'A' && *p <= 'F')))
+        {
+            nr = nr * 16 + (*p >= '0' && *p <= '9' ? *p - '0' : *p >= 'a' && *p <= 'f' ? *p - 'a' + 10 : *p - 'A' + 10);
+            p++;
+        }
     }
     if (*p && !strchr (sep, *p))
     {

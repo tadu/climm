@@ -27,7 +27,9 @@
 #include <netdb.h>
 #endif
 #include <fcntl.h>
+#if HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <assert.h>
 #if HAVE_NETINET_IN_H
 #include <netinet/in.h>
@@ -537,7 +539,7 @@ int UtilIOError (Connection *conn)
 
     length = sizeof (int);
 #ifdef SO_ERROR
-    if (getsockopt (conn->sok, SOL_SOCKET, SO_ERROR, &rc, &length) < 0)
+    if (getsockopt (conn->sok, SOL_SOCKET, SO_ERROR, (void *)&rc, &length) < 0)
 #endif
         rc = errno;
 
@@ -953,42 +955,39 @@ Packet *UtilIOReceiveUDP (Connection *conn)
     return pak;
 }
 
-/**************************************************************
-Same as M_printf but for FD_T's
-***************************************************************/
-void M_fdprint (FD_T fd, const char *str, ...)
+/*
+ * Read a complete line from a fd.
+ *
+ * Returned string may not be free()d.
+ */
+char *UtilIOReadline (FILE *fd)
 {
-    va_list args;
-    int k;
-    char buf[2048];
-
-    va_start (args, str);
-    vsnprintf (buf, sizeof (buf), str, args);
-    k = write (fd, buf, strlen (buf));
-    if (k != strlen (buf))
-    {
-        perror (str);
-        exit (10);
-    }
-    va_end (args);
-}
-
-/***********************************************************
-Reads a line of input from the file descriptor fd into buf
-an entire line is read but no more than len bytes are 
-actually stored
-************************************************************/
-int M_fdnreadln (FILE *fd, char *buf, size_t len)
-{
-    int i;
-
-    buf[0] = '\0';
-    if (!fgets (buf, len, fd))
-        return -1;
+    static UDWORD size;
+    static char *t = NULL;
+    UDWORD pos = 0;
+    char *p;
     
-    for (i = strlen (buf); i--; buf[i] = '\0')
-        if (buf[i] != '\n' && buf[i] != '\r')
+    if (!t)
+        t = malloc (size = 100);
+    *t = 0;
+    *(t + size - 2) = 0;
+    while (1)
+    {
+        if (!fgets (t + pos, size - pos, fd))
+        {
+            if (!pos)
+                return NULL;
+            else
+                break;
+        }
+        if (!*(t + size - 2))
             break;
-    return 0;
+        t = realloc (t, size += 100);
+        pos = strlen (t);
+        *(t + size - 2) = 0;
+    }
+    *(t + size - 2) = 0;
+    if ((p = strpbrk (t, "\r\n")))
+        *p = 0;
+    return t;
 }
-

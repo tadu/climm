@@ -129,7 +129,7 @@ BOOL          ContactMetaLoad   (Contact *cont);
 #define CONTACT_OBSOLETE(cont) ((cont)->meta_obsolete ? (cont)->meta_obsolete : ((cont)->meta_obsolete = calloc (1, sizeof (MetaObsolete))))
 #define CONTACT_DC(cont)       ((cont)->dc            ? (cont)->dc            : ((cont)->dc            = calloc (1, sizeof (ContactDC))))
 
-#define CONT_UTF8(cont) ((cont->caps & (1 << CAP_UTF8)) && (prG->enc_loc != ENC_EUC))
+#define CONT_UTF8(cont,mt) (((cont)->caps & (1 << CAP_UTF8)) && (((mt) == 1) || ((cont)->caps & (1 << CAP_MICQ))))
 
 #define CONT_IGNORE     1UL /* ignore contact. */
 #define CONT_HIDEFROM   2UL /* always pretend to be offline. */

@@ -1,8 +1,21 @@
 /*
  * Decodes and creates FLAPs.
  *
- * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
- * version 2 of the GPL licence.
+ * mICQ Copyright (C) © 2001,2002,2003 Rüdiger Kuhlmann
+ *
+ * mICQ is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 dated June, 1991.
+ *
+ * mICQ is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this package; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
  *
  * $Id$
  */
@@ -148,6 +161,9 @@ static void FlapChannel4 (Connection *conn, Packet *pak)
         if (tlv[4].len)
             M_printf (i18n (1961, "URL: %s\n"), tlv[4].str);
         M_print (COLEXDENT "\n");
+        
+        if (tlv[8].nr == 24)
+            M_printf ("FIXME: now will you please stop logging in every 5 seconds? Don't try again until half an hour has passed.\n");
 
         if ((conn->connect & CONNECT_MASK) && conn->sok != -1)
             sockclose (conn->sok);
@@ -293,16 +309,14 @@ void FlapCliIdent (Connection *conn)
 #ifdef __BEOS__
         M_print (i18n (2063, "You need to save your password in your ~/.micq/micqrc file.\n"));
 #else
-        char pwd[20];
-        pwd[0] = '\0';
         M_printf ("%s ", i18n (1063, "Enter password:"));
         Echo_Off ();
-        M_fdnreadln (stdin, pwd, sizeof (pwd));
+        f = UtilIOReadline (stdin);
         Echo_On ();
 #ifdef ENABLE_UTF8
-        conn->passwd = strdup (ConvToUTF8 (pwd, prG->enc_loc, -1, 0));
+        conn->passwd = strdup (f ? ConvToUTF8 (f, prG->enc_loc, -1, 0) : "");
 #else
-        conn->passwd = strdup (pwd);
+        conn->passwd = strdup (f ? f : "");
 #endif
 #endif
     }

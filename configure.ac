@@ -4,7 +4,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT([micq], [0.4.10.2])
+AC_INIT([micq], [0.4.10.3])
 AC_CONFIG_SRCDIR([include/micq.h])
 AC_CONFIG_LIBOBJ_DIR(replace)
 AC_CONFIG_HEADER(include/config.h)
@@ -56,24 +56,6 @@ else
 fi
 
 if test "x$ac_arg_use_iconv" != "xbuiltin"; then
-  AC_CACHE_CHECK(for iconv declaration, ac_cv_iconv_const,
-    [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
-        #include <iconv.h>]],
-        [[#ifdef __cplusplus
-          "C"
-          #endif
-          #if defined(__STDC__) || defined(__cplusplus)
-          size_t iconv (iconv_t cd, char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);
-          #else
-          size_t iconv();
-          #endif]])],
-      [ac_cv_iconv_const=no-const],
-      [ac_cv_iconv_const=const])])
-  if test $ac_cv_iconv_const = const; then
-     AC_DEFINE([ICONV_CONST], const, [Define as const if the declaration of iconv() needs const.])
-  else
-     AC_DEFINE([ICONV_CONST], /* no-const */)
-  fi
   AC_CACHE_CHECK(for iconv minimal functionality, ac_cv_iconv_min,
     [AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
           #include <iconv.h>]],
@@ -108,20 +90,45 @@ if test "x$ac_arg_use_iconv" != "xbuiltin"; then
           if (res == (iconv_t)-1 || !res) exit (8);
           res = iconv_open ("KOI8-U", "UTF-8");
           if (res == (iconv_t)-1 || !res) exit (9);
-          res = iconv_open ("UTF-8", "CP1251");
-          if (res == (iconv_t)-1 || !res) exit (10);
-          res = iconv_open ("CP1251", "UTF-8");
-          if (res == (iconv_t)-1 || !res) exit (11);
+          res = iconv_open ("UTF-8", "UCS-2BE");
+          if (res == (iconv_t)-1 || !res)
+          {
+              res = iconv_open ("UTF-8", "UNICODEBIG");
+              if (res == (iconv_t)-1 || !res) exit (10);
+              res = iconv_open ("UNICODEBIG", "UTF-8");
+              if (res == (iconv_t)-1 || !res) exit (11);
+          }
+          else
+          {
+              res = iconv_open ("UCS-2BE", "UTF-8");
+              if (res == (iconv_t)-1 || !res) exit (12);
+          }
           exit (0);]])],
       [ac_cv_iconv_min=ok],
       [ac_cv_iconv_min=broken],
       [ac_cv_iconv_min=cross])
   ])
   if test $ac_cv_iconv_min != ok; then
-    ac_arg_use_iconv=none
-    AC_DEFINE([ICONV_LATIN1_NAME], ["ISO-8859-1"],  [the name of the latin1 encoding])
-    AC_DEFINE([ICONV_LATIN9_NAME], ["ISO-8859-15"], [the name of the latin9 encoding])
+    ac_arg_use_iconv=builtin
   else
+    AC_CACHE_CHECK(for iconv declaration, ac_cv_iconv_const,
+      [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
+          #include <iconv.h>]],
+          [[#ifdef __cplusplus
+            "C"
+            #endif
+            #if defined(__STDC__) || defined(__cplusplus)
+            size_t iconv (iconv_t cd, char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);
+            #else
+            size_t iconv();
+            #endif]])],
+        [ac_cv_iconv_const=no-const],
+        [ac_cv_iconv_const=const])])
+    if test $ac_cv_iconv_const = const; then
+       AC_DEFINE([ICONV_CONST], const, [Define as const if the declaration of iconv() needs const.])
+    else
+       AC_DEFINE([ICONV_CONST], /* no-const */)
+    fi
     AC_CACHE_CHECK(for iconv name of latin-1 encoding, ac_cv_iconv_latin1_name,
       [AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
             #include <iconv.h>]],
@@ -133,7 +140,7 @@ if test "x$ac_arg_use_iconv" != "xbuiltin"; then
         [ac_cv_iconv_latin1_name=ISO8859-1],
         [ac_cv_iconv_latin1_name=cannothappen])
     ])
-    AC_DEFINE_UNQUOTED([ICONV_LATIN1_NAME], ["$ac_cv_iconv_latin1_name"])
+    AC_DEFINE_UNQUOTED([ICONV_LATIN1_NAME], ["$ac_cv_iconv_latin1_name"], [the name of the latin1 encoding])
     AC_CACHE_CHECK(for iconv name of latin-9 encoding, ac_cv_iconv_latin9_name,
       [AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
             #include <iconv.h>]],
@@ -145,11 +152,26 @@ if test "x$ac_arg_use_iconv" != "xbuiltin"; then
         [ac_cv_iconv_latin9_name=ISO8859-15],
         [ac_cv_iconv_latin9_name=cannothappen])
     ])
-    AC_DEFINE_UNQUOTED([ICONV_LATIN9_NAME], ["$ac_cv_iconv_latin9_name"])
+    AC_DEFINE_UNQUOTED([ICONV_LATIN9_NAME], ["$ac_cv_iconv_latin9_name"], [the name of the latin9 encoding])
+    AC_CACHE_CHECK(for iconv name of ucs-2be encoding, ac_cv_iconv_ucs2be_name,
+      [AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
+            #include <iconv.h>]],
+          [[iconv_t res;
+            res = iconv_open ("UTF-8", "UCS-2BE");
+            if (res == (iconv_t)-1 || !res) exit (1);
+            exit (0);]])],
+        [ac_cv_iconv_ucs2be_name=UCS-2BE],
+        [ac_cv_iconv_ucs2be_name=UNICODEBIG],
+        [ac_cv_iconv_ucs2be_name=cannothappen])
+    ])
+    AC_DEFINE_UNQUOTED([ICONV_UCS2BE_NAME], ["$ac_cv_iconv_ucs2be_name"], [the name of the ucs-2be encoding])
   fi
-else
+fi
+
+if test "x$ac_arg_use_iconv" = "xbuiltin"; then
   AC_DEFINE([ICONV_LATIN1_NAME], ["ISO-8859-1"])
   AC_DEFINE([ICONV_LATIN9_NAME], ["ISO-8859-15"])
+  AC_DEFINE([ICONV_UCS2BE_NAME], ["UCS-2BE"])
 fi
 
 if test "x$ac_arg_use_remote" != "xno"; then
@@ -240,36 +262,6 @@ AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_STRUCT_TM
 
-AC_C_BIGENDIAN
-AC_CHECK_SIZEOF(char)
-AC_CHECK_SIZEOF(short)
-AC_CHECK_SIZEOF(int)
-AC_CHECK_SIZEOF(long)
-
-if test "x$ac_cv_sizeof_long" = "x4"; then
-  AC_DEFINE(SIZE_4_TYPE, long, [Type of length 4 bytes])
-elif test "x$ac_cv_sizeof_int" = "x4"; then
-  AC_DEFINE(SIZE_4_TYPE, int)
-else
-  AC_MSG_ERROR([No type of length 4 bytes found.])
-fi  
-
-if test "x$ac_cv_sizeof_int" = "x2"; then
-  AC_DEFINE(SIZE_2_TYPE, int, [Type of length 2 bytes])
-elif test "x$ac_cv_sizeof_short" = "x2"; then
-  AC_DEFINE(SIZE_2_TYPE, short)
-else
-  AC_MSG_ERROR([No type of length 2 bytes found.])
-fi  
-
-if test "x$ac_cv_sizeof_short" = "x1"; then
-  AC_DEFINE(SIZE_1_TYPE, short, [Type of length 1 bytes])
-elif test "x$ac_cv_sizeof_char" = "x1"; then
-  AC_DEFINE(SIZE_1_TYPE, char)
-else
-  AC_MSG_ERROR([No type of length 1 bytes found.])
-fi  
-
 # Checks for library functions.
 AC_PROG_GCC_TRADITIONAL
 
@@ -305,7 +297,7 @@ for f in memset mkdir atexit \
 done
 
 if test "x$ac_cv_func_select" != "xyes"; then
-    AC_CHECK_HEADERS([winsock2.h conio.h])
+    AC_CHECK_HEADERS([winsock2.h conio.h windef.h])
     my_old_LIBS=$LIBS
     LIBS="-lws2_32 $LIBS"
     AC_CACHE_CHECK(for library containing select, ac_cv_search_select,
@@ -369,20 +361,54 @@ AC_CHECK_DECLS(h_errno,,,[$ac_includes_default
 #ifdef HAVE_NETDB_H
 #include <netdb.h>
 #endif
+#ifdef HAVE_WINDEF_H
+#include <windef.h>
+#endif
 #ifdef HAVE_WINSOCK2_H
 #include <winsock2.h>
 #endif])
 
-AC_CHECK_TYPES(socklen_t,,,[$ac_includes_default
+AC_CHECK_TYPES([socklen_t, BOOL, UBYTE, UWORD, UDWORD],,,[$ac_includes_default
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
 #ifdef HAVE_NETDB_H
 #include <netdb.h>
 #endif
-#ifdef WINSOCK2_H
+#ifdef HAVE_WINSOCK2_H
 #include <winsock2.h>
 #endif])
+
+AC_C_BIGENDIAN
+AC_CHECK_SIZEOF(char)
+AC_CHECK_SIZEOF(short)
+AC_CHECK_SIZEOF(int)
+AC_CHECK_SIZEOF(long)
+
+if test "x$ac_cv_sizeof_long" = "x4"; then
+  AC_DEFINE(SIZE_4_TYPE, long, [Type of length 4 bytes])
+elif test "x$ac_cv_sizeof_int" = "x4"; then
+  AC_DEFINE(SIZE_4_TYPE, int)
+else
+  AC_MSG_ERROR([No type of length 4 bytes found.])
+fi  
+
+if test "x$ac_cv_sizeof_int" = "x2"; then
+  AC_DEFINE(SIZE_2_TYPE, int, [Type of length 2 bytes])
+elif test "x$ac_cv_sizeof_short" = "x2"; then
+  AC_DEFINE(SIZE_2_TYPE, short)
+else
+  AC_MSG_ERROR([No type of length 2 bytes found.])
+fi  
+
+if test "x$ac_cv_sizeof_short" = "x1"; then
+  AC_DEFINE(SIZE_1_TYPE, short, [Type of length 1 bytes])
+elif test "x$ac_cv_sizeof_char" = "x1"; then
+  AC_DEFINE(SIZE_1_TYPE, char)
+else
+  AC_MSG_ERROR([No type of length 1 bytes found.])
+fi  
+
 # Optimize.
 
 if test "x$GCC" = xyes; then
@@ -403,7 +429,7 @@ if test "x$MICQ_EXTRAVERSION" != "x"; then
     AC_DEFINE_UNQUOTED(EXTRAVERSION,"$MICQ_EXTRAVERSION",[Extra version information like the distribution used])
 fi
 
-AC_CONFIG_FILES([doc/Makefile src/Makefile Makefile lang/Makefile])
+AC_CONFIG_FILES([src/Makefile Makefile lang/Makefile doc/Makefile])
 AC_CONFIG_FILES([doc/de/Makefile doc/ru/Makefile doc/fr/Makefile doc/es/Makefile doc/uk/Makefile])
 AC_CONFIG_FILES([doc/pt_BR/Makefile doc/sr/Makefile])
 AC_OUTPUT

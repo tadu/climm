@@ -462,7 +462,7 @@ void R_process_input_tab (void)
                 *tabwend = '\0';
             }
             tabwlen = sizeof (tabword) < tabwend - tabwstart ? sizeof (tabword) : tabwend - tabwstart;
-            snprintf (tabword, sizeof (tabword), "%.*s", tabwend - tabwstart, tabwstart);
+            snprintf (tabword, sizeof (tabword), "%.*s", (int)(tabwend - tabwstart), tabwstart);
         }
         else
             tabcont = ContactIndex (0, ++tabconti);
