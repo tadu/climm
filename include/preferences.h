@@ -69,20 +69,23 @@ void        PrefSetColorScheme (Preferences *pref, UBYTE scheme);
 const char *PrefUserDirReal (Preferences *pref);
 const char *PrefLogNameReal (Preferences *pref);
 
-#define FLAG_DELBS         1
-#define FLAG_CONVRUSS      2
-#define FLAG_CONVEUC       4
-#define FLAG_FUNNY         8
-#define FLAG_COLOR        16
-#define FLAG_HERMIT       32
-#define FLAG_LOG          64
-#define FLAG_LOG_ONOFF   128
-#define FLAG_AUTOREPLY   256
-#define FLAG_UINPROMPT   512
-#define FLAG_LIBR_BR    1024 /* 0, 3: posssible line break before message */
-#define FLAG_LIBR_INT   2048 /* 2, 3: indent if appropriate */
-#define FLAG_QUIET      4096
-#define FLAG_AUTOSAVE   8192
+#define FLAG_DELBS      (1 <<  0)
+#define FLAG_CONVRUSS   (1 <<  1)
+#define FLAG_CONVEUC    (1 <<  2)
+#define FLAG_FUNNY      (1 <<  3)
+#define FLAG_COLOR      (1 <<  4)
+#define FLAG_HERMIT     (1 <<  5)
+#define FLAG_LOG        (1 <<  6)
+#define FLAG_LOG_ONOFF  (1 <<  7)
+#define FLAG_AUTOREPLY  (1 <<  8)
+#define FLAG_UINPROMPT  (1 <<  9)
+#define FLAG_LIBR_BR    (1 << 10) /* 0, 3: posssible line break before message */
+#define FLAG_LIBR_INT   (1 << 11) /* 2, 3: indent if appropriate */
+#define FLAG_QUIET      (1 << 12)
+#define FLAG_ULTRAQUIET (1 << 13)
+#define FLAG_AUTOSAVE   (1 << 14)
+#define FLAG_AUTOFINGER (1 << 15)
+#define FLAG_
 /*      FLAG_S5
  *      FLAG_S5_USE
  */

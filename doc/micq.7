@@ -50,8 +50,10 @@ Saves current settings in the configuration file, which is
 unless specified otherwise.
 Beware, it will clobber any comments in this file.
 .TP
-.BI r \ [message]
-Reply to last message received.  Without
+.BI msg \ uin|nickname\ [message]
+Send a message to
+.IR uin|nickname .
+Without
 .I message
 multi-line message mode is enabled.  To send the multi-line message, put
 a period
@@ -59,20 +61,55 @@ a period
 on a line of its own.  To cancel the message, put a hash sign
 .RB ( # )
 on a line of its own.
+Outgoing and incoming messages are marked differently depending of the transport
+used.
+.br
+.B \(Fo\(Fo\(Fo
+and
+.B \(Fc\(Fc\(Fc
+mark messages sent via a direct connection; if an outgoing message is not
+acknowledged by the peer for some time, it is printed marked
+.BR === .
+.B \(Fo<<
+and
+.B >>\(Fc
+mark icq8 (also called type-2) messages; if an outgoing message is not
+acknowledged by the peer for some time, it is printed marked
+.BR --= .
+Lastly,
+.B <<<
+and
+.B >>>
+mark icq5 messages, which can be so called type-1, type-4 or offline
+message. These kind of messages are not acknowledged.
+.br
+A message is first tried to be sent via a pre-existing direct connection; if
+none is established, one is initiated in the background for further
+messages. If no direct connection is open, or if the message is not
+acknowledged after some time, the connection will be failed and the next
+transport tried: sending as type-2 message. This step will be skipped if the
+peer does not set the required capabilities to signal its ability to receive
+them. If this is skipped, times out or returns an error, e.g. the peer has
+gone offline in the time between, the message is sent as an ordinary type-4
+message.
+.br
+If the peer signals its ability to accept them and support for them has not
+been disabled at compile time, messages are sent UTF-8 encoded and
+appropriately tagged. Otherwise, the message is sent encoded in the peer's
+configured encoding, or, if unset, the default assumed remote encoding.
+type-1, type-4 and offline messages can not be tagged with their encoding,
+so successfull transmission of 8bit characters relies on correct
+configuration.
+.TP
+.BI r \ [message]
+Reply to last message received. See
+.B msg
+for more details.
 .TP
 .BI a \ [message]
 Send a message to the last person you sent a message to.  See
-.B r
-for behaviour without
-.IR message .
-.TP
-.BI msg \ uin|nickname\ [message]
-Send a message to
-.IR uin|nickname .
-See
-.B r 
-for behaviour without
-.IR message .
+.B msg
+for more details.
 .TP
 .BI url \ uin|nickname\ url\ message
 Send a
@@ -170,17 +207,14 @@ and any level greater than 1 even more.
 .B clear
 Clear the screen.
 .TP
-.BI sound \ [command]
-Toggle sound on or off, or set to
-.IR command .
-.TP
-.BI soundonline \ [command]
-Toggle sound for users coming online on or off, or set to
-.IR command .
-.TP
-.BI soundoffline \ [command]
-Toggle sound for users going offline on or off, or set to
-.IR command .
+.BI sound\ [on|off|event]
+Toggle sound
+.B on
+or
+.BR off ,
+or call the
+.B event
+script for beeps. New syntax for 0.4.9.5.
 .TP
 .B q[uit]
 .TP
@@ -357,6 +391,51 @@ messages and status changes are ignored.
 Show all white page info for
 .IR uin|nickname .
 .TP
+.BR e ,\  w ,\  ee ,\  ww ,\  eg ,\  wg ,\  eeg ,\  wwg
+List parts of your contact list. The following flags are displayed in the first column:
+.RS
+.TP
+.B +
+This entry is actually no real contact, but an alias of the preceding one. Only with
+.BR ww .
+.TP
+.B #
+This entry is not on your contact list, but the UIN was used at some time. Only with
+.B w
+and
+.BR ww .
+.TP
+.B *
+This contact will see your status even if you're invisible.
+.TP
+.B -
+This contact won't see you at all.
+.TP
+.B ^
+This contact is ignored: no messages, no status changes.
+.PP
+The
+.B ww
+and
+.B ee
+display another column for direct connection flags. If the first column would be empty,
+it will be displayed in the first contact for all of those commands unless it's
+.BR ^ .
+.TP
+.B &
+A direct connection to this contact is established.
+.TP
+.B \(ba
+A direct connnection to this contact has failed.
+.TP
+.B :
+A direct connection is currently tried to be established.
+.TP
+.B ^
+No direct connection opened, but IP address and port number are known.
+.TP
+.RE
+.TP
 .B e
 List all people who are online in your contact list.
 .TP
@@ -457,13 +536,56 @@ Set option
 to either
 .I on
 or
-.IR off .
+.IR off ,
+or an
+.I option
+specific set of
+.IR value s.
 .I option
 can be
-.BR color ,
-.B funny
+.BR hermit :
+ignore all non-contacts,
+.BR delbs :
+interpret delete characters as backspace,
+.BR log :
+do logging,
+.BR logonoff :
+also log status changes,
+.BR auto :
+send auto-replies when you're e.g. away,
+.BR uinprompt :
+have the last nick in the prompt,
+.BR autosave :
+automatically save the micqrc,
+.BR autofinger :
+automatically finger new UINs,
+.BR linebreak :
+set the style for line-breaking messages to
+.BR simple ,
+to simply print the message after the nick and wrap,
+.BR break ,
+to add a line break before printing each incoming message,
+.BR indent ,
+to indent all lines of a message to the level after the nick, or
+.BR smart ,
+to add a line break only if the message wouldn't fit on the line;
+.BR tabs :
+set the style for tab-handling to
+.BR simple ,
+to tab through a list of last nick sent to and received from,
+.BR cycle ,
+to cycle through all online contacts, doing auto-completion,
 or
-.BR quiet .
+.BR cycleall ,
+to cycle through all (even offline) contacts, doing auto-completion;
+.BR silence :
+suppress some output :
+.BR off ,
+.BR on ,
+to suppress status changes, or
+.BR complete ,
+to suppress status changes, logins and logoffs.
+New options for 0.4.9.5.
 .TP
 .BI peek \ nick
 Check whether

@@ -242,6 +242,9 @@ Disable or enable the use of the nick you last received a message from in the pr
 .BI set \ autosave\ on|off
 Disable or enable the automatic saving of the micqrc.
 .TP
+.BI set \ autofinger\ on|off
+DIsable or enable the automatic fingering of new UINs.
+.TP
 .BI set \ linebreak\ type
 Configure the line break type for incoming messages to
 .IR type ,
@@ -272,6 +275,12 @@ command.
 is like
 .BR cycle ,
 it just cycles through all, and not only online, contacts.
+.TP
+.BI set \ silence\ type
+Suppress some output, namely status changes for
+.B on
+and status changes, logins and logouts for
+.BR complete .
 .TP
 .BI chat \ nr
 Set the random chat group to

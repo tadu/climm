@@ -49,7 +49,6 @@ static jump_f
     CmdUserContact, CmdUserAnyMess, CmdUserGetAuto;
 
 static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag);
-static void CallbackMeta (Event *event);
 
 /* 1 = do not apply idle stuff next time           v
    2 = count this line as being idle               v */
@@ -262,14 +261,7 @@ static JUMP_F(CmdUserRandom)
         M_printf ("  %2d %s\n", 49, i18n (1715, "mICQ"));
     }
     else
-    {
-        UDWORD ref;
-        if (conn->ver > 6)
-            ref = SnacCliSearchrandom (conn, arg1);
-        else
-            ref = CmdPktCmdRandSearch (conn, arg1);
-        QueueEnqueueData (conn, QUEUE_REQUEST_META, ref, time (NULL) + 10, NULL, 0, NULL, &CallbackMeta);
-    }
+        IMCliInfo (conn, NULL, arg1);
     return 0;
 }
 
@@ -641,31 +633,12 @@ static JUMP_F(CmdUserSMS)
     return 0;
 }
 
-static void CallbackMeta (Event *event)
-{
-    Contact *cont;
-    
-    cont = ContactUIN (event->conn, event->uin);
-    if (cont->updated != UP_INFO && !event->flags & QUEUE_FLAG_CONSIDERED)
-        QueueEnqueue (event);
-    else
-    {
-        UtilUIDisplayMeta (cont);
-        if (~cont->flags & CONT_ISEDITED)
-            ContactMetaSave (cont);
-        else
-            cont->updated &= ~UPF_DISC;
-        EventD (event);
-    }
-}
-
 /*
  * Queries basic info of a user
  */
 static JUMP_F(CmdUserInfo)
 {
     Contact *cont = NULL, *contr = NULL;
-    UDWORD ref;
     OPENCONN;
 
     while (*args || data)
@@ -697,14 +670,7 @@ static JUMP_F(CmdUserInfo)
         M_printf (i18n (1765, "%s has UIN %ld."), cont->nick, cont->uin);
         M_print ("\n");
         
-        cont->updated = 0;
-        
-        if (conn->ver > 6)
-            ref = SnacCliMetareqinfo (conn, cont);
-        else
-            ref = CmdPktCmdMetaReqInfo (conn, cont);
-        
-        QueueEnqueueData (conn, QUEUE_REQUEST_META, ref, time (NULL) + 10, NULL, cont->uin, NULL, &CallbackMeta);
+        IMCliInfo (conn, cont, 0);
     }
     return 0;
 }
@@ -1801,7 +1767,6 @@ static JUMP_F(CmdUserStatusMeta)
 {
     Contact *cont, *contr;
     char *cmd;
-    UDWORD ref;
     ANYCONN;
 
     if (!data)
@@ -1878,12 +1843,7 @@ static JUMP_F(CmdUserStatusMeta)
                 return 0;
             case 5:
             case 6:
-                cont->updated = 0;
-                if (conn->ver > 6)
-                    ref = SnacCliMetareqinfo (conn, contr);
-                else
-                    ref = CmdPktCmdMetaReqInfo (conn, contr);
-                QueueEnqueueData (conn, QUEUE_REQUEST_META, ref, time (NULL) + 10, NULL, contr->uin, NULL, &CallbackMeta);
+                IMCliInfo (conn, contr, 0);
                 if (*args == ',')
                     args++;
                 if (data == 6)
@@ -2215,88 +2175,111 @@ static JUMP_F(CmdUserSet)
 {
     int quiet = 0;
     char *arg1 = NULL;
+    const char *str = "";
     
-    if (!s_parse (&args, &arg1) || !strcmp (arg1, "help") || !strcmp (arg1, "?"))
+    while (!data)
     {
-        M_printf (i18n (1820, "%s <option> [on|off] - control simple options.\n"), CmdUserLookupName ("set"));
-        M_print (i18n (1822, "    color: use colored text output.\n"));
-        M_print (i18n (1815, "    funny: use funny messages for output.\n"));
-        M_print (i18n (2018, "    quiet: be quiet about status changes.\n"));
+        if (!s_parse (&args, &arg1))               data = 0;
+        else if (!strcasecmp (arg1, "color"))      { data = FLAG_COLOR;      str = i18n (2133, "Color is %s%s%s.\n"); }
+        else if (!strcasecmp (arg1, "colour"))     { data = FLAG_COLOR;      str = i18n (2133, "Color is %s%s%s.\n"); }
+        else if (!strcasecmp (arg1, "hermit"))     { data = FLAG_HERMIT;     str = i18n (2261, "Hermit is %s%s%s.\n"); }
+        else if (!strcasecmp (arg1, "delbs"))      { data = FLAG_DELBS;      str = i18n (2262, "Interpreting a delete character as backspace is %s%s%s.\n"); }
+        else if (!strcasecmp (arg1, "funny"))      { data = FLAG_FUNNY;      str = i18n (2134, "Funny messages are %s%s%s.\n"); }
+        else if (!strcasecmp (arg1, "log"))        { data = FLAG_LOG;        str = i18n (2263, "Logging is %s%s%s.\n"); }
+        else if (!strcasecmp (arg1, "logonoff"))   { data = FLAG_LOG_ONOFF;  str = i18n (2264, "Logging of status changes is %s%s%s.\n"); }
+        else if (!strcasecmp (arg1, "auto"))       { data = FLAG_AUTOREPLY;  str = i18n (2265, "Automatic replies are %s%s%s.\n"); }
+        else if (!strcasecmp (arg1, "uinprompt"))  { data = FLAG_UINPROMPT;  str = i18n (2266, "Having the last nick in the prompt is %s%s%s.\n"); }
+        else if (!strcasecmp (arg1, "autosave"))   { data = FLAG_AUTOSAVE;   str = i18n (2267, "Automatic saves are %s%s%s.\n"); }
+        else if (!strcasecmp (arg1, "autofinger")) { data = FLAG_AUTOFINGER; str = i18n (2268, "Automatic fingering of new UINs is %s%s%s.\n"); }
+        else if (!strcasecmp (arg1, "linebreak"))  data = -1;
+        else if (!strcasecmp (arg1, "tabs"))       data = -2;
+        else if (!strcasecmp (arg1, "silence"))    data = -3;
+        else if (!strcasecmp (arg1, "quiet"))
+        {
+            quiet = 1;
+            continue;
+        }
+        break;
     }
-    else if (!strcmp (arg1, "color"))
+    
+    if (data && !s_parse (&args, &arg1))
+        arg1 = "";
+    
+    switch (data)
     {
-        if (s_parse (&args, &arg1))
-        {
-            if (!strcmp (arg1, "on") || !strcmp (arg1, i18n (1085, "on")))
-            {
-                prG->flags |= FLAG_COLOR;
-            }
-            else if (!strcmp (arg1, "off") || !strcmp (arg1, i18n (1086, "off")))
-            {
-                prG->flags &= ~FLAG_COLOR;
-            }
-        }
-
-        if (!quiet)
-        {
-            if (prG->flags & FLAG_COLOR)
-                M_printf (i18n (2133, "Color is %s%s%s.\n"),
-                         COLMESSAGE, i18n (1085, "on"), COLNONE);
-            else
-                M_printf (i18n (2133, "Color is %s%s%s.\n"),
-                         COLMESSAGE, i18n (1086, "off"), COLNONE);
-        }
-    }
-    else if (!strcmp (arg1, "funny"))
-    {
-        if (s_parse (&args, &arg1))
-        {
-            if (!strcmp (arg1, "on") || !strcmp (arg1, i18n (1085, "on")))
-            {
-                prG->flags |= FLAG_FUNNY;
-            }
-            else if (!strcmp (arg1, "off") || !strcmp (arg1, i18n (1086, "off")))
-            {
-                prG->flags &= ~FLAG_FUNNY;
-            }
-        }
-        
-        if (!quiet)
-        {
-            if (prG->flags & FLAG_FUNNY)
-                M_printf (i18n (2134, "Funny messages are %s%s%s.\n"),
-                         COLMESSAGE, i18n (1085, "on"), COLNONE);
-            else
-                M_printf (i18n (2134, "Funny messages are %s%s%s.\n"),
-                         COLMESSAGE, i18n (1086, "off"), COLNONE);
-        }
-    }
-    else if (!strcmp (arg1, "quiet"))
-    {
-        if (s_parse (&args, &arg1))
-        {
-            if (!strcmp (arg1, "on") || !strcmp (arg1, i18n (1085, "on")))
-            {
+        case 0:
+            break;
+        default:
+            if (!strcasecmp (arg1, "on") || !strcmp (arg1, i18n (1085, "on")))
+                prG->flags |= data;
+            else if (!strcasecmp (arg1, "off") || !strcmp (arg1, i18n (1086, "off")))
+                prG->flags &= ~data;
+            else if (*arg1)
+                data = 0;
+            if (!quiet && str)
+                M_printf (str, COLMESSAGE, prG->flags & data ? i18n (1085, "on") : i18n (1086, "off"), COLNONE);
+            break;
+        case -1:
+            prG->flags &= ~FLAG_LIBR_BR & ~FLAG_LIBR_INT;
+            if (!strcasecmp (arg1, "break") || !strcasecmp (arg1, i18n (2269, "break")))
+                prG->flags |= FLAG_LIBR_BR;
+            else if (!strcasecmp (arg1, "simple") || !strcasecmp (arg1, i18n (2270, "simple")))
+                ;
+            else if (!strcasecmp (arg1, "indent") || !strcasecmp (arg1, i18n (2271, "indent")))
+                prG->flags |= FLAG_LIBR_INT;
+            else if (!strcasecmp (arg1, "smart") || !strcasecmp (arg1, i18n (2272, "smart")))
+                prG->flags |= FLAG_LIBR_BR | FLAG_LIBR_INT;
+            else if (*arg1)
+                data = 0;
+            if (!quiet)
+                M_printf (i18n (2288, "Indentation style is %s%s%s.\n"), COLMESSAGE,
+                          ~prG->flags & FLAG_LIBR_BR ? (~prG->flags & FLAG_LIBR_INT ? i18n (2270, "simple") : i18n (2271, "indent")) :
+                          ~prG->flags & FLAG_LIBR_INT ? i18n (2269, "break") : i18n (2272, "smart"), COLNONE);
+            break;
+        case -2:
+            prG->tabs = TABS_SIMPLE;
+            if (!strcasecmp (arg1, "cycle") || !strcasecmp (arg1, i18n (2273, "cycle")))
+                prG->tabs = TABS_CYCLE;
+            else if (!strcasecmp (arg1, "cycleall") || !strcasecmp (arg1, i18n (2274, "cycleall")))
+                prG->tabs = TABS_CYCLEALL;
+            else if ((strcasecmp (arg1, "simple") || !strcasecmp (arg1, i18n (2270, "simple"))) && *arg1)
+                data = 0;
+            if (!quiet)
+                M_printf (i18n (2275, "Tab style is %s%s%s.\n"), COLMESSAGE,
+                          prG->tabs == TABS_CYCLE ? i18n (2273, "cycle") :
+                          prG->tabs == TABS_CYCLEALL ? i18n (2274, "cycleall") : i18n (2270, "simple"), COLNONE);
+            break;
+        case -3:
+            prG->flags &= ~FLAG_QUIET & ~FLAG_ULTRAQUIET;
+            if (!strcasecmp (arg1, "on") || !strcasecmp (arg1, i18n (1085, "on")))
                 prG->flags |= FLAG_QUIET;
-            }
-            else if (!strcmp (arg1, "off") || !strcmp (arg1, i18n (1086, "off")))
-            {
-                prG->flags &= ~FLAG_QUIET;
-            }
-        }
-        
-        if (!quiet)
-        {
-            if (prG->flags & FLAG_QUIET)
-                M_printf (i18n (2135, "Quiet output is %s%s%s.\n"),
-                         COLMESSAGE, i18n (1085, "on"), COLNONE);
-            else
-                M_printf (i18n (2135, "Quiet output is %s%s%s.\n"),
-                         COLMESSAGE, i18n (1086, "off"), COLNONE);
-        }
+            else if (!strcasecmp (arg1, "complete") || !strcasecmp (arg1, i18n (2276, "complete")))
+                prG->flags |= FLAG_QUIET | FLAG_ULTRAQUIET;
+            else if ((strcasecmp (arg1, "off") || !strcasecmp (arg1, i18n (1086, "off"))) && *arg1)
+                data = 0;
+            if (!quiet)
+                M_printf (i18n (2135, "Quiet output is %s%s%s.\n"), COLMESSAGE,
+                          prG->flags & FLAG_ULTRAQUIET ? i18n (2276, "complete") :
+                          prG->flags & FLAG_QUIET ? i18n (1085, "on") : i18n (1086, "off"), COLNONE);
+            break;
     }
-    else
-        M_printf (i18n (1816, "Unknown option %s to set command.\n"), arg1);
+    if (!data)
+    {
+        M_printf (i18n (1820, "%s <option> [on|off|<value>] - control simple options.\n"), CmdUserLookupName ("set"));
+        M_print (i18n (1822, "    color:      use colored text output.\n"));
+        M_print (i18n (2277, "    hermit:     ignore all non-contacts.\n"));
+        M_print (i18n (2278, "    delbs:      interpret delete characters as backspace.\n"));
+        M_print (i18n (1815, "    funny:      use funny messages for output.\n"));
+        M_print (i18n (2279, "    log:        do logging.\n"));
+        M_print (i18n (2280, "    logonoff:   also log status changes.\n"));
+        M_print (i18n (2281, "    auto:       send auto-replies.\n"));
+        M_print (i18n (2282, "    uinprompt:  have the last nick in the prompt.\n"));
+        M_print (i18n (2283, "    autosave:   automatically save the micqrc.\n"));
+        M_print (i18n (2284, "    autofinger: automatically finger new UINs.\n"));
+        M_print (i18n (2285, "    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n"));
+        M_print (i18n (2286, "    tabs:       style for tab-handling: simple, cycle, cycleall.\n"));
+        M_print (i18n (2287, "    silence:    suppress some output: off, on, complete.\n"));
+    }
     return 0;
 }
 

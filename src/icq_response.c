@@ -7,6 +7,7 @@
 #include "util_io.h"
 #include "tabs.h"
 #include "contact.h"
+#include "server.h"
 #include "util_table.h"
 #include "util.h"
 #include "conv.h"
@@ -440,7 +441,7 @@ void Display_Ext_Info_Reply (Connection *conn, Packet *pak)
                  i18n (1575, "Age:"), mo->age);
     else
         M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
-                 i18n (1575, "Age:"), i18n (1200, "Not entered"));
+                 i18n (1575, "Age:"), i18n (1200, "not entered"));
 
     M_printf (COLSERVER "%-15s" COLNONE " %s\n", i18n (1696, "Sex:"),
                mo->sex == 1 ? i18n (1528, "female")
@@ -525,7 +526,8 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
     
     putlog (conn, NOW, cont, status, ~old ? LOG_CHANGE : LOG_ONLINE, 0xFFFF, "");
  
-    if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || (prG->flags & FLAG_QUIET) || !(conn->connect & CONNECT_OK))
+    if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || (prG->flags & FLAG_ULTRAQUIET)
+        || ((prG->flags & FLAG_QUIET) && (old != STATUS_OFFLINE)) || (~conn->connect & CONNECT_OK))
         return;
 
     if (prG->event_cmd && *prG->event_cmd)
@@ -568,7 +570,7 @@ void IMOffline (Contact *cont, Connection *conn)
     cont->status = STATUS_OFFLINE;
     cont->seen_time = time (NULL);
 
-    if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || (prG->flags & FLAG_QUIET))
+    if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || (prG->flags & FLAG_ULTRAQUIET))
         return;
 
     if (prG->event_cmd && *prG->event_cmd)
@@ -704,6 +706,9 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
         R_setpromptf ("[" COLINCOMING "%ld%s" COLNONE "] " COLSERVER "%s" COLNONE "",
                       uiG.idle_msgs, uiG.idle_uins, i18n (1040, "mICQ> "));
     }
+
+    if (cont->flags & CONT_TEMPORARY && ~cont->updated & UPF_SERVER)
+        IMCliInfo (conn, cont, 0);
 
 #ifdef MSGEXEC
     if (prG->event_cmd && *prG->event_cmd)

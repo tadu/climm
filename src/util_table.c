@@ -42,7 +42,7 @@ static const char *TableLang[] = {
 #define TableLangSize sizeof (TableLang) / sizeof (const char *)
 
 static const char *TableCountry[] = {
-    _i18n (1200, "Not entered"),
+    _i18n (1200, "not entered"),
     _i18n (1201, "Afghanistan"), _i18n (1202, "Albania"),                       _i18n (1203, "Algeria"),
                                 _i18n (1204, "American Samoa"),                _i18n (1205, "Andorra"),
     _i18n (1206, "Angola"),      _i18n (1207, "Anguilla"),                      _i18n (1208, "Antigua"),
@@ -151,7 +151,7 @@ static UWORD TableCountryCodes[] = {
 #define TableCountryCodesSize sizeof (TableCountryCodes) / sizeof (UWORD)
 
 static const char *TableOccupation[] = {
-    _i18n (1200, "Not entered"),
+    _i18n (1200, "not entered"),
     _i18n (1161, "Academic"),                    _i18n (1162, "Administrative"),        _i18n (1163, "Art/Entertainmant"),
     _i18n (1164, "College Student"),             _i18n (1165, "Computers"),             _i18n (1166, "Community & Social"),
     _i18n (1167, "Education"),                   _i18n (1168, "Engineering"),           _i18n (1169, "Financial Services"),

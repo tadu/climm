@@ -120,3 +120,43 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, Extra *extra)
     ExtraD (extra);
     return RET_FAIL;
 }
+
+static void CallbackMeta (Event *event);
+
+void IMCliInfo (Connection *conn, Contact *cont, int group)
+{
+    UDWORD ref;
+    if (cont)
+    {
+        cont->updated = 0;
+        if (conn->ver > 6)
+            ref = SnacCliMetareqinfo (conn, cont);
+        else
+            ref = CmdPktCmdMetaReqInfo (conn, cont);
+    }
+    else
+        if (conn->ver > 6)
+            ref = SnacCliSearchrandom (conn, group);
+        else
+            ref = CmdPktCmdRandSearch (conn, group);
+    QueueEnqueueData (conn, QUEUE_REQUEST_META, ref, time (NULL) + 10, NULL, cont->uin, NULL, &CallbackMeta);
+}
+
+static void CallbackMeta (Event *event)
+{
+    Contact *cont;
+    
+    cont = ContactUIN (event->conn, event->uin);
+    if (cont->updated != UP_INFO && !event->flags & QUEUE_FLAG_CONSIDERED)
+        QueueEnqueue (event);
+    else
+    {
+        UtilUIDisplayMeta (cont);
+        if (~cont->flags & CONT_ISEDITED)
+            ContactMetaSave (cont);
+        else
+            cont->updated &= ~UPF_DISC;
+        EventD (event);
+    }
+}
+

@@ -639,12 +639,16 @@ void Read_RC_File (FILE *rcf)
                         which = FLAG_UINPROMPT;
                     else if (!strcasecmp (cmd, "autosave"))
                         which = FLAG_AUTOSAVE;
+                    else if (!strcasecmp (cmd, "autofinger"))
+                        which = FLAG_AUTOFINGER;
                     else if (!strcasecmp (cmd, "linebreak"))
                         which = -2;
                     else if (!strcasecmp (cmd, "tabs"))
                         which = -3;
+                    else if (!strcasecmp (cmd, "silence"))
+                        which = -4;
                     else
-                        continue;
+                        ERROR;
                     if (which > 0)
                     {
                         PrefParse (cmd);
@@ -683,6 +687,7 @@ void Read_RC_File (FILE *rcf)
                             prG->flags |= FLAG_LOG;
                         if (i & 2)
                             prG->flags |= FLAG_LOG_ONOFF;
+                        dep = 1;
                     }
                     else if (which == -2)
                     {
@@ -710,6 +715,18 @@ void Read_RC_File (FILE *rcf)
                         else if (!strcasecmp (cmd, "cycleall"))
                             prG->tabs = TABS_CYCLEALL;
                         else if (strcasecmp (cmd, "simple"))
+                            dep = 1;
+                    }
+                    else if (which == -4)
+                    {
+                        PrefParse (cmd);
+                        
+                        prG->flags &= ~FLAG_QUIET & ~FLAG_ULTRAQUIET;
+                        if (!strcasecmp (cmd, "on"))
+                            prG->flags |= FLAG_QUIET;
+                        else if (!strcasecmp (cmd, "complete"))
+                            prG->flags |= FLAG_QUIET | FLAG_ULTRAQUIET;
+                        else if (strcasecmp (cmd, "off"))
                             dep = 1;
                     }
                 }
@@ -1169,29 +1186,34 @@ int Save_RC ()
 
 
     fprintf (rcf, "# Set some simple options.\n");
-    fprintf (rcf, "set delbs     %s # if a DEL char is supposed to be backspace\n",
+    fprintf (rcf, "set delbs      %s # if a DEL char is supposed to be backspace\n",
                     prG->flags & FLAG_DELBS     ? "on " : "off");
-    fprintf (rcf, "set funny     %s # if you want funny messages\n",
+    fprintf (rcf, "set funny      %s # if you want funny messages\n",
                     prG->flags & FLAG_FUNNY     ? "on " : "off");
-    fprintf (rcf, "set color     %s # if you want colored messages\n",
+    fprintf (rcf, "set color      %s # if you want colored messages\n",
                     prG->flags & FLAG_COLOR     ? "on " : "off");
-    fprintf (rcf, "set hermit    %s # if you want messages from people on your contact list ONLY\n",
+    fprintf (rcf, "set hermit     %s # if you want messages from people on your contact list ONLY\n",
                     prG->flags & FLAG_HERMIT    ? "on " : "off");
-    fprintf (rcf, "set log       %s # if you want to log messages\n",
+    fprintf (rcf, "set log        %s # if you want to log messages\n",
                     prG->flags & FLAG_LOG       ? "on " : "off");
-    fprintf (rcf, "set logonoff  %s # if you also want to log online/offline events\n",
+    fprintf (rcf, "set logonoff   %s # if you also want to log online/offline events\n",
                     prG->flags & FLAG_LOG_ONOFF ? "on " : "off");
-    fprintf (rcf, "set auto      %s # if automatic responses are to be sent\n",
+    fprintf (rcf, "set auto       %s # if automatic responses are to be sent\n",
                     prG->flags & FLAG_AUTOREPLY ? "on " : "off");
-    fprintf (rcf, "set uinprompt %s # if the prompt should contain the last uin a message was received from\n",
+    fprintf (rcf, "set uinprompt  %s # if the prompt should contain the last uin a message was received from\n",
                     prG->flags & FLAG_UINPROMPT ? "on " : "off");
-    fprintf (rcf, "set autosave  %s # whether the micqrc should be automatically saved on exit\n",
+    fprintf (rcf, "set autosave   %s # whether the micqrc should be automatically saved on exit\n",
                     prG->flags & FLAG_AUTOSAVE ? "on " : "off");
-    fprintf (rcf, "set linebreak %s # the line break type to be used (simple, break, indent, smart)\n",
+    fprintf (rcf, "set autofinger %s # whether new UINs should be fingered automatically\n",
+                    prG->flags & FLAG_AUTOFINGER ? "on " : "off");
+    fprintf (rcf, "set linebreak  %s # the line break type to be used (simple, break, indent, smart)\n",
                     prG->flags & FLAG_LIBR_INT 
                     ? prG->flags & FLAG_LIBR_BR ? "smart " : "indent"
                     : prG->flags & FLAG_LIBR_BR ? "break " : "simple");
-    fprintf (rcf, "set tabs %s # type of tab completion (simple, cycle, cycleall)\n\n",
+    fprintf (rcf, "set silence    %s # what stuff to hide (on, off, complete)\n",
+                    prG->flags & FLAG_ULTRAQUIET ? "complete" :
+                    prG->flags & FLAG_QUIET      ? "on" : "off");
+    fprintf (rcf, "set tabs       %s # type of tab completion (simple, cycle, cycleall)\n\n",
                     prG->tabs == TABS_SIMPLE ? "simple" :
                     prG->tabs == TABS_CYCLE ? "cycle" : "cycleall");
 
