@@ -1,4 +1,3 @@
-#include "micq.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -8,22 +7,28 @@
 #include <errno.h>
 #include <time.h>
 #include <sys/types.h>
-#include <sys/time.h>
 #include <sys/stat.h>
-#include <netinet/in.h>
-#ifndef __BEOS__
-#include <arpa/inet.h>
+#ifndef __BEOS__ || _WIN32
+    #include <arpa/inet.h>
 #endif
 #include <fcntl.h>
 #ifdef _WIN32
    #include <io.h>
    #define S_IRUSR        _S_IREAD
    #define S_IWUSR        _S_IWRITE
+#else
+    #include <sys/time.h>
+    #include <netinet/in.h>
+    #include <termios.h>
 #endif
+
 #ifdef UNIX
    #include <unistd.h>
-   #include <termios.h>
 #endif
+
+#include "micq.h"
+
+/****/
 
 BOOL Log_Dir_Normal( void );
 char * Get_Log_Dir( void );

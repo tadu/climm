@@ -24,11 +24,13 @@
 #include <unistd.h>
 #include <string.h>
 #include <ctype.h>
-#include <termios.h>
+
+#ifndef _WIN32
+    #include <termios.h>
+#endif
 
 #define HISTORY_LINES 10
 #define HISTORY_LINE_LEN 1024
-
 
 void R_init (void);
 void R_setprompt (char *prompt);

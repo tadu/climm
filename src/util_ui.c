@@ -10,19 +10,20 @@
 #include <errno.h>
 #include <time.h>
 #include <sys/types.h>
-#include <sys/time.h>
 #include <sys/stat.h>
-#include <netinet/in.h>
 #include <fcntl.h>
 
-#ifndef __BEOS__
-   #include <arpa/inet.h>
-#endif
 
 #ifdef _WIN32
    #include <io.h>
    #define S_IRUSR        _S_IREAD
    #define S_IWUSR        _S_IWRITE
+#else 
+    #include <sys/time.h>
+    #include <netinet/in.h>
+    #ifndef __BEOS__
+       #include <arpa/inet.h>
+    #endif
 #endif
 
 #ifdef UNIX

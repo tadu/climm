@@ -12,38 +12,43 @@ Changes :
      3-5-99 Created
 **********************************************
 **********************************************/
-#include "micq.h"
-#include "datatype.h"
-#include "msg_queue.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
 
 #ifdef _WIN32
-#include <conio.h>
-#include <io.h>
-#include <winsock2.h>
-#include <time.h>
+    #include <conio.h>
+    #include <io.h>
+    #include <winsock2.h>
+    #include <time.h>
 #else
-#include <unistd.h>
-#include <netinet/in.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/socket.h>
-#ifndef __BEOS__
-#include <arpa/inet.h>
+    #include <unistd.h>
+    #include <netinet/in.h>
+    #include <sys/types.h>
+    #include <sys/stat.h>
+    #include <sys/socket.h>
+
+    #ifndef __BEOS__
+        #include <arpa/inet.h>
+    #endif
+
+    #include <netdb.h>
+    #include <sys/time.h>
+    #include <sys/wait.h>
+    #include "mreadline.h"
 #endif
-#include <netdb.h>
-#include <sys/time.h>
-#include <sys/wait.h>
-#include "mreadline.h"
-#endif
+
 #include <fcntl.h>
 #include <time.h>
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>
+
+#include "micq.h"
+#include "datatype.h"
+#include "msg_queue.h"
+
 
 static struct timeval tv;
 static fd_set readfds;

@@ -3,24 +3,25 @@ Send Message Function for ICQ...
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Author : zed@mentasm.com
 */
-#include "datatype.h"
-#include "micq.h"
-#include "msg_queue.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 #ifdef _WIN32
-#include <winsock2.h>
+    #include <winsock2.h>
 #else
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <unistd.h>
+    #include <sys/types.h>
+    #include <sys/socket.h>
 #endif
 #include <string.h>
 #include <assert.h>
 #include <limits.h>
-#include <netinet/in.h>
 #include "mreadline.h"
+
+#include "datatype.h"
+#include "micq.h"
+#include "msg_queue.h"
 
 /*unsigned int next_resend;*/
 DWORD Packets_Sent = 0;

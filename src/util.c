@@ -26,22 +26,30 @@ Changes :
 #include <errno.h>
 #include <time.h>
 #include <sys/types.h>
-#include <sys/time.h>
 #include <sys/stat.h>
-#include <netinet/in.h>
-#ifndef __BEOS__
-#include <arpa/inet.h>
-#endif
 #include <fcntl.h>
 #ifdef _WIN32
    #include <io.h>
    #define S_IRUSR        _S_IREAD
    #define S_IWUSR        _S_IWRITE
+#else
+    #include <sys/time.h>
+    #include <netinet/in.h>
+    #ifndef __BEOS__
+	#include <arpa/inet.h>
+    #endif
 #endif
 #ifdef UNIX
    #include <unistd.h>
    #include <termios.h>
    #include "mreadline.h"
+#endif
+
+#ifdef _WIN32
+typedef struct {
+    long tv_sec;
+    long tv_usec;
+} timeval;
 #endif
 
 static char *Log_Dir = NULL;
@@ -629,9 +637,12 @@ void Init_New_User( void )
    srv_net_icq_pak pak;
    int s;
    struct timeval tv;
-   fd_set readfds;
 #ifdef _WIN32
+   int i;
    WSADATA wsaData;
+   FD_SET readfds;
+#else
+   fd_set readfds;
 #endif
       
 #ifdef _WIN32

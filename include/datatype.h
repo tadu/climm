@@ -18,6 +18,9 @@ typedef unsigned short U_INT16;
 typedef unsigned char  U_INT8;
 
 #ifdef _WIN32
+#define 	snprintf 	_snprintf
+#define 	vsnprintf 	_vsnprintf
+
   typedef int FD_T;
   typedef int SOK_T;
   typedef unsigned int ssize_t;

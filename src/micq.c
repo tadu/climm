@@ -1,7 +1,3 @@
-#include "micq.h"
-#include "datatype.h"
-#include "msg_queue.h"
-#include "mselect.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -35,6 +31,12 @@
 #ifdef __BEOS__
   #include "beos.h"
 #endif
+
+#include "micq.h"
+#include "datatype.h"
+#include "msg_queue.h"
+#include "mselect.h"
+
 
 DWORD real_packs_sent = 0;
 DWORD real_packs_recv = 0;

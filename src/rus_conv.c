@@ -2,7 +2,8 @@
 
 #include "micq.h"
 #ifdef _WIN32
- #include <winuser.h>
+ #include <windows.h>
+ #include <assert.h>
  /* OemToChar and CharToOemis here...*/
 #endif
 #include <stdio.h>

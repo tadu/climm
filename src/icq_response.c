@@ -1,6 +1,3 @@
-#include "datatype.h"
-#include "micq.h"
-#include "mreadline.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -13,6 +10,10 @@
 #endif
 #include <time.h>
 #include <string.h>
+
+#include "datatype.h"
+#include "micq.h"
+#include "mreadline.h"
 
 char *Get_Occupation( WORD x )
 {

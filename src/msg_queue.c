@@ -2,12 +2,12 @@
 Author Lawrence Gold
 Handles resending missed packets.
 *************************************************************/
-#include "msg_queue.h"
-#include "micq.h"
 #include <stdlib.h>
 #include <assert.h>
 #include <limits.h>
 #include "mreadline.h"
+#include "msg_queue.h"
+#include "micq.h"
 
 static struct msg_queue *queue= NULL;
 

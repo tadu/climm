@@ -24,6 +24,8 @@ Changes :
 #include "config.h"
 #include "datatype.h"
 #include <stdlib.h>
+#include "mreadline.h"
+#include <time.h>
 
 /*********  Leeched from Xicq :) xtrophy@it.dk ********/
 /*********  changed to use escape codes like you should :) ***/

@@ -32,9 +32,9 @@ Changes :
   #include <sys/stat.h>
   #include <sys/time.h>
   #include <sys/socket.h>
-#ifndef __BEOS__
-  #include <arpa/inet.h>
-#endif
+    #ifndef __BEOS__
+      #include <arpa/inet.h>
+    #endif
   #include <netdb.h>
   #include "mreadline.h"
 #endif
