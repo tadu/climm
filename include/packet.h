@@ -14,6 +14,7 @@ typedef struct
 } Packet;
 
 Packet *PacketC        (void);
+Packet *PacketClone    (const Packet *pak);
 
 void PacketWrite1      (Packet *pak, UBYTE  data);
 void PacketWrite2      (Packet *pak, UWORD  data);
@@ -24,8 +25,9 @@ void PacketWriteAt1    (Packet *pak, UWORD at, UBYTE  data);
 void PacketWriteAt2    (Packet *pak, UWORD at, UWORD  data);
 void PacketWriteAt4    (Packet *pak, UWORD at, UDWORD data);
 
-UBYTE  PacketReadAt1   (Packet *pak, UWORD at);
-UWORD  PacketReadAt2   (Packet *pak, UWORD at);
-UDWORD PacketReadAt4   (Packet *pak, UWORD at);
+UBYTE       PacketReadAt1   (const Packet *pak, UWORD at);
+UWORD       PacketReadAt2   (const Packet *pak, UWORD at);
+UDWORD      PacketReadAt4   (const Packet *pak, UWORD at);
+const char *PacketReadAtStr (const Packet *pak, UWORD at);
 
 #endif MICQ_PACKET_H

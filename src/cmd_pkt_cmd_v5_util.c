@@ -18,9 +18,9 @@
 #include <stdio.h>
 #include <netinet/in.h> /* for htonl, htons */
 
-static void Gen_Checksum (UBYTE * buf, UDWORD len);
+static UDWORD Gen_Checksum (const Packet *pak);
 static UDWORD Scramble_cc (UDWORD cc);
-static void Wrinkle (void *buf, size_t len);
+static Packet *Wrinkle (const Packet *pak);
 
 typedef struct { UWORD cmd; const char *name; } jump_cmd_t;
 #define jump_el(x) { x, #x },
@@ -41,7 +41,7 @@ static jump_cmd_t jump[] = {
 };
 
 /*
- *
+ * Return the name of a command given by number
  */
 const char *CmdPktCmdName (UWORD cmd)
 {
@@ -101,32 +101,34 @@ void PacketEnqueuev5 (Packet *pak, Session *sess)
     sess->last_cmd[sess->seq_num & 0x3ff] = cmd;
     if (iss2)           sess->seq_num2++;
 
+    PacketSendv5 (pak, sess);
+
+    if (uiG.Verbose & 4)
+    {
+        Time_Stamp ();
+        M_print (" \x1b«" COLCLIENT "");
+        M_print (i18n (775, "Outgoing packet:"));
+        M_print (" %04x %08x:%08x %04x (%s) @%p" COLNONE "\n",
+                 PacketReadAt2 (pak, CMD_v5_OFF_VER), PacketReadAt4 (pak, CMD_v5_OFF_SESS),
+                 PacketReadAt4 (pak, CMD_v5_OFF_SEQ), PacketReadAt2 (pak, CMD_v5_OFF_SEQ2),
+                 CmdPktSrvName (PacketReadAt2 (pak, CMD_v5_OFF_CMD)), pak);
+        Hex_Dump (&pak->data, pak->bytes);
+        M_print ("\x1b»\n");
+    }
+
     if (cmd != CMD_ACK)
     {
         sess->real_packs_sent++;
         sess->seq_num++;
 
         QueueEnqueueData (queue, sess, pak->id, QUEUE_TYPE_UDP_RESEND,
-                          0, time (NULL) + (sess->sok >= 0 ? 10 : 0), -1,
-                          (UBYTE *)pak, NULL, &UDPCallBackResend);
+                          0, time (NULL) + 10,
+                          pak, NULL, &UDPCallBackResend);
     }
     else
     {
-        PacketSendv5 (pak, sess);
-        Debug (64, "%p --> %s", pak, i18n (860, "freeing (is-ack) packet"));
+        Debug (64, "--> %p %s", pak, i18n (860, "freeing (is-ack) packet"));
         free (pak);
-    }
-    if (uiG.Verbose & 4)
-    {
-        Time_Stamp ();
-        M_print (" \x1b«" COLCLIENT "");
-        M_print (i18n (775, "Outgoing packet:"));
-        M_print (" %04x %08x:%08x %04x (%s)" COLNONE "\n",
-                 PacketReadAt2 (pak, CMD_v5_OFF_VER), PacketReadAt4 (pak, CMD_v5_OFF_SESS),
-                 PacketReadAt4 (pak, CMD_v5_OFF_SEQ), PacketReadAt2 (pak, CMD_v5_OFF_SEQ2),
-                 CmdPktSrvName (PacketReadAt2 (pak, CMD_v5_OFF_CMD)));
-        Hex_Dump (&pak->data, pak->bytes);
-        M_print ("\x1b»\n");
     }
 }
 
@@ -157,33 +159,33 @@ static const UBYTE table[] = {
     0x47, 0x43, 0x69, 0x48, 0x33, 0x51, 0x54, 0x5D, 0x6E, 0x3C, 0x31, 0x64, 0x35, 0x5A, 0x00, 0x00,
 };
 
-void Gen_Checksum (UBYTE * buf, UDWORD len)
+UDWORD Gen_Checksum (const Packet *pak)
 {
     UDWORD cc, cc2;
     UDWORD r1, r2;
 
-    cc = buf[8];
+    cc = pak->data[8];
     cc <<= 8;
-    cc += buf[4];
+    cc += pak->data[4];
     cc <<= 8;
-    cc += buf[2];
+    cc += pak->data[2];
     cc <<= 8;
-    cc += buf[6];
+    cc += pak->data[6];
 
-    r1 = rand () % (len - 0x18);
+    r1 = rand () % (pak->bytes - 0x18);
     r1 += 0x18;
     r2 = rand () & 0xff;
 
     cc2 = r1;
     cc2 <<= 8;
-    cc2 += buf[r1];
+    cc2 += pak->data[r1];
     cc2 <<= 8;
     cc2 += r2;
     cc2 <<= 8;
     cc2 += table[r2];
     cc2 ^= 0xff00ff;
 
-    DW_2_Chars (&buf[20], cc ^ cc2);
+    return cc ^ cc2;
 }
 
 UDWORD Scramble_cc (UDWORD cc)
@@ -205,57 +207,61 @@ UDWORD Scramble_cc (UDWORD cc)
     return a[1] + a[2] + a[3] + a[4] + a[5];
 }
 
-void Wrinkle (void *buf, size_t len)
+Packet *Wrinkle (const Packet *opak)
 {
-    UDWORD checkcode;
-    UDWORD code1, code2, code3;
-    UDWORD pos;
-    UDWORD data;
+    UDWORD code, pos, checkcode;
+    Packet *pak;
+    
+    pak = PacketClone (opak);
 
-    Gen_Checksum (buf, len);
-    checkcode = Chars_2_DW (&((UBYTE *) buf)[20]);
-    code1 = len * 0x68656c6cL;
-    code2 = code1 + checkcode;
-    pos = 0xa;
-    for (; pos < (len); pos += 4)
-    {
-        code3 = code2 + table[pos & 0xFF];
-        data = Chars_2_DW (&((UBYTE *) buf)[pos]);
-        data ^= code3;
-        DW_2_Chars (&((UBYTE *) buf)[pos], data);
-    }
+    checkcode = Gen_Checksum (opak);
+    code = pak->bytes * 0x68656c6cL + checkcode;
+
+    for (pos = 10; pos < pak->bytes; pos += 4)
+        PacketWriteAt4 (pak, pos,
+            PacketReadAt4 (opak, pos) ^ (code + table[pos & 0xFF]));
+
     checkcode = Scramble_cc (checkcode);
-    DW_2_Chars (&((UBYTE *) buf)[20], checkcode);
+
+    PacketWriteAt4 (pak, 20, checkcode);
+    
+    return pak;
 }
 
 /*
  * Actually send a v5 packet.
  */
-void PacketSendv5 (Packet *pak, Session *sess)
+void PacketSendv5 (const Packet *pak, Session *sess)
 {
-    UBYTE s5len = (s5G.s5Use ? 10 : 0);
-    UBYTE *body = malloc (pak->bytes + s5len + 3);
-    UBYTE *data = body + s5len;
+    UBYTE s5len = 0;
+    UBYTE *data, *body;
+    Packet *cpak;
     
     assert (pak);
     assert (sess);
-    assert (body);
 
     Debug (64, "--- %p %s", pak, i18n (858, "sending packet"));
 
-    memcpy (data, pak->data, pak->bytes);
-    Wrinkle (data, pak->bytes);
+    cpak = Wrinkle (pak);
+    data = cpak->data;
+
     if (s5G.s5Use)
     {
+        s5len = 10;
+        body = malloc (pak->bytes + s5len);
+
+        assert (body);
+        
         body[0] = 0;
         body[1] = 0;
         body[2] = 0;
         body[3] = 1;
         *(UDWORD *) &body[4] = htonl (s5G.s5DestIP);
         *(UWORD  *) &body[8] = htons (s5G.s5DestPort);
+        memcpy (body + s5len, data, cpak->bytes);
         data = body;
     }
-    sockwrite (sess->sok, data, pak->bytes + s5len);
+    sockwrite (sess->sok, data, cpak->bytes + s5len);
     sess->Packets_Sent++;
 }
 
@@ -264,7 +270,7 @@ void PacketSendv5 (Packet *pak, Session *sess)
  */
 void UDPCallBackResend (struct Event *event)
 {
-    Packet *pak = (Packet *)event->body;
+    Packet *pak = event->pak;
 
     UWORD  cmd     = PacketReadAt2 (pak, CMD_v5_OFF_CMD);
     UDWORD session = PacketReadAt4 (pak, CMD_v5_OFF_SESS);
@@ -277,8 +283,8 @@ void UDPCallBackResend (struct Event *event)
                  cmd, CmdPktSrvName (cmd),
                  session, event->sess->our_session);
 
-        Debug (64, "--> %p (^%p ^-%p) %s", event->body, event, event->info, i18n (861, "freeing (old) packet"));
-        free (event->body);
+        Debug (64, "--> %p (^%p ^-%p) %s", event->pak, event, event->info, i18n (861, "freeing (old) packet"));
+        free (event->pak);
         if (event->info)
             free (event->info);
         free (event);
@@ -289,7 +295,7 @@ void UDPCallBackResend (struct Event *event)
         {
             M_print (i18n (826, "Resending message %04x (%s) sequence %04x (attempt #%d, len %d).\n"),
                      cmd, CmdPktCmdName (cmd),
-                     event->seq >> 16, event->attempts, event->len);
+                     event->seq >> 16, event->attempts, pak->bytes);
         }
         PacketSendv5 (pak, event->sess);
         event->due = time (NULL) + 10;
@@ -344,8 +350,8 @@ void UDPCallBackResend (struct Event *event)
         }
         M_print ("\n");
 
-        Debug (64, "--> %p (^%p ^-%p) %s", event->body, event, event->info, i18n (862, "freeing (disc) packet"));
-        free (event->body);
+        Debug (64, "--> %p (^%p ^-%p) %s", event->pak, event, event->info, i18n (862, "freeing (disc) packet"));
+        free (event->pak);
         if (event->info)
             free (event->info);
         free (event);

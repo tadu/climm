@@ -8,54 +8,11 @@
 /* TCP port to listen on... 0 = random -- james */
 #define TCP_PORT 0 
 
-#if TCP_VER == 6
-/* packet struct */
-typedef struct
-{
-    UBYTE cmd;           /* 0xFF */
-    UBYTE version[2];
-    UBYTE rev[2];
-    UBYTE dest_uin[4];
-    UBYTE X1[2];         /* null */
-    UBYTE port[4];
-    UBYTE uin[4];
-    UBYTE current_ip[4];
-    UBYTE other_ip[4];
-    UBYTE connection_type;
-    UBYTE other_port[4];
-    UBYTE session_id[4];
-} TCP_INIT_PAK, *TCP_INIT_PTR;
-
-typedef struct
-{
-    UBYTE cmd;          /* 0x01 */
-    UBYTE X1[3];
-} TCP_INIT_ACK_PAK, *TCP_INIT_ACK_PTR;
-
-typedef struct
-{
-    UBYTE checksum[4];
-    UBYTE cmd[2];
-    UBYTE X1[2];
-    UBYTE seq[2];
-    UBYTE X2[4];
-    UBYTE X3[4];
-    UBYTE X4[4];
-    UBYTE sub_cmd[2];
-    UBYTE status[2];
-    UBYTE msg_type[2];
-    UBYTE size[2];
-} TCP_MSG_PAK, *TCP_MSG_PTR;
-
-#else
-#error Undefined TCP version
-#endif
-
 #define TCP_OK_FLAG	0x04
 
 /* Commands */
-#define TCP_INIT		0xFF
-#define TCP_INIT_ACK		0x01
+#define TCP_CMD_INIT		0x00FF
+#define TCP_CMD_INIT_ACK	0x0001
 
 #define TCP_CMD_CANCEL		0x07D0
 #define TCP_CMD_ACK		0x07DA
@@ -102,8 +59,8 @@ typedef struct
 /* Miscellaneous */
 #define TCP_MSG_OFFSET  30
 #define TCP_MSG_X1      0x000E
-#define COL_FG          0x00000000	/* Foreground colour in msg body */
-#define COL_BG          0x00FFFFFF	/* Background colour in msg boxy */
+#define TCP_COL_FG      0x00000000	/* Foreground colour in msg body */
+#define TCP_COL_BG      0x00FFFFFF	/* Background colour in msg boxy */
 #define TCP_MSG_QUEUE   10
 
 #endif

@@ -531,7 +531,7 @@ int main (int argc, char *argv[])
 #endif
 
 #ifdef TCP_COMM
-        TCPAddSockets ();
+        TCPAddSockets (&ssG);
 #endif
         R_redraw ();
 

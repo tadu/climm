@@ -73,8 +73,8 @@ struct Event *QueuePop (struct Queue *queue)
             queue->due = INT_MAX;
         else
             queue->due = queue->head->event->due;
-        Debug (32, i18n (851, "popping type %d seq %08x at %p (body %p)"),
-               event->type, event->seq, event, event->body);
+        Debug (32, i18n (851, "popping type %d seq %08x at %p (pak %p)"),
+               event->type, event->seq, event, event->pak);
         return event;
     }
     return NULL;
@@ -98,8 +98,8 @@ void QueueEnqueue (struct Queue *queue, struct Event *event)
     entry->next = NULL;
     entry->event  = event;
 
-    Debug (32, i18n (852, "enqueuing type %d seq %08x at %p (body %p)"),
-           event->type, event->seq, event, event->body);
+    Debug (32, i18n (852, "enqueuing type %d seq %08x at %p (pak %p)"),
+           event->type, event->seq, event, event->pak);
 
     if (!queue->head)
     {
@@ -127,8 +127,8 @@ void QueueEnqueue (struct Queue *queue, struct Event *event)
  * Adds a new entry to the queue. Creates struct Event for you.
  */
 void QueueEnqueueData (struct Queue *queue, Session *sess, UDWORD seq, UDWORD type,
-                       UDWORD uin, time_t due, UDWORD len,
-                       UBYTE *body, UBYTE *info, Queuef *callback)
+                       UDWORD uin, time_t due,
+                       Packet *pak, UBYTE *info, Queuef *callback)
 {
     struct Event *event = malloc (sizeof (struct Event));
     
@@ -139,8 +139,7 @@ void QueueEnqueueData (struct Queue *queue, Session *sess, UDWORD seq, UDWORD ty
     event->attempts = 1;
     event->uin  = uin;
     event->due  = due;
-    event->len  = len;
-    event->body = body;
+    event->pak = pak;
     event->info = info;
     event->callback = callback;
     event->sess = sess;
@@ -177,8 +176,8 @@ struct Event *QueueDequeue (struct Queue *queue, UDWORD seq, UDWORD type)
         else
             queue->due = queue->head->event->due;
 
-        Debug (32, i18n (854, "dequeue type %d seq %08x at %p (body %p)"),
-               type, seq, event, event->body);
+        Debug (32, i18n (854, "dequeue type %d seq %08x at %p (pak %p)"),
+               type, seq, event, event->pak);
         return event;
     }
     for (iter = queue->head; iter->next; iter = iter->next)
@@ -189,8 +188,8 @@ struct Event *QueueDequeue (struct Queue *queue, UDWORD seq, UDWORD type)
             event = tmp->event;
             iter->next=iter->next->next;
             free (tmp);
-            Debug (32, i18n (854, "dequeue type %d seq %08x at %p (body %p)"),
-                   type, seq, event, event->body);
+            Debug (32, i18n (854, "dequeue type %d seq %08x at %p (pak %p)"),
+                   type, seq, event, event->pak);
             return event;
         }
     }

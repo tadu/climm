@@ -2,8 +2,6 @@ const char *Convert_Status_2_Str (UDWORD status);
 
 UDWORD Chars_2_DW (UBYTE * buf);
 UWORD Chars_2_Word (UBYTE * buf);
-void DW_2_Chars (UBYTE * buf, UDWORD num);
-void Word_2_Chars (UBYTE * buf, UWORD num);
 
 void Print_Status (UDWORD new_status);
 int Print_UIN_Name (UDWORD uin);

@@ -23,7 +23,7 @@ void TCPInit           (Session *sess, int port);
 void TCPDirectOpen     (Session *sess, struct Contact_t *cont);
 void TCPDirectClose    (               struct Contact_t *cont);
 
-void TCPAddSockets ();
+void TCPAddSockets     (Session *sess);
 void TCPDispatch       (Session *sess);
 
 /* probably only internal */
@@ -36,8 +36,8 @@ BOOL TCPSendMsg        (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd);
 
 int Send_TCP_Ack (tcpsock_t *sok, UWORD seq, UWORD sub_cmd, BOOL accept);
 void Handle_TCP_Comm (Session *sess, UDWORD uin);
-int Decrypt_Pak (UBYTE *pak, UDWORD size);
-void Encrypt_Pak (UBYTE *pak, UDWORD size);
+/*int Decrypt_Pak (UBYTE *pak, UDWORD size);
+void Encrypt_Pak (UBYTE *pak, UDWORD size);*/
 void Get_Auto_Resp (UDWORD uin);
 #if 0
 char * Get_Auto_Reply ( );

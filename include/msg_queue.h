@@ -18,8 +18,7 @@ struct Event
     UDWORD   attempts;
     UDWORD   uin;
     time_t   due;
-    UDWORD   len;
-    UBYTE   *body;
+    Packet  *pak;
     UBYTE   *info;
     Queuef  *callback;
     Session *sess;
@@ -28,8 +27,8 @@ struct Event
 void          QueueInit        (struct Queue **queue);
 void          QueueEnqueue     (struct Queue  *queue, struct Event *event);
 void          QueueEnqueueData (struct Queue  *queue, Session *sess, UDWORD seq, UDWORD type,
-                                UDWORD uin, time_t due, UDWORD len,
-                                UBYTE *body, UBYTE *info, Queuef *callback);
+                                UDWORD uin, time_t due,
+                                Packet *pak, UBYTE *info, Queuef *callback);
 struct Event *QueueDequeue     (struct Queue  *queue, UDWORD seq, UDWORD type);
 void          QueueRun         (struct Queue  *queue);
 

@@ -1,6 +1,16 @@
 
-2002-01-29 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
-	* Lots o' stuff. No v7 yet. TCP should work.
+2002-02-05 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* new: packet.c for functions creating a packet;
+	  got rid of *_2_Chars() completely; Chars_2_* deprecated
+	* new: cmd_pkt_cmd_v5.c implementing all server bound packets,
+	  IE all CMD_* stuff; complete rewrite of sendmsg.c using packet.c
+	* new: cmd_pkt_cmd_v5_util.c helpers for above
+	* The "global" ssG is now passed around and only local.
+	  Rationale: Have a different session for each transport
+	  (v5, v7, TCPv6)
+	* Bug fixes of TCP. Should work now (finally).
+	* Made more parameters const.
+	* Save Packet * in Queue instead of UBYTE *.
 
 2001-12-18 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Change mselect.c to also do select()ing on exceptfds; use

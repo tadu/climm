@@ -103,8 +103,8 @@ void CmdPktSrvRead (Session *sess)
     {
         if (uiG.Verbose)
         {
-            M_print (i18n (606, "Got a bad session ID %08X with CMD %04X ignored.\n"),
-                     Chars_2_DW (pak.head.session), Chars_2_Word (pak.head.cmd));
+            M_print (i18n (606, "Got a bad session ID %08x (correct: %08x) with CMD %04x ignored.\n"),
+                     Chars_2_DW (pak.head.session), sess->our_session, Chars_2_Word (pak.head.cmd));
         }
         return;
     }
@@ -411,7 +411,7 @@ JUMP_SRV_F (CmdPktSrvAck)
         M_print ("%s %s %d\n", i18n (47, "Extra Data"), i18n (46, "Length"), len);
     }
     
-    ccmd = Chars_2_Word (&event->body[CMD_OFFSET]);
+    ccmd = PacketReadAt2 (event->pak, CMD_OFFSET);
 
     Debug (32, i18n (824, "Acknowledged packet type %04x (%s) sequence %04x removed from queue.\n"),
            ccmd, CmdPktSrvName (ccmd), event->seq >> 16);
@@ -420,14 +420,14 @@ JUMP_SRV_F (CmdPktSrvAck)
     {
         Time_Stamp ();
         M_print (" " COLACK "%10s" COLNONE " %s%s\n",
-                 ContactFindName (Chars_2_DW (&event->body[PAK_DATA_OFFSET])),
-                 MSGACKSTR, MsgEllipsis (&event->body[32]));
+                 ContactFindName (PacketReadAt4 (event->pak, PAK_DATA_OFFSET)),
+                 MSGACKSTR, MsgEllipsis (PacketReadAtStr (event->pak, 32)));
     }
     
-    Debug (64, "--> %p (^%p ^-%p) %s", event->body, event, event->info,
+    Debug (64, "--> %p (^%p ^-%p) %s", event->pak, event, event->info,
            i18n (859, "freeing (ack'ed) packet"));
     if (event->info)
         free (event->info);
-    free (event->body);
+    free (event->pak);
     free (event);
 }

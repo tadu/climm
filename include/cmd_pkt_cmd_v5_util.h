@@ -1,7 +1,7 @@
 
 Packet *PacketCv5 (Session *sess, UWORD cmd);
 void PacketEnqueuev5 (Packet *pak, Session *sess);
-void PacketSendv5 (Packet *pak, Session *sess);
+void PacketSendv5 (const Packet *pak, Session *sess);
 void UDPCallBackResend (struct Event *event);
 const char *CmdPktCmdName (UWORD cmd);
 

@@ -685,31 +685,33 @@ void Display_Search_Reply (Session *sess, UBYTE * pak)
     }
 }
 
-void Do_Msg (Session *sess, UDWORD type, UWORD len, char *data, UDWORD uin, BOOL tcp)
+void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin, BOOL tcp)
 {
-    char *tmp = NULL;
+    char *cdata, *tmp = NULL;
     int x, m;
+    
+    cdata = strdup (data);
 
     TabAddUIN (uin);            /* Adds <uin> to the tab-list */
 
 #ifdef MSGEXEC
     if (*uiG.receive_script)
-        ExecScript (uiG.receive_script, uin, type, data);
+        ExecScript (uiG.receive_script, uin, type, cdata);
 #endif
 
     if (type == USER_ADDED_MESS)
     {
-        tmp = strchr (data, '\xFE');
+        tmp = strchr (cdata, '\xFE');
         if (tmp == NULL)
         {
             M_print (i18n (585, "Ack!!!!!!!  Bad packet"));
             return;
         }
         *tmp = 0;
-        ConvWinUnix (data); /* By Kunia User's nick was not transcoded...;( */
-        M_print (i18n (586, COLCONTACT "\n%s" COLNONE " has added you to their contact list.\n"), data);
+        ConvWinUnix (cdata); /* By Kunia User's nick was not transcoded...;( */
+        M_print (i18n (586, COLCONTACT "\n%s" COLNONE " has added you to their contact list.\n"), cdata);
         tmp++;
-        data = tmp;
+        cdata = tmp;
         tmp = strchr (tmp, '\xFE');
         if (tmp == NULL)
         {
@@ -717,10 +719,10 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, char *data, UDWORD uin, BOOL
             return;
         }
         *tmp = 0;
-        ConvWinUnix (data);
-        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (564, "First name:"), data);
+        ConvWinUnix (cdata);
+        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (564, "First name:"), cdata);
         tmp++;
-        data = tmp;
+        cdata = tmp;
         tmp = strchr (tmp, '\xFE');
         if (tmp == NULL)
         {
@@ -728,22 +730,22 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, char *data, UDWORD uin, BOOL
             return;
         }
         *tmp = 0;
-        ConvWinUnix (data);
-        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (565, "Last name:"), data);
+        ConvWinUnix (cdata);
+        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (565, "Last name:"), cdata);
         tmp++;
-        data = tmp;
+        cdata = tmp;
         tmp = strchr (tmp, '\xFE');
         *tmp = 0;
-        ConvWinUnix (data);
-        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (566, "Email address:"), data);
+        ConvWinUnix (cdata);
+        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (566, "Email address:"), cdata);
     }
     else if (type == AUTH_REQ_MESS)
     {
-        tmp = strchr (data, '\xFE');
+        tmp = strchr (cdata, '\xFE');
         *tmp = 0;
-        M_print (i18n (590, COLCONTACT "\n%s" COLNONE " has requested your authorization to be added to their contact list.\n"), data);
+        M_print (i18n (590, COLCONTACT "\n%s" COLNONE " has requested your authorization to be added to their contact list.\n"), cdata);
         tmp++;
-        data = tmp;
+        cdata = tmp;
         tmp = strchr (tmp, '\xFE');
         if (tmp == NULL)
         {
@@ -751,10 +753,10 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, char *data, UDWORD uin, BOOL
             return;
         }
         *tmp = 0;
-        ConvWinUnix (data);
-        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (564, "First name:"), data);
+        ConvWinUnix (cdata);
+        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (564, "First name:"), cdata);
         tmp++;
-        data = tmp;
+        cdata = tmp;
         tmp = strchr (tmp, '\xFE');
         if (tmp == NULL)
         {
@@ -762,10 +764,10 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, char *data, UDWORD uin, BOOL
             return;
         }
         *tmp = 0;
-        ConvWinUnix (data);
-        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (565, "Last name:"), data);
+        ConvWinUnix (cdata);
+        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (565, "Last name:"), cdata);
         tmp++;
-        data = tmp;
+        cdata = tmp;
         tmp = strchr (tmp, '\xFE');
         if (tmp == NULL)
         {
@@ -773,10 +775,10 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, char *data, UDWORD uin, BOOL
             return;
         }
         *tmp = 0;
-        ConvWinUnix (data);
-        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (566, "Email address:"), data);
+        ConvWinUnix (cdata);
+        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (566, "Email address:"), cdata);
         tmp++;
-        data = tmp;
+        cdata = tmp;
         tmp = strchr (tmp, '\xFE');
         if (tmp == NULL)
         {
@@ -785,7 +787,7 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, char *data, UDWORD uin, BOOL
         }
         *tmp = 0;
         tmp++;
-        data = tmp;
+        cdata = tmp;
         tmp = strchr (tmp, '\x00');
         if (tmp == NULL)
         {
@@ -793,48 +795,48 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, char *data, UDWORD uin, BOOL
             return;
         }
         *tmp = 0;
-        ConvWinUnix (data);
-        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (591, "Reason:"), data);
+        ConvWinUnix (cdata);
+        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (591, "Reason:"), cdata);
     }
     else if ((type == EMAIL_MESS) || (type == WEB_MESS))
     {
-        tmp = strchr (data, '\xFE');
+        tmp = strchr (cdata, '\xFE');
         *tmp = 0;
-        M_print ("\n%s ", data);
+        M_print ("\n%s ", cdata);
         tmp++;
-        data = tmp;
-        tmp = strchr (data, '\xFE');
+        cdata = tmp;
+        tmp = strchr (cdata, '\xFE');
         tmp++;
-        data = tmp;
+        cdata = tmp;
 
-        tmp = strchr (data, '\xFE');
+        tmp = strchr (cdata, '\xFE');
         tmp++;
-        data = tmp;
+        cdata = tmp;
 
-        tmp = strchr (data, '\xFE');
+        tmp = strchr (cdata, '\xFE');
         *tmp = 0;
         if (type == EMAIL_MESS)
-            M_print (i18n (592, "<%s> emailed you a message:\n"), data);
+            M_print (i18n (592, "<%s> emailed you a message:\n"), cdata);
         else
-            M_print (i18n (593, "<%s> send you a web message:\n"), data);
+            M_print (i18n (593, "<%s> send you a web message:\n"), cdata);
         tmp++;
-        data = tmp;
-        tmp = strchr (data, '\xFE');
+        cdata = tmp;
+        tmp = strchr (cdata, '\xFE');
         *tmp = 0;
         if (uiG.Verbose)
         {
-            M_print ("??? '%s'\n", data);
+            M_print ("??? '%s'\n", cdata);
         }
         tmp++;
-        data = tmp;
-        M_print (COLMESS "%s" COLNONE "\n", data);
+        cdata = tmp;
+        M_print (COLMESS "%s" COLNONE "\n", cdata);
     }
     else if (type == URL_MESS || type == MRURL_MESS)
     {
         char *url_url, *url_desc;
 
-        url_desc = data;
-        url_url = strchr (data, '\xFE');
+        url_desc = cdata;
+        url_url = strchr (cdata, '\xFE');
         if (url_url == NULL)
         {
             url_url = url_desc;
@@ -860,34 +862,34 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, char *data, UDWORD uin, BOOL
     }
     else if (type == CONTACT_MESS || type == MRCONTACT_MESS)
     {
-        tmp = strchr (data, '\xFE');
+        tmp = strchr (cdata, '\xFE');
         *tmp = 0;
         M_print (i18n (595, "\nContact List.\n" COLMESS "============================================\n" COLNONE "%d Contacts\n"),
-                 atoi (data));
+                 atoi (cdata));
         tmp++;
-        m = atoi (data);
+        m = atoi (cdata);
         for (x = 0; m > x; x++)
         {
-            data = tmp;
+            cdata = tmp;
             tmp = strchr (tmp, '\xFE');
             *tmp = 0;
-            M_print (COLCONTACT "%s\t\t\t", data);
+            M_print (COLCONTACT "%s\t\t\t", cdata);
             tmp++;
-            data = tmp;
+            cdata = tmp;
             tmp = strchr (tmp, '\xFE');
             *tmp = 0;
-            M_print (COLMESS "%s" COLNONE "\n", data);
+            M_print (COLMESS "%s" COLNONE "\n", cdata);
             tmp++;
         }
     }
     else
     {
-        ConvWinUnix (data);
-        while (*data && (data[strlen (data) - 1] == '\n' || data[strlen (data) - 1] == '\r'))
-            data[strlen (data) - 1] = '\0';
+        ConvWinUnix (cdata);
+        while (*cdata && (cdata[strlen (cdata) - 1] == '\n' || cdata[strlen (cdata) - 1] == '\r'))
+            cdata[strlen (cdata) - 1] = '\0';
         log_event (uin, LOG_MESS, "You received instant message from %s\n%s\n",
-                   ContactFindName (uin), data);
-        M_print ("%s" COLMESS "\x1b<%s" COLNONE "\x1b>\n", tcp ? MSGTCPRECSTR : MSGRECSTR, data);
+                   ContactFindName (uin), cdata);
+        M_print ("%s" COLMESS "\x1b<%s" COLNONE "\x1b>\n", tcp ? MSGTCPRECSTR : MSGRECSTR, cdata);
     }
     /* aaron
        If we just received a message from someone on the contact list,
@@ -902,8 +904,8 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, char *data, UDWORD uin, BOOL
            it tries to write too much to the string even though I think I
            allocate the right amount. Oh well. It shouldn't be too much
            wasted space, I hope.                                                          */
-        ConvWinUnix (data);
-        strcpy (ContactFind (uiG.last_recv_uin)->LastMessage, data);
+        ConvWinUnix (cdata);
+        strcpy (ContactFind (uiG.last_recv_uin)->LastMessage, cdata);
     }
     /* end of aaron */
 }

@@ -313,28 +313,6 @@ UWORD Chars_2_Word (UBYTE * buf)
     return i;
 }
 
-/********************************************
-Converts a UDWORD to
-an intel endian character sequence 
-*********************************************/
-void DW_2_Chars (UBYTE * buf, UDWORD num)
-{
-    buf[3] = (unsigned char) ((num) >> 24) & 0x000000FF;
-    buf[2] = (unsigned char) ((num) >> 16) & 0x000000FF;
-    buf[1] = (unsigned char) ((num) >> 8) & 0x000000FF;
-    buf[0] = (unsigned char) (num) & 0x000000FF;
-}
-
-/********************************************
-Converts a UWORD to
-an intel endian character sequence 
-*********************************************/
-void Word_2_Chars (UBYTE * buf, UWORD num)
-{
-    buf[1] = (unsigned char) (((unsigned) num) >> 8) & 0x00FF;
-    buf[0] = (unsigned char) ((unsigned) num) & 0x00FF;
-}
-
 /*************************************************************************
  *        Function: log_event
  *        Purpose: Log the event provided to the log with a time stamp.
