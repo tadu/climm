@@ -11,6 +11,7 @@
 	* again a few more packet read/write functions: UIN
 	* fix wrong order that let PrefUserDir() be NULL
 	* get rid of more compatibility cruft
+	* add debian packaging stuff
 
 2002-03-04 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Fix packet position pointer size. Oooops!
