@@ -2012,8 +2012,7 @@ static JUMP_F(CmdUserAuth)
                 msg = "Please authorize my request and add me to your Contact List\n";
 /*            if (sess->type == TYPE_SERVER && sess->ver >= 8)
                 SnacCliReqauth (sess, cont->uin, msg);
- */
-            else if (sess->type == TYPE_SERVER)
+            else */ if (sess->type == TYPE_SERVER)
                 SnacCliSendmsg (sess, cont->uin, msg, MSG_AUTH_REQ);
             else
                 CmdPktCmdSendMessage (sess, cont->uin, msg, MSG_AUTH_REQ);
@@ -2026,8 +2025,7 @@ static JUMP_F(CmdUserAuth)
                 msg = "Authorization refused\n";
 /*            if (sess->type == TYPE_SERVER && sess->ver >= 8)
                 SnacCliAuthorize (sess, cont->uin, 0, msg);
- */
-            else if (sess->type == TYPE_SERVER)
+            else */ if (sess->type == TYPE_SERVER)
                 SnacCliSendmsg (sess, cont->uin, "\x03", MSG_AUTH_DENY);
             else
                 CmdPktCmdSendMessage (sess, cont->uin, "\x03", MSG_AUTH_DENY);
@@ -2038,8 +2036,7 @@ static JUMP_F(CmdUserAuth)
         {
 /*            if (sess->type == TYPE_SERVER && sess->ver >= 8)
                 SnacCliGrantauth (sess, cont->uin);
- */
-            else if (sess->type == TYPE_SERVER)
+            else */ if (sess->type == TYPE_SERVER)
                 SnacCliSendmsg (sess, cont->uin, "\x03", MSG_AUTH_ADDED);
             else
                 CmdPktCmdSendMessage (sess, cont->uin, "\x03", MSG_AUTH_ADDED);
@@ -2057,8 +2054,7 @@ static JUMP_F(CmdUserAuth)
         
 /*    if (sess->type == TYPE_SERVER && sess->ver >= 8)
         SnacCliAuthorize (sess, cont->uin, 1, NULL);
- */
-    else if (sess->type == TYPE_SERVER)
+    else */ if (sess->type == TYPE_SERVER)
         SnacCliSendmsg (sess, cont->uin, "\x03", MSG_AUTH_GRANT);
     else
         CmdPktCmdSendMessage (sess, cont->uin, "\x03", MSG_AUTH_GRANT);
