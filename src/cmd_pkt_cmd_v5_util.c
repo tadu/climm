@@ -119,8 +119,8 @@ void PacketEnqueuev5 (Packet *pak, Connection *conn)
                  PacketReadAt2 (pak, CMD_v5_OFF_VER), PacketReadAt4 (pak, CMD_v5_OFF_SESS),
                  PacketReadAt4 (pak, CMD_v5_OFF_SEQ), PacketReadAt2 (pak, CMD_v5_OFF_SEQ2),
                  CmdPktCmdName (PacketReadAt2 (pak, CMD_v5_OFF_CMD)), pak);
-        Hex_Dump (&pak->data, pak->len);
-        M_print (COLEXDENT "\r");
+        M_print  (s_dump (pak->data, pak->len));
+        M_print  (COLEXDENT "\r");
     }
 
     if (cmd != CMD_ACK)

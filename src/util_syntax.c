@@ -43,8 +43,8 @@ static const char *syntable[] = {
     "s4x2s",   "W-",
     "s4x4s",   "",
     "s4x5s",   "W-",
-    "s4x6s",   "DDW[1uWWt[2t[257D]-]-][2uWWt[5WDDCt[10001(wCwdbw)WWDDDWWWLDD]-]-][4uWWt[5DWL]-]",
-    "s4x7s",   "DDW[1uWWt[2t[257D]-]-][2uWWt[5WDDCt[10001(wCwdbw)wwdddwwwLDD]-]-][4uWWt[5DWL]-]",
+    "s4x6s",   "DDW[1uWWt[2t[257D]-]-][2uWWt[5WDDCt[10001(wCwdbw)WWDDDWWWLDDS]-]-][4uWWt[5DWL]-]",
+    "s4x7s",   "DDW[1uWWt[2t[257D]-]-][2uWWt[5WDDCt[10001(wCwdbw)wwdddwwwLDDS]-]-][4uWWt[5DWL]-]",
     "s4x11s",  "DDwuW(wCwdbw)wwdddwwwLDD",
     "s4x12s",  "DDwu",
     "s9x2s",   "",
@@ -82,6 +82,7 @@ static const char *syntable[] = {
     "peer",    "b[1bw][2gpeemsg][3dddddddd][255wwdwddDDbddddS]",
     "peemsg",  "dwwwdddw,wwL.[1DDS][26ggreet]",
     "greet",   "wddddwSdddwbdSdd",
+    "v5sp",    "WbDWWWDD",
     NULL,      NULL
 };
 

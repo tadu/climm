@@ -89,7 +89,7 @@ static void FlapChannel1 (Connection *conn, Packet *pak)
             if (PacketReadLeft (pak))
             {
                 M_print (i18n (1882, "FLAP channel 1 cmd 1 extra data:\n"));
-                Hex_Dump (pak->data + pak->rpos, PacketReadLeft (pak));
+                M_print (s_dump (pak->data + pak->rpos, PacketReadLeft (pak)));
                 break;
             }
             if (!conn->uin)

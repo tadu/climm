@@ -446,7 +446,7 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *p)
         default:
             M_printf ("%s: " COLSERVER "%04x" COLNONE "\n", 
                      i18n (1945, "Unknown Meta User response"), subtype);
-            Hex_Dump (p->data + p->rpos, p->len - p->rpos);
+            M_print  (s_dump (p->data + p->rpos, p->len - p->rpos));
             break;
     }
 }
@@ -462,7 +462,7 @@ void Display_Rand_User (Connection *conn, Packet *pak)
         return;
     }
 
-    Hex_Dump (pak->data + pak->rpos, pak->len - pak->rpos);
+    M_print (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
 
     uin = PacketRead4 (pak);
     M_printf ("%-15s %lu\n", i18n (1440, "Random User:"), uin);

@@ -710,7 +710,7 @@ static Packet *TCPReceivePacket (Connection *peer)
                 M_printf ("%s " COLINDENT COLSERVER "", s_now);
                 M_printf (i18n (1789, "Received malformed packet: (%d)"), peer->sok);
                 M_print  (COLNONE "\n");
-                Hex_Dump (pak->data, pak->len);
+                M_print  (s_dump (pak->data, pak->len));
                 M_print  (COLEXDENT "\r");
 
             }

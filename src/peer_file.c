@@ -403,7 +403,7 @@ void PeerFileDispatch (Connection *fpeer)
         default:
             M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
             M_print  (i18n (2167, "Error - unknown packet.\n"));
-            Hex_Dump (pak->data, pak->len);
+            M_print  (s_dump (pak->data, pak->len));
             PacketD (pak);
             PeerFileClose (fpeer);
     }

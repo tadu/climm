@@ -19,6 +19,7 @@
 #include "contact.h"
 #include "util_io.h"
 #include "util_str.h"
+#include "util_syntax.h"
 #include "conv.h"
 #include <string.h>
 #include <stdio.h>
@@ -109,14 +110,11 @@ void CmdPktSrvRead (Connection *conn)
         M_printf (" %04x %08x:%04x%04x %04x (%s)" COLNONE "\n",
                  pak->ver, session, seq2, seq, cmd, CmdPktSrvName (cmd));
 #if ICQ_VER == 5
-        Hex_Dump (pak->data, 3);
-        Hex_Dump (pak->data + 3, 6);
-        Hex_Dump (pak->data + 9, 12);
-        Hex_Dump (pak->data + 21, s - 21);
+        M_print  (PacketDump (pak, "gv5sp"));
 #else
-        Hex_Dump (pak->data, s);
+        M_print  (s_dump (pak->data, s));
 #endif
-        M_print (COLEXDENT "\r");
+        M_print  (COLEXDENT "\r");
     }
     if (pak->len < 21)
     {
@@ -362,8 +360,8 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             M_printf (i18n (1649, "The version was %X\t"), ver);
             M_printf (i18n (1650, "\nThe SEQ was %04X\t"), seq);
             M_printf (i18n (1651, "The size was %d\n"), pak->len - pak->rpos);
-            Hex_Dump (pak->data + pak->rpos, pak->len - pak->rpos);
-            M_print (COLNONE "\n");
+            M_print  (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
+            M_print  (COLNONE "\n");
             break;
     }
 }
@@ -412,12 +410,9 @@ static JUMP_SRV_F (CmdPktSrvMulti)
             M_printf (" %04x %08x:%04x%04x %04x (%s)" COLNONE "\n",
                      ver, session, seq2, seq, cmd, CmdPktSrvName (cmd));
 #if ICQ_VER == 5
-            Hex_Dump (pak->data, 3);
-            Hex_Dump (pak->data + 3, 6);
-            Hex_Dump (pak->data + 9, 12);
-            Hex_Dump (pak->data + 21, llen - 21);
+            M_print  (PacketDump (pak, "gv5sp"));
 #else
-            Hex_Dump (pak->data, llen);
+            M_print  (s_dump (pak->data, llen));
 #endif
             M_print (COLEXDENT "\n");
         }

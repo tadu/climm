@@ -374,52 +374,6 @@ void clrscr (void)
 /*
  * Displays a hex dump of buf on the screen.
  */
-void Hex_Dump (void *buffer, size_t len)
-{
-    int i, j;
-    unsigned char *buf = buffer;
-
-    if (!len)
-        return;
-
-    assert (len > 0);
-
-    for (i = 0; i < ((len + 15) & ~15); i++)
-    {
-        if (i < len)
-            M_printf ("%02x ", buf[i]);
-        else
-            M_print ("   ");
-        if ((i & 15) == 15)
-        {
-            M_print ("  ");
-            for (j = 15; j >= 0; j--)
-            {
-                if (i - j >= len)
-                    break;
-                if ((buf[i - j] & 0x7f) > 31)
-                    M_printf ("%c", buf[i - j]);
-                else
-                    M_print (".");
-                if (((i - j) & 3) == 3)
-                    M_print (" ");
-            }
-            M_print ("\n");
-            if (i > len)
-                return;
-            if (i > 1000)
-            {
-                M_print ("...\n");
-                return;
-            }
-        }
-        else if (i < len && (i & 7) == 7)
-            M_print ("- ");
-        else if ((i & 3) == 3)
-            M_print ("  ");
-    }
-}
-
 /*
  * Executes a program and feeds some shell-proof information data into it
  */
