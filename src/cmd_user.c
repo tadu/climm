@@ -1397,7 +1397,10 @@ static JUMP_F(CmdUserStatusWide)
     int OnIdx = 0;              /* for inserting and tells us how many there are */
     int OffIdx = 0;             /* for inserting and tells us how many there are */
     int NumCols;                /* number of columns to display on screen        */
+    int StatusLen;
     Contact *cont = NULL;
+    char *stat;
+    SESSION;
 
     if (data)
     {
@@ -1450,7 +1453,7 @@ static JUMP_F(CmdUserStatusWide)
         /* Fairly simple print routine. We check that we only print the right
            number of columns to the screen.                                    */
         M_print (COLMESSAGE);
-        for (i = 0; i < (Get_Max_Screen_Width () - strlen (i18n (1653, "Offline"))) / 2; i++)
+        for (i = 0; 2 * i + strlen (i18n (1653, "Offline")) < Get_Max_Screen_Width (); i++)
         {
             M_print ("=");
         }
@@ -1473,17 +1476,25 @@ static JUMP_F(CmdUserStatusWide)
     /* The user status for Online users is indicated by a one-character
        prefix to the nickname. Unfortunately not all statuses (statusae? :)
        are unique at one character. A better way to encode the information
-       is needed.  */
+       is needed. Our own status is shown to the right in the 'Online' headline */
     M_print (COLMESSAGE);
-    for (i = 0; i < (Get_Max_Screen_Width () - strlen (i18n (1654, "Online"))) / 2; i++)
+
+    stat = UtilStatus (sess->status);
+    StatusLen = strlen (i18n (1071, "Your status is ")) + strlen (stat) + 12;
+    for (i = 0; 2 * i + StatusLen + strlen (i18n (1654, "Online")) < Get_Max_Screen_Width (); i++)
     {
         M_print ("=");
     }
     M_print (COLCLIENT "%s" COLMESSAGE, i18n (1654, "Online"));
-    for (i += strlen (i18n (1654, "Online")); i < Get_Max_Screen_Width (); i++)
+    for (i += strlen (i18n (1654, "Online")); i + StatusLen < Get_Max_Screen_Width (); i++)
     {
         M_print ("=");
     }
+
+   /* Print our status */
+    M_print (" " MAGENTA BOLD "%10lu" COLNONE " %s%s",
+             sess->uin, i18n (1071, "Your status is "), stat);
+    
     M_print (COLNONE "\n");
     for (i = 0; i < OnIdx; i++)
     {
@@ -1511,6 +1522,7 @@ static JUMP_F(CmdUserStatusWide)
         M_print ("=");
     }
     M_print (COLNONE "\n");
+    free (stat);
     free (Online);
     if (data)
         free (Offline);
