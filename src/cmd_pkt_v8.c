@@ -115,7 +115,7 @@ void SrvCallBackReceive (Session *sess)
         {
             case 1:
             case 5:
-                if (sess->assoc && !(sess->assoc->connect & CONNECT_OK))
+                if (sess->assoc && !(sess->assoc->connect & CONNECT_OK) && (sess->assoc->flags & CONN_AUTOLOGIN))
                 {
                     printf ("Buggy: avoiding deadlock\n");
                     sess->connect &= ~CONNECT_SELECT_R;
