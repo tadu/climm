@@ -57,9 +57,9 @@ void Auto_Reply (Session *sess, UDWORD uin)
 
 void icq_sendurl (Session *sess, UDWORD uin, char *description, char *url)
 {
-    char buf[450];
+    char buf[strlen (url) + strlen (description) + 2];
 
-    sprintf (buf, "%s%c%s", url, ConvSep (), description);
+    snprintf (buf, sizeof (buf), "%s%c%s", url, ConvSep (), description);
     icq_sendmsg (sess, uin, buf, URL_MESS);
 }
 
