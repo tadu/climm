@@ -250,8 +250,9 @@ char *PacketDump (Packet *pak, const char *syntax)
                 else if (sub)
                 {
                     Packet *p;
+                    str_s tt = { pak->data + pak->rpos + 4, len, 0 };
                     
-                    p = PacketCreate (pak->data + pak->rpos + 4, len);
+                    p = PacketCreate (&tt);
                     
                     s_cat  (&t, s_dumpnd (pak->data + pak->rpos, 4));
                     s_catf (&t, " " COLDEBUG "TLV (%2lx) \"%s\"" COLNONE "\n", nr, sub);
@@ -279,7 +280,10 @@ char *PacketDump (Packet *pak, const char *syntax)
                 if (pak->len < pak->rpos + 2 + len) break;
                 s_cat  (&t, s_dumpnd (pak->data + pak->rpos, 2));
                 s_catf (&t, " " COLDEBUG "DWORD.%c  \"%s\"" COLNONE "\n", *f == '<' ? 'B' : 'L', f);
-                p = PacketCreate (pak->data + pak->rpos + 2, len);
+                {
+                    str_s tt = { pak->data + pak->rpos + 2, len, 0 };
+                    p = PacketCreate (&tt);
+                }
                 pak->rpos += len + 2;
                 if (*(tmp = PacketDump (p, ++f)))
                     s_cat  (&t, s_ind (tmp));
