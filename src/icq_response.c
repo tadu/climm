@@ -654,7 +654,7 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
     if (!~old)
     {
         if (prG->sound & SFLAG_ON_CMD)
-            EventExec (cont, prG->sound_on_cmd, 2, 0, NULL);
+            EventExec (cont, prG->sound_on_cmd, 2, status, NULL);
         else if (prG->sound & SFLAG_ON_BEEP)
             printf ("\a");
     }
@@ -681,6 +681,8 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
  */
 void IMOffline (Contact *cont, Connection *conn)
 {
+    UDWORD old;
+
     if (!cont)
         return;
     
@@ -689,6 +691,7 @@ void IMOffline (Contact *cont, Connection *conn)
 
     putlog (conn, NOW, cont->uin, STATUS_OFFLINE, LOG_OFFLINE, 0xFFFF, "");
 
+    old = cont->status;
     cont->status = STATUS_OFFLINE;
     cont->seen_time = time (NULL);
 
@@ -696,7 +699,7 @@ void IMOffline (Contact *cont, Connection *conn)
         return;
 
     if (prG->sound & SFLAG_OFF_CMD)
-        EventExec (cont, prG->sound_off_cmd, 3, 0, NULL);
+        EventExec (cont, prG->sound_off_cmd, 3, old, NULL);
     else if (prG->sound & SFLAG_OFF_BEEP)
         printf ("\a");
  
@@ -752,11 +755,9 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, UWORD type, const 
 #ifdef MSGEXEC
         if (prG->event_cmd && strlen (prG->event_cmd))
             EventExec (cont, prG->event_cmd, 1, type, cdata);
+        else
 #endif
-
-        if (prG->sound & SFLAG_CMD)
-            ExecScript (prG->sound_cmd, cont->uin, 0, NULL);
-        else if (prG->sound & SFLAG_BEEP)
+        if (prG->sound & SFLAG_BEEP)
             printf ("\a");
     }
 

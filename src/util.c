@@ -360,47 +360,6 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
 }
 
 /*
- * Displays a hex dump of buf on the screen.
- */
-/*
- * Executes a program and feeds some shell-proof information data into it
- */
-void ExecScript (char *script, UDWORD uin, long num, char *data)
-{
-    int cmdlen, rc;
-    char *mydata, *cmd, *tmp, *who;
-
-    mydata = strdup (data ? data : "");
-    who = strdup (ContactFindName (uin));
-
-    for (tmp = mydata; *tmp; tmp++)
-        if (*tmp == '\'')
-            *tmp = '"';
-    for (tmp = who; *tmp; tmp++)
-        if (*tmp == '\'')
-            *tmp = '"';
-
-    cmdlen = strlen (script) + strlen (mydata) + strlen (who) + 20;
-    cmd = (char *) malloc (cmdlen);
-
-    if (data)
-        snprintf (cmd, cmdlen, "%s '%s' %ld '%s'", script, who, num, mydata);
-    else if (uin)
-        snprintf (cmd, cmdlen, "%s '%s'", script, who);
-    else
-        snprintf (cmd, cmdlen, "%s", script);
-    rc = system (cmd);
-    if (rc)
-    {
-        M_printf (i18n (1584, "Script command '%s' failed with exit value %d.\n"),
-                 script, rc);
-    }
-    free (cmd);
-    free (mydata);
-    free (who);
-}
-
-/*
  * Executes a program and feeds some shell-proof information data into it
  */
 void EventExec (Contact *cont, const char *script, UBYTE type, UDWORD msgtype, const char *text)

@@ -168,8 +168,9 @@ void M_logo_clear ()
  */
 void M_print (const char *org)
 {
-    const char *test, *save, *temp, *str;
+    const char *test, *save, *temp, *str, *para;
     char *fstr;
+    UBYTE isline = 0, ismsg = 0, col = CXNONE;
     int i;
     int sw = Get_Max_Screen_Width () - IndentCount;
     
@@ -179,6 +180,13 @@ void M_print (const char *org)
     fstr = strdup (org);
 #endif
     str = fstr;
+    switch (ENC(enc_loc))
+    {
+        case ENC_UTF8:   para = "Â¶"; break;
+        case ENC_LATIN1:
+        case ENC_LATIN9: para = "¶";  break;
+        default:         para = "P";  break;
+    }
 
     if (first)
     {
@@ -223,10 +231,22 @@ void M_print (const char *org)
             {
                 printf ("%.*s%*s", (int) charoff (str, sw - CharCount), str, IndentCount, "");
                 str += charoff (str, sw - CharCount);
+                if (isline)
+                {
+                    printf ("%s...%s", prG->colors[CXCONTACT], prG->colors[col]);
+                    CharCount = 0;
+                    return;
+                }
                 CharCount = 0;
             }
             if (chardiff (test, str) > sw - CharCount) /* remainder doesn't fit anymore => linebreak */
             {
+                if (isline)
+                {
+                    printf ("%s...%s\n", prG->colors[CXCONTACT], prG->colors[col]);
+                    CharCount = 0;
+                    return;
+                }
                 printf ("\n%s%*s", M_getlogo (), IndentCount, "");
                 CharCount = 0;
             }
@@ -234,10 +254,39 @@ void M_print (const char *org)
             CharCount += chardiff (test, str);
             str = test;
         }
+        if (*str != 0x7f && (*str <= 0 || *str >= ' '))
+        {
+            str--;
+            continue;
+        }
+        if (isline && (*str == '\n' || *str == '\r'))
+        {
+            if (str[1])
+                printf ("%s¶..", prG->colors[CXCONTACT]);
+            printf ("%s\n", prG->colors[col]);
+            CharCount = 0;
+            return;
+        }
+        if (*str == '\n' || *str == '\r' || (*str == '\t' && !isline))
+        {
+            if (!str[1] && ismsg)
+            {
+                printf ("%s\n", prG->colors[col]);
+                CharCount = 0;
+                IndentCount = 0;
+                return;
+            }
+        }
+        else if (ismsg || isline)
+        {
+            printf ("%s%c%s", prG->colors[CXCONTACT], *str - 1 + 'A', prG->colors[col]);
+            CharCount++;
+            continue;
+        }
         switch (*str)           /* Take care of specials */
         {
             case '\b':
-                CharCount -= 1;
+                CharCount--;
                 printf ("\b");
                 break;
             case '\n':
@@ -267,14 +316,18 @@ void M_print (const char *org)
                 break;
             case '\a':
                 if (prG->sound & SFLAG_CMD)
-                    ExecScript (prG->sound_cmd, 0, 0, NULL);
+                    EventExec (NULL, prG->sound_cmd, 0, 0, NULL);
                 else if (prG->sound & SFLAG_BEEP)
                     printf ("\a");
                 break;
             case '\x1b':
+                if (isline)
+                    break;
                 switch (*++test)
                 {
                     case '<':
+                        ismsg = 1;
+                        printf ("%s", prG->colors[col = CXMESSAGE]);
                         switch (prG->flags & (FLAG_LIBR_BR | FLAG_LIBR_INT))
                         {
                             case FLAG_LIBR_BR:
@@ -310,14 +363,14 @@ void M_print (const char *org)
                         IndentCount = 0;
                         str++;
                         break;
-                    case '>':
-                        switch (prG->flags & (FLAG_LIBR_BR | FLAG_LIBR_INT))
+                    case '.':
+                        isline = 1;
+                        sw -= 3;
+                        if (sw <= CharCount)
                         {
-                            case FLAG_LIBR_INT:
-                                CharCount += IndentCount;
-                                sw += IndentCount;
-                                IndentCount = 0;
-                                break;
+                            printf ("%s\n", prG->colors[col]);
+                            CharCount = IndentCount = 0;
+                            return;
                         }
                         str++;
                         break;
@@ -350,7 +403,8 @@ void M_print (const char *org)
                 }
                 break;
             default:
-                str--;
+                printf ("%s%c%s", prG->colors[CXCONTACT], *str - 1 + 'A', prG->colors[col]);
+                
         }
     }
     free (fstr);
@@ -418,7 +472,7 @@ void M_print (char *str)
             }
         }
         else if (prG->sound & SFLAG_CMD)
-            ExecScript (prG->sound_cmd, 0, 0, NULL);
+            EventExec (NULL, prG->sound_cmd, 0, 0, NULL);
         else if (prG->sound & SFLAG_BEEP)
             printf ("\a");
     }
