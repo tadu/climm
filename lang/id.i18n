@@ -6,7 +6,7 @@
 1003:0-4-10-2
 1004:L. Budi Handoko
 1005:L. Budi Handoko
-1006:21 Naret 2003
+1006:24 Naret 2003
 1010:User sedang jauh [Pesan Otomatis]
 1011:User sedang tidak ditempat [Pesan Otomatis]
 1012:User sedang sibuk [Pesan Otomatis]
@@ -713,7 +713,7 @@
 1895:Login gagal:\n
 1896:Server menutup koneksi:\n
 1897:TLV %d tidak lengkap, panjang %ld dari %d - diabaikan.\n
-1898:Redirect ke server %s...
+1898:Redireksi ke server %s...
 1899:Permintaan keluarga tidak dikenal: %d\n
 1900:Hanya bisa dibaca.
 1901:telah mengijinkan Anda untuk menambahkan mereka ke daftar kontak Anda.\n
@@ -820,7 +820,7 @@
 2026:Cookie TCP:
 2029:Kesalahan protokol pada koneksi peer-to-peer
 2031:Koneksi terlalu sering gagal, menyerah.\n
-2032:Menjadwalkan koneki ulang v8 dalam %d detik.\n
+2032:Menjadwalkan koneksi ulang v8 dalam %d detik.\n
 2033:lahir hari ini
 2034:Membuka koneksi TCP pada %s:%ld...
 2036:Menyimpan preferensi saat ini ke disk.
@@ -868,181 +868,181 @@
 2092:Pesan TCP %s dihapus - sesi telah hilang.\n
 2093:%02d %-12s versi %d untuk %s (%lx), pada %s:%ld %s\n
 2094:conn login         Membuka koneksi server pertama.\n
-2095:conn remove <nr>   Menutuk koneksi <nr>.\n
+2095:conn remove <nr>   Menutup koneksi <nr>.\n
 2096:Koneksi %ld tidak terbuka.\n
-2097:conn select <nr>   Pilih koneksi <nr> sebagai koneksi server.\n
-2098:Koneksi %ld bukan koneksi server.\n
+2097:conn select <nr>   Pilih koneksi <nr> sebagai koneksi ke server.\n
+2098:Koneksi %ld bukan koneksi ke server.\n
 2099:Koneksi terpilih %ld (versi %d, UIN %ld) sebagai koneksi aktif.\n
-2100:conn select <uin>  Memilih koneksi dengan UIN <uin> sebagai koneksi server.\n
-2101:Removing connection %ld and its dependents completely.\n
-2102:Connection %ld is a configured connection.\n
-2103:contact show    Show server side contact list.\n
-2104:contact diff    Show server side contacts not on local contact list.\n
-2105:contact import  Add server side contact list to local contact list.\n
-2106:Last message from %s%s%s at %s:\n
-2107:No messages received from %s%s%s.\n
+2100:conn select <uin>  Memilih koneksi dengan UIN <uin> sebagai koneksi ke server.\n
+2101:Menghilangkan koneksi %ld dan tergantung total.\n
+2102:Koneksi %ld adalah koneksi yang terkonfigurasi.\n
+2103:contact show    Menampilkan daftar kontak pada sisi server.\n
+2104:contact diff    Menampilkan kontak pada sisi server tidak pada daftar kontak lokal.\n
+2105:contact import  Menambahkan daftar kontak pada sisi server ke daftar kontak lokal.\n
+2106:Pesan terakhir dari %s%s%s at %s:\n
+2107:Tidak ada pesan yang diterima dari %s%s%s.\n
 2108:otomatis
 2109:versi
 2110:peer files <nick> <file1> <as1> ... [<description>]\n
-2111:                  - Send file1 as as1, ..., with description.\n
-2112:                  - as = '/': strip path, as = '.': as is\n
+2111:                  - Mengirim file1 sebagai as1, ..., dengan deskripsi.\n
+2112:                  - sebagai = '/': menghilangkan path, sebagai = '.': sebagai\n
 2113:Status tidak diketahui '%s'.\n
-2114:The command name '%s' does not exist.\n
-2115:'%s' is not an integer.\n
-2116:No new nick name given.\n
+2114:Perintah '%s' tidak ada.\n
+2115:'%s' bukan bilangan integer.\n
+2116:Tidak ada nick name baru yang diberikan.\n
 2117:%ld ditambahkan sebagai %s.\n
 2118:Memori habis.\n
-2119:auth [grant] <nick>    - grant authorization.\n
-2120:auth deny <nick> <msg> - refuse authorization.\n
-2121:auth req  <nick> <msg> - request authorization.\n
-2122:Note: You need to 'save' to write new password to disc.\n
-2123:%sSyntax error%s: Too few arguments: '%s'\n
-2124:%sSyntax error%s: Not an integer: '%s'\n
-2126:is offline, message queued on server.\n
+2119:auth [grant] <nick>    - menerima otorisasi.\n
+2120:auth deny <nick> <msg> - menolak otorisasi.\n
+2121:auth req  <nick> <msg> - meminta otorisasi.\n
+2122:Catatan: Anda perlu untuk men-'save' untuk menyimpan password ke disk.\n
+2123:%sKesalahan sintak%s: Argumen terlalu sedikit: '%s'\n
+2124:%sKesalahan sintak%s: Bukan bilangan integer: '%s'\n
+2126:sedang offline, pesan antri di server.\n
 2127:       URL: %s %s%s%s\n
-2128: Description: %s%s%s\n
+2128:   Deskripsi: %s%s%s\n
 2129:         URL: %s%s%s\n
-2130:Composing message to %sall%s:\n
-2131:Composing message to %s%s%s:\n
-2133:Color is %s%s%s.\n
-2134:Funny messages are %s%s%s.\n
-2135:Quiet output is %s%s%s.\n
-2136:Password change was %s%s%s.\n
-2137:About info change was %s%s%s.\n
-2138:Info change was %s%s%s.\n
-2139:Other info change was %s%s%s.\n
-2140:Random chat group change was %s%s%s.\n
-2141:Search %sfailed%s.\n
-2142:Direct connection with %s not possible.\n
-2145:auth add  <nick>       - authorized add.\n
-2146:'%s' is already an alias for '%s' (%ld).\n
-2147:'%s' (%ld) is already used as a nick.\n
-2148:Added '%s' as an alias for '%s' (%ld).\n
-2149:Removed alias '%s' for '%s' (%ld).\n
-2150:Removed contact '%s' (%ld).\n
-2156:conn close <nr>    Close connection <nr>.\n
+2130:Menulis pesan kepada %sall%s:\n
+2131:Menulis pesan kepada %s%s%s:\n
+2133:Warna adalah %s%s%s.\n
+2134:Pesab kucunya %s%s%s.\n
+2135:Keluaran kosongnya adalah %s%s%s.\n
+2136:Password yang telah berubah adalah %s%s%s.\n
+2137:Informasi tentang yang berubah adalah %s%s%s.\n
+2138:Informasi yang berubah adalah %s%s%s.\n
+2139:Informasi lain yang berubah adalah %s%s%s.\n
+2140:Grup bicara acak yang berubah adalah %s%s%s.\n
+2141:Pencarian %sfailed%s.\n
+2142:Koneksi langsung dengan %s tidak mungkin dilakukan.\n
+2145:auth add  <nick>       - otorisasi menambahkan.\n
+2146:'%s' sudah sebagai alias untuk '%s' (%ld).\n
+2147:'%s' (%ld) sudah digunakan sebagai nick.\n
+2148:Menambahkan '%s' sebagai alias untuk '%s' (%ld).\n
+2149:Menghapus alias '%s' untuk '%s' (%ld).\n
+2150:Kontak yang dihapus '%s' (%ld).\n
+2156:conn close <nr>    Menutup koneksi <nr>.\n
 2157:Moldova
-2158:No file given.\n
-2159:Some files.
+2158:Tidak ada file yang diberikan.\n
+2159:Beberapa file.
 2160:peer file  <nick> <file> [<description>]\n
-2161:Receiving %ld files with together %ld bytes at speed %lx from %s.\n
-2162:Receiving file %s (%s) with %ld bytes as %s.\n
-2163:Sending file %ld at offset %ld.\n
-2164:Error writing to file.\n
-2165:The peer sent more bytes (%ld) than file length (%ld).\n
-2166:Finished receiving file.\n
-2167:Error - unknown packet.\n
-2168:File transfer #%ld (%s) dropped after %ld attempts because of timeout.\n
-2169:File transfer aborted by peer (%d).\n
-2170:Sending with speed %lx to %s.\n
-2171:Advanced
-2172:Commands for advanced features.
-2176:Displays verbose the current status of everyone on your contact list.
-2177:Displays verbose the current status of online people on your contact list.
-2179:Send all <contacts> a single file.
-2180:Send <uin> or <nick> several files.
-2181:Closes or removes connection number <nr>.
-2182:Select server connection number <nr> as current server connection.
-2183:Check all <contacts> whether they are offline or invisible.
+2161:Menerima %ld file dengan bersamaan %ld byte pada kecepatan %lx dari %s.\n
+2162:Menerima file %s (%s) dengan %ld byte sebagai %s.\n
+2163:Mengirimkan file %ld pada offset %ld.\n
+2164:Kesalahan sewaktu menulis ke file.\n
+2165:Peer mengirim byte tambahan (%ld) daripada ukuran file (%ld).\n
+2166:Selesai menerima file.\n
+2167:Kesalahan - paket tidak dikenal.\n
+2168:Transfer file #%ld (%s) dihentikan setelah %ld percobaan karena timeout.\n
+2169:Transfer file dibatalkan oleh peer (%d).\n
+2170:Mengirimkan dengan kecepatan %lx ke %s.\n
+2171:Tambahan
+2172:Perintah untuk fitur tambahan.
+2176:Menampilkan secara lengkap status saat ini dari setiap orang yang ada pada daftar kontak Anda.
+2177:Menampilkan secara lengkap status saat ini dari orang yang online pada daftar kontak Anda.
+2179:Mengirim semua <contacts> sebagai file tunggal.
+2180:Mengirim <uin> atau <nick> beberapa file.
+2181:Menutup atau menghapus nomor koneksi <nr>.
+2182:Memilih nomor koneksi server <nr> sebagai koneksi saat ini.
+2183:Cek semua <contacts> meskipun mereka offline ataupun tidak nampak.
 2184:%s%-10s%s - %s\n
-2185:Closing connection %ld.\n
-2186:Accepting file '%s' (%ld bytes).\n
-2188:You're sending data too fast - stop typing now, or the server will disconnect!\n
-2191:Instant message error: %d.\n
-2192:Capabilities:
-2194:Don't know how to open this connection type.\n
-2195:Obsolete number:
-2196:Obsolete text:
-2197:Obsolete byte
-2198:Unsuitable password '%s' - may not start with byte 0xf3.\n
-2199:  -h, --help     gives this help text\n
-2200:  -v, --verbose  set (or increase) verbosity (mostly for debugging)\n
-2201:  -b, --basedir  use given BASE dir (default: %s)\n
-2202:  -f, --config   use given configuration file (default: %s)\n
-2203:  -l, --logplace use given log file/dir (default: %s)\n
-2204:  -i, --i18n     use given locale (default: auto-detected)\n
-2205:  -c, --nocolor  disable colors\n
-2206:The server doesn't want to give us offline messages.\n
-2207:Protocol error in command to old ICQ server: %d.\n
-2208:Detected UTF-8 encoding, however, this mICQ was compiled without UTF-8 support.\n
-2209:Detected UTF-8 encoding.\n
-2210:%smICQ (Matt's ICQ clone)%s version %s%s%s (compiled on %s)\n
-2211:Your status is %s.\n
-2212:changed status to %s
-2213:logged on (%s)
-2214:Info for %s%lu%s:\n
-2215:This mICQ can't convert between SJIS or EUC and unicode.\n
-2216:This mICQ doesn't know the '%s' encoding.\n
-2217:This mICQ can't convert between '%s' and unicode.\n
+2185:Menutup koneksi %ld.\n
+2186:Menerima file '%s' (%ld bytes).\n
+2188:Anda mengirim data terlalu cepat - berhenti mengetik sekarang, atau server akan memutus hubungan!\n
+2191:Kesalahan pesan instan: %d.\n
+2192:Kemampuan:
+2194:Tidak tahu bagaimana cara membuka koneksi tipe ini.\n
+2195:Nomor absolut:
+2196:Teks absolut:
+2197:Byte absolut
+2198:Password tidak cocok '%s' - jangan diawali dengan byte 0xf3.\n
+2199:  -h, --help     memberikan teks pertolongan ini\n
+2200:  -v, --verbose  set (atau menambah) kelengkapan informasi (biasanya untuk pelacakan)\n
+2201:  -b, --basedir  menggunakan dir BASE yang diberikan (default: %s)\n
+2202:  -f, --config   menggunakan file konfigurasi yang diberikan (default: %s)\n
+2203:  -l, --logplace menggunakan file/dir log yang diberikan (default: %s)\n
+2204:  -i, --i18n     menggunakan lokalisasi yang diberikan (default: deteksi otomatis)\n
+2205:  -c, --nocolor  warna dimatikan\n
+2206:Server tidak ingin memberi kita pesan offline.\n
+2207:Kesalahan protokol pada perintah kepada server ICQ tua: %d.\n
+2208:Terdeteksi pengkodean UTF-8, bagaimanapun juga, mICQ ini dkompile tanpa dukungan UTF-8.\n
+2209:Terdeteksi pengkodean UTF-8.\n
+2210:%smICQ (Matt's ICQ clone)%s versi %s%s%s (dikompilasi pada %s)\n
+2211:Status Anda adalah %s.\n
+2212:berubah status menjadi %s
+2213:masuk (%s)
+2214:Info untuk %s%lu%s:\n
+2215:mICQ ini tidak dapat mengkonversi antara SJIS atau EUC dan unicode.\n
+2216:mICQ ini tidak mengetahui pengkodean '%s'.\n
+2217:mICQ ini tidak dapat mengkonversi antara '%s' dan unicode.\n
 2218:UIN: %s\n
-2220:several
-2221:Removed temporary contact '%s' (%ld).\n
-2222:Script command '%s' failed: %s (%d).\n
-2223:Opening remote control FIFO at %s...
+2220:beberapa
+2221:Menghapus kontak sementara '%s' (%ld).\n
+2222:Perintah skrip '%s' gagal: %s (%d).\n
+2223:Membuka remote control FIFO pada %s...
 2225:remote control
-2226:Couldn't create FIFO
-2227:Couldn't open FIFO
-2228:Couldn't set FIFO nonblocking
-2229:Refusing file request '%s' (%ld bytes): %s.\n
-2230:Refusing chat request (%s/%s) from %s.\n
-2231:File transfer '%s' rejected by peer: %s.\n
-2232:requests authorization: %s%s\n
-2233:refused authorization: %s%s\n
-2234:Message %s discarded - lost session.\n
-2235:No nick name given.\n
-2236:Information for %s%s%s (%ld):\n
+2226:Tidak dapat membuat FIFO
+2227:Tidak dapat membuka FIFO
+2228:Tidak dapat men-set FIFO nonblocking
+2229:Menolak permintan file '%s' (%ld byte): %s.\n
+2230:Menolak permintaan bicara (%s/%s) dari %s.\n
+2231:Transfer file '%s' ditolak oleh peer: %s.\n
+2232:meminta otorisasi: %s%s\n
+2233:otorisasi yang ditolak: %s%s\n
+2234:Pesan %s dihilangkan - sesi telah hilang.\n
+2235:Tidak ada nick name yang diberikan.\n
+2236:Informasi untuk %s%s%s (%ld):\n
 2237:Webaware:
-2238:Hide IP:
-2239:Unknown more:
-2240:No contact group given.\n
-2241:Added '%s' to contact group '%s'.\n
-2242:Imported %d new contacts, added %d times to a contact group.\n
-2243:Removed contact '%s' from group '%s'.\n
-2244:Contact group '%s' already has contact '%s' (%ld).\n
-2245:Added contact group '%s'.\n
-2246:Contact '%s' is not in group '%s'.\n
-2247:Couldn't load meta data for '%s' (%ld).\n
-2248:Saved meta data for '%s' (%ld).\n
-2249:Couldn't save meta data for '%s' (%ld).\n
-2250:Number '%s' is not of the format +<countrycode><cellprovider><number>.\n
-2251:Error:
-2252:A beep is generated by %sbeep%sing.\n
-2253:A beep is generated by running the %sevent%s script.\n
-2254:A beep is never generated.
-2255:A beep for oncoming contacts is always generated by running the %sevent%s script.\n
-2256:A beep for offgoing contacts is always generated by running the %sevent%s script.\n
-2257:Encoding:
-2258:No pending incoming file transfer request for %s with (sequence %ld) found.\n
-2259:requests file transfer '%s' of %ld bytes (sequence %ld).\n
-2260:Please try the getauto command instead.\n
-2261:Hermit is %s%s%s.\n
-2262:Interpreting a delete character as backspace is %s%s%s.\n
-2263:Logging is %s%s%s.\n
-2264:Logging of status changes is %s%s%s.\n
-2265:Automatic replies are %s%s%s.\n
-2266:Having the last nick in the prompt is %s%s%s.\n
-2267:Automatic saves are %s%s%s.\n
-2268:Automatic fingering of new UINs is %s%s%s.\n
+2238:Sembunyikan IP:
+2239:Tidak diketahui lainnya:
+2240:Tidak ada grup kontak yang diberikan.\n
+2241:Ditambahkan '%s' ke grup kontak '%s'.\n
+2242:Ditambahkan %d kontak baru, ditambahkan %d kali ke grup kontak.\n
+2243:Menghapus kontak '%s' dari grup '%s'.\n
+2244:Grup kontak '%s' sudah memiliki kontak '%s' (%ld).\n
+2245:Ditambahkan grup kontak '%s'.\n
+2246:Kontak '%s' tidak di dalam grup '%s'.\n
+2247:Tidak dapat memuat meta data untuk '%s' (%ld).\n
+2248:Telah disimpan meta data untuk '%s' (%ld).\n
+2249:Tidak dapat menyimpan meta data untuk '%s' (%ld).\n
+2250:Nomor '%s' tidak merupakan format +<countrycode><cellprovider><number>.\n
+2251:Kesalahan:
+2252:Beep dihasilkan oleh %sbeep%sing.\n
+2253:Beep di hasilkan dari eksekusi skrip %sevent%s.\n
+2254:Beep tidak pernah dihasilkan.
+2255:Beep untuk kontak yang datang selalu dihasilkan oleh skrip %sevent%s yang bekerja.\n
+2256:Beep untuk kontak yang pergi selalu dihasilkan oleh skrip %sevent%s yang bekerja.\n
+2257:Pengkodean:
+2258:Tidak ada permintaan transfer file masuk yang ditunda untuk %s dengan (urutan %ld) ditemukan.\n
+2259:permintaan transfer file '%s' dari %ld bytes (urutan %ld).\n
+2260:Tolong coba perintah getauto sebagai gantinya.\n
+2261:Hermit adalah %s%s%s.\n
+2262:Penerjemahan karakter delete sebagai backspace adalah %s%s%s.\n
+2263:Status login %s%s%s.\n
+2264:Perubahan status login menjadi %s%s%s.\n
+2265:Jawaban otomatis %s%s%s.\n
+2266:Menggunakan nick terakhir pada prompt %s%s%s.\n
+2267:Penyimpanan otomatisnya %s%s%s.\n
+2268:Finger otomatis dari UIN baru adalah %s%s%s.\n
 2269:break
-2270:simpel
+2270:simple
 2271:indent
 2272:smart
 2273:cycle
 2274:cycleall
-2275:Tab style is %s%s%s.\n
+2275:Gaya Tab adalah %s%s%s.\n
 2276:complete
-2277:    hermit:     ignore all non-contacts.\n
-2278:    delbs:      interpret delete characters as backspace.\n
-2279:    log:        do logging.\n
-2280:    logonoff:   also log status changes.\n
-2281:    auto:       send auto-replies.\n
-2282:    uinprompt:  have the last nick in the prompt.\n
-2283:    autosave:   automatically save the micqrc.\n
-2284:    autofinger: automatically finger new UINs.\n
-2285:    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n
-2286:    tabs:       style for tab-handling: simple, cycle, cycleall.\n
-2287:    silent:     suppress some output: off, on, complete.\n
-2288:Indentation style is %s%s%s.\n
+2277:    hermit:     mengabaikan semua yang bukan kontak.\n
+2278:    delbs:      menterjemahkan karakter delete sebagai backspace.\n
+2279:    log:        lakukan pencatatan.\n
+2280:    logonoff:   juga catat perubahan status.\n
+2281:    auto:       kirim jawaban otomati.\n
+2282:    uinprompt:  menggunakan nick terakhir pada prompt.\n
+2283:    autosave:   otomatis menyimpan micqrc.\n
+2284:    autofinger: otomatis finger UIN baru.\n
+2285:    linebreak:  gaya untuk pesan berbaris: simple, break, indent, smart.\n
+2286:    tabs:       gaya untuk menangani tab: simple, cycle, cycleall.\n
+2287:    silent:     menghilangkan beberapa keluaran: off, on, complete.\n
+2288:Gaya indentasi %s%s%s.\n
 2289:»»»
 2290:«««
 2291:>>»
@@ -1051,22 +1051,23 @@
 2294:===
 2295:>>>
 2296:<<<
-2297:Alias to what?\n
-2298:Remove which alias?\n
-2299:Alias doesn't exist.\n
-2300:Set an alias or list current aliases.
-2301:Delete an alias.
-2302:Too many levels of alias expansion; probably an infinite loop.\n
-2303:Invalid character 0x%x in alias name.\n
-2304:Get automatic reply from all <contacts> for current status, away, not available, do not disturb, occupied, or free for chat.
-2305:Handle meta data of contacts.
-2306:Request server side contact list and show all or new contacts or import.
-2307:Displays the current status of online people on your contact list, sorted by contact group.
-2308:Displays the current status of everyone on your contact list, sorted by contact group.
-2309:Displays verbose the current status of online people on your contact list, sorted by contact group.
-2310:Displays verbose the current status of everyone on your contact list, sorted by contact group.
-2311:Adds <uin> as <new nick>, or add alias <new nick> for <uin> or <nick>.
-2312:Remove all aliases in <contacts>, removes contact if 'all' is given.
-2313:Grant, deny, request or acknowledge authorization from/to <contacts> to you/them to their/your contact list.
-2314:These are advanced commands. Be sure to have read the manual pages for complete information.\n
+2297:Alias menjadi apa?\n
+2298:Hapus alias yang mana?\n
+2299:Alias tidak ada.\n
+2300:Pasang alias atau menampilkan daftar alias saat ini.
+2301:Hapus alias.
+2302:Terlalu banyak level dari pengembangan alias; mungkin loop yang tak terhingga.\n
+2303:Karakter tidak sesuai 0x%x pada nama alias.\n
+2304:Mendapatkan jawaban otomatis dari semua <contacts> untuk status saat ini, jauh, tidak ditempat, jangan diganggu, sibuk, atau bebas untuk bicara.
+2305:Menangani meta data dari kontak.
+2306:Meminta daftar kontak pada sisi server dan menampilkan semua atau kontak baru atau penambahan.
+2307:Menampilkan status saat ini dari orang yang online pada daftar kontak Anda, diurutkan dengan
+grup kontak.
+2308:Menampilkan status saat ini dari semua orang yang ada pada daftar kontak Anda, diurutkan dengan grup kontak.
+2309:Menampilkan secara lengkap informasi status saat ini dari orang yang online pada daftar kontak Anda, diurutkan dengan grup kontak.
+2310:Menampilkan secara lengkap informasi status saat ini dari semua orang yang ada pada daftar kontak Anda, diurutkan dengan grup kontak.
+2311:Menambahkan <uin> sebagai <new nick>, atau menambah alias <new nick> untuk <uin> atau <nick>.
+2312:Hapus semua alias pada <contacts>, hapus kontak jika 'all' diberikan.
+2313:Menerima, menolak, meminta atau mengetahui otorisasi dari/kepada <contacts> ke Anda/mereka ke daftar kontak mereka/Anda.
+2314:Berikut ini adalah perintah tambahan. Pastikan telah membaca halaman manual untuk informasi lengkap.\n
 2315:Tidak dapat melihat status dari %s - terlalu banyak pengamat.\n
