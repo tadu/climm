@@ -396,7 +396,10 @@ static JUMP_SNAC_F(SnacSrvMotd)
     SnacCliRatesrequest (event->sess);
     SnacCliReqinfo      (event->sess);
     if (event->sess->flags & CONN_WIZARD)
+    {
+        QueueEnqueueData (event->sess, QUEUE_REQUEST_ROSTER, 0, 3, 0x7fffffffL, NULL, NULL, NULL);
         SnacCliReqroster (event->sess);
+    }
     SnacCliReqlocation  (event->sess);
     SnacCliBuddy        (event->sess);
     SnacCliReqicbm      (event->sess);
