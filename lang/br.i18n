@@ -86,8 +86,17 @@
 #085:on
 #086:off
 #087:Ignoring garbage after number.
-#088:default
+#088:Enter UIN or 0 for new UIN: #
 #089:Unloaded translation.
+#090:Enter password : 
+#091:¶Must enter password!¶
+#092:¶Reenter password to verify: 
+#093:¶Passwords did not match reenter¶
+#094:¶SOCKS5 server hostname or IP (type 0 if you don't want to use this) : 
+#095:SOCKS5 port (in general 1080) : 
+#096:SOCKS5 username (type 0 if you don't need authentification) : 
+#097:SOCKS5 password : 
+#098:©4"No_Log" is deprecated.¶Use "LogType 0" Instead.¶©0
 #099:Unknown language.
 100:Não especificado
 101:Árabe
@@ -177,6 +186,16 @@
 #185:Technical
 #186:University Student
 #187:Web Building
+#188:©1Unrecognized command in rc file : %s, ignored.©0¶
+#189:UIN = %ld¶
+#190:port = %ld¶
+#191:passwd = %s¶
+#192:server = %s¶
+#193:status = %ld¶
+#194:# of contacts = %d¶
+#195:UIN of contact[0] = %ld¶
+#196:Message_cmd = %s¶
+#197:Password Change was ©2%s©0.¶
 #198:Other Services
 #199:Unknown country
 200:Não informado
@@ -372,6 +391,13 @@
 390:Zaire
 391:Zambia
 392:Zimbabwe
+#393:successful
+#394:unsuccessful
+#395:About info Change was ©2%s©0.¶
+#396:Info Change was ©2%s©0.¶
+#397:Other Info Change was ©2%s©0.¶
+#398:Search ©2failed©0.¶
+#399:Unknown Meta User response ©1%04X©0¶
 400:		Mostra informação disponível localmente sobre o usuário¶
 401:		Atualiza informações de usuário adicionais¶
 402:		Atualiza suas informações de usuário.¶
@@ -412,6 +438,8 @@
 437:		Muda seu estado para Invisible (invisível).¶
 438:		Atualiza sua informação básica (email, nick, etc.)¶
 439:		Configura seu grupo de usuários aleatórios.¶
+#440:Random User :	%d¶
+#441:IP             :	%d.%d.%d.%d : 
 442:Escolha um dos tópicos de ajuda abaixo.
 443:Comandos relacionados ao mICQ e suas configurações.
 444:Comandos para achar outros usuários.
@@ -421,6 +449,10 @@
 448:Mensagem
 449:Usuário
 450:Conta
+#451:IP2            :	%d.%d.%d.%d¶
+#452:Status        :	
+#453:¶TCP version :	%d	
+#454:Connection  :	%s
 #455:Art               
 #456:Cars              
 #457:Celebrity Fans    
@@ -459,6 +491,12 @@
 #490:70's              
 #491:80's              
 #492:50's              
+#493:Peer-to-Peer
+#494:Server Only
+#495:No Random User Found
+#496::\a¶Date %d/%d/%d	%d:%02d UTC¶
+#497:Type : %d 	 Len : %d¶
+#498:¶The IP address is %u.%u.%u.%u¶
 #499:Other             
 500:Apelido      : 
 501:Nome         : 
@@ -518,3 +556,206 @@
 555:Escolha seu novo Sobrenome : 
 556:Escolha seu novo Endereço de email : 
 557:Você quer que usuários Mirabilis tenham que pedir sua autorização? : 
+#558:The "real" IP address is %u.%u.%u.%u¶
+#559:Peer-to-Peer mode
+#560:Server Only Communication.
+#561:TCP ICQ version : %d¶
+#562:©1Info for %ld¶
+#563:Nick Name :	%s¶
+#564:First name :	%s¶
+#565:Last name :	%s¶
+#566:Email Address :	%s¶
+#567:No authorization needed.©0 
+#568:Must request authorization.©0 
+#569:©1More Info for %ld¶
+#570:City            :	%s¶
+#571:Country        :	%s¶
+#572:Country Code :	%d¶
+#573:Time Zone     :	GMT %+d¶
+#574:State          :	%s¶
+#575:Age             :	%d¶
+#576:Age             :	Not Entered¶
+#577:Sex             :	Male¶
+#578:Sex             :	Female¶
+#579:Sex             :	Not specified¶
+#580:Phone Number :	%s¶
+#581:Home Page     :	%s¶
+#582:About          :¶%s
+#583:©1User found %ld¶
+#584:Warning! Script command '%s' failed with exit value %d¶
+#585:Ack!!!!!!!  Bad packet
+#586:©4¶%s©0 has added you to their contact list.¶
+#587:First name     : ©3%s©0¶
+#588:Last name      : ©3%s©0¶
+#589:Email address : ©3%s©0¶
+#590:©4¶%s©0 has requested your authorization to be added to their contact list.¶
+#591:Reason : ©3%s©0¶
+#592:<%s> emailed you a message:¶
+#593:<%s> send you a web message:¶
+#594:        URL: %s©3%s©0¶
+#595:¶Contact List.¶©3============================================¶©0%d Contacts¶
+#596:[SOCKS] Can't find hostname: %s¶
+#597:[SOCKS] Socket creation failed¶
+#598:[SOCKS] Connection refused¶
+#599:[SOCKS] Authentication method incorrect¶
+#600:[SOCKS] Authorization failure¶
+#601:[SOCKS] General SOCKS server failure¶
+#602:Cmd : %04X	
+#603:Ver : %04X	
+#604:Seq : %08X	
+#605:Ses : %08X¶
+#606:Got a bad session ID %08X with CMD %04X ignored.¶
+#607:Usage: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]¶
+#608:        -v   Turn on verbose Mode (useful for Debugging only)¶
+#609:        -f   specifies an alternate Config File (default: ~/.micqrc)¶
+#610:        -l   specifies an alternate LogFile¶
+#611:        -?   gives this help screen¶¶
+#612:This program was made without any help from Mirabilis or their consent.¶
+#613:No reverse engineering or decompilation of any Mirabilis code took place to make this program.¶
+#614:The config file for this session is "%s"¶
+#615:The logging directory for this session is "%s"¶
+#616:Started BeOS InputThread¶\r
+#617:Memory exhausted!!\a¶
+#618:¶Total entries %d¶
+#619:SEQ = %04x	CMD = %04x	attempts = %d	len = %d¶
+#620:¶Removed message with SEQ %04X CMD 
+#621: from resend queue because of ack.¶
+#623:¶Doubled packet %04X¶
+#624:¶Resending message with SEQ num %04x.	CMD 
+#625:(Attempt #%d.)
+#626:¶Discarding message to 
+#627: after %d send attempts.  Message content:¶
+#628: Description: ©3%s©0¶
+#629: URL        : ©3%s©0 
+#630:¶Discarded a 
+#631: packet.
+#632:¶\aConnection unstable. Exiting....
+#633:ACK!!! %d¶
+#634:¶Send Keep_Alive packet to the server¶
+#635:You have encounterd a bug in my code :( I now own you a beer!¶Greetings Fryslan!¶
+#636:[ Sent auto-reply message to %d(%d)]¶
+#637:¶Packet Number %d¶
+#638:¶The SEQ was %04X¶
+#639:The new UIN is %ld!¶
+#640:Failed to update info.¶
+#641:User info successfully updated.¶
+#642:IP
+#643:Acknowleged SRV_X1 0x021C Done Contact list?¶
+#644:Acknowleged SRV_X2 0x00E6 Done old messages?¶
+#645:©3You entered an incorrect password.©0¶
+#646:©3Server is busy please try again.¶Trying again...¶
+#647: Type = %04x	
+#648: ©2The response was %04X	
+#649:The version was %X	
+#650:¶The SEQ was %04X	
+#651:The size was %d¶
+#652:Insuffificient memory to display a wide Contact List.¶
+#653:Offline
+#654:Online
+#655:Enter the Users E-mail address : 
+#656:Enter the Users Nick : 
+#657:Enter The Users First Name : 
+#658:Enter The Users Last Name : 
+#659:Message sent!¶
+#660:Invalid Command: %s¶
+#661:Shell commands have been disabled.¶
+#662:Color is ©3on©0.¶
+#663:Color is ©3off©0.¶
+#664:Composing message to ©1all©0:¶
+#665:%s not recognized as a nick name
+#666:Unignored %s!¶
+#667:Ignoring %s!¶
+#668:©1Must specify a nick name©0¶
+#669:%s added.¶
+#670:Invisible to %s now.¶
+#671:Visible to %s now.¶
+#672:'s IP address is 
+#673:	The port is %d¶
+#674:	The port is unknown¶
+#675:Need uin to send to
+#676:Need uin to send to¶
+#677:%s not recognized as a nick name¶
+#678:Need URL please.¶
+#679:Sorry saving your personal reply messages went wrong!¶
+#680:Your personal settings have been saved!¶
+#681:Last %d people you talked to:¶
+#682:You have received messages from:¶
+#683:Unknown Contact: %s¶
+#684:%s is not a known Contact¶
+#685:Last message from ©4%s©0:¶
+#686:No messages received from ©4%s©0¶
+#687:Micq has been running for 
+#688:©3%02d ©0days, 
+#689:©3%02d ©0hours, 
+#690:©3%02d ©0minutes, 
+#691:©3%02d ©0seconds.¶
+#692:Contacts ©3%d©0 / %d¶
+#693:Packets Sent : ©3
+#694:%d©0	Packets Recieved : ©3%d©0	
+#695:Lag : ©3
+#697:Distinct Packets Sent : ©3
+#698:%d©0	Distinct Packets Recieved : ©3%d©0¶
+#699:Must give a valid uin/nickname¶
+#700:%s is not a valid user in your list.¶
+#701:IP : %d.%d.%d.%d : %d¶
+#702:TCP Version : %d	%s¶
+#703:©2Status modes: ¶
+#704:©2Groups: ¶
+#705:General                    1¶
+#706:Romance                    2¶
+#707:Games                      3¶
+#708:Students                   4¶
+#709:20 something               6¶
+#710:30 something               7¶
+#711:40 something               8¶
+#712:50+                        9¶
+#713:Man chat requesting women 10¶
+#714:Woman chat requesting men 11¶
+#715:Micq                      49 (might not work but try it)
+#716:None                      -1¶
+#717:©2	! as the first character of a command will execute¶
+#718:©2	a shell command (e.g. "!ls"  "!dir" "!mkdir temp")©0¶
+#719:©3uptime		Shows how long Micq has been running.¶©0
+#720:©2	uin can be either a number or the nickname of the user.¶
+#721:©2	Sending a blank message will put the client into multiline mode.¶	Use . on a line by itself to end message.¶
+#722:	Use # on a line by itself to cancel the message.©0¶
+#723:%s's IP address is 
+#724:Automatic replies are %s¶
+#725:On
+#726:Off
+#727:The Do not disturb message is: %s¶
+#728:The Away message is          : %s¶
+#729:The Not available message is : %s¶
+#730:The Occupied message is      : %s¶
+#731:The Invisible message is     : %s¶
+#732:Automatic replies are on.¶
+#733:Automatic replies are off.¶
+#734:Sorry wrong syntax, can't find a status somewhere.\r¶
+#735:Must give a message.¶
+#736:Sorry wrong syntax. Read tha help man!¶
+#737:Automatic reply setting¶
+#738:Need a command to alter!¶
+#739:Composing message to ©4%s©0:¶
+#740:Composing message to ©2%d©0:¶
+#741:Must receive a message first¶
+#742:Must write one message first¶
+#743:Keep Alive
+#744:Secondary Keep Alive
+#745:Contact List
+#746:Invisible List
+#747:Visible List
+#748:Random Search
+#749:Set Random
+#750:Delete Server Messages
+#751:Finish Login
+#752:Login
+#753:Send Message
+#754:Info Request
+#755:Extended Info Request
+#756:¶Creating Connection...¶
+#757:Couldn't establish connection¶
+#758:Sending Request...¶
+#759:Waiting for response....¶
+#760:¶Your new UIN is %s%ld%s!¶
+#761:unknown
+#762:Ack!!!!!!  %d\a¶
