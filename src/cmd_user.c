@@ -1745,7 +1745,7 @@ static JUMP_F(CmdUserStatusDetail)
         cg = conn->contacts;
         for (j = 0; (cont = ContactIndex (cg, j)); j++)
             if (~cont->flags & CONT_TEMPORARY && ~cont->flags & CONT_ALIAS)
-                if(!ContactFind (tcg, 0, cont->uin, NULL, 0))
+                if (!ContactFind (tcg, 0, cont->uin, NULL, 0))
                     ContactAdd (tcg, cont);
         for (i = 0; (cg = ContactGroupIndex (i)); i++)
             if (cg->serv == conn && cg != conn->contacts && cg != tcg)
@@ -1798,6 +1798,8 @@ static JUMP_F(CmdUserStatusDetail)
     for (k = -1; (k == -1) ? (tcg ? (cg = tcg) : cg) : (cg = ContactGroupIndex (k)); k++)
     {
         if (k != -1 && (cg == conn->contacts || cg == tcg))
+            continue;
+        if (cg->serv != conn)
             continue;
 #ifdef CONFIG_UNDERLINE
         l = 0;

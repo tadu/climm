@@ -1570,6 +1570,11 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
                 enc = remenc;
                 icqenc = 0;
             }
+            if (type != 1)
+            {
+                icqenc = type;
+                enc = ENC_LATIN9;
+            }
 
             p = ConvFromUTF8 (text, enc, &len);
             if (len > 450)
@@ -1579,10 +1584,10 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
 
             PacketWriteTLV     (pak, 2);
             PacketWriteTLV     (pak, 1281);
-            if (icqenc == 0x20000)
+//            if (icqenc == 0x20000)
                 PacketWriteB2  (pak, 0x0106);
-            else
-                PacketWrite1   (pak, 0x01);
+//            else
+//                PacketWrite1   (pak, 0x01);
             PacketWriteTLVDone (pak);
             PacketWriteTLV     (pak, 257);
             PacketWriteB4      (pak, icqenc);
