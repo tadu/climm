@@ -417,7 +417,7 @@
 1417:This command allows you to alter your command set on the fly.
 1418:Set the verbosity level, or display verbosity level.
 1419:Clears the screen.
-1420:Switches beeping when receiving new messages on or off, sets a command for this action or displays current state of this option.
+1420:Switches beeping when receiving new messages on or off, sets a command for this event or displays current state of this option.
 1421: 
 1422:Logs off and quits.
 1423:Displays your autoreply status.
@@ -1037,8 +1037,8 @@
 2037:Open or close a peer-to-peer connection, or disable using peer-to-peer connections for uin|nick.
 2038:Opens connection number nr.
 2039:Sends a message to a cell phone.
-2040:Switches beeping for incoming contacts on or off, sets a command for this action or displays current state of this option.
-2041:Switches beeping for offgoing contacts on or off, sets a command for this action or displays current state of this option.
+2040:Switches beeping for incoming contacts on or off, sets a command for this event or displays current state of this option.
+2041:Switches beeping for offgoing contacts on or off, sets a command for this event or displays current state of this option.
 2042:Displays a list of online people on your contact list in a screen wide format.
 2043:Remove contact from your contact list.
 2044:Set or clear an option.

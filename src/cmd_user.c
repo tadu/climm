@@ -296,13 +296,13 @@ JUMP_F(CmdUserHelp)
                  i18n (1419, "Clears the screen."));
         M_print (COLMESS "%s [%s|%s|<command>]" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("sound"), i18n (1085, "on"), i18n (1086, "off"),
-                 i18n (1420, "Switches beeping when receiving new messages on or off, sets a command for this action or displays current state of this option."));
+                 i18n (1420, "Switches beeping when receiving new messages on or off, sets a command for this event or displays current state of this option."));
         M_print (COLMESS "%s [%s|%s|<command>]" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("soundonline"), i18n (1085, "on"), i18n (1086, "off"),
-                 i18n (2040, "Switches beeping for incoming contacts on or off, sets a command for this action or displays current state of this option."));
+                 i18n (2040, "Switches beeping for incoming contacts on or off, sets a command for this event or displays current state of this option."));
         M_print (COLMESS "%s [%s|%s|<command>]" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("soundoffline"), i18n (1085, "on"), i18n (1086, "off"),
-                 i18n (2041, "Switches beeping for offgoing contacts on or off, sets a command for this action or displays current state of this option."));
+                 i18n (2041, "Switches beeping for offgoing contacts on or off, sets a command for this event or displays current state of this option."));
         M_print (COLMESS "%s [<timeout>]" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("autoaway"),
                  i18n (1767, "Toggles auto cycling to away/not available."));
@@ -336,7 +336,7 @@ JUMP_F(CmdUserHelp)
         M_print (COLMESS "%s open|login <nr>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("conn"),
                  i18n (2038, "Opens connection number nr."));
-        M_print (COLMESS "%s color|funny|quiet<option> <on|off>" COLNONE "\n\t\x1b«%s\x1b»\n",
+        M_print (COLMESS "%s color|funny|quiet <on|off>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("set"),
                  i18n (2044, "Set or clear an option."));
         M_print ("  " COLCLIENT "\x1b«%s\x1b»" COLNONE "\n",
