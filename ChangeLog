@@ -1,5 +1,5 @@
 
-2002-04-28 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+2002-04-30 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Some logging/output cleanup (Peter Backes)
 	* Implemented SRV_ADDEDYOU handling (Peter Backes)
 	* Small improvements to non-ANSI_COLOR part of mreadline (Peter Backes)
@@ -7,7 +7,8 @@
 	* New registration wizard.
 	* A few interface fixes.
 	* type-4 and (hopefully) type-2 messages.
-	* SOCKS framework.
+	* SOCKS5 for the server connection.
+	* Part 1 of info request (Peter Backes)
 
 2002-04-27 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Fix insert-char-deletes-2-other-chars-bug (switched arguments)

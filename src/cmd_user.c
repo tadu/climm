@@ -429,7 +429,7 @@ JUMP_F(CmdUserInfo)
 {
     char *arg1;
     UDWORD uin;
-    SESSION(TYPE_SERVER_OLD);
+    SESSION(TYPE_SERVER | TYPE_SERVER_OLD);
 
     arg1 = strtok (args, "");
     if (arg1 == NULL)
@@ -456,7 +456,10 @@ JUMP_F(CmdUserInfo)
     }
     M_print (i18n (765, "%s has UIN %d."), arg1, uin);
     M_print ("\n");
-    CmdPktCmdMetaReqInfo (sess, uin);
+    if (sess->ver > 6)
+        SnacCliMetareqinfo (sess, uin);
+    else
+        CmdPktCmdMetaReqInfo (sess, uin);
 /*   send_ext_info_req( sok, uin );*/
     return 0;
 }
@@ -1810,7 +1813,7 @@ JUMP_F(CmdUserRem)
  */
 JUMP_F(CmdUserRInfo)
 {
-    SESSION(TYPE_SERVER_OLD);
+    SESSION(TYPE_SERVER | TYPE_SERVER_OLD);
 
     M_print (i18n (672, "%s's IP address is "), ContactFindName (uiG.last_rcvd_uin));
     Print_IP (uiG.last_rcvd_uin);
@@ -1818,7 +1821,11 @@ JUMP_F(CmdUserRInfo)
         M_print (i18n (673, "\tThe port is %d\n"), (UWORD) Get_Port (uiG.last_rcvd_uin));
     else
         M_print (i18n (674, "\tThe port is unknown\n"));
-    CmdPktCmdMetaReqInfo (sess, uiG.last_rcvd_uin);
+    
+    if (sess->ver > 6)
+        SnacCliMetareqinfo (sess, uiG.last_rcvd_uin);
+    else
+        CmdPktCmdMetaReqInfo (sess, uiG.last_rcvd_uin);
 /*  send_ext_info_req( sok, uiG.last_rcvd_uin );*/
     return 0;
 }
@@ -1895,9 +1902,6 @@ JUMP_F(CmdUserURL)
                 if (!arg2)
                     arg2 = "";
                 icq_sendurl (sess, uin, arg1, arg2);
-                Time_Stamp ();
-                M_print (" " COLCONTACT "%10s" COLNONE " " MSGSENTSTR "%s\n",
-                         ContactFindName (uiG.last_sent_uin), MsgEllipsis (arg1));
             }
             else
             {

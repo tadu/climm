@@ -277,6 +277,14 @@ UDWORD PacketReadB4 (Packet *pak)
     return data;
 }
 
+void PacketReadSkip (Packet *pak, UWORD len)
+{
+    assert (pak);
+    assert (pak->rpos + len < PacketMaxData);
+    
+    pak->rpos += len;
+}
+
 void PacketReadData (Packet *pak, char *buf, UWORD len)
 {
     assert (pak);
@@ -286,7 +294,7 @@ void PacketReadData (Packet *pak, char *buf, UWORD len)
     pak->rpos += len;
 }
 
-const char *PacketReadStrB (Packet *pak)
+char *PacketReadStrB (Packet *pak)
 {
     UWORD len;
     char *str;

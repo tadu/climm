@@ -421,7 +421,8 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
     TLV *tlv;
     UDWORD uin;
     int i, len, type, t;
-    const char *text;
+    char *text;
+    const char *txt;
 
     pak = event->pak;
 
@@ -476,7 +477,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
             M_print (" " CYAN BOLD "%10s" COLNONE " ",
                      ContactFindName (uin));
             Do_Msg (event->sess, NORM_MESS, len - 4, text + 4, uin, 0);
-            free ((char *)text);
+            free (text);
 
             /* TLV 1, 2(!), 3, 4, f ignored */
             if (prG->sound & SFLAG_CMD)
@@ -521,12 +522,12 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
                    PacketRead1 (p); /* FLAGS */
             PacketReadB2 (p); /* UNKNOWN */
             PacketReadB2 (p); /* UNKNOWN */
-            text = PacketReadStrN (p);
+            txt = PacketReadStrN (p);
             /* FOREGROUND / BACKGROUND ignored */
             
             Time_Stamp ();
             M_print (" " CYAN BOLD "%10s" COLNONE " ", ContactFindName (uin));
-            Do_Msg (event->sess, type, strlen (text), text, uin, 0);
+            Do_Msg (event->sess, type, strlen (txt), txt, uin, 0);
 
             /* TLV 1, 2(!), 3, 4, f ignored */
             if (prG->sound & SFLAG_CMD)
@@ -539,12 +540,12 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
             uin  = PacketRead4 (p);
             type = PacketRead1 (p);
                    PacketRead1 (p);
-            text = PacketReadStrN (p);
+            txt  = PacketReadStrN (p);
             /* FOREGROUND / BACKGROUND ignored */
             
             Time_Stamp ();
             M_print (" " CYAN BOLD "%10s" COLNONE " ", ContactFindName (uin));
-            Do_Msg (event->sess, type, strlen (text), text, uin, 0);
+            Do_Msg (event->sess, type, strlen (txt), txt, uin, 0);
 
 
             /* TLV 1, 2(!), 3, 4, f ignored */
@@ -599,6 +600,25 @@ JUMP_SNAC_F(SnacSrvAddedyou)
     /* Not using Do_Msg/USER_ADDED_MESS here because it's way too
      * v5 specific.  --rtc
      */
+}
+
+/*
+ * CLI_METAREQINFO - SNAC(15,2) - 2000/1232
+ */
+void SnacCliMetareqinfo (Session *sess, UDWORD uin)
+{
+    Packet *pak;
+
+    pak = SnacC (sess, 21, 2, 0, 0);
+    PacketWriteB2 (pak, 1);  /* TLV(1) */
+    PacketWriteB2 (pak, 16);
+    PacketWrite2  (pak, 14);
+    PacketWrite4  (pak, sess->uin);
+    PacketWrite2  (pak, 2000); /* Command: request information */
+    PacketWrite2  (pak, 2);
+    PacketWrite2  (pak, 1232); /* Type: user info */
+    PacketWrite4  (pak, uin);
+    SnacSend (sess, pak);
 }
 
 /*

@@ -925,7 +925,7 @@ void TCPCallBackResend (struct Event *event)
         if (peer->connect & CONNECT_OK)
         {
             Time_Stamp ();
-            M_print (" " CYAN BOLD "%10s" COLNONE " %s%s\n", cont->nick, MSGTCPSENTSTR, event->info);
+            M_print (" " COLACK "%10s" COLNONE " %s%s\n", cont->nick, MSGTCPSENTSTR, event->info);
 
             event->attempts++;
             TCPSendPacket (pak, peer);

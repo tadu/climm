@@ -794,6 +794,9 @@
 794:If you already have an UIN, please enter it. Otherwise, enter 0, and I will request one for you.¶
 795:Password:
 796:Setup wizard finished. Please wait until registration has finished.¶
+797:Sports Club
+798:Elementary School
+799:High School
 800:Change the working language to <lang>.
 801:Displays a list of people on your contact list in a screen wide format.
 802:SoundOnline cmd
@@ -802,12 +805,18 @@
 805:SoundOffline
 806:Received ACK for message (seq %04X) from %s¶
 807:Cancelled incoming message (seq %04X) from %s¶
+808:College
 809:Unable to retrieve auto-response message for %s.
+810:University
+811:Military
+812:Past Work Place
+813:Past Organization
 814:Sent auto-response message to %s%s%s.¶
 815:    funny: use funny messages for output.¶
 816:Unknown option %s to set command.¶
 817:Warning: ReceiveScript feature not enabled!¶
 818:Warning: Deprecated syntax found in rc file!¶    Please update or "save" the rc file and check for changes.¶
+819:Other
 820:%s <option> [on|off] - control simple options.¶
 821:Funny messages are ©3%s©0.¶
 822:    color: use colored text output.¶
@@ -816,6 +825,7 @@
 825:Discarded a %04x (%s) packet
 826:Resending message %04x (%s) sequence %04x (attempt #%d, len %d).¶
 827:Unknown client
+828:[SOCKS] Connection request refused (%d)¶
 830:Discarding message to %s after %d send attempts.  Message content:¶
 833:Client-to-client TCP connection to %s established.¶
 835:Error while writing to socket - %s (%d)¶

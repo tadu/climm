@@ -261,7 +261,7 @@ BOOL UtilIOConnectTCP (Session *sess)
     flags = fcntl (sess->sok, F_GETFL, 0);
     if (flags != -1)
         flags = fcntl (sess->sok, F_SETFL, flags | O_NONBLOCK);
-    if (flags == -1 && prG->verbose)
+    if (flags == -1)
     {
         rc = errno;
         M_print (i18n (633, "failed:\n"));
@@ -276,7 +276,6 @@ BOOL UtilIOConnectTCP (Session *sess)
     {
         if (prG->s5Use)
         {
-            printf("Using %s:%d\n",prG->s5Host,prG->s5Port);
             origserver = sess->server;
             origip     = sess->ip;
             origport   = sess->port;
@@ -333,7 +332,7 @@ BOOL UtilIOConnectTCP (Session *sess)
 
         if (rc >= 0)
         {
-            sess->connect += prG->s5Use ? CONNECT_SOCKS_ADD : 1;
+            sess->connect += (prG->s5Use ? CONNECT_SOCKS_ADD : 1);
             sess->connect |= CONNECT_SELECT_R;
             M_print (i18n (873, "ok.\n"));
             if (prG->s5Use)
@@ -343,8 +342,7 @@ BOOL UtilIOConnectTCP (Session *sess)
 
         if ((rc = errno) == EINPROGRESS)
         {
-            sess->connect |= CONNECT_SELECT_R | CONNECT_SELECT_X;
-            printf ("con: %d\n",sess->connect);
+            sess->connect |= CONNECT_SELECT_W | CONNECT_SELECT_X;
             QueueEnqueueData (queue, sess, sess->ip, QUEUE_TYPE_TCP_TIMEOUT,
                               sess->uin, time (NULL) + 10,
                               NULL, NULL, &UtilIOTOConn);
@@ -397,19 +395,26 @@ BOOL UtilIOConnectTCP (Session *sess)
  */
 void UtilIOAgain (Session *sess)
 {
-    int rc, flags, len;
+    int rc, eno, flags, len;
     char buf[60];
     const char *err;
 
     while (prG->s5Use)
     {
+        eno = 0;
         switch (sess->connect / CONNECT_SOCKS_ADD)
         {
             case 0:
                 err = NULL;
                 break;
             case 1:
+                sess->connect &= ~CONNECT_SELECT_W;
+                sess->connect |= CONNECT_SELECT_R;
                 rc = sockread (sess->sok, buf, 2);
+                if (rc == -1)
+                    eno = errno;
+                if (eno == EAGAIN)
+                    return;
                 if (rc != 2 || buf[0] != 5 || (buf[1] != 0 && buf[1] != 2) || (buf[1] == 2 && !prG->s5Auth))
                 {
                     err = i18n (599, "[SOCKS] Authentication method incorrect\n");
@@ -427,6 +432,10 @@ void UtilIOAgain (Session *sess)
                 continue;
             case 2:
                 rc = sockread (sess->sok, buf, 2);
+                if (rc == -1)
+                    eno = errno;
+                if (eno == EAGAIN)
+                    return;
                 if (rc != 2 || buf[1])
                 {
                     err = i18n (600, "[SOCKS] Authorization failure\n");
@@ -434,7 +443,7 @@ void UtilIOAgain (Session *sess)
                 }
             case 3:
                 if (sess->server)
-                    snprintf (buf, sizeof (buf), "%c%c%c%c%s%c%c%n", 5, 1, 0, 3,
+                    snprintf (buf, sizeof (buf), "%c%c%c%c%c%s%c%c%n", 5, 1, 0, 3, strlen (sess->server),
                               sess->server, (char)(sess->port >> 8), (char)(sess->port & 255), &len);
                 else
                     snprintf (buf, sizeof (buf), "%c%c%c%c%c%c%c%c%c%c%n", 5, 1, 0, 1, (char)(sess->ip >> 24),
@@ -445,6 +454,10 @@ void UtilIOAgain (Session *sess)
                 return;
             case 4:
                 rc = sockread (sess->sok, buf, 10);
+                if (rc == -1)
+                    eno = errno;
+                if (eno == EAGAIN)
+                    return;
                 if (rc != 10 || buf[3] != 1)
                 {
                     err = i18n (601, "[SOCKS] General SOCKS server failure\n");
@@ -452,7 +465,7 @@ void UtilIOAgain (Session *sess)
                 }
                 if (buf[1])
                 {
-                    err = UtilFill (i18n (598, "[SOCKS] Connection request refused (%d)\n"), buf[1]);
+                    err = UtilFill (i18n (828, "[SOCKS] Connection request refused (%d)\n"), buf[1]);
                     break;
                 }
                 sess->connect++;
@@ -464,6 +477,7 @@ void UtilIOAgain (Session *sess)
         if (!err)
             break;
         sockclose (sess->sok);
+        sess->sok = -1;
         sess->connect += 2;
         M_print (err);
         return;

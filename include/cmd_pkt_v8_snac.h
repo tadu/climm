@@ -26,6 +26,7 @@ void SnacCliSendmsg      (Session *sess, UDWORD uin, char *text, UDWORD type);
 void SnacCliReqofflinemsgs (Session *sess);
 void SnacCliAckofflinemsgs (Session *sess);
 void SnacCliRegisteruser   (Session *sess);
+void SnacCliMetareqinfo    (Session *sess, UDWORD uin);
 /*void  (Session *sess);
 void  (Session *sess);
 void  (Session *sess);
