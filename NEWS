@@ -9,3 +9,4 @@
                     log file utils (from rtc), ^C handler, type-2 message sending, remote control via a FIFO,
                     send and receive UTF-8 encoded message, ASCII art mICQ logo, alias'ing of commands, history
 2003-01-24: 0.4.10.1: bug fix release
+2003-02-27: 0.4.10.2: bug fix release

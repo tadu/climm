@@ -1,5 +1,23 @@
 -*- coding: utf-8 -*-
 
+2003-02-27 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+	* fix endless resend stuff
+	* ignore empty nick names on ocntact list import
+	* fix documentation glitches in man pages
+	* update de man pages
+	* RELEASE as 0.4.10.2
+
+2003-02-24 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+	* debian sync
+	* special-case around Kopete as well
+	* Debian maintainer saw the light, so removing Debian blurb
+	* fix importing multi-packet contact list
+	* fix 0xfe stuff
+	* update micq.spec
+	* handle SRV_SERVERPAUSE
+	* fix quoting issues with " in nick names, aliases, alters, ...
+	* add pt translation
+
 2003-02-14 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
 	* fix set tabs command
 	* fix buildmark
@@ -1336,7 +1354,7 @@ Extended the status command so status nick gives info on nick
 
 Sept 12, 1999
 Improved tabbed nick names
-added more info to the update commad
+added more info to the update command
 added ability to update about info.
 various cosmetic changes
 decode language codes

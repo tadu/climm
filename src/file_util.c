@@ -212,11 +212,12 @@ void Initialize_RC_File ()
     conn->assoc = connt;
     connt->spref->type = TYPE_MSGLISTEN;
     connt->spref->flags = CONN_AUTOLOGIN;
+    connt->spref->status = prG->s5Use ? 2 : TCP_OK_FLAG;
     connt->type  = connt->spref->type;
     connt->flags = connt->spref->flags;
+    connt->status = connt->spref->status;
     connt->spref->version = 8;
     connt->ver = 8;
-    connt->status = prG->s5Use ? 2 : TCP_OK_FLAG;
 #endif
 
 #ifdef ENABLE_REMOTECONTROL
@@ -249,6 +250,7 @@ void Initialize_RC_File ()
     prG->logplace  = strdup ("history" _OS_PATHSEPSTR);
     prG->chat      = 49;
 
+    conn->contacts = ContactGroupFind (0, conn, s_sprintf ("contacts-icq8-%ld", uin), 1);
 #ifdef ENABLE_UTF8
     ContactFind (conn->contacts, 0, 82274703, "R\xc3\xbc" "diger Kuhlmann", 1);
 #else
@@ -323,7 +325,7 @@ void Read_RC_File (FILE *rcf)
             else
             {
                 M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                M_printf (i18n (1659, "Unknown section %s in configuration file."), ConvToUTF8 (buf, enc));
+                M_printf (i18n (1659, "Unknown section %s in configuration file."), ConvToUTF8 (buf, enc, 0));
                 M_print ("\n");
                 section = -1;
             }
@@ -335,7 +337,7 @@ void Read_RC_File (FILE *rcf)
             case -1:
                 M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
                 M_print  (i18n (1675, "Ignored line:"));
-                M_printf (" %s\n", ConvToUTF8 (buf, enc));
+                M_printf (" %s\n", ConvToUTF8 (buf, enc, 0));
                 break;
             case 0:
                 if (!s_parse (&args, &cmd))
@@ -359,19 +361,19 @@ void Read_RC_File (FILE *rcf)
                     if (!strcasecmp (cmd, "auto"))
                         continue;
                     else if (!strcasecmp (cmd, "utf8"))
-                    {   what = ConvEnc ("utf-8");        dep = 1; }
+                    {   what = ConvEnc ("UTF-8");        dep = 1; }
                     else if (!strcasecmp (cmd, "latin1"))
-                    {   what = ConvEnc ("iso-8859-1");   dep = 1; }
+                    {   what = ConvEnc ("ISO-8859-1");   dep = 1; }
                     else if (!strcasecmp (cmd, "latin9"))
-                    {   what = ConvEnc ("iso-8859-15");  dep = 1; }
+                    {   what = ConvEnc ("ISO-8859-15");  dep = 1; }
                     else if (!strcasecmp (cmd, "koi8"))
-                    {   what = ConvEnc ("koi8-u");       dep = 1; }
+                    {   what = ConvEnc ("KOI8-U");       dep = 1; }
                     else if (!strcasecmp (cmd, "win1251"))
-                    {   what = ConvEnc ("windows-1251"); dep = 1; }
+                    {   what = ConvEnc ("CP-1251"); dep = 1; }
                     else if (!strcasecmp (cmd, "euc"))
-                    {   what = ConvEnc ("euc-jp");       dep = 1; }
+                    {   what = ConvEnc ("EUC-JP");       dep = 1; }
                     else if (!strcasecmp (cmd, "sjis"))
-                    {   what = ConvEnc ("shift-jis");    dep = 1; }
+                    {   what = ConvEnc ("SHIFT-JIS");    dep = 1; }
                     else
                         what = ConvEnc (cmd);
 
@@ -381,7 +383,7 @@ void Read_RC_File (FILE *rcf)
                         M_printf (i18n (2216, "This mICQ doesn't know the '%s' encoding.\n"), cmd);
                         ERROR;
                     }
-                    if (what & ENC_AUTO)
+                    if (what & ENC_AUTO && what != (ENC_AUTO | ENC_UTF8))
                     {
                         if ((which == 3 && (what ^ prG->enc_loc) & ~ENC_AUTO)
                             || (which == 2 && (what ^ enc) & ~ENC_AUTO))
@@ -552,32 +554,32 @@ void Read_RC_File (FILE *rcf)
                     else if (!strcasecmp (tmp, "away"))
                     {
                         PrefParse (tmp);
-                        s_repl (&prG->auto_away, ConvToUTF8 (tmp, enc));
+                        s_repl (&prG->auto_away, ConvToUTF8 (tmp, enc, 0));
                     }
                     else if (!strcasecmp (tmp, "na"))
                     {
                         PrefParse (tmp);
-                        s_repl (&prG->auto_na, ConvToUTF8 (tmp, enc));
+                        s_repl (&prG->auto_na, ConvToUTF8 (tmp, enc, 0));
                     }
                     else if (!strcasecmp (tmp, "dnd"))
                     {
                         PrefParse (tmp);
-                        s_repl (&prG->auto_dnd, ConvToUTF8 (tmp, enc));
+                        s_repl (&prG->auto_dnd, ConvToUTF8 (tmp, enc, 0));
                     }
                     else if (!strcasecmp (tmp, "occ"))
                     {
                         PrefParse (tmp);
-                        s_repl (&prG->auto_occ, ConvToUTF8 (tmp, enc));
+                        s_repl (&prG->auto_occ, ConvToUTF8 (tmp, enc, 0));
                     }
                     else if (!strcasecmp (tmp, "inv"))
                     {
                         PrefParse (tmp);
-                        s_repl (&prG->auto_inv, ConvToUTF8 (tmp, enc));
+                        s_repl (&prG->auto_inv, ConvToUTF8 (tmp, enc, 0));
                     }
                     else if (!strcasecmp (tmp, "ffc"))
                     {
                         PrefParse (tmp);
-                        s_repl (&prG->auto_ffc, ConvToUTF8 (tmp, enc));
+                        s_repl (&prG->auto_ffc, ConvToUTF8 (tmp, enc, 0));
                     }
                     else
                         ERROR;
@@ -615,7 +617,7 @@ void Read_RC_File (FILE *rcf)
                 {
                     PrefParse (tmp);
                     if (spooled_tab_nicks < TAB_SLOTS)
-                        tab_nick_spool[spooled_tab_nicks++] = strdup (ConvToUTF8 (tmp, enc));
+                        tab_nick_spool[spooled_tab_nicks++] = strdup (ConvToUTF8 (tmp, enc, 0));
                 }
                 else if (!strcasecmp (cmd, "set"))
                 {
@@ -741,7 +743,7 @@ void Read_RC_File (FILE *rcf)
                 else
                 {
                     M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), ConvToUTF8 (cmd, enc));
+                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), ConvToUTF8 (cmd, enc, 0));
                     M_print ("\n");
                 }
                 break;
@@ -792,7 +794,7 @@ void Read_RC_File (FILE *rcf)
                 }
                 
                 
-                if (!(cont = ContactFind (NULL, 0, uin, ConvToUTF8 (cmd, enc), 1)))
+                if (!(cont = ContactFind (NULL, 0, uin, ConvToUTF8 (cmd, enc, 0), 1)))
                 {
                     M_printf (COLERROR "%s" COLNONE " %s\n", i18n (1619, "Warning:"),
                              i18n (1620, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
@@ -810,9 +812,9 @@ void Read_RC_File (FILE *rcf)
                 if (!strcasecmp (cmd, "alter"))
                 {
                     PrefParse (tmp);
-                    tmp = strdup (s_quote (ConvToUTF8 (tmp, enc)));
+                    tmp = strdup (s_quote (ConvToUTF8 (tmp, enc, 0)));
                     PrefParse (tmp2);
-                    tmp2 = strdup (s_quote (ConvToUTF8 (tmp2, enc)));
+                    tmp2 = strdup (s_quote (ConvToUTF8 (tmp2, enc, 0)));
                     
                     CmdUser (cmd = strdup (s_sprintf ("\xb6" "alter quiet %s %s", tmp, tmp2)));
 
@@ -823,9 +825,9 @@ void Read_RC_File (FILE *rcf)
                 else if (!strcasecmp (cmd, "alias"))
                 {
                     PrefParse (tmp);
-                    tmp = strdup (s_quote (ConvToUTF8 (tmp, enc)));
+                    tmp = strdup (s_quote (ConvToUTF8 (tmp, enc, 0)));
                     PrefParse (tmp2);
-                    tmp2 = strdup (ConvToUTF8 (tmp2, enc));
+                    tmp2 = strdup (ConvToUTF8 (tmp2, enc, 0));
 
                     CmdUser (cmd = strdup (s_sprintf ("\xb6" "alias %s %s", tmp, tmp2)));
                     
@@ -836,7 +838,7 @@ void Read_RC_File (FILE *rcf)
                 else
                 {
                     M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), ConvToUTF8 (cmd, enc));
+                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), ConvToUTF8 (cmd, enc, 0));
                     M_print ("\n");
                 }
                 break;
@@ -920,7 +922,7 @@ void Read_RC_File (FILE *rcf)
                 else if (!strcasecmp (cmd, "password"))
                 {
                     PrefParse (tmp);
-                    s_repl (&conn->spref->passwd, ConvToUTF8 (tmp, enc));
+                    s_repl (&conn->spref->passwd, ConvToUTF8 (tmp, enc, 0));
                 }
                 else if (!strcasecmp (cmd, "status"))
                 {
@@ -939,7 +941,7 @@ void Read_RC_File (FILE *rcf)
                 if (!strcasecmp (cmd, "label") && !cg->used)
                 {
                     PrefParse (tmp);
-                    s_repl (&cg->name, ConvToUTF8 (tmp, enc));
+                    s_repl (&cg->name, ConvToUTF8 (tmp, enc, 0));
                     if (!strncmp (cg->name, "contacts-", 9))
                     {
                         UWORD type = 0;
@@ -1005,7 +1007,7 @@ void Read_RC_File (FILE *rcf)
                 else
                 {
                     M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), ConvToUTF8 (cmd, enc));
+                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), ConvToUTF8 (cmd, enc, 0));
                     M_print ("\n");
                 }
                 break;
@@ -1149,7 +1151,7 @@ int Save_RC ()
     
     fprintf (rcf, "# Character encodings: auto, iso-8859-1, koi8-u, ...\n");
 #ifdef ENABLE_UTF8
-    fprintf (rcf, "encoding file utf-8\n");
+    fprintf (rcf, "encoding file UTF-8\n");
 #else
     fprintf (rcf, "encoding file %s\n", s_quote (ConvEncName (prG->enc_loc)));
 #endif
@@ -1192,18 +1194,18 @@ int Save_RC ()
     fprintf (rcf, "\n[General]\n# Support for SOCKS5 server\n");
     fprintf (rcf, "s5_use %d\n", prG->s5Use);
     if (!prG->s5Host)
-        fprintf (rcf, "s5_host [none]\n");
+        fprintf (rcf, "s5_host \"[none]\"\n");
     else
         fprintf (rcf, "s5_host %s\n", s_quote (prG->s5Host));
     fprintf (rcf, "s5_port %d\n", prG->s5Port);
     fprintf (rcf, "# If you need authentication, put 1 for s5_auth and fill your name/password\n");
     fprintf (rcf, "s5_auth %d\n", prG->s5Auth);
     if (!prG->s5Name)
-        fprintf (rcf, "s5_name [none]\n");
+        fprintf (rcf, "s5_name \"[none]\"\n");
     else
         fprintf (rcf, "s5_name %s\n", s_quote (prG->s5Name));
     if (!prG->s5Pass)
-        fprintf (rcf, "s5_pass [none]\n");
+        fprintf (rcf, "s5_pass \"[none]\"\n");
     else
         fprintf (rcf, "s5_pass %s\n", s_quote (prG->s5Pass));
 

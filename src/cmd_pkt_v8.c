@@ -140,14 +140,15 @@ void SrvCallBackReceive (Connection *conn)
         switch (conn->connect & 7)
         {
             case 0:
-            case 1:
-            case 5:
                 if (conn->assoc && !(conn->assoc->connect & CONNECT_OK) && (conn->assoc->flags & CONN_AUTOLOGIN))
                 {
-                    printf ("Buggy: avoiding deadlock\n");
+                    M_printf ("FIXME: avoiding deadlock\n");
                     conn->connect &= ~CONNECT_SELECT_R;
                 }
                 else
+            case 1:
+            case 5:
+                /* fall-through */
                     conn->connect |= 4 | CONNECT_SELECT_R;
                 conn->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X & ~3;
                 return;
@@ -332,7 +333,8 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
               inc_event, ack_event, msgtype, seq);
 #endif
  
-    ExtraSet (extra, EXTRA_MESSAGE, msgtype, c_in_to (text, cont));
+    ExtraSet (extra, EXTRA_MESSAGE, msgtype, msgtype == MSG_NORM ?
+              c_in_to_0 (text, cont) : c_in_to (text, cont));
 
     accept = FALSE;
 

@@ -696,7 +696,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             /* TLV 1, 2(!), 3, 4, f ignored */
             IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (extra,
                       EXTRA_ORIGIN, EXTRA_ORIGIN_v5, NULL),
-                      EXTRA_MESSAGE, MSG_NORM, c_in_to (text + 4, cont)));
+                      EXTRA_MESSAGE, MSG_NORM, c_in_to_0 (text + 4, cont)));
             Auto_Reply (event->conn, cont);
             break;
         case 2:
@@ -808,7 +808,8 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
 
             IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (extra,
                       EXTRA_ORIGIN, EXTRA_ORIGIN_v5, NULL),
-                      EXTRA_MESSAGE, msgtyp, c_in_to (text, cont)));
+                      EXTRA_MESSAGE, msgtyp, msgtyp == MSG_NORM ?
+                      c_in_to_0 (text, cont) : c_in_to (text, cont)));
             Auto_Reply (event->conn, cont);
             break;
         default:
@@ -957,7 +958,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                         break;
                 j = TLVGet (tlv, 305);
                 assert (j < 200 || j == (UWORD)-1);
-                nick = strdup (j != (UWORD)-1 ? c_in (tlv[j].str) : name);
+                nick = strdup (j != (UWORD)-1 && tlv[j].len ? c_in (tlv[j].str) : name);
 
                 switch (data)
                 {
@@ -1212,6 +1213,7 @@ static JUMP_SNAC_F(SnacSrvNewuin)
 {
     event->conn->uin = event->conn->spref->uin = PacketReadAt4 (event->pak, 6 + 10 + 46);
     M_printf (i18n (1762, "Your new UIN is: %ld.\n"), event->conn->uin);
+
     if (event->conn->flags & CONN_WIZARD)
     {
         assert (event->conn->spref);
@@ -1222,7 +1224,10 @@ static JUMP_SNAC_F(SnacSrvNewuin)
 
         event->conn->spref->flags |= CONN_AUTOLOGIN;
         event->conn->assoc->spref->flags |= CONN_AUTOLOGIN;
+
+        s_repl (&event->conn->contacts->name, s_sprintf ("contacts-icq8-%ld", event->conn->uin));
         M_print (i18n (1790, "Setup wizard finished. Congratulations to your new UIN!\n"));
+
         if (Save_RC () == -1)
         {
             M_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));

@@ -1,5 +1,5 @@
 Package: micq
-Version: 0.4.10.1
+Version: 0.4.10.2
 Revision: 1
 ConfigureParams: --mandir='${prefix}/share/man' CFLAGS=-O4
 Source: http://www.micq.org/source/micq-%v.tgz

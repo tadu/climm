@@ -31,6 +31,7 @@ Changes :
 #include "packet.h"
 #include "util_str.h"
 #include "cmd_user.h"
+#include "conv.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -188,7 +189,7 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
     
     now = time (NULL);
 
-    for (lcnt = 0, pos = mylog = strdup (log); *pos; lcnt += *pos++ == '\n')
+    for (lcnt = 0, pos = mylog = strdup (ConvCrush0xFE (log)); *pos; lcnt += *pos++ == '\n')
         if (pos[0] == '\r' && pos[1] == '\n')
             *pos = ' ';
 
