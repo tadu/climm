@@ -136,7 +136,7 @@ UDWORD ContactFindByNick (const char *nick)
     }
     i = atoi (mynick);
     free (mynick);
-    return i;
+    return i ? i : -1;
 }
 
 /*
