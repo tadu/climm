@@ -1,0 +1,439 @@
+# spanish
+#000: (Übersetzung erfolgreich geladen (%d Einträge). Version 0.1.¶)
+001:Conectado
+002:No Molestar
+003:No estoy
+004:No disponible
+005:Ocupado
+006:Invisible
+007:Libre para charlar
+008:Offline
+009:User is DND [Auto-Message]
+010:User is Away [Auto-Message]
+011:User is not available [Auto-Message]
+012:User is Occupied [Auto-Message]
+013:User is offline
+014:None
+015:Jan
+016:Feb
+017:Mar
+018:Apr
+019:May
+020:Jun
+021:Jul
+022:Aug
+023:Sept
+024:Oct
+025:Nov
+026:Dec
+027:SI
+028:NO
+029:Por favor, ingresa " YES_STR " o " NO_STR "¶
+030: logged off.
+031: logged on.
+032: - Instant Message
+033: - Instant " SERVCOL "Mass" NOCOL " Message
+#034: (Nachricht)
+035: changed status to 
+036:Unknown command %s, type /help for help.
+037:Mensaje enviado antes de que el espacio se agote¶
+038:Mensaje cancelado¶
+039:!¶
+040:Micq> 
+041:msg> 
+042:msg todos> 
+043:Todos los usuarios encontrados.
+044:Demasiados usuarios encontrados.
+045:Búsqueda finalizada.
+046:Longitud
+047:Datos Extras
+048:SEQ
+049:Ver
+050:Conexión al servidor exitosa!
+051:El server recibió el comando %04x.
+052:Couldn't establish connection¶
+053:Connected to %s, waiting for response¶
+054: Conection Refused on port %d at %s¶
+055:Socket creation failed
+056:Socket created attempting to connect¶
+057:The hostname 
+058:%s was not found.¶
+059:The port that will be used for tcp ( not yet implemented ) is %d¶
+060:El nivel de mensajes adicionales es %d.¶
+061:%s no reconocido como un nick
+062:Users ignored: 
+063:Enter password : 
+064:¶Auto-Changed status to 
+065:Using intel byte ordering.
+066:Using motorola byte ordering.
+067:¶Ignored a message cmd  %04x¶
+068: En línea desde %s
+069: Ultima vez que estuvo en línea desde %s
+070: Ultima vez en línea, desconocido.
+071:Tu estado es 
+072:Usuarios desconectados: 
+073:Usuarios conectados: 
+#099: (Unbekannte Sprache)
+100:None
+101:Arabic
+102:Bhojpuri
+103:Bulgarian
+104:Burmese
+105:Cantonese
+106:Catalan
+107:Chinese
+108:Croatian
+109:Czech
+110:Danish
+111:Dutch
+112:English
+113:Esperanto
+114:Estonian
+115:Farsi
+116:Finnish
+117:French
+118:Gaelic
+119:German
+120:Greek
+121:Hebrew
+122:Hindi
+123:Hungarian
+124:Icelandic
+125:Indonesian
+126:Italian
+127:Japanese
+128:Khmer
+129:Korean
+130:Lao
+131:Latvian
+132:Lithuanian
+133:Malay
+134:Norwegian
+135:Polish
+136:Portuguese
+137:Romanian
+138:Russian
+139:Serbo-Croatian
+140:Slovak
+141:Slovenian
+142:Somali
+143:Spanish
+144:Swahili
+145:Swedish
+146:Tagalog
+147:Tartar
+148:Thai
+149:Turkish
+150:Ukrainian
+151:Urdu
+152:Vietnamese
+153:Yiddish
+154:Yoruba
+155:Afrikaans
+156:Bosnian
+157:Persian
+158:Albanian
+159:Armenian
+#199: (Unbekanntes Land)
+200:No ingresado
+201:Afganistán
+202:Albania
+203:Algeria
+204:Samoa Americana
+205:Andorra
+206:Angola
+207:Anguila
+208:Antigua
+209:Argentina
+210:Armenia
+211:Aruba
+212:Islas Ascensión
+213:Australia
+214:Territorio Antártico Australiano
+215:Austria
+216:Azerbadyán
+217:Bahamas
+218:Bahrein
+219:Bangladesh
+220:Barbados
+221:Belarus
+222:Bélgica
+223:Bélice
+224:Benin
+225:Bermuda
+226:Bután
+227:Bolivia
+228:Bosnia & Herzegovina
+229:Botswana
+230:Brasil
+231:Islas Vírgenes Británicas
+232:Brunei
+233:Bulgaria
+234:Burkina Faso
+235:Burundi
+236:Camboya
+237:Camerún
+238:Canadá
+239:Islas Cabo Verde
+240:Islas Caimán
+241:República Centro-Africana
+242:Chad
+243:Islas Natividad
+244:Islas Cocos-Keeling
+245:Comoros
+246:Congo
+247:Islas Cook
+248:Chile
+249:China
+250:Colombia
+251:Costa Rica
+252:Croacia
+253:Cuba
+254:Chipre
+255:República Checa
+256:Dinamarca
+257:Diego García
+258:Djibouti
+259:Dominica
+260:República Dominicana
+261:Ecuador
+262:Egipto
+263:El Salvador
+264:Guinea Ecuatorial
+265:Eritrea
+266:Estonia
+267:Etiopía
+268:F.Y.R.O.M. (Ex-Yugoslavia)
+269:Faeroe Islands
+270:Islas Malvinas (Falkland Islands)
+271:Estados Federados de Micronesia
+272:Fidji
+273:Finlandia
+274:Francia
+275:Antillas Francesas
+276:Antillas Francesas
+277:Guyana Francesa
+278:Polinesia Francesa
+279:Gabon
+280:Gambia
+281:Georgia
+282:Alemania
+283:Ghana
+284:Gibraltar
+285:Grecia
+286:Groenlandia
+287:Granada
+288:Guadalupe
+289:Guam
+290:Bahía de Guantanamo
+291:Guatemala
+292:Guinea
+293:Guinea-Bissau
+294:Guyana
+295:Haití
+296:Honduras
+297:Hong Kong
+298:Hungary
+299:Islandia
+300:India
+301:Indonesia
+302:INMARSAT
+303:INMARSAT Atlántico-Este
+304:Irán
+305:Irak
+306:Irlanda
+307:Israel
+308:Italia
+309:Costa Ivory
+310:Japón
+311:Jordania
+312:Kazakhstan
+313:Kenia
+314:Corea del Sur
+315:Kuwait
+316:Liberia
+317:Libia
+318:Liechtenstein
+319:Luxemburgo
+320:Malawi
+321:Malasia
+322:Malí
+323:Malta
+324:México
+325:Monaco
+326:Marruecos
+327:Namibia
+328:Nepal
+329:Holanda
+330:Antillas Holandesas
+331:Nueva Caledonia
+332:Nueva Zelandia
+333:Nicaragua
+334:Nigeria
+335:Noruega
+336:Omán
+337:Pakistán
+338:Panama
+339:Papúa y Nueva Guinea
+340:Paraguay
+341:Peru
+342:Filipinas
+343:Polonia
+344:Portugal
+345:Puerto Rico
+346:Qatar
+347:Rumania
+348:Rusia
+349:Saipan
+350:San Marino
+351:Arabia Saudita
+352:Senegal
+353:Singapur
+354:Eslovaquia
+355:Sudáfrica
+356:España
+357:Sri Lanka
+358:Surinam
+359:Suecia
+360:Suiza
+361:Taiwán
+362:Tanzania
+363:Tailandia
+364:Tinian Island
+365:Togo
+366:Tokelau
+367:Tonga
+368:Trinadad and Tabago
+369:Túnez
+370:Turquía
+371:Turkmenistan
+372:Turks and Caicos Islands
+373:Tuvalu
+374:Uganda
+375:Ucrania
+376:Emiratos Arabes Unidos
+377:Reino Unido
+378:United States Virgin Islands
+379:Estados Unidos
+380:Uruguay
+381:Uzbekistan
+382:Vanuatu
+383:Ciudad del Vaticano
+384:Venezuela
+385:Vietnam
+386:Wallis and Futuna Islands
+387:Western Samoa
+388:Yemen
+389:Yugoslavia
+390:Zaire
+391:Zambia
+392:Zimbawe
+400:		Shows locally stored info on user¶
+401:		Updates other user info like age and sex¶
+402:		Updates your about user info.¶
+403:		Displays the last message received from <nick>.¶			They must be in your Contact List.¶
+404:		Toggles ignoring/unignoring nick¶
+405:		Lists ignored nicks/uins¶
+406:	Toggles your visibility to a user when you're invisible.¶
+407:			Displays the current status of online people on your contact list¶
+408:		Cambia tu contraseña a secret.¶
+409:		Envía un mensaje a un UIN¶
+410:	Envía un URL con mensaje a un UIN¶
+411:	Envía un mensaje multilínea a todos los de tu lista.¶
+412:		Envía un mensaje a la última persona que le enviaste un mensaje¶
+413:		Autoriza a un UIN para que te agregue a su lista¶
+414:		Responde a la ultima persona que te envió un mensaje¶
+415:		Encuentra un usuario al azar en el grupo especificado o lista los grupos.¶
+416:			Muestra el estado actual de los anotados en lista de contactos¶
+417:	Este comando te permite alterar el juego de comandos inmediatamente.¶
+418:			Ajusta el nivel de detalle de mensajes adicionales ( normal = 0 ).¶
+419:				Limpia la pantalla.¶
+420:				Activa/Desactiva el beep cuando se reciben nuevos mensajes.¶
+421:				Activa/Desactiva los colores.¶
+422:			Desconecta y sale del programa¶
+423:				Muestra tu estado de auto-respuesta¶
+424:			Activa/Desactiva el envío de mensajes cuando tu estado es DND, NA, etc.¶
+425:		Establece el mensaje de respuesta automática cuando está en ese estado.¶
+426:	Crea un nuevo UIN con el password especificado.¶
+427:	Cambia tu estado, al estado especificado por número.¶		Sin un número, lista los modos disponibles.¶
+428:	Agrega el número de UIN a tu lista de contactos con un nick especificado.¶
+429:	Busca un usuario de ICQ con la dirección de e-mail especificada.¶
+430:		Muestra información general del UIN¶
+431:		Marca como CONECTADO (Online).¶
+432:		Marca como NO ESTOY (Away).¶
+433:		Marca como NO DISPONIBLE (Not Available).¶
+434:		Marca como OCUPADO (Occupied).¶
+435:		Marca como NO MOLESTAR (Do not Disturb).¶
+436:		Marca como LIBRE P/CHARLAR (Free for Chat).¶
+437:		Marca como INVISIBLE.¶
+438:		Actualiza tu información básica (e-mail, nick, etc.)¶
+439:		Fija tu grupo de usuario al azar.¶
+#440:PROMPT_HELP_STR (		Ändert den mICQ Prompt.¶)
+#441:GOTO_HELP_STR (				Öffnet die letzte erhaltene URL in Lynx¶)
+442:Por favor, elige uno de los tópicos de ayuda debajo.
+443:Comandos relacionados a micq de muestra en pantalla y configuración.
+444:Comandos relacionados para encontrar a otros usuarios.
+445:Comandos relacionados a tu cuenta ICQ.
+446:Comandos relacionados al envío de mensajes.
+447:Cliente
+448:Mensaje
+449:Usuario
+450:Cuenta
+500:Nickname     : 
+501:Name         : 
+502:Email        : 
+503:Other Email  : 
+504:Old Email    : 
+505:Location     : 
+506:Phone        : 
+507:Fax          : 
+508:Street       : 
+509:Cellular     : 
+510:Zip          : 
+511:Country      : 
+512:Country Code : 
+513:Work Country Code : 
+514:Work Country : 
+515:Work Homepage: 
+516:Occupation   : 
+517:Job Position : 
+518:Department   : 
+519:Company Name : 
+520:Work Zip     : 
+521:Work Fax     : 
+522:Work Address : 
+523:Work Phone   : 
+524:Work Location: 
+525:About : 
+526:Not Entered
+527:Age          : 
+528:Sex : Female
+529:Sex : Male
+530:Sex : Not Specified
+531:Homepage     : 
+532:Born         : 
+533:Languages    : 
+534:Enter a language by number or L for a list: 
+535:Enter new age: 
+536:Enter new sex: 
+537:Enter new homepage: 
+538:Enter new year of birth (4 digits): 
+539:Enter new month of birth: 
+540:Enter new day of birth: 
+541:About> 
+542:Enter other email address: 
+543:Enter old email address: 
+544:Enter new city: 
+545:Enter new state: 
+546:Enter new phone number: 
+547:Enter new fax number: 
+548:Enter new street address: 
+549:Enter new cellular number: 
+550:Enter new zip code (must be numeric): 
+551:Enter your country's phone ID number: 
+552:Enter your time zone (+/- 0-12): 
+553:Ingresa tu nuevo Nick : 
+554:Ingresa tu PRIMER Nombre : 
+555:Ingresa tu APELLIDO : 
+556:Ingresa tu dirección de e-mail : 
+557:Querés que los usuarios de ICQ pidan tu autorización? : 

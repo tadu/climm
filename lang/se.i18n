@@ -1,0 +1,439 @@
+# swedish
+#000: (Übersetzung erfolgreich geladen (%d Einträge). Version 0.1.¶)
+001:Online
+002:Do not disturb
+003:Away
+004:Not Available
+005:Occupied
+006:Invisible
+007:Free for chat
+008:Offline
+009:User is DND [Auto-Message]
+010:User is Away [Auto-Message]
+011:User is not available [Auto-Message]
+012:User is Occupied [Auto-Message]
+013:User is offline
+014:None
+015:Jan
+016:Feb
+017:Mar
+018:Apr
+019:May
+020:Jun
+021:Jul
+022:Aug
+023:Sept
+024:Oct
+025:Nov
+026:Dec
+027:JA
+028:NEJ
+029:Var vänlig skriv " YES_STR " eller " NO_STR "¶
+030: logged off.
+031: logged on.
+032: - Instant Message
+033: - Instant " SERVCOL "Mass" NOCOL " Message
+#034: (Nachricht)
+035: changed status to 
+036:Unknown command %s, type /help for help.
+037:Medellande skickades innan förra raden, buffern var full¶
+038:Meddelande avbrutet¶
+039:!¶
+040:Micq.se> 
+041:msg> 
+042:msg alla> 
+043:Alla användare hittade
+044:För många användare hittade
+045:Sökning avslutad
+046:Längd
+047:Extra Information
+048:SEQ
+049:Ver
+050:Inlogningen lyckades!
+051:Servern bekräftade %04x kommandot.
+052:Couldn't establish connection¶
+053:Connected to %s, waiting for response¶
+054: Conection Refused on port %d at %s¶
+055:Socket creation failed
+056:Socket created attempting to connect¶
+057:The hostname 
+058:%s was not found.¶
+059:The port that will be used for tcp ( not yet implemented ) is %d¶
+060:Verbositets nivå är %d.¶
+061:%s är inte ett giltigt smeknamn
+062:Users ignored: 
+063:Enter password : 
+064:¶Auto-Changed status to 
+065:Using intel byte ordering.
+066:Using motorola byte ordering.
+067:¶Ignored a message cmd  %04x¶
+068: Inloggad sedan %s
+069: Senast inloggad %s
+070: Senast inloggad okänt.
+071:Din status är 
+072:Inte inloggade användare: 
+073:Inloggade användare: 
+#099: (Unbekannte Sprache)
+100:None
+101:Arabic
+102:Bhojpuri
+103:Bulgarian
+104:Burmese
+105:Cantonese
+106:Catalan
+107:Chinese
+108:Croatian
+109:Czech
+110:Danish
+111:Dutch
+112:English
+113:Esperanto
+114:Estonian
+115:Farsi
+116:Finnish
+117:French
+118:Gaelic
+119:German
+120:Greek
+121:Hebrew
+122:Hindi
+123:Hungarian
+124:Icelandic
+125:Indonesian
+126:Italian
+127:Japanese
+128:Khmer
+129:Korean
+130:Lao
+131:Latvian
+132:Lithuanian
+133:Malay
+134:Norwegian
+135:Polish
+136:Portuguese
+137:Romanian
+138:Russian
+139:Serbo-Croatian
+140:Slovak
+141:Slovenian
+142:Somali
+143:Spanish
+144:Swahili
+145:Swedish
+146:Tagalog
+147:Tartar
+148:Thai
+149:Turkish
+150:Ukrainian
+151:Urdu
+152:Vietnamese
+153:Yiddish
+154:Yoruba
+155:Afrikaans
+156:Bosnian
+157:Persian
+158:Albanian
+159:Armenian
+#199: (Unbekanntes Land)
+200:Inte angett
+201:Afganistan
+202:Albanien
+203:Algeriet
+204:Amerikanska Samoa
+205:Andorra
+206:Angola
+207:Anguilla
+208:Antigua
+209:Argentina
+210:Armenien
+211:Aruba
+212:Ascention öarna
+213:Australien
+214:Australiens arktiska teritorium
+215:Österike
+216:Azerbajan
+217:Bahamas
+218:Bahrain
+219:Bangladesh
+220:Barbados
+221:Vittrysland
+222:Belgien
+223:Belize
+224:Benin
+225:Bermuda
+226:Bhutan
+227:Bolivia
+228:Bosnien & Herzegovina
+229:Botswana
+230:Brasilen
+231:Jungfruöarna
+232:Brunei
+233:Bulgarien
+234:Burkina Faso
+235:Burundi
+236:Kambodja
+237:Kamerun
+238:Kanada
+239:Kap Verde öarna
+240:Cayman öarna
+241:Central afrikanska republiken
+242:Chad
+243:Jul ön
+244:Cocos-Keeling öarna
+245:Comoros
+246:Kongo
+247:Cook öarna
+248:Chile
+249:Kina
+250:Colombia
+251:Costa Rica
+252:Kroatien
+253:Kuba
+254:Cypern
+255:Tjeckien
+256:Danmark
+257:Diego Garcia
+258:Djibouti
+259:Dominika
+260:Dominikanska Republiken
+261:Equador
+262:Egypten
+263:El Salvador
+264:Equitorial Guinea
+265:Eritrea
+266:Estland
+267:Etiopien
+268:Före detta Jugoslavien
+269:Farao öarna
+270:Falklandsöarna
+271:Mikronesien
+272:Fiji
+273:Finland
+274:Frankrike
+275:Franska Atillerna
+276:Franska Atillerna
+277:Franska Guiana
+278:Franska Polynesien
+279:Gabon
+280:Gambia
+281:Ukraina
+282:Tyskland
+283:Ghana
+284:Gibraltar
+285:Grekland
+286:Grönland
+287:Granada
+288:Guadeloupe
+289:Guam
+290:Guantanomo Viken
+291:Guatemala
+292:Guinea
+293:Guinea-Bissau
+294:Guyana
+295:Haiti
+296:Honduras
+297:Hong Kong
+298:Bulgarien
+299:Island
+300:Indien
+301:Indonesien
+302:INMARSAT
+303:Öst-Atlantiska INMARSAT
+304:Iran
+305:Irak
+306:Irland
+307:Israel
+308:Italien
+309:Elfenbenskusten
+310:Japan
+311:Jordanien
+312:Kazakhstan
+313:Kenya
+314:Sydkorea
+315:Kuwait
+316:Liberia
+317:Libien
+318:Lichtenstein
+319:Luxemburg
+320:Malawi
+321:Malaysia
+322:Mali
+323:Malta
+324:Mexico
+325:Monaco
+326:Marocco
+327:Namibia
+328:Nepal
+329:Holland
+330:Holländska Antillerna
+331:Nya Caledonien
+332:Nya Zealand
+333:Nicaragua
+334:Nigeria
+335:Norge
+336:Oman
+337:Pakistan
+338:Panama
+339:Papua Nya Guinea
+340:Paraguay
+341:Peru
+342:Philippinerna
+343:Polen
+344:Portugal
+345:Puerto Rico
+346:Qatar
+347:Rumänien
+348:Ryssland
+349:Saipan
+350:San Marino
+351:Saudi Arabien
+352:Senegal
+353:Singapore
+354:Slovakien
+355:Syd Afrika
+356:Spanien
+357:Sri Lanka
+358:Suriname
+359:Sverige
+360:Schweiz
+361:Taiwan
+362:Tanzania
+363:Thailand
+364:Tinian Island
+365:Togo
+366:Tokelau
+367:Tonga
+368:Trinadad and Tabago
+369:Tunisien
+370:Turkiet
+371:Turkmenistan
+372:Turks and Caicos Islands
+373:Tuvalu
+374:Uganda
+375:Ukraina
+376:Förenade arabemiraten
+377:Storbrittanien
+378:United States Virgin Islands
+379:USA
+380:Uruguay
+381:Uzbekistan
+382:Vanuatu
+383:Vatikan staten
+384:Venezuela
+385:Vietnam
+386:Wallis and Futuna Islands
+387:Western Samoa
+388:Yemen
+389:Yugoslavien
+390:Zaire
+391:Zambia
+392:Zimbabwe
+400:		Shows locally stored info on user¶
+401:		Updates other user info like age and sex¶
+402:		Updates your about user info.¶
+403:		Displays the last message received from <nick>.¶			They must be in your Contact List.¶
+404:		Toggles ignoring/unignoring nick¶
+405:		Lists ignored nicks/uins¶
+406:	Toggles your visibility to a user when you're invisible.¶
+407:			Displays the current status of online people on your contact list¶
+408:		Ändrar ditt lösenord till Hemligt.¶
+409:		Skickar ett meddelande till uin¶
+410:	Skickar en url och ett meddelande till uin¶
+411:	Skickar ett  mångradigt meddelande till alla i din lista¶
+412:		Skickar ett meddelande till den du sist skickade ett meddelande till¶
+413:		Tillåt uin att lägga till dig i deras lista¶
+414:		Svara på det meddelande du fick sist¶
+415:		Hittar en slumpmässig användare i den specificerade gruppen eller listan av grupper.¶
+416:			Visar den nuvarande statusen på alla i din  kontaktlista¶
+417:	Det här kommandot tillåter dig att ändra dina kommandon under drift.¶
+418:			Ändra verbositets nivå ( standard = 0 ).¶
+419:				Rensa skärmen.¶
+420:				Ändrar om det piper när du får meddelande.¶
+421:				Sätter av och på färger¶
+422:			Loggar av och stänger av programmet¶
+423:				Visar din automatiskasvarsstatus¶
+424:			Ändrar om du skickar automatiska svar när du är DND, NA, och så vidare¶
+425:		Ställer in dina automatiska svar för en viss status¶
+426:	Skapar ett nytt konto (uin) med angivet lösenord¶
+427:	Ändrar din status till statusnumret¶		Utan ett nummer listar det alternativen¶
+428:	Lägg till uin till din lista med smeknamn.¶
+429:	Söker efter en ICQ användare med angiven e-post adress¶
+430:		Visar allmän information om uin¶
+431:		Ändra status till online (på linjen).¶
+432:		Ändra status till Away (borta).¶
+433:		Ändra status till Not Available (inte tillgänglig).¶
+434:		Ändra status till Occupied (upptagen).¶
+435:		Ändra status till Do not Disturb (stör inte).¶
+436:		Ändra status till Free for Chat (fri att prata).¶
+437:		Ändra status till Invisible (osynlig).¶
+438:		Updatera din grund status (e-post adress, smeknamn, osv.)¶
+439:		Ställer in din slumpmässiga användaregrupp.¶
+#440:PROMPT_HELP_STR (		Ändert den mICQ Prompt.¶)
+#441:GOTO_HELP_STR (				Öffnet die letzte erhaltene URL in Lynx¶)
+442:Var vänlig välj ett ämne ur hjälpen.
+443:Kommandon relaterade till micq.se's uppvisning och konfiguration.
+444:Kommandon relaterade till att hitta andra användare.
+445:Kommandon relaterade till ditt ICQ konto.
+446:Kommandon relaterade till att skicka meddelanden. 
+447:Klient
+448:Meddelande
+449:Användare
+450:Konto
+500:Nickname     : 
+501:Name         : 
+502:Email        : 
+503:Other Email  : 
+504:Old Email    : 
+505:Location     : 
+506:Phone        : 
+507:Fax          : 
+508:Street       : 
+509:Cellular     : 
+510:Zip          : 
+511:Country      : 
+512:Country Code : 
+513:Work Country Code : 
+514:Work Country : 
+515:Work Homepage: 
+516:Occupation   : 
+517:Job Position : 
+518:Department   : 
+519:Company Name : 
+520:Work Zip     : 
+521:Work Fax     : 
+522:Work Address : 
+523:Work Phone   : 
+524:Work Location: 
+525:About : 
+526:Not Entered
+527:Age          : 
+528:Sex : Female
+529:Sex : Male
+530:Sex : Not Specified
+531:Homepage     : 
+532:Born         : 
+533:Languages    : 
+534:Enter a language by number or L for a list: 
+535:Enter new age: 
+536:Enter new sex: 
+537:Enter new homepage: 
+538:Enter new year of birth (4 digits): 
+539:Enter new month of birth: 
+540:Enter new day of birth: 
+541:About> 
+542:Enter other email address: 
+543:Enter old email address: 
+544:Enter new city: 
+545:Enter new state: 
+546:Enter new phone number: 
+547:Enter new fax number: 
+548:Enter new street address: 
+549:Enter new cellular number: 
+550:Enter new zip code (must be numeric): 
+551:Enter your country's phone ID number: 
+552:Enter your time zone (+/- 0-12): 
+553:Skriv in ditt smeknamn : 
+554:Skriv in ditt förnamn : 
+555:Skriv in ditt efternamn : 
+556:Skriv in din e-post adress : 
+557:Vill du att Mirablis användare ska vara tvugna att be om tillåtelse för att få lägga till dig i sin lista : 

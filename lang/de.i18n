@@ -1,0 +1,914 @@
+#
+000:Übersetzung erfolgreich geladen (%d Einträge). Version 0.1.¶
+
+#define STATUS_ONLINE_STR       "Online"
+001:Verbunden
+#define STATUS_DND_STR          "Nicht stoeren"
+002:Nicht stören
+#define STATUS_AWAY_STR         "Nicht da"
+003:Nicht da
+#define STATUS_NA_STR           "Nicht erreichbar"
+004:Nicht erreichbar
+#define STATUS_OCCUPIED_STR     "beschaeftigt"
+005:Beschäftigt
+#define STATUS_INVISIBLE_STR    "Unsichtbar"
+006:Unsichtbar
+#define STATUS_FFC_STR          "Fuer Chats erreichbar"
+007:Für Plaudereien frei
+#define STATUS_OFFLINE_STR      "Offline"
+008:Abgeklemmt
+
+#define DND_DEFAULT_STR "Do Not Disturb (Bitte nicht stoeren) [Auto-Message]"
+009:[Automatische Nachricht] Bitte nicht stören (Do Not Disturb)
+#define AWAY_DEFAULT_STR "User is Away (User ist nicht da) [Auto-Message]"
+010:[Automatische Nachricht] Benutzer ist nicht da (User is Away)
+#define NA_DEFAULT_STR "User is not available (User ist nicht verfuegbar) [Auto-Message]"
+011:[Automatische Nachricht] Benutzer ist nicht verfügbar (User is not available)
+#define OCC_DEFAULT_STR "User is Occupied (User ist verhindert/beschaeftigt) [Auto-Message]"
+012:[Automatische Nachricht] Benutzer ist beschäftigt (User is Occupied)
+#define INV_DEFAULT_STR "User is offline (User ist OFFLINE)"
+013:[Automatische Nachricht] Benutzer ist abgeklemmt (User is Offline)
+
+#define NON_MONTH_STR "Nichts"
+014:---
+#define JAN_MONTH_STR "Jan"
+015:Jan
+#define FEB_MONTH_STR "Feb"
+016:Feb
+#define MAR_MONTH_STR "Maer"
+017:Mär
+#define APR_MONTH_STR "Apr"
+018:Apr
+#define MAY_MONTH_STR "Mai"
+019:Mai
+#define JUN_MONTH_STR "Jun"
+020:Jun
+#define JUL_MONTH_STR "Jul"
+021:Jul
+#define AUG_MONTH_STR "Aug"
+022:Aug
+#define SEP_MONTH_STR "Sep"
+023:Sep
+#define OCT_MONTH_STR "Okt"
+024:Okt
+#define NOV_MONTH_STR "Nov"
+025:Nov
+#define DEC_MONTH_STR "Dez"
+026:Dez
+
+#define YES_STR "JA"
+027:Ja
+#define NO_STR "NEIN"
+028:Nein
+#define YESNO_RESPONSE_STR "Bitte " YES_STR " oder " NO_STR " eingeben!\n"
+029:Bitte Ja oder Nein eingeben!
+
+#define LOGGED_OFF_STR " ausgeloggt."
+030:ausgeloggt.
+#define LOGGED_ON_STR " eingeloggt."
+031:eingeloggt.
+#define INSTANT_MSG_STR " - Nachricht:"
+032:Nachricht:
+#define INSTANT_MASS_MSG_STR " - " SERVCOL "Massen" NOCOL "Nachricht"
+033:Massen
+034:Nachricht
+#define CHANGE_STATUS_STR " hat Status gewechselt zu: "
+035:hat Status gewechselt nach:
+
+#define UNKNOWN_COMMAND_STR "Unbekanntes Kommando %s, tippe /help fuer Hilfe."
+036:Unbekanntes Kommando %s, tippe "help" für Hilfe.
+#define MESSAGE_BUFFER_FULL_STR "Nachricht gesendet bevor der letzte Buffer voll war\n"
+037:Nachricht gesendet, bevor der letzte Puffer voll war¶
+#define MESSAGE_CANCELED_STR "Nachricht abgebrochen\n"
+038:Nachricht abgebrochen¶
+#define MESSAGE_SENT_1_STR  "Nachricht an "
+
+#define MESSAGE_SENT_2_STR  " geschickt!\n"
+039:Nachricht an %s geschickt!¶
+
+#define PROMPT_STR SERVCOL "mICQ> " NOCOL
+040:mICQ> 
+#define MSG_PROMPT_STR "msg> "
+041:msg> 
+#define MSGA_PROMPT_STR "msgAll> "
+042:msgAll> 
+
+#define ALL_FOUND_STR "Alle User gefunden."
+043:Alle Benutzer gefunden.
+#define TOO_MANY_STR "Zu viele User gefunden."
+044:Zu viele Benutzer gefunden.
+#define SEARCH_DONE_STR "Fertig mit suchen."
+045:Fertig mit suchen.
+
+#define LENGTH_STR "Laenge"
+046:Länge
+#define EXTRA_DATA_STR "Extra Data"
+047:Extra-Daten
+#define SEQ_STR "SEQ"
+048:Seq
+#define VER_STR "Ver"
+049:Ver
+#define LOGIN_SUCCESS_STR "Login erfolgreich!"
+050:Login erfolgreich!
+#define SERVER_ACK_STR "Der Server hat das %04x Kommando bestaetigt!"
+051:Der Server hat das %04x Kommando bestätigt!
+
+#define CONNECT_ERROR " Konnte Verbindung nicht herstellen\n"
+052: Konnte Verbindung nicht herstellen¶
+#define CONNECT_SUCCESS " Auf %s verbunden, warte auf Antwort.\n"
+053: Auf %s verbunden, warte auf Antwort.¶
+#define CONNECT_REFUSED_STR " Verbindung verweigert auf Port: %d, Server: %s\n"
+054: Verbindung verweigert auf Port: %d, Server: %s¶
+#define SOCKET_FAIL_STR " Konnte keinen Socket erstellen!"
+055: Konnte keinen Socket erstellen!"
+#define SOCKET_CREAT_STR " Socket erhalten, versuche zu verbinden...\n"
+056: Socket erhalten, versuche zu verbinden...¶
+
+#define BAD_HOST1_STR "Der Hostname "
+057:Der Hostname 
+#define BAD_HOST2_STR "%s wurde nicht gefunden.\n"
+058:%s wurde nicht gefunden.¶
+#define OUR_PORT_STR "Unser Port der fuer TCP verwendet wird, ( noch nicht implementiert! ) ist %d\n"
+059:Verwende Port %d für TCP/IP (noch nicht implementiert).¶
+
+#define VERBOSE_LEVEL_STR "Verbosity level ist %d.\n"
+060:Ausführlichkeit is %d.¶
+#AusführlichkeitGeschwätzigkeitWortreichtumPlapperhaftigkeit
+#define NICK_NOT_FOUND_STR "%s wird nicht als Nickname erkannt"
+061:%s ist kein Spitzname.
+
+#define I_IGNORED_STR "ignorierte User: "
+062:ignorierte User: 
+
+#define ENTER_PW_STR "Bitte Passwort eingeben: "
+063:Bitte Passwort eingeben: 
+#define AUTO_STATUS_CHANGE_STR "Auto-Status-Wechsel: "
+064:Auto-Status-Wechsel: 
+#define INTEL_BO_STR "Benutze Intel-Byte Sortierung."
+065:Bytereihenfolge: Intel.
+#define MOTOROLA_BO_STR "Benutze Motorola-Byte Sortierung."
+066:Bytereihenfolge: Motorola.
+#define IGNORE_CMD_STR "\nIgnoriere Msg-Kmd: %04x\n"
+067:\nIgnoriere Msg-Kmd: %04x\n
+
+#define W_ONLINE_SINCE_STR " Online seit %s"
+068: Online seit %s
+#define W_LAST_ONLINE_STR " Zuletz am %s online gewesen"
+069: Zuletzt am %s online gewesen
+#define W_LAST_ON_UNKNOWN_STR " Es ist nicht bekannt, wann der User das letzte mal online war."
+070: Es ist nicht bekannt, wann der User das letzte mal online war.
+#define W_STATUS_STR "Dein Status ist "
+071:Dein status ist: 
+#define W_OFFLINE_STR "User offline: "
+072:User abgeklemmt: 
+#define W_ONLINE_STR "User online: "
+073:User verbunden: 
+
+##
+## Sprachen
+##
+
+#
+099:Unbekannte Sprache
+#define NONE_LANG_STR           "Nichts"
+100:Keine
+#define ARABIC_LANG_STR         "Arabisch"
+101:Arabisch
+#define BHOJPURI_LANG_STR       "Bhojpuri"
+102:Bhojpuri
+#define BULGARIAN_LANG_STR      "Bulgarisch"
+103:Bulgarisch
+#define BURMESE_LANG_STR        "Burmese"
+104:Burmese
+#define CANTONESE_LANG_STR      "Kantonesisch"
+105:Kantonesisch
+#define CATALAN_LANG_STR        "Katalanisch"
+106:Katalanisch
+#define CHINESE_LANG_STR        "Chinesisch"
+107:Chinesisch
+#define CROATIAN_LANG_STR       "Kroatisch"
+108:Kroatisch
+#define CZECH_LANG_STR          "Tschechisch"
+109:Tschechisch
+#define DANISH_LANG_STR         "Daenisch"
+110:Dänisch
+#define DUTCH_LANG_STR          "Hollaendisch"
+111:Niederländisch
+#define ENGLISH_LANG_STR        "Englisch"
+112:Englisch
+#define ESPERANTO_LANG_STR      "Esperanto"
+113:Esperanto
+#define ESTONIAN_LANG_STR       "Estonisch"
+114:Estnisch
+#define FARSI_LANG_STR          "Farsi"
+115:Farsi
+#define FINNISH_LANG_STR        "Finnisch"
+116:Finnisch
+#define FRENCH_LANG_STR         "Franzoesisch"
+117:Französisch
+#define GAELIC_LANG_STR         "Gaelic"
+118:Gälisch
+#define GERMAN_LANG_STR         "Deutsch"
+119:Deutsch
+#define GREEK_LANG_STR          "Griechisch"
+120:Griechisch
+#define HEBREW_LANG_STR         "Hebraeisch"
+121:Hebräisch
+#define HINDI_LANG_STR          "Hindi"
+122:Hindi
+#define HUNGARIAN_LANG_STR      "Ungarisch"
+123:Ungarisch
+#define ICELANDIC_LANG_STR      "Islaendisch"
+124:Isländisch
+#define INDONESIAN_LANG_STR     "Indonesisch"
+125:Indonesisch
+#define ITALIAN_LANG_STR        "Italienisch"
+126:Italienisch
+#define JAPANESE_LANG_STR       "Japanisch"
+127:Japanisch
+#define KHMER_LANG_STR          "Khmer"
+128:Khmer
+#define KOREAN_LANG_STR         "Koreanisch"
+129:Koreanisch
+#define LAO_LANG_STR            "Lao"
+130:Lao
+#define LATVIAN_LANG_STR        "Latvian"
+131:Lettisch
+#define LITHUANIAN_LANG_STR     "Lithuanian"
+132:Littauisch
+#define MALAY_LANG_STR          "Malaysisch"
+133:Malaysisch
+#define NORWEGIAN_LANG_STR      "Norwegisch"
+134:Norwegisch
+#define POLISH_LANG_STR         "Polisch"
+135:Polisch
+#define PORTUGUESE_LANG_STR     "Portugiesisch"
+136:Portugiesisch
+#define ROMANIAN_LANG_STR       "Rumaenisch"
+137:Rumänisch
+#define RUSSIAN_LANG_STR        "Russisch"
+138:Russisch
+#define SERBOCROATIAN_LANG_STR  "Serbo-Kroatisch"
+139:Serbo-Kroatisch
+#define SLOVAK_LANG_STR         "Slovakisch"
+140:Slovakisch
+#define SLOVENIAN_LANG_STR      "Slovenisch"
+141:Slovenisch
+#define SOMALI_LANG_STR         "Somalisch"
+142:Somalisch
+#define SPANISH_LANG_STR        "Spanisch"
+143:Spanisch
+#define SWAHILI_LANG_STR        "Swahili"
+144:Suaheli
+#define SWEDISH_LANG_STR        "Schwedisch"
+145:Schwedisch
+#define TAGALOG_LANG_STR        "Tagalog"
+146:Tagalog
+#define TARTAR_LANG_STR         "Tartar"
+147:Tartar
+#define THAI_LANG_STR           "Thai"
+148:Thai
+#define TURKISH_LANG_STR        "Tuerkisch"
+149:Türkisch
+#define UKRAINIAN_LANG_STR      "Ukrainian"
+150:Ukrainisch
+#define URDU_LANG_STR           "Urdu"
+151:Urdu
+#define VIETNAMESE_LANG_STR     "Vietnamese"
+152:Vietnamesisch
+#define YIDDISH_LANG_STR        "Yiddish"
+153:Yiddisch
+#define YORUBA_LANG_STR         "Yoruba"
+154:Yoruba
+#define AFRIKAANS_LANG_STR      "Afrikaans"
+155:Afrikaans
+#define BOSNIAN_LANG_STR        "Bosnisch"
+156:Bosnisch
+#define PERSIAN_LANG_STR        "Persisch"
+157:Persisch
+#define ALBANIAN_LANG_STR       "Albanisch"
+158:Albanisch
+#define ARMENIAN_LANG_STR       "Armenian"
+159:Armenisch
+
+##
+## Länder
+##
+
+#
+199:Unbekanntes Land
+#define NON_COUNTRY_STR "Nicht angegeben"
+200:Nicht angegeben
+#define Afghanistan_COUNTRY_STR "Afghanistan"
+201:Afghanistan
+#define Albania_COUNTRY_STR "Albanien"
+202:Albanien
+#define Algeria_COUNTRY_STR "Algerien"
+203:Algerien
+#define American_Samoa_COUNTRY_STR "American Samoa"
+204:Amerikanisches Samoa
+#define Andorra_COUNTRY_STR "Andorra"
+205:Andorra
+#define Angola_COUNTRY_STR "Angola"
+206:Angola
+#define Anguilla_COUNTRY_STR "Anguilla"
+207:Anguilla
+#define Antigua_COUNTRY_STR "Antigua"
+208:Antigua
+#define Argentina_COUNTRY_STR "Argentinen"
+209:Argentinen
+#define Armenia_COUNTRY_STR "Armenien"
+210:Armenien
+#define Aruba_COUNTRY_STR "Aruba"
+211:Aruba
+#define Ascention_Island_COUNTRY_STR "Ascention Island"
+212:«»Ascention Island
+#define Australia_COUNTRY_STR "Australien"
+213:Australien
+#define Australian_Antartic_Territory_COUNTRY_STR "Australisch-Antarktisches Gebiet"
+214:Australisch-Antarktisches Gebiet
+#define Austria_COUNTRY_STR "Oesterreich"
+215:Österreich
+#define Azerbaijan_COUNTRY_STR "Azerbaijan"
+216:Aserbaidschan
+#define Bahamas_COUNTRY_STR "Bahamas"
+217:Bahamas
+#define Bahrain_COUNTRY_STR "Bahrain"
+218:Bahrain
+#define Bangladesh_COUNTRY_STR "Bangladesh"
+219:Bangladesch
+#define Barbados_COUNTRY_STR "Barbados"
+220:Barbados
+#define Belarus_COUNTRY_STR "Belarus"
+221:Belarus
+#define Belgium_COUNTRY_STR "Belgien"
+222:Belgien
+#define Belize_COUNTRY_STR "Belize"
+223:Belize
+#define Benin_COUNTRY_STR "Benin"
+224:Benin
+#define Bermuda_COUNTRY_STR "Bermudas"
+225:Bermudas
+#define Bhutan_COUNTRY_STR "Bhutan"
+226:Bhutan
+#define Bolivia_COUNTRY_STR "Bolivia"
+227:Bolivien
+#define Bosnia_Herzegovina_COUNTRY_STR "Bosnia & Herzegovina"
+228:Bosnien-Herzegovina
+#define Botswana_COUNTRY_STR "Botswana"
+229:Botswana
+#define Brazil_COUNTRY_STR "Brasilien"
+230:Brasilien
+#define British_Virgin_Islands_COUNTRY_STR "British Virgin Islands"
+231:«»British Virgin Islands
+#define Brunei_COUNTRY_STR "Brunei"
+232:Brunei
+#define Bulgaria_COUNTRY_STR "Bulgarien"
+233:Bulgarien
+#define Burkina_Faso_COUNTRY_STR "Burkina Faso"
+234:«»Burkina Faso
+#define Burundi_COUNTRY_STR "Burundi"
+235:Burundi
+#define Cambodia_COUNTRY_STR "Kambodscha"
+236:Kambodscha
+#define Cameroon_COUNTRY_STR "Cameroon"
+237:Kamerun
+#define Canada_COUNTRY_STR "Kanada"
+238:Kanada
+#define Cape_Verde_Islands_COUNTRY_STR "Cape Verde Islands"
+239:«»Cape Verde Islands
+#define Cayman_Islands_COUNTRY_STR "Cayman Islands"
+240:Kaiman-Inseln
+#define Central_African_Republic_COUNTRY_STR "zentralAfrikanische Republik"
+241:Zentral-Afrikanische Republik
+#define Chad_COUNTRY_STR "Chad"
+242:Tschad
+#define Christmas_Island_COUNTRY_STR "Weihnachtsinseln"
+243:Weihnachtsinseln
+#define Cocos_Keeling_Islands_COUNTRY_STR "Cocos-Keeling Islands"
+244:«»Cocos-Keeling Islands
+#define Comoros_COUNTRY_STR "Comoros"
+245:«»Comoros
+#define Congo_COUNTRY_STR "Congo"
+246:Kongo
+#define Cook_Islands_COUNTRY_STR "Cook Islands"
+247:Cook-Inseln
+#define Chile_COUNTRY_STR "Chile"
+248:Chile
+#define China_COUNTRY_STR "China"
+249:China
+#define Columbia_COUNTRY_STR "Columbiem"
+250:Kolumbien
+#define Costa_Rice_COUNTRY_STR "Costa Rica"
+251:Costa Rica
+#define Croatia_COUNTRY_STR "Kroatien"
+252:Kroatien
+#define Cuba_COUNTRY_STR "Cuba"
+253:Kuba
+#define Cyprus_COUNTRY_STR "Cyprus"
+254:Zypern
+#define Czech_Republic_COUNTRY_STR "Tschechische Republik"
+255:Tschechische Republik
+#define Denmark_COUNTRY_STR "Daenemark"
+256:Dänemark
+#define Diego_Garcia_COUNTRY_STR "Diego Garcia"
+257:«»Diego Garcia
+#define Djibouti_COUNTRY_STR "Djibouti"
+258:«»Djibouti
+#define Dominica_COUNTRY_STR "Dominica"
+259:«»Dominica
+#define Dominican_Republic_COUNTRY_STR "Dominikanische Republik"
+260:Dominikanische Republik
+#define Ecuador_COUNTRY_STR "Ecuador"
+261:Äquador
+#define Egypt_COUNTRY_STR "Aegypten"
+262:Ägypten
+#define El_Salvador_COUNTRY_STR "El Salvador"
+263:El Salvador
+#define Equitorial_Guinea_COUNTRY_STR "Equitorial Guinea"
+264:Äquatorial-Guinea
+#define Eritrea_COUNTRY_STR "Eritrea"
+265:Eritrea
+#define Estonia_COUNTRY_STR "Estonia"
+266:Estland
+#define Ethiopia_COUNTRY_STR "Ethiopien"
+267:Äthiopien
+#define Former_Yugoslavia_COUNTRY_STR "F.Y.R.O.M. (Former Yugoslavia)"
+268:Ehemaliges Jugoslavien
+#define Faeroe_Islands_COUNTRY_STR "Faeroe Islands"
+269:«»Faeroe
+#define Falkland_Islands_COUNTRY_STR "Falkland Islands"
+270:Falkland-Inseln
+#define Federated_States_of_Micronesia_COUNTRY_STR "Federated States of Micronesia"
+271:Vereinigte Staaten von Mikronesien
+#define Fiji_COUNTRY_STR "Fiji"
+272:Fidschi
+#define Finland_COUNTRY_STR "Finnland"
+273:Finnland
+#define France_COUNTRY_STR "Frankreich"
+274:Frankreich
+#define French_Antilles_COUNTRY_STR "French Antilles"
+275:Französische Antillen
+276:Französische Antillen
+#define French_Guiana_COUNTRY_STR "French Guiana"
+277:Französisch Gujana
+#define French_Polynesia_COUNTRY_STR "French Polynesia"
+278:Französisch Polynesien
+#define Gabon_COUNTRY_STR "Gabon"
+279:Gabon
+#define Gambia_COUNTRY_STR "Gambia"
+280:Gambia
+#define Georgia_COUNTRY_STR "Georgien"
+281:Georgien
+#define Germany_COUNTRY_STR "Deutschland"
+282:Deutschland
+#define Ghana_COUNTRY_STR "Ghana"
+283:Ghana
+#define Gibraltar_COUNTRY_STR "Gibraltar"
+284:Gibraltar
+#define Greece_COUNTRY_STR "Griechenland"
+285:Griechenland
+#define Greenland_COUNTRY_STR "Greenland"
+286:Grönland
+#define Grenada_COUNTRY_STR "Grenada"
+287:Grenada
+#define Guadeloupe_COUNTRY_STR "Guadeloupe"
+288:«»Guadeloupe
+#define Guam_COUNTRY_STR "Guam"
+289:Guam
+#define Guantanomo_Bay_COUNTRY_STR "Guantanomo Bay"
+290:«»Guantanomo Bay
+#define Guatemala_COUNTRY_STR "Guatemala"
+291:Guatemala
+#define Guinea_COUNTRY_STR "Guinea"
+292:Guinea
+#define Guinea_Bissau_COUNTRY_STR "Guinea-Bissau"
+293:«»Guinea-Bissau
+#define Guyana_COUNTRY_STR "Guyana"
+294:Guyana
+#define Haiti_COUNTRY_STR "Haiti"
+295:Haiti
+#define Honduras_COUNTRY_STR "Honduras"
+296:Honduras
+#define Hong_Kong_COUNTRY_STR "Hong Kong"
+297:Hongkong
+#define Hungary_COUNTRY_STR "Ungarn"
+298:Ungarn
+#define Iceland_COUNTRY_STR "Island"
+299:Island
+#define India_COUNTRY_STR "Indien"
+300:Indien
+#define Indonesia_COUNTRY_STR "Indonesien"
+301:Indonesien
+#define INMARSAT_COUNTRY_STR "INMARSAT"
+302:«»INMARSAT
+#define INMARSAT_Atlantic_East_COUNTRY_STR "INMARSAT Atlantic-East"
+303:«»INMARSAT Atlantic-East
+#define Iran_COUNTRY_STR "Iran"
+304:Iran
+#define Iraq_COUNTRY_STR "Irak"
+305:Irak
+#define Ireland_COUNTRY_STR "Irland"
+306:Irland
+#define Israel_COUNTRY_STR "Israel"
+307:Israel
+#define Italy_COUNTRY_STR "Italien"
+308:Italien
+#define Ivory_Coast_COUNTRY_STR "Ivory Coast"
+309:Elfenbeinküste
+#define Japan_COUNTRY_STR "Japan"
+310:Japan
+#define Jordan_COUNTRY_STR "Jordan"
+311:Jordan
+#define KAZAKHSTAN_COUNTRY_STR  "Kazakhstanisch"
+312:Kasachstan
+#define Kenya_COUNTRY_STR "Kenya"
+313:Kenia
+#define South_Korea_COUNTRY_STR "Sued Korea"
+314:Südkorea
+#define Kuwait_COUNTRY_STR "Kuwait"
+315:Kuwait
+#define Liberia_COUNTRY_STR "Liberia"
+316:Liberia
+#define Libya_COUNTRY_STR "Lybien"
+317:Libyen
+#define Liechtenstein_COUNTRY_STR "Liechtenstein"
+318:Liechtenstein
+#define Luxembourg_COUNTRY_STR "Luxemburg"
+319:Luxemburg
+#define Malawi_COUNTRY_STR "Malawi"
+320:«»Malawi
+#define Malaysia_COUNTRY_STR "Malaysien"
+321:Malaysien
+#define Mali_COUNTRY_STR "Mali"
+322:Mali
+#define Malta_COUNTRY_STR "Malta"
+323:Malta
+#define Mexico_COUNTRY_STR "Mexico"
+324:Mexico
+#define Monaco_COUNTRY_STR "Monaco"
+325:Monaco
+#define Morocco_COUNTRY_STR "Morocco"
+326:Marokko
+#define Namibia_COUNTRY_STR "Namibia"
+327:Namibia
+#define Nepal_COUNTRY_STR "Nepal"
+328:Nepal
+#define Netherlands_COUNTRY_STR "Niederlande"
+329:Niederlande
+#define Netherlands_Antilles_COUNTRY_STR "Netherlands Antilles"
+330:Niederländische Antillen
+#define New_Caledonia_COUNTRY_STR "New Caledonia"
+331:Neu-Kaledonien
+#define New_Zealand_COUNTRY_STR "Neuseeland"
+332:Neuseeland
+#define Nicaragua_COUNTRY_STR "Nikaragua"
+333:Nikaragua
+#define Nigeria_COUNTRY_STR "Nigerien"
+334:Nigerien
+#define Norway_COUNTRY_STR "Norwegen"
+335:Norwegen
+#define Oman_COUNTRY_STR "Oman"
+336:Oman
+#define Pakistan_COUNTRY_STR "Pakistan"
+337:Pakistan
+#define Panama_COUNTRY_STR "Panama"
+338:Panama
+#define Papua_New_Guinea_COUNTRY_STR "Papua New Guinea (Neu Guinea)"
+339:Papua Neu-Guinea
+#define Paraguay_COUNTRY_STR "Paraguay"
+340:Paraguay
+#define Peru_COUNTRY_STR "Peru"
+341:Peru
+#define Philippines_COUNTRY_STR "Philippinen"
+342:Philippinen
+#define Poland_COUNTRY_STR "Polen"
+343:Polen
+#define Portugal_COUNTRY_STR "Portugal"
+344:Portugal
+#define Puerto_Rico_COUNTRY_STR "Puerto Rico"
+345:Puerto Rico
+#define Qatar_COUNTRY_STR "Qatar"
+346:«»Qatar
+#define Romania_COUNTRY_STR "Romenien"
+347:Rumänien
+#define Russia_COUNTRY_STR "Russland"
+348:Russland
+#define Saipan_COUNTRY_STR "Saipan"
+349:«»Saipan
+#define San_Marino_COUNTRY_STR "San Marino"
+350:San Marino
+#define Saudia_Arabia_COUNTRY_STR "Saudi Arabien"
+351:Saudi-Arabien
+#define Senegal_COUNTRY_STR "Senegal"
+352:Senegal
+#define Singapore_COUNTRY_STR "Singapur"
+353:Singapur
+#define Slovakia_COUNTRY_STR "Slovakien"
+354:Slowakei
+#define South_Africa_COUNTRY_STR "Sued Afrika"
+355:Süd-Afrika
+#define Spain_COUNTRY_STR "Spanien"
+356:Spanien
+#define Sri_Lanka_COUNTRY_STR "Sri Lanka"
+357:Sri Lanka
+#define Suriname_COUNTRY_STR "Suriname"
+358:«»Suriname
+#define Sweden_COUNTRY_STR "Schweden"
+359:Schweden
+#define Switzerland_COUNTRY_STR "Schweitz"
+360:Schweitz
+#define Taiwan_COUNTRY_STR "Taiwan"
+361:Taiwan
+#define Tanzania_COUNTRY_STR "Tanzania"
+362:Tansania
+#define Thailand_COUNTRY_STR "Thailand"
+363:Thailand
+#define Tinian_Island_COUNTRY_STR "Tinian Island"
+364:«»Tinian Island
+#define Togo_COUNTRY_STR "Togo"
+365:Togo
+#define Tokelau_COUNTRY_STR "Tokelau"
+366:Tokelau
+#define Tonga_COUNTRY_STR "Tonga"
+367:Tonga
+#define Trinadad_and_Tabago_COUNTRY_STR "Trinadad and Tabago"
+368:Trinidad und Tobago
+#define Tunisia_COUNTRY_STR "Tunesien"
+369:Tunesien
+#define Turkey_COUNTRY_STR "Tuerkei"
+370:Türkei
+#define Turkmenistan_COUNTRY_STR "Turkmenistan"
+371:Turkmenistan
+#define Turks_and_Caicos_Islands_COUNTRY_STR "Turks and Caicos Islands"
+372:«»Turks and Caicos Islands
+#define Tuvalu_COUNTRY_STR "Tuvalu"
+373:Tuvalu
+#define Uganda_COUNTRY_STR "Uganda"
+374:Uganda
+#define Ukraine_COUNTRY_STR "Ukraine"
+375:Ukraine
+#define United_Arab_Emirates_COUNTRY_STR "Vereinigte Arabische Emirate"
+376:Vereinigte Arabische Emirate
+#define UK_COUNTRY_STR "United Kingdom"
+377:Vereinigtes Königreich
+#define US_Virgin_Islands "United States Virgin Islands"
+378:USA/Jungferninseln
+#define USA_COUNTRY_STR "USA"
+379:USA
+#define Uruguay_COUNTRY_STR "Uruguay"
+380:Uruguay
+#define Uzbekistan_COUNTRY_STR "Uzbekistan"
+381:Uzbekistan
+#define Vanuatu_COUNTRY_STR "Vanuatu"
+382:«»Vanuatu
+#define Vatican_City_COUNTRY_STR "Vatikan (City)"
+383:Vatikan (Stadt)
+#define Venezuela_COUNTRY_STR "Venezuela"
+384:Venezuela
+#define Vietnam_COUNTRY_STR "Vietnam"
+385:Vietnam
+#define Wallis_and_Futuna_Islands_COUNTRY_STR "Wallis and Futuna Islands"
+386:«»Wallis and Futuna Islands
+#define Western_Samoa_COUNTRY_STR "Western Samoa"
+387:West-Samoa
+#define Yemen_COUNTRY_STR "Yemen"
+388:«»Yemen
+#define Yugoslavia_COUNTRY_STR "Jugoslavien"
+389:Jugoslavien
+#define Zaire_COUNTRY_STR "Zaire"
+390:Zaire
+#define Zambia_COUNTRY_STR "Zambia"
+391:Sambia
+#define Zimbabwe_COUNTRY_STR "Zimbabwe"
+392:Simbabwe
+
+##
+## Hilfe-Texte
+##
+
+#define STATUS_HELP_STR "\t\tShows locally stored info on user\n"
+400:		Shows locally stored info on user¶
+#define UPDATE_OTHER_HELP_STR "\t\tUpdates other user info like age and sex\n"
+401:		Updates other user info like age and sex¶
+#define ABOUT_HELP_STR       "\t\tAktualisiert die Infos ueber dich.\n"
+402:		Aktualisiert die Infos ueber dich.¶
+#define LAST_HELP_STR        "\t\tZeigt die letzte von <nick> empfangene Nachricht.\n
+403:		Zeigt die letzte von <nick> empfangene Nachricht.¶
+#\t\t\t<nick> _muss_ in deiner Userliste stehen.\n"
+#define TOGIG_HELP_STR "\t\tIgnoriert/Unignoriert <nick>\n"
+404:		Ignoriert/Unignoriert <nick>¶
+#define IGLIST_HELP_STR "\t\tListet ignorierte nicks/uins\n"
+405:		Listet ignorierte nicks/uins¶
+#define TOGVIS_HELP_STR "\tMacht dich (un)sichtbar gegen andere User, wenn du generell unsichtbar bist.\n"
+406:	Macht dich (un)sichtbar gegen andere User, wenn du generell unsichtbar bist.¶
+#define ONLINE_LIST_HELP_STR "\t\t\tZeigt den Online-Status der Leute auf deiner Kontaktliste an.\n"
+407:			Zeigt den Online-Status der Leute auf deiner Kontaktliste an.¶
+#define PASS_HELP_STR "\t\tAendert dein Passwort in secret.\n"
+408:		Ändert dein Passwort in secret.¶
+#define MSG_HELP_STR "\t\tSendet eine Nachricht an uin\n"
+409:		Sendet eine Nachricht an uin.¶
+#define URL_HELP_STR "\tSendet eine Nachricht und URL an uin\n"
+410:	Sendet eine Nachricht und URL an uin¶
+#define MSGA_HELP_STR "\tSendet eine MehrZeilen-Nachricht an JEDEN in deiner Kontaktliste.\n"
+411:	Sendet eine MehrZeilen-Nachricht an JEDEN in deiner Kontaktliste.¶
+#define AGAIN_HELP_STR "\t\tSendet eine Nachricht zu der letzten Person zu der du eine Nachricht geschickt hast.\n"
+412:		Sendet eine Nachricht zu der letzten Person zu der du eine Nachricht geschickt hast.¶
+#define AUTH_HELP_STR "\t\tAuthorisiert uin dich zu seiner Kontaktliste hinzuzufuegen\n"
+413:		Authorisiert uin dich zu seiner Kontaktliste hinzuzufügen¶
+#define REPLY_HELP_STR "\t\tAntwort auf die letzte Nachricht die du bekommen hast.\n"
+414:		Antwort auf die letzte Nachricht die du bekommen hast.¶
+#define RAND_HELP_STR "\t\tFindet einen zufaelligen User in der spezifizierten Gruppe oder listet alle Gruppen.\n"
+415:		Findet einen zufaelligen User in der spezifizierten Gruppe oder listet alle Gruppen.¶
+#define LIST_HELP_STR "\t\t\tzeigt den momentanen Status aller User auf deiner Kontaktliste.\n"
+416:			zeigt den momentanen Status aller User auf deiner Kontaktliste.¶
+#define ALTER_HELP_STR "\tDiese Kommando erlaubt dir die Namen anderer Kommandos on-the-fly zu veraendern.\n"
+417:	Diese Kommando erlaubt Dir, die Namen anderer Kommandos zur Laufzeit zu verändern.¶
+#define VERBOSE_HELP_STR "\t\t\tSetzt den verbosity Level ( default = 0 ).\n"
+418:			Setzt die Ausführlichkeit (Vorgabe: 0).¶
+#define CLEAR_HELP_STR "\t\t\t\tLoescht den Bildschirm.\n"
+419:			Löscht den Bildschirm.¶
+#define SOUND_HELP_STR "\t\t\t\tSchaltet das Biepen beim Erhalt von Nachrichten an/aus.\n"
+420:			Schaltet das Piepsen beim Erhalt von Nachrichten an/aus.¶
+#define COLOR_HELP_STR "\t\t\t\tSchaltet die Anzeige von Farben um.\n"
+421:			tSchaltet die Anzeige von Farben um.¶
+#define QUIT_HELP_STR "\t\t\tLogt aus und beendet mICQ.\n"
+422:			Logt aus und beendet mICQ.¶
+#define AUTO1_HELP_STR "\t\t\t\tzeigt den Auto-Reply Status\n"
+423:				zeigt den Auto-Reply Status¶
+#define AUTO2_HELP_STR "\t\t\tSchaltet das Senden von Nachrichten, wenn du OCC, DND oder NA bist, um.\n"
+424:			Schaltet das Senden von Nachrichten, wenn du OCC, DND oder NA bist, um.¶
+#define AUTO3_HELP_STR "\t\tSetzt die Nachricht, die als auto-reply waehrend eines Modus erzeugt wird, neu.\n"
+425:		Setzt die Nachricht, die als auto-reply waehrend eines Modus erzeugt wird, neu.¶
+#define REG_HELP_STR "\tKreeirt eine neue UIN mit dem spezifizierten Passwort.\n"
+426:	Kreeirt eine neue UIN mit dem spezifizierten Passwort.¶
+#define CHANGE_HELP_STR "\tWechselt deinen Status auf die spezifizierte StatusNummer.\n\t\tOhne Nummer listet es alle verfuegbaren Nummern.\n"
+427:	Wechselt deinen Status auf die spezifizierte StatusNummer.¶		Ohne Nummer listet es alle verfuegbaren Nummern.¶
+#define ADD_HELP_STR "\tFuegt die uin zu deiner Kontaktliste mit Nickname.\n"
+428:	Fügt die uin zu deiner Kontaktliste mit Nickname.¶
+#define SEARCH_HELP_STR "\tSucht nach einem ICQ User mit der spezifizierten eMail-Adresse.\n"
+429:	Sucht nach einem ICQ User mit der spezifizierten eMail-Adresse.¶
+#define INFO_HELP_STR "\t\tzeigt generelle Infos ueber uin\n"
+430:		zeigt generelle Infos über uin.¶
+#define ONLINE_HELP_STR "\t\t-Online-\n"
+431:		-verbunden-¶
+#define AWAY_HELP_STR "\t\t-nicht da-\n"
+432:		-nicht da-¶
+#define NA_HELP_STR "\t\t-nicht erreichbar-\n"
+433:		-nicht erreichbar-¶
+#define OCC_HELP_STR "\t\t-beschaeftigt-\n"
+434:		-beschäftigt-¶
+#define DND_HELP_STR "\t\t-nicht stoeren-\n"
+435:		-nicht stören-¶
+#define FFC_HELP_STR "\t\t-Fuer Chats erreichbar-\n"
+436:		-für Plaudereien frei-¶
+#define INV_HELP_STR "\t\t-Unsichtbar-\n"
+437:		-unsichtbar-¶
+#define UPDATE_HELP_STR "\t\tAendert deine persoenlichen Userinfos (eMail, Nickname, etc.)\n"
+438:		Ändert deine persönlichen Userinfos (eMail, Spitzname, etc.)¶
+#define SET_RAND_HELP_STR "\t\tSetzt deine zufaellige Usergruppe.\n"
+439:		Setzt deine zufällige Usergruppe.¶
+#define PROMPT_HELP_STR "\t\tAendert den mICQ Prompt.\n"
+440:		Ändert den mICQ Prompt.¶
+#define GOTO_HELP_STR "\t\t\t\tOeffnet die letzte erhaltene URL in Lynx\n"
+441:				Öffnet die letzte erhaltene URL in Lynx¶
+#define SELECT_GROUP_STR "Bitte waehle eines der Hilfe-Themen."
+442:Bitte wähle eines der Hilfe-Themen.
+#define CLIENT_HELP_STR "Kommandos um mICQ zu konfigurieren."
+443:Kommandos, um mICQ zu konfigurieren.
+#define USER_HELP_STR "Kommandos um andere User zu finden."
+444:Kommandos, um andere User zu finden.
+#define ACCOUNT_HELP_STR "Kommandos zu deinem ICQ-Account."
+445:Kommandos, zu deinem ICQ-Account.
+#define MESSAGE_HELP_STR "Kommandos wie man Nachrichten an andere User schickt."
+446:Kommandos, wie man Nachrichten an andere User schickt.
+#define CLIENT_CAT_STR "Client"
+447:Client
+#define MESSAGE_CAT_STR "Nachricht"
+448:Nachricht
+#define USER_CAT_STR "User"
+449:User
+#define ACCOUNT_CAT_STR "Account"
+450:Account
+
+##                   v
+#define NICKNAME_INFO_STR           "Nickname       : "
+500:Spitzname:       
+#define NAME_INFO_STR               "Name           : "
+501:Name:            
+#define EMAIL_INFO_STR              "Email          : "
+502:eMail:           
+#define OTHER_EMAIL_INFO_STR        "Zweit Email    : "
+503:Zweit-eMail:     
+#define OLD_EMAIL_INFO_STR          "Alte Email     : "
+504:Alte eMail:      
+#define LOCATION_INFO_STR           "Ort            : "
+505:Ort:             
+#define PHONE_INFO_STR              "Telefon        : "
+506:Telephon:        
+#define FAX_INFO_STR                "Fax            : "
+507:Fax:             
+#define STREET_INFO_STR             "Strasse        : "
+508:Straße:          
+#define CELLULAR_INFO_STR           "Handy          : "
+509:Handy:           
+#define ZIP_INFO_STR                "PLZ            : "
+510:PLZ:             
+#define COUNTRY_INFO_STR            "Land           : "
+511:Land:           
+#define COUNTRY_CODE_INFO_STR       "ISO Landescode : "
+512:ISO-Landescode: 
+#define WORK_COUNTRY_CODE_INFO_STR  "Landescode auf Arbeit  : " 
+513:ISO-Landescode auf der Arbeit: 
+#define WORK_COUNTRY_INFO_STR       "Work Country : " 
+514:Work Country : 
+#define WORK_HOMEPAGE_INFO_STR      "Work Homepage: " 
+515:Work Homepage: 
+#define WORK_OCCUPATION_INFO_STR    "Occupation   : "
+516:Occupation   : 
+#define WORK_JOB_POS_INFO_STR       "Job Position : " 
+517:Job Position : 
+#define WORK_DEPT_INFO_STR          "Department   : " 
+518:Department   : 
+#define WORK_COMP_NAME_INFO_STR     "Company Name : " 
+519:Company Name : 
+#define WORK_ZIP_INFO_STR           "Work Zip     : " 
+520:Work Zip     : 
+#define WORK_FAX_INFO_STR           "Work Fax     : " 
+521:Work Fax     : 
+#define WORK_ADDRESS_INFO_STR       "Work Address : " 
+522:Work Address : 
+#define WORK_PHONE_INFO_STR         "Work Phone   : " 
+523:Work Phone   : 
+#define WORK_LOCATION_INFO_STR      "Work Location: "
+524:Work Location: 
+#define ABOUT_INFO_STR              "About : "
+525:About : 
+#define INFO_NE_STR                 "Not Entered"
+526:Not Entered
+#define AGE_INFO_STR                "Age          : "
+527:Age          : 
+#define FEMALE_INFO_STR             "Sex : Female"
+528:Sex : Female
+#define MALE_INFO_STR               "Sex : Male"
+529:Sex : Male
+#define SEX_UNKNOWN_INFO_STR        "Sex : Not Specified"
+530:Sex : Not Specified
+#define HOMEPAGE_INFO_STR           "Homepage     : "
+531:Homepage     : 
+#define BIRTH_INFO_STR              "Born         : "
+532:Born         : 
+#define LANGUAGE_INFO_STR           "Languages    : "
+533:Languages    : 
+
+#define UPDATE_LANG_STR "Enter a language by number or L for a list: "
+534:Enter a language by number or L for a list: 
+#define UPDATE_AGE_STR "Enter new age: "
+535:Enter new age: 
+#define UPDATE_SEX_STR "Enter new sex: "
+536:Enter new sex: 
+#define UPDATE_HP_STR "Enter new homepage: "
+537:Enter new homepage: 
+#define UPDATE_YEAR_OF_BIRTH_STR "Enter new year of birth (4 digits): "
+538:Enter new year of birth (4 digits): 
+#define UPDATE_MONTH_OF_BIRTH_STR "Enter new month of birth: "
+539:Enter new month of birth: 
+#define UPDATE_DAY_OF_BIRTH_STR "Enter new day of birth: "
+540:Enter new day of birth: 
+#define ABOUT_PROMPT_STR "About> "
+541:About> 
+
+#define EMAIL2_UPDATE_STR    "Zweite eMail Adresse: "
+542:Zweite eMail Adresse: 
+#define EMAIL3_UPDATE_STR    "alte  eMail Adresse: "
+543:alte  eMail Adresse: 
+#define CITY_UPDATE_STR      "Neue  Stadt: "
+544:Neue  Stadt: 
+#define STATE_UPDATE_STR     "Neuer Staat: "
+545:Neuer Staat: 
+#define PHONE_UPDATE_STR     "Neue  Telefonnummer: "
+546:Neue  Telefonnummer: 
+#define FAX_UPDATE_STR       "Neue  Faxnummer: "
+547:Neue  Faxnummer: 
+#define STREET_UPDATE_STR    "Neue  Strasse: "
+548:Neue  Strasse: 
+#define CELLULAR_UPDATE_STR  "Neue  Handynummer: "
+549:Neue  Handynummer: 
+#define ZIP_UPDATE_STR       "Neue  Postleitzahl: "
+550:Neue  Postleitzahl: 
+#define COUNTRY_UPDATE_STR   "LandesVorwahl (049 fuer Deutschland): "
+551:LandesVorwahl (049 fuer Deutschland): 
+#define TIME_ZONE_UPDATE_STR "die Timezone (+/- 0-12): "
+552:die Timezone (+/- 0-12): 
+
+#define NICK_NAME_UPDATE_STR  "Dein neuer Nickname : "
+553:Dein neuer Nickname : 
+#define FIRST_NAME_UPDATE_STR "Dein neuer Vorname  : "
+554:Dein neuer Vorname  : 
+#define LAST_NAME_UPDATE_STR  "Dein neuer Nachname : "
+555:Dein neuer Nachname : 
+#define EMAIL_UPDATE_STR      "Deine Email-Adresse : "
+556:Deine Email-Adresse : 
+#define AUTH_QUESTION_STR     "Moechtest du dass Mirabelis-User dein Autorisation brauchen? : "
+557:Moechtest du dass Mirabelis-User dein Autorisation brauchen? : 
+

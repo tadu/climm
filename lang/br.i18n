@@ -1,0 +1,439 @@
+# brazil
+#000: (Übersetzung erfolgreich geladen (%d Einträge) Version 0.1.¶)
+001:Conectado
+002:Não perturbe
+003:Ausente
+004:Não Disponível
+005:Ocupado
+006:Invisível
+007:Disponível para chat
+008:Desconectado
+009:Usuario está em modo \"não perturbe\" [Msg-Automatica]
+010:Usuario está ausente [Msg-Automatica]
+011:Usuario não está disponível [Msg-Automatica]
+012:Usuario está ocupado [Msg-Automatica]
+013:Usuario não está conectado.
+014:Nenhum
+015:Jan
+016:Fev
+017:Mar
+018:Abr
+019:Mai
+020:Jun
+021:Jul
+022:Ago
+023:Set
+024:Out
+025:Nov
+026:Dez
+027:SIM
+028:NÃO
+029:Por favor escolha " YES_STR " ou " NO_STR "¶
+030: saiu do ICQ.
+031: entrou no ICQ.
+032: enviou uma Mensagem
+033: enviou uma Mensagem " SERVCOL "para um grupo
+#034: (Nachricht)
+035: mudou o estado para 
+036:Comando %s desconhecido, digite /help para obter auxílio.
+037:Mensagem enviada antes que o espaço se esgotasse¶
+038:Mensagem cancelada¶
+039:!¶
+040:Micq> 
+041:msg> 
+042:msg todos> 
+043:Todos os usuários possíveis foram encontrados.
+044:Usuarios demais foram encontrados.
+045:Pesquisa completa.
+046:Tamanho
+047:Dados adicionais
+048:SEQ
+049:Ver
+050:Conectado ao servidor ICQ com sucesso!
+051:O servidor recebeu o comando %04x.
+052:Impossivel estabelecer conexão¶
+053:Conectado a %s, esperando por resposta¶
+054: Conexão recusada na porta %d em %s¶
+055:Erro na criação de um socket
+056:Socket criado, tentando conectar¶
+057:O hostname 
+058:%s não foi encontrado.¶
+059:O port que será usado para TCP (não implementado ainda) é %d¶
+060:Nível de mensagens adicionais é %d.¶
+061:%s não é reconhecido como um nickname.
+062:Usuários ignorados: 
+063:Digite a senha : 
+064:¶Mudando automaticamente o estado para: 
+065:Usando organização de bytes da Intel.
+066:Usando organização de bytes da Motorola.
+067:¶Ignorado o comando de mensagem %04x¶
+068: Conectado desde %s
+069: Conectado pela última vez em %s
+070: Última conexão: desconhecido.
+071:Seu estado é 
+072:Usuários desconectados: 
+073:Usuários conectados: 
+#099: (Unbekannte Sprache)
+100:Não especificado
+101:Árabe
+102:Bhojpuri
+103:Búlgaro
+104:Burmês
+105:Cantonês
+106:Catalão
+107:Chinês
+108:Croata
+109:Tcheco
+110:Dinamarquês
+111:Holandês
+112:Inglês
+113:Esperanto
+114:Estoniano
+115:Farsi
+116:Finlandês
+117:Francês
+118:Gaélico
+119:Alemão
+120:Grego
+121:Hebraico
+122:Hindi
+123:Húngaro
+124:Islandês
+125:Indonésio
+126:Italiano
+127:Japonês
+128:Khmer
+129:Coreano
+130:Lao
+131:Latvian
+132:Lituânio
+133:Malásio
+134:Norueguês
+135:Polonês
+136:Português
+137:Romanês
+138:Russo
+139:Servo-Croata
+140:Eslovaco
+141:Eslovênio
+142:Somali
+143:Espanhol
+144:Swahili
+145:Sueco
+146:Tagalog
+147:Tártaro
+148:Tailandês
+149:Turco
+150:Ucrainiano
+151:Urdu
+152:Vietnamês
+153:Ídiche
+154:Yorubá
+155:Afrikaans
+156:Bósnio
+157:Persa
+158:Albanês
+159:Armênio
+#199: (Unbekanntes Land)
+200:Não informado
+201:Afeganistão
+202:Albânia
+203:Algéria
+204:Samoa Americana
+205:Andorra
+206:Angola
+207:Anguilla
+208:Antígua
+209:Argentina
+210:Armênia
+211:Aruba
+212:Ilha da Ascenção
+213:Austrália
+214:Território antártico Australiano
+215:Áustria
+216:Azerbajão
+217:Bahamas
+218:Bahrain
+219:Bangladesh
+220:Barbados
+221:Belarus
+222:Bélgica
+223:Belize
+224:Benin
+225:Bermudas
+226:Butão
+227:Bolívia
+228:Bósnia & Herzegovina
+229:Botswana
+230:Brasil
+231:Ilhas Virgens Britânicas
+232:Brunei
+233:Bulgária
+234:Burkina Faso
+235:Burundi
+236:Cambója
+237:Camarões
+238:Canadá
+239:Cabo Verde
+240:Ilhas Cayman
+241:República Centro-Africana
+242:Chad
+243:Christmas Island
+244:Cocos-Keeling Islands
+245:Comoros
+246:Congo
+247:Cook Islands
+248:Chile
+249:China
+250:Colúmbia
+251:Costa Rice
+252:Croácia
+253:Cuba
+254:Chipre
+255:República Checa
+256:Dinamarca
+257:Diego Garcia
+258:Djibouti
+259:Dominica
+260:Republica Dominicana
+261:Equador
+262:Egito
+263:El Salvador
+264:Guiné Equatorial
+265:Eritrea
+266:Estônia
+267:Etiópia
+268:F.Y.R.O.M. (Antiga Yugoslavia)
+269:Faeroe Islands
+270:Ilhas Falkland (Malvinas)
+271:Estados Federados da Micronésia
+272:Fiji
+273:Finlândia
+274:França
+275:Antilhas Francesas
+276:Antilhas Francesas
+277:Guiana Francesa
+278:Polinésia Francesa
+279:Gabão
+280:Gâmbia
+281:Geórgia
+282:Alemanha
+283:Ghana
+284:Gibraltar
+285:Grécia
+286:Groenlândia
+287:Granada
+288:Guadalupe
+289:Guam
+290:Baía de Guantanomo
+291:Guatemala
+292:Guiné
+293:Guiné-Bissau
+294:Guiana
+295:Haití
+296:Honduras
+297:Hong Kong
+298:Hungria
+299:Islândia
+300:Índia
+301:Indonésia
+302:INMARSAT
+303:INMARSAT Atlântico-leste
+304:Irã
+305:Iraque
+306:Irlanda
+307:Israel
+308:Itália
+309:Costa do Marfim
+310:Japão
+311:Jordânia
+312:Casaquistão
+313:Quênia
+314:Coréia do Sul
+315:Quait
+316:Libéria
+317:Líbia
+318:Liechtenstein
+319:Luxemburgo
+320:Malawi
+321:Malásia
+322:Mali
+323:Malta
+324:México
+325:Mônaco
+326:Marrocos
+327:Namíbia
+328:Nepal
+329:Holanda
+330:Antilhas Holandesas
+331:Nova Caledônia
+332:Nova Zelândia
+333:Nicarágua
+334:Nigéria
+335:Noruega
+336:Omã
+337:Paquistão
+338:Panamá
+339:Papua Nova Guiné
+340:Paraguai
+341:Peru
+342:Filipinas
+343:Polônia
+344:Portugal
+345:Porto Rico
+346:Qatar
+347:România
+348:Rússia
+349:Saipan
+350:San Marino
+351:Arábia Saudita
+352:Senegal
+353:Singapura
+354:Eslováquia
+355:África do Sul
+356:Espanha
+357:Sri Lanka (antigo Ceilão)
+358:Suriname
+359:Suécia
+360:Suíça
+361:Taiwan
+362:Tanzânia
+363:Tailândia
+364:Ilha Tinian
+365:Togo
+366:Tokelau
+367:Tonga
+368:Trinadad/Tabago
+369:Tunísia
+370:Turquia
+371:Turcomenistão
+372:Turks and Caicos Islands
+373:Tuvalu
+374:Uganda
+375:Ucrânia
+376:Emirados Árabes Unidos
+377:Reino Unido
+378:Ilhas Virgens Americanas
+379:Estados Unidos
+380:Uruguai
+381:Uzbequistão
+382:Vanuatu
+383:Cidade do Vaticano
+384:Venezuela
+385:Vietnã
+386:Wallis and Futuna Islands
+387:Samoa Ocidental
+388:Iêmen
+389:Iugoslávia
+390:Zaire
+391:Zambia
+392:Zimbabwe
+400:		Mostra informação disponível localmente sobre o usuário¶
+401:		Atualiza informações de usuário adicionais¶
+402:		Atualiza suas informações de usuário.¶
+403:		Mostra a última mensagem recebida de <nick>.¶			A pessoa precisa estar em sua Lista de Contatos.¶
+404:		Ignora/designora um nick¶
+405:		Lista os nicks/uins ignorados¶
+406:	Inclui alguém na lista de visibilidade¶
+407:			Mostra o status das pessoas na lista de contatos¶
+408:		Muda sua senha para \"secret\".¶
+409:		Envia mensagem ao uin especificado.¶
+410:	Envia uma mensagem e URL ao uin especificado.¶
+411:	Envia uma mensagem de múltiplas linhas a todos em sua lista.¶
+412:		Envia uma mensagem à última pessoa a quem você enviou mensagem.¶
+413:		Autoriza o usuário do uin a acrescentar você a sua lista.¶
+414:		Envia mensagem à última pessoa que enviou a você (responde).¶
+415:		Encontra um usuário aleatório no grupo ou lista de grupos.¶
+416:			Mostra o estado atual de todos em sua listaa de contatos.¶
+417:	Este comando permite alterar durante execução o conjunto de comandos.¶
+418:			Altera o nível de mensagens adicionais ( normalmente 0 ).¶
+419:				Limpa a tela.¶
+420:				Liga/desliga o ruído ao receber mensagens.¶
+421:				Liga/desliga as cores.¶
+422:			Desconecta e encerra o programa.¶
+423:				Mostra seu estado atual.¶
+424:			Liga/desliga a habilidade de enviar mensagens quando DND, NA, etc.¶
+425:		Configura a resposta automática a ser usada quando nesse estado.¶
+426:	Cria um novo UIN com a senha especificada.¶
+427:	Muda seu estado para o número especificado.¶		Sem o número, lista os estados disponíveis.¶
+428:	Acrescenta o UIN especificado à sua lista sob o nick \"nickname\".¶
+429:	Busca um usuário ICQ com o endereço de e-mail especificado.¶
+430:		Exibe informações sobre o UIN especificado.¶
+431:		Muda seu estado para Online (conectado).¶
+432:		Muda seu estado para Away (fora).¶
+433:		Muda seu estado para Not Available (não disponível).¶
+434:		Muda seu estado para Occupied (ocupado).¶
+435:		Muda seu estado para Do not Disturb (não perturbe).¶
+436:		Muda seu estado para Free for Chat (disponível para chat).¶
+437:		Muda seu estado para Invisible (invisível).¶
+438:		Atualiza sua informação básica (email, nick, etc.)¶
+439:		Configura seu grupo de usuários aleatórios.¶
+#440:PROMPT_HELP_STR (		Ändert den mICQ Prompt.¶)
+#441:GOTO_HELP_STR (				Öffnet die letzte erhaltene URL in Lynx¶)
+442:Escolha um dos tópicos de ajuda abaixo.
+443:Comandos relacionados ao mICQ e suas configurações.
+444:Comandos para achar outros usuários.
+445:Comandos relacionados à sua conta de ICQ.
+446:Comandos relacionados ao envio de mensagens.
+447:Cliente
+448:Mensagem
+449:Usuário
+450:Conta
+500:Apelido      : 
+501:Nome         : 
+502:Email        : 
+503:Outro Email  : 
+504:Antigo Email : 
+505:Cidade       : 
+506:Telefone     : 
+507:Fax          : 
+508:Endereço     : 
+509:Celular      : 
+510:CEP          : 
+511:País         : 
+512:Cód. do País : 
+513:Cód. do País trab. : 
+514:País onde trabalha : 
+515:Homepage do trab.  : 
+516:Ocupação    : 
+517:Emprego     : 
+518:Departmento  : 
+519:Nome Empresa : 
+520:CEP trab.    : 
+521:Fax trab.    : 
+522:Endereço tr. : 
+523:Fone trab.   : 
+524:Cidade trab. : 
+525:Sobre : 
+526:Não preenchido
+527:Idade        : 
+528:Sexo : Feminino
+529:Sexo : Masculino
+530:Sexo : Não preenchido
+531:Homepage     : 
+532:Data nascim. : 
+533:Idiomas      : 
+534:Escolha um idioma pelo número, ou digite L para ver uma listagem: 
+535:Digite sua idade: 
+536:Digite seu sexo: 
+537:Digite o endereço de sua homepage: 
+538:Digite o ano de seu nascimento (4 dígitos): 
+539:Digite o mês de seu nascimento: 
+540:Digite o dia de seu nascimento: 
+541:Sobre> 
+542:Seu outro endereço de email: 
+543:Seu antigo endereço de email: 
+544:Sua cidade: 
+545:Seu estado: 
+546:Seu número de telefone: 
+547:Seu número de fax: 
+548:Seu endereço: 
+549:Seu número de telefone celular: 
+550:Seu código postal (apenas numérico): 
+551:Código telefônico de seu país (Brasil = 55): 
+552:Seu fuso horário (+/- 0-12 - Brasil = +2 a +4): 
+553:Escolha seu novo Nick : 
+554:Escolha seu novo Primeiro nome : 
+555:Escolha seu novo Sobrenome : 
+556:Escolha seu novo Endereço de email : 
+557:Você quer que usuários Mirabilis tenham que pedir sua autorização? : 

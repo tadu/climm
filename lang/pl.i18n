@@ -1,0 +1,439 @@
+# polish
+#000: (Übersetzung erfolgreich geladen (%d Einträge). Version 0.1.¶)
+001:Obecny
+002:Nie przeszkadzaæ
+003:Oddalony
+004:Nieobecny
+005:Zajêty
+006:Niewidzialny
+007:Chêtny do rozmowy
+#008:STATUS_OFFLINE_STR (Abgeklemmt)
+009:Proszê nie przeszkadzaæ
+010:Nie ma mnie przy komputerze
+011:Jestem nieobecny
+012:Jestem zajêty
+013:U¿ytkownik jest roz³±czony
+014:¯aden
+015:Sty
+016:Lut
+017:Mar
+018:Kwi
+019:Maj
+020:Cze
+021:Lip
+022:Sie
+023:Wrz
+024:Pa¼
+025:Lis
+026:Gru
+027:TAK
+028:NIE
+029:Wpisz " YES_STR " albo " NO_STR "¶
+#030:LOGGED_OFF_STR (ausgeloggt.)
+#031:LOGGED_ON_STR (eingeloggt.)
+#032:INSTANT_MSG_STR (Nachricht:)
+#033:INSTANT_MASS_MSG_STR (Massen)
+#034: (Nachricht)
+#035:CHANGE_STATUS_STR (hat Status gewechselt nach:)
+#036:UNKNOWN_COMMAND_STR (Unbekanntes Kommando %s, tippe "help" für Hilfe.)
+037:Wiadomo¶æ wys³ana przed wype³nieniem bufora ostatniej linii¶
+038:Zaniechano wys³ania wiadomo¶ci¶
+039:!¶
+040:Micq> 
+041:msg> 
+042:msg all> 
+043:Znaleziono wszystkich u¿ytkowników.
+044:Znaleziono zbyt wielu u¿ytkowników.
+045:Poszukiwanie zakoñczone.
+046:D³ugo¶æ
+047:Dodatkowe dane
+048:SEQ
+049:Ver
+050:Logowanie pomy¶lne!
+051:Serwer potwierdzi³ komendê %04x.
+052:Nie uda³o siê nawi±zaæ po³±czenia¶
+053:Po³±czenie z %s, oczekiwanie na odpowied¼¶
+054: Odmowa po³±czenia na porcie %d z %s¶
+055:Nie uda³o siê otworzyæ gniazda
+056:Utworzono gniazdo przy próbie po³±czenia¶
+057:Nazwa serwera 
+058:%s nie zosta³a znaleziona.¶
+059:Portem do po³±czeñ TCP bêdzie (jeszcze niezaimplementowane) %d¶
+060:Stopieñ szczegó³owo¶ci komunikatów komunikacyjnych to %d.¶
+061:%s nie zosta³o rozpoznane jako ksywa
+062:Ignorowani u¿ytkownicy: 
+063:Podaj has³o : 
+064:¶Automatyczna zmiana statusu na 
+065:U¿ywam intelowskiego adresowania bajtów.
+066:Using motorola byte ordering.
+067:¶Zignorowano komendê wiadomo¶ci  %04x¶
+068: Obecny od %s
+069: Ostatnio obecny: %s
+070: Ostatnio obecny: nieznane.
+071:Twój status to 
+072:Niepo³±czeni u¿ytkownicy: 
+073:Po³±czeni u¿ytkownicy: 
+#099: (Unbekannte Sprache)
+100:¯aden
+101:Arabski
+102:Bhojpuri
+103:Bu³garski
+104:Burmese
+105:Kantoñski
+106:Kataloñski
+107:Chiñski
+108:Chorwacki
+109:Czeski
+110:Duñski
+111:Holenderski
+112:Angielski
+113:Esperanto
+114:Estoñski
+115:Farsi
+116:Fiñski
+117:Francuski
+118:Galicyjski
+119:Niemiecki
+120:Grecki
+121:Hebrajski
+122:Hindi
+123:Wêgierski
+124:Islandzki
+125:Indonezyjski
+126:W³oski
+127:Japoñski
+128:Khmer
+129:Koreañski
+130:Lao
+131:Litewski
+132:£otewski
+133:Malay
+134:Norweski
+135:Polski
+136:Portugalski
+137:Rumuñski
+138:Rosyjski
+139:Serbsko-Chorwacki
+140:S³owacki
+141:S³oweñski
+142:Somalijski
+143:Hiszpañski
+144:Swahili
+145:Szwedzki
+146:Tagalog
+147:Tartar
+148:Tajlandzki
+149:Turecki
+150:Ukraiñski
+151:Urdu
+152:Wietnamski
+153:Yiddish
+154:Yoruba
+155:Afrikaans
+156:Bo¶niacki
+157:Perski
+158:Albañski
+159:Armeñski
+#199: (Unbekanntes Land)
+200:Brak informacji
+201:Afganistan
+202:Albania
+203:Algieria
+204:Amerykañska Samoa
+205:Andora
+206:Angola
+207:Anguilla
+208:Antigua
+209:Argentyna
+210:Armenia
+211:Aruba
+212:Ascention Island
+213:Australia
+214:Australian Antartic Territory
+215:Austria
+216:Azerbejd¼an
+217:Bahamy
+218:Bahrain
+219:Bangladesz
+220:Barbados
+221:Bia³oru¶
+222:Belgia
+223:Belize
+224:Benin
+225:Bermuda
+226:Bhutan
+227:Boliwia
+228:Bo¶nia & Herzegowina
+229:Botswana
+230:Brazylia
+231:Brytyjskie Wyspy Dziewicze
+232:Brunei
+233:Bu³garia
+234:Burkina Faso
+235:Burundi
+236:Kambod¿a
+237:Kamerun
+238:Kanada
+239:Wyspy Cape Verde
+240:Kajmany
+241:Central African Republic
+242:Czad
+243:Wyspa Bo¿ego Narodzenia
+244:Wyspy Cocos-Keeling
+245:Comoros
+246:Kongo
+247:Wyspy Cook'a
+248:Czile
+249:Chiny
+250:Kolumbia
+251:Kostaryka
+252:Chorwacja
+253:Kuba
+254:Cypr
+255:Czechy
+256:Dania
+257:Diego Garcia
+258:D¿ibuti
+259:Dominika
+260:Dominikana
+261:Ekwador
+262:Egipt
+263:El Salvador
+264:Gwinea Równikowa
+265:Erytrea
+266:Estonia
+267:Etiopia
+268:By³a Jugos³awia
+269:Wyspy Owcze
+270:Falklandy
+271:Mikronezja
+272:Fid¿i
+273:Finlandia
+274:Francja
+275:Antyle Francuskie
+276:Antyle Francuskie
+277:Gujana Francuska
+278:Polinezja Francuska
+279:Gabon
+280:Gambia
+281:Gruzja
+282:Niemcy
+283:Gana
+284:Gibraltar
+285:Grecja
+286:Grenlandia
+287:Grenada
+288:Gwadelupa
+289:Wyspa Guam
+290:Guantanomo Bay
+291:Gwatemala
+292:Gwinea
+293:Gwinea Bissau
+294:Gujana
+295:Haiti
+296:Honduras
+297:Hong Kong
+298:Wêgry
+299:Islandia
+300:Indie
+301:Indonezja
+302:INMARSAT
+303:INMARSAT Atlantic-East
+304:Iran
+305:Irak
+306:Irlandia
+307:Izrael
+308:W³ochy
+309:Wybrze¿e Ko¶ci S³oniowej
+310:Japonia
+311:Jordania
+312:Kazahstan
+313:Kenia
+314:P³d. Korea
+315:Kuwejt
+316:Liberia
+317:Libia
+318:Liechtenstein
+319:Luksemburg
+320:Malawi
+321:Malezja
+322:Mali
+323:Malta
+324:Meksyk
+325:Monako
+326:Maroko
+327:Namibia
+328:Nepal
+329:Holandia
+330:Antyle Holenderskie
+331:Nowa Kaledonia
+332:Nowa Zelandia
+333:Nikaragua
+334:Nigeria
+335:Norwegia
+336:Oman
+337:Pakistan
+338:Panama
+339:Papua Nowa Gwinea
+340:Paragwaj
+341:Peru
+342:Filipiny
+343:Polska
+344:Portugalia
+#345:Puerto_Rico_COUNTRY_STR (Puerto Rico)
+346:Katar
+347:Rumunia
+348:Rosja
+349:Saipan
+350:San Marino
+351:Arabia Saudyjska
+352:Senegal
+353:Singapur
+354:S³owacja
+355:Republika Po³udniowej Afryki
+356:Hiszpania
+357:Sri Lanka
+358:Surinam
+359:Szwecja
+360:Szwajcaria
+361:Tajwan
+362:Tanzania
+363:Tajlandia
+#364:Tinian_Island_COUNTRY_STR («»Tinian Island)
+#365:Togo_COUNTRY_STR (Togo)
+#366:Tokelau_COUNTRY_STR (Tokelau)
+#367:Tonga_COUNTRY_STR (Tonga)
+#368:Trinadad_and_Tabago_COUNTRY_STR (Trinidad und Tobago)
+369:Tunezja
+370:Turcja
+#371:Turkmenistan_COUNTRY_STR (Turkmenistan)
+#372:Turks_and_Caicos_Islands_COUNTRY_STR («»Turks and Caicos Islands)
+#373:Tuvalu_COUNTRY_STR (Tuvalu)
+#374:Uganda_COUNTRY_STR (Uganda)
+375:Ukraina
+376:Zjednoczone Emiraty Arabskie
+377:Zjednoczone Królestwo
+#378:US_Virgin_Islands (USA/Jungferninseln)
+379:Stany Zjednoczone Ameryki Pó³nocnej
+380:Urugwaj
+#381:Uzbekistan_COUNTRY_STR (Uzbekistan)
+#382:Vanuatu_COUNTRY_STR («»Vanuatu)
+383:Watykan
+384:Wenezuela
+385:Wietnam
+#386:Wallis_and_Futuna_Islands_COUNTRY_STR («»Wallis and Futuna Islands)
+#387:Western_Samoa_COUNTRY_STR (West-Samoa)
+388:Jemen
+389:Jugos³awia
+390:Zair
+#391:Zambia_COUNTRY_STR (Sambia)
+392:Zimbabwe
+400:		Pokazuje lokalnie zapisane dane o u¿ytkowniku¶
+401:		Uaktalnia dodatkowe informacje jak wiek czy p³eæ¶
+402:		Uaktualnia informacje o tobie na serwerze.¶
+403:		Pokazuje ostatni± wiadomo¶æ otrzyman± od <nick>.¶			Osoba ta musi byæ na twojej Li¶cie Kontaktowej.¶
+404:		W³±cza/wy³±cza ignorowanie u¿ytkownika¶
+405:		Wypisuje ksywy/UINy ignorowanych u¿ytkowników¶
+406:	W trybie niewidzialno¶ci prze³±cza twoj± widzialno¶æ dla u¿ytkownika.¶
+407:			Pokazuje status zalogowanych u¿ytkowników z twojej Listy Kontaktoweji¶
+408:		Zmienia twoje has³o na \"secret\".¶
+409:		Wysy³a wiadomo¶æ do UINu¶
+410:	Wysy³a URL i wiadomo¶æ do UINu¶
+411:	Wysy³a wieloliniow± wiadomo¶æ do wszystkich z twojej listy.¶
+412:		Wysy³a wiadomo¶æ do osoby, do której ostatnio wys³a³e¶ wiadomo¶æ¶
+413:		Udziela autoryzacji u¿ytkownikowi do dodania ciebie do jego listy¶
+414:		Wysy³a odpowied¼ osobie, która ostatnia wys³a³a do ciebie wiadomo¶æ¶
+415:		Znajduje losowego u¿ytkownika w wybranej grupie lub listuje grupy.¶
+416:			Pokazuje status wszystkich na twojej Li¶cie Kontaktowej¶
+417:	Pozwala ustawiæ w³asny zestaw komendy.¶
+418:			Stopieñ szczegó³owo¶ci komunikatów komunikacyjnych ( domy¶lny = 0 ).¶
+419:				Czy¶ci ekran.¶
+420:				W³±cza/wy³±cza d¼wiêkowe powiadomienie o przychodz±cej wiadomo¶ci.¶
+421:				W³±cza/wy³±cza kolory.¶
+422:			Wylogowanie siê i wyj¶cie z programu¶
+423:				Pokazuje status automatycznej odpowiedzi¶
+424:			W³±cza/wy³±cza wysy³anie wiadomo¶ci gdy twój status to DND, NA, etc.¶
+425:		Ustawia wiadomo¶æ do automatycznego wys³ania dla statusu¶
+426:	Tworzy nowego UIN z podanym has³em.¶
+427:	Zmienia twój status na status o danym numerze.¶		Wpisane bez numeru wypisuje dostêpne tryby.¶
+428:	Dodaje UIN do twojej Listy Kontatkowej z ksyw± \"nickname\".¶
+429:	Szuka u¿ytkownika ICQ o podanym adresie pocztowym.¶
+430:		Podaje informacje o UINie¶
+431:		Ustaw status Obecny (Online).¶
+432:		Ustaw status Oddalony (Away).¶
+433:		Ustaw status Nieobecny (Not Available).¶
+434:		Ustaw status Zajêty (Occupied).¶
+435:		Ustaw status Nie przeszkadzaæ (Do not Disturb).¶
+436:		Ustaw status Chêtny do rozmowy (Free for Chat).¶
+437:		Ustaw status Niewidzialny (Invisible).¶
+438:		Uaktualnia podstawowe informacje o tobie (adres, ksywa, etc.)¶
+439:		Ustawia twoj± losow± grupê.¶
+#440:PROMPT_HELP_STR (		Ändert den mICQ Prompt.¶)
+#441:GOTO_HELP_STR (				Öffnet die letzte erhaltene URL in Lynx¶)
+442:Wybierz jeden z poni¿szych tematów pomocy.
+443:Komendy dotycz±ce interfejsu i konfiguracji programu.
+444:Komendy dotycz±ce znajdywania innych u¿ytkowników.
+445:Komendy dotycz±ce twojego konta ICQ.
+446:Komendy dotycz±ce wysy³ania wiadomo¶ci.
+447:Klient	
+448:Wiadomo¶ci
+449:U¿ytkownik
+450:Konto	
+#500:NICKNAME_INFO_STR (Spitzname:       )
+#501:NAME_INFO_STR (Name:            )
+#502:EMAIL_INFO_STR (eMail:           )
+#503:OTHER_EMAIL_INFO_STR (Zweit-eMail:     )
+#504:OLD_EMAIL_INFO_STR (Alte eMail:      )
+#505:LOCATION_INFO_STR (Ort:             )
+#506:PHONE_INFO_STR (Telephon:        )
+#507:FAX_INFO_STR (Fax:             )
+#508:STREET_INFO_STR (Straße:          )
+#509:CELLULAR_INFO_STR (Handy:           )
+#510:ZIP_INFO_STR (PLZ:             )
+#511:COUNTRY_INFO_STR (Land:           )
+#512:COUNTRY_CODE_INFO_STR (ISO-Landescode: )
+#513:WORK_COUNTRY_CODE_INFO_STR (ISO-Landescode auf der Arbeit: )
+#514:WORK_COUNTRY_INFO_STR (Work Country : )
+#515:WORK_HOMEPAGE_INFO_STR (Work Homepage: )
+#516:WORK_OCCUPATION_INFO_STR (Occupation   : )
+#517:WORK_JOB_POS_INFO_STR (Job Position : )
+#518:WORK_DEPT_INFO_STR (Department   : )
+#519:WORK_COMP_NAME_INFO_STR (Company Name : )
+#520:WORK_ZIP_INFO_STR (Work Zip     : )
+#521:WORK_FAX_INFO_STR (Work Fax     : )
+#522:WORK_ADDRESS_INFO_STR (Work Address : )
+#523:WORK_PHONE_INFO_STR (Work Phone   : )
+#524:WORK_LOCATION_INFO_STR (Work Location: )
+#525:ABOUT_INFO_STR (About : )
+#526:INFO_NE_STR (Not Entered)
+#527:AGE_INFO_STR (Age          : )
+#528:FEMALE_INFO_STR (Sex : Female)
+#529:MALE_INFO_STR (Sex : Male)
+#530:SEX_UNKNOWN_INFO_STR (Sex : Not Specified)
+#531:HOMEPAGE_INFO_STR (Homepage     : )
+#532:BIRTH_INFO_STR (Born         : )
+#533:LANGUAGE_INFO_STR (Languages    : )
+534:Wpisz numer jêzyka. Komenda L listuje dostêpne : 
+535:Wpisz nowy wiek: 
+536:Wpisz now± p³eæ: 
+537:Wpisz nowy adres strony domowej: 
+538:Wpisz nowy rok urodzenia (4 cyfry): 
+539:Wpisz nowy miesi±c urodzenia: 
+540:Wpisz nowy dzieñ urodzenia: 
+541:Info> 
+542:Wpisz inny adres pocztowy: 
+543:Wpisz stary adres pocztowy: 
+544:Wpisz now± nazwê miasta: 
+545:Wpisz nazwê województwa: 
+546:Wpisz numer telefonu: 
+547:Wpisz numer faksu: 
+548:Wpisz nazwê ulicy i nr domu: 
+549:Wpisz numer telefonu komórkowego: 
+550:Wpisz kod pocztowy (same cyfry): 
+551:Wpisz telefoniczny kod kraju: 
+552:Wpisz ró¿nicê czasu do GMT: 
+553:Podaj swoj± now± ksywê : 
+554:Podaj swoje nowe imiê : 
+555:Podaj swoje nowe nazwisko : 
+556:Podaj swój nowy adres email : 
+557:Czy chcesz, aby u¿ytkownicy Mirabillis ICQ potrzbowali twojej zgody by dodaæ ciê do swojej listy? : 

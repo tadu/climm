@@ -1,0 +1,439 @@
+# indonesian
+#000: (Übersetzung erfolgreich geladen (%d Einträge). Version 0.1.¶)
+001:Online
+002:Jangan diganggu
+003:Jauh
+004:Tidak ditempat
+005:Sibuk
+006:Tidak terlihat
+007:Bebas untuk ngobrol
+008:Offline
+009:User sedang tidak ingin diganggu (DND) [Pesan Otomatis]
+010:User sedang jauh (Away) [Pesan Otomatis]
+011:User sedang tidak ditempat (N/A) [Pesan Otomatis]
+012:User sedang sibuk (Occupied) [Pesan Otomatis]
+013:User offline
+014:Tidak Ada
+015:Januari
+016:Pebruari
+017:Maret
+018:April
+019:Mei
+020:Juni
+021:Juli
+022:Agustus
+023:September
+024:Oktober
+025:Nopember
+026:Desember
+027:YA
+028:TIDAK
+029:Tolong masukkan " YES_STR " atau " NO_STR "¶
+030: keluar.
+031: masuk.
+032: - Pesan Masuk
+033: - Instant " SERVCOL "Mass" NOCOL " Message
+#034: (Nachricht)
+035: berubah status menjadi 
+036:%s perintah tidak dikenal, ketik /help untuk pertolongan.
+037:Pesan dikirimkan sebelum baris terakhir dalam penampung penuh¶
+038:Pesan dibatalkan¶
+039: !¶
+040:Micq> 
+041:pesan> 
+042:pesan kesemua> 
+043:Semua user yang diketemukan.
+044:Terlalu banyak user yang diketemukan.
+045:Pencarian Selesai.
+046:Panjang
+047:Data Ekstra
+048:SEQ
+049:Ver
+050:Login berhasil !
+051:Server mengetahui perintah %04x.
+052:Tidak dapat menjaga koneksi¶
+053:Terkoneksi ke %s, menunggu respon¶
+054: Koneksi Ditolak pada port %d pada %s¶
+055:Pembuatan Soket gagal
+056:Soket terbuat dan mencoba untuk konek¶
+057:Nama host 
+058:%s tidak diketemukan.¶
+059:Port yang akan digunakan untuk tcp ( yang belum disertakan ) adalah %d¶
+060:Level penampilan pesan %d.¶
+061:%s tidak dikenal sebagai nama samaran
+062:User yang diabaikan : 
+063:Password : 
+064:¶Otomatis ganti status ke 
+065:Menggunakan urutan byte intel.
+066:Menggunakan urutan byte motorola.
+067:¶Mengabaikan perintah pesan  %04x¶
+068: Online sejak %s
+069: Online terakhir %s
+070: Online terakhir tidak diketahui.
+071:Status anda adalah 
+072:User yang offline : 
+073:User yang online : 
+#099: (Unbekannte Sprache)
+100:Tidak Ada
+101:Arabic
+102:Bhojpuri
+103:Bulgarian
+104:Burmese
+105:Cantonese
+106:Catalan
+107:Chinese
+108:Croatian
+109:Czech
+110:Danish
+111:Dutch
+112:English
+113:Esperanto
+114:Estonian
+115:Farsi
+116:Finnish
+117:French
+118:Gaelic
+119:German
+120:Greek
+121:Hebrew
+122:Hindi
+123:Hungarian
+124:Icelandic
+125:Indonesian
+126:Italian
+127:Japanese
+128:Khmer
+129:Korean
+130:Lao
+131:Latvian
+132:Lithuanian
+133:Malay
+134:Norwegian
+135:Polish
+136:Portuguese
+137:Romanian
+138:Russian
+139:Serbo-Croatian
+140:Slovak
+141:Slovenian
+142:Somali
+143:Spanish
+144:Swahili
+145:Swedish
+146:Tagalog
+147:Tartar
+148:Thai
+149:Turkish
+150:Ukrainian
+151:Urdu
+152:Vietnamese
+153:Yiddish
+154:Yoruba
+155:Afrikaans
+156:Bosnian
+157:Persian
+158:Albanian
+159:Armenian
+#199: (Unbekanntes Land)
+200:Tidak dimasukkan
+201:Afghanistan
+202:Albania
+203:Algeria
+204:American Samoa
+205:Andorra
+206:Angola
+207:Anguilla
+208:Antigua
+209:Argentina
+210:Armenia
+211:Aruba
+212:Ascention Island
+213:Australia
+214:Australian Antartic Territory
+215:Austria
+216:Azerbaijan
+217:Bahamas
+218:Bahrain
+219:Bangladesh
+220:Barbados
+221:Belarus
+222:Belgium
+223:Belize
+224:Benin
+225:Bermuda
+226:Bhutan
+227:Bolivia
+228:Bosnia & Herzegovina
+229:Botswana
+230:Brazil
+231:British Virgin Islands
+232:Brunei
+233:Bulgaria
+234:Burkina Faso
+235:Burundi
+236:Cambodia
+237:Cameroon
+238:Canada
+239:Cape Verde Islands
+240:Cayman Islands
+241:Central African Republic
+242:Chad
+243:Christmas Island
+244:Cocos-Keeling Islands
+245:Comoros
+246:Congo
+247:Cook Islands
+248:Chile
+249:China
+250:Columbia
+251:Costa Rice
+252:Croatia
+253:Cuba
+254:Cyprus
+255:Czech Republic
+256:Denmark
+257:Diego Garcia
+258:Djibouti
+259:Dominica
+260:Dominican Republic
+261:Ecuador
+262:Egypt
+263:El Salvador
+264:Equitorial Guinea
+265:Eritrea
+266:Estonia
+267:Ethiopia
+268:F.Y.R.O.M. (Former Yugoslavia)
+269:Faeroe Islands
+270:Falkland Islands
+271:Federated States of Micronesia
+272:Fiji
+273:Finland
+274:France
+275:French Antilles
+276:French Antilles
+277:French Guiana
+278:French Polynesia
+279:Gabon
+280:Gambia
+281:Georgia
+282:Germany
+283:Ghana
+284:Gibraltar
+285:Greece
+286:Greenland
+287:Grenada
+288:Guadeloupe
+289:Guam
+290:Guantanomo Bay
+291:Guatemala
+292:Guinea
+293:Guinea-Bissau
+294:Guyana
+295:Haiti
+296:Honduras
+297:Hong Kong
+298:Hungary
+299:Iceland
+300:India
+301:Indonesia
+302:INMARSAT
+303:INMARSAT Atlantic-East
+304:Iran
+305:Iraq
+306:Ireland
+307:Israel
+308:Italy
+309:Ivory Coast
+310:Japan
+311:Jordan
+312:Kazakhstan
+313:Kenya
+314:South Korea
+315:Kuwait
+316:Liberia
+317:Libya
+318:Liechtenstein
+319:Luxembourg
+320:Malawi
+321:Malaysia
+322:Mali
+323:Malta
+324:Mexico
+325:Monaco
+326:Morocco
+327:Namibia
+328:Nepal
+329:Netherlands
+330:Netherlands Antilles
+331:New Caledonia
+332:New Zealand
+333:Nicaragua
+334:Nigeria
+335:Norway
+336:Oman
+337:Pakistan
+338:Panama
+339:Papua New Guinea
+340:Paraguay
+341:Peru
+342:Philippines
+343:Poland
+344:Portugal
+345:Puerto Rico
+346:Qatar
+347:Romania
+348:Russia
+349:Saipan
+350:San Marino
+351:Saudia Arabia
+352:Senegal
+353:Singapore
+354:Slovakia
+355:South Africa
+356:Spain
+357:Sri Lanka
+358:Suriname
+359:Sweden
+360:Switzerland
+361:Taiwan
+362:Tanzania
+363:Thailand
+364:Tinian Island
+365:Togo
+366:Tokelau
+367:Tonga
+368:Trinadad and Tabago
+369:Tunisia
+370:Turkey
+371:Turkmenistan
+372:Turks and Caicos Islands
+373:Tuvalu
+374:Uganda
+375:Ukraine
+376:United Arab Emirates
+377:UK
+378:United States Virgin Islands
+379:USA
+380:Uruguay
+381:Uzbekistan
+382:Vanuatu
+383:Vatican City
+384:Venezuela
+385:Vietnam
+386:Wallis and Futuna Islands
+387:Western Samoa
+388:Yemen
+389:Yugoslavia
+390:Zaire
+391:Zambia
+392:Zimbabwe
+400:		Tampilkan info lokal yang tersimpan pada user¶
+401:		Perbaharui info user lainnya seperti usia dan kelamin¶
+402:		Perbaharui info tentang diri anda.¶
+403:		Tampilkan pesan terakhir yang diterima dari <nick>.¶			Mereka harus berada dalam Daftar Kontak anda.¶
+404:		(Non)Aktifkan pengabaian samaran¶
+405:		Daftar samaran/uin yang diabaikan¶
+406:	Ganti penampakan anda kepada user jika anda tidak tampak.¶
+407:			Tampilkan status sekarang dari orang yang online yang berada di daftar kontak anda¶
+408:		Ganti password anda menjadi rahasia.¶
+409:		Mengirim pesan ke uin¶
+410:	Mengirim url dan pesan ke uin¶
+411:	Mengirim pesan lebih dari 1 baris ke semua yang ada di daftar anda.¶
+412:		Mengirim pesan kepada orang terakhir yang anda kirimi pesan¶
+413:		Mengijinkan uin untuk menambahkan anda sebagai daftar kontak mereka¶
+414:		Balas kepada orang terakhir yang memberikan pesan kepada anda¶
+415:		Mencari user secara acak dalam grup atau daftar yang terdaftar di dalam grup.¶
+416:			Tampilkan status saat ini dari tiap orang yang ada di daftar kontak anda¶
+417:	Perintah ini mengijinkan anda untuk memberikan perintah anda sambil lalu.¶
+418:			Set level tampilan ( standar = 0 ).¶
+419:				Membersihkan layar.¶
+420:				Mengaktifkan beep sewaktu menerima pesan baru.¶
+421:				Mengaktifkan penampilan warna.¶
+422:			Log off dan keluar¶
+423:				Tampilkan status balasan otomatis¶
+424:			Aktifkan pengiriman pesan sewaktu status anda DND, NA, dan lain-lain.¶
+425:		Pasang pesan untuk mengirimkan balasan otomatis untuk status¶
+426:	Membuat UIN baru dengan password yang diberikan.¶
+427:	Mengubah status anda menjadi status tertentu.¶		Tanpa nomor akan menampilkan semua mode yang tersedia.¶
+428:	Menambahkan nomor uin ke dalam daftar kontak anda dengan samaran.¶
+429:	Mencari user ICQ.¶
+430:		Menampilkan informasi umum pada uin¶
+431:		Menandai sedang Online.¶
+432:		Menandai sedang jauh (Away).¶
+433:		Menandai sedang tidak ditempat (Not Available).¶
+434:		Menandai sedang sibuk (Occupied).¶
+435:		Menandai sedang tidak ingin diganggu (Do not Disturb).¶
+436:		Menandai sedang bebas untuk ngobrol (Free for Chat).¶
+437:		Menandai sedang tidak kelihatan (Invisible).¶
+438:		Memperbaharui informasi dasar anda (email, nama samaran, dan lain-lain)¶
+439:		Memasang group user acak anda.¶
+#440:PROMPT_HELP_STR (		Ändert den mICQ Prompt.¶)
+#441:GOTO_HELP_STR (				Öffnet die letzte erhaltene URL in Lynx¶)
+442:Tolong pilih salah satu topik pertolongan dibawah ini.
+443:Perintah yang berhubungan dengan tampilan dan configurasi micq.
+444:Perintah yang berhubungan dengan pencarian user lain.
+445:Perintah yang berhubungan dengan account ICQ anda.
+446:Perintah yang berhubungan dengan pengiriman pesan.
+447:Klien
+448:Pesan
+449:User
+450:Account
+500:Nama Samaran : 
+501:Nama         : 
+502:Email        : 
+503:Email Lain   : 
+504:Email Lama   : 
+505:Lokasi       : 
+506:Telepon      : 
+507:Faks         : 
+508:Alamat       : 
+509:Selular      : 
+510:Kode Pos     : 
+511:Negara       : 
+512:Kode Negara  : 
+513:Kode Negara Perusahaan : 
+514:Negara Perusahaan      : 
+515:Homepage Perusahaan    : 
+516:Kesibukan              : 
+517:Posisi Pekerjaan       : 
+518:Bagian                 : 
+519:Nama Perusahaan        : 
+520:Kode Pos Perusahaan    : 
+521:Faks Perusahaan        : 
+522:Alamat Perusahaan      : 
+523:Telepon Perusahaan     : 
+524:Lokasi Perusahaan      : 
+525:Tentang      : 
+526:Tidak Dimasukkan
+527:Usia         : 
+528:Kelamin : Wanita
+529:Kelamin : Pria
+530:Kelamin : Tidak Diberitahukan
+531:Homepage     : 
+532:Kelahiran    : 
+533:Bahasa    : 
+534:Bahasa sesuai dengan urutan atau L untuk melihat daftarnya : 
+535:Usia    : 
+536:Kelamin : 
+537:Alamat homepage : 
+538:Tahun kelahiran (4 digit) : 
+539:Bulan kelahiran : 
+540:Tanggal kelahiran : 
+541:Tentang anda> 
+542:Alamat email yang lain : 
+543:Alamat email yang lama : 
+544:Nama Kota  : 
+545:Propinsi atau Wilayah : 
+546:Nomor Telepon : 
+547:Nomor Faks : 
+548:Alamat : 
+549:Nomor Selular : 
+550:Kode Pos (harus berupa angka) : 
+551:Nomor Telepon Kode Negara : 
+552:Zona Waktu (+/- 0-12): 
+553:Nama Samaran : 
+554:Nama Depan : 
+555:Nama Belakang : 
+556:Alamat Email : 
+557:Anda ingin pengguna Mirabilis untuk meminta ijin kepada anda ? : 

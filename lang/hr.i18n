@@ -1,0 +1,439 @@
+# croatian
+#000: (Übersetzung erfolgreich geladen (%d Einträge). Version 0.1.¶)
+001:Na vezi
+002:Ne uznemiravaj
+003:Odsutan
+004:Nije dostupan
+005:Zauzet
+006:Nevidljiv
+007:Raspolozen za cavrljanje
+008:Offline
+009:User is DND [Auto-Message]
+010:User is Away [Auto-Message]
+011:User is not available [Auto-Message]
+012:User is Occupied [Auto-Message]
+013:User is offline
+014:None
+015:Jan
+016:Feb
+017:Mar
+018:Apr
+019:May
+020:Jun
+021:Jul
+022:Aug
+023:Sept
+024:Oct
+025:Nov
+026:Dec
+027:DA
+028:NE
+029:Molim Vas unesite " YES_STR " or " NO_STR "¶
+030: logged off.
+031: logged on.
+032: - Instant Message
+033: - Instant " SERVCOL "Mass" NOCOL " Message
+#034: (Nachricht)
+035: changed status to 
+036:Unknown command %s, type /help for help.
+037:Poruka poslana pre nego $to je dostignuta maksimalna duzina poruke¶
+038:Poruka je opozvana¶
+039:!¶
+040:Micq> 
+041:Poruka> 
+042:Poruka za sve> 
+043:Svi korisnici pronadjeni.
+044:Pronadjeno je puno korisnika.
+045:Pretrazivanje je zavr$eno.
+046:Duzina
+047:Ekstra podaci
+048:SEQ
+049:Ver
+050:Prijavljivanje je uspje$no!
+051:Server je potvrdio %04x komandu.
+052:Couldn't establish connection¶
+053:Connected to %s, waiting for response¶
+054: Conection Refused on port %d at %s¶
+055:Socket creation failed
+056:Socket created attempting to connect¶
+057:The hostname 
+058:%s was not found.¶
+059:The port that will be used for tcp ( not yet implemented ) is %d¶
+060:Nivo detaljnosti ispisa je %d.¶
+061:%s nije prepoznato kao nadimak
+062:Users ignored: 
+063:Enter password : 
+064:¶Auto-Changed status to 
+065:Using intel byte ordering.
+066:Using motorola byte ordering.
+067:¶Ignored a message cmd  %04x¶
+068: Na vezi od %s
+069: Posljednji put na vezi %s
+070: Posljednji put na vezi - nepoznato.
+071:Va$ status je 
+072:Korisnici koji nisu na vezi: 
+073:Korisnici koji su na vezi: 
+#099: (Unbekannte Sprache)
+100:None
+101:Arabic
+102:Bhojpuri
+103:Bulgarian
+104:Burmese
+105:Cantonese
+106:Catalan
+107:Chinese
+108:Croatian
+109:Czech
+110:Danish
+111:Dutch
+112:English
+113:Esperanto
+114:Estonian
+115:Farsi
+116:Finnish
+117:French
+118:Gaelic
+119:German
+120:Greek
+121:Hebrew
+122:Hindi
+123:Hungarian
+124:Icelandic
+125:Indonesian
+126:Italian
+127:Japanese
+128:Khmer
+129:Korean
+130:Lao
+131:Latvian
+132:Lithuanian
+133:Malay
+134:Norwegian
+135:Polish
+136:Portuguese
+137:Romanian
+138:Russian
+139:Serbo-Croatian
+140:Slovak
+141:Slovenian
+142:Somali
+143:Spanish
+144:Swahili
+145:Swedish
+146:Tagalog
+147:Tartar
+148:Thai
+149:Turkish
+150:Ukrainian
+151:Urdu
+152:Vietnamese
+153:Yiddish
+154:Yoruba
+155:Afrikaans
+156:Bosnian
+157:Persian
+158:Albanian
+159:Armenian
+#199: (Unbekanntes Land)
+200:Nije unijeto
+201:Afganistan
+202:Albanija
+203:Alzir
+204:Americka Samoa
+205:Andora
+206:Angola
+207:Angvila
+208:Antigua
+209:Argentina
+210:Jermenija
+211:Aruba
+212:Otoci Ascention
+213:Australija
+214:Australski Antarticki Teritorij
+215:Austrija
+216:Azerbejdzan
+217:Bahami
+218:Bahrein
+219:Banglade$
+220:Barbados
+221:Bjelorusija
+222:Belgija
+223:Belize
+224:Benin
+225:Bermude
+226:Butan
+227:Bolivija
+228:Bosna i Hercegovina
+229:Bocvana
+230:Brazil
+231:Britanski Djevicanski Otoci
+232:Brunej
+233:Bugarska
+234:Burkina Faso
+235:Burundi
+236:Cambodza
+237:Camerun
+238:Kanada
+239:Otoci Cape Verde
+240:Kajmanski Otoci
+241:Centralna Africka Republika
+242:Chad
+243:Uskr$nji Otoci
+244:Otoci Cocos-Keeling
+245:Komoroni
+246:Kongo
+247:Cookovi otoci
+248:Chile
+249:Kina
+250:Kolumbija
+251:Kostarika
+252:Hrvatska
+253:Kuba
+254:Kipar
+255:Ce$ka Republika
+256:Danska
+257:Diego Garcia
+258:Dzibuti
+259:Dominica
+260:Dominikanska Republika
+261:Ekvador
+262:Egipat
+263:El Salvador
+264:Ekvatorska Gvineja
+265:Eritrea
+266:Estonija
+267:Etiopija
+268:Biv$a Jugoslavija
+269:Faeroe Islands
+270:Foklandska Ostrva
+271:Federalne Drzave Mikronezije
+272:Fidzi
+273:Finska
+274:Francuska
+275:Francuski Antili
+276:Francuski Antili
+277:Francuska Gvajana
+278:Francuska Polinezija
+279:Gabon
+280:Gambija
+281:Gruzija
+282:Njemacka
+283:Gana
+284:Gibraltar
+285:Grcka
+286:Grenland
+287:Grenada
+288:Gvadalupe
+289:Guam
+290:Guantanomo Bay
+291:Gvatemala
+292:Gvineja
+293:Gvineja-Bisao
+294:Gvajana
+295:Haiti
+296:Honduras
+297:Hong Kong
+298:Madjarska
+299:Island
+300:Indija
+301:Indonezija
+302:INMARSAT
+303:INMARSAT Atlantic-East
+304:Iran
+305:Irak
+306:Irska
+307:Izrael
+308:Italija
+309:Obala Slonovace
+310:Japan
+311:Jordan
+312:Kazakhstan
+313:Kenija
+314:Juzna Koreja
+315:Kuvajt
+316:Liberija
+317:Libija
+318:Lihten$tajn
+319:Luksemburg
+320:Malavi
+321:Malezija
+322:Mali
+323:Malta
+324:Meksico
+325:Monako
+326:Maroko
+327:Namibija
+328:Nepal
+329:Nizozemskaa
+330:Nizozemska Antili
+331:Nova Kaledonija
+332:Novi Zeland
+333:Nikaragva
+334:Nigerija
+335:Norve$ka
+336:Oman
+337:Pakistan
+338:Panama
+339:Papua Nova Gvineja
+340:Paragvaj
+341:Peru
+342:Filipini
+343:Poljska
+344:Portugal
+345:Puerto Rico
+346:Kvatar
+347:Rumunija
+348:Rusija
+349:Saipan
+350:San Marino
+351:Saudijska Arabija
+352:Senegal
+353:Singapur
+354:Slovachka
+355:Juznoafricka Republika
+356:$panjolska
+357:$ri Lanka
+358:Surinam
+359:$vedska
+360:$vicarksa
+361:Tajvan
+362:Tanzanija
+363:Tajland
+364:Tinian Island
+365:Togo
+366:Tokelau
+367:Tonga
+368:Trinadad and Tabago
+369:Tunis
+370:Turska
+371:Turkmenistan
+372:Turks and Caicos Islands
+373:Tuvalu
+374:Uganda
+375:Ukrajina
+376:Ujedinjeni Arapski Emirati
+377:Engleska
+378:United States Virgin Islands
+379:SAD
+380:Urugvaj
+381:Uzbekistan
+382:Vanuatu
+383:Vatikan
+384:Venecuela
+385:Vijetnam
+386:Wallis and Futuna Islands
+387:Western Samoa
+388:Jemen
+389:Jugoslavija
+390:Zair
+391:Zambia
+392:Zimbabve
+400:		Shows locally stored info on user¶
+401:		Updates other user info like age and sex¶
+402:		Updates your about user info.¶
+403:		Displays the last message received from <nick>.¶			They must be in your Contact List.¶
+404:		Toggles ignoring/unignoring nick¶
+405:		Lists ignored nicks/uins¶
+406:	Toggles your visibility to a user when you're invisible.¶
+407:			Displays the current status of online people on your contact list¶
+408:		Mijenja Va$u $ifru u tajnu.¶
+409:		$alje poruku UIN-u¶
+410:	$alje URL i poruku UIN-u¶
+411:	$alje multilinijsku poruku svima sa liste.¶
+412:		$alje poruku posljednjoj osobi kojoj ste poslali poruku¶
+413:		Autorizire\a UIN da Vas ubaci na svoju listu¶
+414:		Odgovara osobi koja vam se posljednja obratila¶
+415:		Pronalazi slucajnog korisnika u navedenoj grupi ili izlista grupu.¶
+416:			Ispisuje trenutni status svih na Va$oj kontakt listi¶
+417:	Ova komanda Vam omogucava da promijenite Va$ set komandi u letu.¶
+418:			Postavlja nivo preglednosti ( podrazumijevano = 0 ).¶
+419:				Bri$e ekran.¶
+420:				Ukljucuje/Iskljucuje zvucni signal priliko primanja nove poruke.¶
+421:				Ukljucuje/Iskljucuje prikaz u boji.¶
+422:			Odlogiravanje i izlaz iz programa.¶
+423:				Prikazuje va$ autoodgovor status¶
+424:			Ukljucuje/Iskljucuje slanje poruka kada je va$ status DND, NA, itd.¶
+425:		Postavlja poruku koju ce poslati kao automatski odgovor na trenutni status¶
+426:	Kreira novi UIN (Univerzalni Identifikacijski Broj) sa navedenom $ifrom.¶
+427:	Mijenja Va$ status u status broj.¶		Bez navedenog broja ispisuje dozvoljene modove.¶
+428:	Dodaje UIN broj va$oj kontakt listi uz unos nadimka.¶
+429:	Pronalazi ICQ korisnika sa navedenom e-mail adresom.¶
+430:		Ispisuje osnovne informacije za navedeni UIN¶
+431:		Oznacava kao Online (Na vezi).¶
+432:		Oznacava kao Away (Odsutan).¶
+433:		Oznacava kao Not Available (Nije dostupan).¶
+434:		Oznacava kao Occupied (Zauzet).¶
+435:		Oznacava kao Do not Disturb (Ne uznemiravaj).¶
+436:		Oznacava kao Free for Chat (Raspolozen za cavrljanje).¶
+437:		Oznacava kao Invisible (Nevidljiv).¶
+438:		Korigira Va$e osnovne informacije (e-mail, nadimak, itd.)¶
+439:		Postavlja Va$u slucajnu korisnicku grupu.¶
+#440:PROMPT_HELP_STR (		Ändert den mICQ Prompt.¶)
+#441:GOTO_HELP_STR (				Öffnet die letzte erhaltene URL in Lynx¶)
+442:Molim Vas izaberite jedno od podrucja za pomoc ispod.
+443:Komande vezane za micq prikaz i konfiguriranje.
+444:Komande vezane za pronalazenje korisnika.
+445:Komande vezane za Va$ ICQ nalog.
+446:Komande vezane za slanje poruka.
+447:Klijent
+448:Poruka
+449:Korisnik
+450:Nalog
+500:Nickname     : 
+501:Name         : 
+502:Email        : 
+503:Other Email  : 
+504:Old Email    : 
+505:Location     : 
+506:Phone        : 
+507:Fax          : 
+508:Street       : 
+509:Cellular     : 
+510:Zip          : 
+511:Country      : 
+512:Country Code : 
+513:Work Country Code : 
+514:Work Country : 
+515:Work Homepage: 
+516:Occupation   : 
+517:Job Position : 
+518:Department   : 
+519:Company Name : 
+520:Work Zip     : 
+521:Work Fax     : 
+522:Work Address : 
+523:Work Phone   : 
+524:Work Location: 
+525:About : 
+526:Not Entered
+527:Age          : 
+528:Sex : Female
+529:Sex : Male
+530:Sex : Not Specified
+531:Homepage     : 
+532:Born         : 
+533:Languages    : 
+534:Enter a language by number or L for a list: 
+535:Enter new age: 
+536:Enter new sex: 
+537:Enter new homepage: 
+538:Enter new year of birth (4 digits): 
+539:Enter new month of birth: 
+540:Enter new day of birth: 
+541:About> 
+542:Enter other email address: 
+543:Enter old email address: 
+544:Enter new city: 
+545:Enter new state: 
+546:Enter new phone number: 
+547:Enter new fax number: 
+548:Enter new street address: 
+549:Enter new cellular number: 
+550:Enter new zip code (must be numeric): 
+551:Enter your country's phone ID number: 
+552:Enter your time zone (+/- 0-12): 
+553:Unesite Va$ nadimak : 
+554:Unesite Va$e ime : 
+555:Unesite Va$e prezime : 
+556:Unesite va$ novi e-mail : 
+557:Da li zelite da korisnici trebaju zahtijevati od vas autorizaciju ? : 

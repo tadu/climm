@@ -1,0 +1,439 @@
+# french
+#000: (Übersetzung erfolgreich geladen (%d Einträge). Version 0.1.¶)
+001:En ligne
+002:Ne pas déranger
+003:Absent
+004:Non disponible
+005:Occupé
+006:Invisible
+007:Libre pour du chatter
+008:Hors ligne
+009:L'utilisateur est DND [Msg automatique]
+010:L'utilisateur est Parti [Msg automatique]
+011:L'utilisateur n'est pas disponible [Msg automatique]
+012:L'utilisateur est Occupé [Msg automatique]
+013:L'utilisateur est Hors-ligne
+014:Rien
+015:Jan
+016:Fév
+017:Mar
+018:Avr
+019:Mai
+020:Jun
+021:Jul
+022:Aoû
+023:Sept
+024:Oct
+025:Nov
+026:Déc
+027:OUI
+028:NON
+029:svp " YES_STR " ou " NO_STR "¶
+030: a quitté.
+031: s'est logué.
+032: - message envoyé le
+033: - Instant " SERVCOL "Mass" NOCOL " Message
+#034: (Nachricht)
+035: modifier le status à 
+036:Commande inconnue %s, taper /aide pour l'aide.
+037:Message envoyé avant que la dernière ligne du buffer ne soit remplie¶
+038:Message annulé¶
+039: !¶
+040:Micq> 
+041:msg> 
+042:msgA_TOUS> 
+043:Tous les utilisateurs trouvés.
+044:Trop d'utilisateurs trouvés.
+045:Recherche terminée..
+046:Longueur
+047:Extra Data
+048:SEQ
+049:Ver
+050:Login réussi !
+051:Le serveur a aquité la commande %04x !
+052:N'arrive pas à établir la connexion¶
+053:Connecté à %s, attente de réponse¶
+054: Connection refusé sur le port %d à %s¶
+055:Echec de la création de Socket
+056:Socket crée, tentative de connexion¶
+057:Le nom de domaine 
+058:%s n'a pas été trouvé.¶
+059:Le port qui sera utilisé pour tcp (non implimenté pour l'instant) est %d¶
+060:Le niveau d'info est %d.¶
+061:%s ne sera pas reconnus comme surnom
+062:Utilisateurs ignorés : 
+063:Entrez un mot de passe : 
+064:¶Changement automatique du status à
+065:Utilise l'ordre des processeurs intel pour stocker les octets.
+066:Utilise l'ordre des processeurs motorola pour stocker les octets.
+067:¶Ignorer un message cmd  %04x¶
+068: En ligne depuis %s
+069: Etait à %s la dernière fois en ligne
+070: On ne connait pas la date à laquelle l'utilisateur était la dernière fois en ligne.
+071:Votre status est 
+072:Utilisateur hors-ligne : 
+073:Utilisateur en ligne : 
+#099: (Unbekannte Sprache)
+100:Aucune
+101:Arabe
+102:Bhojpuri
+103:Bulguare
+104:Burmese
+105:Cantonais
+106:Catalan
+107:Chinois
+108:Croate
+109:Tchéque
+110:Danois
+111:Dutch
+112:Anglais
+113:Esperanto
+114:Estonien
+115:Farsi
+116:Finlandais
+117:Français
+118:Gaelic
+119:Allemand
+120:Gréc
+121:Hébreu
+122:Hindi
+123:Hongrois
+124:Icelandais
+125:Indonesien
+126:Italien
+127:Japonais
+128:Khmer
+129:Coréen
+130:Lao
+131:Lettonien
+132:Lituanien
+133:Malay
+134:Norvégien
+135:Polonais
+136:Portugais
+137:Roumain
+138:Russe
+139:Serbo-Croate
+140:Slovaque
+141:Slovénien
+142:Somalien
+143:Espagnol
+144:Swahilien
+145:Suédois
+146:Tagalog
+147:Tartare
+148:Thai
+149:Turque
+150:Ukrainien
+151:Urdu
+152:Vietnamien
+153:Yiddish
+154:Yoruba
+155:Afrikaner
+156:Bosnien
+157:Perse
+158:Albanien
+159:Arménien
+#199: (Unbekanntes Land)
+200:Non référencé
+201:Afghanistan
+202:Albanie
+203:Algerie
+204:American Samoa
+205:Andore
+206:Angola
+207:Anguilla
+208:Antigua
+209:Argentine
+210:Armenie
+211:Aruba
+212:Iles de l'Ascention
+213:Australie
+214:Australisch-Antarktisches Gebiet
+215:Autriche
+216:Azerbaïjan
+217:Bahamas
+218:Bahrain
+219:Bangladesh
+220:Barbade
+221:Belarus
+222:Belgique
+223:Belize
+224:Bénin
+225:Bermudes
+226:Bhutan
+227:Bolivie
+228:Bosnie herzegovine
+229:Botswana
+230:Brésil
+231:British Virgin Islands
+232:Brunei
+233:Bulgarie
+234:Burkina Faso
+235:Burundi
+236:Cambodge
+237:Cameroon
+238:Canada
+239:Iles du cap vert
+240:Iles Cayman
+241:Republique d'afrique centrale
+242:Tchad
+243:Weihnachtsinseln
+244:Iles Cocos-Keeling
+245:Comores
+246:Congo
+247:Iles Cook
+248:Chili
+249:Chine
+250:Columbie
+251:Costa Rica
+252:Croatie
+253:Cuba
+254:Chypre
+255:République Tchéque
+256:Danemark
+257:Diego Garcia
+258:Djibouti
+259:Dominique
+260:République Dominicaine
+261:Equateur
+262:Egypte
+263:El Salvador
+264:Guinée Equitoriale
+265:Eritrée
+266:Estonie
+267:Ethiopie
+268:Ex-Yougoslavie
+269:Iles Feroë
+270:Iles Falkland
+271:Etats fédérés de Micronesie
+272:Fiji
+273:Finlande
+274:France
+275:Antilles françaises
+276:Antilles françaises
+277:Guinée française
+278:Polynesie française
+279:Gabon
+280:Gambie
+281:Georgie
+282:Allemagne
+283:Ghana
+284:Gibraltar
+285:Gréce
+286:Greenland
+287:Grenada
+288:Guadeloupe
+289:Guam
+290:Guantanomo Bay
+291:Guatemala
+292:Guinée
+293:Guinée-Bissau
+294:Guyane
+295:Haïti
+296:Honduras
+297:Hong Kong
+298:Hongrie
+299:Islande
+300:Inde
+301:Indonesie
+302:INMARSAT
+303:INMARSAT Atlantique-Est
+304:Iran
+305:Irak
+306:Irlande
+307:Israël
+308:Italie
+309:Côte d'ivoire
+310:Japon
+311:Jordanie
+312:Kazakhstan
+313:Kenya
+314:Corée du Sud
+315:Kowait
+316:Liberia
+317:Lybie
+318:Liechtenstein
+319:Luxembourg
+320:Malawi
+321:Malaisie
+322:Mali
+323:Malte
+324:Mexique
+325:Monaco
+326:Maroc
+327:Namibie
+328:Népal
+329:Pays bas
+330:Antilles néerlandaises
+331:Nouvelle Calédonie
+332:Nouvelle Zéllande
+333:Nicaragua
+334:Nigeria
+335:Norvége
+336:Oman
+337:Pakistan
+338:Panama
+339:Papuaisie, Nouvelle Guinée
+340:Paraguay
+341:Perou
+342:Philippines
+343:Pologne
+344:Portugal
+345:Puerto Rico
+346:Qatar
+347:Roumanie
+348:Russie
+349:Saipan
+350:Saint Marin
+351:Arabie Saoudite
+352:Sénégal
+353:Singapour
+354:Slovaquie
+355:Afrique du Sud
+356:Espagne
+357:Sri Lanka
+358:Surinam
+359:Suéde
+360:Suisse
+361:Taïwan
+362:Tanzanie
+363:Thaïlande
+364:Tinian Island
+365:Togo
+366:Tokelau
+367:Tonga
+368:Trinadad et Tabago
+369:Tunisie
+370:Turquie
+371:Turkmenistan
+372:Turks and Caicos Islands
+373:Tuvalu
+374:Uganda
+375:Ukraine
+376:Emirats Arabes Unis
+377:Royaume Unis
+378:United States Virgin Islands
+379:Etats-Unis
+380:Uruguay
+381:Uzbekistan
+382:Vanuatu
+383:Vatican (Cité du)
+384:Venezuela
+385:Vietnam
+386:Wallis et Futuna
+387:Western Samoa
+388:Yemen
+389:Yougoslavie
+390:Zaïre
+391:Zambie
+392:Zimbabwe
+400:		Montre les informations sur la situation locale de l'utilisateur.¶
+401:		Met à jour les autres informations sur l'utilisateur comme son age et son sexe.¶
+402:		Met à jour vos informations utilisateur.¶
+403:		Montre le dernier message reçu de <nick>.¶			Il doit appartenir à votre liste de contact.¶
+404:		Change ignorer/ne-pas-ignorer un surnom.¶
+405:		Liste des (surnoms)nicks/uins ignorés.¶
+406:		Change la visibilité pour un utilisateur, lorsque vous êtes invisible.¶
+407:			Affiche le status courant des personnes en ligne dans votre liste de contact.¶
+408:		Rend votre mot de passe secret.¶
+409:		Envois un message à un uin.¶
+410:	Envois un message et un URL à un uin.¶
+411:	Envois un message multi-ligne à TOUTES les personnes votre liste de contact.¶
+412:		Envois un message à la dernière personne à qui vous avez envoyé un message.¶
+413:		Autorise uin à vous ajouter à sa liste.¶
+414:		Réponds à la dernière personne qui vous a envoyé un message.¶
+415:		Trouve un utilisateur aléatoirement dans un groupe spécifié ou dans la listes de tous les groupes.¶
+416:			Affiche le status courant de toutes les personnes de votre liste de contact.¶
+417:	Cette commande vous permet de modifier votre commande pour qu'elle prenne le nom d'une autre commande.¶
+418:			Définit le niveau d'information souhaité ( par défaut = 0 ).¶
+419:				Effacer l'écran.¶
+420:				Activer/Désactiver le bip d'annonce de réception de nouveaux messages.¶
+421:				Changer les couleurs de la mise en page.¶
+422:			Quitte icq, puis micq.¶
+423:				Affiche le status des réponses automatiques.¶
+424:			Change les message envoyés lorsque votre status est OCC, DND ou NA.¶
+425:		Donne à votre message à envoyer un status de réponse automatique.¶
+426:	Crée un nouvel UIN avec un mot de passe.¶
+427:	Modifie votre status à un numéro de status.¶		Sans numéro cela permet de lister les modes disponibles.¶
+428:	Ajoute un numéro uin à votre liste de contact avec son surnom.¶
+429:	Recherche un utilisateur ICQ d'après son adresse mél.¶
+430:		Montre les informations génerales a partir d'un uin¶
+431:		_En Ligne_¶
+432:		_Absent_¶
+433:		-Non disponible-¶
+434:		-Occupé-¶
+435:		_Ne pas déranger_¶
+436:		-Libre pour chatter-¶
+437:		-Invisible-¶
+438:		Met à jour ses infos (Mél, Surnom, etc.)¶
+439:		Se place aléatoirement dans un groupe d'utilisateur.¶
+#440:PROMPT_HELP_STR (		Ändert den mICQ Prompt.¶)
+#441:GOTO_HELP_STR (				Öffnet die letzte erhaltene URL in Lynx¶)
+442:Svp sélectionnez un des thémes d'aide ci-dessous : '/aide théme'
+443:Commandes relatives a mICQ et a sa configuration.
+444:Commandes pour trouver un autre utilisateur.
+445:Commandes relatives à votre compte ICQ.
+446:Commandes relatives à l'envoi de messages.
+447:client
+448:message
+449:nom
+450:compte
+500:Surnom     : 
+501:Nom        : 
+502:Mél        : 
+503:Autre mél  : 
+504:Ancien mél : 
+505:Adresse    : 
+506:Téléphone  : 
+507:Fax        : 
+508:Rue        : 
+509:Téléphone cellulaire     : 
+510:Code postal : 
+511:Pays        : 
+512:Code pays : 
+513:Code du pays de travail : 
+514:Pays de travail : 
+515:Page web de l'entreprise : 
+516:Occupation   : 
+517:Emploi : 
+518:Service de l'entreprise : 
+519:Entreprise : 
+520:Code Postal de l'entreprise : 
+521:Fax de l'entreprise     : 
+522:Adresse de travail  : 
+523:Téléphone de travail : 
+524:Lieu de travail      : 
+525:A propos : 
+526:Non entré
+527:Age          : 
+528:Sexe : Féminin
+529:Sexe : Masculin
+530:Sexe : Non spécifié
+531:Page perso     : 
+532:Né(e)         : 
+533:Langue    : 
+534:Entrer une langue par un numéro ou L pour une liste : 
+535:Entrer un nouvel age : 
+536:Entrer un nouveau  sexe : 
+537:Entrer une nouvelle page perso : 
+538:Entrer une nouvelle année de naissance (4 chiffres) : 
+539:Entrer un nouveau mois de naissance : 
+540:Entrer un nouveau jour de naissance : 
+541:Apropos> 
+542:Entrez une autre adresse mél : 
+543:Entrez l'anciennne adresse mél : 
+544:Entrez une nouvelle ville : 
+545:Entrez un nouvel état : 
+546:Entrez un nouveau numéro de téléphone : 
+547:Entrez un nouveau numéro de fax : 
+548:Entrez une nouvelle adresse : 
+549:Entrez un numéro de téléphone portable : 
+550:Entrez votre code de région (doit être numérique) : 
+551:Entrez l'identifiant du numéro de téléphone caractérisant votre  pays : 
+552:Entrer votre zone de temps (+/- 0-12): 
+553:Votre nouveau surnom  : 
+554:Votre nouveau nom : 
+555:Votre prénom : 
+556:Votre adresse mél : 
+557:Souhaitez-vous que les utilisateurs de Mirabilis requierent votre autorisation ? : 
