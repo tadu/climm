@@ -98,15 +98,6 @@ const char *ConvEncName (UBYTE enc)
     return conv_encs[enc & ~ENC_AUTO].enc;
 }
 
-char ConvSep ()
-{
-    static char conv = '\0';
-    
-    if (conv)
-        return conv;
-    return conv = ConvFromUTF8 (ConvToUTF8 ("\xfe", prG->enc_rem), prG->enc_loc)[0];
-}
-
 #ifdef ENABLE_UTF8
 /*
  * Convert a single unicode code point to UTF-8

@@ -46,7 +46,7 @@ static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd,
     SnacSrvFromicqsrv, SnacSrvAddedyou, SnacSrvToicqerr, SnacSrvNewuin,
     SnacSrvSetinterval, SnacSrvSrvackmsg, SnacSrvAckmsg, SnacSrvAuthreq,
     SnacSrvAuthreply, SnacSrvIcbmerr, SnacSrvReplyroster, SnacSrvContrefused,
-    SnacSrvRateexceeded;
+    SnacSrvRateexceeded, SnacServerpause;
 
 static SNAC SNACv[] = {
     {  1,  3, NULL, NULL},
@@ -68,7 +68,9 @@ static SNAC SNACS[] = {
     {  1,  3, "SRV_FAMILIES",        SnacSrvFamilies},
     {  1,  7, "SRV_RATES",           SnacSrvRates},
     {  1, 10, "SRV_RATEEXCEEDED",    SnacSrvRateexceeded},
+    {  1, 11, "SRV_SERVERPAUSE",     SnacServerpause},
     {  1, 15, "SRV_REPLYINFO",       SnacSrvReplyinfo},
+    {  1, 18, "SRV_MIGRATIONREQ",    SnacServerpause},
     {  1, 19, "SRV_MOTD",            SnacSrvMotd},
     {  1, 24, "SRV_FAMILIES2",       SnacSrvFamilies2},
     {  2,  3, "SRV_REPLYLOCATION",   SnacSrvReplylocation},
@@ -98,6 +100,7 @@ static SNAC SNACS[] = {
     {  1,  2, "CLI_READY",           NULL},
     {  1,  6, "CLI_RATESREQUEST",    NULL},
     {  1,  8, "CLI_ACKRATES",        NULL},
+    {  1, 12, "CLI_ACKSERVERPAUSE",  NULL},
     {  1, 14, "CLI_REQINFO",         NULL},
     {  1, 23, "CLI_FAMILIES",        NULL},
     {  1, 30, "CLI_SETSTATUS",       NULL},
@@ -316,6 +319,24 @@ static JUMP_SNAC_F(SnacSrvRates)
 static JUMP_SNAC_F(SnacSrvRateexceeded)
 {
     M_print (i18n (2188, "You're sending data too fast - stop typing now, or the server will disconnect!\n"));
+}
+
+/*
+ * SRV_SERVERPAUSE - SNAC(1,11)
+ * SRV_MIGRATIONREQ - SNAC(1,18)
+ */
+static JUMP_SNAC_F(SnacServerpause)
+{
+    ContactGroup *cg = event->conn->contacts;
+    Contact *cont;
+    int i;
+
+#ifdef WIP
+    M_printf ("%s WIP: reconnecting because of serverpause.\n", s_time (NULL));
+#endif
+    ConnectionInitServer(event->conn);
+    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+        cont->status = STATUS_OFFLINE;
 }
 
 static void SrvCallbackTodoEg (Event *event)
@@ -845,7 +866,7 @@ static JUMP_SNAC_F(SnacSrvSrvackmsg)
 static JUMP_SNAC_F(SnacSrvReplybos)
 {
     SnacCliSetuserinfo (event->conn);
-    SnacCliSetstatus (event->conn, event->conn->spref->status, 3);
+    SnacCliSetstatus (event->conn, event->conn->status, 3);
     SnacCliReady (event->conn);
     SnacCliAddcontact (event->conn, 0);
     SnacCliReqofflinemsgs (event->conn);
@@ -879,18 +900,12 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
     int i, k, l;
     char *name, *cname, *nick;
     UWORD count, type, tag, id, TLVlen, j, data;
+    time_t stmp;
 
     pak = event->pak;
     
     event2 = QueueDequeue (event->conn, QUEUE_REQUEST_ROSTER, 0);
-    if (event2)
-    {
-        data = event2->uin;
-        EventD (event2);
-    }
-    else
-        data = 1;
-        
+    data = event2 ? event2->uin : 1;
 
     PacketRead1 (pak);
     count = PacketReadB2 (pak);          /* COUNT */
@@ -935,9 +950,11 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
             case 3:
             case 14:
             case 0:
-                cg = ContactGroupFind (tag, event->conn, NULL, 0);
-                if (!tag || (!cg && data == 3))
+                if (!tag)
                     break;
+                if (!(cg = ContactGroupFind (tag, event->conn, NULL, 0)))
+                    if (!(cg = ContactGroupFind (tag, event->conn, s_sprintf ("<group #%d>", tag), 1)))
+                        break;
                 j = TLVGet (tlv, 305);
                 assert (j < 200 || j == (UWORD)-1);
                 nick = strdup (j != (UWORD)-1 ? c_in (tlv[j].str) : name);
@@ -994,7 +1011,12 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
         free (name);
         TLVD (tlv);
     }
-    /* TIMESTAMP ignored */
+    stmp = PacketReadB4 (pak);
+    if (!stmp && event2)
+        QueueEnqueue (event2);
+    else if (event2)
+        EventD (event2);
+
     if (k || l)
     {
         M_printf (i18n (2242, "Imported %d new contacts, added %d times to a contact group.\n"), k, l);
@@ -1006,6 +1028,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
         else
             M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
     }
+    
 }
 
 /*

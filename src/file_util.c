@@ -265,7 +265,6 @@ void Initialize_RC_File ()
 
 #define PrefParse(x)          switch (1) { case 1: if (!s_parse    (&args, &x)) { M_printf (i18n (2123, "%sSyntax error%s: Too few arguments: '%s'\n"), COLERROR, COLNONE, buf); continue; }}
 #define PrefParseInt(i)       switch (1) { case 1: if (!s_parseint (&args, &i)) { M_printf (i18n (2124, "%sSyntax error%s: Not an integer: '%s'\n"), COLERROR, COLNONE, buf); continue; }}
-#define PrefParseRemainder(x) switch (1) { case 1: if (!s_parserem (&args, &x)) { M_printf (i18n (2123, "%sSyntax error%s: Too few arguments: '%s'\n"), COLERROR, COLNONE, buf); continue; }}
 #define ERROR continue;
 
 /*
@@ -274,7 +273,7 @@ void Initialize_RC_File ()
 void Read_RC_File (FILE *rcf)
 {
     char buf[450];
-    char *tmp = NULL, *cmd = NULL;
+    char *tmp = NULL, *tmp2 = NULL, *cmd = NULL;
     char *p, *args;
     Contact *cont = NULL, *lastcont = NULL;
     Connection *oldconn = NULL, *conn = NULL;
@@ -552,32 +551,32 @@ void Read_RC_File (FILE *rcf)
                         prG->flags &= ~FLAG_AUTOREPLY;
                     else if (!strcasecmp (tmp, "away"))
                     {
-                        PrefParseRemainder (tmp);
+                        PrefParse (tmp);
                         s_repl (&prG->auto_away, ConvToUTF8 (tmp, enc));
                     }
                     else if (!strcasecmp (tmp, "na"))
                     {
-                        PrefParseRemainder (tmp);
+                        PrefParse (tmp);
                         s_repl (&prG->auto_na, ConvToUTF8 (tmp, enc));
                     }
                     else if (!strcasecmp (tmp, "dnd"))
                     {
-                        PrefParseRemainder (tmp);
+                        PrefParse (tmp);
                         s_repl (&prG->auto_dnd, ConvToUTF8 (tmp, enc));
                     }
                     else if (!strcasecmp (tmp, "occ"))
                     {
-                        PrefParseRemainder (tmp);
+                        PrefParse (tmp);
                         s_repl (&prG->auto_occ, ConvToUTF8 (tmp, enc));
                     }
                     else if (!strcasecmp (tmp, "inv"))
                     {
-                        PrefParseRemainder (tmp);
+                        PrefParse (tmp);
                         s_repl (&prG->auto_inv, ConvToUTF8 (tmp, enc));
                     }
                     else if (!strcasecmp (tmp, "ffc"))
                     {
-                        PrefParseRemainder (tmp);
+                        PrefParse (tmp);
                         s_repl (&prG->auto_ffc, ConvToUTF8 (tmp, enc));
                     }
                     else
@@ -614,7 +613,7 @@ void Read_RC_File (FILE *rcf)
                 }
                 else if (!strcasecmp (cmd, "tab"))
                 {
-                    PrefParseRemainder (tmp);
+                    PrefParse (tmp);
                     if (spooled_tab_nicks < TAB_SLOTS)
                         tab_nick_spool[spooled_tab_nicks++] = strdup (ConvToUTF8 (tmp, enc));
                 }
@@ -782,14 +781,14 @@ void Read_RC_File (FILE *rcf)
                 if (isdigit (*p))
                 {
                     PrefParseInt (uin);
-                    PrefParseRemainder (cmd);
+                    PrefParse (cmd);
                 }
                 else
                 {
                     if (!lastcont)     /* ignore noise */
                         continue;
                     uin = lastcont->uin;
-                    PrefParseRemainder (cmd);
+                    PrefParse (cmd);
                 }
                 
                 
@@ -810,15 +809,29 @@ void Read_RC_File (FILE *rcf)
 
                 if (!strcasecmp (cmd, "alter"))
                 {
-                    PrefParseRemainder (tmp);
-                    CmdUser (cmd = strdup (s_sprintf ("\xb6" "alter quiet %s", ConvToUTF8 (tmp, enc))));
+                    PrefParse (tmp);
+                    tmp = strdup (s_quote (ConvToUTF8 (tmp, enc)));
+                    PrefParse (tmp2);
+                    tmp2 = strdup (s_quote (ConvToUTF8 (tmp2, enc)));
+                    
+                    CmdUser (cmd = strdup (s_sprintf ("\xb6" "alter quiet %s %s", tmp, tmp2)));
+
                     free (cmd);
+                    free (tmp);
+                    free (tmp2);
                 }
                 else if (!strcasecmp (cmd, "alias"))
                 {
-                    PrefParseRemainder (tmp);
-                    CmdUser (cmd = strdup (s_sprintf ("\xb6" "alias %s", ConvToUTF8 (tmp, enc))));
+                    PrefParse (tmp);
+                    tmp = strdup (s_quote (ConvToUTF8 (tmp, enc)));
+                    PrefParse (tmp2);
+                    tmp2 = strdup (ConvToUTF8 (tmp2, enc));
+
+                    CmdUser (cmd = strdup (s_sprintf ("\xb6" "alias %s %s", tmp, tmp2)));
+                    
                     free (cmd);
+                    free (tmp);
+                    free (tmp2);
                 }
                 else
                 {
@@ -925,7 +938,7 @@ void Read_RC_File (FILE *rcf)
                 PrefParse (cmd);
                 if (!strcasecmp (cmd, "label") && !cg->used)
                 {
-                    PrefParseRemainder (tmp);
+                    PrefParse (tmp);
                     s_repl (&cg->name, ConvToUTF8 (tmp, enc));
                     if (!strncmp (cg->name, "contacts-", 9))
                     {
@@ -1308,8 +1321,10 @@ int Save_RC ()
     {
         alias_t *node;
         for (node = CmdUserAliases (); node; node = node->next)
-            fprintf (rcf, "alias %s %s\n", node->name,
-                     s_quote (node->expansion));
+        {
+            fprintf (rcf, "alias %s", s_quote (node->name));
+            fprintf (rcf, " %s\n", s_quote (node->expansion));
+        }
     }
 
     fprintf (rcf, "\n# Contact groups.");

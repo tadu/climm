@@ -2969,7 +2969,7 @@ static JUMP_F(CmdUserURL)
     if (!s_parserem (&args, &msg))
         msg = "";
 
-    cmsg = s_sprintf ("%s%c%s", msg, ConvSep (), url);
+    cmsg = s_sprintf ("%s%c%s", msg, Conv0xFE, url);
     s_repl (&uiG.last_message_sent, cmsg);
     uiG.last_message_sent_type = MSG_URL;
     uiG.last_sent_uin = cont->uin;
