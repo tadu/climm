@@ -253,6 +253,19 @@ UDWORD s_strlen (const char *str)
 }
 
 /*
+ * Count the string length in unicode characters.
+ */
+UDWORD s_strnlen (const char *str, UDWORD len)
+{
+    UDWORD c;
+    
+    for (c = 0; *str && len; str++, len--)
+        if (!(*str & 0x80) || (*str & 0x40))
+            c++;
+    return c;
+}
+
+/*
  * Gives the byte offset of a character offset in UTF-8.
  */
 UDWORD s_offset  (const char *str, UDWORD offset)
