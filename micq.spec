@@ -1,7 +1,7 @@
-Summary:		text/line based ICQ client with many features%{!?_with_tcl: [no Tcl]}%{!?_with_ssl: [no SSL]}
-Name:			micq%{!?_with_tcl:-notcl}%{!?_with_ssl:-nossl}
+Summary:		text/line based ICQ client with many features%{?_without_tcl: [no Tcl]}%{?_without_ssl: [no SSL]}
+Name:			micq
 Version:		0.4.11
-Release:		1
+Release:		1%{?_without_tcl:.notcl}%{?_without_ssl:.nossl}
 Source:			micq-%{version}.tgz
 URL:			http://www.micq.org/
 Group:			Networking/ICQ
@@ -10,8 +10,8 @@ License:		GPL-2
 BuildRoot:		%{_tmppath}/build-micq-%{version}
 Prefix:			%{_prefix}
 
-%{?_with_ssl:BuildRequires: openssl-devel}
-%{?_with_tcl:BuildRequires: tcl-devel}
+%{!?_without_ssl:BuildRequires: openssl-devel | gnutls-devel}
+%{!?_without_tcl:BuildRequires: tcl-devel}
 
 %description
 mICQ is a portable, small, yet powerful console based ICQ client. It
@@ -72,8 +72,8 @@ test $RPM_BUILD_ROOT != / && rm -rf $RPM_BUILD_ROOT
 
 %build
 %configure --disable-dependency-tracking CFLAGS=-O4 \
-	%{?_with_tcl:--enable-tcl}%{!?_with_tcl:--disable-tcl} \
-	%{?_with_ssl:--enable-ssl}%{!?_with_ssl:--disable-ssl}
+	%{!?_without_tcl:--enable-tcl}%{?_without_tcl:--disable-tcl} \
+	%{!?_without_ssl:--enable-ssl}%{?_without_ssl:--disable-ssl}
 make
 
 %install
