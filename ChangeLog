@@ -4,6 +4,7 @@
 	* Implemented SRV_ADDEDYOU handling (Peter Backes)
 	* Small improvements to non-ANSI_COLOR part of mreadline (Peter Backes)
 	* Implement registering a new UIN: SNAC(17,1) SNAC(17,4) SNAC(17,5).
+	* New registration wizard.
 
 2002-04-27 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Fix insert-char-deletes-2-other-chars-bug (switched arguments)

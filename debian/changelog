@@ -4,6 +4,16 @@ micq (0.4.8.pl5-0) unstable; urgency=low
 
  -- Ruediger Kuhlmann <Ruediger.Kuhlmann@stud.uni-karlsruhe.de>  Wed, 27 Apr 2002 12:00:00 +0100
 
+micq (0.4.8.pl3-1) unstable; urgency=low
+
+  * New Upstream release (Closes: #85713, #108130, #116143, #128619, #113805, #92807, #94402, #117894, #125983)
+  * added little history in debian/copyright
+  * fixed debian/copyright for Ruedigers new parts.
+  * fixed debian/control (Closes: #143033)
+  * removed usr/share/lintian/overrides/micq from debian/dirs
+
+ -- Martin Loschwitz <madkiss@madkiss.org>  Thu, 18 Mar 2002 13:41:00 +0200
+
 micq (0.4.8.pl2-1) unstable; urgency=low
 
   * New Upstream!

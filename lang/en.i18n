@@ -88,12 +88,12 @@
 088:Can't send this (%x) yet.¶
 089:Unloaded translation.
 090:%s is a UIN, not a nick name.
-091:Must enter password!
-092:Reenter password to verify:
-093:Passwords did not match - please reenter.
-094:SOCKS5 server hostname or IP (type 0 if you don't want to use this):
-095:SOCKS5 port (in general 1080):
-096:SOCKS5 username (type 0 if you don't need authentification):
+091: 
+092: 
+093:Passwords did not match - please try again.
+094:SOCKS5 server:
+095:SOCKS5 port:
+096:SOCKS5 user name:
 097:SOCKS5 password:
 098:Display a list of nicknames that you can tab through.
 099:Unknown language.
@@ -615,7 +615,7 @@
 615:Logging to "%s"¶
 616:Started BeOS InputThread¶\r
 617:<all>
-618:Enter UIN or 0 for new UIN:
+618:UIN:
 619:Warning:
 620:maximal number of contacts reached. Ask a wizard to enlarge me!
 621:%d users not returned.
@@ -778,8 +778,22 @@
 778:Incoming TCP packet:
 779:Opening TCP connection to %s at %s:%d... 
 780:Registration of new UIN refused.¶
+781:Your password for UIN %d:¶
+782:You need a password for your new UIN.¶
+783:To prevent typos, please enter your password again.¶
+784:If you are firewalled, you may need to use a SOCKS5 server. If you do, please enter its hostname or IP address. Otherwise, or if unsure, just press return.¶
 785:success.¶
+786:I also need the port the socks server listens on. If unsure, press return for the default port.¶
+787:You probably need to authentificate yourself to the socks server. If so, you need to enter the user name the administrator of the socks server gave you. Otherwise, just press return.¶
+788:Now I also need the password for this user.¶
 789:Received malformed packet.
+790:Setup wizard finished. Congratulations to your new UIN!¶
+791:Setup wizard finished. Congratulations!¶
+792:I'm sorry, AOL doesn't want to give us a new UIN, probably because of too many new UIN requests from this IP. Please try again later.¶
+793:No valid UIN found. The setup wizard will guide you through the process of setting one up.¶
+794:If you already have an UIN, please enter it. Otherwise, enter 0, and I will request one for you.¶
+795:Password:
+796:Setup wizard finished. Please wait until registration has finished.¶
 800:Change the working language to <lang>.
 801:Displays a list of people on your contact list in a screen wide format.
 802:SoundOnline cmd
@@ -864,7 +878,6 @@
 910:FLAP seq %08x length %04x channel %d©0¶
 911:connecting
 912:closed
-913:Wrote new config file %s. Exiting.¶
 914:Can't allocate connection structure.¶
 915:Server says we're at %s.¶
 916:Need a nick or uin.¶
