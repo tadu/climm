@@ -220,7 +220,6 @@ static const char *TablePast[] = {
     _i18n (1178, "Military"),
     _i18n (1812, "Past Work Place"),
     _i18n (1813, "Past Organization"),
-    _i18n (1959, "Other")
 };
 #define TablePastSize sizeof (TablePast) / sizeof (const char *)
 

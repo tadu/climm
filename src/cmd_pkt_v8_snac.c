@@ -452,6 +452,10 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
     cont = ContactFind (uin);
     tlv = TLVRead (pak);
 
+    old = cont ? cont->status : STATUS_OFFLINE;
+    if (tlv[6].len && cont && cont->status != STATUS_OFFLINE)
+        UtilUIUserOnline (cont, tlv[6].nr);
+
     /* tlv[2] may be there twice - ignore the member since time(NULL). */
     if (tlv[2].len == 4)
     {
@@ -480,7 +484,6 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
             PacketReadB2 (p);
             PacketReadData (p, NULL, PacketReadB2 (p));
             PacketReadB2 (p);
-            PacketReadBAt2 (p, PacketReadPos (p));
             text = PacketReadStrB (p);
             txt = text + 4;
             type = NORM_MESS;
@@ -541,29 +544,15 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
             return;
     }
 
-    if (tlv[6].len)
+    Time_Stamp ();
+    M_print (" " CYAN BOLD "%10s" COLNONE " ", ContactFindName (uin));
+
+    if (tlv[6].len && (!cont || cont->status != old || cont->flags & CONT_TEMPORARY))
     {
-        old = cont && !cont->not_in_list ? cont->status : STATUS_OFFLINE;
-
-        if (cont)
-            UtilUIUserOnline (cont, tlv[6].nr);
-
-        Time_Stamp ();
-        M_print (" " CYAN BOLD "%10s" COLNONE " ", ContactFindName (uin));
-
-        if (old != tlv[6].nr)
-        {
-            M_print ("(");
-            Print_Status (tlv[6].nr);
-            M_print (") ");
-        }
+        M_print ("(");
+        Print_Status (tlv[6].nr);
+        M_print (") ");
     }
-    else
-    {
-        Time_Stamp ();
-        M_print (" " CYAN BOLD "%10s" COLNONE " ", ContactFindName (uin));
-    }
-
 
     Do_Msg (event->sess, type, strlen (txt), txt, uin, 0);
 
@@ -1072,7 +1061,7 @@ void SnacCliAddvisible (Session *sess, UDWORD uin)
         PacketWriteUIN (pak, uin);
     else
         for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
-            if (cont->vis_list)
+            if (cont->flags & CONT_INTIMATE)
                 PacketWriteUIN (pak, cont->uin);
     SnacSend (sess, pak);
 }
@@ -1102,7 +1091,7 @@ void SnacCliAddinvis (Session *sess, UDWORD uin)
         PacketWriteUIN (pak, uin);
     else
         for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
-            if (cont->invis_list)
+            if (cont->flags & CONT_HIDEFROM)
                 PacketWriteUIN (pak, cont->uin);
     SnacSend (sess, pak);
 }

@@ -490,7 +490,7 @@ UDWORD UtilCheckUIN (Session *sess, UDWORD uin)
         
         cont = ContactAdd (uin, ContactFindName (uin));
         if (cont)
-            cont->not_in_list = 1;
+            cont->flags |= CONT_TEMPORARY;
         if (sess->ver > 6)
             SnacCliAddcontact (sess, uin);
         else

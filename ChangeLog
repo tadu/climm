@@ -1,4 +1,7 @@
 
+2002-05-06 Peter Backes <rtc@gmx.de>
+	* Implement contact flags differently.
+
 2002-05-06 Peter Backes <rtc@helen.PLASMA.Xg8.DE>
 	* Add status (quite raw, hexadecimal) to online messages in the logfile.
 	* Further cleanup of icq_response.c, reducing code size.

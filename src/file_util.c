@@ -547,17 +547,17 @@ void Read_RC_File (FILE *rcf)
                     break;
                 }
                 
-                if (i == 1)
+                switch (i)
                 {
-                    cont->vis_list = TRUE;
-                }
-                else if (i == 2)
-                {
-                    cont->invis_list = TRUE;
-                }
-                else if (i == 3)
-                {
-                    strncpy (cont->nick, (cont - 1)->nick, 20);
+                    case 1:
+                        cont->flags |= CONT_INTIMATE;
+                        break;
+                    case 2:
+                        cont->flags |= CONT_HIDEFROM;
+                        break;
+                    case 3:
+                        strncpy (cont->nick, (cont - 1)->nick, 20);
+                        break;
                 }
 
                 if (prG->verbose > 2)
@@ -847,10 +847,10 @@ int Save_RC ()
 
     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
     {
-        if (!(cont->uin & 0x80000000L) && !cont->not_in_list)
+        if (!(cont->uin & 0x80000000L) && !(cont->flags & CONT_TEMPORARY))
         {
             Contact *cont2;
-            fprintf (rcf, cont->vis_list ? "*" : cont->invis_list ? "~" : " ");
+            fprintf (rcf, cont->flags & CONT_INTIMATE ? "*" : cont->flags & CONT_HIDEFROM ? "~" : " ");
             fprintf (rcf, "%9ld %s\n", cont->uin, cont->nick);
             k = 0;
             for (cont2 = ContactStart (); ContactHasNext (cont2); cont2 = ContactNext (cont2))

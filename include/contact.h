@@ -2,13 +2,16 @@
 #ifndef MICQ_CONTACT_H
 #define MICQ_CONTACT_H
 
+#define CONT_HIDEFROM  1UL /* Always pretend to be offline. */
+#define CONT_INTIMATE  2UL /* Can see even if invisible. */
+#define CONT_TEMPORARY 4UL /* No status display for this contact. */
+#define CONT_ALIAS     8UL /* Is an alias entry (not yet used). */
+
 struct Contact_s
 {
    UDWORD uin;
    UDWORD status;
-   BOOL   invis_list;
-   BOOL   vis_list;
-   BOOL   not_in_list;
+   UDWORD flags;
    UDWORD local_ip;   /* host byte order */
    UDWORD outside_ip;
    UDWORD port;

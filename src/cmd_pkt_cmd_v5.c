@@ -493,7 +493,7 @@ void CmdPktCmdInvisList (Session *sess)
     {
         for (i = 0, pak = NULL; i < MAX_CONTS_PACKET && ContactHasNext (cont); cont = ContactNext (cont))
         {
-            if ((SDWORD) cont->uin > 0 && cont->invis_list)
+            if ((SDWORD) cont->uin > 0 && cont->flags & CONT_HIDEFROM)
             {
                 if (!pak)
                 {
@@ -529,7 +529,7 @@ void CmdPktCmdVisList (Session *sess)
     {
         for (i = 0, pak = NULL; i < MAX_CONTS_PACKET && ContactHasNext (cont); cont = ContactNext (cont))
         {
-            if ((SDWORD) cont->uin > 0 && cont->vis_list)
+            if ((SDWORD) cont->uin > 0 && cont->flags & CONT_INTIMATE)
             {
                 if (!pak)
                 {

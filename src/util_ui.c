@@ -527,7 +527,7 @@ void UtilUIUserOnline (Contact *cont, UDWORD status)
 
     log_event (cont->uin, LOG_ONLINE, "User logged on %s (%08lx)\n", ContactFindName (cont->uin), status);
  
-    if (cont->not_in_list)
+    if (cont->flags & CONT_TEMPORARY)
         return;
 
     if (~old)
@@ -571,7 +571,7 @@ void UtilUIUserOffline (Contact *cont)
     cont->status = STATUS_OFFLINE;
     cont->last_time = time (NULL);
 
-    if (cont->not_in_list)
+    if (cont->flags & CONT_TEMPORARY)
         return;
 
     if (prG->sound & SFLAG_OFF_CMD)

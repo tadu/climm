@@ -33,9 +33,7 @@ Contact *ContactAdd (UDWORD uin, const char *nick)
     cont->nick[19] = '\0';
     (cont + 1)->uin = 0;
 
-    cont->invis_list = FALSE;
-    cont->vis_list = FALSE;
-    cont->not_in_list = FALSE;
+    cont->flags = 0;
     cont->status = STATUS_OFFLINE;
     cont->last_time = -1L;
     cont->local_ip = 0xffffffff;

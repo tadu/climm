@@ -992,18 +992,14 @@ JUMP_F(CmdUserStatusDetail)
             M_print (i18n (1700, "%s is not a valid user in your list.\n"), name);
             return 0;
         }
-        if (cont->vis_list)
-        {
-            M_print ("%s*%s", COLSERV, COLNONE);
-        }
-        else if (cont->invis_list)
-        {
+        if (cont->flags & CONT_TEMPORARY)
+            M_print (COLSERV "#" COLNONE);
+        else if (cont->flags & CONT_INTIMATE)
+            M_print (COLSERV "*" COLNONE);
+        else if (cont->flags & CONT_HIDEFROM)
             M_print (COLSERV "-" COLNONE);
-        }
         else
-        {
             M_print (" ");
-        }
         M_print ("%6ld=", cont->uin);
         M_print (COLCONTACT "%-20s\t%s(", cont->nick, COLMESS);
         Print_Status (cont->status);
@@ -1050,18 +1046,15 @@ JUMP_F(CmdUserStatusDetail)
     {
         if ((SDWORD) cont->uin > 0)
         {
-            if (!cont->invis_list)
+            if (!(cont->flags & CONT_HIDEFROM))
             {
                 if (cont->status == STATUS_OFFLINE)
                 {
-                    if (cont->vis_list)
-                    {
-                        M_print ("%s*%s", COLSERV, COLNONE);
-                    }
+                    if (cont->flags & CONT_INTIMATE)
+                        M_print (COLSERV "*" COLNONE);
                     else
-                    {
                         M_print (" ");
-                    }
+
                     M_print ("%8ld=", cont->uin);
                     M_print (COLCONTACT "%-20s\t%s(", cont->nick, COLMESS);
                     Print_Status (cont->status);
@@ -1088,18 +1081,15 @@ JUMP_F(CmdUserStatusDetail)
     {
         if ((SDWORD) cont->uin > 0)
         {
-            if (FALSE == cont->invis_list)
+            if (!(cont->flags & CONT_HIDEFROM))
             {
                 if (cont->status != STATUS_OFFLINE)
                 {
-                    if (cont->vis_list)
-                    {
-                        M_print ("%s*%s", COLSERV, COLNONE);
-                    }
+                    if (cont->flags & CONT_INTIMATE)
+                        M_print (COLSERV "*" COLNONE);
                     else
-                    {
                         M_print (" ");
-                    }
+
                     M_print ("%8ld=", cont->uin);
                     M_print (COLCONTACT "%-20s\t%s(", cont->nick, COLMESS);
                     Print_Status (cont->status);
@@ -1141,16 +1131,13 @@ JUMP_F(CmdUserIgnoreStatus)
     {
         if ((SDWORD) cont->uin > 0)
         {
-            if (TRUE == cont->invis_list)
+            if (cont->flags & CONT_HIDEFROM)
             {
-                if (cont->vis_list)
-                {
+                if (cont->flags & CONT_INTIMATE)
                     M_print (COLSERV "*" COLNONE);
-                }
                 else
-                {
                     M_print (" ");
-                }
+
                 M_print (COLCONTACT "%-20s\t" COLMESS "(", cont->nick);
                 Print_Status (cont->status);
                 M_print (")" COLNONE "\n");
@@ -1333,18 +1320,15 @@ JUMP_F(CmdUserStatusShort)
         {
             if ((SDWORD) cont->uin > 0)
             {
-                if (FALSE == cont->invis_list)
+                if (!(cont->flags & CONT_HIDEFROM))
                 {
                     if (cont->status == STATUS_OFFLINE)
                     {
-                        if (cont->vis_list)
-                        {
+                        if (cont->flags & CONT_INTIMATE)
                             M_print (COLSERV "*" COLNONE);
-                        }
                         else
-                        {
                             M_print (" ");
-                        }
+
                         M_print (COLCONTACT "%-20s\t" COLMESS "(", cont->nick);
                         Print_Status (cont->status);
                         M_print (")" COLNONE "\n");
@@ -1359,18 +1343,15 @@ JUMP_F(CmdUserStatusShort)
     {
         if ((SDWORD) cont->uin > 0)
         {
-            if (!cont->invis_list)
+            if (!(cont->flags & CONT_HIDEFROM))
             {
                 if (cont->status != STATUS_OFFLINE)
                 {
-                    if (cont->vis_list)
-                    {
+                    if (cont->flags & CONT_INTIMATE)
                         M_print (COLSERV "*" COLNONE);
-                    }
                     else
-                    {
                         M_print (" ");
-                    }
+
                     M_print (COLCONTACT "%-20s\t" COLMESS "(", cont->nick);
                     Print_Status (cont->status);
                     M_print (")" COLNONE);
@@ -1645,9 +1626,9 @@ JUMP_F(CmdUserTogIgnore)
         return 0;
     }
 
-    if (bud->invis_list == TRUE)
+    if (bud->flags & CONT_HIDEFROM)
     {
-        bud->invis_list = FALSE;
+        bud->flags &= ~CONT_HIDEFROM;
         if (sess->ver > 6)
             SnacCliReminvis (sess, uin);
         else
@@ -1656,8 +1637,8 @@ JUMP_F(CmdUserTogIgnore)
     }
     else
     {
-        bud->vis_list = FALSE;
-        bud->invis_list = TRUE;
+        bud->flags |= CONT_HIDEFROM;
+        bud->flags &= ~CONT_INTIMATE;
         if (sess->ver > 6)
             SnacCliAddinvis (sess, uin);
         else
@@ -1712,9 +1693,9 @@ JUMP_F(CmdUserTogVisible)
         return 0;
     }
 
-    if (bud->vis_list == TRUE)
+    if (bud->flags & CONT_INTIMATE)
     {
-        bud->vis_list = FALSE;
+        bud->flags &= ~CONT_INTIMATE;
         if (sess->ver > 6)
             SnacCliRemvisible (sess, uin);
         else
@@ -1723,8 +1704,8 @@ JUMP_F(CmdUserTogVisible)
     }
     else
     {
-        bud->vis_list = TRUE;
-        bud->invis_list = FALSE;
+        bud->flags |= CONT_INTIMATE;
+        bud->flags &= ~CONT_HIDEFROM;
         if (sess-> ver > 6)
             SnacCliAddvisible (sess, uin);
         else
@@ -1765,7 +1746,7 @@ JUMP_F(CmdUserAdd)
     {
         if (!arg2)
             arg2 = ContactFindName (uin);
-        if (cont->not_in_list)
+        if (cont->flags & CONT_TEMPORARY)
         {
             M_print (i18n (1669, "%s added.\n"), arg1);
             M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
@@ -1775,7 +1756,7 @@ JUMP_F(CmdUserAdd)
             M_print (i18n (1749, "UIN %d renamed to %s.\n"), uin, arg2);
             M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
         }
-        cont->not_in_list = 0;
+        cont->flags &= ~CONT_TEMPORARY;
         strncpy (cont->nick, arg2, 18);
         cont->nick[19] = '\0';
     }
