@@ -57,6 +57,7 @@ static void SrvCallBackDoReconn (Event *event);
 
 Event *ConnectionInitServer (Connection *conn)
 {
+    Contact *cont;
     Event *event;
     
     if (!conn->server || !*conn->server || !conn->port)
@@ -65,7 +66,7 @@ Event *ConnectionInitServer (Connection *conn)
     if (conn->sok != -1)
         sockclose (conn->sok);
     conn->sok = -1;
-    conn->cont = ContactUIN (conn, conn->uin);
+    conn->cont = cont = ContactUIN (conn, conn->uin);
     conn->our_seq  = rand () & 0x7fff;
     conn->connect  = 0;
     conn->dispatch = &SrvCallBackReceive;
@@ -86,8 +87,9 @@ Event *ConnectionInitServer (Connection *conn)
         event = QueueEnqueueData (conn, QUEUE_DEP_OSCARLOGIN, 0, time (NULL) + 12,
                                   NULL, conn->cont, NULL, &SrvCallBackTimeout);
 
-    M_printf (i18n (9999, "Opening v8 connection to %s:%s%ld%s... "),
-              s_wordquote (conn->server), COLQUOTE, conn->port, COLNONE);
+    M_printf (i18n (9999, "Opening v8 connection to %s:%s%ld%s for %s%s%s... "),
+              s_wordquote (conn->server), COLQUOTE, conn->port, COLNONE,
+              COLCONTACT, cont->nick ? cont->nick : s_sprintf ("%ld", cont->uin), COLNONE);
 
     UtilIOConnectTCP (conn);
     return event;
