@@ -1458,12 +1458,12 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     PacketWrite4 (pak, 64);
     PacketWriteLNTS (pak, "Sender's nick");
     QueueEnqueueData (fpeer, QUEUE_PEER_FILE, 0, now, pak, cont->uin,
-                      ExtraSet (NULL, EXTRA_MESSAGE, TCP_MSG_FILE, description), &PeerFileResend);
+                      ExtraSet (NULL, EXTRA_MESSAGE, MSG_FILE, description), &PeerFileResend);
         
     if (peer->ver < 8)
     {
         pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
-        SrvMsgAdvanced   (pak, peer->our_seq, TCP_MSG_FILE, list->parent->status,
+        SrvMsgAdvanced   (pak, peer->our_seq, MSG_FILE, list->parent->status,
                           cont->status, -1, c_out_to (description, cont));
         PacketWrite2 (pak, 0);
         PacketWrite2 (pak, 0);
@@ -1474,7 +1474,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     else
     {
         pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
-        SrvMsgAdvanced   (pak, peer->our_seq, TCP_MSG_GREETING, list->parent->status,
+        SrvMsgAdvanced   (pak, peer->our_seq, MSG_EXTENDED, list->parent->status,
                           cont->status, -1, "");
         SrvMsgGreet (pak, 0x29, description, 0, sumlen, "many, really many files");
     }
@@ -1482,7 +1482,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     peer->stat_real_pak_sent++;
 
     QueueEnqueueData (peer, QUEUE_TCP_RESEND, peer->our_seq--, now, pak, cont->uin,
-                      ExtraSet (NULL, EXTRA_MESSAGE, TCP_MSG_FILE, description), &TCPCallBackResend);
+                      ExtraSet (NULL, EXTRA_MESSAGE, MSG_FILE, description), &TCPCallBackResend);
     return TRUE;
 }
 
@@ -1511,7 +1511,7 @@ static void TCPCallBackResend (Event *event)
     
     if (event->attempts >= MAX_RETRY_ATTEMPTS)
     {
-        if (ExtraGet (event->extra, EXTRA_MESSAGE) != TCP_MSG_FILE)
+        if (ExtraGet (event->extra, EXTRA_MESSAGE) != MSG_FILE)
             TCPClose (peer);
     }
     else if (peer->connect & CONNECT_MASK)
@@ -1643,7 +1643,7 @@ static void TCPCallBackReceive (Event *event)
                               EXTRA_MESSAGE, type, tmp));
                     break;
 
-                case TCP_MSG_FILE:
+                case MSG_FILE:
                     port = PacketReadB2 (pak);
                     if (PeerFileAccept (peer, status, port))
                         IMIntMsg (cont, peer, NOW, status, INT_FILE_ACKED, tmp, ExtraSet (NULL, 0, port, e_msg_text));
@@ -1651,7 +1651,7 @@ static void TCPCallBackReceive (Event *event)
                         IMIntMsg (cont, peer, NOW, status, INT_FILE_REJED, tmp, ExtraSet (NULL, 0, port, e_msg_text));
                     break;
 
-                case TCP_MSG_GREETING:
+                case MSG_EXTENDED:
                     cmd    = PacketRead2 (pak); 
                              PacketReadB4 (pak);   /* ID */
                              PacketReadB4 (pak);

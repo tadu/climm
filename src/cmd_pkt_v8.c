@@ -395,7 +395,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
             ack_status = 0;
             break;
 
-        case TCP_MSG_FILE:
+        case MSG_FILE:
             cmd     = PacketRead4 (inc_pak);
             cname   = PacketReadLNTS (inc_pak);
             flen    = PacketRead4 (inc_pak);
@@ -458,7 +458,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
             }
             accept = -1;
             break;
-        case TCP_MSG_GREETING:
+        case MSG_EXTENDED:
             {
                 /* UWORD port, port2, pad; */
                 char *gtext, *reason;
@@ -489,7 +489,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                         {
                             ExtraSet (extra, EXTRA_FILETRANS, flen, name);
                             ExtraSet (extra, EXTRA_REF, ack_event->seq, NULL);
-                            ExtraSet (extra, EXTRA_MESSAGE, TCP_MSG_FILE, name);
+                            ExtraSet (extra, EXTRA_MESSAGE, MSG_FILE, name);
                             IMSrvMsg (cont, serv, NOW, ExtraClone (extra));
                             e1 = QueueEnqueueData (serv, QUEUE_ACKNOWLEDGE, ack_event->seq, time (NULL) + 60,
                                                    NULL, inc_event->uin, NULL, NULL);
@@ -530,9 +530,9 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                     case 0x002d:
                         IMSrvMsg (cont, serv->assoc, NOW, ExtraClone (extra));
                         IMSrvMsg (cont, serv->assoc, NOW, ExtraSet (ExtraClone (extra),
-                                  EXTRA_MESSAGE, TCP_MSG_CHAT, name));
+                                  EXTRA_MESSAGE, MSG_CHAT, name));
                         IMSrvMsg (cont, serv->assoc, NOW, ExtraSet (ExtraClone (extra),
-                                  EXTRA_MESSAGE, TCP_MSG_CHAT, reason));
+                                  EXTRA_MESSAGE, MSG_CHAT, reason));
                         PacketWrite2    (ack_pak, TCP_ACK_REFUSE);
                         PacketWrite2    (ack_pak, ack_flags);
                         PacketWriteLNTS (ack_pak, "");
@@ -542,7 +542,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                     case 0x0032:
                     default:
                         if (prG->verbose & DEB_PROTOCOL)
-                            M_printf (i18n (2065, "Unknown TCP_MSG_GREET_ command %04x.\n"), msgtype);
+                            M_printf (i18n (2065, "Unknown MSG_GREET_ command %04x.\n"), msgtype);
                         PacketWrite2    (ack_pak, TCP_ACK_REFUSE);
                         PacketWrite2    (ack_pak, ack_flags);
                         PacketWriteLNTS (ack_pak, "");
@@ -560,7 +560,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
             if (prG->verbose & DEB_PROTOCOL)
                 M_printf (i18n (2066, "Unknown TCP_MSG_ command %04x.\n"), msgtype);
             /* fall-through */
-        case TCP_MSG_CHAT:
+        case MSG_CHAT:
             /* chat ist not implemented, so reject chat requests */
             accept = FALSE;
             break;

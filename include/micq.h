@@ -104,6 +104,8 @@ typedef struct Extra_s                 Extra;
 
 #define MSG_AUTO          0x00
 #define MSG_NORM          0x01
+#define MSG_CHAT          0x02
+#define MSG_FILE          0x03
 #define MSG_URL           0x04
 #define MSG_AUTH_REQ      0x06
 #define MSG_AUTH_DENY     0x07
@@ -112,7 +114,7 @@ typedef struct Extra_s                 Extra;
 #define MSG_WEB           0x0d
 #define MSG_EMAIL         0x0e
 #define MSG_CONTACT       0x13
-#define MSG_SMS           0x1a
+#define MSG_EXTENDED      0x1a
 #define MSG_GET_AWAY      0xe8
 #define MSG_GET_OCC       0xe9
 #define MSG_GET_NA        0xea

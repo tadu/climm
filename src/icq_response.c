@@ -12,7 +12,6 @@
 #include "util.h"
 #include "conv.h"
 #include "packet.h"
-#include "tcp.h"
 #include "peer_file.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_v8_snac.h"
@@ -824,7 +823,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             HistMsg (conn, cont, stamp == NOW ? time (NULL) : stamp, cdata);
             break;
 
-        case TCP_MSG_FILE:
+        case MSG_FILE:
             M_printf (i18n (2259, "requests file transfer '%s' of %ld bytes (sequence %ld).\n"),
                       cdata, ExtraGet (extra, EXTRA_FILETRANS), ExtraGet (extra, EXTRA_REF));
             break;
