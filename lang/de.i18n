@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.71 2004/12/05 00:57:40
+#  EN: __.i18n,v 1.73 2005/01/24 21:17:30
 1000:UTF-8
 1001:de
 1002:de_DE
@@ -404,9 +404,7 @@
 1441:äußere IP:
 1442:Bitte wähle eines der Hilfe-Themen.
 1443:Kommandos, um mICQ zu konfigurieren.
-#-#1444:Kommandos, um andere User zu finden oder sehen.
-#+#1444:Commands relating to finding and seeing other users.
-# #1444:Commands relating to seeing and finding other users.
+1444:Kommandos, um andere User zu sehen oder finden.
 1445:Kommandos, um Einstellungen am ICQ-Konto vorzunehmen.
 1446:Kommandos, um anderen Benutzern Nachrichten zu schicken.
 1447:Konfig
@@ -604,9 +602,7 @@
 1714:Weiblein sucht Männlein
 1715:mICQ
 1716:Keine
-#-#1717:"!" als erstes Zeichen, um ein Shell-Kommando auszuführen (z.B. "!ls", "!dir", "!mkdir temp").
-#+#1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
-# #1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
+1717:Führe Shell-Kommando <cmd> aus (z.B. "!ls", "!dir", "!mkdir temp").
 1719:Zeigt, wie lange mICQ schon läuft, und ein paar Statistiken.
 1720.<contacts> ist eine Komma-separierte von Benutzernummern und Spitznamen von Benutzern.
 1721:Bei einer leeren Nachricht können mehrere Zeilen eingegeben werden.\nDabei bedeutet eine Zeile nur mit . das Ende der Nachricht.\nEbenso verwirft eine Zeile nur mit # die Nachricht.
@@ -664,9 +660,7 @@
 1797:Finanzen und Firmen
 1798:Grundschule
 1799:weiterführende Schule
-#-#1800:Wählt die Sprache <lang> aus, oder zeigt Text <nr> an.
-#+#1800:Change the working language to <lang> or display string <nr>.
-# #1800:Change the working language (and encoding) to <lang> or display string <nr>.
+1800:Wählt die Sprache (und Zeichenkodierung) <lang> aus, oder zeigt Text <nr> an.
 1801:Zeigt den Status aller Kontakte im breiten Format an.
 1807:Eingehende Nachricht %04x von %s abgebrochen.\n
 1808:Gymnasium
@@ -842,15 +836,11 @@
 2034.Öffne Direktverbindung auf %s:%ld... 
 2036:Speichere die aktuellen Einstellungen.
 2037:Öffne oder schließe eine Direktverbindung, oder schalte die Verwendung einer Direktverbindung für <uin> bzw. <nick> ab.
-#-#2038:Öffne Verbindung Nummer <nr>, oder die erste Server-Verbindung.
-#+#2038:Opens connection number <nr>, or the first server connection.
-# #2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
+2038:Öffne Verbindung Nummer <nr> oder Verbindung für UIN <uin>, oder die erste Server-Verbindung.
 2039:Sende eine Nachricht an ein Handy (mit der Nummer <cell> / des Benutzers <nick>).
 2042:Zeigt den Status aller verbundenen Kontakte im breiten Format an.
 2043:Entfernt alle <contacts> von der Kontaktgruppe <group>.
-#-#2044:Setzt, löscht or zeigt eine Option an: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
-#+#2044:Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
-# #2044:Set, clear or display an <option>: color, delbs, auto, uinprompt, autosave, autofinger, linebreak, funny.
+2044:Setzt, löscht or zeigt eine Option an: color, delbs, auto, uinprompt, autosave, autofinger, linebreak, funny.
 2045:Setzt oder löscht die Unsichtbarkeit gegenüber allen <contacts>.
 2046:Sie sollten die Version 8 (statt Version 6) für Direktverbindungen wählen.\n
 2047:Erzeuge Verzeichnis %s.\n
@@ -957,21 +947,15 @@
 2169:Dateiübertragung von Gegenüber abgebrochen (%d).\n
 2170:Sende Datei mit Geschwindigkeit %lx zu %s.\n
 2171:Weiteres
-#-#2172:Kommandos für Fortgeschrittenes.
-#+#2172:Commands for advanced features.
-# #2172:Advanced commands.
+2172:Fortgeschrittene Kommandos.
 2176:Zeigt den Status aller Kontakte im ausführlichen Format an.
 2177:Zeigt den Status aller verbundenen Kontakte im ausführlichen Format an.
 2179:Schickt allen <contacts> eine einzelne Datei.
 2180:Schickt <uin> bzw. <nick> mehrere Dateien.
 2181:Schließt bzw. entfernt Verbindung Nummer <nr>.
-#-#2182:Wählt <nr> als aktuelle Server-Verbindung.
-#+#2182:Select server connection number <nr> as current server connection.
-# #2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
+2182:Wählt Verbindung Nummer <nr> oder Verbindung für UIN <uin> als aktuelle Server-Verbindung.
 2183:Überprüft für alle <contacts>, ob diese nur unsichtbar oder nicht verbunden ist.
-#-#2184:%s%-10s%s - %s\n
-#+#2184:%s%-10s%s - %s\n
-# #2184:%s%-14s%s - %s\n
+2184:%s%-14s%s - %s\n
 2185:Schließe Verbindung %ld.\n
 2186.Akzeptiere Datei "%s" (%ld Bytes).\n
 2188:Sende Daten zu schnell - erstmal keine weiteren Befehle eingeben, oder der Server wird die Verbindung unterbrechen.\n
@@ -1005,8 +989,8 @@
 2220:mehrere
 2221.Entferne temporären Kontakt "%s" (%ld).\n
 2222:Skript-Kommando "%s" fehlgeschlagen: %s (%d).\n
-2223:Öffne Fernbedienungskanal auf %s... 
-2225:Fernbedienung
+2223:Öffne Skript-FIFO auf %s... 
+2225:Skript
 2226:Konnte FIFO nicht erschaffen
 2227:Konnte FIFO nicht öffnen
 2228:Konnte FIFO nicht nicht-blockieren machen
@@ -1124,9 +1108,7 @@
 2340.Dateiübertragung "%s" vom Gegenüber abgelehnt: %s%s.\n
 2341.Lehne Dateiübertragung "%s" ab (%ld bytes): %s%s.\n
 2342:Skript
-#-#2343:Kommandos, um mICQ per Skript zu steuern.
-#+#2343:Scripting extensions.
-# #2343:Advanced commands for scripting.
+2343:Fortgeschrittene Kommandos, um mICQ per Skript zu steuern.
 2344:Führe Tcl-Skript aus Datei <file> aus.
 2345:Führe Tcl-Befehle <string> aus.
 2346:Die folgenden Tcl-Befehle werden unterstützt:\n
@@ -1179,114 +1161,114 @@
 2393:%d.%m.%Y
 2394: %H:%M
 2395:Zeigt die Nachrichten von <Kontakt> ab dem Datum <date> an.
-2396:Parameter '%s' ist nicht im ISO 8601 Format (Bsp.: '2004-31-01' oder '2004-31-01T23:12:05').\n
-#2397:No server session found.\n
-#2398:Set or display options for a contact group, a contact or global.\n
-#2399:Request SSL connection.
-#2400:No translation (%s) loaded (%d entries).\n
-#2401:Auto reply messages are now contact options, see the %s command.\n
-#2402:The global auto reply flag is handled by the %s command.\n
-#2403:msg>
-#2405:Your status is %s (%s).\n
-#2406:Couldn't load meta data for %s (%ld).\n
-#2407:This flag is handled by the %s command.\n
-#2408:%s is not a contact group.\n
-#2409:%s is not a contact.\n
-#2410:%s is neither a contact, nor a contact group, nor the %sglobal%s keyword.\n
-#2411:opt - short hand for optglobal, optconnection, optgroup or optcontact.\n
-#2412:optglobal            [<option> [<value>]] - set global option.\n
-#2413:optconnection        {<option> [<value>]] - set connection option.\n
-#2414:optgroup   <group>   [<option> [<value>]] - set contact group option.\n
-#2415:optcontact <contact> [<option> [<value>]] - set contact option.\n
-#2416:Options for contact %s:\n
-#2417:Options for contact group %s:\n
-#2418:Global options:\n
-#2419:undefined
-#2420:effectivly
-#2421:Unknown option %s.\n
-#2422:Option %s for contact %s is undefined.\n
-#2423:Option %s for contact group %s is undefined.\n
-#2424:Option %s%s has no global value.\n
-#2425:Option %s for contact %s is %s%s%s.\n
-#2426:Option %s for contact group %s is %s%s%s.\n
-#2427:Option %s%s is globally %s%s%s.\n
-#2428:Option %s for contact %s is %s.\n
-#2429:Option %s for contact group %s is %s.\n
-#2430:Option %s%s is globally %s.\n
-#2431:Undefining option %s for contact %s.\n
-#2432:Undefining option %s for contact group %s.\n
-#2433:Undefining global option %s%s.\n
-#2434:Setting option %s for contact %s to %s.\n
-#2435:Setting option %s for contact group %s to %s.\n
-#2436:Setting option %s%s globally to %s.\n
-#2437:Setting option %s for contact %s to %s%d%s.\n
-#2438:Setting option %s for contact group %s to %s%d%s.\n
-#2439:Setting option %s%s globally to %s%d%s.\n
-#2440:Setting option %s for contact %s.\n
-#2441:Setting option %s for contact group %s.\n
-#2442:Setting option %s%s globally.\n
-#2443:Clearing option %s for contact %s.\n
-#2444:Clearing option %s for contact group %s.\n
-#2445:Clearing option %s%s globally.\n
-#2446:Invalid value %s for boolean option %s.\n
-#2447:No new password given.\n
-#2448:Contact group '%s' already exists\n
-#2449:Primary contact group for contact '%s' is now '%s'.\n
-#2450:Last %d people you talked with:\n
-#2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
+2396:Parameter '%s' ist nicht im ISO 8601 Format (Bsp.: '2004-01-31' oder '2004-01-31T23:12:05').\n
+2397:Keine Server-Verbindung gefunden.\n
+2398:Setze oder zeige Option für Kontaktgruppe, Kontakt oder global an.\n
+2399:Fordere eine SSL-Verbindung an.
+2400:Deutsche Übersetzung (%s) geladen (%d Einträge).\n
+2401:Automatische Antworten sind jetzt Kontaktoptionen, siehe das %s-Kommando.\n
+2402:Die globale Einstellung für automatische Antworten wird jetzt von dem %s-Kommando gesteuert.\n
+2403:msg>
+2405:Dein Status ist %s (%s).\n
+2406:Konnte Metadaten für Kontakt %s (%ld) nicht laden.\n
+2407:Diese Einstellung wird jetzt von dem %s-Kommando gesteuert.\n
+2408:%s ist keine Kontaktgruppe.\n
+2409:%s ist kein Kontakt.\n
+2410:%s ist weder ein Kontakt, eine Kontaktgruppe, oder das Schlüsselwort "%sglobal%s".\n
+2411:opt - Kürzel für optglobal, optconnection, optgroup oder optcontact.\n
+2412:optglobal            [<Option> [<Wert>]] - setze globale Option.\n
+2413:optconnection        [<Option> [<Wert>]] - setze Option für die aktuelle Verbindung.\n
+2414:optgroup   <Gruppe>  [<Option> [<Wert>]] - setze Option für Kontaktgruppe.\n
+2415:optcontact <Kontakt> [<Option> [<Wert>]] - setze Option für Kontakt.\n
+2416:Optionen für Kontakt %s:\n
+2417:Optionen für Kontaktgruppe %s:\n
+2418:Globale Optionen:\n
+2419:nicht gesetzt
+2420:effektiv
+2421:Unbekannte Option %s.\n
+2422:Option %s für Kontakt %s ist nicht gesetzt.\n
+2423:Option %s für Kontaktgruppe %s ist nicht gesetzt.\n
+2424:Option %s%s hat keinen globalen Wert.\n
+2425:Option %s für Kontakt %s ist %s%s%s.\n
+2426:Option %s für Kontaktgruppe %s ist %s%s%s.\n
+2427:Option %s%s ist global %s%s%s.\n
+2428:Option %s für Kontakt %s ist %s.\n
+2429:Option %s für Kontaktgruppe %s ist %s.\n
+2430:Option %s%s ist global %s.\n
+2431:Lösche Option %s für Kontakt %s.\n
+2432:Lösche Option %s für Kontaktgruppe %s.\n
+2433:Lösche globale Option %s%s.\n
+2434:Setze Option %s für Kontakt %s auf %s.\n
+2435:Setze Option %s für Kontaktgruppe %s auf %s.\n
+2436:Setze Option %s%s global auf %s.\n
+2437:Setze Option %s für Kontakt %s auf %s%d%s.\n
+2438:Setze Option %s für Kontaktgruppe %s auf %s%d%s.\n
+2439:Setze Option %s%s global auf %s%d%s.\n
+2440:Setze Option %s für Kontakt %s.\n
+2441:Setze Option %s für Kontaktgruppe %s.\n
+2442:Setze Option %s%s global.\n
+2443:Setze Option %s für Kontakt %s zurück.\n
+2444:Setze Option %s für Kontaktgruppe %s zurück.\n
+2445:Setze Option %s%s global zurück.\n
+2446:Ungültiger Wert %s für An-/Aus-Option %s.\n
+2447:Kein neues Paßwort angegeben.\n
+2448:Kontaktgruppe "%s" existiert bereits.\n
+2449:Primäre Kontaktgruppe für Kontakt "%s" ist jetzt "%s".\n
+2450:Die letzten %d Kontakte, mit denen kommuniziert wurde:\n
+2451:history <KontaKt> [<Start> [<Anzahl>]] -- Zeige geloggte Nachrichten von <Kontakt>.\n
 #2452:%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n
 #2453:    at %p parent %p assoc %p ssl %d\n
 #2454:    open %p reconn %p close %p err %p dispatch %p\n
-#2455:About>
-#2456:Unknown command %s, type %shelp%s for help.\n
-#2457:Unknown configuration file format version %d.\n
-#2458:Can't tab spool %s; type "%sopt %s tabspool 1%s" manually.\n
-#2459:Peer-to-peer connection not associated to server connection, discarding.\n
-#2460:Contact group %s (id %s%d%s) not associated to server connection.\n
-#2461:Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
-#2462:File transfer %s to port %s%ld%s.
-#2463:File transfer %s rejected by peer: %s.
-#2464:Accepting file %s (%s%ld%s bytes).
-#2465:Refusing file request %s (%s%ld%s bytes): %s.
-#2466:Refusing chat request (%s/%s) from %s%s%s.
-#2467:mICQ>
-#2468:requests file transfer %s of %s%ld%s bytes (sequence %s%ld%s).\n
-#2469:URL:
-#2470:requests authorization: %s\n
-#2471:Ignored contacts:\n
-#2472:Hidden-from contacts:\n
-#2473:Normal contacts:\n
-#2474:Intimate contacts:\n
-#2475:Showed %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
-#2476:Downloaded %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
-#2477:Uploading %d contact groups and %d contacts.\n
-#2478:Server: Group %s (#%d)\n
-#2479:Local:  Group %s (#%d)\n
-#2480:Server: Group %s Contact %s (#%d) <ignored>\n
-#2481:Server: Group %s Contact %s (#%d) <hidefrom>\n
-#2482:Server: Group %s Contact %s/%s (#%d) <hidefrom>\n
-#2483:Local:  Group %s Contact %s/%s (#%d)\n
-#2484:Server: Group %s Contact %s (#%d)\n
-#2485:Server: Group %s Contact %s/%s (#%d)\n
-#2486:Local:  Group %s Contact %s/%s (#%d) <%s>\n
-#2487:hidefrom
-#2488:intimate
-#2489:Server: Group %s Contact %s/%s (#%d) <intimate>\n
-#2490:normal
-#2491:Differences in %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate, %d local.\n
-#2492:Usage: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
-#2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
-#2494:  -u, --uin      login with this UIN instead of those configured\n
-#2495:  -p, --passwd   ... and override password\n
-#2496:  -s, --status   ... and override status\n
-#2497:  -C, --cmd      ... and execute mICQ command\n
-#2498:Encoding %s%s%s is not supported by this mICQ.\n
-#2499:Please recompile using the '--enable-iconvrepl' configure option.\n
-#2500:Manual locale setting %s ignored - use a real locale instead.\n
-#2501:Your locale is unset. Please use the %s--i18n%s command line option or set one of the environment variables %sLC_ALL%s, %sLC_MESSAGES%s, or %sLANG%s to your current locale.\n
-#2502:Locale setting %s ignored - use a real locale instead.\n
-#2503:Your system doesn't know the %s locale - try %siconv --list%s.\n
-#2504:Could not open configuration file %s%s%s.
+2455:Über>
+2456:Unbekanntes Kommando %s, tippe %shelp%s für Hilfe.\n
+2457:Unbekanntes Konfigurationsdateiformatsversion %d.\n
+2458:Kann %s nicht in die Tab-Liste tun; tippe selber "%sopt %s tabspool 1%s".\n
+2459:Direktverbindung gehört zu keiner Server-Verbindung, wird ignoriert.\n
+2460:Kontaktgruppe %s (Kennung %s%d%s) gehört zu keiner Server-Verbindung.\n
+2461:Veraltete Syntax in der Konfigurationsdatei "%s" gefunden!\n    Bitte neu erstellen oder mit "save" überschreiben und auf Änderungen prüfen.\n
+2462:Dateiübertragung %s nach Port %s%ld%s.
+2463:Dateiübertragung %s von der Gegenseite abgelehnt: %s.
+2464:Akzeptiere Dateiübertragung %s (%s%ld%s Byte).
+2465:Lehne Dateiübertragung %s (%s%ld%s Byte) ab: %s.
+2466:Lehne Chat-Anfrage (%s/%s) von %s%s%s ab.
+2467:mICQ>
+2468:möchte Dateiübertragung %s mit %s%ld%s Byte (Sequenz %s%ld%s) starten.\n
+2469:URL:
+2470:wünscht Autorisierung: %s\n
+2471:Ignorierte Kontakte:\n
+2472:Versteckte Kontakte:\n
+2473:Normale Kontakte:\n
+2474:Immer sichtbare Kontakte:\n
+2475:%d Kontaktgruppen angezeigt, dabei insgesamt %d Kontakte, %d ignoriert, %d versteckt, %d sichtbar.\n
+2476:%d Kontaktgruppen heruntergeladen, dabei insgesamt %d Kontakte, %d ignoriert, %d versteckt, %d sichtbar.\n
+2477:Lade %d Kontaktgruppen und %d Kontakte hoch.\n
+2478:Server: Gruppe %s (#%d)\n
+2479:Lokal:  Gruppe %s (#%d)\n
+2480:Server: Gruppe %s Kontakt %s (#%d) <ignoriert>\n
+2481:Server: Gruppe %s Kontakt %s (#%d) <versteckt>\n
+2482:Server: Gruppe %s Kontakt %s/%s (#%d) <versteckt>\n
+2483:Lokal:  Gruppe %s Kontakt %s/%s (#%d)\n
+2484:Server: Gruppe %s Kontakt %s (#%d)\n
+2485:Server: Gruppe %s Kontakt %s/%s (#%d)\n
+2486:Lokal:  Gruppe %s Kontakt %s/%s (#%d) <%s>\n
+2487:versteckt
+2488:sichtbar
+2489:Server: Gruppe %s Kontakt %s/%s (#%d) <sichtbar>\n
+2490:normal
+2491:Differenzen in %d Kontaktgruppen, dabei insgesamt %d Kontakten, %d ignoriert, %d versteckt, %d sichtbar, %d lokal.\n
+2492:Benutzung: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
+2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
+2494:  -u, --uin      mit dieser UIN einloggen statt der konfigurierten\n
+2495:  -p, --passwd   ... und nehme dieses Paßwort\n
+2496:  -s, --status   ... und setze diesen Status\n
+2497:  -C, --cmd      ... und führe dieses mICQ-Kommando aus\n
+2498:Die Zeichenkodierung %s%s%s wird von diesem mICQ nicht unterstützt.\n
+2499:Bitte mICQ mit der Konfigurationsoption '--enable-iconvrepl' neu übersetzen.\n
+2500:Manuelle locale-Einstellung %s ignoriert - benutze stattdessen eine richtige locale.\n
+2501:Es ist keine locale ausgewählt. Mit der Kommandozeilenoption %s--i18n%s oder einer der Umgebungsvariablen %sLC_ALL%s, %sLC_MESSAGES%s, oder %sLANG%s kann eine locale ausgewählt werden.\n
+2502:Die locale-Einstellung %s ist keiner richtige locale und vermutlich nicht das gewünschte.\n
+2503:Das System kennt die locale %s locale - try %slocale -a%s.\n
+2504:Konnte die Konfigurationsdatei %s%s%s nicht öffnen.
 #2505:Deprecated option -f used. Please use the similar -b instead.\n
 #2506:This console uses encoding %s.\n
 #2507:Translation %s%s%s not found. Would you like to translate mICQ into your language?\n
@@ -1347,3 +1329,6 @@
 #2562:Execute <cmd> with connection <nr> or connection for uin <uin> as current server connection.
 #2563:Set or display connection options.\n
 #2564:The user couldn't be detected to be online.\n
+#2565:Contact upload for %s%s%s failed, authorization required.\n
+#2566:Contact upload for %s%s%s failed, already on server.\n
+#2567:Contact upload for %s%s%s succeeded.\n
