@@ -21,6 +21,7 @@
  */
 
 #include "micq.h"
+#include <signal.h>
 #include "util_tcl.h"
 
 #ifdef ENABLE_TCL
