@@ -1537,21 +1537,42 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
             char buf[451];
             const char *p;
 
-            int enc = ENC_LATIN1, icqenc = 3;
+            int enc = ENC_LATIN1, remenc, icqenc = 0x30000;
             size_t len, olen;
             
+            remenc = cont->encoding ? cont->encoding : prG->enc_rem;
+            
+#ifdef ENABLE_UTF8
             if (cont->status == STATUS_OFFLINE)
             {
+                /* encoding is stripped anyway */
+                enc = remenc;
+                icqenc = 0;
+            }
+            else if (remenc == ENC_LATIN1 && ConvFits (text, ENC_LATIN1))
+            {
+                enc = ENC_LATIN1;
+                icqenc = 0x30000;
+            }
+            else if (remenc == ENC_WIN1257 && ConvFits (text, ENC_WIN1257))
+            {
+                enc = ENC_WIN1257;
+                icqenc = 0x3ffff;
+            }
+            else if (HAS_CAP (cont->caps, CAP_UTF8) && cont->dc && cont->dc->version >= 8
+                     && !(cont->dc->id1 == 0xffffff42 && cont->dc->id2 < 0x00040a03)) /* exclude old mICQ */
+            {
                 enc = ENC_UCS2BE;
-                icqenc = 2;
+                icqenc = 0x20000;
             }
             else
-                for (p = text; *p; p++)
-                    if (!(~*p & 0xc0) && (*p & 0x3c))
-                    {
-                        icqenc = 2;
-                        enc = ENC_UCS2BE;
-                    }
+#endif
+            {
+                /* too bad, there's nothing we can do */
+                enc = remenc;
+                icqenc = 0;
+            }
+
             p = ConvFromUTF8 (text, enc, &len);
             if (len > 450)
                 len = 450;
@@ -1560,11 +1581,13 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
 
             PacketWriteTLV     (pak, 2);
             PacketWriteTLV     (pak, 1281);
-            PacketWriteB2      (pak, 0x0106); /* FIXME: don't do this, if no CAP_UTF8, but what instead? */
+            if (icqenc)
+                PacketWriteB2  (pak, 0x0106);
+            else
+                PacketWrite1   (pak, 0x01);
             PacketWriteTLVDone (pak);
             PacketWriteTLV     (pak, 257);
-            PacketWriteB2      (pak, icqenc);
-            PacketWriteB2      (pak, 0);
+            PacketWriteB4      (pak, icqenc);
             PacketWriteData    (pak, buf, len);
             PacketWriteTLVDone (pak);
             PacketWriteTLVDone (pak);
