@@ -94,7 +94,7 @@ AC_CHECK_DECLS(h_errno,,,[$ac_includes_default
 
 AC_TYPE_SIGNAL
 
-AC_REQUIRE([AC_STRUCT_TIMEZONE])dnl
+AC_STRUCT_TIMEZONE
 AC_CACHE_CHECK(for timezone external, ac_cv_var_timezone,
 [  AC_TRY_LINK([#include <time.h>], [return (int)timezone;],
       ac_cv_var_timezone=yes,
