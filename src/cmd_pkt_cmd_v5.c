@@ -297,7 +297,7 @@ void CmdPktCmdStatusChange (Connection *conn, UDWORD status)
  * CMD_UPDATE_INFO - update basic info on server. (unused)
  */
 void CmdPktCmdUpdateInfo (Connection *conn, const char *email, const char *nick,
-                                         const char *first, const char *last, BOOL auth)
+                          const char *first, const char *last, BOOL auth)
 {
     Packet *pak = PacketCv5 (conn, CMD_UPDATE_INFO);
     PacketWriteLNTS (pak, c_out (nick));
@@ -350,28 +350,53 @@ void CmdPktCmdRandSearch (Connection *conn, UDWORD group)
 /*
  * CMD_META_USER : META_SET_GENERAL_INFO - Update general information.
  */
-void CmdPktCmdMetaGeneral (Connection *conn, MetaGeneral *user)
+void CmdPktCmdMetaGeneral (Connection *conn, Contact *cont)
 {
     Packet *pak = PacketCv5 (conn, CMD_META_USER);
     PacketWrite2    (pak, META_SET_GENERAL_INFO_v5);
-    PacketWriteLNTS (pak, c_out (user->nick));
-    PacketWriteLNTS (pak, c_out (user->first));
-    PacketWriteLNTS (pak, c_out (user->last));
-    PacketWriteLNTS (pak, c_out (user->email));
-    PacketWriteLNTS (pak, c_out (user->email2));
-    PacketWriteLNTS (pak, c_out (user->email3));
-    PacketWriteLNTS (pak, c_out (user->city));
-    PacketWriteLNTS (pak, c_out (user->state));
-    PacketWriteLNTS (pak, c_out (user->phone));
-    PacketWriteLNTS (pak, c_out (user->fax));
-    PacketWriteLNTS (pak, c_out (user->street));
-    PacketWriteLNTS (pak, c_out (user->cellular));
-    PacketWrite4    (pak, atoi (user->zip));
-    PacketWrite2    (pak, user->country);
-    PacketWrite1    (pak, user->tz);
-    PacketWrite1    (pak, !user->auth);
-    PacketWrite1    (pak, user->webaware);
-    PacketWrite1    (pak, user->hideip);
+    if (cont->meta_general)
+    {
+        PacketWriteLNTS (pak, c_out (cont->meta_general->nick));
+        PacketWriteLNTS (pak, c_out (cont->meta_general->first));
+        PacketWriteLNTS (pak, c_out (cont->meta_general->last));
+        PacketWriteLNTS (pak, c_out (cont->meta_general->email));
+        PacketWriteLNTS (pak, cont->meta_email ? c_out (cont->meta_general->email) : "");
+        PacketWriteLNTS (pak, cont->meta_email && cont->meta_email->meta_email ?
+                              c_out (cont->meta_email->meta_email->email) : "");
+        PacketWriteLNTS (pak, c_out (cont->meta_general->city));
+        PacketWriteLNTS (pak, c_out (cont->meta_general->state));
+        PacketWriteLNTS (pak, c_out (cont->meta_general->phone));
+        PacketWriteLNTS (pak, c_out (cont->meta_general->fax));
+        PacketWriteLNTS (pak, c_out (cont->meta_general->street));
+        PacketWriteLNTS (pak, c_out (cont->meta_general->cellular));
+        PacketWrite4    (pak, atoi (cont->meta_general->zip));
+        PacketWrite2    (pak, cont->meta_general->country);
+        PacketWrite1    (pak, cont->meta_general->tz);
+        PacketWrite1    (pak, !cont->meta_general->auth);
+        PacketWrite1    (pak, cont->meta_general->webaware);
+        PacketWrite1    (pak, cont->meta_general->hideip);
+    }
+    else
+    {
+        PacketWriteLNTS (pak, c_out (cont->nick));
+        PacketWriteLNTS (pak, "");
+        PacketWriteLNTS (pak, "<unset>");
+        PacketWriteLNTS (pak, "<unset>");
+        PacketWriteLNTS (pak, "");
+        PacketWriteLNTS (pak, "");
+        PacketWriteLNTS (pak, "");
+        PacketWriteLNTS (pak, "");
+        PacketWriteLNTS (pak, "");
+        PacketWriteLNTS (pak, "");
+        PacketWriteLNTS (pak, "");
+        PacketWriteLNTS (pak, "");
+        PacketWrite4    (pak, 0);
+        PacketWrite2    (pak, 0);
+        PacketWrite1    (pak, 0);
+        PacketWrite1    (pak, 0);
+        PacketWrite1    (pak, 0);
+        PacketWrite1    (pak, 0);
+    }
     PacketEnqueuev5 (pak, conn);
 }
 
@@ -382,19 +407,34 @@ void CmdPktCmdMetaGeneral (Connection *conn, MetaGeneral *user)
 /*
  * CMD_META_USER : META_SET_MORE_INFO - Update additional information.
  */
-void CmdPktCmdMetaMore (Connection *conn, MetaMore *info)
+void CmdPktCmdMetaMore (Connection *conn, Contact *cont)
 {
     Packet *pak = PacketCv5 (conn, CMD_META_USER);
     PacketWrite2    (pak, META_SET_MORE_INFO);
-    PacketWrite2    (pak, info->age);
-    PacketWrite1    (pak, info->sex);
-    PacketWriteLNTS (pak, c_out (info->hp));
-    PacketWrite2    (pak, info->year);
-    PacketWrite2    (pak, info->month);
-    PacketWrite2    (pak, info->day);
-    PacketWrite2    (pak, info->lang1);
-    PacketWrite2    (pak, info->lang2);
-    PacketWrite2    (pak, info->lang3);
+    if (cont->meta_more)
+    {
+        PacketWrite2    (pak, cont->meta_more->age);
+        PacketWrite1    (pak, cont->meta_more->sex);
+        PacketWriteLNTS (pak, c_out (cont->meta_more->homepage));
+        PacketWrite2    (pak, cont->meta_more->year);
+        PacketWrite2    (pak, cont->meta_more->month);
+        PacketWrite2    (pak, cont->meta_more->day);
+        PacketWrite2    (pak, cont->meta_more->lang1);
+        PacketWrite2    (pak, cont->meta_more->lang2);
+        PacketWrite2    (pak, cont->meta_more->lang3);
+    }
+    else
+    {
+        PacketWrite2    (pak, 0);
+        PacketWrite1    (pak, 0);
+        PacketWriteLNTS (pak, "");
+        PacketWrite2    (pak, 0);
+        PacketWrite2    (pak, 0);
+        PacketWrite2    (pak, 0);
+        PacketWrite2    (pak, 0);
+        PacketWrite2    (pak, 0);
+        PacketWrite2    (pak, 0);
+    }
     PacketEnqueuev5 (pak, conn);
 }
 

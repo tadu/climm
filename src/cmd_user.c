@@ -2907,8 +2907,14 @@ static JUMP_F(CmdUserSearch)
  */
 static JUMP_F(CmdUserUpdate)
 {
-    static MetaGeneral user;
+    Contact *cont;
+    MetaGeneral *user;
     OPENCONN;
+    
+    if (!(cont = ContactByUIN (conn->uin, 1)))
+        return 0;
+    if (!(user = CONTACT_GENERAL(cont)))
+        return 0;
 
     switch (status)
     {
@@ -2916,70 +2922,75 @@ static JUMP_F(CmdUserUpdate)
             R_setpromptf ("%s ", i18n (1553, "Enter Your New Nickname:"));
             return 300;
         case 300:
-            user.nick = strdup (args);
+            s_repl (&user->nick, args);
             R_setpromptf ("%s ", i18n (1554, "Enter your new first name:"));
             return ++status;
         case 301:
-            user.first = strdup (args);
+            s_repl (&user->first, args);
             R_setpromptf ("%s ", i18n (1555, "Enter your new last name:"));
             return ++status;
         case 302:
-            user.last = strdup (args);
+            s_repl (&user->last, args);
+            s_repl (&user->email, NULL);
             R_setpromptf ("%s ", i18n (1556, "Enter your new email address:"));
             return ++status;
         case 303:
-            user.email = strdup (args);
-            if (conn->ver > 6)
+            if (!user->email || args)
+                user->email = strdup (args);
+            else if (args)
+            {
+                MetaEmail **em = &cont->meta_email;
+                while (*em)
+                    em = &(*em)->meta_email;
+                *em = calloc (1, sizeof (MetaEmail));
+                if (!*em)
+                    args = NULL;
+                else
+                    s_repl (&(*em)->email, args);
+            }
+            if (!args)
             {
                 R_setpromptf ("%s ", i18n (1544, "Enter new city:"));
                 status += 3;
                 return status;
             }
-            R_setpromptf ("%s ", i18n (1542, "Enter other email address:"));
-            return ++status;
-        case 304:
-            user.email2 = strdup (args);
-            R_setpromptf ("%s ", i18n (1543, "Enter old email address:"));
-            return ++status;
-        case 305:
-            user.email3 = strdup (args);
-            R_setpromptf ("%s ", i18n (1544, "Enter new city:"));
-            return ++status;
+            R_setpromptf ("%s ", i18n (1556, "Enter your new email address:"));
+            return status;
         case 306:
-            user.city = strdup (args);
+            user->city = strdup (args);
             R_setpromptf ("%s ", i18n (1545, "Enter new state:"));
             return ++status;
         case 307:
-            user.state = strdup (args);
+            user->state = strdup (args);
             R_setpromptf ("%s ", i18n (1546, "Enter new phone number:"));
             return ++status;
         case 308:
-            user.phone = strdup (args);
+            user->phone = strdup (args);
             R_setpromptf ("%s ", i18n (1547, "Enter new fax number:"));
             return ++status;
         case 309:
-            user.fax = strdup (args);
+            user->fax = strdup (args);
             R_setpromptf ("%s ", i18n (1548, "Enter new street address:"));
             return ++status;
         case 310:
-            user.street = strdup (args);
+            user->street = strdup (args);
             R_setpromptf ("%s ", i18n (1549, "Enter new cellular number:"));
             return ++status;
         case 311:
-            user.cellular = strdup (args);
+            user->cellular = strdup (args);
             R_setpromptf ("%s ", i18n (1550, "Enter new zip code (must be numeric):"));
             return ++status;
         case 312:
-            user.zip = strdup (args);
+            user->zip = strdup (args);
             R_setpromptf ("%s ", i18n (1551, "Enter your country's phone ID number:"));
             return ++status;
         case 313:
-            user.country = atoi (args);
+            user->country = atoi (args);
             R_setpromptf ("%s ", i18n (1552, "Enter your time zone (+/- 0-12):"));
             return ++status;
         case 314:
-            user.tz = atoi (args);
-            user.tz *= 2;
+            user->tz = atoi (args);
+            user->tz *= 2;
             R_setpromptf ("%s ", i18n (1557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
             return ++status;
         case 315:
@@ -2989,7 +3000,7 @@ static JUMP_F(CmdUserUpdate)
                 R_setpromptf ("%s ", i18n (1557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
                 return status;
             }
-            user.auth = strcasecmp (args, i18n (1027, "YES")) ? FALSE : TRUE;
+            user->auth = strcasecmp (args, i18n (1027, "YES")) ? FALSE : TRUE;
             R_setpromptf ("%s ", i18n (1605, "Do you want your status to be available on the web? (YES/NO)"));
             return ++status;
         case 316:
@@ -2999,7 +3010,7 @@ static JUMP_F(CmdUserUpdate)
                 R_setpromptf ("%s ", i18n (1605, "Do you want your status to be available on the web? (YES/NO)"));
                 return status;
             }
-            user.webaware = strcasecmp (args, i18n (1027, "YES")) ? FALSE : TRUE;
+            user->webaware = strcasecmp (args, i18n (1027, "YES")) ? FALSE : TRUE;
             R_setpromptf ("%s ", i18n (1857, "Do you want to hide your IP from other contacts? (YES/NO)"));
             return ++status;
         case 317:
@@ -3009,7 +3020,7 @@ static JUMP_F(CmdUserUpdate)
                 R_setpromptf ("%s ", i18n (1857, "Do you want to hide your IP from other contacts? (YES/NO)"));
                 return status;
             }
-            user.hideip = strcasecmp (args, i18n (1027, "YES")) ? FALSE : TRUE;
+            user->hideip = strcasecmp (args, i18n (1027, "YES")) ? FALSE : TRUE;
             R_setpromptf ("%s ", i18n (1622, "Do you want to apply these changes? (YES/NO)"));
             return ++status;
         case 318:
@@ -3023,17 +3034,10 @@ static JUMP_F(CmdUserUpdate)
             if (!strcasecmp (args, i18n (1027, "YES")))
             {
                 if (conn->ver > 6)
-                    SnacCliMetasetgeneral (conn, &user);
+                    SnacCliMetasetgeneral (conn, cont);
                 else
-                    CmdPktCmdMetaGeneral (conn, &user);
+                    CmdPktCmdMetaGeneral (conn, cont);
             }
-
-            s_repl (&user.nick,  NULL);
-            s_repl (&user.zip,   NULL);
-            s_repl (&user.last,  NULL);
-            s_repl (&user.first, NULL);
-            s_repl (&user.email, NULL);
-            return 0;
     }
     return 0;
 }
@@ -3043,9 +3047,15 @@ static JUMP_F(CmdUserUpdate)
  */
 static JUMP_F(CmdUserOther)
 {
-    static MetaMore other;
+    Contact *cont;
+    MetaMore *more;
     int temp;
     OPENCONN;
+    
+    if (!(cont = ContactByUIN (conn->uin, 1)))
+        return 0;
+    if (!(more = CONTACT_MORE(cont)))
+        return 0;
 
     switch (status)
     {
@@ -3053,80 +3063,69 @@ static JUMP_F(CmdUserOther)
             R_setpromptf ("%s ", i18n (1535, "Enter new age:"));
             return 400;
         case 400:
-            other.age = atoi (args);
+            more->age = atoi (args);
             R_setpromptf ("%s ", i18n (1536, "Enter new sex:"));
             return ++status;
         case 401:
             if (!strncasecmp (args, i18n (1528, "female"), 1))
-            {
-                other.sex = 1;
-            }
+                more->sex = 1;
             else if (!strncasecmp (args, i18n (1529, "male"), 1))
-            {
-                other.sex = 2;
-            }
+                more->sex = 2;
             else
-            {
-                other.sex = 0;
-            }
+                more->sex = 0;
             R_setpromptf ("%s ", i18n (1537, "Enter new homepage:"));
             return ++status;
         case 402:
-            other.hp = strdup (args);
+            s_repl (&more->homepage, args);
             R_setpromptf ("%s ", i18n (1538, "Enter new year of birth (4 digits):"));
             return ++status;
         case 403:
-            other.year = atoi (args);
+            more->year = atoi (args);
             R_setpromptf ("%s ", i18n (1539, "Enter new month of birth:"));
             return ++status;
         case 404:
-            other.month = atoi (args);
+            more->month = atoi (args);
             R_setpromptf ("%s ", i18n (1540, "Enter new day of birth:"));
             return ++status;
         case 405:
-            other.day = atoi (args);
+            more->day = atoi (args);
             R_setpromptf ("%s ", i18n (1534, "Enter a language by number or L for a list:"));
             return ++status;
         case 406:
             temp = atoi (args);
-            if ((0 == temp) && (toupper (args[0]) == 'L'))
-            {
+            if (!temp && (toupper (args[0]) == 'L'))
                 TablePrintLang ();
-            }
             else
             {
-                other.lang1 = temp;
+                more->lang1 = temp;
                 status++;
             }
             R_setpromptf ("%s ", i18n (1534, "Enter a language by number or L for a list:"));
             return status;
         case 407:
             temp = atoi (args);
-            if ((0 == temp) && (toupper (args[0]) == 'L'))
-            {
+            if (!temp && (toupper (args[0]) == 'L'))
                 TablePrintLang ();
-            }
             else
             {
-                other.lang2 = temp;
+                more->lang2 = temp;
                 status++;
             }
             R_setpromptf ("%s ", i18n (1534, "Enter a language by number or L for a list:"));
             return status;
         case 408:
             temp = atoi (args);
-            if ((0 == temp) && (toupper (args[0]) == 'L'))
+            if (!temp && (toupper (args[0]) == 'L'))
             {
                 TablePrintLang ();
                 R_setpromptf ("%s ", i18n (1534, "Enter a language by number or L for a list:"));
                 return status;
             }
-            other.lang3 = temp;
+            more->lang3 = temp;
             if (conn->ver > 6)
-                SnacCliMetasetmore (conn, &other);
+                SnacCliMetasetmore (conn, cont);
             else
-                CmdPktCmdMetaMore (conn, &other);
-            free (other.hp);
+                CmdPktCmdMetaMore (conn, cont);
             return 0;
     }
     return 0;

@@ -1644,25 +1644,45 @@ void SnacCliAckofflinemsgs (Connection *conn)
 /*
  * CLI_METASETGENERAL - SNAC(15,2) - 2000/1002
  */
-void SnacCliMetasetgeneral (Connection *conn, const MetaGeneral *user)
+void SnacCliMetasetgeneral (Connection *conn, Contact *cont)
 {
     Packet *pak;
 
     pak = SnacMetaC (conn, 2000, META_SET_GENERAL_INFO, 0);
-    PacketWriteLNTS (pak, c_out (user->nick));
-    PacketWriteLNTS (pak, c_out (user->first));
-    PacketWriteLNTS (pak, c_out (user->last));
-    PacketWriteLNTS (pak, c_out (user->email));
-    PacketWriteLNTS (pak, c_out (user->city));
-    PacketWriteLNTS (pak, c_out (user->state));
-    PacketWriteLNTS (pak, c_out (user->phone));
-    PacketWriteLNTS (pak, c_out (user->fax));
-    PacketWriteLNTS (pak, c_out (user->street));
-    PacketWriteLNTS (pak, c_out (user->cellular));
-    PacketWriteLNTS (pak, c_out (user->zip));
-    PacketWrite2    (pak, user->country);
-    PacketWrite1    (pak, user->tz);
-    PacketWrite1    (pak, user->webaware);
+    if (cont->meta_general)
+    {
+        PacketWriteLNTS (pak, c_out (cont->meta_general->nick));
+        PacketWriteLNTS (pak, c_out (cont->meta_general->first));
+        PacketWriteLNTS (pak, c_out (cont->meta_general->last));
+        PacketWriteLNTS (pak, c_out (cont->meta_general->email));
+        PacketWriteLNTS (pak, c_out (cont->meta_general->city));
+        PacketWriteLNTS (pak, c_out (cont->meta_general->state));
+        PacketWriteLNTS (pak, c_out (cont->meta_general->phone));
+        PacketWriteLNTS (pak, c_out (cont->meta_general->fax));
+        PacketWriteLNTS (pak, c_out (cont->meta_general->street));
+        PacketWriteLNTS (pak, c_out (cont->meta_general->cellular));
+        PacketWriteLNTS (pak, c_out (cont->meta_general->zip));
+        PacketWrite2    (pak, cont->meta_general->country);
+        PacketWrite1    (pak, cont->meta_general->tz);
+        PacketWrite1    (pak, cont->meta_general->webaware);
+    }
+    else
+    {
+        PacketWriteLNTS (pak, c_out (cont->nick));
+        PacketWriteLNTS (pak, "<unset>");
+        PacketWriteLNTS (pak, "<unset>");
+        PacketWriteLNTS (pak, "");
+        PacketWriteLNTS (pak, "");
+        PacketWriteLNTS (pak, "");
+        PacketWriteLNTS (pak, "");
+        PacketWriteLNTS (pak, "");
+        PacketWriteLNTS (pak, "");
+        PacketWriteLNTS (pak, "");
+        PacketWriteLNTS (pak, "");
+        PacketWrite2    (pak, 0);
+        PacketWrite1    (pak, 0);
+        PacketWrite1    (pak, 0);
+    }
     SnacMetaSend    (conn, pak);
 }
 
@@ -1681,20 +1701,35 @@ void SnacCliMetasetabout (Connection *conn, const char *text)
 /*
  * CLI_METASETMORE - SNAC(15,2) - 2000/1021
  */
-void SnacCliMetasetmore (Connection *conn, const MetaMore *user)
+void SnacCliMetasetmore (Connection *conn, Contact *cont)
 {
     Packet *pak;
-
+    
     pak = SnacMetaC (conn, 2000, META_SET_MORE_INFO, 0);
-    PacketWrite2    (pak, user->age);
-    PacketWrite1    (pak, user->sex);
-    PacketWriteLNTS (pak, c_out (user->hp));
-    PacketWrite2    (pak, user->year);
-    PacketWrite1    (pak, user->month);
-    PacketWrite1    (pak, user->day);
-    PacketWrite1    (pak, user->lang1);
-    PacketWrite1    (pak, user->lang2);
-    PacketWrite1    (pak, user->lang3);
+    if (cont->meta_more)
+    {
+        PacketWrite2    (pak, cont->meta_more->age);
+        PacketWrite1    (pak, cont->meta_more->sex);
+        PacketWriteLNTS (pak, c_out (cont->meta_more->homepage));
+        PacketWrite2    (pak, cont->meta_more->year);
+        PacketWrite1    (pak, cont->meta_more->month);
+        PacketWrite1    (pak, cont->meta_more->day);
+        PacketWrite1    (pak, cont->meta_more->lang1);
+        PacketWrite1    (pak, cont->meta_more->lang2);
+        PacketWrite1    (pak, cont->meta_more->lang3);
+    }
+    else
+    {
+        PacketWrite2    (pak, 0);
+        PacketWrite1    (pak, 0);
+        PacketWriteLNTS (pak, "");
+        PacketWrite2    (pak, 0);
+        PacketWrite1    (pak, 0);
+        PacketWrite1    (pak, 0);
+        PacketWrite1    (pak, 0);
+        PacketWrite1    (pak, 0);
+        PacketWrite1    (pak, 0);
+    }
     SnacMetaSend    (conn, pak);
 }
 
