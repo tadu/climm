@@ -332,11 +332,13 @@ void SrvMsgGreet (Packet *pak, UWORD cmd, const char *reason, UWORD port, UDWORD
  */
 void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Event *ack_event)
 {
+#ifdef ENABLE_PEER2PEER
     Connection *flist;
+    Event *e1, *e2;
+#endif
     Contact *cont = ContactUIN (serv, inc_event->uin);
     Extra *extra = inc_event->extra;
     Packet *ack_pak = ack_event->pak;
-    Event *e1, *e2;
     const char *txt, *ack_msg;
     char *text, *ctext, *cname, *name, *cctmp;
     UDWORD tmp, cmd, flen;
@@ -419,6 +421,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
             name = strdup (c_in_to (cname, cont));
             free (cname);
             
+#ifdef ENABLE_PEER2PEER
             flist = PeerFileCreate (serv);
             if (!ExtraGet (extra, EXTRA_FILETRANS) && flen)
             {
@@ -458,6 +461,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                 PacketWrite4    (ack_pak, flist->port);
             }
             else
+#endif
             {
                 txt = ExtraGetS (extra, EXTRA_FILEACCEPT);
                 PacketWrite2    (ack_pak, TCP_ACK_REFUSE);
@@ -500,6 +504,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                 switch (cmd)
                 {
                     case 0x0029:
+#ifdef ENABLE_PEER2PEER
                         flist = PeerFileCreate (serv);
                         if (!ExtraGet (extra, EXTRA_FILETRANS) && flen)
                         {
@@ -535,6 +540,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                             SrvMsgGreet     (ack_pak, cmd, "", flist->port, 0, "");
                         }
                         else
+#endif
                         {
                             txt = ExtraGetS (extra, EXTRA_FILEACCEPT);
                             PacketWrite2    (ack_pak, TCP_ACK_REFUSE);

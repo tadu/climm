@@ -1420,8 +1420,8 @@ static JUMP_F (CmdUserAnyMess)
             return 0;
         }
         TCPSendMsg (conn->assoc, cont, t, data >> 2);
-    }
 #endif
+    }
     else
     {
         if (conn->type != TYPE_SERVER)

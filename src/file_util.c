@@ -59,7 +59,10 @@
 void Initialize_RC_File ()
 {
     char *pwd, *input;
-    Connection *conn, *connt;
+    Connection *conn;
+#ifdef ENABLE_PEER2PEER
+    Connection *connt;
+#endif
 #ifdef ENABLE_REMOTECONTROL
     Connection *conns;
 #endif
