@@ -48,7 +48,7 @@ BOOL        ContactHasNext (Contact *cont);
 void        ContactSetCap (Contact *cont, Cap *cap);
 void        ContactSetVersion (Contact *cont);
 
-#define CONT_UTF8(cont) ((cont->caps & CAP_UTF8) && (prG->enc_loc != ENC_EUC))
+#define CONT_UTF8(cont) ((cont->caps & (1 << CAP_UTF8)) && (prG->enc_loc != ENC_EUC))
 
 #define CONT_IGNORE     1UL /* ignore contact. */
 #define CONT_HIDEFROM   2UL /* always pretend to be offline. */
