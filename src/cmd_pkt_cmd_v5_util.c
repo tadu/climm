@@ -127,7 +127,7 @@ void PacketEnqueuev5 (Packet *pak, Session *sess)
         sess->stat_real_pak_sent++;
         sess->our_seq++;
 
-        QueueEnqueueData (sess, pak->id, QUEUE_TYPE_UDP_RESEND,
+        QueueEnqueueData (sess, pak->id, QUEUE_UDP_RESEND,
                           0, time (NULL) + 10,
                           pak, NULL, &UDPCallBackResend);
     }
@@ -166,6 +166,12 @@ void CallBackServerInitV5 (Event *event)
 {
     Session *sess = event->sess;
     int rc;
+
+    if (!sess)
+    {
+        free (event);
+        return;
+    }
 
     if (sess->assoc && !(sess->connect & CONNECT_OK))
     {
@@ -321,9 +327,22 @@ void PacketSendv5 (const Packet *pak, Session *sess)
 void UDPCallBackResend (Event *event)
 {
     Packet *pak = event->pak;
+    UWORD  cmd;
+    UDWORD session;
 
-    UWORD  cmd     = PacketReadAt2 (pak, CMD_v5_OFF_CMD);
-    UDWORD session = PacketReadAt4 (pak, CMD_v5_OFF_SESS);
+    assert (pak);
+
+    cmd     = PacketReadAt2 (pak, CMD_v5_OFF_CMD);
+    session = PacketReadAt4 (pak, CMD_v5_OFF_SESS);
+
+    if (!event->sess)
+    {
+        PacketD (pak);
+        if (event->info)
+            free (event->info);
+        free (event);
+        return;
+    }
 
     event->attempts++;
 

@@ -335,16 +335,16 @@ const char *QueueType (UDWORD type)
     static char buf[10];
     switch (type)
     {
-        case QUEUE_TYPE_FLAP:          return "FLAP";
-        case QUEUE_TYPE_SRV_KEEPALIVE: return "SRV_KEEPALIVE";
-        case QUEUE_TYPE_UDP_KEEPALIVE: return "UDP_KEEPALIVE";
-        case QUEUE_TYPE_TCP_RECEIVE:   return "TCP_RECEIVE";
-        case QUEUE_TYPE_CON_TIMEOUT:   return "CON_TIMEOUT";
-        case QUEUE_TYPE_TCP_TIMEOUT:   return "TCP_TIMEOUT";
-        case QUEUE_TYPE_TCP_RESEND:    return "TCP_RESEND";
-        case QUEUE_TYPE_UDP_RESEND:    return "UDP_RESEND";
-        case QUEUE_TYPE_PEER_FILE:     return "PEER_FILE";
-        case QUEUE_TYPE_PEER_RESEND:   return "PEER_RESEND";
+        case QUEUE_FLAP:          return "FLAP";
+        case QUEUE_SRV_KEEPALIVE: return "SRV_KEEPALIVE";
+        case QUEUE_UDP_KEEPALIVE: return "UDP_KEEPALIVE";
+        case QUEUE_TCP_RECEIVE:   return "TCP_RECEIVE";
+        case QUEUE_CON_TIMEOUT:   return "CON_TIMEOUT";
+        case QUEUE_TCP_TIMEOUT:   return "TCP_TIMEOUT";
+        case QUEUE_TCP_RESEND:    return "TCP_RESEND";
+        case QUEUE_UDP_RESEND:    return "UDP_RESEND";
+        case QUEUE_PEER_FILE:     return "PEER_FILE";
+        case QUEUE_PEER_RESEND:   return "PEER_RESEND";
     }
     snprintf (buf, sizeof (buf), "%lx", type);
     return buf;

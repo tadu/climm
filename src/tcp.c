@@ -53,7 +53,7 @@ static Session   *TCPReceiveInit2    (Session *sess, Packet *pak);
 
 
 static Packet    *PacketTCPC         (Session *peer, UDWORD cmd, UDWORD seq,
-                                      UWORD type, UWORD flags, UWORD status, char *msg);
+                                      UWORD type, UWORD flags, UWORD status, const char *msg);
 #ifdef WIP
 static void       TCPGreet           (Packet *pak, UWORD cmd, char *reason,
                                       UWORD port, UDWORD len, char *msg);
@@ -90,7 +90,7 @@ void SessionInitPeer (Session *list)
 
     list->connect     = 0;
     list->our_seq     = -1;
-    list->type        = TYPE_LISTEN;
+    list->type        = TYPE_MSGLISTEN;
     list->flags       = 0;
     list->dispatch    = &TCPDispatchMain;
     list->reconnect   = &TCPDispatchReconn;
@@ -107,7 +107,7 @@ void TCPDirectOpen (Session *list, UDWORD uin)
     Session *peer;
     Contact *cont;
 
-    ASSERT_LISTEN (list);
+    ASSERT_MSGLISTEN (list);
 
     if (uin == list->parent->uin)
         return;
@@ -117,7 +117,7 @@ void TCPDirectOpen (Session *list, UDWORD uin)
     if (!cont || cont->TCP_version < 6)
         return;
 
-    if ((peer = SessionFind (TYPE_DIRECT, uin, list)))
+    if ((peer = SessionFind (TYPE_MSGDIRECT, uin, list)))
     {
         if (peer->connect & CONNECT_MASK)
             return;
@@ -130,7 +130,7 @@ void TCPDirectOpen (Session *list, UDWORD uin)
     
     peer->port   = 0;
     peer->uin    = uin;
-    peer->type   = TYPE_DIRECT;
+    peer->type   = TYPE_MSGDIRECT;
     peer->flags  = 0;
     peer->spref  = NULL;
     peer->parent = list;
@@ -150,7 +150,7 @@ void TCPDirectClose (UDWORD uin)
     
     for (i = 0; (sess = SessionNr (i)); i++)
         if (sess->uin == uin)
-            if (sess->type == TYPE_DIRECT || sess->type == TYPE_FILEDIRECT)
+            if (sess->type == TYPE_MSGDIRECT || sess->type == TYPE_FILEDIRECT)
                 TCPClose (sess);
 }
 
@@ -162,7 +162,7 @@ void TCPDirectOff (UDWORD uin)
     Contact *cont;
     Session *peer;
     
-    peer = SessionFind (TYPE_DIRECT, uin, NULL);
+    peer = SessionFind (TYPE_MSGDIRECT, uin, NULL);
     cont = ContactFind (uin);
     
     if (!peer && cont)
@@ -170,10 +170,12 @@ void TCPDirectOff (UDWORD uin)
 
     if (!peer)
         return;
+    
+    ASSERT_MSGDIRECT(peer);
 
     peer->uin     = cont->uin;
     peer->connect = CONNECT_FAIL;
-    peer->type    = TYPE_DIRECT;
+    peer->type    = TYPE_MSGDIRECT;
     peer->flags   = 0;
     if (peer->incoming)
     {
@@ -189,6 +191,8 @@ void TCPDirectOff (UDWORD uin)
  */
 void TCPDispatchReconn (Session *sess)
 {
+    ASSERT_ANY_DIRECT(sess);
+
     if (prG->verbose)
     {
         Time_Stamp ();
@@ -228,7 +232,7 @@ void TCPDispatchMain (Session *list)
             case 1:
                 list->connect |= CONNECT_OK | CONNECT_SELECT_R | CONNECT_SELECT_X;
                 list->connect &= ~CONNECT_SELECT_W; /* & ~CONNECT_SELECT_X; */
-                if (list->type == TYPE_LISTEN && list->parent && list->parent->ver > 6
+                if (list->type == TYPE_MSGLISTEN && list->parent && list->parent->ver > 6
                     && (list->parent->connect & CONNECT_OK))
                     SnacCliSetstatus (list->parent, 0, 2);
                 break;
@@ -252,7 +256,7 @@ void TCPDispatchMain (Session *list)
             sockclose (list->sok);
         return;
     }
-    peer->type = (list->type == TYPE_LISTEN ? TYPE_DIRECT : TYPE_FILEDIRECT);
+    peer->type = (list->type == TYPE_MSGLISTEN ? TYPE_MSGDIRECT : TYPE_FILEDIRECT);
 
 #ifdef WIP
     M_print ("New incoming direct(?) (%d) %x,%x\n", list->sok, list->type, peer->type);
@@ -318,7 +322,7 @@ void TCPDispatchConn (Session *peer)
                     break;
                 }
                 peer->server  = NULL;
-                if (peer->type == TYPE_DIRECT)
+                if (peer->type == TYPE_MSGDIRECT)
                 {
                     peer->ip      = cont->outside_ip;
                     peer->port    = cont->port;
@@ -368,7 +372,7 @@ void TCPDispatchConn (Session *peer)
                 if (peer->parent && peer->parent->parent && peer->parent->parent->ver < 7)
                 {
                     CmdPktCmdTCPRequest (peer->parent->parent, cont->uin, cont->port);
-                    QueueEnqueueData (peer, peer->ip, QUEUE_TYPE_TCP_TIMEOUT,
+                    QueueEnqueueData (peer, peer->ip, QUEUE_TCP_TIMEOUT,
                                       cont->uin, time (NULL) + 30,
                                       NULL, NULL, &TCPCallBackTOConn);
                     peer->connect = TCP_STATE_WAITING;
@@ -389,7 +393,7 @@ void TCPDispatchConn (Session *peer)
                              UtilIOIP (peer->ip), peer->port);
                     M_print (i18n (1785, "success.\n"));
                 }
-                QueueEnqueueData (peer, peer->ip, QUEUE_TYPE_TCP_TIMEOUT,
+                QueueEnqueueData (peer, peer->ip, QUEUE_TCP_TIMEOUT,
                                   cont->uin, time (NULL) + 10,
                                   NULL, NULL, &TCPCallBackTimeout);
                 peer->connect = 1 | CONNECT_SELECT_R;
@@ -472,7 +476,7 @@ void TCPDispatchShake (Session *peer)
                 continue;
             case 5:
                 peer->connect++;
-                if (peer->ver > 6 && peer->type == TYPE_DIRECT)
+                if (peer->ver > 6 && peer->type == TYPE_MSGDIRECT)
                 {
                     TCPSendInit2 (peer);
                     return;
@@ -480,7 +484,7 @@ void TCPDispatchShake (Session *peer)
                 continue;
             case 6:
                 peer->connect = 7 | CONNECT_SELECT_R;
-                if (peer->ver > 6 && peer->type == TYPE_DIRECT)
+                if (peer->ver > 6 && peer->type == TYPE_MSGDIRECT)
                     peer = TCPReceiveInit2 (peer, pak);
                 continue;
             case 7:
@@ -504,13 +508,13 @@ void TCPDispatchShake (Session *peer)
                 peer->connect++;
                 TCPReceiveInitAck (peer, pak);
                 PacketD (pak);
-                if (peer->ver > 6 && peer->type == TYPE_DIRECT)
+                if (peer->ver > 6 && peer->type == TYPE_MSGDIRECT)
                     return;
                 pak = NULL;
                 continue;
             case 20:
                 peer->connect++;
-                if (peer->ver > 6 && peer->type == TYPE_DIRECT)
+                if (peer->ver > 6 && peer->type == TYPE_MSGDIRECT)
                 {
                     peer = TCPReceiveInit2 (peer, pak);
                     PacketD (pak);
@@ -519,11 +523,11 @@ void TCPDispatchShake (Session *peer)
                 continue;
             case 21:
                 peer->connect = 48 | CONNECT_SELECT_R;
-                if (peer->ver > 6 && peer->type == TYPE_DIRECT)
+                if (peer->ver > 6 && peer->type == TYPE_MSGDIRECT)
                     TCPSendInit2 (peer);
                 continue;
             case 48:
-                QueueDequeue (peer->ip, QUEUE_TYPE_TCP_TIMEOUT);
+                QueueDequeue (peer->ip, QUEUE_TCP_TIMEOUT);
                 if (prG->verbose)
                 {
                     Time_Stamp ();
@@ -537,7 +541,7 @@ void TCPDispatchShake (Session *peer)
                 else
 #endif
                     peer->dispatch = &TCPDispatchPeer;
-                QueueRetry (peer->uin, QUEUE_TYPE_TCP_RESEND);
+                QueueRetry (peer->uin, QUEUE_TCP_RESEND);
                 return;
             case 0:
                 return;
@@ -560,7 +564,7 @@ static void TCPDispatchPeer (Session *peer)
     int i = 0;
     UWORD seq_in = 0, seq, cmd;
     
-    ASSERT_DIRECT (peer);
+    ASSERT_MSGDIRECT (peer);
     
     cont = ContactFind (peer->uin);
     if (!cont)
@@ -591,7 +595,7 @@ static void TCPDispatchPeer (Session *peer)
             switch (cmd)
             {
                 case TCP_CMD_CANCEL:
-                    event = QueueDequeue (seq_in, QUEUE_TYPE_TCP_RECEIVE);
+                    event = QueueDequeue (seq_in, QUEUE_TCP_RECEIVE);
                     if (!event)
                         break;
                     
@@ -607,7 +611,7 @@ static void TCPDispatchPeer (Session *peer)
 
                 default:
                     /* Store the event in the recv queue for handling later */            
-                    QueueEnqueueData (peer, seq_in, QUEUE_TYPE_TCP_RECEIVE,
+                    QueueEnqueueData (peer, seq_in, QUEUE_TCP_RECEIVE,
                                       0, 0, pak, (UBYTE *)cont, &TCPCallBackReceive);
 
                     peer->our_seq--;
@@ -631,8 +635,14 @@ static void TCPCallBackTimeout (Event *event)
 {
     Session *peer = event->sess;
     
+    if (!peer)
+    {
+        free (event);
+        return;
+    }
+    
     ASSERT_ANY_DIRECT (peer);
-    assert (event->type == QUEUE_TYPE_TCP_TIMEOUT);
+    assert (event->type == QUEUE_TCP_TIMEOUT);
     
     if ((peer->connect & CONNECT_MASK) && prG->verbose)
     {
@@ -648,6 +658,12 @@ static void TCPCallBackTimeout (Event *event)
  */
 static void TCPCallBackTOConn (Event *event)
 {
+    if (!event->sess)
+    {
+        free (event);
+        return;
+    }
+
     ASSERT_ANY_DIRECT (event->sess);
 
     event->sess->connect += 2;
@@ -682,7 +698,7 @@ static Packet *TCPReceivePacket (Session *peer)
     peer->stat_pak_rcvd++;
     peer->stat_real_pak_rcvd++;
 
-    if (peer->connect & CONNECT_OK && peer->type == TYPE_DIRECT)
+    if (peer->connect & CONNECT_OK && peer->type == TYPE_MSGDIRECT)
     {
         if (Decrypt_Pak ((UBYTE *) &pak->data + (peer->ver > 6 ? 1 : 0), pak->len - (peer->ver > 6 ? 1 : 0)) < 0)
         {
@@ -733,7 +749,7 @@ void TCPSendPacket (Packet *pak, Session *peer)
     tpak = PacketClone (pak);
     assert (tpak);
     
-    if (peer->type == TYPE_DIRECT)
+    if (peer->type == TYPE_MSGDIRECT)
         if (PacketReadAt1 (tpak, 0) == PEER_MSG || !PacketReadAt1 (tpak, 0)) 
             Encrypt_Pak (peer, tpak);
     
@@ -915,7 +931,7 @@ static Session *TCPReceiveInit (Session *peer, Packet *pak)
 {
     Contact *cont;
     UDWORD muin, uin, sid, port, port2, oip, iip;
-    UWORD  cmd, len, len2, tcpflag, err, nver;
+    UWORD  cmd, len, len2, tcpflag, err, nver, i;
     Session *peer2;
 
     ASSERT_ANY_DIRECT (peer);
@@ -938,7 +954,7 @@ static Session *TCPReceiveInit (Session *peer, Packet *pak)
         port2     = PacketRead4 (pak);
         sid       = PacketRead4 (pak);
         
-        /* check validity of this conenction; fail silently */
+        /* check validity of this connection; fail silently */
         
         if (cmd != PEER_INIT)
             FAIL (1);
@@ -991,19 +1007,24 @@ static Session *TCPReceiveInit (Session *peer, Packet *pak)
             M_print ("\x1b»\n");
         }
 
-        if (peer->type == TYPE_DIRECT && (peer2 = SessionFind (peer->type, uin, NULL)) && peer2 != peer)
+        for (i = 0; (peer2 = SessionNr (i)); i++)
+            if (     peer2->type == peer->type && peer2->parent == peer->parent
+                  && peer2->uin  == peer->uin  && !peer->assoc && peer2 != peer)
+                break;
+
+        if (peer2)
         {
-            if (peer->connect & CONNECT_OK)
+            if (peer2->connect & CONNECT_OK)
             {
                 TCPClose (peer);
-                peer->connect = CONNECT_FAIL;
+                SessionClose (peer);
                 return NULL;
             }
-            if ((peer->connect & CONNECT_MASK) == (UDWORD)TCP_STATE_WAITING)
-                QueueDequeue (peer->ip, QUEUE_TYPE_TCP_TIMEOUT);
-            if (peer->sok != -1)
-                TCPClose (peer);
-            SessionClose (peer);
+            if ((peer2->connect & CONNECT_MASK) == (UDWORD)TCP_STATE_WAITING)
+                QueueDequeue (peer2->ip, QUEUE_TCP_TIMEOUT);
+            if (peer2->sok != -1)
+                TCPClose (peer2);
+            SessionClose (peer2);
         }
         return peer;
     }
@@ -1036,7 +1057,7 @@ static Session *TCPReceiveInit2 (Session *peer, Packet *pak)
     UWORD  cmd, err;
     UDWORD ten, one;
 
-    ASSERT_DIRECT (peer);
+    ASSERT_MSGDIRECT (peer);
     assert (pak);
 
     if (!pak)
@@ -1136,6 +1157,8 @@ void TCPPrint (Packet *pak, Session *peer, BOOL out)
 {
     UWORD cmd;
     
+    ASSERT_ANY_DIRECT(peer);
+    
     pak->rpos = 0;
     cmd = *pak->data;
 
@@ -1146,7 +1169,7 @@ void TCPPrint (Packet *pak, Session *peer, BOOL out)
              peer->sok, ContactFindName (peer->uin), TCPCmdName (cmd));
     M_print (COLNONE "\n");
 #ifdef WIP
-    if (peer->connect & CONNECT_OK && peer->type == TYPE_DIRECT && cmd == 2)
+    if (peer->connect & CONNECT_OK && peer->type == TYPE_MSGDIRECT && cmd == 2)
     {
         UWORD seq, typ;
         UDWORD sta, fla;
@@ -1215,9 +1238,11 @@ void TCPPrint (Packet *pak, Session *peer, BOOL out)
 /*
  * Create and setup a TCP communication packet.
  */
-static Packet *PacketTCPC (Session *peer, UDWORD cmd, UDWORD seq, UWORD type, UWORD flags, UWORD status, char *msg)
+static Packet *PacketTCPC (Session *peer, UDWORD cmd, UDWORD seq, UWORD type, UWORD flags, UWORD status, const char *msg)
 {
     Packet *pak;
+    
+    ASSERT_ANY_DIRECT(peer);
 
     pak = PacketC ();
     if (peer->ver > 6)
@@ -1295,11 +1320,11 @@ void TCPGreet (Packet *pak, UWORD cmd, char *reason, UWORD port, UDWORD len, cha
 static int TCPSendMsgAck (Session *peer, UWORD seq, UWORD type, BOOL accept)
 {
     Packet *pak;
-    char *msg;
+    const char *msg;
     UWORD status, flags;
     Session *fpeer, *flist;
 
-    ASSERT_DIRECT (peer);
+    ASSERT_MSGDIRECT (peer);
 
     switch (type)
     {
@@ -1309,7 +1334,7 @@ static int TCPSendMsgAck (Session *peer, UWORD seq, UWORD type, BOOL accept)
         case TCP_MSG_GET_DND:   msg = prG->auto_dnd;  break;
         case TCP_MSG_GET_FFC:   msg = prG->auto_ffc;  break;
         case TCP_MSG_GET_VER:
-            msg = "mICQ " VERSION " b " __DATE__ " " __TIME__;
+            msg = BuildVersionText;
             break;
         default:
             if (peer->status & STATUSF_DND)
@@ -1378,7 +1403,7 @@ static int TCPSendGreetAck (Session *peer, UWORD seq, UWORD cmd, BOOL accept)
     UWORD status, flags;
     Session *flist;
 
-    ASSERT_DIRECT (peer);
+    ASSERT_MSGDIRECT (peer);
 
     if (peer->status & STATUSF_DND)  status  = TCP_STAT_DND;   else
     if (peer->status & STATUSF_OCC)  status  = TCP_STAT_OCC;   else
@@ -1426,17 +1451,19 @@ BOOL TCPGetAuto (Session *list, UDWORD uin, UWORD which)
     if (!cont->local_ip && !cont->outside_ip)
         return 0;
 
-    ASSERT_LISTEN (list);
+    ASSERT_MSGLISTEN(list);
     
-    peer = SessionFind (TYPE_DIRECT, uin, NULL);
+    peer = SessionFind (TYPE_MSGDIRECT, uin, list);
     if (peer && (peer->connect & CONNECT_FAIL))
         return 0;
     TCPDirectOpen (list, uin);
-    peer = SessionFind (TYPE_DIRECT, uin, NULL);
+    peer = SessionFind (TYPE_MSGDIRECT, uin, list);
     
     if (!peer)
         return 0;
 
+    ASSERT_MSGDIRECT(peer);
+    
     if (!which)
     {
         if (cont->status & STATUSF_DND)
@@ -1459,7 +1486,7 @@ BOOL TCPGetAuto (Session *list, UDWORD uin, UWORD which)
 
     peer->stat_real_pak_sent++;
 
-    QueueEnqueueData (peer, peer->our_seq--, QUEUE_TYPE_TCP_RESEND,
+    QueueEnqueueData (peer, peer->our_seq--, QUEUE_TCP_RESEND,
                       uin, time (NULL),
                       pak, strdup ("..."), &TCPCallBackResend);
     return 1;
@@ -1491,16 +1518,18 @@ BOOL TCPSendMsg (Session *list, UDWORD uin, char *msg, UWORD sub_cmd)
     if (!cont->local_ip && !cont->outside_ip)
         return 0;
 
-    ASSERT_LISTEN (list);
+    ASSERT_MSGLISTEN (list);
     
-    peer = SessionFind (TYPE_DIRECT, uin, NULL);
+    peer = SessionFind (TYPE_MSGDIRECT, uin, list);
     if (peer && (peer->connect & CONNECT_FAIL))
         return 0;
     TCPDirectOpen (list, uin);
-    peer = SessionFind (TYPE_DIRECT, uin, NULL);
+    peer = SessionFind (TYPE_MSGDIRECT, uin, list);
     
     if (!peer)
         return 0;
+
+    ASSERT_MSGDIRECT(peer);
 
     pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, sub_cmd, 0, list->parent->status, msg);
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
@@ -1508,7 +1537,7 @@ BOOL TCPSendMsg (Session *list, UDWORD uin, char *msg, UWORD sub_cmd)
 
     peer->stat_real_pak_sent++;
 
-    QueueEnqueueData (peer, peer->our_seq--, QUEUE_TYPE_TCP_RESEND,
+    QueueEnqueueData (peer, peer->our_seq--, QUEUE_TCP_RESEND,
                       uin, time (NULL),
                       pak, strdup (msg), &TCPCallBackResend);
     return 1;
@@ -1534,7 +1563,7 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
     if (!list)
         return 0;
     
-    ASSERT_LISTEN (list);
+    ASSERT_MSGLISTEN (list);
     assert (list->parent);
 
     if (uin == list->parent->uin)
@@ -1549,18 +1578,22 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
     if (!cont->local_ip && !cont->outside_ip)
         return 0;
 
-    peer = SessionFind (TYPE_DIRECT, uin, NULL);
+    peer = SessionFind (TYPE_MSGDIRECT, uin, list);
     if (peer && (peer->connect & CONNECT_FAIL))
         return 0;
     TCPDirectOpen (list, uin);
-    peer = SessionFind (TYPE_DIRECT, uin, NULL);
+    peer = SessionFind (TYPE_MSGDIRECT, uin, list);
 
     if (!peer)
         return 0;
     
+    ASSERT_MSGDIRECT(peer);
+    
     flist = PeerFileCreate (peer->parent->parent);
     if (!flist)
         return 0;
+    
+    ASSERT_FILELISTEN(flist);
 
     fpeer = SessionClone (flist);
     
@@ -1593,7 +1626,7 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
             PacketWrite4 (pak, fstat.st_size);
             PacketWrite4 (pak, 0);
             PacketWrite4 (pak, 64);
-            QueueEnqueueData (fpeer, sum, QUEUE_TYPE_PEER_FILE,
+            QueueEnqueueData (fpeer, sum, QUEUE_PEER_FILE,
                               uin, time (NULL), pak, strdup (files[i]), &PeerFileResend);
         }
     }
@@ -1611,7 +1644,7 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
     PacketWrite4 (pak, sumlen);
     PacketWrite4 (pak, 64);
     PacketWriteLNTS (pak, "Sender's nick");
-    QueueEnqueueData (fpeer, 0, QUEUE_TYPE_PEER_FILE,
+    QueueEnqueueData (fpeer, 0, QUEUE_PEER_FILE,
                       uin, time (NULL), pak, strdup (description), &PeerFileResend);
         
     if (peer->ver < 8)
@@ -1631,7 +1664,7 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
 
     peer->stat_real_pak_sent++;
 
-    QueueEnqueueData (peer, peer->our_seq--, QUEUE_TYPE_TCP_RESEND,
+    QueueEnqueueData (peer, peer->our_seq--, QUEUE_TCP_RESEND,
                       uin, time (NULL), pak, strdup (description), &TCPCallBackResend);
     return 1;
 }
@@ -1645,10 +1678,21 @@ static void TCPCallBackResend (Event *event)
     Contact *cont;
     Session *peer = event->sess;
     Packet *pak = event->pak;
-    int delta = (peer->ver > 6 ? 1 : 0);
+    int delta;
     
-    ASSERT_DIRECT (peer);
+    if (!peer)
+    {
+        M_print (i18n (9999, "TCP message %s discarded - lost session.\n"), event->info);
+        PacketD (event->pak);
+        free (event->info);
+        free (event);
+        return;
+    }
+
+    ASSERT_MSGDIRECT (peer);
     assert (pak);
+    
+    delta = (peer->ver > 6 ? 1 : 0);
 
     cont = ContactFind (event->uin);
 
@@ -1701,8 +1745,15 @@ static void TCPCallBackReceive (Event *event)
     char *tmp, *tmp3, *text, *reason, *name;
     UWORD cmd, type, seq, port;
     UDWORD len, status, flags;
+
+    if (!event->sess)
+    {
+        PacketD (event->pak);
+        free (event);
+        return;
+    }
     
-    ASSERT_DIRECT (event->sess);
+    ASSERT_MSGDIRECT (event->sess);
     assert (event->pak);
     
     pak = event->pak;
@@ -1723,7 +1774,7 @@ static void TCPCallBackReceive (Event *event)
     switch (cmd)
     {
         case TCP_CMD_ACK:
-            event = QueueDequeue (seq, QUEUE_TYPE_TCP_RESEND);
+            event = QueueDequeue (seq, QUEUE_TCP_RESEND);
             if (!event)
                 break;
             switch (type)
@@ -1940,6 +1991,7 @@ static void TCPCallBackReceive (Event *event)
     }
     PacketD (pak);
     free (tmp);
+    free (event);
 }
 
 

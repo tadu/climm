@@ -34,16 +34,16 @@ Event      *QueuePop         ();
 
 const char *QueueType   (UDWORD type);
 
-#define QUEUE_TYPE_PEER_RESEND   45
-#define QUEUE_TYPE_PEER_FILE     60
-#define QUEUE_TYPE_UDP_RESEND    43
-#define QUEUE_TYPE_TCP_RESEND    42
-#define QUEUE_TYPE_TCP_TIMEOUT   72
-#define QUEUE_TYPE_CON_TIMEOUT   77
-#define QUEUE_TYPE_TCP_RECEIVE   32
-#define QUEUE_TYPE_UDP_KEEPALIVE 23
-#define QUEUE_TYPE_SRV_KEEPALIVE 21
-#define QUEUE_TYPE_FLAP          34
+#define QUEUE_PEER_RESEND   45
+#define QUEUE_PEER_FILE     60
+#define QUEUE_UDP_RESEND    43
+#define QUEUE_TCP_RESEND    42
+#define QUEUE_TCP_TIMEOUT   72
+#define QUEUE_CON_TIMEOUT   77
+#define QUEUE_TCP_RECEIVE   32
+#define QUEUE_UDP_KEEPALIVE 23
+#define QUEUE_SRV_KEEPALIVE 21
+#define QUEUE_FLAP          34
 
 #define QUEUE_FLAG_CONSIDERED     1 /* this event has been considered and won't
                                        be tried again in this queue run */

@@ -78,7 +78,7 @@ BOOL PeerFileRequested (Session *peer, const char *files, UDWORD bytes)
     Session *flist, *fpeer;
     Contact *cont;
 
-    ASSERT_DIRECT(peer);
+    ASSERT_MSGDIRECT(peer);
     
     if (peer->ver < 6)
         return 0;
@@ -118,6 +118,10 @@ BOOL PeerFileAccept (Session *peer, UWORD status, UDWORD port)
     
     flist = PeerFileCreate (peer->parent->parent);
     fpeer = SessionFind (TYPE_FILEDIRECT, peer->uin, flist);
+    
+    ASSERT_MSGDIRECT(peer);
+    ASSERT_FILELISTEN(flist);
+    ASSERT_FILEDIRECT(fpeer);
     
     if (!flist || !fpeer || !port || status)
     {
@@ -196,7 +200,7 @@ void PeerFileDispatch (Session *fpeer)
             M_print ("Files accepted @ %x by %s.\n", speed, name);
             
             fpeer->our_seq = 1;
-            QueueRetry (fpeer->uin, QUEUE_TYPE_PEER_FILE);
+            QueueRetry (fpeer->uin, QUEUE_PEER_FILE);
             
             free (name);
             return;
@@ -272,7 +276,7 @@ void PeerFileDispatch (Session *fpeer)
             }
             fpeer->connect |= 1;
             
-            QueueRetry (fpeer->uin, QUEUE_TYPE_PEER_FILE);
+            QueueRetry (fpeer->uin, QUEUE_PEER_FILE);
             return;
             
         case 4:
@@ -312,6 +316,13 @@ void PeerFileResend (Event *event)
     Session *fpeer = event->sess;
     Packet *pak;
     Event *event2;
+    
+    if (!fpeer)
+    {
+        free (event->info);
+        free (event);
+        return;
+    }
     
     ASSERT_FILEDIRECT (fpeer);
 
@@ -359,6 +370,9 @@ void PeerFileResend (Event *event)
                     M_print (i18n (9999, "Cannot open file %s: %s (%d).\n"),
                              event->info, strerror (rc), rc);
                     TCPClose (fpeer);
+                    SessionClose (fpeer);
+                    SessionClose (ffile);
+                    return;
                 }
                 fpeer->connect &= ~1;
 
@@ -393,11 +407,11 @@ void PeerFileResend (Event *event)
                     M_print (i18n (9999, "Finished sending file %s.\n"), event->info);
                     SessionClose (fpeer->assoc);
                     fpeer->our_seq++;
-                    event2 = QueueDequeue (fpeer->our_seq, QUEUE_TYPE_PEER_FILE);
+                    event2 = QueueDequeue (fpeer->our_seq, QUEUE_PEER_FILE);
                     if (event2)
                     {
                         QueueEnqueue (event2);
-                        QueueRetry (fpeer->uin, QUEUE_TYPE_PEER_FILE);
+                        QueueRetry (fpeer->uin, QUEUE_PEER_FILE);
                         return;
                     }
                     else
@@ -438,69 +452,3 @@ void PeerFileResend (Event *event)
     free (event->info);
     free (event);
 }
-
-#if 0
-/*
- * Accepts a new incoming file transfer connection.
- */
-void PeerFileDispatchIncoming (Session *fpeer)
-{
-    struct sockaddr_in sin;
-    int tmp, rc;
-    SOK_T sok;
-
-    ASSERT_FILEDIRECT(fpeer);
-
-    if (fpeer->connect & CONNECT_OK)
-    {
-        if ((rc = UtilIOError (fpeer)))
-        {
-            M_print (i18n (2051, "Error on socket: %s (%d)\n"), strerror (rc), rc);
-            if (fpeer->sok > 0)
-                sockclose (fpeer->sok);
-            fpeer->sok = -1;
-            fpeer->connect = 0;
-            return;
-        }
-    }
-    else
-    {
-        switch (fpeer->connect & 3)
-        {
-            case 1:
-                fpeer->connect |= CONNECT_OK | CONNECT_SELECT_R | CONNECT_SELECT_X;
-                fpeer->connect &= ~CONNECT_SELECT_W; /* & ~CONNECT_SELECT_X; */
-                break;
-            case 2:
-                fpeer->connect = 0;
-                break;
-            default:
-                assert (0);
-        }
-        return;
-    }
-
-#ifdef WIP
-    M_print ("New incoming file %d\n", fpeer->type);
-#endif
-
-    fpeer->flags = 0;
-    fpeer->spref = NULL;
-    fpeer->our_session = 0;
-    fpeer->dispatch    = &TCPDispatchShake;
-    
-    tmp = sizeof (sin);
-    sok  = accept (fpeer->sok, (struct sockaddr *)&sin, &tmp);
-        
-    if (fpeer->sok <= 0)
-    {
-        fpeer->connect = 0;
-        fpeer->sok     = -1;
-        return;
-    }
-
-    close (fpeer->sok);
-    fpeer->sok = sok;
-    fpeer->connect = 16 | CONNECT_SELECT_R;
-}
-#endif

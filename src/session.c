@@ -165,9 +165,9 @@ const char *SessionType (Session *sess)
             return i18n (1889, "server");
         case TYPE_SERVER_OLD:
             return i18n (1744, "server (v5)");
-        case TYPE_LISTEN:
+        case TYPE_MSGLISTEN:
             return i18n (1947, "listener");
-        case TYPE_DIRECT:
+        case TYPE_MSGDIRECT:
             return i18n (1890, "peer-to-peer");
         case TYPE_FILELISTEN:
             return i18n (9999, "file listener");

@@ -77,13 +77,20 @@ static void SrvCallBackReconn (Session *sess)
 
 static void SrvCallBackDoReconn (Event *event)
 {
-    SessionInitServer (event->sess);
+    if (event->sess)
+        SessionInitServer (event->sess);
     free (event);
 }
 
 static void SrvCallBackTimeout (Event *event)
 {
     Session *sess = event->sess;
+    
+    if (!sess)
+    {
+        free (event);
+        return;
+    }
     
     if ((sess->connect & CONNECT_MASK) && !(sess->connect & CONNECT_OK))
     {
@@ -162,7 +169,7 @@ void SrvCallBackReceive (Session *sess)
     if (prG->verbose & DEB_PACK8SAVE)
         FlapSave (pak, TRUE);
     
-    QueueEnqueueData (sess, pak->id, QUEUE_TYPE_FLAP,
+    QueueEnqueueData (sess, pak->id, QUEUE_FLAP,
                       0, time (NULL),
                       pak, NULL, &SrvCallBackFlap);
     pak = NULL;

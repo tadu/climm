@@ -35,10 +35,7 @@ const char *BuildVersion (void)
 }
 
 const UDWORD BuildVersionNum = MICQ_BUILD_NUM;
-
-#ifdef __AMIGA__
-const char *Build = "$VER: mICQ " VERSION " (" __DATE__ " " __TIME__ ")";
-#endif
+const char *BuildVersionText = "$VER: mICQ " VERSION " c (" __DATE__ " " __TIME__ ")";
 
 /*
  i19n (1001, "en")               locale

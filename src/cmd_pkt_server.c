@@ -164,9 +164,14 @@ void CmdPktSrvRead (Session *sess)
  */
 static void CmdPktSrvCallBackKeepAlive (Event *event)
 {
-    CmdPktCmdKeepAlive (event->sess);
-    event->due = time (NULL) + 120;
-    QueueEnqueue (event);
+    if (event->sess)
+    {
+        CmdPktCmdKeepAlive (event->sess);
+        event->due = time (NULL) + 120;
+        QueueEnqueue (event);
+    }
+    else
+        free (event);
 }
 
 /*
@@ -229,7 +234,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
 #else
                      data[12], data[13], data[14], data[15]);
 #endif
-            QueueEnqueueData (sess, 0, QUEUE_TYPE_UDP_KEEPALIVE, 0, time (NULL) + 120,
+            QueueEnqueueData (sess, 0, QUEUE_UDP_KEEPALIVE, 0, time (NULL) + 120,
                               NULL, NULL, &CmdPktSrvCallBackKeepAlive);
             break;
         case SRV_RECV_MESSAGE:
@@ -435,7 +440,7 @@ static JUMP_SRV_F (CmdPktSrvMulti)
  */
 static JUMP_SRV_F (CmdPktSrvAck)
 {
-    Event *event = QueueDequeue (seq, QUEUE_TYPE_UDP_RESEND);
+    Event *event = QueueDequeue (seq, QUEUE_UDP_RESEND);
     UDWORD ccmd;
 
     if (!event)
