@@ -1,5 +1,5 @@
 # $Id$ castellano (Spanish)
-#  EN: __.i18n,v 1.57 2002/12/09 12:48:07
+#  EN: __.i18n,v 1.63 2003/01/04 15:44:18
 1001:es
 1002:es
 1003:0-4-9-3
@@ -28,25 +28,21 @@
 1028:NO
 1029:Por favor ingrese SI o NO!
 1030:se desconectó
-1031.se conectó
 1032:debug: Paquete doble #%04lx del tipo %04x (%s)\n
 1033:Paquete del server v8 entrante:
 1034:Se alcanzó el numero maximo de reintentos, descartando.
-1035.cambio el estado a
 1036:Comando %s desconocido, escribir /help para ver la ayuda.
 1037:Mensaje enviado parcialmente.\n
 1038:Mensaje cancelado.\n
 1039:El servidor dice que no estamos conectados.\n
 1040:mICQ> 
 1041:msj> 
-1042.msj todos> 
 1043:Todos los usuarios encontrados.
 1044:Demasiados usuarios encontrados.
 1045:Busqueda terminada.
 1046:Longitud
 1047:Datos extra
 1048:Codigo de error %ld\n
-1049.UIN: %d\n
 1050:Usuario y clave validados
 1053:Conectado a %s, esperando respuesta\n
 1055:Error en la creación del socket
@@ -56,22 +52,14 @@
 1062:Usuarios ignorados:
 1063:Ingrese su clave:
 1064:Su estado se cambio automaticamente a %s.\n
-1065.Usando intel byte ordering.
-1066.Usando motorola byte ordering.
-1071.Tu estado es 
 1072:Usuarios desconectados:
 1073:Usuarios conectados:
-1074.mICQ (Clon de ICQ de Matt)
-1075.versión
-1076.compilado en
 1077:dedicado a Matthew D. Smith.
 1078:No hay traducción disponible
 1079:Traducción (%s, %s) por %s, ultima modificación el %s por %s, para mICQ %d.%d.%d%s.\n
 1080:No se pudo cargar la internacionalización "%s\n
 1081:Traducción cargada correctamente (%ld entradas).\n
 1082:Intentando reconectar... [intento %d de %d]\n
-1083.Sonido cmd
-1084.Sonido
 1085:activado
 1086: desactivado
 1089:Traducción descargada.
@@ -170,14 +158,10 @@
 1186:Estudiante universitario
 1187:Construcción de sitios web
 1188:Ignorando comando no reconocido en archivo rc: '%s'.
-1189.UIN = %ld
-1190.puerto = %ld
-1191.clave = %s
-1192.servidor = %s
-1193.estado = %ld
-1196.Message_cmd = %s\n
 1198:Otros servicios
-1200:No ingresado
+#-#1200:No ingresado
+#+#1200:Not entered
+#1200:not entered
 1201:Afganistan
 1202:Albania
 1203:Algeria
@@ -375,33 +359,46 @@
 1400:Muestra la información del usuario almacenada localmente, o, de no indicarse uin o nick, la propia.
 1401:Actualiza otra información acerca del usuario, como por ejemplo edad y genero.
 1402:Actualiza tu información personal adicional.
-1403:Muestra el ultimo mensaje recibido de <uin> o <nick>, de todos los que te enviaron al menos un mensaje.
-1404:Cambia entre ignorar y no ignorar el usuario.
+#-#1403:Muestra el ultimo mensaje recibido de <uin> o <nick>, de todos los que te enviaron al menos un mensaje.
+#+#1403:Displays the last message received from <uin> or <nick> or from everyone who has sent you at least one message.
+#-#1404:Cambia entre ignorar y no ignorar el usuario.
+#+#1404:Toggles ignoring/unignoring <uin> or <nick>.
+#1403:Displays the last message received from <contacts> or from everyone.
+#1404:Toggles ignoring/unignoring the <contacts>.
 1405:Muestra la lista de nicks/uins ignorados.
-1406:Hace que un usuario te vea, o no, cuando estas invisible.
+#-#1406:Hace que un usuario te vea, o no, cuando estas invisible.
+#+#1406:Toggles your visibility to <uin> or <nick> when you're invisible.
+#1406:Toggles your visibility to <contacts> when you're invisible.
 1407:Muestra el estado de tus contactos actualmente conectados.
 1408:Cambia tu clave a <clave>.
-1409:Envia un mensaje a <uin> o <nick>.
-1410:Envia una url y un mensaje a <uin> o <nick>.
-1411:Envia un mensaje con multiples lineas a todas las personas de tu lista.
+#-#1409:Envia un mensaje a <uin> o <nick>.
+#+#1409:Sends a message to <uin> or <nick>.
+#-#1410:Envia una url y un mensaje a <uin> o <nick>.
+#+#1410:Sends a url and message to <uin> or <nick>.
+#1409:Sends a message to <contacts>.
+#1410:Sends a url and message to <contacts>.
 1412:Envia un mensaje a la ultima persona a la que le enviaste.
-1413:Autoriza a <uin> o <nick> para agregarte a su lista de contactos.
 1414:Responde a la ultima persona que te envio un mensaje.
 1415:Encuentra un usuario al azar en el/los grupos o listas especificados.
 1416:Muestra el estado de todas las personas de tu lista de contactos.
-1417:Este comando te permite alterar cualquier comando.
 1418:Cambia el nivel de salida (si no se especifica, es 0).
 1419:Limpia la pantalla.
-1420:Cambia entre hacer bip o no cuando llega un mensaje nuevo.
+#-#1420:Cambia entre hacer bip o no cuando llega un mensaje nuevo.
+#+#1420:Switches beeping when receiving new messages on or off, sets a command for this event or displays current state of this option.
+#1420:Switches beeping when receiving new messages on or off, or using the event script.
 1422:Se desconecta y sale.
 1424:Cambia entre enviar o no mensajes cuando tu estado no es 'conectado', o muestra la configuracion.
 1425:Cambia el mensaje a enviar como una respuesta automatica.
 1426:Crea un nuevo UIN con la clave especificada.
 1427:Cambia tu estado al numero especificado. Si no se ingresa, lista los estados posibles.
-1428:Agrega <uin> como <nuevo nick>, o agrega un alias <nuevo nick> para <uin> o <nick>.
+#-#1428:Agrega <uin> como <nuevo nick>, o agrega un alias <nuevo nick> para <uin> o <nick>.
+#+#1428:Adds <uin> as <new nick>, or add alias <new nick> for <uin> or <nick>.
+#1428:Adds all contacts in <contacts> to contact group <group>.
 1429:Busca un usuario de ICQ.
 1430:Muestra información general del <uin> o <nick>.
-1431:Cambia el estado a "Conectado".
+#-#1431:Cambia el estado a "Conectado".
+#+#1431:Change status to Online.
+#1431:Set status to "online".
 1432:Cambia el estado a "Lejos".
 1433:Cambia el estado a "No disponible".
 1434:Cambia el estado a "Ocupado".
@@ -466,13 +463,9 @@
 1494:Server exclusivamente
 1495:No se encontro usuario al azar
 1497:fallido
-1498.Información para
 1499:Otros
 1500:Nick:
 1501:Nombre:
-1502.Email:
-1503.Otro Email:
-1504.Antiguo Email:
 1505:Ubicación:
 1506:Teléfono:
 1507:Fax:
@@ -508,8 +501,6 @@
 1539:Ingresa tu mes de nacimiento:
 1540:Ingresa tu dia de nacimiento:
 1541:Información adicional> 
-1542.Ingresa tu dirección de email secundaria:
-1543.Ingresa tu vieja dirección de email:
 1544:Ingresa tu city:
 1545:Ingresa tu provincia/estado:
 1546:Ingresa tu número de teléfono:
@@ -524,18 +515,14 @@
 1555:Ingresa tu apellido:
 1556:Ingresa tu dirección de email:
 1557:Queres que los usuarios te pidan autorización? (SI/NO)
-1562.Información de
 1564:Nombre:
 1565:Apellido:
 1566:Email:
-1567.No se necesita autorización. 
-1568.Se requiere autorización. 
 1570:Ciudad:
 1574:Estado:
 1575:Edad:
 1578:Ingresa el código telefónico de tu país:
 1579:Ingresa tu compañia: 
-1584.Alerta! El comando de script '%s' falló con valor %d\n
 1587:Ingresa tu departamento/area: 
 1592:<%s> te mando un mensaje por email:\n
 1593:<%s> te mando un mensaje por web:\n
@@ -552,15 +539,8 @@
 1605:Queres que tu estado sea visible desde la web? (SI/NO)
 1606:Recibimos un session id mal: %08lx (el correcto: %08lx) con el comando %04x, se ignoro.\n
 1607:Uso: micq [-h] [-v[level]] [-f <rc-file>] [-l <logfile>]\n
-1608.        -v   Activa el modo verbose (solo util para debugging)\n
-1609.        -f   especifica un archivo de configuración alternativo (si no se especifica, ~/.micq/micqrc)\n
-1610.        -l   especifica un directorio de registro e historial alternativo\n
-1611.        -?   muestra esta ayuda\n\n
 1612:Este programa fue hecho sin ningun tipo de ayuda ni consentimiento por parte de Mirabilis.\n
 1613:No se utilizo ningun mecanismo de decompilación o ingenieria inversa de codigo de Mirabilis para realizar este programa.\n
-1614.Usando el archivo de configuración "%s"\n
-1615.Guardando registro en "%s"\n
-1617.<todos>
 1618:UIN:
 1619:Advertencia:
 1620:Se alcanzo el numero maximo de contactos.
@@ -630,8 +610,12 @@
 1715:mICQ
 1716:Ninguno
 1717:'!' como primer caracter de una linea la ejecutara como un comando de shell (por ejemplo '!ls', '!dir', '!mkdir temp')
-1719:Muestra por cuanto tiempo ha estado corriendo mICQ.
-1720:uin puede sar tanto un numero como el nick de un usuario.
+#-#1719:Muestra por cuanto tiempo ha estado corriendo mICQ.
+#+#1719:Shows how long mICQ has been running.
+#-#1720:uin puede sar tanto un numero como el nick de un usuario.
+#+#1720:uin can be either a number or the nickname of the user.
+#1719:Shows how long mICQ has been running and some statistics.
+#1720:<contacts> is a comma seperated list of UINs and nick names of users.
 1721:Enviar un mensaje en blanco pondra al programa en modo multilinea.\nEscribi . en una linea vacia para terminar el mensaje.\nUsa # en una linea vacia para cancelar el mensaje.
 1724:Las respuestas automáticas estan %s.\n
 1727:El mensaje de 'No molestar' es:
@@ -660,10 +644,14 @@
 1763:El comando '%s' ha sido renombrado a '%s'.
 1764:El comando '%s' no fue cambiado.
 1765:El UIN de %s es %ld.
-1766:Cambiando el estado a 'Lejos' luego de estar inactivo %s%ld%s segundos.\n
+#-#1766:Cambiando el estado a 'Lejos' luego de estar inactivo %s%ld%s segundos.\n
+#+#1766:Changing status to away resp. not available after idling %s%ld%s seconds.\n
+#1766:Changing status to away/not available after idling %s%ld%s seconds.\n
 1767:Cambia el cambio de estado automatico de 'lejos' a 'no disponible'.
 1768:El nombre de comando '%s' ya esta siendo utilizado.\n
-1770:Reenvia el ultimo mensaje a un nuevo <uin> o <nick>.
+#-#1770:Reenvia el ultimo mensaje a un nuevo <uin> o <nick>.
+#+#1770:Resend your last message to <uin> or <nick>.
+#1770:Resend your last message to <contacts>.
 1771:Todavia no le mandaste un mensaje a nadie!\n
 1774:Paquete entrante:
 1775:Paquete saliente:
@@ -689,22 +677,23 @@
 1799:Escuela secundaria/Polimodal
 1800:Cambia el lenguaje a <lang>, o muestra el string <nr>.
 1801:Muestra una lista de las personas en tu lista de contactos en formato ancho.
-1802.SoundOnline cmd
-1803.SoundOffline cmd
-1804.SoundOnline
-1805.SoundOffline
 1807:Mensaje (seq %04x) entrante de %s cancelado\n
 1808:Colegio
 1810:Universidad
 1812:Lugar de trabajo anterior
 1813:Organización anterior
 1814:Mensaje de respuesta automática configurado a %s%s%s.\n
-1815:    funny: usa mensajes graciosos.\n
-1816:Opción %s desconocida para la configuración de comando.\n
+#-#1815:    funny: usa mensajes graciosos.\n
+#+#1815:    funny: use funny messages for output.\n
+#1815:    funny:      use funny messages for output.\n
 1817:La funcionalidad de scripts sobre eventos esta desactivada.\n
 1818:Alerta: sintaxis en desuso encontrada en el archivo de configuración!\n    Por favor hace "save" y revisa los cambios.\n
-1820:%s <opcion> [on|off] - controla las opciones simples.\n
-1822:    color: usa colores en el texto.\n
+#-#1820:%s <opcion> [on|off] - controla las opciones simples.\n
+#+#1820:%s <option> [on|off] - control simple options.\n
+#-#1822:    color: usa colores en el texto.\n
+#+#1822:    color: use colored text output.\n
+#1820:%s <option> [on|off|<value>] - control simple options.\n
+#1822:    color:      use colored text output.\n
 1823:Mensaje entrante parcial:
 1825:Se descarto un paquete %04x (%s)
 1826:Reenviando mensaje %04x (%s) secuencia %04lx (intento numero %ld, longitud %d).\n
@@ -790,7 +779,6 @@
 1938:Ingresa el genero:
 1939:Ingresa una ciudad:
 1940:Resultado Meta User desconocido %lx.\n
-1941.Publicar Email:
 1942:Emails adicionales:
 1943:(no necesita autorización)
 1944:(debe pedir autorización)
@@ -856,7 +844,6 @@
 2014:No se ingreso un numero.\n
 2015:No se ingreso un mensaje.\n
 2017:El usuario esta realmente conectado, pero posiblemente invisible.\n
-2018:    quiet: no informa acerca de cambios de estado.\n
 2020:Siendo visible para %s.\n
 2021:Siendo invisible para %s.\n
 2022:El usuario esta realmente desconectado.\n
@@ -868,38 +855,49 @@
 2032:Programando reconexión v9 para dentro de %d segundos.\n
 2033:cumple años hoy
 2034:Abriendo conexión TCP a %s:%ld... 
-2035:Muestra el uptime y algunas estadisticas.
 2036:Graba las preferencias actuales al disco.
 2037:Abre o cierra una conexión par-a-par, o desactiva el uso de conexiones par-a-par para el <uin> o <nick> determinado.
 2038:Abre la conexión numero <nr>, o la primera conexión con el servidor.
-2039:Envia un mensaje a un telefono celular.
-2040:Cambia entre hacer beep o no para contactos entrantes, configura un comando para este evento o muestra el estado actual de la opción.
-2041:Cambia entre hacer beep o no para contactos salientes, configura un comando para este evento o muestra el estado actual de la opción.
+#-#2039:Envia un mensaje a un telefono celular.
+#+#2039:Sends a message to a cell phone.
+#2039:Sends a message to a (<nick>'s) <cell> phone.
 2042:Muestra una lista de las personas conectadas en formato ancho.
-2043:Elimina un alias <alias> o <uin>, o elimina un contacto.
-2044:Activa o desactiva una opción.
-2045:Cambia tu visibilidad con <uin> o <nick> cuando estas conectado.
+#-#2043:Elimina un alias <alias> o <uin>, o elimina un contacto.
+#+#2043:Remove alias <alias> or <uin>, or removes contact.
+#-#2044:Activa o desactiva una opción.
+#+#2044:Set or clear an option.
+#-#2045:Cambia tu visibilidad con <uin> o <nick> cuando estas conectado.
+#+#2045:Toggles your visibility to <uin> or <nick> when you're online.
+#2043:Remove all contacts in <contacts> from contact group <group>.
+#2044:Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
+#2045:Toggles your visibility to <contacts> when you're online.
 2046:Probablemente quieras usar la versión 8 del protocolo para conexiones par-a-par.\n
 2047:Creando directorio %s.\n
 2048:Guardando preferencias en %s.\n
 2049:Recibiendo grupo "%s":\n
-2050.Se importaron %d contactos.\n
 2051:Error en socket: %s (%d)\n
-2053.TCP %s seq %x tipo %x estado %x flags %x: '%s'\n
 2054:El mensaje del modo "libre para hablar" es:
 2055:El usuario esta "libre para hablar" y quiere hablar de cualquier cosa.
-2056:peer auto  <nick> - Obtiene la respuesta automatica del contacto.\n
-2057:peer away  <nick> - Obtiene la respuesta automatica del estado 'lejos' del contacto.\n
-2058:peer na    <nick> - Obtiene la respuesta automatica del estado 'no disponible' del contacto.\n
-2059:peer dnd   <nick> - Obtiene la respuesta automatica del estado 'no molestar' del contacto.\n
-2060:peer ffc   <nick> - Obtiene la respuesta automatica del estado 'libre para hablar' del contacto.\n
+#-#2056:peer auto  <nick> - Obtiene la respuesta automatica del contacto.\n
+#+#2056:peer auto  <nick> - Get the auto-response from the contact.\n
+#-#2057:peer away  <nick> - Obtiene la respuesta automatica del estado 'lejos' del contacto.\n
+#+#2057:peer away  <nick> - Get the auto-response for away from the contact.\n
+#-#2058:peer na    <nick> - Obtiene la respuesta automatica del estado 'no disponible' del contacto.\n
+#+#2058:peer na    <nick> - Get the auto-response for not available from the contact.\n
+#-#2059:peer dnd   <nick> - Obtiene la respuesta automatica del estado 'no molestar' del contacto.\n
+#+#2059:peer dnd   <nick> - Get the auto-response for do not disturb from the contact.\n
+#-#2060:peer ffc   <nick> - Obtiene la respuesta automatica del estado 'libre para hablar' del contacto.\n
+#+#2060:peer ffc   <nick> - Get the auto-response for free for chat from the contact.\n
+#2056:getauto [auto] <nick> - Get the auto-response from the contact.\n
+#2057:getauto away   <nick> - Get the auto-response for away from the contact.\n
+#2058:getauto na     <nick> - Get the auto-response for not available from the contact.\n
+#2059:getauto dnd    <nick> - Get the auto-response for do not disturb from the contact.\n
+#2060:getauto ffc    <nick> - Get the auto-response for free for chat from the contact.\n
 2063:Necesitas guardar tu clave en tu archivo ~/.micq/micqrc.\n
-2064.Rechazando pedido de chat (%s/%s/%s) de %s.\n
 2065:Comando TCP_MSG_GREET_ desconocido: %04x.\n
 2066:Comando TCP_MSG_ desconocido: %04x.\n
 2067:entrada y salida de archivos
 2068:Abriendo transferencia de archivo a %s:%ld... \n
-2069.La transferencia de archivo '%s' fue rechazada por el par (%x,%x): %s.\n
 2070:Transfiriendo archivo '%s' al port %ld.\n
 2071:No se pudo efectuar stat sobre el archivo %s: %s (%d)\n
 2072:Cerrando la transferencia de archivos numero %ld (%s) debido a que se cerro la conexión.\n
@@ -950,13 +948,16 @@
 2122:Nota: necesitas grabar mediante el comando 'save' para guardar la nueva clave al disco.\n
 2123:%sError de sintaxis%s: muy pocos argumentos: '%s'\n
 2124:%sError de sintaxis%s: '%s' no es un entero\n
-2126:El usuario esta desconectado, el mensaje (%s#%08lx:%08lx%s) fue puesto en la cola de espera.\n
-2127:       URL: %s%s%s%s\n
+#-#2126:El usuario esta desconectado, el mensaje (%s#%08lx:%08lx%s) fue puesto en la cola de espera.\n
+#+#2126:User is offline, message (%s#%08lx:%08lx%s) queued.\n
+#-#2127:       URL: %s%s%s%s\n
+#+#2127:       URL: %s%s%s%s\n
+#2126:is offline, message queued on server.\n
+#2127:       URL: %s %s%s%s\n
 2128: Descripción: %s%s%s\n
 2129: URL:         %s%s%s\n
 2130:Escribiendo mensaje para %sall%s:\n
 2131:Escribiendo mensaje para %s%s%s:\n
-2132.Escribiendo mensaje para %s%d%s:\n
 2133:El color es %s%s%s.\n
 2134:Los mensajes graciosos estan %s%s%s.\n
 2135:La salida quiet esta %s%s%s.\n
@@ -967,15 +968,12 @@
 2140:El cambio de grupo de usuarios al azar fue %s%s%s.\n
 2141:Busqueda %sfallida%s.\n
 2142:Conexión directa con %s no es posible.\n
-2143.Autorización rechazada: %s%s%s\n
-2144.Pedido de autorización: %s%s%s\n
 2145:auth add  <nick>       - agrega pidiendo autorizacion.\n
 2146:'%s' ya existe como un alias para '%s' (%ld).\n
 2147:'%s' (%ld) ya esta siendo usado como un nick.\n
 2148:Se agrego '%s' como un alias para '%s' (%ld).\n
 2149:Se elimino el alias '%s' para '%s' (%ld).\n
 2150:Se elimino el contacto '%s' (%ld).\n
-2151.%d no esta mas en nuestra lista de contactos.\n
 2156:conn close <nr>    Cierra la conexión <nr>.\n
 2157:Moldova
 2158:No se menciono un archivo.\n
@@ -993,27 +991,23 @@
 2170:Enviando con velocidad %lx a %s.\n
 2171:Avanzado
 2172:Comandos para caracteristicas avanzadas.
-2173:Niega a <uin> o <nick> el permiso de agregarte a su lista.
-2174:Pide autorización de <uin> o <nick>.
-2175:Notifica a <uin> o <nick> que los agregaste a su lista.
 2176:Muestra detalladamente el estado actual de todas las personas de tu lista de contactos.
 2177:Muestra detalladamente el estado actual de todas las personas conectadas de tu lista de contactos.
-2178:Pide el mensaje de respuesta automatico para <uin> o <nick>.
-2179:Envia a <uin> o <nick> un archivo.
+#-#2179:Envia a <uin> o <nick> un archivo.
+#+#2179:Send <uin> or <nick> a single file.
+#2179:Send all <contacts> a single file.
 2180:Envia a <uin> o <nick> varios archivos.
 2181:Cierra o remueve la conexión numero <nr>.
 2182:Selecciona la conexión con el servidor numero <nr> como la actual.
-2183:Revisa si <uin> o <nick> esta realmente conectado o desconectado.
+#-#2183:Revisa si <uin> o <nick> esta realmente conectado o desconectado.
+#+#2183:Check whether <uin> or <nick> is offline or invisible.
+#2183:Check all <contacts> whether it is offline or invisible.
 2184:%s%-10s%s - %s\n
 2185:Cerrando conexión %ld.\n
 2186:Aceptando archivo '%s' (%ld bytes).\n
-2187.Se rechazó el pedido de transferencia de archivos '%s' (%d bytes) (desconocido: %x, %x)\n
 2188:Estas enviando datos demasiado rapido, por favor para de escribir o el servidor te desconectará\n
-2189.Paquete de mensaje instantáneo deforme rechazado por el servidor.\n
-2190.El cliente de la lista de contactos no soporta mensajes tipo 2.\n
 2191:Error en mensaje instantáneo: %d.\n
 2192:Capacidades: 
-2193.No existe el directorio %s.\n
 2194:No se como abrir este tipo de conexión.\n
 2195:Numero obsoleto:
 2196:Texto obsoleto:
@@ -1078,3 +1072,59 @@
 2257:Encoding:
 2258:No se encontro ningun pedido de recepción de archivos pendiente para %s con (secuencia %ld).\n
 2259:pide la tranferencia de archivos '%s' de %ld bytes (secuencia %ld).\n
+#2260:Please try the getauto command instead.\n
+#2261:Hermit is %s%s%s.\n
+#2262:Interpreting a delete character as backspace is %s%s%s.\n
+#2263:Logging is %s%s%s.\n
+#2264:Logging of status changes is %s%s%s.\n
+#2265:Automatic replies are %s%s%s.\n
+#2266:Having the last nick in the prompt is %s%s%s.\n
+#2267:Automatic saves are %s%s%s.\n
+#2268:Automatic fingering of new UINs is %s%s%s.\n
+#2269:break
+#2270:simple
+#2271:indent
+#2272:smart
+#2273:cycle
+#2274:cycleall
+#2275:Tab style is %s%s%s.\n
+#2276:complete
+#2277:    hermit:     ignore all non-contacts.\n
+#2278:    delbs:      interpret delete characters as backspace.\n
+#2279:    log:        do logging.\n
+#2280:    logonoff:   also log status changes.\n
+#2281:    auto:       send auto-replies.\n
+#2282:    uinprompt:  have the last nick in the prompt.\n
+#2283:    autosave:   automatically save the micqrc.\n
+#2284:    autofinger: automatically finger new UINs.\n
+#2285:    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n
+#2286:    tabs:       style for tab-handling: simple, cycle, cycleall.\n
+#2287:    silent:     suppress some output: off, on, complete.\n
+#2288:Indentation style is %s%s%s.\n
+#2289:»»»
+#2290:«««
+#2291:>>»
+#2292:«<<
+#2293:--=
+#2294:===
+#2295:>>>
+#2296:<<<
+#2297:Alias to what?\n
+#2298:Remove which alias?\n
+#2299:Alias doesn't exist.\n
+#2300:Set an alias or list current aliases.
+#2301:Delete an alias.
+#2302:Too many levels of alias expansion; probably an infinite loop.\n
+#2303:Invalid character 0x%x in alias name.\n
+#2304:Get automatic reply from all <contacts> for current status, away, not available, do not disturb, occupied, or free for chat.
+#2305:Handle meta data of contacts.
+#2306:Request server side contact list and show all or new contacts or import.
+#2307:Displays the current status of online people on your contact list, sorted by contact group.
+#2308:Displays the current status of everyone on your contact list, sorted by contact group.
+#2309:Displays verbose the current status of online people on your contact list, sorted by contact group.
+#2310:Displays verbose the current status of everyone on your contact list, sorted by contact group.
+#2311:Adds <uin> as <new nick>, or add alias <new nick> for <uin> or <nick>.
+#2312:Remove all aliases in <contacts>, removes contact if 'all' is given.
+#2313:Grant, deny, request or acknowledge authorization from/to <contacts> to you/them to their/your contact list.
+#2314:These are advanced commands. Be sure to have read the manual pages for complete information.\n
+#2315:Cannot watch status of %s - too many watchers.\n

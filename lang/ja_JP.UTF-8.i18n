@@ -1,5 +1,5 @@
 # $Id$ <Japanese in Japanese> (Japanese)
-#  EN: __.i18n,v 1.56 2002/12/04 01:54:09
+#  EN: __.i18n,v 1.63 2003/01/04 15:44:18
 1001:ja
 1002:ja_JP
 1003:0-4-9-4
@@ -28,50 +28,38 @@
 1028:NO
 1029:Yes か No を入力してください
 1030:がログアウトしました
-1031:がログインしました
 1032:デバック: double packet #%04lx of type %04x (%s).\n
 1033:受信した v8 サーバー パケット:
 1034:リトライの最大値になりました。終了します。
-1035:ステータスを %s に変更しました。
 1036:%s というコマンドはありません, /help を実行しヘルプで確認してください
 1037:バッファが一杯になる前にメッセージを送信しました
 1038:メッセージの送信をキャンセルしました
 1039:サーバーから接続を拒否されました
 1040:mICQ>
 1041:メッセージ>
-1042:メッセージ 全員>
 1043:すべてのユーザーを見つけました
 1044:たくさんのユーザを見つけました
 1045:検索を終了します
 1046:長さ
 1047:付加データ
 1048:エラーコード: %ld\n
-1049:UIN: %d
 1050:ログインに成功しました
 1053:%s に接続します。応答を待っています\n
 1055:ソケットの作成に失敗しました
 1056:接続に使用するソケットを作成しました
-1060:詳細表示のレベルは %d です。\n
+1060:詳細表示のレベルは %ld です。\n
 1061:「%s」というニックネームは登録されていません\n
 1062:ユーザーは無視した:
 1063:パスワードを入力してください:
 1064:状態を自動的に %s に変更しました。\n
-1065:Intel byte orderを使用します
-1066:Motorola byte orderを使用します
-1071:現在 の 状態 は %s です。
 1072:オフライン ユーザー:
 1073:オンライン ユーザー:
-1074:mICQ (MattのICQクローン)
-1075:バージョン
-1076:コンパイル日時
 1077:Matthew D. Smith.に感謝します
 1078:利用できる翻訳がありません
 1079:翻訳  (%s, %s) %s から, 最終変更日:%s (変更者:%s), mICQ ver %d.%d.%d%s 用.\n
 1080:指定された「%s」という翻訳は読み込めませんでした。\n
 1081:日本語の翻訳を読み込みました (%ld 項目分)\n
 1082:再接続を行います...[%d回目(最大 %d回まで)]\n
-1083:サウンド コマンド
-1084:サウンド
 1085:オン
 1086:オフ
 1089:翻訳の使用をやめました
@@ -170,15 +158,10 @@
 1186:大学生
 1187:インターネット開発
 1188:rcファイル内に'%s'という不明なコマンドがありました。無視します。
-1189.UIN = %ld
-1190.ポート番号 = %ld
-1191.パスウード = %s
-1192.サーバ = %s
-1193.ステータス = %ld
-1196.メッセージコマンド = %s
 1198:他の仕事
-1199.未知の国
-1200:未入力
+#-#1200:未入力
+#+#1200:Not entered
+#1200:not entered
 1201:アフガニスタン
 1202:アルバニア
 1203:アルジリア
@@ -376,33 +359,46 @@
 1400:指定したユーザに対しての接続やステータス、クライアントの情報を表示します。表示したいユーザの<uin>か<nick>をオプションに与えてください。またオプションが無い場合は自身の情報を表示します
 1401:次の情報を更新します。年齢/性別/web page/誕生日/話せる言語
 1402:あなたのユーザーインフォメーションを更新します。
-1403:メッセージが届いたユーザ一覧を表示する。一覧には最新の到着日時とメッセージが表示されます。<uin>か<nick>を指定するとそのユーザについてのみ表示されます。
-1404:指定したユーザに対して設定した無視設定を切り替えます。
+#-#1403:メッセージが届いたユーザ一覧を表示する。一覧には最新の到着日時とメッセージが表示されます。<uin>か<nick>を指定するとそのユーザについてのみ表示されます。
+#+#1403:Displays the last message received from <uin> or <nick> or from everyone who has sent you at least one message.
+#-#1404:指定したユーザに対して設定した無視設定を切り替えます。
+#+#1404:Toggles ignoring/unignoring <uin> or <nick>.
+#1403:Displays the last message received from <contacts> or from everyone.
+#1404:Toggles ignoring/unignoring the <contacts>.
 1405:無視リストに登録しているユーザを表示します
-1406:指定したユーザに対して設定した不可視設定を切り替えます。
+#-#1406:指定したユーザに対して設定した不可視設定を切り替えます。
+#+#1406:Toggles your visibility to <uin> or <nick> when you're invisible.
+#1406:Toggles your visibility to <contacts> when you're invisible.
 1407:オンラインになっているユーザを表示します。
 1408:パスワードを指定したものに変更します。
-1409:指定したユーザへ メッセージを送ります。
-1410:指定したユーザへ URL 及びメッセージを送る。
-1411:コンタクトリストに登録しているユーザ全員にメッセージを送ります。
+#-#1409:指定したユーザへ メッセージを送ります。
+#+#1409:Sends a message to <uin> or <nick>.
+#-#1410:指定したユーザへ URL 及びメッセージを送る。
+#+#1410:Sends a url and message to <uin> or <nick>.
+#1409:Sends a message to <contacts>.
+#1410:Sends a url and message to <contacts>.
 1412:最後にメッセージを送った人に対してメッセージを送ります。
-1413:指定したユーザからの認証要求を許可する。
 1414:最後にメッセージを送った人に返信する。
 1415:<hr>で指定したキーワードでユーザをランダム検索します。
 1416:コンタクトリストに登録しているユーザのステータスを表示します。
-1417:コマンドの別名を定義します。
 1418:詳細表示のレベルを指定します。オプション無しの時は現在のレベルを表示します。
 1419:表示内容を消去します。
-1420:新しいメッセージをまたは受け取った時にビープを鳴らす設定を行います。オプション無しの時は現在の設定を表示します。
+#-#1420:新しいメッセージをまたは受け取った時にビープを鳴らす設定を行います。オプション無しの時は現在の設定を表示します。
+#+#1420:Switches beeping when receiving new messages on or off, sets a command for this event or displays current state of this option.
+#1420:Switches beeping when receiving new messages on or off, or using the event script.
 1422:ログオフを行い、プログラムを終了します。
 1424:自動応答を行うかどうか設定します。オプション無しの時は現在の設定を表示します。
 1425:自動応答で使用するメッセージを設定します。
 1426:指定したパスワードで新しいUINを取得します。
 1427:ステータスを指定した番号のものに変更します。オプション無し時は、利用できるステータスを表示します。
-1428:<uin>で指定したユーザを<new nick>として登録します。またはすでに登録されている<nick>に対して別の<new nick>を割り当てることもできます。
+#-#1428:<uin>で指定したユーザを<new nick>として登録します。またはすでに登録されている<nick>に対して別の<new nick>を割り当てることもできます。
+#+#1428:Adds <uin> as <new nick>, or add alias <new nick> for <uin> or <nick>.
+#1428:Adds all contacts in <contacts> to contact group <group>.
 1429:ICQユーザの検索
 1430:指定した<uin>または<nick>に関してのユーザ情報を表示します。
-1431:ステータスを"オンライン"に変更します
+#-#1431:ステータスを"オンライン"に変更します
+#+#1431:Change status to Online.
+#1431:Set status to "online".
 1432:ステータスを"離席中"に変更します
 1433:ステータスを"応答不可"に変更します
 1434:ステータスを"取り込み中"に変更します
@@ -467,13 +463,9 @@
 1494:唯一のサーバー
 1495:ランダムユーザーは見つかりませんでした
 1497:失敗しました
-1498:%s のためのインフォメーション
 1499:その他
 1500:Nickname:
 1501:名前:
-1502:メールアドレス:
-1503:その他のメールアドレス:
-1504:古いメールアドレス:
 1505:場所:
 1506:電話番号:
 1507:ファクス番号:
@@ -509,8 +501,6 @@
 1539:生まれた月を入れてください:
 1540:生まれた日を入れてください:
 1541:About:
-1542:他のメールアドレスを入力してください:
-1543:古いメールアドレスを入力してください:
 1544:市町村を入力してください:
 1545:都道府県を入力してください:
 1546:電話番号を入力してください:
@@ -525,18 +515,14 @@
 1555:姓を入力してください:
 1556:新しいメールアドレスを入力してください:
 1557:他のICQユーザーがあなたをコンタクトリスに登録する際、あなたの承認を必要とするようにしますか? (yes or no)
-1562:%s のためのインフォメーション
 1564:名:
 1565:姓:
 1566:メールアドレス:
-1567:承認を必要としません。
-1568:承認を必要とします。
 1570:市町村:
 1574:都道府県:
 1575:年齢:
 1578:電話の国コード(日本は81)を入力してください:
 1579:会社名を入力してください:
-1584:警告!スクリプトコマンド「%s」は戻り値 %d で失敗しました
 1587:会社の部署を入力してください:
 1592:%s からメール経由でメッセージが届きました:\n
 1593:%s からWeb経由でメッセージが届きました:\n
@@ -553,15 +539,8 @@
 1605:現在のステータスをWebで確認できるようにしますか? (yes or no)
 1606:不正なセッションID %08lx を受信しました(正しくは: %08lx) コマンド要求 %04x を無視します。\n
 1607:使用法: micq [-v|-V] [-f|-F *<rc*-file*>*] [-l|-L *<logfile>*] [-?|-h]\n
-1608:        -v   デバッグ用の詳細表示モードにします]\n
-1609:        -f   設定ファイルを指定します (デフォルト: ~/.micq/micqrc)\n
-1610:        -l   ログファイルを保存するディレクトリを指定します(デフォルト: ~/.micq/history)\n
-1611:        -?  この画面を表示する\n\n
 1612:このプログラムは Mirabilis社 の承諾や助けを得ず作成されました。\n
 1613:また、このプログラム作成に当たりMirabilis社のプログラム本体に対して解析を行っておりません。\n
-1614:設定ファイル "%s" を使用します
-1615:"%s" にログを記録します
-1617:<*すべて*>
 1618:UIN:
 1619:警告:
 1620:コンタクトリストに登録できる最大数になりました。
@@ -631,8 +610,12 @@
 1715:mICQ
 1716:無し
 1717:"!"をつけたコマンドはshellで実行されます。(例:"!ls"、"!dir"、"!mkdir temp")
-1719:mICQの動作時間を表示します。
-1720:uinは数字で指定してください。もしくは、ユーザのnicknameを指定します。
+#-#1719:mICQの動作時間を表示します。
+#+#1719:Shows how long mICQ has been running.
+#-#1720:uinは数字で指定してください。もしくは、ユーザのnicknameを指定します。
+#+#1720:uin can be either a number or the nickname of the user.
+#1719:Shows how long mICQ has been running and some statistics.
+#1720:<contacts> is a comma seperated list of UINs and nick names of users.
 1721:messageを入力しないでコマンドを実行すると、複数行の入力モードになります。\n「.」を入力するとメッセージを送信します。\n「#」を入力すると送信を取りやめます。
 1724:自動応答機能: %s\n
 1727: 「邪魔しないで」：
@@ -649,8 +632,6 @@
 1745:未知
 1746:   nr   タイプ                  送られました / 受信パケット / 個のパケット\n
 1747:合計
-1749.「ユーザー数」 %d は %s へ名前を変更した。
-1751.「あだ名」 %s は取除いた。
 1754:注: あなたは 「save」 がディスクへ新しい接触のリストを書くことを必要とする。\n
 1755:%s は接触のリストへあなたを加えた。\n
 1756:\n関係を作成する...\n
@@ -663,11 +644,14 @@
 1763:命令「%s」は「%s」へ名前を変更された。
 1764:命令「%s」は不変です。
 1765:%s は「ユーザー数」 %ld あります。
-1766:Changing status to away resp. not available after idling %s%ld%s seconds.\n
+#-#1766:Changing status to away resp. not available after idling %s%ld%s seconds.\n
+#+#1766:Changing status to away resp. not available after idling %s%ld%s seconds.\n
+#1766:Changing status to away/not available after idling %s%ld%s seconds.\n
 1767:自動車をトグルで留める、循環、に、遠方に/利用可能でない\n
 1768:指令名「%s」 既に使用されている。\n
-1769.あなたの現在のオンライン状態を表示する。
-1770:「ユーザー数」か「あだ名」へあなたの最後のメッセージを送り直しなさい。
+#-#1770:「ユーザー数」か「あだ名」へあなたの最後のメッセージを送り直しなさい。
+#+#1770:Resend your last message to <uin> or <nick>.
+#1770:Resend your last message to <contacts>.
 1771:あなたはだれでもへメッセージをまだ送らなかった!\n
 1774:入って来る パッケト:
 1775:出て行く パッケト:
@@ -693,22 +677,23 @@
 1799:高校生
 1800:*<lang>*または*<nr>*。にディスプレイ言語を変更します。
 1801:スクリーンの広いフォーマットのなの接触のリストの人々のリストを表示する。
-1802.SoundOnline cmd
-1803.SoundOffline cmd
-1804.SoundOnline
-1805.SoundOffline
 1807:END からの取り消された入って来るメッセージ(seq %04x)%s\n
 1808:大学
 1810:大学
 1812:前の仕事場
 1813:前の構成
 1814:%s%s%s への送られた自動レスポンスメッセージ。\n
-1815:奇妙です:出力のために奇妙なメッセージを使用してください。\n
-1816:コマンドをセットする未知のオプション%s。\n
+#-#1815:奇妙です:出力のために奇妙なメッセージを使用してください。\n
+#+#1815:    funny: use funny messages for output.\n
+#1815:    funny:      use funny messages for output.\n
 1817:警告: ReceiveScript 特徴は可能にされませんでした。\n
 1818:警告:大いに非難されたシンタックスは、micqrcファイルで見つかりました。更新してください、あるいは、「save」変更用の micqrc ファイルおよびチェック\n。
-1820:%s <option> [on|off] - 単純なオプションをコントロールしてください。\n
-1822:    色:有色のテキスト出力を使用してください。\n
+#-#1820:%s <option> [on|off] - 単純なオプションをコントロールしてください。\n
+#+#1820:%s <option> [on|off] - control simple options.\n
+#-#1822:    色:有色のテキスト出力を使用してください。\n
+#+#1822:    color: use colored text output.\n
+#1820:%s <option> [on|off|<value>] - control simple options.\n
+#1822:    color:      use colored text output.\n
 1823:入って来る部分的なパケット:
 1825:%04x (%s) パケットを廃棄しました。
 1826:メッセジ %04x (%s) シーケンス %04lx 試み#%ld(長さ %d)を再び送ること。\n
@@ -774,7 +759,6 @@
 1907:警告: サーバーは、%ld 場合、私たちの「ユーザー数」が %ld であると考えます。\n
 1908:受け取られた「ユーザはオンラインです」非接触用パケット。\n
 1909:受け取られた「ユーザはオフライン」非接触用パケット。\n
-1910.FLAP seq %08x 長さ %04x チャンネル %d
 1911:接続
 1912:閉じられました。
 1914:接続構造を割り付けるこができません。\n
@@ -790,7 +774,6 @@
 1926:見えない
 1927:雑談には自由な
 1929:ユーザー は 「妨げてはいけない」 [自動メッセージ]
-1930.これ (%x) をまだ送ることができません。
 1931:現在のセッションは閉まっています。別のものを試みるか、あるいはこれを再開してください。\n
 1934:接続されました。
 1935:    %d ソケット %d IP %s (%d) をタイプする、の上で [%s,%s]識別 %lx/%x/%x\n
@@ -799,7 +782,6 @@
 1938:性別を入力してください:
 1939:都市に入ります:
 1940:未知のメータ川ユーザ結果 %lx。\n
-1941.電子メールを公表します:
 1942:追加の電子メールアドレス:
 1943:(必要とされる認可はありません)
 1944:(認可を要求するに違いありません)
@@ -866,7 +848,6 @@
 2014:与えられた数はありません。\n
 2015:与えられたメッセージはありません。\n
 2017:ユーザはオンラインですが、恐らく目に見えません。\n
-2018:    静かです:ステータス変更について口外しません。\n
 2020:%s に見えること。\n
 2021:%s に目に見えないこと。\n
 2022:ユーザはオフラインです。\n
@@ -878,59 +859,70 @@
 2032:v8 サーバー の予定 %d 秒で再度接続します。\n
 2033:今日生まれました。
 2034:%s:%ld で TCP 接続を開始すること
-2035:アップタイムおよびある統計を示してください。
 2036:ディスクへの現在の優先権を保存してください。
 2037:ピア・ツー・ピア 接続を開始するか閉じるか、不能にする「ユーザー数」または「あだ名」のために ピア・ツー・ピア 接続を使用すること。
 2038:接続数<nr>、あるいは第1のサーバー接続を開きます。
-2039:携帯電話へメッセージを送ります。
-2040:入って来る接触のための音のスイッチを入れるかスイッチを切ります。この出来事のためにコマンドをセットするか、あるいはこのオプションの現状を表示します。
-2041:スイッチは接触より上に優れるか離れて優れるために鳴ります。この出来事のためにコマンドをセットするか、あるいはこのオプションの現状を表示します。
+#-#2039:携帯電話へメッセージを送ります。
+#+#2039:Sends a message to a cell phone.
+#2039:Sends a message to a (<nick>'s) <cell> phone.
 2042:スクリーン広いフォーマットでのあなたの接触リストにオンライン人々のリストを表示します。
-2043:別名「別名」移動する、あるいは「ユーザー数」、あるいは接触を削除します。
-2044:オプションをセットするか取り除いてください。
-2045:オンラインです場合、あなたの視界 「ユーザー数」あるいは「あだ名」をトグルで留めます。
+#-#2043:別名「別名」移動する、あるいは「ユーザー数」、あるいは接触を削除します。
+#+#2043:Remove alias <alias> or <uin>, or removes contact.
+#-#2044:オプションをセットするか取り除いてください。
+#+#2044:Set or clear an option.
+#-#2045:オンラインです場合、あなたの視界 「ユーザー数」あるいは「あだ名」をトグルで留めます。
+#+#2045:Toggles your visibility to <uin> or <nick> when you're online.
+#2043:Remove all contacts in <contacts> from contact group <group>.
+#2044:Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
+#2045:Toggles your visibility to <contacts> when you're online.
 2046:ICQ の ピア・ツー・ピア プロトコル用にバージョン 8 プロトコルを代わりに使用することが好きかもしれません。\n
 2047:ディレクトリー %s の作成。\n
 2048:%s への優先権の保存。\n
 2049:グループ「%s」を受け取ること:\n
-2050.輸入された %ld 接触。
 2051:ソケット上のエラー: %s (%d)\n
 2051:Error on socket: %s (%d)\n
-2052.%sからファイル「%s」(%d バイト) を受理すること。
-2053.TCP %s シーケンス %x タイプ %x ステータス %x は %x にフラグを立てます:「%s」
 2054:その「雑談には自由な」メッセージは次のとおりです:
 2055:ユーザは「雑談には自由な」で、に対しても歓談したい。
-2056:peer auto  「あだ名」 - 接触からの自動応答を得てください。\n
-2057:peer away  「あだ名」 - 接触から「欠席する」のための自動レスポンスを得てください。\n
-2058:peer na    「あだ名」 - 接触から「利用できない」のための自動レスポンスを得てください。\n
-2059:peer dnd   「あだ名」 - 接触から「妨げてはいけない」のための自動レスポンスを得てください。\n
-2060:peer ffc   「あだ名」 - 接触から「雑談には自由な」のための自動レスポンスを得てください。\n
-2061.%s (未知: %x、%x)からの拒絶されたファイル・リクエスト「%s」(%d バイト)
+#-#2056:peer auto  「あだ名」 - 接触からの自動応答を得てください。\n
+#+#2056:peer auto  <nick> - Get the auto-response from the contact.\n
+#-#2057:peer away  「あだ名」 - 接触から「欠席する」のための自動レスポンスを得てください。\n
+#+#2057:peer away  <nick> - Get the auto-response for away from the contact.\n
+#-#2058:peer na    「あだ名」 - 接触から「利用できない」のための自動レスポンスを得てください。\n
+#+#2058:peer na    <nick> - Get the auto-response for not available from the contact.\n
+#-#2059:peer dnd   「あだ名」 - 接触から「妨げてはいけない」のための自動レスポンスを得てください。\n
+#+#2059:peer dnd   <nick> - Get the auto-response for do not disturb from the contact.\n
+#-#2060:peer ffc   「あだ名」 - 接触から「雑談には自由な」のための自動レスポンスを得てください。\n
+#+#2060:peer ffc   <nick> - Get the auto-response for free for chat from the contact.\n
+#2056:getauto [auto] <nick> - Get the auto-response from the contact.\n
+#2057:getauto away   <nick> - Get the auto-response for away from the contact.\n
+#2058:getauto na     <nick> - Get the auto-response for not available from the contact.\n
+#2059:getauto dnd    <nick> - Get the auto-response for do not disturb from the contact.\n
+#2060:getauto ffc    <nick> - Get the auto-response for free for chat from the contact.\n
 2063:~/.micq/micqrc ファイルの中でパスワードを指定する必要があります。\n
-2064.%s から雑談リクエスト(%s/%s/%s)を拒絶すること。
 2065:未知の TCP_MSG_GREET_コマンド %04x。\n
 2066:未知のTCP_MSG_ コマンド %04x。\n
 2067:フィル IO
 2068:%s:%ld への開始ファイル転送の関係...\n
-2069.ファイル転送 「%s」 は同等者によって (%x,%x): %s を拒絶した
 #2070:File transfer '%s' to port %ld.\n
 2071:状態ファイル %s: %s (%d) はできなかった\n
 2072:閉鎖した関係のために取り消されるファイル転送 #%ld (%s)。\n
 2073:記憶使用法: %ld のパッケトの処理。\n
 2078:出て行く TCP 包み (%d - %s): %s
 2079:入って来る TCP 包み (%d - %s): %s
-2080:サーバーSMS 配達確認:\n%s\n
+#-#2080:サーバーSMS 配達確認:\n%s\n
+#+#2080:Server SMS delivery responce:\n%s\n
+#2080:Server SMS delivery response:\n%s\n
 2081:       %p  親   %p   連合   %p\n
 2082:localhost:%ld の開始ファイル傾聴者の関係
 2083:ファイル%s: %s (%d) を開けるできない\n
 2084:�フセットの %ld: %s (%ld) をファイルするように努めている間間違い\n
-2085.タイムアウトのために取り消されたファイル転送: %d %d。
 2086:ファイル %s: %s (%d) を読んでいる間間違い。\n
 2087:終えられた発送ファイル %s。\n
 2088:%d すべてを送ることは終えられてファイルする。\n
 2089:ファイル傾聴者
 2090:ファイル同等者へ同等者
 #+#2091:移動のための %s として列を作ること。\n
+#2091:Queueing %s as %s for transfer.\n
 2092:TCP メッセージ %s は会議を放棄したり、失った。\n
 2093:%02d %-12s 版 %d for %s (%lx), の %s:%ld %s\n
 2094:conn login         最初サーバー関係を開けなさい。\n
@@ -959,10 +951,67 @@
 2117:%ld %s として加えられた。\n
 2118:ない十分な記憶。\n
 2119:auth [grant] 「あだ名」    - grant authorization.\n
-
-
-
-
+#
+#
+#
+#
+#2120:auth deny <nick> <msg> - refuse authorization.\n
+#2121:auth req  <nick> <msg> - request authorization.\n
+#2122:Note: You need to 'save' to write new password to disc.\n
+#2123:%sSyntax error%s: Too few arguments: '%s'\n
+#2124:%sSyntax error%s: Not an integer: '%s'\n
+#2126:is offline, message queued on server.\n
+#2127:       URL: %s %s%s%s\n
+#2128: Description: %s%s%s\n
+#2129:         URL: %s%s%s\n
+#2130:Composing message to %sall%s:\n
+#2131:Composing message to %s%s%s:\n
+#2133:Color is %s%s%s.\n
+#2134:Funny messages are %s%s%s.\n
+#2135:Quiet output is %s%s%s.\n
+#2136:Password change was %s%s%s.\n
+#2137:About info change was %s%s%s.\n
+#2138:Info change was %s%s%s.\n
+#2139:Other info change was %s%s%s.\n
+#2140:Random chat group change was %s%s%s.\n
+#2141:Search %sfailed%s.\n
+#2142:Direct connection with %s not possible.\n
+#2145:auth add  <nick>       - authorized add.\n
+#2146:'%s' is already an alias for '%s' (%ld).\n
+#2147:'%s' (%ld) is already used as a nick.\n
+#2148:Added '%s' as an alias for '%s' (%ld).\n
+#2149:Removed alias '%s' for '%s' (%ld).\n
+#2150:Removed contact '%s' (%ld).\n
+#2156:conn close <nr>    Close connection <nr>.\n
+#2157:Moldova
+#2158:No file given.\n
+#2159:Some files.
+#2160:peer file  <nick> <file> [<description>]\n
+#2161:Receiving %ld files with together %ld bytes at speed %lx from %s.\n
+#2162:Receiving file %s (%s) with %ld bytes as %s.\n
+#2163:Sending file %ld at offset %ld.\n
+#2164:Error writing to file.\n
+#2165:The peer sent more bytes (%ld) than file length (%ld).\n
+#2166:Finished receiving file.\n
+#2167:Error - unknown packet.\n
+#2168:File transfer #%ld (%s) dropped after %ld attempts because of timeout.\n
+#2169:File transfer aborted by peer (%d).\n
+#2170:Sending with speed %lx to %s.\n
+#2171:Advanced
+#2172:Commands for advanced features.
+#2176:Displays verbose the current status of everyone on your contact list.
+#2177:Displays verbose the current status of online people on your contact list.
+#2179:Send all <contacts> a single file.
+#2180:Send <uin> or <nick> several files.
+#2181:Closes or removes connection number <nr>.
+#2182:Select server connection number <nr> as current server connection.
+#2183:Check all <contacts> whether it is offline or invisible.
+#2184:%s%-10s%s - %s\n
+#2185:Closing connection %ld.\n
+#2186:Accepting file '%s' (%ld bytes).\n
+#2188:You're sending data too fast - stop typing now, or the server will disconnect!\n
+#2191:Instant message error: %d.\n
+#2192:Capabilities: 
 #2194:Don't know how to open this connection type.\n
 #2195:Obsolete number:
 #2196:Obsolete text:
@@ -1025,3 +1074,61 @@
 #2255:A beep for oncoming contacts is always generated by running the %sevent%s script.\n
 #2256:A beep for offgoing contacts is always generated by running the %sevent%s script.\n
 #2257:Encoding:
+#2258:No pending incoming file transfer request for %s with (sequence %ld) found.\n
+#2259:requests file transfer '%s' of %ld bytes (sequence %ld).\n
+#2260:Please try the getauto command instead.\n
+#2261:Hermit is %s%s%s.\n
+#2262:Interpreting a delete character as backspace is %s%s%s.\n
+#2263:Logging is %s%s%s.\n
+#2264:Logging of status changes is %s%s%s.\n
+#2265:Automatic replies are %s%s%s.\n
+#2266:Having the last nick in the prompt is %s%s%s.\n
+#2267:Automatic saves are %s%s%s.\n
+#2268:Automatic fingering of new UINs is %s%s%s.\n
+#2269:break
+#2270:simple
+#2271:indent
+#2272:smart
+#2273:cycle
+#2274:cycleall
+#2275:Tab style is %s%s%s.\n
+#2276:complete
+#2277:    hermit:     ignore all non-contacts.\n
+#2278:    delbs:      interpret delete characters as backspace.\n
+#2279:    log:        do logging.\n
+#2280:    logonoff:   also log status changes.\n
+#2281:    auto:       send auto-replies.\n
+#2282:    uinprompt:  have the last nick in the prompt.\n
+#2283:    autosave:   automatically save the micqrc.\n
+#2284:    autofinger: automatically finger new UINs.\n
+#2285:    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n
+#2286:    tabs:       style for tab-handling: simple, cycle, cycleall.\n
+#2287:    silent:     suppress some output: off, on, complete.\n
+#2288:Indentation style is %s%s%s.\n
+#2289:���
+#2290:���
+#2291:>>�
+#2292:�<<
+#2293:--=
+#2294:===
+#2295:>>>
+#2296:<<<
+#2297:Alias to what?\n
+#2298:Remove which alias?\n
+#2299:Alias doesn't exist.\n
+#2300:Set an alias or list current aliases.
+#2301:Delete an alias.
+#2302:Too many levels of alias expansion; probably an infinite loop.\n
+#2303:Invalid character 0x%x in alias name.\n
+#2304:Get automatic reply from all <contacts> for current status, away, not available, do not disturb, occupied, or free for chat.
+#2305:Handle meta data of contacts.
+#2306:Request server side contact list and show all or new contacts or import.
+#2307:Displays the current status of online people on your contact list, sorted by contact group.
+#2308:Displays the current status of everyone on your contact list, sorted by contact group.
+#2309:Displays verbose the current status of online people on your contact list, sorted by contact group.
+#2310:Displays verbose the current status of everyone on your contact list, sorted by contact group.
+#2311:Adds <uin> as <new nick>, or add alias <new nick> for <uin> or <nick>.
+#2312:Remove all aliases in <contacts>, removes contact if 'all' is given.
+#2313:Grant, deny, request or acknowledge authorization from/to <contacts> to you/them to their/your contact list.
+#2314:These are advanced commands. Be sure to have read the manual pages for complete information.\n
+#2315:Cannot watch status of %s - too many watchers.\n

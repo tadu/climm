@@ -1,11 +1,11 @@
 # $Id$ English (English)
-#  EN: __.i18n,v 1.62 2003/01/03 18:14:40
+#  EN: __.i18n,v 1.63 2003/01/04 15:44:18
 1001:en
 1002:en_US
-1003:0-4-9-3
+1003:0-4-10
 1004:Rüdiger Kuhlmann
 1005:Rüdiger Kuhlmann
-1006:2002-09-24
+1006:2003-01-05
 1007:iso-8859-1
 1010:User is away [Auto-Message]
 1011:User is not available [Auto-Message]
@@ -28,25 +28,21 @@
 1028:NO
 1029:Please enter YES or NO!
 1030:logged off.
-1031.logged on
 1032:debug: double packet #%04lx type %04x (%s)\n
 1033:Incoming v8 server packet:
 1034:Maximum number of tries reached. Giving up.
-1035.changed status to
 1036:Unknown command %s, type /help for help.
 1037:Message partially sent.\n
 1038:Message canceled.\n
 1039:The server claims we're not connected.\n
 1040:mICQ> 
 1041:msg> 
-1042.msg all> 
 1043:All users found.
 1044:Too many users found.
 1045:Search Done.
 1046:Length
 1047:Extra Data
 1048:Error code: %ld\n
-1049.UIN: %d\n
 1050:Login successful!
 1053:Connected to %s, waiting for response\n
 1055:Socket creation failed
@@ -56,22 +52,14 @@
 1062:Users ignored:
 1063:Enter password:
 1064:Automatically changed status to %s.\n
-1065.Using intel byte ordering.
-1066.Using motorola byte ordering.
-1071.Your status is
 1072:Users offline:
 1073:Users online:
-1074.mICQ (Matt's ICQ clone)
-1075.version
-1076.compiled on
 1077:in dedication to Matthew D. Smith.
 1078:No translation available.
 1079:Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n
 1080:Couldn't load "%s" internationalization.\n
 1081:Successfully loaded en translation (%ld entries).\n
 1082:Trying to reconnect... [try %d out of %d]\n
-1083.Sound cmd
-1084.Sound
 1085:on
 1086:off
 1089:Unloaded translation.
@@ -170,12 +158,6 @@
 1186:University Student
 1187:Web Building
 1188:Unrecognized command in rc file '%s', ignored.
-1189.UIN = %ld\n
-1190.port = %ld\n
-1191.passwd = %s\n
-1192.server = %s\n
-1193.status = %ld\n
-1196.Message_cmd = %s\n
 1198:Other Services
 1200:not entered
 1201:Afghanistan
@@ -383,13 +365,10 @@
 1408:Changes your password to <password>.
 1409:Sends a message to <contacts>.
 1410:Sends a url and message to <contacts>.
-1411.Sends a multiline message to everyone on your list.
 1412:Sends a message to the last person you sent a message to.
-1413.Authorize <uin> or <nick> to add you to their list.
 1414:Replies to the last person to send you a message.
 1415:Finds a random user in interest group <nr> or lists the groups.
 1416:Displays the current status of everyone on your contact list.
-1417.This command allows you to alter your command set on the fly.
 1418:Set the verbosity level, or display verbosity level.
 1419:Clears the screen.
 1420:Switches beeping when receiving new messages on or off, or using the event script.
@@ -466,13 +445,9 @@
 1494:Server Only
 1495:No Random User Found
 1497:failed
-1498.Info for
 1499:Other
 1500:Nickname:
 1501:Name:
-1502.Email:
-1503.Other Email:
-1504.Old Email:
 1505:Location:
 1506:Phone:
 1507:Fax:
@@ -508,8 +483,6 @@
 1539:Enter new month of birth:
 1540:Enter new day of birth:
 1541:About> 
-1542.Enter other email address:
-1543.Enter old email address:
 1544:Enter new city:
 1545:Enter new state:
 1546:Enter new phone number:
@@ -524,18 +497,14 @@
 1555:Enter your new last name:
 1556:Enter your new email address:
 1557:Do you want to require Mirabilis users to request your authorization? (YES/NO)
-1562.Info for
 1564:First name:
 1565:Last name:
 1566:Email address:
-1567.No authorization needed.
-1568.Must request authorization.
 1570:City:
 1574:State:
 1575:Age:
 1578:Enter country's phone ID number:
 1579:Enter company: 
-1584.Warning! Script command '%s' failed with exit value %d\n
 1587:Enter department: 
 1592:<%s> emailed you a message:\n
 1593:<%s> send you a web message:\n
@@ -552,15 +521,8 @@
 1605:Do you want your status to be available on the web? (YES/NO)
 1606:Received a bad session ID %08lx (correct: %08lx) with cmd %04x ignored.\n
 1607:Usage: micq [-h] [-v[level]] [-f <rc-file>] [-l <logfile>]\n
-1608.        -v   Turn on verbose Mode (useful for Debugging only)\n
-1609.        -f   specifies an alternate Config File (default: ~/.micq/micqrc)\n
-1610.        -l   specifies an alternate logfile resp. logdir\n
-1611.        -?   gives this help screen\n\n
 1612:This program was made without any help from Mirabilis or their consent.\n
 1613:No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n
-1614.Using config file "%s"\n
-1615.Logging to "%s"\n
-1617.<all>
 1618:UIN:
 1619:Warning:
 1620:maximal number of contacts reached. Ask a wizard to enlarge me!
@@ -689,10 +651,6 @@
 1799:High School
 1800:Change the working language to <lang> or display string <nr>.
 1801:Displays a list of people on your contact list in a screen wide format.
-1802.SoundOnline cmd
-1803.SoundOffline cmd
-1804.SoundOnline
-1805.SoundOffline
 1807:Cancelled incoming message (seq %04x) from %s\n
 1808:College
 1810:University
@@ -700,7 +658,6 @@
 1813:Past Organization
 1814:Sent auto-response message to %s%s%s.\n
 1815:    funny:      use funny messages for output.\n
-1816.Unknown option %s to set command.\n
 1817:The event scripting feature is disabled.\n
 1818:Warning: Deprecated syntax found in rc file!\n    Please update or "save" the rc file and check for changes.\n
 1820:%s <option> [on|off|<value>] - control simple options.\n
@@ -790,7 +747,6 @@
 1938:Enter sex:
 1939:Enter a city:
 1940:Unknown Meta User result %lx.\n
-1941.Publish Email:
 1942:Additional Email addresses:
 1943:(no authorization needed)
 1944:(must request authorization)
@@ -856,7 +812,6 @@
 2014:No number given.\n
 2015:No message given.\n
 2017:The user is online, but possibly invisible.\n
-2018.    quiet: be quiet about status changes.\n
 2020:Being visible to %s.\n
 2021:Being invisible to %s.\n
 2022:The user is offline.\n
@@ -868,24 +823,19 @@
 2032:Scheduling v8 reconnect in %d seconds.\n
 2033:born today
 2034:Opening TCP connection at %s:%ld... 
-2035.Show uptime and some statistics.
 2036:Save current preferences to disc.
 2037:Open or close a peer-to-peer connection, or disable using peer-to-peer connections for <uin> or <nick>.
 2038:Opens connection number <nr>, or the first server connection.
 2039:Sends a message to a (<nick>'s) <cell> phone.
-2040.Switches beeping for incoming contacts on or off, sets a command for this event or displays current state of this option.
-2041.Switches beeping for offgoing contacts on or off, sets a command for this event or displays current state of this option.
 2042:Displays a list of online people on your contact list in a screen wide format.
 2043:Remove all contacts in <contacts> from contact group <group>.
-2044:Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silence.
+2044:Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
 2045:Toggles your visibility to <contacts> when you're online.
 2046:You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n
 2047:Creating directory %s.\n
 2048:Saving preferences to %s.\n
 2049:Receiving group "%s":\n
-2050.Imported %d contacts.\n
 2051:Error on socket: %s (%d)\n
-2053.TCP %s seq %x type %x status %x flags %x: '%s'\n
 2054:The "free for chat" message is:
 2055:User is ffc and wants to chat about everything.
 2056:getauto [auto] <nick> - Get the auto-response from the contact.\n
@@ -894,12 +844,10 @@
 2059:getauto dnd    <nick> - Get the auto-response for do not disturb from the contact.\n
 2060:getauto ffc    <nick> - Get the auto-response for free for chat from the contact.\n
 2063:You need to save your password in your ~/.micq/micqrc file.\n
-2064.Refusing chat request (%s/%s/%s) from %s.\n
 2065:Unknown TCP_MSG_GREET_ command %04x.\n
 2066:Unknown TCP_MSG_ command %04x.\n
 2067:file io
 2068:Opening file transfer connection to %s:%ld... \n
-2069.File transfer '%s' rejected by peer (%x,%x): %s.\n
 2070:File transfer '%s' to port %ld.\n
 2071:Couldn't stat file %s: %s (%d)\n
 2072:File transfer #%ld (%s) canceled because of closed connection.\n
@@ -956,7 +904,6 @@
 2129:         URL: %s%s%s\n
 2130:Composing message to %sall%s:\n
 2131:Composing message to %s%s%s:\n
-2132.Composing message to %s%d%s:\n
 2133:Color is %s%s%s.\n
 2134:Funny messages are %s%s%s.\n
 2135:Quiet output is %s%s%s.\n
@@ -967,15 +914,12 @@
 2140:Random chat group change was %s%s%s.\n
 2141:Search %sfailed%s.\n
 2142:Direct connection with %s not possible.\n
-2143.refused authorization: %s%s\n
-2144.requests authorization: %s%s\n
 2145:auth add  <nick>       - authorized add.\n
 2146:'%s' is already an alias for '%s' (%ld).\n
 2147:'%s' (%ld) is already used as a nick.\n
 2148:Added '%s' as an alias for '%s' (%ld).\n
 2149:Removed alias '%s' for '%s' (%ld).\n
 2150:Removed contact '%s' (%ld).\n
-2151.%d is not on your contact list anymore.\n
 2156:conn close <nr>    Close connection <nr>.\n
 2157:Moldova
 2158:No file given.\n
@@ -993,12 +937,8 @@
 2170:Sending with speed %lx to %s.\n
 2171:Advanced
 2172:Commands for advanced features.
-2173.Deny <uin> or <nick> to add you to their list.
-2174.Request authorization from <uin> or <nick>.
-2175.Tell <uin> or <nick> that you added them to your list.
 2176:Displays verbose the current status of everyone on your contact list.
 2177:Displays verbose the current status of online people on your contact list.
-2178.Request auto reply message for <uin> or <nick>.
 2179:Send all <contacts> a single file.
 2180:Send <uin> or <nick> several files.
 2181:Closes or removes connection number <nr>.
@@ -1007,13 +947,9 @@
 2184:%s%-10s%s - %s\n
 2185:Closing connection %ld.\n
 2186:Accepting file '%s' (%ld bytes).\n
-2187.Refused file request '%s' (%d bytes) (unknown: %x, %x)\n
 2188:You're sending data too fast - stop typing now, or the server will disconnect!\n
-2189.Malformed instant message packet refused by server.\n
-2190.The contact's client does not support type-2 messages.\n
 2191:Instant message error: %d.\n
 2192:Capabilities: 
-2193.Directory %s does not exist.\n
 2194:Don't know how to open this connection type.\n
 2195:Obsolete number:
 2196:Obsolete text:
@@ -1039,7 +975,6 @@
 2216:This mICQ doesn't know the '%s' encoding.\n
 2217:This mICQ can't convert between '%s' and unicode.\n
 2218:UIN: %s\n
-2219.'empty' message with unknown 0x%08x = %d.\n
 2220:several
 2221:Removed temporary contact '%s' (%ld).\n
 2222:Script command '%s' failed: %s (%d).\n
@@ -1106,7 +1041,7 @@
 2284:    autofinger: automatically finger new UINs.\n
 2285:    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n
 2286:    tabs:       style for tab-handling: simple, cycle, cycleall.\n
-2287:    silence:    suppress some output: off, on, complete.\n
+2287:    silent:     suppress some output: off, on, complete.\n
 2288:Indentation style is %s%s%s.\n
 2289:»»»
 2290:«««
@@ -1134,3 +1069,4 @@
 2312:Remove all aliases in <contacts>, removes contact if 'all' is given.
 2313:Grant, deny, request or acknowledge authorization from/to <contacts> to you/them to their/your contact list.
 2314:These are advanced commands. Be sure to have read the manual pages for complete information.\n
+2315:Cannot watch status of %s - too many watchers.\n
