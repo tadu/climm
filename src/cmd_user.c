@@ -3695,6 +3695,11 @@ static JUMP_F(CmdUserContact)
     if (!data)
     {
         if (!(par = s_parse (&args)))                  data = 0;
+        else if (!strcasecmp (par->txt, "activate"))
+        {
+            SnacCliRosterack (conn);
+            return 0;
+        }
         else if (!strcasecmp (par->txt, "show"))     data = IMROSTER_SHOW;
         else if (!strcasecmp (par->txt, "diff"))     data = IMROSTER_DIFF;
         else if (!strcasecmp (par->txt, "add"))      data = IMROSTER_DOWNLOAD;
