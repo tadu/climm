@@ -1244,7 +1244,11 @@ void SnacCliSetstatus (Connection *conn, UWORD status, UWORD action)
     {
         PacketWriteB2 (pak, 0x0c); /* TLV 0C */
         PacketWriteB2 (pak, 0x25);
+#ifdef HIDELANIP
+        PacketWriteB4 (pak, 0);
+#else
         PacketWriteB4 (pak, conn->our_local_ip);
+#endif
         if (conn->assoc && conn->assoc->connect & CONNECT_OK)
         {
             PacketWriteB4 (pak, conn->assoc->port);

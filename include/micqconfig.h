@@ -44,3 +44,5 @@
 /* If you change this things will probably come out formated badly.
 ** But you can change the tab stops if you so desire */
 #define TAB_STOP 8
+
+#undef HIDELANIP
