@@ -1,4 +1,15 @@
 
+2002-05-06 Peter Backes <rtc@helen.PLASMA.Xg8.DE>
+	* Add status (quite raw, hexadecimal) to online messages in the logfile.
+	* Further cleanup of icq_response.c, reducing code size.
+	* Completed personal info searching.
+	* Prepared handler for random search.
+	* mreadline speedup patch
+	* fix: command line was partially overwritten when more than one
+	  line was entered, but the cursur wasn't in the last line
+	
+	* do not display status change for temporary contacts (rk)
+
 2002-05-03 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* add & use new funtions to write LLNTS, TLV and length markers.
 	* recognize MirandaICQ version number

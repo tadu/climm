@@ -165,16 +165,18 @@ void R_goto (int pos)
     cpos = pos;
 }
 
-void R_rlap (const char *s)
+void R_rlap (const char *s, BOOL clear)
 {
-    int pos = cpos;
-    printf ("%s", s);
-    cpos += strlen (s);
 #ifdef ANSI_COLOR
-    if ((M_pos () + cpos) % Get_Max_Screen_Width() == 0)
-        printf (" \b");
+    char buf[20];
+
+    snprintf (buf, sizeof (buf), ESC "[%dD", strlen (s));
+    printf ("%s%s%s%s", s, clear ? ESC "[J" : "",
+            (M_pos () + cpos) % Get_Max_Screen_Width() == 0 ? " \b" : "",
+            strlen (s) ? buf : "");
+#else
+    printf ("%s%s%.*s", s, clear ? " \b" : "", strlen (s), bsbuf);
 #endif
-    R_goto (pos);
 }
 
 
@@ -186,8 +188,7 @@ void R_process_input_backspace (void)
     clen--;
     R_goto (cpos - 1);
     memmove (s + cpos, s + cpos + 1, clen - cpos + 1);
-    printf (ESC "[J");
-    R_rlap (s + cpos);
+    R_rlap (s + cpos, TRUE);
 }
 
 void R_process_input_delete (void)
@@ -197,8 +198,7 @@ void R_process_input_delete (void)
 
     clen--;
     memmove (s + cpos, s + cpos + 1, clen - cpos + 1);
-    printf (ESC "[J");
-    R_rlap (s + cpos);
+    R_rlap (s + cpos, TRUE);
 }
 
 void R_process_input_tab (void)
@@ -259,6 +259,7 @@ int R_process_input (void)
                     s[clen] = 0;
                     cpos = 0;
                     clen = 0;
+                    R_goto (clen);
                     printf ("\n");
                     history_cur = 0;
                     TabReset ();
@@ -330,7 +331,7 @@ int R_process_input (void)
             clen++;
             s[clen] = 0;
             printf ("%c", ch);
-            R_rlap (s + cpos);
+            R_rlap (s + cpos, FALSE);
         }
         return 0;
     }

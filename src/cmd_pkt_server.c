@@ -228,9 +228,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             break;
         case SRV_X1:
             if (prG->verbose)
-            {
                 M_print (i18n (1643, "Acknowleged SRV_X1 0x021C Done Contact list?\n"));
-            }
             CmdUser ("¶e");
             sess->connect |= CONNECT_OK;
             break;
@@ -240,11 +238,12 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             CmdPktCmdAckMessages (sess);
             break;
         case SRV_INFO_REPLY:
-            Display_Info_Reply (sess, data);
+            Display_Info_Reply (sess, pak, i18n (1562, "Info for"), 
+                IREP_HASAUTHFLAG);
             M_print ("\n");
             break;
         case SRV_EXT_INFO_REPLY:
-            Display_Ext_Info_Reply (sess, data);
+            Display_Ext_Info_Reply (sess, pak, i18n (1967, "More Info for"));
             M_print ("\n");
             break;
         case SRV_USER_OFFLINE:
@@ -327,7 +326,8 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             M_print ("\n");
             break;
         case SRV_USER_FOUND:
-            Display_Search_Reply (sess, data);
+            Display_Info_Reply (sess, pak, 
+                i18n (1968, "User found"), IREP_HASAUTHFLAG);
             M_print ("\n");
             break;
         case SRV_RAND_USER:

@@ -215,7 +215,10 @@ JUMP_F(CmdUserRandom)
     }
     else
     {
-        CmdPktCmdRandSearch (sess, atoi (arg1));
+        if (sess->ver > 6)
+            SnacCliRandsearch (sess, atoi (arg1));
+        else
+            CmdPktCmdRandSearch (sess, atoi (arg1));
     }
     return 0;
 }
@@ -2139,14 +2142,9 @@ JUMP_F(CmdUserOldSearch)
             R_dopromptf ("%s ", i18n (1655, "Enter the user's e-mail address:"));
             return status = 101;
         case 101:
-            if (!strlen (args) || sess->ver < 6)
-            {
-                email = strdup ((char *) args);
-                R_dopromptf ("%s ", i18n (1656, "Enter the user's nick name:"));
-                return ++status;
-            }
-            SnacCliSearchbymail (sess, args);
-            return 0;
+            email = strdup ((char *) args);
+            R_dopromptf ("%s ", i18n (1656, "Enter the user's nick name:"));
+            return ++status;
         case 102:
             nick = strdup ((char *) args);
             R_dopromptf ("%s ", i18n (1657, "Enter the user's first name:"));
@@ -2160,7 +2158,7 @@ JUMP_F(CmdUserOldSearch)
             if (sess->type == TYPE_SERVER_OLD)
                 CmdPktCmdSearchUser (sess, email, nick, first, last);
             else
-                SnacCliSearchbypersinf (sess, nick, first, last);
+                SnacCliSearchbypersinf (sess, email, nick, first, last);
             free (email);
             free (nick);
             free (first);
@@ -2183,7 +2181,7 @@ JUMP_F(CmdUserSearch)
     if (!strcmp (args, "."))
         status += 400;
 
-    switch (status % 400)
+    switch (status)
     {
         case 0:
             if (args)
@@ -2193,7 +2191,7 @@ JUMP_F(CmdUserSearch)
             if (arg2)
             {
                 if (sess->ver > 6)
-                    SnacCliSearchbypersinf (sess, NULL, arg1, arg2);
+                    SnacCliSearchbypersinf (sess, NULL, NULL, arg1, arg2);
                 else
                     CmdPktCmdSearchUser (sess, NULL, NULL, arg1, arg2);
                 return 0;
@@ -2212,7 +2210,7 @@ JUMP_F(CmdUserSearch)
                     if (sess->type == TYPE_SERVER_OLD)
                         CmdPktCmdSearchUser (sess, NULL, arg1, NULL, NULL);
                     else
-                        SnacCliSearchbypersinf (sess, arg1, NULL, NULL);
+                        SnacCliSearchbypersinf (sess, NULL, arg1, NULL, NULL);
                 }
                 return 0;
             }
@@ -2306,14 +2304,11 @@ JUMP_F(CmdUserSearch)
             return ++status;
         case 214:
             wp.position = strdup ((char *) args);
-        case 250:
+        default:
             if (sess->ver > 6)
             {
-                if (status > 250 && status <= 402)
-                    SnacCliSearchbypersinf (sess, wp.nick, wp.first, wp.last);
-                else if (status == 403 && !strlen (wp.nick)
-                         && !strlen (wp.last) && !strlen (wp.first))
-                    SnacCliSearchbymail (sess, wp.email);
+                if (status > 250 && status <= 403)
+                    SnacCliSearchbypersinf (sess, wp.email, wp.nick, wp.first, wp.last);
                 else
                     SnacCliSearchwp (sess, &wp);
             }

@@ -495,7 +495,7 @@
 1495:No Random User Found
 1496: 
 1497:failed
-1498:Info for:
+1498:Info for
 1499:Other
 1500:Nickname:
 1501:Name:
@@ -559,35 +559,35 @@
 1559: 
 1560: 
 1561: 
-1562:©1Info for %ld¶
-1563:Nick name:
+1562:Info for
+1563: 
 1564:First name:
 1565:Last name:
 1566:Email address:
 1567:No authorization needed.©0 
 1568:Must request authorization.©0 
-1569:©1More Info for %ld¶
+1569: 
 1570:City:
 1571: 
 1572: 
-1573:Time Zone:
+1573: 
 1574:State:
 1575:Age:
-1576:not entered
+1576: 
 1577: 
 1578:Enter country's phone ID number:
 1579:Enter company: 
-1580:Phone number:
+1580: 
 1581: 
 1582: 
-1583:©1User found %ld¶
+1583: 
 1584:Warning! Script command '%s' failed with exit value %d¶
-1585:Ack!!!!!!!  Bad packet
+1585:Ack!!!!!!!  Bad packet¶
 1586:©4¶%s©0 has added you to their contact list.¶
 1587:Enter department: 
 1588: 
 1589: 
-1590:©4%10s©0 has requested your authorization to be added to their contact list.¶
+1590:©4%10s ©0 has requested your authorization to be added to their contact list.¶
 1591:Reason:
 1592:<%s> emailed you a message:¶
 1593:<%s> send you a web message:¶
@@ -964,3 +964,5 @@
 1964:couldn't dequeue type %d seq %08x
 1965:Auto-response message for %s:¶
 1966: Conection Refused on port %d at %s¶
+1967:More Info for
+1968:User found

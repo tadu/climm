@@ -516,32 +516,39 @@ void Time_Stamp (void)
  */
 void UtilUIUserOnline (Contact *cont, UDWORD status)
 {
+    UDWORD old;
+
     if (status == cont->status)
         return;
-    if (~cont->status)
+    
+    old = cont->status;
+    cont->status = status;
+    cont->last_time = time (NULL);
+
+    log_event (cont->uin, LOG_ONLINE, "User logged on %s (%08lx)\n", ContactFindName (cont->uin), status);
+ 
+    if (~old)
     {
         if (prG->sound & SFLAG_ON_CMD)
             ExecScript (prG->sound_on_cmd, cont->uin, 0, NULL);
         else if (prG->sound & SFLAG_ON_BEEP)
             printf ("\a");
     }
-    log_event (cont->uin, LOG_ONLINE, "User logged on %s\n", ContactFindName (cont->uin));
- 
     Time_Stamp ();
     M_print (" " COLCONTACT "%10s" COLNONE " %s ",
              ContactFindName (cont->uin),
-             ~cont->status ? i18n (1035, "changed status to") : i18n (1031, "logged on"));
+             ~old ? i18n (1035, "changed status to") : i18n (1031, "logged on"));
 
-    if (!~cont->status)
+    if (!~old)
         M_print ("(");
     Print_Status (status);
-    if (!~cont->status)
+    if (!~old)
         M_print (")");
-    if (cont->version && !~cont->status)
+    if (cont->version && !~old)
         M_print (" [%s]", cont->version);
     M_print (".\n");
 
-    if (prG->verbose && !~cont->status)
+    if (prG->verbose && !~old)
     {
         M_print ("%-15s %s\n", i18n (1441, "IP:"), UtilIOIP (cont->outside_ip));
         M_print ("%-15s %s\n", i18n (1451, "IP2:"), UtilIOIP (cont->local_ip));
@@ -549,9 +556,6 @@ void UtilUIUserOnline (Contact *cont, UDWORD status)
         M_print ("%-15s %s\n", i18n (1454, "Connection:"),
                  cont->connection_type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"));
     }
-
-    cont->status = status;
-    cont->last_time = time (NULL);
 }
 
 /*
@@ -559,16 +563,20 @@ void UtilUIUserOnline (Contact *cont, UDWORD status)
  */
 void UtilUIUserOffline (Contact *cont)
 {
+    log_event (cont->uin, LOG_ONLINE, "User logged off %s\n", ContactFindName (cont->uin));
+
+    cont->status = STATUS_OFFLINE;
+    cont->last_time = time (NULL);
+
+    if (cont->not_in_list)
+        return;
+
     if (prG->sound & SFLAG_OFF_CMD)
         ExecScript (prG->sound_off_cmd, cont->uin, 0, NULL);
     else if (prG->sound & SFLAG_OFF_BEEP)
         printf ("\a");
-    log_event (cont->uin, LOG_ONLINE, "User logged off %s\n", ContactFindName (cont->uin));
  
     Time_Stamp ();
     M_print (" " COLCONTACT "%10s" COLNONE " %s\n",
              ContactFindName (cont->uin), i18n (1030, "logged off."));
-    
-    cont->status = STATUS_OFFLINE;
-    cont->last_time = time (NULL);
 }

@@ -434,7 +434,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
     TLV *tlv;
     UDWORD uin;
     int i, len, type, t;
-    char *text;
+    char *text = NULL;
     const char *txt;
 
     pak = event->pak;
@@ -450,9 +450,6 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
     UtilCheckUIN (event->sess, uin);
     cont = ContactFind (uin);
     tlv = TLVRead (pak);
-
-    if (tlv[6].len && cont)
-        UtilUIUserOnline (cont, tlv[6].nr);
 
     /* tlv[2] may be there twice - ignore the member since time(NULL). */
     if (tlv[2].len == 4)
@@ -480,24 +477,14 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
 
             p = TLVPak (tlv + 2);
             PacketReadB2 (p);
-            for (len = PacketReadB2 (p); len > 0; len--)
-                PacketRead1 (p);
+            PacketReadData (p, NULL, PacketReadB2 (p));
             PacketReadB2 (p);
             len = PacketReadBAt2 (p, PacketReadPos (p));
             text = PacketReadStrB (p);
-
-            Time_Stamp ();
-            M_print (" " CYAN BOLD "%10s" COLNONE " ",
-                     ContactFindName (uin));
-            Do_Msg (event->sess, NORM_MESS, len - 4, text + 4, uin, 0);
-            free (text);
-
+            txt = text + 4;
+            type = NORM_MESS;
             /* TLV 1, 2(!), 3, 4, f ignored */
-            if (prG->sound & SFLAG_CMD)
-                ExecScript (prG->sound_cmd, uin, 0, NULL);
-            else if (prG->sound & SFLAG_BEEP)
-                printf ("\a");
-            return;
+            break;
         case 2:
             p = TLVPak (tlv + 5);
             type = PacketReadB2 (p); /* ACKTYPE */
@@ -537,16 +524,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
             PacketReadB2 (p); /* UNKNOWN */
             txt = PacketReadLNTS (p);
             /* FOREGROUND / BACKGROUND ignored */
-            
-            Time_Stamp ();
-            M_print (" " CYAN BOLD "%10s" COLNONE " ", ContactFindName (uin));
-            Do_Msg (event->sess, type, strlen (txt), txt, uin, 0);
-
             /* TLV 1, 2(!), 3, 4, f ignored */
-            if (prG->sound & SFLAG_CMD)
-                ExecScript (prG->sound_cmd, uin, 0, NULL);
-            else if (prG->sound & SFLAG_BEEP)
-                printf ("\a");
             break;
         case 4:
             p = TLVPak (tlv + 5);
@@ -555,22 +533,43 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
                    PacketRead1 (p);
             txt  = PacketReadLNTS (p);
             /* FOREGROUND / BACKGROUND ignored */
-            
-            Time_Stamp ();
-            M_print (" " CYAN BOLD "%10s" COLNONE " ", ContactFindName (uin));
-            Do_Msg (event->sess, type, strlen (txt), txt, uin, 0);
-
-
             /* TLV 1, 2(!), 3, 4, f ignored */
-            if (prG->sound & SFLAG_CMD)
-                ExecScript (prG->sound_cmd, uin, 0, NULL);
-            else if (prG->sound & SFLAG_BEEP)
-                printf ("\a");
             break;
         default:
             SnacSrvUnknown (event);
-            break;
+            return;
     }
+
+    Time_Stamp ();
+    M_print (" " CYAN BOLD "%10s" COLNONE " ", ContactFindName (uin));
+
+    if (tlv[6].len)
+    {
+        UDWORD old = STATUS_OFFLINE;
+        
+        if (cont)
+            old = cont->status;
+
+        if (cont)
+            UtilUIUserOnline (cont, tlv[6].nr);
+
+        if (old != tlv[6].nr)
+        {
+            M_print ("(");
+            Print_Status (tlv[6].nr);
+            M_print (") ");
+        }
+    }
+
+    Do_Msg (event->sess, type, strlen (txt), txt, uin, 0);
+
+    if (text)
+        free (text);
+
+    if (prG->sound & SFLAG_CMD)
+        ExecScript (prG->sound_cmd, uin, 0, NULL);
+    else if (prG->sound & SFLAG_BEEP)
+        printf ("\a");
 }
 
 /*
@@ -642,7 +641,7 @@ JUMP_SNAC_F(SnacSrvAuthreq)
     uin = PacketReadUIN (pak);
     text = PacketReadStrB (pak);
     Time_Stamp ();
-    M_print (i18n (1590, COLCONTACT "%10s" COLNONE " has requested your authorization to be added to their contact list.\n"),
+    M_print (i18n (1590, COLCONTACT "%10s " COLNONE " has requested your authorization to be added to their contact list.\n"),
              ContactFindName (uin));
     M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (1591, "Reason:"), text);
     free (text);
@@ -1272,7 +1271,7 @@ void SnacCliMetareqinfo (Session *sess, UDWORD uin)
 /*
  * CLI_SEARCHBYPERSINF - SNAC(15,2) - 2000/1375
  */
-void SnacCliSearchbypersinf (Session *sess, const char *nick, const char *name, char *surname)
+void SnacCliSearchbypersinf (Session *sess, const char *email, const char *nick, const char *name, char *surname)
 {
     Packet *pak;
 
@@ -1282,13 +1281,15 @@ void SnacCliSearchbypersinf (Session *sess, const char *nick, const char *name, 
     PacketWrite4  (pak, sess->uin);
     PacketWrite2  (pak, 2000); /* Command: request information */
     PacketWrite2  (pak, 2);
-    PacketWrite2  (pak, 1375); /* search user by email in 2001b */
+    PacketWrite2  (pak, 1375); /* search user in 2001b */
     PacketWrite2  (pak, 320); /* key: first name */
     PacketWriteLLNTS (pak, name);
     PacketWrite2  (pak, 330); /* key: last name */
     PacketWriteLLNTS (pak, surname);
     PacketWrite2  (pak, 340); /* key: nick */
     PacketWriteLLNTS (pak, nick);
+    PacketWrite2  (pak, 350); /* key: email address */
+    PacketWriteLLNTS (pak, email);
     PacketWriteLenDone (pak);
     PacketWriteTLVDone (pak);
     SnacSend (sess, pak);
@@ -1300,9 +1301,6 @@ void SnacCliSearchbypersinf (Session *sess, const char *nick, const char *name, 
 void SnacCliSearchbymail (Session *sess, const char *email)
 {
     Packet *pak;
-    int len;
-
-    len = strlen (email);
 
     pak = SnacC (sess, 21, 2, 0, 0);
     PacketWriteTLV (pak, 1);
@@ -1313,15 +1311,37 @@ void SnacCliSearchbymail (Session *sess, const char *email)
 #ifndef USE_OLD_PROTO
     PacketWrite2  (pak, 1395); /* search uin by email in 2001b */
     PacketWrite2  (pak, 350); /* key: email address */
-    PacketWrite2  (pak, len + 3);
+    PacketWriteLLNTS (pak, email);
 #else
     PacketWrite2  (pak, 1231); /* Type: search by email */
+    PacketWriteLNTS (pak, email);
     /* Doesn't work (yields search failed).  Tried with length 
      * prefixed as above, then the search doesn't fail completely
      * but very strange data is returned.    --rtc
      */
 #endif
-    PacketWriteLNTS (pak, email);
+    PacketWriteLenDone (pak);
+    PacketWriteTLVDone (pak);
+    SnacSend (sess, pak);
+}
+
+/*
+ * CLI_RANDSEARCH - SNAC(15,2) - 2000/1390
+ *
+ * Unfortunately this does not work.
+ */
+void SnacCliRandsearch (Session *sess, UDWORD group)
+{
+    Packet *pak;
+
+    pak = SnacC (sess, 21, 2, 0, 0);
+    PacketWriteTLV (pak, 1);
+    PacketWriteLen (pak);
+    PacketWrite4  (pak, sess->uin);
+    PacketWrite2  (pak, 2000); /* Command: request information */
+    PacketWrite2  (pak, 2);
+    PacketWrite2  (pak, 1390); /* search uin by group */
+    PacketWrite4  (pak, group);
     PacketWriteLenDone (pak);
     PacketWriteTLVDone (pak);
     SnacSend (sess, pak);

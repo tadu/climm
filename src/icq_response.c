@@ -78,8 +78,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
 
     switch (subtype)
     {
-        const char *tabd;
-        const char *data, *data2;
+        const char *tabd, *data, *data2;
         UWORD wdata, day, month, i;
         UDWORD len, dwdata;
         int tz;
@@ -90,33 +89,11 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
         case META_SRV_PASS:
             break;
         case 0x0104: /* 2001-short-info */
-            if (*(data = PacketReadLNTS (p)))
-                M_print (AVPFMT, i18n (1563, "Nick name:"), data);
-            if (*(data = PacketReadLNTS (p)))
-                M_print (AVPFMT, i18n (1564, "First name:"), data);
-            if (*(data = PacketReadLNTS (p)))
-                M_print (AVPFMT, i18n (1565, "Last name:"), data);
-            if (*(data = PacketReadLNTS (p)))
-                M_print (AVPFMT, i18n (1566, "Email address:"), data);
+            Display_Info_Reply (sess, p, NULL, 0);
             /* 3 unknown bytes ignored */
             break;
         case META_SRV_GEN: /* 0x00C8, main-home-info */
-            if (*(data = PacketReadLNTS (p)))
-                M_print (COLSERV "%-15s" COLNONE " " COLCONTACT "%s" 
-                    COLNONE "\n", i18n (1500, "Nickname:"), data);
-
-            data = PacketReadLNTS (p);
-            data2 = PacketReadLNTS (p);
-            if (*data && *data2)
-                M_print (COLSERV "%-15s" COLNONE " %s\t %s\n", 
-                    i18n (1501, "Name:"), data, data2);
-            else if (*data)
-                M_print (AVPFMT, i18n (1564, "First name:"), data);
-            else if (*data2)
-                M_print (AVPFMT, i18n (1565, "Last name:"), data2);
-
-            if (*(data = PacketReadLNTS (p)))
-                M_print (AVPFMT, i18n (1502, "Email:"), data);
+            Display_Info_Reply (sess, p, NULL, 0);
 
             if (sess->type == TYPE_SERVER_OLD)
             {
@@ -341,22 +318,9 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                 M_print ("\n");
                 break;
             }
-            M_print (COLSERV "%-15s" COLNONE " %lu\n", i18n (1498, "Info for:"), 
-                PacketRead4 (p));
-            
-            if (*(data = PacketReadLNTS (p)))
-                M_print (AVPFMT, i18n (1563, "Nick name:"), data);
-            if (*(data = PacketReadLNTS (p)))
-                M_print (AVPFMT, i18n (1564, "First name:"), data);
-            if (*(data = PacketReadLNTS (p)))
-                M_print (AVPFMT, i18n (1565, "Last name:"),  data);
-            data = PacketReadLNTS (p);
-            wdata = PacketRead1 (p);
-            if (*data)
-                M_print (COLSERV "%-15s" COLNONE " %s\t%s\n", 
-                    i18n (1566, "Email address:"), data,
-                    wdata == 1 ? i18n (1943, "(no authorization needed)")
-                    : i18n (1944, "(must request authorization)"));
+
+            Display_Info_Reply (sess, p, i18n (1498, "Info for"), 
+                IREP_HASAUTHFLAG);
 
             switch ((wdata = PacketRead2 (p))) {
                 case 0:
@@ -497,111 +461,106 @@ void UserOnlineSetVersion (Contact *con, UDWORD tstamp, UDWORD tstamp2)
     con->version = strlen (buf) ? strdup (buf) : NULL;
 }
 
-void Display_Info_Reply (Session *sess, UBYTE * pak)
-{
-    char *tmp;
-    int len;
 
-    M_print (i18n (1562, COLSERV "Info for %ld\n"), Chars_2_DW (&pak[0]));
-    len = Chars_2_Word (&pak[4]);
-    ConvWinUnix (&pak[6]);
-    M_print ("%-15s %s\n", i18n (1563, "Nick name:"), &pak[6]);
-    tmp = &pak[6 + len];
-    len = Chars_2_Word (tmp);
-    ConvWinUnix (tmp + 2);
-    M_print ("%-15s %s\n", i18n (1564, "First name:"), tmp + 2);
-    tmp += len + 2;
-    len = Chars_2_Word (tmp);
-    ConvWinUnix (tmp + 2);
-    M_print ("%-15s %s\n", i18n (1565, "Last name:"), tmp + 2);
-    tmp += len + 2;
-    len = Chars_2_Word (tmp);
-    ConvWinUnix (tmp + 2);
-    M_print ("%-15s %s\n", i18n (1566, "Email address:"), tmp + 2);
-    tmp += len + 2;
-    if (*tmp == 1)
+void Display_Info_Reply (Session *sess, Packet *pak, const char *uinline,
+    unsigned int flags)
+{
+    const char *data, *data2;
+    UWORD wdata;
+
+    if (uinline)
+        M_print ("%s " COLSERV "%lu" COLNONE "\n", uinline, 
+            PacketRead4 (pak));
+
+    if (*(data = PacketReadLNTS (pak)))
+        M_print (COLSERV "%-15s" COLNONE " " COLCONTACT "%s" 
+            COLNONE "\n", i18n (1500, "Nickname:"), data);
+
+    data = PacketReadLNTS (pak);
+    data2 = PacketReadLNTS (pak);
+    if (*data && *data2)
+        M_print (COLSERV "%-15s" COLNONE " %s\t %s\n", 
+            i18n (1501, "Name:"), data, data2);
+    else if (*data)
+        M_print (AVPFMT, i18n (1564, "First name:"), data);
+    else if (*data2)
+        M_print (AVPFMT, i18n (1565, "Last name:"), data2);
+
+    data = PacketReadLNTS (pak);
+
+    if (flags & IREP_HASAUTHFLAG)
     {
-        M_print (i18n (1567, "No authorization needed." COLNONE " "));
+        wdata = PacketRead1 (pak);
+        if (*data)
+            M_print (COLSERV "%-15s" COLNONE " %s\t%s\n", 
+                i18n (1566, "Email address:"), data,
+                wdata == 1 ? i18n (1943, "(no authorization needed)")
+                : i18n (1944, "(must request authorization)"));
     }
-    else
-    {
-        M_print (i18n (1568, "Must request authorization." COLNONE " "));
-    }
+    else if (*data)
+        M_print (AVPFMT, i18n (1502, "Email:"), data);
+
 /*    ack_srv( sok, Chars_2_Word( pak.head.seq ) ); */
 }
 
-void Display_Ext_Info_Reply (Session *sess, UBYTE * pak)
+void Display_Ext_Info_Reply (Session *sess, Packet *pak, const char *uinline)
 {
-    unsigned char *tmp;
-    int len;
+    const char *tabd, *data, *data2;
+    UWORD wdata;
+    int tz;
 
-    M_print (i18n (1569, COLSERV "More Info for %ld\n"), Chars_2_DW (&pak[0]));
-    len = Chars_2_Word (&pak[4]);
-    ConvWinUnix (&pak[6]);
-    M_print ("%-15s %s\n", i18n (1570, "City:"), &pak[6]);
-    if (TableGetCountry (Chars_2_Word (&pak[6 + len])) != NULL)
-        M_print ("%-15s %s\n", i18n (1511, "Country:"), TableGetCountry (Chars_2_Word (&pak[6 + len])));
+    /* Unfortunatly this is a bit different from any structure 
+     * in meta user format, so it cannot be reused there. 
+     */
+
+    if (uinline)
+        M_print ("%s " COLSERV "%lu" COLNONE "\n", uinline, 
+            PacketRead4 (pak));
+
+    data = PacketReadLNTS (pak);
+    wdata = PacketRead2 (pak);
+    tz = (signed char) PacketRead1 (pak);
+    data2 = PacketReadLNTS (pak);
+
+    if (*data && *data2)
+        M_print (COLSERV "%-15s" COLNONE " %s, %s\n", 
+            i18n (1505, "Location:"), data, data2);
+    else if (*data)
+        M_print (AVPFMT, i18n (1570, "City:"), data);
+    else if (*data2)
+        M_print (AVPFMT, i18n (1574, "State:"), data2);
+
+    if ((tabd = TableGetCountry (wdata)) != NULL)
+        M_print (COLSERV "%-15s" COLNONE " %s\t", 
+            i18n (1511, "Country:"), tabd);
     else
-        M_print ("%-15s %d\n", i18n (1512, "Country code:"), Chars_2_Word (&pak[6 + len]));
-    M_print ("%-15s UTC %+d\n", i18n (1573, "Time Zone:"), ((signed char) pak[len + 8]) >> 1);
-    tmp = &pak[9 + len];
-    len = Chars_2_Word (tmp);
-    ConvWinUnix (tmp + 2);
-    M_print ("%-15s %s\n", i18n (1574, "State:"), tmp + 2);
-    if (Chars_2_Word (tmp + 2 + len) != 0xffff)
-        M_print ("%-15s %d\n", i18n (1575, "Age:"), Chars_2_Word (tmp + 2 + len));
+        M_print (COLSERV "%-15s" COLNONE " %d\t", 
+            i18n (1512, "Country code:"), wdata);
+
+    M_print ("(UTC %+05d)\n", -100 * (tz / 2) + 30 * (tz % 2));
+
+    wdata = PacketRead2 (pak);
+    if (wdata != 0xffff && wdata != 0)
+        M_print (COLSERV "%-15s" COLNONE " %d\n", 
+            i18n (1575, "Age:"), wdata);
     else
-        M_print ("%-15s %s\n", i18n (1575, "Age:"), i18n (1576, "not entered"));
-    if (*(tmp + len + 4) == 2)
-        M_print ("%-15s %s\n", i18n (1696, "Sex:"), i18n (1529, "male"));
-    else if (*(tmp + len + 4) == 1)
-        M_print ("%-15s %s\n", i18n (1696, "Sex:"), i18n (1528, "female"));
-    else
-        M_print ("%-15s %s\n", i18n (1696, "Sex:"), i18n (1576, "not entered"));
-    tmp += len + 5;
-    len = Chars_2_Word (tmp);
-    ConvWinUnix (tmp + 2);
-    M_print ("%-15s %s\n", i18n (1580, "Phone number:"), tmp + 2);
-    tmp += len + 2;
-    len = Chars_2_Word (tmp);
-    ConvWinUnix (tmp + 2);
-    M_print ("%-15s %s\n", i18n (1531, "Homepage:"), tmp + 2);
-    tmp += len + 2;
-    len = Chars_2_Word (tmp);
-    ConvWinUnix (tmp + 2);
-    M_print ("%-15s %s\n", i18n (1525, "About:"), tmp + 2);
+        M_print (COLSERV "%-15s" COLNONE " %s\n", 
+            i18n (1575, "Age:"), i18n (1200, "Not entered"));
+
+    wdata = PacketRead1 (pak);
+    M_print (COLSERV "%-15s" COLNONE " %s\n", i18n (1696, "Sex:"),
+               wdata == 1 ? i18n (1528, "female")
+             : wdata == 2 ? i18n (1529, "male")
+             :              i18n (1530, "not specified"));
+
+    if (*(data = PacketReadLNTS (pak)))
+        M_print (AVPFMT, i18n (1506, "Phone:"), data);
+    if (*(data = PacketReadLNTS (pak)))
+        M_print (AVPFMT, i18n (1531, "Homepage:"), data);
+    if (*(data = PacketReadLNTS (pak)))
+        M_print (COLSERV "%-15s" COLNONE "\n " COLCLIENT 
+            "%s" COLNONE "\n", i18n (1525, "About:"), data);
 /*    ack_srv( sok, Chars_2_Word( pak.head.seq ) ); */
-}
-
-void Display_Search_Reply (Session *sess, UBYTE * pak)
-{
-    char *tmp;
-    int len;
-    M_print (i18n (1583, COLSERV "User found %ld\n"), Chars_2_DW (&pak[0]));
-    len = Chars_2_Word (&pak[4]);
-    ConvWinUnix (&pak[6]);
-    M_print ("%-15s %s\n", i18n (1563, "Nick name:"), &pak[6]);
-    tmp = &pak[6 + len];
-    len = Chars_2_Word (tmp);
-    ConvWinUnix (tmp + 2);
-    M_print ("%-15s %s\n", i18n (1564, "First name:"), tmp + 2);
-    tmp += len + 2;
-    len = Chars_2_Word (tmp);
-    ConvWinUnix (tmp + 2);
-    M_print ("%-15s %s\n", i18n (1565, "Last name:"), tmp + 2);
-    tmp += len + 2;
-    len = Chars_2_Word (tmp);
-    ConvWinUnix (tmp + 2);
-    M_print ("%-15s %s\n", i18n (1566, "Email address:"), tmp + 2);
-    tmp += len + 2;
-    if (*tmp == 1)
-    {
-        M_print (i18n (1567, "No authorization needed." COLNONE " "));
-    }
-    else
-    {
-        M_print (i18n (1568, "Must request authorization." COLNONE " "));
-    }
 }
 
 void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin, BOOL tcp)
@@ -627,7 +586,7 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
             tmp = strchr (cdata, '\xFE');
             if (tmp == NULL)
             {
-                M_print (i18n (1585, "Ack!!!!!!!  Bad packet"));
+                M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
                 return;
             }
             *tmp = 0;
@@ -638,7 +597,7 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
             tmp = strchr (tmp, '\xFE');
             if (tmp == NULL)
             {
-                M_print (i18n (1585, "Ack!!!!!!!  Bad packet"));
+                M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
                 return;
             }
             *tmp = 0;
@@ -649,7 +608,7 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
             tmp = strchr (tmp, '\xFE');
             if (tmp == NULL)
             {
-                M_print (i18n (1585, "Ack!!!!!!!  Bad packet"));
+                M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
                 return;
             }
             *tmp = 0;
@@ -665,13 +624,13 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
         case AUTH_REQ_MESS:
             tmp = strchr (cdata, '\xFE');
             *tmp = 0;
-            M_print (i18n (1590, COLCONTACT "%10s" COLNONE " has requested your authorization to be added to their contact list.\n"), cdata);
+            M_print (i18n (1590, COLCONTACT "%10s " COLNONE " has requested your authorization to be added to their contact list.\n"), cdata);
             tmp++;
             cdata = tmp;
             tmp = strchr (tmp, '\xFE');
             if (tmp == NULL)
             {
-                M_print (i18n (1585, "Ack!!!!!!!  Bad packet"));
+                M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
                 return;
             }
             *tmp = 0;
@@ -682,7 +641,7 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
             tmp = strchr (tmp, '\xFE');
             if (tmp == NULL)
             {
-                M_print (i18n (1585, "Ack!!!!!!!  Bad packet"));
+                M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
                 return;
             }
             *tmp = 0;
@@ -693,7 +652,7 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
             tmp = strchr (tmp, '\xFE');
             if (tmp == NULL)
             {
-                M_print (i18n (1585, "Ack!!!!!!!  Bad packet"));
+                M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
                 return;
             }
             *tmp = 0;
@@ -704,7 +663,7 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
             tmp = strchr (tmp, '\xFE');
             if (tmp == NULL)
             {
-                M_print (i18n (1585, "Ack!!!!!!!  Bad packet"));
+                M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
                 return;
             }
             *tmp = 0;
@@ -713,7 +672,7 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
             tmp = strchr (tmp, '\x00');
             if (tmp == NULL)
             {
-                M_print (i18n (1585, "Ack!!!!!!!  Bad packet"));
+                M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
                 return;
             }
             *tmp = 0;
