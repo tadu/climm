@@ -1276,7 +1276,7 @@ static size_t SOCKWRITE_LOW (SOK_T sok, void *ptr, size_t len)
         R_undraw ();
         Time_Stamp ();
         M_print (" \x1b«" COLCLIENT "");
-        M_print (i18n (775, "Outgoing packet!"));
+        M_print (i18n (775, "Outgoing packet:"));
 #if ICQ_VER == 5
         M_print (" %04X %08X:%08X %04X (", Chars_2_Word (ptr),
                  Chars_2_DW (ptr + 10), Chars_2_DW (ptr + 16),

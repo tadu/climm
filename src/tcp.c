@@ -39,6 +39,8 @@ Author : James Schofield (jschofield@ottawa.com)
 #include <string.h>
 #include <time.h>
 
+#ifdef TCP_COMM
+
 const UBYTE client_check_data[] = {
   "As part of this software beta version Mirabilis is "
   "granting a limited access to the ICQ network, "
@@ -952,3 +954,4 @@ int Decrypt_Pak ( UBYTE *pak, UDWORD size )
 
   return (1);
 }
+#endif

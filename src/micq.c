@@ -730,6 +730,7 @@ int main (int argc, char *argv[])
 /*** TCP: tcp init ***/
 #ifdef TCP_COMM
     tcpSok = Init_TCP (TCP_PORT, STDERR);
+    M_print (i18n (776, "With partial TCP implementation\n"));
 #endif
 
     sok = Connect_Remote (ssG.server, ssG.remote_port, STDERR);
