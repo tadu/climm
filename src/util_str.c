@@ -163,7 +163,7 @@ str_t s_catf (str_t str, const char *fmt, ...)
             str->len += strlen (str->txt + str->len);
             return str;
         }
-        add |= 2;
+        add <<= 2;
         if (!s_blow (str, add))
         {
             str->txt[str->max - 2] = '\0';
@@ -181,7 +181,7 @@ void s_done (str_t str)
 {
     if (str->txt && str->max)
         free (str->txt);
-    str->txt = NULL;
+    str->txt = "\0";
     str->len = str->max = 0;
 }
 
