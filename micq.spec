@@ -10,7 +10,7 @@ Version:		%{version}
 Release:		%{release}
 Source:			%{name}-%{version}.tgz
 URL:			http://www.micq.org
-Group:			Networking/Instant messaging
+Group:			Networking/ICQ
 Packager:		Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 Copyright:		GPL-2
 BuildRoot:		/var/tmp/build-%{name}-%{version}
@@ -38,10 +38,20 @@ Authors: Matthew D. Smith (dead)
 
 %build
 %configure
-%make
+make
 
 %install
 %makeinstall
+for mancat in 1 5 7; do
+        %{__mkdir_p} "${RPM_BUILD_ROOT}%{_mandir}/man${mancat}"
+        %{__install} -m0644 doc/*.${mancat} \
+                "${RPM_BUILD_ROOT}%{_mandir}/man${mancat}/"
+done
+%{__mkdir_p} $RPM_BUILD_ROOT/usr/lib/menu
+cat << EOF > $RPM_BUILD_ROOT/usr/lib/menu/micq
+?package(micq):needs=text section=Networking/ICQ \
+  title="mICQ" command="/usr/bin/micq"
+EOF
 
 %clean
 rm -rf "${RPM_BUILD_ROOT}"
@@ -53,4 +63,11 @@ rm -rf "${RPM_BUILD_ROOT}"
 %doc doc/html
 %{_bindir}/*
 %{_datadir}/micq
+/usr/lib/menu/micq
 %doc %{_mandir}/*/*
+
+%post
+%{update_menus} || true
+
+%postun
+%{clean_menus} || true
