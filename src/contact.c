@@ -1040,7 +1040,8 @@ void ContactSetCap (Contact *cont, Cap *cap)
                 CLR_CAP (cont->caps, CAP_UTF8);
         }
     }
-    else if (cap->var && (cap->id == CAP_MICQ || cap->id == CAP_SIMNEW || cap->id == CAP_KOPETE))
+    else if (cap->var && (cap->id == CAP_MICQ || cap->id == CAP_SIMNEW
+                       || cap->id == CAP_KOPETE || cap->id == CAP_LICQNEW))
     {
         cont->v1 = cap->var[12];
         cont->v2 = cap->var[13];
@@ -1069,7 +1070,8 @@ void ContactSetVersion (Contact *cont)
     ver = dc->id1 & 0xffff;
     
     if (!HAS_CAP (cont->caps, CAP_SIM) && !HAS_CAP (cont->caps, CAP_MICQ)
-        && !HAS_CAP (cont->caps, CAP_SIMNEW) && !HAS_CAP (cont->caps, CAP_KOPETE))
+        && !HAS_CAP (cont->caps, CAP_SIMNEW) && !HAS_CAP (cont->caps, CAP_KOPETE)
+        && !HAS_CAP (cont->caps, CAP_LICQNEW))
         cont->v1 = cont->v2 = cont->v3 = cont->v4 = 0;
 
     if ((dc->id1 & 0xff7f0000UL) == BUILD_LICQ && ver > 1000)
@@ -1188,13 +1190,21 @@ void ContactSetVersion (Contact *cont)
     }
     else if (HAS_CAP (cont->caps, CAP_SIMNEW))
         new = "SIM";
+    else if (HAS_CAP (cont->caps, CAP_LICQNEW))
+    {
+        new = "licq";
+        if (cont->v2 / 100 == cont->v1)
+            cont->v2 %= 100; /* bug in licq 1.3.0 */
+        if (cont->v4 == 1)
+            tail = "/SSL";
+    }
     else if (HAS_CAP (cont->caps, CAP_KOPETE))
         new = "Kopete";
     else if (dc->id1 == dc->id2 && dc->id2 == dc->id3 && dc->id1 == -1)
         new = "vICQ/GAIM(?)";
-    else if (dc->version == 7 && HAS_CAP (cont->caps, CAP_IS_WEB))
+    else if (dc->version == 7 && HAS_CAP (cont->caps, CAP_TYPING))
         new = "ICQ2go";
-    else if (dc->version == 9 && HAS_CAP (cont->caps, CAP_IS_WEB))
+    else if (dc->version == 9 && HAS_CAP (cont->caps, CAP_TYPING))
         new = "ICQ Lite";
     else if (dc->version == 10 && HAS_CAP (cont->caps, CAP_STR_2002) && HAS_CAP (cont->caps, CAP_UTF8))
         new = "ICQ 2003";
