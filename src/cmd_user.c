@@ -63,7 +63,10 @@ static jump_t jump[] = {
     { &CmdUserResend,        "resend",       NULL, 0,   0 },
     { &CmdUserVerbose,       "verbose",      NULL, 0,   0 },
     { &CmdUserIgnoreStatus,  "i",            NULL, 0,   0 },
-    { &CmdUserStatusDetail,  "status",       NULL, 2,   0 },
+    { &CmdUserStatusDetail,  "statuse",      NULL, 2,   0 },
+    { &CmdUserStatusDetail,  "statuseo",     NULL, 2,   1 },
+    { &CmdUserStatusDetail,  "status",       NULL, 2,   2 },
+    { &CmdUserStatusDetail,  "statuso",      NULL, 2,   3 },
     { &CmdUserStatusWide,    "wide",         NULL, 2,   1 },
     { &CmdUserStatusWide,    "ewide",        NULL, 2,   0 },
     { &CmdUserStatusShort,   "w",            NULL, 2,   1 },
@@ -1177,156 +1180,115 @@ static JUMP_F(CmdUserVerbose)
     return 0;
 }
 
+static UDWORD __status (UDWORD status)
+{
+    if (status == STATUS_OFFLINE)  return STATUS_OFFLINE;
+    if (status  & STATUSF_BIRTH)   return STATUSF_BIRTH;
+    if (status  & STATUSF_INV)     return STATUS_INV;
+    if (status  & STATUSF_DND)     return STATUS_DND;
+    if (status  & STATUSF_OCC)     return STATUS_OCC;
+    if (status  & STATUSF_NA)      return STATUS_NA;
+    if (status  & STATUSF_AWAY)    return STATUS_AWAY;
+    if (status  & STATUSF_FFC)     return STATUS_FFC;
+    return STATUS_ONLINE;
+}
+
 /*
  * Shows the contact list in a very detailed way.
  */
 static JUMP_F(CmdUserStatusDetail)
 {
-    UDWORD num;
-    Contact *cont;
+    UDWORD uin = 0, i, lenuin = 0, lennick = 0, lenstat = 0, lenid = 0;
+    Contact *cont = NULL;
+    UDWORD stati[] = { STATUS_OFFLINE, STATUS_INV,  STATUS_DND,    STATUS_OCC,
+                       STATUS_NA,      STATUS_AWAY, STATUS_ONLINE, STATUS_FFC, STATUSF_BIRTH };
     char *name = strtok (args, "\n");
     SESSION;
 
     if (name)
     {
-        num = ContactFindByNick (name);
-        if (num == -1)
+        uin = ContactFindByNick (name);
+        if (uin == -1)
         {
             M_print (i18n (1699, "Must give a valid uin/nickname\n"));
             return 0;
         }
-        cont = ContactFind (num);
+        cont = ContactFind (uin);
         if (cont == NULL)
         {
             M_print (i18n (1700, "%s is not a valid user in your list.\n"), name);
             return 0;
         }
-        if (cont->flags & CONT_TEMPORARY)
-            M_print (COLSERV "#" COLNONE);
-        else if (cont->flags & CONT_INTIMATE)
-            M_print (COLSERV "*" COLNONE);
-        else if (cont->flags & CONT_HIDEFROM)
-            M_print (COLSERV "-" COLNONE);
-        else if (cont->flags & CONT_IGNORE)
-            M_print (COLSERV "^" COLNONE);
-        else
-            M_print (" ");
-        M_print ("%6ld=", cont->uin);
-        M_print (COLCONTACT "%-20s\t%s(", cont->nick, COLMESS);
-        Print_Status (cont->status);
-        M_print (")%s\n", COLNONE);
-        if (cont->status == STATUS_OFFLINE)
-        {
-            if (-1L != cont->last_time)
-            {
-                M_print (i18n (1069, " Last online at %s"), ctime ((time_t *) & cont->last_time));
-            }
-            else
-            {
-                M_print (i18n (1070, " Last on-line unknown."));
-                M_print ("\n");
-            }
-        }
-        else
-        {
-            if (-1L != cont->last_time)
-            {
-                M_print (i18n (1068, " Online since %s"), ctime ((time_t *) & cont->last_time));
-            }
-            else
-            {
-                M_print (i18n (1070, " Last on-line unknown."));
-                M_print ("\n");
-            }
-        }
-        M_print ("%-15s %s:%d\n", i18n (1441, "IP:"), UtilIOIP (cont->outside_ip), cont->port);
-        M_print ("%-15s %d\n", i18n (1453, "TCP version:"), cont->TCP_version);
-        M_print ("%-15s %s\n", i18n (1454, "Connection:"),
-                 cont->connection_type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"));
-        M_print ("%-15s %08x\n", i18n (2026, "TCP cookie:"), cont->cookie);
-        return 0;
     }
-    M_print (W_SEPERATOR);
-    Time_Stamp ();
-    M_print (" ");
-    M_print (i18n (1071, "Your status is "));
-    Print_Status (sess->status);
-    M_print ("\n");
-    /*  First loop sorts thru all offline users */
-    M_print ("%s%s\n", W_SEPERATOR, i18n (1072, "Users offline:"));
-    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+    else
     {
-        if (!(cont->flags & CONT_ALIAS))
+        for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
         {
-            if (!(cont->flags & CONT_IGNORE))
-            {
-                if (cont->status == STATUS_OFFLINE)
-                {
-                    if (cont->flags & CONT_INTIMATE)
-                        M_print (COLSERV "*" COLNONE);
-                    else
-                        M_print (" ");
-
-                    M_print ("%8ld=", cont->uin);
-                    M_print (COLCONTACT "%-20s\t%s(", cont->nick, COLMESS);
-                    Print_Status (cont->status);
-                    M_print (")" COLNONE);
-                    if (-1L != cont->last_time)
-                    {
-                        M_print (i18n (1069, " Last online at %s"),
-                                 ctime ((time_t *) & cont->last_time));
-                    }
-                    else
-                    {
-                        M_print (i18n (1070, " Last on-line unknown."));
-                        M_print ("\n");
-                        /* if time is unknow they can't be logged on cause we */
-                        /* set the time at login */
-                    }
-                }
-            }
+            if (cont->flags & CONT_ALIAS)
+                continue;
+            if (cont->uin > uin)
+                uin = cont->uin;
+            if (strlen (cont->nick) > lennick)
+                lennick = strlen (cont->nick);
+            if (strlen (UtilStatus (cont->status)) > lenstat)
+                lenstat = strlen (UtilStatus (cont->status));
+            if (cont->version && strlen (cont->version) > lenid)
+                lenid = strlen (cont->version);
         }
+        while (uin)
+            lenuin++, uin /= 10;
+        
+        Time_Stamp ();
+        M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", sess->uin);
+        M_print (i18n (1071, "Your status is "));
+        Print_Status (sess->status);
+        M_print ("\n");
     }
-    /* The second loop displays all the online users */
-    M_print ("%s%s\n", W_SEPERATOR, i18n (1073, "Users online:"));
-    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+    for (i = data & 1; i < 9; i++)
     {
-        if (!(cont->flags & CONT_ALIAS))
+        status = stati[i];
+        for (cont = (uin ? cont : ContactStart ()); ContactHasNext (cont); cont = ContactNext (cont))
         {
-            if (!(cont->flags & CONT_IGNORE))
+            char statbuf[100], verbuf[100];
+            
+            if (!uin)
             {
-                if (cont->status != STATUS_OFFLINE)
-                {
-                    if (cont->flags & CONT_INTIMATE)
-                        M_print (COLSERV "*" COLNONE);
-                    else
-                        M_print (" ");
+                if (__status (cont->status) != status)
+                    continue;
+                if (cont->flags & CONT_ALIAS)
+                    continue;
+            }
 
-                    M_print ("%8ld=", cont->uin);
-                    M_print (COLCONTACT "%-20s\t%s(", cont->nick, COLMESS);
-                    Print_Status (cont->status);
-                    M_print (")" COLNONE);
-                    if (-1L != cont->last_time)
-                    {
-                        if (cont->status == STATUS_OFFLINE)
-                            M_print (i18n (1069, " Last online at %s"),
-                                     ctime ((time_t *) & cont->last_time));
-                        else
-                            M_print (i18n (1068, " Online since %s"),
-                                     ctime ((time_t *) & cont->last_time));
-                    }
-                    else
-                    {
-                        M_print (i18n (1070, " Last on-line unknown."));
-                        M_print ("\n");
-                        /* if time is unknow they can't be logged on cause we */
-                        /* set the time at login */
-                    }
-                }
+            snprintf (statbuf, sizeof (statbuf), "(%s)", UtilStatus (cont->status));
+            if (cont->version)
+                snprintf (verbuf,  sizeof (verbuf), "[%s]", cont->version);
+            else
+                verbuf[0] = '\0';
+
+            if (data & 2)
+                M_print (COLSERV "%c%c%c" COLNONE " %*ld",
+                     cont->flags & CONT_TEMPORARY ? '#' : ' ',
+                     cont->flags & CONT_INTIMATE  ? '*' :
+                      cont->flags & CONT_HIDEFROM ? '-' : ' ',
+                     cont->flags & CONT_IGNORE    ? '^' : ' ',
+                     lenuin, cont->uin);
+
+            M_print (" " COLCONTACT "%-*s" COLNONE " " COLMESS "%-*s" COLNONE " %-*s %s",
+                     lennick, cont->nick, lenstat + 2, statbuf, lenid + 2, verbuf,
+                     cont->last_time != -1L && data & 2 ? ctime ((time_t *) &cont->last_time) : "\n");
+            
+            if (uin)
+            {
+                M_print ("%-15s %s/%s:%d\n", i18n (1441, "IP:"), UtilIOIP (cont->outside_ip), UtilIOIP (cont->local_ip), cont->port);
+                M_print ("%-15s %d\n", i18n (1453, "TCP version:"), cont->TCP_version);
+                M_print ("%-15s %s (%d)\n", i18n (1454, "Connection:"),
+                         cont->connection_type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),
+                         cont->connection_type);
+                M_print ("%-15s %08x\n", i18n (2026, "TCP cookie:"), cont->cookie);
+                return 0;
             }
         }
     }
-    M_print (W_SEPERATOR);
     return 0;
 }
 
