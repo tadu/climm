@@ -120,7 +120,7 @@ void i18nInit (const char *arg)
             s_repl (&prG->locale_full, earg);
         if (!earg)
             earg = "en_US.US-ASCII";
-        if (strchr (earg, '.') && !strchr (arg, '.'))
+        if (strchr (earg, '.') && arg && !strchr (arg, '.'))
         {
             arg = earg;
             prG->locale_broken = TRUE;
