@@ -164,6 +164,9 @@ typedef struct Extra_s        Extra;
 #define VIS_LIST_UPDATE         0x02
 #define CONT_LIST_UPDATE        0x00
 
+#define LOG_MAX_PATH 255
+#define DSCSIZ 192 /* Maximum length of log file descriptor lines. */
+
 /*
  * Should you decide to move a global variable from one struct to another,
  * change it manually in the header file, and then in the src directory

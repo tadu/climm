@@ -30,6 +30,9 @@ Contributors:
         Frédéric Lamorce	<fred__at__bemail.org>	BeDevId #15453
             added UDP Socks5 support (for v5)
             /* BeDevId #15453, http://www.colba.net/~tiange/ */
+        
+        Sebastian Felis		<sebastian__at__segv.de>
+            history & find command
 
 Current Translators:
 
