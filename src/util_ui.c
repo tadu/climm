@@ -71,7 +71,7 @@ BOOL Debug (UDWORD level, const char *str, ...)
     return 1;
 }
 
-#define mq(s) s_mquote(s,COLQUOTE,0)
+#define mq s_wordquote
 
 /*
  * Display all meta information regarding a given contact.
@@ -105,7 +105,7 @@ void UtilUIDisplayMeta (Contact *cont)
     if ((mg = cont->meta_general) && cont->updated & (UPF_GENERAL_A | UPF_DISC))
     {
         M_printf ("%s%-15s%s %s\t%s\n", COLSERVER, i18n (1500, "Nickname:"), COLNONE,
-                  mg->nick ? s_mquote (mg->nick, COLCONTACT, 0) : "",
+                  s_mquote (mg->nick, COLCONTACT, 0),
                   mg->auth == 1 ? i18n (1943, "(no authorization needed)")
                                 : i18n (1944, "(must request authorization)"));
         if (mg->first && *mg->first && mg->last && *mg->last)
@@ -343,5 +343,5 @@ void UtilUIDisplayMeta (Contact *cont)
     }
     if (cont->meta_about && *cont->meta_about)
         M_printf ("%s%-15s%s\n%s\n", COLSERVER, 
-                  i18n (1525, "About:"), COLNONE, s_mquote (s_ind (cont->meta_about), COLQUOTE, 1));
+                  i18n (1525, "About:"), COLNONE, s_msgquote (s_ind (cont->meta_about)));
 }

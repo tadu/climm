@@ -1005,7 +1005,7 @@ const char *s_quote (const char *input)
 }
 
 /*
- * Quote a string for display.
+ * Quote a string for display. May use quotes to make sure test boundary is clear.
  */
 const char *s_cquote (const char *input, const char *color)
 {
@@ -1054,7 +1054,7 @@ const char *s_cquote (const char *input, const char *color)
 }
 
 /*
- * Quote a string for message display.
+ * Quote a string for message display. Uses quotes only for the empty string.
  */
 const char *s_mquote (const char *input, const char *color, BOOL allownl)
 {

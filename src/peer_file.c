@@ -176,7 +176,7 @@ BOOL PeerFileAccept (Connection *peer, UWORD status, UDWORD port)
     
     if (prG->verbose)
         M_printf (i18n (9999, "Opening file transfer connection to %s:%s%ld%s... \n"),
-                  s_mquote (fpeer->server, COLQUOTE, 0), COLQUOTE, fpeer->port, COLNONE);
+                  s_wordquote (fpeer->server), COLQUOTE, fpeer->port, COLNONE);
 
     TCPDispatchConn (fpeer);
     

@@ -183,7 +183,7 @@ static void rl_dump_line (void)
     {
         fprintf (stderr, "ucs %02x%02x col %d bytes %d string '%s'\n",
                  rl_ucs.txt[2 * i], rl_ucs.txt[2 * i + 1], rl_ucscol.txt[i], rl_ucsbytes.txt[i],
-                 s_mquote (s_sprintf ("%.*s", rl_ucsbytes.txt[i], rl_display.txt + bp), COLNONE, 0));
+                 s_wordquote (s_sprintf ("%.*s", rl_ucsbytes.txt[i], rl_display.txt + bp)));
         bp += rl_ucsbytes.txt[i];
     }
 } */

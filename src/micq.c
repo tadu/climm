@@ -338,7 +338,7 @@ int main (int argc, char *argv[])
         if (!*arg_i || !strcasecmp (arg_i, "C") || !strcasecmp (arg_i, "POSIX"))
         {
             M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-            M_printf (i18n (9999, "Manual locale setting %s ignored - use a real locale instead.\n"), s_cquote (arg_i, COLQUOTE));
+            M_printf (i18n (9999, "Manual locale setting %s ignored - use a real locale instead.\n"), s_qquote (arg_i));
         }
     }
     else
@@ -352,13 +352,13 @@ int main (int argc, char *argv[])
         else if (!*prG->locale_orig || !strcasecmp (prG->locale_orig, "C") || !strcasecmp (prG->locale_orig, "POSIX"))
         {
             M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-            M_printf (i18n (9999, "Locale setting %s ignored - use a real locale instead.\n"), s_cquote (prG->locale_orig, COLQUOTE));
+            M_printf (i18n (9999, "Locale setting %s ignored - use a real locale instead.\n"), s_qquote (prG->locale_orig));
         }
         if (prG->locale_full && prG->locale_broken)
         {
             M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
             M_printf (i18n (9999, "Your system doesn't know the %s locale - try %siconv --list%s.\n"),
-                      s_cquote (prG->locale_full, COLQUOTE), COLQUOTE, COLNONE);
+                      s_qquote (prG->locale_full), COLQUOTE, COLNONE);
         }
     }
 
@@ -374,16 +374,16 @@ int main (int argc, char *argv[])
         M_printf (i18n (9999, "Deprecated option -f used. Please use the similar -b instead.\n"));
     }
 
-    M_printf (i18n (9999, "This console uses encoding %s.\n"), s_cquote (ConvEncName (prG->enc_loc), COLQUOTE));
+    M_printf (i18n (9999, "This console uses encoding %s.\n"), s_qquote (ConvEncName (prG->enc_loc)));
     if (i == -1)
     {
         M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
         M_printf (i18n (9999, "Translation %s%s%s not found. Would you like to translate mICQ into your language?\n"),
-                  COLQUOTE, s_cquote (prG->locale, COLQUOTE), COLNONE);
+                  COLQUOTE, s_qquote (prG->locale), COLNONE);
     }
     else if (i)
         M_printf (i18n (9999, "English (%s) translation loaded (%s%ld%s entries).\n"),
-                  s_cquote (prG->locale, COLQUOTE), COLQUOTE, i, COLNONE);
+                  s_qquote (prG->locale), COLQUOTE, i, COLNONE);
     else
         M_printf ("No translation requested. You live in nowhereland, eh?\n");
 

@@ -52,7 +52,7 @@ void RemoteOpen (Connection *remo)
 {
     s_repl (&remo->server, s_realpath (remo->pref_server));
 
-    M_printf (i18n (2223, "Opening remote control FIFO at %s... "), s_mquote (remo->server, COLQUOTE, 0));
+    M_printf (i18n (2223, "Opening remote control FIFO at %s... "), s_wordquote (remo->server));
 
     remo->connect     = 0;
     remo->our_seq     = 0;

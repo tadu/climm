@@ -2018,14 +2018,14 @@ static JUMP_F(CmdUserOpt)
         copts = &cg->copts;
         data = COF_GROUP;
         optobj = cg->name;
-        coptobj = strdup (s_cquote (optobj, COLQUOTE));
+        coptobj = strdup (s_qquote (optobj));
     }
     else if ((!data || data == COF_CONTACT) && s_parsenick (&args, &cont, conn))
     {
         copts = &cont->copts;
         data = COF_CONTACT;
         optobj = cont->nick;
-        coptobj = strdup (s_cquote (optobj, COLQUOTE));
+        coptobj = strdup (s_qquote (optobj));
     }
     else if (data == COF_GLOBAL)
     {
@@ -2040,14 +2040,14 @@ static JUMP_F(CmdUserOpt)
             switch (data)
             {
                 case COF_GROUP:
-                    M_printf (i18n (9999, "%s is not a contact group.\n"), s_cquote (par->txt, COLQUOTE));
+                    M_printf (i18n (9999, "%s is not a contact group.\n"), s_qquote (par->txt));
                     break;
                 case COF_CONTACT:
-                    M_printf (i18n (9999, "%s is not a contact.\n"), s_cquote (par->txt, COLQUOTE));
+                    M_printf (i18n (9999, "%s is not a contact.\n"), s_qquote (par->txt));
                     break;
                 default:
                     M_printf (i18n (9999, "%s is neither a contact, nor a contact group, nor the %sglobal%s keyword.\n"),
-                              s_cquote (par->txt, COLQUOTE), COLQUOTE, COLNONE);
+                              s_qquote (par->txt), COLQUOTE, COLNONE);
             }
         }
         else
@@ -2152,10 +2152,10 @@ static JUMP_F(CmdUserOpt)
         
         if (!optname)
         {
-            M_printf (i18n (9999, "Unknown option %s.\n"), s_cquote (par->txt, COLQUOTE));
+            M_printf (i18n (9999, "Unknown option %s.\n"), s_qquote (par->txt));
             continue;
         }
-        coptname = strdup (s_cquote (optname, COLQUOTE));
+        coptname = strdup (s_qquote (optname));
         
         if (!s_parse (&args, &par))
         {
@@ -2177,7 +2177,7 @@ static JUMP_F(CmdUserOpt)
                 M_printf (data == COF_CONTACT ? i18n (9999, "Option %s for contact %s is %s.\n") :
                           data == COF_GROUP   ? i18n (9999, "Option %s for contact group %s is %s.\n")
                                               : i18n (9999, "Option %s%s is globally %s.\n"),
-                          coptname, coptobj, s_cquote (flag & COF_STRING  ? res : ContactOptionsS2C (res), COLQUOTE));
+                          coptname, coptobj, s_qquote (flag & COF_STRING  ? res : ContactOptionsS2C (res)));
             return 0;
         }
         
@@ -2202,7 +2202,7 @@ static JUMP_F(CmdUserOpt)
             M_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s to %s.\n") :
                       data == COF_GROUP   ? i18n (9999, "Setting option %s for contact group %s to %s.\n")
                                           : i18n (9999, "Setting option %s%s globally to %s.\n"),
-                      coptname, coptobj, s_cquote (res, COLQUOTE));
+                      coptname, coptobj, s_qquote (res));
         }
         else if (flag & COF_COLOR)
         {
@@ -2211,7 +2211,7 @@ static JUMP_F(CmdUserOpt)
             M_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s to %s.\n") :
                       data == COF_GROUP   ? i18n (9999, "Setting option %s for contact group %s to %s.\n")
                                           : i18n (9999, "Setting option %s%s' globally to %s.\n"),
-                      coptname, coptobj, s_cquote (col, COLQUOTE));
+                      coptname, coptobj, s_qquote (col));
             free (col);
         }
         else if (flag & COF_NUMERIC)
@@ -2242,7 +2242,7 @@ static JUMP_F(CmdUserOpt)
         }
         else
         {
-            M_printf (i18n (9999, "Invalid value %s for boolean option %s.\n"), s_cquote (par->txt, COLQUOTE), coptname);
+            M_printf (i18n (9999, "Invalid value %s for boolean option %s.\n"), s_qquote (par->txt), coptname);
             continue;
         }
         free (coptname);
@@ -3820,7 +3820,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
                 }
                 else
                     M_printf (i18n (9999, "Unknown command %s, type %shelp%s for help.\n"),
-                              s_mquote (cmd, COLQUOTE, 0), COLQUOTE, COLNONE);
+                              s_qquote (cmd), COLQUOTE, COLNONE);
                 free (cmd);
                 free (argsd);
             }

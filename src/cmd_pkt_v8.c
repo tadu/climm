@@ -74,7 +74,7 @@ void ConnectionInitServer (Connection *conn)
                       NULL, conn->cont, NULL, &SrvCallBackTimeout);
 
     M_printf (i18n (9999, "Opening v8 connection to %s:%s%ld%s... "),
-              s_mquote (conn->server, COLQUOTE, 0), COLQUOTE, conn->port, COLNONE);
+              s_wordquote (conn->server), COLQUOTE, conn->port, COLNONE);
 
     UtilIOConnectTCP (conn);
 }

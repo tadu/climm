@@ -59,6 +59,10 @@ const char *s_quote       (const char *input);
 const char *s_cquote      (const char *input, const char *color);
 const char *s_mquote      (const char *input, const char *color, BOOL allownl);
 
+#define s_qquote(i)      s_cquote (i, COLQUOTE)
+#define s_wordquote(i)   s_mquote (i, COLQUOTE, 0)
+#define s_msgquote(i)    s_mquote (i, COLQUOTE, 1)
+
 #define s_repl(old,new) do { char **_p_p_ = old; const char *_q_q_ = new; \
                              if (*_p_p_) free (*_p_p_); *_p_p_ = NULL; \
                              if (_q_q_) *_p_p_ = strdup (_q_q_); } while (0)

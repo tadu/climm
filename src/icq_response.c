@@ -601,19 +601,27 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
     switch (type)
     {
         case INT_FILE_ACKED:
-            line = s_sprintf (i18n (2070, "File transfer '%s' to port %ld.\n"), extra->text, extra->data);
+            line = s_sprintf (i18n (9999, "File transfer %s to port %ld.\n"),
+                              s_qquote (extra->text), extra->data);
             break;
         case INT_FILE_REJED:
-            line = s_sprintf (i18n (2231, "File transfer '%s' rejected by peer: %s.\n"), extra->text, text);
+            line = s_sprintf (i18n (9999, "File transfer %s rejected by peer: %s.\n"),
+                              s_qquote (extra->text), s_wordquote (text));
             break;
         case INT_FILE_ACKING:
-            line = s_sprintf (i18n (2186, "Accepting file '%s' (%ld bytes).\n"), extra->text, extra->data);
+            line = s_sprintf (i18n (9999, "Accepting file %s (%ld bytes).\n"),
+                              s_qquote (extra->text), extra->data);
             break;
         case INT_FILE_REJING:
-            line = s_sprintf (i18n (2229, "Refusing file request '%s' (%ld bytes): %s.\n"), extra->text, extra->data, text);
+            line = s_sprintf (i18n (9999, "Refusing file request %s (%ld bytes): %s.\n"),
+                              s_qquote (extra->text), extra->data, s_wordquote (text));
             break;
         case INT_CHAR_REJING:
-            line = s_sprintf (i18n (2230, "Refusing chat request (%s/%s) from %s.\n"), extra->text, text, cont->nick);
+            line = s_sprintf (i18n (9999, "Refusing chat request (%s/%s) from %s%s%s.\n"),
+                              p = strdup (s_qquote (extra->text)), q = strdup (s_qquote (text)),
+                              COLCONTACT, cont->nick, COLNONE);
+            free (p);
+            free (q);
             break;
         case INT_MSGTRY_TYPE2:
             line = s_sprintf ("%s%s %s\n", i18n (2293, "--="), COLSINGLE, text);
@@ -796,10 +804,10 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
         case MSGF_MASS: /* not reached here, but quiets compiler warning */
         while (1)
         {
-            M_printf ("?%lx? %s" COLMSGINDENT "%s\n", e_msg_type, COLMESSAGE, e_msg_text);
-            M_printf ("    ");
+            M_printf ("(?%lx?) %s" COLMSGINDENT "%s\n", e_msg_type, COLMESSAGE, e_msg_text);
+            M_printf ("    '");
             for (j = 0; j < strlen (e_msg_text); j++)
-                M_printf ("%c", cdata[j] ? cdata[j] : '.');
+                M_printf ("%c", ((cdata[j] & 0xe0) && (cdata[j] != 127)) ? cdata[j] : '.');
             M_print ("'\n");
             break;
 
@@ -810,8 +818,8 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             break;
 
         case MSG_FILE:
-            M_printf (i18n (2259, "requests file transfer '%s' of %ld bytes (sequence %ld).\n"),
-                      cdata, ExtraGet (extra, EXTRA_FILETRANS), ExtraGet (extra, EXTRA_REF));
+            M_printf (i18n (9999, "requests file transfer %s of %ld bytes (sequence %ld).\n"),
+                      s_qquote (cdata), ExtraGet (extra, EXTRA_FILETRANS), ExtraGet (extra, EXTRA_REF));
             break;
 
         case MSG_AUTO:
@@ -846,8 +854,8 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             tmp  = s_msgtok (cdata); if (!tmp)  continue;
             tmp2 = s_msgtok (NULL);  if (!tmp2) continue;
             
-            M_printf ("%s %s%s%s\n%s", carr, COLMESSAGE, tmp, s_now, COLNONE);
-            M_printf (i18n (2127, "       URL: %s %s%s%s\n"), carr, COLMESSAGE, tmp2, COLNONE);
+            M_printf ("%s %s\n%s", carr, s_msgquote (tmp), s_now);
+            M_printf (i18n (2127, "       URL: %s %s\n"), carr, s_wordquote (tmp2));
             break;
 
         case MSG_AUTH_REQ:
@@ -868,20 +876,18 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
                 tmp = NULL;
             }
 
-            M_printf (i18n (9999, "requests authorization: %s%s%s\n"),
-                      COLMESSAGE, COLMSGINDENT, tmp6);
+            M_printf (i18n (9999, "requests authorization: %s\n"), s_msgquote (tmp6));
             
             if (tmp && strlen (tmp))
-                M_printf ("%-15s %s%s%s\n", "???1:", COLMESSAGE, tmp, COLNONE);
+                M_printf ("%-15s %s\n", "???1:", s_wordquote (tmp));
             if (tmp2 && strlen (tmp2))
-                M_printf ("%-15s %s%s%s\n", i18n (1564, "First name:"), COLMESSAGE, tmp2, COLNONE);
+                M_printf ("%-15s %s\n", i18n (1564, "First name:"), s_wordquote (tmp2));
             if (tmp3 && strlen (tmp3))
-                M_printf ("%-15s %s%s%s\n", i18n (1565, "Last name:"), COLMESSAGE, tmp3, COLNONE);
+                M_printf ("%-15s %s\n", i18n (1565, "Last name:"), s_wordquote (tmp3));
             if (tmp4 && strlen (tmp4))
-                M_printf ("%-15s %s%s%s\n", i18n (1566, "Email address:"), COLMESSAGE, tmp4, COLNONE);
+                M_printf ("%-15s %s\n", i18n (1566, "Email address:"), s_wordquote (tmp4));
             if (tmp5 && strlen (tmp5))
-                M_printf ("%-15s %s%s%s\n", "???5:", COLMESSAGE, tmp5, COLNONE);
-            M_print (COLMSGEXDENT);
+                M_printf ("%-15s %s\n", "???5:", s_wordquote (tmp5));
             break;
 
         case MSG_AUTH_DENY:
@@ -903,11 +909,11 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             tmp3 = s_msgtok (NULL); if (!tmp3) continue;
             tmp4 = s_msgtok (NULL); if (!tmp4) continue;
 
-            M_printf ("\n%s%s%s ", COLCONTACT, tmp, COLNONE);
+            M_printf ("%s ", s_cquote (tmp, COLCONTACT));
             M_print  (i18n (1755, "has added you to their contact list.\n"));
-            M_printf ("%-15s %s%s%s\n", i18n (1564, "First name:"), COLMESSAGE, tmp2, COLNONE);
-            M_printf ("%-15s %s%s%s\n", i18n (1565, "Last name:"), COLMESSAGE, tmp3, COLNONE);
-            M_printf ("%-15s %s%s%s\n", i18n (1566, "Email address:"), COLMESSAGE, tmp4, COLNONE);
+            M_printf ("%-15s %s\n", i18n (1564, "First name:"), s_wordquote (tmp2));
+            M_printf ("%-15s %s\n", i18n (1565, "Last name:"), s_wordquote (tmp3));
+            M_printf ("%-15s %s\n", i18n (1566, "Email address:"), s_wordquote (tmp4));
             break;
 
         case MSG_EMAIL:
@@ -918,16 +924,16 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             tmp4 = s_msgtok (NULL);  if (!tmp4) continue;
             tmp5 = s_msgtok (NULL);  if (!tmp5) continue;
 
-            M_printf ("\n%s ", tmp);
-            M_printf ("\n??? %s", tmp2);
-            M_printf ("\n??? %s", tmp3);
+            M_printf ("\n%s ", s_wordquote (tmp));
+            M_printf ("\n??? %s", s_wordquote (tmp2));
+            M_printf ("\n??? %s", s_wordquote (tmp3));
 
             if (e_msg_type == MSG_EMAIL)
-                M_printf (i18n (1592, "<%s> emailed you a message:\n"), tmp4);
+                M_printf (i18n (1592, "<%s> emailed you a message:\n"), s_cquote (tmp4, COLCONTACT));
             else
-                M_printf (i18n (1593, "<%s> send you a web message:\n"), tmp4);
+                M_printf (i18n (1593, "<%s> send you a web message:\n"), s_cquote (tmp4, COLCONTACT));
 
-            M_printf ("%s%s%s\n", COLMESSAGE, tmp5, COLNONE);
+            M_printf ("%s\n", s_msgquote (tmp5));
             break;
 
         case MSG_CONTACT:
@@ -941,8 +947,8 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
                 tmp2 = s_msgtok (NULL); if (!tmp2) continue;
                 tmp3 = s_msgtok (NULL); if (!tmp3) continue;
                 
-                M_printf ("%s%s\t\t\t", COLCONTACT, tmp2);
-                M_printf ("%s%s%s\n", COLMESSAGE, tmp3, COLNONE);
+                M_print  (s_cquote (tmp2, COLCONTACT));
+                M_printf ("\t\t\t%s\n", s_msgquote (tmp3));
             }
             break;
         }

@@ -188,7 +188,7 @@ static void FlapChannel4 (Connection *conn, Packet *pak)
         conn->ip = 0;
 
         M_printf (i18n (9999, "Redirect to server %s:%s%ld%s... "),
-                  s_mquote (conn->server, COLQUOTE, 0), COLQUOTE, conn->port, COLNONE);
+                  s_wordquote (conn->server), COLQUOTE, conn->port, COLNONE);
 
         conn->connect = 8;
         conn->tlv = tlv;

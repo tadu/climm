@@ -246,8 +246,8 @@ void Initialize_RC_File ()
     free (passwd);
 }
 
-#define PrefParse(x)          switch (1) { case 1: if (!s_parse (&args, &par)) { M_printf (i18n (2123, "%sSyntax error%s: Too few arguments: %s\n"), COLERROR, COLNONE, s_cquote (line->txt, COLQUOTE)); continue; } x = par->txt; }
-#define PrefParseInt(i)       switch (1) { case 1: if (!s_parseint (&args, &i)) { M_printf (i18n (2124, "%sSyntax error%s: Not an integer: %s\n"), COLERROR, COLNONE, s_cquote (line->txt, COLQUOTE)); continue; }}
+#define PrefParse(x)          switch (1) { case 1: if (!s_parse (&args, &par)) { M_printf (i18n (2123, "%sSyntax error%s: Too few arguments: %s\n"), COLERROR, COLNONE, s_qquote (line->txt)); continue; } x = par->txt; }
+#define PrefParseInt(i)       switch (1) { case 1: if (!s_parseint (&args, &i)) { M_printf (i18n (2124, "%sSyntax error%s: Not an integer: %s\n"), COLERROR, COLNONE, s_qquote (line->txt)); continue; }}
 #define ERROR continue;
 
 /*
@@ -578,7 +578,7 @@ int Read_RC_File (FILE *rcf)
                     PrefParse (tmp);
                     M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
                     M_printf (i18n (9999, "Can't tab spool %s; type \"%sopt %s tabspool 1%s\" manually.\n"),
-                              s_cquote (tmp, COLQUOTE), COLQUOTE, tmp, COLNONE);
+                              s_qquote (tmp), COLQUOTE, tmp, COLNONE);
                 }
                 else if (!strcasecmp (cmd, "set"))
                 {
