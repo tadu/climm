@@ -869,7 +869,7 @@ JUMP_F (CmdUserMessage)
     static UDWORD multi_uin;
     static int offset = 0;
     static char msg[1024];
-    char *arg1, *p;
+    char *arg1, *p, *temp;
     int len;
     Contact *cont;
     SESSION;
@@ -906,19 +906,16 @@ JUMP_F (CmdUserMessage)
         }
         else
         {
-            if (offset + strlen (arg1) < 450)
+            while (offset + strlen (arg1) > 450)
             {
-                strcat (msg, arg1);
-                strcat (msg, "\r\n");
-                offset += strlen (arg1) + 2;
-            }
-            else
-            {
+                int diff;
                 M_print (i18n (1037, "Message sent before last line buffer is full\n"));
+                diff = 450 - offset - 2;
+                snprintf (msg + offset, diff, "%s\r\n", arg1);
+                msg [offset + diff] = '\0';
+                arg1 += diff;
                 if (multi_uin == -1)
                 {
-                    char *temp;
-                    
                     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
                     {
                         temp = strdup (msg);
@@ -928,11 +925,17 @@ JUMP_F (CmdUserMessage)
                 }
                 else
                 {
-                    icq_sendmsg (sess, multi_uin, msg, NORM_MESS);
+                    temp = strdup (msg);
+                    icq_sendmsg (sess, multi_uin, temp, NORM_MESS);
+                    free (temp);
                     uiG.last_sent_uin = multi_uin;
                 }
-                return 0;
+                msg[0] = '\0';
+                offset = 0;
             }
+            strcat (msg, arg1);
+            strcat (msg, "\r\n");
+            offset += strlen (arg1) + 2;
         }
     }
     else
