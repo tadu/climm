@@ -145,7 +145,8 @@ int ssl_supported (Connection *conn)
     if (!cont)
         return 0;
 
-    if (!(HAS_CAP(cont->caps, CAP_MICQ) || (HAS_CAP(cont->caps, CAP_LICQ) && cont->dc && (cont->dc->id1 & 0xFFFF0000) == LICQ_WITHSSL)))
+    if (!(HAS_CAP(cont->caps, CAP_SIMNEW) || HAS_CAP(cont->caps, CAP_MICQ)
+          || (cont->dc && (cont->dc->id1 & 0xFFFF0000) == LICQ_WITHSSL)))
     {
         Debug (DEB_SSL, "%s (%ld) is no SSL candidate", cont->nick, cont->uin);
         TCLEvent (cont, "ssl", "no_candidate");
@@ -353,6 +354,12 @@ void ssl_close (Connection *conn)
  */
 BOOL TCPSendSSLReq (Connection *list, Contact *cont)
 {
-    return PeerSendMsg (list, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, MSG_SSL_OPEN, CO_MSGTEXT, "", 0));
+    Connection *peer;
+    UBYTE ret;
+
+    ret = PeerSendMsg (list, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, MSG_SSL_OPEN, CO_MSGTEXT, "", 0));
+    if ((peer = ConnectionFind (TYPE_MSGDIRECT, cont->uin, list)))
+        peer->ssl_status = SSL_STATUS_REQUEST;
+    return ret;
 }                      
 #endif
