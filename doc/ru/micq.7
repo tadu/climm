@@ -1,40 +1,38 @@
-.\" $Id$
-.\"This is the man page for ~/.micq/micqrc."
-.\".TH MICQ 7 "February 15, 2002" "MICQ(7)"
-.Dd August 9, 2002
-.Dt MICQ 7
-.Os MICQ(7)
-.Sh ИМЯ
-micq интерактивные команды
-.Sh ОПИСАНИЕ
+.\" $Id$ -*- nroff -*-
+.\"  EN: <add CVS id like above from the file this translation is synced to>
+.TH MICQ 7 mICQ RU
+.SH ИМЯ
+.B micq
+\- интерактивные команды
+.SH ОПИСАНИЕ
 Эта страница описывает команды, которые используются в micq. Эта страница
 содержит ту же информацию, что и на странице помощи в веб.
-.Sh КОМАНДЫ
-.Bl -tag -width Fl
-.It Ic trans Op Ar lang|nr ...
+.SH КОМАНДЫ
+.TP
+.BI trans \ [lang|nr] ...
 Переключает язык 
-.Ar lang ,
+.IR lang ,
 данный iso кодом, или выводит номер перевода
-.Ar nr .
+.IR nr .
 Чтобы выбрать язык по умолчанию, описанный переменными окружения
-.Ic LANG ,
-.Ic LC_ALL
+.BR LANG ,
+.BR LC_ALL
 и
-.Ic LC_MESSAGES ,
+.BR LC_MESSAGES ,
 используйте
-.Ic \&! ,
-.Ic auto
+.BR ! ,
+.B auto
 или
-.Ic default .
+.BR default .
 Чтобы отключить перевод вообще, используйте
-.Ic \&. ,
-.Ic none
+.BR . ,
+.B none
 или
-.Ic unload .
+.BR unload .
 Чтобы получить отладочную информацию, используйте
-.Ic debug .
+.BR debug .
 Чтобы получить funny сообщения, используйте
-.Ic _fun .
+.BR _fun .
 .sp
 Файлы из ~/.micq/i18n/*.i18n считаются главнее,
 тогда как "funny" сообщения берутся из стандартной директории.
@@ -42,278 +40,342 @@ micq интерактивные команды
 Фактически, вы можете указать сколь угодно много аргументов, например, чтобы
 вывести строку 117 по-немецки и затем переключиться на язык по умолчанию,
 достаточно ввести "trans de 117 default".
-.It Ic tabs 
+.TP
+.BI tabs 
 Показывает список пользователей, которых вы можете перебирать табуляцией.
-.It Ic save
+.TP
+.BI save
 Сохраняет текущие настройки в кофигурационный файл, которым является
-.Pa ~/.micq/micqrc ,
+.IR ~/.micq/micqrc ,
 если не указано другого.
 Будьте осторожны, это удалит все комментарии в этом файле.
-.It Ic r Op Ar сообщение
+.TP
+.BI r \ [сообщение]
 Ответить пользователю, который последним послал вам сообщение.  Без
-.Ar сообщение
+.I сообщение
 будет включен многолинейный режим.  Чтобы послать многолинейное сообщение,
 поставьте точку
-.Ic ( . )
+.RB ( . )
 на пустой линии в конце сообщения.  Чтобы отменить сообщение, поставьте решетку
-.Ic ( # )
+.RB ( # )
 на пустой линии в конце сообщения.
-.It Ic a Op Ar сообщение
+.TP
+.BI a \ [сообщение]
 Послать сообщение тому, кто последний получил ваше сообщение.  Смотрите
-.Ic r
+.B r
 без указания сообщения
-.Ar сообщение .
-.It Ic msg Ar uin|ник Ic Op Ar сообщение
+.IR сообщение .
+.TP
+.BI msg \ uin|ник\ [сообщение]
 Посылает сообщение на
-.Ar uin|ник .
+.IR uin|ник .
 Смотрите
-.Ic r 
+.B r 
 без указания сообщения
-.Ar сообщение .
-.It Ic url Ar uin|ник Ic Ar url Ar сообщение
+.IR сообщение .
+.TP
+.BI url \ uin|ник\ url\ сообщение
 Посылает
-.Ar сообщение
+.I сообщение
 ссылаясь на
-.Ar url
+.I url
 к
-.Ar uin|ник .
-.It Ic sms Ar мобильник сообщение
+.IR uin|ник .
+.TP
+.BI sms \ мобильник\ сообщение
 Посылает SMS
-.Ar сообщение
+.I сообщение
 на сотовый номер
-.Ar мобильник ,
+.IR мобильник ,
 который выглядит как +<номер страны><телефон>.
-.It Ic msga
+.TP
+.BI msga
 Посылает многолинейное сообщение всем из вашего контакт-листа.
 Используйте точку
-.Ic ( . )
+.RB ( . )
 на пустой линии в конце сообщения, чтобы послать сообщение
 или поставьте решетку
-.Ic ( # )
+.RB ( # )
 на пустой линии в конце сообщения, чтобы отменить сообщение.
-.It Ic uptime
+.TP
+.BI uptime
 Показывает сколько времени работает micq.
-.It Ic last Op Ar контакт
+.TP
+.BI last \ [контакт]
 Показывает список пользователей, которые послали вам сообщения
 или последнее сообщение принятое от
-.Ar контакт ,
+.IR контакт ,
 который может быть
-.Ar uin
+.I uin
 или
-.Ar ник .
-.It Ic verbose Op Ar verb
-Установить уровень вывода micq'а на
-.Ar verb ,
+.IR ник .
+.TP
+.BI verbose \ [verb]
+Установить уровень вывода mICQ'а на
+.IR verb ,
 или показать текущий уровень. Уровень вывода - это установка флагов:
-.Bl -tag -width Fl
-.It 128
+.RS
+.TP
+.B 128
 Дамп входящих и исходящих пакетов.
-.It 256
+.TP
+.B 256
 Записывать входящие и исходящие серверные пакеты на диск (~/.micq/debug/packets).
-.El
+.RE
+
+.RS
 и кое-что еще.
-.It Ic clear
+.RE
+.TP
+.BI clear
 Очистить экран.
-.It Ic sound Op Ar command
+.TP
+.BI sound \ [command]
 Включить/выключить звук, или установить команду
-.Ar command .
-.It Ic soundonline Op Ar command
+.IR command .
+.TP
+.BI soundonline \ [command]
 Включить/выключить звук, когда пользователь становится online,
 или установить команду
-.Ar command .
-.It Ic soundoffline Op Ar command
-Включить/выключить звук, когда пользователь становится
-.br
-offline, или установить команду
-.Ar command .
-.It Ic q
-Выйти из micq'а.
-.It Ic auto Op Ar on|off
+.IR command .
+.TP
+.BI soundoffline \ [command]
+Включить/выключить звук, когда пользователь становится offline,
+или установить команду
+.IR command .
+.TP
+.BI q
+Выйти из mICQ'а.
+.TP
+.BI auto \ [on|off]
 Включить/выключить автоответы. Если не задано on или off,
 то показать автоответ.
-.It Ic auto Ar status ответ
+.TP
+.BI auto \ status\ ответ
 Изменить автоответ для режима
-.Ar status
+.I status
 на
-.Ar ответ .
-.It Ic autoaway Op Ar timeout
+.IR ответ .
+.TP
+.BI autoaway \ [timeout]
 Включить/выключить autoaway, или поставить таймаут на
-.Ar timeout .
-.It Ic alter Ar command new
+.Ir timeout .
+.TP
+.BI alter \ command\ new
 Изменить команду
-.Ar command
+.I command
 на
-.Ar new .
-.It Ic auth Ar uin|ник
+.IR new .
+.TP
+.BI auth \ uin|ник
 Позволить
-.Ar uin|ник
+.I uin|ник
 добавить вас в их контакт-лист.
-.It Ic rand Ar number
+.TP
+.BI rand \ number
 Найти пользователя в группе номер
-.Ar number .
-.It Ic pass Ar password
+.IR number .
+.TP
+.BI pass \ password
 Меняет ваш icq пароль на
-.Ar password . 
+.IR password . 
 .br
 Примечание: вам нужно будет сохраниться командой
-.Ar save
+.I save
 чтобы пароль записался в ваш
-.Pa ~/.micq/micqrc
+.IR ~/.micq/micqrc
 файл (смотри
-.Xr micqrc 7 ) ,
+.BR micqrc (7)),
 или у вас будет неправильный пароль, когда вы будете логиниться.
-.It Ic search
-.It Ic search Ar email
-.It Ic search Ar nick
-.It Ic search Ar first last
+.TP
+.BI search
+.TP
+.BI search \ email
+.TP
+.BI search \ nick
+.TP
+.BI search \ first\ last
 Поиск пользователя с 
-.Ar email
+.I email
 как его электронный адрес, с
-.Ar nick
+.I nick
 как его ник (не может содержать @), или с
-.Ar first
+.I first
 как имя и
-.Ar last
+.I last
 как его фамилия. Если не задано аргументов, то спрашивать все это
 и более того в интерактивном режиме поиска.
-.It Ic add Ar uin Op Ar ник
+.TP
+.BI add \ uin\ [ник]
 Добавить
-.Ar uin
+.I uin
 в ваш контакт-лист в виде
-.Ar ник ,
+.IR ник ,
 или переименовать
-.Ar uin
+.I uin
 в
-.Ar ник .
+.IR ник .
 Если
-.Ar ник
+.I ник
 не задан, то использовать
-.Ar uin
+.I uin
 как ник.
 .br
 Замечание: вам нужно сохраниться командой
-.Ar save
+.B save
 чтобы инфа не пропала.
-.It Ic rem Ar ник
+.TP
+.BI rem \ ник
 Удаляет
-.Ar ник
+.I ник
 из вашего контакт-лист.
 .br
 Замечание: вам нужно сохраниться командой
-.Ar save
+.B save
 чтобы инфа не пропала.
-.It Ic togvis Ar ник
+.TP
+.BI togvis \ ник
 Включает вашу видимость для
-.Ar ник
+.I ник
 даже если вы невидимы.
-.It Ic toginvis Ar ник
+.TP
+.BI toginvis \ ник
 Включает вашу невидимость для
-.Ar ник .
-.It Ic togig Ar ник
+.IR ник .
+.TP
+.BI togig \ ник
 Включает игнор
-.Ar ник'а
+.I ник'а
 на его сообщения и режимы.
-.It Ic info Ar uin|ник
+.TP
+.BI info \ uin|ник
 Показать всю инфу о
-.Ar uin|ник .
-.It Ic w
+.IR uin|ник .
+.TP
+.BI w
 Показать всех людей в вашем контакт-листе.
-.It Ic e
+.TP
+.BI e
 Показать всех online пользователей в вашем контакт-листе.
-.It Ic wide
+.TP
+.BI wide
 Показать всех в вашем контакт-листе в широком формате.
-.It Ic ewide
+.TP
+.BI ewide
 Показать всех online пользователей в вашем контакт-листе в широком формате.
-.It Ic s
+.TP
+.BI s
 Показывает ваш статус.
-.It Ic i
+.TP
+.BI i
 Показывает всех игнорированных пользователей.
-.It Ic status Ar ник
+.TP
+.BI status \ ник
 Показывает статус 
-.Ar ник'а .
+.IR ник'а .
 Включает IP адрес, версию протокола ICQ и тип соединения.
-.It Ic change Op Ar number
+.TP
+.BI change [number]
 Изменить ваш статус на номер
-.Ar number .
+.IR number .
 Без номера показывает возможные режимы.
-.It Ic reg password
+.TP
+.BI reg password
 Создает новый аккаунт с паролем
-.Ar password .
-.It Ic online
+.IR password .
+.TP
+.BI online
 Изменить статус на online.
-.It Ic away
+.TP
+.BI away
 Изменить статус на Ушел.
-.It Ic na
+.TP
+.BI na
 Изменить статус на Недоступен.
-.It Ic occ             
+.TP
+.BI occ             
 Изменить статус на Занят.
-.It Ic dnd 
+.TP
+.BI dnd 
 Изменить статус на Не беспокоить.
-.It Ic ffc
+.TP
+.BI ffc
 Изменить статус на Готов пообщаться.
-.It Ic inv
+.TP
+.BI inv
 Изменить статус на Невидимый
-.It Ic update
+.TP
+.BI update
 Обновляет вашу основную инфу (email, ник, и т.д.).
-.It Ic other
+.TP
+.BI other
 Обновляет другую инфу, как возраст и пол.
-.It Ic about
+.TP
+.BI about
 Обновляет информацию о вас.
-.It Ic set Ar option Ar value
+.TP
+.BI set \ option\ value
 Установить опцию
-.Ar option
+.I option
 активной
-.Ic on
+.B on
 или
-.Ic off .
-.Ar option
+.BR off .
+.I option
 может быть
-.Ic color ,
-.Ic funny
+.BR color ,
+.B funny
 или
-.Ic quiet .
-.It Ic peek Ar ник
+.BR quiet .
+.TP
+.BI peek \ ник
 Проверяет, является ли
-.Ar ник
+.I ник
 online или нет. Использует дыру в ICQ протоколе;
 другую информацию таким способом не найти.
-.It Ic setr Op Ar number
+.TP
+.BI setr [number]
 Устанавливает вашу группу номер
-.Ar number .
+.IR number .
 Без аргумента, показывает возможные группы.
-.It Ic tcp Ar command Ar uin|ник
+.TP
+.BI tcp \ command\ uin|ник
 Приводит в действие команду
-.Ar command
+.I command
 на пользователе по UIN'у
-.Ar uin
+.I uin
 или прозвищу
-.Ar ник .
-.Ar command
+.IR ник .
+.I command
 может быть
-.Ic open
+.B open
 чтобы открыть 1-на-1 соединение по TCP к пользователю, или
-.Ic close
+.B close
 чтобы закрыть и сбросить данное соединение, или
-.Ic off
+.B off
 отключить попытки установить такое соединение для отправки
 сообщения, пока оно точно не открыто или сброшено
-.It Ic conn Op Ar command Ar nr
+.TP
+.BI conn [command\ nr]
 Вывести все соединения, или выполнить команду
-.Ar command
+.I command
 на соединении номер
-.Ar nr .
-.Ar command
+.IR nr .
+.I command
 может быть
-.Ic open
+.B open
 или
-.Ic login
+.B login
 чтобы открыть это соединение, если оно еще не открыто.
-.El
-.Sh СМОТРИТЕ ТАКЖЕ
-.Xr micq 1 ,
-.Xr micqrc 5
-.Sh АВТОР
+
+.SH СМОТРИТЕ ТАКЖЕ
+.BR micq (1),
+.BR micqrc (5)
+.SH АВТОР
 Это руководство создано James Morrison
-.Pa <ja2morrison@student.math.uwaterloo.ca>
+.IR <ja2morrison@student.math.uwaterloo.ca>
 как справка о всех интерактивных командах 
-.Ic micq .
+.BR mICQ .
+This man page was translated by "Pest"
+.IR <pezt@mail.ru> .
+

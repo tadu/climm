@@ -1,100 +1,104 @@
-.\" $Id$
-.\"                                      Hey, EMACS: -*- nroff -*-
-.Dd August 9, 2002
-.Dt MICQ 1
-.Os MICQ(1)
-.\" Please adjust this date whenever revising the manpage.
-.Sh ИМЯ
-.Ic micq
+.\" $Id$ -*- nroff -*-
+.\"  EN: <add CVS id like above from the file this translation is synced to>
+.TH MICQ 1 mICQ RU
+.SH ИМЯ
+.B micq
 \- маленький ICQ client для работы в текстовом режиме
-.Sh ЗАПУСК
-.Ic micq Op Ar -v
-.Op Ar -f файл
-.Sh ОПИСАНИЕ
-.Ic mICQ
+.SH ЗАПУСК
+.B micq
+.I [-v[level]]
+.I [-f файл]
+.SH ОПИСАНИЕ
+.B mICQ
 ICQ клиент, поддерживающий большинство функций ICQ от Mirabillis. 
 Micq позволяет менять пароль, создавать новые аккаунты, обновлять инфу 
 о пользователе, искать других пользователей и т.д.
-.Sh ОПЦИИ
-.Bl -tag
-.It Fl v Op Ar уровень
+.SH ОПЦИИ
+.TP
+.BI -v [уровень]
 Включает вывод доп. инфы или меняет вывод инфы на
-.Ar уровень.
-.It Fl f Ar файл
+.IR уровень .
+.TP
+.BI -f \ файл
 Использует
-.Ar файл
+.I файл
 как rc файл.
-.It Fl l Ar файл|дир
+.TP
+.BI -l \ файл|дир
 Использует
-.Ar файл
-, в который записывает логи, или
-.Ar дир
-, в которую будут писаться логи.
-.It Fl ?, h
+.IR файл ,
+в который записывает логи, или
+.IR дир ,
+в которую будут писаться логи.
+.TP
+.BI -?,\ -h
 Показывает помощь.
-.El
 
-.Sh ОСОБЕННОСТИ
-.Ic mICQ
+.SH ОСОБЕННОСТИ
+.B mICQ
 очень компактный и запускается на Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD и других
 современных unix'ах.  
-.Ic mICQ версии 0.4.8
+.B mICQ версии 0.4.8
 запускается на Linux, GNU HURD и других никсах. Но на других системах он
 может или не может запускаться и если кто-то желает протестить их, мы не против.
-.Sh ИСТОРИЯ
-.Bl -tag
-.It 16 Авг 1998
+.SH ИСТОРИЯ
+
+.TP
+. 16 Авг 1998
 Matthew D. Smith выпускает micq на обозрение всего мира. 
 Следуемых 12 релизами до 25 Сен 1998.
-.It 05 Янв 2001
+.TP
+. 05 Янв 2001
 Matthew D. Smith умер в автомобильной аварии.
 Пользователи подняли micq под BSD лицензией и начали 
 разработку 
-.Ic mICQ .
-.El
+.B mICQ .
 
-.Sh ЛИСТ РАССЫЛКИ
+
+.SH ЛИСТ РАССЫЛКИ
 Лист рассылки Micq по этому адресу:
-.Pa micq-list@mc.ukeer.de .
+.IR micq-list@mc.ukeer.de .
 Информация о подписках и архивах лежит здесь:
-.Pa http://micq.ukeer.de/pipermail/micq-list/ .
-.Sh СКАЧАТЬ
+.IR http://micq.ukeer.de/pipermail/micq-list/ .
+.SH СКАЧАТЬ
 По HTTP с
-.Pa http://micq.ukeer.de/download.html .
+.IR http://micq.ukeer.de/download.html .
 .br
 Чтобы достать последнюю версию от CVS, введите
-.br
-cvs -d:pserver:anonymous@micq.ukeer.de:/usr/local/cvsroot login
-.br
-без пароля, нажмите Enter
-.br
-cvs -d:pserver:anonymous@micq.ukeer.de:/usr/local/cvsroot -z3 co micq
-.Sh СМОТРИТЕ ТАКЖЕ
-.Xr micqrc 5 ,
-.Xr micq 7
-.Sh ФАЙЛЫ
-.Bl -tag -width Fl
-.It ~/.micqrc
+.sp
+cvs -d:pserver:anonymous@micq.ukeer.de:/usr/local/cvsroot co micq
+.sp
+.SH СМОТРИТЕ ТАКЖЕ
+.BI micqrc (5),
+.BI micq (7)
+.SH ФАЙЛЫ
+
+.TP
+.I ~/.micqrc
 Старый файл конфигураций для mICQ - устарел.
-.It ~/.micq/micqrc
+.TP
+.I ~/.micq/micqrc
 Файл конфигураций для mICQ.
-.It PREFIX/share/micq/*.i18n
+.TP
+.I PREFIX/share/micq/*.i18n
 Файлы интернационализации, содержащие перевод mICQ.
-.It ~/.micq/i18n/*.i18n
+.TP
+.I ~/.micq/i18n/*.i18n
 Или здесь.
-.It ~/.micq/history/
+.TP
+.I ~/.micq/history/
 Директория по умолчанию, где создаются логи.
-.El
-.Sh BUGS
+
+.SH BUGS
 Если вы нашли глюки в программе или просто хотите что-то сказать,
-.br
 пишите Rico GlЖckner <mc@verdinet.de>,
-UIN #99798577, или RЭdiger Kuhlmann <micq@ruediger-kuhlmann.de>.
-.Sh АВТОР
+UIN #99798577, или RЭdiger Kuhlmann
+.IR <micq@ruediger-kuhlmann.de> .
+.SH АВТОР
 Это описание было написано James Morrison
-.Pa <ja2morrison@student.math.uwaterloo.ca>
-.br
+.IR <ja2morrison@student.math.uwaterloo.ca>
 с минимального описания от Jordi Mallach
-.Pa <jordi@sindominio.net>
-.br
+.IR <jordi@sindominio.net>
 для Debian GNU/Linux систем.
+This man page was translated by "Pest"
+.IR <pezt@mail.ru> .
