@@ -821,8 +821,9 @@ void Read_RC_File (FILE *rcf)
                 if (!j)
                 {
                     dep = 1;
-                    for (i = 0; (tconn = ConnectionNr (i)) && (~tconn->type & TYPEF_ANY_SERVER); i++)
-                        ;
+                    for (i = 0; (tconn = ConnectionNr (i)); i++)
+                        if (tconn->spref->type & TYPEF_ANY_SERVER)
+                            break;
                     if (!tconn)
                         break;
                     if (!(cont = ContactFind (tconn->contacts, 0, uin, ConvToUTF8 (cmd, enc, -1, 0), 1)))
