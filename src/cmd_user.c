@@ -2277,7 +2277,10 @@ static JUMP_F(CmdUserConn)
     }
     else if (!strcmp (arg1, "login") || !strcmp (arg1, "open"))
     {
-        i = atoi (strtok (NULL, "\n"));
+        i = 0;
+        arg1 = strtok (NULL, "\n");
+        if (arg1)
+            i = atoi (arg1);
         sess = SessionNr (i - 1);
         if (!sess)
         {
