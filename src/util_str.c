@@ -39,6 +39,7 @@
 #endif
 #include <string.h>
 #include <ctype.h>
+#include "util_str.h"
 #include "preferences.h"
 #include "contact.h"
 #include "conv.h"
@@ -55,20 +56,20 @@ str_t s_init (str_t str, const char *init, size_t add)
     UDWORD initlen, size;
     
     initlen = strlen (init);
-    size = initlen + add + 2;
+    size = ((initlen + add) | 0x7f) + 1;
     
-    if (!str->txt || size >= str->max)
+    if (!str->txt || size > str->max)
     {
         if (str->txt && str->max)
             free (str->txt);
-        str->max = 1 + (size | 0x3f);
-        str->txt = malloc (str->max);
+        str->txt = malloc (size);
         if (!str->txt)
         {
             str->max = str->len = 0;
             str->txt = "\0";
             return NULL;
         }
+        str->max = size;
     }
     str->len = initlen;
     memcpy (str->txt, init, initlen + 1);
@@ -82,10 +83,10 @@ str_t s_init (str_t str, const char *init, size_t add)
  */
 str_t s_blow (str_t str, size_t len)
 {
-    UDWORD newlen;
+    int newlen;
     char *tmp;
     
-    newlen = 1 + ((str->max + len) | 0x3f);
+    newlen = 1 + ((str->max + len - 1) | 0x7f);
     
     if (!str->txt || !str->max)
         tmp = malloc (newlen);
@@ -94,7 +95,7 @@ str_t s_blow (str_t str, size_t len)
     
     if (!tmp)
     {
-        if (!str->txt)
+        if (!str->txt || !str->max)
         {
             str->max = str->len = 0;
             str->txt = "\0";
@@ -112,7 +113,7 @@ str_t s_blow (str_t str, size_t len)
  */
 str_t s_catc (str_t str, char add)
 {
-    if (str->len + 2 >= str->max)
+    if (str->len + 2 > str->max)
         if (!s_blow (str, str->len + 2 - str->max))
             return NULL;
 
@@ -126,7 +127,7 @@ str_t s_catc (str_t str, char add)
  */
 str_t s_catn (str_t str, const char *add, size_t len)
 {
-    if (str->len + len + 2 >= str->max)
+    if (str->len + len + 2 > str->max)
         if (!s_blow (str, str->len + len + 2 - str->max))
             return NULL;
 
@@ -143,13 +144,9 @@ str_t s_cat (str_t str, const char *add)
 {
     int addlen = strlen (add);
     
-    if (str->len + addlen + 1 >= str->max)
-        if (!s_blow (str, str->len + addlen + 1 - str->max))
-        {
-            addlen = str->max - str->len - 2;
-            if (addlen < 0)
-                return NULL;
-        }
+    if (str->len + addlen + 2 > str->max)
+        if (!s_blow (str, str->len + addlen + 2 - str->max))
+            return NULL;
     
     memcpy (str->txt + str->len, add, addlen + 1);
     str->len += addlen;
@@ -163,10 +160,11 @@ str_t s_cat (str_t str, const char *add)
 str_t s_catf (str_t str, const char *fmt, ...)
 {
     va_list args;
-    size_t add = 64;
+    size_t add = 128;
     int rc;
     
-    s_blow (str, add);
+    if (str->max < add || str->len + 2 >= str->max)
+        s_blow (str, add);
 
     while (1)
     {
@@ -176,12 +174,12 @@ str_t s_catf (str_t str, const char *fmt, ...)
         va_start (args, fmt);
         rc = vsnprintf (str->txt + str->len, str->max - str->len - 1, fmt, args);
         va_end (args);
-        if (rc >= 0 && rc < str->max - str->len - 1 && !str->txt[str->max - 2])
+        if (rc >= 0 && rc < str->max - str->len - 2 && !str->txt[str->max - 2])
         {
             str->len += strlen (str->txt + str->len);
             return str;
         }
-        add = (rc > 0 ? rc - str->max - str->len + 5 : str->max);
+        add = (rc > 0 ? rc - str->max + str->len + 5 : str->max);
         if (!s_blow (str, add))
         {
             str->txt[str->max - 2] = '\0';
@@ -197,9 +195,9 @@ str_t s_catf (str_t str, const char *fmt, ...)
  */
 str_t s_insn (str_t str, size_t pos, const char *ins, size_t len)
 {
-    if (pos > str->len)
+    if (pos > str->len || pos < 0)
         return NULL;
-    if (str->len + len + 2 >= str->max)
+    if (str->len + len + 2 > str->max)
         if (!s_blow (str, str->len + len + 2 - str->max))
             return NULL;
     
@@ -214,9 +212,9 @@ str_t s_insn (str_t str, size_t pos, const char *ins, size_t len)
  */
 str_t s_insc (str_t str, size_t pos, char ins)
 {
-    if (pos > str->len)
+    if (pos > str->len || pos < 0)
         return NULL;
-    if (str->len + 3 >= str->max)
+    if (str->len + 3 > str->max)
         if (!s_blow (str, str->len + 3 - str->max))
             return NULL;
     
@@ -231,7 +229,7 @@ str_t s_insc (str_t str, size_t pos, char ins)
  */
 str_t s_delc (str_t str, size_t pos)
 {
-    if (pos > str->len)
+    if (pos > str->len || pos < 0)
         return NULL;
     memmove (str->txt + pos, str->txt + pos + 1, str->len - pos);
     str->len--;
@@ -561,7 +559,7 @@ const char *s_dump (const UBYTE *data, UWORD len)
                               "%02x %02x %02x %02x %02x %02x %02x %02x  ",
                     d[0], d[1],  d[2],  d[3],  d[4],  d[5],  d[6],  d[7],
                     d[8], d[9], d[10], d[11], d[12], d[13], d[14], d[15]);
-        s_cat (&t, "\"");
+        s_catc (&t, '\"');
         s_cat (&t, noctl  (d[0]));  s_cat (&t, noctl  (d[1]));
         s_cat (&t, noctl  (d[2]));  s_cat (&t, noctl  (d[3]));
         s_cat (&t, noctl  (d[4]));  s_cat (&t, noctl  (d[5]));
@@ -571,7 +569,8 @@ const char *s_dump (const UBYTE *data, UWORD len)
         s_cat (&t, noctl (d[10]));  s_cat (&t, noctl (d[11]));
         s_cat (&t, noctl (d[12]));  s_cat (&t, noctl (d[13]));
         s_cat (&t, noctl (d[14]));  s_cat (&t, noctl (d[15]));
-        s_cat (&t, "'\n");
+        s_catc (&t, '"');
+        s_catc (&t, '\n');
         len -= 16;
         d += 16;
     }
@@ -1090,7 +1089,7 @@ const char *s_quote (const char *input)
 }
 
 /*
- * Quote a string for display. May use quotes to make sure test boundary is clear.
+ * Quote a string for display. May use quotes to make sure text boundary is clear.
  */
 const char *s_cquote (const char *input, const char *color)
 {
