@@ -465,13 +465,16 @@ static JUMP_SNAC_F(SnacSrvUseronline)
 #ifdef WIP
     if (tlv[13].len)
     {
-        p = PacketCreate (tlv[12].str, tlv[12].len);
+        p = PacketCreate (tlv[13].str, tlv[13].len);
         
         while (PacketReadLeft (p))
         {
             Cap *cap = PacketReadCap (p);
-            IMSrvMsg (cont, event->sess, NOW, 33, cap->name, STATUS_OFFLINE);
-            cont->caps |= 1 << cap->id;
+            if (~cont->caps & (1 << cap->id) && cap->id)
+            {
+                IMSrvMsg (cont, event->sess, NOW, 33, cap->name, STATUS_OFFLINE);
+                cont->caps |= 1 << cap->id;
+            }
         }
     }
 #endif
@@ -593,7 +596,8 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
 #ifdef WIP
             if (cap1->id)
             {
-                IMSrvMsg (cont, event->sess, NOW, 33, cap1->name, STATUS_OFFLINE);
+                if (~cont->caps & (1 << cap1->id))
+                    IMSrvMsg (cont, event->sess, NOW, 33, cap1->name, STATUS_OFFLINE);
                 cont->caps |= 1 << cap1->id;
             }
 #endif
@@ -632,7 +636,8 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
 #ifdef WIP
                 if (cap2->id)
                 {
-                    IMSrvMsg (cont, event->sess, NOW, 33, cap2->name, STATUS_OFFLINE);
+                    if (~cont->caps & (1 << cap2->id))
+                        IMSrvMsg (cont, event->sess, NOW, 33, cap2->name, STATUS_OFFLINE);
                     cont->caps |= 1 << cap2->id;
                 }
 #endif
