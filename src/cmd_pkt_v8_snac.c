@@ -1216,9 +1216,9 @@ void SnacCliSetuserinfo (Session *sess)
     pak = SnacC (sess, 2, 4, 0, 0);
     PacketWriteTLV     (pak, 5);
     PacketWriteCap     (pak, CAP_SRVRELAY);
-    PacketWriteCap     (pak, CAP_IS_2002);
     PacketWriteCap     (pak, CAP_ISICQ);
 #ifdef WIP
+    PacketWriteCap     (pak, CAP_IS_2002);
     PacketWriteCap     (pak, CAP_MICQ);
 #endif
     PacketWriteTLVDone (pak);
