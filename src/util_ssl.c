@@ -184,7 +184,7 @@ int SSLInit ()
     ret = gnutls_dh_params_init (&dh_parm);
     SSL_CHECK_SUCCESS_0_OK (ret, -1, "DH param init", "[server]");
 
-#ifdef HAVE_GNUTLS_DH_PARAMS_GENERATE2
+#if HAVE_DH_GENPARAM2
     ret = gnutls_dh_params_generate2 (dh_parm, DH_OFFER_BITS);
     SSL_CHECK_SUCCESS_0_OK (ret, -1, "DH param generate2", "[server]");
 #else
