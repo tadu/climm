@@ -570,7 +570,7 @@ BOOL UtilUIParse (char **input, char **parsed)
 /*
  * Try to find a nick name or uin in the string.
  */
-BOOL UtilUIParseNick (char **input, Contact **parsed)
+BOOL UtilUIParseNick (char **input, Contact **parsed, Session *serv)
 {
     Contact *r;
     char *p = *input, *t;
@@ -599,11 +599,15 @@ BOOL UtilUIParseNick (char **input, Contact **parsed)
     if (strchr ("0123456789", *p))
     {
         l = 0;
-        if (UtilUIParseInt (&p, &max) && (r = ContactFind (max)))
+        if (UtilUIParseInt (&p, &max))
         {
-            *parsed = r;
-            *input = p;
-            return TRUE;
+            UtilCheckUIN (serv, max);
+            if ((r = ContactFind (max)))
+            {
+                *parsed = r;
+                *input = p;
+                return TRUE;
+            }
         }
     }
     max = 0;
