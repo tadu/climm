@@ -226,22 +226,22 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
         case 1:
             {
             strc_t str;
-            int enc = ENC_LATIN1, icqenc = 0;
+            int enc = ENC_LATIN1, icqenc = 0, icqcol;
             
             remenc = ContactPrefVal (cont, CO_ENCODING);
             
             if (cont->status != STATUS_OFFLINE &&
                 HAS_CAP (cont->caps, CAP_UTF8) && cont->dc && cont->dc->version >= 7
-                && !(cont->dc->id1 == (time_t)0xffffff42 && cont->dc->id2 < (time_t)0x00040a03)) /* exclude old mICQ */
+                && !(cont->dc->id1 == (time_t)0xffffff42 && (cont->dc->id2 & 0x7fffffff) < (time_t)0x00040a03)) /* exclude old mICQ */
             {
                 enc = ENC_UCS2BE;
-                icqenc = 0x20000;
+                icqenc = 2;
             }
             else
             {
                 /* too bad, there's nothing we can do */
                 enc = remenc;
-                icqenc = 0x30000;
+                icqenc = 3;
             }
             if (type != 1)
             {
@@ -249,17 +249,19 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
                 enc = ENC_LATIN9;
             }
 
+            icqcol = atoi (text);
             str = s_split (&text, enc, 450);
 
             PacketWriteTLV     (pak, 2);
             PacketWriteTLV     (pak, 1281);
-            if (icqenc == 0x20000)
+            if (icqenc == 2)
                 PacketWriteB2  (pak, 0x0106);
             else
                 PacketWrite1   (pak, 0x01);
             PacketWriteTLVDone (pak);
             PacketWriteTLV     (pak, 257);
-            PacketWriteB4      (pak, icqenc);
+            PacketWriteB2      (pak, icqenc);
+            PacketWriteB2      (pak, icqcol);
             PacketWriteData    (pak, str->txt, str->len);
             PacketWriteTLVDone (pak);
             PacketWriteTLVDone (pak);
@@ -677,11 +679,14 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
                     ContactSetCap (cont, cap2);
                     ContactSetVersion (cont);
                     
-                    event->opt = OptSetVals (event->opt, CO_ORIGIN, CV_ORIGIN_v8, 0);
-                    event->cont = cont;
-                    newevent = QueueEnqueueData (serv, QUEUE_ACKNOWLEDGE, seq1,
-                                 (time_t)-1, p, cont, NULL, &SnacSrvCallbackSendack);
-                    SrvReceiveAdvanced (serv, event, pp, newevent);
+                    if (cap2->id != CAP_STR_2001 && cap2->id != CAP_STR_2002)
+                    {
+                        event->opt = OptSetVals (event->opt, CO_ORIGIN, CV_ORIGIN_v8, 0);
+                        event->cont = cont;
+                        newevent = QueueEnqueueData (serv, QUEUE_ACKNOWLEDGE, seq1,
+                                     (time_t)-1, p, cont, NULL, &SnacSrvCallbackSendack);
+                        SrvReceiveAdvanced (serv, event, pp, newevent);
+                    }
                     PacketD (pp);
                     TLVD (tlv);
                     return;
