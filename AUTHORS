@@ -45,7 +45,8 @@ Translators:
 	    (update) russian translation
 
 	"Pest"			<pezt@mail.ru>
-	    update russian translation to >= 0.4.8pl6
+	    update russian (ru.i18n) translation to 0.4.9.3
+	    russian man pages, russian web page
 
 	Björn Hansson		<hansson@netera.se>
 	    (update) swedish translation
@@ -54,7 +55,8 @@ Translators:
 	    (update) french translation
 	
 	Alberto Bertogli	<albertogli@telpin.com.ar>
-	    (update) spanish (es.i18n) translation to >= 0.4.9
+	    spanish (es.i18n) translation 0.4.9.3
+	    spanish man pages, spanish web page
 	
 	Guillaume Coqueblin	<esquimo_2ooo@caramail.com>
 	    (update) french (fr.i18n) translation to >= 0.4.8pl9

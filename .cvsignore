@@ -15,3 +15,4 @@ configure-stamp
 build-stamp
 pack-*
 stamp-*.in
+release
