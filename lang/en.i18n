@@ -1,5 +1,5 @@
 # $Id$ English (English)
-#  EN: __.i18n,v 1.71 2004/12/05 00:57:40
+#  EN: __.i18n,v 1.72 2004/12/22 00:39:31
 1000:UTF-8
 1001:en
 1002:en_US
@@ -1319,3 +1319,6 @@
 2562:Execute <cmd> with connection <nr> or connection for uin <uin> as current server connection.
 2563:Set or display connection options.\n
 2564:The user couldn't be detected to be online.\n
+2565:Contact upload for %s%s%s failed, authorization required.\n
+2566:Contact upload for %s%s%s failed, already on server.\n
+2567:Contact upload for %s%s%s succeeded.\n
