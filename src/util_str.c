@@ -217,18 +217,15 @@ const char *s_time (time_t *stamp)
 const char *s_msgtok (char *txt)
 {
     static char *str = NULL;
-    static char sep = '\0';
     char *p, *t;
     
     if (txt)
         str = txt;
-    if (!sep)
-        sep = ConvSep ();
     if (!str)
         return NULL;
     if (txt && !*str)
         return NULL;
-    p = strchr (t = str, sep);
+    p = strchr (t = str, Conv0xFE);
     if (p)
     {
         *p = '\0';

@@ -6,7 +6,7 @@
 UBYTE       ConvEnc     (const char *enc);
 const char *ConvEncName (UBYTE enc);
 const char *ConvUTF8    (UDWORD codepoint);
-char        ConvSep     ();
+#define     Conv0xFE    (char)0xfe
 
 #ifdef ENABLE_UTF8
 const char *ConvToUTF8     (const char *in, UBYTE enc);

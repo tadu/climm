@@ -963,7 +963,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             tmp = s_msgtok (cdata); if (!tmp) continue;
 
             M_printf (i18n (1595, "\nContact List.\n============================================\n%d Contacts\n"),
-                     i = atoi (cdata));
+                     i = atoi (tmp));
 
             while (i--)
             {
