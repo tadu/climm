@@ -943,7 +943,7 @@ Packet *UtilIOReceiveUDP (Connection *conn)
     
     pak->len = sockread (conn->sok, prG->s5Use ? pak->socks : pak->data, sizeof (pak->data) + s5len);
     
-    if (pak->len <= 4 + s5len)
+    if (pak->len <= 4 + s5len || pak->len == (UWORD)-1)
     {
         PacketD (pak);
         return NULL;
