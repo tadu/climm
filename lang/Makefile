@@ -1,6 +1,9 @@
 # $Id$
 #
 
+DESTDIR = 
+prefix = /usr/local
+
 all:	
 	
 clean:	
