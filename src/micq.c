@@ -264,7 +264,16 @@ int main (int argc, char *argv[])
 #if _WIN32 || defined(__BEOS__)
         M_set_timeout (0, 1000);
 #else
-        M_set_timeout (2, 500000);
+        if (QueuePeek ())
+        {
+            i = QueuePeek ()->due - time (NULL);
+            if (i <= 0)
+                M_set_timeout (0, 100);
+            else
+                M_set_timeout (2, 500000);
+        }
+        else
+            M_set_timeout (2, 500000);
 #endif
 
         M_select_init ();
