@@ -12,7 +12,7 @@ sub ReadTrans($)
     $name = shift;
     $name .= ".i18n";
 
-    open TMPL, "<$name" || die "Could not open file $name.";
+    open (TMPL, "<:bytes", $name) || die "Could not open file $name.";
     while (<TMPL>)
     {
         if (m¹^# \$Id: build.i18n,v ([0-9.]* 20../../.. ..:..:..).*¹)
@@ -22,9 +22,10 @@ sub ReadTrans($)
         elsif (m/^([0-9]{1,4}):(.*)/)
         {
             $nr = sprintf ("%04d", $1);
-            $max = $nr;
             $val = $2;
+            $max = $nr;
             $nrval{$nr}=$val;
+            print "Reading: nrval{$nr}=$val\n";
             $found++;
         }
         elsif (m/^#/)
@@ -36,6 +37,7 @@ sub ReadTrans($)
         }
     }
     print "Updating translation to $found strings.\n";
+    die "Oooops" unless $found;
 }
 
 sub ReadTainted($)
@@ -145,8 +147,8 @@ while ($uname = shift)
     $name = $pref . $uname;
     stat "$name~" && next;
     rename ($name, "$name~");
-    open IN, "<$name~" || die;
-    open OUT, ">$name" || die;
+    open (IN, "<:bytes", "$name~") || die;
+    open (OUT, ">:bytes", $name) || die;
     
     $ignored = 0;
     $preserved = 0;
