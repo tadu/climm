@@ -36,7 +36,7 @@
 
 #define s_read(s) do { char *data = PacketReadLNTS (pak); s_repl (&s, c_in (data)); free (data); } while (0)
 
-void Meta_Free (MetaList *extra)
+void ExtraFree (MetaList *extra)
 {
     MetaList *tmp;
     while (extra)
@@ -47,6 +47,39 @@ void Meta_Free (MetaList *extra)
         extra = tmp;
     }
 }
+
+UDWORD ExtraGet (MetaList *extra, UWORD type)
+{
+    while (extra && extra->tag != type)
+        extra = extra->more;
+    if (extra)
+        return extra->data;
+    return 0;
+}
+
+MetaList *ExtraSet (MetaList *extra, UWORD type, UDWORD value, const char *text)
+{
+    MetaList *tmp;
+
+    for (tmp = extra; tmp; tmp = tmp->more)
+        if (tmp->tag == type)
+        {
+            tmp->data = value;
+            s_repl (&tmp->description, text);
+            return extra;
+        }
+
+    tmp = calloc (1, sizeof (MetaList));
+    if (!tmp)
+        return extra;
+    tmp->more = extra;
+    tmp->tag = type;
+    tmp->data = value;
+    tmp->description = text ? strdup (text) : NULL;
+    return tmp;
+}
+
+
 
 static BOOL Meta_Read_List (Packet *pak, MetaList **list)
 {
@@ -62,7 +95,7 @@ static BOOL Meta_Read_List (Packet *pak, MetaList **list)
         if ((*list)->data || *(*list)->description)
             list = &(*list)->more;
     }
-    Meta_Free (*list);
+    ExtraFree (*list);
     *list = NULL;
     return TRUE;
 }

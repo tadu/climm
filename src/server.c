@@ -59,7 +59,7 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, const char *text, UDWORD msg_ty
 
     if (!cont)
     {
-        Meta_Free (extra);
+        ExtraFree (extra);
         return RET_FAIL;
     }
     
@@ -98,7 +98,7 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, const char *text, UDWORD msg_ty
         if (conn->connect & CONNECT_OK && conn->type == TYPE_SERVER)
         {
             SnacCliSendmsg (conn, cont->uin, text, msg_type, 0);
-            Meta_Free (extra);
+            ExtraFree (extra);
             return RET_OK;
         }
     extra->data &= ~EXTRA_TRANS_ICQv8;
@@ -106,9 +106,9 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, const char *text, UDWORD msg_ty
         if (conn->connect & CONNECT_OK && conn->type == TYPE_SERVER_OLD)
         {
             CmdPktCmdSendMessage (conn, cont->uin, text, msg_type);
-            Meta_Free (extra);
+            ExtraFree (extra);
             return RET_OK;
         }
-    Meta_Free (extra);
+    ExtraFree (extra);
     return RET_FAIL;
 }
