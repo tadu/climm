@@ -1,4 +1,11 @@
 
+2001-12-## Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Let msg_queue.c sort the queue by exp_time; fix long-standing
+	  memory corruption bug
+	*
+	*
+	*
+
 2001-12-11 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Recognize and display licq's version numbers. Define a way
 	  for micq's version numbers.
