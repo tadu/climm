@@ -327,8 +327,10 @@ void ContactSetVersion (Contact *cont)
     }
     else if (cont->id1 == cont->id2 && cont->id2 == cont->id3 && cont->id1 == 0xffffffff)
         new = "vICQ/GAIM(?)";
-    else if (HAS_CAP (cont->caps, CAP_IS_WEB))
+    else if (cont->TCP_version == 7 && HAS_CAP (cont->caps, CAP_IS_WEB))
         new = "ICQ2go";
+    else if (cont->TCP_version == 9 && HAS_CAP (cont->caps, CAP_IS_WEB))
+        new = "ICQ Lite";
     else if (HAS_CAP (cont->caps, CAP_TRILL_CRYPT | CAP_TRILL_2))
         new = "Trillian";
     else if (HAS_CAP (cont->caps, CAP_LICQ))
