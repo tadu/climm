@@ -698,7 +698,6 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                 else
                     fprintf (stderr, "Buf: \"%s\"\n", buf);
             }
-            fprintf (stderr, "Is_utf: %d\n", isutf8);
             txt = isutf8 ? text : c_in (text);
 #else
             txt = text;
