@@ -19,3 +19,7 @@
                       bug fixes
 2004-11-14: 0.4.12:   more history (by Sebastian Felis), OpenSSL support (by Roman Hoog Antink)
 2004-12-05: 0.4.99.9: beta release
+2005-02-11: 0.5:      also OpenSSL support (by Roman Hoog Antink), contact list upload, more colors in messages,
+                      per-contact configurability of many options - including several new ones, again with
+                      peek/peek2 command, command line options to start commands in mICQ, reworked online help
+                      and man pages, UTF-8 input handling, lots of fixes (and probably new bugs ;)
