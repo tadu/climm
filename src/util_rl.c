@@ -338,14 +338,14 @@ void ReadLineHandleSig (void)
 #if defined(SIGTSTP) && defined(SIGCONT)
         if (sig & 4)
         {
-            int gpos;
-
             ReadLineTtySet ();
             M_print ("\r");
             ReadLinePrompt ();
         }
         if (sig & 8)
         {
+            int gpos;
+
             s_init (&rl_operate, "", 0);
             gpos = rl_colpos;
             rl_key_end ();
