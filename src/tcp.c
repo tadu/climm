@@ -78,6 +78,9 @@ static void        TCPCallBackReceive (Event *event);
 static void        Encrypt_Pak        (Connection *peer, Packet *pak);
 static BOOL        Decrypt_Pak        (Connection *peer, Packet *pak);
 
+static void TCPSendInitv6 (Connection *peer);
+
+
 /*********************************************/
 
 /*
@@ -110,7 +113,7 @@ void ConnectionInitPeer (Connection *list)
     list->ip          = 0;
     s_repl (&list->server, NULL);
     list->port        = list->spref->port;
-    list->uin         = list->parent ? list->parent->uin : -1;
+    list->uin         = list->parent ? list->parent->uin : 0;
 
     UtilIOConnectTCP (list);
 }
@@ -793,7 +796,7 @@ void PeerPacketSend (Connection *peer, Packet *pak)
 /*
  * Sends a TCP initialization packet.
  */
-void TCPSendInitv6 (Connection *peer)
+static void TCPSendInitv6 (Connection *peer)
 {
     Packet *pak;
     
@@ -1732,8 +1735,7 @@ const UBYTE client_check_data[] = {
  */
 static void Encrypt_Pak (Connection *peer, Packet *pak)
 {
-    UDWORD B1, M1, check, size;
-    int i;
+    UDWORD B1, M1, check, size, i;
     UBYTE X1, X2, X3, *p;
     UDWORD hex, key;
 
@@ -1776,8 +1778,7 @@ static void Encrypt_Pak (Connection *peer, Packet *pak)
 
 static BOOL Decrypt_Pak (Connection *peer, Packet *pak)
 {
-    UDWORD hex, key, B1, M1, check;
-    int i, size;
+    UDWORD hex, key, B1, M1, check, i, size;
     UBYTE X1, X2, X3, *p;
 
     p = pak->data;

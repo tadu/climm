@@ -152,7 +152,7 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
     FILE *logfile;
     int fd;
     char *mylog; /* Buffer to compute log entry */
-    str_s t = { NULL };
+    str_s t = { NULL, 0, 0 };
     size_t lcnt;
     char *pos, *indic;
     time_t now;

@@ -243,7 +243,7 @@ void UtilIOConnectUDP (Connection *conn)
     }
 
     sin.sin_addr.s_addr = inet_addr (conn->server);
-    if (sin.sin_addr.s_addr == -1)      /* name isn't n.n.n.n so must be DNS */
+    if (sin.sin_addr.s_addr + 1 == 0)      /* name isn't n.n.n.n so must be DNS */
     {
         host_struct = gethostbyname (conn->server);
         if (!host_struct)
@@ -368,7 +368,7 @@ void UtilIOConnectTCP (Connection *conn)
 
         if (conn->server)
             conn->ip = htonl (inet_addr (conn->server));
-        if (conn->ip == -1 && conn->server)
+        if (conn->ip + 1 == 0 && conn->server)
         {
             host = gethostbyname (conn->server);
             if (!host)

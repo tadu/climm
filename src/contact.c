@@ -1060,7 +1060,7 @@ void ContactSetVersion (Contact *cont)
     }
     else if (HAS_CAP (cont->caps, CAP_MICQ))
         new = "mICQ";
-    else if (dc->id1 == dc->id2 && dc->id2 == dc->id3 && dc->id1 == 0xffffffff)
+    else if (dc->id1 == dc->id2 && dc->id2 == dc->id3 && dc->id1 == -1)
         new = "vICQ/GAIM(?)";
     else if (dc->version == 7 && HAS_CAP (cont->caps, CAP_IS_WEB))
         new = "ICQ2go";

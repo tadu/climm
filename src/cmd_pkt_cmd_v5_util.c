@@ -428,8 +428,10 @@ void UDPCallBackResend (Event *event)
                 {
                     char *url_desc;
                     const char *url_data;
-                    str_s cdata = { data, strlen (data), 0 };
+                    str_s cdata = { NULL, 0, 0 };
                     
+                    cdata.txt = data;
+                    cdata.len = strlen (data);
                     *tmp++ = 0;
                     url_desc = strdup (ConvFromCont (&cdata, cont));
                     cdata.txt = tmp;
@@ -444,7 +446,9 @@ void UDPCallBackResend (Event *event)
             }
             else if ((type & ~MSGF_MASS) == MSG_NORM)
             {
-                str_s cdata = { data, strlen (data), 0 };
+                str_s cdata = { NULL, 0, 0 };
+                cdata.txt = data;
+                cdata.len = strlen (data);
                 M_printf ("%s%s%s ", COLMESSAGE, ConvFromCont (&cdata, cont), COLNONE);
             }
         }

@@ -42,32 +42,32 @@
 
 static Cap caps[CAP_MAX] =
 {
-    { CAP_NONE,        16, cap_none cap_none,                   "CAP_NONE"        },
-    { CAP_AIM_VOICE,   16, cap_aim "\x41" cap_mid cap_id,       "CAP_AIM_VOICE"   },
-    { CAP_AIM_SFILE,   16, cap_aim "\x43" cap_mid cap_id,       "CAP_AIM_SFILE"   },
-    { CAP_ISICQ,       16, cap_aim "\x44" cap_mid cap_id,       "CAP_ISICQ"       },
-    { CAP_AIM_IMIMAGE, 16, cap_aim "\x45" cap_mid cap_id,       "CAP_AIM_IMIMAGE" },
-    { CAP_AIM_BUDICON, 16, cap_aim "\x46" cap_mid cap_id,       "CAP_AIM_BUDICON" },
-    { CAP_AIM_STOCKS,  16, cap_aim "\x47" cap_mid cap_id,       "CAP_AIM_STOCKS"  },
-    { CAP_AIM_GETFILE, 16, cap_aim "\x48" cap_mid cap_id,       "CAP_AIM_GETFILE" },
-    { CAP_SRVRELAY,    16, cap_aim "\x49" cap_mid cap_id,       "CAP_SRVRELAY"    },
-    { CAP_AIM_GAMES,   16, cap_aim "\x4a" cap_mid cap_id,       "CAP_AIM_GAMES"   },
-    { CAP_AIM_SBUD,    16, cap_aim "\x4b" cap_mid cap_id,       "CAP_AIM_SBUD"    },
-    { CAP_UTF8,        16, cap_aim "\x4e" cap_mid cap_id,       "CAP_UTF8"        },
-    { CAP_RTFMSGS,     16, "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x92", "CAP_RTFMSGS"     },
-    { CAP_IS_2001,     16, "\x2e\x7a\x64\x75\xfa\xdf\x4d\xc8\x88\x6f\xea\x35\x95\xfd\xb6\xdf", "CAP_IS_2001"     },
-    { CAP_STR_2001,    16, "\xa0\xe9\x3f\x37" cap_mstr cap_str, "CAP_STR_2001"    },
-    { CAP_STR_2002,    16, "\x10\xcf\x40\xd1" cap_mstr cap_str, "CAP_STR_2002"    },
-    { CAP_AIM_CHAT,    16, "\x74\x8f\x24\x20\x62\x87\x11\xd1" cap_id,                          "CAP_AIM_CHAT"    },
-    { CAP_IS_WEB,      16, "\x56\x3f\xc8\x09\x0b\x6f\x41\xbd\x9f\x79\x42\x26\x09\xdf\xa2\xf3", "CAP_IS_WEB"      },
-    { CAP_TRILL_CRYPT, 16, "\xf2\xe7\xc7\xf4\xfe\xad\x4d\xfb\xb2\x35\x36\x79\x8b\xdf\x00\x00", "CAP_TRILL_CRYPT" },
-    { CAP_TRILL_2,     16, "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x09", "CAP_TRILL_2"     },
-    { CAP_LICQ,        16, "\x09\x49\x13\x49" cap_mid cap_id,   "CAP_LICQ"        },
-    { CAP_SIM,         15, "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x48", "CAP_SIM"         },
-    { CAP_MACICQ,      16, "\xdd\x16\xf2\x02\x84\xe6\x11\xd4\x90\xdb\x00\x10\x4b\x9b\x4b\x7d", "CAP_MACICQ"      },
-    { CAP_MICQ,        12, "mICQ \xa9 R.K. \x00\x00\x00\x00",   "CAP_MICQ"        },
-    { CAP_KXICQ,       16, "\x09\x49\x13\x44" cap_mid cap_id,   "CAP_KXICQ"},
-    { 0, 0, NULL, NULL }
+    { CAP_NONE,        16, cap_none cap_none,                   "CAP_NONE",        NULL },
+    { CAP_AIM_VOICE,   16, cap_aim "\x41" cap_mid cap_id,       "CAP_AIM_VOICE",   NULL },
+    { CAP_AIM_SFILE,   16, cap_aim "\x43" cap_mid cap_id,       "CAP_AIM_SFILE",   NULL },
+    { CAP_ISICQ,       16, cap_aim "\x44" cap_mid cap_id,       "CAP_ISICQ",       NULL },
+    { CAP_AIM_IMIMAGE, 16, cap_aim "\x45" cap_mid cap_id,       "CAP_AIM_IMIMAGE", NULL },
+    { CAP_AIM_BUDICON, 16, cap_aim "\x46" cap_mid cap_id,       "CAP_AIM_BUDICON", NULL },
+    { CAP_AIM_STOCKS,  16, cap_aim "\x47" cap_mid cap_id,       "CAP_AIM_STOCKS",  NULL },
+    { CAP_AIM_GETFILE, 16, cap_aim "\x48" cap_mid cap_id,       "CAP_AIM_GETFILE", NULL },
+    { CAP_SRVRELAY,    16, cap_aim "\x49" cap_mid cap_id,       "CAP_SRVRELAY",    NULL },
+    { CAP_AIM_GAMES,   16, cap_aim "\x4a" cap_mid cap_id,       "CAP_AIM_GAMES",   NULL },
+    { CAP_AIM_SBUD,    16, cap_aim "\x4b" cap_mid cap_id,       "CAP_AIM_SBUD",    NULL },
+    { CAP_UTF8,        16, cap_aim "\x4e" cap_mid cap_id,       "CAP_UTF8",        NULL },
+    { CAP_RTFMSGS,     16, "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x92", "CAP_RTFMSGS",     NULL },
+    { CAP_IS_2001,     16, "\x2e\x7a\x64\x75\xfa\xdf\x4d\xc8\x88\x6f\xea\x35\x95\xfd\xb6\xdf", "CAP_IS_2001",     NULL },
+    { CAP_STR_2001,    16, "\xa0\xe9\x3f\x37" cap_mstr cap_str, "CAP_STR_2001",    NULL },
+    { CAP_STR_2002,    16, "\x10\xcf\x40\xd1" cap_mstr cap_str, "CAP_STR_2002",    NULL },
+    { CAP_AIM_CHAT,    16, "\x74\x8f\x24\x20\x62\x87\x11\xd1" cap_id,                          "CAP_AIM_CHAT",    NULL },
+    { CAP_IS_WEB,      16, "\x56\x3f\xc8\x09\x0b\x6f\x41\xbd\x9f\x79\x42\x26\x09\xdf\xa2\xf3", "CAP_IS_WEB",      NULL },
+    { CAP_TRILL_CRYPT, 16, "\xf2\xe7\xc7\xf4\xfe\xad\x4d\xfb\xb2\x35\x36\x79\x8b\xdf\x00\x00", "CAP_TRILL_CRYPT", NULL },
+    { CAP_TRILL_2,     16, "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x09", "CAP_TRILL_2",     NULL },
+    { CAP_LICQ,        16, "\x09\x49\x13\x49" cap_mid cap_id,   "CAP_LICQ",        NULL },
+    { CAP_SIM,         15, "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x48", "CAP_SIM",         NULL },
+    { CAP_MACICQ,      16, "\xdd\x16\xf2\x02\x84\xe6\x11\xd4\x90\xdb\x00\x10\x4b\x9b\x4b\x7d", "CAP_MACICQ",      NULL },
+    { CAP_MICQ,        12, "mICQ \xa9 R.K. \x00\x00\x00\x00",   "CAP_MICQ",        NULL },
+    { CAP_KXICQ,       16, "\x09\x49\x13\x44" cap_mid cap_id,   "CAP_KXICQ",       NULL },
+    { 0, 0, NULL, NULL, NULL }
 };
 
 static str_s packetstr[] =
@@ -228,7 +228,7 @@ void PacketWriteCap (Packet *pak, Cap *cap)
     assert (pak);
     assert (cap);
 
-    PacketWriteData (pak, (const char *)(cap->var ? cap->var : cap->cap), 16);
+    PacketWriteData (pak, (cap->var ? (const char *)cap->var : cap->cap), 16);
 }
 
 void PacketWriteData (Packet *pak, const char *data, UWORD len)
@@ -550,7 +550,7 @@ Cap *PacketReadCap (Packet *pak)
     memcpy (p, cap, 16);
 
     caps[id].id = id;
-    caps[id].cap = (const UBYTE *)p;
+    caps[id].cap = p;
     caps[id].len = 16;
     caps[id].name = strdup (s_sprintf ("CAP_UNK_%d", id));
     return &caps[id];
@@ -573,7 +573,7 @@ void PacketReadData (Packet *pak, str_t str, UWORD len)
     if (str)
     {
         s_init (str, "", len + 1);
-        if (str->max >= len + 1)
+        if (str->max > len)
         {
             str->len = len;
             str->txt[len] = '\0';
@@ -648,7 +648,7 @@ strc_t PacketReadL2Str (Packet *pak, str_t str)
 
 strc_t PacketReadL4Str (Packet *pak, str_t str)
 {
-    UWORD len;
+    size_t len;
     
     len = PacketRead4 (pak);
     if (pak->rpos + len >= PacketMaxData)
@@ -678,7 +678,7 @@ UDWORD PacketReadUIN (Packet *pak)
 {
     UBYTE len = PacketRead1 (pak);
     UDWORD uin;
-    str_s str = { NULL };
+    str_s str = { NULL, 0, 0 };
 
     PacketReadData (pak, &str, len);
     str.txt[len] = '\0';
@@ -779,7 +779,7 @@ void PacketReadAtData (const Packet *pak, UWORD at, str_t str, UWORD len)
     if (str)
     {
         s_init (str, "", len + 1);
-        if (str->max >= len + 1)
+        if (str->max > len)
             memcpy (str->txt, pak->data + at, len);
     }
 }

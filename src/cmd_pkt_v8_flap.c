@@ -156,7 +156,7 @@ static void FlapChannel4 (Connection *conn, Packet *pak)
         else
             M_print (i18n (1896, "Server closed connection:\n"));
         M_printf (i18n (1048, "Error code: %ld\n"), tlv[9].nr ? tlv[9].nr : tlv[8].nr);
-        if (tlv[1].str.len && atoi (tlv[1].str.txt) != conn->uin)
+        if (tlv[1].str.len && (UDWORD)atoi (tlv[1].str.txt) != conn->uin)
             M_printf (i18n (2218, "UIN: %s\n"), tlv[1].str.txt);
         if (tlv[4].str.len)
             M_printf (i18n (1961, "URL: %s\n"), tlv[4].str.txt);

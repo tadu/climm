@@ -49,10 +49,10 @@
  */
 str_t s_init (str_t str, const char *init, size_t add)
 {
-    size_t initlen, size;
+    UDWORD initlen, size;
     
     initlen = strlen (init);
-    size = initlen + (add >= 0 ? add : 0) + 2;
+    size = initlen + add + 2;
     
     if (!str->txt || size >= str->max)
     {
@@ -79,10 +79,10 @@ str_t s_init (str_t str, const char *init, size_t add)
  */
 str_t s_blow (str_t str, size_t len)
 {
-    size_t newlen;
+    UDWORD newlen;
     char *tmp;
     
-    newlen = 1 + ((str->max + (len >= 0 ? len : 0)) | 0x3f);
+    newlen = 1 + ((str->max + len) | 0x3f);
     
     if (!str->txt || !str->max)
         tmp = malloc (newlen);
@@ -193,7 +193,7 @@ str_t s_catf (str_t str, const char *fmt, ...)
  */
 str_t s_insn (str_t str, size_t pos, const char *ins, size_t len)
 {
-    if (pos < 0 || pos > str->len)
+    if (pos > str->len)
         return NULL;
     if (str->len + len + 2 >= str->max)
         if (!s_blow (str, str->len + len + 2 - str->max))
@@ -210,7 +210,7 @@ str_t s_insn (str_t str, size_t pos, const char *ins, size_t len)
  */
 str_t s_insc (str_t str, size_t pos, char ins)
 {
-    if (pos < 0 || pos > str->len)
+    if (pos > str->len)
         return NULL;
     if (str->len + 3 >= str->max)
         if (!s_blow (str, str->len + 3 - str->max))
@@ -227,7 +227,7 @@ str_t s_insc (str_t str, size_t pos, char ins)
  */
 str_t s_delc (str_t str, size_t pos)
 {
-    if (pos < 0 || pos > str->len)
+    if (pos > str->len)
         return NULL;
     memmove (str->txt + pos, str->txt + pos + 1, str->len - pos);
     str->len--;
@@ -239,7 +239,7 @@ str_t s_delc (str_t str, size_t pos)
  */
 str_t s_deln (str_t str, size_t pos, size_t len)
 {
-    if (pos < 0 || pos + len > str->len)
+    if (pos + len > str->len)
         return NULL;
     memmove (str->txt + pos, str->txt + pos + len, str->len - pos);
     str->len -= len;
@@ -264,10 +264,10 @@ void s_done (str_t str)
 const char *s_sprintf (const char *fmt, ...)
 {
     static char *buf = NULL;
-    static UDWORD size = 0;
+    static int size = 0;
     va_list args;
     char *nbuf;
-    UDWORD rc;
+    int rc;
 
     if (!buf)
         buf = calloc (1, size = 1024);

@@ -38,7 +38,8 @@
 TLV *TLVRead (Packet *pak, UDWORD TLVlen)
 {
     TLV *tlv = calloc (__maxTLV, sizeof (TLV));
-    int typ, len, pos, i = __minTLV, n, max = __maxTLV;
+    int typ, pos, i = __minTLV, n, max = __maxTLV;
+    UDWORD len;
 
     assert (tlv);
 
@@ -48,7 +49,7 @@ TLV *TLVRead (Packet *pak, UDWORD TLVlen)
         len = PacketReadB2 (pak);
         if (TLVlen < len)
         {
-            M_printf (i18n (1897, "Incomplete TLV %d, len %ld of %d - ignoring.\n"), typ, TLVlen, len);
+            M_printf (i18n (1897, "Incomplete TLV %d, len %ld of %ld - ignoring.\n"), typ, TLVlen, len);
             return tlv;
         }
         if (typ >= __minTLV || tlv[typ].str.len)

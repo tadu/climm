@@ -54,6 +54,10 @@ static jump_f
 
 static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag);
 
+static alias_t *CmdUserLookupAlias (const char *name);
+static alias_t *CmdUserSetAlias (const char *name, const char *expansion);
+static int CmdUserRemoveAlias (const char *name);
+
 /* 1 = do not apply idle stuff next time           v
    2 = count this line as being idle               v */
 static jump_t jump[] = {
@@ -149,7 +153,7 @@ static jump_t jump[] = {
     { &CmdUserAbout,         "about",        0,   0 },
     { &CmdUserConn,          "conn",         0,   0 },
 
-    { NULL, NULL, 0 }
+    { NULL, NULL, 0, 0 }
 };
 
 static alias_t *aliases = NULL;
@@ -197,7 +201,7 @@ alias_t *CmdUserAliases (void)
 /*
  * Looks up an alias.
  */
-alias_t *CmdUserLookupAlias (const char *name)
+static alias_t *CmdUserLookupAlias (const char *name)
 {
     alias_t *node;
 
@@ -211,7 +215,7 @@ alias_t *CmdUserLookupAlias (const char *name)
 /*
  * Sets an alias.
  */
-alias_t *CmdUserSetAlias (const char *name, const char *expansion)
+static alias_t *CmdUserSetAlias (const char *name, const char *expansion)
 {
     alias_t *alias;
 
@@ -243,7 +247,7 @@ alias_t *CmdUserSetAlias (const char *name, const char *expansion)
 /*
  * Removes an alias.
  */
-int CmdUserRemoveAlias (const char *name)
+static int CmdUserRemoveAlias (const char *name)
 {
     alias_t *node, *prev_node = NULL;
 
@@ -277,7 +281,7 @@ static JUMP_F(CmdUserChange)
     char *arg1 = NULL;
     OPENCONN;
 
-    if (data == -1)
+    if (data + 1 == 0)
     {
         if (!s_parseint (&args, &data))
         {
@@ -655,11 +659,12 @@ static JUMP_F(CmdUserTrans)
 
     while (1)
     {
-        UDWORD i, l = 0;
+        UDWORD j;
+        int i, l = 0;
 
-        if (s_parseint (&args, &i))
+        if (s_parseint (&args, &j))
         {
-            M_printf ("%3ld:%s\n", i, i18n (i, i18n (1078, "No translation available.")));
+            M_printf ("%3ld:%s\n", j, i18n (j, i18n (1078, "No translation available.")));
             one = 1;
             continue;
         }
@@ -673,7 +678,7 @@ static JUMP_F(CmdUserTrans)
                     if (p)
                     {
                         l = i;
-                        M_printf ("%3ld:%s\n", i, p);
+                        M_printf ("%3d:%s\n", i, p);
                     }
                 }
             }
@@ -692,7 +697,7 @@ static JUMP_F(CmdUserTrans)
                 if (i == -1)
                     M_printf (i18n (2316, "Translation %s not found.\n"), par->txt);
                 else
-                    M_printf (i18n (2318, "No translation (%s) loaded (%ld entries).\n"), par->txt, i);
+                    M_printf (i18n (9999, "No translation (%s) loaded (%d entries).\n"), par->txt, i);
             }
             one = 1;
         }
@@ -1313,7 +1318,7 @@ static UDWORD __status (Contact *cont)
     return STATUS_ONLINE;
 }
 
-static int __tuin, __lenuin, __lennick, __lenstat, __lenid, __totallen, __l;
+static UDWORD __tuin, __lenuin, __lennick, __lenstat, __lenid, __totallen, __l;
 
 static void __initcheck (void)
 {
@@ -1340,7 +1345,7 @@ static void __checkcontact (Contact *cont, UWORD data)
 
 static void __donecheck (UWORD data)
 {
-    if (__lennick > uiG.nick_len)
+    if (__lennick > (UDWORD)uiG.nick_len)
         uiG.nick_len = __lennick;
     while (__tuin)
         __lenuin++, __tuin /= 10;
@@ -1405,18 +1410,18 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
              peer->connect & CONNECT_OK         ? '&' :
              peer->connect & CONNECT_FAIL       ? '|' :
              peer->connect & CONNECT_MASK       ? ':' : '.' ,
-             COLCONTACT, ul, __lennick + s_delta (cont->nick), cont->nick,
-             COLNONE, ul, COLQUOTE, ul, __lenstat + 2 + s_delta (stat), stat,
-             COLNONE, ul, __lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
+             COLCONTACT, ul, (int)__lennick + s_delta (cont->nick), cont->nick,
+             COLNONE, ul, COLQUOTE, ul, (int)__lenstat + 2 + s_delta (stat), stat,
+             COLNONE, ul, (int)__lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
              ver2 ? ver2 : "", tbuf, COLNONE);
 
     for (alias = cont->alias; alias && (data & 2); alias = alias->more)
     {
         M_printf ("%s%s+     %*ld", COLSERVER, ul, (int)__lenuin, cont->uin);
         M_printf ("%s%s %s%s%-*s%s%s %s%s%-*s%s%s %-*s%s%s%s\n",
-                  COLSERVER, ul, COLCONTACT, ul, __lennick + s_delta (alias->alias), alias->alias,
-                  COLNONE, ul, COLQUOTE, ul, __lenstat + 2 + s_delta (stat), stat,
-                  COLNONE, ul, __lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
+                  COLSERVER, ul, COLCONTACT, ul, (int)__lennick + s_delta (alias->alias), alias->alias,
+                  COLNONE, ul, COLQUOTE, ul, (int)__lenstat + 2 + s_delta (stat), stat,
+                  COLNONE, ul, (int)__lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
                   ver2 ? ver2 : "", tbuf, COLNONE);
     }
     free (stat);
@@ -1495,7 +1500,7 @@ static JUMP_F(CmdUserStatusDetail)
                 if (cap->name[4] == 'U' && cap->name[5] == 'N')
                 {
                     M_print (": ");
-                    M_print (s_dump (cap->cap, 16));
+                    M_print (s_dump ((const UBYTE *)cap->cap, 16));
                 }
             }
         if (i)
@@ -1754,14 +1759,14 @@ static JUMP_F(CmdUserStatusWide)
             if (data)
             {
                 ContactAdd (cgoff, cont);
-                if (s_strlen (cont->nick) > lennick)
+                if (s_strlen (cont->nick) > (UDWORD)lennick)
                     lennick = s_strlen (cont->nick);
             }
         }
         else
         {
             ContactAdd (cgon, cont);
-            if (s_strlen (cont->nick) > lennick)
+            if (s_strlen (cont->nick) > (UDWORD)lennick)
                 lennick = s_strlen (cont->nick);
         }
     }
@@ -2494,7 +2499,7 @@ static JUMP_F(CmdUserAdd)
         {
             M_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, cmd);
             M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
-            if (c_strlen (cmd) > uiG.nick_len)
+            if (c_strlen (cmd) > (UDWORD)uiG.nick_len)
                 uiG.nick_len = c_strlen (cmd);
             ContactFindCreate (conn->contacts, 0, cont->uin, cmd);
             if (conn->ver > 6)
@@ -2808,7 +2813,7 @@ static JUMP_F(CmdUserLast)
 
     if (!s_parsenick (&args, &cont, conn))
     {
-        HistShow (conn, NULL);
+        HistShow (NULL);
 
 /*        cg = conn->contacts;
         M_print (i18n (1682, "You have received messages from:\n"));
@@ -2832,7 +2837,7 @@ static JUMP_F(CmdUserLast)
             M_printf (i18n (2107, "No messages received from %s%s%s.\n"),
                      COLCONTACT, cont->nick, COLNONE);
         }*/
-        HistShow (conn, cont);
+        HistShow (cont);
         if (*args == ',')
             args++;
     }
@@ -3194,7 +3199,7 @@ static JUMP_F(CmdUserOldSearch)
 static JUMP_F(CmdUserSearch)
 {
     int temp;
-    static MetaWP wp = { 0 };
+    static MetaWP wp = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     strc_t par;
     char *arg1 = NULL;
     OPENCONN;

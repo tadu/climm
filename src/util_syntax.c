@@ -23,6 +23,7 @@
 #include "micq.h"
 #include <string.h>
 #include <assert.h>
+#include "util_syntax.h"
 #include "packet.h"
 #include "conv.h"
 #include "contact.h"
@@ -105,7 +106,7 @@ static const char *syntable[] = {
 char *PacketDump (Packet *pak, const char *syntax)
 {
     Packet *p = NULL;
-    str_s str = { NULL };
+    str_s str = { NULL, 0, 0 };
     UDWORD nr, len, val, i, mem1, mem2, oldrpos;
     const char *f, *l, *last;
     char *sub, lev, *tmp;
@@ -250,8 +251,10 @@ char *PacketDump (Packet *pak, const char *syntax)
                 else if (sub)
                 {
                     Packet *p;
-                    str_s tt = { pak->data + pak->rpos + 4, len, 0 };
+                    str_s tt = { 0, 0, 0 };
                     
+                    tt.txt = (char *)pak->data + pak->rpos + 4;
+                    tt.len = len;
                     p = PacketCreate (&tt);
                     
                     s_cat  (&str, s_dumpnd (pak->data + pak->rpos, 4));
@@ -281,7 +284,9 @@ char *PacketDump (Packet *pak, const char *syntax)
                 s_cat  (&str, s_dumpnd (pak->data + pak->rpos, 2));
                 s_catf (&str, " %sDWORD.%c  \"%s\"%s\n", COLDEBUG, *f == '<' ? 'B' : 'L', f, COLNONE);
                 {
-                    str_s tt = { pak->data + pak->rpos + 2, len, 0 };
+                    str_s tt = { 0, 0, 0 };
+                    tt.txt = (char *)pak->data + pak->rpos + 2;
+                    tt.len = len;
                     p = PacketCreate (&tt);
                 }
                 pak->rpos += len + 2;

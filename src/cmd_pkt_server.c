@@ -265,7 +265,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             if (!uin || !(cont = ContactUIN (conn, uin)))
                 break;
             M_printf (i18n (2214, "Info for %s%lu%s:\n"), COLSERVER, uin, COLNONE);
-            Display_Info_Reply (conn, cont, pak, IREP_HASAUTHFLAG);
+            Display_Info_Reply (cont, pak, IREP_HASAUTHFLAG);
             break;
         case SRV_EXT_INFO_REPLY:
             Display_Ext_Info_Reply (conn, pak);
@@ -348,7 +348,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             if (!uin || !(cont = ContactUIN (conn, uin)))
                 break;
             M_printf (i18n (1968, "User found:\n"));
-            Display_Info_Reply (conn, cont, pak, IREP_HASAUTHFLAG);
+            Display_Info_Reply (cont, pak, IREP_HASAUTHFLAG);
             break;
         case SRV_RAND_USER:
             if (PacketReadLeft (pak) != 37)

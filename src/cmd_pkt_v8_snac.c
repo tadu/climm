@@ -61,6 +61,13 @@ static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd,
     SnacSrvAuthreply, SnacSrvIcbmerr, SnacSrvReplyroster, SnacSrvContrefused,
     SnacSrvRateexceeded, SnacSrvReplylists, SnacSrvUpdateack, SnacServerpause;
 
+static void SrvCallBackKeepalive (Event *event);
+static Packet *SnacC (Connection *conn, UWORD fam, UWORD cmd, UWORD flags, UDWORD ref);
+static void SnacCallbackType2Ack (Event *event);
+static void SnacCallbackType2 (Event *event);
+static Packet *SnacMetaC (Connection *conn, UWORD sub, UWORD type, UWORD ref);
+static void SnacMetaSend (Connection *conn, Packet *pak);
+
 static SNAC SNACv[] = {
     {  1,  3, NULL, NULL},
     { 19,  4, NULL, NULL},
@@ -181,7 +188,7 @@ void SnacCallback (Event *event)
 /*
  * Keeps track of sending a keep alive every 30 seconds.
  */
-void SrvCallBackKeepalive (Event *event)
+static void SrvCallBackKeepalive (Event *event)
 {
     if (event->conn && event->conn->connect & CONNECT_OK)
     {
@@ -209,7 +216,7 @@ const char *SnacName (UWORD fam, UWORD cmd)
 /*
  * Creates a new SNAC.
  */
-Packet *SnacC (Connection *conn, UWORD fam, UWORD cmd, UWORD flags, UDWORD ref)
+static Packet *SnacC (Connection *conn, UWORD fam, UWORD cmd, UWORD flags, UDWORD ref)
 {
     Packet *pak;
     
@@ -710,7 +717,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     UWORD seq1, tcpver, len, i, msgtyp, type;
     const char *txt = NULL;
     strc_t ctext;
-    str_s str = { NULL };
+    str_s str = { NULL, 0, 0 };
 
     pak = event->pak;
 
@@ -775,7 +782,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                     txt = ConvFromCont (&str, cont);
                     break;
                 case 0x00000000:
-                    if (ConvIsUTF8 (str.txt) && len - 4 == strlen (str.txt))
+                    if (ConvIsUTF8 (str.txt) && len == strlen (str.txt) + 4)
                         txt = ConvFrom (&str, ENC_UTF8)->txt;
                     else
                         txt = ConvFromCont (&str, cont);
@@ -1207,7 +1214,6 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                         cg->id = tag;
                     }
                     M_printf ("FIXME: Group #%08d '%s'\n", tag, name);
-//                  M_printf (i18n (2049, "Receiving group \"%s\":\n"), name);
                 }
                 break;
             case 2:
@@ -1811,7 +1817,7 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
         case 1:
             {
             strc_t str;
-            str_s bstr = { NULL };
+            str_s bstr = { NULL, 0, 0 };
 
             int enc = ENC_LATIN1, icqenc = 0;
             
@@ -1819,7 +1825,7 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
             
             if (cont->status != STATUS_OFFLINE &&
                 HAS_CAP (cont->caps, CAP_UTF8) && cont->dc && cont->dc->version >= 7
-                && !(cont->dc->id1 == 0xffffff42 && cont->dc->id2 < 0x00040a03)) /* exclude old mICQ */
+                && !(cont->dc->id1 == (time_t)0xffffff42 && cont->dc->id2 < (time_t)0x00040a03)) /* exclude old mICQ */
             {
                 enc = ENC_UCS2BE;
                 icqenc = 0x20000;
@@ -1890,7 +1896,7 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
     return RET_OK;
 }
 
-void SnacCallbackType2Ack (Event *event)
+static void SnacCallbackType2Ack (Event *event)
 {
     Contact *cont = ContactUIN (event->conn, event->uin);
     Connection *serv = event->conn;
@@ -1915,7 +1921,7 @@ void SnacCallbackType2Ack (Event *event)
     EventD (event);
 }
 
-void SnacCallbackType2 (Event *event)
+static void SnacCallbackType2 (Event *event)
 {
     Contact *cont = ContactUIN (event->conn, event->uin);
     Connection *serv = event->conn;
@@ -2371,7 +2377,7 @@ void SnacCliAuthorize (Connection *conn, Contact *cont, BOOL accept, const char 
 /*
  * Create meta request package.
  */
-Packet *SnacMetaC (Connection *conn, UWORD sub, UWORD type, UWORD ref)
+static Packet *SnacMetaC (Connection *conn, UWORD sub, UWORD type, UWORD ref)
 {
     Packet *pak;
 
@@ -2392,7 +2398,7 @@ Packet *SnacMetaC (Connection *conn, UWORD sub, UWORD type, UWORD ref)
 /*
  * Complete & send meta request package.
  */
-void SnacMetaSend (Connection *conn, Packet *pak)
+static void SnacMetaSend (Connection *conn, Packet *pak)
 {
     PacketWriteLenDone (pak);
     PacketWriteTLVDone (pak);

@@ -2,7 +2,7 @@
 #ifndef MICQ_UTIL_RL_H
 #define MICQ_UTIL_RL_H 1
 
-extern int rl_columns;
+extern UDWORD rl_columns;
 
 void ReadLineInit (void);
 void ReadLineTtyUnset (void);

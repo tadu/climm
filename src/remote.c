@@ -37,6 +37,7 @@
 #include "session.h"
 #include "packet.h"
 #include "contact.h"
+#include "remote.h"
 #include "preferences.h"
 
 #ifdef ENABLE_REMOTECONTROL

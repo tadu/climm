@@ -79,15 +79,15 @@ static RETSIGTYPE tty_int_handler (int);
 
 /* static void rl_dump_line (void); */
 static int  rl_getcolumns (void);
-static void rl_syncpos (int pos);
-static void rl_goto (int pos);
+static void rl_syncpos (UDWORD pos);
+static void rl_goto (UDWORD pos);
 static void rl_recheck (BOOL clear);
-static void rl_insert_basic (UWORD ucs, const char *display, size_t len, size_t collen);
-static void rl_analyze_ucs (UWORD ucs, const char **display, int *columns);
+static void rl_insert_basic (UWORD ucs, const char *display, UDWORD len, UDWORD collen);
+static void rl_analyze_ucs (UWORD ucs, const char **display, UWORD *columns);
 static void rl_insert (UWORD ucs);
 static int rl_delete (void);
-static int rl_left (int i);
-static int rl_right (int i);
+static int rl_left (UDWORD i);
+static int rl_right (UDWORD i);
 static const Contact *rl_tab_getnext (strc_t common);
 static void rl_tab_accept (void);
 static void rl_tab_cancel (void);
@@ -100,7 +100,7 @@ static void rl_key_backspace (void);
 static void rl_key_end (void);
 static void rl_key_cut (void);
 static void rl_key_kill (void);
-static void rl_linecompress (str_t line, int from, int to);
+static void rl_linecompress (str_t line, UDWORD from, UDWORD to);
 static void rl_lineexpand (char *hist);
 static void rl_historyback (void);
 static void rl_historyforward (void);
@@ -110,35 +110,36 @@ static void rl_checkcolumns (void);
 static volatile int rl_interrupted = 0;
 static volatile int rl_columns_cur = 0;
 
-int rl_columns = 0;
-static int rl_colpos, rl_ucspos, rl_bytepos;
+UDWORD rl_columns = 0;
+static UDWORD rl_colpos, rl_ucspos, rl_bytepos;
 static int rl_stat = 0, rl_inputdone;
 
-static str_s rl_ucs      = { NULL };
-static str_s rl_ucscol   = { NULL };
-static str_s rl_ucsbytes = { NULL };
-static str_s rl_display  = { NULL };
+static str_s rl_ucs      = { NULL, 0, 0 };
+static str_s rl_ucscol   = { NULL, 0, 0 };
+static str_s rl_ucsbytes = { NULL, 0, 0 };
+static str_s rl_display  = { NULL, 0, 0 };
 
-static str_s rl_input    = { NULL };
-static str_s rl_operate  = { NULL };
-static str_s rl_temp     = { NULL };
+static str_s rl_input    = { NULL, 0, 0 };
+static str_s rl_operate  = { NULL, 0, 0 };
+static str_s rl_temp     = { NULL, 0, 0 };
 
 #define RL_HISTORY_LINES 100
 static char *rl_yank = NULL;
 static char *rl_history[RL_HISTORY_LINES + 1];
 static int   rl_history_pos = 0;
 
-static int   rl_tab_state = 0;  /* 0 = OFF 1 = Out 2 = Inc 3 = Online 4 = Offline */
-static int   rl_tab_index = 0;  /* index in list */
-static int   rl_tab_len   = 0;  /* number of codepoints tabbed in */
-static int   rl_tab_pos   = 0;  /* start of word tabbed in */
-static int   rl_tab_common = 0; /* number of given codepoints */
-static str_s rl_colon      = { NULL };
-static str_s rl_coloff     = { NULL };
+static int    rl_tab_state = 0;  /* 0 = OFF 1 = Out 2 = Inc 3 = Online 4 = Offline */
+static UDWORD rl_tab_index = 0;  /* index in list */
+static UDWORD rl_tab_len   = 0;  /* number of codepoints tabbed in */
+static UDWORD rl_tab_pos   = 0;  /* start of word tabbed in */
+static UDWORD rl_tab_common = 0; /* number of given codepoints */
+static str_s  rl_colon      = { NULL, 0, 0 };
+static str_s  rl_coloff     = { NULL, 0, 0 };
 static const Contact *rl_tab_cont = NULL;
 
-static str_s rl_prompt   = { NULL };
-static int rl_prompt_len = 0, rl_prompt_stat = 0;
+static str_s  rl_prompt   = { NULL, 0, 0 };
+static UWORD  rl_prompt_len = 0;
+static int    rl_prompt_stat = 0;
 static time_t rl_prompt_time = 0;
 
 /*
@@ -339,7 +340,7 @@ static int rl_getcolumns ()
  */
 static void rl_checkcolumns ()
 {
-    int w;
+    UDWORD w;
 
     if ((w = rl_getcolumns ()) == rl_columns)
         return;
@@ -364,7 +365,7 @@ void ReadLineClrScr ()
 /*
  * Reset rl_colpos, rl_ucspos, rl_bytepos to correct values for given column
  */
-static void rl_syncpos (int pos)
+static void rl_syncpos (UDWORD pos)
 {
     rl_colpos = rl_ucspos = rl_bytepos = 0;
     while (rl_colpos + rl_ucscol.txt[rl_ucspos] <= pos)
@@ -379,7 +380,7 @@ static void rl_syncpos (int pos)
 /*
  * Go to given column
  */
-static void rl_goto (int pos)
+static void rl_goto (UDWORD pos)
 {
     if (pos == rl_colpos)
         return;
@@ -393,10 +394,10 @@ static void rl_goto (int pos)
         rl_colpos -= l * rl_columns;
         s_catc (&rl_operate, '\r');
         rl_colpos -= (rl_prompt_len + rl_colpos) % rl_columns;
-        if (rl_colpos < 0)
+        if ((int)rl_colpos < 0)
         {
             if (rl_prompt_len)
-                s_catf (&rl_operate, ESC "[%dC", rl_prompt_len);
+                s_catf (&rl_operate, ESC "[%uC", rl_prompt_len);
             rl_colpos = 0;
         }
 #else
@@ -437,9 +438,11 @@ static void rl_recheck (BOOL clear)
             s_delc (&rl_ucscol, rl_ucspos);
             s_delc (&rl_display, rl_bytepos);
         }
-        else if (((rl_prompt_len + rl_colpos) % rl_columns) + rl_ucscol.txt[rl_ucspos] > rl_columns)
+        else if (((rl_prompt_len + rl_colpos) % rl_columns)
+                 + (UBYTE)rl_ucscol.txt[rl_ucspos] > rl_columns)
         {
-            for (i = ((rl_prompt_len + rl_colpos) % rl_columns) + rl_ucscol.txt[rl_ucspos] - rl_columns; i > 0; i--)
+            for (i = ((rl_prompt_len + rl_colpos) % rl_columns)
+                 + (UBYTE)rl_ucscol.txt[rl_ucspos] - rl_columns; i > 0; i--)
             {
                 s_insc (&rl_ucs, 2 * rl_ucspos, -1);
                 s_insc (&rl_ucs, 2 * rl_ucspos, -1);
@@ -472,7 +475,7 @@ static void rl_recheck (BOOL clear)
  * Insert a character by unicode codepoint, display string in local encoding
  * and its length, and its width in columns
  */
-static void rl_insert_basic (UWORD ucs, const char *display, size_t len, size_t collen)
+static void rl_insert_basic (UWORD ucs, const char *display, UDWORD len, UDWORD collen)
 {
     int i;
     
@@ -503,7 +506,7 @@ static void rl_insert_basic (UWORD ucs, const char *display, size_t len, size_t 
 /*
  * Determine for a character is display string and columns width
  */
-static void rl_analyze_ucs (UWORD ucs, const char **display, int *columns)
+static void rl_analyze_ucs (UWORD ucs, const char **display, UWORD *columns)
 {
    if (ucs < 32 || ucs == 127) /* control code */
     {
@@ -533,7 +536,7 @@ static void rl_analyze_ucs (UWORD ucs, const char **display, int *columns)
 static void rl_insert (UWORD ucs)
 {
     const char *display;
-    int columns;
+    UWORD columns;
 
     rl_analyze_ucs (ucs, &display, &columns);
     rl_insert_basic (ucs, display, strlen (display), columns);
@@ -569,7 +572,7 @@ static int rl_delete (void)
 /*
  * Go an amount of glyphs to the left
  */
-static int rl_left (int i)
+static int rl_left (UDWORD i)
 {
     int gpos;
 
@@ -592,7 +595,7 @@ static int rl_left (int i)
 /*
  * Go an amount of glyphs to the right
  */
-static int rl_right (int i)
+static int rl_right (UDWORD i)
 {
     int gpos;
 
@@ -618,11 +621,11 @@ static int rl_right (int i)
 /*
  * Compresses part of the current edited line into an UTF8 string
  */
-static void rl_linecompress (str_t line, int from, int to)
+static void rl_linecompress (str_t line, UDWORD from, UDWORD to)
 {
-    int i, ucs;
+    UDWORD i, ucs;
     
-    if (to < 0)
+    if (to + 1 == 0)
         to = rl_ucscol.len;
     s_init (line, "", 0);
     for (i = from; i < to; i++)
@@ -635,9 +638,9 @@ static void rl_linecompress (str_t line, int from, int to)
  */
 static void rl_lineexpand (char *hist)
 {
-    str_s str = { NULL };
+    str_s str = { NULL, 0, 0 };
     strc_t line;
-    int i;
+    UDWORD i;
 
     s_init (&rl_ucs, "", 0);
     s_init (&rl_ucscol, "", 0);
@@ -780,10 +783,11 @@ static const Contact *rl_tab_getnext (strc_t common)
  */
 static void rl_tab_accept (void)
 {
-    str_s inss = { NULL };
+    str_s inss = { NULL, 0, 0 };
     strc_t ins;
     const char *display;
-    int i, columns;
+    UDWORD i;
+    UWORD columns;
     
     if (!rl_tab_state)
        return;
@@ -809,10 +813,11 @@ static void rl_tab_accept (void)
  */
 static void rl_tab_cancel (void)
 {
-    str_s inss = { NULL };
+    str_s inss = { NULL, 0, 0 };
     strc_t ins;
     const char *display;
-    int i, columns;
+    UDWORD i;
+    UWORD columns;
     
     if (!rl_tab_state)
        return;
@@ -838,10 +843,11 @@ static void rl_tab_cancel (void)
  */
 static void rl_key_tab (void)
 {
-    str_s inss = { NULL };
+    str_s inss = { NULL, 0, 0 };
     strc_t ins;
     const char *display;
-    int i, columns;
+    UDWORD i;
+    UWORD columns;
 
     if (!rl_tab_state)
     {

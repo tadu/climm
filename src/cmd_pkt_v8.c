@@ -34,6 +34,7 @@
 #include "preferences.h"
 #include "cmd_pkt_v8_flap.h"
 #include "cmd_pkt_v8_snac.h"
+#include "cmd_pkt_v8.h"
 #include "tcp.h"
 #include <string.h>
 #include <unistd.h>
@@ -240,7 +241,8 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
     return new;
 }
 
-void SrvMsgAdvanced (Packet *pak, UDWORD seq, UWORD msgtype, UWORD status, UWORD deststatus, UWORD flags, const char *msg)
+void SrvMsgAdvanced (Packet *pak, UDWORD seq, UWORD msgtype, UWORD status,
+                     UDWORD deststatus, UWORD flags, const char *msg)
 {
     if      (status == (UWORD)STATUS_OFFLINE) /* keep */ ;
     else if (status & STATUSF_DND)     status = STATUSF_DND  | (status & STATUSF_INV);
@@ -475,7 +477,8 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                 /* UWORD port, port2, pad; */
                 char *gtext;
                 char id[20];
-                str_s t = { id, 0, 0 };
+                str_s t = { 0, 0, 0 };
+                t.txt = id;
                 
                 cmd    = PacketRead2 (inc_pak);
                          PacketReadData (inc_pak, &t, 16);

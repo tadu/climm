@@ -68,14 +68,16 @@
 #define MICQ_ICON_NOCOLOR_6 "  \\m/CQ  "
 #define MICQ_ICON_NOCOLOR_7 "         "
 
-user_interface_state uiG = { 0 };
+static void Idle_Check (Connection *conn);
+
+user_interface_state uiG = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 Preferences *prG;
 
-void Idle_Check (Connection *conn)
+static void Idle_Check (Connection *conn)
 {
-    int delta, saver = -1;
+    int saver = -1;
     time_t now;
-    UDWORD new = 0xffffffffL;
+    UDWORD delta, new = 0xffffffffL;
 
     if (~conn->type & TYPEF_ANY_SERVER)
         return;
@@ -177,16 +179,16 @@ in a loop waiting for server responses.
 ******************************/
 int main (int argc, char *argv[])
 {
-    UDWORD i, rc;
 #ifdef _WIN32
     WSADATA wsaData;
 #endif
     Connection *conn;
     
     const char *arg_v, *arg_f, *arg_l, *arg_i, *arg_b;
-    UDWORD arg_h = 0, arg_vv = 0, arg_c = 0;
+    UDWORD rc, arg_h = 0, arg_vv = 0, arg_c = 0;
     UWORD res;
     UBYTE save_conv_error;
+    SDWORD i;
 
     srand (time (NULL));
     uiG.start_time = time (NULL);
@@ -203,7 +205,7 @@ int main (int argc, char *argv[])
         else if ((argv[i][1] == 'v') || !strcmp (argv[i], "--verbose"))
         {
             arg_v = argv[i] + 2;
-            arg_vv = (*arg_v ? atol (arg_v) : arg_vv + 1);
+            arg_vv = (*arg_v ? (unsigned int)atol (arg_v) : arg_vv + 1);
         }
         else if ((argv[i][1] == 'b') || !strcmp (argv[i], "--basedir"))
             arg_b = argv[++i];

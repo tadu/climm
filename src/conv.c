@@ -387,11 +387,14 @@ strc_t ConvFrom (strc_t text, UBYTE enc)
 strc_t ConvFromSplit (strc_t text, UBYTE enc)
 {
     static str_s str;
-    str_s tstr = { (char *)text->txt, text->len, 0 };
+    str_s tstr;
     const char *p;
     size_t tlen = text->len;
     
     s_init (&str, "", 100);
+    tstr.txt = (char *)text->txt;
+    tstr.len = text->len;
+    tstr.max = 0;
     while ((p = memchr (tstr.txt, '\xfe', tlen)))
     {
         tstr.len = p - tstr.txt;
@@ -539,7 +542,7 @@ static strc_t iconv_to_iconv (strc_t text, UBYTE enc)
 strc_t iconv_usascii (strc_t in, UBYTE enc)
 {
     static str_s str;
-    int off;
+    unsigned int off;
     char c;
     s_init (&str, "", in->len);
     

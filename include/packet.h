@@ -23,9 +23,9 @@ struct Cap_s
 {
     UBYTE id;
     UBYTE len;
-    const UBYTE *cap;
+    const char *cap;
     const char *name;
-    UBYTE *var;
+    char *var;
 };
 
 #define CAP_NONE        0

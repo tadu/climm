@@ -253,7 +253,7 @@ const char *TableGetLang (UBYTE code)
 
 void TablePrintLang (void)
 {
-    int i;
+    UBYTE i;
     const char *p;
 
     for (i = 1; i < TableLangSize; i++)

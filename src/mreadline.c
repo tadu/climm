@@ -71,7 +71,7 @@ void M_logo_clear ()
 
 #define chardiff(aa,bb)  (ENC(enc_loc) == ENC_UTF8 ? s_strnlen ((bb), (aa) - (bb)) : (aa) - (bb))
 
-#define USECOLORINVCHAR (colinvchar ? colinvchar : colinvchar = ((prG->flags & FLAG_COLOR) ? ContactPrefStr (NULL, CO_COLORINVCHAR) : ""))
+#define USECOLORINVCHAR if (!colinvchar) colinvchar = ((prG->flags & FLAG_COLOR) ? ContactPrefStr (NULL, CO_COLORINVCHAR) : "")
 
 /*
  * Print a string to the output, interpreting color and indenting codes.
@@ -83,7 +83,7 @@ void M_print (const char *org)
     const char *colnone = NULL, *colinvchar = NULL, *col;
     UBYTE isline = 0, ismsg = 0;
     int i;
-    static str_s colbuf = { NULL };
+    static str_s colbuf = { NULL, 0, 0 };
     int sw = rl_columns - IndentCount;
     
     fstr = strdup (ConvTo (org, prG->enc_loc)->txt);
@@ -142,7 +142,8 @@ void M_print (const char *org)
                 str += c_offset (str, sw - CharCount);
                 if (isline)
                 {
-                    printf ("%s...%s", USECOLORINVCHAR, col);
+                    USECOLORINVCHAR;
+                    printf ("%s...%s", colinvchar, col);
                     CharCount = 0;
                     free (fstr);
                     return;
@@ -153,7 +154,8 @@ void M_print (const char *org)
             {
                 if (isline)
                 {
-                    printf ("%s...%s\n", USECOLORINVCHAR, col);
+                    USECOLORINVCHAR;
+                    printf ("%s...%s\n", colinvchar, col);
                     CharCount = 0;
                     free (fstr);
                     return;
@@ -173,7 +175,10 @@ void M_print (const char *org)
         if (isline && (*str == '\n' || *str == '\r'))
         {
             if (str[1])
-                printf ("%s%s..", USECOLORINVCHAR, para);
+            {
+                USECOLORINVCHAR;
+                printf ("%s%s..", colinvchar, para);
+            }
             printf ("%s\n", col);
             CharCount = 0;
             free (fstr);
@@ -192,7 +197,8 @@ void M_print (const char *org)
         }
         else if (ismsg || isline)
         {
-            printf ("%s%c%s", USECOLORINVCHAR, *str - 1 + 'A', col);
+            USECOLORINVCHAR;
+            printf ("%s%c%s", colinvchar, *str - 1 + 'A', col);
             CharCount++;
             continue;
         }
@@ -291,7 +297,7 @@ void M_print (const char *org)
                         save = strchr (test, 'm');
                         if (save)
                         {
-                            while (!strncmp (save, "m\e[", 3) && strchr (save + 1, 'm'))
+                            while (!strncmp (save, "m" ESC "[", 3) && strchr (save + 1, 'm'))
                                 save = strchr (save + 1, 'm');
                             if (prG->flags & FLAG_COLOR)
                             {
@@ -307,7 +313,8 @@ void M_print (const char *org)
                 }
                 break;
             default:
-                printf ("%s%c%s", USECOLORINVCHAR, *str - 1 + 'A', col);
+                USECOLORINVCHAR;
+                printf ("%s%c%s", colinvchar, *str - 1 + 'A', col);
                 
         }
     }

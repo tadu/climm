@@ -47,7 +47,7 @@ struct ConnectionList_s
 };
 
 
-static ConnectionList slist = { NULL };
+static ConnectionList slist = { NULL, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
 
 /*
  * Creates a new session.

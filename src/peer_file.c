@@ -59,7 +59,8 @@
 static void PeerFileDispatchClose   (Connection *ffile);
 static void PeerFileDispatchDClose  (Connection *ffile);
 static void PeerFileIODispatchClose (Connection *ffile);
-
+static void PeerFileDispatchW       (Connection *fpeer);
+static BOOL PeerFileError (Connection *fpeer, UDWORD rc, UDWORD flags);
 
 /*
  * Create a new file listener unless one already exists.
@@ -226,7 +227,7 @@ void PeerFileDispatch (Connection *fpeer)
 {
     Contact *cont;
     Packet *pak;
-    UDWORD err = 0;
+    int err = 0;
     
     ASSERT_FILEDIRECT (fpeer);
     
@@ -307,7 +308,7 @@ void PeerFileDispatch (Connection *fpeer)
                         *p = '_';
                 finfo.st_size = 0;
                 if (!stat (buf, &finfo))
-                    if (finfo.st_size < len)
+                    if ((UDWORD)finfo.st_size < len)
                         off = finfo.st_size;
                 fpeer->assoc = ffile;
                 ffile->sok = open (buf, O_CREAT | O_WRONLY | (off ? O_APPEND : O_TRUNC), 0660);
@@ -363,7 +364,7 @@ void PeerFileDispatch (Connection *fpeer)
             {
                 err = errno;
                 M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                M_printf (i18n (2084, "Error while seeking to offset %ld: %s (%ld).\n"),
+                M_printf (i18n (2084, "Error while seeking to offset %ld: %s (%d).\n"),
                          off, strerror (err), err);
                 TCPClose (fpeer);
                 return;
@@ -390,7 +391,7 @@ void PeerFileDispatch (Connection *fpeer)
 
         case 6:
             len = write (fpeer->assoc->sok, pak->data + 1, pak->len - 1);
-            if (len != pak->len - 1)
+            if (len + 1 != pak->len)
             {
                 M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
                 M_print  (i18n (2164, "Error writing to file.\n"));
@@ -431,12 +432,12 @@ void PeerFileDispatch (Connection *fpeer)
     }
     if ((prG->verbose & DEB_TCP) && err)
     {
-        M_printf ("%s %s: %ld\n", s_now, i18n (2029, "Protocol error on peer-to-peer connection"), err);
+        M_printf ("%s %s: %d\n", s_now, i18n (2029, "Protocol error on peer-to-peer connection"), err);
         PeerFileClose (fpeer);
     }
 }
 
-void PeerFileDispatchW (Connection *fpeer)
+static void PeerFileDispatchW (Connection *fpeer)
 {
     Packet *pak = fpeer->outgoing;
     
@@ -451,7 +452,7 @@ void PeerFileDispatchW (Connection *fpeer)
     QueueRetry (fpeer, QUEUE_PEER_FILE, fpeer->uin);
 }
 
-BOOL PeerFileError (Connection *fpeer, UDWORD rc, UDWORD flags)
+static BOOL PeerFileError (Connection *fpeer, UDWORD rc, UDWORD flags)
 {
     Contact *cont = ContactUIN (fpeer->parent->parent, fpeer->uin);
     switch (rc)

@@ -8,12 +8,11 @@
 #include <assert.h>
 
 static UWORD recv_packs[MAX_SEQ_DEPTH];
-static UDWORD start = 0;
-static UDWORD end = 0;
+static UWORD start = 0, end = 0;
 
 BOOL Is_Repeat_Packet (UWORD this_seq)
 {
-    int i;
+    UWORD i;
 
     assert (end <= MAX_SEQ_DEPTH);
     for (i = start; i != end; i++)

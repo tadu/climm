@@ -177,13 +177,13 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             M_printf (i18n (2080, "Server SMS delivery response:\n%s\n"), ConvFromServ (data));
             break;
         case META_SRV_INFO:
-            Display_Info_Reply (conn, cont, pak, 0);
+            Display_Info_Reply (cont, pak, 0);
             /* 3 unknown bytes ignored */
 
             event->callback (event);
             break;
         case META_SRV_GEN:
-            Display_Info_Reply (conn, cont, pak, 0);
+            Display_Info_Reply (cont, pak, 0);
 
             if (conn->type == TYPE_SERVER_OLD)
             {
@@ -339,7 +339,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             if (!cont || !(mg = CONTACT_GENERAL (cont)) || !(mm = CONTACT_MORE (cont)))
                 break;
 
-            Display_Info_Reply (conn, cont, pak, IREP_HASAUTHFLAG);
+            Display_Info_Reply (cont, pak, IREP_HASAUTHFLAG);
             mg->webaware = PacketRead2 (pak);
             mm->sex = PacketRead1 (pak);
             mm->age = PacketRead2 (pak);
@@ -396,7 +396,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
     }
 }
 
-void Display_Info_Reply (Connection *conn, Contact *cont, Packet *pak, UBYTE flags)
+void Display_Info_Reply (Contact *cont, Packet *pak, UBYTE flags)
 {
     MetaGeneral *mg;
     
@@ -475,9 +475,9 @@ void Recv_Message (Connection *conn, Packet *pak)
     if (!cont)
         return;
     
-    if (len - 1 == ctext->len && ConvIsUTF8 (ctext->txt))
+    if (len == ctext->len + 1 && ConvIsUTF8 (ctext->txt))
         text = ConvFrom (ctext, ENC_UTF8)->txt;
-    else if (len - 1 != ctext->len && type == MSG_NORM && len & 1)
+    else if (len != ctext->len + 1 && type == MSG_NORM && len & 1)
         text = ConvFrom (ctext, ENC_UCS2BE)->txt;
     else
         text = c_in_to_split (ctext, cont);
@@ -669,6 +669,7 @@ struct History_s
 typedef struct History_s History;
 
 static History hist[50];
+void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg);
 
 /*
  * History
@@ -706,7 +707,7 @@ void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg)
     hist[j].msg = strdup (msg);
 }
 
-void HistShow (Connection *conn, Contact *cont)
+void HistShow (Contact *cont)
 {
     int i;
     
@@ -726,7 +727,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
     char *cdata;
     Extra *e;
     const char *e_msg_text, *carr;
-    UDWORD e_msg_type;
+    UDWORD e_msg_type, j;
     int i;
     
     if (!cont)
@@ -801,8 +802,8 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
         {
             M_printf ("?%lx? %s" COLMSGINDENT "%s\n", e_msg_type, COLMESSAGE, e_msg_text);
             M_printf ("    ");
-            for (i = 0; i < strlen (e_msg_text); i++)
-                M_printf ("%c", cdata[i] ? cdata[i] : '.');
+            for (j = 0; j < strlen (e_msg_text); j++)
+                M_printf ("%c", cdata[j] ? cdata[j] : '.');
             M_print ("'\n");
             break;
 

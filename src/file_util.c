@@ -1570,7 +1570,7 @@ int Save_RC ()
  */
 void fHexDump (FILE *f, void *buffer, size_t len)
 {
-    int i, j;
+    size_t i, j;
     unsigned char *buf = buffer;
 
     if (!len)
@@ -1587,9 +1587,10 @@ void fHexDump (FILE *f, void *buffer, size_t len)
         if ((i & 15) == 15)
         {
             fprintf (f, "  ");
-            for (j = 15; j >= 0; j--)
+            for (j = 16; j > 0; )
             {
-                if (i - j >= len)
+                j--;
+                if (i >= len + j)
                     break;
                 if ((buf[i - j] & 0x7f) > 31)
                     fprintf (f, "%c", buf[i - j]);

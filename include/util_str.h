@@ -12,15 +12,15 @@ typedef const struct strc_s *strx_t;
 struct str_s
 {
     char  *txt;
-    size_t len;
-    size_t max;
+    UDWORD len;
+    UDWORD max;
 };
 
 struct strc_s
 {
     const char *txt;
-    size_t len;
-    size_t max;
+    UDWORD len;
+    UDWORD max;
 };
 
 str_t       s_init    (str_t str, const char *init, size_t add);
