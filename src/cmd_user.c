@@ -1505,7 +1505,7 @@ static JUMP_F(CmdUserStatusDetail)
                 free (t1);
                 free (t2);
             }
-            if (cont->group != conn->contacts && cont->group->name)
+            if (cont->group && cont->group != conn->contacts && cont->group->name)
                 rl_printf (i18n (2404, "Group: %s\n"), cont->group->name);
             for (j = id = 0; id < CAP_MAX; id++)
                 if (cont->caps & (1 << id))
