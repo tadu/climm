@@ -4435,6 +4435,6 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
             }
         }
     }
-    if (!status && !uiG.quit && !command)
+    if (!status && !uiG.quit)
         ReadLinePromptReset ();
 }
