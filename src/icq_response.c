@@ -478,6 +478,8 @@ void Recv_Message (Connection *conn, Packet *pak)
     
     if (len - 1 == strlen (ctext) && ConvIsUTF8 (ctext))
         text = strdup (ConvToUTF8 (ctext, ENC_UTF8, -1, 1));
+    else if (len == strlen (ctext) + 10)
+        text = strdup (c_in_to (ctext, cont)); /* work-around bug in Miranda */
     else if (len - 1 != strlen (ctext) && type == MSG_NORM && len & 1)
         text = strdup (ConvToUTF8 (ctext, ENC_UCS2BE, len - 1, 1));
     else
