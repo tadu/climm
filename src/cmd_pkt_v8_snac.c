@@ -402,6 +402,7 @@ static JUMP_SNAC_F(SnacSrvUseronline)
         t3 = PacketReadB4 (p);
         UserOnlineSetVersion (cont, t1, t2, t3);
         /* remainder ignored */
+        PacketD (p);
     }
     /* TLV 1, d, f, 2, 3 ignored */
 
@@ -460,7 +461,7 @@ static JUMP_SNAC_F(SnacSrvReplyicbm)
 static JUMP_SNAC_F(SnacSrvRecvmsg)
 {
     Contact *cont;
-    Packet *p, *pak;
+    Packet *p, *pp, *pak;
     TLV *tlv;
     UDWORD uin;
     int i, type, t;
@@ -516,6 +517,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             txt = text + 4;
             type = NORM_MESS;
             /* TLV 1, 2(!), 3, 4, f ignored */
+            PacketD (p);
             break;
         case 2:
             p = TLVPak (tlv + 5);
@@ -533,30 +535,32 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                 SnacSrvUnknown (event);
                 return;
             }
-            p = TLVPak (tlv + i);
-            if (PacketRead1 (p) != 0x1b)
+            pp = TLVPak (tlv + i);
+            if (PacketRead1 (pp) != 0x1b)
             {
                 SnacSrvUnknown (event);
                 return;
             }
-            t = PacketReadB2 (p);
+            t = PacketReadB2 (pp);
             if (cont)
                 cont->TCP_version = t;
-            PacketRead1 (p); /* UNKNOWN */
-            PacketRead4 (p); PacketRead4 (p); PacketRead4 (p); PacketRead4 (p); /* CAP */
-            PacketRead1 (p); PacketRead2 (p); /* UNKNOWN */
-            PacketReadB4 (p); /* UNKNOWN */
-            PacketReadB2 (p); /* SEQ1 */
-            PacketReadB2 (p); /* UNKNOWN */
-            PacketReadB2 (p); /* SEQ2 */
-            PacketRead4 (p); PacketRead4 (p); PacketRead4 (p); /* UNKNOWN */
-            type = PacketRead1 (p);
-                   PacketRead1 (p); /* FLAGS */
-            PacketReadB2 (p); /* UNKNOWN */
-            PacketReadB2 (p); /* UNKNOWN */
-            txt = PacketReadLNTS (p);
+            PacketRead1 (pp); /* UNKNOWN */
+            PacketRead4 (pp); PacketRead4 (pp); PacketRead4 (pp); PacketRead4 (pp); /* CAP */
+            PacketRead1 (pp); PacketRead2 (pp); /* UNKNOWN */
+            PacketReadB4 (pp); /* UNKNOWN */
+            PacketReadB2 (pp); /* SEQ1 */
+            PacketReadB2 (pp); /* UNKNOWN */
+            PacketReadB2 (pp); /* SEQ2 */
+            PacketRead4 (pp); PacketRead4 (pp); PacketRead4 (pp); /* UNKNOWN */
+            type = PacketRead1 (pp);
+                   PacketRead1 (pp); /* FLAGS */
+            PacketReadB2 (pp); /* UNKNOWN */
+            PacketReadB2 (pp); /* UNKNOWN */
+            txt = PacketReadLNTS (pp);
             /* FOREGROUND / BACKGROUND ignored */
             /* TLV 1, 2(!), 3, 4, f ignored */
+            PacketD (pp);
+            PacketD (p);
             break;
         case 4:
             p = TLVPak (tlv + 5);
@@ -566,6 +570,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             txt  = PacketReadLNTS (p);
             /* FOREGROUND / BACKGROUND ignored */
             /* TLV 1, 2(!), 3, 4, f ignored */
+            PacketD (p);
             break;
         default:
             SnacSrvUnknown (event);
@@ -796,17 +801,16 @@ static JUMP_SNAC_F(SnacSrvFromoldicq)
             M_print (i18n (1919, "UIN mismatch: %d vs %d.\n"), event->sess->uin, uin);
             SnacSrvUnknown (event);
         }
-        return;
     }
-    if (len != tlv[1].len - 2)
+    else if (len != tlv[1].len - 2)
     {
         if (prG->verbose & DEB_PROTOCOL)
         {
             M_print (i18n (1743, "Size mismatch in packet lengths.\n"));
             SnacSrvUnknown (event);
         }
-        return;
     }
+    else
     switch (type)
     {
         case 65:
@@ -828,7 +832,7 @@ static JUMP_SNAC_F(SnacSrvFromoldicq)
             snprintf (buf, sizeof (buf), "%04d-%02d-%02d %2d:%02d UTC", year, mon, mday, hour, min);
 
             Do_Msg (event->sess, buf, flags, text, uin, STATUS_OFFLINE, 0);
-            return;
+            break;
         }
         case 66:
             SnacCliAckofflinemsgs (event->sess);
@@ -840,15 +844,17 @@ static JUMP_SNAC_F(SnacSrvFromoldicq)
             QueueEnqueueData (event->sess, 0, QUEUE_TYPE_SRV_KEEPALIVE,
                               event->sess->uin, time (NULL) + 30,
                               NULL, NULL, &SrvCallBackKeepalive);
-            return;
+            break;
+
         case 2010:
             Meta_User (event->sess, uin, p);
+            break;
 
-            return;
         default:
+            SnacSrvUnknown (event);
             break;
     }
-    SnacSrvUnknown (event);
+    PacketD (p);
 }
 
 /*

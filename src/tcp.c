@@ -738,12 +738,16 @@ static void TCPSendPacket (Packet *pak, Session *sess)
         TCPPrint (pak, sess, TRUE);
 
     tpak = PacketClone (pak);
+    assert (tpak);
+    
     if (sess->type == TYPE_DIRECT)
         if (PacketReadAt1 (tpak, 0) == PEER_MSG || !PacketReadAt1 (tpak, 0)) 
             Encrypt_Pak (sess, tpak);
     
     if (!UtilIOSendTCP (sess, tpak))
         TCPClose (sess);
+    
+    PacketD (tpak);
 }
 
 /*
@@ -771,20 +775,21 @@ void TCPSendInitv6 (Session *sess)
     }
 
     pak = PacketC ();
-    PacketWrite1 (pak, PEER_INIT);                    /* command          */
-    PacketWrite2 (pak, 6);                            /* TCP version      */
-    PacketWrite2 (pak, 0);                            /* TCP revision     */
-    PacketWrite4 (pak, sess->uin);                    /* destination UIN  */
-    PacketWrite2 (pak, 0);                            /* unknown - zero   */
-    PacketWrite4 (pak, sess->assoc->port);            /* our port         */
-    PacketWrite4 (pak, sess->assoc->assoc->uin);             /* our UIN          */
-    PacketWriteB4 (pak, sess->assoc->assoc->our_outside_ip);  /* our (remote) IP  */
-    PacketWriteB4 (pak, sess->assoc->assoc->our_local_ip);    /* our (local)  IP  */
-    PacketWrite1 (pak, TCP_OK_FLAG);                  /* connection type  */
-    PacketWrite4 (pak, sess->assoc->port);            /* our (other) port */
-    PacketWrite4 (pak, sess->our_session);            /* session id       */
+    PacketWrite1  (pak, PEER_INIT);                          /* command          */
+    PacketWrite2  (pak, 6);                                  /* TCP version      */
+    PacketWrite2  (pak, 0);                                  /* TCP revision     */
+    PacketWrite4  (pak, sess->uin);                          /* destination UIN  */
+    PacketWrite2  (pak, 0);                                  /* unknown - zero   */
+    PacketWrite4  (pak, sess->assoc->port);                  /* our port         */
+    PacketWrite4  (pak, sess->assoc->assoc->uin);            /* our UIN          */
+    PacketWriteB4 (pak, sess->assoc->assoc->our_outside_ip); /* our (remote) IP  */
+    PacketWriteB4 (pak, sess->assoc->assoc->our_local_ip);   /* our (local)  IP  */
+    PacketWrite1  (pak, TCP_OK_FLAG);                        /* connection type  */
+    PacketWrite4  (pak, sess->assoc->port);                  /* our (other) port */
+    PacketWrite4  (pak, sess->our_session);                  /* session id       */
 
     TCPSendPacket (pak, sess);
+    PacketD (pak);
 }
 
 /*
@@ -845,6 +850,7 @@ static void TCPSendInit (Session *sess)
     PacketWrite4 (pak, 0);
 
     TCPSendPacket (pak, sess);
+    PacketD (pak);
 }
 
 /*
@@ -872,6 +878,7 @@ static void TCPSendInitAck (Session *sess)
     PacketWrite2 (pak, PEER_INITACK);
     PacketWrite2 (pak, 0);
     TCPSendPacket (pak, sess);
+    PacketD (pak);
 }
 
 static void TCPSendInit2 (Session *sess)
@@ -906,6 +913,7 @@ static void TCPSendInit2 (Session *sess)
     PacketWrite4 (pak, 0);
     PacketWrite4 (pak, (sess->connect & 16) ? 0 : 0x40001);
     TCPSendPacket (pak, sess);
+    PacketD (pak);
 }
 
 #define FAIL(x) { err = x; break; }
