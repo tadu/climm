@@ -80,20 +80,59 @@ static ContactGroup *IMRosterCheckGroup (Connection *serv, RosterEntry *rg)
     return cg;
 }
 
+static void IMRosterDoDelete (Event *event)
+{
+    Roster *roster = event->data;
+    RosterEntry *re;
+    Connection *serv = event->conn;
+    
+    if (!roster)
+        return;
+    
+    for (re = roster->groups; re; re = re->next)
+        if (re->tag == roster->deltag && re->id == roster->delid)
+            SnacCliRosterentrydelete (serv, re);
+
+    for (re = roster->ignore; re; re = re->next)
+        if (re->tag == roster->deltag && re->id == roster->delid)
+            SnacCliRosterentrydelete (serv, re);
+
+    for (re = roster->invisible; re; re = re->next)
+        if (re->tag == roster->deltag && re->id == roster->delid)
+            SnacCliRosterentrydelete (serv, re);
+
+    for (re = roster->visible; re; re = re->next)
+        if (re->tag == roster->deltag && re->id == roster->delid)
+            SnacCliRosterentrydelete (serv, re);
+
+    for (re = roster->normal; re; re = re->next)
+        if (re->tag == roster->deltag && re->id == roster->delid)
+            SnacCliRosterentrydelete (serv, re);
+
+    for (re = roster->generic; re; re = re->next)
+        if (re->tag == roster->deltag && re->id == roster->delid)
+            SnacCliRosterentrydelete (serv, re);
+
+    IMRosterCancel (event);
+}
+
 static void IMRosterShow (Event *event)
 {
     Roster *roster = event->data;
     RosterEntry *rg, *rc;
     Connection *serv = event->conn;
-    Contact *cont;
+    Contact *cont = NULL;
     int cnt_groups = 0, cnt_ignored = 0, cnt_hidden = 0, cnt_intimate = 0, cnt_normal = 0;
     
     if (!roster)
         return;
     
+    rl_printf (i18n (2535, "Groups:\n"));
     for (rg = roster->groups; rg; rg = rg->next)
     {
         IMRosterCheckGroup (serv, rg);
+        rl_printf ("  %s%s%s\n",
+            COLCONTACT, rg && rg->name ? rg->name : "", COLNONE);
         cnt_groups++;
     }
 
@@ -471,6 +510,19 @@ static void IMRosterDiff (Event *event)
                cnt_groups, cnt_ignored + cnt_hidden + cnt_intimate + cnt_normal + cnt_more,
                cnt_ignored, cnt_hidden, cnt_intimate, cnt_more);
 }
+
+UBYTE IMDeleteID (Connection *conn, int tag, int id)
+{
+    Roster *roster;
+    
+    roster = OscarRosterC ();
+    roster->deltag = tag;
+    roster->delid = id;
+    QueueEnqueueData2 (conn, QUEUE_REQUEST_ROSTER, SnacCliCheckroster (conn),
+                       900, roster, IMRosterDoDelete, IMRosterCancel);
+    return RET_OK;
+}
+
 
 UBYTE IMRoster (Connection *serv, int mode)
 {

@@ -3,6 +3,7 @@
 #define MICQ_IM_ICQ8
 
 UBYTE IMRoster (Connection *conn, int mode);
+UBYTE IMDeleteID (Connection *conn, int tag, int id);
 
 #define IMROSTER_EXPORT   1 /* export local to sbl */
 #define IMROSTER_UPLOAD   2 /* add local to sbl */

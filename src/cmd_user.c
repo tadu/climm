@@ -3708,6 +3708,13 @@ static JUMP_F(CmdUserContact)
         else if (!strcasecmp (par->txt, "sync"))     data = IMROSTER_SYNC;
         else if (!strcasecmp (par->txt, "export"))   data = IMROSTER_EXPORT;
         else if (!strcasecmp (par->txt, "upload"))   data = IMROSTER_UPLOAD;
+        else if (!strcasecmp (par->txt, "delid"))
+        {
+            UDWORD tag, id;
+            if (s_parseint (&args, &tag) && s_parseint (&args, &id))
+                IMDeleteID (conn, tag, id);
+            return 0;
+        }
         else                                         data = 0;
     }
     if (data)
