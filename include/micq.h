@@ -27,51 +27,7 @@
 #include <time.h>
 #include "msg_queue.h"
 #include "mselect.h"
-
-/*********  Leeched from Xicq :) xtrophy@it.dk ********/
-/*********  changed to use escape codes like you should :) ***/
-/*********  changed colors ***********************************/
-#ifdef ANSI_COLOR
 #include "color.h"
-/* Last 2 digit number selects the color */
-/* Experiment and let me know if you come up with */
-/* A better scheme */
-/* these were done by Cherrycoke */
-#ifdef COLOR_SCHEME_A
-   #define SERVCOL         BRIGHT_BLUE
-   #define MESSCOL         BRIGHT_BLUE
-   #define CONTACTCOL      GREEN
-   #define CLIENTCOL       BRIGHT_RED
-   #define NOCOL           "\x1B[0m"
-#elif defined (COLOR_SCHEME_B)
-   #define SERVCOL         MAGENTA
-   #define MESSCOL         CYAN
-   #define CONTACTCOL      CYAN
-   #define CLIENTCOL       CYAN
-   #define NOCOL           "\x1B[0m"
-#elif defined (COLOR_SCHEME_M)
-   #define SERVCOL         "\x1B[0m"
-   #define MESSCOL         GREEN
-   #define CONTACTCOL      BRIGHT_GREEN
-   #define CLIENTCOL       GREEN
-   #define NOCOL           GREEN
-#else
-   #define SERVCOL         RED
-   #define MESSCOL         BRIGHT_BLUE
-   #define CONTACTCOL      BRIGHT_MAGENTA
-   #define CLIENTCOL       GREEN
-   #define NOCOL           "\x1B[0m"
-#endif
-#define SENTCOL            MAGENTA BOLD
-#define ACKCOL             GREEN BOLD
-
-#else
-   #define SERVCOL         ""
-   #define MESSCOL         ""
-   #define CONTACTCOL      ""
-   #define CLIENTCOL       ""
-   #define NOCOL           ""
-#endif
 
 #define SOUND_ON 1
 #define SOUND_OFF 0
