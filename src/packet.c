@@ -411,6 +411,8 @@ const char *PacketReadLNTS (Packet *pak)
 
     if (!len)
         return "";
+    if (pak->rpos + len >= PacketMaxData)
+        return "<invalid>";
     if (str [len - 1])
         return "<invalid>";
 
@@ -548,6 +550,8 @@ const char *PacketReadAtLNTS (Packet *pak, UWORD at)
 
     if (!len)
         return "";
+    if (at + 2 + len >= PacketMaxData)
+        return "<invalid>";
     if (str [len - 1])
         return "<invalid>";
 
