@@ -308,14 +308,15 @@ void Read_RC_File (FILE *rcf)
                     if (!UtilUIParseRemainder (&args, &tmp))
                     {
                         dep = 1;
+                        prG->event_cmd = NULL;
                         continue;
                     }
-                    if (!strcmp (tmp, "off"))
+                    if (!strcmp (tmp, "off") || !strcmp (tmp, i18n (1086, "off")) || !strlen (tmp))
                         prG->event_cmd = NULL;
                     else
                     {
-#ifndef MSGEXEC
                         prG->event_cmd = strdup (tmp);
+#ifndef MSGEXEC
                         printf (i18n (1817, "Warning: ReceiveScript feature not enabled!\n"));
 #endif
                     }
@@ -996,7 +997,7 @@ int Save_RC ()
     fprintf (rcf, "soundoffline %s\n\n", prG->sound & SFLAG_OFF_BEEP ? "on" :
                                            prG->sound & SFLAG_OFF_CMD && prG->sound_off_cmd ?
                                            prG->sound_off_cmd : "off");
-    fprintf (rcf, "receivescript %s\n\n", prG->event_cmd ? prG->event_cmd : "off");
+    fprintf (rcf, "receivescript %s\n\n", prG->event_cmd && *prG->event_cmd ? prG->event_cmd : "off");
 
     fprintf (rcf, "\n# automatic responses\n");
     fprintf (rcf, "auto away %s\n", prG->auto_away);
