@@ -199,7 +199,7 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
         symbuf[LOG_MAX_PATH + 1];                     /* path of a sym link */
     char *target = buffer;                        /* Target of the sym link */
     const char *nick = ContactFindNick (uin);
-    const char *username = PrefLogName ();
+    const char *username = PrefLogName (prG);
     FILE *logfile;
     int fd;
     va_list args;
@@ -299,7 +299,7 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
 
     if (!prG->logplace)
     {
-        const char *userdir = PrefUserDir ();
+        const char *userdir = PrefUserDir (prG);
         prG->logplace = strcat (strcpy (malloc (strlen (userdir) 
             + sizeof (deflogdir)), userdir), deflogdir);
     }

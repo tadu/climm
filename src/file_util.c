@@ -925,7 +925,7 @@ int Save_RC ()
         int rc = errno;
         if (rc == ENOENT)
         {
-            char *tmp = strdup (PrefUserDir ());
+            char *tmp = strdup (PrefUserDir (prG));
             if (tmp[strlen (tmp) - 1] == '/')
                 tmp[strlen (tmp) - 1] = '\0';
             M_printf (i18n (2047, "Creating directory %s.\n"), tmp);

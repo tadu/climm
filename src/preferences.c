@@ -53,47 +53,22 @@ PreferencesConnection *PreferencesConnectionC ()
 #ifdef _WIN32
 #define _OS_PREFPATH ".\\"
 #define _OS_PATHSEP  '\\'
-#define _OS_PATHSEPSTR  "\\"
 #else
 #ifdef __amigaos__
 #define _OS_PREFPATH "/PROGDIR/"
 #define _OS_PATHSEP  '/'
-#define _OS_PATHSEPSTR  "/"
 #else
 #define _OS_PREFPATH NULL
 #define _OS_PATHSEP  '/'
-#define _OS_PATHSEPSTR  "/"
 #endif
 #endif
-
-static const char *userbasedir = NULL;
-static const char *userlogname = NULL;
-
-/*
- * Open preference file.
- */
-static FILE *PrefOpenRC (Preferences *pref)
-{
-    FILE *rcf;
-    
-    if (pref->rcfile)
-    {
-        rcf = fopen (pref->rcfile, "r");
-        return rcf;
-    }
-    
-    pref->rcfile = strdup (s_sprintf ("%smicqrc", PrefUserDir()));
-
-    rcf = fopen (pref->rcfile, "r");
-    return rcf;
-}
 
 /*
  * Return the preference base directory
  */
-const char *PrefUserDir ()
+const char *PrefUserDirReal (Preferences *pref)
 {
-    if (!userbasedir)
+    if (!pref->basedir)
     {
         char *home, *path;
         
@@ -104,23 +79,23 @@ const char *PrefUserDir ()
             if (!home)
                 home = "";
             if (*home && home[strlen (home) - 1] != _OS_PATHSEP)
-                userbasedir = strdup (s_sprintf ("%s%c.micq%c", home, _OS_PATHSEP, _OS_PATHSEP));
+                pref->basedir = strdup (s_sprintf ("%s%c.micq%c", home, _OS_PATHSEP, _OS_PATHSEP));
             else
-                userbasedir = strdup (s_sprintf ("%s.micq%c", home, _OS_PATHSEP));
+                pref->basedir = strdup (s_sprintf ("%s.micq%c", home, _OS_PATHSEP));
         }
         else
-            userbasedir = strdup (path);
+            pref->basedir = strdup (path);
     }
-    return userbasedir;
+    return pref->basedir;
 }
 
 #ifndef SYS_NMLN
 #define SYS_NMLN 200
 #endif
 
-const char *PrefLogName ()
+const char *PrefLogNameReal (Preferences *pref)
 {
-    if (!userlogname)
+    if (!pref->logname)
     {
         const char *me;
         char *hostname;
@@ -149,9 +124,28 @@ const char *PrefLogName ()
             hostname[-1] = '@';
         }
 #endif
-        userlogname = strdup (username);
+        pref->logname = strdup (username);
     }
-    return userlogname;
+    return pref->logname;
+}
+
+/*
+ * Open preference file.
+ */
+static FILE *PrefOpenRC (Preferences *pref)
+{
+    FILE *rcf;
+    
+    if (pref->rcfile)
+    {
+        rcf = fopen (pref->rcfile, "r");
+        return rcf;
+    }
+    
+    pref->rcfile = strdup (s_sprintf ("%smicqrc", PrefUserDir(pref)));
+
+    rcf = fopen (pref->rcfile, "r");
+    return rcf;
 }
 
 /*
@@ -176,7 +170,7 @@ BOOL PrefLoad (Preferences *pref)
     {
         char extra[200];
 
-        strcpy (extra, PrefUserDir ());
+        strcpy (extra, PrefUserDir (pref));
         strcat (extra, "contacts");
         rcf = fopen (extra, "r");
         if (rcf)

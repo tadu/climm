@@ -5,8 +5,6 @@
 
 struct Preferences_s
 {
-    char  *rcfile;      /* the preference file to load */
-
     UDWORD verbose;     /* verbosity to use on startup */
     UWORD  sound;       /* flags for sound output */
     UDWORD status;      /* status to use when logging in */
@@ -15,11 +13,14 @@ struct Preferences_s
     UDWORD away_time;   /* time after which to be away automatically; 0 = disable */
     UWORD  tabs;        /* type of tab completion */
     
-    UBYTE  enc_rem;     /* The (assumed) remote encoding */
-    UBYTE  enc_loc;     /* The local character encoding */
-    char  *locale;      /* The used locale */
+    UBYTE  enc_rem;     /* the (assumed) remote encoding */
+    UBYTE  enc_loc;     /* the local character encoding */
+    char  *locale;      /* the used locale */
     
-    char  *logplace;
+    char  *basedir;     /* the base dir where micqrc etc. reside in */
+    char  *rcfile;      /* the preference file to load */
+    char  *logplace;    /* where to log to */
+    char  *logname;     /* which name to use for logging */
 
     char  *sound_cmd;
     char  *sound_on_cmd;
@@ -62,12 +63,14 @@ struct PreferencesConnection_s
 Preferences        *PreferencesC (void);
 PreferencesConnection *PreferencesConnectionC (void);
 
-const char *PrefUserDir ();
-const char *PrefLogName ();
-
 BOOL        PrefLoad (Preferences *pref);
-
 void        PrefSetColorScheme (Preferences *pref, UBYTE scheme);
+
+#define PrefUserDir(pref) (pref->basedir ? pref->basedir : PrefUserDirReal (pref))
+#define PrefLogName(pref) (pref->logname ? pref->logname : PrefLogNameReal (pref))
+
+const char *PrefUserDirReal (Preferences *pref);
+const char *PrefLogNameReal (Preferences *pref);
 
 #define VERB_PACK         4
 #define VERB_PACK_DEBUG   8

@@ -81,17 +81,17 @@ int i18nOpen (const char *loc)
     {
         if (prG->flags & FLAG_FUNNY)
         {
-            i18nTry ("%s/i18n/%s_fun.i18n", PrefUserDir (), loc, "");
+            i18nTry ("%s/i18n/%s_fun.i18n", PrefUserDir (prG), loc, "");
             if (strchr (loc, '_'))
-                i18nTry ("%s/i18n/%.*s@fun.i18n", PrefUserDir (), strchr (loc, '_') - loc, loc);
+                i18nTry ("%s/i18n/%.*s@fun.i18n", PrefUserDir (prG), strchr (loc, '_') - loc, loc);
             i18nTry (PKGDATADIR "/%s@fun.i18n", loc, "", "");
             if (strchr (loc, '_'))
                 i18nTry (PKGDATADIR "/%.*s@fun.i18n", strchr (loc, '_') - loc, loc, "");
         }
 
-        i18nTry ("%s/i18n/%s.i18n", PrefUserDir (), loc, "");
+        i18nTry ("%s/i18n/%s.i18n", PrefUserDir (prG), loc, "");
         if (strchr (loc, '_'))
-            i18nTry ("%s/i18n/%.*s.i18n", PrefUserDir (), strchr (loc, '_') - loc, loc);
+            i18nTry ("%s/i18n/%.*s.i18n", PrefUserDir (prG), strchr (loc, '_') - loc, loc);
         i18nTry (PKGDATADIR "/%s.i18n", loc, "", "");
         if (strchr (loc, '_'))
             i18nTry (PKGDATADIR "/%.*s.i18n", strchr (loc, '_') - loc, loc, "");

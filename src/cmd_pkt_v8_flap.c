@@ -190,9 +190,9 @@ void FlapSave (Packet *pak, BOOL in)
     FILE *logf;
     char buf[200];
     
-    snprintf (buf, sizeof (buf), "%s/debug", PrefUserDir ());
+    snprintf (buf, sizeof (buf), "%s/debug", PrefUserDir (prG));
     mkdir (buf, 0700);
-    snprintf (buf, sizeof (buf), "%s/debug/packets", PrefUserDir ());
+    snprintf (buf, sizeof (buf), "%s/debug/packets", PrefUserDir (prG));
     if (!(logf = fopen (buf, "a")))
         return;
 

@@ -104,7 +104,7 @@ BOOL PeerFileRequested (Connection *peer, const char *files, UDWORD bytes)
         return 0;
     ASSERT_FILELISTEN (flist);
     
-    snprintf (buf, sizeof (buf), "%sfiles/%ld", PrefUserDir (), peer->uin);
+    snprintf (buf, sizeof (buf), "%sfiles/%ld", PrefUserDir (prG), peer->uin);
     if (stat (buf, &finfo))
     {
         M_printf ("%s " COLACK "%10s" COLNONE " ", s_now, cont->nick);
@@ -285,7 +285,7 @@ void PeerFileDispatch (Connection *fpeer)
                 struct stat finfo;
 
                 assert (ffile);
-                snprintf (buf, sizeof (buf), "%s/files/%ld/%n%s", PrefUserDir (), fpeer->uin, &pos, c_in (name));
+                snprintf (buf, sizeof (buf), "%s/files/%ld/%n%s", PrefUserDir (prG), fpeer->uin, &pos, c_in (name));
                 for (p = buf + pos; *p; p++)
                     if (*p == '/')
                         *p = '_';
