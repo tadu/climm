@@ -1194,7 +1194,7 @@ void M_print (const char *org)
                     free (fstr);
                     return;
                 }
-                printf ("\n%s%*s", M_getlogo (), IndentCount, "");
+                printf ("\n%s%*s%s", M_getlogo (), IndentCount, "", USECOLOR (col));
                 CharCount = 0;
             }
             printf ("%.*s", (int)(test - str), str);
@@ -1239,7 +1239,7 @@ void M_print (const char *org)
                 printf ("\b");
                 break;
             case '\n':
-                printf ("\n%s%*s", M_getlogo (), IndentCount, "");
+                printf ("\n%s%*s%s", M_getlogo (), IndentCount, "", USECOLOR (col));
                 CharCount = 0;
                 break;
             case '\r':
@@ -1334,7 +1334,8 @@ void M_print (const char *org)
                         test++;
                         if (*test >= '0' && *test <= '0' + CXCOUNT)
                         {
-                            printf ("%s", USECOLOR (*test - '0'));
+                            col = *test - '0';
+                            printf ("%s", USECOLOR (col));
                             str++;
                         }
                         str++;
