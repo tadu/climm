@@ -221,8 +221,8 @@ void PeerFileDispatch (Session *fpeer)
                 assert (ffile);
                 snprintf (buf, sizeof (buf), "%s/files/%ld/%n%s", PrefUserDir (), fpeer->uin, &pos, name);
                 for (p = buf + pos; *p; p++)
-                    if (*p == '/')
-                        *p = '_';
+                    if (*p == '/' || *p == '\x80' || (p[0] == 'À' && p[1] == '¯'))
+                        *p = '_';    /* ^ kill misencoded UTF-8-/ */
                 finfo.st_size = 0;
                 if (!stat (buf, &finfo))
                     if (finfo.st_size < len)
