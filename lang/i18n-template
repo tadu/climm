@@ -2,7 +2,7 @@
 
 my %nrval, %tain, $max, $tainted, $ignored, $preserved, $added, $ignerr, $uname, $name, $pref;
 
-$cvs = ":pserver:anonymous@www.micq.org:/usr/local/cvsroot";
+$cvs = ":pserver:anonymous\@www.micq.org:/usr/local/cvsroot";
 
 sub ReadTrans($)
 {
@@ -73,7 +73,7 @@ sub ProcessLine($)
             $added++;
         }
         $last = sprintf ("%04d", $last);
-        if ($nrval{$neu})
+        if (length ($nrval{$neu}))
         {
             if ($tain{$neu})
             {
@@ -89,6 +89,10 @@ sub ProcessLine($)
                     $preserved++;
                 }
             }
+        }
+        else
+        {
+            print "Dropping $neu: $line.\n";
         }
         $last = $neu;
     }
@@ -124,18 +128,19 @@ while ($uname = shift)
 {
     next unless $uname cmp "build.i18n";
 
-    $ver = `grep "# *EN" $uname | sed "s/.*,v //;s/ .*//"`;
+    $ver = `grep "# *EN:" $uname | sed "s/.*EN://;s/.*,v //;s/ .*//"`;
     chomp $ver;
     if (!length ($ver))
     {
         $ver = `grep ^1003 $uname`;
         $ver =~ s/^1003://;
         chomp $ver;
+        $ver = 0 unless length ($ver);
         $ver = "i18n-$ver";
     }
     print "Old version tag: $ver.\n";
     
-    system "cvs -d $cvs diff -u0 -r $ver build.i18n"
+    system "cvs -d $cvs rdiff -u -r $ver micq/lang/build.i18n"
          . " | grep \"^-[0-9]\" | sed \"s,^-,,\" | sort -n -t : -k 1,1 -u -o $uname.tainted";
     ReadTainted ("$uname");
 
