@@ -227,7 +227,7 @@ static void Init (int argc, char *argv[])
         }
         else if (!strcmp (argv[i], "-u") || !strcmp (argv[i], "--uin"))
         {
-            if (argv[i + 1])
+            if (argv[i + 1] && *argv[i + 1])
             {
                 targv[j++] = argv[i++];
                 targv[j++] = argv[i];
@@ -241,6 +241,7 @@ static void Init (int argc, char *argv[])
             {
                 targv[j++] = argv[i++];
                 targv[j++] = argv[i];
+                uingiven = 1;
             }
         }
         else
@@ -450,7 +451,7 @@ static void Init (int argc, char *argv[])
             if (conn->type & TYPEF_ANY_SERVER)
                 conn->status = conn->pref_status;
 
-    conn = NULL; //ConnectionFind (TYPEF_ANY_SERVER, NULL, NULL);
+    conn = NULL;
     s_init (&arg_C, "", 0);
     arg_u = arg_p = arg_s = NULL;
     
@@ -458,26 +459,33 @@ static void Init (int argc, char *argv[])
     {
         if      (!strcmp (targv[i], "-u") || !strcmp (targv[i], "--uin"))
         {
-             if (arg_u)
-                 if (!(conn = ConnectionFindUIN (TYPEF_ANY_SERVER, atoll (arg_u))))
-                     conn = PrefNewConnection (atoll (arg_u), arg_p);
-             if (conn)
-             {
-                 if (arg_s)
-                     conn->status = arg_ss;
-                 if (arg_p)
-                     s_repl (&conn->passwd, arg_p);
-                 if (uingiven && arg_u && (loginevent = conn->open (conn)))
-                     QueueEnqueueDep (conn, QUEUE_MICQ_COMMAND, 0, loginevent, NULL, conn->cont,
-                                      OptSetVals (NULL, CO_MICQCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
-                                      &CmdUserCallbackTodo);
-             }
-             
-             arg_u = targv[++i];
-             if (arg_u && !atoll (arg_u))
-                 arg_u = NULL;
-             arg_p = arg_s = NULL;
-             s_init (&arg_C, "", 0);
+            if (arg_u)
+            {
+                if (!(conn = ConnectionFindUIN (TYPEF_ANY_SERVER, atoll (arg_u))) && atoll (arg_u))
+                    conn = PrefNewConnection (atoll (arg_u), arg_p);
+            }
+            else if (!*targv[i+1])
+                conn = ConnectionFind (TYPEF_ANY_SERVER, NULL, NULL);
+            if (conn)
+            {
+                if (arg_s)
+                    conn->status = arg_ss;
+                if (arg_p)
+                    s_repl (&conn->passwd, arg_p);
+                if ((!arg_s || arg_ss != STATUS_OFFLINE) && (loginevent = conn->open (conn)))
+                    QueueEnqueueDep (conn, QUEUE_MICQ_COMMAND, 0, loginevent, NULL, conn->cont,
+                                     OptSetVals (NULL, CO_MICQCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
+                                     &CmdUserCallbackTodo);
+            }
+            
+            arg_u = targv[++i];
+            if (arg_u && !atoll (arg_u))
+                arg_u = NULL;
+            arg_p = arg_s = NULL;
+            s_init (&arg_C, "", 0);
+            arg_s = "offline";
+            arg_ss = STATUS_OFFLINE;
+            conn = NULL;
         }
         else if (!strcmp (targv[i], "-p") || !strcmp (targv[i], "--passwd"))
             arg_p = targv[++i];
