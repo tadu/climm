@@ -34,9 +34,29 @@
 #include "oscar_base.h"
 #include "oscar_snac.h"
 #include "oscar_bos.h"
+#include "oscar_tlv.h"
 #include "packet.h"
 #include "contact.h"
 #include "connection.h"
+#include "util_ui.h"
+
+/*
+ * SRV_BOSERR - SNAC(1,1)
+ */
+JUMP_SNAC_F (SnacSrvBoserr)
+{
+    UWORD err;
+    TLV *tlv;
+    
+    err = PacketReadB2 (event->pak);
+    tlv = TLVRead (event->pak, PacketReadLeft (event->pak));
+    
+    if (tlv[8].str.len)
+        DebugH (DEB_PROTOCOL, "Server returned error code %d, sub code %ld for bos family.", err, tlv[8].nr);
+    else
+        DebugH (DEB_PROTOCOL, "Server returned error %d for bos family.", err);
+    TLVD (tlv);
+}
 
 /*
  * CLI_REQBOS - SNAC(9,2)
