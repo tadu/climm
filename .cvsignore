@@ -16,3 +16,4 @@ build-stamp
 pack-*
 stamp-*.in
 release
+INSTALL
