@@ -125,7 +125,7 @@ const UDWORD BuildVersionNum = MICQ_BUILD_NUM;
 const char  *BuildVersionText = "$VER: mICQ " VERSION " " EV EXTRAVERSION " (" CVSUPDATE " build " BUILDDATE ")";
 
 /*
- i18n (1000, "iso-8859-1")       charset used
+ i18n (1000, "UTF-8")            charset used
  i19n (1001, "en")               locale
  i19n (1002, "en_US")            locale 
  i19n (1003, "0-4-10")           MICQ_BUILD_NUM
