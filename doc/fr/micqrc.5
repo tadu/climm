@@ -1,22 +1,22 @@
 .\" $Id$
-.\"  EN: micqrc.5,v 1.8 2002/08/04 21:01:38
+.\"  EN: micqrc.5,v 1.16U 2002/08/04 21:01:38
 .\"      ^^ <version of English man page this is in sync with>
 .TH MICQRC 5 mICQ FR
 .SH NOM
 .BR ~/.micq/micqrc
 \- Le fichier de configuration de mICQ
 .SH DESCRIPTION
-Cette page de manuel décrit le fichier de configuration de micq. Il comprend 
+Cette page de manuel décrit le fichier de configuration de micq. Il comprend
 plusieurs sections qui débutent par
 .BR [section] ,
 où
 .BR section
 est le nom de la section.
 .SH CONNEXIONS - connection
-Une section 
+Une section
 .BR Connection
 décrit une connexion au sein d'ICQ. En général, il y en a deux,
-qui sont en relation l'une avec l'autre: une connexion au serveur ICQ, et une 
+qui sont en relation l'une avec l'autre: une connexion au serveur ICQ, et une
 connexion pour écouter les communications des contacts.
 
 
@@ -28,11 +28,11 @@ qui peut être
 .BR server
 pour une connexion au serveur ICQ, ou
 .BR peer
-pour une connexion qui concerne les communications avec les contacts. Si l'option 
+pour une connexion qui concerne les communications avec les contacts. Si l'option
 .IR auto
-est donnée, la connexion est créée au démarrage de mICQ. 
-Ceci est probablement ce que vous devriez faire, à moins que vous 
-possédiez plusieurs UINs, dans ce cas paramétrez cela sur la connexion 
+est donnée, la connexion est créée au démarrage de mICQ.
+Ceci est probablement ce que vous devriez faire, à moins que vous
+possédiez plusieurs UINs, dans ce cas paramétrez cela sur la connexion
 correspondant à l'UIN que vous utilisez.
 
 .TP
@@ -44,7 +44,7 @@ Remarquez que pour les connexions vers des serveurs, seule la version
 est supportée, bien que le support pour la version
 .BR 8
 soit plannifié, et seule la version
-.BR 6 
+.BR 6
 est supportée pour les communications avec les contacts.
 
 .TP
@@ -72,7 +72,7 @@ Inutilisé pour les communications avec les contacts.
 .BI password \ [mot_de_passe]
 Paramètre le mot de passe à utiliser lors de la phase de connexion à
 .IR mot_de_passe .
-Inutilisé pour les communications avec les contacts. Si ce paramètre n'est 
+Inutilisé pour les communications avec les contacts. Si ce paramètre n'est
 pas présent, le mot de passe vous sera demandé au lancement.
 
 .TP
@@ -103,8 +103,26 @@ libre pour chatter
 256
 invisible
 .RE
+
+.B BEGIN UNTRANSLATED
+
+.RS
+For peer to peer connections, this is used for the direct connection setting:
+.TP
+1
+We're firewalled and can't receive any connection. Don't even try.
+.TP
+2
+We're firewalled, but use SOCKS and can receive connections.
+.TP
+4
+We're not firewalled at all. This is the default.
+.RE
+
+.B END UNTRANSLATED
+
 .SH GENERAL - general
-Cette section inclue les options concernant SOCKS 5, qui seront 
+Cette section inclue les options concernant SOCKS 5, qui seront
 éventuellement déplacées vers leur propre section, les options générales,
 et quelques chaînes de caractères à redéfinir.
 
@@ -165,9 +183,9 @@ pour désactiver le mode auto away.
 .BI Screen_width \ largeur
 Paramètre la largeur par défaut de l'écran à
 .IR largeur .
-Si la valeur n'est pas paramétrée ou égale à 
+Si la valeur n'est pas paramétrée ou égale à
 .BR 0 , \ 80
-sera la valeur utilisée. Cela est rarement utile car 
+sera la valeur utilisée. Cela est rarement utile car
 généralement la largeur actuelle de l'écran peut être connue à l'exécution.
 
 .TP
@@ -180,12 +198,12 @@ le caractère suppr agira normalement.
 
 .TP
 .BI set \ russian\ on|off
-Désactive ou active la conversion des caractères russes entre le jeu koi8-r/u 
+Désactive ou active la conversion des caractères russes entre le jeu koi8-r/u
 et  cp1251.
 
 .TP
 .BI set \ japanese\ on|off
-Désactive ou active la conversion des caractères japonais entre le jeu 
+Désactive ou active la conversion des caractères japonais entre le jeu
 Shift-JIS et EUC.
 
 .TP
@@ -200,7 +218,7 @@ Désactive ou active l'utilisation des couleurs.
 .BI set \ hermit\ on|off
 Si la valeur est
 .IR on ,
-tous les messages provenant de personnes qui ne sont pas dans votre 
+tous les messages provenant de personnes qui ne sont pas dans votre
 liste de contacts seront ignorés.
 
 .TP
@@ -209,7 +227,7 @@ Désactive ou active l'utilisation des journaux.
 
 .TP
 .BI set \ logonoff\ on|off
-Lorsque l'utilisation des journaux est activée, désactive ou active l'enregistrement 
+Lorsque l'utilisation des journaux est activée, désactive ou active l'enregistrement
 des changements d'états de connecté à deconnecté et vice-versa.
 
 .TP
@@ -218,7 +236,7 @@ Désactive ou active les réponses automatiques.
 
 .TP
 .BI set \ uinprompt\ on|off
-Désactive ou active l'utilisation à partir de l'invite du dernier surnom 
+Désactive ou active l'utilisation à partir de l'invite du dernier surnom
 duquel vous avez reçu un message.
 
 .TP
@@ -237,25 +255,88 @@ pour obtenir un retour à la ligne seulement si le message ne rentre pas dans la 
 
 .TP
 .BI set \ tabs\ simple|cycle|cycleall
-Sélectionne le type d'utilisation de la complétion. Les anciennes versions de 
+Sélectionne le type d'utilisation de la complétion. Les anciennes versions de
 mICQ ne connaissaient que
 .BR simple ,
 qui ne fonctionne qu'avec la commande
 .BR msg
-et complète la commande en parcourant la liste de tous les contacts auquel 
-vous avez envoyé ou desquels vous avez reçus des messages. 
+et complète la commande en parcourant la liste de tous les contacts auquel
+vous avez envoyé ou desquels vous avez reçus des messages.
 Le texte déjà entré après le surnom était perdu.
 .BR cycle
-parcourt la liste de tous les contacts en ligne de votre liste de contact. 
-Elle conserve tout texte entré précédemment intact, cependant elle ne 
-fonctionne qu'avec la commande 
+parcourt la liste de tous les contacts en ligne de votre liste de contact.
+Elle conserve tout texte entré précédemment intact, cependant elle ne
+fonctionne qu'avec la commande
 .BR msg .
 .BR cycleall
 est équivalente à
 .BR cycle ,
 mais parcourt la liste de tous les contacts, même ceux qui ne sont pas connectés.
-.sp
+
+.B BEGIN UNTRANSLATED
+
+.TP
+.BI chat \ nr
+Set the random chat group to
+. IR nr .
+Use
+.B -1
+to disable, and
+.B 49
+for mICQ (which is the default).
+
+.B END UNTRANSLATED
+
+.PP
 Enfin, des chaînes de caractères peuvent être définies:
+
+.B BEGIN UNTRANSLATED
+
+.TP
+.BI color\ scheme \ nr
+Select the color scheme number
+.IR nr .
+.TP
+.BI color \ use\ color
+Select color
+.IR color
+for
+.IR use .
+.IR use
+can be any of
+.BR none ,
+.BR server ,
+.BR client ,
+.BR message ,
+.BR contact ,
+.BR sent ,
+.BR ack ,
+.BR error ,
+.BR debug
+or
+.BR incoming ,
+while
+.IR color
+can be any one of
+.BR black ,
+.BR red ,
+.BR green ,
+.BR yellow ,
+.BR blue ,
+.BR magenta ,
+.BR cyan ,
+.BR white ,
+.BR none ,
+or
+.BR bold
+or a combination of those
+.RB ( bold ,
+however, must be last to take effect),
+or any verbatim string to make the user's terminal
+select the desired color.
+
+.B END UNTRANSLATED
+
 .TP
 .BI logplace \ fichier|répertoire
 Paramètre le fichier contenant le journal à
@@ -263,8 +344,8 @@ Paramètre le fichier contenant le journal à
 ou le répertoire contenant les journaux à
 .IR répertoire .
 Remarquez qu'un chemin est considéré comme un répertoire si il a un
-.BR / 
-à la 
+.BR /
+à la
 fin de son nom.
 
 .TP
@@ -273,7 +354,7 @@ Désactive ou active l'avertissement sonore. Si le paramètre n'est ni
 .B on
 ni
 .B off,
-le paramètre est considéré comme un programme à exécuter à la place de 
+le paramètre est considéré comme un programme à exécuter à la place de
 l'avertissement sonore.
 
 .TP
@@ -286,7 +367,7 @@ Même chose que ci-dessus, mais pour les utilisateurs qui se déconnectent.
 
 .TP
 .BI receivescript \ cmd
-Paramètre la commande à exécuter lors de la réception d'un message. 
+Paramètre la commande à exécuter lors de la réception d'un message.
 Laissez vide pour ne rien faire.
 
 .TP
@@ -311,10 +392,10 @@ Renomme la commande
 .IR ancienne
 en
 .IR nouvelle .
-Remarquez que l'ancien nom peut toujours être utilisé, à moins qu'il entre 
+Remarquez que l'ancien nom peut toujours être utilisé, à moins qu'il entre
 en conflit avec le nom de la commande
 .IR nouvelle
-Pour les noms de commandes possibles, consultez 
+Pour les noms de commandes possibles, consultez
 .BR micq (7).
 Cette option peut être répétée à volontée.
 .SH CONTACTS - contacts
@@ -331,7 +412,7 @@ est donnée, l'utilisateur peut vous voir lorsque vous êtes en mode invisible. Si
 est donnée, il vous verra toujours comme étant déconnecté. Si
 .B ^
 est donnée, vous ignorez l'utilisateur.
-Si un UIN apparaît plusieurs fois, tous excepté le premier sont considérés comme 
+Si un UIN apparaît plusieurs fois, tous excepté le premier sont considérés comme
 des alias.
 Remarque: la liste de contacts doit être la dernière partie du fichier.
 .SH VOIR AUSSI
@@ -340,8 +421,8 @@ Remarque: la liste de contacts doit être la dernière partie du fichier.
 .SH AUTEUR
 Cette page de manuel a été écrite par James Morrison
 .IR <ja2morrison@student.math.uwaterloo.ca> .
-Elle a été écrite pour correspondre à la nouvelle syntaxe du fichier de 
+Elle a été écrite pour correspondre à la nouvelle syntaxe du fichier de
 configuration choisie par Rüdiger Kuhlmann
 .IR <micq@ruediger-kuhlmann.de> .
-Cette page de manuel a été traduite vers le français par Julien Gilli 
+Cette page de manuel a été traduite vers le français par Julien Gilli
 .IR <jgilli@nerim.fr> .

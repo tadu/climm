@@ -1,5 +1,5 @@
 .\" $Id$
-.\"  EN: micq.7,v 1.15 2002/08/04 21:01:38
+.\"  EN: micq.7,v 1.28U 2002/08/04 21:01:38
 .\"      ^^ <version of English man page this is in sync with>
 .TH MICQ 7 mICQ FR
 .SH NOM
@@ -11,7 +11,7 @@ Cette page contient les mêmes informations que l'aide en ligne.
 .SH COMMANDES
 
 .TP
-.BI trans \ [langue|nr]...
+.BI trans \ [langue|nr]\ ...
 Basculer vers la langue
 .IR langue ,
 donné par son code iso, ou affiche la chaîne de caratères traduite numéro
@@ -33,180 +33,260 @@ ou
 .BR unload .
 Pour obtenir des informations de debug, ajoutez le préfixe
 .BR debug .
-Pour obtenir des messages farfelus, ajoutez le suffixe 
+Pour obtenir des messages farfelus, ajoutez le suffixe
 .BR _fun .
 .sp
-Les fichiers correspondant à ~/.micq/i18n/*.i18n sont prioritaires sur les messages globaux, 
+Les fichiers correspondant à ~/.micq/i18n/*.i18n sont prioritaires sur les messages globaux,
 alors que les messages "farfelus" sont plus prioritaires que les messages standards.
 .sp
-En fait, vous pouvez donner autant d'arguments que vous le voulez, 
-par exemple pour afficher la chaîne de caractères numéro 117 en allemand 
+En fait, vous pouvez donner autant d'arguments que vous le voulez,
+par exemple pour afficher la chaîne de caractères numéro 117 en allemand
 et ensuite revenir au langage par défaut, utilisez "trans de 117 default".
 .TP
-.BI tabs 
-Affiche une liste d'utilisateurs que vous pouvez parcourir grâce à 
+.BI tabs
+Affiche une liste d'utilisateurs que vous pouvez parcourir grâce à
 la touche tabulation.
 .TP
 .BI save
 Enregistre les paramètres actuels dans le fichier de configuration, qui est
 .IR ~/.micq/micqrc ,
 a moins qu'autre chose n'ait été spécifié.
-Faites attention car cela ne conservera pas les commentaires présents 
+Faites attention car cela ne conservera pas les commentaires présents
 dans le fichier.
 .TP
 .BI r \ [message]
 Répondre au dernier message reçu. Si un
 .IR message
-n'est pas donné, le mode multi-lignes est activé.  
-Pour envoyer le message multi-lignes, écrivez un point 
+n'est pas donné, le mode multi-lignes est activé.
+Pour envoyer le message multi-lignes, écrivez un point
 .RB ( . )
-seul sur une ligne.  Pour annuler l'écriture d'un message, écrivez un diese 
+seul sur une ligne.  Pour annuler l'écriture d'un message, écrivez un diese
 .RB ( # )
 tout seul sur une ligne.
 .TP
 .BI a \ [message]
-Envoie un message à la dernière personne à laquelle vous avez envoyé un message. Voir 
+Envoie un message à la dernière personne à laquelle vous avez envoyé un message. Voir
 .BR r
-pour un comportement sans 
+pour un comportement sans
 .IR message .
 .TP
 .BI msg \ uin|surnom\ [message]
 Envoie un message à
 .IR uin|surnom .
 Voir
-.BR r 
-pour connaiître son comportement sans 
+.BR r
+pour connaître son comportement sans
 .IR message .
 .TP
 .BI url \ uin|surnom\ url\ message
-Envoie un 
+Envoie un
 .IR message
-concernant une 
+concernant une
 .IR url
-à 
+à
 .IR uin|surnom .
 .TP
 .BI sms \ numéro\ message
-Envoie le message SMS 
+Envoie le message SMS
 .IR message
-à un téléphone de numéro 
+à un téléphone de numéro
 .IR numéro ,
 qui a la forme suivante : +<code pays><numéro>.
 .TP
 .BI msga
-Envoie un message multi-lignes à tous les contacts que vous possédez. 
-Utilisez un point 
+Envoie un message multi-lignes à tous les contacts que vous possédez.
+Utilisez un point
 .RB ( . )
-seul sur une ligne pour envoyer le message, ou un diese 
+seul sur une ligne pour envoyer le message, ou un diese
 .RB ( # )
 seul sur une ligne pour annuler le message.
 .TP
 .BI resend \ uin|surnom\ ...
-Ré-envoie le dernier message à 
+Ré-envoie le dernier message à
 .IR uin
-ou 
+ou
 .IR surnom .
-L'argument peut être répété autant que nécessaire.
+L'argument peut être répété autant de fois que nécessaire.
 .TP
 .BI uptime
 Affiche depuis combien de temps mICQ s'exécute.
 .TP
-.BI last\ [contact]
-Affiche une liste d'utilisateurs qui vous ont envoyé des messages ou le 
-dernier message reçu de la part de 
+.BI last \ [contact]
+
+.B BEGIN UNTRANSLATED
+
+Show a list of users who have sent you messages or the last message
+received from
 .IR contact ,
-qui peut être un 
+which can be a
+.I uin
+or a
+.IR nickname ,
+or from everyone who already sent a message.
+
+.B END UNTRANSLATED
+
+Affiche une liste d'utilisateurs qui vous ont envoyé des messages ou le
+dernier message reçu de la part de
+.IR contact ,
+qui peut être un
 .IR uin
-ou un 
+ou un
 .IR surnom .
 .TP
 .BI verbose \ [verb]
-Paramètre la verbosité de mICQ à 
+Paramètre la verbosité de mICQ à
 .IR verb ,
-ou affiche le niveau actuel de verbosité. Le niveau de verbosité est 
+ou affiche le niveau actuel de verbosité. Le niveau de verbosité est
 constitué d'un ensemble d'options :
 .RS
+
+.B BEGIN UNTRANSLATED
+
+.B 8
+Show protocol errors.
+.TP
+.B 16
+Show creation and deletion of packets.
+.TP
+.B 32
+Show added and removed queue events.
+.TP
+.B 64
+Show created and deleted connections.
+Show v6 packets and their data.
+.TP
+.B 4096
+Show v7/v8 packets.
+.TP
+.B 8192
+Show the hexdump of v7/v8 packets.
+.TP
+.B 16284
+Save those packets to disc.
+.TP
+.B 65536
+Show peer-to-peer packets.
+.TP
+.B 131072
+Show the hexdump of peer-to-peer packets.
+.TP
+.B 262144
+Save those packets to disc.
+.TP
+.B 2097152
+Show peer-to-peer handshake.
+.TP
+.B 4194304
+Show I/O connection setup.
+
+
+.B END UNTRANSLATED
+
 .TP
 .128
 Affiche les paquets entrants et sortants.
 .TP
 .256
-Ecrit les paquets entrants et sortants concernant le serveur dans un fichier 
+Ecrit les paquets entrants et sortants concernant le serveur dans un fichier
 (~/.micq/debug/packets).
 .IP
 Il en existe d'autres.
+
+.B BEGIN UNTRANSLATED
+
+However, any non-zero verbose level will cause more information to be printed,
+and any level greater than 1 even more.
+
+.B END UNTRANSLATED
+
 .TP
 .BI clear
 Efface l'écran.
 .TP
 .BI sound \ [commande]
-Active ou désactive le son, ou paramètre l'exécution de la commande 
-.IR commande 
+Active ou désactive le son, ou paramètre l'exécution de la commande
+.IR commande
 pour le produire.
 .TP
 .BI soundonline \ [commande]
-Active ou désactive le son pour les notifications d'utilisateurs connectés, 
-ou paramètre l'exécution de la commande 
-.IR commande 
+Active ou désactive le son pour les notifications d'utilisateurs connectés,
+ou paramètre l'exécution de la commande
+.IR commande
 pour le produire.
 .TP
 .BI soundoffline \ [commande]
-Active ou désactive le son pour les notifications d'utilisateurs se déconnectant, 
-ou paramètre l'exécution de la commande 
-.IR commande 
+Active ou désactive le son pour les notifications d'utilisateurs se déconnectant,
+ou paramètre l'exécution de la commande
+.IR commande
 pour le produire.
 .TP
 .BI q
 Termine mICQ.
 .TP
 .BI auto \ [on|off]
-Active ou désactive les messages de réponse automatique. 
-Si aucune des deux options n'est donnée, la liste des réponses automatiques 
+Active ou désactive les messages de réponse automatique.
+Si aucune des deux options n'est donnée, la liste des réponses automatiques
 actuelles est donnée.
 .TP
 .BI auto \ état\ message
-Change le message de réponse automatique pour l'état 
+Change le message de réponse automatique pour l'état
 .IR état
-comme étant le message 
+comme étant le message
 .IR message .
 .TP
 .BI autoaway \ [délai|on|off]
-Paramètre le délai à 
+Paramètre le délai à
 .IR délai ,
-ou active le mode "auto away" en utilisant le dernier délai choisi si 
+ou active le mode "auto away" en utilisant le dernier délai choisi si
 .IR on
-est donné, ou désactive le mode "auto away" si l'option  
+est donné, ou désactive le mode "auto away" si l'option
 .IR off
-est choisie en enregistrant le délai actuel. Un délai d'une valeur de 0 est 
-équivalent à l'option 
+est choisie en enregistrant le délai actuel. Un délai d'une valeur de 0 est
+équivalent à l'option
 .IR off .
 Si aucun argument n'est donné, les paramètres actuels sont affichés.
 .TP
 .BI alter \ ancienne_commande\ nouvelle_commande
-Renomme la commande 
+Renomme la commande
 .IR ancienne_commande
-en 
+en
 .IR nouvelle_commande .
+.TP
+
+.B BEGIN UNTRANSLATED
+
+.BI auth \ [req|grant|deny|add]\ uin|nickname
+Grant or deny
+.I uin|nickname
+to add you to their list, request
+.I uin|nickname
+to allow you to add them to your contact list, or tell
+.I uin|nickname
+that you added hem to your contact list.
+
+.B END UNTRANSLATED
+
 .TP
 .BI auth \ uin|surnom
 Autorise
 .IR uin|surnom
-à vous ajouter à sa liste de contacts.
+vous a ajouter à sa liste de contacts.
 .TP
 .BI rand \ numéro
-Trouve aléatoirement un utilisateur dans le groupe d'intérêt 
+Trouve aléatoirement un utilisateur dans le groupe d'intérêt
 .IR numéro .
 .TP
 .BI pass \ mot_de_passe
-Change votre mot de passe ICQ en 
-.IR mot_de_passe . 
+Change votre mot de passe ICQ en
+.IR mot_de_passe .
 .br
-Remarque: vous devez entrer 
+Remarque: vous devez entrer
 .B save
-pour rendre la modification persistante au cas où vous sauvegardiez votre mot 
-de passe dans le fichier 
+pour rendre la modification persistante au cas où vous sauvegardiez votre mot
+de passe dans le fichier
 .IR ~/.micq/micqrc
-(voir 
+(voir
 .BR micqrc (7),
 sinon votre mot de passe sera rejeté à la prochaine authentification.
 .TP
@@ -217,30 +297,47 @@ sinon votre mot de passe sera rejeté à la prochaine authentification.
 .BI search \ surnom
 .TP
 .BI search \ prénom\ nom
-Recherche un utilisateur qui a 
+Recherche un utilisateur qui a
 .IR email
-pour courriel, 
+pour courriel,
 .IR surnom
-comme surnom (qui peut contenir le caractère @), ou 
+comme surnom (qui peut contenir le caractère @), ou
 .IR prénom
-comme prénom et 
-.IR nom 
-comme nom. Si aucun argument n'est donné, vous devrez donner le surnom, 
-prénom, nom, courriel et une quantité importante de données qui seront utilisées 
+comme prénom et
+.IR nom
+comme nom. Si aucun argument n'est donné, vous devrez donner le surnom,
+prénom, nom, courriel et une quantité importante de données qui seront utilisées
 comme critères de recherche.
 .TP
+
+.B BEGIN UNTRANSLATED
+
+.BI add \ nickname\ alias
+
+.B END UNTRANSLATED
+
+.TP
 .BI add \ uin\ [surnom]
-Ajoute 
+Ajoute
 .IR uin
-à votre liste de contacts avec comme surnom 
-.IR surnom , 
-ou renomme 
+à votre liste de contacts avec comme surnom
+.IR surnom ,
+
+.B BEGIN UNTRANSLATED
+
+or add alias
+.IR alias
+for
+
+.B END UNTRANSLATED
+
+ou renomme
 .IR uin
-en 
+en
 .IR surnom .
-Si 
-.IR surnom 
-n'est pas spécifié, utilise 
+Si
+.IR surnom
+n'est pas spécifié, utilise
 .IR uin
 comme surnom.
 .br
@@ -248,84 +345,187 @@ Remarque: vous devez utiliser la commande
 .IR save
 pour rendre les changements persistants.
 .TP
-.BI rem \ surnom 
-Supprime 
-.IR surnom 
+
+.B BEGIN UNTRANSLATED
+
+.BI rem \ alias
+Remove the alias
+.IR alias .
+If
+.IR alias
+is the last alias for this contact, remove the contact completely.
+
+.B END UNTRANSLATED
+
+.BI rem \ surnom
+Supprime
+.IR surnom
 de votre liste de contacts.
 .br
-Remarque: vous devez utiliser la commande 
+Remarque: vous devez utiliser la commande
 .IR save
 pour rendre ce changement persistant.
 .TP
-.BI togvis \ surnom 
-Active ou désactive le fait que 
+.BI togvis \ surnom
+Active ou désactive le fait que
 .IR nickname
 puisse vous contacter même si vous êtes en mode invisible.
 .TP
-.BI toginvis \ surnom 
-Active ou désactive le fait que vous soyez invisible pour le contact ayant le surnom 
+.BI toginvis \ surnom
+Active ou désactive le fait que vous soyez invisible pour le contact ayant le surnom
 .IR surnom .
 .TP
-.BI togig \ surnom 
-Active ou désactive le fait que les messages et changements d'états du contact ayant comme surnom 
-.IR surnom 
+.BI togig \ surnom
+Active ou désactive le fait que les messages et changements d'états du contact ayant comme surnom
+.IR surnom
 soient ignorés.
 .TP
-.BI info \ uin|surnom 
+.BI f[inger] \ uin|surnom
+.TP
+.BI info \ uin|surnom
 Affiche toutes les infos pour le contact ayant comme uin ou surnom
 .IR uin|surnom .
+.TP
+.BI e
+Affiche toutes les personnes de votre liste de contacts qui sont connectées.
 .TP
 .BI w
 Affiche toutes les personnes de votre liste de contacts.
 .TP
-.BI e 
-Affiche toutes les personnes de votre liste de contacts qui sont connectées.
+
+.B BEGIN UNTRANSLATED
+
+.B ee
+List all people who are online in your contact list with more details.
+.TP
+.B ww
+List all people in your contact list with more details. Also shows all aliases.
+
+.B END UNTRANSLATED
+
 .TP
 .BI wide
-Affiche toutes les personnes qui sont dans votre liste de contacts en utilisant 
+Affiche toutes les personnes qui sont dans votre liste de contacts en utilisant
 toute la largeur de l'écran.
 .TP
 .BI ewide
-Affiche toutes les personnes de votre liste de contacts qui sont connectées 
+Affiche toutes les personnes de votre liste de contacts qui sont connectées
 en utilisant toute la largeur de l'écran.
 .TP
+
+.B BEGIN UNTRANSLATED
+
+.B s \ [nickname]
+Show your current status, or the given nickname's in detail, including all aliases.
+
+.B END UNTRANSLATED
+
 .BI s
 Affiche votre état actuel.
 .TP
 .BI i
 Affiche tous les contacts que vous ignorez.
 .TP
-.BI status \ surnom 
-Affiche l'état du contact ayant pour surnom 
+.BI status \ surnom
+Affiche l'état du contact ayant pour surnom
 .IR surnom .
-Les informations affichées comprennent l'adresse IP, la version du 
+Les informations affichées comprennent l'adresse IP, la version du
 protocole ICQ et le type de connexion.
+
+.B BEGIN UNTRANSLATED
+
+Note: This command is deprecated, use
+.B s
+or
+.B ww
+instead.
+
+.B END UNTRANSLATED
+
 .TP
-.BI change \ [numéro]
-Change votre état à l'état numéro 
-.IR numéro .
-Si vous ne lui fournissez pas de numéro, cette commande affiche une liste 
-des modes disponibles. 
-.TP
-.BI reg \ mot_de_passe 
-Crée un nouvel utilisateur ayant pour mot de passe 
+.BI reg \ mot_de_passe
+Crée un nouvel utilisateur ayant pour mot de passe
 .IR mot_de_passe .
+.TP
+
+.B BEGIN UNTRANSLATED
+
+.BI change \ [number\ [message]]
+Changes your status to
+.IR number .
+Without a number it lists some available modes. Optionally
+set auto response for this status to
+.IR message .
+.TP
+
+.B END UNTRANSLATED
+
+.BI change \ [numéro]
+Change votre état à l'état numéro
+.IR numéro .
+Si vous ne lui fournissez pas de numéro, cette commande affiche une liste
+des modes disponibles.
 .TP
 .BI online
 Change votre état en "connecté".
 .TP
+
+.B BEGIN UNTRANSLATED
+
+.BI away \ [message]
+Change status to "away". Optionally set auto response for this status to
+.IR message .
+
+.B END UNTRANSLATED
+
 .BI away
 Change votre état en "absent".
 .TP
+
+.B BEGIN UNTRANSLATED
+
+.BI na \ [message]
+Change status to "not available". Optionally set auto response for this status to
+.IR message .
+
+.B END UNTRANSLATED
+
 .BI na
 Change votre état en "non disponible".
 .TP
-.BI occ             
+
+.B BEGIN UNTRANSLATED
+
+.BI occ \ [message]
+Change status to "occupied". Optionally set auto response for this status to
+.IR message .
+
+.B END UNTRANSLATED
+
+.BI occ
 Change votre état en "occupé".
 .TP
-.BI dnd 
+
+.B BEGIN UNTRANSLATED
+
+.BI dnd \ [message]
+Change status to "do not disturb". Optionally set auto response for this status to
+.IR message .
+
+.B END UNTRANSLATED
+
+.BI dnd
 Change votre état en "ne pas déranger".
 .TP
+
+.B BEGIN UNTRANSLATED
+
+.BI ffc \ [message]
+Change status to "free for chat". Optionally set auto response for this status to
+.IR message .
+
+.B END UNTRANSLATED
+
 .BI ffc
 Change votre état en "libre pour chatter".
 .TP
@@ -341,48 +541,104 @@ Actualise d'autres informations comme l'age et le sexe.
 .BI about
 Met à jour les informations de la section "à propos".
 .TP
-.BI set \ option\ valeur 
+.BI set \ option\ valeur
 Donne a l'option
 .IR option
-la valeur 
+la valeur
 .BR on
-ou 
+ou
 .BR off .
 .IR option
-peut être 
+peut être
 .BR color ,
 .BR funny
-ou 
+ou
 .BR quiet .
 .TP
-.BI peek \ surnom 
-Vérifie si l'utilisateur ayant pour surnom 
-.IR surnom 
-est actuellement connecté. Cette commande utilise un bug dans le protocole ICQ pour 
+.BI peek \ surnom
+Vérifie si l'utilisateur ayant pour surnom
+.IR surnom
+est actuellement connecté. Cette commande utilise un bug dans le protocole ICQ pour
 trouver ce renseignement;
 aucune information excepté l'état de connexion ne peut être récupérée de cette manière.
 .TP
 .BI setr \ [numéro]
 Paramètre votre numéro de groupe d'utilisateur aléatoire à
 .IR numéro .
-Sans argument, cette command affiche les groupes d'intérêts existants. 
+Sans argument, cette command affiche les groupes d'intérêts existants.
 .TP
-.BI tcp \ commande\ uin|surnom 
-Effectue la commande 
-.IR commande 
+.BI peer \ commande\ uin|surnom
+Effectue la commande
+.IR commande
 sur l'utilisateur dont l'uin est
 .IR uin
 ou dont le surnom est
 .IR surnom .
+
+.B BEGIN UNTRANSLATED
+
+.RS
+.TP
+.B open
+Open a peer to peer connection over TCP to the user.
+.TP
+.B close
+Close and reset a peer to peer connection to the user.
+.TP
+.B off
+Switch off trying to establish such a connection for sending
+messages until it is explicitly opened or reset.
+.TP
+.B auto
+Get the user's current auto response.
+.TP
+.B away
+Get the user's current away auto response.
+.TP
+.B na
+Get the user's current not available auto response.
+.TP
+.B dnd
+Get the user's current do not disturb auto response.
+.TP
+.B occ
+Get the user's current occupied auto response.
+.TP
+.B ffc
+Get the user's current free for chat message.
+.TP
+.BI file \ file\ description
+Send file
+.I file
+with description
+.IR description .
+.TP
+.BI files \ [file\ as]...\ description
+Send files to the user. There may be arbitrarely many
+pairs of a physical file name
+.I file
+and the name to be presented to the peer,
+.IR as .
+If
+.IR as
+is
+.RB ' / ',
+the file name without the path is sent, and if it is
+.RB ' . '
+the same name is sent.
+.RE
+
+.B END UNTRANSLATED
+
 .IR commande
-peut être 
+peut être
 .BR open
-pour ouvrir une connexion de pair à pair avec TCP vers l'utilisateur, ou 
+pour ouvrir une connexion de pair à pair avec TCP vers l'utilisateur, ou
 .BR close
 pour fermer et réinitialiser une telle connexion, ou
 .BR off
-pour arrêter d'éssayer d'établir une telle connexion pour envoyer des messages 
-jusqu'à ce qu'elle soit explicitement ouverte ou réinitialisée, ou  
+pour arrêter d'éssayer d'établir une telle connexion pour envoyer des messages
+jusqu'à ce qu'elle soit explicitement ouverte ou réinitialisée, ou
 .BR auto
 pour obtenir la réponse automatique actuelle de l'utilisateur ou encore
 .BR away ,
@@ -394,16 +650,61 @@ ou
 pour obtenir la réponse automatique de l'utilisateur pour un de ces états.
 .TP
 .BI conn \ [commande\ nr]
-Affiche toutes les connexion, ou effectue la commande 
+Affiche toutes les connexion, ou effectue la commande
 .IR command
-sur la connexion 
+sur la connexion
 .IR nr .
-.IR commande 
-peut être 
+
+.B BEGIN UNTRANSLATED
+
+.RS
+.TP
+.B open
+Open the given, or the first server connection.
+.TP
+.B login
+Open the given, or the first server connection.
+.TP
+.B close
+Close the given connection. Temporary connections will get removed by this.
+.TP
+.B remove
+Close and remove given (temporary) connection.
+.TP
+.B select
+Select the given server connection as the current one.
+.I nr
+may be the connection number or the UIN used for the connection.
+.RE
+
+.B END UNTRANSLATED
+
+.IR commande
+peut être
 .BR open
-ou 
+ou
 .BR login
 pour ouvrir cette connexion si elle ne l'est pas actuellement.
+
+.B BEGIN UNTRANSLATED
+
+.TP
+.BI contact \ [command]
+Handle the server side contact list:
+.RS
+.TP
+.B show
+Download the server side contact list and just show it.
+.TP
+.B diff
+Download the server side contact list and show only contacts (uin/nick pairs) that are not
+in the local contact list.
+.TP
+.B import
+Download the server side contact list and add all contacts to the local one.
+.RE
+
+.B END UNTRANSLATED
 
 .SH VOIR AUSSI
 .BR micq (1),
@@ -413,5 +714,5 @@ Cette page de manuel a été écrite par James Morrison
 .IR <ja2morrison@student.math.uwaterloo.ca>
 pour pouvoir consulter une référence de toutes les commandes de
 .BR mICQ .
-Cette page de manuel a été traduite par Julien Gilli 
+Cette page de manuel a été traduite par Julien Gilli
 .IR <jgilli@nerim.fr>.
