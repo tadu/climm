@@ -1,8 +1,7 @@
-%define name		micq
-%define version	0.4.10.5
-%define release	1
-
 Summary:		text/line based ICQ client with many features
+Name:			micq
+Version:		0.4.10.5
+Release:		1
 Name:			%{name}
 Version:		%{version}
 Release:		%{release}
@@ -13,6 +12,9 @@ Packager:		Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 License:		GPL-2
 BuildRoot:		%{_tmppath}/build-%{name}-%{version}
 Prefix:			%{_prefix}
+
+%{?_with_ssl:BuildRequires: openssl-devel}
+%{?_with_tcl:BuildRequires: tcl-devel}
 
 %description
 mICQ is a portable, small, yet powerful console based ICQ client. It
@@ -64,27 +66,30 @@ Authors: Matthew D. Smith (deceased)
 - first RPM
 
 %prep
-rm -rf $RPM_BUILD_ROOT
+test $RPM_BUILD_ROOT != / && rm -rf $RPM_BUILD_ROOT
 
 %setup -q -n %{name}-%{version}
 
 %build
-%configure --disable-dependency-tracking --enable-tcl --enable-ssl CFLAGS=-O4
+%configure --disable-dependency-tracking %{?_with_tcl:--enable-tcl} \
+	%{?_with_ssl:--enable-ssl} CFLAGS=-O4
 make
 
 %install
 
 make install DESTDIR=$RPM_BUILD_ROOT
-%{__mkdir_p} $RPM_BUILD_ROOT/%{_libdir}/menu
-cat << EOF > $RPM_BUILD_ROOT/%{_libdir}/menu/micq
+%if %{?update_menus:1}%{!?update_menus:0}
+%{__mkdir_p} $RPM_BUILD_ROOT%{_libdir}/menu
+cat << EOF > $RPM_BUILD_ROOT%{_libdir}/menu/micq
 ?package(micq):needs=text section=Networking/ICQ \
   title="mICQ" command="%{_bindir}/micq" hints="ICQ client"\
   icon=%{_datadir}/pixmaps/micq.xpm
 EOF
-install -D -m 644 doc/micq.xpm $RPM_BUILD_ROOT/%{_datadir}/pixmaps/micq.xpm
+install -D -m 644 -p doc/micq.xpm $RPM_BUILD_ROOT%{_datadir}/pixmaps/micq.xpm
+%endif
 
 %clean
-rm -rf "${RPM_BUILD_ROOT}"
+test $RPM_BUILD_ROOT != / && rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,0755)
@@ -92,11 +97,17 @@ rm -rf "${RPM_BUILD_ROOT}"
 %doc doc/README.i18n doc/README.logformat doc/README.ssl
 %{_bindir}/*
 %{_datadir}/micq
+%if %{?update_menus:1}%{!?update_menus:0}
 %{_libdir}/menu/micq
-%{_mandir}/*
+%{_datadir}/pixmaps/micq.xpm
+%endif
+%{_mandir}/man?/*
+%{_mandir}/*/man?/*
 
+%if %{?update_menus:1}%{!?update_menus:0}
 %post
 %{update_menus} || true
 
 %postun
 %{clean_menus} || true
+%endif
