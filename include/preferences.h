@@ -57,6 +57,7 @@ struct PreferencesConnection_s
 };
 
 Preferences           *PreferencesC (void);
+void                   PreferencesInit (Preferences *pref);
 PreferencesConnection *PreferencesConnectionC (void);
 
 BOOL        PrefLoad (Preferences *pref);

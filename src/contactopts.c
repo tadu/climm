@@ -2,6 +2,9 @@
 #include <assert.h>
 #include <string.h>
 #include "micq.h"
+#include "conv.h"
+#include "util_ui.h"
+#include "preferences.h"
 #include "contactopts.h"
 #include "util_str.h"
 
@@ -10,249 +13,355 @@ static int strmax = 0;
 
 struct ContactOptionsTable_s
 {
-    UBYTE tags[32];
-    UWORD vals[32];
+    UBYTE tags[16];
+    UWORD vals[16];
 };
 
-BOOL ContactOptionsGet (const ContactOptions *opt, UWORD flag, const char **res)
+struct ContactOption_s ContactOptionsList[] = {
+  { "intimate",      CO_INTIMATE      },
+  { "hidefrom",      CO_HIDEFROM      },
+  { "ignore",        CO_IGNORE        },
+  { "autoaway",      CO_AUTOAWAY      },
+  { "autona",        CO_AUTONA        },
+  { "autoocc",       CO_AUTOOCC       },
+  { "autodnd",       CO_AUTODND       },
+  { "autoffc",       CO_AUTOFFC       },
+  { NULL }
+};
+
+/*
+ * Get a contact option.
+ */
+BOOL ContactOptionsGetVal (const ContactOptions *opt, UWORD flag, UWORD *res)
 {
-    if (flag & CO_DIRECT)
+    UBYTE tag;
+
+    if (flag & COF_DIRECT)
     {
-        if ((flag & ~CO_DIRECT) & opt->set)
+        if ((flag & ~COF_DIRECT) & opt->set)
         {
-            *res = ((flag & ~CO_DIRECT) & opt->val) ? "" : NULL;
+            *res = ((flag & ~COF_DIRECT) & opt->val) ? 1 : 0;
+            Debug (DEB_OPTS, "(%p,%x) = %d", opt, flag, *res);
             return TRUE;
         }
+        Debug (DEB_OPTS, "(%p,%x) undef", opt, flag);
         return FALSE;
     }
     
-    if (opt->set & CO_DIRECT)
+    tag = flag & 0xff;
+    
+    if (opt->set & COF_DIRECT)
     {
         int j, k;
         for (j = k = 0; j < opt->co_un.co_indir.size; j++)
         {
-            for (k = 0; k < 32; k++)
-                if (opt->co_un.co_indir.table[j].tags[k] == flag)
+            for (k = 0; k < 16; k++)
+                if (opt->co_un.co_indir.table[j].tags[k] == tag)
                     break;
-            if (k != 32)
+            if (k != 16)
                 break;
         }
         if (j == opt->co_un.co_indir.size)
         {
+            Debug (DEB_OPTS, "(%p,%x) undef", opt, tag);
             return FALSE;
         }
-        *res = strtable[opt->co_un.co_indir.table[j].vals[k]];
+
+        *res = opt->co_un.co_indir.table[j].vals[k];
+        Debug (DEB_OPTS, "(%p,%x) = %x = %d", opt, tag, *res, *res);
         return TRUE;
     }
 
-    if (opt->co_un.co_dir.taga == flag)
+    if (opt->co_un.co_dir.taga == tag)
     {
-        *res = strtable[opt->co_un.co_dir.vala];
+        *res = opt->co_un.co_dir.vala;
+        Debug (DEB_OPTS, "(%p,%x) = %x = %d", opt, tag, *res, *res);
         return TRUE;
     }
-    if (opt->co_un.co_dir.tagb == flag)
+    if (opt->co_un.co_dir.tagb == tag)
     {
-        *res = strtable[opt->co_un.co_dir.valb];
+        *res = opt->co_un.co_dir.valb;
+        Debug (DEB_OPTS, "(%p,%x) = %x = %d", opt, tag, *res, *res);
         return TRUE;
     }
+    Debug (DEB_OPTS, "(%p,%x) undef", opt, tag);
     return FALSE;
 }
 
-void ContactOptionsSet (ContactOptions *opt, UWORD flag, const char *val)
+/*
+ * Set a contact option.
+ */
+BOOL ContactOptionsSetVal (ContactOptions *opt, UWORD flag, UWORD val)
 {
-    if (flag & CO_DIRECT)
+    int j, k;
+    UBYTE tag;
+
+    Debug (DEB_OPTS, "(%p,%x) := %x = %d", opt, flag, val, val);
+
+    if (flag & COF_DIRECT)
     {
-        flag &= ~CO_DIRECT;
+        flag &= ~COF_DIRECT;
+        opt->set |= flag;
         if (val)
-        {
-            opt->set |= flag;
-            if (*val)
-                opt->val |= flag;
-            else
-                opt->set &= ~flag;
-        }
+            opt->val |= flag;
         else
-        {
-            opt->set &= ~flag;
             opt->val &= ~flag;
+        return TRUE;
+    }
+    
+    tag = flag & 0xff;
+
+    if ((~opt->set & COF_DIRECT) && (!opt->co_un.co_dir.taga || (opt->co_un.co_dir.taga == tag)))
+    {
+        opt->co_un.co_dir.taga = tag;
+        opt->co_un.co_dir.vala = val;
+        return TRUE;
+    }
+    if ((~opt->set & COF_DIRECT) && (!opt->co_un.co_dir.tagb || (opt->co_un.co_dir.tagb == tag)))
+    {
+        opt->co_un.co_dir.tagb = tag;
+        opt->co_un.co_dir.valb = val;
+        return TRUE;
+    }
+    if (~opt->set & COF_DIRECT)
+    {
+        struct ContactOptionsTable_s *new = calloc (sizeof (struct ContactOptionsTable_s), 1);
+        if (!new)
+            return FALSE;
+        new->tags[0] = opt->co_un.co_dir.taga;
+        new->tags[1] = opt->co_un.co_dir.tagb;
+        new->vals[0] = opt->co_un.co_dir.vala;
+        new->vals[1] = opt->co_un.co_dir.valb;
+        opt->co_un.co_indir.size = 1;
+        opt->co_un.co_indir.table = new;
+        opt->set |= COF_DIRECT;
+    }
+    for (j = k = 0; j < opt->co_un.co_indir.size; j++)
+    {
+        for (k = 0; k < 16; k++)
+            if ((opt->co_un.co_indir.table[j].tags[k] == tag) || !opt->co_un.co_indir.table[j].tags[k])
+                break;
+        if (k != 16)
+            break;
+    }
+    if (j == opt->co_un.co_indir.size)
+    {
+        struct ContactOptionsTable_s *new = realloc (opt->co_un.co_indir.table, sizeof (struct ContactOptionsTable_s) * (j + 1));
+        if (!new)
+            return FALSE;
+        opt->co_un.co_indir.size++;
+        for (k = 0; k < 16; k++)
+            new[j].tags[k] = new[j].vals[k] = 0;
+        k = 0;
+        opt->co_un.co_indir.table = new;
+    }
+    opt->co_un.co_indir.table[j].tags[k] = tag;
+    opt->co_un.co_indir.table[j].vals[k] = val;
+    return TRUE;
+}
+
+/*
+ * Undefine a contact option.
+ */
+void ContactOptionsUndef (ContactOptions *opt, UWORD flag)
+{
+    UBYTE tag;
+
+    Debug (DEB_OPTS, "(%p,%x) := undef", opt, flag);
+
+    if (flag & COF_DIRECT)
+    {
+        flag &= ~COF_DIRECT;
+        opt->set &= ~flag;
+        opt->val &= ~flag;
+        return;
+    }
+
+    tag = flag & 0xff;
+
+    if (opt->set & COF_DIRECT)
+    {
+        int j, k, l, m;
+        for (j = k = 0; j < opt->co_un.co_indir.size; j++)
+        {
+            for (k = 0; k < 16; k++)
+                if (opt->co_un.co_indir.table[j].tags[k] == tag)
+                    break;
+            if (k != 16)
+                break;
         }
+        if (j == opt->co_un.co_indir.size)
+            return;
+        for (l = opt->co_un.co_indir.size - 1; l >= 0; l--)
+            if (opt->co_un.co_indir.table[l].tags[0])
+                break;
+        for (m = 16 - 1; m >= 0; m--)
+            if (opt->co_un.co_indir.table[l].tags[m])
+                break;
+        opt->co_un.co_indir.table[j].tags[k] = opt->co_un.co_indir.table[l].tags[m];
+        opt->co_un.co_indir.table[j].vals[k] = opt->co_un.co_indir.table[l].vals[m];
+        opt->co_un.co_indir.table[l].tags[m] = 0;
+        opt->co_un.co_indir.table[l].vals[m] = 0;
     }
     else
     {
-        if (val)
+        if (opt->co_un.co_dir.taga == tag)
         {
-            int i, j, k;
-
-            for (i = 0; i < strmax; i++)
-                if (!strtable[i] || !strcmp (strtable[i], val))
-                    break;
-            if (i == strmax)
-            {
-                int news = (strmax ? strmax * 2 : 128);
-                const char **new = realloc (strtable, sizeof (char *) * news);
-                if (!new)
-                    return;
-                for (j = i; j < news; j++)
-                    new[j] = NULL;
-                strtable = new;
-                strmax = news;
-            }
-            if (!strtable[i])
-                strtable[i] = strdup (val);
-
-            if ((~opt->set & CO_DIRECT) && (!opt->co_un.co_dir.taga || (opt->co_un.co_dir.taga == flag)))
-            {
-                opt->co_un.co_dir.taga = flag & ~CO_DIRECT;
-                opt->co_un.co_dir.vala = i;
-                return;
-            }
-            if ((~opt->set & CO_DIRECT) && (!opt->co_un.co_dir.tagb || (opt->co_un.co_dir.tagb == flag)))
-            {
-                opt->co_un.co_dir.tagb = flag & ~CO_DIRECT;
-                opt->co_un.co_dir.valb = i;
-                return;
-            }
-            if (~opt->set & CO_DIRECT)
-            {
-                struct ContactOptionsTable_s *new = calloc (sizeof (struct ContactOptionsTable_s), 1);
-                if (!new)
-                    return;
-                new->tags[0] = opt->co_un.co_dir.taga;
-                new->tags[1] = opt->co_un.co_dir.tagb;
-                new->vals[0] = opt->co_un.co_dir.vala;
-                new->vals[1] = opt->co_un.co_dir.valb;
-                opt->co_un.co_indir.size = 1;
-                opt->co_un.co_indir.table = new;
-                opt->set |= CO_DIRECT;
-            }
-            for (j = k = 0; j < opt->co_un.co_indir.size; j++)
-            {
-                for (k = 0; k < 32; k++)
-                    if ((opt->co_un.co_indir.table[j].tags[k] == flag) || !opt->co_un.co_indir.table[j].tags[k])
-                        break;
-                if (k != 32)
-                    break;
-            }
-            if (j == opt->co_un.co_indir.size)
-            {
-                struct ContactOptionsTable_s *new = realloc (opt->co_un.co_indir.table, sizeof (struct ContactOptionsTable_s) * (j + 1));
-                if (!new)
-                    return;
-                opt->co_un.co_indir.size++;
-                for (k = 0; k < 32; k++)
-                    new[j].tags[k] = new[j].vals[k] = 0;
-                k = 0;
-                opt->co_un.co_indir.table = new;
-            }
-            opt->co_un.co_indir.table[j].tags[k] = flag;
-            opt->co_un.co_indir.table[j].vals[k] = i;
+            opt->co_un.co_dir.taga = 0;
+            opt->co_un.co_dir.vala = 0;
         }
-        else
+        if (opt->co_un.co_dir.tagb == tag)
         {
-            if (opt->set & CO_DIRECT)
-            {
-                int j, k, l;
-                for (j = k = 0; j < opt->co_un.co_indir.size; j++)
-                    for (k = 0; k < 32; k++)
-                        if (opt->co_un.co_indir.table[j].tags[k] == flag)
-                            break;
-                if (j == opt->co_un.co_indir.size)
-                    return;
-                for (l = 0; opt->co_un.co_indir.table[opt->co_un.co_indir.size - 1].tags[l]; l++)
-                    ;
-                assert (l);
-                l--;
-                opt->co_un.co_indir.table[j].tags[k] = opt->co_un.co_indir.table[opt->co_un.co_indir.size - 1].tags[l];
-                opt->co_un.co_indir.table[j].vals[k] = opt->co_un.co_indir.table[opt->co_un.co_indir.size - 1].vals[l];
-                if (l)
-                {
-                    opt->co_un.co_indir.table[opt->co_un.co_indir.size - 1].tags[l] = 0;
-                    opt->co_un.co_indir.table[opt->co_un.co_indir.size - 1].vals[l] = 0;
-                }
-                else
-                    opt->co_un.co_indir.size--;
-            }
-            else
-            {
-                if (opt->co_un.co_dir.taga == flag)
-                {
-                    opt->co_un.co_dir.taga = 0;
-                    opt->co_un.co_dir.vala = 0;
-                }
-                if (opt->co_un.co_dir.tagb == flag)
-                {
-                    opt->co_un.co_dir.tagb = 0;
-                    opt->co_un.co_dir.valb = 0;
-                }
-            }
+            opt->co_un.co_dir.tagb = 0;
+            opt->co_un.co_dir.valb = 0;
         }
     }
 }
 
-struct ContactOption_s ContactOptionsList[] = {
-  { "intimate",  CO_INTIMATE,  TRUE },
-  { "hidefrom",  CO_HIDEFROM,  TRUE },
-  { "ignore",    CO_IGNORE,    TRUE },
-  { "autoaway",  CO_AUTOAWAY,  FALSE },
-  { "autona",    CO_AUTONA,    FALSE },
-  { "autoocc",   CO_AUTOOCC,   FALSE },
-  { "autodnd",   CO_AUTODND,   FALSE },
-  { "autoffc",   CO_AUTOFFC,   FALSE },
-  { NULL }
-};
+/*
+ * Get a (string) contact option.
+ */
+BOOL ContactOptionsGetStr (const ContactOptions *opt, UWORD flag, const char **res)
+{
+    UWORD val;
+
+    assert (flag & (COF_STRING | COF_COLOR));
+
+    if (!ContactOptionsGetVal (opt, flag, &val))
+        return FALSE;
+
+    if (val >= strmax)
+        return FALSE;
+
+    *res = strtable[val];
+    Debug (DEB_OPTS, "(%p,%x) = %s", opt, flag, s_quote (*res));
+    return TRUE;
+}
+
+/*
+ * Set a (string) contact option.
+ */
+BOOL ContactOptionsSetStr (ContactOptions *opt, UWORD flag, const char *text)
+{
+    UWORD val;
+
+    assert (flag & (COF_STRING | COF_COLOR));
+    
+    if (!text)
+    {
+        ContactOptionsUndef (opt, flag);
+        return TRUE;
+    }
+
+    for (val = 0; val < strmax; val++)
+        if (!strtable[val] || !strcmp (strtable[val], text))
+            break;
+    if (val == strmax)
+    {
+        int j, news = (strmax ? strmax * 2 : 128);
+        const char **new = realloc (strtable, sizeof (char *) * news);
+        if (!new)
+            return FALSE;
+        for (j = val; j < news; j++)
+            new[j] = NULL;
+        strtable = new;
+        strmax = news;
+    }
+    if (!strtable[val])
+        if (!(strtable[val] = strdup (text)))
+            return FALSE;
+
+    Debug (DEB_OPTS, "(%p,%x) := %d / %s", opt, flag, val, s_quote (strtable [val]));
+
+    return ContactOptionsSetVal (opt, flag, val);
+}
 
 const char *ContactOptionsString (const ContactOptions *opts)
 {
     static str_s str;
-    int i;
-    const char *res;
+    int i, flag;
+    UWORD val;
     
     s_init (&str, "", 100);
     
     for (i = 0; ContactOptionsList[i].name; i++)
-        if (ContactOptionsGet (opts, ContactOptionsList[i].flag, &res))
+        if (ContactOptionsGetVal (opts, flag = ContactOptionsList[i].flag, &val))
         {
-            if (ContactOptionsList[i].isbool)
-                s_catf (&str, " %s %s", ContactOptionsList[i].name, res ? "on" : "off");
+            if (flag & COF_BOOL)
+            {
+                if (!*str.txt)
+                    s_cat (&str, "options");
+                s_catf (&str, " %s %s", ContactOptionsList[i].name, val ? "on" : "off");
+            }
             else
-                s_catf (&str, " %s %s", ContactOptionsList[i].name, s_quote (res));
+            {
+                if (*str.txt)
+                    s_catc (&str, '\n');
+                if (flag & COF_NUMERIC)
+                    s_catf (&str, "options %s %d", ContactOptionsList[i].name, val);
+                else
+                    s_catf (&str, "options %s %s", ContactOptionsList[i].name, s_quote (strtable[val]));
+            }
         }
+    if (*str.txt)
+        s_catc (&str, '\n');
 
-    return *str.txt ? str.txt : NULL;
+    return str.txt;
 }
 
+/*
+ * Import options from a string.
+ */
 int ContactOptionsImport (ContactOptions *opts, const char *args)
 {
-    char *cmd;
+    char *cmd, *argst;
+    const char *argstt;
     UWORD flag = 0;
-    int booli = 0, i;
+    int i, ret = 0;
     
-    while (s_parse (&args, &cmd))
+    argst = strdup (args);
+    argstt = argst;
+    
+    while (s_parse (&argstt, &cmd))
     {
         for (i = 0; ContactOptionsList[i].name; i++)
             if (!strcmp (cmd, ContactOptionsList[i].name))
             {
                 flag = ContactOptionsList[i].flag;
-                booli = ContactOptionsList[i].isbool;
                 break;
             }
         
         if (!ContactOptionsList[i].name)
-            return 1;
+        {
+            ret = 1;
+            break;
+        }
         
-        if (!s_parse (&args, &cmd))
-            return 1;
-
-        if (!booli)
-            ContactOptionsSet (opts, flag, cmd);
+        if (!s_parse (&argstt, &cmd))
+        {
+            ret = 1;
+            break;
+        }
+        
+        if (flag & COF_NUMERIC)
+        {
+            UWORD val = atoi (cmd);
+            ContactOptionsSetVal (opts, flag, val);
+        }
+        else if (~flag & COF_BOOL)
+            ContactOptionsSetStr (opts, flag, cmd);
         else if (!strcasecmp (cmd, "on")  || !strcasecmp (cmd, i18n (1085, "on")))
-            ContactOptionsSet (opts, flag, "+");
+            ContactOptionsSetVal (opts, flag, 1);
         else if (!strcasecmp (cmd, "off") || !strcasecmp (cmd, i18n (1086, "off")))
-            ContactOptionsSet (opts, flag, "");
+            ContactOptionsSetVal (opts, flag, 0);
         else if (!strcasecmp (cmd, "undef"))
-            ContactOptionsSet (opts, flag, NULL);
+            ContactOptionsUndef (opts, flag);
         else
-            return 1;
+        {
+            ret = 1;
+            break;
+        }
     }
-    return 0;
+    free (argst);
+    return ret;
 }

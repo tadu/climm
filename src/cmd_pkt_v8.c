@@ -365,13 +365,13 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     accept = FALSE;
 
     if      (serv->status & STATUSF_DND)
-        ack_msg = ContactPref (cont, CO_AUTODND);
+        ack_msg = ContactPrefStr (cont, CO_AUTODND);
     else if (serv->status & STATUSF_OCC)
-        ack_msg = ContactPref (cont, CO_AUTOOCC);
+        ack_msg = ContactPrefStr (cont, CO_AUTOOCC);
     else if (serv->status & STATUSF_NA)
-        ack_msg = ContactPref (cont, CO_AUTONA);
+        ack_msg = ContactPrefStr (cont, CO_AUTONA);
     else if (serv->status & STATUSF_AWAY)
-        ack_msg = ContactPref (cont, CO_AUTOAWAY);
+        ack_msg = ContactPrefStr (cont, CO_AUTOAWAY);
     else
         ack_msg = "";
 
@@ -392,11 +392,11 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     {
         /* Requests for auto-response message */
         do  {
-        case MSGF_GETAUTO | MSG_GET_AWAY:  ack_msg = ContactPref (cont, CO_AUTOAWAY); break;
-        case MSGF_GETAUTO | MSG_GET_OCC:   ack_msg = ContactPref (cont, CO_AUTOOCC);  break;
-        case MSGF_GETAUTO | MSG_GET_NA:    ack_msg = ContactPref (cont, CO_AUTONA);   break;
-        case MSGF_GETAUTO | MSG_GET_DND:   ack_msg = ContactPref (cont, CO_AUTODND);  break;
-        case MSGF_GETAUTO | MSG_GET_FFC:   ack_msg = ContactPref (cont, CO_AUTOFFC);  break;
+        case MSGF_GETAUTO | MSG_GET_AWAY:  ack_msg = ContactPrefStr (cont, CO_AUTOAWAY); break;
+        case MSGF_GETAUTO | MSG_GET_OCC:   ack_msg = ContactPrefStr (cont, CO_AUTOOCC);  break;
+        case MSGF_GETAUTO | MSG_GET_NA:    ack_msg = ContactPrefStr (cont, CO_AUTONA);   break;
+        case MSGF_GETAUTO | MSG_GET_DND:   ack_msg = ContactPrefStr (cont, CO_AUTODND);  break;
+        case MSGF_GETAUTO | MSG_GET_FFC:   ack_msg = ContactPrefStr (cont, CO_AUTOFFC);  break;
         case MSGF_GETAUTO | MSG_GET_VER:   ack_msg = BuildVersionText;
             } while (0);
 #ifdef WIP

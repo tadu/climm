@@ -557,7 +557,7 @@ void CmdPktCmdInvisList (Connection *conn)
 
     for (i = j = 0; (cont = ContactIndex (cg, j)); j++)
     {
-        if (!ContactPref (cont, CO_HIDEFROM))
+        if (!ContactPrefVal (cont, CO_HIDEFROM))
             continue;
 
         if (!pak)
@@ -596,7 +596,7 @@ void CmdPktCmdVisList (Connection *conn)
 
     for (i = j = 0; (cont = ContactIndex (cg, j)); j++)
     {
-        if (!ContactPref (cont, CO_INTIMATE))
+        if (!ContactPrefVal (cont, CO_INTIMATE))
             continue;
 
         if (!pak)

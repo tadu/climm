@@ -352,15 +352,15 @@ void Auto_Reply (Connection *conn, Contact *cont)
         return;
 
           if (conn->status & STATUSF_DND)
-         temp = ContactPref (cont, CO_AUTODND);
+         temp = ContactPrefStr (cont, CO_AUTODND);
      else if (conn->status & STATUSF_OCC)
-         temp = ContactPref (cont, CO_AUTOOCC);
+         temp = ContactPrefStr (cont, CO_AUTOOCC);
      else if (conn->status & STATUSF_NA)
-         temp = ContactPref (cont, CO_AUTONA);
+         temp = ContactPrefStr (cont, CO_AUTONA);
      else if (conn->status & STATUSF_AWAY)
-         temp = ContactPref (cont, CO_AUTOAWAY);
+         temp = ContactPrefStr (cont, CO_AUTOAWAY);
      else if (conn->status & STATUSF_INV)
-         temp = ContactPref (cont, CO_AUTOINV);
+         temp = ContactPrefStr (cont, CO_AUTOINV);
      else
          return;
 

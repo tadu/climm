@@ -832,19 +832,47 @@ BOOL ContactMetaLoad (Contact *cont)
 /*
  * Query a flag for a contact.
  */
-const char *ContactPref (Contact *cont, UWORD flag)
+UWORD ContactPrefVal (Contact *cont, UWORD flag)
+{
+    UWORD res = 0;
+    
+    if (cont)
+    {
+        if (ContactOptionsGetVal (&cont->copts, flag, &res))
+            return res;
+        if (cont->group)
+        {
+            if (ContactOptionsGetVal (&cont->group->copts, flag, &res))
+                return res;
+            if (cont->group->serv && ContactOptionsGetVal (&cont->group->serv->contacts->copts, flag, &res))
+                return res;
+        }
+    }
+    if (ContactOptionsGetVal (&prG->copts, flag, &res))
+        return res;
+    return 0;
+}
+
+/*
+ * Query a flag for a contact.
+ */
+const char *ContactPrefStr (Contact *cont, UWORD flag)
 {
     const char *res = NULL;
     
-    if (ContactOptionsGet (&cont->copts, flag, &res))
-        return res;
-    if (ContactOptionsGet (&cont->group->copts, flag, &res))
-        return res;
-    if (ContactOptionsGet (&cont->group->serv->contacts->copts, flag, &res))
-        return res;
-    if (ContactOptionsGet (&prG->copts, flag, &res))
-        return res;
-    return NULL;
+    if (cont)
+    {
+        if (ContactOptionsGetStr (&cont->copts, flag, &res))
+            return res;
+        if (cont->group)
+        {
+            if (ContactOptionsGetStr (&cont->group->copts, flag, &res))
+                return res;
+            if (cont->group->serv && ContactOptionsGetStr (&cont->group->serv->contacts->copts, flag, &res))
+                return res;
+        }
+    }
+    return "";
 }
 
 /*

@@ -243,16 +243,17 @@ void Initialize_RC_File ()
     prG->flags |= FLAG_COLOR;
 #endif
 
-    ContactOptionsSet (&prG->copts, CO_AUTODND,  i18n (1929, "User is dnd [Auto-Message]"));
-    ContactOptionsSet (&prG->copts, CO_AUTOAWAY, i18n (1010, "User is away [Auto-Message]"));
-    ContactOptionsSet (&prG->copts, CO_AUTONA,   i18n (1011, "User is not available [Auto-Message]"));
-    ContactOptionsSet (&prG->copts, CO_AUTOOCC,  i18n (1012, "User is occupied [Auto-Message]"));
-    ContactOptionsSet (&prG->copts, CO_AUTOFFC,  i18n (2055, "User is ffc and wants to chat about everything."));
+    ContactOptionsSetStr (&prG->copts, CO_AUTODND,  i18n (1929, "User is dnd [Auto-Message]"));
+    ContactOptionsSetStr (&prG->copts, CO_AUTOAWAY, i18n (1010, "User is away [Auto-Message]"));
+    ContactOptionsSetStr (&prG->copts, CO_AUTONA,   i18n (1011, "User is not available [Auto-Message]"));
+    ContactOptionsSetStr (&prG->copts, CO_AUTOOCC,  i18n (1012, "User is occupied [Auto-Message]"));
+    ContactOptionsSetStr (&prG->copts, CO_AUTOFFC,  i18n (2055, "User is ffc and wants to chat about everything."));
 
     prG->logplace  = strdup ("history" _OS_PATHSEPSTR);
     prG->chat      = 49;
 
     conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%ld", uin));
+    ContactOptionsSetVal (&conn->contacts->copts, CO_IGNORE, 0);
     ContactFindCreate (conn->contacts, 0, 82274703, "R\xc3\xbc" "diger Kuhlmann");
     ContactFindCreate (conn->contacts, 0, 82274703, "Tadu");
 
@@ -555,25 +556,25 @@ int Read_RC_File (FILE *rcf)
                     else if (!strcasecmp (tmp, "away"))
                     {
                         PrefParse (tmp);
-                        ContactOptionsSet (&prG->copts, CO_AUTOAWAY, ConvToUTF8 (tmp, enc, -1, 0));
+                        ContactOptionsSetStr (&prG->copts, CO_AUTOAWAY, ConvToUTF8 (tmp, enc, -1, 0));
                         dep = 1;
                     }
                     else if (!strcasecmp (tmp, "na"))
                     {
                         PrefParse (tmp);
-                        ContactOptionsSet (&prG->copts, CO_AUTONA, ConvToUTF8 (tmp, enc, -1, 0));
+                        ContactOptionsSetStr (&prG->copts, CO_AUTONA, ConvToUTF8 (tmp, enc, -1, 0));
                         dep = 1;
                     }
                     else if (!strcasecmp (tmp, "dnd"))
                     {
                         PrefParse (tmp);
-                        ContactOptionsSet (&prG->copts, CO_AUTODND, ConvToUTF8 (tmp, enc, -1, 0));
+                        ContactOptionsSetStr (&prG->copts, CO_AUTODND, ConvToUTF8 (tmp, enc, -1, 0));
                         dep = 1;
                     }
                     else if (!strcasecmp (tmp, "occ"))
                     {
                         PrefParse (tmp);
-                        ContactOptionsSet (&prG->copts, CO_AUTOOCC, ConvToUTF8 (tmp, enc, -1, 0));
+                        ContactOptionsSetStr (&prG->copts, CO_AUTOOCC, ConvToUTF8 (tmp, enc, -1, 0));
                         dep = 1;
                     }
                     else if (!strcasecmp (tmp, "inv"))
@@ -584,7 +585,7 @@ int Read_RC_File (FILE *rcf)
                     else if (!strcasecmp (tmp, "ffc"))
                     {
                         PrefParse (tmp);
-                        ContactOptionsSet (&prG->copts, CO_AUTOFFC, ConvToUTF8 (tmp, enc, -1, 0));
+                        ContactOptionsSetStr (&prG->copts, CO_AUTOFFC, ConvToUTF8 (tmp, enc, -1, 0));
                         dep = 1;
                     }
                     else
@@ -781,14 +782,14 @@ int Read_RC_File (FILE *rcf)
                     {
                         case '*':
                             flags |= CO_INTIMATE;
-                            flags &= ~(CO_HIDEFROM & ~CO_DIRECT);
+                            flags &= ~(CO_HIDEFROM & ~COF_DIRECT);
                             continue;
                         case '^':
                             flags |= CO_IGNORE;
                             continue;
                         case '~':
                             flags |= CO_HIDEFROM;
-                            flags &= ~(CO_INTIMATE & ~CO_DIRECT);
+                            flags &= ~(CO_INTIMATE & ~COF_DIRECT);
                             continue;
                         case ' ':
                         case '-':
@@ -824,7 +825,7 @@ int Read_RC_File (FILE *rcf)
                     {
                         j = 1;
                         ContactAddAlias (cont, ConvToUTF8 (cmd, enc, -1, 0));
-                        ContactOptionsSet (&cont->copts, flags, "+"); /* FIXME */
+                        ContactOptionsSetVal (&cont->copts, flags, 1); /* FIXME */
                     }
                 }
                 if (!j)
@@ -842,7 +843,7 @@ int Read_RC_File (FILE *rcf)
                         section = -1;
                         break;
                     }
-                    ContactOptionsSet (&cont->copts, flags, "+"); /* FIXME */
+                    ContactOptionsSetVal (&cont->copts, flags, 1); /* FIXME */
                 }
                 break;
             case 2:
@@ -1359,7 +1360,6 @@ int Save_RC ()
     Contact *cont;
     Connection *ss;
     ContactGroup *cg;
-    const char *res;
 
     if (!prG->rcfile)
         prG->rcfile = strdup (s_sprintf ("%smicqrc", PrefUserDir (prG)));
@@ -1525,8 +1525,7 @@ int Save_RC ()
         fprintf (rcf, "set dccont     %s # whether to allow dc only from contacts\n", "on");
     fprintf (rcf, "\n");
     
-    if ((res = ContactOptionsString (&prG->copts)))
-        fprintf (rcf, "options%s\n", res);
+    fprintf (rcf, "%s\n\n", ContactOptionsString (&prG->copts));
 
     fprintf (rcf, "# Colors. color scheme 0|1|2|3 or color <use> <color>\n");
     {
@@ -1605,7 +1604,7 @@ int Save_RC ()
 
 #if 1
     fprintf (rcf, "# Contact groups. This is a compatibily section and ignored for mICQ 0.5.x.");
-    for (k = 0; (cg = ContactGroupIndex (k)); k++)
+    for (k = 1; (cg = ContactGroupIndex (k)); k++)
     {
         fprintf (rcf, "\n[Group]\n");
         if (cg->serv)
@@ -1626,9 +1625,10 @@ int Save_RC ()
     for (i = 0; (cont = ContactIndex (0, i)); i++)
     {
         ContactAlias *alias;
-        if (ContactOptionsGet (&cont->copts, CO_INTIMATE, &res) && res) fprintf (rcf, "*"); else fprintf (rcf, " ");
-        if (ContactOptionsGet (&cont->copts, CO_HIDEFROM, &res) && res) fprintf (rcf, "~"); else fprintf (rcf, " ");
-        if (ContactOptionsGet (&cont->copts, CO_IGNORE, &res) && res)   fprintf (rcf, "^"); else fprintf (rcf, " ");
+        UWORD val;
+        if (ContactOptionsGetVal (&cont->copts, CO_INTIMATE, &val) && val) fprintf (rcf, "*"); else fprintf (rcf, " ");
+        if (ContactOptionsGetVal (&cont->copts, CO_HIDEFROM, &val) && val) fprintf (rcf, "~"); else fprintf (rcf, " ");
+        if (ContactOptionsGetVal (&cont->copts, CO_IGNORE,   &val) && val) fprintf (rcf, "^"); else fprintf (rcf, " ");
         fprintf (rcf, "%9ld %s\n", cont->uin, s_quote (cont->nick));
         for (alias = cont->alias; alias; alias = alias->more)
             fprintf (rcf, "   %9ld %s\n", cont->uin, s_quote (alias->alias));
@@ -1637,7 +1637,7 @@ int Save_RC ()
 #endif
 
     fprintf (stf, "# Contact groups.");
-    for (k = 0; (cg = ContactGroupIndex (k)); k++)
+    for (k = 1; (cg = ContactGroupIndex (k)); k++)
     {
         fprintf (stf, "\n[Group]\n");
         if (cg->serv)
@@ -1647,8 +1647,7 @@ int Save_RC ()
         fprintf (stf, "label %s\n", s_quote (cg->name));
         fprintf (stf, "id %d\n", cg->id);
 
-        if ((res = ContactOptionsString (&cg->copts)))
-            fprintf (stf, "options%s\n", res);
+        fprintf (stf, "%s", ContactOptionsString (&cg->copts));
 
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
             fprintf (stf, "entry %d %ld\n", cont->id, cont->uin);
@@ -1665,10 +1664,7 @@ int Save_RC ()
             fprintf (stf, "entry %9ld %s", cont->uin, s_quote (cont->nick));
             for (alias = cont->alias; alias; alias = alias->more)
                 fprintf (stf, " %s", s_quote (alias->alias));
-            fprintf (stf, "\n");
-
-            if ((res = ContactOptionsString (&cont->copts)))
-                fprintf (stf, "options%s\n", res);
+            fprintf (stf, "\n%s", ContactOptionsString (&cont->copts));
         }
     }
     fprintf (stf, "\n");

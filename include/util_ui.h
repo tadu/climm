@@ -13,6 +13,7 @@ BOOL   Debug (UDWORD level, const char *str, ...) __attribute__ ((format (__prin
 #define DEB_EVENT         0x00000080L
 #define DEB_EXTRA         0x00000100L
 #define DEB_CONTACT       0x00000200L
+#define DEB_OPTS          0x00000400L
 #define DEB_PACK5DATA     0x00000800L
 #define DEB_PACK8         0x00001000L
 #define DEB_PACK8DATA     0x00002000L

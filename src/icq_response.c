@@ -514,7 +514,7 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
     
     putlog (conn, NOW, cont, status, ~old ? LOG_CHANGE : LOG_ONLINE, 0xFFFF, "");
  
-    if ((cont->group == conn->noncontacts) || ContactPref (cont, CO_IGNORE)
+    if ((cont->group == conn->noncontacts) || ContactPrefVal (cont, CO_IGNORE)
         || (prG->flags & FLAG_ULTRAQUIET)
         || ((prG->flags & FLAG_QUIET) && (old != STATUS_OFFLINE))
         || (~conn->connect & CONNECT_OK))
@@ -567,7 +567,7 @@ void IMOffline (Contact *cont, Connection *conn)
     cont->status = STATUS_OFFLINE;
     cont->seen_time = time (NULL);
 
-    if ((cont->group == conn->noncontacts) || ContactPref (cont, CO_IGNORE) || (prG->flags & FLAG_ULTRAQUIET))
+    if ((cont->group == conn->noncontacts) || ContactPrefVal (cont, CO_IGNORE) || (prG->flags & FLAG_ULTRAQUIET))
         return;
 
     if (prG->event_cmd && *prG->event_cmd)
@@ -594,7 +594,7 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
 
     if (cont)
     {
-        if (ContactPref (cont, CO_IGNORE) || ((cont->group == conn->noncontacts) && (prG->flags & FLAG_HERMIT)))
+        if (ContactPrefVal (cont, CO_IGNORE) || ((cont->group == conn->noncontacts) && (prG->flags & FLAG_HERMIT)))
         {
             ExtraD (extra);
             return;
@@ -749,7 +749,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
         e_msg_type == MSG_AUTH_ADDED ? LOG_ADDED : LOG_RECVD, e_msg_type,
         cdata);
     
-    if (ContactPref (cont, CO_IGNORE) || ((cont->group == conn->noncontacts) && (prG->flags & FLAG_HERMIT)))
+    if (ContactPrefVal (cont, CO_IGNORE) || ((cont->group == conn->noncontacts) && (prG->flags & FLAG_HERMIT)))
     {
         ExtraD (extra);
         return;

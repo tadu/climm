@@ -21,6 +21,7 @@ static const char *DebugStr (UDWORD level)
     if (level & DEB_PACKET)      return "Packet ";
     if (level & DEB_QUEUE)       return "Queue  ";
     if (level & DEB_EVENT)       return "Event  ";
+    if (level & DEB_OPTS)        return "Options";
     if (level & DEB_EXTRA)       return "Extra  ";
     if (level & DEB_PACK5DATA)   return "v5 data";
     if (level & DEB_PACK8)       return "v8 pack";
@@ -44,6 +45,7 @@ BOOL Debug (UDWORD level, const char *str, ...)
 {
     va_list args;
     char buf[2048], c;
+    const char *name = DebugStr (level & prG->verbose);
 
     if (!(prG->verbose & level) && level)
         return 0;
@@ -52,13 +54,19 @@ BOOL Debug (UDWORD level, const char *str, ...)
     vsnprintf (buf, sizeof (buf), str, args);
     va_end (args);
 
+    level = prG->verbose;
+    prG->verbose = 0;
+
     M_print ("");
     if ((c = M_pos ()))
         M_print ("\n");
-    M_printf ("%s %s%7.7s%s %s", s_now, COLDEBUG, DebugStr (level & prG->verbose), COLNONE, buf);
+    
+    M_printf ("%s %s%7.7s%s %s", s_now, COLDEBUG, name, COLNONE, buf);
 
     if (!c)
         M_print ("\n");
+
+    prG->verbose = level;
 
     return 1;
 }

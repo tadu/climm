@@ -17,6 +17,7 @@
 #include "preferences.h"
 #include "server.h"
 #include "contact.h"
+#include "contactopts.h"
 #include "session.h"
 #include "tcp.h"
 #include "msg_queue.h"
@@ -263,6 +264,7 @@ int main (int argc, char *argv[])
     prG->enc_loc = prG->enc_rem = ENC_AUTO;
     i18nInit (&prG->locale, &prG->enc_loc, arg_i);
     prG->verbose &= ~0x8000;
+    PreferencesInit (prG);
     
     rc = arg_h ? 0 : PrefLoad (prG);
 

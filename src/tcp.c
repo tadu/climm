@@ -1004,7 +1004,7 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
         if (sid  != peer->our_session)
             FAIL (8);
 
-        if (ContactPref (cont, CO_IGNORE))
+        if (ContactPrefVal (cont, CO_IGNORE))
             FAIL (9);
 
         /* okay, the connection seems not to be faked, so update using the following information. */

@@ -24,28 +24,36 @@ struct ContactOption_s
 {
     const char *name;
     UWORD flag;
-    BOOL isbool;
 };
 
-BOOL ContactOptionsGet (const ContactOptions *opt, UWORD flag, const char **res);
-void ContactOptionsSet (ContactOptions *opt, UWORD flag, const char *val);
+BOOL ContactOptionsGetVal (const ContactOptions *opt, UWORD flag, UWORD *val);
+BOOL ContactOptionsSetVal (ContactOptions *opt, UWORD flag, UWORD val);
+void ContactOptionsUndef  (ContactOptions *opt, UWORD flag);
+
+BOOL ContactOptionsGetStr (const ContactOptions *opt, UWORD flag, const char **res);
+BOOL ContactOptionsSetStr (ContactOptions *opt, UWORD flag, const char *val);
 
 int ContactOptionsImport (ContactOptions *opts, const char *args);
 const char *ContactOptionsString (const ContactOptions *opts);
 
 extern struct ContactOption_s ContactOptionsList[];
 
-#define CO_DIRECT 0x8000
+#define COF_BOOL    0x8000
+#define COF_NUMERIC 0x4000
+#define COF_COLOR   0x2000
+#define COF_STRING  0x1000
 
-#define CO_IGNORE    (CO_DIRECT | 0x0001) /* ignore contact. */
-#define CO_HIDEFROM  (CO_DIRECT | 0x0002) /* always pretend to be offline. */
-#define CO_INTIMATE  (CO_DIRECT | 0x0004) /* can see even if invisible. */
+#define COF_DIRECT  COF_BOOL
 
-#define CO_AUTOAWAY  0x0001
-#define CO_AUTONA    0x0002
-#define CO_AUTOOCC   0x0003
-#define CO_AUTODND   0x0004
-#define CO_AUTOFFC   0x0005
-#define CO_AUTOINV   0x0006
+#define CO_IGNORE        (COF_DIRECT | 0x0001)  /* ignore contact               */
+#define CO_HIDEFROM      (COF_DIRECT | 0x0002)  /* always pretend to be offline */
+#define CO_INTIMATE      (COF_DIRECT | 0x0004)  /* can see even if invisible    */
+
+#define CO_AUTOAWAY      (COF_STRING  |   0x04) /* the away auto reply message           */
+#define CO_AUTONA        (COF_STRING  |   0x05) /* the not available auto reply message  */
+#define CO_AUTOOCC       (COF_STRING  |   0x06) /* the occupied auto reply message       */
+#define CO_AUTODND       (COF_STRING  |   0x07) /* the do not disturb auto reply message */
+#define CO_AUTOFFC       (COF_STRING  |   0x08) /* the free for chat auto reply message  */
+#define CO_AUTOINV       (COF_STRING  |   0x09) /* the invisible auto reply message      */
 
 #endif

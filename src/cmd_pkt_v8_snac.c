@@ -1093,16 +1093,16 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
                         cont->id = id;   /* FIXME: should be in ContactGroup? */
                         if (type == 2)
                         {
-                            ContactOptionsSet (&cont->copts, CO_INTIMATE, "+");
-                            ContactOptionsSet (&cont->copts, CO_HIDEFROM, "");
+                            ContactOptionsSetVal (&cont->copts, CO_INTIMATE, 1);
+                            ContactOptionsSetVal (&cont->copts, CO_HIDEFROM, 0);
                         }
                         else if (type == 3)
                         {
-                            ContactOptionsSet (&cont->copts, CO_HIDEFROM, "+");
-                            ContactOptionsSet (&cont->copts, CO_INTIMATE, "");
+                            ContactOptionsSetVal (&cont->copts, CO_HIDEFROM, 1);
+                            ContactOptionsSetVal (&cont->copts, CO_INTIMATE, 0);
                         }
                         else if (type == 14)
-                            ContactOptionsSet (&cont->copts, CO_IGNORE, "+");
+                            ContactOptionsSetVal (&cont->copts, CO_IGNORE, 1);
                         if (!ContactFind (cg, 0, cont->uin, NULL))
                         {
                             ContactAdd (cg, cont);
@@ -1240,16 +1240,16 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                         cont->id = id;   /* FIXME: should be in ContactGroup? */
                         if (type == 2)
                         {
-                            ContactOptionsSet (&cont->copts, CO_INTIMATE, "+");
-                            ContactOptionsSet (&cont->copts, CO_HIDEFROM, "");
+                            ContactOptionsSetVal (&cont->copts, CO_INTIMATE, 1);
+                            ContactOptionsSetVal (&cont->copts, CO_HIDEFROM, 0);
                         }
                         else if (type == 3)
                         {
-                            ContactOptionsSet (&cont->copts, CO_HIDEFROM, "+");
-                            ContactOptionsSet (&cont->copts, CO_INTIMATE, "");
+                            ContactOptionsSetVal (&cont->copts, CO_HIDEFROM, 1);
+                            ContactOptionsSetVal (&cont->copts, CO_INTIMATE, 0);
                         }
                         else if (type == 14)
-                            ContactOptionsSet (&cont->copts, CO_IGNORE, "+");
+                            ContactOptionsSetVal (&cont->copts, CO_IGNORE, 1);
                         if (!ContactFind (cg, 0, cont->uin, NULL))
                         {
                             ContactAdd (cg, cont);
@@ -2056,7 +2056,7 @@ void SnacCliAddvisible (Connection *conn, Contact *cont)
         PacketWriteUIN (pak, cont->uin);
     else
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
-            if (ContactPref (cont, CO_INTIMATE))
+            if (ContactPrefVal (cont, CO_INTIMATE))
                 PacketWriteUIN (pak, cont->uin);
     SnacSend (conn, pak);
 }
@@ -2090,7 +2090,7 @@ void SnacCliAddinvis (Connection *conn, Contact *cont)
         PacketWriteUIN (pak, cont->uin);
     else
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
-            if (ContactPref (cont, CO_HIDEFROM))
+            if (ContactPrefVal (cont, CO_HIDEFROM))
                 PacketWriteUIN (pak, cont->uin);
     SnacSend (conn, pak);
 }

@@ -52,11 +52,16 @@ Preferences *PreferencesC ()
 {
     Preferences *pref = calloc (1, sizeof (Preferences));
     assert (pref);
-    
-    pref->flags = FLAG_DELBS;
-    PrefSetColorScheme (pref, 0);
-    
     return pref;
+}
+
+/*
+ * Set some defaults for the given preferences structure
+ */
+void PreferencesInit (Preferences *pref)
+{    
+    pref->flags = FLAG_DELBS;
+    PrefSetColorScheme (pref, 4);
 }
 
 /*
