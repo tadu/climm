@@ -61,6 +61,8 @@ Changes :
 #endif
 
 MORE_INFO_STRUCT user;
+WP_STRUCT wp;
+
 UDWORD last_uin = 0;
 
 static UDWORD multi_uin;
@@ -509,6 +511,149 @@ void Info_Update (SOK_T sok, char *buf)
     }
 }
 
+/*
+ * This function gathers information for the whitepage search packet
+ * name email etc
+ */
+void Wp_Search (SOK_T sok, char *buf)
+{
+    int temp;
+
+    switch (status)
+    {
+        case WP_NICK:
+            wp.nick = strdup ((char *) buf);
+            M_print ("%s ", i18n (657, "Enter the user's first name:"));
+            status = WP_FIRST;
+            break;
+        case WP_FIRST:
+            wp.first = strdup ((char *) buf);
+            M_print ("%s ", i18n (658, "Enter the user's last name:"));
+            status = WP_LAST;
+            break;
+        case WP_LAST:
+            wp.last = strdup ((char *) buf);
+            M_print ("%s ", i18n (655, "Enter the user's e-mail address:"));
+            status = WP_EMAIL;
+            break;
+        case WP_EMAIL:
+            wp.email = strdup ((char *) buf);
+            M_print ("%s ", i18n (558, "Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):"));
+            status = WP_MIN_AGE;
+            break;
+        case WP_MIN_AGE:
+            wp.minage = atoi (buf);
+            M_print ("%s ", i18n (559, "Enter max age (22,29,39,49,59,120):"));
+            status = WP_MAX_AGE;
+            break;
+        case WP_MAX_AGE:
+            wp.maxage = atoi (buf);
+            M_print (i18n (663, "Enter sex:"));
+            status=WP_SEX;
+            break;
+        case WP_SEX:
+            if (!strncasecmp (buf, i18n (528, "female"), 1))
+            {
+                wp.sex = 1;
+            }
+            else if (!strncasecmp (buf, i18n (529, "male"), 1))
+            {
+                wp.sex = 2;
+            }
+            else
+            {
+                wp.sex = 0;
+            }
+            M_print ("%s ", i18n (534, "Enter a language by number or L for a list:"));
+            status = WP_LANG1;
+            break;
+        case WP_LANG1:
+            temp = atoi (buf);
+            if ((0 == temp) && (toupper (buf[0]) == 'L'))
+            {
+                TablePrintLang ();
+                status = WP_LANG1;
+            M_print ("%s ", i18n (534, "Enter a language by number or L for a list:"));
+            }
+            else
+            {
+                wp.language = temp;
+                status = WP_CITY;
+                M_print ("%s ", i18n (560, "Enter a city:"));
+            }
+            break;
+        case WP_CITY:
+            wp.city = strdup ((char *) buf);
+            M_print ("%s ", i18n (561, "Enter a state:"));
+            status = WP_STATE;
+            break;
+        case WP_STATE:
+            wp.state = strdup ((char *) buf);
+            M_print ("%s ", i18n (578, "Enter country's phone ID number:"));
+            status = WP_COUNTRY;
+            break;
+        case WP_COUNTRY:
+            wp.country = atoi ((char *) buf);
+            M_print ("%s ", i18n (579, "Enter company: "));
+            status = WP_COMPANY;
+            break;
+        case WP_COMPANY:
+            wp.company = strdup ((char *) buf);
+            M_print ("%s ", i18n (587, "Enter department: "));
+            status = WP_DEPARTMENT;
+            break;
+        case WP_DEPARTMENT:
+            wp.department = strdup ((char *) buf);
+            M_print ("%s ", i18n (588, "Enter position: "));
+            status = WP_POSITION;
+            break;
+        case WP_POSITION:
+            wp.position = strdup ((char *) buf);
+            M_print ("%s ", i18n (589, "Should the users be online?"));
+            status = WP_STATUS;
+            break;
+/* A few more could be added here, but we're gonna make this
+ the last one -KK */
+        case WP_STATUS:
+            if (!strcasecmp (buf, i18n (28, "NO")))
+            {
+                wp.online = FALSE;
+                Search_WP (sok, &wp);
+                free (wp.nick);
+                free (wp.last);
+                free (wp.first);
+                free (wp.email);
+                free (wp.company);
+                free (wp.department);
+                free (wp.position);
+                free (wp.city);
+                free (wp.state);
+                status = 0;
+            }
+            else if (!strcasecmp (buf, i18n (27, "YES")))
+            {
+                wp.online = TRUE;
+                Search_WP (sok, &wp);
+                free (wp.nick);
+                free (wp.last);
+                free (wp.first);
+                free (wp.email);
+                free (wp.company);
+                free (wp.department);
+                free (wp.position);
+                free (wp.city);
+                free (wp.state);
+                status = 0;
+            }
+            else
+            {
+                M_print ("%s\n", i18n (29, "Please enter YES or NO!"));
+                M_print ("%s ", i18n (589, "Should the users be online?"));
+            }
+            break;
+    }
+}
+
 /**************************************************************************
 Multi line about info updates
 **************************************************************************/
@@ -555,22 +700,22 @@ void User_Search (SOK_T sok, char *buf)
     switch (status)
     {
         case SRCH_START:
-            M_print ("%s ", i18n (655, "Enter the Users E-mail address:"));
+            M_print ("%s ", i18n (655, "Enter the user's e-mail address:"));
             status++;
             break;
         case SRCH_EMAIL:
             user.email = strdup ((char *) buf);
-            M_print ("%s ", i18n (656, "Enter the Users Nick:"));
+            M_print ("%s ", i18n (656, "Enter the user's nick name:"));
             status++;
             break;
         case SRCH_NICK:
             user.nick = strdup ((char *) buf);
-            M_print ("%s ", i18n (657, "Enter The Users First Name:"));
+            M_print ("%s ", i18n (657, "Enter the user's first name:"));
             status++;
             break;
         case SRCH_FIRST:
             user.first = strdup ((char *) buf);
-            M_print ("%s", i18n (658, "Enter The Users Last Name:"));
+            M_print ("%s", i18n (658, "Enter the user's last name:"));
             status++;
             break;
         case SRCH_LAST:
@@ -693,6 +838,10 @@ void Get_Input (SOK_T sok, int *idle_val, int *idle_flag)
     else if ((status >= SRCH_START) && (status <= SRCH_LAST))
     {
         User_Search (sok, buf);
+    }
+    else if ((status >= WP_START) && (status <= WP_END))
+    {
+        Wp_Search (sok, buf);
     }
     else
     {
@@ -1121,6 +1270,11 @@ void Get_Input (SOK_T sok, int *idle_val, int *idle_flag)
             {
                 status = NEW_NICK;
                 M_print ("%s ", i18n (553, "Enter Your New Nickname:"));
+            }
+            else if (!strcasecmp (cmd, "wpsearch"))
+            {
+                status = WP_START;
+                M_print ("%s ", i18n (656, "Enter the user's nick name:"));
             }
             else if (strcasecmp (cmd, auto_cmd) == 0)
             {

@@ -1,4 +1,13 @@
 
+2001-06-11 Keith Kelley <kkelley@locallink.net>
+	* src/icq_response.c, include/micq.h:
+	  New understood packets META_SRV_WP_FOUND, META_SRV_WP_LAST_USER.
+	* src/sendmsg.c, include/sendmsg.h:
+	  New function Search_WP() to search the yellow pages of ICQ.
+	* src/ui.c, include/ui.h:
+	  New function Wp_Search() for th UI part of the search, bound
+	  to new command "wpsearch".
+
 2001-05-31 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* src/ui.c:
 	  Fixed togvis, togig based on patch by Sander Smeenk

@@ -987,6 +987,103 @@ void Update_More_User_Info (SOK_T sok, MORE_INFO_PTR user)
     SOCKWRITE (sok, &(pak.head.ver), 4 + sizeof (pak.head) - 2);
 }
 
+void Search_WP (SOK_T sok, WP_PTR user)
+{
+    net_icq_pak pak;
+    int size;
+    Word_2_Chars (pak.head.ver, ICQ_VER);
+    Word_2_Chars (pak.head.cmd, CMD_META_USER);
+    Word_2_Chars (pak.head.seq, seq_num++);
+    DW_2_Chars (pak.head.UIN, UIN);
+
+    Word_2_Chars (pak.data, META_CMD_WP);
+    size = 2;
+    Word_2_Chars (pak.data + size, strlen (user->first) + 1);
+    size += 2;
+    ConvUnixWin (user->first);
+    strcpy (pak.data + size, user->first);
+    size += strlen (user->first) + 1;
+    Word_2_Chars (pak.data + size, strlen (user->last) + 1);
+    size += 2;
+    ConvUnixWin (user->last);
+    strcpy (pak.data + size, user->last);
+    size += strlen (user->last) + 1;
+    Word_2_Chars (pak.data + size, strlen (user->nick) + 1);
+    size += 2;
+    ConvUnixWin (user->nick);
+    strcpy (pak.data + size, user->nick);
+    size += strlen (user->nick) + 1;
+    Word_2_Chars (pak.data + size, strlen (user->email) + 1);
+    size += 2;
+    ConvUnixWin (user->email);
+    strcpy (pak.data + size, user->email);
+    size += strlen (user->email) + 1;
+    Word_2_Chars (pak.data + size, user->minage);
+    size += 2;
+    Word_2_Chars (pak.data + size, user->maxage);
+    size += 2;
+    pak.data[size] = user->sex;
+    size += 1;
+    Word_2_Chars (pak.data+size,user->language);  
+    size += 1;
+    Word_2_Chars (pak.data + size, strlen (user->city) + 1);
+    size += 2;
+    ConvUnixWin (user->city);
+    strcpy (pak.data + size, user->city);
+    size += strlen (user->city) + 1;
+    Word_2_Chars (pak.data + size, strlen (user->state) + 1);
+    size += 2;
+    ConvUnixWin (user->state);
+    strcpy (pak.data + size, user->state);
+    size += strlen (user->state) + 1;
+    Word_2_Chars (pak.data + size, user->country);
+    size += 2;
+    Word_2_Chars (pak.data + size, strlen (user->company) + 1);
+    size += 2;
+    ConvUnixWin (user->company);
+    strcpy (pak.data + size, user->company);
+    size += strlen (user->company) + 1;
+    Word_2_Chars (pak.data + size, strlen (user->department) + 1);
+    size += 2;
+    ConvUnixWin (user->department);
+    strcpy (pak.data + size, user->department);
+    size += strlen (user->department) + 1;
+    Word_2_Chars (pak.data + size, strlen (user->position) + 1);
+    size += 2;
+    ConvUnixWin (user->position);
+    strcpy (pak.data + size, user->position);
+    size += strlen (user->position) + 1;
+/*  Now it gets REALLY shakey, as I don't know even what
+    these particular bits of information are.
+    If you know, fill them in. Pretty sure they are
+    interests, organizations, homepage and something else
+    but not sure what order. -KK */
+    Word_2_Chars (pak.data+size, 0x00);
+    size += 1;
+    Word_2_Chars (pak.data+size, 0x0000);
+    size += 2;
+    Word_2_Chars (pak.data+size, 0x01);
+    size += 1;
+    DW_2_Chars (pak.data+size, 0x00000000);
+    size += 4;
+    Word_2_Chars (pak.data+size, 0x01);
+    size += 1;
+    DW_2_Chars (pak.data+size, 0x00000000);
+    size += 4;
+    Word_2_Chars (pak.data+size, 0x01);
+    size += 1;
+    DW_2_Chars (pak.data+size, 0x00000000);
+    size += 4;
+    Word_2_Chars (pak.data+size, 0x01);
+    size += 1;
+    Word_2_Chars (pak.data+size, 0x0000);
+    size += 2;
+    pak.data[size] = user->online;
+    size+=1;
+    last_cmd[(seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
+    SOCKWRITE (sok, &(pak.head.ver), size + sizeof (pak.head) - 2);
+}
+
 void icq_sendurl (SOK_T sok, UDWORD uin, char *description, char *url)
 {
     char buf[450];
@@ -1130,7 +1227,6 @@ size_t SOCKWRITE (SOK_T sok, void *ptr, size_t len)
             next_resend = msg_to_queue->exp_time;
         }
     }
-
     return SOCKWRITE_LOW (sok, ptr, len);
 }
 

@@ -216,6 +216,10 @@ typedef struct
 #define META_INFO_ABOUT     	0x0406
 #define META_INFO_MORE      	0x03FC
 
+#define META_CMD_WP     	0x0533
+#define META_SRV_WP_FOUND	0x01A4
+#define META_SRV_WP_LAST_USER	0x01AE
+
 #define STATUS_OFFLINE  	(-1L)
 #define STATUS_ONLINE  		0x00
 #define STATUS_INVISIBLE 	0x100
@@ -440,6 +444,27 @@ typedef struct
    BOOL hide_email;
    BOOL auth;
 } MORE_INFO_STRUCT, *MORE_INFO_PTR;
+
+typedef struct
+{
+   char *nick;
+   char *first;
+   char *last;
+   char *email;
+   UWORD minage;
+   UWORD maxage;
+   UBYTE sex;
+   UBYTE language;
+   char *city;
+   char *state;
+   UWORD country;
+   char *company;
+   char *department;
+   char *position;
+   UBYTE online;
+   BOOL auth;
+   
+} WP_STRUCT, *WP_PTR;
 
 typedef struct {
 	UWORD age;

@@ -37,6 +37,24 @@ extern UDWORD last_uin;
 #define NEW_LANG2 1008
 #define NEW_LANG3 1009
 
+#define WP_START 101
+#define WP_NICK 101
+#define WP_FIRST 102
+#define WP_LAST 103
+#define WP_EMAIL 104
+#define WP_MIN_AGE 105
+#define WP_MAX_AGE 106
+#define WP_SEX 107
+#define WP_LANG1 108
+#define WP_CITY 109
+#define WP_STATE 110
+#define WP_COUNTRY 111
+#define WP_COMPANY 112
+#define WP_DEPARTMENT 113
+#define WP_POSITION 114
+#define WP_STATUS 115
+#define WP_END 115
+  
 #define CHANGE_STATUS(a)    icq_change_status (sok, a); \
                             Time_Stamp (); \
                             M_print (" "); \

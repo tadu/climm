@@ -20,6 +20,7 @@ void send_ext_info_req (SOK_T sok, UDWORD uin);
 void start_search (SOK_T sok, char *email, char *nick, char *first, char *last);
 void reg_new_user (SOK_T sok, char *pass);
 void Change_Password (SOK_T sok, char *pass);
+void Search_WP (SOK_T sok, WP_PTR user);
 void Update_User_Info (SOK_T sok, USER_INFO_PTR user);
 void Update_More_User_Info (SOK_T sok, MORE_INFO_PTR user);
 void Update_Other (SOK_T sok, OTHER_INFO_PTR info);

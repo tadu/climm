@@ -513,6 +513,7 @@
 #495:No Random User Found
 #496:%02d/%02d/%04d
 #497:Type: %d	 Len: %d¶
+#498:Info for:
 #499:Other
 #500:Nickname:
 #501:Name:
@@ -588,8 +589,12 @@
 #555:Enter your new last name:
 #556:Enter your new email address:
 #557:Do you want to require Mirabilis users to request your authorization? (YES/NO)
+#558:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
+#559:Enter max age (22,29,39,49,59,120):
+#560:Enter a city:
+#561:Enter a state:
 #562:©1Info for %ld¶
-#563:Nick Name:
+#563:Nick name:
 #564:First name:
 #565:Last name:
 #566:Email address:
@@ -604,6 +609,8 @@
 #575:Age:
 #576:not entered
 #577:Sex:
+#578:Enter country's phone ID number:
+#579:Enter company: 
 #580:Phone number:
 #581:Home page:
 #582:About:
@@ -611,6 +618,9 @@
 #584:Warning! Script command '%s' failed with exit value %d¶
 #585:Ack!!!!!!!  Bad packet
 #586:©4¶%s©0 has added you to their contact list.¶
+#587:Enter department: 
+#588:Enter position: 
+#589:Should the users be online?
 #590:©4¶%s©0 has requested your authorization to be added to their contact list.¶
 #591:Reason:
 #592:<%s> emailed you a message:¶
@@ -676,14 +686,15 @@
 #652:Insuffificient memory to display a wide Contact List.¶
 #653:Offline
 #654:Online
-#655:Enter the Users E-mail address:
-#656:Enter the Users Nick:
-#657:Enter The Users First Name:
-#658:Enter The Users Last Name:
+#655:Enter the user's e-mail address:
+#656:Enter the user's nick name:
+#657:Enter the user's first name:
+#658:Enter the user's last name:
 #659:Message sent!¶
 #660:Invalid Command: %s¶
 #661:Shell commands have been disabled.¶
 #662:Color is ©3%s©0.¶
+#663:Enter sex:
 #664:Composing message to ©1all©0:¶
 #665:%s not recognized as a nick name.
 #666:Unignored %s.
@@ -721,6 +732,7 @@
 #698:Distinct packets recieved:
 #699:Must give a valid uin/nickname¶
 #700:%s is not a valid user in your list.¶
+#701:%d users not returned.
 #703:©2Status modes: ¶
 #704:©2Groups: ¶
 #705:General                    1¶

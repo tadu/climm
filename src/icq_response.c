@@ -80,7 +80,8 @@ void Meta_User (SOK_T sok, UBYTE * data, UDWORD len, UDWORD uin)
     UDWORD zip;
     char *newline;
     /*int len_str; */
-
+    int len2;
+    char *tmp;
     subcmd = Chars_2_Word (data);
 
     switch (subcmd)
@@ -274,6 +275,97 @@ void Meta_User (SOK_T sok, UBYTE * data, UDWORD len, UDWORD uin)
                 M_print (i18n (398, "Search " COLCLIENT "failed" COLNONE ".\n"));
                 break;
             }
+        case META_SRV_WP_FOUND:
+            if (data[0] != 0xA4)
+                break;
+            if (data[2] == 0x32 || (data[2]==0x14 && data[3]==0x15))
+            {
+                M_print (i18n (398, "Search " COLCLIENT "failed" COLNONE ".\n"));
+                break;
+            }
+            M_print (COLSERV "%-15s" COLNONE " %d\n", i18n (498, "Info for:"), Chars_2_DW (&data[5]));
+            len2 = Chars_2_Word (&data[9]);
+            ConvUnixWin (&data[11]);
+            M_print (COLSERV "%-15s" COLNONE " %s\n",i18n (563, "Nick name:"), &data[11]);
+            tmp = &data[11 + len2];
+            len2 = Chars_2_Word (tmp);
+            ConvUnixWin (tmp + 2);
+            M_print (COLSERV "%-15s" COLNONE " %s\n",i18n (564, "First name:"), tmp + 2);
+            tmp += len2 + 2;
+            len2 = Chars_2_Word (tmp);
+            ConvUnixWin (tmp + 2);
+            M_print (COLSERV "%-15s" COLNONE " %s\n",i18n (565, "Last name:"), tmp + 2);
+            tmp += len2 + 2;
+            len2 = Chars_2_Word (tmp);
+            ConvUnixWin (tmp + 2);
+            M_print (COLSERV "%-15s" COLNONE " %s\n",i18n (566, "Email address:"), tmp + 2);
+            tmp += len2 + 2;
+            if (*tmp == 1)
+            {
+                M_print (i18n (567, "No authorization needed." COLNONE " "));
+            }
+            else
+            {
+                M_print (i18n (568, "Must request authorization." COLNONE " "));
+            }
+            len2 = Chars_2_Word(tmp);
+            tmp+=1;
+            if (*tmp == 1)
+            {
+                M_print (" %s\n", i18n (1, "Online"));
+            }
+            else
+            {
+                M_print (" %s\n", i18n (8, "Offline"));
+            }
+            break;
+        case META_SRV_WP_LAST_USER:
+            if (data[0] != 0xAE)
+                break;
+            if (data[2] == 0x32 || (data[2]==0x14 && (data[3]==0x15 || data[3]==0x00)))
+            {
+                M_print (i18n (398, "Search " COLCLIENT "failed" COLNONE ".\n"));
+                break;
+            }
+            M_print (COLSERV "%-15s" COLNONE " %d\n", i18n (498, "Info for:"), Chars_2_DW (&data[5]));
+            len2 = Chars_2_Word (&data[9]);
+            ConvUnixWin (&data[11]);
+            M_print (COLSERV "%-15s" COLNONE " %s\n",i18n (563, "Nick name:"), &data[11]);
+            tmp = &data[11 + len2];
+            len2 = Chars_2_Word (tmp);
+            ConvUnixWin (tmp + 2);
+            M_print (COLSERV "%-15s" COLNONE " %s\n",i18n (564, "First name:"), tmp + 2);
+            tmp += len2 + 2;
+            len2 = Chars_2_Word (tmp);
+            ConvUnixWin (tmp + 2);
+            M_print (COLSERV "%-15s" COLNONE " %s\n",i18n (565, "Last name:"), tmp + 2);
+            tmp += len2 + 2;
+            len2 = Chars_2_Word (tmp);
+            ConvUnixWin (tmp + 2);
+            M_print (COLSERV "%-15s" COLNONE " %s\n",i18n (566, "Email address:"), tmp + 2);
+            tmp += len2 + 2;
+            if (*tmp == 1)
+            {
+                M_print (i18n (567, "No authorization needed." COLNONE " "));
+            }
+            else
+            {
+                M_print (i18n (568, "Must request authorization." COLNONE " "));
+            }
+            len2 = Chars_2_Word(tmp);
+            tmp+=1;
+            if (*tmp == 1)
+            {
+                M_print (" %s\n", i18n (1, "Online"));
+            }
+            else
+            {
+                M_print (" %s\n", i18n (8, "Offline"));
+            }
+
+            M_print (i18n (701, "%d users not returned."), *tmp);
+            M_print ("\n");
+            break;
         case 0x010E:
             if (!Verbose)
                 break;
@@ -565,7 +657,7 @@ void Display_Info_Reply (int sok, UBYTE * pak)
     M_print (i18n (562, COLSERV "Info for %ld\n"), Chars_2_DW (&pak[0]));
     len = Chars_2_Word (&pak[4]);
     ConvWinUnix (&pak[6]);
-    M_print ("%-15s %s\n", i18n (563, "Nick Name:"), &pak[6]);
+    M_print ("%-15s %s\n", i18n (563, "Nick name:"), &pak[6]);
     tmp = &pak[6 + len];
     len = Chars_2_Word (tmp);
     ConvWinUnix (tmp + 2);
@@ -640,7 +732,7 @@ void Display_Search_Reply (int sok, UBYTE * pak)
     M_print (i18n (583, COLSERV "User found %ld\n"), Chars_2_DW (&pak[0]));
     len = Chars_2_Word (&pak[4]);
     ConvWinUnix (&pak[6]);
-    M_print ("%-15s %s\n", i18n (563, "Nick Name:"), &pak[6]);
+    M_print ("%-15s %s\n", i18n (563, "Nick name:"), &pak[6]);
     tmp = &pak[6 + len];
     len = Chars_2_Word (tmp);
     ConvWinUnix (tmp + 2);

@@ -28,7 +28,6 @@
 027:Ja
 028:Nein
 029:Bitte Ja oder Nein eingeben!
-#29:
 030:hat sich ausgeloggt.
 031:hat sich eingeloggt
 032:Nachricht:
@@ -513,6 +512,7 @@
 495:Kein zufälliger Benutzer gefunden
 496:%02d/%02d/%04d
 497:Typ: %d	Länge: %d¶
+498:Information über:
 499:Anderes
 500:Spitzname:
 501:Name:
@@ -572,6 +572,10 @@
 555:Dein neuer Nachname:
 556:Deine Email-Adresse:
 557:Möchtest Du, daß Mirabelis-User Deine Autorisierung brauchen?
+558:Mindestalter (18-22, 23-29, 30-39, 40-49, 50-59, 60-120):
+559:Höchstalter (22, 29, 39, 49, 59, 120):
+560:Stadt:
+561:Bundesstaat:
 562:©1Information für %ld¶
 563:Spitzname:
 564:Vorname:
@@ -588,6 +592,8 @@
 575:Alter:
 576:nicht angegeben
 577:nicht angegeben
+578:Landesvorwahl:
+579:Firma:
 580:Telephonnummer:
 581:Internetseite:
 582:Über:
@@ -595,6 +601,9 @@
 584:Warnung! Befehl "%s" mit Rückgabewert %d fehlgeschlagen¶
 585:Arrgghh!!!!!!!  Schlechtes Paket.
 586:©4¶%s©0 hat Sie auf seine Kontaktliste gesetzt.¶
+587:Abteilung:
+588:Position:
+589:Sollen die Benutzer verbunden sein?
 590:©4¶%s©0 bittet um Autorisierung, Sie auf seine Kontaktliste zu setzen.¶
 591:Grund:
 592:<%s> schickt eine Nachricht per eMail:¶
@@ -668,6 +677,7 @@
 660:Ungültiges Kommando: %s¶
 661:Shell-Kommandos wurden abgeschaltet.¶
 662:Farbe ist ©3%s©0.¶
+663:Geschlecht:
 664:Erstelle Nachricht an ©1alle©0:¶
 665:%s ist kein bekannter Spitzname.
 666:Ignoriere %s nicht mehr.
@@ -705,6 +715,7 @@
 698:Unterschiedliche Pakete empfangen:
 699:Benötige gültige Benutzernummer oder Spitzname.¶
 700:%s ist kein gültiger Benutzer in Ihrer Kontaktliste.¶
+701:%d Benutzer nicht zurückgegeben.
 703:©2Status-Modi: ¶
 704:©2Gruppen: ¶
 705:Allgemein                  1¶
