@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.75 2005/02/05 07:54:47
+#  EN: __.i18n,v 1.76 2005/02/11 22:21:08 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:de
 1002:de_DE
@@ -7,11 +7,10 @@
 1004:Rico -mc- Glöckner, Rüdiger Kuhlmann
 1005:Rüdiger Kuhlmann
 1006:2004-11-18
-1008.iso-8859-1
+1008:iso-8859-1
 1010:[Automatische Nachricht] Benutzer ist nicht da (User is Away)
 1011:[Automatische Nachricht] Benutzer ist nicht verfügbar (User is not available)
 1012:[Automatische Nachricht] Benutzer ist beschäftigt (User is Occupied)
-1013.[Automatische Nachricht] Benutzer ist abgeklemmt (User is Offline)
 1014:---
 1015:Jan
 1016:Feb
@@ -32,12 +31,8 @@
 1032:debug: Doppeltes Packet #%04lx vom Typ %04x (%s)\n
 1033:Eingehendes Server-Paket (Version 8):
 1034:Maximale Anzahl an Versuchen erreicht - gebe auf.
-1036.Unbekanntes Kommando %s, tippe "help" für Hilfe.
-1037.Nachricht teilweise gesendet.\n
 1038:Nachricht abgebrochen.\n
 1039:Der Server behauptet, wir wären nicht verbunden.\n
-1040.mICQ> 
-1041.msg> 
 1043:Alle Benutzer gefunden.
 1044:Zu viele Benutzer gefunden.
 1045:Suche beendet.
@@ -53,13 +48,8 @@
 1062:ignorierte User:
 1063:Bitte Passwort eingeben: 
 1064:Automatischer Statuswechsel nach %s.\n
-1072.User abgeklemmt:
-1073.User verbunden:
-1077.gewidmet Matthew D. Smith.
 1078:Keine Übersetzung verfügbar.
 1079:Übersetzung (%s, %s) von %s, zuletzt geändert am %s von %s, für mICQ %d.%d.%d%s.\n
-1080.Konnte Übersetzung "%s" nicht laden.\n
-1081.Deutsche Übersetzung erfolgreich geladen (%ld Einträge).\n
 1082:Versuche, neu zu verbinden... [Versuch %d von %d]\n
 1085:an
 1086:aus
@@ -70,11 +60,9 @@
 1096:Benutzername für SOCKS5 (oder 0, falls Sie keine Authentifizierung benötigen):
 1097:Paßwort für SOCKS5:
 1098:Zeigt eine Liste von Spitznamen, durch mittels <tab> durchgegangen werden kann.
-1099.Unbekannte Sprache
 ##
 ## Sprachen
 ##
-1100.Keine
 1101:Arabisch
 1102:Bhojpuri
 1103:Bulgarisch
@@ -493,7 +481,6 @@
 1538:Neues Geburtsjahr (4 Ziffern):
 1539:Neuer Geburtsmonat:
 1540:Neuer Geburtstag:
-1541.Über> 
 1544:Neue  Stadt:
 1545:Neuer Staat:
 1546:Neue  Telefonnummer:
@@ -517,8 +504,6 @@
 1578:Landesvorwahl:
 1579:Firma:
 1587:Abteilung:
-1592:<%s> schickt eine Nachricht per eMail:\n
-1593:<%s> schickt eine Nachricht per Web:\n
 1595:\nKontaktliste:\n============================================\n%d Kontakte.\n
 1596:[SOCKS] Kann den Rechnernamen %s nicht auflösen: %s.
 1597:[SOCKS] Kann keinen Socket erzeugen.\n
@@ -531,7 +516,6 @@
 1604:Soll der Benutzer online sein?
 1605:Soll Ihr Status im Web einsehbar sein? (Ja/Nein)
 1606:Paket mit falscher Sitzungskennung ID %08lx (richtig: %08lx) mit Kommando %04x ignoriert.\n
-1607.Benutzung: micq [-h] [-c] [-i <locale>] [-b <basedir>] \n                [-f <configfile>] [-v[<level>]] [-l <logplace>]\n
 1612:Dieses Programm wurde ohne Hilfe / Zustimmung von Mirabilis erstellt.\n
 1613:Dazu wurde kein Programmcode von Mirabilis zurückentwickelt oder zurückübersetzt.\n
 1618:Benutzernummer:
@@ -540,7 +524,6 @@
 1621:Suchergebnisse nicht zurückgegeben.
 1622:Möchten Sie die Änderungen anwenden? (JA/NEIN)
 1623:Doppeltes Paket %04x.\n
-1624.Kann den Windows-Socket leider nicht initialisieren...
 1632:\nVerbindung instabil. Beende...
 1634:ok.\n
 1637:Kann Kommunikationsendpunkt nicht mit einem freien Anschluß verknüpfen.\n
@@ -570,24 +553,17 @@
 1667:Ignoriere %s.\n
 1670:Für %s jetzt normal sichtbar.\n
 1671:Für %s jetzt immer sichtbar.\n
-1672.%ss IP-Adresse ist 
-1673.Der Port ist %ld.\n
-1674.Der Port ist unbekannt.\n
 1675:Ignoriere Zeile:
-1676.Benötige Benutzernummer/Spitzname, an die ich schicken soll.\n
 1678:Keine URL angegeben.\n
 1679:Leider ist das Speichern Ihrer persönlichen Einstellungen fehlgeschlagen!\n
 1680:Ihre persönlichen Einstellungen wurden gespeichert!\n
-1681.Die letzten %d Leute, zu denen Sie gesprochen haben:\n
 1682:Sie haben Nachrichten empfangen von:\n
 1687:mICQ läuft seit
 1688:Tagen
 1689:Stunden
 1690:Minuten
 1691:Sekunden
-1692.Kontakte:
 1696:Geschlecht:
-1700.%s ist kein gültiger Benutzer in Ihrer Kontaktliste.\n
 1703:Status-Modi:\n
 1704:Gruppen:\n
 1705:Allgemein
@@ -604,16 +580,7 @@
 1716:Keine
 1717:Führe Shell-Kommando <cmd> aus (z.B. "!ls", "!dir", "!mkdir temp").
 1719:Zeigt, wie lange mICQ schon läuft, und ein paar Statistiken.
-1720.<contacts> ist eine Komma-separierte von Benutzernummern und Spitznamen von Benutzern.
 1721:Bei einer leeren Nachricht können mehrere Zeilen eingegeben werden.\nDabei bedeutet eine Zeile nur mit . das Ende der Nachricht.\nEbenso verwirft eine Zeile nur mit # die Nachricht.
-1724.Automatische Antworten sind %s.\n
-1727.Die "bitte nicht stören"-Nachricht lautet:
-1728.Die "nicht da"-Nachricht lautet:
-1729.Die "nicht erreichbar"-Nachricht lautet:
-1730.Die "beschäftigt"-Nachricht lautet:
-1731.Die "unsichtbar"-Nachricht lautet:
-1735.Benötige eine Nachricht.\n
-1738.Benötige eine Kommando, das umgenannt werden soll.\n
 1741:Man muß erst eine Nachricht empfangen.\n
 1742:Man muß erst eine Nachricht schreiben.\n
 1743:Längendifferenz in Paketlängenangaben.\n
@@ -623,24 +590,13 @@
 1747:Gesamt
 1754:Hinweis: Sie müssen diese Änderung mit "save" abspeichern.\n
 1755:hat Sie zu seiner Kontaktliste hinzugefügt.\n
-1756.\nErstelle Verbindung...\n
-1757.Konnte keine Verbindung herstellen.\n
-1758.Sende Anfrage...\n
-1759.Warte auf Antwort....\n
-1760.\nIhre neue Benutzernummer ist %s%ld%s!\n
-1761.unbekannt
 1762:Ihre neue Benutzernummer ist: %ld.\n
-1763.Das Kommando "%s" wurde in "%s" umbenannt.
-1764.Das Kommando "%s" hat noch den ursprünglichen Namen.
-1765.%s hat die Benutzernummer %ld.
 1766:Automatische Abwesenheit/Nichtverfügbarkeit nach %s%ld%s Sekunden.\n
 1767:Schaltet die automatische Abwesenheitsschaltung an oder ab.
-1768.Der Bezeichner "%s" ist schon in Verwendung.\n
 1770:Sendet die letzte Nachricht erneut an alle <contacts>.
 1771:Noch keine Nachricht an irgendwen verschickt!\n
 1774:Eingehendes Paket:
 1775:Ausgehendes Paket:
-1777.Öffne Direkt-Verbindung auf localhost:%ld...
 1781:Bitte Paßwort für Benutzernummer %ld eingeben:\n
 1782:Sie benötigen ein Paßwort für Ihre neue Benutzernummer.\n
 1783:Um Tippfehler zu vermeiden, geben Sie Ihr Paßwort bitte erneut ein.\n
@@ -678,12 +634,9 @@
 1826:Sende Paket vom Typ %04x (%s), Sequenz-Nummer %04lx, erneut (Versuch #%ld, Länge %d).\n
 1830:Werfe Nachricht an %s nach %ld Versuchen weg. Inhalt der Nachricht:\n
 1833:Direkte Verbindung aufgebaut.\n
-1835.Fehler beim Schreiben in den Kommunikationsendpunkt: %s (%d)\n
-1841.Empfange fehlerhaftes Initialisierungsbestätigungspaket.\n
 1842:Schließe Verbindung (Verbindungsendpunkt Nr. %d) zu %s.\n
 1843:Schließe Verbindungsendpunkt Nr. %d.\n
 1844:Direktverbindungs-Nachricht vm Typ %04x wegen Zeitüberschreitung weggeworfen.\n
-1845.Spitzname %s unbekannt.\n
 1846:Öffnet und schließt Direkt-Verbindungen:\n
 1847:peer open  <nick> - Öffnet eine Direkt-Verbindung.\n
 1848:peer close <nick> - Schließt Direkt-Verbindung.\n
@@ -692,13 +645,10 @@
 1855:Direkt-Verbindung zu %s bei %s:%ld ist fehlgeschlagen.\n
 1856:Werfe ein Paket vom Typ %04x (%s) von alter Sitzung %08lx (aktuell: %08lx) weg.\n
 1857:Möchten Sie Ihre IP-Adresse vor anderen Benutzern verbergen? (Ja/Nein)
-1864.Kann Konfigurationsdatei "%s" nicht öffnen.
-1866.Diese Version von mICQ ist ohne Unterstützung von Direkt-Verbindungen übersetzt worden.\n
 1867:Empfange fehlerhaftes (zu kurzes) packet - ignored.\n
 1868:Empfange fehlerhaftes (zu kurzes Unterpaket) Mehrfach-Paket - Rest ignoriert.\n
 1869:Versionen kleiner als 5 werden nicht mehr unterstützt.\n
 1870:peer off   <nick> - Schaltet die Benutzung von Direkt-Verbindungen ab.\n
-1871.Öffne Verbindung zu v8-Server bei %s:%ld... 
 1872:fehlgeschlagen: %s (%d).\n
 1873:Arbeits-Stadt:
 1874:Arbeits-Staat:
@@ -707,7 +657,6 @@
 1877:ok.\n
 1878:Fehler beim Lesen vom Kommunikationsendpunkt: %s (%d)\n
 1879:Mitgliedschaften:
-1880.Eingehendes Paket ist kein FLAP: Kennung ist %d.\n
 1881:FLAP auf Kanal 1 hat zu wenig Daten.\n
 1882:FLAP auf Kanal 1 Kommando 1 mit weiteren Daten:\n
 1883:FLAP auf Kanal 1 mit unbekanntem Kommando %d.\n
@@ -724,17 +673,12 @@
 1895:Login fehlgeschlagen:\n
 1896:Der Server hat die Verbindung geschlossen:\n
 1897:Unvollständiges TLV %d, Länge %ld von %ld - wird ignoriert.\n
-1898.Weiterleitung zu Server %s... 
 1899:Unbekannte Befehlsfamilie angefordert: %d.\n
 1900:Nur lesbar.
 1901:hat die Autorisierung erteilt.\n
-1902.Öffne Verbindung zu v5-Server bei %s:%ld... 
 1903:Ausgehendes v8-Server-Paket:
 1904:Der Server versteht Version %d (nur Version %d) für Familie %d!\n
-1905.SNAC (%x,%x) [%s] flags %x ref %lx\n
 1907:Warnung: Der Server hält unsere Benutzernummer für %ld, obwohl sie %ld ist.\n
-1908.Eingehendes USERONLINE-Paket für nicht-Kontakt.\n
-1909.Eingehendes USEROFFLINE-Paket für nicht-Kontakt.\n
 1911:verbinde
 1912:geschlossen
 1914:Kann Verbindungs-Datenstruktur nicht allokieren.\n
@@ -833,7 +777,6 @@
 2031:Verbindung zu oft fehlgeschlagen, gebe auf.\n
 2032:Verbinde in %d Sekunden neu.\n
 2033:Geburtstagskind
-2034.Öffne Direktverbindung auf %s:%ld... 
 2036:Speichere die aktuellen Einstellungen.
 2037:Öffne oder schließe eine Direktverbindung, oder schalte die Verwendung einer Direktverbindung für <uin> bzw. <nick> ab.
 2038:Öffne Verbindung Nummer <nr> oder Verbindung für UIN <uin>, oder die erste Server-Verbindung.
@@ -845,9 +788,7 @@
 2046:Sie sollten die Version 8 (statt Version 6) für Direktverbindungen wählen.\n
 2047:Erzeuge Verzeichnis %s.\n
 2048:Speichere Einstellungen in %s.\n
-2049.Lade Gruppe "%s" herunter:\n
 2051:Fehler am Kommunikationsendpunkt: %s (%d)\n
-2054.Die für-Plaudereien-frei-Nachricht ist:
 2055:Der Benutzer ist für Plauereien frei und möchte über alles plaudern.
 2056:getauto auto  <nick> - Hole die automatische Antwort von diesem Kontakt.\n
 2057:getauto away  <nick> - Hole die automatische Antwort für "abwesend" von diesem Kontakt.\n
@@ -858,8 +799,6 @@
 2065:Unbekanntes TCP_MSG_GREET_-Kommando %04x.\n
 2066:Unbekanntes TCP_MSG_-Kommando %04x.\n
 2067:Dateiein-/ausgabe
-2068.Öffne Dateiübertragungsverbindung zu %s:%ld... \n
-2070.Dateiübertragung "%s" zu Anschluß %ld.\n
 2071:Kann Datei "%s" nicht finden: %s (%d).\n
 2072:Dateiübertragung Nummer %ld (%s) wegen geschlossener Verbindung abgebrochen.\n
 2073:Speicherverbrauch: %ld Pakete.\n
@@ -867,7 +806,6 @@
 2079:Eingehendes TCP-Paket (%d - %s): %s
 2080:Der Server meldet über die Auslieferung der SMS:\n%s\n
 2081:    Adresse %p, abhängig von: %p, zugeordnet: %p\n
-2082.Öffne Kommunikationsendpunkt für Dateiübertragungen auf localhost:%ld... 
 2083:Kann Datei "%s" nicht öffnen: %s (%d).\n
 2084:Fehler beim Suchen vom %ld. Byte: %s (%d).\n
 2086:Fehler beim Lesen der Datei "%s": %s (%d).\n
@@ -877,10 +815,8 @@
 2090:Dateiübertragung
 2091:Sende "%s" als "%s".\n
 2092:Direktverbindungsnachricht %s weggeworfen - Verbindung verschwunden.\n
-2093.%02d %-20s Version %d für %s (%lx) zu %s:%ld %s\n
 2094:conn login         Öffne aktuelle/erste Server-Verbindung.\n
 2095:conn remove <nr>   Entferne Verbindung <nr>.\n
-2096.Verbindung %ld ist nicht offen.\n
 2097:conn select <nr>   Wähle Verbindung <nr> als aktuelle Server-Verbindung aus.\n
 2098:Verbindung %ld ist keine Server-Verbindung.\n
 2099:Wähle Verbindung %ld (Version %d, Benutzernummer %ld) als aktuelle Server-Verbindung.\n
@@ -897,8 +833,6 @@
 2110:peer file <Spitz> <Datei1> <Als1> ... [<Beschreibung>]\n
 2111:                  - Sende Datei1 als Als1, ..., mit Beschreibung.\n
 2112:                  - Als = "/": entferne Pfad, Als = ".": wie Datei\n
-2113.Unbekannter Status "%s".\n
-2114.Der Befehlsname "%s" existiert nicht.\n
 2115:"%s" ist keine ganze Zahl.\n
 2116:Kein neuer Spitzname gegeben.\n
 2117:%ld als %s hinzugefügt.\n
@@ -910,14 +844,11 @@
 2123:%sSyntax-Fehler%s: Zu wenige Argumente: %s\n
 2124:%sSyntax-Fehler%s: Keine ganze Zahl: %s\n
 2126:ist nicht verbunden, die Nachricht wird auf dem Server eingereiht.\n
-2127.       URL: %s %s%s%s\n
 2128: Beschreibung: %s%s%s\n
 2129:          URL: %s%s%s\n
-2130.Erstelle Nachricht an %salle%s:\n
 2131:Erstelle Nachricht an %s%s%s:\n
 2133:Farbe ist %s%s%s.\n
 2134:Lustige Meldungen sind %s%s%s.\n
-2135.Verringerte Ausgabe ist %s%s%s.\n
 2136:Änderung des Paßwortes war %s%s%s.\n
 2137:Änderung der "Über"-Information war %s%s%s.\n
 2138:Änderung der grundlegenden Informationen war %s%s%s.\n
@@ -957,7 +888,6 @@
 2183:Überprüft für alle <contacts>, ob diese nur unsichtbar oder nicht verbunden ist.
 2184:%s%-14s%s - %s\n
 2185:Schließe Verbindung %ld.\n
-2186.Akzeptiere Datei "%s" (%ld Bytes).\n
 2188:Sende Daten zu schnell - erstmal keine weiteren Befehle eingeben, oder der Server wird die Verbindung unterbrechen.\n
 2191:Fehler beim Versenden einer Nachricht: %d.\n
 2192:Fähigkeiten:
@@ -969,15 +899,11 @@
 2199:  -h, --help     diesen Hilfe-Text ausgeben\n
 2200:  -v, --verbose  Ausführlichkeit setzen (oder erhöhen) (zur Fehlersuche)\n
 2201:  -b, --basedir  anderes BASIS-Verzeichnis verwenden (Standard: %s)\n
-2202.  -f, --config   andere Konfigurationsdatei verwenden (Standard: %s)\n
 2203:  -l, --logplace andere Logdatei/verzeichnis verwenden (Standard: %s)\n
 2204:  -i, --i18n     andere Lokalisierung verwenden (Standard: automatisch erkannt)\n
 2205:  -c, --nocolor  keine Farben verwenden\n
 2206:Der Server weigert sich, gespeicherte Nachrichten auszuliefern.\n
 2207:Protokollfehler bei Kommando für alten ICQ-Server: %d.\n
-2208.UTF-8-Kodierung erkannt, allerdings wurde dieses mICQ ohne UTF-8-Unterstützung gebaut.\n
-2209.UTF-8-Kodierung erkannt.\n
-2210.%smICQ (Matts ICQ-Klon)%s Version %s%s%s (kompiliert am %s)\n
 2211:Dein Status ist %s.\n
 2212:ist jetzt %s
 2213:hat sich eingeloggt (%s)
@@ -987,32 +913,24 @@
 2217:Dieses mICQ kann nicht zwischen "%s" und Unicode konvertieren.\n
 2218:UIN: %s\n
 2220:mehrere
-2221.Entferne temporären Kontakt "%s" (%ld).\n
 2222:Skript-Kommando "%s" fehlgeschlagen: %s (%d).\n
 2223:Öffne Skript-FIFO auf %s... 
 2225:Skript
 2226:Konnte FIFO nicht erschaffen
 2227:Konnte FIFO nicht öffnen
 2228:Konnte FIFO nicht nicht-blockieren machen
-2229.Lehne Dateiübertragung "%s" ab (%ld bytes): %s.\n
-2230.Lehne Chatanfrage ab (%s/%s) from %s.\n
-2231.Dateiübertragung "%s" vom Gegenüber abgelehnt: %s.\n
-2232.fragt die Autorisierung an: %s%s\n
 2233:hat die Autorisierung abgelehnt: %s%s%s\n
 2234:Nachricht "%s" weggeworfen - die Verbindung ist verschwunden.\n
-2235.Kein Spitzname angegeben.\n
 2236:Informationen über %s%s%s (%ld):\n
 2237:Webaware:
 2238:IP verstecken:
 2239:Unbekanntes:
 2240:Keine Kontaktgruppe angegeben.\n
 2241:Füge "%s" zur Kontaktgruppe "%s" hinzu.\n
-2242.Importiere %d neue Kontakte, insgesamt %d Hinzufügungen zu Kontaktgruppen.\n
 2243:Entferne Kontakt "%s" von Kontaktgruppe "%s".\n
 2244:Kontaktgruppe "%s" hat bereits den Kontakt "%s" (%ld).\n
 2245:Erzeuge neue Kontaktgruppe "%s".\n
 2246:Kontakt "%s" ist nicht in Gruppe "%s".\n
-2247.Konnte Metadaten für "%s" (%ld) nicht laden.\n
 2248:Metadaten für "%s" (%ld) gespeichert.\n
 2249:Konnte Metadaten für "%s" (%ld) nicht speichern.\n
 2250:Die Nummer "%s" ist nicht vom Format +<Landeskode><Provider><Nummer>.\n
@@ -1022,14 +940,9 @@
 2254:Um einen Pieps zu erzeugen, wird nichts getan.\n
 2255:Um einen Pieps für sich einloggende Kontakte zu erzeugen, wird immer das Eregnis-Skript gestartet (%sevent%s).\n
 2256:Um einen Pieps für sich ausloggende Kontakte zu erzeugen, wird immer das Eregnis-Skript gestartet (%sevent%s).\n
-2257.Kodierung:
 2258:Keine wartende Dateiübertragung für %s (mit der Sequenz %ld) gefunden.\n
-2259.möchte eine Dateiübertragung "%s" von insgesamt %ld Bytes starten (Sequenz %ld).\n
 2260:Bitte verwenden Sie den "getauto"-Befehl stattdessen.\n
-2261.Hermit ist %s%s%s.\n
 2262:Interpretieren eines Lösch-Zeichens als Rückschritt ist %s%s%s.\n
-2263.Loggen ist %s%s%s.\n
-2264.Loggen von Statuswechseln ist %s%s%s.\n
 2265:Automatische Antworten sind %s%s%s.\n
 2266:Having the last nick in the prompt is %s%s%s.\n
 2267:Automatisches Speichern ist %s%s%s.\n
@@ -1038,30 +951,15 @@
 2270:simple
 2271:indent
 2272:smart
-2273.cycle
-2274.cycleall
-2275.Tab-Stil ist %s%s%s.\n
-2276.complete
-2277.    hermit:     ignoriere alle nicht-Kontakte.\n
 2278:    delbs:      interpretiere das Lösch-Zeichen als Rückschritt.\n
-2279.    log:        logge.\n
-2280.    logonoff:   logge auch Statuswechsel.\n
 2281:    auto:       sende automatische Antworten.\n
 2282:    uinprompt:  zeige den letztverwendete Spitznamen in der Eingabeaufforderung.\n
 2283:    autosave:   speichere automatisch das micqrc.\n
 2284:    autofinger: fingere automatisch neue Benutzernummern.\n
 2285:    linebreak:  Stil für mehrzeilige Nachrichten: simple, break, indent, smart.\n
-2286.    tabs:       Stil für Tab-Vervollständigung: simple, cycle, cycleall.\n
-2287.    silent:     unterdrücke manche Ausgaben: off, on, complete.\n
 2288:Stil für mehrzeilige Nachrichten ist %s%s%s.\n
-2289.»»»
-2290.«««
-2291.>>»
-2292.«<<
 2293:--=
 2294:===
-2295.>>>
-2296.<<<
 2297:Alias für was?\n
 2298:Entferne welchen Alias?\n
 2299:Dieser Alias existiert nicht.\n
@@ -1081,9 +979,7 @@
 2313:Erteile, verweigere, erbitte oder bestätige die Autorisierung an alle <contacts>, zur Kontaktliste hinzugefügt zu werden.
 2314:Dies sind fortgeschrittene Kommandos. Bitte lesen Sie die Hilfeseiten für vollständige Informationen.\n
 2315:Kann den Status von %s nicht beobachten - zu viele Beobachter.\n
-#2316:Translation %s not found.\n
-2317.Übersetzung "%s" nicht gefunden. Möchten Sie vielleicht mICQ in Ihre Sprache übersetzen?\n
-2318.Deutsche Übersetzung (%s) geladen (%ld Einträge).\n
+2316:Übersetzung %s nicht gefunden.\n
 2319:Akzeptiere eingehende Dateiübertragung von <uin> oder <nick>.
 2320:peer accept <nick> [<id>]\n                  - akzeptiere eine eingehende Dateiübertragung.\n
 2321:contact add     Füge Server-basierte Kontaktliste zur lokalen Kontaktliste hinzu.\n
@@ -1105,26 +1001,17 @@
 2337:  set  - lade eigene Meta-Daten zum Server hoch\n
 2338:  get  - frage den Server nach Meta-Daten\n
 2339:  rget - frage den Server nach den Meta-Daten des letzten Kontaktes\n
-2340.Dateiübertragung "%s" vom Gegenüber abgelehnt: %s%s.\n
-2341.Lehne Dateiübertragung "%s" ab (%ld bytes): %s%s.\n
 2342:Skript
 2343:Fortgeschrittene Kommandos, um mICQ per Skript zu steuern.
 2344:Führe Tcl-Skript aus Datei <file> aus.
 2345:Führe Tcl-Befehle <string> aus.
 2346:Die folgenden Tcl-Befehle werden unterstützt:\n
-2347.micq receive <Skript> [<Kontakt>]
 2348:Installiere einen Rückruf für eingehenede Nachrichten von <Kontakt> oder von allen
-2349.Rückruf-Argumente: <Absender> <Nachricht>
-2350.micq unreceive [<Kontakt>]
 2351:Entferne Rückruf für Nachrichten
-2352.micq event <Skript>
 2353:Installiere Rückruf für Ereignisse.
-2354.micq unevent
 2355:Entferne Rückruf für Ereignisse.
 2356:Liste alle installierten Rückrufe. Format: <Typ> <Kommando> <Filter>.
-2357.micq exec <befehl>
 2358:Führe mICQ-Kommando <befehl> aus.
-2359.micq nick <uin>
 2360:Finde den Spitznamen vom Benutzer mit der Nummer <uin>.
 2361:Falsche Anzahl an Argumenten für den Befehl "%s %s", erwartet wurden %d.\n
 2362:Falsche Anzahl an Argumenten. Versuche "help".
@@ -1135,29 +1022,22 @@
 2367:TCL-Fehler: %s\n
 2368:peer deny <nick> [<id>] [<reason>]\n                  - weise eine eingehende Dateiübertragung ab.\n
 2369:Weise eingehende Dateiübertragung von <nick> ab.
-2370.%02d %-20s Version %d%s für %s (%lx) zu %s:%ld %s\n
 2371:Initialisierung von SSL ist fehlgeschlagen.\n
 2372:Konnte keine sichere Verbindung zu %s anfordern.\n
-2373.Fehler beim Lesen vom Verbindungsendpunkt (SSL): %s (%d).\n
 2374:SSL-Fehler: %s (%d).\n
 2375:SSL-Handschlag ok.\n
 2376:SSL-Lesefehler von %s: (%d) %s.
 2377:SSL-Schreibfehler zu %s: (%d) %s.
 2378:peer ssl <nick>   - baue eine gesicherte (SSL) Verbindung auf.
-2379.»%»
-2380.«%«
 2381:Ich füge den Autor von mICQ zur Kontaktliste hinzu. Diese Gelegenheit sollte man nicht mißbrauchen - bitte erst den "help"-Befehl benutzen und einen ernsthaften Versuch machen, die Hilfeseiten und die FAQ (häufig gestellte Fragen) zu lesen, und erst danach fragen.\n
-2382.Verbindungsannahme gehört zu keiner Server-Verbindung, wird ignoriert.\n
 2383:Zeigt die letzten Nachrichten von <contact> an. Kann zu "h" abgekürzt werden.
 2384:Suche nach <pattern> in der Log-Datei von <contact> (ignoriere Großschreibung).
 2385:Konnte %s nicht zum Lesen öffnen: %s (%d).\n
 2386:Insgesamt %s%d%s Treffer gefunden.\n
-2387.%s <Kontakt> [<last> [<count>]] -- Show history of <contact>.\n
 2388:find <Kontakt> <Text> -- Suche <Text> in den Nachrichten von <Kontakt> (ignoriere Großschreibung).\n
 2389:finds <Kontakt> <Text> -- Suche <Text> in den Nachrichten von <Kontakt> (beachte Großschreibung).\n
 2390:Kein oder ein leerer Text angegeben.\n
 2391:Suche nach <pattern> in der Log-Datei von <contact> (beachte Großschreibung).
-2392.Dein Status ist %s (%s).\n
 2393:%d.%m.%Y
 2394: %H:%M
 2395:Zeigt die Nachrichten von <contact> ab dem Datum <date> an.
@@ -1271,7 +1151,7 @@
 2504:Konnte die Konfigurationsdatei %s%s%s nicht öffnen.
 2505:Veraltete Option -f benutzt. Verwende die ähnliche Option -b stattdessen.\n
 2506:Dieses Textfenster verwendet die Zeichenkodierung %s.\n
-#2507:Translation %s%s%s not found. Would you like to translate mICQ into your language?\n
+2507:Übersetzung %s%s%s nicht gefunden. Beiträge von Übersetzungen sind immer willkommen!\n
 2508:Deutsche Übersetzung (%s) geladen (%s%d%s Einträge).\n
 2509:WSAStartup() für WinSocks 1.1 fehlgeschlagen.
 2510:Öffne Verbindung zu v5-Server bei %s:%s%ld%s...
@@ -1335,5 +1215,7 @@
 2568:Anfrage von %s%s%s nach automatischer Antwort ignoriert.\n
 2569:Sende Nachricht <message> und weitere Nachrichten zu Kontakten <contacts>, bis abgebrochen wird.
 2570:Führe Unterhaltung mit %s%s%s fort:\n
+2571:"%s" <%s> schickte eine Nachricht per eMail [%s]: %s\n
+2572:"%s" <%s> schickte eine Nachricht per Web [%s]: %s\n
 # Those are the funny messages. Substract 2000 to get the normal message.
 3620:Du hast zu viele Freunde, wie wär's mit mehr RL?
