@@ -149,7 +149,7 @@ int main (int argc, char *argv[])
         else if ((argv[i][1] == 'v') || !strcmp (argv[i], "--verbose"))
         {
             arg_v = argv[i] + 2;
-            arg_vv = (*arg_v ? atol (arg_v) : prG->verbose + 1);
+            arg_vv = (*arg_v ? atol (arg_v) : arg_vv + 1);
         }
         else if ((argv[i][1] == 'b') || !strcmp (argv[i], "--basedir"))
         {
