@@ -79,6 +79,9 @@ void SessionInitPeer (Session *sess)
         return;
     }
 
+    if (sess->ver == 6)
+        M_print (i18n (2046, "You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n"));
+
     port = sess->port;
     M_print (i18n (1777, "Opening peer-to-peer connection at localhost:%d... "), port);
 
