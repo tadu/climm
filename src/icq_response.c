@@ -521,7 +521,8 @@ void Recv_Message (Connection *conn, Packet *pak)
 #ifdef HAVE_TIMEZONE
     stamp.tm_sec   = -timezone;
 #else
-    stamp = *localtime (time (NULL));
+    time_t now = time (NULL);
+    stamp = *localtime (&now);
     stamp.tm_sec   = -stamp.tm_gmtoff;
 #endif
     uin            = PacketRead4 (pak);
