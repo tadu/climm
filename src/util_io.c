@@ -767,8 +767,10 @@ Packet *UtilIOReceiveTCP (Connection *conn)
         }
         conn->connect = 0;
     }
-    else
+    if (conn->reconnect)
         conn->reconnect (conn);
+    else
+        conn->connect = 0;
     return NULL;
 }
 
@@ -889,14 +891,27 @@ BOOL UtilIOSendTCP (Connection *conn, Packet *pak)
 
     conn->outgoing = NULL;
     PacketD (pak);
+    dc_close (conn);
+    conn->sok = -1;
 
-    if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+    if ((rc && rc != ECONNRESET) || !conn->reconnect)
     {
-        M_printf ("%s ", s_now);
-        M_printf (i18n (1835, "Error while writing to socket - %s (%d)\n"),
-                 strerror (rc), rc);
+        if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+        {
+            Contact *cont;
+            
+            if ((cont = conn->cont))
+            {
+                M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                M_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), dc_strerror (rc), rc);
+            }
+        }
+        conn->connect = 0;
     }
-
+    if (conn->reconnect)
+        conn->reconnect (conn);
+    else
+        conn->connect = 0;
     return FALSE;
 }
 
