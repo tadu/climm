@@ -572,7 +572,10 @@ Packet *UtilIOReceiveTCP (Session *sess)
         rc = sockread (sess->sok, pak->data + pak->len, len - pak->len);
         if (rc <= 0)
         {
-            rc = errno;
+            if (!rc)
+                rc = UtilIOError (sess);
+            else
+                rc = errno;
             if (rc == EAGAIN)
                 return NULL;
             if (!rc)
@@ -626,6 +629,45 @@ size_t SOCKREAD (Session *sess, void *ptr, size_t len)
 /* SOCKS5 stuff end */
 
     return sz;
+}
+
+BOOL UtilIOSendTCP (Session *sess, Packet *pak)
+{
+    UBYTE *data;
+    UBYTE buf[2];
+    int rc, todo, bytessend = 0;
+
+    data = (void *) &pak->data;
+
+    while (1)
+    {
+        errno = 0;
+
+        buf[0] = pak->len & 0xFF;
+        buf[1] = pak->len >> 8;
+        if (sockwrite (sess->sok, buf, 2) < 2)
+            break;
+
+        for (todo = pak->len; todo > 0; todo -= bytessend, data += bytessend)
+        {
+            bytessend = sockwrite (sess->sok, data, todo);
+            if (bytessend <= 0)
+                break;
+        }
+        if (bytessend <= 0)
+            break;
+        return TRUE;
+    }
+    
+    if (prG->verbose)
+    {
+        rc = errno;
+        Time_Stamp ();
+        M_print (" ");
+        M_print (i18n (1835, "Error while writing to socket - %s (%d)\n"),
+                 strerror (rc), rc);
+    }
+    return FALSE;
 }
 
 /*

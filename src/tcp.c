@@ -697,9 +697,6 @@ static Packet *TCPReceivePacket (Session *sess)
 static void TCPSendPacket (Packet *pak, Session *sess)
 {
     Packet *tpak;
-    UBYTE *data;
-    UBYTE buf[2];
-    int rc, todo, bytessend = 0;
     
     ASSERT_DIRECT (sess);
     
@@ -712,48 +709,12 @@ static void TCPSendPacket (Packet *pak, Session *sess)
         TCPPrint (pak, sess, TRUE);
 
     tpak = PacketClone (pak);
-    switch (PacketReadAt1 (tpak, 0))
-    {
-        case PEER_INIT:
-        case PEER_INITACK:
-        case PEER_INIT2:
-            break;
-
-        default:
+    if (sess->type == TYPE_DIRECT)
+        if (PacketReadAt1 (tpak, 0) == PEER_MSG || !PacketReadAt1 (tpak, 0))
             Encrypt_Pak (sess, tpak);
-    }
     
-    data = (void *) &tpak->data;
-
-    while (1)
-    {
-        errno = 0;
-
-        buf[0] = tpak->len & 0xFF;
-        buf[1] = tpak->len >> 8;
-        if (sockwrite (sess->sok, buf, 2) < 2)
-            break;
-
-        for (todo = tpak->len; todo > 0; todo -= bytessend, data += bytessend)
-        {
-            bytessend = sockwrite (sess->sok, data, todo);
-            if (bytessend <= 0)
-                break;
-        }
-        if (bytessend <= 0)
-            break;
-        return;
-    }
-    
-    if (prG->verbose)
-    {
-        rc = errno;
-        Time_Stamp ();
-        M_print (" ");
-        M_print (i18n (1835, "Error while writing to socket - %s (%d)\n"),
-                 strerror (rc), rc);
-    }
-    TCPClose (sess);
+    if (!UtilIOSendTCP (sess, tpak))
+        TCPClose (sess);
 }
 
 /*

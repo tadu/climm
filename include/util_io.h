@@ -8,6 +8,7 @@ int         UtilIOError      (Session *sess);
 void        UtilIOSocksAccept(Session *sess);
 Packet     *UtilIOReceiveUDP (Session *sess);
 Packet     *UtilIOReceiveTCP (Session *sess);
+BOOL        UtilIOSendTCP    (Session *sess, Packet *pak);
 void        UtilIOSend       (Session *sess, Packet *pak);
 
 void   M_fdprint (FD_T fd, const char *str, ...);
