@@ -1,8 +1,8 @@
-micq-cvs (0.4.99.9-0cvs-2004-12-05) unstable; urgency=low
+micq (0.5-0) unstable; urgency=low
 
   * CVS build
 
- -- Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>  Mon, 13 May 2003 18:00:08 +0200
+ -- Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>  Thu, 10 Feb 2005 18:00:08 +0200
 
 micq (1:0.4.10.3-1.1) unstable; urgency=low
 
