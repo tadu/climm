@@ -63,6 +63,7 @@ struct OptEntry_s OptList[] = {
   { "hideip",        CO_HIDEIP        },
   { "dcauth",        CO_DCAUTH        },
   { "dccont",        CO_DCCONT        },
+  { "revealtime",    CO_REVEALTIME    },
   { "autoaway",      CO_AUTOAWAY      },
   { "autona",        CO_AUTONA        },
   { "autoocc",       CO_AUTOOCC       },

@@ -252,6 +252,7 @@ void Initialize_RC_File ()
     OptSetVal (&prG->copts, CO_SHOWONOFF,  1);
     OptSetVal (&prG->copts, CO_SHOWCHANGE, 1);
     OptSetVal (&prG->copts, CO_WANTSBL,    1);
+    OptSetVal (&prG->copts, CO_REVEALTIME, 600);
 
     OptSetStr (&prG->copts, CO_AUTODND,  i18n (1929, "User is dnd [Auto-Message]"));
     OptSetStr (&prG->copts, CO_AUTOAWAY, i18n (1010, "User is away [Auto-Message]"));

@@ -47,7 +47,7 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, Opt *opt)
 {
     const char *opt_text;
     Event *event;
-    UDWORD opt_type, opt_trans;
+    UDWORD opt_type, opt_trans, reveal_time;
     UBYTE ret;
     
     if (!cont || !conn || !OptGetStr (opt, CO_MSGTEXT, &opt_text))
@@ -61,13 +61,15 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, Opt *opt)
         OptSetVal (opt, CO_MSGTRANS, opt_trans = CV_MSGTRANS_ANY);
     
     if ((conn->status & STATUSF_INV)  && !ContactPrefVal (cont, CO_INTIMATE)
-        && !(opt_type & MSGF_GETAUTO) && !ContactPrefVal (cont, CO_HIDEFROM))
+        && !(opt_type & MSGF_GETAUTO) && !ContactPrefVal (cont, CO_HIDEFROM)
+        && (reveal_time = ContactPrefVal (cont, CO_REVEALTIME)))
     {
         event = QueueDequeue2 (conn, QUEUE_TOGVIS, 0, cont);
         if (event)
             EventD (event);
-        QueueEnqueueData (conn, QUEUE_TOGVIS, 0, time (NULL) + 300, NULL, cont, NULL, CallbackTogvis);
-        SnacCliAddvisible (conn, cont);
+        else
+            SnacCliAddvisible (conn, cont);
+        QueueEnqueueData (conn, QUEUE_TOGVIS, 0, time (NULL) + reveal_time, NULL, cont, NULL, CallbackTogvis);
     }
 
     putlog (conn, NOW, cont, STATUS_ONLINE, 

@@ -60,11 +60,11 @@ const char *PrefSetColorScheme (UBYTE scheme);
 #define PrefUserDir(pref) (pref->basedir ? pref->basedir : PrefUserDirReal (pref))
 #define PrefLogName(pref) (pref->logname ? pref->logname : PrefLogNameReal (pref))
 
+#define AUTOUPDATE_CURRENT 2
+
 const char *PrefDefUserDirReal (Preferences *pref);
 const char *PrefUserDirReal (Preferences *pref);
 const char *PrefLogNameReal (Preferences *pref);
-
-#define AUTOUPDATE_CURRENT 1
 
 #define FLAG_DELBS      (1 <<  0)
 #define FLAG_DEP_CONVRUSS   (1 <<  1)

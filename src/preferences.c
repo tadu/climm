@@ -212,6 +212,9 @@ BOOL PrefLoad (Preferences *pref)
     {
         case 0:
             pref->flags &= ~FLAG_AUTOFINGER;
+        case 1:
+            OptSetVal (&pref->copts, CO_REVEALTIME, 600);
+        case AUTOUPDATE_CURRENT:
         default:
             pref->autoupdate = AUTOUPDATE_CURRENT;
     }

@@ -89,6 +89,8 @@ extern struct OptEntry_s OptList[];
 #define CO_TIMEONLINE    (COF_NUMERIC | COF_CONTACT| 0x09UL) /* time since contact is online          */
 #define CO_TIMEMICQ      (COF_NUMERIC | COF_CONTACT| 0x0aUL) /* time contact last used mICQ           */
 
+#define CO_REVEALTIME    (COF_NUMERIC | CO_CONTACT | 0x0bUL) /* time to reveal invisibility to contact*/
+
 #define CO_AUTOAWAY      (COF_STRING  | CO_CONTACT | 0x10UL) /* the away auto reply message           */
 #define CO_AUTONA        (COF_STRING  | CO_CONTACT | 0x11UL) /* the not available auto reply message  */
 #define CO_AUTOOCC       (COF_STRING  | CO_CONTACT | 0x12UL) /* the occupied auto reply message       */
