@@ -1347,7 +1347,7 @@ Extended the status command so status nick gives info on nick
 
 Sept 12, 1999
 Improved tabbed nick names
-added more info to the update commad
+added more info to the update command
 added ability to update about info.
 various cosmetic changes
 decode language codes
