@@ -316,7 +316,7 @@ const char *ConnectionType (Connection *conn)
         case TYPE_FILE:
             return i18n (2067, "file io");
         case TYPE_REMOTE:
-            return i18n (2225, "remote control");
+            return i18n (2225, "scripting");
         default:
             return i18n (1745, "unknown");
     }
