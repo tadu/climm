@@ -6,3 +6,6 @@ Jeff Bearer <jbearer@tribweb.com>
  : your public key, etc.  After thinking about it, I was quickly in over my
  : head.
 
+various people:
+ : add https support
+ : add tcp support for c2c and s2c

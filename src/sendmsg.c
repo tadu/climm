@@ -101,11 +101,11 @@ Do_Resend (SOK_T sok)
 		  if (tmp != NULL)
 		    {
 		      *tmp = 0;
-		      char_conv ("wc", data);
+		      char_conv ("cw", data);
 		      strcpy (url_desc, data);
 		      tmp++;
 		      data = tmp;
-		      char_conv ("wc", data);
+		      char_conv ("cw", data);
 		      strcpy (url_data, data);
 
 		      M_print (" Description: " MESSCOL "%s" \
@@ -116,7 +116,7 @@ Do_Resend (SOK_T sok)
 		}
 	      else if (type == NORM_MESS || type == MRNORM_MESS)
 		{
-		  char_conv ("wc", data);
+		  char_conv ("cw", data);
 		  M_print (MESSCOL "%s", data);
 		  M_print (NOCOL " ");
 		}

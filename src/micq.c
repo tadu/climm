@@ -187,7 +187,6 @@ if( s5Use )
    sin.sin_port = 0;
 
    if(bind(sok, (struct sockaddr*)&sin, sizeof(struct sockaddr))<0)
-   {
      M_fdprint(aux, "Can't bind socket to free port\n");
      return -1;
    }
@@ -422,22 +421,26 @@ void Handle_Server_Response( SOK_T sok )
    s = SOCKREAD( sok, &pak.head.ver, sizeof( pak ) - 2  );
    if ( s < 0 )
    	return;
-      
-#if 0
+
+//#if 0      
+if (Verbose) {
    M_print( "Cmd : %04X\t",Chars_2_Word( pak.head.cmd ) );
    M_print( "Ver : %04X\t",Chars_2_Word( pak.head.ver ) );
    M_print( "Seq : %08X\t",Chars_2_DW( pak.head.seq ) );
    M_print( "Ses : %08X\n",Chars_2_DW( pak.head.session ) );
-#endif
-   if ( Chars_2_Word( pak.head.ver ) != ICQ_VER ) {
-       	R_undraw();
-	   M_print( "Invalid server response:\tVersion: %d\n", Chars_2_Word( pak.head.ver ) );
-	if ( Verbose ) {
-		Hex_Dump( pak.head.ver, s );
-	}
-	R_redraw();
-	return;
-   }
+}
+//#endif
+//    if ( pak.head.cmd != SRV_BAD_PASS ) {
+//	if ( Chars_2_Word( pak.head.ver ) != ICQ_VER ) {
+//		R_undraw();
+//	        M_print( "Invalid server response:\tVersion: %d\n", Chars_2_Word( pak.head.ver ) );
+//	    if ( Verbose ) {
+//		Hex_Dump( pak.head.ver, s );
+//	    }
+//	R_redraw();
+//	return;
+//        }
+//    }
   if ( Chars_2_DW( pak.head.session ) != our_session ) {
      if ( Verbose ) {
        	R_undraw();

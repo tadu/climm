@@ -588,6 +588,13 @@ DWORD nick2uin( char *nick )
 {
    int i;
    BOOL non_numeric=FALSE;
+
+   /*cut off whitespace at the end (i.e. \t or space*/
+   i = strlen(nick) - 1;
+   while (isspace(nick[i]))
+          i--;
+   nick[i+1] = '\0';
+
    
    for ( i=0; i< Num_Contacts; i++ )
    {

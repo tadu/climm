@@ -982,6 +982,7 @@ void Do_Msg( SOK_T sok, DWORD type, WORD len, char * data, DWORD uin )
            it tries to write too much to the string even though I think I
            allocate the right amount. Oh well. It shouldn't be too much
            wasted space, I hope.                                            */
+	  char_conv("wc", data);
           strcpy(UIN2Contact(last_recv_uin)->LastMessage, data);
       }
       /* end of aaron */

@@ -1,3 +1,8 @@
+Feb 11, 2001
+mc - changed Language Behaviour (Patch submitted by l@kondara.org) 
+mc - ignoring non-alphanumerical chars before command (euro@hq.alert.sk)
+mc - ignoring spaces at the end of a nick (euro@hq.alert.sk)
+
 Jan 20, 2001
 mc - cleaned up code into subdirs 
 mc - added micq.1 from debian.diff

@@ -615,6 +615,14 @@ void Get_Input( SOK_T sok , int *idle_val, int *idle_flag ) /* GRYN */
            Prompt();
            return;
         }
+
+        /* skip all non-alhphanumeric chars on the beginning
+         * to accept IRC like commands starting with a /
+         * or talker like commands starting with a .
+         * or whatever */
+        while (!isalnum(cmd[0]))
+               cmd++;
+
          /* goto's removed and code fixed by Paul Laufer. Enjoy! */
          if ( ( strcasecmp( cmd , "quit" ) == 0 ) ||
               ( strcasecmp( cmd , "/quit" ) == 0 ) )
