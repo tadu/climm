@@ -345,7 +345,6 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             mg->webaware = PacketRead2 (pak);
             mm->sex = PacketRead1 (pak);
             mm->age = PacketRead2 (pak);
-            mm->age = PacketRead2 (pak);
 
             cont->updated |= UPF_GENERAL_C;
             

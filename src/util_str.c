@@ -252,7 +252,7 @@ const char *s_ind (const char *str)
     for (p = str; *p; p++, cnt++)
         if (*p == '\n')
             cnt += 2;
-    if (!t)
+    if (!t || !str || !*str)
         t = calloc (1, size = 100);
     if (size < cnt)
         t = realloc (t, cnt);
