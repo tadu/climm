@@ -1,3 +1,14 @@
+2002-08-08 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* replace struct Event by Event, dito for struct Queue
+	* remove queue argument to message queue functions
+	* add symbolic names to queue types while debugging
+	* new: QueueRetry() to re-run oldest event for uin of given type
+	  (e.g. allows instant reaction to established direct connection)
+	* allow requeing with same time (necessary for file transfer)
+	* fix HHHUUUGGGEEEE memory leaks
+	* actually restrict select timeout to time difference to next event"
+	* WIP: first file transfer happened today
+
 2002-08-01 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* More verbosity flags.
 	* add auto_ffc (semi-auto) response
@@ -6,6 +17,7 @@
 	* prepare for 0.4.9.pl2
 	* add missing CVS version identifiers
 	* update man pages for new commands
+	* show timestamps as hex for client detection when verbose
 
 2002-07-22 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* detect sizeof() of types (for 64bit systems)

@@ -14,7 +14,7 @@ void TCPDirectClose    (               UDWORD uin);
 void TCPDirectOff      (               UDWORD uin);
 
 BOOL TCPSendMsg        (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd);
-BOOL TCPSendFile       (Session *sess, UDWORD uin, char *file);
+BOOL TCPSendFiles      (Session *sess, UDWORD uin, char *description, char **file, char **as, int count);
 BOOL TCPGetAuto        (Session *sess, UDWORD uin, UWORD which);
 
 Session *TCPPeer (UDWORD uin);

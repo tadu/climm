@@ -36,6 +36,7 @@
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
+#include <sys/stat.h>
 
 #ifdef TCP_COMM
 
@@ -75,6 +76,7 @@ static int        TCPSendMsgAck      (Session *sess, UWORD seq, UWORD sub_cmd, B
 #ifdef WIP
 static void PeerFileDispatch (Session *sess);
 static void PeerFileResend (Event *event);
+static void SessionInitFile (Session *sess);
 #endif
 
 /*********************************************/
@@ -102,8 +104,7 @@ void SessionInitPeer (Session *sess)
 
     sess->connect     = 0;
     sess->our_seq     = -1;
-    if (sess->type != TYPE_FILE)
-        sess->type        = TYPE_LISTEN;
+    sess->type        = TYPE_LISTEN;
     sess->flags       = 0;
     sess->dispatch    = &TCPDispatchMain;
     sess->reconnect   = &TCPDispatchReconn;
@@ -119,9 +120,9 @@ void TCPDirectOpen (Session *sess, UDWORD uin)
 {
     Session *peer;
     Contact *cont;
-    
+
     ASSERT_LISTEN (sess);
-    
+
     if (uin == sess->assoc->uin)
         return;
 
@@ -728,6 +729,7 @@ static void TCPSendPacket (Packet *pak, Session *sess)
     Packet *tpak;
     
     ASSERT_DIRECT_FILE (sess);
+    assert (pak);
     
     sess->stat_pak_sent++;
     
@@ -998,7 +1000,7 @@ static Session *TCPReceiveInit (Session *sess, Packet *pak)
             M_print ("\x1b»\n");
         }
 
-        if ((peer = SessionFind (sess->type, uin)) && peer != sess)
+        if (sess->type == TYPE_DIRECT && (peer = SessionFind (sess->type, uin)) && peer != sess)
         {
             if (peer->connect & CONNECT_OK)
             {
@@ -1476,14 +1478,23 @@ BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
  * Sends a message via TCP.
  * Adds it to the resend queue until acked.
  */
-BOOL TCPSendFile (Session *sess, UDWORD uin, char *file)
+BOOL TCPSendFiles (Session *sess, UDWORD uin, char *description, char **files, char **as, int count)
 {
     Contact *cont;
     Packet *pak;
-    Session *peer;
+    Session *peer, *fsess;
+    int i, rc, sumlen = 0, sum = 0;
 
+    if (!count)
+        return 1;
+    if (count < 0)
+        return 0;
+    
     if (!sess)
         return 0;
+    
+    ASSERT_LISTEN (sess);
+
     if (uin == sess->assoc->uin)
         return 0;
     cont = ContactFind (uin);
@@ -1496,37 +1507,87 @@ BOOL TCPSendFile (Session *sess, UDWORD uin, char *file)
     if (!cont->local_ip && !cont->outside_ip)
         return 0;
 
-    ASSERT_LISTEN (sess);
-    
     peer = SessionFind (TYPE_DIRECT, uin);
     if (peer && (peer->connect & CONNECT_FAIL))
         return 0;
     TCPDirectOpen (sess, uin);
     peer = SessionFind (TYPE_DIRECT, uin);
-    
+
     if (!peer)
         return 0;
 
+    fsess = SessionClone (peer);
+    
+    assert (fsess);
+    
+    fsess->assoc = peer->assoc;
+    fsess->uin = uin;
+    fsess->connect = 77;
+    fsess->type = TYPE_FILE;
+        
+    for (i = 0; i < count; i++)
+    {
+        struct stat fstat;
+        
+        if (stat (files[i], &fstat))
+        {
+            rc = errno;
+            M_print (i18n (2071, "Couldn't stat file %s: %s (%d)\n"),
+                     files[i], strerror (rc), rc);
+        }
+        else
+        {
+            M_print (i18n (9999, "Queueing %s as %s for transfer.\n"), files[i], as[i]);
+            sum++;
+            sumlen += fstat.st_size;
+            pak = PacketC ();
+            PacketWrite1 (pak, 2);
+            PacketWrite1 (pak, 0);
+            PacketWriteLNTS (pak, as[i]);
+            PacketWriteLNTS (pak, "");
+            PacketWrite4 (pak, fstat.st_size);
+            PacketWrite4 (pak, 0);
+            PacketWrite4 (pak, 64);
+            QueueEnqueueData (fsess, sum, QUEUE_TYPE_PEER_FILE,
+                              uin, time (NULL), pak, strdup (files[i]), &PeerFileResend);
+        }
+    }
+    
+    if (!sum)
+    {
+        SessionClose (fsess);
+        return 0;
+    }
+    
+    pak = PacketC ();
+    PacketWrite1 (pak, 0);
+    PacketWrite4 (pak, 0);
+    PacketWrite4 (pak, sum);
+    PacketWrite4 (pak, sumlen);
+    PacketWrite4 (pak, 64);
+    PacketWriteLNTS (pak, "Sender's nick");
+    QueueEnqueueData (fsess, 0, QUEUE_TYPE_PEER_FILE,
+                      uin, time (NULL), pak, strdup (description), &PeerFileResend);
+        
     if (peer->ver < 8)
     {
-        pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, TCP_MSG_FILE, sess->assoc->status, 0, "no description");
+        pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, TCP_MSG_FILE, sess->assoc->status, 0, description);
         PacketWrite2 (pak, 0);
         PacketWrite2 (pak, 0);
-        PacketWriteLNTS (pak, file);
-        PacketWrite4 (pak, 12345);
+        PacketWriteLNTS (pak, "many, really many, files");
+        PacketWrite4 (pak, sumlen);
         PacketWrite4 (pak, 0);
     }
     else
     {
         pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, TCP_MSG_GREETING, sess->assoc->status, 0, "");
-        TCPGreet (pak, 0x29, "without reason", 0, 12345, file);
+        TCPGreet (pak, 0x29, description, 0, 12345, "many, really many files");
     }
 
     peer->stat_real_pak_sent++;
 
     QueueEnqueueData (peer, peer->our_seq--, QUEUE_TYPE_TCP_RESEND,
-                      uin, time (NULL),
-                      pak, strdup (file), &TCPCallBackResend);
+                      uin, time (NULL), pak, strdup (description), &TCPCallBackResend);
     return 1;
 }
 #endif
@@ -1654,9 +1715,8 @@ static void TCPCallBackReceive (Event *event)
                         port = PacketReadB2 (pak);
                         M_print (i18n (2070, "File transfer to port %d.\n"), port);
                         
-                        fsess = SessionClone (event->sess);
+                        fsess = SessionFind (TYPE_FILE, event->sess->uin);
                         fsess->port = port;
-                        fsess->assoc = event->sess->assoc;
                         fsess->ip = event->sess->ip;
                         fsess->server = "";
 
@@ -1915,47 +1975,134 @@ static void PeerFileResend (Event *event)
     Contact *cont;
     Session *fpeer = event->sess;
     Packet *pak;
+    Event *event2;
     
     ASSERT_FILE (fpeer);
 
     cont = ContactFind (event->uin);
 
-    if (event->attempts >= MAX_RETRY_ATTEMPTS)
+    if (event->attempts >= MAX_RETRY_ATTEMPTS || (!event->pak && !event->seq))
+    {
+        M_print (i18n (9999, "Dropping file transfer because of timeout: %d %d.\n"),
+                 event->attempts, event->seq);
         TCPClose (fpeer);
+    }
 
     if (fpeer->connect & CONNECT_MASK)
     {
         if (fpeer->connect & CONNECT_OK)
         {
-            pak = PacketC ();
-            PacketWrite1 (pak, 0);
-            PacketWrite4 (pak, 0);
-            PacketWrite4 (pak, 1);
-            PacketWrite4 (pak, 12345);
-            PacketWrite4 (pak, 64);
-            PacketWriteLNTS (pak, "my Nick");
-            TCPSendPacket (pak, fpeer);
-            fpeer->dispatch = &PeerFileDispatch;
+            if (!event->seq)
+            {
+                fpeer->our_seq = 0;
+                TCPSendPacket (event->pak, fpeer);
+                PacketD (event->pak);
+                event->pak = NULL;
+            }
+            else if (event->seq != fpeer->our_seq)
+            {
+                event->due = time (NULL) + 3;
+                QueueEnqueue (event);
+                return;
+            }
+            else if (event->pak)
+            {
+                Session *ffile;
+                
+                TCPSendPacket (event->pak, fpeer);
+                PacketD (event->pak);
+                event->pak = NULL;
+                QueueEnqueue (event);
+                
+                ffile = SessionClone (fpeer);
+                fpeer->assoc = ffile;
+                ffile->assoc = fpeer;
+                ffile->sok = open (event->info, O_RDONLY);
+                if (ffile->sok == -1)
+                {
+                    int rc = errno;
+                    M_print (i18n (9999, "Cannot open file %s: %s (%d).\n"),
+                             event->info, strerror (rc), rc);
+                    TCPClose (fpeer);
+                }
+                fpeer->connect &= ~1;
+
+                return;
+            }
+            else if (fpeer->connect & 1)
+            {
+                int len = 0;
+
+                pak = PacketC ();
+                PacketWrite1 (pak, 6);
+                len = read (fpeer->assoc->sok, pak->data + 1, 2048);
+                if (len == -1)
+                {
+                    len = errno;
+                    M_print (i18n (9999, "Error while reading file %s: %s (%d).\n"),
+                             event->info, strerror (len), len);
+                    TCPClose (fpeer);
+                }
+                else
+                {
+                    pak->len += len;
+                    TCPSendPacket (pak, fpeer);
+                    PacketD (pak);
+
+                    if (len == 2048)
+                    {
+                        QueueEnqueue (event);
+                        return;
+                    }
+                    M_print (i18n (9999, "Finished sending file %s.\n"), event->info);
+                    SessionClose (fpeer->assoc);
+                    fpeer->our_seq++;
+                    event2 = QueueDequeue (fpeer->our_seq, QUEUE_TYPE_PEER_FILE);
+                    if (event2)
+                    {
+                        QueueEnqueue (event2);
+                        QueueRetry (fpeer->uin, QUEUE_TYPE_PEER_FILE);
+                        return;
+                    }
+                    else
+                    {
+                        M_print (i18n (9999, "Finished sending all %d files.\n"), fpeer->our_seq - 1);
+                        SessionClose (fpeer);
+                    }
+                }
+            }
+            else
+            {
+                event->attempts++;
+                QueueEnqueue (event);
+                return;
+            }
         }
         else
         {
-            if (event->attempts)
+            if (event->attempts > 1)
             {
                 Time_Stamp ();
-                M_print (" " COLACK "%10s" COLNONE " %s%s\n", cont->nick, " + ", event->info);
+                M_print (" " COLACK "%10s" COLNONE " %s [%d] %x %s\n",
+                         cont->nick, " + ", event->attempts, fpeer->connect, event->info);
             }
-
-            event->attempts++;
+            if (!event->seq)
+                event->attempts++;
             event->due = time (NULL) + 3;
             QueueEnqueue (event);
             return;
         }
     }
+    else
+    {
+        M_print (i18n (2072, "Dropping file transfer %d (%s) because of closed connection.\n"),
+                 event->seq, event->info);
+    }
     free (event->info);
     free (event);
 }
 
-void SessionInitFile (Session *sess)
+static void SessionInitFile (Session *sess)
 {
     if (prG->verbose)
         M_print (i18n (2068, "Opening file transfer connection at %s:%d... "),
@@ -1964,6 +2111,7 @@ void SessionInitFile (Session *sess)
     sess->connect  = 0;
     sess->type     = TYPE_FILE;
     sess->flags    = 0;
+    sess->our_seq  = 0;
     
     if (sess->ip)
     {
@@ -1980,7 +2128,7 @@ void SessionInitFile (Session *sess)
 #define FAIL(x) { err = x; break; }
 #define PeerFileClose TCPClose
 
-void PeerFileDispatch (Session *sess)
+static void PeerFileDispatch (Session *sess)
 {
     Packet *pak;
     UDWORD err = 0;
@@ -2023,15 +2171,8 @@ void PeerFileDispatch (Session *sess)
             
             M_print ("Files accepted @ %x by %s.\n", speed, name);
             
-            pak = PacketC ();
-            PacketWrite1 (pak, 2);
-            PacketWrite1 (pak, 0);
-            PacketWriteLNTS (pak, "filename");
-            PacketWriteLNTS (pak, "");
-            PacketWrite4 (pak, 12345);
-            PacketWrite4 (pak, 0);
-            PacketWrite4 (pak, 64);
-            TCPSendPacket (pak, sess);
+            sess->our_seq = 1;
+            QueueRetry (sess->uin, QUEUE_TYPE_PEER_FILE);
             return;
             
         case 2:
@@ -2062,19 +2203,21 @@ void PeerFileDispatch (Session *sess)
             nr  = PacketRead4 (pak); /* NR */
             PacketD (pak);
             
-            M_print ("Sending file nr %d at offset %d.\n",
+            M_print ("Sending file %d at offset %d.\n",
                      nr, off);
             
-            pak = PacketC ();
-            PacketWrite1 (pak, 6);
-            PacketWrite1 (pak, 'A'); /* DATA ... */
-            PacketWrite1 (pak, 'B');
-            PacketWrite1 (pak, 'C');
-            PacketWrite1 (pak, 'D');
-            PacketWrite1 (pak, 'E');
-            PacketWrite1 (pak, 'F');
-            PacketWrite1 (pak, 'G');
-            TCPSendPacket (pak, sess);
+            err = lseek (sess->assoc->sok, off, SEEK_SET);
+            if (err == -1)
+            {
+                err = errno;
+                M_print (i18n (9999, "Error while seeking to offset %d: %s (%d).\n"),
+                         off, strerror (err), err);
+                TCPClose (sess);
+                return;
+            }
+            sess->connect |= 1;
+            
+            QueueRetry (sess->uin, QUEUE_TYPE_PEER_FILE);
             return;
             
         case 4:
