@@ -71,18 +71,21 @@ sub ProcessLine($)
             $added++;
         }
         $last = sprintf ("%04d", $last);
-        if ($tain{$neu})
+        if ($nrval{$neu})
         {
-            print OUT "#-#$line\n";
-            print OUT "#$last:$nrval{$last}\n";
-            $tainted++;
-        }
-        else
-        {
-            if ($neu != 9999)
+            if ($tain{$neu})
             {
-                print OUT "$line\n";
-                $preserved++;
+                print OUT "#-#$line\n";
+                print OUT "#$last:$nrval{$last}\n";
+                $tainted++;
+            }
+            else
+            {
+                if ($neu != 9999)
+                {
+                    print OUT "$line\n";
+                    $preserved++;
+                }
             }
         }
         $last = $neu;
@@ -122,10 +125,9 @@ while ($uname = shift)
     $ver = `grep ^1003 $uname`;
     $ver =~ s/^1003://;
     chomp $ver;
-    $ver = $ver + 0;
     
-    system "cvs diff -u0 -r i18n-$ver build.i18n | grep \"^-[0-9]\" | sed \"s,^-,,\" | sort -n -t : -k 1,1 -u -o build.tainted";
-    ReadTainted ("build");
+    system "cvs diff -u0 -r i18n-$ver build.i18n | grep \"^-[0-9]\" | sed \"s,^-,,\" | sort -n -t : -k 1,1 -u -o $uname.tainted";
+    ReadTainted ("$uname");
 
     $name = $pref . $uname;
     stat "$name~" && next;
