@@ -32,6 +32,7 @@
 #define BRIGHT_BROWN "\x1B[0;1;33m"
 #define BRIGHT_BLUE "\x1B[0;1;34m"
 #define BRIGHT_MAGENTA "\x1B[0;1;35m"
-#define BRIGHT_CYAN "\x1B[0;1;36m"
+#define BRIGHT_CYAN  "\x1B[0;1;36m"
 #define BRIGHT_WHITE "\x1B[0;1;37m"
+#define CLRSCR       "\x1B[J;"
 #endif

@@ -310,9 +310,11 @@ static void Read_RC_File( FD_T rcf )
             { strcpy( server, strtok( NULL, " \n\t" ) ); }
          else if ( ! strcasecmp( tmp, "Password" ) )
             { strcpy( passwd, strtok( NULL, "\n\t" ) ); }
-#ifdef MSGEXEC
 	 else if ( ! strcasecmp( tmp, "ReceiveScript") )
+#ifdef MSGEXEC
 	    { strcpy( receive_script, strtok( NULL, "\n\t" ) );}
+#else
+	    { printf("Warning: ReceiveScript Feature not enabled!\n"); }
 #endif
 
 
@@ -684,13 +686,6 @@ int Save_RC()
  
       M_fdprint( rcf, "LogType %d\n\n",LogType );
 
-#if 0
-   /* Deprecated */
-   if ( Logging )
-      M_fdprint( rcf, "#No_Log\n" );
-   else
-      M_fdprint( rcf, "No_Log\n" );
-#endif
    if ( Color )
       M_fdprint( rcf, "#No_Color\n" );
    else

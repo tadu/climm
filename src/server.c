@@ -3,26 +3,6 @@
 #include "msg_queue.h"
 #include <stdio.h>
 #include <stdlib.h>
-
-#ifdef _WIN32
-#include <conio.h>
-#include <io.h>
-#include <winsock2.h>
-#include <time.h>
-#else
-#include <unistd.h>
-#include <netinet/in.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/socket.h>
-#ifndef __BEOS__
-#include <arpa/inet.h>
-#endif
-#include <netdb.h>
-#include <sys/time.h>
-#include <sys/wait.h>
-#include "mreadline.h"
-#endif
 #include <fcntl.h>
 #include <time.h>
 #include <stdarg.h>
@@ -31,10 +11,30 @@
 #include <assert.h>
 #include <limits.h>
 
+#ifdef _WIN32
+  #include <conio.h>
+  #include <io.h>
+  #include <winsock2.h>
+  #include <time.h>
+#else
+  #include <unistd.h>
+  #include <netinet/in.h>
+  #include <sys/types.h>
+  #include <sys/stat.h>
+  #include <sys/socket.h>
+    #ifndef __BEOS__
+      #include <arpa/inet.h>
+    #endif
+  #include <netdb.h>
+  #include <sys/time.h>
+  #include <sys/wait.h>
+  #include "mreadline.h"
+#endif
+
 /*extern unsigned int next_resend;*/
 /*extern BOOL serv_mess[ 1024 ];  used so that we don't get duplicate messages with the same SEQ */
 
-static void Auto_Reply ( SOK_T sok, SIMPLE_MESSAGE_PTR s_mesg )
+static void Auto_Reply (SOK_T sok, SIMPLE_MESSAGE_PTR s_mesg)
 {
       char * temp;
 
@@ -50,30 +50,29 @@ static void Auto_Reply ( SOK_T sok, SIMPLE_MESSAGE_PTR s_mesg )
 	    case STATUS_OCCUPIED:
 	       /* Dup the string so the russian translation only happens once */
 	       temp = strdup( auto_rep_str_occ );
-	       icq_sendmsg( sok, Chars_2_DW( s_mesg->uin ), temp, NORM_MESS );
 	       break;
 	    case STATUS_AWAY:
 	       temp = strdup( auto_rep_str_away );
-	       icq_sendmsg( sok, Chars_2_DW( s_mesg->uin ), temp, NORM_MESS );
 	       break;
 	    case STATUS_DND:
 	       temp = strdup( auto_rep_str_dnd );
-	       icq_sendmsg( sok, Chars_2_DW( s_mesg->uin ), temp, NORM_MESS );
 	       break;
 	    case STATUS_INVISIBLE:
 	       temp = strdup( auto_rep_str_inv );
-	       icq_sendmsg( sok, Chars_2_DW( s_mesg->uin ), temp, NORM_MESS );
 	       break;
 	    case STATUS_NA:
 	       temp = strdup( auto_rep_str_na );
-	       icq_sendmsg( sok, Chars_2_DW( s_mesg->uin ), temp, NORM_MESS );
 	       break;
 	    default:
 	       temp = strdup( auto_rep_str_occ );
 	       M_print("You have encounterd a bug in my code :( I now own you a beer!\nGreetings Fryslan!\n");
             }
+
+         icq_sendmsg( sok, Chars_2_DW( s_mesg->uin ), temp, NORM_MESS );
 	 free( temp );
-	 M_print( "[ Sent auto-reply message ]\n" );
+	 M_print( "[ Sent auto-reply message to %d(%d)]\n",
+	                     Chars_2_DW(s_mesg->uin), last_recv_uin);
+
 	 if ( UIN2nick( last_recv_uin ) != NULL )
             log_event( last_recv_uin, LOG_AUTO_MESS, "Sending an auto-reply message to %s\n", UIN2nick( last_recv_uin ) );
 	 else

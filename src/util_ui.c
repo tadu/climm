@@ -1,4 +1,6 @@
 #include "micq.h"
+#include "mreadline.h"
+#include "util_ui.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -11,36 +13,32 @@
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <netinet/in.h>
-#ifndef __BEOS__
-#include <arpa/inet.h>
-#endif
 #include <fcntl.h>
+
+#ifndef __BEOS__
+   #include <arpa/inet.h>
+#endif
+
 #ifdef _WIN32
    #include <io.h>
    #define S_IRUSR        _S_IREAD
    #define S_IWUSR        _S_IWRITE
 #endif
+
 #ifdef UNIX
    #include <unistd.h>
    #include <termios.h>
    #include <sys/ioctl.h>
 #endif
-#include "mreadline.h"
-#include "util_ui.h"
 
-#if ! defined TAB_STOP
-#define TAB_STOP 8
-#endif
-
-
-static BOOL No_Prompt=FALSE;
-WORD Max_Screen_Width=0;
+static 	BOOL No_Prompt = FALSE;
+	WORD Max_Screen_Width = 0;
 
 #define ADD_COLOR(a)      else if ( ! strncmp( str2, a , strlen( a ) ) ) \
-      {                                                                 \
-         if ( Color )                                                   \
-            printf( a );                                                \
-         str2 += strlen( a );                                           \
+      {                                                                  \
+         if ( Color )                                                    \
+            printf( a );                                                 \
+         str2 += strlen( a );                                            \
       }
 
 
@@ -102,14 +100,14 @@ void M_fdprint( FD_T fd, char *str, ... )
    assert( 2048 >= strlen( str ) );
    
    va_start( args, str );
-   vsprintf( buf, str, args );
+   vsnprintf( buf, sizeof(buf), str, args );
    k = write( fd, buf, strlen( buf ) );
    if ( k != strlen( buf ) )
    {
       perror(str);
-      exit ( 10);
+      exit (10);
    }
-   va_end( args );
+   va_end(args);
 }
 
 WORD Get_Max_Screen_Width()
@@ -163,9 +161,9 @@ static void M_puts_wrap( char *str)
 }
 
 static void M_prints(char *str) {
-      int             i;
-      int             TabSize;
-      char    *Buffer;
+      int	i;
+      int	TabSize;
+      char	*Buffer;
       int             BufIdx = 0;
       int             BufSize = (strlen(str)+2 * sizeof(char));
 

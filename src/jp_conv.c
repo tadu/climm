@@ -17,12 +17,12 @@
 /*********************************
  Shift-JIS(Win) -> EUC(Unix)
 *********************************/
-void sjis2euc( char *pszDest ) {
+void sjis2euc(unsigned char *pszDest ) {
   unsigned char *psz1st;
   unsigned char *psz2nd;
-  char szSrcBuf[ JP_CONV_SIZE ];
-  char *pszDestBuf;
-  char *pszSrcBuf;
+  unsigned char szSrcBuf[ JP_CONV_SIZE ];
+  unsigned char *pszDestBuf;
+  unsigned char *pszSrcBuf;
 
   pszDestBuf = pszDest;
   strncpy( szSrcBuf, pszDest, JP_CONV_SIZE );
@@ -85,12 +85,12 @@ void sjis2euc( char *pszDest ) {
 /*********************************
  EUC(Unix) -> Shift-JIS(Win)
 *********************************/
-void euc2sjis( char *pszDest ) {
+void euc2sjis( unsigned char *pszDest ) {
   unsigned char *psz1st;
   unsigned char *psz2nd;
-  char   szSrcBuf[ JP_CONV_SIZE ];
-  char  *pszDestBuf;
-  char  *pszSrcBuf;
+  unsigned char  szSrcBuf[ JP_CONV_SIZE ];
+  unsigned char *pszDestBuf;
+  unsigned char *pszSrcBuf;
 
   pszDestBuf = pszDest;
   strncpy( szSrcBuf, pszDest, JP_CONV_SIZE );
@@ -147,7 +147,7 @@ void euc2sjis( char *pszDest ) {
  wc : Shift-JIS(Win) -> EUC(Unix)
  cw : EUC(Unix) -> Shift-JIS(Win)
 *********************************/
-void jp_conv( char *fszType, char *pszText ) {
+void jp_conv( unsigned char *fszType, unsigned char *pszText ) {
 #ifndef _WIN32
   if( JapaneseEUC ) {
     if( strcmp( fszType, "wc" ) == 0 ) {

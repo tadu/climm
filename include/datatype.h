@@ -4,18 +4,18 @@
    #include <unistd.h>
 #endif
 
-typedef unsigned long DWORD;
+typedef unsigned long  DWORD;
 typedef unsigned short WORD;
-typedef unsigned char BYTE;
-typedef signed long S_DWORD;
-typedef signed short S_WORD;
-typedef signed char S_BYTE;
-typedef signed long INT32;
-typedef signed short INT16;
-typedef signed char INT8;
-typedef unsigned long U_INT32;
+typedef unsigned char  BYTE;
+typedef signed long    S_DWORD;
+typedef signed short   S_WORD;
+typedef signed char    S_BYTE;
+typedef signed long    INT32;
+typedef signed short   INT16;
+typedef signed char    INT8;
+typedef unsigned long  U_INT32;
 typedef unsigned short U_INT16;
-typedef unsigned char U_INT8;
+typedef unsigned char  U_INT8;
 
 #ifdef _WIN32
   typedef int FD_T;

@@ -1,40 +1,3 @@
-/*********************************************
-**********************************************
-This is the main ICQ file. Currently it
-logs in and sits in a loop. It can receive
-messages and keeps the connection alive.
-Use crtl-break to exit.
-
-This software is provided AS IS to be used in
-whatever way you see fit and is placed in the
-public domain.
-
-Author : Matthew Smith April 19, 1998
-Contributors : Nicolas Sahlqvist April 27, 1998
-			   Ulf Hedlund (guru@slideware.com) April 28, 1998
-            Michael Ivey May 4, 1998
-            Michael Holzt May 5, 1998
-
-Changes :
-   4-28-98 support for WIN32 [UH]
-   4-20-98 added variable time_delay between keep_alive packets mds
-   4-20-98 added instant message from server support mds
-   4-21-98 changed so that long ( 250+ characters ) messages work
-            new maximum is ~900 which is hopefully big enough.
-            When I know more about udp maybe I can come up with
-            a general solution. mds I now think ICQ has a max that is
-            smaller than this so everything is ok mds I now think that
-            the icq client's maximum is arbitrary and can be ignored :)
-   4-23-98 Added beginnings of a user interface
-   4-26-98 Changed the version to 0.2a :)
-   4-27-98 Nicco added feature to use nick names to log in
-   5-05-98 Authorization Messages
-   5-13-98 Added time stamps for most things.
-   6-17-98 Changed condition on which we should send auto_reply message. Fryslan
-   6-18-98 Added different auto reply messages for different status types see also ui.c and util.c Fryslan
-   6-20-98 Added an alter command to alter your command names online. Fryslan
-**********************************************
-**********************************************/
 #include "micq.h"
 #include "datatype.h"
 #include "msg_queue.h"
@@ -42,26 +5,6 @@ Changes :
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
-
-#ifdef _WIN32
-#include <conio.h>
-#include <io.h>
-#include <winsock2.h>
-#include <time.h>
-#else
-#include <unistd.h>
-#include <netinet/in.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/socket.h>
-#ifndef __BEOS__
-#include <arpa/inet.h>
-#endif
-#include <netdb.h>
-#include <sys/time.h>
-#include <sys/wait.h>
-#include "mreadline.h"
-#endif
 #include <fcntl.h>
 #include <time.h>
 #include <stdarg.h>
@@ -69,19 +12,39 @@ Changes :
 #include <ctype.h>
 #include <assert.h>
 
+#ifdef _WIN32
+ #include <conio.h>
+ #include <io.h>
+ #include <winsock2.h>
+ #include <time.h>
+#else
+ #include <unistd.h>
+ #include <netinet/in.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include <sys/socket.h>
+   #ifndef __BEOS__
+     #include <arpa/inet.h>
+   #endif
+ #include <netdb.h>
+ #include <sys/time.h>
+ #include <sys/wait.h>
+ #include "mreadline.h"
+#endif
+
 #ifdef __BEOS__
-#include "beos.h"
+  #include "beos.h"
 #endif
 
 DWORD real_packs_sent = 0;
 DWORD real_packs_recv = 0;
 
 BYTE Sound = SOUND_ON; /* Beeps on by default */
-BYTE Sound_Str[150];  /* the command to run from the shell to play sound files */
+BYTE Sound_Str[150];   /* the command to run from the shell to play sound files */
 BOOL Hermit = FALSE;
-BOOL Russian = FALSE; /* Do we do kio8-r <->Cp1251 codeset translation? */
+BOOL Russian = FALSE;  /* Do we do kio8-r <->Cp1251 codeset translation? */
 BOOL JapaneseEUC = FALSE; /* Do we do Shift-JIS <->EUC codeset translation? */
-BYTE LogType = 2; /* Currently 0 = no logging
+BYTE LogType = 2;      /* Currently 0 = no logging
 			       1 = old style ~/micq_log
 			       2 = new style ~/micq.log/uin.log
 		     *********************************************/
@@ -624,7 +587,10 @@ int main( int argc, char *argv[] )
 #endif
 
    setbuf (stdout, NULL); /* Don't buffer stdout */
-   M_print( SERVCOL "Matt's ICQ clone " NOCOL "compiled on %s %s\n" SERVCOL " Version " MICQ_VERSION NOCOL "\n", __TIME__, __DATE__ );
+   M_print( SERVCOL "Matt's ICQ clone " NOCOL "compiled on %s %s\n" \
+            SERVCOL "Version " MICQ_VERSION NOCOL "\n",      \
+	    __TIME__, __DATE__ );
+	    
 #ifdef FUNNY_MSGS
    M_print( "No Mirabilis client was maimed, hacked, tortured, sodomized or otherwise harmed\nin the making of this utility.\n" );
 #else
@@ -650,9 +616,9 @@ int main( int argc, char *argv[] )
    {
       for ( i=1; i< argc; i++ )
       {
-         if ( argv[i][0] != '-' ) { ; }
-         else if ( (argv[i][1] == 'v' ) || (argv[i][1] == 'V' ) )
-         {
+         if ( argv[i][0] != '-' ) { 
+	    ; 
+	 } else if ( (argv[i][1] == 'v' ) || (argv[i][1] == 'V' ) ) {
             Verbose++;
          } else if ( (argv[i][1] == 'f' ) || (argv[i][1] == 'F' ) ) {
 		i++; /* skip the argument to f */
@@ -670,7 +636,7 @@ int main( int argc, char *argv[] )
    
    Get_Config_Info();
    srand( time( NULL ) );
-   if ( !strcmp( passwd,"" ) )
+   if ( !strcmp( passwd, "" ) )
    {
       M_print( ENTER_PW_STR );
       Echo_Off();
@@ -686,6 +652,8 @@ int main( int argc, char *argv[] )
 
    Initialize_Msg_Queue();
    Check_Endian();
+   
+   
 #ifdef _WIN32
    i = WSAStartup( 0x0101, &wsaData );
    if ( i != 0 ) {
@@ -697,6 +665,8 @@ int main( int argc, char *argv[] )
 	    exit(1);
    }
 #endif
+
+
    sok = Connect_Remote( server, remote_port, STDERR );
 
 #ifdef __BEOS__
@@ -765,12 +735,14 @@ int main( int argc, char *argv[] )
         Do_Resend( sok );
       }
 #ifdef UNIX
-      while(waitpid(-1,NULL,WNOHANG) > 0); /* clean up child processes */
+      while(waitpid(-1, NULL, WNOHANG) > 0); /* clean up child processes */
 #endif
    }
+
 #ifdef __BEOS__
-Be_Stop();
+   Be_Stop();
 #endif
+
    Quit_ICQ( sok );
    return 0;
 }

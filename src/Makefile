@@ -3,7 +3,7 @@
 # rewritten by  Rico Gloeckner <mc@verdinet.de>
 
 CC = gcc
-CFLAGS = -O4 -Wall -DUNIX 
+CFLAGS = -O4 -Wall -DUNIX
 
 # uncomment the line below for debuging info
 #CFLAGS += -g
@@ -21,7 +21,7 @@ OBJS =file_util.o icq_response.o micq.o msg_queue.o rus_conv.o sendmsg.o \
       
 HEADERS = config.h datatype.h micq.h ui.h msg_queue.h mreadline.h mselect.h util_ui.h
 
-INCLUDE = -I. -I../include -I../lang
+INCLUDE = -I../include -I../lang
 
 #uncomment next two lines if you are using BeOS
 #OBJS += beos.o
@@ -42,3 +42,8 @@ clean :
 
 install:
 	install -g root -o root -m 755 micq /usr/local/bin
+
+indent:
+	@for i in *.c; do \
+	indent -bap -bc -bl -bli4 $$i;\
+	done
