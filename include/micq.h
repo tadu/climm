@@ -39,6 +39,10 @@
 time_t portable_timegm (struct tm *tm);
 #endif
 
+#ifndef HAVE_TIMELOCAL
+#define timelocal mktime
+#endif
+
 #ifndef HAVE_LOCALTIME_R
 #define HAVE_LOCALTIME_R 1
 #define localtime_r(t, s)      memcpy(s, localtime(t), sizeof(struct tm))
