@@ -21,7 +21,6 @@
 #include "preferences.h"
 #include "contact.h"
 #include "server.h"
-#include "util_str.h"
 #include "icq_response.h"
 #include "util_io.h"
 #include <string.h>

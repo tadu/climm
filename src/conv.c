@@ -33,7 +33,6 @@
 #endif
 #include "conv.h"
 #include "preferences.h"
-#include "util_str.h"
 
 typedef strc_t (iconv_func)(strc_t, UBYTE);
 

@@ -17,7 +17,6 @@
 #include "cmd_pkt_v8_snac.h"
 #include "preferences.h"
 #include "session.h"
-#include "util_str.h"
 #include "util_extra.h"
 #include "peer_file.h"
 #include <stdlib.h>

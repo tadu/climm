@@ -3,8 +3,6 @@
 #ifndef MICQ_UTIL_CONV
 #define MICQ_UTIL_CONV
 
-#include "util_str.h"
-
 extern UBYTE conv_error;
 
 void        ConvInit       (void);

@@ -31,7 +31,6 @@
 #include "packet.h"
 #include "file_util.h"
 #include "cmd_pkt_v8_tlv.h"
-#include "util_str.h"
 #include "conv.h"
 #include <assert.h>
 #include <string.h>

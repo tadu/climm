@@ -6,7 +6,6 @@
 #include "util_ui.h"
 #include "preferences.h"
 #include "contactopts.h"
-#include "util_str.h"
 
 static const char **strtable = NULL;
 static int strmax = 0;

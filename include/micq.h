@@ -183,3 +183,4 @@ enum logtype
 #endif /* MICQ_H */
 
 #include "i18n.h"
+#include "util_str.h"

@@ -29,8 +29,8 @@
 #include "micq.h"
 #include "msg_queue.h"
 #include "util_ui.h"
-#include "util_str.h"
 #include "util_extra.h"
+#include "preferences.h"
 #include "icq_response.h" /* yuck */
 #include "packet.h" /* yuck */
 

@@ -34,7 +34,6 @@
 #include "preferences.h"
 #include "cmd_pkt_v8_flap.h"
 #include "cmd_pkt_v8_snac.h"
-#include "util_str.h"
 #include "tcp.h"
 #include <string.h>
 #include <unistd.h>

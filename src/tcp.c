@@ -25,7 +25,6 @@
 #include "session.h"
 #include "packet.h"
 #include "tcp.h"
-#include "util_str.h"
 #include "util_syntax.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_v8_snac.h"

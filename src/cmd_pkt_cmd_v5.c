@@ -33,7 +33,6 @@
 #include "icq_response.h"
 #include "util_ui.h"
 #include "buildmark.h"
-#include "util_str.h"
 #include <string.h>
 #include <assert.h>
 #if HAVE_NETINET_IN_H

@@ -24,7 +24,6 @@
 #include "cmd_pkt_v8_tlv.h"
 #include "util_ui.h"
 #include "packet.h"
-#include "util_str.h"
 #include <string.h>
 #include <assert.h>
 

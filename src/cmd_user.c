@@ -32,7 +32,6 @@
 #include "buildmark.h"
 #include "contact.h"
 #include "server.h"
-#include "util_str.h"
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>

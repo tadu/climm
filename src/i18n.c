@@ -31,7 +31,6 @@
 #include "util_ui.h"
 #include "util_io.h"
 #include "preferences.h"
-#include "util_str.h"
 #include "conv.h"
 
 #ifdef HAVE_LOCALE_H

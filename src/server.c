@@ -7,7 +7,6 @@
 #include "mreadline.h"
 #include "server.h"
 #include "util.h"
-#include "util_str.h"
 #include "util_extra.h"
 #include "icq_response.h"
 #include "cmd_pkt_v8_snac.h"

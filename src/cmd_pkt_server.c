@@ -19,7 +19,6 @@
 #include "packet.h"
 #include "contact.h"
 #include "util_io.h"
-#include "util_str.h"
 #include "util_syntax.h"
 #include "conv.h"
 #include <string.h>

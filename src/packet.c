@@ -27,7 +27,6 @@
 #include "packet.h"
 #include "preferences.h"
 #include "util_ui.h"
-#include "util_str.h"
 #include "buildmark.h"
 #include <assert.h>
 #include <stdio.h>

@@ -46,7 +46,6 @@
 #include "remote.h"
 #include "cmd_pkt_v8.h"
 #include "session.h"
-#include "util_str.h"
 
 
 /****/

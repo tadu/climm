@@ -48,7 +48,6 @@ extern int h_errno;
 #include "preferences.h"
 #include "util_ui.h"
 #include "util_io.h"
-#include "util_str.h"
 #include "conv.h"
 #include "util.h"
 #include "contact.h"

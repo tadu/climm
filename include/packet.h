@@ -1,7 +1,5 @@
 /* $Id$ */
 
-#include "util_str.h"
-
 #ifndef MICQ_PACKET_H
 #define MICQ_PACKET_H
 

@@ -4,7 +4,6 @@
 #include "micq.h"
 #include <stdarg.h>
 #include "util_ui.h"
-#include "util_str.h"
 #include "util_table.h"
 #include "util_extra.h"
 #include "color.h"

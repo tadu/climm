@@ -33,10 +33,10 @@
 #endif
 #include "util_io.h"
 #include "util_ui.h"
-#include "util_str.h"
 #include "cmd_user.h"
 #include "session.h"
 #include "packet.h"
+#include "contact.h"
 #include "preferences.h"
 
 #ifdef ENABLE_REMOTECONTROL

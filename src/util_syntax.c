@@ -25,7 +25,6 @@
 #include <assert.h>
 #include "packet.h"
 #include "conv.h"
-#include "util_str.h"
 #include "preferences.h"
 
 #define c_pin(x) ConvFrom (x, ENC_LATIN1)->txt

@@ -29,7 +29,6 @@ Changes :
 #include "util_ui.h"
 #include "preferences.h"
 #include "packet.h"
-#include "util_str.h"
 #include "cmd_user.h"
 #include "conv.h"
 #include <stdlib.h>

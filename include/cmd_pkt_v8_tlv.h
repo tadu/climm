@@ -1,7 +1,5 @@
 /* $Id$ */
 
-#include "util_str.h"
-
 #ifndef MICQ_ICQV8_TLV_H
 #define MICQ_ICQV8_TLV_H
 

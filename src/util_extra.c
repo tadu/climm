@@ -23,8 +23,8 @@
 #include "micq.h"
 #include <string.h>
 #include "util_extra.h"
-#include "util_str.h"
 #include "util_ui.h"
+#include "preferences.h"
 
 void ExtraD (Extra *extra)
 {

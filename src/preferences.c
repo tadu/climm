@@ -40,7 +40,6 @@
 #include "preferences.h"
 #include "util_ui.h"
 #include "session.h"
-#include "util_str.h"
 #include "contact.h"
 
 static FILE *PrefOpenRC (Preferences *pref);

@@ -20,7 +20,6 @@
 #include "contact.h"
 #include "session.h"
 #include "preferences.h"
-#include "util_str.h"
 
 #include <stdio.h>
 #include <stdarg.h>

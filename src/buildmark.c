@@ -27,7 +27,6 @@
 
 #include "micq.h"
 #include "buildmark.h"
-#include "util_str.h"
 #include "conv.h"
 #include "preferences.h"
 #include ".cvsupdate"

@@ -24,7 +24,6 @@
 #include "util.h"
 #include "util_ui.h"
 #include "util_io.h"
-#include "util_str.h"
 #include "util_extra.h"
 #include "util_syntax.h"
 #include "contact.h"

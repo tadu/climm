@@ -36,7 +36,6 @@
 #endif
 #include <string.h>
 #include <ctype.h>
-#include "util_str.h"
 #include "preferences.h"
 #include "contact.h"
 #include "conv.h"
@@ -106,7 +105,7 @@ str_t s_blow (str_t str, size_t len)
 
 
 /*
- * Appends a character to a dynamically allocated string.
+ * Appends a byte to a dynamically allocated string.
  */
 str_t s_catc (str_t str, char add)
 {
@@ -115,6 +114,21 @@ str_t s_catc (str_t str, char add)
             return NULL;
 
     str->txt[str->len++] = add;
+    str->txt[str->len] = '\0';
+    return str;
+}
+
+/*
+ * Appends bytes to a dynamically allocated string.
+ */
+str_t s_catn (str_t str, const char *add, size_t len)
+{
+    if (str->len + len + 2 >= str->max)
+        if (!s_blow (str, str->len + len + 2 - str->max))
+            return NULL;
+
+    memcpy (str->txt + str->len, add, len);
+    str->len += len;
     str->txt[str->len] = '\0';
     return str;
 }
@@ -173,6 +187,65 @@ str_t s_catf (str_t str, const char *fmt, ...)
     }
     return str;
 }
+
+/*
+ * Insert a string into a dynamically allocated string.
+ */
+str_t s_insn (str_t str, size_t pos, const char *ins, size_t len)
+{
+    if (pos < 0 || pos > str->len)
+        return NULL;
+    if (str->len + len + 2 >= str->max)
+        if (!s_blow (str, str->len + len + 2 - str->max))
+            return NULL;
+    
+    memmove (str->txt + pos + len, str->txt + pos, str->len - pos + 1);
+    memcpy (str->txt + pos, ins, len);
+    str->len += len;
+    return str;
+}
+
+/*
+ * Insert a byte into a dynamically allocated string.
+ */
+str_t s_insc (str_t str, size_t pos, char ins)
+{
+    if (pos < 0 || pos > str->len)
+        return NULL;
+    if (str->len + 3 >= str->max)
+        if (!s_blow (str, str->len + 3 - str->max))
+            return NULL;
+    
+    memmove (str->txt + pos + 1, str->txt + pos, str->len - pos + 1);
+    str->txt[pos] = ins;
+    str->len++;
+    return str;
+}
+
+/*
+ * Delete a byte from a dynamically allocated string.
+ */
+str_t s_delc (str_t str, size_t pos)
+{
+    if (pos < 0 || pos > str->len)
+        return NULL;
+    memmove (str->txt + pos, str->txt + pos + 1, str->len - pos);
+    str->len--;
+    return str;
+}
+
+/*
+ * Delete bytes from a dynamically allocated string.
+ */
+str_t s_deln (str_t str, size_t pos, size_t len)
+{
+    if (pos < 0 || pos + len > str->len)
+        return NULL;
+    memmove (str->txt + pos, str->txt + pos + len, str->len - pos);
+    str->len -= len;
+    return str;
+}
+
 
 /*
  * Frees a dynamically allocated string.

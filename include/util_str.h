@@ -27,7 +27,12 @@ str_t       s_init    (str_t str, const char *init, size_t add);
 str_t       s_blow    (str_t str, size_t len);
 str_t       s_cat     (str_t str, const char *add);
 str_t       s_catc    (str_t str, char add);
+str_t       s_catn    (str_t str, const char *add, size_t len);
 str_t       s_catf    (str_t str, const char *fmt, ...) __attribute__ ((format (__printf__, 2, 3)));
+str_t       s_insn    (str_t str, size_t pos, const char *ins, size_t len);
+str_t       s_insc    (str_t str, size_t pos, char ins);
+str_t       s_delc    (str_t str, size_t pos);
+str_t       s_deln    (str_t str, size_t pos, size_t len);
 void        s_done    (str_t str);
 
 const char *s_sprintf (const char *fmt, ...) __attribute__ ((format (__printf__, 1, 2)));

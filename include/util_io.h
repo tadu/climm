@@ -3,8 +3,6 @@
 #ifndef MICQ_UTIL_IO_H
 #define MICQ_UTIL_IO_H
 
-#include "util_str.h"
-
 void    UtilIOConnectUDP (Connection *conn);
 void    UtilIOConnectTCP (Connection *conn);
 void    UtilIOConnectF   (Connection *conn);
