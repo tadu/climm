@@ -17,9 +17,9 @@
   #include <winsock2.h>
   #include <time.h>
 #else
+  #include <sys/types.h>
   #include <unistd.h>
   #include <netinet/in.h>
-  #include <sys/types.h>
   #include <sys/stat.h>
   #include <sys/socket.h>
     #ifndef __BEOS__

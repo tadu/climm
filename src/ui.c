@@ -26,9 +26,9 @@ Changes :
 #ifdef _WIN32
   #include <winsock2.h>
 #else
+  #include <sys/types.h>
   #include <unistd.h>
   #include <netinet/in.h>
-  #include <sys/types.h>
   #include <sys/stat.h>
   #include <sys/time.h>
   #include <sys/socket.h>
@@ -542,7 +542,7 @@ This is huge and ugly it should be fixed.
 *******************************************************/
 void Get_Input( SOK_T sok , int *idle_val, int *idle_flag ) /* GRYN */
 {
-   char buf[1024]; /* This is hopefully enough */
+   unsigned char buf[1024]; /* This is hopefully enough */
    char *cmd;
    char *arg1;
    char *arg2;
@@ -601,7 +601,11 @@ void Get_Input( SOK_T sok , int *idle_val, int *idle_flag ) /* GRYN */
         {
 	   R_pause ();
 #ifdef SHELL_COMMANDS
-	   system( &buf[1] );
+	   if ((buf[1] < 31) || (buf[1] > 127)) {
+		M_print("Invalid Command: %s\n", &buf[1]);
+	   } else {
+		system( &buf[1] );
+	   }
 #else
 	  M_print( "Shell commands have been disabled.\n" );
 #endif

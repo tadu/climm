@@ -198,9 +198,9 @@ void Meta_User( SOK_T sok, BYTE *data, DWORD len, DWORD uin )
 		newline = "\n";
 	}
 	 data += 3;
-         if ( ( ( *data != 0 ) && ( *data != 0xff ) )  ||
-		( ( *(data+1) != 0 ) && ( *(data+1) != 0xff ) )  ||
-		( ( *(data+2) != 0 ) && ( *(data+2) != 0xff ) ) ) {
+         if ( ( ( *data != 0 ) && ( *data != (BYTE)0xff ) )  ||
+		( ( *(data+1) != 0 ) && ( *(data+1) != (BYTE)0xff ) )  ||
+		( ( *(data+2) != 0 ) && ( *(data+2) != (BYTE)0xff ) ) ) {
 		 M_print( LANGUAGE_INFO_STR ); 
 		 if ( Get_Lang_Name( *data ) != NULL ) {
 		 	M_print( "%s ", Get_Lang_Name( *data ) );
@@ -782,6 +782,7 @@ void Do_Msg( SOK_T sok, DWORD type, WORD len, char * data, DWORD uin )
          return;
       }
       *tmp = 0;
+      char_conv ("wc",data);  /* By Kunia User's nick was not transcoded...;( */
       M_print( CONTACTCOL "\n%s" NOCOL " has added you to their contact list.\n", data );
       tmp++;
       data = tmp;

@@ -5,8 +5,10 @@
 #endif
 
 typedef unsigned long  DWORD;
+#ifndef __amigaos__
 typedef unsigned short WORD;
 typedef unsigned char  BYTE;
+#endif
 typedef signed long    S_DWORD;
 typedef signed short   S_WORD;
 typedef signed char    S_BYTE;
@@ -34,7 +36,9 @@ typedef unsigned char  U_INT8;
   #define strncasecmp(s,s1,l)  strnicmp(s,s1,l)
   #define Get_Config_Info() Get_Unix_Config_Info()
 #else
-  typedef unsigned char BOOL;
+  #ifndef __amigaos__
+    typedef unsigned char BOOL;
+  #endif
 #endif
 
 #ifdef UNIX

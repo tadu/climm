@@ -9,9 +9,9 @@ Author : zed@mentasm.com
 #ifdef _WIN32
     #include <winsock2.h>
 #else
+    #include <sys/types.h>
     #include <netinet/in.h>
     #include <unistd.h>
-    #include <sys/types.h>
     #include <sys/socket.h>
 #endif
 #include <string.h>

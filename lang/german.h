@@ -180,7 +180,7 @@
 
 #define ONLINE_LIST_HELP_STR "\t\t\tZeigt den Online-Status der Leute auf deiner Kontaktliste an.\n"
 #define ENTER_PW_STR "Bitte Passwort eingeben: "
-#define AUTO_STATUS_CHANGE_STR "\nAuto-Status-Wechsel: "
+#define AUTO_STATUS_CHANGE_STR "Auto-Status-Wechsel: "
 #define INTEL_BO_STR "Benutze Intel-Byte Sortierung."
 #define MOTOROLA_BO_STR "Benutze Motorola-Byte Sortierung."
 #define IGNORE_CMD_STR "\nIgnoriere Msg-Kmd: %04x\n"
