@@ -1,3 +1,12 @@
+micq (1:0.4.10.4-0.1) unstable; urgency=low
+
+  * New upstream bug fix release
+  + fixes remote DoS
+  + add support for licq style SSL connections (by Roman Hoog Antink)
+  + add support for TCL scripting (by Roman Hoog Antink)
+
+ -- Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>  Mon, 22 Sep 2003 18:00:08 +0200
+
 micq (1:0.4.10.3-1.1) unstable; urgency=low
 
   * New upstream bug fix release

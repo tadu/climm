@@ -33,7 +33,9 @@ configure-stamp:
 	  --build=$(DEB_BUILD_GNU_TYPE) \
 	  --prefix=/usr \
 	  --mandir=\$${prefix}/share/man \
-	  --disable-dependency-tracking
+	  --enable-ssl --enable-tcl \
+	  --disable-dependency-tracking \
+	  CPPFLAGS="$(CPPFLAGS) -I/usr/include/tcl8.4/"
 	touch configure-stamp
 
 build: configure-stamp build-stamp

@@ -2,7 +2,7 @@ Source: micq
 Section: net
 Priority: optional
 Maintainer: Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
-Build-Depends: debhelper (>= 4.0.0)
+Build-Depends: debhelper (>= 4.0.0), tcl8.4-dev, libgnutls7-dev
 Standards-Version: 3.5.9
 
 Package: micq
