@@ -22,22 +22,19 @@ They are hosted by <dan@iquest.net>, but might move to
 sourceforge.
 
 Currently you:
-    post	            micq@phantom.iquest.net
-    subscribe	  micq-subscribe@phantom.iquest.net
-    unsubscfibe	micq-unsubscribe@phantom.iquest.net
-    help	       micq-help@phantom.iquest.net
+    post	   
+                                           micq-list@micq.ukeer.de
+
+    subscribe, unsubscribe, help
+                   http://micq.ukeer.de/mailman/listinfo/micq-list
 
 An Archive might be found at:
-<http://phantom.iquest.net:/micq/>
-
+<http://micq.ukeer.de/pipermail/micq-list/>
 
 c) Download
 
-You might get it at:
-    http://sourceforge.net/projects/micq/
 
 Primary Mirror
-    ftp://micq.chatzone.org:/
     http://micq.ukeer.de:/
 
 CVS (do that only if you know what cvs is)
@@ -79,4 +76,4 @@ However, look out for announcements on Freshmeat.net.
 We will see how the Future of mICQ looks.
 
 
-		- Rico Gloeckner <mc@verdinet.de> 2000-01-23
+		- Rico Gloeckner <mc@verdinet.de> 2000-05-23
