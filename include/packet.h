@@ -20,16 +20,33 @@ struct Packet_s
 
 typedef struct { UBYTE id; const char *cap; const char *name; } Cap;
 
-#define CAP_NONE     0
-#define CAP_ISICQ    1
-#define CAP_SRVRELAY 2
-#define CAP_RTFMSGS  3
-#define CAP_UNK_2001 4
-#define CAP_UNK_2002 5
-#define CAP_STR_2001 6
-#define CAP_STR_2002 7
-#define CAP_MICQ     8
-                    
+#define CAP_NONE        0
+#define CAP_AIM_VOICE   1
+#define CAP_AIM_SFILE   2
+#define CAP_ISICQ       3
+#define CAP_AIM_IMIMAGE 4
+#define CAP_AIM_BUDICON 5
+#define CAP_AIM_STOCKS  6
+#define CAP_AIM_GETFILE 7
+#define CAP_SRVRELAY    8
+#define CAP_AIM_GAMES   9
+#define CAP_AIM_SBUD    10
+#define CAP_IS_2002     11
+#define CAP_RTFMSGS     12
+#define CAP_IS_2001     13
+#define CAP_STR_2001    14
+#define CAP_STR_2002    15
+#define CAP_AIM_CHAT    16
+#define CAP_IS_WEB      17
+#define CAP_TRILL_CRYPT 18
+#define CAP_TRILL_2     19
+#define CAP_LICQ        20
+#define CAP_SIM         21
+#define CAP_MICQ        22
+#define CAP_MAX         30
+
+#define HAS_CAP(caps,cap) ((caps) & (1L << (cap)))
+
 Packet *PacketC        (void);
 Packet *PacketCreate   (const char *data, UDWORD len);
 Packet *PacketClone    (const Packet *pak);

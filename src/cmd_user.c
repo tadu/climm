@@ -1428,9 +1428,7 @@ static JUMP_F(CmdUserStatusDetail)
     if (uin)
     {
         char *t1, *t2;
-#ifdef WIP
         UBYTE id;
-#endif
         if (!contr)
             return 0;
 
@@ -1442,20 +1440,23 @@ static JUMP_F(CmdUserStatusDetail)
                  contr->connection_type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),
                  contr->connection_type);
         M_printf ("%-15s %08x\n", i18n (2026, "TCP cookie:"), contr->cookie);
-#ifdef WIP
-        for (i = id = 0; id < 16; id++)
-            if (contr->caps && (1 << id))
+        for (i = id = 0; id < CAP_MAX; id++)
+            if (contr->caps & (1 << id))
             {
                 Cap *cap = PacketCap (id);
                 if (i++)
                     M_print (", ");
                 else
-                    M_print (i18n (9999, "Capabilities: "));
+                    M_print (i18n (2192, "Capabilities: "));
                 M_print (cap->name);
+                if (cap->name[4] == 'U')
+                {
+                    M_print (": ");
+                    M_print (s_dump (cap->cap, 16));
+                }
             }
         if (i)
             M_print ("\n");
-#endif
         free (t1);
         free (t2);
         return 0;
@@ -2209,8 +2210,9 @@ static JUMP_F(CmdUserAuth)
 #ifdef WIP
             if (sess->type == TYPE_SERVER && sess->ver >= 8)
                 SnacCliReqauth (sess, cont->uin, msg);
+            else
 #endif
-            else if (sess->type == TYPE_SERVER)
+            if (sess->type == TYPE_SERVER)
                 SnacCliSendmsg (sess, cont->uin, msg, MSG_AUTH_REQ, 0);
             else
                 CmdPktCmdSendMessage (sess, cont->uin, msg, MSG_AUTH_REQ);
@@ -2224,8 +2226,9 @@ static JUMP_F(CmdUserAuth)
 #ifdef WIP
             if (sess->type == TYPE_SERVER && sess->ver >= 8)
                 SnacCliAuthorize (sess, cont->uin, 0, msg);
+            else
 #endif
-            else if (sess->type == TYPE_SERVER)
+            if (sess->type == TYPE_SERVER)
                 SnacCliSendmsg (sess, cont->uin, msg, MSG_AUTH_DENY, 0);
             else
                 CmdPktCmdSendMessage (sess, cont->uin, msg, MSG_AUTH_DENY);
@@ -2237,8 +2240,9 @@ static JUMP_F(CmdUserAuth)
 #ifdef WIP
             if (sess->type == TYPE_SERVER && sess->ver >= 8)
                 SnacCliGrantauth (sess, cont->uin);
+            else
 #endif
-            else if (sess->type == TYPE_SERVER)
+            if (sess->type == TYPE_SERVER)
                 SnacCliSendmsg (sess, cont->uin, "\x03", MSG_AUTH_ADDED, 0);
             else
                 CmdPktCmdSendMessage (sess, cont->uin, "\x03", MSG_AUTH_ADDED);
@@ -2257,8 +2261,9 @@ static JUMP_F(CmdUserAuth)
 #ifdef WIP
     if (sess->type == TYPE_SERVER && sess->ver >= 8)
         SnacCliAuthorize (sess, cont->uin, 1, NULL);
+    else
 #endif
-    else if (sess->type == TYPE_SERVER)
+    if (sess->type == TYPE_SERVER)
         SnacCliSendmsg (sess, cont->uin, "\x03", MSG_AUTH_GRANT, 0);
     else
         CmdPktCmdSendMessage (sess, cont->uin, "\x03", MSG_AUTH_GRANT);

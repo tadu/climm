@@ -623,16 +623,13 @@ void IMOnline (Contact *cont, Session *sess, UDWORD status)
     cont->status = status;
     cont->flags &= ~CONT_SEENAUTO;
     
-    if (~old)
-        cont->caps = 0;
-
     putlog (sess, NOW, cont->uin, status, ~old ? LOG_CHANGE : LOG_ONLINE, 
         0xFFFF, "");
  
     if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || (prG->flags & FLAG_QUIET) || !(sess->connect & CONNECT_OK))
         return;
 
-    if (~old)
+    if (!~old)
     {
         if (prG->sound & SFLAG_ON_CMD)
             ExecScript (prG->sound_on_cmd, cont->uin, 0, NULL);
@@ -771,10 +768,16 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
             break;
 
         case 33:
-            M_printf ("<cap> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n",
-                      cdata);
+#ifdef WIP
+            {
+                Cap *cap = NULL;
+                if (!strncmp ("CAP_UNK_", cdata, 8))
+                    cap = PacketCap (atoi (cdata + 8));
+                M_printf ("<cap> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT " %s",
+                          cdata, cap ? s_dump (cap->cap, 16) : "\n");
+            }
             break;
-
+#endif
         case MSG_AUTO:
             M_printf ("<%s> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n",
                      i18n (2108, "auto"), cdata);

@@ -460,9 +460,9 @@ static JUMP_SNAC_F(SnacSrvUseronline)
         PacketD (p);
     }
     /* TLV 1, d, f, 2, 3 ignored */
+    if (!~cont->status)
+        cont->caps = 0;
 
-    IMOnline (cont, event->sess, tlv[6].len ? tlv[6].nr : 0);
-#ifdef WIP
     if (tlv[13].len)
     {
         p = PacketCreate (tlv[13].str, tlv[13].len);
@@ -472,12 +472,14 @@ static JUMP_SNAC_F(SnacSrvUseronline)
             Cap *cap = PacketReadCap (p);
             if (~cont->caps & (1 << cap->id) && cap->id)
             {
+#ifdef WIP
                 IMSrvMsg (cont, event->sess, NOW, 33, cap->name, STATUS_OFFLINE);
+#endif
                 cont->caps |= 1 << cap->id;
             }
         }
     }
-#endif
+    IMOnline (cont, event->sess, tlv[6].len ? tlv[6].nr : 0);
 }
 
 /*
@@ -593,14 +595,14 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                    PacketReadB4 (p); /* MID-RANDOM */
             cap1 = PacketReadCap (p);
             tlv = TLVRead (p, PacketReadLeft (p));
-#ifdef WIP
             if (cap1->id)
             {
+#ifdef WIP
                 if (~cont->caps & (1 << cap1->id))
                     IMSrvMsg (cont, event->sess, NOW, 33, cap1->name, STATUS_OFFLINE);
+#endif
                 cont->caps |= 1 << cap1->id;
             }
-#endif
             if ((i = TLVGet (tlv, 0x2711)) == (UWORD)-1)
             {
                 PacketD (p);
@@ -633,14 +635,14 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             PacketD (pp);
             if (!strlen (text) && unk == 0x12)
             {
-#ifdef WIP
                 if (cap2->id)
                 {
+#ifdef WIP
                     if (~cont->caps & (1 << cap2->id))
                         IMSrvMsg (cont, event->sess, NOW, 33, cap2->name, STATUS_OFFLINE);
+#endif
                     cont->caps |= 1 << cap2->id;
                 }
-#endif
                 s_free (text);
                 return;
             }
@@ -1146,7 +1148,7 @@ void SnacCliSetuserinfo (Session *sess)
     pak = SnacC (sess, 2, 4, 0, 0);
     PacketWriteTLV     (pak, 5);
     PacketWriteCap     (pak, CAP_SRVRELAY);
-    PacketWriteCap     (pak, CAP_UNK_2002);
+    PacketWriteCap     (pak, CAP_IS_2002);
     PacketWriteCap     (pak, CAP_ISICQ);
 #ifdef WIP
     PacketWriteCap     (pak, CAP_MICQ);

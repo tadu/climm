@@ -19,17 +19,38 @@
 #include <stdio.h>
 #include <string.h>
 
-static Cap caps[20] =
+#define cap_id   "\x82\x22\x44\x45\x53\x54\x00\x00"
+#define cap_none "\x00\x00\x00\x00\x00\x00\x00\x00"
+#define cap_str  "\xbc\xd2\x00\x04\xac\x96\xdd\x96"
+
+#define cap_mid  "\x4c\x7f\x11\xd1"
+#define cap_mstr "\x4f\xe9\xd3\x11"
+
+static Cap caps[CAP_MAX] =
 {
-    { CAP_NONE,     "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", "CAP_NONE"     },
-    { CAP_ISICQ,    "\x09\x46\x13\x44\x4c\x7f\x11\xd1\x82\x22\x44\x45\x53\x54\x00\x00", "CAP_ISICQ"    },
-    { CAP_SRVRELAY, "\x09\x46\x13\x49\x4c\x7f\x11\xd1\x82\x22\x44\x45\x53\x54\x00\x00", "CAP_SRVRELAY" },
-    { CAP_RTFMSGS,  "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x92", "CAP_RTFMSGS"  },
-    { CAP_UNK_2001, "\x2E\x7A\x64\x75\xFA\xDF\x4D\xC8\x88\x6F\xEA\x35\x95\xFD\xB6\xDF", "CAP_UNK_2001" },
-    { CAP_UNK_2002, "\x09\x46\x13\x4e\x4c\x7f\x11\xd1\x82\x22\x44\x45\x53\x54\x00\x00", "CAP_UNK_2002" },
-    { CAP_STR_2001, "\xa0\xe9\x3f\x37\x4f\xe9\xd3\x11\xbc\xd2\x00\x04\xac\x96\xdd\x96", "CAP_STR_2001" },
-    { CAP_STR_2002, "\x10\xcf\x40\xd1\x4f\xe9\xd3\x11\xbc\xd2\x00\x04\xac\x96\xdd\x96", "CAP_STR_2002" },
-    { CAP_MICQ,     "mICQ\x00\x04\x09\x04mICQ\x00\x04\x09\x04",                         "CAP_MICQ_0494"},
+    { CAP_NONE,        cap_none cap_none,                   "CAP_NONE"        },
+    { CAP_AIM_VOICE,   "\x09\x46\x13\x41" cap_mid cap_id,   "CAP_AIM_VOICE"   },
+    { CAP_AIM_SFILE,   "\x09\x46\x13\x43" cap_mid cap_id,   "CAP_AIM_SFILE"   },
+    { CAP_ISICQ,       "\x09\x46\x13\x44" cap_mid cap_id,   "CAP_ISICQ"       },
+    { CAP_AIM_IMIMAGE, "\x09\x46\x13\x45" cap_mid cap_id,   "CAP_AIM_IMIMAGE" },
+    { CAP_AIM_BUDICON, "\x09\x46\x13\x46" cap_mid cap_id,   "CAP_AIM_BUDICON" },
+    { CAP_AIM_STOCKS,  "\x09\x46\x13\x47" cap_mid cap_id,   "CAP_AIM_STOCKS"  },
+    { CAP_AIM_GETFILE, "\x09\x46\x13\x48" cap_mid cap_id,   "CAP_AIM_GETFILE" },
+    { CAP_SRVRELAY,    "\x09\x46\x13\x49" cap_mid cap_id,   "CAP_SRVRELAY"    },
+    { CAP_AIM_GAMES,   "\x09\x46\x13\x4a" cap_mid cap_id,   "CAP_AIM_GAMES"   },
+    { CAP_AIM_SBUD,    "\x09\x46\x13\x4b" cap_mid cap_id,   "CAP_AIM_SBUD"    },
+    { CAP_IS_2002,     "\x09\x46\x13\x4e" cap_mid cap_id,   "CAP_IS_2002"     },
+    { CAP_RTFMSGS,     "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x92", "CAP_RTFMSGS"     },
+    { CAP_IS_2001,     "\x2e\x7a\x64\x75\xfa\xdf\x4d\xc8\x88\x6f\xea\x35\x95\xfd\xb6\xdf", "CAP_IS_2001"     },
+    { CAP_STR_2001,    "\xa0\xe9\x3f\x37" cap_mstr cap_str, "CAP_STR_2001"    },
+    { CAP_STR_2002,    "\x10\xcf\x40\xd1" cap_mstr cap_str, "CAP_STR_2002"    },
+    { CAP_AIM_CHAT,    "\x74\x8f\x24\x20\x62\x87\x11\xd1" cap_id,                          "CAP_AIM_CHAT"    },
+    { CAP_IS_WEB,      "\x56\x3f\xc8\x09\x0b\x6f\x41\xbd\x9f\x79\x42\x26\x09\xdf\xa2\xf3", "CAP_IS_WEB"      },
+    { CAP_TRILL_CRYPT, "\xf2\xe7\xc7\xf4\xfe\xad\x4d\xfb\xb2\x35\x36\x79\x8b\xdf\x00\x00", "CAP_TRILL_CRYPT" },
+    { CAP_TRILL_2,     "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x09", "CAP_TRILL_2"     },
+    { CAP_LICQ,        "\x09\x49\x13\x49" cap_mid cap_id,   "CAP_LICQ"        },
+    { CAP_SIM,         "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x48", "CAP_SIM"         },
+    { CAP_MICQ,        "mICQ\x00\x04\x09\x04mICQ\x00\x04\x09\x04",                         "CAP_MICQ_0494"   },
     { 0, NULL, NULL }
 };
 
@@ -148,7 +169,7 @@ void PacketWriteCap (Packet *pak, UBYTE id)
     UBYTE i;
 
     assert (pak);
-    assert (id < 20);
+    assert (id < CAP_MAX);
     
     if (caps[id].id == id)
     {
@@ -156,11 +177,11 @@ void PacketWriteCap (Packet *pak, UBYTE id)
         return;
     }
 
-    for (i = 0; i < 20; i++)
+    for (i = 0; i < CAP_MAX; i++)
         if (caps[i].id == id)
             break;
     
-    i %= 20;
+    i %= CAP_MAX;
     PacketWriteData (pak, caps[i].cap, 16);
 }
 
@@ -440,7 +461,7 @@ Cap *PacketReadCap (Packet *pak)
     cap = pak->data + pak->rpos;
     pak->rpos += 16;
 
-    for (id = 0; id < 20; id++)
+    for (id = 0; id < CAP_MAX; id++)
         if (caps[id].cap)
         {
 #ifdef HAVE_MEMCMP
@@ -700,7 +721,7 @@ int PacketReadLeft  (const Packet *pak)
 
 Cap *PacketCap (UBYTE id)
 {
-    if (id >= 20)
+    if (id >= CAP_MAX)
         return &caps[0];
     return &caps[id];
 }
