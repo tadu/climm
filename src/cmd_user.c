@@ -1332,7 +1332,7 @@ static void __donecheck (UWORD data)
     if (prG->verbose)
         __totallen += 29;
     if (data & 2)
-        __totallen += 2 + 3 + 1 + 1 + __lenuin + 19;
+        __totallen += 2 + 3 + 2 + 1 + __lenuin + 19;
 
 }
 
@@ -1381,7 +1381,7 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
         ul = ESC "[4m";
 #endif
     if (data & 2)
-        rl_printf ("%s%s%c%c%c%1.1d%c%s%s %*ld", COLSERVER, ul,
+        rl_printf ("%s%s%c%c%c%2.2d%c%s%s %*ld", COLSERVER, ul,
              !cont->group                        ? '#' : ' ',
              ContactPrefVal (cont,  CO_INTIMATE) ? '*' :
               ContactPrefVal (cont, CO_HIDEFROM) ? '-' : ' ',
@@ -1536,7 +1536,11 @@ static JUMP_F(CmdUserStatusDetail)
         if (conn)
         {
             rl_printf ("%s %s%10lu%s ", s_now, COLCONTACT, conn->uin, COLNONE);
-            rl_printf (i18n (2211, "Your status is %s.\n"), s_status (conn->status));
+            if (~conn->connect & CONNECT_OK)
+                rl_printf (i18n (9999, "Your status is %s (%s).\n"),
+                    i18n (1969, "offline"), s_status (conn->status));
+            else
+                rl_printf (i18n (2211, "Your status is %s.\n"), s_status (conn->status));
         }
         if (data & 16)
             return 0;
