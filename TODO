@@ -18,28 +18,30 @@ TODO:
  : replace all UDWORD uin parameters by Contact * (done)
  : implement web aware feature (done right)
  : merge extra* and contactopts* stuff (done)
+ : implement mixing contacts and contact groups when contacts are requested on the command line (done)
+ : fix cursor position at end of line && string (done)
+ : command line option for initial status (done)
+ : fix finger timeout, handle error codes (done)
+ : fix file transfer (done)
+ : implement event dependancies (done)
+ : history of messages (partially done)
+ : alias for commands (partially done)
+ : command to display _all_ settings (partially done: opt and set)
  : add https support
  : add missing v8 pieces
    + figure out v8 reverse connection
- : history of messages (partially done)
- : alias for commands (partially done)
  : use ASCII art for setup wizard
  : file transfer:
    + figure out server file sending
  : implement more server message types
- : use Extra * for more message types
- : command to display _all_ settings
+ : use (contact)options for more message types
  : server side contact list:
    + contact list upload
  : better meta data change functions
  : internal: use string lib
  : fix insertion before a double width character when the newly added character would
    fit into the space inserted at the end of the last line due to the double
-   width character beeing double width
- : fix cursor position at end of line && string
- : fix file transfer
- : implement event dependancies
- : implement mixing contacts and contact groups when contacts are requested on the command line
+   width character being double width
  : implement wait-for-connection TCP transport
  : implement AIM compatibility
  : rewrite M_print() as well
@@ -47,3 +49,5 @@ TODO:
  : implement rate control
  : implement proper callback for password requests
  : option to switch off remote client display 
+ : improve login timing
+ 
