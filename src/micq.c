@@ -313,9 +313,9 @@ int main (int argc, char *argv[])
     {
         if (sess->connect & CONNECT_OK)
         {
-            if (sess->type & TYPE_SERVER)
+            if (sess->type == TYPE_SERVER)
                 FlapCliGoodbye (sess);
-            else if (sess->type & TYPE_SERVER_OLD)
+            else if (sess->type == TYPE_SERVER_OLD)
                 CmdPktCmdSendTextCode (sess, "B_USER_DISCONNECTED");
         }
     }
