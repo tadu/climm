@@ -631,11 +631,11 @@ BOOL s_parse_s (const char **input, char **parsed, const char *sep)
  * parsed ->nick will be the nick given,
  * unless the user entered an UIN.
  */
-BOOL s_parsenick_s (const char **input, Contact **parsed, const char *sep, const char **nick, Connection *serv)
+BOOL s_parsenick_s (const char **input, Contact **parsed, const char *sep, Connection *serv)
 {
     ContactGroup *cg;
     Contact *r;
-    const char *p = *input, *maxnick = "";
+    const char *p = *input;
     char *t;
     UDWORD max, l, ll, i;
     
@@ -645,8 +645,6 @@ BOOL s_parsenick_s (const char **input, Contact **parsed, const char *sep, const
     if (!*p)
     {
         *parsed = NULL;
-        if (nick)
-            *nick = NULL;
         return FALSE;
     }
     
@@ -656,23 +654,6 @@ BOOL s_parsenick_s (const char **input, Contact **parsed, const char *sep, const
         *parsed = ContactFind (serv->contacts, 0, 0, t, 0);
         if (*parsed)
         {
-            if (nick)
-            {
-                if (!strcmp ((*parsed)->nick, t))
-                    *nick = (*parsed)->nick;
-                else
-                {
-                    ContactAlias *ca;
-                    
-                    *nick = "";
-                    for (ca = (*parsed)->alias; ca; ca = ca->more)
-                        if (!strcmp (ca->alias, t))
-                        {
-                            *nick = ca->alias;
-                            break;
-                        }
-                }
-            }
             *input = p;
             return TRUE;
         }
@@ -687,8 +668,6 @@ BOOL s_parsenick_s (const char **input, Contact **parsed, const char *sep, const
             if ((r = ContactUIN (serv, max)))
             {
                 *parsed = r;
-                if (nick)
-                    *nick = s_sprintf ("%ld", max);
                 *input = p;
                 return TRUE;
             }
@@ -706,7 +685,7 @@ BOOL s_parsenick_s (const char **input, Contact **parsed, const char *sep, const
         if (l > max && l <= ll && (!p[l] || strchr (sep, p[l])) && !strncasecmp (p, r->nick, l))
         {
             *parsed = r;
-            max = strlen (maxnick = r->nick);
+            max = strlen (r->nick);
         }
         
         for (ca = r->alias; ca; ca = ca->more)
@@ -715,14 +694,12 @@ BOOL s_parsenick_s (const char **input, Contact **parsed, const char *sep, const
             if (l > max && l <= ll && (!p[l] || strchr (sep, p[l])) && !strncasecmp (p, ca->alias, l))
             {
                 *parsed = r;
-                max = strlen (maxnick = ca->alias);
+                max = strlen (ca->alias);
             }
         }
     }
     if (max)
     {
-        if (*nick)
-            *nick = maxnick;
         *input = p + max;
         return TRUE;
     }

@@ -703,7 +703,7 @@ static JUMP_F(CmdUserSMS)
         M_print (i18n (2013, "This command is v8 only.\n"));
         return 0;
     }
-    if (s_parsenick (&args, &cont, NULL, conn))
+    if (s_parsenick (&args, &cont, conn))
     {
         CONTACT_GENERAL (cont);
         arg2 = args;
@@ -746,7 +746,7 @@ static JUMP_F(CmdUserInfo)
 
     while (*args || data)
     {
-        if (!data && !s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
+        if (!data && !s_parsenick_s (&args, &cont, MULTI_SEP, conn))
         {
             M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
             return 0;
@@ -780,7 +780,7 @@ static JUMP_F(CmdUserPeek)
     
     while (*args)
     {
-        if (!s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
+        if (!s_parsenick_s (&args, &cont, MULTI_SEP, conn))
         {
             M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
             return 0;
@@ -903,7 +903,7 @@ static JUMP_F(CmdUserGetAuto)
 #endif
         else args = argst;
     }
-    while (s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
+    while (s_parsenick_s (&args, &cont, MULTI_SEP, conn))
     {
         int cdata;
         
@@ -969,7 +969,7 @@ static JUMP_F(CmdUserPeer)
         else if (!strcmp (arg1, "dnd"))    data = 13;
         else if (!strcmp (arg1, "ffc"))    data = 14;
     }
-    while (data && s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
+    while (data && s_parsenick_s (&args, &cont, MULTI_SEP, conn))
     {
         switch (data)
         {
@@ -1315,7 +1315,7 @@ static JUMP_F (CmdUserResend)
         return 0;
     }
 
-    if (!s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
+    if (!s_parsenick_s (&args, &cont, MULTI_SEP, conn))
     {
         if (*args)
             M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
@@ -1331,7 +1331,7 @@ static JUMP_F (CmdUserResend)
 
         if (*args == ',')
             args++;
-        if (!s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
+        if (!s_parsenick_s (&args, &cont, MULTI_SEP, conn))
         {
             if (*args)
                 M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
@@ -1374,7 +1374,7 @@ static JUMP_F (CmdUserAnyMess)
     }
     s_init (&t, "", 100);
 
-    if (!s_parsenick (&args, &cont, NULL, conn))
+    if (!s_parsenick (&args, &cont, conn))
         return 0;
     
     if (!s_parse (&args, &arg1))
@@ -1432,7 +1432,7 @@ static JUMP_F (CmdUserMessageNG)
                 }
                 for (i = 0; *args; args++)
                 {
-                    if (!s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
+                    if (!s_parsenick_s (&args, &cont, MULTI_SEP, conn))
                     {
                         M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
                         return 0;
@@ -1612,7 +1612,7 @@ static JUMP_F (CmdUserMessage)
                 }
                 while (*args)
                 {
-                    if (!s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
+                    if (!s_parsenick_s (&args, &cont, MULTI_SEP, conn))
                     {
                         M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
                         return 0;
@@ -1739,7 +1739,7 @@ static JUMP_F(CmdUserStatusDetail)
                 args = argst;
     }
 
-    if ((data & 8) && !cg && (!conn || !s_parsenick (&args, &cont, NULL, conn)) && *args)
+    if ((data & 8) && !cg && (!conn || !s_parsenick (&args, &cont, conn)) && *args)
     {
         M_printf (i18n (1700, "%s is not a valid user in your list.\n"), args);
         return 0;
@@ -1991,7 +1991,6 @@ static JUMP_F(CmdUserStatusDetail)
 static JUMP_F(CmdUserStatusMeta)
 {
     Contact *cont;
-    const char *nick;
     char *cmd;
     ANYCONN;
 
@@ -2022,7 +2021,7 @@ static JUMP_F(CmdUserStatusMeta)
     {
         if (data == 6)
             cont = ContactUIN (conn, uiG.last_rcvd_uin);
-        else if (data != 4 && conn && !s_parsenick (&args, &cont, &nick, conn) && *args)
+        else if (data != 4 && conn && !s_parsenick (&args, &cont, conn) && *args)
         {
             M_printf (i18n (1700, "%s is not a valid user in your list.\n"), args);
             return 0;
@@ -2040,17 +2039,17 @@ static JUMP_F(CmdUserStatusMeta)
                     UtilUIDisplayMeta (cont);
                 else
                     M_printf (i18n (2247, "Couldn't load meta data for '%s' (%ld).\n"),
-                              nick, cont->uin);
+                              cont->nick, cont->uin);
                 if (*args == ',')
                     args++;
                 continue;
             case 3:
                 if (ContactMetaSave (cont))
                     M_printf (i18n (2248, "Saved meta data for '%s' (%ld).\n"),
-                              nick, cont->uin);
+                              cont->nick, cont->uin);
                 else
                     M_printf (i18n (2249, "Couldn't save meta data for '%s' (%ld).\n"),
-                              nick, cont->uin);
+                              cont->nick, cont->uin);
                 if (*args == ',')
                     args++;
                 continue;
@@ -2523,7 +2522,7 @@ static JUMP_F(CmdUserOpt)
 {
     ContactGroup *cg = NULL;
     Contact *cont = NULL;
-    const char *nick, *optname = NULL, *res = NULL, *eres = NULL, *optobj = NULL;
+    const char *optname = NULL, *res = NULL, *eres = NULL, *optobj = NULL;
     ContactOptions *copts = NULL;
     int opttype = 0, i;
     UWORD flag = 0;
@@ -2540,9 +2539,9 @@ static JUMP_F(CmdUserOpt)
         return 0;
     }
 
-    if (s_parsekey (&args, "global"))                  { copts = &prG->copts;  opttype = 0; optobj = ""; }
-    else if (s_parsecg (&args, &cg, conn))             { copts = &cg->copts;   opttype = 1; optobj = cg->name; }
-    else if (s_parsenick (&args, &cont, &nick, conn))  { copts = &cont->copts; opttype = 2; optobj = nick; }
+    if (s_parsekey (&args, "global"))           { copts = &prG->copts;  opttype = 0; optobj = ""; }
+    else if (s_parsecg (&args, &cg, conn))      { copts = &cg->copts;   opttype = 1; optobj = cg->name; }
+    else if (s_parsenick (&args, &cont, conn))  { copts = &cont->copts; opttype = 2; optobj = cont->nick; }
     else if (s_parse (&args, &cmd))
     {
         M_printf (i18n (9999, "Could not find contact or contact group name in %s.\n"), args);
@@ -2703,12 +2702,11 @@ static JUMP_F(CmdUserRegister)
 static JUMP_F(CmdUserTogIgnore)
 {
     Contact *cont = NULL;
-    const char *nick;
     OPENCONN;
 
     while (*args)
     {
-        if (!s_parsenick_s (&args, &cont, MULTI_SEP, &nick, conn))
+        if (!s_parsenick_s (&args, &cont, MULTI_SEP, conn))
         {
             M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
             return 0;
@@ -2717,12 +2715,12 @@ static JUMP_F(CmdUserTogIgnore)
         if (ContactPref (cont, CO_IGNORE))
         {
             ContactOptionsSet (&cont->copts, CO_IGNORE, "");
-            M_printf (i18n (1666, "Unignored %s.\n"), nick);
+            M_printf (i18n (1666, "Unignored %s.\n"), cont->nick);
         }
         else
         {
             ContactOptionsSet (&cont->copts, CO_IGNORE, "+");
-            M_printf (i18n (1667, "Ignoring %s.\n"), nick);
+            M_printf (i18n (1667, "Ignoring %s.\n"), cont->nick);
         }
         if (*args == ',')
             args++;
@@ -2736,12 +2734,11 @@ static JUMP_F(CmdUserTogIgnore)
 static JUMP_F(CmdUserTogInvis)
 {
     Contact *cont = NULL;
-    const char *nick;
     OPENCONN;
 
     while (*args)
     {
-        if (!s_parsenick_s (&args, &cont, MULTI_SEP, &nick, conn))
+        if (!s_parsenick_s (&args, &cont, MULTI_SEP, conn))
         {
             M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
             return 0;
@@ -2754,7 +2751,7 @@ static JUMP_F(CmdUserTogInvis)
                 SnacCliReminvis (conn, cont);
             else
                 CmdPktCmdUpdateList (conn, cont, INV_LIST_UPDATE, FALSE);
-            M_printf (i18n (2020, "Being visible to %s.\n"), nick);
+            M_printf (i18n (2020, "Being visible to %s.\n"), cont->nick);
         }
         else
         {
@@ -2764,7 +2761,7 @@ static JUMP_F(CmdUserTogInvis)
                 SnacCliAddinvis (conn, cont);
             else
                 CmdPktCmdUpdateList (conn, cont, INV_LIST_UPDATE, TRUE);
-            M_printf (i18n (2021, "Being invisible to %s.\n"), nick);
+            M_printf (i18n (2021, "Being invisible to %s.\n"), cont->nick);
         }
         if (*args == ',')
             args++;
@@ -2785,12 +2782,11 @@ static JUMP_F(CmdUserTogInvis)
 static JUMP_F(CmdUserTogVisible)
 {
     Contact *cont = NULL;
-    const char *nick = NULL;
     OPENCONN;
 
     while (*args)
     {
-        if (!s_parsenick (&args, &cont, &nick, conn))
+        if (!s_parsenick (&args, &cont, conn))
         {
             M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
             return 0;
@@ -2803,7 +2799,7 @@ static JUMP_F(CmdUserTogVisible)
                 SnacCliRemvisible (conn, cont);
             else
                 CmdPktCmdUpdateList (conn, cont, VIS_LIST_UPDATE, FALSE);
-            M_printf (i18n (1670, "Normal visible to %s now.\n"), nick);
+            M_printf (i18n (1670, "Normal visible to %s now.\n"), cont->nick);
         }
         else
         {
@@ -2813,7 +2809,7 @@ static JUMP_F(CmdUserTogVisible)
                 SnacCliAddvisible (conn, cont);
             else
                 CmdPktCmdUpdateList (conn, cont, VIS_LIST_UPDATE, TRUE);
-            M_printf (i18n (1671, "Always visible to %s now.\n"), nick);
+            M_printf (i18n (1671, "Always visible to %s now.\n"), cont->nick);
         }
         if (*args == ',')
             args++;
@@ -2868,7 +2864,7 @@ static JUMP_F(CmdUserAdd)
     {
         while (*args)
         {
-            while (s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
+            while (s_parsenick_s (&args, &cont, MULTI_SEP, conn))
             {
                 if (cont->oldflags & CONT_TEMPORARY)
                     M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), cont->nick);
@@ -2891,7 +2887,7 @@ static JUMP_F(CmdUserAdd)
         return 0;
     }
 
-    if (!s_parsenick (&args, &cont, NULL, conn))
+    if (!s_parsenick (&args, &cont, conn))
     {
         M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
@@ -2994,7 +2990,7 @@ static JUMP_F(CmdUserRemove)
 
     while (*args)
     {
-        if (!s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
+        if (!s_parsenick_s (&args, &cont, MULTI_SEP, conn))
         {
             M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
             break;
@@ -3073,7 +3069,7 @@ static JUMP_F(CmdUserAuth)
     }
     cmd = strdup (cmd);
 
-    if (s_parsenick (&args, &cont, NULL, conn))
+    if (s_parsenick (&args, &cont, conn))
     {
         s_parserem (&args, &msg);
         if (!strcmp (cmd, "req"))
@@ -3123,7 +3119,7 @@ static JUMP_F(CmdUserAuth)
             return 0;
         }
     }
-    if ((strcmp (cmd, "grant") && !s_parsenick (&argsb, &cont, NULL, conn)) || !cont)
+    if ((strcmp (cmd, "grant") && !s_parsenick (&argsb, &cont, conn)) || !cont)
     {
         M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"),
                  strcmp (cmd, "grant") && strcmp (cmd, "req") && strcmp (cmd, "deny") ? argsb : args);
@@ -3166,7 +3162,7 @@ static JUMP_F(CmdUserURL)
     Contact *cont = NULL;
     OPENCONN;
 
-    if (!s_parsenick (&args, &cont, NULL, conn))
+    if (!s_parsenick (&args, &cont, conn))
     {
         M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
@@ -3230,7 +3226,7 @@ static JUMP_F(CmdUserLast)
 /*    int i; */
     ANYCONN;
 
-    if (!s_parsenick (&args, &cont, NULL, conn))
+    if (!s_parsenick (&args, &cont, conn))
     {
         HistShow (conn, NULL);
 
@@ -3260,7 +3256,7 @@ static JUMP_F(CmdUserLast)
         if (*args == ',')
             args++;
     }
-    while (s_parsenick (&args, &cont, NULL, conn));
+    while (s_parsenick (&args, &cont, conn));
     return 0;
 }
 

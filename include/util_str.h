@@ -43,12 +43,12 @@ UDWORD      s_strnlen (const char *str, UDWORD len);
 UDWORD      s_offset  (const char *str, UDWORD offset);
 const char *s_realpath(const char *path);
 
-BOOL        s_parse_s     (const char **input, char    **parsed, const char *sep);
-BOOL        s_parsenick_s (const char **input, Contact **parsed, const char *sep, const char **nick, Connection *serv);
+BOOL        s_parse_s     (const char **input, char         **parsed, const char *sep);
+BOOL        s_parsenick_s (const char **input, Contact      **parsed, const char *sep, Connection *serv);
 BOOL        s_parsecg_s   (const char **input, ContactGroup **parsed, const char *sep, Connection *serv);
-BOOL        s_parserem_s  (const char **input, char    **parsed, const char *sep);
-BOOL        s_parseint_s  (const char **input, UDWORD   *parsed, const char *sep);
-BOOL        s_parsekey_s  (const char **input, const char *kw, const char *sep);
+BOOL        s_parserem_s  (const char **input, char         **parsed, const char *sep);
+BOOL        s_parseint_s  (const char **input, UDWORD        *parsed, const char *sep);
+BOOL        s_parsekey_s  (const char **input, const char *kw,        const char *sep);
 const char *s_quote       (const char *input);
 
 #define s_repl(old,new) do { char **_p_p_ = old; const char *_q_q_ = new; \
@@ -61,11 +61,11 @@ const char *s_quote       (const char *input);
 #define DEFAULT_SEP " \t\r\n"
 #define MULTI_SEP   " \t\r\n,"
 
-#define s_parse(i,p)          s_parse_s     (i, p, DEFAULT_SEP)
-#define s_parsenick(i,p,pr,s) s_parsenick_s (i, p, DEFAULT_SEP, pr, s)
-#define s_parsecg(i,p,s)      s_parsecg_s   (i, p, DEFAULT_SEP, s)
-#define s_parserem(i,p)       s_parserem_s  (i, p, DEFAULT_SEP)
-#define s_parseint(i,p)       s_parseint_s  (i, p, DEFAULT_SEP)
-#define s_parsekey(i,k)       s_parsekey_s  (i, k, DEFAULT_SEP)
+#define s_parse(i,p)       s_parse_s     (i, p, DEFAULT_SEP)
+#define s_parsenick(i,p,s) s_parsenick_s (i, p, DEFAULT_SEP, s)
+#define s_parsecg(i,p,s)   s_parsecg_s   (i, p, DEFAULT_SEP, s)
+#define s_parserem(i,p)    s_parserem_s  (i, p, DEFAULT_SEP)
+#define s_parseint(i,p)    s_parseint_s  (i, p, DEFAULT_SEP)
+#define s_parsekey(i,k)    s_parsekey_s  (i, k, DEFAULT_SEP)
 
 #endif /* MICQ_UTIL_STR_H */
