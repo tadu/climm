@@ -1,31 +1,56 @@
 .\" $Id$ -*- nroff -*-
-.\"  EN: micq.1,v 1.12 2002/08/09 01:22:20
+.\"  EN: micq.1,v 1.15 2003/01/05 20:56:05
 .TH MICQ 1 mICQ DE
 .SH NAME
 .B mICQ
 \- ein kleines ICQ-Programm, das im Text-Modus l\(:auft
 .SH \(:UBERSICHT
 .B micq
+.I [\-h]
+.I [\-c]
+.I [\-i <locale>]
+.I [\-b <basedir>]
+.I [\-f <configfile>]
 .I [\-v[level]]
-.I [\-f Dateiname]
-.br
+.I [\-l <logplace>]
 .SH BESCHREIBUNG
 .I mICQ
 ist ein text-basiertes ICQ-Programm, das viele Eigenschaften
 des von Mirabilis erstellten ICQ unterst\(:utzt. Mit mICQ kann man
 das Pa\(sswort \(:andern, neue Benutzernumern erzeugen, die
 Benutzerinformationen aktualisieren, andere Benutzer suchen,
+SMS verschicken, direkte Verbindungen aufbauen, Dateien \(:ubertragen,
+das von anderen Benutzern verwendete ICQ-Programm herausfinden,
+UTF-8-kodierte Nachrichten verschicken, bei Ereignissen beliebiege
+Kommandos ausf\(:uhren,
 und so weiter.
 .SH OPTIONEN
 .TP
-.BI \-v [level]
+.BI \-h|\-\-help
+Zeigt einen kurzen Hilfe-Text an und beendet.
+.TP
+.BI \-c|\-\-nocolor
+Verwendet keine Farben.
+.TP
+.BI \-i|\-\-i18n \ <locale>
+Verwendet die Lokalisierung
+.I locale
+anstatt der in den Umgebungsvariablen angegebenen.
+.TP
+.BI \-b|\-\-basedir \ <basedir>
+Verwendet
+.I basedir
+als das Basisverzeichnis, in dem mICQ nach seinen Dateien sucht, insbesondere
+seiner Konfigurationsdatei micqrc.
+.TP
+.BI \-f|\-\-config \ <configfile>
+Verwendet
+.I configfile
+als Konfigurationsdatei.
+.TP
+.BI \-v|\-\-verbose [level]
 W\(:ahlt den ausf\(:uhrlichen Modus bzw. setzt wie Ausf\(:uhrlichkeit auf
 .IR level .
-.TP
-.BI \-f \ Dateiname
-Benutzt
-.I Dateiname
-als Kon\(figurationsdatei.
 .TP
 .BI \-l \ Datei|Verzeichnis
 Benutzt
@@ -33,22 +58,16 @@ Benutzt
 als Log-Datei, bzw. benutzt
 .IR Verzeichnis ,
 um dort die nach Benutzern getrennte Log-Dateien abzulegen.
-.TP
-.BI \-?,\ \-h
-Gibt die Syntax aus.
-
-
 .SH EIGENSCHAFTEN
 .B mICQ
 ist sehr portabel und l\(:auft unter Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD
 und jedem anderen modernen Unix-artigen System.
-.B mICQ version 0.4.9.2
+.B mICQ version 0.4.10
 l\(:auft unter Linux, AIX, HPUX, Tru64, AmigaOS, teilweise BeOS und anderen
 Unix-artigen Systemen. Andere Portierungen funktionieren
 m\(:oglicherweise ebenfalls noch, und jeder, der dies
 testen m\(:ochte, sei dazu aufgerufen.
 .SH GESCHICHTE
-.Bl -tag -width Fl
 .TP
 16. August 1998
 Matthew D. Smith gibt die erste Version von micq frei,
@@ -77,9 +96,8 @@ Informationen \(:uber die Anmeldung und Archive \(finden sich unter
 \(:Uber HTTP von
 .IR http://www.micq.org/download .
 Um die neueste Version aus dem CVS zu bekommen, gebe man ein:
-.sp
-cvs \-d:pserver:anonymous@micq.org:/usr/local/cvsroot co micq
-
+.br
+cvs \-d:pserver:anonymous@micq.org:/var/lib/cvs co micq
 .SH SIEHE AUCH
 .BR micqrc (5),
 .BR micq (7)
@@ -88,18 +106,23 @@ cvs \-d:pserver:anonymous@micq.org:/usr/local/cvsroot co micq
 .I ~/.micqrc
 Alte Kon\(figurationsdatei f\(:ur mICQ \- veraltet.
 .TP
-.I ~/.micq/micqrc
+.I ~/.micq/
+Standardm\(:assiges Basisverzeichnis f\(:ur mICQ's Dateien.
+.TP
+.I BASIS/micqrc
 Kon\(figurationsdatei f\(:ur mICQ.
+.TP
+.I BASIS/i18n/*.i18n
+Benutzer-\(:Anderungen zu mICQ's \(:Ubersetzungsdateien.
+.TP
+.I BASIS/history/
+Standardverzeichnis f\(:ur Log-Dateien.
+.TP
+.I BASIS/files/
+Verzeichnis, in dem mICQ DAteien von eingehende Datei\(:ubertragungen speichert.
 .TP
 .I PREFIX/share/micq/*.i18n
 \(:Ubersetzungsdateien mit \(:Ubersetzungen von alle Texten, die mICQ ausgibt.
-.TP
-.I ~/.micq/i18n/*.i18n
-Benutzer-\(:Anderungen zu diesen Dateien.
-.TP
-.I ~/.micq/history/
-Standardverzeichnis f\(:ur Log-Dateien.
-
 .SH FEHLERBERICHTE
 Fehlerberichte oder Kommentare bitte an R\(:udiger Kuhlmann
 <micq@ruediger\-kuhlmann.de> (auf Deutsch oder Englisch) schicken.
