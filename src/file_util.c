@@ -1232,7 +1232,7 @@ void PrefReadStat (FILE *stf)
             else
             {
                 M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                M_printf (i18n (1659, "Unknown section %s in configuration file."), ConvToUTF8 (line, ENC_UTF8, -1, 0));
+                M_printf (i18n (1659, "Unknown section '%s' in configuration file."), ConvToUTF8 (line, ENC_UTF8, -1, 0));
                 M_print ("\n");
                 section = -1;
             }

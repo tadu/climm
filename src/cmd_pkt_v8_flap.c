@@ -163,7 +163,7 @@ static void FlapChannel4 (Connection *conn, Packet *pak)
         M_print (COLEXDENT "\n");
         
         if (tlv[8].nr == 24)
-            M_printf ("FIXME: now will you please stop logging in every 5 seconds? Don't try again until half an hour has passed.\n");
+            M_print (i18n (2328, "You logged in too frequently, please wait 30 minutes before trying again.\n"));
 
         if ((conn->connect & CONNECT_MASK) && conn->sok != -1)
             sockclose (conn->sok);

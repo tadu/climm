@@ -126,7 +126,7 @@ void Idle_Check (Connection *conn)
     if (!uiG.idle_val)
         uiG.idle_val = now;
 
-    if (uiG.idle_flag && new == 0xffffffffL)
+    if (uiG.idle_flag & 2)
     {
         if (conn->status & STATUSF_NA)
         {
@@ -152,7 +152,7 @@ void Idle_Check (Connection *conn)
     else if (!uiG.idle_flag && delta >= prG->away_time && !(conn->status & (STATUSF_AWAY | STATUSF_NA)))
     {
         new = (conn->status & STATUSF_INV) | STATUS_AWAY;
-        uiG.idle_flag = 1;
+        uiG.idle_flag = 2;
         uiG.idle_msgs = 0;
     }
     if (new != 0xffffffffL && new != conn->status)

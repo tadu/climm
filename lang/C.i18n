@@ -53,11 +53,8 @@
 1064:Automatically changed status to %s.\n
 1072:Users offline:
 1073:Users online:
-1077:in dedication to Matthew D. Smith.
 1078:No translation available.
 1079:Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n
-1080:Couldn't load "%s" internationalization.\n
-1081:Successfully loaded en translation (%ld entries).\n
 1082:Trying to reconnect... [try %d out of %d]\n
 1085:on
 1086:off
@@ -156,7 +153,7 @@
 1185:Technical
 1186:University Student
 1187:Web Building
-1188:Unrecognized command in rc file '%s', ignored.
+1188:Unrecognized command '%s' in configuration file, ignored.
 1198:Other Services
 1200:not entered
 1201:Afghanistan
@@ -527,18 +524,18 @@
 1620:maximal number of contacts reached. Ask a wizard to enlarge me!
 1621:users not returned.
 1622:Do you want to apply these changes? (YES/NO)
-1623:Doubled packet %04X\n
+1623:Double packet %04x.\n
 1624:Sorry, can't initialize Windows Sockets...
-1632:\nConnection unstable. Exiting....
+1632:\nConnection unstable. Exiting....
 1634:ok.\n
 1637:Can't bind socket to free port\n
 1638:Couldn't create socket
 1639:The new UIN is %ld!\n
 1640:Failed to update info.\n
 1641:User info successfully updated.\n
-1642:IP
+1642:IP:
 1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
-1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
+1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
 1645:You entered an incorrect password.\n
 1646:Server is busy.\n
 1648:The response was %04x	
@@ -551,7 +548,7 @@
 1656:Enter the user's nick name:
 1657:Enter the user's first name:
 1658:Enter the user's last name:
-1659:Unknown section %s in configuration file.
+1659:Unknown section '%s' in configuration file.
 1660:Invalid Command: %s\n
 1661:Shell commands have been disabled.\n
 1666:Unignored %s.\n
@@ -592,7 +589,7 @@
 1716:None
 1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
 1719:Shows how long mICQ has been running and some statistics.
-1720:<contacts> is a comma seperated list of UINs and nick names of users.
+1720:<contacts> is a comma separated list of UINs and nick names of users.
 1721:Sending a blank message will put the client into multiline mode.\nUse . on a line by itself to end message.\nUse # on a line by itself to cancel the message.
 1724:Automatic replies are %s.\n
 1727:The "do not disturb" message is:
@@ -657,7 +654,7 @@
 1814:Sent auto-response message to %s%s%s.\n
 1815:    funny:      use funny messages for output.\n
 1817:The event scripting feature is disabled.\n
-1818:Warning: Deprecated syntax found in rc file!\n    Please update or "save" the rc file and check for changes.\n
+1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 1820:%s <option> [on|off|<value>] - control simple options.\n
 1822:    color:      use colored text output.\n
 1823:Incoming partial packet:
@@ -679,7 +676,7 @@
 1855:TCP connection to %s at %s:%ld failed.\n
 1856:Discarded a %04x (%s) packet from old session %08lx (current: %08lx).\n
 1857:Do you want to hide your IP from other contacts? (YES/NO)
-1864:Can't open rcfile %s.
+1864:Could not open configuration file %s.
 1866:This version of mICQ is compiled without direct connection (peer to peer) support.\n
 1867:Received a malformed (too short) packet - ignored.\n
 1868:Got a malformed (to long subpacket) multi-packet - remainder ignored.\n
@@ -874,9 +871,9 @@
 2100:conn select <uin>  Select connection with UIN <uin> as server connection.\n
 2101:Removing connection %ld and its dependents completely.\n
 2102:Connection %ld is a configured connection.\n
-2103:contact show    Show server side contact list.\n
-2104:contact diff    Show server side contacts not on local contact list.\n
-2105:contact import  Add server side contact list to local contact list.\n
+2103:contact show    Show server based contact list.\n
+2104:contact diff    Show server based contacts not on local contact list.\n
+2105:contact import  Import server based contact list as local contact list.\n
 2106:Last message from %s%s%s at %s:\n
 2107:No messages received from %s%s%s.\n
 2108:auto
@@ -920,23 +917,23 @@
 2150:Removed contact '%s' (%ld).\n
 2156:conn close <nr>    Close connection <nr>.\n
 2157:Moldova
-2158:No file given.\n
+2158:No file name given.\n
 2159:Some files.
 2160:peer file  <nick> <file> [<description>]\n
-2161:Receiving %ld files with together %ld bytes at speed %lx from %s.\n
+2161:Receiving %ld files with total size %ld bytes at speed %lx from %s.\n
 2162:Receiving file %s (%s) with %ld bytes as %s.\n
 2163:Sending file %ld at offset %ld.\n
 2164:Error writing to file.\n
-2165:The peer sent more bytes (%ld) than file length (%ld).\n
+2165:The peer sent more bytes (%ld) than the file length (%ld).\n
 2166:Finished receiving file.\n
 2167:Error - unknown packet.\n
 2168:File transfer #%ld (%s) dropped after %ld attempts because of timeout.\n
 2169:File transfer aborted by peer (%d).\n
-2170:Sending with speed %lx to %s.\n
+2170:Sending file at speed %lx to %s.\n
 2171:Advanced
 2172:Commands for advanced features.
-2176:Displays verbose the current status of everyone on your contact list.
-2177:Displays verbose the current status of online people on your contact list.
+2176:Displays verbosely the current status of everyone on your contact list.
+2177:Displays verbosely the current status of online people on your contact list.
 2179:Send all <contacts> a single file.
 2180:Send <uin> or <nick> several files.
 2181:Closes or removes connection number <nr>.
@@ -956,15 +953,11 @@
 2199:  -h, --help     gives this help text\n
 2200:  -v, --verbose  set (or increase) verbosity (mostly for debugging)\n
 2201:  -b, --basedir  use given BASE dir (default: %s)\n
-2202:  -f, --config   use given configuration file (default: %s)\n
 2203:  -l, --logplace use given log file/dir (default: %s)\n
 2204:  -i, --i18n     use given locale (default: auto-detected)\n
 2205:  -c, --nocolor  disable colors\n
 2206:The server doesn't want to give us offline messages.\n
 2207:Protocol error in command to old ICQ server: %d.\n
-2208:Detected UTF-8 encoding, however, this mICQ was compiled without UTF-8 support.\n
-2209:Detected UTF-8 encoding.\n
-2210:%smICQ (Matt's ICQ clone)%s version %s%s%s (compiled on %s)\n
 2211:Your status is %s.\n
 2212:changed status to %s
 2213:logged on (%s)
@@ -1006,7 +999,7 @@
 2251:Error:
 2252:A beep is generated by %sbeep%sing.\n
 2253:A beep is generated by running the %sevent%s script.\n
-2254:A beep is never generated.
+2254:A beep is never generated.\n
 2255:A beep for oncoming contacts is always generated by running the %sevent%s script.\n
 2256:A beep for offgoing contacts is always generated by running the %sevent%s script.\n
 2257:Encoding:
@@ -1061,15 +1054,34 @@
 2306:Request server side contact list and show all or new contacts or import.
 2307:Displays the current status of online people on your contact list, sorted by contact group.
 2308:Displays the current status of everyone on your contact list, sorted by contact group.
-2309:Displays verbose the current status of online people on your contact list, sorted by contact group.
-2310:Displays verbose the current status of everyone on your contact list, sorted by contact group.
+2309:Displays verbosely the current status of online people on your contact list, sorted by contact group.
+2310:Displays verbosely the current status of everyone on your contact list, sorted by contact group.
 2311:Adds <uin> as <new nick>, or add alias <new nick> for <uin> or <nick>.
 2312:Remove all aliases in <contacts>, removes contact if 'all' is given.
 2313:Grant, deny, request or acknowledge authorization from/to <contacts> to you/them to their/your contact list.
 2314:These are advanced commands. Be sure to have read the manual pages for complete information.\n
 2315:Cannot watch status of %s - too many watchers.\n
+2316:Translation %s not found.\n
 2317:Translation %s not found. Would you like to translate mICQ into your language?\n
 2318:English (%s) translation loaded (%ld entries).\n
 2319:Accept an incoming file transfer from <uin> or <nick>.
 2320:peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n
+2321:contact add     Add server based contact list to local contact list.\n
+2322:contact sync    Import server based contact list if appropriate.\n
+2323:contact export  Export local contact list to server based list.\n
+2324:contact upload  Add local contacts to server based contact list.\n
+2325:Warning: server based contact list change failed with error code %d.\n
+2326:Server side contact list only supported for ICQ v8.\n
 2327:%smICQ (Matt's ICQ clone)%s version %s%s%s\n
+2328:You logged in too frequently, please wait 30 minutes before trying again.\n
+2329:syntax error
+2330:removing non-contact
+2331:unknown
+2332:Contact error %d (%s) for %d contacts: 
+2333:%s [show|load|save|set|get|rget] <contacts> - handle meta data for contacts.\n
+2334:  show - show current known meta data\n
+2335:  load - load from file and show meta data\n
+2336:  save - save meta data to file\n
+2337:  set  - upload own meta data to server\n
+2338:  get  - query server for meta data\n
+2339:  rget - query server for last sender's meta data\n

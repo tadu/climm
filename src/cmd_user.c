@@ -1989,7 +1989,13 @@ static JUMP_F(CmdUserStatusMeta)
         
         if (!data)
         {
-            M_printf ("FIXME: help for meta *\n");
+            M_printf (i18n (2333, "%s [show|load|save|set|get|rget] <contacts> - handle meta data for contacts.\n"), CmdUserLookupName ("meta"));
+            M_print  (i18n (2334, "  show - show current known meta data\n"));
+            M_print  (i18n (2335, "  load - load from file and show meta data\n"));
+            M_print  (i18n (2336, "  save - save meta data to file\n"));
+            M_print  (i18n (2337, "  set  - upload own meta data to server\n"));
+            M_print  (i18n (2338, "  get  - query server for meta data\n"));
+            M_print  (i18n (2339, "  rget - query server for last sender's meta data\n"));
             return 0;
         }
     }
@@ -2311,11 +2317,13 @@ static JUMP_F(CmdUserStatusShort)
  */
 static JUMP_F(CmdUserSound)
 {
-    if (strlen (args))
+    char *arg;
+    
+    if (s_parse (&args, &arg))
     {
-        if (!strcasecmp (args, "on") || !strcasecmp (args, i18n (1085, "on")) || !strcasecmp (args, "beep"))
+        if (!strcasecmp (arg, "on") || !strcasecmp (arg, i18n (1085, "on")) || !strcasecmp (arg, "beep"))
            prG->sound = SFLAG_BEEP;
-        else if (strcasecmp (args, "off") && strcasecmp (args, i18n (1086, "off")))
+        else if (strcasecmp (arg, "off") && strcasecmp (arg, i18n (1086, "off")))
            prG->sound = SFLAG_EVENT;
         else
            prG->sound = 0;
@@ -4285,10 +4293,10 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
 
                 if (*cmd != '\xb6')
                 {
-                    if (CmdUserProcessAlias (cmd, argsd, &idle_save, idle_flag))
+                    if (*argsd && CmdUserProcessAlias (cmd, argsd + 1, &idle_save, idle_flag))
                         is_alias = TRUE;
                     else
-                    j = CmdUserLookup (cmd, CU_USER);
+                        j = CmdUserLookup (cmd, CU_USER);
                 }
                 if (!is_alias && !j)
                     j = CmdUserLookup (*cmd == '\xb6' ? cmd + 1 : cmd, CU_DEFAULT);

@@ -1621,7 +1621,7 @@ static void TCPCallBackReceive (Event *event)
                     {
                         IMSrvMsg (cont, peer, NOW, ExtraSet (ExtraSet (NULL,
                                   EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
-                                  EXTRA_MESSAGE, MSG_NORM, tmp));
+                                  EXTRA_MESSAGE, MSG_AUTO, tmp));
                         ContactPrefSet (cont, CONT_SEENAUTO, CONT_MODE_SET);
                     }
                     break;
