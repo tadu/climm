@@ -63,7 +63,7 @@ static jump_t jump[] = {
     { &CmdUserResend,        "resend",       NULL, 0,   0 },
     { &CmdUserVerbose,       "verbose",      NULL, 0,   0 },
     { &CmdUserIgnoreStatus,  "i",            NULL, 0,   0 },
-    { &CmdUserStatusDetail,  "status",       NULL, 2,  14 },
+    { &CmdUserStatusDetail,  "status",       NULL, 2,  10 },
     { &CmdUserStatusDetail,  "w",            NULL, 2,   4 },
     { &CmdUserStatusDetail,  "e",            NULL, 2,   5 },
     { &CmdUserStatusDetail,  "s",            NULL, 2,  20 },
@@ -1253,7 +1253,7 @@ static JUMP_F(CmdUserStatusDetail)
         if (data & 16)
             return 0;
     }
-    for (i = data & 1; i < 9; i++)
+    for (i = data & 1; i < 8; i++)
     {
         status = stati[i];
         for (cont = (uin ? cont : ContactStart ()); ContactHasNext (cont); cont = ContactNext (cont))
