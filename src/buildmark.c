@@ -119,7 +119,7 @@ const char *BuildAttribution (void)
     return ("\xc2\xa9 1998,1999,2000 Matthew D. Smith, \xc2\xa9 2001,2002,2003 R\xc3\xbc" "diger Kuhlmann,\n"
             "released under version 2 of the GNU General Public License (GPL).\n");
 #else
-    return ("\xa9 1998,1999,2000 Matthew D. Smith, \xa9 2001,2002,2003 R\xfcdiger Kuhlmann,\n"
+    return ("\xa9 1998,1999,2000 Matthew D. Smith, \xa9 2001,2002,2003 R\xfc" "diger Kuhlmann,\n"
             "released under version 2 of the GNU General Public License (GPL).\n");
 #endif
 }                  

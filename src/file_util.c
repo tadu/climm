@@ -85,7 +85,7 @@ void Initialize_RC_File ()
         M_printf (i18n (1781, "Your password for UIN %ld:\n"), uin);
     else
         M_print (i18n (1782, "You need a password for your new UIN.\n"));
-    while (!*input)
+    do
     {
         M_printf ("%s ", i18n (1795, "Password:"));
         fflush (stdout);
@@ -113,6 +113,7 @@ void Initialize_RC_File ()
         }
         free (pwd);
     }
+    while (!*input);
 #ifdef ENABLE_UTF8
     passwd = strdup (c_out (input));
 #else
@@ -809,7 +810,7 @@ void Read_RC_File (FILE *rcf)
                     if (tconn->contacts && (cont = ContactFind (tconn->contacts, 0, uin, NULL, 0)))
                     {
                         j = 1;
-                        if (cont->flags & CONT_ALIAS)
+                        if (~cont->flags & CONT_TEMPORARY)
                             ContactFind (tconn->contacts, 0, uin, ConvToUTF8 (cmd, enc, -1, 0), 1);
                         else
                         {
@@ -1036,6 +1037,7 @@ void Read_RC_File (FILE *rcf)
                     cont = ContactFind (conn->contacts, i, uin, s_sprintf ("%ld", uin), 1);
                     if (cg != conn->contacts)
                         ContactAdd (cg, cont);
+                    cont->flags |= CONT_TEMPORARY;
                 }
                 else
                 {

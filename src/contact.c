@@ -587,7 +587,7 @@ BOOL ContactMetaLoad (Contact *cont)
             if (enc & ENC_AUTO && (enc ^ prG->enc_loc) & ~ENC_AUTO)
                 return FALSE;
 #else
-            if (enc != prG->enc_loc & ~ENC_AUTO)
+            if ((enc ^ prG->enc_loc) & ~ENC_AUTO)
                 return FALSE;
 #endif
             enc &= ~ENC_AUTO;
@@ -738,7 +738,7 @@ void ContactSetCap (Contact *cont, Cap *cap)
             cont->v1 = (ver >> 6) - 1;
             cont->v2 = ver & 0x1f;
             cont->v3 = cont->v4 = 0;
-            if (ver <= 0x108)
+            if (ver <= 0x48)
                 cont->caps &= ~(1 << CAP_UTF8);
         }
         else /* KOtzPEKE */

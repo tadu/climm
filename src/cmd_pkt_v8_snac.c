@@ -1829,7 +1829,7 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
             const char *p;
 
             int enc = ENC_LATIN1, icqenc = 0;
-            size_t len, olen;
+            size_t len = 0, olen;
             
             remenc = cont->encoding ? cont->encoding : prG->enc_rem;
             

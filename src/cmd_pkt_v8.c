@@ -242,7 +242,7 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
 
 void SrvMsgAdvanced (Packet *pak, UDWORD seq, UWORD msgtype, UWORD status, UWORD deststatus, UWORD flags, const char *msg)
 {
-    if      (status == STATUS_OFFLINE) /* keep */ ;
+    if      (status == (UWORD)STATUS_OFFLINE) /* keep */ ;
     else if (status & STATUSF_DND)     status = STATUSF_DND  | (status & STATUSF_INV);
     else if (status & STATUSF_OCC)     status = STATUSF_OCC  | (status & STATUSF_INV);
     else if (status & STATUSF_NA)      status = STATUSF_NA   | (status & STATUSF_INV);
@@ -251,7 +251,7 @@ void SrvMsgAdvanced (Packet *pak, UDWORD seq, UWORD msgtype, UWORD status, UWORD
     else                               status &= STATUSF_INV;
     
     if      (flags != (UWORD)-1)           /* keep */ ;
-    else if (deststatus == STATUS_OFFLINE) /* keep */ ;
+    else if (deststatus == (UWORD)STATUS_OFFLINE) /* keep */ ;
     else if (deststatus & STATUSF_DND)     flags = TCP_MSGF_CLIST;
     else if (deststatus & STATUSF_OCC)     flags = TCP_MSGF_CLIST;
     else if (deststatus & STATUSF_NA)      flags = TCP_MSGF_1;
