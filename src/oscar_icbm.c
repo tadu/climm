@@ -13,6 +13,15 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
  * License for more details.
  *
+ * In addition, as a special exception permission is granted to link the
+ * code of this release of mICQ with the OpenSSL project's "OpenSSL"
+ * library, and distribute the linked executables.  You must obey the GNU
+ * General Public License in all respects for all of the code used other
+ * than "OpenSSL".  If you modify this file, you may extend this exception
+ * to your version of the file, but you are not obligated to do so.  If you
+ * do not wish to do so, delete this exception statement from your version
+ * of this file.
+ *
  * You should have received a copy of the GNU General Public License
  * along with this package; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
