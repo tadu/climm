@@ -908,6 +908,14 @@ void UtilUISetVersion (Contact *cont)
                 new = buf;
         }
     }
+    else if (cont->id1 == BUILD_VICQ)
+    {
+        v1 = (cont->id2 & 0x7f000000) >> 24;
+        v2 = (cont->id2 &   0xff0000) >> 16;
+        v3 = (cont->id2 &     0xff00) >> 8;
+        v4 =  cont->id2 &       0xff;
+        new = "vICQ";
+    }
     
     if (new)
     {
