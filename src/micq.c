@@ -330,28 +330,28 @@ static void Init (int argc, char *argv[])
 
     if (arg_h)
     {
-        rl_print  (i18n (9999, "Usage: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n"));
-        rl_print  (i18n (9999, "            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n"));
+        rl_print  (i18n (2492, "Usage: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n"));
+        rl_print  (i18n (2493, "            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n"));
         rl_print  (i18n (2199, "  -h, --help     gives this help text\n"));
         rl_print  (i18n (2205, "  -c, --nocolor  disable colors\n"));
         rl_printf (i18n (2201, "  -b, --basedir  use given BASE dir (default: %s)\n"), "$HOME" _OS_PATHSEPSTR ".micq" _OS_PATHSEPSTR);
         rl_print  (i18n (2204, "  -i, --i1" "8n     use given locale (default: auto-detected)\n"));
         rl_print  (i18n (2200, "  -v, --verbose  set (or increase) verbosity (mostly for debugging)\n"));
         rl_printf (i18n (2203, "  -l, --logplace use given log file/dir (default: %s)\n"), "BASE" _OS_PATHSEPSTR "history" _OS_PATHSEPSTR);
-        rl_print  (i18n (9999, "  -u, --uin      login with this UIN instead of those configured\n"));
-        rl_print  (i18n (9999, "  -p, --passwd   ... and override password\n"));
-        rl_print  (i18n (9999, "  -s, --status   ... and override status\n"));
-        rl_print  (i18n (9999, "  -C, --cmd      ... and execute mICQ command\n"));
+        rl_print  (i18n (2494, "  -u, --uin      login with this UIN instead of those configured\n"));
+        rl_print  (i18n (2495, "  -p, --passwd   ... and override password\n"));
+        rl_print  (i18n (2496, "  -s, --status   ... and override status\n"));
+        rl_print  (i18n (2497, "  -C, --cmd      ... and execute mICQ command\n"));
         exit (0);
     }
     
     if (conv_error)
     {
         rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-        rl_printf (i18n (9999, "Encoding %s%s%s is not supported by this mICQ.\n"), COLQUOTE, ConvEncName (conv_error), COLNONE);
+        rl_printf (i18n (2498, "Encoding %s%s%s is not supported by this mICQ.\n"), COLQUOTE, ConvEncName (conv_error), COLNONE);
         if (save_conv_error)
         {
-            rl_print  (i18n (9999, "Please recompile using the '--enable-iconvrepl' configure option.\n"));
+            rl_print  (i18n (2499, "Please recompile using the '--enable-iconvrepl' configure option.\n"));
             if (conv_error <= prG->enc_loc)
             {
                 rl_print  ("Warning: ");
@@ -367,7 +367,7 @@ static void Init (int argc, char *argv[])
         if (!*arg_i || !strcasecmp (arg_i, "C") || !strcasecmp (arg_i, "POSIX"))
         {
             rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-            rl_printf (i18n (9999, "Manual locale setting %s ignored - use a real locale instead.\n"), s_qquote (arg_i));
+            rl_printf (i18n (2500, "Manual locale setting %s ignored - use a real locale instead.\n"), s_qquote (arg_i));
         }
     }
     else
@@ -375,43 +375,43 @@ static void Init (int argc, char *argv[])
         if (!prG->locale_orig)
         {
             rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-            rl_printf (i18n (9999, "Your locale is unset. Please use the %s--i1" "8n%s command line option or set one of the environment variables %sLC_ALL%s, %sLC_MESSAGES%s, or %sLANG%s to your current locale.\n"),
+            rl_printf (i18n (2501, "Your locale is unset. Please use the %s--i1" "8n%s command line option or set one of the environment variables %sLC_ALL%s, %sLC_MESSAGES%s, or %sLANG%s to your current locale.\n"),
                       COLQUOTE, COLNONE, COLQUOTE, COLNONE, COLQUOTE, COLNONE, COLQUOTE, COLNONE);
         }
         else if (!*prG->locale_orig || !strcasecmp (prG->locale_orig, "C") || !strcasecmp (prG->locale_orig, "POSIX"))
         {
             rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-            rl_printf (i18n (9999, "Locale setting %s ignored - use a real locale instead.\n"), s_qquote (prG->locale_orig));
+            rl_printf (i18n (2502, "Locale setting %s ignored - use a real locale instead.\n"), s_qquote (prG->locale_orig));
         }
         if (prG->locale_full && prG->locale_broken)
         {
             rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-            rl_printf (i18n (9999, "Your system doesn't know the %s locale - try %siconv --list%s.\n"),
+            rl_printf (i18n (2503, "Your system doesn't know the %s locale - try %siconv --list%s.\n"),
                       s_qquote (prG->locale_full), COLQUOTE, COLNONE);
         }
     }
 
     if (!loaded && arg_l)
     {
-        rl_printf (i18n (9999, "Could not open configuration file %s%s%s."), COLQUOTE, prG->rcfile, COLNONE);
+        rl_printf (i18n (2504, "Could not open configuration file %s%s%s."), COLQUOTE, prG->rcfile, COLNONE);
         exit (20);
     }
 
     if (arg_f)
     {
         rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-        rl_printf (i18n (9999, "Deprecated option -f used. Please use the similar -b instead.\n"));
+        rl_printf (i18n (2505, "Deprecated option -f used. Please use the similar -b instead.\n"));
     }
 
-    rl_printf (i18n (9999, "This console uses encoding %s.\n"), s_qquote (ConvEncName (prG->enc_loc)));
+    rl_printf (i18n (2506, "This console uses encoding %s.\n"), s_qquote (ConvEncName (prG->enc_loc)));
     if (i == -1)
     {
         rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-        rl_printf (i18n (9999, "Translation %s%s%s not found. Would you like to translate mICQ into your language?\n"),
+        rl_printf (i18n (2507, "Translation %s%s%s not found. Would you like to translate mICQ into your language?\n"),
                   COLQUOTE, s_qquote (prG->locale), COLNONE);
     }
     else if (i)
-        rl_printf (i18n (9999, "English (%s) translation loaded (%s%d%s entries).\n"),
+        rl_printf (i18n (2508, "English (%s) translation loaded (%s%d%s entries).\n"),
                   s_qquote (prG->locale), COLQUOTE, i, COLNONE);
     else
         rl_printf ("No translation requested. You live in nowhereland, eh?\n");
@@ -419,7 +419,7 @@ static void Init (int argc, char *argv[])
 #ifdef _WIN32
     if (WSAStartup (0x0101, &wsaData))
     {
-        perror (i18n (9999, "WSAStartup() for WinSocks 1.1 failed"));
+        perror (i18n (2509, "WSAStartup() for WinSocks 1.1 failed"));
         exit (1);
     }
 #endif
@@ -575,7 +575,7 @@ int main (int argc, char *argv[])
         if (conv_error)
         {
             rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-            rl_printf (i18n (9999, "Encoding %s%s%s is not supported by this mICQ.\n"), COLQUOTE, ConvEncName (conv_error), COLNONE);
+            rl_printf (i18n (2498, "Encoding %s%s%s is not supported by this mICQ.\n"), COLQUOTE, ConvEncName (conv_error), COLNONE);
             conv_error = 0;
         }
         

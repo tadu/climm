@@ -103,7 +103,7 @@ Event *ConnectionInitPeer (Connection *list)
     if (list->version == 6)
         rl_print (i18n (2046, "You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n"));
 
-    rl_printf (i18n (9999, "Opening peer-to-peer connection at %slocalhost%s:%s%ld%s... "),
+    rl_printf (i18n (2521, "Opening peer-to-peer connection at %slocalhost%s:%s%ld%s... "),
               COLQUOTE, COLNONE, COLQUOTE, list->port, COLNONE);
 
     list->connect     = 0;
@@ -355,7 +355,7 @@ void TCPDispatchConn (Connection *peer)
                 if (prG->verbose)
                 {
                     rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                    rl_printf (i18n (9999, "Opening TCP connection at %s:%s%ld%s... "),
+                    rl_printf (i18n (2522, "Opening TCP connection at %s:%s%ld%s... "),
                               s_wordquote (s_ip (peer->ip)), COLQUOTE, peer->port, COLNONE);
                 }
                 UtilIOConnectTCP (peer);
@@ -375,7 +375,7 @@ void TCPDispatchConn (Connection *peer)
                 if (prG->verbose)
                 {
                     rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                    rl_printf (i18n (9999, "Opening TCP connection at %s:%s%ld%s... "),
+                    rl_printf (i18n (2522, "Opening TCP connection at %s:%s%ld%s... "),
                               s_wordquote (s_ip (peer->ip)), COLQUOTE, peer->port, COLNONE);
                 }
                 UtilIOConnectTCP (peer);
@@ -400,7 +400,7 @@ void TCPDispatchConn (Connection *peer)
                 if (prG->verbose)
                 {
                     rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                    rl_printf (i18n (9999, "Opening TCP connection at %s:%s%ld%s... "),
+                    rl_printf (i18n (2522, "Opening TCP connection at %s:%s%ld%s... "),
                               s_wordquote (s_ip (peer->ip)), COLQUOTE, peer->port, COLNONE);
                     rl_print (i18n (1785, "success.\n"));
                 }

@@ -97,7 +97,7 @@ void UtilUIDisplayMeta (Contact *cont)
     
     if ((dc = cont->dc))
     {
-        rl_printf ("%s%-15s%s %s%s%s:%s%ld%s\n", COLSERVER, i18n (9999, "IP:"), COLNONE,
+        rl_printf ("%s%-15s%s %s%s%s:%s%ld%s\n", COLSERVER, i18n (2534, "IP:"), COLNONE,
                   COLQUOTE, s_ip (dc->ip_rem), COLNONE, COLQUOTE, dc->port, COLNONE);
     }
 

@@ -117,6 +117,6 @@ JUMP_SNAC_F(SnacSrvNewuin)
         serv->open (serv);
     }
     else
-        rl_print (i18n (9999, "You need to 'save' to write your new UIN to disc.\n"));
+        rl_print (i18n (2518, "You need to 'save' to write your new UIN to disc.\n"));
 }
 

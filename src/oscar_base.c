@@ -169,7 +169,7 @@ static void FlapChannel4 (Connection *conn, Packet *pak)
         s_repl (&conn->server, tlv[5].str.txt);
         conn->ip = 0;
 
-        rl_printf (i18n (9999, "Redirect to server %s:%s%ld%s... "),
+        rl_printf (i18n (2511, "Redirect to server %s:%s%ld%s... "),
                   s_wordquote (conn->server), COLQUOTE, conn->port, COLNONE);
 
         conn->connect = 8;
@@ -402,9 +402,9 @@ Event *ConnectionInitServer (Connection *conn)
         event = QueueEnqueueData (conn, QUEUE_DEP_OSCARLOGIN, 0, time (NULL) + 12,
                                   NULL, conn->cont, NULL, &SrvCallBackTimeout);
 
-    rl_printf (i18n (9999, "Opening v8 connection to %s:%s%ld%s for %s%s%s... "),
+    rl_printf (i18n (2512, "Opening v8 connection to %s:%s%ld%s for %s%s%s... "),
               s_wordquote (conn->server), COLQUOTE, conn->port, COLNONE, COLCONTACT,
-              !cont ? i18n (9999, "new UIN") : cont->nick ? cont->nick 
+              !cont ? i18n (2513, "new UIN") : cont->nick ? cont->nick 
               : s_sprintf ("%ld", cont->uin), COLNONE);
 
     UtilIOConnectTCP (conn);

@@ -251,7 +251,7 @@ ContactGroup *s_parselist_s (const char **input, BOOL rem, Connection *serv)
         }
         else if ((par = s_parse (&p)))
         {
-            rl_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
+            rl_printf (i18n (2523, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
             if (!rem)
                 break;
             one = 1;

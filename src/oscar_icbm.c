@@ -967,7 +967,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                 IMSrvMsg (cont, serv, NOW, opt2);
                 opt2 = OptC ();
                 OptSetVal (opt2, CO_FILEACCEPT, 0);
-                OptSetStr (opt2, CO_REFUSE, i18n (9999, "refused (ignored)"));
+                OptSetStr (opt2, CO_REFUSE, i18n (2514, "refused (ignored)"));
                 e1 = QueueEnqueueData (serv, QUEUE_USERFILEACK, ack_event->seq, time (NULL) + 120,
                                        NULL, inc_event->cont, opt2, &PeerFileTO);
                 QueueEnqueueDep (inc_event->conn, inc_event->type, ack_event->seq, e1,
@@ -1062,7 +1062,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                             IMSrvMsg (cont, serv, NOW, opt2);
                             opt2 = OptC ();
                             OptSetVal (opt2, CO_FILEACCEPT, 0);
-                            OptSetStr (opt2, CO_REFUSE, i18n (9999, "refused (ignored)"));
+                            OptSetStr (opt2, CO_REFUSE, i18n (2514, "refused (ignored)"));
                             e1 = QueueEnqueueData (serv, QUEUE_USERFILEACK, ack_event->seq, time (NULL) + 120,
                                                    NULL, inc_event->cont, opt2, &PeerFileTO);
                             QueueEnqueueDep (inc_event->conn, inc_event->type, ack_event->seq, e1,

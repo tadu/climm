@@ -145,23 +145,23 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
     switch (type)
     {
         case INT_FILE_ACKED:
-            line = s_sprintf (i18n (9999, "File transfer %s to port %s%ld%s."),
+            line = s_sprintf (i18n (2462, "File transfer %s to port %s%ld%s."),
                               s_qquote (opt_text), COLQUOTE, opt_port, COLNONE);
             break;
         case INT_FILE_REJED:
-            line = s_sprintf (i18n (9999, "File transfer %s rejected by peer: %s."),
+            line = s_sprintf (i18n (2463, "File transfer %s rejected by peer: %s."),
                               s_qquote (opt_text), s_wordquote (text));
             break;
         case INT_FILE_ACKING:
-            line = s_sprintf (i18n (9999, "Accepting file %s (%s%ld%s bytes)."),
+            line = s_sprintf (i18n (2464, "Accepting file %s (%s%ld%s bytes)."),
                               s_qquote (opt_text), COLQUOTE, opt_bytes, COLNONE);
             break;
         case INT_FILE_REJING:
-            line = s_sprintf (i18n (9999, "Refusing file request %s (%s%ld%s bytes): %s."),
+            line = s_sprintf (i18n (2465, "Refusing file request %s (%s%ld%s bytes): %s."),
                               s_qquote (opt_text), COLQUOTE, opt_bytes, COLNONE, s_wordquote (text));
             break;
         case INT_CHAR_REJING:
-            line = s_sprintf (i18n (9999, "Refusing chat request (%s/%s) from %s%s%s."),
+            line = s_sprintf (i18n (2466, "Refusing chat request (%s/%s) from %s%s%s."),
                               p = strdup (s_qquote (opt_text)), q = strdup (s_qquote (text)),
                               COLCONTACT, cont->nick, COLNONE);
             free (p);
@@ -337,7 +337,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
         uiG.idle_msgs++;
         ReadLinePromptSet (s_sprintf ("[%s%ld%s%s]%s%s",
                            COLINCOMING, uiG.idle_msgs, uiG.idle_uins,
-                           COLNONE, COLSERVER, i18n (9999, "mICQ>")));
+                           COLNONE, COLSERVER, i18n (2467, "mICQ>")));
     }
 
     if (prG->flags & FLAG_AUTOFINGER && ~cont->updated & UPF_AUTOFINGER &&
@@ -393,7 +393,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
                 opt_bytes = 0;
             if (!OptGetVal (opt, CO_REF, &opt_ref))
                 opt_ref = 0;
-            rl_printf (i18n (9999, "requests file transfer %s of %s%ld%s bytes (sequence %s%ld%s).\n"),
+            rl_printf (i18n (2468, "requests file transfer %s of %s%ld%s bytes (sequence %s%ld%s).\n"),
                       s_qquote (cdata), COLQUOTE, opt_bytes, COLNONE, COLQUOTE, opt_ref, COLNONE);
             TCLEvent (cont, "file_request", s_sprintf ("{%s} %ld %ld", cdata, opt_bytes, opt_ref));
             break;
@@ -431,7 +431,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
             tmp2 = s_msgtok (NULL);  if (!tmp2) continue;
             
             rl_printf ("%s %s\n%s %*s", carr, s_msgquote (tmp), s_now, uiG.nick_len - 4, "");
-            rl_printf ("%s %s %s\n", i18n (9999, "URL:"), carr, s_wordquote (tmp2));
+            rl_printf ("%s %s %s\n", i18n (2469, "URL:"), carr, s_wordquote (tmp2));
             HistMsg (conn, cont, stamp == NOW ? time (NULL) : stamp, cdata, HIST_IN);
             break;
 
@@ -453,7 +453,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
                 tmp = NULL;
             }
 
-            rl_printf (i18n (9999, "requests authorization: %s\n"), s_msgquote (tmp6));
+            rl_printf (i18n (2470, "requests authorization: %s\n"), s_msgquote (tmp6));
             
             if (tmp && strlen (tmp))
                 rl_printf ("%-15s %s\n", "???1:", s_wordquote (tmp));

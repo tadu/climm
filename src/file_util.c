@@ -401,7 +401,7 @@ int Read_RC_File (FILE *rcf)
                     if (format > 2)
                     {
                         rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                        rl_printf (i18n (9999, "Unknown configuration file format version %d.\n"), format);
+                        rl_printf (i18n (2457, "Unknown configuration file format version %d.\n"), format);
                         return 0;
                     }
                     if (format == 2)
@@ -604,7 +604,7 @@ int Read_RC_File (FILE *rcf)
                     dep = 234;
                     PrefParse (tmp);
                     rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                    rl_printf (i18n (9999, "Can't tab spool %s; type \"%sopt %s tabspool 1%s\" manually.\n"),
+                    rl_printf (i18n (2458, "Can't tab spool %s; type \"%sopt %s tabspool 1%s\" manually.\n"),
                               s_qquote (tmp), COLQUOTE, tmp, COLNONE);
                 }
                 else if (!strcasecmp (cmd, "set"))
@@ -929,7 +929,7 @@ int Read_RC_File (FILE *rcf)
                         else
                         {
                             rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                            rl_printf (i18n (9999, "Peer-to-peer connection not associated to server connection, discarding.\n"));
+                            rl_printf (i18n (2459, "Peer-to-peer connection not associated to server connection, discarding.\n"));
                             conn->type = 0;
                             section = -1;
                         }
@@ -1048,7 +1048,7 @@ int Read_RC_File (FILE *rcf)
                 else if (!cg->serv)
                 {
                     rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                    rl_printf (i18n (9999, "Contact group %s (id %s%d%s) not associated to server connection.\n"),
+                    rl_printf (i18n (2460, "Contact group %s (id %s%d%s) not associated to server connection.\n"),
                               s_wordquote (cg->name ? cg->name : ""), COLQUOTE, cg->id, COLNONE);
                 }
                 else if (!strcasecmp (cmd, "entry"))
@@ -1134,7 +1134,7 @@ int Read_RC_File (FILE *rcf)
     if (dep || !format)
     {
         rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-        rl_printf (i18n (9999, "Deprecated syntax found in configuration file '%s'!\n    Please update or \"save\" the configuration file and check for changes.\n"), prG->rcfile);
+        rl_printf (i18n (2461, "Deprecated syntax found in configuration file '%s'!\n    Please update or \"save\" the configuration file and check for changes.\n"), prG->rcfile);
         rl_printf ("FIXME: dep %d\n", dep);
     }
     fclose (rcf);
@@ -1207,7 +1207,7 @@ void PrefReadStat (FILE *stf)
                     if (format > 2)
                     {
                         rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                        rl_printf (i18n (9999, "Unknown configuration file format version %d.\n"), format);
+                        rl_printf (i18n (2457, "Unknown configuration file format version %d.\n"), format);
                         return;
                     }
                 }

@@ -231,7 +231,7 @@ void ReadLineTtyUnset (void)
     if (tcsetattr (STDIN_FILENO, TCSAFLUSH, &tty_saved_attr) != 0)
     {
         rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-        rl_printf (i18n (9999, "Can't restore terminal modes.\n"));
+        rl_printf (i18n (2524, "Can't restore terminal modes.\n"));
     }
     else
         tty_saved = 0;
@@ -247,7 +247,7 @@ void ReadLineTtySet (void)
     if (tcgetattr (STDIN_FILENO, &tty_attr) != 0)
     {
         rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-        rl_printf (i18n (9999, "Can't read terminal modes.\n"));
+        rl_printf (i18n (2525, "Can't read terminal modes.\n"));
         return;
     }
     if (!tty_saved)
@@ -259,14 +259,14 @@ void ReadLineTtySet (void)
     if (tcsetattr (STDIN_FILENO, TCSAFLUSH, &tty_attr) != 0)
     {
         rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-        rl_printf (i18n (9999, "Can't modify terminal modes.\n"));
+        rl_printf (i18n (2526, "Can't modify terminal modes.\n"));
         return;
     }
     tty_attr.c_cc[VMIN] = 1;
     if (tcsetattr (STDIN_FILENO, TCSAFLUSH, &tty_attr) != 0)
     {
         rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-        rl_printf (i18n (9999, "Can't modify terminal modes.\n"));
+        rl_printf (i18n (2526, "Can't modify terminal modes.\n"));
     }
 #endif
 }
@@ -1749,5 +1749,5 @@ void ReadLinePromptReset (void)
     if (prG->flags & FLAG_UINPROMPT && (cont = uiG.last_sent))
         ReadLinePromptSet (s_sprintf ("[%s]", cont->nick));
     else
-        ReadLinePromptSet (i18n (9999, "mICQ>"));
+        ReadLinePromptSet (i18n (2467, "mICQ>"));
 }

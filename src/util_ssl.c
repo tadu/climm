@@ -404,17 +404,17 @@ int ssl_read (Connection *conn, UBYTE *data, UWORD len_p)
                 break;
             case SSL_ERROR_SSL:
                 ERR_get_error_line (&file, &line);
-                rl_printf (i18n (9999, "OpenSSL internal error: %s:%i\n"), file, line);
+                rl_printf (i18n (2527, "OpenSSL internal error: %s:%i\n"), file, line);
                 return -1;
             case SSL_ERROR_SYSCALL:
-                rl_printf (i18n (9999, "OpenSSL read error: %s\n"), strerror(tmp));
+                rl_printf (i18n (2528, "OpenSSL read error: %s\n"), strerror(tmp));
                 ssl_disconnect (conn);
                 return -1;
             case SSL_ERROR_ZERO_RETURN:
                 ssl_disconnect (conn);
                 return -1;
             default:
-                rl_printf (i18n (9999, "OpenSSL read error %d (unknown)\n"), tmp);
+                rl_printf (i18n (2529, "OpenSSL read error %d (unknown)\n"), tmp);
                 ssl_disconnect (conn);
                 return -1;
         }
@@ -484,11 +484,11 @@ int ssl_write (Connection *conn, UBYTE *data, UWORD len_p)
                 len = -1;
                 break;
             case SSL_ERROR_SYSCALL:
-                rl_printf (i18n (9999, "OpenSSL write error: %s\n"), strerror (tmp));
+                rl_printf (i18n (2530, "OpenSSL write error: %s\n"), strerror (tmp));
                 ssl_disconnect (conn);
                 return -1;
             default:
-                rl_printf (i18n (9999, "OpenSSL write error %d (unknown)\n"), tmp);
+                rl_printf (i18n (2531, "OpenSSL write error %d (unknown)\n"), tmp);
                 ssl_disconnect (conn);
                 return -1;
         }
@@ -535,10 +535,10 @@ int ssl_handshake (Connection *conn DEBUGPARAM)
                 return 1;
             case SSL_ERROR_SSL:
                 ERR_get_error_line (&file, &line);
-                rl_printf (i18n (9999, "OpenSSL internal error: %s:%i\n"), file, line);
+                rl_printf (i18n (2527, "OpenSSL internal error: %s:%i\n"), file, line);
                 ret = 1;
             default:
-                rl_printf (i18n (9999, "OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n"), err_i, err_j);
+                rl_printf (i18n (2532, "OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n"), err_i, err_j);
                 ret = 1;
         }
     }
@@ -551,7 +551,7 @@ int ssl_handshake (Connection *conn DEBUGPARAM)
 #if ENABLE_GNUTLS
         SSL_FAIL (s_sprintf ("%s %s", "handshake", gnutls_strerror (ret)), ret);
 #else
-        rl_printf (i18n (9999, "SSL handshake failed"));
+        rl_printf (i18n (2533, "SSL handshake failed"));
 #endif
         conn->ssl_status = SSL_STATUS_FAILED;
         ssl_disconnect (conn);

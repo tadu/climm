@@ -207,7 +207,7 @@ static Connection *conn = NULL;
 
 /* Try to have any server connection ready. */
 #define ANYCONN if (!conn) conn = ConnectionFind (TYPEF_ANY_SERVER, 0, NULL); \
-    if (!conn) { rl_print (i18n (9999, "No server session found.\n")); return 0; }
+    if (!conn) { rl_print (i18n (2397, "No server session found.\n")); return 0; }
 
 /*
  * Returns a pointer to the jump table.
@@ -472,7 +472,7 @@ static JUMP_F(CmdUserHelp)
         CMD_USER_HELP  ("trans [<lang|nr>...]", i18n (1800, "Change the working language to <lang> or display string <nr>."));
         CMD_USER_HELP  ("uptime", i18n (1719, "Shows how long mICQ has been running and some statistics."));
         CMD_USER_HELP  ("set <option> <value>", i18n (2044, "Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent."));
-        CMD_USER_HELP  ("opt [[<contact>|<contact group>] <option> <value>]", i18n (9999, "Set an option for a contact group, a contact or global.\n"));
+        CMD_USER_HELP  ("opt [[<contact>|<contact group>] <option> <value>]", i18n (2398, "Set an option for a contact group, a contact or global.\n"));
         CMD_USER_HELP  ("save", i18n (2036, "Save current preferences to disc."));
         CMD_USER_HELP  ("q", i18n (1422, "Logs off and quits."));
         CMD_USER_HELP  ("  ", i18n (1717, "'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')"));
@@ -545,7 +545,7 @@ static JUMP_F(CmdUserHelp)
         CMD_USER_HELP  ("peer accept [<uin|nick>] [<id>]", i18n (2319, "Accept an incoming file transfer from <uin> or <nick>."));
         CMD_USER_HELP  ("peer deny [<uin|nick>] [<id>] [<reason>]", i18n (2369, "Refuse an incoming file transfer from <uin> or <nick>."));
 #ifdef ENABLE_SSL
-        CMD_USER_HELP  ("peer ssl <uin|nick>...", i18n (9999, "Request SSL connection."));
+        CMD_USER_HELP  ("peer ssl <uin|nick>...", i18n (2399, "Request SSL connection."));
 #endif
         CMD_USER_HELP  ("conn open|login [<nr>]", i18n (2038, "Opens connection number <nr>, or the first server connection."));
         CMD_USER_HELP  ("conn close|remove <nr>", i18n (2181, "Closes or removes connection number <nr>."));
@@ -745,7 +745,7 @@ static JUMP_F(CmdUserTrans)
                 if (i == -1)
                     rl_printf (i18n (2316, "Translation %s not found.\n"), par->txt);
                 else
-                    rl_printf (i18n (9999, "No translation (%s) loaded (%d entries).\n"), par->txt, i);
+                    rl_printf (i18n (2400, "No translation (%s) loaded (%d entries).\n"), par->txt, i);
             }
             one = 1;
         }
@@ -1009,8 +1009,8 @@ static JUMP_F(CmdUserPeer)
  */
 static JUMP_F(CmdUserAuto)
 {
-    rl_printf (i18n (9999, "Auto reply messages are now contact options, see the %s command.\n"), s_wordquote ("opt"));
-    rl_printf (i18n (9999, "The global auto reply flag is handled by the %s command.\n"), s_wordquote ("set"));
+    rl_printf (i18n (2401, "Auto reply messages are now contact options, see the %s command.\n"), s_wordquote ("opt"));
+    rl_printf (i18n (2402, "The global auto reply flag is handled by the %s command.\n"), s_wordquote ("set"));
     return 0;
 }
 
@@ -1279,7 +1279,7 @@ static JUMP_F (CmdUserMessage)
         s_catc (&t, '\r');
         s_catc (&t, '\n');
     }
-    ReadLinePromptSet (i18n (9999, "msg>"));
+    ReadLinePromptSet (i18n (2403, "msg>"));
     return status;
 }
 
@@ -1506,7 +1506,7 @@ static JUMP_F(CmdUserStatusDetail)
                 free (t2);
             }
             if (cont->group != conn->contacts && cont->group->name)
-                rl_printf (i18n (9999, "Group: %s\n"), cont->group->name);
+                rl_printf (i18n (2404, "Group: %s\n"), cont->group->name);
             for (j = id = 0; id < CAP_MAX; id++)
                 if (cont->caps & (1 << id))
                 {
@@ -1560,7 +1560,7 @@ static JUMP_F(CmdUserStatusDetail)
         {
             rl_printf ("%s %s%10lu%s ", s_now, COLCONTACT, conn->uin, COLNONE);
             if (~conn->connect & CONNECT_OK)
-                rl_printf (i18n (9999, "Your status is %s (%s).\n"),
+                rl_printf (i18n (2405, "Your status is %s (%s).\n"),
                     i18n (1969, "offline"), s_status (conn->status));
             else
                 rl_printf (i18n (2211, "Your status is %s.\n"), s_status (conn->status));
@@ -1665,7 +1665,7 @@ static JUMP_F(CmdUserStatusMeta)
                     if (ContactMetaLoad (cont))
                         UtilUIDisplayMeta (cont);
                     else
-                        rl_printf (i18n (9999, "Couldn't load meta data for %s (%ld).\n"),
+                        rl_printf (i18n (2406, "Couldn't load meta data for %s (%ld).\n"),
                                   s_wordquote (cont->nick), cont->uin);
                 }
                 break;
@@ -1848,7 +1848,7 @@ static JUMP_F(CmdUserStatusWide)
  */
 static JUMP_F(CmdUserSound)
 {
-    rl_printf (i18n (9999, "This flag is handled by the %s command.\n"), s_wordquote ("set"));
+    rl_printf (i18n (2407, "This flag is handled by the %s command.\n"), s_wordquote ("set"));
     return 0;
 }
 
@@ -2068,37 +2068,37 @@ static JUMP_F(CmdUserOpt)
             switch (data)
             {
                 case COF_GROUP:
-                    rl_printf (i18n (9999, "%s is not a contact group.\n"), s_qquote (par->txt));
+                    rl_printf (i18n (2408, "%s is not a contact group.\n"), s_qquote (par->txt));
                     break;
                 case COF_CONTACT:
-                    rl_printf (i18n (9999, "%s is not a contact.\n"), s_qquote (par->txt));
+                    rl_printf (i18n (2409, "%s is not a contact.\n"), s_qquote (par->txt));
                     break;
                 default:
-                    rl_printf (i18n (9999, "%s is neither a contact, nor a contact group, nor the %sglobal%s keyword.\n"),
+                    rl_printf (i18n (2410, "%s is neither a contact, nor a contact group, nor the %sglobal%s keyword.\n"),
                               s_qquote (par->txt), colquote, colnone);
             }
         }
         else
         {
             if (!data)
-                rl_printf (i18n (9999, "opt - short hand for optglobal, optgroup or optcontact.\n"));
+                rl_printf (i18n (2411, "opt - short hand for optglobal, optgroup or optcontact.\n"));
             if (!data || data == COF_GLOBAL)
-                rl_printf (i18n (9999, "optglobal            [<option> [<value>]] - set global option.\n"));
+                rl_printf (i18n (2412, "optglobal            [<option> [<value>]] - set global option.\n"));
             if (!data)
-                rl_printf (i18n (9999, "optconnection        {<option> [<value>]] - set connection option.\n"));
+                rl_printf (i18n (2413, "optconnection        {<option> [<value>]] - set connection option.\n"));
             if (!data || data == COF_GROUP)
-                rl_printf (i18n (9999, "optgroup   <group>   [<option> [<value>]] - set contact group option.\n"));
+                rl_printf (i18n (2414, "optgroup   <group>   [<option> [<value>]] - set contact group option.\n"));
             if (!data || data == COF_CONTACT)
-                rl_printf (i18n (9999, "optcontact <contact> [<option> [<value>]] - set contact option.\n"));
+                rl_printf (i18n (2415, "optcontact <contact> [<option> [<value>]] - set contact option.\n"));
         }
         return 0;
     }
     
     if (!*args)
     {
-        rl_printf (data == COF_CONTACT ? i18n (9999, "Options for contact %s:\n") :
-                   data == COF_GROUP   ? i18n (9999, "Options for contact group %s:\n")
-                                       : i18n (9999, "Global options:\n"),
+        rl_printf (data == COF_CONTACT ? i18n (2416, "Options for contact %s:\n") :
+                   data == COF_GROUP   ? i18n (2417, "Options for contact group %s:\n")
+                                       : i18n (2418, "Global options:\n"),
                    coptobj);
         
         for (i = 0; (optname = OptList[i].name); i++)
@@ -2114,50 +2114,50 @@ static JUMP_F(CmdUserOpt)
                         rl_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, colquote,
                                   OptGetVal (copts, flag, &val)
                                     ? val ? i18n (1085, "on") : i18n (1086, "off")
-                                    : i18n (9999, "undefined"), colnone, i18n (9999, "effectivly"), colquote,
+                                    : i18n (2419, "undefined"), colnone, i18n (2420, "effectivly"), colquote,
                                   ContactPrefVal (cont, flag)
                                     ? i18n (1085, "on") : i18n (1086, "off"), colnone);
                     else
                         rl_printf ("    %-15s  %s%s%s\n", optname, colquote,
                                   OptGetVal (copts, flag, &val)
                                     ? val  ? i18n (1085, "on") : i18n (1086, "off")
-                                    : i18n (9999, "undefined"), colnone);
+                                    : i18n (2419, "undefined"), colnone);
                     break;
                 case COF_NUMERIC:
                     if (data == COF_CONTACT)
                         rl_printf ("    %-15s  %s%-15s%s  (%s %s%ld%s)\n", optname, colquote,
                                   OptGetVal (copts, flag, &val)
                                     ? s_sprintf ("%ld", val)
-                                    : i18n (9999, "undefined"), colnone, i18n (9999, "effectivly"), colquote,
+                                    : i18n (2419, "undefined"), colnone, i18n (2420, "effectivly"), colquote,
                                   ContactPrefVal (cont, flag), colnone);
                     else
                         rl_printf ("    %-15s  %s%s%s\n", optname, colquote,
                                   OptGetVal (copts, flag, &val)
                                     ? s_sprintf ("%ld", val)
-                                    : i18n (9999, "undefined"), colnone);
+                                    : i18n (2419, "undefined"), colnone);
                     break;
                 case COF_STRING:
                     if (data == COF_CONTACT)
                         rl_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, colquote,
                                   OptGetStr (copts, flag, &res)
-                                    ? res : i18n (9999, "undefined"), colnone, i18n (9999, "effectivly"), colquote,
+                                    ? res : i18n (2419, "undefined"), colnone, i18n (2420, "effectivly"), colquote,
                                   ContactPrefStr (cont, flag), colnone);
                     else
                         rl_printf ("    %-15s  %s%s%s\n", optname, colquote,
                                   OptGetStr (copts, flag, &res)
-                                    ? res : i18n (9999, "undefined"), colnone);
+                                    ? res : i18n (2419, "undefined"), colnone);
                     break;
                 case COF_COLOR:
                     if (data == COF_CONTACT)
                         rl_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, colquote,
                                   OptGetStr (copts, flag, &res)
-                                    ? OptS2C (res) : i18n (9999, "undefined"), colnone,
-                                  i18n (9999, "effectivly"), colquote,
+                                    ? OptS2C (res) : i18n (2419, "undefined"), colnone,
+                                  i18n (2420, "effectivly"), colquote,
                                   OptS2C (ContactPrefStr (cont, flag)), colnone);
                     else
                         rl_printf ("    %-15s  %s%s%s\n", optname, colquote,
                                   OptGetStr (copts, flag, &res)
-                                    ? OptS2C (res) : i18n (9999, "undefined"), colnone);
+                                    ? OptS2C (res) : i18n (2419, "undefined"), colnone);
                     break;
             }
         }
@@ -2181,7 +2181,7 @@ static JUMP_F(CmdUserOpt)
         
         if (!optname)
         {
-            rl_printf (i18n (9999, "Unknown option %s.\n"), s_qquote (par->txt));
+            rl_printf (i18n (2421, "Unknown option %s.\n"), s_qquote (par->txt));
             continue;
         }
         coptname = strdup (s_qquote (optname));
@@ -2192,20 +2192,20 @@ static JUMP_F(CmdUserOpt)
             val_t val;
 
             if (!OptGetVal (copts, flag, &val) || ((flag & (COF_STRING | COF_COLOR)) && !OptGetStr (copts, flag, &res)))
-                rl_printf (data == COF_CONTACT ? i18n (9999, "Option %s for contact %s is undefined.\n") :
-                          data == COF_GROUP   ? i18n (9999, "Option %s for contact group %s is undefined.\n")
-                                              : i18n (9999, "Option %s%s has no global value.\n"),
+                rl_printf (data == COF_CONTACT ? i18n (2422, "Option %s for contact %s is undefined.\n") :
+                          data == COF_GROUP   ? i18n (2423, "Option %s for contact group %s is undefined.\n")
+                                              : i18n (2424, "Option %s%s has no global value.\n"),
                           coptname, coptobj);
             else if (flag & (COF_BOOL | COF_NUMERIC))
-                rl_printf (data == COF_CONTACT ? i18n (9999, "Option %s for contact %s is %s%s%s.\n") :
-                          data == COF_GROUP   ? i18n (9999, "Option %s for contact group %s is %s%s%s.\n")
-                                              : i18n (9999, "Option %s%s is globally %s%s%s.\n"),
+                rl_printf (data == COF_CONTACT ? i18n (2425, "Option %s for contact %s is %s%s%s.\n") :
+                          data == COF_GROUP   ? i18n (2426, "Option %s for contact group %s is %s%s%s.\n")
+                                              : i18n (2427, "Option %s%s is globally %s%s%s.\n"),
                           coptname, coptobj, colquote, flag & COF_NUMERIC ? s_sprintf ("%ld", val)
                           : val ? i18n (1085, "on") : i18n (1086, "off"), colnone);
             else
-                rl_printf (data == COF_CONTACT ? i18n (9999, "Option %s for contact %s is %s.\n") :
-                          data == COF_GROUP   ? i18n (9999, "Option %s for contact group %s is %s.\n")
-                                              : i18n (9999, "Option %s%s is globally %s.\n"),
+                rl_printf (data == COF_CONTACT ? i18n (2428, "Option %s for contact %s is %s.\n") :
+                          data == COF_GROUP   ? i18n (2429, "Option %s for contact group %s is %s.\n")
+                                              : i18n (2430, "Option %s%s is globally %s.\n"),
                           coptname, coptobj, s_qquote (flag & COF_STRING  ? res : OptS2C (res)));
             return 0;
         }
@@ -2216,9 +2216,9 @@ static JUMP_F(CmdUserOpt)
                 OptSetStr (copts, flag, NULL);
             else
                 OptUndef (copts, flag);
-            rl_printf (data == COF_CONTACT ? i18n (9999, "Undefining option %s for contact %s.\n") :
-                      data == COF_GROUP   ? i18n (9999, "Undefining option %s for contact group %s.\n")
-                                          : i18n (9999, "Undefining global option %s%s.\n"),
+            rl_printf (data == COF_CONTACT ? i18n (2431, "Undefining option %s for contact %s.\n") :
+                      data == COF_GROUP   ? i18n (2432, "Undefining option %s for contact group %s.\n")
+                                          : i18n (2433, "Undefining global option %s%s.\n"),
                       coptname, coptobj);
         }
         else if (flag & COF_STRING)
@@ -2231,18 +2231,18 @@ static JUMP_F(CmdUserOpt)
                 res = ConvEncName (enc);
             }
             OptSetStr (copts, flag, res);
-            rl_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s to %s.\n") :
-                      data == COF_GROUP   ? i18n (9999, "Setting option %s for contact group %s to %s.\n")
-                                          : i18n (9999, "Setting option %s%s globally to %s.\n"),
+            rl_printf (data == COF_CONTACT ? i18n (2434, "Setting option %s for contact %s to %s.\n") :
+                      data == COF_GROUP   ? i18n (2435, "Setting option %s for contact group %s to %s.\n")
+                                          : i18n (2436, "Setting option %s%s globally to %s.\n"),
                       coptname, coptobj, s_qquote (res));
         }
         else if (flag & COF_COLOR)
         {
             res = OptC2S (col = strdup (par->txt));
             OptSetStr (copts, flag, res);
-            rl_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s to %s.\n") :
-                      data == COF_GROUP   ? i18n (9999, "Setting option %s for contact group %s to %s.\n")
-                                          : i18n (9999, "Setting option %s%s' globally to %s.\n"),
+            rl_printf (data == COF_CONTACT ? i18n (2434, "Setting option %s for contact %s to %s.\n") :
+                      data == COF_GROUP   ? i18n (2435, "Setting option %s for contact group %s to %s.\n")
+                                          : i18n (2436, "Setting option %s%s globally to %s.\n"),
                       coptname, coptobj, s_qquote (col));
             free (col);
         }
@@ -2251,30 +2251,30 @@ static JUMP_F(CmdUserOpt)
             if (flag == CO_CSCHEME)
                 OptImport (copts, PrefSetColorScheme (val));
             OptSetVal (copts, flag, atoi (par->txt));
-            rl_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s to %s%d%s.\n") :
-                      data == COF_GROUP   ? i18n (9999, "Setting option %s for contact group %s to %s%d%s.\n")
-                                          : i18n (9999, "Setting option %s%s globally to %s%d%s.\n"),
+            rl_printf (data == COF_CONTACT ? i18n (2437, "Setting option %s for contact %s to %s%d%s.\n") :
+                      data == COF_GROUP   ? i18n (2438, "Setting option %s for contact group %s to %s%d%s.\n")
+                                          : i18n (2439, "Setting option %s%s globally to %s%d%s.\n"),
                       coptname, coptobj, colquote, atoi (par->txt), colnone);
         }
         else if (!strcasecmp (par->txt, "on")  || !strcasecmp (par->txt, i18n (1085, "on")))
         {
             OptSetVal (copts, flag, 1);
-            rl_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s.\n") :
-                      data == COF_GROUP   ? i18n (9999, "Setting option %s for contact group %s.\n")
-                                          : i18n (9999, "Setting option %s%s globally.\n"),
+            rl_printf (data == COF_CONTACT ? i18n (2440, "Setting option %s for contact %s.\n") :
+                      data == COF_GROUP   ? i18n (2441, "Setting option %s for contact group %s.\n")
+                                          : i18n (2442, "Setting option %s%s globally.\n"),
                       coptname, coptobj);
         }
         else if (!strcasecmp (par->txt, "off") || !strcasecmp (par->txt, i18n (1086, "off")))
         {
             OptSetVal (copts, flag, 0);
-            rl_printf (data == COF_CONTACT ? i18n (9999, "Clearing option %s for contact %s.\n") :
-                      data == COF_GROUP   ? i18n (9999, "Clearing option %s for contact group %s.\n")
-                                          : i18n (9999, "Clearing option %s%s globally.\n"),
+            rl_printf (data == COF_CONTACT ? i18n (2443, "Clearing option %s for contact %s.\n") :
+                      data == COF_GROUP   ? i18n (2444, "Clearing option %s for contact group %s.\n")
+                                          : i18n (2445, "Clearing option %s%s globally.\n"),
                       coptname, coptobj);
         }
         else
         {
-            rl_printf (i18n (9999, "Invalid value %s for boolean option %s.\n"), s_qquote (par->txt), coptname);
+            rl_printf (i18n (2446, "Invalid value %s for boolean option %s.\n"), s_qquote (par->txt), coptname);
             continue;
         }
         if (flag & COF_GROUP && ~flag & COF_CONTACT && data == COF_GROUP && connl)
@@ -2312,7 +2312,7 @@ static JUMP_F(CmdUserRegister)
             CmdPktCmdRegNewUser (conn, par->txt);     /* TODO */
     }
     else
-        rl_print (i18n (9999, "No new password given.\n"));
+        rl_print (i18n (2447, "No new password given.\n"));
     return 0;
 }
 
@@ -2445,7 +2445,7 @@ static JUMP_F(CmdUserAdd)
     {
         if (cg)
         {
-            rl_printf (i18n (9999, "Contact group '%s' already exists\n"), cg->name);
+            rl_printf (i18n (2448, "Contact group '%s' already exists\n"), cg->name);
             return 0;
         }
         if (!(par = s_parse (&args)))
@@ -2481,7 +2481,7 @@ static JUMP_F(CmdUserAdd)
                 {
                     if (cont->group != cg)
                     {
-                        rl_printf (i18n (9999, "Primary contact group for contact '%s' is now '%s'.\n"),
+                        rl_printf (i18n (2449, "Primary contact group for contact '%s' is now '%s'.\n"),
                                    cont->nick, cg->name);
                         cont->group = cg;
                     }
@@ -2495,7 +2495,7 @@ static JUMP_F(CmdUserAdd)
                 else if (ContactAdd (cg, cont))
                 {
                     rl_printf (i18n (2241, "Added '%s' to contact group '%s'.\n"), cont->nick, cg->name);
-                    rl_printf (i18n (9999, "Primary contact group for contact '%s' is now '%s'.\n"),
+                    rl_printf (i18n (2449, "Primary contact group for contact '%s' is now '%s'.\n"),
                                cont->nick, cg->name);
                     cont->group = cg;
                 }
@@ -2780,7 +2780,7 @@ static JUMP_F(CmdUserTabs)
 
     for (i = 0; TabGet (i); i++)
         ;
-    rl_printf (i18n (9999, "Last %d people you talked with:\n"), i);
+    rl_printf (i18n (2450, "Last %d people you talked with:\n"), i);
     for (i = 0; (cont = TabGet (i)); i++)
     {
         when = TabTime (i);
@@ -2895,7 +2895,7 @@ static JUMP_F(CmdUserHistory)
         if ((par = s_parse (&args)))
             rl_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), par->txt);
         else
-            rl_print (i18n (9999, "history <contact> [<last> [<count>]] -- Show history of <contact>.\n"));
+            rl_print (i18n (2451, "history <contact> [<last> [<count>]] -- Show history of <contact>.\n"));
         return 0;
     }
 
@@ -3528,7 +3528,7 @@ static JUMP_F(CmdUserConn)
             {
                 Contact *cont = connl->cont;
 
-                rl_printf (i18n (9999, "%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n"),
+                rl_printf (i18n (2452, "%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n"),
                           i + 1, ConnectionType (connl), connl->version,
 #ifdef ENABLE_SSL
                           connl->ssl_status == SSL_STATUS_OK ? " SSL" : "",
@@ -3549,11 +3549,11 @@ static JUMP_F(CmdUserConn)
                          t3 = strdup (s_ip (connl->our_outside_ip)),
                          connl->our_session, connl->our_seq, connl->our_seq2);
 #ifdef ENABLE_SSL
-                    rl_printf (i18n (9999, "    at %p parent %p assoc %p ssl %d\n"), connl, connl->parent, connl->assoc, connl->ssl_status);
+                    rl_printf (i18n (2453, "    at %p parent %p assoc %p ssl %d\n"), connl, connl->parent, connl->assoc, connl->ssl_status);
 #else
                     rl_printf (i18n (2081, "    at %p parent %p assoc %p\n"), connl, connl->parent, connl->assoc);
 #endif
-                    rl_printf (i18n (9999, "    open %p reconn %p close %p err %p dispatch %p\n"),
+                    rl_printf (i18n (2454, "    open %p reconn %p close %p err %p dispatch %p\n"),
                               connl->open, connl->reconnect, connl->close, connl->error, connl->dispatch);
                     free (t1);
                     free (t2);
@@ -4249,7 +4249,7 @@ static JUMP_F(CmdUserAbout)
             }
             offset = 0;
     }
-    ReadLinePromptSet (i18n (9999, "About>"));
+    ReadLinePromptSet (i18n (2455, "About>"));
     return 400;
 }
 
@@ -4451,7 +4451,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
                     sticky = j->f;
                 }
                 else
-                    rl_printf (i18n (9999, "Unknown command %s, type %shelp%s for help.\n"),
+                    rl_printf (i18n (2456, "Unknown command %s, type %shelp%s for help.\n"),
                               s_qquote (cmd), COLQUOTE, COLNONE);
                 free (cmd);
                 free (argsd);

@@ -81,7 +81,7 @@ Connection *PeerFileCreate (Connection *serv)
         return NULL;
 
     if (prG->verbose)
-        rl_printf (i18n (9999, "Opening file listener connection at %slocalhost%s:%s%ld%s... "),
+        rl_printf (i18n (2519, "Opening file listener connection at %slocalhost%s:%s%ld%s... "),
                   COLQUOTE, COLNONE, COLQUOTE, serv->assoc->pref_port, COLNONE);
 
     flist->our_seq  = -1;
@@ -213,7 +213,7 @@ BOOL PeerFileAccept (Connection *peer, UWORD status, UDWORD port)
     fpeer->reconnect = &TCPDispatchReconn;
     
     if (prG->verbose)
-        rl_printf (i18n (9999, "Opening file transfer connection to %s:%s%ld%s... \n"),
+        rl_printf (i18n (2520, "Opening file transfer connection to %s:%s%ld%s... \n"),
                   s_wordquote (fpeer->server), COLQUOTE, fpeer->port, COLNONE);
 
     TCPDispatchConn (fpeer);
@@ -452,7 +452,7 @@ void PeerFileDispatch (Connection *fpeer)
             {
                 ReadLinePromptUpdate (s_sprintf ("[%s%ld %02d%%%s] %s%s",
                               COLINCOMING, fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
-                              COLNONE, COLSERVER, i18n (9999, "mICQ>")));
+                              COLNONE, COLSERVER, i18n (2467, "mICQ>")));
             }
             PacketD (pak);
             return;
@@ -508,7 +508,7 @@ static BOOL PeerFileError (Connection *fpeer, UDWORD rc, UDWORD flags)
                 if (fpeer->assoc->len)
                     ReadLinePromptUpdate (s_sprintf ("[%s%ld:%02d%%%s] %s%s",
                                   COLCONTACT, fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
-                                  COLNONE, COLSERVER, i18n (9999, "mICQ>")));
+                                  COLNONE, COLSERVER, i18n (2467, "mICQ>")));
                 return 1;
             }
     }
@@ -642,11 +642,11 @@ void PeerFileResend (Event *event)
                 if (fpeer->assoc->len)
                     ReadLinePromptUpdate (s_sprintf ("[%s%ld %02d%%%s] %s%s",
                                   COLCONTACT, fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
-                                  COLNONE, COLSERVER, i18n (9999, "mICQ>")));
+                                  COLNONE, COLSERVER, i18n (2467, "mICQ>")));
                 else
                     ReadLinePromptUpdate (s_sprintf ("[%s%ld%s] %s%s",
                                   COLCONTACT, fpeer->assoc->done,
-                                  COLNONE, COLSERVER, i18n (9999, "mICQ>")));
+                                  COLNONE, COLSERVER, i18n (2467, "mICQ>")));
                 event->attempts = 0;
                 QueueEnqueue (event);
                 return;

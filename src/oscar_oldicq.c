@@ -87,11 +87,11 @@ JUMP_SNAC_F(SnacSrvToicqerr)
         {
             rl_printf (i18n (2207, "Protocol error in command to old ICQ server: %d.\n"), err);
             if (err == 2)
-                rl_printf (i18n (9999, "You queried already too many users today - come back tomorrow.\n"));
+                rl_printf (i18n (2515, "You queried already too many users today - come back tomorrow.\n"));
             else if (err == 5)
-                rl_printf (i18n (9999, "The query got stuck. Or somesuch. Try again later.\n"));
+                rl_printf (i18n (2516, "The query got stuck. Or somesuch. Try again later.\n"));
             else
-                rl_printf (i18n (9999, "I'm out of wisdom about the server's problem. It just didn't work out.\n"));
+                rl_printf (i18n (2517, "I'm out of wisdom about the server's problem. It just didn't work out.\n"));
             EventD (oevent);
         }
         else
