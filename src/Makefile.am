@@ -2,12 +2,13 @@
 
 bin_PROGRAMS = micq
 
-CFLAGS += -DPREFIX=\"$(prefix)\"
+CFLAGS += -DPREFIX=\"$(prefix)\" -Wall
 
 # If BeOS, add 'beos.c'
 micq_SOURCES = conv.c conv_rus.c conv_jp.c file_util.c icq_response.c micq.c \
-       server.c  ui.c util.c  util_ui.c mreadline.c mselect.c network.c \
-       msg_queue.c sendmsg.c tabs.c i18n.c buildmark.c util_table.c
+       server.c util.c  util_ui.c mreadline.c mselect.c network.c \
+       msg_queue.c sendmsg.c tabs.c i18n.c buildmark.c util_table.c \
+       cmd_user.c
 
 lang:
 	@rm -f *.c~ ../lang/*.i18n~

@@ -1,4 +1,14 @@
 
+2001-06-24 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* rename ui.(c|h) as cmd_user.(c|h) and rename all user functions
+	  as CmdUser<something>, turn some commands into explicit functions,
+	  create a jump table containing all those functions and their
+	  command names, and iterate over the jump table instead of having a
+	  huge if/else-chain; also do the same to commands changing the
+	  prompt (so give status as argument and return new status; if != 0,
+	  call last function again). Since "alter"ed command names are
+	  in the jump table, they don't work yet. (=> alter is broken).
+
 2001-06-20 Benjamin Michotte <binny@baby-linux.net>
 	* lang/fr.i18n: update.
 

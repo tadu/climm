@@ -9,7 +9,7 @@
 #include "sendmsg.h"
 #include "util.h"
 #include "icq_response.h"
-#include "ui.h"
+#include "cmd_user.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -216,8 +216,7 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
             {
                 M_print (i18n (643, "Acknowleged SRV_X1 0x021C Done Contact list?\n"));
             }
-            Show_Quick_Online_Status ();
-            /* Show_Quick_Status(); */
+            CmdUser (sok, "¶e");
             R_redraw ();
             Done_Login = TRUE;
             break;

@@ -242,6 +242,8 @@ char *UIN2nick (UDWORD uin)
 {
     int i;
 
+    if (uin == -1)
+        return strdup (i18n (725, "<all>"));
     for (i = 0; i < Num_Contacts; i++)
     {
         if (Contacts[i].uin == uin)
@@ -259,6 +261,8 @@ char *UIN2Name (UDWORD uin)
     int i;
     char buff[100];
 
+    if (uin == -1)
+        return strdup (i18n (725, "<all>"));
     for (i = 0; i < Num_Contacts; i++)
     {
         if (Contacts[i].uin == uin)
@@ -384,7 +388,7 @@ void Init_New_User (void)
     i = WSAStartup (0x0101, &wsaData);
     if (i != 0)
     {
-        perror (i18n (###, "Sorry, can't initialize Windows Sockets..."));
+        perror (i18n (718, "Sorry, can't initialize Windows Sockets..."));
         exit (1);
     }
 #endif

@@ -7,7 +7,7 @@
 #include "buildmark.h"
 #include "sendmsg.h"
 #include "network.h"
-#include "ui.h"
+#include "cmd_user.h"
 #include "icq_response.h"
 #include "server.h"
 #include <stdio.h>
@@ -134,8 +134,8 @@ char color_cmd[16];
 char sound_cmd[16];
 
 /*** auto away values ***/
-int idle_val = 0;
-int idle_flag = 0;
+static int idle_val = 0;
+static int idle_flag = 0;
 unsigned int away_time;
 
 unsigned int next_resend;
@@ -682,7 +682,7 @@ int main (int argc, char *argv[])
     if (i != 0)
     {
 /* FUNNY: "Windows Sockets broken blame Bill -" */
-        perror (i18n (###, "Sorry, can't initialize Windows Sockets..."));
+        perror (i18n (718, "Sorry, can't initialize Windows Sockets..."));
         exit (1);
     }
 #endif
@@ -738,7 +738,7 @@ int main (int argc, char *argv[])
         {
 /*         idle_val = time( NULL );*/
             if (R_process_input ())
-                Get_Input (sok, &idle_val, &idle_flag);
+                CmdUserInput (sok, &idle_val, &idle_flag);
         }
 
         if (time (NULL) > next)
