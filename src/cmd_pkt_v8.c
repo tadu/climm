@@ -107,7 +107,7 @@ static void SrvCallBackReconn (Connection *conn)
 
 static void SrvCallBackDoReconn (Event *event)
 {
-    if (event->conn && event->type == TYPE_SERVER)
+    if (event->conn && event->conn->type == TYPE_SERVER)
         ConnectionInitServer (event->conn);
     EventD (event);
 }
