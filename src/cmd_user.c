@@ -3374,6 +3374,9 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
         buf[1023] = 0;              /* be safe */
     }
 
+    if (R_isinterrupted ())
+        status = 0;
+    
     if (status)
     {
         status = (*sticky)(buf, 0, status);

@@ -64,6 +64,7 @@ static void R_process_input_delete (void);
 
 static RETSIGTYPE micq_ttystop_handler (int);
 static RETSIGTYPE micq_cont_handler (int);
+static RETSIGTYPE micq_int_handler (int);
 
 static char *history[HISTORY_LINES + 1];
 static int history_cur = 0;
@@ -109,6 +110,7 @@ void R_init (void)
     inited = 1;
     signal (SIGTSTP, &micq_ttystop_handler);
     signal (SIGCONT, &micq_cont_handler);
+    signal (SIGINT, &micq_int_handler);
     tty_prepare ();
     atexit (tty_restore);
     R_resetprompt ();
@@ -126,6 +128,9 @@ void R_clrscr (void)
 #endif
 }
 
+static int tabstate = 0;
+/* set to 1 on first tab, reset to 0 on any other key in R_process_input */
+
 
 static RETSIGTYPE micq_ttystop_handler (int a)
 {
@@ -140,6 +145,40 @@ static RETSIGTYPE micq_cont_handler (int a)
     R_redraw ();
     signal (SIGTSTP, &micq_ttystop_handler);
     signal (SIGCONT, &micq_cont_handler);
+}
+
+volatile static UBYTE interrupted = 0;
+
+UBYTE R_isinterrupted (void)
+{
+    UBYTE is = interrupted;
+    interrupted = 0;
+    return is;
+}
+
+static RETSIGTYPE micq_int_handler (int a)
+{
+    int k;
+    R_remprompt ();
+    s[bytelen] = 0;
+    history_cur = 0;
+    TabReset ();
+    strcpy (history[0], s);
+    if (strcmp (s, history[1]) && *s)
+        for (k = HISTORY_LINES; k; k--)
+            strcpy (history[k], history[k - 1]);
+    R_goto (curlen);
+    printf ("\n");
+    curpos = curlen = 0;
+    bytepos = bytelen = 0;
+    tabstate = 0;
+    s[0] = 0;
+    if (interrupted & 1)
+        exit (1);
+    interrupted = 3;
+    R_resetprompt ();
+    R_prompt ();
+    signal (SIGINT, &micq_int_handler);
 }
 
 void R_pause (void)
@@ -318,9 +357,6 @@ set tabs cycle in micqrc will make mICQ search only online contacts, or
 set tabs cycleall to have mICQ search the entire contact list, including
 offline contacts. */
 
-static int tabstate = 0;
-/* set to 1 on first tab, reset to 0 on any other key in R_process_input */
-
 static char tabword[20];
 /* word that the cursor was on or immediately after at first tab */
 
@@ -452,6 +488,7 @@ int R_process_input (void)
     if (ch == (char)0x80)
         return 0;
 #endif
+    interrupted &= ~1;
     if (!istat)
     {
         if (prG->tabs != TABS_SIMPLE && ch != '\t')

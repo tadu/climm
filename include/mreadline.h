@@ -38,6 +38,8 @@ void R_goto (int pos);                       /* go to position in input line */
 #endif /* USE_MREADLINE */
 
 void R_clrscr (void);
+UBYTE R_isinterrupted (void);
+
 UWORD  Get_Max_Screen_Width ();
 SDWORD Echo_Off (void);
 SDWORD Echo_On (void);
