@@ -245,36 +245,41 @@ Event *QueueDequeue (UDWORD seq, UDWORD type)
 }
 
 /*
- * Removes and returns an event for a given (to be removed) session.
+ * Cancels all events for a given (to be removed) session
+ * by calling the callback with empty session pointer.
  */
-Event *QueueDangling (Session *sess)
+void QueueCancel (Session *sess)
 {
     Event *event;
     struct QueueEntry *iter;
 
     assert (queue);
 
-    if (!queue->head)
-        return NULL;
-
-    if (queue->head->event->sess == sess)
+    while (queue->head && queue->head->event->sess == sess)
     {
         event = QueueDequeueEvent (queue->head->event, NULL);
         Debug (DEB_QUEUE, i18n (2081, "dangling type %s seq %08x at %p (pak %p)"),
                QueueType (event->type), event->seq, event, event->pak);
-        return event;
+        event->sess = NULL;
+        if (event->callback)
+            event->callback (event);
     }
-    for (iter = queue->head; iter->next; iter = iter->next)
+
+    if (!queue->head)
+        return;
+
+    for (iter = queue->head; iter && iter->next; iter = iter->next)
     {
-        if (iter->next->event->sess == sess)
+        while (iter->next && iter->next->event->sess == sess)
         {
             event = QueueDequeueEvent (iter->next->event, iter);
             Debug (DEB_QUEUE, i18n (2081, "dangling type %s seq %08x at %p (pak %p)"),
                    QueueType (event->type), event->seq, event, event->pak);
-            return event;
+            event->sess = NULL;
+            if (event->callback)
+                event->callback (event);
         }
     }
-    return NULL;
 }
 
 /*

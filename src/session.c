@@ -131,7 +131,6 @@ Session *SessionFind (UWORD type, UDWORD uin, const Session *parent)
  */
 void SessionClose (Session *sess)
 {
-    Event *event;
     int i;
     
     for (i = 0; slist[i] != sess && i < listlen; i++)  ;
@@ -142,8 +141,7 @@ void SessionClose (Session *sess)
     if (sess->sok != -1)
         sockclose (sess->sok);
 
-    while ((event = QueueDangling (sess)))
-        free (event);
+    QueueCancel (sess);
 
     while (i + 1 < listlen && slist[i])
     {
