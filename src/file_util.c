@@ -361,19 +361,19 @@ void Read_RC_File (FILE *rcf)
                     if (!strcasecmp (cmd, "auto"))
                         continue;
                     else if (!strcasecmp (cmd, "utf8"))
-                    {   what = ConvEnc ("utf-8");        dep = 1; }
+                    {   what = ConvEnc ("UTF-8");        dep = 1; }
                     else if (!strcasecmp (cmd, "latin1"))
-                    {   what = ConvEnc ("iso-8859-1");   dep = 1; }
+                    {   what = ConvEnc ("ISO-8859-1");   dep = 1; }
                     else if (!strcasecmp (cmd, "latin9"))
-                    {   what = ConvEnc ("iso-8859-15");  dep = 1; }
+                    {   what = ConvEnc ("ISO-8859-15");  dep = 1; }
                     else if (!strcasecmp (cmd, "koi8"))
-                    {   what = ConvEnc ("koi8-u");       dep = 1; }
+                    {   what = ConvEnc ("KOI8-U");       dep = 1; }
                     else if (!strcasecmp (cmd, "win1251"))
-                    {   what = ConvEnc ("windows-1251"); dep = 1; }
+                    {   what = ConvEnc ("CP-1251"); dep = 1; }
                     else if (!strcasecmp (cmd, "euc"))
-                    {   what = ConvEnc ("euc-jp");       dep = 1; }
+                    {   what = ConvEnc ("EUC-JP");       dep = 1; }
                     else if (!strcasecmp (cmd, "sjis"))
-                    {   what = ConvEnc ("shift-jis");    dep = 1; }
+                    {   what = ConvEnc ("SHIFT-JIS");    dep = 1; }
                     else
                         what = ConvEnc (cmd);
 
@@ -1151,7 +1151,7 @@ int Save_RC ()
     
     fprintf (rcf, "# Character encodings: auto, iso-8859-1, koi8-u, ...\n");
 #ifdef ENABLE_UTF8
-    fprintf (rcf, "encoding file utf-8\n");
+    fprintf (rcf, "encoding file UTF-8\n");
 #else
     fprintf (rcf, "encoding file %s\n", s_quote (ConvEncName (prG->enc_loc)));
 #endif

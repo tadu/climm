@@ -449,7 +449,7 @@ BOOL ContactMetaSave (Contact *cont)
     }
     fprintf (f, "#\n# Meta data for contact %ld.\n#\n\n", cont->uin);
 #ifdef ENABLE_UTF8
-    fprintf (f, "encoding utf-8\n"); 
+    fprintf (f, "encoding UTF-8\n"); 
 #else
     fprintf (f, "encoding %s\n", s_quote (ConvEncName (prG->enc_loc)));
 #endif
