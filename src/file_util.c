@@ -54,6 +54,38 @@
 #define WAND3 " \xb7 \\ "
 #define WAND4 "    \\"
 
+Connection *PrefNewConnection (UDWORD uin, const char *passwd)
+{
+    Connection *conn;
+    Contact *cont;
+    
+    conn = ConnectionC (TYPE_SERVER);
+    conn->open = &ConnectionInitServer;
+    
+    conn->flags |= CONN_AUTOLOGIN;
+    conn->pref_server = strdup ("login.icq.com");
+    conn->pref_port = 5190;
+    conn->pref_status = STATUS_ONLINE;
+    conn->version = 8;
+    conn->uin = uin;
+#ifdef __BEOS__
+    conn->pref_passwd = passwd ? strdup (passwd) : NULL;
+#endif
+    
+    conn->server  = strdup ("login.icq.com");
+    conn->port    = 5190;
+    conn->passwd  = passwd ? strdup (passwd) : NULL;
+    conn->status = STATUS_ONLINE;
+
+    conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%ld", uin));
+    ContactOptionsSetVal (&conn->contacts->copts, CO_IGNORE, 0);
+    cont = ContactFindCreate (conn->contacts, 0, 82274703, "R\xc3\xbc" "diger Kuhlmann");
+    ContactFindCreate (conn->contacts, 0, 82274703, "Tadu");
+    ContactOptionsSetStr (&cont->copts, CO_COLORINCOMING, "red bold");
+    ContactOptionsSetStr (&cont->copts, CO_COLORMESSAGE, "red bold");
+    return conn;
+}
+
 void Initialize_RC_File ()
 {
     strc_t line;
@@ -172,38 +204,28 @@ void Initialize_RC_File ()
                 prG->s5Pass = strdup (line->txt);
         }
     }
-
     M_print ("\n");
 
     if (!uin)
     {
         M_print (i18n (1796, "Setup wizard finished. Please wait until registration has finished.\n"));
         conn = SrvRegisterUIN (NULL, passwd);
-        conn->flags |= CONN_WIZARD;
         conn->open = &ConnectionInitServer;
+        conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%ld", uin));
+        ContactOptionsSetVal (&conn->contacts->copts, CO_IGNORE, 0);
+        cont = ContactFindCreate (conn->contacts, 0, 82274703, "R\xc3\xbc" "diger Kuhlmann");
+        ContactFindCreate (conn->contacts, 0, 82274703, "Tadu");
+        ContactOptionsSetStr (&cont->copts, CO_COLORINCOMING, "red bold");
+        ContactOptionsSetStr (&cont->copts, CO_COLORMESSAGE, "red bold");
     }
     else
     {
+        conn = PrefNewConnection (uin, passwd);
         M_print (i18n (1791, "Setup wizard finished. Congratulations!\n"));
-        conn = ConnectionC (TYPE_SERVER);
-        conn->open = &ConnectionInitServer;
-        
-        conn->flags |= CONN_AUTOLOGIN | CONN_WIZARD;
-        conn->pref_server = strdup ("login.icq.com");
-        conn->pref_port = 5190;
-        conn->pref_status = STATUS_ONLINE;
-        conn->version = 8;
-        conn->uin = uin;
-#ifdef __BEOS__
-        conn->pref_passwd = strdup (passwd);
-#endif
-        
-        conn->server  = strdup ("login.icq.com");
-        conn->port    = 5190;
-        conn->flags   = CONN_AUTOLOGIN | CONN_WIZARD;
-        conn->passwd  = strdup (passwd);
     }
     
+    conn->flags |= CONN_WIZARD;
+
 #ifdef ENABLE_REMOTECONTROL
     conns = ConnectionC (TYPE_REMOTE);
     conns->open = &RemoteOpen;
@@ -212,6 +234,8 @@ void Initialize_RC_File ()
     conns->server = strdup (conns->pref_server);
 #endif
 
+    prG->logplace  = strdup ("history" _OS_PATHSEPSTR);
+    prG->chat      = 49;
     prG->status = STATUS_ONLINE;
     prG->flags = FLAG_DELBS | FLAG_AUTOSAVE | FLAG_AUTOFINGER;
 #ifdef ANSI_TERM
@@ -229,16 +253,6 @@ void Initialize_RC_File ()
     ContactOptionsSetStr (&prG->copts, CO_AUTONA,   i18n (1011, "User is not available [Auto-Message]"));
     ContactOptionsSetStr (&prG->copts, CO_AUTOOCC,  i18n (1012, "User is occupied [Auto-Message]"));
     ContactOptionsSetStr (&prG->copts, CO_AUTOFFC,  i18n (2055, "User is ffc and wants to chat about everything."));
-
-    prG->logplace  = strdup ("history" _OS_PATHSEPSTR);
-    prG->chat      = 49;
-
-    conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%ld", uin));
-    ContactOptionsSetVal (&conn->contacts->copts, CO_IGNORE, 0);
-    cont = ContactFindCreate (conn->contacts, 0, 82274703, "R\xc3\xbc" "diger Kuhlmann");
-    ContactFindCreate (conn->contacts, 0, 82274703, "Tadu");
-    ContactOptionsSetStr (&cont->copts, CO_COLORINCOMING, "red bold");
-    ContactOptionsSetStr (&cont->copts, CO_COLORMESSAGE, "red bold");
 
     if (uin)
         Save_RC ();
