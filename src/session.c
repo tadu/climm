@@ -56,7 +56,8 @@ Session *SessionClone (Session *sess)
     if (!child)
         return NULL;
     memcpy (child, sess, sizeof (*child));
-    child->assoc = sess;
+    child->parent = sess;
+    child->assoc = NULL;
     child->sok = -1;
     child->connect = 0;
     child->incoming = NULL;

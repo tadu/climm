@@ -167,14 +167,13 @@ void CallBackServerInitV5 (Event *event)
     Session *sess = event->sess;
     int rc;
 
-    free (event);
-    
     if (sess->assoc && !(sess->connect & CONNECT_OK))
     {
         event->due = time (NULL) + 1;
         QueueEnqueue (event);
         return;
     }
+    free (event);
     
     M_print (i18n (1902, "Opening v5 connection to %s:%d... "), sess->server, sess->port);
     

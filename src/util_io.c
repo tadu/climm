@@ -499,9 +499,10 @@ static void UtilIOConnectCallback (Session *sess)
                     CONN_FAIL (UtilFill (i18n (1958, "[SOCKS] Connection request refused (%d)"), buf[1]));
                 if (!sess->server && !sess->ip)
                 {
-                    sess->assoc->our_local_ip = ntohl (*(UDWORD *)(&buf[4]));
-                    sess->our_outside_ip = sess->assoc->our_local_ip;
+                    sess->our_outside_ip = ntohl (*(UDWORD *)(&buf[4]));
                     sess->port = ntohs (*(UWORD *)(&buf[8]));
+                    if (sess->assoc)
+                        sess->assoc->our_local_ip = sess->our_outside_ip;
                 }
                 sess->connect &= ~CONNECT_SOCKS;
                 CONN_OK

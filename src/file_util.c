@@ -215,7 +215,7 @@ void Initalize_RC_File ()
     sesst->spref = PreferencesSessionC ();
     assert (sesst->spref);
 
-    sesst->assoc = sess;
+    sesst->parent = sess;
     sess->assoc = sesst;
     sesst->spref->type = TYPE_LISTEN;
     sesst->spref->flags = CONN_AUTOLOGIN;
@@ -619,7 +619,7 @@ void Read_RC_File (FILE *rcf)
                         if (oldsess->spref->type == TYPE_SERVER || oldsess->spref->type == TYPE_SERVER_OLD)
                         {
                             oldsess->assoc = sess;
-                            sess->assoc = oldsess;
+                            sess->parent = oldsess;
                         }
                     }
                     else 
@@ -768,7 +768,7 @@ int Save_RC ()
     {
         if (!ss->spref || (ss->spref->type != TYPE_SERVER && ss->spref->type != TYPE_SERVER_OLD && ss->spref->type != TYPE_LISTEN)
             || (!ss->spref->uin && ss->spref->type == TYPE_SERVER)
-            || (ss->assoc && !ss->assoc->spref->uin && ss->spref->type == TYPE_LISTEN))
+            || (ss->spref->type == TYPE_LISTEN && ss->parent && !ss->parent->spref->uin))
             continue;
 
         fprintf (rcf, "[Connection]\n");

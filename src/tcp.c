@@ -123,10 +123,10 @@ void TCPDirectOpen (Session *sess, UDWORD uin)
 
     ASSERT_LISTEN (sess);
 
-    if (uin == sess->assoc->uin)
+    if (uin == sess->parent->uin)
         return;
 
-    UtilCheckUIN (sess->assoc, uin);
+    UtilCheckUIN (sess->parent, uin);
     cont = ContactFind (uin);
     if (!cont || cont->TCP_version < 6)
         return;
@@ -142,13 +142,14 @@ void TCPDirectOpen (Session *sess, UDWORD uin)
     if (!peer)
         return;
     
-    peer->port  = 0;
-    peer->uin   = uin;
-    peer->type  = TYPE_DIRECT;
-    peer->flags = 0;
-    peer->spref = NULL;
-    peer->assoc = sess;
-    peer->ver   = sess->ver <= cont->TCP_version ? sess->ver : cont->TCP_version;
+    peer->port   = 0;
+    peer->uin    = uin;
+    peer->type   = TYPE_DIRECT;
+    peer->flags  = 0;
+    peer->spref  = NULL;
+    peer->parent = sess;
+    peer->assoc  = NULL;
+    peer->ver    = sess->ver <= cont->TCP_version ? sess->ver : cont->TCP_version;
 
     TCPDispatchConn (peer);
 }
@@ -240,9 +241,9 @@ static void TCPDispatchMain (Session *sess)
             case 1:
                 sess->connect |= CONNECT_OK | CONNECT_SELECT_R | CONNECT_SELECT_X;
                 sess->connect &= ~CONNECT_SELECT_W; /* & ~CONNECT_SELECT_X; */
-                if (sess->type == TYPE_LISTEN && sess->assoc && sess->assoc->ver > 6
-                    && (sess->assoc->connect & CONNECT_OK))
-                    SnacCliSetstatus (sess->assoc, 0, 2);
+                if (sess->type == TYPE_LISTEN && sess->parent && sess->parent->ver > 6
+                    && (sess->parent->connect & CONNECT_OK))
+                    SnacCliSetstatus (sess->parent, 0, 2);
                 break;
             case 2:
                 sess->connect = 0;
@@ -377,9 +378,9 @@ static void TCPDispatchConn (Session *sess)
                 return;
             case 5:
             {
-                if (sess->assoc && sess->assoc->assoc && sess->assoc->assoc->ver < 7)
+                if (sess->parent && sess->parent->parent && sess->parent->parent->ver < 7)
                 {
-                    CmdPktCmdTCPRequest (sess->assoc->assoc, cont->uin, cont->port);
+                    CmdPktCmdTCPRequest (sess->parent->parent, cont->uin, cont->port);
                     QueueEnqueueData (sess, sess->ip, QUEUE_TYPE_TCP_TIMEOUT,
                                       cont->uin, time (NULL) + 30,
                                       NULL, NULL, &TCPCallBackTOConn);
@@ -778,18 +779,18 @@ void TCPSendInitv6 (Session *sess)
     }
 
     pak = PacketC ();
-    PacketWrite1  (pak, PEER_INIT);                          /* command          */
-    PacketWrite2  (pak, 6);                                  /* TCP version      */
-    PacketWrite2  (pak, 0);                                  /* TCP revision     */
-    PacketWrite4  (pak, sess->uin);                          /* destination UIN  */
-    PacketWrite2  (pak, 0);                                  /* unknown - zero   */
-    PacketWrite4  (pak, sess->assoc->port);                  /* our port         */
-    PacketWrite4  (pak, sess->assoc->assoc->uin);            /* our UIN          */
-    PacketWriteB4 (pak, sess->assoc->assoc->our_outside_ip); /* our (remote) IP  */
-    PacketWriteB4 (pak, sess->assoc->assoc->our_local_ip);   /* our (local)  IP  */
-    PacketWrite1  (pak, TCP_OK_FLAG);                        /* connection type  */
-    PacketWrite4  (pak, sess->assoc->port);                  /* our (other) port */
-    PacketWrite4  (pak, sess->our_session);                  /* session id       */
+    PacketWrite1  (pak, PEER_INIT);                            /* command          */
+    PacketWrite2  (pak, 6);                                    /* TCP version      */
+    PacketWrite2  (pak, 0);                                    /* TCP revision     */
+    PacketWrite4  (pak, sess->uin);                            /* destination UIN  */
+    PacketWrite2  (pak, 0);                                    /* unknown - zero   */
+    PacketWrite4  (pak, sess->parent->port);                   /* our port         */
+    PacketWrite4  (pak, sess->parent->parent->uin);            /* our UIN          */
+    PacketWriteB4 (pak, sess->parent->parent->our_outside_ip); /* our (remote) IP  */
+    PacketWriteB4 (pak, sess->parent->parent->our_local_ip);   /* our (local)  IP  */
+    PacketWrite1  (pak, TCP_OK_FLAG);                          /* connection type  */
+    PacketWrite4  (pak, sess->parent->port);                   /* our (other) port */
+    PacketWrite4  (pak, sess->our_session);                    /* session id       */
 
     TCPSendPacket (pak, sess);
     PacketD (pak);
@@ -837,16 +838,16 @@ static void TCPSendInit (Session *sess)
 
     pak = PacketC ();
     PacketWrite1  (pak, PEER_INIT);                    /* command          */
-    PacketWrite2  (pak, sess->assoc->ver);             /* TCP version      */
+    PacketWrite2  (pak, sess->parent->ver);            /* TCP version      */
     PacketWrite2  (pak, 43);                           /* length           */
     PacketWrite4  (pak, sess->uin);                    /* destination UIN  */
     PacketWrite2  (pak, 0);                            /* unknown - zero   */
-    PacketWrite4  (pak, sess->assoc->port);            /* our port         */
-    PacketWrite4  (pak, sess->assoc->assoc->uin);             /* our UIN          */
-    PacketWriteB4 (pak, sess->assoc->assoc->our_outside_ip);  /* our (remote) IP  */
-    PacketWriteB4 (pak, sess->assoc->assoc->our_local_ip);    /* our (local)  IP  */
+    PacketWrite4  (pak, sess->parent->port);           /* our port         */
+    PacketWrite4  (pak, sess->parent->parent->uin);             /* our UIN          */
+    PacketWriteB4 (pak, sess->parent->parent->our_outside_ip);  /* our (remote) IP  */
+    PacketWriteB4 (pak, sess->parent->parent->our_local_ip);    /* our (local)  IP  */
     PacketWrite1  (pak, TCP_OK_FLAG);                  /* connection type  */
-    PacketWrite4  (pak, sess->assoc->port);            /* our (other) port */
+    PacketWrite4  (pak, sess->parent->port);           /* our (other) port */
     PacketWrite4  (pak, sess->our_session);            /* session id       */
     PacketWrite4  (pak, 0x00000050);
     PacketWrite4  (pak, 0x00000003);
@@ -962,10 +963,10 @@ static Session *TCPReceiveInit (Session *sess, Packet *pak)
         if (nver == 6 && 23 > len2)
             FAIL (4);
 
-        if (muin  != sess->assoc->assoc->uin)
+        if (muin  != sess->parent->parent->uin)
             FAIL (5);
         
-        if (uin  == sess->assoc->assoc->uin)
+        if (uin  == sess->parent->parent->uin)
             FAIL (6);
         
         if (!(cont = ContactFind (uin)))
@@ -1409,9 +1410,11 @@ BOOL TCPGetAuto (Session *sess, UDWORD uin, UWORD which)
     Packet *pak;
     Session *peer;
 
+    assert (sess->parent);
+
     if (!sess)
         return 0;
-    if (uin == sess->assoc->uin)
+    if (uin == sess->parent->uin)
         return 0;
     cont = ContactFind (uin);
     if (!cont)
@@ -1450,7 +1453,7 @@ BOOL TCPGetAuto (Session *sess, UDWORD uin, UWORD which)
             return 0;
     }
 
-    pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, which, 0, sess->assoc->status, "...");
+    pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, which, 0, sess->parent->status, "...");
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
 
@@ -1472,9 +1475,11 @@ BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
     Packet *pak;
     Session *peer;
 
+    assert (sess->parent);
+
     if (!sess)
         return 0;
-    if (uin == sess->assoc->uin)
+    if (uin == sess->parent->uin)
         return 0;
     cont = ContactFind (uin);
     if (!cont)
@@ -1497,7 +1502,7 @@ BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
     if (!peer)
         return 0;
 
-    pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, sub_cmd, sess->assoc->status, 0, msg);
+    pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, sub_cmd, sess->parent->status, 0, msg);
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
 
@@ -1530,8 +1535,9 @@ BOOL TCPSendFiles (Session *sess, UDWORD uin, char *description, char **files, c
         return 0;
     
     ASSERT_LISTEN (sess);
+    assert (sess->parent);
 
-    if (uin == sess->assoc->uin)
+    if (uin == sess->parent->uin)
         return 0;
     cont = ContactFind (uin);
     if (!cont)
@@ -1556,7 +1562,7 @@ BOOL TCPSendFiles (Session *sess, UDWORD uin, char *description, char **files, c
     
     assert (fsess);
     
-    fsess->assoc = peer->assoc;
+    fsess->parent = peer->parent;
     fsess->uin = uin;
     fsess->connect = 77;
     fsess->type = TYPE_FILE;
@@ -1607,7 +1613,7 @@ BOOL TCPSendFiles (Session *sess, UDWORD uin, char *description, char **files, c
         
     if (peer->ver < 8)
     {
-        pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, TCP_MSG_FILE, sess->assoc->status, 0, description);
+        pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, TCP_MSG_FILE, sess->parent->status, 0, description);
         PacketWrite2 (pak, 0);
         PacketWrite2 (pak, 0);
         PacketWriteLNTS (pak, "many, really many, files");
@@ -1616,7 +1622,7 @@ BOOL TCPSendFiles (Session *sess, UDWORD uin, char *description, char **files, c
     }
     else
     {
-        pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, TCP_MSG_GREETING, sess->assoc->status, 0, "");
+        pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, TCP_MSG_GREETING, sess->parent->status, 0, "");
         TCPGreet (pak, 0x29, description, 0, 12345, "many, really many files");
     }
 
@@ -1670,7 +1676,7 @@ static void TCPCallBackResend (Event *event)
     }
 
     if (PacketReadAt2 (pak, 4 + delta) == TCP_CMD_MESSAGE)
-        icq_sendmsg (peer->assoc->assoc, cont->uin, event->info, PacketReadAt2 (pak, 22 + delta));
+        icq_sendmsg (peer->parent->parent, cont->uin, event->info, PacketReadAt2 (pak, 22 + delta));
     else
         M_print (i18n (1844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4 + delta));
     
@@ -1857,7 +1863,14 @@ static void TCPCallBackReceive (Event *event)
                     }
                     else
                     {
-                        Session *fsess;
+                        Session *fsess, *flist;
+                        
+                        flist = SessionFind (TYPE_FILELISTEN, 0, event->parent->parent);
+                        if (!flist)
+                        { /* create one */
+                        }
+                        assert (flist);
+                        
                         M_print (i18n (2052, "Accepting file %s (%d bytes) from %s.\n"),
                                  tmp2, len, cont->nick);
 
@@ -1867,7 +1880,7 @@ static void TCPCallBackReceive (Event *event)
                         fsess->ip = 0;
                         fsess->server = NULL;
                         fsess->type = TYPE_FILE;
-                        fsess->assoc = event->sess->assoc;
+                        fsess->parent = flist;
                         SessionInitFile (fsess);
 
                         TCPSendMsgAck (event->sess, seq, TCP_MSG_FILE, TRUE);
@@ -1915,7 +1928,7 @@ static void TCPCallBackReceive (Event *event)
                                     fsess->ip = 0;
                                     fsess->server = NULL;
                                     fsess->type = TYPE_FILE;
-                                    fsess->assoc = event->sess->assoc;
+                                    fsess->assoc = /*event->sess->parent*/ NULL; assert (0);
                                     SessionInitFile (fsess);
 
                                     TCPSendGreetAck (event->sess, seq, cmd, TRUE);
