@@ -12,6 +12,7 @@
 
 #include "micq.h"
 #include "packet.h"
+#include "preferences.h"
 #include "conv.h"
 #include "util_ui.h"
 #include "util_str.h"
@@ -199,56 +200,44 @@ void PacketWriteData (Packet *pak, const char *data, UWORD len)
 
 void PacketWriteStr(Packet *pak, const char *data)
 {
-    char *buf = strdup (data);
-    ConvUnixWin (buf);
-    PacketWriteData (pak, buf, strlen (data));
+    if (data)
+        PacketWriteData (pak, data, strlen (data));
 }
 
 void PacketWriteLNTS (Packet *pak, const char *data)
 {
-    char *buf = strdup (data ? data : "");
+    data = data ? data : "";
 
     assert (pak);
-    assert (buf);
-    assert (pak->wpos + 3 + strlen (buf) < PacketMaxData);
+    assert (pak->wpos + 3 + strlen (data) < PacketMaxData);
     
-    ConvUnixWin (buf);
-    PacketWrite2 (pak, strlen (buf) + 1);
-    PacketWriteData (pak, buf, strlen (buf));
+    PacketWrite2 (pak, strlen (data) + 1);
+    PacketWriteData (pak, data, strlen (data));
     PacketWrite1 (pak, 0);
-    
-    free (buf);
 }
 
 void PacketWriteDLStr (Packet *pak, const char *data)
 {
-    char *buf = strdup (data ? data : "");
+    data = data ? data : "";
 
     assert (pak);
-    assert (buf);
-    assert (pak->wpos + 4 + strlen (buf) < PacketMaxData);
+    assert (pak->wpos + 4 + strlen (data) < PacketMaxData);
     
-    ConvUnixWin (buf);
-    PacketWrite4 (pak, strlen (buf));
-    PacketWriteData (pak, buf, strlen (buf));
-    
-    free (buf);
+    PacketWrite4 (pak, strlen (data));
+    PacketWriteData (pak, data, strlen (data));
 }
 
 void PacketWriteLLNTS (Packet *pak, const char *data)
 {
-    char *buf = strdup (data ? data : "");
+    data = data ? data : "";
 
     assert (pak);
-    assert (buf);
-    assert (pak->wpos + 5 + strlen (buf) < PacketMaxData);
+    assert (pak->wpos + 5 + strlen (data) < PacketMaxData);
 
-    ConvUnixWin (buf);
-    PacketWrite2 (pak, strlen (buf) + 3);
-    PacketWrite2 (pak, strlen (buf) + 1);
-    PacketWriteData (pak, buf, strlen (buf));
+    PacketWrite2 (pak, strlen (data) + 3);
+    PacketWrite2 (pak, strlen (data) + 1);
+    PacketWriteData (pak, data, strlen (data));
     PacketWrite1 (pak, 0);
-    free (buf);
 }
 
 void PacketWriteUIN (Packet *pak, UDWORD uin)
@@ -513,7 +502,7 @@ void PacketReadData (Packet *pak, char *buf, UWORD len)
 char *PacketReadStrB (Packet *pak)
 {
     UWORD len;
-    char *str, *t;
+    char *str;
     
     len = PacketReadB2 (pak);
 
@@ -526,9 +515,6 @@ char *PacketReadStrB (Packet *pak)
     PacketReadData (pak, str, len);
     str[len] = '\0';
     
-    for (t = str; t - str < len; t+= strlen (t) + 1)
-        ConvWinUnix (t);
-
     return str;
 }
 
@@ -549,7 +535,6 @@ char *PacketReadLNTS (Packet *pak)
 
     PacketReadData (pak, str, len);
     str[len - 1] = '\0';
-    ConvWinUnix (str);
 
     return str;
 }
@@ -569,7 +554,6 @@ char *PacketReadDLStr (Packet *pak)
     
     PacketReadData (pak, str, len);
     str[len] = '\0';
-    ConvWinUnix (str);
 
     return str;
 }
@@ -687,7 +671,6 @@ char *PacketReadAtStrB (const Packet *pak, UWORD at)
     
     PacketReadAtData (pak, at + 2, str, len);
     str[len] = '\0';
-    ConvWinUnix (str);
 
     return str;
 }
@@ -709,7 +692,7 @@ char *PacketReadAtLNTS (Packet *pak, UWORD at)
 
     PacketReadAtData (pak, at + 2, str, len);
     str[len - 1] = '\0';
-    ConvWinUnix (str);
+
     return str;
 }
 
@@ -732,7 +715,7 @@ const char *PacketDump (Packet *pak, const char *syntax)
     Packet *p = NULL;
     UDWORD size, nr, len, val;
     const char *f, *l, *last;
-    char *t, *sub, lev;
+    char *t, *sub, lev, *tmp;
     
     assert (pak);
     assert (syntax);
@@ -784,13 +767,15 @@ const char *PacketDump (Packet *pak, const char *syntax)
                 nr = PacketReadAtB2 (pak, pak->rpos);
                 if (pak->len < pak->rpos + nr + 2) break;
                 t = s_cat  (t, &size, s_dumpnd (pak->data + pak->rpos, nr + 2));
-                t = s_catf (t, &size, " " COLDEBUG "BStr     '%s'" COLNONE "\n", PacketReadStrB (pak));
+                t = s_catf (t, &size, " " COLDEBUG "BStr     '%s'" COLNONE "\n", c_in (tmp = PacketReadStrB (pak)));
+                free (tmp);
                 continue;
             case 'L':
                 nr = PacketReadAt2 (pak, pak->rpos);
                 if (pak->len < pak->rpos + nr + 2) break;
                 t = s_cat  (t, &size, s_dumpnd (pak->data + pak->rpos, nr + 2));
-                t = s_catf (t, &size, " " COLDEBUG "LNTS     '%s'" COLNONE "\n", PacketReadLNTS (pak));
+                t = s_catf (t, &size, " " COLDEBUG "LNTS     '%s'" COLNONE "\n", c_in (tmp = PacketReadLNTS (pak)));
+                free (tmp);
                 continue;
             case '-':
                 l = last;

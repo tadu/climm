@@ -269,9 +269,7 @@ static char *_encryptpw (const char *pw)
 void FlapCliIdent (Connection *conn)
 {
     Packet *pak;
-    UWORD flags = prG->flags;
 
-    prG->flags &= ~FLAG_CONVRUSS & ~FLAG_CONVEUC;
     if (!conn->passwd || !strlen (conn->passwd))
     {
 #ifdef __BEOS__
@@ -301,7 +299,6 @@ void FlapCliIdent (Connection *conn)
     PacketWriteTLVStr (pak, 15, "de");  /* en */
     PacketWriteTLVStr (pak, 14, "de");  /* en */
     FlapSend (conn, pak);
-    prG->flags = flags;
 }
 
 void FlapCliCookie (Connection *conn, const char *cookie, UWORD len)

@@ -395,26 +395,21 @@ void UDPCallBackResend (Event *event)
                 char *tmp = strchr (data, '\xFE');
                 if (tmp != NULL)
                 {
-                    char url_desc[1024], url_data[1024];
+                    char *url_desc;
+                    const char *url_data;
                     
-                    *tmp = 0;
-                    ConvUnixWin (data);
-                    strcpy (url_desc, data);
-                    tmp++;
-                    data = tmp;
-                    ConvUnixWin (data);
-                    strcpy (url_data, data);
+                    *tmp++ = 0;
+                    url_desc = strdup (c_in (data));
+                    url_data = c_in (tmp);
 
                     M_printf (i18n (2128, " Description: %s%s%s\n"), COLMESSAGE, url_desc, COLNONE);
                     M_printf (i18n (2129, "         URL: %s%s%s\n"), COLMESSAGE, url_data, COLNONE);
+                    
+                    free (url_desc);
                 }
             }
             else if ((type & ~MSGF_MASS) == MSG_NORM)
-            {
-                ConvUnixWin (data);
-                M_printf (COLMESSAGE "%s", data);
-                M_print  (COLNONE " ");
-            }
+                M_printf (COLMESSAGE "%s" COLNONE " ", c_in (data));
         }
         else
         {

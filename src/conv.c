@@ -12,37 +12,13 @@
 #include "preferences.h"
 #include "util_str.h"
 
-void ConvWinUnix (char *text)
-{
-    if (!(prG->flags & FLAG_CONVRUSS) && !(prG->flags & FLAG_CONVEUC))
-        return;
-
-    if (prG->flags & FLAG_CONVRUSS)
-        ConvWinKoi (text);
-    else
-        ConvSjisEuc (text);    
-}
-
-void ConvUnixWin (char *text)
-{
-    if (!(prG->flags & FLAG_CONVRUSS) && !(prG->flags & FLAG_CONVEUC))
-        return;
-
-    if (prG->flags & FLAG_CONVRUSS)
-        ConvKoiWin (text);
-    else
-        ConvEucSjis (text);
-}
-
 char ConvSep ()
 {
-    static char conv[2] = "\0";
+    static char conv = '\0';
     
-    if (conv[0])
-        return conv[0];
-    conv[0] = '\xfe';
-    ConvWinUnix (conv);
-    return conv[0];
+    if (conv)
+        return conv;
+    return conv = ConvFromUTF8 (ConvToUTF8 ("\xfe", prG->enc_rem), prG->enc_loc)[0];
 }
 
 #define PUT_UTF8(x) \
