@@ -65,7 +65,7 @@ static void       TCPCallBackResend  (Event *event);
 static void       TCPCallBackReceive (Event *event);
 
 static void       Encrypt_Pak        (Session *peer, Packet *pak);
-static int        Decrypt_Pak        (UBYTE *pak, UDWORD size);
+static int        Decrypt_Pak        (Session *peer, Packet *pak);
 static int        TCPSendMsgAck      (Session *peer, UWORD seq, UWORD sub_cmd, BOOL accept);
 
 /*********************************************/
@@ -697,7 +697,7 @@ static Packet *TCPReceivePacket (Session *peer)
 
     if (peer->connect & CONNECT_OK && peer->type == TYPE_MSGDIRECT)
     {
-        if (Decrypt_Pak ((UBYTE *) &pak->data + (peer->ver > 6 ? 1 : 0), pak->len - (peer->ver > 6 ? 1 : 0)) < 0)
+        if (Decrypt_Pak (peer, pak))
         {
             if (prG->verbose & DEB_TCP)
             {
@@ -2056,14 +2056,23 @@ static void Encrypt_Pak (Session *peer, Packet *pak)
     PacketWriteAt4 (pak, peer->ver > 6 ? 3 : 2, check);
 }
 
-static int Decrypt_Pak (UBYTE *pak, UDWORD size)
+static int Decrypt_Pak (Session *peer, Packet *pak)
 {
     UDWORD hex, key, B1, M1, check;
-    int i;
-    UBYTE X1, X2, X3;
+    int i, size;
+    UBYTE X1, X2, X3, *p;
+
+    p = pak->data;
+    size = pak->len;
+    
+    if (peer->ver > 6)
+    {
+        p++;
+        size--;
+    }
 
     /* Get checkcode */
-    check = Chars_2_DW (pak);
+    check = PacketReadAt4 (pak, peer->ver > 6 ? 1 : 0);
 
     /* primary decryption */
     key = 0x67657268 * size + check;
@@ -2071,13 +2080,13 @@ static int Decrypt_Pak (UBYTE *pak, UDWORD size)
     for (i = 4; i < (size + 3) / 4; ) 
     {
         hex = key + client_check_data[i & 0xff];
-        pak[i++] ^=  hex        & 0xff;
-        pak[i++] ^= (hex >>  8) & 0xff;
-        pak[i++] ^= (hex >> 16) & 0xff;
-        pak[i++] ^= (hex >> 24) & 0xff;
+        p[i++] ^=  hex        & 0xff;
+        p[i++] ^= (hex >>  8) & 0xff;
+        p[i++] ^= (hex >> 16) & 0xff;
+        p[i++] ^= (hex >> 24) & 0xff;
     }
 
-    B1 = (pak[4]<<24) | (pak[6]<<16) | (pak[4]<<8) | (pak[6]<<0);
+    B1 = (p[4]<<24) | (p[6]<<16) | (p[4]<<8) | (p[6]<<0);
 
     /* special decryption */
     B1 ^= check;
@@ -2087,7 +2096,7 @@ static int Decrypt_Pak (UBYTE *pak, UDWORD size)
     if (M1 < 10 || M1 >= size)
         return (-1);
 
-    X1 = pak[M1] ^ 0xFF;
+    X1 = p[M1] ^ 0xFF;
     if (((B1 >> 16) & 0xFF) != X1) 
         return (-1);
 

@@ -185,20 +185,6 @@ void Init_New_User (Session *sess)
     }
 }
 
-UDWORD Chars_2_DW (UBYTE * buf)
-{
-    UDWORD i;
-
-    i = buf[3];
-    i <<= 8;
-    i += buf[2];
-    i <<= 8;
-    i += buf[1];
-    i <<= 8;
-    i += buf[0];
-
-    return i;
-}
 #define LOG_MAX_PATH 255
 #define DSCSIZ 192 /* Maximum length of log file descriptor lines. */
 
