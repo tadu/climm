@@ -218,6 +218,7 @@ int R_process_input (void)
                 case '\n':
                 case '\r':
                     s[clen + 1] = 0;    /* just to be sure */
+                    R_show ();
                     M_print ("\n");
                     history_cur = 0;
                     TabReset ();
