@@ -55,7 +55,7 @@ static void UtilIOConnectCallback (Session *sess);
  * Connects to hostname on port port
  * hostname can be FQDN or IP
  */
-SOK_T UtilIOConnectUDP (char *hostname, int port)
+void UtilIOConnectUDP (Session *sess)
 {
 /* SOCKS5 stuff begin */
     int res;
@@ -67,13 +67,12 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
 
     int conct;
     unsigned length;
-    int sok;
     struct sockaddr_in sin;     /* used to store inet addr stuff */
     struct hostent *host_struct;        /* used in DNS lookup */
 
-    sok = socket (AF_INET, SOCK_DGRAM, 0);      /* create the unconnected socket */
+    sess->sok = socket (AF_INET, SOCK_DGRAM, 0);      /* create the unconnected socket */
 
-    if (sok < 0)
+    if (sess->sok < 0)
     {
         perror (i18n (1055, "Socket creation failed"));
         exit (1);
@@ -89,14 +88,15 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
         sin.sin_family = AF_INET;
         sin.sin_port = 0;
 
-        if (bind (sok, (struct sockaddr *) &sin, sizeof (struct sockaddr)) < 0)
+        if (bind (sess->sok, (struct sockaddr *) &sin, sizeof (struct sockaddr)) < 0)
         {
             M_print (i18n (1637, "Can't bind socket to free port\n"));
-            return -1;
+            sess->sok = -1;
+            return;
         }
 
         length = sizeof (sin);
-        getsockname (sok, (struct sockaddr *) &sin, &length);
+        getsockname (sess->sok, (struct sockaddr *) &sin, &length);
         s5OurPort = ntohs (sin.sin_port);
 
         s5sin.sin_addr.s_addr = inet_addr (prG->s5Host);
@@ -107,7 +107,8 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
             {
                 M_printf (i18n (1596, "[SOCKS] Can't find hostname %s: %s."), prG->s5Host, hstrerror (h_errno));
                 M_print ("\n");
-                return -1;
+                sess->sok = -1;
+                return;
             }
             s5sin.sin_addr = *((struct in_addr *) host_struct->h_addr);
         }
@@ -117,14 +118,16 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
         if (s5Sok < 0)
         {
             M_print (i18n (1597, "[SOCKS] Socket creation failed\n"));
-            return -1;
+            sess->sok = -1;
+            return;
         }
         conct = connect (s5Sok, (struct sockaddr *) &s5sin, sizeof (s5sin));
         if (conct == -1)        /* did we connect ? */
         {
             M_print (i18n (1598, "[SOCKS] Connection request refused"));
             M_print (".\n");
-            return -1;
+            sess->sok = -1;
+            return;
         }
         buf[0] = 5;             /* protocol version */
         buf[1] = 1;             /* number of methods */
@@ -141,7 +144,8 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
                 M_print (i18n (1599, "[SOCKS] Authentification method incorrect"));
                 M_print (".\n");
                 sockclose (s5Sok);
-                return -1;
+                sess->sok = -1;
+                return;
             }
             buf[0] = 1;         /* version of subnegotiation */
             buf[1] = strlen (prG->s5Name);
@@ -155,7 +159,8 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
                 M_print (i18n (1600, "[SOCKS] Authorization failure"));
                 M_print (".\n");
                 sockclose (s5Sok);
-                return -1;
+                sess->sok = -1;
+                return;
             }
         }
         else
@@ -165,7 +170,8 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
                 M_print (i18n (1599, "[SOCKS] Authentification method incorrect"));
                 M_print (".\n");
                 sockclose (s5Sok);
-                return -1;
+                sess->sok = -1;
+                return;
             }
         }
         buf[0] = 5;             /* protocol version */
@@ -185,62 +191,58 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
             M_print (i18n (1601, "[SOCKS] General SOCKS server failure"));
             M_print (".\n");
             sockclose (s5Sok);
-            return -1;
+            sess->sok = -1;
+            return;
         }
     }
 
-    sin.sin_addr.s_addr = inet_addr (hostname);
+    sin.sin_addr.s_addr = inet_addr (sess->server);
     if (sin.sin_addr.s_addr == -1)      /* name isn't n.n.n.n so must be DNS */
     {
-        host_struct = gethostbyname (hostname);
+        host_struct = gethostbyname (sess->server);
         if (!host_struct)
         {
             if (prG->verbose)
             {
-                M_printf (i18n (1948, "Can't find hostname %s: %s."), hostname, hstrerror (h_errno));
+                M_printf (i18n (1948, "Can't find hostname %s: %s."), sess->server, hstrerror (h_errno));
                 M_print ("\n");
             }
-            return -1;
+            sess->sok = -1;
+            return;
         }
         sin.sin_addr = *((struct in_addr *) host_struct->h_addr);
     }
-    prG->sess->ip = ntohl (sin.sin_addr.s_addr);
+    sess->ip = ntohl (sin.sin_addr.s_addr);
     sin.sin_family = AF_INET;
-    sin.sin_port = htons (port);
+    sin.sin_port = htons (sess->port);
 
     if (prG->s5Use)
     {
-        prG->s5DestIP = ntohl (sin.sin_addr.s_addr);
         memcpy (&sin.sin_addr.s_addr, &buf[4], 4);
 
         sin.sin_family = AF_INET;
-        prG->s5DestPort = port;
         memcpy (&sin.sin_port, &buf[8], 2);
     }
 
-    conct = connect (sok, (struct sockaddr *) &sin, sizeof (sin));
+    conct = connect (sess->sok, (struct sockaddr *) &sin, sizeof (sin));
 
     if (conct == -1)            /* did we connect ? */
     {
         if (prG->verbose)
         {
-            M_printf (i18n (1966, " Conection Refused on port %d at %s\n"), port, hostname);
+            M_printf (i18n (1966, " Conection Refused on port %d at %s\n"), sess->port, sess->server);
             perror ("connect");
         }
-        return -1;
+        sess->sok = -1;
+        return;
     }
 
     length = sizeof (sin);
-    getsockname (sok, (struct sockaddr *) &sin, &length);
-    if (prG->sess)
-        prG->sess->our_local_ip = ntohl (sin.sin_addr.s_addr);
+    getsockname (sess->sok, (struct sockaddr *) &sin, &length);
+    sess->our_local_ip = ntohl (sin.sin_addr.s_addr);
 
     if (prG->verbose)
-    {
-        M_printf (i18n (1053, "Connected to %s, waiting for response\n"), hostname);
-    }
-
-    return sok;
+        M_printf (i18n (1053, "Connected to %s, waiting for response\n"), sess->server);
 }
 
 #define CONN_FAIL(s)  { const char *t = s;        \
@@ -681,7 +683,7 @@ BOOL UtilIOSendTCP (Session *sess, Packet *pak)
  * Send a given packet to the session's socket.
  * Use socks if requested. UDP only.
  */
-void UtilIOSend (Session *sess, Packet *pak)
+void UtilIOSendUDP (Session *sess, Packet *pak)
 {
     size_t s5len = 0;
     UBYTE *body = NULL, *data = pak->data;
@@ -697,8 +699,8 @@ void UtilIOSend (Session *sess, Packet *pak)
         body[1] = 0;
         body[2] = 0;
         body[3] = 1;
-        *(UDWORD *) &body[4] = htonl (prG->s5DestIP);
-        *(UWORD  *) &body[8] = htons (prG->s5DestPort);
+        *(UDWORD *) &body[4] = htonl (sess->ip);
+        *(UWORD  *) &body[8] = htons (sess->port);
         memcpy (body + s5len, data, pak->len);
         data = body;
     }

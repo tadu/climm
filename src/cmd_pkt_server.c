@@ -268,7 +268,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             break;
         case SRV_TRY_AGAIN:
             M_printf ("%s " COLMESSAGE, s_now);
-            M_print (i18n (1646, "Server is busy.\n"));
+            M_print  (i18n (1646, "Server is busy.\n"));
             uiG.reconnect_count++;
             if (uiG.reconnect_count >= MAX_RECONNECT_ATTEMPTS)
             {
@@ -342,10 +342,10 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             wdata = PacketRead2 (pak);
             text  = PacketReadLNTS (pak);
 
-            if (~prG->flags & FLAG_HERMIT || ContactFind (uin) != NULL)
+            UtilCheckUIN (sess, uin);
+            if ((cont = ContactFind (uin)))
             {
-                UtilCheckUIN (sess, uin);
-                IMSrvMsg (ContactFind (uin), sess, NOW, wdata, text, STATUS_OFFLINE);
+                IMSrvMsg (cont, sess, NOW, wdata, text, STATUS_OFFLINE);
                 Auto_Reply (sess, uin);
             }
             free (text);

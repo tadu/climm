@@ -55,7 +55,7 @@ void SrvCallBackFlap (Event *event)
             FlapChannel1 (event->sess, event->pak);
             break;
         case 2: /* SNAC packets */
-            SrvCallBackSnac (event);
+            SnacCallback (event);
             return;
         case 3: /* Errors */
             break;
@@ -179,7 +179,7 @@ void FlapPrint (Packet *pak)
         SnacPrint (pak);
     else
         if (prG->verbose & DEB_PACK8DATA || ~prG->verbose & DEB_PACK8)
-            M_printf ("%s", s_dump (pak->data + 6, pak->len - 6));
+            M_print (s_dump (pak->data + 6, pak->len - 6));
 
     pak->rpos = opos;
 }

@@ -197,7 +197,7 @@ void CallBackServerInitV5 (Event *event)
     
     if (sess->sok < 0)
     {
-        sess->sok = UtilIOConnectUDP (sess->server, sess->port);
+        UtilIOConnectUDP (sess);
 
 #ifdef __BEOS__
         if (sess->sok == -1)
@@ -329,7 +329,7 @@ void PacketSendv5 (const Packet *pak, Session *sess)
     Debug (DEB_PACKET, "---- %p sent");
 
     cpak = Wrinkle (pak);
-    UtilIOSend (sess, cpak);
+    UtilIOSendUDP (sess, cpak);
     PacketD (cpak);
 }
 
@@ -413,7 +413,7 @@ void UDPCallBackResend (Event *event)
             {
                 ConvUnixWin (data);
                 M_printf (COLMESSAGE "%s", data);
-                M_print (COLNONE " ");
+                M_print  (COLNONE " ");
             }
         }
         else

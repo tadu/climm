@@ -138,7 +138,7 @@ static SNAC SNACS[] = {
 /*
  * Interprets the given SNAC.
  */
-void SrvCallBackSnac (Event *event)
+void SnacCallback (Event *event)
 {
     Packet  *pak  = event->pak;
     SNAC *s;

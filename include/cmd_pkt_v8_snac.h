@@ -2,7 +2,7 @@
 
 #include "cmd_pkt_cmd_v5.h"
 
-void SrvCallBackSnac (Event *event);
+void SnacCallback (Event *event);
 const char *SnacName (UWORD fam, UWORD cmd);
 void SnacPrint (Packet *pak);
 

@@ -41,10 +41,6 @@ struct Preferences_s
     char  *s5Name;
     char  *s5Pass;
 
-    UDWORD s5DestIP;    /* this doesn't belong here %TODO% */
-    UDWORD s5DestPort;  /* neither this %TODO%             */
-    Session *sess;      /* get rid of this ASAP  %TODO% */
-
     /* Much more stuff to go here - %TODO% */
 };
 

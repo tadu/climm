@@ -145,8 +145,8 @@ void Init_New_User (Session *sess)
     }
 #endif
     M_print (i18n (1756, "\nCreating Connection...\n"));
-    sess->sok = UtilIOConnectUDP (sess->server, sess->port);
-    if ((sess->sok == -1) || (sess->sok == 0))
+    UtilIOConnectUDP (sess);
+    if (sess->sok == -1)
     {
         M_print (i18n (1757, "Couldn't establish connection.\n"));
         exit (1);

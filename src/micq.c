@@ -243,8 +243,6 @@ int main (int argc, char *argv[])
     else
         M_print ("No internationalization requested.\n");
 
-    prG->sess = SessionNr (0);
-    
     srand (time (NULL));
 
     Check_Endian ();
