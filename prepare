@@ -1,8 +1,8 @@
 #!/bin/sh -e
 
-aclocal && \
+aclocal-1.6 && \
 (autoheader || autoheader-2.50) && \
-(automake -ac || automake -a) && \
+automake-1.6 -ac && \
 (autoconf || autoconf-2.50) && \
 echo "Maintainer scripts ran fine." || \
 echo "Maintainer scripts failed."
