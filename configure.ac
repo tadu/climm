@@ -137,7 +137,7 @@ fi
 if text "x$MICQ_EXTRAVERSION" != "x"; then
     AC_DEFINE(EXTRAVERSION,$MICQ_EXTRAVERSION,[Extra version information like the distribution used])
 else
-    AC_DEFINE(EXTRAVERSION,[hand compiled])
+    AC_DEFINE(EXTRAVERSION,["hand compiled"])
 fi
 
 AC_CONFIG_FILES([doc/Makefile src/Makefile Makefile lang/Makefile])
