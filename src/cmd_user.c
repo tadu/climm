@@ -84,7 +84,8 @@ static jump_t jump[] = {
     { &CmdUserStatusDetail,  "eg",           NULL, 2,  37 },
     { &CmdUserStatusDetail,  "s",            NULL, 2,  30 },
     { &CmdUserStatusDetail,  "s-any",        NULL, 2,   0 },
-    { &CmdUserStatusMeta,    "ss",           NULL, 2,   0 },
+    { &CmdUserStatusMeta,    "ss",           NULL, 2,   1 },
+    { &CmdUserStatusMeta,    "meta",         NULL, 2,   0 },
     { &CmdUserStatusShort,   "w-old",        NULL, 2,   1 },
     { &CmdUserStatusShort,   "e-old",        NULL, 2,   0 },
     { &CmdUserStatusWide,    "wide",         NULL, 2,   1 },
@@ -593,7 +594,9 @@ static JUMP_F(CmdUserPass)
  */
 static JUMP_F(CmdUserSMS)
 {
+    Contact *cont = NULL, *contr = NULL;
     char *arg1 = NULL, *arg2 = NULL;
+    UDWORD i;
     OPENCONN;
     
     if (conn->ver < 6)
@@ -601,17 +604,36 @@ static JUMP_F(CmdUserSMS)
         M_print (i18n (2013, "This command is v8 only.\n"));
         return 0;
     }
-    if (!s_parse (&args, &arg1))
-        M_print (i18n (2014, "No number given.\n"));
-    else
+    if (s_parsenick (&args, &cont, &contr, conn))
     {
-        arg1 = strdup (arg1);
-        if (!s_parserem (&args, &arg2))
-            M_print (i18n (2015, "No message given.\n"));
-        else
-            SnacCliSendsms (conn, arg1, arg2);
-        free (arg1);
+        CONTACT_GENERAL (contr);
+        arg2 = args;
+        if ((!contr->meta_general->cellular || !contr->meta_general->cellular[0])
+            && s_parseint (&arg2, &i) && s_parse (&args, &arg1))
+        {
+            s_repl (&contr->meta_general->cellular, arg1);
+            contr->updated = 0;
+        }
+        arg1 = contr->meta_general->cellular;
     }
+    if ((!arg1 || !arg1[0]) && !s_parse (&args, &arg1))
+    {
+        M_print (i18n (2014, "No number given.\n"));
+        return 0;
+    }
+    if (arg1[0] != '+' || arg1[1] == '0')
+    {
+        M_printf (i18n (2250, "Number '%s' is not of the format +<coutrycode><cellprovider><number>.\n"), arg1);
+        if (contr && contr->meta_general)
+            s_repl (&contr->meta_general->cellular, NULL);
+        return 0;
+    }
+    arg1 = strdup (arg1);
+    if (!s_parserem (&args, &arg2))
+        M_print (i18n (2015, "No message given.\n"));
+    else
+        SnacCliSendsms (conn, arg1, arg2);
+    free (arg1);
     return 0;
 }
 
@@ -1695,21 +1717,97 @@ static JUMP_F(CmdUserStatusDetail)
 static JUMP_F(CmdUserStatusMeta)
 {
     Contact *cont, *contr;
+    char *cmd;
+    UDWORD ref;
     ANYCONN;
-                                                
-    if (conn && !s_parsenick (&args, &cont, &contr, conn) && *args)
+
+    if (!data)
     {
-        M_printf (i18n (1700, "%s is not a valid user in your list.\n"), args);
-        return 0;
+        if (!s_parse (&args, &cmd)) data = 0;
+        else if (!strcmp (cmd, "show")) data = 1;
+        else if (!strcmp (cmd, "load")) data = 2;
+        else if (!strcmp (cmd, "save")) data = 3;
+        else if (!strcmp (cmd, "set"))  data = 4;
+        else if (!strcmp (cmd, "get"))  data = 5;
+        else if (!strcmp (cmd, "rget")) data = 6;
+        
+        if (!data)
+        {
+            M_printf ("FIXME: help for meta *\n");
+            return 0;
+        }
     }
-    
-    if (!contr)
-        contr = ContactUIN (conn, conn->uin);
-    if (!contr)
-        return 0;
-    
-    UtilUIDisplayMeta (contr);
-    
+
+    while (*args)
+    {
+        if (data == 6)
+            contr = ContactUIN (conn, uiG.last_rcvd_uin);
+        else if (data != 4 && conn && !s_parsenick (&args, &cont, &contr, conn) && *args)
+        {
+            M_printf (i18n (1700, "%s is not a valid user in your list.\n"), args);
+            return 0;
+        }
+        
+        if (!contr)
+            contr = ContactUIN (conn, conn->uin);
+        if (!contr)
+            return 0;
+        
+        switch (data)
+        {
+            case 1:
+                UtilUIDisplayMeta (contr);
+                if (*args == ',')
+                    args++;
+                continue;
+            case 2:
+                if (ContactMetaLoad (contr))
+                    UtilUIDisplayMeta (contr);
+                else
+                    M_printf (i18n (2247, "Couldn't load meta data for '%s' (%ld).\n"),
+                              cont->nick, contr->uin);
+                if (*args == ',')
+                    args++;
+                continue;
+            case 3:
+                if (ContactMetaSave (contr))
+                    M_printf (i18n (2248, "Saved meta data for '%s' (%ld).\n"),
+                              cont->nick, contr->uin);
+                else
+                    M_printf (i18n (2249, "Couldn't save meta data for '%s' (%ld).\n"),
+                              cont->nick, contr->uin);
+                if (*args == ',')
+                    args++;
+                continue;
+            case 4:
+                if (conn->ver > 6)
+                {
+                    SnacCliMetasetgeneral (conn, contr);
+                    SnacCliMetasetmore (conn, contr);
+                    SnacCliMetasetabout (conn, contr->meta_about);
+                }
+                else
+                {
+                    CmdPktCmdMetaGeneral (conn, contr);
+                    CmdPktCmdMetaMore (conn, contr);
+                    CmdPktCmdMetaAbout (conn, contr->meta_about);
+                }
+                return 0;
+            case 5:
+            case 6:
+                cont->updated = 0;
+                if (conn->ver > 6)
+                    ref = SnacCliMetareqinfo (conn, contr);
+                else
+                    ref = CmdPktCmdMetaReqInfo (conn, contr);
+                QueueEnqueueData (conn, QUEUE_REQUEST_META, ref, time (NULL) + 10, NULL, contr->uin, NULL, &CallbackMeta);
+                if (*args == ',')
+                    args++;
+                if (data == 6)
+                    return 0;
+                continue;
+        }
+    }
     return 0;
 }
 

@@ -115,6 +115,10 @@ UWORD         ContactID         (Contact *cont);
 void          ContactSetCap     (Contact *cont, Cap *cap);
 void          ContactSetVersion (Contact *cont);
 
+BOOL          ContactMetaSave   (Contact *cont);
+BOOL          ContactMetaLoad   (Contact *cont);
+
+
 #define ContactUIN(conn,uin)   ContactFind ((conn)->contacts, 0, uin, NULL, 1)
 
 #define CONTACT_GENERAL(cont)  ((cont)->meta_general  ? (cont)->meta_general  : ((cont)->meta_general  = calloc (1, sizeof (MetaGeneral))))
@@ -134,17 +138,23 @@ void          ContactSetVersion (Contact *cont);
 #define CONT_ALIAS     16UL /* is an alias entry. */
 #define CONT_SEENAUTO  32UL /* has seen auto response. */
 
-#define UPF_GENERAL_A   0x001
-#define UPF_GENERAL_B   0x002
-#define UPF_WORK        0x004
-#define UPF_MORE        0x008
-#define UPF_ABOUT       0x010
-#define UPF_EMAIL       0x020
-#define UPF_INTEREST    0x040
-#define UPF_BACKGROUND  0x080
-#define UPF_AFFILIATION 0x100
-#define UPF_OBSOLETE    0x200
+#define UPF_GENERAL_A   0x0001
+#define UPF_GENERAL_B   0x0002
+#define UPF_WORK        0x0004
+#define UPF_MORE        0x0008
+#define UPF_ABOUT       0x0010
+#define UPF_EMAIL       0x0020
+#define UPF_INTEREST    0x0040
+#define UPF_BACKGROUND  0x0080
+#define UPF_AFFILIATION 0x0100
+#define UPF_OBSOLETE    0x0200
 
-#define UP_INFO         0x3ff
+#define UPF_DISC        0x1000
+#define UPF_SERVER      0x2000
+
+#define UP_ALL          (UPF_DISC | UPF_SERVER)
+#define UP_INFO         (UPF_GENERAL_A  | UPF_GENERAL_B | UPF_WORK | UPF_MORE \
+                         | UPF_ABOUT    | UPF_INTEREST  | UPF_BACKGROUND  \
+                         | UPF_EMAIL    | UPF_OBSOLETE  | UPF_AFFILIATION)
 
 #endif /* MICQ_CONTACT_H */

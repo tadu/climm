@@ -22,6 +22,7 @@
 #include "util_ui.h"
 #include "session.h"
 #include "util_str.h"
+#include "contact.h"
 
 static FILE *PrefOpenRC (Preferences *pref);
 
@@ -154,6 +155,8 @@ static FILE *PrefOpenRC (Preferences *pref)
 BOOL PrefLoad (Preferences *pref)
 {
     FILE *rcf;
+    Contact *cont;
+    int i;
     BOOL ok = FALSE;
     
     pref->away_time = default_away_time;
@@ -165,21 +168,8 @@ BOOL PrefLoad (Preferences *pref)
         ok = TRUE;
         Read_RC_File (rcf);
     }
-
-#ifdef WIP
-    {
-        char extra[200];
-
-        strcpy (extra, PrefUserDir (pref));
-        strcat (extra, "contacts");
-        rcf = fopen (extra, "r");
-        if (rcf)
-        {
-            ok = TRUE;
-            Read_RC_File (rcf);
-        }
-    }
-#endif
+    for (i = 0; (cont = ContactIndex (NULL, i)); i++)
+        ContactMetaLoad (cont);
     return ok;
 }
 
