@@ -88,7 +88,9 @@ void CmdPktSrvRead (Connection *conn)
     char *f;
     UDWORD session, uin, id;
     UWORD cmd, seq, seq2;
+#if ICQ_VER != 5
     int s;
+#endif
 
     pak = UtilIOReceiveUDP (conn);
     if (!pak)
@@ -103,7 +105,9 @@ void CmdPktSrvRead (Connection *conn)
     uin      = PacketRead4 (pak);
                PacketRead4 (pak); /* check */
     id = seq2 << 16 | seq;
+#if ICQ_VER != 5
     s = pak->len;
+#endif
     
     if (prG->verbose & DEB_PACK5DATA)
     {

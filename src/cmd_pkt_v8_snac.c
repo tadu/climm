@@ -563,15 +563,15 @@ static JUMP_SNAC_F(SnacSrvReplyicbm)
 
 static JUMP_SNAC_F(SnacSrvAckmsg)
 {
-    UDWORD midtime, midrand, uin;
+    UDWORD /*midtime, midrand,*/ uin;
     UWORD msgtype, seq_dc;
     Contact *cont;
     Packet *pak;
     char *text, *ctext;
     
     pak = event->pak;
-    midtime = PacketReadB4 (pak);
-    midrand = PacketReadB4 (pak);
+    /*midtime*/PacketReadB4 (pak);
+    /*midrand*/PacketReadB4 (pak);
               PacketReadB2 (pak);
     uin     = PacketReadUIN (pak);
               PacketReadB2 (pak);
@@ -805,13 +805,13 @@ static JUMP_SNAC_F(SnacSrvSrvackmsg)
 {
     Packet *pak;
     Contact *cont;
-    UDWORD uin, mid1, mid2;
+    UDWORD uin /*, mid1, mid2*/;
     UWORD type;
 
     pak = event->pak;
 
-    mid1 = PacketReadB4 (pak);
-    mid2 = PacketReadB4 (pak);
+    /*mid1=*/PacketReadB4 (pak);
+    /*mid2=*/PacketReadB4 (pak);
     type = PacketReadB2 (pak);
 
     uin = PacketReadUIN (pak);
@@ -1738,13 +1738,13 @@ void SnacCliReminvis (Connection *conn, Contact *cont)
 void SnacCliReqroster (Connection *conn)
 {
     ContactGroup *cg;
-    Contact *cont;
+/*    Contact *cont;*/
     Packet *pak;
     int i;
     
     cg = conn->contacts;
     pak = SnacC (conn, 19, 5, 0, 0);
-    for (i = 0; (cont = ContactIndex (cg, i)); )
+    for (i = 0; (/*cont =*/ ContactIndex (cg, i)); )
         i++;
 
     PacketWriteB4 (pak, 0);  /* last modification of server side contact list */

@@ -791,7 +791,7 @@ void ContactSetVersion (Contact *cont)
         cont->v2 = (dc->id2 &   0xff0000) >> 16;
         cont->v3 = (dc->id2 &     0xff00) >> 8;
         cont->v4 =  dc->id2 &       0xff;
-        switch (dc->id1)
+        switch ((long)dc->id1)
         {
             case BUILD_MIRANDA:
                 if (dc->id2 <= 0x00010202 && dc->version >= 8)

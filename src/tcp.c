@@ -1554,10 +1554,10 @@ static void TCPCallBackReceive (Event *event)
     Contact *cont;
     Packet *pak, *ack_pak = NULL;
     char *tmp, *ctmp, *ctext, *text, *reason, *name, *cname;
-    UWORD cmd, type, seq, port, unk;
-    UDWORD len, status, flags, xtmp1, xtmp2, xtmp3;
+    UWORD cmd, type, seq, port /*, unk*/;
+    UDWORD /*len,*/ status /*, flags, xtmp1, xtmp2, xtmp3*/;
     const char *e_msg_text;
-    UWORD e_msg_type;
+/*    UWORD e_msg_type;*/
 
     if (!(peer = event->conn))
     {
@@ -1581,14 +1581,14 @@ static void TCPCallBackReceive (Event *event)
     switch (cmd)
     {
         case TCP_CMD_ACK:
-            unk    = PacketRead2 (pak);
+            /*unk=*/ PacketRead2 (pak);
             seq    = PacketRead2 (pak);
-            xtmp1  = PacketRead4 (pak);
-            xtmp2  = PacketRead4 (pak);
-            xtmp3  = PacketRead4 (pak);
+            /*xtmp1*/PacketRead4 (pak);
+            /*xtmp2*/PacketRead4 (pak);
+            /*xtmp3*/PacketRead4 (pak);
             type   = PacketRead2 (pak);
             status = PacketRead2 (pak);
-            flags  = PacketRead2 (pak);
+            /*flags*/PacketRead2 (pak);
             ctmp   = PacketReadLNTS (pak);
             /* fore/background color ignored */
             tmp = strdup (c_in_to (ctmp, cont));
@@ -1601,7 +1601,7 @@ static void TCPCallBackReceive (Event *event)
             }
             
             e_msg_text = ExtraGetS (oldevent->extra, EXTRA_MESSAGE);
-            e_msg_type = ExtraGet  (oldevent->extra, EXTRA_MESSAGE);
+            /*e_msg_type = */ ExtraGet  (oldevent->extra, EXTRA_MESSAGE);
 
             switch (type)
             {
@@ -1656,7 +1656,7 @@ static void TCPCallBackReceive (Event *event)
                     port   = PacketReadB2 (pak);
                              PacketRead2 (pak);    /* PAD */
                     cname  = PacketReadLNTS (pak);
-                    len    = PacketRead4 (pak);
+                    /*len=*/ PacketRead4 (pak);
                              /* PORT2 ignored */
 
                     text = strdup (c_in_to (ctext, cont));

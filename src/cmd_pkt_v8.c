@@ -305,8 +305,8 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     const char *txt, *ack_msg;
     char *text, *ctext, *cname, *name, *cctmp;
     UDWORD tmp, cmd, flen;
-    UWORD unk, seq, msgtype, unk2, pri;
-    UWORD ack_type, ack_flags, ack_status, accept;
+    UWORD unk, seq, msgtype, /*unk2,*/ pri;
+    UWORD ack_flags, ack_status, accept;
 
     unk     = PacketRead2    (inc_pak);  PacketWrite2 (ack_pak, unk);
     seq     = PacketRead2    (inc_pak);  PacketWrite2 (ack_pak, seq);
@@ -315,7 +315,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     tmp     = PacketRead4    (inc_pak);  PacketWrite4 (ack_pak, tmp);
     msgtype = PacketRead2    (inc_pak);  PacketWrite2 (ack_pak, msgtype);
 
-    unk2    = PacketRead2    (inc_pak);
+    /*unk2=*/ PacketRead2    (inc_pak);
     pri     = PacketRead2    (inc_pak);
     text    = PacketReadLNTS (inc_pak);
     
@@ -327,7 +327,6 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
  
     ExtraSet (extra, EXTRA_MESSAGE, msgtype, c_in_to (text, cont));
 
-    ack_type = msgtype;
     accept = FALSE;
 
     if      (serv->status & STATUSF_DND)

@@ -58,7 +58,7 @@ static void RemoteDispatch (Connection *remo)
     
     while ((pak = UtilIOReceiveF (remo)))
     {
-        CmdUser (pak->data);
+        CmdUser ((const char *)pak->data);
         PacketD (pak);
     }
 }

@@ -202,6 +202,9 @@ int main (int argc, char *argv[])
     prG->flags |= arg_c ? 0 : FLAG_COLOR;
     if (arg_b && *arg_b != '/' && (*arg_b != '~' || arg_b[1] != '/'))
     {
+#ifndef PATH_MAX
+#define PATH_MAX 256
+#endif
         char buf[PATH_MAX];
         buf[0] = '\0';
         getcwd  (buf, PATH_MAX - 1);
@@ -358,7 +361,7 @@ int main (int argc, char *argv[])
         R_redraw ();
 
         rc = M_select ();
-        assert (rc >= 0);
+        assert (~rc & 0x80000000L);
 
         R_undraw ();
 

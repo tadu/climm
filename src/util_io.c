@@ -747,7 +747,7 @@ Packet *UtilIOReceiveF (Connection *conn)
         }
         pak->len += rc;
         pak->data[pak->len] = '\0';
-        if (!(beg = end = strpbrk (pak->data, "\r\n")))
+        if (!(beg = end = (UBYTE *)strpbrk ((const char *)pak->data, "\r\n")))
             return NULL;
         while (*end && strchr ("\r\n\t ", *end))
             end++;

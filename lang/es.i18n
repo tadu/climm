@@ -1,12 +1,13 @@
 # $Id$ castellano (Spanish)
-#  EN: __.i18n,v 1.63 2003/01/04 15:44:18
+#  EN: __.i18n,v 1.63.2.1 2003/01/09 18:00:20
+1000.iso-8859-1
 1001:es
 1002:es
 1003:0-4-9-3
 1004:Alberto Bertogli
 1005:Alberto Bertogli
 1006:1/Sep/2002
-1007:iso-8859-1
+1007.iso-8859-1
 1010:El usuario no esta [Mensaje automático]
 1011:El usuario no esta disponible [Mensaje automático]
 1012:El usuario esta ocupado [Mensaje automático]
@@ -538,7 +539,7 @@
 1604:Deberian estar conectados los usuarios?
 1605:Queres que tu estado sea visible desde la web? (SI/NO)
 1606:Recibimos un session id mal: %08lx (el correcto: %08lx) con el comando %04x, se ignoro.\n
-1607:Uso: micq [-h] [-v[level]] [-f <rc-file>] [-l <logfile>]\n
+1607:Uso: micq [-h] [-c] [-i <locale>] [-b <basedir>] \n            [-f <configfile>] [-v[<level>]] [-l <logplace>]\n
 1612:Este programa fue hecho sin ningun tipo de ayuda ni consentimiento por parte de Mirabilis.\n
 1613:No se utilizo ningun mecanismo de decompilación o ingenieria inversa de codigo de Mirabilis para realizar este programa.\n
 1618:UIN:
@@ -683,17 +684,13 @@
 1812:Lugar de trabajo anterior
 1813:Organización anterior
 1814:Mensaje de respuesta automática configurado a %s%s%s.\n
-#-#1815:    funny: usa mensajes graciosos.\n
-#+#1815:    funny: use funny messages for output.\n
-#1815:    funny:      use funny messages for output.\n
+1815:    funny:      usa mensajes graciosos.\n
 1817:La funcionalidad de scripts sobre eventos esta desactivada.\n
 1818:Alerta: sintaxis en desuso encontrada en el archivo de configuración!\n    Por favor hace "save" y revisa los cambios.\n
 #-#1820:%s <opcion> [on|off] - controla las opciones simples.\n
 #+#1820:%s <option> [on|off] - control simple options.\n
-#-#1822:    color: usa colores en el texto.\n
-#+#1822:    color: use colored text output.\n
 #1820:%s <option> [on|off|<value>] - control simple options.\n
-#1822:    color:      use colored text output.\n
+1822:    color:      usa colores en el texto.\n
 1823:Mensaje entrante parcial:
 1825:Se descarto un paquete %04x (%s)
 1826:Reenviando mensaje %04x (%s) secuencia %04lx (intento numero %ld, longitud %d).\n
@@ -1001,7 +998,7 @@
 2182:Selecciona la conexión con el servidor numero <nr> como la actual.
 #-#2183:Revisa si <uin> o <nick> esta realmente conectado o desconectado.
 #+#2183:Check whether <uin> or <nick> is offline or invisible.
-#2183:Check all <contacts> whether it is offline or invisible.
+#2183:Check all <contacts> whether they are offline or invisible.
 2184:%s%-10s%s - %s\n
 2185:Cerrando conexión %ld.\n
 2186:Aceptando archivo '%s' (%ld bytes).\n
