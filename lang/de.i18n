@@ -1335,3 +1335,5 @@
 2568:Anfrage von %s%s%s nach automatischer Antwort ignoriert.\n
 2569:Sende Nachricht <message> und weitere Nachrichten zu Kontakten <contacts>, bis abgebrochen wird.
 2570:Führe Unterhaltung mit %s%s%s fort:\n
+# Those are the funny messages. Substract 2000 to get the normal message.
+3620:Du hast zu viele Freunde, wie wär's mit mehr RL?

@@ -1325,3 +1325,8 @@
 2568:Ignored request for auto-response from %s%s%s.\n
 2569:Send <message> and further messages to <contacts> until canceled.
 2570:Continuing chat with %s%s%s:\n
+# Those are the funny messages. Substract 2000 to get the normal message.
+3082:But hey, let's just poke the server again... [try %d out of %d]\n
+3612:No Mirabilis client was maimed, hacked, tortured, sodomized or otherwise harmed in the making of this utility.\n
+3682:These people are being sociable today:\n
+4107:%s%s%s hasn't had anything intelligent to say today.\n
