@@ -31,6 +31,8 @@ Features of mICQ include:
    * reconnect      - reconnects when kicked by server
    * contact list   - complete contact list with several ways for a concise
                       display of online/offline users
+   * server side contact list
+                    - download server side contact list and show, diff or import
    * status         - set status arbitrarely
    * messages       - send and receive messages and urls
    * sms            - send SMS to user's cell phone
@@ -46,6 +48,7 @@ Features of mICQ include:
    * peek           - check whether someone is offline or just invisible
    * tcp            - full support of v8 direct connections
    * auto messages  - auto replys if away, request and send auto messages
+   * file transfer  - v6, v7, v8 file transfer
    * identification - recognizes mICQ, licq, Miranda, StrICQ including version
                       number, and YSM
    * history        - writes a log of all messages to and from a user
@@ -86,8 +89,8 @@ Download mICQ sources and binaries from
 
 f) CVS
 
-Required is the cvs client, autoconf 2.50 or greater and automake 1.4 or
-greater. autoconf 2.53 and automake 1.5 are recommended, however.
+Required is the cvs client, autoconf 2.50 or greater and automake 1.6 or
+greater. autoconf 2.53 is recommended, however.
 
 cvs -d :pserver:anonymous@micq.org:/usr/local/cvsroot co micq
 

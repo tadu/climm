@@ -626,6 +626,8 @@ void UtilUISetVersion (Contact *cont)
         switch (cont->id1)
         {
             case BUILD_MIRANDA:
+                if (cont->id2 <= 0x00010202 && cont->TCP_version >= 8)
+                    cont->TCP_version = 7;
                 new = "Miranda";
                 break;
             case BUILD_STRICQ:

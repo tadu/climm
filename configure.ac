@@ -4,21 +4,15 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.50)
-AC_INIT
-
+AC_INIT(micq, 0.4.9.3)
 AC_CONFIG_SRCDIR([include/micq.h])
+AM_INIT_AUTOMAKE(1.6)
+
+AM_MAINTAINER_MODE
+AM_CONFIG_HEADER(include/config.h)
 
 AC_CANONICAL_HOST
-
-AM_INIT_AUTOMAKE(micq, 0.4.9.3)
-AM_CONFIG_HEADER(include/config.h)
 AC_DEFINE(MICQ_VERSION,VERSION,[mICQ's current version])
-
-# prefer 2.50 auto{conf,header}
-AM_MISSING_PROG(AUTOCONFNG, autoconf-2.50, $missing_dir)
-AM_MISSING_PROG(AUTOHEADERNG, autoheader-2.50, $missing_dir)
-test "x$AUTOCONFNG"   = "xautoconf-2.50"   && AUTOCONF="$AUTOCONFNG";
-test "x$AUTOHEADERNG" = "xautoheader-2.50" && AUTOHEADER="$AUTOHEADERNG";
 
 # Checks for programs.
 AC_PROG_CC
@@ -110,12 +104,5 @@ if test "x$WIP" != "x"; then
      AC_DEFINE(WIP,1,[Include probably buggy work-in-progress code])
 fi
 
-# autoconf 2.50 uses this syntax, but automake uses the vars in AC_OUTPUT
-# so this is commented out until automake is updated.
-# A C _CONFIG_FILES([doc/Makefile
-#                 src/Makefile
-#                 Makefile
-#                 lang/Makefile])
-
-AC_OUTPUT([doc/Makefile doc/de/Makefile doc/ru/Makefile doc/fr/Makefile doc/es/Makefile src/Makefile Makefile lang/Makefile])
-
+AC_CONFIG_FILES([doc/Makefile src/Makefile Makefile lang/Makefile doc/de/Makefile doc/ru/Makefile doc/fr/Makefile doc/es/Makefile])
+AC_OUTPUT
