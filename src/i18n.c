@@ -285,7 +285,7 @@ static int i18nAdd (FILE *i18nf, int debug, int *res)
                 thisenc = 1;
             }
         }
-        else if (i == 8)
+        else if (i == 8) /* i18n (1008, "US-ASCII") */
         {
             if (prG->enc_loc == ENC_AUTO || thisenc)
                 prG->enc_loc = ENC_FAUTO | ConvEnc (p + 1);
