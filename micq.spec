@@ -1,5 +1,5 @@
 %define name		micq
-%define version	0.4.9.4
+%define version	0.4.10
 %define release	0
 
 %define prefix	/usr
@@ -11,7 +11,7 @@ Release:		%{release}
 Source:			%{name}-%{version}.tgz
 URL:			http://www.micq.org
 Group:			Networking/ICQ
-Packager:		Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+Packager:		RÃ¼diger Kuhlmann <info@ruediger-kuhlmann.de>
 Copyright:		GPL-2
 BuildRoot:		/var/tmp/build-%{name}-%{version}
 Prefix:			%{prefix}
@@ -29,16 +29,19 @@ Authors: Matthew D. Smith (dead)
          Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 
 %changelog
-* Tue Oct 03 2002 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+* Tue Jan 07 2003 RÃ¼diger Kuhlmann <info@ruediger-kuhlmann.de>
+- new upstream release 0.4.10
+
+* Tue Oct 03 2002 RÃ¼diger Kuhlmann <info@ruediger-kuhlmann.de>
 - new upstream release 0.4.9.4
 
-* Tue Aug 26 2002 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+* Tue Aug 26 2002 RÃ¼diger Kuhlmann <info@ruediger-kuhlmann.de>
 - new upstream release 0.4.9.3
 
-* Tue Aug 08 2002 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+* Tue Aug 08 2002 RÃ¼diger Kuhlmann <info@ruediger-kuhlmann.de>
 - new upstream release
 
-* Tue Jun 11 2002 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+* Tue Jun 11 2002 RÃ¼diger Kuhlmann <info@ruediger-kuhlmann.de>
 - first RPM
 
 %prep
@@ -46,7 +49,7 @@ Authors: Matthew D. Smith (dead)
 ./prepare || true
 
 %build
-%configure --disable-dependency-tracking
+%configure --disable-dependency-tracking CFLAGS=-O4
 make
 
 %install
@@ -54,7 +57,7 @@ make
 %{__mkdir_p} $RPM_BUILD_ROOT/usr/lib/menu
 cat << EOF > $RPM_BUILD_ROOT/usr/lib/menu/micq
 ?package(micq):needs=text section=Networking/ICQ \
-  title="mICQ" command="/usr/bin/micq" hints="Messenger"\
+  title="mICQ" command="/usr/bin/micq" hints="ICQ client"\
   icon=/usr/X11R6/include/X11/pixmaps/micq.xpm
 EOF
 install -D -m 644 doc/micq.xpm $RPM_BUILD_ROOT/usr/X11R6/include/X11/pixmaps/micq.xpm
@@ -64,8 +67,8 @@ rm -rf "${RPM_BUILD_ROOT}"
 
 %files
 %defattr(-,root,root,0755)
-%doc NEWS README TODO
-%doc doc/README.SOCKS5 doc/icq091.txt doc/icqv7.txt
+%doc NEWS AUTHORS FAQ README TODO
+%doc doc/README.i18n doc/icq091.txt doc/icqv7.txt
 %{_bindir}/*
 %{_datadir}/micq
 /usr/lib/menu/micq

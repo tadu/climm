@@ -1,7 +1,7 @@
 micq - a portable ICQ Console Client
-$Id$ -*- utf-8 -*-
+$Id$ -*- coding: utf-8 -*-
 
-current Version: 0.4.9.2b
+current Version: 0.4.10
 ====================================
 
 a) About mICQ
@@ -18,7 +18,8 @@ For some time, Rico Glöckner <rg@micq.org> maintained the code. He also set
 up the mailinglist and hosts www.micq.org.
 
 Right now, Rüdiger Kuhlmann maintains the code. All code to implement the
-new v8 ICQ protocol is from him.
+new v8 ICQ protocol is from him. In fact, huge parts of mICQ have been
+rewritten completely by him.
 
 b) Features
 

@@ -1,3 +1,20 @@
+micq (1:0.4.10-1.1) unstable; urgency=low
+
+  * New upstream release
+  + autosaving, autofingering
+  + new event script handling
+  + contact meta data saving
+  + contact groups
+  + log file utils
+  + ^C handler
+  + type-2 message sending
+  + remote control via a FIFO
+  + send and receive UTF-8 encoded message
+  + ASCII art mICQ logo
+  + command aliases
+
+ -- Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>  Wed,  7 Jan 2003 17:00:00 +0200
+
 micq (1:0.4.9.4-0) unstable; urgency=low
 
   * New upstream release:
@@ -8,7 +25,7 @@ micq (1:0.4.9.4-0) unstable; urgency=low
   + dump packets following a syntax definition
   + allow quoting of parameters
 
- -- R�diger Kuhlmann <info@ruediger-kuhlmann.de>  Thu,  3 Oct 2002 19:00:00 +0200
+ -- Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>  Thu,  3 Oct 2002 19:00:00 +0200
 
 micq (1:0.4.9.3.1-1) unstable; urgency=low
 

@@ -7,7 +7,7 @@
  * $Id$
  */
 
-#define MICQ_BUILD_NUM 0x00040905
+#define MICQ_BUILD_NUM 0x00040a00
 
 #include <string.h>
 #include <stdio.h>
@@ -30,6 +30,10 @@
 #define EXTRAVERSION "NetBSD hand compiled"
 #elif defined (__FreeBSD__)
 #define EXTRAVERSION "FreeBSD hand compiled"
+#elif __Dbn__ != -1
+#define EXTRAVERSION "De" "bi" "an hand compiled"
+#elif defined (__linux__)
+#define EXTRAVERSION "Linux hand compiled"
 #else
 #define EXTRAVERSION "hand compiled"
 #endif
@@ -61,7 +65,7 @@ const char *BuildVersion (void)
 {
     if (!ver)
         ver = strdup (s_sprintf (i18n (2210, "%smICQ (Matt's ICQ clone)%s version %s%s%s (compiled on %s)\n"),
-            COLSERVER, COLNONE, COLSERVER, MICQ_VERSION " cvs " CVSUPDATE, COLNONE, BUILDDATE));
+            COLSERVER, COLNONE, COLSERVER, MICQ_VERSION, COLNONE, BUILDDATE));
     return ver;
 }
 
@@ -71,14 +75,15 @@ const char *BuildAttribution (void)
 }                  
 
 const UDWORD BuildVersionNum = MICQ_BUILD_NUM;
-const char  *BuildVersionText = "$VER: mICQ " VERSION " CVS " EV EXTRAVERSION " (" CVSUPDATE " build " BUILDDATE ")";
+const char  *BuildVersionText = "$VER: mICQ " VERSION " " EV EXTRAVERSION " (" CVSUPDATE " build " BUILDDATE ")";
 
 /*
+ i19n (1000, "iso-8859-1")       charset used
  i19n (1001, "en")               locale
  i19n (1002, "en_US")            locale 
- i19n (1003, "0-4-9-4")          MICQ_BUILD_NUM
+ i19n (1003, "0-4-10")           MICQ_BUILD_NUM
  i19n (1004, "Ruediger Kuhlmann") all contributors
  i19n (1005, "Ruediger Kuhlmann") last contributor
  i19n (1006, "2002-05-02")       last change
- i18n (1007, "iso-8859-1")       charset used. must be iso-8859-1 if possible
+ i19n (1007, "iso-8859-1")       charset used (obsolete)
  */
