@@ -638,6 +638,7 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
 {
     UDWORD /*midtime, midrand,*/ uin;
     UWORD msgtype, seq_dc;
+    Connection *conn;
     Contact *cont;
     Packet *pak;
     char *text, *ctext;
@@ -659,7 +660,8 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
               PacketRead2 (pak);
     ctext   = PacketReadLNTS (pak);
     
-    cont = ContactUIN (event->conn, uin);
+    conn = event->conn;
+    cont = ContactUIN (conn, uin);
     if (!cont)
         return;
     
@@ -678,10 +680,10 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
     }
     free (ctext);
 
-    event = QueueDequeue (event->conn, QUEUE_TYPE2_RESEND, seq_dc);
+    event = QueueDequeue (conn, QUEUE_TYPE2_RESEND, seq_dc);
 
     if ((msgtype & 0x300) == 0x300)
-        IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (NULL,
+        IMSrvMsg (cont, conn, NOW, ExtraSet (ExtraSet (NULL,
                   EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
                   EXTRA_MESSAGE, msgtype, text));
     else if (event)
