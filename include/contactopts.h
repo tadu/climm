@@ -17,8 +17,12 @@ struct ContactOption_s
     UDWORD flag;
 };
 
+ContactOptions *ContactOptionsC (void);
+void ContactOptionsD (ContactOptions *opt);
+
 BOOL ContactOptionsGetVal   (const ContactOptions *opt, UDWORD flag, val_t *val);
 BOOL ContactOptionsSetVal   (ContactOptions *opt, UDWORD flag, val_t val);
+ContactOptions *ContactOptionsSetVals  (ContactOptions *opt, UDWORD flag, ...);
 val_t ContactOptionsUndef   (ContactOptions *opt, UDWORD flag);
 
 BOOL ContactOptionsGetStr   (const ContactOptions *opt, UDWORD flag, const char **res);
@@ -90,5 +94,29 @@ extern struct ContactOption_s ContactOptionsList[];
 #define CO_COLORACK      (COF_COLOR   | CO_CONTACT | 0x89UL) /* the escape sequence to print for acknowledged messages */
 #define CO_COLORINCOMING (COF_COLOR   | CO_CONTACT | 0x8aUL) /* the escape sequence to print for incoming messages     */
 #define CO_COLORCONTACT  (COF_COLOR   | CO_CONTACT | 0x8bUL) /* the escape sequence to print for contacts              */
+
+#define CO_MSGTEXT       (COF_STRING               | 0x20UL) /* the message text */
+#define CO_MSGTYPE       (COF_NUMERIC              | 0x21UL) /* the message type */
+#define CO_MSGTRANS      (COF_NUMERIC              | 0x22UL) /* message transportations to try */
+#define CO_ORIGIN        (COF_NUMERIC              | 0x23UL) /* the message's origin */
+#define CO_STATUS        (COF_NUMERIC              | 0x24UL) /* a status */
+#define CO_BYTES         (COF_NUMERIC              | 0x25UL) /* a file length */
+#define CO_PORT          (COF_NUMERIC              | 0x26UL) /* a port number */
+#define CO_REF           (COF_NUMERIC              | 0x27UL) /* a reference */
+#define CO_FORCE         (COF_NUMERIC              | 0x28UL) /* force action */
+#define CO_FILENAME      (COF_STRING               | 0x29UL) /* a filename */
+#define CO_FILEACCEPT    (COF_NUMERIC              | 0x2aUL) /* accept a file transfer */
+#define CO_REFUSE        (COF_STRING               | 0x2bUL) /* refuse message */
+
+#define CV_ORIGIN_v5  8
+#define CV_ORIGIN_v8  2
+#define CV_ORIGIN_dc  1
+#define CV_ORIGIN_ssl 16
+
+#define CV_MSGTRANS_DC     1
+#define CV_MSGTRANS_TYPE2  2
+#define CV_MSGTRANS_ICQv8  4
+#define CV_MSGTRANS_ICQv5  8
+#define CV_MSGTRANS_ANY   15
 
 #endif

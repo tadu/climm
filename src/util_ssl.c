@@ -30,7 +30,6 @@
 #include "util_str.h"
 #include "util_tcl.h"
 #include "util_ui.h"
-#include "util_extra.h"
 #include "tcp.h"
 #include "session.h"
 #include "contact.h"
@@ -354,6 +353,6 @@ void ssl_close (Connection *conn)
  */
 BOOL TCPSendSSLReq (Connection *list, Contact *cont)
 {
-    return PeerSendMsg (list, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_SSL_OPEN, ""));
+    return PeerSendMsg (list, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, MSG_SSL_OPEN, CO_MSGTEXT, "", 0));
 }                      
 #endif

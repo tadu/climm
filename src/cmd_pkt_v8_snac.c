@@ -24,7 +24,6 @@
 #include "util.h"
 #include "util_ui.h"
 #include "util_io.h"
-#include "util_extra.h"
 #include "util_syntax.h"
 #include "contact.h"
 #include "server.h"
@@ -677,18 +676,20 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
     event = QueueDequeue (serv, QUEUE_TYPE2_RESEND, seq_dc);
 
     if ((msgtype & 0x300) == 0x300)
-        IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraSet (NULL,
-                  EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
-                  EXTRA_MESSAGE, msgtype, text));
+        IMSrvMsg (cont, serv, NOW, ContactOptionsSetVals (NULL,
+                  CO_ORIGIN, CV_ORIGIN_v8, CO_MSGTYPE, msgtype, CO_MSGTEXT, text, 0));
     else if (event)
     {
-        IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGACK_TYPE2, ExtraGetS (event->extra, EXTRA_MESSAGE), NULL);
-        if ((~cont->oldflags & CONT_SEENAUTO) && strlen (text) && strcmp (text, ExtraGetS (event->extra, EXTRA_MESSAGE)))
+        const char *opt_text;
+        if (ContactOptionsGetStr (event->opt, CO_MSGTEXT, &opt_text));
         {
-            IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraSet (NULL,
-                      EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
-                      EXTRA_MESSAGE, MSG_AUTO, text));
-            cont->oldflags |= CONT_SEENAUTO;
+            IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGACK_TYPE2, opt_text, NULL);
+            if ((~cont->oldflags & CONT_SEENAUTO) && strlen (text) && strcmp (text, opt_text))
+            {
+                IMSrvMsg (cont, serv, NOW, ContactOptionsSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8,
+                          CO_MSGTYPE, MSG_AUTO, CO_MSGTEXT, text, 0));
+                cont->oldflags |= CONT_SEENAUTO;
+            }
         }
     }
     EventD (event);
@@ -715,8 +716,8 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     Event *newevent;
     Cap *cap1, *cap2;
     Packet *p = NULL, *pp = NULL, *pak;
-    Extra *extra = NULL;
     TLV *tlv;
+    ContactOptions *opt;
     UDWORD midtim, midrnd, midtime, midrand, unk, tmp, type1enc;
     UWORD seq1, tcpver, len, i, msgtyp, type;
     const char *txt = NULL;
@@ -743,7 +744,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
 #endif
 
     if (tlv[6].str.len)
-        extra = ExtraSet (extra, EXTRA_STATUS, tlv[6].nr, NULL);
+        event->opt = ContactOptionsSetVals (event->opt, CO_STATUS, tlv[6].nr, 0);
 
     /* tlv[2] may be there twice - ignore the member since time(NULL). */
     if (tlv[2].str.len == 4)
@@ -795,9 +796,9 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                     txt = ConvFromCont (&str, cont);
                     break;
             }
-            IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraSet (extra,
-                      EXTRA_ORIGIN, EXTRA_ORIGIN_v5, NULL),
-                      EXTRA_MESSAGE, MSG_NORM, txt));
+            opt = ContactOptionsSetVals (event->opt, CO_ORIGIN, CV_ORIGIN_v5, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, txt, 0);
+            event->opt = NULL;
+            IMSrvMsg (cont, serv, NOW, opt);
             Auto_Reply (serv, cont);
             s_done (&str);
             break;
@@ -910,7 +911,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                     ContactSetCap (cont, cap2);
                     ContactSetVersion (cont);
                     
-                    event->extra = ExtraSet (extra, EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL);
+                    event->opt = ContactOptionsSetVals (event->opt, CO_ORIGIN, CV_ORIGIN_v8, 0);
                     event->cont = cont;
                     newevent = QueueEnqueueData (serv, QUEUE_ACKNOWLEDGE, seq1,
                                  (time_t)-1, p, cont, NULL, &SnacSrvCallbackSendack);
@@ -928,7 +929,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             break;
         case 4:
             p = PacketCreate (&tlv[5].str);
-            unk  = PacketRead4 (p);
+            unk    = PacketRead4 (p);
             msgtyp = PacketRead2 (p);
             if (unk != cont->uin)
             {
@@ -941,10 +942,10 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             /* FOREGROUND / BACKGROUND ignored */
             /* TLV 1, 2(!), 3, 4, f ignored */
 
-            IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraSet (extra,
-                      EXTRA_ORIGIN, EXTRA_ORIGIN_v5, NULL),
-                      EXTRA_MESSAGE, msgtyp, msgtyp == MSG_NORM ?
-                      ConvFromCont (ctext, cont) : c_in_to_split (ctext, cont)));
+            opt = ContactOptionsSetVals (event->opt, CO_ORIGIN, CV_ORIGIN_v5, CO_MSGTYPE, msgtyp,
+                      CO_MSGTEXT, msgtyp == MSG_NORM ? ConvFromCont (ctext, cont) : c_in_to_split (ctext, cont), 0);
+            event->opt = NULL;
+            IMSrvMsg (cont, serv, NOW, opt);
             Auto_Reply (serv, cont);
             break;
         default:
@@ -1251,6 +1252,7 @@ static JUMP_SNAC_F(SnacSrvUpdateack)
 static JUMP_SNAC_F(SnacSrvAuthreq)
 {
     Connection *serv = event->conn;
+    ContactOptions *opt;
     Packet *pak;
     Contact *cont;
     strc_t ctext;
@@ -1265,10 +1267,9 @@ static JUMP_SNAC_F(SnacSrvAuthreq)
     
     text = strdup (c_in_to_split (ctext, cont));
     
-    IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraSet (NULL,
-              EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
-              EXTRA_MESSAGE, MSG_AUTH_REQ, text));
-
+    opt = ContactOptionsSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8,
+                                 CO_MSGTYPE, MSG_AUTH_REQ, CO_MSGTEXT, text, 0);
+    IMSrvMsg (cont, serv, NOW, opt);
     free (text);
 }
 
@@ -1278,6 +1279,7 @@ static JUMP_SNAC_F(SnacSrvAuthreq)
 static JUMP_SNAC_F(SnacSrvAuthreply)
 {
     Connection *serv = event->conn;
+    ContactOptions *opt;
     Packet *pak;
     Contact *cont;
     strc_t ctext;
@@ -1294,10 +1296,9 @@ static JUMP_SNAC_F(SnacSrvAuthreply)
     
     text = strdup (c_in_to_split (ctext, cont));
 
-    IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraSet (NULL,
-              EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
-              EXTRA_MESSAGE, acc ? MSG_AUTH_GRANT : MSG_AUTH_DENY, text));
-
+    opt = ContactOptionsSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8,
+              CO_MSGTYPE, acc ? MSG_AUTH_GRANT : MSG_AUTH_DENY, CO_MSGTEXT, text, 0);
+    IMSrvMsg (cont, serv, NOW, opt);
     free (text);
 }
 
@@ -1307,15 +1308,15 @@ static JUMP_SNAC_F(SnacSrvAuthreply)
 static JUMP_SNAC_F(SnacSrvAddedyou)
 {
     Connection *serv = event->conn;
+    ContactOptions *opt;
     Contact *cont;
     Packet *pak;
 
     pak = event->pak;
     cont = PacketReadCont (pak, serv);
 
-    IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraSet (NULL,
-              EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
-              EXTRA_MESSAGE, MSG_AUTH_ADDED, ""));
+    opt = ContactOptionsSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8, CO_MSGTYPE, MSG_AUTH_ADDED, 0);
+    IMSrvMsg (cont, serv, NOW, opt);
 }
 
 /*
@@ -1692,7 +1693,7 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
         return RET_DEFER;
     
     if (format == 2 || type == MSG_GET_PEEK)
-        return SnacCliSendmsg2 (serv, cont, ExtraSet (NULL, EXTRA_MESSAGE, type, text));
+        return SnacCliSendmsg2 (serv, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, type, CO_MSGTEXT, text, 0));
     
     IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGACK_V8, text, NULL);
         
@@ -1810,22 +1811,23 @@ static void SnacCallbackType2Ack (Event *event)
     Connection *serv = event->conn;
     Contact *cont = event->cont;
     Event *aevent;
+    UDWORD opt_ref;
 
     if (!serv)
     {
         EventD (event);
         return;
     }
-    aevent = QueueDequeue (serv, QUEUE_TYPE2_RESEND, ExtraGet (event->extra, EXTRA_REF));
-    if (!aevent)
+    if (   !ContactOptionsGetVal (event->opt, CO_REF, &opt_ref)
+        || !(aevent = QueueDequeue (serv, QUEUE_TYPE2_RESEND, opt_ref)))
     {
         EventD (event);
         return;
     }
     ASSERT_SERVER (serv);
     
-    IMCliMsg (serv, cont, aevent->extra);
-    aevent->extra = NULL;
+    IMCliMsg (serv, cont, aevent->opt);
+    aevent->opt = NULL;
     EventD (aevent);
     EventD (event);
 }
@@ -1835,11 +1837,15 @@ static void SnacCallbackType2 (Event *event)
     Connection *serv = event->conn;
     Contact *cont = event->cont;
     Packet *pak = event->pak;
+    const char *opt_text;
+    
+    if (!ContactOptionsGetStr (event->opt, CO_MSGTEXT, &opt_text))
+        opt_text = "";
 
     if (!serv || !cont)
     {
-        if (!serv)
-            M_printf (i18n (2234, "Message %s discarded - lost session.\n"), ExtraGetS (event->extra, EXTRA_MESSAGE));
+        if (!serv && opt_text)
+            M_printf (i18n (2234, "Message %s discarded - lost session.\n"), opt_text);
         EventD (event);
         return;
     }
@@ -1853,14 +1859,14 @@ static void SnacCallbackType2 (Event *event)
         {
             if (event->attempts > 1)
                 IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGTRY_TYPE2,
-                          ExtraGetS (event->extra, EXTRA_MESSAGE), NULL);
+                          opt_text, NULL);
             SnacSend (serv, PacketClone (pak));
             event->attempts++;
             /* allow more time for the peer's ack than the server's ack */
             event->due = time (NULL) + RETRY_DELAY_TYPE2 + 5;
             QueueEnqueueData (serv, QUEUE_TYPE2_RESEND_ACK, pak->ref,
                               time (NULL) + RETRY_DELAY_TYPE2, NULL, cont,
-                              ExtraSet (NULL, EXTRA_REF, event->seq, NULL),
+                              ContactOptionsSetVals (NULL, CO_REF, event->seq, 0),
                               &SnacCallbackType2Ack);
         }
         else
@@ -1869,38 +1875,45 @@ static void SnacCallbackType2 (Event *event)
         return;
     }
     
-    IMCliMsg (serv, cont, event->extra);
-    event->extra = NULL;
+    IMCliMsg (serv, cont, event->opt);
+    event->opt = NULL;
     EventD (event);
 }
 
 /*
  * CLI_SENDMSG - SNAC(4,6) - type2
  */
-UBYTE SnacCliSendmsg2 (Connection *serv, Contact *cont, Extra *extra)
+UBYTE SnacCliSendmsg2 (Connection *serv, Contact *cont, ContactOptions *opt)
 {
     Packet *pak;
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
     BOOL peek = 0;
-    UDWORD type, e_trans;
-    const char *text;
+    UDWORD opt_type, opt_trans, opt_force;
+    const char *opt_text;
     
-    text = ExtraGetS (extra, EXTRA_MESSAGE);
-    type = ExtraGet  (extra, EXTRA_MESSAGE);
+    if (!ContactOptionsGetStr (opt, CO_MSGTEXT, &opt_text))
+        return RET_FAIL;
+    if (!ContactOptionsGetVal (opt, CO_MSGTYPE, &opt_type))
+        opt_type = MSG_NORM;
+    if (!ContactOptionsGetVal (opt, CO_FORCE, &opt_force))
+        opt_force = 0;
+    if (!ContactOptionsGetVal (opt, CO_MSGTRANS, &opt_trans))
+        opt_trans = CV_MSGTRANS_ANY;
 
-    if (type == MSG_GET_PEEK)
+    if (opt_type == MSG_GET_PEEK)
     {
         peek = 1;
-        type = MSG_GET_AWAY;
+        opt_type = MSG_GET_AWAY;
     }
     
-    if (!text || !cont || !(peek || (type & 0xff) == MSG_GET_VER || ExtraGet (extra, EXTRA_FORCE) ||
+    
+    if (!cont || !(peek || (opt_type & 0xff) == MSG_GET_VER || opt_force ||
         (HAS_CAP (cont->caps, CAP_SRVRELAY) && HAS_CAP (cont->caps, CAP_ISICQ))))
         return RET_DEFER;
     
-    if (!ExtraGet (extra, EXTRA_FORCE))
+    if (!opt_force)
     {
-        switch (type & 0xff)
+        switch (opt_type & 0xff)
         {
             case MSG_AUTO:
             case MSG_AUTH_REQ:
@@ -1913,8 +1926,7 @@ UBYTE SnacCliSendmsg2 (Connection *serv, Contact *cont, Extra *extra)
 
     serv->our_seq_dc--;
     
-    e_trans = ExtraGet (extra, EXTRA_TRANS) & ~EXTRA_TRANS_TYPE2;
-    extra = ExtraSet (extra, EXTRA_TRANS, e_trans, NULL);
+    ContactOptionsSetVal (opt, CO_MSGTRANS, opt_trans &= ~CV_MSGTRANS_TYPE2);
 
     pak = SnacC (serv, 4, 6, 0, peek ? 0x1771 : 0);
     PacketWriteB4 (pak, mtime);
@@ -1939,10 +1951,10 @@ UBYTE SnacCliSendmsg2 (Connection *serv, Contact *cont, Extra *extra)
        PacketWrite1       (pak, 0);
        PacketWrite2       (pak, serv->our_seq_dc);
       PacketWriteLenDone (pak);
-      SrvMsgAdvanced     (pak, serv->our_seq_dc, type, serv->status, cont->status, -1, c_out_for (text, cont, type));
+      SrvMsgAdvanced     (pak, serv->our_seq_dc, opt_type, serv->status, cont->status, -1, c_out_for (opt_text, cont, opt_type));
       PacketWrite4       (pak, TCP_COL_FG);
       PacketWrite4       (pak, TCP_COL_BG);
-      if (CONT_UTF8 (cont, type))
+      if (CONT_UTF8 (cont, opt_type))
           PacketWriteDLStr     (pak, CAP_GID_UTF8);
      PacketWriteTLVDone (pak);
      if (peek) /* make a syntax error */
@@ -1953,11 +1965,11 @@ UBYTE SnacCliSendmsg2 (Connection *serv, Contact *cont, Extra *extra)
     if (peek)
     {
         SnacSend (serv, pak);
-        ExtraD (extra);
+        ContactOptionsD (opt);
     }
     else
         QueueEnqueueData (serv, QUEUE_TYPE2_RESEND, serv->our_seq_dc,
-                          time (NULL), pak, cont, extra, &SnacCallbackType2);
+                          time (NULL), pak, cont, opt, &SnacCallbackType2);
     return RET_INPR;
 }
 

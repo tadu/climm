@@ -33,7 +33,6 @@
 #include "util_ui.h"     /* for Debug() and DEB_CONTACT */
 #include "conv.h"        /* for meta data file recoding */
 #include "util_io.h"     /* for UtilIOReadline() */
-#include "util_extra.h"
 #include "packet.h"      /* for capabilities */
 #include "buildmark.h"   /* for versioning */
 #include "preferences.h" /* for BASEDIR */
@@ -560,8 +559,7 @@ UWORD ContactID (Contact *cont)
  */
 BOOL ContactMetaSave (Contact *cont)
 {
-    MetaEmail *email;
-    Extra *extra;
+    ContactMeta *m;
     FILE *f;
     
     if (!(f = fopen (s_sprintf ("%scontacts" _OS_PATHSEPSTR "icq-%ld", PrefUserDir (prG), cont->uin), "w")))
@@ -628,22 +626,18 @@ BOOL ContactMetaSave (Contact *cont)
         fprintf (f, "m_lang2    %u\n", mm->lang2);
         fprintf (f, "m_lang3    %u\n", mm->lang3);
     }
-    for (email = cont->meta_email; email; email = email->meta_email)
-        if (email->email)
-            fprintf (f, "email %u %s\n", email->auth, s_quote (email->email));
     if (cont->meta_obsolete)
         fprintf (f, "obsolete %u %u %u %s\n", cont->meta_obsolete->given,
                  cont->meta_obsolete->empty, cont->meta_obsolete->unknown,
                  s_quote (cont->meta_obsolete->description));
-    for (extra = cont->meta_interest; extra; extra = extra->more)
-        if (extra->text)
-            fprintf (f, "interest %lu %s\n", extra->data, s_quote (extra->text));
-    for (extra = cont->meta_background; extra; extra = extra->more)
-        if (extra->text)
-            fprintf (f, "background %lu %s\n", extra->data, s_quote (extra->text));
-    for (extra = cont->meta_affiliation; extra; extra = extra->more)
-        if (extra->text)
-            fprintf (f, "affiliation %lu %s\n", extra->data, s_quote (extra->text));
+    while ((m = cont->meta_email))
+        fprintf (f, "email %u %s\n", m->data, s_quote (m->text));
+    while ((m = cont->meta_interest))
+        fprintf (f, "interest %u %s\n", m->data, s_quote (m->text));
+    while ((m = cont->meta_background))
+        fprintf (f, "background %u %s\n", m->data, s_quote (m->text));
+    while ((m = cont->meta_affiliation))
+        fprintf (f, "affiliation %u %s\n", m->data, s_quote (m->text));
     if (fclose (f))
         return FALSE;
     cont->updated |= UPF_DISC;
@@ -651,13 +645,40 @@ BOOL ContactMetaSave (Contact *cont)
 }
 
 /*
+ * Destruct a contact meta list
+ */
+void ContactMetaD (ContactMeta *m)
+{
+    ContactMeta *mm;
+    while (m)
+    {
+        if (m->text)
+            free (m->text);
+        mm = m->next;
+        free (m);
+        m = mm;
+    }
+}
+
+/*
+ * Add an entry to a contact meta list
+ */
+void ContactMetaAdd (ContactMeta **m, UWORD val, const char *text)
+{
+    while (*m)
+        m = &(*m)->next;
+    *m = calloc (4 + sizeof (ContactMeta), 1);
+    (*m)->data = val;
+    (*m)->text = strdup (text);
+}
+
+
+/*
  *
  */
 BOOL ContactMetaLoad (Contact *cont)
 {
-    MetaEmail *email;
     UBYTE enc;
-    Extra *extra;
     FILE *f;
     char *cmd;
     strc_t par, lline;
@@ -668,15 +689,14 @@ BOOL ContactMetaLoad (Contact *cont)
         return FALSE;
 
     cont->updated = 0;
-    ExtraD (cont->meta_interest);
-    ExtraD (cont->meta_background);
-    ExtraD (cont->meta_affiliation);
-    while ((email = cont->meta_email))
-    {
-        s_free (email->email);
-        cont->meta_email = email->meta_email;
-        free (email);
-    }
+    ContactMetaD (cont->meta_email);
+    ContactMetaD (cont->meta_interest);
+    ContactMetaD (cont->meta_background);
+    ContactMetaD (cont->meta_affiliation);
+    cont->meta_email = NULL;
+    cont->meta_interest = NULL;
+    cont->meta_background = NULL;
+    cont->meta_affiliation = NULL;
     
     enc = 0;
     while ((lline = UtilIOReadline (f)))
@@ -763,17 +783,6 @@ BOOL ContactMetaLoad (Contact *cont)
             else if (!strcmp (cmd, "m_lang2"))    { if (s_parseint (&line, &i)) mm->lang2 = i; }
             else if (!strcmp (cmd, "m_lang3"))    { if (s_parseint (&line, &i)) mm->lang3 = i; }
         }
-        else if (!strcmp (cmd, "email"))
-        {
-            if (s_parseint (&line, &i) && s_parse (&line, &par))
-            {
-                email = cont->meta_email;
-                cont->meta_email = calloc (1, sizeof (MetaEmail));
-                cont->meta_email->meta_email = email;
-                cont->meta_email->auth = i;
-                cont->meta_email->email = strdup (cmd);
-            }
-        }
         else if (!strcmp (cmd, "obsolete"))
         {
             MetaObsolete *mo = CONTACT_OBSOLETE (cont);
@@ -782,32 +791,25 @@ BOOL ContactMetaLoad (Contact *cont)
             if (s_parseint (&line, &i)) mo->unknown = i;
             if (s_parse (&line, &par)) s_repl (&mo->description, par->txt);
         }
+        else if (!strcmp (cmd, "email"))
+        {
+            if (s_parseint (&line, &i) && s_parse (&line, &par))
+                ContactMetaAdd (&cont->meta_email, i, par->txt);
+        }
         else if (!strcmp (cmd, "interest"))
         {
             if (s_parseint (&line, &i) && s_parse (&line, &par))
-            {
-                extra = cont->meta_interest;
-                cont->meta_interest = ExtraSet (NULL, 0, i, par->txt);
-                cont->meta_interest->more = extra;
-            }
+                ContactMetaAdd (&cont->meta_interest, i, par->txt);
         }
         else if (!strcmp (cmd, "background"))
         {
             if (s_parseint (&line, &i) && s_parse (&line, &par))
-            {
-                extra = cont->meta_background;
-                cont->meta_interest = ExtraSet (NULL, 0, i, par->txt);
-                cont->meta_interest->more = extra;
-            }
+                ContactMetaAdd (&cont->meta_background, i, par->txt);
         }
         else if (!strcmp (cmd, "affiliation"))
         {
             if (s_parseint (&line, &i) && s_parse (&line, &par))
-            {
-                extra = cont->meta_affiliation;
-                cont->meta_interest = ExtraSet (NULL, 0, i, par->txt);
-                cont->meta_interest->more = extra;
-            }
+                ContactMetaAdd (&cont->meta_affiliation, i, par->txt);
         }
         else if (!strcmp (cmd, "format"))
         {

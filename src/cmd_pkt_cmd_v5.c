@@ -379,9 +379,8 @@ void CmdPktCmdMetaGeneral (Connection *conn, Contact *cont)
         PacketWriteLNTS (pak, c_out (cont->meta_general->first));
         PacketWriteLNTS (pak, c_out (cont->meta_general->last));
         PacketWriteLNTS (pak, c_out (cont->meta_general->email));
-        PacketWriteLNTS (pak, cont->meta_email ? c_out (cont->meta_general->email) : "");
-        PacketWriteLNTS (pak, cont->meta_email && cont->meta_email->meta_email ?
-                              c_out (cont->meta_email->meta_email->email) : "");
+        PacketWriteLNTS (pak, cont->meta_email ? c_out (cont->meta_email->text) : "");
+        PacketWriteLNTS (pak, cont->meta_email && cont->meta_email->next ? c_out (cont->meta_email->next->text) : "");
         PacketWriteLNTS (pak, c_out (cont->meta_general->city));
         PacketWriteLNTS (pak, c_out (cont->meta_general->state));
         PacketWriteLNTS (pak, c_out (cont->meta_general->phone));

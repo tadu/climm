@@ -7,7 +7,6 @@
 #include "mreadline.h"
 #include "server.h"
 #include "util.h"
-#include "util_extra.h"
 #include "icq_response.h"
 #include "cmd_pkt_v8_snac.h"
 #include "cmd_pkt_cmd_v5.h"
@@ -29,56 +28,50 @@
 
 static void CallbackMeta (Event *event);
 
-UBYTE IMCliMsg (Connection *conn, Contact *cont, Extra *extra)
+UBYTE IMCliMsg (Connection *conn, Contact *cont, ContactOptions *opt)
 {
-    Extra *e_msg, *e_trans;
+    const char *opt_text;
+    UDWORD opt_type, opt_trans;
     UBYTE ret;
 
-    if (!cont || !conn)
+    if (!cont || !conn || !ContactOptionsGetStr (opt, CO_MSGTEXT, &opt_text))
     {
-        ExtraD (extra);
+        ContactOptionsD (opt);
         return RET_FAIL;
     }
-    
-    if (!(e_msg = ExtraFind (extra, EXTRA_MESSAGE)))
-    {
-        ExtraD (extra);
-        return RET_FAIL;
-    }
-    if (!(e_trans = ExtraFind (extra, EXTRA_TRANS)))
-    {
-        extra = ExtraSet (extra, EXTRA_TRANS, EXTRA_TRANS_ANY, NULL);
-        e_trans = ExtraFind (extra, EXTRA_TRANS);
-    }
+    if (!ContactOptionsGetVal (opt, CO_MSGTYPE, &opt_type))
+        ContactOptionsSetVal (opt, CO_MSGTYPE, opt_type = MSG_NORM);
+    if (!ContactOptionsGetVal (opt, CO_MSGTRANS, &opt_trans))
+        ContactOptionsSetVal (opt, CO_MSGTRANS, opt_trans = CV_MSGTRANS_ANY);
 
     putlog (conn, NOW, cont, STATUS_ONLINE, 
-            e_msg->data == MSG_AUTO ? LOG_AUTO : LOG_SENT, e_msg->data, e_msg->text);
+            opt_type == MSG_AUTO ? LOG_AUTO : LOG_SENT, opt_type, opt_text);
 
 #ifdef ENABLE_PEER2PEER
-    if (e_trans->data & EXTRA_TRANS_DC)
+    if (opt_trans & CV_MSGTRANS_DC)
         if (conn->assoc)
-            if (RET_IS_OK (ret = PeerSendMsg (conn->assoc, cont, extra)))
+            if (RET_IS_OK (ret = PeerSendMsg (conn->assoc, cont, opt)))
                 return ret;
-    e_trans->data &= ~EXTRA_TRANS_DC;
+    ContactOptionsSetVal (opt, CO_MSGTRANS, opt_trans &= ~CV_MSGTRANS_DC);
 #endif
-    if (e_trans->data & EXTRA_TRANS_TYPE2)
+    if (opt_trans & CV_MSGTRANS_TYPE2)
         if (conn->connect & CONNECT_OK && conn->type == TYPE_SERVER)
-            if (RET_IS_OK (ret = SnacCliSendmsg2 (conn, cont, extra)))
+            if (RET_IS_OK (ret = SnacCliSendmsg2 (conn, cont, opt)))
                 return ret;
-    e_trans->data &= ~EXTRA_TRANS_TYPE2;
-    if (e_trans->data & EXTRA_TRANS_ICQv8)
+    ContactOptionsSetVal (opt, CO_MSGTRANS, opt_trans &= ~CV_MSGTRANS_TYPE2);
+    if (opt_trans & CV_MSGTRANS_ICQv8)
         if (conn->connect & CONNECT_OK && conn->type == TYPE_SERVER)
-            if (RET_IS_OK (ret = SnacCliSendmsg (conn, cont, e_msg->text, e_msg->data, 0)))
+            if (RET_IS_OK (ret = SnacCliSendmsg (conn, cont, opt_text, opt_type, 0)))
                 return ret;
-    e_trans->data &= ~EXTRA_TRANS_ICQv8;
-    if (e_trans->data & EXTRA_TRANS_ICQv5)
+    ContactOptionsSetVal (opt, CO_MSGTRANS, opt_trans &= ~CV_MSGTRANS_ICQv8);
+    if (opt_trans & CV_MSGTRANS_ICQv5)
         if (conn->connect & CONNECT_OK && conn->type == TYPE_SERVER_OLD)
         {
-            CmdPktCmdSendMessage (conn, cont, e_msg->text, e_msg->data);
-            ExtraD (extra);
+            CmdPktCmdSendMessage (conn, cont, opt_text, opt_type);
+            ContactOptionsD (opt);
             return RET_OK;
         }
-    ExtraD (extra);
+    ContactOptionsD (opt);
     return RET_FAIL;
 }
 

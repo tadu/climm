@@ -8,9 +8,9 @@
 typedef struct ContactMetaGeneral_s  MetaGeneral;
 typedef struct ContactMetaWork_s     MetaWork;
 typedef struct ContactMetaMore_s     MetaMore;
-typedef struct ContactMetaEmail_s    MetaEmail;
 typedef struct ContactMetaObsolete_s MetaObsolete;
 typedef struct ContactDC_s           ContactDC;
+typedef struct ContactMeta_s         ContactMeta;
 
 struct ContactMetaGeneral_s
 {
@@ -37,13 +37,6 @@ struct ContactMetaMore_s
     char  *homepage;
     UWORD  age, year, unknown;
     UBYTE  sex, month, day, lang1, lang2, lang3;
-};
-
-struct ContactMetaEmail_s
-{
-    MetaEmail *meta_email;
-    char      *email;
-    UBYTE      auth;
 };
 
 struct ContactMetaObsolete_s
@@ -78,6 +71,13 @@ struct ContactAlias_s
     char         *alias;
 };
 
+struct ContactMeta_s
+{
+    ContactMeta *next;
+    UWORD data;
+    char *text;
+};
+
 struct Contact_s
 {
     ContactGroup *group;
@@ -103,9 +103,8 @@ struct Contact_s
     MetaWork        *meta_work;
     MetaMore        *meta_more;
     char            *meta_about;
-    MetaEmail       *meta_email;
     MetaObsolete    *meta_obsolete;
-    Extra           *meta_interest, *meta_background, *meta_affiliation;
+    ContactMeta     *meta_email, *meta_interest, *meta_background, *meta_affiliation;
 };
 
 
@@ -132,6 +131,8 @@ UWORD         ContactID           (Contact *cont);
 void          ContactSetCap       (Contact *cont, Cap *cap);
 void          ContactSetVersion   (Contact *cont);
 
+void          ContactMetaD        (ContactMeta *m);
+void          ContactMetaAdd      (ContactMeta **m, UWORD val, const char *text);
 BOOL          ContactMetaSave     (Contact *cont);
 BOOL          ContactMetaLoad     (Contact *cont);
 
@@ -141,7 +142,6 @@ val_t         ContactPrefVal      (Contact *cont, UDWORD flag);
 #define CONTACT_GENERAL(cont)  ((cont)->meta_general  ? (cont)->meta_general  : ((cont)->meta_general  = calloc (1, sizeof (MetaGeneral))))
 #define CONTACT_WORK(cont)     ((cont)->meta_work     ? (cont)->meta_work     : ((cont)->meta_work     = calloc (1, sizeof (MetaWork))))
 #define CONTACT_MORE(cont)     ((cont)->meta_more     ? (cont)->meta_more     : ((cont)->meta_more     = calloc (1, sizeof (MetaMore))))
-#define CONTACT_EMAIL(cont)    ((cont)->meta_email    ? (cont)->meta_email    : ((cont)->meta_email    = calloc (1, sizeof (MetaEmail))))
 #define CONTACT_OBSOLETE(cont) ((cont)->meta_obsolete ? (cont)->meta_obsolete : ((cont)->meta_obsolete = calloc (1, sizeof (MetaObsolete))))
 #define CONTACT_DC(cont)       ((cont)->dc            ? (cont)->dc            : ((cont)->dc            = calloc (1, sizeof (ContactDC))))
 

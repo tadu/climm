@@ -50,7 +50,6 @@
 #include "util_ui.h"
 #include "util_io.h"
 #include "util_rl.h"
-#include "util_extra.h"
 #include "util.h"
 #include "icq_response.h"
 #include "tcp.h"
@@ -106,11 +105,15 @@ Connection *PeerFileCreate (Connection *serv)
 UBYTE PeerFileIncAccept (Connection *list, Event *event)
 {
     Connection *flist, *fpeer, *serv;
-    Extra *extra;
+    ContactOptions *opt;
     Contact *cont;
-    UDWORD bytes = ExtraGet (event->extra, EXTRA_FILETRANS);
-    const char *files = ExtraGetS (event->extra, EXTRA_FILETRANS);
-    const char *txt;
+    UDWORD opt_bytes, opt_acc;
+    const char *txt = "", *opt_files;
+
+    if (!ContactOptionsGetVal (event->opt, CO_BYTES, &opt_bytes))
+        opt_bytes = 0;
+    if (!ContactOptionsGetStr (event->opt, CO_MSGTEXT, &opt_files))
+        opt_files = "";
 
     ASSERT_MSGLISTEN(list);
     
@@ -118,15 +121,15 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
     cont  = event->cont;
     flist = PeerFileCreate (serv);
 
-    extra = ExtraSet (NULL, 0, bytes, files);
+    opt = ContactOptionsSetVals (NULL, CO_BYTES, opt_bytes, CO_MSGTEXT, opt_files, 0);
 
-    if (((txt = ExtraGetS (event->extra, EXTRA_FILEACCEPT)) && *txt) || !cont || !flist
-        || !ExtraGet (event->extra, EXTRA_FILEACCEPT)
+    if ((ContactOptionsGetStr (event->opt, CO_REFUSE, &txt) && *txt) || !cont || !flist
+        || !ContactOptionsGetVal (event->opt, CO_FILEACCEPT, &opt_acc) || !opt_acc
         || !(fpeer = ConnectionClone (flist, TYPE_FILEDIRECT)))
     {
         if (!txt || !*txt)
-            event->extra = ExtraSet (event->extra, EXTRA_FILEACCEPT, 0, txt = "auto-refused");
-        IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_FILE_REJING, txt, extra);
+            ContactOptionsSetStr (event->opt, CO_REFUSE, txt = "auto-refused");
+        IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_FILE_REJING, txt, opt);
         return FALSE;
     }
     
@@ -138,11 +141,11 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
     fpeer->connect   = 0;
     s_repl (&fpeer->server, NULL);
     fpeer->cont      = cont;
-    fpeer->len       = bytes;
+    fpeer->len       = opt_bytes;
     fpeer->done      = 0;
     fpeer->close     = &PeerFileDispatchDClose;
     fpeer->reconnect = &TCPDispatchReconn;
-    IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_FILE_ACKING, "", extra);
+    IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_FILE_ACKING, "", opt);
     
     return TRUE;
 }
@@ -486,7 +489,7 @@ void PeerFileResend (Event *event)
     Packet *pak;
     Event *event2;
     int rc;
-    const char *e_msg_text = "<>";
+    const char *opt_text;
     
     if (!fpeer)
     {
@@ -499,20 +502,21 @@ void PeerFileResend (Event *event)
     cont = event->cont;
     assert (cont);
     
-    e_msg_text = ExtraGetS (event->extra, EXTRA_MESSAGE);
+    if (!ContactOptionsGetStr (event->opt, CO_MSGTEXT, &opt_text))
+        opt_text = "";
 
     if (event->attempts >= MAX_RETRY_P2PFILE_ATTEMPTS || (!event->pak && !event->seq))
     {
         M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
         M_printf (i18n (2168, "File transfer #%ld (%s) dropped after %ld attempts because of timeout.\n"),
-                 event->seq, e_msg_text, event->attempts);
+                 event->seq, opt_text, event->attempts);
         TCPClose (fpeer);
     }
     else if (!(fpeer->connect & CONNECT_MASK))
     {
         M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
         M_printf (i18n (2072, "File transfer #%ld (%s) canceled because of closed connection.\n"),
-                 event->seq, e_msg_text);
+                 event->seq, opt_text);
     }
     else if (~fpeer->connect & CONNECT_OK)
     {
@@ -548,21 +552,21 @@ void PeerFileResend (Event *event)
         ffile = ConnectionClone (fpeer, TYPE_FILE);
         fpeer->assoc = ffile;
 
-        if (stat (e_msg_text, &finfo))
+        if (stat (opt_text, &finfo))
         {
             rc = errno;
             M_printf (i18n (2071, "Couldn't stat file %s: %s (%d)\n"),
-                      e_msg_text, strerror (rc), rc);
+                      opt_text, strerror (rc), rc);
         }
         ffile->len = finfo.st_size;
 
-        ffile->sok = open (e_msg_text, O_RDONLY);
+        ffile->sok = open (opt_text, O_RDONLY);
         if (ffile->sok == -1)
         {
             int rc = errno;
             M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
             M_printf (i18n (2083, "Cannot open file %s: %s (%d).\n"),
-                      e_msg_text, strerror (rc), rc);
+                      opt_text, strerror (rc), rc);
             TCPClose (fpeer);
             ConnectionClose (ffile);
             ConnectionClose (fpeer);
@@ -589,7 +593,7 @@ void PeerFileResend (Event *event)
             len = errno;
             M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
             M_printf (i18n (2086, "Error while reading file %s: %s (%d).\n"),
-                      e_msg_text, strerror (len), len);
+                      opt_text, strerror (len), len);
             TCPClose (fpeer);
         }
         else
@@ -617,7 +621,7 @@ void PeerFileResend (Event *event)
 
             ReadLinePromptReset ();
             M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-            M_printf (i18n (2087, "Finished sending file %s.\n"), e_msg_text);
+            M_printf (i18n (2087, "Finished sending file %s.\n"), opt_text);
             ConnectionClose (fpeer->assoc);
             fpeer->our_seq++;
             event2 = QueueDequeue (fpeer, QUEUE_PEER_FILE, fpeer->our_seq);

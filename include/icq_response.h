@@ -11,8 +11,8 @@ void Display_Info_Reply (Contact *cont, Packet *pak, UBYTE flags);
 void Display_Ext_Info_Reply (Connection *conn, Packet *pak);
 void HistShow (Contact *cont);
 
-void IMIntMsg  (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UWORD type, const char *text, Extra *extra);
-void IMSrvMsg  (Contact *cont, Connection *conn, time_t stamp, Extra *extra);
+void IMIntMsg  (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UWORD type, const char *text, ContactOptions *opt);
+void IMSrvMsg  (Contact *cont, Connection *conn, time_t stamp, ContactOptions *opt);
 void IMOnline  (Contact *cont, Connection *conn, UDWORD status);
 void IMOffline (Contact *cont, Connection *conn);
 

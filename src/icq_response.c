@@ -19,7 +19,6 @@
 #include "cmd_pkt_v8_snac.h"
 #include "preferences.h"
 #include "session.h"
-#include "util_extra.h"
 #include "peer_file.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -52,24 +51,21 @@ void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg);
 #endif
 
 
-static BOOL Meta_Read_List (Packet *pak, Extra **list, Contact *cont)
+static BOOL Meta_Read_List (Packet *pak, ContactMeta **list, Contact *cont)
 {
     UBYTE i, j;
+    UWORD data;
+    const char *text;
     
     i = PacketRead1 (pak);
+    ContactMetaD (*list);
     for (j = 0; j < i; j++)
     {
-        if (!*list)
-            *list = calloc (1, sizeof (Extra));
-        if (!*list)
-            return FALSE;
-        (*list)->data = PacketRead2 (pak);
-        s_read ((*list)->text);
-        if ((*list)->data || *(*list)->text)
-            list = &(*list)->more;
+        data = PacketRead2 (pak);
+        text = ConvFromCont (PacketReadL2Str (pak, NULL), cont);
+        if (data && text && *text)
+            ContactMetaAdd (list, data, text);
     }
-    ExtraD (*list);
-    *list = NULL;
     return TRUE;
 }
 
@@ -169,7 +165,6 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
         UDWORD dwdata, uin;
         MetaGeneral *mg;
         MetaMore *mm;
-        MetaEmail *me;
         MetaWork *mw;
         MetaObsolete *mo;
 
@@ -191,11 +186,8 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
 
             if (conn->type == TYPE_SERVER_OLD)
             {
-                if (!CONTACT_EMAIL (cont) || !CONTACT_EMAIL (cont->meta_email))
-                    break;
-
-                s_read (cont->meta_email->email);
-                s_read (cont->meta_email->meta_email->email);
+                ContactMetaAdd (&cont->meta_email, 0, ConvFromCont (PacketReadL2Str (pak, NULL), cont));
+                ContactMetaAdd (&cont->meta_email, 0, ConvFromCont (PacketReadL2Str (pak, NULL), cont));
             }
 
             if (!(mg = CONTACT_GENERAL (cont)))
@@ -245,42 +237,14 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             event->callback (event);
             break;
         case META_SRV_MOREEMAIL:
+            ContactMetaD (cont->meta_email);
             if ((i = PacketRead1 (pak)))
             {
-                MetaEmail *met;
-                me = CONTACT_EMAIL(cont);
                 for (j = 0; j < i; j++)
                 {
-                    if (j && !(me = CONTACT_EMAIL(me)))
-                        break;
-                    me->auth = PacketRead1 (pak);
-                    s_read (me->email);
+                    int auth = PacketRead1 (pak);
+                    ContactMetaAdd (&cont->meta_email, auth, ConvFromCont (PacketReadL2Str (pak, NULL), cont));
                 }
-                
-                if (j < i)
-                    break;
-
-                /* Crops trailing list if the new is shorter than the 
-                 * previous one.
-                 */
-                met = me->meta_email;
-                me->meta_email = NULL;
-                me = met;
-            }
-            else
-            {
-                /* Crops the whole list. */
-                me = cont->meta_email;
-                cont->meta_email = NULL;
-            }
-
-            /* Frees cropped list entries. */
-            while (me)
-            {
-                MetaEmail *met = me;
-                me = me->meta_email;
-                s_free (met->email);
-                free (met);
             }
             cont->updated |= UPF_EMAIL;
             event->callback (event);
@@ -490,7 +454,7 @@ void Recv_Message (Connection *conn, Packet *pak)
 
     uiG.last_rcvd = cont;
     IMSrvMsg (cont, conn, mktime (&stamp),
-              ExtraSet (NULL, EXTRA_MESSAGE, type, text));
+              ContactOptionsSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v5, CO_MSGTYPE, type, CO_MSGTEXT, text, 0));
 }
 
 /*
@@ -587,6 +551,8 @@ void IMOffline (Contact *cont, Connection *conn)
     TCLEvent (cont, "status", "logged_off");
 }
 
+#define MSGICQACKSTR   ">>>"
+#define MSGICQRECSTR   "<<<"
 #define MSGTCPACKSTR   ConvTranslit ("\xc2\xbb\xc2\xbb\xc2\xbb", "}}}")
 #define MSGTCPRECSTR   ConvTranslit ("\xc2\xab\xc2\xab\xc2\xab", "{{{")
 #define MSGSSLACKSTR   ConvTranslit ("\xc2\xbb%\xc2\xbb", "}%}")
@@ -597,39 +563,46 @@ void IMOffline (Contact *cont, Connection *conn)
 /*
  * Central entry point for protocol triggered output.
  */
-void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UWORD type, const char *text, Extra *extra)
+void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UWORD type, const char *text, ContactOptions *opt)
 {
-    const char *line;
+    const char *line, *opt_text;
     const char *col = COLCONTACT;
+    UDWORD opt_port, opt_bytes;
     char *p, *q;
 
     if (!cont || ContactPrefVal (cont, CO_IGNORE))
     {
-        ExtraD (extra);
+        ContactOptionsD (opt);
         return;
     }
+    if (!ContactOptionsGetStr (opt, CO_MSGTEXT, &opt_text))
+        opt_text = "";
+    if (!ContactOptionsGetVal (opt, CO_PORT, &opt_port))
+        opt_port = 0;
+    if (!ContactOptionsGetVal (opt, CO_BYTES, &opt_bytes))
+        opt_bytes = 0;
 
     switch (type)
     {
         case INT_FILE_ACKED:
             line = s_sprintf (i18n (9999, "File transfer %s to port %ld."),
-                              s_qquote (extra->text), extra->data);
+                              s_qquote (opt_text), opt_port);
             break;
         case INT_FILE_REJED:
             line = s_sprintf (i18n (9999, "File transfer %s rejected by peer: %s."),
-                              s_qquote (extra->text), s_wordquote (text));
+                              s_qquote (opt_text), s_wordquote (text));
             break;
         case INT_FILE_ACKING:
             line = s_sprintf (i18n (9999, "Accepting file %s (%ld bytes)."),
-                              s_qquote (extra->text), extra->data);
+                              s_qquote (opt_text), opt_bytes);
             break;
         case INT_FILE_REJING:
             line = s_sprintf (i18n (9999, "Refusing file request %s (%ld bytes): %s."),
-                              s_qquote (extra->text), extra->data, s_wordquote (text));
+                              s_qquote (opt_text), opt_bytes, s_wordquote (text));
             break;
         case INT_CHAR_REJING:
             line = s_sprintf (i18n (9999, "Refusing chat request (%s/%s) from %s%s%s."),
-                              p = strdup (s_qquote (extra->text)), q = strdup (s_qquote (text)),
+                              p = strdup (s_qquote (opt_text)), q = strdup (s_qquote (text)),
                               COLCONTACT, cont->nick, COLNONE);
             free (p);
             free (q);
@@ -657,7 +630,7 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
         case INT_MSGACK_V8:
         case INT_MSGACK_V5:
             col = COLACK;
-            line = s_sprintf ("%s%s %s", i18n (2295, ">>>"), COLSINGLE, text);
+            line = s_sprintf ("%s%s %s", MSGICQACKSTR, COLSINGLE, text);
             break;
         default:
             line = "";
@@ -680,7 +653,7 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
     M_print ("\n");
     free (p);
 
-    ExtraD (extra);
+    ContactOptionsD (opt);
 }
 
 struct History_s
@@ -743,42 +716,45 @@ void HistShow (Contact *cont)
 /*
  * Central entry point for incoming messages.
  */
-void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
+void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, ContactOptions *opt)
 {
     const char *tmp, *tmp2, *tmp3, *tmp4, *tmp5, *tmp6;
     char *cdata;
-    Extra *e;
-    const char *e_msg_text, *carr;
-    UDWORD e_msg_type, j;
+    const char *opt_text, *carr;
+    UDWORD opt_type, opt_origin, opt_status, opt_bytes, opt_ref, j;
     int i;
     
     if (!cont)
     {
-        ExtraD (extra);
+        ContactOptionsD (opt);
         return;
     }
 
-    cdata = strdup (e_msg_text = ExtraGetS (extra, EXTRA_MESSAGE));
-    assert (cdata);
+    if (!ContactOptionsGetStr (opt, CO_MSGTEXT, &opt_text))
+        opt_text = "";
+    cdata = strdup (opt_text);
     while (*cdata && strchr ("\n\r", cdata[strlen (cdata) - 1]))
         cdata[strlen (cdata) - 1] = '\0';
-    e_msg_type = ExtraGet (extra, EXTRA_MESSAGE);
+    if (!ContactOptionsGetVal (opt, CO_MSGTYPE, &opt_type))
+        opt_type = MSG_NORM;
+    if (!ContactOptionsGetVal (opt, CO_ORIGIN, &opt_origin))
+        opt_origin = CV_ORIGIN_v5;
 
-    carr = ExtraGet (extra, EXTRA_ORIGIN) == EXTRA_ORIGIN_dc ? MSGTCPRECSTR :
-           ExtraGet (extra, EXTRA_ORIGIN) == EXTRA_ORIGIN_v8 ? MSGTYPE2RECSTR :
+    carr = (opt_origin == CV_ORIGIN_dc) ? MSGTCPRECSTR :
 #ifdef ENABLE_SSL
-           ExtraGet (extra, EXTRA_ORIGIN) == EXTRA_ORIGIN_ssl ? MSGSSLRECSTR :
+           (opt_origin == CV_ORIGIN_ssl) ? MSGSSLRECSTR :
 #endif
-           i18n (2296, "<<<");
+           (opt_origin == CV_ORIGIN_v8) ? MSGTYPE2RECSTR : MSGICQRECSTR;
 
     putlog (conn, stamp, cont,
-        (e = ExtraFind (extra, EXTRA_STATUS)) ? e->data : STATUS_OFFLINE, 
-        e_msg_type == MSG_AUTH_ADDED ? LOG_ADDED : LOG_RECVD, e_msg_type,
+        ContactOptionsGetVal (opt, CO_STATUS, &opt_status) ? opt_status : STATUS_OFFLINE, 
+        (opt_type == MSG_AUTH_ADDED) ? LOG_ADDED : LOG_RECVD, opt_type,
         cdata);
     
     if (ContactPrefVal (cont, CO_IGNORE))
     {
-        ExtraD (extra);
+        free (cdata);
+        ContactOptionsD (opt);
         return;
     }
 
@@ -804,15 +780,15 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
 
 #ifdef MSGEXEC
     if (prG->event_cmd && *prG->event_cmd)
-        EventExec (cont, prG->event_cmd, 1, e_msg_type, e_msg_text);
+        EventExec (cont, prG->event_cmd, 1, opt_type, opt_text);
 #endif
     M_printf ("\a%s %s%*s%s ", s_time (&stamp), COLINCOMING, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
     
-    if ((e = ExtraFind (extra, EXTRA_STATUS)) && (!cont || cont->status != e->data || !cont->group))
-        M_printf ("(%s) ", s_status (e->data));
+    if (ContactOptionsGetVal (opt, CO_STATUS, &opt_status) && (!cont || cont->status != opt_status || !cont->group))
+        M_printf ("(%s) ", s_status (opt_status));
 
     if (prG->verbose > 1)
-        M_printf ("<%ld> ", e_msg_type);
+        M_printf ("<%ld> ", opt_type);
 
     uiG.last_rcvd = cont;
     if (cont)
@@ -821,14 +797,14 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
         cont->last_time = time (NULL);
     }
 
-    switch (e_msg_type & ~MSGF_MASS)
+    switch (opt_type & ~MSGF_MASS)
     {
         case MSGF_MASS: /* not reached here, but quiets compiler warning */
         while (1)
         {
-            M_printf ("(?%lx?) %s" COLMSGINDENT "%s\n", e_msg_type, COLMESSAGE, e_msg_text);
+            M_printf ("(?%lx?) %s" COLMSGINDENT "%s\n", opt_type, COLMESSAGE, opt_text);
             M_printf ("    '");
-            for (j = 0; j < strlen (e_msg_text); j++)
+            for (j = 0; j < strlen (opt_text); j++)
                 M_printf ("%c", ((cdata[j] & 0xe0) && (cdata[j] != 127)) ? cdata[j] : '.');
             M_print ("'\n");
             break;
@@ -842,11 +818,13 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             break;
 
         case MSG_FILE:
+            if (!ContactOptionsGetVal (opt, CO_BYTES, &opt_bytes))
+                opt_bytes = 0;
+            if (!ContactOptionsGetVal (opt, CO_REF, &opt_ref))
+                opt_ref = 0;
             M_printf (i18n (9999, "requests file transfer %s of %ld bytes (sequence %ld).\n"),
-                      s_qquote (cdata), ExtraGet (extra, EXTRA_FILETRANS), ExtraGet (extra, EXTRA_REF));
-            TCLEvent (cont, "file_request", s_sprintf ("{%s} %ld %ld", cdata,
-                      ExtraGet (extra, EXTRA_FILETRANS),
-                      ExtraGet (extra, EXTRA_REF)));
+                      s_qquote (cdata), opt_bytes, opt_ref);
+            TCLEvent (cont, "file_request", s_sprintf ("{%s} %ld %ld", cdata, opt_bytes, opt_ref));
             break;
 
         case MSG_AUTO:
@@ -960,7 +938,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             M_printf ("\n??? %s", s_wordquote (tmp2));
             M_printf ("\n??? %s", s_wordquote (tmp3));
 
-            if (e_msg_type == MSG_EMAIL)
+            if (opt_type == MSG_EMAIL)
             {
                 M_printf (i18n (1592, "<%s> emailed you a message:\n"), s_cquote (tmp4, COLCONTACT));
                 TCLEvent (cont, "mail", s_sprintf ("{%s}", tmp4));
@@ -992,5 +970,5 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
         }
     }
     free (cdata);
-    ExtraD (extra);
+    ContactOptionsD (opt);
 }

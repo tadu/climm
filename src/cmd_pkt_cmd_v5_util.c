@@ -14,7 +14,6 @@
 #include "cmd_pkt_cmd_v5_util.h"
 #include "util_ui.h"
 #include "util.h"
-#include "util_extra.h"
 #include "util_syntax.h"
 #include "conv.h"
 #include "cmd_pkt_server.h"
@@ -364,7 +363,7 @@ void Auto_Reply (Connection *conn, Contact *cont)
      else
          return;
 
-    IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_AUTO, temp));
+    IMCliMsg (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, MSG_AUTO, CO_MSGTEXT, temp, 0));
 }
 
 /*

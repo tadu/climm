@@ -24,7 +24,6 @@
 #include "util.h"
 #include "util_ui.h"
 #include "util_io.h"
-#include "util_extra.h"
 #include "buildmark.h"
 #include "icq_response.h"
 #include "conv.h"
@@ -362,13 +361,13 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
 {
     Connection *flist;
     Contact *cont = inc_event->cont;
-    Extra *extra = inc_event->extra;
+    ContactOptions *opt = inc_event->opt, *opt2;
     Packet *ack_pak = ack_event->pak;
     Event *e1, *e2;
     const char *txt, *ack_msg;
     strc_t text, cname, ctext, reason, cctmp;
     char *name;
-    UDWORD tmp, cmd, flen;
+    UDWORD tmp, cmd, flen, opt_acc;
     UWORD unk, seq, msgtype, unk2, pri;
     UWORD ack_flags, ack_status, accept;
 
@@ -389,9 +388,9 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
               inc_event, ack_event, msgtype, seq);
 #endif
  
-    ExtraSet (extra, EXTRA_MESSAGE, msgtype, msgtype == MSG_NORM ?
-              ConvFromCont (text, cont) : c_in_to_split (text, cont));
-
+    ContactOptionsSetVal (opt, CO_MSGTYPE, msgtype);
+    ContactOptionsSetStr (opt, CO_MSGTEXT, msgtype == MSG_NORM ? ConvFromCont (text, cont) : c_in_to_split (text, cont));
+    
     accept = FALSE;
 
     if      (serv->status & STATUSF_DND)
@@ -448,19 +447,26 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
             name = strdup (ConvFromCont (cname, cont));
             
             flist = PeerFileCreate (serv);
-            if (!ExtraGet (extra, EXTRA_FILETRANS) && flen)
+            if (!ContactOptionsGetVal (opt, CO_FILEACCEPT, &opt_acc) && flen)
             {
-                ExtraSet (extra, EXTRA_FILETRANS, flen, name);
-                ExtraSet (extra, EXTRA_REF, ack_event->seq, NULL);
-                IMSrvMsg (cont, serv, NOW, ExtraClone (extra));
+                ContactOptionsSetVal (opt, CO_FILEACCEPT, 0);
+                ContactOptionsSetVal (opt, CO_BYTES, flen);
+                ContactOptionsSetStr (opt, CO_MSGTEXT, name);
+                ContactOptionsSetVal (opt, CO_REF, ack_event->seq);
+                opt2 = ContactOptionsC ();
+                ContactOptionsSetVal (opt2, CO_BYTES, flen);
+                ContactOptionsSetStr (opt2, CO_MSGTEXT, name);
+                ContactOptionsSetVal (opt2, CO_REF, ack_event->seq);
+                ContactOptionsSetVal (opt2, CO_MSGTYPE, msgtype);
+                IMSrvMsg (cont, serv, NOW, opt2);
                 e1 = QueueEnqueueData (serv, QUEUE_ACKNOWLEDGE, ack_event->seq, time (NULL) + 120,
                                        NULL, inc_event->cont, NULL, NULL);
                 e2 = QueueEnqueueData (inc_event->conn, inc_event->type, ack_event->seq,
-                                       time (NULL) + 122, inc_event->pak, inc_event->cont, extra, inc_event->callback);
+                                       time (NULL) + 122, inc_event->pak, inc_event->cont, opt, inc_event->callback);
                 e1->rel = e2;
                 e2->rel = e1;
                 inc_event->pak->rpos = inc_event->pak->tpos;
-                inc_event->extra = NULL;
+                inc_event->opt = NULL;
                 inc_event->pak = NULL;
                 ack_event->due = 0;
                 ack_event->callback = NULL;
@@ -486,13 +492,14 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
             }
             else
             {
-                txt = ExtraGetS (extra, EXTRA_FILEACCEPT);
+                if (!ContactOptionsGetStr (opt, CO_REFUSE, &txt))
+                    txt = "";
                 PacketWrite2    (ack_pak, TCP_ACK_REFUSE);
                 PacketWrite2    (ack_pak, ack_flags);
                 PacketWriteLNTS (ack_pak, c_out (ack_msg));
                 PacketWriteB2   (ack_pak, 0);
                 PacketWrite2    (ack_pak, 0);
-                PacketWriteStr  (ack_pak, txt ? txt : "");
+                PacketWriteStr  (ack_pak, txt);
                 PacketWrite4    (ack_pak, 0);
                 if (serv->assoc->version > 6)
                     PacketWrite4 (ack_pak, 0x20726f66);
@@ -528,20 +535,26 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                 {
                     case 0x0029:
                         flist = PeerFileCreate (serv);
-                        if (!ExtraGet (extra, EXTRA_FILETRANS) && flen)
+                        if (!ContactOptionsGetVal (opt, CO_FILEACCEPT, &opt_acc) && flen)
                         {
-                            ExtraSet (extra, EXTRA_FILETRANS, flen, name);
-                            ExtraSet (extra, EXTRA_REF, ack_event->seq, NULL);
-                            ExtraSet (extra, EXTRA_MESSAGE, MSG_FILE, name);
-                            IMSrvMsg (cont, serv, NOW, ExtraClone (extra));
+                            ContactOptionsSetVal (opt, CO_FILEACCEPT, 0);
+                            ContactOptionsSetVal (opt, CO_BYTES, flen);
+                            ContactOptionsSetStr (opt, CO_MSGTEXT, name);
+                            ContactOptionsSetVal (opt, CO_REF, ack_event->seq);
+                            opt2 = ContactOptionsC ();
+                            ContactOptionsSetVal (opt2, CO_BYTES, flen);
+                            ContactOptionsSetStr (opt2, CO_MSGTEXT, name);
+                            ContactOptionsSetVal (opt2, CO_REF, ack_event->seq);
+                            ContactOptionsSetVal (opt2, CO_MSGTYPE, msgtype);
+                            IMSrvMsg (cont, serv, NOW, opt2);
                             e1 = QueueEnqueueData (serv, QUEUE_ACKNOWLEDGE, ack_event->seq, time (NULL) + 120,
                                                    NULL, inc_event->cont, NULL, NULL);
                             e2 = QueueEnqueueData (inc_event->conn, inc_event->type, ack_event->seq,
-                                                   time (NULL) + 122, inc_event->pak, inc_event->cont, extra, inc_event->callback);
+                                                   time (NULL) + 122, inc_event->pak, inc_event->cont, opt, inc_event->callback);
                             e1->rel = e2;
                             e2->rel = e1;
                             inc_event->pak->rpos = inc_event->pak->tpos;
-                            inc_event->extra = NULL;
+                            inc_event->opt = NULL;
                             inc_event->pak = NULL;
                             ack_event->callback = NULL;
                             ack_event->due = 0;
@@ -561,10 +574,11 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                         }
                         else
                         {
-                            txt = ExtraGetS (extra, EXTRA_FILEACCEPT);
+                            if (!ContactOptionsGetStr (opt, CO_REFUSE, &txt))
+                                txt = "";
                             PacketWrite2    (ack_pak, TCP_ACK_REFUSE);
                             PacketWrite2    (ack_pak, ack_flags);
-                            PacketWriteLNTS (ack_pak, txt ? txt : "");
+                            PacketWriteLNTS (ack_pak, txt);
                             SrvMsgGreet     (ack_pak, cmd, "", 0, 0, "");
                         }
                         break;
@@ -572,11 +586,17 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                     case 0x002d:
                         if (id[0] == (char)0xbf)
                         {
-                            IMSrvMsg (cont, serv, NOW, ExtraClone (extra));
-                            IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraClone (extra),
-                                      EXTRA_MESSAGE, MSG_CHAT, name));
-                            IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraClone (extra),
-                                      EXTRA_MESSAGE, MSG_CHAT, reason->txt));
+                            opt2 = ContactOptionsC ();
+                            ContactOptionsSetVal (opt2, CO_MSGTYPE, msgtype);
+                            ContactOptionsSetStr (opt2, CO_MSGTEXT, c_in_to_split (text, cont));
+                            IMSrvMsg (cont, serv, NOW, opt2);
+                            opt2 = ContactOptionsC ();
+                            ContactOptionsSetVal (opt2, CO_MSGTYPE, MSG_CHAT);
+                            ContactOptionsSetStr (opt2, CO_MSGTEXT, name);
+                            IMSrvMsg (cont, serv, NOW, opt2);
+                            opt2 = ContactOptionsC ();
+                            ContactOptionsSetVal (opt2, CO_MSGTYPE, MSG_CHAT);
+                            ContactOptionsSetStr (opt2, CO_MSGTEXT, reason->txt);
                             PacketWrite2    (ack_pak, TCP_ACK_REFUSE);
                             PacketWrite2    (ack_pak, ack_flags);
                             PacketWriteLNTS (ack_pak, "");
@@ -585,7 +605,10 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                         }
                         else if (id[0] == (char)0x2a)
                         {
-                            IMSrvMsg (cont, serv, NOW, ExtraSet (ExtraClone (extra), EXTRA_MESSAGE, MSG_CONTACT, c_in_to_split (reason, cont)));
+                            opt2 = ContactOptionsC ();
+                            ContactOptionsSetVal (opt2, CO_MSGTYPE, MSG_CONTACT);
+                            ContactOptionsSetStr (opt2, CO_MSGTEXT, c_in_to_split (reason, cont));
+                            IMSrvMsg (cont, serv, NOW, opt2);
                             PacketWrite2    (ack_pak, ack_status);
                             PacketWrite2    (ack_pak, ack_flags);
                             PacketWriteLNTS (ack_pak, "");
@@ -655,9 +678,10 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
             /**/    PacketRead4 (inc_pak);
             cctmp = PacketReadL4Str (inc_pak, NULL);
             if (!strcmp (cctmp->txt, CAP_GID_UTF8))
-                ExtraSet (extra, EXTRA_MESSAGE, msgtype, text->txt);
+                ContactOptionsSetStr (opt, CO_MSGTEXT, text->txt);
             if (*text->txt)
-                IMSrvMsg (cont, serv, NOW, ExtraClone (extra));
+                IMSrvMsg (cont, serv, NOW, opt);
+            inc_event->opt = NULL;
             PacketWrite2     (ack_pak, ack_status);
             PacketWrite2     (ack_pak, ack_flags);
             PacketWriteLNTS  (ack_pak, c_out (ack_msg));

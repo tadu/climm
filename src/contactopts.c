@@ -1,7 +1,8 @@
 
-#include <assert.h>
-#include <string.h>
 #include "micq.h"
+#include <assert.h>
+#include <stdarg.h>
+#include <string.h>
 #include "conv.h"
 #include "util_ui.h"
 #include "preferences.h"
@@ -10,6 +11,7 @@
 static char **strtable = NULL;
 static int strmax = 0;
 static int struse = 0;
+static int strmin = 0;
 
 #define TABLESIZE CONTACTOPTS_TABLESIZE
 
@@ -55,6 +57,49 @@ struct ContactOption_s ContactOptionsList[] = {
 };
 
 /*
+ * Create new contact options
+ */
+ContactOptions *ContactOptionsC (void)
+{
+    return calloc (sizeof (ContactOptions), 1);
+}
+
+/*
+ * Delete contact options
+ */
+void ContactOptionsD (ContactOptions *opt)
+{
+    ContactOptions *cot;
+    UDWORD flag;
+    val_t val;
+    int i;
+
+    if (!opt)
+        return;
+    for (i = 0; ContactOptionsList[i].name; i++)
+    {
+        if (~(flag = ContactOptionsList[i].flag) & (COF_STRING | COF_COLOR))
+            continue;
+        if ((val = ContactOptionsUndef (opt, flag)))
+        {
+            free (strtable[val]);
+            strtable[val] = NULL;
+            if (val + 1 == struse)
+                while (!strtable[val])
+                    val--, struse--;
+            if (val < strmin)
+                strmin = val;
+        }
+    }
+    while (opt)
+    {
+        cot = opt->next;
+        free (opt);
+        opt = cot;
+    }
+}
+
+/*
  * Get a contact option.
  */
 BOOL ContactOptionsGetVal (const ContactOptions *opt, UDWORD flag, val_t *res)
@@ -77,7 +122,8 @@ BOOL ContactOptionsGetVal (const ContactOptions *opt, UDWORD flag, val_t *res)
         return FALSE;
     }
     *res = (flag & COF_BOOL) ? (cot->vals[k] & (flag * 2) & CO_BOOLMASK) != 0 : cot->vals[k];
-    Debug (DEB_OPTS, "(%p,%lx) = %lx = %lu", opt, flag, *res, *res);
+    if (~tag & 0x80)
+        Debug (DEB_OPTS, "(%p,%lx) = %lx = %lu", opt, flag, *res, *res);
     return TRUE;
 }
 
@@ -127,6 +173,36 @@ BOOL ContactOptionsSetVal (ContactOptions *opt, UDWORD flag, val_t val)
     else
         cot->vals[k] = val;
     return TRUE;
+}
+
+/*
+ * Set several contact options at once
+ */
+ContactOptions *ContactOptionsSetVals (ContactOptions *opt, UDWORD flag, ...)
+{
+    const char *text;
+    va_list args;
+    val_t val;
+    
+    va_start (args, flag);
+    if (!opt)
+        opt = ContactOptionsC ();
+    while (flag)
+    {
+        if (flag & COF_STRING)
+        {
+            text = va_arg (args, const char *);
+            ContactOptionsSetStr (opt, flag, text);
+        }
+        else
+        {
+            val = va_arg (args, val_t);
+            ContactOptionsSetVal (opt, flag, val);
+        }
+        flag = va_arg (args, UDWORD);
+    }
+    va_end (args);
+    return opt;
 }
 
 /*
@@ -188,11 +264,12 @@ BOOL ContactOptionsGetStr (const ContactOptions *opt, UDWORD flag, const char **
     if (!ContactOptionsGetVal (opt, flag, &val))
         return FALSE;
 
-    if (val >= struse)
+    if (val >= strmax)
         return FALSE;
 
     *res = strtable[val];
-    Debug (DEB_OPTS, "(%p,%lx) = %s", opt, flag, s_quote (*res));
+    if (~flag & 0x80)
+        Debug (DEB_OPTS, "(%p,%lx) = %s", opt, flag, s_quote (*res));
     return TRUE;
 }
 
@@ -209,28 +286,31 @@ BOOL ContactOptionsSetStr (ContactOptions *opt, UDWORD flag, const char *text)
     {
         free (strtable[val]);
         strtable[val] = NULL;
-        if (val + 1 == struse)
-            while (!strtable[val])
-                val--, struse--;
+        if (val < strmin)
+            strmin = val;
     }
     if (!text)
         return TRUE;
 
-    if (struse == strmax)
+    val = strmin;
+    while (val < strmax && strtable[val])
+       val++;
+    strmin = val + 1;
+    
+    if (val == strmax)
     {
         int j, news = (strmax ? strmax * 2 : 128);
         char **new = realloc (strtable, sizeof (char *) * news);
         if (!new)
             return FALSE;
-        for (j = struse; j < news; j++)
+        for (j = strmax; j < news; j++)
             new[j] = NULL;
         strtable = new;
         strmax = news;
     }
-    if (!(strtable[val = struse] = strdup (text)))
+    if (!(strtable[val] = strdup (text)))
         return FALSE;
     
-    struse++;
     Debug (DEB_OPTS, "(%p,%lx) := %ld / %s", opt, flag, val, s_quote (strtable [val]));
 
     return ContactOptionsSetVal (opt, flag, val);

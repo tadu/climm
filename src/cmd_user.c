@@ -15,7 +15,6 @@
 #include "util_io.h"
 #include "util_rl.h"
 #include "util_table.h"
-#include "util_extra.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_cmd_v5_util.h"
 #include "cmd_pkt_v8.h"
@@ -661,7 +660,7 @@ static JUMP_F(CmdUserPeek)
         if (*args == ',')
             args++;
 
-        SnacCliSendmsg2 (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_GET_PEEK, ""));
+        SnacCliSendmsg2 (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, MSG_GET_PEEK, 0));
     }
     return 0;
 }
@@ -789,7 +788,7 @@ static JUMP_F(CmdUserGetAuto)
             else if (cont->status  & STATUSF_FFC)    cdata = MSGF_GETAUTO | MSG_GET_FFC;
             else continue;
         }
-        IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, cdata, ""));
+        IMCliMsg (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, cdata, 0));
         if (*args == ',')
             args++;
     }
@@ -941,9 +940,9 @@ static JUMP_F(CmdUserPeer)
                         char *reason = NULL;
                         
                         if (data == 6)
-                            revent->extra = ExtraSet (revent->extra, EXTRA_FILEACCEPT, 1, NULL);
+                            revent->opt = ContactOptionsSetVals (revent->opt, CO_FILEACCEPT, 1, 0);
                         else if (s_parserem (&args, &reason))
-                            revent->extra = ExtraSet (revent->extra, EXTRA_FILEACCEPT, 0, reason);
+                            revent->opt = ContactOptionsSetVals (revent->opt, CO_FILEACCEPT, 1, CO_REFUSE, reason, 0);
                         revent->callback (revent);
                     }
                     EventD (event);
@@ -1110,7 +1109,7 @@ static JUMP_F (CmdUserResend)
     
     while (1)
     {
-        IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, uiG.last_message_sent_type, uiG.last_message_sent));
+        IMCliMsg (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, uiG.last_message_sent_type, CO_MSGTEXT, uiG.last_message_sent, 0));
         uiG.last_sent = cont;
 
         if (*args == ',')
@@ -1177,7 +1176,7 @@ static JUMP_F (CmdUserAnyMess)
             M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
             return 0;
         }
-        PeerSendMsg (conn->assoc, cont, ExtraSet (NULL, EXTRA_MESSAGE, data >> 2, t.txt));
+        PeerSendMsg (conn->assoc, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, data >> 2, CO_MSGTEXT, t.txt, 0));
     }
 #endif
     else
@@ -1187,7 +1186,7 @@ static JUMP_F (CmdUserAnyMess)
         else if (f != 2)
             SnacCliSendmsg (conn, cont, t.txt, data >> 2, f);
         else
-            SnacCliSendmsg2 (conn, cont, ExtraSet (ExtraSet (NULL, EXTRA_FORCE, 1, NULL), EXTRA_MESSAGE, data >> 2, t.txt));
+            SnacCliSendmsg2 (conn, cont, ContactOptionsSetVals (NULL, CO_FORCE, 1, CO_MSGTYPE, data >> 2, CO_MSGTEXT, t.txt, 0));
     }
     return 0;
 }
@@ -1257,7 +1256,7 @@ static JUMP_F (CmdUserMessage)
             uiG.last_message_sent_type = MSG_NORM;
             for (i = 0; (cont = ContactIndex (uinlist, i)); i++)
             {
-                IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_NORM, arg1));
+                IMCliMsg (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, arg1, 0));
                 uiG.last_sent = cont;
                 TabAddOut (cont);
             }
@@ -1296,7 +1295,7 @@ static JUMP_F (CmdUserMessage)
             uiG.last_message_sent_type = MSG_NORM;
             for (i = 0; (cont = ContactIndex (uinlist, i)); i++)
             {
-                IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_NORM, t.txt));
+                IMCliMsg (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, t.txt, 0));
                 uiG.last_sent = cont;
                 TabAddOut (cont);
             }
@@ -2042,6 +2041,7 @@ static JUMP_F(CmdUserSet)
  */
 static JUMP_F(CmdUserOpt)
 {
+    const char *colquote = COLQUOTE, *colnone = COLNONE;
     ContactGroup *cg = NULL;
     Contact *cont = NULL;
     const char *optname = NULL, *res = NULL, *optobj = NULL;
@@ -2103,7 +2103,7 @@ static JUMP_F(CmdUserOpt)
                     break;
                 default:
                     M_printf (i18n (9999, "%s is neither a contact, nor a contact group, nor the %sglobal%s keyword.\n"),
-                              s_qquote (par->txt), COLQUOTE, COLNONE);
+                              s_qquote (par->txt), colquote, colnone);
             }
         }
         else
@@ -2131,8 +2131,7 @@ static JUMP_F(CmdUserOpt)
         
         for (i = 0; (optname = ContactOptionsList[i].name); i++)
         {
-            UWORD flag = ContactOptionsList[i].flag;
-            
+            flag = ContactOptionsList[i].flag;
             if (~flag & data)
                 continue;
             
@@ -2140,53 +2139,53 @@ static JUMP_F(CmdUserOpt)
             {
                 case COF_BOOL:
                     if (data == COF_CONTACT)
-                        M_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, COLQUOTE,
+                        M_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, colquote,
                                   ContactOptionsGetVal (copts, flag, &val)
                                     ? val ? i18n (1085, "on") : i18n (1086, "off")
-                                    : i18n (9999, "undefined"), COLNONE, i18n (9999, "effectivly"), COLQUOTE,
+                                    : i18n (9999, "undefined"), colnone, i18n (9999, "effectivly"), colquote,
                                   ContactPrefVal (cont, flag)
-                                    ? i18n (1085, "on") : i18n (1086, "off"), COLNONE);
+                                    ? i18n (1085, "on") : i18n (1086, "off"), colnone);
                     else
-                        M_printf ("    %-15s  %s%s%s\n", optname, COLQUOTE,
+                        M_printf ("    %-15s  %s%s%s\n", optname, colquote,
                                   ContactOptionsGetVal (copts, flag, &val)
                                     ? val  ? i18n (1085, "on") : i18n (1086, "off")
-                                    : i18n (9999, "undefined"), COLNONE);
+                                    : i18n (9999, "undefined"), colnone);
                     break;
                 case COF_NUMERIC:
                     if (data == COF_CONTACT)
-                        M_printf ("    %-15s  %s%-15s%s  (%s %s%ld%s)\n", optname, COLQUOTE,
+                        M_printf ("    %-15s  %s%-15s%s  (%s %s%ld%s)\n", optname, colquote,
                                   ContactOptionsGetVal (copts, flag, &val)
                                     ? s_sprintf ("%ld", val)
-                                    : i18n (9999, "undefined"), COLNONE, i18n (9999, "effectivly"), COLQUOTE,
-                                  ContactPrefVal (cont, flag), COLNONE);
+                                    : i18n (9999, "undefined"), colnone, i18n (9999, "effectivly"), colquote,
+                                  ContactPrefVal (cont, flag), colnone);
                     else
-                        M_printf ("    %-15s  %s%s%s\n", optname, COLQUOTE,
+                        M_printf ("    %-15s  %s%s%s\n", optname, colquote,
                                   ContactOptionsGetVal (copts, flag, &val)
                                     ? s_sprintf ("%ld", val)
-                                    : i18n (9999, "undefined"), COLNONE);
+                                    : i18n (9999, "undefined"), colnone);
                     break;
                 case COF_STRING:
                     if (data == COF_CONTACT)
-                        M_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, COLQUOTE,
+                        M_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, colquote,
                                   ContactOptionsGetStr (copts, flag, &res)
-                                    ? res : i18n (9999, "undefined"), COLNONE, i18n (9999, "effectivly"), COLQUOTE,
-                                  ContactPrefStr (cont, flag), COLNONE);
+                                    ? res : i18n (9999, "undefined"), colnone, i18n (9999, "effectivly"), colquote,
+                                  ContactPrefStr (cont, flag), colnone);
                     else
-                        M_printf ("    %-15s  %s%s%s\n", optname, COLQUOTE,
+                        M_printf ("    %-15s  %s%s%s\n", optname, colquote,
                                   ContactOptionsGetStr (copts, flag, &res)
-                                    ? res : i18n (9999, "undefined"), COLNONE);
+                                    ? res : i18n (9999, "undefined"), colnone);
                     break;
                 case COF_COLOR:
                     if (data == COF_CONTACT)
-                        M_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, COLQUOTE,
+                        M_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, colquote,
                                   ContactOptionsGetStr (copts, flag, &res)
-                                    ? ContactOptionsS2C (res) : i18n (9999, "undefined"), COLNONE,
-                                  i18n (9999, "effectivly"), COLQUOTE,
-                                  ContactOptionsS2C (ContactPrefStr (cont, flag)), COLNONE);
+                                    ? ContactOptionsS2C (res) : i18n (9999, "undefined"), colnone,
+                                  i18n (9999, "effectivly"), colquote,
+                                  ContactOptionsS2C (ContactPrefStr (cont, flag)), colnone);
                     else
-                        M_printf ("    %-15s  %s%s%s\n", optname, COLQUOTE,
+                        M_printf ("    %-15s  %s%s%s\n", optname, colquote,
                                   ContactOptionsGetStr (copts, flag, &res)
-                                    ? ContactOptionsS2C (res) : i18n (9999, "undefined"), COLNONE);
+                                    ? ContactOptionsS2C (res) : i18n (9999, "undefined"), colnone);
                     break;
             }
         }
@@ -2229,8 +2228,8 @@ static JUMP_F(CmdUserOpt)
                 M_printf (data == COF_CONTACT ? i18n (9999, "Option %s for contact %s is %s%s%s.\n") :
                           data == COF_GROUP   ? i18n (9999, "Option %s for contact group %s is %s%s%s.\n")
                                               : i18n (9999, "Option %s%s is globally %s%s%s.\n"),
-                          coptname, coptobj, COLQUOTE, flag & COF_NUMERIC ? s_sprintf ("%ld", val)
-                          : val ? i18n (1085, "on") : i18n (1086, "off"), COLNONE);
+                          coptname, coptobj, colquote, flag & COF_NUMERIC ? s_sprintf ("%ld", val)
+                          : val ? i18n (1085, "on") : i18n (1086, "off"), colnone);
             else
                 M_printf (data == COF_CONTACT ? i18n (9999, "Option %s for contact %s is %s.\n") :
                           data == COF_GROUP   ? i18n (9999, "Option %s for contact group %s is %s.\n")
@@ -2241,7 +2240,10 @@ static JUMP_F(CmdUserOpt)
         
         if (!strcasecmp (par->txt, "undef"))
         {
-            ContactOptionsUndef (copts, flag);
+            if (flag & COF_STRING)
+                ContactOptionsSetStr (copts, flag, NULL);
+            else
+                ContactOptionsUndef (copts, flag);
             M_printf (data == COF_CONTACT ? i18n (9999, "Undefining option %s for contact %s.\n") :
                       data == COF_GROUP   ? i18n (9999, "Undefining option %s for contact group %s.\n")
                                           : i18n (9999, "Undefining global option %s%s.\n"),
@@ -2280,7 +2282,7 @@ static JUMP_F(CmdUserOpt)
             M_printf (data == COF_CONTACT ? i18n (9999, "Setting option %s for contact %s to %s%d%s.\n") :
                       data == COF_GROUP   ? i18n (9999, "Setting option %s for contact group %s to %s%d%s.\n")
                                           : i18n (9999, "Setting option %s%s globally to %s%d%s.\n"),
-                      coptname, coptobj, COLQUOTE, atoi (par->txt), COLNONE);
+                      coptname, coptobj, colquote, atoi (par->txt), colnone);
         }
         else if (!strcasecmp (par->txt, "on")  || !strcasecmp (par->txt, i18n (1085, "on")))
         {
@@ -2813,7 +2815,7 @@ static JUMP_F(CmdUserURL)
     uiG.last_message_sent_type = MSG_URL;
     uiG.last_sent = cont;
 
-    IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_URL, cmsg));
+    IMCliMsg (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, MSG_URL, CO_MSGTEXT, cmsg, 0));
 
     free (url);
     return 0;
@@ -3442,18 +3444,13 @@ static JUMP_F(CmdUserUpdate)
             return ++status;
         case 303:
             if (!user->email && args)
-                user->email = strdup (args);
-            else if (args && *args)
             {
-                MetaEmail **em = &cont->meta_email;
-                while (*em)
-                    em = &(*em)->meta_email;
-                *em = calloc (1, sizeof (MetaEmail));
-                if (!*em)
-                    args = NULL;
-                else
-                    s_repl (&(*em)->email, args);
+                user->email = strdup (args);
+                ContactMetaD (cont->meta_email);
+                cont->meta_email = NULL;
             }
+            else if (args && *args)
+                ContactMetaAdd (&cont->meta_email, 0, args);
             else
             {
                 ReadLinePromptSet (i18n (1544, "Enter new city:"));

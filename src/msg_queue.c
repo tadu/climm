@@ -30,7 +30,6 @@
 #include "msg_queue.h"
 #include "util_ui.h"
 #include "contact.h" /* for cont->uin */
-#include "util_extra.h"
 #include "preferences.h"
 #include "icq_response.h" /* yuck */
 #include "packet.h" /* yuck */
@@ -158,7 +157,7 @@ void QueueEnqueue (Event *event)
  */
 Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD id,
                          time_t due, Packet *pak, Contact *cont,
-                         Extra *extra, Queuef *callback)
+                         ContactOptions *opt, Queuef *callback)
 {
     Event *event = calloc (sizeof (Event), 1);
     assert (event);
@@ -171,7 +170,7 @@ Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD id,
     event->cont  = cont;
     event->due  = due;
     event->pak = pak;
-    event->extra = extra;
+    event->opt = opt;
     event->callback = callback;
     
     Debug (DEB_EVENT, "<+" STR_DOT STR_DOT " %s %p: %08lx %p %ld %x @ %p",
@@ -334,7 +333,7 @@ void EventD (Event *event)
            event->cont ? event->cont->uin : 0);
     if (event->pak)
         PacketD (event->pak);
-    ExtraD (event->extra);
+    ContactOptionsD (event->opt);
     if (event->rel && event->rel->rel == event)
         event->rel->rel = NULL;
     free (event);

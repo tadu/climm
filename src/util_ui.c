@@ -5,7 +5,6 @@
 #include <stdarg.h>
 #include "util_ui.h"
 #include "util_table.h"
-#include "util_extra.h"
 #include "color.h"
 #include "contact.h"
 #include "preferences.h"
@@ -22,7 +21,6 @@ static const char *DebugStr (UDWORD level)
     if (level & DEB_QUEUE)       return "Queue  ";
     if (level & DEB_EVENT)       return "Event  ";
     if (level & DEB_OPTS)        return "Options";
-    if (level & DEB_EXTRA)       return "Extra  ";
     if (level & DEB_PACK5DATA)   return "v5 data";
     if (level & DEB_PACK8)       return "v8 pack";
     if (level & DEB_PACK8DATA)   return "v8 data";
@@ -82,9 +80,8 @@ void UtilUIDisplayMeta (Contact *cont)
 {
     MetaGeneral *mg;
     MetaMore *mm;
-    MetaEmail *me;
     MetaWork *mw;
-    Extra *ml;
+    ContactMeta *ml;
     MetaObsolete *mo;
     ContactDC *dc;
     const char *tabd;
@@ -174,17 +171,16 @@ void UtilUIDisplayMeta (Contact *cont)
         M_printf ("%s%-15s%s %s%d%s\n",
                   COLSERVER, i18n (2238, "Hide IP:"), COLNONE, COLQUOTE, mg->hideip, COLNONE);
     }
-    if ((me = cont->meta_email))
+    if ((ml = cont->meta_email))
     {
         M_printf ("%s%-15s%s\n", 
                   COLSERVER, i18n (1942, "Additional Email addresses:"), COLNONE);
-
-        for ( ; me; me = me->meta_email)
+        for ( ; ml; ml = ml->next)
         {
-            if (me->email && *me->email)
-                M_printf (" %s %s\n", mq (me->email),
-                           me->auth == 1 ? i18n (1943, "(no authorization needed)") 
-                         : me->auth == 0 ? i18n (1944, "(must request authorization)")
+            if (ml->text && *ml->text)
+                M_printf (" %s %s\n", mq (ml->text),
+                           ml->data == 1 ? i18n (1943, "(no authorization needed)") 
+                         : ml->data == 0 ? i18n (1944, "(must request authorization)")
                          : "");
         }
     }
@@ -295,40 +291,40 @@ void UtilUIDisplayMeta (Contact *cont)
     if ((ml = cont->meta_interest))
     {
         M_printf ("%s%-15s%s\n", COLSERVER, i18n (1875, "Personal interests:"), COLNONE);
-        for ( ; ml; ml = ml->more)
+        for ( ; ml; ml = ml->next)
         {
             if (!ml->text)
                 continue;
             if ((tabd = TableGetInterest (ml->data)))
                 M_printf ("  %s: %s\n", tabd, mq (ml->text));
             else
-                M_printf ("  %ld: %s\n", ml->data, mq (ml->text));
+                M_printf ("  %d: %s\n", ml->data, mq (ml->text));
         }
     }
     if ((ml = cont->meta_background))
     {
         M_printf ("%s%-15s%s\n", COLSERVER, i18n (1876, "Personal past background:"), COLNONE);
-        for ( ; ml; ml = ml->more)
+        for ( ; ml; ml = ml->next)
         {
             if (!ml->text)
                 continue;
             if ((tabd = TableGetPast (ml->data)))
                 M_printf ("  %s: %s\n", tabd, mq (ml->text));
             else
-                M_printf ("  %ld: %s\n", ml->data, mq (ml->text));
+                M_printf ("  %d: %s\n", ml->data, mq (ml->text));
         }
     }
     if ((ml = cont->meta_affiliation))
     {
         M_printf ("%s%-15s%s\n", COLSERVER, i18n (1879, "Affiliations:"), COLNONE);
-        for ( ; ml; ml = ml->more)
+        for ( ; ml; ml = ml->next)
         {
             if (!ml->text)
                 continue;
             if ((tabd = TableGetAffiliation (ml->data)))
                 M_printf ("  %s: %s\n", tabd, mq (ml->text));
             else
-                M_printf ("  %ld: %s\n", ml->data, mq (ml->text));
+                M_printf ("  %d: %s\n", ml->data, mq (ml->text));
         }
     }
     if ((mo = cont->meta_obsolete))
