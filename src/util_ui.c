@@ -74,6 +74,7 @@ void UtilUIDisplayMeta (Contact *cont)
     MetaWork *mw;
     Extra *ml;
     MetaObsolete *mo;
+    ContactDC *dc;
     const char *tabd;
 
     if (!cont)
@@ -82,6 +83,19 @@ void UtilUIDisplayMeta (Contact *cont)
     M_printf (i18n (2236, "Information for %s%s%s (%ld):\n"),
               COLCONTACT, cont->nick, COLNONE, cont->uin);
     
+    if ((dc = cont->dc))
+    {
+        M_printf (i18n (1672, "%s's IP address is "), cont->nick);
+        M_print  (!dc->ip_rem || !~dc->ip_rem
+                  ? i18n (1761, "unknown") : s_ip (dc->ip_rem));
+        M_print ("\t");
+
+        if (dc->port && ~dc->port)
+            M_printf (i18n (1673, "The port is %ld.\n"), dc->port);
+        else
+            M_print (i18n (1674, "The port is unknown.\n"));
+    }
+
     if (cont->encoding)
         M_printf (COLSERVER "%-15s" COLNONE " %s\n",
                   i18n (2257, "Encoding:"), ConvEncName (cont->encoding));
