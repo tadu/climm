@@ -39,7 +39,7 @@
 #include "preferences.h"
 #include "util_io.h"
 #include "remote.h"
-#include "oscar_flap.h"
+#include "oscar_base.h"
 #include "connection.h"
 #include "util_parse.h"
 

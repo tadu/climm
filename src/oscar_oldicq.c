@@ -22,8 +22,8 @@
  */
 
 #include "micq.h"
+#include "oscar_base.h"
 #include "oscar_tlv.h"
-#include "oscar_flap.h"
 #include "oscar_snac.h"
 #include "oscar_oldicq.h"
 #include "packet.h"

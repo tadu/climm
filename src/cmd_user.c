@@ -18,7 +18,7 @@
 #include "util_parse.h"
 #include "oldicq_compat.h"
 #include "oldicq_client.h"
-#include "oscar_flap.h"
+#include "oscar_base.h"
 #include "oscar_snac.h"
 #include "oscar_service.h"
 #include "oscar_contact.h"

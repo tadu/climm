@@ -22,9 +22,9 @@
  */
 
 #include "micq.h"
+#include "oscar_base.h"
 #include "oscar_tlv.h"
 #include "oscar_snac.h"
-#include "oscar_flap.h"
 #include "oscar_service.h"
 #include "oscar_location.h"
 #include "oscar_contact.h"
