@@ -193,9 +193,9 @@ int main (int argc, char *argv[])
     prG->flags |= arg_c ? 0 : FLAG_COLOR;
     
     if (!arg_i)
-        arg_i = getenv ("LC_MESSAGES");
-    if (!arg_i)
         arg_i = getenv ("LC_ALL");
+    if (!arg_i)
+        arg_i = getenv ("LC_MESSAGES");
     if (!arg_i)
         arg_i = getenv ("LANG");
     if (!arg_i)
@@ -240,15 +240,19 @@ int main (int argc, char *argv[])
     if (arg_v)
         prG->verbose = arg_vv;
     
-    M_print (MICQ_ICON_1 "\n" MICQ_ICON_2);
+    M_logo (MICQ_ICON_1 "\n" MICQ_ICON_2);
+    M_logo (MICQ_ICON_3);
+    M_logo (MICQ_ICON_4);
+    M_logo (MICQ_ICON_5);
+    M_logo (MICQ_ICON_6);
+    M_logo (MICQ_ICON_7);
+
     M_print (BuildVersion ());
-    M_print (MICQ_ICON_3);
     M_print (BuildAttribution ());
-    M_print (MICQ_ICON_4);
     M_print (i18n (1612, "This program was made without any help from Mirabilis or their consent.\n"));
-    M_print (MICQ_ICON_5);
     M_print (i18n (1613, "No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n"));
-    M_print (MICQ_ICON_6 "\n" MICQ_ICON_7 "\n");
+
+    M_logo_clear ();
 
     if (arg_h)
     {
@@ -276,6 +280,13 @@ int main (int argc, char *argv[])
     else
         M_print ("No internationalization requested.\n");
 
+    if (ENC(enc_loc) == ENC_UTF8)
+#ifdef ENABLE_UTF8
+        M_print (i18n (2209, "Detected UTF-8 encoding.\n"));
+#else
+        M_print (i18n (2208, "Detected UTF-8 encoding, however, this mICQ was compiled without UTF-8 support.\n"));
+#endif
+
     if (!rc)
         Initalize_RC_File ();
 
@@ -294,11 +305,6 @@ int main (int argc, char *argv[])
     for (i = 0; (conn = ConnectionNr (i)); i++)
         if (conn->flags & CONN_AUTOLOGIN && conn->open)
             conn->open (conn);
-
-#ifdef WIP
-    M_printf ("REMOVEME: remote enc %d\n", prG->enc_rem);
-    M_printf ("REMOVEME: local enc %d\n", prG->enc_loc);
-#endif
 
     while (!uiG.quit)
     {

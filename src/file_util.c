@@ -634,7 +634,7 @@ void Read_RC_File (FILE *rcf)
                     
                     PrefParse (cmd);
                     if (!strcasecmp (cmd, "auto"))
-                        what = ENC_AUTO;
+                        continue;
                     else if (!strcasecmp (cmd, "utf8"))
                         what = ENC_UTF8;
                     else if (!strcasecmp (cmd, "latin1"))
