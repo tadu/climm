@@ -256,7 +256,7 @@ static JUMP_F(CmdUserRandom)
             ref = SnacCliSearchrandom (conn, arg1);
         else
             ref = CmdPktCmdRandSearch (conn, arg1);
-        QueueEnqueueData (conn, QUEUE_REQUEST_META, ref, 0, time (NULL) + 10, NULL, NULL, &CallbackMeta);
+        QueueEnqueueData (conn, QUEUE_REQUEST_META, ref, time (NULL) + 10, NULL, 0, NULL, &CallbackMeta);
     }
     return 0;
 }
@@ -665,7 +665,7 @@ static JUMP_F(CmdUserInfo)
         else
             ref = CmdPktCmdMetaReqInfo (conn, cont);
         
-        QueueEnqueueData (conn, QUEUE_REQUEST_META, ref, cont->uin, time (NULL) + 10, NULL, NULL, &CallbackMeta);
+        QueueEnqueueData (conn, QUEUE_REQUEST_META, ref, time (NULL) + 10, NULL, cont->uin, NULL, &CallbackMeta);
     }
     return 0;
 }
@@ -2813,7 +2813,7 @@ static JUMP_F(CmdUserContact)
     }
     if (data)
     {
-        QueueEnqueueData (conn, QUEUE_REQUEST_ROSTER, 0, data, 0x7fffffffL, NULL, NULL, NULL);
+        QueueEnqueueData (conn, QUEUE_REQUEST_ROSTER, 0, 0x7fffffffL, NULL, data, NULL, NULL);
         SnacCliReqroster (conn);
     }
     else

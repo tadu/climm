@@ -14,6 +14,7 @@
 #include "cmd_pkt_cmd_v5_util.h"
 #include "util_ui.h"
 #include "util.h"
+#include "util_extra.h"
 #include "util_syntax.h"
 #include "conv.h"
 #include "cmd_pkt_server.h"
@@ -21,6 +22,7 @@
 #include "contact.h"
 #include "server.h"
 #include "util_str.h"
+#include "icq_response.h"
 #include "util_io.h"
 #include <string.h>
 #include <assert.h>
@@ -132,9 +134,8 @@ void PacketEnqueuev5 (Packet *pak, Connection *conn)
         conn->stat_real_pak_sent++;
         conn->our_seq++;
 
-        QueueEnqueueData (conn, QUEUE_UDP_RESEND, pak->id,
-                          0, time (NULL) + 10,
-                          pak, NULL, &UDPCallBackResend);
+        QueueEnqueueData (conn, QUEUE_UDP_RESEND, pak->id, time (NULL) + 10,
+                          pak, 0, NULL, &UDPCallBackResend);
     }
     else
         PacketD (pak);
@@ -165,7 +166,7 @@ void ConnectionInitServerV5 (Connection *conn)
         Echo_On ();
         conn->passwd = strdup (pwd);
     }
-    QueueEnqueueData (conn, /* FIXME: */ 0, 0, 0, time (NULL), NULL, NULL, &CallBackServerInitV5);
+    QueueEnqueueData (conn, /* FIXME: */ 0, 0, time (NULL), NULL, 0, NULL, &CallBackServerInitV5);
 }
 
 static void CallBackClosev5 (Connection *conn)
@@ -377,7 +378,6 @@ void UDPCallBackResend (Event *event)
     if (!event->conn)
     {
         PacketD (pak);
-        s_free (event->info);
         free (event);
         return;
     }
@@ -390,7 +390,6 @@ void UDPCallBackResend (Event *event)
                  cmd, CmdPktSrvName (cmd),
                  session, event->conn->our_session);
         PacketD (pak);
-        s_free (event->info);
         free (event);
     }
     else if (event->attempts <= MAX_RETRY_ATTEMPTS)
@@ -451,7 +450,6 @@ void UDPCallBackResend (Event *event)
         M_print ("\n");
 
         PacketD (event->pak);
-        s_free (event->info);
         free (event);
     }
 }

@@ -49,8 +49,8 @@ void ConnectionInitServer (Connection *conn)
     conn->server   = strdup (conn->spref->server);
     conn->type     = TYPE_SERVER;
     QueueEnqueueData (conn, conn->connect, conn->our_seq,
-                      conn->uin, time (NULL) + 10,
-                      NULL, NULL, &SrvCallBackTimeout);
+                      time (NULL) + 10,
+                      NULL, conn->uin, NULL, &SrvCallBackTimeout);
     UtilIOConnectTCP (conn);
 }
 
@@ -67,7 +67,7 @@ static void SrvCallBackReconn (Connection *conn)
     if (reconn < 5)
     {
         M_printf (i18n (2032, "Scheduling v8 reconnect in %d seconds.\n"), 10 << reconn);
-        QueueEnqueueData (conn, /* FIXME: */ 0, 0, conn->uin, time (NULL) + (10 << reconn), NULL, NULL, &SrvCallBackDoReconn);
+        QueueEnqueueData (conn, /* FIXME: */ 0, 0, time (NULL) + (10 << reconn), NULL, conn->uin, NULL, &SrvCallBackDoReconn);
         reconn++;
     }
     else
@@ -175,9 +175,8 @@ void SrvCallBackReceive (Connection *conn)
     if (prG->verbose & DEB_PACK8SAVE)
         FlapSave (pak, TRUE);
     
-    QueueEnqueueData (conn, QUEUE_FLAP, pak->id,
-                      0, time (NULL),
-                      pak, NULL, &SrvCallBackFlap);
+    QueueEnqueueData (conn, QUEUE_FLAP, pak->id, time (NULL),
+                      pak, 0, NULL, &SrvCallBackFlap);
     pak = NULL;
 }
 

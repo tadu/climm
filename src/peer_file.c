@@ -31,7 +31,9 @@
 #include "util_ui.h"
 #include "util_io.h"
 #include "util_str.h"
+#include "util_extra.h"
 #include "util.h"
+#include "icq_response.h"
 #include "tcp.h"
 #include "conv.h"
 
@@ -456,10 +458,10 @@ void PeerFileResend (Event *event)
     Packet *pak;
     Event *event2;
     int rc;
+    const char *e_msg_text = "<>";
     
     if (!fpeer)
     {
-        free (event->info);
         free (event);
         return;
     }
@@ -468,26 +470,28 @@ void PeerFileResend (Event *event)
 
     cont = ContactFind (event->uin);
     assert (cont);
+    
+    e_msg_text = ExtraGetS (event->extra, EXTRA_MESSAGE);
 
     if (event->attempts >= MAX_RETRY_ATTEMPTS || (!event->pak && !event->seq))
     {
         M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
         M_printf (i18n (2168, "File transfer #%d (%s) dropped after %d attempts because of timeout.\n"),
-                 event->seq, event->info, event->attempts);
+                 event->seq, e_msg_text, event->attempts);
         TCPClose (fpeer);
     }
     else if (!(fpeer->connect & CONNECT_MASK))
     {
         M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
         M_printf (i18n (2072, "File transfer #%d (%s) dropped because of closed connection.\n"),
-                 event->seq, event->info);
+                 event->seq, e_msg_text);
     }
     else if (~fpeer->connect & CONNECT_OK)
     {
         if (event->attempts > 1)
         {
             M_printf ("%s " COLACK "%*s" COLNONE " %s [%d] %x %s\n",
-                     s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, " + ", event->attempts, fpeer->connect, event->info);
+                     s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, " + ", event->attempts, fpeer->connect, e_msg_text);
         }
         if (!event->seq)
             event->attempts++;
@@ -521,21 +525,21 @@ void PeerFileResend (Event *event)
         ffile = ConnectionClone (fpeer, TYPE_FILE);
         fpeer->assoc = ffile;
 
-        if (stat (event->info, &finfo))
+        if (stat (e_msg_text, &finfo))
         {
             rc = errno;
             M_printf (i18n (2071, "Couldn't stat file %s: %s (%d)\n"),
-                     event->info, strerror (rc), rc);
+                      e_msg_text, strerror (rc), rc);
         }
         ffile->len = finfo.st_size;
 
-        ffile->sok = open (event->info, O_RDONLY);
+        ffile->sok = open (e_msg_text, O_RDONLY);
         if (ffile->sok == -1)
         {
             int rc = errno;
             M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
             M_printf (i18n (2083, "Cannot open file %s: %s (%d).\n"),
-                     event->info, strerror (rc), rc);
+                      e_msg_text, strerror (rc), rc);
             TCPClose (fpeer);
             ConnectionClose (ffile);
             ConnectionClose (fpeer);
@@ -562,7 +566,7 @@ void PeerFileResend (Event *event)
             len = errno;
             M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
             M_printf (i18n (2086, "Error while reading file %s: %s (%d).\n"),
-                     event->info, strerror (len), len);
+                      e_msg_text, strerror (len), len);
             TCPClose (fpeer);
         }
         else
@@ -589,7 +593,7 @@ void PeerFileResend (Event *event)
 
             R_resetprompt ();
             M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-            M_printf (i18n (2087, "Finished sending file %s.\n"), event->info);
+            M_printf (i18n (2087, "Finished sending file %s.\n"), e_msg_text);
             ConnectionClose (fpeer->assoc);
             fpeer->our_seq++;
             event2 = QueueDequeue (fpeer, QUEUE_PEER_FILE, fpeer->our_seq);
@@ -607,7 +611,6 @@ void PeerFileResend (Event *event)
             }
         }
     }
-    free (event->info);
     free (event);
 }
 

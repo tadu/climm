@@ -387,7 +387,7 @@ static JUMP_SNAC_F(SnacSrvMotd)
     SnacCliReqinfo      (event->conn);
     if (event->conn->flags & CONN_WIZARD)
     {
-        QueueEnqueueData (event->conn, QUEUE_REQUEST_ROSTER, 0, 3, 0x7fffffffL, NULL, NULL, NULL);
+        QueueEnqueueData (event->conn, QUEUE_REQUEST_ROSTER, 0, 0x7fffffffL, NULL, 3, NULL, NULL);
         SnacCliReqroster (event->conn);
     }
     SnacCliReqlocation  (event->conn);
@@ -557,10 +557,8 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
         IMSrvMsg (cont, event->conn, NOW, STATUS_OFFLINE, msgtype, text, 0);
     else if (event)
     {
-        IMIntMsg (cont, event->conn, NOW, STATUS_OFFLINE, INT_MSGACK_TYPE2, event->info, event->extra);
-        s_free (event->info);
-        PacketD (event->pak);
-        free (event);
+        IMIntMsg (cont, event->conn, NOW, STATUS_OFFLINE, INT_MSGACK_TYPE2, ExtraGetS (event->extra, EXTRA_MESSAGE), NULL);
+        EventD (event);
     }
     free (text);
 }
@@ -1030,9 +1028,8 @@ static JUMP_SNAC_F(SnacSrvToicqerr)
         reconn = 0;
         CmdUser ("¶e");
         
-        QueueEnqueueData (event->conn, QUEUE_SRV_KEEPALIVE, 0,
-                          event->conn->uin, time (NULL) + 30,
-                          NULL, NULL, &SrvCallBackKeepalive);
+        QueueEnqueueData (event->conn, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
+                          NULL, event->conn->uin, NULL, &SrvCallBackKeepalive);
     }
     else
     {
@@ -1100,9 +1097,8 @@ static JUMP_SNAC_F(SnacSrvFromicqsrv)
             reconn = 0;
             CmdUser ("¶e");
             
-            QueueEnqueueData (event->conn, QUEUE_SRV_KEEPALIVE, 0,
-                              event->conn->uin, time (NULL) + 30,
-                              NULL, NULL, &SrvCallBackKeepalive);
+            QueueEnqueueData (event->conn, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
+                              NULL, event->conn->uin, NULL, &SrvCallBackKeepalive);
             break;
 
         case 2010:
@@ -1446,17 +1442,15 @@ static void SnacCallbackType2 (Event *event)
     if (!serv || !cont)
     {
         if (!serv)
-            M_printf (i18n (2234, "Message %s discarded - lost session.\n"), event->info);
-        PacketD (event->pak);
-        free (event->info);
-        free (event);
+            M_printf (i18n (2234, "Message %s discarded - lost session.\n"), ExtraGetS (event->extra, EXTRA_MESSAGE));
+        EventD (event);
         return;
     }
 
     ASSERT_SERVER (serv);
     assert (pak);
 
-    if (event->attempts < MAX_RETRY_ATTEMPTS && serv->connect & CONNECT_MASK && (*event->info || event->attempts < 2))
+    if (event->attempts < MAX_RETRY_ATTEMPTS && serv->connect & CONNECT_MASK)
     {
         if (serv->connect & CONNECT_OK)
         {
@@ -1472,10 +1466,11 @@ static void SnacCallbackType2 (Event *event)
         return;
     }
     
-    if (*event->info)
-        IMCliMsg (serv, cont, ExtraSet (ExtraSet (NULL,
-                  EXTRA_TRANS, EXTRA_TRANS_ANY & ~EXTRA_TRANS_DC & ~EXTRA_TRANS_TYPE2, NULL),
-                  EXTRA_MESSAGE, 1 /* FIXME */, event->info));
+    e_trans = ExtraGet (event->extra, EXTRA_TRANS) & ~EXTRA_TRANS_TYPE2;
+    event->extra = ExtraSet (event->extra, EXTRA_TRANS, e_trans, NULL);
+    IMCliMsg (serv, cont, event->extra);
+    event->extra = NULL;
+    EventD (event);
 }
 
 /*
@@ -1558,9 +1553,14 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
     PacketWriteTLVDone (pak);
     PacketWriteB4      (pak, 0x00030000); /* empty TLV(3) */
     
-    QueueEnqueueData (conn, QUEUE_TYPE2_RESEND, conn->our_seq_dc,
-                      cont->uin, time (NULL),
-                      pak, strdup (text), &SnacCallbackType2);
+    if (peek)
+    {
+        SnacSend (conn, pak);
+        ExtraD (extra);
+    }
+    else
+        QueueEnqueueData (conn, QUEUE_TYPE2_RESEND, conn->our_seq_dc,
+                          time (NULL), pak, cont->uin, extra, &SnacCallbackType2);
     return RET_INPR;
 }
 

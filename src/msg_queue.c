@@ -18,6 +18,7 @@
 #include "util_ui.h"
 #include "util_str.h"
 #include "util_extra.h"
+#include "icq_response.h" /* yuck */
 #include "packet.h" /* yuck */
 
 #ifdef ENABLE_UTF8
@@ -143,23 +144,24 @@ void QueueEnqueue (Event *event)
 /*
  * Adds a new entry to the queue. Creates Event for you.
  */
-Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD seq,
-                       UDWORD uin, time_t due,
-                       Packet *pak, char *info, Queuef *callback)
+Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD id,
+                         time_t due, Packet *pak, UDWORD uin,
+                         Extra *extra, Queuef *callback)
 {
     Event *event = calloc (sizeof (Event), 1);
     assert (event);
     
     event->conn = conn;
     event->type = type;
-    event->seq  = seq;
+    event->seq  = id;
     event->attempts = 1;
     event->uin  = uin;
     event->due  = due;
     event->pak = pak;
-    event->info = info;
+    event->extra = extra;
     event->callback = callback;
     
+    Debug (DEB_EVENT, "<+" STR_DOT STR_DOT " %s %p: %08x %p %x", QueueType (event->type), event, event->seq, event->pak, event->flags);
     QueueEnqueue (event);
 
     return event;
@@ -351,10 +353,11 @@ void QueueRetry (Connection *conn, UDWORD type, UDWORD uin)
     if (event)
         event = QueueDequeueEvent (event, NULL);
     
-    if (event && event->callback)
+    if (event)
     {
         event->due = time (NULL);
-        event->callback (event);
+        if (event->callback)
+            event->callback (event);
     }
     else
         Debug (DEB_QUEUE, STR_DOT STR_DOT "s" STR_DOT " %d %s", uin, QueueType (type));
@@ -377,6 +380,7 @@ const char *QueueType (UDWORD type)
         case QUEUE_UDP_RESEND:    return "UDP_RESEND";
         case QUEUE_PEER_FILE:     return "PEER_FILE";
         case QUEUE_PEER_RESEND:   return "PEER_RESEND";
+        case QUEUE_TYPE2_RESEND:  return "TYPE2_RESEND";
     }
     return s_sprintf ("%lx", type);
 }

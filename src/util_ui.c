@@ -19,6 +19,8 @@ static const char *DebugStr (UDWORD level)
 {
     if (level & DEB_PACKET)      return "Packet ";
     if (level & DEB_QUEUE)       return "Queue  ";
+    if (level & DEB_EVENT)       return "Event  ";
+    if (level & DEB_EXTRA)       return "Extra  ";
     if (level & DEB_PACK5DATA)   return "v5 data";
     if (level & DEB_PACK8)       return "v8 pack";
     if (level & DEB_PACK8DATA)   return "v8 data";
@@ -28,7 +30,7 @@ static const char *DebugStr (UDWORD level)
     if (level & DEB_PACKTCPSAVE) return "TCPsave";
     if (level & DEB_PROTOCOL)    return "Protocl";
     if (level & DEB_TCP)         return "TCP HS ";
-    if (level & DEB_IO)          return "  I/O  ";
+    if (level & DEB_IO)          return "In/Out ";
     if (level & DEB_CONNECT)     return "Connect";
     return "unknown";
 }

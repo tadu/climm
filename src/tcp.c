@@ -379,9 +379,8 @@ void TCPDispatchConn (Connection *peer)
                 if (peer->parent && peer->parent->parent && peer->parent->parent->ver < 7)
                 {
                     CmdPktCmdTCPRequest (peer->parent->parent, cont->uin, cont->dc->port);
-                    QueueEnqueueData (peer, QUEUE_TCP_TIMEOUT, peer->ip,
-                                      cont->uin, time (NULL) + 30,
-                                      NULL, NULL, &TCPCallBackTOConn);
+                    QueueEnqueueData (peer, QUEUE_TCP_TIMEOUT, peer->ip, time (NULL) + 30,
+                                      NULL, cont->uin, NULL, &TCPCallBackTOConn);
                     peer->connect = TCP_STATE_WAITING;
                 }
                 else
@@ -399,9 +398,8 @@ void TCPDispatchConn (Connection *peer)
                              s_ip (peer->ip), peer->port);
                     M_print (i18n (1785, "success.\n"));
                 }
-                QueueEnqueueData (peer, QUEUE_TCP_TIMEOUT, peer->ip,
-                                  cont->uin, time (NULL) + 10,
-                                  NULL, NULL, &TCPCallBackTimeout);
+                QueueEnqueueData (peer, QUEUE_TCP_TIMEOUT, peer->ip, time (NULL) + 10,
+                                  NULL, cont->uin, NULL, &TCPCallBackTimeout);
                 peer->connect = 1 | CONNECT_SELECT_R;
                 peer->dispatch = &TCPDispatchShake;
                 TCPDispatchShake (peer);
@@ -618,7 +616,7 @@ static void TCPDispatchPeer (Connection *peer)
                 default:
                     /* Store the event in the recv queue for handling later */            
                     QueueEnqueueData (peer, QUEUE_TCP_RECEIVE, seq_in,
-                                      0, 0, pak, (char *)cont, &TCPCallBackReceive);
+                                      0, pak, cont->uin, NULL, &TCPCallBackReceive);
 
                     peer->our_seq--;
                 break;
@@ -1451,9 +1449,8 @@ BOOL TCPGetAuto (Connection *list, UDWORD uin, UWORD which)
 
     peer->stat_real_pak_sent++;
 
-    QueueEnqueueData (peer, QUEUE_TCP_RESEND, peer->our_seq--,
-                      uin, time (NULL),
-                      pak, strdup ("..."), &TCPCallBackResend);
+    QueueEnqueueData (peer, QUEUE_TCP_RESEND, peer->our_seq--, time (NULL),
+                      pak, uin, ExtraSet (NULL, EXTRA_MESSAGE, which, "..."), &TCPCallBackResend);
     return 1;
 }
 
@@ -1510,9 +1507,8 @@ BOOL TCPSendMsg (Connection *list, UDWORD uin, const char *msg, UWORD sub_cmd)
 
     peer->stat_real_pak_sent++;
 
-    QueueEnqueueData (peer, QUEUE_TCP_RESEND, peer->our_seq--,
-                      uin, time (NULL),
-                      pak, strdup (msg), &TCPCallBackResend);
+    QueueEnqueueData (peer, QUEUE_TCP_RESEND, peer->our_seq--, time (NULL),
+                      pak, uin, ExtraSet (NULL, EXTRA_MESSAGE, 1, msg), &TCPCallBackResend);
     return 1;
 }
 
@@ -1566,9 +1562,8 @@ UBYTE PeerSendMsg (Connection *list, Contact *cont, Extra *extra)
 
     peer->stat_real_pak_sent++;
 
-    QueueEnqueueData (peer, QUEUE_TCP_RESEND, peer->our_seq--,
-                      cont->uin, time (NULL),
-                      pak, strdup (e_msg_text), &TCPCallBackResend);
+    QueueEnqueueData (peer, QUEUE_TCP_RESEND, peer->our_seq--, time (NULL),
+                      pak, cont->uin, extra, &TCPCallBackResend);
     return RET_INPR;
 }
 
@@ -1661,7 +1656,7 @@ BOOL TCPSendFiles (Connection *list, UDWORD uin, const char *description, const 
             PacketWrite4 (pak, 0);
             PacketWrite4 (pak, 64);
             QueueEnqueueData (fpeer, QUEUE_PEER_FILE, sum,
-                              uin, time (NULL), pak, strdup (files[i]), &PeerFileResend);
+                              time (NULL), pak, uin, ExtraSet (NULL, EXTRA_MESSAGE, -1, strdup (files[i])), &PeerFileResend);
         }
     }
     
@@ -1678,7 +1673,7 @@ BOOL TCPSendFiles (Connection *list, UDWORD uin, const char *description, const 
     PacketWrite4 (pak, 64);
     PacketWriteLNTS (pak, "Sender's nick");
     QueueEnqueueData (fpeer, QUEUE_PEER_FILE, 0,
-                      uin, time (NULL), pak, strdup (description), &PeerFileResend);
+                      time (NULL), pak, uin, ExtraSet (NULL, EXTRA_MESSAGE, -1, strdup (description)), &PeerFileResend);
         
     if (peer->ver < 8)
     {
@@ -1700,7 +1695,7 @@ BOOL TCPSendFiles (Connection *list, UDWORD uin, const char *description, const 
     peer->stat_real_pak_sent++;
 
     QueueEnqueueData (peer, QUEUE_TCP_RESEND, peer->our_seq--,
-                      uin, time (NULL), pak, strdup (description), &TCPCallBackResend);
+                      time (NULL), pak, uin, ExtraSet (NULL, EXTRA_MESSAGE, 1, strdup (description)), &TCPCallBackResend);
     return TRUE;
 }
 
@@ -1712,20 +1707,20 @@ static void TCPCallBackResend (Event *event)
     Contact *cont = ContactByUIN (event->uin, 1);
     Connection *peer = event->conn;
     Packet *pak = event->pak;
-    int delta;
-    
+    UWORD delta, e_trans;
+
     if (!peer || !cont)
     {
         if (!peer)
-            M_printf (i18n (2092, "TCP message %s discarded - lost session.\n"), event->info);
-        PacketD (event->pak);
-        free (event->info);
-        free (event);
+            M_printf (i18n (2092, "TCP message %s discarded - lost session.\n"), ExtraGetS (event->extra, EXTRA_MESSAGE));
+        EventD (event);
         return;
     }
 
     ASSERT_MSGDIRECT (peer);
     assert (pak);
+    
+    e_trans = ExtraGet (event->extra, EXTRA_TRANS);
     
     if (event->attempts >= MAX_RETRY_ATTEMPTS)
         TCPClose (peer);
@@ -1735,7 +1730,7 @@ static void TCPCallBackResend (Event *event)
         if (peer->connect & CONNECT_OK)
         {
             if (event->attempts > 1)
-                IMIntMsg (cont, peer, NOW, STATUS_OFFLINE, INT_MSGTRY_DC, event->info, NULL);
+                IMIntMsg (cont, peer, NOW, STATUS_OFFLINE, INT_MSGTRY_DC, ExtraGetS (event->extra, EXTRA_MESSAGE), NULL);
 
 /*          if (event->attempts < 2) */
                 PeerPacketSend (peer, pak);
@@ -1751,14 +1746,11 @@ static void TCPCallBackResend (Event *event)
     peer->connect = CONNECT_FAIL;
     delta = (peer->ver > 6 ? 1 : 0);
     if (PacketReadAt2 (pak, 4 + delta) == TCP_CMD_MESSAGE)
-        IMCliMsg (peer->parent->parent, cont, ExtraSet (ExtraSet (NULL,
-                  EXTRA_MESSAGE, PacketReadAt2 (pak, 22 + delta), event->info),
-                  EXTRA_TRANS, EXTRA_TRANS_ANY & ~EXTRA_TRANS_DC, NULL));
+        IMCliMsg (peer->parent->parent, cont, event->extra);
     else
         M_printf (i18n (1844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4 + delta));
     
     PacketD (event->pak);
-    free (event->info);
     free (event);
 }
 
@@ -1769,11 +1761,15 @@ static void TCPCallBackResend (Event *event)
  */
 static void TCPCallBackReceive (Event *event)
 {
+    Extra *etmp;
+    Event *aevent;
     Contact *cont;
     Packet *pak;
     char *tmp, *ctmp, *cctmp, *tmp3, *ctext, *text, *reason, *name, *cname;
     UWORD cmd, type, seq, port;
     UDWORD len, status, flags;
+    const char *e_msg_text = "<>";
+    UWORD e_msg_type = 1;
 
     if (!event->conn)
     {
@@ -1786,7 +1782,7 @@ static void TCPCallBackReceive (Event *event)
     assert (event->pak);
     
     pak = event->pak;
-    cont = (Contact *) event->info;
+    cont = ContactByUIN (event->uin, 1);
     if (!cont)
         return;
     
@@ -1808,16 +1804,24 @@ static void TCPCallBackReceive (Event *event)
     switch (cmd)
     {
         case TCP_CMD_ACK:
-            event = QueueDequeue (event->conn, QUEUE_TCP_RESEND, seq);
-            if (!event)
+            aevent = QueueDequeue (event->conn, QUEUE_TCP_RESEND, seq);
+            if (!aevent)
                 break;
+            for (etmp = aevent->extra; etmp; etmp = etmp->more)
+                if (etmp->tag == EXTRA_MESSAGE)
+                {
+                    e_msg_text = etmp->text ? etmp->text : "<>";
+                    e_msg_type = etmp->data;
+                    break;
+                }
+            
             switch (type)
             {
                 case MSG_NORM:
-                    IMIntMsg (cont, event->conn, NOW, STATUS_OFFLINE, INT_MSGACK_DC, event->info, NULL);
+                    IMIntMsg (cont, aevent->conn, NOW, STATUS_OFFLINE, INT_MSGACK_DC, e_msg_text, NULL);
                     if (~cont->flags & CONT_SEENAUTO && strlen (tmp))
                     {
-                        IMSrvMsg (cont, event->conn, NOW, status, MSG_NORM, tmp, 0);
+                        IMSrvMsg (cont, aevent->conn, NOW, status, MSG_NORM, tmp, 0);
                         cont->flags |= CONT_SEENAUTO;
                     }
                     break;
@@ -1828,15 +1832,15 @@ static void TCPCallBackReceive (Event *event)
                 case MSGF_GETAUTO | MSG_GET_DND:
                 case MSGF_GETAUTO | MSG_GET_FFC:
                 case MSGF_GETAUTO | MSG_GET_VER:
-                    IMSrvMsg (cont, event->conn, NOW, status & ~MSGF_GETAUTO, type, tmp, 0);
+                    IMSrvMsg (cont, aevent->conn, NOW, status & ~MSGF_GETAUTO, type, tmp, 0);
                     break;
 
                 case TCP_MSG_FILE:
                     port = PacketReadB2 (pak);
-                    if (PeerFileAccept (event->conn, status, port))
-                        IMIntMsg (cont, event->conn, NOW, status, INT_FILE_ACKED, tmp, ExtraSet (NULL, 0, port, event->info));
+                    if (PeerFileAccept (aevent->conn, status, port))
+                        IMIntMsg (cont, aevent->conn, NOW, status, INT_FILE_ACKED, tmp, ExtraSet (NULL, 0, port, e_msg_text));
                     else
-                        IMIntMsg (cont, event->conn, NOW, status, INT_FILE_REJED, tmp, ExtraSet (NULL, 0, port, event->info));
+                        IMIntMsg (cont, aevent->conn, NOW, status, INT_FILE_REJED, tmp, ExtraSet (NULL, 0, port, e_msg_text));
                     break;
 
                 case TCP_MSG_GREETING:
@@ -1868,10 +1872,10 @@ static void TCPCallBackReceive (Event *event)
                     switch (cmd)
                     {
                         case 0x0029:
-                            if (PeerFileAccept (event->conn, status, port))
-                                IMIntMsg (cont, event->conn, NOW, status, INT_FILE_ACKED, tmp, ExtraSet (NULL, 0, port, event->info));
+                            if (PeerFileAccept (aevent->conn, status, port))
+                                IMIntMsg (cont, aevent->conn, NOW, status, INT_FILE_ACKED, tmp, ExtraSet (NULL, 0, port, e_msg_text));
                             else
-                                IMIntMsg (cont, event->conn, NOW, status, INT_FILE_REJED, tmp, ExtraSet (NULL, 0, port, event->info));
+                                IMIntMsg (cont, aevent->conn, NOW, status, INT_FILE_REJED, tmp, ExtraSet (NULL, 0, port, e_msg_text));
                             break;
                             
                         default:
@@ -1886,7 +1890,7 @@ static void TCPCallBackReceive (Event *event)
                     /* fall through */
                 default:
                     Debug (DEB_TCP, "ACK %d uin %d nick %s pak %p peer %d seq %04x",
-                                     event->conn->sok, event->conn->uin, cont->nick, event->pak, event->conn, seq);
+                                     aevent->conn->sok, aevent->conn->uin, cont->nick, aevent->pak, aevent->conn, seq);
             }
             PacketD (event->pak);
             free (event);
@@ -1922,14 +1926,14 @@ static void TCPCallBackReceive (Event *event)
                     tmp3 = strdup (c_in (ctmp));
                     free (ctmp);
 
-                    if (PeerFileRequested (event->conn, event->info, len))
+                    if (PeerFileRequested (event->conn, e_msg_text, len))
                     {
-                        IMIntMsg (cont, event->conn, NOW, status, INT_FILE_ACKING, "", ExtraSet (NULL, 0, len, event->info));
+                        IMIntMsg (cont, event->conn, NOW, status, INT_FILE_ACKING, "", ExtraSet (NULL, 0, len, e_msg_text));
                         TCPSendMsgAck (event->conn, event->seq, TCP_MSG_FILE, TRUE);
                     }
                     else
                     {
-                        IMIntMsg (cont, event->conn, NOW, status, INT_FILE_REJING, "auto-refused", ExtraSet (NULL, 0, len, event->info));
+                        IMIntMsg (cont, event->conn, NOW, status, INT_FILE_REJING, "auto-refused", ExtraSet (NULL, 0, len, e_msg_text));
                         TCPSendMsgAck (event->conn, event->seq, TCP_MSG_FILE, FALSE);
                     }
                     free (tmp3);
@@ -1974,7 +1978,7 @@ static void TCPCallBackReceive (Event *event)
                             case 0x0032:
                                 break;
                             case 0x002d:
-                                s_repl (&event->info, name);
+                                event->extra = ExtraSet (event->extra, EXTRA_MESSAGE, TCP_MSG_GREETING, name);
                                 IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_CHAT, text, event);
                                 IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_CHAT, reason, event);
                                 TCPSendGreetAck (event->conn, seq, cmd, FALSE);
