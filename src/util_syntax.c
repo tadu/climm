@@ -37,7 +37,7 @@ static const char *syntable[] = {
     "s1x2s",   "W-",
     "s1x3s",   "W-",
     "s1x6s",   "",
-    "s1x7s",   "",
+    "s1x7s",   "W,{WDDDDDDDDb}.{WW{D}}",
     "s1x8s",   "W-",
     "s1x10s",  "",
     "s1x14s",  "",
@@ -108,7 +108,8 @@ static const char *syntable[] = {
 char *PacketDump (Packet *pak, const char *syntax)
 {
     Packet *p = NULL;
-    UDWORD size, nr, len, val, i, mem1, mem2, oldrpos;
+    UDWORD count[3];
+    UDWORD size, nr, len, val, i, mem1, mem2, oldrpos, clev = -1;
     const char *f, *l, *last;
     char *t, *sub, lev, *tmp;
     
@@ -274,6 +275,34 @@ char *PacketDump (Packet *pak, const char *syntax)
                     t = s_cat  (t, &size, s_ind (s_dump (pak->data + pak->rpos + 4, len)));
                 }
                 pak->rpos += len + 4;
+                continue;
+            case '{':
+                count[++clev] = nr;
+                if (!nr)
+                {
+                    for (lev = 1; *f && lev; f++)
+                    {
+                        if (strchr ("{}", *f))
+                            lev += (*f == '}' ? -1 : 1);
+                    }
+                    f--;
+                    continue;
+                }
+                continue;
+            case '}':
+                count[clev]--;
+                if (count[clev] > 0)
+                {
+                    f--;
+                    for (lev = 1; *f && lev; f--)
+                    {
+                        if (strchr ("{}", *f))
+                            lev += (*f == '{' ? -1 : 1);
+                    }
+                    f++;
+                }
+                else
+                    clev--;
                 continue;
             case '(':
             case '<':
