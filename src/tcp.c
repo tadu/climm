@@ -175,7 +175,7 @@ void TCPDirectOff (Connection *list, Contact *cont)
     assert (cont);
 
     if (!(peer = ConnectionFind (TYPE_MSGDIRECT, cont, list)))
-        if (!(peer = ConnectionClone (TYPE_MSGDIRECT, list)))
+        if (!(peer = ConnectionClone (list, TYPE_MSGDIRECT)))
             return;
     
     peer->cont     = cont;
