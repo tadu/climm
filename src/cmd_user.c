@@ -2996,24 +2996,27 @@ static JUMP_F(CmdUserTabs)
  */
 static JUMP_F(CmdUserLast)
 {
-    ContactGroup *cg;
+/*    ContactGroup *cg; */
     Contact *cont = NULL, *contr = NULL;
-    int i;
+/*    int i; */
     OPENCONN;
 
     if (!s_parsenick (&args, &cont, &contr, conn))
     {
-        cg = conn->contacts;
+        HistShow (conn, NULL);
+
+/*        cg = conn->contacts;
         M_print (i18n (1682, "You have received messages from:\n"));
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
             if (cont->last_message)
                 M_printf ("  " COLCONTACT "%s" COLNONE " %s " COLMESSAGE "%s" COLNONE "\n",
-                         cont->nick, s_time (&cont->last_time), cont->last_message);
+                         cont->nick, s_time (&cont->last_time), cont->last_message);*/
         return 0;
     }
+
     do
     {
-        if (contr->last_message)
+/*        if (contr->last_message)
         {
             M_printf (i18n (2106, "Last message from %s%s%s at %s:\n"),
                      COLCONTACT, cont->nick, COLNONE, s_time (&contr->last_time));
@@ -3023,7 +3026,8 @@ static JUMP_F(CmdUserLast)
         {
             M_printf (i18n (2107, "No messages received from %s%s%s.\n"),
                      COLCONTACT, cont->nick, COLNONE);
-        }
+        }*/
+        HistShow (conn, cont);
         if (*args == ',')
             args++;
     }

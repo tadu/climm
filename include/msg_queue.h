@@ -54,6 +54,7 @@ const char *QueueType   (UDWORD type);
 #define QUEUE_REQUEST_META    91
 #define QUEUE_ACKNOWLEDGE   80
 #define QUEUE_TODO_EG       11
+#define QUEUE_CACHE_MSG     100
 
 #define QUEUE_FLAG_CONSIDERED     1 /* this event has been considered and won't
                                        be tried again in this queue run */

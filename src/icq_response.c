@@ -672,6 +672,62 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
     ExtraD (extra);
 }    
 
+struct History_s
+{
+    Connection *conn;
+    Contact *cont;
+    time_t stamp;
+    char *msg;
+};
+typedef struct History_s History;
+
+static History hist[50];
+
+/*
+ * History
+ */
+void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg)
+{
+    int i, j, k;
+
+    if (hist[49].conn && hist[0].conn)
+    {
+        free (hist[0].msg);
+        for (i = 0; i < 49; i++)
+            hist[i] = hist[i + 1];
+        hist[49].conn = NULL;
+    }
+
+    for (i = k = j = 0; j < 49 && hist[j].conn; j++)
+        if (cont == hist[j].cont)
+        {
+            if (!k)
+                i = j;
+            if (++k == 10)
+            {
+                free (hist[i].msg);
+                for ( ; i < 49; i++)
+                    hist[i] = hist[i + 1];
+                hist[49].conn = NULL;
+                j--;
+            }
+        }
+    
+    hist[j].conn = conn;
+    hist[j].cont = cont;
+    hist[j].stamp = stamp;
+    hist[j].msg = strdup (msg);
+}
+
+void HistShow (Connection *conn, Contact *cont)
+{
+    int i;
+    
+    for (i = 0; i < 50; i++)
+        if (hist[i].conn && (!cont || hist[i].cont == cont))
+            M_printf (COLDEBUG "%s " COLINCOMING "%*s" COLNONE " " COLMSGINDENT "%s\n",
+                      s_time (&hist[i].stamp), uiG.nick_len + s_delta (hist[i].cont->nick), hist[i].cont->nick, hist[i].msg);
+}
 
 /*
  * Central entry point for incoming messages.
@@ -728,8 +784,12 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
                       uiG.idle_msgs, uiG.idle_uins, i18n (1040, "mICQ> "));
     }
 
-    if (cont->flags & CONT_TEMPORARY && ~cont->updated & UPF_SERVER)
+    if (prG->flags & FLAG_AUTOFINGER && ~cont->updated & UPF_AUTOFINGER &&
+        ~cont->updated & UPF_SERVER && ~cont->updated & UPF_DISC)
+    {
+        cont->updated |= UPF_AUTOFINGER;
         IMCliInfo (conn, cont, 0);
+    }
 
 #ifdef MSGEXEC
     if (prG->event_cmd && *prG->event_cmd)
@@ -764,6 +824,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
         case MSG_NORM:
         default:
             M_printf ("%s " COLMSGINDENT "%s\n", carr, cdata);
+            HistMsg (conn, cont, stamp == NOW ? time (NULL) : stamp, cdata);
             break;
 
         case TCP_MSG_FILE:
