@@ -21,6 +21,7 @@
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
+#include <signal.h>
 #include <stdarg.h>
 #include "preferences.h"
 #include "util_ui.h"
@@ -249,7 +250,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
     return sok;
 }
 
-#define CONN_FAIL(s)  { if (s) M_print ("%s\n", s);  \
+#define CONN_FAIL(s)  { if (s) M_print ("%s [%d]\n", s, __LINE__);  \
                         QueueDequeue (queue, sess->ip, QUEUE_TYPE_CON_TIMEOUT); \
                         if (sess->sok > 0)           \
                           sockclose (sess->sok);      \
@@ -259,15 +260,15 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
                         sess->dispatch (sess);            \
                         return; }
 #define CONN_FAIL_RC(s) { int rc = errno;                   \
-                          M_print (i18n (1949, "failed:\n")); \
-                          CONN_FAIL (UtilFill   ("%s: %s (%d).", s, strerror (rc), rc)) }
-#define CONN_CHECK(s) { if (rc == -1) { rc = errno;          \
+                          M_print (i18n (1949, "failed:\n"));\
+                          CONN_FAIL (UtilFill  ("%s: %s (%d).", s, strerror (rc), rc)) }
+#define CONN_CHECK(s) { if (rc == -1) { rc = errno;            \
                           if (rc == EAGAIN) return;             \
-                          CONN_FAIL (UtilFill      ("%s: %s (%d).", s, strerror (rc), rc)) } }
+                          CONN_FAIL (UtilFill  ("%s: %s (%d).", s, strerror (rc), rc)) } }
 #define CONN_OK         { sess->connect++;                        \
                           QueueDequeue (queue, sess->ip, QUEUE_TYPE_CON_TIMEOUT); \
-                          sess->dispatch = sess->utilio;           \
-                          sess->dispatch (sess);                    \
+                          sess->dispatch = sess->utilio;            \
+                          sess->dispatch (sess);                     \
                           return; }
 
 /*
@@ -398,13 +399,26 @@ void UtilIOConnectTCP (Session *sess)
     }
 }
 
+int UtilIOError (Session *sess)
+{
+    int rc;
+    unsigned flags;
+
+    flags = sizeof (int);
+#ifdef SO_ERROR
+    if (getsockopt (sess->sok, SOL_SOCKET, SO_ERROR, &rc, &flags) < 0)
+#endif
+        rc = errno;
+
+    return rc;
+}
+
 /*
  * Continue connecting.
  */
 static void UtilIOConnectCallback (Session *sess)
 {
     int rc, eno = 0, len;
-    unsigned flags;
     char buf[60];
 
     while (1)
@@ -415,12 +429,7 @@ static void UtilIOConnectCallback (Session *sess)
         switch ((eno = sess->connect / CONNECT_SOCKS_ADD) % 7)
         {
             case 0:
-                flags = sizeof (int);
-#ifdef SO_ERROR
-                if (getsockopt (sess->sok, SOL_SOCKET, SO_ERROR, &rc, &flags) < 0)
-#endif
-                    rc = errno;
-                if (rc)
+                if ((rc = UtilIOError (sess)))
                     CONN_FAIL (UtilFill      ("%s: %s (%d).", i18n (1955, "Connection failed"), strerror (rc), rc));
 
                 sess->connect += CONNECT_SOCKS_ADD;
