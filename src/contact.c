@@ -49,7 +49,8 @@ Contact *ContactAdd (UDWORD uin, const char *nick)
  */
 void ContactRem (UDWORD uin)
 {
-    int i, j;
+    int i;
+    
     for (i = 0; i < cnt_number; i++)
         if (cnt_contacts[i].uin == uin)
             break;
