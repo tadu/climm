@@ -403,8 +403,9 @@ Event *ConnectionInitServer (Connection *conn)
                                   NULL, conn->cont, NULL, &SrvCallBackTimeout);
 
     rl_printf (i18n (9999, "Opening v8 connection to %s:%s%ld%s for %s%s%s... "),
-              s_wordquote (conn->server), COLQUOTE, conn->port, COLNONE,
-              COLCONTACT, cont->nick ? cont->nick : s_sprintf ("%ld", cont->uin), COLNONE);
+              s_wordquote (conn->server), COLQUOTE, conn->port, COLNONE, COLCONTACT,
+              !cont ? i18n (9999, "new UIN") : cont->nick ? cont->nick 
+              : s_sprintf ("%ld", cont->uin), COLNONE);
 
     UtilIOConnectTCP (conn);
     return event;
