@@ -1029,7 +1029,7 @@ void ContactSetCap (Contact *cont, Cap *cap)
             cont->v2 = ver & 0x1f;
             cont->v3 = cont->v4 = 0;
             if (ver <= 0x48)
-                cont->caps &= ~(1 << CAP_UTF8);
+                CLR_CAP (cont->caps, CAP_UTF8);
         }
         else /* old KOPETE */
         {
@@ -1037,7 +1037,7 @@ void ContactSetCap (Contact *cont, Cap *cap)
             cont->v3 = ver & 0x1f;
             cont->v2 = cont->v4 = 0;
             if (ver <= 1)
-                cont->caps &= ~(1 << CAP_UTF8);
+                CLR_CAP (cont->caps, CAP_UTF8);
         }
     }
     else if (cap->var && (cap->id == CAP_MICQ || cap->id == CAP_SIMNEW || cap->id == CAP_KOPETE))
@@ -1047,7 +1047,7 @@ void ContactSetCap (Contact *cont, Cap *cap)
         cont->v3 = cap->var[14];
         cont->v4 = cap->var[15];
     }
-    cont->caps |= 1 << cap->id;
+    SET_CAP (cont->caps, cap->id);
 }
 
 /*

@@ -87,7 +87,7 @@ struct Contact_s
     UDWORD status;
     UDWORD oldflags;
     Opt copts;
-    UDWORD caps;
+    UDWORD caps[2];
     UWORD  id;
     UBYTE  v1, v2, v3, v4;
 
@@ -163,7 +163,7 @@ val_t         ContactPrefVal      (Contact *cont, UDWORD flag);
 #define CONTACT_OBSOLETE(cont) ((cont)->meta_obsolete ? (cont)->meta_obsolete : ((cont)->meta_obsolete = calloc (1, sizeof (MetaObsolete))))
 #define CONTACT_DC(cont)       ((cont)->dc            ? (cont)->dc            : ((cont)->dc            = calloc (1, sizeof (ContactDC))))
 
-#define CONT_UTF8(cont,mt) (((cont)->caps & (1 << CAP_UTF8)) && (((mt) == 1) || ((cont)->caps & (1 << CAP_MICQ))))
+#define CONT_UTF8(cont,mt) (HAS_CAP((cont)->caps, CAP_UTF8) && (((mt) == 1) || HAS_CAP((cont)->caps, CAP_MICQ)))
 
 #define CONT_SEENAUTO  32UL /* has seen auto response. */
 #define CONT_ISEDITED  64UL /* meta data was edited by hand. */

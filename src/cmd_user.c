@@ -1682,7 +1682,7 @@ static JUMP_F(CmdUserStatusDetail)
             if (cont->group && cont->group != conn->contacts && cont->group->name)
                 rl_printf ("    %s %s\n", i18n (2536, "Group:"), cont->group->name);
             for (j = id = 0; id < CAP_MAX; id++)
-                if (cont->caps & (1 << id))
+                if (HAS_CAP (cont->caps, id))
                 {
                     Cap *cap = PacketCap (id);
                     if (j++)

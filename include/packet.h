@@ -55,11 +55,13 @@ struct Cap_s
 #define CAP_MICQ        24
 #define CAP_KXICQ       25
 #define CAP_KOPETE      26
-#define CAP_MAX         31
+#define CAP_MAX         63
 
 #define CAP_GID_UTF8    "{0946134E-4C7F-11D1-8222-444553540000}"
 
-#define HAS_CAP(caps,cap) ((caps) & (1L << (cap)))
+#define HAS_CAP(caps,cap) (((caps)[cap / 32]) & (1UL << (cap % 32)))
+#define SET_CAP(caps,cap) ((caps)[cap / 32]) |= (1UL << (cap % 32))
+#define CLR_CAP(caps,cap) ((caps)[cap / 32]) &= ~(1UL << (cap % 32))
 
 Packet *PacketC        (DEBUG0PARAM);
 Packet *PacketCreate   (str_t str DEBUGPARAM);

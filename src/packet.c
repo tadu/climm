@@ -553,6 +553,8 @@ Cap *PacketReadCap (Packet *pak)
             }
 #endif
         }
+        else
+            break;
     if (id == CAP_MAX)
         return &caps[0];
     

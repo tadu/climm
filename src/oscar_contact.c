@@ -206,7 +206,7 @@ JUMP_SNAC_F(SnacSrvUseronline)
     }
     /* TLV 1, d, f, 2, 3 ignored */
     if (!~cont->status)
-        cont->caps = 0;
+        memset (cont->caps, 0, sizeof (cont->caps));
 
     if (tlv[13].str.len)
     {
