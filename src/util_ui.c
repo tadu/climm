@@ -164,6 +164,7 @@ static void M_prints (const char *str)
         switch (*str)           /* Take care of specials */
         {
             case '\n':
+                R_show ();
                 printf ("\n%*s", IndentCount, "");
                 CharCount = 0;
                 break;
@@ -306,6 +307,7 @@ void M_print (const char *str, ...)
     va_list args;
     char buf[2048];
 
+    R_print ();
     va_start (args, str);
 #ifndef CURSES_UI
     vsnprintf (buf, sizeof (buf), str, args);

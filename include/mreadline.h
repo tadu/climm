@@ -18,8 +18,10 @@ void R_doprompt (const char *prompt);		/* = {R_setprompt(p);R_prompt() */
 void R_dopromptf (const char *prompt, ...);	/* = {R_setprompt(printf(p,...));R_prompt() */
 int R_process_input (void);		/* parse input, returns 1 if CR typed */
 void R_getline (char *buf, int len);	/* returns line */
-void R_undraw (void);			/* hide input */
+void R_undraw (void);			/* hide input (defer) */
 void R_redraw (void);			/* unhide (redraw) input line */
+void R_print (void);			/* hide input */
+void R_show (void);			/* say "need new prompt" */
 void R_pause (void);			/* pause mreadline befor system () */
 void R_resume (void);			/* resume ... */
 

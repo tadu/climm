@@ -290,11 +290,11 @@ int main (int argc, char *argv[])
         rc = M_select ();
         assert (rc >= 0);
 
+        R_undraw ();
+
         if (__os_has_input)
             if (R_process_input ())
                 CmdUserInput (&idle_val, &idle_flag);
-
-        R_undraw ();
 
         for (i = 0; (sess = SessionNr (i)); i++)
         {

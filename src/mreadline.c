@@ -124,9 +124,9 @@ void R_process_input_backspace (void)
 #ifndef ANSI_COLOR
         {
             int i;
-            print ("\b%s", s + cpos);
+            printf ("\b%s", s + cpos);
             for (i = clen - cpos; i; i--)
-                print ("\b");
+                printf ("\b");
         }
 #else
         printf ("\b\033[K%s", s + cpos);
@@ -145,9 +145,9 @@ void R_process_input_delete (void)
 #ifndef ANSI_COLOR
         {
             int i;
-            print (s + cpos);
+            printf (s + cpos);
             for (i = clen - cpos; i; i--)
-                print ("\b");
+                printf ("\b");
         }
 #else
         printf ("\033[K%s", s + cpos);
@@ -393,14 +393,22 @@ void R_prompt (void)
 {
 }
 
+static int prstat = 0;
+/* 0 = prompt da 1 = prompt kann entfern werden 2 = prompt entfernt */
+
 void R_undraw ()
 {
-    M_print ("\r");             /* for tab stop reasons */
-    printf ("\033[K");
+    prstat = 1;
 }
 
 void R_redraw ()
 {
+    if (prstat == 1)
+    {
+        prstat = 0;
+        return;
+    }
+    prstat = 0;
     R_prompt ();
     if (curprompt)
         M_print (curprompt);
@@ -409,6 +417,20 @@ void R_redraw ()
     if (cpos != clen)
         printf ("\033[%dD", clen - cpos);
 #endif
+}
+
+void R_show ()
+{
+    prstat = 2;
+}
+
+void R_print ()
+{
+    if (prstat != 1)
+        return;
+    prstat = 2;
+    M_print ("\r");             /* for tab stop reasons */
+    printf ("\033[K");
 }
 
 void R_doprompt (const char *prompt)

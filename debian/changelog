@@ -1,15 +1,127 @@
-micq (0.4.8pl3-1) unstable; urgency=HIGH
+micq (0.4.8pl3-0) unstable; urgency=low
 
   * New upstream.
 
  -- Ruediger Kuhlmann <Ruediger.Kuhlmann@stud.uni-karlsruhe.de>  Wed,  4 Apr 2002 12:00:00 +0100
 
-micq (0.4.8pl2-1) unstable; urgency=HIGH
+micq (0.4.8.pl2-1) unstable; urgency=low
 
-  * Re-debianized; changelogs got lost due to mismaintainership
-  * New upstream; does a tiny bit of v8 now.
+  * New Upstream!
+  * Close RFA/ITP (Closes: #137760)
 
- -- Ruediger Kuhlmann <Ruediger.Kuhlmann@stud.uni-karlsruhe.de>  Mon,  4 Mar 2002 12:00:00 +0100
+ -- Martin Loschwitz <madkiss@madkiss.org>  Fri, 29 Mar 2002 14:19:00 +0200
+
+micq (0.4.7.cvs20010919-1) unstable; urgency=low
+
+  * New Upstream!
+  + Added configurable Keepalive_Time setting (Closes: #111153)
+  + Fixed the make distclean / rm symlinks problem (Closes: #107728)
+
+ -- Sander Smeenk <ssmeenk@debian.org>  Tue, 25 Sep 2001 23:21:13 +0200
+
+micq (0.4.7.cvs20010813-1) unstable; urgency=low
+
+  * New Upstream!
+  + Be sure to check out 'ewide'!
+
+ -- Sander Smeenk <ssmeenk@debian.org>  Thu, 30 Aug 2001 23:32:01 +0200
+
+micq (0.4.7p1-3) unstable; urgency=low
+
+  * In fact this is a new upstream, but upstream almost never
+    changes their version numbers, so ...
+  * Fixed the 'Couldn't load i18n' problem (Closes: #107485)
+  * Added support for SoundOnline and SoundOffline events. (Closes: #92612)
+    micq is now capable of running a command on online/offline events
+
+ -- Sander Smeenk <ssmeenk@debian.org>  Thu,  2 Aug 2001 21:17:18 +0200
+
+micq (0.4.7p1-2) unstable; urgency=low
+
+  * Fixed some bugs with 'auth <nick>' not working and
+    when using 'r' to reply in multi line mode.
+
+ -- Sander Smeenk <ssmeenk@debian.org>  Tue, 26 Jun 2001 22:20:42 +0200
+
+micq (0.4.7p1-1) unstable; urgency=low
+
+  * New Upstream
+
+ -- Sander Smeenk <ssmeenk@debian.org>  Tue, 26 Jun 2001 22:20:42 +0200
+
+micq (0.4.6p5-2) unstable; urgency=low
+
+  * Fixed build-depends (Closes: #99202)
+
+ -- Sander Smeenk <ssmeenk@debian.org>  Wed, 30 May 2001 20:40:13 +0200
+
+micq (0.4.6p5-1) unstable; urgency=low
+
+  * New upstream version
+
+ -- Sander Smeenk <ssmeenk@debian.org>  Sat, 26 May 2001 18:43:34 +0200
+
+micq (0.4.6p2-1) unstable; urgency=low
+
+  * New upstream version
+    + A lot of fixes and new stuff! Like 10+ chars UIN support!
+
+ -- Sander Smeenk <ssmeenk@debian.org>  Sun, 15 Apr 2001 18:52:14 +0200
+
+micq (0.4.6p1-1) unstable; urgency=low
+
+  * New upstream maintainer & version
+    + Patched to fix remote exploitable bufferoverflows
+    + Patched with same reconnect on "Go Away!" command patch as 0.4.6-4
+
+ -- Sander Smeenk <ssmeenk@debian.org>  Sat, 10 Feb 2001 03:20:20 +0200
+
+micq (0.4.6-4) unstable; urgency=low
+
+  * Adopted micq package
+    + Patched micq to reconnect when server sends 'Go Away!' command.
+
+ -- Sander Smeenk <ssmeenk@debian.org>  Tue, 23 Jan 2001 22:47:10 +0200
+
+micq (0.4.6-3) unstable; urgency=HIGH
+
+  * Applied patch from Guillaume Morin <gemorin@debian.org> to fix a
+    possible remote exploit reported in BugTraq. Thanks!
+
+ -- Jordi Mallach <jordi@debian.org>  Sun, 21 Jan 2001 20:08:51 +0100
+
+micq (0.4.6-2) unstable; urgency=low
+
+  * Added patch from David Murn <davey@doa.org>:
+    + changes behaviour of log writing. If STATUS_LOG is defined, only
+      messages are written to the <uin>.log, so it's easy to see if someone
+      said something while away (closes: #74559).
+    + as a bonus, fix a potentially uninitialized variable in util_ui.c.
+    Thanks David!
+  * debian/rules:
+    + start using DH_COMPAT=2.
+    + replaced wd with $(CURDIR)s.
+    + added support for DEB_BUILD_OPTIONS "debug". This also corrects CFLAGS
+      a bit.
+  * debian/control:
+    + made debhelper's Build-Depend versioned for v2.
+    + removed Suggests: menu.
+    + updated Standards-Version to 3.2.1.0.
+
+ -- Jordi Mallach <jordi@debian.org>  Sat, 16 Dec 2000 16:16:32 +0100
+
+micq (0.4.6-1) unstable; urgency=low
+
+  * New upstream release.
+  * Changed maintainer address.
+
+ -- Jordi Mallach <jordi@debian.org>  Tue, 13 Jun 2000 02:05:13 +0200
+
+micq (0.4.5-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Jordi Mallach <jordi@sindominio.net>  Thu, 18 May 2000 11:51:21 +0200
 
 micq (0.4.3-4) stable; urgency=HIGH
 

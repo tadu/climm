@@ -123,6 +123,8 @@ void Initalize_RC_File (Session *sess)
         Init_New_User (sess);
         sess->spref->uin = sess->uin;
     }
+    else
+        sess->spref->passwd = strdup (pwd1);
     
     sesst = SessionC ();
     sesst->spref = PreferencesSessionC ();

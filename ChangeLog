@@ -1,3 +1,9 @@
+2002-04-05 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Fix remember password (thanks Pavel Roskin).
+	* update debian/ to be more like in the real Debian package.
+	* Fix Debian#113805 (US reported as US Virgin Islands)
+	* Quickfix for scroll/prompt bug
+
 2002-04-03 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Really check in i18n changes.
 	* Fix off-by-one in packet.c.
