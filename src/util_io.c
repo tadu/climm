@@ -1007,7 +1007,7 @@ char *UtilIOReadline (FILE *fd)
     char *p;
     
     if (!t)
-        t = malloc (size = 100);
+        t = malloc (size = 128);
     *t = 0;
     *(t + size - 2) = 0;
     while (1)
@@ -1021,7 +1021,7 @@ char *UtilIOReadline (FILE *fd)
         }
         if (!*(t + size - 2))
             break;
-        t = realloc (t, size += 100);
+        t = realloc (t, size += 128);
         pos = strlen (t);
         *(t + size - 2) = 0;
     }
