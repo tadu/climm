@@ -398,6 +398,7 @@ static void TCPDispatchShake (Session *sess)
         if (!cont && (sess->connect & CONNECT_MASK) != 16)
         {
             TCPClose (sess);
+            sess->connect = CONNECT_FAIL;
             if (pak)
                 PacketD (pak);
             return;
@@ -978,6 +979,7 @@ static Session *TCPReceiveInit (Session *sess, Packet *pak)
             if (peer->connect & CONNECT_OK)
             {
                 TCPClose (sess);
+                sess->connect = CONNECT_FAIL;
                 return NULL;
             }
             if ((peer->connect & CONNECT_MASK) == (UDWORD)TCP_STATE_WAITING)
@@ -993,7 +995,6 @@ static Session *TCPReceiveInit (Session *sess, Packet *pak)
         Time_Stamp ();
         M_print (" %s: %d\n", i18n (2029, "Protocol error on peer-to-peer connection"), err);
     }
-    sess->connect = 0;
     TCPClose (sess);
     return NULL;
 }
@@ -1075,7 +1076,7 @@ static void TCPClose (Session *sess)
     if (sess->sok != -1)
         sockclose (sess->sok);
     sess->sok     = -1;
-    sess->connect = 0;
+    sess->connect = (sess->connect & CONNECT_MASK && !(sess->connect & CONNECT_OK)) ? CONNECT_FAIL : 0;
     sess->our_session = 0;
     /* TODO: is this robust? */
     if (!sess->uin)
