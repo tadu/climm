@@ -1124,6 +1124,7 @@ void M_print (const char *org)
     const char *colnone = NULL, *colcontact = NULL, *col;
     UBYTE isline = 0, ismsg = 0;
     int i;
+    str_s colbuf = { NULL };
     int sw = Get_Max_Screen_Width () - IndentCount;
     
     fstr = strdup (ConvTo (org, prG->enc_loc)->txt);
@@ -1347,7 +1348,13 @@ void M_print (const char *org)
                         if (save)
                         {
                             if (prG->flags & FLAG_COLOR)
-                                printf ("%.*s", (int)(save - str + 1), str);
+                            {
+                                s_init (&colbuf, "", (int)(save - str) + 1);
+                                s_catf (&colbuf, "%.*s", (int)(save - str) + 1, str);
+                                printf ("%s", col = colbuf.txt);
+                            }
+                            else
+                                col = "";
                             str = save;
                         }
                         break;
