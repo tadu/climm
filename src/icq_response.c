@@ -613,55 +613,55 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
     switch (type)
     {
         case INT_FILE_ACKED:
-            line = s_sprintf (i18n (9999, "File transfer %s to port %ld.\n"),
+            line = s_sprintf (i18n (9999, "File transfer %s to port %ld."),
                               s_qquote (extra->text), extra->data);
             break;
         case INT_FILE_REJED:
-            line = s_sprintf (i18n (9999, "File transfer %s rejected by peer: %s.\n"),
+            line = s_sprintf (i18n (9999, "File transfer %s rejected by peer: %s."),
                               s_qquote (extra->text), s_wordquote (text));
             break;
         case INT_FILE_ACKING:
-            line = s_sprintf (i18n (9999, "Accepting file %s (%ld bytes).\n"),
+            line = s_sprintf (i18n (9999, "Accepting file %s (%ld bytes)."),
                               s_qquote (extra->text), extra->data);
             break;
         case INT_FILE_REJING:
-            line = s_sprintf (i18n (9999, "Refusing file request %s (%ld bytes): %s.\n"),
+            line = s_sprintf (i18n (9999, "Refusing file request %s (%ld bytes): %s."),
                               s_qquote (extra->text), extra->data, s_wordquote (text));
             break;
         case INT_CHAR_REJING:
-            line = s_sprintf (i18n (9999, "Refusing chat request (%s/%s) from %s%s%s.\n"),
+            line = s_sprintf (i18n (9999, "Refusing chat request (%s/%s) from %s%s%s."),
                               p = strdup (s_qquote (extra->text)), q = strdup (s_qquote (text)),
                               COLCONTACT, cont->nick, COLNONE);
             free (p);
             free (q);
             break;
         case INT_MSGTRY_TYPE2:
-            line = s_sprintf ("%s%s %s\n", i18n (2293, "--="), COLSINGLE, text);
+            line = s_sprintf ("%s%s %s", i18n (2293, "--="), COLSINGLE, text);
             break;
         case INT_MSGTRY_DC:
-            line = s_sprintf ("%s%s %s\n", i18n (2294, "==="), COLSINGLE, text);
+            line = s_sprintf ("%s%s %s", i18n (2294, "==="), COLSINGLE, text);
             break;
         case INT_MSGACK_TYPE2:
             col = COLACK;
-            line = s_sprintf ("%s%s %s\n", MSGTYPE2ACKSTR, COLSINGLE, text);
+            line = s_sprintf ("%s%s %s", MSGTYPE2ACKSTR, COLSINGLE, text);
             break;
         case INT_MSGACK_DC:
             col = COLACK;
-            line = s_sprintf ("%s%s %s\n", MSGTCPACKSTR, COLSINGLE, text);
+            line = s_sprintf ("%s%s %s", MSGTCPACKSTR, COLSINGLE, text);
             break;
 #ifdef ENABLE_SSL
         case INT_MSGACK_SSL:
             col = COLACK;
-            line = s_sprintf ("%s%s %s\n", MSGSSLACKSTR, COLSINGLE, text);
+            line = s_sprintf ("%s%s %s", MSGSSLACKSTR, COLSINGLE, text);
             break;
 #endif
         case INT_MSGACK_V8:
         case INT_MSGACK_V5:
             col = COLACK;
-            line = s_sprintf ("%s%s %s\n", i18n (2295, ">>>"), COLSINGLE, text);
+            line = s_sprintf ("%s%s %s", i18n (2295, ">>>"), COLSINGLE, text);
             break;
         default:
-            line = s_sprintf ("\n");
+            line = "";
     }
 
     if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || !cont->group))
@@ -678,6 +678,7 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
         if (*q == (char)0xfe)
             *q = '*';
     M_print (p);
+    M_print ("\n");
     free (p);
 
     ExtraD (extra);
