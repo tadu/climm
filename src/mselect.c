@@ -12,6 +12,8 @@ Changes :
      3-5-99 Created
 **********************************************
 **********************************************/
+#include "micq.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -35,7 +37,6 @@ Changes :
     #include <netdb.h>
     #include <sys/time.h>
     #include <sys/wait.h>
-    #include "mreadline.h"
 #endif
 
 #include <fcntl.h>
@@ -45,9 +46,6 @@ Changes :
 #include <ctype.h>
 #include <assert.h>
 
-#include "micq.h"
-#include "datatype.h"
-#include "msg_queue.h"
 
 
 static struct timeval tv;

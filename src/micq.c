@@ -1,3 +1,4 @@
+#include "micq.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -25,17 +26,12 @@
  #include <netdb.h>
  #include <sys/time.h>
  #include <sys/wait.h>
- #include "mreadline.h"
 #endif
 
 #ifdef __BEOS__
   #include "beos.h"
 #endif
 
-#include "micq.h"
-#include "datatype.h"
-#include "msg_queue.h"
-#include "mselect.h"
 
 
 DWORD real_packs_sent = 0;

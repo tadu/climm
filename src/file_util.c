@@ -1,3 +1,4 @@
+#include "micq.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -8,15 +9,16 @@
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#ifndef __BEOS__ || _WIN32
-    #include <arpa/inet.h>
-#endif
 #include <fcntl.h>
+
 #ifdef _WIN32
    #include <io.h>
    #define S_IRUSR        _S_IREAD
    #define S_IWUSR        _S_IWRITE
 #else
+    #ifndef __BEOS__
+    	#include <arpa/inet.h>
+    #endif
     #include <sys/time.h>
     #include <netinet/in.h>
     #include <termios.h>
@@ -26,7 +28,6 @@
    #include <unistd.h>
 #endif
 
-#include "micq.h"
 
 /****/
 

@@ -1,5 +1,4 @@
 #include "micq.h"
-#include "mreadline.h"
 #include <assert.h>
 
 static WORD recv_packs[ MAX_SEQ_DEPTH ];

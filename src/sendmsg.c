@@ -17,11 +17,7 @@ Author : zed@mentasm.com
 #include <string.h>
 #include <assert.h>
 #include <limits.h>
-#include "mreadline.h"
-
-#include "datatype.h"
 #include "micq.h"
-#include "msg_queue.h"
 
 /*unsigned int next_resend;*/
 DWORD Packets_Sent = 0;

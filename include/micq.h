@@ -26,6 +26,8 @@ Changes :
 #include <stdlib.h>
 #include "mreadline.h"
 #include <time.h>
+#include "msg_queue.h"
+#include "mselect.h"
 
 /*********  Leeched from Xicq :) xtrophy@it.dk ********/
 /*********  changed to use escape codes like you should :) ***/
