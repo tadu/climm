@@ -273,6 +273,7 @@ Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nic
              && ContactPref (alias, CONT_TEMPORARY))
     {
         s_repl (&alias->nick, nick);
+        alias->group = group ? group : CONTACTGROUP_GLOBAL;
         ContactPrefSet (alias, CONT_TEMPORARY, CONT_MODE_CLEAR);
         Debug (DEB_CONTACT, "new   #%d %ld '%s' %p in %p was temporary", id, uin, nick, alias, group);
         return alias;
@@ -292,6 +293,7 @@ Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nic
     cont->status = STATUS_OFFLINE;
     cont->seen_time = -1L;
     cont->seen_micq_time = -1L;
+    cont->group = group ? group : CONTACTGROUP_GLOBAL;
     if (alias)
     {
         Debug (DEB_CONTACT, "alias #%d %ld '%s' %p in %p for #%d '%s'",

@@ -71,6 +71,7 @@ struct ContactGroup_s
 
 struct Contact_s
 {
+    ContactGroup *group;
     char  *nick;
     UDWORD uin;
     UDWORD status;
