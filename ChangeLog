@@ -1,6 +1,32 @@
 -*- coding: utf-8 -*-
 
 
+2005-02-28 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* Try to fix incomplete file transfer
+
+2005-02-26 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* fix handling of server's response to type-1/type-4 messages
+	* recognize BOS and SERVICE familiy errors and ignore them
+	* clear CAP_UTF8 on Trillian, as it doesn't actually understands it
+	* make prompt reappear after ^L
+	* fix uninitialized mem access in tabbing code
+	* do not close(-1)
+	* some file transfer fixes, avoid segfault
+
+2005-02-17 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* identify new versions of licq as SSL capable
+	* fix OpenSSL connections
+	* remove iso8859_*, use ISO8859* without any - (HPUX)
+	* pt.i18n update
+	* pt micq.1 micq.7 micqrc.5 update
+	* Trust result of nl_langinfo *sigh*
+	* add Mac OS X compiler #define
+	* fix peek command to actually work
+	* update ru.i18n
+	* remove bogus offline state switches
+	* make time to reveal invisibility to receivers of
+	  messages configurable, new default 10 min
+
 2005-02-14 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 	* update sk.i18n
 	* 0.5
