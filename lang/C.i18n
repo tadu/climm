@@ -644,7 +644,7 @@
 1644:Acknowleged SRV_X2 0x00E6 Done old messages?¶
 1645:©3You entered an incorrect password.©0¶
 1646:©3Server is busy.¶
-1647:%04d-%02d-%02d %02d:%02d UTC
+1647: 
 1648: ©2The response was %04X	
 1649:The version was %X	
 1650:¶The SEQ was %04X	
@@ -1027,3 +1027,4 @@
 2027:Sending third TCP direct connection packet.¶
 2028:Wrong argument count.¶
 2029:Protocol error on peer-to-peer connection
+2030:%04d-%02d-%02d %02d:%02d UTC
