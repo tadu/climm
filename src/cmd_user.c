@@ -820,9 +820,9 @@ static JUMP_F(CmdUserInfo)
 /*
  * Peeks whether a user is really offline.
  */
+#if 0
 static JUMP_F(CmdUserPeek)
 {
-#if 0
     Contact *cont = NULL;
     OPENCONN;
     
@@ -845,8 +845,8 @@ static JUMP_F(CmdUserPeek)
         SnacCliSendmsg2 (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_GET_PEEK, ""));
     }
     return 0;
-#endif
 }
+#endif
 
 /*
  * Gives information about internationalization and translates
