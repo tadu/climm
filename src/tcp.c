@@ -188,6 +188,7 @@ void TCPDirectOff (Connection *list, UDWORD uin)
     peer->connect = CONNECT_FAIL;
     peer->type    = TYPE_MSGDIRECT;
     peer->flags   = 0;
+    peer->parent  = list;
 
     ASSERT_MSGDIRECT(peer);
 
