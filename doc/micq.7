@@ -107,13 +107,14 @@ The argument may be repeated as often as needed.
 Show the time mICQ has been running, plus some statistics.
 .TP
 .BI last \ [contact]
-Show a list of users who have sent you messages or the last message
+Show the last message 
 received from
 .IR contact ,
 which can be a
 .I uin
 or a
-.IR nickname .
+.IR nickname ,
+or from everyone who already sent a message.
 .TP
 .BI verbose \ [verb]
 Set verbosity of mICQ to
@@ -211,10 +212,14 @@ Make command initially or previously known as
 from now on known as
 .IR new .
 .TP
-.BI auth \ uin|nickname
-Allow
+.BI auth \ [req|grant|deny|add] uin|nickname
+Grant or deny
 .I uin|nickname
-to add you to their list.
+to add you to their list, request
+.I uin|nickname
+to allow you to add them to your contact list, or tell
+.I uin|nickname
+that you added hem to your contact list.
 .TP
 .BI rand \ number
 Find a random user in interest group
@@ -297,6 +302,8 @@ Toggles whether you will be hidden for
 Toggles whether
 .I nickname's
 messages and status changes are ignored.
+.TP
+.BI f[inger] \ uin|nickname
 .TP
 .BI info \ uin|nickname
 Show all white page info for

@@ -21,6 +21,7 @@ Jeff Bearer <jbearer@tribweb.com>
 TODO:
  : add https support
  : add missing v8 pieces
+   + figure out v8 reverse connection
  : add capabilities support
  : server side contact list:
    + contact groups
@@ -30,9 +31,18 @@ TODO:
  : saving personal information
  : fix memory leaks (most fixed)
  : finish implementing file transfer (fixed?)
-   + add prompt display
-   + add better user interface
+   + add prompt display (fixed)
+   + add receive command
+   + add better syntax (a bit fixed, awaiting user feedback)
+   + figure out server file sending
  : Trillian bugaround (fixed?)
+ : add list of allowed trailing characters for parsing
+ : implement more server message types, unify handling
+ : make MSGSENTSTR etc configurable (awaiting user feedback)
+ : auto-chat group feature
+ : re-check queue usage
+ : shorten direct message display
+ : add close() hook to connection
 
 DONE:
  : use old-style auth stuff for now :-/ (fixed)
@@ -46,7 +56,6 @@ DONE:
  : give TCPOpenDirect a BOOL to return whether a new connection is now in progress (fixed)
  : fix receivescript (done)
  : rewrite Do_Msg (done)
- : add incoming message/debug color (fixed)
- : recognize vICQ (done)
-
-
+ : add incoming message/debug color (done)
+ : recognize vICQ, Trillian (done)
+ : update online help (done)

@@ -296,10 +296,33 @@ static JUMP_F(CmdUserRandomSet)
 static JUMP_F(CmdUserHelp)
 {
     char *arg1 = NULL;
+    char what;
 
     UtilUIParse (&args, &arg1);
 
-    if (arg1 && !strcasecmp (arg1, i18n (1447, "Client")))
+    if (!arg1) what = 0;
+    else if (!strcasecmp (arg1, i18n (1447, "Client"))   || !strcasecmp (arg1, "Client"))   what = 1;
+    else if (!strcasecmp (arg1, i18n (1448, "Message"))  || !strcasecmp (arg1, "Message"))  what = 2;
+    else if (!strcasecmp (arg1, i18n (1449, "User"))     || !strcasecmp (arg1, "User"))     what = 3;
+    else if (!strcasecmp (arg1, i18n (1450, "Account"))  || !strcasecmp (arg1, "Account"))  what = 4;
+    else if (!strcasecmp (arg1, i18n (2171, "Advanced")) || !strcasecmp (arg1, "Advanced")) what = 5;
+    else what = 0;
+
+    if (!what)
+    {
+        M_print (COLCLIENT "%s\n", i18n (1442, "Please select one of the help topics below."));
+        M_print ("%s\t-\t%s\n", i18n (1448, "Message"),
+                 i18n (1446, "Commands relating to sending messages."));
+        M_print ("%s\t-\t%s\n", i18n (1447, "Client"),
+                 i18n (1443, "Commands relating to mICQ displays and configuration."));
+        M_print ("%s\t-\t%s\n", i18n (1449, "User"),
+                 i18n (1444, "Commands relating to finding and seeing other users."));
+        M_print ("%s\t-\t%s\n", i18n (1450, "Account"),
+                 i18n (1445, "Commands relating to your ICQ account."));
+        M_print ("%s\t-\t%s\n", i18n (2171, "Advanced"),
+                 i18n (2172, "Commands for advanced features."));
+    }
+    else if (what == 1)
     {
         M_print (COLMESSAGE "%s [<nr>]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("verbose"),
@@ -319,54 +342,57 @@ static JUMP_F(CmdUserHelp)
         M_print (COLMESSAGE "%s [<timeout>]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("autoaway"),
                  i18n (1767, "Toggles auto cycling to away/not available."));
-        M_print (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
-                 CmdUserLookupName ("q"),
-                 i18n (1422, "Logs off and quits."));
-        M_print (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
-                 CmdUserLookupName ("auto"),
-                 i18n (1423, "Displays your autoreply status."));
         M_print (COLMESSAGE "%s [on|off]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("auto"),
-                 i18n (1424, "Toggles sending messages when your status is DND, NA, etc."));
+                 i18n (1424, "Set whether autoreplying when not online, or displays setting."));
         M_print (COLMESSAGE "%s <status> <message>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("auto"),
                  i18n (1425, "Sets the message to send as an auto reply for the status."));
         M_print (COLMESSAGE "%s <old cmd> <new cmd>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("alter"),
                  i18n (1417, "This command allows you to alter your command set on the fly."));
-        M_print (COLMESSAGE "%s <lang>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+        M_print (COLMESSAGE "%s [<lang|nr>...]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("trans"), 
-                 i18n (1800, "Change the working language to <lang>."));  
+                 i18n (1800, "Change the working language to <lang> or display string <nr>."));  
         M_print (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("uptime"), 
                  i18n (2035, "Show uptime and some statistics."));  
+        M_print (COLMESSAGE "%s color|funny|quiet on|off" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 CmdUserLookupName ("set"),
+                 i18n (2044, "Set or clear an option."));
+        M_print (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 CmdUserLookupName ("uptime"),
+                 i18n (1719, "Shows how long mICQ has been running."));
+        M_print ("  " COLCLIENT "" COLINDENT "%s" COLEXDENT "" COLNONE "\n",
+                 i18n (1717, "! as the first character of a command will execute a shell command (e.g. \"!ls\"  \"!dir\" \"!mkdir temp\")"));
         M_print (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("save"),
                  i18n (2036, "Save current preferences to disc."));
-        M_print (COLMESSAGE "%s open|close|off uin|nick" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
-                 CmdUserLookupName ("peer"),
-                 i18n (2037, "Open or close a peer-to-peer connection, or disable using peer-to-peer connections for uin|nick."));
-        M_print (COLMESSAGE "%s open|login <nr>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
-                 CmdUserLookupName ("conn"),
-                 i18n (2038, "Opens connection number nr."));
-        M_print (COLMESSAGE "%s color|funny|quiet <on|off>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
-                 CmdUserLookupName ("set"),
-                 i18n (2044, "Set or clear an option."));
-        M_print ("  " COLCLIENT "" COLINDENT "%s" COLEXDENT "" COLNONE "\n",
-                 i18n (1717, "! as the first character of a command will execute a shell command (e.g. \"!ls\"  \"!dir\" \"!mkdir temp\")"));
+        M_print (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 CmdUserLookupName ("q"),
+                 i18n (1422, "Logs off and quits."));
     }
-    else if (arg1 && !strcasecmp (arg1, i18n (1448, "Message")))
+    else if (what == 2)
     {
-        M_print (COLMESSAGE "%s <uin|nick>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+        M_print (COLMESSAGE "%s [grant] <uin|nick>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("auth"),
-                 i18n (1413, "Authorize uin or nick to add you to their list."));
+                 i18n (1413, "Authorize <uin> or <nick> to add you to their list."));
+        M_print (COLMESSAGE "%s deny <uin|nick>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 CmdUserLookupName ("auth"),
+                 i18n (2173, "Deny <uin> or <nick> to add you to their list."));
+        M_print (COLMESSAGE "%s req <uin|nick>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 CmdUserLookupName ("auth"),
+                 i18n (2174, "Request authorization from <uin> or <nick>."));
+        M_print (COLMESSAGE "%s add <uin|nick>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 CmdUserLookupName ("auth"),
+                 i18n (2175, "Tell <uin> or <nick> that you added them to your list."));
         M_print (COLMESSAGE "%s <uin|nick> [<message>]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("msg"),
-                 i18n (1409, "Sends a message to uin or nick."));
+                 i18n (1409, "Sends a message to <uin> or <nick>."));
         M_print (COLMESSAGE "%s <uin|nick> <url> <message>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("url"),
-                 i18n (1410, "Sends a url and message to uin."));
-        M_print (COLMESSAGE "%s <tel> <message>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 i18n (1410, "Sends a url and message to <uin> or <nick>."));
+        M_print (COLMESSAGE "%s <phone> <message>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("sms"),
                  i18n (2039, "Sends a message to a cell phone."));
         M_print (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
@@ -378,34 +404,28 @@ static JUMP_F(CmdUserHelp)
         M_print (COLMESSAGE "%s <message>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("r"),
                  i18n (1414, "Replys to the last person to send you a message."));
-        M_print (COLMESSAGE "%s [<contact>]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+        M_print (COLMESSAGE "%s [<uin|nick>]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("last"),
-                 i18n (1403, "Displays the last message received from <nick>, or a list of who has send you at least one message."));
+                 i18n (1403, "Displays the last message received from <uin> or <nick> or from everyone who who has send you at least one message."));
         M_print (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("tabs"),
                  i18n (1098, "Display a list of nicknames that you can tab through.")); 
-        M_print (COLMESSAGE "%s <uin>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+        M_print (COLMESSAGE "%s <uin|nick>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("resend"),
-                 i18n (1770, "Resend your last message to a new uin."));
-        M_print (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
-                 CmdUserLookupName ("uptime"),
-                 i18n (1719, "Shows how long mICQ has been running."));
+                 i18n (1770, "Resend your last message to <uin> or <nick>."));
         M_print ("  " COLCLIENT "" COLINDENT "%s" COLEXDENT "" COLNONE "\n",
                  i18n (1720, "uin can be either a number or the nickname of the user."));
         M_print ("  " COLCLIENT "" COLINDENT "%s" COLEXDENT "" COLNONE "\n",
                  i18n (1721, "Sending a blank message will put the client into multiline mode.\nUse . on a line by itself to end message.\nUse # on a line by itself to cancel the message."));
     }
-    else if (arg1 && !strcasecmp (arg1, i18n (1449, "User")))
+    else if (what == 3)
     {
         M_print (COLMESSAGE "%s [<nr>]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("rand"),
-                 i18n (1415, "Finds a random user in the specified group or lists the groups."));
-        M_print (COLMESSAGE "%s <user>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
-                 CmdUserLookupName ("status"),
-                 i18n (1400, "Shows locally stored info on user."));
-        M_print (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 i18n (1415, "Finds a random user in interest group <nr> or lists the groups."));
+        M_print (COLMESSAGE "%s <uin|nick>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("s"),
-                 i18n (1769, "Displays your current online status."));
+                 i18n (1400, "Shows locally stored info on <uin> or <nick>, or on yourself."));
         M_print (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("w"),
                  i18n (1416, "Displays the current status of everyone on your contact list."));
@@ -413,48 +433,54 @@ static JUMP_F(CmdUserHelp)
                  CmdUserLookupName ("e"),
                  i18n (1407, "Displays the current status of online people on your contact list."));
         M_print (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 CmdUserLookupName ("ww"),
+                 i18n (2176, "Displays verbose the current status of everyone on your contact list."));
+        M_print (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 CmdUserLookupName ("ee"),
+                 i18n (2177, "Displays verbose the current status of online people on your contact list."));
+        M_print (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("wide"),
                  i18n (1801, "Displays a list of people on your contact list in a screen wide format.")); 
         M_print (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("ewide"),
                  i18n (2042, "Displays a list of online people on your contact list in a screen wide format.")); 
-        M_print (COLMESSAGE "%s <uin>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
-                 CmdUserLookupName ("info"),
-                 i18n (1430, "Displays general info on uin."));
+        M_print (COLMESSAGE "%s <uin|nick>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 CmdUserLookupName ("finger"),
+                 i18n (1430, "Displays general info on <uin> or <nick>."));
         M_print (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("i"),
                  i18n (1405, "Lists ignored nicks/uins."));
         M_print (COLMESSAGE "%s [<email>|<nick>|<first> <last>]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("search"),
-                 i18n (1429, "Searches for a ICQ user."));
-        M_print (COLMESSAGE "%s <uin> [<nick>]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 i18n (1429, "Searches for an ICQ user."));
+        M_print (COLMESSAGE "%s <uin|nick> [<new nick>]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("add"),
-                 i18n (1428, "Adds the uin number to your contact list with nickname, or renames it."));
+                 i18n (1428, "Adds <uin> as <new nick>, or add alias <new nick> for <uin> or <nick>."));
         M_print (COLMESSAGE "%s <uin|nick>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("rem"),
-                 i18n (2043, "Remove contact from your contact list."));
-        M_print (COLMESSAGE "%s <nick>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 i18n (2043, "Remove alias <alias> or <uin>, or removes contact."));
+        M_print (COLMESSAGE "%s <uin|nick>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("togig"),
-                 i18n (1404, "Toggles ignoring/unignoring nick."));
-        M_print (COLMESSAGE "%s <nick>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 i18n (1404, "Toggles ignoring/unignoring <uin> or <nick>."));
+        M_print (COLMESSAGE "%s <uin|nick>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("toginv"),
-                 i18n (2045, "Toggles your visibility to a user when you're online."));
-        M_print (COLMESSAGE "%s <nick>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 i18n (2045, "Toggles your visibility to <uin> or <nick> when you're online."));
+        M_print (COLMESSAGE "%s <uin|nick>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("togvis"),
-                 i18n (1406, "Toggles your visibility to a user when you're invisible."));
+                 i18n (1406, "Toggles your visibility to <uin> or <nick> when you're invisible."));
     }
-    else if (arg1 && !strcasecmp (arg1, i18n (1450, "Account")))
+    else if (what == 4)
     {
-        M_print (COLMESSAGE "%s <status>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
-                 CmdUserLookupName ("change"),
-                 i18n (1427, "Changes your status to the status number. Without a number it lists the available modes."));
-        M_print (COLMESSAGE "%s <secret>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
-                 CmdUserLookupName ("pass"),
-                 i18n (1408, "Changes your password to secret."));
         M_print (COLMESSAGE "%s <password>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("reg"),
                  i18n (1426, "Creates a new UIN with the specified password."));
-        M_print (COLMESSAGE "%s|%s|%s|%s|%s|%s|%s" COLNONE "\n\t" COLINDENT "%s\n%s\n%s\n%s\n%s\n%s\n%s" COLEXDENT "\n", 
+        M_print (COLMESSAGE "%s <password>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 CmdUserLookupName ("pass"),
+                 i18n (1408, "Changes your password to <password>."));
+        M_print (COLMESSAGE "%s <status> [<away-message>]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 CmdUserLookupName ("change"),
+                 i18n (1427, "Changes your status to the status number, or list the available modes."));
+        M_print (COLMESSAGE "%s|%s|%s|%s|%s|%s|%s [<away-message>]" COLNONE "\n\t" COLINDENT "%s\n%s\n%s\n%s\n%s\n%s\n%s" COLEXDENT "\n", 
                  CmdUserLookupName ("online"),
                  CmdUserLookupName ("away"),
                  CmdUserLookupName ("na"),
@@ -481,17 +507,32 @@ static JUMP_F(CmdUserHelp)
                  CmdUserLookupName ("setr"),
                  i18n (1439, "Sets your random user group."));
     }
-    else
+    else if (what == 5)
     {
-        M_print (COLCLIENT "%s\n", i18n (1442, "Please select one of the help topics below."));
-        M_print ("%s\t-\t%s\n", i18n (1447, "Client"),
-                 i18n (1443, "Commands relating to mICQ displays and configuration."));
-        M_print ("%s\t-\t%s\n", i18n (1448, "Message"),
-                 i18n (1446, "Commands relating to sending messages."));
-        M_print ("%s\t-\t%s\n", i18n (1449, "User"),
-                 i18n (1444, "Commands relating to finding other users."));
-        M_print ("%s\t-\t%s\n", i18n (1450, "Account"),
-                 i18n (1445, "Commands relating to your ICQ account."));
+        M_print (COLMESSAGE "%s open|close|off <uin|nick>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 CmdUserLookupName ("peer"),
+                 i18n (2037, "Open or close a peer-to-peer connection, or disable using peer-to-peer connections for <uin> or <nick>."));
+        M_print (COLMESSAGE "%s auto|away|na|dnd|occ|ffc <uin|nick>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 CmdUserLookupName ("peer"),
+                 i18n (2178, "Request auto reply message for <uin> or <nick>."));
+        M_print (COLMESSAGE "%s file <uin|nick> <file> <description>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 CmdUserLookupName ("peer"),
+                 i18n (2179, "Send <uin> or <nick> a single file."));
+        M_print (COLMESSAGE "%s files <uin|nick> <file1> <as1> ... <fileN> <asN> <description>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 CmdUserLookupName ("peer"),
+                 i18n (2180, "Send <uin> or <nick> several files."));
+        M_print (COLMESSAGE "%s open|login [<nr>]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 CmdUserLookupName ("conn"),
+                 i18n (2038, "Opens connection number <nr>, or the first server connection."));
+        M_print (COLMESSAGE "%s close|remove <nr>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 CmdUserLookupName ("conn"),
+                 i18n (2181, "Closes or removes connection number <nr>."));
+        M_print (COLMESSAGE "%s select [<nr>]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 CmdUserLookupName ("conn"),
+                 i18n (2182, "Select server connection number <nr> as current server connection."));
+        M_print (COLMESSAGE "%s <uin|nick>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 CmdUserLookupName ("peek"),
+                 i18n (2183, "Check whether <uin> or <nick> is offline or invisible."));
     }
     return 0;
 }
