@@ -2093,8 +2093,8 @@ static JUMP_F(CmdUserAuth)
 
     if (!strcmp (cmd, "req"))
     {
-        if (!msg)
-            msg = i18n (9999, "Please authorize my request and add me to your Contact List\n");
+        if (!msg)         /* FIXME: let it untranslated? */
+            msg = "Please authorize my request and add me to your Contact List\n";
         if (sess->type == TYPE_SERVER && sess->ver >= 8)
             SnacCliReqauth (sess, uin, msg);
         else if (sess->type == TYPE_SERVER)
@@ -2104,8 +2104,8 @@ static JUMP_F(CmdUserAuth)
     }
     else if (!strcmp (cmd, "deny"))
     {
-        if (!msg)
-            msg = i18n (9999, "Authorization refused\n");
+        if (!msg)         /* FIXME: let it untranslated? */
+            msg = "Authorization refused\n";
         if (sess->type == TYPE_SERVER && sess->ver >= 8)
             SnacCliAuthorize (sess, uin, 0, msg);
         else if (sess->type == TYPE_SERVER)
