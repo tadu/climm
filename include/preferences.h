@@ -90,43 +90,12 @@ void PrefLoad (Preferences *pref);
 #define SFLAG_OFF_BEEP     16
 #define SFLAG_OFF_CMD      32
 
-#define TYPEF_ANY_SERVER    1  /* any server connection  */
-#define TYPEF_SERVER_OLD    2  /* " && ver == 5          */
-#define TYPEF_SERVER        4  /* " && var > 6           */
-#define TYPEF_ANY_PEER      8  /* any peer connection    */
-#define TYPEF_ANY_DIRECT   16  /* " && established       */
-#define TYPEF_ANY_LISTEN   32  /* " && listening         */
-#define TYPEF_ANY_MSG      64  /* " && for messages      */
-#define TYPEF_ANY_FILE    128  /* " && for file transfer */
-#define TYPEF_ANY_CHAT    256  /* " && for chat          */
-#define TYPEF_FILE        512  /* any file io            */
-
-/* any sess->type may be only any of those values:
- * do not use the flags above unless you _really_ REALLY know what you're doing
- */
-#define TYPE_SERVER_OLD   (TYPEF_ANY_SERVER | TYPEF_SERVER_OLD)
-#define TYPE_SERVER       (TYPEF_ANY_SERVER | TYPEF_SERVER)
-#define TYPE_LISTEN       (TYPEF_ANY_PEER | TYPEF_ANY_MSG  | TYPEF_ANY_LISTEN)
-#define TYPE_DIRECT       (TYPEF_ANY_PEER | TYPEF_ANY_MSG  | TYPEF_ANY_DIRECT)
-#define TYPE_FILELISTEN   (TYPEF_ANY_PEER | TYPEF_ANY_FILE | TYPEF_ANY_LISTEN)
-#define TYPE_FILEDIRECT   (TYPEF_ANY_PEER | TYPEF_ANY_FILE | TYPEF_ANY_DIRECT)
-#define TYPE_CHATLISTEN   (TYPEF_ANY_PEER | TYPEF_ANY_CHAT | TYPEF_ANY_LISTEN)
-#define TYPE_CHATDIRECT   (TYPEF_ANY_PEER | TYPEF_ANY_CHAT | TYPEF_ANY_DIRECT)
-#define TYPE_FILE         TYPEF_FILE
-
 #define CONN_AUTOLOGIN   1
 #define CONN_WIZARD      2
 
 #define TABS_SIMPLE      1
 #define TABS_CYCLE       2
 #define TABS_CYCLEALL    3
-
-#define ASSERT_LISTEN(s)      (assert (s), assert ((s)->type == TYPE_LISTEN))
-#define ASSERT_DIRECT(s)      (assert (s), assert ((s)->type == TYPE_DIRECT))
-#define ASSERT_DIRECT_FILE(s) (assert (s), assert ((s)->type == TYPE_FILE || (s)->type == TYPE_DIRECT))
-#define ASSERT_FILE(s)        (assert (s), assert ((s)->type == TYPE_FILE))
-#define ASSERT_SERVER(s)      (assert (s), assert ((s)->type == TYPE_SERVER))
-#define ASSERT_ANY_LISTEN     (assert (s), assert ((s)->type & TYPEF_ANY_LISTEN)
 
 #endif
 
