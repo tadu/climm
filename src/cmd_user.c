@@ -1183,7 +1183,7 @@ static JUMP_F (CmdUserAnyMess)
         else if (f != 2)
             SnacCliSendmsg (conn, cont, arg1, data >> 2, f);
         else
-            SnacCliSendmsg2 (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, data >> 2, arg1));
+            SnacCliSendmsg2 (conn, cont, ExtraSet (ExtraSet (NULL, EXTRA_FORCE, 1, NULL), EXTRA_MESSAGE, data >> 2, arg1));
     }
     return 0;
 }
@@ -2560,6 +2560,14 @@ static JUMP_F(CmdUserRemove)
                 continue;
             }
 
+            if (all || !cont->alias)
+            {
+                if (conn->ver > 6)
+                    SnacCliRemcontact (conn, cont);
+                else
+                    CmdPktCmdContactList (conn);
+            }
+
             alias = strdup (cont->nick);
             uin = cont->uin;
             
@@ -2571,19 +2579,11 @@ static JUMP_F(CmdUserRemove)
             }
             
             if ((cont = ContactFind (conn->contacts, 0, uin, NULL, 0)))
-            {
                 M_printf (i18n (2149, "Removed alias '%s' for '%s' (%ld).\n"),
                          alias, cont->nick, uin);
-            }
             else
-            {
-                if (conn->ver > 6)
-                    SnacCliRemcontact (conn, cont);
-                else
-                    CmdPktCmdContactList (conn);
                 M_printf (i18n (2150, "Removed contact '%s' (%ld).\n"),
                           alias, uin);
-            }
             free (alias);
         }
     }

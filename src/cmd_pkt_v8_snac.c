@@ -1609,7 +1609,7 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
         type = MSG_GET_AWAY;
     }
     
-    if (!text || !cont || !(peek || (type & 0xff) == MSG_GET_VER || 
+    if (!text || !cont || !(peek || (type & 0xff) == MSG_GET_VER || ExtraGet (extra, EXTRA_FORCE) ||
         (HAS_CAP (cont->caps, CAP_SRVRELAY) && HAS_CAP (cont->caps, CAP_ISICQ))))
         return RET_DEFER;
     
