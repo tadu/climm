@@ -56,9 +56,9 @@ Connection *PeerFileCreate (Connection *serv)
     Connection *flist;
     
     ASSERT_ANY_SERVER(serv);
-    assert (serv->assoc);
-    assert (serv->assoc->ver >= 6);
-    assert (serv->assoc->ver <= 8);
+    
+    if (!serv->assoc || serv->assoc->ver < 6)
+        return NULL;
     
     if ((flist = ConnectionFind (TYPE_FILELISTEN, 0, serv)))
         return flist;
