@@ -27,8 +27,11 @@ Contributors:
             v8: info stuff; code cleanup
 
 	Sergey Shkonda		<serg@bcs.zp.ua>
-	    mreadline translation
-	    
+	    mreadline
+
+
+Translators:
+
 	Valerie Dachev		<v.dachev@mail.com>
 	    bulgarian translation
 	
@@ -41,7 +44,7 @@ Contributors:
 	Dmitri Lukyanov		<ldv@sdsl-64-7-10-170.dsl.iad.megapath.net>
 	    (update) russian translation
 
-	Pest			<pest@omskforum.net>
+	"Pest"			<pest@omskforum.net>
 	    update russian translation to >= 0.4.8pl6
 
 	Björn Hansson		<hansson@netera.se>
@@ -52,3 +55,6 @@ Contributors:
 	
 	Alberto Bertogli	<albertogli@telpin.com.ar>
 	    (update) spanish (es.i18n) translation to >= 0.4.8pl9
+	
+	Guillaume Coqueblin	<esquimo_2ooo@caramail.com>
+	    (update) french (fr.i18n) translation to >= 0.4.8pl9

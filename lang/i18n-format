@@ -15,4 +15,4 @@ ERR=$(diff -u0 build.fmt $1.fmt | grep -v ^@ | sed "s/^.\(....\).*/\1/" | grep "
 
 for f in :: $ERR; do grep $f $1.fmt; grep $f build.fmt; done
 
-if [ x$1 != xbuild ]; then rm $1.fmt; fi
+#if [ x$1 != xbuild ]; then rm $1.fmt; fi

@@ -1,5 +1,5 @@
 
-2002-06-04 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+2002-07-04 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Fix Russian/Japanese.
 	* Close log file desciptor (thanks, Alberto  Bertogli)
 	* Automatic responses.
@@ -9,6 +9,9 @@
 	* tcp fixes, interface cleanup
 	* move uin logs again
 	* status codes <-> status flags cleanup
+	* sync and update man page and run-time help texts
+	* de_DE
+	* fr_FR translation by Guillaume Coqueblin <esquimo_2ooo@caramail.com>
 
 2002-05-25 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* tcp.c: s/TYPE_PEER/TYPE_LISTEN; get rid of assert()s; mem leaks;
