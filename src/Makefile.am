@@ -33,8 +33,8 @@ clean:
 buildmark.o: .cvsupdate
 
 .cvsupdate: force
-	grep Id: *.c ../include/*.h | sed "s,.*\(20../../.. ..:..:..\).*,#define CVSUPDATE \"\1\"," \
-	    | sort | tail -1 > .cvsupdate
+	grep Id: *.c ../include/*.h | sed "s,.*\(20../../.. ..:..:..\).*,#define CVSUPDATE \"\1 UTC\"," \
+	    | sort | tail -1 | tr / - > .cvsupdate
 	date "+#define BUILDDATE \"%Y-%d-%m %T %Z\"" >> .cvsupdate
 
 force:
