@@ -162,24 +162,26 @@ static void FlapChannel4 (Session *sess, Packet *pak)
 
 void FlapPrint (Packet *pak)
 {
-    M_print (i18n (1910, "FLAP seq %08x length %04x channel %d\n"),
-             PacketReadAtB2 (pak, 2), pak->len - 6, PacketReadAt1 (pak, 1));
-    M_print (COLNONE);
-    if (PacketReadAt1 (pak, 1) != 2)
-    {
+    UWORD opos = pak->rpos;
+    UBYTE ch;
+    UWORD seq, len;
+
+    pak->rpos = 1;
+    
+    ch  = PacketRead1 (pak);
+    seq = PacketReadB2 (pak);
+    len = PacketReadB2 (pak);
+
+    M_print (COLEXDENT COLNONE "\n  " COLINDENT "%s " COLDEBUG "FLAP  ch %d seq %08x length %04x" COLNONE "\n",
+             s_dumpnd (pak->data, 6), ch, seq, len);
+
+    if (ch == 2)
+        SnacPrint (pak);
+    else
         if (prG->verbose & DEB_PACK8DATA || ~prG->verbose & DEB_PACK8)
-            Hex_Dump (pak->data + 6, pak->len - 6);
-    }
-    else 
-    {
-        M_print (i18n (1905, "SNAC (%x,%x) [%s] flags %x ref %x\n"),
-                 PacketReadAtB2 (pak, 6), PacketReadAtB2 (pak, 8),
-                 SnacName (PacketReadAtB2 (pak, 6), PacketReadAtB2 (pak, 8)),
-                 PacketReadAtB2 (pak, 10), PacketReadAtB4 (pak, 12));
-        M_print (COLNONE);
-        if (prG->verbose & DEB_PACK8DATA || ~prG->verbose & DEB_PACK8)
-            Hex_Dump (pak->data + 16, pak->len - 16);
-    }
+            M_print ("%s", s_dump (pak->data + 6, pak->len - 6));
+
+    pak->rpos = opos;
 }
 
 void FlapSave (Packet *pak, BOOL in)

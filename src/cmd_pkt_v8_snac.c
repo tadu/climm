@@ -32,7 +32,7 @@
 #include <assert.h>
 
 typedef void (jump_snac_f)(Event *);
-typedef struct { UWORD fam; UWORD cmd; const char *name; jump_snac_f *f; } SNAC;
+typedef struct { UWORD fam; UWORD cmd; const char *fmt; const char *name; jump_snac_f *f; } SNAC;
 #define JUMP_SNAC_F(f) void f (Event *event)
 
 extern int reconn;
@@ -62,68 +62,69 @@ static SNAC SNACv[] = {
 };
 
 static SNAC SNACS[] = {
-    {  1,  3, "SRV_FAMILIES",        SnacSrvFamilies},
-    {  1,  7, "SRV_RATES",           SnacSrvRates},
-    {  1, 10, "SRV_RATEEXCEEDED",    SnacSrvRateexceeded},
-    {  1, 15, "SRV_REPLYINFO",       SnacSrvReplyinfo},
-    {  1, 19, "SRV_MOTD",            SnacSrvMotd},
-    {  1, 24, "SRV_FAMILIES2",       SnacSrvFamilies2},
-    {  2,  3, "SRV_REPLYLOCATION",   SnacSrvReplylocation},
-    {  3,  1, "SRV_CONTACTERR",      NULL},
-    {  3,  3, "SRV_REPLYBUDDY",      SnacSrvReplybuddy},
-    {  3, 11, "SRV_USERONLINE",      SnacSrvUseronline},
-    {  3, 12, "SRV_USEROFFLINE",     SnacSrvUseroffline},
-    {  4,  1, "SRV_ICBMERR",         SnacSrvIcbmerr},
-    {  4,  5, "SRV_REPLYICBM",       SnacSrvReplyicbm},
-    {  4,  7, "SRV_RECVMSG",         SnacSrvRecvmsg},
-    {  4, 12, "SRV_SRVACKMSG",       SnacSrvAckmsg},
-    {  9,  3, "SRV_REPLYBOS",        SnacSrvReplybos},
-    { 11,  2, "SRV_SETINTERVAL",     SnacSrvSetinterval},
-    { 19,  3, "SRV_REPLYLISTS",      NULL},
-    { 19,  6, "SRV_REPLYROSTER",     SnacSrvReplyroster},
-    { 19, 14, "SRV_UPDATEACK",       NULL},
-    { 19, 15, "SRV_REPLYROSTEROK",   NULL},
-    { 19, 25, "SRV_AUTHREQ",         SnacSrvAuthreq},
-    { 19, 27, "SRV_AUTHREPLY",       SnacSrvAuthreply},
-    { 19, 28, "SRV_ADDEDYOU",        SnacSrvAddedyou},
-    { 21,  1, "SRV_TOICQERR",        NULL},
-    { 21,  3, "SRV_FROMICQSRV",      SnacSrvFromicqsrv},
-    { 23,  1, "SRV_REGREFUSED",      SnacSrvRegrefused},
-    { 23,  5, "SRV_NEWUIN",          SnacSrvNewuin},
-    {  1,  2, "CLI_READY",           NULL},
-    {  1,  6, "CLI_RATESREQUEST",    NULL},
-    {  1,  8, "CLI_ACKRATES",        NULL},
-    {  1, 14, "CLI_REQINFO",         NULL},
-    {  1, 23, "CLI_FAMILIES",        NULL},
-    {  1, 30, "CLI_SETSTATUS",       NULL},
-    {  2,  2, "CLI_REQLOCATION",     NULL},
-    {  2,  4, "CLI_SETUSERINFO",     NULL},
-    {  3,  2, "CLI_REQBUDDY",        NULL},
-    {  3,  4, "CLI_ADDCONTACT",      NULL},
-    {  3,  5, "CLI_REMCONTACT",      NULL},
-    {  4,  2, "CLI_SETICBM",         NULL},
-    {  4,  4, "CLI_REQICBM",         NULL},
-    {  4,  6, "CLI_SENDMSG",         NULL},
-    {  9,  2, "CLI_REQBOS",          NULL},
-    {  9,  5, "CLI_ADDVISIBLE",      NULL},
-    {  9,  6, "CLI_REMVISIBLE",      NULL},
-    {  9,  7, "CLI_ADDINVISIBLE",    NULL},
-    {  9,  8, "CLI_REMINVISIBLE",    NULL},
-    { 19,  2, "CLI_REQLISTS",        NULL},
-    { 19,  4, "CLI_REQROSTER",       NULL},
-    { 19,  5, "CLI_CHECKROSTER",     NULL},
-    { 19,  7, "CLI_ROSTERACK",       NULL},
-    { 19,  8, "CLI_ADDBUDDY",        NULL},
-    { 19,  9, "CLI_UPDATEGROUP",     NULL},
-    { 19, 10, "CLI_DELETEBUDDY",     NULL},
-    { 19, 17, "CLI_ADDSTART",        NULL},
-    { 19, 18, "CLI_ADDEND",          NULL},
-    { 19, 20, "CLI_GRANTAUTH?",      NULL},
-    { 19, 24, "CLI_REQAUTH",         NULL},
-    { 19, 26, "CLI_AUTHORIZE",       NULL},
-    { 21,  2, "CLI_TOICQSRV",        NULL},
-    { 23,  4, "CLI_REGISTERUSER",    NULL},
-    {  0,  0, "unknown",             NULL}
+    {  1,  3, "W-",       "SRV_FAMILIES",        SnacSrvFamilies},
+    {  1,  7, "",         "SRV_RATES",           SnacSrvRates},
+    {  1, 10, "",         "SRV_RATEEXCEEDED",    SnacSrvRateexceeded},
+    {  1, 15, "uWWt-",    "SRV_REPLYINFO",       SnacSrvReplyinfo},
+    {  1, 19, "Wt-",      "SRV_MOTD",            SnacSrvMotd},
+    {  1, 24, "W-",       "SRV_FAMILIES2",       SnacSrvFamilies2},
+    {  2,  3, "t-",       "SRV_REPLYLOCATION",   SnacSrvReplylocation},
+    {  3,  1, "W",        "SRV_CONTACTERR",      NULL},
+    {  3,  3, "t-",       "SRV_REPLYBUDDY",      SnacSrvReplybuddy},
+    {  3, 11, "uWWt-",    "SRV_USERONLINE",      SnacSrvUseronline},
+    {  3, 12, "uDt-",     "SRV_USEROFFLINE",     SnacSrvUseroffline},
+    {  4,  1, "W",        "SRV_ICBMERR",         SnacSrvIcbmerr},
+    {  4,  5, "W-",       "SRV_REPLYICBM",       SnacSrvReplyicbm},
+    {  4,  7, "DDWuWWt-", "SRV_RECVMSG",         SnacSrvRecvmsg},
+    {  4, 11, "",         "SRV/CLI_ACKMSG",      NULL},
+    {  4, 12, "DDwu",     "SRV_SRVACKMSG",       SnacSrvAckmsg},
+    {  9,  3, "t-",       "SRV_REPLYBOS",        SnacSrvReplybos},
+    { 11,  2, "W",        "SRV_SETINTERVAL",     SnacSrvSetinterval},
+    { 19,  3, "t-",       "SRV_REPLYLISTS",      NULL},
+    { 19,  6, "",         "SRV_REPLYROSTER",     SnacSrvReplyroster},
+    { 19, 14, "W",        "SRV_UPDATEACK",       NULL},
+    { 19, 15, "DW",       "SRV_REPLYROSTEROK",   NULL},
+    { 19, 25, "uB",       "SRV_AUTHREQ",         SnacSrvAuthreq},
+    { 19, 27, "ubBW",     "SRV_AUTHREPLY",       SnacSrvAuthreply},
+    { 19, 28, "u",        "SRV_ADDEDYOU",        SnacSrvAddedyou},
+    { 21,  1, "Wt-",      "SRV_TOICQERR",        NULL},
+    { 21,  3, "t-",       "SRV_FROMICQSRV",      SnacSrvFromicqsrv},
+    { 23,  1, "Wt-",      "SRV_REGREFUSED",      SnacSrvRegrefused},
+    { 23,  5, "t-",       "SRV_NEWUIN",          SnacSrvNewuin},
+    {  1,  2, "W-",       "CLI_READY",           NULL},
+    {  1,  6, "",         "CLI_RATESREQUEST",    NULL},
+    {  1,  8, "W-",       "CLI_ACKRATES",        NULL},
+    {  1, 14, "",         "CLI_REQINFO",         NULL},
+    {  1, 23, "W-",       "CLI_FAMILIES",        NULL},
+    {  1, 30, "t-",       "CLI_SETSTATUS",       NULL},
+    {  2,  2, "",         "CLI_REQLOCATION",     NULL},
+    {  2,  4, "D-",       "CLI_SETUSERINFO",     NULL},
+    {  3,  2, "",         "CLI_REQBUDDY",        NULL},
+    {  3,  4, "u-",       "CLI_ADDCONTACT",      NULL},
+    {  3,  5, "u-",       "CLI_REMCONTACT",      NULL},
+    {  4,  2, "W-",       "CLI_SETICBM",         NULL},
+    {  4,  4, "",         "CLI_REQICBM",         NULL},
+    {  4,  6, "DDWut-",   "CLI_SENDMSG",         NULL},
+    {  9,  2, "",         "CLI_REQBOS",          NULL},
+    {  9,  5, "u-",       "CLI_ADDVISIBLE",      NULL},
+    {  9,  6, "u-",       "CLI_REMVISIBLE",      NULL},
+    {  9,  7, "u-",       "CLI_ADDINVISIBLE",    NULL},
+    {  9,  8, "u-",       "CLI_REMINVISIBLE",    NULL},
+    { 19,  2, "",         "CLI_REQLISTS",        NULL},
+    { 19,  4, "",         "CLI_REQROSTER",       NULL},
+    { 19,  5, "DW",       "CLI_CHECKROSTER",     NULL},
+    { 19,  7, "",         "CLI_ROSTERACK",       NULL},
+    { 19,  8, "uWWWWt-",  "CLI_ADDBUDDY",        NULL},
+    { 19,  9, "BWWWWt-",  "CLI_UPDATEGROUP",     NULL},
+    { 19, 10, "uWWWWt-",  "CLI_DELETEBUDDY",     NULL},
+    { 19, 17, "",         "CLI_ADDSTART",        NULL},
+    { 19, 18, "",         "CLI_ADDEND",          NULL},
+    { 19, 20, "uD",       "CLI_GRANTAUTH?",      NULL},
+    { 19, 24, "uBW",      "CLI_REQAUTH",         NULL},
+    { 19, 26, "ubBW",     "CLI_AUTHORIZE",       NULL},
+    { 21,  2, "t-",       "CLI_TOICQSRV",        NULL},
+    { 23,  4, "t-",       "CLI_REGISTERUSER",    NULL},
+    {  0,  0, "",         "unknown",             NULL}
 };
 
 #define SnacSend FlapSend
@@ -142,11 +143,14 @@ void SrvCallBackSnac (Event *event)
     pak->flags = PacketReadB2 (pak);
     pak->id    = PacketReadB4 (pak);
     
+    if (pak->flags & 0x8000)
+        PacketReadData (pak, NULL, PacketReadB2 (pak));
+    
     for (s = SNACS; s->fam; s++)
         if (s->fam == family && s->cmd == pak->cmd)
             break;
     
-    if (s->fam)
+    if (s->f)
         s->f (event);
     else
         SnacSrvUnknown (event);
@@ -199,6 +203,45 @@ Packet *SnacC (Session *sess, UWORD fam, UWORD cmd, UWORD flags, UDWORD ref)
     PacketWriteB2 (pak, flags);
     PacketWriteB4 (pak, ref /*? ref : sess->our_seq++*/);
     return pak;
+}
+
+/*
+ * Print a given SNAC.
+ */
+void SnacPrint (Packet *pak)
+{
+    UWORD fam, cmd, flag, opos = pak->rpos;
+    UDWORD ref, len;
+
+    pak->rpos = 6;
+    fam  = PacketReadB2 (pak);
+    cmd  = PacketReadB2 (pak);
+    flag = PacketReadB2 (pak);
+    ref  = PacketReadB4 (pak);
+    len  = PacketReadAtB2 (pak, pak->rpos);
+
+    M_print ("%s " COLDEBUG "SNAC     (%x,%x) [%s] flags %x ref %x",
+             s_dumpnd (pak->data + 6, flag & 0x8000 ? 10 + len : 10),
+             fam, cmd, SnacName (fam, cmd), flag, ref);
+    if (flag & 0x8000)
+    {
+        M_print (" extra (%d)", len);
+        pak->rpos += len + 2;
+    }
+    M_print (COLNONE "\n");
+
+    if (prG->verbose & DEB_PACK8DATA || ~prG->verbose & DEB_PACK8)
+    {
+        SNAC *s;
+
+        for (s = SNACS; s->fam; s++)
+            if (s->fam == fam && s->cmd == cmd)
+                break;
+
+        M_print ("%s", PacketDump (pak, s->fmt));
+    }
+
+    pak->rpos = opos;
 }
 
 /*
