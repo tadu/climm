@@ -104,16 +104,25 @@ static jump_t jump[] = {
     { &CmdUserResend,        "resend",       0,   0 },
     { &CmdUserVerbose,       "verbose",      0,   0 },
     { &CmdUserIgnoreStatus,  "i",            0,   0 },
-    { &CmdUserStatusDetail,  "status",       2,  10 },
-    { &CmdUserStatusDetail,  "ww",           2,   2 },
-    { &CmdUserStatusDetail,  "ee",           2,   3 },
-    { &CmdUserStatusDetail,  "w",            2,   4 },
-    { &CmdUserStatusDetail,  "e",            2,   5 },
-    { &CmdUserStatusDetail,  "wwg",          2,  34 },
-    { &CmdUserStatusDetail,  "eeg",          2,  35 },
-    { &CmdUserStatusDetail,  "wg",           2,  36 },
-    { &CmdUserStatusDetail,  "eg",           2,  37 },
-    { &CmdUserStatusDetail,  "s",            2,  30 },
+    { &CmdUserStatusDetail,  "status",       2,     2     + 8 },
+    { &CmdUserStatusDetail,  "ww",           2,     2 },
+    { &CmdUserStatusDetail,  "ee",           2, 1 + 2 },
+    { &CmdUserStatusDetail,  "w",            2,         4 },
+    { &CmdUserStatusDetail,  "e",            2, 1     + 4 },
+    { &CmdUserStatusDetail,  "wwg",          2,     2              + 32 },
+    { &CmdUserStatusDetail,  "eeg",          2, 1 + 2              + 32 },
+    { &CmdUserStatusDetail,  "wg",           2,         4          + 32 },
+    { &CmdUserStatusDetail,  "eg",           2, 1     + 4          + 32 },
+    { &CmdUserStatusDetail,  "s",            2,     2 + 4 + 8 + 16 },
+    { &CmdUserStatusDetail,  "wwv",          2,     2                   + 64 },
+    { &CmdUserStatusDetail,  "eev",          2, 1 + 2                   + 64 },
+    { &CmdUserStatusDetail,  "wv",           2,         4               + 64 },
+    { &CmdUserStatusDetail,  "ev",           2, 1     + 4               + 64 },
+    { &CmdUserStatusDetail,  "wwgv",         2,     2              + 32 + 64 },
+    { &CmdUserStatusDetail,  "eegv",         2, 1 + 2              + 32 + 64 },
+    { &CmdUserStatusDetail,  "wgv",          2,         4          + 32 + 64 },
+    { &CmdUserStatusDetail,  "egv",          2, 1     + 4          + 32 + 64 },
+    { &CmdUserStatusDetail,  "sv",           2,     2 + 4 + 8 + 16      + 64 },
     { &CmdUserStatusDetail,  "s-any",        2,   0 },
     { &CmdUserStatusMeta,    "ss",           2,   1 },
     { &CmdUserStatusMeta,    "meta",         2,   0 },
@@ -1399,12 +1408,15 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
         ul = ESC "[4m";
 #endif
     if (data & 2)
-        rl_printf ("%s%s%c%c%c%2d%c%s%s %*ld", COLSERVER, ul,
+        rl_printf ("%s%s%c%c%c%2d%c%c%s%s %*ld", COLSERVER, ul,
              !cont->group                        ? '#' : ' ',
              ContactPrefVal (cont,  CO_INTIMATE) ? '*' :
               ContactPrefVal (cont, CO_HIDEFROM) ? '-' : ' ',
              ContactPrefVal (cont,  CO_IGNORE)   ? '^' : ' ',
              cont->dc ? cont->dc->version : 0,
+             ContactPrefVal (cont, CO_WANTSBL)  ? 
+               (ContactPrefVal (cont, CO_ISSBL) ? 'S' : '.') :
+                ContactPrefVal (cont, CO_ISSBL) ? 's' : ' ',
              peer ? (
 #ifdef ENABLE_SSL
               peer->connect & CONNECT_OK && peer->ssl_status == SSL_STATUS_OK ? '%' :
@@ -1416,7 +1428,7 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
               cont->dc->ip_rem && ~cont->dc->ip_rem ? '^' : ' ',
              COLNONE, ul, (int)__lenuin, cont->uin);
 
-    rl_printf ("%s%s%c%c%s%s%-*s%s%s %s%s%-*s%s%s %-*s%s%s%s\n",
+    rl_printf ("%s%s%c%s%s%-*s%s%s %s%s%-*s%s%s %-*s%s%s%s\n",
              COLSERVER, ul, data & 2                       ? ' ' :
              !cont->group                       ? '#' :
              ContactPrefVal (cont, CO_INTIMATE) ? '*' :
@@ -1429,9 +1441,6 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
              peer->connect & CONNECT_OK         ? '&' :
              peer->connect & CONNECT_FAIL       ? '|' :
              peer->connect & CONNECT_MASK       ? ':' : '.' ,
-             ContactPrefVal (cont, CO_WANTSBL)  ? 
-               (ContactPrefVal (cont, CO_ISSBL) ? 'S' : '.') :
-                ContactPrefVal (cont, CO_ISSBL) ? 's' : ' ',
              COLCONTACT, ul, (int)__lennick + s_delta (cont->nick), cont->nick,
              COLNONE, ul, COLQUOTE, ul, (int)__lenstat + 2 + s_delta (stat), stat,
              COLNONE, ul, (int)__lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
@@ -1454,6 +1463,7 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
 /*
  * Shows the contact list in a very detailed way.
  *
+ * data & 64: also show shadowed contacts
  * data & 32: sort by groups
  * data & 16: show _only_ own status
  * data & 8: show only given nicks
@@ -1472,7 +1482,7 @@ static JUMP_F(CmdUserStatusDetail)
 
     if (!data)
         s_parseint (&args, &data);
-
+    
     if (~data & 16 && !(cg = s_parsecg (&args, conn)))
         tcg = cg = NULL;
 
@@ -1506,7 +1516,7 @@ static JUMP_F(CmdUserStatusDetail)
                 free (t2);
             }
             if (cont->group && cont->group != conn->contacts && cont->group->name)
-                rl_printf (i18n (2404, "Group: %s\n"), cont->group->name);
+                rl_printf ("    %s %s\n", i18n (2404, "Group:"), cont->group->name);
             for (j = id = 0; id < CAP_MAX; id++)
                 if (cont->caps & (1 << id))
                 {
@@ -1514,7 +1524,7 @@ static JUMP_F(CmdUserStatusDetail)
                     if (j++)
                         rl_print (", ");
                     else
-                        rl_printf ("    %s", i18n (2192, "Capabilities: "));
+                        rl_printf ("    %s ", i18n (2192, "Capabilities:"));
                     rl_print (cap->name);
                     if (cap->name[4] == 'U' && cap->name[5] == 'N')
                     {
@@ -1571,6 +1581,7 @@ static JUMP_F(CmdUserStatusDetail)
 
     for (k = -1; (k == -1) ? (tcg ? (cg = tcg) : cg) : (cg = ContactGroupIndex (k)); k++)
     {
+        char is_shadow;
         if (k != -1 && (cg == conn->contacts || cg == tcg))
             continue;
         if (cg->serv != conn)
@@ -1578,6 +1589,7 @@ static JUMP_F(CmdUserStatusDetail)
 #ifdef CONFIG_UNDERLINE
         __l = 0;
 #endif
+        is_shadow = ~data & 64 && data & 32 && ContactGroupPrefVal (cg, CO_SHADOW);
         rl_print (COLQUOTE);
         if (cg != tcg && cg != conn->contacts && cg->name)
         {
@@ -1586,27 +1598,39 @@ static JUMP_F(CmdUserStatusDetail)
                 for (i = j = (__totallen - c_strlen (cg->name) - 1) / 2; i >= 20; i -= 20)
                     rl_print ("====================");
                 rl_printf ("%.*s", (int)i, "====================");
-                rl_printf (" %s%s%s ", COLCONTACT, cg->name, COLQUOTE);
+                rl_printf (" %s%s%s ", is_shadow ? COLQUOTE : COLCONTACT, cg->name, COLQUOTE);
                 for (i = __totallen - j - c_strlen (cg->name) - 2; i >= 20; i -= 20)
                     rl_print ("====================");
             }
             else
-                rl_printf (" %s%s%s ", COLCONTACT, cg->name, COLQUOTE);
+                rl_printf (" %s%s%s ", is_shadow ? COLQUOTE : COLCONTACT, cg->name, COLQUOTE);
         }
         else
             for (i = __totallen; i >= 20; i -= 20)
                 rl_print ("====================");
         rl_printf ("%.*s%s\n", (int)i, "====================", COLNONE);
 
-        for (i = (data & 1 ? 2 : 0); i < 9; i++)
+        if (!is_shadow)
         {
-            status = stati[i];
-            for (j = 0; (cont = ContactIndex (cg, j)); j++)
+            val_t val;
+            char is_set;
+            is_set = OptGetVal (&cg->copts, CO_SHADOW, &val);
+            OptSetVal (&cg->copts, CO_SHADOW, 0);
+            for (i = (data & 1 ? 2 : 0); i < 9; i++)
             {
-                if (__status (cont) != status)
-                    continue;
-                __showcontact (conn, cont, data);
+                status = stati[i];
+                for (j = 0; (cont = ContactIndex (cg, j)); j++)
+                {
+                    if (__status (cont) != status)
+                        continue;
+                    if (data & 64 || !ContactPrefVal (cont, CO_SHADOW))
+                        __showcontact (conn, cont, data);
+                }
             }
+            if (is_set)
+                OptSetVal (&cg->copts, CO_SHADOW, val);
+            else
+                OptUndef (&cg->copts, CO_SHADOW);
         }
         if (~data & 32)
             break;
@@ -2448,17 +2472,20 @@ static JUMP_F(CmdUserAdd)
             rl_printf (i18n (2448, "Contact group '%s' already exists\n"), cg->name);
             return 0;
         }
-        if (!(par = s_parse (&args)))
+        if (!(cg = s_parsecg (&args, conn)))
         {
-            rl_print (i18n (2240, "No contact group given.\n"));
-            return 0;
-        }
-        if ((cg = ContactGroupC (conn, 0, par->txt)))
-            rl_printf (i18n (2245, "Added contact group '%s'.\n"), par->txt);
-        else
-        {
-            rl_print (i18n (2118, "Out of memory.\n"));
-            return 0;
+            if (!(par = s_parse (&args)))
+            {
+                rl_print (i18n (2240, "No contact group given.\n"));
+                return 0;
+            }
+            if ((cg = ContactGroupC (conn, 0, par->txt)))
+                rl_printf (i18n (2245, "Added contact group '%s'.\n"), par->txt);
+            else
+            {
+                rl_print (i18n (2118, "Out of memory.\n"));
+                return 0;
+            }
         }
     }
     
@@ -2489,7 +2516,6 @@ static JUMP_F(CmdUserAdd)
                     {
                         rl_printf (i18n (2244, "Contact group '%s' already has contact '%s' (%ld).\n"),
                                    cg->name, cont->nick, cont->uin);
-                        return 0;
                     }
                 }
                 else if (ContactAdd (cg, cont))
@@ -2574,7 +2600,7 @@ static JUMP_F(CmdUserRemove)
     int i;
     OPENCONN;
     
-    if (!(cg = s_parsecg (&args, conn)) && data == 2)
+    if (data != 1 && !(cg = s_parsecg (&args, conn)) && data == 2)
     {
         rl_print (i18n (2240, "No contact group given.\n"));
         return 0;
@@ -2586,10 +2612,7 @@ static JUMP_F(CmdUserRemove)
         all = 1;
     
     if (all && cg && cg->serv->contacts != cg)
-    {
-        rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
         return 0;
-    }
 
     if ((acg = s_parselistrem (&args, conn)))
     {

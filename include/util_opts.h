@@ -73,6 +73,7 @@ extern struct OptEntry_s OptList[];
 #define CO_DCCONT        (COF_BOOL    | CO_GROUP   | 0x004002UL) /* this connection: dc only for contacts */
 #define CO_ISSBL         (COF_BOOL    | CO_CONTACT | 0x010002UL) /* is on sbl                    */
 #define CO_WANTSBL       (COF_BOOL    | CO_CONTACT | 0x040002UL) /* want it to be on sbl         */
+#define CO_SHADOW        (COF_BOOL    | CO_CONTACT | 0x100002UL) /* don't display in contact list         */
 
 #define CO_ENCODING      (COF_NUMERIC | CO_CONTACT | 0x03UL) /* the default encoding for this contact */
 #define CO_ENCODINGSTR   (COF_STRING  | CO_CONTACT | 0x04UL) /* the default encoding for this contact */
