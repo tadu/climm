@@ -10,11 +10,11 @@ struct Extra_s
     char   *text;
 };
 
-Extra      *ExtraSet   (Extra *extra, UWORD type, UDWORD value, const char *text);
+Extra      *ExtraSet   (Extra *extra, UDWORD type, UDWORD value, const char *text);
 Extra      *ExtraClone (Extra *extra);
-Extra      *ExtraFind  (Extra *extra, UWORD type);
-UDWORD      ExtraGet   (Extra *extra, UWORD type);
-const char *ExtraGetS  (Extra *extra, UWORD type);
+Extra      *ExtraFind  (Extra *extra, UDWORD type);
+UDWORD      ExtraGet   (Extra *extra, UDWORD type);
+const char *ExtraGetS  (Extra *extra, UDWORD type);
 void        ExtraD     (Extra *extra);
 
 #define EXTRA_TRANS        0x11

@@ -45,34 +45,28 @@ Extra *ExtraClone (Extra *extra)
     return nex;
 }
 
-Extra *ExtraFind (Extra *extra, UWORD type)
+Extra *ExtraFind (Extra *extra, UDWORD type)
 {
     while (extra && extra->tag != type)
         extra = extra->more;
-    if (extra)
-        return extra;
-    return 0;
+    return extra ? extra : NULL;
 }
 
-UDWORD ExtraGet (Extra *extra, UWORD type)
+UDWORD ExtraGet (Extra *extra, UDWORD type)
 {
     while (extra && extra->tag != type)
         extra = extra->more;
-    if (extra)
-        return extra->data;
-    return 0;
+    return extra ? extra->data : 0;
 }
 
-const char *ExtraGetS (Extra *extra, UWORD type)
+const char *ExtraGetS (Extra *extra, UDWORD type)
 {
     while (extra && extra->tag != type)
         extra = extra->more;
-    if (extra)
-        return extra->text;
-    return NULL;
+    return extra ? extra->text : NULL;
 }
 
-Extra *ExtraSet (Extra *extra, UWORD type, UDWORD value, const char *text)
+Extra *ExtraSet (Extra *extra, UDWORD type, UDWORD value, const char *text)
 {
     Extra *tmp, *old = NULL;
 
