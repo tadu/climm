@@ -36,15 +36,16 @@ AC_ARG_ENABLE([iconvrepl], AC_HELP_STRING([--enable-iconvrepl], [compile in icon
 AC_ARG_ENABLE([remote], AC_HELP_STRING([--disable-remote], [disable remote control FIFO]),
               ac_arg_use_remote=$enableval, ac_arg_use_remote=auto)
 
+echo "#define ENABLE_FALLBACK_ASCII   1" > include/iconvfb.h
+echo "#define ENABLE_FALLBACK_UCS2BE  1" >> include/iconvfb.h
+echo "#define ENABLE_FALLBACK_WIN1251 1" >> include/iconvfb.h
+echo "#define ENABLE_FALLBACK_KOI8    1" >> include/iconvfb.h
+echo "#define ENABLE_FALLBACK_LATIN9  1" >> include/iconvfb.h
+echo "#define ENABLE_FALLBACK_LATIN1  1" >> include/iconvfb.h
+echo "#define ENABLE_FALLBACK_UTF8    1" >> include/iconvfb.h
+
 if test "x$ac_arg_use_iconv" != "xno"; then
   AM_ICONV
-  echo "#define ENABLE_FALLBACK_ASCII   1" > include/iconvfb.h
-  echo "#define ENABLE_FALLBACK_UCS2BE  1" >> include/iconvfb.h
-  echo "#define ENABLE_FALLBACK_WIN1251 1" >> include/iconvfb.h
-  echo "#define ENABLE_FALLBACK_KOI8    1" >> include/iconvfb.h
-  echo "#define ENABLE_FALLBACK_LATIN9  1" >> include/iconvfb.h
-  echo "#define ENABLE_FALLBACK_LATIN1  1" >> include/iconvfb.h
-  echo "#define ENABLE_FALLBACK_UTF8    1" >> include/iconvfb.h
   if test "x$am_cv_func_iconv$ac_arg_use_iconvrepl" = "xyesno"; then
     AC_CACHE_CHECK(for iconv() fallbacks to compile in, ac_cv_iconv_fb,
       [ac_cv_iconv_min="UCS2BE WIN1251 KOI8 LATIN9 LATIN1 UTF8"
