@@ -19,6 +19,9 @@ Contributors:
 
         Per Olofsson		<pelle__at__dsv.su.se>
 	    alias support (GPL >= v2)
+	
+	Lutz Rossa		<rossa__at__hmi.de>
+	    win32 screensaver/lock detection
 
 	Sergey Shkonda		<serg__at__bcs.zp.ua>
 	    mreadline

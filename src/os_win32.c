@@ -7,7 +7,7 @@
 #include <winuser.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "os_win32.h"
+#include "os.h"
 
 #define TRACE 1 ? ((void)0) : printf
 
@@ -30,12 +30,13 @@
 static HMODULE g_hUser32DLL   = NULL;
 static int     g_bInitialize  = 1;
 static DWORD   g_dwWinVersion = 0;
-static BOOL    __stdcall (*g_fnSystemParametersInfoA)(UINT uiAction, UINT uiParam, PVOID pvParam, UINT fWinIni) = NULL;
-static HDESK   __stdcall (*g_fnOpenDesktopA)(char* lpszDesktop, DWORD dwFlags, BOOL fInherit, ACCESS_MASK dwDesiredAccess) = NULL;
-static BOOL    __stdcall (*g_fnSwitchDesktop)(HDESK hDesktop) = NULL;
-static BOOL    __stdcall (*g_fnCloseDesktop)(HDESK hDesktop) = NULL;
+static BOOL    (__stdcall * g_fnSystemParametersInfoA)(UINT uiAction, UINT uiParam, PVOID pvParam, UINT fWinIni) = NULL;
+static HDESK   (__stdcall * g_fnOpenDesktopA)(char* lpszDesktop, DWORD dwFlags, BOOL fInherit, ACCESS_MASK dwDesiredAccess) = NULL;
+static BOOL    (__stdcall * g_fnSwitchDesktop)(HDESK hDesktop) = NULL;
+static BOOL    (__stdcall * g_fnCloseDesktop)(HDESK hDesktop) = NULL;
 static int g_iDetectResult[2] = {0x10000, 0x10000};
 
+/* free resources at exit */
 static void DoneDetectLockedWorkstation()
 {
     if (g_hUser32DLL)
@@ -46,6 +47,10 @@ static void DoneDetectLockedWorkstation()
     }
 }
 
+/*
+ * this function tests, if a screen saver is configured and enabled
+ * (it does not test the running state)
+ */
 static int IsScreenSaverActive()
 {
     BOOL bActive  =FALSE;
@@ -56,6 +61,9 @@ static int IsScreenSaverActive()
     return bActive ? 1 : 0;
 }
 
+/*
+ * this function tests, if the screen saver is running
+ */
 static int IsScreenSaverRunning()
 {
     BOOL bActive = FALSE;
@@ -90,6 +98,9 @@ static int IsScreenSaverRunning()
     return bActive ? 1 : 0;
 }
 
+/*
+ * this function tests, if the interactive workstation is locked (on Windows NT and later)
+ */
 static int IsWorkstationLocked()
 {
     BOOL bLocked = FALSE;
@@ -114,6 +125,9 @@ static int IsWorkstationLocked()
     return bLocked ? 1 : 0;
 }
 
+/*
+ * helper function for "os_DetectLockedWorkstation()", initializes globals on first call
+ */
 static int DetectInfo()
 {
     int iDetectResult = g_iDetectResult[0];
@@ -144,10 +158,10 @@ static int DetectInfo()
         }
 
         atexit (&DoneDetectLockedWorkstation);
-        g_fnSystemParametersInfoA = (BOOL __stdcall (*)(UINT, UINT, PVOID, UINT)) GetProcAddress (g_hUser32DLL, "SystemParametersInfoA");
-        g_fnOpenDesktopA = (HDESK __stdcall (*)(char *, DWORD, BOOL, ACCESS_MASK)) GetProcAddress (g_hUser32DLL, "OpenDesktopA");
-        g_fnSwitchDesktop = (BOOL __stdcall (*)(HDESK)) GetProcAddress (g_hUser32DLL, "SwitchDesktop");
-        g_fnCloseDesktop = (BOOL __stdcall (*)(HDESK)) GetProcAddress (g_hUser32DLL, "CloseDesktop");
+        g_fnSystemParametersInfoA = (BOOL (__stdcall *)(UINT, UINT, PVOID, UINT)) GetProcAddress (g_hUser32DLL, "SystemParametersInfoA");
+        g_fnOpenDesktopA = (HDESK (__stdcall *)(char *, DWORD, BOOL, ACCESS_MASK)) GetProcAddress (g_hUser32DLL, "OpenDesktopA");
+        g_fnSwitchDesktop = (BOOL (__stdcall *)(HDESK)) GetProcAddress (g_hUser32DLL, "SwitchDesktop");
+        g_fnCloseDesktop = (BOOL (__stdcall *)(HDESK)) GetProcAddress (g_hUser32DLL, "CloseDesktop");
 
         TRACE("g_fnSystemParametersInfoA = 0x%08lx\n", (unsigned long)g_fnSystemParametersInfoA);
         TRACE("g_fnOpenDesktopA = 0x%08lx\n", (unsigned long)g_fnOpenDesktopA);
@@ -164,7 +178,7 @@ static int DetectInfo()
     }
     if (!g_hUser32DLL) return -1;
 
-    i = IsWorkstationLocked();
+    i = IsWorkstationLocked();    /* test locked workstation */
     if (i >= 0)
     {
         if (i > 0)
@@ -173,10 +187,10 @@ static int DetectInfo()
             iDetectResult &= ~2;
     }
 
-    i = IsScreenSaverActive();
-    if (i >= 0)
+    i = IsScreenSaverActive();    /* test, if the user has a screen saver configured */
+    if (i > 0)
     {
-        i = IsScreenSaverRunning();
+        i = IsScreenSaverRunning(); /* is the screen saver running? */
         if (i >= 0)
         {
             if (i > 0)
@@ -186,6 +200,11 @@ static int DetectInfo()
         }
         else
         {
+            /*
+             * cannot detect, if the screen saver is running
+             * copy state "locked workstation" state
+             */
+
             if (iDetectResult & 2)
                 iDetectResult |=  1;
             else
@@ -194,6 +213,12 @@ static int DetectInfo()
     }
     else
     {
+        /*
+         * cannot detect, if the screen saver is running
+         * or the user has no screen saver configured
+         * copy state "locked workstation" state
+         */
+
         if (iDetectResult & 2)
             iDetectResult |=  1;
         else
@@ -206,7 +231,8 @@ static int DetectInfo()
 
 /*
  * should work on Windows 98/ME
- * works on Windows NT and later
+ * works on Windows NT, if screen saver is password protected
+ * works on Windows 2000 and later
  *
  * detects a running screen saver
  * detects a locked workstation on Windows NT

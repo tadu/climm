@@ -26,6 +26,7 @@
 #include "cmd_pkt_v8_snac.h"
 #include "cmd_pkt_cmd_v5_util.h"
 #include "util_str.h"
+#include "os.h"
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -52,7 +52,7 @@ typedef int SOK_T;
   #define _OS_PREFPATH   ".\\"
   #define _OS_PATHSEP    '\\'
   #define _OS_PATHSEPSTR "\\"
-  int os_DetectLockedWorkstation (void);
+
 #elif defined(__BEOS__)
   #define sockread(s,p,l)  recv (s, p, l, 0)
   #define sockwrite(s,p,l) send (s, p, l, 0)
@@ -63,7 +63,7 @@ typedef int SOK_T;
   #define _OS_PREFPATH   NULL
   #define _OS_PATHSEP    '/'
   #define _OS_PATHSEPSTR "/"
-  #define os_DetectLockedWorkstation() -1
+
 #elif defined(__amigaos__)
   #define sockread(s,p,l)  read (s, p, l)
   #define sockwrite(s,p,l) write (s, p, l)
@@ -74,7 +74,7 @@ typedef int SOK_T;
   #define _OS_PREFPATH   "/PROGDIR/"
   #define _OS_PATHSEP    '/'
   #define _OS_PATHSEPSTR "/"
-  #define os_DetectLockedWorkstation() -1
+
 #else
   #define sockread(s,p,l)  read (s, p, l)
   #define sockwrite(s,p,l) write (s, p, l)
@@ -85,7 +85,7 @@ typedef int SOK_T;
   #define _OS_PREFPATH   NULL
   #define _OS_PATHSEP    '/'
   #define _OS_PATHSEPSTR "/"
-  #define os_DetectLockedWorkstation() -1
+
 #endif
 
 #define Get_Config_Info(x) Get_Unix_Config_Info(x)
