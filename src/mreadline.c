@@ -414,7 +414,7 @@ void R_process_input_tab (void)
         }
 
         if ((uin = TabGetNext ()))
-            sprintf (s, "%s %s ", msgcmd, (cont = ContactFind (NULL, 0, uin, NULL, 1)) ? cont->nick : s_sprintf ("%ld", uin));
+            sprintf (s, "%s %s ", msgcmd, (cont = ContactFind (NULL, 0, uin, NULL, 1)) ? ConvFromUTF8 (cont->nick, prG->enc_loc) : s_sprintf ("%ld", uin));
         else
             sprintf (s, "%s ", msgcmd);
 
@@ -451,7 +451,7 @@ void R_process_input_tab (void)
             {
                 nicklen = strlen (tabcont->nick);
                 if (((prG->tabs == TABS_CYCLE && tabcont->status != STATUS_OFFLINE) || prG->tabs == TABS_CYCLEALL)
-                    && nicklen >= tabwlen && !strncasecmp (tabword, tabcont->nick, tabwlen)
+                    && nicklen >= tabwlen && !strncasecmp (tabword, ConvFromUTF8 (tabcont->nick, prG->enc_loc), tabwlen)
                     && (tabwlen > 0 || ~tabcont->flags & CONT_ALIAS) && ~tabcont->flags & CONT_TEMPORARY)
                     gotmatch = 1;
                 else
@@ -469,7 +469,7 @@ void R_process_input_tab (void)
             }
         }
         *tabwstart = '\0';
-        memmove (s, s_sprintf ("%s%s%s", s, tabcont->nick, tabwend), HISTORY_LINE_LEN);
+        memmove (s, s_sprintf ("%s%s%s", s, ConvFromUTF8 (tabcont->nick, prG->enc_loc), tabwend), HISTORY_LINE_LEN);
         tabwend = tabwstart + nicklen;
         R_remprompt ();
         bytelen = strlen (s);
