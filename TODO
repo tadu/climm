@@ -15,7 +15,7 @@ Jeff Bearer <jbearer@tribweb.com>
  : A couple of things have come up:
  : - All mode changes should be in a central system log and not each user
 
-<e.hemmink@student.utwente.nl>: (refuses to do translation work)
+ICQ#135584591: (refuses to do translation work)
  : implement web aware feature
 
 TODO:
@@ -23,9 +23,9 @@ TODO:
  : add missing v8 pieces
    + figure out v8 reverse connection
  : history of messages
- : alias for commands
+ : alias for commands (partially done)
  : tab completion (improve)
- : make MSGSENTSTR etc configurable (awaiting user feedback)
+ : make MSGSENTSTR etc configurable (done)
  : use ASCII art for setup wizard
  : file transfer:
    + figure out server file sending
