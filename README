@@ -1,5 +1,5 @@
 micq - a portable ICQ Console Client
-$Id$
+$Id$ -*- utf-8 -*-
 
 current Version: 0.4.9.2b
 ====================================
@@ -100,7 +100,7 @@ f) CVS
 Required is the cvs client, autoconf 2.57 or greater and automake 1.7 or
 greater. automake 1.7.2 is recommended, however.
 
-cvs -d :pserver:anonymous@micq.org:/usr/local/cvsroot co micq
+cvs -d :pserver:anonymous@micq.org:/var/lib/cvs co micq
 
 To prepare the maintainer generated files:
 
