@@ -14,6 +14,7 @@
 
 #include "micq.h"
 #include "buildmark.h"
+#include ".cvsupdate"
 
 static const char *ver = 0;
 
@@ -35,7 +36,7 @@ const char *BuildVersion (void)
 }
 
 const UDWORD BuildVersionNum = MICQ_BUILD_NUM;
-const char  *BuildVersionText = "$VER: mICQ " VERSION " CVS-0-4-9-3 (" __DATE__ " " __TIME__ ")";
+const char  *BuildVersionText = "$VER: mICQ " VERSION " CVS-0-4-9-3 cvs " CVSUPDATE " date " BUILDDATE " (" __DATE__ " " __TIME__ ")";
 
 /*
  i19n (1001, "en")               locale

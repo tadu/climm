@@ -28,9 +28,14 @@ memmove.c memmove.h:
 	ln -s ../replace/memmove.h . || cp ../replace/memmove.h .
 
 clean:
-	rm -f snprintf.c snprintf.h memmove.c memmove.h
+	rm -f snprintf.c snprintf.h memmove.c memmove.h .cvsupdate
 
-buildmark.o: force
+buildmark.o: .cvsupdate
+
+.cvsupdate: force
+	grep Id: *.c ../include/*.h | sed "s,.*\(20../../.. ..:..:..\).*,#define CVSUPDATE \"\1\"," \
+	    | sort | tail -1 > .cvsupdate
+	date "+#define BUILDDATE \"%Y-%d-%m %T %Z\"" >> .cvsupdate
 
 force:
 
