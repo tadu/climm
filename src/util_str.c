@@ -746,6 +746,8 @@ BOOL s_parsecg_s (const char **input, ContactGroup **parsed, const char *sep, Co
 
     for (i = 0; (cg = ContactGroupIndex (i)); i++)
     {
+        if (!cg->name || !*cg->name)
+            continue;
         l = strlen (cg->name);
         if (cg->serv == serv && !strncmp (cg->name, p, l)
             && (strchr (sep, p[l]) || !p[l]))
@@ -918,6 +920,7 @@ const char *s_quote (const char *input)
         else
         {
             s_catc (&t, '\\');
+            s_catc (&t, 'x');
             s_catc (&t, (*tmp / 16) <= 9 ? ((UBYTE)*tmp / 16) + '0'
                                      : ((UBYTE)*tmp / 16) - 10 + 'a');
             s_catc (&t, (*tmp & 15) <= 9 ? (*tmp & 15) + '0'
@@ -965,6 +968,7 @@ const char *s_cquote (const char *input, const char *color)
         else
         {
             s_catc (&t, '\\');
+            s_catc (&t, 'x');
             s_catc (&t, (*tmp / 16) <= 9 ? ((UBYTE)*tmp / 16) + '0'
                                      : ((UBYTE)*tmp / 16) - 10 + 'a');
             s_catc (&t, (*tmp & 15) <= 9 ? (*tmp & 15) + '0'
