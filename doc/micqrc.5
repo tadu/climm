@@ -210,12 +210,6 @@ let the delete character act as a backspace. When
 .BR off ,
 let it act as a delete character.
 .TP
-.BI set \ russian\ on|off
-Disable or enable Russian character conversion between koi8-r/u and cp1251.
-.TP
-.BI set \ japanese\ on|off
-Disable or enable Japanese character conversion between Shift-JIS and EUC.
-.TP
 .BI set \ funny\ on|off
 Disable or enable "funny" messages.
 .TP
@@ -243,7 +237,7 @@ Disable or enable the use of the nick you last received a message from in the pr
 Disable or enable the automatic saving of the micqrc.
 .TP
 .BI set \ autofinger\ on|off
-DIsable or enable the automatic fingering of new UINs.
+Disable or enable the automatic fingering of new UINs.
 .TP
 .BI set \ linebreak\ type
 Configure the line break type for incoming messages to
@@ -403,13 +397,12 @@ and
 .B ffc
 for
 .IR status .
-
 .SH STRINGS
 The
 .B Strings
 section contains command renames.
 .TP
-.BI alter \ old\ new
+.BI alter \ <old>\ <new>
 Rename command
 .I old
 to
@@ -420,8 +413,10 @@ name.
 For posible command names, see
 .BR micq (7).
 This option may be repeated as desired.
+.br
+Note: this option is obsolete.
 .TP
-.BI alias \ alias\ expansion
+.BI alias \ <alias>\ <expansion>
 Define an alias named
 .I alias
 which is substituted with
@@ -431,14 +426,13 @@ If the string %s is present in
 it is replaced with the given arguments when the alias is invoked,
 otherwise they will be appended.
 New for 0.4.10.
-
 .SH GROUP
 The
 .B Group
 section contacts a contact group and may be repeated as required.
 It may have the following commands:
 .TP
-.BI server \ type uin
+.BI server \ <type> <uin>
 Set the server connection this contact group belongs to to the one of type
 .IR type ,
 which currently can be 
@@ -450,26 +444,25 @@ and for UIN
 .IR uin .
 If this command is omitted, the first active server connection is assumed.
 .TP
-.BI label \ label
+.BI label \ <label>
 Set the label of this contact group to
 .IR label .
 If it is
 .BI contacts- type - uin,
 then it is the contact list for this server connection.
 .TP
-.BI id \ id
+.BI id \ <id>
 Set the id of this contact group to
 .IR id .
 .B 0
 means no id defined. This will be set when downloading a contact list.
 .TP
-.BI entry \ id\ uin
+.BI entry \ <id>\ <uin>
 Add contact with UIN
 .I uin
 as id
 .I id
 to this contact group.
-
 .SH CONTACTS
 The
 .B Contacts
@@ -488,8 +481,6 @@ is given, let him see you as always offline. If
 .B ^
 is given, ignore this user.
 If a uin occurs multiple times, all except the first are treated as aliases.
-
-Note: the contact list has to be the last part of this file.
 .SH SEE ALSO
 .BR micq (1),
 .BR micq (7)
