@@ -11,9 +11,9 @@ Jeff Bearer <jbearer@tribweb.com>
 various people:
  : add https support
  : add missing v8 pieces
-   : server side contact list
-   : contact groups
-   : history of messages
+ : server side contact list
+ : contact groups
+ : history of messages
  : alias for commands
  : tab completion (check)
  : configurable colors

@@ -74,8 +74,8 @@ Currently you:
     subscribe, unsubscribe, help
                    <http://micq.org/mailman/listinfo/micq-list>
 
-An Archive might be found at:
-<http://micq.org/pipermail/micq-list/>
+    An Archive might be found at:
+                   <http://micq.org/pipermail/micq-list/>
 
 
 e) Download
@@ -89,7 +89,7 @@ f) CVS
 Required is the cvs client, autoconf 2.50 or greater and automake 1.4 or
 greater. autoconf 2.53 and automake 1.5 are recommended, however.
 
-cvs -d :pserver:anonymous@www.micq.org:/usr/local/cvsroot co micq
+cvs -d :pserver:anonymous@micq.org:/usr/local/cvsroot co micq
 
 To prepare the maintainer generated files:
 
