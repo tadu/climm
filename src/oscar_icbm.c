@@ -57,7 +57,7 @@ JUMP_SNAC_F(SnacSrvIcbmerr)
         if (err == 0xe)
             rl_print (i18n (2017, "The user is online, but possibly invisible.\n"));
         else
-            rl_print (i18n (2022, "The user is offline.\n"));
+            rl_print (i18n (2564, "The user couldn't be detected to be online.\n"));
         return;
     }
 
