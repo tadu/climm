@@ -1,3 +1,4 @@
+\" $ Id: $
 .\"This is the man page for ~/.micq/micqrc."
 .\".TH MICQ 7 "February 15, 2002" "MICQ(7)"
 .Dd 02. August 2002
@@ -321,7 +322,17 @@ um eine solche zu schließen und zurückzusetzen, oder
 .Ic off ,
 um niemals automatisch eine Direktverbindung aufzubauen, bis diese mit
 .Ic close
-geschlossen wird.
+geschlossen wird, oder
+.Ic auto ,
+um die aktuelle automatische Antwort des Benutzers abzufragen, oder
+.Ic away ,
+.Ic dnd ,
+.Ic na ,
+.Ic occ
+oder
+.Ic ffc ,
+um die aktuelle automatische Antwort des Benutzers für den
+entsprechenden Status abzufragen.
 .It Ic conn Op Ar Befehl Ar Nr
 Zeigt alle offenen Verbindungen, oder wendet den Befehl
 .Ar Befehl

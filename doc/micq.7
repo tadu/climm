@@ -1,3 +1,4 @@
+.\" $ Id: $
 .\"This is the man page for ~/.micq/micqrc."
 .\".TH MICQ 7 "February 15, 2002" "MICQ(7)"
 .Dd February 15, 2002
@@ -306,7 +307,16 @@ to open a peer to peer connection over TCP to the user, or
 to close and reset such a connection, or
 .Ic off
 to switch off trying to establish such a connection for sending
-messages until it is explicitly opened or reset.
+messages until it is explicitly opened or reset, or
+.Ic auto
+to get the user's current auto response, or
+.Ic away ,
+.Ic na ,
+.Ic dnd ,
+.Ic occ
+or
+.Ic ffc
+to get the user's current (auto) response for that status.
 .It Ic conn Op Ar command Ar nr
 List all connections, or operate
 .Ar command
