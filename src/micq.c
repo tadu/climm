@@ -285,6 +285,8 @@ int main (int argc, char *argv[])
     
     if (arg_v)
         prG->verbose = arg_vv;
+    if (arg_c)
+        prG->flags &= ~FLAG_COLOR;
     
     if (prG->flags & FLAG_COLOR)
     {
