@@ -444,10 +444,10 @@ static JUMP_SRV_F (CmdPktSrvAck)
     if (ccmd == CMD_SEND_MESSAGE)
     {
         char *tmp;
-        M_printf ("%s " COLACK "%*s" COLNONE " %s%s\n",
-                 s_now, uiG.nick_len + s_delta (ContactFindName (PacketReadAt4 (event->pak, CMD_v5_OFF_PARAM))),
-                 ContactFindName (PacketReadAt4 (event->pak, CMD_v5_OFF_PARAM)),
-                 MSGACKSTR, MsgEllipsis (c_in (tmp = PacketReadAtLNTS (event->pak, 30))));
+        M_printf ("%s " COLACK "%*s" COLNONE " %s" COLSINGLE "%s\n",
+                  s_now, uiG.nick_len + s_delta (ContactFindName (PacketReadAt4 (event->pak, CMD_v5_OFF_PARAM))),
+                  ContactFindName (PacketReadAt4 (event->pak, CMD_v5_OFF_PARAM)),
+                  MSGACKSTR, c_in (tmp = PacketReadAtLNTS (event->pak, 30)));
         free (tmp);
     }
     

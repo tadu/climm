@@ -785,63 +785,44 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, UWORD type, const 
         int i;
 
         while (1) {
-            M_printf ("??%x?? %s'%s'%s\n'", type, COLMESSAGE COLMSGINDENT, text, COLNONE);
+            M_printf ("?%x? %s%s\n", type, COLMSGINDENT, text);
+            M_printf ("    ");
             for (i = 0; i < strlen (text); i++)
                 M_printf ("%c", cdata[i] ? cdata[i] : '.');
-            M_print ("'" COLMSGEXDENT "\n");
+            M_print ("'\n");
             break;
 
         case MSG_NORM:
         default:
-            M_printf ("%s" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n",
-                     carr, cdata);
+            M_printf ("%s" COLMSGINDENT "%s\n", carr, cdata);
             break;
 
-        case MSG_INT_CAP:
-#ifdef WIP
-            if (prG->verbose)
-            {
-                Cap *cap = NULL;
-                if (!strncmp ("CAP_UNK_", cdata, 8))
-                    cap = PacketCap (atoi (cdata + 8));
-                M_printf ("<cap> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT " %s",
-                          cdata, cap ? s_dump (cap->cap, 16) : "\n");
-            }
-#endif
-            break;
         case MSG_AUTO:
-            M_printf ("<%s> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n",
-                     i18n (2108, "auto"), cdata);
+            M_printf ("<%s> " COLMSGINDENT "%s\n", i18n (2108, "auto"), cdata);
             break;
 
         case MSGF_GETAUTO | MSG_GET_AWAY: 
-            M_printf ("<%s> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
-                     i18n (1972, "away"), cdata);
+            M_printf ("<%s> " COLMSGINDENT "%s\n", i18n (1972, "away"), cdata);
             break;
 
         case MSGF_GETAUTO | MSG_GET_OCC:
-            M_printf ("<%s> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
-                     i18n (1973, "occupied"), cdata);
+            M_printf ("<%s> " COLMSGINDENT "%s\n", i18n (1973, "occupied"), cdata);
             break;
 
         case MSGF_GETAUTO | MSG_GET_NA:
-            M_printf ("<%s> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
-                     i18n (1974, "not available"), cdata);
+            M_printf ("<%s> " COLMSGINDENT "%s\n", i18n (1974, "not available"), cdata);
             break;
 
         case MSGF_GETAUTO | MSG_GET_DND:
-            M_printf ("<%s> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
-                     i18n (1971, "do not disturb"), cdata);
+            M_printf ("<%s> " COLMSGINDENT "%s\n", i18n (1971, "do not disturb"), cdata);
             break;
 
         case MSGF_GETAUTO | MSG_GET_FFC:
-            M_printf ("<%s> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
-                     i18n (1976, "free for chat"), cdata);
+            M_printf ("<%s> " COLMSGINDENT "%s\n", i18n (1976, "free for chat"), cdata);
             break;
 
         case MSGF_GETAUTO | MSG_GET_VER:
-            M_printf ("<%s> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
-                     i18n (2109, "version"), cdata);
+            M_printf ("<%s> " COLMSGINDENT "%s\n", i18n (2109, "version"), cdata);
             break;
 
         case MSG_URL:
@@ -870,8 +851,8 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, UWORD type, const 
                 tmp = NULL;
             }
 
-            M_printf (i18n (2144, "requests authorization: %s%s%s\n"),
-                     COLMESSAGE COLMSGINDENT, tmp6, COLNONE);
+            M_printf (i18n (2144, "requests authorization: %s%s\n"),
+                      COLMSGINDENT, tmp6);
             
             if (tmp && strlen (tmp))
                 M_printf ("%-15s " COLMESSAGE "%s" COLNONE "\n", "???1:", tmp);
@@ -887,8 +868,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, UWORD type, const 
             break;
 
         case MSG_AUTH_DENY:
-            M_printf (i18n (2143, "refused authorization: %s%s%s\n"),
-                     COLMESSAGE COLMSGINDENT, cdata, COLNONE COLMSGEXDENT);
+            M_printf (i18n (2143, "refused authorization: %s%s\n"), COLMSGINDENT, cdata);
             break;
 
         case MSG_AUTH_GRANT:

@@ -47,5 +47,6 @@
 #define COLEXDENT       ESC "^"
 #define COLMSGINDENT    ESC "<"
 #define COLMSGEXDENT    ESC ">"
+#define COLSINGLE       ESC "."
 
 #endif

@@ -3,8 +3,6 @@
 #ifndef MICQ_UTIL_H
 #define MICQ_UTIL_H
 
-char *MsgEllipsis (const char *msg);
-
 void Init_New_User (Connection *conn);
 
 int putlog (Connection *conn, time_t stamp, UDWORD uin, 

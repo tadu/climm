@@ -73,56 +73,6 @@ struct timeval
 };
 #endif
 
-/**********************************************
- * Returns at most MSGID_LENGTH characters of a
- * message, possibly using ellipsis.
- **********************************************/
-
-char *MsgEllipsis (const char *msg)
-{
-    static char buff[MSGID_LENGTH + 2];
-    int screen_width, msgid_length;
-
-    screen_width = Get_Max_Screen_Width ();
-    if (screen_width < 10)
-        screen_width = 10;
-    msgid_length = screen_width - (strlen ("##:##:## .......... " MSGSENTSTR) % screen_width);
-    if (msgid_length < 5)
-        msgid_length += screen_width;
-    if (msgid_length > MSGID_LENGTH)
-        msgid_length = MSGID_LENGTH;
-
-    if (strchr (msg, '\n') || strchr (msg, '\r'))
-    {
-        const char *p;
-        char *q;
-        int i;
-        for (p = msg, q = buff, i = 0; *p && i <= MSGID_LENGTH; i++, q++, p++)
-        {
-            if (*p == '\r' || *p == '\n')
-            {
-                *(q++) = '¶';
-                break;
-            }
-            *q = *p;
-        }
-        *q = '\0';
-        msg = buff;
-    }
-
-
-    if (strlen (msg) <= msgid_length)
-    {
-        strncpy (buff, msg, sizeof (buff) - 1);
-        return buff;
-    }
-    if (buff != msg)
-        strncpy (buff, msg, msgid_length - 3);
-    buff[msgid_length - 3] = '\0';
-    strcat (buff, "...");
-    return buff;
-}
-
 /**************************************************
 Automates the process of creating a new user.
 ***************************************************/

@@ -1749,8 +1749,8 @@ static void TCPCallBackReceive (Event *event)
             switch (type)
             {
                 case MSG_NORM:
-                    M_printf ("%s " COLACK "%*s" COLNONE " " MSGTCPACKSTR "%s\n",
-                             s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, MsgEllipsis (event->info));
+                    M_printf ("%s " COLACK "%*s" COLNONE " " MSGTCPACKSTR COLSINGLE "%s\n",
+                              s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, event->info);
                     if (~cont->flags & CONT_SEENAUTO && strlen (tmp))
                     {
                         IMSrvMsg (cont, event->conn, NOW, MSG_NORM, tmp, status);
