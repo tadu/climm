@@ -1483,10 +1483,9 @@ static JUMP_F(CmdUserStatusDetail)
     {
         if ((cg = s_parselistrem (&args, conn)))
             tcg = cg;
-        else
+        else if ((par = s_parse (&args)))
         {
-            if ((par = s_parse (&args)))
-                M_printf (i18n (9999, "%s is not a valid user in your list.\n"), s_wordquote (par->txt));
+            M_printf (i18n (9999, "%s is not a valid user in your list.\n"), s_wordquote (par->txt));
             return 0;
         }
     }
@@ -1521,7 +1520,7 @@ static JUMP_F(CmdUserStatusDetail)
                 if (cont->caps & (1 << id))
                 {
                     Cap *cap = PacketCap (id);
-                    if (i++)
+                    if (j++)
                         M_print (", ");
                     else
                         M_printf ("    %s", i18n (2192, "Capabilities: "));
