@@ -1,13 +1,14 @@
-Source: micq-cvs
+Source: micq
 Section: net
 Priority: optional
 Maintainer: Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
-Build-Depends: debhelper (>= 4.0.0), tcl8.4-dev | tcl8.3-dev, libgnutls7-dev
+Build-Depends: debhelper (>= 4.0.0), tcl8.4-dev | tcl8.3-dev, libgnutls7-dev | libgnutls10-dev | libgnutls11-dev
 Standards-Version: 3.5.9
 
-Package: micq-cvs
+Package: micq
 Architecture: any
 Depends: ${shlibs:Depends}
+Recommends: popularity-contest
 Provides: micq-ssl
 Description: text/line based ICQ client with many features
  mICQ is a portable, small, yet powerful console based ICQ client. It
