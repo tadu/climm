@@ -7,7 +7,7 @@
  * $Id$
  */
 
-#define MICQ_BUILD_NUM 0x00040a00
+#define MICQ_BUILD_NUM 0x80040a00
 
 #include <string.h>
 #include <stdio.h>
@@ -34,6 +34,8 @@
 #define EXTRAVERSION "De" "bi" "an hand compiled"
 #elif defined (__linux__)
 #define EXTRAVERSION "Linux hand compiled"
+#elif defined (__Cygwin__)
+#define EXTRAVERSION "Cygwin hand compiled"
 #else
 #define EXTRAVERSION "hand compiled"
 #endif
@@ -65,7 +67,7 @@ const char *BuildVersion (void)
 {
     if (!ver)
         ver = strdup (s_sprintf (i18n (2210, "%smICQ (Matt's ICQ clone)%s version %s%s%s (compiled on %s)\n"),
-            COLSERVER, COLNONE, COLSERVER, MICQ_VERSION, COLNONE, BUILDDATE));
+            COLSERVER, COLNONE, COLSERVER, MICQ_VERSION "CVS " CVSUPDATE, COLNONE, BUILDDATE));
     return ver;
 }
 
