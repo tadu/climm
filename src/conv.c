@@ -46,34 +46,35 @@ char ConvSep ()
 }
 
 #define PUT_UTF8(x) \
- do { if (!((x) & 0xffffff80)) s_catf (t, &size, "%c",              x); \
- else if (!((x) & 0xfffff800)) s_catf (t, &size, "%c%c",          ((x)               >>  6) | 0xc0,  \
-                                                                  ((x) &       0x3f)        | 0x80); \
- else if (!((x) & 0xffff0000)) s_catf (t, &size, "%c%c%c",        ((x)               >> 12) | 0xc0,  \
-                                                                 (((x) &      0xfc0) >>  6) | 0x80,  \
-                                                                  ((x) &       0x3f)        | 0x80); \
- else if (!((x) & 0xffe00000)) s_catf (t, &size, "%c%c%c%c",      ((x)               >> 18) | 0xc0,  \
-                                                                 (((x) &    0x3f000) >> 12) | 0x80,  \
-                                                                 (((x) &      0xfc0) >>  6) | 0x80,  \
-                                                                  ((x) &       0x3f)        | 0x80); \
- else if (!((x) & 0xfc000000)) s_catf (t, &size, "%c%c%c%c%c",    ((x)               >> 24) | 0xc0,  \
-                                                                 (((x) &   0xfc0000) >> 18) | 0x80,  \
-                                                                 (((x) &    0x3f000) >> 12) | 0x80,  \
-                                                                 (((x) &      0xfc0) >>  6) | 0x80,  \
-                                                                  ((x) &       0x3f)        | 0x80); \
- else if (!((x) & 0x80000000)) s_catf (t, &size, "%c%c%c%c%c%c",  ((x)               >> 30) | 0xc0,  \
-                                                                 (((x) & 0x3f000000) >> 24) | 0x80,  \
-                                                                 (((x) &   0xfc0000) >> 18) | 0x80,  \
-                                                                 (((x) &    0x3f000) >> 12) | 0x80,  \
-                                                                 (((x) &      0xfc0) >>  6) | 0x80,  \
-                                                                  ((x) &       0x3f)        | 0x80); \
- else s_catf (t, &size, "?"); } while (0)
+ do { if (!((x) & 0xffffff80)) t = s_catf (t, &size, "%c",              x); \
+ else if (!((x) & 0xfffff800)) t = s_catf (t, &size, "%c%c",          ((x)               >>  6) | 0xc0,  \
+                                                                      ((x) &       0x3f)        | 0x80); \
+ else if (!((x) & 0xffff0000)) t = s_catf (t, &size, "%c%c%c",        ((x)               >> 12) | 0xe0,  \
+                                                                     (((x) &      0xfc0) >>  6) | 0x80,  \
+                                                                      ((x) &       0x3f)        | 0x80); \
+ else if (!((x) & 0xffe00000)) t = s_catf (t, &size, "%c%c%c%c",      ((x)               >> 18) | 0xf0,  \
+                                                                     (((x) &    0x3f000) >> 12) | 0x80,  \
+                                                                     (((x) &      0xfc0) >>  6) | 0x80,  \
+                                                                      ((x) &       0x3f)        | 0x80); \
+ else if (!((x) & 0xfc000000)) t = s_catf (t, &size, "%c%c%c%c%c",    ((x)               >> 24) | 0xf8,  \
+                                                                     (((x) &   0xfc0000) >> 18) | 0x80,  \
+                                                                     (((x) &    0x3f000) >> 12) | 0x80,  \
+                                                                     (((x) &      0xfc0) >>  6) | 0x80,  \
+                                                                      ((x) &       0x3f)        | 0x80); \
+ else if (!((x) & 0x80000000)) t = s_catf (t, &size, "%c%c%c%c%c%c",  ((x)               >> 30) | 0xf4,  \
+                                                                     (((x) & 0x3f000000) >> 24) | 0x80,  \
+                                                                     (((x) &   0xfc0000) >> 18) | 0x80,  \
+                                                                     (((x) &    0x3f000) >> 12) | 0x80,  \
+                                                                     (((x) &      0xfc0) >>  6) | 0x80,  \
+                                                                      ((x) &       0x3f)        | 0x80); \
+ else t = s_catf (t, &size, "_"); } while (0)
 
 #define GET_UTF8(in,y) \
- do { UDWORD val = 0; int todo = 1; UDWORD org = *in++; if ((org & 0xc0) != 0xc0) { y = '?'; continue; } \
-      while (org & 0x20) { todo += 1; org <<= 2; }; org &= 0x1f; for (val = 1; val < todo; val++) org >>= 2; \
-      val = org; while (todo > 0) { org = *in++; if ((org & 0xc0) != 0x80) { todo = -1; continue; } org &= 0x3f; \
-      val <<= 6; val |= org; } if (todo == -1) y = '?'; else y = val; } while (0)
+ do { UDWORD vl = 0; int todo = 1; UDWORD org = *in++; if ((org & 0xc0) != 0xc0) { y = '!'; continue; } \
+      while (org & 0x20) { todo += 1; org <<= 2; }; org &= 0x3f; for (vl = 1; vl < todo; vl++) org >>= 2; \
+      vl = org; while (todo > 0) { org = *in++; \
+      if ((org & 0xc0) != 0x80) { todo = -1; continue; } org &= 0x3f; \
+      vl <<= 6; vl |= org; todo--; } if (todo == -1) y = '?'; else y = vl; } while (0)
 
 
 const UDWORD koi8u_utf8[] = { /* 7bit are us-ascii */
@@ -114,28 +115,29 @@ const UDWORD win1251_utf8[] = { /* 7bit are us-ascii */
     0x0448, 0x0449, 0x044a, 0x044b, 0x044c, 0x044d, 0x044e, 0x044f
 };
 
-const char *ConvToUTF8 (const char *in, UBYTE enc)
+const char *ConvToUTF8 (const char *inn, UBYTE enc)
 {
     static char *t = NULL;
     static UDWORD size = 0;
+    const unsigned char *in = inn;
     UDWORD i;
     
-    s_catf (t, &size, "%*s", strlen (in) * 3, "");
+    t = s_catf (t, &size, "%*s", strlen (in) * 3, "");
     *t = '\0';
     
     for (*t = '\0'; *in; in++)
     {
         if (~*in & 0x80)
         {
-            s_catf (t, &size, "%c", *in);
+            t = s_catf (t, &size, "%c", *in);
             continue;
         }
         switch (enc)
         {
             case ENC_UTF8:
-                if (*in == (char)0xfe) /* we _do_ allow 0xFE here, it's the ICQ seperator character */
+                if (*in == 0xfe) /* we _do_ allow 0xFE here, it's the ICQ seperator character */
                 {
-                    s_catf (t, &size, "\xfe");
+                    t = s_catf (t, &size, "\xfe");
                     continue;
                 }
                 GET_UTF8 (in, i);
@@ -169,31 +171,32 @@ const char *ConvToUTF8 (const char *in, UBYTE enc)
             case ENC_EUC:
             case ENC_SJIS:
             default:
-                s_cat (t, &size, "?");
+                t = s_cat (t, &size, "?");
         }
     }
     return t;
 }
 
-const char *ConvFromUTF8 (const char *in, UBYTE enc)
+const char *ConvFromUTF8 (const char *inn, UBYTE enc)
 {
     static char *t = NULL;
     static UDWORD size = 0;
+    const unsigned char *in = inn;
     UDWORD val, i;
     
-    s_catf (t, &size, "%*s", strlen (in) * 3, "");
+    t = s_catf (t, &size, "%*s", strlen (in) * 3, "");
     *t = '\0';
     
     for (*t = '\0'; *in; in++)
     {
         if (~*in & 0x80)
         {
-            s_catf (t, &size, "%c", *in);
+            t = s_catf (t, &size, "%c", *in);
             continue;
         }
-        if (enc == ENC_UTF8 && *in == (char)0xfe) /* we _do_ allow 0xFE here, it's the ICQ seperator character */
+        if (*in == 0xfe) /* we _do_ allow 0xFE here, it's the ICQ seperator character */
         {
-            s_catf (t, &size, "\xfe");
+            t = s_catf (t, &size, "\xfe");
             continue;
         }
         val = '?';
@@ -201,7 +204,7 @@ const char *ConvFromUTF8 (const char *in, UBYTE enc)
         in--;
         if (val == '?')
         {
-            s_catf (t, &size, "?");
+            t = s_catf (t, &size, "·");
             continue;
         }
         switch (enc)
@@ -211,50 +214,50 @@ const char *ConvFromUTF8 (const char *in, UBYTE enc)
                 continue;
             case ENC_LATIN1:
                 if (!(val & 0xffffff00))
-                    s_catf (t, &size, "%c", val);
+                    t = s_catf (t, &size, "%c", val);
                 else
-                    s_catf (t, &size, "?");
+                    t = s_catf (t, &size, "?");
                 continue;
             case ENC_LATIN9:
                 if (!(val & 0xffffff00))
-                    s_catf (t, &size, "%c", val);
+                    t = s_catf (t, &size, "%c", val);
                 else
                     switch (val)
                     {
-                        case 0x20ac: s_catf (t, &size, "\xa4"); continue; /* EURO */
-                        case 0x0160: s_catf (t, &size, "\xa6"); continue; /* SCARON */
-                        case 0x0161: s_catf (t, &size, "\xa8"); continue; /* SMALL SCARON */
-                        case 0x017d: s_catf (t, &size, "\xb4"); continue; /* ZCARON */
-                        case 0x017e: s_catf (t, &size, "\xb8"); continue; /* SMALL ZCARON */
-                        case 0x0152: s_catf (t, &size, "\xbc"); continue; /* OE */
-                        case 0x0153: s_catf (t, &size, "\xbd"); continue; /* SMALL OE */
-                        case 0x0178: s_catf (t, &size, "\xbe"); continue; /* Y DIAERESIS */
+                        case 0x20ac: t = s_catf (t, &size, "\xa4"); continue; /* EURO */
+                        case 0x0160: t = s_catf (t, &size, "\xa6"); continue; /* SCARON */
+                        case 0x0161: t = s_catf (t, &size, "\xa8"); continue; /* SMALL SCARON */
+                        case 0x017d: t = s_catf (t, &size, "\xb4"); continue; /* ZCARON */
+                        case 0x017e: t = s_catf (t, &size, "\xb8"); continue; /* SMALL ZCARON */
+                        case 0x0152: t = s_catf (t, &size, "\xbc"); continue; /* OE */
+                        case 0x0153: t = s_catf (t, &size, "\xbd"); continue; /* SMALL OE */
+                        case 0x0178: t = s_catf (t, &size, "\xbe"); continue; /* Y DIAERESIS */
                         default:
-                            s_catf (t, &size, "?");
+                            t = s_catf (t, &size, "?");
                     }
                 continue;
             case ENC_KOI8:
                 for (i = 0; i < 128; i++)
                     if (koi8u_utf8[i] == val)
                     {
-                        s_catf (t, &size, "%c", i + 128);
+                        t = s_catf (t, &size, "%c", i + 128);
                         continue;
                     }
-                s_catf (t, &size, "?");
+                t = s_catf (t, &size, "?");
                 continue;
             case ENC_WIN1251:
                 for (i = 0; i < 128; i++)
                     if (win1251_utf8[i] == val)
                     {
-                        s_catf (t, &size, "%c", i + 128);
+                        t = s_catf (t, &size, "%c", i + 128);
                         continue;
                     }
-                s_catf (t, &size, "?");
+                t = s_catf (t, &size, "?");
                 continue;
             case ENC_EUC:
             case ENC_SJIS:
             default:
-                s_cat (t, &size, "?");
+                t = s_cat (t, &size, "?");
         }
     }
     return t;

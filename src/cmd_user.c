@@ -3204,7 +3204,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
              * to accept IRC like commands starting with a /
              * or talker like commands starting with a .
              * or whatever */
-            if (!isalnum (*cmd))
+            if (strchr ("/.", *cmd))
                 cmd++;
 
             if (!*cmd)

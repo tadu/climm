@@ -258,15 +258,16 @@ UDWORD s_strlen (const char *str)
 UDWORD s_offset  (const char *str, UDWORD offset)
 {
     int off;
-    for (off = 0; offset && *str; offset--, str++, off++)
+    for (off = 0; offset && *str; offset--, off++)
     {
         if (*str & 0x80)
         {
             str++;
-            while (*str && (~(*str) & 0x40))
+            while (*str && ((*str & 0xc0) == 0x80))
                 str++, off++;
-            str--;
         }
+        else
+            str++;
     }
     return off;
 }

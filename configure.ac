@@ -28,17 +28,17 @@ AC_PROG_LN_S
 
 AC_CACHE_CHECK(whether to enable peer to peer connections, ac_cv_use_peer2peer,
                [AC_ARG_ENABLE(peer2peer, AC_HELP_STRING([--disable-peer2peer],
-                                                        [disable peer to peer connections)]),
-                           ac_cv_use_peer2peer=$withval, ac_cv_use_peer2peer=yes)])
+                                                        [disable peer to peer connections]),
+                           ac_cv_use_peer2peer=$enableval, ac_cv_use_peer2peer=yes)])
 
 if test "x$ac_cv_use_peer2peer" = "xyes"; then
   AC_DEFINE(ENABLE_PEER2PEER, 1, [Whether to enable peer to peer connections])
 fi;
 
-AC_CACHE_CHECK(whether to enable peer to peer connections, ac_cv_use_utf8,
+AC_CACHE_CHECK(whether to enable usage of utf-8 internally, ac_cv_use_utf8,
                [AC_ARG_ENABLE(utf8, AC_HELP_STRING([--enable-utf8],
-                                                   [enable use of UTF-8 internally)]),
-                           ac_cv_use_utf8=$withval, ac_cv_use_utf8=no)])
+                                                   [enable use of UTF-8 internally]),
+                           ac_cv_use_utf8=$enableval, ac_cv_use_utf8=no)])
 
 if test "x$ac_cv_use_utf8" = "xyes"; then
   AC_DEFINE(ENABLE_UTF8, 1, [Whether to use UTF-8 internally])
