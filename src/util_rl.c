@@ -603,6 +603,11 @@ static void rl_analyze_ucs (UWORD ucs, const char **display, UWORD *columns)
         *display = ConvTo (utf, ENC(enc_loc))->txt;
         *columns = 1;
     }
+    else if (prG->locale_broken && !strcmp (ConvFrom (ConvTo (utf, ENC(enc_loc)), ENC(enc_loc))->txt, utf))
+    {
+        *display = ConvTo (utf, ENC(enc_loc))->txt;
+        *columns = 1;
+    }
     else if (!(ucs & 0xffff0000)) /* more control code, or unknown */
     {
         *display = s_sprintf ("%s\\u%c%c%c%c%s", COLINVCHAR,
