@@ -262,6 +262,7 @@ int main (int argc, char *argv[])
     
     prG->enc_loc = prG->enc_rem = ENC_AUTO;
     i18nInit (&prG->locale, &prG->enc_loc, arg_i);
+    prG->verbose &= ~0x8000;
     
     rc = arg_h ? 0 : PrefLoad (prG);
 
