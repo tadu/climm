@@ -32,8 +32,8 @@
 1031:hat sich eingeloggt
 1032:debug: Doppeltes Packet #%04x vom Typ %04x (%s)¶
 1033:Eingehendes Server-Paket (Version 8):
-1034:Maximale Anzahl an Versuchen erreicht - gabe auf.
-1035:hat Status gewechselt nach:
+1034:Maximale Anzahl an Versuchen erreicht - gebe auf.
+1035:ist jetzt
 1036:Unbekanntes Kommando %s, tippe "help" für Hilfe.
 1037:Nachricht gesendet, bevor der letzte Puffer voll war¶
 1038:Nachricht abgebrochen¶
@@ -69,7 +69,7 @@
 1068: Online seit %s
 1069: Zuletzt am %s online gewesen
 1070: Es ist nicht bekannt, wann der User das letzte mal online war.
-1071:Dein status ist: 
+1071:Dein Status ist: 
 1072:User abgeklemmt:
 1073:User verbunden:
 1074:mICQ (Matts ICQ-Klon)
