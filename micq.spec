@@ -37,7 +37,7 @@ Authors: Matthew D. Smith (dead)
 
 %prep
 %setup
-./prepare
+./prepare || true
 
 %build
 %configure
@@ -62,7 +62,6 @@ rm -rf "${RPM_BUILD_ROOT}"
 %{_bindir}/*
 %{_datadir}/micq
 /usr/lib/menu/micq
-%doc %{_mandir}/*/*
 
 %post
 %{update_menus} || true
