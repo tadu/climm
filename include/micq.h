@@ -19,7 +19,7 @@ Changes :
    2-26-99 Added TAB_SLOTS, tab_array, add_tab() and get_tab() (Lalo)
 **********************************************
 **********************************************/
-#define MICQ_VERSION "0.4.6p2 in dedication to Matthew D. Smith.\t"
+#define MICQ_VERSION "0.4.6p3 ($Id$) \n in dedication to Matthew D. Smith.\t"
 
 #include "config.h"
 #include "datatype.h"
