@@ -249,7 +249,7 @@ int R_process_input (void)
                 default:
                     if (ch == t_attr.c_cc[VERASE] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
                     {
-                        if (uiG.del_is_bs)
+                        if (prG->flags & FLAG_DELBS)
                             R_process_input_backspace ();
                         else
                             R_process_input_delete ();

@@ -61,21 +61,6 @@
 #include "icq_v5.h"
 #include "icq_tcp.h"
 
-typedef ICQ_pak *ICQ_PAK_PTR;
-typedef SRV_ICQ_pak *SRV_ICQ_PAK_PTR;
-
-typedef struct
-{
-   ICQ_pak  head;
-   unsigned char  data[1024];
-} net_icq_pak, *NET_ICQ_PTR;
-
-typedef struct
-{
-   SRV_ICQ_pak  head;
-   unsigned char  data[1024];
-} srv_net_icq_pak, *SRV_NET_ICQ_PTR;
-
 #define STATUS_OFFLINE  	(-1L)
 #define STATUS_ONLINE  		0x00
 #define STATUS_INVISIBLE 	0x100
@@ -148,78 +133,23 @@ typedef struct
 
 /* user interface global state variables */
 typedef struct {
-        BOOL Verbose;          /* displays extra debugging info
-                                *  4 = show paket
-                                *  8 = show paket contents
-                                * 32 = debug queue
-                                */
-        UBYTE Sound;           /* sound setting for normal beeps etc */
-        UBYTE SoundOnline;     /* sound setting for users comming online */
-        UBYTE SoundOffline;    /* sound settng for users going offline */
         UDWORD Current_Status;
         UDWORD last_recv_uin;
-        char *LogPlace;         /* Directory / file to log to */
-        UBYTE LogLevel;         /* &1 = enable logging
-                                 * &2 = omit online/offline messages
-                                 */
-        BOOL auto_resp;
-        char auto_rep_str_na[450];
-        char auto_rep_str_away[450];
-        char auto_rep_str_occ[450];
-        char auto_rep_str_inv[450];
-        char auto_rep_str_dnd[450];
-        UBYTE Sound_Str[150];           /* shellcmd to exec on normal beeps */
-        UBYTE Sound_Str_Online[150];    /* shellcmd to exec on usr online */
-        UBYTE Sound_Str_Offline[150];   /* shellcmd to exec on usr offline */
-        BOOL del_is_bs;                 /* del char is backspace */
-        BOOL last_uin_prompt;           /* use last UIN's nick as prompt */
-        int  line_break_type;           /* see .rc file for modes */
-
-        BOOL Russian;    /* Do we do koi8-r <->Cp1251 codeset translation? */
-        BOOL JapaneseEUC;/* Do we do Shift-JIS <->EUC codeset translation? */
-        BOOL Funny;            /* Do we use supposed "funny" messages */
-        BOOL Color;            /* Do we use ANSI color? */
-        UWORD Max_Screen_Width;
-        BOOL Hermit;
-/* aaron
-   Variable to hold the time that Micq is started, for the "uptime" command,
-   which shows how long Micq has been running. */
         time_t MicqStartTime;
-/* end of aaron */
-
-#ifdef MSGEXEC
- /*
-  * Ben Simon:
-  * receive_script -- a script that gets called anytime we receive
-  * a message
-  */
-        char receive_script[255];
-#endif
 } user_interface_state;
 
 extern user_interface_state uiG;
+extern struct Queue *queue;
+#include "preferences.h"
+extern Preferences *prG;
 
-/* SOCKS5 stuff begin*/
-/* SOCKS5 global state variables */
-typedef struct {
-        int s5Use;
-        char s5Host[100];
-        unsigned short s5Port;
-        int  s5Auth;
-        char s5Name[64];
-        char s5Pass[64];
-        unsigned long s5DestIP;
-        unsigned short s5DestPort;
-} socks5_state;
-/* SOCKS5 stuff end */
-
-extern socks5_state s5G;
+void CallBackLoginUDP (struct Event *Event);
 
 #define LOG_MESS 1
 #define LOG_AUTO_MESS 2
 #define LOG_ONLINE 3
 
 #include "i18n.h"
-int Connect_Remote (char *hostname, int port, FD_T aux);
 
-extern struct Queue *queue;
+
+

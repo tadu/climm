@@ -57,7 +57,7 @@ void CmdPktCmdTCPRequest (Session *sess, UDWORD tuin, UDWORD port)
 {
     Packet *pak = PacketCv5 (sess, CMD_TCP_REQUEST);
     PacketWrite4 (pak, tuin);
-    PacketWrite4 (pak, sess->our_ip);
+    PacketWrite4 (pak, sess->our_local_ip);
     PacketWrite4 (pak, sess->our_port);
     PacketWrite1 (pak, 0x04);
     PacketWrite4 (pak, port);
@@ -73,10 +73,10 @@ void CmdPktCmdLogin (Session *sess)
 {
     Packet *pak;
 
-    if (sess->seq_num2 != 1)
+    if (sess->our_seq2 != 1)
     {
-        sess->seq_num     = rand () & 0x3fff;
-        sess->seq_num2    = 1;
+        sess->our_seq     = rand () & 0x3fff;
+        sess->our_seq2    = 1;
         sess->our_session = rand () & 0x3fffffff;
     }
     sess->ver = 5;
@@ -88,7 +88,7 @@ void CmdPktCmdLogin (Session *sess)
     PacketWrite4 (pak, sess->our_port);
     PacketWriteStr (pak, sess->passwd);
     PacketWrite4 (pak, 0x000000d5);
-    PacketWrite4 (pak, htonl (sess->our_ip));
+    PacketWrite4 (pak, htonl (sess->our_local_ip));
     PacketWrite1 (pak, 0x04);         /* 1=firewall | 2=proxy | 4=tcp */
     PacketWrite4 (pak, sess->set_status);
     PacketWrite2 (pak, TCP_VER);      /* 6 */
@@ -141,7 +141,7 @@ void CmdPktCmdContactList (Session *sess)
                 if (!pak)
                 {
                     pak = PacketCv5 (sess, CMD_CONTACT_LIST);
-                    pbytes = pak->bytes;
+                    pbytes = PacketWritePos (pak);
                     PacketWrite1 (pak, 0);
                 }
                 PacketWrite4 (pak, cont->uin);
@@ -487,7 +487,7 @@ void CmdPktCmdInvisList (Session *sess)
                 if (!pak)
                 {
                     pak = PacketCv5 (sess, CMD_INVIS_LIST);
-                    pbytes = pak->bytes;
+                    pbytes = PacketWritePos (pak);
                     PacketWrite1 (pak, 0);
                 }
                 PacketWrite4 (pak, cont->uin);
@@ -523,7 +523,7 @@ void CmdPktCmdVisList (Session *sess)
                 if (!pak)
                 {
                     pak = PacketCv5 (sess, CMD_VIS_LIST);
-                    pbytes = pak->bytes;
+                    pbytes = PacketWritePos (pak);
                     PacketWrite1 (pak, 0);
                 }
                 PacketWrite4 (pak, cont->uin);

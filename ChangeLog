@@ -1,4 +1,14 @@
 
+2002-02-06 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* new: util_io.c for all IO related stuff (that what SOCK* did);
+	  there's still stuff around that belongs there
+	* removed: sendmsg.c
+	* new: preferences.c that contains (or should contain) all
+	  stuff that is saved in .micq/micqrc; big move of stuff. TODO.
+	* thereby replacing all char[] by char *
+	* more stuff in packet.c for reading; should be sufficient now
+	* log TCP messages, too
+
 2002-02-05 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* new: packet.c for functions creating a packet;
 	  got rid of *_2_Chars() completely; Chars_2_* deprecated

@@ -2,13 +2,14 @@
 
 #include "micq.h"
 #include "conv.h"
+#include "preferences.h"
 
 void ConvWinUnix (char *text)
 {
-    if (!uiG.Russian && !uiG.JapaneseEUC)
+    if (!(prG->flags & FLAG_CONVRUSS) && !(prG->flags & FLAG_CONVEUC))
         return;
 
-    if (uiG.Russian)
+    if (prG->flags & FLAG_CONVRUSS)
         ConvWinKoi (text);
     else
         ConvSjisEuc (text);    
@@ -16,10 +17,10 @@ void ConvWinUnix (char *text)
 
 void ConvUnixWin (char *text)
 {
-    if (!uiG.Russian && !uiG.JapaneseEUC)
+    if (!(prG->flags & FLAG_CONVRUSS) && !(prG->flags & FLAG_CONVEUC))
         return;
 
-    if (uiG.Russian)
+    if (prG->flags & FLAG_CONVRUSS)
         ConvKoiWin (text);
     else
         ConvEucSjis (text);

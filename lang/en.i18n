@@ -37,7 +37,7 @@ i18n (67, )
 036:Unknown command %s, type /help for help.
 037:Message sent before last line buffer is full¶
 038:Message canceled¶
-039:Server has forced us to disconnect.  This may be because of network lag.
+039:Server claims we're not connected.¶
 040:Micq> 
 041:msg> 
 042:msg all> 
@@ -50,7 +50,7 @@ i18n (67, )
 049: 
 050:Login successful!
 051: 
-052:Couldn't establish connection¶
+052:Couldn't establish connection for this session.¶
 053:Connected to %s, waiting for response¶
 054: Conection Refused on port %d at %s¶
 055:Socket creation failed
@@ -65,7 +65,7 @@ i18n (67, )
 064:Auto-Changed status to
 065:Using intel byte ordering.
 066:Using motorola byte ordering.
-067:Debug: Doppeltes Packet #%04x vom Typ %04x (%s)¶
+067:debug: Doppeltes Packet #%04x vom Typ %04x (%s)¶
 068: Online since %s
 069: Last online at %s
 070: Last on-line unknown.
@@ -80,7 +80,7 @@ i18n (67, )
 079:No translation; using compiled-in strings.¶
 080:Couldn't load "%s" internationalization.¶
 081:Successfully loaded en translation (%d entries).¶
-082:Trying to reconnect... [try %d out of %d]
+082:Trying to reconnect... [try %d out of %d]¶
 083:Sound cmd
 084:Sound
 085:on
@@ -604,7 +604,7 @@ i18n (67, )
 603: 
 604: 
 605: 
-606:Got a bad session ID %08X with CMD %04X ignored.¶
+606:Got a bad session ID %08x (correct: %08x) with cmd %04x ignored.¶
 607:Usage: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]¶
 608:        -v   Turn on verbose Mode (useful for Debugging only)¶
 609:        -f   specifies an alternate Config File (default: ~/.micqrc)¶
@@ -692,11 +692,11 @@ i18n (67, )
 691:seconds
 692:Contacts:
 693:Packets sent:
-694:Packets recieved:
+694:Packets received:
 695:Lag:
 696:Sex:
 697:Distinct packets sent:
-698:Distinct packets recieved:
+698:Distinct packets received:
 699:Must give a valid uin/nickname¶
 700:%s is not a valid user in your list.¶
 701:%d users not returned.
@@ -755,7 +755,7 @@ i18n (67, )
 754: 
 755: 
 756:¶Creating Connection...¶
-757:Couldn't establish connection¶
+757:Couldn't establish connection.¶
 758:Sending Request...¶
 759:Waiting for response....¶
 760:¶Your new UIN is %s%ld%s!¶
@@ -815,7 +815,7 @@ i18n (67, )
 814:Sent auto-response message to %s%s%s.¶
 815:    funny: use funny messages for output.¶
 816:Unknown option %s to set command.¶
-817:Warning: ReceiveScript Feature not enabled!¶
+817:Warning: ReceiveScript feature not enabled!¶
 818:Warning: Deprecated syntax found in rc file!¶    Please update or "save" the rc file and check for changes.¶
 819:Can't find rc file %s - using old location %s¶
 820:%s <option> [on|off] - control simple options.¶
@@ -839,7 +839,7 @@ i18n (67, )
 838:Received direct connection initialization.¶
 839:Version %04x:%04x, Port %d, UIN %d, session %08x¶
 840:Received malformed direct connection initialization.¶
-841:Received malformed initialization acknowledgement packet.
+841:Received malformed initialization acknowledgement packet.¶
 842:Closing socket %d to %s.¶
 843:Closing socket %d.¶
 844:TCP message %04x discarded after timeout.¶
@@ -849,10 +849,10 @@ i18n (67, )
 848:    close <nick> - Closes/resets TCP connection(s).¶
 849:Error on select: %s (%d)¶
 850:Timeout on connection with %s at %s:%d¶
-851:popping type %d seq %08x at %p (body %p)
-852:enqueuing type %d seq %08x at %p (body %p)
+851:popping type %d seq %08x at %p (pak %p)
+852:enqueuing type %d seq %08x at %p (pak %p)
 853:couldn't dequeue type %d seq %08x
-854:dequeue type %d seq %08x at %p (body %p)
+854:dequeue type %d seq %08x at %p (pak %p)
 855:TCP connection to %s at %s:%d failed.¶
 856:Discarded a %04x (%s) packet from old session %08x (current: %08x).¶
 857:Do you want to hide your IP from other contacts? (YES/NO)
@@ -862,3 +862,8 @@ i18n (67, )
 861:freeing (old) packet
 862:freeing (disc) packet
 863:creating new packet
+864:Can't open rcfile %s.
+865:cloning existing packet
+866:This version of micq is compiled without TCP support.¶
+867:Got a malformed (too short) packet - ignored.¶
+868:Got a malformed (to long subpacket) multi-packet - remainder ignored.¶

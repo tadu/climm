@@ -3,66 +3,6 @@
  *  Defines for version 2 of the ICQ protocol.
  */
 
-typedef struct
-{
-   UWORD dummy; /* to fix alignment problem */
-   UBYTE ver[2];
-   UBYTE cmd[2];
-   UBYTE seq[2];
-   UBYTE UIN[4];
-} pak_2_cmd_s;
-
-typedef struct
-{
-   UWORD dummy; /* to fix alignment problem */
-   UBYTE ver[2];
-   UBYTE cmd[2];
-   UBYTE seq[2];
-} pak_2_srv_s;
-
-typedef struct
-{
-   UBYTE port[4];
-   UBYTE len[2];
-} pak_2_log1_s;
-
-typedef struct
-{
-   UBYTE X1[4];
-   UBYTE ip[4];
-   UBYTE X2[1];
-   UBYTE status[4];
-   UBYTE X3[4];
-   UBYTE seq[2];
-   UBYTE X4[4];
-   UBYTE X5[4];
-} pak_2_log2_s;
-
-
-#if ICQ_VER == 2
-
-#define ICQ_pak     pak_2_cmd_s
-#define SRV_ICQ_pak pak_2_srv_s
-#define login_1     pak_2_log1_s
-#define login_2     pak_2_log2_s
-
-/* those behind the // are for the spec on
- http://www.student.nada.kth.se/~d95-mih/icq/
- they didn't work for me so I changed them
- to values that did work.
- *********************************/
-/*#define LOGIN_X1_DEF 0x00000078 */
-#define LOGIN_X1_DEF 0x00040072
-#define LOGIN_X2_DEF 0x06
-/*#define LOGIN_X3_DEF 0x00000002*/
-#define LOGIN_X3_DEF 0x00000003
-/*#define LOGIN_X4_DEF 0x00000000*/
-#define LOGIN_X4_DEF 0x00000000
-/*#define LOGIN_X5_DEF 0x00780008*/
-#define LOGIN_X5_DEF 0x00720004
-
-#endif
-
 #define SRV_ACK            	0x000A
 #define SRV_NEW_UIN        	0x0046
 #define SRV_LOGIN_REPLY    	0x005A

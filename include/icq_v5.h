@@ -2,46 +2,7 @@
  *  Defines for version 5 of the ICQ protocol.
  */
 
-typedef struct
-{
-   UBYTE dummy[2]; /* to fix alignment problem */
-   UBYTE ver[2];
-   UBYTE zero[4];
-   UBYTE UIN[4];
-   UBYTE session[4];
-   UBYTE cmd[2];
-   UBYTE seq2[2];
-   UBYTE seq[2];
-   UBYTE checkcode[4];
-} pak_5_cmd_s;
-
-typedef struct
-{
-   UBYTE dummy[2]; /* to fix alignment problem */
-   UBYTE ver[2];
-   UBYTE zero;
-   UBYTE session[4];
-   UBYTE cmd[2];
-   UBYTE seq[2];
-   UBYTE seq2[2];
-   UBYTE UIN[4];
-   UBYTE check[4];
-} pak_5_srv_s;
-
-#define CMD_OFFSET 14
-#define SEQ_OFFSET 16
-#define SEQ2_OFFSET 18
-#define DATA_OFFSET 4
-#define PAK_DATA_OFFSET 24
-
-#if ICQ_VER == 5
-
-#define ICQ_pak     pak_5_cmd_s
-#define SRV_ICQ_pak pak_5_srv_s
-
 #define BUILD_MICQ 0x7a000000
-
-#endif
 
 #define SRV_GO_AWAY        	0x0028
 #define SRV_BAD_PASS       	0x0064

@@ -7,9 +7,9 @@ CFLAGS = @CFLAGS@ -DPREFIX=\"$(prefix)\" -Wall
 # If BeOS, add 'beos.c'
 micq_SOURCES = conv.c conv_rus.c conv_jp.c file_util.c icq_response.c micq.c \
        server.c util.c  util_ui.c mreadline.c mselect.c network.c \
-       msg_queue.c sendmsg.c tabs.c i18n.c util_table.c contact.c tcp.c packet.c \
+       msg_queue.c tabs.c i18n.c util_table.c contact.c tcp.c packet.c \
        cmd_pkt_cmd_v5.c cmd_pkt_cmd_v5_util.c cmd_pkt_server.c cmd_user.c \
-       buildmark.c
+       preferences.c util_io.c session.c buildmark.c
 
 lang:
 	@rm -f *.c~ ../lang/*.i18n~

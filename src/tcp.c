@@ -23,7 +23,6 @@
 #include "file_util.h"
 #include "util.h"
 #include "buildmark.h"
-#include "sendmsg.h"
 #include "network.h"
 #include "cmd_user.h"
 #include "icq_response.h"
@@ -50,6 +49,16 @@ static void       TCPCallBackReceive (struct Event *event);
 
 static void       Encrypt_Pak        (Packet *pak);
 static int        Decrypt_Pak        (UBYTE *pak, UDWORD size);
+
+
+/*
+ * Callback that triggers "login" - ehm, listening.
+ */
+void CallBackLoginTCP (struct Event *event)
+{
+    TCPInit (event->sess, TCP_PORT);
+    free (event);
+}
 
 /* Initializes TCP socket for incoming connections on given port.
  * 0 = random port
@@ -188,7 +197,7 @@ int TCPSocket (tcpsock_t *sok)
     flags = fcntl (sok->sok, F_GETFL, 0);
     if (flags != -1)
         flags = fcntl (sok->sok, F_SETFL, flags | O_NONBLOCK);
-    if (flags == -1 && uiG.Verbose)
+    if (flags == -1 && prG->verbose)
     {
         rc = errno;
         M_print (i18n (828, "Warning: couldn't set socket nonblocking: %s (%d).\n"), strerror (rc), rc);
@@ -207,7 +216,7 @@ int TCPConnect (Session *sess, tcpsock_t *sok, int mode)
     
     while (1)
     {
-        if (uiG.Verbose)
+        if (prG->verbose)
             M_print ("debug: TCPConnect; Nick: %s mode: %d state: %d\n", sok->cont ? sok->cont->nick : "", mode, sok->state);
         switch (sok->state)
         {
@@ -252,7 +261,7 @@ int TCPConnect (Session *sess, tcpsock_t *sok, int mode)
                 QueueDequeue (queue, sok->ip, QUEUE_TYPE_TCP_TIMEOUT);
             case 2:
                 close (sok->sok);
-                if (uiG.Verbose)
+                if (prG->verbose)
                 {
                     M_print (i18n (829, "Opening TCP connection to %s%s%s at %s:%d failed: %d (%s) (%d)\n"),
                              COLCONTACT, sok->cont->nick, COLNONE, inet_ntoa (sin.sin_addr), sok->cont->port, rc, strerror (rc), 1);
@@ -314,7 +323,7 @@ int TCPConnect (Session *sess, tcpsock_t *sok, int mode)
             case TCP_STATE_CONNECTED:
                 QueueDequeue (queue, sok->ip, QUEUE_TYPE_TCP_TIMEOUT);
                 sin.sin_addr.s_addr = sok->ip;
-                if (uiG.Verbose)
+                if (prG->verbose)
                 {
                     M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , sok->cont->nick, inet_ntoa (sin.sin_addr), sok->cont->port);
                     M_print (i18n (785, "success.\n"));
@@ -422,7 +431,7 @@ Packet *TCPReceivePacket (tcpsock_t *sok)
         if (bytesread <= 0)
             break;
 
-        if (uiG.Verbose & 4)
+        if (prG->verbose & 4)
         {
             Time_Stamp ();
             M_print (" \x1b«" COLSERV "");
@@ -432,14 +441,14 @@ Packet *TCPReceivePacket (tcpsock_t *sok)
             M_print ("\x1b»\n");
         }
 
-        pak->bytes = size;
+        pak->len = size;
         return pak;
     }
     
     if (pak)
         free (pak);
 
-    if (uiG.Verbose)
+    if (prG->verbose)
     {
         rc = errno;
         Time_Stamp ();
@@ -465,13 +474,13 @@ void TCPSendPacket (Packet *pak, tcpsock_t *sok)
     if (sok->state <= 0)
         return;
 
-    if (uiG.Verbose & 4)
+    if (prG->verbose & 4)
     {
         Time_Stamp ();
         M_print (" \x1b«" COLCLIENT "");
         M_print (i18n (776, "Outgoing TCP packet:"));
         M_print (COLNONE "\n");
-        Hex_Dump (pak->data, pak->bytes);
+        Hex_Dump (pak->data, pak->len);
         M_print ("\x1b»\n");
     }
 
@@ -493,22 +502,22 @@ void TCPSendPacket (Packet *pak, tcpsock_t *sok)
     {
         errno = 0;
 
-        buf[0] = tpak->bytes & 0xFF;
-        buf[1] = tpak->bytes >> 8;
+        buf[0] = tpak->len & 0xFF;
+        buf[1] = tpak->len >> 8;
         if (sockwrite (sok->sok, buf, 2) < 2)
             break;
 
-        if (uiG.Verbose & 4)
+        if (prG->verbose & 4)
         {
             Time_Stamp ();
             M_print (" \x1b«" COLCLIENT "");
             M_print (i18n (776, "Outgoing TCP packet:"));
             M_print (COLNONE "*\n");
-            Hex_Dump (data, tpak->bytes);
+            Hex_Dump (data, tpak->len);
             M_print ("\x1b»\n");
         }
 
-        for (todo = tpak->bytes; todo > 0; todo -= bytessend, data += bytessend)
+        for (todo = tpak->len; todo > 0; todo -= bytessend, data += bytessend)
         {
             bytessend = sockwrite (sok->sok, data, todo);
             if (bytessend <= 0)
@@ -519,7 +528,7 @@ void TCPSendPacket (Packet *pak, tcpsock_t *sok)
         return;
     }
     
-    if (uiG.Verbose)
+    if (prG->verbose)
     {
         rc = errno;
         Time_Stamp ();
@@ -543,7 +552,7 @@ void TCPSendInit (Session *sess, tcpsock_t *sok)
     if (!sok->sid)
         sok->sid = rand ();
 
-    if (uiG.Verbose)
+    if (prG->verbose)
         M_print (i18n (836, "Sending TCP direct connection initialization packet.\n"));
 
     pak = PacketC ();
@@ -555,7 +564,7 @@ void TCPSendInit (Session *sess, tcpsock_t *sok)
     PacketWrite4 (pak, sess->our_port);               /* our port         */
     PacketWrite4 (pak, sess->uin);                    /* our UIN          */
     PacketWrite4 (pak, htonl (sess->our_outside_ip)); /* our (remote) IP  */
-    PacketWrite4 (pak, htonl (sess->our_ip));         /* our (local)  IP  */
+    PacketWrite4 (pak, htonl (sess->our_local_ip));   /* our (local)  IP  */
     PacketWrite1 (pak, TCP_OK_FLAG);                  /* connection type  */
     PacketWrite4 (pak, sess->our_port);               /* our (other) port */
     PacketWrite4 (pak, sok->sid);                     /* session id       */
@@ -573,7 +582,7 @@ void TCPSendInitAck (tcpsock_t *sok)
     if (sok->state <= 0)
         return;
 
-    if (uiG.Verbose)
+    if (prG->verbose)
         M_print (i18n (837, "Acknowledging TCP direct connection initialization packet.\n"));
 
     pak = PacketC ();
@@ -596,7 +605,7 @@ tcpsock_t *TCPReceiveInit (tcpsock_t *sok)
     if (!pak)
         return sok;
 
-    size = pak->bytes;
+    size = pak->len;
 
     for (;;)
     {
@@ -632,7 +641,7 @@ tcpsock_t *TCPReceiveInit (tcpsock_t *sok)
         if (sok->sid != sid)
             break;
 
-        if (uiG.Verbose)
+        if (prG->verbose)
         {
             M_print (i18n (838, "Received direct connection initialization.\n"));
             M_print ("    \x1b«");
@@ -646,7 +655,7 @@ tcpsock_t *TCPReceiveInit (tcpsock_t *sok)
         free (pak);
         return sok;
     }
-    if (uiG.Verbose)
+    if (prG->verbose)
         M_print (i18n (840, "Received malformed direct connection initialization.\n"));
 
     TCPClose (sok);
@@ -665,7 +674,7 @@ void TCPReceiveInitAck (tcpsock_t *sok)
 
     pak = TCPReceivePacket (sok);
 
-    if (pak && (pak->bytes != 4 || PacketReadAt1 (pak, 0) != TCP_CMD_INIT_ACK))
+    if (pak && (pak->len != 4 || PacketReadAt1 (pak, 0) != TCP_CMD_INIT_ACK))
     {
         M_print (i18n (841, "Received malformed initialization acknowledgement packet.\n"));
         TCPClose (sok);
@@ -726,7 +735,7 @@ void TCPHandleComm (Session *sess, Contact *cont, int mode)
         TCPConnect (sess, &cont->sok, mode);
     else
     {
-        if (uiG.Verbose) M_print ("Debug: TCPHandleComm: Nick: %s, mode: %d\n", cont?cont->nick:"",mode);
+        if (prG->verbose) M_print ("Debug: TCPHandleComm: Nick: %s, mode: %d\n", cont?cont->nick:"",mode);
         if (mode&1)
         Handle_TCP_Comm (sess, cont->uin);
     }
@@ -880,7 +889,7 @@ void Handle_TCP_Comm (Session *sess, UDWORD uin)
         if (!(pak = TCPReceivePacket (&cont->sok)))
             break;
 
-        size = pak->bytes;
+        size = pak->len;
 
         if (Decrypt_Pak ((UBYTE *) &pak->data, size) < 0)
         {
@@ -889,7 +898,7 @@ void Handle_TCP_Comm (Session *sess, UDWORD uin)
             break;
         }
 
-        if (uiG.Verbose & 4)
+        if (prG->verbose & 4)
         {
             Time_Stamp ();
             M_print (" \x1b«" COLSERV "");
@@ -913,6 +922,9 @@ void Handle_TCP_Comm (Session *sess, UDWORD uin)
                         break;
                     if (PacketReadAt2 (pak, 26) == NORM_MESS)
                     {
+                        log_event (cont->uin, LOG_MESS, "You sent a TCP message to %s\n%s\n",
+                                   cont->name, PacketReadAtStr (pak, 28));
+
                         Time_Stamp ();
                         M_print (" " COLACK "%10s" COLNONE " " MSGTCPACKSTR "%s\n",
                                  cont->nick, event->info);
@@ -922,7 +934,7 @@ void Handle_TCP_Comm (Session *sess, UDWORD uin)
                         M_print (i18n (194, "Auto-response message for %s:\n"), ContactFindNick (cont->uin));
                         M_print (MESSCOL "%s\n" NOCOL, PacketReadAtStr (pak, 28));
                     }
-                    if (uiG.Verbose && PacketReadAt2 (pak, 26) != NORM_MESS)
+                    if (prG->verbose && PacketReadAt2 (pak, 26) != NORM_MESS)
                     {
                         M_print (i18n (806, "Received ACK for message (seq %04X) from %s\n"),
                                  seq_in, cont->nick);
@@ -936,7 +948,7 @@ void Handle_TCP_Comm (Session *sess, UDWORD uin)
                     if (!event)
                         break;
                     
-                    if (uiG.Verbose)
+                    if (prG->verbose)
                     {
                         M_print (i18n (807, "Cancelled incoming message (seq %04X) from %s\n"),
                                  seq_in, cont->nick);
@@ -1004,6 +1016,9 @@ void TCPCallBackReceive (struct Event *event)
             tmp = PacketReadAtStr (pak, 28);
             Do_Msg (event->sess, PacketReadAt2 (pak, 24), strlen (tmp),
                     tmp, cont->uin, 1);
+
+            log_event (cont->uin, LOG_MESS, "You received a TCP message from %s\n%s\n",
+                       ContactFindName (cont->uin), tmp);
 
             Send_TCP_Ack (&cont->sok, PacketReadAt2 (pak, 8),
                           PacketReadAt2 (pak, 22), TRUE);
@@ -1135,7 +1150,7 @@ void Encrypt_Pak (Packet *pak)
     UDWORD hex, key;
 
     p = pak->data;
-    size = pak->bytes;
+    size = pak->len;
 
     /* calculate verification data */
     M1 = (rand() % ((size < 255 ? size : 255)-10))+10;

@@ -34,6 +34,7 @@ int  TCPConnect        (Session *sess, tcpsock_t *sok, int mode);
 void TCPHandleComm     (Session *sess, struct Contact_t *cont, int mode);
 BOOL TCPSendMsg        (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd);
 
+void CallBackLoginTCP  (struct Event *event);
 int Send_TCP_Ack (tcpsock_t *sok, UWORD seq, UWORD sub_cmd, BOOL accept);
 void Handle_TCP_Comm (Session *sess, UDWORD uin);
 /*int Decrypt_Pak (UBYTE *pak, UDWORD size);

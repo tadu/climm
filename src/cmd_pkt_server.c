@@ -1,6 +1,5 @@
 
 #include "micq.h"
-#include "sendmsg.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_cmd_v5_util.h"
 #include "util.h"
@@ -11,6 +10,7 @@
 #include "icq_response.h"
 #include "server.h"
 #include "contact.h"
+#include "util_io.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -73,87 +73,97 @@ const char *CmdPktSrvName (int cmd)
  */
 void CmdPktSrvRead (Session *sess)
 {
-    srv_net_icq_pak pak;
+    Packet *pak;
     int s;
+    UDWORD session, uin, id;
+    UWORD cmd, seq, seq2;
 
-    s = SOCKREAD (sess, &pak.head.ver, sizeof (pak) - 2);
-    if (s < 0)
+    pak = UtilIORecvUDP (sess);
+    if (!pak)
         return;
 
-    if (uiG.Verbose & 4)
+    pak->ver = PacketRead2 (pak);
+               PacketRead1 (pak); /* zero */
+    session  = PacketRead4 (pak);
+    cmd      = PacketRead2 (pak);
+    seq      = PacketRead2 (pak);
+    seq2     = PacketRead2 (pak);
+    uin      = PacketRead4 (pak);
+               PacketRead4 (pak); /* check */
+    id = seq2 << 16 | seq;
+    s = pak->len;
+    
+    if (prG->verbose & 4)
     {
         Time_Stamp ();
         M_print (" \x1b«" COLSERV "");
         M_print (i18n (774, "Incoming packet:"));
-        M_print (" %04x %08x:%08x %04x (%s)" COLNONE "\n",
-                 Chars_2_Word (pak.head.ver), Chars_2_DW (pak.head.session),
-                 Chars_2_DW (pak.head.seq), Chars_2_Word (pak.head.cmd),
-                 CmdPktSrvName (Chars_2_Word (pak.head.cmd)));
+        M_print (" %04x %08x:%04x%04x %04x (%s)" COLNONE "\n",
+                 pak->ver, session, seq2, seq, cmd, CmdPktSrvName (cmd));
 #if ICQ_VER == 5
-        Hex_Dump (pak.head.ver, 3);                       M_print ("\n");
-        Hex_Dump (pak.head.ver + 3, 6);                   M_print ("\n");
-        Hex_Dump (pak.head.ver + 9, 12);      if (s > 21) M_print ("\n");
-        Hex_Dump (pak.head.ver + 21, s - 21);
+        Hex_Dump (pak->data, 3);                       M_print ("\n");
+        Hex_Dump (pak->data + 3, 6);                   M_print ("\n");
+        Hex_Dump (pak->data + 9, 12);      if (s > 21) M_print ("\n");
+        Hex_Dump (pak->data + 21, s - 21);
 #else
-        Hex_Dump (pak.head.ver, s);
+        Hex_Dump (pak->data, s);
 #endif
         M_print ("\x1b»\n");
     }
-    if (Chars_2_DW (pak.head.session) != sess->our_session)
+    if (pak->len < 21)
     {
-        if (uiG.Verbose)
+        if (prG->verbose)
+            M_print (i18n (867, "Got a malformed (too short) packet - ignored.\n"));
+        return;
+    }
+    if (session != sess->our_session)
+    {
+        if (prG->verbose)
         {
-            M_print (i18n (606, "Got a bad session ID %08x (correct: %08x) with CMD %04x ignored.\n"),
-                     Chars_2_DW (pak.head.session), sess->our_session, Chars_2_Word (pak.head.cmd));
+            M_print (i18n (606, "Got a bad session ID %08x (correct: %08x) with cmd %04x ignored.\n"),
+                     session, sess->our_session, cmd);
         }
         return;
     }
-    if ((Chars_2_Word (pak.head.cmd) != SRV_NEW_UIN)
-        && (Is_Repeat_Packet (Chars_2_Word (pak.head.seq))))
+    if (cmd != SRV_NEW_UIN && Is_Repeat_Packet (seq))
     {
-        if (Chars_2_Word (pak.head.seq))
+        if (seq && cmd != SRV_ACK)
         {
-            if (Chars_2_Word (pak.head.cmd) != SRV_ACK) /* ACKs don't matter */
+            if (prG->verbose)
             {
-                if (uiG.Verbose)
-                {
-                    M_print (i18n (67, "Debug: Doppeltes Packet #%04x vom Typ %04x (%s)\n"),
-                             Chars_2_Word (pak.head.seq), Chars_2_Word (pak.head.cmd),
-                             CmdPktSrvName (Chars_2_Word (pak.head.cmd)));
-                }
-                CmdPktCmdAck (sess, Chars_2_DW (pak.head.seq));       /* LAGGGGG!! i18n (67, "") i18n */ 
-                return;
+                M_print (i18n (67, "debug: Doppeltes Packet #%04x vom Typ %04x (%s)\n"),
+                         id, cmd, CmdPktSrvName (cmd));
             }
+            CmdPktCmdAck (sess, id);       /* LAGGGGG!! i18n (67, "") i18n */ 
+            return;
         }
     }
-    if (Chars_2_Word (pak.head.cmd) != SRV_ACK)
+    if (cmd != SRV_ACK)
     {
-        sess->serv_mess[Chars_2_Word (pak.head.seq2)] = TRUE;
-        Got_SEQ (Chars_2_DW (pak.head.seq));
-        CmdPktCmdAck (sess, Chars_2_DW (pak.head.seq));
-        sess->real_packs_recv++;
+        Got_SEQ (id);
+        CmdPktCmdAck (sess, id);
+        sess->stat_real_pak_rcvd++;
     }
-    CmdPktSrvProcess (sess, pak.head.check + DATA_OFFSET, s - (sizeof (pak.head) - 2),
-                     Chars_2_Word (pak.head.cmd), Chars_2_Word (pak.head.ver),
-                     Chars_2_DW (pak.head.seq), Chars_2_DW (pak.head.UIN));
+    CmdPktSrvProcess (sess, pak, cmd, pak->ver, id, uin);
 }
 
 /*
  * Process the given server packet
  */
-void CmdPktSrvProcess (Session *sess, UBYTE * data, int len, UWORD cmd,
+void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
                        UWORD ver, UDWORD seq, UDWORD uin)
 {
     jump_srv_t *t;
     SIMPLE_MESSAGE_PTR s_mesg;
     static int loginmsg = 0;
-    int i;
+    UBYTE *data = pak->data + pak->rpos;
+    UWORD len = pak->len - pak->rpos;
     
     for (t = jump; t->cmd; t++)
     {
         if (cmd == t->cmd && t->f)
         {
-            t->f (sess, data, len, cmd, ver, seq, uin);
+            t->f (sess, pak, cmd, ver, seq, uin);
             return;
         }
     }
@@ -197,7 +207,7 @@ void CmdPktSrvProcess (Session *sess, UBYTE * data, int len, UWORD cmd,
             Recv_Message (sess, data);
             break;
         case SRV_X1:
-            if (uiG.Verbose)
+            if (prG->verbose)
             {
                 M_print (i18n (643, "Acknowleged SRV_X1 0x021C Done Contact list?\n"));
             }
@@ -205,7 +215,7 @@ void CmdPktSrvProcess (Session *sess, UBYTE * data, int len, UWORD cmd,
             sess->Done_Login = TRUE;
             break;
         case SRV_X2:
-            if (uiG.Verbose)
+            if (prG->verbose)
                 M_print (i18n (644, "Acknowleged SRV_X2 0x00E6 Done old messages?\n"));
             CmdPktCmdAckMessages (sess);
             break;
@@ -226,24 +236,8 @@ void CmdPktSrvProcess (Session *sess, UBYTE * data, int len, UWORD cmd,
             break;
         case SRV_TRY_AGAIN:
             M_print (i18n (646, COLMESS "Server is busy please try again.\nTrying again...\n"));
-#if HAVE_FORK
-            i = fork();
-#else
-            i = -1;
-#endif
-            sess->our_session = rand();
-            if (i < 0)
-            {
-                sleep (2);
-                CmdPktCmdLogin (sess);
-            }
-            else if (!i)
-            {
-                sleep (5);
-                CmdPktCmdLogin (sess);
-                _exit (0);
-            }
-            break;
+            sess->our_seq2 = 0;
+            QueueEnqueueData (queue, sess, 0, 0, 0, time (NULL) + 5, NULL, NULL, &CallBackLoginUDP);
         case SRV_USER_ONLINE:
             User_Online (sess, data);
             break;
@@ -261,26 +255,10 @@ void CmdPktSrvProcess (Session *sess, UBYTE * data, int len, UWORD cmd,
                 sess->Quit = TRUE;
                 break;
             }
-            M_print ("%s\n", i18n (39, "Server has forced us to disconnect.  This may be because of network lag."));
-            M_print (i18n (82, "Trying to reconnect... [try %d out of %d]"), Reconnect_Count, MAX_RECONNECT_ATTEMPTS);
-#if HAVE_FORK
-            i = fork();
-#else
-            i = -1;
-#endif
-            sess->our_session = rand ();
-            if (i < 0)
-            {
-                sleep (2);
-                CmdPktCmdLogin (sess);
-            }
-            else if (!i)
-            {
-                sleep (5);
-                CmdPktCmdLogin (sess);
-                _exit (0);
-            }
-            M_print ("\n");
+            M_print ("%s\n", i18n (39, "Server claims we're not connected.\n"));
+            M_print (i18n (82, "Trying to reconnect... [try %d out of %d]\n"), Reconnect_Count, MAX_RECONNECT_ATTEMPTS);
+            sess->our_seq2    = 0;
+            QueueEnqueueData (queue, sess, 0, 0, 0, time (NULL) + 5, NULL, NULL, &CallBackLoginUDP);
             break;
         case SRV_END_OF_SEARCH:
             M_print (i18n (45, "Search Done."));
@@ -311,12 +289,12 @@ void CmdPktSrvProcess (Session *sess, UBYTE * data, int len, UWORD cmd,
         /*** Don't edit here unless you're sure you know the difference */
         /*** Edit Do_Msg() in icq_response.c so you handle all messages */
             s_mesg = (SIMPLE_MESSAGE_PTR) data;
-            if (!((NULL == ContactFind (Chars_2_DW (s_mesg->uin))) && (uiG.Hermit)))
+            if (!((NULL == ContactFind (Chars_2_DW (s_mesg->uin))) && (prG->flags & FLAG_HERMIT)))
             {
                 uiG.last_recv_uin = Chars_2_DW (s_mesg->uin);
                 Time_Stamp ();
                 M_print ("\a " CYAN BOLD "%10s" COLNONE " ", ContactFindName (Chars_2_DW (s_mesg->uin)));
-                if (uiG.Verbose)
+                if (prG->verbose)
                     M_print (i18n (647, " Type = %04x\t"), Chars_2_Word (s_mesg->type));
                 Do_Msg (sess, Chars_2_Word (s_mesg->type), Chars_2_Word (s_mesg->len),
                         s_mesg->len + 2, uiG.last_recv_uin, 0);
@@ -331,7 +309,7 @@ void CmdPktSrvProcess (Session *sess, UBYTE * data, int len, UWORD cmd,
             M_print (i18n (649, "The version was %X\t"), ver);
             M_print (i18n (650, "\nThe SEQ was %04X\t"), seq);
             M_print (i18n (651, "The size was %d\n"), len);
-            if (uiG.Verbose)
+            if (prG->verbose)
             {
                 if (len > 0)
                     Hex_Dump (data, len);
@@ -347,45 +325,58 @@ void CmdPktSrvProcess (Session *sess, UBYTE * data, int len, UWORD cmd,
  */
 JUMP_SRV_F (CmdPktSrvMulti)
 {
-    int num_pack, i;
-    int llen;
-    UBYTE *j;
-    srv_net_icq_pak pak;
-    num_pack = (unsigned char) data[0];
-    j = data;
-    j++;
+    int i, num_pack, llen;
+    Packet *npak;
+    UDWORD session, uin, id;
+    UWORD cmd, seq, seq2;
+
+    num_pack = PacketRead1 (pak);
 
     for (i = 0; i < num_pack; i++)
     {
-        llen = Chars_2_Word (j);
-        memcpy (&pak, j, sizeof (pak));
-        j += 2;
+        llen = PacketRead2 (pak);
+        if (pak->rpos + llen > pak->len)
+        {
+            if (prG->verbose)
+                M_print (i18n (868, "Got a malformed (to long subpacket) multi-packet - remainder ignored.\n"));
+            return;
+        }
+        
+        npak = PacketC ();
+        memcpy (npak->data, pak->data + pak->rpos, llen);
+        npak->len = llen;
+        pak->rpos += llen;
+        
+        npak->ver = PacketRead2 (npak);
+                    PacketRead1 (npak); /* zero */
+        session   = PacketRead4 (npak);
+        cmd       = PacketRead2 (npak);
+        seq       = PacketRead2 (npak);
+        seq2      = PacketRead2 (npak);
+        uin       = PacketRead4 (npak);
+                    PacketRead4 (npak); /* check */
+        id = seq2 << 16 | seq;
 
-        if (uiG.Verbose & 4)
+        if (prG->verbose & 4)
         {
             Time_Stamp ();
             M_print (" \x1b«" COLSERV "");
             M_print (i18n (823, "Incoming partial packet:"));
-            M_print (" %04x %08x:%08x %04x (%s)" COLNONE "\n",
-                     Chars_2_Word (pak.head.ver), Chars_2_DW (pak.head.session),
-                     Chars_2_DW (pak.head.seq), Chars_2_Word (pak.head.cmd),
-                     CmdPktSrvName (Chars_2_Word (pak.head.cmd)));
+            M_print (" %04x %08x:%04x%04x %04x (%s)" COLNONE "\n",
+                     ver, session, seq2, seq, cmd, CmdPktSrvName (cmd));
 #if ICQ_VER == 5
-            Hex_Dump (pak.head.ver, 3);                          M_print ("\n");
-            Hex_Dump (pak.head.ver + 3, 6);                      M_print ("\n");
-            Hex_Dump (pak.head.ver + 9, 12);      if (llen > 21) M_print ("\n");
-            Hex_Dump (pak.head.ver + 21, llen - 21);
+            Hex_Dump (pak->data, 3);                          M_print ("\n");
+            Hex_Dump (pak->data + 3, 6);                      M_print ("\n");
+            Hex_Dump (pak->data + 9, 12);      if (llen > 21) M_print ("\n");
+            Hex_Dump (pak->data + 21, llen - 21);
 #else
-            Hex_Dump (pak.head.ver, llen);
+            Hex_Dump (pak->data, llen);
 #endif
             M_print ("\x1b»\n");
         }
 
         Kill_Prompt ();
-        CmdPktSrvProcess (sess, pak.data, (llen + 2) - sizeof (pak.head),
-                         Chars_2_Word (pak.head.cmd), Chars_2_Word (pak.head.ver),
-                         Chars_2_DW (pak.head.seq), Chars_2_DW (pak.head.UIN));
-        j += llen;
+        CmdPktSrvProcess (sess, npak, cmd, ver, seq << 16 | seq2, uin);
     }
 }
 
@@ -399,29 +390,29 @@ JUMP_SRV_F (CmdPktSrvAck)
 
     if (!event)
     {
-        if (uiG.Verbose)
+        if (prG->verbose)
         {
             /* complain */
         }
         return;
     }
 
-    if (len && uiG.Verbose)
+    if (pak->rpos < pak->len && prG->verbose)
     {
-        M_print ("%s %s %d\n", i18n (47, "Extra Data"), i18n (46, "Length"), len);
+        M_print ("%s %s %d\n", i18n (47, "Extra Data"), i18n (46, "Length"), pak->len - pak->rpos);
     }
     
-    ccmd = PacketReadAt2 (event->pak, CMD_OFFSET);
+    ccmd = PacketReadAt2 (event->pak, CMD_v5_OFF_CMD);
 
     Debug (32, i18n (824, "Acknowledged packet type %04x (%s) sequence %04x removed from queue.\n"),
-           ccmd, CmdPktSrvName (ccmd), event->seq >> 16);
+           ccmd, CmdPktCmdName (ccmd), event->seq >> 16);
 
     if (ccmd == CMD_SEND_MESSAGE)
     {
         Time_Stamp ();
         M_print (" " COLACK "%10s" COLNONE " %s%s\n",
-                 ContactFindName (PacketReadAt4 (event->pak, PAK_DATA_OFFSET)),
-                 MSGACKSTR, MsgEllipsis (PacketReadAtStr (event->pak, 32)));
+                 ContactFindName (PacketReadAt4 (event->pak, CMD_v5_OFF_PARAM)),
+                 MSGACKSTR, MsgEllipsis (PacketReadAtStr (event->pak, 30)));
     }
     
     Debug (64, "--> %p (^%p ^-%p) %s", event->pak, event, event->info,

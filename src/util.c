@@ -20,9 +20,9 @@ Changes :
 **********************************************/
 #include "micq.h"
 #include "util.h"
-#include "sendmsg.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "contact.h"
+#include "util_io.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -123,7 +123,7 @@ void Print_Status (UDWORD new_status)
         {
             M_print ("%s", Convert_Status_2_Str (new_status));
         }
-        if (uiG.Verbose)
+        if (prG->verbose)
             M_print (" %08x", new_status);
     }
     else
@@ -189,8 +189,7 @@ Automates the process of creating a new user.
 ***************************************************/
 void Init_New_User (Session *sess)
 {
-    srv_net_icq_pak pak;
-    int s;
+    Packet *pak;
     struct timeval tv;
 #ifdef _WIN32
     int i;
@@ -200,6 +199,7 @@ void Init_New_User (Session *sess)
     fd_set readfds;
 #endif
 
+    sess->ver = 5;
 #ifdef _WIN32
     i = WSAStartup (0x0101, &wsaData);
     if (i != 0)
@@ -209,10 +209,10 @@ void Init_New_User (Session *sess)
     }
 #endif
     M_print (i18n (756, "\nCreating Connection...\n"));
-    sess->sok = Connect_Remote (sess->server, sess->remote_port, STDERR);
+    sess->sok = UtilIOConnectUDP (sess->server, sess->server_port, STDERR);
     if ((sess->sok == -1) || (sess->sok == 0))
     {
-        M_print (i18n (757, "Couldn't establish connection\n"));
+        M_print (i18n (757, "Couldn't establish connection.\n"));
         exit (1);
     }
     M_print (i18n (758, "Sending Request...\n"));
@@ -235,16 +235,14 @@ void Init_New_User (Session *sess)
         M_print (i18n (759, "Waiting for response....\n"));
         if (FD_ISSET (sess->sok, &readfds))
         {
-            s = SOCKREAD (sess, &pak.head.ver, sizeof (pak) - 2);
-            if (Chars_2_Word (pak.head.cmd) == SRV_NEW_UIN)
+            pak = UtilIORecvUDP (sess);
+            if (!pak)
+                continue;
+            if (PacketReadAt2 (pak, 7) == SRV_NEW_UIN)
             {
-                sess->uin = Chars_2_DW (pak.head.UIN);
+                sess->uin = PacketReadAt4 (pak, 13);
                 M_print (i18n (760, "\nYour new UIN is %s%ld%s!\n"), COLSERV, sess->uin, COLNONE);
                 return;
-            }
-            else
-            {
-/*                Hex_Dump( &pak.head.ver, s);*/
             }
         }
         CmdPktCmdRegNewUser (sess, sess->passwd);
@@ -330,17 +328,17 @@ int log_event (UDWORD uin, int type, char *str, ...)
     time_t timeval;
     struct stat statbuf;
 
-    if (!uiG.LogLevel)
+    if (!(prG->flags & FLAG_LOG))
         return 0;
 
-    if ((uiG.LogLevel & 2) && (LOG_ONLINE == type))
+    if ((prG->flags & FLAG_LOG_ONOFF) && (LOG_ONLINE == type))
         return 0;
 
-    if (!uiG.LogPlace)
+    if (!prG->logplace)
     {
-        uiG.LogPlace = malloc (strlen (GetUserBaseDir ()) + 10);
-        strcpy (uiG.LogPlace, GetUserBaseDir ());
-        strcat (uiG.LogPlace, "history/");
+        prG->logplace = malloc (strlen (GetUserBaseDir ()) + 10);
+        strcpy (prG->logplace, GetUserBaseDir ());
+        strcat (prG->logplace, "history/");
     }
 
     timeval = time (0);
@@ -349,27 +347,27 @@ int log_event (UDWORD uin, int type, char *str, ...)
     vsprintf (&buf[strlen (buf)], str, args);
     va_end (args);
 
-    if (uiG.LogPlace[strlen (uiG.LogPlace) - 1] == '/')
+    if (prG->logplace[strlen (prG->logplace) - 1] == '/')
     {
-        if (stat (uiG.LogPlace, &statbuf) == -1)
+        if (stat (prG->logplace, &statbuf) == -1)
         {
             if (errno == ENOENT)
-                mkdir (uiG.LogPlace, 0700);
+                mkdir (prG->logplace, 0700);
             else
                 return -1;
         }
-        sprintf (buffer, "%s%ld.log", uiG.LogPlace, uin);
+        sprintf (buffer, "%s%ld.log", prG->logplace, uin);
 
 #if HAVE_SYMLINK
         if (ContactFindNick (uin))
         {
-            sprintf (symbuf, "%s%s.log", uiG.LogPlace, ContactFindNick (uin));
+            sprintf (symbuf, "%s%s.log", prG->logplace, ContactFindNick (uin));
             symlink (buffer, symbuf);
         }
 #endif
     }
     else
-        strcpy (buffer, uiG.LogPlace);
+        strcpy (buffer, prG->logplace);
 
     if (!(msgfd = fopen (buffer, "a")))
     {

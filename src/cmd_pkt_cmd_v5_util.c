@@ -12,7 +12,7 @@
 #include "conv.h"
 #include "cmd_pkt_server.h"
 #include "contact.h"
-#include "sendmsg.h"
+#include "util_io.h"
 #include <string.h>
 #include <assert.h>
 #include <stdio.h>
@@ -63,8 +63,8 @@ Packet *PacketCv5 (Session *sess, UWORD cmd)
 {
     Packet *pak = PacketC ();
     BOOL  iss2  = cmd != CMD_KEEP_ALIVE && cmd != CMD_SEND_TEXT_CODE && cmd != CMD_ACK;
-    UWORD seq   = cmd != CMD_ACK ? sess->seq_num  : 0;
-    UWORD seq2  = iss2 ? sess->seq_num2 : 0;
+    UWORD seq   = cmd != CMD_ACK ? sess->our_seq  : 0;
+    UWORD seq2  = iss2 ? sess->our_seq2 : 0;
 
     assert (pak);
     assert (sess);
@@ -94,16 +94,15 @@ void PacketEnqueuev5 (Packet *pak, Session *sess)
     UDWORD cmd = pak->cmd;
     BOOL iss2 = cmd != CMD_KEEP_ALIVE && cmd != CMD_SEND_TEXT_CODE && cmd != CMD_ACK;
 
-    assert (pak->bytes > 0x18);
+    assert (pak->len > 0x18);
     assert (sess);
     assert (sess->ver == 5);
 
-    sess->last_cmd[sess->seq_num & 0x3ff] = cmd;
-    if (iss2)           sess->seq_num2++;
+    if (iss2)           sess->our_seq2++;
 
     PacketSendv5 (pak, sess);
 
-    if (uiG.Verbose & 4)
+    if (prG->verbose & 4)
     {
         Time_Stamp ();
         M_print (" \x1b«" COLCLIENT "");
@@ -111,15 +110,15 @@ void PacketEnqueuev5 (Packet *pak, Session *sess)
         M_print (" %04x %08x:%08x %04x (%s) @%p" COLNONE "\n",
                  PacketReadAt2 (pak, CMD_v5_OFF_VER), PacketReadAt4 (pak, CMD_v5_OFF_SESS),
                  PacketReadAt4 (pak, CMD_v5_OFF_SEQ), PacketReadAt2 (pak, CMD_v5_OFF_SEQ2),
-                 CmdPktSrvName (PacketReadAt2 (pak, CMD_v5_OFF_CMD)), pak);
-        Hex_Dump (&pak->data, pak->bytes);
+                 CmdPktCmdName (PacketReadAt2 (pak, CMD_v5_OFF_CMD)), pak);
+        Hex_Dump (&pak->data, pak->len);
         M_print ("\x1b»\n");
     }
 
     if (cmd != CMD_ACK)
     {
-        sess->real_packs_sent++;
-        sess->seq_num++;
+        sess->stat_real_pak_sent++;
+        sess->our_seq++;
 
         QueueEnqueueData (queue, sess, pak->id, QUEUE_TYPE_UDP_RESEND,
                           0, time (NULL) + 10,
@@ -172,8 +171,8 @@ UDWORD Gen_Checksum (const Packet *pak)
     cc <<= 8;
     cc += pak->data[6];
 
-    r1 = rand () % (pak->bytes - 0x18);
-    r1 += 0x18;
+    r1 = rand () % (pak->len - 24);
+    r1 += 24;
     r2 = rand () & 0xff;
 
     cc2 = r1;
@@ -215,16 +214,18 @@ Packet *Wrinkle (const Packet *opak)
     pak = PacketClone (opak);
 
     checkcode = Gen_Checksum (opak);
-    code = pak->bytes * 0x68656c6cL + checkcode;
+    code = opak->len * 0x68656c6cL + checkcode;
+    PacketWriteAt4 (pak, 20, checkcode);
 
-    for (pos = 10; pos < pak->bytes; pos += 4)
+    for (pos = 10; pos < opak->len; pos += 4)
+    {
         PacketWriteAt4 (pak, pos,
             PacketReadAt4 (opak, pos) ^ (code + table[pos & 0xFF]));
+    }
 
     checkcode = Scramble_cc (checkcode);
-
     PacketWriteAt4 (pak, 20, checkcode);
-    
+    pak->len = opak->len;
     return pak;
 }
 
@@ -233,8 +234,6 @@ Packet *Wrinkle (const Packet *opak)
  */
 void PacketSendv5 (const Packet *pak, Session *sess)
 {
-    UBYTE s5len = 0;
-    UBYTE *data, *body;
     Packet *cpak;
     
     assert (pak);
@@ -243,26 +242,8 @@ void PacketSendv5 (const Packet *pak, Session *sess)
     Debug (64, "--- %p %s", pak, i18n (858, "sending packet"));
 
     cpak = Wrinkle (pak);
-    data = cpak->data;
-
-    if (s5G.s5Use)
-    {
-        s5len = 10;
-        body = malloc (pak->bytes + s5len);
-
-        assert (body);
-        
-        body[0] = 0;
-        body[1] = 0;
-        body[2] = 0;
-        body[3] = 1;
-        *(UDWORD *) &body[4] = htonl (s5G.s5DestIP);
-        *(UWORD  *) &body[8] = htons (s5G.s5DestPort);
-        memcpy (body + s5len, data, cpak->bytes);
-        data = body;
-    }
-    sockwrite (sess->sok, data, cpak->bytes + s5len);
-    sess->Packets_Sent++;
+    UtilIOSend (sess, cpak);
+    free (cpak);
 }
 
 /*
@@ -291,11 +272,11 @@ void UDPCallBackResend (struct Event *event)
     }
     else if (event->attempts <= MAX_RETRY_ATTEMPTS)
     {
-        if (uiG.Verbose & 32)
+        if (prG->verbose & 32)
         {
             M_print (i18n (826, "Resending message %04x (%s) sequence %04x (attempt #%d, len %d).\n"),
                      cmd, CmdPktCmdName (cmd),
-                     event->seq >> 16, event->attempts, pak->bytes);
+                     event->seq >> 16, event->attempts, pak->len);
         }
         PacketSendv5 (pak, event->sess);
         event->due = time (NULL) + 10;

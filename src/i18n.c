@@ -61,7 +61,7 @@ int i18nOpen (const char *loc)
     }
     else
     {
-        if (uiG.Funny)
+        if (prG->flags & FLAG_FUNNY)
         {
             i18nTry ("%s/i18n/%s_fun.i18n", GetUserBaseDir (), loc, "");
             if (strchr (loc, '_'))

@@ -619,7 +619,7 @@
 603: 
 604: 
 605: 
-606:Falsche Sitzungskennung %08X bei Kommando CMD %04X ignoriert.¶
+#606:Falsche Sitzungskennung %08X bei Kommando CMD %04X ignoriert.¶
 607:Benutzung: micq [-v|-V] [-f|-F <KonfDatei>] [-l|-L <ProtDatei>] [-?|-h]¶
 608:        -v   ausführlicher Modus (nur zur Fehlersuche nützlich)¶
 609:        -f   alternative Konfigurationsdatei verwenden (normalerweise ~/.micqrc)¶

@@ -42,67 +42,26 @@
 
 static char *fill (const char *fmt, const char *in);
 
-#define      ADD_ALTER(a,b)      else if (!strcasecmp (tmp, a))   \
+#define      ADD_ALTER(a,b)      else if (!strcasecmp (tmp, a))    \
                                        CmdUser (sess, fill ("¶alter quiet " #b " %s", strtok (NULL, " \n\t")))
-#define      ADD_CMD(a,b)        else if (!strcasecmp (tmp, a))     \
-                                 { char *stb;                        \
-                                   stb = strtok (NULL, "\n\t");       \
-                                   if (!stb) stb = "";                 \
-                                   snprintf (b, sizeof (b), "%s", stb); } else if (0) 
-
-static char rcfile[256];
-static int rcfiledef = 0;
+#define      ADD_CMD_D(a,b)      else if (!strcasecmp (tmp, a))        \
+                                       { prG->b = strtok (NULL, "\n");\
+                                         if (!prG->b) prG->b = ""; \
+                                         while (*prG->b == ' ' || *prG->b == '\t') prG->b++; \
+                                         prG->b = strdup (prG->b);     \
+                                         dep = 1; } else if (0)
+#define      ADD_CMD(a,b)        else if (!strcasecmp (tmp, a))        \
+                                       { prG->b = strtok (NULL, "\n");\
+                                         if (!prG->b) prG->b = ""; \
+                                         while (*prG->b == ' ' || *prG->b == '\t') prG->b++; \
+                                         prG->b = strdup (prG->b);     \
+                                         } else if (0)
 
 char *fill (const char *fmt, const char *in)
 {
     char buf[1024];
     snprintf (buf, sizeof (buf), fmt, in);
     return strdup (buf);
-}
-
-void Set_rcfile (const char *name)
-{
-    char *path = 0;
-    char *home;
-
-    if (!name || !strlen (name))
-    {
-        if (rcfiledef == 2)
-            return;
-
-#ifdef _WIN32
-        path = ".\\";
-#endif
-
-#ifdef __amigaos__
-        path = "PROGDIR:";
-#endif
-
-        home = getenv ("HOME");
-        if (home || !path)
-        {
-            if (!home)
-                home = "";
-            path = malloc (strlen (home) + 2 + 6);
-            strcpy (path, home);
-            if (path[strlen (path) - 1] != '/')
-                strcat (path, "/");
-            if (!name)
-                strcat (path, ".micq/");
-        }
-        strcpy (rcfile, path);
-        if (name)
-            strcat (rcfile, ".micqrc");
-        else
-            strcat (rcfile, "micqrc");
-        rcfiledef = 1;
-    }
-    else
-    {
-        strncpy (rcfile, name, 256);
-        rcfile[255] = 0;
-        rcfiledef = 2;
-    }
 }
 
 /************************************************************************
@@ -116,12 +75,17 @@ static void M_strcpy (char *dest, char *src)
         *dest = '\0';
 }
 
-static void Initalize_RC_File (Session *sess)
+static char *M_strdup (char *src)
+{
+    return strdup (src ? src : "");
+}
+
+void Initalize_RC_File (Session *sess)
 {
     FD_T rcf;
-    char passwd2[sizeof (sess->passwd)];
-    strcpy (sess->server, "icq1.mirabilis.com");
-    sess->remote_port = 4000;
+    char pwd1[20], pwd2[20], input[200];
+    sess->server = "icq1.mirabilis.com";
+    sess->server_port = 4000;
 
     sess->away_time = default_away_time;
 
@@ -131,61 +95,63 @@ static void Initalize_RC_File (Session *sess)
   password_entry:
     M_print ("%s ", i18n (63, "Enter password:"));
     fflush (stdout);
-    memset (sess->passwd, 0, sizeof (sess->passwd));
+    memset (pwd1, 0, sizeof (pwd1));
     Echo_Off ();
-    M_fdnreadln (STDIN, sess->passwd, sizeof (sess->passwd));
+    M_fdnreadln (STDIN, pwd1, sizeof (pwd1));
     Echo_On ();
     if (sess->uin == 0)
     {
-        if (0 == sess->passwd[0])
+        if (!pwd1[0])
         {
             M_print ("\n%s\n", i18n (91, "Must enter password!"));
             goto password_entry;
         }
         M_print ("\n%s ", i18n (92, "Reenter password to verify:"));
         fflush (stdout);
-        memset (passwd2, 0, sizeof (passwd2));
+        memset (pwd2, 0, sizeof (pwd2));
         Echo_Off ();
-        M_fdnreadln (STDIN, passwd2, sizeof (sess->passwd));
+        M_fdnreadln (STDIN, pwd2, sizeof (pwd2));
         Echo_On ();
-        if (strcmp (sess->passwd, passwd2))
+        if (strcmp (pwd1, pwd2))
         {
             M_print ("\n%s\n", i18n (93, "Passwords did not match - please reenter."));
             goto password_entry;
         }
+        sess->passwd = strdup (pwd1);
         Init_New_User (sess);
     }
 
 /* SOCKS5 stuff begin */
     M_print ("\n%s ", i18n (94, "SOCKS5 server hostname or IP (type 0 if you don't want to use this):"));
     fflush (stdout);
-    scanf ("%s", s5G.s5Host);
-    if (strlen (s5G.s5Host) > 1)
+    scanf ("%190s", input);
+    if (strlen (input) > 1)
     {
-        s5G.s5Use = 1;
+        prG->s5Host = strdup (input);
+        prG->s5Use = 1;
         M_print ("%s ", i18n (95, "SOCKS5 port (in general 1080):"));
         fflush (stdout);
-        scanf ("%hu", &s5G.s5Port);
+        scanf ("%hu", &prG->s5Port);
 
         M_print ("%s ", i18n (96, "SOCKS5 username (type 0 if you don't need authentification):"));
         fflush (stdout);
-        scanf ("%s", s5G.s5Name);
-        if (strlen (s5G.s5Name) > 1)
+        scanf ("%190s", input);
+        if (strlen (input) > 1)
         {
-            s5G.s5Auth = 1;
+            prG->s5Name = strdup (input);
+            prG->s5Auth = 1;
             M_print ("%s ", i18n (97, "SOCKS5 password:"));
             fflush (stdout);
-            scanf ("%s", s5G.s5Pass);
+            scanf ("%190s", input);
+            prG->s5Pass = strdup (input);
         }
         else
         {
-            s5G.s5Auth = 0;
-            strcpy (s5G.s5Name, "0");
-            strcpy (s5G.s5Pass, "0");
+            prG->s5Auth = 0;
         }
     }
     else
-        s5G.s5Use = 0;
+        prG->s5Use = 0;
 /* SOCKS5 stuff end */
 
     sess->set_status = STATUS_ONLINE;
@@ -198,7 +164,7 @@ static void Initalize_RC_File (Session *sess)
 
     uiG.Current_Status = STATUS_ONLINE;
 
-    rcf = open (rcfile, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+    rcf = open (prG->rcfile, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     if (rcf == -1)
     {
         perror ("Error creating config file ");
@@ -213,7 +179,7 @@ static void Initalize_RC_File (Session *sess)
     }
 }
 
-static void Read_RC_File (Session *sess, FD_T rcf)
+void Read_RC_File (Session *sess, FD_T rcf)
 {
     char buf[450];
     char *tmp;
@@ -224,22 +190,9 @@ static void Read_RC_File (Session *sess, FD_T rcf)
     char *tab_nick_spool[TAB_SLOTS];
     int spooled_tab_nicks;
 
-    sess->passwd[0] = 0;
+    sess->passwd = NULL;
     sess->uin = 0;
     sess->away_time = default_away_time;
-
-#ifdef MSGEXEC
-    uiG.receive_script[0] = '\0';
-#endif
-
-/* SOCKS5 stuff begin */
-    s5G.s5Use = 0;
-    s5G.s5Host[0] = '\0';
-    s5G.s5Port = 0;
-    s5G.s5Auth = 0;
-    s5G.s5Name[0] = '\0';
-    s5G.s5Pass[0] = '\0';
-/* SOCKS5 stuff end */
 
     spooled_tab_nicks = 0;
     for (section = 0; !M_fdnreadln (rcf, buf, sizeof (buf)); )
@@ -272,98 +225,120 @@ static void Read_RC_File (Session *sess, FD_T rcf)
                 tmp = strtok (buf, " ");
                 if (!strcasecmp (tmp, "Server"))
                 {
-                    strcpy (sess->server, strtok (NULL, " \n\t"));
+                    sess->server = M_strdup (strtok (NULL, " \n\t"));
                 }
                 else if (!strcasecmp (tmp, "Password"))
                 {
-                    strcpy (sess->passwd, strtok (NULL, "\n\t"));
+                    sess->passwd = M_strdup (strtok (NULL, "\n\t"));
                 }
                 else if (!strcasecmp (tmp, "ReceiveScript"))
                 {
 #ifdef MSGEXEC
-                    strcpy (uiG.receive_script, strtok (NULL, "\n\t"));
+                    prG->event_cmd = M_strdup (strtok (NULL, "\n"));
 #else
-                    printf (i18n (817, "Warning: ReceiveScript Feature not enabled!\n"));
+                    printf (i18n (817, "Warning: ReceiveScript feature not enabled!\n"));
 #endif
                 }
                 else if (!strcasecmp (tmp, "s5_use"))
                 {
-                    s5G.s5Use = atoi (strtok (NULL, " \n\t"));
+                    prG->s5Use = atoi (strtok (NULL, " \n\t"));
                 }
                 else if (!strcasecmp (tmp, "s5_host"))
                 {
-                    M_strcpy (s5G.s5Host, strtok (NULL, "\n\t"));
+                    prG->s5Host = M_strdup (strtok (NULL, "\n\t"));
                 }
                 else if (!strcasecmp (tmp, "s5_port"))
                 {
-                    s5G.s5Port = atoi (strtok (NULL, " \n\t"));
+                    prG->s5Port = atoi (strtok (NULL, " \n\t"));
                 }
                 else if (!strcasecmp (tmp, "s5_auth"))
                 {
-                    s5G.s5Auth = atoi (strtok (NULL, " \n\t"));
+                    prG->s5Auth = atoi (strtok (NULL, " \n\t"));
                 }
                 else if (!strcasecmp (tmp, "s5_name"))
                 {
-                    M_strcpy (s5G.s5Name, strtok (NULL, "\n\t"));
+                    prG->s5Name = M_strdup (strtok (NULL, "\n\t"));
                 }
                 else if (!strcasecmp (tmp, "s5_pass"))
                 {
-                    M_strcpy (s5G.s5Pass, strtok (NULL, "\n\t"));
+                    prG->s5Pass = M_strdup (strtok (NULL, "\n\t"));
+                }
+                else if (!strcasecmp (tmp, "verbose"))
+                {
+                    if (prG->verbose == (unsigned)-2)
+                        prG->verbose = atoi (strtok (NULL, "\n"));
                 }
                 else if (!strcasecmp (tmp, "Russian"))
                 {
-                    uiG.Russian = TRUE;
+                    prG->flags |= FLAG_CONVRUSS;
+                    dep = 1;
                 }
                 else if (!strcasecmp (tmp, "JapaneseEUC"))
                 {
-                    uiG.JapaneseEUC = TRUE;
+                    prG->flags |= FLAG_CONVEUC;
+                    dep = 1;
                 }
                 else if (!strcasecmp (tmp, "Hermit"))
                 {
-                    uiG.Hermit = TRUE;
+                    prG->flags |= FLAG_HERMIT;
+                    dep = 1;
+                }
+                else if (!strcasecmp (tmp, "logplace"))
+                {
+                    if (!prG->logplace) /* don't overwrite command line arg */
+                        prG->logplace = strdup (strtok (NULL, " \t\n"));
                 }
                 else if (!strcasecmp (tmp, "LogType"))
                 {
                     char *home = getenv ("HOME");
                     if (!home) home = "";
-                    uiG.LogLevel = atoi (strtok (NULL, " \n\t"));
-                    switch (uiG.LogLevel)
+                    i = atoi (strtok (NULL, " \n\t"));
+                    prG->flags &= ~FLAG_LOG & ~FLAG_LOG_ONOFF;
+                    switch (i)
                     {
                         case 1:
-                            uiG.LogPlace = malloc (strlen (home) + 10);
-                            strcpy (uiG.LogPlace, home);
-                            strcpy (uiG.LogPlace, "/micq_log");
+                            prG->logplace = malloc (strlen (home) + 10);
+                            strcpy (prG->logplace, home);
+                            strcpy (prG->logplace, "/micq_log");
                             break;
                         case 3:
+                            prG->flags |= FLAG_LOG_ONOFF;
                         case 2:
-                            uiG.LogLevel--;
-                            uiG.LogPlace = malloc (strlen (home) + 10);
-                            strcpy (uiG.LogPlace, home);
-                            strcpy (uiG.LogPlace, "/micq.log/");
+                            prG->flags |= FLAG_LOG;
+                            prG->logplace = malloc (strlen (home) + 10);
+                            strcpy (prG->logplace, home);
+                            strcpy (prG->logplace, "/micq.log/");
                     }
                     dep = 1;
                 }
                 else if (!strcasecmp (tmp, "No_Log"))
                 {
-                    uiG.LogLevel = 0;
+                    prG->flags &= ~FLAG_LOG & ~FLAG_LOG_ONOFF;
                     dep = 1;
                 }
                 else if (!strcasecmp (tmp, "No_Color"))
                 {
-                    uiG.Color = FALSE;
+                    prG->flags &= ~FLAG_COLOR;
                     dep = 1;
                 }
                 else if (!strcasecmp (tmp, "Last_UIN_Prompt"))
                 {
-                    uiG.last_uin_prompt = TRUE;
+                    prG->flags |= FLAG_UINPROMPT;
+                    dep = 1;
                 }
                 else if (!strcasecmp (tmp, "Del_is_Del"))
                 {
-                    uiG.del_is_bs = FALSE;
+                    prG->flags &= ~FLAG_DELBS;
+                    dep = 1;
                 }
                 else if (!strcasecmp (tmp, "LineBreakType"))
                 {
-                    uiG.line_break_type = atoi (strtok (NULL, " \n\t"));
+                    i = atoi (strtok (NULL, " \n\t"));
+                    prG->flags &= ~FLAG_LIBR_BR & ~FLAG_LIBR_INT;
+                    if (!i || i == 3)
+                        prG->flags |= FLAG_LIBR_BR;
+                    if (i & 2)
+                        prG->flags |= FLAG_LIBR_INT;
                 }
                 else if (!strcasecmp (tmp, "UIN"))
                 {
@@ -371,88 +346,121 @@ static void Read_RC_File (Session *sess, FD_T rcf)
                 }
                 else if (!strcasecmp (tmp, "port"))
                 {
-                    sess->remote_port = atoi (strtok (NULL, " \n\t"));
+                    sess->server_port = atoi (strtok (NULL, " \n\t"));
                 }
                 else if (!strcasecmp (tmp, "Status"))
                 {
                     sess->set_status = atoi (strtok (NULL, " \n\t"));
                 }
-                else if (!strcasecmp (tmp, "Auto"))
+                ADD_CMD_D ("auto_rep_str_away", auto_away);
+                ADD_CMD_D ("auto_rep_str_na",   auto_na);
+                ADD_CMD_D ("auto_rep_str_dnd",  auto_dnd);
+                ADD_CMD_D ("auto_rep_str_occ",  auto_occ);
+                ADD_CMD_D ("auto_rep_str_inv",  auto_inv);
+                else if (!strcasecmp (tmp, "auto"))
                 {
-                    uiG.auto_resp = TRUE;
+                    tmp = strtok (NULL, " \t\n");
+                    
+                    if (!tmp || !strcasecmp (tmp, "on"))
+                        prG->flags |= FLAG_AUTOREPLY;
+                    else if (!strcasecmp (tmp, "off"))
+                        prG->flags &= ~FLAG_AUTOREPLY;
+                    ADD_CMD ("away", auto_away);
+                    ADD_CMD ("na",   auto_na);
+                    ADD_CMD ("dnd",  auto_dnd);
+                    ADD_CMD ("occ",  auto_occ);
+                    ADD_CMD ("inv",  auto_inv);
+                    else
+                        prG->flags |= FLAG_AUTOREPLY;
                 }
-                ADD_CMD ("auto_rep_str_away", uiG.auto_rep_str_away);
-                ADD_CMD ("auto_rep_str_na", uiG.auto_rep_str_na);
-                ADD_CMD ("auto_rep_str_dnd", uiG.auto_rep_str_dnd);
-                ADD_CMD ("auto_rep_str_occ", uiG.auto_rep_str_occ);
-                ADD_CMD ("auto_rep_str_inv", uiG.auto_rep_str_inv);
                 else if (!strcasecmp (tmp, "LogDir"))
                 {
                     char *tmp = strtok (NULL, "\n");
                     if (!tmp) tmp = "";
                     if (*tmp && tmp[strlen (tmp) - 1] == '/')
                     {
-                        uiG.LogPlace = strdup (tmp);
+                        prG->logplace = strdup (tmp);
                     }
                     else
                     {
-                        uiG.LogPlace = malloc (strlen (tmp) + 2);
-                        strcpy (uiG.LogPlace, tmp);
-                        strcat (uiG.LogPlace, "/");
+                        prG->logplace = malloc (strlen (tmp) + 2);
+                        strcpy (prG->logplace, tmp);
+                        strcat (prG->logplace, "/");
                     }
-                    uiG.LogLevel |= 1;
+                    prG->flags |= FLAG_LOG;
                     dep = 1;
                 }
                 else if (!strcasecmp (tmp, "Sound"))
                 {
-                    M_strcpy (uiG.Sound_Str, strtok (NULL, "\n\t"));
-                    if (uiG.Sound_Str[0])
+                    tmp = strtok (NULL, "\n\t");
+                    if (!tmp)
                     {
-                        uiG.Sound = SOUND_CMD;
+                        prG->sound |= SFLAG_BEEP;
+                        dep = 1;
+                        continue;
                     }
+                    prG->sound &= ~SFLAG_BEEP & ~SFLAG_CMD;
+                    if (!strcasecmp (tmp, "on"))
+                        prG->sound |= SFLAG_BEEP;
+                    else if (!strcasecmp (tmp, "off")) ;
                     else
                     {
-                        uiG.Sound = SOUND_ON;
+                        prG->sound |= SFLAG_CMD;
+                        prG->sound_cmd = strdup (tmp);
                     }
                 }
                 else if (!strcasecmp (tmp, "No_Sound"))
                 {
-                    uiG.Sound = SOUND_OFF;
-                    uiG.Sound_Str[0] = '\0';
+                    prG->sound &= ~SFLAG_BEEP & ~SFLAG_CMD;
+                    dep = 1;
                 }
                 else if (!strcasecmp (tmp, "SoundOnline"))
                 {
-                    M_strcpy (uiG.Sound_Str_Online, strtok (NULL, "\n\t"));
-                    if (uiG.Sound_Str_Online[0])
+                    tmp = strtok (NULL, "\n\t");
+                    if (!tmp)
                     {
-                        uiG.SoundOnline = SOUND_CMD;
+                        prG->sound |= SFLAG_ON_BEEP;
+                        dep = 1;
+                        continue;
                     }
-                    else 
+                    prG->sound &= ~SFLAG_ON_BEEP & ~SFLAG_ON_CMD;
+                    if (!strcasecmp (tmp, "on"))
+                        prG->sound |= SFLAG_ON_BEEP;
+                    else if (!strcasecmp (tmp, "off")) ;
+                    else
                     {
-                        uiG.SoundOnline = SOUND_ON;
+                        prG->sound |= SFLAG_ON_CMD;
+                        prG->sound_on_cmd = strdup (tmp);
                     }
                 }
                 else if (!strcasecmp (tmp, "No_SoundOnline"))
                 {
-                    uiG.SoundOnline = SOUND_OFF;
-                    uiG.Sound_Str_Online[0] = '\0';
+                    prG->sound &= ~SFLAG_ON_BEEP & ~SFLAG_ON_CMD;
+                    dep = 1;
                 }
                 else if (!strcasecmp (tmp, "SoundOffline"))
-                {       
-                    M_strcpy (uiG.Sound_Str_Offline, strtok (NULL, "\n\t"));
-                    if (uiG.Sound_Str_Offline[0])
+                {
+                    tmp = strtok (NULL, "\n\t");
+                    if (!tmp)
                     {
-                        uiG.SoundOffline = SOUND_CMD;
+                        prG->sound |= SFLAG_OFF_BEEP;
+                        dep = 1;
+                        continue;
                     }
+                    prG->sound &= ~SFLAG_OFF_BEEP & ~SFLAG_OFF_CMD;
+                    if (!strcasecmp (tmp, "on"))
+                        prG->sound |= SFLAG_OFF_BEEP;
+                    else if (!strcasecmp (tmp, "off")) ;
                     else
                     {
-                        uiG.SoundOffline = SOUND_ON;
+                        prG->sound |= SFLAG_OFF_CMD;
+                        prG->sound_on_cmd = strdup (tmp);
                     }
                 }
                 else if (!strcasecmp (tmp, "No_SoundOffline"))
                 {
-                    uiG.SoundOffline = SOUND_OFF;
-                    uiG.Sound_Str_Offline[0] = '\0';
+                    prG->sound &= ~SFLAG_OFF_BEEP & ~SFLAG_OFF_CMD;
+                    dep = 1;
                 }
                 else if (!strcasecmp (tmp, "Auto_away"))
                 {
@@ -460,7 +468,7 @@ static void Read_RC_File (Session *sess, FD_T rcf)
                 }
                 else if (!strcasecmp (tmp, "Screen_width"))
                 {
-                    uiG.Max_Screen_Width = atoi (strtok (NULL, " \n\t"));
+                    prG->screen = atoi (strtok (NULL, " \n\t"));
                 }
                 ADD_ALTER ("clear_cmd", clear);
                 ADD_ALTER ("message_cmd", msg);
@@ -498,28 +506,100 @@ static void Read_RC_File (Session *sess, FD_T rcf)
                 else if (!strcasecmp (tmp, "Tab"))
                 {
                     if (spooled_tab_nicks < TAB_SLOTS)
-                        tab_nick_spool[spooled_tab_nicks++] = strdup (strtok (NULL, "\n\t"));
+                        tab_nick_spool[spooled_tab_nicks++] = M_strdup (strtok (NULL, "\n\t"));
                 }
                 else if (!strcasecmp (tmp, "Contacts"))
                 {
                     section = 1;
+                    dep = 1;
                 }
                 else if (!strcasecmp (tmp, "set"))
                 {
-                    CmdUser (sess, fill ("@set quiet %s", strtok (NULL, "\n")));
+                    int which = 0;
+                    tmp = strtok (NULL, " \t\n");
+                    if (!tmp)
+                        continue;
+                    if (!strcasecmp (tmp, "color"))
+                        which = FLAG_COLOR;
+                    else if (!strcasecmp (tmp, "hermit"))
+                        which = FLAG_HERMIT;
+                    else if (!strcasecmp (tmp, "delbs"))
+                        which = FLAG_DELBS;
+                    else if (!strcasecmp (tmp, "russian"))
+                        which = FLAG_CONVRUSS;
+                    else if (!strcasecmp (tmp, "japanese"))
+                        which = FLAG_CONVEUC;
+                    else if (!strcasecmp (tmp, "funny"))
+                        which = FLAG_FUNNY;
+                    else if (!strcasecmp (tmp, "log"))
+                        which = FLAG_LOG;
+                    else if (!strcasecmp (tmp, "loglevel"))
+                        which = -1;
+                    else if (!strcasecmp (tmp, "logonoff"))
+                        which = FLAG_LOG_ONOFF;
+                    else if (!strcasecmp (tmp, "auto"))
+                        which = FLAG_AUTOREPLY;
+                    else if (!strcasecmp (tmp, "uinprompt"))
+                        which = FLAG_UINPROMPT;
+                    else if (!strcasecmp (tmp, "autologin"))
+                        which = FLAG_AUTOLOGIN;
+                    else if (!strcasecmp (tmp, "linebreak"))
+                        which = -2;
+                    else
+                        continue;
+                    if (which > 0)
+                    {
+                        tmp = strtok (NULL, " \t\n");
+                        if (!tmp || !strcasecmp (tmp, "on"))
+                            prG->flags |= which;
+                        else
+                            prG->flags &= ~which;
+                    }
+                    else if (which == -1)
+                    {
+                        tmp = strtok (NULL, " \t\n");
+                        if (!tmp)
+                            continue;
+                        i = atoi (tmp);
+                        prG->flags &= ~FLAG_LOG & ~FLAG_LOG_ONOFF;
+                        if (i)
+                            prG->flags |= FLAG_LOG;
+                        if (i & 2)
+                            prG->flags |= FLAG_LOG_ONOFF;
+                    }
+                    else
+                    {
+                        tmp = strtok (NULL, " \t\n");
+                        printf ("type: %s\n", tmp);
+                        prG->flags &= ~FLAG_LIBR_BR & ~FLAG_LIBR_INT;
+                        if (!strcasecmp (tmp, "break"))
+                            prG->flags |= FLAG_LIBR_BR;
+                        else if (!strcasecmp (tmp, "simple"))
+                            ;
+                        else if (!strcasecmp (tmp, "indent"))
+                            prG->flags |= FLAG_LIBR_INT;
+                        else if (!strcasecmp (tmp, "smart"))
+                            prG->flags |= FLAG_LIBR_BR | FLAG_LIBR_INT;
+                    }
                 }
                 else if (!strcasecmp (tmp, "logging"))
                 {
+                    dep = 1;
                     tmp = strtok (NULL, " \t\n");
                     if (tmp)
                     {
-                        uiG.LogLevel = atoi (tmp);
+                        i = atoi (tmp);
+                        prG->flags &= ~FLAG_LOG & ~FLAG_LOG_ONOFF;
+                        if (i)
+                            prG->flags |= FLAG_LOG;
+                        if (i & 2)
+                            prG->flags |= FLAG_LOG_ONOFF;
                         tmp = strtok (NULL, "\n");
                         if (tmp)
                         {
-                            uiG.LogPlace = strdup (tmp);
-                            if (!strlen (uiG.LogPlace))
-                                uiG.LogPlace = NULL;
+                            prG->logplace = strdup (tmp);
+                            if (!strlen (prG->logplace))
+                                prG->logplace = NULL;
                         }
                     }
                 }
@@ -586,7 +666,7 @@ static void Read_RC_File (Session *sess, FD_T rcf)
                     strncpy (cont->nick, (cont - 1)->nick, 20);
                 }
 
-                if (uiG.Verbose > 2)
+                if (prG->verbose > 2)
                     M_print ("%ld = %s\n", cont->uin, cont->nick);
                 break;
             case 2:
@@ -612,32 +692,33 @@ static void Read_RC_File (Session *sess, FD_T rcf)
         free (tab_nick_spool[i]);
     }
 
-    if (!*uiG.auto_rep_str_dnd)
-        strcpy (uiG.auto_rep_str_dnd, i18n (9, "User is DND [Auto-Message]"));
-    if (!*uiG.auto_rep_str_away)
-        strcpy (uiG.auto_rep_str_away, i18n (10, "User is Away [Auto-Message]"));
-    if (!*uiG.auto_rep_str_na)
-        strcpy (uiG.auto_rep_str_na, i18n (11, "User is not available [Auto-Message]"));
-    if (!*uiG.auto_rep_str_occ)
-        strcpy (uiG.auto_rep_str_occ, i18n (12, "User is Occupied [Auto-Message]"));
-    if (!*uiG.auto_rep_str_inv)
-        strcpy (uiG.auto_rep_str_inv, i18n (13, "User is offline"));
+    if (!prG->auto_dnd)
+        prG->auto_dnd  = strdup (i18n (9, "User is DND [Auto-Message]"));
+    if (!prG->auto_away)
+        prG->auto_away = strdup (i18n (10, "User is Away [Auto-Message]"));
+    if (!prG->auto_na)
+        prG->auto_na   = strdup (i18n (11, "User is not available [Auto-Message]"));
+    if (!prG->auto_occ)
+        prG->auto_occ  = strdup (i18n (12, "User is Occupied [Auto-Message]"));
+    if (!prG->auto_inv)
+        prG->auto_inv  = strdup (i18n (13, "User is offline"));
 
-    if (uiG.LogLevel && !uiG.LogPlace)
+    if (prG->flags & FLAG_LOG && !prG->logplace)
     {
-        uiG.LogPlace = malloc (strlen (GetUserBaseDir ()) + 10);
-        strcpy (uiG.LogPlace, GetUserBaseDir ());
-        strcat (uiG.LogPlace, "history/");
+        prG->logplace = malloc (strlen (GetUserBaseDir ()) + 10);
+        strcpy (prG->logplace, GetUserBaseDir ());
+        strcat (prG->logplace, "history/");
     }
 
-    if (uiG.Verbose)
+    if (prG->verbose)
     {
-        M_print (i18n (189, "UIN = %ld\n"), sess->uin);
-        M_print (i18n (190, "port = %ld\n"), sess->remote_port);
-        M_print (i18n (191, "passwd = %s\n"), sess->passwd);
-        M_print (i18n (192, "server = %s\n"), sess->server);
+        M_print (i18n (189, "UIN = %ld\n"),    sess->uin);
+        M_print (i18n (190, "port = %ld\n"),   sess->server_port);
+        M_print (i18n (191, "passwd = %s\n"),  sess->passwd);
+        M_print (i18n (192, "server = %s\n"),  sess->server);
         M_print (i18n (193, "status = %ld\n"), sess->set_status);
         M_print (i18n (196, "Message_cmd = %s\n"), CmdUserLookupName ("msg"));
+        M_print ("flags: %08x\n", prG->flags);
     }
     if (sess->uin == 0)
     {
@@ -660,7 +741,7 @@ int Save_RC (Session *sess)
     int k;
     Contact *cont;
 
-    rcf = open (rcfile, O_WRONLY | O_CREAT | O_TRUNC, 0600);
+    rcf = open (prG->rcfile, O_WRONLY | O_CREAT | O_TRUNC, 0600);
     if (rcf == -1)
         return -1;
     M_fdprint (rcf, "# This file was generated by Micq of %s %s\n", __TIME__, __DATE__);
@@ -677,96 +758,85 @@ int Save_RC (Session *sess)
     M_fdprint (rcf, "Status %d\n", uiG.Current_Status);
     M_fdprint (rcf, "\nServer %s\n", "icq1.mirabilis.com");
     M_fdprint (rcf, "Port %d\n", 4000);
+    M_fdprint (rcf, "\nverbose %d\n", prG->verbose);
 
-/* SOCKS5 stuff begin */
     M_fdprint (rcf, "\n# Support for SOCKS5 server\n");
-    M_fdprint (rcf, "s5_use %d\n", s5G.s5Use);
-    if (NULL == s5G.s5Host)
+    M_fdprint (rcf, "s5_use %d\n", prG->s5Use);
+    if (!prG->s5Host)
         M_fdprint (rcf, "s5_host [none]\n");
     else
-        M_fdprint (rcf, "s5_host %s\n", s5G.s5Host);
-    M_fdprint (rcf, "s5_port %d\n", s5G.s5Port);
+        M_fdprint (rcf, "s5_host %s\n", prG->s5Host);
+    M_fdprint (rcf, "s5_port %d\n", prG->s5Port);
     M_fdprint (rcf, "# If you need authentification, put 1 for s5_auth and fill your name/password\n");
-    M_fdprint (rcf, "s5_auth %d\n", s5G.s5Auth);
-    if (NULL == s5G.s5Name)
+    M_fdprint (rcf, "s5_auth %d\n", prG->s5Auth);
+    if (!prG->s5Name)
         M_fdprint (rcf, "s5_name [none]\n");
     else
-        M_fdprint (rcf, "s5_name %s\n", s5G.s5Name);
-    if (NULL == s5G.s5Pass)
+        M_fdprint (rcf, "s5_name %s\n", prG->s5Name);
+    if (!prG->s5Pass)
         M_fdprint (rcf, "s5_pass [none]\n");
     else
-        M_fdprint (rcf, "s5_pass %s\n", s5G.s5Pass);
-/* SOCKS5 stuff end */
-
-    M_fdprint (rcf, "\n#If you want messages from people on your list ONLY uncomment below.\n");
-    if (!uiG.Hermit)
-        M_fdprint (rcf, "#Hermit\n\n");
-    else
-        M_fdprint (rcf, "Hermit\n\n");
-
-    M_fdprint (rcf, "# Define to a program which is executed to play sound when a message is received.\n");
-    M_fdprint (rcf, "%sSound %s\n%sNo_Sound\n\n", uiG.Sound == SOUND_OFF ? "#" : "", 
-                    uiG.Sound_Str, uiG.Sound == SOUND_OFF ? "" : "#");
-
-    M_fdprint (rcf, "# Execute this cmd when a user comes online in your contacts.\n");
-    M_fdprint (rcf, "%sSoundOnline %s\n%sNo_SoundOnline\n\n", uiG.SoundOnline == SOUND_OFF ? "#" : "",
-                    uiG.Sound_Str_Online, uiG.SoundOnline == SOUND_OFF ? "" : "#");
-
-    M_fdprint (rcf, "# Execute this cmd when a user goes offline in your contacts.\n");
-    M_fdprint (rcf, "%sSoundOffline %s\n%sNo_SoundOffline\n\n", uiG.SoundOffline == SOUND_OFF ? "#" : "",
-                    uiG.Sound_Str_Offline, uiG.SoundOffline == SOUND_OFF ? "" : "#");
-
-    M_fdprint (rcf, "# Set some simple options.\n");
-    M_fdprint (rcf, "set color %s\n", uiG.Color ? "on" : "off");
-    M_fdprint (rcf, "set funny %s\n\n", uiG.Funny ? "on" : "off");
-
-    M_fdprint (rcf, "# This defines the loglevel and the location of the logfile(s).\n");
-    M_fdprint (rcf, "# logging <level> <location>\n");
-    M_fdprint (rcf, "#     level != 0 means enable loggin\n");
-    M_fdprint (rcf, "#     level  & 2 means suppress on/offline changes\n");
-    M_fdprint (rcf, "#     location   file to log into, or directory to log log into seperate files for each UIN\n");
-    M_fdprint (rcf, "logging %d %s\n", uiG.LogLevel, uiG.LogPlace ? uiG.LogPlace : "");
-
-    if (uiG.del_is_bs)
-        M_fdprint (rcf, "#Del_is_Del\n");
-    else
-        M_fdprint (rcf, "Del_is_Del\n");
-    if (uiG.last_uin_prompt)
-        M_fdprint (rcf, "Last_UIN_Prompt\n");
-    else
-        M_fdprint (rcf, "#Last_UIN_Prompt\n");
-    M_fdprint (rcf, "# 0 = Line break before message\n");
-    M_fdprint (rcf, "# 1 = Just word wrap message as usual\n");
-    M_fdprint (rcf, "# 2 = Indent message\n");
-    M_fdprint (rcf, "# 3 = Line break before message unless message fits on current line\n");
-    M_fdprint (rcf, "LineBreakType %d\n", uiG.line_break_type);
-    if (uiG.Russian)
-        M_fdprint (rcf, "\nRussian\n#if you want KOI8-R/U to CP1251 Cyrillic translation uncomment the above line.\n");
-    else
-        M_fdprint (rcf, "\n#Russian\n#if you want KOI8-R/U to CP1251 Cyrillic translation uncomment the above line.\n");
-    if (uiG.JapaneseEUC)
-    {
-        M_fdprint (rcf, "\nJapaneseEUC\n#if you want Shift-JIS <-> EUC Japanese translation uncomment the above line.\n");
-    }
-    else
-    {
-        M_fdprint (rcf, "\n#JapaneseEUC\n#if you want Shift-JIS <-> EUC Japanese translation uncomment the above line.\n");
-    }
-    if (uiG.auto_resp)
-        M_fdprint (rcf, "\n#Automatic responses on.\nAuto\n");
-    else
-        M_fdprint (rcf, "\n#Automatic responses off.\n#Auto\n");
+        M_fdprint (rcf, "s5_pass %s\n", prG->s5Pass);
 
     M_fdprint (rcf, "\n#in seconds\nAuto_Away %d\n", sess->away_time);
     M_fdprint (rcf, "\n#For dumb terminals that don't wrap set this.");
-    M_fdprint (rcf, "\nScreen_Width %d\n", uiG.Max_Screen_Width);
+    M_fdprint (rcf, "\nScreen_Width %d\n", prG->screen);
 
-    M_fdprint (rcf, "\n#Now auto response messages\n");
-    M_fdprint (rcf, "auto_rep_str_away %s\n", uiG.auto_rep_str_away);
-    M_fdprint (rcf, "auto_rep_str_na %s\n", uiG.auto_rep_str_na);
-    M_fdprint (rcf, "auto_rep_str_dnd %s\n", uiG.auto_rep_str_dnd);
-    M_fdprint (rcf, "auto_rep_str_occ %s\n", uiG.auto_rep_str_occ);
-    M_fdprint (rcf, "auto_rep_str_inv %s\n", uiG.auto_rep_str_inv);
+
+    M_fdprint (rcf, "# Set some simple options.\n");
+    M_fdprint (rcf, "set delbs     %s # if a DEL char is supposed to be backspace\n",
+                    prG->flags & FLAG_DELBS     ? "on " : "off");
+    M_fdprint (rcf, "set russian   %s # if you want russian koi8-r/u <-> cp1251 character conversion\n",
+                    prG->flags & FLAG_CONVRUSS  ? "on " : "off");
+    M_fdprint (rcf, "set japanese  %s # if you want japanese Shift-JIS <-> EUC character conversion\n",
+                    prG->flags & FLAG_CONVEUC   ? "on " : "off");
+    M_fdprint (rcf, "set funny     %s # if you want funny messages\n",
+                    prG->flags & FLAG_FUNNY     ? "on " : "off");
+    M_fdprint (rcf, "set color     %s # if you want colored messages\n",
+                    prG->flags & FLAG_COLOR     ? "on " : "off");
+    M_fdprint (rcf, "set hermit    %s # if you want messages from people on your contact list ONLY\n",
+                    prG->flags & FLAG_HERMIT    ? "on " : "off");
+    M_fdprint (rcf, "set log       %s # if you want to log messages\n",
+                    prG->flags & FLAG_LOG       ? "on " : "off");
+    M_fdprint (rcf, "set logonoff  %s # if you also want to log online/offline events\n",
+                    prG->flags & FLAG_LOG_ONOFF ? "on " : "off");
+    M_fdprint (rcf, "set auto      %s # if automatic responses are to be sent\n",
+                    prG->flags & FLAG_AUTOREPLY ? "on " : "off");
+    M_fdprint (rcf, "set uinprompt %s # if the prompt should contain the last uin a message was received from\n",
+                    prG->flags & FLAG_UINPROMPT ? "on " : "off");
+    M_fdprint (rcf, "set autologin %s # if you want to login automatically\n",
+                    prG->flags & FLAG_DELBS     ? "on " : "off");
+    M_fdprint (rcf, "set linebreak %s # the line break type to be used (simple, break, indent, smart)\n\n",
+                    prG->flags & FLAG_LIBR_INT 
+                    ? prG->flags & FLAG_LIBR_BR ? "smart " : "indent"
+                    : prG->flags & FLAG_LIBR_BR ? "break " : "simple");
+
+
+    M_fdprint (rcf, "logplace %s      # the file or (dstinct files in) dir to log to\n",
+                    prG->logplace ? prG->logplace : "");
+
+
+    M_fdprint (rcf, "# Define to a program which is executed to play sound when a message is received.\n");
+    M_fdprint (rcf, "sound %s\n\n", prG->sound & SFLAG_BEEP ? "on" :
+                                    prG->sound & SFLAG_CMD && prG->sound_cmd ? prG->sound_cmd : "off");
+
+    M_fdprint (rcf, "# Execute this cmd when a user comes online in your contacts.\n");
+    M_fdprint (rcf, "soundonline %s\n\n", prG->sound & SFLAG_ON_BEEP ? "on" :
+                                          prG->sound & SFLAG_ON_CMD && prG->sound_on_cmd ? 
+                                          prG->sound_on_cmd : "off");
+
+    M_fdprint (rcf, "# Execute this cmd when a user goes offline in your contacts.\n");
+    M_fdprint (rcf, "soundoffline %s\n\n", prG->sound & SFLAG_OFF_BEEP ? "on" :
+                                           prG->sound & SFLAG_OFF_CMD && prG->sound_off_cmd ?
+                                           prG->sound_off_cmd : "off");
+    M_fdprint (rcf, "receivescript %s\n\n", prG->event_cmd ? prG->event_cmd : "");
+
+    M_fdprint (rcf, "\n# automatic responses\n");
+    M_fdprint (rcf, "auto away %s\n", prG->auto_away);
+    M_fdprint (rcf, "auto na   %s\n", prG->auto_na);
+    M_fdprint (rcf, "auto dnd  %s\n", prG->auto_dnd);
+    M_fdprint (rcf, "auto occ  %s\n", prG->auto_occ);
+    M_fdprint (rcf, "auto inv  %s\n", prG->auto_inv);
 
     M_fdprint (rcf, "\n# The strings section - runtime redefinable strings.\n");
     M_fdprint (rcf, "# The alter command redefines command names.\n");
@@ -812,42 +882,6 @@ int Save_RC (Session *sess)
     return close (rcf);
 }
 
-/*******************************************************
-Gets config info from the rc file in the users home 
-directory.
-********************************************************/
-void Get_Unix_Config_Info (Session *sess)
-{
-    FD_T rcf;
-
-    rcf = open (rcfile, O_RDONLY);
-    if (rcf == -1 && rcfiledef == 1)
-    {
-        char *tmp = strdup (rcfile);
-        Set_rcfile ("");
-        M_print (i18n (819, "Can't find rc file %s - using old location %s\n"),
-                 tmp, rcfile);
-        rcf = open (rcfile, O_RDONLY);
-        Set_rcfile (NULL);
-    }
-    if (rcf == -1)
-    {
-        if (errno == ENOENT)    /* file not found */
-        {
-            Initalize_RC_File (sess);
-        }
-        else
-        {
-            perror ("Error reading config file exiting ");
-            exit (1);
-        }
-    }
-    else
-    {
-        Read_RC_File (sess, rcf);
-    }
-}
-
 int Add_User (Session *sess, UDWORD uin, char *name)
 {
     FD_T rcf;
@@ -858,7 +892,7 @@ int Add_User (Session *sess, UDWORD uin, char *name)
     if (ContactFind (uin))
             return 0;
 
-    rcf = open (rcfile, O_RDWR | O_APPEND);
+    rcf = open (prG->rcfile, O_RDWR | O_APPEND);
     if (rcf == -1)
         return 0;
     M_fdprint (rcf, "%d %s\n", uin, name);

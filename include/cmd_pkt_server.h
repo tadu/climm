@@ -1,8 +1,7 @@
 
 
-typedef void (jump_srv_f)(Session *sess, UBYTE *data, int len, UWORD cmd, UWORD ver, UDWORD seq, UDWORD uin);
-#define JUMP_SRV_F(f) void f (Session *sess, UBYTE *data, int len, UWORD cmd, \
-                              UWORD ver, UDWORD seq, UDWORD uin)
+typedef void (jump_srv_f)(Session *sess, Packet *pak, UWORD cmd, UWORD ver, UDWORD seq, UDWORD uin);
+#define JUMP_SRV_F(f) void f (Session *sess, Packet *pak, UWORD cmd, UWORD ver, UDWORD seq, UDWORD uin)
 
 struct jumpsrvstr {
     int cmd;

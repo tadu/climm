@@ -5,11 +5,11 @@
 #include "util_ui.h"
 #include "util_table.h"
 #include "cmd_pkt_cmd_v5.h"
-#include "sendmsg.h"
 #include "tabs.h"
 #include "file_util.h"
 #include "buildmark.h"
 #include "contact.h"
+#include "server.h"
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
@@ -500,6 +500,7 @@ JUMP_F(CmdUserTrans)
  */
 JUMP_F(CmdUserTCP)
 {
+#ifdef TCP_COMM
     char *cmd, *nick;
     Contact *cont = NULL;
 
@@ -525,12 +526,25 @@ JUMP_F(CmdUserTCP)
         else
             M_print (i18n (845, "Nick %s unknown.\n"), nick ? nick : "");
     }
+    else if (!strcmp (cmd, "off"))
+    {
+        nick = strtok (NULL, "");
+        if (nick)
+            cont = ContactFind (ContactFindByNick (nick));
+        if (cont)
+            cont->sok.state = -1;
+        else
+            M_print (i18n (845, "Nick %s unknown.\n"), nick ? nick : "");
+    }
     else
     {
         M_print (i18n (846, "Opens and closes TCP connections:\n"));
         M_print (i18n (847, "    open <nick>  - Opens TCP connection.\n"));
         M_print (i18n (848, "    close <nick> - Closes/resets TCP connection(s).\n"));
     }
+#else
+    M_print (i18n (866, "This version of micq is compiled without TCP support.\n"));
+#endif
     return 0;
 }
 
@@ -545,22 +559,23 @@ JUMP_F(CmdUserAuto)
     cmd = strtok (args, "");
     if (cmd == NULL)
     {
-        M_print (i18n (724, "Automatic replies are %s.\n"), uiG.auto_resp ? i18n (85, "on") : i18n (86, "off"));
-        M_print ("%30s %s\n", i18n (727, "The Do not disturb message is:"), uiG.auto_rep_str_dnd);
-        M_print ("%30s %s\n", i18n (728, "The Away message is:"),           uiG.auto_rep_str_away);
-        M_print ("%30s %s\n", i18n (729, "The Not available message is:"),  uiG.auto_rep_str_na);
-        M_print ("%30s %s\n", i18n (730, "The Occupied message is:"),       uiG.auto_rep_str_occ);
-        M_print ("%30s %s\n", i18n (731, "The Invisible message is:"),      uiG.auto_rep_str_inv);
+        M_print (i18n (724, "Automatic replies are %s.\n"),
+                 prG->flags & FLAG_AUTOREPLY ? i18n (85, "on") : i18n (86, "off"));
+        M_print ("%30s %s\n", i18n (727, "The Do not disturb message is:"), prG->auto_dnd);
+        M_print ("%30s %s\n", i18n (728, "The Away message is:"),           prG->auto_away);
+        M_print ("%30s %s\n", i18n (729, "The Not available message is:"),  prG->auto_na);
+        M_print ("%30s %s\n", i18n (730, "The Occupied message is:"),       prG->auto_occ);
+        M_print ("%30s %s\n", i18n (731, "The Invisible message is:"),      prG->auto_inv);
         return 0;
     }
     else if (strcasecmp (cmd, "on") == 0)
     {
-        uiG.auto_resp = TRUE;
+        prG->flags |= FLAG_AUTOREPLY;
         M_print (i18n (724, "Automatic replies are %s.\n"), i18n (85, "on"));
     }
     else if (strcasecmp (cmd, "off") == 0)
     {
-        uiG.auto_resp = FALSE;
+        prG->flags &= ~FLAG_AUTOREPLY;
         M_print (i18n (724, "Automatic replies are %s.\n"), i18n (86, "off"));
     }
     else
@@ -579,7 +594,7 @@ JUMP_F(CmdUserAuto)
                 M_print (i18n (735, "Must give a message.\n"));
                 return 0;
             }
-            strcpy (uiG.auto_rep_str_dnd, cmd);
+            prG->auto_dnd = strdup (cmd);
         }
         else if (!strcasecmp (arg1, CmdUserLookupName ("away")))
         {
@@ -589,7 +604,7 @@ JUMP_F(CmdUserAuto)
                 M_print (i18n (735, "Must give a message.\n"));
                 return 0;
             }
-            strcpy (uiG.auto_rep_str_away, cmd);
+            prG->auto_away = strdup (cmd);
         }
         else if (!strcasecmp (arg1, CmdUserLookupName ("na")))
         {
@@ -599,7 +614,7 @@ JUMP_F(CmdUserAuto)
                 M_print (i18n (735, "Must give a message.\n"));
                 return 0;
             }
-            strcpy (uiG.auto_rep_str_na, cmd);
+            prG->auto_na = strdup (cmd);
         }
         else if (!strcasecmp (arg1, CmdUserLookupName ("occ")))
         {
@@ -609,7 +624,7 @@ JUMP_F(CmdUserAuto)
                 M_print (i18n (735, "Must give a message.\n"));
                 return 0;
             }
-            strcpy (uiG.auto_rep_str_occ, cmd);
+            prG->auto_occ = strdup (cmd);
         }
         else if (!strcasecmp (arg1, CmdUserLookupName ("inv")))
         {
@@ -619,7 +634,7 @@ JUMP_F(CmdUserAuto)
                 M_print (i18n (735, "Must give a message.\n"));
                 return 0;
             }
-            strcpy (uiG.auto_rep_str_inv, cmd);
+            prG->auto_inv = strdup (cmd);
         }
         else
             M_print (i18n (736, "Sorry wrong syntax. Read tha help man!\n"));
@@ -897,9 +912,9 @@ JUMP_F(CmdUserVerbose)
     arg1 = strtok (args, "");
     if (arg1 != NULL)
     {
-        uiG.Verbose = atoi (arg1);
+        prG->verbose = atoi (arg1);
     }
-    M_print (i18n (60, "Verbosity level is %d.\n"), uiG.Verbose);
+    M_print (i18n (60, "Verbosity level is %d.\n"), prG->verbose);
     return 0;
 }
 
@@ -1326,20 +1341,21 @@ JUMP_F(CmdUserSound)
     
     if ((arg1 = strtok (args, "")))
     {
-        *uiG.Sound_Str = 0;
-        uiG.Sound = SOUND_ON;
+        prG->sound &= ~SFLAG_BEEP & ~SFLAG_CMD;
         if (!strcasecmp (arg1, i18n (85, "on")))
-           uiG.Sound = SOUND_ON;
-        else if (!strcasecmp (arg1, i18n (86, "off")))
-           uiG.Sound = SOUND_OFF;
-        else /* treat it as a command */
-           strcpy (uiG.Sound_Str, arg1);
+           prG->sound |= SFLAG_BEEP;
+        else if (!strcasecmp (arg1, i18n (86, "off"))) ;
+        else
+        {
+           prG->sound |= SFLAG_CMD;
+           prG->sound_cmd = strdup (arg1);
+        }
     }
-    if (*uiG.Sound_Str)
-        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (83, "Sound cmd"), uiG.Sound_Str);
-    else if (SOUND_ON == uiG.Sound)
+    if (prG->sound & SFLAG_BEEP)
         M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (84, "Sound"), i18n (85, "on"));
-    else if (SOUND_OFF == uiG.Sound)
+    else if (prG->sound & SFLAG_CMD)
+        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (83, "Sound cmd"), prG->sound_cmd);
+    else
         M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (84, "Sound"), i18n (86, "off"));
     return 0;
 }
@@ -1353,20 +1369,21 @@ JUMP_F(CmdUserSoundOnline)
     
     if ((arg1 = strtok (args, "")))
     {
-        *uiG.Sound_Str = 0;
-        uiG.SoundOnline = SOUND_ON;
+        prG->sound &= ~SFLAG_ON_BEEP & ~SFLAG_ON_CMD;
         if (!strcasecmp (arg1, i18n (85, "on")))
-           uiG.SoundOnline = SOUND_ON;
-        else if (!strcasecmp (arg1, i18n (86, "off")))
-           uiG.SoundOnline = SOUND_OFF;
-        else /* treat it as a command */
-           strcpy (uiG.Sound_Str_Online, arg1);
+           prG->sound |= SFLAG_ON_BEEP;
+        else if (!strcasecmp (arg1, i18n (86, "off"))) ;
+        else
+        {
+           prG->sound |= SFLAG_ON_CMD;
+           prG->sound_on_cmd = strdup (arg1);
+        }
     }
-    if (*uiG.Sound_Str_Online)
-        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (802, "SoundOnline cmd"), uiG.Sound_Str_Online);
-    else if (SOUND_ON == uiG.SoundOnline)
+    if (prG->sound & SFLAG_ON_BEEP)
         M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (804, "SoundOnline"), i18n (85, "on"));
-    else if (SOUND_OFF == uiG.SoundOnline)
+    else if (prG->sound & SFLAG_ON_CMD)
+        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (802, "SoundOnline cmd"), prG->sound_on_cmd);
+    else
         M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (804, "SoundOnline"), i18n (86, "off"));
     return 0;
 }
@@ -1380,20 +1397,21 @@ JUMP_F(CmdUserSoundOffline)
     
     if ((arg1 = strtok (args, "")))
     {
-        *uiG.Sound_Str_Offline = 0;
-        uiG.SoundOffline = SOUND_ON;
+        prG->sound &= ~SFLAG_OFF_BEEP & ~SFLAG_OFF_CMD;
         if (!strcasecmp (arg1, i18n (85, "on")))
-           uiG.SoundOffline = SOUND_ON;
-        else if (!strcasecmp (arg1, i18n (86, "off")))
-           uiG.SoundOffline = SOUND_OFF;
-        else /* treat it as a command */
-           strcpy (uiG.Sound_Str_Offline, arg1);
+           prG->sound |= SFLAG_OFF_BEEP;
+        else if (!strcasecmp (arg1, i18n (86, "off"))) ;
+        else
+        {
+           prG->sound |= SFLAG_OFF_CMD;
+           prG->sound_off_cmd = strdup (arg1);
+        }
     }
-    if (*uiG.Sound_Str_Offline)
-        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (803, "SoundOffline cmd"), uiG.Sound_Str_Offline);
-    else if (SOUND_ON == uiG.SoundOffline)
+    if (prG->sound & SFLAG_OFF_BEEP)
         M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (805, "SoundOffline"), i18n (85, "on"));
-    else if (SOUND_OFF == uiG.SoundOffline)
+    else if (prG->sound & SFLAG_OFF_CMD)
+        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (803, "SoundOffline cmd"), prG->sound_off_cmd);
+    else
         M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (805, "SoundOffline"), i18n (86, "off"));
     return 0;
 }
@@ -1466,17 +1484,17 @@ JUMP_F(CmdUserSet)
         {
             if (!strcmp (arg1, "on") || !strcmp (arg1, i18n (85, "on")))
             {
-                uiG.Color = TRUE;
+                prG->flags |= FLAG_COLOR;
             }
             else if (!strcmp (arg1, "off") || !strcmp (arg1, i18n (86, "off")))
             {
-                uiG.Color = FALSE;
+                prG->flags &= ~FLAG_COLOR;
             }
         }
 
         if (!quiet)
         {
-            if (uiG.Color)
+            if (prG->flags & FLAG_COLOR)
                 M_print (i18n (662, "Color is " COLMESS "%s" COLNONE ".\n"), i18n (85, "on"));
             else
                 M_print (i18n (662, "Color is " COLMESS "%s" COLNONE ".\n"), i18n (86, "off"));
@@ -1489,17 +1507,17 @@ JUMP_F(CmdUserSet)
         {
             if (!strcmp (arg1, "on") || !strcmp (arg1, i18n (85, "on")))
             {
-                uiG.Funny = TRUE;
+                prG->flags |= FLAG_FUNNY;
             }
             else if (!strcmp (arg1, "off") || !strcmp (arg1, i18n (86, "off")))
             {
-                uiG.Funny = FALSE;
+                prG->flags &= ~FLAG_FUNNY;
             }
         }
         
         if (!quiet)
         {
-            if (uiG.Funny)
+            if (prG->flags & FLAG_FUNNY)
                 M_print (i18n (821, "Funny messages are " COLMESS "%s" COLNONE ".\n"), i18n (85, "on"));
             else
                 M_print (i18n (821, "Funny messages are " COLMESS "%s" COLNONE ".\n"), i18n (86, "off"));
@@ -1844,15 +1862,15 @@ JUMP_F(CmdUserUptime)
         M_print (COLMESS "%02d" COLNONE "%s, ", Minutes, i18n (690, "minutes"));
     M_print (COLMESS "%02d" COLNONE "%s.\n", Seconds, i18n (691, "seconds"));
 /*    M_print ("%s " COLMESS "%d" COLNONE " / %d\n", i18n (692, "Contacts:"), uiG.Num_Contacts, MAX_CONTACTS); */
-    M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (693, "Packets sent:"), sess->Packets_Sent);
-    M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (694, "Packets recieved:"), sess->Packets_Recv);
-    if (sess->Packets_Sent || sess->Packets_Recv)
+    M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (693, "Packets sent:"),     sess->stat_pak_sent);
+    M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (694, "Packets received:"), sess->stat_pak_rcvd);
+    if (sess->stat_pak_sent || sess->stat_pak_rcvd)
     {
         M_print ("%s " COLMESS "%2.2f" COLNONE "%%\n", i18n (695, "Lag:"),
-                 abs (sess->Packets_Sent - sess->Packets_Recv) * (200.0 / (sess->Packets_Sent + sess->Packets_Recv)));
+                 abs (sess->stat_pak_sent - sess->stat_pak_rcvd) * (200.0 / (sess->stat_pak_sent + sess->stat_pak_rcvd)));
     }
-    M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (697, "Distinct packets sent:"), sess->real_packs_sent);
-    M_print ("%s " COLMESS "%d" COLNONE "\n", i18n (698, "Distinct packets recieved:"), sess->real_packs_recv);
+    M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (697, "Distinct packets sent:"),     sess->stat_real_pak_sent);
+    M_print ("%s " COLMESS "%d" COLNONE "\n", i18n (698, "Distinct packets received:"), sess->stat_real_pak_rcvd);
     return 0;
 }
 

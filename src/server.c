@@ -5,9 +5,9 @@
 #include "datatype.h"
 #include "mreadline.h"
 #include "server.h"
-#include "sendmsg.h"
 #include "util.h"
 #include "icq_response.h"
+#include "cmd_pkt_cmd_v5.h"
 #include "cmd_user.h"
 #include "contact.h"
 #include <stdio.h>
@@ -47,25 +47,25 @@ char *Get_Auto_Reply ()
     nullmsg = malloc (1);
     *nullmsg = '\0';
 
-    if (uiG.auto_resp == FALSE)
+    if (!(prG->flags & FLAG_AUTOREPLY))
         return nullmsg;
 
     switch (uiG.Current_Status & 0x1FF)
     {
         case STATUS_OCCUPIED:
-            return strdup (uiG.auto_rep_str_occ);
+            return strdup (prG->auto_occ);
             break;
 
         case STATUS_AWAY:
-            return strdup (uiG.auto_rep_str_away);
+            return strdup (prG->auto_away);
             break;
 
         case STATUS_DND:
-            return strdup (uiG.auto_rep_str_dnd);
+            return strdup (prG->auto_dnd);
             break;
 
         case STATUS_NA:
-            return strdup (uiG.auto_rep_str_na);
+            return strdup (prG->auto_na);
             break;
 
         case STATUS_INVISIBLE:
@@ -84,34 +84,33 @@ void Auto_Reply (Session *sess, SIMPLE_MESSAGE_PTR s_mesg)
    since the client can request one if they want to see it.   */
 #ifndef TCP_COMM
 /*** TCP: handle auto response ***/
-    if (uiG.auto_resp)
+    if (prG->flags & FLAG_AUTOREPLY)
     { 
 #endif
         /*** !!!!???? What does this if do?  Why is it here ????!!!!! ****/
     if (0xfe != *(((unsigned char *) s_mesg) + sizeof (s_mesg)))
     {
-        if (uiG.auto_resp && (uiG.Current_Status != STATUS_ONLINE) && (uiG.Current_Status != STATUS_FREE_CHAT))
+        if (prG->flags & FLAG_AUTOREPLY && (uiG.Current_Status != STATUS_ONLINE) && (uiG.Current_Status != STATUS_FREE_CHAT))
         {
             switch (uiG.Current_Status & 0x1ff)
             {
                 case STATUS_OCCUPIED:
-                    /* Dup the string so the russian translation only happens once */
-                    temp = strdup (uiG.auto_rep_str_occ);
+                    temp = prG->auto_occ;
                     break;
                 case STATUS_AWAY:
-                    temp = strdup (uiG.auto_rep_str_away);
+                    temp = prG->auto_away;
                     break;
                 case STATUS_DND:
-                    temp = strdup (uiG.auto_rep_str_dnd);
+                    temp = prG->auto_dnd;
                     break;
                 case STATUS_INVISIBLE:
-                    temp = strdup (uiG.auto_rep_str_inv);
+                    temp = prG->auto_inv;
                     break;
                 case STATUS_NA:
-                    temp = strdup (uiG.auto_rep_str_na);
+                    temp = prG->auto_na;
                     break;
                 default:
-                    temp = strdup (uiG.auto_rep_str_occ);
+                    temp = prG->auto_occ;
                     M_print (i18n (635, "You have encounterd a bug in my code :( I now own you a beer!\nGreetings Fryslan!\n"));
             }
 
@@ -130,3 +129,20 @@ void Auto_Reply (Session *sess, SIMPLE_MESSAGE_PTR s_mesg)
     }
 #endif
 }
+
+void icq_sendurl (Session *sess, UDWORD uin, char *description, char *url)
+{
+    char buf[450];
+
+    sprintf (buf, "%s\xFE%s", url, description);
+    icq_sendmsg (sess, uin, buf, URL_MESS);
+}
+
+void icq_sendmsg (Session *sess, UDWORD uin, char *text, UDWORD msg_type)
+{	
+#ifdef TCP_COMM
+    if (!TCPSendMsg (sess, uin, text, msg_type))
+#endif
+    CmdPktCmdSendMessage (sess, uin, text, msg_type);
+}
+

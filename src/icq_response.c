@@ -7,7 +7,6 @@
 #include "contact.h"
 #include "util_table.h"
 #include "util.h"
-#include "sendmsg.h"
 #include "conv.h"
 #include "packet.h"
 #include "cmd_pkt_cmd_v5.h"
@@ -371,11 +370,11 @@ void Meta_User (Session *sess, UBYTE * data, UDWORD len, UDWORD uin)
             M_print ("\n");
             break;
         case 0x010E:
-            if (!uiG.Verbose)
+            if (!prG->verbose)
                 break;
         default:
             M_print (i18n (399, "Unknown Meta User response " COLSERV "%04X" COLNONE "\n"), subcmd);
-            if (uiG.Verbose)
+            if (prG->verbose)
             {
                 Hex_Dump (data, len);
                 M_print ("\n");
@@ -397,7 +396,7 @@ void Display_Rand_User (Session *sess, UBYTE * data, UDWORD len)
         M_print ("%-15s %d\n", i18n (453, "TCP version:"), Chars_2_Word (&data[21]));
         M_print ("%-15s %s\n", i18n (454, "Connection:"),
                  data[16] == 4 ? i18n (493, "Peer-to-Peer") : i18n (494, "Server Only"));
-        if (uiG.Verbose > 1)
+        if (prG->verbose > 1)
         {
             M_print ("\n");
             Hex_Dump (data, len);
@@ -439,8 +438,10 @@ void User_Offline (Session *sess, UBYTE * pak)
              ContactFindName (remote_uin), i18n (30, "logged off."));
     log_event (remote_uin, LOG_ONLINE, "User logged off %s\n", ContactFindName (remote_uin));
 
-    if (uiG.SoundOffline == SOUND_CMD)
-        ExecScript (uiG.Sound_Str_Offline, remote_uin, 0, NULL);
+    if (prG->sound & SFLAG_OFF_CMD)
+        ExecScript (prG->sound_off_cmd, remote_uin, 0, NULL);
+    else if (prG->sound & SFLAG_OFF_BEEP)
+        printf ("\n");
 
     if ((con = ContactFind (remote_uin)) != NULL)
     {
@@ -471,7 +472,7 @@ static void UserOnlineSetVersion (Contact *con, UDWORD tstamp)
         if (ver % 10)  sprintf (buf + strlen (buf), " cvs %d",   ver        %  10);
         if (ssl) strcat (buf, "/SSL");
     }
-    else if (uiG.Verbose)
+    else if (prG->verbose)
         sprintf (buf, "%s %08x", i18n (827, "Unknown client"), (unsigned int)tstamp);
     else
         buf[0] = '\0';
@@ -492,8 +493,10 @@ void User_Online (Session *sess, UBYTE * pak)
     if (sess->Done_Login)
     {
 
-        if (uiG.SoundOnline == SOUND_CMD)
-            ExecScript (uiG.Sound_Str_Online, remote_uin, 0, NULL);
+        if (prG->sound & SFLAG_ON_CMD)
+            ExecScript (prG->sound_on_cmd, remote_uin, 0, NULL);
+        else if (prG->sound & SFLAG_ON_BEEP)
+            printf ("\n");
 
         if ((con = ContactFind (remote_uin)))
         {
@@ -520,10 +523,10 @@ void User_Online (Session *sess, UBYTE * pak)
                  ContactFindName (remote_uin), i18n (31, "logged on"));
         Print_Status (new_status);
         M_print (")");
-        if (con->version)
+        if (con && con->version)
             M_print ("[%s]", con->version);
         M_print (".\n");
-        if (uiG.Verbose)
+        if (prG->verbose)
         {
             M_print ("%-15s %d.%d.%d.%d\n", i18n (441, "IP:"), pak[4], pak[5], pak[6], pak[7]);
             M_print ("%-15s %d.%d.%d.%d\n", i18n (451, "IP2:"), pak[12], pak[13], pak[14], pak[15]);
@@ -695,8 +698,8 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
     TabAddUIN (uin);            /* Adds <uin> to the tab-list */
 
 #ifdef MSGEXEC
-    if (*uiG.receive_script)
-        ExecScript (uiG.receive_script, uin, type, cdata);
+    if (prG->event_cmd && strlen (prG->event_cmd))
+        ExecScript (prG->event_cmd, uin, type, cdata);
 #endif
 
     if (type == USER_ADDED_MESS)
@@ -823,7 +826,7 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
         cdata = tmp;
         tmp = strchr (cdata, '\xFE');
         *tmp = 0;
-        if (uiG.Verbose)
+        if (prG->verbose)
         {
             M_print ("??? '%s'\n", cdata);
         }

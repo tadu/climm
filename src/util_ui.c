@@ -40,8 +40,6 @@
 #endif
 
 static BOOL No_Prompt = FALSE;
-/* Max_Screen_Width set to zero in micq.c */
-
 
 /***************************************************************
 Turns keybord echo off for the password
@@ -150,8 +148,8 @@ UWORD Get_Max_Screen_Width ()
             scrwd = 0;
         return scrwdtmp;
     }
-    if (uiG.Max_Screen_Width)
-        return uiG.Max_Screen_Width;
+    if (prG->screen)
+        return prG->screen;
     return 80;                  /* a reasonable screen width default. */
 }
 
@@ -235,27 +233,27 @@ static void M_prints (const char *str)
                 }
                 break;
             case '\a':
-                if (uiG.Sound == SOUND_CMD)
-                    ExecScript (uiG.Sound_Str, 0, 0, NULL);
-                else if (uiG.Sound == SOUND_ON)
+                if (prG->sound & SFLAG_CMD)
+                    ExecScript (prG->sound_cmd, 0, 0, NULL);
+                else if (prG->sound & SFLAG_BEEP)
                     printf ("\a");
                 break;
             case '\x1b':
                 switch (*++p)
                 {
                     case '<':
-                        switch (uiG.line_break_type)
+                        switch (prG->flags & (FLAG_LIBR_BR | FLAG_LIBR_INT))
                         {
-                            case 0:
+                            case FLAG_LIBR_BR:
                                 printf ("\n");
                                 CharCount = 0;
                                 break;
-                            case 2:
+                            case FLAG_LIBR_INT:
                                 IndentCount = CharCount;
                                 sw -= IndentCount;
                                 CharCount = 0;
                                 break;
-                            case 3:
+                            case FLAG_LIBR_BR | FLAG_LIBR_INT:
                                 s = strstr (str, "\x1b»");
                                 if (s && s - str - 2 > sw - CharCount)
                                 {
@@ -280,9 +278,9 @@ static void M_prints (const char *str)
                         str++;
                         break;
                     case '>':
-                        switch (uiG.line_break_type)
+                        switch (prG->flags & (FLAG_LIBR_BR | FLAG_LIBR_INT))
                         {
-                            case 2:
+                            case FLAG_LIBR_INT:
                                 CharCount += IndentCount;
                                 sw += IndentCount;
                                 IndentCount = 0;
@@ -291,7 +289,7 @@ static void M_prints (const char *str)
                         str++;
                         break;
                     case COLCHR:
-                        if (!uiG.Color)
+                        if (!(prG->flags & FLAG_COLOR))
                         {
                             str += 2;
                             break;
@@ -331,7 +329,7 @@ static void M_prints (const char *str)
                         s = strchr (p, 'm');
                         if (s)
                         {
-                            if (uiG.Color)
+                            if (prG->flags & FLAG_COLOR)
                                 printf ("%.*s", s - str + 1, str);
                             str = s;
                         }
@@ -409,9 +407,9 @@ static void M_prints (char *str)
                 }
             }
         }
-        else if (uiG.Sound == SOUND_CMD)
-            ExecScript (uiG.Sound_Str, 0, 0, NULL);
-        else if (uiG.Sound == SOUND_ON)
+        else if (prG->sound & SFLAG_CMD)
+            ExecScript (prG->sound_cmd, 0, 0, NULL);
+        else if (prG->sound & SFLAG_BEEP)
             printf ("\a");
     }
 }
@@ -438,7 +436,7 @@ void M_print (char *str, ...)
         if (str2)
         {
             str2[0] = 0;
-            if (uiG.Color)
+            if (prG->flags & FLAG_COLOR)
                 printf ("%sm", str1);
             str2++;
         }
@@ -460,7 +458,7 @@ void Debug (UDWORD level, const char *str, ...)
     char buf[2048];
     char buf2[3072];
 
-    if (!(uiG.Verbose & level))
+    if (!(prG->verbose & level))
         return;
 
     va_start (args, str);
@@ -548,7 +546,7 @@ extern UDWORD last_uin;
 void Prompt (void)
 {
     static char buff[200];
-    if (uiG.last_uin_prompt && last_uin)
+    if (prG->flags & FLAG_UINPROMPT && last_uin)
     {
         snprintf (buff, sizeof (buff), COLSERV "[%s]" COLNONE " ", ContactFindName (last_uin));
         R_doprompt (buff);
