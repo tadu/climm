@@ -31,8 +31,8 @@ Currently you:
 An Archive might be found at:
 <http://micq.ukeer.de/pipermail/micq-list/>
 
-c) Download
 
+c) Download
 
 Primary Mirror
     http://micq.ukeer.de:/
@@ -45,12 +45,17 @@ $ cvs -z9 co micq
 
 (Yes: '$' is the Prompt only ;)
 
+To prepare the maintainer generated files:
+
+$ ./prepare
+
+This will run aclocal, autoheader, automake -a and autoconf. It requires
+autoconf 2.50.
+
+
 d) Compile
 
-Edit include/config.h to your needs, then `make` and
-then (optionally) `make install`.
-
-$ vi include/config.h
+$ ./configure 
 $ make
 $ su
 # make install

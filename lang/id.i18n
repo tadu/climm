@@ -411,7 +411,8 @@
 400:		Tampilkan info lokal yang tersimpan pada user¶
 401:		Perbaharui info user lainnya seperti usia dan kelamin¶
 402:		Perbaharui info tentang diri anda.¶
-403:		Tampilkan pesan terakhir yang diterima dari <nick>.¶			Mereka harus berada dalam Daftar Kontak anda.¶
+#-#403:		Tampilkan pesan terakhir yang diterima dari <nick>.¶			Mereka harus berada dalam Daftar Kontak anda.¶
+#403:		Displays the last message received from <nick>.¶			They must be in your Contact List.¶		Or a list of who has send you at least one message.¶
 404:		(Non)Aktifkan pengabaian samaran¶
 405:		Daftar samaran/uin yang diabaikan¶
 406:	Ganti penampakan anda kepada user jika anda tidak tampak.¶
@@ -766,6 +767,7 @@
 #699:Must give a valid uin/nickname¶
 #700:%s is not a valid user in your list.¶
 #701:%d users not returned.
+#702:		Display a list of nicknames that you can tab through.¶
 #703:©2Status modes: ¶
 #704:©2Groups: ¶
 #705:General                    1¶
@@ -822,3 +824,5 @@
 #760:¶Your new UIN is %s%ld%s!¶
 #761:unknown
 #762:Ack!!!!!!  %d\a¶
+#800:		Change the working language to <lang>¶
+#801:		Displays a list of people on your contact list in a screen wide format.¶

@@ -1,0 +1,190 @@
+.\"This is the man page for ~/.micqrc."
+.\"There is also no global preferences such as micq.conf"
+.\"However, ~/etc/micq.conf is an options with micq -E"
+.TH micq.conf 5 "10 June 2001"
+
+.SH NAME
+~/.micqrc \- The configuration file for micq
+.SH DESCRIPTION
+This manual page describes the configuration file for micq.
+.SH OPTIONS
+.B UIN 
+<your-uin>
+.br
+.B Password 
+<optional password>
+.br
+.B Status 
+<number>
+.br
+	0   Online
+.br
+	1   Away
+.br
+	5   Not Available
+.br
+	17  Occupied
+.br
+	19  Do Not disturb
+.br
+	32  Free for Chat
+.br
+	256 Invisible
+.br
+.B Server 
+icq-server
+.br
+	Possibilities: icq1.mirabilis.com
+.br
+.B Port 
+<number>
+.br
+	choose something > 1024 such as 4000
+.br
+.B Socks5 options
+.br
+	0 is disabled
+.br	
+	s5_use  <number>
+.br
+	s5_port <portnumber>
+.br
+	s5_host <host-ID>
+.br
+	s5_auth <0|1>
+.br	
+	s5_name <name if s5_auth == 1>
+.br
+	s5_pass <password if s5_auth == 1>
+.br
+.B [Hermit] 
+.br
+	Only accepts messages from people on your list
+.br
+.B LogDir 
+<path>
+.br
+	specifies the directory to base the logging from default is $HOME
+.br	
+.B LogType 
+<0|1|2|3>
+.br
+	0 Disable logging
+.br
+	1 Log to LogDir/micq_log
+.br
+	2 Log to LogDir/micq.log/uin.log
+.br
+	3 Log to LogDir/micq.log/uin.log but don't log mode changes
+.br
+.B [No_Color]
+.br
+	Stop micq from displaying colours
+.br
+.B [Auto]
+.br
+	Turns auto reply messages on
+.br
+.B Auto_Away <number>
+.br
+	Number of seconds until auto-change status 0 to disable.
+.br
+.B Screen_Width <number>
+.br
+	0 for autodetect \- some other number to explicitly stake your screen width
+.br
+.SH COMMAND IDENTIFIERS
+clear_cmd <clear screen command>
+.br
+message_cmd <send message command>
+.br
+togig_cmd <toggle ignore command>
+.br
+iglist_cmd <view ignore list command>
+.br
+info_cmd <view info on a user command>
+.br
+quit_cmd <quit command>
+.br
+reply_cmd <reply command>
+.br
+again_cmd <message again command>
+.br
+list_cmd <list all, excluding ignored, users command>
+.br
+online_list_cmd <list online users command>
+.br
+away_cmd <change status to away command>
+.br
+na_cmd <change status to Not Available command>
+.br
+dnd_cmd <change status to Do Not Disturb command>
+.br
+online_cmd <change status to online command>
+.br
+occ_cmd <change status to Occupied command>
+.br
+ffc_cmd <change status to Free for Chat command>
+.br
+inv_cmd <change status to Invisible command>
+.br
+search_cmd <search command>
+.br
+status_cmd <status command>
+.br
+auth_cmd <authorize user command>
+.br
+auto_cmd <auto reply command>
+.br
+add_cmd <add user command>
+.br
+togvis_cmd <toggle visible command>
+.br
+change_cmd <change status command>
+.br
+save_cmd <save settings command>
+.br
+alter_cmd <alter user command>
+.br
+msga_cmd <message all users command>
+.br
+url_cmd <send url message command>
+.br
+update_cmd <update info command>
+.br
+about_cmd <update about section of info command>
+.sp 2
+auto_rep_str_away <Auto away reply message> 
+.br
+auto_rep_str_na <Auto Not available reply message> 
+.br
+auto_rep_str_dnd <Auto Do not Disturb reply message>
+.br
+auto_rep_str_occ <Auto Occupied reply message>
+.br
+auto_rep_str_inv <Auto invisible reply message> 
+.sp 2
+.B Contacts 
+.br
+	start contact list command
+
+.SH CONTACT LIST
+.B [*|~]<uin> <nickname>
+.br
+.B *
+put <uin> on your visible while invisible list
+.br
+.B ~
+put <uin> on your ignore list. Note: micq does not reject messages from
+people on your ignore list. Note: the contact list has to be the last
+part of this file.
+
+.SH SEE ALSO
+micq(1), micq(7)
+.SH Author
+This man page was written by James Morrison <ja2morrison@student.math.uwaterloo.ca> for 
+.B micq
+version 0.4.6
+
+
+

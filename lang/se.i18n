@@ -400,7 +400,8 @@
 400:		Visar lokal infomation om användaren¶
 401:		Uppdaterar information som ålder och kön¶
 402:		Uppdaterar informationen om dig.¶
-403:		Visar det sista meddelandet du har fått från <namn>.¶			Namnet måste vara med på din lista.¶
+#-#403:		Visar det sista meddelandet du har fått från <namn>.¶			Namnet måste vara med på din lista.¶
+#403:		Displays the last message received from <nick>.¶			They must be in your Contact List.¶		Or a list of who has send you at least one message.¶
 404:		Väljer att ignorera/ej ignorera en användare¶
 405:		Visar ignorerade användare¶
 406:	Väljer om de är synlig för en användare när du är osynlig.¶
@@ -555,6 +556,11 @@
 555:Ange ditt efternamn:
 556:Ange din e-postadress:
 557:Vill du att de som använder Mirabilis behöver din tillåtelse för att lägga till dig? (JA/NEJ)
+#558:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
+#559:Enter max age (22,29,39,49,59,120):
+#560:Enter a city:
+#561:Enter a state:
+#562:©1Info for %ld¶
 563:Namn:
 564:Förnamn:
 565:Efternamn:
@@ -563,6 +569,9 @@
 560:Ange en stad:
 561:Ange en stat:
 562:©1Information om %ld¶
+#563:Nick name:
+#564:First name:
+#565:Last name:
 566:E-post adress:
 567:Inget bekräftelse behövs.©0 
 568:Bekräftelse behövs.©0 
@@ -699,6 +708,7 @@
 #699:Must give a valid uin/nickname¶
 #700:%s is not a valid user in your list.¶
 #701:%d users not returned.
+#702:		Display a list of nicknames that you can tab through.¶
 #703:©2Status modes: ¶
 #704:©2Groups: ¶
 705:Allmänt                    1¶
@@ -755,3 +765,5 @@
 760:¶Ditt nya nummer är %s%ld%s!¶
 761:okänt
 #762:Ack!!!!!!  %d\a¶
+#800:		Change the working language to <lang>¶
+#801:		Displays a list of people on your contact list in a screen wide format.¶

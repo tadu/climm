@@ -411,7 +411,8 @@
 400:		Mostra informação disponível localmente sobre o usuário¶
 401:		Atualiza informações de usuário adicionais¶
 402:		Atualiza suas informações de usuário.¶
-403:		Mostra a última mensagem recebida de <nick>.¶			A pessoa precisa estar em sua Lista de Contatos.¶
+#-#403:		Mostra a última mensagem recebida de <nick>.¶			A pessoa precisa estar em sua Lista de Contatos.¶
+#403:		Displays the last message received from <nick>.¶			They must be in your Contact List.¶		Or a list of who has send you at least one message.¶
 404:		Ignora/designora um nick¶
 405:		Lista os nicks/uins ignorados¶
 406:	Inclui alguém na lista de visibilidade¶
@@ -766,6 +767,7 @@
 #699:Must give a valid uin/nickname¶
 #700:%s is not a valid user in your list.¶
 #701:%d users not returned.
+#702:		Display a list of nicknames that you can tab through.¶
 #703:©2Status modes: ¶
 #704:©2Groups: ¶
 #705:General                    1¶
@@ -822,3 +824,5 @@
 #760:¶Your new UIN is %s%ld%s!¶
 #761:unknown
 #762:Ack!!!!!!  %d\a¶
+#800:		Change the working language to <lang>¶
+#801:		Displays a list of people on your contact list in a screen wide format.¶

@@ -413,8 +413,7 @@
 400:		Shows locally stored info on user¶
 401:		Updates other user info like age and sex¶
 402:		Aktualisiert die Infos ueber dich.¶
-403:		Zeigt die letzte von <nick> empfangene Nachricht.¶
-#\t\t\t<nick> _muss_ in deiner Userliste stehen.\n"
+403:		Zeigt die letzte von <nick> empfangene Nachricht.¶			<nick> muß in der Kontaktliste stehen.¶		Oder schonmal eine Nachricht geschickt haben.¶
 404:		Ignoriert/Unignoriert <nick>¶
 405:		Listet ignorierte nicks/uins¶
 406:	Macht dich (un)sichtbar gegen andere User, wenn du generell unsichtbar bist.¶
@@ -716,6 +715,7 @@
 699:Benötige gültige Benutzernummer oder Spitzname.¶
 700:%s ist kein gültiger Benutzer in Ihrer Kontaktliste.¶
 701:%d Benutzer nicht zurückgegeben.
+702:		Zeigt eine Liste von Benutzernamen, die man durch die tab-Taste auswählen kann.¶
 703:©2Status-Modi: ¶
 704:©2Gruppen: ¶
 705:Allgemein                  1¶
@@ -772,3 +772,5 @@
 760:¶Ihre neue Benutzernummer ist %s%ld%s!¶
 761:unbekannt
 762:Bestätigt!!!!!!  %d\a¶
+800:		Wählt die Sprache <lang> aus.¶
+801:		Zeigt die Kontaktliste im ausführlichen Format.

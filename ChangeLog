@@ -1,4 +1,9 @@
 
+2001-06-12 James Morrison <ja2morrison@student.math.uwaterloo.ca>
+	* src/ui.c: Add help for trans, wide, tabs
+	* doc/micq.7, doc/micqrc.5: new.
+	* README: add info to run ./prepare.
+
 2001-06-12 Björn Hansson <hansson@netera.se>
 	* lang/se.i18n: update.
 

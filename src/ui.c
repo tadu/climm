@@ -14,10 +14,11 @@ Contributors : Nicolas Sahlqvist April 27, 1998
                Michael Ivey May 4, 1998
                Ulf Hedlund -- Windows Support
                Michael Holzt May 5, 1998
-			   aaron March 29, 2000
+                           aaron March 29, 2000
 Changes :
 22-6-98 Added the save and alter command and the
         new implementation of auto
+
 **********************************************
 **********************************************/
 
@@ -864,11 +865,11 @@ void Get_Input (SOK_T sok, int *idle_val, int *idle_flag)
             }
             cmd = strtok (buf, " \n\t");
 
-	    if ( cmd == NULL)
-	    {
-		Prompt ();
-		return;
-	    }
+            if ( cmd == NULL)
+            {
+                Prompt ();
+                return;
+            }
 
             /* skip all non-alhphanumeric chars on the beginning
              * to accept IRC like commands starting with a /
@@ -884,7 +885,7 @@ void Get_Input (SOK_T sok, int *idle_val, int *idle_flag)
             }
 
             /* goto's removed and code fixed by Paul Laufer. Enjoy! */
-	    if ((strcasecmp (cmd, "quit") == 0) || (strcasecmp (cmd, "/quit") == 0))
+            if ((strcasecmp (cmd, "quit") == 0) || (strcasecmp (cmd, "/quit") == 0))
             {
                 Quit = TRUE;
             }
@@ -1830,6 +1831,8 @@ static void Help_Function (void)
                  i18n (425, "\t\tSets the message to send as an auto reply for the status\n"));
         M_print (COLMESS "%s <old cmd> <new cmd>" COLNONE "%s", alter_cmd,
                  i18n (417, "\tThis command allows you to alter your command set on the fly.\n"));
+        M_print (COLMESS "%s <lang>" COLNONE "%s", "trans", 
+                 i18n (800, "\t\tChange the working language to <lang>\n"));  
         M_print (i18n (717, COLCLIENT "\t! as the first character of a command will execute\n"));
         M_print (i18n (718, COLCLIENT "\ta shell command (e.g. \"!ls\"  \"!dir\" \"!mkdir temp\")" COLNONE "\n"));
     }
@@ -1848,7 +1851,8 @@ static void Help_Function (void)
         M_print (COLMESS "%s <message>" COLNONE "%s", reply_cmd,
                  i18n (414, "\t\tReplys to the last person to send you a message\n"));
         M_print (COLMESS "%s <nick>" COLNONE "%s", "last",
-                 i18n (403, "\t\tDisplays the last message received from <nick>.\n\t\t\tThey must be in your Contact List.\n"));
+                 i18n (403, "\t\tDisplays the last message received from <nick>.\n\t\t\tThey must be in your Contact List.\n\t\tOr a list of who has send you at least one message.\n"));
+        M_print (COLMESS "%s" COLNONE "%s", "tabs", i18n (702, "\t\tDisplay a list of nicknames that you can tab through.\n")); 
         M_print (i18n (719, COLMESS "uptime\t\tShows how long Micq has been running.\n" COLNONE));
         M_print (i18n (720, COLCLIENT "\tuin can be either a number or the nickname of the user.\n"));
         M_print (i18n (721, COLCLIENT "\tSending a blank message will put the client into multiline mode.\n\tUse . on a line by itself to end message.\n"));
@@ -1868,6 +1872,8 @@ static void Help_Function (void)
                  i18n (400, "\t\tShows locally stored info on user\n"));
         M_print (COLMESS "%s" COLNONE "%s", online_list_cmd,
                  i18n (407, "\t\t\tDisplays the current status of online people on your contact list\n"));
+        M_print (COLMESS "%s" COLNONE "%s", "wide", 
+                 i18n (801, "\t\tDisplays a list of people on your contact list in a screen wide format.\n")); 
         M_print (COLMESS "%s <uin>" COLNONE "%s", info_cmd,
                  i18n (430, "\t\tDisplays general info on uin\n"));
         M_print (COLMESS "%s <nick>" COLNONE "%s", togig_cmd,
@@ -1997,7 +2003,7 @@ static void Trans_Function (SOK_T sok)
                 else
                     M_print ("No internationalization requested.\n");
             } 
-    	}
+        }
     }
 }
 
