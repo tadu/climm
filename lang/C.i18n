@@ -1206,3 +1206,4 @@
 2570:Continuing chat with %s%s%s:\n
 2571:"%s" <%s> emailed you a message [%s]: %s\n
 2572:"%s" <%s> sent you a web message [%s]: %s\n
+2573:The user is probably offline.\n
