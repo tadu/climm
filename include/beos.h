@@ -8,12 +8,12 @@
 #include <KernelKit.h>
 
 /* BeOS input stuff */
-#define BE_NO	0
-#define BE_YES	1
+#define BE_NO   0
+#define BE_YES  1
 
 #define BE_HOLD 0
-#define BE_GO	1
-#define BE_DIE	2
+#define BE_GO   1
+#define BE_DIE  2
 
 extern int BeStatus;
 extern int BeThread;
