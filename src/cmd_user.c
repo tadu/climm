@@ -731,7 +731,7 @@ static JUMP_F(CmdUserTCP)
                 if (!UtilUIParse (&args, &as))
                     break;
                 if (*as == '/' && !*(as + 1))
-                    as = (index (des, '/')) ? rindex (des, '/') + 1 : des;
+                    as = (strchr (des, '/')) ? strrchr (des, '/') + 1 : des;
                 if (*as == '.' && !*(as + 1))
                     as = des;
                 files[count] = des;
