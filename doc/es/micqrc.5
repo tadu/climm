@@ -1,0 +1,318 @@
+.\" $Id$
+.\"  EN: micqrc.5,v 1.9 2002/08/09 01:22:20
+.\"      ^^ <version of English man page this is in sync with>
+.TH MICQRC 5 mICQ
+.SH NOMBRE
+.B ~/.micq/micqrc
+\- El archivo de configuracion de micq
+.SH DESCRIPCION
+Este manual describe el archivo de configuracion para micq. Consiste en
+diversas secciones que comienzan con
+.IR [seccion] ,
+donde
+.I seccion
+es el nombre de la seccion.
+.SH CONEXIONES - connection
+Una seccion de
+.B Connection
+describe una conexion dentro de ICQ. Tipicamente, hay dos de ellas,
+relacionadas: una conexion con el server ICQ, y una conexion que recibe las
+comunicaciones par a par.
+.TP
+.BI type \ type\ [auto]
+Configura el tipo de conexion a
+.IR type ,
+el cual puede ser
+.B server
+para una conexion con el server ICQ, o
+.B peer
+para una conexion que recibe las comunicaciones par a par. Si se elige
+.I auto
+la conexion es creada al iniciar. Esto es lo mas comun, salvo que tengas
+varias UINs, entonces configura esto dentro de la conexion correspondiente al
+UIN que usas.
+.TP
+.BI version \ nr
+Configura el numero de version que se utilizara para esta conexion a
+.IR nr .
+Por favor tene en cuenta que para las conexiones con el server, las versiones
+.BR 5 ,
+.B 7
+y
+.B 8
+estan disponibles, y para conexiones par a par
+.BR 6 ,
+.B 7
+y
+.BR 8 .
+.TP
+.BI server \ server
+Configura el server al cual conectarse a
+.IR server .
+Por default, este es
+.IR login.icq.com .
+No es utilizado para conexiones par a par.
+.TP
+.BI port \ port
+Configura el port al cual conectarse con el server a
+.IR port ,
+o el port en el cual esperar por conexiones par a par.
+.TP
+.BI uin \ UIN
+Configura el UIN utilizado para loguearse a
+.IR UIN .
+No es utilizado para conexiones par a par.
+.TP
+.BI password \ [password]
+Configura la clave a utilizar para conectarse a
+.IR password .
+No es utilizado para conexiones par a par. Si se omite, se pedira la clave al
+iniciar.
+Nota: los usuarios de BeOS no pueden omitir la clave.
+.TP
+.BI status \ nr
+Configura el estado inicial a
+.IR nr .
+El estado puede ser:
+.RS
+.TP
+0
+conectado (online)
+.TP
+1
+lejos (away)
+.TP
+5
+no disponible (not available)
+.TP
+17
+ocupado (occupied)
+.TP
+19
+no molestar (do not disturb)
+.TP
+32
+libre para hablar (free for chat)
+.TP
+256
+invisible
+.RE
+.SH GENERAL - general
+La seccion
+.B General
+incluye opciones para SOCKS 5 (que puede mas adelante ser movida a su propia
+seccion), opciones generales, y algunos strings.
+.TP
+.BI s5_use \ number
+Configura 
+.I number
+a 0 para desactivar o 1 para activar SOCKS 5.
+.TP
+.BI s5_host \ host
+Conectarse al proxy socks 5 en el host
+.IR host .
+.TP
+.BI s5_port \ port
+Conectarse al proxy socks 5 que espera conexiones en el port
+.IR port .
+.TP
+.BI s5_auth \ number
+Configura
+.I number
+a 0 para omitir autenticacion y 1 para hacerla.
+.TP
+.BI s5_name \ name
+Se identifica como el usuario
+.I name
+ante el proxy socks 5.
+.TP
+.BI s5_pass \ password
+Se autentica con la clave
+.I password
+ante el proxy socks 5.
+PP
+Ahora las opciones:
+.TP
+.BI verbose \ level
+Configura el nivel de salida a
+.IR level .
+.TP
+.BI auto_away \ time
+Configura el tiempo luego del cual se cambiara el estado a "lejos" de forma
+automatica a
+.I time
+segundos. Configurar a
+.I 0
+para desactivarlo.
+.TP
+.BI Screen_width \ width
+Configura el ancho por default de la pantalla a
+.IR width .
+Si no esta seteado, o
+.IR 0 , \ 80
+sera usado. Generalmente, no es necesario configurar estas opciones dado que
+el ancho de la pantalla puede ser obtenido en tiempo de ejecucion.
+.TP
+.BI set \ delbs\ on|off
+Si se configura a
+.BR on ,
+la tecla 'delete' actua como la tecla 'backspace'. Cuando se configura a
+.BR off ,
+se comporta normalmente.
+.TP
+.BI set \ russian\ on|off
+Activa o desactiva la conversion de caracteres rusos entre koi8-r/u y cp1251.
+.TP
+.BI set \ japanese\ on|off
+Activa o desactiva la conversion de caracteres japoneses entre Shift-JIS and
+EUC.
+.TP
+.BI set \ funny\ on|off
+Activa o desactiva los mensajes graciosos.
+.TP
+.BI set \ color\ on|off
+Activa o desactiva el uso de colores.
+.TP
+.BI set \ hermit\ on|off
+Si se configura a
+.BR on ,
+todos los mensajes de las personas que no esten en tu lista de contactos seran
+ignorados.
+.TP
+.BI set \ log\ on|off
+Activa o desactiva el logueo.
+.TP
+.BI set \ logonoff\ on|off
+Cuando el logueo esta activado, activa o desactiva la notificacion de
+conexion/desconexion.
+.TP
+.BI set \ auto\ on|off
+Activa o desactiva las respuestas automaticas.
+.TP
+.BI set \ uinprompt\ on|off
+Activa o desactiva el uso del nick del cual recibiste el ultimo mensaje en el
+prompt.
+.TP
+.BI set \ linebreak\ type
+Configura el tipo de corte de linea para los mensajes entrantes a
+.IR type ,
+el cual puede ser:
+.B simple
+para cortar las lineas normalmente,
+.B break
+para que haya un corte de linea antes de cada mensaje,
+.B indent
+para tener un corte de linea e indentar el mensaje, y
+.B smart
+para tener un corte de linea solo si el mensaje no entra en la linea actual.
+.TP
+.BI set \ tabs\ simple|cycle|cycleall
+Selecciona el modo de cambio de nick con la tecla tab. Versiones anteriores de
+mICQ solo utilizaban
+.BR simple ,
+que solo funciona con el comando
+.B msg
+y que completa el comando y cicla a traves de todos los contactos que hayan
+recibido o enviado mensajes. El texto que estaba escrito luego del nick se
+pierde.
+Pero
+.B cycle
+cicla a traves de todos los contactos de tu lista que se encuentran
+conectados, y deja intacto el texto escrito pereviamente; aunque no agrega el
+.BR msg .
+.B cycleall
+es como
+.BR cycle ,
+pero cicla a traves de todos los contactos, no solo los conectados.
+PP
+Por ultimo, algunos strings pueden ser definidos:
+.TP
+.BI logplace \ file|dir
+Configura el archivo al cual escribir el log a
+.IR file ,
+o el directorio dentro de donde escribir el log a
+.IR dir .
+Por favor tene en cuenta que el path se asume un directorio si tiene una
+.I / 
+final.
+.TP
+.BI sound \ on|off|cmd
+Activa o desactiva el beep. Si el argumento no es ni
+.B on
+ni
+.BR off ,
+se asume como el programa que ha de ejecutarse en lugar de emitir el beep.
+.TP
+.BI soundonline \ on|off|cmd
+Lo mismo que el anterior, pero para cuando un usuario se conecta.
+.TP
+.BI soundoffline \ on|off|cmd
+Lo mismo que el anterior, pero para cuando un usuario se desconecta.
+.TP
+.BI receivescript \ cmd
+El comando que se ejecuta al recibir un mensaje. Si se deja en blanco no tiene
+efecto.
+.TP
+.BI auto \ status\ string
+Configura la respuesta automatica en el estado
+.I status
+a
+.IR string .
+Esta opcion puede repetirse para todos los valores posibles
+.RR ( away ,
+.BR na ,
+.BR dnd ,
+.BR occ ,
+.BR inv ,
+y
+.BR ffc )
+para
+.IR status .
+
+.SH STRINGS - strings
+La seccion
+.B Strings
+contiene los cambios de nombre de los comandos.
+.TP
+.BI alter \ old\ new
+Renombra el comando
+.I old
+a
+.IR new .
+Tene en cuenta que el nombre viejo todavia puede ser utilizado, salvo que
+exista un conflicto con algun nombre nuevo.
+Para posibles nombres de comandos, ver
+.BR micq (7).
+Esta opcion puede repetirse tantas veces como se desee.
+
+.SH CONTACTOS - contacts
+La seccion
+.B Contacts
+contiene la lista de contactos.
+.TP
+.I [*][~][^] uin nick
+Agrega el usuario con UIN
+.I uin
+con el nick como
+.IR nick .
+Si se da un
+.B *
+el usuario puede verte cuando estas invisible. Si se da un
+.B ~
+el usuario te ve siempre offline. Si se da un
+.B ^
+el usuario es ignorado.
+Si un uin aparece mas de una vez, todos salvo el primero son tratados como
+alias.
+.sp
+Nota: la lista de contactos tiene que ser la ultima parte del archivo.
+.SH VER TAMBIEN
+.BR micq (1),
+.BR micq (7)
+.SH AUTOR
+Esta pagina fue escrita por James Morrison
+.IR <ja2morrison@student.math.uwaterloo.ca> .
+Fue reescrita para reflejar la nueva sintaxis por Rüdiger Kuhlmann
+.IR <micq@ruediger-kuhlmann.de> .
+This man page was translated by Alberto Bertogli
+.IR <albertogli@telpin.com.ar> .
