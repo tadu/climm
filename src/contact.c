@@ -62,6 +62,7 @@ void ContactRem (UDWORD uin)
         cnt_contacts[i] = cnt_contacts[i + 1];
         i++;
     }
+    cnt_contacts[cnt_number].uin = 0;
 }
 
 /*
