@@ -323,7 +323,7 @@ void ContactSetVersion (Contact *cont)
              cont->id2 == BUILD_TRILLIAN_ID2 &&
              cont->id3 == BUILD_TRILLIAN_ID3)
     {
-        new = "Trillian 0.73/0.74/Pro 1.0";
+        new = "Trillian";
     }
     else if (cont->id1 == cont->id2 && cont->id2 == cont->id3 && cont->id1 == 0xffffffff)
         new = "vICQ/GAIM(?)";
