@@ -1,43 +1,4 @@
-$Id$
 
-Feature requests:
+Todo:
 
-Jeff Bearer <jbearer@tribweb.com>
- : But the idea is to add PGP encryption to micq working with GNU Privacy
- : Guard.  There is a plugin for ICQ that enables PGP that's where I got
- : the idea.  As it stands right now you can't use micq to send messages
- : encoded with GPG because the max message size isn't large enough to send
- : your public key, etc.  After thinking about it, I was quickly in over my
- : head.
-
-21:47:57  m:1126630 <<< Hello,
- : I have been talking with friends about mICQ and about how much we like it ..
- : A couple of things have come up:
- : - All mode changes should be in a central system log and not each user
-
-ICQ#135584591: (refuses to do translation work)
- : implement web aware feature (done, but undocumented)
-
-TODO:
- : add https support
- : add missing v8 pieces
-   + figure out v8 reverse connection
- : history of messages (partially done)
- : alias for commands (partially done)
- : tab completion (improve)
- : use ASCII art for setup wizard
- : file transfer:
-   + figure out server file sending
- : implement more server message types
- : use Extra * for more message types
- : use wprintf() etc to figure out width in character cells (needed for Japanese)
- : replace all UDWORD uin parameters by Contact * (function calls done, Event,Connection missing)
- : command to display _all_ settings
- : server side contact list:
-   + contact list upload
- : message length (partially done)
- : better meta data change functions
- : pressing tab in a msg composition ">" area, inserts a nick, tab should be ignored in msg composition
- : delay login eg on each incoming oncoming contact (done)
- : internal: use string lib
- : have preferences relative to connection (or: session)
+Release 0.4.99.x as 0.5.
