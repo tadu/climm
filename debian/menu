@@ -1,3 +1,3 @@
 ?package(micq):needs=text section=Apps/Net hints="Messenger"\
-  title="mICQ" command="/usr/bin/micq"
+  title="mICQ" command="/usr/bin/micq" \
   icon=/usr/X11R6/include/X11/pixmaps/micq.xpm
