@@ -359,7 +359,7 @@ static JUMP_SNAC_F(SnacServerpause)
 
 static void SrvCallbackTodoEg (Event *event)
 {
-    CmdUser (s_sprintf ("\xb6" "as %ld eg", event->conn->uin));
+    CmdUser (s_sprintf ("\\as %ld eg", event->conn->uin));
 }
 
 /*

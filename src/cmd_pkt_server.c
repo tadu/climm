@@ -252,7 +252,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
         case SRV_X1:
             if (prG->verbose & DEB_PROTOCOL)
                 M_print (i18n (1643, "Acknowledged SRV_X1 0x021C Done Contact list?\n"));
-            CmdUser ("\xb6" "e");
+            CmdUser ("\\e");
             conn->connect |= CONNECT_OK;
             break;
         case SRV_X2:
