@@ -68,15 +68,15 @@ fi
 
 if test "x$ac_arg_use_tcl" != "xno"; then
   ac_use_tcl=no
-  AC_CHECK_HEADERS([tcl8.4/tcl.h tcl8.3/tcl.h tcl.h] , [ac_arg_use_tcl=header
+  AC_CHECK_HEADERS([tcl8.4/tcl.h tcl8.3/tcl.h tcl.h] , [ac_arg_tcl=yes
                                                         break])
-  if test "x$ac_arg_use_tcl" = "xheader"; then
-    AC_SEARCH_LIBS([Tcl_CreateInterp], [tcl8.4 tcl8.3], [ac_arg_use_tcl=yes], [ac_arg_use_tcl=no])
+  if test "x$ac_use_tcl" = "xyes"; then
+    AC_SEARCH_LIBS([Tcl_CreateInterp], [tcl8.4 tcl8.3], [ac_arg_tcl=yes], [ac_arg_tcl=no])
   fi
   if test "x$ac_usl_tcl$ac_arg_use_tcl" = "xnoyes"; then
     AC_MSG_FAILURE([cannot find a suitable Tcl interpreter library])
   fi
-  ac_arg_use_tcl=$ac_use_tcl;
+  ac_arg_use_tcl=$ac_use_tcl
 fi
 
 if test "x$ac_arg_use_utf8" = "xno"; then
