@@ -184,6 +184,7 @@ int main (int argc, char *argv[])
     
     const char *arg_v, *arg_f, *arg_l, *arg_i, *arg_b;
     UDWORD arg_h = 0, arg_vv = 0, arg_c = 0;
+    UWORD res;
 
     srand (time (NULL));
     uiG.start_time = time (NULL);
@@ -261,7 +262,7 @@ int main (int argc, char *argv[])
         prG->basedir = arg_b ? strdup (arg_b[strlen (arg_b) - 1] == _OS_PATHSEP
                                ? arg_b : s_sprintf ("%s" _OS_PATHSEPSTR, arg_b)) : NULL;
     
-    prG->enc_loc = prG->enc_rem = ENC_AUTO;
+    prG->enc_loc = ENC_AUTO;
     i18nInit (&prG->locale, &prG->enc_loc, arg_i);
     prG->verbose &= ~0x8000;
     PreferencesInit (prG);
@@ -273,15 +274,15 @@ int main (int argc, char *argv[])
     if (prG->enc_loc == ENC_AUTO)
         prG->enc_loc = ENC_AUTO | ENC_LATIN1;
     
-    if (prG->enc_rem == ENC_AUTO)
+    if (!ContactOptionsGetVal (&prG->copts, CO_ENCODING, &res))
     {
         switch (prG->enc_loc & ~ENC_AUTO)
         {
-            case ENC_EUC:     prG->enc_rem |= ENC_SJIS;    break;
-            case ENC_SJIS:    prG->enc_rem |= ENC_SJIS;    break;
-            case ENC_KOI8:    prG->enc_rem |= ENC_WIN1251; break;
-            case ENC_WIN1251: prG->enc_rem |= ENC_WIN1251; break;
-            default:          prG->enc_rem |= ENC_LATIN1;
+            case ENC_EUC:     ContactOptionsSetVal (&prG->copts, CO_ENCODING, ENC_SJIS); break;
+            case ENC_SJIS:    ContactOptionsSetVal (&prG->copts, CO_ENCODING, ENC_SJIS); break;
+            case ENC_KOI8:    ContactOptionsSetVal (&prG->copts, CO_ENCODING, ENC_WIN1251); break;
+            case ENC_WIN1251: ContactOptionsSetVal (&prG->copts, CO_ENCODING, ENC_WIN1251); break;
+            default:          ContactOptionsSetVal (&prG->copts, CO_ENCODING, ENC_LATIN1);
         }
     }
     

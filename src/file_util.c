@@ -237,11 +237,16 @@ void Initialize_RC_File ()
 
     prG->status = STATUS_ONLINE;
     prG->tabs = TABS_SIMPLE;
-    prG->flags = FLAG_LOG | FLAG_LOG_ONOFF | FLAG_DELBS;
-    prG->flags |= FLAG_AUTOSAVE | FLAG_AUTOFINGER;
+    prG->flags = FLAG_DELBS | FLAG_AUTOSAVE | FLAG_AUTOFINGER;
 #ifdef ANSI_TERM
     prG->flags |= FLAG_COLOR;
 #endif
+
+    ContactOptionsSetVal (&prG->copts, CO_LOGMESS,    1);
+    ContactOptionsSetVal (&prG->copts, CO_LOGONOFF,   1);
+    ContactOptionsSetVal (&prG->copts, CO_LOGCHANGE,  1);
+    ContactOptionsSetVal (&prG->copts, CO_SHOWONOFF,  1);
+    ContactOptionsSetVal (&prG->copts, CO_SHOWCHANGE, 1);
 
     ContactOptionsSetStr (&prG->copts, CO_AUTODND,  i18n (1929, "User is dnd [Auto-Message]"));
     ContactOptionsSetStr (&prG->copts, CO_AUTOAWAY, i18n (1010, "User is away [Auto-Message]"));
@@ -314,6 +319,7 @@ int Read_RC_File (FILE *rcf)
                 if (format < 2)
                 {
                     cg = ContactGroupC (NULL, 0, NULL);
+                    ContactOptionsSetVal (&cg->copts, CO_IGNORE, 0);
                     for (i = 0; (conn = ConnectionNr (i)); i++)
                         if (conn->flags & CONN_AUTOLOGIN)
                         {
@@ -383,18 +389,25 @@ int Read_RC_File (FILE *rcf)
                         M_printf (i18n (2216, "This mICQ doesn't know the '%s' encoding.\n"), cmd);
                         ERROR;
                     }
-                    if (what & ENC_AUTO && what != (ENC_AUTO | ENC_UTF8))
+                    if (what & ENC_AUTO)
                     {
-                        if ((which == 3 && (what ^ prG->enc_loc) & ~ENC_AUTO)
-                            || (which == 2 && (what ^ enc) & ~ENC_AUTO))
-                            M_printf (COLERROR "%s" COLNONE " ", i18n (2251, "Error:"));
-                        else
-                            M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                        M_printf (i18n (2217, "This mICQ can't convert between '%s' and unicode.\n"), cmd);
+                        if (what != (ENC_AUTO | ENC_UTF8))
+                        {
+                            if ((which == 3 && (what ^ prG->enc_loc) & ~ENC_AUTO)
+                                || (which == 2 && (what ^ enc) & ~ENC_AUTO))
+                                M_printf (COLERROR "%s" COLNONE " ", i18n (2251, "Error:"));
+                            else
+                                M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                            M_printf (i18n (2217, "This mICQ can't convert between '%s' and unicode.\n"), cmd);
+                        }
                         what &= ~ENC_AUTO;
                     }
                     if (which == 1)
-                        prG->enc_rem = what;
+                    {
+                        ContactOptionsSetVal (&prG->copts, CO_ENCODING, what);
+                        ContactOptionsSetStr (&prG->copts, CO_ENCODINGSTR, ConvEncName (what));
+                        dep = 17;
+                    }
                     else if (which == 2)
                         prG->enc_loc = what;
                     else
@@ -479,56 +492,17 @@ int Read_RC_File (FILE *rcf)
                 }
                 else if (!strcasecmp (cmd, "color") || !strcasecmp (cmd, "colour"))
                 {
-                    if (!s_parseint (&args, &i))
-                    {
-                        PrefParse (tmp);
-                        
-                        if      (!strcasecmp (tmp, "none"))     i = 0;
-                        else if (!strcasecmp (tmp, "server"))   i = 1;
-                        else if (!strcasecmp (tmp, "client"))   i = 2;
-                        else if (!strcasecmp (tmp, "message"))  i = 3;
-                        else if (!strcasecmp (tmp, "contact"))  i = 4;
-                        else if (!strcasecmp (tmp, "sent"))     i = 5;
-                        else if (!strcasecmp (tmp, "ack"))      i = 6;
-                        else if (!strcasecmp (tmp, "error"))    i = 7;
-                        else if (!strcasecmp (tmp, "incoming")) i = 8;
-                        else if (!strcasecmp (tmp, "debug"))    i = 9;
-                        else if (!strcasecmp (tmp, "scheme"))   i = -1;
-                        else continue;
-                    }
-                    
-                    if (i == -1)
+                    dep = 235;
+
+                    PrefParse (tmp);
+
+                    if (!strcasecmp (tmp, "scheme"))
                     {
                         PrefParseInt (i);
-                        PrefSetColorScheme (prG, i);
+                        ContactOptionsImport (&prG->copts, PrefSetColorScheme (1 + ((i + 3) % 4)));
                     }
                     else
-                    {
-                        char buf[200], *c;
-
-                        if (i >= CXCOUNT)
-                            continue;
-                        buf[0] = '\0';
-
-                        while (s_parse (&args, &cmd))
-                        {
-                            if      (!strcasecmp (cmd, "black"))   c = BLACK;
-                            else if (!strcasecmp (cmd, "red"))     c = RED;
-                            else if (!strcasecmp (cmd, "green"))   c = GREEN;
-                            else if (!strcasecmp (cmd, "yellow"))  c = YELLOW;
-                            else if (!strcasecmp (cmd, "blue"))    c = BLUE;
-                            else if (!strcasecmp (cmd, "magenta")) c = MAGENTA;
-                            else if (!strcasecmp (cmd, "cyan"))    c = CYAN;
-                            else if (!strcasecmp (cmd, "white"))   c = WHITE;
-                            else if (!strcasecmp (cmd, "none"))    c = SGR0;
-                            else if (!strcasecmp (cmd, "bold"))    c = BOLD;
-                            else c = cmd;
-                            
-                            snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", c);
-                        }
-                        prG->scheme = -1;
-                        s_repl (&prG->colors[i], buf);
-                    }
+                        ContactOptionsImport (&prG->copts, s_sprintf ("color%s %s", tmp, s_quote (args)));
                 }
                 else if (!strcasecmp (cmd, "linebreaktype"))
                 {
@@ -635,21 +609,21 @@ int Read_RC_File (FILE *rcf)
                     if (!strcasecmp (cmd, "color") || !strcasecmp (cmd, "colour"))
                         which = FLAG_COLOR;
                     else if (!strcasecmp (cmd, "hermit"))
-                        which = FLAG_HERMIT;
+                        which = FLAG_DEP_HERMIT;
                     else if (!strcasecmp (cmd, "delbs"))
                         which = FLAG_DELBS;
                     else if (!strcasecmp (cmd, "russian"))
-                        which = FLAG_CONVRUSS;
+                        which = FLAG_DEP_CONVRUSS;
                     else if (!strcasecmp (cmd, "japanese"))
-                        which = FLAG_CONVEUC;
+                        which = FLAG_DEP_CONVEUC;
                     else if (!strcasecmp (cmd, "funny"))
                         which = FLAG_FUNNY;
                     else if (!strcasecmp (cmd, "log"))
-                        which = FLAG_LOG;
+                        which = FLAG_DEP_LOG;
                     else if (!strcasecmp (cmd, "loglevel"))
                         which = -1;
                     else if (!strcasecmp (cmd, "logonoff"))
-                        which = FLAG_LOG_ONOFF;
+                        which = FLAG_DEP_LOG_ONOFF;
                     else if (!strcasecmp (cmd, "auto"))
                         which = FLAG_AUTOREPLY;
                     else if (!strcasecmp (cmd, "uinprompt"))
@@ -679,15 +653,17 @@ int Read_RC_File (FILE *rcf)
                         PrefParse (cmd);
                         if (!strcasecmp (cmd, "on"))
                         {
-                            if (which == FLAG_CONVRUSS)
+                            if (which == FLAG_DEP_CONVRUSS)
                             {
+                                ContactOptionsSetVal (&prG->copts, CO_ENCODING, ENC_WIN1251);
+                                ContactOptionsSetStr (&prG->copts, CO_ENCODINGSTR, ConvEncName (ENC_WIN1251));
                                 dep = 14;
-                                prG->enc_rem = ENC_WIN1251;
                             }
-                            else if (which == FLAG_CONVEUC)
+                            else if (which == FLAG_DEP_CONVEUC)
                             {
                                 dep = 15;
-                                prG->enc_rem = ENC_SJIS;
+                                ContactOptionsSetVal (&prG->copts, CO_ENCODING, ENC_SJIS);
+                                ContactOptionsSetStr (&prG->copts, CO_ENCODINGSTR, ConvEncName (ENC_SJIS));
 #ifndef ENABLE_ICONV
                                 if (prG->enc_loc == ENC_UTF8)
                                 {
@@ -696,7 +672,24 @@ int Read_RC_File (FILE *rcf)
                                 }
 #endif
                             }
-                            prG->flags |= which;
+                            else if (which == FLAG_DEP_LOG)
+                            {
+                                dep = 16;
+                                ContactOptionsSetVal (&prG->copts, CO_LOGMESS, 1);
+                            }
+                            else if (which == FLAG_DEP_LOG_ONOFF)
+                            {
+                                dep = 17;
+                                ContactOptionsSetVal (&prG->copts, CO_LOGONOFF, 1);
+                                ContactOptionsSetVal (&prG->copts, CO_LOGCHANGE, 1);
+                            }
+                            else if (which == FLAG_DEP_HERMIT)
+                            {
+                                dep = 18;
+                                ContactOptionsSetVal (&prG->copts, CO_IGNORE, 1);
+                            }
+                            else
+                                prG->flags |= which;
                         }
                         else if (!strcasecmp (cmd, "off"))
                             prG->flags &= ~which;
@@ -707,11 +700,15 @@ int Read_RC_File (FILE *rcf)
                     {
                         PrefParseInt (i);
 
-                        prG->flags &= ~FLAG_LOG & ~FLAG_LOG_ONOFF;
                         if (i)
-                            prG->flags |= FLAG_LOG;
+                        {
+                            ContactOptionsSetVal (&prG->copts, CO_LOGMESS, 1);
+                        }
                         if (i & 2)
-                            prG->flags |= FLAG_LOG_ONOFF;
+                        {
+                            ContactOptionsSetVal (&prG->copts, CO_LOGONOFF, 1);
+                            ContactOptionsSetVal (&prG->copts, CO_LOGCHANGE, 1);
+                        }
                         dep = 16;
                     }
                     else if (which == -2)
@@ -746,13 +743,14 @@ int Read_RC_File (FILE *rcf)
                     {
                         PrefParse (cmd);
                         
-                        prG->flags &= ~FLAG_QUIET & ~FLAG_ULTRAQUIET;
                         if (!strcasecmp (cmd, "on"))
-                            prG->flags |= FLAG_QUIET;
+                            ContactOptionsSetVal (&prG->copts, CO_SHOWCHANGE, 0);
                         else if (!strcasecmp (cmd, "complete"))
-                            prG->flags |= FLAG_QUIET | FLAG_ULTRAQUIET;
-                        else if (strcasecmp (cmd, "off"))
-                            dep = 18;
+                        {
+                            ContactOptionsSetVal (&prG->copts, CO_SHOWCHANGE, 0);
+                            ContactOptionsSetVal (&prG->copts, CO_SHOWONOFF, 0);
+                        }
+                        dep = 18;
                     }
                 }
                 else if (!strcasecmp (cmd, "options"))
@@ -1068,7 +1066,7 @@ int Read_RC_File (FILE *rcf)
         free (tab_nick_spool[i]);
     }
 
-    if (prG->flags & FLAG_LOG && !prG->logplace)
+    if (!prG->logplace)
         prG->logplace = strdup ("history" _OS_PATHSEPSTR);
     
     if (!prG->chat)
@@ -1171,6 +1169,7 @@ void PrefReadStat (FILE *stf)
             {
                 section = 4;
                 cg = ContactGroupC (NULL, 0, NULL);
+                ContactOptionsSetVal (&cg->copts, CO_IGNORE, 0);
                 for (i = 0; (conn = ConnectionNr (i)); i++)
                     if (conn->flags & CONN_AUTOLOGIN)
                     {
@@ -1335,6 +1334,7 @@ void PrefReadStat (FILE *stf)
         if (!conn->contacts && (conn->type & TYPEF_SERVER))
         {
             conn->contacts = cg = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%ld", conn->type == TYPE_SERVER ? "icq8" : "icq5", conn->uin));
+            ContactOptionsSetVal (&cg->copts, CO_IGNORE, 0);
             dep = 21;
         }
     }
@@ -1356,7 +1356,7 @@ int Save_RC ()
 {
     FILE *rcf, *stf;
     time_t t;
-    int i, k, l;
+    int i, k;
     Contact *cont;
     Connection *ss;
     ContactGroup *cg;
@@ -1427,8 +1427,6 @@ int Save_RC ()
     fprintf (rcf, "%sencoding local %s%s\n",
              prG->enc_loc & ENC_AUTO ? "#" : "", s_quote (ConvEncName (prG->enc_loc)),
              prG->enc_loc & ENC_AUTO ? "" : " # please set your locale correctly instead");
-    fprintf (rcf, "%sencoding remote %s\n",
-             prG->enc_rem & ENC_AUTO ? "#" : "", s_quote (ConvEncName (prG->enc_rem)));
     fprintf (rcf, "format 2\n\n");
 
     for (k = 0; (ss = ConnectionNr (k)); k++)
@@ -1491,12 +1489,6 @@ int Save_RC ()
                     prG->flags & FLAG_FUNNY     ? "on " : "off");
     fprintf (rcf, "set color      %s # if you want colored messages\n",
                     prG->flags & FLAG_COLOR     ? "on " : "off");
-    fprintf (rcf, "set hermit     %s # if you want messages from people on your contact list ONLY\n",
-                    prG->flags & FLAG_HERMIT    ? "on " : "off");
-    fprintf (rcf, "set log        %s # if you want to log messages\n",
-                    prG->flags & FLAG_LOG       ? "on " : "off");
-    fprintf (rcf, "set logonoff   %s # if you also want to log online/offline events\n",
-                    prG->flags & FLAG_LOG_ONOFF ? "on " : "off");
     fprintf (rcf, "set auto       %s # if automatic responses are to be sent\n",
                     prG->flags & FLAG_AUTOREPLY ? "on " : "off");
     fprintf (rcf, "set uinprompt  %s # if the prompt should contain the last uin a message was received from\n",
@@ -1509,9 +1501,6 @@ int Save_RC ()
                     prG->flags & FLAG_LIBR_INT 
                     ? prG->flags & FLAG_LIBR_BR ? "smart " : "indent"
                     : prG->flags & FLAG_LIBR_BR ? "break " : "simple");
-    fprintf (rcf, "set silent     %s # what stuff to hide (on, off, complete)\n",
-                    prG->flags & FLAG_ULTRAQUIET ? "complete" :
-                    prG->flags & FLAG_QUIET      ? "on" : "off");
     fprintf (rcf, "set tabs       %s # type of tab completion (simple, cycle, cycleall)\n",
                     prG->tabs == TABS_SIMPLE ? "simple" :
                     prG->tabs == TABS_CYCLE ? "cycle" : "cycleall");
@@ -1527,50 +1516,6 @@ int Save_RC ()
     
     fprintf (rcf, "%s\n\n", ContactOptionsString (&prG->copts));
 
-    fprintf (rcf, "# Colors. color scheme 0|1|2|3 or color <use> <color>\n");
-    {
-        char *t, *c;
-
-        for (i = 0; i < CXCOUNT; i++)
-        {
-            switch (i)
-            {
-                case 0: c = "none    "; break;
-                case 1: c = "server  "; break;
-                case 2: c = "client  "; break;
-                case 3: c = "message "; break;
-                case 4: c = "contact "; break;
-                case 5: c = "sent    "; break;
-                case 6: c = "ack     "; break;
-                case 7: c = "error   "; break;
-                case 8: c = "incoming"; break;
-                case 9: c = "debug   "; break;
-                default: c = ""; assert (0);
-            }
-            fprintf (rcf, "color %s", c);
-            for (t = prG->colors[i]; *t; t += l)
-            {
-                if      (!strncmp (BLACK,   t, l = strlen (BLACK)))   c = "black";
-                else if (!strncmp (RED,     t, l = strlen (RED)))     c = "red";
-                else if (!strncmp (GREEN,   t, l = strlen (GREEN)))   c = "green";
-                else if (!strncmp (YELLOW,  t, l = strlen (YELLOW)))  c = "yellow";
-                else if (!strncmp (BLUE,    t, l = strlen (BLUE)))    c = "blue";
-                else if (!strncmp (MAGENTA, t, l = strlen (MAGENTA))) c = "magenta";
-                else if (!strncmp (CYAN,    t, l = strlen (CYAN)))    c = "cyan";
-                else if (!strncmp (WHITE,   t, l = strlen (WHITE)))   c = "white";
-                else if (!strncmp (SGR0,    t, l = strlen (SGR0)))    c = "none";
-                else if (!strncmp (BOLD,    t, l = strlen (BOLD)))    c = "bold";
-                else c = t, l = strlen (t);
-                fprintf (rcf, " %s", s_quote (c));
-            }
-            fprintf (rcf, "\n");
-        }
-    }
-    if (prG->scheme != (UBYTE)-1)
-        fprintf (rcf, "color scheme   %d # comment out if above are changed\n\n", prG->scheme);
-    else
-        fprintf (rcf, "# color scheme <0,1,2,3>\n\n");
-    
     fprintf (rcf, "chat %d          # random chat group; -1 to disable, 49 for mICQ\n\n",
                   prG->chat);
 

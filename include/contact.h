@@ -89,7 +89,6 @@ struct Contact_s
     UDWORD caps;
     UWORD  id;
     UBYTE  v1, v2, v3, v4;
-    UBYTE  encoding;
 
     char  *version;
     char  *last_message;

@@ -1109,7 +1109,7 @@ void M_logo_clear ()
 
 #define chardiff(aa,bb)  (ENC(enc_loc) == ENC_UTF8 ? s_strnlen ((bb), (aa) - (bb)) : (aa) - (bb))
 
-#define USECOLOR(c)  ((prG->flags & FLAG_COLOR) && prG->colors[c] ? prG->colors[c] : "")
+#define USECOLOR(c)  ((prG->flags & FLAG_COLOR) ? ContactPrefStr (NULL, CO_COLORNONE + c) : "")
 
 /*
  * Print a string to the output, interpreting color and indenting codes.
@@ -1208,8 +1208,8 @@ void M_print (const char *org)
         if (isline && (*str == '\n' || *str == '\r'))
         {
             if (str[1])
-                printf ("%s%s..",USECOLOR (CXCONTACT), para);
-            printf ("%s\n",USECOLOR (col));
+                printf ("%s%s..", USECOLOR (CXCONTACT), para);
+            printf ("%s\n", USECOLOR (col));
             CharCount = 0;
             free (fstr);
             return;
@@ -1275,7 +1275,8 @@ void M_print (const char *org)
                 {
                     case '<':
                         ismsg = 1;
-                        printf ("%s", USECOLOR (col = CXMESSAGE));
+                        col = CXMESSAGE;
+                        printf ("%s", USECOLOR (CXMESSAGE));
                         switch (prG->flags & (FLAG_LIBR_BR | FLAG_LIBR_INT))
                         {
                             case FLAG_LIBR_BR:
@@ -1332,10 +1333,7 @@ void M_print (const char *org)
                         test++;
                         if (*test >= '0' && *test <= '0' + CXCOUNT)
                         {
-                            if (prG->colors[*test - '0'])
-                                printf ("%s", USECOLOR (*test - '0'));
-                            else
-                                /* FIXME */;
+                            printf ("%s", USECOLOR (*test - '0'));
                             str++;
                         }
                         str++;
@@ -1352,7 +1350,7 @@ void M_print (const char *org)
                 }
                 break;
             default:
-                printf ("%s%c%s", prG->colors[CXCONTACT], *str - 1 + 'A', prG->colors[col]);
+                printf ("%s%c%s", USECOLOR (CXCONTACT), *str - 1 + 'A', USECOLOR (col));
                 
         }
     }

@@ -13,11 +13,11 @@ BOOL        ConvIsUTF8     (const char *in);
 const char *ConvToUTF8     (const char *in, UBYTE enc, size_t totalin, UBYTE keep0xfe);
 const char *ConvFromUTF8   (const char *in, UBYTE enc, size_t *resultlen);
 #define     c_out_for(t,c,mt) (CONT_UTF8 (c,mt) ? t : c_out_to (t,c))
-#define     c_out(t)       ConvFromUTF8 (t, prG->enc_rem, NULL)
-#define     c_in(t)        ConvToUTF8   (t, prG->enc_rem, -1, 1)
-#define     c_out_to(t,c)  ConvFromUTF8 (t, (c) && (c)->encoding ? (c)->encoding : prG->enc_rem, NULL)
-#define     c_in_to(t,c)   ConvToUTF8   (t, (c) && (c)->encoding ? (c)->encoding : prG->enc_rem, -1, 1)
-#define     c_in_to_0(t,c) ConvToUTF8   (t, (c) && (c)->encoding ? (c)->encoding : prG->enc_rem, -1, 0)
+#define     c_out(t)       ConvFromUTF8 (t, ContactPrefVal (NULL, CO_ENCODING), NULL)
+#define     c_in(t)        ConvToUTF8   (t, ContactPrefVal (NULL, CO_ENCODING), -1, 1)
+#define     c_out_to(t,c)  ConvFromUTF8 (t, ContactPrefVal ((c), CO_ENCODING), NULL)
+#define     c_in_to(t,c)   ConvToUTF8   (t, ContactPrefVal ((c), CO_ENCODING), -1, 1)
+#define     c_in_to_0(t,c) ConvToUTF8   (t, ContactPrefVal ((c), CO_ENCODING), -1, 0)
 #define     c_strlen(t)    (ENC(enc_loc) == ENC_UTF8 ? s_strlen (t) : strlen (t))
 #define     c_offset(t,o)  (ENC(enc_loc) == ENC_UTF8 ? s_offset (t, o) : (o))
 #define     c_delta(t)     (int)(ENC(enc_loc) == ENC_UTF8 ? strlen (t) - s_strlen (t) : 0)

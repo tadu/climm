@@ -107,9 +107,6 @@ void UtilUIDisplayMeta (Contact *cont)
             M_print (i18n (1674, "The port is unknown.\n"));
     }
 
-    if (cont->encoding)
-        M_printf (COLSERVER "%-15s" COLNONE " %s\n",
-                  i18n (2257, "Encoding:"), ConvEncName (cont->encoding));
     if ((mg = cont->meta_general) && cont->updated & (UPF_GENERAL_A | UPF_DISC))
     {
         M_printf (COLSERVER "%-15s" COLNONE " " COLCONTACT "%s" COLNONE "\t%s\n",

@@ -21,11 +21,28 @@ struct ContactOption_s ContactOptionsList[] = {
   { "intimate",      CO_INTIMATE      },
   { "hidefrom",      CO_HIDEFROM      },
   { "ignore",        CO_IGNORE        },
+  { "logonoff",      CO_LOGONOFF      },
+  { "logchange",     CO_LOGCHANGE     },
+  { "logmess",       CO_LOGMESS       },
+  { "showonoff",     CO_SHOWONOFF     },
+  { "showchange",    CO_SHOWCHANGE    },
   { "autoaway",      CO_AUTOAWAY      },
   { "autona",        CO_AUTONA        },
   { "autoocc",       CO_AUTOOCC       },
   { "autodnd",       CO_AUTODND       },
   { "autoffc",       CO_AUTOFFC       },
+  { "colornone",     CO_COLORNONE     },
+  { "colorserver",   CO_COLORSERVER   },
+  { "colorclient",   CO_COLORCLIENT   },
+  { "colormessage",  CO_COLORMESSAGE  },
+  { "colorcontact",  CO_COLORCONTACT  },
+  { "colorsent",     CO_COLORSENT     },
+  { "colorack",      CO_COLORACK      },
+  { "colorerror",    CO_COLORERROR    },
+  { "colorincoming", CO_COLORINCOMING },
+  { "colordebug",    CO_COLORDEBUG    },
+  { "encoding",      CO_ENCODINGSTR   }, /* not CO_ENCODING */
+  { "colorscheme",   CO_CSCHEME       },
   { NULL }
 };
 
@@ -276,6 +293,70 @@ BOOL ContactOptionsSetStr (ContactOptions *opt, UWORD flag, const char *text)
     return ContactOptionsSetVal (opt, flag, val);
 }
 
+/*
+ * Convert a string describing a color into an escape sequence.
+ */
+const char *ContactOptionsC2S (const char *color)
+{
+    static str_s str;
+    char *c, *cmd;
+
+    s_init (&str, "", 10);
+
+    while (s_parse (&color, &cmd))
+    {
+        if      (!strcasecmp (cmd, "black"))   c = BLACK;
+        else if (!strcasecmp (cmd, "red"))     c = RED;
+        else if (!strcasecmp (cmd, "green"))   c = GREEN;
+        else if (!strcasecmp (cmd, "yellow"))  c = YELLOW;
+        else if (!strcasecmp (cmd, "blue"))    c = BLUE;
+        else if (!strcasecmp (cmd, "magenta")) c = MAGENTA;
+        else if (!strcasecmp (cmd, "cyan"))    c = CYAN;
+        else if (!strcasecmp (cmd, "white"))   c = WHITE;
+        else if (!strcasecmp (cmd, "none"))    c = SGR0;
+        else if (!strcasecmp (cmd, "bold"))    c = BOLD;
+        else c = cmd;
+        
+        s_cat (&str, c);
+    }
+    return str.txt;
+}
+
+/*
+ * Convert an escape sequence into a description of the color it selects
+ */
+const char *ContactOptionsS2C (const char *text)
+{
+    static str_s str;
+    const char *c;
+    int l;
+    
+    s_init (&str, "", 20);
+
+    for ( ; *text; text += l)
+    {
+        if      (!strncmp (BLACK,   text, l = strlen (BLACK)))   c = "black";
+        else if (!strncmp (RED,     text, l = strlen (RED)))     c = "red";
+        else if (!strncmp (BLUE,    text, l = strlen (BLUE)))    c = "blue";
+        else if (!strncmp (GREEN,   text, l = strlen (GREEN)))   c = "green";
+        else if (!strncmp (YELLOW,  text, l = strlen (YELLOW)))  c = "yellow";
+        else if (!strncmp (MAGENTA, text, l = strlen (MAGENTA))) c = "magenta";
+        else if (!strncmp (CYAN,    text, l = strlen (CYAN)))    c = "cyan";
+        else if (!strncmp (WHITE,   text, l = strlen (WHITE)))   c = "white";
+        else if (!strncmp (SGR0,    text, l = strlen (SGR0)))    c = "none";
+        else if (!strncmp (BOLD,    text, l = strlen (BOLD)))    c = "bold";
+        else (c = text), (l = strlen (text));
+
+        if (*str.txt)
+            s_catc (&str, ' ');
+        s_cat (&str, s_quote (c));
+    }
+    return str.txt;
+}
+
+/*
+ * Export options into a string.
+ */
 const char *ContactOptionsString (const ContactOptions *opts)
 {
     static str_s str;
@@ -299,6 +380,8 @@ const char *ContactOptionsString (const ContactOptions *opts)
                     s_catc (&str, '\n');
                 if (flag & COF_NUMERIC)
                     s_catf (&str, "options %s %d", ContactOptionsList[i].name, val);
+                else if (flag & COF_COLOR)
+                    s_catf (&str, "options %s %s", ContactOptionsList[i].name, s_quote (ContactOptionsS2C (strtable[val])));
                 else
                     s_catf (&str, "options %s %s", ContactOptionsList[i].name, s_quote (strtable[val]));
             }
@@ -343,9 +426,26 @@ int ContactOptionsImport (ContactOptions *opts, const char *args)
             break;
         }
         
-        if (flag & COF_NUMERIC)
+        if (flag & COF_COLOR)
+        {
+            char *color = strdup (cmd);
+            ContactOptionsSetStr (opts, flag, ContactOptionsC2S (color));
+            ContactOptionsUndef  (opts, CO_CSCHEME);
+            free (color);
+        }
+        else if (flag == CO_ENCODINGSTR)
+        {
+            UWORD enc = ConvEnc (cmd) & ~ENC_AUTO;
+            ContactOptionsSetVal (opts, CO_ENCODING, enc);
+            ContactOptionsSetStr (opts, CO_ENCODINGSTR, ConvEncName (enc));
+        }
+        else if (flag & COF_NUMERIC)
         {
             UWORD val = atoi (cmd);
+            
+            if (flag == CO_CSCHEME)
+                ContactOptionsImport (opts, PrefSetColorScheme (val));
+            
             ContactOptionsSetVal (opts, flag, val);
         }
         else if (~flag & COF_BOOL)

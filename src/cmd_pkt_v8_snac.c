@@ -1806,7 +1806,7 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
             int enc = ENC_LATIN1, icqenc = 0;
             size_t len = 0, olen;
             
-            remenc = cont->encoding ? cont->encoding : prG->enc_rem;
+            remenc = ContactPrefVal (cont, CO_ENCODING);
             
             if (cont->status != STATUS_OFFLINE &&
                 HAS_CAP (cont->caps, CAP_UTF8) && cont->dc && cont->dc->version >= 7
@@ -1853,7 +1853,7 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
             }
             break;
         case 4:
-            remenc = cont->encoding ? cont->encoding : prG->enc_rem;
+            remenc = ContactPrefVal (cont, CO_ENCODING);
             convtext = ConvFromUTF8 (text, remenc, NULL);
             
             PacketWriteTLV     (pak, 5);

@@ -61,7 +61,9 @@ Preferences *PreferencesC ()
 void PreferencesInit (Preferences *pref)
 {    
     pref->flags = FLAG_DELBS;
-    PrefSetColorScheme (pref, 4);
+    ContactOptionsImport (&pref->copts, PrefSetColorScheme (4));
+    ContactOptionsSetVal (&pref->copts, CO_SHOWCHANGE, 1);
+    ContactOptionsSetVal (&pref->copts, CO_SHOWONOFF, 1);
 }
 
 /*
@@ -206,58 +208,39 @@ BOOL PrefLoad (Preferences *pref)
 /*
  * Set the color scheme to use.
  */
-void PrefSetColorScheme (Preferences *pref, UBYTE scheme)
+const char *PrefSetColorScheme (UBYTE scheme)
 {
     switch (scheme)
     {
         case 1: /* former colors scheme A */
-            s_repl (&pref->colors[CXNONE],     SGR0);
-            s_repl (&pref->colors[CXSERVER],   BLUE BOLD);
-            s_repl (&pref->colors[CXCLIENT],   RED BOLD);
-            s_repl (&pref->colors[CXMESSAGE],  BLUE BOLD);
-            s_repl (&pref->colors[CXCONTACT],  GREEN);
-            s_repl (&pref->colors[CXSENT],     MAGENTA BOLD);
-            s_repl (&pref->colors[CXACK],      GREEN BOLD);
-            s_repl (&pref->colors[CXERROR],    RED BOLD);
-            s_repl (&pref->colors[CXINCOMING], CYAN BOLD);
-            s_repl (&pref->colors[CXDEBUG],    YELLOW);
-            break;
+            return "colornone none "           "colorserver \"blue bold\" "
+                   "colorclient \"red bold\" " "colormessage \"blue bold\" "
+                   "colorcontact green "       "colorsent \"magenta bold\" "
+                   "colorack \"green bold\" "  "colorerror \"red bold\" "
+                   "colorincoming \"cyan bold\" colordebug yellow";
         case 2:
-            s_repl (&pref->colors[CXNONE],     SGR0);
-            s_repl (&pref->colors[CXSERVER],   MAGENTA);
-            s_repl (&pref->colors[CXCLIENT],   CYAN);
-            s_repl (&pref->colors[CXMESSAGE],  CYAN);
-            s_repl (&pref->colors[CXCONTACT],  CYAN);
-            s_repl (&pref->colors[CXSENT],     MAGENTA BOLD);
-            s_repl (&pref->colors[CXACK],      GREEN BOLD);
-            s_repl (&pref->colors[CXERROR],    RED BOLD);
-            s_repl (&pref->colors[CXINCOMING], CYAN BOLD);
-            s_repl (&pref->colors[CXDEBUG],    YELLOW);
-            break;
+            return "colornone none "           "colorserver magenta "
+                   "colorclient cyan "         "colormessage cyan "
+                   "colorcontact cyan "        "colorsent \"magenta bold\" "
+                   "colorack \"green bold\" "  "colorerror \"red bold\" "
+                   "colorincoming \"cyan bold\" colordebug yellow";
         case 3:
-            s_repl (&pref->colors[CXNONE],     GREEN);
-            s_repl (&pref->colors[CXSERVER],   SGR0);
-            s_repl (&pref->colors[CXCLIENT],   GREEN);
-            s_repl (&pref->colors[CXMESSAGE],  GREEN);
-            s_repl (&pref->colors[CXCONTACT],  GREEN BOLD);
-            s_repl (&pref->colors[CXSENT],     MAGENTA BOLD);
-            s_repl (&pref->colors[CXACK],      GREEN BOLD);
-            s_repl (&pref->colors[CXERROR],    RED BOLD);
-            s_repl (&pref->colors[CXINCOMING], CYAN BOLD);
-            s_repl (&pref->colors[CXDEBUG],    YELLOW);
-            break;
+            return "colornone green "          "colorserver none "
+                   "colorclient green "        "colormessage green "
+                   "colorcontact \"green bold\" colorsent \"magenta bold\" "
+                   "colorack \"green bold\" "  "colorerror \"red bold\" "
+                   "colorincoming \"cyan bold\" colordebug yellow";
+        case 4:
+            return "colornone none "           "colorserver red "
+                   "colorclient green "        "colormessage \"blue bold\" "
+                 "colorcontact \"magenta bold\" colorsent \"magenta bold\" "
+                   "colorack \"green bold\" "  "colorerror \"red bold\" "
+                   "colorincoming \"cyan bold\" colordebug yellow";
         default:
-            s_repl (&pref->colors[CXNONE],     SGR0);
-            s_repl (&pref->colors[CXSERVER],   RED);
-            s_repl (&pref->colors[CXCLIENT],   GREEN);
-            s_repl (&pref->colors[CXMESSAGE],  BLUE BOLD);
-            s_repl (&pref->colors[CXCONTACT],  MAGENTA BOLD);
-            s_repl (&pref->colors[CXSENT],     MAGENTA BOLD);
-            s_repl (&pref->colors[CXACK],      GREEN BOLD);
-            s_repl (&pref->colors[CXERROR],    RED BOLD);
-            s_repl (&pref->colors[CXINCOMING], CYAN BOLD);
-            s_repl (&pref->colors[CXDEBUG],    YELLOW);
-            scheme = 0;
+            return "colornone none "           "colorserver none "
+                   "colorclient none "         "colormessage none "
+                   "colorcontact none "        "colorsent none "
+                   "colorack none "            "colorerror none "
+                   "colorincoming none "       "colordebug yellow";
     }
-    pref->scheme = scheme;
 }

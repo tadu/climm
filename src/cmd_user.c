@@ -2406,18 +2406,14 @@ static JUMP_F(CmdUserSet)
         if (!s_parse (&args, &arg1))               data = 0;
         else if (!strcasecmp (arg1, "color"))      { data = FLAG_COLOR;      str = i18n (2133, "Color is %s%s%s.\n"); }
         else if (!strcasecmp (arg1, "colour"))     { data = FLAG_COLOR;      str = i18n (2133, "Color is %s%s%s.\n"); }
-        else if (!strcasecmp (arg1, "hermit"))     { data = FLAG_HERMIT;     str = i18n (2261, "Hermit is %s%s%s.\n"); }
         else if (!strcasecmp (arg1, "delbs"))      { data = FLAG_DELBS;      str = i18n (2262, "Interpreting a delete character as backspace is %s%s%s.\n"); }
         else if (!strcasecmp (arg1, "funny"))      { data = FLAG_FUNNY;      str = i18n (2134, "Funny messages are %s%s%s.\n"); }
-        else if (!strcasecmp (arg1, "log"))        { data = FLAG_LOG;        str = i18n (2263, "Logging is %s%s%s.\n"); }
-        else if (!strcasecmp (arg1, "logonoff"))   { data = FLAG_LOG_ONOFF;  str = i18n (2264, "Logging of status changes is %s%s%s.\n"); }
         else if (!strcasecmp (arg1, "auto"))       { data = FLAG_AUTOREPLY;  str = i18n (2265, "Automatic replies are %s%s%s.\n"); }
         else if (!strcasecmp (arg1, "uinprompt"))  { data = FLAG_UINPROMPT;  str = i18n (2266, "Having the last nick in the prompt is %s%s%s.\n"); }
         else if (!strcasecmp (arg1, "autosave"))   { data = FLAG_AUTOSAVE;   str = i18n (2267, "Automatic saves are %s%s%s.\n"); }
         else if (!strcasecmp (arg1, "autofinger")) { data = FLAG_AUTOFINGER; str = i18n (2268, "Automatic fingering of new UINs is %s%s%s.\n"); }
         else if (!strcasecmp (arg1, "linebreak"))  data = -1;
         else if (!strcasecmp (arg1, "tabs"))       data = -2;
-        else if (!strcasecmp (arg1, "silent"))     data = -3;
         else if (!strcasecmp (arg1, "webaware"))   { data = FLAG_WEBAWARE; setstatus = 1; }
         else if (!strcasecmp (arg1, "hideip"))     { data = FLAG_HIDEIP;   setstatus = 1; }
         else if (!strcasecmp (arg1, "dcauth"))     { data = FLAG_DC_AUTH;  setstatus = 1; }
@@ -2480,19 +2476,6 @@ static JUMP_F(CmdUserSet)
                           prG->tabs == TABS_CYCLE ? i18n (2273, "cycle") :
                           prG->tabs == TABS_CYCLEALL ? i18n (2274, "cycleall") : i18n (2270, "simple"), COLNONE);
             break;
-        case -3:
-            prG->flags &= ~FLAG_QUIET & ~FLAG_ULTRAQUIET;
-            if (!strcasecmp (arg1, "on") || !strcasecmp (arg1, i18n (1085, "on")))
-                prG->flags |= FLAG_QUIET;
-            else if (!strcasecmp (arg1, "complete") || !strcasecmp (arg1, i18n (2276, "complete")))
-                prG->flags |= FLAG_QUIET | FLAG_ULTRAQUIET;
-            else if ((strcasecmp (arg1, "off") || !strcasecmp (arg1, i18n (1086, "off"))) && *arg1)
-                data = 0;
-            if (!quiet)
-                M_printf (i18n (2135, "Quiet output is %s%s%s.\n"), COLMESSAGE,
-                          prG->flags & FLAG_ULTRAQUIET ? i18n (2276, "complete") :
-                          prG->flags & FLAG_QUIET ? i18n (1085, "on") : i18n (1086, "off"), COLNONE);
-            break;
     }
     if (!data)
     {
@@ -2501,15 +2484,12 @@ static JUMP_F(CmdUserSet)
         M_print (i18n (2277, "    hermit:     ignore all non-contacts.\n"));
         M_print (i18n (2278, "    delbs:      interpret delete characters as backspace.\n"));
         M_print (i18n (1815, "    funny:      use funny messages for output.\n"));
-        M_print (i18n (2279, "    log:        do logging.\n"));
-        M_print (i18n (2280, "    logonoff:   also log status changes.\n"));
         M_print (i18n (2281, "    auto:       send auto-replies.\n"));
         M_print (i18n (2282, "    uinprompt:  have the last nick in the prompt.\n"));
         M_print (i18n (2283, "    autosave:   automatically save the micqrc.\n"));
         M_print (i18n (2284, "    autofinger: automatically finger new UINs.\n"));
         M_print (i18n (2285, "    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n"));
         M_print (i18n (2286, "    tabs:       style for tab-handling: simple, cycle, cycleall.\n"));
-        M_print (i18n (2287, "    silent:     suppress some output: off, on, complete.\n"));
     }
     return 0;
 }
@@ -2557,7 +2537,7 @@ static JUMP_F(CmdUserOpt)
         {
             UWORD flag = ContactOptionsList[i].flag;
             
-            switch (flag & (COF_BOOL | COF_NUMERIC | COF_STRING))
+            switch (flag & (COF_BOOL | COF_NUMERIC | COF_STRING | COF_COLOR))
             {
                 case COF_BOOL:
                     if (opttype == 2)
@@ -2597,6 +2577,18 @@ static JUMP_F(CmdUserOpt)
                                   ContactOptionsGetStr (copts, flag, &res)
                                     ? res : i18n (9999, "undefined"), COLNONE);
                     break;
+                case COF_COLOR:
+                    if (opttype == 2)
+                        M_printf ("    %-15s  %s%-15s%s  (%s %s%s%s)\n", optname, COLMESSAGE,
+                                  ContactOptionsGetStr (copts, flag, &res)
+                                    ? ContactOptionsS2C (res) : i18n (9999, "undefined"), COLNONE,
+                                  i18n (9999, "effectivly"), COLMESSAGE,
+                                  ContactOptionsS2C (ContactPrefStr (cont, flag)), COLNONE);
+                    else
+                        M_printf ("    %-15s  %s%s%s\n", optname, COLMESSAGE,
+                                  ContactOptionsGetStr (copts, flag, &res)
+                                    ? ContactOptionsS2C (res) : i18n (9999, "undefined"), COLNONE);
+                    break;
             }
         }        
         return 0;
@@ -2626,7 +2618,7 @@ static JUMP_F(CmdUserOpt)
             const char *res = NULL;
             UWORD val;
 
-            if (!ContactOptionsGetVal (copts, flag, &val) || ((flag & COF_STRING) && !ContactOptionsGetStr (copts, flag, &res)))
+            if (!ContactOptionsGetVal (copts, flag, &val) || ((flag & (COF_STRING | COF_COLOR)) && !ContactOptionsGetStr (copts, flag, &res)))
                 M_printf (opttype == 2 ? i18n (9999, "Option '%s' for contact '%s' is undefined.\n") :
                           opttype == 1 ? i18n (9999, "Option '%s' for contact group '%s' is undefined.\n")
                                        : i18n (9999, "Option '%s%s' has no global value.\n"),
@@ -2641,13 +2633,21 @@ static JUMP_F(CmdUserOpt)
                 M_printf (opttype == 2 ? i18n (9999, "Option '%s' for contact '%s' is '%s'.\n") :
                           opttype == 1 ? i18n (9999, "Option '%s' for contact group '%s' is '%s'.\n")
                                        : i18n (9999, "Option '%s%s' is globally '%s'.\n"),
-                          optname, optobj, res);
+                          optname, optobj, flag & COF_STRING  ? res : ContactOptionsS2C (res));
             return 0;
         }
         
         if (flag & COF_STRING)
         {
             ContactOptionsSetStr (copts, flag, cmd);
+            M_printf (opttype == 2 ? i18n (9999, "Setting option '%s' for contact '%s' to '%s'.\n") :
+                      opttype == 1 ? i18n (9999, "Setting option '%s' for contact group '%s' to '%s'.\n")
+                                   : i18n (9999, "Setting option '%s%s' globally to '%s'.\n"),
+                      optname, optobj, cmd);
+        }
+        else if (flag & COF_COLOR)
+        {
+            ContactOptionsSetStr (copts, flag, ContactOptionsC2S (cmd));
             M_printf (opttype == 2 ? i18n (9999, "Setting option '%s' for contact '%s' to '%s'.\n") :
                       opttype == 1 ? i18n (9999, "Setting option '%s' for contact group '%s' to '%s'.\n")
                                    : i18n (9999, "Setting option '%s%s' globally to '%s'.\n"),
@@ -3351,7 +3351,7 @@ static JUMP_F(CmdUserConn)
             
             cont = ContactUIN (conn, conn->uin);
 
-            M_printf (i18n (2093, "%02d %-12s version %d for %s (%lx), at %s:%ld %s\n"),
+            M_printf (i18n (2093, "%02d %-15s version %d for %s (%lx), at %s:%ld %s\n"),
                      i + 1, ConnectionType (conn), conn->ver, cont ? cont->nick : "", conn->status,
                      conn->server ? conn->server : s_ip (conn->ip), conn->port,
                      conn->connect & CONNECT_FAIL ? i18n (1497, "failed") :

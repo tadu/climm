@@ -580,7 +580,6 @@ BOOL ContactMetaSave (Contact *cont)
     fprintf (f, "b_uin      %ld\n", cont->uin);
     fprintf (f, "b_id       %d\n", cont->id);
     fprintf (f, "b_nick     %s\n", s_quote (cont->nick));
-    fprintf (f, "b_enc      %s\n", s_quote (ConvEncName (cont->encoding)));
     fprintf (f, "b_seen     %ld\n", (long)cont->seen_time);
     fprintf (f, "b_micq     %ld\n", (long)cont->seen_micq_time);
     if (cont->meta_about)
@@ -708,7 +707,7 @@ BOOL ContactMetaLoad (Contact *cont)
             else if (!strcmp (cmd, "b_id"))    { if (s_parseint (&line, &i)) cont->id = i; }
             else if (!strcmp (cmd, "b_nick"))  { s_parse (&line, &cmd); /* ignore for now */ }
             else if (!strcmp (cmd, "b_alias")) { s_parse (&line, &cmd); /* deprecated */ }
-            else if (!strcmp (cmd, "b_enc"))   { if (s_parse (&line, &cmd))  cont->encoding = ConvEnc (cmd) & ~ENC_AUTO; }
+            else if (!strcmp (cmd, "b_enc"))   { s_parse (&line, &cmd); /* deprecated */ }
             else if (!strcmp (cmd, "b_flags")) { s_parseint (&line, &i); /* ignore for compatibility */ }
             else if (!strcmp (cmd, "b_about")) { if (s_parse (&line, &cmd))  s_repl (&cont->meta_about, ConvToUTF8 (cmd, enc, -1, 0)); }
             else if (!strcmp (cmd, "b_seen"))  { if (s_parseint (&line, &i)) cont->seen_time = i; }
@@ -871,6 +870,24 @@ const char *ContactPrefStr (Contact *cont, UWORD flag)
                 return res;
         }
     }
+    if (ContactOptionsGetStr (&prG->copts, flag, &res))
+        return res;
+    if (~flag & COF_COLOR || flag == CO_COLORNONE)
+        return "";
+    if (cont)
+    {
+        if (ContactOptionsGetStr (&cont->copts, CO_COLORNONE, &res))
+            return res;
+        if (cont->group)
+        {
+            if (ContactOptionsGetStr (&cont->group->copts, CO_COLORNONE, &res))
+                return res;
+            if (cont->group->serv && ContactOptionsGetStr (&cont->group->serv->contacts->copts, CO_COLORNONE, &res))
+                return res;
+        }
+    }
+    if (ContactOptionsGetStr (&prG->copts, CO_COLORNONE, &res))
+        return res;
     return "";
 }
 

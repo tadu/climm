@@ -162,26 +162,19 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
     if (!cont)
         return 0;
 
-    if (~prG->flags & FLAG_LOG)
-        return 0;
-
-    if (~prG->flags & FLAG_LOG_ONOFF 
-        && (level == LOG_ONLINE || level == LOG_CHANGE || level == LOG_OFFLINE))
-        return 0;
-
     switch (level)
     {
         case LOG_MISC:    indic = "--"; break;
-        case LOG_SENT:    indic = "->"; break;
-        case LOG_AUTO:    indic = "=>"; break;
-        case LOG_RECVD:   indic = "<-"; break;
-        case LOG_CHANGE:  indic = "::"; break;
-        case LOG_REPORT:  indic = ":!"; break;
-        case LOG_GUESS:   indic = ":?"; break;
-        case LOG_ONLINE:  indic = ":+"; break;
-        case LOG_OFFLINE: indic = ":-"; break;
-        case LOG_ACK:     indic = "<#"; break;
-        case LOG_ADDED:   indic = "<*"; break;
+        case LOG_SENT:    indic = "->"; if (!ContactPrefVal (cont, CO_LOGMESS)) return 0; break;
+        case LOG_AUTO:    indic = "=>"; if (!ContactPrefVal (cont, CO_LOGMESS)) return 0; break;
+        case LOG_RECVD:   indic = "<-"; if (!ContactPrefVal (cont, CO_LOGMESS)) return 0; break;
+        case LOG_CHANGE:  indic = "::"; if (!ContactPrefVal (cont, CO_LOGCHANGE)) return 0; break;
+        case LOG_REPORT:  indic = ":!"; if (!ContactPrefVal (cont, CO_LOGCHANGE)) return 0; break;
+        case LOG_GUESS:   indic = ":?"; if (!ContactPrefVal (cont, CO_LOGCHANGE)) return 0; break;
+        case LOG_ONLINE:  indic = ":+"; if (!ContactPrefVal (cont, CO_LOGONOFF)) return 0; break;
+        case LOG_OFFLINE: indic = ":-"; if (!ContactPrefVal (cont, CO_LOGONOFF)) return 0; break;
+        case LOG_ACK:     indic = "<#"; if (!ContactPrefVal (cont, CO_LOGMESS)) return 0; break;
+        case LOG_ADDED:   indic = "<*"; if (!ContactPrefVal (cont, CO_LOGMESS)) return 0; break;
         case LOG_LIST:    indic = "*>"; break;
         case LOG_EVENT:   indic = "<="; break;
         default:          indic = "=="; break;
