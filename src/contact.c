@@ -115,12 +115,12 @@ UDWORD ContactFindByNick (const char *nick)
     int i;
 
     mynick = strdup (nick);
-    for (p = mynick + strlen (mynick) - 1; p >= mynick && isspace (*p); p--)
+    for (p = mynick + strlen (mynick) - 1; p >= mynick && isspace ((int)*p); p--)
         *p = '\0';
 
     for (p = mynick; *p; p++)
     {
-        if (!isdigit (*p))
+        if (!isdigit ((int)*p))
         {
             for (i = 0; i < cnt_number; i++)
             {

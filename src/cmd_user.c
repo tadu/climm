@@ -2843,7 +2843,7 @@ void CmdUserProcess (const char *command, int *idle_val, int *idle_flag)
              * to accept IRC like commands starting with a /
              * or talker like commands starting with a .
              * or whatever */
-            if (!isalnum (cmd[0]))
+            if (!isalnum ((int)cmd[0]))
                 cmd++;
 
             if (!*cmd)
