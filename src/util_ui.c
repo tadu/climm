@@ -46,6 +46,8 @@
 struct termios sattr;
 #endif
 
+static const char *DebugStr (UDWORD level);
+
 /***************************************************************
 Turns keybord echo off for the password
 ****************************************************************/
@@ -401,8 +403,7 @@ void M_print (char *str, ...)
     }
     M_prints (str2);
 #else
-#error No curses support included yet.
-#error You must add it yourself.
+#error No curses support included yet. You must add it yourself.
 #endif
     va_end (args);
 }
@@ -414,6 +415,22 @@ void M_print (char *str, ...)
 int M_pos ()
 {
     return CharCount;
+}
+
+/*
+ * Returns string describing debug level
+ */
+static const char *DebugStr (UDWORD level)
+{
+    if (level & DEB_PACKET)     return "Packet";
+    if (level & DEB_QUEUE)      return "Queue";
+    if (level & DEB_PACKDATA)   return "Packet data";
+    if (level & DEB_PACK8DATA)  return "Packet v8 data";
+    if (level & DEB_PACK8SAVE)  return "Packet v8 save";
+    if (level & DEB_PROTOCOL)   return "Protocol";
+    if (level & DEB_TCP)        return "TCP";
+    if (level & DEB_IO)         return "IO";
+    return "unknown";
 }
 
 void Debug (UDWORD level, const char *str, ...)
@@ -431,10 +448,7 @@ void Debug (UDWORD level, const char *str, ...)
 
     M_print ("Debug: ");
     Time_Stamp ();
-    snprintf (buf2, sizeof (buf2), " [%s] %s\n",
-              level == 32 ? "Queue" : 
-              level == 64 ? "Packet" : "unknown",
-              buf);
+    snprintf (buf2, sizeof (buf2), " [%s] %s\n", DebugStr (level & prG->verbose), buf);
     
     M_print ("%s", buf2);
 }
@@ -501,16 +515,17 @@ void UtilUIUserOnline (Session *sess, Contact *cont, UDWORD status)
 {
     UDWORD old;
 
+    cont->last_time = time (NULL);
+
     if (status == cont->status)
         return;
     
     old = cont->status;
     cont->status = status;
-    cont->last_time = time (NULL);
 
     log_event (cont->uin, LOG_ONLINE, "User logged on %s (%08lx)\n", ContactFindName (cont->uin), status);
  
-    if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || prG->flags & FLAG_QUIET || !(sess->connect & CONNECT_OK))
+    if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || (prG->flags & FLAG_QUIET) || !(sess->connect & CONNECT_OK))
         return;
 
     if (~old)
@@ -556,7 +571,7 @@ void UtilUIUserOffline (Contact *cont)
     cont->status = STATUS_OFFLINE;
     cont->last_time = time (NULL);
 
-    if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || prG->flags & FLAG_QUIET)
+    if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || (prG->flags & FLAG_QUIET))
         return;
 
     if (prG->sound & SFLAG_OFF_CMD)

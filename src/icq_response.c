@@ -418,8 +418,7 @@ void Display_Rand_User (Session *sess, UBYTE *data, UDWORD len)
         M_print ("%-15s %d\n", i18n (1453, "TCP version:"), Chars_2_Word (&data[21]));
         M_print ("%-15s %s\n", i18n (1454, "Connection:"),
                  data[16] == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"));
-        if (prG->verbose > 1)
-            Hex_Dump (data, len);
+        Hex_Dump (data, len);
         CmdPktCmdMetaReqInfo (sess, Chars_2_DW (data));
     }
     else

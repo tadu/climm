@@ -73,7 +73,7 @@ struct Event *QueuePop (struct Queue *queue)
             queue->due = INT_MAX;
         else
             queue->due = queue->head->event->due;
-        Debug (32, i18n (1963, "popping type %d seq %08x at %p (pak %p)"),
+        Debug (DEB_QUEUE, i18n (1963, "popping type %d seq %08x at %p (pak %p)"),
                event->type, event->seq, event, event->pak);
         return event;
     }
@@ -98,7 +98,7 @@ void QueueEnqueue (struct Queue *queue, struct Event *event)
     entry->next = NULL;
     entry->event  = event;
 
-    Debug (32, i18n (1626, "enqueuing type %d seq %08x at %p (pak %p)"),
+    Debug (DEB_QUEUE, i18n (1626, "enqueuing type %d seq %08x at %p (pak %p)"),
            event->type, event->seq, event, event->pak);
 
     if (!queue->head)
@@ -160,7 +160,7 @@ struct Event *QueueDequeue (struct Queue *queue, UDWORD seq, UDWORD type)
 
     if (!queue->head)
     {
-        Debug (32, i18n (1964, "couldn't dequeue type %d seq %08x"), type, seq);
+        Debug (DEB_QUEUE, i18n (1964, "couldn't dequeue type %d seq %08x"), type, seq);
         return NULL;
     }
 
@@ -176,7 +176,7 @@ struct Event *QueueDequeue (struct Queue *queue, UDWORD seq, UDWORD type)
         else
             queue->due = queue->head->event->due;
 
-        Debug (32, i18n (1630, "dequeue type %d seq %08x at %p (pak %p)"),
+        Debug (DEB_QUEUE, i18n (1630, "dequeue type %d seq %08x at %p (pak %p)"),
                type, seq, event, event->pak);
         return event;
     }
@@ -188,12 +188,12 @@ struct Event *QueueDequeue (struct Queue *queue, UDWORD seq, UDWORD type)
             event = tmp->event;
             iter->next=iter->next->next;
             free (tmp);
-            Debug (32, i18n (1630, "dequeue type %d seq %08x at %p (pak %p)"),
+            Debug (DEB_QUEUE, i18n (1630, "dequeue type %d seq %08x at %p (pak %p)"),
                    type, seq, event, event->pak);
             return event;
         }
     }
-    Debug (32, i18n (1964, "couldn't dequeue type %d seq %08x"), type, seq);
+    Debug (DEB_QUEUE, i18n (1964, "couldn't dequeue type %d seq %08x"), type, seq);
     return NULL;
 }
 

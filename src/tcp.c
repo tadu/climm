@@ -184,9 +184,12 @@ void TCPDirectOff (UDWORD uin)
  */
 static void TCPDispatchReconn (Session *sess)
 {
-    Time_Stamp ();
-    M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
-    M_print (i18n (2023, "Direct connection closed by peer.\n"));
+    if (prG->verbose)
+    {
+        Time_Stamp ();
+        M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
+        M_print (i18n (2023, "Direct connection closed by peer.\n"));
+    }
     TCPClose (sess);
 }
 
@@ -282,7 +285,7 @@ static void TCPDispatchConn (Session *sess)
             TCPClose (sess);
             return;
         }
-        if (prG->verbose)
+        if (prG->verbose & DEB_TCP)
             M_print ("debug: TCPDispatchConn; Nick: %s state: %x\n", ContactFindName (sess->uin), sess->connect);
 
         switch (sess->connect & CONNECT_MASK)
@@ -298,10 +301,13 @@ static void TCPDispatchConn (Session *sess)
                 sess->port    = cont->port;
                 sess->connect = 1;
                 
-                Time_Stamp ();
-                M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
-                M_print (i18n (2034, "Opening TCP connection at %s:%d... "),
-                         UtilIOIP (sess->ip), sess->port);
+                if (prG->verbose)
+                {
+                    Time_Stamp ();
+                    M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
+                    M_print (i18n (2034, "Opening TCP connection at %s:%d... "),
+                              UtilIOIP (sess->ip), sess->port);
+                }
                 UtilIOConnectTCP (sess);
                 return;
             case 3:
@@ -315,10 +321,13 @@ static void TCPDispatchConn (Session *sess)
                 sess->port    = cont->port;
                 sess->connect = 3;
                 
-                Time_Stamp ();
-                M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
-                M_print (i18n (2034, "Opening TCP connection at %s:%d... "),
-                         UtilIOIP (sess->ip), sess->port);
+                if (prG->verbose)
+                {
+                    Time_Stamp ();
+                    M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
+                    M_print (i18n (2034, "Opening TCP connection at %s:%d... "),
+                             UtilIOIP (sess->ip), sess->port);
+                }
                 UtilIOConnectTCP (sess);
                 return;
             case 5:
@@ -355,7 +364,8 @@ static void TCPDispatchConn (Session *sess)
                 TCPDispatchShake (sess);
                 return;
             case TCP_STATE_WAITING:
-                M_print (i18n (1855, "TCP connection to %s at %s:%d failed.\n") , cont->nick, UtilIOIP (sess->ip), sess->port);
+                if (prG->verbose)
+                    M_print (i18n (1855, "TCP connection to %s at %s:%d failed.\n") , cont->nick, UtilIOIP (sess->ip), sess->port);
                 sess->connect = -1;
                 sess->sok = -1;
                 return;
@@ -389,7 +399,7 @@ static void TCPDispatchShake (Session *sess)
         if (!sess)
             return;
 
-        if (prG->verbose)
+        if (prG->verbose & DEB_TCP)
         {
             Time_Stamp ();
             M_print (" [%d %p %p] %s State: %d\n", sess->sok, pak, sess, ContactFindName (sess->uin), sess->connect);
@@ -477,9 +487,12 @@ static void TCPDispatchShake (Session *sess)
                 continue;
             case 48:
                 QueueDequeue (queue, sess->ip, QUEUE_TYPE_TCP_TIMEOUT);
-                Time_Stamp ();
-                M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
-                M_print (i18n (1833, "Peer to peer TCP connection established.\n"), cont->nick);
+                if (prG->verbose)
+                {
+                    Time_Stamp ();
+                    M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
+                    M_print (i18n (1833, "Peer to peer TCP connection established.\n"), cont->nick);
+                }
                 sess->connect = CONNECT_OK | CONNECT_SELECT_R;
                 sess->dispatch = &TCPDispatchPeer;
                 return;
@@ -578,7 +591,7 @@ static void TCPCallBackTimeout (struct Event *event)
     ASSERT_DIRECT (event->sess);
     assert (event->type == QUEUE_TYPE_TCP_TIMEOUT);
     
-    if (sess->connect & CONNECT_MASK)
+    if ((sess->connect & CONNECT_MASK) && prG->verbose)
     {
         M_print (i18n (1850, "Timeout on connection with %s at %s:%d\n"),
                  ContactFindName (sess->uin), UtilIOIP (sess->ip), sess->port);
@@ -630,20 +643,23 @@ static Packet *TCPReceivePacket (Session *sess)
     {
         if (Decrypt_Pak ((UBYTE *) &pak->data + (sess->ver > 6 ? 1 : 0), pak->len - (sess->ver > 6 ? 1 : 0)) < 0)
         {
-            Time_Stamp ();
-            M_print (" \x1b«" COLSERV "");
-            M_print (i18n (1789, "Received malformed packet: (%d)"), sess->sok);
-            M_print (COLNONE "\n");
-            Hex_Dump (pak->data, pak->len);
-            M_print (ESC "»\r");
+            if (prG->verbose & DEB_TCP)
+            {
+                Time_Stamp ();
+                M_print (" \x1b«" COLSERV "");
+                M_print (i18n (1789, "Received malformed packet: (%d)"), sess->sok);
+                M_print (COLNONE "\n");
+                Hex_Dump (pak->data, pak->len);
+                M_print (ESC "»\r");
 
+            }
             TCPClose (sess);
             PacketD (pak);
             return NULL;
         }
     }
 
-    if (prG->verbose & 4)
+    if (prG->verbose & DEB_PACKDATA)
     {
         Time_Stamp ();
         M_print (" \x1b«" COLSERV "");
@@ -676,7 +692,7 @@ static void TCPSendPacket (Packet *pak, Session *sess)
     if (!(sess->connect & CONNECT_MASK))
         return;
 
-    if (prG->verbose & 4)
+    if (prG->verbose & DEB_PACKDATA)
     {
         Time_Stamp ();
         M_print (" \x1b«" COLCLIENT "");
@@ -748,7 +764,7 @@ void TCPSendInitv6 (Session *sess)
 
     sess->stat_real_pak_sent++;
 
-    if (prG->verbose)
+    if (prG->verbose & DEB_TCP)
     {
         Time_Stamp ();
         M_print (" [%d %p] %s TCP>>CONNECT\n", sess->sok, sess, ContactFindName (sess->uin));
@@ -805,7 +821,7 @@ static void TCPSendInit (Session *sess)
 
     sess->stat_real_pak_sent++;
 
-    if (prG->verbose)
+    if (prG->verbose & DEB_TCP)
     {
         Time_Stamp ();
         M_print (" [%d %p] %s TCP>>CONNECTv8\n", sess->sok, sess, ContactFindName (sess->uin));
@@ -844,7 +860,7 @@ static void TCPSendInitAck (Session *sess)
     if (!(sess->connect & CONNECT_MASK))
         return;
 
-    if (prG->verbose)
+    if (prG->verbose & DEB_TCP)
     {
         Time_Stamp ();
         M_print (" [%d %p] %s TCP>>ACK\n", sess->sok, sess, ContactFindName (sess->uin));
@@ -871,7 +887,7 @@ static void TCPSendInit2 (Session *sess)
     if (!(sess->connect & CONNECT_MASK))
         return;
     
-    if (prG->verbose)
+    if (prG->verbose & DEB_TCP)
     {
         Time_Stamp ();
         M_print (" [%d %p] %s <%x> TCP>>CONNECT2\n", sess->sok, sess, ContactFindName (sess->uin), sess->connect);
@@ -964,7 +980,7 @@ static Session *TCPReceiveInit (Session *sess, Packet *pak)
         if (iip)      cont->local_ip = iip;
         if (tcpflag)  cont->connection_type = tcpflag;
 
-        if (prG->verbose)
+        if (prG->verbose & DEB_TCP)
         {
             Time_Stamp ();
             M_print (" %d [%p] ", uin, sess);
@@ -991,7 +1007,7 @@ static Session *TCPReceiveInit (Session *sess, Packet *pak)
         }
         return sess;
     }
-    if (prG->verbose && err)
+    if ((prG->verbose & DEB_TCP) && err)
     {
         Time_Stamp ();
         M_print (" %s: %d\n", i18n (2029, "Protocol error on peer-to-peer connection"), err);
@@ -1010,7 +1026,7 @@ static void TCPReceiveInitAck (Session *sess, Packet *pak)
     
     if (pak->len != 4 || PacketReadAt4 (pak, 0) != PEER_INITACK)
     {
-        M_print (i18n (1841, "Received malformed initialization acknowledgement packet.\n"));
+        Debug (DEB_TCP | DEB_PROTOCOL, i18n (1841, "Received malformed initialization acknowledgement packet.\n"));
         TCPClose (sess);
     }
 }
@@ -1045,7 +1061,7 @@ static Session *TCPReceiveInit2 (Session *sess, Packet *pak)
         return sess;
     }
 
-    if (err)
+    if (err && (prG->verbose & (DEB_TCP | DEB_PROTOCOL)))
     {
         Time_Stamp ();
         M_print (" %s: %d\n", i18n (2029, "Protocol error on peer-to-peer connection"), err);
@@ -1064,18 +1080,19 @@ static void TCPClose (Session *sess)
 {
     ASSERT_DIRECT (sess);
     
-    if (sess->connect & CONNECT_MASK)
-    {
-        Time_Stamp ();
-        M_print (" ");
-        if (sess->uin)
-            M_print (i18n (1842, "Closing socket %d to %s.\n"), sess->sok, ContactFindName (sess->uin));
-        else
-            M_print (i18n (1843, "Closing socket %d.\n"), sess->sok);
-    }
-
     if (sess->sok != -1)
+    {
+        if (sess->connect & CONNECT_MASK && prG->verbose)
+        {
+            Time_Stamp ();
+            M_print (" ");
+            if (sess->uin)
+                M_print (i18n (1842, "Closing socket %d to %s.\n"), sess->sok, ContactFindName (sess->uin));
+            else
+                M_print (i18n (1843, "Closing socket %d.\n"), sess->sok);
+        }
         sockclose (sess->sok);
+    }
     sess->sok     = -1;
     sess->connect = (sess->connect & CONNECT_MASK && !(sess->connect & CONNECT_OK)) ? CONNECT_FAIL : 0;
     sess->our_session = 0;
@@ -1264,7 +1281,7 @@ static void TCPCallBackReceive (struct Event *event)
                 M_print (i18n (1965, "Auto-response message for %s:\n"), cont->nick);
                 M_print (MESSCOL "%s\n" NOCOL, PacketReadAtLNTS (pak, PacketReadPos (pak) + 20));
             }
-            if (prG->verbose && type != NORM_MESS)
+            if ((prG->verbose & DEB_TCP) && type != NORM_MESS)
             {
                 M_print (i18n (1806, "Received ACK for message (seq %04x) from %s\n"),
                          seq, cont->nick);

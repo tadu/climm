@@ -143,8 +143,7 @@ void SrvCallBackReceive (Session *sess)
 
     if (PacketRead1 (pak) != 0x2a)
     {
-        if (prG->verbose)
-            M_print (i18n (1880, "Incoming packet is not a FLAP: id is %d.\n"), PacketRead1 (pak));
+        Debug (DEB_PROTOCOL, i18n (1880, "Incoming packet is not a FLAP: id is %d.\n"), PacketRead1 (pak));
         return;
     }
     
@@ -152,14 +151,14 @@ void SrvCallBackReceive (Session *sess)
     pak->id =  PacketReadB2 (pak);
                PacketReadB2 (pak);
     
-    if (prG->verbose & 128)
+    if (prG->verbose & DEB_PACK8DATA)
     {
         Time_Stamp ();
         M_print (" " ESC "«" COLSERV "%s ", i18n (1033, "Incoming v8 server packet:"));
         FlapPrint (pak);
         M_print (ESC "»\r");
     }
-    if (prG->verbose & 256)
+    if (prG->verbose & DEB_PACK8SAVE)
         FlapSave (pak, TRUE);
     
     QueueEnqueueData (queue, sess, pak->id, QUEUE_TYPE_FLAC,

@@ -103,7 +103,7 @@ void CmdPktSrvRead (Session *sess)
     id = seq2 << 16 | seq;
     s = pak->len;
     
-    if (prG->verbose & 4)
+    if (prG->verbose & DEB_PACKDATA)
     {
         Time_Stamp ();
         M_print (" \x1b«" COLSERV "");
@@ -122,13 +122,13 @@ void CmdPktSrvRead (Session *sess)
     }
     if (pak->len < 21)
     {
-        if (prG->verbose)
+        if (prG->verbose & DEB_PROTOCOL)
             M_print (i18n (1867, "Got a malformed (too short) packet - ignored.\n"));
         return;
     }
     if (session != sess->our_session)
     {
-        if (prG->verbose)
+        if (prG->verbose & DEB_PROTOCOL)
         {
             M_print (i18n (1606, "Got a bad session ID %08x (correct: %08x) with cmd %04x ignored.\n"),
                      session, sess->our_session, cmd);
@@ -139,7 +139,7 @@ void CmdPktSrvRead (Session *sess)
     {
         if (seq && cmd != SRV_ACK)
         {
-            if (prG->verbose)
+            if (prG->verbose & DEB_PROTOCOL)
             {
                 M_print (i18n (1032, "debug: Doppeltes Packet #%04x vom Typ %04x (%s)\n"),
                          id, cmd, CmdPktSrvName (cmd));
@@ -234,13 +234,13 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             Recv_Message (sess, data);
             break;
         case SRV_X1:
-            if (prG->verbose)
+            if (prG->verbose & DEB_PROTOCOL)
                 M_print (i18n (1643, "Acknowleged SRV_X1 0x021C Done Contact list?\n"));
             CmdUser ("¶e");
             sess->connect |= CONNECT_OK;
             break;
         case SRV_X2:
-            if (prG->verbose)
+            if (prG->verbose & DEB_PROTOCOL)
                 M_print (i18n (1644, "Acknowleged SRV_X2 0x00E6 Done old messages?\n"));
             CmdPktCmdAckMessages (sess);
             break;
@@ -362,11 +362,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             M_print (i18n (1649, "The version was %X\t"), ver);
             M_print (i18n (1650, "\nThe SEQ was %04X\t"), seq);
             M_print (i18n (1651, "The size was %d\n"), len);
-            if (prG->verbose)
-            {
-                if (len > 0)
-                    Hex_Dump (data, len);
-            }
+            Hex_Dump (data, len);
             M_print (COLNONE "\n");
             break;
     }
@@ -390,7 +386,7 @@ static JUMP_SRV_F (CmdPktSrvMulti)
         llen = PacketRead2 (pak);
         if (pak->rpos + llen > pak->len)
         {
-            if (prG->verbose)
+            if (prG->verbose & DEB_PROTOCOL)
                 M_print (i18n (1868, "Got a malformed (to long subpacket) multi-packet - remainder ignored.\n"));
             return;
         }
@@ -409,7 +405,7 @@ static JUMP_SRV_F (CmdPktSrvMulti)
         uin       = PacketRead4 (npak);
                     PacketRead4 (npak); /* check */
 
-        if (prG->verbose & 4)
+        if (prG->verbose & DEB_PACKDATA)
         {
             Time_Stamp ();
             M_print (" \x1b«" COLSERV "");
@@ -441,22 +437,16 @@ static JUMP_SRV_F (CmdPktSrvAck)
     UDWORD ccmd;
 
     if (!event)
-    {
-        if (prG->verbose)
-        {
-            /* complain */
-        }
         return;
-    }
 
-    if (pak->rpos < pak->len && prG->verbose)
+    if (pak->rpos < pak->len && (prG->verbose & DEB_PROTOCOL))
     {
         M_print ("%s %s %d\n", i18n (1047, "Extra Data"), i18n (1046, "Length"), pak->len - pak->rpos);
     }
     
     ccmd = PacketReadAt2 (event->pak, CMD_v5_OFF_CMD);
 
-    Debug (32, i18n (1824, "Acknowledged packet type %04x (%s) sequence %04x removed from queue.\n"),
+    Debug (DEB_QUEUE, i18n (1824, "Acknowledged packet type %04x (%s) sequence %04x removed from queue.\n"),
            ccmd, CmdPktCmdName (ccmd), event->seq >> 16);
 
     if (ccmd == CMD_SEND_MESSAGE)

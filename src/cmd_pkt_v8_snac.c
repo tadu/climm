@@ -194,7 +194,7 @@ Packet *SnacC (Session *sess, UWORD fam, UWORD cmd, UWORD flags, UDWORD ref)
  */
 static JUMP_SNAC_F(SnacSrvUnknown)
 {
-    if (!(prG->verbose & 128))
+    if (!(prG->verbose & DEB_PACK8DATA))
     {
         Time_Stamp ();
         M_print (" " ESC "«");
@@ -368,7 +368,7 @@ static JUMP_SNAC_F(SnacSrvUseronline)
     cont = ContactFind (PacketReadUIN (pak));
     if (!cont)
     {
-        if (prG->verbose)
+        if (prG->verbose & DEB_PROTOCOL)
             M_print (i18n (1908, "Received USERONLINE packet for non-contact.\n"));
         return;
     }
@@ -416,7 +416,7 @@ static JUMP_SNAC_F(SnacSrvUseroffline)
     cont = ContactFind (PacketReadUIN (pak));
     if (!cont)
     {
-        if (prG->verbose)
+        if (prG->verbose & DEB_PROTOCOL)
             M_print (i18n (1909, "Received USEROFFLINE packet for non-contact.\n"));
         return;
     }
@@ -627,7 +627,7 @@ static JUMP_SNAC_F(SnacSrvSetinterval)
 
     pak = event->pak;
     interval = PacketReadB2 (pak);
-    if (prG->verbose)
+    if (prG->verbose & DEB_PROTOCOL)
         M_print (i18n (1918, "Ignored server request for a minimum report interval of %d.\n"), 
             interval);
 }
@@ -722,16 +722,22 @@ static JUMP_SNAC_F(SnacSrvFromoldicq)
     uin = PacketRead4 (p);
     type= PacketRead2 (p);
 /*  id=*/ PacketRead2 (p);
-    if (prG->verbose && uin != event->sess->uin)
+    if (uin != event->sess->uin)
     {
-        M_print (i18n (1919, "UIN mismatch: %d vs %d.\n"), event->sess->uin, uin);
-        SnacSrvUnknown (event);
+        if (prG->verbose & DEB_PROTOCOL)
+        {
+            M_print (i18n (1919, "UIN mismatch: %d vs %d.\n"), event->sess->uin, uin);
+            SnacSrvUnknown (event);
+        }
         return;
     }
-    if (prG->verbose && len != tlv[1].len - 2)
+    if (len != tlv[1].len - 2)
     {
-        M_print (i18n (1743, "Size mismatch in packet lengths.\n"));
-        SnacSrvUnknown (event);
+        if (prG->verbose & DEB_PROTOCOL)
+        {
+            M_print (i18n (1743, "Size mismatch in packet lengths.\n"));
+            SnacSrvUnknown (event);
+        }
         return;
     }
     switch (type)

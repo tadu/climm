@@ -108,7 +108,7 @@ void PacketEnqueuev5 (Packet *pak, Session *sess)
 
     PacketSendv5 (pak, sess);
 
-    if (prG->verbose & 4)
+    if (prG->verbose & DEB_PACKDATA)
     {
         Time_Stamp ();
         M_print (" \x1b«" COLCLIENT "");
@@ -308,7 +308,7 @@ void PacketSendv5 (const Packet *pak, Session *sess)
     assert (pak);
     assert (sess);
 
-    Debug (64, "--- %p %s", pak, i18n (1858, "sending packet"));
+    Debug (DEB_PACKET, "--- %p %s", pak, i18n (1858, "sending packet"));
 
     cpak = Wrinkle (pak);
     UtilIOSend (sess, cpak);

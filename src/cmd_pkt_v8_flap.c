@@ -216,14 +216,14 @@ void FlapSend (Session *sess, Packet *pak)
     PacketWriteAtB2 (pak, 2, pak->id = sess->our_seq);
     PacketWriteAtB2 (pak, 4, pak->len - 6);
     
-    if (prG->verbose & 128)
+    if (prG->verbose & DEB_PACK8DATA)
     {
         Time_Stamp ();
         M_print (" " ESC "«" COLCLIENT "%s ", i18n (1903, "Outgoing v8 server packet:"));
         FlapPrint (pak);
         M_print (ESC "»\r");
     }
-    if (prG->verbose & 256)
+    if (prG->verbose & DEB_PACK8SAVE)
         FlapSave (pak, FALSE);
     
     sess->stat_pak_sent++;

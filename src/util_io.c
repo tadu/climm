@@ -287,8 +287,7 @@ void UtilIOConnectTCP (Session *sess)
     
     sess->utilio   = sess->dispatch;
 
-    if (prG->verbose)
-        M_print ("Debug: UtilIOConnectCallback: %x\n", sess->connect);
+    Debug (DEB_IO, "UtilIOConnectCallback: %x\n", sess->connect);
 
     sess->sok = socket (AF_INET, SOCK_STREAM, 0);
     if (sess->sok < 0)
@@ -412,8 +411,7 @@ static void UtilIOConnectCallback (Session *sess)
     {
         eno = 0;
         rc = 0;
-        if (prG->verbose)
-            M_print ("Debug: UtilIOConnectCallback: %x\n", sess->connect);
+        Debug (DEB_IO, "UtilIOConnectCallback: %x\n", sess->connect);
         switch ((eno = sess->connect / CONNECT_SOCKS_ADD) % 7)
         {
             case 0:
