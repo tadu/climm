@@ -141,27 +141,29 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *pak)
         case META_SRV_INTEREST:
         case META_SRV_BACKGROUND:
         case META_SRV_UNKNOWN_270:
+        case META_SRV_RANDOM:
         if (!(event = QueueDequeue (conn, QUEUE_REQUEST_META, pak->ref)) || !event->callback)
         {
             M_printf ("FIXME: meta reply ref %x not found.\n", pak->ref);
             return;
         }
-        cont = ContactByUIN (event->uin, 1);
-        if (!cont)
-            return;
+        if (event->uin)
+        {
+            cont = ContactByUIN (event->uin, 1);
+            if (!cont)
+                return;
+        }
     }
 
     switch (subtype)
     {
-        const char *tabd;
         char *data, *data2;
         UWORD wdata, i, j;
-        UDWORD dwdata, uin;
+        UDWORD dwdata;
         MetaGeneral *mg;
         MetaMore *mm;
         MetaEmail *me;
         MetaWork *mw;
-        MetaList *ml;
         MetaObsolete *mo;
 
         case META_SRV_SMS_OK:
@@ -176,6 +178,7 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *pak)
         case META_SRV_INFO:
             Display_Info_Reply (conn, cont, pak, 0);
             /* 3 unknown bytes ignored */
+
             event->callback (event);
             break;
         case META_SRV_GEN:
@@ -211,48 +214,9 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *pak)
             mg->auth    = PacketRead1 (pak);
             /* one unknown word ignored according to v7 doc */
             /* probably more security settings? */
+
             cont->updated |= UPF_GENERAL_B;
             event->callback (event);
-
-/*            if (*mg->city && *mg->state)
-                M_printf (COLSERVER "%-15s" COLNONE " %s, %s\n",
-                         i18n (1505, "Location:"), mg->city, mg->state);
-            else if (*mg->city)
-                M_printf (AVPFMT, i18n (1570, "City:"), mg->city);
-            else if (*mg->state)
-                M_printf (AVPFMT, i18n (1574, "State:"), mg->state);
-
-            if (*mg->phone)
-                M_printf (AVPFMT, i18n (1506, "Phone:"), mg->phone);
-            if (*mg->fax)
-                M_printf (AVPFMT, i18n (1507, "Fax:"), mg->fax);
-            if (*mg->street)
-                M_printf (AVPFMT, i18n (1508, "Street:"), mg->street);
-            if (*mg->cellular)
-                M_printf (AVPFMT, i18n (1509, "Cellular:"), mg->cellular);
-            if (*mg->zip)
-                M_printf (AVPFMT, i18n (1510, "Zip:"), mg->zip);
-
-            if ((tabd = TableGetCountry (mg->country)) != NULL)
-                M_printf (COLSERVER "%-15s" COLNONE " %s\t", 
-                         i18n (1511, "Country:"), tabd);
-            else
-                M_printf (COLSERVER "%-15s" COLNONE " %d\t", 
-                         i18n (1512, "Country code:"), mg->country);
-
-            M_printf ("(UTC %+05d)\n", -100 * (mg->tz / 2) + 30 * (mg->tz % 2));
-            M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
-                i18n (1941, "Publish Email:"), mg->auth
-                ? i18n (1567, "No authorization needed.")
-                : i18n (1568, "Must request authorization."));
-            
-            if (conn->type == TYPE_SERVER_OLD)
-            {
-                if (*cont->meta_email->email)
-                    M_printf (AVPFMT, i18n (1503, "Other Email:"), cont->meta_email->email);
-                if (*cont->meta_email->meta_email->email)
-                    M_printf (AVPFMT, i18n (1504, "Old Email:"), cont->meta_email->meta_email->email);
-            } */
             break;
         case META_SRV_MORE:
             if (!(mm = CONTACT_MORE (cont)))
@@ -271,41 +235,9 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *pak)
             mm->lang2 = PacketRead1 (pak);
             mm->lang3 = PacketRead1 (pak);
             /* one unknown word ignored according to v7 doc */
+
             cont->updated |= UPF_MORE;
             event->callback (event);
-
-/*            if (mm->age && ~mm->age)
-                M_printf (COLSERVER "%-15s" COLNONE " %d\n", 
-                         i18n (1575, "Age:"), mm->age);
-            else
-                M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
-                         i18n (1575, "Age:"), i18n (1200, "Not entered"));
-
-            M_printf (COLSERVER "%-15s" COLNONE " %s\n", i18n (1696, "Sex:"),
-                       mm->sex == 1 ? i18n (1528, "female")
-                     : mm->sex == 2 ? i18n (1529, "male")
-                     :                i18n (1530, "not specified"));
-
-            if (*mm->homepage)
-                M_printf (AVPFMT, i18n (1531, "Homepage:"), mm->homepage);
-
-            if (mm->month >= 1 && mm->month <= 12 && mm->day && mm->day < 32 && mm->year)
-                M_printf (COLSERVER "%-15s" COLNONE " %02d. %s %4d\n", 
-                    i18n (1532, "Born:"), mm->day, TableGetMonth (mm->month), mm->year);
-
-            M_printf (COLSERVER "%-15s" COLNONE " ", i18n (1533, "Languages:"));
-            if ((tabd = TableGetLang (mm->lang1)))
-                M_printf (tabd);
-            else
-                M_printf ("%x", mm->lang1);
-            if ((tabd = TableGetLang (mm->lang2)))
-                M_printf (", %s", tabd);
-            else
-                M_printf (", %x", mm->lang2);
-            if ((tabd = TableGetLang (mm->lang3)))
-                M_printf (", %s.\n", tabd);
-            else
-                M_printf (", %x.\n", mm->lang3); */
             break;
         case META_SRV_MOREEMAIL:
             if (!CONTACT_EMAIL (cont) || !CONTACT_EMAIL (cont->meta_email))
@@ -333,21 +265,6 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *pak)
             }
             cont->updated |= UPF_EMAIL;
             event->callback (event);
-            
-/*            if (!i)
-                break;
-
-            M_printf (COLSERVER "%-15s" COLNONE "\n", 
-                      i18n (1942, "Additional Email addresses:"));
-
-            for (me = cont->meta_email->meta_email, i = 2; me; me = me->meta_email, i++)
-            {
-                if (*me->email)
-                    M_printf (" %02d %s %s\n", i, me->email,
-                               me->auth == 1 ? i18n (1943, "(no authorization needed)") 
-                             : me->auth == 0 ? i18n (1944, "(must request authorization)")
-                             : "");
-            } */
             break;
         case META_SRV_WORK:
             if (!(mw = CONTACT_WORK (cont)))
@@ -374,100 +291,29 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *pak)
             
             cont->updated |= UPF_WORK;
             event->callback (event);
-
-/*            if (*mw->wcity && *mw->wstate)
-                M_printf (COLSERVER "%-15s" COLNONE " %s, %s\n", 
-                         i18n (1524, "Work Location:"), mw->wcity, mw->wstate);
-            else if (*mw->wcity)
-                M_printf (AVPFMT, i18n (1873, "Work City:"), mw->wcity);
-            else if (*mw->wstate)
-                M_printf (AVPFMT, i18n (1874, "Work State:"), mw->wstate);
-
-            if (*mw->wphone)
-                M_printf (AVPFMT, i18n (1523, "Work Phone:"), mw->wphone);
-            if (*mw->wfax)
-                M_printf (AVPFMT, i18n (1521, "Work Fax:"), mw->wfax);
-            if (*mw->waddress)
-                M_printf (AVPFMT, i18n (1522, "Work Address:"), mw->waddress);
-            if (*mw->wzip)
-                M_printf (AVPFMT, i18n (1520, "Work Zip:"), mw->wzip);
-
-            if (mw->wcountry)
-            {
-                if ((tabd = TableGetCountry (mw->wcountry)))
-                    M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
-                             i18n (1514, "Work Country:"), tabd);
-                else
-                    M_printf (COLSERVER "%-15s" COLNONE " %d\n", 
-                             i18n (1513, "Work Country Code:"), mw->wcountry);
-            }
-            if (*mw->wcompany)
-                M_printf (AVPFMT, i18n (1519, "Company Name:"), mw->wcompany);
-            if (*mw->wdepart)
-                M_printf (AVPFMT, i18n (1518, "Department:"), mw->wdepart);
-            if (*mw->wposition)
-                M_printf (AVPFMT, i18n (1517, "Job Position:"), mw->wposition);
-            if (mw->woccupation)
-                M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
-                          i18n (1516, "Occupation:"), TableGetOccupation (mw->woccupation));
-            if (*mw->whomepage)
-                M_printf (AVPFMT, i18n (1515, "Work Homepage:"), mw->whomepage); */
             break;
         case META_SRV_ABOUT:
             s_free (cont->meta_about);
             cont->meta_about = PacketReadLNTS (pak);
+
             cont->updated |= UPF_ABOUT;
             event->callback (event);
-            
-/*            if (*cont->meta_about)
-                M_printf (COLSERVER "%-15s" COLNONE "\n%s\n",
-                          i18n (1525, "About:"), s_ind (cont->meta_about)); */
             break;
         case META_SRV_INTEREST:
             if (!Meta_Read_List (pak, &cont->meta_interest))
                 break;
+
             cont->updated |= UPF_INTEREST;
             event->callback (event);
-
-/*            if (cont->meta_interest)
-                M_printf (COLSERVER "%-15s" COLNONE "\n",
-                          i18n (1875, "Personal interests:"));
-            for (ml = cont->meta_interest; ml; ml = ml->meta_list)
-            {
-                if ((tabd = TableGetInterest (ml->type)))
-                    M_printf ("  %s: %s\n", tabd, ml->description);
-                else
-                    M_printf ("  %d: %s\n", ml->type, ml->description);
-            } */
             break;
         case META_SRV_BACKGROUND:
             if (!Meta_Read_List (pak, &cont->meta_background))
                 break;
             if (!Meta_Read_List (pak, &cont->meta_affiliation))
                 break;
+
             cont->updated |= UPF_BACKGROUND | UPF_AFFILIATION;
             event->callback (event);
-
-/*            if (cont->meta_background)
-                M_printf (COLSERVER "%-15s" COLNONE "\n",
-                          i18n (1876, "Personal past background:"));
-            for (ml = cont->meta_background; ml; ml = ml->meta_list)
-            {
-                if ((tabd = TableGetPast (ml->type)))
-                    M_printf ("  %s: %s\n", tabd, ml->description);
-                else
-                    M_printf ("  %d: %s\n", ml->type, ml->description);
-            }
-            if (cont->meta_affiliation)
-                M_printf (COLSERVER "%-15s" COLNONE "\n",
-                          i18n (1879, "Affiliations:"));
-            for (ml = cont->meta_affiliation; ml; ml = ml->meta_list)
-            {
-                if ((tabd = TableGetAffiliation (ml->type)))
-                    M_printf ("  %s: %s\n", tabd, ml->description);
-                else
-                    M_printf ("  %d: %s\n", ml->type, ml->description);
-            } */
             break;
         case META_SRV_WP_FOUND:
         case META_SRV_WP_LAST_USER:
@@ -477,61 +323,34 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *pak)
                 break;
             }
             cont = ContactByUIN (PacketRead4 (pak), 1);
-            if (!cont)
+            if (!cont || !(mg = CONTACT_GENERAL (cont)) || !(mm = CONTACT_MORE (cont)))
                 break;
-            M_printf (i18n (2214, "Info for %s%lu%s:\n"), COLSERVER, cont->uin, COLNONE);
 
             Display_Info_Reply (conn, cont, pak, IREP_HASAUTHFLAG);
-
-            switch ((wdata = PacketRead2 (pak)))
-            {
-                case 0:
-                    M_printf (COLSERVER "%-15s" COLNONE " %s\n", i18n (1452, "Status:"),
-                             i18n (1653, "Offline"));
-                    break;
-                case 1:
-                    M_printf (COLSERVER "%-15s" COLNONE " %s\n", i18n (1452, "Status:"),
-                             i18n (1654, "Online"));
-                    break;
-                case 2:
-                    M_printf (COLSERVER "%-15s" COLNONE " %s\n", i18n (1452, "Status:"),
-                             i18n (1888, "Not webaware"));
-                    break;
-                default:
-                    M_printf (COLSERVER "%-15s" COLNONE " %d\n", i18n (1452, "Status:"), 
-                             wdata);
-                    break;
-            }
-
-            wdata = PacketRead1 (pak);
-            M_printf (COLSERVER "%-15s" COLNONE " %s\n", i18n (1696, "Sex:"),
-                       wdata == 1 ? i18n (1528, "female")
-                     : wdata == 2 ? i18n (1529, "male")
-                     :              i18n (1530, "not specified"));
-
-            wdata = PacketRead1 (pak);
-            if (wdata != 0xff && wdata != 0)
-                M_printf (COLSERVER "%-15s" COLNONE " %d\n", 
-                         i18n (1575, "Age:"), wdata);
-            else
-                M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
-                         i18n (1575, "Age:"), i18n (1200, "Not entered"));
-
+            mg->webaware = PacketRead2 (pak);
+            mm->sex = PacketRead1 (pak);
+            mm->age = PacketRead1 (pak);
+            
+            UtilUIDisplayMeta (cont);
             if (subtype == META_SRV_WP_LAST_USER && (dwdata = PacketRead4 (pak)))
                 M_printf ("%lu %s\n", dwdata, i18n (1621, "users not returned."));
             break;
         case META_SRV_RANDOM:
-            uin = PacketRead4 (pak);
-            cont = ContactByUIN (uin, 1);
+            event->uin = PacketRead4 (pak);
+            cont = ContactByUIN (event->uin, 1);
             wdata = PacketRead2 (pak);
             M_printf (i18n (2009, "Found random chat partner UIN %d in chat group %d.\n"),
-                     uin, wdata);
+                      cont->uin, wdata);
             if (!cont || !CONTACT_DC (cont))
                 break;
-            if (conn->ver > 6)
-                SnacCliMetareqinfo (conn, cont);
-            else
-                CmdPktCmdMetaReqInfo (conn, cont);
+            if (~cont->updated & UP_INFO)
+            {
+                if (conn->ver > 6)
+                    event->seq = SnacCliMetareqinfo (conn, cont);
+                else
+                    event->seq = CmdPktCmdMetaReqInfo (conn, cont);
+            }
+            event->callback (event);
             cont->dc->ip_rem  = PacketReadB4 (pak);
             cont->dc->port    = PacketRead4  (pak);
             cont->dc->ip_loc  = PacketReadB4 (pak);
@@ -550,19 +369,9 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *pak)
                 s_read (mo->description);
             }
             mo->empty = PacketRead1 (pak);
+
             cont->updated |= UPF_OBSOLETE;
             event->callback (event);
-            
-/*            if (mo->given)
-            {
-                M_printf ("%s: " COLSERVER "%04x = %d" COLNONE "\n",
-                          i18n (2195, "Obsolete number"), mo->unknown, mo->unknown);
-                M_printf ("%s: " COLSERVER "%s" COLNONE "\n",
-                          i18n (2196, "Obsolete text"), mo->description);
-            }
-            if (mo->empty)
-                M_printf ("%s: " COLSERVER "%d" COLNONE "\n",
-                          i18n (2197, "Obsolete byte"), mo->empty); */
             break;
         default:
             M_printf ("%s: " COLSERVER "%04x" COLNONE "\n", 
@@ -570,42 +379,6 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *pak)
             M_print  (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
             break;
     }
-}
-
-void Display_Rand_User (Connection *conn, Packet *pak)
-{
-    Contact *cont;
-
-    if (PacketReadLeft (pak) != 37)
-    {
-        M_printf ("%s\n", i18n (1495, "No Random User Found"));
-        return;
-    }
-
-    M_print (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
-
-    if (!(cont = ContactByUIN (PacketRead4 (pak), 1)))
-        return;
-    if (!CONTACT_DC (cont))
-        return;
-
-    cont->dc->ip_rem  = PacketReadB4 (pak);
-    cont->dc->port    = PacketRead4  (pak);
-    cont->dc->ip_loc  = PacketReadB4 (pak);
-    cont->dc->type    = PacketRead1  (pak);
-    cont->status      = PacketRead4  (pak);
-    cont->dc->version = PacketRead2  (pak);
-
-    M_printf ("%-15s %lu\n", i18n (1440, "Random User:"), cont->uin);
-    M_printf ("%-15s %s:%lu\n", i18n (1441, "IP:"), 
-              s_ip (cont->dc->ip_rem), cont->dc->port);
-    M_printf ("%-15s %s\n", i18n (1451, "IP2:"),  s_ip (cont->dc->ip_loc));
-    M_printf ("%-15s %s\n", i18n (1454, "Connection:"), cont->dc->type == 4
-              ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"));
-    M_printf ("%-15s %s\n", i18n (1452, "Status:"), s_status (cont->status));
-    M_printf ("%-15s %d\n", i18n (1453, "TCP version:"), cont->dc->version);
-
-    CmdPktCmdMetaReqInfo (conn, cont);
 }
 
 void Display_Info_Reply (Connection *conn, Contact *cont, Packet *pak, UBYTE flags)
@@ -633,17 +406,6 @@ void Display_Info_Reply (Connection *conn, Contact *cont, Packet *pak, UBYTE fla
         M_printf (AVPFMT, i18n (1564, "First name:"), mg->first);
     else if (*mg->last)
         M_printf (AVPFMT, i18n (1565, "Last name:"), mg->last);
-
-/*    if (*mg->email)
-    {
-        if (flags & IREP_HASAUTHFLAG)
-            M_printf (COLSERVER "%-15s" COLNONE " %s\t%s\n", 
-                     i18n (1566, "Email address:"), mg->email,
-                     mg->auth == 1 ? i18n (1943, "(no authorization needed)")
-                                   : i18n (1944, "(must request authorization)"));
-        else
-            M_printf (AVPFMT, i18n (1502, "Email:"), mg->email);
-    } */
 }
 
 void Display_Ext_Info_Reply (Connection *conn, Packet *pak)
@@ -658,10 +420,6 @@ void Display_Ext_Info_Reply (Connection *conn, Packet *pak)
     
     if (!(mg = CONTACT_GENERAL (cont)) || !(mo = CONTACT_MORE (cont)))
         return;
-
-    /* Unfortunatly this is a bit different from any structure 
-     * in meta user format, so it cannot be reused there. 
-     */
 
     M_printf ("%s " COLSERVER "%lu" COLNONE "\n", i18n (1967, "More Info for"));
 
