@@ -421,8 +421,8 @@ fi
 # Optimize.
 
 AC_CACHE_CHECK(checking for variadic macro support, ac_cv_macro_variadic,
-  [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#define variadic(a,...) printf (a, ## __VA_ARGS__) ]],
-      [[variadic ("bla\n");
+  [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#define variadic(a,...) printf (a " bla", ## __VA_ARGS__) ]],
+      [[variadic ("bla\n");   /* note the space, it triggers the bug    ^ in gcc 2.95 */
         variadic ("bla%sbla\n", "bla");]])],
     [ac_cv_macro_variadic=yes],
     [ac_cv_macro_variadic=no])])
