@@ -514,7 +514,7 @@ void Time_Stamp (void)
 /*
  * Inform that a user went online
  */
-void UtilUIUserOnline (Contact *cont, UDWORD status)
+void UtilUIUserOnline (Session *sess, Contact *cont, UDWORD status)
 {
     UDWORD old;
 
@@ -527,7 +527,7 @@ void UtilUIUserOnline (Contact *cont, UDWORD status)
 
     log_event (cont->uin, LOG_ONLINE, "User logged on %s (%08lx)\n", ContactFindName (cont->uin), status);
  
-    if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || prG->flags & FLAG_QUIET)
+    if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || prG->flags & FLAG_QUIET || !(sess->connect & CONNECT_OK))
         return;
 
     if (~old)

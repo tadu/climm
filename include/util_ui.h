@@ -10,5 +10,5 @@ void   M_print (const char *str, ...);
 int    M_pos ();
 void   Debug (UDWORD level, const char *str, ...);
 
-void   UtilUIUserOnline  (Contact *cont, UDWORD status);
+void   UtilUIUserOnline  (Session *sess, Contact *cont, UDWORD status);
 void   UtilUIUserOffline (Contact *cont);

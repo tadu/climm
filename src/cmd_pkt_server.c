@@ -295,12 +295,12 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             t2                    = PacketRead4 (pak);
             t3                    = PacketRead4 (pak);
             UserOnlineSetVersion (cont, t1, t2, t3);
-            UtilUIUserOnline (cont, status);
+            UtilUIUserOnline (sess, cont, status);
             break;
         case SRV_STATUS_UPDATE:
             UtilCheckUIN (sess, uin = PacketRead4 (pak));
             if ((cont = ContactFind (uin)))
-                UtilUIUserOnline (cont, PacketRead4 (pak));
+                UtilUIUserOnline (sess, cont, PacketRead4 (pak));
             break;
         case SRV_GO_AWAY:
         case SRV_NOT_CONNECTED:

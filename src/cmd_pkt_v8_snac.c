@@ -22,6 +22,7 @@
 #include "cmd_pkt_v8_tlv.h"
 #include "file_util.h"
 #include "buildmark.h"
+#include "cmd_user.h"
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
@@ -399,7 +400,7 @@ JUMP_SNAC_F(SnacSrvUseronline)
     }
     /* TLV 1, d, f, 2, 3 ignored */
 
-    UtilUIUserOnline (cont, tlv[6].len ? tlv[6].nr : 0);
+    UtilUIUserOnline (event->sess, cont, tlv[6].len ? tlv[6].nr : 0);
 }
 
 /*
@@ -476,7 +477,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
     tlv = TLVRead (pak);
 
     if (tlv[6].len && cont && cont->status != STATUS_OFFLINE)
-        UtilUIUserOnline (cont, tlv[6].nr);
+        UtilUIUserOnline (event->sess, cont, tlv[6].nr);
 
     /* tlv[2] may be there twice - ignore the member since time(NULL). */
     if (tlv[2].len == 4)
@@ -609,17 +610,10 @@ JUMP_SNAC_F(SnacSrvReplybos)
 {
     SnacCliSetuserinfo (event->sess);
     SnacCliSetstatus (event->sess, event->sess->spref->status, 3);
-    SnacCliReady (event->sess);
-    SnacCliReqofflinemsgs (event->sess);
 /*    SnacCliReqroster (event->sess); */
+    SnacCliReady (event->sess);
     SnacCliAddcontact (event->sess, 0);
-
-    event->sess->connect = CONNECT_OK | CONNECT_SELECT_R;
-    reconn = 0;
-    
-    QueueEnqueueData (queue, event->sess, event->sess->connect, QUEUE_TYPE_SRV_KEEPALIVE,
-                      event->sess->uin, time (NULL) + 30,
-                      NULL, NULL, &SrvCallBackKeepalive);
+    SnacCliReqofflinemsgs (event->sess);
 }
 
 /*
@@ -764,6 +758,14 @@ JUMP_SNAC_F(SnacSrvFromoldicq)
         }
         case 66:
             SnacCliAckofflinemsgs (event->sess);
+
+            event->sess->connect = CONNECT_OK | CONNECT_SELECT_R;
+            reconn = 0;
+            CmdUser ("¶e");
+            
+            QueueEnqueueData (queue, event->sess, 0, QUEUE_TYPE_SRV_KEEPALIVE,
+                              event->sess->uin, time (NULL) + 30,
+                              NULL, NULL, &SrvCallBackKeepalive);
             return;
         case 2010:
             Meta_User (event->sess, uin, p);
