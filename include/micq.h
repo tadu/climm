@@ -159,7 +159,6 @@ typedef struct
 } user_interface_state;
 
 extern user_interface_state uiG;
-extern struct Queue *queue;
 extern Preferences *prG;
 
 #define LOG_MESS 1

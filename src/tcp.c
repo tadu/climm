@@ -380,7 +380,7 @@ static void TCPDispatchConn (Session *sess)
                 if (sess->assoc && sess->assoc->assoc && sess->assoc->assoc->ver < 7)
                 {
                     CmdPktCmdTCPRequest (sess->assoc->assoc, cont->uin, cont->port);
-                    QueueEnqueueData (queue, sess, sess->ip, QUEUE_TYPE_TCP_TIMEOUT,
+                    QueueEnqueueData (sess, sess->ip, QUEUE_TYPE_TCP_TIMEOUT,
                                       cont->uin, time (NULL) + 30,
                                       NULL, NULL, &TCPCallBackTOConn);
                     sess->connect = TCP_STATE_WAITING;
@@ -401,7 +401,7 @@ static void TCPDispatchConn (Session *sess)
                              UtilIOIP (sess->ip), sess->port);
                     M_print (i18n (1785, "success.\n"));
                 }
-                QueueEnqueueData (queue, sess, sess->ip, QUEUE_TYPE_TCP_TIMEOUT,
+                QueueEnqueueData (sess, sess->ip, QUEUE_TYPE_TCP_TIMEOUT,
                                   cont->uin, time (NULL) + 10,
                                   NULL, NULL, &TCPCallBackTimeout);
                 sess->connect = 1 | CONNECT_SELECT_R;
@@ -531,7 +531,7 @@ static void TCPDispatchShake (Session *sess)
                 TCPSendInit2 (sess);
                 continue;
             case 48:
-                QueueDequeue (queue, sess->ip, QUEUE_TYPE_TCP_TIMEOUT);
+                QueueDequeue (sess->ip, QUEUE_TYPE_TCP_TIMEOUT);
                 if (prG->verbose)
                 {
                     Time_Stamp ();
@@ -598,7 +598,7 @@ static void TCPDispatchPeer (Session *sess)
             switch (cmd)
             {
                 case TCP_CMD_CANCEL:
-                    event = QueueDequeue (queue, seq_in, QUEUE_TYPE_TCP_RECEIVE);
+                    event = QueueDequeue (seq_in, QUEUE_TYPE_TCP_RECEIVE);
                     if (!event)
                         break;
                     
@@ -614,7 +614,7 @@ static void TCPDispatchPeer (Session *sess)
 
                 default:
                     /* Store the event in the recv queue for handling later */            
-                    QueueEnqueueData (queue, sess, seq_in, QUEUE_TYPE_TCP_RECEIVE,
+                    QueueEnqueueData (sess, seq_in, QUEUE_TYPE_TCP_RECEIVE,
                                       0, 0, pak, (UBYTE *)cont, &TCPCallBackReceive);
 
                     sess->our_seq--;
@@ -998,7 +998,7 @@ static Session *TCPReceiveInit (Session *sess, Packet *pak)
                 return NULL;
             }
             if ((peer->connect & CONNECT_MASK) == (UDWORD)TCP_STATE_WAITING)
-                QueueDequeue (queue, peer->ip, QUEUE_TYPE_TCP_TIMEOUT);
+                QueueDequeue (peer->ip, QUEUE_TYPE_TCP_TIMEOUT);
             if (peer->sok != -1)
                 TCPClose (peer);
             SessionClose (peer);
@@ -1413,7 +1413,7 @@ BOOL TCPGetAuto (Session *sess, UDWORD uin, UWORD which)
 
     peer->stat_real_pak_sent++;
 
-    QueueEnqueueData (queue, peer, peer->our_seq--, QUEUE_TYPE_TCP_RESEND,
+    QueueEnqueueData (peer, peer->our_seq--, QUEUE_TYPE_TCP_RESEND,
                       uin, time (NULL),
                       pak, strdup ("..."), &TCPCallBackResend);
     return 1;
@@ -1460,7 +1460,7 @@ BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
 
     peer->stat_real_pak_sent++;
 
-    QueueEnqueueData (queue, peer, peer->our_seq--, QUEUE_TYPE_TCP_RESEND,
+    QueueEnqueueData (peer, peer->our_seq--, QUEUE_TYPE_TCP_RESEND,
                       uin, time (NULL),
                       pak, strdup (msg), &TCPCallBackResend);
     return 1;
@@ -1519,7 +1519,7 @@ BOOL TCPSendFile (Session *sess, UDWORD uin, char *file)
 
     peer->stat_real_pak_sent++;
 
-    QueueEnqueueData (queue, peer, peer->our_seq--, QUEUE_TYPE_TCP_RESEND,
+    QueueEnqueueData (peer, peer->our_seq--, QUEUE_TYPE_TCP_RESEND,
                       uin, time (NULL),
                       pak, strdup (file), &TCPCallBackResend);
     return 1;
@@ -1563,7 +1563,7 @@ static void TCPCallBackResend (Event *event)
         }
         else
             event->due = time (NULL) + 1;
-        QueueEnqueue (queue, event);
+        QueueEnqueue (event);
         return;
     }
 
@@ -1611,7 +1611,7 @@ static void TCPCallBackReceive (Event *event)
     switch (cmd)
     {
         case TCP_CMD_ACK:
-            event = QueueDequeue (queue, seq, QUEUE_TYPE_TCP_RESEND);
+            event = QueueDequeue (seq, QUEUE_TYPE_TCP_RESEND);
             if (!event)
                 break;
             switch (type)
@@ -1654,11 +1654,6 @@ static void TCPCallBackReceive (Event *event)
                         fsess->assoc = event->sess->assoc;
                         fsess->ip = event->sess->ip;
                         fsess->server = "";
-                        fsess->uin = event->sess->uin;
-
-                        QueueEnqueueData (queue, fsess, fsess->our_seq--, QUEUE_TYPE_PEER_RESEND,
-                                          event->sess->uin, time (NULL),
-                                          NULL, strdup (event->info), &PeerFileResend);
 
                         SessionInitFile (fsess);
                     }
@@ -1947,7 +1942,7 @@ static void PeerFileResend (Event *event)
 
             event->attempts++;
             event->due = time (NULL) + 3;
-            QueueEnqueue (queue, event);
+            QueueEnqueue (event);
             return;
         }
     }

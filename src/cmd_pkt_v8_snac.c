@@ -154,7 +154,7 @@ void SrvCallBackKeepalive (Event *event)
         FlapCliKeepalive (event->sess);
         /* old: SnacCliAckofflinemsgs (event->sess); */
         event->due = time (NULL) + 30;
-        QueueEnqueue (queue, event);
+        QueueEnqueue (event);
         return;
     }
     free (event);
@@ -837,7 +837,7 @@ static JUMP_SNAC_F(SnacSrvFromoldicq)
             reconn = 0;
             CmdUser ("¶e");
             
-            QueueEnqueueData (queue, event->sess, 0, QUEUE_TYPE_SRV_KEEPALIVE,
+            QueueEnqueueData (event->sess, 0, QUEUE_TYPE_SRV_KEEPALIVE,
                               event->sess->uin, time (NULL) + 30,
                               NULL, NULL, &SrvCallBackKeepalive);
             return;

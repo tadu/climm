@@ -55,8 +55,6 @@ PreferencesSession *psG;
 static int idle_val = 0;
 static int idle_flag = 0;
 
-struct Queue *queue = NULL;
-
 void init_global_defaults () {
   /* Initialize User Interface global state */
   uiG.start_time = time (NULL);
@@ -233,7 +231,6 @@ int main (int argc, char *argv[])
         }
     }
 
-    QueueInit (&queue);
     PrefLoad (prG);
     
     if (argverb) prG->verbose = 0;
@@ -307,7 +304,7 @@ int main (int argc, char *argv[])
             sess->dispatch (sess);
         }
 
-        QueueRun (queue);
+        QueueRun ();
     }
 
     for (i = 0; (sess = SessionNr (i)); i++)

@@ -29,25 +29,33 @@ struct Queue_s
     time_t due;
 };
 
+static Queue queued = { NULL, INT_MAX };
+static Queue *queue = &queued;
+
 /*
- * Create a new empty queue.
+ * Create a new empty queue to use, or use the given queue instead.
+ * Do not call unless you have several message queues.
  */
-void QueueInit (Queue **queue)
+void QueueInit (Queue **myqueue)
 {
-    assert (queue);
+    assert (myqueue);
     
-    *queue = malloc (sizeof (Queue));
-    (*queue)->head = NULL;
-    (*queue)->due = INT_MAX;
+    if (myqueue)
+        queue = *myqueue;
+    else
+    {
+        queue = malloc (sizeof (Queue));
+        queue->head = NULL;
+        queue->due = INT_MAX;
+        *myqueue = queue;
+    }
 }
 
 /*
  * Returns the event most due without removing it, or NULL.
  */
-Event *QueuePeek (Queue *queue)
+Event *QueuePeek ()
 {
-    assert (queue);
-
     if (queue->head)
         return queue->head->event;
     return NULL;
@@ -56,12 +64,10 @@ Event *QueuePeek (Queue *queue)
 /*
  * Removes the event most due from the queue, or NULL.
  */
-Event *QueuePop (Queue *queue)
+Event *QueuePop ()
 {
     Event *event;
     struct QueueEntry *temp;
-
-    assert (queue);
 
     if (queue->head)
     {
@@ -88,11 +94,9 @@ void QueueEnqueue (Event *event)
     struct QueueEntry *entry;
     struct QueueEntry *iter;
 
-    assert (queue);
-    assert (event);
-
     entry = malloc (sizeof (struct QueueEntry));
 
+    assert (event);
     assert (entry);
 
     entry->next = NULL;
@@ -126,7 +130,7 @@ void QueueEnqueue (Event *event)
 /*
  * Adds a new entry to the queue. Creates Event for you.
  */
-void QueueEnqueueData (Queue *queue, Session *sess, UDWORD seq, UDWORD type,
+void QueueEnqueueData (Session *sess, UDWORD seq, UDWORD type,
                        UDWORD uin, time_t due,
                        Packet *pak, UBYTE *info, Queuef *callback)
 {
@@ -143,7 +147,7 @@ void QueueEnqueueData (Queue *queue, Session *sess, UDWORD seq, UDWORD type,
     event->callback = callback;
     event->sess = sess;
     
-    QueueEnqueue (queue, event);
+    QueueEnqueue (event);
 }
 
 /*
@@ -201,14 +205,14 @@ Event *QueueDequeue (UDWORD seq, UDWORD type)
  * function.
  * Callback function may re-enqueue them with a later due time.
  */
-void QueueRun (Queue *queue)
+void QueueRun ()
 {
     time_t now = time (NULL);
     Event *event;
     
     while (queue->due <= now)
     {
-        event = QueuePop (queue);
+        event = QueuePop ();
         if (event->callback)
             event->callback (event);
     }

@@ -18,16 +18,16 @@ struct Event_s
     Session *sess;
 };
 
-void          QueueInit        (Queue **queue);
-void          QueueEnqueue     (Queue  *queue, struct Event *event);
-void          QueueEnqueueData (Queue  *queue, Session *sess, UDWORD seq, UDWORD type,
-                                UDWORD uin, time_t due,
-                                Packet *pak, UBYTE *info, Queuef *callback);
-struct *QueueDequeue     (Queue  *queue, UDWORD seq, UDWORD type);
-void          QueueRun         (Queue  *queue);
+void        QueueInit        (Queue **queue);
+void        QueueEnqueue     (Event *event);
+void        QueueEnqueueData (Session *sess, UDWORD seq, UDWORD type,
+                              UDWORD uin, time_t due,
+                              Packet *pak, UBYTE *info, Queuef *callback);
+Event      *QueueDequeue     (UDWORD seq, UDWORD type);
+void        QueueRun         ();
 
-struct *QueuePeek        (Queue  *queue);
-struct *QueuePop         (Queue  *queue);
+Event      *QueuePeek        ();
+Event      *QueuePop         ();
 
 #define QUEUE_TYPE_PEER_RESEND   45
 #define QUEUE_TYPE_UDP_RESEND    43

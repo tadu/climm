@@ -253,7 +253,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
 }
 
 #define CONN_FAIL(s)  { if (s) M_print ("%s [%d]\n", s, __LINE__);  \
-                        QueueDequeue (queue, sess->ip, QUEUE_TYPE_CON_TIMEOUT); \
+                        QueueDequeue (sess->ip, QUEUE_TYPE_CON_TIMEOUT); \
                         if (sess->sok > 0)           \
                           sockclose (sess->sok);      \
                         sess->sok = -1;                \
@@ -268,7 +268,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
                           if (rc == EAGAIN) return;             \
                           CONN_FAIL (UtilFill  ("%s: %s (%d).", s, strerror (rc), rc)) } }
 #define CONN_OK         { sess->connect++;                        \
-                          QueueDequeue (queue, sess->ip, QUEUE_TYPE_CON_TIMEOUT); \
+                          QueueDequeue (sess->ip, QUEUE_TYPE_CON_TIMEOUT); \
                           sess->dispatch = sess->utilio;            \
                           sess->dispatch (sess);                     \
                           return; }
@@ -353,7 +353,7 @@ void UtilIOConnectTCP (Session *sess)
                 M_print (i18n (1634, "ok\n"));
             if (prG->s5Use)
             {
-                QueueEnqueueData (queue, sess, sess->ip, QUEUE_TYPE_CON_TIMEOUT,
+                QueueEnqueueData (sess, sess->ip, QUEUE_TYPE_CON_TIMEOUT,
                                   sess->uin, time (NULL) + 10,
                                   NULL, NULL, &UtilIOTOConn);
                 sess->dispatch = &UtilIOConnectCallback;
@@ -369,7 +369,7 @@ void UtilIOConnectTCP (Session *sess)
             M_print ("");
             if (M_pos () > 0)
                 M_print ("\n");
-            QueueEnqueueData (queue, sess, sess->ip, QUEUE_TYPE_CON_TIMEOUT,
+            QueueEnqueueData (sess, sess->ip, QUEUE_TYPE_CON_TIMEOUT,
                               sess->uin, time (NULL) + 10,
                               NULL, NULL, &UtilIOTOConn);
             sess->utilio   = sess->dispatch;
@@ -491,7 +491,7 @@ static void UtilIOConnectCallback (Session *sess)
                     sess->connect &= ~CONNECT_SOCKS;
                     sess->connect |= 8 * CONNECT_SOCKS_ADD;
                     sess->dispatch = sess->utilio;
-                    QueueDequeue (queue, sess->ip, QUEUE_TYPE_CON_TIMEOUT);
+                    QueueDequeue (sess->ip, QUEUE_TYPE_CON_TIMEOUT);
                     UtilIOConnectTCP (sess);
                     return;
                 }

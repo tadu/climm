@@ -127,7 +127,7 @@ void PacketEnqueuev5 (Packet *pak, Session *sess)
         sess->stat_real_pak_sent++;
         sess->our_seq++;
 
-        QueueEnqueueData (queue, sess, pak->id, QUEUE_TYPE_UDP_RESEND,
+        QueueEnqueueData (sess, pak->id, QUEUE_TYPE_UDP_RESEND,
                           0, time (NULL) + 10,
                           pak, NULL, &UDPCallBackResend);
     }
@@ -159,7 +159,7 @@ void SessionInitServerV5 (Session *sess)
         Echo_On ();
         sess->passwd = strdup (pwd);
     }
-    QueueEnqueueData (queue, sess, 0, 0, 0, time (NULL), NULL, NULL, &CallBackServerInitV5);
+    QueueEnqueueData (sess, 0, 0, 0, time (NULL), NULL, NULL, &CallBackServerInitV5);
 }
 
 void CallBackServerInitV5 (Event *event)
@@ -172,7 +172,7 @@ void CallBackServerInitV5 (Event *event)
     if (sess->assoc && !(sess->connect & CONNECT_OK))
     {
         event->due = time (NULL) + 1;
-        QueueEnqueue (queue, event);
+        QueueEnqueue (event);
         return;
     }
     
@@ -348,7 +348,7 @@ void UDPCallBackResend (Event *event)
         }
         PacketSendv5 (pak, event->sess);
         event->due = time (NULL) + 10;
-        QueueEnqueue (queue, event);
+        QueueEnqueue (event);
     }
     else
     {
