@@ -20,6 +20,12 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#ifdef ENABLE_UTF8
+#include "conv.h"
+#else
+#define ConvToUTF8(in,enc) in
+#endif
+
 /* use numbers 1000 ... 2999 */
 #define i18nSLOTS  2000
 #define i18nOffset 1000
@@ -109,6 +115,9 @@ static int i18nAdd (FILE *i18nf, int debug, int *res)
 {
     char buf[2048];
     int j = 0;
+#ifdef ENABLE_UTF8
+    UBYTE enc = 0;
+#endif
     
     if (*res)
     {
@@ -125,14 +134,27 @@ static int i18nAdd (FILE *i18nf, int debug, int *res)
         if (p == buf || i < 0 || i >= i18nSLOTS || i18nStrings[i])
             continue;
         
-        if (debug)
-            i18nStrings[i] = p = strdup (buf);
-        else
-            i18nStrings[i] = p = strdup (++p);
+        p = debug ? buf : ++p;
+#ifdef ENABLE_UTF8
+        if (i == 1007)
+        {
+            if      (!strcmp (buf, "iso-8859-1")) enc = ENC_LATIN1;
+            else if (!strcmp (buf, "koi8-r"))     enc = ENC_KOI8;
+            else if (!strcmp (buf, "koi8-u"))     enc = ENC_KOI8;
+            else if (!strcmp (buf, "utf-8"))      enc = ENC_UTF8;
+            else                                  enc = ENC_LATIN1;
+        }
+        s_repl (&i18nStrings[i], p = strdup (ConvToUTF8 (p, enc ? enc : ENC_LATIN1)));
+#else
+        s_repl (&i18nStrings[i], p = strdup (p));
+#endif
         j++;
         for (; *p; p++)
-            if (*p == '¶')
-                *p = '\n';
+            if (*p == '\\' && p[1] == 'n')
+            {
+                *p++ = '\n';
+                *p = '\r';
+            }
     }
     fclose (i18nf);
     return j;
