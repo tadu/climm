@@ -102,6 +102,8 @@ BOOL          ContactGroupAdd   (ContactGroup *group, Contact *cont);
 BOOL          ContactGroupRem   (ContactGroup *group, Contact *cont);
 UWORD         ContactGroupID    (ContactGroup *group);
 BOOL          ContactGroupHas   (ContactGroup *group, Contact *cont);
+UDWORD        ContactGroupCount (ContactGroup *group);
+void          ContactGroupD     (ContactGroup *group);
 
 Contact    *ContactIndex (ContactGroup *group, int i);
 

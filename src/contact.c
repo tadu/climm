@@ -111,6 +111,7 @@ BOOL ContactGroupRem (ContactGroup *group, Contact *cont)
     if (!group || !cont || !group->serv)
         return FALSE;
     while (group)
+    {
         for (i = 0; i < group->used; i++)
             if (group->uins[i] == cont->uin)
             {
@@ -118,6 +119,8 @@ BOOL ContactGroupRem (ContactGroup *group, Contact *cont)
                 group->uins[group->used] = 0;
                 return TRUE;
             }
+        group = group->more;
+    }
     return FALSE;
 }
 
@@ -170,7 +173,7 @@ Contact *ContactIndex (ContactGroup *group, int i)
 }
 
 /*
- * Check whether a given contact is in the contact group
+ * Check whether a given contact is in the contact group.
  */
 BOOL ContactGroupHas (ContactGroup *group, Contact *cont)
 {
@@ -183,6 +186,38 @@ BOOL ContactGroupHas (ContactGroup *group, Contact *cont)
         group = group->more;
     }
     return FALSE;
+}
+
+/*
+ * Count the number of contacts in this list.
+ */
+UDWORD ContactGroupCount (ContactGroup *group)
+{
+    UDWORD c = 0;
+    while (group)
+    {
+        c += group->used;
+        group = group->more;
+    }
+    return c;
+}
+
+/*
+ * Remove a contact group.
+ */
+void ContactGroupD (ContactGroup *group)
+{
+    ContactGroup *tmp;
+
+    s_repl (&group->name, NULL);
+    if (group)
+        group = group->more;
+    while (group)
+    {
+        tmp = group->more;
+        free (group);
+        group = tmp;
+    }
 }
 
 

@@ -592,7 +592,7 @@ BOOL s_parsenick_s (char **input, Contact **parsed, char *sep, Contact **parsedr
     for (i = 0; (r = ContactIndex (cg, i)); i++)
     {
         l = strlen (r->nick);
-        if (l > max && l <= ll && (!p[l] || strchr (sep, p[l])) && !strncmp (p, r->nick, l))
+        if (l > max && l <= ll && (!p[l] || strchr (sep, p[l])) && !strncasecmp (p, r->nick, l))
         {
             *parsed = r;
             max = strlen (r->nick);

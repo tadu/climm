@@ -42,7 +42,7 @@ static jump_f
     CmdUserStatusDetail, CmdUserStatusWide, CmdUserStatusShort,
     CmdUserSound, CmdUserSoundOnline, CmdUserRegister, CmdUserStatusMeta,
     CmdUserSoundOffline, CmdUserAutoaway, CmdUserSet, CmdUserClear,
-    CmdUserTogIgnore, CmdUserTogInvis, CmdUserTogVisible, CmdUserAdd, CmdUserRem,
+    CmdUserTogIgnore, CmdUserTogInvis, CmdUserTogVisible, CmdUserAdd, CmdUserRemove,
     CmdUserAuth, CmdUserURL, CmdUserSave, CmdUserTabs, CmdUserLast,
     CmdUserUptime, CmdUserOldSearch, CmdUserSearch, CmdUserUpdate, CmdUserPass,
     CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserPeer, CmdUserConn,
@@ -79,6 +79,10 @@ static jump_t jump[] = {
     { &CmdUserStatusDetail,  "ee",           NULL, 2,   3 },
     { &CmdUserStatusDetail,  "w",            NULL, 2,   4 },
     { &CmdUserStatusDetail,  "e",            NULL, 2,   5 },
+    { &CmdUserStatusDetail,  "wwg",          NULL, 2,  34 },
+    { &CmdUserStatusDetail,  "eeg",          NULL, 2,  35 },
+    { &CmdUserStatusDetail,  "wg",           NULL, 2,  36 },
+    { &CmdUserStatusDetail,  "eg",           NULL, 2,  37 },
     { &CmdUserStatusDetail,  "s",            NULL, 2,  30 },
     { &CmdUserStatusDetail,  "s-any",        NULL, 2,   0 },
     { &CmdUserStatusMeta,    "ss",           NULL, 2,   0 },
@@ -104,7 +108,9 @@ static jump_t jump[] = {
     { &CmdUserTogVisible,    "togvis",       NULL, 0,   0 },
     { &CmdUserTogInvis,      "toginv",       NULL, 0,   0 },
     { &CmdUserAdd,           "add",          NULL, 0,   0 },
-    { &CmdUserRem,           "rem",          NULL, 0,   0 },
+    { &CmdUserAdd,           "addalias",     NULL, 0,   1 },
+    { &CmdUserAdd,           "addgroup",     NULL, 0,   2 },
+    { &CmdUserRemove,        "rem",          NULL, 0,   0 },
     { &CmdUserRegister,      "reg",          NULL, 0,   0 },
     { &CmdUserAuth,          "auth",         NULL, 0,   0 },
     { &CmdUserURL,           "url",          NULL, 0,   0 },
@@ -1466,6 +1472,7 @@ static UDWORD __status (Contact *cont)
 /*
  * Shows the contact list in a very detailed way.
  *
+ * data & 32: sort by groups
  * data & 16: show _only_ own status
  * data & 8: show only given nick
  * data & 4: show own status
@@ -1474,21 +1481,29 @@ static UDWORD __status (Contact *cont)
  */
 static JUMP_F(CmdUserStatusDetail)
 {
-    ContactGroup *cg;
-    UDWORD uin = 0, tuin = 0, i, j;
+    ContactGroup *cg = NULL, *tcg = NULL;
+    UDWORD uin = 0, tuin = 0;
+    int i, j, k;
     int lenuin = 0, lennick = 0, lenstat = 0, lenid = 0, totallen = 0;
     Contact *cont = NULL, *contr = NULL;
     Connection *peer;
+    char *argst, *arg1;
     UDWORD stati[] = { 0xfffffffe, STATUS_OFFLINE, STATUS_DND,    STATUS_OCC, STATUS_NA,
                                    STATUS_AWAY,    STATUS_ONLINE, STATUS_FFC, STATUSF_BIRTH };
     ANYCONN;
 
-    cg = conn->contacts;
-
     if (!data)
         s_parseint (&args, &data);
 
-    if ((data & 8) && (!conn || !s_parsenick (&args, &cont, NULL, conn)) && *args)
+    if (~data & 32)
+    {
+        argst = args;
+        if (s_parse (&argst, &arg1))
+            if ((tcg = cg = ContactGroupFind (0, conn, arg1, 0)))
+                args = argst;
+    }
+
+    if ((data & 8) && !cg && (!conn || !s_parsenick (&args, &cont, NULL, conn)) && *args)
     {
         M_printf (i18n (1700, "%s is not a valid user in your list.\n"), args);
         return 0;
@@ -1497,7 +1512,30 @@ static JUMP_F(CmdUserStatusDetail)
     if (cont)
         uin = cont->uin;
 
-    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+    if (data & 32)
+    {
+        if (!(tcg = ContactGroupFind (0xcafe, conn, "\x01\x02\x03\x04\x05", 1)))
+        {
+            M_print (i18n (2118, "Out of memory.\n"));
+            return 0;
+        }
+        while ((cont = ContactIndex (tcg, 0)))
+            ContactGroupRem (tcg, cont);
+        cg = conn->contacts;
+        for (j = 0; (cont = ContactIndex (cg, j)); j++)
+            if (!ContactGroupHas (tcg, cont))
+                ContactGroupAdd (tcg, cont);
+        for (i = 0; (cg = ContactGroupIndex (i)); i++)
+            if (cg->serv == conn && cg != conn->contacts && cg != tcg)
+                for (j = 0; (cont = ContactIndex (cg, j)); j++)
+                    ContactGroupRem (tcg, cont);
+        cg = conn->contacts;
+    }
+
+    if (!cg)
+        cg = conn->contacts;
+
+    for (i = 0; (cont = ContactIndex (tcg && ~data & 32 ? tcg : cg, i)); i++)
     {
         if (uin && cont->uin != uin)
             continue;
@@ -1535,78 +1573,97 @@ static JUMP_F(CmdUserStatusDetail)
         if (data & 16)
             return 0;
     }
-    if (!uin)
+    for (k = -1; (k == -1) ? (tcg ? (cg = tcg) : cg) : (cg = ContactGroupIndex (k)); k++)
     {
-        M_print (COLMESSAGE);
-        for (i = totallen; i >= 20; i -= 20)
-            M_print ("====================");
-        M_printf ("%.*s" COLNONE "\n", (int)i, "====================");
-    }
-    for (i = (data & 1 ? 2 : 0); i < 9; i++)
-    {
-        status = stati[i];
-        for (j = 0; (cont = ContactIndex (cg, j)); j++)
+        if (k != -1 && (cg == conn->contacts || cg == tcg))
+            continue;
+        if (!uin)
         {
-            char *stat, *ver = NULL, *ver2 = NULL;
-            
-            if (uin && cont->uin != uin)
-                continue;
-
-            contr = ContactByUIN (cont->uin, 0);
-            if (!contr)
-                continue;
-
-            if (__status (contr) != status)
-                continue;
-            if (cont->flags & CONT_ALIAS && (~data & 2 || data & 1))
-                continue;
-
-            peer = (conn && conn->assoc) ? ConnectionFind (TYPE_MSGDIRECT, cont->uin, conn->assoc) : NULL;
-            
-            stat = strdup (s_sprintf ("(%s)", s_status (contr->status)));
-            if (contr->version)
-                ver  = strdup (s_sprintf ("[%s]", contr->version));
-            if (prG->verbose && cont->dc)
-                ver2 = strdup (s_sprintf (" <%08x:%08x:%08x>", (unsigned int)cont->dc->id1,
-                                           (unsigned int)cont->dc->id2, (unsigned int)cont->dc->id3));
-
-            if (data & 2)
-                M_printf (COLSERVER "%c%c%c%1.1d%c" COLNONE " %*ld",
-                     cont->flags & CONT_ALIAS      ? '+' :
-                     contr->flags & CONT_TEMPORARY ? '#' : ' ',
-                     contr->flags & CONT_INTIMATE  ? '*' :
-                      contr->flags & CONT_HIDEFROM ? '-' : ' ',
-                     contr->flags & CONT_IGNORE    ? '^' : ' ',
-                     contr->dc ? contr->dc->version : 0,
-                     peer ? (
-                      peer->connect & CONNECT_OK   ? '&' :
-                      peer->connect & CONNECT_FAIL ? '|' :
-                      peer->connect & CONNECT_MASK ? ':' : '.' ) :
-                      contr->dc && contr->dc->version && contr->dc->port && ~contr->dc->port &&
-                      contr->dc->ip_rem && ~contr->dc->ip_rem ? '^' : ' ',
-                     (int)lenuin, cont->uin);
-
-            M_printf (COLSERVER "%c" COLCONTACT "%-*s" COLNONE " " COLMESSAGE "%-*s" COLNONE " %-*s%s %s",
-                     data & 2                      ? ' ' :
-                     cont->flags  & CONT_ALIAS     ? '+' :
-                     contr->flags & CONT_TEMPORARY ? '#' :
-                     contr->flags & CONT_INTIMATE  ? '*' :
-                     contr->flags & CONT_HIDEFROM  ? '-' :
-                     contr->flags & CONT_IGNORE    ? '^' :
-                     !peer                         ? ' ' :
-                     peer->connect & CONNECT_OK    ? '&' :
-                     peer->connect & CONNECT_FAIL  ? '|' :
-                     peer->connect & CONNECT_MASK  ? ':' : '.' ,
-                     lennick + s_delta (cont->nick), cont->nick,
-                     lenstat + 2 + s_delta (stat), stat,
-                     lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
-                     ver2 ? ver2 : "",
-                     contr->seen_time != -1L && data & 2 ? ctime ((time_t *) &contr->seen_time) : "\n");
-            free (stat);
-            s_free (ver);
-            s_free (ver2);
+            M_print (COLMESSAGE);
+            if (cg != tcg && cg != conn->contacts)
+            {
+                for (i = j = (totallen - c_strlen (cg->name) - 1) / 2; i >= 20; i -= 20)
+                    M_print ("====================");
+                M_printf ("%.*s", (int)i, "====================");
+                M_printf (" " COLCONTACT "%s" COLMESSAGE " ", cg->name);
+                for (i = totallen - j - c_strlen (cg->name) - 2; i >= 20; i -= 20)
+                    M_print ("====================");
+            }
+            else
+                for (i = totallen; i >= 20; i -= 20)
+                    M_print ("====================");
+            M_printf ("%.*s" COLNONE "\n", (int)i, "====================");
         }
+        for (i = (data & 1 ? 2 : 0); i < 9; i++)
+        {
+            status = stati[i];
+            for (j = 0; (cont = ContactIndex (cg, j)); j++)
+            {
+                char *stat, *ver = NULL, *ver2 = NULL;
+                
+                if (uin && cont->uin != uin)
+                    continue;
+
+                contr = ContactByUIN (cont->uin, 0);
+                if (!contr)
+                    continue;
+
+                if (__status (contr) != status)
+                    continue;
+                if (cont->flags & CONT_ALIAS && (~data & 2 || data & 1))
+                    continue;
+
+                peer = (conn && conn->assoc) ? ConnectionFind (TYPE_MSGDIRECT, cont->uin, conn->assoc) : NULL;
+                
+                stat = strdup (s_sprintf ("(%s)", s_status (contr->status)));
+                if (contr->version)
+                    ver  = strdup (s_sprintf ("[%s]", contr->version));
+                if (prG->verbose && cont->dc)
+                    ver2 = strdup (s_sprintf (" <%08x:%08x:%08x>", (unsigned int)cont->dc->id1,
+                                               (unsigned int)cont->dc->id2, (unsigned int)cont->dc->id3));
+
+                if (data & 2)
+                    M_printf (COLSERVER "%c%c%c%1.1d%c" COLNONE " %*ld",
+                         cont->flags & CONT_ALIAS      ? '+' :
+                         contr->flags & CONT_TEMPORARY ? '#' : ' ',
+                         contr->flags & CONT_INTIMATE  ? '*' :
+                          contr->flags & CONT_HIDEFROM ? '-' : ' ',
+                         contr->flags & CONT_IGNORE    ? '^' : ' ',
+                         contr->dc ? contr->dc->version : 0,
+                         peer ? (
+                          peer->connect & CONNECT_OK   ? '&' :
+                          peer->connect & CONNECT_FAIL ? '|' :
+                          peer->connect & CONNECT_MASK ? ':' : '.' ) :
+                          contr->dc && contr->dc->version && contr->dc->port && ~contr->dc->port &&
+                          contr->dc->ip_rem && ~contr->dc->ip_rem ? '^' : ' ',
+                         (int)lenuin, cont->uin);
+
+                M_printf (COLSERVER "%c" COLCONTACT "%-*s" COLNONE " " COLMESSAGE "%-*s" COLNONE " %-*s%s %s",
+                         data & 2                      ? ' ' :
+                         cont->flags  & CONT_ALIAS     ? '+' :
+                         contr->flags & CONT_TEMPORARY ? '#' :
+                         contr->flags & CONT_INTIMATE  ? '*' :
+                         contr->flags & CONT_HIDEFROM  ? '-' :
+                         contr->flags & CONT_IGNORE    ? '^' :
+                         !peer                         ? ' ' :
+                         peer->connect & CONNECT_OK    ? '&' :
+                         peer->connect & CONNECT_FAIL  ? '|' :
+                         peer->connect & CONNECT_MASK  ? ':' : '.' ,
+                         lennick + s_delta (cont->nick), cont->nick,
+                         lenstat + 2 + s_delta (stat), stat,
+                         lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
+                         ver2 ? ver2 : "",
+                         contr->seen_time != -1L && data & 2 ? ctime ((time_t *) &contr->seen_time) : "\n");
+                free (stat);
+                s_free (ver);
+                s_free (ver2);
+            }
+        }
+        if (~data & 32)
+            break;
     }
+    if (tcg && data & 32)
+        ContactGroupD (tcg);
     if (uin)
     {
         char *t1, *t2;
@@ -2272,8 +2329,9 @@ static JUMP_F(CmdUserTogVisible)
  */
 static JUMP_F(CmdUserAdd)
 {
+    ContactGroup *cg = NULL;
     Contact *cont = NULL, *cont2;
-    char *arg1;
+    char *arg1, *argst;
     OPENCONN;
 
     if (!s_parsenick (&args, &cont, NULL, conn))
@@ -2282,64 +2340,96 @@ static JUMP_F(CmdUserAdd)
         return 0;
     }
 
+    if (!data)
+    {
+        argst = args;
+        if (s_parse (&argst, &arg1) && (cg = ContactGroupFind (0, conn, arg1, 0)))
+            args = argst;
+    }
+
     if (!s_parserem (&args, &arg1))
     {
-        M_print (i18n (2116, "No new nick name given.\n"));
+        if (!cg)
+        {
+            if (data != 2)
+                M_print (i18n (2116, "No new nick name given.\n"));
+            else if (data == 2)
+                M_print (i18n (2240, "No contact group given.\n"));
+            return 0;
+        }
+        arg1 = NULL;
+    }
+
+    if (data != 1 && !cg)
+        if ((cg = ContactGroupFind (0, conn, arg1, data == 2 ? 1 : 0)))
+            arg1 = NULL;
+    if (!cg && data & 2)
+    {
+        M_print (i18n (2118, "Out of memory.\n"));
         return 0;
     }
 
-    if (cont->flags & CONT_TEMPORARY)
+    if (arg1)
     {
-        M_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, arg1);
-        if (!Add_User (conn, cont->uin, arg1))
-            M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
-        if (c_strlen (arg1) > uiG.nick_len)
-            uiG.nick_len = c_strlen (arg1);
-        if (conn->ver > 6)
-            SnacCliAddcontact (conn, cont->uin);
-        else
-            CmdPktCmdContactList (conn);
-        s_repl (&cont->nick, arg1);
-        cont->flags &= ~CONT_TEMPORARY;
-    }
-    else
-    {
-        if ((cont2 = ContactFindAlias (cont->uin, arg1)))
+        if (cont->flags & CONT_TEMPORARY)
         {
-            M_printf (i18n (2146, "'%s' is already an alias for '%s' (%ld).\n"),
-                     cont2->nick, cont->nick, cont->uin);
-        }
-        else if ((cont2 = ContactByNick (arg1, 1)))
-        {
-            M_printf (i18n (2147, "'%s' (%ld) is already used as a nick.\n"),
-                     cont2->nick, cont2->uin);
+            M_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, arg1);
+            if (!Add_User (conn, cont->uin, arg1))
+                M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
+            if (c_strlen (arg1) > uiG.nick_len)
+                uiG.nick_len = c_strlen (arg1);
+            if (!ContactGroupHas (conn->contacts, cont))
+                ContactGroupAdd (conn->contacts, cont);
+            if (conn->ver > 6)
+                SnacCliAddcontact (conn, cont->uin);
+            else
+                CmdPktCmdContactList (conn);
+            s_repl (&cont->nick, arg1);
+            cont->flags &= ~CONT_TEMPORARY;
         }
         else
         {
-            if (!(cont2 = ContactAdd (cont->uin, arg1)))
-            {
-                M_print (i18n (2118, "Out of memory.\n"));
-            }
+            if ((cont2 = ContactFindAlias (cont->uin, arg1)))
+                M_printf (i18n (2146, "'%s' is already an alias for '%s' (%ld).\n"),
+                         cont2->nick, cont->nick, cont->uin);
+            else if ((cont2 = ContactByNick (arg1, 1)))
+                M_printf (i18n (2147, "'%s' (%ld) is already used as a nick.\n"),
+                         cont2->nick, cont2->uin);
             else
             {
-                M_printf (i18n (2148, "Added '%s' as an alias for '%s' (%ld).\n"),
-                         cont2->nick, cont->nick, cont->uin);
-                M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
+                if (!(cont2 = ContactAdd (cont->uin, arg1)))
+                    M_print (i18n (2118, "Out of memory.\n"));
+                else
+                {
+                    M_printf (i18n (2148, "Added '%s' as an alias for '%s' (%ld).\n"),
+                             cont2->nick, cont->nick, cont->uin);
+                    M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
+                }
             }
         }
     }
-
+    if (cg)
+    {
+        if (!ContactGroupHas (cg, cont))
+        {
+            if (ContactGroupAdd (cg, cont))
+                M_printf (i18n (2241, "Added '%s' to contact group '%s'.\n"), cont->nick, cg->name);
+            else
+                M_print (i18n (2118, "Out of memory.\n"));
+        }
+    }
     return 0;
 }
 
 /*
  * Remove a user from your contact list.
  */
-static JUMP_F(CmdUserRem)
+static JUMP_F(CmdUserRemove)
 {
+    ContactGroup *cg = NULL;
     Contact *cont = NULL;
     UDWORD uin;
-    char *alias;
+    char *alias, *argst;
     UBYTE all = 0, tmp = 0;
     OPENCONN;
     
@@ -2349,6 +2439,11 @@ static JUMP_F(CmdUserRem)
         all = 1;
     }
 
+    argst = args;
+    if (s_parse (&args, &alias))
+        if ((cg = ContactGroupFind (0, conn, alias, 0)))
+            args = argst;
+
     while (*args)
     {
         if (!s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
@@ -2356,40 +2451,47 @@ static JUMP_F(CmdUserRem)
             M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
             break;
         }
+        if (*args == ',')
+            args++;
         
-        alias = strdup (cont->nick);
-        uin = cont->uin;
-        tmp = cont->flags & CONT_TEMPORARY;
-        
-        ContactRem (cont);
-        if (all)
+        if (cg)
         {
-            while ((cont = ContactByUIN (uin, 0)))
-                ContactRem (cont);
-        }
-        
-        if ((cont = ContactByUIN (uin, 0)))
-        {
-            M_printf (i18n (2149, "Removed alias '%s' for '%s' (%ld).\n"),
-                     alias, cont->nick, uin);
-        }
-        else if (tmp)
-        {
-            M_printf (i18n (2221, "Removed temporary contact '%s' (%ld).\n"),
-                     alias, uin);
         }
         else
         {
-            if (conn->ver > 6)
-                SnacCliRemcontact (conn, uin);
+            alias = strdup (cont->nick);
+            uin = cont->uin;
+            tmp = cont->flags & CONT_TEMPORARY;
+            
+            ContactRem (cont);
+            if (all)
+            {
+                while ((cont = ContactByUIN (uin, 0)))
+                    ContactRem (cont);
+            }
+            
+            if ((cont = ContactByUIN (uin, 0)))
+            {
+                M_printf (i18n (2149, "Removed alias '%s' for '%s' (%ld).\n"),
+                         alias, cont->nick, uin);
+            }
+            else if (tmp)
+            {
+                M_printf (i18n (2221, "Removed temporary contact '%s' (%ld).\n"),
+                         alias, uin);
+            }
             else
-                CmdPktCmdContactList (conn);
-            M_printf (i18n (2150, "Removed contact '%s' (%ld).\n"),
-                     alias, uin);
+            {
+                if (conn->ver > 6)
+                    SnacCliRemcontact (conn, uin);
+                else
+                    CmdPktCmdContactList (conn);
+                ContactGroupRem (conn->contacts, ContactByUIN (uin, 1));
+                M_printf (i18n (2150, "Removed contact '%s' (%ld).\n"),
+                         alias, uin);
+            }
+            free (alias);
         }
-        if (*args == ',')
-            args++;
-        free (alias);
     }
 
     M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));

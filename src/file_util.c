@@ -885,35 +885,31 @@ void Read_RC_File (FILE *rcf)
                 {
                     PrefParseRemainder (tmp);
                     s_repl (&cg->name, tmp);
-                    if (!cg->serv)
+                    if (!strncmp (cg->name, "contacts-", 9))
                     {
-                        if (!strncmp (cg->name, "contacts-", 9))
-                        {
-                            UWORD type = 0;
-                            UDWORD uin = 0;
-                            
-                            if      (!strncmp (cg->name + 9, "icq5-", 5)) type = TYPE_SERVER_OLD;
-                            else if (!strncmp (cg->name + 9, "icq8-", 5)) type = TYPE_SERVER;
-                            uin = atoi (cg->name + 14);
-                            
-                            for (i = 0; (conn = ConnectionNr (i)); i++)
-                                if (conn->spref && conn->spref->type == type && conn->spref->uin == uin)
-                                {
-                                    cg->serv = conn;
-                                    cg->serv->contacts = cg;
-                                    break;
-                                }
-                        }
-                        else
-                        {
-                            for (i = 0; (conn = ConnectionNr (i)); i++)
-                                if (conn->spref && conn->spref->type & TYPEF_SERVER)
-                                {
-                                    cg->serv = conn;
-                                    cg->serv->contacts = cg;
-                                    break;
-                                }
-                        }
+                        UWORD type = 0;
+                        UDWORD uin = 0;
+                        
+                        if      (!strncmp (cg->name + 9, "icq5-", 5)) type = TYPE_SERVER_OLD;
+                        else if (!strncmp (cg->name + 9, "icq8-", 5)) type = TYPE_SERVER;
+                        uin = atoi (cg->name + 14);
+                        
+                        for (i = 0; (conn = ConnectionNr (i)); i++)
+                            if (conn->spref && conn->spref->type == type && conn->spref->uin == uin)
+                            {
+                                cg->serv = conn;
+                                cg->serv->contacts = cg;
+                                break;
+                            }
+                    }
+                    else if (!cg->serv)
+                    {
+                        for (i = 0; (conn = ConnectionNr (i)); i++)
+                            if (conn->spref && conn->spref->type & TYPEF_SERVER)
+                            {
+                                cg->serv = conn;
+                                break;
+                            }
                     }
                 }
                 else if (!strcasecmp (cmd, "id") && !cg->used)
