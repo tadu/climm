@@ -131,6 +131,12 @@ void Idle_Check (Session *sess)
         {
             if (delta >= 2 * prG->away_time)
                 new = (sess->status & STATUSF_INV) | STATUS_NA;
+            else if (delta < prG->away_time || !prG->away_time)
+            {
+                new = (sess->status & STATUSF_INV) | STATUS_ONLINE;
+                idle_flag = 0;
+                idle_val = 0;
+            }
         }
     }
     else if (delta >= prG->away_time && !(sess->status & (STATUSF_AWAY | STATUSF_NA)))
