@@ -1,4 +1,7 @@
 
+2001-05-04 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* src/util_ui.c: Fix output glitch.
+
 2001-05-02 Rico Gloeckner <mc@ukeer.de>
 	* fixed tiny Input bug
 

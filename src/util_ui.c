@@ -281,7 +281,10 @@ static void M_prints (const char *str)
                         break;
                     case COLCHR:
                         if (!Color)
+                        {
+                            str += 2;
                             break;
+                        }
                         switch (*++p)
                         {
                             case '0':
