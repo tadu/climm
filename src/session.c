@@ -59,23 +59,23 @@ Connection *ConnectionC (void)
     Connection *conn;
     int i, j;
     
-    for (i = j = 0, cl = &slist; cl && cl->conn[i]; cl = cl->more)
-        for (i = 0; i < ConnectionListLen && cl->conn[i]; i++, j++)
-            ;
-    
-    if (!cl)
+    cl = &slist;
+    i = j = 0;
+    while (cl->conn[ConnectionListLen - 1] && cl->more)
+        cl = cl->more, j += ConnectionListLen;
+    if (cl->conn[ConnectionListLen - 1])
     {
-        for (cl = &slist; cl->more; cl = cl->more)
-            ;
         cl->more = calloc (1, sizeof (ConnectionList));
         
         if (!cl->more)
             return NULL;
 
         cl = cl->more;
-        i = 0;
+        j += ConnectionListLen;
     }
-    
+    while (cl->conn[i])
+        i++, j++;
+
     conn = calloc (1, sizeof (Connection));
     
     if (!conn)
@@ -198,7 +198,7 @@ UDWORD ConnectionFindNr (Connection *conn)
 
     for (i = 0, cl = &slist; cl; cl = cl->more)
         for (j = i; i < j + ConnectionListLen; i++)
-            if (cl->conn[i] == conn)
+            if (cl->conn[i % ConnectionListLen] == conn)
                 return i;
     return -1;
 }
@@ -212,9 +212,7 @@ void ConnectionClose (Connection *conn)
     Connection *clc;
     int i, j, k;
     
-    i = ConnectionFindNr (conn);
-    
-    if (i == -1)
+    if ((i = ConnectionFindNr (conn)) == -1)
         return;
 
     Debug (DEB_CONNECT, "===> %p[%d] (%s) closing...", conn, i, ConnectionType (conn));
@@ -222,8 +220,7 @@ void ConnectionClose (Connection *conn)
     if (conn->close)
         conn->close (conn);
 
-    i = k = ConnectionFindNr (conn);
-    if (i == -1)
+    if ((i = ConnectionFindNr (conn)) == -1)
         return;
 
     if (conn->sok != -1)
@@ -253,16 +250,21 @@ void ConnectionClose (Connection *conn)
 
     QueueCancel (conn);
 
-    for (cl = &slist; cl && i > ConnectionListLen; cl = cl->more)
-        i -= ConnectionListLen;
-    assert (cl);
+    for (k = 0, cl = &slist; cl; cl = cl->more)
+    {
+        for (i = 0; i < ConnectionListLen; i++, k++)
+            if (cl->conn[i] == conn)
+                break;
+        if (i < ConnectionListLen)
+            break;
+    }
     
     while (cl)
     {
         for (j = i; j + 1 < ConnectionListLen; j++)
             cl->conn[j] = cl->conn[j + 1];
-        cl->conn[ConnectionListLen - 1] = cl->more ? cl->more->conn[0] : NULL;
-        j = 0;
+        cl->conn[j] = cl->more ? cl->more->conn[0] : NULL;
+        i = 0;
     }
 
     Debug (DEB_CONNECT, "===> %p[%d] closed.", conn, k);
