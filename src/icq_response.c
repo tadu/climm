@@ -586,10 +586,11 @@ void IMOffline (Contact *cont, Connection *conn)
 #define MSGTYPE2ACKSTR ">>+"
 #define MSGTYPE2RECSTR "+<<"
 #else
-#define MSGTCPACKSTR   i18n (2289, "»»»")
-#define MSGTCPRECSTR   i18n (2290, "«««")
-#define MSGTYPE2ACKSTR i18n (2291, ">>»")
-#define MSGTYPE2RECSTR i18n (2292, "«<<")
+#define i19n i18n
+#define MSGTCPACKSTR   i19n (2289, "»»»")  /* i18n (2289, "���") */
+#define MSGTCPRECSTR   i19n (2290, "«««")  /* i18n (2290, "���") */
+#define MSGTYPE2ACKSTR i19n (2291, ">>»")    /* i18n (2291, ">>�") */
+#define MSGTYPE2RECSTR i19n (2292, "«<<")    /* i18n (2292, "�<<") */
 #endif
 
 /*

@@ -1042,10 +1042,10 @@
 2286:    tabs:       style for tab-handling: simple, cycle, cycleall.\n
 2287:    silence:    suppress some output: off, on, complete.\n
 2288:Indentation style is %s%s%s.\n
-2289:Â»Â»Â»
-2290:Â«Â«Â«
-2291:>>Â»
-2292:Â«<<
+2289:»»»
+2290:«««
+2291:>>»
+2292:«<<
 2293:--=
 2294:===
 2295:>>>
