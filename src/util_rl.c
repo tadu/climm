@@ -113,6 +113,7 @@ static void rl_key_left (void);
 static void rl_key_right (void);
 static void rl_key_delete (void);
 static void rl_key_backspace (void);
+static void rl_key_delete_backward_word (void);
 static void rl_key_backward_word (void);
 static void rl_key_forward_word (void);
 static void rl_key_end (void);
@@ -1227,6 +1228,38 @@ static void rl_key_backspace (void)
 }
 
 /*
+ * Handle delete backward-word
+ */
+static void rl_key_delete_backward_word (void)
+{
+    if (!rl_ucspos)
+        return;
+
+    rl_key_left ();
+    if (rl_ucspos > 0 && !iswalnum (rl_ucs_at (&rl_ucs, rl_ucspos)))
+        while (rl_ucspos > 0 && !iswalnum (rl_ucs_at (&rl_ucs, rl_ucspos)))
+        {
+            rl_key_delete ();
+            rl_key_left ();
+        }
+    if (!rl_ucspos)
+    {
+        rl_key_delete ();
+        return;
+    }
+    while (rl_ucspos > 0 && iswalnum (rl_ucs_at (&rl_ucs, rl_ucspos)))
+    {
+        rl_key_delete ();
+        rl_key_left ();
+    }
+    
+    if (!iswalnum (rl_ucs_at (&rl_ucs, rl_ucspos)))
+        rl_key_right ();
+    else
+        rl_key_delete ();
+}
+
+/*
  * Handle backward-word
  */
 static void rl_key_backward_word (void)
@@ -1395,6 +1428,9 @@ str_t ReadLine (UBYTE newbyte)
                     rl_tab_accept ();
                     rl_key_end ();
                     rl_historyadd ();
+                    break;
+                case 23:             /* ^W */
+                    rl_key_delete_backward_word ();
                     break;
                 case 25:             /* ^Y */
                     rl_tab_state = 0;
