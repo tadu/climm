@@ -35,9 +35,9 @@
 #include <string.h>
 #include <assert.h>
 
-#define s_read(s) do { char *data = PacketReadLNTS (pak); s_repl (&s, c_in (data)); free (data); } while (0)
+#define s_read(s) do { char *data = PacketReadLNTS (pak); s_repl (&s, c_in_to (data, cont)); free (data); } while (0)
 
-static BOOL Meta_Read_List (Packet *pak, Extra **list)
+static BOOL Meta_Read_List (Packet *pak, Extra **list, Contact *cont)
 {
     UBYTE i, j;
     
@@ -295,16 +295,16 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             event->callback (event);
             break;
         case META_SRV_INTEREST:
-            if (!Meta_Read_List (pak, &cont->meta_interest))
+            if (!Meta_Read_List (pak, &cont->meta_interest, cont))
                 break;
 
             cont->updated |= UPF_INTEREST;
             event->callback (event);
             break;
         case META_SRV_BACKGROUND:
-            if (!Meta_Read_List (pak, &cont->meta_background))
+            if (!Meta_Read_List (pak, &cont->meta_background, cont))
                 break;
-            if (!Meta_Read_List (pak, &cont->meta_affiliation))
+            if (!Meta_Read_List (pak, &cont->meta_affiliation, cont))
                 break;
 
             cont->updated |= UPF_BACKGROUND | UPF_AFFILIATION;
@@ -459,9 +459,10 @@ void Display_Ext_Info_Reply (Connection *conn, Packet *pak)
 void Recv_Message (Connection *conn, Packet *pak)
 {
     struct tm stamp;
+    Contact *cont;
+    char *text, *ctext;
     UDWORD uin;
     UWORD type;
-    char *text, *ctext;
 
 #ifdef HAVE_TIMEZONE
     stamp.tm_sec   = -timezone;
@@ -482,11 +483,15 @@ void Recv_Message (Connection *conn, Packet *pak)
     type           = PacketRead2 (pak);
     ctext          = PacketReadLNTS (pak);
     
-    text = strdup (c_in (ctext));
+    cont = ContactUIN (conn, uin);
+    if (!cont)
+        return;
+
+    text = strdup (c_in_to (ctext, cont));
     free (ctext);
 
     uiG.last_rcvd_uin = uin;
-    IMSrvMsg (ContactUIN (conn, uin), conn, mktime (&stamp),
+    IMSrvMsg (cont, conn, mktime (&stamp),
               ExtraSet (NULL, EXTRA_MESSAGE, type, text));
     free (text);
 }

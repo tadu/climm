@@ -426,8 +426,8 @@ void UDPCallBackResend (Event *event)
                     const char *url_data;
                     
                     *tmp++ = 0;
-                    url_desc = strdup (c_in (data));
-                    url_data = c_in (tmp);
+                    url_desc = strdup (c_in_to (data, cont));
+                    url_data = c_in_to (tmp, cont);
 
                     M_printf (i18n (2128, " Description: %s%s%s\n"), COLMESSAGE, url_desc, COLNONE);
                     M_printf (i18n (2129, "         URL: %s%s%s\n"), COLMESSAGE, url_data, COLNONE);
@@ -436,7 +436,7 @@ void UDPCallBackResend (Event *event)
                 }
             }
             else if ((type & ~MSGF_MASS) == MSG_NORM)
-                M_printf (COLMESSAGE "%s" COLNONE " ", c_in (data));
+                M_printf (COLMESSAGE "%s" COLNONE " ", c_in_to (data, cont));
         }
         else
         {

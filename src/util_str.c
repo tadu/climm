@@ -724,7 +724,7 @@ const char *s_quote (const char *input)
     if (!t)
         t = malloc (size = 32);
     if (!t || !input || !*input)
-        return "";
+        return "\"\"";
     for (tmp = input; *tmp; tmp++)
         if (!strchr (SUPERSAFE, *tmp))
             break;

@@ -72,12 +72,13 @@ struct ContactGroup_s
 struct Contact_s
 {
     char  *nick;
-    UWORD  id;
     UDWORD uin;
     UDWORD status;
     UDWORD flags;
-    UBYTE  v1, v2, v3, v4;
     UDWORD caps;
+    UWORD  id;
+    UBYTE  v1, v2, v3, v4;
+    UBYTE  encoding;
 
     char  *version;
     char  *last_message;

@@ -9,6 +9,7 @@
 #include "util_extra.h"
 #include "contact.h"
 #include "preferences.h"
+#include "conv.h"
 
 static const char *DebugStr (UDWORD level);
 
@@ -81,6 +82,9 @@ void UtilUIDisplayMeta (Contact *cont)
     M_printf (i18n (2236, "Information for %s%s%s (%ld):\n"),
               COLCONTACT, cont->nick, COLNONE, cont->uin);
     
+    if (cont->encoding)
+        M_printf (COLSERVER "%-15s" COLNONE " %s\n",
+                  i18n (2257, "Encoding:"), ConvEncName (cont->encoding));
     if ((mg = cont->meta_general))
     {
         if (mg->nick && *mg->nick)

@@ -383,7 +383,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             wdata = PacketRead2 (pak);
             ctext = PacketReadLNTS (pak);
             
-            text = strdup (c_in (ctext));
+            text = strdup (c_in_to (ctext, cont));
             free (ctext);
 
             if ((cont = ContactUIN (conn, uin)))
@@ -499,7 +499,7 @@ static JUMP_SRV_F (CmdPktSrvAck)
             return;
 
         IMIntMsg (cont, event->conn, NOW, STATUS_OFFLINE, INT_MSGACK_V5,
-                  c_in (tmp = PacketReadAtLNTS (event->pak, 30)), NULL);
+                  c_in_to (tmp = PacketReadAtLNTS (event->pak, 30), cont), NULL);
         free (tmp);
     }
     

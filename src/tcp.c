@@ -1647,7 +1647,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
             sumlen += fstat.st_size;
             pak = PeerPacketC (fpeer, 2);
             PacketWrite1 (pak, 0);
-            PacketWriteLNTS (pak, c_out (as[i]));
+            PacketWriteLNTS (pak, c_out_to (as[i], cont));
             PacketWriteLNTS (pak, "");
             PacketWrite4 (pak, fstat.st_size);
             PacketWrite4 (pak, 0);
@@ -1675,7 +1675,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     if (peer->ver < 8)
     {
         pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
-        SrvMsgAdvanced   (pak, peer->our_seq, TCP_MSG_FILE, 0, list->parent->status, c_out (description));
+        SrvMsgAdvanced   (pak, peer->our_seq, TCP_MSG_FILE, 0, list->parent->status, c_out_to (description, cont));
         PacketWrite2 (pak, 0);
         PacketWrite2 (pak, 0);
         PacketWriteLNTS (pak, "many, really many, files");
@@ -1798,7 +1798,7 @@ static void TCPCallBackReceive (Event *event)
     ctmp   = PacketReadLNTS (pak);
     /* fore/background color ignored */
     
-    tmp = strdup (c_in (ctmp));
+    tmp = strdup (c_in_to (ctmp, cont));
     
     switch (cmd)
     {
@@ -1870,9 +1870,9 @@ static void TCPCallBackReceive (Event *event)
                     len    = PacketRead4 (pak);
                              /* PORT2 ignored */
 
-                    text = strdup (c_in (ctext));
+                    text = strdup (c_in_to (ctext, cont));
                     free (ctext);
-                    name = strdup (c_in (cname));
+                    name = strdup (c_in_to (cname, cont));
                     free (cname);
 
                     switch (cmd)
@@ -1928,7 +1928,7 @@ static void TCPCallBackReceive (Event *event)
                     len  = PacketRead4 (pak);
                     type = PacketRead4 (pak);
                     
-                    tmp3 = strdup (c_in (ctmp));
+                    tmp3 = strdup (c_in_to (ctmp, cont));
                     free (ctmp);
 
                     if (PeerFileRequested (event->conn, e_msg_text, len))
@@ -1961,9 +1961,9 @@ static void TCPCallBackReceive (Event *event)
                         flen   = PacketRead4 (pak);
                         /*port2*/PacketRead4 (pak);
                         
-                        text = strdup (c_in (ctext));
+                        text = strdup (c_in_to (ctext, cont));
                         free (ctext);
-                        name = strdup (c_in (cname));
+                        name = strdup (c_in_to (cname, cont));
                         free (cname);
                         
                         switch (cmd)
