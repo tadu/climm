@@ -117,15 +117,11 @@ const char *BuildVersion (void)
 
 const char *BuildAttribution (void)
 {
-    if (ConvHaveUe (prG->enc_loc))
-    return (s_sprintf ("\xc2\xa9 1998-2000 %sMatthew D. Smith%s, "
-            "\xc2\xa9 2001-2003 %sR\xc3\xbc" "diger Kuhlmann%s,\n"
+    return (s_sprintf ("%s 1998-2000 %sMatthew D. Smith%s, %s 2001-2003 %sR%sdiger Kuhlmann%s,\n"
             "released under version 2 of the GNU General Public License (%sGPLv2%s).\n",
-            COLQUOTE, COLNONE, COLQUOTE, COLNONE, COLQUOTE, COLNONE));
-    return (s_sprintf ("\xc2\xa9 1998-2000 %sMatthew D. Smith%s, "
-            "\xc2\xa9 2001-2003 %sRuediger Kuhlmann%s,\n"
-            "released under version 2 of the GNU General Public License (%sGPLv2%s).\n",
-            COLQUOTE, COLNONE, COLQUOTE, COLNONE, COLQUOTE, COLNONE));
+            ConvTranslit ("\xc2\xa9", "(c)"), COLQUOTE, COLNONE,
+            ConvTranslit ("\xc2\xa9", "(c)"), COLQUOTE,
+            ConvTranslit ("\xc3\xbc", "ue"), COLNONE, COLQUOTE, COLNONE));
 }                  
 
 const UDWORD BuildVersionNum = MICQ_BUILD_NUM;

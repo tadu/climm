@@ -587,13 +587,12 @@ void IMOffline (Contact *cont, Connection *conn)
     TCLEvent (cont, "status", "logged_off");
 }
 
-#define i19n i18n
-#define MSGTCPACKSTR   i19n (2289, "Â»Â»Â»")  /* i18n (2289, "»»»") */
-#define MSGTCPRECSTR   i19n (2290, "Â«Â«Â«")  /* i18n (2290, "«««") */
-#define MSGSSLACKSTR   i19n (2279, "Â»%Â»")  /* i18n (2379, "»%»") */
-#define MSGSSLRECSTR   i19n (2380, "Â»%Â«")  /* i18n (2380, "«%«") */
-#define MSGTYPE2ACKSTR i19n (2291, ">>Â»")  /* i18n (2291, ">>»") */
-#define MSGTYPE2RECSTR i19n (2292, "Â«<<")  /* i18n (2292, "«<<") */
+#define MSGTCPACKSTR   ConvTranslit ("\xc2\xbb\xc2\xbb\xc2\xbb", "}}}")
+#define MSGTCPRECSTR   ConvTranslit ("\xc2\xab\xc2\xab\xc2\xab", "{{{")
+#define MSGSSLACKSTR   ConvTranslit ("\xc2\xbb%\xc2\xbb", "}%}")
+#define MSGSSLRECSTR   ConvTranslit ("\xc2\xab%\xc2\xab", "{%{")
+#define MSGTYPE2ACKSTR ConvTranslit (">>\xc2\xbb", ">>}")
+#define MSGTYPE2RECSTR ConvTranslit ("\xc2\xab<<", "{<<")
 
 /*
  * Central entry point for protocol triggered output.

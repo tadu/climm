@@ -27,12 +27,7 @@ BOOL        ConvFits           (const char *in, UBYTE enc);
 #define     c_delta(t)         (int)(ENC(enc_loc) == ENC_UTF8 ? strlen (t) - s_strlen (t) : 0)
 #define     s_delta(t)         (int)strlen (t) - (int)s_strlen (t)
 
-#if HAVE_ICONV
-BOOL        ConvHaveUe     (UBYTE enc);
-#else
-#define     ConvHaveUe(e)  (e == ENC_UTF8 || e == ENC_LATIN1 || e == ENC_LATIN9)
-#endif
-
+const char *ConvTranslit (const char *orig, const char *trans);
 
 strc_t      ConvFrom       (strc_t in, UBYTE enc);
 strc_t      ConvFromSplit  (strc_t in, UBYTE enc);

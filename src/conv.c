@@ -87,16 +87,6 @@ static enc_t *conv_encs = NULL;
 UBYTE conv_error = 0;
 
 #if HAVE_ICONV
-BOOL ConvHaveUe (UBYTE enc)
-{
-    enc &= ~ENC_FAUTO;
-    if (enc >= conv_nr)
-        return FALSE;
-    if (!conv_encs[enc].ito)
-        iconv_check (enc);
-    return conv_encs[enc].canue;
-}
-
 /*
  * Check whether iconv() can handle it.
  */
@@ -477,6 +467,19 @@ strc_t ConvTo (const char *ctext, UBYTE enc)
     if ((enc >= conv_nr) || (!conv_encs[enc].fto))
         enc = ENC_ASCII;
     return conv_encs[enc].fto (&text, enc);
+}
+
+/*
+ * Transliterates manually a string if it doesn't fit into the local
+ * encoding
+ */
+const char *ConvTranslit (const char *orig, const char *trans)
+{
+    UBYTE enc = prG->enc_loc;
+
+    if (strcmp (orig, ConvFrom (ConvTo (orig, enc), enc)->txt))
+        return trans;
+    return orig;
 }
 
 BOOL ConvFits (const char *in, UBYTE enc)
