@@ -456,7 +456,7 @@ static JUMP_F(CmdUserHelp)
                   i18n (1719, "Shows how long mICQ has been running and some statistics."));
         M_printf (COLMESSAGE "%s <option> <value>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                   CmdUserLookupName ("set"),
-                  i18n (2044, "Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silence."));
+                  i18n (2044, "Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent."));
         M_printf (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                   CmdUserLookupName ("save"),
                   i18n (2036, "Save current preferences to disc."));
@@ -2365,7 +2365,7 @@ static JUMP_F(CmdUserSet)
         else if (!strcasecmp (arg1, "autofinger")) { data = FLAG_AUTOFINGER; str = i18n (2268, "Automatic fingering of new UINs is %s%s%s.\n"); }
         else if (!strcasecmp (arg1, "linebreak"))  data = -1;
         else if (!strcasecmp (arg1, "tabs"))       data = -2;
-        else if (!strcasecmp (arg1, "silence"))    data = -3;
+        else if (!strcasecmp (arg1, "silent"))     data = -3;
         else if (!strcasecmp (arg1, "quiet"))
         {
             quiet = 1;
@@ -2450,7 +2450,7 @@ static JUMP_F(CmdUserSet)
         M_print (i18n (2284, "    autofinger: automatically finger new UINs.\n"));
         M_print (i18n (2285, "    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n"));
         M_print (i18n (2286, "    tabs:       style for tab-handling: simple, cycle, cycleall.\n"));
-        M_print (i18n (2287, "    silence:    suppress some output: off, on, complete.\n"));
+        M_print (i18n (2287, "    silent:     suppress some output: off, on, complete.\n"));
     }
     return 0;
 }

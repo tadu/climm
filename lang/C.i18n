@@ -828,7 +828,7 @@
 2039:Sends a message to a (<nick>'s) <cell> phone.
 2042:Displays a list of online people on your contact list in a screen wide format.
 2043:Remove all contacts in <contacts> from contact group <group>.
-2044:Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silence.
+2044:Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
 2045:Toggles your visibility to <contacts> when you're online.
 2046:You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n
 2047:Creating directory %s.\n
@@ -1040,7 +1040,7 @@
 2284:    autofinger: automatically finger new UINs.\n
 2285:    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n
 2286:    tabs:       style for tab-handling: simple, cycle, cycleall.\n
-2287:    silence:    suppress some output: off, on, complete.\n
+2287:    silent:     suppress some output: off, on, complete.\n
 2288:Indentation style is %s%s%s.\n
 2289:»»»
 2290:«««
@@ -1068,3 +1068,4 @@
 2312:Remove all aliases in <contacts>, removes contact if 'all' is given.
 2313:Grant, deny, request or acknowledge authorization from/to <contacts> to you/them to their/your contact list.
 2314:These are advanced commands. Be sure to have read the manual pages for complete information.\n
+2315:Cannot watch status of %s - too many watchers.\n

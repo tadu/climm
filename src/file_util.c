@@ -646,7 +646,7 @@ void Read_RC_File (FILE *rcf)
                         which = -2;
                     else if (!strcasecmp (cmd, "tabs"))
                         which = -3;
-                    else if (!strcasecmp (cmd, "silence"))
+                    else if (!strcasecmp (cmd, "silent"))
                         which = -4;
                     else
                         ERROR;
@@ -1217,7 +1217,7 @@ int Save_RC ()
                     prG->flags & FLAG_LIBR_INT 
                     ? prG->flags & FLAG_LIBR_BR ? "smart " : "indent"
                     : prG->flags & FLAG_LIBR_BR ? "break " : "simple");
-    fprintf (rcf, "set silence    %s # what stuff to hide (on, off, complete)\n",
+    fprintf (rcf, "set silent     %s # what stuff to hide (on, off, complete)\n",
                     prG->flags & FLAG_ULTRAQUIET ? "complete" :
                     prG->flags & FLAG_QUIET      ? "on" : "off");
     fprintf (rcf, "set tabs       %s # type of tab completion (simple, cycle, cycleall)\n\n",
