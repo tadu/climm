@@ -1012,7 +1012,7 @@ const char *s_mquote (const char *input, const char *color, BOOL allownl)
             s_catc (&t, *tmp);
         else if (*tmp != '\r' || !allownl || tmp[1] != '\n')
         {
-            s_catf (&t, COLCONTACT); /* color abuse */
+            s_catf (&t, COLINVCHAR);
             s_catc (&t, *tmp - 1 + 'A');
             s_catf (&t, color);
         }

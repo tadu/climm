@@ -1729,7 +1729,7 @@ static JUMP_F(CmdUserStatusDetail)
     {
         if (conn)
         {
-            M_printf ("%s " COLCONTACT "%10lu" COLNONE " ", s_now, conn->uin);
+            M_printf ("%s %s%10lu" COLNONE " ", s_now, COLCONTACT, conn->uin);
             M_printf (i18n (2211, "Your status is %s.\n"), s_status (conn->status));
         }
         if (data & 16)
@@ -1754,12 +1754,12 @@ static JUMP_F(CmdUserStatusDetail)
                     for (i = j = (totallen - c_strlen (cg->name) - 1) / 2; i >= 20; i -= 20)
                         M_print ("====================");
                     M_printf ("%.*s", (int)i, "====================");
-                    M_printf (" " COLCONTACT "%s" COLQUOTE " ", cg->name);
+                    M_printf (" %s%s" COLQUOTE " ", COLCONTACT, cg->name);
                     for (i = totallen - j - c_strlen (cg->name) - 2; i >= 20; i -= 20)
                         M_print ("====================");
                 }
                 else
-                    M_printf (" " COLCONTACT "%s" COLQUOTE " ", cg->name);
+                    M_printf (" %s%s" COLQUOTE " ", COLCONTACT, cg->name);
             }
             else
                 for (i = totallen; i >= 20; i -= 20)
@@ -1819,7 +1819,7 @@ static JUMP_F(CmdUserStatusDetail)
                           cont->dc->ip_rem && ~cont->dc->ip_rem ? '^' : ' ',
                          ul, (int)lenuin, cont->uin);
 
-                M_printf (COLSERVER "%s%c" COLCONTACT "%s%-*s" COLNONE "%s " COLQUOTE "%s%-*s" COLNONE "%s %-*s%s%s" COLNONE "\n",
+                M_printf (COLSERVER "%s%c%s%s%-*s" COLNONE "%s " COLQUOTE "%s%-*s" COLNONE "%s %-*s%s%s" COLNONE "\n",
                          ul, data & 2                       ? ' ' :
                          !cont->group                       ? '#' :
                          ContactPrefVal (cont, CO_INTIMATE) ? '*' :
@@ -1829,7 +1829,7 @@ static JUMP_F(CmdUserStatusDetail)
                          peer->connect & CONNECT_OK         ? '&' :
                          peer->connect & CONNECT_FAIL       ? '|' :
                          peer->connect & CONNECT_MASK       ? ':' : '.' ,
-                         ul, lennick + s_delta (cont->nick), cont->nick,
+                         COLCONTACT, ul, lennick + s_delta (cont->nick), cont->nick,
                          ul, ul, lenstat + 2 + s_delta (stat), stat,
                          ul, lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
                          ver2 ? ver2 : "", tbuf);
@@ -1837,8 +1837,8 @@ static JUMP_F(CmdUserStatusDetail)
                 for (alias = cont->alias; alias && (data & 2); alias = alias->more)
                 {
                     M_printf (COLSERVER "%s+     %*ld", ul, (int)lenuin, cont->uin);
-                    M_printf (COLSERVER "%s " COLCONTACT "%s%-*s" COLNONE "%s " COLQUOTE "%s%-*s" COLNONE "%s %-*s%s%s" COLNONE "\n",
-                             ul, ul, lennick + s_delta (alias->alias), alias->alias,
+                    M_printf (COLSERVER "%s %s%s%-*s" COLNONE "%s " COLQUOTE "%s%-*s" COLNONE "%s %-*s%s%s" COLNONE "\n",
+                             ul, COLCONTACT, ul, lennick + s_delta (alias->alias), alias->alias,
                              ul, ul, lenstat + 2 + s_delta (stat), stat,
                              ul, lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
                              ver2 ? ver2 : "", tbuf);
@@ -2029,8 +2029,8 @@ static JUMP_F(CmdUserIgnoreStatus)
             else
                 M_print (" ");
 
-            M_printf (COLCONTACT "%-20s\t" COLQUOTE "(%s)" COLNONE "\n",
-                     cont->nick, s_status (cont->status));
+            M_printf ("%s%-20s\t" COLQUOTE "(%s)" COLNONE "\n",
+                      COLCONTACT, cont->nick, s_status (cont->status));
         }
     }
     M_print (W_SEPARATOR);
@@ -2118,7 +2118,7 @@ static JUMP_F(CmdUserStatusWide)
         M_print (COLNONE "\n");
         for (i = 0; i < OffIdx; i++)
         {
-            M_printf (COLCONTACT "  %-*s" COLNONE, MaxLen + 2, Offline[i]->nick);
+            M_printf ("%s  %-*s" COLNONE, COLCONTACT, MaxLen + 2, Offline[i]->nick);
             if ((i + 1) % NumCols == 0)
                 M_print ("\n");
         }
@@ -2145,7 +2145,7 @@ static JUMP_F(CmdUserStatusWide)
     }
 
    /* Print our status */
-    M_printf (" " COLCONTACT "%10lu" COLNONE " ", conn->uin);
+    M_printf (" %s%10lu" COLNONE " ", COLCONTACT, conn->uin);
     M_printf (i18n (2211, "Your status is %s.\n"), stat);
     free (stat);
     
@@ -2158,8 +2158,8 @@ static JUMP_F(CmdUserStatusWide)
         if ((Online[i]->status & 0xffff) == STATUS_ONLINE)
             ind = ' ';
 
-        M_printf (COLNONE "%c " COLCONTACT "%-*s" COLNONE,
-                 ind, MaxLen + 2, Online[i]->nick);
+        M_printf (COLNONE "%c %s%-*s" COLNONE,
+                 ind, COLCONTACT, MaxLen + 2, Online[i]->nick);
         if ((i + 1) % NumCols == 0)
             M_print ("\n");
     }
@@ -2190,7 +2190,8 @@ static JUMP_F(CmdUserStatusShort)
     OPENCONN;
 
     M_print  (W_SEPARATOR);
-    M_printf ("%s " COLCONTACT "%10lu" COLNONE " ", s_now, conn->uin);
+    cont = ContactUIN (conn, conn->uin);
+    M_printf ("%s %s%10lu" COLNONE " ", s_now, COLCONTACT, conn->uin);
     M_printf (i18n (2211, "Your status is %s.\n"), s_status (conn->status));
 
     cg = conn->contacts;
@@ -2208,8 +2209,8 @@ static JUMP_F(CmdUserStatusShort)
                     else
                         M_print (" ");
 
-                    M_printf (COLCONTACT "%-20s\t" COLQUOTE "(%s)" COLNONE "\n",
-                             cont->nick, s_status (cont->status));
+                    M_printf ("%s%-20s\t" COLQUOTE "(%s)" COLNONE "\n",
+                              COLCONTACT, cont->nick, s_status (cont->status));
                 }
             }
         }
@@ -2227,8 +2228,8 @@ static JUMP_F(CmdUserStatusShort)
                 else
                     M_print (" ");
 
-                M_printf (COLCONTACT "%-20s\t" COLQUOTE "(%s)" COLNONE "\n",
-                         cont->nick, s_status (cont->status));
+                M_printf ("%s%-20s\t" COLQUOTE "(%s)" COLNONE "\n",
+                          COLCONTACT, cont->nick, s_status (cont->status));
                 if (cont->version)
                    M_printf (" [%s]", cont->version);
                 if (cont->status & STATUSF_BIRTH)

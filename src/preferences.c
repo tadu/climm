@@ -218,34 +218,34 @@ const char *PrefSetColorScheme (UBYTE scheme)
                    "colorcontact green "       "colorsent \"magenta bold\" "
                    "colorack \"green bold\" "  "colorerror \"red bold\" "
                    "colorincoming \"cyan bold\" colordebug yellow "
-                   "colorquote blue";
+                   "colorquote blue "          "colorinvchar \"red bold\"";
         case 2:
             return "colornone none "           "colorserver magenta "
                    "colorclient cyan "         "colormessage cyan "
                    "colorcontact cyan "        "colorsent \"magenta bold\" "
                    "colorack \"green bold\" "  "colorerror \"red bold\" "
                    "colorincoming \"cyan bold\" colordebug yellow "
-                   "colorquote blue";
+                   "colorquote blue "          "colorinvchar \"red bold\"";
         case 3:
             return "colornone green "          "colorserver none "
                    "colorclient green "        "colormessage green "
                    "colorcontact \"green bold\" colorsent \"magenta bold\" "
                    "colorack \"green bold\" "  "colorerror \"red bold\" "
                    "colorincoming \"cyan bold\" colordebug yellow "
-                   "colorquote blue";
+                   "colorquote blue "          "colorinvchar \"red bold\"";
         case 4:
             return "colornone none "           "colorserver red "
                    "colorclient green "        "colormessage \"blue bold\" "
                  "colorcontact \"magenta bold\" colorsent \"magenta bold\" "
                    "colorack \"green bold\" "  "colorerror \"red bold\" "
                    "colorincoming \"cyan bold\" colordebug yellow "
-                   "colorquote blue";
+                   "colorquote blue "          "colorinvchar \"red bold\"";
         default:
             return "colornone none "           "colorserver none "
                    "colorclient none "         "colormessage none "
                    "colorcontact none "        "colorsent none "
                    "colorack none "            "colorerror none "
                    "colorincoming none "       "colordebug none "
-                   "colorquote none";
+                   "colorquote none "          "colorinvchar none ";
     }
 }

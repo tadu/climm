@@ -81,7 +81,7 @@ extern struct ContactOption_s ContactOptionsList[];
 #define CO_COLORNONE     (COF_COLOR   | CO_GLOBAL  | 0x10) /* the escape sequence to print for no color              */
 #define CO_COLORSERVER   (COF_COLOR   | CO_GLOBAL  | 0x11) /* the escape sequence to print for server message        */
 #define CO_COLORCLIENT   (COF_COLOR   | CO_GLOBAL  | 0x12) /* the escape sequence to print for client stuff          */
-#define CO_COLORCONTACT  (COF_COLOR   | CO_GLOBAL  | 0x13) /* the escape sequence to print for contacts              */
+#define CO_COLORINVCHAR  (COF_COLOR   | CO_GLOBAL  | 0x13) /* the escape sequence to print for invalid characters    */
 #define CO_COLORERROR    (COF_COLOR   | CO_GLOBAL  | 0x14) /* the escape sequence to print for errors                */
 #define CO_COLORDEBUG    (COF_COLOR   | CO_GLOBAL  | 0x15) /* the escape sequence to print for debug messages        */
 #define CO_COLORQUOTE    (COF_COLOR   | CO_GLOBAL  | 0x16) /* the escape sequence to print for options/quotes        */
@@ -89,5 +89,6 @@ extern struct ContactOption_s ContactOptionsList[];
 #define CO_COLORSENT     (COF_COLOR   | CO_CONTACT | 0x18) /* the escape sequence to print for sent messages         */
 #define CO_COLORACK      (COF_COLOR   | CO_CONTACT | 0x19) /* the escape sequence to print for acknowledged messages */
 #define CO_COLORINCOMING (COF_COLOR   | CO_CONTACT | 0x1a) /* the escape sequence to print for incoming messages     */
+#define CO_COLORCONTACT  (COF_COLOR   | CO_CONTACT | 0x1b) /* the escape sequence to print for contacts              */
 
 #endif

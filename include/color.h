@@ -26,7 +26,7 @@
 #define COLNONE         ESC COLSTR "0"
 #define COLSERVER       ESC COLSTR "1"
 #define COLCLIENT       ESC COLSTR "2"
-#define COLCONTACT      ESC COLSTR "3"
+#define COLINVCHAR      ESC COLSTR "3"
 #define COLERROR        ESC COLSTR "4"
 #define COLDEBUG        ESC COLSTR "5"
 #define COLQUOTE        ESC COLSTR "6"
@@ -34,6 +34,7 @@
 #define COLSENT         ContactPrefStr (cont, CO_COLORSENT)
 #define COLACK          ContactPrefStr (cont, CO_COLORACK)
 #define COLINCOMING     ContactPrefStr (cont, CO_COLORINCOMING)
+#define COLCONTACT      ContactPrefStr (cont, CO_COLORCONTACT)
 
 #define COLINDENT       ESC "v"
 #define COLEXDENT       ESC "^"

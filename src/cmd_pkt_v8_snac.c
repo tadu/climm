@@ -974,7 +974,7 @@ static JUMP_SNAC_F(SnacSrvSrvackmsg)
         case 4:
             IMOffline (cont, event->conn);
 
-            M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
+            M_printf ("%s %s%*s" COLNONE " ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick);
             M_print  (i18n (2126, "is offline, message queued on server.\n"));
 
 /*          cont->status = STATUS_OFFLINE;

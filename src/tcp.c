@@ -1426,7 +1426,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
         }
         else
         {
-            M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
+            M_printf ("%s %s%*s" COLNONE " ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick);
             M_printf (i18n (2091, "Queueing %s as %s for transfer.\n"), files[i], as[i]);
             sum++;
             sumlen += fstat.st_size;

@@ -531,7 +531,7 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
     if (prG->event_cmd && *prG->event_cmd)
         EventExec (cont, prG->event_cmd, !~old ? 2 : 5, status, NULL);
 
-    M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
+    M_printf ("%s %s%*s" COLNONE " ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick);
     M_printf (~old ? i18n (2212, "changed status to %s") : i18n (2213, "logged on (%s)"), s_status (status));
     if (cont->version && !~old)
         M_printf (" [%s]", cont->version);
@@ -574,8 +574,8 @@ void IMOffline (Contact *cont, Connection *conn)
     if (prG->event_cmd && *prG->event_cmd)
         EventExec (cont, prG->event_cmd, 3, old, NULL);
  
-    M_printf ("%s " COLCONTACT "%*s" COLNONE " %s\n",
-             s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, i18n (1030, "logged off."));
+    M_printf ("%s %s%*s" COLNONE " %s\n",
+             s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, i18n (1030, "logged off."));
 }
 
 #define i19n i18n
@@ -909,7 +909,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             tmp3 = s_msgtok (NULL); if (!tmp3) continue;
             tmp4 = s_msgtok (NULL); if (!tmp4) continue;
 
-            M_printf ("\n" COLCONTACT "%s" COLNONE " ", tmp);
+            M_printf ("\n%s%s" COLNONE " ", COLCONTACT, tmp);
             M_print  (i18n (1755, "has added you to their contact list.\n"));
             M_printf ("%-15s %s%s" COLNONE "\n", i18n (1564, "First name:"), COLMESSAGE, tmp2);
             M_printf ("%-15s %s%s" COLNONE "\n", i18n (1565, "Last name:"), COLMESSAGE, tmp3);
@@ -947,7 +947,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
                 tmp2 = s_msgtok (NULL); if (!tmp2) continue;
                 tmp3 = s_msgtok (NULL); if (!tmp3) continue;
                 
-                M_printf (COLCONTACT "%s\t\t\t", tmp2);
+                M_printf ("%s%s\t\t\t", COLCONTACT, tmp2);
                 M_printf ("%s%s" COLNONE "\n", COLMESSAGE, tmp3);
             }
             break;
