@@ -686,9 +686,12 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
             *q = '*';
     M_print (p);
     free (p);
-
     ExtraD (extra);
+
+    HistMsg (conn, cont, stamp == NOW ? time (NULL) : stamp, text, HIST_OUT);
 }
+
+#define HISTSIZE 100
 
 struct History_s
 {
@@ -696,37 +699,38 @@ struct History_s
     Contact *cont;
     time_t stamp;
     char *msg;
+    UWORD inout;
 };
 typedef struct History_s History;
 
-static History hist[50];
+static History hist[HISTSIZE];
 
 /*
  * History
  */
-void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg)
+void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg, UWORD inout)
 {
     int i, j, k;
 
-    if (hist[49].conn && hist[0].conn)
+    if (hist[HISTSIZE - 1].conn && hist[0].conn)
     {
         free (hist[0].msg);
-        for (i = 0; i < 49; i++)
+        for (i = 0; i < HISTSIZE - 1; i++)
             hist[i] = hist[i + 1];
-        hist[49].conn = NULL;
+        hist[HISTSIZE - 1].conn = NULL;
     }
 
-    for (i = k = j = 0; j < 49 && hist[j].conn; j++)
+    for (i = k = j = 0; j < HISTSIZE - 1 && hist[j].conn; j++)
         if (cont == hist[j].cont)
         {
             if (!k)
                 i = j;
-            if (++k == 10)
+            if (++k == 20)
             {
                 free (hist[i].msg);
-                for ( ; i < 49; i++)
+                for ( ; i < HISTSIZE - 1; i++)
                     hist[i] = hist[i + 1];
-                hist[49].conn = NULL;
+                hist[HISTSIZE - 1].conn = NULL;
                 j--;
             }
         }
@@ -735,16 +739,25 @@ void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg)
     hist[j].cont = cont;
     hist[j].stamp = stamp;
     hist[j].msg = strdup (msg);
+    hist[j].inout = inout;
 }
 
 void HistShow (Connection *conn, Contact *cont)
 {
     int i;
     
-    for (i = 0; i < 50; i++)
+    for (i = 0; i < HISTSIZE; i++)
         if (hist[i].conn && (!cont || hist[i].cont == cont))
-            M_printf (COLDEBUG "%s " COLINCOMING "%*s" COLNONE " " COLMSGINDENT "%s\n",
-                      s_time (&hist[i].stamp), uiG.nick_len + s_delta (hist[i].cont->nick), hist[i].cont->nick, hist[i].msg);
+        {
+            if (hist[i].inout == HIST_IN)
+                M_printf (COLDEBUG "%s " COLINCOMING "%*s <" COLNONE " " COLMSGINDENT "%s\n",
+                          s_time (&hist[i].stamp), uiG.nick_len + s_delta (hist[i].cont->nick),
+                          hist[i].cont->nick, hist[i].msg);
+            else
+                M_printf (COLDEBUG "%s " COLACK "%*s >" COLNONE " " COLMSGINDENT "%s\n",
+                          s_time (&hist[i].stamp), uiG.nick_len + s_delta (hist[i].cont->nick),
+                          hist[i].cont->nick, hist[i].msg);
+        }
 }
 
 /*
@@ -847,7 +860,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
         case MSG_NORM:
         default:
             M_printf ("%s " COLMSGINDENT "%s\n", carr, cdata);
-            HistMsg (conn, cont, stamp == NOW ? time (NULL) : stamp, cdata);
+            HistMsg (conn, cont, stamp == NOW ? time (NULL) : stamp, cdata, HIST_IN);
             TCLEvent ("message", s_sprintf ("%lu {%s}", cont->uin, cdata));
             TCLMessage (cont, cdata);
             break;
@@ -895,6 +908,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             
             M_printf ("%s " COLMESSAGE "%s" COLNONE "\n%s", carr, s_sanitize (tmp), s_now);
             M_printf (i18n (2127, "       URL: %s %s%s%s\n"), carr, COLMESSAGE, s_sanitize (tmp2), COLNONE);
+            HistMsg (conn, cont, stamp == NOW ? time (NULL) : stamp, cdata, HIST_IN);
             break;
 
         case MSG_AUTH_REQ:

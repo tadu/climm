@@ -9,6 +9,8 @@ void Display_Rand_User (Connection *conn, Packet *pak);
 void Recv_Message (Connection *conn, Packet *pak);
 void Display_Info_Reply (Connection *conn, Contact *cont, Packet *pak, UBYTE flags);
 void Display_Ext_Info_Reply (Connection *conn, Packet *pak);
+
+void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg, UWORD inout);
 void HistShow (Connection *conn, Contact *cont);
 
 void IMIntMsg  (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UWORD type, const char *text, Extra *extra);
@@ -30,5 +32,8 @@ void IMOffline (Contact *cont, Connection *conn);
 #define INT_MSGACK_TYPE2 11
 #define INT_MSGACK_V8    12
 #define INT_MSGACK_V5    13
+
+#define HIST_IN 1
+#define HIST_OUT 2
 
 #endif /* MICQ_IM_SRV_H */
