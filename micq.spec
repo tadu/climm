@@ -2,7 +2,7 @@ Summary:		text/line based ICQ client with many features
 Name:			micq%{!?_with_tcl:-notcl}%{!?_with_ssl:-nossl}
 Version:		0.4.10.6
 Release:		1
-Source:			%{name}-%{version}.tgz
+Source:			micq-%{version}.tgz
 URL:			http://www.micq.org/
 Group:			Networking/ICQ
 Packager:		Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
