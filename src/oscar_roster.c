@@ -91,7 +91,18 @@ JUMP_SNAC_F(SnacSrvReplylists)
     SnacCliAddcontact (serv, NULL, serv->contacts);
     SnacCliReqofflinemsgs (serv);
     if (serv->flags & CONN_WIZARD)
+    {
         IMRoster (serv, IMROSTER_IMPORT);
+        if (serv->flags & CONN_INITWP)
+        {
+            Contact *cont = ContactUIN (serv, serv->uin);
+            CONTACT_GENERAL (cont);
+            CONTACT_MORE (cont);
+            SnacCliMetasetabout (serv, "mICQ");
+            SnacCliMetasetgeneral (serv, cont);
+            SnacCliMetasetmore (serv, cont);
+        }
+    }
     else if (ContactGroupPrefVal (serv->contacts, CO_WANTSBL))
         IMRoster (serv, IMROSTER_DIFF);
 }
@@ -485,17 +496,17 @@ JUMP_SNAC_F(SnacSrvUpdateack)
                 cont->oldflags |= CONT_REQAUTH;
                 OptSetVal (&cont->copts, CO_ISSBL, 0);
             }
-            rl_printf (i18n (9999, "Contact upload failed, authorization required.\n"));
+            rl_printf (i18n (2537, "Contact upload failed, authorization required.\n"));
             break;
         case 3:
             if (cont)
                 cont->id = 0;
-            rl_printf (i18n (9999, "Contact upload failed, already on server.\n"));
+            rl_printf (i18n (2538, "Contact upload failed, already on server.\n"));
             break;
         case 0:
             if (cont)
                 OptSetVal (&cont->copts, CO_ISSBL, 1);
-            rl_printf (i18n (9999, "Contact upload succeeded.\n"));
+            rl_printf (i18n (2539, "Contact upload succeeded.\n"));
             break;
         default:
             rl_printf (i18n (2325, "Warning: server based contact list change failed with error code %d.\n"), err);

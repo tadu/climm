@@ -105,6 +105,7 @@ JUMP_SNAC_F(SnacSrvNewuin)
         serv->assoc->flags |= CONN_AUTOLOGIN;
 #endif
         serv->flags |= CONN_AUTOLOGIN;
+        serv->flags |= CONN_INITWP;
 
         s_repl (&serv->contacts->name, s_sprintf ("contacts-icq8-%ld", cont->uin));
         rl_print (i18n (1790, "Setup wizard finished. Congratulations to your new UIN!\n"));
@@ -119,4 +120,3 @@ JUMP_SNAC_F(SnacSrvNewuin)
     else
         rl_print (i18n (2518, "You need to 'save' to write your new UIN to disc.\n"));
 }
-

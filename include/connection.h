@@ -172,5 +172,6 @@ val_t          ConnectionPrefVal (Connection *conn, UDWORD flag);
 #define CONN_AUTOLOGIN   1
 #define CONN_WIZARD      2
 #define CONN_CONFIGURED  4
+#define CONN_INITWP      8
 
 #endif /* MICQ_UTIL_CONNECTION_H */
