@@ -1,40 +1,40 @@
 .\" $Id$
-.\"Ceci est la page de manuel du fichier ~/.micq/micqrc."
-.\".TH MICQ 7 "15 Février 2002" "MICQ(7)"
-.Dd February 15, 2002
-.Dt MICQ 7
-.Os MICQ(7)
-.Sh NOM
-Les commandes interactives de mICQ
-.Sh DESCRIPTION
-Cette page de manuel décrit les commandes qui peuvent être utilisé dans micq.
+.\"  EN: micq.7,v 1.1 2002/08/11 20:17:33
+.\"      ^^ <version of English man page this is in sync with>
+.TH MICQ 7 mICQ FR
+.SH NOM
+.B mICQ
+\- les commandes interactives
+.SH DESCRIPTION
+Cette page de manuel décrit les commandes qui peuvent être utilisé dans mICQ.
 Cette page contient les mêmes informations que l'aide en ligne.
-.Sh COMMANDES
-.Bl -tag -width Fl
-.It Ic trans Op Ar langue|nr ...
+.SH COMMANDES
+
+.TP
+.BI trans \ [langue|nr]...
 Basculer vers la langue
-.Ar langue ,
+.IR langue ,
 donné par son code iso, ou affiche la chaîne de caratères traduite numéro
-.Ar nr .
+.IR nr .
 Pour sélectionner la langue par défaut donnée par les variables d'environnement
-.Ic LANG ,
-.Ic LC_ALL
+.BR LANG ,
+.BR LC_ALL
 et
-.Ic LC_MESSAGES ,
+.BR LC_MESSAGES ,
 utilisez
-.Ic \&! ,
-.Ic auto
+.BR ! ,
+.BR auto
 ou
-.Ic default .
+.BR default .
 Pour ne pas sélectionner de traduction du tout, utilisez
-.Ic \&. ,
-.Ic none
+.BR . ,
+.BR none
 ou
-.Ic unload .
+.BR unload .
 Pour obtenir des informations de debug, ajoutez le préfixe
-.Ic debug .
+.BR debug .
 Pour obtenir des messages farfelus, ajoutez le suffixe 
-.Ic _fun .
+.BR _fun .
 .sp
 Les fichiers correspondant à ~/.micq/i18n/*.i18n sont prioritaires sur les messages globaux, 
 alors que les messages "farfelus" sont plus prioritaires que les messages standards.
@@ -42,318 +42,376 @@ alors que les messages "farfelus" sont plus prioritaires que les messages standa
 En fait, vous pouvez donner autant d'arguments que vous le voulez, 
 par exemple pour afficher la chaîne de caractères numéro 117 en allemand 
 et ensuite revenir au langage par défaut, utilisez "trans de 117 default".
-.It Ic tabs 
+.TP
+.BI tabs 
 Affiche une liste d'utilisateurs que vous pouvez parcourir grâce à 
 la touche tabulation.
-.It Ic save
+.TP
+.BI save
 Enregistre les paramètres actuels dans le fichier de configuration, qui est
-.Pa ~/.micq/micqrc ,
+.IR ~/.micq/micqrc ,
 a moins qu'autre chose n'ait été spécifié.
 Faites attention car cela ne conservera pas les commentaires présents 
 dans le fichier.
-.It Ic r Op Ar message
+.TP
+.BI r \ [message]
 Répondre au dernier message reçu. Si un
-.Ar message
+.IR message
 n'est pas donné, le mode multi-lignes est activé.  
 Pour envoyer le message multi-lignes, écrivez un point 
-.Ic ( . )
+.RB ( . )
 seul sur une ligne.  Pour annuler l'écriture d'un message, écrivez un diese 
-.Ic ( # )
+.RB ( # )
 tout seul sur une ligne.
-.It Ic a Op Ar message
+.TP
+.BI a \ [message]
 Envoie un message à la dernière personne à laquelle vous avez envoyé un message. Voir 
-.Ic r
+.BR r
 pour un comportement sans 
-.Ar message .
-.It Ic msg Ar uin|surnom Ic Op Ar message
+.IR message .
+.TP
+.BI msg \ uin|surnom\ [message]
 Envoie un message à
-.Ar uin|surnom .
+.IR uin|surnom .
 Voir
-.Ic r 
+.BR r 
 pour connaiître son comportement sans 
-.Ar message .
-.It Ic url Ar uin|surnom Ic Ar url Ar message
+.IR message .
+.TP
+.BI url \ uin|surnom\ url\ message
 Envoie un 
-.Ar message
+.IR message
 concernant une 
-.Ar url
+.IR url
 à 
-.Ar uin|surnom .
-.It Ic sms Ar numéro message
+.IR uin|surnom .
+.TP
+.BI sms \ numéro\ message
 Envoie le message SMS 
-.Ar message
+.IR message
 à un téléphone de numéro 
-.Ar numéro ,
+.IR numéro ,
 qui a la forme suivante : +<code pays><numéro>.
-.It Ic msga
+.TP
+.BI msga
 Envoie un message multi-lignes à tous les contacts que vous possédez. 
 Utilisez un point 
-.Ic ( . )
+.RB ( . )
 seul sur une ligne pour envoyer le message, ou un diese 
-.Ic ( # )
+.RB ( # )
 seul sur une ligne pour annuler le message.
-.It Ic resend Ar uin|surnom ...
+.TP
+.BI resend \ uin|surnom\ ...
 Ré-envoie le dernier message à 
-.Ar uin
+.IR uin
 ou 
-.Ar surnom .
+.IR surnom .
 L'argument peut être répété autant que nécessaire.
-.It Ic uptime
+.TP
+.BI uptime
 Affiche depuis combien de temps mICQ s'exécute.
-.It Ic last Op Ar contact
+.TP
+.BI last\ [contact]
 Affiche une liste d'utilisateurs qui vous ont envoyé des messages ou le 
 dernier message reçu de la part de 
-.Ar contact ,
+.IR contact ,
 qui peut être un 
-.Ar uin
+.IR uin
 ou un 
-.Ar surnom .
-.It Ic verbose Op Ar verb
+.IR surnom .
+.TP
+.BI verbose \ [verb]
 Paramètre la verbosité de mICQ à 
-.Ar verb ,
+.IR verb ,
 ou affiche le niveau actuel de verbosité. Le niveau de verbosité est 
 constitué d'un ensemble d'options :
-.Bl -tag -width Fl
-.It 128
+.RS
+.TP
+.128
 Affiche les paquets entrants et sortants.
-.It 256
+.TP
+.256
 Ecrit les paquets entrants et sortants concernant le serveur dans un fichier 
 (~/.micq/debug/packets).
-.El
+.IP
 Il en existe d'autres.
-.It Ic clear
+.TP
+.BI clear
 Efface l'écran.
-.It Ic sound Op Ar commande
+.TP
+.BI sound \ [commande]
 Active ou désactive le son, ou paramètre l'exécution de la commande 
-.Ar commande 
+.IR commande 
 pour le produire.
-.It Ic soundonline Op Ar commande
+.TP
+.BI soundonline \ [commande]
 Active ou désactive le son pour les notifications d'utilisateurs connectés, 
 ou paramètre l'exécution de la commande 
-.Ar commande 
+.IR commande 
 pour le produire.
-.It Ic soundoffline Op Ar commande
+.TP
+.BI soundoffline \ [commande]
 Active ou désactive le son pour les notifications d'utilisateurs se déconnectant, 
 ou paramètre l'exécution de la commande 
-.Ar commande 
+.IR commande 
 pour le produire.
-.It Ic q
-Termine micq.
-.It Ic auto Op Ar on|off
+.TP
+.BI q
+Termine mICQ.
+.TP
+.BI auto \ [on|off]
 Active ou désactive les messages de réponse automatique. 
 Si aucune des deux options n'est donnée, la liste des réponses automatiques 
 actuelles est donnée.
-.It Ic auto Ar état message
+.TP
+.BI auto \ état\ message
 Change le message de réponse automatique pour l'état 
-.Ar état
+.IR état
 comme étant le message 
-.Ar message .
-.It Ic autoaway Op Ar délai|on|off
+.IR message .
+.TP
+.BI autoaway \ [délai|on|off]
 Paramètre le délai à 
-.Ar délai ,
+.IR délai ,
 ou active le mode "auto away" en utilisant le dernier délai choisi si 
-.Ar on
+.IR on
 est donné, ou désactive le mode "auto away" si l'option  
-.Ar off
+.IR off
 est choisie en enregistrant le délai actuel. Un délai d'une valeur de 0 est 
 équivalent à l'option 
-.Ar off .
+.IR off .
 Si aucun argument n'est donné, les paramètres actuels sont affichés.
-.It Ic alter Ar ancienne_commande nouvelle_commande
+.TP
+.BI alter \ ancienne_commande\ nouvelle_commande
 Renomme la commande 
-.Ar ancienne_commande
+.IR ancienne_commande
 en 
-.Ar nouvelle_commande .
-.It Ic auth Ar uin|surnom
+.IR nouvelle_commande .
+.TP
+.BI auth \ uin|surnom
 Autorise
-.Ar uin|surnom
+.IR uin|surnom
 à vous ajouter à sa liste de contacts.
-.It Ic rand Ar numéro
+.TP
+.BI rand \ numéro
 Trouve aléatoirement un utilisateur dans le groupe d'intérêt 
-.Ar numéro .
-.It Ic pass Ar mot_de_passe
+.IR numéro .
+.TP
+.BI pass \ mot_de_passe
 Change votre mot de passe ICQ en 
-.Ar mot_de_passe . 
+.IR mot_de_passe . 
 .br
-Remarque : vous devez entrer 
-.Ar save
+Remarque: vous devez entrer 
+.B save
 pour rendre la modification persistante au cas où vous sauvegardiez votre mot 
 de passe dans le fichier 
-.Pa ~/.micq/micqrc
+.IR ~/.micq/micqrc
 (voir 
-.Xr micqrc 7 ) ,
+.BR micqrc (7),
 sinon votre mot de passe sera rejeté à la prochaine authentification.
-.It Ic search
-.It Ic search Ar email
-.It Ic search Ar surnom
-.It Ic search Ar prénom nom
+.TP
+.BI search
+.TP
+.BI search \ email
+.TP
+.BI search \ surnom
+.TP
+.BI search \ prénom\ nom
 Recherche un utilisateur qui a 
-.Ar email
+.IR email
 pour courriel, 
-.Ar surnom
+.IR surnom
 comme surnom (qui peut contenir le caractère @), ou 
-.Ar prénom
+.IR prénom
 comme prénom et 
-.Ar nom 
+.IR nom 
 comme nom. Si aucun argument n'est donné, vous devrez donner le surnom, 
 prénom, nom, courriel et une quantité importante de données qui seront utilisées 
 comme critères de recherche.
-.It Ic add Ar uin Op Ar surnom
+.TP
+.BI add \ uin\ [surnom]
 Ajoute 
-.Ar uin
+.IR uin
 à votre liste de contacts avec comme surnom 
-.Ar surnom , 
+.IR surnom , 
 ou renomme 
-.Ar uin
+.IR uin
 en 
-.Ar surnom .
+.IR surnom .
 Si 
-.Ar surnom 
+.IR surnom 
 n'est pas spécifié, utilise 
-.Ar uin
+.IR uin
 comme surnom.
 .br
-Remarque  : vous devez utiliser la commande
-.Ar save
+Remarque: vous devez utiliser la commande
+.IR save
 pour rendre les changements persistants.
-.It Ic rem Ar surnom 
+.TP
+.BI rem \ surnom 
 Supprime 
-.Ar surnom 
+.IR surnom 
 de votre liste de contacts.
 .br
-Remarque : vous devez utiliser la commande 
-.Ar save
+Remarque: vous devez utiliser la commande 
+.IR save
 pour rendre ce changement persistant.
-.It Ic togvis Ar surnom 
+.TP
+.BI togvis \ surnom 
 Active ou désactive le fait que 
-.Ar nickname
+.IR nickname
 puisse vous contacter même si vous êtes en mode invisible.
-.It Ic toginvis Ar surnom 
+.TP
+.BI toginvis \ surnom 
 Active ou désactive le fait que vous soyez invisible pour le contact ayant le surnom 
-.Ar surnom .
-.It Ic togig Ar surnom 
+.IR surnom .
+.TP
+.BI togig \ surnom 
 Active ou désactive le fait que les messages et changements d'états du contact ayant comme surnom 
-.Ar surnom 
+.IR surnom 
 soient ignorés.
-.It Ic info Ar uin|surnom 
+.TP
+.BI info \ uin|surnom 
 Affiche toutes les infos pour le contact ayant comme uin ou surnom
-.Ar uin|surnom .
-.It Ic w
+.IR uin|surnom .
+.TP
+.BI w
 Affiche toutes les personnes de votre liste de contacts.
-.It Ic e 
+.TP
+.BI e 
 Affiche toutes les personnes de votre liste de contacts qui sont connectées.
-.It Ic wide
+.TP
+.BI wide
 Affiche toutes les personnes qui sont dans votre liste de contacts en utilisant 
 toute la largeur de l'écran.
-.It Ic ewide
+.TP
+.BI ewide
 Affiche toutes les personnes de votre liste de contacts qui sont connectées 
 en utilisant toute la largeur de l'écran.
-.It Ic s
+.TP
+.BI s
 Affiche votre état actuel.
-.It Ic i
+.TP
+.BI i
 Affiche tous les contacts que vous ignorez.
-.It Ic status Ar surnom 
+.TP
+.BI status \ surnom 
 Affiche l'état du contact ayant pour surnom 
-.Ar surnom .
+.IR surnom .
 Les informations affichées comprennent l'adresse IP, la version du 
 protocole ICQ et le type de connexion.
-.It Ic change Op Ar numéro 
+.TP
+.BI change \ [numéro]
 Change votre état à l'état numéro 
-.Ar numéro .
+.IR numéro .
 Si vous ne lui fournissez pas de numéro, cette commande affiche une liste 
 des modes disponibles. 
-.It Ic reg mot_de_passe 
+.TP
+.BI reg \ mot_de_passe 
 Crée un nouvel utilisateur ayant pour mot de passe 
-.Ar mot_de_passe .
-.It Ic online
-Change votre état en Online.
-.It Ic away
-Change votre état en Away.
-.It Ic na
-Change votre état en Not Available.
-.It Ic occ             
-Change votre état en Occupied.
-.It Ic dnd 
-Change votre état en Do not Disturb.
-.It Ic ffc
-Change votre état en Free for Chat.
-.It Ic inv
-Change votre état en Invisible
-.It Ic update
+.IR mot_de_passe .
+.TP
+.BI online
+Change votre état en "connecté".
+.TP
+.BI away
+Change votre état en "absent".
+.TP
+.BI na
+Change votre état en "non disponible".
+.TP
+.BI occ             
+Change votre état en "occupé".
+.TP
+.BI dnd 
+Change votre état en "ne pas déranger".
+.TP
+.BI ffc
+Change votre état en "libre pour chatter".
+.TP
+.BI inv
+Change votre état en "invisible".
+.TP
+.BI update
 Actualise vos informations basiques (courriel, surnom, etc.).
-.It Ic other
+.TP
+.BI other
 Actualise d'autres informations comme l'age et le sexe.
-.It Ic about
+.TP
+.BI about
 Met à jour les informations de la section "à propos".
-.It Ic set Ar option Ar valeur 
-Donne a l'option 
-.Ar option
+.TP
+.BI set \ option\ valeur 
+Donne a l'option
+.IR option
 la valeur 
-.Ic on
+.BR on
 ou 
-.Ic off .
-.Ar option
+.BR off .
+.IR option
 peut être 
-.Ic color ,
-.Ic funny
+.BR color ,
+.BR funny
 ou 
-.Ic quiet .
-.It Ic peek Ar surnom 
+.BR quiet .
+.TP
+.BI peek \ surnom 
 Vérifie si l'utilisateur ayant pour surnom 
-.Ar surnom 
+.IR surnom 
 est actuellement connecté. Cette commande utilise un bug dans le protocole ICQ pour 
 trouver ce renseignement;
 aucune information excepté l'état de connexion ne peut être récupérée de cette manière.
-.It Ic setr Op Ar numéro 
+.TP
+.BI setr \ [numéro]
 Paramètre votre numéro de groupe d'utilisateur aléatoire à
-.Ar numéro .
+.IR numéro .
 Sans argument, cette command affiche les groupes d'intérêts existants. 
-.It Ic tcp Ar commande Ar uin|surnom 
+.TP
+.BI tcp \ commande\ uin|surnom 
 Effectue la commande 
-.Ar commande 
+.IR commande 
 sur l'utilisateur dont l'uin est
-.Ar uin
+.IR uin
 ou dont le surnom est
-.Ar surnom .
-.Ar commande
+.IR surnom .
+.IR commande
 peut être 
-.Ic open
+.BR open
 pour ouvrir une connexion de pair à pair avec TCP vers l'utilisateur, ou 
-.Ic close
+.BR close
 pour fermer et réinitialiser une telle connexion, ou
-.Ic off
+.BR off
 pour arrêter d'éssayer d'établir une telle connexion pour envoyer des messages 
 jusqu'à ce qu'elle soit explicitement ouverte ou réinitialisée, ou  
-.Ic auto
+.BR auto
 pour obtenir la réponse automatique actuelle de l'utilisateur ou encore
-.Ic away ,
-.Ic na ,
-.Ic dnd ,
-.Ic occ
+.BR away ,
+.BR na ,
+.BR dnd ,
+.BR occ
 ou
-.Ic ffc
+.BR ffc
 pour obtenir la réponse automatique de l'utilisateur pour un de ces états.
-.It Ic conn Op Ar commande Ar nr
+.TP
+.BI conn \ [commande\ nr]
 Affiche toutes les connexion, ou effectue la commande 
-.Ar command
+.IR command
 sur la connexion 
-.Ar nr .
-.Ar commande 
+.IR nr .
+.IR commande 
 peut être 
-.Ic open
+.BR open
 ou 
-.Ic login
+.BR login
 pour ouvrir cette connexion si elle ne l'est pas actuellement.
-.El
-.Sh VOIR AUSSI
-.Xr micq 1 ,
-.Xr micqrc 5
-.Sh AUTEUR
-Cette page de manuel a été écrite par James Morrison
-.Pa <ja2morrison@student.math.uwaterloo.ca>
-pour pouvoir consulter une référence de toutes les commandes de
-.Ic micq .
 
-.Sh TRADUCTION
+.SH VOIR AUSSI
+.BR micq (1),
+.BR micqrc (5)
+.SH AUTEUR
+Cette page de manuel a été écrite par James Morrison
+.IR <ja2morrison@student.math.uwaterloo.ca>
+pour pouvoir consulter une référence de toutes les commandes de
+.BR mICQ .
 Cette page de manuel a été traduite par Julien Gilli 
-.Pa <jgilli@nerim.fr>.
+.IR <jgilli@nerim.fr>.

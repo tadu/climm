@@ -1,284 +1,347 @@
 .\" $Id$
-.\"Ceci est la page de manuel de ~/.micqrc."
-.Dd 15 Février 2002
-.Dt MICQRC 5
-.Os MICQRC(5)
-.\".TH micqrc 5 "15 Février 2002"
-.Sh NOM
-.Ic ~/.micq/micqrc
-\- Le fichier de configuration de micq
-.Sh DESCRIPTION
+.\"  EN: micqrc.5,v 1.1 2002/08/11 20:17:33
+.\"      ^^ <version of English man page this is in sync with>
+.TH MICQRC 5 mICQ FR
+.SH NOM
+.BR ~/.micq/micqrc
+\- Le fichier de configuration de mICQ
+.SH DESCRIPTION
 Cette page de manuel décrit le fichier de configuration de micq. Il comprend 
 plusieurs sections qui débutent par
-.Ic [section] ,
+.BR [section] ,
 où
-.Ic section
+.BR section
 est le nom de la section.
-.Sh CONNEXIONS
+.SH CONNEXIONS
 Une section 
-.Ic Connection
+.BR Connection
 décrit une connexion au sein d'ICQ. En général, il y en a deux,
-qui sont en relation l'une avec l'autre : une connexion au serveur ICQ, et une 
+qui sont en relation l'une avec l'autre: une connexion au serveur ICQ, et une 
 connexion pour écouter les communications des contacts.
-.Bl -tag -width Fl
-.It Ic type Ar type Op Ar auto
+
+
+.TP
+.BI type \ type\ [auto]
 Paramètre le type de la connexion à
-.Ar type ,
+.IR type ,
 qui peut être
-.Ic server
+.BR server
 pour une connexion au serveur ICQ, ou
-.Ic peer
+.BR peer
 pour une connexion qui concerne les communications avec les contacts. Si l'option 
-.Ar auto
+.IR auto
 est donnée, la connexion est créée au démarrage de mICQ. 
 Ceci est probablement ce que vous devriez faire, à moins que vous 
 possédiez plusieurs UINs, dans ce cas paramétrez cela sur la connexion 
 correspondant à l'UIN que vous utilisez.
-.It Ic version Ar nr
+
+.TP
+.BI version \ nr
 Paramètre la version du protocole ICQ utilisée pour cette connexion à
-.Ar nr .
+.IR nr .
 Remarquez que pour les connexions vers des serveurs, seule la version
-.Ic 5
+.BR 5
 est supportée, bien que le support pour la version
-.Ic 8
+.BR 8
 soit plannifié, et seule la version
-.Ic 6 
+.BR 6 
 est supportée pour les communications avec les contacts.
-.It Ic server Ar server
+
+.TP
+.BI server \ server
 Paramètre le serveur auquel se connecter à
-.Ar server .
+.IR server .
 La valeur par défaut est
-.Ic icq.icq.com .
+.BR icq.icq.com .
 Ceci est inutilisé pour les communications avec les contacts.
-.It Ic port Ar port
+
+.TP
+.BI port \ port
 Paramètre le port auquel se connecter sur le serveur à
-.Ar port ,
+.IR port ,
 ou le port à écouter pour les communications avec les contacts à
-.Ar port.
-.It Ic uin Ar UIN
+.IR port .
+
+.TP
+.BI uin \ UIN
 Paramètre l'UIN à utiliser pour la phase de connexion à
-.Ar UIN .
+.IR UIN .
 Inutilisé pour les communications avec les contacts.
-.It Ic password Op Ar mot_de_passe
+
+.TP
+.BI password \ [mot_de_passe]
 Paramètre le mot de passe à utiliser lors de la phase de connexion à
-.Ar mot_de_passe .
+.IR mot_de_passe .
 Inutilisé pour les communications avec les contacts. Si ce paramètre n'est 
 pas présent, le mot de passe vous sera demandé au lancement.
-.It Ic status Ar nr
+
+.TP
+.BI status \ nr
 Paramètre l'état à choisir après la phase de connexion à
-.Ar nr .
-L'état peut être :
-.br
-0   online
-.br
-1   away
-.br
-5   not available
-.br
-17  occupied
-.br
-19  do not disturb
-.br
-32  free for chat
-.br
-256 invisible
-.El
-.Sh GENERAL
+.IR nr .
+L'état peut être:
+.RS
+.TP
+0
+connecté
+.TP
+1
+absent
+.TP
+5
+non disponible
+.TP
+17
+occupé
+.TP
+19
+ne pas déranger
+.TP
+32
+libre pour chatter
+.TP
+256
+invisible
+.RE
+.SH GENERAL
 Cette section inclue les options concernant SOCKS 5, qui seront 
-éventuellement déplacées vers leur propre section , les options générales,
+éventuellement déplacées vers leur propre section, les options générales,
 et quelques chaînes de caractères à redéfinir.
-.Bl -tag -width Fl
-.It Ic s5_use Ar nombre
+
+
+.TP
+.BI s5_use \ nombre
 Paramétrez
-.Ar number
+.IR number
 à 0 pour désactiver et 1 pour activer l'utilisation de SOCKS 5.
-.It Ic s5_host Ar host
+
+.TP
+.BI s5_host \ host
 Se connecter au proxy socks 5 de la machine
-.Ar machine .
-.It Ic s5_port Ar port
+.IR machine .
+
+.TP
+.BI s5_port \ port
 Se connecter au proxy socks 5 qui écoute sur le port
-.Ar port .
-.It Ic s5_auth Ar nombre
+.IR port .
+
+.TP
+.BI s5_auth \ nombre
 Paramètrez
-.Ar nombre
+.IR nombre
 à 0 pour ne pas effectuer l'authentification et 1 pour l'effectuer.
-.It Ic s5_name Ar nom
+
+.TP
+.BI s5_name \ nom
 S'identifier en tant qu'utilisateur de nom
-.Ar nom
+.IR nom
 auprès du proxy socks 5.
 .br
-.It Ic s5_pass Ar mot_de_passe
+
+.TP
+.BI s5_pass \ mot_de_passe
 S'authentifier avec le mot de passe
-.Ar mot_de_passe
+.IR mot_de_passe
 auprès du proxy socks5.
-.El
+
 .sp
 Maintenant les options :
-.Bl -tag -width Fl
-.It Ic verbose Ar niveau
+
+
+.TP
+.BI verbose \ niveau
 Paramètre le niveau de verbosité au lancement à
-.Ar niveau .
-.It Ic auto_away Ar délai
+.IR niveau .
+
+.TP
+.BI auto_away \ délai
 Paramètre le délai précédent l'activation de l'état away à
-.Ar délai
+.IR délai
 en secondes. Donnez la valeur
-.Ic 0
+.BR 0
 pour désactiver le mode auto away.
-.It Ic Screen_width Ar largeur
+
+.TP
+.BI Screen_width \ largeur
 Paramètre la largeur par défaut de l'écran à
-.Ar largeur .
+.IR largeur .
 Si la valeur n'est pas paramétrée ou égale à 
-.Ic 0 , 80
+.BR 0 , \ 80
 sera la valeur utilisée. Cela est rarement utile car 
 généralement la largeur actuelle de l'écran peut être connue à l'exécution.
-.It Ic set delbs Ar on|off
+
+.TP
+.BI set \ delbs\ on|off
 Si la valeur est
-.Ar on ,
+.B on ,
 le caractère suppr agira comme un retour (backspace). Si la valeur est
-.Ar off ,
+.B off ,
 le caractère suppr agira normalement.
-.It Ic set russian Ar on|off
+
+.TP
+.BI set \ russian\ on|off
 Désactive ou active la conversion des caractères russes entre le jeu koi8-r/u 
 et  cp1251.
-.It Ic set japanese Ar on|off
+
+.TP
+.BI set \ japanese\ on|off
 Désactive ou active la conversion des caractères japonais entre le jeu 
 Shift-JIS et EUC.
-.It Ic set funny Ar on|off
+
+.TP
+.BI set \ funny\ on|off
 Désactive ou active les messages amusants.
-.It Ic set color Ar on|off
+
+.TP
+.BI set \ color\ on|off
 Désactive ou active l'utilisation des couleurs.
-.It Ic set hermit Ar on|off
+
+.TP
+.BI set \ hermit\ on|off
 Si la valeur est
-.Ar on ,
+.IR on ,
 tous les messages provenant de personnes qui ne sont pas dans votre 
 liste de contacts seront ignorés.
-.It Ic set log Ar on|off
+
+.TP
+.BI set \ log\ on|off
 Désactive ou active l'utilisation des journaux.
-.It Ic set logonoff Ar on|off
+
+.TP
+.BI set \ logonoff\ on|off
 Lorsque l'utilisation des journaux est activée, désactive ou active l'enregistrement 
 des changements d'états de connecté à deconnecté et vice-versa.
-.It Ic set auto Ar on|off
+
+.TP
+.BI set \ auto\ on|off
 Désactive ou active les réponses automatiques.
-.It Ic set uinprompt Ar on|off
+
+.TP
+.BI set \ uinprompt\ on|off
 Désactive ou active l'utilisation à partir de l'invite du dernier surnom 
 duquel vous avez reçu un message.
-.It Ic set linebreak Ar type
+
+.TP
+.BI set \ linebreak\ type
 Paramètre le type des retours à la ligne pour les messages reçus à
-.Ar type ,
+.IR type ,
 qui peut être
-.Ic simple
+.BR simple
 pour arranger les lignes de manière habituelle,
-.Ic break
+.BR break
 pour obtenir un retour à la ligne avant chaque message,
-.Ic indent
+.BR indent
 pour obtenir un retour à la ligne et indenter le message et
-.Ic smart
+.BR smart
 pour obtenir un retour à la ligne seulement si le message ne rentre pas dans la ligne actuelle.
-.It Ic set tabs simple|cycle|cycle_tous
+
+.TP
+.BI set \ tabs\ simple|cycle|cycleall
 Sélectionne le type d'utilisation de la complétion. Les anciennes versions de 
 mICQ ne connaissaient que
-.Ic simple ,
+.BR simple ,
 qui ne fonctionne qu'avec la commande
-.Ic msg
+.BR msg
 et complète la commande en parcourant la liste de tous les contacts auquel 
 vous avez envoyé ou desquels vous avez reçus des messages. 
 Le texte déjà entré après le surnom était perdu.
-.Ic cycle
+.BR cycle
 parcourt la liste de tous les contacts en ligne de votre liste de contact. 
 Elle conserve tout texte entré précédemment intact, cependant elle ne 
 fonctionne qu'avec la commande 
-.Ic msg.
-.Ic cycleall
+.BR msg .
+.BR cycleall
 est équivalente à
-.Ic cycle ,
+.BR cycle ,
 mais parcourt la liste de tous les contacts, même ceux qui ne sont pas connectés.
-.El
 .sp
-Enfin, des chaînes de caractères peuvent être définies :
-.Bl -tag -width Fl
-.It Ic logplace Ar fichier|répertoire
+Enfin, des chaînes de caractères peuvent être définies:
+.TP
+.BI logplace \ fichier|répertoire
 Paramètre le fichier contenant le journal à
-.Ar fichier ,
+.IR fichier ,
 ou le répertoire contenant les journaux à
-.Ar répertoire .
+.IR répertoire .
 Remarquez qu'un chemin est considéré comme un répertoire si il a un
-.Ic / 
+.BR / 
 à la 
 fin de son nom.
-.It Ic sound Ar on|off|cmd
+
+.TP
+.BI sound \ on|off|cmd
 Désactive ou active l'avertissement sonore. Si le paramètre n'est ni
-.Ar on
+.B on
 ni
-.Ar off,
+.B off,
 le paramètre est considéré comme un programme à exécuter à la place de 
 l'avertissement sonore.
-.It Ic soundonline Ar on|off|cmd
+
+.TP
+.BI soundonline \ on|off|cmd
 Même chose que ci-dessus, mais concernant les utilisateurs se connectant.
-.It Ic soundoffline Ar on|off|cmd
+
+.TP
+.BI soundoffline \ on|off|cmd
 Même chose que ci-dessus, mais pour les utilisateurs qui se déconnectent.
-.It Ic receivescript Ar cmd
+
+.TP
+.BI receivescript \ cmd
 Paramètre la commande à exécuter lors de la réception d'un message. 
 Laissez vide pour ne rien faire.
-.It Ic auto Ar état Ar chaîne_de_caractères
-Paramètre la réponse automatique de l'état
-.Ar état
-à
-.Ar chaine_de_caractères.
-Cette option peut être répétée pour tous les états possibles
-.Ic away ,
-.Ic na ,
-.Ic dnd ,
-.Ic occ ,
-.Ic inv ,
-and
-.Ic ffc
-.
-.El
 
-.Sh CHAINES
+.TP
+.BI auto \ état\ chaîne_de_caractères
+Paramètre la réponse automatique de l'état
+.IR état
+à
+.IR chaine_de_caractères.
+Cette option peut être répétée pour tous les états possibles
+.BR away ,
+.BR na ,
+.BR dnd ,
+.BR occ ,
+.BR inv ,
+and
+.BR ffc .
+.SH CHAINES
 Cette section contient les changements de nom de commandes.
-.Bl -tag -width Fl
-.It Ic alter Ar ancienne Ar nouvelle
+.TP
+.BI alter \ ancienne\ nouvelle
 Renomme la commande
-.Ar ancienne
+.IR ancienne
 en
-.Ar nouvelle .
+.IR nouvelle .
 Remarquez que l'ancien nom peut toujours être utilisé, à moins qu'il entre 
 en conflit avec le nom de la commande
-.Ar nouvelle
-.
+.IR nouvelle
 Pour les noms de commandes possibles, consultez 
-.Xr micq 7 .
+.BR micq (7).
 Cette option peut être répétée à volontée.
-.El
-.Sh CONTACTS
+.SH CONTACTS
 Cette section contient la liste de contacts.
-.Bl -tag -width Fl
-.It Ic [ Ar * ] [ Ar ~ ] [ Ar ^ ] Ar uin Ar surnom
+.I [*][~][^] uin surnom
 Donner à l'utilisateur possédant l'UIN
-.Ar uin
+.IR uin
 le surnom
-.Ar surnom .
+.IR surnom .
 Si
-.Ar *
+.B *
 est donnée, l'utilisateur peut vous voir lorsque vous êtes en mode invisible. Si
-.Ar ~
+.B ~
 est donnée, il vous verra toujours comme étant déconnecté. Si
-.Ar ^
+.B ^
 est donnée, vous ignorez l'utilisateur.
 Si un UIN apparaît plusieurs fois, tous excepté le premier sont considérés comme 
 des alias.
-.El
-Remarque : la liste de contacts doit être la dernière partie du fichier.
-.Sh VOIR AUSSI
-.Xr micq 1 ,
-.Xr micq 7
-.Sh AUTEUR
+Remarque: la liste de contacts doit être la dernière partie du fichier.
+.SH VOIR AUSSI
+.BR micq (1),
+.BR micq (7)
+.SH AUTEUR
 Cette page de manuel a été écrite par James Morrison
-.Pa <ja2morrison@student.math.uwaterloo.ca> .
+.IR <ja2morrison@student.math.uwaterloo.ca> .
 Elle a été écrite pour correspondre à la nouvelle syntaxe du fichier de 
 configuration choisie par Rüdiger Kuhlmann
-.Pa <micq@ruediger-kuhlmann.de> .
-.Sh TRADUCTION
+.IR <micq@ruediger-kuhlmann.de> .
 Cette page de manuel a été traduite vers le français par Julien Gilli 
-.Pa <jgilli@nerim.fr>.
+.IR <jgilli@nerim.fr> .

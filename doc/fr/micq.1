@@ -1,102 +1,110 @@
-.\" $Id$
-.\"                                      Hey, EMACS: -*- nroff -*-
-.Dd 15 Février 2002
-.Dt MICQ 1
-.Os MICQ(1)
-.\" Please adjust this date whenever revising the manpage.
-.Sh NOM
-.Ic micq
+.\" $Id$ -*- nroff -*-
+.\"  EN: micq.1,v 1.1 2002/08/11 20:17:33
+.\"      ^^ <version of English man page this is in sync with>
+.TH MICQ 1 mICQ FR
+.SH NOM
+.BR micq
 \- Un petit client ICQ en mode texte
-.Sh SYNOPSIS
-.Ic micq Op Ar -v
-.Op Ar -f nom_fichier
+.SH SYNOPSIS
+.BR micq
+.I [-v[level]]
+.I [-f nom_fichier]
 .br
-.Sh DESCRIPTION
-.Ic mICQ
+.SH DESCRIPTION
+.BR mICQ
 est un client ICQ en mode texte qui supporte de nombreuses caractéristiques parmi celles fournies par le client de Mirabilis.
 Micq permet de changer le mot de passe de l'utilisateur, de créer de nouveaux comptes, d'actualiser les informations de 
 l'utilisateur, de rechercher d'autres utilisateurs, etc.
-.Sh OPTIONS
-.Bl -tag -width flag
-.It Fl v Op Ar verbosité
-Active le mode verbeux, ou paramètre le niveau de verbosité à 
-.Ar verbosité .
-.It Fl f Ar nom_fichier
-Utilise le fichier 
-.Ar nom_fichier
-comme fichier de configuration.
-.It Fl l Ar fichier|répertoire
-Utilise
-.Ar fichier
-comme fichier journal, ou utilise
-.Ar répertoire
-comme répertoire dans lequel créer des fichiers journaux par utilisateur.
-.It Fl ?, h
-Affiche l'aide.
-.El
+.SH OPTIONS
 
-.Sh CARACTERISTIQUES
-.Ic mICQ
+.TP
+.BI -v \ [verbosité]
+Active le mode verbeux, ou paramètre le niveau de verbosité à 
+.IR verbosité .
+.TP
+.BI -f \ nom_fichier
+Utilise le fichier 
+.IR nom_fichier
+comme fichier de configuration.
+.TP
+.BI -l \ fichier|répertoire
+Utilise
+.IR fichier
+comme fichier journal, ou utilise
+.IR répertoire
+comme répertoire dans lequel créer des fichiers journaux par utilisateur.
+.TP
+.B -?, -h
+Affiche l'aide.
+
+
+.SH CARACTERISTIQUES
+.BR mICQ
 est très portable et tourne sous Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD 
 et tout autre système de type Unix moderne.
 
-.Ic La version 0.4.9 de mICQ 
+La version
+.B 0.4.9 de mICQ 
 tourne sous Linux, AIX, HPUX, Tru64, partiellement sous BeOS et d'autres unices.  
 Cependant, les autres portages peuvent ne pas fonctionner et toute personne souhaitant 
-les tester est la bienvenue
-.Sh HISTORIQUE
-.Bl -tag -width Fl
-.It 16 Août 1998
+les tester est la bienvenue.
+
+.SH HISTORIQUE
+.TP
+16 Août 1998
 Matthew D. Smith publie micq au monde. 
-Cela sera suivit par 12 publications jusqu'au 25 Septembre 1998
-.It 05 Janvier 2001
+Cela sera suivit par 12 publications jusqu'au 25 Septembre 1998.
+.TP
+05 Janvier 2001
 Matthew D. Smith est décédé d'un accident de voiture. 
 Les utilisateurs de mICQ ont repris le projet où Matthew l'a quitté, 
 ont opté pour la licence BSD et relancé le développement de
-.Ic mICQ .
-.It 10 Juin 2002
+.BR mICQ .
+.TP
+10 Juin 2002
 La version 0.4.9 est publiée par Rüdiger Kuhlmann dans les termes de la licence GPL, 
 et implémente la nouvelle version du protocole ICQ (version 8).
-.Sh LISTE DE DISCUSSION
+.SH LISTE DE DISCUSSION
 La liste de discussion de micq est
-.Pa micq-list@mc.ukeer.de .
+.IR micq-list@mc.ukeer.de .
 Les informations concernant l'abonnement  et les archives sont disponibles à
-.Pa http://www.micq.org/pipermail/micq-list/ .
-.Sh TELECHARGEMENT
+.IR http://www.micq.org/pipermail/micq-list/ .
+.SH TELECHARGEMENT
 Par HTTP à
-.Pa http://www.micq.org/download .
-.br
-Pour obtenir la dernière version par CVS, entrez :
-.br
+.IR http://www.micq.org/download .
+Pour obtenir la dernière version par CVS, entrez:
+.sp
 cvs -d:pserver:anonymous@micq.org:/usr/local/cvsroot co micq
-.br
-.Sh VOIR AUSSI
-.Xr micqrc 5 ,
-.Xr micq 7
-.Sh FICHIERS
-.Bl -tag -width Fl
-.It ~/.micqrc
+.SH VOIR AUSSI
+.BR micqrc (5),
+.BR micq (7)
+.SH FICHIERS
+
+.TP
+.I ~/.micqrc
 Ancien fichier de configuration de mICQ, obsolète.
-.It ~/.micq/micqrc
+.TP
+.I ~/.micq/micqrc
 Fichier de configuration de mICQ.
-.It PREFIXE/share/micq/*.i18n
+.TP
+.I PREFIXE/share/micq/*.i18n
 Fichiers de traduction contenant les traductions de toutes les chaînes de 
 caractères que mICQ affiche.
-.It ~/.micq/i18n/*.i18n
+.TP
+.I ~/.micq/i18n/*.i18n
 Substituts locaux pour les fichiers de traduction mentionnés ci-dessus.
-.It ~/.micq/history/
+.TP
+.I ~/.micq/history/
 Chemin par défaut du répertoire où les fichiers journaux sont créés.
-.El
-.Sh BUGS
+
+.SH BUGS
 Envoyez les rapports de bugs et commentaires à Rüdiger Kuhlmann
 <micq@ruediger-kuhlmann.de> (en allemand ou en anglais).
-.Sh AUTEUR
+.SH AUTEUR
 Cette page de manuel a été écrite par James Morrison
-.Pa <ja2morrison@student.math.uwaterloo.ca>
+.IR <ja2morrison@student.math.uwaterloo.ca>
 à partir de la page de manuel minimale écrite par Jordi Mallach
-.Pa <jordi@sindominio.net>
+.IR <jordi@sindominio.net>
 pour le système d'exploitation Debian GNU/Linux.
-
-.Sh TRADUCTION
 Cette page de manuel a été traduite par Julien Gilli 
-.Pa <jgilli@nerim.fr>.
+.IR <jgilli@nerim.fr> .
