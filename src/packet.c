@@ -100,15 +100,15 @@ Packet *PacketC (void)
     return pak;
 }
 
-Packet *PacketCreate (const void *data, UDWORD len)
+Packet *PacketCreate (str_t str)
 {
     Packet *newpak;
     
     newpak = calloc (1, sizeof (Packet));
     assert (newpak);
     
-    memcpy (newpak->data, data, len);
-    newpak->len = len;
+    memcpy (newpak->data, str->txt, str->len);
+    newpak->len = str->len;
     
     Debug (DEB_PACKET, "<-+- %p create", newpak);
     uiG.packets++;
@@ -577,6 +577,7 @@ void PacketReadData (Packet *pak, str_t str, UWORD len)
         if (str->max >= len + 1)
         {
             str->len = len;
+            str->txt[len] = '\0';
             memcpy (str->txt, pak->data + pak->rpos, len);
         }
     }

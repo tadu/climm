@@ -62,7 +62,7 @@ struct Cap_s
 #define HAS_CAP(caps,cap) ((caps) & (1L << (cap)))
 
 Packet *PacketC        (void);
-Packet *PacketCreate   (const void *data, UDWORD len);
+Packet *PacketCreate   (str_t str);
 Packet *PacketClone    (const Packet *pak);
 void    PacketD        (Packet *pak);
 
