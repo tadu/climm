@@ -177,7 +177,7 @@ Contact *ContactFindContact (const char *nick)
                 if (!strncasecmp (mynick, cnt_contacts[i].nick, 19))
                 {
                     free (mynick);
-                    return cnt_contacts[i];
+                    return &cnt_contacts[i];
                 }
             }
             free (mynick);
