@@ -510,12 +510,14 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
 
     old = cont->status;
     cont->status = status;
-    cont->flags &= ~CONT_SEENAUTO;
+    ContactPrefSet (cont, CONT_SEENAUTO, CONT_MODE_CLEAR);
     
     putlog (conn, NOW, cont, status, ~old ? LOG_CHANGE : LOG_ONLINE, 0xFFFF, "");
  
-    if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || (prG->flags & FLAG_ULTRAQUIET)
-        || ((prG->flags & FLAG_QUIET) && (old != STATUS_OFFLINE)) || (~conn->connect & CONNECT_OK))
+    if ((ContactPref (cont, CONT_TEMPORARY) && ContactPref (cont, CONT_IGNORE))
+        || (prG->flags & FLAG_ULTRAQUIET)
+        || ((prG->flags & FLAG_QUIET) && (old != STATUS_OFFLINE))
+        || (~conn->connect & CONNECT_OK))
         return;
     
     if ((egevent = QueueDequeue2 (conn, QUEUE_TODO_EG, 0, 0)))
@@ -565,7 +567,7 @@ void IMOffline (Contact *cont, Connection *conn)
     cont->status = STATUS_OFFLINE;
     cont->seen_time = time (NULL);
 
-    if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || (prG->flags & FLAG_ULTRAQUIET))
+    if (ContactPref (cont, CONT_TEMPORARY) || ContactPref (cont, CONT_IGNORE) || (prG->flags & FLAG_ULTRAQUIET))
         return;
 
     if (prG->event_cmd && *prG->event_cmd)
@@ -592,7 +594,7 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
 
     if (cont)
     {
-        if (cont->flags & CONT_IGNORE || ((cont->flags & CONT_TEMPORARY) && (prG->flags & FLAG_HERMIT)))
+        if (ContactPref (cont, CONT_IGNORE) || (ContactPref (cont, CONT_TEMPORARY) && (prG->flags & FLAG_HERMIT)))
         {
             ExtraD (extra);
             return;
@@ -639,7 +641,7 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
             line = s_sprintf ("\n");
     }
 
-    if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
+    if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || ContactPref (cont, CONT_TEMPORARY)))
         M_printf ("(%s) ", s_status (tstatus));
     
     M_printf ("%s ", s_time (&stamp));
@@ -747,7 +749,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
         e_msg_type == MSG_AUTH_ADDED ? LOG_ADDED : LOG_RECVD, e_msg_type,
         cdata);
     
-    if (cont->flags & CONT_IGNORE || (((cont->flags & CONT_TEMPORARY) && (prG->flags & FLAG_HERMIT))))
+    if (ContactPref (cont, CONT_IGNORE) || ((ContactPref (cont, CONT_TEMPORARY) && (prG->flags & FLAG_HERMIT))))
     {
         ExtraD (extra);
         return;
@@ -783,7 +785,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
 #endif
     M_printf ("\a%s " COLINCOMING "%*s" COLNONE " ", s_time (&stamp), uiG.nick_len + s_delta (cont->nick), cont->nick);
     
-    if ((e = ExtraFind (extra, EXTRA_STATUS)) && (!cont || cont->status != e->data || cont->flags & CONT_TEMPORARY))
+    if ((e = ExtraFind (extra, EXTRA_STATUS)) && (!cont || cont->status != e->data || ContactPref (cont, CONT_TEMPORARY)))
         M_printf ("(%s) ", s_status (e->data));
 
     if (prG->verbose > 1)

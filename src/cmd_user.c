@@ -1673,15 +1673,15 @@ static JUMP_F(CmdUserVerbose)
 
 static UDWORD __status (Contact *cont)
 {
-    if (cont->flags   & CONT_IGNORE)     return 0xfffffffe;
-    if (cont->flags   & CONT_TEMPORARY)  return 0xfffffffe;
-    if (cont->status == STATUS_OFFLINE)  return STATUS_OFFLINE;
-    if (cont->status  & STATUSF_BIRTH)   return STATUSF_BIRTH;
-    if (cont->status  & STATUSF_DND)     return STATUS_DND;
-    if (cont->status  & STATUSF_OCC)     return STATUS_OCC;
-    if (cont->status  & STATUSF_NA)      return STATUS_NA;
-    if (cont->status  & STATUSF_AWAY)    return STATUS_AWAY;
-    if (cont->status  & STATUSF_FFC)     return STATUS_FFC;
+    if (ContactPref (cont, CONT_IGNORE))    return 0xfffffffe;
+    if (ContactPref (cont, CONT_TEMPORARY)) return 0xfffffffe;
+    if (cont->status == STATUS_OFFLINE)     return STATUS_OFFLINE;
+    if (cont->status  & STATUSF_BIRTH)      return STATUSF_BIRTH;
+    if (cont->status  & STATUSF_DND)        return STATUS_DND;
+    if (cont->status  & STATUSF_OCC)        return STATUS_OCC;
+    if (cont->status  & STATUSF_NA)         return STATUS_NA;
+    if (cont->status  & STATUSF_AWAY)       return STATUS_AWAY;
+    if (cont->status  & STATUSF_FFC)        return STATUS_FFC;
     return STATUS_ONLINE;
 }
 
@@ -1742,7 +1742,7 @@ static JUMP_F(CmdUserStatusDetail)
             ContactRem (tcg, cont);
         cg = conn->contacts;
         for (j = 0; (cont = ContactIndex (cg, j)); j++)
-            if (~cont->flags & CONT_TEMPORARY && ~cont->flags & CONT_ALIAS)
+            if (!ContactPref (cont, CONT_TEMPORARY) && !ContactPref (cont, CONT_ALIAS))
                 if (!ContactFind (tcg, 0, cont->uin, NULL, 0))
                     ContactAdd (tcg, cont);
         for (i = 0; (cg = ContactGroupIndex (i)); i++)
@@ -1759,13 +1759,13 @@ static JUMP_F(CmdUserStatusDetail)
     {
         if (uin && cont->uin != uin)
             continue;
-        if (cont->flags & (CONT_TEMPORARY | CONT_ALIAS) && ~data & 2)
+        if ((ContactPref (cont, CONT_TEMPORARY) || ContactPref (cont, CONT_ALIAS)) && ~data & 2)
             continue;
         if (cont->uin > tuin)
             tuin = cont->uin;
         if (s_strlen (cont->nick) > lennick)
             lennick = s_strlen (cont->nick);
-        if (cont->flags & CONT_ALIAS)
+        if (ContactPref (cont, CONT_ALIAS))
             continue;
         if (s_strlen (s_status (cont->status)) > lenstat)
             lenstat = s_strlen (s_status (cont->status));
@@ -1833,7 +1833,7 @@ static JUMP_F(CmdUserStatusDetail)
                 
                 if (uin && cont->uin != uin)
                     continue;
-                if (cont->flags & CONT_ALIAS)
+                if (ContactPref (cont, CONT_ALIAS))
                     continue;
                 if (__status (cont) != status)
                     continue;
@@ -1869,11 +1869,11 @@ static JUMP_F(CmdUserStatusDetail)
                     
                     if (data & 2)
                         M_printf (COLSERVER "%s%c%c%c%1.1d%c" COLNONE "%s %*ld", ul,
-                             alias->flags & CONT_ALIAS     ? '+' :
-                             cont->flags  & CONT_TEMPORARY ? '#' : ' ',
-                             cont->flags  & CONT_INTIMATE  ? '*' :
-                              cont->flags & CONT_HIDEFROM  ? '-' : ' ',
-                             cont->flags  & CONT_IGNORE    ? '^' : ' ',
+                             ContactPref (alias, CONT_ALIAS)     ? '+' :
+                             ContactPref (cont,  CONT_TEMPORARY) ? '#' : ' ',
+                             ContactPref (cont,  CONT_INTIMATE)  ? '*' :
+                              ContactPref (cont, CONT_HIDEFROM)  ? '-' : ' ',
+                             ContactPref (cont,  CONT_IGNORE)    ? '^' : ' ',
                              cont->dc ? cont->dc->version : 0,
                              peer ? (
                               peer->connect & CONNECT_OK   ? '&' :
@@ -1884,16 +1884,16 @@ static JUMP_F(CmdUserStatusDetail)
                              ul, (int)lenuin, cont->uin);
 
                     M_printf (COLSERVER "%s%c" COLCONTACT "%s%-*s" COLNONE "%s " COLMESSAGE "%s%-*s" COLNONE "%s %-*s%s%s" COLNONE "\n",
-                             ul, data & 2                  ? ' ' :
-                             alias->flags & CONT_ALIAS     ? '+' :
-                             cont->flags  & CONT_TEMPORARY ? '#' :
-                             cont->flags  & CONT_INTIMATE  ? '*' :
-                             cont->flags  & CONT_HIDEFROM  ? '-' :
-                             cont->flags  & CONT_IGNORE    ? '^' :
-                             !peer                         ? ' ' :
-                             peer->connect & CONNECT_OK    ? '&' :
-                             peer->connect & CONNECT_FAIL  ? '|' :
-                             peer->connect & CONNECT_MASK  ? ':' : '.' ,
+                             ul, data & 2                        ? ' ' :
+                             ContactPref (alias, CONT_ALIAS)     ? '+' :
+                             ContactPref (cont,  CONT_TEMPORARY) ? '#' :
+                             ContactPref (cont,  CONT_INTIMATE)  ? '*' :
+                             ContactPref (cont,  CONT_HIDEFROM)  ? '-' :
+                             ContactPref (cont,  CONT_IGNORE)    ? '^' :
+                             !peer                               ? ' ' :
+                             peer->connect & CONNECT_OK          ? '&' :
+                             peer->connect & CONNECT_FAIL        ? '|' :
+                             peer->connect & CONNECT_MASK        ? ':' : '.' ,
                              ul, lennick + s_delta (alias->nick), alias->nick,
                              ul, ul, lenstat + 2 + s_delta (stat), stat,
                              ul, lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
@@ -2075,13 +2075,13 @@ static JUMP_F(CmdUserIgnoreStatus)
     cg = conn->contacts;
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
     {
-        if (!(cont->flags & CONT_ALIAS))
+        if (!ContactPref (cont, CONT_ALIAS))
         {
-            if (cont->flags & CONT_IGNORE)
+            if (ContactPref (cont, CONT_IGNORE))
             {
-                if (cont->flags & CONT_INTIMATE)
+                if (ContactPref (cont, CONT_INTIMATE))
                     M_print (COLSERVER "*" COLNONE);
-                else if (cont->flags & CONT_HIDEFROM)
+                else if (ContactPref (cont, CONT_HIDEFROM))
                     M_print (COLSERVER "~" COLNONE);
                 else
                     M_print (" ");
@@ -2136,7 +2136,7 @@ static JUMP_F(CmdUserStatusWide)
        many columns will fit on the screen. */
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
     {
-        if (!(cont->flags & CONT_ALIAS))
+        if (!ContactPref (cont, CONT_ALIAS))
         {
             if (cont->status == STATUS_OFFLINE)
             {
@@ -2260,11 +2260,11 @@ static JUMP_F(CmdUserStatusShort)
         M_printf ("%s%s\n", W_SEPARATOR, i18n (1072, "Users offline:"));
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
         {
-            if (~cont->flags & CONT_ALIAS && ~cont->flags & CONT_IGNORE)
+            if (!ContactPref (cont, CONT_ALIAS) && !ContactPref (cont, CONT_IGNORE))
             {
                 if (cont->status == STATUS_OFFLINE)
                 {
-                    if (cont->flags & CONT_INTIMATE)
+                    if (ContactPref (cont, CONT_INTIMATE))
                         M_print (COLSERVER "*" COLNONE);
                     else
                         M_print (" ");
@@ -2279,11 +2279,11 @@ static JUMP_F(CmdUserStatusShort)
     M_printf ("%s%s\n", W_SEPARATOR, i18n (1073, "Users online:"));
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
     {
-        if (~cont->flags & CONT_ALIAS && ~cont->flags & CONT_IGNORE)
+        if (!ContactPref (cont, CONT_ALIAS) && !ContactPref (cont, CONT_IGNORE))
         {
             if (cont->status != STATUS_OFFLINE)
             {
-                if (cont->flags & CONT_INTIMATE)
+                if (ContactPref (cont, CONT_INTIMATE))
                     M_print (COLSERVER "*" COLNONE);
                 else
                     M_print (" ");
@@ -2542,14 +2542,14 @@ static JUMP_F(CmdUserTogIgnore)
             return 0;
         }
 
-        if (contr->flags & CONT_IGNORE)
+        if (ContactPref (contr, CONT_IGNORE))
         {
-            contr->flags &= ~CONT_IGNORE;
+            ContactPrefSet (cont, CONT_IGNORE, CONT_MODE_CLEAR);
             M_printf (i18n (1666, "Unignored %s.\n"), cont->nick);
         }
         else
         {
-            contr->flags |= CONT_IGNORE;
+            ContactPrefSet (cont, CONT_IGNORE, CONT_MODE_SET);
             M_printf (i18n (1667, "Ignoring %s.\n"), cont->nick);
         }
         if (*args == ',')
@@ -2574,9 +2574,9 @@ static JUMP_F(CmdUserTogInvis)
             return 0;
         }
 
-        if (contr->flags & CONT_HIDEFROM)
+        if (ContactPref (contr, CONT_HIDEFROM))
         {
-            contr->flags &= ~CONT_HIDEFROM;
+            ContactPrefSet (cont, CONT_HIDEFROM, CONT_MODE_CLEAR);
             if (conn->ver > 6)
                 SnacCliReminvis (conn, cont);
             else
@@ -2585,8 +2585,8 @@ static JUMP_F(CmdUserTogInvis)
         }
         else
         {
-            contr->flags |= CONT_HIDEFROM;
-            contr->flags &= ~CONT_INTIMATE;
+            ContactPrefSet (cont, CONT_INTIMATE, CONT_MODE_CLEAR);
+            ContactPrefSet (cont, CONT_HIDEFROM, CONT_MODE_SET);
             if (conn->ver > 6)
                 SnacCliAddinvis (conn, cont);
             else
@@ -2622,9 +2622,9 @@ static JUMP_F(CmdUserTogVisible)
             return 0;
         }
 
-        if (contr->flags & CONT_INTIMATE)
+        if (ContactPref (contr, CONT_INTIMATE))
         {
-            contr->flags &= ~CONT_INTIMATE;
+            ContactPrefSet (cont, CONT_INTIMATE, CONT_MODE_CLEAR);
             if (conn->ver > 6)
                 SnacCliRemvisible (conn, cont);
             else
@@ -2633,8 +2633,8 @@ static JUMP_F(CmdUserTogVisible)
         }
         else
         {
-            contr->flags |= CONT_INTIMATE;
-            contr->flags &= ~CONT_HIDEFROM;
+            ContactPrefSet (cont, CONT_HIDEFROM, CONT_MODE_CLEAR);
+            ContactPrefSet (cont, CONT_INTIMATE, CONT_MODE_SET);
             if (conn-> ver > 6)
                 SnacCliAddvisible (conn, cont);
             else
@@ -2696,7 +2696,7 @@ static JUMP_F(CmdUserAdd)
         {
             while (s_parsenick_s (&args, &cont2, MULTI_SEP, &cont, conn))
             {
-                if (cont->flags & CONT_TEMPORARY)
+                if (ContactPref (cont, CONT_TEMPORARY))
                     M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), cont->nick);
                 else if (!ContactFind (cg, 0, cont->uin, 0, 0))
                 {
@@ -2731,7 +2731,7 @@ static JUMP_F(CmdUserAdd)
 
     if (arg1)
     {
-        if (cont->flags & CONT_TEMPORARY)
+        if (ContactPref (cont, CONT_TEMPORARY))
         {
             M_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, arg1);
             M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
@@ -2743,7 +2743,7 @@ static JUMP_F(CmdUserAdd)
             else
                 CmdPktCmdContactList (conn);
             s_repl (&cont->nick, arg1);
-            cont->flags &= ~CONT_TEMPORARY;
+            ContactPrefSet (cont, CONT_TEMPORARY, CONT_MODE_CLEAR);
         }
         else
         {
@@ -2838,7 +2838,7 @@ static JUMP_F(CmdUserRemove)
         }
         else
         {
-            if (cont->flags & CONT_TEMPORARY)
+            if (ContactPref (cont, CONT_TEMPORARY))
             {
                 M_printf (i18n (2221, "Removed temporary contact '%s' (%ld).\n"),
                           cont->nick, cont->uin);

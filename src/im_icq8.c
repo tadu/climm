@@ -18,30 +18,22 @@
 
 UBYTE IMRoster (Connection *conn, int mode)
 {
+    ContactGroup *cg;
+    Contact *cont;
+    int i;
+    
+    for (i = 0, cg = conn->contacts; (cont = ContactIndex (cg, i)); i++)
+        ContactPrefSet (cont, CONT_ISSBL, CONT_MODE_CLEAR);
+    
     switch (mode)
     {
-        ContactGroup *cg;
-        Contact *cont;
-        int i;
-
         case IMROSTER_UPLOAD:
         case IMROSTER_EXPORT:
-//            for (i = 0; (cg = ContactGroupIndex (i)); i++)
-//                SnacCliRosteradd (conn, cg, NULL);
-
-//            for (i = 0, cg = conn->contacts; (cont = ContactIndex (cg, i)); i++)
-//                if (~cont->flags & CONT_ISSBL)
-//                    SnacCliRosteradd (conn, cg, cont);
-
-//            for (i = 0; (cg = ContactGroupIndex (i)); i++)
-//                SnacCliRosterupdate (conn, cg, NULL);
         case IMROSTER_DOWNLOAD:
         case IMROSTER_IMPORT:
         case IMROSTER_SYNC:
         case IMROSTER_SHOW:
         case IMROSTER_DIFF:
-            for (i = 0, cg = conn->contacts; (cont = ContactIndex (cg, i)); i++)
-                cont->flags &= ~CONT_ISSBL;
             QueueEnqueueData (conn, QUEUE_REQUEST_ROSTER, 0, 0x7fffffffL, NULL, mode, NULL, NULL);
             SnacCliCheckroster (conn);
             return RET_OK;

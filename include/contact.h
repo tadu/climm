@@ -119,6 +119,8 @@ void          ContactSetVersion (Contact *cont);
 BOOL          ContactMetaSave   (Contact *cont);
 BOOL          ContactMetaLoad   (Contact *cont);
 
+#define ContactPref(cont,flag) ((cont)->flags & (flag) ? 1 : 0)
+#define ContactPrefSet(cont,flag,mode) (cont)->flags = ((cont)->flags & ~(flag)) | (mode == CONT_MODE_SET ? (flag) : 0)
 
 #define ContactUIN(conn,uin)   ContactFind ((conn)->contacts, 0, uin, NULL, 1)
 
@@ -142,6 +144,10 @@ BOOL          ContactMetaLoad   (Contact *cont);
 
 #define CONT_ISSBL    128UL /* contact has been added to server based list */
 #define CONT_REQAUTH  256UL /* contact requires authorization */
+
+#define CONT_MODE_SET    2
+#define CONT_MODE_CLEAR  1
+#define CONT_MODE_UNDEF  0
 
 #define UPF_GENERAL_A   0x0001
 #define UPF_GENERAL_B   0x0002

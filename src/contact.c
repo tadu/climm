@@ -28,6 +28,7 @@
 
 #include "micq.h"
 #include "contact.h"
+#include "session.h"
 #include "util_str.h"
 #include "util_ui.h"     /* for Debug() and DEB_CONTACT */
 #include "conv.h"        /* for meta data file recoding */
@@ -269,10 +270,10 @@ Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nic
     if (!create)
         return NULL;
     if (nick && (alias = ContactFind (group, id, uin, NULL, 0))
-             && alias->flags & CONT_TEMPORARY)
+             && ContactPref (alias, CONT_TEMPORARY))
     {
         s_repl (&alias->nick, nick);
-        alias->flags &= ~CONT_TEMPORARY;
+        ContactPrefSet (alias, CONT_TEMPORARY, CONT_MODE_CLEAR);
         Debug (DEB_CONTACT, "new   #%d %ld '%s' %p in %p was temporary", id, uin, nick, alias, group);
         return alias;
     }
@@ -283,7 +284,7 @@ Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nic
     cont->id = id;
     if (!nick)
     {
-        cont->flags |= CONT_TEMPORARY;
+        ContactPrefSet (cont, CONT_TEMPORARY, CONT_MODE_SET);
         s_repl (&cont->nick, s_sprintf ("%ld", uin));
     }
     else
@@ -298,7 +299,7 @@ Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nic
         while (alias->alias)
             alias = alias->alias;
         alias->alias = cont;
-        cont->flags |= CONT_ALIAS;
+        ContactPrefSet (cont, CONT_ALIAS, CONT_MODE_SET);
         return cont;
     }
     if (fr->used == MAX_ENTRIES)
@@ -327,7 +328,7 @@ BOOL ContactAdd (ContactGroup *group, Contact *cont)
             ContactGroupInit ();
         group = CONTACTGROUP_GLOBAL;
     }
-    if (!group || !cont || cont->flags & CONT_ALIAS)
+    if (!group || !cont || ContactPref (cont, CONT_ALIAS))
         return FALSE;
     while (group->used == MAX_ENTRIES && group->more)
         group = group->more;
@@ -408,7 +409,7 @@ BOOL ContactRemAlias (ContactGroup *group, Contact *alias)
     {
         s_repl (&alias->nick, s_sprintf ("%ld", alias->uin));
         alias->id = 0;
-        alias->flags = CONT_TEMPORARY;
+        ContactPrefSet (alias, CONT_TEMPORARY, CONT_MODE_SET);
         return ContactRem (group, alias);
     }
     while (cont->alias != alias)

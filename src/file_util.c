@@ -1373,7 +1373,7 @@ int Save_RC ()
         while (cg)
         {
             for (i = 0; i < cg->used; i++)
-                if (!((cont = cg->contacts[i])->flags & (CONT_TEMPORARY | CONT_ALIAS)))
+                if (!ContactPref (cont = cg->contacts[i], CONT_TEMPORARY) && !ContactPref (cont, CONT_ALIAS))
                     fprintf (rcf, "entry 0 %ld\n", cont->uin);
             cg = cg->more;
         }
@@ -1387,7 +1387,7 @@ int Save_RC ()
 
     for (i = 0; (cont = ContactIndex (0, i)); i++)
     {
-        if (!(cont->flags & (CONT_TEMPORARY | CONT_ALIAS)))
+        if (!ContactPref (cont, CONT_TEMPORARY) && !ContactPref (cont, CONT_ALIAS))
         {
             Contact *cont2;
             if (cont->flags & CONT_INTIMATE) fprintf (rcf, "*"); else fprintf (rcf, " ");
