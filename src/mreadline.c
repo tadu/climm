@@ -18,7 +18,6 @@
 #include "tabs.h"
 #include "conv.h"
 #include "contact.h"
-#include "session.h"
 #include "preferences.h"
 
 #include <stdarg.h>

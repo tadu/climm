@@ -27,7 +27,7 @@
 #include "util_ui.h"
 #include "util_io.h"
 #include "preferences.h"
-#include "session.h"
+#include "connection.h"
 #include "packet.h"
 #include "contact.h"
 #include "util_syntax.h"

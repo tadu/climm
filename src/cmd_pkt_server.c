@@ -14,7 +14,7 @@
 #include "icq_response.h"
 #include "preferences.h"
 #include "server.h"
-#include "session.h"
+#include "connection.h"
 #include "packet.h"
 #include "contact.h"
 #include "util_io.h"

@@ -33,7 +33,7 @@
 #include "util_io.h"
 #include "util_ui.h"
 #include "cmd_user.h"
-#include "session.h"
+#include "connection.h"
 #include "packet.h"
 #include "contact.h"
 #include "remote.h"

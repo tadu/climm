@@ -24,7 +24,7 @@
 #include "preferences.h"
 #include "packet.h"
 #include "tabs.h"
-#include "session.h"
+#include "connection.h"
 #include "tcp.h"
 #include "icq_response.h"
 #include "conv.h"
@@ -2972,7 +2972,7 @@ static JUMP_F(CmdUserConn)
                 return 0;
             }
             M_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), nr);
-            ConnectionClose (connl);
+            ConnectionD (connl);
             break;
         
         case 5:
@@ -2993,7 +2993,7 @@ static JUMP_F(CmdUserConn)
             else
             {
                 M_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), nr);
-                ConnectionClose (connl);
+                ConnectionD (connl);
             }
     }
     return 0;

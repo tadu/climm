@@ -82,17 +82,17 @@ struct Connection_s
 
 Connection    *ConnectionC       (UWORD type DEBUGPARAM);
 Connection    *ConnectionClone   (Connection *conn, UWORD type DEBUGPARAM);
+void           ConnectionD       (Connection *conn DEBUGPARAM);
 Connection    *ConnectionNr      (int i);
 Connection    *ConnectionFind    (UWORD type, const Contact *cont, const Connection *parent);
 Connection    *ConnectionFindUIN (UWORD type, UDWORD uin);
 UDWORD         ConnectionFindNr  (Connection *conn);
-void           ConnectionClose   (Connection *conn DEBUGPARAM);
 const char    *ConnectionType    (Connection *conn);
 val_t          ConnectionPrefVal (Connection *conn, UDWORD flag);
 
-#define ConnectionC(t)       ConnectionC(t DEBUGARGS)
-#define ConnectionClone(c,t) ConnectionClone(c,t DEBUGARGS)
-#define ConnectionClose(c)   ConnectionClose(c DEBUGARGS)
+#define ConnectionC(t)       ConnectionC (t DEBUGARGS)
+#define ConnectionClone(c,t) ConnectionClone (c,t DEBUGARGS)
+#define ConnectionD(c)       ConnectionD (c DEBUGARGS)
 
 /*
                             TYPE_SERVER

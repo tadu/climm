@@ -28,7 +28,7 @@
 #include "icq_response.h"
 #include "conv.h"
 #include "contact.h"
-#include "session.h"
+#include "connection.h"
 #include "packet.h"
 #include "preferences.h"
 #include "cmd_pkt_v8_flap.h"
@@ -245,7 +245,7 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
 #ifdef ENABLE_PEER2PEER
     if (!(newl = ConnectionClone (new, TYPE_MSGLISTEN)))
     {
-        ConnectionClose (new);
+        ConnectionD (new);
         return NULL;
     }
     new->assoc = newl;

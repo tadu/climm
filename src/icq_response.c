@@ -18,7 +18,7 @@
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_v8_snac.h"
 #include "preferences.h"
-#include "session.h"
+#include "connection.h"
 #include "peer_file.h"
 #include <stdarg.h>
 #include <assert.h>

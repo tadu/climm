@@ -42,7 +42,7 @@
 #endif
 
 #include "preferences.h"
-#include "session.h"
+#include "connection.h"
 #include "packet.h"
 #include "util_ui.h"
 #include "util_io.h"
@@ -237,7 +237,7 @@ static void PeerFileDispatchDClose (Connection *fpeer)
 {
     fpeer->connect = 0;
     PeerFileClose (fpeer);
-    ConnectionClose (fpeer);
+    ConnectionD (fpeer);
     ReadLinePromptReset ();
 }
 
@@ -359,7 +359,7 @@ void PeerFileDispatch (Connection *fpeer)
                         M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
                         M_printf (i18n (2083, "Cannot open file %s: %s (%d).\n"),
                                  buf, strerror (rc), rc);
-                        ConnectionClose (fpeer);
+                        ConnectionD (fpeer);
                         return;
                     }
                 }
@@ -601,8 +601,8 @@ void PeerFileResend (Event *event)
             M_printf (i18n (2083, "Cannot open file %s: %s (%d).\n"),
                       opt_text, strerror (rc), rc);
             TCPClose (fpeer);
-            ConnectionClose (ffile);
-            ConnectionClose (fpeer);
+            ConnectionD (ffile);
+            ConnectionD (fpeer);
             return;
         }
         ffile->close = &PeerFileIODispatchClose;
@@ -655,7 +655,7 @@ void PeerFileResend (Event *event)
             ReadLinePromptReset ();
             M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
             M_printf (i18n (2087, "Finished sending file %s.\n"), opt_text);
-            ConnectionClose (fpeer->assoc);
+            ConnectionD (fpeer->assoc);
             fpeer->our_seq++;
             event2 = QueueDequeue (fpeer, QUEUE_PEER_FILE, fpeer->our_seq);
             if (event2)
@@ -668,7 +668,7 @@ void PeerFileResend (Event *event)
             {
                 M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
                 M_printf (i18n (2088, "Finished sending all %d files.\n"), fpeer->our_seq - 1);
-                ConnectionClose (fpeer);
+                ConnectionD (fpeer);
             }
         }
     }

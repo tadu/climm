@@ -9,7 +9,7 @@
 
 #include "micq.h"
 #include "contact.h"
-#include "session.h"
+#include "connection.h"
 #include "cmd_pkt_v8.h"
 #include "cmd_pkt_v8_snac.h"
 #include "cmd_pkt_v8_flap.h"

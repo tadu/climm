@@ -21,7 +21,7 @@
 #include "preferences.h"
 #include "server.h"
 #include "contact.h"
-#include "session.h"
+#include "connection.h"
 #include "packet.h"
 #include "tcp.h"
 #include "util_syntax.h"
@@ -294,7 +294,7 @@ void TCPDispatchMain (Connection *list)
         
         if (peer->sok <= 0)
         {
-            ConnectionClose (peer);
+            ConnectionD (peer);
             return;
         }
     }
@@ -1021,7 +1021,7 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
             if (peer2->connect & CONNECT_OK)
             {
                 TCPClose (peer);
-                ConnectionClose (peer);
+                ConnectionD (peer);
                 return NULL;
             }
             if ((peer2->connect & CONNECT_MASK) == (UDWORD)TCP_STATE_WAITING)
@@ -1034,13 +1034,13 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
                 peer2->connect = peer->connect | CONNECT_SELECT_R;
                 peer2->dispatch = peer->dispatch;
                 peer->sok = -1;
-                ConnectionClose (peer);
+                ConnectionD (peer);
                 return peer2;
             }
             if (peer2->sok != -1)
                 TCPClose (peer2);
             peer->len = peer2->len;
-            ConnectionClose (peer2);
+            ConnectionD (peer2);
         }
         return peer;
     }
@@ -1124,7 +1124,7 @@ void TCPClose (Connection *peer)
     assert (peer);
     
     if (peer->assoc && peer->assoc->type == TYPE_FILE)
-        ConnectionClose (peer->assoc);
+        ConnectionD (peer->assoc);
     
     if (peer->sok != -1)
     {
@@ -1156,7 +1156,7 @@ void TCPClose (Connection *peer)
     if (peer->type == TYPE_FILEDIRECT || !peer->cont)
     {
         peer->close = NULL;
-        ConnectionClose (peer);
+        ConnectionD (peer);
     }
 }
 
@@ -1394,7 +1394,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     
     if (!sum)
     {
-        ConnectionClose (fpeer);
+        ConnectionD (fpeer);
         s_done (&filenames);
         return FALSE;
     }

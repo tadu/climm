@@ -31,7 +31,7 @@
 #include "util_tcl.h"
 #include "util_ui.h"
 #include "tcp.h"
-#include "session.h"
+#include "connection.h"
 #include "contact.h"
 #include "packet.h"
 

@@ -19,7 +19,7 @@
 #include "server.h"
 #include "contact.h"
 #include "contactopts.h"
-#include "session.h"
+#include "connection.h"
 #include "tcp.h"
 #include "tabs.h"
 #include "msg_queue.h"

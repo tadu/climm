@@ -9,7 +9,7 @@
 
 #include "micq.h"
 #include "packet.h"
-#include "session.h"
+#include "connection.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_cmd_v5_util.h"
 #include "util_ui.h"

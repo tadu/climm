@@ -27,7 +27,7 @@
 
 #include "contact.h"
 #include "preferences.h"
-#include "session.h"
+#include "connection.h"
 #include "cmd_user.h"
 #include "util_str.h"
 #include "color.h"

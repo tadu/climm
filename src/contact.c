@@ -27,7 +27,7 @@
 
 #include "micq.h"
 #include "contact.h"
-#include "session.h"
+#include "connection.h"
 #include "util_ui.h"     /* for Debug() and DEB_CONTACT */
 #include "conv.h"        /* for meta data file recoding */
 #include "util_io.h"     /* for UtilIOReadline() */

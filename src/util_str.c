@@ -42,7 +42,7 @@
 #include "preferences.h"
 #include "contact.h"
 #include "conv.h"
-#include "session.h" /* conn->contacts */
+#include "connection.h" /* conn->contacts */
 #include "util.h"
 
 /*

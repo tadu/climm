@@ -28,7 +28,7 @@
 #include "contact.h"
 #include "server.h"
 #include "packet.h"
-#include "session.h"
+#include "connection.h"
 #include "preferences.h"
 #include "icq_response.h"
 #include "cmd_pkt_cmd_v5_util.h"
@@ -1430,9 +1430,9 @@ static JUMP_SNAC_F(SnacSrvRegrefused)
         exit (0);
     }
 #ifdef ENABLE_PEER2PEER
-    ConnectionClose (serv->assoc);
+    ConnectionD (serv->assoc);
 #endif
-    ConnectionClose (serv);
+    ConnectionD (serv);
 }
 
 /*

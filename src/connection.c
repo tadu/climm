@@ -21,7 +21,7 @@
  */
 
 #include "micq.h"
-#include "session.h"
+#include "connection.h"
 #include "preferences.h"
 #include "util_ui.h"
 #include "cmd_pkt_cmd_v5_util.h"
@@ -221,8 +221,8 @@ UDWORD ConnectionFindNr (Connection *conn)
 /*
  * Closes and removes a session.
  */
-#undef ConnectionClose
-void ConnectionClose (Connection *conn DEBUGPARAM)
+#undef ConnectionD
+void ConnectionD (Connection *conn DEBUGPARAM)
 {
     ConnectionList *cl;
     Connection *clc;
@@ -258,7 +258,7 @@ void ConnectionClose (Connection *conn DEBUGPARAM)
             if ((clc = cl->conn[j]) && clc->parent == conn)
             {
                 clc->parent = NULL;
-                ConnectionClose (clc DEBUGFOR);
+                ConnectionD (clc DEBUGFOR);
                 cl = &slist;
                 j = -1;
             }

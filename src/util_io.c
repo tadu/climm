@@ -49,7 +49,7 @@ extern int h_errno;
 #include "conv.h"
 #include "util.h"
 #include "contact.h"
-#include "session.h"
+#include "connection.h"
 #include "packet.h"
 
 #ifndef HAVE_HSTRERROR
