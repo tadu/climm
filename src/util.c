@@ -63,6 +63,41 @@ typedef struct
 timeval;
 #endif
 
+/*
+ * Return a string describing the status.
+ * Result must be free()d.
+ */
+char *UtilStatus (UDWORD status)
+{
+    char buf[200];
+    
+    if (status == STATUS_OFFLINE)
+        return (strdup (i18n (1969, "offline")));
+ 
+    if (status & STATUSF_INV)
+        snprintf (buf, sizeof (buf), "%s-", i18n (1975, "invisible"));
+    else
+        buf[0] = '\0';
+    
+    if (status & STATUSF_DND)
+        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1971, "do not disturb"));
+    else if (status & STATUSF_OCC)
+        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1973, "occupied"));
+    else if (status & STATUSF_NA)
+        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1974, "not available"));
+    else if (status & STATUSF_AWAY)
+        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1972, "away"));
+    else if (status & STATUSF_FFC)
+        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1976, "free for chat"));
+    else
+        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1970, "online"));
+    
+    if (prG->verbose)
+        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), " %08lx", status);
+    
+    return strdup (buf);
+}
+
 /********************************************
 returns a string describing the status
 *********************************************/

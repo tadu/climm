@@ -1,10 +1,11 @@
 /* $Id$ */
 
-const char *Convert_Status_2_Str (UDWORD status);
 
 UDWORD Chars_2_DW (UBYTE * buf);
 UWORD Chars_2_Word (UBYTE * buf);
 
+char *UtilStatus (UDWORD status);
+const char *Convert_Status_2_Str (UDWORD status);
 void Print_Status (UDWORD new_status);
 int Print_UIN_Name (UDWORD uin);
 int Print_UIN_Name_10 (UDWORD uin);
