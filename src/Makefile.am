@@ -16,26 +16,11 @@ micq_SOURCES = conv.c conv_rus.c conv_jp.c file_util.c icq_response.c micq.c \
 micq_LDADD = @LIBOBJS@
 $(micq_SOURCES): @LIBOBJS@
 
-lang:
-	@rm -f *.c~ ../lang/*.i18n~
-	@../lang/i18n-extract
-	@../lang/i18n-number
-	@if grep -q "i18n (#" *.c; then \
-	   echo "Ooops, untranslated strings left."; \
-	   grep "i18n (#" *.c; \
-	   exit 1; fi; true
-	@rm -f *.c~ ../lang/*.i18n~
-	@../lang/i18n-extract
-	@rm -rf ../lang/*.i18n~
-
 snprintf.o: snprintf.c snprintf.h
 
-snprintf.c:
-	rm -f snprintf.c
+snprintf.c snprintf.h:
+	rm -f snprintf.c snprintf.h
 	ln -s ../replace/snprintf.c . || cp ../replace/snprintf.c .
-
-snprintf.h:
-	rm -f snprintf.h
 	ln -s ../replace/snprintf.h . || cp ../replace/snprintf.h .
 
 clean:
@@ -44,3 +29,16 @@ clean:
 buildmark.o: force
 
 force:
+
+lang:
+	@rm -f *.c~ ../lang/*.i18n~
+	@../lang/i18n-extract *.c
+	@../lang/i18n-number *.c
+	@if grep -q "i18n (#" *.c; then \
+	   echo "Ooops, untranslated strings left."; \
+	   grep "i18n (#" *.c; \
+	   exit 1; fi; true
+	@rm -f *.c~ ../lang/*.i18n~
+	@../lang/i18n-extract *.c
+	@rm -rf ../lang/*.i18n~
+
