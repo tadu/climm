@@ -5,7 +5,7 @@
 004:Non disponible
 005:Occupé
 006:Invisible
-007:Libre pour du chatter
+007:Libre pour chatter
 008:Hors ligne
 009:L'utilisateur est DND [Msg automatique]
 010:L'utilisateur est Parti [Msg automatique]
@@ -21,83 +21,82 @@
 020:Jun
 021:Jul
 022:Aoû
-023:Sept
+023:Sep
 024:Oct
 025:Nov
 026:Déc
 027:OUI
 028:NON
-029:svp OUI ou NON
-030: a quitté.
-031: s'est logué.
-032: - message envoyé le
-033: - Instant " SERVCOL "Mass" NOCOL " Message
-#034:Maximum number of tries reached. Giving up.
-035: modifier le status à 
-036:Commande inconnue %s, taper /aide pour l'aide.
+029:Veuillez taper OUI ou NON !
+030:a quitté
+031:s'est logué
+032: - Message envoyé
+033: - Message envoyé en masse
+034:Trop d'essais. Quittant !
+035:a modifié son status à
+036:Commande inconnue %s, taper "help" pour l'aide.
 037:Message envoyé avant que la dernière ligne du buffer ne soit remplie¶
 038:Message annulé¶
-039: !¶
+039:Le serveur nous force de terminer la connexion.
 040:Micq> 
 041:msg> 
-042:msgA_TOUS> 
+042:msg à tous> 
 043:Tous les utilisateurs trouvés.
 044:Trop d'utilisateurs trouvés.
-045:Recherche terminée..
+045:Recherche terminée.
 046:Longueur
-047:Extra Data
+047:Données supplémentaires
 048:SEQ
 049:Ver
 050:Login réussi !
-051:Le serveur a aquité la commande %04x !
+051:Le serveur a acquitté la commande %04x !
 052:N'arrive pas à établir la connexion¶
 053:Connecté à %s, attente de réponse¶
 054: Connection refusé sur le port %d à %s¶
-055:Echec de la création de Socket
+055:Échec de la création du socket
 056:Socket crée, tentative de connexion¶
 057:Le nom de domaine 
 058:%s n'a pas été trouvé.¶
 059:Le port qui sera utilisé pour tcp (non implimenté pour l'instant) est %d¶
 060:Le niveau d'info est %d.¶
-061:%s ne sera pas reconnus comme surnom
+061:%s n'est pas reconnu comme surnom
 062:Utilisateurs ignorés:
 063:Entrez un mot de passe:
-064:¶Changement automatique du status à
-065:Utilise l'ordre des processeurs intel pour stocker les octets.
-066:Utilise l'ordre des processeurs motorola pour stocker les octets.
-067:¶Ignorer un message cmd  %04x¶
+064:Changement automatique du status à
+065:Utilisant l'ordre des processeurs intel pour stocker les octets.
+066:Utilisant l'ordre des processeurs motorola pour stocker les octets.
+067:¶Commande du msg ignoré  %04x¶
 068: En ligne depuis %s
 069: Etait à %s la dernière fois en ligne
-070: On ne connait pas la date à laquelle l'utilisateur était la dernière fois en ligne.
+070: La dernière fois que l'utilisateur était en ligne est inconnue
 071:Votre status est 
-072:Utilisateur hors-ligne:
-073:Utilisateur en ligne:
-#074:Micq (Matt's ICQ clone)
-#075:version
-#076:compiled on
-#077:in dedication to Matthew D. Smith.
-#078:No translation available.
-#079:No translation; using compiled-in strings.¶
-#080:Couldn't load "%s" internationalization.¶
-#081:Successfully loaded en translation (%d entries).¶
-#082:Trying to reconnect... [try %d out of %d]
-#083:Sound cmd
-#084:Sound
-#085:on
-#086:off
-#087:Ignoring garbage after number.
-#088:Enter UIN or 0 for new UIN:
-#089:Unloaded translation.
-#090:%s is a UIN, not a nick name.
-#091:Must enter password!
-#092:Reenter password to verify:
-#093:Passwords did not match - please reenter.
-#094:SOCKS5 server hostname or IP (type 0 if you don't want to use this):
-#095:SOCKS5 port (in general 1080):
-#096:SOCKS5 username (type 0 if you don't need authentification):
-#097:SOCKS5 password:
-#098:©4"No_Log" is deprecated.¶Use "LogType 0" Instead.¶©0
-#099:Unknown language.
+072:Utilisateurs hors-ligne:
+073:Utilisateurs en ligne:
+074:Micq (Matt's ICQ clone)
+075:version
+076:compilé le
+077:dedié à Matthew D. Smith.
+078:Aucune traduction disponible.
+079:Aucune traduction ; les phrases compilés dans le logiciel seront utilisés.¶
+080:N'a pu pas ouvrir le fichier de langue "%s".¶
+081:Chargement de la traduction française réussi (%d données).¶
+082:Tentatice de reconnexion.. [essai %d de %d]
+083:cmd de bip 
+084:Bip
+085:activé
+086:désactivé
+087:Ignorant les données supplémentaires suivant le numéro
+088:Entrez votre UIN (0 pour créer un nouveau):
+089:Traduction déchargée.
+091:If faut entrer un mot de passe !
+092:Entrez-le encore pour vérifier:
+093:Les mots de passe ne sont pas identiques ; veuillez re-essayer.
+094:Serveur SOCKS5 (0 si vous n'en avez pas besoin):
+095:Port SOCKS5 (habituellement 1080):
+096:Nom de l'utilisateur SOCKS5 (0 si l'identification n'est pas requise):
+097:Mot de passe SOCKS5:
+098:©4"No_Log" est déconseillé.¶Utilisez "LogType 0" en place.¶©0
+099:Langue inconnue.
 100:Aucune
 101:Arabe
 102:Bhojpuri
@@ -158,46 +157,49 @@
 157:Perse
 158:Albanien
 159:Arménien
-#160:Not Entered
-#161:Academic
-#162:Administrative
-#163:Art/Entertainmant
-#164:College Student
-#165:Computers
-#166:Community & Social
-#167:Education
-#168:Engineering
-#169:Financial Services
-#170:Government
-#171:High School Student
-#172:Home
-#173:ICQ - Providing Help
-#174:Law
-#175:Managerial
-#176:Manufacturing
-#177:Medical/Health
-#178:Military
-#179:Non-government Organization
-#180:Professional
-#181:Retail
-#182:Retired
-#183:Science & Research
-#184:Sports
-#185:Technical
-#186:University Student
-#187:Web Building
-#188:©1Unrecognized command in rc file '%s', ignored.©0¶
-#189:UIN = %ld¶
-#190:port = %ld¶
-#191:passwd = %s¶
-#192:server = %s¶
-#193:status = %ld¶
-#194:# of contacts = %d¶
-#195:UIN of contact[0] = %ld¶
+160:Non-inscrit
+161:Académique
+162:Administratif
+163:Art/Divertissement
+164:Étudiant (collège) 
+165:Ordinateurs
+166:Communauté et social
+167:Éducation
+168:Génie
+169:Services financiaux
+170:Gouvernement
+171:Étudiant (sécondaire)
+172:Chez soi
+173:ICQ - Donnant de l'aide
+174:Loi
+175:Directorial
+176:Fabrication
+177:Médical/Santé
+178:Militaire
+179:Organisation non-gouvernemental
+180:Professionel
+181:Détail
+182:À la retraite
+183:Sciences/Recherche
+184:Sports
+185:Technique
+186:Étudiant (université)
+187:Construction de pages web
+188:©1Commande inconnue dans le fichier rc: '%s'. Ignoré.©0¶
+189:UIN = %ld¶
+190:port = %ld¶
+191:mot de passe = %s¶
+192:serveur = %s¶
+193:status = %ld¶
+194:Nombre de contacts = %d¶
+195:UIN du contact[0] = %ld¶
 #196:Message_cmd = %s¶
-#197:Password change was ©2%s©0.¶
-#198:Other Services
-#199:Unknown country
+196:cmd de message = %s¶
+# what does it mean ? when is it used ?
+# found it in file_util.c
+197:Le changement du mot de passe a ©2%s©0.¶
+198:Autres services
+199:Pays inconnue
 200:Non référencé
 201:Afghanistan
 202:Albanie
@@ -391,44 +393,44 @@
 390:Zaïre
 391:Zambie
 392:Zimbabwe
-#393:successful
-#394:unsuccessful
-#395:About info change was ©2%s©0.¶
-#396:Info change was ©2%s©0.¶
-#397:Other info change was ©2%s©0.¶
-#398:Search ©2failed©0.¶
-#399:Unknown Meta User response ©1%04X©0¶
+393:réussi
+394:échoué
+395:Changement des informations a ©2%s©0.¶
+396:Changement des informations supplémentaires a ©2%s©0.¶
+397:Changement des informations de l'utilisateur a ©2%s©0.¶
+398:Recherche ©2échouée©0.¶
+399:Réponse "Meta User" inconnue: ©1%04X©0¶
 400:Montre les informations sur la situation locale de l'utilisateur.
-401:Met à jour les autres informations sur l'utilisateur comme son age et son sexe.
+401:Met à jour les autres informations sur l'utilisateur (age, sexe, etc).
 402:Met à jour vos informations utilisateur.
-403:Montre le dernier message reçu de <nick>. Il doit appartenir à votre liste de contact.
+403:Montre le dernier message reçu de <surnom>. Il doit appartenir à votre liste de contact.
 404:Change ignorer/ne-pas-ignorer un surnom.
-405:Liste des (surnoms)nicks/uins ignorés.
+405:Liste des surnoms/UINs ignorés.
 406:Change la visibilité pour un utilisateur, lorsque vous êtes invisible.
 407:Affiche le status courant des personnes en ligne dans votre liste de contact.
-408:Rend votre mot de passe secret.
-409:Envois un message à un uin.
-410:Envois un message et un URL à un uin.
-411:Envois un message multi-ligne à TOUTES les personnes votre liste de contact.
-412:Envois un message à la dernière personne à qui vous avez envoyé un message.
-413:Autorise uin à vous ajouter à sa liste.
-414:Réponds à la dernière personne qui vous a envoyé un message.
-415:Trouve un utilisateur aléatoirement dans un groupe spécifié ou dans la listes de tous les groupes.
+408:Change votre mot de passe <secret>.
+409:Envoie un message à un UIN.
+410:Envoie un message et un URL à un UIN.
+411:Envoie un message multi-ligne à TOUTES les personnes dans votre liste de contact.
+412:Envoie un message à la dernière personne à qui vous avez envoyé un message.
+413:Autorise UIN à vous ajouter à sa liste.
+414:Répond à la dernière personne qui vous a envoyié un message.
+415:Trouve un utilisateur aléatoirement dans un groupe spécifié ou dans la liste de tous les groupes.
 416:Affiche le status courant de toutes les personnes de votre liste de contact.
 417:Cette commande vous permet de modifier votre commande pour qu'elle prenne le nom d'une autre commande.
 418:Définit le niveau d'information souhaité ( par défaut = 0 ).
-419:Effacer l'écran.
+419:Efface l'écran.
 420:Activer/Désactiver le bip d'annonce de réception de nouveaux messages.
 421:Changer les couleurs de la mise en page.
-422:Quitte icq, puis micq.
+422:Quitte micq.
 423:Affiche le status des réponses automatiques.
 424:Change les message envoyés lorsque votre status est OCC, DND ou NA.
 425:Donne à votre message à envoyer un status de réponse automatique.
 426:Crée un nouvel UIN avec un mot de passe.
-427:Modifie votre status à un numéro de status. Sans numéro cela permet de lister les modes disponibles.
+427:Modifie votre status à un numéro de status.Sans numéro, cela permet de lister les modes disponibles.
 428:Ajoute un numéro uin à votre liste de contact avec son surnom.
-429:Recherche un utilisateur ICQ d'après son adresse mél.
-430:Montre les informations génerales a partir d'un uin
+429:Recherche un utilisateur ICQ d'après son adresse email.
+430:Montre les informations génerales a partir d'un UIN
 431:-En Ligne-
 432:-Absent-
 433:-Non disponible-
@@ -436,12 +438,12 @@
 435:-Ne pas déranger-
 436:-Libre pour chatter-
 437:-Invisible-
-438:Met à jour ses infos (Mél, Surnom, etc.)
-439:Se place aléatoirement dans un groupe d'utilisateur.
-#440:Random User:
-#441:IP:
-442:Svp sélectionnez un des thémes d'aide ci-dessous: '/aide théme'
-443:Commandes relatives a mICQ et a sa configuration.
+438:Met à jour ses infos (Email, Surnom, etc.)¶
+439:Se place aléatoirement dans un groupe d'utilisateur.¶
+440:Utilisateur choisi au hasard:
+441:IP:
+442:Svp sélectionnez un des thèmes d'aide ci-dessous: 'help <thème>'
+443:Commandes relatives à micq et à sa configuration.
 444:Commandes pour trouver un autre utilisateur.
 445:Commandes relatives à votre compte ICQ.
 446:Commandes relatives à l'envoi de messages.
@@ -449,61 +451,60 @@
 448:message
 449:nom
 450:compte
-#451:IP2:
-#452:Status:
-#453:TCP version:
-#454:Connection:
-#455:Art
-#456:Cars
-#457:Celebrity Fans
-#458:Collections
-#459:Computers
-#460:Culture & Literature
-#461:Fitness
-#462:Games
-#463:Hobbies
-#464:ICQ - Providing Help
-#465:Internet
-#466:Lifestyle
-#467:Movies/TV
-#468:Music
-#469:Outdoor Activities
+451:IP2:
+452:Status:
+453:Version TCP:
+454:Connexion:
+455:Art
+456:Automobiles
+457:Passioné(e) des célébrités
+458:Collections
+459:Ordinateurs
+460:Culture et littérature
+461:Bien-être physique
+462:Jeux
+463:Bidets
+464:ICQ - Donnant de l'aide
+465:Internet
+466:Style de vie
+467:Films/télévision
+468:Musique
+469:Activités en plein air
 #470:Parenting
-#471:Pets/Animals
-#472:Religion
-#473:Science/Technology
-#474:Skills
-#475:Sports
-#476:Web Design
-#477:Nature and Environment
-#478:News & Media
-#479:Government
-#480:Business & Economy
-#481:Mystics
-#482:Travel
-#483:Astronomy
-#484:Space
-#485:Clothing
-#486:Parties
-#487:Women
-#488:Social science
-#489:60's
-#490:70's
-#491:80's
-#492:50's
-#493:Peer-to-Peer
-#494:Server Only
-#495:No Random User Found
-#496:%02d/%02d/%04d
-#497:Type: %d	 Len: %d¶
-#498:Info for:
-#499:Other
+471:Animaux
+472:Religion
+473:Sciences/Téchnologie
+474:Abilités
+475:Sports
+476:Dessin de pages web
+477:Nature et environement
+478:Nouvelles et média
+479:Governement
+480:Affaires/économique
+481:Mystique
+482:Voyage
+483:Astronomie
+484:Espace
+485:Vêtements
+486:Parties
+487:Dames
+488:Science social
+489:Les années 60
+490:Les années 70
+491:Les années 80
+492:Les années 50
+493:Client à client
+494:Client à serveur
+495:N'a pu pas trouver un utilisateur au hasard
+496:%d/%d/%d
+497:Type: %d     Longueur: %d¶
+499:Autre
 500:Surnom:
 501:Nom:
-502:Mél:
-503:Autre mél:
-504:Ancien mél:
-505:Adresse:
+502:Email:
+503:Autre email:
+504:Ancien email:
+505:Lieu:
 506:Téléphone:
 507:Fax:
 508:Rue:
@@ -519,241 +520,231 @@
 518:Service de l'entreprise:
 519:Entreprise:
 520:Code Postal de l'entreprise:
-521:Fax de l'entreprise:
+521:Télécopieur de l'entreprise:
 522:Adresse de travail:
 523:Téléphone de travail:
 524:Lieu de travail:
 525:A propos:
 526:Non entré
 527:Age:
-528:Féminin
-529:Masculin
-530:Non spécifié
-531:Page perso:
+528:femme
+529:homme
+530:non spécifié
+531:Page web:
 532:Né(e):
 533:Langue:
-534:Entrer une langue par un numéro ou L pour une liste:
-535:Entrer un nouvel age:
-536:Entrer un nouveau  sexe:
-537:Entrer une nouvelle page perso:
-538:Entrer une nouvelle année de naissance (4 chiffres):
-539:Entrer un nouveau mois de naissance:
-540:Entrer un nouveau jour de naissance:
-541:Apropos> 
-542:Entrez une autre adresse mél:
-543:Entrez l'anciennne adresse mél:
-544:Entrez une nouvelle ville:
-545:Entrez un nouvel état:
-546:Entrez un nouveau numéro de téléphone:
-547:Entrez un nouveau numéro de fax:
-548:Entrez une nouvelle adresse:
-549:Entrez un numéro de téléphone portable:
-550:Entrez votre code de région (doit être numérique):
-551:Entrez l'identifiant du numéro de téléphone caractérisant votre  pays:
-552:Entrer votre zone de temps (+/- 0-12): 
-553:Votre nouveau surnom:
-554:Votre nouveau nom:
-555:Votre prénom:
-556:Votre adresse mél:
-557:Souhaitez-vous que les utilisateurs de Mirabilis requierent votre autorisation?
-#558:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
-#559:Enter max age (22,29,39,49,59,120):
-#560:Enter a city:
-#561:Enter a state:
-#562:©1Info for %ld¶
-#563:Nick name:
-#564:First name:
-#565:Last name:
-#566:Email address:
-#567:No authorization needed.©0 
-#568:Must request authorization.©0 
-#569:©1More Info for %ld¶
-#570:City:
-#571:Country:
-#572:Country code:
-#573:Time Zone:
-#574:State:
-#575:Age:
-#576:not entered
-#577:Sex:
-#578:Enter country's phone ID number:
-#579:Enter company: 
-#580:Phone number:
-#581:Home page:
-#582:About:
-#583:©1User found %ld¶
-#584:Warning! Script command '%s' failed with exit value %d¶
-#585:Ack!!!!!!!  Bad packet
-#586:©4¶%s©0 has added you to their contact list.¶
-#587:Enter department: 
-#588:Enter position: 
-#589:Should the users be online?
-#590:©4¶%s©0 has requested your authorization to be added to their contact list.¶
-#591:Reason:
-#592:<%s> emailed you a message:¶
-#593:<%s> send you a web message:¶
-#594:        URL: %s©3%s©0¶
-#595:¶Contact List.¶©3============================================¶©0%d Contacts¶
-#596:[SOCKS] Can't find hostname: %s¶
-#597:[SOCKS] Socket creation failed¶
-#598:[SOCKS] Connection refused¶
-#599:[SOCKS] Authentication method incorrect¶
-#600:[SOCKS] Authorization failure¶
-#601:[SOCKS] General SOCKS server failure¶
-#602:Cmd: %04X	
-#603:Ver: %04X	
-#604:Seq: %08X	
-#605:Ses: %08X¶
-#606:Got a bad session ID %08X with CMD %04X ignored.¶
-#607:Usage: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]¶
-#608:        -v   Turn on verbose Mode (useful for Debugging only)¶
-#609:        -f   specifies an alternate Config File (default: ~/.micqrc)¶
-#610:        -l   specifies an alternate LogFile¶
-#611:        -?   gives this help screen¶¶
-#612:This program was made without any help from Mirabilis or their consent.¶
-#613:No reverse engineering or decompilation of any Mirabilis code took place to make this program.¶
-#614:The config file for this session is "%s"¶
-#615:The logging directory for this session is "%s"¶
+534:Votre langue par un numéro ou L pour une liste:
+535:Votre âge:
+536:Votre sexe:
+537:Votre page web:
+538:Votre année de naissance (4 chiffres):
+539:Votre mois de naissance:
+540:Votre jour de naissance:
+541:à propos> 
+542:Votre autre adresse email:
+543:Votre ancien adresse email:
+544:Votre ville:
+545:Votre état/province:
+546:Votre numéro de téléphone:
+547:Votre numéro de fax:
+548:Votre adresse:
+549:Votre numéro de téléphone céllulaire:
+550:Votre code de région (doit être numérique):
+551:Votre identifiant du numéro de téléphone caractérisant votre pays:
+552:Votre zone de temps (+/- 0-12):
+553:Votre surnom:
+554:Votre prénom:
+555:Votre nom de famille:
+556:Votre adresse email:
+557:Souhaitez-vous que les utilisateurs de Mirabilis nécessitent votre autorisation?
+562:©1Info pour %ld¶
+563:Surnom:
+564:Prénom:
+565:Nom de famille:
+566:Addresse email:
+567:Aucune autorisation nécessaire.©0 
+568:Il faut demander l'autorisation.©0 
+569:©1Info supplémentaire pour %ld¶
+570:Ville:
+571:Pays:
+572:Code du pays:
+573:Zone de temps:
+574:État/province:
+575:Age:
+576:non spécifié
+577:Sexe:
+580:Numéro de téléphone:
+581:Page web:
+582:A propos de l'utilisateur:
+583:©1Utilisateur trouvé %ld¶
+584:Avis: La commande '%s' a échouée, donnant un valeur d'erreur %d¶
+585:Ack ! Packet mutilé
+586:©4¶%s©0 vous a ajouté à sa liste de contacts.¶
+590:©4¶%s©0 demande votre autorisation.
+591:Raison:
+592:<%s> vous a envoyé un email:¶
+593:<%s> vous a envoyé un message par le web:¶
+594:        URL: %s©3%s©0¶
+595:¶Liste de contacts.¶©3============================================¶©0%d contacts¶
+596:[SOCKS] N'a pu pas trouver le nom de domaine: %s¶
+597:[SOCKS] La création du socket a échouée¶
+598:[SOCKS] Connexion refusée¶
+599:[SOCKS] Méthode d'autorisation incorrecte¶
+600:[SOCKS] Échec d'autorisation¶
+601:[SOCKS] Échec général¶
+602:Cmd: %04X	
+603:Ver: %04X	
+604:Séq: %08X	
+605:Ses: %08X¶
+606:Mauvais ID du session %08X avec commande %04X. Ignoré.¶
+607:Usage: micq [-v|-V] [-f|-F <fichier-rc>] [-l|-L <fichier-journal>] [-?|-h]¶
+608:        -v   mode verbeuse¶
+609:        -f   fichier de configuration alternatif (défaut: ~/.micqrc)¶
+610:        -l   fichier du journal alternatif¶
+611:        -?   cet écran-ci¶¶
+612:Ce logiciel a été réalisé sans aide ni consentement de Mirabilis.¶
+613:Aucun logiciel de Mirabilis n'a été déconstruit ou décompilé.¶
+614:Le fichier de configuration est "%s"¶
+615:Le repertoire du journal est "%s"¶
 #616:Started BeOS InputThread¶\r
-#617:Memory exhausted!!\a¶
-#618:¶Total entries %d¶
-#619:SEQ = %04x	CMD = %04x	attempts = %d	len = %d¶
-#620:Removed message with SEQ %04X CMD 
-#621: from resend queue because of ack.¶
-#622:Do you want to apply these changes? (YES/NO)
-#623:¶Doubled packet %04X¶
-#624:Resending message with SEQ num %04X CMD 
-#625:(Attempt #%d.)
-#626:Discarding message to 
-#627: after %d send attempts.  Message content:¶
-#628: Description: ©3%s©0¶
-#629: URL:         ©3%s©0
-#630:Discarded a 
-#631: packet.
-#632:¶\aConnection unstable. Exiting....
-#633:ACK!!! %d¶
-#634:¶Send Keep_Alive packet to the server¶
-#635:You have encounterd a bug in my code :( I now own you a beer!¶Greetings Fryslan!¶
-#636:[ Sent auto-reply message to %d(%d)]¶
-#637:¶Packet Number %d¶
-#638:¶The SEQ was %04X¶
-#639:The new UIN is %ld!¶
-#640:Failed to update info.¶
-#641:User info successfully updated.¶
-#642:IP
-#643:Acknowleged SRV_X1 0x021C Done Contact list?¶
-#644:Acknowleged SRV_X2 0x00E6 Done old messages?¶
-#645:©3You entered an incorrect password.©0¶
-#646:©3Server is busy please try again.¶Trying again...¶
-#647: Type = %04x	
-#648: ©2The response was %04X	
-#649:The version was %X	
-#650:¶The SEQ was %04X	
-#651:The size was %d¶
-#652:Insuffificient memory to display a wide Contact List.¶
-#653:Offline
-#654:Online
-#655:Enter the user's e-mail address:
-#656:Enter the user's nick name:
-#657:Enter the user's first name:
-#658:Enter the user's last name:
-#659:Message sent!¶
-#660:Invalid Command: %s¶
-#661:Shell commands have been disabled.¶
-#662:Color is ©3%s©0.¶
-#663:Enter sex:
-#664:Composing message to ©1all©0:¶
-#665:%s not recognized as a nick name.
-#666:Unignored %s.
-#667:Ignoring %s.
-#668:You must specify a nick name.
-#669:%s added.
-#670:Invisible to %s now.
-#671:Visible to %s now.
-#672:'s IP address is 
-#673:	The port is %d¶
-#674:	The port is unknown¶
-#675:Need uin to send to
-#676:Need uin to send to¶
-#677:%s not recognized as a nick name¶
-#678:Need URL please.¶
-#679:Sorry saving your personal reply messages went wrong!¶
-#680:Your personal settings have been saved!¶
-#681:Last %d people you talked to:¶
-#682:You have received messages from:¶
-#683:Unknown Contact: %s¶
-#684:%s is not a known Contact¶
-#685:Last message from ©4%s©0:¶
-#686:No messages received from ©4%s©0¶
-#687:Micq has been running for
-#688:days
-#689:hours
-#690:minutes
-#691:seconds
-#692:Contacts:
-#693:Packets sent:
-#694:Packets recieved:
-#695:Lag:
-#696:Sex:
-#697:Distinct packets sent:
-#698:Distinct packets recieved:
-#699:Must give a valid uin/nickname¶
-#700:%s is not a valid user in your list.¶
-#701:%d users not returned.
-#702:Display a list of nicknames that you can tab through.
-#703:©2Status modes: ¶
-#704:©2Groups: ¶
-#705:General                    1¶
-#706:Romance                    2¶
-#707:Games                      3¶
-#708:Students                   4¶
-#709:20 something               6¶
-#710:30 something               7¶
-#711:40 something               8¶
-#712:50+                        9¶
-#713:Man chat requesting women 10¶
-#714:Woman chat requesting men 11¶
-#715:Micq                      49 (might not work but try it)
-#716:None                      -1¶
-#717:! as the first character of a command will execute a shell command (e.g. "!ls"  "!dir" "!mkdir temp")
-#719:Shows how long Micq has been running.
-#720:uin can be either a number or the nickname of the user.
-#721:Sending a blank message will put the client into multiline mode.¶Use . on a line by itself to end message.¶Use # on a line by itself to cancel the message.
-#723:%s's IP address is 
-#724:Automatic replies are %s.¶
-#727:The Do not disturb message is:
-#728:The Away message is:
-#729:The Not available message is:
-#730:The Occupied message is:
-#731:The Invisible message is:
-#734:Sorry wrong syntax, can't find a status somewhere.\r¶
-#735:Must give a message.¶
-#736:Sorry wrong syntax. Read tha help man!¶
-#737:Automatic reply setting¶
-#738:Need a command to alter!¶
-#739:Composing message to ©4%s©0:¶
-#740:Composing message to ©2%d©0:¶
-#741:Must receive a message first¶
-#742:Must write one message first¶
-#743:Keep Alive
-#744:Secondary Keep Alive
-#745:Contact List
-#746:Invisible List
-#747:Visible List
-#748:Random Search
-#749:Set Random
-#750:Delete Server Messages
-#751:Finish Login
-#752:Login
-#753:Send Message
-#754:Info Request
-#755:Extended Info Request
-#756:¶Creating Connection...¶
-#757:Couldn't establish connection¶
-#758:Sending Request...¶
-#759:Waiting for response....¶
-#760:¶Your new UIN is %s%ld%s!¶
-#761:unknown
-#762:Ack!!!!!!  %d\a¶
-#800:Change the working language to <lang>.
-#801:Displays a list of people on your contact list in a screen wide format.
+616:InputThread de BeOS lancé¶\r
+617:Il n'y a plus de mémoire !\a¶
+618:¶Données total: %d¶
+619:SEQ = %04x	CMD = %04x	essais = %d	longeur = %d¶
+620:Le serveur a acquitté le message avec SEQ %04X CMD 
+621:.¶
+622:Mettre ces changements en vigueur (OUI ou NON) ?
+623:¶Packet doublé %04X¶
+624:Re-envoyant le message avec SEQ %04X  CMD
+625:(Essai #%d.)
+626:Abandonnant un message à
+627: après avoir essayé %d fois. Contenu du message:¶
+628: Déscription: ©3%s©0¶
+629: URL:         ©3%s©0
+630:Abandonnant un packet 
+631:.
+632:¶\aConnexion instable. Quittant....
+633:ACK!!! %d¶
+634:¶Packet "keep-alive" envoyé au serveur¶
+635:Vous avez découvert un erreur dans mon code:( Je vous doit une bière !¶
+636:[ Message automatique envoyé à %d(%d)]¶
+637:¶Numéro du packet %d¶
+638:¶La SEQ était %04X¶
+639:Votre nouveau UIN est %ld!¶
+640:N'a pas pu mettre vos changements en vigueur.¶
+641:Changement d'information réussi.¶
+642:IP
+643:Le serveur acquitte SRV_X1 0x021C - Liste de contacts finie ?¶
+644:Le serveur acquitte SRV_X2 0x00E6 - Fin des vieux messages ?¶
+645:©3Votre mot de passe est incorrect.©0¶
+646:©3Le serveur est chargé.¶Re-essayant...¶
+647: Type = %04x	
+648: ©2La réponse était %04X	
+649:La version était %X	
+650:¶La SEQ était %04X	
+651:La longueur était %d¶
+652:Insuffisamment de mémoire.¶
+653:Hors-ligne
+654:En-ligne
+655:Entrez l'email de l'utilisateur:
+656:Entrez le surnom de l'utilisateur:
+657:Entrez le prénom de l'utilisateur:
+658:Entrez le nom de famille de l'utilisateur:
+659:Message envoyé !¶
+660:Commande inconnue: %s¶
+661:Les commandes shell sont interdites.¶
+662:Le couleur est ©3%s©0.¶
+664:Composant un message pour ©1tous©0:¶
+665:%s n'est pas reconnu comme surnom
+666:N'ignorant pas %s !¶
+667:Ignorant %s !¶
+668:©1Il faut spécifier un surnom©0¶
+669:%s a été ajouté.¶
+670:Invisible pour %s.¶
+671:Visible pour %s.¶
+672: - IP 
+673:	Port: %d¶
+674:	Port: inconnu¶
+675:À quel UIN ?
+676:À quel UIN ?¶
+677:%s n'est pas reconnu comme surnom¶
+678:Veuillez entrez une URL.¶
+679:Erreur en enregistrant vos messages de réponse automatique !¶
+680:Votre configuration à été enregistrée !¶
+681:Derniers %d contacts à qui vous avez parlé:¶
+682:Vous avez reçu des messages de ces contacts:¶
+683:Contact inconnu: %s¶
+684:%s n'est pas reconnu¶
+685:Dernière message de ©4%s©0:¶
+686:Vous n'avez pas reçu un message de ©4%s©0¶
+687:Micq a été lancé il y a
+688:jours
+689:heures
+690:minutes
+691:secondes
+692:Contacts:
+693:Packets envoyés:
+694:Packets reçus:
+695:Retard:
+696:Sexe:
+697:Packets distincts envoyés:
+698:Packets distincts reçus:
+699:Il faut donner un UIN/surnom valide¶
+700:%s ne se retrouve pas dans votre liste de contacts.¶
+703:©2Modes de status:¶
+704:©2Groupes:¶
+705:Général                    1¶
+706:Romance                    2¶
+707:Jeux                       3¶
+708:Étudiants                  4¶
+709:À la vingtaine             6¶
+710:À la trentaine             7¶
+711:À la quarantaine           8¶
+712:Cinquante et plus          9¶
+713:Homme desirant une femme  10¶
+714:Femme desirant un homme   11¶
+715:Micq                      49 (peut-être en panne, mais essayez-le !)
+716:Aucun                     -1¶
+717:©2	! comme première caractère d'une commande exécutera¶
+718:©2	une commande shell (e.g. "!ls"  "!dir" "!mkdir temp")©0¶
+719:©3uptime		Montre depuis combien de temps micq est lancé.¶©0
+720:©2	L'UIN peut être soit un numéro ou le surnom de l'utilisateur.¶
+721:©2	En laissant le message vide, la mode multi-ligne sera activé.¶	Faites . sur un nouveau ligne pour envoyer le message.¶
+722:	Faites # sur un nouveau ligne pour la terminer.©0¶
+723:%s - IP 
+724:Les réponses automatiques sont %s.¶
+727:Le message Ne pas déranger est:
+728:Le message Absent est:
+729:Le message Non disponible est:
+730:Le message Occupé est:
+731:Le message Invisible est:
+734:Je ne comprends pas !\r¶
+735:Il faut entrer un message.¶
+736:Je ne comprends pas ! Lisez donc l'aide !¶ 
+737:Sélection des réponses automatiques¶
+738:Il faut spécifier une commande à changer.¶
+739:Composant un message pour ©4%s©0:¶
+740:Composant un message pour ©2%d©0:¶
+741:Il n'y a rien à répondre.¶
+742:Vous n'avez pas encore écrit un message.¶
+743:Keep-Alive
+744:Keep-Alive sécondaire
+745:Liste de contacts
+746:Liste de contacts invisibles
+747:Liste de contacts visibles
+748:Recherche au hasard
+749:Sélectionnement du groupe pour les recherches au hasard
+750:Efface les messages du serveur
+751:Loguement fini
+751:Séquence de connexion complétée
+752:Se connecter
+753:Envoie un message
+754:Demande de l'information
+755:Demande de l'information supplémentaire
+756:¶Établissement de la connexion...¶
+757:N'a pas pu établir la connexion¶
+758:Envoyant la demande...¶
+759:Attendant une réponse....¶
+760:¶Votre nouveau UIN est %s%ld%s !¶
+761:inconnu
+762:Ack !!!!!!  %d\a¶

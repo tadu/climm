@@ -1,4 +1,7 @@
 
+2001-06-20 Benjamin Michotte <binny@baby-linux.net>
+	* lang/fr.i18n: update.
+
 2001-06-17 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Get rid of UNIX and FUNNY_MSGS.
 	* Move #include <time.h> to micq.h and protect <sys/time.h>.
