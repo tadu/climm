@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.76 2005/02/11 22:21:08 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.78 2005/03/10 18:52:44 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:de
 1002:de_DE
@@ -843,7 +843,7 @@
 2122:Hinweis: Die Paßwort-Änderung muß mittels "save" abgespeichert werden.\n
 2123:%sSyntax-Fehler%s: Zu wenige Argumente: %s\n
 2124:%sSyntax-Fehler%s: Keine ganze Zahl: %s\n
-2126:ist nicht verbunden, die Nachricht wird auf dem Server eingereiht.\n
+2126.ist nicht verbunden, die Nachricht wird auf dem Server eingereiht.\n
 2128: Beschreibung: %s%s%s\n
 2129:          URL: %s%s%s\n
 2131:Erstelle Nachricht an %s%s%s:\n
@@ -870,7 +870,7 @@
 2161:Empfange %ld Dateien mit zusammen %ld Bytes in Geschwindigkeit %lx von %s.\n
 2162:Empfange Datei %s (%s) mit %ld Bytes als %s.\n
 2163:Sende Datei %ld, setze nach %ld Bytes fort.\n
-2164:Fehler beim Schreiben in die Datei.\n
+2164.Fehler beim Schreiben in die Datei.\n
 2165:Das Gegenüber hat mehr Bytes (%ld) gesendet als vorher angegeben (%ld).\n
 2166:Datei erfolgreich empfangen.\n
 2167:Fehler - unbekanntes Paket.\n
@@ -1217,5 +1217,9 @@
 2570:Führe Unterhaltung mit %s%s%s fort:\n
 2571:"%s" <%s> schickte eine Nachricht per eMail [%s]: %s\n
 2572:"%s" <%s> schickte eine Nachricht per Web [%s]: %s\n
+2573:Der Benutzer ist wahrscheinlich nicht verbunden.\n
+2574:%sFreigegeben unter Version 2 der GNU General Public License (%sGPL v2%s).\n
+2575:Fehler beim Schreiben in die Datei (%lu Bytes von %u geschrieben).\n
+#2999:unused
 # Those are the funny messages. Substract 2000 to get the normal message.
 3620:Du hast zu viele Freunde, wie wär's mit mehr RL?
