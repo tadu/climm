@@ -586,7 +586,7 @@ BOOL ContactMetaLoad (Contact *cont)
             else if (!strcmp (cmd, "b_nick"))  { s_parse (&args, &cmd); /* ignore for now */ }
             else if (!strcmp (cmd, "b_alias")) { s_parse (&args, &cmd); /* ignore for now */ }
             else if (!strcmp (cmd, "b_enc"))   { if (s_parse (&args, &cmd))  cont->encoding = ConvEnc (cmd) & ~ENC_AUTO; }
-            else if (!strcmp (cmd, "b_flags")) { s_parseint (&args, &i); }
+            else if (!strcmp (cmd, "b_flags")) { if (s_parseint (&args, &i)) cont->flags = ((cont->flags & ~CONT_ISEDITED) | (i & CONT_ISEDITED)); }
             else if (!strcmp (cmd, "b_about")) { if (s_parse (&args, &cmd))  s_repl (&cont->meta_about, ConvToUTF8 (cmd, enc)); }
             else if (!strcmp (cmd, "b_seen"))  { if (s_parseint (&args, &i)) cont->seen_time = i; }
             else if (!strcmp (cmd, "b_micq"))  { if (s_parseint (&args, &i)) cont->seen_micq_time = i; }
