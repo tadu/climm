@@ -40,7 +40,7 @@ static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd,
     SnacSrvRates, SnacSrvReplyicbm, SnacSrvReplybuddy, SnacSrvReplybos,
     SnacSrvReplyinfo, SnacSrvReplylocation, SnacSrvUseronline, SnacSrvRegrefused,
     SnacSrvUseroffline, SnacSrvRecvmsg, SnacSrvUnknown, SnacSrvFromicqsrv,
-    SnacSrvAddedyou, SnacSrvNewuin, SnacSrvSetinterval, SnacSrvAckmsg,
+    SnacSrvAddedyou, SnacSrvNewuin, SnacSrvSetinterval, SnacSrvSrvackmsg, SnacSrvAckmsg,
     SnacSrvAuthreq, SnacSrvAuthreply, SnacSrvIcbmerr, SnacSrvReplyroster,
     SnacSrvRateexceeded;
 
@@ -77,11 +77,12 @@ static SNAC SNACS[] = {
     {  4,  1, "W",        "SRV_ICBMERR",         SnacSrvIcbmerr},
     {  4,  5, "W-",       "SRV_REPLYICBM",       SnacSrvReplyicbm},
     {  4,  7, "DDW[1uWWt[2t[257D]-]-]"
-               "[2uWWt[5WDDCt[10001(WCWDbW)WWDDDWWWLDD]-]-]"
+               "[2uWWt[5WDDCt[10001(wCwdbw)wwdddwwwLDD]-]-]"
                "[4uWWt[5DWL]-]",
                           "SRV_RECVMSG",         SnacSrvRecvmsg},
-    {  4, 11, "",         "SRV/CLI_ACKMSG",      NULL},
-    {  4, 12, "DDwu",     "SRV_SRVACKMSG",       SnacSrvAckmsg},
+    {  4, 11, "DDwuW(wCwdbw)wwdddwwwLDD",
+                          "SRV/CLI_ACKMSG",      SnacSrvAckmsg},
+    {  4, 12, "DDwu",     "SRV_SRVACKMSG",       SnacSrvSrvackmsg},
     {  9,  3, "t-",       "SRV_REPLYBOS",        SnacSrvReplybos},
     { 11,  2, "W",        "SRV_SETINTERVAL",     SnacSrvSetinterval},
     { 19,  3, "t-",       "SRV_REPLYLISTS",      NULL},
@@ -109,7 +110,10 @@ static SNAC SNACS[] = {
     {  3,  5, "u-",       "CLI_REMCONTACT",      NULL},
     {  4,  2, "W-",       "CLI_SETICBM",         NULL},
     {  4,  4, "",         "CLI_REQICBM",         NULL},
-    {  4,  6, "DDWut-",   "CLI_SENDMSG",         NULL},
+    {  4,  6, "DDW[1uWWt[2t[257D]-]-]"
+               "[2uWWt[5WDDCt[10001(wCwdbw)WWDDDWWWLDD]-]-]"
+               "[4uWWt[5DWL]-]",
+                          "CLI_SENDMSG",         NULL},
     {  9,  2, "",         "CLI_REQBOS",          NULL},
     {  9,  5, "u-",       "CLI_ADDVISIBLE",      NULL},
     {  9,  6, "u-",       "CLI_REMVISIBLE",      NULL},
@@ -528,7 +532,41 @@ static JUMP_SNAC_F(SnacSrvIcbmerr)
  */
 static JUMP_SNAC_F(SnacSrvReplyicbm)
 {
-   SnacCliSeticbm (event->sess);
+    SnacCliSeticbm (event->sess);
+}
+
+static JUMP_SNAC_F(SnacSrvAckmsg)
+{
+    UDWORD midtime, midrand, uin;
+    UWORD msgtype;
+    Contact *cont;
+    Packet *pak;
+    char *text;
+    
+    pak = event->pak;
+    midtime = PacketReadB4 (pak);
+    midrand = PacketReadB4 (pak);
+              PacketReadB2 (pak);
+    uin     = PacketReadUIN (pak);
+              PacketReadB2 (pak);
+              PacketReadData (pak, NULL, PacketRead2 (pak));
+              PacketRead2 (pak);
+              PacketRead2 (pak);
+              PacketRead4 (pak);
+              PacketRead4 (pak);
+              PacketRead4 (pak);
+    msgtype = PacketRead2 (pak);
+              PacketRead2 (pak);
+              PacketRead2 (pak);
+    text    = PacketReadLNTS (pak);
+    UtilCheckUIN (event->sess, uin);
+    cont = ContactFind (uin);
+    if (!cont)
+        return;
+    if ((msgtype & 0x300) != 0x300)
+        return;
+    IMSrvMsg (cont, event->sess, NOW, msgtype, text, STATUS_OFFLINE);
+    free (text);
 }
 
 /*
@@ -540,21 +578,19 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     Cap *cap1, *cap2;
     Packet *p = NULL, *pp = NULL, *pak;
     TLV *tlv;
-    UDWORD uin, unk;
-    UWORD i, type;
-    int t;
+    UDWORD midtim, midrnd, midtime, midrand, uin, unk, tmp;
+    UWORD seq1, seq2, tcpver, len, i, msgtyp, type, status, pri;
     char *text = NULL;
-    const char *txt = NULL;
+    const char *resp, *txt = NULL;
 
     pak = event->pak;
 
-           PacketReadB4 (pak); /* TIME */
-           PacketReadB2 (pak); /* RANDOM */
-           PacketReadB2 (pak); /* WARN */
-    type = PacketReadB2 (pak);
-    uin =  PacketReadUIN (pak);
-           PacketReadB2 (pak); /* WARNING */
-           PacketReadB2 (pak); /* COUNT */
+    midtime = PacketReadB4 (pak);
+    midrand = PacketReadB4 (pak);
+    type    = PacketReadB2 (pak);
+    uin     = PacketReadUIN (pak);
+              PacketReadB2 (pak); /* WARNING */
+              PacketReadB2 (pak); /* COUNT */
     
     UtilCheckUIN (event->sess, uin);
     cont = ContactFind (uin);
@@ -586,19 +622,68 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             text = PacketReadStrB (p);
             PacketD (p);
             txt = text + 4;
-            type = MSG_NORM;
+            msgtyp = MSG_NORM;
             /* TLV 1, 2(!), 3, 4, f ignored */
             break;
         case 2:
             p = PacketCreate (tlv[5].str, tlv[5].len);
-            type = PacketReadB2 (p); /* ACKTYPE */
-                   PacketReadB4 (p); /* MID-TIME */
-                   PacketReadB4 (p); /* MID-RANDOM */
-            cap1 = PacketReadCap (p);
+            type   = PacketReadB2 (p);
+            midtim = PacketReadB4 (p);
+            midrnd = PacketReadB4 (p);
+            cap1   = PacketReadCap (p);
+            TLVD (tlv);
             tlv = TLVRead (p, PacketReadLeft (p));
-            if (cap1->id)
+            PacketD (p);
+            
+            if ((i = TLVGet (tlv, 0x2711)) == (UWORD)-1)
             {
-                if (~cont->caps & (1 << cap1->id))
+                if (TLVGet (tlv, 11) == (UWORD)-1)
+                    SnacSrvUnknown (event);
+                TLVD (tlv);
+                return;
+            }
+            
+            if (midtim != midtime || midrnd != midrand
+                || tlv[i].str[0] != 0x1b)
+            {
+                SnacSrvUnknown (event);
+                TLVD (tlv);
+                return;
+            }
+
+            p = SnacC (event->sess, 4, 11, 0, 0);
+            PacketWriteB4 (p, midtim);
+            PacketWriteB4 (p, midrnd);
+            PacketWriteB2 (p, 2);
+            PacketWriteUIN (p, cont->uin);
+            PacketWriteB2 (p, 3);
+
+            pp = PacketCreate (tlv[i].str, tlv[i].len);
+            len    = PacketRead2 (pp);      PacketWrite2 (p, len);
+            tcpver = PacketRead2 (pp);      PacketWrite2 (p, tcpver);
+            cap2   = PacketReadCap (pp);    PacketWriteCap (p, cap2->id);
+            tmp    = PacketRead2 (pp);      PacketWrite2 (p, tmp);
+            tmp    = PacketRead4 (pp);      PacketWrite4 (p, tmp);
+            tmp    = PacketRead1 (pp);      PacketWrite1 (p, tmp);
+            seq1   = PacketRead2 (pp);      PacketWrite2 (p, seq1);
+            unk    = PacketRead2 (pp);      PacketWrite2 (p, unk);
+            seq2   = PacketRead2 (pp);      PacketWrite2 (p, seq2);
+            tmp    = PacketRead4 (pp);      PacketWrite4 (p, tmp);
+            tmp    = PacketRead4 (pp);      PacketWrite4 (p, tmp);
+            tmp    = PacketRead4 (pp);      PacketWrite4 (p, tmp);
+            msgtyp = PacketRead2 (pp);      PacketWrite2 (p, msgtyp);
+            status = PacketRead2 (pp);
+            pri    = PacketRead2 (pp);
+            txt = text = 
+                     PacketReadLNTS (pp);
+            /* FOREGROUND / BACKGROUND ignored */
+            PacketD (pp);
+            if (cont)
+                cont->TCP_version = tcpver;
+
+            if (cap1->id || cap2->id)
+            {
+                if (cap1->id && ~cont->caps & (1 << cap1->id))
                 {
                     ContactSetVersion (cont);
 #ifdef WIP
@@ -606,73 +691,51 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
 #endif
                     cont->caps |= 1 << cap1->id;
                 }
+                if (cap2->id && ~cont->caps & (1 << cap2->id))
+                {
+                    ContactSetVersion (cont);
+#ifdef WIP
+                    IMSrvMsg (cont, event->sess, NOW, 33, cap2->name, STATUS_OFFLINE);
+#endif
+                    cont->caps |= 1 << cap2->id;
+                }
             }
-            if ((i = TLVGet (tlv, 0x2711)) == (UWORD)-1)
-            {
-                PacketD (p);
-                SnacSrvUnknown (event);
-                return;
-            }
-            pp = PacketCreate (tlv[i].str, tlv[i].len);
-            PacketD (p);
-            if (PacketRead1 (pp) != 0x1b)
-            {
-                PacketD (pp);
-                SnacSrvUnknown (event);
-                return;
-            }
-            t = PacketReadB2 (pp);
-            if (cont)
-                cont->TCP_version = t;
-            PacketRead1 (pp); /* UNKNOWN */
-            cap2 = PacketReadCap (pp);
-            PacketRead1 (pp); PacketRead2 (pp); /* UNKNOWN */
-            PacketReadB4 (pp); /* UNKNOWN */
-            PacketReadB2 (pp); /* SEQ1 */
-            unk = PacketRead2 (pp); /* UNKNOWN */
-            PacketReadB2 (pp); /* SEQ2 */
-            PacketRead4 (pp); PacketRead4 (pp); PacketRead4 (pp); /* UNKNOWN */
-            type = PacketRead2 (pp); /* MSGTYPE & MSGFLAGS */
-            PacketReadB2 (pp); /* UNKNOWN */
-            PacketReadB2 (pp); /* UNKNOWN */
-            txt = text = PacketReadLNTS (pp);
-            PacketD (pp);
             if (!strlen (text) && unk == 0x12)
             {
-                if (cap2->id)
-                {
-                    if (~cont->caps & (1 << cap2->id))
-                    {
-                        ContactSetVersion (cont);
-#ifdef WIP
-                        IMSrvMsg (cont, event->sess, NOW, 33, cap2->name, STATUS_OFFLINE);
-#endif
-                        cont->caps |= 1 << cap2->id;
-                    }
-                }
+                PacketD (p);
+                TLVD (tlv);
                 s_free (text);
                 return;
             }
-            if ((type & MSGF_GETAUTO) == MSGF_GETAUTO)
+
+            if ((msgtyp & MSGF_GETAUTO) == MSGF_GETAUTO)
             {
-                switch (type & 0xff)
+                switch (msgtyp & 0xff)
                 {
-                    case MSG_GET_AWAY:
-                    case MSG_GET_OCC:
-                    case MSG_GET_NA:
-                    case MSG_GET_DND:
-                    case MSG_GET_FFC:
-                    case MSG_GET_VER:
+                    do  {
+                    case MSG_GET_AWAY: resp = prG->auto_away; break;
+                    case MSG_GET_OCC:  resp = prG->auto_occ;  break;
+                    case MSG_GET_NA:   resp = prG->auto_na;   break;
+                    case MSG_GET_DND:  resp = prG->auto_dnd;  break;
+                    case MSG_GET_FFC:  resp = prG->auto_ffc;  break;
+                    case MSG_GET_VER:  resp = BuildVersionText;
+                        } while (0);
+                        PacketWrite2 (p, 0);
+                        PacketWrite2 (p, pri);
+                        PacketWriteLNTS (p, resp);
+                        SnacSend (event->sess, p);
+                        TLVD (tlv);
+                        s_free (text);
+                        return;
                 }
-                /* FIXME: send appropriate acknowledge */
             }
-            /* FOREGROUND / BACKGROUND ignored */
+            PacketD (p);
             /* TLV 1, 2(!), 3, 4, f ignored */
             break;
         case 4:
             p = PacketCreate (tlv[5].str, tlv[5].len);
             unk  = PacketRead4 (p);
-            type = PacketRead2 (p);
+            msgtyp = PacketRead2 (p);
             if (unk != uin)
             {
                 PacketD (p);
@@ -689,22 +752,18 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             return;
     }
 
-    IMSrvMsg (cont, event->sess, NOW, type, txt,
+    IMSrvMsg (cont, event->sess, NOW, msgtyp, txt,
               tlv[6].len ? tlv[6].nr : STATUS_OFFLINE);
     Auto_Reply (event->sess, uin);
 
+    TLVD (tlv);
     s_free (text);
-    
-    if (prG->sound & SFLAG_CMD)
-        ExecScript (prG->sound_cmd, uin, 0, NULL);
-    else if (prG->sound & SFLAG_BEEP)
-        printf ("\a");
 }
 
 /*
  * SRV_ACKMSG - SNAC(4,C)
  */
-static JUMP_SNAC_F(SnacSrvAckmsg)
+static JUMP_SNAC_F(SnacSrvSrvackmsg)
 {
     Packet *pak;
     Contact *cont;
