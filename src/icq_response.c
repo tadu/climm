@@ -476,24 +476,25 @@ void Display_Rand_User (Session *sess, Packet *pak)
 void Recv_Message (Session *sess, Packet *pak)
 {
     struct tm stamp;
+    UDWORD uin;
     UWORD type;
     char *text;
 
-    uiG.last_rcvd_uin = PacketRead4 (pak);
-    stamp.tm_year     = PacketRead2 (pak) - 1900;
-    stamp.tm_mon      = PacketRead1 (pak) - 1;
-    stamp.tm_mday     = PacketRead1 (pak);
-    stamp.tm_hour     = PacketRead1 (pak);
-    stamp.tm_min      = PacketRead1 (pak);
+    uin            = PacketRead4 (pak);
+    stamp.tm_year  = PacketRead2 (pak) - 1900;
+    stamp.tm_mon   = PacketRead1 (pak) - 1;
+    stamp.tm_mday  = PacketRead1 (pak);
+    stamp.tm_hour  = PacketRead1 (pak);
+    stamp.tm_min   = PacketRead1 (pak);
     /* kludge to convert that strange UTC-DST time to time_t */
-    stamp.tm_sec      = -timezone;
+    stamp.tm_sec   = -timezone;
     /* FIXME: The following probably only works correctly in Europe. */
-    stamp.tm_isdst    = -1;
-    type              = PacketRead2 (pak);
-    text              = PacketReadLNTS (pak);
+    stamp.tm_isdst = -1;
+    type           = PacketRead2 (pak);
+    text           = PacketReadLNTS (pak);
 
-    Do_Msg (sess, mktime (&stamp), type, text, 
-        uiG.last_rcvd_uin, STATUS_ONLINE);
+    UtilCheckUIN (sess, uiG.last_rcvd_uin = uin);
+    IMSrvMsg (ContactFind (uin), sess, mktime (&stamp), type, text, STATUS_ONLINE);
     free (text);
 }
 
@@ -606,45 +607,70 @@ void Display_Ext_Info_Reply (Session *sess, Packet *pak, const char *uinline)
 }
 
 /*
+ * strtok()/strsep() replacement
+ */
+static char *_septok (char *txt)
+{
+    static char *str = NULL;
+    static char sep = '\0';
+    char *p, *t;
+    
+    if (txt)
+        str = txt;
+    if (!sep)
+        sep = ConvSep ();
+    if (!str)
+        return NULL;
+    p = strchr (t = str, sep);
+    if (p)
+    {
+        *p = '\0';
+        str = p + 1;
+    }
+    else
+    {
+        str = NULL;
+    }
+    return t;
+}
+
+/*
  * Central entry point for incoming messages.
  */
-void Do_Msg (Session *sess, time_t stamp, UWORD type, const char *text, UDWORD uin, UDWORD tstatus)
+void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const char *text, UDWORD tstatus)
 {
-    char *cdata, *tmp = NULL;
-    char *url_url, *url_desc;
-    char sep = ConvSep ();
-    Contact *cont;
-    Session *serv;
-    int x, m;
+    char *cdata, *carr;
+    char sep[2];
     
+    if (!cont)
+        return;
+    if (cont->flags & CONT_IGNORE)
+        return;
+    if ((cont->flags & CONT_TEMPORARY) && (prG->flags & FLAG_HERMIT))
+        return;
+
     cdata = strdup (text);
+    assert (cdata);
+    while (*cdata && strchr ("\n\r", cdata[strlen (cdata) - 1]))
+        cdata[strlen (cdata) - 1] = '\0';
 
-    TabAddUIN (uin);            /* Adds <uin> to the tab-list */
+    sep[0] = ConvSep ();
+    sep[1] = '\0';
+    carr = sess->type & TYPEF_ANY_SERVER ? MSGRECSTR : MSGTCPRECSTR;
 
-    /* Thanks rtc for breaking and not fixing it */
-    for (serv = sess; serv && ~serv->type & TYPEF_SERVER; )
-        serv = serv->parent;
-    assert (serv);
+    TabAddUIN (cont->uin);            /* Adds <uin> to the tab-list */
 
-    UtilCheckUIN (serv, uin);
-
-    putlog (sess, stamp, uin, tstatus, 
+    putlog (sess, stamp, cont->uin, tstatus, 
         type == MSG_AUTH_ADDED ? LOG_ADDED : LOG_RECVD, type,
         *cdata ? "%s\n" : "%s", cdata);
     
-    cont = ContactFind (uin);
-    if (cont && (cont->flags & CONT_IGNORE))
-        return;
-    if (!cont && (prG->flags & FLAG_HERMIT))
-        return;
-
     if (uiG.idle_flag)
     {
         char buf[2048];
 
-        if ((uin != uiG.last_rcvd_uin) || !uiG.idle_uins)
+        if ((cont->uin != uiG.last_rcvd_uin) || !uiG.idle_uins)
         {
-            snprintf (buf, sizeof (buf), "%s %s", uiG.idle_uins && uiG.idle_msgs ? uiG.idle_uins : "", ContactFindName (uin));
+            snprintf (buf, sizeof (buf), "%s %s", uiG.idle_uins && uiG.idle_msgs ? uiG.idle_uins : "", cont->nick);
             if (uiG.idle_uins)
                 free (uiG.idle_uins);
             uiG.idle_uins = strdup (buf);
@@ -657,14 +683,16 @@ void Do_Msg (Session *sess, time_t stamp, UWORD type, const char *text, UDWORD u
 
 #ifdef MSGEXEC
     if (prG->event_cmd && strlen (prG->event_cmd))
-        ExecScript (prG->event_cmd, uin, type, cdata);
+        ExecScript (prG->event_cmd, cont->uin, type, cdata);
 #endif
 
+    if (prG->sound & SFLAG_CMD)
+        ExecScript (prG->sound_cmd, cont->uin, 0, NULL);
     if (prG->sound & SFLAG_BEEP)
         printf ("\a");
 
     Time_Output (stamp);
-    M_print (" " CYAN BOLD "%10s" COLNONE " ", ContactFindName (uin));
+    M_print (" " CYAN BOLD "%10s" COLNONE " ", cont->nick);
     
     if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
     {
@@ -673,7 +701,7 @@ void Do_Msg (Session *sess, time_t stamp, UWORD type, const char *text, UDWORD u
         M_print (") ");
     }
 
-    uiG.last_rcvd_uin = uin;
+    uiG.last_rcvd_uin = cont->uin;
     if (cont)
     {
         if (cont->last_message)
@@ -684,214 +712,164 @@ void Do_Msg (Session *sess, time_t stamp, UWORD type, const char *text, UDWORD u
 
     switch (type & ~MSGF_MASS)
     {
-        case MSG_AUTH_ADDED:
-            if (*cdata)
-            {
-                tmp = strchr (cdata, sep);
-                if (tmp == NULL)
-                {
-                    M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
-                    return;
-                }
-                *tmp = '\0';
-                M_print ("\n" COLCONTACT "%s" COLNONE " ", cdata);
-            }
+        char *tmp, *tmp2, *tmp3, *tmp4, *tmp5, *tmp6;
+        int i;
 
-            M_print (i18n (1755, "has added you to their contact list.\n"));
-
-            if (tmp == NULL)
-                break;
-
-            tmp++;
-            cdata = tmp;
-            tmp = strchr (tmp, sep);
-            if (tmp == NULL)
-            {
-                M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
-                return;
-            }
-            *tmp = 0;
-            M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1564, "First name:"), cdata);
-            tmp++;
-            cdata = tmp;
-            tmp = strchr (tmp, sep);
-            if (tmp == NULL)
-            {
-                M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
-                return;
-            }
-            *tmp = 0;
-            M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1565, "Last name:"), cdata);
-            tmp++;
-            cdata = tmp;
-            tmp = strchr (tmp, sep);
-            *tmp = 0;
-            M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1566, "Email address:"), cdata);
+        while (1) {
+            M_print (i18n (2146, "??%x?? %s%s%s\n"),
+                     type, COLMESSAGE COLMSGINDENT, text, COLNONE);
+            for (i = 0; i < strlen (text); i++)
+                M_print ("%c", cdata[i] ? cdata[i] : '.');
+            M_print (COLMSGEXDENT "\n");
             break;
-        case MSG_AUTH_REQ:
-            tmp = strchr (cdata, sep);
-            *tmp = 0;
-            M_print ("" COLCONTACT "%10s" COLNONE "%s\n", cdata,
-                     i18n (1590, "has requested your authorization to be added to their contact list."));
-            tmp++;
-            cdata = tmp;
-            tmp = strchr (tmp, sep);
-            if (tmp == NULL)
-            {
-                M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
-                return;
-            }
-            *tmp = 0;
-            M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1564, "First name:"), cdata);
-            tmp++;
-            cdata = tmp;
-            tmp = strchr (tmp, sep);
-            if (tmp == NULL)
-            {
-                M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
-                return;
-            }
-            *tmp = 0;
-            M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1565, "Last name:"), cdata);
-            tmp++;
-            cdata = tmp;
-            tmp = strchr (tmp, sep);
-            if (tmp == NULL)
-            {
-                M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
-                return;
-            }
-            *tmp = 0;
-            M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1566, "Email address:"), cdata);
-            tmp++;
-            cdata = tmp;
-            tmp = strchr (tmp, sep);
-            if (tmp == NULL)
-            {
-                M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
-                return;
-            }
-            *tmp = 0;
-            tmp++;
-            cdata = tmp;
-            tmp = strchr (tmp, sep);
-            if (tmp == NULL)
-            {
-                M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
-                return;
-            }
-            *tmp = 0;
-            M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1591, "Reason:"), cdata);
-            break;
-        case MSG_EMAIL:
-        case MSG_WEB:
-            tmp = strchr (cdata, sep);
-            *tmp = 0;
-            M_print ("\n%s ", cdata);
-            tmp++;
-            cdata = tmp;
-            tmp = strchr (cdata, sep);
-            tmp++;
-            cdata = tmp;
 
-            tmp = strchr (cdata, sep);
-            tmp++;
-            cdata = tmp;
-
-            tmp = strchr (cdata, sep);
-            *tmp = 0;
-            if (type == MSG_EMAIL)
-                M_print (i18n (1592, "<%s> emailed you a message:\n"), cdata);
-            else
-                M_print (i18n (1593, "<%s> send you a web message:\n"), cdata);
-            tmp++;
-            cdata = tmp;
-            tmp = strchr (cdata, sep);
-            *tmp = 0;
-            if (prG->verbose)
-            {
-                M_print ("??? '%s'\n", cdata);
-            }
-            tmp++;
-            cdata = tmp;
-            M_print (COLMESSAGE "%s" COLNONE "\n", cdata);
-            break;
-        case MSG_URL:
-            url_desc = cdata;
-            url_url = strchr (cdata, sep);
-            if (url_url == NULL)
-            {
-                url_url = url_desc;
-                url_desc = "";
-            }
-            else
-            {
-                *url_url = '\0';
-                url_url++;
-            }
-
-            M_print ("%s" COLMESSAGE "%s" COLNONE "\n",
-                     sess->type & TYPEF_ANY_SERVER ? MSGRECSTR : MSGTCPRECSTR,
-                     url_desc);
-            Time_Stamp ();
-            M_print (i18n (2127, "       URL: %s%s%s%s\n"), 
-                     sess->type & TYPEF_ANY_SERVER ? MSGRECSTR : MSGTCPRECSTR,
-                     COLMESSAGE, url_url, COLNONE);
-            break;
-        case MSG_CONTACT:
-            tmp = strchr (cdata, sep);
-            *tmp = 0;
-            M_print (i18n (1595, "\nContact List.\n============================================\n%d Contacts\n"),
-                     atoi (cdata));
-            tmp++;
-            m = atoi (cdata);
-            for (x = 0; m > x; x++)
-            {
-                cdata = tmp;
-                tmp = strchr (tmp, sep);
-                *tmp = 0;
-                M_print (COLCONTACT "%s\t\t\t", cdata);
-                tmp++;
-                cdata = tmp;
-                tmp = strchr (tmp, sep);
-                *tmp = 0;
-                M_print (COLMESSAGE "%s" COLNONE "\n", cdata);
-                tmp++;
-            }
-            break;
         case MSG_AUTO:
-            M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
-                i18n (2108, "auto"), cdata);
+            M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n",
+                     i18n (2108, "auto"), cdata);
             break;
+
+        case MSG_NORM:
+        default:
+            M_print ("%s" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n",
+                     carr, cdata);
+            break;
+
         case TCP_MSG_GET_AWAY: 
             M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
-                i18n (1972, "away"), cdata);
+                     i18n (1972, "away"), cdata);
             break;
+
         case TCP_MSG_GET_OCC:
             M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
-                i18n (1973, "occupied"), cdata);
+                     i18n (1973, "occupied"), cdata);
             break;
+
         case TCP_MSG_GET_NA:
             M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
-                i18n (1974, "not available"), cdata);
+                     i18n (1974, "not available"), cdata);
             break;
+
         case TCP_MSG_GET_DND:
             M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
-                i18n (1971, "do not disturb"), cdata);
+                     i18n (1971, "do not disturb"), cdata);
             break;
+
         case TCP_MSG_GET_FFC:
             M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
-                i18n (1976, "free for chat"), cdata);
+                     i18n (1976, "free for chat"), cdata);
             break;
+
         case TCP_MSG_GET_VER:
             M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
-                i18n (2109, "version"), cdata);
+                     i18n (2109, "version"), cdata);
             break;
-        default:
-            while (*cdata && (cdata[strlen (cdata) - 1] == '\n' || cdata[strlen (cdata) - 1] == '\r'))
-                cdata[strlen (cdata) - 1] = '\0';
-            M_print ("%s" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
-                sess->type & TYPEF_ANY_SERVER ? MSGRECSTR : MSGTCPRECSTR, cdata);
+
+        case MSG_URL:
+            tmp  = _septok (cdata); if (!tmp)  continue;
+            tmp2 = _septok (NULL);  if (!tmp2) continue;
+            
+            M_print ("%s" COLMESSAGE "%s" COLNONE "\n", carr, tmp);
+            Time_Stamp ();
+            M_print (i18n (2127, "       URL: %s%s%s%s\n"), carr, COLMESSAGE, tmp2, COLNONE);
             break;
+
+        case MSG_AUTH_REQ:
+            tmp = _septok (cdata); if (!tmp) continue;
+            tmp2 = _septok (NULL);
+            tmp3 = tmp4 = tmp5 = tmp6 = NULL;
+            
+            if (tmp2)
+            {
+                tmp3 = _septok (NULL); if (!tmp3) continue;
+                tmp4 = _septok (NULL); if (!tmp4) continue;
+                tmp5 = _septok (NULL); if (!tmp5) continue;
+                tmp6 = _septok (NULL); if (!tmp6) continue;
+            }
+            else
+            {
+                tmp6 = tmp;
+                tmp = NULL;
+            }
+
+            M_print (i18n (2144, "requests authorization: %s%s%s\n"),
+                     COLMESSAGE COLMSGINDENT, tmp6, COLNONE);
+            
+            if (tmp && strlen (tmp))
+                M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", "???1:", tmp);
+            if (tmp2 && strlen (tmp2))
+                M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1564, "First name:"), tmp2);
+            if (tmp3 && strlen (tmp3))
+                M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1565, "Last name:"), tmp3);
+            if (tmp4 && strlen (tmp4))
+                M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1566, "Email address:"), tmp4);
+            if (tmp5 && strlen (tmp5))
+                M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", "???5:", tmp5);
+            M_print (COLMSGEXDENT);
+            break;
+
+        case MSG_AUTH_DENY:
+            M_print (i18n (2143, "refused authorization: %s%s%s\n"),
+                     COLMESSAGE COLMSGINDENT, cdata, COLNONE COLMSGEXDENT);
+            break;
+
+        case MSG_AUTH_GRANT:
+            M_print (i18n (1901, "has authorized you to add them to your contact list.\n"));
+            break;
+
+        case MSG_AUTH_ADDED:
+            tmp = _septok (cdata);
+            if (!tmp)
+            {
+                M_print (i18n (1755, "has added you to their contact list.\n"));
+                break;
+            }
+            tmp2 = _septok (NULL); if (!tmp2) continue;
+            tmp3 = _septok (NULL); if (!tmp3) continue;
+            tmp4 = _septok (NULL); if (!tmp4) continue;
+
+            M_print ("\n" COLCONTACT "%s" COLNONE " ", tmp);
+            M_print (i18n (1755, "has added you to their contact list.\n"));
+            M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1564, "First name:"), tmp2);
+            M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1565, "Last name:"), tmp3);
+            M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1566, "Email address:"), tmp4);
+            break;
+
+        case MSG_EMAIL:
+        case MSG_WEB:
+            tmp  = _septok (cdata); if (!tmp)  continue;
+            tmp2 = _septok (NULL);  if (!tmp2) continue;
+            tmp3 = _septok (NULL);  if (!tmp3) continue;
+            tmp4 = _septok (NULL);  if (!tmp4) continue;
+            tmp5 = _septok (NULL);  if (!tmp5) continue;
+
+            M_print ("\n%s ", tmp);
+            M_print ("\n??? %s", tmp2);
+            M_print ("\n??? %s", tmp3);
+
+            if (type == MSG_EMAIL)
+                M_print (i18n (1592, "<%s> emailed you a message:\n"), tmp4);
+            else
+                M_print (i18n (1593, "<%s> send you a web message:\n"), tmp4);
+
+            M_print (COLMESSAGE "%s" COLNONE "\n", tmp5);
+            break;
+
+        case MSG_CONTACT:
+            tmp = _septok (cdata); if (!tmp) continue;
+
+            M_print (i18n (1595, "\nContact List.\n============================================\n%d Contacts\n"),
+                     i = atoi (cdata));
+
+            while (i--)
+            {
+                tmp2 = _septok (NULL); if (!tmp2) continue;
+                tmp3 = _septok (NULL); if (!tmp3) continue;
+                
+                M_print (COLCONTACT "%s\t\t\t", tmp2);
+                M_print (COLMESSAGE "%s" COLNONE "\n", tmp3);
+            }
+            break;
+        }
     }
+    free (cdata);
 }

@@ -333,8 +333,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             M_print ("\n");
             break;
         case SRV_USER_FOUND:
-            Display_Info_Reply (sess, pak, 
-                i18n (1968, "User found"), IREP_HASAUTHFLAG);
+            Display_Info_Reply (sess, pak, i18n (1968, "User found"), IREP_HASAUTHFLAG);
             M_print ("\n");
             break;
         case SRV_RAND_USER:
@@ -348,8 +347,8 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
 
             if (~prG->flags & FLAG_HERMIT || ContactFind (uin) != NULL)
             {
-                uiG.last_rcvd_uin = uin;
-                Do_Msg (sess, NOW, wdata, text, uin, STATUS_OFFLINE);
+                UtilCheckUIN (sess, uin);
+                IMSrvMsg (ContactFind (uin), sess, NOW, wdata, text, STATUS_OFFLINE);
                 Auto_Reply (sess, uin);
             }
             free (text);

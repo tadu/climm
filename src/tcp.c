@@ -1792,7 +1792,7 @@ static void TCPCallBackReceive (Event *event)
                              cont->nick, event->info);
                     if (~cont->flags & CONT_SEENAUTO && strlen (tmp))
                     {
-                        Do_Msg (event->sess, NOW, MSG_NORM, tmp, cont->uin, status);
+                        IMSrvMsg (cont, event->sess, NOW, MSG_NORM, tmp, status);
                         cont->flags |= CONT_SEENAUTO;
                     }
                     break;
@@ -1803,7 +1803,7 @@ static void TCPCallBackReceive (Event *event)
                 case TCP_MSG_GET_DND:
                 case TCP_MSG_GET_FFC:
                 case TCP_MSG_GET_VER:
-                    Do_Msg (event->sess, NOW, type, tmp, cont->uin, status);
+                    IMSrvMsg (cont, event->sess, NOW, type, tmp, status);
                     break;
 
                 case TCP_MSG_FILE:
@@ -1981,7 +1981,7 @@ static void TCPCallBackReceive (Event *event)
                 case MSG_WEB:
                 case MSG_EMAIL:
                 case MSG_CONTACT:
-                    Do_Msg (event->sess, NOW, type, tmp, cont->uin, status);
+                    IMSrvMsg (cont, event->sess, NOW, type, tmp, status);
 
                     TCPSendMsgAck (event->sess, seq, type, TRUE);
                     break;

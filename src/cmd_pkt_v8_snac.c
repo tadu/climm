@@ -560,8 +560,9 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             return;
     }
 
-    Do_Msg (event->sess, NOW, type, txt, uin, tlv[6].len 
-        ? tlv[6].nr : STATUS_OFFLINE);
+    UtilCheckUIN (event->sess, uin);
+    IMSrvMsg (ContactFind (uin), event->sess, NOW, type, txt,
+            tlv[6].len ? tlv[6].nr : STATUS_OFFLINE);
     Auto_Reply (event->sess, uin);
 
     if (text)
@@ -737,17 +738,13 @@ static JUMP_SNAC_F(SnacSrvAuthreq)
     pak = event->pak;
     PacketReadData (pak, NULL, PacketReadB2 (pak));
     /* TLV 1 ignored */
-    uin = PacketReadUIN (pak);
+    uin  = PacketReadUIN (pak);
     text = PacketReadStrB (pak);
-    Time_Stamp ();
-    M_print ("" COLCONTACT "%10s" COLNONE "%s\n", ContactFindName (uin),
-             i18n (1590, "has requested your authorization to be added to their contact list."));
-    M_print ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1591, "Reason:"), text);
+    
+    UtilCheckUIN (event->sess, uin);
+    IMSrvMsg (ContactFind (uin), event->sess, NOW, MSG_AUTH_REQ, text, STATUS_OFFLINE);
+
     free (text);
-    if (prG->sound & SFLAG_CMD)
-        ExecScript (prG->sound_cmd, uin, 0, NULL);
-    else if (prG->sound & SFLAG_BEEP)
-        printf ("\a");
 }
 
 /*
@@ -757,19 +754,21 @@ static JUMP_SNAC_F(SnacSrvAuthreply)
 {
     Packet *pak;
     UDWORD uin;
+    UBYTE acc;
+    char *reply;
 
     pak = event->pak;
     PacketReadData (pak, NULL, PacketReadB2 (pak));
     /* TLV 1 ignored */
-    uin = PacketReadUIN (pak);
-    Time_Stamp ();
-    M_print (" " COLCONTACT "%10s" COLNONE " ", ContactFindName (uin));
-    M_print (i18n (1901, "has authorized you to add them to your contact list."));
-    M_print ("\n");
-    if (prG->sound & SFLAG_CMD)
-        ExecScript (prG->sound_cmd, uin, 0, NULL);
-    else if (prG->sound & SFLAG_BEEP)
-        printf ("\a");
+    uin   = PacketReadUIN  (pak);
+    acc   = PacketRead1    (pak);
+    reply = PacketReadStrB (pak);
+
+    UtilCheckUIN (event->sess, uin);
+    IMSrvMsg (ContactFind (uin), event->sess, NOW,
+              acc ? MSG_AUTH_GRANT : MSG_AUTH_DENY, reply, STATUS_OFFLINE);
+
+    free (reply);
 }
 
 /*
@@ -785,7 +784,8 @@ static JUMP_SNAC_F(SnacSrvAddedyou)
     /* TLV 1 ignored */
     uin = PacketReadUIN (pak);
 
-    Do_Msg (event->sess, NOW, MSG_AUTH_ADDED, "", uin, STATUS_ONLINE);
+    UtilCheckUIN (event->sess, uin);
+    IMSrvMsg (ContactFind (uin), event->sess, NOW, MSG_AUTH_ADDED, "", STATUS_ONLINE);
 }
 /*
  * SRV_FROMOLDICQ - SNAC(15,3)
