@@ -12,7 +12,7 @@ current Maintainer:
 Contributors:
 
 	Rüdiger Kuhlmann	<micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
-	    submitted many Patches, added i18n support
+	    submitted many Patches, added i18n support, tcpcomm, icqv8
 
 	Frederic Lamorce	<flamorce@dataradio.com>
 	    added Socks5 Support

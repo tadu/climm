@@ -1,7 +1,7 @@
 micq - a portable ICQ Console Client
 $Id$
 
-current Version: 0.4.6
+current Version: 0.4.8
 ====================================
 
 a) about mICQ
@@ -14,6 +14,10 @@ BSD, BeOS, Windows and Amiga.
 When the Author passed away 2001-01-05, some of us Users
 overtook the "leadership" of the project and its now
 actively developed by some of us Freaks.
+
+I, Rico Gloeckner, want to give up Maintainership. Anyone
+who feels that he could do that may feel free to contact me.
+Anyone who is willing to maintain micq will get my support.
 
 
 b) Mailinglist
