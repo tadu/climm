@@ -1220,8 +1220,10 @@ void SnacCliSetuserinfo (Session *sess)
     PacketWriteTLV     (pak, 5);
     PacketWriteCap     (pak, CAP_SRVRELAY);
     PacketWriteCap     (pak, CAP_ISICQ);
-#ifdef WIP
+#if defined(WIP) || defined (__BEOS__)
     PacketWriteCap     (pak, CAP_IS_2002);
+#endif
+#ifdef WIP
     PacketWriteCap     (pak, CAP_MICQ);
 #endif
     PacketWriteTLVDone (pak);

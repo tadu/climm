@@ -232,12 +232,14 @@ void TCPDispatchMain (Session *list)
     {
         if ((rc = UtilIOError (list)))
         {
+#ifndef __BEOS__
             M_printf (i18n (2051, "Error on socket: %s (%d)\n"), strerror (rc), rc);
             if (list->sok > 0)
                 sockclose (list->sok);
             list->sok = -1;
             list->connect = 0;
             return;
+#endif
         }
     }
     else
@@ -1538,7 +1540,9 @@ BOOL TCPSendMsg (Session *list, UDWORD uin, char *msg, UWORD sub_cmd)
     pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, sub_cmd, 0, list->parent->status, msg);
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
-/*    PacketWriteDLStr (pak, "{0946134E-4C7F-11D1-8222-444553540000}"); FIXME: implement UTF-8 */
+#ifdef __BEOS__
+    PacketWriteDLStr (pak, "{0946134E-4C7F-11D1-8222-444553540000}");
+#endif
 
     peer->stat_real_pak_sent++;
 

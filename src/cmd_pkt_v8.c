@@ -123,6 +123,7 @@ void SrvCallBackReceive (Session *sess)
     {
         switch (sess->connect & 7)
         {
+            case 0:
             case 1:
             case 5:
                 if (sess->assoc && !(sess->assoc->connect & CONNECT_OK) && (sess->assoc->flags & CONN_AUTOLOGIN))
