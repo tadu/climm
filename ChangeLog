@@ -1,4 +1,21 @@
 
+2002-05-15 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Debian merges.
+	* change version information to be more like other ICQ clones.
+	* debug: save all packets.
+	* p2p rewrite: v8.
+	* Tab completion (Peter Stuge).
+	* Solaris compile fix.
+	* Russian update ("Pest").
+	* Peek command to check whether someone is really online.
+	* Sending keep-alives.
+	* Meta packet sending cleanup.
+	* quiet mode: do not show status changes.
+	* Ignoring users; now differentiate between ignore and invisible.
+	* i18n fix of stuuuuuupid bug.
+	* now recognizing: StrICQ.
+	* Honoring hermit.
+
 2002-05-10 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* SMS sending implemented
 	* Password changing implemented
