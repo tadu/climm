@@ -78,7 +78,7 @@ void i18nInit (char **loc, UBYTE *enc, const char *arg)
     if (*q == 'C' && !q[1] && enc && *enc == ENC_AUTO)
     {
         s_repl (loc, "en_US");
-        *enc = ENC_LATIN1;
+        *enc = ENC_LATIN1 | ENC_AUTO;
     }
 }
 
