@@ -1,4 +1,7 @@
 
+2001-06-12 Björn Hansson <hansson@netera.se>
+	* lang/se.i18n: update.
+
 2001-06-11 Keith Kelley <kkelley@locallink.net>
 	* src/icq_response.c, include/micq.h:
 	  New understood packets META_SRV_WP_FOUND, META_SRV_WP_LAST_USER.

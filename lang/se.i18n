@@ -43,8 +43,8 @@
 043:Sökningen avslutad.
 044:Sökningen gav för många svar.
 045:Sökning klar.
-#046:Length
-#047:Extra Data
+046:Längd
+047:Extra infomation
 #048:SEQ
 #049:Ver
 050:Inloggning klar!
@@ -57,7 +57,7 @@
 057:Namnet 
 058:%s hittade ej.¶
 059:Den port som kommer användas för TCP (ännu ej implementerat) är %d¶
-#060:Verbosity level is %d.¶
+060:Debugnivån är %d.¶
 061:%s är inte ett registrerat namn
 062:Användare ignorerade:
 063:Ange lösenord:
@@ -87,7 +87,7 @@
 #087:Ignoring garbage after number.
 088:Ange ditt ICQ-nummer, eller 0 för att skapa ett nytt:
 089:Tog bort översättning.
-#090:%s is a UIN, not a nick name.
+090:%s är ett nummer, inte ett namn.
 091:Du måste ange lösenord!
 092:Bekräfta lösenord:
 093:Lösenorden inte like, försök igen!
@@ -95,7 +95,7 @@
 095:SOCKS5 port (brukar vara 1080):
 096:SOCKS5 användarnam (ange 0 om du inte behöver logga in):
 097:SOCKS5 lösenord:
-#098:©4"No_Log" is deprecated.¶Use "LogType 0" Instead.¶©0
+098:©4"No_Log" fasas ut.¶Use "LogType 0" i stället.¶©0
 099:Okänt språk.
 100:Inget
 101:Arabiska
@@ -158,43 +158,43 @@
 158:Albanian
 159:Armenian
 160:Ej angett
-#161:Academic
-#162:Administrative
-#163:Art/Entertainmant
-#164:College Student
-#165:Computers
-#166:Community & Social
-#167:Education
-#168:Engineering
-#169:Financial Services
-#170:Government
-#171:High School Student
-#172:Home
+161:Akademiskt
+162:Administrativt
+163:Konst/underhållning
+164:Student
+165:Datorrelaterat
+166:Samhälle
+167:Utbildning
+168:Ingenjör
+169:Finanstjänster
+170:Staten
+171:Student
+172:Hem
 #173:ICQ - Providing Help
-#174:Law
-#175:Managerial
-#176:Manufacturing
-#177:Medical/Health
-#178:Military
-#179:Non-government Organization
-#180:Professional
+174:Juridik
+175:Tjänsteman
+176:Tillverkande
+177:Medicin/hälsa
+178:Militär
+179:Privat organisation
+180:Professional
 #181:Retail
-#182:Retired
+182:Pensionär
 #183:Science & Research
-#184:Sports
-#185:Technical
-#186:University Student
-#187:Web Building
-#188:©1Unrecognized command in rc file '%s', ignored.©0¶
-#189:UIN = %ld¶
-#190:port = %ld¶
-#191:passwd = %s¶
-#192:server = %s¶
-#193:status = %ld¶
-#194:# of contacts = %d¶
+184:Sport
+185:Teknisk
+186:Högskolestuderande
+187:Webutveckling
+188:©1Okänt kommando i inställningsfil '%s', ignorerad.©0¶
+189:UIN = %ld¶
+190:port = %ld¶
+191:lösenord = %s¶
+192:server = %s¶
+193:status = %ld¶
+194:antal vänner = %d¶
 #195:UIN of contact[0] = %ld¶
 #196:Message_cmd = %s¶
-#197:Password change was ©2%s©0.¶
+197:Lösenordsbytet gick ©2%s©0.¶
 198:Annan tjänst
 199:Okänt land
 200:Ej angett
@@ -390,21 +390,21 @@
 390:Zaire
 391:Zambia
 392:Zimbabwe
-#393:successful
-#394:unsuccessful
-#395:About info change was ©2%s©0.¶
-#396:Info change was ©2%s©0.¶
-#397:Other info change was ©2%s©0.¶
-#398:Search ©2failed©0.¶
+393:lyckades
+394:misslyckades
+395:Bytet av information ©2%s©0.¶
+396:Bytet av information ©2%s©0.¶
+397:Uppdateringen av informationen ©2%s©0.¶
+398:Sökningen ©2failed©0.¶
 #399:Unknown Meta User response ©1%04X©0¶
-#400:		Shows locally stored info on user¶
-#401:		Updates other user info like age and sex¶
-#402:		Updates your about user info.¶
-#403:		Displays the last message received from <nick>.¶			They must be in your Contact List.¶
-#404:		Toggles ignoring/unignoring nick¶
-#405:		Lists ignored nicks/uins¶
-#406:	Toggles your visibility to a user when you're invisible.¶
-#407:			Displays the current status of online people on your contact list¶
+400:		Visar lokal infomation om användaren¶
+401:		Uppdaterar information som ålder och kön¶
+402:		Uppdaterar informationen om dig.¶
+403:		Visar det sista meddelandet du har fått från <namn>.¶			Namnet måste vara med på din lista.¶
+404:		Väljer att ignorera/ej ignorera en användare¶
+405:		Visar ignorerade användare¶
+406:	Väljer om de är synlig för en användare när du är osynlig.¶
+407:			Visar status för användare på din lista¶
 408:		Byter lösenord.¶
 409:		Skickar ett meddelande till uin¶
 410:	Skickar en webadress och ett meddelande till uin¶
@@ -413,9 +413,9 @@
 413:		Tillåter uin att lägga till dig på din lista¶
 414:		Svarar på det meddelande du fick sist¶
 415:		Hittar en slumpmässig användare i den specificerade gruppen eller listan av grupper.¶
-416:			Visar den nuvarande statusen på alla i din  kontaktlista¶
+416:			Visar nuvarande status på alla i din kontaktlista¶
 417:	Det här kommandot tillåter dig att ändra dina kommandon under drift.¶
-418:			Ändra verbositets nivå ( standard = 0 ).¶
+418:			Ändra debug nivå ( standard = 0 ).¶
 419:				Rensa skärmen.¶
 420:				Ändrar om det piper när du får meddelande.¶
 421:				Sätter av och på färger.¶
@@ -437,7 +437,7 @@
 437:		Ändra status till osynlig.¶
 438:		Uppdaterar informationen om dig själv¶
 439:		Ställer in din slumpmässiga användaregrupp.¶
-#440:Random User:
+440:Slumpmässig användare:
 441:IP:
 442:Var vänlig välj ett ämne ur hjälpen.
 443:Kommandon relaterade till micq.se's uppvisning och konfiguration.
@@ -451,56 +451,56 @@
 451:IP2:
 452:Status:
 #453:TCP version:
-#454:Connection:
-#455:Art
-#456:Cars
+454:Anslutning:
+455:Konst
+456:Bilar
 #457:Celebrity Fans
 #458:Collections
-#459:Computers
+459:Datorer
 #460:Culture & Literature
-#461:Fitness
+461:Hälsa
 #462:Games
 #463:Hobbies
 #464:ICQ - Providing Help
-#465:Internet
-#466:Lifestyle
-#467:Movies/TV
-#468:Music
+465:Internet
+466:Livstil
+467:Film/TV
+468:Musik
 #469:Outdoor Activities
 #470:Parenting
-#471:Pets/Animals
-#472:Religion
-#473:Science/Technology
+471:Djur/husdjur
+472:Religion
+473:Vetenskap/teknik
 #474:Skills
-#475:Sports
-#476:Web Design
+475:Sport
+476:Webdesign
 #477:Nature and Environment
-#478:News & Media
+478:Nyheter & Media
 #479:Government
-#480:Business & Economy
+480:Företagande och ekonomi
 #481:Mystics
-#482:Travel
-#483:Astronomy
-#484:Space
-#485:Clothing
-#486:Parties
-#487:Women
+482:Resor
+483:Astronomi
+484:Rymden
+485:Kläder
+486:Fester
+487:Kvinnor
 #488:Social science
-#489:60's
-#490:70's
-#491:80's
-#492:50's
-#493:Peer-to-Peer
-#494:Server Only
-#495:No Random User Found
+489:60-talet
+490:70-talet
+491:80-talet
+492:50-talet
+493:Direktkontakt
+494:Server enbart
+495:Hittade ingen slumpvis användare
 #496:%02d/%02d/%04d
 #497:Type: %d	 Len: %d¶
-#498:Info for:
-#499:Other
+498:Information om:
+499:Övrigt
 500:ICQ-namn:
 501:Namn:
 502:E-post:
-503:Other Email:
+503:Annan e-post:
 504:Gammal e-post:
 505:Position:
 506:Telefon:
@@ -509,20 +509,20 @@
 509:Mobil:
 510:Postnummer:
 511:Land:
-#512:Country Code:
-#513:Work Country Code:
-#514:Work Country:
-#515:Work Homepage:
-#516:Occupation:
-#517:Job Position:
-#518:Department:
+512:Landsnummer:
+513:Landsnummer jobb:
+514:Land jobb:
+515:Hemsida jobb:
+516:Yrke:
+517:Tjänst:
+518:Avdelning:
 519:Företag:
 520:Work Zip:
 521:Work Fax:
 522:Work Address:
 523:jobbtelefon:
-#524:Work Location:
-#525:About:
+524:jobb position:
+525:Om:
 526:ej angett
 527:Ålder:
 528:kvinna
@@ -538,61 +538,61 @@
 538:Ange födelseår (fyra siffror):
 539:Ange födelsemånad:
 540:Ange födelsedag:
-#541:About> 
-#542:Enter other email address:
-#543:Enter old email address:
-#544:Enter new city:
-#545:Enter new state:
-#546:Enter new phone number:
-#547:Enter new fax number:
-#548:Enter new street address:
-#549:Enter new cellular number:
-#550:Enter new zip code (must be numeric):
-#551:Enter your country's phone ID number:
-#552:Enter your time zone (+/- 0-12):
-#553:Enter Your New Nickname:
-#554:Enter your new first name:
-#555:Enter your new last name:
-#556:Enter your new email address:
+541:Om> 
+542:Ange annan e-postadress:
+543:Ange gammal e-postadress:
+544:Ange stad:
+545:Ange stat:
+546:Ange telefonnummer:
+547:Ange faxnummer:
+548:Ange gatuadress:
+549:Ange mobiltelefonnummer:
+550:Ange postnummer (måste vara nummer):
+551:Ange landets landsnummer:
+552:Ange din tidszon (+/- 0-12):
+553:Ange ditt namn:
+554:Ange ditt förnamn:
+555:Ange ditt efternamn:
+556:Ange din e-postadress:
 557:Vill du att de som använder Mirabilis behöver din tillåtelse för att lägga till dig? (JA/NEJ)
 563:Namn:
 564:Förnamn:
 565:Efternamn:
-#558:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
-#559:Enter max age (22,29,39,49,59,120):
-#560:Enter a city:
-#561:Enter a state:
-#562:©1Info for %ld¶
+558:Ange minsta ålder (18-22,23-29,30-39,40-49,50-59,60-120):
+559:Ange högsta ålder (22,29,39,49,59,120):
+560:Ange en stad:
+561:Ange en stat:
+562:©1Information om %ld¶
 566:E-post adress:
 567:Inget bekräftelse behövs.©0 
 568:Bekräftelse behövs.©0 
 569:©1More Info for %ld¶
 570:Stad:
 571:Land:
-#572:Country code:
+572:Landsnummer:
 573:Tidszon:
 574:State:
 575:Ålder:
 576:ej angett
 577:Kön:
-#578:Enter country's phone ID number:
-#579:Enter company: 
+578:Landets landsnummer:
+579:Ange företag:
 580:Telefonnummer:
 581:Hemsida:
-#582:About:
-#583:©1User found %ld¶
-#584:Warning! Script command '%s' failed with exit value %d¶
-#585:Ack!!!!!!!  Bad packet
-#586:©4¶%s©0 has added you to their contact list.¶
-#587:Enter department: 
-#588:Enter position: 
-#589:Should the users be online?
-#590:©4¶%s©0 has requested your authorization to be added to their contact list.¶
+582:Om:
+583:©1Användaren hittad %ld¶
+584:Varning! Snabbkommandot '%s' misslyckades med returvärdet %d¶
+585:Ack!!!!!!! Felaktigt paket
+586:©4¶%s©0 har lagt till dig på sin lista.¶
+587:Ange avdelning: 
+588:Ange position: 
+589:Ska användaren vara inloggad?
+590:©4¶%s©0 har begärt ditt tillstånd att lägga till dig på sin lista.¶
 591:Anledning:
-#592:<%s> emailed you a message:¶
+592:<%s> skickade ett meddelande med e-post:¶
 593:<%s> skickade dig en webadress:¶
 594:        URL: %s©3%s©0¶
-#595:¶Contact List.¶©3============================================¶©0%d Contacts¶
+595:¶Lista.¶©3============================================¶©0%d Användare¶
 596:[SOCKS] Hittade ej namnet: %s¶
 597:[SOCKS] Kunde ej skapa anslutning¶
 598:[SOCKS] Anslutning vägrades¶
@@ -604,15 +604,15 @@
 #604:Seq: %08X	
 #605:Ses: %08X¶
 #606:Got a bad session ID %08X with CMD %04X ignored.¶
-#607:Usage: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]¶
-#608:        -v   Turn on verbose Mode (useful for Debugging only)¶
-#609:        -f   specifies an alternate Config File (default: ~/.micqrc)¶
-#610:        -l   specifies an alternate LogFile¶
-#611:        -?   gives this help screen¶¶
+607:Användning: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]¶
+608:        -v   aktiverar debugläge (endast användbart vid debug)¶
+609:        -f   anger en alternativ inställningsfil (standard: ~/.micqrc)¶
+610:        -l   anger en alternativ logfil¶
+611:        -?   visar denna hjälptext¶
 612:Detta program har utvecklats helt utan hjälp från Mirabilis.¶
 613:Vi har ej försökt dekompilera någon av Mirabilis källkod.¶
-#614:The config file for this session is "%s"¶
-#615:The logging directory for this session is "%s"¶
+614:Konfigurationsfilen för denna session är "%s"¶
+615:Katalogen med logfilerna denna session är "%s"¶
 #616:Started BeOS InputThread¶\r
 #617:Memory exhausted!!\a¶
 #618:¶Total entries %d¶
@@ -620,16 +620,16 @@
 #620:Removed message with SEQ %04X CMD 
 621: from resend queue because of ack.¶
 622:Vill du använda dessa ändringar? (JA/NEJ)
-#623:¶Doubled packet %04X¶
-#624:Resending message with SEQ num %04X CMD 
-#625:(Attempt #%d.)
-#626:Discarding message to 
-#627: after %d send attempts.  Message content:¶
-#628: Description: ©3%s©0¶
-#629: URL:         ©3%s©0
-#630:Discarded a 
-#631: packet.
-#632:¶\aConnection unstable. Exiting....
+623:¶Dubblerat paket %04X¶
+624:Återsänder meddelande med SEQ nummer %04X CMD 
+625:(Försök #%d.)
+626:Avbryter meddelande till
+627: efter %d sändningsförsök.  Innehåll:¶
+628: Beskrivning: ©3%s©0¶
+629: URL:         ©3%s©0
+630:Avbröt ett
+631: paket.
+632:¶\aAnslutningen instabil. Avbryter...
 #633:ACK!!! %d¶
 #634:¶Send Keep_Alive packet to the server¶
 #635:You have encounterd a bug in my code :( I now own you a beer!¶Greetings Fryslan!¶
@@ -645,10 +645,10 @@
 645:©3Felaktigt lösenord.©0¶
 646:©3Servern är överbelastad.¶Försöker igen...¶
 647: Type = %04x	
-#648: ©2The response was %04X	
-#649:The version was %X	
+648: ©2Svaret var %04X	
+649:Versionen var %X	
 #650:¶The SEQ was %04X	
-#651:The size was %d¶
+651:Storleken var %d¶
 652:Otillräckligt minne för att visa hela listan.¶
 653:Ej inloggad
 654:Inloggad
@@ -660,28 +660,28 @@
 660:Felaktigt kommando: %s¶
 661:Skalkommandor är avstängda.¶
 662:Color is ©3%s©0.¶
-#663:Enter sex:
+663:Ange kön:
 664:Skriver meddelande till ©1all©0:¶
 665:%s är inte något känt namn.
 666:Slutar ignornera %s.
 667:Ignorerar %s.
-#668:You must specify a nick name.
-669:Lagt till %s.
+668:Du måste ange ett namn.
+669:Lade till %s.
 670:Osynlig för %s nu.
 671:Synlig för %s nu.
-672:'s IP adressen är
+672:'s IP adress är
 673:	Porten är %d¶
 674:	Porten är okänd¶
 675:Behöver ICQ-nummer för att skicka
 676:Behöver ICQ-nummer för att skicka¶
 677:%s är inte ett känt namn¶
 678:Ange URL.¶
-#679:Sorry saving your personal reply messages went wrong!¶
+679:Tyvärr, kunde ej spara ditt svarsmeddelande!¶
 680:Dina inställningar är sparade!¶
 681:De senaste %d du pratade med:¶
 682:Du har mottagit meddelanden från:¶
-#683:Unknown Contact: %s¶
-#684:%s is not a known Contact¶
+683:Okänd kontakt: %s¶
+684:%s är ej känd¶
 685:Senaste meddelandet från ©4%s©0:¶
 686:Du har inte fått nåt meddelande från ©4%s©0¶
 687:Micq har varit igång i
@@ -689,7 +689,7 @@
 689: timmar
 690: minuter
 691: sekunder
-692:Contacts:
+692:Vänner::
 693:Paket skickadee:
 694:Paket mottagna:
 695:Lag:
@@ -701,7 +701,7 @@
 #701:%d users not returned.
 #703:©2Status modes: ¶
 #704:©2Groups: ¶
-705:Alltmänt                   1¶
+705:Allmänt                    1¶
 706:Kärlek                     2¶
 707:Spel                       3¶
 708:Studenter                  4¶
@@ -713,14 +713,14 @@
 714:Kvinnor söker män         11¶
 715:Micq                      49 (kanske inte fungerar, men testa!)
 #716:None                      -1¶
-#717:©2	! as the first character of a command will execute¶
-#718:©2	a shell command (e.g. "!ls"  "!dir" "!mkdir temp")©0¶
-#719:©3uptime		Shows how long Micq has been running.¶©0
-#720:©2	uin can be either a number or the nickname of the user.¶
+717:©2	! som det första tecknet av ett kommando kommer köra¶
+718:©2	ett skalkommando (t.ex. "!ls"  "!dir" "!mkdir temp")©0¶
+719:©3uptime		Visar hur länge micq varit igång.¶©0
+720:©2	kan vara ett nummer eller namn på användare.¶
 #721:©2	Sending a blank message will put the client into multiline mode.¶	Use . on a line by itself to end message.¶
-#722:	Use # on a line by itself to cancel the message.©0¶
+722:	Skriver # ensamt på en rad för att avbryta ett meddelande.©0¶
 723:%s IP adress är
-#724:Automatic replies are %s.¶
+724:Automatiska svar är %s.¶
 #727:The Do not disturb message is:
 #728:The Away message is:
 #729:The Not available message is:
@@ -751,7 +751,7 @@
 #756:¶Creating Connection...¶
 757:Kunde inte skapa anslutning¶
 #758:Sending Request...¶
-#759:Waiting for response....¶
-#760:¶Your new UIN is %s%ld%s!¶
-#761:unknown
+759:Väntar på stav...¶
+760:¶Ditt nya nummer är %s%ld%s!¶
+761:okänt
 #762:Ack!!!!!!  %d\a¶

@@ -2,7 +2,7 @@
 .\" First parameter, NAME, should be all caps
 .\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
 .\" other parameters are allowed: see man(7), man(1)
-.TH MICQ 1 "May 18, 2000"
+.TH MICQ 1 "10 June 2001"
 .\" Please adjust this date whenever revising the manpage.
 .\"
 .\" Some roff macros, for reference:
@@ -19,29 +19,68 @@
 micq \- a small, text mode ICQ client
 .SH SYNOPSIS
 .B micq
-.RI [-v\ -V,\ -f\ -F]
+.RI [-v]\ [-f\ <filename>]
 .br
 .SH DESCRIPTION
-This manual page documents briefly the
+This manual page briefly documents the
 .B micq
 command.
-This manual page was written for the Debian GNU/Linux distribution
-because the original program does not have a manual page.
+This manual page was originally written for the Debian GNU/Linux distribution
+because the original program did not have a manual page.
 .PP
-\fBmicq\fP is a text based ICQ client supporting many of the original ICQ
-client by Mirabillis. Micq allows to change the user password, create new
+\fBmicq\fP is a text based ICQ client supporting many of the ICQ
+features provided by the client by Mirabillis. Micq allows to change the user password, create new
 accounts, updating user info, search other users, etc.
 .SH OPTIONS
 .TP
 .B \-v, \-V
 Toggle verbose mode.
 .TP
-.B \-f, \-F
-Use different rc file.
+.B \-f, \-F <filename>
+Use <filename> as the rc file.
+.\ .B \-E
+.\ Use ~/etc/micq.conf instead of ~/.micqrc
+
+.SH FEATURES
+.B Micq
+is very portable and has run on Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD and any
+other modern unix system.  
+.B Micq version 0.4.6 
+is known to run on Linux, GNU HURD and other unices.  However, the other ports
+may or may not still work and anyone wishing to test them is welcome to.
+.SH HISTORY
+16 Aug 1998
+.br
+	Matthew D. Smith releases micq unto the world. 
+.br
+	Followed by 12 dated releases until 25 Sept 1998
+.br
+05 Jan 2001
+.br
+	Matthew D. Smith died in a car accident.
+.br
+	Users pick up where Matthew left off, formalize micq under the BSD 
+license and restart the development of micq. 
+
+.SH MAILING-LIST
+The micq mailing list is: micq-list@mc.ukeer.de
+.br
+Archives are available @ http://micq.ukeer.de/pipermail/micq-list/
+.SH DOWNLOAD
+http://micq.ukeer.de/download.html
+.br
+cvs -d:pserver:anonymous@micq.ukeer.de:/usr/local/cvsroot login
+.br
+empty password, hit enter
+.br
+cvs -d:pserver:anonymous@micq.ukeer.de:/usr/local/cvsroot -z3 co micq
+.SH SEE ALSO
+micqrc(5),micq(7)
 .SH BUGS
 Send Bugreport or Comments to Rico Gloeckner <mc@verdinet.de>,
 UIN #99798577
 .SH AUTHOR
 This manual page was written by Jordi Mallach <jordi@sindominio.net>,
-for the Debian GNU/Linux system (but may be used by others).
+for the Debian GNU/Linux system.  The current revision of the document
+is by James Morrison <ja2morrison@student.math.uwaterloo.ca>.
 
