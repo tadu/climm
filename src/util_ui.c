@@ -533,7 +533,9 @@ void Time_Stamp (void)
 
     M_print ("%.02d:%.02d:%.02d", thetime->tm_hour, thetime->tm_min, thetime->tm_sec);
     
-    if (prG->verbose)
+    if (prG->verbose > 7)
+        M_print (".%.06d", tv.tv_usec);
+    else if (prG->verbose > 1)
         M_print (".%.03d", tv.tv_usec / 1000);
 }
 
