@@ -339,7 +339,7 @@ static JUMP_SNAC_F(SnacServerpause)
 
 static void SrvCallbackTodoEg (Event *event)
 {
-    CmdUser ("\xb6" "eg");
+    CmdUser (s_sprintf ("\xb6" "as %ld eg", event->conn->uin));
 }
 
 /*
@@ -387,7 +387,7 @@ static JUMP_SNAC_F(SnacSrvReplyinfo)
         reconn = 0;
         QueueEnqueueData (event->conn, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
                           NULL, event->conn->uin, NULL, &SrvCallBackKeepalive);
-        QueueEnqueueData (event->conn, QUEUE_TODO_EG, 0, time (NULL) + 2,
+        QueueEnqueueData (event->conn, QUEUE_TODO_EG, 0, time (NULL) + 3,
                           NULL, 0, NULL, &SrvCallbackTodoEg);
     }
 }

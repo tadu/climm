@@ -40,7 +40,7 @@
 static jump_f
     CmdUserChange, CmdUserRandom, CmdUserHelp, CmdUserInfo, CmdUserTrans,
     CmdUserAuto, CmdUserAlter, CmdUserAlias, CmdUserUnalias, CmdUserMessage,
-    CmdUserMessageNG, CmdUserResend, CmdUserPeek,
+    CmdUserMessageNG, CmdUserResend, CmdUserPeek, CmdUserAsSession,
     CmdUserVerbose, CmdUserRandomSet, CmdUserIgnoreStatus, CmdUserSMS,
     CmdUserStatusDetail, CmdUserStatusWide, CmdUserStatusShort,
     CmdUserSound, CmdUserSoundOnline, CmdUserRegister, CmdUserStatusMeta,
@@ -134,6 +134,7 @@ static jump_t jump[] = {
     { &CmdUserPass,          "pass",         NULL, 0,   0 },
     { &CmdUserSMS,           "sms",          NULL, 0,   0 },
     { &CmdUserPeek,          "peek",         NULL, 0,   0 },
+    { &CmdUserAsSession,     "as",           NULL, 0,   0 },
     { &CmdUserContact,       "contact",      NULL, 0,   0 },
     { &CmdUserContact,       "contactshow",  NULL, 0,   1 },
     { &CmdUserContact,       "contactdiff",  NULL, 0,   2 },
@@ -3339,6 +3340,51 @@ static JUMP_F(CmdUserQuit)
     uiG.quit = TRUE;
     return 0;
 }
+
+
+/*
+ * Runs a command using temporarely a different current connection
+ */
+static JUMP_F(CmdUserAsSession)
+{
+    Connection *saveconn, *tmpconn;
+    char *q = NULL;
+    UDWORD quiet = 0, nr;
+    
+    saveconn = currconn;
+    if (!s_parseint (&args, &nr))
+    {
+        if (!s_parse (&args, &q))
+            /* syntax error */
+            return 0;
+        if (!strcmp (q, "quiet"))
+            /* syntax error */
+            return 0;
+        quiet = 1;
+        if (!s_parseint (&args, &nr))
+            /* syntax error */
+            return 0;
+    }
+
+    tmpconn = ConnectionNr (nr - 1);
+    if (!tmpconn && !(tmpconn = ConnectionFind (TYPEF_SERVER, nr, NULL)))
+    {
+        if (!quiet)
+            M_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
+        return 0;
+    }
+    if (~tmpconn->type & TYPEF_SERVER)
+    {
+        if (!quiet)
+            M_printf (i18n (2098, "Connection %ld is not a server connection.\n"), nr);
+        return 0;
+    }
+    currconn = tmpconn;
+    CmdUser (args);
+    currconn = saveconn;
+    return 0;
+}
+
 
 /******************************************************************************
  *
