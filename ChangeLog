@@ -1,5 +1,19 @@
 -*- coding: utf-8 -*-
 
+2003-10-06 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
+	* allow --enable-ssl=auto and --enable-tcl=auto
+	* fix typos in man pages
+	* add README.ssl
+	* fix dc message mem leak
+	* backport proper s_catf() implementation from unstable
+	* fix auto-reconnect
+	* discard unassociated p2p connections and warn user
+	* update it.i18n, pt.i18n
+	* cache C.i18n versions in i18n-template
+	* fix contact list downloading
+	* add missing queue types for debugging
+	* prepare for 0.4.10.5.
+
 2003-09-30 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
 	* fix i18n string numbers
 	* Win32 screen saver fix

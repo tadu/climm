@@ -36,17 +36,20 @@ Contributors:
 
 Current Translators:
 
+	Leonardo Rosa		<leorosa__at__feq.unicamp.br>
+	    portuguese/brazil (pt) translation 0.4.10.5
+	    updated portuguese man pages to 0.4.10.5
+	    portuguese web page
+
+	Fabio Venturi		<f.venturi__at__email.it>
+	    italian (it.i18n) translation 0.4.10.5
+	
 	Nikola Lecic		<lecicc__at__ptt.yu>
 	    serbian (sr_yu) translation 0.4.10
 	    serbian man pages, serbian web page
 	
 	Alonso Andres
 	    portuguese/brazil (pt) translation 0.4.10
-
-	Leonardo Rosa		<leorosa__at__feq.unicamp.br>
-	    portuguese/brazil (pt) translation 0.4.10
-	    updated portuguese man pages to 0.4.10
-	    portuguese web page
 
 	Artem Sokolov		<sokolov__at__ukr.net>
 	    ukrainian (uk.i18n) translation 0.4.10
@@ -61,9 +64,6 @@ Current Translators:
 	Alberto Bertogli	<albertogli__at__telpin.com.ar>
 	    spanish (es.i18n) translation 0.4.9.3
 	    spanish man pages, spanish web page
-	
-	Fabio KaLiF		<f.venturi__at__email.it>
-	    italian (it.i18n) translation
 	
 	Seva Gluschenko		<gvs__at__demos.net>
 	    updated russian (ru) translation to 0.4.10
