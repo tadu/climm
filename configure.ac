@@ -88,11 +88,18 @@ fi
 AC_PROG_GCC_TRADITIONAL
 
 AC_CHECK_DECLS(h_errno,,,[$ac_includes_default
-#include <netdb.h>])
+#ifdef HAVE_NETDB_H
+#include <netdb.h>
+#endif])
 
 AC_TYPE_SIGNAL
 AC_CHECK_TYPES(socklen_t,,,[$ac_includes_default
-#include <netdb.h>])
+#ifdef HAVE_SYS_SOCKET_H
+#include <sys/socket.h>
+#endif
+#ifdef HAVE_NETDB_H
+#include <netdb.h>
+#endif])
 AC_FUNC_VPRINTF
 AC_FUNC_SNPRINTF
 AC_FUNC_MEMMOVE
