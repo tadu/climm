@@ -89,17 +89,26 @@ if test "x$ac_arg_use_iconv" != "xbuiltin"; then
               if (res == (iconv_t)-1 || !res) exit (4);
           }
           res = iconv_open ("UTF-8", "ISO-8859-15");
-          if (res == (iconv_t)-1 || !res) exit (5);
-          res = iconv_open ("ISO-8859-15", "UTF-8");
-          if (res == (iconv_t)-1 || !res) exit (6);
+          if (res == (iconv_t)-1 || !res)
+          {
+              res = iconv_open ("UTF-8", "ISO8859-15");
+              if (res == (iconv_t)-1 || !res) exit (5);
+              res = iconv_open ("ISO8859-15", "UTF-8");
+              if (res == (iconv_t)-1 || !res) exit (6);
+          }
+          else
+          {
+              res = iconv_open ("ISO-8859-15", "UTF-8");
+              if (res == (iconv_t)-1 || !res) exit (7);
+          }
           res = iconv_open ("UTF-8", "KOI8-U");
-          if (res == (iconv_t)-1 || !res) exit (7);
-          res = iconv_open ("KOI8-U", "UTF-8");
           if (res == (iconv_t)-1 || !res) exit (8);
-          res = iconv_open ("UTF-8", "CP1251");
+          res = iconv_open ("KOI8-U", "UTF-8");
           if (res == (iconv_t)-1 || !res) exit (9);
-          res = iconv_open ("CP1251", "UTF-8");
+          res = iconv_open ("UTF-8", "CP1251");
           if (res == (iconv_t)-1 || !res) exit (10);
+          res = iconv_open ("CP1251", "UTF-8");
+          if (res == (iconv_t)-1 || !res) exit (11);
           exit (0);]])],
       [ac_cv_iconv_min=ok],
       [ac_cv_iconv_min=broken],
@@ -107,7 +116,8 @@ if test "x$ac_arg_use_iconv" != "xbuiltin"; then
   ])
   if test $ac_cv_iconv_min != ok; then
     ac_arg_use_iconv=none
-    AC_DEFINE([ICONV_LATIN1_NAME], ["ISO-8859-1"], [the name of the latin1 encoding])
+    AC_DEFINE([ICONV_LATIN1_NAME], ["ISO-8859-1"],  [the name of the latin1 encoding])
+    AC_DEFINE([ICONV_LATIN9_NAME], ["ISO-8859-15"], [the name of the latin9 encoding])
   else
     AC_CACHE_CHECK(for iconv name of latin-1 encoding, ac_cv_iconv_latin1_name,
       [AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
@@ -121,9 +131,22 @@ if test "x$ac_arg_use_iconv" != "xbuiltin"; then
         [ac_cv_iconv_latin1_name=cannothappen])
     ])
     AC_DEFINE_UNQUOTED([ICONV_LATIN1_NAME], ["$ac_cv_iconv_latin1_name"])
+    AC_CACHE_CHECK(for iconv name of latin-9 encoding, ac_cv_iconv_latin9_name,
+      [AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
+            #include <iconv.h>]],
+          [[iconv_t res;
+            res = iconv_open ("UTF-8", "ISO-8859-15");
+            if (res == (iconv_t)-1 || !res) exit (1);
+            exit (0);]])],
+        [ac_cv_iconv_latin9_name=ISO-8859-15],
+        [ac_cv_iconv_latin9_name=ISO8859-15],
+        [ac_cv_iconv_latin9_name=cannothappen])
+    ])
+    AC_DEFINE_UNQUOTED([ICONV_LATIN9_NAME], ["$ac_cv_iconv_latin9_name"])
   fi
 else
   AC_DEFINE([ICONV_LATIN1_NAME], ["ISO-8859-1"])
+  AC_DEFINE([ICONV_LATIN9_NAME], ["ISO-8859-15"])
 fi
 
 if test "x$ac_arg_use_remote" != "xno"; then

@@ -44,7 +44,7 @@ UBYTE ConvEnc (const char *enc)
         conv_encs[0].enc = strdup ("none");
         conv_encs[1].enc = strdup ("UTF-8");
         conv_encs[2].enc = strdup (ICONV_LATIN1_NAME);
-        conv_encs[3].enc = strdup ("ISO-8859-15");
+        conv_encs[3].enc = strdup (ICONV_LATIN9_NAME);
         conv_encs[4].enc = strdup ("KOI8-U");
         conv_encs[5].enc = strdup ("CP1251");      /* NOT cp-1251, NOT windows* */
         conv_encs[6].enc = strdup (ICONV_LATIN1_NAME);  /* this is dupe (!) */
@@ -55,6 +55,8 @@ UBYTE ConvEnc (const char *enc)
         enc = "CP1251";
     if (!strcasecmp (enc, "ISO-8859-1") || !strcasecmp (enc, "ISO8859-1") || !strcasecmp (enc, "LATIN1"))
         enc = ICONV_LATIN1_NAME;
+    if (!strcasecmp (enc, "ISO-8859-15") || !strcasecmp (enc, "ISO8859-15") || !strcasecmp (enc, "LATIN9"))
+        enc = ICONV_LATIN15_NAME;
 #ifndef ENABLE_ICONV
     if (!strncasecmp (enc, "KOI8", 4))
         enc = "KOI8-U";
