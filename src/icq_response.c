@@ -447,7 +447,7 @@ void UserOnlineSetVersion (Contact *con, time_t tstamp, time_t tstamp2, time_t t
     char buf[100];
     char *new = NULL;
     unsigned int ver = tstamp & 0xffff, ssl = 0;
-    char v1 = 0, v2 = 0, v3 = 0, v4 = 0;
+    signed char v1 = 0, v2 = 0, v3 = 0, v4 = 0;
 
     if      ((tstamp & 0xff7f0000) == BUILD_LICQ && ver > 1000)
     {
@@ -472,9 +472,12 @@ void UserOnlineSetVersion (Contact *con, time_t tstamp, time_t tstamp2, time_t t
     else if (tstamp == tstamp2 && tstamp2 == tstamp3 && tstamp == 0xffffffff)
         new = "vICQ/GAIM(?)";
 
-    if (   (tstamp & 0xffff0000) == 0xffff0000
-        || (tstamp & 0x0000ffff) == 0x0000ffff)
+    if ((tstamp & 0xffff0000) == 0xffff0000)
     {
+        v1 = (tstamp2 & 0x7f000000) >> 24;
+        v2 = (tstamp2 &   0xff0000) >> 16;
+        v3 = (tstamp2 &     0xff00) >> 8;
+        v4 =  tstamp2 &       0xff;
         switch (tstamp)
         {
             case BUILD_MIRANDA:
@@ -488,15 +491,13 @@ void UserOnlineSetVersion (Contact *con, time_t tstamp, time_t tstamp2, time_t t
                 break;
             case BUILD_YSM:
                 new = "YSM";
+                if (v1 < 0 || v2 < 0 || v3 < 0 || v4 < 0)
+                    v1 = v2 = v3 = v4 = 0;
                 break;
             default:
                 snprintf (buf, sizeof (buf), "%08lx", tstamp);
                 new = buf;
         }
-        v1 = (tstamp2 & 0x7f000000) >> 24;
-        v2 = (tstamp2 &   0xff0000) >> 16;
-        v3 = (tstamp2 &     0xff00) >> 8;
-        v4 =  tstamp2 &       0xff;
     }
     
     if (new)
@@ -508,14 +509,16 @@ void UserOnlineSetVersion (Contact *con, time_t tstamp, time_t tstamp2, time_t t
             strcat (buf, " ");
                           sprintf (buf + strlen (buf), "%d.%d", v1, v2);
             if (v3 || v4) sprintf (buf + strlen (buf), ".%d", v3);
-            if (v4)       sprintf (buf + strlen (buf), " cvs %d", v4);
+            if (v4)       sprintf (buf + strlen (buf), ".%d", v4);
         }
         if (ssl) strcat (buf, "/SSL");
     }
-    else if (prG->verbose)
-        sprintf (buf, "%s %08x", i18n (1827, "Unknown client"), (unsigned int)tstamp);
     else
         buf[0] = '\0';
+
+    if (prG->verbose)
+        sprintf (buf + strlen (buf), "<%08x:%08x:%08x>", (unsigned int)tstamp,
+                 (unsigned int)tstamp2, (unsigned int)tstamp3);
 
     if (con->version) free (con->version);
     con->version = strlen (buf) ? strdup (buf) : NULL;
