@@ -4,7 +4,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT([micq], [0.4.9.5])
+AC_INIT([micq], [0.4.10])
 AC_CONFIG_SRCDIR([include/micq.h])
 AC_CONFIG_LIBOBJ_DIR(replace)
 AC_CONFIG_HEADER(include/config.h)
@@ -116,17 +116,26 @@ if test "x$ac_arg_use_remote" != "xno"; then
           #include <stdio.h>
           
           #include <sys/stat.h>
-          #include <fcntl.h>]],
+          #include <fcntl.h>
+          #include <signal.h>
+          void timeout (int i) { exit (11); } ]],
         [[int res, sok, so2;
           char buf[10];
           unlink ("./conftest.fifo");
-          res = mkfifo ("./conftest.fifo", 0600);   if (res < 0) exit (1);
-          sok = open ("./conftest.fifo", O_RDWR);   if (sok < 0) exit (2);
-          so2 = open ("./conftest.fifo", O_RDONLY); if (so2 < 0) exit (3);
-          res = write (sok, "bla", 3);              if (res < 3) exit (4);
+          signal (SIGALRM, &timeout);
+          alarm (5);
+          res = mkfifo ("./conftest.fifo", 0600);
+          if (res < 0) exit (1);
+          sok = open ("./conftest.fifo", O_RDWR | O_NONBLOCK);
+          if (sok < 0) exit (2);
+          so2 = open ("./conftest.fifo", O_RDONLY | O_NONBLOCK);
+          if (so2 < 0) exit (3);
+          res = write (sok, "bla", 3);
+          if (res < 3) exit (4);
           buf[0] = buf[3] = buf[5] = 0;
-          res = read (so2, buf, 3);                 if (res < 3) exit (5);
-          if (strcmp (buf, "bla"))                               exit (6);
+          res = read (so2, buf, 3);
+          if (res < 3) exit (5);
+          if (strcmp (buf, "bla")) exit (6);
           close (sok);
           close (so2);
           unlink ("./conftest.fifo");
@@ -280,8 +289,14 @@ if test "x$WIP" != "x"; then
     AC_DEFINE(WIP,1,[Include probably buggy work-in-progress code])
 fi
 
+if test "x${DEB_HOST_GNU_SYSTEM}" != "x"; then
+    AC_DEFINE(__Dbn__,1,"")
+else
+    AC_DEFINE(__Dbn__,-1)
+fi
+
 if test "x$MICQ_EXTRAVERSION" != "x"; then
-    AC_DEFINE_UNQUOTED(EXTRAVERSION,"$MICQ_EXTRAVERSION",[Extra version information like the distribution used])
+    AC_DEFINE_UNQUOTED(EXTRAVERSION,$MICQ_EXTRAVERSION,[Extra version information like the distribution used])
 fi
 
 AC_CONFIG_FILES([doc/Makefile src/Makefile Makefile lang/Makefile])
