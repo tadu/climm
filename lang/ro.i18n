@@ -1,10 +1,10 @@
 # $Id$ Romana (Romanian)
-#  EN: __.i18n,v 1.44 2002/09/19 00:36:27
+#  EN: __.i18n,v 1.50 2002/09/30 17:45:07
 1001:ro
 1002:ro_RO
 1003:0-4-9-3
-1004:Digor Dumitru
-1005:Digor Dumitru
+1004:Digor Dumitru, Alina Pelin
+1005:Alina Pelin
 1006:05-09-2002
 1007:iso-8859-2
 1010:Utilizatorul e plecat [Auto-Message]
@@ -31,12 +31,13 @@
 1031:s-a conectat.
 #1032:debug: Doppeltes Packet #%04x vom Typ %04x (%s)¶
 1033:Pachet server v8 care vine:
-1034:Numarul maxim de incercari a fost atins. Ma predau.
+1034:Numarul maxim de incercari a fost atins. Cedez.
 1035:a schimbat starea in
 1036:%s comanda necunoscuta, tastati /help pentru ajutor.
 1037:Mesaj trimis pana la ultima linie (buffer plin)¶
 1038:Mesajul a fost intrerupt¶
-1039:Serverul afirma ca nu sintem conectati.¶
+#-#1039:Serverul afirma ca nu sintem conectati.¶
+#1039:The server claims we're not connected.¶
 1040:mICQ> 
 1041:msg> 
 1042:msg toti> 
@@ -52,7 +53,7 @@
 1055:Crearea socketului a esuat
 1056:Socket-ul a fost creat incercam sa ne conectam¶
 1060:Nivelul detalizarii mesajelor e %d.¶
-#1061:'%s' nu pare a fi nick name.¶
+1061:'%s' nu pare a fi nick name.¶
 1062:Utilizatori ignorati:
 1063:Introduceti parola:
 1064:Starea a fost automat schimbata in
@@ -64,7 +65,6 @@
 1074:mICQ (clonul ICQ al lui Matt)
 1075:versiunea
 1076:compilat
-#1077:in dedication to Matthew D. Smith.
 1077:consacrat lui Matthew D. Smith.
 1078:Traducere nu exista.
 1079:Traducere (%s, %s) din %s, ultima modificare facuta la %s de %s, pentru mICQ %d.%d.%d%s.¶
@@ -142,407 +142,413 @@
 #1156:Bosnian
 1157:Persana
 1158:Albaneza
-#-#1195:Culoarea e %s%s%s.¶
 #1159:Armenian
 #1161:Academic
-#1162:Administrative
-#1163:Art/Entertainmant
-#1164:College Student
-#1165:Computers
+1162:Administrativa
+1163:Arte/ Diastractii
+1164:Student la colegiu
+1165:Calculatoare
 #1166:Community & Social
-#1167:Education
-#1168:Engineering
-#1169:Financial Services
-#1170:Government
-#1171:High School Student
-#1172:Home
+1167:Educatie
+1168:Inginer
+1169:Servicii financiare
+1170:Guvernamant
+1171:Student la colegiu/universitate
+1172:Acasa
 #1173:ICQ - Providing Help
-#1174:Law
+1174: Dreptul
 #1175:Managerial
-#1176:Manufacturing
-#1177:Medical/Health
-#1178:Military
-#1179:Non-government Organization
-#1180:Professional
+1176:Fabricare manuala
+1177:Medical/ Sanatate
+1178:Militar
+1179:Organizatii non-guvernamentale
+1180:Profesional
 #1181:Retail
 #1182:Retired
-#1183:Science & Research
-#1184:Sports
-#1185:Technical
-#1186:University Student
-#1187:Web Building
-1188:Comanda necunoscuta in fisierul de configurare '%s'; ignorata.
-1189:UIN = %ld¶
-1190:port = %ld¶
-1191:parola = %s¶
-1192:server = %s¶
-1193:stare = %ld¶
+1183:Stiinta si descoperiri
+1184:Sport
+1185:Tehnica
+1186:Student la universitate
+1187:Constructie de web-site-uri
+#1188:Unrecognized command in rc file '%s', ignored.
+#1189:UIN = %ld¶
+#1190:port = %ld¶
+#1191:passwd = %s¶
+#1192:server = %s¶
+#1193:status = %ld¶
 #1196:Message_cmd = %s¶
-1198:Alte servicii
-1199:Tara necunoscuta
-1200:Neintrodusa
-1201:Afganistan
-1202:Albania
+#1198:Other Services
+#1200:Not entered
+#1201:Afghanistan
+#1202:Albania
 #1203:Algeria
 #1204:American Samoa
-1205:Andora
+#1205:Andorra
 #1206:Angola
 #1207:Anguilla
 #1208:Antigua
-1209:Argentina
-1210:Armenia
+#1209:Argentina
+#1210:Armenia
 #1211:Aruba
 #1212:Ascention Island
-1213:Australia
-#1214:Australian Antartic Territory
-1215:Austria
+#1213:Australia
+1214:Teritoriul Antarctic Australian 
+#1215:Austria
 #1216:Azerbaijan
 #1217:Bahamas
 #1218:Bahrain
-1219:Bangladesh
+#1219:Bangladesh
 #1220:Barbados
-1221:Belorusia
-1222:Belgia
+#1221:Belarus
+#1222:Belgium
 #1223:Belize
 #1224:Benin
 #1225:Bermuda
 #1226:Bhutan
-1227:Bolivia
-1228:Bosnia si Herzegovina
-#1229:Botswana
-1230:Brazilia
-#1231:British Virgin Islands
+#1227:Bolivia
+#1228:Bosnia & Herzegovina
+1229:Botvana
+#1230:Brazil
+1231:Insulele Virgine Britanice
 #1232:Brunei
-1233:Bulgaria
+#1233:Bulgaria
 #1234:Burkina Faso
 #1235:Burundi
 #1236:Cambodia
 #1237:Cameroon
-1238:Canada
+#1238:Canada
 #1239:Cape Verde Islands
 #1240:Cayman Islands
-#1241:Central African Republic
+1241:Republica Africana Centrala
 #1242:Chad
-#1243:Christmas Island
+1243:Insula Craciunului
 #1244:Cocos-Keeling Islands
 #1245:Comoros
-#1246:Congo
+1246:Congo 
 #1247:Cook Islands
-#1248:Chile
+1248:Cili
 #1249:China
 #1250:Columbia
-#1251:Costa Rice
+1251:Costa Rica
 #1252:Croatia
 #1253:Cuba
-#1254:Cyprus
-#1255:Czech Republic
-#1256:Denmark
+1254:Cipru 
+1255:Republica Ceha
+1256:Danemarca
 #1257:Diego Garcia
 #1258:Djibouti
 #1259:Dominica
-#1260:Dominican Republic
-#1261:Ecuador
-#1262:Egypt
+1260:Republica Dominicana
+1261:Ecuador   
+1262:Egipt
 #1263:El Salvador
 #1264:Equitorial Guinea
 #1265:Eritrea
 #1266:Estonia
-#1267:Ethiopia
+1267:Etiopia
 #1268:F.Y.R.O.M. (Former Yugoslavia)
 #1269:Faeroe Islands
 #1270:Falkland Islands
-#1271:Federated States of Micronesia
-#1272:Fiji
-#1273:Finland
-#1274:France
-#1275:French Antilles
-#1276:French Antilles
-#1277:French Guiana
-#1278:French Polynesia
-#1279:Gabon
-#1280:Gambia
-#1281:Georgia
-#1282:Germany
-#1283:Ghana
-#1284:Gibraltar
-#1285:Greece
-#1286:Greenland
-#1287:Grenada
-#1288:Guadeloupe
-#1289:Guam
+1271:Statele Federale ale Micronesiei
+1272:Fiji
+1273:Finlanda
+1274:Franta
+1275:Antilele Franceze
+1276:Antilele Franceze
+1277:Guiana Fanceza
+1278:Polinezia Franceza
+1279:Gabon
+1280:Gambia
+1281:Georgia
+1282:Germania
+1283:Gana
+1284:Gibraltar
+1285:Grecia
+1286:Groenlanda
+1287:Grenada
+1288:Guadelupa
+1289:Guam
 #1290:Guantanomo Bay
-#1291:Guatemala
-#1292:Guinea
+1291:Guatemala 
+1292:Guineea
 #1293:Guinea-Bissau
 #1294:Guyana
-#1295:Haiti
-#1296:Honduras
-#1297:Hong Kong
-#1298:Hungary
-#1299:Iceland
-#1300:India
-#1301:Indonesia
+1295:Haiti
+1296:Honduras
+1297:Hong Kong 
+1298:Ungaria 
+1299:Islanda  
+1300:India
+1301:Indonezia
 #1302:INMARSAT
 #1303:INMARSAT Atlantic-East
-#1304:Iran
-#1305:Iraq
-#1306:Ireland
-#1307:Israel
-#1308:Italy
+1304:Iran 
+1305:Iraq
+1306:Irlanda
+1307:Israel
+1308:Italia
 #1309:Ivory Coast
-#1310:Japan
-#1311:Jordan
-#1312:Kazakhstan
-#1313:Kenya
-#1314:South Korea
+1310:Japonia
+1311:Iordania
+1312:Kazahstan
+1313:Kenia
+1314:Coreea De Sud
 #1315:Kuwait
-#1316:Liberia
-#1317:Libya
+1316:Liberia
+1317:Libia
 #1318:Liechtenstein
-#1319:Luxembourg
+1319:Luxemburg
 #1320:Malawi
-#1321:Malaysia
-#1322:Mali
-#1323:Malta
-#1324:Mexico
-#1325:Monaco
-#1326:Morocco
-#1327:Namibia
-#1328:Nepal
-#1329:Netherlands
-#1330:Netherlands Antilles
-#1331:New Caledonia
-#1332:New Zealand
-#1333:Nicaragua
-#1334:Nigeria
-#1335:Norway
-#1336:Oman
-#1337:Pakistan
-#1338:Panama
+1321:Malaizia
+1322:Mali
+1323:Malta
+1324:Mexic
+1325:Monaco
+1326:Maroc
+1327:Namibia 
+1328:Nepal
+1329:Nederlanda
+1330:Antilele Olandeze
+1331:Noua Caledonie
+1332:Noua Zeilanda
+1333:Nicaragua
+1334:Nigeria
+1335:Norvegia
+1336:Oman
+1337:Pachistan
+1338:Panama
 #1339:Papua New Guinea
 #1340:Paraguay
-#1341:Peru
-#1342:Philippines
-#1343:Poland
-#1344:Portugal
-#1345:Puerto Rico
+1341:Peru
+1342:I-le Filipine
+1343:Polonia
+1344:Portugalia
+1345:Puerto Rico
 #1346:Qatar
-1347:Romania
-1348:Rusia
-1349:Spania
-1350:San Marino
-1351:Arabia Saudita
-1352:Senegal
+#1347:Romania
+#1348:Russia
+#1349:Saipan
+#1350:San Marino
+#1351:Saudia Arabia
+#1352:Senegal
 #1353:Singapore
-1354:Slovacia
-1355:Africa de Sud
-1356:Spania
-1357:Sri Lanka
-1358:Suriname
-1359:Suedia
-1360:Elvetia
-1361:Taiwan
-1362:Tanzania
-#1363:Thailand
-#1364:Tinian Island
-#1365:Togo
-#1366:Tokelau
-#1367:Tonga
-#1368:Trinadad and Tabago
-#1369:Tunisia
-#1370:Turkey
-#1371:Turkmenistan
+#1354:Slovakia
+#1355:South Africa
+#1356:Spain
+#1357:Sri Lanka
+#1358:Suriname
+#1359:Sweden
+#1360:Switzerland
+#1361:Taiwan
+#1362:Tanzania
+1363:Tailanda
+1364:I-la Tiniana
+1365:Togo
+1366:Tokelau
+1367:Tonga
+1368:I-le Trinidad si Tabago
+1369:Tunis
+1370:Turcia
+1371:Turkmenistan
 #1372:Turks and Caicos Islands
 #1373:Tuvalu
 #1374:Uganda
-1375:Ucraina
-1376:Emiratele Arabe Unite
-1377:Regatul Unit
+#1375:Ukraine
+#1376:United Arab Emirates
+#1377:UK
 #1378:United States Virgin Islands
-1379:SUA
-1380:Uruguay
-1381:Uzbekistan
+#1379:USA
+#1380:Uruguay
+#1381:Uzbekistan
 #1382:Vanuatu
-#1383:Vatican City
+1383:Vatican 
 #1384:Venezuela
-1385:Vietnam
+#1385:Vietnam
 #1386:Wallis and Futuna Islands
 #1387:Western Samoa
-1388:Yemen
-1389:Yugoslavia
-1390:Zair
-1391:Zambia
-1392:Zimbabwe
-1393:cu succes
-1394:fara succes
-1400:Arata informatia stocata local despre utilizator.
-1401:Actualizeaza mai multe date despre utilizator, cum ar fi varsta, sex.
-1402:Actualizeaza informatia personala "despre".
-1403:Afiseaza ultimul mesaj primit de la <nick>, sau o lista a celor care v-au trimis cel putin un mesaj.
-#1404:Toggles ignoring/unignoring nick.
-1405:Afiseaza nick-uri/uin-uri ignorate.
-#1406:Toggles your visibility to a user when you're invisible.
-1407:Afiseaza starea curenta a oamenilor conectati din lista de contacte.
-#1408:Changes your password to secret.
-1409:Trimite un mesaj la uin sau nick.
-1410:Trimite un url si un mesaj la uin.
-1411:Trimite un mesaj din mai multe randuri tuturor din lista de contacte.
-1412:Trimite un mesaj ultimei persoane careia i-ati mai trimis mesaje.
-1413:Autorizeaza UIN sau nick sa va adauge in lista lor.
-#1414:Replys to the last person to send you a message.
-#1415:Finds a random user in the specified group or lists the groups.
-#1416:Displays the current status of everyone on your contact list.
-#1417:This command allows you to alter your command set on the fly.
-#1418:Set the verbosity level, or display verbosity level.
-1419:Curata ecranul.
-#1420:Switches beeping when receiving new messages on or off, sets a command for this event or displays current state of this option.
-#1422:Logs off and quits.
-#1423:Displays your autoreply status.
-#1424:Toggles sending messages when your status is DND, NA, etc.
-#1425:Sets the message to send as an auto reply for the status.
-#1426:Creates a new UIN with the specified password.
-#1427:Changes your status to the status number. Without a number it lists the available modes.
-#1428:Adds the uin number to your contact list with nickname, or renames it.
-#1429:Searches for a ICQ user.
-#1430:Displays general info on uin.
-#1431:Change status to Online.
-#1432:Mark as "away".
-#1433:Mark as "not available".
-#1434:Mark as "occupied".
-#1435:Mark as "do not disturb".
-#1436:Mark as "free for chat".
-#1437:Mark as "invisible".
-#1438:Updates your basic info (email, nickname, etc.).
-#1439:Sets your random user group.
-#1440:Random User:
-#1441:IP:
-#1442:Please select one of the help topics below.
-#1443:Commands relating to mICQ displays and configuration.
-#1444:Commands relating to finding other users.
-#1445:Commands relating to your ICQ account.
-#1446:Commands relating to sending messages.
-#1447:Client
-#1448:Message
-#1449:User
-#1450:Account
-#1451:IP2:
-#1452:Status:
-#1453:TCP version:
-#1454:Connection:
-#1455:Art
-#1456:Cars
-#1457:Celebrity Fans
-#1458:Collections
-#1459:Computers
-#1460:Culture & Literature
-#1461:Fitness
-#1462:Games
-#1463:Hobbies
-#1465:Internet
-#1466:Lifestyle
-#1467:Movies/TV
-#1468:Music
-#1469:Outdoor Activities
-#1470:Parenting
-#1471:Pets/Animals
-#1472:Religion
-#1473:Science/Technology
-#1474:Skills
-#1475:Sports
-#1476:Web Design
-#1477:Nature and Environment
-#1478:News & Media
-#1479:Government
-#1480:Business & Economy
-#1481:Mystics
-#1482:Travel
-#1483:Astronomy
-#1484:Space
-#1485:Clothing
-#1486:Parties
-#1487:Women
-#1488:Social science
-#1489:60's
-#1490:70's
-#1491:80's
-#1492:50's
+#1388:Yemen
+#1389:Yugoslavia
+#1390:Zaire
+#1391:Zambia
+#1392:Zimbabwe
+#1393:successful
+#1394:unsuccessful
+#1400:Shows locally stored info on <uin> or <nick>, or on yourself.
+#1401:Updates more user info like age and sex.
+#1402:Updates your about user info.
+#1403:Displays the last message received from <uin> or <nick> or from everyone who who has send you at least one message.
+#1404:Toggles ignoring/unignoring <uin> or <nick>.
+#1405:Lists ignored nicks/uins.
+#1406:Toggles your visibility to <uin> or <nick> when you're invisible.
+#1407:Displays the current status of online people on your contact list.
+#1408:Changes your password to <password>.
+#1409:Sends a message to <uin> or <nick>.
+#1410:Sends a url and message to <uin> or <nick>.
+#1411:Sends a multiline message to everyone on your list.
+#1412:Sends a message to the last person you sent a message to.
+#1413:Authorize <uin> or <nick> to add you to their list.
+1414:Raspundeti la ultimul mesaj.
+#-#1415:Gaseste o persoana aliatoare in grupul/grupurile indicat(e).
+#1415:Finds a random user in interest group <nr> or lists the groups.
+1416:Arata starea tuturor din lista de contacte.
+1417:Va permite sa alterati comenzile in timpul lucrului.
+1418:Setarea sau tiparirea nivelului de limbutie.
+1419:Sterge ecranul.
+1420:Seteaza sau opreste sunetul la primirea mesajelor noi, seteaza programul lansat la primirea mesajelor sau arata starea curenta a acestei optiuni.
+1421.Schimbarea culorilor.
+1422:Deconectare de la server si iesire din mICQ.
+1423.Arata starea autoresponderului.
+#-#1424:Schimba starea trimiterii mesajelor in timpul starii DND, NA, s.a.m.d.
+#1424:Set whether autoreplying when not online, or displays setting.
+1425:Seteaza mesajul ca raspuns a autoresponderului.
+1426:Creeaza un nou uin cu parola specificata.
+#-#1427:Schimba statusul d-stra intr-un numar. Fara numar- arata modurile posibile.
+#1427:Changes your status to the status number, or list the available modes.
+#-#1428:Adauga numarul uin-ului cu un nickname in lista d-stra de contacte sau ii schimba numele.
+#1428:Adds <uin> as <new nick>, or add alias <new nick> for <uin> or <nick>.
+#-#1429:Cauta un utilizator al ICQ-ului.
+#1429:Searches for an ICQ user.
+#-#1430:Arata informatia generala despre uin.
+#1430:Displays general info on <uin> or <nick>.
+1431:Schimba starea in "conectat".
+1432:Marcheaza ca "plecat".
+1433:Marcheaza ca "inaccesibil".
+1434:Marcheaza ca "ocupat".
+1435:Marcheaza ca "sa nu ma deranjati".
+1436:Marcheaza ca "liber pentru discutie".
+1437:Marcheaza ca "invizibil".
+1438:Reinnoieste informatia d-stra de baza (emailul, nickname-ul, etc.).
+1439:Indicati grupa d-stra pentru utilizatori aliatori.
+1440:Utilizator aliator:
+1441:IP:
+1442:Va rugam sa alegeti una din temele de ajutor propuse mai jos.
+1443:Comenzi ce tin de display si configurare.
+#-#1444:Comenzi ce tin de cautarea altor utilizatori.
+#1444:Commands relating to finding and seeing other users.
+1445:Comenzi ce tin de contul d-stra ICQ.
+1446:Comenzi ce tin de trimiterea mesajelor.
+1447:Client
+1448:Mesaj
+1449:Utilizator
+1450:Cont
+1451:IP2:
+1452:Stare:
+1453:Versiunea TCP:
+1454:Conectare:
+1455:Arte
+1456:Automobile
+1457:Fanii celebritatilor
+1458:Colectii
+1459:Calculatoare
+1460:Cultura si Literatura
+1461:Fitness
+1462:Jocuri
+1463:Pasiuni
+1465:Internet
+1466:Modul de viata
+1467:Filme/TV
+1468:Muzika
+1469:Activitati la aer curat
+1470:Supravegherea copiilor
+1471:Animale
+1472:Religie
+1473:Stiinta/Tehnologie
+1474:Mestesugarit
+1475:Sporturi
+1476:Constructia web-ului
+1477:Natura si Mediul inconjurator
+1478:Noutati si Media
+1479:Guvernamant
+1480:Business si Economie
+1481:Misticul
+1482:Calatoriile
+1483:Astronomia
+1484:Cosmosul
+1485:Vestimentare
+1486:Sarbatori
+1487:Femei
+1488:Stiinta sociala
+1489:Anii '60
+1490:Anii '70
+1491:Anii '80
+1492:Anii '50
 #1493:Peer-to-Peer
 #1494:Server Only
 #1495:No Random User Found
 #1497:failed
-#1498:Info for
-#1499:Other
-#1500:Nickname:
-#1501:Name:
-#1502:Email:
-#1503:Other Email:
-#1504:Old Email:
-#1505:Location:
-#1506:Phone:
-#1507:Fax:
-#1508:Street:
-#1509:Cellular:
-#1510:Zip:
-#1511:Country:
-#1512:Country code:
-#1513:Work Country Code:
-#1514:Work Country:
+1498:Informatie pentru:
+1499:Altele
+1500:Nickname:
+1501:Numele:
+1502:Email:
+1503:Alt email:
+1504:Emailul vechi:
+1505:Locul:
+1506:Telefonul:
+1507:Faxul:
+1508:Strada:
+1509:Telefonul mobil:
+1510:Codul postal:
+1511:Tara:
+1512:Codul tarii:
+1513:Codul tarii unde lucrati:
+1514:Tara unde lucrati:
 #1515:Work Homepage:
-#1516:Occupation:
+1516:Ocupatia:
 #1517:Job Position:
-#1518:Department:
-#1519:Company Name:
-#1520:Work Zip:
-#1521:Work Fax:
-#1522:Work Address:
-#1523:Work Phone:
-#1524:Work Location:
-#1525:About:
-#1528:female
-#1529:male
-#1530:not specified
-#1531:Homepage:
-#1532:Born:
-#1533:Languages:
-#1534:Enter a language by number or L for a list:
-#1535:Enter new age:
-#1536:Enter new sex:
-#1537:Enter new homepage:
-#1538:Enter new year of birth (4 digits):
-#1539:Enter new month of birth:
-#1540:Enter new day of birth:
-#1541:About> 
-#1542:Enter other email address:
-#1543:Enter old email address:
-#1544:Enter new city:
-#1545:Enter new state:
-#1546:Enter new phone number:
-#1547:Enter new fax number:
-#1548:Enter new street address:
-#1549:Enter new cellular number:
-#1550:Enter new zip code (must be numeric):
-#1551:Enter your country's phone ID number:
-#1552:Enter your time zone (+/- 0-12):
-#1553:Enter Your New Nickname:
-#1554:Enter your new first name:
-#1555:Enter your new last name:
-#1556:Enter your new email address:
+1518:Departmentul:
+1519:Numele companiei:
+1520:Codul postal de la servicul d-stra:
+1521:Faxul de la serviciul d-stra:
+1522:Adresa serviciului d-stra:
+1523:Telefonul d-stra de la serviciu:
+1524:Amplasarea serviciului:
+1525:Despre:
+1528:feminin
+1529:masculin
+1530:neindicat
+1531:Homepage:
+1532:Nascut la:
+1533:Limbile:
+1534:Introduceti o limba dupa numar sau tastati L pentru lista limbilor posibile.
+1535:Introduceti noua varsta:
+1536:Introduceti noul sex:
+1537:Introduceti noua pagina web:
+1538:Introduceti noul an de nastere (4 caractere):
+1539:Introduceti noua luna de nastere:
+1540:Introduceti noua data de nastere:
+1541:Despre:
+1542:Introduceti alta adresa email:
+1543:Introduceti adresa veche email:
+1544:Introduceti noul oras:
+1545:Introduceti noul stat:
+1546:Introduceti numarul nou de telefon:
+1547:Introduceti numarul nou de fax:
+1548:Introduceti noua adresa:
+1549:Introduceti numarul nou de telefon mobil:
+1550:Introduceti noul cod postal (cu cifre):
+1551:Introduceti codul telefonic pentru tara d-stra:
+1552:Introduceti zona d-stra de timp (+/- 12):
+1553:Introduceti noul d-stra nickname:
+1554:Introduceti numele d-stra:
+1555:Introduceti prenumele d-stra:
+1556:Introduceti adresa d-stra email noua:
 #1557:Do you want to require Mirabilis users to request your authorization? (YES/NO)
-#1562:Info for
-#1564:First name:
-#1565:Last name:
-#1566:Email address:
-#1567:No authorization needed.
-#1568:Must request authorization.
-#1570:City:
-#1574:State:
-#1575:Age:
-#1578:Enter country's phone ID number:
-#1579:Enter company: 
+1562:Informatie pentru
+1564:Numele:
+1565:Prenumele:
+1566:Adresa email:
+1567:Autorizarea nu este necesara:
+1568:Necesita autorizare:
+1570:Orasul:
+1574:Statul:
+1575:Varsta:
+1578:Introduceti codul telefonic pentru tara:
+1579:Introduceti compania:
 #1584:Warning! Script command '%s' failed with exit value %d¶
-#1587:Enter department: 
-#1592:<%s> emailed you a message:¶
-#1593:<%s> send you a web message:¶
+1587:Introduceti departamentul:
+1592:<%s> v-a trimis mesaj prin email:
+1593:<%s> va trimite un mesaj web:
 #1595:¶Contact List.¶============================================¶%d Contacts¶
 #1596:[SOCKS] Can't find hostname %s: %s.
 #1597:[SOCKS] Socket creation failed¶
@@ -565,15 +571,15 @@
 #1614:Using config file "%s"¶
 #1615:Logging to "%s"¶
 #1617:<all>
-#1618:UIN:
-#1619:Warning:
-#1620:maximal number of contacts reached. Ask a wizard to enlarge me!
+1618:UIN:
+1619:NB!:
+1620:numarul maximal de contacte a fost atins. Rugati vrajitorul sa v-o mareasca!
 #1621:users not returned.
 #1622:Do you want to apply these changes? (YES/NO)
 #1623:Doubled packet %04X¶
 #1624:Sorry, can't initialize Windows Sockets...
 #1632:¶Connection unstable. Exiting....
-#1634:ok¶
+#1634:ok.¶
 #1637:Can't bind socket to free port¶
 #1638:Couldn't create socket
 #1639:The new UIN is %ld!¶
@@ -582,50 +588,49 @@
 #1642:IP
 #1643:Acknowleged SRV_X1 0x021C Done Contact list?¶
 #1644:Acknowleged SRV_X2 0x00E6 Done old messages?¶
-#1645:You entered an incorrect password.¶
-#1646:Server is busy.¶
-#1648:The response was %04X	
-#1649:The version was %X	
-#1650:¶The SEQ was %04X	
-#1651:The size was %d¶
-#1652:Insuffificient memory to display a wide Contact List.¶
-#1653:Offline
-#1654:Online
-#1655:Enter the user's e-mail address:
-#1656:Enter the user's nick name:
-#1657:Enter the user's first name:
-#1658:Enter the user's last name:
+1645:Ati introdus gresit parola.¶
+1646:Serverul este ocupat.¶
+1648:Raspunsul a fost %04X	
+1649:Versiunea a fost %X	
+1650:¶SEQ a fost %04X	
+1651:Marimea a fost %d¶
+1653:Deconectat
+1654:Conectat
+1655:Introduceti adresa email a utilizatorului:
+1656:Introduceti nickname-ul utilizatorului:
+1657:Introduceti numele utilizatorului:
+1658:Introduceti prenumele utilizatorului:
 #1659:Unknown section %s in configuration file.
 #1660:Invalid Command: %s¶
 #1661:Shell commands have been disabled.¶
-#1666:Unignored %s.
-#1667:Ignoring %s.
-#1670:Normal visible to %s now.
-#1671:Always visible to %s now.
-#1672:%s's IP address is 
-#1673:	The port is %d¶
-#1674:	The port is unknown¶
-#1675:Ignored line:
-#1676:Need uin/nick to send to.¶
-#1678:Need URL please.¶
+1666: %s neignorat.
+1667: %s ignorat:
+1670:Invizibil pentru %s.
+1671:Mereu vizibil pentru %s.
+1672:Adresa IP a lui %s este:
+#1673:The port is %d.¶
+#1674:The port is unknown.¶
+1675:Rand ignorat:
+1676:E nevoide de uin/nick pentru a trimite.¶
+1678:Specificati si un URL va rog.¶
 #1679:Sorry saving your personal reply messages went wrong!¶
 #1680:Your personal settings have been saved!¶
 #1681:Last %d people you talked to:¶
-#1682:You have received messages from:¶
-#1687:mICQ has been running for
-#1688:days
-#1689:hours
-#1690:minutes
-#1691:seconds
-#1692:Contacts:
-#1696:Sex:
-#1700:%s is not a valid user in your list.¶
-#1703:Status modes:¶
-#1704:Groups:¶
-#1705:General
-#1706:Romance
-#1707:Games
-#1708:Students
+1682:Ati primit mesaj de la:¶
+1687:mICQ lucreaza 
+1688:zile
+1689:ore
+1690:minute
+1691:secunde
+1692:Contactele:
+1696:Sex:
+1700:%s nu este un utilizator valid.
+1703:Modurile starii:¶
+1704:Grupurile:¶
+1705:General
+1706:Romantic
+1707:Jocuri
+1708:Studenti
 #1709:20 something
 #1710:30 something
 #1711:40 something
@@ -635,80 +640,80 @@
 #1715:mICQ
 #1716:None
 #1717:! as the first character of a command will execute a shell command (e.g. "!ls"  "!dir" "!mkdir temp")
-#1719:Shows how long mICQ has been running.
-#1720:uin can be either a number or the nickname of the user.
+1719:Arata de cat timp e lansat mICQ.
+1720:uin poate fi atat un numar cat si un nickname al utilizatorului.
 #1721:Sending a blank message will put the client into multiline mode.¶Use . on a line by itself to end message.¶Use # on a line by itself to cancel the message.
 #1724:Automatic replies are %s.¶
-#1727:The "do not disturb" message is:
-#1728:The "away" message is:
-#1729:The "not available" message is:
-#1730:The "occupied" message is:
-#1731:The "invisible" message is:
-#1735:Must give a message.¶
+1727:Mesajul pentru "sa nu ma deranjati"  este:
+1728:Mesajul pentru "plecat" este:
+1729:Mesajul pentru "inaccesibil" este:
+1730:Mesajul pentru "ocupat" este:
+1731:Mesajul pentru "invizibil" este:
+1735:Este necesar sa fie specificat un mesaj.¶
 #1738:Need a command to alter.¶
-#1741:Must receive a message first¶
-#1742:Must write one message first¶
-#1743:Size mismatch in packet lengths.¶
-#1744:server (v5)
-#1745:unknown
+1741:La inceput este necesar sa fie primit un mesaj¶
+1742:La inceput este necesar sa fie scris un mesaj¶
+1743:Marimea nu se incadreaza in limita lungimii pachetului.¶
+1744:server (v5)
+1745:necunoscut
 #1746: nr type         sent/received packets/unique packets¶
-#1747:total
-#1749:UIN %d renamed to %s.¶
-#1751:Nick %s removed.
-#1754: Note: You need to 'save' to write new contact list to disc.¶
-#1755:has added you to their contact list.¶
-#1756:¶Creating Connection...¶
-#1757:Couldn't establish connection.¶
-#1758:Sending Request...¶
-#1759:Waiting for response....¶
-#1760:¶Your new UIN is %s%ld%s!¶
-#1761:unknown
-#1762:Your new UIN is: %d.¶
-#1763:The command '%s' has been renamed to '%s'.
-#1764:The command '%s' is unchanged.
-#1765:%s has UIN %d.
+1747:total
+1754: Nota: trebuie sa tastati 'save' pentru a scrie noua lista de contacte pe disk.¶
+1755:v-a adaugat in lista sa de contacte.¶
+1756:¶Are loc conectarea...¶
+1757:Conectarea nu reuseste sa fie facuta.¶
+1758:Are loc trimiterea cererii...¶
+1759:In asteptarea raspunsului....¶
+1760:¶ UIN-ul d-stra nou este  %s%ld%s!¶
+1761:necunoscut
+1762:UIN-ul d-stra nou este : %d.¶
+1763:Numele comenzii  '%s' a fost schimbat in   '%s'.
+1764:Comanda '%s' nu a fost schimbata.
+1765:%s are UIN-ul %d.
 #1766:Changing status to away resp. not available after idling %s%d%s seconds.¶
 #1767:Toggles auto cycling to away/not available.
-#1768:The command name '%s' is already being used.¶
-#1769:Displays your current online status.
-#1770:Resend your last message to a new uin.
-#1771:You haven't sent a message to anyone yet!¶
-#1774:Incoming packet:
-#1775:Outgoing packet:
+1768:Numele comenzii '%s' este deja utilizat.¶
+1769.Arata statutul d-stra de conectare.
+#-#1770:Trimite ultimul d-stra mesaj la un nou UIN.
+#1770:Resend your last message to <uin> or <nick>.
+1771:D-stra pana ce nu ati trimis nici un mesaj nimanui!¶
+1774:Pachetul primit:
+1775:Pachetul trimis:
 #1777:Opening peer-to-peer connection at localhost:%d... 
-#1781:Your password for UIN %d:¶
-#1782:You need a password for your new UIN.¶
-#1783:To prevent typos, please enter your password again.¶
+1781:Parola d-stra pentru  UIN %d:¶
+1782:Este necesara o parola pentru UIN-ul d-stra nou.¶
+1783:Pentru a preveni erori, va rugam sa introduceti inca o data parola d-stra ¶ 
 #1784:If you are firewalled, you may need to use a SOCKS5 server. If you do, please enter its hostname or IP address. Otherwise, or if unsure, just press return.¶
-#1785:success.¶
+1785:succes.¶
 #1786:I also need the port the socks server listens on. If unsure, press return for the default port.¶
 #1787:You probably need to authentificate yourself to the socks server. If so, you need to enter the user name the administrator of the socks server gave you. Otherwise, just press return.¶
-#1788:Now I also need the password for this user.¶
+1788:Acum am nevoie de parola pentru acest utilizator.¶
 #1789:Received malformed packet: (%d)
-#1790:Setup wizard finished. Congratulations to your new UIN!¶
-#1791:Setup wizard finished. Congratulations!¶
-#1792:I'm sorry, AOL doesn't want to give us a new UIN, probably because of too many new UIN requests from this IP. Please try again later.¶
-#1793:No valid UIN found. The setup wizard will guide you through the process of setting one up.¶
-#1794:If you already have an UIN, please enter it. Otherwise, enter 0, and I will request one for you.¶
-#1795:Password:
-#1796:Setup wizard finished. Please wait until registration has finished.¶
-#1797:Finance and corporate
-#1798:Elementary School
-#1799:High School
-#1800:Change the working language to <lang>.
+1790:Vrajitorul de configurare si-a terminat executia. Felicitari pentru noul d-stra UIN!¶
+1791:Vrajitorul de configurare si-a terminat executia. Felicitari!¶
+1792:Imi cer scuze, insa AOL nu doreste sa ne ofere un UIN nou, probabil din cauza ca sunt prea multe cereri pentru UINuri noi de la acest IP .¶
+1793:Nu a fost gasit un UIN valid. Vrajitorul de configurare va va ghida prin procesul de instalare a unui UIN.¶
+1794:Daca deja vaeti un UIN, sunteti rugat sa il introduceti.In caz contrar tastati 0 si eu voi face cerere pentru d-stra.¶
+1795:Parola:
+1796:Vrajitorul  de configurare si-a terminat executia. Va rugam sa asteptati pana registrarea finiseaza.¶
+1797:Finante si corporatii
+1798:Scoala generala
+1799:Scoala suprema
+#-#1800:Schimba limba curenta in <lang>.
+#1800:Change the working language to <lang> or display string <nr>.
 #1801:Displays a list of people on your contact list in a screen wide format.
-#1802:SoundOnline cmd
-#1803:SoundOffline cmd
-#1804:SoundOnline
-#1805:SoundOffline
+1802:SunetulConectat cmd
+1803:SunetulDeconectat cmd
+1804:SunetulConectat
+1805:SunetulDeconectat
 #1807:Cancelled incoming message (seq %04x) from %s¶
-#1808:College
-#1810:University
-#1812:Past Work Place
-#1813:Past Organization
-#1814:Sent auto-response message to %s%s%s.¶
-#1815:    funny: use funny messages for output.¶
-#1816:Unknown option %s to set command.¶
+1808:Colegiu
+1810:Universitate
+1812:Locul precedent de munca
+1813:organizatia precedenta
+1814:Trimite automat raspuns la %s%s%s.¶
+1815:    hazliu: foloseste mesaje hazlii pentru a trimite.¶
+1816:%s  este o optiune necunoscuta pentru comanda set.¶
 #1817:Warning: ReceiveScript feature not enabled!¶
 #1818:Warning: Deprecated syntax found in rc file!¶    Please update or "save" the rc file and check for changes.¶
 #1820:%s <option> [on|off] - control simple options.¶
@@ -723,28 +728,29 @@
 #1842:Closing socket %d to %s.¶
 #1843:Closing socket %d.¶
 #1844:TCP message %04x discarded after timeout.¶
-#1845:Nick %s unknown.¶
-#1846:Opens and closes TCP connections:¶
-#1847:    open  <nick> - Opens TCP connection.¶
-#1848:    close <nick> - Closes/resets TCP connection(s).¶
-#1849:Error on select: %s (%d)¶
+1845:Nickul %s este necunoscut.¶
+#-#1846:Creaza si distruge conectari TCP :¶
+#1846:Opens and closes direct (peer to peer) connections:¶
+#1847:peer open  <nick> - Opens direct connection.¶
+#1848:peer close <nick> - Closes/resets direct connection(s).¶
+1849:Greseala la alegere: %s (%d)¶
 #1850:Timeout on connection with %s at %s:%d¶
 #1855:TCP connection to %s at %s:%d failed.¶
 #1856:Discarded a %04x (%s) packet from old session %08x (current: %08x).¶
-#1857:Do you want to hide your IP from other contacts? (YES/NO)
+1857:Doriti sa ascundeti Ip-ul d-stra de alte contacte? (DA/NU)
 #1864:Can't open rcfile %s.
-#1866:This version of mICQ is compiled without TCP support.¶
+#1866:This version of mICQ is compiled without direct connection (peer to peer) support.¶
 #1867:Got a malformed (too short) packet - ignored.¶
 #1868:Got a malformed (to long subpacket) multi-packet - remainder ignored.¶
 #1869:Protocoll versions less than 5 are not supported anymore.¶
-#1870:    off   <nick> - Closes TCP connection(s) and don't try TCP again.¶
+#1870:peer off   <nick> - Closes direct connection(s) and don't try it again.¶
 #1871:Opening v8 connection to %s:%d... 
 #1872:failed: %s (%d)¶
 #1873:Work City:
 #1874:Work State:
-#1875:Personal interests:
+1875:Interese personale:
 #1876:Personal past background:
-#1877:ok.¶
+1877:bine.¶
 #1878:Error while reading from socket: %s (%d)¶
 #1879:Affiliations:
 #1880:Incoming packet is not a FLAP: id is %d.¶
@@ -753,7 +759,7 @@
 #1883:FLAP channel 1 unknown command %d.¶
 #1884:FLAP with unknown channel %d received.¶
 #1885:Connection v8 timed out.¶
-#1887:Connections:
+1887:Conectari:
 #1888:Not webaware
 #1889:server
 #1890:peer-to-peer
@@ -765,9 +771,9 @@
 #1896:Server closed connection:¶
 #1897:Incomplete TLV %d, len %d of %d - ignoring.¶
 #1898:Redirect to server %s... 
-#1899:Unknown family requested: %d¶
+1899:A fost ceruta familie necunoscuta: %d¶
 #1900:It's readonly.
-#1901:has authorized you to add them to your contact list.¶
+1901:v-a autorizat ca sa poata fi introdus in lista d-stra de contacte.¶
 #1902:Opening v5 connection to %s:%d... 
 #1903:Outgoing v8 server packet:
 #1904:Server doesn't understand ver %d (only %d) for family %d!¶
@@ -775,7 +781,6 @@
 #1907:Warning: Server thinks our UIN is %d, while it is %d.¶
 #1908:Received USERONLINE packet for non-contact.¶
 #1909:Received USEROFFLINE packet for non-contact.¶
-#1910:FLAP seq %08x length %04x channel %d¶
 #1911:connecting
 #1912:closed
 #1914:Can't allocate connection structure.¶
@@ -783,130 +788,130 @@
 #1918:Ignored server request for a minimum report interval of %d.¶
 #1919:UIN mismatch: %d vs %d.¶
 #1920:Registration of new UIN refused.¶
-#1921:Online
-#1922:Do not disturb
-#1923:Away
-#1924:Not Available
-#1925:Occupied
-#1926:Invisible
-#1927:Free for chat
-#1929:User is dnd [Auto-Message]
-#1930:Can't send this (%x) yet.¶
-#1931:Couldn't find server connection.¶
-#1934:connected
+1921:Conectat
+1922:Nu ma deranjati
+1923:Plecat
+1924:Inaccesibil
+1925:Ocupat
+1926:Invizibil
+1927:Liber pentru discutii
+1929:Utilizatorul este NMD[Mesaj automatic]
+#1931:Current session is closed. Try another or open this one.¶
+1934:conectat
 #1935:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x¶
-#1936:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
-#1937:Enter max age (22,29,39,49,59,120):
-#1938:Enter sex:
-#1939:Enter a city:
+1936:Introduceti varsta minimala (18-22,23-29,30-39,40-49,50-59,60-120):
+1937:Introduceti varsta maximala (22,29,39,49,59,120):
+1938:Introduceti sexul:
+1939:Introduceti un oras:
 #1940:Unknown Meta User result %x.¶
-#1941:Publish Email:
-#1942:Additional Email addresses:
-#1943:(no authorization needed)
-#1944:(must request authorization)
+1941:Adresa email publica:
+1942:Adrese email optionale:
+1943:(autorizarea nu este necesara)
+1944:(autorizarea este necesara)
 #1945:Unknown Meta User response
-#1947:listener
+1947:ascultator
 #1948:Can't find hostname %s: %s.
 #1949:failed:¶
 #1950:Couldn't set socket nonblocking
 #1951:Can't find hostname %s
-#1952:Couldn't open connection
+1952:Conexiunea nu poate fi creata
 #1953:couldn't bind socket to free port
 #1954:unable to listen on socket
 #1955:Connection failed
 #1958:[SOCKS] Connection request refused (%d)
-#1960:Enter data to search user for. Enter '.' to start the search.¶
+1960:Introduceti date pentru cautarea utilizatorului. Introduceti '.' pentru a incepe cautarea.¶
 #1961:URL: %s¶
 #1966: Conection Refused on port %d at %s¶
-#1967:More Info for
-#1968:User found
-#1969:offline
-#1970:online
-#1971:do not disturb
-#1972:away
-#1973:occupied
-#1974:not available
-#1975:invisible
-#1976:free for chat
-#1977:Audio and visual
-#1978:Sporting and athletic
-#1979:Publishing
+1967:Mai multa informatie pentru
+1968:Utilizator gasit
+1969:deconectat
+1970:conectat
+1971:nu ma deranjati
+1972:plecat
+1973:ocupat
+1974:inaccesibil
+1975:invizibil
+1976:liber pentru discutii
+1977:Audio si vizual
+1978:Sport si atletica
+1979:Publicitatea
 #1980:Home automation
 #1981:Alumni Org.
-#1982:Charity Org.
-#1983:Club/Social Org.
+1982:Organizatii de binefacere
+1983:Organizatii sociale/cluburi
 #1984:Community Org.
-#1985:Cultural Org.
-#1986:Fan Clubs
-#1987:Fraternity/Sorority
+1985:Organizatii culturale
+1986:Cluburi pentru fani
+1987:Fraternitate/Suroritate
 #1988:Hobbyists Org.
-#1989:International Org.
-#1990:Nature and Environment Org.
-#1991:Professional Org.
-#1992:Scientific/Technical Org.
+1989:Organizatii Internationale
+1990:Organizatii pentru natura si mediu inconjurator
+1991:Organizatii profesionale
+1992:Organizatii stiintifice/tehnice
 #1993:Self Improvement Group
-#1994:Spiritual/Religious Org.
-#1995:Sports Org.
+1994:Organizatii spirituale/religioase
+1995:Organizatii sportive
 #1996:Support Org.
 #1997:Trade and Business Org.
-#1998:Union
-#1999:Volunteer Org.
-#2000:Entertainment
+1998:Uniune
+1999:Organizatii voluntare
+2000:Distractii
 #2001:Consumer electronics
 #2002:Retail stores
-#2003:Health and beauty
-#2004:Media
-#2005:Household products
+2003:Sanatate si frumusete 
+2004:Media
+2005:Produse pentru casa
 #2006:Mail order catalog
-#2007:Business services
+2007:Business servicii
 #2009:Found random chat partner UIN %d in chat group %d.¶
 #2011:You do not have a listening peer-to-peer connection.¶
-#2012:No password given.¶
+2012:Parola neindicata.¶
 #2013:This command is v8 only.¶
-#2014:No number given.¶
-#2015:No message given.¶
-#2017:The user is actually online.¶
-#2018:    quiet: be quiet about status changes.¶
-#2020:Being visible to %s.
-#2021:Being invisible to %s.
-#2022:The user is indeed offline.¶
+2014:Numar neindicat.¶
+2015:Mesaj neindicat.¶
+#-#2017:Actualmente utilizatorul este conectat.¶
+#2017:The user is online, but possibly invisible.¶
+2018:    liniste: fiti linistit despre schimbarile starii.¶
+2020:A fi vizibil pentru %s.
+2021:A fi invizibil pentru %s.
+#-#2022:Utilizatorul este chiar deconectat.¶
+#2022:The user is offline.¶
 #2023:Direct connection closed by peer.¶
 #2024:Unknown protocol version %d for ICQ peer-to-peer protocol.¶
 #2026:TCP cookie:
 #2029:Protocol error on peer-to-peer connection
 #2031:Connecting failed too often, giving up.¶
 #2032:Scheduling v8 reconnect in %d seconds.¶
-#2033:born today
+2033:nascut astazi
 #2034:Opening TCP connection at %s:%d... 
 #2035:Show uptime and some statistics.
 #2036:Save current preferences to disc.
-#2037:Open or close a peer-to-peer connection, or disable using peer-to-peer connections for uin|nick.
-#2038:Opens connection number nr.
-#2039:Sends a message to a cell phone.
+#2037:Open or close a peer-to-peer connection, or disable using peer-to-peer connections for <uin> or <nick>.
+#2038:Opens connection number <nr>, or the first server connection.
+2039:Trimite un mesaj la telefonul mobil.
 #2040:Switches beeping for incoming contacts on or off, sets a command for this event or displays current state of this option.
 #2041:Switches beeping for offgoing contacts on or off, sets a command for this event or displays current state of this option.
 #2042:Displays a list of online people on your contact list in a screen wide format.
-#2043:Remove contact from your contact list.
-#2044:Set or clear an option.
-#2045:Toggles your visibility to a user when you're online.
+#-#2043:Elimina contactul din lista d-stra de contacte.
+#2043:Remove alias <alias> or <uin>, or removes contact.
+2044:Seteaza sau curata o optiune.
+#2045:Toggles your visibility to <uin> or <nick> when you're online.
 #2046:You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.¶
 #2047:Creating directory %s.¶
 #2048:Saving preferences to %s.¶
 #2049:Receiving group "%s":¶
 #2050:Imported %d contacts.¶
 #2051:Error on socket: %s (%d)¶
-#2052:Accepting file '%s' (%d bytes) from %s.¶
 #2053:TCP %s seq %x type %x status %x flags %x: '%s'¶
-#2054:The "free for chat" message is:
-#2055:User is ffc and wants to chat about everything.
-#2056:    auto  <nick> - Get the auto-response from the contact.¶
-#2057:    away  <nick> - Get the auto-response for away from the contact.¶
-#2058:    na    <nick> - Get the auto-response for not available from the contact.¶
-#2059:    dnd   <nick> - Get the auto-response for do not disturb from the contact.¶
-#2060:    ffc   <nick> - Get the auto-response for free for chat from the contact.¶
-#2061:Refused file request '%s' (%d bytes) from %s (unknown: %x, %x)¶
+2054:Mesajul pentru "liber pentru discutii" este:
+2055:Utilizatorul este LPD si ar dori sa vorbeasca despre orice.
+#2056:peer auto  <nick> - Get the auto-response from the contact.¶
+#2057:peer away  <nick> - Get the auto-response for away from the contact.¶
+#2058:peer na    <nick> - Get the auto-response for not available from the contact.¶
+#2059:peer dnd   <nick> - Get the auto-response for do not disturb from the contact.¶
+#2060:peer ffc   <nick> - Get the auto-response for free for chat from the contact.¶
 #2063:You need to save your password in your ~/.micq/micqrc file.¶
-#2064:Refusing chat request (%s/%s/%s) from %s.¶
+2064:Cererea pentru discutie (%s/%s/%s) a fost refuzata de  %s.¶
 #2065:Unknown TCP_MSG_GREET_ command %04x.¶
 #2066:Unknown TCP_MSG_ command %04x.¶
 #2067:file io
@@ -914,7 +919,7 @@
 #2069:File transfer '%s' rejected by peer (%x,%x): %s.¶
 #2070:File transfer '%s' to port %d.¶
 #2071:Couldn't stat file %s: %s (%d)¶
-#2072:Dropping file transfer %d (%s) because of closed connection.¶
+#2072:File transfer #%d (%s) dropped because of closed connection.¶
 #2073:Memory usage: %d packets processing.¶
 #2078:Outgoing TCP packet (%d - %s): %s
 #2079:Incoming TCP packet (%d - %s): %s
@@ -923,7 +928,6 @@
 #2082:Opening file listener connection at localhost:%d... 
 #2083:Cannot open file %s: %s (%d).¶
 #2084:Error while seeking to offset %d: %s (%d).¶
-#2085:Dropping file transfer because of timeout: %d %d.¶
 #2086:Error while reading file %s: %s (%d).¶
 #2087:Finished sending file %s.¶
 #2088:Finished sending all %d files.¶
@@ -944,42 +948,86 @@
 #2103:contact show    Show server side contact list.¶
 #2104:contact diff    Show server side contacts not on local contact list.¶
 #2105:contact import  Add server side contact list to local contact list.¶
-#2106:Last message from %s%s%s at %s:¶
-#2107:No messages received from %s%s%s.¶
+2106:Ultimul mesaj de la %s%s%s la %s:¶
+2107:Nici un mesaj primit de la %s%s%s.¶
 #2108:auto
-#2109:version
-#2110:    file  <nick> <file1> <as1> ... <description>¶
-#2111:                 - Send file1 as as1, ..., with description.¶
-#2112:                 - as = '/': strip path, as = '.': as is¶
-#2113:Unknown status '%s'.¶
-#2114:The command name '%s' does not exist.¶
+2109:versiune
+#2110:peer files <nick> <file1> <as1> ... [<description>]¶
+#2111:                  - Send file1 as as1, ..., with description.¶
+#2112:                  - as = '/': strip path, as = '.': as is¶
+2113:Stare necunoscuta '%s'.¶
+2114:Numele  '%s' pentru comanda este inexistibil.¶
 #2115:'%s' is not an integer.¶
-#2116:No new nick name given.¶
-#2117:%d added as %s.¶
-#2118:Out of memory.¶
+2116:Nu a fost introdus un nou nickname.¶
+2117:%d este adaugat ca %s.¶
+2118:Memoria este plina.¶
 #2119:auth [grant] <nick>    - grant authorization.¶
 #2120:auth deny <nick> <msg> - refuse authorization.¶
 #2121:auth req  <nick> <msg> - request authorization.¶
 #2122: Note: You need to 'save' to write new password to disc.¶
-#2123:%sSyntax error%s: Too few arguments: '%s'¶
+2123:%sGreseala sintactica%s: Prea putine argumente: '%s'¶
 #2124:%sSyntax error%s: Not an integer: '%s'¶
 #2126:User is offline, message (%s#%08lx:%08lx%s) queued.¶
 #2127:       URL: %s%s%s%s¶
-#2128: Description: %s%s%s¶
+2128: Descriere: %s%s%s¶
 #2129:         URL: %s%s%s¶
 #2130:Composing message to %sall%s:¶
 #2131:Composing message to %s%s%s:¶
 #2132:Composing message to %s%d%s:¶
-#2133:Color is %s%s%s.¶
-#2134:Funny messages are %s%s%s.¶
+2133:Culoarea este %s%s%s.¶
+2134:Mesajele hazlii sunt %s%s%s.¶
 #2135:Quiet output is %s%s%s.¶
-#2136:Password change was %s%s%s.¶
+2136:Schimbarea parolei a fost %s%s%s.¶
 #2137:About info change was %s%s%s.¶
-#2138:Info change was %s%s%s.¶
-#2139:Other info change was %s%s%s.¶
+2138:Schimbarea informatiei a fost %s%s%s.¶
+2139:Alta schimbare a informatiei a fost %s%s%s.¶
 #2140:Random chat group change was %s%s%s.¶
 #2141:Search %sfailed%s.¶
 #2142:Direct connection with %s not possible.¶
-#2143:refused authorization: %s%s%s¶
+2143:Autorizarea a fost refuzata: %s%s%s¶
 #2144:requests authorization: %s%s%s¶
 #2145:auth add  <nick>       - authorized add.¶
+#2146:'%s' is already an alias for '%s' (%d).¶
+#2147:'%s' (%d) is already used as a nick.¶
+#2148:Added '%s' as an alias for '%s' (%d).¶
+#2149:Removed alias '%s' for '%s' (%d).¶
+#2150:Removed contact '%s' (%d).¶
+#2151:%d is not on your contact list anymore.¶
+#2156:conn close <nr>    Close connection <nr>.¶
+#2157:Moldova
+#2158:No file given.¶
+#2159:Some files.
+#2160:peer file  <nick> <file> [<description>]¶
+#2161:Receiving %d files with together %d bytes at speed %x from %s.¶
+#2162:Receiving file %s (%s) with %d bytes as %s.¶
+#2163:Sending file %d at offset %d.¶
+#2164:Error writing to file.¶
+#2165:The peer sent more bytes (%d) than file length (%d).¶
+#2166:Finished receiving file.¶
+#2167:Error - unknown packet.¶
+#2168:File transfer #%d (%s) dropped after %d attempts because of timeout.¶
+#2169:File transfer aborted by peer (%d).¶
+#2170:Sending with speed %x to %s.¶
+#2171:Advanced
+#2172:Commands for advanced features.
+#2173:Deny <uin> or <nick> to add you to their list.
+#2174:Request authorization from <uin> or <nick>.
+#2175:Tell <uin> or <nick> that you added them to your list.
+#2176:Displays verbose the current status of everyone on your contact list.
+#2177:Displays verbose the current status of online people on your contact list.
+#2178:Request auto reply message for <uin> or <nick>.
+#2179:Send <uin> or <nick> a single file.
+#2180:Send <uin> or <nick> several files.
+#2181:Closes or removes connection number <nr>.
+#2182:Select server connection number <nr> as current server connection.
+#2183:Check whether <uin> or <nick> is offline or invisible.
+#2184:%s%-10s%s - %s¶
+#2185:Closing connection %d.¶
+#2186:Accepting file '%s' (%d bytes).¶
+#2187:Refused file request '%s' (%d bytes) (unknown: %x, %x)¶
+#2188:You're sending data too fast - stop typing now, or the server will disconnect!¶
+#2189:Malformed instant message packet refused by server.¶
+#2190:The contact's client does not support type-2 messages.¶
+#2191:Instant message error: %d.¶
+#2192:Capabilities: 
+#2193:Directory %s does not exists.¶
