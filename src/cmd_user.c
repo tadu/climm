@@ -754,6 +754,7 @@ static JUMP_F(CmdUserInfo)
             contr = ContactUIN (conn, uiG.last_rcvd_uin);
             if (!contr)
                 return 0;
+            data = 0;
         }
         IMCliInfo (conn, cont, 0);
     }
