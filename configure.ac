@@ -95,9 +95,9 @@ if test "x$ac_arg_use_iconv" != "xnone"; then
           if (res == (iconv_t)-1 || !res) exit (4);
           res = iconv_open ("koi8-u", "utf-8");
           if (res == (iconv_t)-1 || !res) exit (4);
-          res = iconv_open ("utf-8", "windows-1251");
+          res = iconv_open ("utf-8", "cp1251");
           if (res == (iconv_t)-1 || !res) exit (5);
-          res = iconv_open ("windows-1251", "utf-8");
+          res = iconv_open ("cp1251", "utf-8");
           if (res == (iconv_t)-1 || !res) exit (5);
           exit (0);]])],
       [ac_cv_iconv_min=ok],

@@ -39,11 +39,13 @@ UBYTE ConvEnc (const char *enc)
         conv_encs[2].enc = strdup ("iso-8859-1");
         conv_encs[3].enc = strdup ("iso-8859-15");
         conv_encs[4].enc = strdup ("koi8-u");
-        conv_encs[5].enc = strdup ("windows-1251");
+        conv_encs[5].enc = strdup ("cp-1251");
         conv_encs[6].enc = strdup ("iso-8859-1"); /* this is dupe (!) */
         conv_encs[7].enc = strdup ("euc-jp");
         conv_encs[8].enc = strdup ("shift-jis");
     }
+    if (!strncmp (enc, "windows-1251")
+        enc = "cp1251";
 #ifndef ENABLE_ICONV
     if (!strncmp (enc, "koi8", 4))
         enc = "koi8-u";
