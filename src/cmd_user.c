@@ -1378,7 +1378,7 @@ static JUMP_F (CmdUserMessage)
             case 2:
                 if (!uiG.last_rcvd_uin)
                 {
-                    M_print (i18n (1741, "Must receive a message first\n"));
+                    M_print (i18n (1741, "Must receive a message first.\n"));
                     return 0;
                 }
                 uinlist[0] = uiG.last_rcvd_uin;
@@ -1387,7 +1387,7 @@ static JUMP_F (CmdUserMessage)
             case 4:
                 if (!uiG.last_sent_uin)
                 {
-                    M_print (i18n (1742, "Must write one message first\n"));
+                    M_print (i18n (1742, "Must write a message first.\n"));
                     return 0;
                 }
                 uinlist[0] = uiG.last_sent_uin;
