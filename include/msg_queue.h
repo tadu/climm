@@ -30,9 +30,9 @@ Event      *QueueDequeue2     (Connection *conn, UDWORD type, UDWORD seq, UDWORD
 void        QueueRetry        (Connection *conn, UDWORD type, UDWORD uin);
 void        QueueCancel       (Connection *conn);
 
-void        QueueRun  ();
-Event      *QueuePeek ();
-Event      *QueuePop  ();
+void        QueueRun  (void);
+Event      *QueuePeek (void);
+Event      *QueuePop  (void);
 
 void EventD (Event *event);
 

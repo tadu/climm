@@ -861,7 +861,7 @@ int Read_RC_File (FILE *rcf)
                     PrefParse (tmp2);
                     tmp2 = strdup (s_quote (tmp2));
                     
-                    CmdUser (cmd = strdup (s_sprintf ("\xb6" "alias %s %s", tmp2, tmp)));
+                    CmdUser (cmd = strdup (s_sprintf ("\\alias %s %s", tmp2, tmp)));
 
                     free (cmd);
                     free (tmp);
@@ -874,7 +874,7 @@ int Read_RC_File (FILE *rcf)
                     PrefParse (tmp2);
                     tmp2 = strdup (tmp2);
 
-                    CmdUser (cmd = strdup (s_sprintf ("\xb6" "alias %s %s", tmp, tmp2)));
+                    CmdUser (cmd = strdup (s_sprintf ("\\alias %s %s", tmp, tmp2)));
                     
                     free (cmd);
                     free (tmp);

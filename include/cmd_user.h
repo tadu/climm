@@ -39,6 +39,7 @@ const char *CmdUserLookupName (const char *command);
 alias_t *CmdUserAliases (void);
 
 void CmdUser (const char *command);
-void CmdUserInput (time_t *idle_val, UBYTE *idle_flag);
+void CmdUserInput (strc_t line);
+void CmdUserInterrupt (void);
 
 #endif /* MICQ_USER_H */

@@ -7,6 +7,7 @@
 #include "util_ui.h"
 #include "file_util.h"
 #include "util.h"
+#include "util_rl.h"
 #include "conv.h"
 #include "buildmark.h"
 #include "cmd_pkt_cmd_v5.h"
@@ -250,6 +251,7 @@ int main (int argc, char *argv[])
     i18nInit (arg_i);
     prG->verbose &= ~0x8000;
     PreferencesInit (prG);
+    ReadLineInit ();
     
     rc = arg_h ? 0 : PrefLoad (prG);
     i = i18nOpen (prG->locale);
@@ -395,7 +397,6 @@ int main (int argc, char *argv[])
     }
 #endif
 
-    R_init ();
     TabInit ();
 
     for (i = 0; (conn = ConnectionNr (i)); i++)
@@ -448,16 +449,26 @@ int main (int argc, char *argv[])
             conv_error = 0;
         }
 
-        R_redraw ();
+        ReadLinePrompt ();
 
         rc = M_select ();
         assert (~rc & 0x80000000L);
 
-        R_undraw ();
-
         if (__os_has_input)
-            if (R_process_input ())
-                CmdUserInput (&uiG.idle_val, &uiG.idle_flag);
+        {
+            strc_t input;
+            char newbyte;
+#if INPUT_BY_GETCH
+            newbyte = getch ();
+#else
+            int k;
+            k = read (STDIN_FILENO, &newbyte, 1);
+            if (k && k != -1)
+#endif
+            if ((input = ReadLine (newbyte)))
+                CmdUserInput (input);
+        }
+        
 
         for (i = 0; (conn = ConnectionNr (i)); i++)
         {

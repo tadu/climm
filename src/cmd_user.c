@@ -13,6 +13,7 @@
 #include "util.h"
 #include "util_ui.h"
 #include "util_io.h"
+#include "util_rl.h"
 #include "util_table.h"
 #include "util_extra.h"
 #include "cmd_pkt_cmd_v5.h"
@@ -1294,7 +1295,7 @@ static JUMP_F (CmdUserMessage)
             s_catc (&t, '\n');
         }
     }
-    R_setprompt (i18n (1041, "msg> "));
+    ReadLinePromptSet (i18n (9999, "msg>"));
     return status;
 }
 
@@ -1629,7 +1630,7 @@ static JUMP_F(CmdUserStatusMeta)
         
         if (!data)
         {
-            M_printf (i18n (2333, "%s [show|load|save|set|get|rget] <contacts> - handle meta data for contacts.\n"), CmdUserLookupName ("meta"));
+            M_printf (i18n (2333, "%s [show|load|save|set|get|rget] <contacts> - handle meta data for contacts.\n"), "meta");
             M_print  (i18n (2334, "  show - show current known meta data\n"));
             M_print  (i18n (2335, "  load - load from file and show meta data\n"));
             M_print  (i18n (2336, "  save - save meta data to file\n"));
@@ -1783,18 +1784,18 @@ static JUMP_F(CmdUserStatusWide)
         }
     }
 
-    columns = Get_Max_Screen_Width () / (lennick + 3);
+    columns = rl_columns / (lennick + 3);
     if (columns < 1)
         columns = 1;
 
     if (data)
     {
-        colleft = (Get_Max_Screen_Width () - s_strlen (i18n (1653, "Offline"))) / 2 - 1;
+        colleft = (rl_columns - s_strlen (i18n (1653, "Offline"))) / 2 - 1;
         M_print (COLQUOTE);
         for (i = 0; i < colleft; i++)
             M_print ("=");
         M_printf (" %s%s%s ", COLCLIENT, i18n (1653, "Offline"), COLQUOTE);
-        colright = Get_Max_Screen_Width () - i - s_strlen (i18n (1653, "Offline")) - 2;
+        colright = rl_columns - i - s_strlen (i18n (1653, "Offline")) - 2;
         for (i = 0; i < colright; i++)
             M_print ("=");
         M_print (COLNONE);
@@ -1810,12 +1811,12 @@ static JUMP_F(CmdUserStatusWide)
 
     cont = ContactUIN (conn, conn->uin);
     M_printf ("%s%ld%s %s", COLCONTACT, cont->uin, COLNONE, COLQUOTE);
-    colleft = (Get_Max_Screen_Width () - s_strlen (i18n (1654, "Online"))) / 2 - s_strlen (s_sprintf ("%ld", conn->uin)) - 2;
+    colleft = (rl_columns - s_strlen (i18n (1654, "Online"))) / 2 - s_strlen (s_sprintf ("%ld", conn->uin)) - 2;
     for (i = 0; i < colleft; i++)
         M_print ("=");
     M_printf (" %s%s%s ", COLCLIENT, i18n (1654, "Online"), COLQUOTE);
     i += 3 + s_strlen (i18n (1654, "Online")) + s_strlen (s_sprintf ("%ld", conn->uin));
-    colright = Get_Max_Screen_Width () - i - s_strlen (s_status (conn->status)) - 3;
+    colright = rl_columns - i - s_strlen (s_status (conn->status)) - 3;
     for (i = 0; i < colright; i++)
         M_print ("=");
     M_printf (" %s(%s)%s", COLQUOTE, s_status (conn->status), COLNONE);
@@ -1830,7 +1831,7 @@ static JUMP_F(CmdUserStatusWide)
         M_printf ("%c %s%-*s%s ", ind, COLCONTACT, lennick + s_delta (cont->nick), cont->nick, COLNONE);
     }
     M_printf ("\n%s", COLQUOTE);
-    colleft = Get_Max_Screen_Width ();
+    colleft = rl_columns;
     for (i = 0; i < colleft; i++)
         M_print ("=");
     M_printf ("%s\n", COLNONE);
@@ -2281,7 +2282,7 @@ static JUMP_F(CmdUserOpt)
  */
 static JUMP_F(CmdUserClear)
 {
-    R_clrscr ();
+    ReadLineClrScr ();
     return 0;
 }
 
@@ -2800,7 +2801,7 @@ static JUMP_F(CmdUserURL)
 static JUMP_F(CmdUserTabs)
 {
     int i;
-    Contact *cont;
+    const Contact *cont;
     ANYCONN;
 
     for (i = 0; TabGetOut (i); i++)
@@ -3185,19 +3186,19 @@ static JUMP_F(CmdUserOldSearch)
                 
                 return 0;
             }
-            R_setpromptf ("%s ", i18n (1655, "Enter the user's e-mail address:"));
+            ReadLinePromptSet (i18n (1655, "Enter the user's e-mail address:"));
             return status = 101;
         case 101:
             email = strdup ((char *) args);
-            R_setpromptf ("%s ", i18n (1656, "Enter the user's nick name:"));
+            ReadLinePromptSet (i18n (1656, "Enter the user's nick name:"));
             return ++status;
         case 102:
             nick = strdup ((char *) args);
-            R_setpromptf ("%s ", i18n (1657, "Enter the user's first name:"));
+            ReadLinePromptSet (i18n (1657, "Enter the user's first name:"));
             return ++status;
         case 103:
             first = strdup ((char *) args);
-            R_setpromptf ("%s ", i18n (1658, "Enter the user's last name:"));
+            ReadLinePromptSet (i18n (1658, "Enter the user's last name:"));
             return ++status;
         case 104:
             last = strdup ((char *) args);
@@ -3234,7 +3235,7 @@ static JUMP_F(CmdUserSearch)
             if (!s_parse (&args, &par))
             {
                 M_print (i18n (1960, "Enter data to search user for. Enter '.' to start the search.\n"));
-                R_setpromptf ("%s ", i18n (1656, "Enter the user's nick name:"));
+                ReadLinePromptSet (i18n (1656, "Enter the user's nick name:"));
                 return 200;
             }
             arg1 = strdup (par->txt);
@@ -3265,19 +3266,19 @@ static JUMP_F(CmdUserSearch)
             return 0;
         case 200:
             wp.nick = strdup (args);
-            R_setpromptf ("%s ", i18n (1657, "Enter the user's first name:"));
+            ReadLinePromptSet (i18n (1657, "Enter the user's first name:"));
             return ++status;
         case 201:
             wp.first = strdup (args);
-            R_setpromptf ("%s ", i18n (1658, "Enter the user's last name:"));
+            ReadLinePromptSet (i18n (1658, "Enter the user's last name:"));
             return ++status;
         case 202:
             wp.last = strdup (args);
-            R_setpromptf ("%s ", i18n (1655, "Enter the user's e-mail address:"));
+            ReadLinePromptSet (i18n (1655, "Enter the user's e-mail address:"));
             return ++status;
         case 203:
             wp.email = strdup (args);
-            R_setpromptf ("%s ", i18n (1604, "Should the users be online?"));
+            ReadLinePromptSet (i18n (1604, "Should the users be online?"));
             return ++status;
 /* A few more could be added here, but we're gonna make this
  the last one -KK */
@@ -3285,19 +3286,19 @@ static JUMP_F(CmdUserSearch)
             if (strcasecmp (args, i18n (1028, "NO")) && strcasecmp (args, i18n (1027, "YES")))
             {
                 M_printf ("%s\n", i18n (1029, "Please enter YES or NO!"));
-                R_setpromptf ("%s ", i18n (1604, "Should the users be online?"));
+                ReadLinePromptSet (i18n (1604, "Should the users be online?"));
                 return status;
             }
             wp.online = strcasecmp (args, i18n (1027, "YES")) ? FALSE : TRUE;
-            R_setpromptf ("%s ", i18n (1936, "Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):"));
+            ReadLinePromptSet (i18n (1936, "Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):"));
             return ++status;
         case 205:
             wp.minage = atoi (args);
-            R_setpromptf ("%s ", i18n (1937, "Enter max age (22,29,39,49,59,120):"));
+            ReadLinePromptSet (i18n (1937, "Enter max age (22,29,39,49,59,120):"));
             return ++status;
         case 206:
             wp.maxage = atoi (args);
-            R_setprompt (i18n (1938, "Enter sex:"));
+            ReadLinePromptSet (i18n (1938, "Enter sex:"));
             return ++status;
         case 207:
             if (!strncasecmp (args, i18n (1528, "female"), 1))
@@ -3312,41 +3313,41 @@ static JUMP_F(CmdUserSearch)
             {
                 wp.sex = 0;
             }
-            R_setpromptf ("%s ", i18n (1534, "Enter a language by number or L for a list:"));
+            ReadLinePromptSet (i18n (1534, "Enter a language by number or L for a list:"));
             return ++status;
         case 208:
             temp = atoi (args);
             if ((0 == temp) && (toupper (args[0]) == 'L'))
             {
                 TablePrintLang ();
-                R_setpromptf ("%s ", i18n (1534, "Enter a language by number or L for a list:"));
+                ReadLinePromptSet (i18n (1534, "Enter a language by number or L for a list:"));
             }
             else
             {
                 wp.language = temp;
                 status++;
-                R_setpromptf ("%s ", i18n (1939, "Enter a city:"));
+                ReadLinePromptSet (i18n (1939, "Enter a city:"));
             }
             return status;
         case 209:
             wp.city = strdup ((char *) args);
-            R_setpromptf ("%s ", i18n (1602, "Enter a state:"));
+            ReadLinePromptSet (i18n (1602, "Enter a state:"));
             return ++status;
         case 210:
             wp.state = strdup ((char *) args);
-            R_setpromptf ("%s ", i18n (1578, "Enter country's phone ID number:"));
+            ReadLinePromptSet (i18n (1578, "Enter country's phone ID number:"));
             return ++status;
         case 211:
             wp.country = atoi ((char *) args);
-            R_setpromptf ("%s ", i18n (1579, "Enter company: "));
+            ReadLinePromptSet (i18n (1579, "Enter company: "));
             return ++status;
         case 212:
             wp.company = strdup ((char *) args);
-            R_setpromptf ("%s ", i18n (1587, "Enter department: "));
+            ReadLinePromptSet (i18n (1587, "Enter department: "));
             return ++status;
         case 213:
             wp.department = strdup ((char *) args);
-            R_setpromptf ("%s ", i18n (1603, "Enter position: "));
+            ReadLinePromptSet (i18n (1603, "Enter position: "));
             return ++status;
         case 214:
             wp.position = strdup ((char *) args);
@@ -3396,20 +3397,20 @@ static JUMP_F(CmdUserUpdate)
     switch (status)
     {
         case 0:
-            R_setpromptf ("%s ", i18n (1553, "Enter Your New Nickname:"));
+            ReadLinePromptSet (i18n (1553, "Enter Your New Nickname:"));
             return 300;
         case 300:
             s_repl (&user->nick, args);
-            R_setpromptf ("%s ", i18n (1554, "Enter your new first name:"));
+            ReadLinePromptSet (i18n (1554, "Enter your new first name:"));
             return ++status;
         case 301:
             s_repl (&user->first, args);
-            R_setpromptf ("%s ", i18n (1555, "Enter your new last name:"));
+            ReadLinePromptSet (i18n (1555, "Enter your new last name:"));
             return ++status;
         case 302:
             s_repl (&user->last, args);
             s_repl (&user->email, NULL);
-            R_setpromptf ("%s ", i18n (1556, "Enter your new email address:"));
+            ReadLinePromptSet (i18n (1556, "Enter your new email address:"));
             return ++status;
         case 303:
             if (!user->email && args)
@@ -3427,84 +3428,84 @@ static JUMP_F(CmdUserUpdate)
             }
             else
             {
-                R_setpromptf ("%s ", i18n (1544, "Enter new city:"));
+                ReadLinePromptSet (i18n (1544, "Enter new city:"));
                 status += 3;
                 return status;
             }
-            R_setpromptf ("%s ", i18n (1556, "Enter your new email address:"));
+            ReadLinePromptSet (i18n (1556, "Enter your new email address:"));
             return status;
         case 306:
             user->city = strdup (args);
-            R_setpromptf ("%s ", i18n (1545, "Enter new state:"));
+            ReadLinePromptSet (i18n (1545, "Enter new state:"));
             return ++status;
         case 307:
             user->state = strdup (args);
-            R_setpromptf ("%s ", i18n (1546, "Enter new phone number:"));
+            ReadLinePromptSet (i18n (1546, "Enter new phone number:"));
             return ++status;
         case 308:
             user->phone = strdup (args);
-            R_setpromptf ("%s ", i18n (1547, "Enter new fax number:"));
+            ReadLinePromptSet (i18n (1547, "Enter new fax number:"));
             return ++status;
         case 309:
             user->fax = strdup (args);
-            R_setpromptf ("%s ", i18n (1548, "Enter new street address:"));
+            ReadLinePromptSet (i18n (1548, "Enter new street address:"));
             return ++status;
         case 310:
             user->street = strdup (args);
-            R_setpromptf ("%s ", i18n (1549, "Enter new cellular number:"));
+            ReadLinePromptSet (i18n (1549, "Enter new cellular number:"));
             return ++status;
         case 311:
             user->cellular = strdup (args);
-            R_setpromptf ("%s ", i18n (1550, "Enter new zip code (must be numeric):"));
+            ReadLinePromptSet (i18n (1550, "Enter new zip code (must be numeric):"));
             return ++status;
         case 312:
             user->zip = strdup (args);
-            R_setpromptf ("%s ", i18n (1551, "Enter your country's phone ID number:"));
+            ReadLinePromptSet (i18n (1551, "Enter your country's phone ID number:"));
             return ++status;
         case 313:
             user->country = atoi (args);
-            R_setpromptf ("%s ", i18n (1552, "Enter your time zone (+/- 0-12):"));
+            ReadLinePromptSet (i18n (1552, "Enter your time zone (+/- 0-12):"));
             return ++status;
         case 314:
             user->tz = atoi (args);
             user->tz *= 2;
-            R_setpromptf ("%s ", i18n (1557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
+            ReadLinePromptSet (i18n (1557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
             return ++status;
         case 315:
             if (strcasecmp (args, i18n (1028, "NO")) && strcasecmp (args, i18n (1027, "YES")))
             {
                 M_printf ("%s\n", i18n (1029, "Please enter YES or NO!"));
-                R_setpromptf ("%s ", i18n (1557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
+                ReadLinePromptSet (i18n (1557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
                 return status;
             }
             user->auth = strcasecmp (args, i18n (1027, "YES")) ? FALSE : TRUE;
-            R_setpromptf ("%s ", i18n (1605, "Do you want your status to be available on the web? (YES/NO)"));
+            ReadLinePromptSet (i18n (1605, "Do you want your status to be available on the web? (YES/NO)"));
             return ++status;
         case 316:
             if (strcasecmp (args, i18n (1028, "NO")) && strcasecmp (args, i18n (1027, "YES")))
             {
                 M_printf ("%s\n", i18n (1029, "Please enter YES or NO!"));
-                R_setpromptf ("%s ", i18n (1605, "Do you want your status to be available on the web? (YES/NO)"));
+                ReadLinePromptSet (i18n (1605, "Do you want your status to be available on the web? (YES/NO)"));
                 return status;
             }
             user->webaware = strcasecmp (args, i18n (1027, "YES")) ? FALSE : TRUE;
-            R_setpromptf ("%s ", i18n (1857, "Do you want to hide your IP from other contacts? (YES/NO)"));
+            ReadLinePromptSet (i18n (1857, "Do you want to hide your IP from other contacts? (YES/NO)"));
             return ++status;
         case 317:
             if (strcasecmp (args, i18n (1028, "NO")) && strcasecmp (args, i18n (1027, "YES")))
             {
                 M_printf ("%s\n", i18n (1029, "Please enter YES or NO!"));
-                R_setpromptf ("%s ", i18n (1857, "Do you want to hide your IP from other contacts? (YES/NO)"));
+                ReadLinePromptSet (i18n (1857, "Do you want to hide your IP from other contacts? (YES/NO)"));
                 return status;
             }
             user->hideip = strcasecmp (args, i18n (1027, "YES")) ? FALSE : TRUE;
-            R_setpromptf ("%s ", i18n (1622, "Do you want to apply these changes? (YES/NO)"));
+            ReadLinePromptSet (i18n (1622, "Do you want to apply these changes? (YES/NO)"));
             return ++status;
         case 318:
             if (strcasecmp (args, i18n (1028, "NO")) && strcasecmp (args, i18n (1027, "YES")))
             {
                 M_printf ("%s\n", i18n (1029, "Please enter YES or NO!"));
-                R_setpromptf ("%s ", i18n (1622, "Do you want to apply these changes? (YES/NO)"));
+                ReadLinePromptSet (i18n (1622, "Do you want to apply these changes? (YES/NO)"));
                 return status;
             }
 
@@ -3537,11 +3538,11 @@ static JUMP_F(CmdUserOther)
     switch (status)
     {
         case 0:
-            R_setpromptf ("%s ", i18n (1535, "Enter new age:"));
+            ReadLinePromptSet (i18n (1535, "Enter new age:"));
             return 400;
         case 400:
             more->age = atoi (args);
-            R_setpromptf ("%s ", i18n (1536, "Enter new sex:"));
+            ReadLinePromptSet (i18n (1536, "Enter new sex:"));
             return ++status;
         case 401:
             if (!strncasecmp (args, i18n (1528, "female"), 1))
@@ -3550,23 +3551,23 @@ static JUMP_F(CmdUserOther)
                 more->sex = 2;
             else
                 more->sex = 0;
-            R_setpromptf ("%s ", i18n (1537, "Enter new homepage:"));
+            ReadLinePromptSet (i18n (1537, "Enter new homepage:"));
             return ++status;
         case 402:
             s_repl (&more->homepage, args);
-            R_setpromptf ("%s ", i18n (1538, "Enter new year of birth (4 digits):"));
+            ReadLinePromptSet (i18n (1538, "Enter new year of birth (4 digits):"));
             return ++status;
         case 403:
             more->year = atoi (args);
-            R_setpromptf ("%s ", i18n (1539, "Enter new month of birth:"));
+            ReadLinePromptSet (i18n (1539, "Enter new month of birth:"));
             return ++status;
         case 404:
             more->month = atoi (args);
-            R_setpromptf ("%s ", i18n (1540, "Enter new day of birth:"));
+            ReadLinePromptSet (i18n (1540, "Enter new day of birth:"));
             return ++status;
         case 405:
             more->day = atoi (args);
-            R_setpromptf ("%s ", i18n (1534, "Enter a language by number or L for a list:"));
+            ReadLinePromptSet (i18n (1534, "Enter a language by number or L for a list:"));
             return ++status;
         case 406:
             temp = atoi (args);
@@ -3577,7 +3578,7 @@ static JUMP_F(CmdUserOther)
                 more->lang1 = temp;
                 status++;
             }
-            R_setpromptf ("%s ", i18n (1534, "Enter a language by number or L for a list:"));
+            ReadLinePromptSet (i18n (1534, "Enter a language by number or L for a list:"));
             return status;
         case 407:
             temp = atoi (args);
@@ -3588,14 +3589,14 @@ static JUMP_F(CmdUserOther)
                 more->lang2 = temp;
                 status++;
             }
-            R_setpromptf ("%s ", i18n (1534, "Enter a language by number or L for a list:"));
+            ReadLinePromptSet (i18n (1534, "Enter a language by number or L for a list:"));
             return status;
         case 408:
             temp = atoi (args);
             if (!temp && (toupper (args[0]) == 'L'))
             {
                 TablePrintLang ();
-                R_setpromptf ("%s ", i18n (1534, "Enter a language by number or L for a list:"));
+                ReadLinePromptSet (i18n (1534, "Enter a language by number or L for a list:"));
                 return status;
             }
             more->lang3 = temp;
@@ -3663,7 +3664,7 @@ static JUMP_F(CmdUserAbout)
         }
         offset = 0;
     }
-    R_setprompt (i18n (1541, "About> "));
+    ReadLinePromptSet (i18n (9999, "About>"));
     return 400;
 }
 
@@ -3680,9 +3681,9 @@ void CmdUser (const char *command)
 /*
  * Get one line of input and process it.
  */
-void CmdUserInput (time_t *idle_val, UBYTE *idle_flag)
+void CmdUserInput (strc_t line)
 {
-    CmdUserProcess (NULL, idle_val, idle_flag);
+    CmdUserProcess (line->txt, &uiG.idle_val, &uiG.idle_flag);
 }
 
 /*
@@ -3733,8 +3734,15 @@ static int CmdUserProcessAlias (const char *cmd, const char *argsd,
         return FALSE;
 }
 
+static UBYTE isinterrupted = 0;
+
+void CmdUserInterrupt (void)
+{
+    isinterrupted = 1;
+}
+
 /*
- * Process one line of command, get it if necessary.
+ * Process one line of command.
  */
 static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag)
 {
@@ -3750,20 +3758,15 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
     idle_save = *idle_val;
     *idle_val = time (NULL);
 
-    if (command)
-    {
-        snprintf (buf, sizeof (buf), "%s", command);
-    }
-    else
-    {
-        memset (buf, 0, 1024);
-        R_getline (buf, 1024);
-        M_print ("\r");             /* reset char printed count for dumb terminals */
-        buf[1023] = 0;              /* be safe */
-    }
+    snprintf (buf, sizeof (buf), "%s", command);
+    M_print ("\r");             /* reset char printed count for dumb terminals */
+    buf[1023] = 0;              /* be safe */
 
-    if (R_isinterrupted ())
+    if (isinterrupted)
+    {
         status = 0;
+        isinterrupted = 0;
+    }
     
     if (status)
     {
@@ -3775,7 +3778,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
         {
             if ('!' == buf[0])
             {
-                R_pause ();
+                ReadLineTtyUnset ();
 #ifdef SHELL_COMMANDS
                 if (((unsigned char)buf[1] < 31) || (buf[1] & 128))
                     M_printf (i18n (1660, "Invalid Command: %s\n"), &buf[1]);
@@ -3784,16 +3787,16 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
 #else
                 M_print (i18n (1661, "Shell commands have been disabled.\n"));
 #endif
-                R_resume ();
+                ReadLineTtySet ();
                 if (!command)
-                    R_resetprompt ();
+                    ReadLinePromptReset ();
                 return;
             }
             args = buf;
             if (!s_parse (&args, &par))
             {
                 if (!command)
-                    R_resetprompt ();
+                    ReadLinePromptReset ();
                 return;
             }
             cmd = par->txt;
@@ -3808,7 +3811,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
             if (!*cmd)
             {
                 if (!command)
-                    R_resetprompt ();
+                    ReadLinePromptReset ();
                 return;
             }
 
@@ -3820,22 +3823,14 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
             {
                 char *argsd;
                 jump_t *j = (jump_t *)NULL;
-                int is_alias = FALSE;
                 
                 cmd = strdup (cmd);
                 argsd = strdup (args);
 
-                if (*cmd != '\xb6')
-                {
-                    if (*argsd && CmdUserProcessAlias (cmd, argsd + 1, &idle_save, idle_flag))
-                        is_alias = TRUE;
-                    else
-                        j = CmdUserLookup (cmd, CU_USER);
-                }
-                if (!is_alias && !j)
-                    j = CmdUserLookup (*cmd == '\xb6' ? cmd + 1 : cmd, CU_DEFAULT);
-
-                if (j)
+                if (*cmd != '\\' &&
+                    *argsd && CmdUserProcessAlias (cmd, argsd + 1, &idle_save, idle_flag))
+                    ;
+                else if ((j = CmdUserLookup (*cmd == '\\' ? cmd + 1 : cmd , CU_DEFAULT)))
                 {
                     if (j->unidle == 2)
                         *idle_val = idle_save;
@@ -3845,18 +3840,13 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
                     sticky = j->f;
                 }
                 else
-                {
-                    if (!is_alias)
-                    {
-                        M_printf (i18n (9999, "Unknown command %s, type /help for help.\n"),
-                                  s_mquote (cmd, COLQUOTE, 0));
-                    }
-                }
+                    M_printf (i18n (9999, "Unknown command %s, type %shelp%s for help.\n"),
+                              s_mquote (cmd, COLQUOTE, 0), COLQUOTE, COLNONE);
                 free (cmd);
                 free (argsd);
             }
         }
     }
     if (!status && !uiG.quit && !command)
-        R_resetprompt ();
+        ReadLinePromptReset ();
 }

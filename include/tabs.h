@@ -4,10 +4,10 @@
 #define MICQ_UTIL_TABS_H
 
 void   TabInit (void);
-void   TabAddIn (Contact *cont);
-void   TabAddOut (Contact *cont);
-Contact *TabGetIn (int nr);
-Contact *TabGetOut (int nr);
-Contact *TabGet (int nr);
+void           TabAddIn  (const Contact *cont);
+void           TabAddOut (const Contact *cont);
+const Contact *TabGetIn  (int nr);
+const Contact *TabGetOut (int nr);
+int            TabHas    (const Contact *cont);
 
 #endif /* MICQ_UTIL_TABS_H */

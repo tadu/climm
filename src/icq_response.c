@@ -5,6 +5,7 @@
 #include "icq_response.h"
 #include "util_ui.h"
 #include "util_io.h"
+#include "util_rl.h"
 #include "tabs.h"
 #include "contact.h"
 #include "server.h"
@@ -762,9 +763,9 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             s_repl (&uiG.idle_uins, s_sprintf ("%s %s", uiG.idle_uins && uiG.idle_msgs ? uiG.idle_uins : "", cont->nick));
 
         uiG.idle_msgs++;
-        R_setpromptf ("[%s%ld%s%s]%s%s",
+        ReadLinePromptSet (s_sprintf ("[%s%ld%s%s]%s%s",
                            COLINCOMING, uiG.idle_msgs, uiG.idle_uins,
-                           COLNONE, COLSERVER, i18n (1040, "mICQ> "));
+                           COLNONE, COLSERVER, i18n (9999, "mICQ>")));
     }
 
     if (prG->flags & FLAG_AUTOFINGER && ~cont->updated & UPF_AUTOFINGER &&

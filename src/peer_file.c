@@ -49,6 +49,7 @@
 #include "packet.h"
 #include "util_ui.h"
 #include "util_io.h"
+#include "util_rl.h"
 #include "util_extra.h"
 #include "util.h"
 #include "icq_response.h"
@@ -203,7 +204,7 @@ static void PeerFileDispatchDClose (Connection *fpeer)
 {
     fpeer->connect = 0;
     PeerFileClose (fpeer);
-    R_resetprompt ();
+    ReadLinePromptReset ();
 }
 
 /*
@@ -215,7 +216,7 @@ static void PeerFileIODispatchClose (Connection *ffile)
         close (ffile->sok);
     ffile->sok = -1;
     ffile->connect = 0;
-    R_resetprompt ();
+    ReadLinePromptReset ();
 }
 
 /*
@@ -409,15 +410,15 @@ void PeerFileDispatch (Connection *fpeer)
             }
             else if (fpeer->assoc->len == fpeer->assoc->done)
             {
-                R_resetprompt ();
+                ReadLinePromptReset ();
                 M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
                 M_print  (i18n (2166, "Finished receiving file.\n"));
             }
             else if (fpeer->assoc->len)
             {
-                R_settimepromptf ("[%s%ld %02d%%%s] %s%s",
+                ReadLinePromptUpdate (s_sprintf ("[%s%ld %02d%%%s] %s%s",
                               COLINCOMING, fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
-                              COLNONE, COLSERVER, i18n (1040, "mICQ> "));
+                              COLNONE, COLSERVER, i18n (9999, "mICQ>")));
             }
             PacketD (pak);
             return;
@@ -466,9 +467,9 @@ BOOL PeerFileError (Connection *fpeer, UDWORD rc, UDWORD flags)
                 fpeer->dispatch = &PeerFileDispatchW;
                 fpeer->assoc->connect = CONNECT_OK | 1;
                 if (fpeer->assoc->len)
-                    R_settimepromptf ("[%s%ld:%02d%%%s] %s%s",
+                    ReadLinePromptUpdate (s_sprintf ("[%s%ld:%02d%%%s] %s%s",
                                   COLCONTACT, fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
-                                  COLNONE, COLSERVER, i18n (1040, "mICQ> "));
+                                  COLNONE, COLSERVER, i18n (9999, "mICQ>")));
                 return 1;
             }
     }
@@ -599,19 +600,19 @@ void PeerFileResend (Event *event)
             if (len == 2048)
             {
                 if (fpeer->assoc->len)
-                    R_settimepromptf ("[%s%ld %02d%%%s] %s%s",
+                    ReadLinePromptUpdate (s_sprintf ("[%s%ld %02d%%%s] %s%s",
                                   COLCONTACT, fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
-                                  COLNONE, COLSERVER, i18n (1040, "mICQ> "));
+                                  COLNONE, COLSERVER, i18n (9999, "mICQ>")));
                 else
-                    R_settimepromptf ("[%s%ld%s] %s%s",
+                    ReadLinePromptUpdate (s_sprintf ("[%s%ld%s] %s%s",
                                   COLCONTACT, fpeer->assoc->done,
-                                  COLNONE, COLSERVER, i18n (1040, "mICQ> "));
+                                  COLNONE, COLSERVER, i18n (9999, "mICQ>")));
                 event->attempts = 0;
                 QueueEnqueue (event);
                 return;
             }
 
-            R_resetprompt ();
+            ReadLinePromptReset ();
             M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
             M_printf (i18n (2087, "Finished sending file %s.\n"), e_msg_text);
             ConnectionClose (fpeer->assoc);

@@ -27,8 +27,8 @@
 
 #define TAB_SLOTS 16
 
-static Contact *tab_in[TAB_SLOTS + 1];
-static Contact *tab_out[TAB_SLOTS + 1];
+static const Contact *tab_in[TAB_SLOTS + 1];
+static const Contact *tab_out[TAB_SLOTS + 1];
 
 void TabInit (void)
 {
@@ -46,9 +46,13 @@ void TabInit (void)
  * Appends an UIN to the incoming list. A previous occurrence is deleted.
  * Last entry might get lost.
  */
-void TabAddIn (Contact *cont)
+void TabAddIn (const Contact *cont)
 {
     int found;
+
+    for (found = 0; found < TAB_SLOTS + 1; found++)
+        if (tab_out[found] == cont)
+            return;
 
     for (found = 0; found < TAB_SLOTS; found++)
         if (tab_in[found] == cont)
@@ -64,7 +68,7 @@ void TabAddIn (Contact *cont)
  * Appends an UIN to the outgoing list. A previous occurrence is deleted.
  * Last entry might get lost.
  */
-void TabAddOut (Contact *cont)
+void TabAddOut (const Contact *cont)
 {
     int found;
 
@@ -76,12 +80,20 @@ void TabAddOut (Contact *cont)
         tab_out[found] = tab_out[found - 1];
 
     tab_out[0] = cont;
+
+    for (found = 0; found < TAB_SLOTS + 1; found++)
+        if (tab_in[found] == cont)
+        {
+            while (found < TAB_SLOTS)
+                tab_in[found] = tab_in[found + 1];
+            tab_in[TAB_SLOTS] = NULL;
+        }
 }
 
 /*
  * Returns the nr.th entry, or NULL.
  */
-Contact *TabGetIn (int nr)
+const Contact *TabGetIn (int nr)
 {
     return nr > TAB_SLOTS ? NULL : tab_in[nr];
 }
@@ -89,7 +101,7 @@ Contact *TabGetIn (int nr)
 /*
  * Returns the nr.th entry, or NULL.
  */
-Contact *TabGetOut (int nr)
+const Contact *TabGetOut (int nr)
 {
     return nr > TAB_SLOTS ? NULL : tab_out[nr];
 }
@@ -97,17 +109,12 @@ Contact *TabGetOut (int nr)
 /*
  * Returns the nr.th entry of both list, or NULL.
  */
-Contact *TabGet (int nr)
+int TabHas (const Contact *cont)
 {
-    static int off = TAB_SLOTS;
-    int tnr;
-    
-    if (nr < off && tab_out[nr])
-        return tab_out[nr];
-    if (nr < TAB_SLOTS && !tab_out[nr])
-        off = nr;
-    tnr = nr - off;
-    if (!tab_in[tnr])
-        off = TAB_SLOTS;
-    return tab_in[tnr];
+    int found;
+
+    for (found = 0; found < TAB_SLOTS; found++)
+        if (tab_out[found] == cont || tab_in[found] == cont)
+            return 1;
+    return 0;
 }
