@@ -23,23 +23,39 @@ static Contact cnt_contacts[MAX_CONTACTS];
  */
 Contact *ContactAdd (UDWORD uin, const char *nick)
 {
-    Contact *cont = &cnt_contacts[cnt_number++];
+    Contact *cont;
+    int i;
+    int flags = 0;
+    
+    for (i = 0; i < cnt_number; i++)
+        if (cnt_contacts[i].uin == uin)
+        {
+            if (!strcmp (cnt_contacts[i].nick, nick))
+            {
+                cnt_contacts[i].flags &= ~CONT_TEMPORARY;
+                return &cnt_contacts[i];
+            }
+            flags = CONT_ALIAS;
+        }
+    
+    
+    cont = &cnt_contacts[cnt_number++];
 
     if (cnt_number == MAX_CONTACTS)
-        return 0;
+        return NULL;
 
     cont->uin = uin;
     strncpy (cont->nick, nick, 20);
     cont->nick[19] = '\0';
     (cont + 1)->uin = 0;
 
-    cont->flags = 0;
+    cont->flags = flags;
     cont->status = STATUS_OFFLINE;
     cont->last_time = -1L;
     cont->local_ip = 0xffffffff;
     cont->outside_ip = 0xffffffff;
     cont->port = 0;
-    cont->version = NULL;
+    cont->version = 0;
 
     return cont;
 }
@@ -49,7 +65,7 @@ Contact *ContactAdd (UDWORD uin, const char *nick)
  */
 void ContactRem (UDWORD uin)
 {
-    int i;
+    int i, first = 1;
     
     for (i = 0; i < cnt_number; i++)
         if (cnt_contacts[i].uin == uin)
@@ -60,6 +76,16 @@ void ContactRem (UDWORD uin)
     while (i < cnt_number)
     {
         cnt_contacts[i] = cnt_contacts[i + 1];
+        if (cnt_contacts[i].uin == uin)
+        {
+            if (first)
+            {
+                cnt_contacts[i].flags &= ~CONT_ALIAS;
+                first = 0;
+            }
+            else
+                cnt_contacts[i].flags |= CONT_ALIAS;
+        }
         i++;
     }
     cnt_contacts[cnt_number].uin = 0;
@@ -73,8 +99,14 @@ Contact *ContactFind (UDWORD uin)
     int i;
     
     for (i = 0; i < cnt_number; i++)
-        if (cnt_contacts[i].uin == uin)
+        if (cnt_contacts[i].uin == uin && ~cnt_contacts[i].flags & CONT_ALIAS)
             return &cnt_contacts[i];
+    for (i = 0; i < cnt_number; i++)
+        if (cnt_contacts[i].uin == uin)
+        {
+            cnt_contacts[i].flags &= ~CONT_ALIAS;
+            return &cnt_contacts[i];
+        }
     return NULL;
 }
 

@@ -255,7 +255,7 @@ void Read_RC_File (FILE *rcf)
     char buf[450];
     char *tmp;
     char *p;
-    Contact *cont = NULL;
+    Contact *cont = NULL, *lastcont = NULL;
     Session *oldsess = NULL, *sess = NULL;
     int i, section, dep = 0;
     UDWORD uin;
@@ -563,16 +563,13 @@ void Read_RC_File (FILE *rcf)
                     tmp = strtok (NULL, "");
                     if (!tmp)
                         continue;
-                    if (ContactFind (uin))
-                        flags |= CONT_ALIAS;
                 }
                 else
                 {
-                    if (!cont)     /* ignore noise */
+                    if (!lastcont)     /* ignore noise */
                         continue;
-                    uin = cont->uin;
+                    uin = lastcont->uin;
                     tmp = strtok (NULL, "");
-                    flags |= CONT_ALIAS;
                 }
                 
                 
@@ -583,13 +580,10 @@ void Read_RC_File (FILE *rcf)
                     section = -1;
                     break;
                 }
-                cont->flags = flags;
-                if (uin == -1)
-                    cont->uin = (cont - 1)->uin;
-                if (flags & CONT_ALIAS)
-                    cont->flags = ContactFind (uin)->flags | CONT_ALIAS;
+                if (~cont->flags & CONT_ALIAS)
+                    cont->flags = flags;
                 if (prG->verbose > 2)
-                    M_print ("%ld = %s\n", cont->uin, cont->nick);
+                    M_print ("%ld = %s %x | %p\n", cont->uin, cont->nick, cont->flags, cont);
                 break;
             case 2:
                 tmp = strtok (buf, " ");
