@@ -984,7 +984,7 @@ strc_t UtilIOReadline (FILE *fd)
     static str_s str;
     char *p;
     
-    s_init (&str, "", 100);
+    s_init (&str, "", 128);
     while (1)
     {
         str.txt[str.max - 2] = 0;
@@ -999,7 +999,7 @@ strc_t UtilIOReadline (FILE *fd)
         str.len = strlen (str.txt);
         if (!str.txt[str.max - 2])
             break;
-        s_blow (&str, 100);
+        s_blow (&str, 128);
     }
     if ((p = strpbrk (str.txt, "\r\n")))
     {
