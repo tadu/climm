@@ -602,10 +602,14 @@
 599:[SOCKS] Méthode d'autorisation incorrecte¶
 600:[SOCKS] Échec d'autorisation¶
 601:[SOCKS] Échec général¶
-602:Cmd: %04X	
-603:Ver: %04X	
-604:Séq: %08X	
-605:Ses: %08X¶
+#-#602:Cmd: %04X	
+#-#603:Ver: %04X	
+#-#604:Séq: %08X	
+#-#605:Ses: %08X¶
+#602: 
+#603: 
+#604: 
+#605: 
 606:Mauvais ID du session %08X avec commande %04X. Ignoré.¶
 607:Usage: micq [-v|-V] [-f|-F <fichier-rc>] [-l|-L <fichier-journal>] [-?|-h]¶
 608:        -v   mode verbeuse¶
@@ -776,6 +780,8 @@
 #771:You haven't sent a message to anyone yet!¶
 #772:Can't find hostname %s.
 #773:%s could not be added.
+#774:Incoming packet:
+#775:Outgoing packet:
 #800:Change the working language to <lang>.
 #801:Displays a list of people on your contact list in a screen wide format.
 #802:SoundOnline cmd

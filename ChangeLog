@@ -1,4 +1,11 @@
 
+2001-11-20 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Include James' partial TCP implementation. Kinda experimental -
+	  enable with TCP_COMM in micqconfig.h.
+	* Fix Hex_Dump() output. Indent ingoing & outgoing packets; show
+	  them if verbosity & 4.
+	* Let -v accept a verbosity (without space after -v).
+
 2001-11-01 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Fix M_strcpy in src/file_utils.c.
 	* Use hstrerror() to print diagnostics if hostname lookup fails.

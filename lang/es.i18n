@@ -600,10 +600,10 @@
 #599:[SOCKS] Authentication method incorrect¶
 #600:[SOCKS] Authorization failure¶
 #601:[SOCKS] General SOCKS server failure¶
-#602:Cmd: %04X	
-#603:Ver: %04X	
-#604:Seq: %08X	
-#605:Ses: %08X¶
+#602: 
+#603: 
+#604: 
+#605: 
 #606:Got a bad session ID %08X with CMD %04X ignored.¶
 #607:Usage: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]¶
 #608:        -v   Turn on verbose Mode (useful for Debugging only)¶
@@ -772,6 +772,8 @@
 #771:You haven't sent a message to anyone yet!¶
 #772:Can't find hostname %s.
 #773:%s could not be added.
+#774:Incoming packet:
+#775:Outgoing packet:
 #800:Change the working language to <lang>.
 #801:Displays a list of people on your contact list in a screen wide format.
 #802:SoundOnline cmd

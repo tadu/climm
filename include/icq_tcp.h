@@ -11,11 +11,6 @@
 #define TCP_VER_REV	0x00
 #define TCP_OK_FLAG	0x04
 
-/* Errors */
-#define TCP_ERR_SEND    "Error sending TCP packet.\n"
-#define TCP_ERR_RECV    "Error receiving TCP packet.\n"
-#define TCP_ERR_BAD_PAK "Received malformed packet.\n"
- 
 /* Commands */
 #define TCP_INIT		0xFF
 #define TCP_INIT_ACK		0x01
@@ -61,9 +56,6 @@
 #ifdef TCP_COMM 
 extern struct msg_queue *tcp_rq, *tcp_sq;   /* recv and send queues */
 #endif
-
-
-
 
 
 #define CHAT_MESS       0x0002

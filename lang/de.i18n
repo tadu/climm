@@ -615,10 +615,14 @@
 599:[SOCKS] Autorisationsmethode ungültig.¶
 600:[SOCKS] Autorisierung fehlgeschlagen.¶
 601:[SOCKS] Allgemeiner SOCKS-Server-Fehlschlag.¶
-602:Kommando:    %04X	
-603:Version:     %04X	
-604:Folgenummer: %08X	
-605:Sitzung:     %08X¶
+#-#602:Kommando:    %04X	
+#-#603:Version:     %04X	
+#-#604:Folgenummer: %08X	
+#-#605:Sitzung:     %08X¶
+#602: 
+#603: 
+#604: 
+#605: 
 606:Falsche Sitzungskennung %08X bei Kommando CMD %04X ignoriert.¶
 607:Benutzung: micq [-v|-V] [-f|-F <KonfDatei>] [-l|-L <ProtDatei>] [-?|-h]¶
 608:        -v   ausführlicher Modus (nur zur Fehlersuche nützlich)¶
@@ -787,6 +791,8 @@
 #771:You haven't sent a message to anyone yet!¶
 772:Kann Rechner %s nicht finden.
 773:Konnte Nick %s nicht hinzufügen.
+#774:Incoming packet:
+#775:Outgoing packet:
 800:Wählt die Sprache <lang> aus.
 801:Zeigt die Kontaktliste im ausführlichen Format an.
 802:Klang-Befehl, wenn jemand verbindet:

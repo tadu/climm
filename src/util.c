@@ -733,6 +733,7 @@ void Hex_Dump (void *buffer, size_t len)
     char *buf;
 
     buf = buffer;
+    if (!len) return;
     assert (len > 0);
     if ((len > 1000))
     {
@@ -763,7 +764,7 @@ void Hex_Dump (void *buffer, size_t len)
     }
     for (k = i % 16; k < 16; k++)
     {
-        M_print ("    ");
+        M_print ("   ");
         if ((k & 7) == 7)
             M_print ("  ");
         else if ((k & 3) == 3)

@@ -446,15 +446,29 @@ void Handle_Server_Response (SOK_T sok)
     if (s < 0)
         return;
 
-//#if 0      
-    if (uiG.Verbose)
+    if (uiG.Verbose & 4)
     {
-        M_print (i18n (602, "Cmd: %04X\t"), Chars_2_Word (pak.head.cmd));
-        M_print (i18n (603, "Ver: %04X\t"), Chars_2_Word (pak.head.ver));
-        M_print (i18n (604, "Seq: %08X\t"), Chars_2_DW (pak.head.seq));
-        M_print (i18n (605, "Ses: %08X\n"), Chars_2_DW (pak.head.session));
+        R_undraw ();
+        Time_Stamp ();
+        M_print (" \x1b«" COLSERV "");
+        M_print (i18n (774, "Incoming packet:"));
+        M_print (" %04X %08X:%08X %04X (", Chars_2_Word (pak.head.ver),
+                 Chars_2_DW (pak.head.session), Chars_2_DW (pak.head.seq),
+                 Chars_2_Word (pak.head.cmd));
+        Print_CMD (Chars_2_Word (pak.head.cmd));
+        M_print (")" COLNONE "\n");
+#if ICQ_VER == 5
+        Hex_Dump (pak.head.ver, 3);           M_print ("\n");
+        Hex_Dump (pak.head.ver + 3, 6);       M_print ("\n");
+        Hex_Dump (pak.head.ver + 9, 12);      M_print ("\n");
+        Hex_Dump (pak.head.ver + 21, s - 21);
+#else
+        Hex_Dump (pak.head.ver, s);
+#endif
+        M_print ("\x1b»\n");
+        R_redraw ();
+        /* i18n (602, " ") i18n (603, " ") i18n (604, " ") i18n (605, " ") */
     }
-//#endif
 //    if ( pak.head.cmd != SRV_BAD_PASS ) {
 //      if ( Chars_2_Word( pak.head.ver ) != ICQ_VER ) {
 //              R_undraw();
@@ -620,7 +634,7 @@ int main (int argc, char *argv[])
 #ifdef TCP_COMM
     int tcpSok;
 #endif
-    int i;
+    int i, j;
     int next;
     int time_delay = 120;
 #ifdef _WIN32
@@ -660,7 +674,8 @@ int main (int argc, char *argv[])
             }
             else if ((argv[i][1] == 'v') || (argv[i][1] == 'V'))
             {
-                uiG.Verbose++;
+                j = atol (argv[i] + 2);
+                uiG.Verbose = (j ? j : uiG.Verbose + 1);
             }
             else if ((argv[i][1] == 'f') || (argv[i][1] == 'F'))
             {
@@ -677,7 +692,7 @@ int main (int argc, char *argv[])
             else if ((argv[i][1] == '?') || (argv[i][1] == 'h'))
             {
                 Usage ();
-                /* One will never get here ... */
+                /* not reached */
             }
         }
     }
@@ -753,14 +768,14 @@ int main (int argc, char *argv[])
 
 /*** TCP: add tcp socket into select queue ***/
 #ifdef TCP_COMM
-		M_Add_rsocket( tcpSok );
-		for ( i=0; i < uiG.Num_Contacts; i++ )
-		{
-			if ( uiG.Contacts[i].sok>0 )
-			{
-				M_Add_rsocket( uiG.Contacts[i].sok );
-			}
-		}
+        M_Add_rsocket (tcpSok);
+        for (i = 0; i < uiG.Num_Contacts; i++)
+        {
+            if (uiG.Contacts[i].sok > 0)
+            {
+                M_Add_rsocket (uiG.Contacts[i].sok);
+            }
+        }
 #endif
 
 
@@ -770,28 +785,28 @@ int main (int argc, char *argv[])
             Handle_Server_Response (sok);
 /*** TCP: on receiving a connection ***/
 #ifdef TCP_COMM
-		if (M_Is_Set (tcpSok))
-			New_TCP (tcpSok);
-		for (i = 0; i < uiG.Num_Contacts; i++)
-		{
-			if (uiG.Contacts[i].sok > 0)
-			{
-				if (M_Is_Set (uiG.Contacts[i].sok))
-				{
-					/* Are we waiting for an init packet
-					   ... or is init already finished? */
-					if (uiG.Contacts[i].session_id > 0)
-					{ 
-						/* session id is non-zero only during init */
-						Recv_TCP_Init (uiG.Contacts[i].sok);
-					}
-					else
-					{
-						Handle_TCP_Comm (uiG.Contacts[i].uin);
-					}
-				}
-			}
-		}
+        if (M_Is_Set (tcpSok))
+            New_TCP (tcpSok);
+        for (i = 0; i < uiG.Num_Contacts; i++)
+        {
+            if (uiG.Contacts[i].sok > 0)
+            {
+                if (M_Is_Set (uiG.Contacts[i].sok))
+                {
+                    /* Are we waiting for an init packet
+                     * ... or is init already finished? */
+                    if (uiG.Contacts[i].session_id > 0)
+                    {
+                        /* session id is non-zero only during init */
+                        Recv_TCP_Init (uiG.Contacts[i].sok);
+                    }
+                    else
+                    {
+                        Handle_TCP_Comm (uiG.Contacts[i].uin);
+                    }
+                }
+            }
+        }
 #endif
 
 
@@ -822,10 +837,10 @@ int main (int argc, char *argv[])
         }
 /*** TCP: Resend stuff ***/
 #ifdef TCP_COMM
-		if (time (NULL) > ssG.next_tcp_resend)
-		{
-			Do_TCP_Resend (sok);
-		}
+        if (time (NULL) > ssG.next_tcp_resend)
+        {
+            Do_TCP_Resend (sok);
+        }
 #endif
 
 #if HAVE_FORK

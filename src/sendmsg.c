@@ -1271,11 +1271,24 @@ static size_t SOCKWRITE_LOW (SOK_T sok, void *ptr, size_t len)
     assert (len > 0x18);
 
 #if 1
-    if (uiG.Verbose > 1)
+    if (uiG.Verbose & 4)
     {
+        R_undraw ();
+        Time_Stamp ();
+        M_print (" \x1b«" COLCLIENT "");
+        M_print (i18n (775, "Outgoing packet!"));
+#if ICQ_VER == 5
+        M_print (" %04X %08X:%08X %04X (", Chars_2_Word (ptr),
+                 Chars_2_DW (ptr + 10), Chars_2_DW (ptr + 16),
+                 Chars_2_Word (ptr + 14));
+        Print_CMD (Chars_2_Word (ptr + 14));
+        M_print (")" COLNONE "\n");
+#else
         M_print ("\n");
+#endif
         Hex_Dump (ptr, len);
-        M_print ("\n");
+        M_print ("\x1b»\n");
+        R_redraw ();
     }
 #endif
 
