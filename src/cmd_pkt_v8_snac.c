@@ -590,6 +590,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     UWORD seq1, seq2, tcpver, len, i, msgtyp, type, /*status,*/ pri;
     char *text = NULL;
     const char *resp, *txt = NULL;
+    UBYTE isutf8 = 0;
 
     pak = event->pak;
 
@@ -682,9 +683,26 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             msgtyp = PacketRead2 (pp);      PacketWrite2 (p, msgtyp);
             /*status=*/PacketRead2 (pp);
             pri    = PacketRead2 (pp);
-            txt = text = 
-                     PacketReadLNTS (pp);
-            /* FOREGROUND / BACKGROUND ignored */
+            text   = PacketReadLNTS (pp);
+                     PacketRead4 (pp); /* FOREGROUND */
+                     PacketRead4 (pp); /* BACKGROUND */
+#ifdef ENABLE_UTF8
+            isutf8 = 0;
+            if (PacketReadLeft (pp) >= 38)
+            {
+                char buf[40];
+                PacketReadData (pp, buf, 38);
+                buf [38] = '\0';
+                if (!strcmp (buf, "{0946134E-4C7F-11D1-8222-444553540000}"))
+                    isutf8 = 1;
+                else
+                    fprintf (stderr, "Buf: \"%s\"\n", buf);
+            }
+            fprintf (stderr, "Is_utf: %d\n", isutf8);
+            txt = isutf8 ? text : c_in (text);
+#else
+            txt = text;
+#endif
             PacketD (pp);
             if (cont)
                 cont->TCP_version = tcpver;
@@ -1319,6 +1337,9 @@ void SnacCliReqicbm (Connection *conn)
 void SnacCliSendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD type, UBYTE format)
 {
     Packet *pak;
+#ifdef ENABLE_UTF8
+    Contact *cont = ContactFind (uin);
+#endif
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
     BOOL peek = (format == 0xff && type == MSG_GET_AWAY);
     
@@ -1402,9 +1423,17 @@ void SnacCliSendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD type
               PacketWrite2       (pak, type);
               PacketWrite2       (pak, 0);
               PacketWrite2       (pak, 1);
+#ifdef ENABLE_UTF8
+              PacketWriteLNTS    (pak, cont->caps & CAP_UTF8 ? text : c_out (text));
+#else
               PacketWriteLNTS    (pak, text);
+#endif
               PacketWriteB4      (pak, 0);
               PacketWriteB4      (pak, 0xffffff00);
+#ifdef ENABLE_UTF8
+              if (cont->caps & CAP_UTF8)
+                  PacketWriteStr     (pak, "{0946134E-4C7F-11D1-8222-444553540000}");
+#endif
              PacketWriteTLVDone (pak);
              if (peek)
                  PacketWriteB4  (pak, 0x00030000);
