@@ -1589,7 +1589,7 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
         }
         else
         {
-            M_print (i18n (9999, "Queueing %s as %s for transfer.\n"), files[i], as[i]);
+            M_print (i18n (2091, "Queueing %s as %s for transfer.\n"), files[i], as[i]);
             sum++;
             sumlen += fstat.st_size;
             pak = PacketC ();
@@ -1655,7 +1655,7 @@ static void TCPCallBackResend (Event *event)
     
     if (!peer)
     {
-        M_print (i18n (9999, "TCP message %s discarded - lost session.\n"), event->info);
+        M_print (i18n (2092, "TCP message %s discarded - lost session.\n"), event->info);
         PacketD (event->pak);
         free (event->info);
         free (event);

@@ -47,7 +47,7 @@ Session *PeerFileCreate (Session *serv)
         return flist;
     
     if (prG->verbose)
-        M_print (i18n (9999, "Opening file listener connection at localhost:%d... "), serv->assoc->spref->port);
+        M_print (i18n (2082, "Opening file listener connection at localhost:%d... "), serv->assoc->spref->port);
 
     flist = SessionClone (serv->assoc, TYPE_FILELISTEN);
     if (!flist)
@@ -233,7 +233,7 @@ void PeerFileDispatch (Session *fpeer)
                 if (ffile->sok == -1)
                 {
                     int rc = errno;
-                    M_print (i18n (9999, "Cannot open file %s: %s (%d).\n"),
+                    M_print (i18n (2083, "Cannot open file %s: %s (%d).\n"),
                              buf, strerror (rc), rc);
                     SessionClose (fpeer);
                     free (name);
@@ -269,7 +269,7 @@ void PeerFileDispatch (Session *fpeer)
             if (err == -1)
             {
                 err = errno;
-                M_print (i18n (9999, "Error while seeking to offset %d: %s (%d).\n"),
+                M_print (i18n (2084, "Error while seeking to offset %d: %s (%d).\n"),
                          off, strerror (err), err);
                 TCPClose (fpeer);
                 return;
@@ -330,7 +330,7 @@ void PeerFileResend (Event *event)
 
     if (event->attempts >= MAX_RETRY_ATTEMPTS || (!event->pak && !event->seq))
     {
-        M_print (i18n (9999, "Dropping file transfer because of timeout: %d %d.\n"),
+        M_print (i18n (2085, "Dropping file transfer because of timeout: %d %d.\n"),
                  event->attempts, event->seq);
         TCPClose (fpeer);
     }
@@ -367,7 +367,7 @@ void PeerFileResend (Event *event)
                 if (ffile->sok == -1)
                 {
                     int rc = errno;
-                    M_print (i18n (9999, "Cannot open file %s: %s (%d).\n"),
+                    M_print (i18n (2083, "Cannot open file %s: %s (%d).\n"),
                              event->info, strerror (rc), rc);
                     TCPClose (fpeer);
                     SessionClose (fpeer);
@@ -386,7 +386,7 @@ void PeerFileResend (Event *event)
                 if (len == -1)
                 {
                     len = errno;
-                    M_print (i18n (9999, "Error while reading file %s: %s (%d).\n"),
+                    M_print (i18n (2086, "Error while reading file %s: %s (%d).\n"),
                              event->info, strerror (len), len);
                     TCPClose (fpeer);
                 }
@@ -402,7 +402,7 @@ void PeerFileResend (Event *event)
                         QueueEnqueue (event);
                         return;
                     }
-                    M_print (i18n (9999, "Finished sending file %s.\n"), event->info);
+                    M_print (i18n (2087, "Finished sending file %s.\n"), event->info);
                     SessionClose (fpeer->assoc);
                     fpeer->our_seq++;
                     event2 = QueueDequeue (fpeer->our_seq, QUEUE_PEER_FILE);
@@ -414,7 +414,7 @@ void PeerFileResend (Event *event)
                     }
                     else
                     {
-                        M_print (i18n (9999, "Finished sending all %d files.\n"), fpeer->our_seq - 1);
+                        M_print (i18n (2088, "Finished sending all %d files.\n"), fpeer->our_seq - 1);
                         SessionClose (fpeer);
                     }
                 }
