@@ -29,7 +29,7 @@ BOOL        ConvFits           (const char *in, UBYTE enc);
 #if HAVE_ICONV
 BOOL        ConvHaveUe     (UBYTE enc);
 #else
-#define     ConvHaveUe(e)  (enc == ENC_UTF8 || enc == ENC_LATIN1 || enc == ENC_LATIN9)
+#define     ConvHaveUe(e)  (e == ENC_UTF8 || e == ENC_LATIN1 || e == ENC_LATIN9)
 #endif
 
 

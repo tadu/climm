@@ -32,6 +32,7 @@
 #include <ctype.h>
 #endif
 #include "conv.h"
+#include "iconvfb.h"
 #include "preferences.h"
 
 typedef strc_t (iconv_func)(strc_t, UBYTE);
@@ -47,7 +48,7 @@ static iconv_func iconv_from_usascii, iconv_to_usascii;
 static iconv_func iconv_usascii;
 #endif
 #if ENABLE_FALLBACK_UTF8
-static iconv_func iconv_utf8;
+static iconv_func iconv_from_utf8, iconv_to_utf8;
 #endif
 #if ENABLE_FALLBACK_LATIN1
 static iconv_func iconv_from_latin1, iconv_to_latin1;
@@ -198,8 +199,8 @@ void ConvInit (void)
     if (!conv_encs[ENC_UTF8].fof)
     {
 #if ENABLE_FALLBACK_UTF8
-        conv_encs[ENC_UTF8].fof  = &iconv_utf8;
-        conv_encs[ENC_UTF8].fto  = &iconv_utf8;
+        conv_encs[ENC_UTF8].fof  = &iconv_from_utf8;
+        conv_encs[ENC_UTF8].fto  = &iconv_to_utf8;
 #else
         conv_encs[ENC_UTF8].fof  = conv_encs[ENC_ASCII].fof;
         conv_encs[ENC_UTF8].fto  = conv_encs[ENC_ASCII].fto;
@@ -541,11 +542,11 @@ static strc_t iconv_to_iconv (strc_t text, UBYTE enc)
 #if !ENABLE_FALLBACK_ASCII
 strc_t iconv_usascii (strc_t in, UBYTE enc)
 {
-    static str_s str;
+    static str_s str = { NULL, 0, 0 };
     unsigned int off;
     char c;
+
     s_init (&str, "", in->len);
-    
     for (off = 0; off < in->len; off++)
         if ((c = in->txt[off]) & 0x80)
             str.txt[off] = CHAR_BROKEN;
@@ -560,11 +561,11 @@ strc_t iconv_usascii (strc_t in, UBYTE enc)
 #if ENABLE_FALLBACK_ASCII || ENABLE_FALLBACK_UCS2BE || ENABLE_FALLBACK_WIN1251 || ENABLE_FALLBACK_KOI8 \
   || ENABLE_FALLBACK_LATIN9 || ENABLE_FALLBACK_LATIN1 || ENABLE_FALLBACK_UTF8
 
-static UDWORD iconv_get_utf8 (str_t in, int *off)
+static UDWORD iconv_get_utf8 (strc_t in, int *off)
 {
      UDWORD ucs = 0;
      int i, continuations = 1;
-     UBYTE  c = in->txt[*(off++)];
+     UBYTE  c = in->txt[(*off)++];
 
      if (~c & 0x80)
          return c;
@@ -579,12 +580,12 @@ static UDWORD iconv_get_utf8 (str_t in, int *off)
      }
 
      c &= 0x3f;
-     c >>= continuations;
+     c >>= continuations - 1;
 
      for (i = 0, ucs = c; i < continuations; i++)
      {
          if (((c = in->txt[*off + i]) & 0xc0) != 0x80)
-             return c ? CHAR_BROKEN : CHAR_INCOOMPLETE;
+             return c ? CHAR_BROKEN : CHAR_INCOMPLETE;
 
          c &= 0x3f;
          ucs <<= 6;
@@ -594,14 +595,14 @@ static UDWORD iconv_get_utf8 (str_t in, int *off)
      return ucs;
 }
 
-#if ENABLE_FALLBACK_USASCII
+#if ENABLE_FALLBACK_ASCII
 static strc_t iconv_from_usascii (strc_t in, UBYTE enc)
 {
-    static str_s str;
+    static str_s str = { NULL, 0, 0 };
     int off;
     char c;
+
     s_init (&str, "", in->len);
-    
     for (off = 0; off < in->len; off++)
         if ((c = in->txt[off]) & 0x80)
             s_catc (&str, CHAR_BROKEN);
@@ -612,14 +613,14 @@ static strc_t iconv_from_usascii (strc_t in, UBYTE enc)
 
 static strc_t iconv_to_usascii (strc_t in, UBYTE enc)
 {
-    static str_s str;
+    static str_s str = { NULL, 0, 0 };
     UDWORD ucs;
     int off;
+
     s_init (&str, "", in->len);
-    
     for (off = 0; off < in->len; )
     {
-        ucs = iconv_get_utf8 (&str, &off);
+        ucs = iconv_get_utf8 (in, &off);
         s_catc (&str, ucs & 0x80 ? CHAR_NOT_AVAILABLE : ucs);
     }
     return &str;
@@ -627,59 +628,73 @@ static strc_t iconv_to_usascii (strc_t in, UBYTE enc)
 #endif
 
 #if ENABLE_FALLBACK_UTF8
-strc_t iconv_utf8 (strc_t in, UBYTE enc)
+strc_t iconv_utf8_buf (str_t out, strc_t in, UBYTE enc)
 {
-    static str_s str;
     UDWORD ucs;
     int off;
-    s_init (&str, "", in.len);
-    
-    for (off = 0; off < in.len; )
+
+    s_init (out, "", in->len);
+    for (off = 0; off < in->len; )
     {
-        ucs = iconv_get_utf8 (&str, &off);
-        s_cat (&str, ConvUTF8 (ucs);
+        ucs = iconv_get_utf8 (in, &off);
+        s_cat (out, ConvUTF8 (ucs));
     }
-    return &str;
+    return out;
+}
+
+strc_t iconv_to_utf8 (strc_t in, UBYTE enc)
+{
+    static str_s str = { NULL, 0, 0 };
+    return iconv_utf8_buf (&str, in, enc);
+}
+
+strc_t iconv_from_utf8 (strc_t in, UBYTE enc)
+{
+    static str_s str = { NULL, 0, 0 };
+    return iconv_utf8_buf (&str, in, enc);
 }
 #endif
 
 #if ENABLE_FALLBACK_LATIN1
 static strc_t iconv_from_latin1 (strc_t in, UBYTE enc)
 {
-    static str_s str;
+    static str_s str = { NULL, 0, 0 };
     int off;
-    
-    for (off = 0; off < in.len; off++)
-        s_cat (&str, ConvUTF8 (in.txt[off]));
+
+    s_init (&str, "", in->len);
+    for (off = 0; off < in->len; off++)
+        s_cat (&str, ConvUTF8 ((UBYTE)in->txt[off]));
+    return &str;
 }
 
 static strc_t iconv_to_latin1 (strc_t in, UBYTE enc)
 {
-    static str_s str;
+    static str_s str = { NULL, 0, 0 };
     UDWORD ucs;
     int off;
-    s_init (&str, "", in.len);
-    
-    for (off = 0; off < in.len; )
+
+    s_init (&str, "", in->len);
+    for (off = 0; off < in->len; )
     {
-        ucs = iconv_get_utf8 (&str, &off);
-        s_catc (&str, ucs & 0xffffff00 ? CHAR_NOT_AAVAILABLE : ucs);
+        ucs = iconv_get_utf8 (in, &off);
+        s_catc (&str, ucs & 0xffffff00 ? CHAR_NOT_AVAILABLE : ucs);
     }
     return &str;
 }
 #endif
 
 #if ENABLE_FALLBACK_LATIN9
-static strc_t iconv_from_latin1 (strc_t in, UBYTE enc)
+static strc_t iconv_from_latin9 (strc_t in, UBYTE enc)
 {
-    static str_s str;
+    static str_s str = { NULL, 0, 0 };
     UDWORD ucs;
     UBYTE c;
     int off;
     
-    for (off = 0; off < in.len; off++)
+    s_init (&str, "", in->len);
+    for (off = 0; off < in->len; off++)
     {
-        c = in.txt[off];
+        c = in->txt[off];
         switch (c)
         {
             case 0xa4: ucs = 0x20ac; /* EURO */
@@ -694,18 +709,19 @@ static strc_t iconv_from_latin1 (strc_t in, UBYTE enc)
         }
         s_cat (&str, ConvUTF8 (ucs));
     }
+    return &str;
 }
 
-static strc_t iconv_to_latin1 (strc_t in, UBYTE enc)
+static strc_t iconv_to_latin9 (strc_t in, UBYTE enc)
 {
-    static str_s str;
+    static str_s str = { NULL, 0, 0 };
     UDWORD ucs;
     int off;
-    s_init (&str, "", in.len);
-    
-    for (off = 0; off < in.len; )
+
+    s_init (&str, "", in->len);
+    for (off = 0; off < in->len; )
     {
-        ucs = iconv_get_utf8 (&str, &off);
+        ucs = iconv_get_utf8 (in, &off);
         if (!(ucs & 0xffffff00))
         {
             switch (ucs)
@@ -759,35 +775,39 @@ const UDWORD koi8u_utf8[] = { /* 7bit are us-ascii */
 
 static strc_t iconv_from_koi8 (strc_t in, UBYTE enc)
 {
-    static str_s str;
+    static str_s str = { NULL, 0, 0 };
     UBYTE c;
     int off;
     
-    for (off = 0; off < in.len; off++)
-        s_cat (&str, ConvUTF8 ((c = in.txt[off]) & 0x80 ? koi8_utf8[c] : c));
+    s_init (&str, "", in->len);
+    for (off = 0; off < in->len; off++)
+        s_cat (&str, ConvUTF8 ((c = in->txt[off]) & 0x80 ? koi8u_utf8[c & 0x7f] : c));
+    return &str;
 }
 
 static strc_t iconv_to_koi8 (strc_t in, UBYTE enc)
 {
-    static str_s str;
+    static str_s str = { NULL, 0, 0 };
     UDWORD ucs;
     UBYTE c;
     int off;
-    s_init (&str, "", in.len);
-    
-    for (off = 0; off < in.len; )
+
+    s_init (&str, "", in->len);
+    for (off = 0; off < in->len; )
     {
-        ucs = iconv_get_utf8 (&str, &off);
-        if (ucs & 0xffffff00)
+        ucs = iconv_get_utf8 (in, &off);
+        if (ucs & 0xffffff80)
         {
             for (c = 0; ~c & 0x80; c++)
-                if (koi8_utf8[c] == ucs)
+                if (koi8u_utf8[c] == ucs)
                     break;
             
-            s_catc (&str, c & 0x80 ? CHAR_NOT_AVAILABLE : c);
+            s_catc (&str, c & 0x80 ? CHAR_NOT_AVAILABLE : c | 0x80);
         }
         else
             s_catc (&str, c);
+    }
+    return &str;
 }
 #endif
 
@@ -814,90 +834,78 @@ const UDWORD win1251_utf8[] = { /* 7bit are us-ascii */
 
 static strc_t iconv_from_win1251 (strc_t in, UBYTE enc)
 {
-    static str_s str;
+    static str_s str = { NULL, 0, 0 };
     UBYTE c;
     int off;
     
-    for (off = 0; off < in.len; off++)
-        s_cat (&str, ConvUTF8 ((c = in.txt[off]) & 0x80 ? win1251_utf8[c] : c));
+    s_init (&str, "", in->len);
+    for (off = 0; off < in->len; off++)
+        s_cat (&str, ConvUTF8 ((c = in->txt[off]) & 0x80 ? win1251_utf8[c & 0x7f] : c));
+    return &str;
 }
 
 static strc_t iconv_to_win1251 (strc_t in, UBYTE enc)
 {
-    static str_s str;
+    static str_s str = { NULL, 0, 0 };
     UDWORD ucs;
     UBYTE c;
     int off;
-    s_init (&str, "", in.len);
-    
-    for (off = 0; off < in.len; )
+
+    s_init (&str, "", in->len);
+    for (off = 0; off < in->len; )
     {
-        ucs = iconv_get_utf8 (&str, &off);
-        if (ucs & 0xffffff00)
+        ucs = iconv_get_utf8 (in, &off);
+        if (ucs & 0xffffff80)
         {
             for (c = 0; ~c & 0x80; c++)
                 if (win1251_utf8[c] == ucs)
                     break;
             
-            s_catc (&str, c & 0x80 ? CHAR_NOT_AVAILABLE : c);
+            s_catc (&str, c & 0x80 ? CHAR_NOT_AVAILABLE : c | 0x80);
         }
         else
             s_catc (&str, c);
+    }
+    return &str;
 }
 #endif
 
 #if ENABLE_FALLBACK_UCS2BE
 static strc_t iconv_from_ucs2be (strc_t in, UBYTE enc)
 {
-    static str_s str;
-    UDWORD ucs, ucs2;
-    UBYTE c;
+    static str_s str = { NULL, 0, 0 };
+    UDWORD ucs;
     int off;
-    s_init (&str, "", in.len);
-    
-    for (off = 0; off < in.len; )
+
+    s_init (&str, "", in->len);
+    for (off = 0; off < in->len; )
     {
-        if (off + 1 == in.len)
+        if (off + 1 >= in->len)
         {
             s_catc (&str, CHAR_INCOMPLETE);
             break;
         }
 
-        ucs = in->txt[off++] << 8;
-        ucs |= in->txt[off++];
-        if ((ucs & 0xfc00) == 0xd800)
-        {
-            if (off + 3 >= in.len)
-            {
-                s_catc (&str, CHAR_INCOMPLETE);
-                break;
-            }
-            ucs &= 0x4ff;
-            ucs <<= 2;
-            if (((c = in->txt[off++]) & 0xfc) != 0xc)
-            {
-                s_catc (&str, CHAR_BROKEN);
-                off++;
-                continue;
-            }
-            ucs |= 0x3 & c;
-            ucs <<= 8;
-            ucs = in->txt[off++];
-        }
-        s_cat (&str, ConvUTF8 (ucs));
+        ucs = (UBYTE)in->txt[off++] << 8;
+        ucs |= (UBYTE)in->txt[off++];
+        if ((ucs & 0xf800) == 0xd800)
+            s_catc (&str, CHAR_BROKEN);
+        else
+            s_cat (&str, ConvUTF8 (ucs));
     }
+    return &str;
 }
 
 static strc_t iconv_to_ucs2be (strc_t in, UBYTE enc)
 {
-    static str_s str;
+    static str_s str = { NULL, 0, 0 };
     UDWORD ucs;
     int off;
-    s_init (&str, "", in.len);
-    
-    for (off = 0; off < in.len; )
+
+    s_init (&str, "", in->len);
+    for (off = 0; off < in->len; )
     {
-        ucs = iconv_get_utf8 (&str, &off);
+        ucs = iconv_get_utf8 (in, &off);
         if (ucs & 0xffff0000)
         {
             s_catc (&str, 0);
@@ -908,8 +916,8 @@ static strc_t iconv_to_ucs2be (strc_t in, UBYTE enc)
             s_catc (&str, (ucs >> 8) & 0xff);
             s_catc (&str, ucs & 0xff);
         }
-        s_catc (&str, 0);
-        s_catc (&str, 0);
+    }
+    return &str;
 }
 #endif
 #endif /* ENABLE_FALLBACK_* */
