@@ -4,28 +4,25 @@
    #include <unistd.h>
 #endif
 
-typedef unsigned long  UDWORD;
+typedef unsigned SIZE_4_TYPE UDWORD;
 #ifndef __amigaos__
-typedef unsigned short UWORD;
-typedef unsigned char  UBYTE;
+typedef unsigned SIZE_2_TYPE UWORD;
+typedef unsigned SIZE_1_TYPE UBYTE;
 #endif
-typedef signed long    SDWORD;
-typedef signed short   SWORD;
-typedef signed char    SBYTE;
-typedef signed long    SINT32;
-typedef signed short   SINT16;
-typedef signed char    SINT8;
-typedef unsigned long  UINT32;
-typedef unsigned short UINT16;
-typedef unsigned char  UIN8;
+typedef signed   SIZE_4_TYPE SDWORD;
+typedef signed   SIZE_2_TYPE SWORD;
+typedef signed   SIZE_1_TYPE SBYTE;
+typedef signed   SIZE_4_TYPE SINT32;
+typedef signed   SIZE_2_TYPE SINT16;
+typedef signed   SIZE_1_TYPE SINT8;
+typedef unsigned SIZE_4_TYPE UINT32;
+typedef unsigned SIZE_2_TYPE UINT16;
+typedef unsigned SIZE_1_TYPE UINT8;
 
 typedef int FD_T;
 typedef int SOK_T;
 
 #ifdef _WIN32
-  #define snprintf _snprintf
-  #define vsnprintf _vsnprintf
-
   typedef unsigned int ssize_t;
   typedef int BOOL;
   #define sockread(s,p,l) recv(s,(char *) p,l,0)
