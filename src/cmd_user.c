@@ -642,7 +642,7 @@ JUMP_F(CmdUserAlter)
             if (j->name)
                 M_print (i18n (763, "The command '%s' has been renamed to '%s'."), j->defname, j->name);
             else
-                M_print (i18n (764, "The command '%s' has still it's original name."));
+                M_print (i18n (764, "The command '%s' has still it's original name."), j->defname);
             M_print ("\n");
         }
     }

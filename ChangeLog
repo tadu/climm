@@ -1,5 +1,8 @@
 
 2001-08-12 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Fix saving alter'ed commands.
+
+2001-08-12 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* small fixes (\a, last check-in only src/, _POSIX_VDISABLE)
 
 2001-08-11 Georgi Kuzmanov <georgi@cs.man.ac.uk>

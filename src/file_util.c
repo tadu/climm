@@ -798,7 +798,7 @@ int Save_RC ()
     {
         jump_t *f;
         for (f = CmdUserTable (); f->f; f++)
-            if (f->name && !strcmp (f->name, f->defname))
+            if (f->name && strcmp (f->name, f->defname))
                 M_fdprint (rcf, "alter %s %s\n", f->defname, f->name);
     }
 
