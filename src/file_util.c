@@ -1802,11 +1802,11 @@ int Save_RC ()
         {
             fprintf (stf, "options");
             if (cg->flagsset & CONT_INTIMATE)
-                fprintf (stf, " intimate %s", cont->flags & CONT_INTIMATE ? "on" : "off");
+                fprintf (stf, " intimate %s", cg->flags & CONT_INTIMATE ? "on" : "off");
             if (cg->flagsset & CONT_HIDEFROM)
-                fprintf (stf, " hidefrom %s", cont->flags & CONT_HIDEFROM ? "on" : "off");
+                fprintf (stf, " hidefrom %s", cg->flags & CONT_HIDEFROM ? "on" : "off");
             if (cg->flagsset & CONT_IGNORE)
-                fprintf (stf, " ignore   %s", cont->flags & CONT_IGNORE   ? "on" : "off");
+                fprintf (stf, " ignore   %s", cg->flags & CONT_IGNORE   ? "on" : "off");
             fprintf (stf, "\n");
         }
         while (cg)
