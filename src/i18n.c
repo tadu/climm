@@ -170,20 +170,21 @@ static int i18nAdd (FILE *i18nf, int debug, int *res)
 
         i = strtol (buf, &p, 10) - i18nOffset;
 
+        if (i == 7)
+        {
+            if      (!strcasecmp (p + 1, "iso-8859-1")) enc = ENC_LATIN1;
+            else if (!strcasecmp (p + 1, "koi8-r"))     enc = ENC_KOI8;
+            else if (!strcasecmp (p + 1, "koi8-u"))     enc = ENC_KOI8;
+            else if (!strcasecmp (p + 1, "utf-8"))      enc = ENC_UTF8;
+            else                                        enc = ENC_LATIN1;
+            if (prG->enc_loc == ENC_AUTO)
+                prG->enc_loc = ENC_AUTO | enc;
+        }
+
         if (p == buf || i < 0 || i >= i18nSLOTS || i18nStrings[i])
             continue;
         
         p = debug ? buf : p + 1;
-        if (i == 1007)
-        {
-            if      (!strcmp (buf, "iso-8859-1")) enc = ENC_LATIN1;
-            else if (!strcmp (buf, "koi8-r"))     enc = ENC_KOI8;
-            else if (!strcmp (buf, "koi8-u"))     enc = ENC_KOI8;
-            else if (!strcmp (buf, "utf-8"))      enc = ENC_UTF8;
-            else                                  enc = ENC_LATIN1;
-            if (prG->enc_loc == ENC_AUTO)
-                prG->enc_loc = ENC_AUTO | enc;
-        }
 #ifdef ENABLE_UTF8
         i18nStrings[i] = p = strdup (ConvToUTF8 (p, enc ? enc : ENC_LATIN1));
 #else
