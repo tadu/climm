@@ -518,7 +518,7 @@ void UtilUIUserOnline (Contact *cont, UDWORD status)
 {
     if (status == cont->status)
         return;
-    if (~status)
+    if (~cont->status)
     {
         if (prG->sound & SFLAG_ON_CMD)
             ExecScript (prG->sound_on_cmd, cont->uin, 0, NULL);
@@ -541,8 +541,7 @@ void UtilUIUserOnline (Contact *cont, UDWORD status)
         M_print (" [%s]", cont->version);
     M_print (".\n");
 
-    cont->status = status;
-    if (prG->verbose)
+    if (prG->verbose && !~cont->status)
     {
         M_print ("%-15s %s\n", i18n (441, "IP:"), UtilIOIP (cont->outside_ip));
         M_print ("%-15s %s\n", i18n (451, "IP2:"), UtilIOIP (cont->local_ip));
@@ -550,6 +549,9 @@ void UtilUIUserOnline (Contact *cont, UDWORD status)
         M_print ("%-15s %s\n", i18n (454, "Connection:"),
                  cont->connection_type == 4 ? i18n (493, "Peer-to-Peer") : i18n (494, "Server Only"));
     }
+
+    cont->status = status;
+    cont->last_time = time (NULL);
 }
 
 /*
@@ -566,4 +568,7 @@ void UtilUIUserOffline (Contact *cont)
     Time_Stamp ();
     M_print (" " COLCONTACT "%10s" COLNONE " %s\n",
              ContactFindName (cont->uin), i18n (30, "logged off."));
+    
+    cont->status = STATUS_OFFLINE;
+    cont->last_time = time (NULL);
 }
