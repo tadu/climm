@@ -131,12 +131,27 @@ void PacketWriteLNTS (Packet *pak, const char *data)
 
     assert (pak);
     assert (buf);
-    assert (pak->wpos + strlen (buf) < PacketMaxData);
+    assert (pak->wpos + 3 + strlen (buf) < PacketMaxData);
     
     ConvUnixWin (buf);
     PacketWrite2 (pak, strlen (buf) + 1);
     PacketWriteData (pak, buf, strlen (buf));
     PacketWrite1 (pak, 0);
+    
+    free (buf);
+}
+
+void PacketWriteDLNTS (Packet *pak, const char *data)
+{
+    char *buf = strdup (data ? data : "");
+
+    assert (pak);
+    assert (buf);
+    assert (pak->wpos + 4 + strlen (buf) < PacketMaxData);
+    
+    ConvUnixWin (buf);
+    PacketWrite4 (pak, strlen (buf));
+    PacketWriteData (pak, buf, strlen (buf));
     
     free (buf);
 }
@@ -147,7 +162,7 @@ void PacketWriteLLNTS (Packet *pak, const char *data)
 
     assert (pak);
     assert (buf);
-    assert (pak->wpos + strlen (buf) < PacketMaxData);
+    assert (pak->wpos + 5 + strlen (buf) < PacketMaxData);
 
     ConvUnixWin (buf);
     PacketWrite2 (pak, strlen (buf) + 3);
@@ -200,6 +215,24 @@ void PacketWriteLenDone (Packet *pak)
     
     pos = PacketReadAtB2 (pak, pak->tpos);
     PacketWriteAt2 (pak, pak->tpos, pak->wpos - pak->tpos - 2);
+    pak->tpos = pos;
+}
+
+void PacketWriteLen4 (Packet *pak)
+{
+    UWORD pos;
+    
+    pos = pak->wpos;
+    PacketWrite4 (pak, pak->tpos); /* will be length */
+    pak->tpos = pos;
+}
+
+void PacketWriteLen4Done (Packet *pak)
+{
+    UWORD pos;
+    
+    pos = PacketReadAt4 (pak, pak->tpos);
+    PacketWriteAt4 (pak, pak->tpos, pak->wpos - pak->tpos - 2);
     pak->tpos = pos;
 }
 
