@@ -1,3 +1,4 @@
+# $Id$ strings extracted from mICQ sources
 1001:<lang>
 1002:<lang_cc>
 1003:0
@@ -790,7 +791,6 @@
 1910:FLAP seq %08x length %04x channel %d©0¶
 1911:connecting
 1912:closed
-1913:Received server acknowledge for %s#%08lx:%08lx%s sent to %s%s%s.¶
 1914:Can't allocate connection structure.¶
 1915:Server says we're at %s.¶
 1918:Ignored server request for a minimum report interval of %d.¶
@@ -978,4 +978,5 @@
 2122: Note: You need to 'save' to write new password to disc.¶
 2123:%sSyntax error%s: Too few arguments: '%s'¶
 2124:%sSyntax error%s: Not an integer: '%s'¶
-2125:        URL: %s%s%s¶
+2126:User is offline, message (%s#%08lx:%08lx%s) queued.¶
+2127:    URL: %s%s%s%s¶
