@@ -1511,7 +1511,7 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, const char *text, UDWORD
 
     conn->our_seq_dc--;
     
-    pak = SnacC (conn, 4, 6, 0, 0);
+    pak = SnacC (conn, 4, 6, 0, peek ? 0x1771 : 0);
     PacketWriteB4 (pak, mtime);
     PacketWriteB4 (pak, mid);
     PacketWriteB2 (pak, 2);

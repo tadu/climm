@@ -693,7 +693,7 @@ static JUMP_F(CmdUserPeek)
         if (*args == ',')
             args++;
 
-        SnacCliSendmsg (conn, cont->uin, "", MSG_GET_AWAY, -1);
+        SnacCliSendmsg2 (conn, cont, "", MSG_GET_PEEK, NULL);
     }
     return 0;
 }
@@ -3075,9 +3075,9 @@ static JUMP_F(CmdUserUpdate)
             R_setpromptf ("%s ", i18n (1556, "Enter your new email address:"));
             return ++status;
         case 303:
-            if (!user->email || args)
+            if (!user->email && args)
                 user->email = strdup (args);
-            else if (args)
+            else if (args && *args)
             {
                 MetaEmail **em = &cont->meta_email;
                 while (*em)
@@ -3088,7 +3088,7 @@ static JUMP_F(CmdUserUpdate)
                 else
                     s_repl (&(*em)->email, args);
             }
-            if (!args)
+            else
             {
                 R_setpromptf ("%s ", i18n (1544, "Enter new city:"));
                 status += 3;
