@@ -35,7 +35,7 @@ static const char *TableMonths[] = {   /* *INDENT-OFF* */
 };
 
 static const char *TableLang[] = {
-    _i18n (1100, "None"),
+    "",
     _i18n (1101, "Arabic"),      _i18n (1102, "Bhojpuri"),    _i18n (1103, "Bulgarian"),       _i18n (1104, "Burmese"),
     _i18n (1105, "Cantonese"),   _i18n (1106, "Catalan"),     _i18n (1107, "Chinese"),         _i18n (1108, "Croatian"),
     _i18n (1109, "Czech"),       _i18n (1110, "Danish"),      _i18n (1111, "Dutch"),           _i18n (1112, "English"),

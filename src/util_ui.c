@@ -41,7 +41,7 @@ static const char *DebugStr (UDWORD level)
 /*
  * Output a given string if the debug level is appropriate.
  */
-BOOL Debug (UDWORD level, const char *str, ...)
+BOOL DebugReal (UDWORD level, const char *str, ...)
 {
     va_list args;
     char buf[2048], c;
@@ -213,19 +213,38 @@ void UtilUIDisplayMeta (Contact *cont)
             M_printf ("%s%-15s%s %s%02d. %s %4d%s\n", 
                       COLSERVER, i18n (1532, "Born:"), COLNONE, COLQUOTE, mm->day, TableGetMonth (mm->month), mm->year, COLNONE);
 
-        M_printf ("%s%-15s%s ", COLSERVER, i18n (1533, "Languages:"), COLNONE);
-        if ((tabd = TableGetLang (mm->lang1)))
-            M_printf ("%s%s%s", COLQUOTE, tabd, COLNONE);
-        else
-            M_printf ("%x", mm->lang1);
-        if ((tabd = TableGetLang (mm->lang2)))
-            M_printf (", %s%s%s", COLQUOTE, tabd, COLNONE);
-        else
-            M_printf (", %x", mm->lang2);
-        if ((tabd = TableGetLang (mm->lang3)))
-            M_printf (", %s%s%s", COLQUOTE, tabd, COLNONE);
-        else
-            M_printf (", %x.\n", mm->lang3);
+        if (!mm->lang1)
+        {
+            if (!mm->lang2)
+            {
+                mm->lang1 = mm->lang3;
+                mm->lang2 = 0;
+                mm->lang3 = 0;
+            }
+            else
+            {
+                mm->lang1 = mm->lang2;
+                mm->lang2 = mm->lang3;
+                mm->lang3 = 0;
+            }
+        }
+        if (mm->lang1)
+        {
+            M_printf ("%s%-15s%s ", COLSERVER, i18n (1533, "Languages:"), COLNONE);
+            if ((tabd = TableGetLang (mm->lang1)))
+                M_printf ("%s%s%s", COLQUOTE, tabd, COLNONE);
+            else
+                M_printf ("%x", mm->lang1);
+            if (mm->lang2 && (tabd = TableGetLang (mm->lang2)))
+                M_printf (", %s%s%s", COLQUOTE, tabd, COLNONE);
+            else if (mm->lang2)
+                M_printf (", %x", mm->lang2);
+            if (mm->lang3 && (tabd = TableGetLang (mm->lang3)))
+                M_printf (", %s%s%s", COLQUOTE, tabd, COLNONE);
+            else if (mm->lang3)
+                M_printf (", %x", mm->lang3);
+            M_print ("\n");
+        }
         if (mm->unknown)
             M_printf ("%s%-15s%s %s%d%s\n", COLSERVER, i18n (2239, "Unknown more:"), COLNONE,
                       COLQUOTE, mm->unknown, COLNONE);
