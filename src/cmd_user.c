@@ -1610,10 +1610,11 @@ static JUMP_F(CmdUserStatusDetail)
         if (data & 16)
             return 0;
     }
-    for (k = -1, l = 0; (k == -1) ? (tcg ? (cg = tcg) : cg) : (cg = ContactGroupIndex (k)); k++)
+    for (k = -1; (k == -1) ? (tcg ? (cg = tcg) : cg) : (cg = ContactGroupIndex (k)); k++)
     {
         if (k != -1 && (cg == conn->contacts || cg == tcg))
             continue;
+        l = 0;
         if (!uin)
         {
             M_print (COLMESSAGE);
@@ -2520,8 +2521,7 @@ static JUMP_F(CmdUserAdd)
         if (cont->flags & CONT_TEMPORARY)
         {
             M_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, arg1);
-            if (!Add_User (conn, cont, arg1))
-                M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
+            M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
             if (c_strlen (arg1) > uiG.nick_len)
                 uiG.nick_len = c_strlen (arg1);
             ContactFind (conn->contacts, 0, cont->uin, cont->nick, 1);

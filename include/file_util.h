@@ -1,7 +1,6 @@
 /* $Id$ */
 
 int   Save_RC(void);
-int   Add_User (Connection *conn, Contact *cont, const char *name);
 void  Get_Unix_Config_Info (Connection *conn);
 void  Set_rcfile (const char * name);
 

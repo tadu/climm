@@ -1332,20 +1332,6 @@ int Save_RC ()
     return fclose (rcf) ? -1 : 0;
 }
 
-int Add_User (Connection *conn, Contact *cont, const char *name)
-{
-    FILE *rcf;
-
-    if (!cont)
-        return FALSE;
-    rcf = fopen (prG->rcfile, "a");
-    if (!rcf)
-        return FALSE;
-    fprintf (rcf, "%9ld %s\n", cont->uin, s_quote (name));
-    fclose (rcf);
-    return TRUE;
-}
-
 /*
  * Writes a hex dump of buf to a file.
  */
