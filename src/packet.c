@@ -6,6 +6,8 @@
  * version 2 of the GPL licence.
  *
  * $Id$
+ *
+ * Note: alle read strings need to be free()ed.
  */
 
 #include "micq.h"
@@ -407,45 +409,29 @@ char *PacketReadStrB (Packet *pak)
     return str;
 }
 
-const char *PacketReadLNTS (Packet *pak)
+char *PacketReadLNTS (Packet *pak)
 {
     UWORD len;
     UBYTE *str;
     
     len = PacketRead2 (pak);
-    str = pak->data + pak->rpos;
 
+    if (pak->rpos + len >= PacketMaxData)
+        str = "<invalidlen>";
     if (!len)
-        return "";
-    if (pak->rpos + len >= PacketMaxData)
-        str = "<invalidlen>";
-    else if (str [len - 1])
-        str = "<invalidstr>";
+        return strdup ("");
 
-    PacketWriteAt2 (pak, pak->rpos - 2, 0); /* clear string to prevent double recoding */
-    PacketReadData (pak, NULL, len);
+    str = malloc (len);
+    assert (str);
+
+    PacketReadData (pak, str, len);
+    str[len - 1] = '\0';
     ConvWinUnix (str);
+
     return str;
 }
 
-const char *PacketReadLNTSC (Packet *pak)
-{
-    UWORD len;
-    UBYTE *str;
-    
-    len = PacketRead2 (pak);
-    str = pak->data + pak->rpos;
-
-    if (pak->rpos + len >= PacketMaxData)
-        str = "<invalidlen>";
-    else if (len && str [len - 1])
-        str = "<invalidstr>";
-
-    PacketReadData (pak, NULL, len ? len : strlen (str) + 1);
-    return str;
-}
-
-const char *PacketReadDLStr (Packet *pak)
+char *PacketReadDLStr (Packet *pak)
 {
     UWORD len;
     UBYTE *str;
@@ -583,22 +569,23 @@ char *PacketReadAtStrB (const Packet *pak, UWORD at)
     return str;
 }
 
-const char *PacketReadAtLNTS (Packet *pak, UWORD at)
+char *PacketReadAtLNTS (Packet *pak, UWORD at)
 {
     UWORD len;
     UBYTE *str;
     
     len = PacketReadAt2 (pak, at);
-    str = pak->data + at + 2;
 
-    if (!len)
-        return "";
     if (at + 2 + len >= PacketMaxData)
         return "<invalid>";
-    if (str [len - 1])
-        return "<invalid>";
+    if (!len)
+        return strdup ("");
 
-    PacketWriteAt2 (pak, at - 2, 0);
+    str = malloc (len);
+    assert (str);
+
+    PacketReadAtData (pak, at + 2, str, len);
+    str[len - 1] = '\0';
     ConvWinUnix (str);
     return str;
 }

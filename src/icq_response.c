@@ -86,7 +86,8 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
     switch (subtype)
     {
         Contact *cont;
-        const char *tabd, *data, *data2;
+        const char *tabd;
+        char *data, *data2;
         UWORD wdata, day, month, i;
         UDWORD dwdata, uin;
         int tz;
@@ -98,12 +99,13 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
         case META_SRV_RANDOM_UPDATE:
             break;
         case META_SRV_SMS_OK:
-            PacketRead4 (p);
-            PacketRead2 (p);
-            PacketReadStrB (p);
-            M_print (i18n (2080, "The server says about the SMS delivery:\n%s\n"),
-                      PacketReadStrB (p));
-            
+                    PacketRead4 (p);
+                    PacketRead2 (p);
+            data  = PacketReadStrB (p);
+            data2 = PacketReadStrB (p);
+            M_print (i18n (2080, "The server says about the SMS delivery:\n%s\n"), data2);
+            free (data);
+            free (data2);
             break;
         case META_SRV_INFO:
             Display_Info_Reply (sess, p, NULL, 0);
@@ -116,8 +118,10 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             {
                 if (*(data = PacketReadLNTS (p)))
                     M_print (AVPFMT, i18n (1503, "Other Email:"), data);
+                free (data);
                 if (*(data = PacketReadLNTS (p)))
                     M_print (AVPFMT, i18n (1504, "Old Email:"), data);
+                free (data);
             }
 
             data = PacketReadLNTS (p);
@@ -129,20 +133,27 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                 M_print (AVPFMT, i18n (1570, "City:"), data);
             else if (*data2)
                 M_print (AVPFMT, i18n (1574, "State:"), data2);
+                free (data);
+                free (data2);
 
             if (*(data = PacketReadLNTS (p)))
                 M_print (AVPFMT, i18n (1506, "Phone:"), data);
+                free (data);
             if (*(data = PacketReadLNTS (p)))
                 M_print (AVPFMT, i18n (1507, "Fax:"), data);
+                free (data);
             if (*(data = PacketReadLNTS (p)))
                 M_print (AVPFMT, i18n (1508, "Street:"), data);
+                free (data);
             if (*(data = PacketReadLNTS (p)))
                 M_print (AVPFMT, i18n (1509, "Cellular:"), data);
+                free (data);
 
             if (sess->type == TYPE_SERVER)
             {
                 if (*(data = PacketReadLNTS (p)))
                     M_print (AVPFMT, i18n (1510, "Zip:"), data);
+                free (data);
             }
             else if ((dwdata = PacketRead4 (p)))
                 M_print (COLSERV "%-15s" COLNONE " %05lu\n", 
@@ -181,6 +192,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
 
             if (*(data = PacketReadLNTS (p)))
                 M_print (AVPFMT, i18n (1531, "Homepage:"), data);
+            free (data);
 
             if (sess->type == TYPE_SERVER_OLD)
                 wdata = PacketRead1 (p) + 1900;
@@ -223,6 +235,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                         wdata == 1 ? i18n (1943, "(no authorization needed)") 
                         : wdata == 0 ? i18n (1944, "(must request authorization)")
                         : "");
+                free (data);
             }
             break;
         case META_SRV_WORK:
@@ -235,18 +248,24 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                 M_print (AVPFMT, i18n (1873, "Work City:"), data);
             else if (*data2)
                 M_print (AVPFMT, i18n (1874, "Work State:"), data2);
+            free (data);
+            free (data2);
 
             if (*(data = PacketReadLNTS (p)))
                 M_print (AVPFMT, i18n (1523, "Work Phone:"), data);
+            free (data);
             if (*(data = PacketReadLNTS (p)))
                 M_print (AVPFMT, i18n (1521, "Work Fax:"), data);
+            free (data);
             if (*(data = PacketReadLNTS (p)))
                 M_print (AVPFMT, i18n (1522, "Work Address:"), data);
+            free (data);
 
             if (sess->type == TYPE_SERVER)
             {  
                 if (*(data = PacketReadLNTS (p)))
                     M_print (AVPFMT, i18n (1520, "Work Zip:"), data);
+                free (data);
             }
             else if ((dwdata = PacketRead4 (p)))
                 M_print (COLSERV "%-15s" COLNONE " %lu\n", 
@@ -263,21 +282,26 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             }
             if (*(data = PacketReadLNTS (p)))
                 M_print (AVPFMT, i18n (1519, "Company Name:"), data);
+            free (data);
             if (*(data = PacketReadLNTS (p)))
                 M_print (AVPFMT, i18n (1518, "Department:"), data);
+            free (data);
             if (*(data = PacketReadLNTS (p)))
                 M_print (AVPFMT, i18n (1517, "Job Position:"), data);
+            free (data);
             if ((wdata = PacketRead2 (p))) 
                 M_print (COLSERV "%-15s" COLNONE " %s\n", 
                     i18n (1516, "Occupation:"), TableGetOccupation (wdata));
             if (*(data = PacketReadLNTS (p)))
                 M_print (AVPFMT, i18n (1515, "Work Homepage:"), data);
+            free (data);
 
             break;
         case META_SRV_ABOUT:
             if (*(data = PacketReadLNTS (p)))
                 M_print (COLSERV "%-15s" COLNONE "\n " COLCLIENT 
                     "%s" COLNONE "\n", i18n (1525, "About:"), data);
+            free (data);
             break;
         case META_SRV_INTEREST:
             if ((i = PacketRead1 (p)))
@@ -293,6 +317,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                     else
                         M_print ("  %d: %s\n", wdata, data);
                 }
+                free (data);
             }
             break;
         case META_SRV_BACKGROUND:
@@ -309,7 +334,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                     else
                         M_print ("  %d: %s\n", wdata, data);
                 }
-
+                free (data);
             }
             if ((i = PacketRead1 (p)))
                 M_print (COLSERV "%-15s" COLNONE "\n", 
@@ -324,6 +349,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                     else
                         M_print ("  %d: %s\n", wdata, data);
                 }
+                free (data);
             }
 
             break;
@@ -529,7 +555,7 @@ void UserOnlineSetVersion (Contact *con, time_t tstamp, time_t tstamp2, time_t t
 void Display_Info_Reply (Session *sess, Packet *pak, const char *uinline,
     unsigned int flags)
 {
-    const char *data, *data2;
+    char *data, *data2;
     UWORD wdata;
 
     if (uinline)
@@ -539,6 +565,7 @@ void Display_Info_Reply (Session *sess, Packet *pak, const char *uinline,
     if (*(data = PacketReadLNTS (pak)))
         M_print (COLSERV "%-15s" COLNONE " " COLCONTACT "%s" 
             COLNONE "\n", i18n (1500, "Nickname:"), data);
+                free (data);
 
     data = PacketReadLNTS (pak);
     data2 = PacketReadLNTS (pak);
@@ -549,6 +576,8 @@ void Display_Info_Reply (Session *sess, Packet *pak, const char *uinline,
         M_print (AVPFMT, i18n (1564, "First name:"), data);
     else if (*data2)
         M_print (AVPFMT, i18n (1565, "Last name:"), data2);
+    free (data);
+    free (data2);
 
     data = PacketReadLNTS (pak);
 
@@ -563,13 +592,13 @@ void Display_Info_Reply (Session *sess, Packet *pak, const char *uinline,
     }
     else if (*data)
         M_print (AVPFMT, i18n (1502, "Email:"), data);
-
-/*    ack_srv( sok, Chars_2_Word( pak.head.seq ) ); */
+    free (data);
 }
 
 void Display_Ext_Info_Reply (Session *sess, Packet *pak, const char *uinline)
 {
-    const char *tabd, *data, *data2;
+    const char *tabd;
+    char *data, *data2;
     UWORD wdata;
     int tz;
 
@@ -593,6 +622,8 @@ void Display_Ext_Info_Reply (Session *sess, Packet *pak, const char *uinline)
         M_print (AVPFMT, i18n (1570, "City:"), data);
     else if (*data2)
         M_print (AVPFMT, i18n (1574, "State:"), data2);
+    free (data);
+    free (data2);
 
     if ((tabd = TableGetCountry (wdata)) != NULL)
         M_print (COLSERV "%-15s" COLNONE " %s\t", 
@@ -619,12 +650,14 @@ void Display_Ext_Info_Reply (Session *sess, Packet *pak, const char *uinline)
 
     if (*(data = PacketReadLNTS (pak)))
         M_print (AVPFMT, i18n (1506, "Phone:"), data);
+    free (data);
     if (*(data = PacketReadLNTS (pak)))
         M_print (AVPFMT, i18n (1531, "Homepage:"), data);
+    free (data);
     if (*(data = PacketReadLNTS (pak)))
         M_print (COLSERV "%-15s" COLNONE "\n " COLCLIENT 
             "%s" COLNONE "\n", i18n (1525, "About:"), data);
-/*    ack_srv( sok, Chars_2_Word( pak.head.seq ) ); */
+    free (data);
 }
 
 void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, UDWORD uin, UDWORD tstatus, BOOL tcp)

@@ -468,7 +468,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     UDWORD uin;
     int i, type, t;
     char *text = NULL;
-    const char *txt;
+    const char *txt = NULL;
 
     pak = event->pak;
 
@@ -546,7 +546,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                    PacketRead1 (pp); /* FLAGS */
             PacketReadB2 (pp); /* UNKNOWN */
             PacketReadB2 (pp); /* UNKNOWN */
-            txt = PacketReadLNTS (pp);
+            txt = text = PacketReadLNTS (pp);
             /* FOREGROUND / BACKGROUND ignored */
             /* TLV 1, 2(!), 3, 4, f ignored */
             break;
@@ -555,7 +555,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             uin  = PacketRead4 (p);
             type = PacketRead1 (p);
                    PacketRead1 (p);
-            txt  = PacketReadLNTS (p);
+            txt = text = PacketReadLNTS (p);
             /* FOREGROUND / BACKGROUND ignored */
             /* TLV 1, 2(!), 3, 4, f ignored */
             break;
@@ -569,7 +569,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
 
     if (text)
         free (text);
-
+    
     if (pp)
         PacketD (pp);
     
@@ -642,7 +642,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
     TLV *tlv;
 
     int i, j, k;
-    const char *name, *nick;
+    char *name, *nick;
     UWORD count, type, tag, id, TLVlen;
 
     pak = event->pak;
@@ -674,7 +674,9 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                 if (!tag)
                     break;
                 k++;
-                nick = ((j = TLVGet (tlv, 305)) != -1 ? tlv[j].str : name);
+                j = TLVGet (tlv, 305);
+                assert (j < 200);
+                nick = (j != -1 ? tlv[j].str : name);
                    
                 if (event->sess->flags & CONN_WIZARD)
                     ContactAdd (atoi (name), nick);
@@ -685,6 +687,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
             case 17:
                 /* unknown / ignored */
         }
+        free (name);
         TLVD (tlv);
     }
     /* TIMESTAMP ignored */
@@ -773,7 +776,7 @@ static JUMP_SNAC_F(SnacSrvFromoldicq)
 {
     TLV *tlv;
     Packet *p, *pak;
-    const char *text;
+    char *text;
     UDWORD len, uin, type /*, id*/;
     
     pak = event->pak;
@@ -826,6 +829,7 @@ static JUMP_SNAC_F(SnacSrvFromoldicq)
             snprintf (buf, sizeof (buf), "%04d-%02d-%02d %2d:%02d UTC", year, mon, mday, hour, min);
 
             Do_Msg (event->sess, buf, flags, text, uin, STATUS_OFFLINE, 0);
+            free (text);
             break;
         }
         case 66:

@@ -453,10 +453,12 @@ static JUMP_SRV_F (CmdPktSrvAck)
 
     if (ccmd == CMD_SEND_MESSAGE)
     {
+        char *tmp;
         Time_Stamp ();
         M_print (" " COLACK "%10s" COLNONE " %s%s\n",
                  ContactFindName (PacketReadAt4 (event->pak, CMD_v5_OFF_PARAM)),
-                 MSGACKSTR, MsgEllipsis (PacketReadAtLNTS (event->pak, 30)));
+                 MSGACKSTR, MsgEllipsis (tmp = PacketReadAtLNTS (event->pak, 30)));
+        free (tmp);
     }
     
     PacketD (pak);

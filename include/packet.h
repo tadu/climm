@@ -53,9 +53,8 @@ UDWORD      PacketRead4       (      Packet *pak);
 UDWORD      PacketReadB4      (      Packet *pak);
 void        PacketReadData    (      Packet *pak,           char  *data, UWORD len);
 char       *PacketReadStrB    (      Packet *pak);
-const char *PacketReadLNTS    (      Packet *pak);
-const char *PacketReadLNTSC   (      Packet *pak);
-const char *PacketReadDLStr   (      Packet *pak);
+char       *PacketReadLNTS    (      Packet *pak);
+char       *PacketReadDLStr   (      Packet *pak);
 UDWORD      PacketReadUIN     (      Packet *pak);
 
 UBYTE       PacketReadAt1     (const Packet *pak, UWORD at);
@@ -65,7 +64,7 @@ UDWORD      PacketReadAt4     (const Packet *pak, UWORD at);
 UDWORD      PacketReadAtB4    (const Packet *pak, UWORD at);
 void        PacketReadAtData  (const Packet *pak, UWORD at, char  *data, UWORD len);
 char       *PacketReadAtStrB  (const Packet *pak, UWORD at);
-const char *PacketReadAtLNTS  (      Packet *pak, UWORD at);
+char       *PacketReadAtLNTS  (      Packet *pak, UWORD at);
 
 UWORD       PacketWritePos    (const Packet *pak);
 UWORD       PacketReadPos     (const Packet *pak);
