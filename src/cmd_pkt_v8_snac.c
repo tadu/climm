@@ -487,18 +487,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
 
     /* tlv[2] may be there twice - ignore the member since time(NULL). */
     if (tlv[2].len == 4)
-    {
-        for (i = 16; i < 20; i++)
-            if (tlv[i].tlv == 2)
-            {
-                int typ = tlv[i].tlv, len = tlv[i].len, nr = tlv[i].nr;
-                const char *str = tlv[i].str;
-                tlv[i].tlv = tlv[2].tlv; tlv[i].len = tlv[2].len;
-                tlv[i].nr  = tlv[2].nr;  tlv[i].str = tlv[2].str;
-                tlv[2].tlv = typ; tlv[2].len = len;
-                tlv[2].nr  = nr;  tlv[2].str = str;
-            }
-    }
+        TLVDone (tlv, 2);
 
     switch (type)
     {
@@ -683,7 +672,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                 if (!tag)
                     break;
                 k++;
-                nick = ((j = TLVGet (tlv, 305)) != -1) ? tlv[j].str : name;
+                nick = ((j = TLVGet (tlv, 305)) != -1 ? tlv[j].str : name);
                    
                 if (event->sess->flags & CONN_WIZARD)
                     ContactAdd (atoi (name), nick);
@@ -694,6 +683,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
             case 17:
                 /* unknown / ignored */
         }
+        TLVD (tlv);
     }
     /* TIMESTAMP ignored */
     if (event->sess->flags & CONN_WIZARD)

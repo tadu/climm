@@ -10,19 +10,27 @@
 #include "micq.h"
 #include "cmd_pkt_v8_tlv.h"
 #include "util_ui.h"
-#include "session.h"
 #include "packet.h"
 #include <string.h>
+#include <assert.h>
 
 #define __maxTLV  25
+#define __minTLV  16
 
+/*
+ * Read in given amount of data and parse as TLVs.
+ *
+ * The resulting array of TLV does not have pointers into the given Packet.
+ */
 TLV *TLVRead (Packet *pak, UDWORD TLVlen)
 {
     TLV *tlv = calloc (__maxTLV, sizeof (TLV));
     char *p;
-    int typ, len, pos, i = 16, n;
+    int typ, len, pos, i = __minTLV, n, max = __maxTLV;
 
-    while (TLVlen >= 4 && i < __maxTLV)
+    assert (tlv);
+
+    while (TLVlen >= 4)
     {
         typ = PacketReadB2 (pak);
         len = PacketReadB2 (pak);
@@ -31,12 +39,25 @@ TLV *TLVRead (Packet *pak, UDWORD TLVlen)
             M_print (i18n (1897, "Incomplete TLV %d, len %d of %d - ignoring.\n"), typ, TLVlen, len);
             return tlv;
         }
-        if (typ >= 16 || tlv[typ].len)
+        if (typ >= __minTLV || tlv[typ].len)
             n = i++;
         else
             n = typ;
 
-        p = malloc (len + 1);
+        if (i + 1 == max)
+        {
+            TLV *tlvn;
+
+            max += 5;
+            tlvn = calloc (max, sizeof (TLV));
+            
+            assert (tlvn);
+            
+            memcpy (tlvn, tlv, (max - 5) * sizeof (TLV));
+            free (tlv);
+        }
+
+        p = calloc (1, len + 1);
         pos = PacketReadPos (pak);
         PacketReadData (pak, p, len);
         p[len] = '\0';
@@ -55,26 +76,75 @@ TLV *TLVRead (Packet *pak, UDWORD TLVlen)
     return tlv;
 }
 
+/*
+ * Search for a given TLV.
+ */
 UWORD TLVGet (TLV *tlv, UWORD nr)
 {
     UWORD i;
 
-    for (i = 0; i < __maxTLV; i++)
+    for (i = 0; i < __minTLV; i++)
+        if (tlv[i].tlv == nr)
+            return i;
+    for ( ; tlv[i].tlv; i++)
         if (tlv[i].tlv == nr)
             return i;
 
     return -1;
 }
 
+/*
+ * Free and remove a TLV from the array.
+ *
+ * Another TLV with the same number will be moved into this slot if it
+ * exists.
+ */
+void TLVDone (TLV *tlv, UWORD nr)
+{
+    int i;
+    if (tlv[nr].str)
+        free (tlv[nr].str);
+    tlv[nr].tlv = 0;
+    tlv[nr].str = NULL;
+    if (nr < __minTLV)
+    {
+        for (i = __minTLV; tlv[i].tlv; i++)
+            if (tlv[i].tlv == nr)
+                break;
+        if (!tlv[i].tlv)
+            return;
+        tlv[nr] = tlv[i];
+        nr = i;
+    }
+    i = nr + 1;
+    while (tlv[i].tlv)
+        i++;
+    if (i == nr + 1)
+        return;
+    i--;
+    tlv[nr] = tlv[i];
+    tlv[i].tlv = 0;
+    tlv[i].str = NULL;
+}
+
+/*
+ * Free the array of TLV.
+ */
 void TLVD (TLV *tlv)
 {
     int i;
-    for (i = 0; i < 20; i++)
+    for (i = 0; i < __minTLV; i++)
+        if (tlv[i].str)
+            free ((char *)tlv[i].str);
+    for ( ; tlv[i].tlv; i++)
         if (tlv[i].str)
             free ((char *)tlv[i].str);
     free (tlv);
 }
 
+/*
+ * Copy the data of a TLV into a new Packet.
+ */
 Packet *TLVPak (TLV *tlv)
 {
     Packet *pak;
