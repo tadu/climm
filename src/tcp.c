@@ -560,7 +560,7 @@ void TCPDispatchShake (Connection *peer)
                 }
 #ifdef ENABLE_SSL
                 /* outgoing peer connection established */
-                if (ssl_supported (peer) && peer->ssl_status == SSL_STATUS_REQUEST)
+                if (peer->type == TYPE_MSGDIRECT && ssl_supported (peer) && peer->ssl_status == SSL_STATUS_REQUEST)
                     if (!TCPSendSSLReq (peer->parent, cont)) 
                         rl_printf (i18n (2372, "Could not send SSL request to %s\n"), cont->nick);
 #endif
