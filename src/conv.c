@@ -21,29 +21,57 @@ char ConvSep ()
     return conv = ConvFromUTF8 (ConvToUTF8 ("\xfe", prG->enc_rem), prG->enc_loc)[0];
 }
 
-#define PUT_UTF8(x) \
- do { if (!((x) & 0xffffff80)) t = s_catf (t, &size, "%c",              x); \
- else if (!((x) & 0xfffff800)) t = s_catf (t, &size, "%c%c",          ((x)               >>  6) | 0xc0,  \
-                                                                      ((x) &       0x3f)        | 0x80); \
- else if (!((x) & 0xffff0000)) t = s_catf (t, &size, "%c%c%c",        ((x)               >> 12) | 0xe0,  \
-                                                                     (((x) &      0xfc0) >>  6) | 0x80,  \
-                                                                      ((x) &       0x3f)        | 0x80); \
- else if (!((x) & 0xffe00000)) t = s_catf (t, &size, "%c%c%c%c",      ((x)               >> 18) | 0xf0,  \
-                                                                     (((x) &    0x3f000) >> 12) | 0x80,  \
-                                                                     (((x) &      0xfc0) >>  6) | 0x80,  \
-                                                                      ((x) &       0x3f)        | 0x80); \
- else if (!((x) & 0xfc000000)) t = s_catf (t, &size, "%c%c%c%c%c",    ((x)               >> 24) | 0xf8,  \
-                                                                     (((x) &   0xfc0000) >> 18) | 0x80,  \
-                                                                     (((x) &    0x3f000) >> 12) | 0x80,  \
-                                                                     (((x) &      0xfc0) >>  6) | 0x80,  \
-                                                                      ((x) &       0x3f)        | 0x80); \
- else if (!((x) & 0x80000000)) t = s_catf (t, &size, "%c%c%c%c%c%c",  ((x)               >> 30) | 0xf4,  \
-                                                                     (((x) & 0x3f000000) >> 24) | 0x80,  \
-                                                                     (((x) &   0xfc0000) >> 18) | 0x80,  \
-                                                                     (((x) &    0x3f000) >> 12) | 0x80,  \
-                                                                     (((x) &      0xfc0) >>  6) | 0x80,  \
-                                                                      ((x) &       0x3f)        | 0x80); \
- else t = s_catf (t, &size, "_"); } while (0)
+const char *ConvUTF8 (UDWORD x)
+{
+    static char b[8];
+    
+    if      (!(x & 0xffffff80))
+    {
+        b[0] = x;
+        b[1] = '\0';
+    }
+    else if (!(x & 0xfffff800))
+    {
+        b[0] = 0xc0 |  (x               >>  6);
+        b[1] = 0x80 |  (x &       0x3f);
+        b[2] = '\0';
+    }
+    else if (!(x & 0xffff0000))
+    {
+        b[0] = 0xe0 | ( x               >> 12);
+        b[1] = 0x80 | ((x &      0xfc0) >>  6);
+        b[2] = 0x80 |  (x &       0x3f);
+        b[3] = '\0';
+    }
+    else if (!(x) & 0xffe00000)
+    {
+    }
+    else if (!(x) & 0xfc000000)
+    {
+        b[0] = 0xf8 | ( x               >> 24);
+        b[1] = 0xf0 | ((x &   0xfc0000) >> 18);
+        b[2] = 0x80 | ((x &    0x3f000) >> 12);
+        b[3] = 0x80 | ((x &      0xfc0) >>  6);
+        b[4] = 0x80 |  (x &       0x3f);
+        b[5] = '\0';
+    }
+    else if (!(x) & 0x80000000)
+    {
+        b[0] = 0xfc | ( x               >> 30);
+        b[1] = 0xf8 | ((x & 0x3f000000) >> 24);
+        b[2] = 0xf0 | ((x &   0xfc0000) >> 18);
+        b[3] = 0x80 | ((x &    0x3f000) >> 12);
+        b[4] = 0x80 | ((x &      0xfc0) >>  6);
+        b[5] = 0x80 |  (x &       0x3f);
+        b[6] = '\0';
+    }
+    else
+        return "?";
+    return b;
+}
+
+
+#define PUT_UTF8(x) t = s_cat (t, &size, ConvUTF8 (x))
 
 #define GET_UTF8(in,y) \
  do { UDWORD vl = 0; int todo = 1; UDWORD org = *in++; if ((org & 0xc0) != 0xc0) { y = '!'; continue; } \

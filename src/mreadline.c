@@ -403,6 +403,7 @@ int R_process_input (void)
 {
     char ch;
     int k;
+    static UDWORD inp = 0;
 
     if (!read (STDIN_FILENO, &ch, 1))
         return 0;
@@ -456,6 +457,11 @@ int R_process_input (void)
                 case '\t':
                     R_process_input_tab ();
                     break;
+#ifdef ENABLE_UTF8
+                case 21:       /* ^U */
+                    istat = 10;
+                    break;
+#endif
                 case 25:       /* ^Y */
                     R_remprompt ();
                     strcpy (s, y);
@@ -625,6 +631,79 @@ int R_process_input (void)
                 default:
                     printf ("\a");
             }
+            break;
+#ifdef ENABLE_UTF8
+        case 10:
+            istat++;
+            if (prG->enc_loc != ENC_UTF8)
+                istat = 0;
+            else if (ch >= '0' && ch <= '9')
+                inp = ch - '0';
+            else if (ch >= 'a' && ch <= 'f')
+                inp = ch - 'a' + 10;
+            else if (ch >= 'A' && ch <= 'F')
+                inp = ch - 'A' + 10;
+            else
+                istat = 0;
+            fprintf (stderr, "Codepoint 10: %04x\n", inp);
+            break;
+        case 11:
+            istat++;
+            inp <<= 4;
+            if (ch >= '0' && ch <= '9')
+                inp |= ch - '0';
+            else if (ch >= 'a' && ch <= 'f')
+                inp |= ch - 'a' + 10;
+            else if (ch >= 'A' && ch <= 'F')
+                inp |= ch - 'A' + 10;
+            else istat = 0;
+            fprintf (stderr, "Codepoint 11: %04x\n", inp);
+            break;
+        case 12:
+            istat++;
+            inp <<= 4;
+            if (ch >= '0' && ch <= '9')
+                inp |= ch - '0';
+            else if (ch >= 'a' && ch <= 'f')
+                inp |= ch - 'a' + 10;
+            else if (ch >= 'A' && ch <= 'F')
+                inp |= ch - 'A' + 10;
+            else istat = 0;
+            fprintf (stderr, "Codepoint 12: %04x\n", inp);
+            break;
+        case 13:
+            istat++;
+            inp <<= 4;
+            if (ch >= '0' && ch <= '9')
+                inp |= ch - '0';
+            else if (ch >= 'a' && ch <= 'f')
+                inp |= ch - 'a' + 10;
+            else if (ch >= 'A' && ch <= 'F')
+                inp |= ch - 'A' + 10;
+            else istat = 0;
+            if (!istat)
+                return 0;
+            
+            fprintf (stderr, "Codepoint: %04x\n", inp);
+            {
+                const char *add = ConvUTF8 (inp);
+                int charbytes = strlen (add);
+            
+                curlen += 1;
+                curpos += 1;
+
+                bytelen += charbytes;
+                memmove (s + bytepos + charbytes, s + bytepos, bytelen - bytepos);
+                memmove (s + bytepos, add, charbytes);
+                bytepos += charbytes;
+                s[bytelen] = 0;
+                R_rlap (s + bytepos, add, FALSE);
+            }
+            istat = 0;
+            break;
+        default:
+            istat = 0;
+#endif
     }
 #endif
     return 0;

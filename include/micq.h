@@ -7,6 +7,8 @@
 #include "config.h"
 #endif
 
+#include "micqconfig.h"
+
 #if TM_IN_SYS_TIME
   #include <sys/time.h>
   #if TIME_WITH_SYS_TIME
@@ -42,7 +44,6 @@ typedef struct Connection_s            Connection;
 typedef struct Preferences_s           Preferences;
 typedef struct PreferencesConnection_s PreferencesConnection;
 
-#include "micqconfig.h"
 #include "datatype.h"
 #include <stdlib.h>
 #include "mreadline.h"

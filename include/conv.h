@@ -3,6 +3,7 @@
 #ifndef MICQ_UTIL_CONV
 #define MICQ_UTIL_CONV
 
+const char *ConvUTF8     (UDWORD codepoint);
 const char *ConvToUTF8   (const char *in, UBYTE enc);
 const char *ConvFromUTF8 (const char *in, UBYTE enc);
 
