@@ -66,4 +66,5 @@ void CallBackServerInitV5 (struct Event *event);
 #define META_SEARCH_RANDOM       1870
 #define META_SET_RANDOM          1880
 #define META_SET_WEB_PRESENCE    2000 /* */
+#define META_SEND_SMS            5250
 

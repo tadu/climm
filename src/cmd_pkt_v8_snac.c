@@ -1187,7 +1187,7 @@ void SnacCliMetasetgeneral (Session *sess, const MetaGeneral *user)
     PacketWriteLNTS    (pak, user->street);
     PacketWriteLNTS    (pak, user->cellular);
     PacketWriteLNTS    (pak, UtilFill ("%05d", user->zip));
-    PacketWriteB2      (pak, user->country);
+    PacketWrite2       (pak, user->country);
     PacketWrite1       (pak, user->tz);
     PacketWrite1       (pak, user->webaware);
     PacketWriteLenDone (pak);
@@ -1449,7 +1449,7 @@ void SnacCliSendsms (Session *sess, const char *target, const char *text)
     PacketWrite4       (pak, sess->uin);
     PacketWrite2       (pak, 2000);
     PacketWrite2       (pak, 2);
-    PacketWrite2       (pak, 5250);
+    PacketWrite2       (pak, META_SEND_SMS);
     PacketWriteB2      (pak, 1);
     PacketWriteB2      (pak, 22);
     PacketWriteB4      (pak, 0);

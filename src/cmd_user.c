@@ -2452,7 +2452,7 @@ JUMP_F(CmdUserUpdate)
             return ++status;
         case 314:
             user.tz = atoi ((char *) args);
-            user.tz <<= 1;
+            user.tz *= 2;
             R_dopromptf ("%s ", i18n (1557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
             return ++status;
         case 315:
@@ -2548,7 +2548,7 @@ JUMP_F(CmdUserOther)
             R_dopromptf ("%s ", i18n (1538, "Enter new year of birth (4 digits):"));
             return ++status;
         case 403:
-            other.year = atoi (args) - 1900;
+            other.year = atoi (args);
             R_dopromptf ("%s ", i18n (1539, "Enter new month of birth:"));
             return ++status;
         case 404:

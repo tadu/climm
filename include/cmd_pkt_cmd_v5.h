@@ -20,7 +20,8 @@ typedef struct
     UWORD age;
     UBYTE sex;
     char *hp;
-    UBYTE year, month, day;
+    UWORD year;
+    UBYTE month, day;
     UBYTE lang1, lang2, lang3;
 } MetaMore;
 
