@@ -87,6 +87,13 @@ A: The former are used when a direct connection to the contact is
    when the message is sent through the server (as a non-acknowledged
    message). '>>»' and '«<<' are used for acknowledged messages.
 
+Q: How can I set a specific encoding for a given user?
+
+A: In the file BASEDIR/contacts/icq-<ICQ#>, edit the line "b_enc none" into
+   "b_enc <encoding>". Note that mICQ may overwrite this file on exit.  You
+   can force mICQ to save the file with "meta save <ICQ#>". To make the
+   change active, type "meta load <ICQ#>" to load the file.
+
 Q: Are there any known bugs in 0.4.10?
 
 A: No, not yet.
