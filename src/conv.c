@@ -44,7 +44,7 @@ UBYTE ConvEnc (const char *enc)
         conv_encs[7].enc = strdup ("euc-jp");
         conv_encs[8].enc = strdup ("shift-jis");
     }
-    if (!strncmp (enc, "windows-1251")
+    if (!strcmp (enc, "windows-1251")
         enc = "cp1251";
 #ifndef ENABLE_ICONV
     if (!strncmp (enc, "koi8", 4))
