@@ -56,24 +56,6 @@ else
 fi
 
 if test "x$ac_arg_use_iconv" != "xbuiltin"; then
-  AC_CACHE_CHECK(for iconv declaration, ac_cv_iconv_const,
-    [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
-        #include <iconv.h>]],
-        [[#ifdef __cplusplus
-          "C"
-          #endif
-          #if defined(__STDC__) || defined(__cplusplus)
-          size_t iconv (iconv_t cd, char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);
-          #else
-          size_t iconv();
-          #endif]])],
-      [ac_cv_iconv_const=no-const],
-      [ac_cv_iconv_const=const])])
-  if test $ac_cv_iconv_const = const; then
-     AC_DEFINE([ICONV_CONST], const, [Define as const if the declaration of iconv() needs const.])
-  else
-     AC_DEFINE([ICONV_CONST], /* no-const */)
-  fi
   AC_CACHE_CHECK(for iconv minimal functionality, ac_cv_iconv_min,
     [AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
           #include <iconv.h>]],
@@ -108,9 +90,9 @@ if test "x$ac_arg_use_iconv" != "xbuiltin"; then
           if (res == (iconv_t)-1 || !res) exit (8);
           res = iconv_open ("KOI8-U", "UTF-8");
           if (res == (iconv_t)-1 || !res) exit (9);
-          res = iconv_open ("UTF-8", "CP1251");
+          res = iconv_open ("UTF-8", "UCS-2BE");
           if (res == (iconv_t)-1 || !res) exit (10);
-          res = iconv_open ("CP1251", "UTF-8");
+          res = iconv_open ("UCS-2BE", "UTF-8");
           if (res == (iconv_t)-1 || !res) exit (11);
           exit (0);]])],
       [ac_cv_iconv_min=ok],
@@ -119,9 +101,25 @@ if test "x$ac_arg_use_iconv" != "xbuiltin"; then
   ])
   if test $ac_cv_iconv_min != ok; then
     ac_arg_use_iconv=buildin
-    AC_DEFINE([ICONV_LATIN1_NAME], ["ISO-8859-1"],  [the name of the latin1 encoding])
-    AC_DEFINE([ICONV_LATIN9_NAME], ["ISO-8859-15"], [the name of the latin9 encoding])
   else
+    AC_CACHE_CHECK(for iconv declaration, ac_cv_iconv_const,
+      [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
+          #include <iconv.h>]],
+          [[#ifdef __cplusplus
+            "C"
+            #endif
+            #if defined(__STDC__) || defined(__cplusplus)
+            size_t iconv (iconv_t cd, char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);
+            #else
+            size_t iconv();
+            #endif]])],
+        [ac_cv_iconv_const=no-const],
+        [ac_cv_iconv_const=const])])
+    if test $ac_cv_iconv_const = const; then
+       AC_DEFINE([ICONV_CONST], const, [Define as const if the declaration of iconv() needs const.])
+    else
+       AC_DEFINE([ICONV_CONST], /* no-const */)
+    fi
     AC_CACHE_CHECK(for iconv name of latin-1 encoding, ac_cv_iconv_latin1_name,
       [AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
             #include <iconv.h>]],
@@ -147,7 +145,9 @@ if test "x$ac_arg_use_iconv" != "xbuiltin"; then
     ])
     AC_DEFINE_UNQUOTED([ICONV_LATIN9_NAME], ["$ac_cv_iconv_latin9_name"])
   fi
-else
+fi
+
+if "x$ac_arg_use_iconv" = "buildin"
   AC_DEFINE([ICONV_LATIN1_NAME], ["ISO-8859-1"])
   AC_DEFINE([ICONV_LATIN9_NAME], ["ISO-8859-15"])
 fi
@@ -407,7 +407,7 @@ if test "x$MICQ_EXTRAVERSION" != "x"; then
     AC_DEFINE_UNQUOTED(EXTRAVERSION,"$MICQ_EXTRAVERSION",[Extra version information like the distribution used])
 fi
 
-AC_CONFIG_FILES([doc/Makefile src/Makefile Makefile lang/Makefile])
+AC_CONFIG_FILES([src/Makefile Makefile lang/Makefile doc/Makefile])
 AC_CONFIG_FILES([doc/de/Makefile doc/ru/Makefile doc/fr/Makefile doc/es/Makefile doc/uk/Makefile])
 AC_CONFIG_FILES([doc/pt_BR/Makefile doc/sr/Makefile])
 AC_OUTPUT
