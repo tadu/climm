@@ -215,13 +215,10 @@ Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nic
     Contact *cont, *alias = NULL;
     int i;
     
-    if (!group)
-    {
-        if (!cnt_groups)
-            ContactGroupInit ();
-        group = CONTACTGROUP_GLOBAL;
-    }
-    for (tmp = group; tmp; tmp = tmp->more)
+    if (!group && !cnt_groups)
+        ContactGroupInit ();
+
+    for (tmp = group ? group : CONTACTGROUP_GLOBAL; tmp; tmp = tmp->more)
     {
         if (tmp->used < MAX_ENTRIES)
             fr = tmp;
