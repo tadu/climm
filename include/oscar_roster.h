@@ -27,6 +27,7 @@ struct Roster_s {
   RosterEntry *visible;
   RosterEntry *invisible;
   RosterEntry *ignore;
+  time_t import;
 };
 
 Roster *OscarRosterC (void);
@@ -35,9 +36,11 @@ void    OscarRosterD (Roster *roster);
 
 UDWORD SnacCliCheckroster (Connection *serv);
 void SnacCliRosteradd (Connection *serv, ContactGroup *cg, Contact *cont);
+void SnacCliRosterentryadd (Connection *serv, const char *name, UWORD tag, UWORD id, UWORD type, UWORD tlv, void *data, UWORD len);
 void SnacCliRosterupdate (Connection *serv, ContactGroup *cg, Contact *cont);
 void SnacCliSetvisibility (Connection *serv);
 void SnacCliRosterdelete (Connection *serv, ContactGroup *cg, Contact *cont);
+void SnacCliRosterentrydelete (Connection *serv, RosterEntry *entry);
 void SnacCliAddstart (Connection *serv);
 void SnacCliAddend (Connection *serv);
 void SnacCliGrantauth (Connection *serv, Contact *cont);

@@ -195,27 +195,38 @@ JUMP_SNAC_F(SnacSrvReplyroster)
         
         switch (re->type)
         {
-            case 1:
+            case 1: /* group */
                 if (!re->tag && !re->id)
                     rref = &roster->generic;
                 else
                     rref = &roster->groups;
                 break;
-            case 2:
+            case 2: /* visible */
                 rref = &roster->visible;
                 break;
-            case 3:
+            case 3: /* invisible */
                 rref = &roster->invisible;
                 break;
-            case 14:
+            case 14: /* ignore */
                 rref = &roster->ignore;
                 break;
-            case 0:
+            case 0: /* normal contact */
                 rref = &roster->normal;
                 break;
-            case 4:
-            case 9:
-            case 17:
+            case 17: /* wierd */
+                SnacCliRosterentrydelete (serv, re);
+                rref = NULL;
+                break;
+            case 19: /* ImportTime */
+                j = TLVGet (re->tlv, 212);
+                if (j != (UWORD)-1 && re->tlv[j].str.len == 4)
+                    roster->import = re->tlv[j].nr;
+                else
+                    rl_printf ("#Bogus ImportTime item: %d: %s %d %d.\n", re->type, re->name, re->tag, re->id);
+                rref = NULL;
+                break;
+            case 4: /* visibility */
+            case 9: /* ICQTIC */
                 rref = NULL;
                 break;
             default:
@@ -228,10 +239,21 @@ JUMP_SNAC_F(SnacSrvReplyroster)
             re->next = *rref;
             *rref = re;
         }
+        else
+            OscarRosterEntryD (re);
     }
     stmp = PacketReadB4 (pak);
     if (stmp)
+    {
+        if (!roster->import)
+        {
+            time_t now = time (NULL);
+            UDWORD da = now;
+            SnacCliRosterentryadd (serv, "ImportTime", 0, 1, 19, 212, &da, 4);
+        }
         event2->callback (event2);
+        
+    }
     else
         QueueEnqueue (event2);
 }
@@ -252,6 +274,9 @@ void SnacCliRosteradd (Connection *serv, ContactGroup *cg, Contact *cont)
     if (cont)
     {
         UWORD type = 0;
+        
+        if (!ContactGroupPrefVal (cg, CO_ISSBL))
+            SnacCliRosteradd (serv, cg, NULL);
         
         if (ContactPrefVal (cont, CO_HIDEFROM))
             type = 3;
@@ -293,6 +318,23 @@ void SnacCliRosteradd (Connection *serv, ContactGroup *cg, Contact *cont)
     }
 }
 
+void SnacCliRosterentryadd (Connection *serv, const char *name, UWORD tag, UWORD id, UWORD type, UWORD tlv, void *data, UWORD len)
+{
+    Packet *pak;
+    int i;
+
+    pak = SnacC (serv, 19, 8, 0, 0);
+    PacketWriteStrB     (pak, name);
+    PacketWriteB2       (pak, tag);
+    PacketWriteB2       (pak, id);
+    PacketWriteB2       (pak, type);
+    PacketWriteBLen     (pak);
+    if (tlv)
+        PacketWriteTLVData (pak, tlv, data, len);
+    PacketWriteBLenDone (pak);
+    SnacSend (serv, pak);
+}
+
 /*
  * CLI_ROSTERUPDATE - SNAC(13,9)
  */
@@ -332,6 +374,7 @@ void SnacCliRosterupdate (Connection *serv, ContactGroup *cg, Contact *cont)
         PacketWriteTLVDone  (pak);
         PacketWriteBLenDone (pak);
     }
+    SnacSend (serv, pak);
 }
 
 /*
@@ -356,7 +399,7 @@ void SnacCliSetvisibility (Connection *serv)
 }
 
 /*
- * CLI_ROSTERDELETE - SANC(13,a)
+ * CLI_ROSTERDELETE - SNAC(13,a)
  */
 void SnacCliRosterdelete (Connection *serv, ContactGroup *cg, Contact *cont)
 {
@@ -381,6 +424,28 @@ void SnacCliRosterdelete (Connection *serv, ContactGroup *cg, Contact *cont)
         PacketWriteBLen     (pak);
         PacketWriteBLenDone (pak);
     }
+    SnacSend (serv, pak);
+}
+
+/*
+ * CLI_ROSTERDELETE - SNAC(13,a)
+ */
+void SnacCliRosterentrydelete (Connection *serv, RosterEntry *re)
+{
+    Packet *pak;
+    int i;
+
+    pak = SnacC (serv, 19, 10, 0, 0);
+    PacketWriteStrB     (pak, re->name);
+    PacketWriteB2       (pak, re->tag);
+    PacketWriteB2       (pak, re->id);
+    PacketWriteB2       (pak, re->type);
+    PacketWriteBLen     (pak);
+    for (i = 0; i < 16 || re->tlv[i].tag; i++)
+        if (re->tlv[i].tag)
+            PacketWriteTLVData (pak, re->tlv[i].tag, re->tlv[i].str.txt, re->tlv[i].str.len);
+    PacketWriteBLenDone (pak);
+    SnacSend (serv, pak);
 }
 
 /*
