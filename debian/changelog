@@ -1,5 +1,11 @@
 micq (0.4.8pl2-1) unstable; urgency=HIGH
 
+  * New upstream.
+
+ -- Ruediger Kuhlmann <Ruediger.Kuhlmann@stud.uni-karlsruhe.de>  Wed,  4 Apr 2002 12:00:00 +0100
+
+micq (0.4.8pl2-1) unstable; urgency=HIGH
+
   * Re-debianized; changelogs got lost due to mismaintainership
   * New upstream; does a tiny bit of v8 now.
 
