@@ -163,7 +163,7 @@ void ConvInit (void)
     conv_encs[ENC_WIN1251].encc = "CP-1251";
     conv_encs[ENC_UCS2BE].enca = "UCS-2BE";
     conv_encs[ENC_UCS2BE].encb = "UNICODEBIG";
-    conv_encs[ENC_UCS2BE].encc = "ucs2"
+    conv_encs[ENC_UCS2BE].encc = "ucs2";
     conv_encs[ENC_WIN1257].enca = "CP1257";
     conv_encs[ENC_WIN1257].encb = "WINDOWS-1257";
     conv_encs[ENC_WIN1257].encc = "CP-1257";
