@@ -217,6 +217,7 @@ void TCPDispatchMain (Session *sess)
     peer->type  = TYPE_DIRECT;
     peer->flags = 0;
     peer->spref = NULL;
+    peer->our_session = 0;
     peer->dispatch    = &TCPDispatchShake;
 
     if (prG->s5Use)
@@ -353,9 +354,12 @@ void TCPDispatchShake (Session *sess)
     
     ASSERT_DIRECT (sess);
     
-    pak = TCPReceivePacket (sess);
-    if (!pak)
-        return;
+    if ((sess->connect & CONNECT_MASK) != 1)
+    {
+        pak = TCPReceivePacket (sess);
+        if (!pak)
+            return;
+    }
 
     while (1)
     {
@@ -365,7 +369,7 @@ void TCPDispatchShake (Session *sess)
         if (prG->verbose)
         {
             Time_Stamp ();
-            M_print (" [%d %p] %s State: %d\n", sess->sok, sess, ContactFindName (sess->uin), sess->connect);
+            M_print (" [%d %p %p] %s State: %d\n", sess->sok, pak, sess, ContactFindName (sess->uin), sess->connect);
         }
 
         cont = ContactFind (sess->uin);
@@ -473,7 +477,6 @@ void TCPDispatchPeer (Session *sess)
     Contact *cont;
     Packet *pak;
     struct Event *event;
-    int size;
     int i = 0;
     UWORD seq_in = 0, seq, cmd, type;
     
@@ -493,30 +496,6 @@ void TCPDispatchPeer (Session *sess)
         if (!(pak = TCPReceivePacket (sess)))
             return;
 
-        size = pak->len;
-
-        if (Decrypt_Pak ((UBYTE *) &pak->data + (sess->ver > 6 ? 1 : 0), size - (sess->ver > 6 ? 1 : 0)) < 0)
-        {
-            Time_Stamp ();
-            M_print (" \x1b«" COLSERV "");
-            M_print (i18n (1789, "Received malformed packet: (%d)"), sess->sok);
-            M_print (COLNONE "\n");
-            Hex_Dump (pak->data, size);
-            M_print (ESC "»\r");
-            TCPClose (sess);
-            break;
-        }
-
-        if (prG->verbose & 4)
-        {
-            Time_Stamp ();
-            M_print (" \x1b«" COLSERV "");
-            M_print (i18n (1778, "Incoming TCP packet: (%d)"), sess->sok);
-            M_print (COLNONE "\n");
-            Hex_Dump (pak->data, size);
-            M_print (ESC "»\r");
-        }
-        
         if (sess->ver > 6)
             PacketRead1 (pak);
                PacketRead4 (pak);
@@ -544,6 +523,7 @@ void TCPDispatchPeer (Session *sess)
                     }
                     PacketD (event->pak);
                     free (event);
+                    PacketD (pak);
                     break;
 
                 default:
@@ -555,7 +535,6 @@ void TCPDispatchPeer (Session *sess)
                 break;
             }
         }
-        PacketD (pak);
 
         M_select_init();
         M_set_timeout (0, 100000);
@@ -624,6 +603,35 @@ Packet *TCPReceivePacket (Session *sess)
     sess->stat_pak_rcvd++;
     sess->stat_real_pak_rcvd++;
 
+    if (sess->connect & CONNECT_OK)
+    {
+        if (Decrypt_Pak ((UBYTE *) &pak->data + (sess->ver > 6 ? 1 : 0), pak->len - (sess->ver > 6 ? 1 : 0)) < 0)
+        {
+            Time_Stamp ();
+            M_print (" \x1b«" COLSERV "");
+            M_print (i18n (1789, "Received malformed packet: (%d)"), sess->sok);
+            M_print (COLNONE "\n");
+            Hex_Dump (pak->data, pak->len);
+            M_print (ESC "»\r");
+
+            TCPClose (sess);
+            PacketD (pak);
+            return NULL;
+        }
+    }
+
+    if (prG->verbose & 4)
+    {
+        Time_Stamp ();
+        M_print (" \x1b«" COLSERV "");
+        M_print (i18n (1778, "Incoming TCP packet: (%d)"), sess->sok);
+        M_print (COLNONE "\n");
+        Hex_Dump (pak->data, pak->len);
+        M_print (ESC "»\r");
+    }
+    
+    pak->rpos = 0;
+    pak->wpos = 0;
     return pak;
 }
 
@@ -869,7 +877,7 @@ Session *TCPReceiveInit (Session *sess, Packet *pak)
 {
     Contact *cont;
     UDWORD muin, uin, sid, port, port2, oip, iip;
-    UWORD  cmd, len, tcpflag, err;
+    UWORD  cmd, len, len2, tcpflag, err, nver;
     Session *peer;
 
     ASSERT_DIRECT (sess);
@@ -878,8 +886,9 @@ Session *TCPReceiveInit (Session *sess, Packet *pak)
     for (err = 0;;)
     {
         cmd       = PacketRead1 (pak);
-        sess->ver = PacketRead2 (pak);
+        nver      = PacketRead2 (pak);
         len       = PacketRead2 (pak);
+        len2      = PacketReadLeft (pak);
         muin      = PacketRead4 (pak);
                     PacketRead2 (pak);
         port      = PacketRead4 (pak);
@@ -893,33 +902,35 @@ Session *TCPReceiveInit (Session *sess, Packet *pak)
         /* check validity of this conenction; fail silently */
         
         if (cmd != PEER_INIT)
-            FAIL (0);
+            FAIL (1);
         
-        if (sess->ver < 6 || sess->ver > 8)
-            FAIL (0);
+        if (nver < 6)
+            FAIL (2);
         
-        if (sess->ver > 6 && len != PacketReadLeft (pak))
-            FAIL (0);
+        if (nver > 6 && len != len2)
+            FAIL (3);
         
-        if (sess->ver == 6 && 23 > PacketReadLeft (pak))
-            FAIL (0);
+        if (nver == 6 && 23 > len2)
+            FAIL (4);
 
         if (muin  != sess->assoc->assoc->uin)
-            FAIL (0);
+            FAIL (5);
         
         if (uin  == sess->assoc->assoc->uin)
-            FAIL (0);
+            FAIL (6);
         
         if (!(cont = ContactFind (uin)))
-            FAIL (0);
+            FAIL (7);
+
+        sess->ver = (sess->ver > nver ? nver : sess->ver);
 
         if (!sess->our_session)
             sess->our_session = sess->ver > 6 ? cont->cookie : sid;
         if (sid  != sess->our_session)
-            FAIL (0);
+            FAIL (8);
 
         if (cont->flags & CONT_IGNORE)
-            FAIL (0);
+            FAIL (9);
 
         /* okay, the connection seems not to be faked, so update using the following information. */
 
@@ -954,11 +965,13 @@ Session *TCPReceiveInit (Session *sess, Packet *pak)
                 TCPClose (peer);
             SessionClose (peer);
         }
-        
-        PacketD (pak);
         return sess;
     }
-    
+    if (prG->verbose && err)
+    {
+        Time_Stamp ();
+        M_print (" %s: %d\n", i18n (2029, "Protocol error on peer-to-peer connection"), err);
+    }
     sess->connect = 0;
     TCPClose (sess);
     return NULL;
@@ -1158,6 +1171,7 @@ void TCPCallBackResend (struct Event *event)
     Contact *cont;
     Session *peer = event->sess;
     Packet *pak = event->pak;
+    int delta = (peer->ver > 6 ? 1 : 0);
     
     ASSERT_DIRECT (peer);
     assert (pak);
@@ -1171,8 +1185,11 @@ void TCPCallBackResend (struct Event *event)
     {
         if (peer->connect & CONNECT_OK)
         {
-            Time_Stamp ();
-            M_print (" " COLACK "%10s" COLNONE " %s%s\n", cont->nick, MSGTCPSENTSTR, event->info);
+            if (event->attempts > 1)
+            {
+                Time_Stamp ();
+                M_print (" " COLACK "%10s" COLNONE " %s%s\n", cont->nick, MSGTCPSENTSTR, event->info);
+            }
 
             event->attempts++;
             TCPSendPacket (pak, peer);
@@ -1184,13 +1201,13 @@ void TCPCallBackResend (struct Event *event)
         return;
     }
 
-    if (event->attempts < MAX_RETRY_ATTEMPTS && PacketReadAt2 (pak, 4) == TCP_CMD_MESSAGE)
+    if (event->attempts < MAX_RETRY_ATTEMPTS && PacketReadAt2 (pak, 4 + delta) == TCP_CMD_MESSAGE)
     {
         peer->connect = CONNECT_FAIL;
-        icq_sendmsg (peer->assoc->assoc, cont->uin, event->info, PacketReadAt2 (pak, 22));
+        icq_sendmsg (peer->assoc->assoc, cont->uin, event->info, PacketReadAt2 (pak, 22 + delta));
     }
     else
-        M_print (i18n (1844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4));
+        M_print (i18n (1844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4 + delta));
     
     PacketD (event->pak);
     free (event->info);
@@ -1207,11 +1224,12 @@ void TCPCallBackReceive (struct Event *event)
     Contact *cont;
     const char *tmp;
     UWORD cmd, type, seq, status;
-    Packet *pak = event->pak;
+    Packet *pak;
     
     ASSERT_DIRECT (event->sess);
-    assert (pak);
+    assert (event->pak);
     
+    pak = event->pak;
     cont = (Contact *) event->info;
     
     cmd    = PacketRead2 (pak);
@@ -1278,7 +1296,6 @@ void TCPCallBackReceive (struct Event *event)
             Send_TCP_Ack (event->sess, seq, type, TRUE);
     }
     PacketD (pak);
-    free (event);
 }
 
 

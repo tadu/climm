@@ -45,10 +45,10 @@
 #define MSGRECSTR  "<<< "
 
 /* Define what to output additionally when sending a tcp message. */
-#define MSGTCPSENTSTR "»»» "
+#define MSGTCPSENTSTR "=== "
 
 /* Define what to output additionally when sending a tcp message. */
-#define MSGTCPACKSTR "=== "
+#define MSGTCPACKSTR "»»» "
 
 /* Define what to output additionally when a tcp message is received. */
 #define MSGTCPRECSTR  "««« "

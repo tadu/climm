@@ -786,7 +786,7 @@
 1786:I also need the port the socks server listens on. If unsure, press return for the default port.¶
 1787:You probably need to authentificate yourself to the socks server. If so, you need to enter the user name the administrator of the socks server gave you. Otherwise, just press return.¶
 1788:Now I also need the password for this user.¶
-1789:Received malformed packet.
+1789:Received malformed packet: (%d)
 1790:Setup wizard finished. Congratulations to your new UIN!¶
 1791:Setup wizard finished. Congratulations!¶
 1792:I'm sorry, AOL doesn't want to give us a new UIN, probably because of too many new UIN requests from this IP. Please try again later.¶
