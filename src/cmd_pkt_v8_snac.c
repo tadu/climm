@@ -890,7 +890,7 @@ void SnacCliSetstatus (Session *sess, UWORD status, UWORD action)
         PacketWriteB2 (pak, 80);
         PacketWriteB2 (pak, 0);
         PacketWriteB2 (pak, 3);
-        PacketWriteB4 (pak, BUILD_MICQ_OLD);
+        PacketWriteB4 (pak, BUILD_MICQ);
         PacketWriteB4 (pak, BuildVersionNum);
         PacketWriteB4 (pak, time (NULL));
         PacketWriteB2 (pak, 0);
