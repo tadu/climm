@@ -41,14 +41,15 @@ TODO (probably next release):
    + contact list upload
  : save meta info about contacts, save to file (done)
  : finish implementing file transfer (fixed?)
-   + add receive command
-   + add better syntax (a bit fixed, awaiting user feedback)
+   + add receive command (done)
+   + add better syntax (done)
  : fix seperator characters (url etc) (seems to work)
  : message length
  : fix encoding of config files (done)
  : fix quoting of config file saving (done)
- : contact specific encoding
+ : contact specific encoding (done)
  : use library function to determine charset/locale (setlocale done)
  : better meta data change functions
- : add sensible commands for away etc. automessages
+ : add sensible commands for away etc. automessages (done)
  : add autosave micqrc function (done)
+ : update Changelog (done)
