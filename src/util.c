@@ -359,8 +359,6 @@ int log_event (UDWORD uin, int type, char *str, ...)
             else
                 return -1;
         }
-        snprintf (buffer + strlen (buffer), sizeof (buffer) - strlen (buffer), "%ld.log", uin);
-
 #if HAVE_SYMLINK
         if (ContactFindNick (uin))
         {
@@ -371,6 +369,7 @@ int log_event (UDWORD uin, int type, char *str, ...)
             symlink  (symbuf2, symbuf);
         }
 #endif
+        snprintf (buffer + strlen (buffer), sizeof (buffer) - strlen (buffer), "%ld.log", uin);
     }
 
     if (!(msgfd = fopen (buffer, "a")))
