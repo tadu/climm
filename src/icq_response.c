@@ -677,6 +677,7 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
 {
     char *cdata, *tmp = NULL;
     char *url_url, *url_desc;
+    Contact *cont;
     int x, m;
     
     cdata = strdup (data);
@@ -879,21 +880,12 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
             M_print ("%s" COLMESS "\x1b<%s" COLNONE "\x1b>\n", tcp ? MSGTCPRECSTR : MSGRECSTR, cdata);
             break;
     }
-    /* aaron
-       If we just received a message from someone on the contact list,
-       save it with the person's contact information. If they are not in
-       the list, don't do anything special with it.                              */
-    if (ContactFind (uiG.last_rcvd_uin) != NULL)
+    uiG.last_rcvd_uin = uin;
+    if ((cont = ContactFind (uin)))
     {
-        ContactFind (uiG.last_rcvd_uin)->LastMessage =
-           realloc (ContactFind (uiG.last_rcvd_uin)->LastMessage, len + 5);
-        /* I add on so many characters because I always have segfaults in
-           my own program when I try to allocate strings like this. Somehow
-           it tries to write too much to the string even though I think I
-           allocate the right amount. Oh well. It shouldn't be too much
-           wasted space, I hope.                                                          */
+        cont->LastMessage = realloc (cont->LastMessage, len + 1);
         ConvWinUnix (cdata);
-        strcpy (ContactFind (uiG.last_rcvd_uin)->LastMessage, cdata);
+        strncpy (cont->LastMessage, cdata, len + 1);
+        cont->LastMessage [len] = '\0';
     }
-    /* end of aaron */
 }

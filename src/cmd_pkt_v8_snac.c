@@ -19,6 +19,7 @@
 #include "cmd_pkt_v8_flap.h"
 #include "cmd_pkt_v8_tlv.h"
 #include "file_util.h"
+#include "buildmark.h"
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
@@ -780,7 +781,7 @@ void SnacCliSetstatus (Session *sess, UWORD status, UWORD action)
         PacketWriteB2 (pak, 80);
         PacketWriteB2 (pak, 0);
         PacketWriteB2 (pak, 3);
-        PacketWriteB4 (pak, BUILD_LICQ | MICQ_VERSION_NUM);
+        PacketWriteB4 (pak, BUILD_LICQ | BuildVersionNum);
         PacketWriteB4 (pak, 0);
         PacketWriteB4 (pak, time (NULL));
         PacketWriteB2 (pak, 0);

@@ -16,6 +16,7 @@
 #include "preferences.h"
 #include "util.h"
 #include "util_ui.h"
+#include "buildmark.h"
 #include <string.h>
 #include <assert.h>
 #include <netinet/in.h> /* for htonl, htons */
@@ -106,7 +107,7 @@ void CmdPktCmdLogin (Session *sess)
     PacketWrite4 (pak, 0x822c01ec);   /* 0x00d50008, 0x00780008 */
     PacketWrite4 (pak, 0x00000050);
     PacketWrite4 (pak, 0x00000003);
-    PacketWrite4 (pak, BUILD_LICQ | MICQ_VERSION_NUM);
+    PacketWrite4 (pak, BUILD_LICQ | BuildVersionNum);
     PacketEnqueuev5 (pak, sess);
 }
 
