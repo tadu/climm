@@ -1,5 +1,22 @@
 -*- coding: utf-8 -*-
 
+2003-01-22 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+	* fix remgroup command
+	* fix url/msg order
+	* fix typos (thanks, David Krause)
+	* fix segfault caused by printf-interpolation for type-1 messages
+	* remove usage of sprintf
+	* add serbian web pages
+
+2003-01-19 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+	* fix tab handling for real
+	* fix segfault when UTF-8 is enabled, but not used
+	* update ja_JP.UTF-8.i18n, ro.i18n
+	* rename ja_JP -> ja, sr_YU -> sr
+	* fix encoding name (s/cp-1251/cp1251/)
+	* add sr (serbian) man pages
+	* move IP/port info to util_ui.c, drop dupe UIN display
+
 2003-01-15 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
 	* fix auto-away prompt string (wasn't always cleared)
 	* fix stupid typo
@@ -94,7 +111,7 @@
 	* make silence available in micqrc
 	* document complete set command and set rc option
 	* add issues from FAQ to man page
-	* make receive/acknoledge string configurable
+	* make receive/acknowledge string configurable
 	* fix adding of temporary users with aliases
 	* (preliminarily) implement splitting of overlong type-1 messages
 
@@ -138,7 +155,7 @@
 	- fix slow sending time
 	- fix s_parserem() to advance input pointer (fixes file sending command), a few more syntax descriptions
 	- fix wrong sender printed
-	- fix scolling for incoming messages
+	- fix scrolling for incoming messages
 
 2002-12-02 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 	* new stuff:
@@ -207,7 +224,7 @@
 	* changes:
 	- add note about CVS snapshot to README
 	- implement type-2 resend
-	- make s_sprintf cope with arbitrarely long strings
+	- make s_sprintf cope with arbitrarily long strings
 	- recognize libicq2000 based clients
 	- recognize alicq
 	- swallow message/messagetype into *extra for SnacCliSendmsg2() and IMCliMsg(); don't reden peek; don't
@@ -220,7 +237,7 @@
 	- avoid excessive realloc()ing
 	- switch IMSrvMsg to Extra* style parameter
 	- accepts colour for color as well
-	- more correct handling of \xfe seperator character
+	- more correct handling of \xfe separator character
 	- don't require CAP_ISICQ for type-2 for peek
 	- increase packet size
 	- don't abort on already closed connections
@@ -379,7 +396,7 @@
 	* add tel code for Moldava
 	* debian merge
 	* fix & improve file transfer
-	* snychronize help texts, man pages with reality
+	* synchronize help texts, man pages with reality
 	* do not wait for direct connection when automatically creating one
 	* more translation updates
 	* implement sess->close() hook (allows closing of given connection)
@@ -559,7 +576,7 @@
 
 2002-06-26 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 	* fix SOCKS5 authorization
-	* document resend command, let it take arbitrarely many arguments
+	* document resend command, let it take arbitrarily many arguments
 	* change behaviour of autoaway command
 	* hopefully fix reconnect loops this time
 	* rework verbose: setting verbose won't give any debug messages
@@ -581,7 +598,7 @@
 
 2002-06-04 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 	* Fix Russian/Japanese.
-	* Close log file desciptor (thanks, Alberto  Bertogli)
+	* Close log file descriptor (thanks, Alberto  Bertogli)
 	* Automatic responses.
 	* Automatic reconnects.
 	* Delay online status changes till own login is finished.
@@ -597,7 +614,7 @@
 
 2002-05-25 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 	* tcp.c: s/TYPE_PEER/TYPE_LISTEN; get rid of assert()s; mem leaks;
-	  timeout fixes; more #define cleanup; more gratious on changed
+	  timeout fixes; more #define cleanup; more gracious on changed
 	  connection status data and more quiet; ACK types;
 	  short: just fixes.
 	* ru.i18n update by "Pest".
@@ -646,7 +663,7 @@
 	* do not display status change for temporary contacts (rk)
 
 2002-05-03 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
-	* add & use new funtions to write LLNTS, TLV and length markers.
+	* add & use new functions to write LLNTS, TLV and length markers.
 	* recognize MirandaICQ version number
 	* implement white page search; amend "search" syntax, so that
 	  wpsearch becomes obsolete
@@ -780,14 +797,14 @@
 	* new: session.c for connection management. TCP still (ab)uses
 	  the server (UDP) session^h^h^h^h^h^h^hconnection.
 	* Better transition to .micq/micqrc (create .micq); change
-	  rc file format to have arbitrarely many connections. The
+	  rc file format to have arbitrarily many connections. The
 	  idea is to have a v5 and a v8 connection at the same time till
 	  the latter is usable.
 
 2002-02-06 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 	* finish big rename by moving stuff from session.h to uiG;
 	  realized that session is the wrong name...
-	* reset reconnect_count on successfull login
+	* reset reconnect_count on successful login
 	* fix typo in last release
 
 2002-02-06 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
@@ -833,8 +850,8 @@
 	* Let msg_queue.c sort the queue by exp_time; fix long-standing
 	  memory corruption bug; add callback
 	* Move all this contact list stuff to a new src/contact.c. All
-	  funtions now named Contact*(), all source files changed
-	  acordingly. Lots of stuff!
+	  functions now named Contact*(), all source files changed
+	  accordingly. Lots of stuff!
 	* Rewrote huge parts of tcp.c to make it asynchronous (though
 	  still DoS'able); get rid of send queue; clean up output;
 	  add supplementary "tcp <open|close>" command
@@ -866,7 +883,7 @@
 	* rc file is now $HOME/.micq/micqrc instead of $HOME/.micqrc.
 	* local i18n files are now in $HOME/.micq/i18n.
 	* default log dir is now $HOME/.micq/history/.
-	* Warn about deprectated rc file options and rc file on old place.
+	* Warn about deprecated rc file options and rc file on old place.
 	* Rewrote i18n loading to load local i18n file, then add missing
 	  string from global one. Actually, first try all "funny"
 	  i18n files it funny is on; thus _fun.i18n has only the mod' strings.
@@ -1000,7 +1017,7 @@
 	  micq.7 new, all modified in appearance.
 	* lang/*.i18n:
 	  Regenerated; white space changes of this and earlier check ins
-	  mergend into some *.i18n files.
+	  merged into some *.i18n files.
 
 2001-06-12 James Morrison <ja2morrison@student.math.uwaterloo.ca>
 	* src/ui.c: Add help for trans, wide, tabs
@@ -1115,7 +1132,7 @@
 	  Fixed table size.
 	* src/*conv*.c, src/icq_response.c, src/sendmsg.c:
 	  Renamed to conv.c, conv_jp.c, conv_rus.c and replace
-	  char_conv ("wc", ) resp.("cw", ) by seperate functions.
+	  char_conv ("wc", ) resp.("cw", ) by separate functions.
 	* src/file_utils.c:
 	  Overwrite rc file on save. Allow spaces before UINs in rc file.
 	  Align on output.
@@ -1164,7 +1181,7 @@
 	  get_tab() to R_process_input_tab(); avoid clobbering of input.
 	* include/i18n.h, src/i18n.c, src/*.c:
 	  Implement simple internationalization functions and use them.
-	  Move some initialisation from micq.c and add Show_String_A()
+	  Move some initialization from micq.c and add Show_String_A()
 	  to aid using the new functions.
 	* src/*.c:
 	  Change indenting to 4 chars, no tabs whereever I came across.
@@ -1215,7 +1232,7 @@
 	* src/file_util.c, src/micq.c, include/micq.h: Add config option
 	  "Del_is_Del" tied to global BOOL del_is_bs, (default TRUE).
 	* src/mreadline.c: Put backspace and delete processing into
-	  seperate functions R_process_input_backspace() and
+	  separate functions R_process_input_backspace() and
 	  R_process_input_delete(); now ^h triggers backspace, ESC[3~
 	  delete, and the delete character backspace or delete depending on
 	  whether del_is_bs is set. Allow different arrow key codes
@@ -1281,9 +1298,9 @@ Mar 11, 2000
 Added some color to the user info display
 Fixed the long standing "auto away" segfaulting bug
 Added Hermit mode to keep random people from messaging you.
-Added more info display capablities
+Added more info display capabilities
 Added the other command to update other user info (age sex homepage)
-About command can now make multiline about messages just like message mulitline mode.
+About command can now make multiline about messages just like message multiline mode.
 Added peliminary SOCKS5 support
 Added BEOS support.
 Added screen width option for dumb terminals that don't automatically wrap.
@@ -1312,7 +1329,7 @@ Feb 21, 1999
 V5 of the ICQ protocol.
 Anti-spoofing/hijacking.
 Several memory leaks that may or may not be related to V5
-More internationalizatio strings.
+More internationalization strings.
 Brazilian language support started.
 dumb bug with user offline being displayed incorrectly.
 Added na to the auto away.

@@ -1,6 +1,6 @@
 # $Id$ English (English)
 #  EN: __.i18n,v 1.63.2.1 2003/01/09 18:00:20
-1000.iso-8859-1
+1000:iso-8859-1
 1001:en
 1002:en_US
 1003:0-4-10
@@ -540,7 +540,7 @@
 1641:User info successfully updated.\n
 1642:IP
 1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
-1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
+1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
 1645:You entered an incorrect password.\n
 1646:Server is busy.\n
 1648:The response was %04x	
@@ -594,7 +594,7 @@
 1716:None
 1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
 1719:Shows how long mICQ has been running and some statistics.
-1720:<contacts> is a comma seperated list of UINs and nick names of users.
+1720:<contacts> is a comma separated list of UINs and nick names of users.
 1721:Sending a blank message will put the client into multiline mode.\nUse . on a line by itself to end message.\nUse # on a line by itself to cancel the message.
 1724:Automatic replies are %s.\n
 1727:The "do not disturb" message is:

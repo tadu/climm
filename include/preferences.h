@@ -80,7 +80,7 @@ const char *PrefLogNameReal (Preferences *pref);
 #define FLAG_LOG_ONOFF  (1 <<  7)
 #define FLAG_AUTOREPLY  (1 <<  8)
 #define FLAG_UINPROMPT  (1 <<  9)
-#define FLAG_LIBR_BR    (1 << 10) /* 0, 3: posssible line break before message */
+#define FLAG_LIBR_BR    (1 << 10) /* 0, 3: possible line break before message */
 #define FLAG_LIBR_INT   (1 << 11) /* 2, 3: indent if appropriate */
 #define FLAG_QUIET      (1 << 12)
 #define FLAG_ULTRAQUIET (1 << 13)

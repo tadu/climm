@@ -31,7 +31,7 @@
 /* This is for some people who use modems and have problems with large packets*/
 #define MAX_CONTS_PACKET 100
 
-/* This is how many packets to "remember" we've recieved. If you get the same
+/* This is how many packets to "remember" we've received. If you get the same
 ** message twice setting this higher will help.  The default should be fine
 ** for everyone except the paranoid.  Setting it lower will reduce the memory
 ** footprint slightly. */

@@ -4,14 +4,15 @@
 
 Version 0.91
 Last update 12 April 1998
-(Minor update 11 May 1998)
+(Minor update 11 May 1998 and 26 August 1998)
 Created by Magnus Ihse (d95-mih@nada.kth.se)
 Copyright © 1998
 
 The home page of this specification is
 http://www.student.nada.kth.se/~d95-mih/icq/
+
 To participate in the mailing list icq-devel, send a mail to
-majordomo@tjsgroup.com, with the message body consisting only of the
+majordomo@lists.realminfo.com, with the message body consisting only of the
 line "subscribe icq-devel".
 
 About this document
@@ -45,14 +46,14 @@ looking at the TCP and UDP packets send out from, and received by, my
 computer.
 
 If you are a Mirabilis employee, and you feel that this document still
-violates the Licence agreement, or if you on other grounds think that
+violates the License agreement, or if you on other grounds think that
 this document is dubious - please contact me as soon as possible!
 (My e-mail address given at top of this document.)
 
 
 Copyright
 ---------
-This document is protected under internation copyright law. You may
+This document is protected under international copyright law. You may
 not modify this document. You may, however, make an unlimited number
 of copies of this document, as long as it is kept intact. You may
 freely distribute this document electronically (on the Internet or 

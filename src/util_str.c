@@ -207,7 +207,7 @@ const char *s_time (time_t *stamp)
 }
 
 /*
- * strtok()/strsep() replacement, use to seperate message fields
+ * strtok()/strsep() replacement, use to separate message fields
  */
 const char *s_msgtok (char *txt)
 {

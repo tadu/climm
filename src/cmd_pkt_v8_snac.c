@@ -1470,7 +1470,7 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
         case 1:
             {
             char buf[451];
-            snprintf (buf, sizeof (buf), c_out_to (text, cont));
+            snprintf (buf, sizeof (buf), "%s", c_out_to (text, cont));
             PacketWriteTLV     (pak, 2);
             PacketWriteTLV     (pak, 1281);
             PacketWrite1       (pak, 1);

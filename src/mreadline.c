@@ -392,7 +392,7 @@ void R_process_input_tab (void)
     if (bytelen < strlen (msgcmd) &&
         !strncmp (s, msgcmd, bytelen < strlen (msgcmd) ? bytelen : strlen (msgcmd)))
     {
-        sprintf (s, "%s ", msgcmd);
+        snprintf (s, sizeof (s), "%s ", msgcmd);
         bytepos = bytelen = strlen (s);
 #ifdef ENABLE_UTF8
         curpos = curlen = c_strlen (s);
@@ -414,9 +414,14 @@ void R_process_input_tab (void)
         }
 
         if ((uin = TabGetNext ()))
-            sprintf (s, "%s %s ", msgcmd, (cont = ContactFind (NULL, 0, uin, NULL, 1)) ? ConvFromUTF8 (cont->nick, prG->enc_loc) : s_sprintf ("%ld", uin));
+        {
+            cont = ContactFind (NULL, 0, uin, NULL, 1);
+            snprintf (s, sizeof (s), "%s %s ", msgcmd,
+                      cont ? ConvFromUTF8 (cont->nick, prG->enc_loc)
+                           : s_sprintf ("%ld", uin));
+        }
         else
-            sprintf (s, "%s ", msgcmd);
+            snprintf (s, sizeof (s), "%s ", msgcmd);
 
         R_remprompt ();
         bytelen = bytepos = strlen (s);
@@ -976,7 +981,7 @@ static void tty_prepare (void)
 }
 
 /***************************************************************
-Turns keybord echo off for the password
+Turns keyboard echo off for the password
 ****************************************************************/
 SDWORD Echo_Off (void)
 {
@@ -997,7 +1002,7 @@ SDWORD Echo_Off (void)
 
 
 /***************************************************************
-Turns keybord echo back on after the password
+Turns keyboard echo back on after the password
 ****************************************************************/
 SDWORD Echo_On (void)
 {

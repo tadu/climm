@@ -299,7 +299,7 @@ int main (int argc, char *argv[])
 #endif
 
     if (!rc)
-        Initalize_RC_File ();
+        Initialize_RC_File ();
 
 #ifdef _WIN32
     i = WSAStartup (0x0101, &wsaData);
