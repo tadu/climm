@@ -716,8 +716,7 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
         int i;
 
         while (1) {
-            M_print (i18n (2146, "??%x?? %s%s%s\n"),
-                     type, COLMESSAGE COLMSGINDENT, text, COLNONE);
+            M_print ("??%x?? %s%s%s\n", type, COLMESSAGE COLMSGINDENT, text, COLNONE);
             for (i = 0; i < strlen (text); i++)
                 M_print ("%c", cdata[i] ? cdata[i] : '.');
             M_print (COLMSGEXDENT "\n");
