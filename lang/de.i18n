@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN:
+#  EN: en.i18n,v 1.50 2002/08/26 13:11:47
 1001:de
 1002:de_DE
 1003:0-4-9-3
@@ -800,8 +800,8 @@
 1889:Server
 1890:Direktverbindung
 1891:Verbindung %d ist bereits geöffnet.¶
-1892:conn             Liste verfügbare Verbindungen auf.¶
-1893:conn login <nr>  Öffnet Verbindung <nr>.¶
+1892:conn               Liste verfügbare Verbindungen auf.¶
+1893:conn login <nr>    Öffnet Verbindung <nr>.¶
 1894:Es gibt keine Verbindung Nummer %d.¶
 1895:Login fehlgeschlagen:¶
 1896:Der Server hat die Verbindung geschlossen:¶
@@ -976,7 +976,7 @@
 2084:Fehler beim Suchen vom %d. Byte: %s (%d).¶
 2085:Breche Dateiübertragung %d %d wegen Zeitüberschreitung ab.¶
 2086:Fehler beim Lesen der Datei "%s": %s (%d).¶
-2087:Datei Nummer %d fertig gesendet.¶
+2087:Datei "%s" fertig gesendet.¶
 2088:Alle %d Dateien fertig gesendet.¶
 2089:Dateiannahme
 2090:Dateiübertragung
