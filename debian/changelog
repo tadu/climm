@@ -1,8 +1,8 @@
-micq (0.5-0) unstable; urgency=low
+micq (1:0.5.0.1-0) unstable; urgency=low
 
-  * CVS build
+  * New upstream version.
 
- -- Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>  Thu, 10 Feb 2005 18:00:08 +0200
+ -- Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>  Sun, 27 Feb 2005 18:00:08 +0200
 
 micq (1:0.4.10.3-1.1) unstable; urgency=low
 

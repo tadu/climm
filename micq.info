@@ -1,5 +1,5 @@
 Package: micq
-Version: 0.5
+Version: 0.5.0.1
 Revision: 1
 ConfigureParams: --enable-ssl --enable-tcl CFLAGS=-O4
 Source: http://www.micq.org/source/micq-%v.tgz
