@@ -141,9 +141,9 @@
 1168:Engenharia
 1169:Serviços Financeiros
 1170:Governo
-1171:Estudante 2o. Grau
+1171:Estudante de 2o. Grau
 1172:Lar
-1173:ICQ - Dando Ajuda
+1173:ICQ - Fornecendo Ajuda
 1174:Lei
 1175:Gerencial
 1176:Manufatura
@@ -262,8 +262,8 @@
 1299:Islândia
 1300:Índia
 1301:Indonésia
-1302:INMARSAT
-1303:INMARSAT Atlântico-Leste
+1302:INMARSAT (Organização Internacional de Telecomunicações Marítimas via Satélite)
+1303:INMARSAT Atlântico-Leste (Organização Internacional de Telecomunicações Marítimas via Satélite)
 1304:Irã
 1305:Iraque
 1306:Irlanda
@@ -381,13 +381,13 @@
 1428:Adiciona todos os contatos em <contatos> para o grupo de contatos <grupo>.
 1429:Procura um usuário ICQ.
 1430:Mostra informações gerais para <uin> ou <apelido>.
-1431:Ajustar estado para "conectado".
-1432:Ajustar estado para "ausente".
-1433:Ajustar estado para "não disponível".
-1434:Ajustar estado para "ocupado".
-1435:Ajustar estado para "não perturbe".
-1436:Ajustar estado para "livre para bate papo".
-1437:Ajustar estado para "invisível".
+1431:Ajusta estado para "conectado".
+1432:Ajusta estado para "ausente".
+1433:Ajusta estado para "não disponível".
+1434:Ajusta estado para "ocupado".
+1435:Ajusta estado para "não perturbe".
+1436:Ajusta estado para "livre para bate papo".
+1437:Ajusta estado para "invisível".
 1438:Atualiza suas informações básicas (email, apelido, etc.).
 1439:Ajusta seu grupo aleatório de usuário.
 1440:Usuário Aleatório:
@@ -399,7 +399,7 @@
 1446:Comandos para enviar mensagens.
 1447:Cliente
 1448:Mensagem
-1449:Usuário   
+1449:Usuário
 1450:Conta
 1451:IP  local:
 1452:Estado:
@@ -538,9 +538,7 @@
 1639:O novo UIN é %ld!\n
 1640:Atualização de informações falhou.\n
 1641:Informações de usuário atualizadas com sucesso.\n
-#-#1642:IP
-#+#1642:IP
-#1642:IP:
+1642:IP:
 1643:Conhecido SRV_X1 0x021C Lista de contatos pronta?\n
 1644:Conhecido SRV_X2 0x00E6 Antigas mensagens prontas?\n
 1645:Você entrou uma senha inválida.\n
@@ -994,7 +992,7 @@
 2234:Mensagem %s descartada - sessão perdida.\n
 2235:Nenhum apelido dado.\n
 2236:Informações para %s%s%s (%ld):\n
-2237:Disponibilidade em rede:
+2237:Presença na rede:
 2238:Esconder IP:
 2239:Mais desconhecido:
 2240:Nenhum grupo de contatos dado.\n
@@ -1078,43 +1076,43 @@
 2319:Aceita um arquivo vindo de <uin> ou <nick>.
 2320:peer accept <nick> [<id>]\n                  - aceita uma transferência de arquivo chegando.\n
 2327:%smICQ (clone ICQ do Matt)%s versão %s%s%s\n
-#2328:You logged in too frequently, please wait 30 minutes before trying again.\n
-#2329:syntax error
-#2330:removing non-contact
-#2331:unknown
-#2332:Contact error %d (%s) for %d contacts: 
-#2333:%s [show|load|save|set|get|rget] <contacts> - handle meta data for contacts.\n
-#2334:  show - show current known meta data\n
-#2335:  load - load from file and show meta data\n
-#2336:  save - save meta data to file\n
-#2337:  set  - upload own meta data to server\n
-#2338:  get  - query server for meta data\n
-#2339:  rget - query server for last sender's meta data\n
+2328:Você logou muito freqüentemente, por favor espere 30 minutos antes de tentar novamente\n
+2329:erro de sintaxe
+2330:removendo não-contato
+2331:desconhecido
+2332:Erro de contato %d (%s) para %d contatos: 
+2333:%s [show|load|save|set|get|rget] <contacts> - manipular meta dados para contatos.\n
+2334:  show - mostra meta dados conhecidos atualmente\n
+2335:  load - lê de arquivo e mostra meta dados\n
+2336:  save - salva meta dados em arquivo\n
+2337:  set  - envia os próprios meta dados para o servidor\n
+2338:  get  - pede meta dados para o servidor\n
+2339:  rget - pede os últimos meta dados do remetente para o servidor\n
 2340:Transferência de arquivo '%s' rejeitado pelo ponto: %s%s.\n
 2341:Recusando pedido de arquivo '%s' (%ld bytes): %s%s.\n
-#2342:Scripting
-#2343:Scripting extensions.
-#2344:Execute Tcl script from <file>.
-#2345:Execute Tcl script in <string>.
-#2346:The following Tcl commands are supported:\n
-#2347:micq receive <script> [<contact>]
-#2348:Install hook to receive messages from UIN or nick, or all if omitted.
-#2349:Callback arguments: from message
-#2350:micq unreceive [<contact>]
-#2351:Uninstall message hook for UIN or nick.
-#2352:micq event <script>
-#2353:Install event hook. Callback arguments: type ...
-#2354:micq unevent
-#2355:Uninstall event hook.
-#2356:List all installed hooks. Format: <type> <command> <filter>.
-#2357:micq exec <cmd>
-#2358:Execute micq command.
-#2359:micq nick <uin>
-#2360:Find nick from <uin>.
-#2361:Wrong number of arguments for command '%s %s'. Expected %d.\n
-#2362:Wrong number of arguments. Try 'help'.
-#2363:Error: recursive 'micq exec' not allowed.
-#2364:No connection found.
-#2365:unknown command: %s
-#2366:TCL error in file %s: %s\n
-#2367:TCL error: %s\n
+2342:Scripting
+2343:Extensões para scripting.
+2344:Executar script Tcl de <arquivo>.
+2345:Executar script Tcl em <texto>.
+2346:Os seguintes comandos TCL são suportados:\n
+2347:micq receive <script> [<contato>]
+2348:Instalar laço para receber mensagens de UIN ou apelido, ou todos se omitido.
+2349:Argumentos de retorno: da mensagem
+2350:micq unreceive [<contato>]
+2351:Desinstalar laço de mensagem para UIN ou apelido.
+2352:micq event <script>
+2353:Instalar laço de evento. Argumentos de retorno: tipo ...
+2354:micq unevent
+2355:Desinstalar laço de evento.
+2356:Listar todos os laço instalados. Formato: <tipo> <comando> <filtro>.
+2357:micq exec <cmd>
+2358:Executar comando micq.
+2359:micq nick <uin>
+2360:Procurar apelido de <uin>.
+2361:Número errado de argumentos para comando '%s %s'. %d esperado.\n
+2362:Número errado de argumentos. Tente 'help'.
+2363:Erro: 'micq exec' recursivo não permitido.
+2364:Nenhuma conexão encontrada.
+2365:comando desconhecido: %s
+2366:erro TCL no arquivo %s: %s\n
+2367:erro TCL: %s\n
