@@ -37,7 +37,7 @@
 1037:Mensaje enviado antes de quedarnos sin espacio
 1038:Mensaje cancelado
 1039:El servidor dice que no estamos conectados
-#1040:mICQ> 
+1040:mICQ> 
 1041:msj> 
 1042:msj todos> 
 1043:Todos los usuarios encontrados.
@@ -698,10 +698,10 @@
 1799:Escuela secundaria/Polimodal
 1800:Cambia el lenguaje a <lang>.
 1801:Muestra una lista de las personas en tu lista de contactos en formato ancho.
-#1802:SoundOnline cmd
-#1803:SoundOffline cmd
-#1804:SoundOnline
-#1805:SoundOffline
+1802:SoundOnline cmd
+1803:SoundOffline cmd
+1804:SoundOnline
+1805:SoundOffline
 1807:Mensaje (seq %04x) entrante de %s cancelado¶
 1808:Colegio
 1810:Universidad
@@ -806,7 +806,7 @@
 1943:(no necesita autorización)
 1944:(debe pedir autorización)
 1945:Respuesta meta-user desconocida
-#1947:listener
+1947:conexión escucha
 1948:No se puede encontrar el hostname %s: %s.
 1949:falló:¶
 1950:No se pudo poner el socket en modo nonblocking
@@ -910,7 +910,7 @@
 2064:Rechazando pedido de chat (%s/%s/%s) de %s.¶
 #2065:Unknown TCP_MSG_GREET_ command %04x.¶
 #2066:Unknown TCP_MSG_ command %04x.¶
-#2067:file io
+2067:entrada y salida de archivos
 2068:Abriendo transferencia de archivo a %s:%d... ¶
 2069:La transferencia de archivo '%s' fue rechazada por el par (%x,%x): %s.¶
 2070:Transfiriendo archivo '%s' al port %d.¶
@@ -928,8 +928,8 @@
 2086:Error leyendo el archivo %s: %s (%d).¶
 2087:El envio del archivo %s ha finalizado.¶
 2088:El envio de los %d archivos ha finalizado.¶
-#2089:file listener
-#2090:file peer-to-peer
+2089:conexión en espera de archivos
+2090:conexión par-a-par de archivos
 2091:Agregando %s como %s a la lista de transferencias.¶
 #2092:TCP message %s discarded - lost session.¶
 #2093:%02d %-12s version %d for %s (%x), at %s:%d %s¶
