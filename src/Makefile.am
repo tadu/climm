@@ -2,7 +2,7 @@
 
 bin_PROGRAMS = micq
 
-AM_CFLAGS = -DPKGDATADIR='"$(pkgdatadir)"' -I$(top_srcdir)/include
+AM_CFLAGS = -DPKGDATADIR='"$(pkgdatadir)"' -I$(top_srcdir)/include @LIBICONV@
 
 micq_SOURCES = conv.c file_util.c icq_response.c micq.c \
        server.c util.c util_opts.c util_ui.c mreadline.c \

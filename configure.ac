@@ -115,6 +115,8 @@ AC_CACHE_CHECK(for iconv() fallbacks to compile in, ac_cv_iconv_fb,
     fi
   fi
   if test "x$am_cv_func_iconv$ac_arg_use_iconvrepl" = "xyesno"; then
+    old_LDFLAGS=$LDFLAGS
+    LDFLAGS="$LDFLAGS $LIBICONV"
     AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
           #include <iconv.h>
           #include <stdio.h>]],
@@ -195,6 +197,7 @@ AC_CACHE_CHECK(for iconv() fallbacks to compile in, ac_cv_iconv_fb,
           exit (0);]])],
       [ac_cv_iconv_fb="`cat conftest.encodings`"],
       [], [])
+    LDFLAGS=$old_LDFLAGS
     rm -f conftest.encodings
   fi
 ])
