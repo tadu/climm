@@ -1,4 +1,4 @@
-/* $Id: */
+/* $Id$ */
 
 const char *s_sprintf (const char *fmt, ...);
 const char *s_ip (UDWORD ip);
