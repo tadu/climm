@@ -333,8 +333,7 @@ void ReadLineHandleSig (void)
         {
             s_init (&rl_operate, "", 0);
             rl_key_end ();
-            printf ("%s", rl_operate.txt);
-            printf (" %s^C%s\n", COLERROR, COLNONE);
+            printf ("%s %s^C%s\n", rl_operate.txt, COLERROR, COLNONE);
             rl_print ("\r");
             rl_prompt_stat = 0;
             rl_historyadd ();
