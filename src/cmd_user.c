@@ -582,7 +582,7 @@ static JUMP_F(CmdUserPass)
         conn->passwd = strdup (arg1);
         if (conn->spref->passwd && strlen (conn->spref->passwd))
         {
-            M_print (i18n (2122, " Note: You need to 'save' to write new password to disc.\n"));
+            M_print (i18n (2122, "Note: You need to 'save' to write new password to disc.\n"));
             conn->spref->passwd = strdup (arg1);
         }
     }
@@ -2489,7 +2489,7 @@ static JUMP_F(CmdUserAdd)
         {
             M_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, arg1);
             if (!Add_User (conn, cont->uin, arg1))
-                M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
+                M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
             if (c_strlen (arg1) > uiG.nick_len)
                 uiG.nick_len = c_strlen (arg1);
             ContactFind (conn->contacts, 0, cont->uin, cont->nick, 1);
@@ -2516,7 +2516,7 @@ static JUMP_F(CmdUserAdd)
                 {
                     M_printf (i18n (2148, "Added '%s' as an alias for '%s' (%ld).\n"),
                              cont2->nick, cont->nick, cont->uin);
-                    M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
+                    M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
                 }
             }
         }
@@ -2622,7 +2622,7 @@ static JUMP_F(CmdUserRemove)
         }
     }
 
-    M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
+    M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
     return 0;
 }
 

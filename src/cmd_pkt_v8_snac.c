@@ -1017,7 +1017,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                 M_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
         }
         else
-            M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
+            M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
     }
 }
 
@@ -1635,7 +1635,7 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
      PacketWriteTLV     (pak, 10001);
       PacketWriteLen     (pak);
        PacketWrite2       (pak, conn->assoc && conn->assoc->connect & CONNECT_OK
-                              ? conn->assoc->ver : 0);
+                              ? conn->assoc->ver : 8);
        PacketWriteCapID   (pak, CAP_NONE);
        PacketWrite2       (pak, 0);
        PacketWrite4       (pak, 3);
