@@ -4,6 +4,7 @@
 #define MICQ_COLOR_H
 
 #define ESC "\x1b"
+#define ESCC '\x1b'
 
 #define BLACK           ESC "[0;30m"
 #define RED             ESC "[0;31m"

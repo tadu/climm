@@ -215,8 +215,7 @@ void R_resume (void)
 void R_goto (int pos)
 {
     int mypos, mylen;
-    static char *t = NULL;
-    static UDWORD size = 0;
+    static str_s t;
 #ifdef ANSI_TERM
     int scr, off;
 #endif
@@ -225,36 +224,36 @@ void R_goto (int pos)
     
     if (pos == curpos)
         return;
-        
-    if (!t)
-        t = strdup ("");
-    *t = '\0';
+
+    s_init (&t, "", 100);
 
 #ifdef ANSI_TERM
     scr = Get_Max_Screen_Width ();
     off = M_pos ();
     while ((off + pos) / scr < (off + curpos) / scr)
     {
-        t = s_cat (t, &size, ESC "[A");
+        s_catc (&t, ESCC);
+        s_catc (&t, '[');
+        s_catc (&t, 'A');
         curpos -= scr;
     }
     if (curpos < 0)
     {
-        t = s_catf (t, &size, ESC "[%dC", -curpos);
+        s_catf (&t, ESC "[%dC", -curpos);
         curpos = 0;
     }
     if (pos < curpos)
-        t = s_catf (t, &size, ESC "[%dD", curpos - pos);
+        s_catf (&t, ESC "[%dD", curpos - pos);
 #else
     while (pos + 10 <= curpos)
     {
-        t = s_cat (t, &size, "\b\b\b\b\b\b\b\b\b\b");
+        s_cat (&t, "\b\b\b\b\b\b\b\b\b\b");
         curpos -= 10;
     }
-    if (pos < curpos)
+    while (pos < curpos)
     {
-        t = s_catf (t, &size, "%.*s", curpos - pos, "\b\b\b\b\b\b\b\b\b\b");
-        curpos = pos;
+        s_catc (&t, '\b');
+        curpos--;
     }
 #endif
 
@@ -272,13 +271,13 @@ void R_goto (int pos)
             mypos = curpos;
             mylen = pos - curpos;
         }
-        t = s_catf (t, &size, "%.*s", mylen, s + mypos);
+        s_catf (&t, "%.*s", mylen, s + mypos);
     }
     curpos = pos;
 #ifdef ENABLE_UTF8
     bytepos = c_offset (s, curpos);
 #endif
-    printf ("%s", t);
+    printf ("%s", t.txt);
 }
 
 void R_rlap (const char *s, const char *add, BOOL clear)

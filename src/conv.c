@@ -133,21 +133,18 @@ const char *ConvEncName (UBYTE enc)
 
 const char *ConvCrush0xFE (const char *inn)
 {
-    static char *t = NULL;
-    static UDWORD size = 0;
+    static str_s t;
     char *p;
     
     if (!inn || !*inn)
         return "";
     
-    t = s_catf (t, &size, "%*s", 100, "");
-    *t = '\0';
-    
-    t = s_catf (t, &size, "%s", inn);
-    for (p = t; *p; p++)
+    s_init (&t, inn, 0);
+
+    for (p = t.txt; *p; p++)
         if (*p == Conv0xFE)
             *p = '*';
-    return t;
+    return t.txt;
 }
 
 #ifdef ENABLE_UTF8
@@ -231,17 +228,16 @@ BOOL ConvIsUTF8 (const char *in)
 
 const char *ConvToUTF8 (const char *inn, UBYTE enc, size_t totalin, UBYTE keep0xfe)
 {
-    static char *t = NULL;
-    static UDWORD size = 0;
+    static str_s t;
+
     size_t inleft, outleft, totalleft;
-    char *out, *tmp;
+    char *out;
     ICONV_CONST char *in;
 
     if (!inn)
         return "";
 
-    t = s_catf (t, &size, "%*s", 100, "");
-    *t = '\0';
+    s_init (&t, "", 100);
     
     enc &= ~ENC_AUTO;
     if (!conv_nr)
@@ -260,58 +256,54 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc, size_t totalin, UBYTE keep0x
         }
     }
     iconv (conv_encs[enc].to, NULL, NULL, NULL, NULL);
+    out = t.txt;
+    outleft = t.max - 2;
     in = (ICONV_CONST char *)inn;
-    out = t;
     totalin = (totalin == -1 ? strlen (in) : totalin);
     totalleft = totalin;
     inleft = (keep0xfe && memchr (in, 0xfe, totalin)) ? (const char *)memchr (in, 0xfe, totalin) - in : totalin;
-    outleft = size - 1;
     while (iconv (conv_encs[enc].to, &in, &inleft, &out, &outleft) == (size_t)(-1) || *in == (char)0xfe)
     {
         UDWORD rc = errno;
+
+        t.len = out - t.txt;
+
         if (outleft < 10 || rc == E2BIG)
         {
-            UDWORD done = out - t;
-            tmp = realloc (t, size + 50);
-            if (!tmp)
-                break;
-            t = tmp;
-            size += 50;
-            outleft += 50;
-            out = t + done;
+            s_blow (&t, 50);
         }
         else if (*in == (char)0xfe && keep0xfe)
         {
-            *out++ = 0xfe;
-            outleft--;
+            s_catc (&t, 0xfe);
             in++;
             totalin = totalleft - (in - inn);
             inleft = (keep0xfe && memchr (in, 0xfe, totalin)) ? (const char *)memchr (in, 0xfe, totalin) - in : totalin;
         }
         else /* EILSEQ */
         {
-            *out++ = '?';
-            outleft--;
+            s_catc (&t, '?');
             in++;
             inleft--;
         }
+        out = t.txt + t.len;
+        outleft = t.max - t.len - 2;
     }
     *out = '\0';
-    return t;
+    return t.txt;
 }
 
 const char *ConvFromUTF8 (const char *inn, UBYTE enc, size_t *resultlen)
 {
-    static char *t = NULL;
-    static UDWORD size = 0;
+    static str_s t;
+
     size_t inleft, outleft;
-    char *out, *tmp;
+    char *out;
     ICONV_CONST char *in;
 
     if (!inn)
         return "";
-    t = s_catf (t, &size, "%*s", 100, "");
-    *t = '\0';
+    
+    s_init (&t, "", 100);
     
     enc &= ~ENC_AUTO;
     if (!conv_nr)
@@ -330,45 +322,41 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc, size_t *resultlen)
         }
     }
     iconv (conv_encs[enc].from, NULL, NULL, NULL, NULL);
+    out = t.txt;
+    outleft = t.max - 2;
     in = (ICONV_CONST char *)inn;
-    out = t;
     inleft = strchr (in, 0xfe) ? strchr (in, 0xfe) - in : strlen (in);
-    outleft = size - 1;
     while (iconv (conv_encs[enc].from, &in, &inleft, &out, &outleft) == (size_t)(-1) || *in == (char)0xfe)
     {
         UDWORD rc = errno;
+
+        t.len = out - t.txt;
+
         if (outleft < 10 || rc == E2BIG)
         {
-            UDWORD done = out - t;
-            tmp = realloc (t, size + 50);
-            if (!tmp)
-                break;
-            t = tmp;
-            size += 50;
-            outleft += 50;
-            out = t + done;
+            s_blow (&t, 50);
         }
         else if (*in == (char)0xfe)
         {
-            *out++ = 0xfe;
-            outleft--;
+            s_catc (&t, 0xfe);
             in++;
             inleft = strchr (in, 0xfe) ? strchr (in, 0xfe) - in : strlen (in);
         }
         else /* EILSEQ */
         {
-            *out++ = '?';
-            outleft--;
+            s_catc (&t, '?');
             in++;
             inleft--;
             while (*in && ((*in & 0xc0) == 0x80)) /* skip continuation bytes */
                 in++, inleft--;
         }
+        out = t.txt + t.len;
+        outleft = t.max - t.len - 2;
     }
     *out = '\0';
     if (resultlen)
-        *resultlen = out - t;
-    return t;
+        *resultlen = t.len = out - t.txt;
+    return t.txt;
 }
 
 BOOL ConvFits (const char *in, UBYTE enc)
@@ -386,7 +374,9 @@ BOOL ConvFits (const char *in, UBYTE enc)
 
 #else
 
-#define PUT_UTF8(x) t = s_cat (t, &size, ConvUTF8 (x))
+
+
+#define PUT_UTF8(x) s_cat (&t, ConvUTF8 (x))
 
 #define GET_UTF8(in,y) \
  do { UDWORD vl = 0; int todo = 1; UDWORD org = *in++; if ((org & 0xc0) != 0xc0) { y = '!'; continue; } \
@@ -438,13 +428,10 @@ const UDWORD win1251_utf8[] = { /* 7bit are us-ascii */
 
 const char *ConvToUTF8 (const char *inn, UBYTE enc, size_t totalin, UBYTE keep0xfe)
 {
-    static char *t = NULL;
-    static UDWORD size = 0;
+    static str_s t;
+
     const unsigned char *in = (const unsigned char *)inn;
     UDWORD ucs, i;
-#if 0
-    unsigned char x, y;
-#endif
     
     if (!inn)
         return "";
@@ -452,19 +439,18 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc, size_t totalin, UBYTE keep0x
     totalin = (enc == ENC_UCS2BE ? (totalin == -1 ? strlen (in) : totalin) : 0);
     /* obey totalin _only_ for UCS-2BE */
 
-    t = s_catf (t, &size, "%*s", (int)(totalin * 3), "");
-    *t = '\0';
+    s_init (&t, "", 100):
     
-    for (*t = '\0'; *in || totalin; in++)
+    for ( ; *in || totalin; in++)
     {
         if ((~*in & 0x80) && (enc & ~ENC_AUTO) != ENC_UCS2BE)
         {
-            t = s_catf (t, &size, "%c", *in);
+            s_catf (&t, "%c", *in);
             continue;
         }
         if (keep0xfe && *in == (unsigned char)Conv0xFE)
         {
-            t = s_catf (t, &size, "\xfe");
+            s_catf (&t, "\xfe");
             continue;
         }
         switch (enc & ~ENC_AUTO)
@@ -512,7 +498,7 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc, size_t totalin, UBYTE keep0x
                         PUT_UTF8 ('?');
                         in--;
                         if (totalin < 2)
-                            return t;
+                            return t.txt;
                         continue;
                     }
                     ucs |= (0x3 & *(in++));
@@ -522,61 +508,30 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc, size_t totalin, UBYTE keep0x
                 totalin -= 2;
                 PUT_UTF8 (ucs);
                 if (totalin < 2)
-                    return t;
+                    return t.txt;
                 continue;
-#if 0
-            case ENC_EUC:
-                /* FIXME: No, this is no real UTF-8. We just stuff EUC
-                          into the private use area U+Fxxxx */
-                PUT_UTF8 (0xf0000 | (*in << 8) | in[1]);
-                in++;
-                continue;
-            case ENC_SJIS:
-                x = *in++;
-                y = *in;
-                if ((x & 0xe0) == 0x80)
-                {
-                    if (y < 0x9f)
-                    {
-                        x = 2 * x - (x >= 0xe0 ? 0xe1 : 0x61);
-                        y += 0x61 - (y >= 0x7f ?    1 :    0);
-                    }
-                    else
-                    {
-                        x = 2 * x - (x >= 0xe0 ? 0xe0 : 0x60);
-                        y += 2;
-                    }
-                }
-                PUT_UTF8 (0xf0000 | (x << 8) | y);
-                continue;
-#endif
             default:
-                t = s_cat (t, &size, "?");
+                s_catc (&t, '?');
         }
     }
-    return t;
+    return t.txt;
 }
 
 const char *ConvFromUTF8 (const char *inn, UBYTE enc, size_t *resultlen)
 {
-    static char *t = NULL;
-    static UDWORD size = 0;
+    static str_s t;
+
     const unsigned char *in = (const unsigned char *)inn;
     UDWORD val, i;
-#if 0
-    unsigned char x, y;
-#endif
 
     if (!inn)
         return "";
 
-    t = s_catf (t, &size, "%*s", (int)strlen ((const char *)in), "");
+    s_init (&t, "", 100);
+
     if ((enc & ~ENC_AUTO) == ENC_UCS2BE)
     {
-        char *p = NULL;
-        
-        t = s_catf (t, &size, "%*s", (int)strlen ((const char *)in), "");
-        for (p = t; *in; )
+        for ( ; *in; )
         {
             if (~*in & 0x80)
                 val = *(in++);
@@ -587,34 +542,34 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc, size_t *resultlen)
             }
             if (val > 0xffff || (val & 0xf800) == 0xd800)
             {
-                *(p++) = 0xd8 | ((val >> 18) & 0x3);
-                *(p++) = (val >> 10) & 0xff;
-                *(p++) = 0xdc | ((val >> 8) & 0x3);
-                *(p++) = val & 0xff;
+                s_catc (&t, 0xd8 | ((val >> 18) & 0x3)));
+                s_catc (&t, (val >> 10) & 0xff);
+                s_catc (&t, 0xdc | ((val >> 8) & 0x3));
+                s_catc (&t, val & 0xff);
             }
             else
             {
-                *(p++) = (val >> 8) & 0xff;
-                *(p++) = val & 0xff;
+                s_catc (&t, (val >> 8) & 0xff);
+                s_catc (&t, val & 0xff);
             }
         }
         if (resultlen)
-            *resultlen = p - t;
-        *(p++) = 0;
-        *(p++) = 0;
-        return t;
+            *resultlen = t.len;
+        s_catc (&t, 0);
+        s_catc (&t, 0);
+        return t.txt;
     }
 
-    for (*t = '\0'; *in; in++)
+    for ( ; *in; in++)
     {
         if (~*in & 0x80)
         {
-            t = s_catf (t, &size, "%c", *in);
+            s_catc (&t, *in);
             continue;
         }
         if (*in == 0xfe) /* we _do_ allow 0xFE here, it's the ICQ separator character */
         {
-            t = s_catf (t, &size, "\xfe");
+            s_catfc (&t, '\xfe');
             continue;
         }
         val = '?';
@@ -622,7 +577,7 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc, size_t *resultlen)
         in--;
         if (val == '?')
         {
-            t = s_catf (t, &size, "?");
+            s_catc (&t, '?');
             continue;
         }
         switch (enc & ~ENC_AUTO)
@@ -632,26 +587,25 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc, size_t *resultlen)
                 continue;
             case ENC_LATIN1:
                 if (!(val & 0xffffff00))
-                    t = s_catf (t, &size, "%c", (UBYTE)val);
+                    s_catc (&t, val);
                 else
-                    t = s_catf (t, &size, "?");
+                    s_catc (&t, '?');
                 continue;
             case ENC_LATIN9:
                 if (!(val & 0xffffff00))
-                    t = s_catf (t, &size, "%c", (UBYTE)val);
+                    s_catc (&t, val);
                 else
                     switch (val)
                     {
-                        case 0x20ac: t = s_catf (t, &size, "\xa4"); continue; /* EURO */
-                        case 0x0160: t = s_catf (t, &size, "\xa6"); continue; /* SCARON */
-                        case 0x0161: t = s_catf (t, &size, "\xa8"); continue; /* SMALL SCARON */
-                        case 0x017d: t = s_catf (t, &size, "\xb4"); continue; /* ZCARON */
-                        case 0x017e: t = s_catf (t, &size, "\xb8"); continue; /* SMALL ZCARON */
-                        case 0x0152: t = s_catf (t, &size, "\xbc"); continue; /* OE */
-                        case 0x0153: t = s_catf (t, &size, "\xbd"); continue; /* SMALL OE */
-                        case 0x0178: t = s_catf (t, &size, "\xbe"); continue; /* Y DIAERESIS */
-                        default:
-                            t = s_catf (t, &size, "?");
+                        case 0x20ac: s_catc (&t, '\xa4'); continue; /* EURO */
+                        case 0x0160: s_catc (&t, '\xa6'); continue; /* SCARON */
+                        case 0x0161: s_catc (&t, '\xa8'); continue; /* SMALL SCARON */
+                        case 0x017d: s_catc (&t, '\xb4'); continue; /* ZCARON */
+                        case 0x017e: s_catc (&t, '\xb8'); continue; /* SMALL ZCARON */
+                        case 0x0152: s_catc (&t, '\xbc'); continue; /* OE */
+                        case 0x0153: s_catc (&t, '\xbd'); continue; /* SMALL OE */
+                        case 0x0178: s_catc (&t, '\xbe'); continue; /* Y DIAERESIS */
+                        default:     s_catc (&t, '?');
                     }
                 continue;
             case ENC_KOI8:
@@ -659,11 +613,11 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc, size_t *resultlen)
                 {
                     if (koi8u_utf8[i] == val)
                     {
-                        t = s_catf (t, &size, "%c", (UBYTE)(i + 128));
+                        s_catc (&t, i + 128);
                         break;
                     }
                     if (i == 128)
-                        t = s_catf (t, &size, "?");
+                        s_catc (&t, '?');
                 }
                 continue;
             case ENC_WIN1251:
@@ -671,50 +625,21 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc, size_t *resultlen)
                 {
                     if (win1251_utf8[i] == val)
                     {
-                        t = s_catf (t, &size, "%c", (UBYTE)(i + 128));
+                        s_catc (&t, i + 128);
                         break;
                     }
                     if (i == 128)
-                        t = s_catf (t, &size, "?");
+                        s_catc (&t, '?');
                 }
                 continue;
 /*          case ENC_UCS2BE:  handled above */
-#if 0
-            case ENC_EUC:
-                if ((val & 0xffff0000) != 0xf0000)
-                {
-                    t = s_catf (t, &size, "?");
-                    continue;
-                }
-                t = s_catf (t, &size, "%c%c", (val & 0xff00) >> 8, val & 0xff);
-                continue;
-            case ENC_SJIS:
-                if ((val & 0xffff0000) != 0xf0000)
-                {
-                    t = s_catf (t, &size, "?");
-                    continue;
-                }
-                x = (val & 0xff00) >> 8;
-                y = val & 0xff;
-                if (x & 1)
-                {
-                    x = x / 2 + (x < 0xdf ? 0x31 : 0x71);
-                    y -= 0x61 - (y < 0xe0 ?    0 :    1);
-                }
-                else
-                {
-                    x = x / 2 + (x < 0xdf ? 0x30 : 0x70);
-                    y -= 2;
-                }
-                continue;
-#endif
             default:
-                t = s_cat (t, &size, "?");
+                s_catc (&t, '?');
         }
     }
     if (resultlen)
-        *resultlen = strlen (t);
-    return t;
+        *resultlen = t.len;
+    return t.txt;
 }
 
 #endif /* ENABLE_ICONV */

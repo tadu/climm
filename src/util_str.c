@@ -44,6 +44,137 @@
 #include "util.h"
 
 /*
+ * Initialize a dynamically allocated string.
+ *
+ * Returns NULL if not enough memory.
+ */
+str_t s_init (str_t str, const char *init, size_t len)
+{
+    size_t initlen, size;
+    
+    initlen = strlen (init);
+    size = initlen + (len >= 0 ? len : 0) + 2;
+    
+    if (!str->txt || size >= str->max)
+    {
+        if (str->txt)
+            free (str->txt);
+        str->max = 1 + (size | 0x3f);
+        str->txt = malloc (str->max);
+        if (!str->txt)
+        {
+            str->max = str->len = 0;
+            str->txt = "\0";
+            return NULL;
+        }
+    }
+    str->len = initlen;
+    memcpy (str->txt, init, initlen + 1);
+    return str;
+}
+
+/*
+ * Increase storage size of dynamically allocated string.
+ *
+ * Returns NULL if not enough memory.
+ */
+str_t s_blow (str_t str, size_t len)
+{
+    size_t newlen;
+    char *tmp;
+    
+    newlen = 1 + ((str->max + (len >= 0 ? len : 0)) | 0x3f);
+    
+    if (!str->txt || !str->max)
+        tmp = malloc (newlen);
+    else
+        tmp = realloc (str->txt, newlen);
+    
+    if (!tmp)
+    {
+        if (!str->txt)
+        {
+            str->max = str->len = 0;
+            str->txt = "\0";
+        }
+        return NULL;
+    }
+    str->txt = tmp;
+    str->max = newlen;
+    return str;
+}
+
+
+/*
+ * Appends a character to a dynamically allocated string.
+ */
+str_t s_catc (str_t str, char add)
+{
+    if (str->len + 2 >= str->max)
+        if (!s_blow (str, str->len + 2 - str->max))
+            return NULL;
+
+    str->txt[str->len++] = add;
+    str->txt[str->len] = '\0';
+    return str;
+}
+
+/*
+ * Appends a string to a dynamically allocated string.
+ */
+str_t s_cat (str_t str, const char *add)
+{
+    int addlen = strlen (add);
+    
+    if (str->len + addlen + 1 >= str->max)
+        if (!s_blow (str, str->len + addlen + 1 - str->max))
+        {
+            addlen = str->max - str->len - 2;
+            if (addlen < 0)
+                return NULL;
+        }
+    
+    memcpy (str->txt + str->len, add, addlen + 1);
+    str->len += addlen;
+    return str;
+}
+
+
+/*
+ * Appends a formatted string to a dynamically allocated string.
+ */
+str_t s_catf (str_t str, const char *fmt, ...)
+{
+    va_list args;
+    size_t add = 64;
+    
+    s_blow (str, add);
+
+    while (1)
+    {
+        if (str->len + 2 >= str->max)
+            return NULL;
+        str->txt[str->max - 2] = '\0';
+        va_start (args, fmt);
+        vsnprintf (str->txt + str->len, str->max - str->len - 1, fmt, args);
+        va_end (args);
+        if (!str->txt[str->max - 2])
+        {
+            str->len += strlen (str->txt + str->len);
+            return str;
+        }
+        add |= 2;
+        if (!s_blow (str, add))
+        {
+            str->txt[str->max - 2] = '\0';
+            str->len = str->max - 2;
+            return str;
+        }
+    }
+    return str;
+}
+
+/*
  * Return a static formatted string.
  */
 const char *s_sprintf (const char *fmt, ...)
@@ -74,70 +205,6 @@ const char *s_sprintf (const char *fmt, ...)
         size += 1024;
     }
     return buf;
-}
-
-/*
- * Appends to a dynamically allocated string.
- */
-char *s_cat (char *str, UDWORD *size, const char *add)
-{
-    UDWORD nsize;
-    char *nstr;
-    
-    if (!str)
-        str = strdup ("");
-    if (!size)
-        return str;
-    
-    nsize = strlen (nstr = str) + strlen (add) + 1;
-    if (nsize > *size)
-    {
-        nstr = realloc (str, nsize += 64);
-        if (nstr)
-            *size = nsize;
-        else
-        {
-            nstr = str;
-            nsize = *size;
-        }
-    }
-    strcat (nstr, add);
-    return nstr;
-}
-
-
-/*
- * Appends to a dynamically allocated string.
- */
-char *s_catf (char *str, UDWORD *size, const char *fmt, ...)
-{
-    va_list args;
-    UDWORD nsize;
-    char *nstr;
-    
-    if (!str)
-        str = strdup ("");
-    if (!size)
-        return str;
-    
-    nsize = strlen (nstr = str) + 1024;
-    if (nsize > *size)
-    {
-        nstr = realloc (str, nsize += 64);
-        if (nstr)
-            *size = nsize;
-        else
-        {
-            nstr = str;
-            nsize = *size;
-        }
-    }
-    
-    va_start (args, fmt);
-    vsnprintf (nstr + strlen (nstr), nsize - strlen (nstr), fmt, args);
-    va_end (args);
-    
-    return nstr;
 }
 
 /*
@@ -345,70 +412,72 @@ UDWORD s_offset  (const char *str, UDWORD offset)
  */
 const char *s_dump (const UBYTE *data, UWORD len)
 {
-    static char *t = NULL;
-    static UDWORD size = 0;
+    static str_s t;
     UDWORD i, off;
     const unsigned char *d = (const unsigned char *)data;
     
-    if (!t)
-        t = calloc (1, size = 100);
-    *t = '\0';
+    s_init (&t, "", 100);
+
     while (len >= 16)
     {
-        t = s_catf (t, &size, "%02x %02x %02x %02x %02x %02x %02x %02x  "
+        s_catf (&t, "%02x %02x %02x %02x %02x %02x %02x %02x  "
                               "%02x %02x %02x %02x %02x %02x %02x %02x  ",
                     d[0], d[1],  d[2],  d[3],  d[4],  d[5],  d[6],  d[7],
                     d[8], d[9], d[10], d[11], d[12], d[13], d[14], d[15]);
 #ifdef ENABLE_UTF8
-        t = s_cat (t, &size, "\"");
-        t = s_cat (t, &size, noctl  (d[0]));  t = s_cat (t, &size, noctl  (d[1]));
-        t = s_cat (t, &size, noctl  (d[2]));  t = s_cat (t, &size, noctl  (d[3]));
-        t = s_cat (t, &size, noctl  (d[4]));  t = s_cat (t, &size, noctl  (d[5]));
-        t = s_cat (t, &size, noctl  (d[6]));  t = s_cat (t, &size, noctl  (d[7]));
-        t = s_cat (t, &size, " ");
-        t = s_cat (t, &size, noctl  (d[8]));  t = s_cat (t, &size, noctl  (d[9]));
-        t = s_cat (t, &size, noctl (d[10]));  t = s_cat (t, &size, noctl (d[11]));
-        t = s_cat (t, &size, noctl (d[12]));  t = s_cat (t, &size, noctl (d[13]));
-        t = s_cat (t, &size, noctl (d[14]));  t = s_cat (t, &size, noctl (d[15]));
-        t = s_cat (t, &size, "'\n");
+        s_cat (&t, "\"");
+        s_cat (&t, noctl  (d[0]));  s_cat (&t, noctl  (d[1]));
+        s_cat (&t, noctl  (d[2]));  s_cat (&t, noctl  (d[3]));
+        s_cat (&t, noctl  (d[4]));  s_cat (&t, noctl  (d[5]));
+        s_cat (&t, noctl  (d[6]));  s_cat (&t, noctl  (d[7]));
+        s_cat (&t, " ");
+        s_cat (&t, noctl  (d[8]));  s_cat (&t, noctl  (d[9]));
+        s_cat (&t, noctl (d[10]));  s_cat (&t, noctl (d[11]));
+        s_cat (&t, noctl (d[12]));  s_cat (&t, noctl (d[13]));
+        s_cat (&t, noctl (d[14]));  s_cat (&t, noctl (d[15]));
+        s_cat (&t, "'\n");
 #else
-        t = s_catf (t, &size, "'%c%c%c%c%c%c%c%c %c%c%c%c%c%c%c%c'\n",
-                    noctl  (d[0]), noctl  (d[1]), noctl  (d[2]), noctl  (d[3]),
-                    noctl  (d[4]), noctl  (d[5]), noctl  (d[6]), noctl  (d[7]),
-                    noctl  (d[8]), noctl  (d[9]), noctl (d[10]), noctl (d[11]),
-                    noctl (d[12]), noctl (d[13]), noctl (d[14]), noctl (d[15]));
+        s_catc (&t, '\'');
+        for (i = 0; i < 8; i++)
+            s_catc (&t, noctl (d[i]));
+        s_catc (&t, ' ');
+        for ( ; i < 16; i++)
+            s_catc (&t, noctl (d[i]));
+        s_catc (&t, '\'');
+        s_catc (&t, '\n');
 #endif
         len -= 16;
         d += 16;
     }
     if (!len)
-        return (t);
+        return (t.txt);
     for (off = i = 0; i <= 16; i++)
     {
         if (len)
         {
-            t = s_catf (t, &size, "%02x ", *d++);
+            s_catf (&t, "%02x ", *d++);
             len--;
             off++;
         }
         else if (i != 16)
-            t = s_catf (t, &size, "   ");
+            s_catf (&t, "   ");
         if (i == 7)
-            t = s_catf (t, &size, " ");
+            s_catc (&t, ' ');
         
     }
-    t = s_catf (t, &size, " '");
+    s_catc (&t, ' ');
+    s_catc (&t, '\'');
     while (off)
     {
 #ifdef ENABLE_UTF8
-        t = s_catf (t, &size, "%s", noctl (*(d - off)));
+        s_cat (&t, noctl (*(d - off)));
 #else
-        t = s_catf (t, &size, "%c", noctl (*(d - off)));
+        s_catc (&t, noctl (*(d - off)));
 #endif
         off--;
     }
-    t = s_catf (t, &size, "'\n");
-    return t;
+    s_catf (&t, "'\n");
+    return t.txt;
 }
 
 /*
@@ -416,17 +485,16 @@ const char *s_dump (const UBYTE *data, UWORD len)
  */
 const char *s_dumpnd (const UBYTE *data, UWORD len)
 {
-    static char *t = NULL;
-    static UDWORD size = 0;
+    static str_s t;
     UDWORD i;
     const unsigned char *d = (const unsigned char *)data;
     
-    if (t)
-        *t = 0;
+    s_init (&t, "", 100);
+
     while (len > 16)
     {
-        t = s_catf (t, &size, "%02x %02x %02x %02x %02x %02x %02x %02x  "
-                              "%02x %02x %02x %02x %02x %02x %02x %02x\\\n",
+        s_catf (&t, "%02x %02x %02x %02x %02x %02x %02x %02x  "
+                    "%02x %02x %02x %02x %02x %02x %02x %02x\\\n",
                     d[0], d[1],  d[2],  d[3],  d[4],  d[5],  d[6],  d[7],
                     d[8], d[9], d[10], d[11], d[12], d[13], d[14], d[15]);
         len -= 16;
@@ -436,24 +504,24 @@ const char *s_dumpnd (const UBYTE *data, UWORD len)
     {
         for (i = 0; i < len && i < 8; i++)
         {
-            t = s_catf (t, &size, "%02x ", *d++);
+            s_catf (&t, "%02x ", *d++);
         }
-        t = s_catf (t, &size, "\n");
+        s_catc (&t, '\n');
         len -= i;
     }
     for (i = 0; i < 10; i++)
     {
         if (len)
         {
-            t = s_catf (t, &size, "%02x ", *d++);
+            s_catf (&t, "%02x ", *d++);
             len--;
         }
         else
-            t = s_catf (t, &size, "   ");
+            s_cat (&t, "   ");
         if (i == 7)
-            t = s_catf (t, &size, " ");
+            s_catc (&t, ' ');
     }
-    return t;
+    return t.txt;
 }
 
 /*
@@ -761,34 +829,38 @@ BOOL s_parseint_s (char **input, UDWORD *parsed, char *sep)
  */
 const char *s_quote (const char *input)
 {
-    static char *t = NULL;
-    static UDWORD size = 0;
+    static str_s t;
     const char *tmp;
     
-    if (!t)
-        t = malloc (size = 32);
-    if (!t || !input || !*input)
+    if (!input || !*input)
         return "\"\"";
     for (tmp = input; *tmp; tmp++)
         if (!strchr (SUPERSAFE, *tmp))
             break;
     if (!*tmp)
         return input;
-    *t = 0;
-    t = s_cat (t, &size, "\"");
+    
+    s_init (&t, "", 100);
+
+    s_catc (&t, '\"');
     for (tmp = input; *tmp; tmp++)
     {
         if (strchr ("\\\"", *tmp))
-            t = s_catf (t, &size, "\\%c", *tmp);
+        {
+            s_catc (&t, '\\');
+            s_catc (&t, *tmp);
+        }
         else if (*tmp & 0xe0)
-            t = s_catf (t, &size, "%c", *tmp);
+            s_catc (&t, *tmp);
         else
-            t = s_catf (t, &size, "\\x%c%c",
-                    (*tmp / 16) <= 9 ? ((UBYTE)*tmp / 16) + '0'
-                                     : ((UBYTE)*tmp / 16) - 10 + 'a',
-                    (*tmp & 15) <= 9 ? (*tmp & 15) + '0'
+        {
+            s_catc (&t, '\\');
+            s_catc (&t, (*tmp / 16) <= 9 ? ((UBYTE)*tmp / 16) + '0'
+                                     : ((UBYTE)*tmp / 16) - 10 + 'a');
+            s_catc (&t, (*tmp & 15) <= 9 ? (*tmp & 15) + '0'
                                      : (*tmp & 15) - 10 + 'a');
+        }
     }
-    t = s_cat (t, &size, "\"");
-    return t;
+    s_catc (&t, '\"');
+    return t.txt;
 }

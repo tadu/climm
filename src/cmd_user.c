@@ -1337,8 +1337,7 @@ static JUMP_F (CmdUserAnyMess)
     Contact *cont;
     char *arg1 = NULL;
     UDWORD i, f = 0;
-    static UDWORD size;
-    static char *t = NULL;
+    static str_s t;
     ANYCONN;
 
     if (!(data & 3))
@@ -1362,9 +1361,7 @@ static JUMP_F (CmdUserAnyMess)
             return 0;
         data |= i << 2;
     }
-    if (!t)
-        t = s_catf (t, &size, " ");
-    *t = 0;
+    s_init (&t, "", 100);
 
     if (!s_parsenick (&args, &cont, NULL, conn))
         return 0;
@@ -1372,10 +1369,10 @@ static JUMP_F (CmdUserAnyMess)
     if (!s_parse (&args, &arg1))
         return 0;
     
-    t = s_catf (t, &size, "%s", arg1);
+    s_catf (&t, "%s", arg1);
 
     while (s_parse (&args, &arg1))
-        t = s_catf (t, &size, "%c<%s>", Conv0xFE, arg1);
+        s_catf (&t, "%c<%s>", Conv0xFE, arg1);
         
     if (data & 1)
     {
@@ -1385,17 +1382,17 @@ static JUMP_F (CmdUserAnyMess)
             M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
             return 0;
         }
-        TCPSendMsg (conn->assoc, cont, t, data >> 2);
+        TCPSendMsg (conn->assoc, cont, t.txt, data >> 2);
     }
 #endif
     else
     {
         if (conn->type != TYPE_SERVER)
-            CmdPktCmdSendMessage (conn, cont, t, data >> 2);
+            CmdPktCmdSendMessage (conn, cont, t.txt, data >> 2);
         else if (f != 2)
-            SnacCliSendmsg (conn, cont, t, data >> 2, f);
+            SnacCliSendmsg (conn, cont, t.txt, data >> 2, f);
         else
-            SnacCliSendmsg2 (conn, cont, ExtraSet (ExtraSet (NULL, EXTRA_FORCE, 1, NULL), EXTRA_MESSAGE, data >> 2, t));
+            SnacCliSendmsg2 (conn, cont, ExtraSet (ExtraSet (NULL, EXTRA_FORCE, 1, NULL), EXTRA_MESSAGE, data >> 2, t.txt));
     }
     return 0;
 }
@@ -1405,8 +1402,7 @@ static JUMP_F (CmdUserAnyMess)
  */
 static JUMP_F (CmdUserMessageNG)
 {
-    static UDWORD size = 0;
-    static char *msg = NULL;
+    static str_s t;
     static UDWORD uinlist[20] = { 0 };
     char *arg1 = NULL;
     UDWORD i;
@@ -1477,13 +1473,13 @@ static JUMP_F (CmdUserMessageNG)
             M_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLCONTACT, ContactUIN (conn, uinlist[0])->nick, COLNONE);
         else
             M_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLMESSAGE, i18n (2220, "several"), COLNONE);
-        msg = s_cat (msg, &size, "");
-        *msg = 0;
+        s_init (&t, "", 100);
         if (arg1)
         {
             arg1[strlen (arg1) - 1] = '\0';
-            msg = s_cat (msg, &size, arg1);
-            msg = s_cat (msg, &size, "\r\n");
+            s_cat (&t, arg1);
+            s_catc (&t, '\r');
+            s_catc (&t, '\n');
         }
         status = 1;
     }
@@ -1491,16 +1487,16 @@ static JUMP_F (CmdUserMessageNG)
     {
         if (!strcmp (args, END_MSG_STR))
         {
-            arg1 = msg + strlen (msg) - 1;
-            while (*msg && strchr ("\r\n\t ", *arg1))
+            arg1 = t.txt + t.len - 1;
+            while (*t.txt && strchr ("\r\n\t ", *arg1))
                 *arg1-- = '\0';
-            s_repl (&uiG.last_message_sent, msg);
+            s_repl (&uiG.last_message_sent, t.txt);
             uiG.last_message_sent_type = MSG_NORM;
             for (i = 0; uinlist[i]; i++)
             {
                 if (!(cont = ContactUIN (conn, uinlist[i])))
                     continue;
-                IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_NORM, msg));
+                IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_NORM, t.txt));
                 uiG.last_sent_uin = cont->uin;
                 TabAddUIN (cont->uin);
             }
@@ -1513,8 +1509,9 @@ static JUMP_F (CmdUserMessageNG)
         }
         else
         {
-            msg = s_cat (msg, &size, args);
-            msg = s_cat (msg, &size, "\r\n");
+            s_cat (&t, args);
+            s_catc (&t, '\r');
+            s_catc (&t, '\n');
         }
     }
     R_setprompt (i18n (1041, "msg> "));

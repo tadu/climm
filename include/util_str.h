@@ -3,13 +3,29 @@
 #ifndef MICQ_UTIL_STR_H
 #define MICQ_UTIL_STR_H
 
+typedef struct str_s str_s;
+typedef struct str_s *str_t;
+typedef const struct str_s *strc_t;
+
+struct str_s
+{
+    char  *txt;
+    size_t len;
+    size_t max;
+};
+
+str_t       s_init    (str_t str, const char *init, size_t len);
+str_t       s_blow    (str_t str, size_t len);
+str_t       s_cat     (str_t str, const char *add);
+str_t       s_catc    (str_t str, char add);
+str_t       s_catf    (str_t str, const char *fmt, ...) __attribute__ ((format (__printf__, 2, 3)));
+
 const char *s_sprintf (const char *fmt, ...) __attribute__ ((format (__printf__, 1, 2)));
 const char *s_ip      (UDWORD ip);
 const char *s_status  (UDWORD status);
 const char *s_time    (time_t *stamp);
 const char *s_msgtok  (char *);
-char       *s_cat     (char *str, UDWORD *size, const char *add);
-char       *s_catf    (char *str, UDWORD *size, const char *fmt, ...) __attribute__ ((format (__printf__, 3, 4)));
+
 const char *s_dump    (const UBYTE *data, UWORD len);
 const char *s_dumpnd  (const UBYTE *data, UWORD len);
 const char *s_ind     (const char *str);

@@ -152,8 +152,8 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
     const char *username = PrefLogName (prG);
     FILE *logfile;
     int fd;
-    char *t = NULL, *mylog; /* Buffer to compute log entry */
-    UDWORD size = 0;
+    char *mylog; /* Buffer to compute log entry */
+    str_s t = { NULL };
     size_t lcnt;
     char *pos, *indic;
     time_t now;
@@ -195,7 +195,8 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
 
     utctime = gmtime (&now);
 
-    t = s_catf (t, &size, "# %04d%02d%02d%02d%02d%02d%s%.0ld ",
+    s_init (&t, "", 100);
+    s_catf (&t, "# %04d%02d%02d%02d%02d%02d%s%.0ld ",
         utctime->tm_year + 1900, utctime->tm_mon + 1, 
         utctime->tm_mday, utctime->tm_hour, utctime->tm_min, 
         utctime->tm_sec, stamp != -1 ? "/" : "", 
@@ -206,36 +207,36 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
     switch (conn->type)
     {
         case TYPE_SERVER_OLD:
-            t = s_catf (t, &size, "[icq5:%lu]!%s %s %s%s%s[icq5:%lu+%lX]", 
+            s_catf (&t, "[icq5:%lu]!%s %s %s%s%s[icq5:%lu+%lX]", 
                 conn->uin, username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, status);
             break;
         case TYPE_SERVER:
-            t = s_catf (t, &size, "[icq8:%lu]!%s %s %s%s%s[icq8:%lu+%lX]", 
+            s_catf (&t, "[icq8:%lu]!%s %s %s%s%s[icq8:%lu+%lX]", 
                 conn->uin, username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, status);
             break;
         case TYPE_MSGLISTEN:
         case TYPE_MSGDIRECT:
-            t = s_catf (t, &size, "%s %s %s%s%s[tcp:%lu+%lX]",
+            s_catf (&t, "%s %s %s%s%s[tcp:%lu+%lX]",
                       username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, status);
             break;
         default:
-            t = s_catf (t, &size, "%s %s %s%s%s[tcp:%lu+%lX]",
+            s_catf (&t, "%s %s %s%s%s[tcp:%lu+%lX]",
                       username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, status);
             break;
     }
 
     if ((lcnt += *mylog != '\0') != 0)
-        t = s_catf (t, &size, " +%u", (unsigned)lcnt);
+        s_catf (&t, " +%u", (unsigned)lcnt);
 
     if (type != 0xFFFF && type != MSG_NORM)
-        t = s_catf (t, &size, " (%u)", type);
+        s_catf (&t, " (%u)", type);
     
-    t = s_cat (t, &size, "\n");
+    s_catc (&t, '\n');
 
     if (*mylog)
     {
-        t = s_cat (t, &size, mylog);
-        t = s_cat (t, &size, "\n");
+        s_cat (&t, mylog);
+        s_catc (&t, '\n');
     }
     free (mylog);
 
@@ -251,7 +252,10 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
     if (target[-1] == _OS_PATHSEP)
     {
         if (mkdir (buffer, S_IRWXU) == -1 && errno != EEXIST)
+        {
+            free (t.txt);
             return -1;
+        }
 
         snprintf (target, buffer + sizeof (buffer) - target, "%lu.log", cont->uin);
 
@@ -274,13 +278,13 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
         == -1)
     {
         fprintf (stderr, "\nCouldn't open %s for logging\n", buffer);
-        free (t);
+        free (t.txt);
         return -1;
     }
     if (!(logfile = fdopen (fd, "a")))
     {
         fprintf (stderr, "\nCouldn't open %s for logging\n", buffer);
-        free (t);
+        free (t.txt);
         close (fd);
         return -1;
     }
@@ -288,8 +292,8 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
     /* Write the log entry as a single chunk to cope with concurrent writes 
      * of multiple mICQ instances.
      */
-    fputs (t, logfile);
-    free (t);
+    fputs (t.txt, logfile);
+    free (t.txt);
 
     /* Closes stream and file descriptor. */
     fclose (logfile);
