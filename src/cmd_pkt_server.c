@@ -231,7 +231,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             M_printf ("%s " COLCONTACT "%10s" COLNONE " %s: %u.%u.%u.%u\n",
                 s_now, ContactFindName (uin), i18n (1642, "IP"),
                 ip[0], ip[1], ip[2], ip[3]);
-            QueueEnqueueData (sess, 0, QUEUE_UDP_KEEPALIVE, 0, time (NULL) + 120,
+            QueueEnqueueData (sess, QUEUE_UDP_KEEPALIVE, 0, 0, time (NULL) + 120,
                               NULL, NULL, &CmdPktSrvCallBackKeepAlive);
             break;
         case SRV_RECV_MESSAGE:
@@ -277,7 +277,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
                 break;
             }
             M_printf (i18n (1082, "Trying to reconnect... [try %d out of %d]\n"), uiG.reconnect_count, MAX_RECONNECT_ATTEMPTS);
-            QueueEnqueueData (sess, 0, 0, 0, time (NULL) + 5, NULL, NULL, &CallBackServerInitV5); 
+            QueueEnqueueData (sess, /* FIXME: */ 0, 0, 0, time (NULL) + 5, NULL, NULL, &CallBackServerInitV5); 
             break;
         case SRV_USER_ONLINE:
             UtilCheckUIN (sess, uin = PacketRead4 (pak));
@@ -315,7 +315,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
                 break;
             }
             M_printf (i18n (1082, "Trying to reconnect... [try %d out of %d]\n"), uiG.reconnect_count, MAX_RECONNECT_ATTEMPTS);
-            QueueEnqueueData (sess, 0, 0, 0, time (NULL) + 5, NULL, NULL, &CallBackServerInitV5);
+            QueueEnqueueData (sess, /* FIXME: */ 0, 0, 0, time (NULL) + 5, NULL, NULL, &CallBackServerInitV5);
             break;
         case SRV_END_OF_SEARCH:
             M_print (i18n (1045, "Search Done."));
@@ -427,7 +427,7 @@ static JUMP_SRV_F (CmdPktSrvMulti)
  */
 static JUMP_SRV_F (CmdPktSrvAck)
 {
-    Event *event = QueueDequeue (seq, QUEUE_UDP_RESEND);
+    Event *event = QueueDequeue (sess, QUEUE_UDP_RESEND, seq);
     UDWORD ccmd;
 
     if (!event)

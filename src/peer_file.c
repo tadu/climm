@@ -258,7 +258,7 @@ void PeerFileDispatch (Session *fpeer)
             M_printf (i18n (2170, "Sending with speed %x to %s.\n"), speed, name);
             
             fpeer->our_seq = 1;
-            QueueRetry (fpeer->uin, QUEUE_PEER_FILE);
+            QueueRetry (fpeer, QUEUE_PEER_FILE, fpeer->uin);
             
             free (name);
             return;
@@ -343,7 +343,7 @@ void PeerFileDispatch (Session *fpeer)
             fpeer->assoc->done = off;
             fpeer->assoc->connect = CONNECT_OK;
             
-            QueueRetry (fpeer->uin, QUEUE_PEER_FILE);
+            QueueRetry (fpeer, QUEUE_PEER_FILE, fpeer->uin);
             return;
             
         case 4:
@@ -419,7 +419,7 @@ void PeerFileDispatchW (Session *fpeer)
     if (!UtilIOSendTCP (fpeer, pak))
         TCPClose (fpeer);
     
-    QueueRetry (fpeer->uin, QUEUE_PEER_FILE);
+    QueueRetry (fpeer, QUEUE_PEER_FILE, fpeer->uin);
 }
 
 BOOL PeerFileError (Session *fpeer, UDWORD rc, UDWORD flags)
@@ -585,11 +585,11 @@ void PeerFileResend (Event *event)
             M_printf (i18n (2087, "Finished sending file %s.\n"), event->info);
             SessionClose (fpeer->assoc);
             fpeer->our_seq++;
-            event2 = QueueDequeue (fpeer->our_seq, QUEUE_PEER_FILE);
+            event2 = QueueDequeue (fpeer, QUEUE_PEER_FILE, fpeer->our_seq);
             if (event2)
             {
                 QueueEnqueue (event2);
-                QueueRetry (fpeer->uin, QUEUE_PEER_FILE);
+                QueueRetry (fpeer, QUEUE_PEER_FILE, fpeer->uin);
                 return;
             }
             else

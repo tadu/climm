@@ -47,7 +47,7 @@ void SessionInitServer (Session *sess)
     sess->close    = &FlapCliGoodbye;
     sess->server   = strdup (sess->spref->server);
     sess->type     = TYPE_SERVER;
-    QueueEnqueueData (sess, sess->our_seq, sess->connect,
+    QueueEnqueueData (sess, sess->connect, sess->our_seq,
                       sess->uin, time (NULL) + 10,
                       NULL, NULL, &SrvCallBackTimeout);
     UtilIOConnectTCP (sess);
@@ -62,7 +62,7 @@ static void SrvCallBackReconn (Session *sess)
     if (reconn < 5)
     {
         M_printf (i18n (2032, "Scheduling v8 reconnect in %d seconds.\n"), 10 << reconn);
-        QueueEnqueueData (sess, 0, 0, sess->uin, time (NULL) + (10 << reconn), NULL, NULL, &SrvCallBackDoReconn);
+        QueueEnqueueData (sess, /* FIXME: */ 0, 0, sess->uin, time (NULL) + (10 << reconn), NULL, NULL, &SrvCallBackDoReconn);
         reconn++;
     }
     else
@@ -170,7 +170,7 @@ void SrvCallBackReceive (Session *sess)
     if (prG->verbose & DEB_PACK8SAVE)
         FlapSave (pak, TRUE);
     
-    QueueEnqueueData (sess, pak->id, QUEUE_FLAP,
+    QueueEnqueueData (sess, QUEUE_FLAP, pak->id,
                       0, time (NULL),
                       pak, NULL, &SrvCallBackFlap);
     pak = NULL;

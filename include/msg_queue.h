@@ -7,26 +7,26 @@ typedef void (Queuef)(Event *event);
 
 struct Event_s
 {
-    UDWORD   seq;
+    Session *sess;
     UDWORD   type;
+    UDWORD   seq;
     UDWORD   attempts;
     UDWORD   uin;
     time_t   due;
     Packet  *pak;
     char    *info;
     Queuef  *callback;
-    Session *sess;
     UBYTE    flags;
 };
 
 void        QueueInit        (Queue **queue);
 void        QueueEnqueue     (Event *event);
-void        QueueEnqueueData (Session *sess, UDWORD seq, UDWORD type,
+void        QueueEnqueueData (Session *sess, UDWORD type, UDWORD seq,
                               UDWORD uin, time_t due,
                               Packet *pak, char *info, Queuef *callback);
-Event      *QueueDequeue     (UDWORD seq, UDWORD type);
+Event      *QueueDequeue     (Session *sess, UDWORD type, UDWORD seq);
 void        QueueRun         ();
-void        QueueRetry       (UDWORD uin, UDWORD type);
+void        QueueRetry       (Session *sess, UDWORD type, UDWORD uin);
 void        QueueCancel      (Session *sess);
 
 Event      *QueuePeek        ();

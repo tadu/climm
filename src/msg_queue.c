@@ -135,22 +135,22 @@ void QueueEnqueue (Event *event)
 /*
  * Adds a new entry to the queue. Creates Event for you.
  */
-void QueueEnqueueData (Session *sess, UDWORD seq, UDWORD type,
+void QueueEnqueueData (Session *sess, UDWORD type, UDWORD seq,
                        UDWORD uin, time_t due,
                        Packet *pak, char *info, Queuef *callback)
 {
     Event *event = calloc (sizeof (Event), 1);
     assert (event);
     
-    event->seq  = seq;
+    event->sess = sess;
     event->type = type;
+    event->seq  = seq;
     event->attempts = 1;
     event->uin  = uin;
     event->due  = due;
     event->pak = pak;
     event->info = info;
     event->callback = callback;
-    event->sess = sess;
     
     QueueEnqueue (event);
 }
@@ -207,7 +207,7 @@ static Event *QueueDequeueEvent (Event *event, struct QueueEntry *previous)
 /*
  * Removes and returns an event given by sequence number and type.
  */
-Event *QueueDequeue (UDWORD seq, UDWORD type)
+Event *QueueDequeue (Session *sess, UDWORD type, UDWORD seq)
 {
     Event *event;
     struct QueueEntry *iter;
@@ -220,7 +220,9 @@ Event *QueueDequeue (UDWORD seq, UDWORD type)
         return NULL;
     }
 
-    if (queue->head->event->seq == seq && queue->head->event->type == type)
+    if (   queue->head->event->sess == sess
+        && queue->head->event->type == type
+        && queue->head->event->seq  == seq)
     {
         event = QueueDequeueEvent (queue->head->event, NULL);
         Debug (DEB_QUEUE, "··s> %s %p: %08x %p", QueueType (type), event, seq, event->pak);
@@ -228,7 +230,9 @@ Event *QueueDequeue (UDWORD seq, UDWORD type)
     }
     for (iter = queue->head; iter->next; iter = iter->next)
     {
-        if (iter->next->event->seq == seq && iter->next->event->type == type)
+        if (   iter->next->event->sess == sess
+            && iter->next->event->type == type
+            && iter->next->event->seq  == seq)
         {
             event = QueueDequeueEvent (iter->next->event, iter);
             Debug (DEB_QUEUE, "··s> %s %p: %08x %p", QueueType (type), event, seq, event->pak);
@@ -308,19 +312,23 @@ void QueueRun ()
  * Checks whether there is an event waiting for uin of that type,
  * and delivers the event with the lowest sequence number
  */
-void QueueRetry (UDWORD uin, UDWORD type)
+void QueueRetry (Session *sess, UDWORD type, UDWORD uin)
 {
     struct QueueEntry *iter;
     Event *event = NULL;
     
     assert (queue);
     for (iter = queue->head; iter; iter = iter->next)
-        if (iter->event->uin == uin && iter->event->type == type)
+        if (iter->event->sess == sess
+            && iter->event->type == type
+            && iter->event->uin == uin)
+        {
             if (!event || event->seq > iter->event->seq)
                 event = iter->event;
+        }
     
     if (event)
-        event = QueueDequeue (event->seq, type);
+        event = QueueDequeue (event->sess, event->seq, type);
     
     if (event && event->callback)
     {

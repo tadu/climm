@@ -716,7 +716,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
 
     pak = event->pak;
     
-    event2 = QueueDequeue (0, QUEUE_REQUEST_ROSTER);
+    event2 = QueueDequeue (event->sess, QUEUE_REQUEST_ROSTER, 0);
     if (event2)
     {
         data = event2->uin;
@@ -906,7 +906,7 @@ static JUMP_SNAC_F(SnacSrvFromicqsrv)
             reconn = 0;
             CmdUser ("¶e");
             
-            QueueEnqueueData (event->sess, 0, QUEUE_SRV_KEEPALIVE,
+            QueueEnqueueData (event->sess, QUEUE_SRV_KEEPALIVE, 0,
                               event->sess->uin, time (NULL) + 30,
                               NULL, NULL, &SrvCallBackKeepalive);
             break;
