@@ -1130,3 +1130,4 @@
 2389:%s <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
 2390:No or empty pattern given.\n
 2391:Case sensitive search of <pattern> in log file of <contact>.
+2392:Your status is %s (%s).\n
