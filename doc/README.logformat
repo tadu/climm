@@ -1,0 +1,39 @@
+
+marker ::= "#" stamp [ "/" [ "-" ] offset ] SPACE spec 
+	[ SPACE range ] [ SPACE "(" type ")" ]
+range ::= "+" count | "-" delim | "/" indent
+ident ::= [ nick ] "[" origin "]" [ "!" addr ]
+	| [ [ nick ] "[" origin "]" "!"] addr
+origin ::= ( "tcp" | "icq" ) [ version ] ":" uin [ "+" stat ]
+addr ::= user "@" host
+
+spec ::= ident SPACE event SPACE ident
+
+version: [0-9]+
+indent: [0-9]+
+count: [0-9]*
+delim: [-*=@;,+~0-9a-zA-Z]+
+stamp: [0-9]{14}
+offset: [0-9]+
+host: [a-zA-Z0-9]([-.]?[a-zA-Z0-9])*
+user: [a-zA-Z][-_.a-zA-Z0-9]*
+nick: [a-zA-Z][a-zA-Z0-9]*
+type: [0-9]+
+
+event              description
+----------         ------------
+->                 sent message
+<-                 received message
+::                 status change
+:!                 status report
+:?                 status guess
+:-                 went offline
+:+                 went online
+<#                 ACK to message
+<*                 added to contact list by someone
+*>                 added someone to contact list
+=>                 automatic message
+
+# time/delay NICK[icq:UIN]!USER@HOST <- NICK[icq:UIN+STAT] +9
+# time/delay ... -delim
+
