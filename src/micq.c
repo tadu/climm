@@ -184,21 +184,22 @@ static void Init (int argc, char *argv[])
 #endif
     Connection *conn;
     Event *loginevent = NULL;
-    const char *arg_v, *arg_f, *arg_l, *arg_i, *arg_b, *arg_s;
-    UDWORD loaded, arg_h = 0, arg_vv = 0, arg_c = 0, arg_ss = 0;
+    const char *arg_v, *arg_f, *arg_l, *arg_i, *arg_b, *arg_s, *arg_u, *arg_p;
+    UDWORD loaded, uingiven = 0, arg_h = 0, arg_vv = 0, arg_c = 0, arg_ss = 0;
     str_s arg_C = { NULL, 0, 0 };
     val_t res;
     UBYTE save_conv_error;
-    SDWORD i;
+    char **targv;
+    int i, j;
 
     srand (time (NULL));
     uiG.start_time = time (NULL);
     setbuf (stdout, NULL);
     tzset ();
 
-    arg_v = arg_f = arg_l = arg_i = arg_b = arg_s = NULL;
-    s_init (&arg_C, "", 0);
-    for (i = 1; i < argc; i++)
+    targv = calloc (argc + 2, sizeof (char *));
+    arg_v = arg_f = arg_l = arg_i = arg_b = arg_s = arg_u = arg_p = NULL;
+    for (i = 1, j = 0; i < argc; i++)
     {
         if (   !strcmp (argv[i], "-?") || !strcmp (argv[i], "-h")
             || !strcmp (argv[i], "--help") || !strcmp (argv[i], "--version"))
@@ -206,8 +207,10 @@ static void Init (int argc, char *argv[])
         else if (   !strcmp (argv[i], "-c") || !strcmp (argv[i], "--nocolor")
                  || !strcmp (argv[i], "--nocolour"))
             arg_c++;
-        else if (!strcmp (argv[i], "-s") || !strcmp (argv[i], "--status"))
-            arg_s = argv[++i];
+        else if (!strcmp (argv[i], "-i") || !strcmp (argv[i], "--i18n") || !strcmp (argv[i], "--locale"))
+            arg_i = argv[++i];
+        else if (!strcmp (argv[i], "-l") || !strcmp (argv[i], "--logplace"))
+            arg_l = argv[++i];
         else if (!strcmp (argv[i], "-b") || !strcmp (argv[i], "--basedir"))
             arg_b = argv[++i];
         else if (!strcmp (argv[i], "-f") || !strcmp (argv[i], "--config"))
@@ -220,24 +223,36 @@ static void Init (int argc, char *argv[])
             else if (argv[i + 1])
             {
                 char *t;
-                UDWORD n = strtol (argv[i + 1], &t, 10);
+                UDWORD n = strtol (argv[i + 1], &t, 0);
                 if (*t)
                     arg_vv++;
                 else
                     i++, arg_vv = n | 0x80000000UL;
             }
         }
-        else if (!strcmp (argv[i], "-i") || !strcmp (argv[i], "--i18n") || !strcmp (argv[i], "--locale"))
-            arg_i = argv[++i];
-        else if (!strcmp (argv[i], "-l") || !strcmp (argv[i], "--logplace"))
-            arg_l = argv[++i];
+        else if (!strcmp (argv[i], "-u") || !strcmp (argv[i], "--uin"))
+        {
+            if (argv[i + 1])
+            {
+                targv[j++] = argv[i++];
+                targv[j++] = argv[i];
+                uingiven = 1;
+            }
+        }
+        else if (    !strcmp (argv[i], "-p") || !strcmp (argv[i], "--passwd")
+                  || !strcmp (argv[i], "-s") || !strcmp (argv[i], "--status"))
+        {
+            if (argv[i + 1])
+            {
+                targv[j++] = argv[i++];
+                targv[j++] = argv[i];
+            }
+        }
         else
         {
             if (argv[i + 1] && (!strcmp (argv[i], "-C") || !strcmp (argv[i], "--cmd")))
                 i++;
-            if (arg_C.len)
-                s_catc (&arg_C, ' ');
-            s_cat (&arg_C, s_quote (argv[i]));
+            targv[j++] = argv[i];
         }
     }
 
@@ -269,12 +284,12 @@ static void Init (int argc, char *argv[])
     
     prG->enc_loc = ENC_AUTO;
     i18nInit (arg_i);
-    prG->verbose &= ~0x8000;
     PreferencesInit (prG);
+    ReadLineInit ();
     
     loaded = arg_h ? 0 : PrefLoad (prG);
+    prG->verbose &= ~0x80000000UL;
     i = i18nOpen (prG->locale);
-    ReadLineInit ();
 
     if (prG->enc_loc == ENC_AUTO)
         prG->enc_loc = ENC_FAUTO | ENC_ASCII;
@@ -291,8 +306,6 @@ static void Init (int argc, char *argv[])
         }
     }
     
-    if (arg_v)
-        prG->verbose = arg_vv;
     if (arg_c)
         prG->flags &= ~FLAG_COLOR;
     
@@ -324,16 +337,18 @@ static void Init (int argc, char *argv[])
 
     if (arg_h)
     {
-        M_print  (i18n (9999, "Usage: micq [-h] [-c] [-p <passwd>] [-u <UIN>] [-s <status>] [-b <basedir>]\n"));
-        M_print  (i18n (9999, "            [-i <locale>] [-v[<level>]] [-l <logplace>] [[-C] <command>]...\n"));
+        M_print  (i18n (9999, "Usage: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n"));
+        M_print  (i18n (9999, "            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n"));
         M_print  (i18n (2199, "  -h, --help     gives this help text\n"));
         M_print  (i18n (2205, "  -c, --nocolor  disable colors\n"));
-        M_print  (i18n (9999, "  -s, --status   overide status of auto-login server connections\n"));
         M_printf (i18n (2201, "  -b, --basedir  use given BASE dir (default: %s)\n"), "$HOME" _OS_PATHSEPSTR ".micq" _OS_PATHSEPSTR);
-        M_print  (i18n (2200, "  -v, --verbose  set (or increase) verbosity (mostly for debugging)\n"));
         M_print  (i18n (2204, "  -i, --i1" "8n     use given locale (default: auto-detected)\n"));
+        M_print  (i18n (2200, "  -v, --verbose  set (or increase) verbosity (mostly for debugging)\n"));
         M_printf (i18n (2203, "  -l, --logplace use given log file/dir (default: %s)\n"), "BASE" _OS_PATHSEPSTR "history" _OS_PATHSEPSTR);
-        M_print  (i18n (9999, "  -C, --cmd      execute mICQ command\n"));
+        M_print  (i18n (9999, "  -u, --uin      login with this UIN instead of those configured\n"));
+        M_print  (i18n (9999, "  -p, --passwd   ... and override password\n"));
+        M_print  (i18n (9999, "  -s, --status   ... and override status\n"));
+        M_print  (i18n (9999, "  -C, --cmd      ... and execute mICQ command\n"));
         exit (0);
     }
     
@@ -403,7 +418,7 @@ static void Init (int argc, char *argv[])
                   COLQUOTE, s_qquote (prG->locale), COLNONE);
     }
     else if (i)
-        M_printf (i18n (9999, "English (%s) translation loaded (%s%ld%s entries).\n"),
+        M_printf (i18n (9999, "English (%s) translation loaded (%s%d%s entries).\n"),
                   s_qquote (prG->locale), COLQUOTE, i, COLNONE);
     else
         M_printf ("No translation requested. You live in nowhereland, eh?\n");
@@ -429,43 +444,92 @@ static void Init (int argc, char *argv[])
     TCLInit ();
 #endif
 
-    if (arg_s)
+    if (uingiven)
     {
-        if (!strncmp (arg_s, "inv", 3))
-            arg_ss = STATUS_INV;
-        else if (!strcmp (arg_s, "dnd"))
-            arg_ss = STATUS_DND;
-        else if (!strcmp (arg_s, "occ"))
-            arg_ss = STATUS_OCC;
-        else if (!strcmp (arg_s, "na"))
-            arg_ss = STATUS_NA;
-        else if (!strcmp (arg_s, "away"))
-            arg_ss = STATUS_AWAY;
-        else if (!strcmp (arg_s, "ffc"))
-            arg_ss = STATUS_FFC;
-        else if (!strncmp (arg_s, "off", 3))
-            arg_ss = STATUS_OFFLINE;
-        else
-            arg_ss = atoll (arg_s);
+        for (i = 0; (conn = ConnectionNr (i)); i++)
+            if (conn->flags & CONN_AUTOLOGIN)
+                if (conn->type & TYPEF_ANY_SERVER)
+                    conn->status = STATUS_OFFLINE;
+        targv[j++] = "-u";
+        targv[j++] = "";
     }
+
+    conn = ConnectionFind (TYPEF_ANY_SERVER, NULL, NULL);
+    s_init (&arg_C, "", 0);
+    arg_u = arg_p = arg_s = NULL;
     
-        
+    for (i = 0; i < j; i++)
+    {
+        if      (!strcmp (targv[i], "-u") || !strcmp (targv[i], "--uin"))
+        {
+             if (arg_u)
+                 if (!(conn = ConnectionFindUIN (TYPEF_ANY_SERVER, atoll (arg_u))))
+                     conn = PrefNewConnection (atoll (arg_u), arg_p);
+             if (conn)
+             {
+                 if (arg_s)
+                     conn->status = arg_ss;
+                 if (arg_p)
+                     s_repl (&conn->passwd, arg_p);
+                 if (uingiven && arg_u && (loginevent = conn->open (conn)))
+                     QueueEnqueueDep (conn, QUEUE_MICQ_COMMAND, 0, loginevent, NULL, conn->cont,
+                                      ContactOptionsSetVals (NULL, CO_MICQCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
+                                      &CmdUserCallbackTodo);
+             }
+             
+             arg_u = targv[++i];
+             if (arg_u && !atoll (arg_u))
+                 arg_u = NULL;
+             arg_p = arg_s = NULL;
+             s_init (&arg_C, "", 0);
+        }
+        else if (!strcmp (targv[i], "-p") || !strcmp (targv[i], "--passwd"))
+            arg_p = targv[++i];
+        else if (!strcmp (targv[i], "-s") || !strcmp (targv[i], "--status"))
+        {
+            if ((arg_s = targv[++i]))
+            {
+                if (!strncmp (arg_s, "inv", 3))
+                    arg_ss = STATUS_INV;
+                else if (!strcmp (arg_s, "dnd"))
+                    arg_ss = STATUS_DND;
+                else if (!strcmp (arg_s, "occ"))
+                    arg_ss = STATUS_OCC;
+                else if (!strcmp (arg_s, "na"))
+                    arg_ss = STATUS_NA;
+                else if (!strcmp (arg_s, "away"))
+                    arg_ss = STATUS_AWAY;
+                else if (!strcmp (arg_s, "ffc"))
+                    arg_ss = STATUS_FFC;
+                else if (!strncmp (arg_s, "off", 3))
+                    arg_ss = STATUS_OFFLINE;
+                else
+                    arg_ss = atoll (arg_s);
+            }
+        }
+        else
+        {
+            s_catc (&arg_C, ' ');
+            s_cat (&arg_C, s_quote (targv[i]));
+        }
+    }
+    s_done (&arg_C);
+    free (targv);
+    
     for (i = 0; (conn = ConnectionNr (i)); i++)
-        if ((conn->flags & CONN_AUTOLOGIN) && conn->open)
+        if (conn->open && conn->flags & CONN_AUTOLOGIN)
         {
             if (conn->type & TYPEF_ANY_SERVER)
             {
-                if (arg_s)
-                    conn->status = arg_ss;
-                if (conn->status == STATUS_OFFLINE)
-                    continue;
-                if ((loginevent = conn->open (conn)))
+                if (uingiven || conn->status == STATUS_OFFLINE)
                 {
-                    QueueEnqueueDep (conn, QUEUE_MICQ_COMMAND, 0, loginevent,
-                                     NULL, conn->cont, ContactOptionsSetVals (NULL, CO_MICQCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
-                                     &CmdUserCallbackTodo);
-                    arg_C.len = 0;
+                    conn->status = conn->pref_status;
+                    continue;
                 }
+                if ((loginevent = conn->open (conn)))
+                     QueueEnqueueDep (conn, QUEUE_MICQ_COMMAND, 0, loginevent, NULL, conn->cont,
+                                      ContactOptionsSetVals (NULL, CO_MICQCOMMAND, "eg", 0),
+                                      &CmdUserCallbackTodo);
             }
             else
                 conn->open (conn);
