@@ -289,6 +289,7 @@ void TCLEvent (const char *type, const char *data)
     if (tcl_events)
     {
         char *cdata = strdup (data);
+        Tcl_ResetResult (tinterp);
         Tcl_Eval (tinterp, s_sprintf ("%s {%s} %s", tcl_events->cmd, type, cdata));
         result = Tcl_GetStringResult (tinterp);
         if (strlen (result) > 0)
@@ -314,6 +315,7 @@ void TCLMessage (Contact *from, const char *text)
         else if (from && (!strcmp (hook->filter, from->nick) || 
                   !strcmp (hook->filter, uin)))
         {
+            Tcl_ResetResult (tinterp);
             Tcl_Eval (tinterp, s_sprintf ("%s %s {%s}", hook->cmd, uin, text));
             generic = NULL;
             break;
@@ -321,7 +323,10 @@ void TCLMessage (Contact *from, const char *text)
         hook = hook->next;
     }        
     if (generic)
+    {
+        Tcl_ResetResult (tinterp);
         Tcl_Eval (tinterp, s_sprintf ("%s %s {%s}", generic->cmd, uin, text));
+    }
 
     result = Tcl_GetStringResult (tinterp);
     if (strlen (result) > 0)
@@ -385,7 +390,8 @@ JUMP_F (CmdUserTclScript)
 {
     int result;
 
-    result = data ? Tcl_Eval (tinterp, args) : Tcl_EvalFile (tinterp, args);
+    Tcl_ResetResult (tinterp);
+    result = data ? Tcl_Eval (tinterp, args + 1) : Tcl_EvalFile (tinterp, args + 1);
     if (result != TCL_OK)
         M_printf (i18n (2367, "TCL error: %s\n"), Tcl_GetStringResult (tinterp));
     else
