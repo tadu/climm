@@ -1523,7 +1523,7 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
         type = MSG_GET_AWAY;
     }
     
-    if (!text || !cont || !(HAS_CAP (cont->caps, CAP_SRVRELAY) || peek))
+    if (!text || !cont || !(peek || (HAS_CAP (cont->caps, CAP_SRVRELAY) && HAS_CAP (cont->caps, CAP_ISICQ))))
         return RET_DEFER;
     
     switch (type & 0xff)
