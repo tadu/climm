@@ -452,7 +452,7 @@ void Recv_Message (Connection *conn, Packet *pak)
     
     if (len == ctext->len + 1 && ConvIsUTF8 (ctext->txt))
         text = ConvFrom (ctext, ENC_UTF8)->txt;
-    else if (len == ctext->len + 10)
+    else if (len == ctext->len + 10 || len == strlen (ctext) + 2)
         text = c_in_to_split (ctext, cont); /* work around bug in Miranda < 0.3.1 */
     else if (len != ctext->len + 1 && type == MSG_NORM && len & 1)
         text = ConvFrom (ctext, ENC_UCS2BE)->txt;
