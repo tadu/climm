@@ -179,7 +179,7 @@ void Initalize_RC_File ()
     {
         M_print (i18n (1796, "Setup wizard finished. Please wait until registration has finished.\n"));
         sess = SrvRegisterUIN (NULL, pwd1);
-        sess->flags |= CONN_WIZARD;
+        sess->flags = CONN_WIZARD;
     }
     else
     {
@@ -190,7 +190,7 @@ void Initalize_RC_File ()
         assert (sess->spref);
         
         sess->spref->type = TYPE_SERVER;
-        sess->spref->flags = CONN_AUTOLOGIN;
+        sess->spref->flags = CONN_AUTOLOGIN | CONN_WIZARD;
         sess->spref->server = strdup ("login.icq.com");
         sess->spref->port = 5190;
         sess->spref->status = STATUS_ONLINE;
@@ -200,7 +200,7 @@ void Initalize_RC_File ()
         sess->server  = strdup ("login.icq.com");
         sess->port    = 5190;
         sess->type    = TYPE_SERVER;
-        sess->flags   = CONN_AUTOLOGIN;
+        sess->flags   = CONN_AUTOLOGIN | CONN_WIZARD;
         sess->ver     = 8;
         sess->uin     = uin;
         sess->passwd  = strdup (passwd);

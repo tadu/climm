@@ -503,7 +503,7 @@ static void UtilIOConnectCallback (Session *sess)
 /*
  * Does SOCKS5 handshake for incoming connection
  */
-void UtilIOSocksAccept(Session *sess)
+void UtilIOSocksAccept (Session *sess)
 {
     char buf[60];
     int rc;

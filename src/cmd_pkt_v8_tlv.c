@@ -12,17 +12,19 @@
 #include "util_ui.h"
 #include <string.h>
 
-TLV *TLVRead (Packet *pak)
+#define __maxTLV  25
+
+TLV *TLVRead (Packet *pak, UDWORD TLVlen)
 {
-    TLV *tlv = calloc (20, sizeof (TLV));
+    TLV *tlv = calloc (__maxTLV, sizeof (TLV));
     char *p;
     int typ, len, pos, i = 16, n;
 
-    while (PacketReadLeft (pak) >= 4 && i < 20)
+    while (TLVlen >= 4 && i < __maxTLV)
     {
         typ = PacketReadB2 (pak);
         len = PacketReadB2 (pak);
-        if (PacketReadLeft (pak) < len)
+        if (TLVlen < len)
         {
             M_print (i18n (1897, "Incomplete TLV %d, len %d of %d - ignoring.\n"), typ, PacketReadLeft (pak), len);
             return tlv;
@@ -45,8 +47,21 @@ TLV *TLVRead (Packet *pak)
             tlv[n].nr = PacketReadAtB2 (pak, pos);
         if (len == 4)
             tlv[n].nr = PacketReadAtB4 (pak, pos);
+        
+        TLVlen -= 2 + 2 + len;
     }
     return tlv;
+}
+
+UWORD TLVGet (TLV *tlv, UWORD nr)
+{
+    int i;
+
+    for (i = 0; i < __maxTLV; i++)
+        if (tlv[i].tlv == nr)
+            return i;
+
+    return -1;
 }
 
 void TLVD (TLV *tlv)

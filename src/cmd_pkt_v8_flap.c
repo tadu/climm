@@ -104,7 +104,7 @@ static void FlapChannel1 (Session *sess, Packet *pak)
 
 static void FlapChannel4 (Session *sess, Packet *pak)
 {
-    tlv = TLVRead (pak);
+    tlv = TLVRead (pak, PacketReadLeft (pak));
     if (!tlv[5].len)
     {
         Time_Stamp ();

@@ -43,7 +43,6 @@ void SessionInitServer (Session *sess)
     sess->reconnect= &SrvCallBackReconn;
     sess->server   = strdup (sess->spref->server);
     sess->type     = TYPE_SERVER;
-    sess->flags    = 0;
     QueueEnqueueData (queue, sess, sess->our_seq, sess->connect,
                       sess->uin, time (NULL) + 10,
                       NULL, NULL, &SrvCallBackTimeout);

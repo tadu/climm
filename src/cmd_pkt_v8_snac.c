@@ -38,7 +38,7 @@ static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd,
     SnacSrvReplyinfo, SnacSrvReplylocation, SnacSrvUseronline, SnacSrvRegrefused,
     SnacSrvUseroffline, SnacSrvRecvmsg, SnacSrvUnknown, SnacSrvFromoldicq,
     SnacSrvAddedyou, SnacSrvNewuin, SnacSrvSetinterval, SnacSrvAckmsg,
-    SnacSrvAuthreq, SnacSrvAuthreply, SnacSrvIcbmerr;
+    SnacSrvAuthreq, SnacSrvAuthreply, SnacSrvIcbmerr, SnacSrvReplyroster;
 
 static SNAC SNACv[] = {
     {  1,  3, NULL, NULL},
@@ -73,7 +73,7 @@ static SNAC SNACS[] = {
     {  9,  3, "SRV_REPLYBOS",        SnacSrvReplybos},
     { 11,  2, "SRV_SETINTERVAL",     SnacSrvSetinterval},
     { 19,  3, "SRV_REPLYUNKNOWN",    SnacSrvUnknown},
-    { 19,  6, "SRV_REPLYROSTER",     SnacSrvUnknown},
+    { 19,  6, "SRV_REPLYROSTER",     SnacSrvReplyroster},
     { 19, 14, "SRV_UPDATEACK",       SnacSrvUnknown},
     { 19, 15, "SRV_REPLYROSTEROK",   SnacSrvUnknown},
     { 19, 25, "SRV_AUTHREQ",         SnacSrvAuthreq},
@@ -122,12 +122,12 @@ void SrvCallBackSnac (struct Event *event)
 {
     Packet  *pak  = event->pak;
     SNAC *s;
-    UWORD family /*, flags*/;
+    UWORD family;
     
-    family   = PacketReadB2 (pak);
-    pak->cmd = PacketReadB2 (pak);
-/* flags = */  PacketReadB2 (pak);
-    pak->id  = PacketReadB4 (pak);
+    family     = PacketReadB2 (pak);
+    pak->cmd   = PacketReadB2 (pak);
+    pak->flags = PacketReadB2 (pak);
+    pak->id    = PacketReadB4 (pak);
     
     for (s = SNACS; s->fam; s++)
         if (s->fam == family && s->cmd == pak->cmd)
@@ -262,7 +262,7 @@ static JUMP_SNAC_F(SnacSrvReplyinfo)
     UDWORD uin, status;
     
     pak = event->pak;
-    if (PacketReadAtB2 (pak, 10) & 0x8000)
+    if (pak->flags & 0x8000)
     {
         PacketReadB4 (pak);
         PacketReadB4 (pak);
@@ -274,7 +274,7 @@ static JUMP_SNAC_F(SnacSrvReplyinfo)
                  uin, event->sess->uin);
     PacketReadB2 (pak);
     PacketReadB2 (pak);
-    tlv = TLVRead (pak);
+    tlv = TLVRead (pak, PacketReadLeft (pak));
     if (tlv[10].len)
     {
         event->sess->our_outside_ip = tlv[10].nr;
@@ -332,6 +332,8 @@ static JUMP_SNAC_F(SnacSrvMotd)
 
     SnacCliRatesrequest (event->sess);
     SnacCliReqinfo      (event->sess);
+    if (event->sess->flags & CONN_WIZARD)
+        SnacCliReqroster (event->sess);
     SnacCliReqlocation  (event->sess);
     SnacCliBuddy        (event->sess);
     SnacCliReqicbm      (event->sess);
@@ -375,7 +377,7 @@ static JUMP_SNAC_F(SnacSrvUseronline)
     
     PacketReadB2 (pak);
     PacketReadB2 (pak);
-    tlv = TLVRead (pak);
+    tlv = TLVRead (pak, PacketReadLeft (pak));
     if (tlv[10].len)
         cont->outside_ip = tlv[10].nr;
     
@@ -475,7 +477,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     
     UtilCheckUIN (event->sess, uin);
     cont = ContactFind (uin);
-    tlv = TLVRead (pak);
+    tlv = TLVRead (pak, PacketReadLeft (pak));
 
     if (tlv[6].len && cont && cont->status != STATUS_OFFLINE)
         UtilUIUserOnline (event->sess, cont, tlv[6].nr);
@@ -520,7 +522,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                    PacketReadB2 (p); /* RANDOM */
                    PacketReadB2 (p); /* UNKNOWN */
                    PacketReadB4 (p); PacketReadB4 (p); PacketReadB4 (p); PacketReadB4 (p); /* CAP */
-            tlv = TLVRead (pak);
+            tlv = TLVRead (pak, PacketReadLeft (pak));
             for (i = 16; i < 20; i++)
                 if (tlv[i].nr == 0x2711)
                     break;
@@ -611,14 +613,13 @@ static JUMP_SNAC_F(SnacSrvReplybos)
 {
     SnacCliSetuserinfo (event->sess);
     SnacCliSetstatus (event->sess, event->sess->spref->status, 3);
-/*    SnacCliReqroster (event->sess); */
     SnacCliReady (event->sess);
     SnacCliAddcontact (event->sess, 0);
     SnacCliReqofflinemsgs (event->sess);
 }
 
 /*
- * SRV_SETINTERVAL - SNAC(B,2)
+ * SRV_SETINTERVAL - SNAC(b,2)
  */
 static JUMP_SNAC_F(SnacSrvSetinterval)
 {
@@ -630,6 +631,70 @@ static JUMP_SNAC_F(SnacSrvSetinterval)
     if (prG->verbose & DEB_PROTOCOL)
         M_print (i18n (1918, "Ignored server request for a minimum report interval of %d.\n"), 
             interval);
+}
+
+/*
+ * SRV_REPLYROSTER - SNAC(13,6)
+ */
+static JUMP_SNAC_F(SnacSrvReplyroster)
+{
+    Packet *pak;
+    TLV *tlv;
+
+    int i, j, k;
+    const char *name, *nick;
+    UWORD count, type, tag, id, TLVlen;
+
+    pak = event->pak;
+    if (pak->flags & 0x8000)
+    {
+        PacketReadB4 (pak);
+        PacketReadB4 (pak);
+    }
+
+    PacketRead1 (pak);
+    count = PacketReadB2 (pak);          /* COUNT */
+    for (i = k = 0; i < count; i++)
+    {
+        name   = PacketReadStrB (pak);   /* GROUP NAME */
+        tag    = PacketReadB2 (pak);     /* TAG  */
+        id     = PacketReadB2 (pak);     /* ID   */
+        type   = PacketReadB2 (pak);     /* TYPE */
+        TLVlen = PacketReadB2 (pak);     /* TLV length */
+        tlv    = TLVRead (pak, TLVlen);
+
+        switch (type)
+        {
+            case 1:
+                if (!tag && !id)
+                    break;
+                M_print (i18n (2049, "Receiving group \"%s\":\n"), name);
+                break;
+            case 0:
+                if (!tag)
+                    break;
+                k++;
+                nick = (j = TLVGet (tlv, 305)) ? tlv[j].str : name;
+                   
+                if (event->sess->flags & CONN_WIZARD)
+                    ContactAdd (atoi (name), nick);
+                M_print ("  %10d %s\n", atoi (name), nick);
+                break;
+            case 4:
+            case 9:
+            case 17:
+                /* unknown / ignored */
+        }
+    }
+    /* TIMESTAMP ignored */
+    if (event->sess->flags & CONN_WIZARD)
+    {
+        M_print (i18n (2050, "Imported %d contacts.\n"), k);
+        if (Save_RC () == -1)
+        {
+            M_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
+        }
+    }
 }
 
 /*
@@ -711,7 +776,7 @@ static JUMP_SNAC_F(SnacSrvFromoldicq)
     UDWORD len, uin, type /*, id*/;
     
     pak = event->pak;
-    tlv = TLVRead (pak);
+    tlv = TLVRead (pak, PacketReadLeft (pak));
     if (tlv[1].len < 10)
     {
         SnacSrvUnknown (event);

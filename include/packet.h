@@ -10,6 +10,7 @@ struct Packet_s
     UWORD    len;
     UBYTE    ver;
     UDWORD   cmd;
+    UDWORD   flags;
 
     UWORD    rpos, wpos, tpos;
     UBYTE    socks[10];

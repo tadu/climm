@@ -39,7 +39,8 @@ static jump_f
     CmdUserTogIgnore, CmdUserTogInvis, CmdUserTogVisible, CmdUserAdd, CmdUserRem, CmdUserRInfo,
     CmdUserAuth, CmdUserURL, CmdUserSave, CmdUserTabs, CmdUserLast,
     CmdUserUptime, CmdUserOldSearch, CmdUserSearch, CmdUserUpdate, CmdUserPass,
-    CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserTCP, CmdUserConn;
+    CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserTCP, CmdUserConn,
+    CmdUserContactDL;
 
 static void CmdUserProcess (const char *command, int *idle_val, int *idle_flag);
 
@@ -100,6 +101,7 @@ static jump_t jump[] = {
     { &CmdUserPass,          "pass",         NULL, 0,   0 },
     { &CmdUserSMS,           "sms",          NULL, 0,   0 },
     { &CmdUserPeek,          "peek",         NULL, 0,   0 },
+    { &CmdUserContactDL,     "contactdl",    NULL, 0,   0 },
 
     { &CmdUserOldSearch,     "oldsearch",    NULL, 0,   0 },
     { &CmdUserSearch,        "search",       NULL, 0,   0 },
@@ -2303,6 +2305,18 @@ static JUMP_F(CmdUserConn)
     return 0;
 }
 
+/*
+ * Download Contact List
+ */
+static JUMP_F(CmdUserContactDL)
+{
+    SESSION;
+
+    if (sess->type == TYPE_SERVER)
+        SnacCliReqroster (sess);
+
+    return 0;
+}
 
 /*
  * Exits mICQ.
