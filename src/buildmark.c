@@ -7,7 +7,7 @@
  * $Id$
  */
 
-#define MICQ_BUILD_NUM 489
+#define MICQ_BUILD_NUM 0x00040809
 
 #include <string.h>
 #include <stdio.h>
@@ -34,7 +34,7 @@ const char *BuildVersion (void)
     return ver;
 }
 
-const int BuildVersionNum = MICQ_BUILD_NUM;
+const UDWORD BuildVersionNum = MICQ_BUILD_NUM;
 
 /*
  i19n (1001, "en")               locale

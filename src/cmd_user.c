@@ -537,8 +537,11 @@ JUMP_F(CmdUserPeek)
     
     if (sess->ver < 6)
         return 0;
-    if (!args)
+    if (!args || !*args)
+    {
+        M_print (i18n (2028, "Wrong argument count.\n"), strlen(args));
         return 0;
+    }
     uin = ContactFindByNick (args);
     if (uin == -1)
         M_print (i18n (1061, "%s not recognized as a nick name.\n"), args);

@@ -108,7 +108,7 @@ void CmdPktCmdLogin (Session *sess)
     PacketWrite4 (pak, 0x822c01ec);   /* 0x00d50008, 0x00780008 */
     PacketWrite4 (pak, 0x00000050);
     PacketWrite4 (pak, 0x00000003);
-    PacketWrite4 (pak, BUILD_LICQ | BuildVersionNum);
+    PacketWrite4 (pak, BUILD_MICQ_OLD);
     PacketEnqueuev5 (pak, sess);
 }
 

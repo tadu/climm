@@ -1025,3 +1025,4 @@
 2025:Sending v8 TCP direct connection initialization packet.¶
 2026:TCP cookie:
 2027:Sending third TCP direct connection packet.¶
+2028:Wrong argument count.¶

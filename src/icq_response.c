@@ -14,6 +14,7 @@
 #include "cmd_pkt_v8_snac.h"
 #include "preferences.h"
 #include "conv.h"
+#include "buildmark.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -462,35 +463,37 @@ void UserOnlineSetVersion (Contact *con, time_t tstamp, time_t tstamp2, time_t t
     else if ((tstamp & 0xff7f0000) == BUILD_MICQ || (tstamp & 0xff7f0000) == BUILD_LICQ)
     {
         new = "mICQ";
-        if (tstamp & BUILD_SSL)
-            ssl = 1;
         v1 = ver / 10000;
         v2 = (ver / 100) % 100;
         v3 = (ver / 10) % 10;
         v4 = ver % 10;
-    }
-    else if (tstamp == 0xffffffff)
-    {
-        new = "Miranda";
-        v1 = (tstamp2 & 0x7f000000) >> 24;
-        v2 = (tstamp2 &   0xff0000) >> 16;
-        v3 = (tstamp2 &     0xff00) >> 8;
-        v4 =  tstamp2 &       0xff;
-    }
-    else if (tstamp == 0xffffff8f)
-    {
-        new = "StrICQ";
-        v1 = (tstamp2 & 0x7f000000) >> 24;
-        v2 = (tstamp2 &   0xff0000) >> 16;
-        v3 = (tstamp2 &     0xff00) >> 8;
-        v4 =  tstamp2 &       0xff;
+        if (ver >= 489 && tstamp2)
+            tstamp = BUILD_MICQ;
     }
     else if (tstamp == tstamp2 && tstamp2 == tstamp3)
         new = "vICQ/GAIM(?)";
-    else if ((tstamp & 0xffff0000) == 0xffff0000)
+
+    if ((tstamp & 0xffff0000) == 0xffff0000)
     {
-        snprintf (buf, sizeof (buf), "%08lx", tstamp);
-        new = buf;
+        switch (tstamp)
+        {
+            case BUILD_MIRANDA:
+                new = "Miranda";
+                break;
+            case BUILD_STRICQ:
+                new = "StrICQ";
+                break;
+            case BUILD_MICQ:
+                new = "mICQ";
+                break;
+            default:
+                snprintf (buf, sizeof (buf), "%08lx", tstamp);
+                new = buf;
+        }
+        v1 = (tstamp2 & 0x7f000000) >> 24;
+        v2 = (tstamp2 &   0xff0000) >> 16;
+        v3 = (tstamp2 &     0xff00) >> 8;
+        v4 =  tstamp2 &       0xff;
     }
     
     if (new)
