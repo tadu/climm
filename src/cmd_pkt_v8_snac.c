@@ -167,21 +167,6 @@ const char *SnacName (UWORD fam, UWORD cmd)
 }
 
 /*
- * Prints a given SNAC packet.
- */
-void SnacPrint (Packet *pak)
-{
-    assert (pak->len >= 16);
-
-    M_print (i18n (1905, "SNAC (%x,%x) [%s] flags %x ref %x\n"),
-             PacketReadAtB2 (pak, 6), PacketReadAtB2 (pak, 8),
-             SnacName (PacketReadAtB2 (pak, 6), PacketReadAtB2 (pak, 8)),
-             PacketReadAtB2 (pak, 10), PacketReadAtB4 (pak, 12));
-    M_print (COLNONE);
-    Hex_Dump (pak->data + 16, pak->len - 16);
-}
-
-/*
  * Creates a new SNAC.
  */
 Packet *SnacC (Session *sess, UWORD fam, UWORD cmd, UWORD flags, UDWORD ref)
@@ -209,7 +194,7 @@ JUMP_SNAC_F(SnacSrvUnknown)
         Time_Stamp ();
         M_print (" " ESC "«");
         M_print (" " ESC "«" COLSERV "%s ", i18n (1033, "Incoming v8 server packet:"));
-        SnacPrint (event->pak);
+        FlapPrint (event->pak);
         M_print (ESC "»\n");
     }
 }

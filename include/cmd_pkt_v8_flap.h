@@ -17,3 +17,4 @@ void SrvCallBackFlap (struct Event *event);
 Packet *FlapC (UBYTE channel);
 void    FlapSend (Session *sess, Packet *pak);
 void    FlapPrint (Packet *pak);
+void    FlapSave (Packet *pak, BOOL in);

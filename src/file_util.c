@@ -882,3 +882,48 @@ int Add_User (Session *sess, UDWORD uin, char *name)
     fclose (rcf);
     return 1;
 }
+
+/*
+ * Writes a hex dump of buf to a file.
+ */
+void fHexDump (FILE *f, void *buffer, size_t len)
+{
+    int i, j;
+    unsigned char *buf = buffer;
+
+    if (!len)
+        return;
+
+    assert (len >= 0);
+
+    for (i = 0; i < ((len + 15) & ~15); i++)
+    {
+        if (i < len)
+            fprintf (f, "%02x ", buf[i]);
+        else
+            fprintf (f, "   ");
+        if ((i & 15) == 15)
+        {
+            fprintf (f, "  ");
+            for (j = 15; j >= 0; j--)
+            {
+                if (i - j >= len)
+                    break;
+                if ((buf[i - j] & 0x7f) > 31)
+                    fprintf (f, "%c", buf[i - j]);
+                else
+                    fprintf (f, ".");
+                if (((i - j) & 3) == 3)
+                    fprintf (f, " ");
+            }
+            fprintf (f, "\n");
+            if (i > len)
+                return;
+        }
+        else if (i < len && (i & 7) == 7)
+            fprintf (f, "- ");
+        else if ((i & 3) == 3)
+            fprintf (f, "  ");
+    }
+}
+

@@ -122,6 +122,8 @@ void SrvCallBackReceive (Session *sess)
         FlapPrint (pak);
         M_print (ESC "»\r");
     }
+    if (prG->verbose & 256)
+        FlapSave (pak, TRUE);
     
     QueueEnqueueData (queue, sess, pak->id, QUEUE_TYPE_FLAC,
                       0, time (NULL),

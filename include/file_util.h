@@ -6,3 +6,5 @@ void  Set_rcfile (const char * name);
 
 void Initalize_RC_File (void);
 void Read_RC_File (FILE *rcf);
+
+void fHexDump (FILE *f, void *buffer, size_t len);

@@ -14,6 +14,7 @@
 #include "util_ui.h"
 #include "util_io.h"
 #include "preferences.h"
+#include "file_util.h"
 #include "cmd_pkt_v8_tlv.h"
 #include <assert.h>
 #include <string.h>
@@ -25,6 +26,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <sys/stat.h>
 
 static TLV *tlv = NULL;
 static void FlapChannel1 (Session *sess, Packet *pak);
@@ -146,17 +148,44 @@ void FlapChannel4 (Session *sess, Packet *pak)
 
 void FlapPrint (Packet *pak)
 {
-    if (PacketReadAt1 (pak, 1) == 2)
-    {
-        M_print (i18n (1910, "FLAP seq %08x length %04x channel %d" COLNONE "\n"),
-                 PacketReadAtB2 (pak, 2), pak->len - 6, PacketReadAt1 (pak, 1));
-        SnacPrint (pak);
-    }
+    M_print (i18n (1910, "FLAP seq %08x length %04x channel %d" COLNONE "\n"),
+             PacketReadAtB2 (pak, 2), pak->len - 6, PacketReadAt1 (pak, 1));
+    if (PacketReadAt1 (pak, 1) != 2)
+        Hex_Dump (pak->data + 6, pak->len - 6);
     else
     {
-        M_print (i18n (1910, "FLAP seq %08x length %04x channel %d" COLNONE "\n"),
-                 PacketReadAtB2 (pak, 2), pak->len - 6, PacketReadAt1 (pak, 1));
-        Hex_Dump (pak->data + 6, pak->len - 6);
+        M_print (i18n (1905, "SNAC (%x,%x) [%s] flags %x ref %x\n"),
+                 PacketReadAtB2 (pak, 6), PacketReadAtB2 (pak, 8),
+                 SnacName (PacketReadAtB2 (pak, 6), PacketReadAtB2 (pak, 8)),
+                 PacketReadAtB2 (pak, 10), PacketReadAtB4 (pak, 12));
+        M_print (COLNONE);
+        Hex_Dump (pak->data + 16, pak->len - 16);
+    }
+}
+
+void FlapSave (Packet *pak, BOOL in)
+{
+    FILE *logf;
+    char buf[200];
+    
+    snprintf (buf, sizeof (buf), "%s/debug", PrefUserDir ());
+    mkdir (buf, 0600);
+    snprintf (buf, sizeof (buf), "%s/debug/packets", PrefUserDir ());
+    if (!(logf = fopen (buf, "a")))
+        return;
+
+    fprintf (logf, "%s FLAP seq %08x length %04x channel %d\n",
+             in ? "<<<" : ">>>", PacketReadAtB2 (pak, 2),
+             pak->len - 6, PacketReadAt1 (pak, 1));
+    if (PacketReadAt1 (pak, 1) != 2)
+        fHexDump (logf, pak->data + 6, pak->len - 6);
+    else
+    {
+        fprintf (logf, i18n (1905, "SNAC (%x,%x) [%s] flags %x ref %x\n"),
+                 PacketReadAtB2 (pak, 6), PacketReadAtB2 (pak, 8),
+                 SnacName (PacketReadAtB2 (pak, 6), PacketReadAtB2 (pak, 8)),
+                 PacketReadAtB2 (pak, 10), PacketReadAtB4 (pak, 12));
+        fHexDump (logf, pak->data + 16, pak->len - 16);
     }
 }
 
@@ -192,6 +221,8 @@ void FlapSend (Session *sess, Packet *pak)
         FlapPrint (pak);
         M_print (ESC "»\r");
     }
+    if (prG->verbose & 256)
+        FlapSave (pak, FALSE);
     
     sess->stat_pak_sent++;
     sess->stat_real_pak_sent++;
