@@ -973,9 +973,11 @@
 2092:TCP message %s discarded - lost session.¶
 2093:%02d %-12s version %d for %s (%x), at %s:%d %s¶
 2094:conn login         Open first server connection.¶
-2095:conn close <nr>    Close connection <nr>.¶
+2095:conn remove <nr>   Remove connection <nr>.¶
 2096:Connection %d is not open.¶
 2097:conn select <nr>   Select connection <nr> as server connection.¶
+2098:Connection %d is a configured connection.¶
 2098:Connection %d is not a server connection.¶
 2099:Selected connection %d (version %d, UIN %d) as current connection.¶
 2100:conn select <uin>  Select connection with UIN <uin> as server connection.¶
+2101:Removing connection %d and its dependands completely.¶

@@ -4,6 +4,7 @@
 #define MICQ_SESSION_H
 
 typedef void (jump_sess_f)(Session *sess);
+typedef BOOL (jump_sess_err_f)(Session *sess, UDWORD rc, UDWORD flags);
 
 struct Session_s
 {
@@ -21,6 +22,7 @@ struct Session_s
         SOK_T     sok;            /* socket for connection to server          */
         UWORD     connect;        /* connection setup status                  */
         Packet   *incoming;       /* packet we're receiving                   */
+        Packet   *outgoing;       /* packet we're sending                     */
 
         UDWORD    our_local_ip;   /* LAN-internal IP (host byte order)        */
         UDWORD    our_outside_ip; /* the IP address the server sees from us   */
@@ -39,9 +41,12 @@ struct Session_s
         Session            *assoc;  /* associated session           */
         Session            *parent; /* parent session               */
         
-        jump_sess_f *dispatch;     /* function to call on select()   */
-        jump_sess_f *reconnect;    /* function to call for reconnect */
-        jump_sess_f *utilio;       /* private to util_io.c           */
+        jump_sess_f *dispatch;     /* function to call on select()    */
+        jump_sess_f *reconnect;    /* function to call for reconnect  */
+        jump_sess_err_f *error;    /* function to call for i/o errors */
+
+
+        jump_sess_f *utilio;       /* private to util_io.c            */
 };
 
 #define CONNECT_MASK       0x00ff
@@ -116,5 +121,8 @@ const char *SessionType   (Session *sess);
 #define ASSERT_FILELISTEN(s)  (assert (s), assert ((s)->type == TYPE_FILELISTEN), ASSERT_ANY_SERVER ((s)->parent))
 #define ASSERT_FILEDIRECT(s)  (assert (s), assert ((s)->type == TYPE_FILEDIRECT), ASSERT_FILELISTEN ((s)->parent))
 #define ASSERT_FILE(s)        (assert (s), assert ((s)->type == TYPE_FILE), assert ((s)->parent->assoc == (s)), ASSERT_FILEDIRECT ((s)->parent))
+
+#define SESSERR_WRITE       1
+#define SESSERR_READ        2
 
 #endif

@@ -181,11 +181,10 @@ void PeerFileDispatch (Session *fpeer)
             M_print ("Incoming initialization: %d files with together %d bytes @ %x from %s.\n",
                      nr, len, speed, name);
             
-            pak = PacketC ();
-            PacketWrite1 (pak, 1);
+            pak = PeerPacketC (fpeer, 1);
             PacketWrite4 (pak, 64);
             PacketWriteLNTS (pak, "my Nick0");
-            TCPSendPacket (pak, fpeer);
+            PeerPacketSend (fpeer, pak);
             
             free (name);
             return;
@@ -244,13 +243,12 @@ void PeerFileDispatch (Session *fpeer)
                 M_print ("Starting receiving %s (%s), len %d as %s\n",
                          name, text, len, buf);
             }
-            pak = PacketC ();
-            PacketWrite1 (pak, 3);
+            pak = PeerPacketC (fpeer, 3);
             PacketWrite4 (pak, off);
             PacketWrite4 (pak, 0);
             PacketWrite4 (pak, 64);
             PacketWrite4 (pak, 1);
-            TCPSendPacket (pak, fpeer);
+            PeerPacketSend (fpeer, pak);
             
             free (name);
             return;
@@ -310,6 +308,38 @@ void PeerFileDispatch (Session *fpeer)
     }
 }
 
+void PeerFileDispatchW (Session *fpeer)
+{
+    Packet *pak = fpeer->outgoing;
+    
+    fpeer->outgoing = NULL;
+    fpeer->connect = CONNECT_OK | CONNECT_SELECT_R;
+    fpeer->dispatch = &PeerFileDispatch;
+    fpeer->assoc->connect = CONNECT_OK;
+
+    if (!UtilIOSendTCP (fpeer, pak))
+        TCPClose (fpeer);
+    
+    QueueRetry (fpeer->uin, QUEUE_PEER_FILE);
+}
+
+BOOL PeerFileError (Session *fpeer, UDWORD rc, UDWORD flags)
+{
+    if (flags != SESSERR_WRITE) return 0;
+    switch (rc)
+    {
+        case EPIPE:
+            TCPClose (fpeer);
+            return 1;
+        case EAGAIN:
+            fpeer->connect = CONNECT_OK | CONNECT_SELECT_W;
+            fpeer->dispatch = &PeerFileDispatchW;
+            fpeer->assoc->connect = CONNECT_OK | 1;
+            return 1;
+    }
+    return 0;
+}
+
 void PeerFileResend (Event *event)
 {
     Contact *cont;
@@ -342,7 +372,7 @@ void PeerFileResend (Event *event)
             if (!event->seq)
             {
                 fpeer->our_seq = 0;
-                TCPSendPacket (event->pak, fpeer);
+                PeerPacketSend (fpeer, event->pak);
                 PacketD (event->pak);
                 event->pak = NULL;
             }
@@ -356,7 +386,7 @@ void PeerFileResend (Event *event)
             {
                 Session *ffile;
                 
-                TCPSendPacket (event->pak, fpeer);
+                PeerPacketSend (fpeer, event->pak);
                 PacketD (event->pak);
                 event->pak = NULL;
                 QueueEnqueue (event);
@@ -380,8 +410,7 @@ void PeerFileResend (Event *event)
             {
                 int len = 0;
 
-                pak = PacketC ();
-                PacketWrite1 (pak, 6);
+                pak = PeerPacketC (fpeer, 6);
                 len = read (fpeer->assoc->sok, pak->data + 1, 2048);
                 if (len == -1)
                 {
@@ -393,12 +422,13 @@ void PeerFileResend (Event *event)
                 else
                 {
                     pak->len += len;
-                    TCPSendPacket (pak, fpeer);
+                    fpeer->error = &PeerFileError;
+                    PeerPacketSend (fpeer, pak);
                     PacketD (pak);
-/*                    event->due++;   */
 
                     if (len == 2048)
                     {
+                        event->attempts = 0;
                         QueueEnqueue (event);
                         return;
                     }
@@ -422,7 +452,7 @@ void PeerFileResend (Event *event)
             else
             {
                 event->attempts++;
-                event->due += 3;
+                event->due = time (NULL) + 3;
                 QueueEnqueue (event);
                 return;
             }

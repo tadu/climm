@@ -30,11 +30,13 @@ void PeerFileDispatchIncoming (Session *fpeer);
 void PeerFileResend (Event *event);
 void PeerFileDispatch (Session *);
 
+Packet *PeerPacketC    (Session *peer, UBYTE cmd);
+void    PeerPacketSend (Session *peer, Packet *pak);
+
 void       TCPDispatchShake   (Session *peer);
 void       TCPDispatchReconn  (Session *peer);
 void       TCPDispatchMain    (Session *peer);
 void       TCPDispatchConn    (Session *peer);
-void       TCPSendPacket      (Packet *pak, Session *peer);
 void       TCPClose           (Session *peer);
 void       TCPPrint           (Packet *pak, Session *peer, BOOL out);
 

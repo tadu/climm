@@ -290,7 +290,7 @@ void UtilIOConnectTCP (Session *sess)
     
     sess->utilio   = sess->dispatch;
 
-    Debug (DEB_IO, "UtilIOConnectCallback: %x\n", sess->connect);
+    Debug (DEB_IO, "UtilIOConnectCallback: %x", sess->connect);
 
     sess->sok = socket (AF_INET, SOCK_STREAM, 0);
     if (sess->sok < 0)
@@ -427,7 +427,7 @@ static void UtilIOConnectCallback (Session *sess)
     {
         eno = 0;
         rc = 0;
-        Debug (DEB_IO, "UtilIOConnectCallback: %x\n", sess->connect);
+        Debug (DEB_IO, "UtilIOConnectCallback: %x", sess->connect);
         switch ((eno = sess->connect / CONNECT_SOCKS_ADD) % 7)
         {
             case 0:
@@ -600,6 +600,9 @@ Packet *UtilIOReceiveTCP (Session *sess)
         return pak;
     }
 
+    if (sess->error && sess->error (sess, rc, SESSERR_READ))
+        return NULL;
+
     PacketD (pak);
     sockclose (sess->sok);
     sess->sok = -1;
@@ -635,42 +638,52 @@ size_t SOCKREAD (Session *sess, void *ptr, size_t len)
     return sz;
 }
 
+/*
+ * Send packet via TCP. Consumes packet.
+ */
 BOOL UtilIOSendTCP (Session *sess, Packet *pak)
 {
     UBYTE *data;
-    UBYTE buf[2];
-    int rc, todo, bytessend = 0;
+    int rc, bytessend = 0;
 
     data = (void *) &pak->data;
+    
+    if (sess->outgoing)
+        return FALSE;
+    
+    sess->outgoing = pak;
 
     while (1)
     {
         errno = 0;
 
-        buf[0] = pak->len & 0xFF;
-        buf[1] = pak->len >> 8;
-        if (sockwrite (sess->sok, buf, 2) < 2)
-            break;
-
-        for (todo = pak->len; todo > 0; todo -= bytessend, data += bytessend)
+        for ( ; pak->len > pak->rpos; pak->rpos += bytessend)
         {
-            bytessend = sockwrite (sess->sok, data, todo);
+            bytessend = sockwrite (sess->sok, data, pak->len - pak->rpos);
             if (bytessend <= 0)
                 break;
         }
         if (bytessend <= 0)
             break;
+        
+        PacketD (pak);
+        sess->outgoing = NULL;
+        sess->stat_pak_sent++;
         return TRUE;
     }
     
-    if (prG->verbose)
-    {
-        rc = errno;
-        Time_Stamp ();
-        M_print (" ");
-        M_print (i18n (1835, "Error while writing to socket - %s (%d)\n"),
-                 strerror (rc), rc);
-    }
+    rc = errno;
+
+    if (sess->error && sess->error (sess, rc, SESSERR_WRITE))
+        return TRUE;
+
+    PacketD (pak);
+
+    Time_Stamp ();
+    M_print (" ");
+    M_print (i18n (1835, "Error while writing to socket - %s (%d)\n"),
+             strerror (rc), rc);
+
     return FALSE;
 }
 

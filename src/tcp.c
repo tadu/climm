@@ -310,7 +310,7 @@ void TCPDispatchConn (Session *peer)
             return;
         }
         
-        Debug (DEB_TCP, "Conn: uin %d nick %s state %x\n", peer->uin, ContactFindName (peer->uin), peer->connect);
+        Debug (DEB_TCP, "Conn: uin %d nick %s state %x", peer->uin, ContactFindName (peer->uin), peer->connect);
 
         switch (peer->connect & CONNECT_MASK)
         {
@@ -529,10 +529,15 @@ void TCPDispatchShake (Session *peer)
                 }
                 peer->connect = CONNECT_OK | CONNECT_SELECT_R;
                 if (peer->type == TYPE_FILEDIRECT)
+                {
                     peer->dispatch = &PeerFileDispatch;
+                    QueueRetry (peer->uin, QUEUE_PEER_FILE);
+                }
                 else
+                {
                     peer->dispatch = &TCPDispatchPeer;
-                QueueRetry (peer->uin, QUEUE_TCP_RESEND);
+                    QueueRetry (peer->uin, QUEUE_TCP_RESEND);
+                }
                 return;
             case 0:
                 return;
@@ -719,17 +724,29 @@ static Packet *TCPReceivePacket (Session *peer)
 }
 
 /*
+ * Creates a peer-to-peer packet.
+ */
+Packet *PeerPacketC (Session *peer, UBYTE cmd)
+{
+    Packet *pak;
+    
+    pak = PacketC ();
+    if (peer->type != TYPE_MSGDIRECT || peer->ver > 6 || cmd != PEER_MSG)
+{        PacketWrite1 (pak, cmd);
+M_print ("Adding: %d %x %d %x\n",peer->type,peer->connect,peer->ver,cmd);}
+    return pak;
+}
+
+/*
  * Encrypts and sends a TCP packet.
  * Resets socket on error.
  */
-void TCPSendPacket (Packet *pak, Session *peer)
+void PeerPacketSend (Session *peer, Packet *pak)
 {
     Packet *tpak;
     
     ASSERT_ANY_DIRECT (peer);
     assert (pak);
-    
-    peer->stat_pak_sent++;
     
     if (!(peer->connect & CONNECT_MASK))
         return;
@@ -737,18 +754,21 @@ void TCPSendPacket (Packet *pak, Session *peer)
     if (prG->verbose & DEB_PACKTCP)
         TCPPrint (pak, peer, TRUE);
 
-    tpak = PacketClone (pak);
+    tpak = PacketC ();
     assert (tpak);
     
+    PacketWriteAt2 (tpak, 0, pak->len);
+    memcpy (tpak->data + 2, pak->data, pak->len);
+    tpak->len = pak->len + 2;
+    
     if (peer->type == TYPE_MSGDIRECT)
-        if (PacketReadAt1 (tpak, 0) == PEER_MSG || !PacketReadAt1 (tpak, 0)) 
+        if (PacketReadAt1 (pak, 0) == PEER_MSG || (!PacketReadAt1 (pak, 0) && peer->type == TYPE_MSGDIRECT && peer->ver == 6)) 
             Encrypt_Pak (peer, tpak);
     
     if (!UtilIOSendTCP (peer, tpak))
         TCPClose (peer);
-    
-    PacketD (tpak);
 }
+
 
 /*
  * Sends a TCP initialization packet.
@@ -767,8 +787,7 @@ void TCPSendInitv6 (Session *peer)
 
     peer->stat_real_pak_sent++;
 
-    pak = PacketC ();
-    PacketWrite1  (pak, PEER_INIT);                            /* command          */
+    pak = PeerPacketC (peer, PEER_INIT);
     PacketWrite2  (pak, 6);                                    /* TCP version      */
     PacketWrite2  (pak, 0);                                    /* TCP revision     */
     PacketWrite4  (pak, peer->uin);                            /* destination UIN  */
@@ -784,7 +803,7 @@ void TCPSendInitv6 (Session *peer)
     Debug (DEB_TCP, "HS %d uin %d nick %s CONNECT pak %p peer %d",
                     peer->sok, peer->uin, ContactFindName (peer->uin), pak, peer);
 
-    TCPSendPacket (pak, peer);
+    PeerPacketSend (peer, pak);
     PacketD (pak);
 }
 
@@ -821,8 +840,7 @@ static void TCPSendInit (Session *peer)
 
     peer->stat_real_pak_sent++;
 
-    pak = PacketC ();
-    PacketWrite1  (pak, PEER_INIT);                    /* command          */
+    pak = PeerPacketC (peer, PEER_INIT);
     PacketWrite2  (pak, peer->parent->ver);            /* TCP version      */
     PacketWrite2  (pak, 43);                           /* length           */
     PacketWrite4  (pak, peer->uin);                    /* destination UIN  */
@@ -841,7 +859,7 @@ static void TCPSendInit (Session *peer)
     Debug (DEB_TCP, "HS %d uin %d nick %s CONNECTv8 pak %p peer %d",
                     peer->sok, peer->uin, ContactFindName (peer->uin), pak, peer);
 
-    TCPSendPacket (pak, peer);
+    PeerPacketSend (peer, pak);
     PacketD (pak);
 }
 
@@ -859,14 +877,14 @@ static void TCPSendInitAck (Session *peer)
 
     peer->stat_real_pak_sent++;
 
-    pak = PacketC ();
-    PacketWrite2 (pak, PEER_INITACK);
+    pak = PeerPacketC (peer, PEER_INITACK);
+    PacketWrite1 (pak, 0);
     PacketWrite2 (pak, 0);
 
     Debug (DEB_TCP, "HS %d uin %d nick %s INITACK pak %p peer %d",
                     peer->sok, peer->uin, ContactFindName (peer->uin), pak, peer);
 
-    TCPSendPacket (pak, peer);
+    PeerPacketSend (peer, pak);
     PacketD (pak);
 }
 
@@ -884,8 +902,7 @@ static void TCPSendInit2 (Session *peer)
     
     peer->stat_real_pak_sent++;
     
-    pak = PacketC ();
-    PacketWrite1 (pak, PEER_INIT2);
+    pak = PeerPacketC (peer, PEER_INIT2);
     PacketWrite4 (pak, 10);
     PacketWrite4 (pak, 1);
     PacketWrite4 (pak, (peer->connect & 16) ? 1 : 0);
@@ -898,7 +915,7 @@ static void TCPSendInit2 (Session *peer)
     Debug (DEB_TCP, "HS %d uin %d nick %s INITMSG pak %p peer %d",
                     peer->sok, peer->uin, ContactFindName (peer->uin), pak, peer);
 
-    TCPSendPacket (pak, peer);
+    PeerPacketSend (peer, pak);
     PacketD (pak);
 }
 
@@ -1103,6 +1120,11 @@ void TCPClose (Session *peer)
         PacketD (peer->incoming);
         peer->incoming = NULL;
     }
+    if (peer->outgoing)
+    {
+        PacketD (peer->outgoing);
+        peer->outgoing = NULL;
+    }
     
     if (peer->type == TYPE_FILEDIRECT)
         SessionClose (peer);
@@ -1208,7 +1230,7 @@ void TCPPrint (Packet *pak, Session *peer, BOOL out)
         Hex_Dump (pak->data + pak->rpos, pak->len - pak->rpos);
         M_print ("---\n");
     }
-    else if (cmd != 6)
+    if (cmd != 6)
         if (prG->verbose & DEB_PACKTCPDATA)
             Hex_Dump (pak->data, pak->len);
     M_print (ESC "»\r");
@@ -1223,20 +1245,18 @@ static Packet *PacketTCPC (Session *peer, UDWORD cmd, UDWORD seq, UWORD type, UW
     
     ASSERT_ANY_DIRECT(peer);
 
-    pak = PacketC ();
-    if (peer->ver > 6)
-        PacketWrite1 (pak, PEER_MSG);
-    PacketWrite4     (pak, 0);          /* checksum - filled in later */
-    PacketWrite2     (pak, cmd);        /* command                    */
-    PacketWrite2     (pak, TCP_MSG_X1); /* unknown                    */
-    PacketWrite2     (pak, seq);        /* sequence number            */
-    PacketWrite4     (pak, 0);          /* unknown                    */
-    PacketWrite4     (pak, 0);          /* unknown                    */
-    PacketWrite4     (pak, 0);          /* unknown                    */
-    PacketWrite2     (pak, type);       /* message type               */
-    PacketWrite2     (pak, status);     /* flags                      */
-    PacketWrite2     (pak, flags);      /* status                     */
-    PacketWriteLNTS  (pak, msg);        /* the message                */
+    pak = PeerPacketC (peer, PEER_MSG);
+    PacketWrite4      (pak, 0);          /* checksum - filled in later */
+    PacketWrite2      (pak, cmd);        /* command                    */
+    PacketWrite2      (pak, TCP_MSG_X1); /* unknown                    */
+    PacketWrite2      (pak, seq);        /* sequence number            */
+    PacketWrite4      (pak, 0);          /* unknown                    */
+    PacketWrite4      (pak, 0);          /* unknown                    */
+    PacketWrite4      (pak, 0);          /* unknown                    */
+    PacketWrite2      (pak, type);       /* message type               */
+    PacketWrite2      (pak, status);     /* flags                      */
+    PacketWrite2      (pak, flags);      /* status                     */
+    PacketWriteLNTS   (pak, msg);        /* the message                */
     
     return pak;
 }
@@ -1369,7 +1389,7 @@ static int TCPSendMsgAck (Session *peer, UWORD seq, UWORD type, BOOL accept)
         case 0x1a:
             /* no idea */
     }
-    TCPSendPacket (pak, peer);
+    PeerPacketSend (peer, pak);
     return 1;
 }
 
@@ -1401,7 +1421,7 @@ static int TCPSendGreetAck (Session *peer, UWORD seq, UWORD cmd, BOOL accept)
 
     pak = PacketTCPC (peer, TCP_CMD_ACK, seq, TCP_MSG_GREETING, flags, status, "");
     TCPGreet (pak, cmd, "", flist ? flist->port : 0, 0, "");
-    TCPSendPacket (pak, peer);
+    PeerPacketSend (peer, pak);
     return 1;
 }
 
@@ -1595,8 +1615,7 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
             M_print (i18n (2091, "Queueing %s as %s for transfer.\n"), files[i], as[i]);
             sum++;
             sumlen += fstat.st_size;
-            pak = PacketC ();
-            PacketWrite1 (pak, 2);
+            pak = PeerPacketC (fpeer, 2);
             PacketWrite1 (pak, 0);
             PacketWriteLNTS (pak, as[i]);
             PacketWriteLNTS (pak, "");
@@ -1614,8 +1633,7 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
         return 0;
     }
     
-    pak = PacketC ();
-    PacketWrite1 (pak, 0);
+    pak = PeerPacketC (fpeer, 0);
     PacketWrite4 (pak, 0);
     PacketWrite4 (pak, sum);
     PacketWrite4 (pak, sumlen);
@@ -1689,7 +1707,7 @@ static void TCPCallBackResend (Event *event)
             }
 
             if ((event->attempts++) < 2)
-                TCPSendPacket (pak, peer);
+                PeerPacketSend (peer, pak);
             event->due = time (NULL) + 10;
         }
         else
@@ -1991,8 +2009,8 @@ static void Encrypt_Pak (Session *peer, Packet *pak)
     UBYTE X1, X2, X3, *p;
     UDWORD hex, key;
 
-    p = pak->data;
-    size = pak->len;
+    p = pak->data + 2;
+    size = pak->len - 2;
     
     if (peer->ver > 6)
     {
@@ -2025,7 +2043,7 @@ static void Encrypt_Pak (Session *peer, Packet *pak)
     }
 
     /* storing the checkcode */
-    PacketWriteAt4 (pak, peer->ver > 6 ? 1 : 0, check);
+    PacketWriteAt4 (pak, peer->ver > 6 ? 3 : 2, check);
 }
 
 static int Decrypt_Pak (UBYTE *pak, UDWORD size)
