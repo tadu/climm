@@ -1549,7 +1549,7 @@ static JUMP_F(CmdUserStatusDetail)
         __l = 0;
 #endif
         M_print (COLQUOTE);
-        if (cg != tcg && cg != conn->contacts)
+        if (cg != tcg && cg != conn->contacts && cg->name)
         {
             if (__totallen > c_strlen (cg->name) + 1)
             {
