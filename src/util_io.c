@@ -418,7 +418,21 @@ void UtilIOConnectTCP (Connection *conn)
         sin.sin_addr.s_addr = INADDR_ANY;
 
         if (bind (conn->sok, (struct sockaddr*)&sin, sizeof (struct sockaddr)) < 0)
-            CONN_FAIL_RC (i18n (1953, "couldn't bind socket to free port"));
+        {
+            while ((rc = errno) == EADDRINUSE && conn->port)
+            {
+                rc = 0;
+                sin.sin_port = htons (++conn->port);
+                if (bind (conn->sok, (struct sockaddr*)&sin, sizeof (struct sockaddr)) == 0)
+                    break;
+                rc = errno;
+            }
+            if (rc)
+            {
+                errno = rc;
+                CONN_FAIL_RC (i18n (1953, "couldn't bind socket to free port"));
+            }
+        }
 
         if (listen (conn->sok, BACKLOG) < 0)
             CONN_FAIL_RC (i18n (1954, "unable to listen on socket"));
