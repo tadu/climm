@@ -7,7 +7,7 @@
 	* New registration wizard.
 	* A few interface fixes.
 	* type-4 and (hopefully) type-2 messages.
-	* SOCKS5 for the server connection.
+	* SOCKS5 support.
 	* Part 1 of info request (Peter Backes)
 
 2002-04-27 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
