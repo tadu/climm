@@ -19,6 +19,7 @@
 #include "preferences.h"
 #include "contact.h"
 #include "conv.h"
+#include "session.h" /* conn->contacts */
 #include "util.h"
 
 /*
@@ -532,9 +533,10 @@ BOOL s_parse_s (char **input, char **parsed, char *sep)
  */
 BOOL s_parsenick_s (char **input, Contact **parsed, char *sep, Contact **parsedr, Connection *serv)
 {
+    ContactGroup *cg;
     Contact *r;
     char *p = *input, *t;
-    UDWORD max, l, ll;
+    UDWORD max, l, ll, i;
     
     while (*p && strchr (sep, *p))
         p++;
@@ -586,7 +588,8 @@ BOOL s_parsenick_s (char **input, Contact **parsed, char *sep, Contact **parsedr
     max = 0;
     *parsed = NULL;
     ll = strlen (p);
-    for (r = ContactStart (); ContactHasNext (r); r = ContactNext (r))
+    cg = serv->contacts;
+    for (i = 0; (r = ContactIndex (cg, i)); i++)
     {
         l = strlen (r->nick);
         if (l > max && l <= ll && (!p[l] || strchr (sep, p[l])) && !strncmp (p, r->nick, l))

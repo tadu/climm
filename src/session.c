@@ -67,6 +67,7 @@ Connection *ConnectionClone (Connection *conn, UWORD type)
     child->type     = type;
     child->open     = NULL;
     child->server   = NULL;
+    child->contacts = NULL;
     
     Debug (DEB_CONNECT, "<=*= %p (%s) clone from %p (%s)", child, ConnectionType (child), conn, ConnectionType (conn));
 

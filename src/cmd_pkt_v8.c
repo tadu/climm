@@ -56,7 +56,9 @@ void ConnectionInitServer (Connection *conn)
 
 static void SrvCallBackReconn (Connection *conn)
 {
+    ContactGroup *cg = conn->contacts;
     Contact *cont;
+    int i;
 
     cont = ContactByUIN (conn->uin, 1);
     if (!cont)
@@ -75,7 +77,7 @@ static void SrvCallBackReconn (Connection *conn)
         M_print (i18n (2031, "Connecting failed too often, giving up.\n"));
         reconn = 0;
     }
-    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+    for (i = 0; (cont = ContactIndex (cg, i)); i++)
         cont->status = STATUS_OFFLINE;
 }
 

@@ -142,34 +142,37 @@ void CmdPktCmdRegNewUser (Connection *conn, const char *pass)
  */
 void CmdPktCmdContactList (Connection *conn)
 {
+    ContactGroup *cg = conn->contacts;
     Contact *cont;
-    Packet *pak;
+    Packet *pak = NULL;
     UWORD pbytes = 0;
-    int i;
+    int i, j;
 
-    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+    for (i = j = 0; (cont = ContactIndex (cg, j)); j++)
     {
-        for (i = 0, pak = NULL; i < MAX_CONTS_PACKET && ContactHasNext (cont); cont = ContactNext (cont))
+        if (cont->flags & CONT_ALIAS)
+            continue;
+
+        if (!pak)
         {
-            if (!(cont->flags & CONT_ALIAS))
-            {
-                if (!pak)
-                {
-                    pak = PacketCv5 (conn, CMD_CONTACT_LIST);
-                    pbytes = PacketWritePos (pak);
-                    PacketWrite1 (pak, 0);
-                }
-                PacketWrite4 (pak, cont->uin);
-                i++;
-            }
+            pak = PacketCv5 (conn, CMD_CONTACT_LIST);
+            pbytes = PacketWritePos (pak);
+            PacketWrite1 (pak, 0);
         }
-        if (pak)
-        {
-            PacketWriteAt1 (pak, pbytes, i);
-            PacketEnqueuev5 (pak, conn);
-        }
-        if (!ContactHasNext (cont))
-            break;
+        PacketWrite4 (pak, cont->uin);
+        i++;
+
+        if (i < MAX_CONTS_PACKET)
+            continue;
+
+        PacketWriteAt1 (pak, pbytes, i);
+        PacketEnqueuev5 (pak, conn);
+        pak = NULL;
+    }
+    if (pak)
+    {
+        PacketWriteAt1 (pak, pbytes, i);
+        PacketEnqueuev5 (pak, conn);
     }
 }
 
@@ -532,34 +535,37 @@ void CmdPktCmdMetaSearchWP (Connection *conn, MetaWP *user)
  */
 void CmdPktCmdInvisList (Connection *conn)
 {
+    ContactGroup *cg = conn->contacts;
     Contact *cont;
-    Packet *pak;
+    Packet *pak = NULL;
     UWORD pbytes = 0;
-    int i;
+    int i, j;
 
-    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+    for (i = j = 0; (cont = ContactIndex (cg, j)); j++)
     {
-        for (i = 0, pak = NULL; i < MAX_CONTS_PACKET && ContactHasNext (cont); cont = ContactNext (cont))
+        if (cont->flags & CONT_ALIAS || ~cont->flags & CONT_HIDEFROM)
+            continue;
+
+        if (!pak)
         {
-            if (!(cont->flags & CONT_ALIAS) && cont->flags & CONT_HIDEFROM)
-            {
-                if (!pak)
-                {
-                    pak = PacketCv5 (conn, CMD_INVIS_LIST);
-                    pbytes = PacketWritePos (pak);
-                    PacketWrite1 (pak, 0);
-                }
-                PacketWrite4 (pak, cont->uin);
-                i++;
-            }
+            pak = PacketCv5 (conn, CMD_INVIS_LIST);
+            pbytes = PacketWritePos (pak);
+            PacketWrite1 (pak, 0);
         }
-        if (pak)
-        {
-            PacketWriteAt1 (pak, pbytes, i);
-            PacketEnqueuev5 (pak, conn);
-        }
-        if (!ContactHasNext (cont))
-            break;
+        PacketWrite4 (pak, cont->uin);
+        i++;
+
+        if (i < MAX_CONTS_PACKET)
+            continue;
+
+        PacketWriteAt1 (pak, pbytes, i);
+        PacketEnqueuev5 (pak, conn);
+        pak = NULL;
+    }
+    if (pak)
+    {
+        PacketWriteAt1 (pak, pbytes, i);
+        PacketEnqueuev5 (pak, conn);
     }
 }
 
@@ -568,34 +574,37 @@ void CmdPktCmdInvisList (Connection *conn)
  */
 void CmdPktCmdVisList (Connection *conn)
 {
+    ContactGroup *cg = conn->contacts;
     Contact *cont;
-    Packet *pak;
+    Packet *pak = NULL;
     UWORD pbytes = 0;
-    int i;
+    int i, j;
 
-    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+    for (i = j = 0; (cont = ContactIndex (cg, j)); j++)
     {
-        for (i = 0, pak = NULL; i < MAX_CONTS_PACKET && ContactHasNext (cont); cont = ContactNext (cont))
+        if (cont->flags & CONT_ALIAS || ~cont->flags & CONT_INTIMATE)
+            continue;
+
+        if (!pak)
         {
-            if (!(cont->flags & CONT_ALIAS) && cont->flags & CONT_INTIMATE)
-            {
-                if (!pak)
-                {
-                    pak = PacketCv5 (conn, CMD_VIS_LIST);
-                    pbytes = PacketWritePos (pak);
-                    PacketWrite1 (pak, 0);
-                }
-                PacketWrite4 (pak, cont->uin);
-                i++;
-            }
+            pak = PacketCv5 (conn, CMD_INVIS_LIST);
+            pbytes = PacketWritePos (pak);
+            PacketWrite1 (pak, 0);
         }
-        if (pak)
-        {
-            PacketWriteAt1 (pak, pbytes, i);
-            PacketEnqueuev5 (pak, conn);
-        }
-        if (!ContactHasNext (cont))
-            break;
+        PacketWrite4 (pak, cont->uin);
+        i++;
+
+        if (i < MAX_CONTS_PACKET)
+            continue;
+
+        PacketWriteAt1 (pak, pbytes, i);
+        PacketEnqueuev5 (pak, conn);
+        pak = NULL;
+    }
+    if (pak)
+    {
+        PacketWriteAt1 (pak, pbytes, i);
+        PacketEnqueuev5 (pak, conn);
     }
 }
 

@@ -26,6 +26,7 @@
 #include "cmd_pkt_cmd_v5_util.h"
 #include "preferences.h"
 #include "util_io.h"
+#include "contact.h"
 #include "remote.h"
 #include "cmd_pkt_v8.h"
 #include "session.h"
@@ -270,6 +271,7 @@ void Read_RC_File (FILE *rcf)
     char *p, *args;
     Contact *cont = NULL, *lastcont = NULL;
     Connection *oldconn = NULL, *conn = NULL, *conns = NULL;
+    ContactGroup *cg = NULL;
     int section, dep = 0;
     UDWORD uin, i;
     UWORD flags;
@@ -295,6 +297,18 @@ void Read_RC_File (FILE *rcf)
                 oldconn = conn;
                 conn = ConnectionC ();
                 conn->spref = PreferencesConnectionC ();
+            }
+            else if (!strcasecmp (buf, "[Group]"))
+            {
+                section = 4;
+                cg = ContactGroupFind (0, (Connection *)(-1), "", 1);
+                cg->serv = NULL;
+                for (i = 0; (conn = ConnectionNr (i)); i++)
+                    if (conn->flags & CONN_AUTOLOGIN)
+                    {
+                        cg->serv = conn;
+                        break;
+                    }
             }
             else
             {
@@ -851,7 +865,7 @@ void Read_RC_File (FILE *rcf)
                 else if (!strcasecmp (cmd, "password"))
                 {
                     PrefParse (tmp);
-                    conn->spref->passwd = strdup (tmp);
+                    s_repl (&conn->spref->passwd, strdup (tmp));
                 }
                 else if (!strcasecmp (cmd, "status"))
                 {
@@ -864,6 +878,86 @@ void Read_RC_File (FILE *rcf)
                     M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), cmd);
                     M_print ("\n");
                 }
+                break;
+            case 4: /* contact groups */
+                PrefParse (cmd);
+                if (!strcasecmp (cmd, "label") && !cg->used)
+                {
+                    PrefParseRemainder (tmp);
+                    s_repl (&cg->name, tmp);
+                    if (!cg->serv)
+                    {
+                        if (!strncmp (cg->name, "contacts-", 9))
+                        {
+                            UWORD type = 0;
+                            UDWORD uin = 0;
+                            
+                            if      (!strncmp (cg->name + 9, "icq5-", 5)) type = TYPE_SERVER_OLD;
+                            else if (!strncmp (cg->name + 9, "icq8-", 5)) type = TYPE_SERVER;
+                            uin = atoi (cg->name + 14);
+                            
+                            for (i = 0; (conn = ConnectionNr (i)); i++)
+                                if (conn->spref && conn->spref->type == type && conn->spref->uin == uin)
+                                {
+                                    cg->serv = conn;
+                                    cg->serv->contacts = cg;
+                                    break;
+                                }
+                        }
+                        else
+                        {
+                            for (i = 0; (conn = ConnectionNr (i)); i++)
+                                if (conn->spref && conn->spref->type & TYPEF_SERVER)
+                                {
+                                    cg->serv = conn;
+                                    cg->serv->contacts = cg;
+                                    break;
+                                }
+                        }
+                    }
+                }
+                else if (!strcasecmp (cmd, "id") && !cg->used)
+                {
+                    PrefParseInt (i);
+                    cg->id = i;
+                }
+                else if (!strcasecmp (cmd, "server") && !cg->used)
+                {
+                    UWORD type = 0;
+                    UDWORD uin = 0;
+                    
+                    PrefParse (tmp);
+                    if      (!strcasecmp (tmp, "icq5")) type = TYPE_SERVER_OLD;
+                    else if (!strcasecmp (tmp, "icq8")) type = TYPE_SERVER;
+                    
+                    PrefParseInt (uin);
+                    
+                    for (i = 0; (conn = ConnectionNr (i)); i++)
+                        if (conn->type == type && conn->uin == uin)
+                        {
+                            if (cg->serv->contacts == cg)
+                                cg->serv->contacts = NULL;
+                            cg->serv = conn;
+                            cg->serv->contacts = cg;
+                            break;
+                        }
+                }
+                else if (!strcasecmp (cmd, "entry"))
+                {
+                    UDWORD uin;
+                    
+                    PrefParseInt (i);
+                    PrefParseInt (uin);
+                    
+                    ContactGroupAdd (cg, ContactByUIN (uin, 1));
+                }
+                else
+                {
+                    M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), cmd);
+                    M_print ("\n");
+                }
+                break;
         }
     }
     
@@ -901,7 +995,7 @@ void Read_RC_File (FILE *rcf)
 
         conn->port   = conn->spref->port;
         s_repl (&conn->server, conn->spref->server);
-        conn->passwd = conn->spref->passwd;
+        s_repl (&conn->passwd, conn->spref->passwd);
         conn->status = conn->spref->status;
         conn->uin    = conn->spref->uin;
         conn->ver    = conn->spref->version;
@@ -930,6 +1024,14 @@ void Read_RC_File (FILE *rcf)
                 conn->open = NULL;
                 break;
         }
+        if (!conn->contacts && conn->type & TYPEF_SERVER)
+        {
+            conn->contacts = cg = ContactGroupFind (0, conn, s_sprintf ("contacts-%s-%ld",
+                                conn->type == TYPE_SERVER ? "icq8" : "icq5", conn->uin), 1);
+            for (cont = ContactStart(); ContactHasNext (cont); cont = ContactNext (cont))
+                ContactGroupAdd (cg, cont);
+            dep = 1;
+        }
     }
 
     if (!conns)
@@ -942,6 +1044,7 @@ void Read_RC_File (FILE *rcf)
         conns->spref->type = TYPE_REMOTE;
         conns->type  = conns->spref->type;
         conns->server = strdup (conns->spref->server);
+        dep = 1;
     }
                             
     if (dep)
@@ -961,6 +1064,7 @@ int Save_RC ()
     int k;
     Contact *cont;
     Connection *ss;
+    ContactGroup *cg;
 
     M_printf (i18n (2048, "Saving preferences to %s.\n"), prG->rcfile);
     rcf = fopen (prG->rcfile, "w");
@@ -1004,7 +1108,7 @@ int Save_RC ()
                                       ss->spref->flags & CONN_AUTOLOGIN ? " auto" : "");
         fprintf (rcf, "version %d\n", ss->spref->version);
         if (ss->spref->server)
-            fprintf (rcf, "server %s\n",  ss->spref->server);
+            fprintf (rcf, "server %s\n",   ss->spref->server);
         if (ss->spref->port)
             fprintf (rcf, "port %ld\n",    ss->spref->port);
         if (ss->spref->uin)
@@ -1152,6 +1256,25 @@ int Save_RC ()
         for (f = CmdUserTable (); f->f; f++)
             if (f->name && strcmp (f->name, f->defname))
                 fprintf (rcf, "alter %s %s\n", f->defname, f->name);
+    }
+
+    fprintf (rcf, "\n# Contact groups.");
+    for (k = 0; (cg = ContactGroupIndex (k)); k++)
+    {
+        fprintf (rcf, "\n[Group]\n");
+        if (cg->serv)
+            fprintf (rcf, "server %s %ld\n", cg->serv->type == TYPE_SERVER ? "icq8" : "icq5", cg->serv->uin);
+        else
+            fprintf (rcf, "#server <icq5|icq8> <uin>\n");
+        fprintf (rcf, "label \"%s\"\n", cg->name);
+        fprintf (rcf, "id %d\n", cg->id);
+        while (cg)
+        {
+            int i;
+            for (i = 0; i < cg->used; i++)
+                fprintf (rcf, "entry 0 %ld\n", cg->uins[i]);
+            cg = cg->more;
+        }
     }
 
     fprintf (rcf, "\n# The contact list section.\n");

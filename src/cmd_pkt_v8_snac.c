@@ -893,10 +893,11 @@ static JUMP_SNAC_F(SnacSrvSetinterval)
  */
 static JUMP_SNAC_F(SnacSrvReplyroster)
 {
-    Packet *pak;
+    Packet *pak, *p;
     TLV *tlv;
     Event *event2;
-
+    ContactGroup *cg = NULL;
+    Contact *cont;
     int i, k;
     char *name, *cname, *nick;
     UWORD count, type, tag, id, TLVlen, j, data;
@@ -931,11 +932,30 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
         {
             case 1:
                 if (!tag && !id)
-                    break;
-                M_printf (i18n (2049, "Receiving group \"%s\":\n"), name);
+                {
+                    j = TLVGet (tlv, 200);
+                    if (j == (UWORD)-1)
+                        break;
+                    p = PacketCreate (tlv[j].str, tlv[j].len);
+                    while ((id = PacketReadB2 (p)))
+                        if (!ContactGroupFind (id, event->conn, NULL, 0) && data == 3)
+                            ContactGroupFind (id, event->conn, "", 1);
+                    PacketD (p);
+                }
+                else
+                {
+                    if (!(cg = ContactGroupFind (tag, event->conn, name, 0)))
+                        if (!(cg = ContactGroupFind (tag, event->conn, NULL, 0)))
+                            if (!(cg = ContactGroupFind (0, event->conn, name, 0)))
+                                if (data != 3 || !(cg = ContactGroupFind (tag, event->conn, name, 1)))
+                                    break;
+                    s_repl (&cg->name, name);
+                    M_printf (i18n (2049, "Receiving group \"%s\":\n"), name);
+                }
                 break;
             case 0:
-                if (!tag)
+                cg = ContactGroupFind (tag, event->conn, NULL, 0);
+                if (!tag || (!cg && data == 3))
                     break;
                 j = TLVGet (tlv, 305);
                 assert (j < 200 || j == (UWORD)-1);
@@ -944,12 +964,18 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                 switch (data)
                 {
                     case 3:
-                        if (ContactFindAlias (atoi (name), nick))
+                        if (j != (UWORD)-1 && !ContactFindAlias (atoi (name), nick))
+                            ContactAdd (atoi (name), nick);
+                        if (!(cont = ContactByUIN (atoi (name), 1)))
                             break;
-                        if (!ContactByUIN (atoi (name), 0))
+                        cont->id = id;   /* FIXME: should be in ContactGroup? */
+                        ContactGroupAdd (cg, cont);
+                        if (!ContactGroupHas (event->conn->contacts, cont))
+                        {
+                            ContactGroupAdd (event->conn->contacts, cont);
                             SnacCliAddcontact (event->conn, atoi (name));
-                        ContactAdd (atoi (name), nick);
-                        k++;
+                            k++;
+                        }
                         M_printf ("  %10d %s\n", atoi (name), nick);
                         break;
                     case 2:
@@ -1340,14 +1366,17 @@ void SnacCliBuddy (Connection *conn)
  */
 void SnacCliAddcontact (Connection *conn, UDWORD uin)
 {
-    Packet *pak;
+    ContactGroup *cg;
     Contact *cont;
+    Packet *pak;
+    int i;
     
+    cg = conn->contacts;
     pak = SnacC (conn, 3, 4, 0, 0);
     if (uin)
         PacketWriteUIN (pak, uin);
     else
-        for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
             PacketWriteUIN (pak, cont->uin);
     SnacSend (conn, pak);
 }
@@ -1637,14 +1666,17 @@ void SnacCliReqbos (Connection *conn)
  */
 void SnacCliAddvisible (Connection *conn, UDWORD uin)
 {
-    Packet *pak;
+    ContactGroup *cg;
     Contact *cont;
+    Packet *pak;
+    int i;
     
+    cg = conn->contacts;
     pak = SnacC (conn, 9, 5, 0, 0);
     if (uin)
         PacketWriteUIN (pak, uin);
     else
-        for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
             if (cont->flags & CONT_INTIMATE)
                 PacketWriteUIN (pak, cont->uin);
     SnacSend (conn, pak);
@@ -1667,14 +1699,17 @@ void SnacCliRemvisible (Connection *conn, UDWORD uin)
  */
 void SnacCliAddinvis (Connection *conn, UDWORD uin)
 {
-    Packet *pak;
+    ContactGroup *cg;
     Contact *cont;
+    Packet *pak;
+    int i;
     
     pak = SnacC (conn, 9, 7, 0, 0);
+    cg = conn->contacts;
     if (uin)
         PacketWriteUIN (pak, uin);
     else
-        for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
             if (cont->flags & CONT_HIDEFROM)
                 PacketWriteUIN (pak, cont->uin);
     SnacSend (conn, pak);
@@ -1697,12 +1732,14 @@ void SnacCliReminvis (Connection *conn, UDWORD uin)
  */
 void SnacCliReqroster (Connection *conn)
 {
-    Packet *pak;
+    ContactGroup *cg;
     Contact *cont;
+    Packet *pak;
     int i;
     
+    cg = conn->contacts;
     pak = SnacC (conn, 19, 5, 0, 0);
-    for (i = 0, cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+    for (i = 0; (cont = ContactIndex (cg, i)); )
         i++;
 
     PacketWriteB4 (pak, 0);  /* last modification of server side contact list */

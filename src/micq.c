@@ -125,7 +125,7 @@ in a loop waiting for server responses.
 ******************************/
 int main (int argc, char *argv[])
 {
-    int i, rc;
+    UDWORD i, rc;
 #ifdef _WIN32
     WSADATA wsaData;
 #endif
@@ -192,6 +192,15 @@ int main (int argc, char *argv[])
     prG->rcfile   = arg_f ? strdup (arg_f) : NULL;
     prG->logplace = arg_l ? strdup (arg_l) : NULL;
     prG->flags |= arg_c ? 0 : FLAG_COLOR;
+    if (arg_b && *arg_b != '/' && (*arg_b != '~' || arg_b[1] != '/'))
+    {
+        char buf[PATH_MAX];
+        buf[0] = '\0';
+        getcwd  (buf, PATH_MAX - 1);
+        prG->basedir = strdup (s_sprintf ("%s/%s", buf, arg_b));
+    }
+    else
+        prG->basedir = arg_b ? strdup (arg_b) : NULL;
     
     prG->enc_loc = prG->enc_rem = ENC_AUTO;
     i18nInit (&prG->locale, &prG->enc_loc, arg_i);
@@ -254,7 +263,7 @@ int main (int argc, char *argv[])
     if (i == -1)
         M_print ("Couldn't load internationalization. Maybe you want to do some translation work?\n");
     else if (i)
-        M_printf (i18n (1081, "Successfully loaded en translation (%d entries).\n"), i);
+        M_printf (i18n (1081, "Successfully loaded en translation (%ld entries).\n"), i);
     else
         M_print ("No internationalization requested.\n");
 

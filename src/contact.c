@@ -74,6 +74,13 @@ ContactGroup *ContactGroupFind (UWORD id, Connection *serv, const char *name, BO
     return &cnt_groups[i];
 }
 
+ContactGroup *ContactGroupIndex (int i)
+{
+    if (i >= 0 && i < MAX_GROUPS && cnt_groups[i].name)
+        return &cnt_groups[i];
+    return NULL;
+}
+
 /*
  * Adds a contact to a contact group.
  */
@@ -114,6 +121,69 @@ BOOL ContactGroupRem (ContactGroup *group, Contact *cont)
     return FALSE;
 }
 
+/*
+ * Returns the group id, if necessary create one
+ */
+UWORD ContactGroupID (ContactGroup *group)
+{
+    while (!group->id)
+    {
+        ContactGroup *cg;
+        int i;
+
+        group->id = rand() % 0x7fff;
+        for (i = 0; (cg = ContactGroupIndex (i)); i++)
+            if (cg->id == group->id)
+                group->id = 0;
+    }
+    return group->id;
+}
+
+/*
+ * Iterate through contacts on a contact group
+ */
+Contact *ContactIndex (ContactGroup *group, int i)
+{
+    static ContactGroup *old = NULL, *oldpos = NULL;
+    static int oldoff = 0;
+    ContactGroup *orig = group;
+    int j = 0;
+    
+    if (oldpos == group && oldoff <= i)
+    {
+        group = oldpos;
+        i -= oldoff;
+        j = oldoff;
+    }
+    while (group && group->used <= i)
+    {
+        i -= group->used;
+        j += group->used;
+        group = group->more;
+    }
+    if (!group)
+        return NULL;
+    old = orig;
+    oldpos = group;
+    oldoff = j;
+    return ContactByUIN (group->uins[i], 1);
+}
+
+/*
+ * Check whether a given contact is in the contact group
+ */
+BOOL ContactGroupHas (ContactGroup *group, Contact *cont)
+{
+    int i;
+    while (group)
+    {
+        for (i = 0; i < group->used; i++)
+            if (group->uins[i] == cont->uin)
+                return TRUE;
+        group = group->more;
+    }
+    return FALSE;
+}
 
 
 /*
@@ -130,6 +200,8 @@ Contact *ContactAdd (UDWORD uin, const char *nick)
         for (i = 0; i < cnt_number; i++)
             if (cnt_contacts[i].uin == uin)
             {
+                if (cnt_contacts[i].flags & CONT_TEMPORARY)
+                    s_repl (&cnt_contacts[i].nick, nick);
                 if (!strcmp (cnt_contacts[i].nick, nick))
                     return &cnt_contacts[i];
                 flags = CONT_ALIAS;

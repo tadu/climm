@@ -1474,13 +1474,16 @@ static UDWORD __status (Contact *cont)
  */
 static JUMP_F(CmdUserStatusDetail)
 {
-    UDWORD uin = 0, tuin = 0, i;
+    ContactGroup *cg;
+    UDWORD uin = 0, tuin = 0, i, j;
     int lenuin = 0, lennick = 0, lenstat = 0, lenid = 0, totallen = 0;
     Contact *cont = NULL, *contr = NULL;
     Connection *peer;
     UDWORD stati[] = { 0xfffffffe, STATUS_OFFLINE, STATUS_DND,    STATUS_OCC, STATUS_NA,
                                    STATUS_AWAY,    STATUS_ONLINE, STATUS_FFC, STATUSF_BIRTH };
     ANYCONN;
+
+    cg = conn->contacts;
 
     if (!data)
         s_parseint (&args, &data);
@@ -1494,7 +1497,7 @@ static JUMP_F(CmdUserStatusDetail)
     if (cont)
         uin = cont->uin;
 
-    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+    for (i = 0; (cont = ContactIndex (cg, i)); i++)
     {
         if (uin && cont->uin != uin)
             continue;
@@ -1542,7 +1545,7 @@ static JUMP_F(CmdUserStatusDetail)
     for (i = (data & 1 ? 2 : 0); i < 9; i++)
     {
         status = stati[i];
-        for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+        for (j = 0; (cont = ContactIndex (cg, j)); j++)
         {
             char *stat, *ver = NULL, *ver2 = NULL;
             
@@ -1620,7 +1623,7 @@ static JUMP_F(CmdUserStatusDetail)
             M_printf ("%-15s %s (%d)\n", i18n (1454, "Connection:"),
                       contr->dc->type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),
                       contr->dc->type);
-            M_printf ("%-15s %08x\n", i18n (2026, "TCP cookie:"), contr->dc->cookie);
+            M_printf ("%-15s %08lx\n", i18n (2026, "TCP cookie:"), contr->dc->cookie);
             free (t1);
             free (t2);
         }
@@ -1679,11 +1682,14 @@ static JUMP_F(CmdUserStatusMeta)
  */
 static JUMP_F(CmdUserIgnoreStatus)
 {
+    ContactGroup *cg;
     Contact *cont;
+    int i;
+    ANYCONN;
 
     M_printf ("%s%s\n", W_SEPERATOR, i18n (1062, "Users ignored:"));
-    /*  Sorts thru all ignored users */
-    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+    cg = conn->contacts;
+    for (i = 0; (cont = ContactIndex (cg, i)); i++)
     {
         if (!(cont->flags & CONT_ALIAS))
         {
@@ -1713,15 +1719,18 @@ static JUMP_F(CmdUserStatusWide)
 {
     Contact **Online;           /* definitely won't need more; could    */
     Contact **Offline = NULL;   /* probably get away with less.    */
-    int MaxLen = 0;             /* legnth of longest contact name */
+    int MaxLen = 0;             /* length of longest contact name */
     int i;
     int OnIdx = 0;              /* for inserting and tells us how many there are */
     int OffIdx = 0;             /* for inserting and tells us how many there are */
     int NumCols;                /* number of columns to display on screen        */
     int StatusLen;
+    ContactGroup *cg;
     Contact *cont = NULL;
     char *stat;
     OPENCONN;
+
+    cg = conn->contacts;
 
     if (data)
     {
@@ -1741,7 +1750,7 @@ static JUMP_F(CmdUserStatusWide)
     /* Filter the contact list into two lists -- online and offline. Also
        find the longest name in the list -- this is used to determine how
        many columns will fit on the screen. */
-    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+    for (i = 0; (cont = ContactIndex (cg, i)); i++)
     {
         if (!(cont->flags & CONT_ALIAS))
         {
@@ -1852,45 +1861,24 @@ static JUMP_F(CmdUserStatusWide)
  */
 static JUMP_F(CmdUserStatusShort)
 {
+    ContactGroup *cg;
     Contact *cont;
+    int i;
     OPENCONN;
 
     M_print  (W_SEPERATOR);
     M_printf ("%s " COLCONTACT "%10lu" COLNONE " ", s_now, conn->uin);
     M_printf (i18n (2211, "Your status is %s.\n"), s_status (conn->status));
 
+    cg = conn->contacts;
     if (data)
     {
         M_printf ("%s%s\n", W_SEPERATOR, i18n (1072, "Users offline:"));
-        for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
         {
-            if (!(cont->flags & CONT_ALIAS))
+            if (~cont->flags & CONT_ALIAS && ~cont->flags & CONT_IGNORE)
             {
-                if (!(cont->flags & CONT_IGNORE))
-                {
-                    if (cont->status == STATUS_OFFLINE)
-                    {
-                        if (cont->flags & CONT_INTIMATE)
-                            M_print (COLSERVER "*" COLNONE);
-                        else
-                            M_print (" ");
-
-                        M_printf (COLCONTACT "%-20s\t" COLMESSAGE "(%s)" COLNONE "\n",
-                                 cont->nick, s_status (cont->status));
-                    }
-                }
-            }
-        }
-    }
-
-    M_printf ("%s%s\n", W_SEPERATOR, i18n (1073, "Users online:"));
-    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
-    {
-        if (!(cont->flags & CONT_ALIAS))
-        {
-            if (!(cont->flags & CONT_IGNORE))
-            {
-                if (cont->status != STATUS_OFFLINE)
+                if (cont->status == STATUS_OFFLINE)
                 {
                     if (cont->flags & CONT_INTIMATE)
                         M_print (COLSERVER "*" COLNONE);
@@ -1899,12 +1887,30 @@ static JUMP_F(CmdUserStatusShort)
 
                     M_printf (COLCONTACT "%-20s\t" COLMESSAGE "(%s)" COLNONE "\n",
                              cont->nick, s_status (cont->status));
-                    if (cont->version)
-                       M_printf (" [%s]", cont->version);
-                    if (cont->status & STATUSF_BIRTH)
-                       M_printf (" (%s)", i18n (2033, "born today"));
-                    M_print ("\n");
                 }
+            }
+        }
+    }
+
+    M_printf ("%s%s\n", W_SEPERATOR, i18n (1073, "Users online:"));
+    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+    {
+        if (~cont->flags & CONT_ALIAS && ~cont->flags & CONT_IGNORE)
+        {
+            if (cont->status != STATUS_OFFLINE)
+            {
+                if (cont->flags & CONT_INTIMATE)
+                    M_print (COLSERVER "*" COLNONE);
+                else
+                    M_print (" ");
+
+                M_printf (COLCONTACT "%-20s\t" COLMESSAGE "(%s)" COLNONE "\n",
+                         cont->nick, s_status (cont->status));
+                if (cont->version)
+                   M_printf (" [%s]", cont->version);
+                if (cont->status & STATUSF_BIRTH)
+                   M_printf (" (%s)", i18n (2033, "born today"));
+                M_print ("\n");
             }
         }
     }
@@ -2557,13 +2563,16 @@ static JUMP_F(CmdUserTabs)
  */
 static JUMP_F(CmdUserLast)
 {
+    ContactGroup *cg;
     Contact *cont = NULL, *contr = NULL;
+    int i;
     OPENCONN;
 
     if (!s_parsenick (&args, &cont, &contr, conn))
     {
+        cg = conn->contacts;
         M_print (i18n (1682, "You have received messages from:\n"));
-        for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
             if (cont->last_message)
                 M_printf ("  " COLCONTACT "%s" COLNONE " %s " COLMESSAGE "%s" COLNONE "\n",
                          cont->nick, s_time (&cont->last_time), cont->last_message);

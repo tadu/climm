@@ -8,7 +8,6 @@ typedef struct ContactMetaWork_s     MetaWork;
 typedef struct ContactMetaMore_s     MetaMore;
 typedef struct ContactMetaEmail_s    MetaEmail;
 typedef struct ContactMetaObsolete_s MetaObsolete;
-typedef struct ContactGroup_s        ContactGroup;
 typedef struct ContactDC_s           ContactDC;
 
 struct ContactMetaGeneral_s
@@ -96,15 +95,21 @@ struct Contact_s
     Extra           *meta_interest, *meta_background, *meta_affiliation;
 };
 
-Contact    *ContactAdd (UDWORD uin, const char *nick);
-void        ContactRem (Contact *cont);
 
-ContactGroup *ContactGroupFind (UWORD id, Connection *serv, const char *name, BOOL create);
-BOOL          ContactGroupAdd (ContactGroup *group, Contact *cont);
-BOOL          ContactGroupRem (ContactGroup *group, Contact *cont);
+ContactGroup *ContactGroupFind  (UWORD id, Connection *serv, const char *name, BOOL create);
+ContactGroup *ContactGroupIndex (int i);
+BOOL          ContactGroupAdd   (ContactGroup *group, Contact *cont);
+BOOL          ContactGroupRem   (ContactGroup *group, Contact *cont);
+UWORD         ContactGroupID    (ContactGroup *group);
+BOOL          ContactGroupHas   (ContactGroup *group, Contact *cont);
+
+Contact    *ContactIndex (ContactGroup *group, int i);
 
 Contact    *ContactByUIN (UDWORD uin, BOOL create);
 Contact    *ContactByNick (const char *nick, BOOL create);
+
+Contact    *ContactAdd (UDWORD uin, const char *nick);
+void        ContactRem (Contact *cont);
 Contact    *ContactFindAlias (UDWORD uin, const char *nick);
 
 Contact    *ContactStart ();

@@ -23,6 +23,8 @@ struct Connection_s
         UWORD     connect;        /* connection setup status                  */
         Packet   *incoming;       /* packet we're receiving                   */
         Packet   *outgoing;       /* packet we're sending                     */
+        
+        ContactGroup *contacts;   /* The contacts for this connection         */
 
         UDWORD    our_local_ip;   /* LAN-internal IP (host byte order)        */
         UDWORD    our_outside_ip; /* the IP address the server sees from us   */

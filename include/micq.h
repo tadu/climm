@@ -41,6 +41,7 @@ struct Extra_s;
 typedef struct Queue_s                 Queue;
 typedef struct Event_s                 Event;
 typedef struct Contact_s               Contact;
+typedef struct ContactGroup_s          ContactGroup;
 typedef struct Packet_s                Packet;
 typedef struct Connection_s            Connection;
 typedef struct Preferences_s           Preferences;
