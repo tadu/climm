@@ -38,8 +38,8 @@ Print usage.
 .Ic mICQ
 is very portable and has run on Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD and any
 other modern unix system.  
-.Ic mICQ version 0.4.8
-is known to run on Linux, GNU HURD and other unices.  However, the other ports
+.Ic mICQ version 0.4.9
+is known to run on Linux, AIX, HPUX, Tru64, partially BeOS and other unices.  However, the other ports
 may or may not still work and anyone wishing to test them is welcome to.
 .Sh HISTORY
 .Bl -tag -width Fl
@@ -51,23 +51,23 @@ Matthew D. Smith died in a car accident.
 Users pick up where Matthew left off, formalize micq under the BSD 
 license and restart the development of
 .Ic mICQ .
-
+.It 10 June 2002
+Version 0.4.9 is released under the GPL licence, finally
+implementing the new version 8 of the ICQ protocol, done
+by Rüdiger Kuhlmann.
 .Sh MAILING-LIST
 The micq mailing list is
 .Pa micq-list@mc.ukeer.de .
 Information about subscribing and archives is available at
-.Pa http://micq.ukeer.de/pipermail/micq-list/ .
+.Pa http://www.micq.org/pipermail/micq-list/ .
 .Sh DOWNLOAD
 Via HTTP from
-.Pa http://micq.ukeer.de/download.html .
+.Pa http://www.micq.org/download .
 .br
-To get the newest version from CVS, enter
+To get the newest version from CVS, enter:
 .br
-cvs -d:pserver:anonymous@micq.ukeer.de:/usr/local/cvsroot login
+cvs -d:pserver:anonymous@micq.org:/usr/local/cvsroot co micq
 .br
-empty password, hit enter
-.br
-cvs -d:pserver:anonymous@micq.ukeer.de:/usr/local/cvsroot -z3 co micq
 .Sh SEE ALSO
 .Xr micqrc 5 ,
 .Xr micq 7
@@ -86,8 +86,8 @@ Local overrides for the files above.
 Default location of directory where log files are created in.
 .El
 .Sh BUGS
-Send bug reports or comments to Rico Glöckner <mc@verdinet.de>,
-UIN #99798577, or Rüdiger Kuhlmann <micq@ruediger-kuhlmann.de>.
+Send bug reports or comments to Rüdiger Kuhlmann
+<micq@ruediger-kuhlmann.de> (German or English).
 .Sh AUTHOR
 This manual page was derived by James Morrison
 .Pa <ja2morrison@student.math.uwaterloo.ca>

@@ -11,7 +11,8 @@ This manual page describes the configuration file for micq. It consists
 of several sections that are started by
 .Ic [section] ,
 where
-.Ic section is the name of the section.
+.Ic section
+is the name of the section.
 .Sh CONNECTIONS
 A
 .Ic Connection
@@ -64,19 +65,19 @@ Set the status to be on log in in to
 .Ar nr .
 Status can be:
 .br
-0   Online
+0   online
 .br
-1   Away
+1   away
 .br
-5   Not Available
+5   not available
 .br
-17  Occupied
+17  occupied
 .br
-19  Do Not disturb
+19  do not disturb
 .br
-32  Free for Chat
+32  free for chat
 .br
-256 Invisible
+256 invisible
 .El
 .Sh GENERAL
 This section includes the options for SOCKS 5, that may be eventually
@@ -228,7 +229,8 @@ Rename command
 to
 .Ar new .
 Note the old name may still be used, unless it conflicts with some
-.Ar new name .
+.Ar new
+name.
 For posible command names, see
 .Xr micq 7 .
 This option may be repeated as desired.
@@ -254,7 +256,7 @@ Note: the contact list has to be the last part of this file.
 .Sh SEE ALSO
 .Xr micq 1 ,
 .Xr micq 7
-.Sh Author
+.Sh AUTHOR
 This man page was written by James Morrison
 .Pa <ja2morrison@student.math.uwaterloo.ca> .
 It was rewritten to match new config file syntax by Rüdiger Kuhlmann

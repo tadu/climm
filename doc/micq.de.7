@@ -1,0 +1,346 @@
+.\"This is the man page for ~/.micq/micqrc."
+.\".TH MICQ 7 "February 15, 2002" "MICQ(7)"
+.Dd 02. August 2002
+.Dt MICQ 7
+.Os MICQ(7)
+.Sh NAME
+mICQ - interaktive Befehle
+.Sh BESCHREIBUNG
+Diese Hilfeseite beschreibt die Befehle, die aus mICQ heraus verwendet
+werden können. Diese Seite enthält prinzipiell die selben Informationen wie
+die Hilfe innerhalb von mICQ.
+.Sh BEFEHLE
+.Bl -tag -width Fl
+.It Ic trans Op Ar Sprache|Nr ...
+Wechsle zur Sprache
+.Ar Sprache ,
+gegen durch ihren ISO-Sprachcode, oder gibt die Übersetzung
+der Textes mit der Nummer
+.Ar Nr
+aus. Um die durch die Umgebungsvariablen
+.Ic LANG ,
+.Ic LC_ALL
+und
+.Ic LC_MESSAGES
+bestimmte Sprache auszuwählen, kann
+.Ic \&! ,
+.Ic auto
+oder
+.Ic default .
+verwendet werden. Um überhaupt keine Übersetzung auszuwählen,
+kann man
+.Ic \&. ,
+.Ic none
+oder
+.Ic unload
+verwenden. Um zur Fehlersuche die Nummern der
+übersetzten Texte mitauszugeben, kann man
+.Ic debug
+voranstellen. Um an ein paar Stellen lustige Meldungen
+zu verwenden, kann man
+.Ic _fun
+anhängen.
+.sp
+Die Dateien aus ~/.micq/i18n/*.i18n haben Vorrang über die globalen
+Dateien, während die "lustigen" über die normalen Vorrang haben.
+.sp
+Tatsächlich kann man sogar soviele Argumente angeben, wie man will,
+um z.B. den 17. Text in Deutsch auszugeben und dann zur Standardsprache
+zurückzukehren, gebe man "trans de 117 default" ein.
+.It Ic tabs 
+Zeigt eine Liste von Benutzern, zu denen man bereits Nachrichten
+geschickt hat bzw. von denen man bereits welche Empfangen hat, und
+die man mittels das <tab>-Taste durchgehen kann.
+.It Ic save
+Speichert die aktuellen Einstellungen in der Konfigurationsdatei ab,
+welches
+.Pa ~/.micq/micqrc
+ist, wenn nicht anders angegeben. Vorsicht, dies wird alle hinzugefügten
+Kommentare in dieser Datei überschreiben.
+.It Ic r Op Ar Nachricht
+Antwortet auf die zuletzt empfangene Nachricht. Ohne
+.Ar Nachricht
+wird der Mehr-Zeilen-Modus aktiviert. Um eine Mehr-Zeilen-Nachricht abzuschicken,
+gebe man einen Punkt
+.Ic ( . )
+auf einer Zeile für sich ein. Um die Nachricht abzubrechen, gebe man ein Doppelkreuz
+.Ic ( # )
+auf einer Zeile für sich ein.
+.It Ic a Op Ar Nachricht
+Schickt eine Nachricht zur gleichen Person wie die letzte Nachricht.
+Siehe 
+.Ic r
+für das Verhalten ohne
+.Ar Nachricht .
+.It Ic msg Ar Benutzernummer|Spitzname Ic Op Ar Nachricht
+Schickt eine Nachricht an
+.Ar Benutzernummer|Spitzname .
+Siehe
+.Ic r 
+für das Verhalten ohne
+.Ar Nachricht .
+.It Ic url Ar Benutzernummer|Spitzname Ic Ar URL Ar Nachricht
+Schickt eine
+.Ar Nachricht
+über die Seite
+.Ar URL
+an
+.Ar Benutzernummer|Spitzname .
+.It Ic sms Ar HandyNr Nachricht
+Verschickt eine SMS-Nachricht
+.Ar Nachricht
+an die Handy-Nummer
+.Ar HandyNr ,
+die in der Form +<Landeskode><Nummer> sein muß.
+.It Ic msga
+Schickt eine Mehr-Zeilen-Nachricht an jeden auf der Kontaktliste. Siehe
+auch
+.Ic r .
+.It Ic resend Ar Benutzernummer|Spitzname ...
+Schickt die letzte Nachricht erneut an
+.Ar Benutzernummer
+oder 
+.Ar Spitzname .
+Es können beliebig viele Argumente angegeben werden.
+.It Ic uptime
+Zeigt an, wie lange mICQ bereits läuft.
+.It Ic last Op Ar Kontakt
+Zeigt eine Liste von Benutzern, von denen bereits eine Nachricht kam,
+oder die letzte empfangene Nachricht von
+.Ar Kontakt ,
+welches eine
+.Ar Benutzernummer
+oder ein
+.Ar Spitzname
+sein kann.
+.It Ic verbose Op Ar verb
+Setzt die Ausführlichkeit der Ausgaben von mICQ auf
+.Ar verb ,
+oder zeigt die aktuelle Ausführlichkeit an. Die Ausführlichkeit ist eine Menge von
+Werten, die aufaddiert werden:
+.Bl -tag -width Fl
+.It 128
+Zeigt ein- und ausgehende Pakete.
+.It 256
+Schreibt ein- und ausgehende Pakete in eine Datei (~/.micq/debug/packets).
+.El
+Und noch einige weitere.
+.It Ic clear
+Löscht den Bildschirm.
+.It Ic sound Op Ar Befehl
+Schaltet Piepsen ein oder aus, oder verwende stattdessen
+.Ar Befehl .
+.It Ic soundonline Op Ar Befehl
+Schaltet Piepsen für sich verbindende Benutzer ein oder aus, oder verwende stattdessen
+.Ar Befehl .
+.It Ic soundoffline Op Ar Befehl
+Schaltet Piepsen für sich ausloggende Benutzer ein oder aus, oder verwende stattdessen
+.Ar Befehl .
+.It Ic q
+Beendet mICQ.
+.It Ic auto Op Ar on|off
+Schaltet automatische Antworten ein oder aus, oder zeigt die aktuellen
+automatischen Antworten an.
+.It Ic auto Ar Status Nachricht
+Setzt die automatische Antwort für den Status
+.Ar Status
+auf
+.Ar Nachricht .
+.It Ic autoaway Op Ar Zeit|on|off
+Gehe nach
+.Ar Zeit
+Sekunden automatisch in den Status "abwesend" bzw. "nicht verfügbar",
+oder schaltet dies ein (mit der letzten verwendeten Zeit) oder aus.
+Eine Zeit von 0 schaltet dies ebenfalls ab. Ist kein Argument gegeben,
+zeigt es die aktuelle Einstellung an.
+.It Ic alter Ar Befehl Neu
+Mache den ursprünglich oder vorher als
+.Ar Befehl
+bekannten Befehl unter dem Namen
+.Ar Neu
+bekannt.
+.It Ic auth Ar Benutzernummer|Spitzname
+Erlaubt es
+.Ar Benutzernummer|Spitzname ,
+Sie zu seiner Kontaktliste hinzuzufügen.
+.It Ic rand Op Ar Nummer
+Findet einen zufälligen Kontakt in der Interessengruppe
+.Ar Nummer ,
+oder zeigt alle Interessengruppen an.
+.It Ic pass Ar Paßwort
+Setzt das Paßwort auf
+.Ar Paßwort . 
+.br
+Hinweis: Sie müssen danach mit
+.Ar save
+abspeichern, um diese Änderung dauerhaft zu machen, falls Sie Ihr Paßwort
+in Ihrem
+.Pa ~/.micq/micqrc
+abspeichern (siehe
+.Xr micqrc 7 ) ,
+oder Ihr Paßwort wird beim nächsten Login fehlerhaft sein.
+.It Ic search
+.It Ic search Ar eMail
+.It Ic search Ar Spitzname
+.It Ic search Ar Vorname Nachname
+Sucht nach einem Benutzer mit der eMail-Adresse
+.Ar eMail ,
+mit dem Spitznamen
+.Ar Spitzname ,
+der kein @ enthalten darf, oder mit
+.Ar Vorname
+als Vor- und
+.Ar Nachname
+als Nachname. Ist kein Argument gegeben, frage nach
+Spitznamen, Vornamen, Nachnamen, eMail-Adresse und einem
+Haufen anderer Daten, nach denen man suchen kann.
+.It Ic add Ar Benutzernummer Op Ar Spitzname
+Fügt die Benutzernummer
+.Ar Benutzernummer
+zur Kontaktliste hinzu unter dem Namen
+.Ar Spitzname ,
+oder nennt
+.Ar Benutzernummer
+in
+.Ar Spitzname
+um. Ist
+.Ar Spitzname
+nicht gegeben, benutze
+.Ar Benutzernummer
+als Spitzname.
+.br
+Hinweis: Sie müssen mit
+.Ar save
+abspeichern, um diese Änderungen dauerhaft zu machen.
+.It Ic rem Ar Spitzname
+Entfernt
+.Ar Spitzname
+von der Kontektliste.
+.br
+Hinweise: Sie müssen mit
+.Ar save
+abspeichern, um diese Änderungen dauerhaft zu machen.
+.It Ic togvis Ar Spitzname
+Ändert, ob
+.Ar Spitzname
+sehen kann, wenn Sie unsichtbar sind.
+.It Ic toginvis Ar Spitzname
+Ändert, ob
+.Ar Spitzname
+Sie niemal sehen kann.
+.It Ic togig Ar Spitzname
+Ändert, ob Nachrichten und Statusänderungen von
+.Ar Spitzname
+ignoriert werden sollen.
+.It Ic info Ar Benutzernummer|Spitzname
+Zeigt alle Daten über
+.Ar Benutzernummer|Spitzname .
+.It Ic w
+Zeigt alle Kontakte auf der Kontaktliste.
+.It Ic e
+Zeigt alle Kontakte auf der Kontaktliste, die verbunden sind.
+.It Ic wide
+Zeigt alle Kontakte auf der Kontaktliste in einem breiten Format.
+.It Ic ewide
+Zeigt alle Kontakte auf der Kontaktliste, die verbunden sind, in einem breiten Format.
+.It Ic s
+Zeigt den aktuellen Status.
+.It Ic i
+Zeigt alle Kontakte auf der Ignorieren-Liste.
+.It Ic status Ar Spitzname
+Zeigt den Status von
+.Ar Spitzname .
+Dies beinhaltet die IP-Adresse, verwendete Version des ICQ-Protokolls für
+Direktverbindungen und den Verbindungstyp.
+.It Ic change Op Ar Nummer
+Wechselt in den Status
+.Ar Nummer .
+Ohne eine Nummer: liste die verfügbaren Nummern auf.
+.It Ic reg Paßwort
+Erzeugt eine neue Benutzernummer mit dem Paßwort
+.Ar Paßwort .
+.It Ic online
+Wechselt in den Status "verbunden".
+.It Ic away
+Wechselt in den Status "abwesend".
+.It Ic na
+Wechselt in den Status "nicht verfügbar".
+.It Ic occ             
+Wechselt in den Status "beschäftigt".
+.It Ic dnd 
+Wechselt in den Status "nicht stören".
+.It Ic ffc
+Wechselt in den Status "frei für Plaudereien".
+.It Ic inv
+Wechselt in den Status "unsichtbar".
+.It Ic update
+Aktualisiert die auf dem Server gespeicherten Benutzerinformationen (eMail-Adresse, Spitzname, und so weiter).
+.It Ic other
+Aktualisiert weitergehende Benutzerinformationen wie Alter und Geschlecht.
+.It Ic about
+Aktualisiert den Punkt "Über" der Benutzerinformationen.
+.It Ic set Ar Option Ar Wert
+Schaltet die Option
+.Ar Option
+entweder
+.Ic an
+oder
+.Ic aus .
+.Ar Option
+kann
+.Ic color
+(Farben verwenden),
+.Ic funny
+(lustige Meldungen)
+oder
+.Ic quiet
+(weniger Meldungen) sein.
+.It Ic peek Ar Spitzname
+Überprüft, ob
+.Ar Spitzname
+tatsächlich verbunden ist oder nicht. Dies mißbraucht einen Fehler im ICQ-Protokoll, um
+dies herauszufinden; es kann nur herausgefunden werden, ob verbunden oder nicht.
+.It Ic setr Op Ar Nummer
+Setzt die Interessengruppe für zufällige Kontakte auf
+.Ar Nummer .
+Ohne Argumente: listet mögliche Interessengruppen auf.
+.It Ic tcp Ar Befehl Ar Benutzernummer|Spitzname
+wendet den Befehl
+.Ar Befehl
+auf den durch Benutzernummer
+.Ar Benutzernummer
+oder Spitzname
+.Ar Spitzname
+angegebenen Benutzer an.
+.Ar Befehl
+kann dabei sein:
+.Ic open ,
+um eine Direktverbindung über TCP zu diesem Benutzer, oder
+.Ic close ,
+um eine solche zu schließen und zurückzusetzen, oder
+.Ic off ,
+um niemals automatisch eine Direktverbindung aufzubauen, bis diese mit
+.Ic close
+geschlossen wird.
+.It Ic conn Op Ar Befehl Ar Nr
+Zeigt alle offenen Verbindungen, oder wendet den Befehl
+.Ar Befehl
+auf die Verbindung
+.Ar Nr 
+an.
+.Ar Befehl
+kann dabei
+.Ic open
+oder
+.Ic login
+sein, um die Verbindung zu öffnen, wenn sie dies derzeit nicht ist.
+.El
+.Sh SIEHE AUCH
+.Xr micq 1 ,
+.Xr micqrc 5
+.Sh AUTOR
+Diese hilfeseite wurde von James Morrison
+.Pa <ja2morrison@student.math.uwaterloo.ca>
+erschaffen, um eine Referenz für alle interaktiven Befehle in
+.Ic mICQ
+zu erschaffen. Sie wurde übersetzt von Rüdiger Kuhlmann.
