@@ -301,10 +301,17 @@ void SnacCliRosterupdate (Connection *serv, ContactGroup *cg, Contact *cont)
     pak = SnacC (serv, 19, 9, 0, 0);
     if (cont)
     {
+        UWORD type = 0;
+        
+        if (ContactPrefVal (cont, CO_HIDEFROM))
+            type = 3;
+        else if (ContactPrefVal (cont, CO_INTIMATE))
+            type = 2;
+
         PacketWriteStrB     (pak, s_sprintf ("%ld", cont->uin));
         PacketWriteB2       (pak, ContactGroupID (cg));
         PacketWriteB2       (pak, ContactID (cont));
-        PacketWriteB2       (pak, 0);
+        PacketWriteB2       (pak, type);
         PacketWriteBLen     (pak);
         PacketWriteTLVStr   (pak, 305, cont->nick);
         PacketWriteBLenDone (pak);
@@ -394,14 +401,14 @@ JUMP_SNAC_F(SnacSrvUpdateack)
         {
             case 0xe:
                 cont->oldflags |= CONT_REQAUTH;
-                cont->oldflags &= ~CONT_ISSBL;
+                OptSetVal (&cont->copts, CO_ISSBL, 0);
                 SnacCliRosteradd (serv, serv->contacts, cont);
                 EventD (event2);
                 return;
             case 0x3:
                 cont->id = 0;
             case 0x0:
-                cont->oldflags |= ~CONT_ISSBL;
+                OptSetVal (&cont->copts, CO_ISSBL, 1);
                 EventD (event2);
                 return;
         }
