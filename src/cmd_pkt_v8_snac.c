@@ -1036,6 +1036,13 @@ static JUMP_SNAC_F(SnacSrvReplylists)
     SnacCliReqofflinemsgs (serv);
     if (serv->flags & CONN_WIZARD)
     {
+        Contact *cont = ContactUIN (serv, serv->uin);
+        CONTACT_GENERAL (cont);
+        CONTACT_MORE (cont);
+        SnacCliMetasetabout (serv, "mICQ");
+        SnacCliMetasetgeneral (serv, cont);
+        SnacCliMetasetmore (serv, cont);
+        
         SnacCliReqroster  (serv);
         QueueEnqueueData (serv, QUEUE_REQUEST_ROSTER, 3, 0x7fffffffL,
                           NULL, 0, NULL, NULL);
@@ -2385,14 +2392,13 @@ void SnacCliSendsms (Connection *conn, const char *target, const char *text)
  * CLI_REGISTERUSER - SNAC(17,4)
  */
 #define _REG_X1 0x28000300
-#define _REG_X2 0x8a4c0000
 #define _REG_X3 0x00000602
-#define REG_X1 0x28000300
-#define REG_X2 0x9e270000
+#define REG_X1 0x28000400
 #define REG_X3 0x00000302
 void SnacCliRegisteruser (Connection *conn)
 {
     Packet *pak;
+    UDWORD reg_x2 = rand() % 0x10000;
     
     pak = SnacC (conn, 23, 4, 0, 0);
     PacketWriteTLV (pak, 1);
@@ -2400,14 +2406,14 @@ void SnacCliRegisteruser (Connection *conn)
     PacketWriteB4 (pak, REG_X1);
     PacketWriteB4 (pak, 0);
     PacketWriteB4 (pak, 0);
-    PacketWriteB4 (pak, REG_X2);
-    PacketWriteB4 (pak, REG_X2);
+    PacketWrite4 (pak, reg_x2);
+    PacketWrite4 (pak, reg_x2);
     PacketWriteB4 (pak, 0);
     PacketWriteB4 (pak, 0);
     PacketWriteB4 (pak, 0);
     PacketWriteB4 (pak, 0);
     PacketWriteLNTS (pak, c_out (conn->passwd));
-    PacketWriteB4 (pak, REG_X2);
+    PacketWrite4 (pak, reg_x2);
     PacketWriteB4 (pak, REG_X3);
     PacketWriteTLVDone (pak);
     SnacSend (conn, pak);
