@@ -2403,12 +2403,13 @@ static JUMP_F(CmdUserSet)
                           ~prG->flags & FLAG_LIBR_INT ? i18n (2269, "break") : i18n (2272, "smart"), COLNONE);
             break;
         case -2:
-            prG->tabs = TABS_SIMPLE;
             if (!strcasecmp (arg1, "cycle") || !strcasecmp (arg1, i18n (2273, "cycle")))
                 prG->tabs = TABS_CYCLE;
             else if (!strcasecmp (arg1, "cycleall") || !strcasecmp (arg1, i18n (2274, "cycleall")))
                 prG->tabs = TABS_CYCLEALL;
-            else if ((strcasecmp (arg1, "simple") || !strcasecmp (arg1, i18n (2270, "simple"))) && *arg1)
+            else if (!strcasecmp (arg1, "simple") || !strcasecmp (arg1, i18n (2270, "simple")))
+                prG->tabs = TABS_SIMPLE;
+            else if (*arg1)
                 data = 0;
             if (!quiet)
                 M_printf (i18n (2275, "Tab style is %s%s%s.\n"), COLMESSAGE,
