@@ -7,6 +7,13 @@ man5de_DATA = de/micqrc.5
 man7dedir   = @mandir@/de/man7
 man7de_DATA = de/micq.7
 
+man1skdir   = @mandir@/sk/man1
+man1sk_DATA = sk/micq.1
+man5skdir   = @mandir@/sk/man5
+man5sk_DATA = sk/micqrc.5
+man7skdir   = @mandir@/sk/man7
+man7sk_DATA = sk/micq.7
+
 man1frdir   = @mandir@/fr/man1
 man1fr_DATA = fr/micq.1
 man5frdir   = @mandir@/fr/man5
