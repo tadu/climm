@@ -250,7 +250,10 @@ JUMP_SNAC_F(SnacSrvReplyroster)
             SnacCliRosterentryadd (serv, "ICQTIC", 0, 2, 9, 205, "3608,0,0,0,60,null", 18);
         event2->callback (event2);
         if (ContactGroupPrefVal (serv->contacts, CO_WANTSBL))
+        {
+            rl_printf ("#Server side contact list activated, authorization restrictions apply.\n");
             SnacCliRosterack (serv);
+        }
     }
     else
         QueueEnqueue (event2);
@@ -468,12 +471,19 @@ JUMP_SNAC_F(SnacSrvUpdateack)
     
     switch (err)
     {
-        case 10:
+        case 0xe:
             if (cont)
             {
                 cont->oldflags |= CONT_REQAUTH;
                 OptSetVal (&cont->copts, CO_ISSBL, 0);
                 SnacCliRosteradd (serv, serv->contacts, cont);
+            }
+            break;
+        case 10:
+            if (cont)
+            {
+                cont->oldflags |= CONT_REQAUTH;
+                OptSetVal (&cont->copts, CO_ISSBL, 0);
             }
             rl_printf (i18n (9999, "Contact upload failed, authorization required.\n"));
             break;
