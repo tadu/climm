@@ -1,5 +1,5 @@
 
-/* Copyright ? */
+/* Copyright: This file may be distributed under version 2 of the GPL licence. */
 
 #include "micq.h"
 #include "cmd_pkt_cmd_v5.h"

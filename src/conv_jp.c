@@ -1,5 +1,5 @@
 /* $Id$ */
-/* Copyright? */
+/* Copyright: AYUHANA Tomonori <l@kondara.org> This file may be distributed under version 2 of the GPL licence. */
 
 /*********************************
  jconv-0.1.3 for mICQ

@@ -3,6 +3,7 @@
  *
  *  Author/Copyright: James Schofield (jschofield@ottawa.com) 22 Feb 2001
  *  Lots of changes from Rüdiger Kuhlmann.
+ *  This file may be distributed under version 2 of the GPL licence.
  */
 
 #include "micq.h"

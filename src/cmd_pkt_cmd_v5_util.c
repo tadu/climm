@@ -2,7 +2,7 @@
 /*
  * Helper functions of various sources for cmd_pkt_cmd_v5.c.
  *
- * Copyright: various
+ * Copyright: This file may be distributed under version 2 of the GPL licence.
  *
  * $ Id: cmd_pkt_cmd_v5_util.c,v $
  */

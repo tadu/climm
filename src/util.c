@@ -5,12 +5,9 @@
 This is a file of general utility functions useful
 for programming in general and icq in specific
 
-This software is provided AS IS to be used in
-whatever way you see fit and is placed in the
-Copyright: public domain.
-
 Author : Matthew Smith April 23, 1998
 Contributors :  airog (crabbkw@rose-hulman.edu) May 13, 1998
+Copyright: This file may be distributed under version 2 of the GPL licence.
 
 
 Changes :

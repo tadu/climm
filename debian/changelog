@@ -1,8 +1,14 @@
-micq (0.4.8.pl10-0) unstable; urgency=low
+micq (0.4.9) unstable; urgency=low
 
   * New Upstream release
 
  -- Rüdiger Kuhlmann <Ruediger.Kuhlmann@stud.uni-karlsruhe.de>  Wed, 10 May 2002 12:00:00 +0100
+
+micq (0.4.8.pl10-1) unstable; urgency=low
+
+  * New Upstream release
+
+ -- Martin Loschwitz <madkiss@madkiss.org>  Tue, 08 May 2002 14:53:00 +0200
 
 micq (0.4.8.pl8-1) unstable; urgency=low
 

@@ -1,7 +1,7 @@
 /*
  * Assorted helper functions for doing I/O.
  *
- * Copyright: various.
+ * Copyright: This file may be distributed under version 2 of the GPL licence.
  *
  * $Id$
  */

@@ -3,6 +3,7 @@
 /*****************************************************
  * mreadline - small line editing and history code
  * Copyright (C) 1998 Sergey Shkonda (serg@bcs.zp.ua)
+ * This file may be distributed under version 2 of the GPL licence.
  *
  * This software is provided AS IS to be used in
  * whatever way you see fit and is placed in the

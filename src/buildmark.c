@@ -7,7 +7,7 @@
  * $Id$
  */
 
-#define MICQ_BUILD_NUM 0x0004080a
+#define MICQ_BUILD_NUM 0x00040900
 
 #include <string.h>
 #include <stdio.h>
@@ -44,6 +44,4 @@ const UDWORD BuildVersionNum = MICQ_BUILD_NUM;
  i19n (1005, "Rüdiger Kuhlmann") last contributor
  i19n (1006, "2002-05-02")       last change
  i18n (1007, "iso-8859-1")       charset used. must be iso-8859-1 if possible
-
-
  */

@@ -1,7 +1,7 @@
 micq - a portable ICQ Console Client
 $Id$
 
-current Version: 0.4.8
+current Version: 0.4.9
 ====================================
 
 a) about mICQ
@@ -13,11 +13,14 @@ BSD, BeOS, Windows and Amiga.
 
 When the Author passed away 2001-01-05, some of us Users
 overtook the "leadership" of the project and its now
-actively developed by some of us Freaks.
+actively developed by some of us freaks.
 
-I, Rico Gloeckner, want to give up Maintainership. Anyone
-who feels that he could do that may feel free to contact me.
-Anyone who is willing to maintain micq will get my support.
+For some time, Rico Gloeckner <rg@micq.org> maintained the code. He also set
+up the mailinglist and hosts www.micq.org.
+
+Right now, Rüdiger Kuhlmann maintains the code. All code to implement the
+new v8 ICQ protocol is from him.
+
 
 
 b) Mailinglist
@@ -40,13 +43,10 @@ c) Download
 Primary Mirror
     http://www.micq.org/
 
-CVS (do that only if you know what cvs is)
-$ export CVSROOT=:pserver:anonymous@micq.org:/usr/local/cvsroot
-$ cvs login
-[leave password empty]
-$ cvs -z9 co micq
+CVS (do that only if you know what cvs is):
 
-(Yes: '$' is the Prompt only ;)
+cvs -d :pserver:anonymous@micq.ukeer.de:/usr/local/cvsroot co micq
+[hit enter] (=empty Password)
 
 To prepare the maintainer generated files:
 
@@ -59,7 +59,7 @@ autoconf 2.50.
 d) Compile
 
 $ ./configure --help
-    Please read the Help carefully. Particulary, if you are not "root",
+    Please read the help carefully. Particulary, if you are not "root",
     please watch the --prefix Parameter.
 $ ./configure 
 $ make
@@ -74,7 +74,11 @@ It will ask you for an UID (if you have none, just type '0') and a
 Password.
 
 
-h) You'll find original docs in the src/ Subdirectory.
+h) Docs
+
+You'll find original docs in the doc/ subdirectory. This also contains a
+dump of http://maipm.mathematik.uni-karlsruhe.de/~kuhlmann/ICQ/ , which
+features a database of the ICQ protocl.
 
 
 i) NOTE!
@@ -85,6 +89,5 @@ email mc@verdinet.de or...
 However, look out for announcements on Freshmeat.net.
 
 We will see how the Future of mICQ looks.
-
 
 		- Rico Gloeckner <rg@micq.org> 2000-05-23

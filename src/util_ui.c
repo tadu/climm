@@ -1,5 +1,5 @@
 /* $Id$ */
-/* Copyright ?*/
+/* Copyright: This file may be distributed under version 2 of the GPL licence. */
 
 #include "micq.h"
 #include "mreadline.h"
