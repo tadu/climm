@@ -4,6 +4,25 @@
  */
 
 #include "micq.h"
+#include <limits.h>
+#include <fcntl.h>
+#include <stdarg.h>
+#include <ctype.h>
+#include <assert.h>
+
+#if HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+#if HAVE_SYS_WAIT_H
+#include <sys/wait.h>
+#endif
+#if HAVE_WINSOCK2_H
+#include <winsock2.h>
+#endif
+#if HAVE_CONIO_H
+#include <conio.h>
+#endif
+
 #include "util_ui.h"
 #include "file_util.h"
 #include "util.h"
@@ -29,25 +48,6 @@
 #include "util_tcl.h"
 #include "util_ssl.h"
 #include "os.h"
-
-#include <limits.h>
-#include <fcntl.h>
-#include <stdarg.h>
-#include <ctype.h>
-#include <assert.h>
-
-#if HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
-#if HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-#endif
-#if HAVE_WINSOCK2_H
-#include <winsock2.h>
-#endif
-#if HAVE_CONIO_H
-#include <conio.h>
-#endif
 
 #define MICQ_ICON_1 "   " GREEN "_" SGR0 "     "
 #define MICQ_ICON_2 " " GREEN "_/ \\_" SGR0 "   "

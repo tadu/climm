@@ -11,6 +11,12 @@
  */
 
 #include "micq.h"
+#include <assert.h>
+#include <ctype.h>
+#include <fcntl.h>                      /* fopen parameter */
+#include <sys/stat.h>                   /* fopen parameter */
+#include <errno.h>
+ 
 #include "cmd_user.h"
 #include "util.h"
 #include "util_ui.h"
@@ -36,12 +42,7 @@
 #include "util_str.h"
 #include "util_tcl.h"
 #include "util_ssl.h"
-#include <assert.h>
-#include <ctype.h>
-#include <fcntl.h>                      /* fopen parameter */
-#include <sys/stat.h>                   /* fopen parameter */
-#include <errno.h>
- 
+
 #define MAX_STR_BUF 2048                /* buffer length for history */
 #define DEFAULT_HISTORY_COUNT 10        /* count of last messages of history */
 #define MALIGN(n)    (((n) & -128)+128) /* align of 2^7 blocks for malloc() 
