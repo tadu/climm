@@ -35,6 +35,7 @@
 ** But you can change the tab stops if you so desire */
 #define TAB_STOP 8
 
+#ifndef ENABLE_UTF8
 /* Define what to output additionally when sending a message. */
 #define MSGSENTSTR ">>> "
 
@@ -52,6 +53,14 @@
 
 /* Define what to output additionally when a tcp message is received. */
 #define MSGTCPRECSTR  "��� "
+#else
+#define MSGSENTSTR ">>> "
+#define MSGACKSTR  "ok: "
+#define MSGRECSTR  "<<< "
+#define MSGTCPSENTSTR "=== "
+#define MSGTCPACKSTR  "»»» "
+#define MSGTCPRECSTR  "««« "
+#endif
 
 /* Define how many characters to print when messages are sent
  * or acknowledged to identify a message. At most the whole
