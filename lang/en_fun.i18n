@@ -1,3 +1,5 @@
+# $Id$ English - funny (English - funny)
+#  EN:
 #1001: 
 #1002: 
 #1003: 
@@ -80,8 +82,7 @@
 #1079:No translation; using compiled-in strings.¶
 #1080:Couldn't load "%s" internationalization.¶
 1081:Successfully loaded English (funny) translation (%d entries).¶
-#-#1082:But hey, let's just poke the server again... [try %d out of %d]
-#1082:Trying to reconnect... [try %d out of %d]¶
+1082:But hey, let's just poke the server again... [try %d out of %d]¶
 #1083:Sound cmd
 #1084:Sound
 #1085:on

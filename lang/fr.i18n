@@ -1,3 +1,5 @@
+# $Id$ francois (French)
+#  EN:
 1001:fr
 1002:fr_FR
 1003:489
@@ -967,7 +969,7 @@
 #1957: 
 1958:[SOCKS] Demande de connection refusée (%d)
 #1959: 
-1960:Entrez les données pour la recherche d'utilisateur. Entrez \'.\' pour commencer une recherche.¶
+1960:Entrez les données pour la recherche d'utilisateur. Entrez '.' pour commencer une recherche.¶
 1961:URL: %s¶
 #1962: 
 #1963:popping type %d seq %08x at %p (pak %p)

@@ -1,3 +1,5 @@
+# $Id$ espaniol (Spanish)
+#  EN:
 1001:es
 1002:es
 1003:490
@@ -956,7 +958,7 @@
 #1957: 
 1958:[SOCKS] Pedido de conexión rechazado (%d)
 #1959: 
-1960:Ingresa los datos del usuario a buscar. Ingresa \'.\' para iniciar la busqueda.¶
+1960:Ingresa los datos del usuario a buscar. Ingresa '.' para iniciar la busqueda.¶
 1961:URL: %s¶
 #1962: 
 #1963:popping type %d seq %08x at %p (pak %p)

@@ -1,4 +1,4 @@
-i18n (1079, "Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.¶" */
+# $Id$ English (English)
 1001:en
 1002:en_US
 1003:0
@@ -956,3 +956,125 @@ i18n (1079, "Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %
 1957: 
 1958:[SOCKS] Connection request refused (%d)
 1959:Other
+1960:Enter data to search user for. Enter '.' to start the search.¶
+1961:URL: %s¶
+1966: Conection Refused on port %d at %s¶
+1967:More Info for
+1968:User found
+1969:offline
+1970:online
+1971:do not disturb
+1972:away
+1973:occupied
+1974:not available
+1975:invisible
+1976:free for chat
+1977:Audio and visual
+1978:Sporting and athletic
+1979:Publishing
+1980:Home automation
+1981:Alumni Org.
+1982:Charity Org.
+1983:Club/Social Org.
+1984:Community Org.
+1985:Cultural Org.
+1986:Fan Clubs
+1987:Fraternity/Sorority
+1988:Hobbyists Org.
+1989:International Org.
+1990:Nature and Environment Org.
+1991:Professional Org.
+1992:Scientific/Technical Org.
+1993:Self Improvement Group
+1994:Spiritual/Religious Org.
+1995:Sports Org.
+1996:Support Org.
+1997:Trade and Business Org.
+1998:Union
+1999:Volunteer Org.
+2000:Entertainment
+2001:Consumer electronics
+2002:Retail stores
+2003:Health and beauty
+2004:Media
+2005:Household products
+2006:Mail order catalog
+2007:Business services
+2008:Random chat group change was 2%s0.¶
+2009:Found random chat partner UIN %d in chat group %d.¶
+2010:None                       0¶
+2011:You do not have a listening peer-to-peer connection.¶
+2012:No password given.¶
+2013:This command is v8 only.¶
+2014:No number given.¶
+2015:No message given.¶
+2017:The user is actually online.¶
+2018:    quiet: be quiet about status changes.¶
+2019:Quiet output is 3%s0.¶
+2020:Being visible to %s.
+2021:Being invisible to %s.
+2022:The user is indeed offline.¶
+2023:Direct connection closed by peer.¶
+2024:Unknown protocol version %d for ICQ peer-to-peer protocol.¶
+2026:TCP cookie:
+2028:Wrong argument count.¶
+2029:Protocol error on peer-to-peer connection
+2030:%04d-%02d-%02d %02d:%02d UTC
+2031:Connecting failed too often, giving up.¶
+2032:Scheduling v8 reconnect in %d seconds.¶
+2033:born today
+2034:Opening TCP connection at %s:%d... 
+2035:Show uptime and some statistics.
+2036:Save current preferences to disc.
+2037:Open or close a peer-to-peer connection, or disable using peer-to-peer connections for uin|nick.
+2038:Opens connection number nr.
+2039:Sends a message to a cell phone.
+2040:Switches beeping for incoming contacts on or off, sets a command for this event or displays current state of this option.
+2041:Switches beeping for offgoing contacts on or off, sets a command for this event or displays current state of this option.
+2042:Displays a list of online people on your contact list in a screen wide format.
+2043:Remove contact from your contact list.
+2044:Set or clear an option.
+2045:Toggles your visibility to a user when you're online.
+2046:You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.¶
+2047:Creating directory %s.¶
+2048:Saving preferences to %s.¶
+2049:Receiving group "%s":¶
+2050:Imported %d contacts.¶
+2051:Error on socket: %s (%d)¶
+2052:Accepting file '%s' (%d bytes) from %s.¶
+2053:TCP %s seq %x type %x status %x flags %x: '%s'¶
+2054:The free for chat message is:
+2055:User is ffc and wants to chat about everything.
+2056:    auto  <nick> - Get the auto-response from the contact.¶
+2057:    away  <nick> - Get the auto-response for away from the contact.¶
+2058:    na    <nick> - Get the auto-response for not available from the contact.¶
+2059:    dnd   <nick> - Get the auto-response for do not disturb from the contact.¶
+2060:    ffc   <nick> - Get the auto-response for free for chat from the contact.¶
+2061:Refused file request '%s' (%d bytes) from %s (unknown: %x, %x)¶
+2062:version
+2063:You need to save your password in your ~/.micq/micqrc file.¶
+2064:Refusing chat request (%s/%s/%s) from %s.¶
+2065:Unknown TCP_MSG_GREET_ command %04x.¶
+2066:Unknown TCP_MSG_ command %04x.¶
+2067:file io
+2068:Opening file transfer connection at %s:%d... ¶
+2069:File transfer '%s' rejected by peer (%x,%x): %s.¶
+2070:File transfer '%s' to port %d.¶
+2071:Couldn't stat file %s: %s (%d)¶
+2072:Dropping file transfer %d (%s) because of closed connection.¶
+2073:Memory usage: %d packets processing.¶
+2078:Outgoing TCP packet (%d - %s): %s
+2079:Incoming TCP packet (%d - %s): %s
+2080:The server says about the SMS delivery:¶%s¶
+2081:    at %p parent %p assoc %p¶
+2082:Opening file listener connection at localhost:%d... 
+2083:Cannot open file %s: %s (%d).¶
+2084:Error while seeking to offset %d: %s (%d).¶
+2085:Dropping file transfer because of timeout: %d %d.¶
+2086:Error while reading file %s: %s (%d).¶
+2087:Finished sending file %s.¶
+2088:Finished sending all %d files.¶
+2089:file listener
+2090:file peer-to-peer
+2091:Queueing %s as %s for transfer.¶
+2092:TCP message %s discarded - lost session.¶
