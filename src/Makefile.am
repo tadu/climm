@@ -2,7 +2,7 @@
 
 bin_PROGRAMS = micq
 
-CFLAGS += -DUNIX -DPREFIX=\"$(prefix)\"
+CFLAGS += -DPREFIX=\"$(prefix)\"
 
 # If BeOS, add 'beos.c'
 micq_SOURCES = conv.c conv_rus.c conv_jp.c file_util.c icq_response.c micq.c \

@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
-#include <time.h>
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
@@ -24,7 +23,6 @@
 #include <conio.h>
 #include <io.h>
 #include <winsock2.h>
-#include <time.h>
 #else
 #include <sys/types.h>
 #include <unistd.h>
@@ -35,7 +33,6 @@
 #include <arpa/inet.h>
 #endif
 #include <netdb.h>
-#include <sys/time.h>
 #include <sys/wait.h>
 #include "mreadline.h"
 #endif
@@ -129,6 +126,7 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
 {
     SIMPLE_MESSAGE_PTR s_mesg;
     static int loginmsg = 0;
+    int i;
 
     switch (cmd)
     {
@@ -258,16 +256,22 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
         case SRV_TRY_AGAIN:
             R_undraw ();
             M_print (i18n (646, COLMESS "Server is busy please try again.\nTrying again...\n"));
-#if defined (UNIX) && !defined (__BEOS__) && !defined (AMIGA)
-            if (fork () == 0)
+#if HAVE_FORK
+            i = fork();
+#else
+            i = -1;
+#endif
+            if (i < 0)
+            {
+                sleep (2);
+                Login (sok, UIN, &passwd[0], our_ip, our_port, set_status);
+            }
+            else if (!i)
             {
                 sleep (5);
                 Login (sok, UIN, &passwd[0], our_ip, our_port, set_status);
-                exit (0);
+                _exit (0);
             }
-#else
-            Login (sok, UIN, &passwd[0], our_ip, our_port, set_status);
-#endif
             R_redraw ();
             break;
         case SRV_USER_ONLINE:
@@ -294,17 +298,22 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
             }
             M_print ("%s\n", i18n (39, "Server has forced us to disconnect.  This may be because of network lag."));
             M_print (i18n (82, "Trying to reconnect... [try %d out of %d]"), Reconnect_Count, MAX_RECONNECT_ATTEMPTS);
-#if defined (UNIX) && !defined (__BEOS__) && !defined (AMIGA)
-            if (!fork ())
+#if HAVE_FORK
+            i = fork();
+#else
+            i = -1;
+#endif
+            if (i < 0)
+            {
+                sleep (2);
+                Login (sok, UIN, &passwd[0], our_ip, our_port, set_status);
+            }
+            else if (!i)
             {
                 sleep (5);
                 Login (sok, UIN, &passwd[0], our_ip, our_port, set_status);
-                exit (0);
+                _exit (0);
             }
-#else
-            sleep (2);
-            Login (sok, UIN, &passwd[0], our_ip, our_port, set_status);
-#endif
             M_print ("\n");
             break;
         case SRV_END_OF_SEARCH:

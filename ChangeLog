@@ -1,5 +1,11 @@
 
-2001-15-06 James Morrison <ja2morrison@student.math.uwaterloo.ca>, rk
+2001-06-17 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Get rid of UNIX and FUNNY_MSGS.
+	* Move #include <time.h> to micq.h and protect <sys/time.h>.
+	* Catch SIGTSTOP and SIKCONT to restore/prepare terminal.
+	* Fix terminal restore on reconnect.
+
+2001-06-15 James Morrison <ja2morrison@student.math.uwaterloo.ca>, rk
 	* src/ui.c:
 	  help patch from James Morrison, but \t and \n moved to format
 	  string, and indenting used.

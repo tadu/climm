@@ -14,7 +14,6 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <fcntl.h>
-#include <time.h>
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
@@ -24,7 +23,6 @@
 #include <conio.h>
 #include <io.h>
 #include <winsock2.h>
-#include <time.h>
 #else
 #include <sys/types.h>
 #include <unistd.h>
@@ -36,7 +34,6 @@
 #include <arpa/inet.h>
 #endif
 #include <netdb.h>
-#include <sys/time.h>
 #include <sys/wait.h>
 #endif
 
@@ -327,9 +324,6 @@ SOK_T Connect_Remote (char *hostname, int port, FD_T aux)
         if (Verbose)
         {
             M_fdprint (aux, i18n (54, " Conection Refused on port %d at %s\n"), port, hostname);
-#ifdef FUNNY_MSGS
-            M_fdprint (aux, " D'oh!\n");
-#endif
             perror ("connect");
         }
         return -1;
@@ -401,9 +395,6 @@ int Connect_Remote_Old (char *hostname, int port, FD_T aux)
         if (Verbose)
         {
             M_fdprint (aux, i18n (54, " Conection Refused on port %d at %s\n"), port, hostname);
-#ifdef FUNNY_MSGS
-            M_fdprint (aux, " D'oh!\n");
-#endif
             perror ("connect");
         }
         return 0;
@@ -690,11 +681,8 @@ int main (int argc, char *argv[])
     i = WSAStartup (0x0101, &wsaData);
     if (i != 0)
     {
-#ifdef FUNNY_MSGS
-        perror ("Windows Sockets broken blame Bill -");
-#else
-        perror ("Sorry, can't initialize Windows Sockets...");
-#endif
+/* FUNNY: "Windows Sockets broken blame Bill -" */
+        perror (i18n (###, "Sorry, can't initialize Windows Sockets..."));
         exit (1);
     }
 #endif
@@ -722,14 +710,10 @@ int main (int argc, char *argv[])
     for (; !Quit;)
     {
         Idle_Check (sok);
-#ifdef UNIX
-        M_set_timeout (2, 500000);
+#if _WIN32 || defined(__BEOS__)
+        M_set_timeout (0, 100000);
 #else
-        M_set_timeout (0, 100000);
-#endif
-
-#ifdef __BEOS__
-        M_set_timeout (0, 100000);
+        M_set_timeout (2, 500000);
 #endif
 
         M_select_init ();
@@ -745,10 +729,10 @@ int main (int argc, char *argv[])
 #if _WIN32
         if (_kbhit ())          /* sorry, this is a bit ugly...   [UH] */
 #else
-#ifndef __BEOS__
-        if (M_Is_Set (STDIN))
-#else
+#ifdef __BEOS__
         if (Be_TextReady ())
+#else
+        if (M_Is_Set (STDIN))
 #endif
 #endif
         {
@@ -767,7 +751,7 @@ int main (int argc, char *argv[])
         {
             Do_Resend (sok);
         }
-#ifdef UNIX
+#if HAVE_FORK
         while (waitpid (-1, NULL, WNOHANG) > 0);        /* clean up child processes */
 #endif
     }

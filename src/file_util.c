@@ -15,7 +15,6 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-#include <time.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 
@@ -28,7 +27,6 @@
 #define S_IRUSR        _S_IREAD
 #define S_IWUSR        _S_IWRITE
 #else
-#include <sys/time.h>
 #include <netinet/in.h>
 #include <termios.h>
 #ifndef __BEOS__
@@ -61,7 +59,6 @@ void Set_rcfile (const char *name)
         path = "PROGDIR:";
 #endif
 
-#ifdef UNIX
         home = getenv ("HOME");
         if (home || !path)
         {
@@ -72,7 +69,6 @@ void Set_rcfile (const char *name)
             if (path[strlen (path) - 1] != '/')
                 strcat (path, "/");
         }
-#endif
 
         strcpy (rcfile, path);
         strcat (rcfile, ".micqrc");
@@ -115,8 +111,8 @@ static void Initalize_RC_File (void)
   password_entry:
     M_print ("%s ", i18n (63, "Enter password:"));
     fflush (stdout);
-    Echo_Off ();
     memset (passwd, 0, sizeof (passwd));
+    Echo_Off ();
     M_fdnreadln (STDIN, passwd, sizeof (passwd));
     Echo_On ();
     if (UIN == 0)
@@ -128,8 +124,8 @@ static void Initalize_RC_File (void)
         }
         M_print ("\n%s ", i18n (92, "Reenter password to verify:"));
         fflush (stdout);
-        Echo_Off ();
         memset (passwd2, 0, sizeof (passwd2));
+        Echo_Off ();
         M_fdnreadln (STDIN, passwd2, sizeof (passwd));
         Echo_On ();
         if (strcmp (passwd, passwd2))

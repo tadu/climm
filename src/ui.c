@@ -39,7 +39,6 @@ Changes :
 #include <unistd.h>
 #include <netinet/in.h>
 #include <sys/stat.h>
-#include <sys/time.h>
 #include <sys/socket.h>
 #ifndef __BEOS__
 #include <arpa/inet.h>
@@ -48,7 +47,6 @@ Changes :
 #include "mreadline.h"
 #endif
 #include <fcntl.h>
-#include <time.h>
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>

@@ -30,11 +30,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 #include <ctype.h>
+#include <signal.h>
 
-#ifndef _WIN32
+#if HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#if HAVE_TERMIOS_H
 #include <termios.h>
 #endif
 
@@ -47,6 +50,9 @@ static void tty_restore (void);
 
 static void R_process_input_backspace (void);
 static void R_process_input_delete (void);
+
+static RETSIGTYPE micq_ttystop_handler (int);
+static RETSIGTYPE micq_cont_handler (int);
 
 static char *history[HISTORY_LINES + 1];
 static int history_cur = 0;
@@ -70,8 +76,25 @@ void R_init (void)
     }
     s[0] = 0;
     inited = 1;
+    signal (SIGTSTP, &micq_ttystop_handler);
+    signal (SIGCONT, &micq_cont_handler);
     tty_prepare ();
     atexit (tty_restore);
+}
+
+static RETSIGTYPE micq_ttystop_handler (int a)
+{
+    tty_restore ();
+    signal (SIGTSTP, SIG_DFL);
+    raise (SIGTSTP);
+}
+
+static RETSIGTYPE micq_cont_handler (int a)
+{
+    tty_prepare ();
+    R_redraw ();
+    signal (SIGTSTP, &micq_ttystop_handler);
+    signal (SIGCONT, &micq_cont_handler);
 }
 
 void R_pause (void)
@@ -387,24 +410,31 @@ static void tty_restore (void)
 {
     if (!attrs_saved)
         return;
+#if HAVE_TCGETATTR
     if (tcsetattr (STDIN_FILENO, TCSAFLUSH, &saved_attr) != 0)
         perror ("can't restore tty modes");
     else
+#endif
         attrs_saved = 0;
 }
 
 static void tty_prepare (void)
 {
     istat = 0;
+#if HAVE_TCGETATTR
     if (tcgetattr (STDIN_FILENO, &t_attr) != 0)
         return;
-    saved_attr = t_attr;
-    attrs_saved = 1;
+    if (!attrs_saved)
+    {
+        saved_attr = t_attr;
+        attrs_saved = 1;
+    }
 
     t_attr.c_lflag &= ~(ECHO | ICANON);
     t_attr.c_cc[VMIN] = 1;
     if (tcsetattr (STDIN_FILENO, TCSAFLUSH, &t_attr) != 0)
         perror ("can't change tty modes");
+#endif
 }
 
 

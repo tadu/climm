@@ -1,6 +1,6 @@
 #ifndef __MATT_DATATYPE__
 #define __MATT_DATATYPE__
-#ifdef UNIX
+#if HAVE_UNISTD_H
    #include <unistd.h>
 #endif
 
@@ -39,30 +39,28 @@ typedef unsigned char  UIN8;
   #ifndef __amigaos__
     typedef unsigned char BOOL;
   #endif
-#endif
 
-#ifdef UNIX
-#ifdef __BEOS__
-  #define sockread(s,p,l) recv(s,p,l,0)
-#else
-  #define sockread(s,p,l) read(s,p,l)
-#endif
-/* use SOCKWRITE !!!!! */
-#ifdef __BEOS__
-  #define sockwrite(s,p,l) send(s,p,l,0)
-#else
-  #define sockwrite(s,p,l) write(s,p,l)
-#endif
+  #ifdef __BEOS__
+    #define sockread(s,p,l) recv(s,p,l,0)
+  #else
+    #define sockread(s,p,l) read(s,p,l)
+  #endif
+  /* use SOCKWRITE !!!!! */
+  #ifdef __BEOS__
+    #define sockwrite(s,p,l) send(s,p,l,0)
+  #else
+    #define sockwrite(s,p,l) write(s,p,l)
+  #endif
 
-#ifdef __BEOS__
-  #define SOCKCLOSE( s ) closesocket(s)
-#else
-  #define SOCKCLOSE( s ) close(s)
-#endif
+  #ifdef __BEOS__
+    #define SOCKCLOSE(s) closesocket(s)
+  #else
+    #define SOCKCLOSE(s) close(s)
+  #endif
   #define Get_Config_Info() Get_Unix_Config_Info()
   typedef int FD_T;
   typedef int SOK_T;
-#endif /* UNIX */
+#endif
 
 #ifndef TRUE
   #define TRUE 1

@@ -45,11 +45,13 @@ AC_C_BIGENDIAN
 
 # Checks for library functions.
 AC_PROG_GCC_TRADITIONAL
-AC_FUNC_MALLOC
+dnl AC_FUNC_MALLOC
 AC_TYPE_SIGNAL
-AC_FUNC_STAT
+dnl AC_FUNC_STAT
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([atexit gethostbyname memset mkdir select socket strcasecmp strchr strdup strncasecmp strpbrk strrchr strstr strtol fork])
+AC_CHECK_FUNCS([atexit gethostbyname memset mkdir select socket strcasecmp \
+                strchr strdup strncasecmp strpbrk strrchr strstr strtol fork \
+                symlink chmod tcgetattr])
 
 # vprintf stat malloc \
 for f in gethostbyname memset mkdir select socket fork atexit \

@@ -28,7 +28,6 @@ Changes :
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-#include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -38,17 +37,18 @@ Changes :
 #define S_IRUSR          _S_IREAD
 #define S_IWUSR          _S_IWRITE
 #else
-#include <sys/time.h>
 #include <netinet/in.h>
 #ifndef __BEOS__
 #include <arpa/inet.h>
 #endif
 #endif
-#ifdef UNIX
+#if HAVE_UNISTD_H
 #include <unistd.h>
-#include <termios.h>
-#include "mreadline.h"
 #endif
+#if HAVE_TERMIOS_H
+#include <termios.h>
+#endif
+#include "mreadline.h"
 
 #ifdef _WIN32
 typedef struct
@@ -384,11 +384,7 @@ void Init_New_User (void)
     i = WSAStartup (0x0101, &wsaData);
     if (i != 0)
     {
-#ifdef FUNNY_MSGS
-        perror ("Windows Sockets broken blame Bill -");
-#else
-        perror ("Sorry, can't initialize Windows Sockets...");
-#endif
+        perror (i18n (###, "Sorry, can't initialize Windows Sockets..."));
         exit (1);
     }
 #endif
@@ -403,12 +399,12 @@ void Init_New_User (void)
     reg_new_user (sok, passwd);
     for (;;)
     {
-#ifdef UNIX
-        tv.tv_sec = 3;
-        tv.tv_usec = 500000;
-#else
+#ifdef _WIN32
         tv.tv_sec = 0;
         tv.tv_usec = 100000;
+#else
+        tv.tv_sec = 3;
+        tv.tv_usec = 500000;
 #endif
 
         FD_ZERO (&readfds);
@@ -562,7 +558,6 @@ const char *Set_Log_Dir (const char *newpath)
         path = "PROGDIR:";
 #endif
 
-#ifdef UNIX
         home = getenv ("HOME");
         if (home || !path)
         {
@@ -573,7 +568,6 @@ const char *Set_Log_Dir (const char *newpath)
             if (path[strlen (path) - 1] != '/')
                 strcat (path, "/");
         }
-#endif
 
         Log_Dir = path;
         return path;
@@ -671,7 +665,7 @@ int log_event (UDWORD uin, int type, char *str, ...)
             strcpy (symbuf, buffer);
             sprintf (&buffer[strlen (buffer)], "%ld.log", uin);
 
-#ifdef UNIX
+#if HAVE_SYMLINK
             if (NULL != UIN2nick (uin))
             {
                 sprintf (&symbuf[strlen (symbuf)], "%s.log", UIN2nick (uin));
@@ -688,9 +682,9 @@ int log_event (UDWORD uin, int type, char *str, ...)
         return (-1);
     }
 /*     if ( ! strcasecmp(UIN2nick(uin),"Unknow UIN"))
-         fprintf(msgfd, "\n%-24.24s %s %ld\n%s\n", ctime(&timeval), desc, uin, msg);
+         fprintf (msgfd, "\n%-24.24s %s %ld\n%s\n", ctime(&timeval), desc, uin, msg);
      else
-         fprintf(msgfd, "\n%-24.24s %s %s\n%s\n", ctime(&timeval), desc, UIN2nick(uin), msg);*/
+         fprintf (msgfd, "\n%-24.24s %s %s\n%s\n", ctime(&timeval), desc, UIN2nick(uin), msg);*/
 
     if (strlen (buf))
     {
@@ -706,7 +700,7 @@ int log_event (UDWORD uin, int type, char *str, ...)
     va_end (args);
 
     fclose (msgfd);
-#ifdef UNIX
+#if HAVE_CHMOD
     chmod (buffer, 0600);
 #endif
     return (0);
@@ -717,18 +711,10 @@ int log_event (UDWORD uin, int type, char *str, ...)
 **************************************************/
 void clrscr (void)
 {
-#ifdef UNIX
-    system ("clear");
+#ifdef ANSI_COLOR
+    printf ("\x1b[H\x1b[J");
 #else
-#ifdef _WIN32
-    system ("cls");
-#else
-    int x;
-    char newline = '\n';
-
-    for (x = 0; x <= 25; x++)
-        M_print ("%c", newline);
-#endif
+    M_print ("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 #endif
 }
 

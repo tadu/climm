@@ -24,11 +24,21 @@
 #include "config.h"
 #endif
 
+#if TM_IN_SYS_TIME
+  #include <sys/time.h>
+  #if TIME_WITH_SYS_TIME
+    #include <time.h>
+  #endif
+#else
+  #include <time.h>
+  #if TIME_WITH_SYS_TIME
+    #include <sys/time.h>
+  #endif
+#endif
 #include "micqconfig.h"
 #include "datatype.h"
 #include <stdlib.h>
 #include "mreadline.h"
-#include <time.h>
 #include "msg_queue.h"
 #include "mselect.h"
 #include "color.h"

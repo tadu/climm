@@ -11,7 +11,6 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-#include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -23,16 +22,19 @@
 #define S_IRUSR        _S_IREAD
 #define S_IWUSR        _S_IWRITE
 #else
-#include <sys/time.h>
 #include <netinet/in.h>
 #ifndef __BEOS__
 #include <arpa/inet.h>
 #endif
 #endif
 
-#ifdef UNIX
+#if HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+#if HAVE_TERMIOS_H
 #include <termios.h>
+#endif
+#if HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
 
@@ -45,7 +47,7 @@ Turns keybord echo off for the password
 ****************************************************************/
 SDWORD Echo_Off (void)
 {
-#ifdef UNIX
+#ifdef HAVE_TCGETATTR
     struct termios attr;        /* used for getting and setting terminal
                                    attributes */
 
@@ -74,7 +76,7 @@ Turns keybord echo back on after the password
 ****************************************************************/
 SDWORD Echo_On (void)
 {
-#ifdef UNIX
+#ifdef HAVE_TCGETATTR
     struct termios attr;        /* used for getting and setting terminal
                                    attributes */
 
@@ -123,9 +125,8 @@ FD_T M_fdopen (const char *fmt, ...)
     return open (buf, O_RDONLY);
 }
 
-#ifdef UNIX
 static volatile UDWORD scrwd = 0;
-static void micq_sigwinch_handler (int a)
+static RETSIGTYPE micq_sigwinch_handler (int a)
 {
     struct winsize ws;
 
@@ -133,7 +134,6 @@ static void micq_sigwinch_handler (int a)
     ioctl (STDOUT, TIOCGWINSZ, &ws);
     scrwd = ws.ws_col;
 };
-#endif
 
 UWORD Get_Max_Screen_Width ()
 {
@@ -142,7 +142,6 @@ UWORD Get_Max_Screen_Width ()
     if (scrwdtmp)
         return scrwdtmp;
 
-#ifdef UNIX
     micq_sigwinch_handler (0);
     if ((scrwdtmp = scrwd))
     {
@@ -150,9 +149,6 @@ UWORD Get_Max_Screen_Width ()
             scrwd = 0;
         return scrwdtmp;
     }
-#else
-    /* Could put more code here to determine the width dynamically of xterms etc */
-#endif
     if (Max_Screen_Width)
         return Max_Screen_Width;
     return 80;                  /* a reasonable screen width default. */

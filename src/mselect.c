@@ -25,7 +25,6 @@ Changes :
 #include <conio.h>
 #include <io.h>
 #include <winsock2.h>
-#include <time.h>
 #else
 #include <sys/types.h>
 #include <unistd.h>
@@ -38,12 +37,10 @@ Changes :
 #endif
 
 #include <netdb.h>
-#include <sys/time.h>
 #include <sys/wait.h>
 #endif
 
 #include <fcntl.h>
-#include <time.h>
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
