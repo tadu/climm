@@ -635,6 +635,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
 {
     Packet *pak;
     TLV *tlv;
+    Event *event2;
 
     int i, k;
     char *name, *nick;
@@ -647,11 +648,11 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
         PacketReadB4 (pak);
     }
     
-    event = QueueDequeue (0, QUEUE_REQUEST_ROSTER);
-    if (event)
+    event2 = QueueDequeue (0, QUEUE_REQUEST_ROSTER);
+    if (event2)
     {
-        data = event->uin;
-        free (event);
+        data = event2->uin;
+        free (event2);
     }
     else
         data = 1;
@@ -678,7 +679,6 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
             case 0:
                 if (!tag)
                     break;
-                k++;
                 j = TLVGet (tlv, 305);
                 assert (j < 200 || j == (UWORD)-1);
                 nick = (j != (UWORD)-1 ? tlv[j].str : name);
@@ -686,7 +686,11 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                 switch (data)
                 {
                     case 3:
+                        if (ContactFindAlias (atoi (name), nick))
+                            break;
                         ContactAdd (atoi (name), nick);
+                        k++;
+                        M_print ("  %10d %s\n", atoi (name), nick);
                         break;
                     case 2:
                         if (ContactFindAlias (atoi (name), nick))
@@ -704,13 +708,16 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
         TLVD (tlv);
     }
     /* TIMESTAMP ignored */
-    if (event->sess->flags & CONN_WIZARD)
+    if (k)
     {
         M_print (i18n (2050, "Imported %d contacts.\n"), k);
-        if (Save_RC () == -1)
+        if (event->sess->flags & CONN_WIZARD)
         {
-            M_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
+            if (Save_RC () == -1)
+                M_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
         }
+        else
+            M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
     }
 }
 

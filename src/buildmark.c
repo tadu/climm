@@ -35,7 +35,7 @@ const char *BuildVersion (void)
 }
 
 const UDWORD BuildVersionNum = MICQ_BUILD_NUM;
-const char  *BuildVersionText = "$VER: mICQ " VERSION " Official-0-4-9-3 (" __DATE__ " " __TIME__ ")";
+const char  *BuildVersionText = "$VER: mICQ " VERSION " Official-0-4-9-3-1 (" __DATE__ " " __TIME__ ")";
 
 /*
  i19n (1001, "en")               locale

@@ -1,5 +1,5 @@
 %define name		micq
-%define version	0.4.9.3
+%define version	0.4.9.3.1
 %define release	0
 
 %define prefix	/usr

@@ -2473,16 +2473,16 @@ static JUMP_F(CmdUserContact)
     if (!data)
     {
         tmp = strtok (args, "\n");
-        if      (!tmp)                          data = 0;
-        else if (!strcasecmp ("tmp", "show"))   data = 1;
-        else if (!strcasecmp ("tmp", "diff"))   data = 2;
-        else if (!strcasecmp ("tmp", "add"))    data = 3;
-        else if (!strcasecmp ("tmp", "import")) data = 3;
-        else                                    data = 0;
+        if      (!tmp)                        data = 0;
+        else if (!strcasecmp (tmp, "show"))   data = 1;
+        else if (!strcasecmp (tmp, "diff"))   data = 2;
+        else if (!strcasecmp (tmp, "add"))    data = 3;
+        else if (!strcasecmp (tmp, "import")) data = 3;
+        else                                  data = 0;
     }
     if (data)
     {
-        QueueEnqueueData (sess, 0, QUEUE_REQUEST_ROSTER, data, -1, NULL, NULL, NULL);
+        QueueEnqueueData (sess, 0, QUEUE_REQUEST_ROSTER, data, 0x7fffffffL, NULL, NULL, NULL);
         SnacCliReqroster (sess);
     }
     else
