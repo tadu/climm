@@ -10,6 +10,7 @@ const char *ConvCrush0xFE  (const char *in);
 #define     Conv0xFE       (char)0xfe
 
 #ifdef ENABLE_UTF8
+BOOL        ConvIsUTF8     (const char *in);
 const char *ConvToUTF8     (const char *in, UBYTE enc, size_t totalin, UBYTE keep0xfe);
 const char *ConvFromUTF8   (const char *in, UBYTE enc, size_t *resultlen);
 #define     c_out_for(t,c) (CONT_UTF8 (c) ? t : c_out_to (t,c))
@@ -25,6 +26,7 @@ const char *ConvFromUTF8   (const char *in, UBYTE enc, size_t *resultlen);
 #else
 #define     ConvToUTF8(i,e,l,k) i
 #define     ConvFromUTF8(i,e,x) i
+#define     ConvIsUTF8(i)  0
 #define     c_out_for(t,c) t
 #define     c_out(t)       t
 #define     c_in(t)        t

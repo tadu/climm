@@ -169,6 +169,24 @@ const char *ConvUTF8 (UDWORD x)
     return b;
 }
 
+BOOL ConvIsUTF8 (const char *in)
+{
+    char c;
+
+    for ( ; *in; in++)
+    {
+        if (~*in & 0x80)
+            continue;
+        if (~*in & 0x40)
+            return 0;
+        for (c = *in; (in[1] & 0x80) && (~in[1] & 0x40) && (c & 0x40); in++)
+            c *= 2;
+        if (c & 0x40)
+            return 0;
+    }
+    return 1;
+}
+
 const char *ConvCrush0xFE (const char *inn)
 {
     static char *t = NULL;
