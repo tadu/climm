@@ -1,6 +1,6 @@
 -*- coding: utf-8 -*-
 
-2003-02-28 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+2003-03-07 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
 	* fix endless resend stuff
 	* ignore empty nick names on ocntact list import
 	* fix documentation glitches in man pages
@@ -11,6 +11,8 @@
 	* remove 0xfe from log file entries
 	* fix deprecated syntax messages for newly creates micqrcs
 	* fix 0xfe problems
+	* fix sending to DND and OCC
+	* fix embedded status
 	* RELEASE as 0.4.10.2
 
 2003-02-24 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
