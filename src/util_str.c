@@ -506,12 +506,10 @@ strc_t s_split (const char **input, UBYTE enc, int len)
     in.len = strlen (*input);
     off = offnl = offin = offmax = 0;
     
-    fprintf (stderr, "s_split: %d, %d, (%d)%s\n", enc, len, in.len, in.txt);
     while (in.txt[off])
     {
         offold = off;
         ucs = ConvGetUTF8 (&in, &off);
-        fprintf (stderr, "off %u old %u max %d nl %d in %d\n", off, offold, offmax, offnl, offin);
         if (ucs == '\r')
             offnl = offold;
         if (isspace (ucs & 0xff))
@@ -529,7 +527,6 @@ strc_t s_split (const char **input, UBYTE enc, int len)
         if (!in.txt[off])
             offmax = off;
     }
-    fprintf (stderr, "off %u old %u max %d nl %d in %d\n", off, offold, offmax, offnl, offin);
     if (offmax)
         off = offmax;
     else if (offnl)
