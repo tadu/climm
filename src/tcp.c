@@ -296,8 +296,7 @@ void TCPDispatchMain (Session *list)
         
         if (peer->sok <= 0)
         {
-            peer->connect = 0;
-            peer->sok     = -1;
+            SessionClose (peer);
             return;
         }
     }
