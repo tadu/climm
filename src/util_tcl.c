@@ -117,7 +117,7 @@ TCL_COMMAND (TCL_command_help)
     }
     else
     {
-        snprintf (interp->result, TCL_RESULT_SIZE, "wrong number of arguments.");
+        Tcl_SetResult (interp, (char *)i18n (2362, "Wrong number of arguments. Try 'help'."), TCL_VOLATILE);
         return TCL_ERROR;
     }
 }
@@ -252,13 +252,9 @@ TCL_COMMAND (TCL_command_micq)
         TCL_CHECK_PARMS (1);
         Connection *tconn;
         Contact *cont;
-        int i;
         UDWORD uin = atol (argv[2]);
         
-        for (i = 0; (tconn = ConnectionNr (i)); i++)
-            if (tconn->spref->type & TYPEF_ANY_SERVER)
-                break;
-        if (!tconn)
+        if (!(tconn = ConnectionFind (TYPEF_ANY_SERVER, 0, NULL)))
         {
             Tcl_SetResult (tinterp, 
                 (char *)i18n (2364, "No connection found."),
@@ -328,7 +324,7 @@ void TCLMessage (Contact *from, const char *text_)
 void TCLInit ()
 {
     tcl_pref_p pref;
-    int result;
+    int i, result;
     Connection *conn;
 
     tinterp = Tcl_CreateInterp ();   
@@ -341,10 +337,10 @@ void TCLInit ()
     Tcl_SetVar (tinterp, "micq_basedir", prG->basedir, 0);
     Tcl_SetVar (tinterp, "micq_version", MICQ_VERSION, 0);
 
-    conn = ConnectionFind (TYPEF_SERVER, 0, NULL);
-    if (conn)
-        Tcl_SetVar (tinterp, "micq_uin", 
-            strdup (s_sprintf ("%lu", conn->spref->uin)), 0);
+    for (i = 0; (conn = ConnectionNr (i)); i++)
+        if (conn->spref->type & TYPEF_ANY_SERVER)
+            Tcl_SetVar (tinterp, "micq_uin", s_sprintf ("%lu", conn->spref->uin),
+                        TCL_LIST_ELEMENT | TCL_APPEND_VALUE);
 
     tcl_events = NULL;
     tcl_msgs = NULL;
