@@ -555,7 +555,7 @@ const char *s_realpath (const char *path)
  * Try to find a parameter in the string.
  * Result must NOT be free()d.
  */
-BOOL s_parse_s (const char **input, char **parsed, char *sep)
+BOOL s_parse_s (const char **input, char **parsed, const char *sep)
 {
     static char *t = NULL;
     const char *p = *input;
@@ -631,11 +631,11 @@ BOOL s_parse_s (const char **input, char **parsed, char *sep)
  * parsed ->nick will be the nick given,
  * unless the user entered an UIN.
  */
-BOOL s_parsenick_s (const char **input, Contact **parsed, char *sep, Contact **parsedr, Connection *serv)
+BOOL s_parsenick_s (const char **input, Contact **parsed, const char *sep, const char **nick, Connection *serv)
 {
     ContactGroup *cg;
     Contact *r;
-    const char *p = *input;
+    const char *p = *input, *maxnick = "";
     char *t;
     UDWORD max, l, ll, i;
     
@@ -645,8 +645,8 @@ BOOL s_parsenick_s (const char **input, Contact **parsed, char *sep, Contact **p
     if (!*p)
     {
         *parsed = NULL;
-        if (parsedr)
-            *parsedr = NULL;
+        if (nick)
+            *nick = NULL;
         return FALSE;
     }
     
@@ -656,13 +656,21 @@ BOOL s_parsenick_s (const char **input, Contact **parsed, char *sep, Contact **p
         *parsed = ContactFind (serv->contacts, 0, 0, t, 0);
         if (*parsed)
         {
-            if (parsedr)
+            if (nick)
             {
-                *parsedr = ContactFind (serv->contacts, 0, (*parsed)->uin, NULL, 0);
-                if (!*parsedr)
+                if (!strcmp ((*parsed)->nick, t))
+                    *nick = (*parsed)->nick;
+                else
                 {
-                    *parsed = NULL;
-                    return FALSE;
+                    ContactAlias *ca;
+                    
+                    *nick = "";
+                    for (ca = (*parsed)->alias; ca; ca = ca->more)
+                        if (!strcmp (ca->alias, t))
+                        {
+                            *nick = ca->alias;
+                            break;
+                        }
                 }
             }
             *input = p;
@@ -679,8 +687,8 @@ BOOL s_parsenick_s (const char **input, Contact **parsed, char *sep, Contact **p
             if ((r = ContactUIN (serv, max)))
             {
                 *parsed = r;
-                if (parsedr)
-                    *parsedr = r;
+                if (nick)
+                    *nick = s_sprintf ("%ld", max);
                 *input = p;
                 return TRUE;
             }
@@ -692,24 +700,29 @@ BOOL s_parsenick_s (const char **input, Contact **parsed, char *sep, Contact **p
     cg = serv->contacts;
     for (i = 0; (r = ContactIndex (cg, i)); i++)
     {
+        ContactAlias *ca;
+
         l = strlen (r->nick);
         if (l > max && l <= ll && (!p[l] || strchr (sep, p[l])) && !strncasecmp (p, r->nick, l))
         {
             *parsed = r;
-            max = strlen (r->nick);
+            max = strlen (maxnick = r->nick);
+        }
+        
+        for (ca = r->alias; ca; ca = ca->more)
+        {
+            l = strlen (ca->alias);
+            if (l > max && l <= ll && (!p[l] || strchr (sep, p[l])) && !strncasecmp (p, ca->alias, l))
+            {
+                *parsed = r;
+                max = strlen (maxnick = ca->alias);
+            }
         }
     }
     if (max)
     {
-        if (parsedr)
-        {
-            *parsedr = ContactFind (serv->contacts, 0, (*parsed)->uin, NULL, 0);
-            if (!*parsedr)
-            {
-                *parsed = NULL;
-                return FALSE;
-            }
-        }
+        if (*nick)
+            *nick = maxnick;
         *input = p + max;
         return TRUE;
     }
@@ -719,7 +732,7 @@ BOOL s_parsenick_s (const char **input, Contact **parsed, char *sep, Contact **p
 /*
  * Try to find a contact group name in the string.
  */
-BOOL s_parsecg_s (const char **input, ContactGroup **parsed, char *sep, Connection *serv)
+BOOL s_parsecg_s (const char **input, ContactGroup **parsed, const char *sep, Connection *serv)
 {
     ContactGroup *cg;
     const char *p = *input;
@@ -770,7 +783,7 @@ BOOL s_parsecg_s (const char **input, ContactGroup **parsed, char *sep, Connecti
 /*
  * Finds the remaining non-whitespace line, but parses '\'.
  */
-BOOL s_parserem_s (const char **input, char **parsed, char *sep)
+BOOL s_parserem_s (const char **input, char **parsed, const char *sep)
 {
     static char *t = NULL;
     const char *p = *input;
@@ -816,7 +829,7 @@ BOOL s_parserem_s (const char **input, char **parsed, char *sep)
 /*
  * Try to find a number.
  */
-BOOL s_parseint_s (const char **input, UDWORD *parsed, char *sep)
+BOOL s_parseint_s (const char **input, UDWORD *parsed, const char *sep)
 {
     const char *p = *input;
     UDWORD nr, sig;
@@ -873,7 +886,7 @@ BOOL s_parseint_s (const char **input, UDWORD *parsed, char *sep)
 /*
  * Try to find a keyword.
  */
-BOOL s_parsekey_s (const char **input, const char *keyword, char *sep)
+BOOL s_parsekey_s (const char **input, const char *keyword, const char *sep)
 {
     const char *p = *input;
     

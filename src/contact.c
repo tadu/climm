@@ -25,6 +25,7 @@
 #include <ctype.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <assert.h>
 
 #include "micq.h"
 #include "contact.h"
@@ -243,41 +244,58 @@ Contact *ContactIndex (ContactGroup *group, int i)
 Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nick, BOOL create)
 {
     ContactGroup *tmp, *fr = NULL;
-    Contact *cont, *alias = NULL;
+    ContactAlias *ca;
+    Contact *cont;
     int i;
     
     if (!group && !cnt_groups)
         ContactGroupInit ();
 
-    for (tmp = group ? group : CONTACTGROUP_GLOBAL; tmp; tmp = tmp->more)
+    if (nick && create)
     {
-        if (tmp->used < MAX_ENTRIES)
-            fr = tmp;
-        for (i = 0; i < tmp->used; i++)
-            for (cont = tmp->contacts[i]; cont; cont = cont->alias)
+        assert (id || uin);
+        if ((cont = ContactFind (group, id, uin, NULL, 0)))
+        {
+            if (cont->oldflags & CONT_TEMPORARY)
+            {
+                s_repl (&cont->nick, nick);
+                cont->group = group ? group : CONTACTGROUP_GLOBAL;
+                cont->oldflags &= ~CONT_TEMPORARY;
+                Debug (DEB_CONTACT, "new   #%d %ld '%s' %p in %p was temporary", id, uin, nick, cont, group);
+                return cont;
+            }
+            ContactAddAlias (cont, nick);
+            return cont;
+        }
+    }
+
+    {
+        for (tmp = group ? group : CONTACTGROUP_GLOBAL; tmp; tmp = tmp->more)
+        {
+            if (tmp->used < MAX_ENTRIES)
+                fr = tmp;
+            for (i = 0; i < tmp->used; i++)
+            {
+                cont = tmp->contacts[i];
                 if ((!uin  || uin == cont->uin) &&
-                    (!nick || !strcmp (nick, cont->nick)) &&
                     (!id   || id == cont->id))
                 {
-                    return cont;
+                    if (!nick || !strcmp (nick, cont->nick))
+                        return cont;
+                    for (ca = cont->alias; ca; ca = ca->more)
+                        if (!strcmp (nick, ca->alias))
+                            return cont;
                 }
-        if (!tmp->more)
-        {
-            fr = tmp;
-            break;
+            }
+            if (!tmp->more)
+            {
+                fr = tmp;
+                break;
+            }
         }
     }
     if (!create)
         return NULL;
-    if (nick && (alias = ContactFind (group, id, uin, NULL, 0))
-             && alias->oldflags & CONT_TEMPORARY)
-    {
-        s_repl (&alias->nick, nick);
-        alias->group = group ? group : CONTACTGROUP_GLOBAL;
-        alias->oldflags &= ~CONT_TEMPORARY;
-        Debug (DEB_CONTACT, "new   #%d %ld '%s' %p in %p was temporary", id, uin, nick, alias, group);
-        return alias;
-    }
     cont = calloc (1, sizeof (Contact));
     if (!cont)
         return NULL;
@@ -294,16 +312,6 @@ Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nic
     cont->seen_time = -1L;
     cont->seen_micq_time = -1L;
     cont->group = group ? group : CONTACTGROUP_GLOBAL;
-    if (alias)
-    {
-        Debug (DEB_CONTACT, "alias #%d %ld '%s' %p in %p for #%d '%s'",
-               id, uin, cont->nick, cont, group, alias->id, alias->nick);
-        while (alias->alias)
-            alias = alias->alias;
-        alias->alias = cont;
-        cont->oldflags |= CONT_ALIAS;
-        return cont;
-    }
     if (fr->used == MAX_ENTRIES)
         fr = fr->more = calloc (1, sizeof (ContactGroup));
     if (!fr)
@@ -319,6 +327,33 @@ Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nic
 }
 
 /*
+ * Delete a contact by hiding it as good as possible.
+ */
+void ContactD (Contact *cont)
+{
+    ContactAlias *ca, *cao;
+    ContactGroup *cg;
+    int i;
+
+    for (ca = cont->alias; ca; ca = cao)
+    {
+        cao = ca->more;
+        free (ca->alias);
+        free (ca);
+    }
+    
+    cont->id = 0;
+    cont->alias = NULL;
+    s_repl (&cont->nick, s_sprintf ("%ld", cont->uin));
+    
+    for (i = 1; (cg = ContactGroupIndex (i)); i++)
+        if (cg != cont->group->serv->contacts)
+            ContactRem (cg, cont);
+    cont->oldflags |= CONT_TEMPORARY;
+}
+
+
+/*
  * Adds a contact to a contact group.
  */
 BOOL ContactAdd (ContactGroup *group, Contact *cont)
@@ -330,7 +365,7 @@ BOOL ContactAdd (ContactGroup *group, Contact *cont)
             ContactGroupInit ();
         group = CONTACTGROUP_GLOBAL;
     }
-    if (!group || !cont || cont->oldflags & CONT_ALIAS)
+    if (!group || !cont)
         return FALSE;
     while (group->used == MAX_ENTRIES && group->more)
         group = group->more;
@@ -352,7 +387,6 @@ BOOL ContactAdd (ContactGroup *group, Contact *cont)
 BOOL ContactRem (ContactGroup *group, Contact *cont)
 {
     ContactGroup *orig = group;
-    Contact *alias;
     int i;
 
     if (!group)
@@ -366,62 +400,87 @@ BOOL ContactRem (ContactGroup *group, Contact *cont)
     while (group)
     {
         for (i = 0; i < group->used; i++)
-            for (alias = group->contacts[i]; alias; alias = alias->alias)
-                if (alias == cont)
-                {
-                    group->contacts[i] = group->contacts[--group->used];
-                    group->contacts[group->used] = 0;
-                    Debug (DEB_CONTACT, "rem   #%d %ld '%s' %p to %p", cont->id, cont->uin, cont->nick, cont, orig);
-                    return TRUE;
-                }
+            if (group->contacts[i] == cont)
+            {
+                group->contacts[i] = group->contacts[--group->used];
+                group->contacts[group->used] = 0;
+                Debug (DEB_CONTACT, "rem   #%d %ld '%s' %p to %p", cont->id, cont->uin, cont->nick, cont, orig);
+                return TRUE;
+            }
         group = group->more;
     }
     return FALSE;
 }
 
 /*
+ * Adds an alias to a contact.
+ */
+BOOL ContactAddAlias (Contact *cont, const char *nick)
+{
+    ContactAlias **caref;
+    ContactAlias *ca;
+    
+    for (caref = &cont->alias; *caref; caref = &(*caref)->more)
+        if (!strcmp ((*caref)->alias, nick))
+        {
+            Debug (DEB_CONTACT, "addal #%d %ld '%s' a'%s'", cont->id, cont->uin, cont->nick, nick);
+            return TRUE;
+        }
+    
+    ca = calloc (1, sizeof (ContactAlias));
+    if (!ca)
+        return FALSE;
+    
+    ca->alias = strdup (nick);
+    if (!ca->alias)
+    {
+        free (ca);
+        return FALSE;
+    }
+    *caref = ca;
+    Debug (DEB_CONTACT, "addal #%d %ld '%s' A'%s'", cont->id, cont->uin, cont->nick, nick);
+    return TRUE;
+}
+
+
+/*
  * Removes an alias from a contact.
  */
-BOOL ContactRemAlias (ContactGroup *group, Contact *alias)
+BOOL ContactRemAlias (Contact *cont, const char *nick)
 {
-    Contact *cont, *tmp;
+    ContactAlias **caref;
+    ContactAlias *ca;
 
-    if (!group)
+    if (!strcmp (cont->nick, nick))
     {
-        if (!cnt_groups)
-            ContactGroupInit ();
-        group = CONTACTGROUP_GLOBAL;
-    }
-    if (!group || !alias)
-        return FALSE;
-    if (alias->alias)
-    {
-        Debug (DEB_CONTACT, "remal #%d %ld '%s' %p to %p", alias->id, alias->uin, alias->nick, alias, group);
-        tmp = alias->alias->alias;
-        s_repl (&alias->nick, alias->alias->nick);
-        s_repl (&alias->alias->nick, NULL);
-        free (alias->alias);
-        alias->alias = tmp;
+        char *nn;
+        
+        if (cont->alias)
+        {
+            ca = cont->alias;
+            nn = cont->alias->alias;
+            cont->alias = cont->alias->more;
+        }
+        else
+            nn = strdup ("");
+        free (cont->nick);
+        cont->nick = nn;
+        Debug (DEB_CONTACT, "remal #%d %ld N'%s' '%s'", cont->id, cont->uin, cont->nick, nick);
         return TRUE;
     }
-    cont = ContactFind (group, 0, alias->uin, NULL, 0);
-    if (!cont)
-        return FALSE;
-    if (cont == alias)
-    {
-        s_repl (&alias->nick, s_sprintf ("%ld", alias->uin));
-        alias->id = 0;
-        alias->oldflags |= CONT_TEMPORARY;
-        return ContactRem (group, alias);
-    }
-    while (cont->alias != alias)
-        if (!(cont = cont->alias))
-            return FALSE;
-    Debug (DEB_CONTACT, "remal #%d %ld '%s' %p to %p", alias->id, alias->uin, alias->nick, cont, group);
-    s_repl (&alias->nick, NULL);
-    free (alias);
-    cont->alias = NULL;
-    return TRUE;
+
+    for (caref = &cont->alias; *caref; caref = &(*caref)->more)
+        if (!strcmp ((*caref)->alias, nick))
+        {
+            free ((*caref)->alias);
+            ca = *caref;
+            *caref = (*caref)->more;
+            free (ca);
+            Debug (DEB_CONTACT, "remal #%d %ld '%s' X'%s'", cont->id, cont->uin, cont->nick, nick);
+            return TRUE;
+        }
+
+    return FALSE;
 }
 
 /*
@@ -448,7 +507,6 @@ UWORD ContactID (Contact *cont)
 BOOL ContactMetaSave (Contact *cont)
 {
     MetaEmail *email;
-    Contact *alias;
     Extra *extra;
     FILE *f;
     
@@ -464,8 +522,6 @@ BOOL ContactMetaSave (Contact *cont)
     fprintf (f, "b_uin      %ld\n", cont->uin);
     fprintf (f, "b_id       %d\n", cont->id);
     fprintf (f, "b_nick     %s\n", s_quote (cont->nick));
-    for (alias = cont->alias; alias; alias = alias->alias)
-        fprintf (f, "b_alias    %s\n", s_quote (alias->nick));
     fprintf (f, "b_enc      %s\n", s_quote (ConvEncName (cont->encoding)));
     fprintf (f, "b_seen     %ld\n", (long)cont->seen_time);
     fprintf (f, "b_micq     %ld\n", (long)cont->seen_micq_time);
@@ -593,7 +649,7 @@ BOOL ContactMetaLoad (Contact *cont)
             if      (!strcmp (cmd, "b_uin"))   { if (s_parseint (&line, &i) && i != cont->uin) return FALSE; }
             else if (!strcmp (cmd, "b_id"))    { if (s_parseint (&line, &i)) cont->id = i; }
             else if (!strcmp (cmd, "b_nick"))  { s_parse (&line, &cmd); /* ignore for now */ }
-            else if (!strcmp (cmd, "b_alias")) { s_parse (&line, &cmd); /* ignore for now */ }
+            else if (!strcmp (cmd, "b_alias")) { s_parse (&line, &cmd); /* deprecated */ }
             else if (!strcmp (cmd, "b_enc"))   { if (s_parse (&line, &cmd))  cont->encoding = ConvEnc (cmd) & ~ENC_AUTO; }
             else if (!strcmp (cmd, "b_flags")) { s_parseint (&line, &i); /* ignore for compatibility */ }
             else if (!strcmp (cmd, "b_about")) { if (s_parse (&line, &cmd))  s_repl (&cont->meta_about, ConvToUTF8 (cmd, enc, -1, 0)); }

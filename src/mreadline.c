@@ -451,7 +451,7 @@ void R_process_input_tab (void)
                 nicklen = strlen (tabcont->nick);
                 if (((prG->tabs == TABS_CYCLE && tabcont->status != STATUS_OFFLINE) || prG->tabs == TABS_CYCLEALL)
                     && nicklen >= tabwlen && !strncasecmp (tabword, ConvFromUTF8 (tabcont->nick, prG->enc_loc, NULL), tabwlen)
-                    && (tabwlen > 0 || (~tabcont->oldflags & CONT_ALIAS)) && ~tabcont->oldflags & CONT_TEMPORARY)
+                    && (tabwlen > 0) && ~tabcont->oldflags & CONT_TEMPORARY)
                     gotmatch = 1;
                 else
                     tabcont = ContactIndex (NULL, ++tabconti);

@@ -846,8 +846,7 @@ int Read_RC_File (FILE *rcf)
                         section = -1;
                         break;
                     }
-                    if (~cont->oldflags & CONT_ALIAS)
-                        ContactOptionsSet (&cont->copts, flags, "+"); /* FIXME */
+                    ContactOptionsSet (&cont->copts, flags, "+"); /* FIXME */
                 }
                 break;
             case 2:
@@ -1633,7 +1632,7 @@ int Save_RC ()
         while (cg)
         {
             for (i = 0; i < cg->used; i++)
-                if (~(cont = cg->contacts[i])->oldflags & (CONT_TEMPORARY | CONT_ALIAS))
+                if (~(cont = cg->contacts[i])->oldflags & CONT_TEMPORARY)
                     fprintf (rcf, "entry 0 %ld\n", cont->uin);
             cg = cg->more;
         }
@@ -1645,15 +1644,15 @@ int Save_RC ()
     fprintf (rcf, "[Contacts]\n");
     for (i = 0; (cont = ContactIndex (0, i)); i++)
     {
-        if (~cont->oldflags & (CONT_TEMPORARY | CONT_ALIAS))
+        if (~cont->oldflags & CONT_TEMPORARY)
         {
-            Contact *cont2;
+            ContactAlias *alias;
             if (ContactOptionsGet (&cont->copts, CO_INTIMATE, &res) && res) fprintf (rcf, "*"); else fprintf (rcf, " ");
             if (ContactOptionsGet (&cont->copts, CO_HIDEFROM, &res) && res) fprintf (rcf, "~"); else fprintf (rcf, " ");
             if (ContactOptionsGet (&cont->copts, CO_IGNORE, &res) && res)   fprintf (rcf, "^"); else fprintf (rcf, " ");
             fprintf (rcf, "%9ld %s\n", cont->uin, s_quote (cont->nick));
-            for (cont2 = cont->alias; cont2; cont2 = cont2->alias)
-                fprintf (rcf, "   %9ld %s\n", cont->uin, s_quote (cont2->nick));
+            for (alias = cont->alias; alias; alias = alias->more)
+                fprintf (rcf, "   %9ld %s\n", cont->uin, s_quote (alias->alias));
         }
     }
     fprintf (rcf, "\n");
@@ -1676,7 +1675,7 @@ int Save_RC ()
         while (cg)
         {
             for (i = 0; i < cg->used; i++)
-                if (~(cont = cg->contacts[i])->oldflags & (CONT_TEMPORARY | CONT_ALIAS))
+                if (~(cont = cg->contacts[i])->oldflags & CONT_TEMPORARY)
                     fprintf (stf, "entry 0 %ld\n", cont->uin);
             cg = cg->more;
         }
@@ -1687,12 +1686,12 @@ int Save_RC ()
 
     for (i = 0; (cont = ContactIndex (0, i)); i++)
     {
-        if (~(cont->oldflags & (CONT_TEMPORARY | CONT_ALIAS)))
+        if (~(cont->oldflags & CONT_TEMPORARY))
         {
-            Contact *cont2;
+            ContactAlias *alias;
             fprintf (stf, "entry %9ld %s", cont->uin, s_quote (cont->nick));
-            for (cont2 = cont->alias; cont2; cont2 = cont2->alias)
-                fprintf (stf, " %s", s_quote (cont2->nick));
+            for (alias = cont->alias; alias; alias = alias->more)
+                fprintf (stf, " %s", s_quote (alias->alias));
             fprintf (stf, "\n");
 
             if ((res = ContactOptionsString (&cont->copts)))

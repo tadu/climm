@@ -63,13 +63,19 @@ struct ContactDC_s
 
 struct ContactGroup_s
 {
-    ContactGroup *more;
-    Connection   *serv;
-    char         *name;
+    ContactGroup  *more;
+    Connection    *serv;
+    char          *name;
     ContactOptions copts;
-    Contact      *contacts[32];
-    UWORD         id;
-    UBYTE         used;
+    Contact       *contacts[32];
+    UWORD          id;
+    UBYTE          used;
+};
+
+struct ContactAlias_s
+{
+    ContactAlias *more;
+    char         *alias;
 };
 
 struct Contact_s
@@ -89,7 +95,7 @@ struct Contact_s
     char  *last_message;
     time_t last_time, seen_time, seen_micq_time;
     
-    Contact *alias; /* the next alias for this entry */
+    ContactAlias *alias; /* alias of this entry */
 
     UWORD  updated; /* which meta_* has been updated */
 
@@ -115,7 +121,10 @@ Contact      *ContactIndex        (ContactGroup *group, int i);
 Contact      *ContactFind         (ContactGroup *group, UWORD id, UDWORD uin, const char *nick, BOOL create);
 BOOL          ContactAdd          (ContactGroup *group, Contact *cont);
 BOOL          ContactRem          (ContactGroup *group, Contact *cont);
-BOOL          ContactRemAlias     (ContactGroup *group, Contact *cont);
+void          ContactD            (Contact *cont);
+
+BOOL          ContactAddAlias     (Contact *cont, const char *nick);
+BOOL          ContactRemAlias     (Contact *cont, const char *nick);
 
 UWORD         ContactID           (Contact *cont);
 void          ContactSetCap       (Contact *cont, Cap *cap);
@@ -138,7 +147,6 @@ const char   *ContactPref         (Contact *cont, UWORD flag);
 #define CONT_UTF8(cont,mt) (((cont)->caps & (1 << CAP_UTF8)) && (((mt) == 1) || ((cont)->caps & (1 << CAP_MICQ))))
 
 #define CONT_TEMPORARY  8UL /* no status display for this contact. */
-#define CONT_ALIAS     16UL /* is an alias entry. */
 #define CONT_SEENAUTO  32UL /* has seen auto response. */
 #define CONT_ISEDITED  64UL /* meta data was edited by hand. */
 

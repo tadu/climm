@@ -692,7 +692,7 @@ static JUMP_F(CmdUserPass)
  */
 static JUMP_F(CmdUserSMS)
 {
-    Contact *cont = NULL, *contr = NULL;
+    Contact *cont = NULL;
     char *arg1 = NULL, *arg3 = NULL;
     const char *arg2 = NULL;
     UDWORD i;
@@ -703,17 +703,17 @@ static JUMP_F(CmdUserSMS)
         M_print (i18n (2013, "This command is v8 only.\n"));
         return 0;
     }
-    if (s_parsenick (&args, &cont, &contr, conn))
+    if (s_parsenick (&args, &cont, NULL, conn))
     {
-        CONTACT_GENERAL (contr);
+        CONTACT_GENERAL (cont);
         arg2 = args;
-        if ((!contr->meta_general->cellular || !contr->meta_general->cellular[0])
+        if ((!cont->meta_general->cellular || !cont->meta_general->cellular[0])
             && s_parseint (&arg2, &i) && s_parse (&args, &arg1))
         {
-            s_repl (&contr->meta_general->cellular, arg1);
-            contr->updated = 0;
+            s_repl (&cont->meta_general->cellular, arg1);
+            cont->updated = 0;
         }
-        arg1 = contr->meta_general->cellular;
+        arg1 = cont->meta_general->cellular;
     }
     if ((!arg1 || !arg1[0]) && !s_parse (&args, &arg1))
     {
@@ -723,8 +723,8 @@ static JUMP_F(CmdUserSMS)
     if (arg1[0] != '+' || arg1[1] == '0')
     {
         M_printf (i18n (2250, "Number '%s' is not of the format +<countrycode><cellprovider><number>.\n"), arg1);
-        if (contr && contr->meta_general)
-            s_repl (&contr->meta_general->cellular, NULL);
+        if (cont && cont->meta_general)
+            s_repl (&cont->meta_general->cellular, NULL);
         return 0;
     }
     arg1 = strdup (arg1);
@@ -741,12 +741,12 @@ static JUMP_F(CmdUserSMS)
  */
 static JUMP_F(CmdUserInfo)
 {
-    Contact *cont = NULL, *contr = NULL;
+    Contact *cont = NULL;
     OPENCONN;
 
     while (*args || data)
     {
-        if (!data && !s_parsenick_s (&args, &cont, MULTI_SEP, &contr, conn))
+        if (!data && !s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
         {
             M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
             return 0;
@@ -755,8 +755,8 @@ static JUMP_F(CmdUserInfo)
             args++;
         if (data)
         {
-            contr = ContactUIN (conn, uiG.last_rcvd_uin);
-            if (!contr)
+            cont = ContactUIN (conn, uiG.last_rcvd_uin);
+            if (!cont)
                 return 0;
         }
         IMCliInfo (conn, cont, 0);
@@ -1112,7 +1112,7 @@ static JUMP_F(CmdUserPeer)
  */
 static JUMP_F(CmdUserAuto)
 {
-    char *arg1 = NULL, *arg2 = NULL;
+    char *arg1 = NULL; //, *arg2 = NULL;
 
 #if 0
     if (!s_parse (&args, &arg1))
@@ -1720,7 +1720,8 @@ static JUMP_F(CmdUserStatusDetail)
     int l;
 #endif
     int lenuin = 0, lennick = 0, lenstat = 0, lenid = 0, totallen = 0;
-    Contact *cont = NULL, *alias = NULL;
+    Contact *cont = NULL;
+    ContactAlias *alias;
     Connection *peer;
     char *arg1;
     UDWORD stati[] = { 0xfffffffe, STATUS_OFFLINE, STATUS_DND,    STATUS_OCC, STATUS_NA,
@@ -1758,7 +1759,7 @@ static JUMP_F(CmdUserStatusDetail)
             ContactRem (tcg, cont);
         cg = conn->contacts;
         for (j = 0; (cont = ContactIndex (cg, j)); j++)
-            if (~cont->oldflags & CONT_TEMPORARY && ~cont->oldflags & CONT_ALIAS)
+            if (~cont->oldflags & CONT_TEMPORARY)
                 if (!ContactFind (tcg, 0, cont->uin, NULL, 0))
                     ContactAdd (tcg, cont);
         for (i = 0; (cg = ContactGroupIndex (i)); i++)
@@ -1775,14 +1776,16 @@ static JUMP_F(CmdUserStatusDetail)
     {
         if (uin && cont->uin != uin)
             continue;
-        if ((cont->oldflags & (CONT_TEMPORARY | CONT_ALIAS)) && ~data & 2)
+        if ((cont->oldflags & CONT_TEMPORARY) && ~data & 2)
             continue;
         if (cont->uin > tuin)
             tuin = cont->uin;
         if (s_strlen (cont->nick) > lennick)
             lennick = s_strlen (cont->nick);
-        if (cont->oldflags & CONT_ALIAS)
-            continue;
+        if (data & 2)
+            for (alias = cont->alias; alias; alias = alias->more)
+                if (s_strlen (alias->alias) > lennick)
+                    lennick = s_strlen (alias->alias);
         if (s_strlen (s_status (cont->status)) > lenstat)
             lenstat = s_strlen (s_status (cont->status));
         if (cont->version && s_strlen (cont->version) > lenid)
@@ -1846,10 +1849,10 @@ static JUMP_F(CmdUserStatusDetail)
             for (j = 0; (cont = ContactIndex (cg, j)); j++)
             {
                 char *stat, *ver = NULL, *ver2 = NULL;
+                const char *ul = "";
+                char tbuf[100];
                 
                 if (uin && cont->uin != uin)
-                    continue;
-                if (ContactPref (cont, CONT_ALIAS))
                     continue;
                 if (__status (cont) != status)
                     continue;
@@ -1866,51 +1869,53 @@ static JUMP_F(CmdUserStatusDetail)
                 if (prG->verbose && cont->dc)
                     ver2 = strdup (s_sprintf (" <%08x:%08x:%08x>", (unsigned int)cont->dc->id1,
                                                (unsigned int)cont->dc->id2, (unsigned int)cont->dc->id3));
-                for (alias = cont; alias && (data & 2 || alias == cont); alias = alias->alias)
-                {
-                    const char *ul = "";
-                    char tbuf[100];
-                    
-                    if (cont->seen_time != -1L && data & 2)
-                        strftime (tbuf, sizeof (tbuf), " %Y-%m-%d %H:%M:%S", localtime (&cont->seen_time));
-                    else if (data & 2)
-                        strcpy (tbuf, "                    ");
-                    else
-                        tbuf[0] = '\0';
-                    
-#ifdef CONFIG_UNDERLINE
-                    if (!(++l % 5))
-                        ul = ESC "[4m";
-#endif
-                    
-                    if (data & 2)
-                        M_printf (COLSERVER "%s%c%c%c%1.1d%c" COLNONE "%s %*ld", ul,
-                             alias->oldflags & CONT_ALIAS     ? '+' :
-                             cont->oldflags & CONT_TEMPORARY  ? '#' : ' ',
-                             ContactPref (cont,  CO_INTIMATE) ? '*' :
-                              ContactPref (cont, CO_HIDEFROM) ? '-' : ' ',
-                             ContactPref (cont,  CO_IGNORE)   ? '^' : ' ',
-                             cont->dc ? cont->dc->version : 0,
-                             peer ? (
-                              peer->connect & CONNECT_OK   ? '&' :
-                              peer->connect & CONNECT_FAIL ? '|' :
-                              peer->connect & CONNECT_MASK ? ':' : '.' ) :
-                              cont->dc && cont->dc->version && cont->dc->port && ~cont->dc->port &&
-                              cont->dc->ip_rem && ~cont->dc->ip_rem ? '^' : ' ',
-                             ul, (int)lenuin, cont->uin);
 
-                    M_printf (COLSERVER "%s%c" COLCONTACT "%s%-*s" COLNONE "%s " COLMESSAGE "%s%-*s" COLNONE "%s %-*s%s%s" COLNONE "\n",
-                             ul, data & 2                     ? ' ' :
-                             alias->oldflags & CONT_ALIAS     ? '+' :
-                             cont->oldflags & CONT_TEMPORARY  ? '#' :
-                             ContactPref (cont, CO_INTIMATE)  ? '*' :
-                             ContactPref (cont, CO_HIDEFROM)  ? '-' :
-                             ContactPref (cont, CO_IGNORE)    ? '^' :
-                             !peer                            ? ' ' :
-                             peer->connect & CONNECT_OK       ? '&' :
-                             peer->connect & CONNECT_FAIL     ? '|' :
-                             peer->connect & CONNECT_MASK     ? ':' : '.' ,
-                             ul, lennick + s_delta (alias->nick), alias->nick,
+                if (cont->seen_time != -1L && data & 2)
+                    strftime (tbuf, sizeof (tbuf), " %Y-%m-%d %H:%M:%S", localtime (&cont->seen_time));
+                else if (data & 2)
+                    strcpy (tbuf, "                    ");
+                else
+                    tbuf[0] = '\0';
+                
+#ifdef CONFIG_UNDERLINE
+                if (!(++l % 5))
+                    ul = ESC "[4m";
+#endif
+                if (data & 2)
+                    M_printf (COLSERVER "%s%c%c%c%1.1d%c" COLNONE "%s %*ld", ul,
+                         cont->oldflags & CONT_TEMPORARY  ? '#' : ' ',
+                         ContactPref (cont,  CO_INTIMATE) ? '*' :
+                          ContactPref (cont, CO_HIDEFROM) ? '-' : ' ',
+                         ContactPref (cont,  CO_IGNORE)   ? '^' : ' ',
+                         cont->dc ? cont->dc->version : 0,
+                         peer ? (
+                          peer->connect & CONNECT_OK   ? '&' :
+                          peer->connect & CONNECT_FAIL ? '|' :
+                          peer->connect & CONNECT_MASK ? ':' : '.' ) :
+                          cont->dc && cont->dc->version && cont->dc->port && ~cont->dc->port &&
+                          cont->dc->ip_rem && ~cont->dc->ip_rem ? '^' : ' ',
+                         ul, (int)lenuin, cont->uin);
+
+                M_printf (COLSERVER "%s%c" COLCONTACT "%s%-*s" COLNONE "%s " COLMESSAGE "%s%-*s" COLNONE "%s %-*s%s%s" COLNONE "\n",
+                         ul, data & 2                     ? ' ' :
+                         cont->oldflags & CONT_TEMPORARY  ? '#' :
+                         ContactPref (cont, CO_INTIMATE)  ? '*' :
+                         ContactPref (cont, CO_HIDEFROM)  ? '-' :
+                         ContactPref (cont, CO_IGNORE)    ? '^' :
+                         !peer                            ? ' ' :
+                         peer->connect & CONNECT_OK       ? '&' :
+                         peer->connect & CONNECT_FAIL     ? '|' :
+                         peer->connect & CONNECT_MASK     ? ':' : '.' ,
+                         ul, lennick + s_delta (cont->nick), cont->nick,
+                         ul, ul, lenstat + 2 + s_delta (stat), stat,
+                         ul, lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
+                         ver2 ? ver2 : "", tbuf);
+
+                for (alias = cont->alias; alias && (data & 2); alias = alias->more)
+                {
+                    M_printf (COLSERVER "%s+     %*ld", ul, (int)lenuin, cont->uin);
+                    M_printf (COLSERVER "%s " COLCONTACT "%s%-*s" COLNONE "%s " COLMESSAGE "%s%-*s" COLNONE "%s %-*s%s%s" COLNONE "\n",
+                             ul, ul, lennick + s_delta (alias->alias), alias->alias,
                              ul, ul, lenstat + 2 + s_delta (stat), stat,
                              ul, lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
                              ver2 ? ver2 : "", tbuf);
@@ -1985,7 +1990,8 @@ static JUMP_F(CmdUserStatusDetail)
  */
 static JUMP_F(CmdUserStatusMeta)
 {
-    Contact *cont, *contr;
+    Contact *cont;
+    const char *nick;
     char *cmd;
     ANYCONN;
 
@@ -2015,64 +2021,59 @@ static JUMP_F(CmdUserStatusMeta)
     while (*args)
     {
         if (data == 6)
-            contr = ContactUIN (conn, uiG.last_rcvd_uin);
-        else if (data != 4 && conn && !s_parsenick (&args, &cont, &contr, conn) && *args)
+            cont = ContactUIN (conn, uiG.last_rcvd_uin);
+        else if (data != 4 && conn && !s_parsenick (&args, &cont, &nick, conn) && *args)
         {
             M_printf (i18n (1700, "%s is not a valid user in your list.\n"), args);
             return 0;
         }
         
-        if (!contr)
-            contr = ContactUIN (conn, conn->uin);
-        if (!contr)
-            return 0;
-        
         switch (data)
         {
             case 1:
-                UtilUIDisplayMeta (contr);
+                UtilUIDisplayMeta (cont);
                 if (*args == ',')
                     args++;
                 continue;
             case 2:
-                if (ContactMetaLoad (contr))
-                    UtilUIDisplayMeta (contr);
+                if (ContactMetaLoad (cont))
+                    UtilUIDisplayMeta (cont);
                 else
                     M_printf (i18n (2247, "Couldn't load meta data for '%s' (%ld).\n"),
-                              cont->nick, contr->uin);
+                              nick, cont->uin);
                 if (*args == ',')
                     args++;
                 continue;
             case 3:
-                if (ContactMetaSave (contr))
+                if (ContactMetaSave (cont))
                     M_printf (i18n (2248, "Saved meta data for '%s' (%ld).\n"),
-                              cont->nick, contr->uin);
+                              nick, cont->uin);
                 else
                     M_printf (i18n (2249, "Couldn't save meta data for '%s' (%ld).\n"),
-                              cont->nick, contr->uin);
+                              nick, cont->uin);
                 if (*args == ',')
                     args++;
                 continue;
             case 4:
-                contr = ContactUIN (conn, conn->uin);
-                if (!contr)
+                cont = ContactUIN (conn, conn->uin);
+                if (!cont)
                     return 0;
                 if (conn->ver > 6)
                 {
-                    SnacCliMetasetgeneral (conn, contr);
-                    SnacCliMetasetmore (conn, contr);
-                    SnacCliMetasetabout (conn, contr->meta_about);
+                    SnacCliMetasetgeneral (conn, cont);
+                    SnacCliMetasetmore (conn, cont);
+                    SnacCliMetasetabout (conn, cont->meta_about);
                 }
                 else
                 {
-                    CmdPktCmdMetaGeneral (conn, contr);
-                    CmdPktCmdMetaMore (conn, contr);
-                    CmdPktCmdMetaAbout (conn, contr->meta_about);
+                    CmdPktCmdMetaGeneral (conn, cont);
+                    CmdPktCmdMetaMore (conn, cont);
+                    CmdPktCmdMetaAbout (conn, cont->meta_about);
                 }
                 return 0;
             case 5:
             case 6:
-                IMCliInfo (conn, contr, 0);
+                IMCliInfo (conn, cont, 0);
                 if (*args == ',')
                     args++;
                 if (data == 6)
@@ -2097,20 +2098,17 @@ static JUMP_F(CmdUserIgnoreStatus)
     cg = conn->contacts;
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
     {
-        if (~cont->oldflags & CONT_ALIAS)
+        if (ContactPref (cont, CO_IGNORE))
         {
-            if (ContactPref (cont, CO_IGNORE))
-            {
-                if (ContactPref (cont, CO_INTIMATE))
-                    M_print (COLSERVER "*" COLNONE);
-                else if (ContactPref (cont, CO_HIDEFROM))
-                    M_print (COLSERVER "~" COLNONE);
-                else
-                    M_print (" ");
+            if (ContactPref (cont, CO_INTIMATE))
+                M_print (COLSERVER "*" COLNONE);
+            else if (ContactPref (cont, CO_HIDEFROM))
+                M_print (COLSERVER "~" COLNONE);
+            else
+                M_print (" ");
 
-                M_printf (COLCONTACT "%-20s\t" COLMESSAGE "(%s)" COLNONE "\n",
-                         cont->nick, s_status (cont->status));
-            }
+            M_printf (COLCONTACT "%-20s\t" COLMESSAGE "(%s)" COLNONE "\n",
+                     cont->nick, s_status (cont->status));
         }
     }
     M_print (W_SEPARATOR);
@@ -2158,25 +2156,22 @@ static JUMP_F(CmdUserStatusWide)
        many columns will fit on the screen. */
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
     {
-        if (!ContactPref (cont, CONT_ALIAS))
+        if (cont->status == STATUS_OFFLINE)
         {
-            if (cont->status == STATUS_OFFLINE)
+            if (data)
             {
-                if (data)
-                {
-                    Offline[OffIdx++] = cont;
-                    if (strlen (cont->nick) > MaxLen)
-                        MaxLen = strlen (cont->nick);
-                }
-            }
-            else
-            {
-                Online[OnIdx++] = cont;
+                Offline[OffIdx++] = cont;
                 if (strlen (cont->nick) > MaxLen)
                     MaxLen = strlen (cont->nick);
             }
         }
-    }                           /* end for */
+        else
+        {
+            Online[OnIdx++] = cont;
+            if (strlen (cont->nick) > MaxLen)
+                MaxLen = strlen (cont->nick);
+        }
+    }
 
     /* This is probably a very ugly way to determine the number of columns
        to use... it's probably specific to my own contact list.            */
@@ -2282,7 +2277,7 @@ static JUMP_F(CmdUserStatusShort)
         M_printf ("%s%s\n", W_SEPARATOR, i18n (1072, "Users offline:"));
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
         {
-            if ((~cont->oldflags & CONT_ALIAS) && !ContactPref (cont, CO_IGNORE))
+            if (!ContactPref (cont, CO_IGNORE))
             {
                 if (cont->status == STATUS_OFFLINE)
                 {
@@ -2301,7 +2296,7 @@ static JUMP_F(CmdUserStatusShort)
     M_printf ("%s%s\n", W_SEPARATOR, i18n (1073, "Users online:"));
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
     {
-        if ((~cont->oldflags & CONT_ALIAS) && !ContactPref (cont, CO_IGNORE))
+        if (!ContactPref (cont, CO_IGNORE))
         {
             if (cont->status != STATUS_OFFLINE)
             {
@@ -2527,8 +2522,8 @@ static JUMP_F(CmdUserSet)
 static JUMP_F(CmdUserOpt)
 {
     ContactGroup *cg = NULL;
-    Contact *cont = NULL, *contr = NULL;
-    const char *optname = NULL, *res = NULL, *eres = NULL, *optobj = NULL;
+    Contact *cont = NULL;
+    const char *nick, *optname = NULL, *res = NULL, *eres = NULL, *optobj = NULL;
     ContactOptions *copts = NULL;
     int opttype = 0, i;
     UWORD flag = 0;
@@ -2545,9 +2540,9 @@ static JUMP_F(CmdUserOpt)
         return 0;
     }
 
-    if (s_parsekey (&args, "global"))                  { copts = &prG->copts;   opttype = 0; optobj = ""; }
-    else if (s_parsecg (&args, &cg, conn))             { copts = &cg->copts;    opttype = 1; optobj = cg->name; }
-    else if (s_parsenick (&args, &cont, &contr, conn)) { copts = &contr->copts; opttype = 2; optobj = cont->nick; }
+    if (s_parsekey (&args, "global"))                  { copts = &prG->copts;  opttype = 0; optobj = ""; }
+    else if (s_parsecg (&args, &cg, conn))             { copts = &cg->copts;   opttype = 1; optobj = cg->name; }
+    else if (s_parsenick (&args, &cont, &nick, conn))  { copts = &cont->copts; opttype = 2; optobj = nick; }
     else if (s_parse (&args, &cmd))
     {
         M_printf (i18n (9999, "Could not find contact or contact group name in %s.\n"), args);
@@ -2572,7 +2567,7 @@ static JUMP_F(CmdUserOpt)
                                 : res) 
                               : i18n (1086, "off")) 
                             : i18n (9999, "undefined"), COLNONE, i18n (9999, "effectivly"), COLMESSAGE,
-                          (eres = ContactPref (contr, ContactOptionsList[i].flag))
+                          (eres = ContactPref (cont, ContactOptionsList[i].flag))
                             ? (ContactOptionsList[i].isbool
                               ? i18n (1085, "on")
                               : eres)
@@ -2707,26 +2702,27 @@ static JUMP_F(CmdUserRegister)
  */
 static JUMP_F(CmdUserTogIgnore)
 {
-    Contact *cont = NULL, *contr = NULL;
+    Contact *cont = NULL;
+    const char *nick;
     OPENCONN;
 
     while (*args)
     {
-        if (!s_parsenick_s (&args, &cont, MULTI_SEP, &contr, conn))
+        if (!s_parsenick_s (&args, &cont, MULTI_SEP, &nick, conn))
         {
             M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
             return 0;
         }
 
-        if (ContactPref (contr, CO_IGNORE))
+        if (ContactPref (cont, CO_IGNORE))
         {
             ContactOptionsSet (&cont->copts, CO_IGNORE, "");
-            M_printf (i18n (1666, "Unignored %s.\n"), cont->nick);
+            M_printf (i18n (1666, "Unignored %s.\n"), nick);
         }
         else
         {
             ContactOptionsSet (&cont->copts, CO_IGNORE, "+");
-            M_printf (i18n (1667, "Ignoring %s.\n"), cont->nick);
+            M_printf (i18n (1667, "Ignoring %s.\n"), nick);
         }
         if (*args == ',')
             args++;
@@ -2739,25 +2735,26 @@ static JUMP_F(CmdUserTogIgnore)
  */
 static JUMP_F(CmdUserTogInvis)
 {
-    Contact *cont = NULL, *contr = NULL;
+    Contact *cont = NULL;
+    const char *nick;
     OPENCONN;
 
     while (*args)
     {
-        if (!s_parsenick_s (&args, &cont, MULTI_SEP, &contr, conn))
+        if (!s_parsenick_s (&args, &cont, MULTI_SEP, &nick, conn))
         {
             M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
             return 0;
         }
 
-        if (ContactPref (contr, CO_HIDEFROM))
+        if (ContactPref (cont, CO_HIDEFROM))
         {
             ContactOptionsSet (&cont->copts, CO_HIDEFROM, "");
             if (conn->ver > 6)
                 SnacCliReminvis (conn, cont);
             else
                 CmdPktCmdUpdateList (conn, cont, INV_LIST_UPDATE, FALSE);
-            M_printf (i18n (2020, "Being visible to %s.\n"), cont->nick);
+            M_printf (i18n (2020, "Being visible to %s.\n"), nick);
         }
         else
         {
@@ -2767,7 +2764,7 @@ static JUMP_F(CmdUserTogInvis)
                 SnacCliAddinvis (conn, cont);
             else
                 CmdPktCmdUpdateList (conn, cont, INV_LIST_UPDATE, TRUE);
-            M_printf (i18n (2021, "Being invisible to %s.\n"), cont->nick);
+            M_printf (i18n (2021, "Being invisible to %s.\n"), nick);
         }
         if (*args == ',')
             args++;
@@ -2787,25 +2784,26 @@ static JUMP_F(CmdUserTogInvis)
  */
 static JUMP_F(CmdUserTogVisible)
 {
-    Contact *cont = NULL, *contr = NULL;
+    Contact *cont = NULL;
+    const char *nick = NULL;
     OPENCONN;
 
     while (*args)
     {
-        if (!s_parsenick (&args, &cont, &contr, conn))
+        if (!s_parsenick (&args, &cont, &nick, conn))
         {
             M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
             return 0;
         }
 
-        if (ContactPref (contr, CO_INTIMATE))
+        if (ContactPref (cont, CO_INTIMATE))
         {
             ContactOptionsSet (&cont->copts, CO_INTIMATE, "");
             if (conn->ver > 6)
                 SnacCliRemvisible (conn, cont);
             else
                 CmdPktCmdUpdateList (conn, cont, VIS_LIST_UPDATE, FALSE);
-            M_printf (i18n (1670, "Normal visible to %s now.\n"), cont->nick);
+            M_printf (i18n (1670, "Normal visible to %s now.\n"), nick);
         }
         else
         {
@@ -2815,7 +2813,7 @@ static JUMP_F(CmdUserTogVisible)
                 SnacCliAddvisible (conn, cont);
             else
                 CmdPktCmdUpdateList (conn, cont, VIS_LIST_UPDATE, TRUE);
-            M_printf (i18n (1671, "Always visible to %s now.\n"), cont->nick);
+            M_printf (i18n (1671, "Always visible to %s now.\n"), nick);
         }
         if (*args == ',')
             args++;
@@ -2870,7 +2868,7 @@ static JUMP_F(CmdUserAdd)
     {
         while (*args)
         {
-            while (s_parsenick_s (&args, &cont2, MULTI_SEP, &cont, conn))
+            while (s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
             {
                 if (cont->oldflags & CONT_TEMPORARY)
                     M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), cont->nick);
@@ -3034,19 +3032,18 @@ static JUMP_F(CmdUserRemove)
             alias = strdup (cont->nick);
             uin = cont->uin;
             
-            ContactRemAlias (conn->contacts, cont);
-            if (all)
+            if (all || !cont->alias)
             {
-                while ((cont = ContactFind (conn->contacts, 0, uin, NULL, 0)))
-                    ContactRemAlias (conn->contacts, cont);
-            }
-            
-            if ((cont = ContactFind (conn->contacts, 0, uin, NULL, 0)))
-                M_printf (i18n (2149, "Removed alias '%s' for '%s' (%ld).\n"),
-                         alias, cont->nick, uin);
-            else
+                ContactD (cont);
                 M_printf (i18n (2150, "Removed contact '%s' (%ld).\n"),
                           alias, uin);
+            }
+            else
+            {
+                ContactRemAlias (cont, alias);
+                M_printf (i18n (2149, "Removed alias '%s' for '%s' (%ld).\n"),
+                         alias, cont->nick, uin);
+            }
             free (alias);
         }
     }
@@ -3229,11 +3226,11 @@ static JUMP_F(CmdUserTabs)
 static JUMP_F(CmdUserLast)
 {
 /*    ContactGroup *cg; */
-    Contact *cont = NULL, *contr = NULL;
+    Contact *cont = NULL;
 /*    int i; */
     ANYCONN;
 
-    if (!s_parsenick (&args, &cont, &contr, conn))
+    if (!s_parsenick (&args, &cont, NULL, conn))
     {
         HistShow (conn, NULL);
 
@@ -3248,10 +3245,10 @@ static JUMP_F(CmdUserLast)
 
     do
     {
-/*        if (contr->last_message)
+/*        if (cont->last_message)
         {
             M_printf (i18n (2106, "Last message from %s%s%s at %s:\n"),
-                     COLCONTACT, cont->nick, COLNONE, s_time (&contr->last_time));
+                     COLCONTACT, cont->nick, COLNONE, s_time (&cont->last_time));
             M_printf (COLMESSAGE "%s" COLNONE "\n", cont->last_message);
         }
         else
@@ -3263,7 +3260,7 @@ static JUMP_F(CmdUserLast)
         if (*args == ',')
             args++;
     }
-    while (s_parsenick (&args, &cont, &contr, conn));
+    while (s_parsenick (&args, &cont, NULL, conn));
     return 0;
 }
 

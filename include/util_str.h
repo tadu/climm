@@ -43,12 +43,12 @@ UDWORD      s_strnlen (const char *str, UDWORD len);
 UDWORD      s_offset  (const char *str, UDWORD offset);
 const char *s_realpath(const char *path);
 
-BOOL        s_parse_s     (const char **input, char    **parsed, char *sep);
-BOOL        s_parsenick_s (const char **input, Contact **parsed, char *sep, Contact **parsedr, Connection *serv);
-BOOL        s_parsecg_s   (const char **input, ContactGroup **parsed, char *sep, Connection *serv);
-BOOL        s_parserem_s  (const char **input, char    **parsed, char *sep);
-BOOL        s_parseint_s  (const char **input, UDWORD   *parsed, char *sep);
-BOOL        s_parsekey_s  (const char **input, const char *kw, char *sep);
+BOOL        s_parse_s     (const char **input, char    **parsed, const char *sep);
+BOOL        s_parsenick_s (const char **input, Contact **parsed, const char *sep, const char **nick, Connection *serv);
+BOOL        s_parsecg_s   (const char **input, ContactGroup **parsed, const char *sep, Connection *serv);
+BOOL        s_parserem_s  (const char **input, char    **parsed, const char *sep);
+BOOL        s_parseint_s  (const char **input, UDWORD   *parsed, const char *sep);
+BOOL        s_parsekey_s  (const char **input, const char *kw, const char *sep);
 const char *s_quote       (const char *input);
 
 #define s_repl(old,new) do { char **_p_p_ = old; const char *_q_q_ = new; \
