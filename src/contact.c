@@ -180,7 +180,11 @@ Contact *ContactIndex (ContactGroup *group, int i)
     int j = 0;
     
     if (!group)
+    {
+        if (!cnt_groups)
+            ContactGroupInit ();
         group = CONTACTGROUP_GLOBAL;
+    }
     orig = group;
     if (old == group && oldoff <= i)
     {
@@ -211,7 +215,13 @@ Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nic
     Contact *cont, *alias = NULL;
     int i;
     
-    for (tmp = group ? group : CONTACTGROUP_GLOBAL; tmp; tmp = tmp->more)
+    if (!group)
+    {
+        if (!cnt_groups)
+            ContactGroupInit ();
+        group = CONTACTGROUP_GLOBAL;
+    }
+    for (tmp = group; tmp; tmp = tmp->more)
     {
         if (tmp->used < MAX_ENTRIES)
             fr = tmp;
@@ -289,7 +299,11 @@ BOOL ContactAdd (ContactGroup *group, Contact *cont)
 {
     ContactGroup *orig = group;
     if (!group)
+    {
+        if (!cnt_groups)
+            ContactGroupInit ();
         group = CONTACTGROUP_GLOBAL;
+    }
     if (!group || !cont || cont->flags & CONT_ALIAS)
         return FALSE;
     while (group->used == MAX_ENTRIES && group->more)
@@ -316,7 +330,11 @@ BOOL ContactRem (ContactGroup *group, Contact *cont)
     int i;
 
     if (!group)
+    {
+        if (!cnt_groups)
+            ContactGroupInit ();
         group = CONTACTGROUP_GLOBAL;
+    }
     if (!group || !cont)
         return FALSE;
     while (group)
@@ -343,7 +361,11 @@ BOOL ContactRemAlias (ContactGroup *group, Contact *alias)
     Contact *cont, *tmp;
 
     if (!group)
+    {
+        if (!cnt_groups)
+            ContactGroupInit ();
         group = CONTACTGROUP_GLOBAL;
+    }
     if (!group || !alias)
         return FALSE;
     if (alias->alias)
