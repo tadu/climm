@@ -173,7 +173,7 @@ void CallBackServerInitV5 (Event *event)
         return;
     }
 
-    if (sess->assoc && !(sess->connect & CONNECT_OK))
+    if (sess->assoc && !(sess->assoc->connect & CONNECT_OK))
     {
         event->due = time (NULL) + 1;
         QueueEnqueue (event);

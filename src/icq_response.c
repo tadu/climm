@@ -487,7 +487,7 @@ void Recv_Message (Session *sess, Packet *pak)
     stamp.tm_min      = PacketRead1 (pak);
     /* kludge to convert that strange UTC-DST time to time_t */
     stamp.tm_sec      = -timezone;
-    /* FIXME The following proabably only works correctly in Europe. */
+    /* FIXME: The following probably only works correctly in Europe. */
     stamp.tm_isdst    = -1;
     type              = PacketRead2 (pak);
     text              = PacketReadLNTS (pak);

@@ -634,13 +634,7 @@ const char *UtilFill (const char *fmt, ...)
 UDWORD UtilCheckUIN (Session *sess, UDWORD uin)
 {
     if (!ContactFind (uin))
-    {
-        Contact *cont;
-        
-        cont = ContactAdd (uin, NULL);
-        if (cont)
-            cont->flags |= CONT_TEMPORARY;
-    }
+        ContactAdd (uin, NULL);
 
     return uin;
 }

@@ -31,13 +31,9 @@ Contact *ContactAdd (UDWORD uin, const char *nick)
         if (cnt_contacts[i].uin == uin)
         {
             if (!strcmp (cnt_contacts[i].nick, nick))
-            {
-                cnt_contacts[i].flags &= ~CONT_TEMPORARY;
                 return &cnt_contacts[i];
-            }
             flags = CONT_ALIAS;
         }
-    
     
     cont = &cnt_contacts[cnt_number++];
 
@@ -51,7 +47,10 @@ Contact *ContactAdd (UDWORD uin, const char *nick)
         cont->nick[19] = '\0';
     }
     else
+    {
         snprintf (cont->nick, sizeof (cont->nick), "%ld", uin);
+        flags |= CONT_TEMPORARY;
+    }
     (cont + 1)->uin = 0;
 
     cont->flags = flags;

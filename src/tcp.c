@@ -173,12 +173,13 @@ void TCPDirectOff (Session *list, UDWORD uin)
     if (!peer)
         return;
     
-    ASSERT_MSGDIRECT(peer);
-
     peer->uin     = cont->uin;
     peer->connect = CONNECT_FAIL;
     peer->type    = TYPE_MSGDIRECT;
     peer->flags   = 0;
+
+    ASSERT_MSGDIRECT(peer);
+
     if (peer->incoming)
     {
         PacketD (peer->incoming);
@@ -400,9 +401,10 @@ void TCPDispatchConn (Session *peer)
                 TCPDispatchShake (peer);
                 return;
             case TCP_STATE_WAITING:
+            case TCP_STATE_WAITING + 2:
                 if (prG->verbose)
                     M_print (i18n (1855, "TCP connection to %s at %s:%d failed.\n") , cont->nick, UtilIOIP (peer->ip), peer->port);
-                peer->connect = -1;
+                peer->connect = CONNECT_FAIL;
                 peer->sok = -1;
                 return;
             case CONNECT_OK:
