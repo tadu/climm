@@ -293,15 +293,14 @@ void SrvMsgGreet (Packet *pak, UWORD cmd, const char *reason, UWORD port, UDWORD
 /*
  * Process an advanced message.
  *
- * Note: swallows both incoming and acknowledge packet,
- *       but only acknowledge event.
+ * Note: swallows only acknowledge event/packet
  */
-void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Event *ack_event)
+void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Event *ack_event)
 {
     Connection *flist;
     Contact *cont = ContactUIN (serv, inc_event->uin);
     Extra *extra = inc_event->extra;
-    Packet *inc_pak = inc_event->pak, *ack_pak = ack_event->pak;
+    Packet *ack_pak = ack_event->pak;
     Event *e1, *e2;
     const char *txt, *ack_msg;
     char *text, *ctext, *cname, *name, *cctmp;
@@ -309,8 +308,6 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Event *ack_event)
     UWORD unk, seq, msgtype, status, pri;
     UWORD ack_type, ack_flags, ack_status, accept;
 
-    M_printf ("FIXME: Starting advanced message: events %p, %p.\n", inc_event, ack_event);
- 
     unk     = PacketRead2    (inc_pak);  PacketWrite2 (ack_pak, unk);
     seq     = PacketRead2    (inc_pak);  PacketWrite2 (ack_pak, seq);
     tmp     = PacketRead4    (inc_pak);  PacketWrite4 (ack_pak, tmp);
@@ -322,6 +319,11 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Event *ack_event)
     pri     = PacketRead2    (inc_pak);
     text    = PacketReadLNTS (inc_pak);
     
+#ifdef WIP
+    M_printf ("FIXME: Starting advanced message: events %p, %p; type %d, seq %x, status %x.\n",
+              inc_event, ack_event, msgtype, seq, status);
+#endif
+ 
     ExtraSet (extra, EXTRA_MESSAGE, msgtype, c_in_to (text, cont));
 
     ack_type = msgtype;
@@ -397,7 +399,9 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Event *ack_event)
                 ack_event->callback = NULL;
                 free (text);
                 free (name);
+#ifdef WIP
                 M_printf ("FIXME: Delaying advanced message: events %p, %p.\n", inc_event, ack_event);
+#endif
                 return;
             }
             free (name);
@@ -478,7 +482,9 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Event *ack_event)
                             free (name);
                             free (gtext);
                             free (reason);
+#ifdef WIP
                             M_printf ("FIXME: Delaying advanced message: events %p, %p.\n", inc_event, ack_event);
+#endif
                             return;
                         }
                         if (PeerFileIncAccept (serv->assoc, inc_event))
@@ -585,7 +591,9 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Event *ack_event)
             PacketWriteLNTS   (ack_pak, c_out_to (ack_msg, cont));
     }
     free (text);
+#ifdef WIP
     M_printf ("FIXME: Finishing advanced message: events %p, %p.\n", inc_event, ack_event);
+#endif
     ack_event->callback (ack_event);
 }
 

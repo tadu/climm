@@ -1748,7 +1748,7 @@ static void TCPCallBackReceive (Event *event)
             event->extra = ExtraSet (event->extra, EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL);
             oldevent = QueueEnqueueData (event->conn, QUEUE_ACKNOWLEDGE, rand () % 0xff,
                          (time_t)-1, ack_pak, cont->uin, NULL, &PeerCallbackReceiveAdvanced);
-            SrvReceiveAdvanced (event->conn->parent->parent, event, oldevent);
+            SrvReceiveAdvanced (event->conn->parent->parent, event, event->pak, oldevent);
             break;
     }
     EventD (event);
