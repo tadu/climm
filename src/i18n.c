@@ -244,7 +244,7 @@ static int i18nAdd (FILE *i18nf, int debug, int *res)
     strc_t line;
     str_s str;
     int i, j = 0;
-    UBYTE enc = ENC_LATIN1, thisenc = 0;
+    UBYTE enc = ENC_UTF8, thisenc = 0;
     
     if (*res)
     {
@@ -268,9 +268,8 @@ static int i18nAdd (FILE *i18nf, int debug, int *res)
         }
         else if (i == 8)
         {
-            enc = ConvEnc (p + 1);
             if (prG->enc_loc == ENC_AUTO || thisenc)
-                prG->enc_loc = ENC_FAUTO | enc;
+                prG->enc_loc = ENC_FAUTO | ConvEnc (p + 1);
         }
 
         if (p == line->txt || i < 0 || i >= i18nSLOTS || i18nStrings[i])
