@@ -85,11 +85,29 @@ Execute mICQ commands
 after login instead of the default
 .I eg
 command.
+.SH USAGE
+Upon first start (for the given base directory), mICQ will ask for a UIN,
+or create a new one. After the first login, the server based contact list
+will be imported automatically.
+.br
+Basic commands include
+.I msg
+to message other contacts (try pressing the <tab> key several times
+on an empty input line to bring up msg commands to message contacts
+recently talked to),
+.I add
+to add new contacts,
+.IR update ,\  other ,\ and\  about
+to change your meta data on the ICQ server, and, of course,
+.I help
+for online help. A complete list of commands is available in the
+.BR micq (7)
+man page.
 .SH FEATURES
 .B mICQ
 is very portable and runs on Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD and any
 other modern unix system.  
-.B mICQ version 0.4.10
+.B mICQ version 0.5
 is known to run on Linux, AIX, HPUX, Tru64, AmigaOS, partially BeOS and other unices.
 However, the other ports
 may or may not still work and anyone wishing to test them is welcome to.
@@ -134,9 +152,16 @@ Old configuration file for mICQ \- obsolete.
 The default base directory where mICQ looks for its files.
 .TP
 .I BASE/micqrc
-Configuration file for mICQ.
+Configuration file for mICQ. Contains global configuration.
+.TP
+.I BASE/status
+Configuration file for mICQ. Contains contacts list and
+contact options.
 .TP
 .I BASE/i18n/*.i18n
+Local overrides for mICQ's translation files.
+.TP
+.I ~/.micq/i18n/*.i18n
 Local overrides for mICQ's translation files.
 .TP
 .I BASE/contacts/
@@ -166,4 +191,5 @@ This manual page was derived by James Morrison
 .I <ja2morrison@student.math.uwaterloo.ca>
 from the minimal man page written by Jordi Mallach
 .I <jordi@sindominio.net>
-for the Debian GNU/Linux system.
+for the Debian GNU/Linux system and later kept up-to-date by
+.IR <micq@ruediger\-kuhlmann.de> .

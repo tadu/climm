@@ -1,5 +1,5 @@
 .\" $Id$ -*- nroff -*-
-.\"  EN: micq.1,v 1.15.2.3
+.\"  EN: micq.1,v 1.20
 .TH MICQ 1 mICQ DE
 .SH NAME
 .B mICQ
@@ -8,11 +8,14 @@
 .B micq
 .I [\-h]
 .I [\-c]
-.I [\-i <locale>]
 .I [\-b <basedir>]
-.I [\-f <configfile>]
+.I [\-i <locale>]
 .I [\-v[level]]
 .I [\-l <logplace>]
+.I [\-u <UIN>]
+.I [\-p <passwd>]
+.I [\-s <status>]
+.I [\-C <commands>]
 .SH BESCHREIBUNG
 .I mICQ
 ist ein text-basiertes ICQ-Programm, das viele Eigenschaften
@@ -30,12 +33,7 @@ und so weiter.
 Zeigt einen kurzen Hilfe-Text an und beendet.
 .TP
 .BI \-c|\-\-nocolor
-Verwendet keine Farben.
-.TP
-.BI \-i|\-\-i18n \ <locale>
-Verwendet die Lokalisierung
-.I locale
-anstatt der in den Umgebungsvariablen angegebenen.
+Verwende keine Farben.
 .TP
 .BI \-b|\-\-basedir \ <basedir>
 Verwendet
@@ -43,26 +41,85 @@ Verwendet
 als das Basisverzeichnis, in dem mICQ nach seinen Dateien sucht, insbesondere
 seiner Konfigurationsdatei micqrc.
 .TP
+.BI \-i|\-\-i18n \ <locale>
+Verwendet die Lokalisierung
+.I locale
+anstatt der in den Umgebungsvariablen angegebenen.
+.TP
 .BI \-f|\-\-config \ <configfile>
 Verwendet
 .I configfile
 als Konfigurationsdatei.
 .TP
-.BI \-v|\-\-verbose [level]
+.BI \-v|\-\-verbose [<level>]
 W\(:ahlt den ausf\(:uhrlichen Modus bzw. setzt wie Ausf\(:uhrlichkeit auf
 .IR level .
 .TP
-.BI \-l \ Datei|Verzeichnis
+.BI \-l|\-\-logplace \ <Datei>|<Verzeichnis>
 Benutzt
 .I Datei
 als Log-Datei, bzw. benutzt
 .IR Verzeichnis ,
 um dort die nach Benutzern getrennte Log-Dateien abzulegen.
+.TP
+.BI \-u|\-\-uin \ <uin>
+Nur mit der Benutzernummer
+.I uin
+einloggen. Kann beliebig oft angegeben werden.
+.TP
+.BI \-p|\-\-passwd \ <passwd>
+Mit dem Pa\(sswort
+.I passwd
+einloggen. Kann f\(:ur jede
+.I \-u
+angegeben werden, oder alleinestehend.
+.TP
+.BI \-s|\-\-status \ <status>
+Mit dem Status
+.I status
+einloggen, welcher numerisch oder als
+.BR inv ,
+.BR dnd ,
+.BR occ ,
+.BR na ,
+.BR away ,
+.BR ffc ,
+oder
+.BR off[line]
+angegeben werden kann.
+.TP
+.BI \-C|\-\-cmd \ <commands>
+F\(:uhre die mICQ-Kommandos
+.I commands
+nach dem Einloggen anstatt des Befehls
+.I eg
+aus.
+.SH BENUTZUNG
+Beim ersten Start (je Basisverzeichnis) wird mICQ nach einer
+Benutzernummer (UIN) fragen, oder eine neue erschaffen.
+Nach dem ersten Einloggen wird die server-basierte Kontaktliste
+automatisch importiert.
+.br
+Grundlegende Kommandos sind
+.IR msg ,
+um anderen Kontakten eine Nachricht zu schicken (dr\(:uckt man die Tabulator-Taste
+mehrermals auf einer vorher leeren Eingabezeile, werden nacheinander
+msg-Kommandos erzeugt, um Nachrichten an Kontakte zu schicken, mit denen man
+vorher kommuniziert hat),
+.IR add ,
+um neue Kontakte hinzuzuf\(:ugen,
+.IR update ,\  other ,\ und\  about ,
+um die Meta-Daten auf dem ICQ-Server zu aktualisieren,
+und nat\(:urlich
+.I help
+f\(:ur die Hilfe. Eine komplette Liste der Kommandos gibt es
+in der Hilfeseite
+.BR micq (7).
 .SH EIGENSCHAFTEN
 .B mICQ
 ist sehr portabel und l\(:auft unter Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD
 und jedem anderen modernen Unix-artigen System.
-.B mICQ version 0.4.10
+.B mICQ version 0.5
 l\(:auft unter Linux, AIX, HPUX, Tru64, AmigaOS, teilweise BeOS und anderen
 Unix-artigen Systemen. Andere Portierungen funktionieren
 m\(:oglicherweise ebenfalls noch, und jeder, der dies
@@ -110,18 +167,32 @@ Alte Kon\(figurationsdatei f\(:ur mICQ \- veraltet.
 Standardm\(:assiges Basisverzeichnis f\(:ur mICQ's Dateien.
 .TP
 .I BASIS/micqrc
-Kon\(figurationsdatei f\(:ur mICQ.
+Kon\(figurationsdatei f\(:ur mICQ. Enth\(:alt die globale  Konfiguration.
+.TP
+.I BASIS/status
+Kon\(figurationsdatei f\(:ur mICQ. Enth\(:alt die Kontaktliste und
+die Optionen der Kontakte.
 .TP
 .I BASIS/i18n/*.i18n
 Benutzer-\(:Anderungen zu mICQ's \(:Ubersetzungsdateien.
+.TP
+.I ~/.micq/i18n/*.i18n
+Benutzer-\(:Anderungen zu mICQ's \(:Ubersetzungsdateien.
+.TP
+.I BASIS/contacts/
+Verzeichnis f\(:ur Metadaten zu Kontakten.
 .TP
 .I BASIS/history/
 Standardverzeichnis f\(:ur Log-Dateien.
 .TP
 .I BASIS/files/
-Verzeichnis, in dem mICQ DAteien von eingehende Datei\(:ubertragungen speichert.
+Verzeichnis, in dem mICQ Dateien von eingehende Datei\(:ubertragungen speichert.
 .TP
-.I BASE/remote-control
+.I BASE/remote\-control
+Veralteter Standardort f\(:ur die FIFO-Warteschlange, die f\(:ur die Fernbedienung verwendet wird.
+Wurde umbenannt, da es unbedarfte Benutzer irritiert hat.
+.TP
+.I BASE/scripting
 Standardort f\(:ur die FIFO-Warteschlange, die f\(:ur die Fernbedienung verwendet wird.
 .TP
 .I PREFIX/share/micq/*.i18n
@@ -134,5 +205,7 @@ Diese Hilfeseite basiert auf einer von James Morrison
 .IR <ja2morrison@student.math.uwaterloo.ca> ,
 die aus der minimalen Hilfeseite hervorging, die Jordi Mallach
 .I <jordi@sindominio.net>
-f\(:ur das  Debian-GNU/Linux-System geschrieben hat.
-Sie wurde von R\(:udiger Kuhlmann \(:ubersetzt.
+f\(:ur das  Debian-GNU/Linux-System geschrieben hat,
+und wurde danach von R\(:udiger Kuhlmann
+.IR <micq@ruediger\-kuhlmann.de>
+aktuell gehalten sowie ins Deutsche \(:ubersetzt.
