@@ -8,7 +8,7 @@
 #endif
 
 #if !HAVE_SOCKLEN_T
-typedef unsigned int socklen_t;
+typedef int socklen_t;
 #endif
 
 typedef unsigned SIZE_4_TYPE UDWORD;
