@@ -15,7 +15,6 @@
 #include "preferences.h"
 #include "conv.h"
 #include "session.h"
-#include "buildmark.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -468,90 +467,6 @@ void Recv_Message (Session *sess, UBYTE * pak)
             uiG.last_rcvd_uin, STATUS_OFFLINE, 0);
 }
 
-
-void UserOnlineSetVersion (Contact *con, time_t tstamp, time_t tstamp2, time_t tstamp3)
-{
-    char buf[100];
-    char *new = NULL;
-    unsigned int ver = tstamp & 0xffff, ssl = 0;
-    signed char v1 = 0, v2 = 0, v3 = 0, v4 = 0;
-
-    if      ((tstamp & 0xff7f0000) == BUILD_LICQ && ver > 1000)
-    {
-        new = "licq";
-        if (tstamp & BUILD_SSL)
-            ssl = 1;
-        v1 = ver / 1000;
-        v2 = (ver / 10) % 100;
-        v3 = ver % 10;
-        v4 = 0;
-    }
-    else if ((tstamp & 0xff7f0000) == BUILD_MICQ || (tstamp & 0xff7f0000) == BUILD_LICQ)
-    {
-        new = "mICQ";
-        v1 = ver / 10000;
-        v2 = (ver / 100) % 100;
-        v3 = (ver / 10) % 10;
-        v4 = ver % 10;
-        if (ver >= 489 && tstamp2)
-            tstamp = BUILD_MICQ;
-    }
-    else if (tstamp == tstamp2 && tstamp2 == tstamp3 && tstamp == 0xffffffff)
-        new = "vICQ/GAIM(?)";
-
-    if ((tstamp & 0xffff0000) == 0xffff0000)
-    {
-        v1 = (tstamp2 & 0x7f000000) >> 24;
-        v2 = (tstamp2 &   0xff0000) >> 16;
-        v3 = (tstamp2 &     0xff00) >> 8;
-        v4 =  tstamp2 &       0xff;
-        switch (tstamp)
-        {
-            case BUILD_MIRANDA:
-                new = "Miranda";
-                break;
-            case BUILD_STRICQ:
-                new = "StrICQ";
-                break;
-            case BUILD_MICQ:
-                new = "mICQ";
-                break;
-            case BUILD_YSM:
-                new = "YSM";
-                if (v1 < 0 || v2 < 0 || v3 < 0 || v4 < 0)
-                    v1 = v2 = v3 = v4 = 0;
-                break;
-            default:
-                snprintf (buf, sizeof (buf), "%08lx", tstamp);
-                new = buf;
-        }
-    }
-    
-    if (new)
-    {
-        if (new != buf)
-            strcpy (buf, new);
-        if (v1 || v2 || v3 || v4)
-        {
-            strcat (buf, " ");
-                          sprintf (buf + strlen (buf), "%d.%d", v1, v2);
-            if (v3 || v4) sprintf (buf + strlen (buf), ".%d", v3);
-            if (v4)       sprintf (buf + strlen (buf), ".%d", v4);
-        }
-        if (ssl) strcat (buf, "/SSL");
-    }
-    else
-        buf[0] = '\0';
-
-    if (prG->verbose)
-        sprintf (buf + strlen (buf), "<%08x:%08x:%08x>", (unsigned int)tstamp,
-                 (unsigned int)tstamp2, (unsigned int)tstamp3);
-
-    if (con->version) free (con->version);
-    con->version = strlen (buf) ? strdup (buf) : NULL;
-}
-
-
 void Display_Info_Reply (Session *sess, Packet *pak, const char *uinline,
     unsigned int flags)
 {
@@ -726,9 +641,10 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
     uiG.last_rcvd_uin = uin;
     if (cont)
     {
-        cont->LastMessage = realloc (cont->LastMessage, strlen (text) + 1);
-        strncpy (cont->LastMessage, cdata, strlen (text) + 1);
-        cont->LastMessage [strlen (text)] = '\0';
+        if (cont->last_message)
+            free (cont->last_message);
+        cont->last_message = strdup (text);
+        cont->last_time = time (NULL);
     }
 
     switch (type)

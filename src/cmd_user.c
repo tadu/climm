@@ -1284,9 +1284,13 @@ static JUMP_F(CmdUserStatusDetail)
                      cont->flags & CONT_IGNORE    ? '^' : ' ',
                      cont->TCP_version, lenuin, cont->uin);
 
-            M_print (" " COLCONTACT "%-*s" COLNONE " " COLMESSAGE "%-*s" COLNONE " %-*s %s",
+            M_print ("%c" COLCONTACT "%-*s" COLNONE " " COLMESSAGE "%-*s" COLNONE " %-*s %s",
+                     cont->flags & CONT_TEMPORARY ? '#' :
+                     cont->flags & CONT_INTIMATE  ? '*' :
+                     cont->flags & CONT_HIDEFROM  ? '-' :
+                     cont->flags & CONT_IGNORE    ? '^' : ' ',
                      lennick, cont->nick, lenstat + 2, statbuf, lenid + 2, verbuf,
-                     cont->last_time != -1L && data & 2 ? ctime ((time_t *) &cont->last_time) : "\n");
+                     cont->seen_time != -1L && data & 2 ? ctime ((time_t *) &cont->seen_time) : "\n");
             
             if (uin)
             {
@@ -2222,8 +2226,9 @@ static JUMP_F(CmdUserLast)
     {
         M_print (i18n (1682, "You have received messages from:\n"));
         for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
-            if (cont->LastMessage)
-                M_print (COLCONTACT "  %s" COLNONE "\n", cont->nick);
+            if (cont->last_message)
+                M_print ("  " COLCONTACT "%s" COLNONE " %s " COLMESSAGE "%s" COLNONE "\n",
+                         cont->nick, UtilUITime (&cont->last_time), cont->last_message);
     }
     else
     {
@@ -2235,11 +2240,11 @@ static JUMP_F(CmdUserLast)
                 M_print (i18n (1684, "%s is not on your contact list.\n"), arg1);
             else
             {
-                if (ContactFind (uin)->LastMessage != NULL)
+                if (ContactFind (uin)->last_message != NULL)
                 {
-                    M_print (i18n (1685, "Last message from " COLCONTACT "%s" COLNONE ":\n"),
-                             ContactFind (uin)->nick);
-                    M_print (COLMESSAGE "%s" COLNONE "\n", ContactFind (uin)->LastMessage);
+                    M_print (i18n (1685, "Last message from " COLCONTACT "%s" COLNONE " at %s\n"),
+                             ContactFind (uin)->nick, UtilUITime (&cont->last_time));
+                    M_print (COLMESSAGE "%s" COLNONE "\n", ContactFind (uin)->last_message);
                 }
                 else
                 {

@@ -366,7 +366,6 @@ static JUMP_SNAC_F(SnacSrvUseronline)
     Contact *cont;
     Packet *p, *pak;
     TLV *tlv;
-    time_t t1, t2, t3;
     
     pak = event->pak;
     cont = ContactFind (PacketReadUIN (pak));
@@ -397,10 +396,9 @@ static JUMP_SNAC_F(SnacSrvUseronline)
             cont->local_ip = ip;
         PacketReadB4 (p);
         PacketReadB4 (p);
-        t1 = PacketReadB4 (p);
-        t2 = PacketReadB4 (p);
-        t3 = PacketReadB4 (p);
-        UserOnlineSetVersion (cont, t1, t2, t3);
+        cont->id1 = PacketReadB4 (p);
+        cont->id2 = PacketReadB4 (p);
+        cont->id3 = PacketReadB4 (p);
         /* remainder ignored */
         PacketD (p);
     }
@@ -427,7 +425,6 @@ static JUMP_SNAC_F(SnacSrvUseroffline)
     }
 
     cont->status = STATUS_OFFLINE;
-    cont->last_time = time (NULL);
     
     UtilUIUserOffline (event->sess, cont);
 }

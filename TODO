@@ -1,5 +1,7 @@
 $Id$
 
+Feature requests:
+
 Jeff Bearer <jbearer@tribweb.com>
  : But the idea is to add PGP encryption to micq working with GNU Privacy
  : Guard.  There is a plugin for ICQ that enables PGP that's where I got
@@ -7,6 +9,11 @@ Jeff Bearer <jbearer@tribweb.com>
  : encoded with GPG because the max message size isn't large enough to send
  : your public key, etc.  After thinking about it, I was quickly in over my
  : head.
+
+21:47:57  m:1126630 <<< Hello,
+ : I have been talking with friends about mICQ and about how much we like it ..
+ : A couple of things have come up:
+ : - All mode changes should be in a central system log and not each user
 
 various people:
  : add https support
@@ -16,20 +23,17 @@ various people:
    + fix contact list download segfault
  : history of messages:
    + It would be nice to know just how many messages a person has sent while
-     one was away - regarding the 'last' function. (fixed?)
-   + last <uin> doesn't show the time.
+     one was away - regarding the 'last' function. (fixed)
+   + last <uin> doesn't show the time. (fixed)
  : alias for commands
- : tab completion (check)
+ : tab completion (improve)
  : configurable colors (fixed)
  : saving personal information
- : fix memory leaks (most fixed?)
+ : fix memory leaks (most fixed)
  : finish implementing file transfer (fixed?)
- : fix missing online flags (fixed?)
+ : fix missing online flags (fixed)
  : Trillian bugaround
  : use old-style auth stuff as well :-/ (fixed?)
  : fix wrong-destination messages (fixed)
+ : "" quoting of arguments
 
-21:47:57  m:1126630 <<< Hello,
-I have been talking with friends about mICQ and about how much we like it ..
-A couple of things have come up:
-- All mode changes should be in a central system log and not each user

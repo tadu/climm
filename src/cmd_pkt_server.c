@@ -187,7 +187,6 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
     UWORD len = pak->len - pak->rpos;
     Contact *cont;
     UDWORD status;
-    time_t t1, t2, t3;
     
     for (t = jump; t->cmd; t++)
     {
@@ -288,7 +287,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             cont = ContactFind (uin);
             if (!cont)
                 return;
-            cont->last_time = time (NULL);
+            cont->seen_time = time (NULL);
             cont->outside_ip      = PacketRead4 (pak);
             cont->port            = PacketRead4 (pak);
             cont->local_ip        = PacketRead4 (pak);
@@ -298,10 +297,9 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
                                     PacketRead4 (pak);
                                     PacketRead4 (pak);
                                     PacketRead4 (pak);
-            t1                    = PacketRead4 (pak);
-            t2                    = PacketRead4 (pak);
-            t3                    = PacketRead4 (pak);
-            UserOnlineSetVersion (cont, t1, t2, t3);
+            cont->id1             = PacketRead4 (pak);
+            cont->id2             = PacketRead4 (pak);
+            cont->id3             = PacketRead4 (pak);
             UtilUIUserOnline (sess, cont, status);
             break;
         case SRV_STATUS_UPDATE:

@@ -14,16 +14,21 @@ struct Contact_s
    UDWORD uin;
    UDWORD status;
    UDWORD flags;
-   UDWORD local_ip;   /* host byte order */
+   char   nick[20];
+
+   UDWORD local_ip;
    UDWORD outside_ip;
    UDWORD port;
-   UDWORD last_time; /* last time online or when came online */
+   time_t seen_time;
+   time_t seen_micq_time;
    UWORD  TCP_version;
    UBYTE  connection_type;
    UDWORD cookie;
+   time_t id1, id2, id3;
+
    char  *version;
-   char  *LastMessage;
-   char   nick[20];
+   char  *last_message;
+   time_t last_time;
 };
 
 Contact    *ContactAdd (UDWORD uin, const char *nick);

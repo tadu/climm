@@ -51,7 +51,8 @@ Contact *ContactAdd (UDWORD uin, const char *nick)
 
     cont->flags = flags;
     cont->status = STATUS_OFFLINE;
-    cont->last_time = -1L;
+    cont->seen_time = -1L;
+    cont->seen_micq_time = -1L;
     cont->local_ip = 0xffffffff;
     cont->outside_ip = 0xffffffff;
     cont->port = 0;
@@ -118,7 +119,7 @@ const char *ContactFindNick (UDWORD uin)
     Contact *cont;
 
     if (uin == -1)
-        return strdup (i18n (1617, "<all>"));
+        return i18n (1617, "<all>");
     if ((cont = ContactFind (uin)))
         return cont->nick;
     return NULL;
@@ -126,20 +127,18 @@ const char *ContactFindNick (UDWORD uin)
 
 /*
  * Returns the nick of UIN or "<all>" or UIN as string.
- * Returned string needs to be free()d.
  */
 char *ContactFindName (UDWORD uin)
 {
+    static char buff[20];
     Contact *cont;
-    char buff[20];
 
     if (uin == -1)
-        return strdup (i18n (1617, "<all>"));
+        return i18n (1617, "<all>");
     if ((cont = ContactFind (uin)))
-        return strdup (cont->nick);
-    snprintf (buff, 19, "%lu", uin);
-    buff[19] = '\0';
-    return strdup (buff);
+        return cont->nick;
+    snprintf (buff, sizeof (buf), "%lu", uin);
+    return buff;
 }
 
 /*
