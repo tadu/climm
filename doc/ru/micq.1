@@ -1,23 +1,22 @@
 .\" $Id$
 .\"                                      Hey, EMACS: -*- nroff -*-
-.Dd August 1, 2002
+.Dd August 9, 2002
 .Dt MICQ 1
 .Os MICQ(1)
 .\" Please adjust this date whenever revising the manpage.
 .Sh ИМЯ
 .Ic micq
-\- маленький, ICQ client для работы в текстовом режиме
+\- маленький ICQ client для работы в текстовом режиме
 .Sh ЗАПУСК
 .Ic micq Op Ar -v
 .Op Ar -f файл
-.br
 .Sh ОПИСАНИЕ
 .Ic mICQ
 ICQ клиент, поддерживающий большинство функций ICQ от Mirabillis. 
 Micq позволяет менять пароль, создавать новые аккаунты, обновлять инфу 
 о пользователе, искать других пользователей и т.д.
 .Sh ОПЦИИ
-.Bl -tag -width flag
+.Bl -tag
 .It Fl v Op Ar уровень
 Включает вывод доп. инфы или меняет вывод инфы на
 .Ar уровень.
@@ -43,7 +42,7 @@ Micq позволяет менять пароль, создавать новые аккаунты, обновлять инфу
 запускается на Linux, GNU HURD и других никсах. Но на других системах он
 может или не может запускаться и если кто-то желает протестить их, мы не против.
 .Sh ИСТОРИЯ
-.Bl -tag -width Fl
+.Bl -tag
 .It 16 Авг 1998
 Matthew D. Smith выпускает micq на обозрение всего мира. 
 Следуемых 12 релизами до 25 Сен 1998.
@@ -52,6 +51,7 @@ Matthew D. Smith умер в автомобильной аварии.
 Пользователи подняли micq под BSD лицензией и начали 
 разработку 
 .Ic mICQ .
+.El
 
 .Sh ЛИСТ РАССЫЛКИ
 Лист рассылки Micq по этому адресу:
@@ -86,7 +86,9 @@ cvs -d:pserver:anonymous@micq.ukeer.de:/usr/local/cvsroot -z3 co micq
 Директория по умолчанию, где создаются логи.
 .El
 .Sh BUGS
-Глюки в программе или комментарии пишите Rico GlЖckner <mc@verdinet.de>,
+Если вы нашли глюки в программе или просто хотите что-то сказать,
+.br
+пишите Rico GlЖckner <mc@verdinet.de>,
 UIN #99798577, или RЭdiger Kuhlmann <micq@ruediger-kuhlmann.de>.
 .Sh АВТОР
 Это описание было написано James Morrison
