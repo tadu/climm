@@ -135,6 +135,7 @@ static int i18nAdd (FILE *i18nf, int debug, int *res)
             continue;
         
         p = debug ? buf : ++p;
+        s_free (i18nStrings[i]);
 #ifdef ENABLE_UTF8
         if (i == 1007)
         {
@@ -144,16 +145,16 @@ static int i18nAdd (FILE *i18nf, int debug, int *res)
             else if (!strcmp (buf, "utf-8"))      enc = ENC_UTF8;
             else                                  enc = ENC_LATIN1;
         }
-        s_repl (&i18nStrings[i], p = strdup (ConvToUTF8 (p, enc ? enc : ENC_LATIN1)));
+        i18nStrings[i] = p = strdup (ConvToUTF8 (p, enc ? enc : ENC_LATIN1));
 #else
-        s_repl (&i18nStrings[i], p = strdup (p));
+        i18nStrings[i] = p = strdup (p);
 #endif
         j++;
         for (; *p; p++)
             if (*p == '\\' && p[1] == 'n')
             {
-                *p++ = '\n';
-                *p = '\r';
+                *p++ = '\r';
+                *p = '\n';
             }
     }
     fclose (i18nf);
