@@ -37,4 +37,8 @@ void CmdUser (const char *command);
 void CmdUserInput (strc_t line);
 void CmdUserInterrupt (void);
 
+#define CMD_USER_HELP(syn,des) M_printf ("%s" syn "%s\n\t" COLINDENT "%s" COLEXDENT "\n", COLQUOTE, COLNONE, des);
+#define CMD_USER_HELP3(syn,d,e,f) M_printf ("%s" syn "%s\n\t" COLINDENT "%s" COLEXDENT "\n", COLQUOTE, COLNONE, d, e, f);
+#define CMD_USER_HELP7(syn,a,b,c,d,e,f,g) M_printf ("%s" syn "%s\n\t" COLINDENT "%s\n%s\n%s\n%s\n%s\n%s\n%s" COLEXDENT "\n", COLQUOTE, COLNONE, a,b,c,d,e,f,g);
+
 #endif /* MICQ_USER_H */

@@ -36,9 +36,9 @@ AC_ARG_ENABLE([iconvrepl], AC_HELP_STRING([--enable-iconvrepl], [compile in icon
 AC_ARG_ENABLE([remote], AC_HELP_STRING([--disable-remote], [disable remote control FIFO]),
               ac_arg_use_remote=$enableval, ac_arg_use_remote=auto)
 AC_ARG_ENABLE([tcl], AC_HELP_STRING([--disable-tcl], [disable Tcl scripting]),
-              ac_arg_use_tcl=$enableval, ac_arg_use_tcl=yes)
+              ac_arg_use_tcl=$enableval, ac_arg_use_tcl=auto)
 AC_ARG_ENABLE([ssl], AC_HELP_STRING([--disable-ssl], [disable SSL encryption]),
-              ac_arg_use_ssl=$enableval, ac_arg_use_ssl=yes)
+              ac_arg_use_ssl=$enableval, ac_arg_use_ssl=auto)
 
 
 # Checks for libraries.
@@ -61,7 +61,7 @@ if test "x$ac_arg_use_ssl" != "xno"; then
   fi
   if test "x$ac_use_ssl" = "xyes"; then
     LIBS="$LIBGNUTLS_LIBS $LIBS"
-    CFLAGS="$LIBGNUTLS_CFLAGS $CLFAGS"
+    CFLAGS="$LIBGNUTLS_CFLAGS $CFLAGS"
     AC_CHECK_FUNCS([gnutls_dh_params_generate2])
   fi
   ac_arg_use_ssl=$ac_use_ssl
@@ -251,6 +251,14 @@ fi
 
 if test "x$ac_arg_use_remote" = "xyes"; then
   AC_DEFINE(ENABLE_REMOTECONTROL, 1, [Whether to enable remote control FIFO])
+fi
+
+if test "x$ac_arg_use_ssl" = "xyes"; then
+  AC_DEFINE(ENABLE_SSL, 1, [Whether to use the SSL extension])
+fi
+
+if test "x$ac_arg_use_tcl" = "xyes"; then
+  AC_DEFINE(ENABLE_TCL, 1, [Whether to use the Tcl scripting extension])
 fi
 
 # Checks for typedefs, structures, and compiler characteristics.

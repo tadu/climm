@@ -426,10 +426,6 @@ static JUMP_F(CmdUserHelp)
     }
     else if (what == 1)
     {
-#define CMD_USER_HELP(syn,des) M_printf ("%s" syn "%s\n\t" COLINDENT "%s" COLEXDENT "\n", COLQUOTE, COLNONE, des);
-#define CMD_USER_HELP3(syn,d,e,f) M_printf ("%s" syn "%s\n\t" COLINDENT "%s" COLEXDENT "\n", COLQUOTE, COLNONE, d, e, f);
-#define CMD_USER_HELP7(syn,a,b,c,d,e,f,g) M_printf ("%s" syn "%s\n\t" COLINDENT "%s\n%s\n%s\n%s\n%s\n%s\n%s" COLEXDENT "\n", COLQUOTE, COLNONE, a,b,c,d,e,f,g);
-
         CMD_USER_HELP  ("verbose [<nr>]", i18n (1418, "Set the verbosity level, or display verbosity level."));
         CMD_USER_HELP  ("clear", i18n (1419, "Clears the screen."));
         CMD_USER_HELP3 ("sound [%s|%s|event]", i18n (1085, "on"), i18n (1086, "off"),
@@ -2961,18 +2957,18 @@ static JUMP_F(CmdUserConn)
             {
                 Contact *cont = connl->cont;
 
-                M_printf (i18n (2093, "%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n"),
-                         i + 1, ConnectionType (connl), connl->version,
+                M_printf (i18n (9999, "%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n"),
+                          i + 1, ConnectionType (connl), connl->version,
 #ifdef ENABLE_SSL
-                         conn->ssl_status == SSL_STATUS_OK ? " SSL" : "",
+                          conn->ssl_status == SSL_STATUS_OK ? " SSL" : "",
 #else
-                         "",
+                          "",
 #endif
-                         cont ? cont->nick : "", connl->status,
-                         connl->server ? connl->server : s_ip (connl->ip), connl->port,
-                         connl->connect & CONNECT_FAIL ? i18n (1497, "failed") :
-                         connl->connect & CONNECT_OK   ? i18n (1934, "connected") :
-                         connl->connect & CONNECT_MASK ? i18n (1911, "connecting") : i18n (1912, "closed"));
+                          cont ? cont->nick : "", connl->status,
+                          connl->server ? connl->server : s_ip (connl->ip), connl->port,
+                          connl->connect & CONNECT_FAIL ? i18n (1497, "failed") :
+                          connl->connect & CONNECT_OK   ? i18n (1934, "connected") :
+                          connl->connect & CONNECT_MASK ? i18n (1911, "connecting") : i18n (1912, "closed"));
                 if (prG->verbose)
                 {
                     char *t1, *t2, *t3;

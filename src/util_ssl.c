@@ -30,6 +30,7 @@
 #include "util_str.h"
 #include "util_tcl.h"
 #include "util_ui.h"
+#include "util_extra.h"
 #include "tcp.h"
 #include "session.h"
 #include "contact.h"
@@ -210,7 +211,7 @@ int ssl_connect (Connection *conn, BOOL is_client)
 
 int ssl_handshake (Connection *conn)
 {
-    Contact *contact = ContactUIN (conn, conn->uin);    
+    Contact *cont = ContactUIN (conn, conn->uin);    
     int ret;
 
     ret = gnutls_handshake (conn->ssl);
@@ -224,7 +225,7 @@ int ssl_handshake (Connection *conn)
 
     if (ret)
     {
-        TCLEvent (contact, "ssl", "failed handshake");
+        TCLEvent (cont, "ssl", "failed handshake");
 
         SSL_FAIL (s_sprintf ("%s %s", "handshake", gnutls_strerror (ret)), ret);
         conn->ssl_status = SSL_STATUS_FAILED;
@@ -237,10 +238,10 @@ int ssl_handshake (Connection *conn)
     conn->connect = CONNECT_OK | CONNECT_SELECT_R;
     if (prG->verbose)
     {
-        M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (contact->nick), contact->nick, COLNONE);
+        M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
         M_printf (i18n (2375, "SSL handshake ok\n"));
     }
-    TCLEvent (contact, "ssl", "ok");
+    TCLEvent (cont, "ssl", "ok");
 
     return 2;
 }
@@ -250,10 +251,10 @@ int ssl_handshake (Connection *conn)
  *
  * Calls default sockread() for non-SSL connections.
  */
-int ssl_sockread (Connection *conn, UBYTE *data, UWORD len_p)
+int ssl_read (Connection *conn, UBYTE *data, UWORD len_p)
 {
     int len, rc;
-    Contact *contact = ContactUIN (conn, conn->uin);    
+    Contact *cont = ContactUIN (conn, conn->uin);    
     
     if (conn->ssl_status == SSL_STATUS_HANDSHAKE)
     {
@@ -273,11 +274,11 @@ int ssl_sockread (Connection *conn, UBYTE *data, UWORD len_p)
 
     len = gnutls_record_recv (conn->ssl, data, len_p);
     if (len > 0)
-        Debug (DEB_SSL, "read %d bytes from %s", len, contact->nick);
+        Debug (DEB_SSL, "read %d bytes from %s", len, cont->nick);
     if (len < 0)
     {
         SSL_FAIL (s_sprintf (i18n (2376, "SSL read from %s [ERR=%d]: %s"), 
-                  contact->nick, len, gnutls_strerror (len)), len);
+                  cont->nick, len, gnutls_strerror (len)), len);
         ssl_disconnect (conn);
     }
     if (!len)
@@ -293,10 +294,10 @@ int ssl_sockread (Connection *conn, UBYTE *data, UWORD len_p)
  *
  * Calls default sockwrite() for non-SSL connections.
  */
-int ssl_sockwrite (Connection *conn, UBYTE *data, UWORD len_p)
+int ssl_write (Connection *conn, UBYTE *data, UWORD len_p)
 {
     int len;
-    Contact *contact = ContactUIN (conn, conn->uin);    
+    Contact *cont = ContactUIN (conn, conn->uin);    
     
     if (conn->ssl_status == SSL_STATUS_HANDSHAKE)
     {
@@ -308,11 +309,11 @@ int ssl_sockwrite (Connection *conn, UBYTE *data, UWORD len_p)
 
     len = gnutls_record_send (conn->ssl, data, len_p);
     if (len > 0)
-        Debug (DEB_SSL, "write %d bytes to %s", len, contact->nick);
+        Debug (DEB_SSL, "write %d bytes to %s", len, cont->nick);
     if (len < 0)
     {
         SSL_FAIL (s_sprintf (i18n (2377, "SSL write to %s [ERR=%d]: %s"), 
-                 contact->nick, len, gnutls_strerror (len)), len);
+                 cont->nick, len, gnutls_strerror (len)), len);
         ssl_disconnect (conn);
     }
     return len;
@@ -356,6 +357,6 @@ void ssl_close (Connection *conn)
  */
 BOOL TCPSendSSLReq (Connection *list, Contact *cont)
 {
-    return TCPSendMsg (list, cont, "", MSG_SSL_OPEN);
+    return PeerSendMsg (list, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_SSL_OPEN, ""));
 }                      
 #endif

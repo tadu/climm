@@ -844,7 +844,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
         case MSG_FILE:
             M_printf (i18n (9999, "requests file transfer %s of %ld bytes (sequence %ld).\n"),
                       s_qquote (cdata), ExtraGet (extra, EXTRA_FILETRANS), ExtraGet (extra, EXTRA_REF));
-            TCLEvent (cont, "file_request", s_sprintf ("{%s} %ld %ld", cdata
+            TCLEvent (cont, "file_request", s_sprintf ("{%s} %ld %ld", cdata,
                       ExtraGet (extra, EXTRA_FILETRANS),
                       ExtraGet (extra, EXTRA_REF)));
             break;

@@ -15,9 +15,9 @@
 #define DH_EXPECT_BITS      512
 
 int SSLInit ();
-int ssl_sockwrite (Connection *conn, UBYTE *data, UWORD len);
-int ssl_sockread (Connection *conn, UBYTE *data, UWORD len);
-void ssl_sockclose (Connection *conn);
+int ssl_write (Connection *conn, UBYTE *data, UWORD len);
+int ssl_read (Connection *conn, UBYTE *data, UWORD len);
+void ssl_close (Connection *conn);
 void ssl_disconnect (Connection *conn);
 int ssl_supported (Connection *conn);
 int ssl_connect (Connection *conn, BOOL is_client);
@@ -35,8 +35,8 @@ BOOL TCPSendSSLReq (Connection *list, Contact *cont);
 
 #define LICQ_WITHSSL        0x7D800000  /* taken from licq 1.2.7 */
 
-#define dc_write    ssl_sockwrite
-#define dc_read     ssl_sockread
+#define dc_write    ssl_write
+#define dc_read     ssl_read
 #define dc_close    ssl_close
 #define dc_strerror gnutls_strerror
 

@@ -45,8 +45,7 @@ static Tcl_Interp *tinterp;
 static tcl_hook_p tcl_events = NULL;
 static tcl_hook_p tcl_msgs = NULL;
 
-static char *buf = NULL;
-static UDWORD buflen = 0;
+static str_s buf = { NULL, 0, 0 };
 
 char *RemEscapes (const char *s)
 {
@@ -88,7 +87,7 @@ TCL_CALLBACK (TCL_collect_out)
     char *unes;
     
     unes = RemEscapes (s);
-    buf = s_cat (buf, &buflen, unes);
+    s_cat (&buf, unes);
     free (unes);
 }
 
@@ -97,28 +96,13 @@ TCL_COMMAND (TCL_command_help)
     if (argc <= 2)
     {
         M_printf (i18n (2346, "The following Tcl commands are supported:\n"));
-        M_printf (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s\n%s" COLEXDENT "\n",
-                 i18n (2347, "micq receive <script> [<contact>]"),
-                 i18n (2348, "Install hook to receive messages from UIN or nick, or all if omitted."),
-                 i18n (2349, "Callback arguments: from message"));
-        M_printf (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
-                 i18n (2350, "micq unreceive [<contact>]"),
-                 i18n (2351, "Uninstall message hook for UIN or nick."));
-        M_printf (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
-                 i18n (2352, "micq event <script>"),
-                 i18n (2353, "Install event hook. Callback arguments: type ..."));
-        M_printf (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
-                 i18n (2354, "micq unevent"),
-                 i18n (2355, "Uninstall event hook."));
-        M_printf (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
-                 "micq hooks",
-                 i18n (2356, "List all installed hooks. Format: <type> <command> <filter>."));
-        M_printf (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
-                 i18n (2357, "micq exec <cmd>"),
-                 i18n (2358, "Execute micq command."));
-        M_printf (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
-                 i18n (2359, "micq nick <uin>"),
-                 i18n (2360, "Find nick from <uin>."));
+        CMD_USER_HELP ("micq receive <script> [<contact>]", i18n (2348, "Install hook to receive messages from UIN or nick, or all if omitted."));
+        CMD_USER_HELP ("micq unreceive [<contact>]", i18n (2351, "Uninstall message hook for UIN or nick."));
+        CMD_USER_HELP ("micq event <script>", i18n (2353, "Install event hook. Callback arguments: type ..."));
+        CMD_USER_HELP ("micq unevent", i18n (2355, "Uninstall event hook."));
+        CMD_USER_HELP ("micq hooks", i18n (2356, "List all installed hooks. Format: <type> <command> <filter>."));
+        CMD_USER_HELP ("micq exec <cmd>", i18n (2358, "Execute micq command."));
+        CMD_USER_HELP ("micq nick <uin>", i18n (2360, "Find nick from <uin>."));
         return TCL_OK;
     }
     else
@@ -245,13 +229,10 @@ TCL_COMMAND (TCL_command_micq)
         }
         prG->tclout = TCL_collect_out;
         tinterp = interp; /* not necessary but clean. */
-        buf = NULL;
-        buflen = 0;
+        s_init (&buf, "", 0);
         CmdUser (argv[2]); 
         prG->tclout = NULL;
-        Tcl_SetResult (interp, buf, TCL_VOLATILE);
-        free (buf);
-        buflen = 0;
+        Tcl_SetResult (interp, buf.txt, TCL_VOLATILE);
     }
     else if (!strcmp (argv[1], "nick"))
     {
@@ -267,7 +248,7 @@ TCL_COMMAND (TCL_command_micq)
                 TCL_VOLATILE);
             return TCL_ERROR;
         }
-        cont = ContactFind (tconn->contacts, 0, uin, NULL, 0);
+        cont = ContactFind (tconn->contacts, 0, uin, NULL);
         if (cont)
             Tcl_SetResult (tinterp, cont->nick, TCL_VOLATILE);
     }
@@ -346,8 +327,8 @@ void TCLInit ()
     Tcl_SetVar (tinterp, "micq_version", MICQ_VERSION, 0);
 
     for (i = 0; (conn = ConnectionNr (i)); i++)
-        if (conn->spref->type & TYPEF_ANY_SERVER)
-            Tcl_SetVar (tinterp, "micq_uin", s_sprintf ("%lu", conn->spref->uin),
+        if (conn->type & TYPEF_ANY_SERVER)
+            Tcl_SetVar (tinterp, "micq_uin", s_sprintf ("%lu", conn->uin),
                         TCL_LIST_ELEMENT | TCL_APPEND_VALUE);
 
     tcl_events = NULL;
