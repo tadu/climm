@@ -43,6 +43,12 @@
 /* Define what to output additionally when a message is received. */
 #define MSGRECSTR  "<<< "
 
+/* Define what to output additionally when sending a tcp message. */
+#define MSGTCPSENTSTR "»»» "
+
+/* Define what to output additionally when a tcp message is received. */
+#define MSGTCPRECSTR  "««« "
+
 /* Define how many characters to print when messages are sent
  * or acknowledged to identify a message. At most the whole
  * line is printed. */

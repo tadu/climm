@@ -709,8 +709,6 @@ JUMP_F (CmdUserResend)
     icq_sendmsg (sok, uin, temp, ssG.last_message_sent_type);
     free (temp);
     last_uin = uin;
-    Time_Stamp ();
-    M_print (" " COLSENT "%10s" COLNONE " " MSGSENTSTR "%s\n", UIN2Name (uin), MsgEllipsis (ssG.last_message_sent));
     return 0;
 }
 
@@ -732,9 +730,6 @@ JUMP_F (CmdUserMessage)
         if (strcmp (arg1, END_MSG_STR) == 0)
         {
             msg[offset - 1] = msg[offset - 2] = 0;
-            Time_Stamp ();
-            M_print (" " COLSENT "%10s" COLNONE " " MSGSENTSTR "%s\n", UIN2Name (multi_uin),
-                     MsgEllipsis (msg));
             if (multi_uin == -1)
             {
                 int i;
@@ -770,8 +765,6 @@ JUMP_F (CmdUserMessage)
             else
             {
                 M_print (i18n (37, "Message sent before last line buffer is full\n"));
-                M_print (" " COLSENT "%10s" COLNONE " " MSGSENTSTR "%s\n", UIN2Name (multi_uin),
-                         MsgEllipsis (msg));
                 if (multi_uin == -1)
                 {
                     int i;
@@ -845,6 +838,7 @@ JUMP_F (CmdUserMessage)
         }
         if (arg1)
         {
+            Time_Stamp ();
             if (data == 8)
             {
                 int i;
@@ -862,8 +856,6 @@ JUMP_F (CmdUserMessage)
                 icq_sendmsg (sok, uin, arg1, NORM_MESS);
                 last_uin = uin;
             }
-            Time_Stamp ();
-            M_print (" " COLSENT "%10s" COLNONE " " MSGSENTSTR "%s\n", UIN2Name (uin), MsgEllipsis (arg1));
             return 0;
         }
         multi_uin = uin;

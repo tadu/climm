@@ -34,6 +34,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <signal.h>
+#include <assert.h>
 
 #if HAVE_UNISTD_H
 #include <unistd.h>
@@ -368,14 +369,31 @@ int R_process_input (void)
     return 0;
 }
 
-void R_redraw (void)
+static int R_undraw_counter = 1;
+
+void R_undraw ()
 {
-    R_prompt ();
-    printf ("%s", s);
+    R_undraw_counter--;
+    if (R_undraw_counter < 0)
+    {
+        M_print ("Error! R_un/redraw() unbalanced!\n");
+        R_undraw_counter = 0;
+    }
+    M_print ("\r");             /* for tab stop reasons */
+    printf ("\033[K");
+}
+
+void R_redraw ()
+{
+    if (++R_undraw_counter > 0)
+    {
+        R_prompt ();
+        printf ("%s", s);
 #ifdef ANSI_COLOR
-    if (cpos != clen)
-        printf ("\033[%dD", clen - cpos);
+        if (cpos != clen)
+            printf ("\033[%dD", clen - cpos);
 #endif
+    }
 }
 
 void R_getline (char *buf, int len)
@@ -417,12 +435,6 @@ void R_dopromptf (const char *prompt, ...)
 
     R_setprompt (buf);
     R_prompt ();
-}
-
-void R_undraw ()
-{
-    M_print ("\r");             /* for tab stop reasons */
-    printf ("\033[K");
 }
 
 static struct termios saved_attr;

@@ -722,32 +722,29 @@ void clrscr (void)
 #endif
 }
 
-/************************************************************
-Displays a hex dump of buf on the screen.
-*************************************************************/
+/*
+ * Displays a hex dump of buf on the screen.
+ */
 void Hex_Dump (void *buffer, size_t len)
 {
-    int i;
-    int j;
-    int k;
-    char *buf;
+    int i, j;
+    unsigned char *buf = buffer;
 
-    buf = buffer;
-    if (!len) return;
-    assert (len > 0);
-    if ((len > 1000))
+    assert (len >= 0);
+
+    for (i = 0; i < ((len + 15) & ~15); i++)
     {
-        M_print (i18n (762, "Ack!!!!!!  %d\a\n"), len);
-        return;
-    }
-    for (i = 0; i < len; i++)
-    {
-        M_print ("%02x ", (unsigned char) buf[i]);
+        if (i < len)
+            M_print ("%02x ", buf[i]);
+        else
+            M_print ("   ");
         if ((i & 15) == 15)
         {
             M_print ("  ");
             for (j = 15; j >= 0; j--)
             {
+                if (i - j >= len)
+                    return;
                 if (buf[i - j] > 31)
                     M_print ("%c", buf[i - j]);
                 else
@@ -755,31 +752,23 @@ void Hex_Dump (void *buffer, size_t len)
                 if (((i - j) & 3) == 3)
                     M_print (" ");
             }
+            if (i > len)
+                return;
             M_print ("\n");
+            if (i > 1000)
+            {
+                M_print ("...");
+                return;
+            }
         }
-        else if ((i & 7) == 7)
+        else if (i < len && (i & 7) == 7)
             M_print ("- ");
         else if ((i & 3) == 3)
             M_print ("  ");
     }
-    for (k = i % 16; k < 16; k++)
-    {
-        M_print ("   ");
-        if ((k & 7) == 7)
-            M_print ("  ");
-        else if ((k & 3) == 3)
-            M_print ("  ");
-    }
-    for (j = i % 16; j > 0; j--)
-    {
-        if (buf[i - j] > 31)
-            M_print ("%c", buf[i - j]);
-        else
-            M_print (".");
-        if (((i - j) & 3) == 3)
-            M_print (" ");
-    }
 }
+
+/* i18n (762, " ") i18n */
 
 /*
  * Executes a program and feeds some shell-proof information data into it

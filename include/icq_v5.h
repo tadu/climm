@@ -38,9 +38,9 @@ typedef struct
 {
    UBYTE X1[4];
    UBYTE ip[4];
-   UBYTE X2[1];
+   UBYTE flags[1];
    UBYTE status[4];
-   UBYTE X3[4];
+   UBYTE tcpver[4];
    UBYTE X4[4];
    UBYTE X5[4];
    UBYTE X6[4];
@@ -65,9 +65,6 @@ typedef struct
 /*   #define LOGIN_X2_DEF 0x04*/
 #define LOGIN_X1_DEF 0x000000d5
 /*#define LOGIN_X1_DEF 0x000000C8*/
-#define LOGIN_X2_DEF 0x06 /* SERVER ONLY */
-/*#define LOGIN_X3_DEF 0x00000002*/
-#define LOGIN_X3_DEF 0x00000006 /* TCP VERSION */
 /*#define LOGIN_X4_DEF 0x00000000*/
 #define LOGIN_X4_DEF 0x00000000
 /*#define LOGIN_X5_DEF 0x00780008*/

@@ -1,4 +1,21 @@
 
+2001-11-29 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Move sent message output to icq_sendmsg_srv and Send_TCP_Msg
+	  to have different output for TCP messages.
+	* Rewrote Login() a little, rename login packet fields now known,
+	  set TCP flag.
+	* Fix some overwrites of TCP port with the irrelevant UDP port.
+	* Remove obsolete Connect_Remote_Old
+	* Hex dump output tuning for UDP, fix newline glitch in Hex_Dump()
+	* A HUGE LOT of code de-uglification
+	* Make W_{un,re}draw() nesting. There's one redraw() too much
+	  during login.
+	* assign verbosity flag 16 for Queue debugging. 4 is show packets,
+	  8 is also show packet contents, though 4 acts as 8 right now.
+	* Don't segfault on UINs if TCP is on.
+	* Add TCP packet dumps.
+	* TCP should work now, though it's scrolling a lot.
+
 2001-11-27 Jake Lau <Jake.Lau@compaq.com>
 	* Fix non-TCP compilation. Add note when TCP enabled.
 

@@ -566,68 +566,42 @@ void Status_Update (int sok, UBYTE * pak)
 void Login (int sok, int UIN, char *pass, int ip, int port, UDWORD status)
 {
     net_icq_pak pak;
-    int size;
-    UWORD passlen;
     login_1 s1;
     login_2 s2;
-    struct sockaddr_in sin;     /* used to store inet addr stuff  */
+
+    int size;
+    UWORD passlen;
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_LOGIN);
     Word_2_Chars (pak.head.seq, ssG.seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    DW_2_Chars   (pak.head.UIN, UIN);
 
-    DW_2_Chars (s1.port, ntohs (port) + 0x1000);
-    passlen = strlen (pass);
-    passlen++;
-    if (passlen > 9)
-    {
-        passlen = 9;
-        pass[passlen - 1] = 0;
-    }
-    Word_2_Chars (s1.len, passlen);
-    DW_2_Chars (s1.time, time (NULL));
+    passlen = (strlen (pass) > 8 ? 8 : strlen (pass));
 
-    DW_2_Chars (s2.ip, ip);
-    sin.sin_addr.s_addr = Chars_2_DW (s2.ip);
-    DW_2_Chars (s2.status, status);
-/*    Word_2_Chars( s2.seq, ssG.seq_num++ );*/
+    DW_2_Chars   (s1.port, port);
+    Word_2_Chars (s1.len, passlen + 1);
+    DW_2_Chars   (s1.time, time (NULL));
 
-    DW_2_Chars (s2.X1, LOGIN_X1_DEF);
-    s2.X2[0] = LOGIN_X2_DEF;
-    DW_2_Chars (s2.X3, LOGIN_X3_DEF);
-    DW_2_Chars (s2.X4, LOGIN_X4_DEF);
-    DW_2_Chars (s2.X5, LOGIN_X5_DEF);
-    DW_2_Chars (s2.X6, LOGIN_X6_DEF);
-    DW_2_Chars (s2.X7, LOGIN_X7_DEF);
-    DW_2_Chars (s2.X8, LOGIN_X8_DEF);
+    DW_2_Chars   (s2.ip, htonl (ip));
+    DW_2_Chars   (s2.status, status);
+    DW_2_Chars   (s2.X1, LOGIN_X1_DEF);
+    s2.flags[0] = 0x04; /* 1=firewall | 2=proxy | 4=tcp */
+    DW_2_Chars   (s2.tcpver, TCP_VER);
+    DW_2_Chars   (s2.X4, LOGIN_X4_DEF);
+    DW_2_Chars   (s2.X5, LOGIN_X5_DEF);
+    DW_2_Chars   (s2.X6, LOGIN_X6_DEF);
+    DW_2_Chars   (s2.X7, LOGIN_X7_DEF);
+    DW_2_Chars   (s2.X8, LOGIN_X8_DEF);
 
     memcpy (pak.data, &s1, sizeof (s1));
     size = sizeof (s1);
-    memcpy (&pak.data[size], pass, Chars_2_Word (s1.len));
-    size += Chars_2_Word (s1.len);
-    memcpy (&pak.data[size], &s2.X1, sizeof (s2.X1));
-    size += sizeof (s2.X1);
-    memcpy (&pak.data[size], &s2.ip, sizeof (s2.ip));
-    size += sizeof (s2.ip);
-    memcpy (&pak.data[size], &s2.X2, sizeof (s2.X2));
-    size += sizeof (s2.X2);
-    memcpy (&pak.data[size], &s2.status, sizeof (s2.status));
-    size += sizeof (s2.status);
-    memcpy (&pak.data[size], &s2.X3, sizeof (s2.X3));
-    size += sizeof (s2.X3);
-/*    memcpy( &pak.data[size], &s2.seq, sizeof( s2.seq ) );
-/    size += sizeof( s2.seq );*/
-    memcpy (&pak.data[size], &s2.X4, sizeof (s2.X4));
-    size += sizeof (s2.X4);
-    memcpy (&pak.data[size], &s2.X5, sizeof (s2.X5));
-    size += sizeof (s2.X5);
-    memcpy (&pak.data[size], &s2.X6, sizeof (s2.X6));
-    size += sizeof (s2.X6);
-    memcpy (&pak.data[size], &s2.X7, sizeof (s2.X7));
-    size += sizeof (s2.X7);
-    memcpy (&pak.data[size], &s2.X8, sizeof (s2.X8));
-    size += sizeof (s2.X8);
+    memcpy (&pak.data[size], pass, passlen);
+    size += passlen;
+    pak.data[size++] = '\0';
+    memcpy (&pak.data[size], &s2, sizeof (s2));
+    size += sizeof (s2);
+
 #if ICQ_VER == 0x0004
     ssG.last_cmd[ssG.seq_num - 1] = Chars_2_Word (pak.head.cmd);
 #elif ICQ_VER == 0x0005
@@ -635,7 +609,7 @@ void Login (int sok, int UIN, char *pass, int ip, int port, UDWORD status)
 #else
     ssG.last_cmd[ssG.seq_num - 2] = Chars_2_Word (pak.head.cmd);
 #endif
-    SOCKWRITE (sok, &(pak.head.ver), size + sizeof (pak.head) - 2);
+    SOCKWRITE (sok, &pak.head.ver, size + sizeof (pak.head) - 2);
 }
 
 /*
@@ -654,8 +628,6 @@ void ack_srv (SOK_T sok, UDWORD seq)
     DW_2_Chars (pak.data, rand ());
 
     SOCKWRITE (sok, &(pak.head.ver), sizeof (pak.head) - 2 + 4);
-/*    Hex_Dump( &(pak.head.ver), sizeof( pak.head ) - 2 + 4 );*/
-
 }
 
 void Display_Info_Reply (int sok, UBYTE * pak)

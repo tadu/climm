@@ -124,8 +124,8 @@ static void Auto_Reply (SOK_T sok, SIMPLE_MESSAGE_PTR s_mesg)
 
             icq_sendmsg (sok, Chars_2_DW (s_mesg->uin), temp, NORM_MESS);
             free (temp);
-            M_print (i18n (636, "[ Sent auto-reply message to %d(%d)]\n"), Chars_2_DW (s_mesg->uin),
-                     uiG.last_recv_uin);
+/*            M_print (i18n (636, "[ Sent auto-reply message to %d(%d)]\n"), Chars_2_DW (s_mesg->uin),
+                     uiG.last_recv_uin);*/
 
             if (UIN2nick (uiG.last_recv_uin) != NULL)
                 log_event (uiG.last_recv_uin, LOG_AUTO_MESS,
@@ -182,26 +182,17 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
         case SRV_ACK:
             if (uiG.Verbose)
             {
-                Kill_Prompt ();
                 R_undraw ();
-            }
-            if (uiG.Verbose > 1)
-            {
-                M_print (i18n (51, "The server acknowledged the %04x command."),
+/*                M_print (i18n (51, "The server acknowledged the %04x command."),
                          ssG.last_cmd[seq >> 16]);
-                M_print (i18n (638, "\nThe SEQ was %04X\n"), seq);
-            }
-            Check_Queue (seq, queue);
-            if (uiG.Verbose)
-            {
-                if (len != 0)
+                M_print (i18n (638, "\nThe SEQ was %04X\n"), seq);*/
+                if (len)
                 {
                     M_print ("%s %s %d\n", i18n (47, "Extra Data"), i18n (46, "Length"), len);
-                    Hex_Dump (data, len);
-                    M_print ("\n");
                 }
                 R_redraw ();
             }
+            Check_Queue (seq, queue);
             break;
         case SRV_META_USER:
             R_undraw ();
@@ -231,7 +222,6 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
         case SRV_LOGIN_REPLY:
 /*      ssG.UIN = Chars_2_DW( &pak.data[0] ); */
             R_undraw ();
-            ssG.our_ip = Chars_2_DW (&data[0]);
             Time_Stamp ();
             M_print (" " MAGENTA BOLD "%10lu" COLNONE " %s\n", uin, i18n (50, "Login successful!"));
             snd_login_1 (sok);
@@ -401,7 +391,6 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
         /***  There are 2 places we get messages!! */
         /*** Don't edit here unless you're sure you know the difference */
         /*** Edit Do_Msg() in icq_response.c so you handle all messages */
-        /*** doing msg does not cause cancer that is all thank you */
             R_undraw ();
             s_mesg = (SIMPLE_MESSAGE_PTR) data;
             if (!((NULL == UIN2Contact (Chars_2_DW (s_mesg->uin))) && (uiG.Hermit)))
@@ -409,13 +398,6 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
                 uiG.last_recv_uin = Chars_2_DW (s_mesg->uin);
                 Time_Stamp ();
                 M_print ("\a " CYAN BOLD "%10s" COLNONE " ", UIN2Name (Chars_2_DW (s_mesg->uin)));
-                /*
-                   if ( 0 == ( Chars_2_Word( s_mesg->type ) & MASS_MESS_MASK ) )
-                   M_print (i18n (32, " - Instant Message"));
-                   else
-                   M_print (i18n (33, " - Instant Mass Message"));
-                   M_print ("\a ");
-                 */
                 if (uiG.Verbose)
                     M_print (i18n (647, " Type = %04x\t"), Chars_2_Word (s_mesg->type));
                 Do_Msg (sok, Chars_2_Word (s_mesg->type), Chars_2_Word (s_mesg->len),
@@ -443,3 +425,5 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
             break;
     }
 }
+
+/* i18n (32, " ") i18n (33, " ") i18n */

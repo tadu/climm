@@ -97,6 +97,7 @@ void init_global_defaults () {
   /* Initialize ICQ session global state    */
   ssG.seq_num = 1;  /* current sequence number */
   ssG.our_ip = 0x0100007f; /* Intel-ism??? why little-endian? */
+  ssG.our_port = 0;
   ssG.our_outside_ip = 0x0100007f;
   ssG.Quit = FALSE;
   ssG.passwd[0] = 0;
@@ -157,17 +158,21 @@ SOK_T Init_TCP (int port, FD_T aux)
 
     /* Get the port used -- needs to be sent in login packet to ICQ server */
     length = sizeof (struct sockaddr);
-    getsockname (sok, (struct sockaddr *) &sin, &length );
+    getsockname (sok, (struct sockaddr *) &sin, &length);
     ssG.our_port = ntohs (sin.sin_port);
+    M_fdprint (aux, i18n (777, "The port that will be used for tcp (partially implemented) is %d\n"),
+               ssG.our_port);
 
     return sok;
 }
 
+/* i18n (59, " ") i18n */
 
-/*/////////////////////////////////////////////
-// Connects to hostname on port port
-// hostname can be DNS or nnn.nnn.nnn.nnn
-// write out messages to the FD aux */
+/*
+ * Connects to hostname on port port
+ * hostname can be FQDN or IP
+ * write out messages to the FD aux
+ */
 SOK_T Connect_Remote (char *hostname, int port, FD_T aux)
 {
 /* SOCKS5 stuff begin */
@@ -349,86 +354,12 @@ SOK_T Connect_Remote (char *hostname, int port, FD_T aux)
     length = sizeof (sin);
     getsockname (sok, (struct sockaddr *) &sin, &length);
     ssG.our_ip = ntohl (sin.sin_addr.s_addr);
-    ssG.our_port = ntohs (sin.sin_port);
 
     if (uiG.Verbose)
     {
-        M_fdprint (aux, i18n (59, "The port that will be used for tcp (not yet implemented) is %d\n"),
-                   ntohs (sin.sin_port));
         M_fdprint (aux, i18n (53, "Connected to %s, waiting for response\n"), hostname);
     }
 
-    return sok;
-}
-
-
-/*/////////////////////////////////////////////
-// Connects to hostname on port port
-// hostname can be DNS or nnn.nnn.nnn.nnn
-// write out messages to the FD aux */
-int Connect_Remote_Old (char *hostname, int port, FD_T aux)
-{
-    int conct, length;
-    int sok;
-    struct sockaddr_in sin;     /* used to store inet addr stuff */
-    struct hostent *host_struct;        /* used in DNS lookup */
-
-#if 1
-    sin.sin_addr.s_addr = inet_addr (hostname);
-    if (sin.sin_addr.s_addr == -1)      /* name isn't n.n.n.n so must be DNS */
-#else
-
-    if (inet_aton (hostname, &sin.sin_addr) == 0)       /* checks for n.n.n.n notation */
-#endif
-    {
-        host_struct = gethostbyname (hostname); /* name isn't n.n.n.n so must be DNS */
-        if (host_struct == NULL)
-        {
-            if (uiG.Verbose)
-            {
-#ifdef HAVE_HSTRERROR
-                M_print (i18n (58, "Can't find hostname %s: %s."), hostname, hstrerror (h_errno));
-#else
-                M_print (i18n (772, "Can't find hostname %s."), hostname);
-#endif
-                M_print ("\n");
-            }
-            return 0;
-        }
-        sin.sin_addr = *((struct in_addr *) host_struct->h_addr);
-    }
-    sin.sin_family = AF_INET;   /* we're using the inet not appletalk */
-    sin.sin_port = htons (port);        /* port */
-    sok = socket (AF_INET, SOCK_DGRAM, 0);      /* create the unconnected socket */
-    if (sok == -1)
-    {
-        perror (i18n (55, "Socket creation failed"));
-        exit (1);
-    }
-    if (uiG.Verbose)
-    {
-        M_fdprint (aux, i18n (56, "Socket created attempting to connect\n"));
-    }
-    conct = connect (sok, (struct sockaddr *) &sin, sizeof (sin));
-    if (conct == -1)            /* did we connect ? */
-    {
-        if (uiG.Verbose)
-        {
-            M_fdprint (aux, i18n (54, " Conection Refused on port %d at %s\n"), port, hostname);
-            perror ("connect");
-        }
-        return 0;
-    }
-    length = sizeof (sin);
-    getsockname (sok, (struct sockaddr *) &sin, &length);
-    ssG.our_ip = sin.sin_addr.s_addr;
-    ssG.our_port = sin.sin_port;
-    if (uiG.Verbose)
-    {
-        M_fdprint (aux, i18n (59, "The port that will be used for tcp (not yet implemented) is %d\n"),
-                   ntohs (sin.sin_port));
-        M_fdprint (aux, i18n (53, "Connected to %s, waiting for response\n"), hostname);
-    }
     return sok;
 }
 
@@ -458,9 +389,9 @@ void Handle_Server_Response (SOK_T sok)
         Print_CMD (Chars_2_Word (pak.head.cmd));
         M_print (")" COLNONE "\n");
 #if ICQ_VER == 5
-        Hex_Dump (pak.head.ver, 3);           M_print ("\n");
-        Hex_Dump (pak.head.ver + 3, 6);       M_print ("\n");
-        Hex_Dump (pak.head.ver + 9, 12);      M_print ("\n");
+        Hex_Dump (pak.head.ver, 3);                       M_print ("\n");
+        Hex_Dump (pak.head.ver + 3, 6);                   M_print ("\n");
+        Hex_Dump (pak.head.ver + 9, 12);      if (s > 21) M_print ("\n");
         Hex_Dump (pak.head.ver + 21, s - 21);
 #else
         Hex_Dump (pak.head.ver, s);
@@ -469,17 +400,17 @@ void Handle_Server_Response (SOK_T sok)
         R_redraw ();
         /* i18n (602, " ") i18n (603, " ") i18n (604, " ") i18n (605, " ") */
     }
-//    if ( pak.head.cmd != SRV_BAD_PASS ) {
-//      if ( Chars_2_Word( pak.head.ver ) != ICQ_VER ) {
-//              R_undraw();
-//              M_print( "Invalid server response:\tVersion: %d\n", Chars_2_Word( pak.head.ver ) );
-//          if ( uiG.Verbose ) {
-//              Hex_Dump( pak.head.ver, s );
-//          }
-//      R_redraw();
-//      return;
-//        }
-//    }
+/*    if ( pak.head.cmd != SRV_BAD_PASS ) {
+      if ( Chars_2_Word( pak.head.ver ) != ICQ_VER ) {
+              R_undraw();
+              M_print( "Invalid server response:\tVersion: %d\n", Chars_2_Word( pak.head.ver ) );
+          if ( uiG.Verbose ) {
+              Hex_Dump( pak.head.ver, s );
+          }
+      R_redraw();
+      return;
+        }
+    }*/
     if (Chars_2_DW (pak.head.session) != ssG.our_session)
     {
         if (uiG.Verbose)
@@ -499,11 +430,8 @@ void Handle_Server_Response (SOK_T sok)
     if ((Chars_2_Word (pak.head.cmd) != SRV_NEW_UIN)
         && (Is_Repeat_Packet (Chars_2_Word (pak.head.seq))))
     {
-        if (Chars_2_Word (pak.head.seq) == 0)
-        {;
-        }
-        else
-        {                       /*yes ugly */
+        if (Chars_2_Word (pak.head.seq))
+        {
             if (Chars_2_Word (pak.head.cmd) != SRV_ACK) /* ACKs don't matter */
             {
                 if (uiG.Verbose)
@@ -558,6 +486,7 @@ void Check_Endian (void)
     {
         M_print (i18n (66, "Using motorola byte ordering."));
     }
+    M_print ("\n");
 }
 
 /******************************
@@ -730,7 +659,6 @@ int main (int argc, char *argv[])
 /*** TCP: tcp init ***/
 #ifdef TCP_COMM
     tcpSok = Init_TCP (TCP_PORT, STDERR);
-    M_print (i18n (776, "With partial TCP implementation\n"));
 #endif
 
     sok = Connect_Remote (ssG.server, ssG.remote_port, STDERR);
@@ -750,9 +678,8 @@ int main (int argc, char *argv[])
     next += 120;
     ssG.next_resend = 10;
     R_init ();
-    M_print ("\n");
     Prompt ();
-    for (; !ssG.Quit;)
+    while (!ssG.Quit)
     {
         Idle_Check (sok);
 #if _WIN32 || defined(__BEOS__)

@@ -62,7 +62,7 @@ void Do_Resend (SOK_T sok)
         queued_msg->attempts++;
         if (queued_msg->attempts <= MAX_RETRY_ATTEMPTS)
         {
-            if (uiG.Verbose)
+            if (uiG.Verbose & 16)
             {
                 R_undraw ();
                 M_print ("\n");
@@ -78,7 +78,6 @@ void Do_Resend (SOK_T sok)
             }
             temp = malloc (queued_msg->len + 3);        /* make sure packet fits in UDWORDS */
             assert (temp != NULL);
-/*	    M_print( "Pre!\n" );*/
             memcpy (temp, queued_msg->body, queued_msg->len);
 /*	    Hex_Dump( temp, queued_msg->len );*/
             SOCKWRITE_LOW (sok, temp, queued_msg->len);
@@ -433,14 +432,9 @@ void Keep_Alive (int sok)
     ssG.last_cmd[(ssG.seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), sizeof (pak.head) - 2 + 4);
 #endif
-
-    if (uiG.Verbose)
-    {
-        R_undraw ();
-        M_print (i18n (634, "\nSend Keep_Alive packet to the server\n"));
-        R_redraw ();
-    }
 }
+
+/* i18n (634, " ") i18n */
 
 /********************************************************
 The following data constitutes fair use for compatibility.
@@ -467,26 +461,20 @@ static const UBYTE table[] = {
 /***************************************************
 Sends a message to uin. Text is the message to send.
 ***************************************************/
-void icq_sendmsg( SOK_T sok, UDWORD uin, char *text, UDWORD msg_type)
+void icq_sendmsg (SOK_T sok, UDWORD uin, char *text, UDWORD msg_type)
 {	
 #ifdef TCP_COMM
-
     CONTACT_PTR cont;
 
     /* attempt to send message directly if user is on contact list */
     cont = UIN2Contact (uin);
-    if ((cont->connection_type == TCP_OK_FLAG) && (cont->status != STATUS_OFFLINE))
+    if (cont && (cont->connection_type & TCP_OK_FLAG) && (cont->status != STATUS_OFFLINE))
     {
         Send_TCP_Msg (sok, uin, text, msg_type);
     }
     else        
-    {
 #endif
-    /* send message via server */
     icq_sendmsg_srv (sok, uin, text, msg_type);
-#ifdef TCP_COMM  
-  }
-#endif
 }
 
 
@@ -499,9 +487,14 @@ void icq_sendmsg_srv (SOK_T sok, UDWORD uin, char *text, UDWORD msg_type)
     SIMPLE_MESSAGE msg;
     net_icq_pak pak;
     int size, len;
-    if (ssG.last_message_sent != NULL) free(ssG.last_message_sent);
-    ssG.last_message_sent = strdup(text);
+    
+    if (ssG.last_message_sent != NULL) free (ssG.last_message_sent);
+    ssG.last_message_sent = strdup (text);
     ssG.last_message_sent_type = msg_type;
+    
+    Time_Stamp ();
+    M_print (" " COLSENT "%10s" COLNONE " " MSGSENTSTR "%s\n", UIN2Name (uin), MsgEllipsis (text));
+
     if (UIN2nick (uin) != NULL)
         log_event (uin, LOG_MESS, "You sent instant message to %s\n%s\n", UIN2nick (uin), text);
     else
@@ -633,6 +626,8 @@ void Quit_ICQ (int sok)
 {
     net_icq_pak pak;
     int size, len;
+
+    R_undraw ();
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_SEND_TEXT_CODE);
@@ -1270,7 +1265,6 @@ static size_t SOCKWRITE_LOW (SOK_T sok, void *ptr, size_t len)
 
     assert (len > 0x18);
 
-#if 1
     if (uiG.Verbose & 4)
     {
         R_undraw ();
@@ -1290,14 +1284,9 @@ static size_t SOCKWRITE_LOW (SOK_T sok, void *ptr, size_t len)
         M_print ("\x1b»\n");
         R_redraw ();
     }
-#endif
 
     Wrinkle (ptr, len);
 
-#if 0
-    if (uiG.Verbose > 1)
-        Hex_Dump (ptr, len);
-#endif
 /*   Dump_Queue()*/
     ssG.Packets_Sent++;
 /* SOCKS5 stuff begin */
@@ -1323,6 +1312,7 @@ size_t SOCKREAD (SOK_T sok, void *ptr, size_t len)
 
     sz = sockread (sok, ptr, len);
     ssG.Packets_Recv++;
+
 /* SOCKS5 stuff begin */
     if (s5G.s5Use)
     {
@@ -1331,10 +1321,5 @@ size_t SOCKREAD (SOK_T sok, void *ptr, size_t len)
     }
 /* SOCKS5 stuff end */
 
-    if ((uiG.Verbose > 2) && (sz > 0))
-    {
-        M_print ("\n");
-        Hex_Dump (ptr, sz);
-    }
     return sz;
 }
