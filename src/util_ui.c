@@ -569,7 +569,7 @@ void UtilUIUserOnline (Session *sess, Contact *cont, UDWORD status)
 /*
  * Inform that a user went offline
  */
-void UtilUIUserOffline (Contact *cont)
+void UtilUIUserOffline (Session *sess, Contact *cont)
 {
     log_event (cont->uin, LOG_ONLINE, "User logged off %s\n", ContactFindName (cont->uin));
 

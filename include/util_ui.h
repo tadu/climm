@@ -13,7 +13,7 @@ int    M_pos ();
 void   Debug (UDWORD level, const char *str, ...);
 
 void   UtilUIUserOnline  (Session *sess, Contact *cont, UDWORD status);
-void   UtilUIUserOffline (Contact *cont);
+void   UtilUIUserOffline (Session *sess, Contact *cont);
 
 #define DEB_PACKET        64
 #define DEB_QUEUE         32

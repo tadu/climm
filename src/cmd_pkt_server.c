@@ -258,7 +258,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
         case SRV_USER_OFFLINE:
             UtilCheckUIN (sess, uin = PacketRead4 (pak));
             if ((cont = ContactFind (uin)))
-                UtilUIUserOffline (cont);
+                UtilUIUserOffline (sess, cont);
             break;
         case SRV_BAD_PASS:
             M_print (i18n (1645, COLMESS "You entered an incorrect password." COLNONE "\n"));

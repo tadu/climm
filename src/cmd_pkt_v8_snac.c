@@ -431,7 +431,7 @@ static JUMP_SNAC_F(SnacSrvUseroffline)
     cont->status = STATUS_OFFLINE;
     cont->last_time = time (NULL);
     
-    UtilUIUserOffline (cont);
+    UtilUIUserOffline (event->sess, cont);
 }
 
 /*
