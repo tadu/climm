@@ -397,7 +397,10 @@ int Read_RC_File (FILE *rcf)
                         dep = 17;
                     }
                     else if (which == 2)
+                    {
                         prG->enc_loc = what;
+                        prG->locale_broken = 2;
+                    }
                     else
                         enc = what;
                 }

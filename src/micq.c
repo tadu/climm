@@ -386,9 +386,9 @@ static void Init (int argc, char *argv[])
         else if (!*prG->locale_orig || !strcasecmp (prG->locale_orig, "C") || !strcasecmp (prG->locale_orig, "POSIX"))
         {
             rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-            rl_printf (i18n (2502, "Locale setting %s ignored - use a real locale instead.\n"), s_qquote (prG->locale_orig));
+            rl_printf (i18n (2502, "Locale setting %s is no real locale and probably not what you want.\n"), s_qquote (prG->locale_orig));
         }
-        if (prG->locale_full && prG->locale_broken)
+        if (prG->locale_full && prG->locale_broken == TRUE)
         {
             rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
             rl_printf (i18n (2503, "Your system doesn't know the %s locale - try %siconv --list%s.\n"),
