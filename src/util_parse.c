@@ -280,7 +280,6 @@ char *s_parserem_s (const char **input, const char *sep)
 {
     static char *t = NULL;
     const char *p = *input;
-    char *q, *parsed;
     
     while (*p && strchr (sep, *p))
         p++;
@@ -289,31 +288,9 @@ char *s_parserem_s (const char **input, const char *sep)
         return NULL;
 
     s_repl (&t, p);
-    parsed = t;
-    for (q = t ; *p; )
-    {
-        if (*p == '\\')
-        {
-            p++;
-            if (*p == 'x' && p[1] && p[2])
-            {
-                p++;
-                *q = (*p >= '0' && *p <= '9' ? *p - '0' : *p >= 'a' && *p <= 'f' ? *p - 'a' + 10 : *p - 'A' + 10) << 4;
-                p++;
-                *q |= *p >= '0' && *p <= '9' ? *p - '0' : *p >= 'a' && *p <= 'f' ? *p - 'a' + 10 : *p - 'A' + 10;
-                p++, q++;
-            }
-            else if (*p)
-                *(q++) = *(p++);
-            else
-                *(q++) = '\\';
-        }
-        else
-            *(q++) = *(p++);
-    }
-    *q = '\0';
-    *input = p;
-    return parsed;
+    while (*p)
+        p++;
+    return t;
 }
 
 /*
