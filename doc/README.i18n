@@ -22,14 +22,14 @@ for mICQ, but it does matter for the scripts updating these files. The first
 CREATING A NEW TRANSLATION WITHOUT CVS
 
 If you want to make a new translation, lets assume for Danish (language
-code: da), you start by copying the build.i18n file from the latest mICQ
-source package to a new file, da.i18n. Add a hash sign in front of every
-line of this file. Then translate each line, and for each line done, remove
-the leading hash sign. This way, all untranslated lines are commented out,
-while all translated lines are not. When you've done a significant part of
-the file, simply mail it to me (i18n@ruediger-kuhlmann.de, ICQ # 82274703).
-You may want to contact me when you start working on a translation as well.
-From this on, follow the directions for translation updates.
+code: da), you start by copying the C.i18n file from the latest mICQ source
+package to a new file, da.i18n. Add a hash sign in front of every line of
+this file. Then translate each line, and for each line done, remove the
+leading hash sign. This way, all untranslated lines are commented out, while
+all translated lines are not. When you've done a significant part of the
+file, simply mail it to me (i18n@ruediger-kuhlmann.de, ICQ # 82274703). You
+may want to contact me when you start working on a translation as well. From
+this on, follow the directions for translation updates.
 
 UPDATING A TRANSLATION WITHOUT CVS
 
@@ -73,7 +73,7 @@ otherwise the complete file.
 PROGRAMMERS INFORMATION
 
 The scripts i18n-extract and i18n-number extract the current set of strings
-into build.i18n resp. number new strings without a number. They're usually
+into C.i18n resp. number new strings without a number. They're usually
 called by typing "make lang" in the src/ subdirectory after new strings have
 been added. These script create backups.
 

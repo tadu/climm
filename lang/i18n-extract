@@ -1,30 +1,30 @@
 
 cd "../lang/";
 
-echo "Extracting translations to build.i18n."
-touch build.i18n
-mv build.i18n build.i18n~
+echo "Extracting translations to C.i18n."
+touch C.i18n
+mv C.i18n C.i18n~
 
 bla="\$I"
 
 (echo "# ${bla}d: $ strings extracted from mICQ sources"; cat ../src/*.c \
     | sed "s¹i18n¹¶i18n¹g" | tr ¶ "\n" | grep "^i18n ([0-9#]" \
     | sed 's¹" "¹¹g;s¹i18n *(\([0-9#]*\), *"\(\([^\"]\|\\.\)*\)").*¹\1:\2¹;s¹^\([0-9]\):¹00\1:¹;s¹^\([0-9][0-9]\):¹0\1:¹' \
-    | sed 's¹\\a¹¹g;s¹\\t¹	¹g;s¹\\"¹"¹g' | sort -n | uniq ) > build.i18n
+    | sed 's¹\\a¹¹g;s¹\\t¹	¹g;s¹\\"¹"¹g' | sort -n | uniq ) > C.i18n
 
 cat ../src/*.c \
     | sed "s¹i18n¹¶i18n¹g" | tr ¶ "\n" | grep "^i18n ([0-9#]" \
     | sed 's¹i18n *(\([0-9#]*\),.*¹\1:¹;s¹^\([0-9]\):¹00\1:¹;s¹^\([0-9][0-9]\):¹0\1:¹' \
-    | sort -n | uniq > build.i18n.num
+    | sort -n | uniq > C.i18n.num
 
-cat build.i18n | grep "^[0-9#]*:" | sed 's¹\([0-9#]*:\).*¹\1¹' | sort -n > build.i18n.exnum
+cat C.i18n | grep "^[0-9#]*:" | sed 's¹\([0-9#]*:\).*¹\1¹' | sort -n > C.i18n.exnum
 
 echo -n "Strings used in files:"
-cat build.i18n.num | wc -l
+cat C.i18n.num | wc -l
 echo -n "Strings extracted ok:"
-cat build.i18n.exnum | wc -l
-diff -u build.i18n.num build.i18n.exnum | uniq
+cat C.i18n.exnum | wc -l
+diff -u C.i18n.num C.i18n.exnum | uniq
 
-rm build.i18n.num build.i18n.exnum
+rm C.i18n.num C.i18n.exnum
 
-diff -u build.i18n~ build.i18n | tr '' '[' || true
+diff -u C.i18n~ C.i18n | tr '' '[' || true

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-test -f .build.i18n.fmt || test "x$1" = "xbuild.i18n" || ./i18n-format build.i18n
+test -f .C.i18n.fmt || test "x$1" = "xC.i18n" || ./i18n-format C.i18n
 
 cat $1 | grep -a % | grep -a "^[0-9]" \
     | sed "s/%%//g;s/\\\\n/%n/g;s/^\(....\):/\1:END/;s/%[-0-9.]*\([nl*]*[npsduxX]\)/BEGIN%\1END/g" \
@@ -13,9 +13,9 @@ cat $1 | grep -a % | grep -a "^[0-9]" \
 #    | sed "s/:[^%]*\(%[-0-9l]*.\)/.\1:/g;s/:[^%]*$//" | sed "s/:[^%]*\(%[-0-9l]*.\)/.\1:/g;s/:[^%]*$//" \
 #    | sed "s/:[^%]*\(%[-0-9l]*.\)/.\1:/g;s/:[^%]*$//" | sed "s/:[^%]*\(%[-0-9l]*.\)/.\1:/g;s/:[^%]*$//" \
 
-test "x$1" = "xbuild.i18n" && exit 0;
+test "x$1" = "xC.i18n" && exit 0;
 
-ERR=$(diff -u0 .build.i18n.fmt .$1.fmt | grep -v ^@ | sed "s/^.\(....\).*/\1/" | grep "^[0-9]" \
+ERR=$(diff -u0 .C.i18n.fmt .$1.fmt | grep -v ^@ | sed "s/^.\(....\).*/\1/" | grep "^[0-9]" \
       | sort | uniq -c | grep -v "^      1" | sed "s/^........//")
 
-for f in :: $ERR; do grep $f .$1.fmt; grep $f .build.i18n.fmt; done
+for f in :: $ERR; do grep $f .$1.fmt; grep $f .C.i18n.fmt; done

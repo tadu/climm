@@ -2,7 +2,7 @@
 
 my %defstr, $k, $uname, $name, $new, $pref;
 
-open NRS, "<../lang/build.i18n" || die;
+open NRS, "<../lang/C.i18n" || die;
 
 { my $neu = 0;
 sub NewNumber ()
