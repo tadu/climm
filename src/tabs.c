@@ -29,6 +29,7 @@
 
 static const Contact *tab_in[TAB_SLOTS + 1];
 static const Contact *tab_out[TAB_SLOTS + 1];
+static time_t tab_last;
 
 void TabInit (void)
 {
@@ -40,6 +41,7 @@ void TabInit (void)
     for (i = 0; (cont = ContactIndex (NULL, i)); i++)
         if (ContactPrefVal (cont, CO_TABSPOOL))
             TabAddOut (cont);
+    tab_last = time (NULL);
 }
 
 /*
@@ -103,11 +105,30 @@ const Contact *TabGetIn (int nr)
  */
 const Contact *TabGetOut (int nr)
 {
+    time_t now;
+    if (!nr && (now = time (NULL)) - tab_last > 300)
+    {
+        int i, found;
+        const Contact *cont;
+
+        i = (now - tab_last) / 300;
+        for (found = 0; found < TAB_SLOTS + 1; found++)
+            if (!tab_out[found])
+                break;
+        while (i-- && found > 0)
+        {
+            found--;
+            cont = tab_out[found];
+            tab_out[found] = NULL;
+            TabAddIn (cont);
+        }
+        tab_last = now;
+    }
     return nr > TAB_SLOTS ? NULL : tab_out[nr];
 }
 
 /*
- * Returns the nr.th entry of both list, or NULL.
+ * Check whether a contact is tabbed
  */
 int TabHas (const Contact *cont)
 {
