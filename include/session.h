@@ -6,7 +6,8 @@ typedef void (jump_sess_f)(Session *sess);
 
 struct Session_s
 {
-        UBYTE   type;           /* connection type - TYPE_{SERVER{,_OLD},PEER,DIRECT}*/
+        UBYTE   type:4;         /* connection type - TYPE_{SERVER{,_OLD},PEER,DIRECT}*/
+        UBYTE   flags:4;        /* connection flags */
         UBYTE   ver;            /* protocol version in this session; either 5,6 or 8 */
         UDWORD  uin;            /* current user identification number                */
         UDWORD  status;         /* status of uin                                     */

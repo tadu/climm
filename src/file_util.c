@@ -179,7 +179,7 @@ void Initalize_RC_File ()
     {
         M_print (i18n (796, "Setup wizard finished. Please wait until registration has finished.\n"));
         sess = SrvRegisterUIN (NULL, pwd1);
-        sess->type |= TYPE_WIZARD;
+        sess->flags |= CONN_WIZARD;
     }
     else
     {
@@ -189,7 +189,8 @@ void Initalize_RC_File ()
         sess->spref = PreferencesSessionC ();
         assert (sess->spref);
         
-        sess->spref->type = TYPE_SERVER | TYPE_AUTOLOGIN;
+        sess->spref->type = TYPE_SERVER;
+        sess->spref->flags = CONN_AUTOLOGIN;
         sess->spref->server = strdup ("login.icq.com");
         sess->spref->port = 5190;
         sess->spref->status = STATUS_ONLINE;
@@ -198,7 +199,8 @@ void Initalize_RC_File ()
         
         sess->server  = strdup ("login.icq.com");
         sess->port    = 5190;
-        sess->type    = TYPE_SERVER | TYPE_AUTOLOGIN;
+        sess->type    = TYPE_SERVER;
+        sess->flags   = CONN_AUTOLOGIN;
         sess->ver     = 8;
         sess->uin     = uin;
         sess->passwd  = strdup (passwd);
@@ -212,8 +214,12 @@ void Initalize_RC_File ()
     sesst->assoc = sess;
     sess->assoc = sesst;
     if (uin)
-        sesst->spref->type = TYPE_PEER | TYPE_AUTOLOGIN;
+    {
+        sesst->spref->type = TYPE_PEER;
+        sesst->spref->flags = CONN_AUTOLOGIN;
+    }
     sesst->type = sesst->spref->type;
+    sesst->flags = sesst->spref->flags;
     sesst->spref->version = 6;
     sesst->ver = 6;
 
@@ -572,33 +578,40 @@ void Read_RC_File (FILE *rcf)
                     if (!tmp)
                         continue;
                     if (!strcasecmp (tmp, "server"))
+                    {
                         sess->spref->type =
-                            (sess->spref->version ? (sess->spref->version > 6 ? TYPE_SERVER 
-                             : TYPE_SERVER_OLD) : TYPE_SERVER | TYPE_SERVER_OLD);
+                            (sess->spref->version ? (sess->spref->version > 6 
+                               ? TYPE_SERVER : TYPE_SERVER_OLD) : 0);
+                        sess->spref->flags = 0;
+                    }
                     else if (!strcasecmp (tmp, "peer"))
                     {
                         sess->spref->type = TYPE_PEER;
-                        if (oldsess->spref->type & TYPE_SERVER)
+                        sess->spref->flags = 0;
+                        if (oldsess->spref->type == TYPE_SERVER || oldsess->spref->type == TYPE_SERVER_OLD)
                         {
                             oldsess->assoc = sess;
                             sess->assoc = oldsess;
                         }
                     }
-                    else
+                    else 
                         continue;
                     tmp = strtok (NULL, " ");
                     if (!tmp)
                         continue;
                     if (!strcasecmp (tmp, "auto"))
-                        sess->spref->type |= TYPE_AUTOLOGIN;
+                        sess->spref->flags |= CONN_AUTOLOGIN;
                 }
                 else if (!strcasecmp (tmp, "version"))
                 {
                     sess->spref->version = atoi (strtok (NULL, " \n\t"));
-                    if (sess->spref->version > 6)
-                        sess->spref->type &= ~TYPE_SERVER_OLD;
-                    else
-                        sess->spref->type &= ~TYPE_SERVER;
+                    if (!sess->spref->type)
+                    {
+                        if (sess->spref->version > 6)
+                            sess->spref->type = TYPE_SERVER;
+                        else
+                            sess->spref->type = TYPE_SERVER_OLD;
+                    }
                 }
                 else if (!strcasecmp (tmp, "server"))
                 {
@@ -661,7 +674,8 @@ void Read_RC_File (FILE *rcf)
         sess->uin    = sess->spref->uin;
         sess->ver    = sess->spref->version;
         sess->type   = sess->spref->type;
-        if (sess->spref->type & (TYPE_SERVER | TYPE_SERVER_OLD))
+        sess->flags  = sess->spref->flags;
+        if (sess->spref->type == TYPE_SERVER || sess->spref->type == TYPE_SERVER_OLD)
             oldsess = sess;
     }
 
@@ -708,14 +722,14 @@ int Save_RC ()
     
     for (k = 0; (ss = SessionNr (k)); k++)
     {
-        if (!(ss->spref) || !(ss->spref->type & (TYPE_SERVER | TYPE_SERVER_OLD | TYPE_PEER))
-            || (!ss->spref->uin && ss->spref->type & TYPE_SERVER)
-            || (ss->assoc && !ss->assoc->spref->uin && ss->spref->type & TYPE_PEER))
+        if (!ss->spref || (ss->spref->type != TYPE_SERVER && ss->spref->type != TYPE_SERVER_OLD && ss->spref->type != TYPE_PEER)
+            || (!ss->spref->uin && ss->spref->type == TYPE_SERVER)
+            || (ss->assoc && !ss->assoc->spref->uin && ss->spref->type == TYPE_PEER))
             continue;
 
         fprintf (rcf, "[Connection]\n");
-        fprintf (rcf, "type %s%s\n",  ss->spref->type & (TYPE_SERVER | TYPE_SERVER_OLD) ? "server" : "peer",
-                                        ss->spref->type & TYPE_AUTOLOGIN ? " auto" : "");
+        fprintf (rcf, "type %s%s\n",  ss->spref->type == TYPE_SERVER || ss->spref->type == TYPE_SERVER_OLD ? "server" : "peer",
+                                        ss->spref->flags & CONN_AUTOLOGIN ? " auto" : "");
         fprintf (rcf, "version %d\n", ss->spref->version);
         if (ss->spref->server)
             fprintf (rcf, "server %s\n",  ss->spref->server);

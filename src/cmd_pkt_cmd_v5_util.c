@@ -143,6 +143,7 @@ void SessionInitServerV5 (Session *sess)
     }
     
     sess->type = TYPE_SERVER_OLD;
+    sess->flags = 0;
     if (!sess->server || !strlen (sess->server))
         sess->server = "icq.icq.com";
     if (!sess->port)

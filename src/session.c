@@ -71,9 +71,9 @@ void SessionInit (Session *sess)
         return;
     if (!sess->spref)
         return;
-    if (sess->spref->type & TYPE_SERVER)
+    if (sess->spref->type == TYPE_SERVER)
         SessionInitServer (sess);
-    else if (sess->spref->type & TYPE_SERVER_OLD)
+    else if (sess->spref->type == TYPE_SERVER_OLD)
         SessionInitServerV5 (sess);
     else
         SessionInitPeer (sess);
@@ -97,14 +97,14 @@ Session *SessionFind (UBYTE type, UDWORD uin)
     int i;
     
     for (i = 0; i < listlen; i++)
-        if (slist[i] && (slist[i]->type & type) && (slist[i]->uin == uin) && uin)
+        if (slist[i] && (slist[i]->type == type) && (slist[i]->uin == uin) && uin)
             return slist[i];
     if (uin)
         return NULL;
     for (i = 0; i < listlen; i++)
-        if (slist[i] && (slist[i]->type & type) && (slist[i]->connect & CONNECT_OK))
+        if (slist[i] && (slist[i]->type == type) && (slist[i]->connect & CONNECT_OK))
             return slist[i];
-    return (NULL);
+    return NULL;
 }
 
 /*
@@ -136,13 +136,17 @@ void SessionClose (Session *sess)
  */
 const char *SessionType (Session *sess)
 {
-    if (sess->type & TYPE_SERVER)
-        return i18n (889, "server");
-    if (sess->type & TYPE_SERVER_OLD)
-        return i18n (744, "server (v5)");
-    if (sess->type & TYPE_PEER)
-        return i18n (732, "listener");
-    if (sess->type & TYPE_DIRECT)
-        return i18n (890, "peer-to-peer");
-    return i18n (745, "unknown");
+    switch (sess->type) {
+        case TYPE_SERVER:
+            return i18n (889, "server");
+        case TYPE_SERVER_OLD:
+            return i18n (744, "server (v5)");
+        case TYPE_PEER:
+            return i18n (732, "listener");
+        case TYPE_DIRECT:
+            return i18n (890, "peer-to-peer");
+        case TYPE_UNKNOWN:
+        default:
+            return i18n (745, "unknown");
+    }
 }

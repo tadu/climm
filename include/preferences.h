@@ -43,7 +43,8 @@ struct Preferences_s
 
 struct PreferencesSession_s
 {
-    UBYTE   type;
+    UBYTE   type:4;
+    UBYTE   flags:4;
     UBYTE   version;
     UDWORD  uin;
     UDWORD  status;
@@ -85,15 +86,17 @@ void PrefLoad (Preferences *pref);
 #define SFLAG_OFF_BEEP   16
 #define SFLAG_OFF_CMD    32
 
+#define TYPE_UNKNOWN      0
 #define TYPE_SERVER_OLD   1
 #define TYPE_SERVER       2
-#define TYPE_PEER         4
-#define TYPE_DIRECT       8
-#define TYPE_AUTOLOGIN    16
-#define TYPE_WIZARD       32
+#define TYPE_PEER         3
+#define TYPE_DIRECT       4
 
-#define ASSERT_PEER(s)   do { assert (s); assert (s->type & TYPE_PEER);   } while (0)
-#define ASSERT_DIRECT(s) do { assert (s); assert (s->type & TYPE_DIRECT); } while (0)
+#define CONN_AUTOLOGIN   1
+#define CONN_WIZARD      2
+
+#define ASSERT_PEER(s)   (assert (s), assert (s->type == TYPE_PEER))
+#define ASSERT_DIRECT(s) (assert (s), assert (s->type == TYPE_DIRECT))
 
 #endif
 

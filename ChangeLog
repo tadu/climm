@@ -1,7 +1,9 @@
 
+2002-05-01 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* more ui fixes: status change msg, "r" command
 	* packet.c cleanup for...
-	* ... (Peter Backes)
+	* search/metainfo patch (Peter Backes)
+	* split Session->type into type and flags (Peter Backes)
 	* avoid code duplication: remove User_Online, Status_Update,
 	  User_Offline
 	* fix tcp message types

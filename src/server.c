@@ -146,7 +146,7 @@ void icq_sendmsg (Session *sess, UDWORD uin, char *text, UDWORD msg_type)
     if (!sess->assoc || !TCPSendMsg (sess->assoc, uin, text, msg_type))
 #endif
     {
-        if (sess->type & TYPE_SERVER)
+        if (sess->type == TYPE_SERVER)
             SnacCliSendmsg (sess, uin, text, msg_type);
         else
             CmdPktCmdSendMessage (sess, uin, text, msg_type);

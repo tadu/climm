@@ -395,8 +395,8 @@
 395:About info change was ©2%s©0.¶
 396:Info change was ©2%s©0.¶
 397:Other info change was ©2%s©0.¶
-398:Search ©2failed©0.¶
-399:Unknown Meta User response ©1%04X©0¶
+398:Search ©2failed©0.
+399:Unknown Meta User response
 400:Shows locally stored info on user.
 401:Updates other user info like age and sex.
 402:Updates your about user info.
@@ -509,7 +509,7 @@
 509:Cellular:
 510:Zip:
 511:Country:
-512:Country Code:
+512:Country code:
 513:Work Country Code:
 514:Work Country:
 515:Work Homepage:
@@ -524,7 +524,7 @@
 524:Work Location:
 525:About:
 526:Not Entered
-527:Age:
+527:Received server acknowledge for %s#%08lx:%08lx%s sent to %s%s%s.¶
 528:female
 529:male
 530:not specified
@@ -618,7 +618,7 @@
 618:UIN:
 619:Warning:
 620:maximal number of contacts reached. Ask a wizard to enlarge me!
-621:%d users not returned.
+621:users not returned.
 622:Do you want to apply these changes? (YES/NO)
 623:Doubled packet %04X¶
 624:Sorry, can't initialize Windows Sockets...
@@ -848,11 +848,18 @@
 848:    close <nick> - Closes/resets TCP connection(s).¶
 849:Error on select: %s (%d)¶
 850:Timeout on connection with %s at %s:%d¶
+851:Ignored server request for a minimum report interval of %d.¶
+852:Couldn't find server connection.¶
+853:Unknown Meta User result %x.¶
+854:Publish Email:
 855:TCP connection to %s at %s:%d failed.¶
 856:Discarded a %04x (%s) packet from old session %08x (current: %08x).¶
 857:Do you want to hide your IP from other contacts? (YES/NO)
 858:sending packet
+859:Additional Email addresses:
 860:freeing packet
+861:(no authorization needed)
+862:(must request authorization)
 863:creating new packet
 864:Can't open rcfile %s.
 865:cloning existing packet
@@ -863,15 +870,22 @@
 870:    off   <nick> - Closes TCP connection(s) and don't try TCP again.¶
 871:Opening v8 connection to %s:%d... 
 872:failed: %s (%d)¶
+873:Work City:
+874:Work State:
+875:Personal interests:
+876:Background:
 877:ok.¶
 878:Error while reading from socket: %s (%d)¶
+879:Personal Past:
 880:Incoming packet is not a FLAP: id is %d.¶
 881:FLAP channel 1 out of data.¶
 882:FLAP channel 1 cmd 1 extra data:¶
 883:FLAP channel 1 unknown command %d.¶
 884:FLAP with unknown channel %d received.¶
 885:Connection v8 timed out.¶
+886:Status:
 887:Connections:
+888:Not webaware
 889:server
 890:peer-to-peer
 891:Connection %d is already open.¶
@@ -883,6 +897,7 @@
 897:Incomplete TLV %d, len %d of %d - ignoring.¶
 898:Redirect to server %s... 
 899:Unknown family requested: %d¶
+900:It's readonly.
 904:Server doesn't understand ver %d (only %d) for family %d!¶
 906:This command operates only on connections of type %s.¶
 910:FLAP seq %08x length %04x channel %d©0¶

@@ -321,7 +321,7 @@ void UtilIOConnectTCP (Session *sess)
         flags = sizeof (struct sockaddr);
         getsockname (sess->sok, (struct sockaddr *) &sin, &flags);
         sess->our_local_ip = ntohl (sin.sin_addr.s_addr);
-        if (sess->assoc && (sess->type & TYPE_SERVER))
+        if (sess->assoc && (sess->type == TYPE_SERVER))
             sess->assoc->our_local_ip = sess->our_local_ip;
 
         if (rc >= 0)
@@ -517,7 +517,7 @@ Packet *UtilIOReceiveTCP (Session *sess)
     if (!(pak = sess->incoming))
         sess->incoming = pak = PacketC ();
     
-    if (sess->type & TYPE_SERVER)
+    if (sess->type == TYPE_SERVER)
     {
         len = off = 6;
         if (pak->len >= off)

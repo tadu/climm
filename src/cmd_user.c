@@ -104,7 +104,10 @@ static jump_t jump[] = {
     { NULL, NULL, NULL, 0 }
 };
 
-#define SESSION(type) Session *sess; sess = SessionFind (type, 0); \
+#define SERVER_SESSION Session *sess; if (!(sess = SessionFind (TYPE_SERVER, 0))) sess = SessionFind (TYPE_SERVER_OLD, 0); \
+    if (!sess) { M_print (i18n (852, "Couldn't find server connection.\n")); return 0; }
+
+#define SESSION_TYPE(type) Session *sess; sess = SessionFind (type, 0); \
     if (!sess) { M_print (i18n (906, "This command operates only on connections of type %s.\n"), #type); return 0; }
 
 /*
@@ -151,7 +154,7 @@ const char *CmdUserLookupName (const char *cmd)
 JUMP_F(CmdUserChange)
 {
     char *arg1;
-    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
+    SERVER_SESSION;
 
     arg1 = strtok (args, " \n\r");
     if (data == -1)
@@ -190,7 +193,7 @@ JUMP_F(CmdUserChange)
 JUMP_F(CmdUserRandom)
 {
     char *arg1;
-    SESSION(TYPE_SERVER_OLD);
+    SESSION_TYPE(TYPE_SERVER_OLD);
     
     arg1 = strtok (args, " \n\r");
     if (arg1 == NULL)
@@ -222,7 +225,7 @@ JUMP_F(CmdUserRandom)
 JUMP_F(CmdUserRandomSet)
 {
     char *arg1;
-    SESSION(TYPE_SERVER_OLD);
+    SESSION_TYPE(TYPE_SERVER_OLD);
     
     arg1 = strtok (args, " \n\r");
     if (arg1 == NULL)
@@ -429,7 +432,7 @@ JUMP_F(CmdUserInfo)
 {
     char *arg1;
     UDWORD uin;
-    SESSION(TYPE_SERVER | TYPE_SERVER_OLD);
+    SERVER_SESSION;
 
     arg1 = strtok (args, "");
     if (arg1 == NULL)
@@ -554,7 +557,7 @@ JUMP_F(CmdUserTCP)
         }
         if (!strcmp (cmd, "open"))
         {
-            SESSION(TYPE_PEER);
+            SESSION_TYPE(TYPE_PEER);
             TCPDirectOpen  (sess, uin);
         }
         else if (!strcmp (cmd, "close"))
@@ -745,7 +748,7 @@ JUMP_F (CmdUserResend)
 {
     UDWORD uin;
     char *arg1;
-    SESSION(TYPE_SERVER_OLD);
+    SESSION_TYPE(TYPE_SERVER_OLD);
 
     arg1 = strtok (args, UIN_DELIMS);
     if (!uiG.last_message_sent) 
@@ -782,7 +785,7 @@ JUMP_F (CmdUserMessage)
     char *arg1, *p;
     int len;
     Contact *cont;
-    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
+    SERVER_SESSION;
 
     if (status)
     {
@@ -966,7 +969,7 @@ JUMP_F(CmdUserStatusDetail)
     UDWORD num;
     Contact *cont;
     char *name = strtok (args, "");
-    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
+    SERVER_SESSION;
 
     if (name)
     {
@@ -1289,7 +1292,7 @@ JUMP_F(CmdUserStatusWide)
  */
 JUMP_F(CmdUserStatusSelf)
 {
-    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
+    SERVER_SESSION;
     
     M_print (W_SEPERATOR);
     Time_Stamp ();
@@ -1307,7 +1310,7 @@ JUMP_F(CmdUserStatusSelf)
 JUMP_F(CmdUserStatusShort)
 {
     Contact *cont;
-    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
+    SERVER_SESSION;
 
     M_print (W_SEPERATOR);
     Time_Stamp ();
@@ -1610,7 +1613,7 @@ JUMP_F(CmdUserTogIgnore)
     char *arg1;
     Contact *bud;
     UDWORD uin;
-    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
+    SERVER_SESSION;
 
     arg1 = strtok (args, "\n");
     if (!arg1)
@@ -1678,7 +1681,7 @@ JUMP_F(CmdUserTogVisible)
     char *arg1;
     Contact *bud;
     UDWORD uin;
-    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
+    SERVER_SESSION;
 
     arg1 = strtok (args, " \n");
     if (!arg1)
@@ -1736,7 +1739,7 @@ JUMP_F(CmdUserAdd)
     Contact *cont;
     char *arg1, *arg2;
     UDWORD uin;
-    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
+    SERVER_SESSION;
 
     arg1 = strtok (args, " \t");
     if (!arg1)
@@ -1795,7 +1798,7 @@ JUMP_F(CmdUserRem)
 {
     char *arg1;
     UDWORD uin;
-    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
+    SERVER_SESSION;
 
     arg1 = strtok (args, " \t");
     if (arg1)
@@ -1824,7 +1827,7 @@ JUMP_F(CmdUserRem)
  */
 JUMP_F(CmdUserRInfo)
 {
-    SESSION(TYPE_SERVER | TYPE_SERVER_OLD);
+    SERVER_SESSION;
 
     M_print (i18n (672, "%s's IP address is "), ContactFindName (uiG.last_rcvd_uin));
     Print_IP (uiG.last_rcvd_uin);
@@ -1848,7 +1851,7 @@ JUMP_F(CmdUserAuth)
 {
     char *arg1;
     UDWORD uin;
-    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
+    SERVER_SESSION;
 
     arg1 = strtok (args, "");
     if (!arg1)
@@ -1861,7 +1864,7 @@ JUMP_F(CmdUserAuth)
         if (-1 == uin)
             M_print (i18n (665, "%s not recognized as a nick name."), arg1);
         else
-            if (sess->type & TYPE_SERVER)
+            if (sess->type == TYPE_SERVER)
                 SnacCliSendmsg (sess, uin, "\x03", AUTH_OK_MESS);
             else
                 CmdPktCmdSendMessage (sess, uin, "\x03", AUTH_OK_MESS);
@@ -1889,7 +1892,7 @@ JUMP_F(CmdUserURL)
 {
     char *arg1, *arg2;
     UDWORD uin;
-    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
+    SERVER_SESSION;
 
     arg1 = strtok (args, " ");
     if (!arg1)
@@ -2119,33 +2122,45 @@ JUMP_F(CmdUserQuit)
 JUMP_F(CmdUserSearch)
 {
     static char *email, *nick, *first, *last;
-    SESSION(TYPE_SERVER_OLD);
+    SERVER_SESSION;
 
     switch (status)
     {
         case 0:
             if (*args)
             {
-                CmdPktCmdSearchUser (sess, args, "", "", "");
+                if (sess->type == TYPE_SERVER_OLD)
+                    CmdPktCmdSearchUser (sess, args, "", "", "");
+                else
+                    SnacCliSearchbymail (sess, args);
+                
                 return 0;
             }
             R_dopromptf ("%s ", i18n (655, "Enter the user's e-mail address:"));
             return status = 101;
         case 101:
-            email = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (656, "Enter the user's nick name:"));
-            return ++status;
+            if (!strlen (args) || sess->ver < 6)
+            {
+                email = strdup ((char *) args);
+                R_dopromptf ("%s ", i18n (656, "Enter the user's nick name:"));
+                return ++status;
+            }
+            SnacCliSearchbymail (sess, args);
+            return 0;
         case 102:
             nick = strdup ((char *) args);
             R_dopromptf ("%s ", i18n (657, "Enter the user's first name:"));
             return ++status;
         case 103:
             first = strdup ((char *) args);
-            R_dopromptf ("%s", i18n (658, "Enter the user's last name:"));
+            R_dopromptf ("%s ", i18n (658, "Enter the user's last name:"));
             return ++status;
         case 104:
             last = strdup ((char *) args);
-            CmdPktCmdSearchUser (sess, email, nick, first, last);
+            if (sess->type == TYPE_SERVER_OLD)
+                CmdPktCmdSearchUser (sess, email, nick, first, last);
+            else
+                SnacCliSearchbypersinf (sess, nick, first, last);
             free (email);
             free (nick);
             free (first);
@@ -2162,7 +2177,7 @@ JUMP_F(CmdUserWpSearch)
 {
     int temp;
     static MetaWP wp;
-    SESSION(TYPE_SERVER_OLD);
+    SESSION_TYPE(TYPE_SERVER_OLD);
 
     switch (status)
     {
@@ -2279,7 +2294,7 @@ JUMP_F(CmdUserWpSearch)
 JUMP_F(CmdUserUpdate)
 {
     static MetaGeneral user;
-    SESSION(TYPE_SERVER_OLD);
+    SESSION_TYPE(TYPE_SERVER_OLD);
 
     switch (status)
     {
@@ -2404,7 +2419,7 @@ JUMP_F(CmdUserOther)
 {
     static MetaMore other;
     int temp;
-    SESSION(TYPE_SERVER_OLD);
+    SESSION_TYPE(TYPE_SERVER_OLD);
 
     switch (status)
     {
@@ -2495,7 +2510,7 @@ JUMP_F(CmdUserAbout)
 {
     static int offset = 0;
     static char msg[1024];
-    SESSION(TYPE_SERVER_OLD);
+    SESSION_TYPE(TYPE_SERVER_OLD);
 
     if (status > 100)
     {

@@ -32,7 +32,7 @@ static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd,
     SnacSrvRates, SnacSrvReplyicbm, SnacSrvReplybuddy, SnacSrvReplybos,
     SnacSrvReplyinfo, SnacSrvReplylocation, SnacSrvUseronline, SnacSrvRegrefused,
     SnacSrvUseroffline, SnacSrvRecvmsg, SnacSrvUnknown, SnacSrvFromoldicq,
-    SnacSrvAddedyou, SnacSrvNewuin;
+    SnacSrvAddedyou, SnacSrvNewuin, SnacSrvSetinterval, SnacSrvAckmsg;
 
 static SNAC SNACv[] = {
     {  1,  3, NULL, NULL},
@@ -62,7 +62,9 @@ static SNAC SNACS[] = {
     {  3, 12, "SRV_USEROFFLINE",     SnacSrvUseroffline},
     {  4,  5, "SRV_REPLYICBM",       SnacSrvReplyicbm},
     {  4,  7, "SRV_RECVMSG",         SnacSrvRecvmsg},
+    {  4, 12, "SRV_ACKMSG",          SnacSrvAckmsg},
     {  9,  3, "SRV_REPLYBOS",        SnacSrvReplybos},
+    { 11,  2, "SRV_SETINTERVAL",     SnacSrvSetinterval},
     { 19,  3, "SRV_REPLYUNKNOWN",    SnacSrvUnknown},
     { 19,  6, "SRV_REPLYROSTER",     SnacSrvUnknown},
     { 19, 14, "SRV_UPDATEACK",       SnacSrvUnknown},
@@ -566,6 +568,30 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
 }
 
 /*
+ * SRV_ACKMSG - SNAC(4,C)
+ */
+JUMP_SNAC_F(SnacSrvAckmsg)
+{
+    Packet *pak;
+    UDWORD uin, mid1, mid2;
+    UWORD vers;
+
+    pak = event->pak;
+
+    mid1 = PacketReadB4 (pak);
+    mid2 = PacketReadB4 (pak);
+    vers = PacketReadB2 (pak);
+
+    uin = PacketReadUIN (pak);
+    Time_Stamp ();
+    M_print (" ");
+    M_print (i18n (527, "Received server acknowledge for %s#%08lx:%08lx%s sent to %s%s%s.\n"),
+             COLSERV, mid1, mid2, COLNONE, COLCONTACT, ContactFindName (uin), COLNONE);
+    log_event (uin, LOG_EVENT, "Received ACK for #%08lx%08lx to %s\n",
+               mid1, mid2, ContactFindName (uin));
+}
+
+/*
  * SRV_REPLYBOS - SNAC(9,3)
  */
 JUMP_SNAC_F(SnacSrvReplybos)
@@ -581,22 +607,32 @@ JUMP_SNAC_F(SnacSrvReplybos)
 }
 
 /*
+ * SRV_SETINTERVAL - SNAC(B,2)
+ */
+JUMP_SNAC_F(SnacSrvSetinterval)
+{
+    Packet *pak;
+    UWORD interval;
+
+    pak = event->pak;
+    interval = PacketReadB2 (pak);
+    if (prG->verbose)
+        M_print (i18n (851, "Ignored server request for a minimum report interval of %d.\n"), 
+            interval);
+}
+
+/*
  * SRV_ADDEDYOU - SNAC(13,1c)
  */
 JUMP_SNAC_F(SnacSrvAddedyou)
 {
-    Contact *cont;
     Packet *pak;
     UDWORD uin;
-    int len;
 
     pak = event->pak;
-
-    for (len = PacketReadB2 (pak); len > 0; len--)
-        PacketRead1 (pak);
+    PacketReadData (pak, NULL, PacketReadB2 (pak));
     /* TLV 1 ignored */
     uin = PacketReadUIN (pak);
-    cont = ContactFind (uin);
     Time_Stamp ();
     M_print (" " COLCONTACT "%10s" COLNONE " ", ContactFindName (uin));
     M_print (i18n (755, "added you to their contact list.\n"));
@@ -623,6 +659,74 @@ void SnacCliMetareqinfo (Session *sess, UDWORD uin)
     PacketWrite2  (pak, 2);
     PacketWrite2  (pak, 1232); /* Type: user info */
     PacketWrite4  (pak, uin);
+    SnacSend (sess, pak);
+}
+
+/*
+ * CLI_SEARCHBYPERSINF - SNAC(15,2) - 2000/1375
+ */
+void SnacCliSearchbypersinf (Session *sess, const char *nick, const char *name,
+    char *surname)
+{
+    Packet *pak;
+    int len;
+
+    len = strlen (nick) + strlen (name) + strlen (surname);
+
+    pak = SnacC (sess, 21, 2, 0, 0);
+    PacketWriteB2 (pak, 1);  /* TLV(1) */
+    PacketWriteB2 (pak, 33 + len);
+    PacketWrite2  (pak, 31 + len);
+    PacketWrite4  (pak, sess->uin);
+    PacketWrite2  (pak, 2000); /* Command: request information */
+    PacketWrite2  (pak, 2);
+    PacketWrite2  (pak, 1375); /* search user by email in 2001b */
+    PacketWrite2  (pak, 320); /* key: first name */
+    PacketWrite2  (pak, strlen (name) + 3);
+    PacketWriteLNTS (pak, name);
+    PacketWrite2  (pak, 330); /* key: last name */
+    PacketWrite2  (pak, strlen (surname) + 3);
+    PacketWriteLNTS (pak, surname);
+    PacketWrite2  (pak, 340); /* key: nick */
+    PacketWrite2  (pak, strlen (nick) + 3);
+    PacketWriteLNTS (pak, nick);
+
+    SnacSend (sess, pak);
+}
+/*
+ * CLI_SEARCHBYMAIL - SNAC(15,2) - 2000/{1395,1321}
+ */
+void SnacCliSearchbymail (Session *sess, const char *email)
+{
+    Packet *pak;
+    int len;
+
+    len = strlen (email);
+
+    pak = SnacC (sess, 21, 2, 0, 0);
+    PacketWriteB2 (pak, 1);  /* TLV(1) */
+#ifndef USE_OLD_PROTO
+    PacketWriteB2 (pak, 19 + len);
+    PacketWrite2  (pak, 17 + len);
+#else
+    PacketWriteB2 (pak, 15 + len);
+    PacketWrite2  (pak, 13 + len);
+#endif
+    PacketWrite4  (pak, sess->uin);
+    PacketWrite2  (pak, 2000); /* Command: request information */
+    PacketWrite2  (pak, 2);
+#ifndef USE_OLD_PROTO
+    PacketWrite2  (pak, 1395); /* search uin by email in 2001b */
+    PacketWrite2  (pak, 350); /* key: email address */
+    PacketWrite2  (pak, len + 3);
+#else
+    PacketWrite2  (pak, 1231); /* Type: search by email */
+    /* Doesn't work (yields search failed).  Tried with length 
+     * prefixed as above, then the search doesn't fail completely
+     * but very strange data is returned.    --rtc
+     */
+#endif
+    PacketWriteLNTS (pak, email);
     SnacSend (sess, pak);
 }
 
@@ -685,7 +789,12 @@ JUMP_SNAC_F(SnacSrvFromoldicq)
         case 0x42:
             SnacCliAckofflinemsgs (event->sess);
             return;
+        case 0x7DA:
+            Meta_User (event->sess, uin, p);
+
+            return;
         default:
+            break;
     }
     SnacSrvUnknown (event);
 }
@@ -696,7 +805,7 @@ JUMP_SNAC_F(SnacSrvFromoldicq)
 JUMP_SNAC_F(SnacSrvRegrefused)
 {
     M_print (i18n (780, "Registration of new UIN refused.\n"));
-    if (event->sess->type & TYPE_WIZARD)
+    if (event->sess->flags & CONN_WIZARD)
     {
         M_print (i18n (792, "I'm sorry, AOL doesn't want to give us a new UIN, probably because of too many new UIN requests from this IP. Please try again later.\n"));
         exit (0);
@@ -710,14 +819,14 @@ JUMP_SNAC_F(SnacSrvNewuin)
 {
     event->sess->uin = event->sess->spref->uin = PacketReadAt4 (event->pak, 6 + 10 + 46);
     M_print (i18n (762, "Your new UIN is: %d.\n"), event->sess->uin);
-    if (event->sess->type & TYPE_WIZARD)
+    if (event->sess->flags & CONN_WIZARD)
     {
         assert (event->sess->spref);
         assert (event->sess->assoc);
         assert (event->sess->assoc->spref);
 
-        event->sess->spref->type |= TYPE_AUTOLOGIN;
-        event->sess->assoc->spref->type |= TYPE_AUTOLOGIN;
+        event->sess->spref->flags |= CONN_AUTOLOGIN;
+        event->sess->assoc->spref->flags |= CONN_AUTOLOGIN;
         M_print (i18n (790, "Setup wizard finished. Congratulations to your new UIN!\n"));
         if (Save_RC () == -1)
         {

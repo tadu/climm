@@ -37,6 +37,7 @@ void SessionInitServer (Session *sess)
     sess->dispatch = &SrvCallBackReceive;
     sess->server   = strdup (sess->spref->server);
     sess->type     = TYPE_SERVER;
+    sess->flags    = 0;
     QueueEnqueueData (queue, sess, sess->our_seq, sess->connect,
                       sess->uin, time (NULL) + 10,
                       NULL, NULL, &SrvCallBackTimeout);
@@ -140,7 +141,7 @@ Session *SrvRegisterUIN (Session *sess, const char *pass)
         return NULL;
     if (sess)
     {
-        assert (sess->spref->type & TYPE_SERVER);
+        assert (sess->spref->type == TYPE_SERVER);
         
         memcpy (new->spref, sess->spref, sizeof (*new->spref));
         new->spref->server = strdup (new->spref->server);
@@ -149,12 +150,14 @@ Session *SrvRegisterUIN (Session *sess, const char *pass)
     else
     {
         new->spref->type = TYPE_SERVER;
+        new->spref->flags = 0;
         new->spref->version = 8;
         new->spref->server = strdup ("login.icq.com");
         new->spref->port = 5190;
     }
     new->spref->passwd = strdup (pass);
-    new->type = TYPE_SERVER;
+    new->type    = TYPE_SERVER;
+    new->flags   = 0;
     new->ver  = new->spref->version;
     new->server = strdup (new->spref->server);
     new->port = new->spref->port;

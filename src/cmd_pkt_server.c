@@ -186,7 +186,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
     switch (cmd)
     {
         case SRV_META_USER:
-            Meta_User (sess, data, len, uin);
+            Meta_User (sess, uin, pak);
             break;
         case SRV_NEW_UIN:
             M_print (i18n (639, "The new UIN is %ld!\n"), uin);

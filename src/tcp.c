@@ -74,7 +74,8 @@ void SessionInitPeer (Session *sess)
 
     sess->connect = 0;
     sess->our_seq = -1;
-    sess->type = 4;
+    sess->type    = TYPE_PEER;
+    sess->flags   = 0;
     sess->dispatch = &TCPDispatchMain;
 
     UtilIOConnectTCP (sess);
@@ -106,6 +107,7 @@ void TCPDirectOpen (Session *sess, UDWORD uin)
     peer->port  = 0;
     peer->uin   = uin;
     peer->type  = TYPE_DIRECT;
+    peer->flags = 0;
     peer->spref = NULL;
     peer->assoc = sess;
 
@@ -142,7 +144,8 @@ void TCPDirectOff (UDWORD uin)
 
     peer->uin = cont->uin;
     peer->connect = CONNECT_FAIL;
-    peer->type = TYPE_DIRECT;
+    peer->type    = TYPE_DIRECT;
+    peer->flags   = 0;
     if (peer->incoming)
     {
         PacketD (peer->incoming);
@@ -195,7 +198,8 @@ void TCPDispatchMain (Session *sess)
         return;
     }
 
-    peer->type = TYPE_DIRECT;
+    peer->type  = TYPE_DIRECT;
+    peer->flags = 0;
     peer->spref = NULL;
     peer->dispatch    = &TCPDispatchShake;
 

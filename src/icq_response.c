@@ -28,362 +28,380 @@
 #include <string.h>
 #include <assert.h>
 
-static void Handle_Interest (UBYTE count, UBYTE * data);
-static void PktPrintString (UBYTE ** data, const char *fmt, ...);
+/* Attribute-value-pair format string */
+#define AVPFMT COLSERV "%-15s" COLNONE " %s\n"
 
-static void PktPrintString (UBYTE ** data, const char *fmt, ...)
+void Meta_User (Session *sess, UDWORD uin, Packet *p)
 {
-    char buf[2048];
-    va_list args;
-    int len;
+    UDWORD subtype, result;
 
-    va_start (args, fmt);
-    vsnprintf (buf, sizeof (buf), fmt, args);
-    va_end (args);
+    subtype = PacketRead2 (p);
+    result  = PacketRead1 (p);
 
-    len = Chars_2_Word ((*data));
-    *data += 2;
-    if (len != 1)
-    {
-        (*data)[len - 1] = 0;   /* be safe */
-        ConvWinUnix (*data);
-        M_print (buf, *data);        /* Careful - fmt is used as a format string twice. */
-    }
-    *data += len;
-}
-
-static void Handle_Interest (UBYTE count, UBYTE * data)
-{
-    const char *nomen;
-    UBYTE * data2;
-    int len, nlen, count2;
-    
-    for (data2 = data, count2 = count, len = 0; count2; count2--)
-    {
-        nomen = TableGetInterest (Chars_2_Word (data));
-        if (nomen && (nlen = strlen (nomen)) > len)
-            len = nlen;
-    }
-    
-    for (; count; count--)
-    {
-        nomen = TableGetInterest (Chars_2_Word (data));
-
-        if (nomen)
-            M_print (COLSERV "%*s:\t" COLMESS, len, nomen);
-        else
-            M_print (COLSERV "%*d:\t" COLMESS, len, Chars_2_Word (data));
-
-        data += 2;
-        PktPrintString (&data, "%%s");
-        M_print (COLNONE "\n");
-    }
-}
-
-void Meta_User (Session *sess, UBYTE * data, UDWORD len, UDWORD uin)
-{
-    UWORD subcmd;
-    UDWORD zip;
-    char *newline;
-    /*int len_str; */
-    int len2;
-    char *tmp;
-    subcmd = Chars_2_Word (data);
-
-    switch (subcmd)
+    switch (subtype)
     {
         case META_SRV_PASS:
             M_print (i18n (197, "Password change was " COLCLIENT "%s" COLNONE ".\n"),
-                     data[2] == 0xA ? i18n (393, "successful") : i18n (394, "unsuccessful"));
+                     result == 0xA ? i18n (393, "successful") : i18n (394, "unsuccessful"));
             break;
         case META_SRV_ABOUT_UPDATE:
             M_print (i18n (395, "About info change was " COLCLIENT "%s" COLNONE ".\n"),
-                     data[2] == 0xA ? i18n (393, "successful") : i18n (394, "unsuccessful"));
+                     result == 0xA ? i18n (393, "successful") : i18n (394, "unsuccessful"));
             break;
         case META_SRV_GEN_UPDATE:
             M_print (i18n (396, "Info change was " COLCLIENT "%s" COLNONE ".\n"),
-                     data[2] == 0xA ? i18n (393, "successful") : i18n (394, "unsuccessful"));
+                     result == 0xA ? i18n (393, "successful") : i18n (394, "unsuccessful"));
             break;
         case META_SRV_OTHER_UPDATE:
             M_print (i18n (397, "Other info change was " COLCLIENT "%s" COLNONE ".\n"),
-                     data[2] == 0xA ? i18n (393, "successful") : i18n (394, "unsuccessful"));
+                     result == 0xA ? i18n (393, "successful") : i18n (394, "unsuccessful"));
             break;
-        case META_SRV_MORE:
-            data += 2;
-            if (*data != 0x0A)
-                break;
-            data++;
+    }
 
-            if (Chars_2_Word (data) != (UWORD) - 1)
-                M_print (COLSERV "%-15s" COLNONE " %d\n", i18n (527, "Age:"),
-                         Chars_2_Word (data));
+    switch (result) /* default error handling */
+    {
+        case 0x32:
+        case 0x14:
+            Time_Stamp ();
+            M_print (" %s\n", i18n (398, "Search " COLCLIENT "failed" COLNONE "."));
+            return;
+        case 0x1E:
+            Time_Stamp ();
+            M_print (" %s\n", i18n (900, "It's readonly."));
+            return;
+        case 0x0A:
+            break;
+        default:
+            M_print (i18n (853, "Unknown Meta User result %x.\n"), result);
+            return;
+    }
+
+    switch (subtype)
+    {
+        const char *tabd;
+        const char *data, *data2;
+        UWORD wdata, day, month, i;
+        UDWORD len, dwdata;
+        int tz;
+
+        case 0x0104: /* 2001-short-info */
+            if (*(data = PacketReadLNTS (p)))
+                M_print (AVPFMT, i18n (563, "Nick name:"), data);
+            if (*(data = PacketReadLNTS (p)))
+                M_print (AVPFMT, i18n (564, "First name:"), data);
+            if (*(data = PacketReadLNTS (p)))
+                M_print (AVPFMT, i18n (565, "Last name:"), data);
+            if (*(data = PacketReadLNTS (p)))
+                M_print (AVPFMT, i18n (566, "Email address:"), data);
+            /* 3 unknown bytes ignored */
+            break;
+        case META_SRV_GEN: /* 0x00C8, main-home-info */
+            if (*(data = PacketReadLNTS (p)))
+                M_print (COLSERV "%-15s" COLNONE " " COLCONTACT "%s" 
+                    COLNONE "\n", i18n (500, "Nickname:"), data);
+
+            data = PacketReadLNTS (p);
+            data2 = PacketReadLNTS (p);
+            if (*data && *data2)
+                M_print (COLSERV "%-15s" COLNONE " %s\t %s\n", 
+                    i18n (501, "Name:"), data, data2);
+            else if (*data)
+                M_print (AVPFMT, i18n (564, "First name:"), data);
+            else if (*data2)
+                M_print (AVPFMT, i18n (565, "Last name:"), data2);
+
+            if (*(data = PacketReadLNTS (p)))
+                M_print (AVPFMT, i18n (502, "Email:"), data);
+
+            if (sess->type == TYPE_SERVER_OLD)
+            {
+                if (*(data = PacketReadLNTS (p)))
+                    M_print (AVPFMT, i18n (503, "Other Email:"), data);
+                if (*(data = PacketReadLNTS (p)))
+                    M_print (AVPFMT, i18n (504, "Old Email:"), data);
+            }
+
+            data = PacketReadLNTS (p);
+            data2 = PacketReadLNTS (p);
+            if (*data && *data2)
+                M_print (COLSERV "%-15s" COLNONE " %s, %s\n", 
+                    i18n (505, "Location:"), data, data2);
+            else if (*data)
+                M_print (AVPFMT, i18n (570, "City:"), data);
+            else if (*data2)
+                M_print (AVPFMT, i18n (574, "State:"), data2);
+
+            if (*(data = PacketReadLNTS (p)))
+                M_print (AVPFMT, i18n (506, "Phone:"), data);
+            if (*(data = PacketReadLNTS (p)))
+                M_print (AVPFMT, i18n (507, "Fax:"), data);
+            if (*(data = PacketReadLNTS (p)))
+                M_print (AVPFMT, i18n (508, "Street:"), data);
+            if (*(data = PacketReadLNTS (p)))
+                M_print (AVPFMT, i18n (509, "Cellular:"), data);
+
+            if (sess->type == TYPE_SERVER)
+            {
+                if (*(data = PacketReadLNTS (p)))
+                    M_print (AVPFMT, i18n (510, "Zip:"), data);
+            }
+            else if ((dwdata = PacketRead4 (p)))
+                M_print (COLSERV "%-15s" COLNONE " %05lu\n", 
+                    i18n (510, "Zip:"), dwdata);
+
+            wdata = PacketRead2 (p);
+            if ((tabd = TableGetCountry (wdata)) != NULL)
+                M_print (COLSERV "%-15s" COLNONE " %s\t", 
+                    i18n (511, "Country:"), tabd);
             else
-                M_print (COLSERV "%-15s" COLNONE " %s\n", i18n (527, "Age:"),
-                         i18n (526, "Not Entered"));
-            data += 2;
+                M_print (COLSERV "%-15s" COLNONE " %d\t", 
+                    i18n (512, "Country code:"), wdata);
+            tz = (signed char) PacketRead1 (p);
+            M_print ("(UTC %+05d)\n", -100 * (tz / 2) + 30 * (tz % 2));
+            wdata = PacketRead1 (p); /* publish email, 01: yes, 00: no */
+            M_print (COLSERV "%-15s" COLNONE " %s\n", 
+                i18n (854, "Publish Email:"), wdata 
+                ? i18n (567, "No authorization needed." COLNONE " ")
+                : i18n (568, "Must request authorization." COLNONE " "));
+            /* one unknown word ignored according to v7 doc */
+            break;
+        case META_SRV_MORE: /* 0x00DC, homepage-more-info */
+            wdata = PacketRead2 (p);
+            if (wdata != 0xffff && wdata != 0)
+                M_print (COLSERV "%-15s" COLNONE " %d\n", 
+                    i18n (575, "Age:"), wdata);
+            else
+                M_print (COLSERV "%-15s" COLNONE " %s\n", 
+                    i18n (575, "Age:"), i18n (526, "Not Entered"));
 
+            wdata = PacketRead1 (p);
             M_print (COLSERV "%-15s" COLNONE " %s\n", i18n (696, "Sex:"),
-                       *data == 1 ? i18n (528, "female")
-                     : *data == 2 ? i18n (529, "male")
+                       wdata == 1 ? i18n (528, "female")
+                     : wdata == 2 ? i18n (529, "male")
                      :              i18n (530, "not specified"));
-            data++;
 
-            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (531, "Homepage:"));
-            newline = "";
-            if ((*(data + 1) > 0) && (*(data + 1) <= 12))
-            {
-                M_print (COLSERV "%-15s" COLNONE " %02d. %s %4d\n", i18n (532, "Born:"),
-                         *(data + 2), TableGetMonth (*(data + 1)), *(data) + 1900);
-            }
-            data += 3;
-            if (((*data != 0) && (*data != (UBYTE) 0xff))
-                || ((*(data + 1) != 0) && (*(data + 1) != (UBYTE) 0xff))
-                || ((*(data + 2) != 0) && (*(data + 2) != (UBYTE) 0xff)))
-            {
-                M_print (COLSERV "%-15s" COLNONE " ", i18n (533, "Languages:"));
-                if (TableGetLang (*data) != NULL)
-                {
-                    M_print ("%s", TableGetLang (*data));
-                }
-                else
-                {
-                    M_print ("%X", *data);
-                }
-                data++;
-                if (TableGetLang (*data) != NULL)
-                {
-                    M_print (", %s", TableGetLang (*data));
-                }
-                else
-                {
-                    M_print (", %X", *data);
-                }
-                data++;
-                if (TableGetLang (*data) != NULL)
-                {
-                    M_print (", %s", TableGetLang (*data));
-                }
-                else
-                {
-                    M_print (", %X", *data);
-                }
-                M_print ("\n");
-            }
-            break;
-        case META_SRV_ABOUT:
-            data += 2;
-            if (*data != 0x0A)
-                break;
-            data++;
-            PktPrintString (&data, COLSERV "%s" COLCLIENT "\n%%s", i18n (525, "About:"));
-            M_print (COLNONE);
-            break;
-        case META_SRV_WORK:
-            data += 2;
-            if (*data != 0x0A)
-                break;
-            data++;
-            
-            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (524, "Work Location:"));
-            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (524, "Work Location:"));
-            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (523, "Work Phone:"));
-            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (521, "Work Fax:"));
-            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (522, "Work Address:"));
+            if (*(data = PacketReadLNTS (p)))
+                M_print (AVPFMT, i18n (531, "Homepage:"), data);
 
-            if (Chars_2_DW (data))
-            {
-                M_print (COLSERV "%-15s" COLNONE " %d\n", i18n (520, "Work Zip:"), Chars_2_DW (data));
-            }
-            data += 4;
-            
-            if (Chars_2_Word (data))
-            {
-                if (TableGetCountry (Chars_2_Word (data)))
-                    M_print (COLSERV "%-15s" COLNONE " %s\n", i18n (514, "Work Country:"),
-                             TableGetCountry (Chars_2_Word (data)));
-                else
-                    M_print (COLSERV "%-15s" COLNONE " %d\n", i18n (513, "Work Country Code:"),
-                             Chars_2_Word (data));
-            }
-            data += 2;
-            
-            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (519, "Company Name:"));
-            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (518, "Department:"));
-            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (517, "Job Position:"));
-            
-            if (Chars_2_Word (data))
-                M_print (COLSERV "%-15s" COLNONE " %s\n", i18n (516, "Occupation:"),
-                         TableGetOccupation (Chars_2_Word (data)));
-            data += 2;
-            
-            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (515, "Work Homepage:"));
-            M_print (COLNONE);
-            break;
-        case META_SRV_GEN:
-            data += 2;
-            if (*data != 0x0A)
-                break;
-            data++;
-            PktPrintString (&data, COLSERV "%-15s" COLNONE " " COLCONTACT "%%s" COLNONE "\n", i18n (500, "Nickname:"));
-
-        /*  PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (-1, "First Name:");
-            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (-1, "Last Name:");   */
-
-            if (Chars_2_Word (data))
-            {
-                PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s", i18n (501, "Name:"));
-                PktPrintString (&data, "\t%%s");
-                M_print ("\n");
-            }
-
-            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (502, "Email:"));
-            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (503, "Other Email:"));
-            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (504, "Old Email:"));
-
-        /*  PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (-1, "City:");
-            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (-1, "State:");   */
-
-            if (Chars_2_Word (data))
-            {
-                PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s", i18n (505, "Location:"));
-                PktPrintString (&data, ", %%s");
-                M_print ("\n");
-            }
-
-            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (506, "Phone:"));
-            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (507, "Fax:"));
-            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (508, "Street:"));
-            PktPrintString (&data, COLSERV "%-15s" COLNONE " %%s\n", i18n (509, "Cellular:"));
-
-            zip = Chars_2_DW (data);
-            if (((signed long) zip) > 0)
-                M_print (COLSERV "%-15s" COLNONE " %05u\n", i18n (510, "Zip:"), zip);
-            data += 4;
-
-            if (TableGetCountry (Chars_2_Word (data)))
-                M_print (COLSERV "%-15s" COLNONE " %s\t", i18n (511, "Country:"),
-                         TableGetCountry (Chars_2_Word (data)));
+            if (sess->type == TYPE_SERVER_OLD)
+                wdata = PacketRead1 (p) + 1900;
             else
-                M_print (COLSERV "%-15s" COLNONE " %d\t", i18n (512, "Country Code:"), Chars_2_Word (data));
-            data += 2;
+                wdata = PacketRead2 (p);
+            month = PacketRead1 (p);
+            day = PacketRead1 (p);
 
-            if (((signed char) *data) >> 1 != -50)
-                M_print ("(UTC %+d)", ((signed char) *data) >> 1);
-            M_print (COLNONE "\n");
-            break;
-        case 0x00F0:
-            data += 3;
-            Handle_Interest ((UBYTE) * data, data + 1);
-            break;
-        case 0x00FA:           /* Silently ignore these so as not to confuse people */
-            if (data[2] == 0x14)
-            {
-                M_print (i18n (398, "Search " COLCLIENT "failed" COLNONE ".\n"));
-                break;
-            }
-        case META_SRV_WP_FOUND:
-            if (data[0] != 0xA4)
-                break;
-            if (data[2] == 0x32 || (data[2]==0x14 && data[3]==0x15))
-            {
-                M_print (i18n (398, "Search " COLCLIENT "failed" COLNONE ".\n"));
-                break;
-            }
-            M_print (COLSERV "%-15s" COLNONE " %d\n", i18n (498, "Info for:"), Chars_2_DW (&data[5]));
-            len2 = Chars_2_Word (&data[9]);
-            ConvUnixWin (&data[11]);
-            M_print (COLSERV "%-15s" COLNONE " %s\n",i18n (563, "Nick name:"), &data[11]);
-            tmp = &data[11 + len2];
-            len2 = Chars_2_Word (tmp);
-            ConvUnixWin (tmp + 2);
-            M_print (COLSERV "%-15s" COLNONE " %s\n",i18n (564, "First name:"), tmp + 2);
-            tmp += len2 + 2;
-            len2 = Chars_2_Word (tmp);
-            ConvUnixWin (tmp + 2);
-            M_print (COLSERV "%-15s" COLNONE " %s\n",i18n (565, "Last name:"), tmp + 2);
-            tmp += len2 + 2;
-            len2 = Chars_2_Word (tmp);
-            ConvUnixWin (tmp + 2);
-            M_print (COLSERV "%-15s" COLNONE " %s\n",i18n (566, "Email address:"), tmp + 2);
-            tmp += len2 + 2;
-            if (*tmp == 1)
-            {
-                M_print (i18n (567, "No authorization needed." COLNONE " "));
-            }
+            if (month >= 1 && month <= 12 && day && day < 32 && wdata)
+                M_print (COLSERV "%-15s" COLNONE " %02d. %s %4d\n", 
+                    i18n (532, "Born:"), day, TableGetMonth (month), 
+                    wdata);
+            M_print (COLSERV "%-15s" COLNONE " ", 
+                i18n (533, "Languages:"));
+            if ((tabd = TableGetLang (wdata = PacketRead1 (p))) != NULL)
+                M_print ("%s", tabd);
             else
-            {
-                M_print (i18n (568, "Must request authorization." COLNONE " "));
-            }
-            len2 = Chars_2_Word(tmp);
-            tmp+=1;
-            if (*tmp == 1)
-            {
-                M_print (" %s\n", i18n (921, "Online"));
-            }
+                M_print ("%X", wdata);
+            if ((tabd = TableGetLang (wdata = PacketRead1 (p))) != NULL)
+                M_print (", %s", tabd);
             else
-            {
-                M_print (" %s\n", i18n (928, "Offline"));
-            }
-            break;
-        case META_SRV_WP_LAST_USER:
-            if (data[0] != 0xAE)
-                break;
-            if (data[2] == 0x32 || (data[2]==0x14 && (data[3]==0x15 || data[3]==0x00)))
-            {
-                M_print (i18n (398, "Search " COLCLIENT "failed" COLNONE ".\n"));
-                break;
-            }
-            M_print (COLSERV "%-15s" COLNONE " %d\n", i18n (498, "Info for:"), Chars_2_DW (&data[5]));
-            len2 = Chars_2_Word (&data[9]);
-            ConvUnixWin (&data[11]);
-            M_print (COLSERV "%-15s" COLNONE " %s\n",i18n (563, "Nick name:"), &data[11]);
-            tmp = &data[11 + len2];
-            len2 = Chars_2_Word (tmp);
-            ConvUnixWin (tmp + 2);
-            M_print (COLSERV "%-15s" COLNONE " %s\n",i18n (564, "First name:"), tmp + 2);
-            tmp += len2 + 2;
-            len2 = Chars_2_Word (tmp);
-            ConvUnixWin (tmp + 2);
-            M_print (COLSERV "%-15s" COLNONE " %s\n",i18n (565, "Last name:"), tmp + 2);
-            tmp += len2 + 2;
-            len2 = Chars_2_Word (tmp);
-            ConvUnixWin (tmp + 2);
-            M_print (COLSERV "%-15s" COLNONE " %s\n",i18n (566, "Email address:"), tmp + 2);
-            tmp += len2 + 2;
-            if (*tmp == 1)
-            {
-                M_print (i18n (567, "No authorization needed." COLNONE " "));
-            }
+                M_print (", %X", wdata);
+            if ((tabd = TableGetLang (wdata = PacketRead1 (p))) != NULL)
+                M_print (", %s", tabd);
             else
-            {
-                M_print (i18n (568, "Must request authorization." COLNONE " "));
-            }
-            len2 = Chars_2_Word(tmp);
-            tmp+=1;
-            if (*tmp == 1)
-            {
-                M_print (" %s\n", i18n (921, "Online"));
-            }
-            else
-            {
-                M_print (" %s\n", i18n (928, "Offline"));
-            }
-
-            M_print (i18n (621, "%d users not returned."), *tmp);
+                M_print (", %X", wdata);
             M_print ("\n");
+
+            /* one unknown word ignored according to v7 doc */
+            break;
+        case 0xEB: /* more-email-info */
+            if ((i = PacketRead1 (p)))
+                M_print (COLSERV "%-15s" COLNONE "\n", 
+                    i18n (859, "Additional Email addresses:"));
+            for (; i > 0; i--)
+            {
+                wdata = PacketRead1 (p);
+                if (*(data = PacketReadLNTS (p)))
+                    M_print ("  %s %s\n", data, 
+                        wdata == 1 ? i18n (861, "(no authorization needed)") 
+                        : wdata == 0 ? i18n (862, "(must request authorization)")
+                        : "");
+            }
+            break;
+        case META_SRV_WORK: /* 0x00D2, work-info */
+            data = PacketReadLNTS (p);
+            data2 = PacketReadLNTS (p);
+            if (*data && *data2)
+                M_print (COLSERV "%-15s" COLNONE " %s, %s\n", 
+                    i18n (524, "Work Location:"), data, data2);
+            else if (*data)
+                M_print (AVPFMT, i18n (873, "Work City:"), data);
+            else if (*data2)
+                M_print (AVPFMT, i18n (874, "Work State:"), data2);
+
+            if (*(data = PacketReadLNTS (p)))
+                M_print (AVPFMT, i18n (523, "Work Phone:"), data);
+            if (*(data = PacketReadLNTS (p)))
+                M_print (AVPFMT, i18n (521, "Work Fax:"), data);
+            if (*(data = PacketReadLNTS (p)))
+                M_print (AVPFMT, i18n (522, "Work Address:"), data);
+
+            if (sess->type == TYPE_SERVER)
+            {  
+                if (*(data = PacketReadLNTS (p)))
+                    M_print (AVPFMT, i18n (520, "Work Zip:"), data);
+            }
+            else if ((dwdata = PacketRead4 (p)))
+                M_print (COLSERV "%-15s" COLNONE " %lu\n", 
+                    i18n (520, "Work Zip:"), dwdata);
+
+            if ((wdata = PacketRead2 (p)))
+            {
+                if ((tabd = TableGetCountry (wdata)))
+                    M_print (COLSERV "%-15s" COLNONE " %s\n", 
+                        i18n (514, "Work Country:"), tabd);
+                else
+                    M_print (COLSERV "%-15s" COLNONE " %d\n", 
+                        i18n (513, "Work Country Code:"), wdata);
+            }
+            if (*(data = PacketReadLNTS (p)))
+                M_print (AVPFMT, i18n (519, "Company Name:"), data);
+            if (*(data = PacketReadLNTS (p)))
+                M_print (AVPFMT, i18n (518, "Department:"), data);
+            if (*(data = PacketReadLNTS (p)))
+                M_print (AVPFMT, i18n (517, "Job Position:"), data);
+            if ((wdata = PacketRead2 (p))) 
+                M_print (COLSERV "%-15s" COLNONE " %s\n", 
+                    i18n (516, "Occupation:"), TableGetOccupation (wdata));
+            if (*(data = PacketReadLNTS (p)))
+                M_print (AVPFMT, i18n (515, "Work Homepage:"), data);
+
+            break;
+        case META_SRV_ABOUT: /* 0x00E6, about */
+            if (*(data = PacketReadLNTS (p)))
+                M_print (COLSERV "%-15s" COLNONE "\n " COLCLIENT 
+                    "%s" COLNONE "\n", i18n (525, "About:"), data);
+            break;
+        case 0x00F0: /* personal-interests-info */
+            if ((i = PacketRead1 (p)))
+                M_print (COLSERV "%-15s" COLNONE "\n",
+                    i18n (875, "Personal interests:"));
+            for (; i > 0; i--)
+            {
+                wdata = PacketRead2 (p);
+                if (*(data = PacketReadLNTS (p)))
+                {
+                    if ((tabd = TableGetInterest (wdata)))
+                        M_print ("  %s: %s\n", tabd, data);
+                    else
+                        M_print ("  %d: %s\n", wdata, data);
+                }
+            }
+            break;
+        case 0x00FA: /* past-background-info */
+            if ((i = PacketRead1 (p)))
+                M_print (COLSERV "%-15s" COLNONE "\n", 
+                    i18n (876, "Background:")); /* XXX unsure */
+            for (; i > 0; i--)
+            {
+                wdata = PacketRead2 (p);
+                if (*(data = PacketReadLNTS (p)))
+                {
+                    if ((tabd = TableGetPast (wdata)))
+                        M_print ("  %s: %s\n", tabd, data);
+                    else
+                        M_print ("  %d: %s\n", wdata, data);
+                }
+
+            }
+            if ((i = PacketRead1 (p)))
+                M_print (COLSERV "%-15s" COLNONE "\n", 
+                    i18n (879, "Personal Past:")); /* unsure XXX */
+            for (; i > 0; i--)
+            {
+                wdata = PacketRead2 (p);
+                if (*(data = PacketReadLNTS (p)))
+                {
+                    if ((tabd = TableGetPast (wdata)))
+                        M_print ("  %s: %s\n", tabd, data);
+                    else
+                        M_print ("  %d: %s\n", wdata, data);
+                }
+            }
+
+            break;
+        case META_SRV_WP_FOUND: /* 0x01A4, wp-info + lasting */
+        case META_SRV_WP_LAST_USER: /* 0x01AE, wp-info */
+            if ((len = PacketRead2 (p)) < 21)
+            {
+                M_print (i18n (398, "Search " COLCLIENT "failed" COLNONE "."));
+                M_print ("\n");
+                break;
+            }
+            M_print (COLSERV "%-15s" COLNONE " %lu\n", i18n (498, "Info for:"), 
+                PacketRead4 (p));
+            
+            if (*(data = PacketReadLNTS (p)))
+                M_print (AVPFMT, i18n (563, "Nick name:"), data);
+            if (*(data = PacketReadLNTS (p)))
+                M_print (AVPFMT, i18n (564, "First name:"), data);
+            if (*(data = PacketReadLNTS (p)))
+                M_print (AVPFMT, i18n (565, "Last name:"),  data);
+            data = PacketReadLNTS (p);
+            wdata = PacketRead1 (p);
+            if (*data)
+                M_print (COLSERV "%-15s" COLNONE " %s\t%s\n", 
+                    i18n (566, "Email address:"), data,
+                    wdata == 1 ? i18n (861, "(no authorization needed)")
+                    : i18n (862, "(must request authorization)"));
+
+            switch ((wdata = PacketRead2 (p))) {
+                case 0:
+                    M_print (COLSERV "%-15s" COLNONE " %s\n", i18n (886, "Status:"),
+                        i18n (928, "Offline"));
+                    break;
+                case 1:
+                    M_print (COLSERV "%-15s" COLNONE " %s\n", i18n (886, "Status:"),
+                        i18n (921, "Online"));
+                    break;
+                case 2:
+                    M_print (COLSERV "%-15s" COLNONE " %s\n", i18n (886, "Status:"),
+                        i18n (888, "Not webaware"));
+                    break;
+                default:
+                    M_print (COLSERV "%-15s" COLNONE " %d\n", i18n (886, "Status:"), 
+                        wdata);
+                    break;
+            }
+
+            wdata = PacketRead1 (p);
+            M_print (COLSERV "%-15s" COLNONE " %s\n", i18n (696, "Sex:"),
+                       wdata == 1 ? i18n (528, "female")
+                     : wdata == 2 ? i18n (529, "male")
+                     :              i18n (530, "not specified"));
+
+            wdata = PacketRead1 (p);
+            if (wdata != 0xff && wdata != 0)
+                M_print (COLSERV "%-15s" COLNONE " %d\n", 
+                    i18n (575, "Age:"), wdata);
+            else
+                M_print (COLSERV "%-15s" COLNONE " %s\n", 
+                    i18n (575, "Age:"), i18n (526, "Not Entered"));
+
+            if (subtype == META_SRV_WP_FOUND && (dwdata = PacketRead4(p)))
+                M_print ("%lu %s\n", dwdata, i18n (621, "users not returned."));
             break;
         case 0x010E:
-            if (!prG->verbose)
+            /* 0, counter like more-email-info? */
+            if (!PacketRead2 (p))
                 break;
         default:
-            M_print (i18n (399, "Unknown Meta User response " COLSERV "%04X" COLNONE "\n"), subcmd);
-            if (prG->verbose)
-                Hex_Dump (data, len);
+            M_print ("%s: " COLSERV "%04X" COLNONE "\n", 
+                i18n (399, "Unknown Meta User response"), subtype);
+            Hex_Dump (p->data + p->rpos, p->len - p->rpos);
             break;
     }
 }
 
-void Display_Rand_User (Session *sess, UBYTE * data, UDWORD len)
+void Display_Rand_User (Session *sess, UBYTE *data, UDWORD len)
 {
     if (len == 37)
     {

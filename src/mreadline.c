@@ -168,8 +168,7 @@ void R_goto (int pos)
 void R_rlap (const char *s)
 {
     int pos = cpos;
-    printf (s);
-    printf (ESC "[J");
+    printf ("%s", s);
     cpos += strlen (s);
 #ifdef ANSI_COLOR
     if ((M_pos () + cpos) % Get_Max_Screen_Width() == 0)
@@ -187,6 +186,7 @@ void R_process_input_backspace (void)
     clen--;
     R_goto (cpos - 1);
     memmove (s + cpos, s + cpos + 1, clen - cpos + 1);
+    printf (ESC "[J");
     R_rlap (s + cpos);
 }
 
@@ -197,6 +197,7 @@ void R_process_input_delete (void)
 
     clen--;
     memmove (s + cpos, s + cpos + 1, clen - cpos + 1);
+    printf (ESC "[J");
     R_rlap (s + cpos);
 }
 

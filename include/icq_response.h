@@ -1,5 +1,5 @@
 
-void Meta_User (Session *sess, UBYTE * data, UDWORD len, UDWORD uin);
+void Meta_User (Session *sess, UDWORD uin, Packet *p);
 void Display_Rand_User (Session *sess, UBYTE * data, UDWORD len);
 void Recv_Message (Session *sess, UBYTE * pak);
 void ack_srv (Session *sess, UDWORD seq);
