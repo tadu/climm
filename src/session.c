@@ -59,6 +59,7 @@ Session *SessionClone (Session *sess)
     child->assoc = sess;
     child->sok = -1;
     child->connect = 0;
+    child->incoming = NULL;
     
     return child;
 }
@@ -146,6 +147,8 @@ const char *SessionType (Session *sess)
             return i18n (1947, "listener");
         case TYPE_DIRECT:
             return i18n (1890, "peer-to-peer");
+        case TYPE_FILE:
+            return i18n (2067, "file transfer");
         default:
             return i18n (1745, "unknown");
     }
