@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.52 2002/10/21 01:09:44
+#  EN: __.i18n,v 1.53 2002/10/27 19:36:28
 1001:de
 1002:de_DE
 1003:0-4-9-3
@@ -35,7 +35,7 @@
 1035.ist jetzt
 1036:Unbekanntes Kommando %s, tippe "help" für Hilfe.
 1037:Nachricht teilweise gesendet.\n
-1038:Nachricht abgebrochen\n
+1038:Nachricht abgebrochen.\n
 1039:Der Server behauptet, wir wären nicht verbunden.\n
 1040:mICQ> 
 1041:msg> 
@@ -46,7 +46,7 @@
 1046:Länge
 1047:Extra-Daten
 1048:Fehlerkode: %d\n
-1049:UIN: %d\n
+1049.UIN: %d\n
 1050:Login erfolgreich!
 1053:Nach %s verbunden, warte auf Antwort.\n
 1055:Konnte keinen Socket erstellen.
@@ -547,7 +547,7 @@
 1575:Alter:
 1578:Landesvorwahl:
 1579:Firma:
-1584:Warnung! Befehl "%s" mit Rückgabewert %d fehlgeschlagen\n
+1584.Warnung! Befehl "%s" mit Rückgabewert %d fehlgeschlagen\n
 1587:Abteilung:
 1592:<%s> schickt eine Nachricht per eMail:\n
 1593:<%s> schickt eine Nachricht per Web:\n
@@ -605,10 +605,10 @@
 1659:Unbekannter Abschnitt %s in der Konfigurationsdatei.
 1660:Ungültiges Kommando: %s\n
 1661:Shell-Kommandos wurden abgeschaltet.\n
-1666:Ignoriere %s nicht mehr.
-1667:Ignoriere %s.
-1670:Für %s jetzt normal sichtbar.
-1671:Für %s jetzt immer sichtbar.
+1666:Ignoriere %s nicht mehr.\n
+1667:Ignoriere %s.\n
+1670:Für %s jetzt normal sichtbar.\n
+1671:Für %s jetzt immer sichtbar.\n
 1672:%ss IP-Adresse ist 
 1673:Der Port ist %d.\n
 1674:Der Port ist unbekannt.\n
@@ -641,7 +641,7 @@
 1714:Weiblein sucht Männlein
 1715:mICQ
 1716:Keine
-1717:! als erstes Zeichen, um ein Shell-Kommando auszuführen (z.B. "!ls"  "!dir" "!mkdir temp").
+1717:"!" als erstes Zeichen, um ein Shell-Kommando auszuführen (z.B. "!ls", "!dir", "!mkdir temp").
 1719:Zeigt, wie lange mICQ schon läuft.
 1720:<uin> kann die Benutzernummer oder der Spitzname eines Benutzers sein.
 1721:Bei einer leeren Nachricht können mehrere Zeilen eingegeben werden.\nDabei bedeutet eine Zeile nur mit . das Ende der Nachricht.\nEbenso verwirft eine Zeile nur mit # die Nachricht.
@@ -869,8 +869,8 @@
 2015:Keine Nachricht angegeben.\n
 2017:Der Benutzer ist verbunden, aber möglicherweise unsichtbar.\n
 2018:    quiet: keine Ausgabe für Statuswechsel.\n
-2020:Für %s jetzt sichtbar.
-2021:Für %s jetzt unsichtbar.
+2020:Für %s jetzt sichtbar.\n
+2021:Für %s jetzt unsichtbar.\n
 2022:Der Benutzer ist nicht verbunden.\n
 2023:Direkte Verbindung von Verbindungspartner geschlossen.\n
 2024:Unbekannte Protokoll-Version %d für ICQ-Direktverbindungen.\n
@@ -968,7 +968,7 @@
 2129:          URL: %s%s%s\n
 2130:Erstelle Nachricht an %salle%s:\n
 2131:Erstelle Nachricht an %s%s%s:\n
-2132:Erstelle Nachricht an %s%d%s:\n
+2132.Erstelle Nachricht an %s%d%s:\n
 2133:Farbe ist %s%s%s.\n
 2134:Lustige Meldungen sind %s%s%s.\n
 2135:Verringerte Ausgabe ist %s%s%s.\n
@@ -979,8 +979,8 @@
 2140:Interessengruppenänderung war %s%s%s.\n
 2141:Suche %sfehlgeschlagen%s.\n
 2142:Direkt-Verbindung mit %s nicht möglich.\n
-2143:hat die Autorisierung abgelehnt: %s%s%s\n
-2144:fragt Autorisierung an: %s%s%s\n
+2143:hat die Autorisierung abgelehnt: %s%s\n
+2144:fragt Autorisierung an: %s%s\n
 2145:auth add  <Spitz>         - Nach Autorisierung hinzugefügt.\n
 2146:"%s" ist bereits ein Zweit-Name für "%s" (%d).\n
 2147:"%s" (%d) wird bereits als Spitzname verwendet.\n
@@ -1047,3 +1047,16 @@
 2212:ist jetzt %s
 2213:hat sich eingeloggt (%s)
 2214:Informationen über %s%lu%s:\n
+2215:Dieses mICQ kann nicht zwischen SJIS oder EUC und Unicode konvertieren.\n
+2216:Dieses mICQ kennt die Kodierung "%s" nicht.\n
+2217:Dieses mICQ kann nicht zwischen "%s" und Unicode konvertieren.\n
+2218:UIN: %s\n
+#2219:'empty' message with unknown 0x%08x = %d.\n
+2220:mehrere
+2221:Entferne temporären Kontakt '%s' (%d).\n
+2222:Skript-Kommando "%s" fehlgeschlagen: %s (%d).\n
+2223:Öffne Fernbedienungskanal auf %s... 
+2225:Fernbedienung
+2226:Konnte FIFO nicht erschaffen
+2227:Konnte FIFO nicht öffnen
+2228:Konnte FIFO nicht nicht-blockieren machen
