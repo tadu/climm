@@ -196,7 +196,7 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
         if (conv_encs[enc].to == (iconv_t)(-1))
         {
             if (enc != ENC_UTF8)
-                return s_spritnf ("<invalid encoding unsupported %d %s>", enc, conv_encs[enc].enc);
+                return s_sprintf ("<invalid encoding unsupported %d %s>", enc, conv_encs[enc].enc);
             else
                 return s_sprintf ("%s", inn);
         }
@@ -268,7 +268,7 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
         if (conv_encs[enc].from == (iconv_t)(-1))
         {
             if (enc != ENC_UTF8)
-                return s_spritnf ("<invalid encoding unsupported %d %s>", enc, conv_encs[enc].enc);
+                return s_sprintf ("<invalid encoding unsupported %d %s>", enc, conv_encs[enc].enc);
             else
                 return s_sprintf ("%s", inn);
         }
