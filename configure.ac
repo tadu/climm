@@ -91,7 +91,8 @@ AC_CHECK_DECLS(h_errno,,,[$ac_includes_default
 #include <netdb.h>])
 
 AC_TYPE_SIGNAL
-AC_CHECK_TYPES(socklen_t)
+AC_CHECK_TYPES(socklen_t,,,[$ac_includes_default
+#include <netdb.h>])
 AC_FUNC_VPRINTF
 AC_FUNC_SNPRINTF
 AC_FUNC_MEMMOVE
