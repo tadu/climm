@@ -1,5 +1,12 @@
 -*- coding: utf-8 -*-
 
+2004-01-17 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
+	* prolong re-login delay, allow for UTF8-tagged auto replies
+	* detect ICQ2003(b)
+	* improve 'last'-history by saving outgoing messages as well
+	* update pt.i18n, de.i18n, en.i18n
+	* work around TCL using clone(CLONE_SIGHAND)
+	* Release as 0.4.10.6
 
 2004-01-15 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
 	* change malloc()ed size as suggested by Sebastian Felis

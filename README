@@ -1,7 +1,7 @@
 micq - a portable ICQ Console Client
 $Id$ -*- coding: utf-8 -*-
 
-current Version: 0.4.10.5
+current Version: 0.4.10.6
 ====================================
 
 a) About mICQ
@@ -50,7 +50,6 @@ Features of mICQ include:
                       offline or send a message.
    * remote control - can be operated from other programs via a FIFO
    * connections    - can show a users connection info and last seen online time
-   * peek           - check whether someone is offline or just invisible
    * tcp            - full support of v8 direct connections
    * SSL            - supports SSL-encrypted direct connections compatible with licq and SIM
    * Tcl            - scripting support using the Tcl scripting language

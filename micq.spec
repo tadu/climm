@@ -1,6 +1,6 @@
 Summary:		text/line based ICQ client with many features
 Name:			micq
-Version:		0.4.10.5
+Version:		0.4.10.6
 Release:		1
 Name:			%{name}
 Version:		%{version}
@@ -34,6 +34,9 @@ Authors: Matthew D. Smith (deceased)
          Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 
 %changelog
+* Sat Jan 17 2004 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+- new upstream release 0.4.10.6
+
 * Mon Oct  6 2003 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 - new upstream bug fix release 0.4.10.5
 

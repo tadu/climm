@@ -2,12 +2,12 @@
 2001-05-23: We're using autoconf now!
 2002-06-10: Finally 0.4.9 is released, featuring full v8 support.
 2002-08-08: Many fixes, including most memory leaks.
-2002-08-26: 0.4.9.3: file transfer, Trillian bug fix, more translations, colors customizable, ~-expansion for logplace
-2002-10-??: 0.4.9.4: fix/improve file transfer, Peter Backes' new log file format, recognize most clients,
-                     capabilities support, dump packets following a syntax definition, allow quoting of parameters
-2003-01-07: 0.4.10: autosaving, autofingering, new event script handling, contact meta data saving, contact groups,
-                    log file utils (from rtc), ^C handler, type-2 message sending, remote control via a FIFO,
-                    send and receive UTF-8 encoded message, ASCII art mICQ logo, alias'ing of commands, history
+2002-08-26: 0.4.9.3:  file transfer, Trillian bug fix, more translations, colors customizable, ~-expansion for logplace
+2002-10-??: 0.4.9.4:  fix/improve file transfer, Peter Backes' new log file format, recognize most clients,
+                      capabilities support, dump packets following a syntax definition, allow quoting of parameters
+2003-01-07: 0.4.10:   autosaving, autofingering, new event script handling, contact meta data saving, contact groups,
+                      log file utils (from rtc), ^C handler, type-2 message sending, remote control via a FIFO,
+                      send and receive UTF-8 encoded message, ASCII art mICQ logo, alias'ing of commands, history
 2003-01-24: 0.4.10.1: bug fix release
 2003-03-07: 0.4.10.2: bug fix release
 2003-05-13: 0.4.10.3: bug fix release, support unicode type-1 messages, tweaks for multi-UIN use,
@@ -15,3 +15,5 @@
 2003-09-22: 0.4.10.4: bug fix release, fixes remote DoS, SSL support a la licq,
                       TCL scripting, fixes a few file transfer glitches
 2003-10-06: 0.4.10.5: fixes a bunch of annoying yet easy to fix bugs
+2004-01-17: 0.4.10.6: history seach/dump, avoid deleted new registered UINs by initializing ICQ meta data,
+                      bug fixes

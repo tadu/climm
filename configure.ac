@@ -4,7 +4,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT([micq], [0.4.10.5])
+AC_INIT([micq], [0.4.10.6])
 AC_CONFIG_SRCDIR([include/micq.h])
 AC_CONFIG_LIBOBJ_DIR(replace)
 AC_CONFIG_HEADER(include/config.h)
@@ -37,9 +37,9 @@ AC_ARG_ENABLE([iconv], AC_HELP_STRING([--disable-iconv], [do not use iconv() at 
 AC_ARG_ENABLE([remote], AC_HELP_STRING([--disable-remote], [disable remote control FIFO]),
               ac_arg_use_remote=$enableval, ac_arg_use_remote=auto)
 AC_ARG_ENABLE([tcl], AC_HELP_STRING([--enable-tcl], [enable Tcl scripting (EXPERIMENTAL)]),
-              ac_arg_use_tcl=$enableval, ac_arg_use_tcl=no)
+              ac_arg_use_tcl=$enableval, ac_arg_use_tcl=auto)
 AC_ARG_ENABLE([ssl], AC_HELP_STRING([--enable-ssl], [enable SSL encryption (EXPERIMENTAL)]),
-              ac_arg_use_ssl=$enableval, ac_arg_use_ssl=no)
+              ac_arg_use_ssl=$enableval, ac_arg_use_ssl=auto)
 
 # Checks for libraries.
 AC_CHECK_FUNCS([inet_ntoa getpeername])
@@ -60,6 +60,9 @@ if test "x$ac_arg_use_peer2peer" != "xno"; then
     if test "x$ac_use_ssl$ac_arg_use_ssl" = "xnoyes"; then
       AC_MSG_FAILURE([cannot find a suitable SSL library])
     fi
+    if test "x$ac_use_ssl$ac_arg_use_ssl" = "xnoauto"; then
+      AC_MSG_WARN([cannot find a suitable SSL library -- enctypted connection support disabled])
+    fi
     if test "x$ac_use_ssl" = "xyes"; then
       LIBS="$LIBGNUTLS_LIBS $LIBS"
       CFLAGS="$LIBGNUTLS_CFLAGS $CFLAGS"
@@ -78,8 +81,11 @@ if test "x$ac_arg_use_tcl" != "xno"; then
   if test "x$ac_use_tcl" = "xyes"; then
     AC_SEARCH_LIBS([Tcl_CreateInterp], [tcl8.4 tcl8.3], [ac_use_tcl=yes], [ac_use_tcl=no])
   fi
-  if test "x$ac_usl_tcl$ac_arg_use_tcl" = "xnoyes"; then
+  if test "x$ac_use_tcl$ac_arg_use_tcl" = "xnoyes"; then
     AC_MSG_FAILURE([cannot find a suitable Tcl interpreter library])
+  fi
+  if test "x$ac_use_tcl$ac_arg_use_tcl" = "xnoauto"; then
+    AC_MSG_WARN([cannot find a suitable Tcl interpreter library -- TCL scripting disabled])
   fi
   ac_arg_use_tcl=$ac_use_tcl
 fi

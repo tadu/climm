@@ -1,3 +1,12 @@
+micq (1:0.4.10.6-1) unstable; urgency=low
+
+  * New upstream release
+  + new history dump and search commands
+  + avoid deleted new registered UINs by initializing ICQ meta data
+  + bug fixes
+
+ -- Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>  Sat, 17 Jan 2004 02:17:28 +0100
+
 micq (1:0.4.10.5-1) unstable; urgency=low
 
   * New upstream bug fix release
