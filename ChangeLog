@@ -1,5 +1,12 @@
 -*- coding: utf-8 -*-
 
+2003-02-27 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+	* fix endless resend stuff
+	* ignore empty nick names on ocntact list import
+	* fix documentation glitches in man pages
+	* update de man pages
+	* RELEASE as 0.4.10.2
+
 2003-02-24 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
 	* debian sync
 	* special-case around Kopete as well

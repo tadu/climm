@@ -1,5 +1,5 @@
 %define name		micq
-%define version	0.4.10.1
+%define version	0.4.10.2
 %define release	1
 
 %define prefix	/usr
@@ -29,6 +29,9 @@ Authors: Matthew D. Smith (dead)
          Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 
 %changelog
+* Tue Feb 27 2003 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+- new upstream bug fix release 0.4.10.2
+
 * Tue Jan 24 2003 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 - new upstream bug fix release 0.4.10.1
 
