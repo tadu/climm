@@ -781,8 +781,10 @@ Packet *UtilIOReceiveTCP (Connection *conn)
         }
         conn->connect = 0;
     }
-    else
+    if (conn->reconnect)
         conn->reconnect (conn);
+    else
+        conn->connect = 0;
     return NULL;
 }
 
@@ -908,14 +910,35 @@ BOOL UtilIOSendTCP (Connection *conn, Packet *pak)
 
     conn->outgoing = NULL;
     PacketD (pak);
+#if ENABLE_SSL
+    ssl_sockclose (conn);
+#else
+    sockclose (conn);
+#endif
+    conn->sok = -1;
 
-    if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+    if ((rc && rc != ECONNRESET) || !conn->reconnect)
     {
-        M_printf ("%s ", s_now);
-        M_printf (i18n (1835, "Error while writing to socket - %s (%d)\n"),
-                 strerror (rc), rc);
+        if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+        {
+            Contact *cont;
+            if ((cont = ContactUIN (conn, conn->uin)))
+            {
+                M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+#ifdef ENABLE_SSL
+                if (conn->ssl_status == SSL_STATUS_OK)
+                    M_printf (i18n (2373, "Error while reading from socket (SSL): %s (%d)\n"), ssl_strerror (rc), rc);
+                else    
+#endif /* ENABLE SSL */
+                    M_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
+            }
+        }
+        conn->connect = 0;
     }
-
+    if (conn->reconnect)
+        conn->reconnect (conn);
+    else
+        conn->connect = 0;
     return FALSE;
 }
 
