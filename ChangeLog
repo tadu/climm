@@ -1,4 +1,11 @@
 
+2001-05-31 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* src/ui.c:
+	  Fixed togvis, togig based on patch by Sander Smeenk
+	* lang/*: Regenerate.
+	* lang/i18n-template: Fixed stupid harmless bug.
+	* src/util.c: Clean up UIN2Contact().
+
 2001-05-31 Michel Oosterhof <micheloo@xs4all.nl>
 	* src/file_utils.c, include/file_utils.h:
 	  Fix termination of wrong string with '\0', use HAVE_UNISTD_H

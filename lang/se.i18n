@@ -87,6 +87,7 @@
 #087:Ignoring garbage after number.
 088:Ange ditt ICQ-nummer, eller 0 för att skapa ett nytt:
 089:Tog bort översättning.
+#090:%s is a UIN, not a nick name.
 091:Du måste ange lösenord!
 092:Bekräfta lösenord:
 093:Lösenorden inte like, försök igen!
@@ -492,7 +493,7 @@
 #493:Peer-to-Peer
 #494:Server Only
 #495:No Random User Found
-#496:%d/%d/%d
+#496:%02d/%02d/%04d
 #497:Type: %d	 Len: %d¶
 #499:Other
 500:ICQ-namn:
@@ -512,7 +513,7 @@
 #514:Work Country:
 #515:Work Homepage:
 #516:Occupation:
-#517:Titel:
+#517:Job Position:
 #518:Department:
 519:Företag:
 520:Work Zip:
@@ -650,13 +651,13 @@
 661:Skalkommandor är avstängda.¶
 662:Color is ©3%s©0.¶
 664:Skriver meddelande till ©1all©0:¶
-665:%s är inte något känt namn
-666:Slutar ignornera %s!¶
-667:Ignorerar %s!¶
-#668:©1Must specify a nick name©0¶
-669:Lagt till %s.¶
-670:Osynlig för %s nu.¶
-671:Synlig för %s nu.¶
+665:%s är inte något känt namn.
+666:Slutar ignornera %s.
+667:Ignorerar %s.
+#668:You must specify a nick name.
+669:Lagt till %s.
+670:Osynlig för %s nu.
+671:Synlig för %s nu.
 672:'s IP adressen är
 673:	Porten är %d¶
 674:	Porten är okänd¶

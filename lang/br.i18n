@@ -98,6 +98,7 @@
 #087:Ignoring garbage after number.
 #088:Enter UIN or 0 for new UIN:
 #089:Unloaded translation.
+#090:%s is a UIN, not a nick name.
 #091:Must enter password!
 #092:Reenter password to verify:
 #093:Passwords did not match - please reenter.
@@ -529,7 +530,7 @@
 #493:Peer-to-Peer
 #494:Server Only
 #495:No Random User Found
-#496:%d/%d/%d
+#496:%02d/%02d/%04d
 #497:Type: %d	 Len: %d¶
 #499:Other
 #500:Nickname:
@@ -717,13 +718,13 @@
 #661:Shell commands have been disabled.¶
 #662:Color is ©3%s©0.¶
 #664:Composing message to ©1all©0:¶
-#665:%s not recognized as a nick name
-#666:Unignored %s!¶
-#667:Ignoring %s!¶
-#668:©1Must specify a nick name©0¶
-#669:%s added.¶
-#670:Invisible to %s now.¶
-#671:Visible to %s now.¶
+#665:%s not recognized as a nick name.
+#666:Unignored %s.
+#667:Ignoring %s.
+#668:You must specify a nick name.
+#669:%s added.
+#670:Invisible to %s now.
+#671:Visible to %s now.
 #672:'s IP address is 
 #673:	The port is %d¶
 #674:	The port is unknown¶

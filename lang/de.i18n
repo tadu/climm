@@ -90,6 +90,7 @@
 087:Ignoriere Müll nach der Zahl.
 088:Geben Sie Ihre Benutzernummer (oder 0 für eine neue) ein:
 089:Entferne Übersetzung aus dem Speicher.
+090:%s ist eine Benutzernummer, kein Spitzname.
 091:Sie müssen ein Paßwort eingeben!
 092:Geben Sie Ihr Paßwort zur Kontrolle erneut ein:
 093:Die Paßwörter stimmen nicht überein, nochmal!
@@ -510,7 +511,7 @@
 493:Benutzer-zu-Benutzer
 494:Nur Server
 495:Kein zufälliger Benutzer gefunden
-496:%d.%d.%d
+496:%02d/%02d/%04d
 497:Typ: %d	Länge: %d¶
 499:Anderes
 500:Spitzname:
@@ -668,13 +669,13 @@
 661:Shell-Kommandos wurden abgeschaltet.¶
 662:Farbe ist ©3%s©0.¶
 664:Erstelle Nachricht an ©1alle©0:¶
-665:%s ist kein bekannter Spitzname
-666:Ignoriere %s nicht mehr!¶
-667:Ignoriere %s!¶
-668:©1Sie müssen einen Spitznamen angeben©0.¶
-669:%s hinzugefügt.¶
-670:Für %s jetzt unsichtbar.¶
-671:Für %s jetzt sichtbar.¶
+665:%s ist kein bekannter Spitzname.
+666:Ignoriere %s nicht mehr.
+667:Ignoriere %s.
+668:Sie müssen einen Spitznamen angeben.
+669:%s hinzugefügt.
+670:Für %s jetzt unsichtbar.
+671:Für %s jetzt sichtbar.
 672:s IP-Adresse ist 
 673:	Der Port ist %d.¶
 674:	Der Port ist unbekannt.¶

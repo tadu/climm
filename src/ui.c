@@ -915,40 +915,47 @@ void Get_Input (SOK_T sok, int *idle_val, int *idle_flag)
             else if (!strcasecmp (cmd, togig_cmd))
             {
                 arg1 = strtok (NULL, "\n");
-                if (arg1 != NULL)
+                if (arg1)
                 {
                     uin = nick2uin (arg1);
-                    if (-1 == uin)
+                    if (uin == -1)
                     {
-                        M_print (i18n (665, "%s not recognized as a nick name"), arg1);
+                        M_print (i18n (665, "%s not recognized as a nick name."), arg1);
                     }
                     else
                     {
-                        CONTACT_PTR bud;
-                        bud = UIN2Contact (uin);
-                        if (bud->invis_list == TRUE)
+                        CONTACT_PTR bud =  UIN2Contact (uin);
+                        if (!bud)
                         {
-                            bud->invis_list = FALSE;
-                            update_list (sok, uin, INV_LIST_UPDATE, FALSE);
-                            M_print (i18n (666, "Unignored %s!\n"), UIN2nick (uin));
+                            M_print (i18n (90, "%s is a UIN, not a nick name."), arg1);
                         }
                         else
                         {
-                            bud->vis_list = FALSE;
-                            bud->invis_list = TRUE;
-                            update_list (sok, uin, INV_LIST_UPDATE, TRUE);
-                            M_print (i18n (667, "Ignoring %s!\n"), UIN2nick (uin));
+                            if (bud->invis_list == TRUE)
+                            {
+                                bud->invis_list = FALSE;
+                                update_list (sok, uin, INV_LIST_UPDATE, FALSE);
+                                M_print (i18n (666, "Unignored %s."), UIN2nick (uin));
+                            }
+                            else
+                            {
+                                bud->vis_list = FALSE;
+                                bud->invis_list = TRUE;
+                                update_list (sok, uin, INV_LIST_UPDATE, TRUE);
+                                M_print (i18n (667, "Ignoring %s."), UIN2nick (uin));
+                            }
+                            snd_contact_list (sok);
+                            snd_invis_list (sok);
+                            snd_vis_list (sok);
+                            CHANGE_STATUS (Current_Status);
                         }
-                        snd_contact_list (sok);
-                        snd_invis_list (sok);
-                        snd_vis_list (sok);
-                        CHANGE_STATUS (Current_Status);
                     }
                 }
                 else
                 {
-                    M_print (i18n (668, COLSERV "Must specify a nick name" COLNONE "\n"));
+                    M_print (i18n (668, "You must specify a nick name."));
                 }
+                M_print ("\n");
             }
             else if (!strcasecmp (cmd, iglist_cmd))
             {
@@ -966,50 +973,57 @@ void Get_Input (SOK_T sok, int *idle_val, int *idle_flag)
                     uin = atoi (arg1);
                     arg1 = strtok (NULL, "");
                     if (Add_User (sok, uin, arg1))
-                        M_print (i18n (669, "%s added.\n"), arg1);
+                        M_print (i18n (669, "%s added."), arg1);
                 }
                 else
                 {
-                    M_print (i18n (668, COLSERV "Must specify a nick name" COLNONE "\n"));
+                    M_print (i18n (668, "You must specify a nick name."));
                 }
+                M_print ("\n");
             }
             else if (!strcasecmp (cmd, togvis_cmd))
             {
                 arg1 = strtok (NULL, " \t");
-                if (arg1 != NULL)
+                if (arg1)
                 {
                     uin = nick2uin (arg1);
-                    if (-1 == uin)
+                    if (uin == -1)
                     {
-                        M_print (i18n (665, "%s not recognized as a nick name"), arg1);
+                        M_print (i18n (665, "%s not recognized as a nick name."), arg1);
                     }
                     else
                     {
-                        CONTACT_PTR bud;
-                        bud = UIN2Contact (uin);
-                        if (bud->vis_list == TRUE)
+                        CONTACT_PTR bud = UIN2Contact (uin);
+                        if (!bud)
                         {
-                            bud->vis_list = FALSE;
-                            update_list (sok, uin, VIS_LIST_UPDATE, FALSE);
-                            M_print (i18n (670, "Invisible to %s now.\n"), UIN2nick (uin));
+                            M_print (i18n (90, "%s is a UIN, not a nick name."), arg1);
                         }
                         else
                         {
-                            bud->vis_list = TRUE;
-                            update_list (sok, uin, VIS_LIST_UPDATE, TRUE);
-                            M_print (i18n (671, "Visible to %s now.\n"), UIN2nick (uin));
+                            if (bud->vis_list == TRUE)
+                            {
+                                bud->vis_list = FALSE;
+                                update_list (sok, uin, VIS_LIST_UPDATE, FALSE);
+                                M_print (i18n (670, "Invisible to %s now."), UIN2nick (uin));
+                            }
+                            else
+                            {
+                                bud->vis_list = TRUE;
+                                update_list (sok, uin, VIS_LIST_UPDATE, TRUE);
+                                M_print (i18n (671, "Visible to %s now."), UIN2nick (uin));
+                            }
+                             /*FIXME*/          /* 
+                            snd_contact_list( sok );
+                            snd_invis_list( sok );
+                            snd_vis_list( sok ); */
                         }
-                         /*FIXME*/
-/*                      snd_contact_list( sok );
-                        snd_invis_list( sok );
-                        snd_vis_list( sok );
-*/
                     }
                 }
                 else
                 {
-                    M_print (i18n (668, COLSERV "Must specify a nick name" COLNONE "\n"));
+                    M_print (i18n (668, "You must specify a nick name."));
                 }
+                M_print ("\n");
             }
             else if (strcasecmp (cmd, "verbose") == 0)
             {
@@ -1045,7 +1059,7 @@ void Get_Input (SOK_T sok, int *idle_val, int *idle_flag)
                     uin = nick2uin (arg1);
                     if (-1 == uin)
                     {
-                        M_print (i18n (665, "%s not recognized as a nick name"), arg1);
+                        M_print (i18n (665, "%s not recognized as a nick name."), arg1);
                     }
                     else
                         icq_sendauthmsg (sok, uin);

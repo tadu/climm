@@ -317,19 +317,10 @@ CONTACT_PTR UIN2Contact (UDWORD uin)
     int i;
 
     for (i = 0; i < Num_Contacts; i++)
-    {
         if (Contacts[i].uin == uin)
-            break;
-    }
+            return &Contacts[i];
 
-    if (i == Num_Contacts)
-    {
-        return (CONTACT_PTR) NULL;
-    }
-    else
-    {
-        return &Contacts[i];
-    }
+    return (CONTACT_PTR) NULL;
 }
 
 /*********************************************

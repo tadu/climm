@@ -64,8 +64,7 @@ sub ProcessLine($)
         $neu = $1;
         for ($last++ ; $last < $neu; $last++)
         {
-            $last = "0$last" if $last < 100;
-            $last = "0$last" if $last < 10;
+            $last = ("0" x (3 - length ($last))) . $last;
             next unless defined $nrval{$last};
             print OUT "#$last:$nrval{$last}\n";
             $added++;
@@ -98,7 +97,8 @@ if (stat "lang/en.i18n")
     chdir "lang";
     $pref = "../";
 }
-if (stat "../lang/en.i18n")
+
+if (stat "../lang/en.i18n" and not stat "en.i18n")
 {
     chdir "../lang";
     $pref = "../src/";
