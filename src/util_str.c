@@ -552,7 +552,7 @@ BOOL s_parsenick_s (char **input, Contact **parsed, char *sep, Contact **parsedr
     t = NULL;
     if (s_parse_s (&p, &t, sep))
     {
-        *parsed = ContactFind (serv->contacts, 0, 0, t, 1);
+        *parsed = ContactFind (serv->contacts, 0, 0, t, 0);
         if (*parsed)
         {
             if (parsedr)

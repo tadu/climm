@@ -110,6 +110,8 @@ static jump_t jump[] = {
     { &CmdUserAdd,           "addalias",     NULL, 0,   1 },
     { &CmdUserAdd,           "addgroup",     NULL, 0,   2 },
     { &CmdUserRemove,        "rem",          NULL, 0,   0 },
+    { &CmdUserRemove,        "remalias",     NULL, 0,   1 },
+    { &CmdUserRemove,        "remgroup",     NULL, 0,   2 },
     { &CmdUserRegister,      "reg",          NULL, 0,   0 },
     { &CmdUserAuth,          "auth",         NULL, 0,   0 },
     { &CmdUserURL,           "url",          NULL, 0,   0 },
@@ -766,6 +768,7 @@ static JUMP_F(CmdUserTrans)
         else
         {
             UDWORD v1 = 0, v2 = 0, v3 = 0, v4 = 0;
+            const char *s = "1079:No translation; using compiled-in strings.\n";
 
             arg1 = strdup (i18n (1003, "0"));
             for (t = arg1; *t; t++)
@@ -777,7 +780,7 @@ static JUMP_F(CmdUserTrans)
             s_parseint (&arg1, &v4);
             
             /* i18n (1079, "Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n") */
-            M_printf (i18n (-1, "1079:No translation; using compiled-in strings.\n"),
+            M_printf (i18n (-1, s),
                      i18n (1001, "<lang>"), i18n (1002, "<lang_cc>"), i18n (1004, "<translation authors>"),
                      i18n (1006, "<last edit date>"), i18n (1005, "<last editor>"),
                      v1, v2, v3, v4 ? s_sprintf (".%ld", v4) : "");
@@ -1423,7 +1426,7 @@ static JUMP_F(CmdUserVerbose)
         M_printf (i18n (2115, "'%s' is not an integer.\n"), args);
         return 0;
     }
-    M_printf (i18n (1060, "Verbosity level is %ld.\n"), prG->verbose = i);
+    M_printf (i18n (1060, "Verbosity level is %ld.\n"), prG->verbose);
     return 0;
 }
 
@@ -1482,7 +1485,7 @@ static JUMP_F(CmdUserStatusDetail)
     }
 
     if (cont)
-        uin = cont->uin;
+        assert(uin = cont->uin);
 
     if (data & 32)
     {
@@ -1593,7 +1596,7 @@ static JUMP_F(CmdUserStatusDetail)
                 if (prG->verbose && cont->dc)
                     ver2 = strdup (s_sprintf (" <%08x:%08x:%08x>", (unsigned int)cont->dc->id1,
                                                (unsigned int)cont->dc->id2, (unsigned int)cont->dc->id3));
-                for (alias = cont; alias; alias = alias->alias)
+                for (alias = cont; alias && (data & 2 || alias == cont); alias = alias->alias)
                 {
                     if (data & 2)
                         M_printf (COLSERVER "%c%c%c%1.1d%c" COLNONE " %*ld",
@@ -2423,6 +2426,10 @@ static JUMP_F(CmdUserAdd)
 
 /*
  * Remove a user from your contact list.
+ *
+ * 2 contact group
+ * 1 alias
+ * 0 auto
  */
 static JUMP_F(CmdUserRemove)
 {
@@ -2433,10 +2440,18 @@ static JUMP_F(CmdUserRemove)
     UBYTE all = 0;
     OPENCONN;
     
-    argst = args;
-    if (s_parse (&argst, &alias))
-        if ((cg = ContactGroupFind (0, conn, alias, 0)))
-            args = argst;
+    if (data != 1)
+    {
+        argst = args;
+        if (s_parse (&argst, &alias))
+            if ((cg = ContactGroupFind (0, conn, alias, 0)))
+                args = argst;
+        if (data == 2 && !cg)
+        {
+            M_print (i18n (2240, "No contact group given.\n"));
+            return 0;
+        }
+    }
 
     if (!strncmp (args, "all ", 4))
     {
@@ -2462,9 +2477,12 @@ static JUMP_F(CmdUserRemove)
         
         if (cg)
         {
-            ContactRem (cg, cont);
-            M_printf (i18n (2243, "Removed contact '%s' from group '%s'.\n"),
-                      cont->nick, cg->name);
+            if (ContactRem (cg, cont))
+                M_printf (i18n (2243, "Removed contact '%s' from group '%s'.\n"),
+                          cont->nick, cg->name);
+            else
+                M_printf (i18n (2246, "Contact '%s' is not in group '%s'.\n"),
+                          cont->nick, cg->name);
         }
         else
         {
@@ -2473,7 +2491,7 @@ static JUMP_F(CmdUserRemove)
                 M_printf (i18n (2221, "Removed temporary contact '%s' (%ld).\n"),
                           cont->nick, cont->uin);
                 ContactRem (conn->contacts, cont);
-                return 0;
+                continue;
             }
 
             alias = strdup (cont->nick);
@@ -2498,7 +2516,7 @@ static JUMP_F(CmdUserRemove)
                 else
                     CmdPktCmdContactList (conn);
                 M_printf (i18n (2150, "Removed contact '%s' (%ld).\n"),
-                         alias, uin);
+                          alias, uin);
             }
             free (alias);
         }

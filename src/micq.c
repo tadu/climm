@@ -197,10 +197,13 @@ int main (int argc, char *argv[])
         char buf[PATH_MAX];
         buf[0] = '\0';
         getcwd  (buf, PATH_MAX - 1);
-        prG->basedir = strdup (arg_b[strlen (arg_b) - 1] == '/' ? arg_b : s_sprintf ("%s/%s/", buf, arg_b));
+        prG->basedir = strdup (arg_b[strlen (arg_b) - 1] == '/'
+                       ? s_sprintf ("%s/%s", buf, arg_b)
+                       : s_sprintf ("%s/%s/", buf, arg_b));
     }
     else
-        prG->basedir = arg_b ? strdup (arg_b[strlen (arg_b) - 1] == '/' ? arg_b : s_sprintf ("%s/", arg_b)) : NULL;
+        prG->basedir = arg_b ? strdup (arg_b[strlen (arg_b) - 1] == '/'
+                               ? arg_b : s_sprintf ("%s/", arg_b)) : NULL;
     
     prG->enc_loc = prG->enc_rem = ENC_AUTO;
     i18nInit (&prG->locale, &prG->enc_loc, arg_i);

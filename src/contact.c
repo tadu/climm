@@ -360,7 +360,12 @@ BOOL ContactRemAlias (ContactGroup *group, Contact *alias)
     if (!cont)
         return FALSE;
     if (cont == alias)
+    {
+        s_repl (&alias->nick, s_sprintf ("%ld", alias->uin));
+        alias->id = 0;
+        alias->flags = CONT_TEMPORARY;
         return ContactRem (group, alias);
+    }
     while (cont->alias != alias)
         if (!(cont = cont->alias))
             return FALSE;

@@ -680,7 +680,6 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                 UDWORD sop  = PacketRead4  (pp);
                 UDWORD sp2  = PacketRead4  (pp);
                 UWORD  sver = PacketRead2  (pp);
-                /* count */   PacketRead4  (pp);
                 if (suin != uin || !CONTACT_DC (cont) || sip != cont->dc->ip_rem || sp1 != cont->dc->port
                     || scon != cont->dc->type || sver != cont->dc->version
                     || sp1 != sp2 || (event->conn->assoc && sop != event->conn->assoc->port))
@@ -690,8 +689,9 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                 else
                 {
 #ifdef WIP
+                    UDWORD sunk = PacketRead4  (pp);
                     M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-                    M_printf ("FIXME: 'empty' message with unknown 0x%08x = %d.\n", sunk, sunk);
+                    M_printf ("FIXME: 'empty' message with sequence 0x%08x = %d.\n", sunk, sunk);
 #endif
                     /* yeah, we're on his contact list */
                 }
