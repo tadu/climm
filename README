@@ -18,26 +18,26 @@ actively developed by some of us Freaks.
 
 b) Mailinglist
 
-They are hosted by <mc@ukeer.de>.
+They are hosted by <rg@micq.org>.
 
 Currently you:
     post	   
-                                           micq-list@micq.ukeer.de
+                                           micq-list@micq.org
 
     subscribe, unsubscribe, help
-                   http://micq.ukeer.de/mailman/listinfo/micq-list
+                   http://micq.org/mailman/listinfo/micq-list
 
 An Archive might be found at:
-<http://micq.ukeer.de/pipermail/micq-list/>
+<http://micq.org/pipermail/micq-list/>
 
 
 c) Download
 
 Primary Mirror
-    http://micq.ukeer.de:/
+    http://www.micq.org/
 
 CVS (do that only if you know what cvs is)
-$ export CVSROOT=:pserver:anonymous@mc.ukeer.de:/usr/local/cvsroot
+$ export CVSROOT=:pserver:anonymous@micq.org:/usr/local/cvsroot
 $ cvs login
 [leave password empty]
 $ cvs -z9 co micq
@@ -54,6 +54,9 @@ autoconf 2.50.
 
 d) Compile
 
+$ ./configure --help
+    Please read the Help carefully. Particulary, if you are not "root",
+    please watch the --prefix Parameter.
 $ ./configure 
 $ make
 $ su
@@ -73,11 +76,11 @@ h) You'll find original docs in the src/ Subdirectory.
 i) NOTE!
 
 mICQ is in a Phase of being re-organized, thus things may change
-very fast. When in Doubt, have a Look at http://micq.ukeer.de/ or
+very fast. When in Doubt, have a Look at http://micq.org/ or
 email mc@verdinet.de or...
 However, look out for announcements on Freshmeat.net.
 
 We will see how the Future of mICQ looks.
 
 
-		- Rico Gloeckner <mc@verdinet.de> 2000-05-23
+		- Rico Gloeckner <rg@micq.org> 2000-05-23
