@@ -489,6 +489,7 @@ JUMP_F(CmdUserSMS)
  */
 JUMP_F(CmdUserInfo)
 {
+    Contact *cont;
     char *arg1;
     UDWORD uin;
     SESSION;
@@ -518,7 +519,11 @@ JUMP_F(CmdUserInfo)
     M_print (i18n (1765, "%s has UIN %d."), arg1, uin);
     M_print ("\n");
     if (sess->ver > 6)
+    {
         SnacCliMetareqinfo (sess, uin);
+        if (!(cont = ContactFind (uin)) || (cont->status == STATUS_OFFLINE))
+            SnacCliSendmsg (sess, uin, "", 0xe8);
+    }
     else
         CmdPktCmdMetaReqInfo (sess, uin);
 /*   send_ext_info_req( sok, uin );*/

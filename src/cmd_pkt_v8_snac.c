@@ -34,7 +34,7 @@ static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd,
     SnacSrvReplyinfo, SnacSrvReplylocation, SnacSrvUseronline, SnacSrvRegrefused,
     SnacSrvUseroffline, SnacSrvRecvmsg, SnacSrvUnknown, SnacSrvFromoldicq,
     SnacSrvAddedyou, SnacSrvNewuin, SnacSrvSetinterval, SnacSrvAckmsg,
-    SnacSrvAuthreq, SnacSrvAuthreply;
+    SnacSrvAuthreq, SnacSrvAuthreply, SnacSrvIcbmerr;
 
 static SNAC SNACv[] = {
     {  1,  3, NULL, NULL},
@@ -62,6 +62,7 @@ static SNAC SNACS[] = {
     {  3,  3, "SRV_REPLYBUDDY",      SnacSrvReplybuddy},
     {  3, 11, "SRV_USERONLINE",      SnacSrvUseronline},
     {  3, 12, "SRV_USEROFFLINE",     SnacSrvUseroffline},
+    {  4,  1, "SRV_ICBMERR",         SnacSrvIcbmerr},
     {  4,  5, "SRV_REPLYICBM",       SnacSrvReplyicbm},
     {  4,  7, "SRV_RECVMSG",         SnacSrvRecvmsg},
     {  4, 12, "SRV_ACKMSG",          SnacSrvAckmsg},
@@ -118,12 +119,11 @@ void SrvCallBackSnac (struct Event *event)
     Packet  *pak  = event->pak;
     SNAC *s;
     UWORD family, flags;
-    UDWORD ref;
     
     family   = PacketReadB2 (pak);
     pak->cmd = PacketReadB2 (pak);
     flags    = PacketReadB2 (pak);
-    ref      = PacketReadB4 (pak);
+    pak->id  = PacketReadB4 (pak);
     
     for (s = SNACS; s->fam; s++)
         if (s->fam == family && s->cmd == pak->cmd)
@@ -415,6 +415,15 @@ JUMP_SNAC_F(SnacSrvUseroffline)
     cont->last_time = time (NULL);
     
     UtilUIUserOffline (cont);
+}
+
+/*
+ * SRV_ICBMERR - SNAC(4,1)
+ */
+JUMP_SNAC_F(SnacSrvIcbmerr)
+{
+    if (event->pak->id == 0x1771)
+        M_print (i18n (2017, "The user is actually online.\n"));
 }
 
 /*
@@ -990,6 +999,7 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, char *text, UDWORD type)
 {
     Packet *pak;
     UBYTE format;
+    UDWORD mtime = 0, mid = 0;
     
     Time_Stamp ();
     M_print (" " COLACK "%10s" COLNONE " " MSGSENTSTR "%s\n", ContactFindName (uin), MsgEllipsis (text));
@@ -1005,14 +1015,17 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, char *text, UDWORD type)
         case NORM_MESS:
             format = 1;
             break;
+        case 0xe8:
+            format = 2;
+            break;
         default:
             M_print (i18n (1930, "Can't send this (%x) yet.\n"), type);
             return;
     }
     
-    pak = SnacC (sess, 4, 6, 0, 0);
-    PacketWriteB4 (pak, 0); /* message ID */
-    PacketWriteB4 (pak, 0); /* message ID */
+    pak = SnacC (sess, 4, 6, 0, format == 2 ? 0x1771 : 0);
+    PacketWriteB4 (pak, mtime);
+    PacketWriteB4 (pak, mid);
     PacketWriteB2 (pak, format);
     PacketWriteUIN (pak, uin);
     
@@ -1028,17 +1041,57 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, char *text, UDWORD type)
             PacketWriteStr     (pak, text);
             PacketWriteTLVDone (pak);
             PacketWriteTLVDone (pak);
+            PacketWriteB2 (pak, 6);
+            PacketWriteB2 (pak, 0);
+            break;
+        case 2:
+            PacketWriteTLV     (pak, 5);
+            PacketWrite2       (pak, 0);
+            PacketWriteB4      (pak, mtime);
+            PacketWriteB4      (pak, mid);
+            PacketWriteB4      (pak, 0x09461349); /* capability */
+            PacketWriteB4      (pak, 0x4c7f11d1);
+            PacketWriteB4      (pak, 0x82224445);
+            PacketWriteB4      (pak, 0x53540000);
+            PacketWriteTLV2    (pak, 10, 1);
+            PacketWriteB4      (pak, 0x000f0000); /* empty TLV(5) */
+            PacketWriteTLV     (pak, 10001);
+            PacketWrite1       (pak, 27);
+            PacketWriteB2      (pak, TCP_VER);
+            PacketWrite1       (pak, 0);
+            PacketWriteB4      (pak, 0); /* capability */
+            PacketWriteB4      (pak, 0);
+            PacketWriteB4      (pak, 0);
+            PacketWriteB4      (pak, 0);
+            PacketWrite2       (pak, 0);
+            PacketWrite1       (pak, 0);
+            PacketWrite4       (pak, 0);
+            PacketWrite2       (pak, -1);
+            PacketWrite2       (pak, 14);
+            PacketWrite2       (pak, -1);
+            PacketWrite4       (pak, 0);
+            PacketWrite4       (pak, 0);
+            PacketWrite4       (pak, 0);
+            PacketWrite2       (pak, type);
+            PacketWrite2       (pak, 0);
+            PacketWrite2       (pak, 1);
+            PacketWriteLNTS    (pak, text);
+            PacketWriteB4      (pak, 0);
+            PacketWriteB4      (pak, 0xffffff00);
+            PacketWriteTLVDone (pak);
+            PacketWriteB4      (pak, 0x00030000); /* empty TLV(3) */
+            PacketWriteTLVDone (pak);
             break;
         case 4:
-            PacketWriteB2 (pak, 5);
-            PacketWriteB2 (pak, strlen (text) + 9);
-            PacketWrite4  (pak, sess->uin);
-            PacketWrite1  (pak, type);
-            PacketWrite1  (pak, 0);
-            PacketWriteLNTS (pak, text);
+            PacketWriteTLV     (pak, 5);
+            PacketWrite4       (pak, sess->uin);
+            PacketWrite1       (pak, type);
+            PacketWrite1       (pak, 0);
+            PacketWriteLNTS    (pak, text);
+            PacketWriteTLVDone (pak);
+            PacketWriteB2 (pak, 6);
+            PacketWriteB2 (pak, 0);
     }
-    PacketWriteB2 (pak, 6);
-    PacketWriteB2 (pak, 0);
     SnacSend (sess, pak);
 }
 
