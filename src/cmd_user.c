@@ -609,28 +609,33 @@ static JUMP_F(CmdUserInfo)
     Contact *cont = NULL, *contr = NULL;
     OPENCONN;
 
-    if (!s_parsenick (&args, &cont, &contr, conn))
+    while (*args)
     {
-        M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
-        return 0;
+        if (!s_parsenick_s (&args, &cont, MULTI_SEP, &contr, conn))
+        {
+            M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
+            return 0;
+        }
+        if (*args == ',')
+            args++;
+
+        M_printf (i18n (1672, "%s's IP address is "), cont->nick);
+        M_print  (contr->outside_ip == -1 ? i18n (1761, "unknown") : s_ip (contr->outside_ip));
+        M_print ("\t");
+
+        if (contr->port != (UWORD) 0xffff)
+            M_printf (i18n (1673, "The port is %d.\n"), contr->port);
+        else
+            M_print (i18n (1674, "The port is unknown.\n"));
+
+        M_printf (i18n (1765, "%s has UIN %d."), cont->nick, cont->uin);
+        M_print ("\n");
+
+        if (conn->ver > 6)
+            SnacCliMetareqinfo (conn, cont->uin);
+        else
+            CmdPktCmdMetaReqInfo (conn, cont->uin);
     }
-    M_printf (i18n (1672, "%s's IP address is "), cont->nick);
-    M_print  (contr->outside_ip == -1 ? i18n (1761, "unknown") : s_ip (contr->outside_ip));
-    M_print ("\t");
-
-    if (contr->port != (UWORD) 0xffff)
-        M_printf (i18n (1673, "The port is %d.\n"), contr->port);
-    else
-        M_print (i18n (1674, "The port is unknown.\n"));
-
-    M_printf (i18n (1765, "%s has UIN %d."), cont->nick, cont->uin);
-    M_print ("\n");
-
-    if (conn->ver > 6)
-        SnacCliMetareqinfo (conn, cont->uin);
-    else
-        CmdPktCmdMetaReqInfo (conn, cont->uin);
-
     return 0;
 }
 
@@ -647,11 +652,19 @@ static JUMP_F(CmdUserPeek)
         M_print (i18n (2013, "This command is v8 only.\n"));
         return 0;
     }
+    
+    while (*args)
+    {
+        if (!s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
+        {
+            M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
+            return 0;
+        }
+        if (*args == ',')
+            args++;
 
-    if (!s_parsenick (&args, &cont, NULL, conn))
-        M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
-    else
         SnacCliSendmsg (conn, cont->uin, "", MSG_GET_AWAY, -1);
+    }
     return 0;
 }
 
@@ -745,20 +758,20 @@ static JUMP_F(CmdUserPeer)
     Connection *list;
     ANYCONN;
 
-    while (1)
+    if (!conn || !(list = conn->assoc))
     {
-        if (!conn || !(list = conn->assoc))
-        {
-            M_print (i18n (2011, "You do not have a listening peer-to-peer connection.\n"));
-            return 0;
-        }
+        M_print (i18n (2011, "You do not have a listening peer-to-peer connection.\n"));
+        return 0;
+    }
 
-        if (!s_parse (&args, &arg1))
-            break;
-        
+    if (!s_parse (&args, &arg1))
+        arg1 = NULL;
+    else
         arg1 = strdup (arg1);
 
-        if (!s_parsenick (&args, &cont, NULL, conn))
+    while (arg1)
+    {
+        if (!s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
         {
             M_printf (i18n (1845, "Nick %s unknown.\n"), args);
             free (arg1);
@@ -870,8 +883,13 @@ static JUMP_F(CmdUserPeer)
         }
         else
             break;
-        free (arg1);
-        return 0;
+        if (*args == ',')
+            args++;
+        if (!*args)
+        {
+            free (arg1);
+            return 0;
+        }
     }
     M_print (i18n (1846, "Opens and closes direct (peer to peer) connections:\n"));
     M_print (i18n (1847, "peer open  <nick> - Opens direct connection.\n"));
@@ -1024,7 +1042,7 @@ static JUMP_F (CmdUserResend)
         return 0;
     }
 
-    if (!s_parsenick (&args, &cont, NULL, conn))
+    if (!s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
     {
         if (*args)
             M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
@@ -1037,7 +1055,9 @@ static JUMP_F (CmdUserResend)
     {
         icq_sendmsg (conn, uiG.last_sent_uin = cont->uin,
                      uiG.last_message_sent, uiG.last_message_sent_type);
-        if (!s_parsenick (&args, &cont, NULL, conn))
+        if (*args == ',')
+            args++;
+        if (!s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
         {
             if (*args)
                 M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
@@ -1108,11 +1128,11 @@ static JUMP_F (CmdUserAnyMess)
  */
 static JUMP_F (CmdUserMessage)
 {
-    static UDWORD multi_uin;
     static int offset = 0;
     static char msg[1024];
-    char *arg1 = NULL, *temp;
-    UDWORD uin = 0;
+    static UDWORD uinlist[20] = { 0 };
+    char *arg1 = NULL;
+    UDWORD i;
     Contact *cont = NULL;
     OPENCONN;
 
@@ -1123,7 +1143,7 @@ static JUMP_F (CmdUserMessage)
         if (strcmp (arg1, END_MSG_STR) == 0)
         {
             msg[offset - 1] = msg[offset - 2] = 0;
-            if (multi_uin == -1)
+            if (*uinlist == -1)
             {
                 char *temp;
                 
@@ -1135,15 +1155,16 @@ static JUMP_F (CmdUserMessage)
                 }
             }
             else
-            {
-                icq_sendmsg (conn, multi_uin, msg, MSG_NORM);
-                uiG.last_sent_uin = multi_uin;
-            }
+                for (i = 0; uinlist[i]; i++)
+                {
+                    icq_sendmsg (conn, uiG.last_sent_uin = uinlist[i], msg, MSG_NORM);
+                    TabAddUIN (uinlist[i]);
+                }
             return 0;
         }
         else if (strcmp (arg1, CANCEL_MSG_STR) == 0)
         {
-            M_print (i18n (1038, "Message canceled\n"));
+            M_print (i18n (1038, "Message canceled.\n"));
             return 0;
         }
         else
@@ -1170,22 +1191,15 @@ static JUMP_F (CmdUserMessage)
                     while (*arg1 == ' ')
                         arg1++;
                 }
-                if (multi_uin == -1)
-                {
+                if (*uinlist == -1)
                     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
-                    {
-                        temp = strdup (msg);
-                        icq_sendmsg (conn, cont->uin, temp, MSG_NORM | MSGF_MASS);
-                        free (temp);
-                    }
-                }
+                        icq_sendmsg (conn, cont->uin, msg, MSG_NORM | MSGF_MASS);
                 else
-                {
-                    temp = strdup (msg);
-                    icq_sendmsg (conn, multi_uin, temp, MSG_NORM);
-                    free (temp);
-                    uiG.last_sent_uin = multi_uin;
-                }
+                    for (i = 0; uinlist[i]; i++)
+                    {
+                        icq_sendmsg (conn, uiG.last_sent_uin = uinlist[i], msg, MSG_NORM);
+                        TabAddUIN (uinlist[i]);
+                    }
                 msg[0] = '\0';
                 offset = 0;
             }
@@ -1199,13 +1213,20 @@ static JUMP_F (CmdUserMessage)
         switch (data)
         {
             case 1:
-                if (!s_parsenick (&args, &cont, NULL, conn))
+                i = 0;
+                while (*args)
                 {
-                    M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
-                    return 0;
+                    if (!s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
+                    {
+                        M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
+                        return 0;
+                    }
+                    uinlist[i++] = cont->uin;
+                    if (*args != ',')
+                        break;
+                    args++;
                 }
-                uin = cont->uin;
-                s_parserem (&args, &arg1);
+                uinlist[i] = 0;
                 break;
             case 2:
                 if (!uiG.last_rcvd_uin)
@@ -1213,8 +1234,8 @@ static JUMP_F (CmdUserMessage)
                     M_print (i18n (1741, "Must receive a message first\n"));
                     return 0;
                 }
-                uin = uiG.last_rcvd_uin;
-                s_parserem (&args, &arg1);
+                uinlist[0] = uiG.last_rcvd_uin;
+                uinlist[1] = 0;
                 break;
             case 4:
                 if (!uiG.last_sent_uin)
@@ -1222,48 +1243,37 @@ static JUMP_F (CmdUserMessage)
                     M_print (i18n (1742, "Must write one message first\n"));
                     return 0;
                 }
-                uin = uiG.last_sent_uin;
-                s_parserem (&args, &arg1);
+                uinlist[0] = uiG.last_sent_uin;
+                uinlist[1] = 0;
                 break;
             case 8:
-                uin = -1;
-                s_parserem (&args, &arg1);
+                uinlist[0] = -1;
+                uinlist[1] = 0;
                 break;
             default:
                 assert (0);
         }
-        if (data != 8)
-        {
-            uiG.last_sent_uin = uin;
-            TabAddUIN (uin);
-        }
+        if (!s_parserem (&args, &arg1))
+            arg1 = NULL;
         if (arg1)
         {
             if (data == 8)
-            {
-                char *temp;
-                
                 for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
-                {
-                    temp = strdup (arg1);
-                    icq_sendmsg (conn, cont->uin, temp, MSG_NORM | MSGF_MASS);
-                    free (temp);
-                }
-            }
+                    icq_sendmsg (conn, cont->uin, arg1, MSG_NORM | MSGF_MASS);
             else
-            {
-                icq_sendmsg (conn, uin, arg1, MSG_NORM);
-                uiG.last_sent_uin = uin;
-            }
+                for (i = 0; uinlist[i]; i++)
+                {
+                    icq_sendmsg (conn, uiG.last_sent_uin = uinlist[i], arg1, MSG_NORM);
+                    TabAddUIN (uinlist[i]);
+                }
             return 0;
         }
-        multi_uin = uin;
-        if (uin == -1)
+        if (data == 8)
             M_printf (i18n (2130, "Composing message to %sall%s:\n"), COLCONTACT, COLNONE);
-        else if (ContactFindNick (uin))
-            M_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLCONTACT, ContactFindNick (uin), COLNONE);
+        else if (!uinlist[1])
+            M_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLCONTACT, ContactFindName (*uinlist), COLNONE);
         else
-            M_printf (i18n (2132, "Composing message to %s%d%s:\n"), COLCONTACT, uin, COLNONE);
+            M_printf (i18n (2131, "Composing message to %s%s%s:\n"), COLMESSAGE, i18n (2220, "several"), COLNONE);
         offset = 0;
         status = data;
     }
@@ -1963,23 +1973,27 @@ static JUMP_F(CmdUserTogIgnore)
     Contact *cont = NULL, *contr = NULL;
     OPENCONN;
 
-    if (!s_parsenick (&args, &cont, &contr, conn))
+    while (*args)
     {
-        M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
-        return 0;
-    }
+        if (!s_parsenick_s (&args, &cont, MULTI_SEP, &contr, conn))
+        {
+            M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
+            return 0;
+        }
 
-    if (contr->flags & CONT_IGNORE)
-    {
-        contr->flags &= ~CONT_IGNORE;
-        M_printf (i18n (1666, "Unignored %s."), cont->nick);
+        if (contr->flags & CONT_IGNORE)
+        {
+            contr->flags &= ~CONT_IGNORE;
+            M_printf (i18n (1666, "Unignored %s.\n"), cont->nick);
+        }
+        else
+        {
+            contr->flags |= CONT_IGNORE;
+            M_printf (i18n (1667, "Ignoring %s.\n"), cont->nick);
+        }
+        if (*args == ',')
+            args++;
     }
-    else
-    {
-        contr->flags |= CONT_IGNORE;
-        M_printf (i18n (1667, "Ignoring %s."), cont->nick);
-    }
-    M_print ("\n");
     return 0;
 }
 
@@ -1991,30 +2005,35 @@ static JUMP_F(CmdUserTogInvis)
     Contact *cont = NULL, *contr = NULL;
     OPENCONN;
 
-    if (!s_parsenick (&args, &cont, &contr, conn))
+    while (*args)
     {
-        M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
-        return 0;
-    }
+        if (!s_parsenick_s (&args, &cont, MULTI_SEP, &contr, conn))
+        {
+            M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
+            return 0;
+        }
 
-    if (contr->flags & CONT_HIDEFROM)
-    {
-        contr->flags &= ~CONT_HIDEFROM;
-        if (conn->ver > 6)
-            SnacCliReminvis (conn, cont->uin);
+        if (contr->flags & CONT_HIDEFROM)
+        {
+            contr->flags &= ~CONT_HIDEFROM;
+            if (conn->ver > 6)
+                SnacCliReminvis (conn, cont->uin);
+            else
+                CmdPktCmdUpdateList (conn, cont->uin, INV_LIST_UPDATE, FALSE);
+            M_printf (i18n (2020, "Being visible to %s.\n"), cont->nick);
+        }
         else
-            CmdPktCmdUpdateList (conn, cont->uin, INV_LIST_UPDATE, FALSE);
-        M_printf (i18n (2020, "Being visible to %s."), cont->nick);
-    }
-    else
-    {
-        contr->flags |= CONT_HIDEFROM;
-        contr->flags &= ~CONT_INTIMATE;
-        if (conn->ver > 6)
-            SnacCliAddinvis (conn, cont->uin);
-        else
-            CmdPktCmdUpdateList (conn, cont->uin, INV_LIST_UPDATE, TRUE);
-        M_printf (i18n (2021, "Being invisible to %s."), cont->nick);
+        {
+            contr->flags |= CONT_HIDEFROM;
+            contr->flags &= ~CONT_INTIMATE;
+            if (conn->ver > 6)
+                SnacCliAddinvis (conn, cont->uin);
+            else
+                CmdPktCmdUpdateList (conn, cont->uin, INV_LIST_UPDATE, TRUE);
+            M_printf (i18n (2021, "Being invisible to %s.\n"), cont->nick);
+        }
+        if (*args == ',')
+            args++;
     }
     if (conn->ver < 6)
     {
@@ -2023,7 +2042,6 @@ static JUMP_F(CmdUserTogInvis)
         CmdPktCmdVisList (conn);
         CmdPktCmdStatusChange (conn, conn->status);
     }
-    M_print ("\n");
     return 0;
 }
 
@@ -2035,33 +2053,36 @@ static JUMP_F(CmdUserTogVisible)
     Contact *cont = NULL, *contr = NULL;
     OPENCONN;
 
-    if (!s_parsenick (&args, &cont, &contr, conn))
+    while (*args)
     {
-        M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
-        return 0;
-    }
+        if (!s_parsenick (&args, &cont, &contr, conn))
+        {
+            M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
+            return 0;
+        }
 
-    if (contr->flags & CONT_INTIMATE)
-    {
-        contr->flags &= ~CONT_INTIMATE;
-        if (conn->ver > 6)
-            SnacCliRemvisible (conn, cont->uin);
+        if (contr->flags & CONT_INTIMATE)
+        {
+            contr->flags &= ~CONT_INTIMATE;
+            if (conn->ver > 6)
+                SnacCliRemvisible (conn, cont->uin);
+            else
+                CmdPktCmdUpdateList (conn, cont->uin, VIS_LIST_UPDATE, FALSE);
+            M_printf (i18n (1670, "Normal visible to %s now.\n"), cont->nick);
+        }
         else
-            CmdPktCmdUpdateList (conn, cont->uin, VIS_LIST_UPDATE, FALSE);
-        M_printf (i18n (1670, "Normal visible to %s now."), cont->nick);
+        {
+            contr->flags |= CONT_INTIMATE;
+            contr->flags &= ~CONT_HIDEFROM;
+            if (conn-> ver > 6)
+                SnacCliAddvisible (conn, cont->uin);
+            else
+                CmdPktCmdUpdateList (conn, cont->uin, VIS_LIST_UPDATE, TRUE);
+            M_printf (i18n (1671, "Always visible to %s now.\n"), cont->nick);
+        }
+        if (*args == ',')
+            args++;
     }
-    else
-    {
-        contr->flags |= CONT_INTIMATE;
-        contr->flags &= ~CONT_HIDEFROM;
-        if (conn-> ver > 6)
-            SnacCliAddvisible (conn, cont->uin);
-        else
-            CmdPktCmdUpdateList (conn, cont->uin, VIS_LIST_UPDATE, TRUE);
-        M_printf (i18n (1671, "Always visible to %s now."), cont->nick);
-    }
-
-    M_print ("\n");
     return 0;
 }
 
@@ -2138,36 +2159,53 @@ static JUMP_F(CmdUserRem)
     Contact *cont = NULL;
     UDWORD uin;
     char *alias;
+    UBYTE all = 0;
     OPENCONN;
+    
+    if (!strncmp (args, "all ", 4))
+    {
+        args += 4;
+        all = 1;
+    }
 
-    if (!s_parsenick (&args, &cont, NULL, conn))
+    while (*args)
     {
-        M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
-        return 0;
-    }
-    
-    alias = strdup (cont->nick);
-    uin = cont->uin;
-    
-    ContactRem (cont);
-    
-    if ((cont = ContactFind (uin)))
-    {
-        M_printf (i18n (2149, "Removed alias '%s' for '%s' (%d).\n"),
-                 alias, cont->nick, uin);
-    }
-    else
-    {
-        if (conn->ver > 6)
-            SnacCliRemcontact (conn, uin);
+        if (!s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
+        {
+            M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
+            break;
+        }
+        
+        alias = strdup (cont->nick);
+        uin = cont->uin;
+        
+        ContactRem (cont);
+        if (all)
+        {
+            while ((cont = ContactFind (uin)))
+                ContactRem (cont);
+        }
+        
+        if ((cont = ContactFind (uin)))
+        {
+            M_printf (i18n (2149, "Removed alias '%s' for '%s' (%d).\n"),
+                     alias, cont->nick, uin);
+        }
         else
-            CmdPktCmdContactList (conn);
-        M_printf (i18n (2150, "Removed contact '%s' (%d).\n"),
-                 alias, uin);
+        {
+            if (conn->ver > 6)
+                SnacCliRemcontact (conn, uin);
+            else
+                CmdPktCmdContactList (conn);
+            M_printf (i18n (2150, "Removed contact '%s' (%d).\n"),
+                     alias, uin);
+        }
+        if (*args == ',')
+            args++;
+        free (alias);
     }
 
     M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
-    free (alias);
     return 0;
 }
 
@@ -2377,8 +2415,9 @@ static JUMP_F(CmdUserLast)
             if (cont->last_message)
                 M_printf ("  " COLCONTACT "%s" COLNONE " %s " COLMESSAGE "%s" COLNONE "\n",
                          cont->nick, s_time (&cont->last_time), cont->last_message);
+        return 0;
     }
-    else
+    do
     {
         if (contr->last_message)
         {
@@ -2391,7 +2430,10 @@ static JUMP_F(CmdUserLast)
             M_printf (i18n (2107, "No messages received from %s%s%s.\n"),
                      COLCONTACT, cont->nick, COLNONE);
         }
+        if (*args == ',')
+            args++;
     }
+    while (s_parsenick (&args, &cont, &contr, conn));
     return 0;
 }
 
