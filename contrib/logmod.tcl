@@ -21,7 +21,7 @@ proc getrec {fd} {
 	if {[set line [gets $fd]] == "" && [eof $fd]} {
 		return {}
 	}
-	if {![regexp {^# ([0-9]+)(/-?[0-9]+)? [^ []*\[[^\]]+\]!([^ ]+) [^ ]+ ([^" ]*|"[^"]*")\[[^:]*:([0-9]+)[^ ]*\]( \+[0-9]+)?( \([0-9]+\))?(.*)$} $line intro stamp diff spec x uin nlin type rest]} {
+	if {![regexp {^# ([0-9]+)(/-?[0-9]+)? ([^ []*\[[^\]]+\]!)?([^ ]+) [^ ]+ ([^" ]*|"[^"]*")\[[^:]*:([0-9]+)[^ ]*\]( \+[0-9]+)?( \([0-9]+\))?(.*)$} $line intro stamp diff src spec x uin nlin type rest]} {
 		puts stderr "Error: Line is not a valid record header."
 		puts stderr ">>> $line"
 		exit 1
@@ -73,17 +73,20 @@ proc log_merge {argv} {
 	}
 }
 
-proc split_bydate {stamp spec} {
+proc split_bydate {stamp spec uin} {
 	return [string range $stamp 0 5]
 }
-proc split_bymachine {stamp spec} {
+proc split_bymachine {stamp spec uin} {
 	return [lindex [split $spec "@"] 1]
+}
+proc split_byuin {stamp spec uin} {
+	return $uin
 }
 
 proc log_split {splitter} {
 	fconfigure stdin -translation binary
 	while {[lset [getrec stdin] stamp spec intro uin type message] != {}} {
-		set file [$splitter $stamp $spec]
+		set file [$splitter $stamp $spec $uin]
 		if {![info exists oldfile] || $oldfile != $file} {
 			if {[info exists fd]} {
 				close $fd
@@ -131,6 +134,9 @@ if {$argv != {}} {
 		-bymachine {
 			log_split split_bymachine
 		}
+		-byuin {
+			log_split split_byuin
+		}
 		-merge {
 			log_merge $argv
 		}
@@ -141,6 +147,7 @@ if {$argv != {}} {
 			puts stderr "Bad Usage."
 			puts stderr "logmod.tcl -bydate < input.log"
 			puts stderr "           -bymachine < input.log"
+			puts stderr "           -byuin < input.log"
 			puts stderr "           -merge input.log1 input.log2 ... > merged.log"
 			puts stderr "           -filter uin:nnn < input.log > output.log"
 			puts stderr "           -filter type:xxx < input.log > output.log"
