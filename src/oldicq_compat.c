@@ -322,6 +322,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             cont->updated |= UPF_GENERAL_C;
             
             UtilUIDisplayMeta (cont);
+            PacketRead2 (pak);
             if (subtype == META_SRV_WP_LAST_USER && (wdata = PacketRead2 (pak)))
                 rl_printf ("%u %s\n", wdata, i18n (1621, "users not returned."));
             break;
