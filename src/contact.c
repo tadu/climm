@@ -466,7 +466,6 @@ BOOL ContactMetaSave (Contact *cont)
     fprintf (f, "b_nick     %s\n", s_quote (cont->nick));
     for (alias = cont->alias; alias; alias = alias->alias)
         fprintf (f, "b_alias    %s\n", s_quote (alias->nick));
-    fprintf (f, "b_flags    %ld\n", cont->flags);
     fprintf (f, "b_enc      %s\n", s_quote (ConvEncName (cont->encoding)));
     fprintf (f, "b_seen     %ld\n", (long)cont->seen_time);
     fprintf (f, "b_micq     %ld\n", (long)cont->seen_micq_time);

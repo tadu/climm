@@ -147,18 +147,21 @@ const char *PrefLogNameReal (Preferences *pref)
  */
 static FILE *PrefOpenRC (Preferences *pref)
 {
-    FILE *rcf;
+    if (!pref->rcfile)
+        pref->rcfile = strdup (s_sprintf ("%smicqrc", PrefUserDir (pref)));
     
-    if (pref->rcfile)
-    {
-        rcf = fopen (pref->rcfile, "r");
-        return rcf;
-    }
-    
-    pref->rcfile = strdup (s_sprintf ("%smicqrc", PrefUserDir(pref)));
+    return fopen (pref->rcfile, "r");
+}
 
-    rcf = fopen (pref->rcfile, "r");
-    return rcf;
+/*
+ * Open status file.
+ */
+static FILE *PrefOpenStat (Preferences *pref)
+{
+    if (!pref->statfile)
+        pref->statfile = strdup (s_sprintf ("%sstatus", PrefUserDir (pref)));
+
+    return fopen (pref->statfile, "r");
 }
 
 /*
@@ -166,10 +169,10 @@ static FILE *PrefOpenRC (Preferences *pref)
  */
 BOOL PrefLoad (Preferences *pref)
 {
-    FILE *rcf;
+    FILE *rcf, *stf;
     Contact *cont;
     int i;
-    BOOL ok = FALSE;
+    BOOL ok = TRUE;
     
     pref->away_time = default_away_time;
     pref->tabs = TABS_SIMPLE;
@@ -177,9 +180,18 @@ BOOL PrefLoad (Preferences *pref)
     rcf = PrefOpenRC (pref);
     if (rcf)
     {
-        ok = TRUE;
-        Read_RC_File (rcf);
+        i = Read_RC_File (rcf);
+        if (i == 2)
+        {
+            stf = PrefOpenStat (pref);
+            if (stf)
+                PrefReadStat (stf);
+            else
+                ok = FALSE;
+        }
     }
+    else
+        ok = FALSE;
     for (i = 0; (cont = ContactIndex (NULL, i)); i++)
         ContactMetaLoad (cont);
     return ok;

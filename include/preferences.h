@@ -29,6 +29,7 @@ struct Preferences_s
     
     char  *basedir;     /* the base dir where micqrc etc. reside in */
     char  *rcfile;      /* the preference file to load */
+    char  *statfile;    /* the status file to load */
     char  *logplace;    /* where to log to */
     char  *logname;     /* which name to use for logging */
 

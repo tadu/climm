@@ -269,7 +269,7 @@ void Initialize_RC_File ()
 /*
  * Reads in a configuration file.
  */
-void Read_RC_File (FILE *rcf)
+int Read_RC_File (FILE *rcf)
 {
     char *tmp = NULL, *tmp2 = NULL, *cmd = NULL;
     char *p, *line, *args;
@@ -309,19 +309,22 @@ void Read_RC_File (FILE *rcf)
             else if (!strcasecmp (line, "[Group]"))
             {
                 section = 4;
-                cg = ContactGroupFind (0, (Connection *)(-1), "", 1);
-                cg->serv = NULL;
-                for (i = 0; (conn = ConnectionNr (i)); i++)
-                    if (conn->flags & CONN_AUTOLOGIN)
-                    {
-                        cg->serv = conn;
-                        break;
-                    }
+                if (format < 2)
+                {
+                    cg = ContactGroupFind (0, (Connection *)(-1), "", 1);
+                    cg->serv = NULL;
+                    for (i = 0; (conn = ConnectionNr (i)); i++)
+                        if (conn->flags & CONN_AUTOLOGIN)
+                        {
+                            cg->serv = conn;
+                            break;
+                        }
+                }
             }
             else
             {
                 M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                M_printf (i18n (1659, "Unknown section %s in configuration file."), ConvToUTF8 (line, enc, -1, 0));
+                M_printf (i18n (1659, "Unknown section '%s' in configuration file."), ConvToUTF8 (line, enc, -1, 0));
                 M_print ("\n");
                 section = -1;
             }
@@ -359,17 +362,17 @@ void Read_RC_File (FILE *rcf)
                     else if (!strcasecmp (cmd, "utf8"))
                     {   what = ConvEnc ("UTF-8");        dep = 1; }
                     else if (!strcasecmp (cmd, "latin1"))
-                    {   what = ConvEnc ("ISO-8859-1");   dep = 1; }
+                    {   what = ConvEnc ("ISO-8859-1");   dep = 2; }
                     else if (!strcasecmp (cmd, "latin9"))
-                    {   what = ConvEnc ("ISO-8859-15");  dep = 1; }
+                    {   what = ConvEnc ("ISO-8859-15");  dep = 3; }
                     else if (!strcasecmp (cmd, "koi8"))
-                    {   what = ConvEnc ("KOI8-U");       dep = 1; }
+                    {   what = ConvEnc ("KOI8-U");       dep = 4; }
                     else if (!strcasecmp (cmd, "win1251"))
-                    {   what = ConvEnc ("CP-1251"); dep = 1; }
+                    {   what = ConvEnc ("CP-1251");      dep = 5; }
                     else if (!strcasecmp (cmd, "euc"))
-                    {   what = ConvEnc ("EUC-JP");       dep = 1; }
+                    {   what = ConvEnc ("EUC-JP");       dep = 6; }
                     else if (!strcasecmp (cmd, "sjis"))
-                    {   what = ConvEnc ("SHIFT-JIS");    dep = 1; }
+                    {   what = ConvEnc ("SHIFT-JIS");    dep = 7; }
                     else
                         what = ConvEnc (cmd);
 
@@ -400,16 +403,20 @@ void Read_RC_File (FILE *rcf)
                 {
                     PrefParseInt (i);
                     format = i;
-                    if (format != 1)
-                        return;
+                    if (format != 1 && format != 2)
+                        return 0;
+                    if (format == 2)
+                        enc = ENC_UTF8;
+                    else
+                        dep = 32;
                 }
                 else if (!strcasecmp (cmd, "receivescript") || !strcasecmp (cmd, "event"))
                 {
                     if (!strcasecmp (cmd, "receivescript"))
-                        dep |= 1;
+                        dep = 8;
                     if (!s_parse (&args, &tmp))
                     {
-                        dep |= 1;
+                        dep = 9;
                         prG->event_cmd = NULL;
                         continue;
                     }
@@ -538,7 +545,7 @@ void Read_RC_File (FILE *rcf)
                 {
                     if (!s_parse (&args, &tmp))
                     {
-                        dep = 1;
+                        dep = 10;
                         prG->flags |= FLAG_AUTOREPLY;
                         continue;
                     }
@@ -585,7 +592,7 @@ void Read_RC_File (FILE *rcf)
                     if (!s_parse (&args, &tmp))
                     {
                         prG->sound = SFLAG_BEEP;
-                        dep |= 1;
+                        dep = 11;
                         continue;
                     }
                     if (!strcasecmp (tmp, "on") || !strcasecmp (tmp, "beep"))
@@ -596,9 +603,9 @@ void Read_RC_File (FILE *rcf)
                         prG->sound = 0;
                 }
                 else if (!strcasecmp (cmd, "soundonline"))
-                    dep |= 1;
+                    dep = 12;
                 else if (!strcasecmp (cmd, "soundoffline"))
-                    dep |= 1;
+                    dep = 13;
                 else if (!strcasecmp (cmd, "auto_away"))
                 {
                     PrefParseInt (i);
@@ -670,12 +677,12 @@ void Read_RC_File (FILE *rcf)
                         {
                             if (which == FLAG_CONVRUSS)
                             {
-                                dep = 1;
+                                dep = 14;
                                 prG->enc_rem = ENC_WIN1251;
                             }
                             else if (which == FLAG_CONVEUC)
                             {
-                                dep = 1;
+                                dep = 15;
                                 prG->enc_rem = ENC_SJIS;
 #ifndef ENABLE_ICONV
                                 if (prG->enc_loc == ENC_UTF8)
@@ -701,7 +708,7 @@ void Read_RC_File (FILE *rcf)
                             prG->flags |= FLAG_LOG;
                         if (i & 2)
                             prG->flags |= FLAG_LOG_ONOFF;
-                        dep = 1;
+                        dep = 16;
                     }
                     else if (which == -2)
                     {
@@ -729,7 +736,7 @@ void Read_RC_File (FILE *rcf)
                         else if (!strcasecmp (cmd, "cycleall"))
                             prG->tabs = TABS_CYCLEALL;
                         else if (strcasecmp (cmd, "simple"))
-                            dep = 1;
+                            dep = 17;
                     }
                     else if (which == -4)
                     {
@@ -741,17 +748,58 @@ void Read_RC_File (FILE *rcf)
                         else if (!strcasecmp (cmd, "complete"))
                             prG->flags |= FLAG_QUIET | FLAG_ULTRAQUIET;
                         else if (strcasecmp (cmd, "off"))
-                            dep = 1;
+                            dep = 18;
+                    }
+                }
+                else if (!strcasecmp (cmd, "options"))
+                {
+                    while (s_parse (&args, &cmd))
+                    {
+                        if (!strcmp (cmd, "intimate"))
+                        {
+                            PrefParse (cmd);
+                            if (!strcmp (cmd, "on"))
+                                prG->contflags |=  CONT_INTIMATE;
+                            else if (!strcmp (cmd, "off"))
+                                prG->contflags &= ~CONT_INTIMATE;
+                            else
+                                ERROR;
+                        }
+                        else if (!strcmp (cmd, "hidefrom"))
+                        {
+                            PrefParse (cmd);
+                            if (!strcmp (cmd, "on"))
+                                prG->contflags |=  CONT_HIDEFROM;
+                            else if (!strcmp (cmd, "off"))
+                                prG->contflags &= ~CONT_HIDEFROM;
+                            else
+                                ERROR;
+                        }
+                        else if (!strcmp (cmd, "ignore"))
+                        {
+                            PrefParse (cmd);
+                            if (!strcmp (cmd, "on"))
+                                prG->contflags |=  CONT_IGNORE;
+                            else if (!strcmp (cmd, "off"))
+                                prG->contflags &= ~CONT_IGNORE;
+                            else
+                                ERROR;
+                        }
+                        else
+                            ERROR;
                     }
                 }
                 else
                 {
                     M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), ConvToUTF8 (cmd, enc, -1, 0));
+                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), ConvToUTF8 (cmd, enc, -1, 0));
                     M_print ("\n");
                 }
                 break;
             case 1:
+                if (format == 2)
+                    continue;
+
                 flags = 0;
                 
                 for (p = args; *p && *p != '#'; p++)
@@ -802,18 +850,19 @@ void Read_RC_File (FILE *rcf)
                     if (tconn->contacts && (cont = ContactFind (tconn->contacts, 0, uin, NULL, 0)))
                     {
                         j = 1;
-                        if (~cont->flags & CONT_TEMPORARY)
+                        if (!ContactPref (cont, CONT_TEMPORARY))
                             ContactFind (tconn->contacts, 0, uin, ConvToUTF8 (cmd, enc, -1, 0), 1);
                         else
                         {
                             s_repl (&cont->nick, ConvToUTF8 (cmd, enc, -1, 0));
                             cont->flags = flags;
+                            cont->flagsset = flags;
                         }
                     }
                 }
                 if (!j)
                 {
-                    dep = 1;
+                    dep = 19;
                     for (i = 0; (tconn = ConnectionNr (i)); i++)
                         if (tconn->spref->type & TYPEF_ANY_SERVER)
                             break;
@@ -826,8 +875,11 @@ void Read_RC_File (FILE *rcf)
                         section = -1;
                         break;
                     }
-                    if (~cont->flags & CONT_ALIAS)
+                    if (!ContactPref (cont, CONT_ALIAS))
+                    {
                         cont->flags = flags;
+                        cont->flagsset = flags;
+                    }
                 }
                 break;
             case 2:
@@ -862,7 +914,7 @@ void Read_RC_File (FILE *rcf)
                 else
                 {
                     M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), ConvToUTF8 (cmd, enc, -1, 0));
+                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), ConvToUTF8 (cmd, enc, -1, 0));
                     M_print ("\n");
                 }
                 break;
@@ -879,7 +931,7 @@ void Read_RC_File (FILE *rcf)
                             (conn->spref->version ? (conn->spref->version > 6 
                                ? TYPE_SERVER : TYPE_SERVER_OLD) : conn->spref->type);
                         conn->spref->flags = 0;
-                        dep |= 1;
+                        dep = 20;
                     }
                     else if (!strcasecmp (cmd, "icq8"))
                     {
@@ -956,11 +1008,14 @@ void Read_RC_File (FILE *rcf)
                 else
                 {
                     M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), cmd);
+                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), cmd);
                     M_print ("\n");
                 }
                 break;
             case 4: /* contact groups */
+                if (format == 2)
+                    continue;
+
                 PrefParse (cmd);
                 if (!strcasecmp (cmd, "label") && !cg->used)
                 {
@@ -1029,12 +1084,12 @@ void Read_RC_File (FILE *rcf)
                     cont = ContactFind (conn->contacts, i, uin, s_sprintf ("%ld", uin), 1);
                     if (cg != conn->contacts)
                         ContactAdd (cg, cont);
-                    cont->flags |= CONT_TEMPORARY;
+                    ContactPrefSet (cont, CONT_TEMPORARY, CONT_MODE_SET);
                 }
                 else
                 {
                     M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-                    M_printf (i18n (1188, "Unrecognized command in rc file '%s', ignored."), ConvToUTF8 (cmd, enc, -1, 0));
+                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), ConvToUTF8 (cmd, enc, -1, 0));
                     M_print ("\n");
                 }
                 break;
@@ -1106,13 +1161,13 @@ void Read_RC_File (FILE *rcf)
                 conn->open = NULL;
                 break;
         }
-        if (!conn->contacts && conn->type & TYPEF_SERVER)
+        if (format != 2 && !conn->contacts && conn->type & TYPEF_SERVER)
         {
             conn->contacts = cg = ContactGroupFind (0, conn, s_sprintf ("contacts-%s-%ld",
                                 conn->type == TYPE_SERVER ? "icq8" : "icq5", conn->uin), 1);
             for (i = 0; (cont = ContactIndex (NULL, i)); i++)
                 ContactFind (cg, 0, cont->uin, cont->nick, 1);
-            dep = 1;
+            dep = 21;
         }
     }
 
@@ -1127,14 +1182,308 @@ void Read_RC_File (FILE *rcf)
         conns->spref->type = TYPE_REMOTE;
         conns->type  = conns->spref->type;
         conns->server = strdup (conns->spref->server);
-        dep = 1;
+        dep = 22;
     }
 #endif
                            
     if (dep || !format)
-        M_print (i18n (1818, "Warning: Deprecated syntax found in rc file!\n    Please update or \"save\" the rc file and check for changes.\n"));
+    {
+        M_printf (i18n (1818, "Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or \"save\" the configuration file and check for changes.\n"), prG->rcfile);
+    }
     fclose (rcf);
+    return format;
 }
+
+
+/*
+ * Reads in a status file.
+ */
+void PrefReadStat (FILE *stf)
+{
+    char *line, *args, *cmd = NULL;
+    Contact *cont = NULL;
+    Connection *conn;
+    ContactGroup *cg = NULL;
+    int section, dep = 0;
+    UDWORD i;
+    UBYTE format = 0;
+    UDWORD uinconts = 0;
+    Contact *uincont[20];
+
+    for (section = 0; (line = UtilIOReadline (stf)); )
+    {
+        if (!*line || (*line == '#'))
+            continue;
+        if (*line == '[')
+        {
+            if (!strcasecmp (line, "[Group]"))
+            {
+                section = 4;
+                cg = ContactGroupFind (0, (Connection *)(-1), "", 1);
+                cg->serv = NULL;
+                for (i = 0; (conn = ConnectionNr (i)); i++)
+                    if (conn->flags & CONN_AUTOLOGIN)
+                    {
+                        cg->serv = conn;
+                        break;
+                    }
+            }
+            else if (!strcasecmp (line, "[Contacts]"))
+                section = 5;
+            else
+            {
+                M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                M_printf (i18n (1659, "Unknown section %s in configuration file."), ConvToUTF8 (line, ENC_UTF8, -1, 0));
+                M_print ("\n");
+                section = -1;
+            }
+            continue;
+        }
+        args = line;
+        switch (section)
+        {
+            case -1:
+                M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                M_print  (i18n (1675, "Ignored line:"));
+                M_printf (" %s\n", ConvToUTF8 (args, ENC_UTF8, -1, 0));
+                break;
+            case 0:
+                PrefParse (cmd);
+                if (!strcasecmp (cmd, "format"))
+                {
+                    PrefParseInt (i);
+                    format = i;
+                    if (format != 1)
+                        return;
+                }
+                else
+                {
+                    M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), ConvToUTF8 (cmd, ENC_UTF8, -1, 0));
+                    M_print ("\n");
+                }
+                break;
+            case 4: /* contact groups */
+                PrefParse (cmd);
+                if (!strcasecmp (cmd, "label") && !cg->used)
+                {
+                    PrefParse (cmd);
+                    s_repl (&cg->name, ConvToUTF8 (cmd, ENC_UTF8, -1, 0));
+                    if (!strncmp (cg->name, "contacts-", 9))
+                    {
+                        UWORD type = 0;
+                        UDWORD uin = 0;
+                        
+                        if      (!strncmp (cg->name + 9, "icq5-", 5)) type = TYPE_SERVER_OLD;
+                        else if (!strncmp (cg->name + 9, "icq8-", 5)) type = TYPE_SERVER;
+                        uin = atoi (cg->name + 14);
+                        
+                        for (i = 0; (conn = ConnectionNr (i)); i++)
+                            if (conn->spref && conn->spref->type == type && conn->spref->uin == uin)
+                            {
+                                cg->serv = conn;
+                                cg->serv->contacts = cg;
+                                break;
+                            }
+                    }
+                    if (!cg->serv)
+                    {
+                        for (i = 0; (conn = ConnectionNr (i)); i++)
+                            if (conn->spref && conn->spref->type & TYPEF_SERVER)
+                            {
+                                cg->serv = conn;
+                                break;
+                            }
+                    }
+                }
+                else if (!strcasecmp (cmd, "id") && !cg->used)
+                {
+                    PrefParseInt (i);
+                    cg->id = i;
+                }
+                else if (!strcasecmp (cmd, "server") && !cg->used)
+                {
+                    UWORD type = 0;
+                    UDWORD uin = 0;
+                    
+                    PrefParse (cmd);
+                    if      (!strcasecmp (cmd, "icq5")) type = TYPE_SERVER_OLD;
+                    else if (!strcasecmp (cmd, "icq8")) type = TYPE_SERVER;
+                    
+                    PrefParseInt (uin);
+                    
+                    for (i = 0; (conn = ConnectionNr (i)); i++)
+                        if (conn->type == type && conn->uin == uin)
+                        {
+                            cg->serv = conn;
+                            break;
+                        }
+                }
+                else if (!strcasecmp (cmd, "entry"))
+                {
+                    UDWORD uin;
+                    
+                    PrefParseInt (i);
+                    PrefParseInt (uin);
+                    
+                    cont = ContactFind (cg->serv->contacts, i, uin, s_sprintf ("%ld", uin), 1);
+                    if (cg != cg->serv->contacts)
+                        ContactAdd (cg, cont);
+                    ContactPrefSet (cont, CONT_TEMPORARY, CONT_MODE_SET);
+                }
+                else if (!strcasecmp (cmd, "options"))
+                {
+                    while (s_parse (&args, &cmd))
+                    {
+                        if (!strcmp (cmd, "intimate"))
+                        {
+                            PrefParse (cmd);
+                            if (!strcmp (cmd, "on"))
+                                ContactGroupPrefSet (cg, CONT_INTIMATE, CONT_MODE_SET);
+                            else if (!strcmp (cmd, "off"))
+                                ContactGroupPrefSet (cg, CONT_INTIMATE, CONT_MODE_CLEAR);
+                            else
+                                ContactGroupPrefSet (cg, CONT_INTIMATE, CONT_MODE_UNDEF);
+                        }
+                        else if (!strcmp (cmd, "hidefrom"))
+                        {
+                            PrefParse (cmd);
+                            if (!strcmp (cmd, "on"))
+                                ContactGroupPrefSet (cg, CONT_HIDEFROM, CONT_MODE_SET);
+                            else if (!strcmp (cmd, "off"))
+                                ContactGroupPrefSet (cg, CONT_HIDEFROM, CONT_MODE_CLEAR);
+                            else
+                                ContactGroupPrefSet (cg, CONT_HIDEFROM, CONT_MODE_UNDEF);
+                        }
+                        else if (!strcmp (cmd, "ignore"))
+                        {
+                            PrefParse (cmd);
+                            if (!strcmp (cmd, "on"))
+                                ContactGroupPrefSet (cg, CONT_IGNORE, CONT_MODE_SET);
+                            else if (!strcmp (cmd, "off"))
+                                ContactGroupPrefSet (cg, CONT_IGNORE, CONT_MODE_CLEAR);
+                            else
+                                ContactGroupPrefSet (cg, CONT_IGNORE, CONT_MODE_UNDEF);
+                        }
+                        else
+                            ERROR;
+                    }
+                }
+                else
+                {
+                    M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), ConvToUTF8 (cmd, ENC_UTF8, -1, 0));
+                    M_print ("\n");
+                }
+                break;
+            case 5:
+                PrefParse (cmd);
+                if (!strcasecmp (cmd, "entry"))
+                {
+                    UDWORD uin;
+                    
+                    PrefParseInt (uin);
+                    PrefParse (cmd);
+                    
+                    for (i = uinconts = 0; (conn = ConnectionNr (i)); i++)
+                    {
+                        if (conn->contacts && (cont = ContactFind (conn->contacts, 0, uin, NULL, 0)) && uinconts < 20)
+                        {
+                            uincont[uinconts++] = cont;
+                            if (!ContactPref (cont, CONT_TEMPORARY))
+                                ContactFind (cont->group, 0, uin, ConvToUTF8 (cmd, ENC_UTF8, -1, 0), 1);
+                            else
+                            {
+                                s_repl (&cont->nick, ConvToUTF8 (cmd, ENC_UTF8, -1, 0));
+                                ContactPrefSet (cont, CONT_TEMPORARY, CONT_MODE_CLEAR);
+                            }
+                        }
+                    }
+                    while (s_parse (&args, &cmd))
+                    {
+                        for (i = 0; i < uinconts; i++)
+                            ContactFind (uincont[i]->group, 0, uin, ConvToUTF8 (cmd, ENC_UTF8, -1, 0), 1);
+                    }
+                }
+                else if (!strcasecmp (cmd, "options"))
+                {
+                    while (s_parse (&args, &cmd))
+                    {
+                        if (!strcmp (cmd, "intimate"))
+                        {
+                            PrefParse (cmd);
+                            if (!strcmp (cmd, "on"))
+                                for (i = 0; i < uinconts; i++)
+                                   ContactPrefSet (uincont[i], CONT_INTIMATE, CONT_MODE_SET);
+                            else if (!strcmp (cmd, "off"))
+                                for (i = 0; i < uinconts; i++)
+                                   ContactPrefSet (uincont[i], CONT_INTIMATE, CONT_MODE_CLEAR);
+                            else
+                                for (i = 0; i < uinconts; i++)
+                                   ContactPrefSet (uincont[i], CONT_INTIMATE, CONT_MODE_UNDEF);
+                        }
+                        else if (!strcmp (cmd, "hidefrom"))
+                        {
+                            PrefParse (cmd);
+                            if (!strcmp (cmd, "on"))
+                                for (i = 0; i < uinconts; i++)
+                                    ContactPrefSet (uincont[i], CONT_HIDEFROM, CONT_MODE_SET);
+                            else if (!strcmp (cmd, "off"))
+                                for (i = 0; i < uinconts; i++)
+                                    ContactPrefSet (uincont[i], CONT_HIDEFROM, CONT_MODE_CLEAR);
+                            else
+                                for (i = 0; i < uinconts; i++)
+                                    ContactPrefSet (uincont[i], CONT_HIDEFROM, CONT_MODE_UNDEF);
+                        }
+                        else if (!strcmp (cmd, "ignore"))
+                        {
+                            PrefParse (cmd);
+                            if (!strcmp (cmd, "on"))
+                                for (i = 0; i < uinconts; i++)
+                                    ContactPrefSet (uincont[i], CONT_IGNORE, CONT_MODE_SET);
+                            else if (!strcmp (cmd, "off"))
+                                for (i = 0; i < uinconts; i++)
+                                    ContactPrefSet (uincont[i], CONT_IGNORE, CONT_MODE_CLEAR);
+                            else
+                                for (i = 0; i < uinconts; i++)
+                                    ContactPrefSet (uincont[i], CONT_IGNORE, CONT_MODE_UNDEF);
+                        }
+                        else
+                            ERROR;
+                    }
+                }
+                else
+                {
+                    M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                    M_printf (i18n (1188, "Unrecognized command '%s' in configuration file, ignored."), ConvToUTF8 (cmd, ENC_UTF8, -1, 0));
+                    M_print ("\n");
+                }
+                break;
+        }
+    }
+    
+    for (i = 0; (conn = ConnectionNr (i)); i++)
+    {
+        if (!conn->contacts && conn->type & TYPEF_SERVER)
+        {
+            conn->contacts = cg = ContactGroupFind (0, conn, s_sprintf ("contacts-%s-%ld",
+                                conn->type == TYPE_SERVER ? "icq8" : "icq5", conn->uin), 1);
+            dep = 21;
+        }
+    }
+
+    if (dep || !format)
+    {
+        M_printf (i18n (1818, "Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or \"save\" the configuration file and check for changes.\n"), prG->statfile);
+    }
+    fclose (stf);
+}
+
+
+
+
+
+
 
 /************************************************
  *   This function should save your auto reply messages in the rc file.
@@ -1143,7 +1492,7 @@ void Read_RC_File (FILE *rcf)
  ***********************************************/
 int Save_RC ()
 {
-    FILE *rcf;
+    FILE *rcf, *stf;
     time_t t;
     int i, k, l;
     Contact *cont;
@@ -1166,15 +1515,45 @@ int Save_RC ()
                 rcf = fopen (prG->rcfile, "w");
             if (!rcf)
                 rc = errno;
+            free (tmp);
         }
         if (!rcf)
             M_printf (i18n (1872, "failed: %s (%d)\n"), strerror (rc), rc);
     }
     if (!rcf)
         return -1;
-    fprintf (rcf, "# This file was generated by mICQ " MICQ_VERSION " of %s %s\n", __TIME__, __DATE__);
+
+    stf = fopen (prG->statfile, "w");
+    if (!stf)
+    {
+        int rc = errno;
+        if (rc == ENOENT)
+        {
+            char *tmp = strdup (PrefUserDir (prG));
+            if (tmp[strlen (tmp) - 1] == '/')
+                tmp[strlen (tmp) - 1] = '\0';
+            M_printf (i18n (2047, "Creating directory %s.\n"), tmp);
+            k = mkdir (tmp, 0700);
+            if (!k)
+                rcf = fopen (prG->statfile, "w");
+            if (!rcf)
+                rc = errno;
+            free (tmp);
+        }
+        if (!stf)
+            M_printf (i18n (1872, "failed: %s (%d)\n"), strerror (rc), rc);
+    }
+    if (!stf)
+        return -1;
+
+
     t = time (NULL);
-    fprintf (rcf, "# This file was generated on %s\n\n", ctime (&t));
+    fprintf (rcf, "# This file was generated by mICQ " MICQ_VERSION " of %s %s\n", __TIME__, __DATE__);
+    fprintf (rcf, "# This file was generated on %s\n", ctime (&t));
+
+    fprintf (stf, "# This file was generated by mICQ " MICQ_VERSION " of %s %s\n", __TIME__, __DATE__);
+    fprintf (stf, "# This file was generated on %s\n", ctime (&t));
+    fprintf (stf, "format 1\n\n");
     
     fprintf (rcf, "# Character encodings: auto, iso-8859-1, koi8-u, ...\n");
     fprintf (rcf, "encoding file UTF-8\n");
@@ -1183,7 +1562,7 @@ int Save_RC ()
              prG->enc_loc & ENC_AUTO ? "" : " # please set your locale correctly instead");
     fprintf (rcf, "%sencoding remote %s\n",
              prG->enc_rem & ENC_AUTO ? "#" : "", s_quote (ConvEncName (prG->enc_rem)));
-    fprintf (rcf, "format 1\n\n");
+    fprintf (rcf, "format 2\n\n");
 
     for (k = 0; (ss = ConnectionNr (k)); k++)
     {
@@ -1266,7 +1645,7 @@ int Save_RC ()
     fprintf (rcf, "set silent     %s # what stuff to hide (on, off, complete)\n",
                     prG->flags & FLAG_ULTRAQUIET ? "complete" :
                     prG->flags & FLAG_QUIET      ? "on" : "off");
-    fprintf (rcf, "set tabs       %s # type of tab completion (simple, cycle, cycleall)\n\n",
+    fprintf (rcf, "set tabs       %s # type of tab completion (simple, cycle, cycleall)\n",
                     prG->tabs == TABS_SIMPLE ? "simple" :
                     prG->tabs == TABS_CYCLE ? "cycle" : "cycleall");
     if (prG->flags & FLAG_WEBAWARE)
@@ -1277,6 +1656,15 @@ int Save_RC ()
         fprintf (rcf, "set dcauth     %s # whether to allow dc only from authorized contacts\n", "on");
     if (prG->flags & FLAG_DC_CONT)
         fprintf (rcf, "set dccont     %s # whether to allow dc only from contacts\n", "on");
+    fprintf (rcf, "\n");
+    fprintf (rcf, "options");
+    if (prG->contflags & CONT_IGNORE)
+        fprintf (rcf, " ignore on");
+    if (prG->contflags & CONT_HIDEFROM)
+        fprintf (rcf, " hidefrom on");
+    if (prG->contflags & CONT_INTIMATE)
+        fprintf (rcf, " intimate on");
+    fprintf (rcf, "\n\n");
 
     fprintf (rcf, "# Colors. color scheme 0|1|2|3 or color <use> <color>\n");
     {
@@ -1359,8 +1747,10 @@ int Save_RC ()
             fprintf (rcf, " %s\n", s_quote (node->expansion));
         }
     }
+    fprintf (rcf, "\n");
 
-    fprintf (rcf, "\n# Contact groups.");
+#if 1
+    fprintf (rcf, "# Contact groups. This is a compatibily section and ignored for mICQ 0.5.x.");
     for (k = 0; (cg = ContactGroupIndex (k)); k++)
     {
         fprintf (rcf, "\n[Group]\n");
@@ -1378,13 +1768,11 @@ int Save_RC ()
             cg = cg->more;
         }
     }
-
-    fprintf (rcf, "\n# The contact list section.\n");
+    fprintf (rcf, "\n# The contact list section. This is a compatibily section and ignored for mICQ 0.5.x.\n");
     fprintf (rcf, "#  Use * in front of the number of anyone you want to see you while you're invisible.\n");
     fprintf (rcf, "#  Use ~ in front of the number of anyone you want to always see you as offline.\n");
     fprintf (rcf, "#  Use ^ in front of the number of anyone you want to ignore.\n");
     fprintf (rcf, "[Contacts]\n");
-
     for (i = 0; (cont = ContactIndex (0, i)); i++)
     {
         if (!ContactPref (cont, CONT_TEMPORARY) && !ContactPref (cont, CONT_ALIAS))
@@ -1399,7 +1787,65 @@ int Save_RC ()
         }
     }
     fprintf (rcf, "\n");
-    return fclose (rcf) ? -1 : 0;
+#endif
+
+    fprintf (stf, "# Contact groups.");
+    for (k = 0; (cg = ContactGroupIndex (k)); k++)
+    {
+        fprintf (stf, "\n[Group]\n");
+        if (cg->serv)
+            fprintf (stf, "server %s %ld\n", cg->serv->type == TYPE_SERVER ? "icq8" : "icq5", cg->serv->uin);
+        else
+            fprintf (stf, "#server <icq5|icq8> <uin>\n");
+        fprintf (stf, "label %s\n", s_quote (cg->name));
+        fprintf (stf, "id %d\n", cg->id);
+        if (cg->flagsset)
+        {
+            fprintf (stf, "options");
+            if (cg->flagsset & CONT_INTIMATE)
+                fprintf (stf, " intimate %s", cont->flags & CONT_INTIMATE ? "on" : "off");
+            if (cg->flagsset & CONT_HIDEFROM)
+                fprintf (stf, " hidefrom %s", cont->flags & CONT_HIDEFROM ? "on" : "off");
+            if (cg->flagsset & CONT_IGNORE)
+                fprintf (stf, " ignore   %s", cont->flags & CONT_IGNORE   ? "on" : "off");
+            fprintf (stf, "\n");
+        }
+        while (cg)
+        {
+            for (i = 0; i < cg->used; i++)
+                if (!ContactPref (cont = cg->contacts[i], CONT_TEMPORARY) && !ContactPref (cont, CONT_ALIAS))
+                    fprintf (stf, "entry 0 %ld\n", cont->uin);
+            cg = cg->more;
+        }
+    }
+
+    fprintf (stf, "\n# The contact list section.\n");
+    fprintf (stf, "[Contacts]\n");
+
+    for (i = 0; (cont = ContactIndex (0, i)); i++)
+    {
+        if (!ContactPref (cont, CONT_TEMPORARY) && !ContactPref (cont, CONT_ALIAS))
+        {
+            Contact *cont2;
+            fprintf (stf, "entry %9ld %s", cont->uin, s_quote (cont->nick));
+            for (cont2 = cont->alias; cont2; cont2 = cont2->alias)
+                fprintf (stf, " %s", s_quote (cont2->nick));
+            if (cont->flagsset)
+            {
+                fprintf (stf, "\noptions");
+                if (cont->flagsset & CONT_INTIMATE)
+                    fprintf (stf, " intimate %s", cont->flags & CONT_INTIMATE ? "on" : "off");
+                if (cont->flagsset & CONT_HIDEFROM)
+                    fprintf (stf, " hidefrom %s", cont->flags & CONT_HIDEFROM ? "on" : "off");
+                if (cont->flagsset & CONT_IGNORE)
+                    fprintf (stf, " ignore   %s", cont->flags & CONT_IGNORE   ? "on" : "off");
+            }
+            fprintf (stf, "\n");
+        }
+    }
+    fprintf (stf, "\n");
+    
+    return fclose (rcf) | fclose (stf) ? -1 : 0;
 }
 
 /*
