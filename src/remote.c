@@ -56,8 +56,6 @@ void RemoteOpen (Connection *remo)
 
     remo->connect     = 0;
     remo->our_seq     = 0;
-    remo->type        = TYPE_REMOTE;
-    remo->flags       = 0;
     remo->open        = &RemoteOpen;
     remo->dispatch    = &RemoteDispatch;
     remo->reconnect   = NULL;
