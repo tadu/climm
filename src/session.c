@@ -153,11 +153,11 @@ void SessionClose (Session *sess)
     sess->parent  = NULL;
 
     for (j = 0; j < listlen; j++)
-        if (slist[j]->assoc == sess)
+        if (slist[j] && slist[j]->assoc == sess)
             slist[j]->assoc = NULL;
 
     for (j = 0; j < listlen; j++)
-        if (slist[j]->parent == sess)
+        if (slist[j] && slist[j]->parent == sess)
         {
             slist[j]->parent = NULL;
             SessionClose (slist[j]);
