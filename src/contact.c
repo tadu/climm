@@ -44,32 +44,32 @@ static int            cnt_count = 0;
 #define CONTACTGROUP_GLOBAL      (cnt_groups[0])
 #define CONTACTGROUP_NONCONTACTS (cnt_groups[1])
 
-#define BUILD_MIRANDA  0xffffffffL
-#define BUILD_MOBICQ   0xfffffffeL
-#define BUILD_STRICQ   0xffffff8fL
-#define BUILD_YSM      0xffffffabL
-#define BUILD_ARQ      0xffffff7fL
-#define BUILD_VICQ     0x04031980L
-#define BUILD_ALICQ    0xffffffbeL
+#define BUILD_MIRANDA  0xffffffffUL
+#define BUILD_MOBICQ   0xfffffffeUL
+#define BUILD_STRICQ   0xffffff8fUL
+#define BUILD_YSM      0xffffffabUL
+#define BUILD_ARQ      0xffffff7fUL
+#define BUILD_VICQ     0x04031980UL
+#define BUILD_ALICQ    0xffffffbeUL
 
-#define BUILD_LICQ     0x7d000000L
-#define BUILD_SSL      0x00800000L
+#define BUILD_LICQ     0x7d000000UL
+#define BUILD_SSL      0x00800000UL
 
-#define BUILD_TRILLIAN_ID1  0x3b75ac09
-#define BUILD_TRILLIAN_ID2  0x3bae70b6
-#define BUILD_TRILLIAN_ID3  0x3b744adb
+#define BUILD_TRILLIAN_ID1  0x3b75ac09UL
+#define BUILD_TRILLIAN_ID2  0x3bae70b6UL
+#define BUILD_TRILLIAN_ID3  0x3b744adbUL
 
-#define BUILD_LIBICQ2K_ID1  0x3aa773ee
-#define BUILD_LIBICQ2K_ID2  0x3aa66380
-#define BUILD_LIBICQ2K_ID3  0x3a877a42
+#define BUILD_LIBICQ2K_ID1  0x3aa773eeUL
+#define BUILD_LIBICQ2K_ID2  0x3aa66380UL
+#define BUILD_LIBICQ2K_ID3  0x3a877a42UL
 
-#define BUILD_KXICQ_ID1     0x3b4c4c0c
-#define BUILD_KXICQ_ID2     0
-#define BUILD_KXICQ_ID3     0x3b7248ed
+#define BUILD_KXICQ_ID1     0x3b4c4c0cUL
+#define BUILD_KXICQ_ID2     0UL
+#define BUILD_KXICQ_ID3     0x3b7248edUL
 
-#define BUILD_KXICQ2_ID1    0x3aa773ee
-#define BUILD_KXICQ2_ID2    0x3aa66380
-#define BUILD_KXICQ2_ID3    0x3a877a42
+#define BUILD_KXICQ2_ID1    0x3aa773eeUL
+#define BUILD_KXICQ2_ID2    0x3aa66380UL
+#define BUILD_KXICQ2_ID3    0x3a877a42UL
 
 /*
  * Initializes the contact group table.
@@ -985,7 +985,7 @@ void ContactSetVersion (Contact *cont)
         && !HAS_CAP (cont->caps, CAP_SIMNEW) && !HAS_CAP (cont->caps, CAP_KOPETE))
         cont->v1 = cont->v2 = cont->v3 = cont->v4 = 0;
 
-    if ((dc->id1 & 0xff7f0000) == BUILD_LICQ && ver > 1000)
+    if ((dc->id1 & 0xff7f0000UL) == BUILD_LICQ && ver > 1000)
     {
         new = "licq";
         if (dc->id1 & BUILD_SSL)
@@ -996,7 +996,7 @@ void ContactSetVersion (Contact *cont)
         cont->v4 = 0;
     }
 #ifdef WIP
-    else if ((dc->id1 & 0xff7f0000) == BUILD_MICQ || (dc->id1 & 0xff7f0000) == BUILD_LICQ)
+    else if ((dc->id1 & 0xff7f0000UL) == BUILD_MICQ || (dc->id1 & 0xff7f0000UL) == BUILD_LICQ)
     {
         new = "mICQ";
         cont->v1 = ver / 10000;
@@ -1008,13 +1008,13 @@ void ContactSetVersion (Contact *cont)
     }
 #endif
 
-    else if ((dc->id1 & 0xffff0000) == 0xffff0000)
+    else if ((dc->id1 & 0xffff0000UL) == 0xffff0000UL)
     {
         cont->v1 = (dc->id2 & 0x7f000000) >> 24;
         cont->v2 = (dc->id2 &   0xff0000) >> 16;
         cont->v3 = (dc->id2 &     0xff00) >> 8;
         cont->v4 =  dc->id2 &       0xff;
-        switch ((long)dc->id1)
+        switch ((UDWORD)dc->id1)
         {
             case BUILD_MIRANDA:
                 if (dc->id2 <= 0x00010202 && dc->version >= 8)
