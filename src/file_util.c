@@ -1033,7 +1033,8 @@ void Read_RC_File (FILE *rcf)
                     PrefParseInt (uin);
                     
                     cont = ContactFind (conn->contacts, i, uin, s_sprintf ("%ld", uin), 1);
-                    ContactAdd (cg, cont);
+                    if (cg != conn->contact)
+                        ContactAdd (cg, cont);
                 }
                 else
                 {
