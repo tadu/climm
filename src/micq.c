@@ -131,7 +131,7 @@ void Idle_Check (Session *sess)
         new = (sess->status & STATUSF_INV) | STATUS_AWAY;
         idle_flag = 1;
     }
-    if (new != -1)
+    if (new != -1 && new != sess->status)
     {
         if (sess->type & TYPE_SERVER)
             SnacCliSetstatus (sess, new, 1);
