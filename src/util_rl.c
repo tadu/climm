@@ -1497,11 +1497,10 @@ str_t ReadLine (UBYTE newbyte)
                 rl_key_backward_word ();
             else if (ucs == 'f')
                 rl_key_forward_word ();
+            else if (ucs == 127)
+                rl_key_delete_backward_word ();
             else
-            {
                 printf ("\a");
-                rl_stat = 0;
-            }
             break;
             
         case 2: /* state 2: CSI was typed */
