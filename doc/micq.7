@@ -67,7 +67,7 @@ or
 .BR off ,
 or call the
 .B event
-script for beeps. New syntax for 0.4.9.5.
+script for beeps. New syntax for 0.4.10.
 .TP
 .BI autoaway \ [timeout|on|off]
 Set the timeout to
@@ -100,12 +100,12 @@ string %s is present in
 .IR expansion ,
 it is replaced with the given arguments when the alias is invoked,
 otherwise they will be appended. 
-New for 0.4.9.5.
+New for 0.4.10.
 .TP
 .BI unalias \ alias
 Delete the alias named
 .IR alias .
-New for 0.4.9.5.
+New for 0.4.10.
 .TP
 .BI alter \ command\ new
 Make command initially or previously known as
@@ -114,7 +114,7 @@ from now on known as
 .IR new .
 This command is obsoleted by the
 .B alias
-command as of mICQ 0.4.9.5.
+command as of mICQ 0.4.10.
 .TP
 .BI trans \ [lang|nr]\ ...
 Switch to the language 
@@ -220,7 +220,7 @@ to suppress status changes, or
 .BR complete ,
 to suppress status changes, logins and logoffs.
 .PP
-New options for 0.4.9.5.
+New options for 0.4.10.
 .RE
 .TP
 .B save
@@ -233,7 +233,7 @@ Beware, it will clobber any comments in this file.
 .TP
 .B exit
 Quit mICQ.
-Aliases quit and exit new for 0.4.9.5.
+Aliases quit and exit new for 0.4.10.
 .SH COMMANDS CONCERNING MESSAGE SENDING
 A
 .I <contacts>
@@ -346,7 +346,7 @@ for free for chat. If
 or nothing is given, the auto message for the contacts
 is fetched for their respective status. Contacts not in any of those
 status will be skipped.
-New for 0.4.9.5.
+New for 0.4.10.
 .TP
 .BI auth \ [req|grant|deny|add]\ <contacts>
 Grant or deny all
@@ -449,16 +449,16 @@ List all people who are online in your contact list with more details.
 List all people in your contact list with more details. Also shows all aliases.
 .TP
 .B eg
-List all people who are online in your contact list, sorted by contact groups. New for 0.4.9.5.
+List all people who are online in your contact list, sorted by contact groups. New for 0.4.10.
 .TP
 .B wg
-List all people in your contact list, sorted by contact groups. New for 0.4.9.5.
+List all people in your contact list, sorted by contact groups. New for 0.4.10.
 .TP
 .B eeg
-List all people who are online in your contact list with more details, sorted by contact groups. New for 0.4.9.5.
+List all people who are online in your contact list with more details, sorted by contact groups. New for 0.4.10.
 .TP
 .B wwg
-List all people in your contact list with more details. Also shows all aliases, sorted by contact groups. New for 0.4.9.5.
+List all people in your contact list with more details. Also shows all aliases, sorted by contact groups. New for 0.4.10.
 .TP
 .B ewide
 List all people who are online in your contact list in a screen wide format.
@@ -513,7 +513,7 @@ to the contact group
 .IR group ,
 which is created if it doesn't exist and the command is given as
 .BI addgroup .
-New for 0.4.9.5.
+New for 0.4.10.
 .br
 Note: you need to
 .B save
@@ -530,7 +530,7 @@ or add alias
 .IR alias
 for
 .IR nickname .
-New (addalias) for 0.4.9.5.
+New (addalias) for 0.4.10.
 .br
 Note: you need to
 .B save
@@ -546,7 +546,7 @@ from the contact group
 or remove the contact group completely if
 .B all
 is given.
-New for 0.4.9.5.
+New for 0.4.10.
 Note: you need to
 .B save
 to make this persistent.
@@ -558,7 +558,7 @@ If any nick is the last alias for this contact, or if
 .B all
 is given, remove the contact completely.
 .br
-New (remalias) for 0.4.9.5.
+New (remalias) for 0.4.10.
 Note: you need to
 .B save
 to make this persistent.
@@ -677,13 +677,13 @@ from the server and shows them.
 Gets the meta data for the contact the last message was received
 from from the server and shows it.
 .PP
-New for 0.4.9.5.
+New for 0.4.10.
 .RE
 .TP
 .BI file \ [...]
 Alias for
 .BR peer\ file .
-New for 0.4.9.5.
+New for 0.4.10.
 .TP
 .BI peer \ command\ uin|nick
 Operate command

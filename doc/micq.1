@@ -6,23 +6,48 @@
 \- a small, text mode ICQ client
 .SH SYNOPSIS
 .B micq
+.I [\-h]
+.I [\-c]
+.I [\-i <locale>]
+.I [\-b <basedir>]
+.I [\-f <configfile>]
 .I [\-v[level]]
-.I [\-f filename]
+.I [\-l <logplace>]
 .SH DESCRIPTION
 .B mICQ
 is a text based ICQ client supporting many of the ICQ features provided by
 the client by Mirabillis. mICQ allows to change the user password, create
-new accounts, updating user info, search other users, etc.
+new accounts, updating user info, search other users, SMS sending, direct
+connections, acknowledged messages, file transfer, detect other user's
+client, send UTF-8 encoded messages, execute arbitrarely commands upon
+any event, etc.
 .SH OPTIONS
+.TP
+.BI \-h
+Display a short help text and exit.
+.TP
+.BI \-c
+Disable the use of color.
+.TP
+.BI \-i \ <locale>
+Use the locale
+.I locale
+instead of the one derived from environment variables.
+.TP
+.BI \-b \ <basedir>
+Specify
+.I basedir
+as the base directory where mICQ will look for it's files, in particular
+it's micqrc file.
+.TP
+.BI \-f \ <configfile>
+Specify
+.I configfile
+as the configuration file to use.
 .TP
 .BI \-v [level]
 Set verbose mode, or set verbosity to
 .IR level .
-.TP
-.BI \-f \ filename
-Use
-.I filename
-as the rc file.
 .TP
 .BI \-l \ file|dir
 Use
@@ -30,16 +55,11 @@ Use
 as file to write log into, or use
 .I dir
 as a directory to create per user log files in.
-.TP
-.BI \-?,\ \-h
-Print usage.
-
-
 .SH FEATURES
 .B mICQ
-is very portable and has run on Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD and any
+is very portable and runs on Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD and any
 other modern unix system.  
-.B mICQ version 0.4.9.2
+.B mICQ version 0.4.10
 is known to run on Linux, AIX, HPUX, Tru64, AmigaOS, partially BeOS and other unices.
 However, the other ports
 may or may not still work and anyone wishing to test them is welcome to.
@@ -70,8 +90,7 @@ Via HTTP from
 .br
 To get the newest version from CVS, enter:
 .br
-
-cvs \-d:pserver:anonymous@micq.org:/usr/local/cvsroot co micq
+cvs \-d:pserver:anonymous@micq.org:/var/lib/cvs co micq
 .br
 .SH SEE ALSO
 .BR micqrc (5),
@@ -81,19 +100,24 @@ cvs \-d:pserver:anonymous@micq.org:/usr/local/cvsroot co micq
 .I ~/.micqrc
 Old configuration file for mICQ \- obsolete.
 .TP
-.I ~/.micq/micqrc
+.I ~/.micq/
+The default base directory where mICQ looks for its files.
+.TP
+.I BASE/micqrc
 Configuration file for mICQ.
+.TP
+.I BASE/i18n/*.i18n
+Local overrides for mICQ's translation files.
+.TP
+.I BASE/history/
+Default directory for log files.
+.TP
+.I BASE/files/
+Directory where incoming file transfers are saved.
 .TP
 .I PREFIX/share/micq/*.i18n
 Internationalization files containing translations of all strings
 mICQ outputs.
-.TP
-.I ~/.micq/i18n/*.i18n
-Local overrides for the files above.
-.TP
-.I ~/.micq/history/
-Default location of directory where log files are created in.
-
 .SH BUGS
 Send bug reports or comments to R\(:udiger Kuhlmann
 .I <micq@ruediger\-kuhlmann.de>
