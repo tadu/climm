@@ -72,7 +72,7 @@ void ConnectionInitServer (Connection *conn)
     if (conn->status == STATUS_OFFLINE)
         conn->status = conn->spref->status;
     QueueEnqueueData (conn, conn->connect, conn->our_seq,
-                      time (NULL) + 10,
+                      time (NULL) + 10 * (reconn + 1),
                       NULL, conn->uin, NULL, &SrvCallBackTimeout);
     UtilIOConnectTCP (conn);
 }
@@ -644,12 +644,14 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
             IMSrvMsg (cont, serv, NOW, ExtraClone (extra));
             PacketWrite2     (ack_pak, ack_status);
             PacketWrite2     (ack_pak, ack_flags);
-            PacketWriteLNTS  (ack_pak, c_out (ack_msg));
+            PacketWriteLNTS  (ack_pak, c_out_for (ack_msg, cont, type));
             if (msgtype == MSG_NORM)
             {
                 PacketWrite4 (ack_pak, TCP_COL_FG);
                 PacketWrite4 (ack_pak, TCP_COL_BG);
             }
+            if (CONT_UTF8 (cont, type))
+                PacketWriteDLStr     (ack_pak, CAP_GID_UTF8);
             accept = -1;
             break;
     }
