@@ -601,7 +601,9 @@ void ssl_close (Connection *conn DEBUGPARAM)
         DebugH (DEB_SSL, "ssl_close calling ssl_disconnect");
         ssl_disconnect (conn);
     }
-    sockclose (conn->sok);
+    if (conn->sok != -1)
+        sockclose (conn->sok);
+    conn->sok = -1;
 }
 
 /*
