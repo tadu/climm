@@ -2044,139 +2044,99 @@ static JUMP_F(CmdUserIgnoreStatus)
  */
 static JUMP_F(CmdUserStatusWide)
 {
-    Contact **Online;           /* definitely won't need more; could    */
-    Contact **Offline = NULL;   /* probably get away with less.    */
-    int MaxLen = 0;             /* length of longest contact name */
-    int i;
-    int OnIdx = 0;              /* for inserting and tells us how many there are */
-    int OffIdx = 0;             /* for inserting and tells us how many there are */
-    int NumCols;                /* number of columns to display on screen        */
-    int StatusLen;
-    ContactGroup *cg;
-    Contact *cont = NULL;
-    char *stat;
+    ContactGroup *cg, *cgon, *cgoff = NULL;
+    int lennick = 0, columns, colleft, colright, i;
+    Contact *cont;
     OPENCONN;
 
     cg = conn->contacts;
 
-    if (data)
-    {
-        if ((Offline = (Contact **) malloc (MAX_CONTACTS * sizeof (Contact *))) == NULL)
-        {
-            M_print (i18n (2118, "Out of memory.\n"));
-            return 0;
-        }
-    }
-
-    if ((Online = (Contact **) malloc (MAX_CONTACTS * sizeof (Contact *))) == NULL)
+    if (data && !(cgoff = ContactGroupC (conn, 0, "")))
     {
         M_print (i18n (2118, "Out of memory.\n"));
         return 0;
     }
+    
+    if (!(cgon = ContactGroupC (conn, 0, "")))
+    {
+        if (data)
+            ContactGroupD (cgon);
+        M_print (i18n (2118, "Out of memory.\n"));
+        return 0;
+    }
 
-    /* Filter the contact list into two lists -- online and offline. Also
-       find the longest name in the list -- this is used to determine how
-       many columns will fit on the screen. */
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
     {
         if (cont->status == STATUS_OFFLINE)
         {
             if (data)
             {
-                Offline[OffIdx++] = cont;
-                if (strlen (cont->nick) > MaxLen)
-                    MaxLen = strlen (cont->nick);
+                ContactAdd (cgoff, cont);
+                if (s_strlen (cont->nick) > lennick)
+                    lennick = s_strlen (cont->nick);
             }
         }
         else
         {
-            Online[OnIdx++] = cont;
-            if (strlen (cont->nick) > MaxLen)
-                MaxLen = strlen (cont->nick);
+            ContactAdd (cgon, cont);
+            if (s_strlen (cont->nick) > lennick)
+                lennick = s_strlen (cont->nick);
         }
     }
 
-    /* This is probably a very ugly way to determine the number of columns
-       to use... it's probably specific to my own contact list.            */
-    NumCols = Get_Max_Screen_Width () / (MaxLen + 4);
-    if (NumCols < 1)
-        NumCols = 1;            /* sanity check. :)  */
+    columns = Get_Max_Screen_Width () / (lennick + 3);
+    if (columns < 1)
+        columns = 1;
 
     if (data)
     {
-        /* Fairly simple print routine. We check that we only print the right
-           number of columns to the screen.                                    */
+        colleft = (Get_Max_Screen_Width () - s_strlen (i18n (1653, "Offline"))) / 2 - 1;
         M_print (COLQUOTE);
-        for (i = 0; 2 * i + strlen (i18n (1653, "Offline")) < Get_Max_Screen_Width (); i++)
-        {
+        for (i = 0; i < colleft; i++)
             M_print ("=");
-        }
-        M_printf (COLCLIENT "%s" COLQUOTE, i18n (1653, "Offline"));
-        for (i += strlen (i18n (1653, "Offline")); i < Get_Max_Screen_Width (); i++)
-        {
+        M_printf (" " COLCLIENT "%s" COLQUOTE " ", i18n (1653, "Offline"));
+        colright = Get_Max_Screen_Width () - i - s_strlen (i18n (1653, "Offline")) - 2;
+        for (i = 0; i < colright; i++)
             M_print ("=");
-        }
-        M_print (COLNONE "\n");
-        for (i = 0; i < OffIdx; i++)
+        M_print (COLNONE);
+        for (i = 0; (cont = ContactIndex (cgoff, i)); i++)
         {
-            M_printf ("%s  %-*s" COLNONE, COLCONTACT, MaxLen + 2, Offline[i]->nick);
-            if ((i + 1) % NumCols == 0)
+            if (!(i % columns))
                 M_print ("\n");
+            M_printf ("  %s%-*s" COLNONE " ", COLCONTACT, lennick + s_delta (cont->nick), cont->nick);
         }
-        if (i % NumCols != 0)
-            M_print ("\n");
+        M_print ("\n");
+        ContactGroupD (cgoff);
     }
 
-    /* The user status for Online users is indicated by a one-character
-       prefix to the nickname. Unfortunately not all statuses (statusae? :)
-       are unique at one character. A better way to encode the information
-       is needed. Our own status is shown to the right in the 'Online' headline */
-    M_print (COLQUOTE);
-
-    stat = strdup (s_status (conn->status));
-    StatusLen = strlen (i18n (2211, "Your status is %s.\n")) + strlen (stat) + 8;
-    for (i = 0; 2 * i + StatusLen + strlen (i18n (1654, "Online")) < Get_Max_Screen_Width (); i++)
-    {
+    cont = ContactUIN (conn, conn->uin);
+    M_printf ("%s%ld" COLNONE " " COLQUOTE, COLCONTACT, cont->uin);
+    colleft = (Get_Max_Screen_Width () - s_strlen (i18n (1654, "Online"))) / 2 - s_strlen (s_sprintf ("%ld", conn->uin)) - 2;
+    for (i = 0; i < colleft; i++)
         M_print ("=");
-    }
-    M_printf (COLCLIENT "%s" COLQUOTE, i18n (1654, "Online"));
-    for (i += strlen (i18n (1654, "Online")); i + StatusLen < Get_Max_Screen_Width (); i++)
-    {
+    M_printf (" " COLCLIENT "%s" COLQUOTE " ", i18n (1654, "Online"));
+    i += 3 + s_strlen (i18n (1654, "Online")) + s_strlen (s_sprintf ("%ld", conn->uin));
+    colright = Get_Max_Screen_Width () - i - s_strlen (s_status (conn->status)) - 3;
+    for (i = 0; i < colright; i++)
         M_print ("=");
-    }
-
-   /* Print our status */
-    M_printf (" %s%10lu" COLNONE " ", COLCONTACT, conn->uin);
-    M_printf (i18n (2211, "Your status is %s.\n"), stat);
-    free (stat);
-    
-    for (i = 0; i < OnIdx; i++)
+    M_printf (" " COLQUOTE "(%s)" COLNONE, s_status (conn->status));
+    for (i = 0; (cont = ContactIndex (cgon, i)); i++)
     {
-        char ind;
-        
-        ind = s_status (Online[i]->status)[0];
-
-        if ((Online[i]->status & 0xffff) == STATUS_ONLINE)
+        char ind = s_status (cont->status)[0];
+        if ((cont->status & 0xffff) == STATUS_ONLINE)
             ind = ' ';
 
-        M_printf (COLNONE "%c %s%-*s" COLNONE,
-                 ind, COLCONTACT, MaxLen + 2, Online[i]->nick);
-        if ((i + 1) % NumCols == 0)
+        if (!(i % columns))
             M_print ("\n");
+        M_printf ("%c %s%-*s" COLNONE " ", ind, COLCONTACT, lennick + s_delta (cont->nick), cont->nick);
     }
-    if (i % NumCols != 0)
-    {
-        M_print ("\n");
-    }
-    M_print (COLQUOTE);
-    for (i = 0; i < Get_Max_Screen_Width (); i++)
-    {
+    M_print ("\n" COLQUOTE);
+    colleft = Get_Max_Screen_Width ();
+    for (i = 0; i < colleft; i++)
         M_print ("=");
-    }
     M_print (COLNONE "\n");
-    free (Online);
-    if (data)
-        free (Offline);
+    ContactGroupD (cgon);
+
     return 0;
 }
 
@@ -3294,7 +3254,6 @@ static JUMP_F(CmdUserUptime)
     if (Minutes != 0)
         M_printf (COLQUOTE "%02d" COLNONE " %s, ", Minutes, i18n (1690, "minutes"));
     M_printf (COLQUOTE "%02d" COLNONE " %s.\n", Seconds, i18n (1691, "seconds"));
-/*    M_printf ("%s " COLQUOTE "%d" COLNONE " / %d\n", i18n (1692, "Contacts:"), uiG.Num_Contacts, MAX_CONTACTS); */
 
     M_print (i18n (1746, " nr type         sent/received packets/unique packets\n"));
     for (i = 0; (conn = ConnectionNr (i)); i++)

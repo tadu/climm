@@ -43,10 +43,6 @@
 ** footprint slightly. */
 #define MAX_SEQ_DEPTH 50
 
-/* This is the maximum number of people you can have in your list.  This is 
-** not only true contacts but aliases to your contacts also. */
-#define MAX_CONTACTS 1024
-
 /* If you change this things will probably come out formated badly.
 ** But you can change the tab stops if you so desire */
 #define TAB_STOP 8
