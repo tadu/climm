@@ -182,8 +182,31 @@ Toggle sound for users coming online on or off, or set to
 Toggle sound for users going offline on or off, or set to
 .IR command .
 .TP
-.B q
+.B q[uit]
+.TP
+.B exit
 Quit mICQ.
+Aliases quit and exit new for 0.4.9.5.
+.TP
+.BI getauto \ [auto|away|na|dnd|occ|ffc]\ [contacts]
+Requests auto message from
+.IR contacts
+for given status, where
+.B away
+is for away,
+.B na
+for not available,
+.B dnd
+for do not disturb,
+.B occ
+for occupied and
+.B ffc
+for free for chat. If
+.B auto
+or nothing is given, the auto message for the contacts
+is fetched for their respective status. Contacts not in any of those
+status will be skipped.
+New for 0.4.9.5.
 .TP
 .BI auto \ [on|off]
 Turn auto reply messages on or off. If neither on or off is given
@@ -448,10 +471,15 @@ Check whether
 is actually online or not. Abuses a bug in the ICQ protocol to figure this out;
 no additional information except online or offline can be found out this way.
 .TP
-.BI setr\ [number]
+.BI setr \ [number]
 Sets your random user group to
 .IR number .
 Without argument, lists possible interest groups.
+.TP
+.BI file \ [...]
+Alias for
+.BR peer\ file .
+New for 0.4.9.5.
 .TP
 .BI peer \ command\ uin|nick
 Operate command
@@ -471,24 +499,6 @@ Close and reset a peer to peer connection to the user.
 .B off
 Switch off trying to establish such a connection for sending
 messages until it is explicitly opened or reset.
-.TP
-.B auto
-Get the user's current auto response.
-.TP
-.B away
-Get the user's current away auto response.
-.TP
-.B na
-Get the user's current not available auto response.
-.TP
-.B dnd
-Get the user's current do not disturb auto response.
-.TP
-.B occ
-Get the user's current occupied auto response.
-.TP
-.B ffc
-Get the user's current free for chat message.
 .TP
 .BI file \ file\ description
 Send file

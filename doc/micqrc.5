@@ -10,22 +10,28 @@ of several sections that are started by
 .IR [section] ,
 where
 .I section
-is the name of the section.
+is the name of the section. File or directory names given are taken relative
+to the base directory, which is usually ~/.micq/.
+
 .SH CONNECTIONS
 A
 .B Connection
 section describes a connection within ICQ. Typically, there are two of them,
 that are related to each other: a connection to the ICQ server, and a
-connection to listen to peer to peer communication.
+connection to listen to peer to peer communication. You may also have a
+remote control connection: that means a FIFO is opened, and lines read from
+it are interpreted in the same way as input lines.
 .TP
 .BI type \ type\ [auto]
 Set the connection type to
 .IR type ,
 which can be
 .B server
-for a connection to the ICQ server, or
+for a connection to the ICQ server,
 .B peer
-for a connection listening to peer to peer communication. If
+for a connection listening to peer to peer communication, or
+.B remote
+for a remote control FIFO. If
 .I auto
 is given, create this connection on startup. You presumable want to do this,
 unless you have several UINs, then set this on the connection corresponding
@@ -44,13 +50,15 @@ are supported, and for peer to peer connections
 .B 7
 and
 .BR 8 .
+Remote control FIFOs don't have a version.
 .TP
 .BI server \ server
 Set the server to connect to to
 .IR server .
 This defaults to
 .IR login.icq.com .
-Unused for peer to peer connections.
+Unused for peer to peer connections. For remote control fifos,
+this is the path of the FIFO to be created.
 .TP
 .BI port \ port
 Set the port to connect on the server to
@@ -61,7 +69,7 @@ or the port to listen on for peer to peer connections to
 .BI uin \ UIN
 Set the UIN to log in with to
 .IR UIN .
-Unused for peer to peer connections.
+Unused for peer to peer connections and remote control FIFOs.
 .TP
 .BI password \ [password]
 Set the password to log in with to
@@ -109,6 +117,9 @@ We're firewalled, but use SOCKS and can receive connections.
 4
 We're not firewalled at all. This is the default.
 .RE
+.RS
+Remote control FIFOs do not use this setting.
+.RE
 .SH GENERAL
 The
 .B General
@@ -143,7 +154,35 @@ Authenticate with password
 .I password
 to socks 5 proxy.
 .PP
-Now the options:
+A few book-keeping options are usually placed at the beginning of
+the micqrc file:
+.TP
+.BI encoding\ file encoding
+Set the encoding which is used for strings in this files to
+.IR encoding .
+If utf8 is enabled, will be set to utf8, otherwise to the current
+locale. If utf8 is disabled, mICQ will refuse to load the file
+if the locale given in this option does not agree with the
+current one.
+.TP
+.BI encoding\ local encoding
+Set the encoding the user currently uses to
+.IR encoding .
+This overrides the encoding derived from environment variables.
+.TP
+.BI encoding\ remote encoding
+Set the encoding to use for meta data on the server,
+including the password to
+.RI encoding .
+This encoding is also used for communicating with other contacts
+whose client doesn't understand utf8 messages unless a specific
+encoding is set for this contact.
+.BI format nr
+Set the format this config file is to
+.RI nr .
+Currently, only format 1 is known and accepted.
+.PP
+Now the other options:
 .TP
 .BI verbose \ level
 Set the verbosity level on startup to
@@ -199,6 +238,9 @@ Disable or enable automatic responses (reply messages).
 .TP
 .BI set \ uinprompt\ on|off
 Disable or enable the use of the nick you last received a message from in the prompt.
+.TP
+.BI set \ autosave\ on|off
+Disable or enable the automatic saving of the micqrc.
 .TP
 .BI set \ linebreak\ type
 Configure the line break type for incoming messages to
@@ -292,21 +334,50 @@ or the directory to log into to
 Please note that a path is assumed to be a directory if it has a trailing
 .IR / .
 .TP
-.BI sound \ on|off|cmd
-Disable or enable beeping. If the argument is neither
+.BI sound \ on|beep|off|event
+Specify what happens if a beep is to be generated.
 .B on
-nor
+or
+.B beep
+will simply beep,
+.B off
+will do noting,
+while
+.B event
+will call the script for events.
+.TP
+.BI event \ script
+Set the script to execute for events to
+.RI script .
+It is called with the following arguments:
+.br
+1. The IM type, currently only
+.BR icq .
+.br
+2. The UIN of the contact this event relates to, or 0.
+.br
+3. The nick of the contact this events to relates to, or the empty string.
+.br
+4. The string
+.BR global .
+5. The type of this event, which can be
+.BR msg ,
+.BR on ,
 .BR off ,
-it is assumed to be a program to execute instead of beeping.
-.TP
-.BI soundonline \ on|off|cmd
-The same as above for users coming online.
-.TP
-.BI soundoffline \ on|off|cmd
-The same as above for users going offline.
-.TP
-.BI receivescript \ cmd
-The command to execute for incoming messages. Leave blank to do nothing.
+.BR beep
+or
+.BR status ,
+where
+.BR on and off
+are for oncoming and offgoing contacts. This list may not be exhaustive.
+.br
+6. For messages, the message type, for offgoing contacts, the previous status,
+and for oncoming contacts or status changes, the new status, otherwise 0.
+.br
+7. The text of the message.
+.br
+Note that for security reasons, single quotes may be replaced by double
+quotes, and the message text may be truncated.
 .TP
 .BI auto \ status\ string
 Set the automatic reply in status
@@ -341,10 +412,48 @@ For posible command names, see
 .BR micq (7).
 This option may be repeated as desired.
 
+.SH GROUP
+The
+.B Group
+section contacts a contact group and may be repeated as required.
+It may have the following commands:
+.TP
+.BI server \ type uin
+Set the server connection this contact group belongs to to the one of type
+.IR type ,
+which currently can be 
+.BR icqv8
+for ICQ server connections version 8 or
+.BR icqv5
+for ICQ server connections version 5,
+and for UIN
+.IR uin .
+If this command is omitted, the first active server connection is assumed.
+.TP
+.BI label \ label
+Set the label of this contact group to
+.IR label .
+If it is
+.BI contacts- type - uin,
+then it is the contact list for this server connection.
+.TP
+.BI id \ id
+Set the id of this contact group to
+.IR id .
+.B 0
+means no id defined. This will be set when downloading a contact list.
+.TP
+.BI entry \ id\ uin
+Add contact with UIN
+.I uin
+as id
+.I id
+to this contact group.
+
 .SH CONTACTS
 The
 .B Contacts
-section contains the contact list.
+section contains the (global) contact list. It may become obsolete.
 .TP
 .I [*][~][^] uin nick
 Make user with UIN
