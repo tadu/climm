@@ -1064,7 +1064,7 @@ static void TCPReceiveInitAck (Connection *peer, Packet *pak)
     
     if (pak->len != 4 || PacketReadAt4 (pak, 0) != PEER_INITACK)
     {
-        Debug (DEB_TCP | DEB_PROTOCOL, i18n (1841, "Received malformed initialization acknowledgement packet.\n"));
+        Debug (DEB_TCP, "Received malformed initialization acknowledgement packet.\n");
         TCPClose (peer);
     }
 }
