@@ -57,7 +57,13 @@ Features of mICQ include:
    * birthday flag  - show if it is user's birthday
    * socks5         - supports connections via socks5
 
-c) Mailinglist
+c) Translations
+
+mICQ, its man page and the www.micq.org website are translated into several
+languages, including English, German and Russian. See the web page for
+downloads of new translations.
+
+d) Mailinglist
 
 They are hosted by <rg@micq.org>.
 
@@ -72,24 +78,26 @@ An Archive might be found at:
 <http://micq.org/pipermail/micq-list/>
 
 
-d) Download
+e) Download
 
-Primary Mirror
+Download mICQ sources and binaries from
+
     http://www.micq.org/
 
-CVS (do that only if you know what cvs is):
+f) CVS
+
+Required is the cvs client, autoconf 2.50 or greater and automake 1.4 or
+greater. autoconf 2.53 and automake 1.5 are recommended, however.
 
 cvs -d :pserver:anonymous@www.micq.org:/usr/local/cvsroot co micq
 
-To prepare the maintainer generated files (only for CVS):
+To prepare the maintainer generated files:
 
 $ ./prepare
 
-This will run aclocal, autoheader, automake -ac and autoconf. It requires
-autoconf 2.50 or greater.
+This will run aclocal, autoheader, automake -ac and autoconf.
 
-
-e) Compile
+g) Compile
 
 $ ./configure --help
     Please read the help carefully. Particulary, if you are not "root",
@@ -100,25 +108,25 @@ $ su
 # make install
 
 
-f) Usage
+h) Usage
 
 Although mICQ has some command line options, for a quick start just type
 'micq'. If you don't have a valid configuration, the setup wizard will guide
 you through the process of creating one for you.
 
 
-g) Docs
+i) Docs
 
 You'll find original docs in the doc/ subdirectory. This also contains a
 dump of http://www.stud.uni-karlsruhe.de/~uck4/ICQ/ , which
 features a database of the ICQ protocol.
 
-h) Future
+j) Future
 
 Planned features for the future include v8 file transfer (no other client
 can do that as of yet).
 
-i) NOTE!
+k) NOTE!
 
 mICQ is in a phase of being re-organized, thus things may change
 very fast. When in doubt, have a Look at http://micq.org/ or
