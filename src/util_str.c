@@ -417,13 +417,13 @@ const char *s_dumpnd (const UBYTE *data, UWORD len)
  * Try to find a parameter in the string.
  * Result must NOT be free()d.
  */
-BOOL s_parse (char **input, char **parsed)
+BOOL s_parse_s (char **input, char **parsed, char *sep)
 {
     static char *t = NULL;
     char *p = *input, *q;
     int s = 0;
     
-    while (*p && strchr (" \t\r\n", *p))
+    while (*p && strchr (sep, *p))
         p++;
     if (*p == '#')
     {
@@ -464,7 +464,7 @@ BOOL s_parse (char **input, char **parsed)
             *input = p + 1;
             return TRUE;
         }
-        if (!s && strchr (" \r\t\n", *p))
+        if (!s && strchr (sep, *p))
             break;
         *(q++) = *(p++);
     }
@@ -480,13 +480,13 @@ BOOL s_parse (char **input, char **parsed)
  * parsed ->nick will be the nick given,
  * unless the user entered an UIN.
  */
-BOOL s_parsenick (char **input, Contact **parsed, Contact **parsedr, Connection *serv)
+BOOL s_parsenick_s (char **input, Contact **parsed, char *sep, Contact **parsedr, Connection *serv)
 {
     Contact *r;
     char *p = *input, *t;
     UDWORD max, l, ll;
     
-    while (*p && strchr (" \t\r\n", *p))
+    while (*p && strchr (sep, *p))
         p++;
     *input = p;
     if (!*p)
@@ -498,7 +498,7 @@ BOOL s_parsenick (char **input, Contact **parsed, Contact **parsedr, Connection 
     }
     
     t = NULL;
-    if (s_parse (&p, &t))
+    if (s_parse_s (&p, &t, sep))
     {
         *parsed = ContactFindContact (t);
         if (*parsed)
@@ -521,7 +521,7 @@ BOOL s_parsenick (char **input, Contact **parsed, Contact **parsedr, Connection 
     if (strchr ("0123456789", *p))
     {
         l = 0;
-        if (s_parseint (&p, &max))
+        if (s_parseint_s (&p, &max, sep))
         {
             UtilCheckUIN (serv, max);
             if ((r = ContactFind (max)))
@@ -540,7 +540,7 @@ BOOL s_parsenick (char **input, Contact **parsed, Contact **parsedr, Connection 
     for (r = ContactStart (); ContactHasNext (r); r = ContactNext (r))
     {
         l = strlen (r->nick);
-        if (l > max && l <= ll && (!p[l] || strchr (" \t\r\n", p[l])) && !strncmp (p, r->nick, l))
+        if (l > max && l <= ll && (!p[l] || strchr (sep, p[l])) && !strncmp (p, r->nick, l))
         {
             *parsed = r;
             max = strlen (r->nick);
@@ -566,12 +566,12 @@ BOOL s_parsenick (char **input, Contact **parsed, Contact **parsedr, Connection 
 /*
  * Finds the remaining non-whitespace line.
  */
-BOOL s_parserem (char **input, char **parsed)
+BOOL s_parserem_s (char **input, char **parsed, char *sep)
 {
     static char *t = NULL;
     char *p = *input, *q, s = 0;
     
-    while (*p && strchr (" \t\r\n", *p))
+    while (*p && strchr (sep, *p))
         p++;
     if (*p == '#')
     {
@@ -594,22 +594,27 @@ BOOL s_parserem (char **input, char **parsed)
     s_repl (&t, p);
     *parsed = q = t;
     q = q + strlen (q) - 1;
-    while (strchr (" \t\r\n", *q))
+    while (strchr (sep, *q))
         *(q--) = '\0';
-    if (s && *q == '"')
-        *(q--) = '\0';
+    if (s)
+    {
+        if (*q == '"')
+            *(q--) = '\0';
+        else
+            (*parsed)++;
+    }
     return TRUE;
 }
 
 /*
  * Try to find a number.
  */
-BOOL s_parseint (char **input, UDWORD *parsed)
+BOOL s_parseint_s (char **input, UDWORD *parsed, char *sep)
 {
     char *p = *input;
     UDWORD nr, sig;
     
-    while (*p && strchr (" \t\r\n", *p))
+    while (*p && strchr (sep, *p))
         p++;
     if (*p == '#')
     {
@@ -639,7 +644,7 @@ BOOL s_parseint (char **input, UDWORD *parsed)
         nr = nr * 10 + (*p - '0');
         p++;
     }
-    if (*p && !strchr (" \t\r\n", *p))
+    if (*p && !strchr (sep, *p))
     {
         *parsed = 0;
         return FALSE;
