@@ -70,6 +70,7 @@ const char *s_sprintf (const char *fmt, ...)
         nbuf = malloc (size + 1024);
         if (!nbuf)
             break;
+        free (buf);
         buf = nbuf;
         size += 1024;
     }
@@ -96,10 +97,7 @@ char *s_cat (char *str, UDWORD *size, const char *add)
         if (nstr)
             *size = nsize;
         else
-        {
-            nstr = str;
-            nsize = *size;
-        }
+            return str;
     }
     strcat (nstr, add);
     return nstr;
