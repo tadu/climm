@@ -2612,7 +2612,7 @@ static JUMP_F(CmdUserRemove)
     int i;
     OPENCONN;
     
-    if (data == 2 && !(cg = s_parsecg (&args, conn)) && data == 2)
+    if (!(cg = s_parsecg (&args, conn)) && data == 2)
     {
         M_print (i18n (2240, "No contact group given.\n"));
         return 0;
@@ -2634,7 +2634,7 @@ static JUMP_F(CmdUserRemove)
     {
         if ((acg = s_parselistrem (&args, conn)))
         {
-            for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            for (i = 0; (cont = ContactIndex (acg, i)); i++)
             {
                 if (cg)
                 {
