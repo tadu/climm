@@ -42,7 +42,11 @@ void i18nInit (char **loc, UBYTE *enc, const char *arg)
 
 #ifdef HAVE_SETLOCALE
     if (!arg)
+    {
         arg = setlocale (LC_ALL, "");
+        if (*arg == 'C' && !arg[1])
+            arg = NULL;
+    }
 #endif
     if (!arg)
         arg = getenv ("LC_ALL");
