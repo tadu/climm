@@ -117,7 +117,7 @@ Session *SrvRegisterUIN (Session *sess, const char *pass)
         return NULL;
     if (sess)
     {
-        assert (sess->spref->type == TYPE_SERVER);
+        assert (sess->spref->type & TYPE_SERVER);
         
         memcpy (new->spref, sess->spref, sizeof (*new->spref));
         new->spref->server = strdup (new->spref->server);

@@ -254,7 +254,8 @@ int main (int argc, char *argv[])
 #endif
 
     for (i = 0; (sess = SessionNr (i)); i++)
-        SessionInit (sess);
+        if (sess->type & TYPE_AUTOLOGIN)
+            SessionInit (sess);
 
     R_init ();
     Prompt ();

@@ -118,6 +118,6 @@ void PrefLoad (Preferences *pref)
     rcf = PrefOpenRC (pref);
     if (rcf)
         Read_RC_File (rcf);
-    else
-        Initalize_RC_File (NULL);
+    if (!SessionNr (0))
+        Initalize_RC_File ();
 }

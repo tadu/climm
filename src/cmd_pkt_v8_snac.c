@@ -18,6 +18,7 @@
 #include "cmd_pkt_v8_snac.h"
 #include "cmd_pkt_v8_flap.h"
 #include "cmd_pkt_v8_tlv.h"
+#include "file_util.h"
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
@@ -595,6 +596,11 @@ JUMP_SNAC_F(SnacSrvFromoldicq)
 JUMP_SNAC_F(SnacSrvRegrefused)
 {
     M_print (i18n (780, "Registration of new UIN refused.\n"));
+    if (event->sess->type & TYPE_WIZARD)
+    {
+        M_print (i18n (792, "I'm sorry, AOL doesn't want to give us a new UIN, probably because of too many new UIN requests from this IP. Please try again later.\n"));
+        exit (0);
+    }
 }
 
 /*
@@ -604,6 +610,22 @@ JUMP_SNAC_F(SnacSrvNewuin)
 {
     event->sess->uin = event->sess->spref->uin = PacketReadAt4 (event->pak, 6 + 10 + 46);
     M_print (i18n (762, "Your new UIN is: %d.\n"), event->sess->uin);
+    if (event->sess->type & TYPE_WIZARD)
+    {
+        assert (event->sess->spref);
+        assert (event->sess->assoc);
+        assert (event->sess->assoc->spref);
+
+        event->sess->spref->type |= TYPE_AUTOLOGIN;
+        event->sess->assoc->spref->type |= TYPE_AUTOLOGIN;
+        M_print (i18n (790, "Setup wizard finished. Congratulations to your new UIN!\n"));
+        if (Save_RC () == -1)
+        {
+            M_print (i18n (679, "Sorry saving your personal reply messages went wrong!\n"));
+        }
+        SessionInit (event->sess);
+        SessionInit (event->sess->assoc);
+    }
 }
 
 /*************************************/

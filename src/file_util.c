@@ -24,6 +24,7 @@
 #include "cmd_pkt_cmd_v5.h"
 #include "preferences.h"
 #include "util_io.h"
+#include "cmd_pkt_v8.h"
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -71,133 +72,156 @@ static char *M_strdup (char *src)
     return strdup (src ? src : "");
 }
 
-void Initalize_RC_File (Session *sess)
+void Initalize_RC_File ()
 {
-    FD_T rcf;
     char pwd1[20], pwd2[20], input[200];
-    Session *sesst;
+    Session *sess, *sesst;
+    char *passwd, *t;
+    UDWORD uin;
     
-    sess = SessionC ();
-    sess->spref = PreferencesSessionC ();
-    sess->spref->type = TYPE_SERVER | TYPE_AUTOLOGIN;
-    sess->spref->server = "login.icq.com";
-    sess->spref->port = 5190;
-    sess->spref->status = STATUS_ONLINE;
-    sess->spref->version = 8;
-    
-    sess->server = "login.icq.com";
-    sess->port   = 5190;
-    sess->type   = TYPE_SERVER | TYPE_AUTOLOGIN;
-
     prG->away_time = default_away_time;
 
-    M_print ("%s ", i18n (618, "Enter UIN or 0 for new UIN:"));
+    M_print ("\n"); /* i18n (91, " ") i18n (92, " ") */
+    M_print (i18n (793, "No valid UIN found. The setup wizard will guide you through the process of setting one up.\n"));
+    M_print (i18n (794, "If you already have an UIN, please enter it. Otherwise, enter 0, and I will request one for you.\n"));
+    M_print ("%s ", i18n (618, "UIN:"));
     fflush (stdout);
     M_fdnreadln (stdin, input, sizeof (input));
-    sscanf (input, "%ld", &sess->spref->uin);
-  password_entry:
-    M_print ("%s ", i18n (63, "Enter password:"));
-    fflush (stdout);
+    uin = 0;
+    sscanf (input, "%ld", &uin);
+
+    M_print ("\n");
+    if (uin)
+        M_print (i18n (781, "Your password for UIN %d:\n"), uin);
+    else
+        M_print (i18n (782, "You need a password for your new UIN.\n"));
     memset (pwd1, 0, sizeof (pwd1));
-    Echo_Off ();
-    M_fdnreadln (stdin, pwd1, sizeof (pwd1));
-    Echo_On ();
-    if (sess->spref->uin == 0)
+    while (!pwd1[0])
     {
-        if (!pwd1[0])
-        {
-            M_print ("\n%s\n", i18n (91, "Must enter password!"));
-            goto password_entry;
-        }
-        M_print ("\n%s ", i18n (92, "Reenter password to verify:"));
+        M_print ("%s ", i18n (795, "Password:"));
+        fflush (stdout);
+        Echo_Off ();
+        M_fdnreadln (stdin, pwd1, sizeof (pwd1));
+        Echo_On ();
+        M_print ("\n");
+        if (uin)
+            continue;
+
+        M_print (i18n (783, "To prevent typos, please enter your password again.\n"));
+        M_print ("%s ", i18n (795, "Password:"));
         fflush (stdout);
         memset (pwd2, 0, sizeof (pwd2));
         Echo_Off ();
         M_fdnreadln (stdin, pwd2, sizeof (pwd2));
         Echo_On ();
+        M_print ("\n");
         if (strcmp (pwd1, pwd2))
         {
-            M_print ("\n%s\n", i18n (93, "Passwords did not match - please reenter."));
-            goto password_entry;
+            M_print ("\n%s\n", i18n (93, "Passwords did not match - please try again."));
+            pwd1[0] = '\0';
         }
-        sess->spref->passwd = strdup (pwd1);
-        sess->passwd = strdup (pwd1);
-        Init_New_User (sess);
-        sess->spref->uin = sess->uin;
+    }
+    passwd = pwd1;
+
+    prG->s5Use = 0;
+    prG->s5Port = 0;
+
+    M_print ("\n");
+    M_print (i18n (784, "If you are firewalled, you may need to use a SOCKS5 server. If you do, please enter its hostname or IP address. Otherwise, or if unsure, just press return.\n"));
+    M_print ("%s ", i18n (94, "SOCKS5 server:"));
+    fflush (stdout);
+    M_fdnreadln (stdin, input, sizeof (input));
+    if (strlen (input) > 1)
+    {
+        if ((t = strchr (input, ':')))
+        {
+            prG->s5Port = atoi (t + 1);
+            *t = '\0';
+            prG->s5Host = strdup (input);
+        }
+        else
+        {
+            prG->s5Host = strdup (input);
+            M_print (i18n (786, "I also need the port the socks server listens on. If unsure, press return for the default port.\n"));
+            M_print ("%s ", i18n (95, "SOCKS5 port:"));
+            fflush (stdout);
+            M_fdnreadln (stdin, input, sizeof (input));
+            sscanf (input, "%hu", &prG->s5Port);
+        }
+        if (!prG->s5Port)
+            prG->s5Port = 1080;
+
+        prG->s5Use = 1;
+        prG->s5Auth = 0;
+        prG->s5Pass = NULL;
+        prG->s5Name = NULL;
+
+        M_print ("\n");
+        M_print (i18n (787, "You probably need to authentificate yourself to the socks server. If so, you need to enter the user name the administrator of the socks server gave you. Otherwise, just press return.\n"));
+        M_print ("%s ", i18n (96, "SOCKS5 user name:"));
+        fflush (stdout);
+        M_fdnreadln (stdin, input, sizeof (input));
+        if (strlen (input) > 1)
+        {
+            prG->s5Auth = 1;
+            prG->s5Name = strdup (input);
+            M_print (i18n (788, "Now I also need the password for this user.\n"));
+            M_print ("%s ", i18n (97, "SOCKS5 password:"));
+            fflush (stdout);
+            M_fdnreadln (stdin, input, sizeof (input));
+            prG->s5Pass = strdup (input);
+        }
+    }
+
+    M_print ("\n");
+
+    if (!uin)
+    {
+        M_print (i18n (796, "Setup wizard finished. Please wait until registration has finished.\n"));
+        sess = SrvRegisterUIN (NULL, pwd1);
+        sess->type |= TYPE_WIZARD;
     }
     else
-        sess->spref->passwd = strdup (pwd1);
+    {
+        M_print (i18n (791, "Setup wizard finished. Congratulations!\n"));
+        sess = SessionC ();
+        assert (sess);
+        sess->spref = PreferencesSessionC ();
+        assert (sess->spref);
+        
+        sess->spref->type = TYPE_SERVER | TYPE_AUTOLOGIN;
+        sess->spref->server = strdup ("login.icq.com");
+        sess->spref->port = 5190;
+        sess->spref->status = STATUS_ONLINE;
+        sess->spref->version = 8;
+        sess->spref->uin = uin;
+        
+        sess->server  = strdup ("login.icq.com");
+        sess->port    = 5190;
+        sess->type    = TYPE_SERVER | TYPE_AUTOLOGIN;
+        sess->ver     = 8;
+        sess->uin     = uin;
+        sess->passwd  = strdup (passwd);
+    }
     
     sesst = SessionC ();
+    assert (sesst);
     sesst->spref = PreferencesSessionC ();
+    assert (sesst->spref);
+
     sesst->assoc = sess;
     sess->assoc = sesst;
     sesst->spref->type = TYPE_PEER | TYPE_AUTOLOGIN;
     sesst->spref->version = 6;
 
-/* SOCKS5 stuff begin */
-    M_print ("\n%s ", i18n (94, "SOCKS5 server hostname or IP (type 0 if you don't want to use this):"));
-    fflush (stdout);
-    scanf ("%190s", input);
-    if (strlen (input) > 1)
-    {
-        prG->s5Host = strdup (input);
-        prG->s5Use = 1;
-        M_print ("%s ", i18n (95, "SOCKS5 port (in general 1080):"));
-        fflush (stdout);
-        scanf ("%hu", &prG->s5Port);
-
-        M_print ("%s ", i18n (96, "SOCKS5 username (type 0 if you don't need authentification):"));
-        fflush (stdout);
-        scanf ("%190s", input);
-        if (strlen (input) > 1)
-        {
-            prG->s5Name = strdup (input);
-            prG->s5Auth = 1;
-            M_print ("%s ", i18n (97, "SOCKS5 password:"));
-            fflush (stdout);
-            scanf ("%190s", input);
-            prG->s5Pass = strdup (input);
-        }
-        else
-        {
-            prG->s5Auth = 0;
-        }
-    }
-    else
-        prG->s5Use = 0;
-/* SOCKS5 stuff end */
-
     prG->status = STATUS_ONLINE;
     prG->flags = FLAG_COLOR | FLAG_LOG | FLAG_LOG_ONOFF | FLAG_DELBS;
 
     ContactAdd (11290140, "mICQ author (dead)");
-    ContactAdd (99798577, "Rico \"mc\" Glöckner");
-    ContactAdd (-99798577, "mICQ maintainer");
+/*    ContactAdd (99798577, "Rico \"mc\" Glöckner");
+    ContactAdd (-99798577, "mICQ maintainer"); */
     ContactAdd (82274703, "Rüdiger Kuhlmann");
-    ContactAdd (-82274703, "mICQ developer");
-
-
-    rcf = open (prG->rcfile, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
-    if (rcf == -1 && errno == ENOENT)
-    {
-        mkdir (PrefUserDir (), 0700);
-        rcf = open (prG->rcfile, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
-    }
-    if (rcf == -1)
-    {
-        perror ("Error creating config file ");
-        exit (1);
-    }
-    close (rcf);
-
-    if (Save_RC (sess) == -1)
-    {
-        perror ("Error creating config file ");
-        exit (1);
-    }
-    M_print (i18n (913, "Wrote new config file %s. Exiting.\n"), prG->rcfile);
-    exit (0);
+    ContactAdd (-82274703, "mICQ maintainer");
 }
 
 void Read_RC_File (FILE *rcf)
@@ -653,7 +677,7 @@ void Read_RC_File (FILE *rcf)
  *   NOTE: the code isn't really neat yet, I hope to change that soon.
  *   Added on 6-20-98 by Fryslan
  ***********************************************/
-int Save_RC (Session *sess)
+int Save_RC ()
 {
     FILE *rcf;
     time_t t;
@@ -662,6 +686,12 @@ int Save_RC (Session *sess)
     Session *ss;
 
     rcf = fopen (prG->rcfile, "w");
+    if (!rcf && errno == ENOENT)
+    {
+        k = mkdir (PrefUserDir (), 0700);
+        if (!k)
+            rcf = fopen (prG->rcfile, "w");
+    }
     if (!rcf)
         return -1;
     fprintf (rcf, "# This file was generated by mICQ " MICQ_VERSION " of %s %s\n", __TIME__, __DATE__);
@@ -671,7 +701,9 @@ int Save_RC (Session *sess)
     
     for (k = 0; (ss = SessionNr (k)); k++)
     {
-        if (!(ss->spref) || !(ss->spref->type & (TYPE_SERVER | TYPE_SERVER_OLD | TYPE_PEER)))
+        if (!(ss->spref) || !(ss->spref->type & (TYPE_SERVER | TYPE_SERVER_OLD | TYPE_PEER))
+            || (!ss->spref->uin && ss->spref->type & TYPE_SERVER)
+            || (ss->assoc && !ss->assoc->spref->uin && ss->spref->type & TYPE_PEER))
             continue;
 
         fprintf (rcf, "[Connection]\n");

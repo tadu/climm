@@ -1856,7 +1856,7 @@ JUMP_F(CmdUserAuth)
  */
 JUMP_F(CmdUserSave)
 {
-    int i = Save_RC (NULL);
+    int i = Save_RC ();
     if (i == -1)
         M_print (i18n (679, "Sorry saving your personal reply messages went wrong!\n"));
     else
