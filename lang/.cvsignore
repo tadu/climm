@@ -1,7 +1,7 @@
 Makefile
 Makefile.in
-en.tainted
 build.i18n
-build.tainted
-build.fmt
 *.tainted
+.*.tainted
+.*.fmt
+

@@ -979,4 +979,4 @@
 2123:%sSyntax error%s: Too few arguments: '%s'¶
 2124:%sSyntax error%s: Not an integer: '%s'¶
 2126:User is offline, message (%s#%08lx:%08lx%s) queued.¶
-2127:    URL: %s%s%s%s¶
+2127:       URL: %s%s%s%s¶

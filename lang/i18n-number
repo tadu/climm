@@ -2,18 +2,7 @@
 
 my %defstr, $k, $uname, $name, $new, $pref;
 
-if (stat "lang/en.i18n")
-{
-    chomp ($pref = `pwd`); 
-    chdir "lang";
-}
-if (stat "../lang/en.i18n")
-{
-    chomp ($pref = `pwd`);
-    chdir "../lang";
-}
-
-open NRS, "<build.i18n" || die;
+open NRS, "<../lang/build.i18n" || die;
 
 { my $neu = 0;
 sub NewNumber ()
@@ -40,17 +29,9 @@ sub NewNumber ()
 
 print "Numbering new translation entries.\n";
 
-if ($#ARGV == -1)
-{
-    chdir "../src";
-    @ARGV = glob "*.c";
-    chdir "../lang";
-    $pref = "../src";
-}
-
 while ($uname = shift)
 {
-    $name = "$pref/$uname";
+    $name = "../src/$uname";
     stat "$name~" && next;
     stat "$name" || next;
 
@@ -71,6 +52,7 @@ while ($uname = shift)
     while (<IN>)
     {
         $k = $_;
+        chomp ($k);
         while ($k =~ m/i18n \(##*,((("(([^\"]*(\\.)*)*)")*(COL(NONE|CONTACT|CLIENT|MESS|SERV|ACK|SENT))* *)*)\)/)
         {
             $new = $1;
@@ -105,11 +87,11 @@ while ($uname = shift)
             }
             else
             {
-                print "Line was:   $l";
-                print "Line is:    $k";
+                print "Line was:   $l\n";
+                print "Line is:    $k\n";
             }
         }
-        print OUT $k;
+        print OUT "$k\n";
     }
 }
 print $nl . "Finished.\n";

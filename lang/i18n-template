@@ -2,7 +2,7 @@
 
 my %nrval, %tain, $max, $tainted, $ignored, $preserved, $added, $ignerr, $uname, $name, $pref;
 
-$cvs = ":pserver:anonymous\@www.micq.org:/usr/local/cvsroot";
+$cvs = ':pserver:anonymous@www.micq.org:/usr/local/cvsroot';
 
 sub ReadTrans($)
 {
@@ -15,7 +15,11 @@ sub ReadTrans($)
     open TMPL, "<$name" || die "Could not open file $name.";
     while (<TMPL>)
     {
-        if (m/^([0-9]{1,4}):(.*)/)
+        if (m¹^# \$Id: build.i18n,v ([0-9.]* 20../../.. ..:..:..).*¹)
+        {
+            $version = $1;
+        }
+        elsif (m/^([0-9]{1,4}):(.*)/)
         {
             $nr = sprintf ("%04d", $1);
             $max = $nr;
@@ -39,7 +43,7 @@ sub ReadTainted($)
     my $name = shift;
     
     %tain = {};
-    $name .= ".tainted";
+    $name = ".$name.tainted";
     open IN, "<$name" || return;
     while (<IN>)
     {
@@ -54,7 +58,11 @@ sub ProcessLine($)
 {
     my $line = shift;
     
-    if ($line =~ m/^#[0-9][0-9]*:/)
+    if ($line =~ m/^#  EN:/)
+    {
+        print OUT "#  EN: __.i18n,v $version\n";
+    }
+    elsif ($line =~ m/^#[0-9][0-9]*:/)
     {
     }
     elsif ($line =~ m/^#/)
@@ -103,24 +111,6 @@ sub ProcessLine($)
     }
 }
 
-if (stat "lang/en.i18n")
-{
-    chdir "lang";
-    $pref = "../";
-}
-
-if (stat "../lang/en.i18n" and not stat "en.i18n")
-{
-    chdir "../lang";
-    $pref = "../src/";
-}
-
-if ($#ARGV == -1)
-{
-    @ARGV = glob "*.i18n";
-    $pref = "";
-}
-
 ReadTrans ("build");
 
 print "File		Comments Junk	Old	Changed	New\n";
@@ -141,7 +131,7 @@ while ($uname = shift)
     print "Old version tag: $ver.\n";
     
     system "cvs -d $cvs rdiff -u -r $ver micq/lang/build.i18n"
-         . " | grep \"^-[0-9]\" | sed \"s,^-,,\" | sort -n -t : -k 1,1 -u -o $uname.tainted";
+         . " | grep \"^-[0-9]\" | sed \"s,^-,,\" | sort -n -t : -k 1,1 -u -o .$uname.tainted";
     ReadTainted ("$uname");
 
     $name = $pref . $uname;
