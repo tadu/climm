@@ -24,6 +24,7 @@ AC_DEFINE(MICQ_VERSION,VERSION,[mICQ's current version])
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_LN_S
+AC_SYS_LARGEFILE
 
 # Check for arguments.
 
