@@ -117,7 +117,11 @@ void UtilUIDisplayMeta (Contact *cont)
             M_printf (COLSERVER "%-15s" COLNONE " %d\t", 
                      i18n (1512, "Country code:"), mg->country);
         M_printf ("(UTC %+05d)\n", -100 * (mg->tz / 2) + 30 * (mg->tz % 2));
-        M_printf (COLSERVER "%-15s" COLNONE " %d\n", i18n (9999, "Webaware:"), mg->webaware);
+        M_printf (COLSERVER "%-15s" COLNONE " %s\n", i18n (9999, "Webaware:"),
+                       !mg->webaware      ? i18n (1969, "offline") :
+                        mg->webaware == 1 ? i18n (1970, "online")  :
+                        mg->webaware == 2 ? i18n (1888, "not webaware") :
+                                            s_sprintf ("%d", mg->webaware));
         M_printf (COLSERVER "%-15s" COLNONE " %d\n", i18n (9999, "Hide IP:"), mg->hideip);
 
     }
