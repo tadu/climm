@@ -1,5 +1,5 @@
 .\" $Id$
-.\"  EN: micq.7,v 1.16 2002/08/09 01:22:20
+.\"  EN: micq.7,v 1.17 2002/08/09 01:22:20
 .TH MICQ 7 mICQ DE
 .SH NAME
 .B mICQ
@@ -115,14 +115,13 @@ Es können beliebig viele Argumente angegeben werden.
 Zeigt an, wie lange mICQ bereits läuft.
 .TP
 .BI last \ [Kontakt]
-Zeigt eine Liste von Benutzern, von denen bereits eine Nachricht kam,
-oder die letzte empfangene Nachricht von
+Zeigt die zuletzt empfangene Nachricht von
 .IR Kontakt ,
 welches eine
 .I Benutzernummer
 oder ein
 .I Spitzname
-sein kann.
+sein kann, oder von allen, die bisher eine Nachricht geschickt haben.
 .TP
 .BI verbose \ [verb]
 Setzt die Ausführlichkeit der Ausgaben von mICQ auf
@@ -219,10 +218,17 @@ bekannten Befehl unter dem Namen
 .I Neu
 bekannt.
 .TP
-.BI auth \ Benutzernummer|Spitzname
+.BI auth [req|grant|deny|add]\ Benutzernummer|Spitzname
 Erlaubt es
 .IR Benutzernummer|Spitzname ,
-Sie zu seiner Kontaktliste hinzuzufügen.
+Sie zu seiner Kontaktliste hinzuzufügen
+.RB ( grant ),
+verbietet dies
+.RB ( deny ),
+beantragt dies
+.RB ( req )
+oder teilt das Hinzufügen nach Autorisierung mit
+.RB ( add ).
 .TP
 .BI rand \ [Nummer]
 Findet einen zufälligen Kontakt in der Interessengruppe
@@ -261,16 +267,17 @@ als Nachname. Ist kein Argument gegeben, frage nach
 Spitznamen, Vornamen, Nachnamen, eMail-Adresse und einem
 Haufen anderer Daten, nach denen man suchen kann.
 .TP
+.BI add \ Spitzname\ Zweit-Name
 .BI add \ Benutzernummer\ [Spitzname]
-Fügt die Benutzernummer
+Fügt den Benutzer mit Benutzernummer
 .I Benutzernummer
-zur Kontaktliste hinzu unter dem Namen
-.IR Spitzname ,
-oder nennt
-.I Benutzernummer
-in
-.I Spitzname
-um. Ist
+zur Kontaktliste unter dem Namen
+.IR Spitzname
+hinzu oder vergibt einen Zweite-Namen
+.I Zweit-Name
+für
+.IR Spitzname .
+Ist
 .I Spitzname
 nicht gegeben, benutze
 .I Benutzernummer
@@ -280,9 +287,10 @@ Hinweis: Sie müssen mit
 .B save
 abspeichern, um diese Änderungen dauerhaft zu machen.
 .TP
-.BI rem \ Spitzname
-Entfernt
-.I Spitzname
+.BI rem \ Zweit-Name
+Entfernt den Zweit-Namen
+.IR Zweit-Name .
+Wenn dies der einzige Name ist, entferne Kontakt
 von der Kontaktliste.
 .br
 Hinweis: Sie müssen mit
@@ -303,6 +311,8 @@ Sie niemals sehen kann.
 Ändert, ob Nachrichten und Statusänderungen von
 .I Spitzname
 ignoriert werden sollen.
+.TP
+.BI f[inger] \ Benutzernummer|Spitzname
 .TP
 .BI info \ Benutzernummer|Spitzname
 Zeigt alle Daten über
@@ -423,7 +433,7 @@ Setzt die Interessengruppe für zufällige Kontakte auf
 .IR Nummer .
 Ohne Argumente: listet mögliche Interessengruppen auf.
 .TP
-.BI tcp \ Befehl\ Benutzernummer|Spitzname
+.BI peer \ Befehl\ Benutzernummer|Spitzname
 wendet den Befehl
 .I Befehl
 auf den durch Benutzernummer
@@ -460,7 +470,13 @@ Fragt die aktuelle automatische Antwort für "beschäftigt" des Benutzers ab.
 .B ffc
 Fragt die aktuelle "für Plaudereien frei"-Meldung des Benutzers ab.
 .TP
-.BI file \ [Datei\ als]...\ Beschreibung
+.BI file \ Datei\ Beschreibung
+Sendet eine einzelne Datei
+.I Datei
+mit der Beschreibung
+.IR Beschreibung .
+.TP
+.BI files \ [Datei\ als]...\ Beschreibung
 Sende Dateien zum Benutzer. Es darf beliebig viele Paare von tatsächlichen Dateinamen
 .I Datei
 und dem gegenüber präsentierten Dateinamen
@@ -489,6 +505,9 @@ an.
 .TP
 .B login
 dito
+.TP
+.B close
+Schließt die angegebene Verbindung. Temporäre Verbindungen werden entfernt.
 .TP
 .B remove
 Schließe und entferne die angegebene (temporäre) Verbindung.
