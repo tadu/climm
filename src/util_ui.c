@@ -916,6 +916,12 @@ void UtilUISetVersion (Contact *cont)
         v4 = (cont->id2 & 0x7fff0000) >> 16;
         new = "vICQ";
     }
+    else if (cont->id1 == BUILD_TRILLIAN_ID1 &&
+             cont->id2 == BUILD_TRILLIAN_ID2 &&
+             cont->id3 == BUILD_TRILLIAN_ID3)
+    {
+        new = "Trillian 0.73/0.74/Pro 1.0";
+    }
     
     if (new)
     {
