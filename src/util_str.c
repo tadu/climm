@@ -927,3 +927,93 @@ const char *s_quote (const char *input)
     s_catc (&t, '\"');
     return t.txt;
 }
+
+/*
+ * Quote a string for display.
+ */
+const char *s_cquote (const char *input, const char *color)
+{
+    static str_s t;
+    const char *tmp;
+    
+    if (!input || !*input)
+        return "";
+    s_init (&t, "", 100);
+
+    for (tmp = input; *tmp; tmp++)
+        if (!strchr (SUPERSAFE, *tmp))
+            break;
+    if (!*tmp)
+    {
+        s_cat (&t, color);
+        s_cat (&t, input);
+        s_cat (&t, COLNONE);
+        return t.txt;
+    }
+    
+    s_catc (&t, '\"');
+    s_cat (&t, color);
+    for (tmp = input; *tmp; tmp++)
+    {
+        if (strchr ("\\\"", *tmp))
+        {
+            s_catc (&t, '\\');
+            s_catc (&t, *tmp);
+        }
+        else if (*tmp & 0xe0)
+            s_catc (&t, *tmp);
+        else
+        {
+            s_catc (&t, '\\');
+            s_catc (&t, (*tmp / 16) <= 9 ? ((UBYTE)*tmp / 16) + '0'
+                                     : ((UBYTE)*tmp / 16) - 10 + 'a');
+            s_catc (&t, (*tmp & 15) <= 9 ? (*tmp & 15) + '0'
+                                     : (*tmp & 15) - 10 + 'a');
+        }
+    }
+    s_cat (&t, COLNONE);
+    s_catc (&t, '\"');
+    return t.txt;
+}
+
+/*
+ * Quote a string for message display.
+ */
+const char *s_mquote (const char *input, const char *color, BOOL allownl)
+{
+    static str_s t;
+    const char *tmp;
+    
+    if (!input || !*input)
+        return "\"\"";
+    s_init (&t, "", 100);
+
+    for (tmp = input; *tmp; tmp++)
+        if (!strchr (SUPERSAFE, *tmp))
+            break;
+    if (!*tmp)
+    {
+        s_cat (&t, color);
+        s_cat (&t, input);
+        s_cat (&t, COLNONE);
+        return t.txt;
+    }
+    
+    s_cat (&t, color);
+    for (tmp = input; *tmp; tmp++)
+    {
+        if (*tmp == '\n' && !tmp[1])
+            ;
+        else if (*tmp & 0xe0 || (*tmp == '\n' && allownl))
+            s_catc (&t, *tmp);
+        else if (*tmp != '\r' || !allownl || tmp[1] != '\n')
+        {
+            s_catf (&t, COLCONTACT); /* color abuse */
+            s_catc (&t, *tmp - 1 + 'A');
+            s_catf (&t, color);
+        }
+    }
+    s_cat (&t, COLNONE);
+    return t.txt;
+}
+

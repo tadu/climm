@@ -60,7 +60,8 @@ void ConnectionInitServer (Connection *conn)
     if (!conn->server || !*conn->server || !conn->port)
         return;
 
-    M_printf (i18n (1871, "Opening v8 connection to %s:%ld... "), conn->server, conn->port);
+    M_printf (i18n (9999, "Opening v8 connection to %s:%s%ld%s... "),
+              s_mquote (conn->server, COLMESSAGE, 0), COLMESSAGE, conn->port, COLNONE);
 
     conn->our_seq  = rand () & 0x7fff;
     conn->connect  = 0;

@@ -97,7 +97,8 @@ void ConnectionInitPeer (Connection *list)
     if (list->ver == 6)
         M_print (i18n (2046, "You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n"));
 
-    M_printf (i18n (1777, "Opening peer-to-peer connection at localhost:%ld... "), list->port);
+    M_printf (i18n (9999, "Opening peer-to-peer connection at %slocalhost%s:%s%ld%s... "),
+              COLMESSAGE, COLNONE, COLMESSAGE, list->port, COLNONE);
 
     list->connect     = 0;
     list->our_seq     = -1;
@@ -356,8 +357,8 @@ void TCPDispatchConn (Connection *peer)
                 if (prG->verbose)
                 {
                     M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                    M_printf (i18n (2034, "Opening TCP connection at %s:%ld... "),
-                             s_ip (peer->ip), peer->port);
+                    M_printf (i18n (9999, "Opening TCP connection at %s:%s%ld%s... "),
+                              s_mquote (s_ip (peer->ip), COLMESSAGE, 0), COLMESSAGE, peer->port, COLNONE);
                 }
                 UtilIOConnectTCP (peer);
                 return;
@@ -376,8 +377,8 @@ void TCPDispatchConn (Connection *peer)
                 if (prG->verbose)
                 {
                     M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                    M_printf (i18n (2034, "Opening TCP connection at %s:%ld... "),
-                             s_ip (peer->ip), peer->port);
+                    M_printf (i18n (9999, "Opening TCP connection at %s:%s%ld%s... "),
+                              s_mquote (s_ip (peer->ip), COLMESSAGE, 0), COLMESSAGE, peer->port, COLNONE);
                 }
                 UtilIOConnectTCP (peer);
                 return;
@@ -401,8 +402,8 @@ void TCPDispatchConn (Connection *peer)
                 if (prG->verbose)
                 {
                     M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                    M_printf (i18n (2034, "Opening TCP connection at %s:%ld... "),
-                             s_ip (peer->ip), peer->port);
+                    M_printf (i18n (9999, "Opening TCP connection at %s:%s%ld%s... "),
+                              s_mquote (s_ip (peer->ip), COLMESSAGE, 0), COLMESSAGE, peer->port, COLNONE);
                     M_print (i18n (1785, "success.\n"));
                 }
                 QueueEnqueueData (peer, QUEUE_TCP_TIMEOUT, peer->ip, time (NULL) + 10,

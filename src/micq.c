@@ -360,9 +360,9 @@ int main (int argc, char *argv[])
         M_printf (i18n (9999, "Deprecated option -f used. Please use the similar -b instead.\n"));
 
     if (i == -1)
-        M_printf (i18n (9999, "Translation %s%s%s not found. Would you like to translate mICQ into your language?\n"), COLMESSAGE, prG->locale_full, COLNONE);
+        M_printf (i18n (9999, "Translation %s%s%s not found. Would you like to translate mICQ into your language?\n"), COLMESSAGE, s_cquote (prG->locale_full, COLMESSAGE), COLNONE);
     else if (i)
-        M_printf (i18n (9999, "English (%s) translation loaded (%s%ld%s entries).\n"), prG->locale_full, COLMESSAGE, i, COLNONE);
+        M_printf (i18n (9999, "English (%s) translation loaded (%s%ld%s entries).\n"), s_cquote (prG->locale_full, COLMESSAGE), COLMESSAGE, i, COLNONE);
     else
         M_print ("No translation requested.\n");
 

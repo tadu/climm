@@ -204,7 +204,8 @@ void CallBackServerInitV5 (Event *event)
     }
     EventD (event);
     
-    M_printf (i18n (1902, "Opening v5 connection to %s:%ld... "), conn->server, conn->port);
+    M_printf (i18n (9999, "Opening v5 connection to %s:%s%ld%s... "),
+              s_mquote (conn->server, COLMESSAGE, 0), COLMESSAGE, conn->port, COLNONE);
     
     if (conn->sok < 0)
     {

@@ -274,8 +274,8 @@ void Initialize_RC_File ()
     free (passwd);
 }
 
-#define PrefParse(x)          switch (1) { case 1: if (!s_parse    (&args, &par)) { M_printf (i18n (2123, "%sSyntax error%s: Too few arguments: '%s'\n"), COLERROR, COLNONE, line->txt); x = par->txt; continue; }}
-#define PrefParseInt(i)       switch (1) { case 1: if (!s_parseint (&args, &i)) { M_printf (i18n (2124, "%sSyntax error%s: Not an integer: '%s'\n"), COLERROR, COLNONE, line->txt); continue; }}
+#define PrefParse(x)          switch (1) { case 1: if (!s_parse (&args, &par)) { M_printf (i18n (2123, "%sSyntax error%s: Too few arguments: %s\n"), COLERROR, COLNONE, s_cquote (line->txt, COLMESSAGE)); continue; } x = par->txt; }
+#define PrefParseInt(i)       switch (1) { case 1: if (!s_parseint (&args, &i)) { M_printf (i18n (2124, "%sSyntax error%s: Not an integer: %s\n"), COLERROR, COLNONE, s_cquote (line->txt, COLMESSAGE)); continue; }}
 #define ERROR continue;
 
 /*

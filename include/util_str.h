@@ -51,6 +51,8 @@ BOOL        s_parserem_s  (const char **input, char         **parsed, const char
 BOOL        s_parseint_s  (const char **input, UDWORD        *parsed, const char *sep);
 BOOL        s_parsekey_s  (const char **input, const char *kw,        const char *sep);
 const char *s_quote       (const char *input);
+const char *s_cquote      (const char *input, const char *color);
+const char *s_mquote      (const char *input, const char *color, BOOL allownl);
 
 #define s_repl(old,new) do { char **_p_p_ = old; const char *_q_q_ = new; \
                              if (*_p_p_) free (*_p_p_); *_p_p_ = NULL; \

@@ -81,7 +81,8 @@ Connection *PeerFileCreate (Connection *serv)
         return NULL;
 
     if (prG->verbose)
-        M_printf (i18n (2082, "Opening file listener connection at localhost:%ld... "), serv->assoc->spref->port);
+        M_printf (i18n (9999, "Opening file listener connection at %slocalhost%s:%s%ld%s... "),
+                  COLMESSAGE, COLNONE, COLMESSAGE, serv->assoc->spref->port, COLNONE);
 
     flist->spref       = NULL;
     flist->parent      = serv;
@@ -176,8 +177,8 @@ BOOL PeerFileAccept (Connection *peer, UWORD status, UDWORD port)
     fpeer->close    = &PeerFileDispatchDClose;
     
     if (prG->verbose)
-        M_printf (i18n (2068, "Opening file transfer connection to %s:%ld... \n"),
-                  fpeer->server, fpeer->port);
+        M_printf (i18n (9999, "Opening file transfer connection to %s:%s%ld%s... \n"),
+                  s_mquote (fpeer->server, COLMESSAGE, 0), COLMESSAGE, fpeer->port, COLNONE);
 
     TCPDispatchConn (fpeer);
     

@@ -247,8 +247,7 @@ const char *TableGetMonth (int code)   /* *INDENT-ON* */
 const char *TableGetLang (UBYTE code)
 {
     if (code >= TableLangSize)
-        return i18n (1099, "Unknown language.");
-
+        return NULL;
     return i18n (-1, TableLang[code]);
 }
 

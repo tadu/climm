@@ -87,15 +87,7 @@
 #define EV_P2P
 #endif
 
-#define EV_UTF8 "UTF8 "
-
-#ifdef ENABLE_ICONV
-#define EV_ICONV "ICONV(" ENABLE_ICONV ") "
-#else
-#define EV_ICONV
-#endif
-
-#define EV EV_P2P EV_UTF8 EV_ICONV
+#define EV EV_P2P
 
 const UDWORD BuildPlatformID = BUILD_PLATFORM;
 
@@ -111,8 +103,9 @@ const char *BuildVersion (void)
 
 const char *BuildAttribution (void)
 {
-    return ("\xc2\xa9 1998,1999,2000 Matthew D. Smith, \xc2\xa9 2001,2002,2003 R\xc3\xbc" "diger Kuhlmann,\n"
-            "released under version 2 of the GNU General Public License (GPL).\n");
+    return ("\xc2\xa9 1998,1999,2000 " COLMESSAGE "Matthew D. Smith" COLNONE ", "
+            "\xc2\xa9 2001,2002,2003 " COLMESSAGE "R\xc3\xbc" "diger Kuhlmann" COLNONE ",\n"
+            "released under version 2 of the GNU General Public License (" COLMESSAGE "GPLv2" COLNONE ").\n");
 }                  
 
 const UDWORD BuildVersionNum = MICQ_BUILD_NUM;

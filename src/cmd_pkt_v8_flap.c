@@ -175,15 +175,15 @@ static void FlapChannel4 (Connection *conn, Packet *pak)
     else
     {
         assert (strchr (tlv[5].str.txt, ':'));
-
-        M_printf (i18n (1898, "Redirect to server %s... "), tlv[5].str.txt);
-
         FlapCliGoodbye (conn);
 
         conn->port = atoi (strchr (tlv[5].str.txt, ':') + 1);
         *strchr (tlv[5].str.txt, ':') = '\0';
         s_repl (&conn->server, tlv[5].str.txt);
         conn->ip = 0;
+
+        M_printf (i18n (9999, "Redirect to server %s:%s%ld%s... "),
+                  s_mquote (conn->server, COLMESSAGE, 0), COLMESSAGE, conn->port, COLNONE);
 
         conn->connect = 8;
         conn->tlv = tlv;
