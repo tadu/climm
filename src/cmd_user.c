@@ -2159,7 +2159,7 @@ static JUMP_F(CmdUserRem)
     Contact *cont = NULL;
     UDWORD uin;
     char *alias;
-    UBYTE all = 0;
+    UBYTE all = 0, tmp = 0;
     OPENCONN;
     
     if (!strncmp (args, "all ", 4))
@@ -2178,6 +2178,7 @@ static JUMP_F(CmdUserRem)
         
         alias = strdup (cont->nick);
         uin = cont->uin;
+        tmp = cont->flags & CONT_TEMPORARY;
         
         ContactRem (cont);
         if (all)
@@ -2190,6 +2191,11 @@ static JUMP_F(CmdUserRem)
         {
             M_printf (i18n (2149, "Removed alias '%s' for '%s' (%d).\n"),
                      alias, cont->nick, uin);
+        }
+        else if (tmp)
+        {
+            M_printf (i18n (2221, "Removed temporary contact '%s' (%d).\n"),
+                     alias, uin);
         }
         else
         {
