@@ -1,15 +1,14 @@
-micq (0.4.8.pl6-0) unstable; urgency=high
+micq (0.4.8.pl7-0) unstable; urgency=low
 
-  * New upstream.
-  * There is no automatic reconnect in v8 yet. Server and listening
-    port can be chosen. Closes: #119513, #92611
-  * New setup wizard. Closes: #144422, #143038
-    (since when is having to setup your conf file yourself RC???)
-  * New "rem" command. Closes: #92606
-  * No response to moreinfo. Closes: #107562
-  * No bugs left in BTS.
+  * New Upstream release.
 
- -- Ruediger Kuhlmann <Ruediger.Kuhlmann@stud.uni-karlsruhe.de>  Wed, 27 Apr 2002 12:00:00 +0100
+ -- Rüdiger Kuhlmann <Ruediger.Kuhlmann@stud.uni-karlsruhe.de>  Wed, 03 May 2002 12:00:00 +0100
+
+micq (0.4.8.pl6-1) unstable; urgency=high
+
+  * New Upstream release (Closes: #92611, #119513, #144422, #92606, #107562, #143038)
+  
+ -- Martin Loschwitz <madkiss@madkiss.org>  Thu, 01 May 2002 19:29:00 +0200
 
 micq (0.4.8.pl3-1) unstable; urgency=low
 
@@ -117,7 +116,7 @@ micq (0.4.6-2) unstable; urgency=low
     Thanks David!
   * debian/rules:
     + start using DH_COMPAT=2.
-    + replaced wd with $(CURDIR)s.
+    + replaced `pwd`s with $(CURDIR)s.
     + added support for DEB_BUILD_OPTIONS "debug". This also corrects CFLAGS
       a bit.
   * debian/control:
@@ -166,8 +165,8 @@ micq (0.4.3-2) frozen unstable; urgency=low
 
 micq (0.4.3-1) unstable; urgency=low
 
-  * New upstream release
-  * Fixes serious bugfixes mainstream (unluckily, they seem to be
+  * New upstream release.
+  * Fixes serious bugfixes upstream (unluckily, they seem to be
     unreflected in the changelog).
   * Removed my second surname from the maintainer's name.
 

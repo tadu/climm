@@ -223,11 +223,20 @@ void Initalize_RC_File ()
     sesst->spref->version = 6;
     sesst->ver = 6;
 
-    if (uin)
-        Save_RC ();
-
     prG->status = STATUS_ONLINE;
     prG->flags = FLAG_COLOR | FLAG_LOG | FLAG_LOG_ONOFF | FLAG_DELBS;
+    prG->auto_dnd  = strdup (i18n (1929, "User is DND [Auto-Message]"));
+    prG->auto_away = strdup (i18n (1010, "User is Away [Auto-Message]"));
+    prG->auto_na   = strdup (i18n (1011, "User is not available [Auto-Message]"));
+    prG->auto_occ  = strdup (i18n (1012, "User is Occupied [Auto-Message]"));
+    prG->auto_inv  = strdup (i18n (1013, "User is offline"));
+    prG->logplace = malloc (strlen (PrefUserDir ()) + 10);
+    assert (prG->logplace);
+    strcpy (prG->logplace, PrefUserDir ());
+    strcat (prG->logplace, "history/");
+
+    if (uin)
+        Save_RC ();
 
     ContactAdd (11290140, "mICQ author (dead)");
 /*    ContactAdd (99798577, "Rico \"mc\" Glöckner");

@@ -1,7 +1,7 @@
-This package was debianized by Jordi Mallach <jordi@sindominio.net> on
-Mon, 22 Nov 1999 15:38:08 +0100.
+This package was first debianized by Jordi 'Oskuro' Mallach in 1999.
+In 2002, Martin 'Madkiss' Loschwitz overtook the package maintenance.
 
-It was downloaded from http://micq.ukeer.de/download.shtml and from CVS
+It was downloaded from http://micq.ukeer.de/download.shtml and from CVS.
 
 Upstream Author(s): Matthew Smith <meadhros@yahoo.com> (dead)
                     Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
@@ -14,4 +14,4 @@ the GNU public licence (GPL).
 On Debian systems, the complete text of the GPL can be found in the
 /usr/share/common-licenses/GPL-2 file.
 
-There's more info available in the README that ships with this package.
+There is more info available in the README that ships with this package.

@@ -7,7 +7,7 @@
  * $Id$
  */
 
-#define MICQ_BUILD_NUM 486
+#define MICQ_BUILD_NUM 487
 
 #include <string.h>
 #include <stdio.h>
@@ -39,7 +39,7 @@ const int BuildVersionNum = MICQ_BUILD_NUM;
 /*
  i19n (1001, "en")               locale
  i19n (1002, "en_US")            locale 
- i19n (1003, "486")              MICQ_BUILD_NUM
+ i19n (1003, "487")              MICQ_BUILD_NUM
  i19n (1004, "Rüdiger Kuhlmann") all contributors
  i19n (1005, "Rüdiger Kuhlmann") last contributor
  i19n (1006, "2002-05-02")       last change
