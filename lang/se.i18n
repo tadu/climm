@@ -1,5 +1,5 @@
 # $Id$ (Swedish)
-#  EN: __.i18n,v 1.63.2.2 2003/01/10 15:57:15
+#  EN: __.i18n,v 1.63.2.3 2003/04/08 15:28:43
 1000:iso-8859-1
 1001:sv
 1002:sv_SE
@@ -527,7 +527,7 @@
 1618:UIN:
 1619:Varning:
 1620:maximala antalet kontakter nått. Be en trollkarl förstora mig!
-#1621: from resend queue because of ack.\n
+#1621:users not returned.
 1622:Vill du använda dessa ändringar? (JA/NEJ)
 1623:Dubblerat paket %04X\n
 1624:Ledsen, kan inte initiera Windows socket 
@@ -622,7 +622,7 @@
 1762:Ditt nya UIN är: %ld.\n
 1763:Kommandot '%s' har bytt namn till '%s'.
 1764:Kommandot '%s' är oförändrat.
-1765:%s har UIN %ld.
+1765.%s har UIN %ld.
 1766:Byter status till borta/ej tillgänglig pga %s%ld%s sekunders inaktivitet.\n
 1767:Aktiver autobyte till borta/ej tillgänglig.
 1768:Kommandonamnet '%s' är redan i bruk.\n
@@ -891,7 +891,7 @@
 #2114:The command name '%s' does not exist.\n
 #2115:'%s' is not an integer.\n
 #2116:No new nick name given.\n
-#2117:%ld lade till %s.\n
+#2117:%ld added as %s.\n
 2118:Slut på minne.\n
 #2119:auth [grant] <nick>    - grant authorization.\n
 #2120:auth deny <nick> <msg> - refuse authorization.\n
@@ -976,11 +976,11 @@
 #2216:This mICQ doesn't know the '%s' encoding.\n
 #2217:This mICQ can't convert between '%s' and unicode.\n
 #2218:UIN: %s\n
-#2220:flera
+#2220:several
 #2221:Removed temporary contact '%s' (%ld).\n
 #2222:Script command '%s' failed: %s (%d).\n
 2223:Öppnar fjärrkontrolls-FIFO på %s... 
-#2225:fjärrkontroll
+#2225:remote control
 2226:Kunde inte skapa FIFO
 2227:Kunde inte öppna FIFO
 2228:Kunde inte ställa in FIFO som icke-blockerande
@@ -993,7 +993,7 @@
 #2235:No nick name given.\n
 #2236:Information for %s%s%s (%ld):\n
 #2237:Webaware:
-#2238:Göm IP:
+#2238:Hide IP:
 #2239:Unknown more:
 #2240:No contact group given.\n
 #2241:Added '%s' to contact group '%s'.\n
@@ -1071,3 +1071,7 @@
 #2313:Grant, deny, request or acknowledge authorization from/to <contacts> to you/them to their/your contact list.
 2314:Det här är avancerade kommandon. Se till att du läst manualsidorna för den fullständiga informationen om vad de innebär.\n
 2315:Kan inte kolla %s status - för många andra som kollar just nu. \n
+#2317:Translation %s not found. Would you like to translate mICQ into your language?\n
+2318:Swedish (%s) translation loaded (%ld entries).\n
+#2319:Accept an incoming file transfer from <uin> or <nick>.
+#2320:peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n

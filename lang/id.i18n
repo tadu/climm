@@ -1,5 +1,5 @@
 # $Id$ (Indonesian)
-#  EN: __.i18n,v 1.63.2.2 2003/01/10 15:57:15
+#  EN: __.i18n,v 1.63.2.3 2003/04/08 15:28:43
 1000:iso-8859-1
 1001:id
 1002:id_ID
@@ -621,7 +621,7 @@
 1762:UIN baru Anda adalah: %ld.\n
 1763:Perintah '%s' telah diubah menjadi '%s'.
 1764:Perintah '%s' tidak berubah.
-1765:%s UIN-nya %ld.
+1765.%s UIN-nya %ld.
 1766:Mengubah status ke jauh/tidak ditempat setelah nganggur selama %s%ld%s detik.\n
 1767:Menganti perputaran otomatis ke jauh/tidak ditempat.
 1768:Nama perintah '%s' telah digunakan.\n
@@ -1061,8 +1061,7 @@
 2304:Mendapatkan jawaban otomatis dari semua <contacts> untuk status saat ini, jauh, tidak ditempat, jangan diganggu, sibuk, atau bebas untuk bicara.
 2305:Menangani meta data dari kontak.
 2306:Meminta daftar kontak pada sisi server dan menampilkan semua atau kontak baru atau penambahan.
-2307:Menampilkan status saat ini dari orang yang online pada daftar kontak Anda, diurutkan dengan
-grup kontak.
+2307:Menampilkan status saat ini dari orang yang online pada daftar kontak Anda, diurutkan dengan grup kontak.
 2308:Menampilkan status saat ini dari semua orang yang ada pada daftar kontak Anda, diurutkan dengan grup kontak.
 2309:Menampilkan secara lengkap informasi status saat ini dari orang yang online pada daftar kontak Anda, diurutkan dengan grup kontak.
 2310:Menampilkan secara lengkap informasi status saat ini dari semua orang yang ada pada daftar kontak Anda, diurutkan dengan grup kontak.
@@ -1071,3 +1070,7 @@ grup kontak.
 2313:Menerima, menolak, meminta atau mengetahui otorisasi dari/kepada <contacts> ke Anda/mereka ke daftar kontak mereka/Anda.
 2314:Berikut ini adalah perintah tambahan. Pastikan telah membaca halaman manual untuk informasi lengkap.\n
 2315:Tidak dapat melihat status dari %s - terlalu banyak pengamat.\n
+#2317:Translation %s not found. Would you like to translate mICQ into your language?\n
+2318:Indonesian (%s) translation loaded (%ld entries).\n
+#2319:Accept an incoming file transfer from <uin> or <nick>.
+#2320:peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n

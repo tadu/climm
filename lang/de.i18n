@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.63.2.2 2003/01/10 15:57:15
+#  EN: __.i18n,v 1.63.2.3 2003/04/08 15:28:43
 1000:iso-8859-1
 1001:de
 1002:de_DE
@@ -632,7 +632,7 @@
 1762:Ihre neue Benutzernummer ist: %ld.\n
 1763:Das Kommando "%s" wurde in "%s" umbenannt.
 1764:Das Kommando "%s" hat noch den ursprünglichen Namen.
-1765:%s hat die Benutzernummer %ld.
+1765.%s hat die Benutzernummer %ld.
 1766:Automatische Abwesenheit/Nichtverfügbarkeit nach %s%ld%s Sekunden.\n
 1767:Schaltet die automatische Abwesenheitsschaltung an oder ab.
 1768:Der Bezeichner "%s" ist schon in Verwendung.\n
@@ -1081,3 +1081,7 @@
 2313:Erteile, verweigere, erbitte oder bestätige die Autorisierung an alle <contacts>, zur Kontaktliste hinzugefügt zu werden.
 2314:Dies sind fortgeschrittene Kommandos. Bitte lesen Sie die Hilfeseiten für vollständige Informationen.\n
 2315:Kann den Status von %s nicht beobachten - zu viele Beobachter.\n
+2317:Übersetzung "%s" nicht gefunden. Möchten Sie vielleicht mICQ in Ihre Sprache übersetzen?\n
+2318:Deutsche Übersetzung (%s) geladen (%ld Einträge).\n
+2319:Akzeptiere eingehende Dateiübertragung von <uin> oder <nick>.
+2320:peer accept <nick> [<id>]\n                  - akzeptiere eine eingehende Dateiübertragung.\n

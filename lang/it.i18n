@@ -1,5 +1,5 @@
 # $Id$ Italiano (Italian)
-#  EN: __.i18n,v 1.63.2.2 2003/01/10 15:57:15
+#  EN: __.i18n,v 1.63.2.3 2003/04/08 15:28:43
 #1000:iso-8859-1
 1001:it
 1002:it_IT
@@ -687,7 +687,6 @@
 #-#1766:Non e' possibile cambiare lo stato a 'Non al computer' dopo %s%d%s secondi di inattivita'.
 #+#1766:Changing status to away resp. not available after idling %s%d%s seconds.\n
 #1767 Attiva/disattiva il cambio automatico fra 'Non la computer'/'Non disponibile'.
-#1765:%s has UIN %ld.
 #1766:Changing status to away/not available after idling %s%ld%s seconds.\n
 #1767:Toggles auto cycling to away/not available.
 1768:Il nome '%s' per un comando e' gia' in uso.\n
@@ -1286,3 +1285,7 @@
 #2313:Grant, deny, request or acknowledge authorization from/to <contacts> to you/them to their/your contact list.
 #2314:These are advanced commands. Be sure to have read the manual pages for complete information.\n
 #2315:Cannot watch status of %s - too many watchers.\n
+#2317:Translation %s not found. Would you like to translate mICQ into your language?\n
+2318:Italian (%s) translation loaded (%ld entries).\n
+#2319:Accept an incoming file transfer from <uin> or <nick>.
+#2320:peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n

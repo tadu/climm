@@ -1,5 +1,5 @@
 # $Id$ castellano (Spanish)
-#  EN: __.i18n,v 1.63.2.2 2003/01/10 15:57:15
+#  EN: __.i18n,v 1.63.2.3 2003/04/08 15:28:43
 1000:iso-8859-1
 1001:es
 1002:es
@@ -644,7 +644,7 @@
 1762:Tu nuevo UIN es: %ld.\n
 1763:El comando '%s' ha sido renombrado a '%s'.
 1764:El comando '%s' no fue cambiado.
-1765:El UIN de %s es %ld.
+1765.El UIN de %s es %ld.
 #-#1766:Cambiando el estado a 'Lejos' luego de estar inactivo %s%ld%s segundos.\n
 #+#1766:Changing status to away resp. not available after idling %s%ld%s seconds.\n
 #1766:Changing status to away/not available after idling %s%ld%s seconds.\n
@@ -1125,3 +1125,7 @@
 #2313:Grant, deny, request or acknowledge authorization from/to <contacts> to you/them to their/your contact list.
 #2314:These are advanced commands. Be sure to have read the manual pages for complete information.\n
 #2315:Cannot watch status of %s - too many watchers.\n
+#2317:Translation %s not found. Would you like to translate mICQ into your language?\n
+2318:Spanish (%s) translation loaded (%ld entries).\n
+#2319:Accept an incoming file transfer from <uin> or <nick>.
+#2320:peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n
