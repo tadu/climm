@@ -265,6 +265,7 @@ void ConnectionClose (Connection *conn)
             cl->conn[j] = cl->conn[j + 1];
         cl->conn[j] = cl->more ? cl->more->conn[0] : NULL;
         i = 0;
+        cl = cl->more;
     }
 
     Debug (DEB_CONNECT, "===> %p[%d] closed.", conn, k);
