@@ -1,5 +1,5 @@
 # $Id$ (Russian)
-#  EN: __.i18n,v 1.63.2.8 2003/09/03 19:01:01
+#  EN: __.i18n,v 1.63.2.10 2003/09/21 23:20:15
 1000:koi8-r
 1001:ru
 1002:ru_RU
@@ -867,10 +867,10 @@
 2090:файл один-на-один
 2091:Помещаю в очередь %s как %s для передачи.\n
 2092:TCP сообщение %s отклоненно - потеря сессии.\n
-2093:%02d %-12s версия %d для %s (%lx), на %s:%ld %s\n
+2093.%02d %-12s версия %d для %s (%lx), на %s:%ld %s\n
 2094:conn login         Открывает первое серверное соединение.\n
 2095:conn remove <nr>   Удаляет соединение номер <nr>.\n
-2096:Соединение %ld не открыто.\n
+2096.Соединение %ld не открыто.\n
 2097:conn select <nr>   Выбирает соединение номер <nr> как серверное соединение.\n
 2098:Соединение %ld не является серверным.\n
 2099:Текущим соединением выбрано соединение %ld (версия %d, UIN %ld).\n
@@ -1116,3 +1116,16 @@
 #2365:unknown command: %s
 #2366:TCL error in file %s: %s\n
 #2367:TCL error: %s\n
+#2368:peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n
+#2369:Refuse an incoming file transfer from <uin> or <nick>.
+2370:%02d %-12s версия %d%s для %s (%lx), на %s:%ld %s\n
+#2371:SSL init failed.\n
+#2372:Could not send SSL request to %s\n
+#2373:Error while reading from socket (SSL): %s (%d)\n
+#2374:SSL error: %s [%d]\n
+#2375:SSL handshake ok\n
+#2376:SSL read from %s [ERR=%d]: %s
+#2377:SSL write to %s [ERR=%d]: %s
+#2378:peer ssl <nick>   - initiate SSL handshake.
+2379:}%}
+2380:{%{

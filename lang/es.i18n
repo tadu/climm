@@ -1,5 +1,5 @@
 # $Id$ castellano (Spanish)
-#  EN: __.i18n,v 1.63.2.8 2003/09/03 19:01:01
+#  EN: __.i18n,v 1.63.2.10 2003/09/21 23:20:15
 1000:iso-8859-1
 1001:es
 1002:es
@@ -913,10 +913,10 @@
 2090:conexión par-a-par de archivos
 2091:Agregando %s como %s a la lista de transferencias.\n
 2092:Mensaje TCP %s descartado - sesión perdida.\n
-2093:%02d %-12s versión %d para %s (%lx), en %s:%ld %s\n
+2093.%02d %-12s versión %d para %s (%lx), en %s:%ld %s\n
 2094:conn login         Abre la primer conexión con el servidor.\n
 2095:conn remove <nr>   Remueve la conexión numero <nr>.\n
-2096:La conexion %ld no esta abierta.\n
+2096.La conexion %ld no esta abierta.\n
 2097:conn select <nr>   Selecciona la conexion <nr> como la conexión contra el servidor.\n
 2098:La conexion %ld no es una conexión con el servidor.\n
 2099:Se selecciono la conexion %ld (versión %d, UIN %ld) como la conexión actual.\n
@@ -1170,3 +1170,16 @@
 #2365:unknown command: %s
 #2366:TCL error in file %s: %s\n
 #2367:TCL error: %s\n
+#2368:peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n
+#2369:Refuse an incoming file transfer from <uin> or <nick>.
+2370:%02d %-12s versión %d%s para %s (%lx), en %s:%ld %s\n
+#2371:SSL init failed.\n
+#2372:Could not send SSL request to %s\n
+#2373:Error while reading from socket (SSL): %s (%d)\n
+#2374:SSL error: %s [%d]\n
+#2375:SSL handshake ok\n
+#2376:SSL read from %s [ERR=%d]: %s
+#2377:SSL write to %s [ERR=%d]: %s
+#2378:peer ssl <nick>   - initiate SSL handshake.
+2379:»%»
+2380:«%«
