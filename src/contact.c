@@ -339,6 +339,8 @@ void ContactSetVersion (Contact *cont)
         new = "ICQ 2002";
     else if (HAS_CAP (cont->caps, CAP_STR_2001))
         new = "ICQ 2001";
+    else if (HAS_CAP (cont->caps, CAP_MACICQ))
+        new = "ICQ for Mac");
     else if (HAS_CAP (cont->caps, CAP_IS_2002))
         new = "ICQ 2002 (?)";
     else if (HAS_CAP (cont->caps, CAP_IS_2001))
