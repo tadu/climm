@@ -1,935 +1,935 @@
 # polish
-#001: 
-#002: 
-#003: 
-#004: 
-#005: 
-#006: 
-#007: 
-#008: 
-#009: 
-010:Nie ma mnie przy komputerze
-011:Jestem nieobecny
-012:Jestem zajêty
-013:U¿ytkownik jest roz³±czony
-014:¯aden
-015:Sty
-016:Lut
-017:Mar
-018:Kwi
-019:Maj
-020:Cze
-021:Lip
-022:Sie
-023:Wrz
-024:Pa¼
-025:Lis
-026:Gru
-027:TAK
-028:NIE
-#-#029:Wpisz " YES_STR " albo " NO_STR "¶
-#029:Please enter YES or NO!
-#030:logged off.
-#031:logged on
-#032:debug: Doppeltes Packet #%04x vom Typ %04x (%s)¶
-#033:Incoming v8 server packet:
-#034:Maximum number of tries reached. Giving up.
-#035:changed status to
-#036:Unknown command %s, type /help for help.
-037:Wiadomo¶æ wys³ana przed wype³nieniem bufora ostatniej linii¶
-038:Zaniechano wys³ania wiadomo¶ci¶
-#-#039:!¶
-#039:Server claims we're not connected.¶
-#-#040:Micq> 
-#040:mICQ> 
-041:msg> 
-042:msg all> 
-043:Znaleziono wszystkich u¿ytkowników.
-044:Znaleziono zbyt wielu u¿ytkowników.
-045:Poszukiwanie zakoñczone.
-046:D³ugo¶æ
-047:Dodatkowe dane
-048:SEQ
-049:Ver
-050:Logowanie pomy¶lne!
-051:Serwer potwierdzi³ komendê %04x.
-#-#052:Nie uda³o siê nawi±zaæ po³±czenia¶
-#052:Opening v5 connection to %s:%d... 
-053:Po³±czenie z %s, oczekiwanie na odpowied¼¶
-054: Odmowa po³±czenia na porcie %d z %s¶
-055:Nie uda³o siê otworzyæ gniazda
-056:Utworzono gniazdo przy próbie po³±czenia¶
-#-#057:Nazwa serwera 
-#-#058:%s nie zosta³a znaleziona.¶
-#057:Outgoing v8 server packet:
-#058:SNAC (%x,%x) [%s] flags %x ref %x¶
-059:Portem do po³±czeñ TCP bêdzie (jeszcze niezaimplementowane) %d¶
-060:Stopieñ szczegó³owo¶ci komunikatów komunikacyjnych to %d.¶
-061:%s nie zosta³o rozpoznane jako ksywa
-#-#062:Ignorowani u¿ytkownicy: 
-#-#063:Podaj has³o : 
-#062:Users ignored:
-#063:Enter password:
-064:¶Automatyczna zmiana statusu na 
-065:U¿ywam intelowskiego adresowania bajtów.
-066:Using motorola byte ordering.
-#067:Warning: Server thinks our UIN is %d, while it is %d.¶
-068: Obecny od %s
-069: Ostatnio obecny: %s
-070: Ostatnio obecny: nieznane.
-071:Twój status to 
-#-#072:Niepo³±czeni u¿ytkownicy: 
-#-#073:Po³±czeni u¿ytkownicy: 
-#072:Users offline:
-#073:Users online:
-#074:mICQ (Matt's ICQ clone)
-#075:version
-#076:compiled on
-#077:in dedication to Matthew D. Smith.
-#078:No translation available.
-#079:No translation; using compiled-in strings.¶
-#080:Couldn't load "%s" internationalization.¶
-#081:Successfully loaded en translation (%d entries).¶
-#082:Trying to reconnect... [try %d out of %d]¶
-#083:Sound cmd
-#084:Sound
-#085:on
-#086:off
-#087:Ignoring garbage after number.
-#088:Can't send this (%x) yet.¶
-#089:Unloaded translation.
-#090:%s is a UIN, not a nick name.
-#091:Must enter password!
-#092:Reenter password to verify:
-#093:Passwords did not match - please reenter.
-#094:SOCKS5 server hostname or IP (type 0 if you don't want to use this):
-#095:SOCKS5 port (in general 1080):
-#096:SOCKS5 username (type 0 if you don't need authentification):
-#097:SOCKS5 password:
-#098:Display a list of nicknames that you can tab through.
-#099:Unknown language.
-100:¯aden
-101:Arabski
-102:Bhojpuri
-103:Bu³garski
-104:Burmese
-105:Kantoñski
-106:Kataloñski
-107:Chiñski
-108:Chorwacki
-109:Czeski
-110:Duñski
-111:Holenderski
-112:Angielski
-113:Esperanto
-114:Estoñski
-115:Farsi
-116:Fiñski
-117:Francuski
-118:Galicyjski
-119:Niemiecki
-120:Grecki
-121:Hebrajski
-122:Hindi
-123:Wêgierski
-124:Islandzki
-125:Indonezyjski
-126:W³oski
-127:Japoñski
-128:Khmer
-129:Koreañski
-130:Lao
-131:Litewski
-132:£otewski
-133:Malay
-134:Norweski
-135:Polski
-136:Portugalski
-137:Rumuñski
-138:Rosyjski
-139:Serbsko-Chorwacki
-140:S³owacki
-141:S³oweñski
-142:Somalijski
-143:Hiszpañski
-144:Swahili
-145:Szwedzki
-146:Tagalog
-147:Tartar
-148:Tajlandzki
-149:Turecki
-150:Ukraiñski
-151:Urdu
-152:Wietnamski
-153:Yiddish
-154:Yoruba
-155:Afrikaans
-156:Bo¶niacki
-157:Perski
-158:Albañski
-159:Armeñski
-#160:Not Entered
-#161:Academic
-#162:Administrative
-#163:Art/Entertainmant
-#164:College Student
-#165:Computers
-#166:Community & Social
-#167:Education
-#168:Engineering
-#169:Financial Services
-#170:Government
-#171:High School Student
-#172:Home
-#173:ICQ - Providing Help
-#174:Law
-#175:Managerial
-#176:Manufacturing
-#177:Medical/Health
-#178:Military
-#179:Non-government Organization
-#180:Professional
-#181:Retail
-#182:Retired
-#183:Science & Research
-#184:Sports
-#185:Technical
-#186:University Student
-#187:Web Building
-#188:Unrecognized command in rc file '%s', ignored.
-#189:UIN = %ld¶
-#190:port = %ld¶
-#191:passwd = %s¶
-#192:server = %s¶
-#193:status = %ld¶
-#194:Need uin to ask for.¶
-#195:Color is ©3%s©0.¶
-#196:Message_cmd = %s¶
-#197:Password change was ©2%s©0.¶
-#198:Other Services
-#199:Unknown country
-200:Brak informacji
-201:Afganistan
-202:Albania
-203:Algieria
-204:Amerykañska Samoa
-205:Andora
-206:Angola
-207:Anguilla
-208:Antigua
-209:Argentyna
-210:Armenia
-211:Aruba
-212:Ascention Island
-213:Australia
-214:Australian Antartic Territory
-215:Austria
-216:Azerbejd¼an
-217:Bahamy
-218:Bahrain
-219:Bangladesz
-220:Barbados
-221:Bia³oru¶
-222:Belgia
-223:Belize
-224:Benin
-225:Bermuda
-226:Bhutan
-227:Boliwia
-228:Bo¶nia & Herzegowina
-229:Botswana
-230:Brazylia
-231:Brytyjskie Wyspy Dziewicze
-232:Brunei
-233:Bu³garia
-234:Burkina Faso
-235:Burundi
-236:Kambod¿a
-237:Kamerun
-238:Kanada
-239:Wyspy Cape Verde
-240:Kajmany
-241:Central African Republic
-242:Czad
-243:Wyspa Bo¿ego Narodzenia
-244:Wyspy Cocos-Keeling
-245:Comoros
-246:Kongo
-247:Wyspy Cook'a
-248:Czile
-249:Chiny
-250:Kolumbia
-251:Kostaryka
-252:Chorwacja
-253:Kuba
-254:Cypr
-255:Czechy
-256:Dania
-257:Diego Garcia
-258:D¿ibuti
-259:Dominika
-260:Dominikana
-261:Ekwador
-262:Egipt
-263:El Salvador
-264:Gwinea Równikowa
-265:Erytrea
-266:Estonia
-267:Etiopia
-268:By³a Jugos³awia
-269:Wyspy Owcze
-270:Falklandy
-271:Mikronezja
-272:Fid¿i
-273:Finlandia
-274:Francja
-275:Antyle Francuskie
-276:Antyle Francuskie
-277:Gujana Francuska
-278:Polinezja Francuska
-279:Gabon
-280:Gambia
-281:Gruzja
-282:Niemcy
-283:Gana
-284:Gibraltar
-285:Grecja
-286:Grenlandia
-287:Grenada
-288:Gwadelupa
-289:Wyspa Guam
-290:Guantanomo Bay
-291:Gwatemala
-292:Gwinea
-293:Gwinea Bissau
-294:Gujana
-295:Haiti
-296:Honduras
-297:Hong Kong
-298:Wêgry
-299:Islandia
-300:Indie
-301:Indonezja
-302:INMARSAT
-303:INMARSAT Atlantic-East
-304:Iran
-305:Irak
-306:Irlandia
-307:Izrael
-308:W³ochy
-309:Wybrze¿e Ko¶ci S³oniowej
-310:Japonia
-311:Jordania
-312:Kazahstan
-313:Kenia
-314:P³d. Korea
-315:Kuwejt
-316:Liberia
-317:Libia
-318:Liechtenstein
-319:Luksemburg
-320:Malawi
-321:Malezja
-322:Mali
-323:Malta
-324:Meksyk
-325:Monako
-326:Maroko
-327:Namibia
-328:Nepal
-329:Holandia
-330:Antyle Holenderskie
-331:Nowa Kaledonia
-332:Nowa Zelandia
-333:Nikaragua
-334:Nigeria
-335:Norwegia
-336:Oman
-337:Pakistan
-338:Panama
-339:Papua Nowa Gwinea
-340:Paragwaj
-341:Peru
-342:Filipiny
-343:Polska
-344:Portugalia
-#345:Puerto Rico
-346:Katar
-347:Rumunia
-348:Rosja
-349:Saipan
-350:San Marino
-351:Arabia Saudyjska
-352:Senegal
-353:Singapur
-354:S³owacja
-355:Republika Po³udniowej Afryki
-356:Hiszpania
-357:Sri Lanka
-358:Surinam
-359:Szwecja
-360:Szwajcaria
-361:Tajwan
-362:Tanzania
-363:Tajlandia
-#364:Tinian Island
-#365:Togo
-#366:Tokelau
-#367:Tonga
-#368:Trinadad and Tabago
-369:Tunezja
-370:Turcja
-#371:Turkmenistan
-#372:Turks and Caicos Islands
-#373:Tuvalu
-#374:Uganda
-375:Ukraina
-376:Zjednoczone Emiraty Arabskie
-377:Zjednoczone Królestwo
-#378:United States Virgin Islands
-379:Stany Zjednoczone Ameryki Pó³nocnej
-380:Urugwaj
-#381:Uzbekistan
-#382:Vanuatu
-383:Watykan
-384:Wenezuela
-385:Wietnam
-#386:Wallis and Futuna Islands
-#387:Western Samoa
-388:Jemen
-389:Jugos³awia
-390:Zair
-#391:Zambia
-392:Zimbabwe
-#-#400:		Pokazuje lokalnie zapisane dane o u¿ytkowniku¶
-#-#401:		Uaktalnia dodatkowe informacje jak wiek czy p³eæ¶
-#-#402:		Uaktualnia informacje o tobie na serwerze.¶
-#-#403:		Pokazuje ostatni± wiadomo¶æ otrzyman± od <nick>.¶			Osoba ta musi byæ na twojej Li¶cie Kontaktowej.¶
-#-#404:		W³±cza/wy³±cza ignorowanie u¿ytkownika¶
-#-#405:		Wypisuje ksywy/UINy ignorowanych u¿ytkowników¶
-#-#406:	W trybie niewidzialno¶ci prze³±cza twoj± widzialno¶æ dla u¿ytkownika.¶
-#-#407:			Pokazuje status zalogowanych u¿ytkowników z twojej Listy Kontaktoweji¶
-#-#408:		Zmienia twoje has³o na \"secret\".¶
-#-#409:		Wysy³a wiadomo¶æ do UINu¶
-#-#410:	Wysy³a URL i wiadomo¶æ do UINu¶
-#-#411:	Wysy³a wieloliniow± wiadomo¶æ do wszystkich z twojej listy.¶
-#-#412:		Wysy³a wiadomo¶æ do osoby, do której ostatnio wys³a³e¶ wiadomo¶æ¶
-#-#413:		Udziela autoryzacji u¿ytkownikowi do dodania ciebie do jego listy¶
-#-#414:		Wysy³a odpowied¼ osobie, która ostatnia wys³a³a do ciebie wiadomo¶æ¶
-#-#415:		Znajduje losowego u¿ytkownika w wybranej grupie lub listuje grupy.¶
-#-#416:			Pokazuje status wszystkich na twojej Li¶cie Kontaktowej¶
-#-#417:	Pozwala ustawiæ w³asny zestaw komendy.¶
-#-#418:			Stopieñ szczegó³owo¶ci komunikatów komunikacyjnych ( domy¶lny = 0 ).¶
-#-#419:				Czy¶ci ekran.¶
-#-#420:				W³±cza/wy³±cza d¼wiêkowe powiadomienie o przychodz±cej wiadomo¶ci.¶
-#-#421:				W³±cza/wy³±cza kolory.¶
-#-#422:			Wylogowanie siê i wyj¶cie z programu¶
-#-#423:				Pokazuje status automatycznej odpowiedzi¶
-#-#424:			W³±cza/wy³±cza wysy³anie wiadomo¶ci gdy twój status to DND, NA, etc.¶
-#-#425:		Ustawia wiadomo¶æ do automatycznego wys³ania dla statusu¶
-#-#426:	Tworzy nowego UIN z podanym has³em.¶
-#-#427:	Zmienia twój status na status o danym numerze.¶		Wpisane bez numeru wypisuje dostêpne tryby.¶
-#-#428:	Dodaje UIN do twojej Listy Kontatkowej z ksyw± \"nickname\".¶
-#-#429:	Szuka u¿ytkownika ICQ o podanym adresie pocztowym.¶
-#-#430:		Podaje informacje o UINie¶
-#-#431:		Ustaw status Obecny (Online).¶
-#-#432:		Ustaw status Oddalony (Away).¶
-#-#433:		Ustaw status Nieobecny (Not Available).¶
-#-#434:		Ustaw status Zajêty (Occupied).¶
-#-#435:		Ustaw status Nie przeszkadzaæ (Do not Disturb).¶
-#-#436:		Ustaw status Chêtny do rozmowy (Free for Chat).¶
-#-#437:		Ustaw status Niewidzialny (Invisible).¶
-#-#438:		Uaktualnia podstawowe informacje o tobie (adres, ksywa, etc.)¶
-#-#439:		Ustawia twoj± losow± grupê.¶
-#393:successful
-#394:unsuccessful
-#395:About info change was ©2%s©0.¶
-#396:Info change was ©2%s©0.¶
-#397:Other info change was ©2%s©0.¶
-#398:Search ©2failed©0.¶
-#399:Unknown Meta User response ©1%04X©0¶
-#400:Shows locally stored info on user.
-#401:Updates other user info like age and sex.
-#402:Updates your about user info.
-#403:Displays the last message received from <nick>, or a list of who has send you at least one message.
-#404:Toggles ignoring/unignoring nick.
-#405:Lists ignored nicks/uins.
-#406:Toggles your visibility to a user when you're invisible.
-#407:Displays the current status of online people on your contact list.
-#408:Changes your password to secret.
-#409:Sends a message to uin.
-#410:Sends a url and message to uin.
-#411:Sends a multiline message to everyone on your list.
-#412:Sends a message to the last person you sent a message to.
-#413:Authorize uin to add you to their list.
-#414:Replys to the last person to send you a message.
-#415:Finds a random user in the specified group or lists the groups.
-#416:Displays the current status of everyone on your contact list.
-#417:This command allows you to alter your command set on the fly.
-#418:Set the verbosity level (default 0).
-#419:Clears the screen.
-#420:Toggles beeping when recieving new messages.
-#421:Toggles displaying colors.
-#422:Logs off and quits.
-#423:Displays your autoreply status.
-#424:Toggles sending messages when your status is DND, NA, etc.
-#425:Sets the message to send as an auto reply for the status.
-#426:Creates a new UIN with the specified password.
-#427:Changes your status to the status number. Without a number it lists the available modes.
-#428:Adds the uin number to your contact list with nickname.
-#429:Searches for a ICQ user.
-#430:Displays general info on uin.
-#431:Change status to Online.
-#432:Mark as Away.
-#433:Mark as Not Available.
-#434:Mark as Occupied.
-#435:Mark as Do not Disturb.
-#436:Mark as Free for Chat.
-#437:Mark as Invisible.
-#438:Updates your basic info (email, nickname, etc.).
-#439:Sets your random user group.
-#440:Random User:
-#441:IP:
-442:Wybierz jeden z poni¿szych tematów pomocy.
-443:Komendy dotycz±ce interfejsu i konfiguracji programu.
-444:Komendy dotycz±ce znajdywania innych u¿ytkowników.
-445:Komendy dotycz±ce twojego konta ICQ.
-446:Komendy dotycz±ce wysy³ania wiadomo¶ci.
-447:Klient	
-448:Wiadomo¶ci
-449:U¿ytkownik
-450:Konto	
-#-#534:Wpisz numer jêzyka. Komenda L listuje dostêpne : 
-#-#535:Wpisz nowy wiek: 
-#-#536:Wpisz now± p³eæ: 
-#-#537:Wpisz nowy adres strony domowej: 
-#-#538:Wpisz nowy rok urodzenia (4 cyfry): 
-#-#539:Wpisz nowy miesi±c urodzenia: 
-#-#540:Wpisz nowy dzieñ urodzenia: 
-#451:IP2:
-#452:Status:
-#453:TCP version:
-#454:Connection:
-#455:Art
-#456:Cars
-#457:Celebrity Fans
-#458:Collections
-#459:Computers
-#460:Culture & Literature
-#461:Fitness
-#462:Games
-#463:Hobbies
-#464:ICQ - Providing Help
-#465:Internet
-#466:Lifestyle
-#467:Movies/TV
-#468:Music
-#469:Outdoor Activities
-#470:Parenting
-#471:Pets/Animals
-#472:Religion
-#473:Science/Technology
-#474:Skills
-#475:Sports
-#476:Web Design
-#477:Nature and Environment
-#478:News & Media
-#479:Government
-#480:Business & Economy
-#481:Mystics
-#482:Travel
-#483:Astronomy
-#484:Space
-#485:Clothing
-#486:Parties
-#487:Women
-#488:Social science
-#489:60's
-#490:70's
-#491:80's
-#492:50's
-#493:Peer-to-Peer
-#494:Server Only
-#495:No Random User Found
-#496:%02d/%02d/%04d
-#497:failed
-#498:Info for:
-#499:Other
-#500:Nickname:
-#501:Name:
-#502:Email:
-#503:Other Email:
-#504:Old Email:
-#505:Location:
-#506:Phone:
-#507:Fax:
-#508:Street:
-#509:Cellular:
-#510:Zip:
-#511:Country:
-#512:Country Code:
-#513:Work Country Code:
-#514:Work Country:
-#515:Work Homepage:
-#516:Occupation:
-#517:Job Position:
-#518:Department:
-#519:Company Name:
-#520:Work Zip:
-#521:Work Fax:
-#522:Work Address:
-#523:Work Phone:
-#524:Work Location:
-#525:About:
-#526:Not Entered
-#527:Age:
-#528:female
-#529:male
-#530:not specified
-#531:Homepage:
-#532:Born:
-#533:Languages:
-#534:Enter a language by number or L for a list:
-#535:Enter new age:
-#536:Enter new sex:
-#537:Enter new homepage:
-#538:Enter new year of birth (4 digits):
-#539:Enter new month of birth:
-#540:Enter new day of birth:
-541:Info> 
-#-#542:Wpisz inny adres pocztowy: 
-#-#543:Wpisz stary adres pocztowy: 
-#-#544:Wpisz now± nazwê miasta: 
-#-#545:Wpisz nazwê województwa: 
-#-#546:Wpisz numer telefonu: 
-#-#547:Wpisz numer faksu: 
-#-#548:Wpisz nazwê ulicy i nr domu: 
-#-#549:Wpisz numer telefonu komórkowego: 
-#-#550:Wpisz kod pocztowy (same cyfry): 
-#-#551:Wpisz telefoniczny kod kraju: 
-#-#552:Wpisz ró¿nicê czasu do GMT: 
-#-#553:Podaj swoj± now± ksywê : 
-#-#554:Podaj swoje nowe imiê : 
-#-#555:Podaj swoje nowe nazwisko : 
-#-#556:Podaj swój nowy adres email : 
-#-#557:Czy chcesz, aby u¿ytkownicy Mirabillis ICQ potrzbowali twojej zgody by dodaæ ciê do swojej listy? : 
-#542:Enter other email address:
-#543:Enter old email address:
-#544:Enter new city:
-#545:Enter new state:
-#546:Enter new phone number:
-#547:Enter new fax number:
-#548:Enter new street address:
-#549:Enter new cellular number:
-#550:Enter new zip code (must be numeric):
-#551:Enter your country's phone ID number:
-#552:Enter your time zone (+/- 0-12):
-#553:Enter Your New Nickname:
-#554:Enter your new first name:
-#555:Enter your new last name:
-#556:Enter your new email address:
-#557:Do you want to require Mirabilis users to request your authorization? (YES/NO)
-#558:connected
-#559:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x¶
-#560:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
-#561:Enter max age (22,29,39,49,59,120):
-#562:©1Info for %ld¶
-#563:Nick name:
-#564:First name:
-#565:Last name:
-#566:Email address:
-#567:No authorization needed.©0 
-#568:Must request authorization.©0 
-#569:©1More Info for %ld¶
-#570:City:
-#571:Country:
-#572:Country code:
-#573:Time Zone:
-#574:State:
-#575:Age:
-#576:not entered
-#577:Sex:
-#578:Enter country's phone ID number:
-#579:Enter company: 
-#580:Phone number:
-#581:Home page:
-#582:About:
-#583:©1User found %ld¶
-#584:Warning! Script command '%s' failed with exit value %d¶
-#585:Ack!!!!!!!  Bad packet
-#586:©4¶%s©0 has added you to their contact list.¶
-#587:Enter department: 
-#588:Enter sex:
-#589:Enter a city:
-#590:©4¶%s©0 has requested your authorization to be added to their contact list.¶
-#591:Reason:
-#592:<%s> emailed you a message:¶
-#593:<%s> send you a web message:¶
-#594:        URL: %s©3%s©0¶
-#595:¶Contact List.¶©3============================================¶©0%d Contacts¶
-#596:[SOCKS] Can't find hostname %s: %s.
-#597:[SOCKS] Socket creation failed¶
-#598:[SOCKS] Connection refused¶
-#599:[SOCKS] Authentication method incorrect¶
-#600:[SOCKS] Authorization failure¶
-#601:[SOCKS] General SOCKS server failure¶
-#602:Enter a state:
-#603:Enter position: 
-#604:Should the users be online?
-#605:Do you want your status to be available on the web? (YES/NO)
-#606:Got a bad session ID %08x (correct: %08x) with cmd %04x ignored.¶
-#607:Usage: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]¶
-#608:        -v   Turn on verbose Mode (useful for Debugging only)¶
-#609:        -f   specifies an alternate Config File (default: ~/.micq/micqrc)¶
-#610:        -l   specifies an alternate logfile resp. logdir¶
-#611:        -?   gives this help screen¶¶
-#612:This program was made without any help from Mirabilis or their consent.¶
-#613:No reverse engineering or decompilation of any Mirabilis code took place to make this program.¶
-#614:Using config file "%s"¶
-#615:Logging to "%s"¶
-#616:Started BeOS InputThread¶\r
-#617:<all>
-#618:Enter UIN or 0 for new UIN:
-#619:Warning:
-#620:maximal number of contacts reached. Ask a wizard to enlarge me!
-#621:%d users not returned.
-#622:Do you want to apply these changes? (YES/NO)
-#623:Doubled packet %04X¶
-#624:Sorry, can't initialize Windows Sockets...
-#625:popping type %d seq %08x at %p (pak %p)
-#626:enqueuing type %d seq %08x at %p (pak %p)
-#627:couldn't dequeue type %d seq %08x
-#628: Description: ©3%s©0¶
-#629: URL:         ©3%s©0
-#630:dequeue type %d seq %08x at %p (pak %p)
-#631:Opening TCP connection to %s%s%s at %s:%d... 
-#632:¶Connection unstable. Exiting....
-#633:failed:¶
-#634:Connection failed: %s (%d)¶
-#635:You have encounterd a bug in my code :( I now own you a beer!¶Greetings Fryslan!¶
-#636:Auto-response message for %s:¶
-#637:Can't bind socket to free port¶
-#638:[SOCKS] Can't find hostname %s.
-#639:The new UIN is %ld!¶
-#640:Failed to update info.¶
-#641:User info successfully updated.¶
-#642:IP
-#643:Acknowleged SRV_X1 0x021C Done Contact list?¶
-#644:Acknowleged SRV_X2 0x00E6 Done old messages?¶
-#645:©3You entered an incorrect password.©0¶
-#646:©3Server is busy.¶
-#647: Type = %04x	
-#648: ©2The response was %04X	
-#649:The version was %X	
-#650:¶The SEQ was %04X	
-#651:The size was %d¶
-#652:Insuffificient memory to display a wide Contact List.¶
-#653:Offline
-#654:Online
-#655:Enter the user's e-mail address:
-#656:Enter the user's nick name:
-#657:Enter the user's first name:
-#658:Enter the user's last name:
-#659:Unknown section %s in configuration file.
-#660:Invalid Command: %s¶
-#661:Shell commands have been disabled.¶
-#662:Can't find hostname %s: %s.
-#663:Couldn't create socket: %s (%d).¶
-#664:Composing message to ©4all©0:¶
-#665:%s not recognized as a nick name.
-#666:Unignored %s.
-#667:Ignoring %s.
-#668:You must specify a nick name.
-#669:%s added.
-#670:Invisible to %s now.
-#671:Visible to %s now.
-#672:%s's IP address is 
-#673:	The port is %d¶
-#674:	The port is unknown¶
-#675:Ignored line:
-#676:Need uin to send to.¶
-#677:%s not recognized as a nick name¶
-#678:Need URL please.¶
-#679:Sorry saving your personal reply messages went wrong!¶
-#680:Your personal settings have been saved!¶
-#681:Last %d people you talked to:¶
-#682:You have received messages from:¶
-#683:Unknown Contact: %s¶
-#684:%s is not a known Contact¶
-#685:Last message from ©4%s©0:¶
-#686:No messages received from ©4%s©0¶
-#687:mICQ has been running for
-#688:days
-#689:hours
-#690:minutes
-#691:seconds
-#692:Contacts:
-#693:Packets sent:
-#694:Packets received:
-#695:Lag:
-#696:Sex:
-#697:Distinct packets sent:
-#698:Distinct packets received:
-#699:Must give a valid uin/nickname¶
-#700:%s is not a valid user in your list.¶
-#701:Couldn't set socket nonblocking: %s (%d).¶
-#702:Can't find hostname %s: %s (%d).
-#703:©2Status modes: ¶
-#704:©2Groups: ¶
-#705:General                    1¶
-#706:Romance                    2¶
-#707:Games                      3¶
-#708:Students                   4¶
-#709:20 something               6¶
-#710:30 something               7¶
-#711:40 something               8¶
-#712:50+                        9¶
-#713:Man chat requesting women 10¶
-#714:Woman chat requesting men 11¶
-#715:mICQ                      49 (might not work but try it)
-#716:None                      -1¶
-#717:! as the first character of a command will execute a shell command (e.g. "!ls"  "!dir" "!mkdir temp")
-#718:Can't find hostname %s: %d.
-#719:Shows how long mICQ has been running.
-#720:uin can be either a number or the nickname of the user.
-#721:Sending a blank message will put the client into multiline mode.¶Use . on a line by itself to end message.¶Use # on a line by itself to cancel the message.
-#722:Type help to see your current command, because this one you typed wasn't one!
-#723:%s's IP address is 
-#724:Automatic replies are %s.¶
-#727:The Do not disturb message is:
-#728:The Away message is:
-#729:The Not available message is:
-#730:The Occupied message is:
-#731:The Invisible message is:
-#734:Sorry wrong syntax, can't find a status somewhere.\r¶
-#735:Must give a message.¶
-#736:Sorry wrong syntax. Read tha help man!¶
-#737:Automatic reply setting¶
-#738:Need a command to alter!¶
-#739:Composing message to ©4%s©0:¶
-#740:Composing message to ©2%d©0:¶
-#741:Must receive a message first¶
-#742:Must write one message first¶
-#756:¶Creating Connection...¶
-#757:Couldn't establish connection.¶
-#758:Sending Request...¶
-#759:Waiting for response....¶
-#760:¶Your new UIN is %s%ld%s!¶
-#761:unknown
-#763:The command '%s' has been renamed to '%s'.
-#764:The command '%s' is unchanged.
-#765:%s has UIN %d.
-#766:Auto_away is ©3%d©0.¶
-#767:Toggles auto cycling to away/not available.
-#768:The label '%s' is already being used.
-#769:Displays your current online status.
-#770:Resend your last message to a new uin.
-#771:You haven't sent a message to anyone yet!¶
-#772:Can't find hostname %s.
-#773:%s could not be added.
-#774:Incoming packet:
-#775:Outgoing packet:
-#776:Outgoing TCP packet:
-#777:Opening peer-to-peer connection at localhost:%d... 
-#778:Incoming TCP packet:
-#779:Opening TCP connection to %s at %s:%d... 
-#785:success.¶
-#789:Received malformed packet.
-#800:Change the working language to <lang>.
-#801:Displays a list of people on your contact list in a screen wide format.
-#802:SoundOnline cmd
-#803:SoundOffline cmd
-#804:SoundOnline
-#805:SoundOffline
-#806:Received ACK for message (seq %04X) from %s¶
-#807:Cancelled incoming message (seq %04X) from %s¶
-#809:Unable to retrieve auto-response message for %s.
-#814:Sent auto-response message to %s%s%s.¶
-#815:    funny: use funny messages for output.¶
-#816:Unknown option %s to set command.¶
-#817:Warning: ReceiveScript feature not enabled!¶
-#818:Warning: Deprecated syntax found in rc file!¶    Please update or "save" the rc file and check for changes.¶
-#820:%s <option> [on|off] - control simple options.¶
-#821:Funny messages are ©3%s©0.¶
-#822:    color: use colored text output.¶
-#823:Incoming partial packet:
-#824:Acknowledged packet type %04x (%s) sequence %04x removed from queue.¶
-#825:Discarded a %04x (%s) packet
-#826:Resending message %04x (%s) sequence %04x (attempt #%d, len %d).¶
-#827:Unknown client
-#830:Discarding message to %s after %d send attempts.  Message content:¶
-#833:Client-to-client TCP connection to %s established.¶
-#835:Error while writing to socket - %s (%d)¶
-#836:Sending TCP direct connection initialization packet.¶
-#837:Acknowledging TCP direct connection initialization packet.¶
-#838:Received direct connection initialization.¶
-#839:Version %04x:%04x, Port %d, UIN %d, session %08x¶
-#840:Received malformed direct connection initialization.¶
-#841:Received malformed initialization acknowledgement packet.¶
-#842:Closing socket %d to %s.¶
-#843:Closing socket %d.¶
-#844:TCP message %04x discarded after timeout.¶
-#845:Nick %s unknown.¶
-#846:Opens and closes TCP connections:¶
-#847:    open  <nick> - Opens TCP connection.¶
-#848:    close <nick> - Closes/resets TCP connection(s).¶
-#849:Error on select: %s (%d)¶
-#850:Timeout on connection with %s at %s:%d¶
-#855:TCP connection to %s at %s:%d failed.¶
-#856:Discarded a %04x (%s) packet from old session %08x (current: %08x).¶
-#857:Do you want to hide your IP from other contacts? (YES/NO)
-#858:sending packet
-#860:freeing packet
-#863:creating new packet
-#864:Can't open rcfile %s.
-#865:cloning existing packet
-#866:This version of micq is compiled without TCP support.¶
-#867:Got a malformed (too short) packet - ignored.¶
-#868:Got a malformed (to long subpacket) multi-packet - remainder ignored.¶
-#869:Protocoll versions less than 5 are not supported anymore.¶
-#870:    off   <nick> - Closes TCP connection(s) and don't try TCP again.¶
-#871:Opening v8 connection to %s:%d... 
-#872:failed: %s (%d)¶
-#873:ok.¶
-#877:ok.¶
-#878:Error while reading from socket: %s (%d)¶
-#880:Incoming packet is not a FLAP: id is %d.¶
-#881:FLAP channel 1 out of data.¶
-#882:FLAP channel 1 cmd 1 extra data:¶
-#883:FLAP channel 1 unknown command %d.¶
-#884:FLAP with unknown channel %d received.¶
-#885:Connection v8 timed out.¶
-#887:Connections:
-#889:server
-#890:peer-to-peer
-#891:Connection %d is already open.¶
-#892:conn             List available connections.¶
-#893:conn login <nr>  Open connection <nr>.¶
-#894:There is no connection number %d.¶
-#895:Login failed:¶
-#896:Server closed connection:¶
-#897:Incomplete TLV %d, len %d of %d - ignoring.¶
-#898:Redirect to server %s... 
-#899:Unknown family requested: %d¶
-#904:Server doesn't understand ver %d (only %d) for family %d!¶
-#906:This command operates only on connections of type %s.¶
-#907:couldn't bind socket to free port: %s (%d).¶
-#908:unable to listen on socket: %s (%d).¶
-#909:Couldn't open connection: %s (%d)¶
-#910:FLAP seq %08x length %04x channel %d©0¶
-#911:connecting
-#912:closed
-#913:Wrote new config file %s. Exiting.¶
-#914:Can't allocate connection structure.¶
-#915:Server says we're at %s.¶
-#916:Need a nick or uin.¶
-#917:%-12s version %d for %s (%x), at %s:%d %s¶
-921:Obecny
-922:Nie przeszkadzaæ
-923:Oddalony
-924:Nieobecny
-925:Zajêty
-926:Niewidzialny
-927:Chêtny do rozmowy
-#928:Offline
-929:Proszê nie przeszkadzaæ
+#1001: 
+#1002: 
+#1003: 
+#1004: 
+#1005: 
+#1006: 
+#1007: 
+#1008: 
+#1009: 
+1010:Nie ma mnie przy komputerze
+1011:Jestem nieobecny
+1012:Jestem zajêty
+1013:U¿ytkownik jest roz³±czony
+1014:¯aden
+1015:Sty
+1016:Lut
+1017:Mar
+1018:Kwi
+1019:Maj
+1020:Cze
+1021:Lip
+1022:Sie
+1023:Wrz
+1024:Pa¼
+1025:Lis
+1026:Gru
+1027:TAK
+1028:NIE
+#-#1029:Wpisz " YES_STR " albo " NO_STR "¶
+#1029:Please enter YES or NO!
+#1030:logged off.
+#1031:logged on
+#1032:debug: Doppeltes Packet #%04x vom Typ %04x (%s)¶
+#1033:Incoming v8 server packet:
+#1034:Maximum number of tries reached. Giving up.
+#1035:changed status to
+#1036:Unknown command %s, type /help for help.
+1037:Wiadomo¶æ wys³ana przed wype³nieniem bufora ostatniej linii¶
+1038:Zaniechano wys³ania wiadomo¶ci¶
+#-#1039:!¶
+#1039:Server claims we're not connected.¶
+#-#1040:Micq> 
+#1040:mICQ> 
+1041:msg> 
+1042:msg all> 
+1043:Znaleziono wszystkich u¿ytkowników.
+1044:Znaleziono zbyt wielu u¿ytkowników.
+1045:Poszukiwanie zakoñczone.
+1046:D³ugo¶æ
+1047:Dodatkowe dane
+1048:SEQ
+1049:Ver
+1050:Logowanie pomy¶lne!
+1051:Serwer potwierdzi³ komendê %04x.
+#-#1052:Nie uda³o siê nawi±zaæ po³±czenia¶
+#1052:Opening v5 connection to %s:%d... 
+1053:Po³±czenie z %s, oczekiwanie na odpowied¼¶
+1054: Odmowa po³±czenia na porcie %d z %s¶
+1055:Nie uda³o siê otworzyæ gniazda
+1056:Utworzono gniazdo przy próbie po³±czenia¶
+#-#1057:Nazwa serwera 
+#-#1058:%s nie zosta³a znaleziona.¶
+#1057:Outgoing v8 server packet:
+#1058:SNAC (%x,%x) [%s] flags %x ref %x¶
+1059:Portem do po³±czeñ TCP bêdzie (jeszcze niezaimplementowane) %d¶
+1060:Stopieñ szczegó³owo¶ci komunikatów komunikacyjnych to %d.¶
+1061:%s nie zosta³o rozpoznane jako ksywa¶
+#-#1062:Ignorowani u¿ytkownicy: 
+#-#1063:Podaj has³o : 
+#1062:Users ignored:
+#1063:Enter password:
+1064:¶Automatyczna zmiana statusu na 
+1065:U¿ywam intelowskiego adresowania bajtów.
+1066:Using motorola byte ordering.
+#1067:Warning: Server thinks our UIN is %d, while it is %d.¶
+1068: Obecny od %s
+1069: Ostatnio obecny: %s
+1070: Ostatnio obecny: nieznane.
+1071:Twój status to 
+#-#1072:Niepo³±czeni u¿ytkownicy: 
+#-#1073:Po³±czeni u¿ytkownicy: 
+#1072:Users offline:
+#1073:Users online:
+#1074:mICQ (Matt's ICQ clone)
+#1075:version
+#1076:compiled on
+#1077:in dedication to Matthew D. Smith.
+#1078:No translation available.
+#1079:No translation; using compiled-in strings.¶
+#1080:Couldn't load "%s" internationalization.¶
+#1081:Successfully loaded en translation (%d entries).¶
+#1082:Trying to reconnect... [try %d out of %d]¶
+#1083:Sound cmd
+#1084:Sound
+#1085:on
+#1086:off
+#1087:Ignoring garbage after number.
+#1088:Can't send this (%x) yet.¶
+#1089:Unloaded translation.
+#1090:%s is a UIN, not a nick name.
+#1091:Must enter password!
+#1092:Reenter password to verify:
+#1093:Passwords did not match - please reenter.
+#1094:SOCKS5 server hostname or IP (type 0 if you don't want to use this):
+#1095:SOCKS5 port (in general 1080):
+#1096:SOCKS5 username (type 0 if you don't need authentification):
+#1097:SOCKS5 password:
+#1098:Display a list of nicknames that you can tab through.
+#1099:Unknown language.
+1100:¯aden
+1101:Arabski
+1102:Bhojpuri
+1103:Bu³garski
+1104:Burmese
+1105:Kantoñski
+1106:Kataloñski
+1107:Chiñski
+1108:Chorwacki
+1109:Czeski
+1110:Duñski
+1111:Holenderski
+1112:Angielski
+1113:Esperanto
+1114:Estoñski
+1115:Farsi
+1116:Fiñski
+1117:Francuski
+1118:Galicyjski
+1119:Niemiecki
+1120:Grecki
+1121:Hebrajski
+1122:Hindi
+1123:Wêgierski
+1124:Islandzki
+1125:Indonezyjski
+1126:W³oski
+1127:Japoñski
+1128:Khmer
+1129:Koreañski
+1130:Lao
+1131:Litewski
+1132:£otewski
+1133:Malay
+1134:Norweski
+1135:Polski
+1136:Portugalski
+1137:Rumuñski
+1138:Rosyjski
+1139:Serbsko-Chorwacki
+1140:S³owacki
+1141:S³oweñski
+1142:Somalijski
+1143:Hiszpañski
+1144:Swahili
+1145:Szwedzki
+1146:Tagalog
+1147:Tartar
+1148:Tajlandzki
+1149:Turecki
+1150:Ukraiñski
+1151:Urdu
+1152:Wietnamski
+1153:Yiddish
+1154:Yoruba
+1155:Afrikaans
+1156:Bo¶niacki
+1157:Perski
+1158:Albañski
+1159:Armeñski
+#1160:Not Entered
+#1161:Academic
+#1162:Administrative
+#1163:Art/Entertainmant
+#1164:College Student
+#1165:Computers
+#1166:Community & Social
+#1167:Education
+#1168:Engineering
+#1169:Financial Services
+#1170:Government
+#1171:High School Student
+#1172:Home
+#1173:ICQ - Providing Help
+#1174:Law
+#1175:Managerial
+#1176:Manufacturing
+#1177:Medical/Health
+#1178:Military
+#1179:Non-government Organization
+#1180:Professional
+#1181:Retail
+#1182:Retired
+#1183:Science & Research
+#1184:Sports
+#1185:Technical
+#1186:University Student
+#1187:Web Building
+#1188:Unrecognized command in rc file '%s', ignored.
+#1189:UIN = %ld¶
+#1190:port = %ld¶
+#1191:passwd = %s¶
+#1192:server = %s¶
+#1193:status = %ld¶
+#1194:Need uin to ask for.¶
+#1195:Color is ©3%s©0.¶
+#1196:Message_cmd = %s¶
+#1197:Password change was ©2%s©0.¶
+#1198:Other Services
+#1199:Unknown country
+1200:Brak informacji
+1201:Afganistan
+1202:Albania
+1203:Algieria
+1204:Amerykañska Samoa
+1205:Andora
+1206:Angola
+1207:Anguilla
+1208:Antigua
+1209:Argentyna
+1210:Armenia
+1211:Aruba
+1212:Ascention Island
+1213:Australia
+1214:Australian Antartic Territory
+1215:Austria
+1216:Azerbejd¼an
+1217:Bahamy
+1218:Bahrain
+1219:Bangladesz
+1220:Barbados
+1221:Bia³oru¶
+1222:Belgia
+1223:Belize
+1224:Benin
+1225:Bermuda
+1226:Bhutan
+1227:Boliwia
+1228:Bo¶nia & Herzegowina
+1229:Botswana
+1230:Brazylia
+1231:Brytyjskie Wyspy Dziewicze
+1232:Brunei
+1233:Bu³garia
+1234:Burkina Faso
+1235:Burundi
+1236:Kambod¿a
+1237:Kamerun
+1238:Kanada
+1239:Wyspy Cape Verde
+1240:Kajmany
+1241:Central African Republic
+1242:Czad
+1243:Wyspa Bo¿ego Narodzenia
+1244:Wyspy Cocos-Keeling
+1245:Comoros
+1246:Kongo
+1247:Wyspy Cook'a
+1248:Czile
+1249:Chiny
+1250:Kolumbia
+1251:Kostaryka
+1252:Chorwacja
+1253:Kuba
+1254:Cypr
+1255:Czechy
+1256:Dania
+1257:Diego Garcia
+1258:D¿ibuti
+1259:Dominika
+1260:Dominikana
+1261:Ekwador
+1262:Egipt
+1263:El Salvador
+1264:Gwinea Równikowa
+1265:Erytrea
+1266:Estonia
+1267:Etiopia
+1268:By³a Jugos³awia
+1269:Wyspy Owcze
+1270:Falklandy
+1271:Mikronezja
+1272:Fid¿i
+1273:Finlandia
+1274:Francja
+1275:Antyle Francuskie
+1276:Antyle Francuskie
+1277:Gujana Francuska
+1278:Polinezja Francuska
+1279:Gabon
+1280:Gambia
+1281:Gruzja
+1282:Niemcy
+1283:Gana
+1284:Gibraltar
+1285:Grecja
+1286:Grenlandia
+1287:Grenada
+1288:Gwadelupa
+1289:Wyspa Guam
+1290:Guantanomo Bay
+1291:Gwatemala
+1292:Gwinea
+1293:Gwinea Bissau
+1294:Gujana
+1295:Haiti
+1296:Honduras
+1297:Hong Kong
+1298:Wêgry
+1299:Islandia
+1300:Indie
+1301:Indonezja
+1302:INMARSAT
+1303:INMARSAT Atlantic-East
+1304:Iran
+1305:Irak
+1306:Irlandia
+1307:Izrael
+1308:W³ochy
+1309:Wybrze¿e Ko¶ci S³oniowej
+1310:Japonia
+1311:Jordania
+1312:Kazahstan
+1313:Kenia
+1314:P³d. Korea
+1315:Kuwejt
+1316:Liberia
+1317:Libia
+1318:Liechtenstein
+1319:Luksemburg
+1320:Malawi
+1321:Malezja
+1322:Mali
+1323:Malta
+1324:Meksyk
+1325:Monako
+1326:Maroko
+1327:Namibia
+1328:Nepal
+1329:Holandia
+1330:Antyle Holenderskie
+1331:Nowa Kaledonia
+1332:Nowa Zelandia
+1333:Nikaragua
+1334:Nigeria
+1335:Norwegia
+1336:Oman
+1337:Pakistan
+1338:Panama
+1339:Papua Nowa Gwinea
+1340:Paragwaj
+1341:Peru
+1342:Filipiny
+1343:Polska
+1344:Portugalia
+#1345:Puerto Rico
+1346:Katar
+1347:Rumunia
+1348:Rosja
+1349:Saipan
+1350:San Marino
+1351:Arabia Saudyjska
+1352:Senegal
+1353:Singapur
+1354:S³owacja
+1355:Republika Po³udniowej Afryki
+1356:Hiszpania
+1357:Sri Lanka
+1358:Surinam
+1359:Szwecja
+1360:Szwajcaria
+1361:Tajwan
+1362:Tanzania
+1363:Tajlandia
+#1364:Tinian Island
+#1365:Togo
+#1366:Tokelau
+#1367:Tonga
+#1368:Trinadad and Tabago
+1369:Tunezja
+1370:Turcja
+#1371:Turkmenistan
+#1372:Turks and Caicos Islands
+#1373:Tuvalu
+#1374:Uganda
+1375:Ukraina
+1376:Zjednoczone Emiraty Arabskie
+1377:Zjednoczone Królestwo
+#1378:United States Virgin Islands
+1379:Stany Zjednoczone Ameryki Pó³nocnej
+1380:Urugwaj
+#1381:Uzbekistan
+#1382:Vanuatu
+1383:Watykan
+1384:Wenezuela
+1385:Wietnam
+#1386:Wallis and Futuna Islands
+#1387:Western Samoa
+1388:Jemen
+1389:Jugos³awia
+1390:Zair
+#1391:Zambia
+1392:Zimbabwe
+#-#1400:		Pokazuje lokalnie zapisane dane o u¿ytkowniku¶
+#-#1401:		Uaktalnia dodatkowe informacje jak wiek czy p³eæ¶
+#-#1402:		Uaktualnia informacje o tobie na serwerze.¶
+#-#1403:		Pokazuje ostatni± wiadomo¶æ otrzyman± od <nick>.¶			Osoba ta musi byæ na twojej Li¶cie Kontaktowej.¶
+#-#1404:		W³±cza/wy³±cza ignorowanie u¿ytkownika¶
+#-#1405:		Wypisuje ksywy/UINy ignorowanych u¿ytkowników¶
+#-#1406:	W trybie niewidzialno¶ci prze³±cza twoj± widzialno¶æ dla u¿ytkownika.¶
+#-#1407:			Pokazuje status zalogowanych u¿ytkowników z twojej Listy Kontaktoweji¶
+#-#1408:		Zmienia twoje has³o na \"secret\".¶
+#-#1409:		Wysy³a wiadomo¶æ do UINu¶
+#-#1410:	Wysy³a URL i wiadomo¶æ do UINu¶
+#-#1411:	Wysy³a wieloliniow± wiadomo¶æ do wszystkich z twojej listy.¶
+#-#1412:		Wysy³a wiadomo¶æ do osoby, do której ostatnio wys³a³e¶ wiadomo¶æ¶
+#-#1413:		Udziela autoryzacji u¿ytkownikowi do dodania ciebie do jego listy¶
+#-#1414:		Wysy³a odpowied¼ osobie, która ostatnia wys³a³a do ciebie wiadomo¶æ¶
+#-#1415:		Znajduje losowego u¿ytkownika w wybranej grupie lub listuje grupy.¶
+#-#1416:			Pokazuje status wszystkich na twojej Li¶cie Kontaktowej¶
+#-#1417:	Pozwala ustawiæ w³asny zestaw komendy.¶
+#-#1418:			Stopieñ szczegó³owo¶ci komunikatów komunikacyjnych ( domy¶lny = 0 ).¶
+#-#1419:				Czy¶ci ekran.¶
+#-#1420:				W³±cza/wy³±cza d¼wiêkowe powiadomienie o przychodz±cej wiadomo¶ci.¶
+#-#1421:				W³±cza/wy³±cza kolory.¶
+#-#1422:			Wylogowanie siê i wyj¶cie z programu¶
+#-#1423:				Pokazuje status automatycznej odpowiedzi¶
+#-#1424:			W³±cza/wy³±cza wysy³anie wiadomo¶ci gdy twój status to DND, NA, etc.¶
+#-#1425:		Ustawia wiadomo¶æ do automatycznego wys³ania dla statusu¶
+#-#1426:	Tworzy nowego UIN z podanym has³em.¶
+#-#1427:	Zmienia twój status na status o danym numerze.¶		Wpisane bez numeru wypisuje dostêpne tryby.¶
+#-#1428:	Dodaje UIN do twojej Listy Kontatkowej z ksyw± \"nickname\".¶
+#-#1429:	Szuka u¿ytkownika ICQ o podanym adresie pocztowym.¶
+#-#1430:		Podaje informacje o UINie¶
+#-#1431:		Ustaw status Obecny (Online).¶
+#-#1432:		Ustaw status Oddalony (Away).¶
+#-#1433:		Ustaw status Nieobecny (Not Available).¶
+#-#1434:		Ustaw status Zajêty (Occupied).¶
+#-#1435:		Ustaw status Nie przeszkadzaæ (Do not Disturb).¶
+#-#1436:		Ustaw status Chêtny do rozmowy (Free for Chat).¶
+#-#1437:		Ustaw status Niewidzialny (Invisible).¶
+#-#1438:		Uaktualnia podstawowe informacje o tobie (adres, ksywa, etc.)¶
+#-#1439:		Ustawia twoj± losow± grupê.¶
+#1393:successful
+#1394:unsuccessful
+#1395:About info change was ©2%s©0.¶
+#1396:Info change was ©2%s©0.¶
+#1397:Other info change was ©2%s©0.¶
+#1398:Search ©2failed©0.¶
+#1399:Unknown Meta User response ©1%04X©0¶
+#1400:Shows locally stored info on user.
+#1401:Updates other user info like age and sex.
+#1402:Updates your about user info.
+#1403:Displays the last message received from <nick>, or a list of who has send you at least one message.
+#1404:Toggles ignoring/unignoring nick.
+#1405:Lists ignored nicks/uins.
+#1406:Toggles your visibility to a user when you're invisible.
+#1407:Displays the current status of online people on your contact list.
+#1408:Changes your password to secret.
+#1409:Sends a message to uin.
+#1410:Sends a url and message to uin.
+#1411:Sends a multiline message to everyone on your list.
+#1412:Sends a message to the last person you sent a message to.
+#1413:Authorize uin to add you to their list.
+#1414:Replys to the last person to send you a message.
+#1415:Finds a random user in the specified group or lists the groups.
+#1416:Displays the current status of everyone on your contact list.
+#1417:This command allows you to alter your command set on the fly.
+#1418:Set the verbosity level (default 0).
+#1419:Clears the screen.
+#1420:Toggles beeping when recieving new messages.
+#1421:Toggles displaying colors.
+#1422:Logs off and quits.
+#1423:Displays your autoreply status.
+#1424:Toggles sending messages when your status is DND, NA, etc.
+#1425:Sets the message to send as an auto reply for the status.
+#1426:Creates a new UIN with the specified password.
+#1427:Changes your status to the status number. Without a number it lists the available modes.
+#1428:Adds the uin number to your contact list with nickname.
+#1429:Searches for a ICQ user.
+#1430:Displays general info on uin.
+#1431:Change status to Online.
+#1432:Mark as Away.
+#1433:Mark as Not Available.
+#1434:Mark as Occupied.
+#1435:Mark as Do not Disturb.
+#1436:Mark as Free for Chat.
+#1437:Mark as Invisible.
+#1438:Updates your basic info (email, nickname, etc.).
+#1439:Sets your random user group.
+#1440:Random User:
+#1441:IP:
+1442:Wybierz jeden z poni¿szych tematów pomocy.
+1443:Komendy dotycz±ce interfejsu i konfiguracji programu.
+1444:Komendy dotycz±ce znajdywania innych u¿ytkowników.
+1445:Komendy dotycz±ce twojego konta ICQ.
+1446:Komendy dotycz±ce wysy³ania wiadomo¶ci.
+1447:Klient	
+1448:Wiadomo¶ci
+1449:U¿ytkownik
+1450:Konto	
+#-#1534:Wpisz numer jêzyka. Komenda L listuje dostêpne : 
+#-#1535:Wpisz nowy wiek: 
+#-#1536:Wpisz now± p³eæ: 
+#-#1537:Wpisz nowy adres strony domowej: 
+#-#1538:Wpisz nowy rok urodzenia (4 cyfry): 
+#-#1539:Wpisz nowy miesi±c urodzenia: 
+#-#1540:Wpisz nowy dzieñ urodzenia: 
+#1451:IP2:
+#1452:Status:
+#1453:TCP version:
+#1454:Connection:
+#1455:Art
+#1456:Cars
+#1457:Celebrity Fans
+#1458:Collections
+#1459:Computers
+#1460:Culture & Literature
+#1461:Fitness
+#1462:Games
+#1463:Hobbies
+#1464:ICQ - Providing Help
+#1465:Internet
+#1466:Lifestyle
+#1467:Movies/TV
+#1468:Music
+#1469:Outdoor Activities
+#1470:Parenting
+#1471:Pets/Animals
+#1472:Religion
+#1473:Science/Technology
+#1474:Skills
+#1475:Sports
+#1476:Web Design
+#1477:Nature and Environment
+#1478:News & Media
+#1479:Government
+#1480:Business & Economy
+#1481:Mystics
+#1482:Travel
+#1483:Astronomy
+#1484:Space
+#1485:Clothing
+#1486:Parties
+#1487:Women
+#1488:Social science
+#1489:60's
+#1490:70's
+#1491:80's
+#1492:50's
+#1493:Peer-to-Peer
+#1494:Server Only
+#1495:No Random User Found
+#1496:%02d/%02d/%04d
+#1497:failed
+#1498:Info for:
+#1499:Other
+#1500:Nickname:
+#1501:Name:
+#1502:Email:
+#1503:Other Email:
+#1504:Old Email:
+#1505:Location:
+#1506:Phone:
+#1507:Fax:
+#1508:Street:
+#1509:Cellular:
+#1510:Zip:
+#1511:Country:
+#1512:Country Code:
+#1513:Work Country Code:
+#1514:Work Country:
+#1515:Work Homepage:
+#1516:Occupation:
+#1517:Job Position:
+#1518:Department:
+#1519:Company Name:
+#1520:Work Zip:
+#1521:Work Fax:
+#1522:Work Address:
+#1523:Work Phone:
+#1524:Work Location:
+#1525:About:
+#1526:Not Entered
+#1527:Age:
+#1528:female
+#1529:male
+#1530:not specified
+#1531:Homepage:
+#1532:Born:
+#1533:Languages:
+#1534:Enter a language by number or L for a list:
+#1535:Enter new age:
+#1536:Enter new sex:
+#1537:Enter new homepage:
+#1538:Enter new year of birth (4 digits):
+#1539:Enter new month of birth:
+#1540:Enter new day of birth:
+1541:Info> 
+#-#1542:Wpisz inny adres pocztowy: 
+#-#1543:Wpisz stary adres pocztowy: 
+#-#1544:Wpisz now± nazwê miasta: 
+#-#1545:Wpisz nazwê województwa: 
+#-#1546:Wpisz numer telefonu: 
+#-#1547:Wpisz numer faksu: 
+#-#1548:Wpisz nazwê ulicy i nr domu: 
+#-#1549:Wpisz numer telefonu komórkowego: 
+#-#1550:Wpisz kod pocztowy (same cyfry): 
+#-#1551:Wpisz telefoniczny kod kraju: 
+#-#1552:Wpisz ró¿nicê czasu do GMT: 
+#-#1553:Podaj swoj± now± ksywê : 
+#-#1554:Podaj swoje nowe imiê : 
+#-#1555:Podaj swoje nowe nazwisko : 
+#-#1556:Podaj swój nowy adres email : 
+#-#1557:Czy chcesz, aby u¿ytkownicy Mirabillis ICQ potrzbowali twojej zgody by dodaæ ciê do swojej listy? : 
+#1542:Enter other email address:
+#1543:Enter old email address:
+#1544:Enter new city:
+#1545:Enter new state:
+#1546:Enter new phone number:
+#1547:Enter new fax number:
+#1548:Enter new street address:
+#1549:Enter new cellular number:
+#1550:Enter new zip code (must be numeric):
+#1551:Enter your country's phone ID number:
+#1552:Enter your time zone (+/- 0-12):
+#1553:Enter Your New Nickname:
+#1554:Enter your new first name:
+#1555:Enter your new last name:
+#1556:Enter your new email address:
+#1557:Do you want to require Mirabilis users to request your authorization? (YES/NO)
+#1558:connected
+#1559:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x¶
+#1560:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
+#1561:Enter max age (22,29,39,49,59,120):
+#1562:©1Info for %ld¶
+#1563:Nick name:
+#1564:First name:
+#1565:Last name:
+#1566:Email address:
+#1567:No authorization needed.©0 
+#1568:Must request authorization.©0 
+#1569:©1More Info for %ld¶
+#1570:City:
+#1571:Country:
+#1572:Country code:
+#1573:Time Zone:
+#1574:State:
+#1575:Age:
+#1576:not entered
+#1577:Sex:
+#1578:Enter country's phone ID number:
+#1579:Enter company: 
+#1580:Phone number:
+#1581:Home page:
+#1582:About:
+#1583:©1User found %ld¶
+#1584:Warning! Script command '%s' failed with exit value %d¶
+#1585:Ack!!!!!!!  Bad packet
+#1586:©4¶%s©0 has added you to their contact list.¶
+#1587:Enter department: 
+#1588:Enter sex:
+#1589:Enter a city:
+#1590:©4¶%s©0 has requested your authorization to be added to their contact list.¶
+#1591:Reason:
+#1592:<%s> emailed you a message:¶
+#1593:<%s> send you a web message:¶
+#1594:        URL: %s©3%s©0¶
+#1595:¶Contact List.¶©3============================================¶©0%d Contacts¶
+#1596:[SOCKS] Can't find hostname %s: %s.
+#1597:[SOCKS] Socket creation failed¶
+#1598:[SOCKS] Connection refused¶
+#1599:[SOCKS] Authentication method incorrect¶
+#1600:[SOCKS] Authorization failure¶
+#1601:[SOCKS] General SOCKS server failure¶
+#1602:Enter a state:
+#1603:Enter position: 
+#1604:Should the users be online?
+#1605:Do you want your status to be available on the web? (YES/NO)
+#1606:Got a bad session ID %08x (correct: %08x) with cmd %04x ignored.¶
+#1607:Usage: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]¶
+#1608:        -v   Turn on verbose Mode (useful for Debugging only)¶
+#1609:        -f   specifies an alternate Config File (default: ~/.micq/micqrc)¶
+#1610:        -l   specifies an alternate logfile resp. logdir¶
+#1611:        -?   gives this help screen¶¶
+#1612:This program was made without any help from Mirabilis or their consent.¶
+#1613:No reverse engineering or decompilation of any Mirabilis code took place to make this program.¶
+#1614:Using config file "%s"¶
+#1615:Logging to "%s"¶
+#1616:Started BeOS InputThread¶\r
+#1617:<all>
+#1618:Enter UIN or 0 for new UIN:
+#1619:Warning:
+#1620:maximal number of contacts reached. Ask a wizard to enlarge me!
+#1621:%d users not returned.
+#1622:Do you want to apply these changes? (YES/NO)
+#1623:Doubled packet %04X¶
+#1624:Sorry, can't initialize Windows Sockets...
+#1625:popping type %d seq %08x at %p (pak %p)
+#1626:enqueuing type %d seq %08x at %p (pak %p)
+#1627:couldn't dequeue type %d seq %08x
+#1628: Description: ©3%s©0¶
+#1629: URL:         ©3%s©0
+#1630:dequeue type %d seq %08x at %p (pak %p)
+#1631:Opening TCP connection to %s%s%s at %s:%d... 
+#1632:¶Connection unstable. Exiting....
+#1633:failed:¶
+#1634:Connection failed: %s (%d)¶
+#1635:You have encounterd a bug in my code :( I now own you a beer!¶Greetings Fryslan!¶
+#1636:Auto-response message for %s:¶
+#1637:Can't bind socket to free port¶
+#1638:[SOCKS] Can't find hostname %s.
+#1639:The new UIN is %ld!¶
+#1640:Failed to update info.¶
+#1641:User info successfully updated.¶
+#1642:IP
+#1643:Acknowleged SRV_X1 0x021C Done Contact list?¶
+#1644:Acknowleged SRV_X2 0x00E6 Done old messages?¶
+#1645:©3You entered an incorrect password.©0¶
+#1646:©3Server is busy.¶
+#1647: Type = %04x	
+#1648: ©2The response was %04X	
+#1649:The version was %X	
+#1650:¶The SEQ was %04X	
+#1651:The size was %d¶
+#1652:Insuffificient memory to display a wide Contact List.¶
+#1653:Offline
+#1654:Online
+#1655:Enter the user's e-mail address:
+#1656:Enter the user's nick name:
+#1657:Enter the user's first name:
+#1658:Enter the user's last name:
+#1659:Unknown section %s in configuration file.
+#1660:Invalid Command: %s¶
+#1661:Shell commands have been disabled.¶
+#1662:Can't find hostname %s: %s.
+#1663:Couldn't create socket: %s (%d).¶
+#1664:Composing message to ©4all©0:¶
+#1665:%s not recognized as a nick name.
+#1666:Unignored %s.
+#1667:Ignoring %s.
+#1668:You must specify a nick name.
+#1669:%s added.
+#1670:Invisible to %s now.
+#1671:Visible to %s now.
+#1672:%s's IP address is 
+#1673:	The port is %d¶
+#1674:	The port is unknown¶
+#1675:Ignored line:
+#1676:Need uin to send to.¶
+#1677:%s not recognized as a nick name¶
+#1678:Need URL please.¶
+#1679:Sorry saving your personal reply messages went wrong!¶
+#1680:Your personal settings have been saved!¶
+#1681:Last %d people you talked to:¶
+#1682:You have received messages from:¶
+#1683:Unknown Contact: %s¶
+#1684:%s is not a known Contact¶
+#1685:Last message from ©4%s©0:¶
+#1686:No messages received from ©4%s©0¶
+#1687:mICQ has been running for
+#1688:days
+#1689:hours
+#1690:minutes
+#1691:seconds
+#1692:Contacts:
+#1693:Packets sent:
+#1694:Packets received:
+#1695:Lag:
+#1696:Sex:
+#1697:Distinct packets sent:
+#1698:Distinct packets received:
+#1699:Must give a valid uin/nickname¶
+#1700:%s is not a valid user in your list.¶
+#1701:Couldn't set socket nonblocking: %s (%d).¶
+#1702:Can't find hostname %s: %s (%d).
+#1703:©2Status modes: ¶
+#1704:©2Groups: ¶
+#1705:General                    1¶
+#1706:Romance                    2¶
+#1707:Games                      3¶
+#1708:Students                   4¶
+#1709:20 something               6¶
+#1710:30 something               7¶
+#1711:40 something               8¶
+#1712:50+                        9¶
+#1713:Man chat requesting women 10¶
+#1714:Woman chat requesting men 11¶
+#1715:mICQ                      49 (might not work but try it)
+#1716:None                      -1¶
+#1717:! as the first character of a command will execute a shell command (e.g. "!ls"  "!dir" "!mkdir temp")
+#1718:Can't find hostname %s: %d.
+#1719:Shows how long mICQ has been running.
+#1720:uin can be either a number or the nickname of the user.
+#1721:Sending a blank message will put the client into multiline mode.¶Use . on a line by itself to end message.¶Use # on a line by itself to cancel the message.
+#1722:Type help to see your current command, because this one you typed wasn't one!
+#1723:%s's IP address is 
+#1724:Automatic replies are %s.¶
+#1727:The Do not disturb message is:
+#1728:The Away message is:
+#1729:The Not available message is:
+#1730:The Occupied message is:
+#1731:The Invisible message is:
+#1734:Sorry wrong syntax, can't find a status somewhere.\r¶
+#1735:Must give a message.¶
+#1736:Sorry wrong syntax. Read tha help man!¶
+#1737:Automatic reply setting¶
+#1738:Need a command to alter!¶
+#1739:Composing message to ©4%s©0:¶
+#1740:Composing message to ©2%d©0:¶
+#1741:Must receive a message first¶
+#1742:Must write one message first¶
+#1756:¶Creating Connection...¶
+#1757:Couldn't establish connection.¶
+#1758:Sending Request...¶
+#1759:Waiting for response....¶
+#1760:¶Your new UIN is %s%ld%s!¶
+#1761:unknown
+#1763:The command '%s' has been renamed to '%s'.
+#1764:The command '%s' is unchanged.
+#1765:%s has UIN %d.
+#1766:Auto_away is ©3%d©0.¶
+#1767:Toggles auto cycling to away/not available.
+#1768:The label '%s' is already being used.
+#1769:Displays your current online status.
+#1770:Resend your last message to a new uin.
+#1771:You haven't sent a message to anyone yet!¶
+#1772:Can't find hostname %s.
+#1773:%s could not be added.
+#1774:Incoming packet:
+#1775:Outgoing packet:
+#1776:Outgoing TCP packet:
+#1777:Opening peer-to-peer connection at localhost:%d... 
+#1778:Incoming TCP packet:
+#1779:Opening TCP connection to %s at %s:%d... 
+#1785:success.¶
+#1789:Received malformed packet.
+#1800:Change the working language to <lang>.
+#1801:Displays a list of people on your contact list in a screen wide format.
+#1802:SoundOnline cmd
+#1803:SoundOffline cmd
+#1804:SoundOnline
+#1805:SoundOffline
+#1806:Received ACK for message (seq %04X) from %s¶
+#1807:Cancelled incoming message (seq %04X) from %s¶
+#1809:Unable to retrieve auto-response message for %s.
+#1814:Sent auto-response message to %s%s%s.¶
+#1815:    funny: use funny messages for output.¶
+#1816:Unknown option %s to set command.¶
+#1817:Warning: ReceiveScript feature not enabled!¶
+#1818:Warning: Deprecated syntax found in rc file!¶    Please update or "save" the rc file and check for changes.¶
+#1820:%s <option> [on|off] - control simple options.¶
+#1821:Funny messages are ©3%s©0.¶
+#1822:    color: use colored text output.¶
+#1823:Incoming partial packet:
+#1824:Acknowledged packet type %04x (%s) sequence %04x removed from queue.¶
+#1825:Discarded a %04x (%s) packet
+#1826:Resending message %04x (%s) sequence %04x (attempt #%d, len %d).¶
+#1827:Unknown client
+#1830:Discarding message to %s after %d send attempts.  Message content:¶
+#1833:Client-to-client TCP connection to %s established.¶
+#1835:Error while writing to socket - %s (%d)¶
+#1836:Sending TCP direct connection initialization packet.¶
+#1837:Acknowledging TCP direct connection initialization packet.¶
+#1838:Received direct connection initialization.¶
+#1839:Version %04x:%04x, Port %d, UIN %d, session %08x¶
+#1840:Received malformed direct connection initialization.¶
+#1841:Received malformed initialization acknowledgement packet.¶
+#1842:Closing socket %d to %s.¶
+#1843:Closing socket %d.¶
+#1844:TCP message %04x discarded after timeout.¶
+#1845:Nick %s unknown.¶
+#1846:Opens and closes TCP connections:¶
+#1847:    open  <nick> - Opens TCP connection.¶
+#1848:    close <nick> - Closes/resets TCP connection(s).¶
+#1849:Error on select: %s (%d)¶
+#1850:Timeout on connection with %s at %s:%d¶
+#1855:TCP connection to %s at %s:%d failed.¶
+#1856:Discarded a %04x (%s) packet from old session %08x (current: %08x).¶
+#1857:Do you want to hide your IP from other contacts? (YES/NO)
+#1858:sending packet
+#1860:freeing packet
+#1863:creating new packet
+#1864:Can't open rcfile %s.
+#1865:cloning existing packet
+#1866:This version of micq is compiled without TCP support.¶
+#1867:Got a malformed (too short) packet - ignored.¶
+#1868:Got a malformed (to long subpacket) multi-packet - remainder ignored.¶
+#1869:Protocoll versions less than 5 are not supported anymore.¶
+#1870:    off   <nick> - Closes TCP connection(s) and don't try TCP again.¶
+#1871:Opening v8 connection to %s:%d... 
+#1872:failed: %s (%d)¶
+#1873:ok.¶
+#1877:ok.¶
+#1878:Error while reading from socket: %s (%d)¶
+#1880:Incoming packet is not a FLAP: id is %d.¶
+#1881:FLAP channel 1 out of data.¶
+#1882:FLAP channel 1 cmd 1 extra data:¶
+#1883:FLAP channel 1 unknown command %d.¶
+#1884:FLAP with unknown channel %d received.¶
+#1885:Connection v8 timed out.¶
+#1887:Connections:
+#1889:server
+#1890:peer-to-peer
+#1891:Connection %d is already open.¶
+#1892:conn             List available connections.¶
+#1893:conn login <nr>  Open connection <nr>.¶
+#1894:There is no connection number %d.¶
+#1895:Login failed:¶
+#1896:Server closed connection:¶
+#1897:Incomplete TLV %d, len %d of %d - ignoring.¶
+#1898:Redirect to server %s... 
+#1899:Unknown family requested: %d¶
+#1904:Server doesn't understand ver %d (only %d) for family %d!¶
+#1906:This command operates only on connections of type %s.¶
+#1907:couldn't bind socket to free port: %s (%d).¶
+#1908:unable to listen on socket: %s (%d).¶
+#1909:Couldn't open connection: %s (%d)¶
+#1910:FLAP seq %08x length %04x channel %d©0¶
+#1911:connecting
+#1912:closed
+#1913:Wrote new config file %s. Exiting.¶
+#1914:Can't allocate connection structure.¶
+#1915:Server says we're at %s.¶
+#1916:Need a nick or uin.¶
+#1917:%-12s version %d for %s (%x), at %s:%d %s¶
+1921:Obecny
+1922:Nie przeszkadzaæ
+1923:Oddalony
+1924:Nieobecny
+1925:Zajêty
+1926:Niewidzialny
+1927:Chêtny do rozmowy
+#1928:Offline
+1929:Proszê nie przeszkadzaæ

@@ -1,37 +1,35 @@
 
 test -f ../lang/en.i18n && cd ../lang
 test -f lang/en.i18n && cd lang
-test -f en.i18n~ && exit 10
-test -f en.i18n || exit 10
 
-echo "Extracting translations to en.i18n."
-mv en.i18n en.i18n~
+echo "Extracting translations to build.i18n."
+touch build.i18n
+mv build.i18n build.i18n~
 
 cat ../src/*.c \
     | sed "s¹i18n¹¶i18n¹g" | tr ¶ "\n" | grep "^i18n ([0-9#]" \
-    | tee /tmp/bla \
     | sed 's¹ *COLNONE *¹"©0"¹g;s¹ *COLSERV *¹"©1"¹g;s¹ *COLCLIENT *¹"©2"¹g;s¹ *COLMESS *¹"©3"¹g;' \
     | sed 's¹ *COLCONTACT *¹"©4"¹g;s¹ *COLSENT *¹"©5"¹g;s¹ *COLACK *¹"©6"¹g;' \
     | sed 's¹""¹¹g' \
     | sed 's¹i18n *(\([0-9#]*\), *"\(\([^\"]\|\\.\)*\)").*¹\1:\2¹;s¹^\([0-9]\):¹00\1:¹;s¹^\([0-9][0-9]\):¹0\1:¹' \
-    | sed 's¹\\n¹¶¹g;s¹\\a¹¹g;s¹\\t¹	¹g;s¹\\"¹"¹g' | sort -n | uniq > en.i18n
+    | sed 's¹\\n¹¶¹g;s¹\\a¹¹g;s¹\\t¹	¹g;s¹\\"¹"¹g' | sort -n | uniq > build.i18n
 
 cat ../src/*.c \
     | sed "s¹i18n¹¶i18n¹g" | tr ¶ "\n" | grep "^i18n ([0-9#]" \
     | sed 's¹i18n *(\([0-9#]*\),.*¹\1:¹;s¹^\([0-9]\):¹00\1:¹;s¹^\([0-9][0-9]\):¹0\1:¹' \
-    | sort -n | uniq > en.i18n.num
+    | sort -n | uniq > build.i18n.num
 
-cat en.i18n | grep "^[0-9#]*:" | sed 's¹\([0-9#]*:\).*¹\1¹' | sort -n > en.i18n.exnum
+cat build.i18n | grep "^[0-9#]*:" | sed 's¹\([0-9#]*:\).*¹\1¹' | sort -n > build.i18n.exnum
 
 echo -n "Strings used in files:"
-cat en.i18n.num | wc -l
+cat build.i18n.num | wc -l
 echo -n "Strings extracted ok:"
-cat en.i18n.exnum | wc -l
-diff -u en.i18n.num en.i18n.exnum | uniq
+cat build.i18n.exnum | wc -l
+diff -u build.i18n.num build.i18n.exnum | uniq
 
-diff -u0 en.i18n~ en.i18n | grep "^-[0-9]" | sed "s,^-,," >> en.tainted
-sort -n -t : -k 1,1 -u -o en.tainted en.tainted
+diff -u0 build.i18n~ build.i18n | grep "^-[0-9]" | sed "s,^-,," >> build.tainted
+sort -n -t : -k 1,1 -u -o build.tainted build.tainted
 
-rm en.i18n.num en.i18n.exnum
+rm build.i18n.num build.i18n.exnum
 
-diff -u en.i18n~ en.i18n | tr '' '[' || true
+diff -u build.i18n~ build.i18n | tr '' '[' || true

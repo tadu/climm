@@ -30,7 +30,7 @@ void SessionInitServer (Session *sess)
     if (!sess->server || !*sess->server || !sess->port)
         return;
 
-    M_print (i18n (871, "Opening v8 connection to %s:%d... "), sess->server, sess->port);
+    M_print (i18n (1871, "Opening v8 connection to %s:%d... "), sess->server, sess->port);
 
     sess->our_seq  = rand () & 0x7fff;
     sess->connect  = 0;
@@ -52,7 +52,7 @@ void SrvCallBackTimeout (struct Event *event)
     {
         if (sess->connect == event->type)
         {
-            M_print (i18n (885, "Connection v8 timed out.\n"));
+            M_print (i18n (1885, "Connection v8 timed out.\n"));
             sess->connect = 0;
             sockclose (sess->sok);
             sess->sok = -1;
@@ -107,7 +107,7 @@ void SrvCallBackReceive (Session *sess)
     if (PacketRead1 (pak) != 0x2a)
     {
         if (prG->verbose)
-            M_print (i18n (880, "Incoming packet is not a FLAP: id is %d.\n"), PacketRead1 (pak));
+            M_print (i18n (1880, "Incoming packet is not a FLAP: id is %d.\n"), PacketRead1 (pak));
         return;
     }
     
@@ -118,7 +118,7 @@ void SrvCallBackReceive (Session *sess)
     if (prG->verbose & 128)
     {
         Time_Stamp ();
-        M_print (" " ESC "«" COLSERV "%s ", i18n (33, "Incoming v8 server packet:"));
+        M_print (" " ESC "«" COLSERV "%s ", i18n (1033, "Incoming v8 server packet:"));
         FlapPrint (pak);
         M_print (ESC "»\r");
     }

@@ -84,11 +84,11 @@ void Check_Endian (void)
     i = *(UDWORD *) check;
     if (i == 1)
     {
-        M_print (i18n (65, "Using intel byte ordering."));
+        M_print (i18n (1065, "Using intel byte ordering."));
     }
     else
     {
-        M_print (i18n (66, "Using motorola byte ordering."));
+        M_print (i18n (1066, "Using motorola byte ordering."));
     }
     M_print ("\n");
 }
@@ -114,7 +114,7 @@ void Idle_Check (Session *sess)
     {
         CmdPktCmdStatusChange (sess, STATUS_ONLINE);
         Time_Stamp ();
-        M_print (" %s ", i18n (64, "Auto-Changed status to"));
+        M_print (" %s ", i18n (1064, "Auto-Changed status to"));
         Print_Status (sess->status);
         M_print ("\n");
         idle_flag = 0;
@@ -124,7 +124,7 @@ void Idle_Check (Session *sess)
     {
         CmdPktCmdStatusChange (sess, STATUS_NA);
         Time_Stamp ();
-        M_print (" %s ", i18n (64, "Auto-Changed status to"));
+        M_print (" %s ", i18n (1064, "Auto-Changed status to"));
         Print_Status (sess->status);
         M_print ("\n");
         idle_val = time (NULL);
@@ -138,7 +138,7 @@ void Idle_Check (Session *sess)
     {
         CmdPktCmdStatusChange (sess, STATUS_AWAY);
         Time_Stamp ();
-        M_print (" %s ", i18n (64, "Auto-Changed status to"));
+        M_print (" %s ", i18n (1064, "Auto-Changed status to"));
         Print_Status (sess->status);
         M_print ("\n");
         idle_flag = 1;
@@ -149,11 +149,11 @@ void Idle_Check (Session *sess)
 
 void Usage ()
 {
-    M_print (i18n (607, "Usage: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]\n"));
-    M_print (i18n (608, "        -v   Turn on verbose Mode (useful for Debugging only)\n"));
-    M_print (i18n (609, "        -f   specifies an alternate Config File (default: ~/.micq/micqrc)\n"));
-    M_print (i18n (610, "        -l   specifies an alternate logfile resp. logdir\n"));
-    M_print (i18n (611, "        -?   gives this help screen\n\n"));
+    M_print (i18n (1607, "Usage: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]\n"));
+    M_print (i18n (1608, "        -v   Turn on verbose Mode (useful for Debugging only)\n"));
+    M_print (i18n (1609, "        -f   specifies an alternate Config File (default: ~/.micq/micqrc)\n"));
+    M_print (i18n (1610, "        -l   specifies an alternate logfile resp. logdir\n"));
+    M_print (i18n (1611, "        -?   gives this help screen\n\n"));
     exit (0);
 }
 
@@ -179,13 +179,13 @@ int main (int argc, char *argv[])
     setbuf (stdout, NULL);      /* Don't buffer stdout */
     M_print (BuildVersion ());
 
-    M_print (i18n (612, "This program was made without any help from Mirabilis or their consent.\n"));
-    M_print (i18n (613, "No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n"));
+    M_print (i18n (1612, "This program was made without any help from Mirabilis or their consent.\n"));
+    M_print (i18n (1613, "No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n"));
 
     if (i == -1)
         M_print ("Couldn't load internationalization.\n");
     else if (i)
-        M_print (i18n (81, "Successfully loaded en translation (%d entries).\n"), i);
+        M_print (i18n (1081, "Successfully loaded en translation (%d entries).\n"), i);
     else
         M_print ("No internationalization requested.\n");
 
@@ -209,12 +209,12 @@ int main (int argc, char *argv[])
             {
                 i++;            /* skip the argument to f */
                 prG->rcfile = argv[i];
-                M_print (i18n (614, "Using config file \"%s\"\n"), argv[i]);
+                M_print (i18n (1614, "Using config file \"%s\"\n"), argv[i]);
             }
             else if ((argv[i][1] == 'l') || (argv[i][1] == 'L'))
             {
                 i++;
-                M_print (i18n (615, "Logging to \"%s\"\n"), argv[i]);
+                M_print (i18n (1615, "Logging to \"%s\"\n"), argv[i]);
                 prG->logplace = argv[i];
             }
             else if ((argv[i][1] == '?') || (argv[i][1] == 'h'))
@@ -238,7 +238,7 @@ int main (int argc, char *argv[])
 
 #ifdef __BEOS__
     Be_Start ();
-    M_print (i18n (616, "Started BeOS InputThread\n\r"));
+    M_print (i18n (1616, "Started BeOS InputThread\n\r"));
 #endif
 
     Check_Endian ();
@@ -248,7 +248,7 @@ int main (int argc, char *argv[])
     if (i != 0)
     {
 /* FUNNY: "Windows Sockets broken blame Bill -" */
-        perror (i18n (624, "Sorry, can't initialize Windows Sockets..."));
+        perror (i18n (1624, "Sorry, can't initialize Windows Sockets..."));
         exit (1);
     }
 #endif

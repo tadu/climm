@@ -112,7 +112,7 @@ void PacketEnqueuev5 (Packet *pak, Session *sess)
     {
         Time_Stamp ();
         M_print (" \x1b«" COLCLIENT "");
-        M_print (i18n (775, "Outgoing packet:"));
+        M_print (i18n (1775, "Outgoing packet:"));
         M_print (" %04x %08x:%08x %04x (%s) @%p" COLNONE "\n",
                  PacketReadAt2 (pak, CMD_v5_OFF_VER), PacketReadAt4 (pak, CMD_v5_OFF_SESS),
                  PacketReadAt4 (pak, CMD_v5_OFF_SEQ), PacketReadAt2 (pak, CMD_v5_OFF_SEQ2),
@@ -138,7 +138,7 @@ void SessionInitServerV5 (Session *sess)
 {
     if (sess->spref->version < 5)
     {
-        M_print (i18n (869, "Protocoll versions less than 5 are not supported anymore.\n"));
+        M_print (i18n (1869, "Protocoll versions less than 5 are not supported anymore.\n"));
         return;
     }
     
@@ -152,7 +152,7 @@ void SessionInitServerV5 (Session *sess)
     {
         char pwd[20];
         pwd[0] = '\0';
-        M_print ("%s ", i18n (63, "Enter password:"));
+        M_print ("%s ", i18n (1063, "Enter password:"));
         Echo_Off ();
         M_fdnreadln (stdin, pwd, sizeof (pwd));
         Echo_On ();
@@ -175,7 +175,7 @@ void CallBackServerInitV5 (struct Event *event)
         return;
     }
     
-    M_print (i18n (902, "Opening v5 connection to %s:%d... "), sess->server, sess->port);
+    M_print (i18n (1902, "Opening v5 connection to %s:%d... "), sess->server, sess->port);
     
     if (sess->sok < 0)
     {
@@ -188,13 +188,13 @@ void CallBackServerInitV5 (struct Event *event)
 #endif
         {
             rc = errno;
-            M_print (i18n (872, "failed: %s (%d)\n"), strerror (rc), rc);
+            M_print (i18n (1872, "failed: %s (%d)\n"), strerror (rc), rc);
             sess->connect = 0;
             sess->sok = -1;
             return;
         }
     }
-    M_print (i18n (877, "ok.\n"));
+    M_print (i18n (1877, "ok.\n"));
     sess->our_seq2    = 0;
     sess->connect = 1 | CONNECT_SELECT_R;
     sess->dispatch = &CmdPktSrvRead;
@@ -308,7 +308,7 @@ void PacketSendv5 (const Packet *pak, Session *sess)
     assert (pak);
     assert (sess);
 
-    Debug (64, "--- %p %s", pak, i18n (858, "sending packet"));
+    Debug (64, "--- %p %s", pak, i18n (1858, "sending packet"));
 
     cpak = Wrinkle (pak);
     UtilIOSend (sess, cpak);
@@ -329,7 +329,7 @@ void UDPCallBackResend (struct Event *event)
 
     if (session != event->sess->our_session)
     {
-        M_print (i18n (856, "Discarded a %04x (%s) packet from old session %08x (current: %08x).\n"),
+        M_print (i18n (1856, "Discarded a %04x (%s) packet from old session %08x (current: %08x).\n"),
                  cmd, CmdPktSrvName (cmd),
                  session, event->sess->our_session);
         PacketD (pak);
@@ -341,7 +341,7 @@ void UDPCallBackResend (struct Event *event)
     {
         if (prG->verbose & 32)
         {
-            M_print (i18n (826, "Resending message %04x (%s) sequence %04x (attempt #%d, len %d).\n"),
+            M_print (i18n (1826, "Resending message %04x (%s) sequence %04x (attempt #%d, len %d).\n"),
                      cmd, CmdPktCmdName (cmd),
                      event->seq >> 16, event->attempts, pak->len);
         }
@@ -358,7 +358,7 @@ void UDPCallBackResend (struct Event *event)
             char  *data = &pak->data[CMD_v5_OFF_PARAM + 8];
 
             M_print ("\n");
-            M_print (i18n (830, "Discarding message to %s after %d send attempts.  Message content:\n"),
+            M_print (i18n (1830, "Discarding message to %s after %d send attempts.  Message content:\n"),
                      ContactFindName (tuin), event->attempts - 1);
 
             if (type == URL_MESS || type == MRURL_MESS)
@@ -376,8 +376,8 @@ void UDPCallBackResend (struct Event *event)
                     ConvUnixWin (data);
                     strcpy (url_data, data);
 
-                    M_print (i18n (628, " Description: " COLMESS "%s" COLNONE "\n"), url_desc);
-                    M_print (i18n (629, " URL:         " COLMESS "%s" COLNONE), url_data);
+                    M_print (i18n (1628, " Description: " COLMESS "%s" COLNONE "\n"), url_desc);
+                    M_print (i18n (1629, " URL:         " COLMESS "%s" COLNONE), url_data);
                 }
             }
             else if (type == NORM_MESS || type == MRNORM_MESS)
@@ -389,10 +389,10 @@ void UDPCallBackResend (struct Event *event)
         }
         else
         {
-            M_print (i18n (825, "Discarded a %04x (%s) packet"), cmd, CmdPktSrvName (cmd));
+            M_print (i18n (1825, "Discarded a %04x (%s) packet"), cmd, CmdPktSrvName (cmd));
             if (cmd == CMD_LOGIN || cmd == CMD_KEEP_ALIVE)
             {
-                M_print (i18n (632, "\n\aConnection unstable. Exiting...."));
+                M_print (i18n (1632, "\n\aConnection unstable. Exiting...."));
                 uiG.quit = TRUE;
             }
         }

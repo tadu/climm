@@ -24,7 +24,7 @@ TLV *TLVRead (Packet *pak)
         len = PacketReadB2 (pak);
         if (PacketReadLeft (pak) < len)
         {
-            M_print (i18n (897, "Incomplete TLV %d, len %d of %d - ignoring.\n"), typ, PacketReadLeft (pak), len);
+            M_print (i18n (1897, "Incomplete TLV %d, len %d of %d - ignoring.\n"), typ, PacketReadLeft (pak), len);
             return tlv;
         }
         if (typ >= 16 || tlv[typ].len)

@@ -82,9 +82,9 @@ void Initalize_RC_File ()
     prG->away_time = default_away_time;
 
     M_print ("\n");
-    M_print (i18n (793, "No valid UIN found. The setup wizard will guide you through the process of setting one up.\n"));
-    M_print (i18n (794, "If you already have an UIN, please enter it. Otherwise, enter 0, and I will request one for you.\n"));
-    M_print ("%s ", i18n (618, "UIN:"));
+    M_print (i18n (1793, "No valid UIN found. The setup wizard will guide you through the process of setting one up.\n"));
+    M_print (i18n (1794, "If you already have an UIN, please enter it. Otherwise, enter 0, and I will request one for you.\n"));
+    M_print ("%s ", i18n (1618, "UIN:"));
     fflush (stdout);
     M_fdnreadln (stdin, input, sizeof (input));
     uin = 0;
@@ -92,13 +92,13 @@ void Initalize_RC_File ()
 
     M_print ("\n");
     if (uin)
-        M_print (i18n (781, "Your password for UIN %d:\n"), uin);
+        M_print (i18n (1781, "Your password for UIN %d:\n"), uin);
     else
-        M_print (i18n (782, "You need a password for your new UIN.\n"));
+        M_print (i18n (1782, "You need a password for your new UIN.\n"));
     memset (pwd1, 0, sizeof (pwd1));
     while (!pwd1[0])
     {
-        M_print ("%s ", i18n (795, "Password:"));
+        M_print ("%s ", i18n (1795, "Password:"));
         fflush (stdout);
         Echo_Off ();
         M_fdnreadln (stdin, pwd1, sizeof (pwd1));
@@ -107,8 +107,8 @@ void Initalize_RC_File ()
         if (uin)
             continue;
 
-        M_print (i18n (783, "To prevent typos, please enter your password again.\n"));
-        M_print ("%s ", i18n (795, "Password:"));
+        M_print (i18n (1783, "To prevent typos, please enter your password again.\n"));
+        M_print ("%s ", i18n (1795, "Password:"));
         fflush (stdout);
         memset (pwd2, 0, sizeof (pwd2));
         Echo_Off ();
@@ -117,7 +117,7 @@ void Initalize_RC_File ()
         M_print ("\n");
         if (strcmp (pwd1, pwd2))
         {
-            M_print ("\n%s\n", i18n (93, "Passwords did not match - please try again."));
+            M_print ("\n%s\n", i18n (1093, "Passwords did not match - please try again."));
             pwd1[0] = '\0';
         }
     }
@@ -127,8 +127,8 @@ void Initalize_RC_File ()
     prG->s5Port = 0;
 
     M_print ("\n");
-    M_print (i18n (784, "If you are firewalled, you may need to use a SOCKS5 server. If you do, please enter its hostname or IP address. Otherwise, or if unsure, just press return.\n"));
-    M_print ("%s ", i18n (94, "SOCKS5 server:"));
+    M_print (i18n (1784, "If you are firewalled, you may need to use a SOCKS5 server. If you do, please enter its hostname or IP address. Otherwise, or if unsure, just press return.\n"));
+    M_print ("%s ", i18n (1094, "SOCKS5 server:"));
     fflush (stdout);
     M_fdnreadln (stdin, input, sizeof (input));
     if (strlen (input) > 1)
@@ -142,8 +142,8 @@ void Initalize_RC_File ()
         else
         {
             prG->s5Host = strdup (input);
-            M_print (i18n (786, "I also need the port the socks server listens on. If unsure, press return for the default port.\n"));
-            M_print ("%s ", i18n (95, "SOCKS5 port:"));
+            M_print (i18n (1786, "I also need the port the socks server listens on. If unsure, press return for the default port.\n"));
+            M_print ("%s ", i18n (1095, "SOCKS5 port:"));
             fflush (stdout);
             M_fdnreadln (stdin, input, sizeof (input));
             sscanf (input, "%hu", &prG->s5Port);
@@ -157,16 +157,16 @@ void Initalize_RC_File ()
         prG->s5Name = NULL;
 
         M_print ("\n");
-        M_print (i18n (787, "You probably need to authentificate yourself to the socks server. If so, you need to enter the user name the administrator of the socks server gave you. Otherwise, just press return.\n"));
-        M_print ("%s ", i18n (96, "SOCKS5 user name:"));
+        M_print (i18n (1787, "You probably need to authentificate yourself to the socks server. If so, you need to enter the user name the administrator of the socks server gave you. Otherwise, just press return.\n"));
+        M_print ("%s ", i18n (1096, "SOCKS5 user name:"));
         fflush (stdout);
         M_fdnreadln (stdin, input, sizeof (input));
         if (strlen (input) > 1)
         {
             prG->s5Auth = 1;
             prG->s5Name = strdup (input);
-            M_print (i18n (788, "Now I also need the password for this user.\n"));
-            M_print ("%s ", i18n (97, "SOCKS5 password:"));
+            M_print (i18n (1788, "Now I also need the password for this user.\n"));
+            M_print ("%s ", i18n (1097, "SOCKS5 password:"));
             fflush (stdout);
             M_fdnreadln (stdin, input, sizeof (input));
             prG->s5Pass = strdup (input);
@@ -177,13 +177,13 @@ void Initalize_RC_File ()
 
     if (!uin)
     {
-        M_print (i18n (796, "Setup wizard finished. Please wait until registration has finished.\n"));
+        M_print (i18n (1796, "Setup wizard finished. Please wait until registration has finished.\n"));
         sess = SrvRegisterUIN (NULL, pwd1);
         sess->flags |= CONN_WIZARD;
     }
     else
     {
-        M_print (i18n (791, "Setup wizard finished. Congratulations!\n"));
+        M_print (i18n (1791, "Setup wizard finished. Congratulations!\n"));
         sess = SessionC ();
         assert (sess);
         sess->spref = PreferencesSessionC ();
@@ -272,8 +272,8 @@ void Read_RC_File (FILE *rcf)
             }
             else
             {
-                M_print (COLERR "%s" COLNONE " ", i18n (619, "Warning:"));
-                M_print (i18n (659, "Unknown section %s in configuration file."), buf);
+                M_print (COLERR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                M_print (i18n (1659, "Unknown section %s in configuration file."), buf);
                 M_print ("\n");
                 section = -1;
             }
@@ -282,8 +282,8 @@ void Read_RC_File (FILE *rcf)
         switch (section)
         {
             case -1:
-                M_print (COLERR "%s" COLNONE " ", i18n (619, "Warning:"));
-                M_print (i18n (675, "Ignored line:"));
+                M_print (COLERR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                M_print (i18n (1675, "Ignored line:"));
                 M_print (" %s\n", buf);
                 break;
             case 0:
@@ -293,7 +293,7 @@ void Read_RC_File (FILE *rcf)
 #ifdef MSGEXEC
                     prG->event_cmd = M_strdup (strtok (NULL, "\n"));
 #else
-                    printf (i18n (817, "Warning: ReceiveScript feature not enabled!\n"));
+                    printf (i18n (1817, "Warning: ReceiveScript feature not enabled!\n"));
 #endif
                 }
                 else if (!strcasecmp (tmp, "s5_use"))
@@ -493,8 +493,8 @@ void Read_RC_File (FILE *rcf)
                 }
                 else
                 {
-                    M_print (COLERR "%s" COLNONE " ", i18n (619, "Warning:"));
-                    M_print (i18n (188, "Unrecognized command in rc file '%s', ignored."), tmp);
+                    M_print (COLERR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                    M_print (i18n (1188, "Unrecognized command in rc file '%s', ignored."), tmp);
                     M_print ("\n");
                 }
                 break;
@@ -535,8 +535,8 @@ void Read_RC_File (FILE *rcf)
                 
                 if (!(cont = ContactAdd (uin, tmp)))
                 {
-                    M_print (COLERR "%s" COLNONE " %s\n", i18n (619, "Warning:"),
-                             i18n (620, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
+                    M_print (COLERR "%s" COLNONE " %s\n", i18n (1619, "Warning:"),
+                             i18n (1620, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
                     section = -1;
                     break;
                 }
@@ -565,8 +565,8 @@ void Read_RC_File (FILE *rcf)
                 }
                 else
                 {
-                    M_print (COLERR "%s" COLNONE " ", i18n (619, "Warning:"));
-                    M_print (i18n (188, "Unrecognized command in rc file '%s', ignored."), tmp);
+                    M_print (COLERR "%s" COLNONE " ", i18n (1619, "Warning:"));
+                    M_print (i18n (1188, "Unrecognized command in rc file '%s', ignored."), tmp);
                     M_print ("\n");
                 }
                 break;
@@ -646,15 +646,15 @@ void Read_RC_File (FILE *rcf)
     }
 
     if (!prG->auto_dnd)
-        prG->auto_dnd  = strdup (i18n (929, "User is DND [Auto-Message]"));
+        prG->auto_dnd  = strdup (i18n (1929, "User is DND [Auto-Message]"));
     if (!prG->auto_away)
-        prG->auto_away = strdup (i18n (10, "User is Away [Auto-Message]"));
+        prG->auto_away = strdup (i18n (1010, "User is Away [Auto-Message]"));
     if (!prG->auto_na)
-        prG->auto_na   = strdup (i18n (11, "User is not available [Auto-Message]"));
+        prG->auto_na   = strdup (i18n (1011, "User is not available [Auto-Message]"));
     if (!prG->auto_occ)
-        prG->auto_occ  = strdup (i18n (12, "User is Occupied [Auto-Message]"));
+        prG->auto_occ  = strdup (i18n (1012, "User is Occupied [Auto-Message]"));
     if (!prG->auto_inv)
-        prG->auto_inv  = strdup (i18n (13, "User is offline"));
+        prG->auto_inv  = strdup (i18n (1013, "User is offline"));
 
     if (prG->flags & FLAG_LOG && !prG->logplace)
     {
@@ -681,16 +681,16 @@ void Read_RC_File (FILE *rcf)
 
     if (prG->verbose && oldsess)
     {
-        M_print (i18n (189, "UIN = %ld\n"),    oldsess->spref->uin);
-        M_print (i18n (190, "port = %ld\n"),   oldsess->spref->port);
-        M_print (i18n (191, "passwd = %s\n"),  oldsess->spref->passwd ? oldsess->spref->passwd : "[none]");
-        M_print (i18n (192, "server = %s\n"),  oldsess->spref->server ? oldsess->spref->server : "[none]");
-        M_print (i18n (193, "status = %ld\n"), oldsess->spref->status);
-        M_print (i18n (196, "Message_cmd = %s\n"), CmdUserLookupName ("msg"));
+        M_print (i18n (1189, "UIN = %ld\n"),    oldsess->spref->uin);
+        M_print (i18n (1190, "port = %ld\n"),   oldsess->spref->port);
+        M_print (i18n (1191, "passwd = %s\n"),  oldsess->spref->passwd ? oldsess->spref->passwd : "[none]");
+        M_print (i18n (1192, "server = %s\n"),  oldsess->spref->server ? oldsess->spref->server : "[none]");
+        M_print (i18n (1193, "status = %ld\n"), oldsess->spref->status);
+        M_print (i18n (1196, "Message_cmd = %s\n"), CmdUserLookupName ("msg"));
         M_print ("flags: %08x\n", prG->flags);
     }
     if (dep)
-        M_print (i18n (818, "Warning: Deprecated syntax found in rc file!\n    Please update or \"save\" the rc file and check for changes.\n"));
+        M_print (i18n (1818, "Warning: Deprecated syntax found in rc file!\n    Please update or \"save\" the rc file and check for changes.\n"));
 }
 
 /************************************************

@@ -112,7 +112,7 @@ void Auto_Reply (Session *sess, SIMPLE_MESSAGE_PTR s_mesg)
                     break;
                 default:
                     temp = prG->auto_occ;
-                    M_print (i18n (635, "You have encounterd a bug in my code :( I now own you a beer!\nGreetings Fryslan!\n"));
+                    M_print (i18n (1635, "You have encounterd a bug in my code :( I now own you a beer!\nGreetings Fryslan!\n"));
             }
 
             icq_sendmsg (sess, Chars_2_DW (s_mesg->uin), temp, NORM_MESS);

@@ -69,7 +69,7 @@ FILE *PrefOpenRC (Preferences *pref)
         rcf = fopen (pref->rcfile, "r");
         if (rcf)
             return rcf;
-        M_print (i18n (864, "Can't open rcfile %s."), pref->rcfile);
+        M_print (i18n (1864, "Can't open rcfile %s."), pref->rcfile);
         exit (20);
     }
     

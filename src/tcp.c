@@ -70,7 +70,7 @@ void SessionInitPeer (Session *sess)
     assert (sess);
     
     port = sess->port;
-    M_print (i18n (777, "Opening peer-to-peer connection at localhost:%d... "), port);
+    M_print (i18n (1777, "Opening peer-to-peer connection at localhost:%d... "), port);
 
     sess->connect = 0;
     sess->our_seq = -1;
@@ -191,7 +191,7 @@ void TCPDispatchMain (Session *sess)
     
     if (!peer)
     {
-        M_print (i18n (914, "Can't allocate connection structure.\n"));
+        M_print (i18n (1914, "Can't allocate connection structure.\n"));
         sess->connect = 0;
         if (sess->sok)
             sockclose (sess->sok);
@@ -262,7 +262,7 @@ void TCPDispatchConn (Session *sess)
                 sess->port    = cont->port;
                 sess->connect = 1;
                 
-                M_print (i18n (631, "Opening TCP connection to %s%s%s at %s:%d... "),
+                M_print (i18n (1631, "Opening TCP connection to %s%s%s at %s:%d... "),
                              COLCONTACT, cont->nick, COLNONE, UtilIOIP (sess->ip), sess->port);
                 UtilIOConnectTCP (sess);
                 return;
@@ -277,7 +277,7 @@ void TCPDispatchConn (Session *sess)
                 sess->port    = cont->port;
                 sess->connect = 3;
                 
-                M_print (i18n (631, "Opening TCP connection to %s%s%s at %s:%d... "),
+                M_print (i18n (1631, "Opening TCP connection to %s%s%s at %s:%d... "),
                              COLCONTACT, cont->nick, COLNONE, UtilIOIP (sess->ip), sess->port);
                 UtilIOConnectTCP (sess);
                 return;
@@ -302,8 +302,9 @@ void TCPDispatchConn (Session *sess)
             case TCP_STATE_CONNECTED:
                 if (prG->verbose)
                 {
-                    M_print (i18n (779, "Opening TCP connection to %s at %s:%d... "), cont->nick, UtilIOIP (sess->ip), sess->port);
-                    M_print (i18n (785, "success.\n"));
+                    M_print (i18n (1631, "Opening TCP connection to %s%s%s at %s:%d... "),
+                             COLCONTACT, cont->nick, COLNONE, UtilIOIP (sess->ip), sess->port);
+                    M_print (i18n (1785, "success.\n"));
                 }
                 sess->connect = 1 | CONNECT_SELECT_R;
                 sess->dispatch = &TCPDispatchShake;
@@ -313,7 +314,7 @@ void TCPDispatchConn (Session *sess)
                 TCPSendInit (sess);
                 return;
             case TCP_STATE_WAITING:
-                M_print (i18n (855, "TCP connection to %s at %s:%d failed.\n") , cont->nick, UtilIOIP (sess->ip), sess->port);
+                M_print (i18n (1855, "TCP connection to %s at %s:%d failed.\n") , cont->nick, UtilIOIP (sess->ip), sess->port);
                 sess->connect = -1;
                 sess->sok = -1;
                 return;
@@ -380,7 +381,7 @@ void TCPDispatchShake (Session *sess)
                 QueueDequeue (queue, sess->ip, QUEUE_TYPE_TCP_TIMEOUT);
                 Time_Stamp ();
                 M_print (" ");
-                M_print (i18n (833, "Client-to-client TCP connection to %s established.\n"), cont->nick);
+                M_print (i18n (1833, "Client-to-client TCP connection to %s established.\n"), cont->nick);
                 sess->connect = CONNECT_OK | CONNECT_SELECT_R;
                 sess->dispatch = &TCPDispatchPeer;
                 return;
@@ -422,7 +423,7 @@ void TCPDispatchPeer (Session *sess)
 
         if (Decrypt_Pak ((UBYTE *) &pak->data, size) < 0)
         {
-            M_print (i18n (789, "Received malformed packet."));
+            M_print (i18n (1789, "Received malformed packet."));
             TCPClose (sess);
             break;
         }
@@ -431,7 +432,7 @@ void TCPDispatchPeer (Session *sess)
         {
             Time_Stamp ();
             M_print (" \x1b«" COLSERV "");
-            M_print (i18n (778, "Incoming TCP packet:"));
+            M_print (i18n (1778, "Incoming TCP packet:"));
             M_print (COLNONE "\n");
             Hex_Dump (pak->data, size);
             M_print (ESC "»\r");
@@ -457,12 +458,12 @@ void TCPDispatchPeer (Session *sess)
                     }
                     else if (PacketReadAt2 (pak, 26) & TCP_AUTO_RESPONSE_MASK)
                     {
-                        M_print (i18n (636, "Auto-response message for %s:\n"), cont->nick);
+                        M_print (i18n (1636, "Auto-response message for %s:\n"), cont->nick);
                         M_print (MESSCOL "%s\n" NOCOL, PacketReadAtLNTS (pak, 28));
                     }
                     if (prG->verbose && PacketReadAt2 (pak, 26) != NORM_MESS)
                     {
-                        M_print (i18n (806, "Received ACK for message (seq %04X) from %s\n"),
+                        M_print (i18n (1806, "Received ACK for message (seq %04X) from %s\n"),
                                  seq_in, cont->nick);
                     }
                     PacketD (event->pak);
@@ -476,7 +477,7 @@ void TCPDispatchPeer (Session *sess)
                     
                     if (prG->verbose)
                     {
-                        M_print (i18n (807, "Cancelled incoming message (seq %04X) from %s\n"),
+                        M_print (i18n (1807, "Cancelled incoming message (seq %04X) from %s\n"),
                                  seq_in, cont->nick);
                     }
                     PacketD (event->pak);
@@ -514,7 +515,7 @@ void TCPCallBackTimeout (struct Event *event)
     
     if (sess->connect & CONNECT_MASK)
     {
-        M_print (i18n (850, "Timeout on connection with %s at %s:%d\n"),
+        M_print (i18n (1850, "Timeout on connection with %s at %s:%d\n"),
                  ContactFindName (sess->uin), UtilIOIP (sess->ip), sess->port);
         TCPClose (sess);
     }
@@ -561,7 +562,7 @@ Packet *TCPReceivePacket (Session *sess)
     {
         Time_Stamp ();
         M_print (" \x1b«" COLSERV "");
-        M_print (i18n (778, "Incoming TCP packet:"));
+        M_print (i18n (1778, "Incoming TCP packet:"));
         M_print (COLNONE "*\n");
         Hex_Dump (pak->data, pak->len);
         M_print (ESC "»\r");
@@ -595,7 +596,7 @@ void TCPSendPacket (Packet *pak, Session *sess)
     {
         Time_Stamp ();
         M_print (" \x1b«" COLCLIENT "");
-        M_print (i18n (776, "Outgoing TCP packet:"));
+        M_print (i18n (1776, "Outgoing TCP packet:"));
         M_print (COLNONE "\n");
         Hex_Dump (pak->data, pak->len);
         M_print (ESC "»\r");
@@ -628,7 +629,7 @@ void TCPSendPacket (Packet *pak, Session *sess)
         {
             Time_Stamp ();
             M_print (" \x1b«" COLCLIENT "");
-            M_print (i18n (776, "Outgoing TCP packet:"));
+            M_print (i18n (1776, "Outgoing TCP packet:"));
             M_print (COLNONE "*\n");
             Hex_Dump (data, tpak->len);
             M_print (ESC "»\r");
@@ -650,7 +651,7 @@ void TCPSendPacket (Packet *pak, Session *sess)
         rc = errno;
         Time_Stamp ();
         M_print (" ");
-        M_print (i18n (835, "Error while writing to socket - %s (%d)\n"),
+        M_print (i18n (1835, "Error while writing to socket - %s (%d)\n"),
                  strerror (rc), rc);
     }
     TCPClose (sess);
@@ -674,7 +675,7 @@ void TCPSendInit (Session *sess)
         sess->our_session = rand ();
 
     if (prG->verbose)
-        M_print (i18n (836, "Sending TCP direct connection initialization packet.\n"));
+        M_print (i18n (1836, "Sending TCP direct connection initialization packet.\n"));
 
     pak = PacketC ();
     PacketWrite1 (pak, TCP_CMD_INIT);                 /* command          */
@@ -706,7 +707,7 @@ void TCPSendInitAck (Session *sess)
         return;
 
     if (prG->verbose)
-        M_print (i18n (837, "Acknowledging TCP direct connection initialization packet.\n"));
+        M_print (i18n (1837, "Acknowledging TCP direct connection initialization packet.\n"));
 
     sess->stat_real_pak_sent++;
 
@@ -747,9 +748,9 @@ Session *TCPReceiveInit (Session *sess, Packet *pak)
 
         if (prG->verbose)
         {
-            M_print (i18n (838, "Received direct connection initialization.\n"));
+            M_print (i18n (1838, "Received direct connection initialization.\n"));
             M_print ("    \x1b«");
-            M_print (i18n (839, "Version %04x:%04x, Port %d, UIN %d, session %08x\n"),
+            M_print (i18n (1839, "Version %04x:%04x, Port %d, UIN %d, session %08x\n"),
                      PacketReadAt2 (pak, 1), PacketReadAt2 (pak, 3),
                      PacketReadAt4 (pak, 11), PacketReadAt4 (pak, 15),
                      PacketReadAt4 (pak, 32));
@@ -782,7 +783,7 @@ Session *TCPReceiveInit (Session *sess, Packet *pak)
         return sess;
     }
     if (prG->verbose)
-        M_print (i18n (840, "Received malformed direct connection initialization.\n"));
+        M_print (i18n (1840, "Received malformed direct connection initialization.\n"));
 
     TCPClose (sess);
     return sess;
@@ -797,7 +798,7 @@ void TCPReceiveInitAck (Session *sess, Packet *pak)
     
     if (pak && (pak->len != 4 || PacketReadAt1 (pak, 0) != TCP_CMD_INIT_ACK))
     {
-        M_print (i18n (841, "Received malformed initialization acknowledgement packet.\n"));
+        M_print (i18n (1841, "Received malformed initialization acknowledgement packet.\n"));
         TCPClose (sess);
     }
 }
@@ -814,9 +815,9 @@ void TCPClose (Session *sess)
         Time_Stamp ();
         M_print (" ");
         if (sess->uin)
-            M_print (i18n (842, "Closing socket %d to %s.\n"), sess->sok, ContactFindName (sess->uin));
+            M_print (i18n (1842, "Closing socket %d to %s.\n"), sess->sok, ContactFindName (sess->uin));
         else
-            M_print (i18n (843, "Closing socket %d.\n"), sess->sok);
+            M_print (i18n (1843, "Closing socket %d.\n"), sess->sok);
     }
 
     if (sess->sok != -1)
@@ -969,7 +970,7 @@ void TCPCallBackResend (struct Event *event)
         icq_sendmsg (peer->assoc->assoc, cont->uin, strdup (PacketReadAtLNTS (pak, 28)), PacketReadAt2 (pak, 22));
     }
     else
-        M_print (i18n (844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4));
+        M_print (i18n (1844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4));
     
     PacketD (event->pak);
     free (event->info);
@@ -1000,7 +1001,7 @@ void TCPCallBackReceive (struct Event *event)
         case TCP_CMD_GET_NA:
         case TCP_CMD_GET_DND:
         case TCP_CMD_GET_FFC:
-            M_print (i18n (814, "Sent auto-response message to %s%s%s.\n"),
+            M_print (i18n (1814, "Sent auto-response message to %s%s%s.\n"),
                      COLCONTACT, cont->nick, COLNONE);
             Send_TCP_Ack (event->sess, PacketReadAt2 (pak, 8), PacketReadAt2 (pak, 22), TRUE);
             break;
@@ -1089,7 +1090,7 @@ void Get_Auto_Resp (Session *sess, UDWORD uin)
     }
 
     if (sub_cmd == 0)
-        M_print (i18n (809, "Unable to retrieve auto-response message for %s."),
+        M_print (i18n (1809, "Unable to retrieve auto-response message for %s."),
                  ContactFindName (uin));
     else
         TCPSendMsg (sess, uin, msg, sub_cmd);

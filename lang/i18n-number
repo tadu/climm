@@ -13,9 +13,9 @@ if (stat "../lang/en.i18n")
     chdir "../lang";
 }
 
-open NRS, "<en.i18n" || die;
+open NRS, "<build.i18n" || die;
 
-{ my ($last, $neu) = (0, 0);
+{ my ($last, $neu) = (1020, 1020);
 sub NewNumber ()
 {
     $last++;
@@ -32,7 +32,7 @@ sub NewNumber ()
     while (<NRS>)
     {
         chomp;
-        if (m/^([0-9]{3}):/)
+        if (m/^([0-9][0-9][0-9][0-9]):/)
         {
             $neu = $1;
             if ($last < $neu)
@@ -68,7 +68,7 @@ while ($uname = shift)
     $match = 0;
     while (<IN>)
     {
-        $match = 1 if (m/i18n \(###, "(([^"]*(\")*)*)"\)/);
+        $match = 1 if (m/i18n \(##*, "(([^"]*(\")*)*)"\)/);
     }
     next if not $match;
 
@@ -81,7 +81,7 @@ while ($uname = shift)
     while (<IN>)
     {
         $k = $_;
-        while ($k =~ m/i18n \(###,((("(([^\"]*(\\.)*)*)")*(COL(NONE|CONTACT|CLIENT|MESS|SERV|ACK|SENT))* *)*)\)/)
+        while ($k =~ m/i18n \(##*,((("(([^\"]*(\\.)*)*)")*(COL(NONE|CONTACT|CLIENT|MESS|SERV|ACK|SENT))* *)*)\)/)
         {
             $new = $1;
             $new =~ s/\\/\\\\/g;
@@ -106,7 +106,7 @@ while ($uname = shift)
             $l = $k;
             foreach $i (keys %defstr)
             {
-                $k =~ s/i18n \(###,($i)\)/i18n ($defstr{$i},$1)/g;
+                $k =~ s/i18n \(##*,($i)\)/i18n ($defstr{$i},$1)/g;
             }
             if (not $k cmp $l)
             {

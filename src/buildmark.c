@@ -25,10 +25,10 @@ const char *BuildVersion (void)
         
         snprintf (buf, sizeof (buf), COLSERV "%s" COLNONE " %s " COLSERV MICQ_VERSION COLNONE " (%s " \
                                      __DATE__ " " __TIME__ ")\n%s\n",
-                  i18n (74, "mICQ (Matt's ICQ clone)"),
-                  i18n (75, "version"),
-                  i18n (76, "compiled on"),
-                  i18n (77, "in dedication to Matthew D. Smith."));
+                  i18n (1074, "mICQ (Matt's ICQ clone)"),
+                  i18n (1075, "version"),
+                  i18n (1076, "compiled on"),
+                  i18n (1077, "in dedication to Matthew D. Smith."));
         ver = strdup (buf);
     }
     return ver;
@@ -37,13 +37,13 @@ const char *BuildVersion (void)
 const int BuildVersionNum = MICQ_BUILD_NUM;
 
 /*
- i18n (1, "en")               locale
- i18n (2, "en_US")            locale 
- i18n (3, "486")              MICQ_BUILD_NUM
- i18n (4, "Rüdiger Kuhlmann") all contributors
- i18n (5, "Rüdiger Kuhlmann") last contributor
- i18n (6, "2002-05-02")       last change
- i18n (7, "iso-8859-1")       charset used. must be iso-8859-1 if possible
+ i19n (1001, "en")               locale
+ i19n (1002, "en_US")            locale 
+ i19n (1003, "486")              MICQ_BUILD_NUM
+ i19n (1004, "Rüdiger Kuhlmann") all contributors
+ i19n (1005, "Rüdiger Kuhlmann") last contributor
+ i19n (1006, "2002-05-02")       last change
+ i18n (1007, "iso-8859-1")       charset used. must be iso-8859-1 if possible
 
 
  */

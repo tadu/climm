@@ -51,7 +51,7 @@ void SrvCallBackFlap (struct Event *event)
             break;
         case 5: /* Ping */
         default:
-            M_print (i18n (884, "FLAP with unknown channel %d received.\n"), event->pak->cmd);
+            M_print (i18n (1884, "FLAP with unknown channel %d received.\n"), event->pak->cmd);
     }
     PacketD (event->pak);
     free (event);
@@ -65,7 +65,7 @@ void FlapChannel1 (Session *sess, Packet *pak)
 
     if (PacketReadLeft (pak) < 4)
     {
-        M_print (i18n (881, "FLAP channel 1 out of data.\n"));
+        M_print (i18n (1881, "FLAP channel 1 out of data.\n"));
         return;
     }
     i = PacketReadB4 (pak);
@@ -74,7 +74,7 @@ void FlapChannel1 (Session *sess, Packet *pak)
         case 1:
             if (PacketReadLeft (pak))
             {
-                M_print (i18n (882, "FLAP channel 1 cmd 1 extra data:\n"));
+                M_print (i18n (1882, "FLAP channel 1 cmd 1 extra data:\n"));
                 Hex_Dump (pak->data + pak->rpos, PacketReadLeft (pak));
                 break;
             }
@@ -94,7 +94,7 @@ void FlapChannel1 (Session *sess, Packet *pak)
                 FlapCliIdent (sess);
             break;
         default:
-            M_print (i18n (883, "FLAP channel 1 unknown command %d.\n"), i);
+            M_print (i18n (1883, "FLAP channel 1 unknown command %d.\n"), i);
     }
 }
 
@@ -106,14 +106,14 @@ void FlapChannel4 (Session *sess, Packet *pak)
         Time_Stamp ();
         M_print (" " ESC "«");
         if (!(sess->connect & CONNECT_OK))
-            M_print (i18n (895, "Login failed:\n"));
+            M_print (i18n (1895, "Login failed:\n"));
         else
-            M_print (i18n (896, "Server closed connection:\n"));
-        M_print (i18n (48, "Error code: %d\n"), tlv[8].nr);
+            M_print (i18n (1896, "Server closed connection:\n"));
+        M_print (i18n (1048, "Error code: %d\n"), tlv[8].nr);
         if (tlv[1].len && tlv[1].nr != sess->uin)
-            M_print (i18n (49, "UIN: %d\n"), tlv[1].nr);
+            M_print (i18n (1049, "UIN: %d\n"), tlv[1].nr);
         if (tlv[4].len)
-            M_print (i18n (51, "URL: %s\n"), tlv[4].str);
+            M_print (i18n (1051, "URL: %s\n"), tlv[4].str);
         M_print (ESC "»\n");
 
         if ((sess->connect & CONNECT_MASK) && sess->sok != -1)
@@ -129,7 +129,7 @@ void FlapChannel4 (Session *sess, Packet *pak)
         {
             assert (strchr (tlv[5].str, ':'));
 
-            M_print (i18n (898, "Redirect to server %s... "), tlv[5].str);
+            M_print (i18n (1898, "Redirect to server %s... "), tlv[5].str);
 
             sess->port = atoi (strchr (tlv[5].str, ':') + 1);
             *strchr (tlv[5].str, ':') = '\0';
@@ -148,13 +148,13 @@ void FlapPrint (Packet *pak)
 {
     if (PacketReadAt1 (pak, 1) == 2)
     {
-        M_print (i18n (910, "FLAP seq %08x length %04x channel %d" COLNONE "\n"),
+        M_print (i18n (1910, "FLAP seq %08x length %04x channel %d" COLNONE "\n"),
                  PacketReadBAt2 (pak, 2), pak->len - 6, PacketReadAt1 (pak, 1));
         SnacPrint (pak);
     }
     else
     {
-        M_print (i18n (910, "FLAP seq %08x length %04x channel %d" COLNONE "\n"),
+        M_print (i18n (1910, "FLAP seq %08x length %04x channel %d" COLNONE "\n"),
                  PacketReadBAt2 (pak, 2), pak->len - 6, PacketReadAt1 (pak, 1));
         Hex_Dump (pak->data + 6, pak->len - 6);
     }
@@ -188,7 +188,7 @@ void FlapSend (Session *sess, Packet *pak)
     if (prG->verbose & 128)
     {
         Time_Stamp ();
-        M_print (" " ESC "«" COLCLIENT "%s ", i18n (903, "Outgoing v8 server packet:"));
+        M_print (" " ESC "«" COLCLIENT "%s ", i18n (1903, "Outgoing v8 server packet:"));
         FlapPrint (pak);
         M_print (ESC "»\r");
     }
@@ -221,7 +221,7 @@ void FlapCliIdent (Session *sess)
     {
         char pwd[20];
         pwd[0] = '\0';
-        M_print ("%s ", i18n (63, "Enter password:"));
+        M_print ("%s ", i18n (1063, "Enter password:"));
         Echo_Off ();
         M_fdnreadln (stdin, pwd, sizeof (pwd));
         Echo_On ();

@@ -48,6 +48,7 @@ static jump_t jump[] = {
     { &CmdUserRandomSet,     "setr",         NULL, 0,   0 },
     { &CmdUserHelp,          "help",         NULL, 0,   0 },
     { &CmdUserInfo,          "info",         NULL, 0,   0 },
+    { &CmdUserTrans,         "lang",         NULL, 0,   0 },
     { &CmdUserTrans,         "trans",        NULL, 0,   0 },
     { &CmdUserAuto,          "auto",         NULL, 0,   0 },
     { &CmdUserAlter,         "alter",        NULL, 0,   0 },
@@ -105,10 +106,10 @@ static jump_t jump[] = {
 };
 
 #define SERVER_SESSION Session *sess; if (!(sess = SessionFind (TYPE_SERVER, 0))) sess = SessionFind (TYPE_SERVER_OLD, 0); \
-    if (!sess) { M_print (i18n (931, "Couldn't find server connection.\n")); return 0; }
+    if (!sess) { M_print (i18n (1931, "Couldn't find server connection.\n")); return 0; }
 
 #define SESSION_TYPE(type) Session *sess; sess = SessionFind (type, 0); \
-    if (!sess) { M_print (i18n (906, "This command operates only on connections of type %s.\n"), #type); return 0; }
+    if (!sess) { M_print (i18n (1906, "This command operates only on connections of type %s.\n"), #type); return 0; }
 
 /*
  * Returns a pointer to the jump table.
@@ -161,14 +162,14 @@ JUMP_F(CmdUserChange)
     {
         if (arg1 == NULL)
         {
-            M_print (i18n (703, COLCLIENT "Status modes: \n"));
-            M_print ("  %-20s %d\n", i18n (921, "Online"),         STATUS_ONLINE);
-            M_print ("  %-20s %d\n", i18n (923, "Away"),           STATUS_AWAY);
-            M_print ("  %-20s %d\n", i18n (922, "Do not disturb"), STATUS_DND);
-            M_print ("  %-20s %d\n", i18n (924, "Not Available"),  STATUS_NA);
-            M_print ("  %-20s %d\n", i18n (927, "Free for chat"),  STATUS_FREE_CHAT);
-            M_print ("  %-20s %d\n", i18n (925, "Occupied"),       STATUS_OCCUPIED);
-            M_print ("  %-20s %d",   i18n (926, "Invisible"),      STATUS_INVISIBLE);
+            M_print (i18n (1703, COLCLIENT "Status modes: \n"));
+            M_print ("  %-20s %d\n", i18n (1921, "Online"),         STATUS_ONLINE);
+            M_print ("  %-20s %d\n", i18n (1923, "Away"),           STATUS_AWAY);
+            M_print ("  %-20s %d\n", i18n (1922, "Do not disturb"), STATUS_DND);
+            M_print ("  %-20s %d\n", i18n (1924, "Not Available"),  STATUS_NA);
+            M_print ("  %-20s %d\n", i18n (1927, "Free for chat"),  STATUS_FREE_CHAT);
+            M_print ("  %-20s %d\n", i18n (1925, "Occupied"),       STATUS_OCCUPIED);
+            M_print ("  %-20s %d",   i18n (1926, "Invisible"),      STATUS_INVISIBLE);
             M_print (COLNONE "\n");
             return 0;
         }
@@ -198,18 +199,18 @@ JUMP_F(CmdUserRandom)
     arg1 = strtok (args, " \n\r");
     if (arg1 == NULL)
     {
-        M_print (i18n (704, COLCLIENT "Groups: \n"));
-        M_print (i18n (705, "General                    1\n"));
-        M_print (i18n (706, "Romance                    2\n"));
-        M_print (i18n (707, "Games                      3\n"));
-        M_print (i18n (708, "Students                   4\n"));
-        M_print (i18n (709, "20 something               6\n"));
-        M_print (i18n (710, "30 something               7\n"));
-        M_print (i18n (711, "40 something               8\n"));
-        M_print (i18n (712, "50+                        9\n"));
-        M_print (i18n (713, "Man chat requesting women 10\n"));
-        M_print (i18n (714, "Woman chat requesting men 11\n"));
-        M_print (i18n (715, "mICQ                      49 (might not work but try it)"));
+        M_print (i18n (1704, COLCLIENT "Groups: \n"));
+        M_print (i18n (1705, "General                    1\n"));
+        M_print (i18n (1706, "Romance                    2\n"));
+        M_print (i18n (1707, "Games                      3\n"));
+        M_print (i18n (1708, "Students                   4\n"));
+        M_print (i18n (1709, "20 something               6\n"));
+        M_print (i18n (1710, "30 something               7\n"));
+        M_print (i18n (1711, "40 something               8\n"));
+        M_print (i18n (1712, "50+                        9\n"));
+        M_print (i18n (1713, "Man chat requesting women 10\n"));
+        M_print (i18n (1714, "Woman chat requesting men 11\n"));
+        M_print (i18n (1715, "mICQ                      49 (might not work but try it)"));
         M_print (COLNONE "\n");
     }
     else
@@ -230,19 +231,19 @@ JUMP_F(CmdUserRandomSet)
     arg1 = strtok (args, " \n\r");
     if (arg1 == NULL)
     {
-        M_print (i18n (704, COLCLIENT "Groups: \n"));
-        M_print (i18n (716, "None                      -1\n"));
-        M_print (i18n (705, "General                    1\n"));
-        M_print (i18n (706, "Romance                    2\n"));
-        M_print (i18n (707, "Games                      3\n"));
-        M_print (i18n (708, "Students                   4\n"));
-        M_print (i18n (709, "20 something               6\n"));
-        M_print (i18n (710, "30 something               7\n"));
-        M_print (i18n (711, "40 something               8\n"));
-        M_print (i18n (712, "50+                        9\n"));
-        M_print (i18n (713, "Man chat requesting women 10\n"));
-        M_print (i18n (714, "Woman chat requesting men 11\n"));
-        M_print (i18n (715, "mICQ                      49 (might not work but try it)"));
+        M_print (i18n (1704, COLCLIENT "Groups: \n"));
+        M_print (i18n (1716, "None                      -1\n"));
+        M_print (i18n (1705, "General                    1\n"));
+        M_print (i18n (1706, "Romance                    2\n"));
+        M_print (i18n (1707, "Games                      3\n"));
+        M_print (i18n (1708, "Students                   4\n"));
+        M_print (i18n (1709, "20 something               6\n"));
+        M_print (i18n (1710, "30 something               7\n"));
+        M_print (i18n (1711, "40 something               8\n"));
+        M_print (i18n (1712, "50+                        9\n"));
+        M_print (i18n (1713, "Man chat requesting women 10\n"));
+        M_print (i18n (1714, "Woman chat requesting men 11\n"));
+        M_print (i18n (1715, "mICQ                      49 (might not work but try it)"));
         M_print (COLNONE "\n");
     }
     else
@@ -263,133 +264,133 @@ JUMP_F(CmdUserHelp)
 
     if (!arg1)
     {
-        M_print (COLCLIENT "%s\n", i18n (442, "Please select one of the help topics below."));
-        M_print ("%s\t-\t%s\n", i18n (447, "Client"),
-                 i18n (443, "Commands relating to mICQ displays and configuration."));
-        M_print ("%s\t-\t%s\n", i18n (448, "Message"),
-                 i18n (446, "Commands relating to sending messages."));
-        M_print ("%s\t-\t%s\n", i18n (449, "User"),
-                 i18n (444, "Commands relating to finding other users."));
-        M_print ("%s\t-\t%s\n", i18n (450, "Account"),
-                 i18n (445, "Commands relating to your ICQ account."));
+        M_print (COLCLIENT "%s\n", i18n (1442, "Please select one of the help topics below."));
+        M_print ("%s\t-\t%s\n", i18n (1447, "Client"),
+                 i18n (1443, "Commands relating to mICQ displays and configuration."));
+        M_print ("%s\t-\t%s\n", i18n (1448, "Message"),
+                 i18n (1446, "Commands relating to sending messages."));
+        M_print ("%s\t-\t%s\n", i18n (1449, "User"),
+                 i18n (1444, "Commands relating to finding other users."));
+        M_print ("%s\t-\t%s\n", i18n (1450, "Account"),
+                 i18n (1445, "Commands relating to your ICQ account."));
     }
-    else if (!strcasecmp (arg1, i18n (447, "Client")))
+    else if (!strcasecmp (arg1, i18n (1447, "Client")))
     {
         M_print (COLMESS "verbose <nr>" COLNONE "\n\t\x1b«%s\x1b»\n",
-                 i18n (418, "Set the verbosity level (default 0)."));
+                 i18n (1418, "Set the verbosity level (default 0)."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("clear"),
-                 i18n (419, "Clears the screen."));
+                 i18n (1419, "Clears the screen."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("sound"),
-                 i18n (420, "Toggles beeping when recieving new messages."));
+                 i18n (1420, "Toggles beeping when recieving new messages."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("autoaway"),
-                 i18n (767, "Toggles auto cycling to away/not available."));
+                 i18n (1767, "Toggles auto cycling to away/not available."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("color"),
-                 i18n (421, "Toggles displaying colors."));
+                 i18n (1421, "Toggles displaying colors."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("q"),
-                 i18n (422, "Logs off and quits."));
+                 i18n (1422, "Logs off and quits."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("auto"),
-                 i18n (423, "Displays your autoreply status."));
+                 i18n (1423, "Displays your autoreply status."));
         M_print (COLMESS "%s [on|off]" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("auto"),
-                 i18n (424, "Toggles sending messages when your status is DND, NA, etc."));
+                 i18n (1424, "Toggles sending messages when your status is DND, NA, etc."));
         M_print (COLMESS "%s <status> <message>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("auto"),
-                 i18n (425, "Sets the message to send as an auto reply for the status."));
+                 i18n (1425, "Sets the message to send as an auto reply for the status."));
         M_print (COLMESS "%s <old cmd> <new cmd>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("alter"),
-                 i18n (417, "This command allows you to alter your command set on the fly."));
+                 i18n (1417, "This command allows you to alter your command set on the fly."));
         M_print (COLMESS "%s <lang>" COLNONE "\n\t\x1b«%s\x1b»\n", "trans", 
-                 i18n (800, "Change the working language to <lang>."));  
+                 i18n (1800, "Change the working language to <lang>."));  
         M_print ("  " COLCLIENT "\x1b«%s\x1b»" COLNONE "\n",
-                 i18n (717, "! as the first character of a command will execute a shell command (e.g. \"!ls\"  \"!dir\" \"!mkdir temp\")"));
+                 i18n (1717, "! as the first character of a command will execute a shell command (e.g. \"!ls\"  \"!dir\" \"!mkdir temp\")"));
     }
-    else if (!strcasecmp (arg1, i18n (448, "Message")))
+    else if (!strcasecmp (arg1, i18n (1448, "Message")))
     {
         M_print (COLMESS "%s <uin>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("auth"),
-                 i18n (413, "Authorize uin to add you to their list."));
+                 i18n (1413, "Authorize uin to add you to their list."));
         M_print (COLMESS "%s <uin>/<message>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("msg"),
-                 i18n (409, "Sends a message to uin."));
+                 i18n (1409, "Sends a message to uin."));
         M_print (COLMESS "%s <uin> <url> <message>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("url"),
-                 i18n (410, "Sends a url and message to uin."));
+                 i18n (1410, "Sends a url and message to uin."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("msga"),
-                 i18n (411, "Sends a multiline message to everyone on your list."));
+                 i18n (1411, "Sends a multiline message to everyone on your list."));
         M_print (COLMESS "%s <message>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("a"),
-                 i18n (412, "Sends a message to the last person you sent a message to."));
+                 i18n (1412, "Sends a message to the last person you sent a message to."));
         M_print (COLMESS "%s <message>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("r"),
-                 i18n (414, "Replys to the last person to send you a message."));
+                 i18n (1414, "Replys to the last person to send you a message."));
         M_print (COLMESS "%s <nick>" COLNONE "\n\t\x1b«%s\x1b»\n", "last",
-                 i18n (403, "Displays the last message received from <nick>, or a list of who has send you at least one message."));
+                 i18n (1403, "Displays the last message received from <nick>, or a list of who has send you at least one message."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", "tabs", 
-                 i18n (98, "Display a list of nicknames that you can tab through.")); 
+                 i18n (1098, "Display a list of nicknames that you can tab through.")); 
         M_print (COLMESS "%s <uin>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("resend"),
-                 i18n (770, "Resend your last message to a new uin."));
+                 i18n (1770, "Resend your last message to a new uin."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", "uptime", 
-                 i18n (719, "Shows how long mICQ has been running."));
+                 i18n (1719, "Shows how long mICQ has been running."));
         M_print ("  " COLCLIENT "\x1b«%s\x1b»" COLNONE "\n",
-                 i18n (720, "uin can be either a number or the nickname of the user."));
+                 i18n (1720, "uin can be either a number or the nickname of the user."));
         M_print ("  " COLCLIENT "\x1b«%s\x1b»" COLNONE "\n",
-                 i18n (721, "Sending a blank message will put the client into multiline mode.\nUse . on a line by itself to end message.\nUse # on a line by itself to cancel the message."));
+                 i18n (1721, "Sending a blank message will put the client into multiline mode.\nUse . on a line by itself to end message.\nUse # on a line by itself to cancel the message."));
     }
-    else if (!strcasecmp (arg1, i18n (449, "User")))
+    else if (!strcasecmp (arg1, i18n (1449, "User")))
     {
         M_print (COLMESS "%s <nr>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("rand"),
-                 i18n (415, "Finds a random user in the specified group or lists the groups."));
+                 i18n (1415, "Finds a random user in the specified group or lists the groups."));
         M_print (COLMESS "pass <secret>" COLNONE "\n\t\x1b«%s\x1b»\n",
-                 i18n (408, "Changes your password to secret."));
+                 i18n (1408, "Changes your password to secret."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("w"),
-                 i18n (416, "Displays the current status of everyone on your contact list."));
+                 i18n (1416, "Displays the current status of everyone on your contact list."));
         M_print (COLMESS "%s <user>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("status"),
-                 i18n (400, "Shows locally stored info on user."));
+                 i18n (1400, "Shows locally stored info on user."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("s"),
-                 i18n (769, "Displays your current online status."));
+                 i18n (1769, "Displays your current online status."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("e"),
-                 i18n (407, "Displays the current status of online people on your contact list."));
+                 i18n (1407, "Displays the current status of online people on your contact list."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", "wide", 
-                 i18n (801, "Displays a list of people on your contact list in a screen wide format.")); 
+                 i18n (1801, "Displays a list of people on your contact list in a screen wide format.")); 
         M_print (COLMESS "%s <uin>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("info"),
-                 i18n (430, "Displays general info on uin."));
+                 i18n (1430, "Displays general info on uin."));
         M_print (COLMESS "%s <nick>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("togig"),
-                 i18n (404, "Toggles ignoring/unignoring nick."));
+                 i18n (1404, "Toggles ignoring/unignoring nick."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("i"),
-                 i18n (405, "Lists ignored nicks/uins."));
+                 i18n (1405, "Lists ignored nicks/uins."));
         M_print (COLMESS "%s <email>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("search"),
-                 i18n (429, "Searches for a ICQ user."));
+                 i18n (1429, "Searches for a ICQ user."));
         M_print (COLMESS "%s <uin> <nick>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("add"),
-                 i18n (428, "Adds the uin number to your contact list with nickname."));
+                 i18n (1428, "Adds the uin number to your contact list with nickname."));
         M_print (COLMESS "%s <nick>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("togvis"),
-                 i18n (406, "Toggles your visibility to a user when you're invisible."));
+                 i18n (1406, "Toggles your visibility to a user when you're invisible."));
     }
-    else if (!strcasecmp (arg1, i18n (450, "Account")))
+    else if (!strcasecmp (arg1, i18n (1450, "Account")))
     {
         M_print (COLMESS "%s <status>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("change"),
-                 i18n (427, "Changes your status to the status number. Without a number it lists the available modes."));
+                 i18n (1427, "Changes your status to the status number. Without a number it lists the available modes."));
         M_print (COLMESS "reg <password>" COLNONE "\n\t\x1b«%s\x1b»\n",
-                 i18n (426, "Creates a new UIN with the specified password."));
+                 i18n (1426, "Creates a new UIN with the specified password."));
         M_print (COLMESS "%s|%s|%s|%s|%s|%s|%s" COLNONE "\n\t\x1b«%s\n%s\n%s\n%s\n%s\n%s\n%s\x1b»\n", 
                  CmdUserLookupName ("online"),
                  CmdUserLookupName ("away"),
@@ -398,29 +399,29 @@ JUMP_F(CmdUserHelp)
                  CmdUserLookupName ("dnd"),
                  CmdUserLookupName ("ffc"),
                  CmdUserLookupName ("inv"),
-                 i18n (431, "Change status to Online."),
+                 i18n (1431, "Change status to Online."),
                  /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("online"), */ 
-                 i18n (432, "Mark as Away."),
+                 i18n (1432, "Mark as Away."),
                  /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("away"), */
-                 i18n (433, "Mark as Not Available."),
+                 i18n (1433, "Mark as Not Available."),
                  /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("na"), */
-                 i18n (434, "Mark as Occupied."),
+                 i18n (1434, "Mark as Occupied."),
                  /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("dnd"), */
-                 i18n (435, "Mark as Do not Disturb."),
+                 i18n (1435, "Mark as Do not Disturb."),
                  /*        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("ffc"), */ 
-                 i18n (436, "Mark as Free for Chat."),
+                 i18n (1436, "Mark as Free for Chat."),
                  /*        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("inv"), */
-                 i18n (437, "Mark as Invisible."));
+                 i18n (1437, "Mark as Invisible."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("update"),
-                 i18n (438, "Updates your basic info (email, nickname, etc.)."));
+                 i18n (1438, "Updates your basic info (email, nickname, etc.)."));
         M_print (COLMESS "other" COLNONE "\n\t\x1b«%s\x1b»\n",
-                 i18n (401, "Updates other user info like age and sex."));
+                 i18n (1401, "Updates other user info like age and sex."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("about"),
-                 i18n (402, "Updates your about user info."));
+                 i18n (1402, "Updates your about user info."));
         M_print (COLMESS "set <nr>" COLNONE "\n\t\x1b«%s\x1b»\n", 
-                 i18n (439, "Sets your random user group."));
+                 i18n (1439, "Sets your random user group."));
     }
     return 0;
 }
@@ -437,27 +438,26 @@ JUMP_F(CmdUserInfo)
     arg1 = strtok (args, "");
     if (arg1 == NULL)
     {
-        M_print (i18n (932, "Need uin to ask for.\n"));
+        M_print (i18n (1932, "Need uin to ask for.\n"));
         return 0;
     }
     uin = ContactFindByNick (arg1);
     if (-1 == uin)
     {
-        M_print (i18n (61, "%s not recognized as a nick name"), arg1);
-        M_print ("\n");
+        M_print (i18n (1061, "%s not recognized as a nick name.\n"), arg1);
         return 0;
     }
-    M_print (i18n (723, "%s's IP address is "), arg1);
+    M_print (i18n (1672, "%s's IP address is "), arg1);
     Print_IP (uin);
     if ((UWORD) Get_Port (uin) != (UWORD) 0xffff)
     {
-        M_print (i18n (673, "\tThe port is %d\n"), (UWORD) Get_Port (uin));
+        M_print (i18n (1673, "\tThe port is %d\n"), (UWORD) Get_Port (uin));
     }
     else
     {
-        M_print (i18n (674, "\tThe port is unknown\n"));
+        M_print (i18n (1674, "\tThe port is unknown\n"));
     }
-    M_print (i18n (765, "%s has UIN %d."), arg1, uin);
+    M_print (i18n (1765, "%s has UIN %d."), arg1, uin);
     M_print ("\n");
     if (sess->ver > 6)
         SnacCliMetareqinfo (sess, uin);
@@ -478,7 +478,12 @@ JUMP_F(CmdUserTrans)
     arg1 = strtok (args, " \t");
     if (!arg1)
     {
-        M_print (i18n (79, "No translation; using compiled-in strings.\n"));
+        ver = atoi (i18n (1003, "0"));
+        /* i18n (1079, "Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n") */
+        M_print (i18n (-1, "1079:No translation; using compiled-in strings.¶"),
+                 i18n (1001, "<lang>"), i18n (1002, "<lang_lang>"), i18n (1004, "<translation authors>"),
+                 i18n (1006, "<last edit date>"), i18n (1005, "<last editor>"),
+                 ver / 1000, (ver / 100) % 10, (ver / 10) % 10, ver % 10 ? UtilFill (".pl%d", ver % 10) : "");
         return 0;
     }
     for (;arg1; arg1 = strtok (NULL, " \t"))
@@ -489,8 +494,8 @@ JUMP_F(CmdUserTrans)
         if (i || !*p)
         {
             if (*p)
-                M_print ("%s\n", i18n (87, "Ignoring garbage after number."));
-            M_print ("%3d:%s\n", i, i18n (78, "No translation available."));
+                M_print ("%s\n", i18n (1087, "Ignoring garbage after number."));
+            M_print ("%3d:%s\n", i, i18n (1078, "No translation available."));
         }
         else
         {
@@ -512,7 +517,7 @@ JUMP_F(CmdUserTrans)
             {
                 if (!strcmp (arg1, ".") || !strcmp (arg1, "none") || !strcmp (arg1, "unload"))
                 {
-                    p = strdup (i18n (89, "Unloaded translation."));
+                    p = strdup (i18n (1089, "Unloaded translation."));
                     i18nClose ();
                     M_print ("%s\n", p);
                     free (p);
@@ -520,9 +525,9 @@ JUMP_F(CmdUserTrans)
                 }
                 i = i18nOpen (arg1);
                 if (i == -1)
-                    M_print (i18n (80, "Couldn't load \"%s\" internationalization.\n"), arg1);
+                    M_print (i18n (1080, "Couldn't load \"%s\" internationalization.\n"), arg1);
                 else if (i)
-                    M_print (i18n (81, "Successfully loaded en translation (%d entries).\n"), i);
+                    M_print (i18n (1081, "Successfully loaded en translation (%d entries).\n"), i);
                 else
                     M_print ("No internationalization requested.\n");
             } 
@@ -546,13 +551,13 @@ JUMP_F(CmdUserTCP)
         nick = strtok (NULL, "");
         if (!nick)
         {
-            M_print (i18n (916, "Need a nick or uin.\n"));
+            M_print (i18n (1916, "Need a nick or uin.\n"));
             return 0;
         }
         uin = ContactFindByNick (nick);
         if (uin == -1)
         {
-            M_print (i18n (845, "Nick %s unknown.\n"), nick);
+            M_print (i18n (1845, "Nick %s unknown.\n"), nick);
             return 0;
         }
         if (!strcmp (cmd, "open"))
@@ -569,13 +574,13 @@ JUMP_F(CmdUserTCP)
     }
     else
     {
-        M_print (i18n (846, "Opens and closes TCP connections:\n"));
-        M_print (i18n (847, "    open  <nick> - Opens TCP connection.\n"));
-        M_print (i18n (848, "    close <nick> - Closes/resets TCP connection(s).\n"));
-        M_print (i18n (870, "    off   <nick> - Closes TCP connection(s) and don't try TCP again.\n"));
+        M_print (i18n (1846, "Opens and closes TCP connections:\n"));
+        M_print (i18n (1847, "    open  <nick> - Opens TCP connection.\n"));
+        M_print (i18n (1848, "    close <nick> - Closes/resets TCP connection(s).\n"));
+        M_print (i18n (1870, "    off   <nick> - Closes TCP connection(s) and don't try TCP again.\n"));
     }
 #else
-    M_print (i18n (866, "This version of mICQ is compiled without TCP support.\n"));
+    M_print (i18n (1866, "This version of mICQ is compiled without TCP support.\n"));
 #endif
     return 0;
 }
@@ -591,31 +596,31 @@ JUMP_F(CmdUserAuto)
     cmd = strtok (args, "");
     if (cmd == NULL)
     {
-        M_print (i18n (724, "Automatic replies are %s.\n"),
-                 prG->flags & FLAG_AUTOREPLY ? i18n (85, "on") : i18n (86, "off"));
-        M_print ("%30s %s\n", i18n (727, "The Do not disturb message is:"), prG->auto_dnd);
-        M_print ("%30s %s\n", i18n (728, "The Away message is:"),           prG->auto_away);
-        M_print ("%30s %s\n", i18n (729, "The Not available message is:"),  prG->auto_na);
-        M_print ("%30s %s\n", i18n (730, "The Occupied message is:"),       prG->auto_occ);
-        M_print ("%30s %s\n", i18n (731, "The Invisible message is:"),      prG->auto_inv);
+        M_print (i18n (1724, "Automatic replies are %s.\n"),
+                 prG->flags & FLAG_AUTOREPLY ? i18n (1085, "on") : i18n (1086, "off"));
+        M_print ("%30s %s\n", i18n (1727, "The Do not disturb message is:"), prG->auto_dnd);
+        M_print ("%30s %s\n", i18n (1728, "The Away message is:"),           prG->auto_away);
+        M_print ("%30s %s\n", i18n (1729, "The Not available message is:"),  prG->auto_na);
+        M_print ("%30s %s\n", i18n (1730, "The Occupied message is:"),       prG->auto_occ);
+        M_print ("%30s %s\n", i18n (1731, "The Invisible message is:"),      prG->auto_inv);
         return 0;
     }
     else if (strcasecmp (cmd, "on") == 0)
     {
         prG->flags |= FLAG_AUTOREPLY;
-        M_print (i18n (724, "Automatic replies are %s.\n"), i18n (85, "on"));
+        M_print (i18n (1724, "Automatic replies are %s.\n"), i18n (1085, "on"));
     }
     else if (strcasecmp (cmd, "off") == 0)
     {
         prG->flags &= ~FLAG_AUTOREPLY;
-        M_print (i18n (724, "Automatic replies are %s.\n"), i18n (86, "off"));
+        M_print (i18n (1724, "Automatic replies are %s.\n"), i18n (1086, "off"));
     }
     else
     {
         arg1 = strtok (cmd, " ");
         if (arg1 == NULL)
         {
-            M_print (i18n (734, "Sorry wrong syntax, can't find a status somewhere.\r\n"));
+            M_print (i18n (1734, "Sorry wrong syntax, can't find a status somewhere.\r\n"));
             return 0;
         }
         if (!strcasecmp (arg1, CmdUserLookupName ("dnd")))
@@ -623,7 +628,7 @@ JUMP_F(CmdUserAuto)
             cmd = strtok (NULL, "");
             if (cmd == NULL)
             {
-                M_print (i18n (735, "Must give a message.\n"));
+                M_print (i18n (1735, "Must give a message.\n"));
                 return 0;
             }
             prG->auto_dnd = strdup (cmd);
@@ -633,7 +638,7 @@ JUMP_F(CmdUserAuto)
             cmd = strtok (NULL, "");
             if (cmd == NULL)
             {
-                M_print (i18n (735, "Must give a message.\n"));
+                M_print (i18n (1735, "Must give a message.\n"));
                 return 0;
             }
             prG->auto_away = strdup (cmd);
@@ -643,7 +648,7 @@ JUMP_F(CmdUserAuto)
             cmd = strtok (NULL, "");
             if (cmd == NULL)
             {
-                M_print (i18n (735, "Must give a message.\n"));
+                M_print (i18n (1735, "Must give a message.\n"));
                 return 0;
             }
             prG->auto_na = strdup (cmd);
@@ -653,7 +658,7 @@ JUMP_F(CmdUserAuto)
             cmd = strtok (NULL, "");
             if (cmd == NULL)
             {
-                M_print (i18n (735, "Must give a message.\n"));
+                M_print (i18n (1735, "Must give a message.\n"));
                 return 0;
             }
             prG->auto_occ = strdup (cmd);
@@ -663,14 +668,14 @@ JUMP_F(CmdUserAuto)
             cmd = strtok (NULL, "");
             if (cmd == NULL)
             {
-                M_print (i18n (735, "Must give a message.\n"));
+                M_print (i18n (1735, "Must give a message.\n"));
                 return 0;
             }
             prG->auto_inv = strdup (cmd);
         }
         else
-            M_print (i18n (736, "Sorry wrong syntax. Read tha help man!\n"));
-        M_print (i18n (737, "Automatic reply setting\n"));
+            M_print (i18n (1736, "Sorry wrong syntax. Read tha help man!\n"));
+        M_print (i18n (1737, "Automatic reply setting\n"));
     }
     return 0;
 }
@@ -694,7 +699,7 @@ JUMP_F(CmdUserAlter)
         
     if (cmd == NULL)
     {
-        M_print (i18n (738, "Need a command to alter!\n"));
+        M_print (i18n (1738, "Need a command to alter!\n"));
         return 0;
     }
     
@@ -703,7 +708,7 @@ JUMP_F(CmdUserAlter)
         j = CmdUserLookup (cmd, CU_USER);
     if (!j)
     {
-        M_print (i18n (722, "Type help to see your current command, because this one you typed wasn't one!"));
+        M_print (i18n (1722, "Type help to see your current command, because this one you typed wasn't one!"));
         M_print ("\n");
     }
     else
@@ -716,7 +721,7 @@ JUMP_F(CmdUserAlter)
             {
                 if (!quiet)
                 {
-                    M_print (i18n (768, "The label '%s' is already being used."), new);
+                    M_print (i18n (1768, "The label '%s' is already being used."), new);
                     M_print ("\n");
                 }
                 return 0;
@@ -732,9 +737,9 @@ JUMP_F(CmdUserAlter)
         if (!quiet)
         {
             if (j->name)
-                M_print (i18n (763, "The command '%s' has been renamed to '%s'."), j->defname, j->name);
+                M_print (i18n (1763, "The command '%s' has been renamed to '%s'."), j->defname, j->name);
             else
-                M_print (i18n (764, "The command '%s' is unchanged."), j->defname);
+                M_print (i18n (1764, "The command '%s' is unchanged."), j->defname);
             M_print ("\n");
         }
     }
@@ -753,19 +758,18 @@ JUMP_F (CmdUserResend)
     arg1 = strtok (args, UIN_DELIMS);
     if (!uiG.last_message_sent) 
     {
-        M_print (i18n (771, "You haven't sent a message to anyone yet!\n"));
+        M_print (i18n (1771, "You haven't sent a message to anyone yet!\n"));
         return 0;
     }
     if (!arg1)
     {
-        M_print (i18n (676, "Need uin to send to.\n"));
+        M_print (i18n (1676, "Need uin to send to.\n"));
         return 0;
     }
     uin = ContactFindByNick (arg1);
     if (uin == -1)
     {
-        M_print (i18n (61, "%s not recognized as a nick name"), arg1);
-        M_print ("\n");
+        M_print (i18n (1061, "%s not recognized as a nick name.\n"), arg1);
         return 0;
     }
     icq_sendmsg (sess, uin, uiG.last_message_sent, uiG.last_message_sent_type);
@@ -814,7 +818,7 @@ JUMP_F (CmdUserMessage)
         }
         else if (strcmp (arg1, CANCEL_MSG_STR) == 0)
         {
-            M_print (i18n (38, "Message canceled\n"));
+            M_print (i18n (1038, "Message canceled\n"));
             return 0;
         }
         else
@@ -827,7 +831,7 @@ JUMP_F (CmdUserMessage)
             }
             else
             {
-                M_print (i18n (37, "Message sent before last line buffer is full\n"));
+                M_print (i18n (1037, "Message sent before last line buffer is full\n"));
                 if (multi_uin == -1)
                 {
                     char *temp;
@@ -856,7 +860,7 @@ JUMP_F (CmdUserMessage)
                 arg1 = strtok (p = strdup (args), UIN_DELIMS);
                 if (!arg1)
                 {
-                    M_print (i18n (676, "Need uin to send to.\n"));
+                    M_print (i18n (1676, "Need uin to send to.\n"));
                     return 0;
                 }
                 uin = ContactFindByNick (arg1);
@@ -870,8 +874,7 @@ JUMP_F (CmdUserMessage)
                     if (!arg1)
                     {
                         
-                        M_print (i18n (61, "%s not recognized as a nick name"), strtok (args, UIN_DELIMS));
-                        M_print ("\n");
+                        M_print (i18n (1061, "%s not recognized as a nick name.\n"), strtok (args, UIN_DELIMS));
                         return 0;
                     }
                     uin = ContactFindByNick (p);
@@ -881,7 +884,7 @@ JUMP_F (CmdUserMessage)
             case 2:
                 if (!uiG.last_rcvd_uin)
                 {
-                    M_print (i18n (741, "Must receive a message first\n"));
+                    M_print (i18n (1741, "Must receive a message first\n"));
                     return 0;
                 }
                 uin = uiG.last_rcvd_uin;
@@ -890,7 +893,7 @@ JUMP_F (CmdUserMessage)
             case 4:
                 if (!uiG.last_sent_uin)
                 {
-                    M_print (i18n (742, "Must write one message first\n"));
+                    M_print (i18n (1742, "Must write one message first\n"));
                     return 0;
                 }
                 uin = uiG.last_sent_uin;
@@ -930,18 +933,18 @@ JUMP_F (CmdUserMessage)
         }
         multi_uin = uin;
         if (uin == -1)
-            M_print (i18n (664, "Composing message to " COLCONTACT "all" COLNONE ":\n"));
+            M_print (i18n (1664, "Composing message to " COLCONTACT "all" COLNONE ":\n"));
         else if (ContactFindNick (uin))
-            M_print (i18n (739, "Composing message to " COLCONTACT "%s" COLNONE ":\n"), ContactFindNick (uin));
+            M_print (i18n (1739, "Composing message to " COLCONTACT "%s" COLNONE ":\n"), ContactFindNick (uin));
         else
-            M_print (i18n (740, "Composing message to " COLCLIENT "%d" COLNONE ":\n"), uin);
+            M_print (i18n (1740, "Composing message to " COLCLIENT "%d" COLNONE ":\n"), uin);
         offset = 0;
         status = data;
     }
     if (status == 8)
-        R_doprompt (i18n (42, "msg all> "));
+        R_doprompt (i18n (1042, "msg all> "));
     else
-        R_doprompt (i18n (41, "msg> "));
+        R_doprompt (i18n (1041, "msg> "));
     return status;
 }
 
@@ -957,7 +960,7 @@ JUMP_F(CmdUserVerbose)
     {
         prG->verbose = atoi (arg1);
     }
-    M_print (i18n (60, "Verbosity level is %d.\n"), prG->verbose);
+    M_print (i18n (1060, "Verbosity level is %d.\n"), prG->verbose);
     return 0;
 }
 
@@ -976,13 +979,13 @@ JUMP_F(CmdUserStatusDetail)
         num = ContactFindByNick (name);
         if (num == -1)
         {
-            M_print (i18n (699, "Must give a valid uin/nickname\n"));
+            M_print (i18n (1699, "Must give a valid uin/nickname\n"));
             return 0;
         }
         cont = ContactFind (num);
         if (cont == NULL)
         {
-            M_print (i18n (700, "%s is not a valid user in your list.\n"), name);
+            M_print (i18n (1700, "%s is not a valid user in your list.\n"), name);
             return 0;
         }
         if (cont->vis_list)
@@ -1005,11 +1008,11 @@ JUMP_F(CmdUserStatusDetail)
         {
             if (-1L != cont->last_time)
             {
-                M_print (i18n (69, " Last online at %s"), ctime ((time_t *) & cont->last_time));
+                M_print (i18n (1069, " Last online at %s"), ctime ((time_t *) & cont->last_time));
             }
             else
             {
-                M_print (i18n (70, " Last on-line unknown."));
+                M_print (i18n (1070, " Last on-line unknown."));
                 M_print ("\n");
             }
         }
@@ -1017,28 +1020,28 @@ JUMP_F(CmdUserStatusDetail)
         {
             if (-1L != cont->last_time)
             {
-                M_print (i18n (68, " Online since %s"), ctime ((time_t *) & cont->last_time));
+                M_print (i18n (1068, " Online since %s"), ctime ((time_t *) & cont->last_time));
             }
             else
             {
-                M_print (i18n (70, " Last on-line unknown."));
+                M_print (i18n (1070, " Last on-line unknown."));
                 M_print ("\n");
             }
         }
-        M_print ("%-15s %s:%d\n", i18n (441, "IP:"), UtilIOIP (cont->outside_ip), cont->port);
-        M_print ("%-15s %d\n", i18n (453, "TCP version:"), cont->TCP_version);
-        M_print ("%-15s %s\n", i18n (454, "Connection:"),
-                 cont->connection_type == 4 ? i18n (493, "Peer-to-Peer") : i18n (494, "Server Only"));
+        M_print ("%-15s %s:%d\n", i18n (1441, "IP:"), UtilIOIP (cont->outside_ip), cont->port);
+        M_print ("%-15s %d\n", i18n (1453, "TCP version:"), cont->TCP_version);
+        M_print ("%-15s %s\n", i18n (1454, "Connection:"),
+                 cont->connection_type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"));
         return 0;
     }
     M_print (W_SEPERATOR);
     Time_Stamp ();
     M_print (" ");
-    M_print (i18n (71, "Your status is "));
+    M_print (i18n (1071, "Your status is "));
     Print_Status (sess->status);
     M_print ("\n");
     /*  First loop sorts thru all offline users */
-    M_print ("%s%s\n", W_SEPERATOR, i18n (72, "Users offline:"));
+    M_print ("%s%s\n", W_SEPERATOR, i18n (1072, "Users offline:"));
     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
     {
         if ((SDWORD) cont->uin > 0)
@@ -1061,12 +1064,12 @@ JUMP_F(CmdUserStatusDetail)
                     M_print (")" COLNONE);
                     if (-1L != cont->last_time)
                     {
-                        M_print (i18n (69, " Last online at %s"),
+                        M_print (i18n (1069, " Last online at %s"),
                                  ctime ((time_t *) & cont->last_time));
                     }
                     else
                     {
-                        M_print (i18n (70, " Last on-line unknown."));
+                        M_print (i18n (1070, " Last on-line unknown."));
                         M_print ("\n");
                         /* if time is unknow they can't be logged on cause we */
                         /* set the time at login */
@@ -1076,7 +1079,7 @@ JUMP_F(CmdUserStatusDetail)
         }
     }
     /* The second loop displays all the online users */
-    M_print ("%s%s\n", W_SEPERATOR, i18n (73, "Users online:"));
+    M_print ("%s%s\n", W_SEPERATOR, i18n (1073, "Users online:"));
     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
     {
         if ((SDWORD) cont->uin > 0)
@@ -1100,15 +1103,15 @@ JUMP_F(CmdUserStatusDetail)
                     if (-1L != cont->last_time)
                     {
                         if (cont->status == STATUS_OFFLINE)
-                            M_print (i18n (69, " Last online at %s"),
+                            M_print (i18n (1069, " Last online at %s"),
                                      ctime ((time_t *) & cont->last_time));
                         else
-                            M_print (i18n (68, " Online since %s"),
+                            M_print (i18n (1068, " Online since %s"),
                                      ctime ((time_t *) & cont->last_time));
                     }
                     else
                     {
-                        M_print (i18n (70, " Last on-line unknown."));
+                        M_print (i18n (1070, " Last on-line unknown."));
                         M_print ("\n");
                         /* if time is unknow they can't be logged on cause we */
                         /* set the time at login */
@@ -1128,7 +1131,7 @@ JUMP_F(CmdUserIgnoreStatus)
 {
     Contact *cont;
 
-    M_print ("%s%s\n", W_SEPERATOR, i18n (62, "Users ignored:"));
+    M_print ("%s%s\n", W_SEPERATOR, i18n (1062, "Users ignored:"));
     /*  Sorts thru all ignored users */
     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
     {
@@ -1173,14 +1176,14 @@ JUMP_F(CmdUserStatusWide)
     {
         if ((Offline = (Contact **) malloc (MAX_CONTACTS * sizeof (Contact *))) == NULL)
         {
-            M_print (i18n (652, "Insuffificient memory to display a wide Contact List.\n"));
+            M_print (i18n (1652, "Insuffificient memory to display a wide Contact List.\n"));
             return 0;
         }
     }
 
     if ((Online = (Contact **) malloc (MAX_CONTACTS * sizeof (Contact *))) == NULL)
     {
-        M_print (i18n (652, "Insuffificient memory to display a wide Contact List.\n"));
+        M_print (i18n (1652, "Insuffificient memory to display a wide Contact List.\n"));
         return 0;
     }
 
@@ -1220,12 +1223,12 @@ JUMP_F(CmdUserStatusWide)
         /* Fairly simple print routine. We check that we only print the right
            number of columns to the screen.                                    */
         M_print (COLMESS);
-        for (i = 0; i < (Get_Max_Screen_Width () - strlen (i18n (653, "Offline"))) / 2; i++)
+        for (i = 0; i < (Get_Max_Screen_Width () - strlen (i18n (1653, "Offline"))) / 2; i++)
         {
             M_print ("=");
         }
-        M_print (COLCLIENT "%s" COLMESS, i18n (653, "Offline"));
-        for (i += strlen (i18n (653, "Offline")); i < Get_Max_Screen_Width (); i++)
+        M_print (COLCLIENT "%s" COLMESS, i18n (1653, "Offline"));
+        for (i += strlen (i18n (1653, "Offline")); i < Get_Max_Screen_Width (); i++)
         {
             M_print ("=");
         }
@@ -1245,12 +1248,12 @@ JUMP_F(CmdUserStatusWide)
        are unique at one character. A better way to encode the information
        is needed.                                                            */
     M_print (COLMESS);
-    for (i = 0; i < (Get_Max_Screen_Width () - strlen (i18n (654, "Online"))) / 2; i++)
+    for (i = 0; i < (Get_Max_Screen_Width () - strlen (i18n (1654, "Online"))) / 2; i++)
     {
         M_print ("=");
     }
-    M_print (COLCLIENT "%s" COLMESS, i18n (654, "Online"));
-    for (i += strlen (i18n (654, "Online")); i < Get_Max_Screen_Width (); i++)
+    M_print (COLCLIENT "%s" COLMESS, i18n (1654, "Online"));
+    for (i += strlen (i18n (1654, "Online")); i < Get_Max_Screen_Width (); i++)
     {
         M_print ("=");
     }
@@ -1297,7 +1300,7 @@ JUMP_F(CmdUserStatusSelf)
     M_print (W_SEPERATOR);
     Time_Stamp ();
     M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", sess->uin);
-    M_print (i18n (71, "Your status is "));
+    M_print (i18n (1071, "Your status is "));
     Print_Status (sess->status);
     M_print ("\n");
     M_print (W_SEPERATOR);
@@ -1315,13 +1318,13 @@ JUMP_F(CmdUserStatusShort)
     M_print (W_SEPERATOR);
     Time_Stamp ();
     M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", sess->uin);
-    M_print (i18n (71, "Your status is "));
+    M_print (i18n (1071, "Your status is "));
     Print_Status (sess->status);
     M_print ("\n");
 
     if (data)
     {
-        M_print ("%s%s\n", W_SEPERATOR, i18n (72, "Users offline:"));
+        M_print ("%s%s\n", W_SEPERATOR, i18n (1072, "Users offline:"));
         for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
         {
             if ((SDWORD) cont->uin > 0)
@@ -1347,7 +1350,7 @@ JUMP_F(CmdUserStatusShort)
         }
     }
 
-    M_print ("%s%s\n", W_SEPERATOR, i18n (73, "Users online:"));
+    M_print ("%s%s\n", W_SEPERATOR, i18n (1073, "Users online:"));
     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
     {
         if ((SDWORD) cont->uin > 0)
@@ -1388,9 +1391,9 @@ JUMP_F(CmdUserSound)
     if ((arg1 = strtok (args, "")))
     {
         prG->sound &= ~SFLAG_BEEP & ~SFLAG_CMD;
-        if (!strcasecmp (arg1, i18n (85, "on")))
+        if (!strcasecmp (arg1, i18n (1085, "on")))
            prG->sound |= SFLAG_BEEP;
-        else if (!strcasecmp (arg1, i18n (86, "off"))) ;
+        else if (!strcasecmp (arg1, i18n (1086, "off"))) ;
         else
         {
            prG->sound |= SFLAG_CMD;
@@ -1398,11 +1401,11 @@ JUMP_F(CmdUserSound)
         }
     }
     if (prG->sound & SFLAG_BEEP)
-        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (84, "Sound"), i18n (85, "on"));
+        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (1084, "Sound"), i18n (1085, "on"));
     else if (prG->sound & SFLAG_CMD)
-        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (83, "Sound cmd"), prG->sound_cmd);
+        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (1083, "Sound cmd"), prG->sound_cmd);
     else
-        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (84, "Sound"), i18n (86, "off"));
+        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (1084, "Sound"), i18n (1086, "off"));
     return 0;
 }
 
@@ -1416,9 +1419,9 @@ JUMP_F(CmdUserSoundOnline)
     if ((arg1 = strtok (args, "")))
     {
         prG->sound &= ~SFLAG_ON_BEEP & ~SFLAG_ON_CMD;
-        if (!strcasecmp (arg1, i18n (85, "on")))
+        if (!strcasecmp (arg1, i18n (1085, "on")))
            prG->sound |= SFLAG_ON_BEEP;
-        else if (!strcasecmp (arg1, i18n (86, "off"))) ;
+        else if (!strcasecmp (arg1, i18n (1086, "off"))) ;
         else
         {
            prG->sound |= SFLAG_ON_CMD;
@@ -1426,11 +1429,11 @@ JUMP_F(CmdUserSoundOnline)
         }
     }
     if (prG->sound & SFLAG_ON_BEEP)
-        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (804, "SoundOnline"), i18n (85, "on"));
+        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (1804, "SoundOnline"), i18n (1085, "on"));
     else if (prG->sound & SFLAG_ON_CMD)
-        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (802, "SoundOnline cmd"), prG->sound_on_cmd);
+        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (1802, "SoundOnline cmd"), prG->sound_on_cmd);
     else
-        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (804, "SoundOnline"), i18n (86, "off"));
+        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (1804, "SoundOnline"), i18n (1086, "off"));
     return 0;
 }
 
@@ -1444,9 +1447,9 @@ JUMP_F(CmdUserSoundOffline)
     if ((arg1 = strtok (args, "")))
     {
         prG->sound &= ~SFLAG_OFF_BEEP & ~SFLAG_OFF_CMD;
-        if (!strcasecmp (arg1, i18n (85, "on")))
+        if (!strcasecmp (arg1, i18n (1085, "on")))
            prG->sound |= SFLAG_OFF_BEEP;
-        else if (!strcasecmp (arg1, i18n (86, "off"))) ;
+        else if (!strcasecmp (arg1, i18n (1086, "off"))) ;
         else
         {
            prG->sound |= SFLAG_OFF_CMD;
@@ -1454,11 +1457,11 @@ JUMP_F(CmdUserSoundOffline)
         }
     }
     if (prG->sound & SFLAG_OFF_BEEP)
-        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (805, "SoundOffline"), i18n (85, "on"));
+        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (1805, "SoundOffline"), i18n (1085, "on"));
     else if (prG->sound & SFLAG_OFF_CMD)
-        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (803, "SoundOffline cmd"), prG->sound_off_cmd);
+        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (1803, "SoundOffline cmd"), prG->sound_off_cmd);
     else
-        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (805, "SoundOffline"), i18n (86, "off"));
+        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (1805, "SoundOffline"), i18n (1086, "off"));
     return 0;
 }
 
@@ -1497,7 +1500,7 @@ JUMP_F(CmdUserAutoaway)
             prG->away_time = 0;
         }
     }
-    M_print (i18n (766, "Auto_away is " COLMESS "%d" COLNONE ".\n"), prG->away_time);
+    M_print (i18n (1766, "Auto_away is " COLMESS "%d" COLNONE ".\n"), prG->away_time);
     return 0;
 }
 
@@ -1519,20 +1522,20 @@ JUMP_F(CmdUserSet)
     
     if (!arg1 || !strcmp (arg1, "help") || !strcmp (arg1, "?"))
     {
-        M_print (i18n (820, "%s <option> [on|off] - control simple options.\n"), CmdUserLookupName ("set"));
-        M_print (i18n (822, "    color: use colored text output.\n"));
-        M_print (i18n (815, "    funny: use funny messages for output.\n"));
+        M_print (i18n (1820, "%s <option> [on|off] - control simple options.\n"), CmdUserLookupName ("set"));
+        M_print (i18n (1822, "    color: use colored text output.\n"));
+        M_print (i18n (1815, "    funny: use funny messages for output.\n"));
     }
     else if (!strcmp (arg1, "color"))
     {
         arg1 = strtok (NULL, "\n");
         if (arg1)
         {
-            if (!strcmp (arg1, "on") || !strcmp (arg1, i18n (85, "on")))
+            if (!strcmp (arg1, "on") || !strcmp (arg1, i18n (1085, "on")))
             {
                 prG->flags |= FLAG_COLOR;
             }
-            else if (!strcmp (arg1, "off") || !strcmp (arg1, i18n (86, "off")))
+            else if (!strcmp (arg1, "off") || !strcmp (arg1, i18n (1086, "off")))
             {
                 prG->flags &= ~FLAG_COLOR;
             }
@@ -1541,9 +1544,9 @@ JUMP_F(CmdUserSet)
         if (!quiet)
         {
             if (prG->flags & FLAG_COLOR)
-                M_print (i18n (195, "Color is " COLMESS "%s" COLNONE ".\n"), i18n (85, "on"));
+                M_print (i18n (1195, "Color is " COLMESS "%s" COLNONE ".\n"), i18n (1085, "on"));
             else
-                M_print (i18n (195, "Color is " COLMESS "%s" COLNONE ".\n"), i18n (86, "off"));
+                M_print (i18n (1195, "Color is " COLMESS "%s" COLNONE ".\n"), i18n (1086, "off"));
         }
     }
     else if (!strcmp (arg1, "funny"))
@@ -1551,11 +1554,11 @@ JUMP_F(CmdUserSet)
         arg1 = strtok (NULL, "\n");
         if (arg1)
         {
-            if (!strcmp (arg1, "on") || !strcmp (arg1, i18n (85, "on")))
+            if (!strcmp (arg1, "on") || !strcmp (arg1, i18n (1085, "on")))
             {
                 prG->flags |= FLAG_FUNNY;
             }
-            else if (!strcmp (arg1, "off") || !strcmp (arg1, i18n (86, "off")))
+            else if (!strcmp (arg1, "off") || !strcmp (arg1, i18n (1086, "off")))
             {
                 prG->flags &= ~FLAG_FUNNY;
             }
@@ -1564,13 +1567,13 @@ JUMP_F(CmdUserSet)
         if (!quiet)
         {
             if (prG->flags & FLAG_FUNNY)
-                M_print (i18n (821, "Funny messages are " COLMESS "%s" COLNONE ".\n"), i18n (85, "on"));
+                M_print (i18n (1821, "Funny messages are " COLMESS "%s" COLNONE ".\n"), i18n (1085, "on"));
             else
-                M_print (i18n (821, "Funny messages are " COLMESS "%s" COLNONE ".\n"), i18n (86, "off"));
+                M_print (i18n (1821, "Funny messages are " COLMESS "%s" COLNONE ".\n"), i18n (1086, "off"));
         }
     }
     else
-        M_print (i18n (816, "Unknown option %s to set command.\n"), arg1);
+        M_print (i18n (1816, "Unknown option %s to set command.\n"), arg1);
     return 0;
 }
 
@@ -1618,7 +1621,7 @@ JUMP_F(CmdUserTogIgnore)
     arg1 = strtok (args, "\n");
     if (!arg1)
     {
-        M_print (i18n (668, "You must specify a nick name."));
+        M_print (i18n (1668, "You must specify a nick name."));
         M_print ("\n");
         return 0;
     }
@@ -1626,15 +1629,14 @@ JUMP_F(CmdUserTogIgnore)
     uin = ContactFindByNick (arg1);
     if (uin == -1)
     {
-        M_print (i18n (665, "%s not recognized as a nick name."), arg1);
-        M_print ("\n");
+        M_print (i18n (1061, "%s not recognized as a nick name.\n"), arg1);
         return 0;
     }
 
     bud =  ContactFind (uin);
     if (!bud)
     {
-        M_print (i18n (90, "%s is a UIN, not a nick name."), arg1);
+        M_print (i18n (1090, "%s is a UIN, not a nick name."), arg1);
         M_print ("\n");
         return 0;
     }
@@ -1646,7 +1648,7 @@ JUMP_F(CmdUserTogIgnore)
             SnacCliReminvis (sess, uin);
         else
             CmdPktCmdUpdateList (sess, uin, INV_LIST_UPDATE, FALSE);
-        M_print (i18n (666, "Unignored %s."), bud->nick);
+        M_print (i18n (1666, "Unignored %s."), bud->nick);
     }
     else
     {
@@ -1656,7 +1658,7 @@ JUMP_F(CmdUserTogIgnore)
             SnacCliAddinvis (sess, uin);
         else
             CmdPktCmdUpdateList (sess, uin, INV_LIST_UPDATE, TRUE);
-        M_print (i18n (667, "Ignoring %s."), bud->nick);
+        M_print (i18n (1667, "Ignoring %s."), bud->nick);
     }
     if (sess->ver < 6)
     {
@@ -1686,7 +1688,7 @@ JUMP_F(CmdUserTogVisible)
     arg1 = strtok (args, " \n");
     if (!arg1)
     {
-        M_print (i18n (668, "You must specify a nick name."));
+        M_print (i18n (1668, "You must specify a nick name."));
         M_print ("\n");
         return 0;
     }
@@ -1694,15 +1696,14 @@ JUMP_F(CmdUserTogVisible)
     uin = ContactFindByNick (arg1);
     if (uin == -1)
     {
-        M_print (i18n (665, "%s not recognized as a nick name."), arg1);
-        M_print ("\n");
+        M_print (i18n (1061, "%s not recognized as a nick name.\n"), arg1);
         return 0;
     }
 
     bud =  ContactFind (uin);
     if (!bud)
     {
-        M_print (i18n (90, "%s is a UIN, not a nick name."), arg1);
+        M_print (i18n (1090, "%s is a UIN, not a nick name."), arg1);
         M_print ("\n");
         return 0;
     }
@@ -1714,7 +1715,7 @@ JUMP_F(CmdUserTogVisible)
             SnacCliRemvisible (sess, uin);
         else
             CmdPktCmdUpdateList (sess, uin, VIS_LIST_UPDATE, FALSE);
-        M_print (i18n (670, "Invisible to %s now."), ContactFindNick (uin));
+        M_print (i18n (1670, "Invisible to %s now."), ContactFindNick (uin));
     }
     else
     {
@@ -1724,7 +1725,7 @@ JUMP_F(CmdUserTogVisible)
             SnacCliAddvisible (sess, uin);
         else
             CmdPktCmdUpdateList (sess, uin, VIS_LIST_UPDATE, TRUE);
-        M_print (i18n (671, "Visible to %s now."), ContactFindNick (uin));
+        M_print (i18n (1671, "Visible to %s now."), ContactFindNick (uin));
     }
 
     M_print ("\n");
@@ -1744,7 +1745,7 @@ JUMP_F(CmdUserAdd)
     arg1 = strtok (args, " \t");
     if (!arg1)
     {
-        M_print (i18n (753, "You must specify UIN and new nick name.\n"));
+        M_print (i18n (1753, "You must specify UIN and new nick name.\n"));
         return 0;
     }
     
@@ -1752,7 +1753,7 @@ JUMP_F(CmdUserAdd)
     arg2 = strtok (NULL, "");
     if (!uin)
     {
-        M_print (i18n (748, "No UIN given.\n"));
+        M_print (i18n (1748, "No UIN given.\n"));
         return 0;
     }
 
@@ -1762,13 +1763,13 @@ JUMP_F(CmdUserAdd)
             arg2 = ContactFindName (uin);
         if (cont->not_in_list)
         {
-            M_print (i18n (669, "%s added.\n"), arg1);
-            M_print (i18n (754, " Note: You need to 'save' to write new contact list to disc.\n"));
+            M_print (i18n (1669, "%s added.\n"), arg1);
+            M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
         }
         else
         {
-            M_print (i18n (749, "UIN %d renamed to %s.\n"), uin, arg2);
-            M_print (i18n (754, " Note: You need to 'save' to write new contact list to disc.\n"));
+            M_print (i18n (1749, "UIN %d renamed to %s.\n"), uin, arg2);
+            M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
         }
         cont->not_in_list = 0;
         strncpy (cont->nick, arg2, 18);
@@ -1779,9 +1780,9 @@ JUMP_F(CmdUserAdd)
         if (!arg2)
             arg2 = ContactFindName (uin);
         if (Add_User (sess, uin, arg2))
-            M_print (i18n (669, "%s added.\n"), arg2);
+            M_print (i18n (1669, "%s added.\n"), arg2);
         else
-            M_print (i18n (773, "%s could not be added.\n"), arg2);
+            M_print (i18n (1773, "%s could not be added.\n"), arg2);
         ContactAdd (uin, arg2);
         if (sess->ver > 6)
             SnacCliAddcontact (sess, uin);
@@ -1805,7 +1806,7 @@ JUMP_F(CmdUserRem)
     {
         uin = ContactFindByNick (arg1);
         if (!uin)
-            M_print (i18n (750, "Nick %s not in contact list.\n"), arg1);
+            M_print (i18n (1750, "Nick %s not in contact list.\n"), arg1);
         else
         {
             ContactRem (uin);
@@ -1813,12 +1814,12 @@ JUMP_F(CmdUserRem)
                 SnacCliRemcontact (sess, uin);
             else
                 CmdPktCmdContactList (sess);
-            M_print (i18n (751, "Nick %s removed."), arg1);
-            M_print (i18n (754, " Note: You need to 'save' to write new contact list to disc.\n"), arg1);
+            M_print (i18n (1751, "Nick %s removed."), arg1);
+            M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"), arg1);
         }
     }
     else
-        M_print (i18n (752, "No nick given.\n"));
+        M_print (i18n (1752, "No nick given.\n"));
     return 0;
 }
 
@@ -1829,12 +1830,12 @@ JUMP_F(CmdUserRInfo)
 {
     SERVER_SESSION;
 
-    M_print (i18n (672, "%s's IP address is "), ContactFindName (uiG.last_rcvd_uin));
+    M_print (i18n (1672, "%s's IP address is "), ContactFindName (uiG.last_rcvd_uin));
     Print_IP (uiG.last_rcvd_uin);
     if ((UWORD) Get_Port (uiG.last_rcvd_uin) != (UWORD) 0xffff)
-        M_print (i18n (673, "\tThe port is %d\n"), (UWORD) Get_Port (uiG.last_rcvd_uin));
+        M_print (i18n (1673, "\tThe port is %d\n"), (UWORD) Get_Port (uiG.last_rcvd_uin));
     else
-        M_print (i18n (674, "\tThe port is unknown\n"));
+        M_print (i18n (1674, "\tThe port is unknown\n"));
     
     if (sess->ver > 6)
         SnacCliMetareqinfo (sess, uiG.last_rcvd_uin);
@@ -1856,13 +1857,13 @@ JUMP_F(CmdUserAuth)
     arg1 = strtok (args, "");
     if (!arg1)
     {
-        M_print (i18n (676, "Need uin to send to.\n"));
+        M_print (i18n (1676, "Need uin to send to.\n"));
     }
     else
     {
         uin = ContactFindByNick (arg1);
         if (-1 == uin)
-            M_print (i18n (665, "%s not recognized as a nick name."), arg1);
+            M_print (i18n (1061, "%s not recognized as a nick name.\n"), arg1);
         else
             if (sess->type == TYPE_SERVER)
                 SnacCliSendmsg (sess, uin, "\x03", AUTH_OK_MESS);
@@ -1879,9 +1880,9 @@ JUMP_F(CmdUserSave)
 {
     int i = Save_RC ();
     if (i == -1)
-        M_print (i18n (679, "Sorry saving your personal reply messages went wrong!\n"));
+        M_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
     else
-        M_print (i18n (680, "Your personal settings have been saved!\n"));
+        M_print (i18n (1680, "Your personal settings have been saved!\n"));
     return 0;
 }
 
@@ -1897,14 +1898,14 @@ JUMP_F(CmdUserURL)
     arg1 = strtok (args, " ");
     if (!arg1)
     {
-        M_print (i18n (676, "Need uin to send to.\n"));
+        M_print (i18n (1676, "Need uin to send to.\n"));
     }
     else
     {
         uin = ContactFindByNick (arg1);
         if (uin == -1)
         {
-            M_print (i18n (677, "%s not recognized as a nick name\n"), arg1);
+            M_print (i18n (1061, "%s not recognized as a nick name.\n"), arg1);
         }
         else
         {
@@ -1919,7 +1920,7 @@ JUMP_F(CmdUserURL)
             }
             else
             {
-                M_print (i18n (678, "Need URL please.\n"));
+                M_print (i18n (1678, "Need URL please.\n"));
             }
         }
     }
@@ -1935,7 +1936,7 @@ JUMP_F(CmdUserTabs)
 
     for (i = 0, TabReset (); TabHasNext (); i++)
         TabGetNext ();
-    M_print (i18n (681, "Last %d people you talked to:\n"), i);
+    M_print (i18n (1681, "Last %d people you talked to:\n"), i);
     for (TabReset (); TabHasNext ();)
     {
         UDWORD uin = TabGetNext ();
@@ -1965,7 +1966,7 @@ JUMP_F(CmdUserLast)
     arg1 = strtok (args, "\t\n");
     if (!arg1)
     {
-        M_print (i18n (682, "You have received messages from:\n"));
+        M_print (i18n (1682, "You have received messages from:\n"));
         for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
             if (cont->LastMessage)
                 M_print (COLCONTACT "  %s" COLNONE "\n", cont->nick);
@@ -1973,22 +1974,22 @@ JUMP_F(CmdUserLast)
     else
     {
         if ((uin = ContactFindByNick (arg1)) == -1)
-            M_print (i18n (933, "%s is neither a nick nor a UIN.\n"), arg1);
+            M_print (i18n (1933, "%s is neither a nick nor a UIN.\n"), arg1);
         else
         {
             if (ContactFind (uin) == NULL)
-                M_print (i18n (684, "%s is not on your contact list.\n"), arg1);
+                M_print (i18n (1684, "%s is not on your contact list.\n"), arg1);
             else
             {
                 if (ContactFind (uin)->LastMessage != NULL)
                 {
-                    M_print (i18n (685, "Last message from " COLCONTACT "%s" COLNONE ":\n"),
+                    M_print (i18n (1685, "Last message from " COLCONTACT "%s" COLNONE ":\n"),
                              ContactFind (uin)->nick);
                     M_print (COLMESS "%s" COLNONE "\n", ContactFind (uin)->LastMessage);
                 }
                 else
                 {
-                    M_print (i18n (686, "No messages received from " COLCONTACT "%s" COLNONE "\n"),
+                    M_print (i18n (1686, "No messages received from " COLCONTACT "%s" COLNONE "\n"),
                              ContactFind (uin)->nick);
                 }
             }
@@ -2015,17 +2016,17 @@ JUMP_F(CmdUserUptime)
     TimeDiff = TimeDiff / 24.0;
     Days = TimeDiff;
 
-    M_print ("%s ", i18n (687, "mICQ has been running for"));
+    M_print ("%s ", i18n (1687, "mICQ has been running for"));
     if (Days != 0)
-        M_print (COLMESS "%02d" COLNONE " %s, ", Days, i18n (688, "days"));
+        M_print (COLMESS "%02d" COLNONE " %s, ", Days, i18n (1688, "days"));
     if (Hours != 0)
-        M_print (COLMESS "%02d" COLNONE " %s, ", Hours, i18n (689, "hours"));
+        M_print (COLMESS "%02d" COLNONE " %s, ", Hours, i18n (1689, "hours"));
     if (Minutes != 0)
-        M_print (COLMESS "%02d" COLNONE " %s, ", Minutes, i18n (690, "minutes"));
-    M_print (COLMESS "%02d" COLNONE " %s.\n", Seconds, i18n (691, "seconds"));
-/*    M_print ("%s " COLMESS "%d" COLNONE " / %d\n", i18n (692, "Contacts:"), uiG.Num_Contacts, MAX_CONTACTS); */
+        M_print (COLMESS "%02d" COLNONE " %s, ", Minutes, i18n (1690, "minutes"));
+    M_print (COLMESS "%02d" COLNONE " %s.\n", Seconds, i18n (1691, "seconds"));
+/*    M_print ("%s " COLMESS "%d" COLNONE " / %d\n", i18n (1692, "Contacts:"), uiG.Num_Contacts, MAX_CONTACTS); */
 
-    M_print (i18n (746, " nr type         sent/received packets/unique packets\n"));
+    M_print (i18n (1746, " nr type         sent/received packets/unique packets\n"));
     for (i = 0; (sess = SessionNr (i)); i++)
     {
         M_print ("%3d %-12s %7d %7d %7d %7d\n",
@@ -2037,7 +2038,7 @@ JUMP_F(CmdUserUptime)
         real_pak_rcvd += sess->stat_real_pak_rcvd;
     }
     M_print ("    %-12s %7d %7d %7d %7d\n",
-             i18n (747, "total"), pak_sent, pak_rcvd,
+             i18n (1747, "total"), pak_sent, pak_rcvd,
              real_pak_sent, real_pak_rcvd);
     return 0;
 }
@@ -2054,19 +2055,19 @@ JUMP_F(CmdUserConn)
     arg1 = strtok (args, " \t\n");
     if (!arg1)
     {
-        M_print (i18n (887, "Connections:"));
+        M_print (i18n (1887, "Connections:"));
         M_print ("\n  " ESC "«");
         
         for (i = 0; (sess = SessionNr (i)); i++)
         {
-            M_print (i18n (917, "%-12s version %d for %s (%x), at %s:%d %s\n"),
+            M_print (i18n (1917, "%-12s version %d for %s (%x), at %s:%d %s\n"),
                      SessionType (sess), sess->ver, ContactFindName (sess->uin), sess->status,
                      sess->server ? sess->server : UtilIOIP (sess->ip), sess->port,
-                     sess->connect & CONNECT_FAIL ? i18n (497, "failed") :
-                     sess->connect & CONNECT_OK   ? i18n (934, "connected") :
-                     sess->connect & CONNECT_MASK ? i18n (911, "connecting") : i18n (912, "closed"));
+                     sess->connect & CONNECT_FAIL ? i18n (1497, "failed") :
+                     sess->connect & CONNECT_OK   ? i18n (1934, "connected") :
+                     sess->connect & CONNECT_MASK ? i18n (1911, "connecting") : i18n (1912, "closed"));
             if (prG->verbose)
-            M_print (i18n (935, "    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x\n"),
+            M_print (i18n (1935, "    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x\n"),
                      sess->type, sess->sok, UtilIOIP (sess->ip),
                      sess->connect, UtilIOIP (sess->our_local_ip), UtilIOIP (sess->our_outside_ip),
                      sess->our_session, sess->our_seq, sess->our_seq2);
@@ -2079,12 +2080,12 @@ JUMP_F(CmdUserConn)
         sess = SessionNr (i - 1);
         if (!sess)
         {
-            M_print (i18n (894, "There is no connection number %d.\n"), i);
+            M_print (i18n (1894, "There is no connection number %d.\n"), i);
             return 0;
         }
         if (sess->connect & CONNECT_OK)
         {
-            M_print (i18n (891, "Connection %d is already open.\n"), i);
+            M_print (i18n (1891, "Connection %d is already open.\n"), i);
             return 0;
         }
 
@@ -2092,8 +2093,8 @@ JUMP_F(CmdUserConn)
     }
     else
     {
-        M_print (i18n (892, "conn             List available connections.\n"));
-        M_print (i18n (893, "conn login <nr>  Open connection <nr>.\n"));
+        M_print (i18n (1892, "conn             List available connections.\n"));
+        M_print (i18n (1893, "conn login <nr>  Open connection <nr>.\n"));
     }
     return 0;
 }
@@ -2134,24 +2135,24 @@ JUMP_F(CmdUserSearch)
                 
                 return 0;
             }
-            R_dopromptf ("%s ", i18n (655, "Enter the user's e-mail address:"));
+            R_dopromptf ("%s ", i18n (1655, "Enter the user's e-mail address:"));
             return status = 101;
         case 101:
             if (!strlen (args) || sess->ver < 6)
             {
                 email = strdup ((char *) args);
-                R_dopromptf ("%s ", i18n (656, "Enter the user's nick name:"));
+                R_dopromptf ("%s ", i18n (1656, "Enter the user's nick name:"));
                 return ++status;
             }
             SnacCliSearchbymail (sess, args);
             return 0;
         case 102:
             nick = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (657, "Enter the user's first name:"));
+            R_dopromptf ("%s ", i18n (1657, "Enter the user's first name:"));
             return ++status;
         case 103:
             first = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (658, "Enter the user's last name:"));
+            R_dopromptf ("%s ", i18n (1658, "Enter the user's last name:"));
             return ++status;
         case 104:
             last = strdup ((char *) args);
@@ -2180,38 +2181,38 @@ JUMP_F(CmdUserWpSearch)
     switch (status)
     {
         case 0:
-            R_dopromptf ("%s ", i18n (656, "Enter the user's nick name:"));
+            R_dopromptf ("%s ", i18n (1656, "Enter the user's nick name:"));
             return 200;
         case 200:
             wp.nick = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (657, "Enter the user's first name:"));
+            R_dopromptf ("%s ", i18n (1657, "Enter the user's first name:"));
             return ++status;
         case 201:
             wp.first = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (658, "Enter the user's last name:"));
+            R_dopromptf ("%s ", i18n (1658, "Enter the user's last name:"));
             return ++status;
         case 202:
             wp.last = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (655, "Enter the user's e-mail address:"));
+            R_dopromptf ("%s ", i18n (1655, "Enter the user's e-mail address:"));
             return ++status;
         case 203:
             wp.email = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (936, "Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):"));
+            R_dopromptf ("%s ", i18n (1936, "Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):"));
             return ++status;
         case 204:
             wp.minage = atoi (args);
-            R_dopromptf ("%s ", i18n (937, "Enter max age (22,29,39,49,59,120):"));
+            R_dopromptf ("%s ", i18n (1937, "Enter max age (22,29,39,49,59,120):"));
             return ++status;
         case 205:
             wp.maxage = atoi (args);
-            R_doprompt (i18n (938, "Enter sex:"));
+            R_doprompt (i18n (1938, "Enter sex:"));
             return ++status;
         case 206:
-            if (!strncasecmp (args, i18n (528, "female"), 1))
+            if (!strncasecmp (args, i18n (1528, "female"), 1))
             {
                 wp.sex = 1;
             }
-            else if (!strncasecmp (args, i18n (529, "male"), 1))
+            else if (!strncasecmp (args, i18n (1529, "male"), 1))
             {
                 wp.sex = 2;
             }
@@ -2219,56 +2220,56 @@ JUMP_F(CmdUserWpSearch)
             {
                 wp.sex = 0;
             }
-            R_dopromptf ("%s ", i18n (534, "Enter a language by number or L for a list:"));
+            R_dopromptf ("%s ", i18n (1534, "Enter a language by number or L for a list:"));
             return ++status;
         case 207:
             temp = atoi (args);
             if ((0 == temp) && (toupper (args[0]) == 'L'))
             {
                 TablePrintLang ();
-                R_dopromptf ("%s ", i18n (534, "Enter a language by number or L for a list:"));
+                R_dopromptf ("%s ", i18n (1534, "Enter a language by number or L for a list:"));
             }
             else
             {
                 wp.language = temp;
                 status++;
-                R_dopromptf ("%s ", i18n (939, "Enter a city:"));
+                R_dopromptf ("%s ", i18n (1939, "Enter a city:"));
             }
             return status;
         case 208:
             wp.city = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (602, "Enter a state:"));
+            R_dopromptf ("%s ", i18n (1602, "Enter a state:"));
             return ++status;
         case 209:
             wp.state = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (578, "Enter country's phone ID number:"));
+            R_dopromptf ("%s ", i18n (1578, "Enter country's phone ID number:"));
             return ++status;
         case 210:
             wp.country = atoi ((char *) args);
-            R_dopromptf ("%s ", i18n (579, "Enter company: "));
+            R_dopromptf ("%s ", i18n (1579, "Enter company: "));
             return ++status;
         case 211:
             wp.company = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (587, "Enter department: "));
+            R_dopromptf ("%s ", i18n (1587, "Enter department: "));
             return ++status;
         case 212:
             wp.department = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (603, "Enter position: "));
+            R_dopromptf ("%s ", i18n (1603, "Enter position: "));
             return ++status;
         case 213:
             wp.position = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (604, "Should the users be online?"));
+            R_dopromptf ("%s ", i18n (1604, "Should the users be online?"));
             return ++status;
 /* A few more could be added here, but we're gonna make this
  the last one -KK */
         case 214:
-            if (strcasecmp (args, i18n (28, "NO")) && strcasecmp (args, i18n (27, "YES")))
+            if (strcasecmp (args, i18n (1028, "NO")) && strcasecmp (args, i18n (1027, "YES")))
             {
-                M_print ("%s\n", i18n (29, "Please enter YES or NO!"));
-                R_dopromptf ("%s ", i18n (604, "Should the users be online?"));
+                M_print ("%s\n", i18n (1029, "Please enter YES or NO!"));
+                R_dopromptf ("%s ", i18n (1604, "Should the users be online?"));
                 return status;
             }
-            wp.online = strcasecmp (args, i18n (27, "YES")) ? FALSE : TRUE;
+            wp.online = strcasecmp (args, i18n (1027, "YES")) ? FALSE : TRUE;
 
             CmdPktCmdMetaSearchWP (sess, &wp);
 
@@ -2297,108 +2298,108 @@ JUMP_F(CmdUserUpdate)
     switch (status)
     {
         case 0:
-            R_dopromptf ("%s ", i18n (553, "Enter Your New Nickname:"));
+            R_dopromptf ("%s ", i18n (1553, "Enter Your New Nickname:"));
             return 300;
         case 300:
             user.nick = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (554, "Enter your new first name:"));
+            R_dopromptf ("%s ", i18n (1554, "Enter your new first name:"));
             return ++status;
         case 301:
             user.first = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (555, "Enter your new last name:"));
+            R_dopromptf ("%s ", i18n (1555, "Enter your new last name:"));
             return ++status;
         case 302:
             user.last = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (556, "Enter your new email address:"));
+            R_dopromptf ("%s ", i18n (1556, "Enter your new email address:"));
             return ++status;
         case 303:
             user.email = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (542, "Enter other email address:"));
+            R_dopromptf ("%s ", i18n (1542, "Enter other email address:"));
             return ++status;
         case 304:
             user.email2 = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (543, "Enter old email address:"));
+            R_dopromptf ("%s ", i18n (1543, "Enter old email address:"));
             return ++status;
         case 305:
             user.email3 = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (544, "Enter new city:"));
+            R_dopromptf ("%s ", i18n (1544, "Enter new city:"));
             return ++status;
         case 306:
             user.city = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (545, "Enter new state:"));
+            R_dopromptf ("%s ", i18n (1545, "Enter new state:"));
             return ++status;
         case 307:
             user.state = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (546, "Enter new phone number:"));
+            R_dopromptf ("%s ", i18n (1546, "Enter new phone number:"));
             return ++status;
         case 308:
             user.phone = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (547, "Enter new fax number:"));
+            R_dopromptf ("%s ", i18n (1547, "Enter new fax number:"));
             return ++status;
         case 309:
             user.fax = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (548, "Enter new street address:"));
+            R_dopromptf ("%s ", i18n (1548, "Enter new street address:"));
             return ++status;
         case 310:
             user.street = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (549, "Enter new cellular number:"));
+            R_dopromptf ("%s ", i18n (1549, "Enter new cellular number:"));
             return ++status;
         case 311:
             user.cellular = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (550, "Enter new zip code (must be numeric):"));
+            R_dopromptf ("%s ", i18n (1550, "Enter new zip code (must be numeric):"));
             return ++status;
         case 312:
             user.zip = atoi ((char *) args);
-            R_dopromptf ("%s ", i18n (551, "Enter your country's phone ID number:"));
+            R_dopromptf ("%s ", i18n (1551, "Enter your country's phone ID number:"));
             return ++status;
         case 313:
             user.country = atoi ((char *) args);
-            R_dopromptf ("%s ", i18n (552, "Enter your time zone (+/- 0-12):"));
+            R_dopromptf ("%s ", i18n (1552, "Enter your time zone (+/- 0-12):"));
             return ++status;
         case 314:
             user.tz = atoi ((char *) args);
             user.tz <<= 1;
-            R_dopromptf ("%s ", i18n (557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
+            R_dopromptf ("%s ", i18n (1557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
             return ++status;
         case 315:
-            if (strcasecmp (args, i18n (28, "NO")) && strcasecmp (args, i18n (27, "YES")))
+            if (strcasecmp (args, i18n (1028, "NO")) && strcasecmp (args, i18n (1027, "YES")))
             {
-                M_print ("%s\n", i18n (29, "Please enter YES or NO!"));
-                R_dopromptf ("%s ", i18n (557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
+                M_print ("%s\n", i18n (1029, "Please enter YES or NO!"));
+                R_dopromptf ("%s ", i18n (1557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
                 return status;
             }
-            user.auth = strcasecmp (args, i18n (27, "YES")) ? FALSE : TRUE;
-            R_dopromptf ("%s ", i18n (605, "Do you want your status to be available on the web? (YES/NO)"));
+            user.auth = strcasecmp (args, i18n (1027, "YES")) ? FALSE : TRUE;
+            R_dopromptf ("%s ", i18n (1605, "Do you want your status to be available on the web? (YES/NO)"));
             return ++status;
         case 316:
-            if (strcasecmp (args, i18n (28, "NO")) && strcasecmp (args, i18n (27, "YES")))
+            if (strcasecmp (args, i18n (1028, "NO")) && strcasecmp (args, i18n (1027, "YES")))
             {
-                M_print ("%s\n", i18n (29, "Please enter YES or NO!"));
-                R_dopromptf ("%s ", i18n (605, "Do you want your status to be available on the web? (YES/NO)"));
+                M_print ("%s\n", i18n (1029, "Please enter YES or NO!"));
+                R_dopromptf ("%s ", i18n (1605, "Do you want your status to be available on the web? (YES/NO)"));
                 return status;
             }
-            user.webaware = strcasecmp (args, i18n (27, "YES")) ? FALSE : TRUE;
-            R_dopromptf ("%s ", i18n (857, "Do you want to hide your IP from other contacts? (YES/NO)"));
+            user.webaware = strcasecmp (args, i18n (1027, "YES")) ? FALSE : TRUE;
+            R_dopromptf ("%s ", i18n (1857, "Do you want to hide your IP from other contacts? (YES/NO)"));
             return ++status;
         case 317:
-            if (strcasecmp (args, i18n (28, "NO")) && strcasecmp (args, i18n (27, "YES")))
+            if (strcasecmp (args, i18n (1028, "NO")) && strcasecmp (args, i18n (1027, "YES")))
             {
-                M_print ("%s\n", i18n (29, "Please enter YES or NO!"));
-                R_dopromptf ("%s ", i18n (857, "Do you want to hide your IP from other contacts? (YES/NO)"));
+                M_print ("%s\n", i18n (1029, "Please enter YES or NO!"));
+                R_dopromptf ("%s ", i18n (1857, "Do you want to hide your IP from other contacts? (YES/NO)"));
                 return status;
             }
-            user.hideip = strcasecmp (args, i18n (27, "YES")) ? FALSE : TRUE;
-            R_dopromptf ("%s ", i18n (622, "Do you want to apply these changes? (YES/NO)"));
+            user.hideip = strcasecmp (args, i18n (1027, "YES")) ? FALSE : TRUE;
+            R_dopromptf ("%s ", i18n (1622, "Do you want to apply these changes? (YES/NO)"));
             return ++status;
         case 318:
-            if (strcasecmp (args, i18n (28, "NO")) && strcasecmp (args, i18n (27, "YES")))
+            if (strcasecmp (args, i18n (1028, "NO")) && strcasecmp (args, i18n (1027, "YES")))
             {
-                M_print ("%s\n", i18n (29, "Please enter YES or NO!"));
-                R_dopromptf ("%s ", i18n (622, "Do you want to apply these changes? (YES/NO)"));
+                M_print ("%s\n", i18n (1029, "Please enter YES or NO!"));
+                R_dopromptf ("%s ", i18n (1622, "Do you want to apply these changes? (YES/NO)"));
                 return status;
             }
 
-            if (!strcasecmp (args, i18n (27, "YES")))
+            if (!strcasecmp (args, i18n (1027, "YES")))
                 CmdPktCmdMetaGeneral (sess, &user);
 
             free (user.nick);
@@ -2422,18 +2423,18 @@ JUMP_F(CmdUserOther)
     switch (status)
     {
         case 0:
-            R_dopromptf ("%s ", i18n (535, "Enter new age:"));
+            R_dopromptf ("%s ", i18n (1535, "Enter new age:"));
             return 400;
         case 400:
             other.age = atoi (args);
-            R_dopromptf ("%s ", i18n (536, "Enter new sex:"));
+            R_dopromptf ("%s ", i18n (1536, "Enter new sex:"));
             return ++status;
         case 401:
-            if (!strncasecmp (args, i18n (528, "female"), 1))
+            if (!strncasecmp (args, i18n (1528, "female"), 1))
             {
                 other.sex = 1;
             }
-            else if (!strncasecmp (args, i18n (529, "male"), 1))
+            else if (!strncasecmp (args, i18n (1529, "male"), 1))
             {
                 other.sex = 2;
             }
@@ -2441,23 +2442,23 @@ JUMP_F(CmdUserOther)
             {
                 other.sex = 0;
             }
-            R_dopromptf ("%s ", i18n (537, "Enter new homepage:"));
+            R_dopromptf ("%s ", i18n (1537, "Enter new homepage:"));
             return ++status;
         case 402:
             other.hp = strdup (args);
-            R_dopromptf ("%s ", i18n (538, "Enter new year of birth (4 digits):"));
+            R_dopromptf ("%s ", i18n (1538, "Enter new year of birth (4 digits):"));
             return ++status;
         case 403:
             other.year = atoi (args) - 1900;
-            R_dopromptf ("%s ", i18n (539, "Enter new month of birth:"));
+            R_dopromptf ("%s ", i18n (1539, "Enter new month of birth:"));
             return ++status;
         case 404:
             other.month = atoi (args);
-            R_dopromptf ("%s ", i18n (540, "Enter new day of birth:"));
+            R_dopromptf ("%s ", i18n (1540, "Enter new day of birth:"));
             return ++status;
         case 405:
             other.day = atoi (args);
-            R_dopromptf ("%s ", i18n (534, "Enter a language by number or L for a list:"));
+            R_dopromptf ("%s ", i18n (1534, "Enter a language by number or L for a list:"));
             return ++status;
         case 406:
             temp = atoi (args);
@@ -2470,7 +2471,7 @@ JUMP_F(CmdUserOther)
                 other.lang1 = temp;
                 status++;
             }
-            R_dopromptf ("%s ", i18n (534, "Enter a language by number or L for a list:"));
+            R_dopromptf ("%s ", i18n (1534, "Enter a language by number or L for a list:"));
             return status;
         case 407:
             temp = atoi (args);
@@ -2483,14 +2484,14 @@ JUMP_F(CmdUserOther)
                 other.lang2 = temp;
                 status++;
             }
-            R_dopromptf ("%s ", i18n (534, "Enter a language by number or L for a list:"));
+            R_dopromptf ("%s ", i18n (1534, "Enter a language by number or L for a list:"));
             return status;
         case 408:
             temp = atoi (args);
             if ((0 == temp) && (toupper (args[0]) == 'L'))
             {
                 TablePrintLang ();
-                R_dopromptf ("%s ", i18n (534, "Enter a language by number or L for a list:"));
+                R_dopromptf ("%s ", i18n (1534, "Enter a language by number or L for a list:"));
                 return status;
             }
             other.lang3 = temp;
@@ -2546,7 +2547,7 @@ JUMP_F(CmdUserAbout)
         }
         offset = 0;
     }
-    R_doprompt (i18n (541, "About> "));
+    R_doprompt (i18n (1541, "About> "));
     return 400;
 }
 
@@ -2614,11 +2615,11 @@ void CmdUserProcess (const char *command, int *idle_val, int *idle_flag)
                 R_pause ();
 #ifdef SHELL_COMMANDS
                 if ((buf[1] < 31) || (buf[1] > 127))
-                    M_print (i18n (660, "Invalid Command: %s\n"), &buf[1]);
+                    M_print (i18n (1660, "Invalid Command: %s\n"), &buf[1]);
                 else
                     system (&buf[1]);
 #else
-                M_print (i18n (661, "Shell commands have been disabled.\n"));
+                M_print (i18n (1661, "Shell commands have been disabled.\n"));
 #endif
                 R_resume ();
                 if (!command)
@@ -2685,7 +2686,7 @@ void CmdUserProcess (const char *command, int *idle_val, int *idle_flag)
                 }
                 else
                 {
-                    M_print (i18n (36, "Unknown command %s, type /help for help."), cmd);
+                    M_print (i18n (1036, "Unknown command %s, type /help for help."), cmd);
                     M_print ("\n");
                 }
                 free (argsd);

@@ -15,111 +15,111 @@
 
 
 static const char *TableMonths[] = {   /* *INDENT-OFF* */
-    _i18n (14, "None"),
-    _i18n (15, "Jan"),    _i18n (16, "Feb"),    _i18n (17, "Mar"),    _i18n (18, "Apr"),
-    _i18n (19, "May"),    _i18n (20, "Jun"),    _i18n (21, "Jul"),    _i18n (22, "Aug"),
-    _i18n (23, "Sep"),    _i18n (24, "Oct"),    _i18n (25, "Nov"),    _i18n (26, "Dec")
+    _i18n (1014, "None"),
+    _i18n (1015, "Jan"),    _i18n (1016, "Feb"),    _i18n (1017, "Mar"),    _i18n (1018, "Apr"),
+    _i18n (1019, "May"),    _i18n (1020, "Jun"),    _i18n (1021, "Jul"),    _i18n (1022, "Aug"),
+    _i18n (1023, "Sep"),    _i18n (1024, "Oct"),    _i18n (1025, "Nov"),    _i18n (1026, "Dec")
 };
 
 static const char *TableLang[] = {
-    _i18n (100, "None"),
-    _i18n (101, "Arabic"),      _i18n (102, "Bhojpuri"),    _i18n (103, "Bulgarian"),       _i18n (104, "Burmese"),
-    _i18n (105, "Cantonese"),   _i18n (106, "Catalan"),     _i18n (107, "Chinese"),         _i18n (108, "Croatian"),
-    _i18n (109, "Czech"),       _i18n (110, "Danish"),      _i18n (111, "Dutch"),           _i18n (112, "English"),
-    _i18n (113, "Esperanto"),   _i18n (114, "Estonian"),    _i18n (115, "Farsi"),           _i18n (116, "Finnish"),
-    _i18n (117, "French"),      _i18n (118, "Gaelic"),      _i18n (119, "German"),          _i18n (120, "Greek"),
-    _i18n (121, "Hebrew"),      _i18n (122, "Hindi"),       _i18n (123, "Hungarian"),       _i18n (124, "Icelandic"),
-    _i18n (125, "Indonesian"),  _i18n (126, "Italian"),     _i18n (127, "Japanese"),        _i18n (128, "Khmer"),
-    _i18n (129, "Korean"),      _i18n (130, "Lao"),         _i18n (131, "Latvian"),         _i18n (132, "Lithuanian"),
-    _i18n (133, "Malay"),       _i18n (134, "Norwegian"),   _i18n (135, "Polish"),          _i18n (136, "Portuguese"),
-    _i18n (137, "Romanian"),    _i18n (138, "Russian"),     _i18n (139, "Serbo-Croatian"),  _i18n (140, "Slovak"),
-    _i18n (141, "Slovenian"),   _i18n (142, "Somali"),      _i18n (143, "Spanish"),         _i18n (144, "Swahili"),
-    _i18n (145, "Swedish"),     _i18n (146, "Tagalog"),     _i18n (147, "Tartar"),          _i18n (148, "Thai"),
-    _i18n (149, "Turkish"),     _i18n (150, "Ukrainian"),   _i18n (151, "Urdu"),            _i18n (152, "Vietnamese"),
-    _i18n (153, "Yiddish"),     _i18n (154, "Yoruba"),      _i18n (155, "Afrikaans"),       _i18n (156, "Bosnian"),
-    _i18n (157, "Persian"),     _i18n (158, "Albanian"),    _i18n (159, "Armenian")
+    _i18n (1100, "None"),
+    _i18n (1101, "Arabic"),      _i18n (1102, "Bhojpuri"),    _i18n (1103, "Bulgarian"),       _i18n (1104, "Burmese"),
+    _i18n (1105, "Cantonese"),   _i18n (1106, "Catalan"),     _i18n (1107, "Chinese"),         _i18n (1108, "Croatian"),
+    _i18n (1109, "Czech"),       _i18n (1110, "Danish"),      _i18n (1111, "Dutch"),           _i18n (1112, "English"),
+    _i18n (1113, "Esperanto"),   _i18n (1114, "Estonian"),    _i18n (1115, "Farsi"),           _i18n (1116, "Finnish"),
+    _i18n (1117, "French"),      _i18n (1118, "Gaelic"),      _i18n (1119, "German"),          _i18n (1120, "Greek"),
+    _i18n (1121, "Hebrew"),      _i18n (1122, "Hindi"),       _i18n (1123, "Hungarian"),       _i18n (1124, "Icelandic"),
+    _i18n (1125, "Indonesian"),  _i18n (1126, "Italian"),     _i18n (1127, "Japanese"),        _i18n (1128, "Khmer"),
+    _i18n (1129, "Korean"),      _i18n (1130, "Lao"),         _i18n (1131, "Latvian"),         _i18n (1132, "Lithuanian"),
+    _i18n (1133, "Malay"),       _i18n (1134, "Norwegian"),   _i18n (1135, "Polish"),          _i18n (1136, "Portuguese"),
+    _i18n (1137, "Romanian"),    _i18n (1138, "Russian"),     _i18n (1139, "Serbo-Croatian"),  _i18n (1140, "Slovak"),
+    _i18n (1141, "Slovenian"),   _i18n (1142, "Somali"),      _i18n (1143, "Spanish"),         _i18n (1144, "Swahili"),
+    _i18n (1145, "Swedish"),     _i18n (1146, "Tagalog"),     _i18n (1147, "Tartar"),          _i18n (1148, "Thai"),
+    _i18n (1149, "Turkish"),     _i18n (1150, "Ukrainian"),   _i18n (1151, "Urdu"),            _i18n (1152, "Vietnamese"),
+    _i18n (1153, "Yiddish"),     _i18n (1154, "Yoruba"),      _i18n (1155, "Afrikaans"),       _i18n (1156, "Bosnian"),
+    _i18n (1157, "Persian"),     _i18n (1158, "Albanian"),    _i18n (1159, "Armenian")
 };
 #define TableLangSize sizeof (TableLang) / sizeof (const char *)
 
 static const char *TableCountry[] = {
-    _i18n (200, "Not entered"),
-    _i18n (201, "Afghanistan"), _i18n (202, "Albania"),                       _i18n (203, "Algeria"),
-                                _i18n (204, "American Samoa"),                _i18n (205, "Andorra"),
-    _i18n (206, "Angola"),      _i18n (207, "Anguilla"),                      _i18n (208, "Antigua"),
-                                _i18n (209, "Argentina"),                     _i18n (210, "Armenia"),
-    _i18n (211, "Aruba"),       _i18n (212, "Ascention Island"),              _i18n (213, "Australia"),
-                                _i18n (214, "Australian Antartic Territory"), _i18n (215, "Austria"),
-    _i18n (216, "Azerbaijan"),  _i18n (217, "Bahamas"),                       _i18n (218, "Bahrain"),
-                                _i18n (219, "Bangladesh"),                    _i18n (220, "Barbados"),
-    _i18n (221, "Belarus"),     _i18n (222, "Belgium"),                       _i18n (223, "Belize"),
-                                _i18n (224, "Benin"),                         _i18n (225, "Bermuda"),
-    _i18n (226, "Bhutan"),      _i18n (227, "Bolivia"),                       _i18n (228, "Bosnia & Herzegovina"),
-                                _i18n (229, "Botswana"),                      _i18n (230, "Brazil"),
-    _i18n (231, "British Virgin Islands"),   _i18n (232, "Brunei"),           _i18n (233, "Bulgaria"),
-                                _i18n (234, "Burkina Faso"),                  _i18n (235, "Burundi"),
-    _i18n (236, "Cambodia"),    _i18n (237, "Cameroon"),                      _i18n (238, "Canada"),
-                                _i18n (239, "Cape Verde Islands"),            _i18n (240, "Cayman Islands"),
-    _i18n (241, "Central African Republic"), _i18n (242, "Chad"),             _i18n (243, "Christmas Island"),
-                                _i18n (244, "Cocos-Keeling Islands"),         _i18n (245, "Comoros"),
-    _i18n (246, "Congo"),       _i18n (247, "Cook Islands"),                  _i18n (248, "Chile"),
-                                _i18n (249, "China"),                         _i18n (250, "Columbia"),
-    _i18n (251, "Costa Rice"),  _i18n (252, "Croatia"),                       _i18n (253, "Cuba"),
-                                _i18n (254, "Cyprus"),                        _i18n (255, "Czech Republic"),
-    _i18n (256, "Denmark"),     _i18n (257, "Diego Garcia"),                  _i18n (258, "Djibouti"),
-                                _i18n (259, "Dominica"),                      _i18n (260, "Dominican Republic"),
-    _i18n (261, "Ecuador"),     _i18n (262, "Egypt"),                         _i18n (263, "El Salvador"),
-                                _i18n (264, "Equitorial Guinea"),             _i18n (265, "Eritrea"),
-    _i18n (266, "Estonia"),     _i18n (267, "Ethiopia"),                      _i18n (268, "F.Y.R.O.M. (Former Yugoslavia)"),
-                                _i18n (269, "Faeroe Islands"),                _i18n (270, "Falkland Islands"),
-    _i18n (271, "Federated States of Micronesia"), _i18n (272, "Fiji"),       _i18n (273, "Finland"),
-                                _i18n (274, "France"),                        _i18n (275, "French Antilles"),
-    _i18n (276, "French Antilles"),         _i18n (277, "French Guiana"),     _i18n (278, "French Polynesia"),
-                                _i18n (279, "Gabon"),                         _i18n (280, "Gambia"),
-    _i18n (281, "Georgia"),     _i18n (282, "Germany"),                       _i18n (283, "Ghana"),       
-                                _i18n (284, "Gibraltar"),                     _i18n (285, "Greece"),      
-    _i18n (286, "Greenland"),   _i18n (287, "Grenada"),                       _i18n (288, "Guadeloupe"),  
-                                _i18n (289, "Guam"),                          _i18n (290, "Guantanomo Bay"),
-    _i18n (291, "Guatemala"),   _i18n (292, "Guinea"),                        _i18n (293, "Guinea-Bissau"),
-                                _i18n (294, "Guyana"),                        _i18n (295, "Haiti"),       
-    _i18n (296, "Honduras"),    _i18n (297, "Hong Kong"),                     _i18n (298, "Hungary"),
-                                _i18n (299, "Iceland"),                       _i18n (300, "India"),       
-    _i18n (301, "Indonesia"),   _i18n (302, "INMARSAT"),                      _i18n (303, "INMARSAT Atlantic-East"),
-                                _i18n (304, "Iran"),                          _i18n (305, "Iraq"),        
-    _i18n (306, "Ireland"),     _i18n (307, "Israel"),                        _i18n (308, "Italy"),
-                                _i18n (309, "Ivory Coast"),                   _i18n (310, "Japan"),       
-    _i18n (311, "Jordan"),      _i18n (312, "Kazakhstan"),                    _i18n (313, "Kenya"),
-                                _i18n (314, "South Korea"),                   _i18n (315, "Kuwait"),      
-    _i18n (316, "Liberia"),     _i18n (317, "Libya"),                         _i18n (318, "Liechtenstein"),
-                                _i18n (319, "Luxembourg"),                    _i18n (320, "Malawi"),      
-    _i18n (321, "Malaysia"),    _i18n (322, "Mali"),                          _i18n (323, "Malta"),
-                                _i18n (324, "Mexico"),                        _i18n (325, "Monaco"),      
-    _i18n (326, "Morocco"),     _i18n (327, "Namibia"),                       _i18n (328, "Nepal"),       
-                                _i18n (329, "Netherlands"),                   _i18n (330, "Netherlands Antilles"),
-    _i18n (331, "New Caledonia"),           _i18n (332, "New Zealand"),       _i18n (333, "Nicaragua"),
-                                _i18n (334, "Nigeria"),                       _i18n (335, "Norway"),      
-    _i18n (336, "Oman"),        _i18n (337, "Pakistan"),                      _i18n (338, "Panama"),      
-                                _i18n (339, "Papua New Guinea"),              _i18n (340, "Paraguay"),
-    _i18n (341, "Peru"),        _i18n (342, "Philippines"),                   _i18n (343, "Poland"),      
-                                _i18n (344, "Portugal"),                      _i18n (345, "Puerto Rico"), 
-    _i18n (346, "Qatar"),       _i18n (347, "Romania"),                       _i18n (348, "Russia"),
-                                _i18n (349, "Saipan"),                        _i18n (350, "San Marino"),  
-    _i18n (351, "Saudia Arabia"),           _i18n (352, "Senegal"),           _i18n (353, "Singapore"),
-                                _i18n (354, "Slovakia"),                      _i18n (355, "South Africa"),
-    _i18n (356, "Spain"),       _i18n (357, "Sri Lanka"),                     _i18n (358, "Suriname"),
-                                _i18n (359, "Sweden"),                        _i18n (360, "Switzerland"), 
-    _i18n (361, "Taiwan"),      _i18n (362, "Tanzania"),                      _i18n (363, "Thailand"),
-                                _i18n (364, "Tinian Island"),                 _i18n (365, "Togo"),        
-    _i18n (366, "Tokelau"),     _i18n (367, "Tonga"),                         _i18n (368, "Trinadad and Tabago"),
-                                _i18n (369, "Tunisia"),                       _i18n (370, "Turkey"),      
-    _i18n (371, "Turkmenistan"),_i18n (372, "Turks and Caicos Islands"),      _i18n (373, "Tuvalu"),
-                                _i18n (374, "Uganda"),                        _i18n (375, "Ukraine"),     
-    _i18n (376, "United Arab Emirates"),    _i18n (377, "UK"),                _i18n (378, "United States Virgin Islands"),
-                                _i18n (379, "USA"),                           _i18n (380, "Uruguay"),     
-    _i18n (381, "Uzbekistan"),  _i18n (382, "Vanuatu"),                       _i18n (383, "Vatican City"),
-                                _i18n (384, "Venezuela"),                     _i18n (385, "Vietnam"),     
-    _i18n (386, "Wallis and Futuna Islands"), _i18n (387, "Western Samoa"),   _i18n (388, "Yemen"),
-                                _i18n (389, "Yugoslavia"),                    _i18n (390, "Zaire"),       
-    _i18n (391, "Zambia"),      _i18n (392, "Zimbabwe"),
+    _i18n (1200, "Not entered"),
+    _i18n (1201, "Afghanistan"), _i18n (1202, "Albania"),                       _i18n (1203, "Algeria"),
+                                _i18n (1204, "American Samoa"),                _i18n (1205, "Andorra"),
+    _i18n (1206, "Angola"),      _i18n (1207, "Anguilla"),                      _i18n (1208, "Antigua"),
+                                _i18n (1209, "Argentina"),                     _i18n (1210, "Armenia"),
+    _i18n (1211, "Aruba"),       _i18n (1212, "Ascention Island"),              _i18n (1213, "Australia"),
+                                _i18n (1214, "Australian Antartic Territory"), _i18n (1215, "Austria"),
+    _i18n (1216, "Azerbaijan"),  _i18n (1217, "Bahamas"),                       _i18n (1218, "Bahrain"),
+                                _i18n (1219, "Bangladesh"),                    _i18n (1220, "Barbados"),
+    _i18n (1221, "Belarus"),     _i18n (1222, "Belgium"),                       _i18n (1223, "Belize"),
+                                _i18n (1224, "Benin"),                         _i18n (1225, "Bermuda"),
+    _i18n (1226, "Bhutan"),      _i18n (1227, "Bolivia"),                       _i18n (1228, "Bosnia & Herzegovina"),
+                                _i18n (1229, "Botswana"),                      _i18n (1230, "Brazil"),
+    _i18n (1231, "British Virgin Islands"),   _i18n (1232, "Brunei"),           _i18n (1233, "Bulgaria"),
+                                _i18n (1234, "Burkina Faso"),                  _i18n (1235, "Burundi"),
+    _i18n (1236, "Cambodia"),    _i18n (1237, "Cameroon"),                      _i18n (1238, "Canada"),
+                                _i18n (1239, "Cape Verde Islands"),            _i18n (1240, "Cayman Islands"),
+    _i18n (1241, "Central African Republic"), _i18n (1242, "Chad"),             _i18n (1243, "Christmas Island"),
+                                _i18n (1244, "Cocos-Keeling Islands"),         _i18n (1245, "Comoros"),
+    _i18n (1246, "Congo"),       _i18n (1247, "Cook Islands"),                  _i18n (1248, "Chile"),
+                                _i18n (1249, "China"),                         _i18n (1250, "Columbia"),
+    _i18n (1251, "Costa Rice"),  _i18n (1252, "Croatia"),                       _i18n (1253, "Cuba"),
+                                _i18n (1254, "Cyprus"),                        _i18n (1255, "Czech Republic"),
+    _i18n (1256, "Denmark"),     _i18n (1257, "Diego Garcia"),                  _i18n (1258, "Djibouti"),
+                                _i18n (1259, "Dominica"),                      _i18n (1260, "Dominican Republic"),
+    _i18n (1261, "Ecuador"),     _i18n (1262, "Egypt"),                         _i18n (1263, "El Salvador"),
+                                _i18n (1264, "Equitorial Guinea"),             _i18n (1265, "Eritrea"),
+    _i18n (1266, "Estonia"),     _i18n (1267, "Ethiopia"),                      _i18n (1268, "F.Y.R.O.M. (Former Yugoslavia)"),
+                                _i18n (1269, "Faeroe Islands"),                _i18n (1270, "Falkland Islands"),
+    _i18n (1271, "Federated States of Micronesia"), _i18n (1272, "Fiji"),       _i18n (1273, "Finland"),
+                                _i18n (1274, "France"),                        _i18n (1275, "French Antilles"),
+    _i18n (1276, "French Antilles"),         _i18n (1277, "French Guiana"),     _i18n (1278, "French Polynesia"),
+                                _i18n (1279, "Gabon"),                         _i18n (1280, "Gambia"),
+    _i18n (1281, "Georgia"),     _i18n (1282, "Germany"),                       _i18n (1283, "Ghana"),       
+                                _i18n (1284, "Gibraltar"),                     _i18n (1285, "Greece"),      
+    _i18n (1286, "Greenland"),   _i18n (1287, "Grenada"),                       _i18n (1288, "Guadeloupe"),  
+                                _i18n (1289, "Guam"),                          _i18n (1290, "Guantanomo Bay"),
+    _i18n (1291, "Guatemala"),   _i18n (1292, "Guinea"),                        _i18n (1293, "Guinea-Bissau"),
+                                _i18n (1294, "Guyana"),                        _i18n (1295, "Haiti"),       
+    _i18n (1296, "Honduras"),    _i18n (1297, "Hong Kong"),                     _i18n (1298, "Hungary"),
+                                _i18n (1299, "Iceland"),                       _i18n (1300, "India"),       
+    _i18n (1301, "Indonesia"),   _i18n (1302, "INMARSAT"),                      _i18n (1303, "INMARSAT Atlantic-East"),
+                                _i18n (1304, "Iran"),                          _i18n (1305, "Iraq"),        
+    _i18n (1306, "Ireland"),     _i18n (1307, "Israel"),                        _i18n (1308, "Italy"),
+                                _i18n (1309, "Ivory Coast"),                   _i18n (1310, "Japan"),       
+    _i18n (1311, "Jordan"),      _i18n (1312, "Kazakhstan"),                    _i18n (1313, "Kenya"),
+                                _i18n (1314, "South Korea"),                   _i18n (1315, "Kuwait"),      
+    _i18n (1316, "Liberia"),     _i18n (1317, "Libya"),                         _i18n (1318, "Liechtenstein"),
+                                _i18n (1319, "Luxembourg"),                    _i18n (1320, "Malawi"),      
+    _i18n (1321, "Malaysia"),    _i18n (1322, "Mali"),                          _i18n (1323, "Malta"),
+                                _i18n (1324, "Mexico"),                        _i18n (1325, "Monaco"),      
+    _i18n (1326, "Morocco"),     _i18n (1327, "Namibia"),                       _i18n (1328, "Nepal"),       
+                                _i18n (1329, "Netherlands"),                   _i18n (1330, "Netherlands Antilles"),
+    _i18n (1331, "New Caledonia"),           _i18n (1332, "New Zealand"),       _i18n (1333, "Nicaragua"),
+                                _i18n (1334, "Nigeria"),                       _i18n (1335, "Norway"),      
+    _i18n (1336, "Oman"),        _i18n (1337, "Pakistan"),                      _i18n (1338, "Panama"),      
+                                _i18n (1339, "Papua New Guinea"),              _i18n (1340, "Paraguay"),
+    _i18n (1341, "Peru"),        _i18n (1342, "Philippines"),                   _i18n (1343, "Poland"),      
+                                _i18n (1344, "Portugal"),                      _i18n (1345, "Puerto Rico"), 
+    _i18n (1346, "Qatar"),       _i18n (1347, "Romania"),                       _i18n (1348, "Russia"),
+                                _i18n (1349, "Saipan"),                        _i18n (1350, "San Marino"),  
+    _i18n (1351, "Saudia Arabia"),           _i18n (1352, "Senegal"),           _i18n (1353, "Singapore"),
+                                _i18n (1354, "Slovakia"),                      _i18n (1355, "South Africa"),
+    _i18n (1356, "Spain"),       _i18n (1357, "Sri Lanka"),                     _i18n (1358, "Suriname"),
+                                _i18n (1359, "Sweden"),                        _i18n (1360, "Switzerland"), 
+    _i18n (1361, "Taiwan"),      _i18n (1362, "Tanzania"),                      _i18n (1363, "Thailand"),
+                                _i18n (1364, "Tinian Island"),                 _i18n (1365, "Togo"),        
+    _i18n (1366, "Tokelau"),     _i18n (1367, "Tonga"),                         _i18n (1368, "Trinadad and Tabago"),
+                                _i18n (1369, "Tunisia"),                       _i18n (1370, "Turkey"),      
+    _i18n (1371, "Turkmenistan"),_i18n (1372, "Turks and Caicos Islands"),      _i18n (1373, "Tuvalu"),
+                                _i18n (1374, "Uganda"),                        _i18n (1375, "Ukraine"),     
+    _i18n (1376, "United Arab Emirates"),    _i18n (1377, "UK"),                _i18n (1378, "United States Virgin Islands"),
+                                _i18n (1379, "USA"),                           _i18n (1380, "Uruguay"),     
+    _i18n (1381, "Uzbekistan"),  _i18n (1382, "Vanuatu"),                       _i18n (1383, "Vatican City"),
+                                _i18n (1384, "Venezuela"),                     _i18n (1385, "Vietnam"),     
+    _i18n (1386, "Wallis and Futuna Islands"), _i18n (1387, "Western Samoa"),   _i18n (1388, "Yemen"),
+                                _i18n (1389, "Yugoslavia"),                    _i18n (1390, "Zaire"),       
+    _i18n (1391, "Zambia"),      _i18n (1392, "Zimbabwe"),
     0
 };
 #define TableCountrySize sizeof (TableCountry) / sizeof (const char *)
@@ -151,33 +151,33 @@ static UWORD TableCountryCodes[] = {
 #define TableCountryCodesSize sizeof (TableCountryCodes) / sizeof (UWORD)
 
 static const char *TableOccupation[] = {
-    _i18n (160, "Not Entered"),
-    _i18n (161, "Academic"),                    _i18n (162, "Administrative"),        _i18n (163, "Art/Entertainmant"),
-    _i18n (164, "College Student"),             _i18n (165, "Computers"),             _i18n (166, "Community & Social"),
-    _i18n (167, "Education"),                   _i18n (168, "Engineering"),           _i18n (169, "Financial Services"),
-    _i18n (170, "Government"),                  _i18n (171, "High School Student"),   _i18n (172, "Home"),
-    _i18n (173, "ICQ - Providing Help"),        _i18n (174, "Law"),                   _i18n (175, "Managerial"),
-    _i18n (176, "Manufacturing"),               _i18n (177, "Medical/Health"),        _i18n (178, "Military"),
-    _i18n (179, "Non-government Organization"), _i18n (180, "Professional"),          _i18n (181, "Retail"),
-    _i18n (182, "Retired"),                     _i18n (183, "Science & Research"),    _i18n (184, "Sports"),
-    _i18n (185, "Technical"),                   _i18n (186, "University Student"),    _i18n (187, "Web Building")
+    _i18n (1200, "Not entered"),
+    _i18n (1161, "Academic"),                    _i18n (1162, "Administrative"),        _i18n (1163, "Art/Entertainmant"),
+    _i18n (1164, "College Student"),             _i18n (1165, "Computers"),             _i18n (1166, "Community & Social"),
+    _i18n (1167, "Education"),                   _i18n (1168, "Engineering"),           _i18n (1169, "Financial Services"),
+    _i18n (1170, "Government"),                  _i18n (1171, "High School Student"),   _i18n (1172, "Home"),
+    _i18n (1173, "ICQ - Providing Help"),        _i18n (1174, "Law"),                   _i18n (1175, "Managerial"),
+    _i18n (1176, "Manufacturing"),               _i18n (1177, "Medical/Health"),        _i18n (1178, "Military"),
+    _i18n (1179, "Non-government Organization"), _i18n (1180, "Professional"),          _i18n (1181, "Retail"),
+    _i18n (1182, "Retired"),                     _i18n (1183, "Science & Research"),    _i18n (1184, "Sports"),
+    _i18n (1185, "Technical"),                   _i18n (1186, "University Student"),    _i18n (1187, "Web Building")
 };
 #define TableOccupationSize sizeof (TableOccupation) / sizeof (const char *)
 
 static const char *TableInterest[] = {
-    _i18n (455, "Art"),                   _i18n (456, "Cars"),                  _i18n (457, "Celebrity Fans"),    
-    _i18n (458, "Collections"),           _i18n (459, "Computers"),             _i18n (460, "Culture & Literature"), 
-    _i18n (461, "Fitness"),               _i18n (462, "Games"),                 _i18n (463, "Hobbies"),           
-    _i18n (464, "ICQ - Providing Help"),  _i18n (465, "Internet"),              _i18n (466, "Lifestyle"),         
-    _i18n (467, "Movies/TV"),             _i18n (468, "Music"),                 _i18n (469, "Outdoor Activities"),
-    _i18n (470, "Parenting"),             _i18n (471, "Pets/Animals"),          _i18n (472, "Religion"),          
-    _i18n (473, "Science/Technology"),    _i18n (474, "Skills"),                _i18n (475, "Sports"),            
-    _i18n (476, "Web Design"),            _i18n (477, "Nature and Environment"),_i18n (478, "News & Media"),      
-    _i18n (479, "Government"),            _i18n (480, "Business & Economy"),    _i18n (481, "Mystics"),           
-    _i18n (482, "Travel"),                _i18n (483, "Astronomy"),             _i18n (484, "Space"),             
-    _i18n (485, "Clothing"),              _i18n (486, "Parties"),               _i18n (487, "Women"),             
-    _i18n (488, "Social science"),        _i18n (489, "60's"),                  _i18n (490, "70's"),              
-    _i18n (491, "80's"),                  _i18n (492, "50's"),              
+    _i18n (1455, "Art"),                   _i18n (1456, "Cars"),                  _i18n (1457, "Celebrity Fans"),    
+    _i18n (1458, "Collections"),           _i18n (1459, "Computers"),             _i18n (1460, "Culture & Literature"), 
+    _i18n (1461, "Fitness"),               _i18n (1462, "Games"),                 _i18n (1463, "Hobbies"),           
+    _i18n (1173, "ICQ - Providing Help"),  _i18n (1465, "Internet"),              _i18n (1466, "Lifestyle"),         
+    _i18n (1467, "Movies/TV"),             _i18n (1468, "Music"),                 _i18n (1469, "Outdoor Activities"),
+    _i18n (1470, "Parenting"),             _i18n (1471, "Pets/Animals"),          _i18n (1472, "Religion"),          
+    _i18n (1473, "Science/Technology"),    _i18n (1474, "Skills"),                _i18n (1475, "Sports"),            
+    _i18n (1476, "Web Design"),            _i18n (1477, "Nature and Environment"),_i18n (1478, "News & Media"),      
+    _i18n (1479, "Government"),            _i18n (1480, "Business & Economy"),    _i18n (1481, "Mystics"),           
+    _i18n (1482, "Travel"),                _i18n (1483, "Astronomy"),             _i18n (1484, "Space"),             
+    _i18n (1485, "Clothing"),              _i18n (1486, "Parties"),               _i18n (1487, "Women"),             
+    _i18n (1488, "Social science"),        _i18n (1489, "60's"),                  _i18n (1490, "70's"),              
+    _i18n (1491, "80's"),                  _i18n (1492, "50's"),              
 };
 #define TableInterestSize sizeof (TableInterest) / sizeof (const char *)
 
@@ -189,15 +189,15 @@ static UWORD TablePastCodes[] = {
 #define TablePastCodesSize sizeof (TablePastCodes) / sizeof (UWORD)
 
 static const char *TablePast[] = {
-    _i18n (797, "Sports Club"), /* unsure  --rtc */
-    _i18n (798, "Elementary School"),
-    _i18n (799, "High School"),
-    _i18n (808, "College"),
-    _i18n (810, "University"),
-    _i18n (811, "Military"),
-    _i18n (812, "Past Work Place"),
-    _i18n (813, "Past Organization"),
-    _i18n (959, "Other"),
+    _i18n (1797, "Sports Club"), /* unsure  --rtc */
+    _i18n (1798, "Elementary School"),
+    _i18n (1799, "High School"),
+    _i18n (1808, "College"),
+    _i18n (1810, "University"),
+    _i18n (1178, "Military"),
+    _i18n (1812, "Past Work Place"),
+    _i18n (1813, "Past Organization"),
+    _i18n (1959, "Other"),
     NULL
 };
 #define TablePastSize sizeof (TablePast) / sizeof (const char *)
@@ -213,7 +213,7 @@ const char *TableGetMonth (int code)   /* *INDENT-ON* */
 const char *TableGetLang (UBYTE code)
 {
     if (code >= TableLangSize)
-        return i18n (99, "Unknown language.");
+        return i18n (1099, "Unknown language.");
 
     return i18n (-1, TableLang[code]);
 }
@@ -249,7 +249,7 @@ const char *TableGetCountry (UWORD code)
         if (TableCountryCodes[i] == code)
             return i18n (-1, TableCountry[i]);
 
-    return i18n (199, "Unknown country");
+    return i18n (1199, "Unknown country");
 }
 
 const char *TableGetPast (UWORD code)
@@ -271,7 +271,7 @@ const char *TableGetPast (UWORD code)
 const char *TableGetOccupation (UWORD code)
 {
     if (code == 99)
-        return _i18n (198, "Other Services");
+        return _i18n (1198, "Other Services");
 
     if (code >= TableOccupationSize)
         code = 0;
@@ -283,7 +283,7 @@ const char *TableGetInterest (UWORD code)
 {
     code -= 100;
     if (code == 99)
-        return _i18n (499, "Other");
+        return _i18n (1499, "Other");
 
     if (code >= TableInterestSize)
         return NULL;
@@ -294,16 +294,21 @@ const char *TableGetInterest (UWORD code)
 /*
 Never reuse i18n numbers till the next release. Dump them here.
 
-i18n (693, " ") i18n (694, " ") i18n (695, " ") i18n (697, " ") i18n (698, " ")
-i18n (91, " ") i18n (92, " ")
-i18n (8, " ") i18n (9, " ")
-i18n (52, " ") i18n (57, " ") i18n (058, " ") i18n (67, " ") i18n (88, " ")
-i18n (194, " ") i18n (399, " ") i18n (527, " ") i18n (558, " ") i18n (559, " ")
-i18n (560, " ") i18n (561, " ") i18n (588, " ") i18n (589, " ") i18n (633, " ")
-i18n (662, " ") i18n (663, " ") i18n (683, " ") i18n (701, " ") i18n (702, " ")
-i18n (718, " ") i18n (725, " ") i18n (726, " ") i18n (732, " ") i18n (733, " ")
-i18n (772, " ") i18n (780, " ") i18n (819, " ") i18n (828, " ") i18n (829, " ")
-i18n (832, " ") i18n (834, " ") i18n (851, " ") i18n (852, " ") i18n (853, " ")
-i18n (854, " ") i18n (859, " ") i18n (860, " ") i18n (861, " ") i18n (862, " ")
+i18n (1693, " ") i18n (1694, " ") i18n (1695, " ") i18n (1697, " ") i18n (1698, " ")
+i18n (1091, " ") i18n (1092, " ")
+i18n (1008, " ") i18n (1009, " ")
+i18n (1160, " ") i18n (1464, " ") i18n (1526, " ") i18n (1571, " ") i18n (1572, " ")
+i18n (1577, " ") i18n (1581, " ") i18n (1582, " ") i18n (1665, " ") i18n (1677, " ")
+i18n (1723, " ") i18n (1779, " ") i18n (1811, " ") i18n (1831, " ") i18n (1886, " ")
+i18n (1928, " ") i18n (1956, " ") i18n (1957, " ")
+
+i18n (1052, " ") i18n (1057, " ") i18n (1058, " ") i18n (1067, " ") i18n (1088, " ")
+i18n (1194, " ") i18n (1399, " ") i18n (1527, " ") i18n (1558, " ") i18n (1559, " ")
+i18n (1560, " ") i18n (1561, " ") i18n (1588, " ") i18n (1589, " ") i18n (1633, " ")
+i18n (1662, " ") i18n (1663, " ") i18n (1683, " ") i18n (1701, " ") i18n (1702, " ")
+i18n (1718, " ") i18n (1725, " ") i18n (1726, " ") i18n (1732, " ") i18n (1733, " ")
+i18n (1772, " ") i18n (1780, " ") i18n (1819, " ") i18n (1828, " ") i18n (1829, " ")
+i18n (1832, " ") i18n (1834, " ") i18n (1851, " ") i18n (1852, " ") i18n (1853, " ")
+i18n (1854, " ") i18n (1859, " ") i18n (1860, " ") i18n (1861, " ") i18n (1862, " ")
 */
 

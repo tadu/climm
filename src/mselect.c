@@ -109,7 +109,7 @@ int M_select (void)
         res = errno;
         if (res == EINTR)
             return 0;
-        printf (i18n (849, "Error on select: %s (%d)\n"), strerror (res), res);
+        printf (i18n (1849, "Error on select: %s (%d)\n"), strerror (res), res);
         return -1;
     }
     return res;

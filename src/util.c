@@ -71,28 +71,28 @@ const char *Convert_Status_2_Str (UDWORD status)
 {
     if (STATUS_OFFLINE == status)       /* this because -1 & 0xFFFF is not -1 */
     {
-        return i18n (928, "Offline");
+        return i18n (1653, "Offline");
     }
 
     switch (status & 0x1ff)
     {
         case STATUS_ONLINE:
-            return i18n (921, "Online");
+            return i18n (1654, "Online");
         case STATUS_DND_99:
         case STATUS_DND:
-            return i18n (922, "Do not disturb");
+            return i18n (1922, "Do not disturb");
         case STATUS_AWAY:
-            return i18n (923, "Away");
+            return i18n (1923, "Away");
         case STATUS_OCCUPIED_MAC:
         case STATUS_OCCUPIED:
-            return i18n (925, "Occupied");
+            return i18n (1925, "Occupied");
         case STATUS_NA:
         case STATUS_NA_99:
-            return i18n (924, "Not Available");
+            return i18n (1924, "Not Available");
         case STATUS_INVISIBLE:
-            return i18n (926, "Invisible");
+            return i18n (1926, "Invisible");
         case STATUS_FREE_CHAT:
-            return i18n (927, "Free for chat");
+            return i18n (1927, "Free for chat");
         default:
             return NULL;
     }
@@ -118,7 +118,7 @@ void Print_Status (UDWORD new_status)
     {
         if (inv)
         {
-            M_print ("%s-%s", i18n (926, "Invisible"), Convert_Status_2_Str (new_status));
+            M_print ("%s-%s", i18n (1926, "Invisible"), Convert_Status_2_Str (new_status));
             new_status = new_status | (STATUS_INVISIBLE);
         }
         else
@@ -206,18 +206,18 @@ void Init_New_User (Session *sess)
     i = WSAStartup (0x0101, &wsaData);
     if (i != 0)
     {
-        perror (i18n (624, "Sorry, can't initialize Windows Sockets..."));
+        perror (i18n (1624, "Sorry, can't initialize Windows Sockets..."));
         exit (1);
     }
 #endif
-    M_print (i18n (756, "\nCreating Connection...\n"));
+    M_print (i18n (1756, "\nCreating Connection...\n"));
     sess->sok = UtilIOConnectUDP (sess->server, sess->port);
     if ((sess->sok == -1) || (sess->sok == 0))
     {
-        M_print (i18n (757, "Couldn't establish connection.\n"));
+        M_print (i18n (1757, "Couldn't establish connection.\n"));
         exit (1);
     }
-    M_print (i18n (758, "Sending Request...\n"));
+    M_print (i18n (1758, "Sending Request...\n"));
     CmdPktCmdRegNewUser (sess, sess->passwd);
     for (;;)
     {
@@ -234,7 +234,7 @@ void Init_New_User (Session *sess)
 
         /* don't care about writefds and exceptfds: */
         select (sess->sok + 1, &readfds, NULL, NULL, &tv);
-        M_print (i18n (759, "Waiting for response....\n"));
+        M_print (i18n (1759, "Waiting for response....\n"));
         if (FD_ISSET (sess->sok, &readfds))
         {
             pak = UtilIOReceiveUDP (sess);
@@ -243,7 +243,7 @@ void Init_New_User (Session *sess)
             if (PacketReadAt2 (pak, 7) == SRV_NEW_UIN)
             {
                 sess->uin = PacketReadAt4 (pak, 13);
-                M_print (i18n (760, "\nYour new UIN is %s%ld%s!\n"), COLSERV, sess->uin, COLNONE);
+                M_print (i18n (1760, "\nYour new UIN is %s%ld%s!\n"), COLSERV, sess->uin, COLNONE);
                 return;
             }
         }
@@ -258,7 +258,7 @@ void Print_IP (UDWORD uin)
 
     if (!(cont = ContactFind (uin)) || (cont->outside_ip == -1L))
     {
-        M_print (i18n (761, "unknown"));
+        M_print (i18n (1761, "unknown"));
         return;
     }
     
@@ -488,7 +488,7 @@ void ExecScript (char *script, UDWORD uin, long num, char *data)
     rc = system (cmd);
     if (rc)
     {
-        M_print (i18n (584, "Warning! Script command '%s' failed with exit value %d\n"),
+        M_print (i18n (1584, "Warning! Script command '%s' failed with exit value %d\n"),
                  script, rc);
     }
     free (cmd);

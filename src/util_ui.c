@@ -466,7 +466,7 @@ void Prompt (void)
     }
     else
     {
-        snprintf (buff, sizeof (buff), COLSERV "%s" COLNONE, i18n (40, "mICQ> "));
+        snprintf (buff, sizeof (buff), COLSERV "%s" COLNONE, i18n (1040, "mICQ> "));
         R_doprompt (buff);
     }
     No_Prompt = FALSE;
@@ -484,13 +484,13 @@ void Soft_Prompt (void)
 #if 1
     static char buff[200];
     printf ("\r" ESC "[J");
-    snprintf (buff, sizeof (buff), COLSERV "%s" COLNONE, i18n (40, "mICQ> "));
+    snprintf (buff, sizeof (buff), COLSERV "%s" COLNONE, i18n (1040, "mICQ> "));
     R_doprompt (buff);
     No_Prompt = FALSE;
 #else
     if (!No_Prompt)
     {
-        M_print (COLSERV "%s" COLNONE, i18n (40, "mICQ> "));
+        M_print (COLSERV "%s" COLNONE, i18n (1040, "mICQ> "));
         fflush (stdout);
     }
     else
@@ -530,7 +530,7 @@ void UtilUIUserOnline (Contact *cont, UDWORD status)
     Time_Stamp ();
     M_print (" " COLCONTACT "%10s" COLNONE " %s ",
              ContactFindName (cont->uin),
-             ~cont->status ? i18n (35, "changed status to") : i18n (31, "logged on"));
+             ~cont->status ? i18n (1035, "changed status to") : i18n (1031, "logged on"));
 
     if (!~cont->status)
         M_print ("(");
@@ -543,11 +543,11 @@ void UtilUIUserOnline (Contact *cont, UDWORD status)
 
     if (prG->verbose && !~cont->status)
     {
-        M_print ("%-15s %s\n", i18n (441, "IP:"), UtilIOIP (cont->outside_ip));
-        M_print ("%-15s %s\n", i18n (451, "IP2:"), UtilIOIP (cont->local_ip));
-        M_print ("%-15s %d\n", i18n (453, "TCP version:"), cont->TCP_version);
-        M_print ("%-15s %s\n", i18n (454, "Connection:"),
-                 cont->connection_type == 4 ? i18n (493, "Peer-to-Peer") : i18n (494, "Server Only"));
+        M_print ("%-15s %s\n", i18n (1441, "IP:"), UtilIOIP (cont->outside_ip));
+        M_print ("%-15s %s\n", i18n (1451, "IP2:"), UtilIOIP (cont->local_ip));
+        M_print ("%-15s %d\n", i18n (1453, "TCP version:"), cont->TCP_version);
+        M_print ("%-15s %s\n", i18n (1454, "Connection:"),
+                 cont->connection_type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"));
     }
 
     cont->status = status;
@@ -567,7 +567,7 @@ void UtilUIUserOffline (Contact *cont)
  
     Time_Stamp ();
     M_print (" " COLCONTACT "%10s" COLNONE " %s\n",
-             ContactFindName (cont->uin), i18n (30, "logged off."));
+             ContactFindName (cont->uin), i18n (1030, "logged off."));
     
     cont->status = STATUS_OFFLINE;
     cont->last_time = time (NULL);

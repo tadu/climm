@@ -138,15 +138,15 @@ const char *SessionType (Session *sess)
 {
     switch (sess->type) {
         case TYPE_SERVER:
-            return i18n (889, "server");
+            return i18n (1889, "server");
         case TYPE_SERVER_OLD:
-            return i18n (744, "server (v5)");
+            return i18n (1744, "server (v5)");
         case TYPE_PEER:
-            return i18n (947, "listener");
+            return i18n (1947, "listener");
         case TYPE_DIRECT:
-            return i18n (890, "peer-to-peer");
+            return i18n (1890, "peer-to-peer");
         case TYPE_UNKNOWN:
         default:
-            return i18n (745, "unknown");
+            return i18n (1745, "unknown");
     }
 }

@@ -17,14 +17,13 @@ lang:
 	@rm -f *.c~ ../lang/*.i18n~
 	@../lang/i18n-extract
 	@../lang/i18n-number
-	@if grep -q "###" *.c; then \
+	@if grep -q "i18n (#" *.c; then \
 	   echo "Ooops, untranslated strings left."; \
-	   grep "###" *.c; \
+	   grep "i18n (#" *.c; \
 	   exit 1; fi; true
 	@rm -f *.c~ ../lang/*.i18n~
 	@../lang/i18n-extract
 	@rm -rf ../lang/*.i18n~
-#	@../lang/i18n-template
 
 buildmark.o: force
 

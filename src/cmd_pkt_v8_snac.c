@@ -157,7 +157,7 @@ void SnacPrint (Packet *pak)
 {
     assert (pak->len >= 16);
 
-    M_print (i18n (905, "SNAC (%x,%x) [%s] flags %x ref %x\n"),
+    M_print (i18n (1905, "SNAC (%x,%x) [%s] flags %x ref %x\n"),
              PacketReadBAt2 (pak, 6), PacketReadBAt2 (pak, 8),
              SnacName (PacketReadBAt2 (pak, 6), PacketReadBAt2 (pak, 8)),
              PacketReadBAt2 (pak, 10), PacketReadBAt4 (pak, 12));
@@ -192,7 +192,7 @@ JUMP_SNAC_F(SnacSrvUnknown)
     {
         Time_Stamp ();
         M_print (" " ESC "«");
-        M_print (" " ESC "«" COLSERV "%s ", i18n (59, COLSERV "Incoming v8 server packet:"));
+        M_print (" " ESC "«" COLSERV "%s ", i18n (1059, COLSERV "Incoming v8 server packet:"));
         SnacPrint (event->pak);
         M_print (ESC "»\n");
     }
@@ -219,7 +219,7 @@ JUMP_SNAC_F(SnacSrvFamilies)
                 break;
         if (!s->fam)
         {
-            M_print (i18n (899, "Unknown family requested: %d\n"), fam);
+            M_print (i18n (1899, "Unknown family requested: %d\n"), fam);
             continue;
         }
     }
@@ -272,7 +272,7 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
     uin = PacketReadUIN (pak);
     
     if (uin != event->sess->uin)
-        M_print (i18n (907, "Warning: Server thinks our UIN is %d, while it is %d.\n"),
+        M_print (i18n (1907, "Warning: Server thinks our UIN is %d, while it is %d.\n"),
                  uin, event->sess->uin);
     PacketReadB2 (pak);
     PacketReadB2 (pak);
@@ -281,7 +281,7 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
     {
         event->sess->our_outside_ip = tlv[10].nr;
         if (prG->verbose)
-            M_print (i18n (915, "Server says we're at %s.\n"), UtilIOIP (event->sess->our_outside_ip));
+            M_print (i18n (1915, "Server says we're at %s.\n"), UtilIOIP (event->sess->our_outside_ip));
         if (event->sess->assoc)
             event->sess->assoc->our_outside_ip = event->sess->our_outside_ip;
     }
@@ -320,7 +320,7 @@ JUMP_SNAC_F(SnacSrvFamilies2)
         if (!s->fam)
             continue;
         if (s->cmd > ver)
-            M_print (i18n (904, "Server doesn't understand ver %d (only %d) for family %d!\n"), s->cmd, ver, fam);
+            M_print (i18n (1904, "Server doesn't understand ver %d (only %d) for family %d!\n"), s->cmd, ver, fam);
     }
 }
 
@@ -362,7 +362,7 @@ JUMP_SNAC_F(SnacSrvUseronline)
     if (!cont)
     {
         if (prG->verbose)
-            M_print (i18n (908, "Received USERONLINE packet for non-contact.\n"));
+            M_print (i18n (1908, "Received USERONLINE packet for non-contact.\n"));
         return;
     }
     
@@ -403,7 +403,7 @@ JUMP_SNAC_F(SnacSrvUseroffline)
     if (!cont)
     {
         if (prG->verbose)
-            M_print (i18n (909, "Received USEROFFLINE packet for non-contact.\n"));
+            M_print (i18n (1909, "Received USEROFFLINE packet for non-contact.\n"));
         return;
     }
 
@@ -588,7 +588,7 @@ JUMP_SNAC_F(SnacSrvAckmsg)
     uin = PacketReadUIN (pak);
     Time_Stamp ();
     M_print (" ");
-    M_print (i18n (913, "Received server acknowledge for %s#%08lx:%08lx%s sent to %s%s%s.\n"),
+    M_print (i18n (1913, "Received server acknowledge for %s#%08lx:%08lx%s sent to %s%s%s.\n"),
              COLSERV, mid1, mid2, COLNONE, COLCONTACT, ContactFindName (uin), COLNONE);
     log_event (uin, LOG_EVENT, "Received ACK for #%08lx%08lx to %s\n",
                mid1, mid2, ContactFindName (uin));
@@ -620,7 +620,7 @@ JUMP_SNAC_F(SnacSrvSetinterval)
     pak = event->pak;
     interval = PacketReadB2 (pak);
     if (prG->verbose)
-        M_print (i18n (918, "Ignored server request for a minimum report interval of %d.\n"), 
+        M_print (i18n (1918, "Ignored server request for a minimum report interval of %d.\n"), 
             interval);
 }
 
@@ -638,7 +638,7 @@ JUMP_SNAC_F(SnacSrvAddedyou)
     uin = PacketReadUIN (pak);
     Time_Stamp ();
     M_print (" " COLCONTACT "%10s" COLNONE " ", ContactFindName (uin));
-    M_print (i18n (755, "added you to their contact list.\n"));
+    M_print (i18n (1755, "added you to their contact list.\n"));
     log_event (uin, LOG_EVENT, "Added to the contact list by %s\n",
                ContactFindName (uin));
     /* Not using Do_Msg/USER_ADDED_MESS here because it's way too
@@ -757,13 +757,13 @@ JUMP_SNAC_F(SnacSrvFromoldicq)
     id  = PacketRead2 (p);
     if (prG->verbose && uin != event->sess->uin)
     {
-        M_print (i18n (919, "UIN mismatch: %d vs %d.\n"), event->sess->uin, uin);
+        M_print (i18n (1919, "UIN mismatch: %d vs %d.\n"), event->sess->uin, uin);
         SnacSrvUnknown (event);
         return;
     }
     if (prG->verbose && len != tlv[1].len - 2)
     {
-        M_print (i18n (743, "Size mismatch in packet lengths.\n"));
+        M_print (i18n (1743, "Size mismatch in packet lengths.\n"));
         SnacSrvUnknown (event);
         return;
     }
@@ -807,10 +807,10 @@ JUMP_SNAC_F(SnacSrvFromoldicq)
  */
 JUMP_SNAC_F(SnacSrvRegrefused)
 {
-    M_print (i18n (920, "Registration of new UIN refused.\n"));
+    M_print (i18n (1920, "Registration of new UIN refused.\n"));
     if (event->sess->flags & CONN_WIZARD)
     {
-        M_print (i18n (792, "I'm sorry, AOL doesn't want to give us a new UIN, probably because of too many new UIN requests from this IP. Please try again later.\n"));
+        M_print (i18n (1792, "I'm sorry, AOL doesn't want to give us a new UIN, probably because of too many new UIN requests from this IP. Please try again later.\n"));
         exit (0);
     }
 }
@@ -821,7 +821,7 @@ JUMP_SNAC_F(SnacSrvRegrefused)
 JUMP_SNAC_F(SnacSrvNewuin)
 {
     event->sess->uin = event->sess->spref->uin = PacketReadAt4 (event->pak, 6 + 10 + 46);
-    M_print (i18n (762, "Your new UIN is: %d.\n"), event->sess->uin);
+    M_print (i18n (1762, "Your new UIN is: %d.\n"), event->sess->uin);
     if (event->sess->flags & CONN_WIZARD)
     {
         assert (event->sess->spref);
@@ -830,10 +830,10 @@ JUMP_SNAC_F(SnacSrvNewuin)
 
         event->sess->spref->flags |= CONN_AUTOLOGIN;
         event->sess->assoc->spref->flags |= CONN_AUTOLOGIN;
-        M_print (i18n (790, "Setup wizard finished. Congratulations to your new UIN!\n"));
+        M_print (i18n (1790, "Setup wizard finished. Congratulations to your new UIN!\n"));
         if (Save_RC () == -1)
         {
-            M_print (i18n (679, "Sorry saving your personal reply messages went wrong!\n"));
+            M_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
         }
         SessionInit (event->sess);
         SessionInit (event->sess->assoc);
@@ -855,9 +855,9 @@ JUMP_SNAC_F(SnacSrvAuthreq)
     uin = PacketReadUIN (pak);
     text = PacketReadStrB (pak);
     Time_Stamp ();
-    M_print (i18n (590, COLCONTACT "%10s" COLNONE " has requested your authorization to be added to their contact list.\n"),
+    M_print (i18n (1590, COLCONTACT "%10s" COLNONE " has requested your authorization to be added to their contact list.\n"),
              ContactFindName (uin));
-    M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (591, "Reason:"), text);
+    M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (1591, "Reason:"), text);
     free (text);
     if (prG->sound & SFLAG_CMD)
         ExecScript (prG->sound_cmd, uin, 0, NULL);
@@ -879,7 +879,7 @@ JUMP_SNAC_F(SnacSrvAuthreply)
     uin = PacketReadUIN (pak);
     Time_Stamp ();
     M_print (" " COLCONTACT "%10s" COLNONE " ", ContactFindName (uin));
-    M_print (i18n (901, "has authorized you to add them to your contact list."));
+    M_print (i18n (1901, "has authorized you to add them to your contact list."));
     M_print ("\n");
     if (prG->sound & SFLAG_CMD)
         ExecScript (prG->sound_cmd, uin, 0, NULL);
@@ -1098,7 +1098,7 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, char *text, UDWORD type)
             format = 1;
             break;
         default:
-            M_print (i18n (930, "Can't send this (%x) yet.\n"), type);
+            M_print (i18n (1930, "Can't send this (%x) yet.\n"), type);
             return;
     }
     
