@@ -1,10 +1,38 @@
 -*- coding: utf-8 -*-
 
+2004-09-07 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* another attempt at fixing -s
+	* check-in missing update
+
+2004-08-28 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* improve help command (rtc)
+
+2004-08-17 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* fix missing break
+	* add undocumented 'contact delid' command to delete server
+	  side contact list items
+	* re-add missing sr.i18n
+	* renumber strings due to changed format string
+
+2004-08-10 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* make ESC DEL delete last word
+	* try to fix parameters once more
+	* send correct ADDEND
+	* add 'contact activate' command
+	* properly decode rate limits
+	* reserve lower roster id numbers for special roster entries
+	* fixes, create ImportTime, nuke entry type 17
+	* add ICQTIC if missing, fix missing ADDSTART/ADDEND
+	* fix authorization required contacts
+
 2004-08-01 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 	* option 'local' for non-contacts
 	* send correct type to server when uploading contactst
 	* try to update group on server as well
-	* 
+	* Tcl double-^C fix from stable
+	* fix upgrading issues
+	* add sk.i18n from Ján Stanik
+	* add missing include in util_tcl.c
 
 2004-07-24 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 	* re-implement roster code, now does allow to upload contacts
