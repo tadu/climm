@@ -1263,7 +1263,7 @@ static Packet *PacketTCPC (Connection *peer, UDWORD cmd, UDWORD seq, UWORD type,
     PacketWrite2      (pak, type);       /* message type               */
     PacketWrite2      (pak, status);     /* flags                      */
     PacketWrite2      (pak, flags);      /* status                     */
-    PacketWriteLNTS   (pak, c_out (msg));/* the message                */
+    PacketWriteLNTS   (pak, msg);        /* the message                */
     
     return pak;
 }
@@ -1366,7 +1366,7 @@ static int TCPSendMsgAck (Connection *peer, UWORD seq, UWORD type, BOOL accept)
     if (peer->parent->parent->status & STATUSF_INV)  flags |= TCP_MSGF_INV;
     flags ^= TCP_MSGF_LIST;
 
-    pak = PacketTCPC (peer, TCP_CMD_ACK, seq, type, flags, status, msg);
+    pak = PacketTCPC (peer, TCP_CMD_ACK, seq, type, flags, status, c_out (msg));
     switch (type)
     {
         case TCP_MSG_FILE:
@@ -1545,11 +1545,18 @@ BOOL TCPSendMsg (Connection *list, UDWORD uin, char *msg, UWORD sub_cmd)
 
     ASSERT_MSGDIRECT(peer);
 
+#ifdef ENABLE_UTF8
+    fprintf (stderr, "TCPing '%s'\n", msg);
+    pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, sub_cmd, 0, list->parent->status,
+                      (cont->caps & CAP_UTF8) ? msg : c_out (msg));
+#else
     pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, sub_cmd, 0, list->parent->status, msg);
+#endif
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
-#ifdef __BEOS__
-    PacketWriteDLStr (pak, "{0946134E-4C7F-11D1-8222-444553540000}");
+#ifdef ENABLE_UTF8
+    if (cont->caps & CAP_UTF8)
+        PacketWriteDLStr (pak, CAP_GID_UTF8);
 #endif
 
     peer->stat_real_pak_sent++;
@@ -1670,7 +1677,7 @@ BOOL TCPSendFiles (Connection *list, UDWORD uin, char *description, char **files
         
     if (peer->ver < 8)
     {
-        pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, TCP_MSG_FILE, 0, list->parent->status, description);
+        pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, TCP_MSG_FILE, 0, list->parent->status, c_out (description));
         PacketWrite2 (pak, 0);
         PacketWrite2 (pak, 0);
         PacketWriteLNTS (pak, "many, really many, files");
@@ -1757,7 +1764,7 @@ static void TCPCallBackReceive (Event *event)
 {
     Contact *cont;
     Packet *pak;
-    char *tmp, *ctmp, *tmp3, *ctext, *text, *reason, *name, *cname;
+    char *tmp, *ctmp, *cctmp, *tmp3, *ctext, *text, *reason, *name, *cname;
     UWORD cmd, type, seq, port;
     UDWORD len, status, flags;
 
@@ -1787,7 +1794,6 @@ static void TCPCallBackReceive (Event *event)
     /* fore/background color ignored */
     
     tmp = strdup (c_in (ctmp));
-    free (ctmp);
     
     switch (cmd)
     {
@@ -2010,6 +2016,20 @@ static void TCPCallBackReceive (Event *event)
                 case MSG_WEB:
                 case MSG_EMAIL:
                 case MSG_CONTACT:
+#ifdef ENABLE_UTF8
+                    /**/    PacketRead4 (pak);
+                    /**/    PacketRead4 (pak);
+                    cctmp = PacketReadDLStr (pak);
+
+                    if (!strcmp (cctmp, CAP_GID_UTF8))
+                    {
+                        free (tmp);
+                        tmp = ctmp;
+                        ctmp = cctmp;
+                    }
+                    else
+                        free (cctmp);
+#endif
                     IMSrvMsg (cont, event->conn, NOW, type, tmp, status);
 
                     TCPSendMsgAck (event->conn, seq, type, TRUE);
@@ -2021,6 +2041,7 @@ static void TCPCallBackReceive (Event *event)
             break;
     }
     PacketD (pak);
+    free (ctmp);
     free (tmp);
     free (event);
 }
