@@ -798,8 +798,6 @@ static JUMP_SNAC_F(SnacSrvAuthreq)
     char *text;
 
     pak = event->pak;
-    PacketReadData (pak, NULL, PacketReadB2 (pak));
-    /* TLV 1 ignored */
     uin  = PacketReadUIN (pak);
     text = PacketReadStrB (pak);
     
@@ -820,8 +818,6 @@ static JUMP_SNAC_F(SnacSrvAuthreply)
     char *reply;
 
     pak = event->pak;
-    PacketReadData (pak, NULL, PacketReadB2 (pak));
-    /* TLV 1 ignored */
     uin   = PacketReadUIN  (pak);
     acc   = PacketRead1    (pak);
     reply = PacketReadStrB (pak);
@@ -842,8 +838,6 @@ static JUMP_SNAC_F(SnacSrvAddedyou)
     UDWORD uin;
 
     pak = event->pak;
-    PacketReadData (pak, NULL, PacketReadB2 (pak));
-    /* TLV 1 ignored */
     uin = PacketReadUIN (pak);
 
     UtilCheckUIN (event->sess, uin);
