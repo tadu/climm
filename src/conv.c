@@ -1,7 +1,7 @@
 /*
  * This file handles character conversions.
  *
- * This file is Copyright Rüdiger Kuhlmann; it may be distributed under
+ * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
  * version 2 of the GPL licence.
  *
  * $Id$
@@ -44,6 +44,10 @@ UBYTE ConvEnc (const char *enc)
         conv_encs[7].enc = strdup ("euc-jp");
         conv_encs[8].enc = strdup ("shift-jis");
     }
+#ifndef ENABLE_ICONV
+    if (!strncmp (enc, "koi8", 4))
+        enc = "koi8-u";
+#endif
     for (nr = 0; conv_encs[nr].enc; nr++)
         if (!strcasecmp (conv_encs[nr].enc, enc))
         {
@@ -352,7 +356,9 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
     static UDWORD size = 0;
     const unsigned char *in = inn;
     UDWORD i;
+#if 0
     unsigned char x, y;
+#endif
     
     if (!inn)
         return "";
@@ -442,7 +448,9 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
     static UDWORD size = 0;
     const unsigned char *in = inn;
     UDWORD val, i;
+#if 0
     unsigned char x, y;
+#endif
 
     if (!inn)
         return "";
@@ -477,13 +485,13 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
                 continue;
             case ENC_LATIN1:
                 if (!(val & 0xffffff00))
-                    t = s_catf (t, &size, "%c", val);
+                    t = s_catf (t, &size, "%c", (UBYTE)val);
                 else
                     t = s_catf (t, &size, "?");
                 continue;
             case ENC_LATIN9:
                 if (!(val & 0xffffff00))
-                    t = s_catf (t, &size, "%c", val);
+                    t = s_catf (t, &size, "%c", (UBYTE)val);
                 else
                     switch (val)
                     {
@@ -503,7 +511,7 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
                 for (i = 0; i < 128; i++)
                     if (koi8u_utf8[i] == val)
                     {
-                        t = s_catf (t, &size, "%c", i + 128);
+                        t = s_catf (t, &size, "%c", (UBYTE)(i + 128));
                         continue;
                     }
                 t = s_catf (t, &size, "?");
@@ -512,7 +520,7 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
                 for (i = 0; i < 128; i++)
                     if (win1251_utf8[i] == val)
                     {
-                        t = s_catf (t, &size, "%c", i + 128);
+                        t = s_catf (t, &size, "%c", (UBYTE)(i + 128));
                         continue;
                     }
                 t = s_catf (t, &size, "?");
