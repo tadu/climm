@@ -55,7 +55,7 @@ BOOL DebugReal (UDWORD level, const char *str, ...)
 
     name = DebugStr (level & prG->verbose);
     level = prG->verbose;
-    prG->verbose = 0;
+    prG->verbose = 8;
 
     M_print ("");
     if ((c = M_pos ()))
