@@ -18,7 +18,8 @@
 
 /* Message types */
 #define TCP_MSG_AUTO            0x0000
-#define TCP_MSG_MESS            0x0002
+#define TCP_MSG_MESS            0x0001
+#define TCP_MSG_CHAT            0x0002
 #define TCP_MSG_FILE            0x0003
 #define TCP_MSG_URL             0x0004
 #define TCP_MSG_REQ_AUTH        0x0006
