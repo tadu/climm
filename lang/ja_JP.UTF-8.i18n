@@ -3,9 +3,9 @@
 1001:ja
 1002:ja_JP
 1003:0-4-9-4
-1004:now3d
-1005:now3d
-1006:2002-09-24
+1004:J. Grant, Okasana, T.
+1005:J. Grant
+1006:2002-12-18
 1007:UTF-8
 1010:ユーザーは離席中です [自動メッセージ ]
 1011:ユーザーは対応できません [自動メッセージ]
@@ -26,7 +26,7 @@
 1026:十二月
 1027:YES
 1028:NO
-1029:YES か NO を入力してください
+1029:Yes か No を入力してください
 1030:がログアウトしました
 1031:がログインしました
 1032:デバック: double packet #%04x of type %04x (%s).
@@ -642,82 +642,52 @@
 1731: 「不可視」：
 1735:メッセージを指定する必要があります。
 1738:変更するコマンドを指定してください。
-#-#1741:メッセージを最初に受け取らなければならない
-#1741:Must receive a message first.\n
-#-#1742:一つのメッセージを最初に書かなければならない
-#1742:Must write a message first.\n
-#-#1743:包みの長さのサイズの不適当な組み合わせ。
-#1743:Size mismatch in packet lengths.\n
+1741:メッセージを最初に受け取らなければならない\n
+1742:一つのメッセージを最初に書かなければならない\n
+1743:包みの長さのサイズの不適当な組み合わせ。\n
 1744:サーバー (v5)
 1745:未知
-#-#1746:   nr   タイプ                  送られました / 受信パケット / 個のパケット
-#1746: nr type         sent/received packets/unique packets\n
+1746:   nr   タイプ                  送られました / 受信パケット / 個のパケット\n
 1747:合計
 1749.「ユーザー数」 %d は %s へ名前を変更した。
 1751.「あだ名」 %s は取除いた。
-#-#1754:注: あなたは 「save」 がディスクへ新しい接触のリストを書くことを必要とする。
-#1754:Note: You need to 'save' to write new contact list to disc.\n
-#-#1755:%s は接触のリストへあなたを加えた。
-#1755:has added you to their contact list.\n
-#-#1756:関係を作成する...
-#1756:\nCreating Connection...\n
-#-#1757:関係を確立できない。
-#1757:Couldn't establish connection.\n
-#-#1758:要求を送る...
-#1758:Sending Request...\n
-#-#1759:待っている応答は....
-#1759:Waiting for response....\n
-#-#1760:\nあんたの 「ユーザー数」は %s%ld%s です!\n
-#1760:\nYour new UIN is %s%ld%s!\n
+1754:注: あなたは 「save」 がディスクへ新しい接触のリストを書くことを必要とする。\n
+1755:%s は接触のリストへあなたを加えた。\n
+1756:\n関係を作成する...\n
+1757:関係を確立できない。\n
+1758:要求を送る...\n
+1759:待っている応答は....\n
+1760:\nあんたの 「ユーザー数」は %s%ld%s です!\n
 1761:新
-#-#1762:貴方の 新 「ユーザー数」 は: %ld。\n
-#1762:Your new UIN is: %ld.\n
+1762:貴方の 新 「ユーザー数」 は: %ld。\n
 1763:命令「%s」は「%s」へ名前を変更された。
 1764:命令「%s」は不変です。
-#-#1765:%s は「ユーザー数」 %ld あります。
-#1765:%s has UIN %ld.
-#1766:Changing status to away resp. not available after idling %s%ld%s seconds.\n
+1765:%s は「ユーザー数」 %ld あります。
+1766:Changing status to away resp. not available after idling %s%ld%s seconds.\n
 1767:自動車をトグルで留める、循環、に、遠方に/利用可能でない\n
-#-#1768:指令名「%s」 既に使用されている。\n
-#1768:The command name '%s' is already being used.\n
+1768:指令名「%s」 既に使用されている。\n
 1769.あなたの現在のオンライン状態を表示する。
 1770:「ユーザー数」か「あだ名」へあなたの最後のメッセージを送り直しなさい。
-#-#1771:あなたはだれでもへメッセージをまだ送らなかった!
-#1771:You haven't sent a message to anyone yet!\n
+1771:あなたはだれでもへメッセージをまだ送らなかった!\n
 1774:入って来る パッケト:
 1775:出て行く パッケト:
-#-#1777:localhost:%ld の開始 ピア・ツー・ピア の関係は...
-#1777:Opening peer-to-peer connection at localhost:%ld... 
-#-#1781:「ユーザー数」のパスウードは %ld:\n
-#1781:Your password for UIN %ld:\n
-#-#1782:あなたはあなたの新しい「ユーザー数」 のためのパスワードを必要とする。
-#1782:You need a password for your new UIN.\n
-#-#1783:もういちど入力。
-#1783:To prevent typos, please enter your password again.\n
-#-#1784:Firewall を有すれば, あなたは SOCKS5 サーバーを使用する必要があるかもしれない。あなたが, hostname かIP アドレスを書き入れるため。さもなければ不確実なら, 公正な出版物のリターン, または。
-#1784:If you are firewalled, you may need to use a SOCKS5 server. If you do, please enter its hostname or IP address. Otherwise, or if unsure, just press return.\n
-#-#1785:成功。
-#1785:success.\n
-#-#1786:どんな港が SOCKS5 サーバー聞くか. 不確実なら, ディフォルトの ポート のための出版物のリターン。
-#1786:I also need the port the socks server listens on. If unsure, press return for the default port.\n
-#-#1787:あなたはおそらく確証 をあなた自身ソックスサーバーへ必要とする。さもなければ, 公正な出版物のリターン。
-#1787:You probably need to authentificate yourself to the socks server. If so, you need to enter the user name the administrator of the socks server gave you. Otherwise, just press return.\n
-#-#1788:パスウード：
-#1788:Now I also need the password for this user.\n
+1777:localhost:%ld の開始 ピア・ツー・ピア の関係は...
+1781:「ユーザー数」のパスウードは %ld:\n
+1782:あなたはあなたの新しい「ユーザー数」 のためのパスワードを必要とする。\n
+1783:もういちど入力。\n
+1784:Firewall を有すれば, あなたは SOCKS5 サーバーを使用する必要があるかもしれない。あなたが, hostname かIP アドレスを書き入れるため。さもなければ不確実なら, 公正な出版物のリターン, または。\n
+1785:成功。\n
+1786:どんな港が SOCKS5 サーバー聞くか. 不確実なら, ディフォルトの ポート のための出版物のリターン。\n
+1787:あなたはおそらく確証 をあなた自身ソーへ必要とする。さもなければ, 公正な出版物のリターン。\n
+1788:パスウード：\n
 1789:受け取られた奇形の包み: (%d)
-#-#1790:終わる組み立て。あなたの新しい「ユーザー数」へのおめでとう
-#1790:Setup wizard finished. Congratulations to your new UIN!\n
-#-#1791:終わる組み立て。おめでとう!
-#1791:Setup wizard finished. Congratulations!\n
-#-#1792:ごめなさい、AOL は後で再度試みるのIP. からの余りにも多くのい 「ユー数」 の要求のために私達に新しい「ユーザー数」 を, おそらく与えたくない
-#1792:I'm sorry, AOL doesn't want to give us a new UIN, probably because of too many new UIN requests from this IP. Please try again later.\n
-#-#1793:見つけられる有効な「ユーザー数」 。組み立ての魔法使いは設定1 プロセスによってあなたを導く。
-#1793:No valid UIN found. The setup wizard will guide you through the process of setting one up.\n
-#-#1794:あなたに既に「ユーザー数」 があったら, それに入りなさい。さもなければ , 0 つ及び新しい要求入りなさい。
-#1794:If you already have an UIN, please enter it. Otherwise, enter 0, and I will request one for you.\n
+1790:終わる組み立て。あなたの新しい「ユーザー数」へのおめでとう\n
+1791:終わる組み立て。おめでとう!\n
+1792:ごめなさい、AOL は後で再度試みるのIP. からの余りにも多くのい 「ユー数」 の要求のために私達に新しい「ユーザー数」 を, おそらく与えたくない\n
+1793:見つけられる有効な「ユーザー数」 。組み立ての魔法使いは設定1 プロセスによってあなたを導く。\n
+1794:あなたに既に「ユーザー数」 があったら, それに入りなさい。さもなければ , 0 つ及び新しい要求入りなさい。\n
 1795:パスウード:
-#-#1796:組み立ては終わった。録が終わったまで待ちなさい。
-#1796:Setup wizard finished. Please wait until registration has finished.\n
+1796:組み立ては終わった。録が終わったまで待ちなさい。\n
 1797:金融、そして企業
 1798:小学校
 1799:高校生
@@ -727,38 +697,25 @@
 1803.SoundOffline cmd
 1804.SoundOnline
 1805.SoundOffline
-#-#1807:%s からの取り消された入って来るメッセージ(seq %04x)\n
-#1807:Cancelled incoming message (seq %04x) from %s\n
+1807:END からの取り消された入って来るメッセージ(seq %04x)%s\n
 1808:大学
 1810:大学
 1812:前の仕事場
 1813:前の構成
-#-#1814:%s%s%s への送られた自動レスポンスメッセージ。\n
-#1814:Sent auto-response message to %s%s%s.\n
-#-#1815:奇妙です:出力のために奇妙なメッセージを使用してください。
-#1815:    funny: use funny messages for output.\n
-#-#1816:コマンドをセットする未知のオプション%s。\n
-#1816:Unknown option %s to set command.\n
-#-#1817:警告: ReceiveScript 特徴は可能にされませんでした。
-#1817:The event scripting feature is disabled.\n
-#-#1818:警告:大いに非難されたシンタックスは、micqrcファイルで見つかりました。更新してください、あるいは、「save」変更用の micqrc ファイルおよびチェック。
-#1818:Warning: Deprecated syntax found in rc file!\n    Please update or "save" the rc file and check for changes.\n
-#-#1820:%s *<option>* [on|off] - 単純なオプションをコントロールしてください。\n
-#1820:%s <option> [on|off] - control simple options.\n
-#-#1822:    色:有色のテキスト出力を使用してください。
-#1822:    color: use colored text output.\n
+1814:%s%s%s への送られた自動レスポンスメッセージ。\n
+1815:奇妙です:出力のために奇妙なメッセージを使用してください。\n
+1816:コマンドをセットする未知のオプション%s。\n
+1817:警告: ReceiveScript 特徴は可能にされませんでした。\n
+1818:警告:大いに非難されたシンタックスは、micqrcファイルで見つかりました。更新してください、あるいは、「save」変更用の micqrc ファイルおよびチェック\n。
+1820:%s <option> [on|off] - 単純なオプションをコントロールしてください。\n
+1822:    色:有色のテキスト出力を使用してください。\n
 1823:入って来る部分的なパケット:
 1825:%04x (%s) パケットを廃棄しました。
-#-#1826:メッセジ %04x (%s) シーケンス %04lx 試み#%ld(長さ%d)を再び送ること。\n
-#1826:Resending message %04x (%s) sequence %04lx (attempt #%ld, len %d).\n
-#-#1830:%ldの後に%sへのメッセージを廃棄すること、試みを送る、失敗しました。メッセージ内容:\n
-#1830:Discarding message to %s after %ld send attempts.  Message content:\n
-#-#1833:ピア・ツー・ピア TCP 接続は確立しました。
-#1833:Peer to peer TCP connection established.\n
-#-#1835:ソケットに書く間のエラー %s (%d)\n
-#1835:Error while writing to socket - %s (%d)\n
-#-#1841:受信奇形の初期化認識パケット。
-#1841:Received malformed initialization acknowledgement packet.\n
+1826:メッセジ %04x (%s) シーケンス %04lx 試み#%ld(長さ %d)を再び送ること。\n
+1830:%s の後に %ld へのメッセージを廃棄すること、試みを送る、失敗しました。メッセージ内容:\n
+1833:ピア・ツー・ピア TCP 接続は確立しました。\n
+1835:ソケットに書く間のエラー %s (%d)\n
+1841:受信奇形の初期化認識パケット。\n
 #-#1842:%s にソケット %d を閉じること。\n
 #1842:Closing socket %d to %s.\n
 #-#1843:ソケット %d を閉じること。\n
