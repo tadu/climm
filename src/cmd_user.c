@@ -2388,12 +2388,33 @@ static JUMP_F(CmdUserConn)
         M_print (i18n (2099, "Selected connection %d (version %d, UIN %d) as current connection.\n"),
                  i, sess->ver, sess->uin);
     }
+    else if (!strcmp (arg1, "remove") || !strcmp (arg1, "delete"))
+    {
+        int i;
+
+        arg1 = strtok (NULL, "\n");
+        i = arg1 ? atoi (arg1) : 0;
+
+        sess = SessionNr (i - 1);
+        if (!sess)
+        {
+            M_print (i18n (1894, "There is no connection number %d.\n"), i);
+            return 0;
+        }
+        if (sess->spref)
+        {
+            M_print (i18n (2098, "Connection %d is a configured connection.\n"), i);
+            return 0;
+        }
+        M_print (i18n (2101, "Removing connection %d and its dependands completely.\n"), i);
+        SessionClose (sess);
+    }
     else
     {
         M_print (i18n (1892, "conn               List available connections.\n"));
         M_print (i18n (2094, "conn login         Open first server connection.\n"));
         M_print (i18n (1893, "conn login <nr>    Open connection <nr>.\n"));
-/*        M_print (i18n (2095, "conn close <nr>    Close connection <nr>.\n"));  */
+        M_print (i18n (2095, "conn remove <nr>   Remove connection <nr>.\n"));
         M_print (i18n (2097, "conn select <nr>   Select connection <nr> as server connection.\n"));
         M_print (i18n (2100, "conn select <uin>  Select connection with UIN <uin> as server connection.\n"));
     }
