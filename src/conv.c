@@ -154,14 +154,14 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
             case ENC_LATIN9:
                 switch (*in)
                 {
-                    case '\xa4': PUT_UTF8 (0x20ac); continue; /* EURO */
-                    case '\xa6': PUT_UTF8 (0x0160); continue; /* SCARON */
-                    case '\xa8': PUT_UTF8 (0x0161); continue; /* SMALL SCARON */
-                    case '\xb4': PUT_UTF8 (0x017d); continue; /* ZCARON */
-                    case '\xb8': PUT_UTF8 (0x017e); continue; /* SMALL ZCARON */
-                    case '\xbc': PUT_UTF8 (0x0152); continue; /* OE */
-                    case '\xbd': PUT_UTF8 (0x0153); continue; /* SMALL OE */
-                    case '\xbe': PUT_UTF8 (0x0178); continue; /* Y DIAERESIS */
+                    case 0xa4: PUT_UTF8 (0x20ac); continue; /* EURO */
+                    case 0xa6: PUT_UTF8 (0x0160); continue; /* SCARON */
+                    case 0xa8: PUT_UTF8 (0x0161); continue; /* SMALL SCARON */
+                    case 0xb4: PUT_UTF8 (0x017d); continue; /* ZCARON */
+                    case 0xb8: PUT_UTF8 (0x017e); continue; /* SMALL ZCARON */
+                    case 0xbc: PUT_UTF8 (0x0152); continue; /* OE */
+                    case 0xbd: PUT_UTF8 (0x0153); continue; /* SMALL OE */
+                    case 0xbe: PUT_UTF8 (0x0178); continue; /* Y DIAERESIS */
                     default:
                         PUT_UTF8 (*in);
                 }
