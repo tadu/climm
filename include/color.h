@@ -31,7 +31,7 @@
 #define CXERROR         7  /* errors          */
 #define CXINCOMING      8  /* incoming msgs   */
 #define CXDEBUG         9  /* debug messages  */
-#define CXCOUNT         10
+#define CXCOUNT         11
 
 #define COLNONE         ESC COLSTR "0"
 #define COLSERVER       ESC COLSTR "1"
@@ -43,6 +43,7 @@
 #define COLERROR        ESC COLSTR "7"
 #define COLINCOMING     ESC COLSTR "8"
 #define COLDEBUG        ESC COLSTR "9"
+#define COLQUOTE        ESC COLSTR ":"
 
 #define COLINDENT       ESC "v"
 #define COLEXDENT       ESC "^"

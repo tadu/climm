@@ -281,7 +281,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             exit (1);
             break;
         case SRV_TRY_AGAIN:
-            M_printf ("%s " COLMESSAGE, s_now);
+            M_printf ("%s " COLSERVER, s_now);
             M_print  (i18n (1646, "Server is busy.\n"));
             uiG.reconnect_count++;
             if (uiG.reconnect_count >= MAX_RECONNECT_ATTEMPTS)

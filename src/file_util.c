@@ -61,6 +61,7 @@ void Initialize_RC_File ()
     strc_t line;
     char *pwd;
     Connection *conn, *connt;
+    Contact *cont;
 #ifdef ENABLE_REMOTECONTROL
     Connection *conns;
 #endif
@@ -265,8 +266,10 @@ void Initialize_RC_File ()
 
     conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%ld", uin));
     ContactOptionsSetVal (&conn->contacts->copts, CO_IGNORE, 0);
-    ContactFindCreate (conn->contacts, 0, 82274703, "R\xc3\xbc" "diger Kuhlmann");
+    cont = ContactFindCreate (conn->contacts, 0, 82274703, "R\xc3\xbc" "diger Kuhlmann");
     ContactFindCreate (conn->contacts, 0, 82274703, "Tadu");
+    ContactOptionsSetStr (&cont->copts, CO_COLORINCOMING, "red bold");
+    ContactOptionsSetStr (&cont->copts, CO_COLORMESSAGE, "red bold");
 
     if (uin)
         Save_RC ();
@@ -274,8 +277,8 @@ void Initialize_RC_File ()
     free (passwd);
 }
 
-#define PrefParse(x)          switch (1) { case 1: if (!s_parse (&args, &par)) { M_printf (i18n (2123, "%sSyntax error%s: Too few arguments: %s\n"), COLERROR, COLNONE, s_cquote (line->txt, COLMESSAGE)); continue; } x = par->txt; }
-#define PrefParseInt(i)       switch (1) { case 1: if (!s_parseint (&args, &i)) { M_printf (i18n (2124, "%sSyntax error%s: Not an integer: %s\n"), COLERROR, COLNONE, s_cquote (line->txt, COLMESSAGE)); continue; }}
+#define PrefParse(x)          switch (1) { case 1: if (!s_parse (&args, &par)) { M_printf (i18n (2123, "%sSyntax error%s: Too few arguments: %s\n"), COLERROR, COLNONE, s_cquote (line->txt, COLQUOTE)); continue; } x = par->txt; }
+#define PrefParseInt(i)       switch (1) { case 1: if (!s_parseint (&args, &i)) { M_printf (i18n (2124, "%sSyntax error%s: Not an integer: %s\n"), COLERROR, COLNONE, s_cquote (line->txt, COLQUOTE)); continue; }}
 #define ERROR continue;
 
 /*

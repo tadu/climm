@@ -315,7 +315,7 @@ int main (int argc, char *argv[])
     if (conv_error)
     {
         M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-        M_printf (i18n (9999, "Encoding %s%s%s is not supported by this mICQ.\n"), COLMESSAGE, ConvEncName (conv_error), COLNONE);
+        M_printf (i18n (9999, "Encoding %s%s%s is not supported by this mICQ.\n"), COLQUOTE, ConvEncName (conv_error), COLNONE);
         if (save_conv_error)
         {
             M_print  (i18n (9999, "Please recompile using the '--enable-iconvrepl' configure option.\n"));
@@ -334,7 +334,7 @@ int main (int argc, char *argv[])
         if (!*arg_i || !strcasecmp (arg_i, "C") || !strcasecmp (arg_i, "POSIX"))
         {
             M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-            M_printf (i18n (9999, "Manual locale setting %s ignored - use a real locale instead.\n"), s_cquote (arg_i, COLMESSAGE));
+            M_printf (i18n (9999, "Manual locale setting %s ignored - use a real locale instead.\n"), s_cquote (arg_i, COLQUOTE));
         }
     }
     else
@@ -343,24 +343,24 @@ int main (int argc, char *argv[])
         {
             M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
             M_printf (i18n (9999, "Your locale is unset. Please use the %s--i1" "8n%s command line option or set one of the environment variables %sLC_ALL%s, %sLC_MESSAGES%s, or %sLANG%s to your current locale.\n"),
-                      COLMESSAGE, COLNONE, COLMESSAGE, COLNONE, COLMESSAGE, COLNONE, COLMESSAGE, COLNONE);
+                      COLQUOTE, COLNONE, COLQUOTE, COLNONE, COLQUOTE, COLNONE, COLQUOTE, COLNONE);
         }
         else if (!*prG->locale_orig || !strcasecmp (prG->locale_orig, "C") || !strcasecmp (prG->locale_orig, "POSIX"))
         {
             M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-            M_printf (i18n (9999, "Locale setting %s ignored - use a real locale instead.\n"), s_cquote (prG->locale_orig, COLMESSAGE));
+            M_printf (i18n (9999, "Locale setting %s ignored - use a real locale instead.\n"), s_cquote (prG->locale_orig, COLQUOTE));
         }
         if (prG->locale_broken)
         {
             M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
             M_printf (i18n (9999, "Your system doesn't know the %s locale - try %siconv --list%s.\n"),
-                      s_cquote (prG->locale_full, COLMESSAGE), COLMESSAGE, COLNONE);
+                      s_cquote (prG->locale_full, COLQUOTE), COLQUOTE, COLNONE);
         }
     }
 
     if (!rc && arg_l)
     {
-        M_printf (i18n (9999, "Could not open configuration file %s%s%s."), COLMESSAGE, prG->rcfile, COLNONE);
+        M_printf (i18n (9999, "Could not open configuration file %s%s%s."), COLQUOTE, prG->rcfile, COLNONE);
         exit (20);
     }
 
@@ -370,16 +370,16 @@ int main (int argc, char *argv[])
         M_printf (i18n (9999, "Deprecated option -f used. Please use the similar -b instead.\n"));
     }
 
-    M_printf (i18n (9999, "This console uses encoding %s.\n"), s_cquote (ConvEncName (prG->enc_loc), COLMESSAGE));
+    M_printf (i18n (9999, "This console uses encoding %s.\n"), s_cquote (ConvEncName (prG->enc_loc), COLQUOTE));
     if (i == -1)
     {
         M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
         M_printf (i18n (9999, "Translation %s%s%s not found. Would you like to translate mICQ into your language?\n"),
-                  COLMESSAGE, s_cquote (prG->locale, COLMESSAGE), COLNONE);
+                  COLQUOTE, s_cquote (prG->locale, COLQUOTE), COLNONE);
     }
     else
         M_printf (i18n (9999, "English (%s) translation loaded (%s%ld%s entries).\n"),
-                  s_cquote (prG->locale, COLMESSAGE), COLMESSAGE, i, COLNONE);
+                  s_cquote (prG->locale, COLQUOTE), COLQUOTE, i, COLNONE);
 
     if (!rc)
         Initialize_RC_File ();
@@ -441,7 +441,7 @@ int main (int argc, char *argv[])
         if (conv_error)
         {
             M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
-            M_printf (i18n (9999, "Encoding %s%s%s is not supported by this mICQ.\n"), COLMESSAGE, ConvEncName (conv_error), COLNONE);
+            M_printf (i18n (9999, "Encoding %s%s%s is not supported by this mICQ.\n"), COLQUOTE, ConvEncName (conv_error), COLNONE);
             conv_error = 0;
         }
 

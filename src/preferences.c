@@ -217,30 +217,35 @@ const char *PrefSetColorScheme (UBYTE scheme)
                    "colorclient \"red bold\" " "colormessage \"blue bold\" "
                    "colorcontact green "       "colorsent \"magenta bold\" "
                    "colorack \"green bold\" "  "colorerror \"red bold\" "
-                   "colorincoming \"cyan bold\" colordebug yellow";
+                   "colorincoming \"cyan bold\" colordebug yellow "
+                   "colorquote blue";
         case 2:
             return "colornone none "           "colorserver magenta "
                    "colorclient cyan "         "colormessage cyan "
                    "colorcontact cyan "        "colorsent \"magenta bold\" "
                    "colorack \"green bold\" "  "colorerror \"red bold\" "
-                   "colorincoming \"cyan bold\" colordebug yellow";
+                   "colorincoming \"cyan bold\" colordebug yellow "
+                   "colorquote blue";
         case 3:
             return "colornone green "          "colorserver none "
                    "colorclient green "        "colormessage green "
                    "colorcontact \"green bold\" colorsent \"magenta bold\" "
                    "colorack \"green bold\" "  "colorerror \"red bold\" "
-                   "colorincoming \"cyan bold\" colordebug yellow";
+                   "colorincoming \"cyan bold\" colordebug yellow "
+                   "colorquote blue";
         case 4:
             return "colornone none "           "colorserver red "
                    "colorclient green "        "colormessage \"blue bold\" "
                  "colorcontact \"magenta bold\" colorsent \"magenta bold\" "
                    "colorack \"green bold\" "  "colorerror \"red bold\" "
-                   "colorincoming \"cyan bold\" colordebug yellow";
+                   "colorincoming \"cyan bold\" colordebug yellow "
+                   "colorquote blue";
         default:
             return "colornone none "           "colorserver none "
                    "colorclient none "         "colormessage none "
                    "colorcontact none "        "colorsent none "
                    "colorack none "            "colorerror none "
-                   "colorincoming none "       "colordebug yellow";
+                   "colorincoming none "       "colordebug none "
+                   "colorquote none";
     }
 }

@@ -98,7 +98,7 @@ void ConnectionInitPeer (Connection *list)
         M_print (i18n (2046, "You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n"));
 
     M_printf (i18n (9999, "Opening peer-to-peer connection at %slocalhost%s:%s%ld%s... "),
-              COLMESSAGE, COLNONE, COLMESSAGE, list->port, COLNONE);
+              COLQUOTE, COLNONE, COLQUOTE, list->port, COLNONE);
 
     list->connect     = 0;
     list->our_seq     = -1;
@@ -358,7 +358,7 @@ void TCPDispatchConn (Connection *peer)
                 {
                     M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
                     M_printf (i18n (9999, "Opening TCP connection at %s:%s%ld%s... "),
-                              s_mquote (s_ip (peer->ip), COLMESSAGE, 0), COLMESSAGE, peer->port, COLNONE);
+                              s_mquote (s_ip (peer->ip), COLQUOTE, 0), COLQUOTE, peer->port, COLNONE);
                 }
                 UtilIOConnectTCP (peer);
                 return;
@@ -378,7 +378,7 @@ void TCPDispatchConn (Connection *peer)
                 {
                     M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
                     M_printf (i18n (9999, "Opening TCP connection at %s:%s%ld%s... "),
-                              s_mquote (s_ip (peer->ip), COLMESSAGE, 0), COLMESSAGE, peer->port, COLNONE);
+                              s_mquote (s_ip (peer->ip), COLQUOTE, 0), COLQUOTE, peer->port, COLNONE);
                 }
                 UtilIOConnectTCP (peer);
                 return;
@@ -403,7 +403,7 @@ void TCPDispatchConn (Connection *peer)
                 {
                     M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
                     M_printf (i18n (9999, "Opening TCP connection at %s:%s%ld%s... "),
-                              s_mquote (s_ip (peer->ip), COLMESSAGE, 0), COLMESSAGE, peer->port, COLNONE);
+                              s_mquote (s_ip (peer->ip), COLQUOTE, 0), COLQUOTE, peer->port, COLNONE);
                     M_print (i18n (1785, "success.\n"));
                 }
                 QueueEnqueueData (peer, QUEUE_TCP_TIMEOUT, peer->ip, time (NULL) + 10,

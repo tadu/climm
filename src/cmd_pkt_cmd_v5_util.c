@@ -205,7 +205,7 @@ void CallBackServerInitV5 (Event *event)
     EventD (event);
     
     M_printf (i18n (9999, "Opening v5 connection to %s:%s%ld%s... "),
-              s_mquote (conn->server, COLMESSAGE, 0), COLMESSAGE, conn->port, COLNONE);
+              s_mquote (conn->server, COLQUOTE, 0), COLQUOTE, conn->port, COLNONE);
     
     if (conn->sok < 0)
     {
@@ -446,7 +446,7 @@ void UDPCallBackResend (Event *event)
             else if ((type & ~MSGF_MASS) == MSG_NORM)
             {
                 str_s cdata = { data, strlen (data), 0 };
-                M_printf (COLMESSAGE "%s" COLNONE " ", ConvFromCont (&cdata, cont));
+                M_printf ("%s%s" COLNONE " ", COLMESSAGE, ConvFromCont (&cdata, cont));
             }
         }
         else

@@ -106,12 +106,12 @@ const char *BuildVersion (void)
 const char *BuildAttribution (void)
 {
     if (ConvHaveUe (prG->enc_loc))
-    return ("\xc2\xa9 1998-2000 " COLMESSAGE "Matthew D. Smith" COLNONE ", "
-            "\xc2\xa9 2001-2003 " COLMESSAGE "R\xc3\xbc" "diger Kuhlmann" COLNONE ",\n"
-            "released under version 2 of the GNU General Public License (" COLMESSAGE "GPLv2" COLNONE ").\n");
-    return ("\xc2\xa9 1998-2000 " COLMESSAGE "Matthew D. Smith" COLNONE ", "
-            "\xc2\xa9 2001-2003 " COLMESSAGE "Ruediger Kuhlmann" COLNONE ",\n"
-            "released under version 2 of the GNU General Public License (" COLMESSAGE "GPLv2" COLNONE ").\n");
+    return ("\xc2\xa9 1998-2000 " COLQUOTE "Matthew D. Smith" COLNONE ", "
+            "\xc2\xa9 2001-2003 " COLQUOTE "R\xc3\xbc" "diger Kuhlmann" COLNONE ",\n"
+            "released under version 2 of the GNU General Public License (" COLQUOTE "GPLv2" COLNONE ").\n");
+    return ("\xc2\xa9 1998-2000 " COLQUOTE "Matthew D. Smith" COLNONE ", "
+            "\xc2\xa9 2001-2003 " COLQUOTE "Ruediger Kuhlmann" COLNONE ",\n"
+            "released under version 2 of the GNU General Public License (" COLQUOTE "GPLv2" COLNONE ").\n");
 }                  
 
 const UDWORD BuildVersionNum = MICQ_BUILD_NUM;

@@ -82,7 +82,7 @@ Connection *PeerFileCreate (Connection *serv)
 
     if (prG->verbose)
         M_printf (i18n (9999, "Opening file listener connection at %slocalhost%s:%s%ld%s... "),
-                  COLMESSAGE, COLNONE, COLMESSAGE, serv->assoc->spref->port, COLNONE);
+                  COLQUOTE, COLNONE, COLQUOTE, serv->assoc->spref->port, COLNONE);
 
     flist->spref       = NULL;
     flist->parent      = serv;
@@ -178,7 +178,7 @@ BOOL PeerFileAccept (Connection *peer, UWORD status, UDWORD port)
     
     if (prG->verbose)
         M_printf (i18n (9999, "Opening file transfer connection to %s:%s%ld%s... \n"),
-                  s_mquote (fpeer->server, COLMESSAGE, 0), COLMESSAGE, fpeer->port, COLNONE);
+                  s_mquote (fpeer->server, COLQUOTE, 0), COLQUOTE, fpeer->port, COLNONE);
 
     TCPDispatchConn (fpeer);
     
@@ -416,8 +416,8 @@ void PeerFileDispatch (Connection *fpeer)
             }
             else if (fpeer->assoc->len)
             {
-                R_settimepromptf ("[" COLINCOMING "%ld %02d%%" COLNONE "] " COLSERVER "%s" COLNONE "",
-                              fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
+                R_settimepromptf ("[%s%ld %02d%%" COLNONE "] " COLSERVER "%s" COLNONE "",
+                              COLINCOMING, fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
                               i18n (1040, "mICQ> "));
             }
             PacketD (pak);

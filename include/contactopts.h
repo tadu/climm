@@ -78,5 +78,6 @@ extern struct ContactOption_s ContactOptionsList[];
 #define CO_COLORERROR    (COF_COLOR   |   0x17) /* the escape sequence to print for errors                */
 #define CO_COLORINCOMING (COF_COLOR   |   0x18) /* the escape sequence to print for incoming messages     */
 #define CO_COLORDEBUG    (COF_COLOR   |   0x19) /* the escape sequence to print for debug messages        */
+#define CO_COLORQUOTE    (COF_COLOR   |   0x1a) /* the escape sequence to print for quotes/options        */
 
 #endif

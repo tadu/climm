@@ -72,7 +72,7 @@ BOOL Debug (UDWORD level, const char *str, ...)
     return 1;
 }
 
-#define mq(s) s_mquote(s,COLMESSAGE,0)
+#define mq(s) s_mquote(s,COLQUOTE,0)
 
 /*
  * Display all meta information regarding a given contact.
@@ -99,7 +99,7 @@ void UtilUIDisplayMeta (Contact *cont)
     
     if ((dc = cont->dc))
     {
-        M_printf (COLSERVER "%-15s" COLNONE " " COLMESSAGE "%s" COLNONE ":" COLMESSAGE "%ld" COLNONE "\n",
+        M_printf (COLSERVER "%-15s" COLNONE " " COLQUOTE "%s" COLNONE ":" COLQUOTE "%ld" COLNONE "\n",
                   i18n (9999, "IP:"), s_ip (dc->ip_rem), dc->port);
     }
 
@@ -153,13 +153,13 @@ void UtilUIDisplayMeta (Contact *cont)
             M_printf (COLSERVER "%-15s" COLNONE " %s\t", 
                      i18n (1511, "Country:"), mq (tabd));
         else
-            M_printf (COLSERVER "%-15s" COLNONE " " COLMESSAGE "%d" COLNONE "\t", 
+            M_printf (COLSERVER "%-15s" COLNONE " " COLQUOTE "%d" COLNONE "\t", 
                      i18n (1512, "Country code:"), mg->country);
         M_printf ("(UTC %+05d)\n", -100 * (mg->tz / 2) + 30 * (mg->tz % 2));
     }
     if (mg && cont->updated & (UPF_GENERAL_C | UPF_DISC))
     {
-        M_printf (COLSERVER "%-15s" COLNONE " " COLMESSAGE "%s" COLNONE "\n", i18n (2237, "Webaware:"),
+        M_printf (COLSERVER "%-15s" COLNONE " %s\n", i18n (2237, "Webaware:"),
                        !mg->webaware      ? i18n (1969, "offline") :
                         mg->webaware == 1 ? i18n (1970, "online")  :
                         mg->webaware == 2 ? i18n (1888, "not webaware") :
@@ -170,7 +170,7 @@ void UtilUIDisplayMeta (Contact *cont)
      */
     if (mg && 0)
     {
-        M_printf (COLSERVER "%-15s" COLNONE " " COLMESSAGE "%d" COLNONE "\n",
+        M_printf (COLSERVER "%-15s" COLNONE " " COLQUOTE "%d" COLNONE "\n",
                   i18n (2238, "Hide IP:"), mg->hideip);
     }
     if ((me = cont->meta_email))
@@ -181,7 +181,7 @@ void UtilUIDisplayMeta (Contact *cont)
         for ( ; me; me = me->meta_email)
         {
             if (me->email && *me->email)
-                M_printf (" " COLMESSAGE "%s" COLNONE " %s\n", mq (me->email),
+                M_printf (" " COLQUOTE "%s" COLNONE " %s\n", mq (me->email),
                            me->auth == 1 ? i18n (1943, "(no authorization needed)") 
                          : me->auth == 0 ? i18n (1944, "(must request authorization)")
                          : "");
@@ -191,13 +191,13 @@ void UtilUIDisplayMeta (Contact *cont)
         && cont->updated & (UPF_MORE | UPF_GENERAL_C | UPF_GENERAL_E | UPF_DISC))
     {
         if (mm->age && ~mm->age)
-            M_printf (COLSERVER "%-15s" COLNONE " " COLMESSAGE "%d" COLNONE "\n", 
+            M_printf (COLSERVER "%-15s" COLNONE " " COLQUOTE "%d" COLNONE "\n", 
                      i18n (1575, "Age:"), mm->age);
         else
             M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
                      i18n (1575, "Age:"), i18n (1200, "not entered"));
 
-        M_printf (COLSERVER "%-15s" COLNONE " " COLMESSAGE "%s" COLNONE "\n", i18n (1696, "Sex:"),
+        M_printf (COLSERVER "%-15s" COLNONE " " COLQUOTE "%s" COLNONE "\n", i18n (1696, "Sex:"),
                    mm->sex == 1 ? i18n (1528, "female")
                  : mm->sex == 2 ? i18n (1529, "male")
                  :                i18n (1530, "not specified"));
@@ -210,24 +210,24 @@ void UtilUIDisplayMeta (Contact *cont)
     if (mm && cont->updated & (UPF_MORE | UPF_DISC))
     {
         if (mm->month >= 1 && mm->month <= 12 && mm->day && mm->day < 32 && mm->year)
-            M_printf (COLSERVER "%-15s" COLNONE " " COLMESSAGE "%02d. %s %4d" COLNONE "\n", 
+            M_printf (COLSERVER "%-15s" COLNONE " " COLQUOTE "%02d. %s %4d" COLNONE "\n", 
                 i18n (1532, "Born:"), mm->day, TableGetMonth (mm->month), mm->year);
 
         M_printf (COLSERVER "%-15s" COLNONE " ", i18n (1533, "Languages:"));
         if ((tabd = TableGetLang (mm->lang1)))
-            M_printf (COLMESSAGE "%s" COLNONE, tabd);
+            M_printf (COLQUOTE "%s" COLNONE, tabd);
         else
             M_printf ("%x", mm->lang1);
         if ((tabd = TableGetLang (mm->lang2)))
-            M_printf (", " COLMESSAGE "%s" COLNONE, tabd);
+            M_printf (", " COLQUOTE "%s" COLNONE, tabd);
         else
             M_printf (", %x", mm->lang2);
         if ((tabd = TableGetLang (mm->lang3)))
-            M_printf (", " COLMESSAGE "%s" COLNONE ".\n", tabd);
+            M_printf (", " COLQUOTE "%s" COLNONE ".\n", tabd);
         else
             M_printf (", %x.\n", mm->lang3);
         if (mm->unknown)
-            M_printf (COLSERVER "%-15s" COLNONE " " COLMESSAGE "%d" COLNONE "\n", i18n (2239, "Unknown more:"), mm->unknown);
+            M_printf (COLSERVER "%-15s" COLNONE " " COLQUOTE "%d" COLNONE "\n", i18n (2239, "Unknown more:"), mm->unknown);
     }
     if ((mw = cont->meta_work))
     {
@@ -251,10 +251,10 @@ void UtilUIDisplayMeta (Contact *cont)
         if (mw->wcountry)
         {
             if ((tabd = TableGetCountry (mw->wcountry)))
-                M_printf (COLSERVER "%-15s" COLNONE " " COLMESSAGE "%s" COLNONE "\n", 
+                M_printf (COLSERVER "%-15s" COLNONE " " COLQUOTE "%s" COLNONE "\n", 
                          i18n (1514, "Work Country:"), tabd);
             else
-                M_printf (COLSERVER "%-15s" COLNONE " " COLMESSAGE "%d" COLNONE "\n", 
+                M_printf (COLSERVER "%-15s" COLNONE " " COLQUOTE "%d" COLNONE "\n", 
                          i18n (1513, "Work Country Code:"), mw->wcountry);
         }
         if (mw->wcompany && *mw->wcompany)
@@ -264,7 +264,7 @@ void UtilUIDisplayMeta (Contact *cont)
         if (mw->wposition && *mw->wposition)
             M_printf (AVPFMT, i18n (1517, "Job Position:"), mq (mw->wposition));
         if (mw->woccupation)
-            M_printf (COLSERVER "%-15s" COLNONE " " COLMESSAGE "%s" COLNONE "\n", 
+            M_printf (COLSERVER "%-15s" COLNONE " " COLQUOTE "%s" COLNONE "\n", 
                       i18n (1516, "Occupation:"), TableGetOccupation (mw->woccupation));
         if (mw->whomepage && *mw->whomepage)
             M_printf (AVPFMT, i18n (1515, "Work Homepage:"), mq (mw->whomepage));
@@ -311,16 +311,16 @@ void UtilUIDisplayMeta (Contact *cont)
     if ((mo = cont->meta_obsolete))
     {
         if (mo->unknown)
-            M_printf (COLSERVER "%-15s" COLNONE " " COLMESSAGE "%04x" COLNONE " = " COLMESSAGE "%d" COLNONE "\n",
+            M_printf (COLSERVER "%-15s" COLNONE " " COLQUOTE "%04x" COLNONE " = " COLQUOTE "%d" COLNONE "\n",
                       i18n (2195, "Obsolete number:"), mo->unknown, mo->unknown);
         if (mo->description && *mo->description)
             M_printf (COLSERVER "%-15s" COLNONE " %s\n",
                       i18n (2196, "Obsolete text:"), mq (mo->description));
         if (mo->empty)
-            M_printf (COLSERVER "%-15s" COLNONE " " COLMESSAGE "%d" COLNONE "\n",
+            M_printf (COLSERVER "%-15s" COLNONE " " COLQUOTE "%d" COLNONE "\n",
                       i18n (2197, "Obsolete byte"), mo->empty);
     }
     if (cont->meta_about && *cont->meta_about)
         M_printf (COLSERVER "%-15s" COLNONE "\n%s\n",
-                  i18n (1525, "About:"), s_mquote (s_ind (cont->meta_about), COLMESSAGE, 1));
+                  i18n (1525, "About:"), s_mquote (s_ind (cont->meta_about), COLQUOTE, 1));
 }
