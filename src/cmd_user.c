@@ -311,13 +311,15 @@ static JUMP_F(CmdUserChange)
             return 0;
         }
     }
+
     if (s_parserem (&args, &arg1))
     {
-        if      (data & STATUSF_DND)  s_repl (&prG->auto_dnd,  arg1);
-        else if (data & STATUSF_OCC)  s_repl (&prG->auto_occ,  arg1);
-        else if (data & STATUSF_NA)   s_repl (&prG->auto_na,   arg1);
-        else if (data & STATUSF_AWAY) s_repl (&prG->auto_away, arg1);
-        else if (data & STATUSF_FFC)  s_repl (&prG->auto_ffc,  arg1);
+        if      (data & STATUSF_DND)  ContactOptionsSet (&prG->copts, CO_AUTODND,  arg1);
+        else if (data & STATUSF_OCC)  ContactOptionsSet (&prG->copts, CO_AUTOOCC,  arg1);
+        else if (data & STATUSF_NA)   ContactOptionsSet (&prG->copts, CO_AUTONA,   arg1);
+        else if (data & STATUSF_AWAY) ContactOptionsSet (&prG->copts, CO_AUTOAWAY, arg1);
+        else if (data & STATUSF_FFC)  ContactOptionsSet (&prG->copts, CO_AUTOFFC,  arg1);
+        else if (data & STATUSF_INV)  ContactOptionsSet (&prG->copts, CO_AUTOINV,  arg1);
     }
 
     if (conn->ver > 6)
@@ -691,7 +693,8 @@ static JUMP_F(CmdUserPass)
 static JUMP_F(CmdUserSMS)
 {
     Contact *cont = NULL, *contr = NULL;
-    char *arg1 = NULL, *arg2 = NULL;
+    char *arg1 = NULL, *arg3 = NULL;
+    const char *arg2 = NULL;
     UDWORD i;
     OPENCONN;
     
@@ -725,10 +728,10 @@ static JUMP_F(CmdUserSMS)
         return 0;
     }
     arg1 = strdup (arg1);
-    if (!s_parserem (&args, &arg2))
+    if (!s_parserem (&args, &arg3))
         M_print (i18n (2015, "No message given.\n"));
     else
-        SnacCliSendsms (conn, arg1, arg2);
+        SnacCliSendsms (conn, arg1, arg3);
     free (arg1);
     return 0;
 }
@@ -796,8 +799,9 @@ static JUMP_F(CmdUserPeek)
  */
 static JUMP_F(CmdUserTrans)
 {
-    char *arg1 = NULL, *t = NULL;
-    const char *p = NULL;
+    char *arg1 = NULL;
+    char *t = NULL;
+    const char *p = NULL, *arg2;
     int one = 0;
 
     while (1)
@@ -858,10 +862,11 @@ static JUMP_F(CmdUserTrans)
             for (t = arg1; *t; t++)
                 if (*t == '-')
                     *t = ' ';
-            s_parseint (&arg1, &v1);
-            s_parseint (&arg1, &v2);
-            s_parseint (&arg1, &v3);
-            s_parseint (&arg1, &v4);
+            arg2 = arg1;
+            s_parseint (&arg2, &v1);
+            s_parseint (&arg2, &v2);
+            s_parseint (&arg2, &v3);
+            s_parseint (&arg2, &v4);
             
             /* i18n (1079, "Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n") */
             M_printf (i18n (-1, s),
@@ -884,7 +889,8 @@ static JUMP_F(CmdUserGetAuto)
 
     if (!data)
     {
-        char *argst = args, *arg1 = NULL;
+        const char *argst = args;
+        char *arg1 = NULL;
         if (!s_parse (&args, &arg1))     data = 0;
         else if (!strcmp (arg1, "auto")) data = 0;
         else if (!strcmp (arg1, "away")) data = MSGF_GETAUTO | MSG_GET_AWAY;
@@ -1108,6 +1114,7 @@ static JUMP_F(CmdUserAuto)
 {
     char *arg1 = NULL, *arg2 = NULL;
 
+#if 0
     if (!s_parse (&args, &arg1))
     {
         M_printf (i18n (1724, "Automatic replies are %s.\n"),
@@ -1120,6 +1127,7 @@ static JUMP_F(CmdUserAuto)
         M_printf ("%30s %s\n", i18n (2054, "The \"free for chat\" message is:"),  prG->auto_ffc);
         return 0;
     }
+#endif
 
     if      (!strcasecmp (arg1, "on")  || !strcasecmp (arg1, i18n (1085, "on")))
     {
@@ -1133,7 +1141,9 @@ static JUMP_F(CmdUserAuto)
         M_printf (i18n (1724, "Automatic replies are %s.\n"), i18n (1086, "off"));
         return 0;
     }
-    
+    M_printf (i18n (9999, "Auto reply messages are now contact options, see the 'opt' command.\n"));
+
+#if 0    
     arg1 = strdup (arg1);
 
     if (!s_parserem (&args, &arg2))
@@ -1158,6 +1168,7 @@ static JUMP_F(CmdUserAuto)
     else
         M_printf (i18n (2113, "Unknown status '%s'.\n"), arg1);
     free (arg1);
+#endif
     return 0;
 }
 
@@ -1526,7 +1537,8 @@ static JUMP_F (CmdUserMessage)
     static int offset = 0;
     static char msg[1024];
     static UDWORD uinlist[20] = { 0 };
-    char *arg1 = NULL;
+    const char *arg1 = NULL;
+    char *arg2;
     UDWORD i;
     Contact *cont = NULL;
     OPENCONN;
@@ -1633,13 +1645,13 @@ static JUMP_F (CmdUserMessage)
             default:
                 assert (0);
         }
-        if (!s_parserem (&args, &arg1))
-            arg1 = NULL;
-        if (arg1)
+        if (!s_parserem (&args, &arg2))
+            arg2 = NULL;
+        if (arg2)
         {
             for (i = 0; uinlist[i]; i++)
             {
-                icq_sendmsg (conn, uiG.last_sent_uin = uinlist[i], arg1, MSG_NORM);
+                icq_sendmsg (conn, uiG.last_sent_uin = uinlist[i], arg2, MSG_NORM);
                 TabAddUIN (uinlist[i]);
             }
             return 0;
@@ -1677,8 +1689,8 @@ static JUMP_F(CmdUserVerbose)
 
 static UDWORD __status (Contact *cont)
 {
-    if (ContactPref (cont, CONT_IGNORE))    return 0xfffffffe;
-    if (ContactPref (cont, CONT_TEMPORARY)) return 0xfffffffe;
+    if (ContactPref (cont, CO_IGNORE))      return 0xfffffffe;
+    if (cont->oldflags & CONT_TEMPORARY)    return 0xfffffffe;
     if (cont->status == STATUS_OFFLINE)     return STATUS_OFFLINE;
     if (cont->status  & STATUSF_BIRTH)      return STATUSF_BIRTH;
     if (cont->status  & STATUSF_DND)        return STATUS_DND;
@@ -1710,7 +1722,7 @@ static JUMP_F(CmdUserStatusDetail)
     int lenuin = 0, lennick = 0, lenstat = 0, lenid = 0, totallen = 0;
     Contact *cont = NULL, *alias = NULL;
     Connection *peer;
-    char *argst, *arg1;
+    char *arg1;
     UDWORD stati[] = { 0xfffffffe, STATUS_OFFLINE, STATUS_DND,    STATUS_OCC, STATUS_NA,
                                    STATUS_AWAY,    STATUS_ONLINE, STATUS_FFC, STATUSF_BIRTH };
     ANYCONN;
@@ -1720,7 +1732,7 @@ static JUMP_F(CmdUserStatusDetail)
 
     if (~data & 32)
     {
-        argst = args;
+        const char *argst = args;
         if (s_parse (&argst, &arg1))
             if ((tcg = cg = ContactGroupFind (0, conn, arg1, 0)))
                 args = argst;
@@ -1746,7 +1758,7 @@ static JUMP_F(CmdUserStatusDetail)
             ContactRem (tcg, cont);
         cg = conn->contacts;
         for (j = 0; (cont = ContactIndex (cg, j)); j++)
-            if (!ContactPref (cont, CONT_TEMPORARY) && !ContactPref (cont, CONT_ALIAS))
+            if (~cont->oldflags & CONT_TEMPORARY && ~cont->oldflags & CONT_ALIAS)
                 if (!ContactFind (tcg, 0, cont->uin, NULL, 0))
                     ContactAdd (tcg, cont);
         for (i = 0; (cg = ContactGroupIndex (i)); i++)
@@ -1763,13 +1775,13 @@ static JUMP_F(CmdUserStatusDetail)
     {
         if (uin && cont->uin != uin)
             continue;
-        if ((ContactPref (cont, CONT_TEMPORARY) || ContactPref (cont, CONT_ALIAS)) && ~data & 2)
+        if ((cont->oldflags & (CONT_TEMPORARY | CONT_ALIAS)) && ~data & 2)
             continue;
         if (cont->uin > tuin)
             tuin = cont->uin;
         if (s_strlen (cont->nick) > lennick)
             lennick = s_strlen (cont->nick);
-        if (ContactPref (cont, CONT_ALIAS))
+        if (cont->oldflags & CONT_ALIAS)
             continue;
         if (s_strlen (s_status (cont->status)) > lenstat)
             lenstat = s_strlen (s_status (cont->status));
@@ -1873,11 +1885,11 @@ static JUMP_F(CmdUserStatusDetail)
                     
                     if (data & 2)
                         M_printf (COLSERVER "%s%c%c%c%1.1d%c" COLNONE "%s %*ld", ul,
-                             ContactPref (alias, CONT_ALIAS)     ? '+' :
-                             ContactPref (cont,  CONT_TEMPORARY) ? '#' : ' ',
-                             ContactPref (cont,  CONT_INTIMATE)  ? '*' :
-                              ContactPref (cont, CONT_HIDEFROM)  ? '-' : ' ',
-                             ContactPref (cont,  CONT_IGNORE)    ? '^' : ' ',
+                             alias->oldflags & CONT_ALIAS     ? '+' :
+                             cont->oldflags & CONT_TEMPORARY  ? '#' : ' ',
+                             ContactPref (cont,  CO_INTIMATE) ? '*' :
+                              ContactPref (cont, CO_HIDEFROM) ? '-' : ' ',
+                             ContactPref (cont,  CO_IGNORE)   ? '^' : ' ',
                              cont->dc ? cont->dc->version : 0,
                              peer ? (
                               peer->connect & CONNECT_OK   ? '&' :
@@ -1888,16 +1900,16 @@ static JUMP_F(CmdUserStatusDetail)
                              ul, (int)lenuin, cont->uin);
 
                     M_printf (COLSERVER "%s%c" COLCONTACT "%s%-*s" COLNONE "%s " COLMESSAGE "%s%-*s" COLNONE "%s %-*s%s%s" COLNONE "\n",
-                             ul, data & 2                        ? ' ' :
-                             ContactPref (alias, CONT_ALIAS)     ? '+' :
-                             ContactPref (cont,  CONT_TEMPORARY) ? '#' :
-                             ContactPref (cont,  CONT_INTIMATE)  ? '*' :
-                             ContactPref (cont,  CONT_HIDEFROM)  ? '-' :
-                             ContactPref (cont,  CONT_IGNORE)    ? '^' :
-                             !peer                               ? ' ' :
-                             peer->connect & CONNECT_OK          ? '&' :
-                             peer->connect & CONNECT_FAIL        ? '|' :
-                             peer->connect & CONNECT_MASK        ? ':' : '.' ,
+                             ul, data & 2                     ? ' ' :
+                             alias->oldflags & CONT_ALIAS     ? '+' :
+                             cont->oldflags & CONT_TEMPORARY  ? '#' :
+                             ContactPref (cont, CO_INTIMATE)  ? '*' :
+                             ContactPref (cont, CO_HIDEFROM)  ? '-' :
+                             ContactPref (cont, CO_IGNORE)    ? '^' :
+                             !peer                            ? ' ' :
+                             peer->connect & CONNECT_OK       ? '&' :
+                             peer->connect & CONNECT_FAIL     ? '|' :
+                             peer->connect & CONNECT_MASK     ? ':' : '.' ,
                              ul, lennick + s_delta (alias->nick), alias->nick,
                              ul, ul, lenstat + 2 + s_delta (stat), stat,
                              ul, lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
@@ -2085,13 +2097,13 @@ static JUMP_F(CmdUserIgnoreStatus)
     cg = conn->contacts;
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
     {
-        if (!ContactPref (cont, CONT_ALIAS))
+        if (~cont->oldflags & CONT_ALIAS)
         {
-            if (ContactPref (cont, CONT_IGNORE))
+            if (ContactPref (cont, CO_IGNORE))
             {
-                if (ContactPref (cont, CONT_INTIMATE))
+                if (ContactPref (cont, CO_INTIMATE))
                     M_print (COLSERVER "*" COLNONE);
-                else if (ContactPref (cont, CONT_HIDEFROM))
+                else if (ContactPref (cont, CO_HIDEFROM))
                     M_print (COLSERVER "~" COLNONE);
                 else
                     M_print (" ");
@@ -2270,11 +2282,11 @@ static JUMP_F(CmdUserStatusShort)
         M_printf ("%s%s\n", W_SEPARATOR, i18n (1072, "Users offline:"));
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
         {
-            if (!ContactPref (cont, CONT_ALIAS) && !ContactPref (cont, CONT_IGNORE))
+            if ((~cont->oldflags & CONT_ALIAS) && !ContactPref (cont, CO_IGNORE))
             {
                 if (cont->status == STATUS_OFFLINE)
                 {
-                    if (ContactPref (cont, CONT_INTIMATE))
+                    if (ContactPref (cont, CO_INTIMATE))
                         M_print (COLSERVER "*" COLNONE);
                     else
                         M_print (" ");
@@ -2289,11 +2301,11 @@ static JUMP_F(CmdUserStatusShort)
     M_printf ("%s%s\n", W_SEPARATOR, i18n (1073, "Users online:"));
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
     {
-        if (!ContactPref (cont, CONT_ALIAS) && !ContactPref (cont, CONT_IGNORE))
+        if ((~cont->oldflags & CONT_ALIAS) && !ContactPref (cont, CO_IGNORE))
         {
             if (cont->status != STATUS_OFFLINE)
             {
-                if (ContactPref (cont, CONT_INTIMATE))
+                if (ContactPref (cont, CO_INTIMATE))
                     M_print (COLSERVER "*" COLNONE);
                 else
                     M_print (" ");
@@ -2516,226 +2528,148 @@ static JUMP_F(CmdUserOpt)
 {
     ContactGroup *cg = NULL;
     Contact *cont = NULL, *contr = NULL;
-    char *arg1;
-    const char *argo = "";
+    const char *optname = NULL, *res = NULL, *eres = NULL, *optobj = NULL;
+    ContactOptions *copts = NULL;
+    int opttype = 0, i;
+    UWORD flag = 0;
+    BOOL booli = 0;
+    
+    char *cmd;
     ANYCONN;
 
     if (!*args)
     {
-        M_printf (i18n (9999, "opt [[<contact>|<contact group>] <option> <value>] - set an option for a contact group, a contact or global.\n"));
+        M_printf (i18n (9999, "opt [[<contact>|<contact group>|global] <option> <value>] - set an option for a contact group, a contact or global.\n"));
         M_printf (i18n (9999, "  <option> can be: hidefrom, ignore, intimate.\n"));
         M_printf (i18n (9999, "  <value> can be: on, off, undef.\n"));
         return 0;
     }
 
+    if (s_parsekey (&args, "global"))                  { copts = &prG->copts;   opttype = 0; optobj = ""; }
+    else if (s_parsecg (&args, &cg, conn))             { copts = &cg->copts;    opttype = 1; optobj = cg->name; }
+    else if (s_parsenick (&args, &cont, &contr, conn)) { copts = &contr->copts; opttype = 2; optobj = cont->nick; }
+    else if (s_parse (&args, &cmd))
+    {
+        M_printf (i18n (9999, "Could not find contact or contact group name in %s.\n"), args);
+        return 0;
+    }
+    
+    if (!*args)
+    {
+        M_printf (opttype == 2 ? i18n (9999, "Options for contact '%s%s%s':\n") :
+                  opttype == 1 ? i18n (9999, "Options for contact group '%s%s%s':\n")
+                               : i18n (9999, "Global options:\n"),
+                  COLMESSAGE, optobj, COLNONE);
+        
+        for (i = 0; (optname = ContactOptionsList[i].name); i++)
+        {
+            if (opttype == 2)
+                M_printf ("    %10s  %s%10s%s  (%s %s%s%s)\n", optname, COLMESSAGE,
+                          ContactOptionsGet (copts, ContactOptionsList[i].flag, &res)
+                            ? (res
+                              ? (ContactOptionsList[i].isbool
+                                ? i18n (1085, "on") 
+                                : res) 
+                              : i18n (1086, "off")) 
+                            : i18n (9999, "undefined"), COLNONE, i18n (9999, "effectivly"), COLMESSAGE,
+                          (eres = ContactPref (contr, ContactOptionsList[i].flag))
+                            ? (ContactOptionsList[i].isbool
+                              ? i18n (1085, "on")
+                              : eres)
+                            : i18n (1086, "off"), COLNONE);
+            else
+                M_printf ("    %10s  %s%s%s\n", optname, COLMESSAGE,
+                          ContactOptionsGet (copts, ContactOptionsList[i].flag, &res)
+                            ? (res
+                              ? (ContactOptionsList[i].isbool
+                                ? i18n (1085, "on") 
+                                : res) 
+                              : i18n (1086, "off")) 
+                            : i18n (9999, "undefined"), COLNONE);
+        }        
+        return 0;
+    }
+    
     while (*args)
     {
-        argo = args;
-        if (s_parsekey (&args, "hidefrom"))
-        {
-            if (!s_parse (&args, &arg1))
-                break;
-            if (!strcmp (arg1, "on"))
-            {
-                M_printf (i18n (9999, "Setting global option '%s'.\n"), "hidefrom");
-                prG->contflags |= CONT_HIDEFROM;
-            }
-            else if (!strcmp (arg1, "off") || !strcmp (arg1, "undef"))
-            {
-                M_printf (i18n (9999, "Clearing global option '%s'.\n"), "hidefrom");
-                prG->contflags &= ~CONT_HIDEFROM;
-            }
-            else break;
-        }
-        else if (s_parsekey (&args, "ignore"))
-        {
-            if (!s_parse (&args, &arg1))
-                break;
-            if (!strcmp (arg1, "on"))
-            {
-                M_printf (i18n (9999, "Setting global option '%s'.\n"), "ignore");
-                prG->contflags |= CONT_IGNORE;
-            }
-            else if (!strcmp (arg1, "off") || !strcmp (arg1, "undef"))
-            {
-                M_printf (i18n (9999, "Clearing global option '%s'.\n"), "ignore");
-                prG->contflags &= ~CONT_IGNORE;
-            }
-            else break;
-        }
-        else if (s_parsekey (&args, "intimate"))
-        {
-            if (!s_parse (&args, &arg1))
-                break;
-            if (!strcmp (arg1, "on"))
-            {
-                M_printf (i18n (9999, "Setting global option '%s'.\n"), "intimate");
-                prG->contflags |= CONT_INTIMATE;
-            }
-            else if (!strcmp (arg1, "off") || !strcmp (arg1, "undef"))
-            {
-                M_printf (i18n (9999, "Clearing global option '%s'.\n"), "intimate");
-                prG->contflags &= ~CONT_INTIMATE;
-            }
-            else break;
-        }
-        else if (s_parsecg (&args, &cg, conn))
-        {
-            if (s_parsekey (&args, "hidefrom"))
-            {
-                if (!s_parse (&args, &arg1))
-                    break;
-                if (!strcmp (arg1, "on"))
-                {
-                    M_printf (i18n (9999, "Setting option '%s' for contact group '%s'.\n"), "hidefrom", cg->name);
-                    cg->flags    |=  CONT_HIDEFROM;
-                    cg->flagsset |=  CONT_HIDEFROM;
-                }
-                else if (!strcmp (arg1, "off"))
-                {
-                    M_printf (i18n (9999, "Clearing option '%s' for contact group '%s'.\n"), "hidefrom", cg->name);
-                    cg->flags    &= ~CONT_HIDEFROM;
-                    cg->flagsset |=  CONT_HIDEFROM;
-                }
-                else if (!strcmp (arg1, "undef"))
-                {
-                    M_printf (i18n (9999, "Undefining option '%s' for contact group '%s'.\n"), "hidefrom", cg->name);
-                    cg->flags    &= ~CONT_HIDEFROM;
-                    cg->flagsset &= ~CONT_HIDEFROM;
-                }
-                else break;
-            }
-            else if (s_parsekey (&args, "ignore"))
-            {
-                if (!s_parse (&args, &arg1))
-                    break;
-                if (!strcmp (arg1, "on"))
-                {
-                    M_printf (i18n (9999, "Setting option '%s' for contact group '%s'.\n"), "ignore", cg->name);
-                    cg->flags    |=  CONT_IGNORE;
-                    cg->flagsset |=  CONT_IGNORE;
-                }
-                else if (!strcmp (arg1, "off"))
-                {
-                    M_printf (i18n (9999, "Clearing option '%s' for contact group '%s'.\n"), "ignore", cg->name);
-                    cg->flags    &= ~CONT_IGNORE;
-                    cg->flagsset |=  CONT_IGNORE;
-                }
-                else if (!strcmp (arg1, "undef"))
-                {
-                    M_printf (i18n (9999, "Undefining option '%s' for contact group '%s'.\n"), "ignore", cg->name);
-                    cg->flags    &= ~CONT_IGNORE;
-                    cg->flagsset &= ~CONT_IGNORE;
-                }
-                else break;
-            }
-            else if (s_parsekey (&args, "intimate"))
-            {
-                if (!s_parse (&args, &arg1))
-                    break;
-                if (!strcmp (arg1, "on"))
-                {
-                    M_printf (i18n (9999, "Setting option '%s' for contact group '%s'.\n"), "intimate", cg->name);
-                    cg->flags    |=  CONT_INTIMATE;
-                    cg->flagsset |=  CONT_INTIMATE;
-                }
-                else if (!strcmp (arg1, "off"))
-                {
-                    M_printf (i18n (9999, "Clearing option '%s' for contact group '%s'.\n"), "intimate", cg->name);
-                    cg->flags    &= ~CONT_INTIMATE;
-                    cg->flagsset |=  CONT_INTIMATE;
-                }
-                else if (!strcmp (arg1, "undef"))
-                {
-                    M_printf (i18n (9999, "Undefining option '%s' for contact group '%s'.\n"), "intimate", cg->name);
-                    cg->flags    &= ~CONT_INTIMATE;
-                    cg->flagsset &= ~CONT_INTIMATE;
-                }
-                else break;
-            }
-            else break;
-        }
-        else if (s_parsenick (&args, &cont, &contr, conn))
-        {
-            if (s_parsekey (&args, "hidefrom"))
-            {
-                if (!s_parse (&args, &arg1))
-                    break;
-                if (!strcmp (arg1, "on"))
-                {
-                    M_printf (i18n (9999, "Setting option '%s' for contact '%s'.\n"), "hidefrom", cont->nick);
-                    contr->flags    |=  CONT_HIDEFROM;
-                    contr->flagsset |=  CONT_HIDEFROM;
-                }
-                else if (!strcmp (arg1, "off"))
-                {
-                    M_printf (i18n (9999, "Clearing option '%s' for contact '%s'.\n"), "hidefrom", cont->nick);
-                    contr->flags    &= ~CONT_HIDEFROM;
-                    contr->flagsset |=  CONT_HIDEFROM;
-                }
-                else if (!strcmp (arg1, "undef"))
-                {
-                    M_printf (i18n (9999, "Undefining option '%s' for contact '%s'.\n"), "hidefrom", cont->nick);
-                    contr->flags    &= ~CONT_HIDEFROM;
-                    contr->flagsset &= ~CONT_HIDEFROM;
-                }
-                else break;
-            }
-            else if (s_parsekey (&args, "ignore"))
-            {
-                if (!s_parse (&args, &arg1))
-                    break;
-                if (!strcmp (arg1, "on"))
-                {
-                    M_printf (i18n (9999, "Setting option '%s' for contact '%s'.\n"), "ignore", cont->nick);
-                    contr->flags    |=  CONT_IGNORE;
-                    contr->flagsset |=  CONT_IGNORE;
-                }
-                else if (!strcmp (arg1, "off"))
-                {
-                    M_printf (i18n (9999, "Clearing option '%s' for contact '%s'.\n"), "ignore", cont->nick);
-                    contr->flags    &= ~CONT_IGNORE;
-                    contr->flagsset |=  CONT_IGNORE;
-                }
-                else if (!strcmp (arg1, "undef"))
-                {
-                    M_printf (i18n (9999, "Undefining option '%s' for contact '%s'.\n"), "ignore", cont->nick);
-                    contr->flags    &= ~CONT_IGNORE;
-                    contr->flagsset &= ~CONT_IGNORE;
-                }
-                else break;
-            }
-            else if (s_parsekey (&args, "intimate"))
-            {
-                if (!s_parse (&args, &arg1))
-                    break;
-                if (!strcmp (arg1, "on"))
-                {
-                    M_printf (i18n (9999, "Setting option '%s' for contact group '%s'.\n"), "intimate", cont->nick);
-                    contr->flags    |=  CONT_INTIMATE;
-                    contr->flagsset |=  CONT_INTIMATE;
-                }
-                else if (!strcmp (arg1, "off"))
-                {
-                    M_printf (i18n (9999, "Clearing option '%s' for contact group '%s'.\n"), "intimate", cont->nick);
-                    contr->flags    &= ~CONT_INTIMATE;
-                    contr->flagsset |=  CONT_INTIMATE;
-                }
-                else if (!strcmp (arg1, "undef"))
-                {
-                    M_printf (i18n (9999, "Undefining option '%s' for contact group '%s'.\n"), "intimate", cont->nick);
-                    contr->flags    &= ~CONT_INTIMATE;
-                    contr->flagsset &= ~CONT_INTIMATE;
-                }
-                else break;
-            }
-            else break;
-        }
-        else break;
-        if (!*args)
+        if (!s_parse (&args, &cmd))
             return 0;
+        
+        for (i = 0; ContactOptionsList[i].name; i++)
+            if (!strcmp (cmd, ContactOptionsList[i].name))
+            {
+                optname = ContactOptionsList[i].name;
+                flag = ContactOptionsList[i].flag;
+                booli = ContactOptionsList[i].isbool;
+                break;
+            }
+        
+        if (!optname)
+        {
+            M_printf (i18n (9999, "Unknown option '%s'.\n"), cmd);
+            continue;
+        }
+        
+        if (!s_parse (&args, &cmd))
+        {
+            const char *res = NULL;
+            if (!ContactOptionsGet (copts, flag, &res))
+                M_printf (opttype == 2 ? i18n (9999, "Option '%s' for contact '%s' is undefined.\n") :
+                          opttype == 1 ? i18n (9999, "Option '%s' for contact group '%s' is undefined.\n")
+                                       : i18n (9999, "Option '%s%s' has no global value.\n"),
+                          optname, optobj);
+            else if (res)
+                M_printf (opttype == 2 ? i18n (9999, "Option '%s' for contact '%s' is '%s'.\n") :
+                          opttype == 1 ? i18n (9999, "Option '%s' for contact group '%s' is '%s'.\n")
+                                       : i18n (9999, "Option '%s%s' is globally '%s'.\n"),
+                          optname, optobj, booli ? i18n (1085, "on") : res);
+            else
+                M_printf (opttype == 2 ? i18n (9999, "Option '%s' for contact '%s' is '%s'.\n") :
+                          opttype == 1 ? i18n (9999, "Option '%s' for contact group '%s' is '%s'.\n")
+                                       : i18n (9999, "Option '%s%s' is globally '%s'.\n"),
+                          optname, optobj, booli ? i18n (1086, "off") : "<?>");
+                
+            return 0;
+        }
+        
+        if (!booli)
+        {
+            ContactOptionsSet (copts, flag, cmd);
+            M_printf (opttype == 2 ? i18n (9999, "Setting option '%s' for contact '%s' to '%s'.\n") :
+                      opttype == 1 ? i18n (9999, "Setting option '%s' for contact group '%s' to '%s'.\n")
+                                   : i18n (9999, "Setting option '%s%s' globally to '%s'.\n"),
+                      optname, optobj, cmd);
+        }
+        else if (!strcasecmp (cmd, "on")  || !strcasecmp (cmd, i18n (1085, "on")))
+        {
+            ContactOptionsSet (copts, flag, "+");
+            M_printf (opttype == 2 ? i18n (9999, "Setting option '%s' for contact '%s'.\n") :
+                      opttype == 1 ? i18n (9999, "Setting option '%s' for contact group '%s'.\n")
+                                   : i18n (9999, "Setting option '%s%s' globally.\n"),
+                      optname, optobj);
+        }
+        else if (!strcasecmp (cmd, "off") || !strcasecmp (cmd, i18n (1086, "off")))
+        {
+            ContactOptionsSet (copts, flag, "");
+            M_printf (opttype == 2 ? i18n (9999, "Clearing option '%s' for contact '%s'.\n") :
+                      opttype == 1 ? i18n (9999, "Clearing option '%s' for contact group '%s'.\n")
+                                   : i18n (9999, "Clearing option '%s%s' globally.\n"),
+                      optname, optobj);
+        }
+        else if (!strcasecmp (cmd, "undef"))
+        {
+            ContactOptionsSet (copts, flag, NULL);
+            M_printf (opttype == 2 ? i18n (9999, "Undefining option '%s' for contact '%s'.\n") :
+                      opttype == 1 ? i18n (9999, "Undefining option '%s' for contact group '%s'.\n")
+                                   : i18n (9999, "Clearing global option '%s%s'.\n"),
+                      optname, optobj);
+        }
+        else
+        {
+            M_printf (i18n (9999, "Invalid value '%s' for boolean option '%s'.\n"), cmd, optname);
+            continue;
+        }
     }
-    M_printf (i18n (9999, "Could not understand '%s'.\n"), argo);
     return 0;
 }
 
@@ -2784,14 +2718,14 @@ static JUMP_F(CmdUserTogIgnore)
             return 0;
         }
 
-        if (ContactPref (contr, CONT_IGNORE))
+        if (ContactPref (contr, CO_IGNORE))
         {
-            ContactPrefSet (cont, CONT_IGNORE, CONT_MODE_CLEAR);
+            ContactOptionsSet (&cont->copts, CO_IGNORE, "");
             M_printf (i18n (1666, "Unignored %s.\n"), cont->nick);
         }
         else
         {
-            ContactPrefSet (cont, CONT_IGNORE, CONT_MODE_SET);
+            ContactOptionsSet (&cont->copts, CO_IGNORE, "+");
             M_printf (i18n (1667, "Ignoring %s.\n"), cont->nick);
         }
         if (*args == ',')
@@ -2816,9 +2750,9 @@ static JUMP_F(CmdUserTogInvis)
             return 0;
         }
 
-        if (ContactPref (contr, CONT_HIDEFROM))
+        if (ContactPref (contr, CO_HIDEFROM))
         {
-            ContactPrefSet (cont, CONT_HIDEFROM, CONT_MODE_CLEAR);
+            ContactOptionsSet (&cont->copts, CO_HIDEFROM, "");
             if (conn->ver > 6)
                 SnacCliReminvis (conn, cont);
             else
@@ -2827,8 +2761,8 @@ static JUMP_F(CmdUserTogInvis)
         }
         else
         {
-            ContactPrefSet (cont, CONT_INTIMATE, CONT_MODE_CLEAR);
-            ContactPrefSet (cont, CONT_HIDEFROM, CONT_MODE_SET);
+            ContactOptionsSet (&cont->copts, CO_INTIMATE, "");
+            ContactOptionsSet (&cont->copts, CO_HIDEFROM, "+");
             if (conn->ver > 6)
                 SnacCliAddinvis (conn, cont);
             else
@@ -2864,9 +2798,9 @@ static JUMP_F(CmdUserTogVisible)
             return 0;
         }
 
-        if (ContactPref (contr, CONT_INTIMATE))
+        if (ContactPref (contr, CO_INTIMATE))
         {
-            ContactPrefSet (cont, CONT_INTIMATE, CONT_MODE_CLEAR);
+            ContactOptionsSet (&cont->copts, CO_INTIMATE, "");
             if (conn->ver > 6)
                 SnacCliRemvisible (conn, cont);
             else
@@ -2875,8 +2809,8 @@ static JUMP_F(CmdUserTogVisible)
         }
         else
         {
-            ContactPrefSet (cont, CONT_HIDEFROM, CONT_MODE_CLEAR);
-            ContactPrefSet (cont, CONT_INTIMATE, CONT_MODE_SET);
+            ContactOptionsSet (&cont->copts, CO_HIDEFROM, "");
+            ContactOptionsSet (&cont->copts, CO_INTIMATE, "+");
             if (conn-> ver > 6)
                 SnacCliAddvisible (conn, cont);
             else
@@ -2900,12 +2834,12 @@ static JUMP_F(CmdUserAdd)
 {
     ContactGroup *cg = NULL;
     Contact *cont = NULL, *cont2;
-    char *arg1, *argst;
+    char *arg1;
     OPENCONN;
 
     if (data != 1)
     {
-        argst = args;
+        const char *argst = args;
         if (s_parse (&argst, &arg1))
         {
             if ((cg = ContactGroupFind (0, conn, arg1, 0)))
@@ -2938,7 +2872,7 @@ static JUMP_F(CmdUserAdd)
         {
             while (s_parsenick_s (&args, &cont2, MULTI_SEP, &cont, conn))
             {
-                if (ContactPref (cont, CONT_TEMPORARY))
+                if (cont->oldflags & CONT_TEMPORARY)
                     M_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), cont->nick);
                 else if (!ContactFind (cg, 0, cont->uin, 0, 0))
                 {
@@ -2973,7 +2907,7 @@ static JUMP_F(CmdUserAdd)
 
     if (arg1)
     {
-        if (ContactPref (cont, CONT_TEMPORARY))
+        if (cont->oldflags & CONT_TEMPORARY)
         {
             M_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, arg1);
             M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
@@ -2985,7 +2919,7 @@ static JUMP_F(CmdUserAdd)
             else
                 CmdPktCmdContactList (conn);
             s_repl (&cont->nick, arg1);
-            ContactPrefSet (cont, CONT_TEMPORARY, CONT_MODE_CLEAR);
+            cont->oldflags &= ~CONT_TEMPORARY;
         }
         else
         {
@@ -3023,7 +2957,8 @@ static JUMP_F(CmdUserRemove)
     ContactGroup *cg = NULL;
     Contact *cont = NULL;
     UDWORD uin;
-    char *alias, *argst;
+    char *alias;
+    const char *argst;
     UBYTE all = 0;
     OPENCONN;
     
@@ -3080,7 +3015,7 @@ static JUMP_F(CmdUserRemove)
         }
         else
         {
-            if (ContactPref (cont, CONT_TEMPORARY))
+            if (cont->oldflags & CONT_TEMPORARY)
             {
                 M_printf (i18n (2221, "Removed temporary contact '%s' (%ld).\n"),
                           cont->nick, cont->uin);
@@ -3125,7 +3060,8 @@ static JUMP_F(CmdUserRemove)
  */
 static JUMP_F(CmdUserAuth)
 {
-    char *cmd = NULL, *argsb, *msg = NULL;
+    char *cmd = NULL, *msg = NULL;
+    const char *argsb;
     Contact *cont = NULL;
     OPENCONN;
 
@@ -4208,7 +4144,8 @@ static int CmdUserProcessAlias (const char *cmd, const char *argsd,
 static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag)
 {
     char buf[1024];    /* This is hopefully enough */
-    char *cmd = NULL, *args;
+    char *cmd = NULL;
+    const char *args;
 
     static jump_f *sticky = (jump_f *)NULL;
     static int status = 0;

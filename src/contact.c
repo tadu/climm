@@ -270,11 +270,11 @@ Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nic
     if (!create)
         return NULL;
     if (nick && (alias = ContactFind (group, id, uin, NULL, 0))
-             && ContactPref (alias, CONT_TEMPORARY))
+             && alias->oldflags & CONT_TEMPORARY)
     {
         s_repl (&alias->nick, nick);
         alias->group = group ? group : CONTACTGROUP_GLOBAL;
-        ContactPrefSet (alias, CONT_TEMPORARY, CONT_MODE_CLEAR);
+        alias->oldflags &= ~CONT_TEMPORARY;
         Debug (DEB_CONTACT, "new   #%d %ld '%s' %p in %p was temporary", id, uin, nick, alias, group);
         return alias;
     }
@@ -285,7 +285,7 @@ Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nic
     cont->id = id;
     if (!nick)
     {
-        ContactPrefSet (cont, CONT_TEMPORARY, CONT_MODE_SET);
+        cont->oldflags |= CONT_TEMPORARY;
         s_repl (&cont->nick, s_sprintf ("%ld", uin));
     }
     else
@@ -301,7 +301,7 @@ Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nic
         while (alias->alias)
             alias = alias->alias;
         alias->alias = cont;
-        ContactPrefSet (cont, CONT_ALIAS, CONT_MODE_SET);
+        cont->oldflags |= CONT_ALIAS;
         return cont;
     }
     if (fr->used == MAX_ENTRIES)
@@ -330,7 +330,7 @@ BOOL ContactAdd (ContactGroup *group, Contact *cont)
             ContactGroupInit ();
         group = CONTACTGROUP_GLOBAL;
     }
-    if (!group || !cont || ContactPref (cont, CONT_ALIAS))
+    if (!group || !cont || cont->oldflags & CONT_ALIAS)
         return FALSE;
     while (group->used == MAX_ENTRIES && group->more)
         group = group->more;
@@ -411,7 +411,7 @@ BOOL ContactRemAlias (ContactGroup *group, Contact *alias)
     {
         s_repl (&alias->nick, s_sprintf ("%ld", alias->uin));
         alias->id = 0;
-        ContactPrefSet (alias, CONT_TEMPORARY, CONT_MODE_SET);
+        alias->oldflags |= CONT_TEMPORARY;
         return ContactRem (group, alias);
     }
     while (cont->alias != alias)
@@ -552,7 +552,8 @@ BOOL ContactMetaLoad (Contact *cont)
     UBYTE enc;
     Extra *extra;
     FILE *f;
-    char *line, *cmd;
+    char *cmd;
+    const char *line;
     UDWORD i;
     
     if (!(f = fopen (s_sprintf ("%scontacts" _OS_PATHSEPSTR "icq-%ld", PrefUserDir (prG), cont->uin), "r")))
@@ -716,73 +717,19 @@ BOOL ContactMetaLoad (Contact *cont)
 /*
  * Query a flag for a contact.
  */
-UDWORD ContactPref (Contact *cont, UDWORD flag)
+const char *ContactPref (Contact *cont, UWORD flag)
 {
-    if (cont->flagsset & flag)
-    {
-        if (flag & CONT_BINARY)
-            return cont->flags & flag ? 1 : 0;
-        return 0;
-    }
-    if (cont->group->flagsset & flag)
-    {
-        if (flag & CONT_BINARY)
-            return cont->group->flags & flag ? 1 : 0;
-        return 0;
-    }
-    if (cont->group->serv->contacts->flagsset & flag)
-    {
-        if (flag & CONT_BINARY)
-            return cont->group->serv->contacts->flags & flag ? 1 : 0;
-        return 0;
-    }
-    if (flag & CONT_BINARY)
-        return prG->contflags & flag ? 1 : 0;
-    return 0;
-}
-
-/*
- * Sets, clears or undefines a contact flag.
- */
-void ContactPrefSet (Contact *cont, UDWORD flag, UBYTE mode)
-{
-    switch (mode)
-    {
-        case CONT_MODE_UNDEF:
-            cont->flags    &= ~flag;
-            cont->flagsset &= ~flag;
-            return;
-        case CONT_MODE_CLEAR:
-            cont->flags    &= ~flag;
-            cont->flagsset |=  flag;
-            return;
-        case CONT_MODE_SET:
-            cont->flags    |=  flag;
-            cont->flagsset |=  flag;
-            return;
-    }
-}
-
-/*
- * Sets, clears or undefines a contact group flag.
- */
-void ContactGroupPrefSet (ContactGroup *group, UDWORD flag, UBYTE mode)
-{
-    switch (mode)
-    {
-        case CONT_MODE_UNDEF:
-            group->flags    &= ~flag;
-            group->flagsset &= ~flag;
-            return;
-        case CONT_MODE_CLEAR:
-            group->flags    &= ~flag;
-            group->flagsset |=  flag;
-            return;
-        case CONT_MODE_SET:
-            group->flags    |=  flag;
-            group->flagsset |=  flag;
-            return;
-    }
+    const char *res = NULL;
+    
+    if (ContactOptionsGet (&cont->copts, flag, &res))
+        return res;
+    if (ContactOptionsGet (&cont->group->copts, flag, &res))
+        return res;
+    if (ContactOptionsGet (&cont->group->serv->contacts->copts, flag, &res))
+        return res;
+    if (ContactOptionsGet (&prG->copts, flag, &res))
+        return res;
+    return NULL;
 }
 
 /*

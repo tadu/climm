@@ -144,7 +144,7 @@ static void CallbackMeta (Event *event)
     else
     {
         UtilUIDisplayMeta (cont);
-        if (!ContactPref (cont, CONT_ISEDITED))
+        if (~cont->oldflags & CONT_ISEDITED)
             ContactMetaSave (cont);
         else
             cont->updated &= ~UPF_DISC;

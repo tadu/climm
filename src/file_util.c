@@ -242,12 +242,13 @@ void Initialize_RC_File ()
 #ifdef ANSI_TERM
     prG->flags |= FLAG_COLOR;
 #endif
-    prG->auto_dnd  = strdup (i18n (1929, "User is dnd [Auto-Message]"));
-    prG->auto_away = strdup (i18n (1010, "User is away [Auto-Message]"));
-    prG->auto_na   = strdup (i18n (1011, "User is not available [Auto-Message]"));
-    prG->auto_occ  = strdup (i18n (1012, "User is occupied [Auto-Message]"));
-    prG->auto_inv  = strdup (i18n (1013, "User is offline"));
-    prG->auto_ffc  = strdup (i18n (2055, "User is ffc and wants to chat about everything."));
+
+    ContactOptionsSet (&prG->copts, CO_AUTODND,  i18n (1929, "User is dnd [Auto-Message]"));
+    ContactOptionsSet (&prG->copts, CO_AUTOAWAY, i18n (1010, "User is away [Auto-Message]"));
+    ContactOptionsSet (&prG->copts, CO_AUTONA,   i18n (1011, "User is not available [Auto-Message]"));
+    ContactOptionsSet (&prG->copts, CO_AUTOOCC,  i18n (1012, "User is occupied [Auto-Message]"));
+    ContactOptionsSet (&prG->copts, CO_AUTOFFC,  i18n (2055, "User is ffc and wants to chat about everything."));
+
     prG->logplace  = strdup ("history" _OS_PATHSEPSTR);
     prG->chat      = 49;
 
@@ -272,7 +273,8 @@ void Initialize_RC_File ()
 int Read_RC_File (FILE *rcf)
 {
     char *tmp = NULL, *tmp2 = NULL, *cmd = NULL;
-    char *p, *line, *args;
+    char *line;
+    const char *args, *p;
     Contact *cont = NULL, *lastcont = NULL;
     Connection *oldconn = NULL, *conn = NULL, *tconn;
 #ifdef ENABLE_REMOTECONTROL
@@ -555,32 +557,37 @@ int Read_RC_File (FILE *rcf)
                     else if (!strcasecmp (tmp, "away"))
                     {
                         PrefParse (tmp);
-                        s_repl (&prG->auto_away, ConvToUTF8 (tmp, enc, -1, 0));
+                        ContactOptionsSet (&prG->copts, CO_AUTOAWAY, ConvToUTF8 (tmp, enc, -1, 0));
+                        dep = 1;
                     }
                     else if (!strcasecmp (tmp, "na"))
                     {
                         PrefParse (tmp);
-                        s_repl (&prG->auto_na, ConvToUTF8 (tmp, enc, -1, 0));
+                        ContactOptionsSet (&prG->copts, CO_AUTONA, ConvToUTF8 (tmp, enc, -1, 0));
+                        dep = 1;
                     }
                     else if (!strcasecmp (tmp, "dnd"))
                     {
                         PrefParse (tmp);
-                        s_repl (&prG->auto_dnd, ConvToUTF8 (tmp, enc, -1, 0));
+                        ContactOptionsSet (&prG->copts, CO_AUTODND, ConvToUTF8 (tmp, enc, -1, 0));
+                        dep = 1;
                     }
                     else if (!strcasecmp (tmp, "occ"))
                     {
                         PrefParse (tmp);
-                        s_repl (&prG->auto_occ, ConvToUTF8 (tmp, enc, -1, 0));
+                        ContactOptionsSet (&prG->copts, CO_AUTOOCC, ConvToUTF8 (tmp, enc, -1, 0));
+                        dep = 1;
                     }
                     else if (!strcasecmp (tmp, "inv"))
                     {
                         PrefParse (tmp);
-                        s_repl (&prG->auto_inv, ConvToUTF8 (tmp, enc, -1, 0));
+                        dep = 1;
                     }
                     else if (!strcasecmp (tmp, "ffc"))
                     {
                         PrefParse (tmp);
-                        s_repl (&prG->auto_ffc, ConvToUTF8 (tmp, enc, -1, 0));
+                        ContactOptionsSet (&prG->copts, CO_AUTOFFC, ConvToUTF8 (tmp, enc, -1, 0));
+                        dep = 1;
                     }
                     else
                         ERROR;
@@ -751,41 +758,8 @@ int Read_RC_File (FILE *rcf)
                 }
                 else if (!strcasecmp (cmd, "options"))
                 {
-                    while (s_parse (&args, &cmd))
-                    {
-                        if (!strcmp (cmd, "intimate"))
-                        {
-                            PrefParse (cmd);
-                            if (!strcmp (cmd, "on"))
-                                prG->contflags |=  CONT_INTIMATE;
-                            else if (!strcmp (cmd, "off"))
-                                prG->contflags &= ~CONT_INTIMATE;
-                            else
-                                ERROR;
-                        }
-                        else if (!strcmp (cmd, "hidefrom"))
-                        {
-                            PrefParse (cmd);
-                            if (!strcmp (cmd, "on"))
-                                prG->contflags |=  CONT_HIDEFROM;
-                            else if (!strcmp (cmd, "off"))
-                                prG->contflags &= ~CONT_HIDEFROM;
-                            else
-                                ERROR;
-                        }
-                        else if (!strcmp (cmd, "ignore"))
-                        {
-                            PrefParse (cmd);
-                            if (!strcmp (cmd, "on"))
-                                prG->contflags |=  CONT_IGNORE;
-                            else if (!strcmp (cmd, "off"))
-                                prG->contflags &= ~CONT_IGNORE;
-                            else
-                                ERROR;
-                        }
-                        else
-                            ERROR;
-                    }
+                    if (ContactOptionsImport (&prG->copts, args))
+                        ERROR;
                 }
                 else
                 {
@@ -808,15 +782,15 @@ int Read_RC_File (FILE *rcf)
                     switch (*p)
                     {
                         case '*':
-                            flags |= CONT_INTIMATE;
-                            flags &= ~CONT_HIDEFROM;
+                            flags |= CO_INTIMATE;
+                            flags &= ~(CO_HIDEFROM & ~CO_DIRECT);
                             continue;
                         case '^':
-                            flags |= CONT_IGNORE;
+                            flags |= CO_IGNORE;
                             continue;
                         case '~':
-                            flags |= CONT_HIDEFROM;
-                            flags &= ~CONT_INTIMATE;
+                            flags |= CO_HIDEFROM;
+                            flags &= ~(CO_INTIMATE & ~CO_DIRECT);
                             continue;
                         case ' ':
                         case '-':
@@ -848,13 +822,12 @@ int Read_RC_File (FILE *rcf)
                     if (tconn->contacts && (cont = ContactFind (tconn->contacts, 0, uin, NULL, 0)))
                     {
                         j = 1;
-                        if (!ContactPref (cont, CONT_TEMPORARY))
+                        if (~cont->oldflags & CONT_TEMPORARY)
                             ContactFind (tconn->contacts, 0, uin, ConvToUTF8 (cmd, enc, -1, 0), 1);
                         else
                         {
                             s_repl (&cont->nick, ConvToUTF8 (cmd, enc, -1, 0));
-                            cont->flags = flags;
-                            cont->flagsset = flags;
+                            ContactOptionsSet (&cont->copts, flags, "+"); /* FIXME */
                         }
                     }
                 }
@@ -873,11 +846,8 @@ int Read_RC_File (FILE *rcf)
                         section = -1;
                         break;
                     }
-                    if (!ContactPref (cont, CONT_ALIAS))
-                    {
-                        cont->flags = flags;
-                        cont->flagsset = flags;
-                    }
+                    if (~cont->oldflags & CONT_ALIAS)
+                        ContactOptionsSet (&cont->copts, flags, "+"); /* FIXME */
                 }
                 break;
             case 2:
@@ -1082,7 +1052,7 @@ int Read_RC_File (FILE *rcf)
                     cont = ContactFind (conn->contacts, i, uin, s_sprintf ("%ld", uin), 1);
                     if (cg != conn->contacts)
                         ContactAdd (cg, cont);
-                    ContactPrefSet (cont, CONT_TEMPORARY, CONT_MODE_SET);
+                    cont->oldflags |= CONT_TEMPORARY;
                 }
                 else
                 {
@@ -1102,19 +1072,6 @@ int Read_RC_File (FILE *rcf)
             TabAddUIN (cont->uin);
         free (tab_nick_spool[i]);
     }
-
-    if (!prG->auto_dnd)
-        prG->auto_dnd  = strdup (i18n (1929, "User is dnd [Auto-Message]"));
-    if (!prG->auto_away)
-        prG->auto_away = strdup (i18n (1010, "User is away [Auto-Message]"));
-    if (!prG->auto_na)
-        prG->auto_na   = strdup (i18n (1011, "User is not available [Auto-Message]"));
-    if (!prG->auto_occ)
-        prG->auto_occ  = strdup (i18n (1012, "User is occupied [Auto-Message]"));
-    if (!prG->auto_inv)
-        prG->auto_inv  = strdup (i18n (1013, "User is offline"));
-    if (!prG->auto_ffc)
-        prG->auto_ffc  = strdup (i18n (2055, "User is ffc and wants to chat about everything."));
 
     if (prG->flags & FLAG_LOG && !prG->logplace)
         prG->logplace = strdup ("history" _OS_PATHSEPSTR);
@@ -1199,7 +1156,8 @@ int Read_RC_File (FILE *rcf)
  */
 void PrefReadStat (FILE *stf)
 {
-    char *line, *args, *cmd = NULL;
+    char *line, *cmd = NULL;
+    const char *args;
     Contact *cont = NULL;
     Connection *conn;
     ContactGroup *cg = NULL;
@@ -1328,45 +1286,12 @@ void PrefReadStat (FILE *stf)
                     cont = ContactFind (cg->serv->contacts, i, uin, s_sprintf ("%ld", uin), 1);
                     if (cg != cg->serv->contacts)
                         ContactAdd (cg, cont);
-                    ContactPrefSet (cont, CONT_TEMPORARY, CONT_MODE_SET);
+                    cont->oldflags |= CONT_TEMPORARY;
                 }
                 else if (!strcasecmp (cmd, "options"))
                 {
-                    while (s_parse (&args, &cmd))
-                    {
-                        if (!strcmp (cmd, "intimate"))
-                        {
-                            PrefParse (cmd);
-                            if (!strcmp (cmd, "on"))
-                                ContactGroupPrefSet (cg, CONT_INTIMATE, CONT_MODE_SET);
-                            else if (!strcmp (cmd, "off"))
-                                ContactGroupPrefSet (cg, CONT_INTIMATE, CONT_MODE_CLEAR);
-                            else
-                                ContactGroupPrefSet (cg, CONT_INTIMATE, CONT_MODE_UNDEF);
-                        }
-                        else if (!strcmp (cmd, "hidefrom"))
-                        {
-                            PrefParse (cmd);
-                            if (!strcmp (cmd, "on"))
-                                ContactGroupPrefSet (cg, CONT_HIDEFROM, CONT_MODE_SET);
-                            else if (!strcmp (cmd, "off"))
-                                ContactGroupPrefSet (cg, CONT_HIDEFROM, CONT_MODE_CLEAR);
-                            else
-                                ContactGroupPrefSet (cg, CONT_HIDEFROM, CONT_MODE_UNDEF);
-                        }
-                        else if (!strcmp (cmd, "ignore"))
-                        {
-                            PrefParse (cmd);
-                            if (!strcmp (cmd, "on"))
-                                ContactGroupPrefSet (cg, CONT_IGNORE, CONT_MODE_SET);
-                            else if (!strcmp (cmd, "off"))
-                                ContactGroupPrefSet (cg, CONT_IGNORE, CONT_MODE_CLEAR);
-                            else
-                                ContactGroupPrefSet (cg, CONT_IGNORE, CONT_MODE_UNDEF);
-                        }
-                        else
-                            ERROR;
-                    }
+                    if (ContactOptionsImport (&cg->copts, args))
+                        ERROR;
                 }
                 else
                 {
@@ -1389,12 +1314,12 @@ void PrefReadStat (FILE *stf)
                         if (conn->contacts && (cont = ContactFind (conn->contacts, 0, uin, NULL, 0)) && uinconts < 20)
                         {
                             uincont[uinconts++] = cont;
-                            if (!ContactPref (cont, CONT_TEMPORARY))
+                            if (~cont->oldflags & CONT_TEMPORARY)
                                 ContactFind (cont->group, 0, uin, ConvToUTF8 (cmd, ENC_UTF8, -1, 0), 1);
                             else
                             {
                                 s_repl (&cont->nick, ConvToUTF8 (cmd, ENC_UTF8, -1, 0));
-                                ContactPrefSet (cont, CONT_TEMPORARY, CONT_MODE_CLEAR);
+                                cont->oldflags &= ~CONT_TEMPORARY;
                             }
                         }
                     }
@@ -1406,50 +1331,8 @@ void PrefReadStat (FILE *stf)
                 }
                 else if (!strcasecmp (cmd, "options"))
                 {
-                    while (s_parse (&args, &cmd))
-                    {
-                        if (!strcmp (cmd, "intimate"))
-                        {
-                            PrefParse (cmd);
-                            if (!strcmp (cmd, "on"))
-                                for (i = 0; i < uinconts; i++)
-                                   ContactPrefSet (uincont[i], CONT_INTIMATE, CONT_MODE_SET);
-                            else if (!strcmp (cmd, "off"))
-                                for (i = 0; i < uinconts; i++)
-                                   ContactPrefSet (uincont[i], CONT_INTIMATE, CONT_MODE_CLEAR);
-                            else
-                                for (i = 0; i < uinconts; i++)
-                                   ContactPrefSet (uincont[i], CONT_INTIMATE, CONT_MODE_UNDEF);
-                        }
-                        else if (!strcmp (cmd, "hidefrom"))
-                        {
-                            PrefParse (cmd);
-                            if (!strcmp (cmd, "on"))
-                                for (i = 0; i < uinconts; i++)
-                                    ContactPrefSet (uincont[i], CONT_HIDEFROM, CONT_MODE_SET);
-                            else if (!strcmp (cmd, "off"))
-                                for (i = 0; i < uinconts; i++)
-                                    ContactPrefSet (uincont[i], CONT_HIDEFROM, CONT_MODE_CLEAR);
-                            else
-                                for (i = 0; i < uinconts; i++)
-                                    ContactPrefSet (uincont[i], CONT_HIDEFROM, CONT_MODE_UNDEF);
-                        }
-                        else if (!strcmp (cmd, "ignore"))
-                        {
-                            PrefParse (cmd);
-                            if (!strcmp (cmd, "on"))
-                                for (i = 0; i < uinconts; i++)
-                                    ContactPrefSet (uincont[i], CONT_IGNORE, CONT_MODE_SET);
-                            else if (!strcmp (cmd, "off"))
-                                for (i = 0; i < uinconts; i++)
-                                    ContactPrefSet (uincont[i], CONT_IGNORE, CONT_MODE_CLEAR);
-                            else
-                                for (i = 0; i < uinconts; i++)
-                                    ContactPrefSet (uincont[i], CONT_IGNORE, CONT_MODE_UNDEF);
-                        }
-                        else
-                            ERROR;
-                    }
+                    for (i = 0; i < uinconts; i++)
+                        ContactOptionsImport (&uincont[i]->copts, args);
                 }
                 else
                 {
@@ -1492,6 +1375,7 @@ int Save_RC ()
     Contact *cont;
     Connection *ss;
     ContactGroup *cg;
+    const char *res;
 
     if (!prG->rcfile)
         prG->rcfile = strdup (s_sprintf ("%smicqrc", PrefUserDir (prG)));
@@ -1656,14 +1540,9 @@ int Save_RC ()
     if (prG->flags & FLAG_DC_CONT)
         fprintf (rcf, "set dccont     %s # whether to allow dc only from contacts\n", "on");
     fprintf (rcf, "\n");
-    fprintf (rcf, "options");
-    if (prG->contflags & CONT_IGNORE)
-        fprintf (rcf, " ignore on");
-    if (prG->contflags & CONT_HIDEFROM)
-        fprintf (rcf, " hidefrom on");
-    if (prG->contflags & CONT_INTIMATE)
-        fprintf (rcf, " intimate on");
-    fprintf (rcf, "\n\n");
+    
+    if ((res = ContactOptionsString (&prG->copts)))
+        fprintf (rcf, "options%s\n", res);
 
     fprintf (rcf, "# Colors. color scheme 0|1|2|3 or color <use> <color>\n");
     {
@@ -1721,14 +1600,6 @@ int Save_RC ()
 
     fprintf (rcf, "event %s\n\n", prG->event_cmd && *prG->event_cmd ? s_quote (prG->event_cmd) : "off");
 
-    fprintf (rcf, "\n# automatic responses\n");
-    fprintf (rcf, "auto away %s\n", s_quote (prG->auto_away));
-    fprintf (rcf, "auto na   %s\n", s_quote (prG->auto_na));
-    fprintf (rcf, "auto dnd  %s\n", s_quote (prG->auto_dnd));
-    fprintf (rcf, "auto occ  %s\n", s_quote (prG->auto_occ));
-    fprintf (rcf, "auto inv  %s\n", s_quote (prG->auto_inv));
-    fprintf (rcf, "auto ffc  %s\n", s_quote (prG->auto_ffc));
-
     fprintf (rcf, "\n# The strings section - runtime redefinable strings.\n");
     fprintf (rcf, "# The alter command redefines command names.\n");
     fprintf (rcf, "[Strings]\n");
@@ -1762,7 +1633,7 @@ int Save_RC ()
         while (cg)
         {
             for (i = 0; i < cg->used; i++)
-                if (!ContactPref (cont = cg->contacts[i], CONT_TEMPORARY) && !ContactPref (cont, CONT_ALIAS))
+                if (~(cont = cg->contacts[i])->oldflags & (CONT_TEMPORARY | CONT_ALIAS))
                     fprintf (rcf, "entry 0 %ld\n", cont->uin);
             cg = cg->more;
         }
@@ -1774,12 +1645,12 @@ int Save_RC ()
     fprintf (rcf, "[Contacts]\n");
     for (i = 0; (cont = ContactIndex (0, i)); i++)
     {
-        if (!ContactPref (cont, CONT_TEMPORARY) && !ContactPref (cont, CONT_ALIAS))
+        if (~cont->oldflags & (CONT_TEMPORARY | CONT_ALIAS))
         {
             Contact *cont2;
-            if (cont->flags & CONT_INTIMATE) fprintf (rcf, "*"); else fprintf (rcf, " ");
-            if (cont->flags & CONT_HIDEFROM) fprintf (rcf, "~"); else fprintf (rcf, " ");
-            if (cont->flags & CONT_IGNORE)   fprintf (rcf, "^"); else fprintf (rcf, " ");
+            if (ContactOptionsGet (&cont->copts, CO_INTIMATE, &res) && res) fprintf (rcf, "*"); else fprintf (rcf, " ");
+            if (ContactOptionsGet (&cont->copts, CO_HIDEFROM, &res) && res) fprintf (rcf, "~"); else fprintf (rcf, " ");
+            if (ContactOptionsGet (&cont->copts, CO_IGNORE, &res) && res)   fprintf (rcf, "^"); else fprintf (rcf, " ");
             fprintf (rcf, "%9ld %s\n", cont->uin, s_quote (cont->nick));
             for (cont2 = cont->alias; cont2; cont2 = cont2->alias)
                 fprintf (rcf, "   %9ld %s\n", cont->uin, s_quote (cont2->nick));
@@ -1798,21 +1669,14 @@ int Save_RC ()
             fprintf (stf, "#server <icq5|icq8> <uin>\n");
         fprintf (stf, "label %s\n", s_quote (cg->name));
         fprintf (stf, "id %d\n", cg->id);
-        if (cg->flagsset)
-        {
-            fprintf (stf, "options");
-            if (cg->flagsset & CONT_INTIMATE)
-                fprintf (stf, " intimate %s", cg->flags & CONT_INTIMATE ? "on" : "off");
-            if (cg->flagsset & CONT_HIDEFROM)
-                fprintf (stf, " hidefrom %s", cg->flags & CONT_HIDEFROM ? "on" : "off");
-            if (cg->flagsset & CONT_IGNORE)
-                fprintf (stf, " ignore   %s", cg->flags & CONT_IGNORE   ? "on" : "off");
-            fprintf (stf, "\n");
-        }
+
+        if ((res = ContactOptionsString (&cg->copts)))
+            fprintf (stf, "options%s\n", res);
+
         while (cg)
         {
             for (i = 0; i < cg->used; i++)
-                if (!ContactPref (cont = cg->contacts[i], CONT_TEMPORARY) && !ContactPref (cont, CONT_ALIAS))
+                if (~(cont = cg->contacts[i])->oldflags & (CONT_TEMPORARY | CONT_ALIAS))
                     fprintf (stf, "entry 0 %ld\n", cont->uin);
             cg = cg->more;
         }
@@ -1823,23 +1687,16 @@ int Save_RC ()
 
     for (i = 0; (cont = ContactIndex (0, i)); i++)
     {
-        if (!ContactPref (cont, CONT_TEMPORARY) && !ContactPref (cont, CONT_ALIAS))
+        if (~(cont->oldflags & (CONT_TEMPORARY | CONT_ALIAS)))
         {
             Contact *cont2;
             fprintf (stf, "entry %9ld %s", cont->uin, s_quote (cont->nick));
             for (cont2 = cont->alias; cont2; cont2 = cont2->alias)
                 fprintf (stf, " %s", s_quote (cont2->nick));
-            if (cont->flagsset)
-            {
-                fprintf (stf, "\noptions");
-                if (cont->flagsset & CONT_INTIMATE)
-                    fprintf (stf, " intimate %s", cont->flags & CONT_INTIMATE ? "on" : "off");
-                if (cont->flagsset & CONT_HIDEFROM)
-                    fprintf (stf, " hidefrom %s", cont->flags & CONT_HIDEFROM ? "on" : "off");
-                if (cont->flagsset & CONT_IGNORE)
-                    fprintf (stf, " ignore   %s", cont->flags & CONT_IGNORE   ? "on" : "off");
-            }
             fprintf (stf, "\n");
+
+            if ((res = ContactOptionsString (&cont->copts)))
+                fprintf (stf, "options%s\n", res);
         }
     }
     fprintf (stf, "\n");

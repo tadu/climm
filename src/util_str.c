@@ -554,10 +554,11 @@ const char *s_realpath (const char *path)
  * Try to find a parameter in the string.
  * Result must NOT be free()d.
  */
-BOOL s_parse_s (char **input, char **parsed, char *sep)
+BOOL s_parse_s (const char **input, char **parsed, char *sep)
 {
     static char *t = NULL;
-    char *p = *input, *q;
+    const char *p = *input;
+    char *q;
     int s = 0;
     
     while (*p && strchr (sep, *p))
@@ -629,11 +630,12 @@ BOOL s_parse_s (char **input, char **parsed, char *sep)
  * parsed ->nick will be the nick given,
  * unless the user entered an UIN.
  */
-BOOL s_parsenick_s (char **input, Contact **parsed, char *sep, Contact **parsedr, Connection *serv)
+BOOL s_parsenick_s (const char **input, Contact **parsed, char *sep, Contact **parsedr, Connection *serv)
 {
     ContactGroup *cg;
     Contact *r;
-    char *p = *input, *t;
+    const char *p = *input;
+    char *t;
     UDWORD max, l, ll, i;
     
     while (*p && strchr (sep, *p))
@@ -716,10 +718,11 @@ BOOL s_parsenick_s (char **input, Contact **parsed, char *sep, Contact **parsedr
 /*
  * Try to find a contact group name in the string.
  */
-BOOL s_parsecg_s (char **input, ContactGroup **parsed, char *sep, Connection *serv)
+BOOL s_parsecg_s (const char **input, ContactGroup **parsed, char *sep, Connection *serv)
 {
     ContactGroup *cg;
-    char *p = *input, *t;
+    const char *p = *input;
+    char *t;
     UDWORD l, i;
     
     while (*p && strchr (sep, *p))
@@ -766,10 +769,11 @@ BOOL s_parsecg_s (char **input, ContactGroup **parsed, char *sep, Connection *se
 /*
  * Finds the remaining non-whitespace line, but parses '\'.
  */
-BOOL s_parserem_s (char **input, char **parsed, char *sep)
+BOOL s_parserem_s (const char **input, char **parsed, char *sep)
 {
     static char *t = NULL;
-    char *p = *input, *q;
+    const char *p = *input;
+    char *q;
     
     while (*p && strchr (sep, *p))
         p++;
@@ -811,9 +815,9 @@ BOOL s_parserem_s (char **input, char **parsed, char *sep)
 /*
  * Try to find a number.
  */
-BOOL s_parseint_s (char **input, UDWORD *parsed, char *sep)
+BOOL s_parseint_s (const char **input, UDWORD *parsed, char *sep)
 {
-    char *p = *input;
+    const char *p = *input;
     UDWORD nr, sig;
     
     while (*p && strchr (sep, *p))
@@ -868,9 +872,9 @@ BOOL s_parseint_s (char **input, UDWORD *parsed, char *sep)
 /*
  * Try to find a keyword.
  */
-BOOL s_parsekey_s (char **input, const char *keyword, char *sep)
+BOOL s_parsekey_s (const char **input, const char *keyword, char *sep)
 {
-    char *p = *input;
+    const char *p = *input;
     
     while (*p && strchr (sep, *p))
         p++;

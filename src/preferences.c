@@ -198,25 +198,6 @@ BOOL PrefLoad (Preferences *pref)
 }
 
 /*
- * Sets, clears or undefines a global contact flag.
- */
-void PrefContactSet (Preferences *pref, UDWORD flag, UBYTE mode)
-{
-    switch (mode)
-    {
-        case CONT_MODE_UNDEF:
-            pref->contflags &= ~flag;
-            return;
-        case CONT_MODE_CLEAR:
-            pref->contflags &= ~flag;
-            return;
-        case CONT_MODE_SET:
-            pref->contflags |=  flag;
-            return;
-    }
-}
-
-/*
  * Set the color scheme to use.
  */
 void PrefSetColorScheme (Preferences *pref, UBYTE scheme)

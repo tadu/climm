@@ -1004,7 +1004,7 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
         if (sid  != peer->our_session)
             FAIL (8);
 
-        if (ContactPref (cont, CONT_IGNORE))
+        if (ContactPref (cont, CO_IGNORE))
             FAIL (9);
 
         /* okay, the connection seems not to be faked, so update using the following information. */
@@ -1617,12 +1617,12 @@ static void TCPCallBackReceive (Event *event)
                 case MSG_NORM:
                 case MSG_URL:
                     IMIntMsg (cont, peer, NOW, STATUS_OFFLINE, INT_MSGACK_DC, e_msg_text, NULL);
-                    if (!ContactPref (cont, CONT_SEENAUTO) && strlen (tmp))
+                    if ((~cont->oldflags & CONT_SEENAUTO) && strlen (tmp))
                     {
                         IMSrvMsg (cont, peer, NOW, ExtraSet (ExtraSet (NULL,
                                   EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
                                   EXTRA_MESSAGE, MSG_AUTO, tmp));
-                        ContactPrefSet (cont, CONT_SEENAUTO, CONT_MODE_SET);
+                        cont->oldflags |= CONT_SEENAUTO;
                     }
                     break;
 

@@ -3,6 +3,8 @@
 #ifndef MICQ_CONTACT_H
 #define MICQ_CONTACT_H
 
+#include "contactopts.h"
+
 typedef struct ContactMetaGeneral_s  MetaGeneral;
 typedef struct ContactMetaWork_s     MetaWork;
 typedef struct ContactMetaMore_s     MetaMore;
@@ -64,7 +66,7 @@ struct ContactGroup_s
     ContactGroup *more;
     Connection   *serv;
     char         *name;
-    UDWORD        flags, flagsset;
+    ContactOptions copts;
     Contact      *contacts[32];
     UWORD         id;
     UBYTE         used;
@@ -76,7 +78,8 @@ struct Contact_s
     char  *nick;
     UDWORD uin;
     UDWORD status;
-    UDWORD flags, flagsset;
+    UDWORD oldflags;
+    ContactOptions copts;
     UDWORD caps;
     UWORD  id;
     UBYTE  v1, v2, v3, v4;
@@ -121,9 +124,7 @@ void          ContactSetVersion   (Contact *cont);
 BOOL          ContactMetaSave     (Contact *cont);
 BOOL          ContactMetaLoad     (Contact *cont);
 
-UDWORD        ContactPref         (Contact *cont, UDWORD flag);
-void          ContactPrefSet      (Contact *cont, UDWORD flag, UBYTE mode);
-void          ContactGroupPrefSet (ContactGroup *group, UDWORD flag, UBYTE mode);
+const char   *ContactPref         (Contact *cont, UWORD flag);
 
 #define ContactUIN(conn,uin)   ContactFind ((conn)->contacts, 0, uin, NULL, 1)
 
@@ -136,10 +137,6 @@ void          ContactGroupPrefSet (ContactGroup *group, UDWORD flag, UBYTE mode)
 
 #define CONT_UTF8(cont,mt) (((cont)->caps & (1 << CAP_UTF8)) && (((mt) == 1) || ((cont)->caps & (1 << CAP_MICQ))))
 
-#define CONT_IGNORE     1UL /* ignore contact. */
-#define CONT_HIDEFROM   2UL /* always pretend to be offline. */
-#define CONT_INTIMATE   4UL /* can see even if invisible. */
-
 #define CONT_TEMPORARY  8UL /* no status display for this contact. */
 #define CONT_ALIAS     16UL /* is an alias entry. */
 #define CONT_SEENAUTO  32UL /* has seen auto response. */
@@ -148,18 +145,6 @@ void          ContactGroupPrefSet (ContactGroup *group, UDWORD flag, UBYTE mode)
 #define CONT_ISSBL    128UL /* contact has been added to server based list */
 #define CONT_REQAUTH  256UL /* contact requires authorization */
 #define CONT_TMPSBL   512UL /* contact tagged for SBL operation */
-
-#define CONT_BYCONT     (CONT_IGNORE | CONT_HIDEFROM | CONT_INTIMATE)
-#define CONT_BYGROUP    (CONT_IGNORE | CONT_HIDEFROM | CONT_INTIMATE)
-#define CONT_BYGLOBAL     0
-#define CONT_BINARY     (CONT_IGNORE | CONT_HIDEFROM | CONT_INTIMATE | \
-                         CONT_TEMPORARY | CONT_ALIAS | CONT_SEENAUTO | \
-                         CONT_ISEDITED | CONT_ISSBL | CONT_REQAUTH | \
-                         CONT_TMPSBL)
-
-#define CONT_MODE_SET    2
-#define CONT_MODE_CLEAR  1
-#define CONT_MODE_UNDEF  0
 
 #define UPF_GENERAL_A   0x0001
 #define UPF_GENERAL_B   0x0002

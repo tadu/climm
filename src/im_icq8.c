@@ -23,7 +23,7 @@ UBYTE IMRoster (Connection *conn, int mode)
     int i;
     
     for (i = 0, cg = conn->contacts; (cont = ContactIndex (cg, i)); i++)
-        ContactPrefSet (cont, CONT_ISSBL, CONT_MODE_CLEAR);
+        cont->oldflags &= ~(CONT_TMPSBL | CONT_ISSBL);
     
     switch (mode)
     {

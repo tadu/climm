@@ -685,12 +685,12 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
     else if (event)
     {
         IMIntMsg (cont, event->conn, NOW, STATUS_OFFLINE, INT_MSGACK_TYPE2, ExtraGetS (event->extra, EXTRA_MESSAGE), NULL);
-        if (ContactPref (cont, CONT_SEENAUTO) && strlen (text))
+        if ((~cont->oldflags & CONT_SEENAUTO) && strlen (text))
         {
             IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (NULL,
                       EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
                       EXTRA_MESSAGE, MSG_AUTO, text));
-            ContactPrefSet (cont, CONT_SEENAUTO, CONT_MODE_CLEAR);
+            cont->oldflags |= CONT_SEENAUTO;
         }
     }
     EventD (event);
@@ -1092,7 +1092,7 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
                 {
                     case 3:
                         if (j != (UWORD)-1 || !(cont = ContactFind (event->conn->contacts, 0, atoi (name), NULL, 0))
-                                           || ContactPref (cont, CONT_TEMPORARY))
+                                           || cont->oldflags & CONT_TEMPORARY)
                         {
                             cont = ContactFind (event->conn->contacts, id, atoi (name), nick, 1);
                             SnacCliAddcontact (event->conn, cont);
@@ -1105,16 +1105,16 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
                         cont->id = id;   /* FIXME: should be in ContactGroup? */
                         if (type == 2)
                         {
-                            ContactPrefSet (cont, CONT_INTIMATE, CONT_MODE_SET);
-                            ContactPrefSet (cont, CONT_HIDEFROM, CONT_MODE_CLEAR);
+                            ContactOptionsSet (&cont->copts, CO_INTIMATE, "+");
+                            ContactOptionsSet (&cont->copts, CO_HIDEFROM, "");
                         }
                         else if (type == 3)
                         {
-                            ContactPrefSet (cont, CONT_HIDEFROM, CONT_MODE_SET);
-                            ContactPrefSet (cont, CONT_INTIMATE, CONT_MODE_CLEAR);
+                            ContactOptionsSet (&cont->copts, CO_HIDEFROM, "+");
+                            ContactOptionsSet (&cont->copts, CO_INTIMATE, "");
                         }
                         else if (type == 14)
-                            ContactPrefSet (cont, CONT_IGNORE, CONT_MODE_SET);
+                            ContactOptionsSet (&cont->copts, CO_IGNORE, "+");
                         if (!ContactFind (cg, 0, cont->uin, NULL, 0))
                         {
                             ContactAdd (cg, cont);
@@ -1124,7 +1124,7 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
                         break;
                     case 2:
                         if ((cont = ContactFind (event->conn->contacts, id, atoi (name), nick, 0))
-                            && !ContactPref (cont, CONT_TEMPORARY))
+                            && ~cont->oldflags & CONT_TEMPORARY)
                             break;
                     case 1:
                         M_printf (" #%08d %10d %s\n", id, atoi (name), nick);
@@ -1241,7 +1241,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                 {
                     case 3:
                         if (j != (UWORD)-1 || !(cont = ContactFind (event->conn->contacts, 0, atoi (name), NULL, 0))
-                                           || ContactPref (cont, CONT_TEMPORARY))
+                                           || cont->oldflags & CONT_TEMPORARY)
                         {
                             cont = ContactFind (event->conn->contacts, id, atoi (name), nick, 1);
                             SnacCliAddcontact (event->conn, cont);
@@ -1254,16 +1254,16 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                         cont->id = id;   /* FIXME: should be in ContactGroup? */
                         if (type == 2)
                         {
-                            ContactPrefSet (cont, CONT_INTIMATE, CONT_MODE_SET);
-                            ContactPrefSet (cont, CONT_HIDEFROM, CONT_MODE_CLEAR);
+                            ContactOptionsSet (&cont->copts, CO_INTIMATE, "+");
+                            ContactOptionsSet (&cont->copts, CO_HIDEFROM, "");
                         }
                         else if (type == 3)
                         {
-                            ContactPrefSet (cont, CONT_HIDEFROM, CONT_MODE_SET);
-                            ContactPrefSet (cont, CONT_INTIMATE, CONT_MODE_CLEAR);
+                            ContactOptionsSet (&cont->copts, CO_HIDEFROM, "+");
+                            ContactOptionsSet (&cont->copts, CO_INTIMATE, "");
                         }
                         else if (type == 14)
-                            ContactPrefSet (cont, CONT_IGNORE, CONT_MODE_SET);
+                            ContactOptionsSet (&cont->copts, CO_IGNORE, "+");
                         if (!ContactFind (cg, 0, cont->uin, NULL, 0))
                         {
                             ContactAdd (cg, cont);
@@ -1273,7 +1273,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                         break;
                     case 2:
                         if ((cont = ContactFind (event->conn->contacts, id, atoi (name), nick, 0))
-                            && !ContactPref (cont, CONT_TEMPORARY))
+                            && !~cont->oldflags & CONT_TEMPORARY)
                             break;
                     case 1:
                         M_printf (" #%08d %10d %s\n", id, atoi (name), nick);
@@ -1328,15 +1328,15 @@ static JUMP_SNAC_F(SnacSrvUpdateack)
         switch (err)
         {
             case 0xe:
-                ContactPrefSet (cont, CONT_REQAUTH, CONT_MODE_SET);
-                ContactPrefSet (cont, CONT_ISSBL,   CONT_MODE_CLEAR);
+                cont->oldflags |= CONT_REQAUTH;
+                cont->oldflags &= ~CONT_ISSBL;
                 SnacCliRosteradd (event->conn, event->conn->contacts, cont);
                 EventD (event2);
                 return;
             case 0x3:
                 cont->id = 0;
             case 0x0:
-                ContactPrefSet (cont, CONT_ISSBL, CONT_MODE_SET);
+                cont->oldflags |= ~CONT_ISSBL;
                 EventD (event2);
                 return;
         }
@@ -2071,7 +2071,7 @@ void SnacCliAddvisible (Connection *conn, Contact *cont)
         PacketWriteUIN (pak, cont->uin);
     else
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
-            if (ContactPref (cont, CONT_INTIMATE))
+            if (ContactPref (cont, CO_INTIMATE))
                 PacketWriteUIN (pak, cont->uin);
     SnacSend (conn, pak);
 }
@@ -2105,7 +2105,7 @@ void SnacCliAddinvis (Connection *conn, Contact *cont)
         PacketWriteUIN (pak, cont->uin);
     else
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
-            if (ContactPref (cont, CONT_HIDEFROM))
+            if (ContactPref (cont, CO_HIDEFROM))
                 PacketWriteUIN (pak, cont->uin);
     SnacSend (conn, pak);
 }
@@ -2197,7 +2197,7 @@ void SnacCliRosteradd (Connection *conn, ContactGroup *cg, Contact *cont)
         PacketWriteB2       (pak, 0);
         PacketWriteBLen     (pak);
         PacketWriteTLVStr   (pak, 305, cont->nick);
-        if (ContactPref (cont, CONT_REQAUTH))
+        if (cont->oldflags & CONT_REQAUTH)
         {
             PacketWriteTLV     (pak, 102);
             PacketWriteTLVDone (pak);

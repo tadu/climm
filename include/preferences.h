@@ -3,6 +3,8 @@
 #ifndef MICQ_PREFERENCES_H
 #define MICQ_PREFERENCES_H
 
+#include "contactopts.h"
+
 struct Preferences_s
 {
     char  *s5Host;      /* socks 5 settings */
@@ -17,7 +19,7 @@ struct Preferences_s
     UBYTE  enc_rem;     /* the (assumed) remote encoding */
     UBYTE  enc_loc;     /* the local character encoding */
     
-    UDWORD contflags;   /* global (default) contact flags */
+    ContactOptions copts;  /* global (default) contact flags */
 
     UDWORD verbose;     /* verbosity to use on startup */
     UWORD  sound;       /* how to beep */
@@ -34,13 +36,6 @@ struct Preferences_s
     char  *logname;     /* which name to use for logging */
 
     char  *event_cmd;   /* the command to execute for events */
-    
-    char  *auto_na;
-    char  *auto_away;
-    char  *auto_occ;
-    char  *auto_inv;
-    char  *auto_dnd;
-    char  *auto_ffc;
     
     char  *colors[CXCOUNT];
     UBYTE  scheme;
@@ -69,8 +64,6 @@ void        PrefSetColorScheme (Preferences *pref, UBYTE scheme);
 
 #define PrefUserDir(pref) (pref->basedir ? pref->basedir : PrefUserDirReal (pref))
 #define PrefLogName(pref) (pref->logname ? pref->logname : PrefLogNameReal (pref))
-
-void PrefContactSet (Preferences *pref, UDWORD flag, UBYTE mode);
 
 const char *PrefUserDirReal (Preferences *pref);
 const char *PrefLogNameReal (Preferences *pref);

@@ -6,7 +6,7 @@ AM_CFLAGS = -DPKGDATADIR='"$(pkgdatadir)"' -I$(top_srcdir)/include
 
 micq_SOURCES = conv.c file_util.c icq_response.c micq.c \
        server.c util.c  util_ui.c mreadline.c mselect.c network.c \
-       msg_queue.c tabs.c i18n.c util_table.c contact.c tcp.c packet.c \
+       msg_queue.c tabs.c i18n.c util_table.c contactopts.c contact.c tcp.c packet.c \
        cmd_pkt_cmd_v5.c cmd_pkt_cmd_v5_util.c cmd_pkt_server.c cmd_user.c \
        preferences.c util_io.c util_str.c util_syntax.c session.c peer_file.c \
        cmd_pkt_v8.c cmd_pkt_v8_flap.c cmd_pkt_v8_tlv.c cmd_pkt_v8_snac.c \

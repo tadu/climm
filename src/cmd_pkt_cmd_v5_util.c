@@ -346,21 +346,21 @@ void PacketSendv5 (const Packet *pak, Connection *conn)
 
 void Auto_Reply (Connection *conn, Contact *cont)
 {
-    char *temp;
+    const char *temp;
 
     if (!(prG->flags & FLAG_AUTOREPLY) || !cont)
         return;
 
           if (conn->status & STATUSF_DND)
-         temp = prG->auto_dnd;
+         temp = ContactPref (cont, CO_AUTODND);
      else if (conn->status & STATUSF_OCC)
-         temp = prG->auto_occ;
+         temp = ContactPref (cont, CO_AUTOOCC);
      else if (conn->status & STATUSF_NA)
-         temp = prG->auto_na;
+         temp = ContactPref (cont, CO_AUTONA);
      else if (conn->status & STATUSF_AWAY)
-         temp = prG->auto_away;
+         temp = ContactPref (cont, CO_AUTOAWAY);
      else if (conn->status & STATUSF_INV)
-         temp = prG->auto_inv;
+         temp = ContactPref (cont, CO_AUTOINV);
      else
          return;
 
