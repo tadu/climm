@@ -117,7 +117,7 @@ void PrefLoad (Preferences *pref)
     if (rcf)
         Read_RC_File (rcf);
     else
-        Initalize_RC_File (pref->sess);
+        Initalize_RC_File (NULL);
 }
 
 

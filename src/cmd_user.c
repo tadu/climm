@@ -540,7 +540,7 @@ JUMP_F(CmdUserTCP)
         M_print (i18n (846, "Opens and closes TCP connections:\n"));
         M_print (i18n (847, "    open <nick>  - Opens TCP connection.\n"));
         M_print (i18n (848, "    close <nick> - Closes/resets TCP connection(s).\n"));
-        M_print (i18n (###, "    off <nick>   - Closes TCP connection(s) and don't try TCP again.\n"));
+        M_print (i18n (870, "    off <nick>   - Closes TCP connection(s) and don't try TCP again.\n"));
     }
 #else
     M_print (i18n (866, "This version of micq is compiled without TCP support.\n"));

@@ -200,7 +200,8 @@ SOK_T UtilIOConnectUDP (char *hostname, int port, FD_T aux)
 
     length = sizeof (sin);
     getsockname (sok, (struct sockaddr *) &sin, &length);
-    prG->sess->our_local_ip = ntohl (sin.sin_addr.s_addr);
+    if (prG->sess)
+        prG->sess->our_local_ip = ntohl (sin.sin_addr.s_addr);
 
     if (prG->verbose)
     {

@@ -868,3 +868,4 @@ i18n (67, )
 867:Got a malformed (too short) packet - ignored.¶
 868:Got a malformed (to long subpacket) multi-packet - remainder ignored.¶
 869:Protocoll versions less than 5 are not supported anymore.¶
+870:    off <nick>   - Closes TCP connection(s) and don't try TCP again.¶

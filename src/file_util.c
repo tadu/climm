@@ -85,14 +85,24 @@ void Initalize_RC_File (Session *sess)
 {
     FD_T rcf;
     char pwd1[20], pwd2[20], input[200];
-    sess->server = "icq1.mirabilis.com";
+    Session *sesst;
+    
+    sess = SessionC ();
+    sess->spref = PreferencesSessionC ();
+    sess->spref->type = TYPE_SERVER | TYPE_AUTOLOGIN;
+    sess->spref->server = "icq.icq.com";
+    sess->spref->port = 4000;
+    sess->spref->status = STATUS_ONLINE;
+    sess->spref->version = 5;
+    
+    sess->server = "icq.icq.com";
     sess->server_port = 4000;
 
     prG->away_time = default_away_time;
 
     M_print ("%s ", i18n (88, "Enter UIN or 0 for new UIN:"));
     fflush (stdout);
-    scanf ("%ld", &sess->uin);
+    scanf ("%ld", &sess->spref->uin);
   password_entry:
     M_print ("%s ", i18n (63, "Enter password:"));
     fflush (stdout);
@@ -100,7 +110,7 @@ void Initalize_RC_File (Session *sess)
     Echo_Off ();
     M_fdnreadln (STDIN, pwd1, sizeof (pwd1));
     Echo_On ();
-    if (sess->uin == 0)
+    if (sess->spref->uin == 0)
     {
         if (!pwd1[0])
         {
@@ -118,9 +128,17 @@ void Initalize_RC_File (Session *sess)
             M_print ("\n%s\n", i18n (93, "Passwords did not match - please reenter."));
             goto password_entry;
         }
+        sess->spref->passwd = strdup (pwd1);
         sess->passwd = strdup (pwd1);
         Init_New_User (sess);
     }
+    
+    sesst = SessionC ();
+    sesst->spref = PreferencesSessionC ();
+    sesst->assoc = sess;
+    sess->assoc = sesst;
+    sesst->spref->type = TYPE_PEER | TYPE_AUTOLOGIN;
+    sesst->spref->version = 6;
 
 /* SOCKS5 stuff begin */
     M_print ("\n%s ", i18n (94, "SOCKS5 server hostname or IP (type 0 if you don't want to use this):"));
@@ -156,6 +174,7 @@ void Initalize_RC_File (Session *sess)
 /* SOCKS5 stuff end */
 
     prG->status = STATUS_ONLINE;
+    prG->flags = FLAG_COLOR | FLAG_LOG | FLAG_LOG_ONOFF | FLAG_DELBS;
 
     ContactAdd (11290140, "mICQ author (dead)");
     ContactAdd (99798577, "Rico \"mc\" Glöckner");
@@ -163,7 +182,6 @@ void Initalize_RC_File (Session *sess)
     ContactAdd (82274703, "Rüdiger Kuhlmann");
     ContactAdd (-82274703, "mICQ developer");
 
-    sess->status = STATUS_ONLINE;
 
     rcf = open (prG->rcfile, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     if (rcf == -1)
@@ -178,6 +196,7 @@ void Initalize_RC_File (Session *sess)
         perror ("Error creating config file ");
         exit (1);
     }
+    exit (0);
 }
 
 void Read_RC_File (FD_T rcf)
