@@ -44,54 +44,16 @@
 #include <sys/wait.h>
 #endif
 
-user_interface_state uiG;
+#define MICQ_ICON_1 "   " GREEN "_" SGR0 "     "
+#define MICQ_ICON_2 " " GREEN "_/ \\_" SGR0 "   "
+#define MICQ_ICON_3 GREEN "/ \\ / \\" SGR0 "  "
+#define MICQ_ICON_4 RED ">--" YELLOW "o" GREEN "--<" SGR0 "  "
+#define MICQ_ICON_5 RED "\\_" RED "/" BLUE " \\" GREEN "_/" SGR0 "  "
+#define MICQ_ICON_6 "  " BLUE "\\" UL "m" BLUE BOLD "/" BLUE "CQ" SGR0 "  "
+#define MICQ_ICON_7 "         "
+
+user_interface_state uiG = { 0 };
 Preferences *prG;
-PreferencesConnection *psG;
-
-void init_global_defaults () {
-  /* Initialize User Interface global state */
-  uiG.start_time = time (NULL);
-  uiG.last_rcvd_uin = 0;
-  uiG.quit = FALSE;
-  uiG.last_message_sent = NULL;
-  uiG.away_time_prev = 0;
-  uiG.last_sent_uin  = 0;
-  uiG.reconnect_count = 0;
-  uiG.idle_val = 0;
-  uiG.idle_flag = 0;
-  uiG.idle_msgs = 0;
-  uiG.idle_uins = NULL;
-}
-
-/**********************************************
-Verifies that we are in the correct endian
-***********************************************/
-void Check_Endian (void)
-{
-    int i;
-    char check[10];
-
-    check[0] = 1;
-    check[1] = 0;
-    check[2] = 0;
-    check[3] = 0;
-    check[4] = 0;
-    check[5] = 0;
-    check[6] = 0;
-    check[7] = 0;
-    check[8] = 0;
-    check[9] = 0;
-    i = *(UDWORD *) check;
-    if (i == 1)
-    {
-        M_print (i18n (1065, "Using intel byte ordering."));
-    }
-    else
-    {
-        M_print (i18n (1066, "Using motorola byte ordering."));
-    }
-    M_print ("\n");
-}
 
 void Idle_Check (Connection *conn)
 {
@@ -154,16 +116,6 @@ void Idle_Check (Connection *conn)
     return;
 }
 
-void Usage ()
-{
-    M_print (i18n (1607, "Usage: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]\n"));
-    M_print (i18n (1608, "        -v   Turn on verbose Mode (useful for Debugging only)\n"));
-    M_print (i18n (1609, "        -f   specifies an alternate Config File (default: ~/.micq/micqrc)\n"));
-    M_print (i18n (1610, "        -l   specifies an alternate logfile resp. logdir\n"));
-    M_print (i18n (1611, "        -?   gives this help screen\n\n"));
-    exit (0);
-}
-
 /******************************
 Main function connects gets UIN
 and passwd and logins in and sits
@@ -171,81 +123,160 @@ in a loop waiting for server responses.
 ******************************/
 int main (int argc, char *argv[])
 {
-    int i, j, rc;
+    int i, rc;
 #ifdef _WIN32
     WSADATA wsaData;
 #endif
     Connection *conn;
+    char *p;
+    
+    const char *arg_v, *arg_f, *arg_l, *arg_i, *arg_b;
+    UBYTE arg_h = 0, arg_vv = 0, arg_c = 0;
+
+    srand (time (NULL));
+    uiG.start_time = time (NULL);
+    setbuf (stdout, NULL);
+    tzset ();
+
+    arg_v = arg_f = arg_l = arg_i = arg_b = NULL;
+    for (i = 1; i < argc; i++)
+    {
+        if (argv[i][0] != '-')
+        {
+            ;
+        }
+        else if ((argv[i][1] == 'v') || !strcmp (argv[i], "--verbose"))
+        {
+            arg_v = argv[i] + 2;
+            prG->verbose = arg_vv = (*arg_v ? atol (arg_v) : prG->verbose + 1);
+        }
+        else if ((argv[i][1] == 'b') || !strcmp (argv[i], "--basedir"))
+        {
+            if (argv[i][2])
+                arg_b = &argv[i][2];
+            else
+                arg_b = argv[++i];
+        }
+        else if ((argv[i][1] == 'f') || !strcmp (argv[i], "--config"))
+        {
+            if (argv[i][2])
+                arg_f = &argv[i][2];
+            else
+                arg_f = argv[++i];
+        }
+        else if ((argv[i][1] == 'l') || !strcmp (argv[i], "--logplace"))
+        {
+            if (argv[i][2])
+                arg_l = &argv[i][2];
+            else
+                arg_l = argv[++i];
+        }
+        else if ((argv[i][1] == 'i') || !strcmp (argv[i], "--i18n") || !strcmp (argv[i], "--locale"))
+        {
+            if (argv[i][2])
+                arg_i = &argv[i][2];
+            else
+                arg_i = argv[++i];
+        }
+        else if ((argv[i][1] == '?') || (argv[i][1] == 'h') ||
+                 !strcmp (argv[i], "--help") || !strcmp (argv[i], "--version"))
+            arg_h++;
+        else if ((argv[i][1] == 'c') || !strcmp (argv[i], "--nocolor"))
+            arg_c++;
+            
+    }
 
     prG = PreferencesC ();
-    psG = PreferencesConnectionC ();
-    init_global_defaults ();
+    prG->verbose  = arg_vv;
+    prG->rcfile   = arg_f ? strdup (arg_f) : NULL;
+    prG->logplace = arg_l ? strdup (arg_l) : NULL;
+    prG->flags |= arg_c ? 0 : FLAG_COLOR;
+    
+    if (!arg_i)
+        arg_i = getenv ("LC_MESSAGES");
+    if (!arg_i)
+        arg_i = getenv ("LC_ALL");
+    if (!arg_i)
+        arg_i = getenv ("LANG");
+    if (!arg_i)
+        arg_i = "C";
+    prG->locale = strdup (arg_i);
 
-    i = i18nOpen ("!");
-
-    setbuf (stdout, NULL);      /* Don't buffer stdout */
-
-    { int argverb = 0;
-    if (argc > 1)
+    prG->enc_loc = ENC_AUTO;
+    if ((p = strchr (prG->locale, '@')))
     {
-        for (i = 1; i < argc; i++)
+        if (!strcmp (p, "@euro"))
+            prG->enc_loc = ENC_AUTO | ENC_LATIN9;
+        *p = '\0';
+    }
+    if ((p = strchr (prG->locale, '.')))
+    {
+        if (!strncmp (p, ".KOI", 3))
+            prG->enc_loc = ENC_AUTO | ENC_KOI8;
+        if (!strcmp (p, ".UTF-8"))
+            prG->enc_loc = ENC_AUTO | ENC_UTF8;
+        *p = '\0';
+    }
+
+    rc = arg_h ? 0 : PrefLoad (prG);
+
+    i = i18nOpen (prG->locale);
+    
+    if (prG->enc_loc == ENC_AUTO)
+        prG->enc_loc = ENC_AUTO | ENC_LATIN1;
+    
+    if (prG->enc_rem == ENC_AUTO)
+    {
+        switch (prG->enc_loc & ~ENC_AUTO)
         {
-            if (argv[i][0] != '-')
-            {
-                ;
-            }
-            else if ((argv[i][1] == 'v') || (argv[i][1] == 'V'))
-            {
-                j = atol (argv[i] + 2);
-                prG->verbose = (argv[i][2] ? j : prG->verbose + 1);
-                if (!prG->verbose)
-                    argverb = 1;
-            }
-            else if ((argv[i][1] == 'f') || (argv[i][1] == 'F'))
-            {
-                if (argv[i][2])
-                    prG->rcfile = &argv[i][2];
-                else
-                    prG->rcfile = argv[++i];
-                M_printf (i18n (1614, "Using config file \"%s\"\n"), prG->rcfile);
-            }
-            else if ((argv[i][1] == 'l') || (argv[i][1] == 'L'))
-            {
-                if (argv[i][2])
-                    prG->logplace = &argv[i][2];
-                else
-                    prG->logplace = argv[++i];
-                M_printf (i18n (1615, "Logging to \"%s\"\n"), prG->logplace);
-            }
-            else if ((argv[i][1] == '?') || (argv[i][1] == 'h'))
-            {
-                Usage ();
-                /* not reached */
-            }
+            case ENC_EUC:     prG->enc_rem = ENC_SJIS;    break;
+            case ENC_SJIS:    prG->enc_rem = ENC_SJIS;    break;
+            case ENC_KOI8:    prG->enc_rem = ENC_WIN1251; break;
+            case ENC_WIN1251: prG->enc_rem = ENC_WIN1251; break;
+            default:          prG->enc_rem = ENC_LATIN1;
         }
     }
-
-    PrefLoad (prG);
-    if (argverb) prG->verbose = 0;
-    }
     
+    if (arg_v)
+        prG->verbose = arg_vv;
+    
+    M_print (MICQ_ICON_1 "\n" MICQ_ICON_2);
     M_print (BuildVersion ());
-
+    M_print (MICQ_ICON_3);
+    M_print (BuildAttribution ());
+    M_print (MICQ_ICON_4);
     M_print (i18n (1612, "This program was made without any help from Mirabilis or their consent.\n"));
+    M_print (MICQ_ICON_5);
     M_print (i18n (1613, "No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n"));
+    M_print (MICQ_ICON_6 "\n" MICQ_ICON_7 "\n");
+
+    if (arg_h)
+    {
+        M_print  (i18n (1607, "Usage: micq [-h] [-v[level]] [-f <rc-file>] [-l <logfile>]\n"));
+        M_print  (i18n (2199, "  -h, --help     gives this help text\n"));
+        M_print  (i18n (2200, "  -v, --verbose  set (or increase) verbosity (mostly for debugging)\n"));
+        M_printf (i18n (2201, "  -b, --basedir  use given BASE dir (default: %s)\n"), "~/.micq/");
+        M_printf (i18n (2202, "  -f, --config   use given configuration file (default: %s)\n"), "BASE micqrc");
+        M_printf (i18n (2203, "  -l, --logplace use given log file/dir (default: %s)\n"), "BASE history/");
+        M_print  (i18n (2204, "  -i, --i18n     use given locale (default: auto-detected)\n"));
+        M_print  (i18n (2205, "  -c, --nocolor  disable colors\n"));
+        exit (0);
+    }
+
+    if (!rc && arg_l)
+    {
+        M_printf (i18n (1864, "Can't open rcfile %s."), prG->rcfile);
+        exit (20);
+    }
 
     if (i == -1)
-        M_print ("Couldn't load internationalization.\n");
+        M_print ("Couldn't load internationalization. Maybe you want to do some translation work?\n");
     else if (i)
         M_printf (i18n (1081, "Successfully loaded en translation (%d entries).\n"), i);
     else
         M_print ("No internationalization requested.\n");
 
-    srand (time (NULL));
-
-    Check_Endian ();
-
-    if (!ConnectionNr (0))
+    if (!rc)
         Initalize_RC_File ();
 
 #ifdef _WIN32
@@ -258,12 +289,17 @@ int main (int argc, char *argv[])
     }
 #endif
 
+    R_init ();
+
     for (i = 0; (conn = ConnectionNr (i)); i++)
         if (conn->flags & CONN_AUTOLOGIN && conn->open)
             conn->open (conn);
 
-    R_init ();
-    R_resetprompt ();
+#ifdef WIP
+    M_printf ("REMOVEME: remote enc %d\n", prG->enc_rem);
+    M_printf ("REMOVEME: local enc %d\n", prG->enc_loc);
+#endif
+
     while (!uiG.quit)
     {
 

@@ -15,6 +15,7 @@
 #define WHITE           ESC "[0;37m"
 #define SGR0            ESC "[0m"
 #define BOLD            ESC "[1m"
+#define UL              ESC "[4m"
 
 #define COLCHR '!'
 #define COLSTR "!"
