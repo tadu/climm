@@ -198,6 +198,7 @@ void Initalize_RC_File ()
         conn->passwd  = strdup (passwd);
     }
     
+#ifdef ENABLE_PEER2PEER
     connt = ConnectionC ();
     assert (connt);
     connt->open = &ConnectionInitPeer;
@@ -213,6 +214,7 @@ void Initalize_RC_File ()
     connt->spref->version = 8;
     connt->ver = 8;
     connt->status = prG->s5Use ? 2 : TCP_OK_FLAG;
+#endif
 
     prG->status = STATUS_ONLINE;
     prG->tabs = TABS_SIMPLE;
@@ -881,9 +883,11 @@ void Read_RC_File (FILE *rcf)
             case TYPE_SERVER_OLD:
                 conn->open = &ConnectionInitServerV5;
                 break;
+#ifdef ENABLE_PEER2PEER
             case TYPE_MSGLISTEN:
                 conn->open = &ConnectionInitPeer;
                 break;
+#endif
             default:
                 conn->open = NULL;
                 break;

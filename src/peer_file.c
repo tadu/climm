@@ -9,6 +9,8 @@
 
 #include "micq.h"
 
+#ifdef ENABLE_PEER2PEER
+
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -608,3 +610,5 @@ void PeerFileResend (Event *event)
     free (event->info);
     free (event);
 }
+
+#endif /* ENABLE_PEER2PEER */

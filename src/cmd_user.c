@@ -1083,6 +1083,7 @@ static JUMP_F (CmdUserAnyMess)
 
     if (data & 1)
     {
+#ifdef ENABLE_PEER2PEER
         if (!conn->assoc || !TCPDirectOpen  (conn->assoc, cont->uin))
         {
             M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
@@ -1090,6 +1091,7 @@ static JUMP_F (CmdUserAnyMess)
         }
         TCPSendMsg (conn->assoc, cont->uin, arg1, data >> 2);
     }
+#endif
     else
     {
         if (conn->type == TYPE_SERVER)
