@@ -700,6 +700,7 @@ static Packet *TCPReceivePacket (Connection *peer)
     if (!peer->connect)
     {
         TCPClose (peer);
+        PacketD (pak);
         return NULL;
     }
     

@@ -360,7 +360,7 @@ void Auto_Reply (Connection *conn, UDWORD uin)
      else
          return;
 
-    icq_sendmsg (conn, uin, temp, MSG_AUTO);
+    IMCliMsg (conn, ContactByUIN (uin, 1), ExtraSet (NULL, EXTRA_MESSAGE, MSG_AUTO, temp));
 }
 
 /*

@@ -66,8 +66,8 @@ static jump_t jump[] = {
     { &CmdUserAuto,          "auto",         NULL, 0,   0 },
     { &CmdUserAlter,         "alter",        NULL, 0,   0 },
     { &CmdUserAnyMess,       "message",      NULL, 0,   0 },
-    { &CmdUserMessageNG,     "nmsg",         NULL, 0,   1 },
-    { &CmdUserMessage,       "msg",          NULL, 0,   1 },
+    { &CmdUserMessageNG,     "msg",          NULL, 0,   1 },
+    { &CmdUserMessage,       "msg-old",      NULL, 0,   1 },
     { &CmdUserMessage,       "r",            NULL, 0,   2 },
     { &CmdUserMessage,       "a",            NULL, 0,   4 },
     { &CmdUserMessage,       "msga",         NULL, 0,   8 },
@@ -1087,8 +1087,7 @@ static JUMP_F (CmdUserResend)
     
     while (1)
     {
-        icq_sendmsg (conn, uiG.last_sent_uin = cont->uin,
-                     uiG.last_message_sent, uiG.last_message_sent_type);
+        IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, uiG.last_message_sent_type, uiG.last_message_sent));
         if (*args == ',')
             args++;
         if (!s_parsenick_s (&args, &cont, MULTI_SEP, NULL, conn))
@@ -2519,11 +2518,8 @@ static JUMP_F(CmdUserURL)
     if (!s_parserem (&args, &msg))
         msg = "";
 
-    msg = strdup (s_sprintf ("%s%c%s", url, ConvSep (), msg));
-
-    uiG.last_sent_uin = cont->uin;
-    
-    icq_sendmsg (conn, cont->uin, msg, MSG_URL);
+    IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_URL,
+              s_sprintf ("%s%c%s", url, ConvSep (), msg)));
 
     free (msg);
     free (url);
