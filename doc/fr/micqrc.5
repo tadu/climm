@@ -1,0 +1,284 @@
+.\" $Id$
+.\"Ceci est la page de manuel de ~/.micqrc."
+.Dd 15 Février 2002
+.Dt MICQRC 5
+.Os MICQRC(5)
+.\".TH micqrc 5 "15 Février 2002"
+.Sh NOM
+.Ic ~/.micq/micqrc
+\- Le fichier de configuration de micq
+.Sh DESCRIPTION
+Cette page de manuel décrit le fichier de configuration de micq. Il comprend 
+plusieurs sections qui débutent par
+.Ic [section] ,
+où
+.Ic section
+est le nom de la section.
+.Sh CONNEXIONS
+Une section 
+.Ic Connection
+décrit une connexion au sein d'ICQ. En général, il y en a deux,
+qui sont en relation l'une avec l'autre : une connexion au serveur ICQ, et une 
+connexion pour écouter les communications des contacts.
+.Bl -tag -width Fl
+.It Ic type Ar type Op Ar auto
+Paramètre le type de la connexion à
+.Ar type ,
+qui peut être
+.Ic server
+pour une connexion au serveur ICQ, ou
+.Ic peer
+pour une connexion qui concerne les communications avec les contacts. Si l'option 
+.Ar auto
+est donnée, la connexion est créée au démarrage de mICQ. 
+Ceci est probablement ce que vous devriez faire, à moins que vous 
+possédiez plusieurs UINs, dans ce cas paramétrez cela sur la connexion 
+correspondant à l'UIN que vous utilisez.
+.It Ic version Ar nr
+Paramètre la version du protocole ICQ utilisée pour cette connexion à
+.Ar nr .
+Remarquez que pour les connexions vers des serveurs, seule la version
+.Ic 5
+est supportée, bien que le support pour la version
+.Ic 8
+soit plannifié, et seule la version
+.Ic 6 
+est supportée pour les communications avec les contacts.
+.It Ic server Ar server
+Paramètre le serveur auquel se connecter à
+.Ar server .
+La valeur par défaut est
+.Ic icq.icq.com .
+Ceci est inutilisé pour les communications avec les contacts.
+.It Ic port Ar port
+Paramètre le port auquel se connecter sur le serveur à
+.Ar port ,
+ou le port à écouter pour les communications avec les contacts à
+.Ar port.
+.It Ic uin Ar UIN
+Paramètre l'UIN à utiliser pour la phase de connexion à
+.Ar UIN .
+Inutilisé pour les communications avec les contacts.
+.It Ic password Op Ar mot_de_passe
+Paramètre le mot de passe à utiliser lors de la phase de connexion à
+.Ar mot_de_passe .
+Inutilisé pour les communications avec les contacts. Si ce paramètre n'est 
+pas présent, le mot de passe vous sera demandé au lancement.
+.It Ic status Ar nr
+Paramètre l'état à choisir après la phase de connexion à
+.Ar nr .
+L'état peut être :
+.br
+0   online
+.br
+1   away
+.br
+5   not available
+.br
+17  occupied
+.br
+19  do not disturb
+.br
+32  free for chat
+.br
+256 invisible
+.El
+.Sh GENERAL
+Cette section inclue les options concernant SOCKS 5, qui seront 
+éventuellement déplacées vers leur propre section , les options générales,
+et quelques chaînes de caractères à redéfinir.
+.Bl -tag -width Fl
+.It Ic s5_use Ar nombre
+Paramétrez
+.Ar number
+à 0 pour désactiver et 1 pour activer l'utilisation de SOCKS 5.
+.It Ic s5_host Ar host
+Se connecter au proxy socks 5 de la machine
+.Ar machine .
+.It Ic s5_port Ar port
+Se connecter au proxy socks 5 qui écoute sur le port
+.Ar port .
+.It Ic s5_auth Ar nombre
+Paramètrez
+.Ar nombre
+à 0 pour ne pas effectuer l'authentification et 1 pour l'effectuer.
+.It Ic s5_name Ar nom
+S'identifier en tant qu'utilisateur de nom
+.Ar nom
+auprès du proxy socks 5.
+.br
+.It Ic s5_pass Ar mot_de_passe
+S'authentifier avec le mot de passe
+.Ar mot_de_passe
+auprès du proxy socks5.
+.El
+.sp
+Maintenant les options :
+.Bl -tag -width Fl
+.It Ic verbose Ar niveau
+Paramètre le niveau de verbosité au lancement à
+.Ar niveau .
+.It Ic auto_away Ar délai
+Paramètre le délai précédent l'activation de l'état away à
+.Ar délai
+en secondes. Donnez la valeur
+.Ic 0
+pour désactiver le mode auto away.
+.It Ic Screen_width Ar largeur
+Paramètre la largeur par défaut de l'écran à
+.Ar largeur .
+Si la valeur n'est pas paramétrée ou égale à 
+.Ic 0 , 80
+sera la valeur utilisée. Cela est rarement utile car 
+généralement la largeur actuelle de l'écran peut être connue à l'exécution.
+.It Ic set delbs Ar on|off
+Si la valeur est
+.Ar on ,
+le caractère suppr agira comme un retour (backspace). Si la valeur est
+.Ar off ,
+le caractère suppr agira normalement.
+.It Ic set russian Ar on|off
+Désactive ou active la conversion des caractères russes entre le jeu koi8-r/u 
+et  cp1251.
+.It Ic set japanese Ar on|off
+Désactive ou active la conversion des caractères japonais entre le jeu 
+Shift-JIS et EUC.
+.It Ic set funny Ar on|off
+Désactive ou active les messages amusants.
+.It Ic set color Ar on|off
+Désactive ou active l'utilisation des couleurs.
+.It Ic set hermit Ar on|off
+Si la valeur est
+.Ar on ,
+tous les messages provenant de personnes qui ne sont pas dans votre 
+liste de contacts seront ignorés.
+.It Ic set log Ar on|off
+Désactive ou active l'utilisation des journaux.
+.It Ic set logonoff Ar on|off
+Lorsque l'utilisation des journaux est activée, désactive ou active l'enregistrement 
+des changements d'états de connecté à deconnecté et vice-versa.
+.It Ic set auto Ar on|off
+Désactive ou active les réponses automatiques.
+.It Ic set uinprompt Ar on|off
+Désactive ou active l'utilisation à partir de l'invite du dernier surnom 
+duquel vous avez reçu un message.
+.It Ic set linebreak Ar type
+Paramètre le type des retours à la ligne pour les messages reçus à
+.Ar type ,
+qui peut être
+.Ic simple
+pour arranger les lignes de manière habituelle,
+.Ic break
+pour obtenir un retour à la ligne avant chaque message,
+.Ic indent
+pour obtenir un retour à la ligne et indenter le message et
+.Ic smart
+pour obtenir un retour à la ligne seulement si le message ne rentre pas dans la ligne actuelle.
+.It Ic set tabs simple|cycle|cycle_tous
+Sélectionne le type d'utilisation de la complétion. Les anciennes versions de 
+mICQ ne connaissaient que
+.Ic simple ,
+qui ne fonctionne qu'avec la commande
+.Ic msg
+et complète la commande en parcourant la liste de tous les contacts auquel 
+vous avez envoyé ou desquels vous avez reçus des messages. 
+Le texte déjà entré après le surnom était perdu.
+.Ic cycle
+parcourt la liste de tous les contacts en ligne de votre liste de contact. 
+Elle conserve tout texte entré précédemment intact, cependant elle ne 
+fonctionne qu'avec la commande 
+.Ic msg.
+.Ic cycleall
+est équivalente à
+.Ic cycle ,
+mais parcourt la liste de tous les contacts, même ceux qui ne sont pas connectés.
+.El
+.sp
+Enfin, des chaînes de caractères peuvent être définies :
+.Bl -tag -width Fl
+.It Ic logplace Ar fichier|répertoire
+Paramètre le fichier contenant le journal à
+.Ar fichier ,
+ou le répertoire contenant les journaux à
+.Ar répertoire .
+Remarquez qu'un chemin est considéré comme un répertoire si il a un
+.Ic / 
+à la 
+fin de son nom.
+.It Ic sound Ar on|off|cmd
+Désactive ou active l'avertissement sonore. Si le paramètre n'est ni
+.Ar on
+ni
+.Ar off,
+le paramètre est considéré comme un programme à exécuter à la place de 
+l'avertissement sonore.
+.It Ic soundonline Ar on|off|cmd
+Même chose que ci-dessus, mais concernant les utilisateurs se connectant.
+.It Ic soundoffline Ar on|off|cmd
+Même chose que ci-dessus, mais pour les utilisateurs qui se déconnectent.
+.It Ic receivescript Ar cmd
+Paramètre la commande à exécuter lors de la réception d'un message. 
+Laissez vide pour ne rien faire.
+.It Ic auto Ar état Ar chaîne_de_caractères
+Paramètre la réponse automatique de l'état
+.Ar état
+à
+.Ar chaine_de_caractères.
+Cette option peut être répétée pour tous les états possibles
+.Ic away ,
+.Ic na ,
+.Ic dnd ,
+.Ic occ ,
+.Ic inv ,
+and
+.Ic ffc
+.
+.El
+
+.Sh CHAINES
+Cette section contient les changements de nom de commandes.
+.Bl -tag -width Fl
+.It Ic alter Ar ancienne Ar nouvelle
+Renomme la commande
+.Ar ancienne
+en
+.Ar nouvelle .
+Remarquez que l'ancien nom peut toujours être utilisé, à moins qu'il entre 
+en conflit avec le nom de la commande
+.Ar nouvelle
+.
+Pour les noms de commandes possibles, consultez 
+.Xr micq 7 .
+Cette option peut être répétée à volontée.
+.El
+.Sh CONTACTS
+Cette section contient la liste de contacts.
+.Bl -tag -width Fl
+.It Ic [ Ar * ] [ Ar ~ ] [ Ar ^ ] Ar uin Ar surnom
+Donner à l'utilisateur possédant l'UIN
+.Ar uin
+le surnom
+.Ar surnom .
+Si
+.Ar *
+est donnée, l'utilisateur peut vous voir lorsque vous êtes en mode invisible. Si
+.Ar ~
+est donnée, il vous verra toujours comme étant déconnecté. Si
+.Ar ^
+est donnée, vous ignorez l'utilisateur.
+Si un UIN apparaît plusieurs fois, tous excepté le premier sont considérés comme 
+des alias.
+.El
+Remarque : la liste de contacts doit être la dernière partie du fichier.
+.Sh VOIR AUSSI
+.Xr micq 1 ,
+.Xr micq 7
+.Sh AUTEUR
+Cette page de manuel a été écrite par James Morrison
+.Pa <ja2morrison@student.math.uwaterloo.ca> .
+Elle a été écrite pour correspondre à la nouvelle syntaxe du fichier de 
+configuration choisie par Rüdiger Kuhlmann
+.Pa <micq@ruediger-kuhlmann.de> .
+.Sh TRADUCTION
+Cette page de manuel a été traduite vers le français par Julien Gilli 
+.Pa <jgilli@nerim.fr>.

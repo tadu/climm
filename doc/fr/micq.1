@@ -1,0 +1,102 @@
+.\" $Id$
+.\"                                      Hey, EMACS: -*- nroff -*-
+.Dd 15 Février 2002
+.Dt MICQ 1
+.Os MICQ(1)
+.\" Please adjust this date whenever revising the manpage.
+.Sh NOM
+.Ic micq
+\- Un petit client ICQ en mode texte
+.Sh SYNOPSIS
+.Ic micq Op Ar -v
+.Op Ar -f nom_fichier
+.br
+.Sh DESCRIPTION
+.Ic mICQ
+est un client ICQ en mode texte qui supporte de nombreuses caractéristiques parmi celles fournies par le client de Mirabilis.
+Micq permet de changer le mot de passe de l'utilisateur, de créer de nouveaux comptes, d'actualiser les informations de 
+l'utilisateur, de rechercher d'autres utilisateurs, etc.
+.Sh OPTIONS
+.Bl -tag -width flag
+.It Fl v Op Ar verbosité
+Active le mode verbeux, ou paramètre le niveau de verbosité à 
+.Ar verbosité .
+.It Fl f Ar nom_fichier
+Utilise le fichier 
+.Ar nom_fichier
+comme fichier de configuration.
+.It Fl l Ar fichier|répertoire
+Utilise
+.Ar fichier
+comme fichier journal, ou utilise
+.Ar répertoire
+comme répertoire dans lequel créer des fichiers journaux par utilisateur.
+.It Fl ?, h
+Affiche l'aide.
+.El
+
+.Sh CARACTERISTIQUES
+.Ic mICQ
+est très portable et tourne sous Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD 
+et tout autre système de type Unix moderne.
+
+.Ic La version 0.4.9 de mICQ 
+tourne sous Linux, AIX, HPUX, Tru64, partiellement sous BeOS et d'autres unices.  
+Cependant, les autres portages peuvent ne pas fonctionner et toute personne souhaitant 
+les tester est la bienvenue
+.Sh HISTORIQUE
+.Bl -tag -width Fl
+.It 16 Août 1998
+Matthew D. Smith publie micq au monde. 
+Cela sera suivit par 12 publications jusqu'au 25 Septembre 1998
+.It 05 Janvier 2001
+Matthew D. Smith est décédé d'un accident de voiture. 
+Les utilisateurs de mICQ ont repris le projet où Matthew l'a quitté, 
+ont opté pour la licence BSD et relancé le développement de
+.Ic mICQ .
+.It 10 Juin 2002
+La version 0.4.9 est publiée par Rüdiger Kuhlmann dans les termes de la licence GPL, 
+et implémente la nouvelle version du protocole ICQ (version 8).
+.Sh LISTE DE DISCUSSION
+La liste de discussion de micq est
+.Pa micq-list@mc.ukeer.de .
+Les informations concernant l'abonnement  et les archives sont disponibles à
+.Pa http://www.micq.org/pipermail/micq-list/ .
+.Sh TELECHARGEMENT
+Par HTTP à
+.Pa http://www.micq.org/download .
+.br
+Pour obtenir la dernière version par CVS, entrez :
+.br
+cvs -d:pserver:anonymous@micq.org:/usr/local/cvsroot co micq
+.br
+.Sh VOIR AUSSI
+.Xr micqrc 5 ,
+.Xr micq 7
+.Sh FICHIERS
+.Bl -tag -width Fl
+.It ~/.micqrc
+Ancien fichier de configuration de mICQ, obsolète.
+.It ~/.micq/micqrc
+Fichier de configuration de mICQ.
+.It PREFIXE/share/micq/*.i18n
+Fichiers de traduction contenant les traductions de toutes les chaînes de 
+caractères que mICQ affiche.
+.It ~/.micq/i18n/*.i18n
+Substituts locaux pour les fichiers de traduction mentionnés ci-dessus.
+.It ~/.micq/history/
+Chemin par défaut du répertoire où les fichiers journaux sont créés.
+.El
+.Sh BUGS
+Envoyez les rapports de bugs et commentaires à Rüdiger Kuhlmann
+<micq@ruediger-kuhlmann.de> (en allemand ou en anglais).
+.Sh AUTEUR
+Cette page de manuel a été écrite par James Morrison
+.Pa <ja2morrison@student.math.uwaterloo.ca>
+à partir de la page de manuel minimale écrite par Jordi Mallach
+.Pa <jordi@sindominio.net>
+pour le système d'exploitation Debian GNU/Linux.
+
+.Sh TRADUCTION
+Cette page de manuel a été traduite par Julien Gilli 
+.Pa <jgilli@nerim.fr>.

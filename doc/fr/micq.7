@@ -1,0 +1,359 @@
+.\" $Id$
+.\"Ceci est la page de manuel du fichier ~/.micq/micqrc."
+.\".TH MICQ 7 "15 Février 2002" "MICQ(7)"
+.Dd February 15, 2002
+.Dt MICQ 7
+.Os MICQ(7)
+.Sh NOM
+Les commandes interactives de mICQ
+.Sh DESCRIPTION
+Cette page de manuel décrit les commandes qui peuvent être utilisé dans micq.
+Cette page contient les mêmes informations que l'aide en ligne.
+.Sh COMMANDES
+.Bl -tag -width Fl
+.It Ic trans Op Ar langue|nr ...
+Basculer vers la langue
+.Ar langue ,
+donné par son code iso, ou affiche la chaîne de caratères traduite numéro
+.Ar nr .
+Pour sélectionner la langue par défaut donnée par les variables d'environnement
+.Ic LANG ,
+.Ic LC_ALL
+et
+.Ic LC_MESSAGES ,
+utilisez
+.Ic \&! ,
+.Ic auto
+ou
+.Ic default .
+Pour ne pas sélectionner de traduction du tout, utilisez
+.Ic \&. ,
+.Ic none
+ou
+.Ic unload .
+Pour obtenir des informations de debug, ajoutez le préfixe
+.Ic debug .
+Pour obtenir des messages farfelus, ajoutez le suffixe 
+.Ic _fun .
+.sp
+Les fichiers correspondant à ~/.micq/i18n/*.i18n sont prioritaires sur les messages globaux, 
+alors que les messages "farfelus" sont plus prioritaires que les messages standards.
+.sp
+En fait, vous pouvez donner autant d'arguments que vous le voulez, 
+par exemple pour afficher la chaîne de caractères numéro 117 en allemand 
+et ensuite revenir au langage par défaut, utilisez "trans de 117 default".
+.It Ic tabs 
+Affiche une liste d'utilisateurs que vous pouvez parcourir grâce à 
+la touche tabulation.
+.It Ic save
+Enregistre les paramètres actuels dans le fichier de configuration, qui est
+.Pa ~/.micq/micqrc ,
+a moins qu'autre chose n'ait été spécifié.
+Faites attention car cela ne conservera pas les commentaires présents 
+dans le fichier.
+.It Ic r Op Ar message
+Répondre au dernier message reçu. Si un
+.Ar message
+n'est pas donné, le mode multi-lignes est activé.  
+Pour envoyer le message multi-lignes, écrivez un point 
+.Ic ( . )
+seul sur une ligne.  Pour annuler l'écriture d'un message, écrivez un diese 
+.Ic ( # )
+tout seul sur une ligne.
+.It Ic a Op Ar message
+Envoie un message à la dernière personne à laquelle vous avez envoyé un message. Voir 
+.Ic r
+pour un comportement sans 
+.Ar message .
+.It Ic msg Ar uin|surnom Ic Op Ar message
+Envoie un message à
+.Ar uin|surnom .
+Voir
+.Ic r 
+pour connaiître son comportement sans 
+.Ar message .
+.It Ic url Ar uin|surnom Ic Ar url Ar message
+Envoie un 
+.Ar message
+concernant une 
+.Ar url
+à 
+.Ar uin|surnom .
+.It Ic sms Ar numéro message
+Envoie le message SMS 
+.Ar message
+à un téléphone de numéro 
+.Ar numéro ,
+qui a la forme suivante : +<code pays><numéro>.
+.It Ic msga
+Envoie un message multi-lignes à tous les contacts que vous possédez. 
+Utilisez un point 
+.Ic ( . )
+seul sur une ligne pour envoyer le message, ou un diese 
+.Ic ( # )
+seul sur une ligne pour annuler le message.
+.It Ic resend Ar uin|surnom ...
+Ré-envoie le dernier message à 
+.Ar uin
+ou 
+.Ar surnom .
+L'argument peut être répété autant que nécessaire.
+.It Ic uptime
+Affiche depuis combien de temps mICQ s'exécute.
+.It Ic last Op Ar contact
+Affiche une liste d'utilisateurs qui vous ont envoyé des messages ou le 
+dernier message reçu de la part de 
+.Ar contact ,
+qui peut être un 
+.Ar uin
+ou un 
+.Ar surnom .
+.It Ic verbose Op Ar verb
+Paramètre la verbosité de mICQ à 
+.Ar verb ,
+ou affiche le niveau actuel de verbosité. Le niveau de verbosité est 
+constitué d'un ensemble d'options :
+.Bl -tag -width Fl
+.It 128
+Affiche les paquets entrants et sortants.
+.It 256
+Ecrit les paquets entrants et sortants concernant le serveur dans un fichier 
+(~/.micq/debug/packets).
+.El
+Il en existe d'autres.
+.It Ic clear
+Efface l'écran.
+.It Ic sound Op Ar commande
+Active ou désactive le son, ou paramètre l'exécution de la commande 
+.Ar commande 
+pour le produire.
+.It Ic soundonline Op Ar commande
+Active ou désactive le son pour les notifications d'utilisateurs connectés, 
+ou paramètre l'exécution de la commande 
+.Ar commande 
+pour le produire.
+.It Ic soundoffline Op Ar commande
+Active ou désactive le son pour les notifications d'utilisateurs se déconnectant, 
+ou paramètre l'exécution de la commande 
+.Ar commande 
+pour le produire.
+.It Ic q
+Termine micq.
+.It Ic auto Op Ar on|off
+Active ou désactive les messages de réponse automatique. 
+Si aucune des deux options n'est donnée, la liste des réponses automatiques 
+actuelles est donnée.
+.It Ic auto Ar état message
+Change le message de réponse automatique pour l'état 
+.Ar état
+comme étant le message 
+.Ar message .
+.It Ic autoaway Op Ar délai|on|off
+Paramètre le délai à 
+.Ar délai ,
+ou active le mode "auto away" en utilisant le dernier délai choisi si 
+.Ar on
+est donné, ou désactive le mode "auto away" si l'option  
+.Ar off
+est choisie en enregistrant le délai actuel. Un délai d'une valeur de 0 est 
+équivalent à l'option 
+.Ar off .
+Si aucun argument n'est donné, les paramètres actuels sont affichés.
+.It Ic alter Ar ancienne_commande nouvelle_commande
+Renomme la commande 
+.Ar ancienne_commande
+en 
+.Ar nouvelle_commande .
+.It Ic auth Ar uin|surnom
+Autorise
+.Ar uin|surnom
+à vous ajouter à sa liste de contacts.
+.It Ic rand Ar numéro
+Trouve aléatoirement un utilisateur dans le groupe d'intérêt 
+.Ar numéro .
+.It Ic pass Ar mot_de_passe
+Change votre mot de passe ICQ en 
+.Ar mot_de_passe . 
+.br
+Remarque : vous devez entrer 
+.Ar save
+pour rendre la modification persistante au cas où vous sauvegardiez votre mot 
+de passe dans le fichier 
+.Pa ~/.micq/micqrc
+(voir 
+.Xr micqrc 7 ) ,
+sinon votre mot de passe sera rejeté à la prochaine authentification.
+.It Ic search
+.It Ic search Ar email
+.It Ic search Ar surnom
+.It Ic search Ar prénom nom
+Recherche un utilisateur qui a 
+.Ar email
+pour courriel, 
+.Ar surnom
+comme surnom (qui peut contenir le caractère @), ou 
+.Ar prénom
+comme prénom et 
+.Ar nom 
+comme nom. Si aucun argument n'est donné, vous devrez donner le surnom, 
+prénom, nom, courriel et une quantité importante de données qui seront utilisées 
+comme critères de recherche.
+.It Ic add Ar uin Op Ar surnom
+Ajoute 
+.Ar uin
+à votre liste de contacts avec comme surnom 
+.Ar surnom , 
+ou renomme 
+.Ar uin
+en 
+.Ar surnom .
+Si 
+.Ar surnom 
+n'est pas spécifié, utilise 
+.Ar uin
+comme surnom.
+.br
+Remarque  : vous devez utiliser la commande
+.Ar save
+pour rendre les changements persistants.
+.It Ic rem Ar surnom 
+Supprime 
+.Ar surnom 
+de votre liste de contacts.
+.br
+Remarque : vous devez utiliser la commande 
+.Ar save
+pour rendre ce changement persistant.
+.It Ic togvis Ar surnom 
+Active ou désactive le fait que 
+.Ar nickname
+puisse vous contacter même si vous êtes en mode invisible.
+.It Ic toginvis Ar surnom 
+Active ou désactive le fait que vous soyez invisible pour le contact ayant le surnom 
+.Ar surnom .
+.It Ic togig Ar surnom 
+Active ou désactive le fait que les messages et changements d'états du contact ayant comme surnom 
+.Ar surnom 
+soient ignorés.
+.It Ic info Ar uin|surnom 
+Affiche toutes les infos pour le contact ayant comme uin ou surnom
+.Ar uin|surnom .
+.It Ic w
+Affiche toutes les personnes de votre liste de contacts.
+.It Ic e 
+Affiche toutes les personnes de votre liste de contacts qui sont connectées.
+.It Ic wide
+Affiche toutes les personnes qui sont dans votre liste de contacts en utilisant 
+toute la largeur de l'écran.
+.It Ic ewide
+Affiche toutes les personnes de votre liste de contacts qui sont connectées 
+en utilisant toute la largeur de l'écran.
+.It Ic s
+Affiche votre état actuel.
+.It Ic i
+Affiche tous les contacts que vous ignorez.
+.It Ic status Ar surnom 
+Affiche l'état du contact ayant pour surnom 
+.Ar surnom .
+Les informations affichées comprennent l'adresse IP, la version du 
+protocole ICQ et le type de connexion.
+.It Ic change Op Ar numéro 
+Change votre état à l'état numéro 
+.Ar numéro .
+Si vous ne lui fournissez pas de numéro, cette commande affiche une liste 
+des modes disponibles. 
+.It Ic reg mot_de_passe 
+Crée un nouvel utilisateur ayant pour mot de passe 
+.Ar mot_de_passe .
+.It Ic online
+Change votre état en Online.
+.It Ic away
+Change votre état en Away.
+.It Ic na
+Change votre état en Not Available.
+.It Ic occ             
+Change votre état en Occupied.
+.It Ic dnd 
+Change votre état en Do not Disturb.
+.It Ic ffc
+Change votre état en Free for Chat.
+.It Ic inv
+Change votre état en Invisible
+.It Ic update
+Actualise vos informations basiques (courriel, surnom, etc.).
+.It Ic other
+Actualise d'autres informations comme l'age et le sexe.
+.It Ic about
+Met à jour les informations de la section "à propos".
+.It Ic set Ar option Ar valeur 
+Donne a l'option 
+.Ar option
+la valeur 
+.Ic on
+ou 
+.Ic off .
+.Ar option
+peut être 
+.Ic color ,
+.Ic funny
+ou 
+.Ic quiet .
+.It Ic peek Ar surnom 
+Vérifie si l'utilisateur ayant pour surnom 
+.Ar surnom 
+est actuellement connecté. Cette commande utilise un bug dans le protocole ICQ pour 
+trouver ce renseignement;
+aucune information excepté l'état de connexion ne peut être récupérée de cette manière.
+.It Ic setr Op Ar numéro 
+Paramètre votre numéro de groupe d'utilisateur aléatoire à
+.Ar numéro .
+Sans argument, cette command affiche les groupes d'intérêts existants. 
+.It Ic tcp Ar commande Ar uin|surnom 
+Effectue la commande 
+.Ar commande 
+sur l'utilisateur dont l'uin est
+.Ar uin
+ou dont le surnom est
+.Ar surnom .
+.Ar commande
+peut être 
+.Ic open
+pour ouvrir une connexion de pair à pair avec TCP vers l'utilisateur, ou 
+.Ic close
+pour fermer et réinitialiser une telle connexion, ou
+.Ic off
+pour arrêter d'éssayer d'établir une telle connexion pour envoyer des messages 
+jusqu'à ce qu'elle soit explicitement ouverte ou réinitialisée, ou  
+.Ic auto
+pour obtenir la réponse automatique actuelle de l'utilisateur ou encore
+.Ic away ,
+.Ic na ,
+.Ic dnd ,
+.Ic occ
+ou
+.Ic ffc
+pour obtenir la réponse automatique de l'utilisateur pour un de ces états.
+.It Ic conn Op Ar commande Ar nr
+Affiche toutes les connexion, ou effectue la commande 
+.Ar command
+sur la connexion 
+.Ar nr .
+.Ar commande 
+peut être 
+.Ic open
+ou 
+.Ic login
+pour ouvrir cette connexion si elle ne l'est pas actuellement.
+.El
+.Sh VOIR AUSSI
+.Xr micq 1 ,
+.Xr micqrc 5
+.Sh AUTEUR
+Cette page de manuel a été écrite par James Morrison
+.Pa <ja2morrison@student.math.uwaterloo.ca>
+pour pouvoir consulter une référence de toutes les commandes de
+.Ic micq .
+
+.Sh TRADUCTION
+Cette page de manuel a été traduite par Julien Gilli 
+.Pa <jgilli@nerim.fr>.
