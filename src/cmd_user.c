@@ -2139,7 +2139,7 @@ static JUMP_F(CmdUserAutoaway)
 static JUMP_F(CmdUserSet)
 {
     int quiet = 0;
-    strc_t par;
+    strc_t par = NULL;
     const char *str = "";
     
     while (!data)

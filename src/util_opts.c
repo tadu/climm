@@ -377,7 +377,7 @@ BOOL OptGetVal (const Opt *opt, UDWORD flag, val_t *res DEBUGPARAM)
 BOOL OptSetVal (Opt *opt, UDWORD flag, val_t val DEBUGPARAM)
 {
     Opt *cot, *cotold;
-    int k;
+    int k = 0;
     UBYTE tag = flag & 0xff;
 
     cotold = NULL;
