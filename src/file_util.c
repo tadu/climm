@@ -379,7 +379,7 @@ void Read_RC_File (FILE *rcf)
                     PrefParseInt (i);
                     prG->chat = i;
                 }
-                else if (!strcasecmp (cmd, "color"))
+                else if (!strcasecmp (cmd, "color") || !strcasecmp (cmd, "colour"))
                 {
                     if (!s_parseint (&args, &i))
                     {
@@ -537,7 +537,7 @@ void Read_RC_File (FILE *rcf)
                     
                     PrefParse (cmd);
 
-                    if (!strcasecmp (cmd, "color"))
+                    if (!strcasecmp (cmd, "color") || !strcasecmp (cmd, "colour"))
                         which = FLAG_COLOR;
                     else if (!strcasecmp (cmd, "hermit"))
                         which = FLAG_HERMIT;

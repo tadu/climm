@@ -182,7 +182,7 @@ int main (int argc, char *argv[])
         else if ((argv[i][1] == '?') || (argv[i][1] == 'h') ||
                  !strcmp (argv[i], "--help") || !strcmp (argv[i], "--version"))
             arg_h++;
-        else if ((argv[i][1] == 'c') || !strcmp (argv[i], "--nocolor"))
+        else if ((argv[i][1] == 'c') || !strcmp (argv[i], "--nocolor") || !strcmp (argv[i], "--nocolour"))
             arg_c++;
             
     }
