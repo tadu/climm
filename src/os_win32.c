@@ -7,6 +7,7 @@
 #include <winuser.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "os.h"
 
 #define TRACE 1 ? ((void)0) : printf
@@ -35,6 +36,7 @@ static HDESK   (__stdcall * g_fnOpenDesktopA)(char* lpszDesktop, DWORD dwFlags, 
 static BOOL    (__stdcall * g_fnSwitchDesktop)(HDESK hDesktop) = NULL;
 static BOOL    (__stdcall * g_fnCloseDesktop)(HDESK hDesktop) = NULL;
 static int g_iDetectResult[2] = {0x10000, 0x10000};
+static time_t  g_tLastTest    = 0;
 
 /* free resources at exit */
 static void DoneDetectLockedWorkstation()
@@ -246,7 +248,17 @@ static int DetectInfo()
  */
 int os_DetectLockedWorkstation()
 {
-    int iResult = DetectInfo();
+    int iResult;
+    time_t now = time(NULL);
+
+    /* don't test too often, fastest test every second */
+    /* otherwise return old test result */
+    if (g_tLastTest == now)
+        return g_iDetectResult[1];
+
+    g_tLastTest = now;
+
+    iResult = DetectInfo();
     if (iResult < 0) return -1;
 
     if (g_iDetectResult[0] == iResult)

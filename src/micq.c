@@ -81,7 +81,7 @@ void Idle_Check (Connection *conn)
         return;
 
     if ((conn->status & (STATUSF_DND | STATUSF_OCC | STATUSF_FFC))
-        || !(conn->connect & CONNECT_OK))
+        || ~conn->connect & CONNECT_OK)
     {
         uiG.idle_val = 0;
         return;
@@ -90,12 +90,17 @@ void Idle_Check (Connection *conn)
     now = time (NULL);
     delta = uiG.idle_val ? now - uiG.idle_val : 0;
 
-    if (!prG->away_time && delta > 10 && uiG.idle_val)
+    if (!prG->away_time)
     {
         saver = os_DetectLockedWorkstation();
         
         if (saver >= 0 && saver <= 3)
         {
+            if (!uiG.idle_val)
+                uiG.idle_val = now;
+            if (delta > 10 && uiG.idle_val)
+            {
+
             switch (saver)
             {
                 case 0: /* no screen saver, not locked */
@@ -119,6 +124,8 @@ void Idle_Check (Connection *conn)
             uiG.idle_val = 0;
             uiG.idle_flag = 1;
             delta = 0;
+            
+            }
         }
     }
 
