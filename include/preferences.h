@@ -13,9 +13,7 @@ struct Preferences_s
     BOOL   s5Auth;
 
     char  *locale;      /* the used locale */
-#if 0
     char  *locale_full; /* ... verbatim as derived from ENV/--1i8n */
-#endif
     UBYTE  enc_rem;     /* the (assumed) remote encoding */
     UBYTE  enc_loc;     /* the local character encoding */
     

@@ -141,7 +141,7 @@ UWORD ContactGroupID (ContactGroup *group)
 
         group->id = rand() % 0x7fff;
         for (i = 0; (cg = ContactGroupIndex (i)); i++)
-            if (cg->id == group->id)
+            if (cg->id == group->id && cg != group)
                 group->id = 0;
     }
     return group->id;
@@ -425,7 +425,7 @@ UWORD ContactID (Contact *cont)
 
         cont->id = rand() % 0x7fff;
         for (i = 0; (c = ContactIndex (NULL, i)); i++)
-            if (c->id == cont->id)
+            if (c->id == cont->id && c != cont)
                 cont->id = 0;
     }
     return cont->id;

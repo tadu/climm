@@ -34,6 +34,8 @@
 #define EXTRAVERSION "De" "bi" "an hand compiled"
 #elif defined (__linux__)
 #define EXTRAVERSION "Linux hand compiled"
+#elif defined (__Cygwin__)
+#define EXTRAVERSION "Cygwin hand compiled"
 #else
 #define EXTRAVERSION "hand compiled"
 #endif
