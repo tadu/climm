@@ -156,11 +156,11 @@ void ConvInit (void)
     conv_encs[ENC_UTF8].enca = "UTF-8";
     conv_encs[ENC_LATIN1].enca = "ISO-8859-1";
     conv_encs[ENC_LATIN1].encb = "ISO8859-1";
-    conv_encs[ENC_LATIN1].encc = "iso8859_1"; /* don't re-sort */
+    conv_encs[ENC_LATIN1].encc = "ISO88591"; /* don't re-sort */
     conv_encs[ENC_LATIN1].encd = "LATIN1";
     conv_encs[ENC_LATIN9].enca = "ISO-8859-15";
     conv_encs[ENC_LATIN9].encb = "ISO8859-15";
-    conv_encs[ENC_LATIN9].encc = "iso8859_15";
+    conv_encs[ENC_LATIN9].encc = "ISO885915";
     conv_encs[ENC_LATIN9].encd = "LATIN9";
     conv_encs[ENC_KOI8].enca = "KOI8-U";
     conv_encs[ENC_KOI8].encb = "KOI8-R";
