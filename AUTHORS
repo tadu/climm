@@ -1,10 +1,11 @@
 $Id$ -*- coding: utf-8 -*-
 
-mICQ's original Author was:
+Authors:
 	Matthew D. Smith
+	    micq development up to 0.4.7
 
-current Maintainer:
 	Rüdiger Kuhlmann	<info__at__ruediger-kuhlmann.de>
+	    mICQ development since 0.4.8
 
 Contributors:
 

@@ -10,3 +10,5 @@
                     send and receive UTF-8 encoded message, ASCII art mICQ logo, alias'ing of commands, history
 2003-01-24: 0.4.10.1: bug fix release
 2003-03-07: 0.4.10.2: bug fix release
+2003-05-12: 0.4.10.3: bug fix release, support unicode type-1 messages, tweaks for multi-UIN use,
+                    win32 screensaver/lock detection

@@ -1,3 +1,13 @@
+micq (1:0.4.10.3-1.1) unstable; urgency=low
+
+  * New upstream bug fix release
+  + receive/send UCS-2BE encoded type-1 messages
+  + clarify copyright notices as nobody seemed to realize
+    the correct licence / authors
+  + a few tweaks for multi-UIN use
+
+ -- Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>  Mon, 12 May 2003 18:00:08 +0200
+
 micq (1:0.4.10.2-1.1) unstable; urgency=low
 
   * New upstream bug fix release
