@@ -646,7 +646,6 @@ static void CallbackMeta (Event *event)
     Contact *cont;
     
     cont = ContactUIN (event->conn, event->uin);
-    M_printf ("FIXME: Updated: %x.\n", cont->updated);
     if (cont->updated != UP_INFO && !event->flags & QUEUE_FLAG_CONSIDERED)
         QueueEnqueue (event);
     else
@@ -2194,7 +2193,7 @@ static JUMP_F(CmdUserAutoaway)
             prG->away_time = 0;
         }
     }
-    M_printf (i18n (1766, "Changing status to away resp. not available after idling %s%ld%s seconds.\n"),
+    M_printf (i18n (1766, "Changing status to away/not available after idling %s%ld%s seconds.\n"),
              COLMESSAGE, prG->away_time, COLNONE);
     return 0;
 }

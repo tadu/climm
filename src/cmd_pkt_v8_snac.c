@@ -798,8 +798,7 @@ static JUMP_SNAC_F(SnacSrvSrvackmsg)
             IMOffline (cont, event->conn);
 
             M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-            M_printf (i18n (2126, "User is offline, message (%s#%08lx:%08lx%s) queued.\n"),
-                     COLSERVER, mid1, mid2, COLNONE);
+            M_print  (i18n (2126, "is offline, message queued.\n"));
 
 /*          cont->status = STATUS_OFFLINE;
             putlog (event->conn, NOW, cont, STATUS_OFFLINE, LOG_ACK, 0xFFFF, 

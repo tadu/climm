@@ -154,7 +154,7 @@ void UtilUIDisplayMeta (Contact *cont)
                      i18n (1575, "Age:"), mm->age);
         else
             M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
-                     i18n (1575, "Age:"), i18n (1200, "Not entered"));
+                     i18n (1575, "Age:"), i18n (1200, "not entered"));
 
         M_printf (COLSERVER "%-15s" COLNONE " %s\n", i18n (1696, "Sex:"),
                    mm->sex == 1 ? i18n (1528, "female")

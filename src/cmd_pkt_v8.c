@@ -320,6 +320,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     text    = PacketReadLNTS (inc_pak);
     
 #ifdef WIP
+    if (prG->verbose)
     M_printf ("FIXME: Starting advanced message: events %p, %p; type %d, seq %x, status %x.\n",
               inc_event, ack_event, msgtype, seq, status);
 #endif
@@ -592,6 +593,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     }
     free (text);
 #ifdef WIP
+    if (prG->verbose)
     M_printf ("FIXME: Finishing advanced message: events %p, %p.\n", inc_event, ack_event);
 #endif
     QueueDequeueEvent (ack_event);
