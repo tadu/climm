@@ -461,7 +461,7 @@ static JUMP_SNAC_F(SnacSrvReplyicbm)
 static JUMP_SNAC_F(SnacSrvRecvmsg)
 {
     Contact *cont;
-    Packet *p, *pp, *pak;
+    Packet *p = NULL, *pp = NULL, *pak;
     TLV *tlv;
     UDWORD uin;
     int i, type, t;
@@ -517,7 +517,6 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             txt = text + 4;
             type = NORM_MESS;
             /* TLV 1, 2(!), 3, 4, f ignored */
-            PacketD (p);
             break;
         case 2:
             p = TLVPak (tlv + 5);
@@ -559,8 +558,6 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             txt = PacketReadLNTS (pp);
             /* FOREGROUND / BACKGROUND ignored */
             /* TLV 1, 2(!), 3, 4, f ignored */
-            PacketD (pp);
-            PacketD (p);
             break;
         case 4:
             p = TLVPak (tlv + 5);
@@ -570,7 +567,6 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             txt  = PacketReadLNTS (p);
             /* FOREGROUND / BACKGROUND ignored */
             /* TLV 1, 2(!), 3, 4, f ignored */
-            PacketD (p);
             break;
         default:
             SnacSrvUnknown (event);
@@ -582,6 +578,12 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
 
     if (text)
         free (text);
+
+    if (pp)
+        PacketD (pp);
+    
+    if (p)
+        PacketD (p);
 
     if (prG->sound & SFLAG_CMD)
         ExecScript (prG->sound_cmd, uin, 0, NULL);
