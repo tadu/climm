@@ -26,13 +26,31 @@
  */
 const char *s_sprintf (const char *fmt, ...)
 {
-    static char buf[1024];
+    static char *buf = NULL;
+    static UDWORD size = 0;
     va_list args;
+    char *nbuf;
+    UDWORD rc;
 
-    va_start (args, fmt);
-    vsnprintf (buf, sizeof (buf), fmt, args);
-    va_end (args);
+    if (!buf)
+        buf = calloc (1, size = 1024);
 
+    while (1)
+    {
+        buf[size - 2] = '\0';
+        va_start (args, fmt);
+        rc = vsnprintf (buf, size, fmt, args);
+        va_end (args);
+        
+        if (rc != -1 && rc < size && !buf[size - 2])
+            break;
+
+        nbuf = malloc (size + 1024);
+        if (!nbuf)
+            break;
+        buf = nbuf;
+        size += 1024;
+    }
     return buf;
 }
 
