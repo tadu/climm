@@ -623,7 +623,6 @@ static JUMP_F(CmdUserInfo)
 {
     ContactGroup *cg;
     Contact *cont;
-    strc_t par;
     int i;
     OPENCONN;
     
@@ -634,18 +633,10 @@ static JUMP_F(CmdUserInfo)
         return 0;
     }
 
-    while (1)
-    {
-        if ((cg = s_parselistrem (&args, conn)))
-        {
-            for (i = 0; (cont = ContactIndex (cg, i)); i++)
-                IMCliInfo (conn, cont, 0);
-            ContactGroupD (cg);
-        }
-        if (!(par = s_parse (&args)))
-            return 0;
-        M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
-    }
+    if ((cg = s_parselistrem (&args, conn)))
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            IMCliInfo (conn, cont, 0);
+    return 0;
 }
 
 /*
@@ -655,7 +646,6 @@ static JUMP_F(CmdUserPeek)
 {
     ContactGroup *cg;
     Contact *cont;
-    strc_t par;
     int i;
     OPENCONN;
     
@@ -665,18 +655,10 @@ static JUMP_F(CmdUserPeek)
         return 0;
     }
     
-    while (1)
-    {
-        if ((cg = s_parselistrem (&args, conn)))
-        {
-            for (i = 0; (cont = ContactIndex (cg, i)); i++)
-                SnacCliSendmsg2 (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, MSG_GET_PEEK, CO_MSGTEXT, "", 0));
-            ContactGroupD (cg);
-        }
-        if (!(par = s_parse (&args)))
-            return 0;
-        M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
-    }
+    if ((cg = s_parselistrem (&args, conn)))
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            SnacCliSendmsg2 (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, MSG_GET_PEEK, CO_MSGTEXT, "", 0));
+    return 0;
 }
 
 /*
@@ -769,7 +751,6 @@ static JUMP_F(CmdUserGetAuto)
 {
     ContactGroup *cg;
     Contact *cont;
-    strc_t par;
     int i;
     int one = 0;
     ANYCONN;
@@ -786,33 +767,25 @@ static JUMP_F(CmdUserGetAuto)
         else if (s_parsekey (&args, "ver"))  data = MSGF_GETAUTO | MSG_GET_VER;
 #endif
     }
-    while (1)
-    {
-        if ((cg = s_parselistrem (&args, conn)))
+
+    if ((cg = s_parselistrem (&args, conn)))
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
         {
-            for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            int cdata;
+            
+            one = 1;
+            if (!(cdata = data))
             {
-                int cdata;
-                
-                one = 1;
-                if (!(cdata = data))
-                {
-                    if      (cont->status == STATUS_OFFLINE) continue;
-                    else if (cont->status  & STATUSF_DND)    cdata = MSGF_GETAUTO | MSG_GET_DND;
-                    else if (cont->status  & STATUSF_OCC)    cdata = MSGF_GETAUTO | MSG_GET_OCC;
-                    else if (cont->status  & STATUSF_NA)     cdata = MSGF_GETAUTO | MSG_GET_NA;
-                    else if (cont->status  & STATUSF_AWAY)   cdata = MSGF_GETAUTO | MSG_GET_AWAY;
-                    else if (cont->status  & STATUSF_FFC)    cdata = MSGF_GETAUTO | MSG_GET_FFC;
-                    else continue;
-                }
-                IMCliMsg (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, cdata, 0));
+                if      (cont->status == STATUS_OFFLINE) continue;
+                else if (cont->status  & STATUSF_DND)    cdata = MSGF_GETAUTO | MSG_GET_DND;
+                else if (cont->status  & STATUSF_OCC)    cdata = MSGF_GETAUTO | MSG_GET_OCC;
+                else if (cont->status  & STATUSF_NA)     cdata = MSGF_GETAUTO | MSG_GET_NA;
+                else if (cont->status  & STATUSF_AWAY)   cdata = MSGF_GETAUTO | MSG_GET_AWAY;
+                else if (cont->status  & STATUSF_FFC)    cdata = MSGF_GETAUTO | MSG_GET_FFC;
+                else continue;
             }
-            ContactGroupD (cg);
+            IMCliMsg (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, cdata, 0));
         }
-        if (!(par = s_parse (&args)))
-            break;
-        M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
-    }
 
     if (data || one)
         return 0;
@@ -993,7 +966,6 @@ static JUMP_F(CmdUserPeer)
             case 14:
                 M_printf (i18n (2260, "Please try the getauto command instead.\n"));
         }
-        ContactGroupD (cg);
     }
     return 0;
 }
@@ -1081,8 +1053,7 @@ static JUMP_F (CmdUserResend)
 {
     ContactGroup *cg;
     Contact *cont;
-    strc_t par;
-    int i, one = 0;
+    int i;
     OPENCONN;
 
     if (!uiG.last_message_sent) 
@@ -1091,24 +1062,13 @@ static JUMP_F (CmdUserResend)
         return 0;
     }
 
-    while (1)
-    {
-        if ((cg = s_parselistrem (&args, conn)))
+    if ((cg = s_parselistrem (&args, conn)))
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
         {
-            for (i = 0; (cont = ContactIndex (cg, i)); i++)
-            {
-                one = 1;
-                IMCliMsg (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, uiG.last_message_sent_type, CO_MSGTEXT, uiG.last_message_sent, 0));
-                uiG.last_sent = cont;
-            }
-            ContactGroupD (cg);
+            IMCliMsg (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, uiG.last_message_sent_type, CO_MSGTEXT, uiG.last_message_sent, 0));
+            uiG.last_sent = cont;
         }
-        if (!(par = s_parse (&args)))
-            return 0;
-        M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
-        one = 1;
-    }
-    if (!one)
+    else
         IMCliMsg (conn, uiG.last_sent, ContactOptionsSetVals (NULL, CO_MSGTYPE, uiG.last_message_sent_type, CO_MSGTEXT, uiG.last_message_sent, 0));
     return 0;
 }
@@ -1188,8 +1148,8 @@ static JUMP_F (CmdUserMessage)
 {
     static str_s t;
     static ContactGroup *cg = NULL;
+    ContactGroup *tcg;
     Contact *cont = NULL;
-    strc_t par;
     char *arg1 = NULL;
     UDWORD i;
     OPENCONN;
@@ -1200,11 +1160,11 @@ static JUMP_F (CmdUserMessage)
         {
             case 1:
                 if (!(cg = s_parselist (&args, conn)))
-                {
-                    if ((par = s_parse (&args)))
-                        M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
                     return 0;
-                }
+                tcg = ContactGroupC (NULL, 0, NULL);
+                for (i = 0; (cont = ContactIndex (cg, i)); i++)
+                    ContactAdd (tcg, cont);
+                cg = tcg;
                 break;
             case 2:
                 if (!uiG.last_rcvd)
@@ -1212,7 +1172,7 @@ static JUMP_F (CmdUserMessage)
                     M_print (i18n (1741, "Must receive a message first.\n"));
                     return 0;
                 }
-                cg = ContactGroupC (NULL, 0, "");
+                cg = ContactGroupC (NULL, 0, NULL);
                 ContactAdd (cg, uiG.last_rcvd);
                 break;
             case 4:
@@ -1469,7 +1429,6 @@ static JUMP_F(CmdUserStatusDetail)
 {
     ContactGroup *cg = NULL, *tcg = NULL;
     Contact *cont = NULL;
-    strc_t par;
     int i, j, k;
     UDWORD stati[] = { 0xfffffffe, STATUS_OFFLINE, STATUS_DND,    STATUS_OCC, STATUS_NA,
                                    STATUS_AWAY,    STATUS_ONLINE, STATUS_FFC, STATUSF_BIRTH };
@@ -1482,15 +1441,7 @@ static JUMP_F(CmdUserStatusDetail)
         tcg = cg = NULL;
 
     if ((data & 8) && !cg)
-    {
-        if ((cg = s_parselistrem (&args, conn)))
-            tcg = cg;
-        else if ((par = s_parse (&args)))
-        {
-            M_printf (i18n (9999, "%s is not a valid user in your list.\n"), s_wordquote (par->txt));
-            return 0;
-        }
-    }
+        tcg = cg = s_parselistrem (&args, conn);
 
     if (tcg)
     {
@@ -1536,7 +1487,6 @@ static JUMP_F(CmdUserStatusDetail)
             if (j)
                 M_print ("\n");
         }
-        ContactGroupD (tcg);
         return 0;
     }
 
@@ -1635,7 +1585,6 @@ static JUMP_F(CmdUserStatusMeta)
 {
     ContactGroup *cg = NULL;
     Contact *cont;
-    strc_t par;
     int i;
     ANYCONN;
 
@@ -1660,68 +1609,61 @@ static JUMP_F(CmdUserStatusMeta)
         }
     }
     
-    while (1)
+    if ((data == 4) || (cg = s_parselistrem (&args, conn)) || (data == 6))
     {
-        if ((data == 4) || (cg = s_parselistrem (&args, conn)) || (data == 6))
+        switch (data)
         {
-            switch (data)
-            {
-                case 1:
-                    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            case 1:
+                for (i = 0; (cont = ContactIndex (cg, i)); i++)
+                    UtilUIDisplayMeta (cont);
+                break;
+            case 2:
+                for (i = 0; (cont = ContactIndex (cg, i)); i++)
+                {
+                    if (ContactMetaLoad (cont))
                         UtilUIDisplayMeta (cont);
-                    break;
-                case 2:
-                    for (i = 0; (cont = ContactIndex (cg, i)); i++)
-                    {
-                        if (ContactMetaLoad (cont))
-                            UtilUIDisplayMeta (cont);
-                        else
-                            M_printf (i18n (9999, "Couldn't load meta data for %s (%ld).\n"),
-                                      s_wordquote (cont->nick), cont->uin);
-                    }
-                    break;
-                case 3:
-                    for (i = 0; (cont = ContactIndex (cg, i)); i++)
-                    {
-                        if (ContactMetaSave (cont))
-                            M_printf (i18n (2248, "Saved meta data for '%s' (%ld).\n"),
-                                      cont->nick, cont->uin);
-                        else
-                            M_printf (i18n (2249, "Couldn't save meta data for '%s' (%ld).\n"),
-                                      cont->nick, cont->uin);
-                    }
-                    break;
-                case 4:
-                    if (!(cont = conn->cont))
-                        return 0;
-                    if (conn->type == TYPE_SERVER)
-                    {
-                        SnacCliMetasetgeneral (conn, cont);
-                        SnacCliMetasetmore (conn, cont);
-                        SnacCliMetasetabout (conn, cont->meta_about);
-                    }
                     else
-                    {
-                        CmdPktCmdMetaGeneral (conn, cont);
-                        CmdPktCmdMetaMore (conn, cont);
-                        CmdPktCmdMetaAbout (conn, cont->meta_about);
-                    }
+                        M_printf (i18n (9999, "Couldn't load meta data for %s (%ld).\n"),
+                                  s_wordquote (cont->nick), cont->uin);
+                }
+                break;
+            case 3:
+                for (i = 0; (cont = ContactIndex (cg, i)); i++)
+                {
+                    if (ContactMetaSave (cont))
+                        M_printf (i18n (2248, "Saved meta data for '%s' (%ld).\n"),
+                                  cont->nick, cont->uin);
+                    else
+                        M_printf (i18n (2249, "Couldn't save meta data for '%s' (%ld).\n"),
+                                  cont->nick, cont->uin);
+                }
+                break;
+            case 4:
+                if (!(cont = conn->cont))
                     return 0;
-                case 6:
-                    IMCliInfo (conn, uiG.last_rcvd, 0);
-                    if (!cg)
-                        continue;
-                case 5:
-                    for (i = 0; (cont = ContactIndex (cg, i)); i++)
-                        IMCliInfo (conn, cont, 0);
-                    data = 5;
+                if (conn->type == TYPE_SERVER)
+                {
+                    SnacCliMetasetgeneral (conn, cont);
+                    SnacCliMetasetmore (conn, cont);
+                    SnacCliMetasetabout (conn, cont->meta_about);
+                }
+                else
+                {
+                    CmdPktCmdMetaGeneral (conn, cont);
+                    CmdPktCmdMetaMore (conn, cont);
+                    CmdPktCmdMetaAbout (conn, cont->meta_about);
+                }
+                return 0;
+            case 6:
+                IMCliInfo (conn, uiG.last_rcvd, 0);
+                if (!cg)
                     break;
-            }
-            ContactGroupD (cg);
+            case 5:
+                for (i = 0; (cont = ContactIndex (cg, i)); i++)
+                    IMCliInfo (conn, cont, 0);
+                data = 5;
+                break;
         }
-        if (!(par = s_parse (&args)))
-            break;
-        M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
     }
     return 0;
 }
@@ -2339,33 +2281,23 @@ static JUMP_F(CmdUserTogIgnore)
 {
     ContactGroup *cg;
     Contact *cont;
-    strc_t par;
     int i;
     OPENCONN;
 
-    while (1)
-    {
-        if ((cg = s_parselistrem (&args, conn)))
+    if ((cg = s_parselistrem (&args, conn)))
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
         {
-            for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            if (ContactPrefVal (cont, CO_IGNORE))
             {
-                if (ContactPrefVal (cont, CO_IGNORE))
-                {
-                    ContactOptionsSetVal (&cont->copts, CO_IGNORE, 0);
-                    M_printf (i18n (1666, "Unignored %s.\n"), cont->nick);
-                }
-                else
-                {
-                    ContactOptionsSetVal (&cont->copts, CO_IGNORE, 1);
-                    M_printf (i18n (1667, "Ignoring %s.\n"), cont->nick);
-                }
+                ContactOptionsSetVal (&cont->copts, CO_IGNORE, 0);
+                M_printf (i18n (1666, "Unignored %s.\n"), cont->nick);
             }
-            ContactGroupD (cg);
+            else
+            {
+                ContactOptionsSetVal (&cont->copts, CO_IGNORE, 1);
+                M_printf (i18n (1667, "Ignoring %s.\n"), cont->nick);
+            }
         }
-        if (!(par = s_parse (&args)))
-            break;
-        M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
-    }
     return 0;
 }
 
@@ -2376,49 +2308,39 @@ static JUMP_F(CmdUserTogInvis)
 {
     ContactGroup *cg;
     Contact *cont;
-    strc_t par;
     int i;
     OPENCONN;
 
-    while (1)
-    {
-        if ((cg = s_parselistrem (&args, conn)))
+    if ((cg = s_parselistrem (&args, conn)))
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
         {
-            for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            if (ContactPrefVal (cont, CO_HIDEFROM))
             {
-                if (ContactPrefVal (cont, CO_HIDEFROM))
-                {
-                    ContactOptionsSetVal (&cont->copts, CO_HIDEFROM, 0);
-                    if (conn->type == TYPE_SERVER)
-                        SnacCliReminvis (conn, cont);
-                    else
-                        CmdPktCmdUpdateList (conn, cont, INV_LIST_UPDATE, FALSE);
-                    M_printf (i18n (2020, "Being visible to %s.\n"), cont->nick);
-                }
+                ContactOptionsSetVal (&cont->copts, CO_HIDEFROM, 0);
+                if (conn->type == TYPE_SERVER)
+                    SnacCliReminvis (conn, cont);
                 else
-                {
-                    ContactOptionsSetVal (&cont->copts, CO_INTIMATE, 0);
-                    ContactOptionsSetVal (&cont->copts, CO_HIDEFROM, 1);
-                    if (conn->type == TYPE_SERVER)
-                        SnacCliAddinvis (conn, cont);
-                    else
-                        CmdPktCmdUpdateList (conn, cont, INV_LIST_UPDATE, TRUE);
-                    M_printf (i18n (2021, "Being invisible to %s.\n"), cont->nick);
-                }
-                if (conn->type != TYPE_SERVER)
-                {
-                    CmdPktCmdContactList (conn);
-                    CmdPktCmdInvisList (conn);
-                    CmdPktCmdVisList (conn);
-                    CmdPktCmdStatusChange (conn, conn->status);
-                }
+                    CmdPktCmdUpdateList (conn, cont, INV_LIST_UPDATE, FALSE);
+                M_printf (i18n (2020, "Being visible to %s.\n"), cont->nick);
             }
-            ContactGroupD (cg);
+            else
+            {
+                ContactOptionsSetVal (&cont->copts, CO_INTIMATE, 0);
+                ContactOptionsSetVal (&cont->copts, CO_HIDEFROM, 1);
+                if (conn->type == TYPE_SERVER)
+                    SnacCliAddinvis (conn, cont);
+                else
+                    CmdPktCmdUpdateList (conn, cont, INV_LIST_UPDATE, TRUE);
+                M_printf (i18n (2021, "Being invisible to %s.\n"), cont->nick);
+            }
+            if (conn->type != TYPE_SERVER)
+            {
+                CmdPktCmdContactList (conn);
+                CmdPktCmdInvisList (conn);
+                CmdPktCmdVisList (conn);
+                CmdPktCmdStatusChange (conn, conn->status);
+            }
         }
-        if (!(par = s_parse (&args)))
-            break;
-        M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
-    }
     return 0;
 }
 
@@ -2429,42 +2351,32 @@ static JUMP_F(CmdUserTogVisible)
 {
     ContactGroup *cg;
     Contact *cont;
-    strc_t par;
     int i;
     OPENCONN;
 
-    while (1)
-    {
-        if ((cg = s_parselistrem (&args, conn)))
+    if ((cg = s_parselistrem (&args, conn)))
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
         {
-            for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            if (ContactPrefVal (cont, CO_INTIMATE))
             {
-                if (ContactPrefVal (cont, CO_INTIMATE))
-                {
-                    ContactOptionsSetVal (&cont->copts, CO_INTIMATE, 0);
-                    if (conn->type == TYPE_SERVER)
-                        SnacCliRemvisible (conn, cont);
-                    else
-                        CmdPktCmdUpdateList (conn, cont, VIS_LIST_UPDATE, FALSE);
-                    M_printf (i18n (1670, "Normal visible to %s now.\n"), cont->nick);
-                }
+                ContactOptionsSetVal (&cont->copts, CO_INTIMATE, 0);
+                if (conn->type == TYPE_SERVER)
+                    SnacCliRemvisible (conn, cont);
                 else
-                {
-                    ContactOptionsSetVal (&cont->copts, CO_HIDEFROM, 0);
-                    ContactOptionsSetVal (&cont->copts, CO_INTIMATE, 1);
-                    if (conn->type == TYPE_SERVER)
-                        SnacCliAddvisible (conn, cont);
-                    else
-                        CmdPktCmdUpdateList (conn, cont, VIS_LIST_UPDATE, TRUE);
-                    M_printf (i18n (1671, "Always visible to %s now.\n"), cont->nick);
-                }
+                    CmdPktCmdUpdateList (conn, cont, VIS_LIST_UPDATE, FALSE);
+                M_printf (i18n (1670, "Normal visible to %s now.\n"), cont->nick);
             }
-            ContactGroupD (cg);
+            else
+            {
+                ContactOptionsSetVal (&cont->copts, CO_HIDEFROM, 0);
+                ContactOptionsSetVal (&cont->copts, CO_INTIMATE, 1);
+                if (conn->type == TYPE_SERVER)
+                    SnacCliAddvisible (conn, cont);
+                else
+                    CmdPktCmdUpdateList (conn, cont, VIS_LIST_UPDATE, TRUE);
+                M_printf (i18n (1671, "Always visible to %s now.\n"), cont->nick);
+            }
         }
-        if (!(par = s_parse (&args)))
-            break;
-        M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
-    }
     return 0;
 }
 
@@ -2510,36 +2422,29 @@ static JUMP_F(CmdUserAdd)
     
     if (cg)
     {
-        while (1)
+        if ((acg = s_parselistrem (&args, conn)))
         {
-            if ((acg = s_parselistrem (&args, conn)))
+            for (i = 0; (cont = ContactIndex (acg, i)); i++)
             {
-                for (i = 0; (cont = ContactIndex (acg, i)); i++)
+                if (!cont->group)
                 {
-                    if (!cont->group)
-                    {
-                        ContactFindCreate (conn->contacts, 0, cont->uin, s_sprintf ("%ld", cont->uin));
-                        if (conn->type == TYPE_SERVER)
-                            SnacCliAddcontact (conn, cont);
-                        else
-                            CmdPktCmdContactList (conn);
-                        M_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, cont->nick);
-                    }
-                    if (ContactHas (cg, cont))
-                        M_printf (i18n (2244, "Contact group '%s' already has contact '%s' (%ld).\n"),
-                                  cg->name, cont->nick, cont->uin);
-                    else if (ContactAdd (cg, cont))
-                        M_printf (i18n (2241, "Added '%s' to contact group '%s'.\n"), cont->nick, cg->name);
+                    ContactFindCreate (conn->contacts, 0, cont->uin, s_sprintf ("%ld", cont->uin));
+                    if (conn->type == TYPE_SERVER)
+                        SnacCliAddcontact (conn, cont);
                     else
-                        M_print (i18n (2118, "Out of memory.\n"));
+                        CmdPktCmdContactList (conn);
+                    M_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, cont->nick);
                 }
-                ContactGroupD (acg);
+                if (ContactHas (cg, cont))
+                    M_printf (i18n (2244, "Contact group '%s' already has contact '%s' (%ld).\n"),
+                              cg->name, cont->nick, cont->uin);
+                else if (ContactAdd (cg, cont))
+                    M_printf (i18n (2241, "Added '%s' to contact group '%s'.\n"), cont->nick, cg->name);
+                else
+                    M_print (i18n (2118, "Out of memory.\n"));
             }
-            if (!(par = s_parse (&args)))
-                break;
-            M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
+            M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
         }
-        M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
         return 0;
     }
 
@@ -2605,7 +2510,6 @@ static JUMP_F(CmdUserRemove)
     ContactGroup *cg = NULL, *acg;
     Contact *cont = NULL;
     UDWORD uin;
-    strc_t par;
     char *alias;
     const char *argst;
     UBYTE all = 0;
@@ -2625,64 +2529,56 @@ static JUMP_F(CmdUserRemove)
     
     if (all && cg && cg->serv->contacts != cg)
     {
-        ContactGroupD (cg);
         M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
         return 0;
     }
 
-    while (1)
+    if ((acg = s_parselistrem (&args, conn)))
     {
-        if ((acg = s_parselistrem (&args, conn)))
+        for (i = 0; (cont = ContactIndex (acg, i)); i++)
         {
-            for (i = 0; (cont = ContactIndex (acg, i)); i++)
+            if (cg)
             {
-                if (cg)
+                if (ContactRem (cg, cont))
+                    M_printf (i18n (2243, "Removed contact '%s' from group '%s'.\n"),
+                              cont->nick, cg->name);
+                else
+                    M_printf (i18n (2246, "Contact '%s' is not in group '%s'.\n"),
+                              cont->nick, cg->name);
+            }
+            else
+            {
+                if (!cont->group)
+                    continue;
+
+                if (all || !cont->alias)
                 {
-                    if (ContactRem (cg, cont))
-                        M_printf (i18n (2243, "Removed contact '%s' from group '%s'.\n"),
-                                  cont->nick, cg->name);
+                    if (conn->type == TYPE_SERVER)
+                        SnacCliRemcontact (conn, cont);
                     else
-                        M_printf (i18n (2246, "Contact '%s' is not in group '%s'.\n"),
-                                  cont->nick, cg->name);
+                        CmdPktCmdContactList (conn);
+                }
+
+                alias = strdup (cont->nick);
+                uin = cont->uin;
+                
+                if (all || !cont->alias)
+                {
+                    ContactD (cont);
+                    M_printf (i18n (2150, "Removed contact '%s' (%ld).\n"),
+                              alias, uin);
                 }
                 else
                 {
-                    if (!cont->group)
-                        continue;
-
-                    if (all || !cont->alias)
-                    {
-                        if (conn->type == TYPE_SERVER)
-                            SnacCliRemcontact (conn, cont);
-                        else
-                            CmdPktCmdContactList (conn);
-                    }
-
-                    alias = strdup (cont->nick);
-                    uin = cont->uin;
-                    
-                    if (all || !cont->alias)
-                    {
-                        ContactD (cont);
-                        M_printf (i18n (2150, "Removed contact '%s' (%ld).\n"),
-                                  alias, uin);
-                    }
-                    else
-                    {
-                        ContactRemAlias (cont, alias);
-                        M_printf (i18n (2149, "Removed alias '%s' for '%s' (%ld).\n"),
-                                 alias, cont->nick, uin);
-                    }
-                    free (alias);
+                    ContactRemAlias (cont, alias);
+                    M_printf (i18n (2149, "Removed alias '%s' for '%s' (%ld).\n"),
+                             alias, cont->nick, uin);
                 }
+                free (alias);
             }
-            ContactGroupD (acg);
         }
-        if (!(par = s_parse (&args)))
-            break;
-        M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
+        M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
     }
-    M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
     return 0;
 }
 
@@ -2693,7 +2589,6 @@ static JUMP_F(CmdUserAuth)
 {
     ContactGroup *cg;
     Contact *cont;
-    strc_t par;
     int i;
     char *msg = NULL;
     OPENCONN;
@@ -2714,11 +2609,7 @@ static JUMP_F(CmdUserAuth)
         return 0;
     }
     if (!(cg = s_parselist (&args, conn)))
-    {
-        if ((par = s_parse (&args)))
-            M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
         return 0;
-    }
     if (data & 2 && !(msg = s_parserem (&args)))
         msg = NULL;
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
@@ -2762,7 +2653,6 @@ static JUMP_F(CmdUserAuth)
                     CmdPktCmdSendMessage (conn, cont, "\x03", MSG_AUTH_GRANT);
         }
     }
-    ContactGroupD (cg);
     return 0;
 }
 
@@ -2793,11 +2683,7 @@ static JUMP_F(CmdUserURL)
     OPENCONN;
 
     if (!(cg = s_parselist (&args, conn)))
-    {
-        if ((par = s_parse (&args)))
-            M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
         return 0;
-    }
     
     if (!(par = s_parse (&args)))
     {
@@ -2821,7 +2707,6 @@ static JUMP_F(CmdUserURL)
     }
 
     free (url);
-    ContactGroupD (cg);
     return 0;
 }
 
@@ -3010,6 +2895,8 @@ static JUMP_F(CmdUserConn)
 #else
                     M_printf (i18n (2081, "    at %p parent %p assoc %p\n"), connl, connl->parent, connl->assoc);
 #endif
+                    M_printf (i18n (9999, "    open %p reconn %p close %p err %p dispatch %p\n"),
+                              connl->open, connl->reconnect, connl->close, connl->error, connl->dispatch);
                     free (t1);
                     free (t2);
                     free (t3);

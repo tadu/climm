@@ -682,6 +682,7 @@ const char *s_realpath (const char *path)
 /*
  * Try to find a parameter in the string.
  * Result must NOT be free()d.
+ * If nothing is found, *input will point to the terminating null byte.
  */
 strc_t s_parse_s (const char **input, const char *sep)
 {
@@ -873,12 +874,16 @@ ContactGroup *s_parsecg_s (const char **input, const char *sep, Connection *serv
  */
 ContactGroup *s_parselist_s (const char **input, BOOL rem, Connection *serv)
 {
-    ContactGroup *cg, *ncg;
+    static ContactGroup *scg = NULL;
+    ContactGroup *cg;
     Contact *cont;
     const char *p = *input;
-    UDWORD i;
+    strc_t par;
+    UDWORD i, one = 0;
     
-    ncg = ContactGroupC (serv, 0, "");
+    if (scg)
+        ContactGroupD (scg);
+    scg = ContactGroupC (serv, 0, "");
     while (*p)
     {
         while (*p && strchr (DEFAULT_SEP, *p))
@@ -886,13 +891,21 @@ ContactGroup *s_parselist_s (const char **input, BOOL rem, Connection *serv)
         if ((cg = s_parsecg_s (&p, MULTI_SEP, serv)))
         {
             for (i = 0; (cont = ContactIndex (cg, i)); i++)
-                if (!ContactHas (ncg, cont))
-                    ContactAdd (ncg, cont);
+                if (!ContactHas (scg, cont))
+                    ContactAdd (scg, cont);
         }
         else if ((cont = s_parsenick_s (&p, MULTI_SEP, serv)))
         {
-            if (!ContactHas (ncg, cont))
-                ContactAdd (ncg, cont);
+            if (!ContactHas (scg, cont))
+                ContactAdd (scg, cont);
+        }
+        else if ((par = s_parse (&p)))
+        {
+            M_printf (i18n (9999, "%s not recognized as a nick name.\n"), s_wordquote (par->txt));
+            if (!rem)
+                break;
+            one = 1;
+            continue;
         }
         else
             break;
@@ -902,12 +915,11 @@ ContactGroup *s_parselist_s (const char **input, BOOL rem, Connection *serv)
             p++;
     }
     
-    if (ContactIndex (ncg, 0) && (rem || strchr (DEFAULT_SEP, *p)))
+    if ((one || ContactIndex (scg, 0)) && (rem || strchr (DEFAULT_SEP, *p)))
     {
         *input = p;
-        return ncg;
+        return scg;
     }
-    ContactGroupD (ncg);
     return NULL;
 }
 
