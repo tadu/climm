@@ -221,7 +221,7 @@ void Initalize_RC_File ()
     conns->spref->server = strdup ("remote-control");
     conns->type  = conns->spref->type;
     conns->flags = conns->spref->flags;
-    conn->server = strdup (conns->spref->server);
+    conns->server = strdup (conns->spref->server);
 
     prG->status = STATUS_ONLINE;
     prG->tabs = TABS_SIMPLE;
@@ -778,7 +778,7 @@ void Read_RC_File (FILE *rcf)
                     {
                         conn->spref->type =
                             (conn->spref->version ? (conn->spref->version > 6 
-                               ? TYPE_SERVER : TYPE_SERVER_OLD) : 0);
+                               ? TYPE_SERVER : TYPE_SERVER_OLD) : conn->spref->type);
                         conn->spref->flags = 0;
                         dep |= 1;
                     }
@@ -903,10 +903,8 @@ void Read_RC_File (FILE *rcf)
         conn->ver    = conn->spref->version;
         conn->type   = conn->spref->type;
         conn->flags  = conn->spref->flags;
-        if (prG->s5Use && conn->type & TYPEF_SERVER)
-            conn->type = conn->spref->type = 2;
-        if (conn->spref->type == TYPE_SERVER || conn->spref->type == TYPE_SERVER_OLD)
-            oldconn = conn;
+        if (prG->s5Use && conn->type & TYPEF_SERVER && !conn->ver)
+            conn->ver = 2;
         switch (conn->type)
         {
             case TYPE_SERVER:
@@ -942,16 +940,6 @@ void Read_RC_File (FILE *rcf)
         conns->server = strdup (conns->spref->server);
     }
                             
-    if (prG->verbose && oldconn)
-    {
-        M_printf (i18n (1189, "UIN = %ld\n"),    oldconn->spref->uin);
-        M_printf (i18n (1190, "port = %ld\n"),   oldconn->spref->port);
-        M_printf (i18n (1191, "passwd = %s\n"),  oldconn->spref->passwd ? oldconn->spref->passwd : "[none]");
-        M_printf (i18n (1192, "server = %s\n"),  oldconn->spref->server ? oldconn->spref->server : "[none]");
-        M_printf (i18n (1193, "status = %ld\n"), oldconn->spref->status);
-        M_printf (i18n (1196, "Message_cmd = %s\n"), CmdUserLookupName ("msg"));
-        M_printf ("flags: %08x\n", prG->flags);
-    }
     if (dep)
         M_print (i18n (1818, "Warning: Deprecated syntax found in rc file!\n    Please update or \"save\" the rc file and check for changes.\n"));
     fclose (rcf);
