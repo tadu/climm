@@ -7,7 +7,7 @@
  * $Id$
  */
 
-#define MICQ_BUILD_NUM 0x00040903
+#define MICQ_BUILD_NUM 0x00040904
 
 #include <string.h>
 #include <stdio.h>
@@ -36,7 +36,7 @@ const char *BuildVersion (void)
 }
 
 const UDWORD BuildVersionNum = MICQ_BUILD_NUM;
-const char  *BuildVersionText = "$VER: mICQ " VERSION " CVS-0-4-9-3 cvs " CVSUPDATE " date " BUILDDATE " (" __DATE__ " " __TIME__ ")";
+const char  *BuildVersionText = "$VER: mICQ " VERSION " CVS-0-4-9-4 Prerelease cvs " CVSUPDATE " date " BUILDDATE " (" __DATE__ " " __TIME__ ")";
 
 /*
  i19n (1001, "en")               locale
