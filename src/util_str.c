@@ -533,7 +533,7 @@ BOOL s_parse_s (char **input, char **parsed, char *sep)
         if (*p == '"' && s)
         {
             *q = '\0';
-            *parsed++;
+            (*parsed)++;
             *input = p + 1;
             return TRUE;
         }

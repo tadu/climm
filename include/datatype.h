@@ -7,15 +7,28 @@
    #include <unistd.h>
 #endif
 
+#ifdef HAVE_WINDEF_H
+#include <windef.h>
+#endif
+
 #if !HAVE_SOCKLEN_T
 typedef int socklen_t;
 #endif
 
+#if !HAVE_BOOL
+typedef unsigned char BOOL;
+#endif
+
+#if !HAVE_UDWORD
 typedef unsigned SIZE_4_TYPE UDWORD;
-#ifndef __amigaos__
+#endif
+#if !HAVE_UWORD
 typedef unsigned SIZE_2_TYPE UWORD;
+#endif
+#if !HAVE_UBYTE
 typedef unsigned SIZE_1_TYPE UBYTE;
 #endif
+
 typedef signed   SIZE_4_TYPE SDWORD;
 typedef signed   SIZE_2_TYPE SWORD;
 typedef signed   SIZE_1_TYPE SBYTE;
@@ -25,7 +38,6 @@ typedef int SOK_T;
 
 #ifdef _WIN32
   typedef unsigned int ssize_t;
-  typedef int BOOL;
   #define sockread(s,p,l)  recv (s, (char *) p, l, 0)
   #define sockwrite(s,p,l) send (s, (char *) p, l, 0)
   #define sockclose(s)     closesocket(s)
@@ -40,8 +52,8 @@ typedef int SOK_T;
   #define _OS_PREFPATH   ".\\"
   #define _OS_PATHSEP    '\\'
   #define _OS_PATHSEPSTR "\\"
+  int os_DetectLockedWorkstation (void);
 #elif defined(__BEOS__)
-  typedef unsigned char BOOL;
   #define sockread(s,p,l)  recv (s, p, l, 0)
   #define sockwrite(s,p,l) send (s, p, l, 0)
   #define sockclose(s)     closesocket (s)
@@ -64,7 +76,6 @@ typedef int SOK_T;
   #define _OS_PATHSEPSTR "/"
   #define os_DetectLockedWorkstation() -1
 #else
-  typedef unsigned char BOOL;
   #define sockread(s,p,l)  read (s, p, l)
   #define sockwrite(s,p,l) write (s, p, l)
   #define sockclose(s)     close (s)

@@ -435,7 +435,7 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc, size_t totalin, UBYTE keep0x
     totalin = (enc == ENC_UCS2BE ? (totalin == -1 ? strlen (in) : totalin) : 0);
     /* obey totalin _only_ for UCS-2BE */
 
-    t = s_catf (t, &size, "%*s", totalin * 3, "");
+    t = s_catf (t, &size, "%*s", (int)(totalin * 3), "");
     *t = '\0';
     
     for (*t = '\0'; *in || totalin; in++)

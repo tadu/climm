@@ -27,7 +27,9 @@
 #include <netdb.h>
 #endif
 #include <fcntl.h>
+#if HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <assert.h>
 #if HAVE_NETINET_IN_H
 #include <netinet/in.h>
@@ -537,7 +539,7 @@ int UtilIOError (Connection *conn)
 
     length = sizeof (int);
 #ifdef SO_ERROR
-    if (getsockopt (conn->sok, SOL_SOCKET, SO_ERROR, &rc, &length) < 0)
+    if (getsockopt (conn->sok, SOL_SOCKET, SO_ERROR, (void *)&rc, &length) < 0)
 #endif
         rc = errno;
 

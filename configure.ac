@@ -240,36 +240,6 @@ AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_STRUCT_TM
 
-AC_C_BIGENDIAN
-AC_CHECK_SIZEOF(char)
-AC_CHECK_SIZEOF(short)
-AC_CHECK_SIZEOF(int)
-AC_CHECK_SIZEOF(long)
-
-if test "x$ac_cv_sizeof_long" = "x4"; then
-  AC_DEFINE(SIZE_4_TYPE, long, [Type of length 4 bytes])
-elif test "x$ac_cv_sizeof_int" = "x4"; then
-  AC_DEFINE(SIZE_4_TYPE, int)
-else
-  AC_MSG_ERROR([No type of length 4 bytes found.])
-fi  
-
-if test "x$ac_cv_sizeof_int" = "x2"; then
-  AC_DEFINE(SIZE_2_TYPE, int, [Type of length 2 bytes])
-elif test "x$ac_cv_sizeof_short" = "x2"; then
-  AC_DEFINE(SIZE_2_TYPE, short)
-else
-  AC_MSG_ERROR([No type of length 2 bytes found.])
-fi  
-
-if test "x$ac_cv_sizeof_short" = "x1"; then
-  AC_DEFINE(SIZE_1_TYPE, short, [Type of length 1 bytes])
-elif test "x$ac_cv_sizeof_char" = "x1"; then
-  AC_DEFINE(SIZE_1_TYPE, char)
-else
-  AC_MSG_ERROR([No type of length 1 bytes found.])
-fi  
-
 # Checks for library functions.
 AC_PROG_GCC_TRADITIONAL
 
@@ -305,7 +275,7 @@ for f in memset mkdir atexit \
 done
 
 if test "x$ac_cv_func_select" != "xyes"; then
-    AC_CHECK_HEADERS([winsock2.h conio.h])
+    AC_CHECK_HEADERS([winsock2.h conio.h windef.h])
     my_old_LIBS=$LIBS
     LIBS="-lws2_32 $LIBS"
     AC_CACHE_CHECK(for library containing select, ac_cv_search_select,
@@ -369,20 +339,54 @@ AC_CHECK_DECLS(h_errno,,,[$ac_includes_default
 #ifdef HAVE_NETDB_H
 #include <netdb.h>
 #endif
+#ifdef HAVE_WINDEF_H
+#include <windef.h>
+#endif
 #ifdef HAVE_WINSOCK2_H
 #include <winsock2.h>
 #endif])
 
-AC_CHECK_TYPES(socklen_t,,,[$ac_includes_default
+AC_CHECK_TYPES([socklen_t, BOOL, UBYTE, UWORD, UDWORD],,,[$ac_includes_default
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
 #ifdef HAVE_NETDB_H
 #include <netdb.h>
 #endif
-#ifdef WINSOCK2_H
+#ifdef HAVE_WINSOCK2_H
 #include <winsock2.h>
 #endif])
+
+AC_C_BIGENDIAN
+AC_CHECK_SIZEOF(char)
+AC_CHECK_SIZEOF(short)
+AC_CHECK_SIZEOF(int)
+AC_CHECK_SIZEOF(long)
+
+if test "x$ac_cv_sizeof_long" = "x4"; then
+  AC_DEFINE(SIZE_4_TYPE, long, [Type of length 4 bytes])
+elif test "x$ac_cv_sizeof_int" = "x4"; then
+  AC_DEFINE(SIZE_4_TYPE, int)
+else
+  AC_MSG_ERROR([No type of length 4 bytes found.])
+fi  
+
+if test "x$ac_cv_sizeof_int" = "x2"; then
+  AC_DEFINE(SIZE_2_TYPE, int, [Type of length 2 bytes])
+elif test "x$ac_cv_sizeof_short" = "x2"; then
+  AC_DEFINE(SIZE_2_TYPE, short)
+else
+  AC_MSG_ERROR([No type of length 2 bytes found.])
+fi  
+
+if test "x$ac_cv_sizeof_short" = "x1"; then
+  AC_DEFINE(SIZE_1_TYPE, short, [Type of length 1 bytes])
+elif test "x$ac_cv_sizeof_char" = "x1"; then
+  AC_DEFINE(SIZE_1_TYPE, char)
+else
+  AC_MSG_ERROR([No type of length 1 bytes found.])
+fi  
+
 # Optimize.
 
 if test "x$GCC" = xyes; then
