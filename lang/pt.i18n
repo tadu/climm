@@ -1,5 +1,5 @@
 # $Id$ Português (Brazillian)
-#  EN: __.i18n,v 1.63.2.12 2003/10/06 16:55:58
+#  EN: __.i18n,v 1.63.2.14 2004/01/05 23:59:18
 1000:iso-8859-1
 1001:pt
 1002:pt_BR
@@ -1131,3 +1131,12 @@
 2380:«%«
 #2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
 #2382:Peer-to-peer connection not associated to server connection, discarding.\n
+#2383:View your last messages of <contact>. Type 'h' as short command.
+#2384:Case insensitive search of <pattern> in log file of <contact>.
+#2385:Couldn't open %s for reading: %s (%d).\n
+#2386:Found %s%d%s matches.\n
+#2387:%s <contact> [<last> [<number>]] -- Show history of <contact>.\n
+#2388:%s <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n
+#2389:%s <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
+#2390:No or empty pattern given.\n
+#2391:Case sensitive search of <pattern> in log file of <contact>.

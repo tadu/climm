@@ -1,5 +1,5 @@
 # $Id$ (Dutch)
-#  EN: __.i18n,v 1.63.2.12 2003/10/06 16:55:58
+#  EN: __.i18n,v 1.63.2.14 2004/01/05 23:59:18
 #-#1010:Gebruiker is weg [Automatisch bericht]
 #1000:iso-8859-1
 #1001:<lang>
@@ -1060,7 +1060,7 @@
 #2167:Error - unknown packet.\n
 #2168:File transfer #%ld (%s) dropped after %ld attempts because of timeout.\n
 #2169:File transfer aborted by peer (%d).\n
-#2170:Sending with speed %lx to %s.\n
+#2170:Sending at speed %lx to %s.\n
 #2171:Advanced
 #2172:Commands for advanced features.
 #2176:Displays verbose the current status of everyone on your contact list.
@@ -1090,7 +1090,7 @@
 #2205:  -c, --nocolor  disable colors\n
 #2206:The server doesn't want to give us offline messages.\n
 #2207:Protocol error in command to old ICQ server: %d.\n
-#2208:Detected UTF-8 encoding, however, this mICQ was compiled without UTF-8 support.\n
+#2208:Detected UTF-8 encoding. However, this mICQ was compiled without UTF-8 support.\n
 #2209:Detected UTF-8 encoding.\n
 #2211:Your status is %s.\n
 #2212:changed status to %s
@@ -1159,7 +1159,7 @@
 #2279:    log:        do logging.\n
 #2280:    logonoff:   also log status changes.\n
 #2281:    auto:       send auto-replies.\n
-#2282:    uinprompt:  have the last nick in the prompt.\n
+#2282:    uinprompt:  display the last nick in the prompt.\n
 #2283:    autosave:   automatically save the micqrc.\n
 #2284:    autofinger: automatically finger new UINs.\n
 #2285:    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n
@@ -1253,3 +1253,12 @@
 2380:«%«
 #2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
 #2382:Peer-to-peer connection not associated to server connection, discarding.\n
+#2383:View your last messages of <contact>. Type 'h' as short command.
+#2384:Case insensitive search of <pattern> in log file of <contact>.
+#2385:Couldn't open %s for reading: %s (%d).\n
+#2386:Found %s%d%s matches.\n
+#2387:%s <contact> [<last> [<number>]] -- Show history of <contact>.\n
+#2388:%s <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n
+#2389:%s <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
+#2390:No or empty pattern given.\n
+#2391:Case sensitive search of <pattern> in log file of <contact>.
