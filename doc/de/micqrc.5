@@ -1,5 +1,5 @@
 .\" $Id$
-.\"  EN: micqrc.5,v 1.23 2003/01/06 03:10:20
+.\"  EN: micqrc.5,v 1.23.2.7
 .TH MICQRC 5 mICQ DE
 .SH NAME
 .B ~/.micq/micqrc
@@ -27,8 +27,10 @@ Eingabezeilen.
 W\(:ahlt 
 .I type
 als Typ der Verbindung:
-.B server
-f\(:ur eine Verbindung zum ICQ-Server,
+.B icq5
+f\(:ur eine Verbindung zu einem ICQ-Server der Version 5,
+.B icq8
+f\(:ur eine Verbindung zu einem ICQ-Server der Version 8,
 .B peer
 f\(:ur eine Verbindung f\(:ur eingehende Direktverbindungen oder
 .B remote
@@ -156,31 +158,34 @@ beim SOCKS-5-Server.
 .PP
 Einige Optionen befinden sich \(:ublicherweise am Anfang der Datei:
 .TP
-.BI encoding\ file <encoding>
-Setzt die Kodierung, die f\(:ur in dieser Datei vorkommenden Zeichenketten
-verwendet wird, auf
-.IR encoding .
+.BI encoding\ file\ <encoding>
+Gibt die Kodierung als
+.IR encoding
+an, die f\(:ur in dieser Datei vorkommenden Zeichenketten
+verwendet wird.
 Wenn UTF-8 angeschaltet ist, wird die Datei immer in UTF-8 geschrieben,
 andernfalls mit der aktuell verwendeten Zeichenkodierung. Wenn UTF-8
 abgeschaltet ist, kann mICQ keine Konfigurationsdateien lesen, deren
 Kodierung nicht mit der aktuellen \(:ubereinstimmt.
 .TP
-.BI encoding\ local <encoding>
-Setzt die aktuelle Kodierung auf
-.IR encoding .
+.BI encoding\ local\ <encoding>
+Gibt die Kodierung des Terminals als
+.IR encoding 
+an.
 Dies \(:uberschreibt die durch die Umgebungsvariablen bestimmte Kodierung.
 .TP
-.BI encoding\ remote encoding
+.BI encoding\ remote\ <encoding>
 Setzt die Kodierung, die f\(:ur Benutzerdaten auf dem Server
-inklusive dem Pa\(sswort verwendet wird, auf
+(inklusive dem Pa\(sswort) verwendet wird, auf
 including the password to
 .RI encoding .
 Diese Kodierung wird auch zur Kommunikation mit anderen Kontakten
 verwendet, deren ICQ-Programm keine UTF-8-Nachrichten versteht und
 f\(:ur die keine eigene Kodierung gesetzt ist.
-.BI format nr
+.TP
+.BI format \ nr
 Setzt das Format dieser Konfigurationsdatei auf
-.RI nr .
+.IR nr .
 Derzeit ist nur Format 1 g\(:ultig.
 .PP
 Jetzt die Optionen:
