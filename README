@@ -89,8 +89,8 @@ Download mICQ sources and binaries from
 
 f) CVS
 
-Required is the cvs client, autoconf 2.50 or greater and automake 1.6 or
-greater. autoconf 2.53 is recommended, however.
+Required is the cvs client, autoconf 2.53 or greater and automake 1.6 or
+greater. autoconf 2.54 is recommended, however.
 
 cvs -d :pserver:anonymous@micq.org:/usr/local/cvsroot co micq
 
@@ -99,6 +99,20 @@ To prepare the maintainer generated files:
 $ ./prepare
 
 This will run aclocal, autoheader, automake -ac and autoconf.
+
+Note that if you don't have current autotools, there is a CVS snapshot that
+you can download the includes the generated files just like in the release.
+It does, however, contain CVS directories, so you can still use "cvs up" to
+update the checkout. Usually I upload a new snapshot when I make changes
+to configure.ac or any of the Makefile.am files.
+
+If that isn't enough because you made too much changes, you can link the
+generated files from a CVS snapshot to a CVS checkout like this:
+
+  cd micq  # the CVS check-out
+  ln -s ../micq-cvs/{install-sh,config.guess,config.sub,configure,depend,mkinstalldirs} .
+  cd ../micq-cvs  # the CVS snapshot
+  find . -name "*.in" -exec ln -s ../micq-cvs/\{\} ../micq/\{\}
 
 g) Compile
 
@@ -117,21 +131,9 @@ Although mICQ has some command line options, for a quick start just type
 'micq'. If you don't have a valid configuration, the setup wizard will guide
 you through the process of creating one for you.
 
-
-i) Docs
-
-You'll find original docs in the doc/ subdirectory. This also contains a
-dump of http://www.stud.uni-karlsruhe.de/~uck4/ICQ/ , which
-features a database of the ICQ protocol.
-
-j) Future
-
-Planned features for the future include v8 file transfer (no other client
-can do that as of yet).
-
-k) NOTE!
+i) NOTE!
 
 mICQ is in a phase of being re-organized, thus things may change
-very fast. When in doubt, have a Look at http://micq.org/ or
-email mc@verdinet.de or...
+very fast. When in doubt, have a Look at http://www.micq.org/ or
+the maililng list or contact me via ICQ.
 However, look out for announcements on Freshmeat.net.
