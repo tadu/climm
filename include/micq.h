@@ -571,7 +571,7 @@ typedef struct {
         unsigned int next_resend;
         UDWORD our_session;
         BOOL Done_Login;
-        unsigned int away_time;
+        unsigned int away_time, away_time_prev;
         UDWORD real_packs_sent;
         UDWORD real_packs_recv;
         UDWORD Packets_Sent;
@@ -595,7 +595,7 @@ typedef struct {
 /* SOCKS5 stuff end */
 
 extern socks5_state s5G;
-		
+
 #define LOG_MESS 1
 #define LOG_AUTO_MESS 2
 #define LOG_ONLINE 3

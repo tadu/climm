@@ -26,13 +26,13 @@ static jump_f CmdUserMessage;
 static jump_f CmdUserVerbose;
 static jump_f CmdUserRandomSet;
 static jump_f CmdUserIgnoreStatus;
-static jump_f CmdUserStatus;
+static jump_f CmdUserStatusDetail;
 static jump_f CmdUserStatusWide;
-static jump_f CmdUserStatusW;
-static jump_f CmdUserStatusE;
+static jump_f CmdUserStatusShort;
 static jump_f CmdUserSound;
 static jump_f CmdUserSoundOnline;
 static jump_f CmdUserSoundOffline;
+static jump_f CmdUserAutoaway;
 static jump_f CmdUserColor;
 static jump_f CmdUserClear;
 static jump_f CmdUserTogIgnore;
@@ -55,53 +55,55 @@ static jump_f CmdUserQuit;
 static void CmdUserProcess (SOK_T sok, const char *command, int *idle_val, int *idle_flag);
 
 static jump_t jump[] = {
-    { &CmdUserRandom,        "rand",     NULL, 0,   0 },
-    { &CmdUserRandomSet,     "set",      NULL, 0,   0 },
-    { &CmdUserHelp,          "help",     NULL, 0,   0 },
-    { &CmdUserInfo,          "info",     NULL, 0,   0 },
-    { &CmdUserTrans,         "trans",    NULL, 0,   0 },
-    { &CmdUserAuto,          "auto",     NULL, 0,   0 },
-    { &CmdUserAlter,         "alter",    NULL, 0,   0 },
-    { &CmdUserMessage,       "msg",      NULL, 0,   1 },
-    { &CmdUserMessage,       "r",        NULL, 0,   2 },
-    { &CmdUserMessage,       "a",        NULL, 0,   4 },
-    { &CmdUserMessage,       "msga",     NULL, 0,   8 },
-    { &CmdUserVerbose,       "verbose",  NULL, 0,   0 },
-    { &CmdUserIgnoreStatus,  "i",        NULL, 0,   0 },
-    { &CmdUserStatus,        "status",   NULL, 2,   0 },
-    { &CmdUserStatusWide,    "wide",     NULL, 2,   0 },
-    { &CmdUserStatusW,       "w",        NULL, 2,   0 },
-    { &CmdUserStatusE,       "e",        NULL, 2,   0 },
-    { &CmdUserSound,         "sound",    NULL, 2,   0 },
+    { &CmdUserRandom,        "rand",         NULL, 0,   0 },
+    { &CmdUserRandomSet,     "set",          NULL, 0,   0 },
+    { &CmdUserHelp,          "help",         NULL, 0,   0 },
+    { &CmdUserInfo,          "info",         NULL, 0,   0 },
+    { &CmdUserTrans,         "trans",        NULL, 0,   0 },
+    { &CmdUserAuto,          "auto",         NULL, 0,   0 },
+    { &CmdUserAlter,         "alter",        NULL, 0,   0 },
+    { &CmdUserMessage,       "msg",          NULL, 0,   1 },
+    { &CmdUserMessage,       "r",            NULL, 0,   2 },
+    { &CmdUserMessage,       "a",            NULL, 0,   4 },
+    { &CmdUserMessage,       "msga",         NULL, 0,   8 },
+    { &CmdUserVerbose,       "verbose",      NULL, 0,   0 },
+    { &CmdUserIgnoreStatus,  "i",            NULL, 0,   0 },
+    { &CmdUserStatusDetail,  "status",       NULL, 2,   0 },
+    { &CmdUserStatusWide,    "wide",         NULL, 2,   1 },
+    { &CmdUserStatusWide,    "ewide",        NULL, 2,   0 },
+    { &CmdUserStatusShort,   "w",            NULL, 2,   0 },
+    { &CmdUserStatusShort,   "e",            NULL, 2,   1 },
+    { &CmdUserSound,         "sound",        NULL, 2,   0 },
     { &CmdUserSoundOnline,   "soundonline",  NULL, 2,   0 },
     { &CmdUserSoundOffline,  "soundoffline", NULL, 2,   0 },
-    { &CmdUserColor,         "color",    NULL, 2,   0 },
-    { &CmdUserChange,        "change",   NULL, 0,  -1 },
-    { &CmdUserChange,        "online",   NULL, 1,   0 },
-    { &CmdUserChange,        "away",     NULL, 1,   1 },
-    { &CmdUserChange,        "na",       NULL, 1,   5 },
-    { &CmdUserChange,        "occ",      NULL, 1,  17 },
-    { &CmdUserChange,        "dnd",      NULL, 1,  19 },
-    { &CmdUserChange,        "ffc",      NULL, 1,  32 },
-    { &CmdUserChange,        "inv",      NULL, 1, 256 },
-    { &CmdUserClear,         "clear",    NULL, 2,   0 },
-    { &CmdUserTogIgnore,     "togig",    NULL, 0,   0 },
-    { &CmdUserTogVisible,    "togvis",   NULL, 0,   0 },
-    { &CmdUserAdd,           "add",      NULL, 0,   0 },
-    { &CmdUserRInfo,         "rinfo",    NULL, 0,   0 },
-    { &CmdUserAuth,          "auth",     NULL, 0,   0 },
-    { &CmdUserURL,           "url",      NULL, 0,   0 },
-    { &CmdUserSave,          "save",     NULL, 0,   0 },
-    { &CmdUserTabs,          "tabs",     NULL, 0,   0 },
-    { &CmdUserLast,          "last",     NULL, 0,   0 },
-    { &CmdUserUptime,        "uptime",   NULL, 0,   0 },
-    { &CmdUserQuit,          "q",        NULL, 0,   0 },
+    { &CmdUserAutoaway,      "autoaway",     NULL, 2,   0 },
+    { &CmdUserColor,         "color",        NULL, 2,   0 },
+    { &CmdUserChange,        "change",       NULL, 0,  -1 },
+    { &CmdUserChange,        "online",       NULL, 1,   0 },
+    { &CmdUserChange,        "away",         NULL, 1,   1 },
+    { &CmdUserChange,        "na",           NULL, 1,   5 },
+    { &CmdUserChange,        "occ",          NULL, 1,  17 },
+    { &CmdUserChange,        "dnd",          NULL, 1,  19 },
+    { &CmdUserChange,        "ffc",          NULL, 1,  32 },
+    { &CmdUserChange,        "inv",          NULL, 1, 256 },
+    { &CmdUserClear,         "clear",        NULL, 2,   0 },
+    { &CmdUserTogIgnore,     "togig",        NULL, 0,   0 },
+    { &CmdUserTogVisible,    "togvis",       NULL, 0,   0 },
+    { &CmdUserAdd,           "add",          NULL, 0,   0 },
+    { &CmdUserRInfo,         "rinfo",        NULL, 0,   0 },
+    { &CmdUserAuth,          "auth",         NULL, 0,   0 },
+    { &CmdUserURL,           "url",          NULL, 0,   0 },
+    { &CmdUserSave,          "save",         NULL, 0,   0 },
+    { &CmdUserTabs,          "tabs",         NULL, 0,   0 },
+    { &CmdUserLast,          "last",         NULL, 0,   0 },
+    { &CmdUserUptime,        "uptime",       NULL, 0,   0 },
+    { &CmdUserQuit,          "q",            NULL, 0,   0 },
 
-    { &CmdUserSearch,        "search",   NULL, 0,   0 },
-    { &CmdUserWpSearch,      "wpsearch", NULL, 0,   0 },
-    { &CmdUserUpdate,        "update",   NULL, 0,   0 },
-    { &CmdUserOther,         "other",    NULL, 0,   0 },
-    { &CmdUserAbout,         "about",    NULL, 0,   0 },
+    { &CmdUserSearch,        "search",       NULL, 0,   0 },
+    { &CmdUserWpSearch,      "wpsearch",     NULL, 0,   0 },
+    { &CmdUserUpdate,        "update",       NULL, 0,   0 },
+    { &CmdUserOther,         "other",        NULL, 0,   0 },
+    { &CmdUserAbout,         "about",        NULL, 0,   0 },
 
     { NULL, NULL, NULL, 0 }
 };
@@ -269,6 +271,9 @@ JUMP_F(CmdUserHelp)
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("sound"),
                  i18n (420, "Toggles beeping when recieving new messages."));
+        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
+                 CmdUserLookupName ("autoaway"),
+                 i18n (767, "Toggles auto cycling to away/not available."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("color"),
                  i18n (421, "Toggles displaying colors."));
@@ -840,7 +845,7 @@ JUMP_F(CmdUserVerbose)
 /*
  * Shows the contact list in a very detailed way.
  */
-JUMP_F(CmdUserStatus)
+JUMP_F(CmdUserStatusDetail)
 {
     int i;
     UDWORD num;
@@ -1044,27 +1049,21 @@ JUMP_F(CmdUserStatusWide)
     int OnIdx = 0;              /* for inserting and tells us how many there are */
     int OffIdx = 0;             /* for inserting and tells us how many there are */
     int NumCols;                /* number of columns to display on screen        */
-    int Col;                    /* the current column during output.            */
+
+    if (data)
+    {
+        if ((Offline = (int *) malloc (uiG.Num_Contacts * sizeof (int))) == NULL)
+        {
+            M_print (i18n (652, "Insuffificient memory to display a wide Contact List.\n"));
+            return 0;
+        }
+    }
 
     if ((Online = (int *) malloc (uiG.Num_Contacts * sizeof (int))) == NULL)
     {
         M_print (i18n (652, "Insuffificient memory to display a wide Contact List.\n"));
         return 0;
     }
-
-    if ((Offline = (int *) malloc (uiG.Num_Contacts * sizeof (int))) == NULL)
-    {
-        M_print (i18n (652, "Insuffificient memory to display a wide Contact List.\n"));
-        return 0;
-    }
-
-    /* We probably don't need to zero out the array, but just to be on the
-       safe side...
-       The arrays really should be only uiG.Num_Contacts in size... future
-       improvement, I guess. Hopefully no one is running that tight on
-       memory.                                                                */
-    memset (Online, 0, sizeof (Online));
-    memset (Offline, 0, sizeof (Offline));
 
     /* Filter the contact list into two lists -- online and offline. Also
        find the longest name in the list -- this is used to determine how
@@ -1074,12 +1073,20 @@ JUMP_F(CmdUserStatusWide)
         if ((SDWORD) uiG.Contacts[i].uin > 0)
         {                       /* Aliases */
             if (uiG.Contacts[i].status == STATUS_OFFLINE)
-                Offline[OffIdx++] = i;
+            {
+                if (data)
+                {
+                    Offline[OffIdx++] = i;
+                    if (strlen (uiG.Contacts[i].nick) > MaxLen)
+                        MaxLen = strlen (uiG.Contacts[i].nick);
+                }
+            }
             else
+            {
                 Online[OnIdx++] = i;
-
-            if (strlen (uiG.Contacts[i].nick) > MaxLen)
-                MaxLen = strlen (uiG.Contacts[i].nick);
+                if (strlen (uiG.Contacts[i].nick) > MaxLen)
+                    MaxLen = strlen (uiG.Contacts[i].nick);
+            }
         }
     }                           /* end for */
 
@@ -1089,51 +1096,47 @@ JUMP_F(CmdUserStatusWide)
     if (NumCols < 1)
         NumCols = 1;            /* sanity check. :)  */
 
-    /* Fairly simple print routine. We check that we only print the right
-       number of columns to the screen.                                    */
-    M_print (COLMESS);
-    for (i = 1; i < (Get_Max_Screen_Width () - strlen (i18n (653, "Offline"))) / 2; i++)
+    if (data)
     {
-        M_print ("=");
-    }
-    M_print (COLCLIENT "%s" COLMESS, i18n (653, "Offline"));
-    for (i = 1; i < (Get_Max_Screen_Width () - strlen (i18n (653, "Offline"))) / 2; i++)
-    {
-        M_print ("=");
-    }
-    M_print (COLNONE "\n");
-    for (Col = 1, i = 0; i < OffIdx; i++)
-        if (Col % NumCols == 0)
+        /* Fairly simple print routine. We check that we only print the right
+           number of columns to the screen.                                    */
+        M_print (COLMESS);
+        for (i = 0; i < (Get_Max_Screen_Width () - strlen (i18n (653, "Offline"))) / 2; i++)
         {
-            M_print (COLCONTACT "  %-*s\n" COLNONE, MaxLen + 2, uiG.Contacts[Offline[i]].nick);
-            Col = 1;
+            M_print ("=");
         }
-        else
+        M_print (COLCLIENT "%s" COLMESS, i18n (653, "Offline"));
+        for (i += strlen (i18n (653, "Offline")); i < Get_Max_Screen_Width (); i++)
+        {
+            M_print ("=");
+        }
+        M_print (COLNONE "\n");
+        for (i = 0; i < OffIdx; i++)
         {
             M_print (COLCONTACT "  %-*s" COLNONE, MaxLen + 2, uiG.Contacts[Offline[i]].nick);
-            Col++;
-        }                       /* end if */
+            if ((i + 1) % NumCols == 0)
+                M_print ("\n");
+        }
+        if (i % NumCols != 0)
+            M_print ("\n");
+    }
 
     /* The user status for Online users is indicated by a one-character
        prefix to the nickname. Unfortunately not all statuses (statusae? :)
        are unique at one character. A better way to encode the information
        is needed.                                                            */
-    if ((Col - 1) % NumCols != 0)
-    {
-        M_print ("\n");
-    }
     M_print (COLMESS);
-    for (i = 1; i < (Get_Max_Screen_Width () - strlen (i18n (654, "Online"))) / 2; i++)
+    for (i = 0; i < (Get_Max_Screen_Width () - strlen (i18n (654, "Online"))) / 2; i++)
     {
         M_print ("=");
     }
     M_print (COLCLIENT "%s" COLMESS, i18n (654, "Online"));
-    for (i = 1; i < (Get_Max_Screen_Width () - strlen (i18n (654, "Online"))) / 2; i++)
+    for (i += strlen (i18n (654, "Online")); i < Get_Max_Screen_Width (); i++)
     {
         M_print ("=");
     }
     M_print (COLNONE "\n");
-    for (Col = 1, i = 0; i < OnIdx; i++)
+    for (i = 0; i < OnIdx; i++)
     {
         const char *status;
         char weird = 'W';       /* for weird statuses that are reported as hex */
@@ -1144,107 +1147,31 @@ JUMP_F(CmdUserStatusWide)
         {
             status = " ";
         }
-        if (Col % NumCols == 0)
-        {
-            M_print (COLNONE "%c " COLCONTACT "%-*s\n" COLNONE,
-                     /*        *Convert_Status_2_Str(uiG.Contacts[Online[i]].status), */
-                     *status, MaxLen + 2, uiG.Contacts[Online[i]].nick);
-            Col = 1;
-        }
-        else
-        {
-            M_print (COLNONE "%c " COLCONTACT "%-*s" COLNONE,
-/*                    *Convert_Status_2_Str(uiG.Contacts[Online[i]].status), */
-                     *status, MaxLen + 2, uiG.Contacts[Online[i]].nick);
-            Col++;
-        }                       /* end if */
+        M_print (COLNONE "%c " COLCONTACT "%-*s" COLNONE,
+                 *status, MaxLen + 2, uiG.Contacts[Online[i]].nick);
+        if ((i + 1) % NumCols == 0)
+            M_print ("\n");
     }
-    if ((Col - 1) % NumCols != 0)
+    if (i % NumCols != 0)
     {
         M_print ("\n");
     }
     M_print (COLMESS);
-    for (i = 1; i < Get_Max_Screen_Width () - 1; i++)
+    for (i = 0; i < Get_Max_Screen_Width (); i++)
     {
         M_print ("=");
     }
     M_print (COLNONE "\n");
     free (Online);
-    free (Offline);
-    return 0;
-}                               /* end of aaron */
-
-/*
- * Display offline and online users on your contact list.
- */
-JUMP_F(CmdUserStatusW)
-{
-    int i;
-
-    M_print (W_SEPERATOR);
-    Time_Stamp ();
-    M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", ssG.UIN);
-    M_print (i18n (71, "Your status is "));
-    Print_Status (uiG.Current_Status);
-    M_print ("\n");
-    M_print ("%s%s\n", W_SEPERATOR, i18n (72, "Users offline:"));
-
-    for (i = 0; i < uiG.Num_Contacts; i++)
-    {
-        if ((SDWORD) uiG.Contacts[i].uin > 0)
-        {
-            if (FALSE == uiG.Contacts[i].invis_list)
-            {
-                if (uiG.Contacts[i].status == STATUS_OFFLINE)
-                {
-                    if (uiG.Contacts[i].vis_list)
-                    {
-                        M_print (COLSERV "*" COLNONE);
-                    }
-                    else
-                    {
-                        M_print (" ");
-                    }
-                    M_print (COLCONTACT "%-20s\t" COLMESS "(", uiG.Contacts[i].nick);
-                    Print_Status (uiG.Contacts[i].status);
-                    M_print (")" COLNONE "\n");
-                }
-            }
-        }
-    }
-
-    M_print ("%s%s\n", W_SEPERATOR, i18n (73, "Users online:"));
-    for (i = 0; i < uiG.Num_Contacts; i++)
-    {
-        if ((SDWORD) uiG.Contacts[i].uin > 0)
-        {
-            if (FALSE == uiG.Contacts[i].invis_list)
-            {
-                if (uiG.Contacts[i].status != STATUS_OFFLINE)
-                {
-                    if (uiG.Contacts[i].vis_list)
-                    {
-                        M_print (COLSERV "*" COLNONE);
-                    }
-                    else
-                    {
-                        M_print (" ");
-                    }
-                    M_print (COLCONTACT "%-20s\t" COLMESS "(", uiG.Contacts[i].nick);
-                    Print_Status (uiG.Contacts[i].status);
-                    M_print (")" COLNONE "\n");
-                }
-            }
-        }
-    }
-    M_print (W_SEPERATOR);
+    if (data)
+        free (Offline);
     return 0;
 }
 
 /*
- * Display online users on your contact list.
+ * Display offline and online users on your contact list.
  */
-JUMP_F(CmdUserStatusE)
+JUMP_F(CmdUserStatusShort)
 {
     int i;
 
@@ -1255,7 +1182,34 @@ JUMP_F(CmdUserStatusE)
     Print_Status (uiG.Current_Status);
     M_print ("\n");
 
-    /* Loop displays all the online users */
+    if (data)
+    {
+        M_print ("%s%s\n", W_SEPERATOR, i18n (72, "Users offline:"));
+        for (i = 0; i < uiG.Num_Contacts; i++)
+        {
+            if ((SDWORD) uiG.Contacts[i].uin > 0)
+            {
+                if (FALSE == uiG.Contacts[i].invis_list)
+                {
+                    if (uiG.Contacts[i].status == STATUS_OFFLINE)
+                    {
+                        if (uiG.Contacts[i].vis_list)
+                        {
+                            M_print (COLSERV "*" COLNONE);
+                        }
+                        else
+                        {
+                            M_print (" ");
+                        }
+                        M_print (COLCONTACT "%-20s\t" COLMESS "(", uiG.Contacts[i].nick);
+                        Print_Status (uiG.Contacts[i].status);
+                        M_print (")" COLNONE "\n");
+                    }
+                }
+            }
+        }
+    }
+
     M_print ("%s%s\n", W_SEPERATOR, i18n (73, "Users online:"));
     for (i = 0; i < uiG.Num_Contacts; i++)
     {
@@ -1362,6 +1316,45 @@ JUMP_F(CmdUserSoundOffline)
         M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (805, "SoundOffline"), i18n (85, "on"));
     else if (SOUND_OFF == uiG.SoundOffline)
         M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (805, "SoundOffline"), i18n (86, "off"));
+    return 0;
+}
+
+/*
+ * Toggles autoaway or sets autoaway time.
+ */
+JUMP_F(CmdUserAutoaway) 
+{
+    char *arg1;
+    if ((arg1 = strtok (args, ""))) /* assign a value */
+    {
+        if (ssG.away_time == 0 || ssG.away_time_prev == 0 || atoi (arg1) == 0)
+        {
+            ssG.away_time_prev = ssG.away_time;
+            ssG.away_time = atoi (arg1);
+        }
+        else
+        {
+            ssG.away_time = atoi (arg1);
+        }
+    }
+    else                            /* toggle */
+    {
+        if (ssG.away_time == 0 && ssG.away_time_prev == 0)
+        {
+            ssG.away_time = default_away_time;
+        }
+        else if (ssG.away_time == 0)
+        {
+            ssG.away_time = ssG.away_time_prev;
+            ssG.away_time_prev = 0;
+        }
+        else
+        {
+            ssG.away_time_prev = ssG.away_time;
+            ssG.away_time = 0;
+        }
+    }
+    M_print (i18n (766, "Auto_away is " COLMESS "%d" COLNONE ".\n"), ssG.away_time);
     return 0;
 }
 

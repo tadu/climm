@@ -1,4 +1,13 @@
 
+2001-09-19 Kaolin <cognosco@tentacle.net>
+	* added command autoaway to set the auto away timeout.
+
+2001-09-19 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* rewrote CmdUserStatusWide to also do ewide, as proposed
+	  by Sander Smeenk <ssmeenk@cistron.nl>.
+	* merge CmdStatus(E|W), now called CmdStatusShort, rename
+	  CmdStatus as CmdStatsDetail.
+
 2001-09-13 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* fix delete.
 	* fix line length in wide for LANG != C.
