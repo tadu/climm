@@ -23,7 +23,6 @@
  * $Id$
  */
 
-#include <stdlib.h>
 #include <assert.h>
 #include <limits.h>
 #include "micq.h"

@@ -18,8 +18,6 @@ Changes :
 #include "micq.h"
 #include "mselect.h"
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <limits.h>
 
 #if HAVE_SYS_TYPES_H
@@ -55,8 +53,6 @@ Changes :
 
 #include <fcntl.h>
 #include <stdarg.h>
-#include <string.h>
-#include <stdio.h>
 #include <ctype.h>
 #include <assert.h>
 #include <errno.h>

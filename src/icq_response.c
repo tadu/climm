@@ -21,11 +21,7 @@
 #include "util_str.h"
 #include "util_extra.h"
 #include "peer_file.h"
-#include <stdlib.h>
-#include <stdio.h>
 #include <stdarg.h>
-#include <time.h>
-#include <string.h>
 #include <assert.h>
 #if HAVE_SYS_TYPES_H
 #include <sys/types.h>

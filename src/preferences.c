@@ -23,7 +23,6 @@
  */
 
 #include "micq.h"
-#include <stdlib.h>
 #include <assert.h>
 #if HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -32,7 +31,6 @@
 #include <sys/stat.h>
 #endif
 #include <fcntl.h>
-#include <string.h>
 #if HAVE_SYS_UTSNAME_H
 #include <sys/utsname.h>
 #endif

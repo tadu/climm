@@ -34,7 +34,6 @@
 #include "util_str.h"
 #include "conv.h"
 #include <assert.h>
-#include <string.h>
 #include <fcntl.h>
 #include <errno.h>
 #if HAVE_NETDB_H

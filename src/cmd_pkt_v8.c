@@ -37,7 +37,6 @@
 #include "util_str.h"
 #include "util_ssl.h"
 #include "tcp.h"
-#include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>

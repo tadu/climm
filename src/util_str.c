@@ -34,7 +34,6 @@
 #if HAVE_WINSOCK2_H
 #include <winsock2.h>
 #endif
-#include <string.h>
 #include <ctype.h>
 #include "util_str.h"
 #include "preferences.h"

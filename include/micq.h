@@ -58,6 +58,12 @@ typedef struct Extra_s                 Extra;
 
 #include "datatype.h"
 #include <stdlib.h>
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
 #include "mreadline.h"
 #include "msg_queue.h"
 #include "mselect.h"
@@ -124,6 +130,7 @@ typedef struct Extra_s                 Extra;
 #define MSG_GET_NA        0xea
 #define MSG_GET_DND       0xeb
 #define MSG_GET_FFC       0xec
+/* mICQ extension */
 #define MSG_GET_PEEK      0xf0
 #define MSG_GET_VER       0xf4
 /* Licq extension */

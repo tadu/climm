@@ -24,9 +24,7 @@
 #include "util_str.h"
 #include "icq_response.h"
 #include "util_io.h"
-#include <string.h>
 #include <assert.h>
-#include <stdio.h>
 #include <errno.h>
 #if HAVE_NETINET_IN_H
 #include <netinet/in.h> /* for htonl, htons */

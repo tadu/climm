@@ -24,10 +24,7 @@
 
 #ifdef ENABLE_PEER2PEER
 
-#include <stdio.h>
 #include <unistd.h>
-#include <string.h>
-#include <time.h>
 #include <assert.h>
 #include <fcntl.h>
 #include <errno.h>

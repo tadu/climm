@@ -25,7 +25,6 @@
 #include "util_ui.h"
 #include "packet.h"
 #include "util_str.h"
-#include <string.h>
 #include <assert.h>
 
 #define __maxTLV  25

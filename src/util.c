@@ -32,11 +32,8 @@ Changes :
 #include "util_str.h"
 #include "cmd_user.h"
 #include "conv.h"
-#include <stdlib.h>
-#include <stdio.h>
 #include <stdarg.h>
 #include <assert.h>
-#include <string.h>
 #include <signal.h>
 #include <ctype.h>
 #include <errno.h>

@@ -34,8 +34,6 @@
 #include "util_str.h"
 #include "util_tcl.h"
 #include "util_ssl.h"
-#include <string.h>
-#include <stdio.h>
 #include <assert.h>
 #include <ctype.h>
 
