@@ -2206,7 +2206,7 @@ static JUMP_F(CmdUserAuth)
 
     if (s_parsenick (&args, &cont, NULL, sess))
     {
-        s_parse (&args, &msg);
+        s_parserem (&args, &msg);
         if (!strcmp (cmd, "req"))
         {
             if (!msg)         /* FIXME: let it untranslated? */
