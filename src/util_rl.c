@@ -337,8 +337,8 @@ void ReadLineHandleSig (void)
             printf (" %s^C%s\n", COLERROR, COLNONE);
             rl_print ("\r");
             rl_prompt_stat = 0;
-            rl_tab_state = 0;
             rl_historyadd ();
+            rl_tab_state = 0;
             s_init (&rl_input, "", 0);
             CmdUserInterrupt ();
             ReadLinePromptReset ();
@@ -827,13 +827,14 @@ void rl_historyforward ()
 
 /*
  * Add current line to history
+ * ALSO FINISHES LINE PROCESSING
  */
 static void rl_historyadd ()
 {
     int i, j;
 
     rl_linecompress (&rl_temp, 0, -1);
-    if (rl_temp.txt[0])
+    if (rl_tab_state >= 0 && rl_temp.txt[0])
     {
         for (j = 1; j <= RL_HISTORY_LINES; j++)
             if (!rl_history[j] || !strcmp (rl_temp.txt, rl_history[j]))
