@@ -305,7 +305,7 @@ int Print_UIN_Name_10 (UDWORD uin)
         }
     }
 
-    M_print (COLCLIENT "%8lu" COLNONE, uin);
+    M_print (COLCLIENT "%10lu" COLNONE, uin);
     return -1;
 }
 
