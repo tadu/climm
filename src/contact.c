@@ -156,6 +156,40 @@ Contact *ContactFindAlias (UDWORD uin, const char *nick)
 
 
 /*
+ * Returns (possibly temporary) contact for nick.
+ */
+Contact *ContactFindContact (const char *nick)
+{
+    Contact *cont;
+    char *mynick, *p;
+    int i;
+
+    mynick = strdup (nick);
+    for (p = mynick + strlen (mynick) - 1; p >= mynick && isspace ((int)*p); p--)
+        *p = '\0';
+
+    for (p = mynick; *p; p++)
+    {
+        if (!isdigit ((int)*p))
+        {
+            for (i = 0; i < cnt_number; i++)
+            {
+                if (!strncasecmp (mynick, cnt_contacts[i].nick, 19))
+                {
+                    free (mynick);
+                    return cnt_contacts[i];
+                }
+            }
+            free (mynick);
+            return NULL;
+        }
+    }
+    cont = ContactAdd (atoi (mynick), mynick);
+    free (mynick);
+    return cont ? cont : NULL;
+}
+
+/*
  * Returns the UIN of nick, which can be numeric, or -1.
  */
 UDWORD ContactFindByNick (const char *nick)
