@@ -396,18 +396,18 @@ int Read_RC_File (FILE *rcf)
                         M_printf (i18n (2216, "This mICQ doesn't know the '%s' encoding.\n"), cmd);
                         ERROR;
                     }
-                    if (what & ENC_AUTO)
+                    if (what & ENC_FAUTO)
                     {
-                        if (what != (ENC_AUTO | ENC_UTF8))
+                        if (what != (ENC_FAUTO | ENC_UTF8))
                         {
-                            if ((which == 3 && (what ^ prG->enc_loc) & ~ENC_AUTO)
-                                || (which == 2 && (what ^ enc) & ~ENC_AUTO))
+                            if ((which == 3 && (what ^ prG->enc_loc) & ~ENC_FAUTO)
+                                || (which == 2 && (what ^ enc) & ~ENC_FAUTO))
                                 M_printf (COLERROR "%s" COLNONE " ", i18n (2251, "Error:"));
                             else
                                 M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
                             M_printf (i18n (2217, "This mICQ can't convert between '%s' and unicode.\n"), cmd);
                         }
-                        what &= ~ENC_AUTO;
+                        what &= ~ENC_FAUTO;
                     }
                     if (which == 1)
                     {
@@ -1436,8 +1436,8 @@ int Save_RC ()
     fprintf (rcf, "# Character encodings: auto, iso-8859-1, koi8-u, ...\n");
     fprintf (rcf, "encoding file UTF-8\n");
     fprintf (rcf, "%sencoding local %s%s\n",
-             prG->enc_loc & ENC_AUTO ? "#" : "", s_quote (ConvEncName (prG->enc_loc)),
-             prG->enc_loc & ENC_AUTO ? "" : " # please set your locale correctly instead");
+             prG->enc_loc & ENC_FAUTO ? "#" : "", s_quote (ConvEncName (prG->enc_loc)),
+             prG->enc_loc & ENC_FAUTO ? "" : " # please set your locale correctly instead");
     fprintf (rcf, "format 2\n\n");
 
     for (k = 0; (ss = ConnectionNr (k)); k++)

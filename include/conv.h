@@ -28,6 +28,12 @@ BOOL        ConvFits           (const char *in, UBYTE enc);
 #define     c_delta(t)         (int)(ENC(enc_loc) == ENC_UTF8 ? strlen (t) - s_strlen (t) : 0)
 #define     s_delta(t)         (int)strlen (t) - (int)s_strlen (t)
 
+#if HAVE_ICONV
+BOOL        ConvHaveUe     (UBYTE enc);
+#else
+#define     ConvHaveUe(e)  (enc == ENC_UTF8 || enc == ENC_LATIN1 || enc == ENC_LATIN9)
+#endif
+
 
 strc_t      ConvFrom       (strc_t in, UBYTE enc);
 strc_t      ConvFromSplit  (strc_t in, UBYTE enc);
@@ -36,7 +42,8 @@ strc_t      ConvTo         (const char *in, UBYTE enc);
 #define CHAR_NA '?'
 #define CHAR_BR '*'
 
-#define ENC_AUTO    0x80
+#define ENC_FAUTO   0x80
+#define ENC_AUTO    0xff
 
 #define ENC_ASCII   0x00
 #define ENC_UTF8    0x01
@@ -48,5 +55,7 @@ strc_t      ConvTo         (const char *in, UBYTE enc);
 #define ENC_WIN1257 0x07
 #define ENC_EUC     0x08
 #define ENC_SJIS    0x09  /* Windows Shift-JIS */
+
+#define ENC(enc_x) (prG->enc_x & ~ENC_FAUTO)
 
 #endif /* MICQ_UTIL_CONV */

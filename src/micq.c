@@ -205,33 +205,13 @@ int main (int argc, char *argv[])
             arg_vv = (*arg_v ? atol (arg_v) : arg_vv + 1);
         }
         else if ((argv[i][1] == 'b') || !strcmp (argv[i], "--basedir"))
-        {
-            if (argv[i][2])
-                arg_b = &argv[i][2];
-            else
-                arg_b = argv[++i];
-        }
+            arg_b = argv[++i];
         else if ((argv[i][1] == 'f') || !strcmp (argv[i], "--config"))
-        {
-            if (argv[i][2])
-                arg_f = &argv[i][2];
-            else
-                arg_f = argv[++i];
-        }
+            arg_f = argv[++i];
         else if ((argv[i][1] == 'l') || !strcmp (argv[i], "--logplace"))
-        {
-            if (argv[i][2])
-                arg_l = &argv[i][2];
-            else
-                arg_l = argv[++i];
-        }
+            arg_l = argv[++i];
         else if ((argv[i][1] == 'i') || !strcmp (argv[i], "--i18n") || !strcmp (argv[i], "--locale"))
-        {
-            if (argv[i][2])
-                arg_i = &argv[i][2];
-            else
-                arg_i = argv[++i];
-        }
+            arg_i = argv[++i];
         else if ((argv[i][1] == '?') || (argv[i][1] == 'h') ||
                  !strcmp (argv[i], "--help") || !strcmp (argv[i], "--version"))
             arg_h++;
@@ -267,20 +247,19 @@ int main (int argc, char *argv[])
                                ? arg_b : s_sprintf ("%s" _OS_PATHSEPSTR, arg_b)) : NULL;
     
     prG->enc_loc = ENC_AUTO;
-    i18nInit (&prG->locale, &prG->enc_loc, arg_i);
+    i18nInit (arg_i);
     prG->verbose &= ~0x8000;
     PreferencesInit (prG);
     
     rc = arg_h ? 0 : PrefLoad (prG);
+    i = i18nOpen (prG->locale);
 
-    i = i18nOpen (prG->locale, prG->enc_loc);
-    
     if (prG->enc_loc == ENC_AUTO)
-        prG->enc_loc = ENC_AUTO | ENC_LATIN1;
+        prG->enc_loc = ENC_FAUTO | ENC_ASCII;
     
     if (!ContactOptionsGetVal (&prG->copts, CO_ENCODING, &res))
     {
-        switch (prG->enc_loc & ~ENC_AUTO)
+        switch (prG->enc_loc & ~ENC_FAUTO)
         {
             case ENC_EUC:     ContactOptionsSetVal (&prG->copts, CO_ENCODING, ENC_SJIS); break;
             case ENC_SJIS:    ContactOptionsSetVal (&prG->copts, CO_ENCODING, ENC_SJIS); break;
@@ -349,6 +328,35 @@ int main (int argc, char *argv[])
         }
         conv_error = 0;
     }
+    
+    if (arg_i)
+    {
+        if (!*arg_i || !strcasecmp (arg_i, "C") || !strcasecmp (arg_i, "POSIX"))
+        {
+            M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+            M_printf (i18n (9999, "Manual locale setting %s ignored - use a real locale instead.\n"), s_cquote (arg_i, COLMESSAGE));
+        }
+    }
+    else
+    {
+        if (!prG->locale_orig)
+        {
+            M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+            M_printf (i18n (9999, "Your locale is unset. Please use the %s--i1" "8n%s command line option or set one of the environment variables %sLC_ALL%s, %sLC_MESSAGES%s, or %sLANG%s to your current locale.\n"),
+                      COLMESSAGE, COLNONE, COLMESSAGE, COLNONE, COLMESSAGE, COLNONE, COLMESSAGE, COLNONE);
+        }
+        else if (!*prG->locale_orig || !strcasecmp (prG->locale_orig, "C") || !strcasecmp (prG->locale_orig, "POSIX"))
+        {
+            M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+            M_printf (i18n (9999, "Locale setting %s ignored - use a real locale instead.\n"), s_cquote (prG->locale_orig, COLMESSAGE));
+        }
+        if (prG->locale_broken)
+        {
+            M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+            M_printf (i18n (9999, "Your system doesn't know the %s locale - try %siconv --list%s.\n"),
+                      s_cquote (prG->locale_full, COLMESSAGE), COLMESSAGE, COLNONE);
+        }
+    }
 
     if (!rc && arg_l)
     {
@@ -357,14 +365,21 @@ int main (int argc, char *argv[])
     }
 
     if (arg_f)
+    {
+        M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
         M_printf (i18n (9999, "Deprecated option -f used. Please use the similar -b instead.\n"));
+    }
 
+    M_printf (i18n (9999, "This console uses encoding %s.\n"), s_cquote (ConvEncName (prG->enc_loc), COLMESSAGE));
     if (i == -1)
-        M_printf (i18n (9999, "Translation %s%s%s not found. Would you like to translate mICQ into your language?\n"), COLMESSAGE, s_cquote (prG->locale_full, COLMESSAGE), COLNONE);
-    else if (i)
-        M_printf (i18n (9999, "English (%s) translation loaded (%s%ld%s entries).\n"), s_cquote (prG->locale_full, COLMESSAGE), COLMESSAGE, i, COLNONE);
+    {
+        M_printf (COLERROR "%s" COLNONE " ", i18n (1619, "Warning:"));
+        M_printf (i18n (9999, "Translation %s%s%s not found. Would you like to translate mICQ into your language?\n"),
+                  COLMESSAGE, s_cquote (prG->locale, COLMESSAGE), COLNONE);
+    }
     else
-        M_print ("No translation requested.\n");
+        M_printf (i18n (9999, "English (%s) translation loaded (%s%ld%s entries).\n"),
+                  s_cquote (prG->locale, COLMESSAGE), COLMESSAGE, i, COLNONE);
 
     if (!rc)
         Initialize_RC_File ();

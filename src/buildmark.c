@@ -28,6 +28,8 @@
 #include "micq.h"
 #include "buildmark.h"
 #include "util_str.h"
+#include "conv.h"
+#include "preferences.h"
 #include ".cvsupdate"
 
 #ifdef __AMIGA__
@@ -103,8 +105,12 @@ const char *BuildVersion (void)
 
 const char *BuildAttribution (void)
 {
-    return ("\xc2\xa9 1998,1999,2000 " COLMESSAGE "Matthew D. Smith" COLNONE ", "
-            "\xc2\xa9 2001,2002,2003 " COLMESSAGE "R\xc3\xbc" "diger Kuhlmann" COLNONE ",\n"
+    if (ConvHaveUe (prG->enc_loc))
+    return ("\xc2\xa9 1998-2000 " COLMESSAGE "Matthew D. Smith" COLNONE ", "
+            "\xc2\xa9 2001-2003 " COLMESSAGE "R\xc3\xbc" "diger Kuhlmann" COLNONE ",\n"
+            "released under version 2 of the GNU General Public License (" COLMESSAGE "GPLv2" COLNONE ").\n");
+    return ("\xc2\xa9 1998-2000 " COLMESSAGE "Matthew D. Smith" COLNONE ", "
+            "\xc2\xa9 2001-2003 " COLMESSAGE "Ruediger Kuhlmann" COLNONE ",\n"
             "released under version 2 of the GNU General Public License (" COLMESSAGE "GPLv2" COLNONE ").\n");
 }                  
 

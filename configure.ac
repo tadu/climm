@@ -209,7 +209,7 @@ fi
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([locale.h sys/select.h arpa/inet.h ctype.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h])
+AC_CHECK_HEADERS([locale.h langinfo.h sys/select.h arpa/inet.h ctype.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -242,7 +242,7 @@ AC_FUNC_SNPRINTF
 AC_FUNC_MEMMOVE
 AC_CHECK_FUNCS([atexit memset memcmp mkdir strcasecmp uname fcntl \
                 strchr memchr strdup strncasecmp strpbrk strrchr strstr strtol strtok_r \
-                symlink chmod tcgetattr gettimeofday setlocale select])
+                symlink chmod tcgetattr gettimeofday setlocale nl_langinfo select])
 
 for f in memset mkdir atexit \
          strcasecmp strchr memchr strdup strncasecmp strpbrk strrchr strstr strtol; do

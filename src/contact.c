@@ -698,9 +698,9 @@ BOOL ContactMetaLoad (Contact *cont)
             if (!s_parse (&line, &par))
                 return FALSE;
             enc = ConvEnc (par->txt);
-            if (enc & ENC_AUTO && (enc ^ prG->enc_loc) & ~ENC_AUTO)
+            if (enc & ENC_FAUTO && (enc ^ prG->enc_loc) & ~ENC_FAUTO)
                 return FALSE;
-            enc &= ~ENC_AUTO;
+            enc &= ~ENC_FAUTO;
         }
         else if (!enc)
             return FALSE;

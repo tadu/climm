@@ -841,16 +841,11 @@ static JUMP_F(CmdUserTrans)
                     free (t);
                     continue;
                 }
-                i = i18nOpen (par->txt, prG->enc_loc);
+                i = i18nOpen (par->txt);
                 if (i == -1)
                     M_printf (i18n (2316, "Translation %s not found.\n"), par->txt);
-                else if (i)
-                    {
-                        s_repl (&prG->locale, par->txt);
-                        M_printf (i18n (2318, "English (%s) translation loaded (%ld entries).\n"), par->txt, i);
-                    }
                 else
-                    M_print ("No translation required.\n");
+                    M_printf (i18n (2318, "English (%s) translation loaded (%ld entries).\n"), par->txt, i);
             }
             one = 1;
         }

@@ -14,8 +14,10 @@ struct Preferences_s
     BOOL   s5Use;
     BOOL   s5Auth;
 
-    char  *locale;      /* the used locale */
-    char  *locale_full; /* ... verbatim as derived from ENV/--1i8n */
+    char  *locale;      /* the used locale (stripped of encoding) */
+    char  *locale_orig; /* the original locale (as from ENV) */
+    char  *locale_full; /* the original locale (... but not C/POSIX) */
+    BOOL   locale_broken;
     UBYTE  enc_loc;     /* the local character encoding */
     
     ContactOptions copts;  /* global (default) contact flags */
@@ -99,8 +101,6 @@ const char *PrefLogNameReal (Preferences *pref);
 #define TABS_SIMPLE      1
 #define TABS_CYCLE       2
 #define TABS_CYCLEALL    3
-
-#define ENC(enc_x) (prG->enc_x & ~ENC_AUTO)
 
 #endif /* MICQ_PREFERENCES_H */
 

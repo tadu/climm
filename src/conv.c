@@ -70,7 +70,8 @@ static iconv_func iconv_from_ucs2be, iconv_to_ucs2be;
 #if HAVE_ICONV
 typedef struct { const char *enca; const char *encb; const char *encc;
                  iconv_func *fof; iconv_func *fto;
-                 iconv_t     iof; iconv_t      ito; } enc_t;
+                 iconv_t     iof; iconv_t      ito; UBYTE canue; } enc_t;
+static BOOL iconv_check (UBYTE enc);
 #else
 typedef struct { const char *enca; const char *encb; const char *encc;
                  iconv_func *fof; iconv_func *fto; } enc_t;
@@ -81,132 +82,178 @@ static enc_t *conv_encs = NULL;
 
 UBYTE conv_error = 0;
 
+#if HAVE_ICONV
+BOOL ConvHaveUe (UBYTE enc)
+{
+    enc &= ~ENC_FAUTO;
+    if (enc >= conv_nr)
+        return FALSE;
+    if (!conv_encs[enc].ito)
+        iconv_check (enc);
+    return conv_encs[enc].canue;
+}
+
+/*
+ * Check whether iconv() can handle it.
+ */
+static BOOL iconv_check (UBYTE enc)
+{
+    conv_encs[enc].ito = iconv_open (s_sprintf ("%s//TRANSLIT", conv_encs[enc].enca), "UTF-8");
+    if (conv_encs[enc].ito == (iconv_t)-1)
+        conv_encs[enc].ito = iconv_open (conv_encs[enc].enca, "UTF-8");
+    conv_encs[enc].iof = iconv_open ("UTF-8", conv_encs[enc].enca);
+    if ((conv_encs[enc].ito == (iconv_t)-1 || conv_encs[enc].iof == (iconv_t)-1)
+        && conv_encs[enc].encb)
+    {
+        conv_encs[enc].ito = iconv_open (s_sprintf ("%s//TRANSLIT", conv_encs[enc].encb), "UTF-8");
+        if (conv_encs[enc].ito == (iconv_t)-1)
+            conv_encs[enc].ito = iconv_open (conv_encs[enc].encb, "UTF-8");
+        conv_encs[enc].iof = iconv_open ("UTF-8", conv_encs[enc].encb);
+    }
+    if ((conv_encs[enc].ito == (iconv_t)-1 || conv_encs[enc].iof == (iconv_t)-1)
+        && conv_encs[enc].encc)
+    {
+        conv_encs[enc].ito = iconv_open (s_sprintf ("%s//TRANSLIT", conv_encs[enc].encc), "UTF-8");
+        if (conv_encs[enc].ito == (iconv_t)-1)
+            conv_encs[enc].ito = iconv_open (conv_encs[enc].encc, "UTF-8");
+        conv_encs[enc].iof = iconv_open ("UTF-8", conv_encs[enc].encc);
+    }
+    if (conv_encs[enc].ito != (iconv_t)-1 && conv_encs[enc].iof != (iconv_t)-1)
+    {
+        conv_encs[enc].fof = &iconv_from_iconv;
+        conv_encs[enc].fto = &iconv_to_iconv;
+
+        conv_encs[enc].canue = 0;
+        if (!strcmp (ConvFrom (ConvTo ("\xc3\xbc", enc), enc)->txt, "\xc3\xbc"))
+            conv_encs[enc].canue = 1;
+
+        return TRUE;
+    }
+    conv_encs[enc].canue = 0;
+    return FALSE;
+}
+#endif
+
 /*
  * Initialize encoding table.
  */
 void ConvInit (void)
 {
-    int i;
-
     conv_error = 0;
     conv_encs = calloc (sizeof (enc_t), conv_nr = 15);
-    conv_encs[0].enca = "US-ASCII";
-    conv_encs[1].enca = "UTF-8";
-    conv_encs[2].enca = "ISO-8859-1";
-    conv_encs[2].encb = "ISO8859-1";
-    conv_encs[2].encc = "LATIN1";
-    conv_encs[3].enca = "ISO-8859-15";
-    conv_encs[3].encb = "ISO8859-15";
-    conv_encs[3].encc = "LATIN9";
-    conv_encs[4].enca = "KOI8-U";
-    conv_encs[4].encb = "KOI8-R";
-    conv_encs[4].encc = "KOI8";
-    conv_encs[5].enca = "CP1251";
-    conv_encs[5].encb = "WINDOWS-1251";
-    conv_encs[5].encc = "CP-1251";
-    conv_encs[6].enca = "UCS2BE";
-    conv_encs[6].encb = "UNICODEBIG";
-    conv_encs[7].enca = "CP1257";
-    conv_encs[7].encb = "WINDOWS-1257";
-    conv_encs[7].encc = "CP-1257";
-    conv_encs[8].enca = "EUC-JP";
-    conv_encs[9].enca = "SHIFT-JIS";
-    conv_encs[9].encb = "SJIS";
+    conv_encs[ENC_ASCII].enca = "US-ASCII";
+    conv_encs[ENC_ASCII].encb = "USASCII";
+    conv_encs[ENC_ASCII].encc = "ANSI_X3.4-1968";
+    conv_encs[ENC_UTF8].enca = "UTF-8";
+    conv_encs[ENC_LATIN1].enca = "ISO-8859-1";
+    conv_encs[ENC_LATIN1].encb = "ISO8859-1";
+    conv_encs[ENC_LATIN1].encc = "LATIN1";
+    conv_encs[ENC_LATIN9].enca = "ISO-8859-15";
+    conv_encs[ENC_LATIN9].encb = "ISO8859-15";
+    conv_encs[ENC_LATIN9].encc = "LATIN9";
+    conv_encs[ENC_KOI8].enca = "KOI8-U";
+    conv_encs[ENC_KOI8].encb = "KOI8-R";
+    conv_encs[ENC_KOI8].encc = "KOI8";
+    conv_encs[ENC_WIN1251].enca = "CP1251";
+    conv_encs[ENC_WIN1251].encb = "WINDOWS-1251";
+    conv_encs[ENC_WIN1251].encc = "CP-1251";
+    conv_encs[ENC_UCS2BE].enca = "UCS-2BE";
+    conv_encs[ENC_UCS2BE].encb = "UNICODEBIG";
+    conv_encs[ENC_WIN1257].enca = "CP1257";
+    conv_encs[ENC_WIN1257].encb = "WINDOWS-1257";
+    conv_encs[ENC_WIN1257].encc = "CP-1257";
+    conv_encs[ENC_EUC].enca = "EUC-JP";
+    conv_encs[ENC_SJIS].enca = "SHIFT-JIS";
+    conv_encs[ENC_SJIS].encb = "SJIS";
     
 #if HAVE_ICONV
-    for (i = 0; i < 10; i++)
-        ConvEnc (conv_encs[i].enca);
     /* extra check for UTF-8 */
-    if (conv_encs[1].fof)
+    ConvEnc (conv_encs[ENC_UTF8].enca);
+    if (conv_encs[ENC_UTF8].fof)
     {
         size_t inl = 2, outl = 10;
-        char inb[10], outb[10], *inp = inb, *outp = outb;
+        char inb[10], outb[10], *outp = outb;
+        ICONV_CONST char *inp = inb;
         strcpy (inp, "\xfc.\xc0\xaf");
-        if (iconv (conv_encs[1].ito, &inp, &inl, &outp, &outl) != (size_t)-1)
-            conv_encs[1].fto = conv_encs[1].fof = NULL;
+        if (iconv (conv_encs[ENC_UTF8].ito, &inp, &inl, &outp, &outl) != (size_t)-1)
+            conv_encs[ENC_UTF8].fto = conv_encs[ENC_UTF8].fof = NULL;
         else
         {
             inp = inb + 2;
-            iconv (conv_encs[1].ito, NULL, NULL, NULL, NULL);
-            if ((iconv (conv_encs[1].ito, &inp, &inl, &outp, &outl) != (size_t)-1) && *outp != '/')
-                conv_encs[1].fto = conv_encs[1].fof = NULL;
+            iconv (conv_encs[ENC_UTF8].ito, NULL, NULL, NULL, NULL);
+            if ((iconv (conv_encs[ENC_UTF8].ito, &inp, &inl, &outp, &outl) != (size_t)-1) && *outp != '/')
+                conv_encs[ENC_UTF8].fto = conv_encs[ENC_UTF8].fof = NULL;
         }
     }
 #endif
-    if (!conv_encs[0].fof)
+    if (!conv_encs[ENC_ASCII].fof)
     {
 #if ENABLE_FALLBACK_ASCII
-        conv_encs[0].fof  = &iconv_from_usascii;
-        conv_encs[0].fto  = &iconv_to_usascii;
+        conv_encs[ENC_ASCII].fof  = &iconv_from_usascii;
+        conv_encs[ENC_ASCII].fto  = &iconv_to_usascii;
 #else
-        conv_encs[0].fof  = &iconv_usascii;
-        conv_encs[0].fto  = &iconv_usascii;
+        conv_encs[ENC_ASCII].fof  = &iconv_usascii;
+        conv_encs[ENC_ASCII].fto  = &iconv_usascii;
 #endif
     }
-    if (!conv_encs[1].fof)
+    if (!conv_encs[ENC_UTF8].fof)
     {
 #if ENABLE_FALLBACK_UTF8
-        conv_encs[1].fof  = &iconv_utf8;
-        conv_encs[1].fto  = &iconv_utf8;
+        conv_encs[ENC_UTF8].fof  = &iconv_utf8;
+        conv_encs[ENC_UTF8].fto  = &iconv_utf8;
 #else
-        conv_encs[1].fof  = conv_encs[0].fof;
-        conv_encs[1].fto  = conv_encs[0].fto;
-        conv_error = 1;
+        conv_encs[ENC_UTF8].fof  = conv_encs[ENC_ASCII].fof;
+        conv_encs[ENC_UTF8].fto  = conv_encs[ENC_ASCII].fto;
 #endif
     }
-    if (!conv_encs[2].fof)
+    if (!conv_encs[ENC_LATIN1].fof)
     {
 #if ENABLE_FALLBACK_LATIN1
-        conv_encs[2].fof  = &iconv_from_latin1;
-        conv_encs[2].fto  = &iconv_to_latin1;
+        conv_encs[ENC_LATIN1].fof  = &iconv_from_latin1;
+        conv_encs[ENC_LATIN1].fto  = &iconv_to_latin1;
 #else
-        conv_encs[2].fof  = conv_encs[0].fof;
-        conv_encs[2].fto  = conv_encs[0].fto;
-        conv_error = 2;
+        conv_encs[ENC_LATIN1].fof  = conv_encs[ENC_ASCII].fof;
+        conv_encs[ENC_LATIN1].fto  = conv_encs[ENC_ASCII].fto;
 #endif
     }
-    if (!conv_encs[3].fof)
+    if (!conv_encs[ENC_LATIN9].fof)
     {
 #if ENABLE_FALLBACK_LATIN9
-        conv_encs[3].fof  = &iconv_from_latin9;
-        conv_encs[3].fto  = &iconv_to_latin9;
+        conv_encs[ENC_LATIN9].fof  = &iconv_from_latin9;
+        conv_encs[ENC_LATIN9].fto  = &iconv_to_latin9;
 #else
-        conv_encs[3].fof  = conv_encs[0].fof;
-        conv_encs[3].fto  = conv_encs[0].fto;
-        conv_error = 3;
+        conv_encs[ENC_LATIN9].fof  = conv_encs[ENC_ASCII].fof;
+        conv_encs[ENC_LATIN9].fto  = conv_encs[ENC_ASCII].fto;
 #endif
     }
-    if (!conv_encs[4].fof)
+    if (!conv_encs[ENC_KOI8].fof)
     {
 #if ENABLE_FALLBACK_KOI8
-        conv_encs[4].fof  = &iconv_from_koi8;
-        conv_encs[4].fto  = &iconv_to_koi8;
+        conv_encs[ENC_KOI8].fof  = &iconv_from_koi8;
+        conv_encs[ENC_KOI8].fto  = &iconv_to_koi8;
 #else
-        conv_encs[4].fof  = conv_encs[0].fof;
-        conv_encs[4].fto  = conv_encs[0].fto;
-        conv_error = 4;
+        conv_encs[ENC_KOI8].fof  = conv_encs[ENC_ASCII].fof;
+        conv_encs[ENC_KOI8].fto  = conv_encs[ENC_ASCII].fto;
 #endif
     }
-    if (!conv_encs[5].fof)
+    if (!conv_encs[ENC_WIN1251].fof)
     {
 #if ENABLE_FALLBACK_WIN1251
-        conv_encs[5].fof  = &iconv_from_win1251;
-        conv_encs[5].fto  = &iconv_to_win1251;
+        conv_encs[ENC_WIN1251].fof  = &iconv_from_win1251;
+        conv_encs[ENC_WIN1251].fto  = &iconv_to_win1251;
 #else
-        conv_encs[5].fof  = conv_encs[0].fof;
-        conv_encs[5].fto  = conv_encs[0].fto;
-        conv_error = 5;
+        conv_encs[ENC_WIN1251].fof  = conv_encs[ENC_ASCII].fof;
+        conv_encs[ENC_WIN1251].fto  = conv_encs[ENC_ASCII].fto;
 #endif
     }
-    if (!conv_encs[6].fof)
+    if (!conv_encs[ENC_UCS2BE].fof)
     {
 #if ENABLE_FALLBACK_UCS2BE
-        conv_encs[6].fof  = &iconv_from_ucs2be;
-        conv_encs[6].fto  = &iconv_to_ucs2be;
+        conv_encs[ENC_UCS2BE].fof  = &iconv_from_ucs2be;
+        conv_encs[ENC_UCS2BE].fto  = &iconv_to_ucs2be;
 #else
-        conv_encs[6].fof  = conv_encs[0].fof;
-        conv_encs[6].fto  = conv_encs[0].fto;
-        conv_error = 6;
+        conv_encs[ENC_UCS2BE].fof  = conv_encs[ENC_ASCII].fof;
+        conv_encs[ENC_UCS2BE].fto  = conv_encs[ENC_ASCII].fto;
 #endif
     }
 }
@@ -228,7 +275,7 @@ UBYTE ConvEnc (const char *enc)
             {
                 if (conv_encs[nr].ito != (iconv_t)(-1) && conv_encs[nr].iof != (iconv_t)(-1))
                     return nr;
-                return ENC_AUTO | nr;
+                return ENC_FAUTO | nr;
             }
 #endif
             if (conv_encs[nr].fof && conv_encs[nr].fto)
@@ -252,29 +299,11 @@ UBYTE ConvEnc (const char *enc)
         conv_encs[nr + 1].enca = NULL;
     }
 #if HAVE_ICONV
-    conv_encs[nr].iof = iconv_open ("UTF-8", conv_encs[nr].enca);
-    conv_encs[nr].ito = iconv_open (conv_encs[nr].enca, "UTF-8");
-    if ((conv_encs[nr].ito == (iconv_t)(-1) || conv_encs[nr].iof == (iconv_t)(-1))
-        && conv_encs[nr].encb)
-    {
-        conv_encs[nr].iof = iconv_open ("UTF-8", conv_encs[nr].encb);
-        conv_encs[nr].ito = iconv_open (conv_encs[nr].encb, "UTF-8");
-    }
-    if ((conv_encs[nr].ito == (iconv_t)(-1) || conv_encs[nr].iof == (iconv_t)(-1))
-        && conv_encs[nr].encc)
-    {
-        conv_encs[nr].iof = iconv_open ("UTF-8", conv_encs[nr].encc);
-        conv_encs[nr].ito = iconv_open (conv_encs[nr].encc, "UTF-8");
-    }
-    if (conv_encs[nr].ito != (iconv_t)(-1) && conv_encs[nr].iof != (iconv_t)(-1))
-    {
-        conv_encs[nr].fof = &iconv_from_iconv;
-        conv_encs[nr].fto = &iconv_to_iconv;
+    if (iconv_check (nr))
         return nr;
-    }
 #endif
     conv_error = nr;
-    return ENC_AUTO | nr;
+    return ENC_FAUTO | nr;
 }
 
 /*
@@ -282,7 +311,9 @@ UBYTE ConvEnc (const char *enc)
  */
 const char *ConvEncName (UBYTE enc)
 {
-    return conv_encs[enc & ~ENC_AUTO].enca;
+    if ((enc & ~ENC_FAUTO) > conv_nr)
+        return "<auto/undefined>";
+    return conv_encs[enc & ~ENC_FAUTO].enca;
 }
 
 const char *ConvCrush0xFE (const char *in)
@@ -344,12 +375,13 @@ const char *ConvUTF8 (UDWORD ucs)
 
 strc_t ConvFrom (strc_t text, UBYTE enc)
 {
-    enc &= ~ENC_AUTO;
+    enc &= ~ENC_FAUTO;
+#if HAVE_ICONV
+    if ((enc < conv_nr) && !conv_encs[enc].iof)
+        iconv_check (enc);
+#endif
     if ((enc >= conv_nr) || (!conv_encs[enc].fof))
-    {
-        conv_error = enc;
         enc = ENC_ASCII;
-    }
     return conv_encs[enc].fof (text, enc);
 }
 
@@ -376,12 +408,13 @@ strc_t ConvFromSplit (strc_t text, UBYTE enc)
 strc_t ConvTo (const char *ctext, UBYTE enc)
 {
     str_s text = { (char *)ctext, strlen (ctext), 0 };
-    enc &= ~ENC_AUTO;
+    enc &= ~ENC_FAUTO;
+#if HAVE_ICONV
+    if ((enc < conv_nr) && !conv_encs[enc].ito)
+        iconv_check (enc);
+#endif
     if ((enc >= conv_nr) || (!conv_encs[enc].fto))
-    {
-        conv_error = enc;
         enc = ENC_ASCII;
-    }
     return conv_encs[enc].fto (&text, enc);
 }
 
@@ -434,6 +467,7 @@ static strc_t iconv_from_iconv (strc_t text, UBYTE enc)
         outleft = str.max - str.len - 2;
     }
     *out = '\0';
+    str.len = out - str.txt;
     return &str;
 }
 
@@ -469,6 +503,7 @@ static strc_t iconv_to_iconv (strc_t text, UBYTE enc)
         outleft = str.max - str.len - 2;
     }
     *out = '\0';
+    str.len = out - str.txt;
     return &str;
 }
 #endif

@@ -438,7 +438,7 @@ int ContactOptionsImport (ContactOptions *opts, const char *args)
         }
         else if (flag == CO_ENCODINGSTR)
         {
-            UWORD enc = ConvEnc (par->txt) & ~ENC_AUTO;
+            UWORD enc = ConvEnc (par->txt) & ~ENC_FAUTO;
             ContactOptionsSetVal (opts, CO_ENCODING, enc);
             ContactOptionsSetStr (opts, CO_ENCODINGSTR, ConvEncName (enc));
         }
