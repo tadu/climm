@@ -4,6 +4,8 @@
  *  Author/Copyright: James Schofield (jschofield@ottawa.com) 22 Feb 2001
  *  Lots of changes from Rüdiger Kuhlmann. File transfer by Rüdiger Kuhlmann.
  *  This file may be distributed under version 2 of the GPL licence.
+ *
+ * $Id$
  */
 
 #include "micq.h"
@@ -65,7 +67,7 @@ static void       TCPCallBackResend  (Event *event);
 static void       TCPCallBackReceive (Event *event);
 
 static void       Encrypt_Pak        (Session *peer, Packet *pak);
-static int        Decrypt_Pak        (Session *peer, Packet *pak);
+static BOOL       Decrypt_Pak        (Session *peer, Packet *pak);
 static int        TCPSendMsgAck      (Session *peer, UWORD seq, UWORD sub_cmd, BOOL accept);
 
 /*********************************************/
@@ -697,7 +699,7 @@ static Packet *TCPReceivePacket (Session *peer)
 
     if (peer->connect & CONNECT_OK && peer->type == TYPE_MSGDIRECT)
     {
-        if (Decrypt_Pak (peer, pak))
+        if (!Decrypt_Pak (peer, pak))
         {
             if (prG->verbose & DEB_TCP)
             {
@@ -2056,7 +2058,7 @@ static void Encrypt_Pak (Session *peer, Packet *pak)
     PacketWriteAt4 (pak, peer->ver > 6 ? 3 : 2, check);
 }
 
-static int Decrypt_Pak (Session *peer, Packet *pak)
+static BOOL Decrypt_Pak (Session *peer, Packet *pak)
 {
     UDWORD hex, key, B1, M1, check;
     int i, size;
@@ -2105,9 +2107,9 @@ static int Decrypt_Pak (Session *peer, Packet *pak)
     {
         X3 = client_check_data[X2] ^ 0xFF;
         if((B1 & 0xFF) != X3)
-            return (-1);
+            return FALSE;
     }
 
-    return (1);
+    return TRUE;
 }
 #endif /* ENABLE_PEER2PEER */
