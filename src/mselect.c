@@ -105,18 +105,19 @@ BOOL M_Is_Set (FD_T sok)
 
 int M_select (void)
 {
-    int res;
+    int res, rc;
 
+    errno = 0;
     res = select (max_fd + 1, &readfds, &writefds, &exceptfds, &tv);
+    rc = errno;
     if (res == -1)
     {
         FD_ZERO (&readfds);
         FD_ZERO (&writefds);
         FD_ZERO (&exceptfds);
-        res = errno;
-        if (res == EINTR)
+        if (rc == EINTR)
             return 0;
-        printf (i18n (1849, "Error on select: %s (%d)\n"), strerror (res), res);
+        printf (i18n (1849, "Error on select: %s (%d)\n"), strerror (rc), rc);
         return -1;
     }
     return res;
