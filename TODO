@@ -25,7 +25,6 @@ TODO:
  : history of messages
  : alias for commands (partially done)
  : tab completion (improve)
- : make MSGSENTSTR etc configurable (done)
  : use ASCII art for setup wizard
  : file transfer:
    + figure out server file sending
@@ -38,3 +37,5 @@ TODO:
    + contact list upload
  : message length (partially done)
  : better meta data change functions
+ : pressing tab in a msg composition ">" area, inserts a nick, tab should be ignored in msg composition
+ : delay login eg on each incoming oncoming contact (done)

@@ -808,7 +808,7 @@ void Read_RC_File (FILE *rcf)
                 else if (!strcasecmp (cmd, "alias"))
                 {
                     PrefParseRemainder (tmp);
-                    CmdUser (cmd = strdup (s_sprintf ("\xb6" "alias quiet %s", ConvToUTF8 (tmp, enc))));
+                    CmdUser (cmd = strdup (s_sprintf ("\xb6" "alias %s", ConvToUTF8 (tmp, enc))));
                     free (cmd);
                 }
                 else

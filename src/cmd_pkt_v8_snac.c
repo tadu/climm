@@ -318,6 +318,11 @@ static JUMP_SNAC_F(SnacSrvRateexceeded)
     M_print (i18n (2188, "You're sending data too fast - stop typing now, or the server will disconnect!\n"));
 }
 
+static void SrvCallbackTodoEg (Event *event)
+{
+    CmdUser ("\xb6" "eg");
+}
+
 /*
  * SRV_REPLYINFO - SNAC(1,15)
  */
@@ -355,6 +360,17 @@ static JUMP_SNAC_F(SnacSrvReplyinfo)
     }
     /* TLV 1 c f 2 3 ignored */
     TLVD (tlv);
+    
+    if (~event->conn->connect & CONNECT_OK)
+    {
+        SnacCliSetrandom (event->conn, prG->chat);
+        event->conn->connect = CONNECT_OK | CONNECT_SELECT_R;
+        reconn = 0;
+        QueueEnqueueData (event->conn, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
+                          NULL, event->conn->uin, NULL, &SrvCallBackKeepalive);
+        QueueEnqueueData (event->conn, QUEUE_TODO_EG, 0, time (NULL) + 2,
+                          NULL, 0, NULL, &SrvCallbackTodoEg);
+    }
 }
 
 /*
@@ -451,7 +467,7 @@ static JUMP_SNAC_F(SnacSrvUseronline)
         PacketD (pak);
         return;
     }
-    
+
     PacketReadB2 (pak);
     PacketReadB2 (pak);
     tlv = TLVRead (pak, PacketReadLeft (pak));
@@ -1075,14 +1091,6 @@ static JUMP_SNAC_F(SnacSrvToicqerr)
     if ((pak->ref & 0xffff) == 0x4231)
     {
         M_print (i18n (2206, "The server doesn't want to give us offline messages.\n"));
-        SnacCliSetrandom (event->conn, prG->chat);
-
-        event->conn->connect = CONNECT_OK | CONNECT_SELECT_R;
-        reconn = 0;
-        CmdUser ("\xb6" "eg");
-        
-        QueueEnqueueData (event->conn, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
-                          NULL, event->conn->uin, NULL, &SrvCallBackKeepalive);
     }
     else
     {
@@ -1148,14 +1156,6 @@ static JUMP_SNAC_F(SnacSrvFromicqsrv)
 
         case 66:
             SnacCliAckofflinemsgs (event->conn);
-            SnacCliSetrandom (event->conn, prG->chat);
-
-            event->conn->connect = CONNECT_OK | CONNECT_SELECT_R;
-            reconn = 0;
-            CmdUser ("\xb6" "eg");
-            
-            QueueEnqueueData (event->conn, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
-                              NULL, event->conn->uin, NULL, &SrvCallBackKeepalive);
             break;
 
         case 2010:

@@ -65,7 +65,6 @@ static void RemoteDispatch (Connection *remo)
 
 static void RemoteClose (Connection *remo)
 {
-    M_print ("FIXME: closing down.\n");
     sockclose (remo->sok);
     remo->sok = -1;
     remo->connect = 0;

@@ -235,8 +235,7 @@ alias_t *CmdUserSetAlias (const char *name, const char *expansion)
 
     if (!alias)
     {
-        alias = malloc (sizeof (alias_t));
-        memset (alias, 0, sizeof (alias_t));
+        alias = calloc (1, sizeof (alias_t));
         
         if (aliases)
         {
@@ -393,9 +392,6 @@ static JUMP_F(CmdUserRandomSet)
 /*
  * Displays help.
  */
-
-/* FIXME: update help strings */
-
 static JUMP_F(CmdUserHelp)
 {
     char *arg1 = NULL;
@@ -1840,8 +1836,10 @@ static JUMP_F(CmdUserStatusDetail)
                     else
                         tbuf[0] = '\0';
                     
+#ifdef CONFIG_UNDERLINE
                     if (!(++l % 5))
                         ul = ESC "[4m";
+#endif
                     
                     if (data & 2)
                         M_printf (COLSERVER "%s%c%c%c%1.1d%c" COLNONE "%s %*ld", ul,

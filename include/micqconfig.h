@@ -45,4 +45,8 @@
 ** But you can change the tab stops if you so desire */
 #define TAB_STOP 8
 
+/* Always report tghe local IP address as 0.0.0.0. */
 #undef HIDELANIP
+
+/* Underline every fifth line in e,eg,w,wg,ee,eeg,ww,wwg commands */
+#undef CONFIG_UNDERLINE

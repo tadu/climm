@@ -504,6 +504,7 @@ void Recv_Message (Connection *conn, Packet *pak)
  */
 void IMOnline (Contact *cont, Connection *conn, UDWORD status)
 {
+    Event *egevent;
     UDWORD old;
 
     if (!cont)
@@ -529,6 +530,13 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
     if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || (prG->flags & FLAG_ULTRAQUIET)
         || ((prG->flags & FLAG_QUIET) && (old != STATUS_OFFLINE)) || (~conn->connect & CONNECT_OK))
         return;
+    
+    if ((egevent = QueueDequeue2 (conn, QUEUE_TODO_EG, 0, 0)))
+    {
+        egevent->due = time (NULL) + 2;
+        QueueEnqueue (egevent);
+        return;
+    }
 
     if (prG->event_cmd && *prG->event_cmd)
         EventExec (cont, prG->event_cmd, !~old ? 2 : 5, status, NULL);
