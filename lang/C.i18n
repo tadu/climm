@@ -398,7 +398,7 @@
 1398:Search ©2failed©0.
 1399: 
 1400:Shows locally stored info on user.
-1401:Updates other user info like age and sex.
+1401:Updates more user info like age and sex.
 1402:Updates your about user info.
 1403:Displays the last message received from <nick>, or a list of who has send you at least one message.
 1404:Toggles ignoring/unignoring nick.
@@ -406,26 +406,26 @@
 1406:Toggles your visibility to a user when you're invisible.
 1407:Displays the current status of online people on your contact list.
 1408:Changes your password to secret.
-1409:Sends a message to uin.
+1409:Sends a message to uin or nick.
 1410:Sends a url and message to uin.
 1411:Sends a multiline message to everyone on your list.
 1412:Sends a message to the last person you sent a message to.
-1413:Authorize uin to add you to their list.
+1413:Authorize uin or nick to add you to their list.
 1414:Replys to the last person to send you a message.
 1415:Finds a random user in the specified group or lists the groups.
 1416:Displays the current status of everyone on your contact list.
 1417:This command allows you to alter your command set on the fly.
-1418:Set the verbosity level (default 0).
+1418:Set the verbosity level, or display verbosity level.
 1419:Clears the screen.
-1420:Toggles beeping when recieving new messages.
-1421:Toggles displaying colors.
+1420:Switches beeping when receiving new messages on or off, sets a command for this action or displays current state of this option.
+1421: 
 1422:Logs off and quits.
 1423:Displays your autoreply status.
 1424:Toggles sending messages when your status is DND, NA, etc.
 1425:Sets the message to send as an auto reply for the status.
 1426:Creates a new UIN with the specified password.
 1427:Changes your status to the status number. Without a number it lists the available modes.
-1428:Adds the uin number to your contact list with nickname.
+1428:Adds the uin number to your contact list with nickname, or renames it.
 1429:Searches for a ICQ user.
 1430:Displays general info on uin.
 1431:Change status to Online.
@@ -1032,3 +1032,14 @@
 2032:Scheduling v8 reconnect in %d seconds.¶
 2033:born today
 2034:Opening TCP connection at %s:%d... 
+2035:Show uptime and some statistics.
+2036:Save current preferences to disc.
+2037:Open or close a peer-to-peer connection, or disable using peer-to-peer connections for uin|nick.
+2038:Opens connection number nr.
+2039:Sends a message to a cell phone.
+2040:Switches beeping for incoming contacts on or off, sets a command for this action or displays current state of this option.
+2041:Switches beeping for offgoing contacts on or off, sets a command for this action or displays current state of this option.
+2042:Displays a list of online people on your contact list in a screen wide format.
+2043:Remove contact from your contact list.
+2044:Set or clear an option.
+2045:Toggles your visibility to a user when you're online.

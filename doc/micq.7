@@ -63,13 +63,20 @@ Send a message to the last person you sent a message to.  See
 .Ic r
 for behaviour without
 .Ar message .
-.It Ic msg Ar uin|nickname Ic / Op Ar message
+.It Ic msg Ar uin|nickname Ic Op Ar message
 Send a message to
 .Ar uin|nickname .
 See
 .Ic r 
 for behaviour without
 .Ar message .
+.It Ic url Ar uin|nickname Ic Ar url Ar message
+Send a
+.Ar message
+regarding an
+.Ar url
+to
+.Ar uin|nickname .
 .It Ic sms Ar cell message
 Send an SMS message
 .Ar message
@@ -84,14 +91,25 @@ on a line of its own to send the message, or a hash sign
 on a line of its own to cancel the message.
 .It Ic uptime
 Show the time micq has been running.
-.It Ic last Op Ar uin|nickname
+.It Ic last Op Ar contact
 Show a list of users who have sent you messages or the last message
 received from
-.Ar uin|nickname .
-.It Ic verbose Ar verb
+.Ar contact ,
+which can be a
+.Ar uin
+or a
+.Ar nickname .
+.It Ic verbose Op Ar verb
 Set verbosity of micq to
 .Ar verb ,
-default is 0, maximum is 5.
+or show the current verbosity. The verbosity level is a set of flags:
+.Bl -tag -width Fl
+.It 128
+Dump incoming and outgoing packets.
+.It 256
+Write incoming and outgoing server packets to disc (~/.micq/debug/packets).
+.El
+And some more.
 .It Ic clear
 Clear the screen.
 .It Ic sound Op Ar command
@@ -131,14 +149,19 @@ Find a random user in interest group
 .It Ic pass Ar password
 Changes your icq password to
 .Ar password . 
-Note: you should alter your password directly in your
-.Pa .micq/micqrc
+.br
+Note: you need to
+.Ar save
+to make this persistent in case you save your password in your
+.Pa ~/.micq/micqrc
 file (see
-.Xr micqrc 7 ) .
+.Xr micqrc 7 ) ,
+or you will get a mismatched password
+on your next login.
 .It Ic search
 .It Ic search Ar email
 .It Ic search Ar nick
-.It Ic search Ar first nick
+.It Ic search Ar first last
 Search for a user with
 .Ar email
 as their email address, with
@@ -176,29 +199,36 @@ from your contact list.
 Note: you need to
 .Ar save
 to make this persistent.
+.It Ic togvis Ar nickname
+Toggles whether
+.Ar nickname
+can see you even if you are invisible.
+.It Ic toginvis Ar nickname
+Toggles whether you will be hidden for
+.Ar nickname .
+.It Ic togig Ar nickname
+Toggles whether
+.Ar nickname's
+messages and status changes are ignored.
+.It Ic info Ar uin|nickname
+Show all white page info for
+.Ar uin|nickname .
 .It Ic w
 List all people in your contact list.
 .It Ic e
 List all people who are online in your contact list.
 .It Ic wide
 List all people who are in your contact list in a screen wide format.
+.It Ic ewide
+List all people who are online in your contact list in a screen wide format.
+.It Ic s
+Show your current status.
 .It Ic i
 List all the people on your ignore list.
-.It Ic togvis nickname
-Toggles whether
-.Ar nickname
-can see you when you are invisible.
-.It Ic info Ar uin|nickname
-Show the info for
-.Ar uin|nickname .
 .It Ic status Ar nickname
 Show the status of
 .Ar nickname .
 This includes IP address, ICQ protocol version and connection type.
-.It Ic togig Ar nickname
-Toggles whether
-.Ar nickname
-is on your ignore list or not.
 .It Ic change Op Ar number
 Changes your status to
 .Ar number .
@@ -264,13 +294,11 @@ to close and reset such a connection, or
 .Ic off
 to switch off trying to establish such a connection for sending
 messages until it is explicitly opened or reset.
-.It Ic conn Op Ar command Ar uin|nick
+.It Ic conn Op Ar command Ar nr
 List all connections, or operate
 .Ar command
-on user given by UIN
-.Ar uin
-or nick name
-.Ar nick .
+on connection
+.Ar nr .
 .Ar command
 can be
 .Ic open
