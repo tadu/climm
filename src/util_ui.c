@@ -441,9 +441,9 @@ static void remove_tab( int index )
 void add_tab( DWORD uin )
 {
    int i, j;
-   char *new=NULL;
-   char *temp;
-   char *orig;
+   char *new = NULL;
+   char *temp = NULL;
+   char *orig = NULL;
    
    for ( i=0; i < Num_Contacts; i++ )
    {

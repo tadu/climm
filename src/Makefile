@@ -1,10 +1,7 @@
-# Anyone who knows how to make Makefiles please help out.
-# I have no clue but this appears to work fairly well
-# be sure to use gmake
-#
-# Most options that were here and soem that weren't have been moved to config.h
-# edit that file to set up options.
-#
+# $Id$
+# originally by Matt D. Smith
+# rewritten by  Rico Gloeckner <mc@verdinet.de>
+
 CC = gcc
 CFLAGS = -O4 -Wall -DUNIX 
 
@@ -44,7 +41,8 @@ micq : ${OBJS}
 # ${OBJS} :
 
 clean :
-	rm -f ${OBJS} micq
+	rm -f ${OBJS} micq *~
 
 install:
 	@install -g root -o root -m 755 micq /usr/local/bin
+	@install -g root -o root -m 755 ../micq.1 /usr/local/man/man1

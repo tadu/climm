@@ -1,5 +1,7 @@
 Jan 20, 2001
 mc - cleaned up code into subdirs 
+mc - added micq.1 from debian.diff
+mc - fixed vulnerability in icq_response.c from debian.diff
 
 Jun 9, 2000
 Word wraping at the screen boundaries

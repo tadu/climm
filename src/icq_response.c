@@ -722,11 +722,12 @@ void Display_Search_Reply( int sok, BYTE * pak )
 
 void Do_Msg( SOK_T sok, DWORD type, WORD len, char * data, DWORD uin )
 {
-   char *tmp;
-	int   x,m;
-   char message[1024];
-   char url_data[1024];
-   char url_desc[1024];
+   char *tmp = NULL;
+   int   x,
+	 m;
+   char message[11264];
+   char url_data[5120];
+   char url_desc[5120];
 
    add_tab( uin );
 
@@ -870,13 +871,23 @@ void Do_Msg( SOK_T sok, DWORD type, WORD len, char * data, DWORD uin )
       }
       *tmp = 0;
       char_conv ("wc",data);
-      strcpy (url_desc,data);
+// temporaryy fix to buffer overflow
+// should be solved better -mc
+//      strcpy (url_desc,data);
+      url_desc[0] = '\0';
+      strncat(url_desc,data,sizeof(url_data)-1);
+
       tmp++;
       data = tmp;
       char_conv ("wc",data);
-      strcpy (url_data,data);
-      
-      sprintf (message,"Description: %s \n                          URL: %s",url_desc,url_data);  
+// same apllies here --mc
+//      strcpy (url_data,data);
+      url_data[0] = '\0';
+      strncat (url_data,data,sizeof(url_data)-1);
+
+// and again
+//      sprintf (message,"Description: %s \n                          URL: %s",url_desc,url_data);  
+      snprintf (message,sizeof(message),"Description: %s \nURL: %s",url_desc,url_data); 
       if ( UIN2nick( uin ) != NULL )
          log_event( uin, LOG_MESS, "You received URL message from %s\n%s\n", UIN2nick(uin), message );
       else
