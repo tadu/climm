@@ -22,13 +22,28 @@
     #include <sys/time.h>
   #endif
 #endif
+
 #include <stdio.h>
+
 #ifdef PREFER_PORTABLE_SNPRINTF
-  #include <snprintf.h>
+#include "snprintf.h"
 #endif
+
 #ifdef PREFER_PORTABLE_MEMMOVE
-  #include <memmove.h>
+#include "memmove.h"
 #endif
+
+#ifndef HAVE_TIMEGM
+#define HAVE_TIMEGM 1
+#define timegm portable_timegm
+time_t portable_timegm (struct tm *tm);
+#endif
+
+#ifndef HAVE_LOCALTIME_R
+#define HAVE_LOCALTIME_R 1
+#define localtime_r(t, s)      memcpy(s, localtime(t), sizeof(struct tm))
+#endif
+
 #ifndef __attribute__
 #if !defined(__GNUC__) || __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 7)
   #define __attribute__(x)

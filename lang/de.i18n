@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.63.2.15 2004/01/16 01:02:29
+#  EN: __.i18n,v 1.63.2.16 2004/03/10 22:31:00
 1000:iso-8859-1
 1001:de
 1002:de_DE
@@ -1145,9 +1145,13 @@
 2384:Suche nach <Text> in der Log-Datei von <Kontakt> (ignoriere Groﬂschreibung).
 2385:Konnte %s nicht zum Lesen ˆffnen: %s (%d).\n
 2386:Insgesamt %s%d%s Treffer gefunden.\n
-2387:%s <Kontakt> [<last> [<number>]] -- Show history of <contact>.\n
+2387:%s <Kontakt> [<last> [<count>]] -- Show history of <contact>.\n
 2388:%s <Kontakt> <Text> -- Suche <Text> in den Nachrichten von <Kontakt> (ignoriere Groﬂschreibung).\n
 2389:%s <Kontakt> <Text> -- Suche <Text> in den Nachrichten von <Kontakt> (beachte Groﬂschreibung).\n
 2390:Kein oder ein leerer Text angegeben.\n
 2391:Suche nach <Text> in der Log-Datei von <Kontakt> (beachte Groﬂschreibung).
 2392:Dein Status ist %s (%s).\n
+2393:%d.%m.%Y
+2394: %H:%M
+2395:Zeigt die Nachrichten von <Kontakt> ab dem Datum <date> an.
+2396:Parameter '%s' ist nicht im ISO 8601 Format (Bsp.: '2004-31-01' oder '2004-31-01T23:12:05').\n
