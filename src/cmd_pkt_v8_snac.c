@@ -407,7 +407,7 @@ static JUMP_SNAC_F(SnacSrvUseronline)
     }
     /* TLV 1, d, f, 2, 3 ignored */
 
-    UtilUIUserOnline (event->sess, cont, tlv[6].len ? tlv[6].nr : 0);
+    IMOnline (cont, event->sess, tlv[6].len ? tlv[6].nr : 0);
 }
 
 /*
@@ -429,7 +429,7 @@ static JUMP_SNAC_F(SnacSrvUseroffline)
 
     cont->status = STATUS_OFFLINE;
     
-    UtilUIUserOffline (event->sess, cont);
+    IMOffline (cont, event->sess);
 }
 
 /*
@@ -483,7 +483,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     tlv = TLVRead (pak, PacketReadLeft (pak));
 
     if (tlv[6].len && cont && cont->status != STATUS_OFFLINE)
-        UtilUIUserOnline (event->sess, cont, tlv[6].nr);
+        IMOnline (cont, event->sess, tlv[6].nr);
 
     /* tlv[2] may be there twice - ignore the member since time(NULL). */
     if (tlv[2].len == 4)

@@ -258,7 +258,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
         case SRV_USER_OFFLINE:
             UtilCheckUIN (sess, uin = PacketRead4 (pak));
             if ((cont = ContactFind (uin)))
-                UtilUIUserOffline (sess, cont);
+                IMOffline (cont, sess);
             break;
         case SRV_BAD_PASS:
             M_print (i18n (1645, "You entered an incorrect password.\n"));
@@ -295,12 +295,12 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             cont->id1             = PacketRead4 (pak);
             cont->id2             = PacketRead4 (pak);
             cont->id3             = PacketRead4 (pak);
-            UtilUIUserOnline (sess, cont, status);
+            IMOnline (cont, sess, status);
             break;
         case SRV_STATUS_UPDATE:
             UtilCheckUIN (sess, uin = PacketRead4 (pak));
             if ((cont = ContactFind (uin)))
-                UtilUIUserOnline (sess, cont, PacketRead4 (pak));
+                IMOnline (cont, sess, PacketRead4 (pak));
             break;
         case SRV_GO_AWAY:
         case SRV_NOT_CONNECTED:

@@ -9,4 +9,6 @@ void ack_srv (Session *sess, UDWORD seq);
 void Display_Info_Reply (Session *sess, Packet *pak, const char *uinline, unsigned int flags);
 void Display_Ext_Info_Reply (Session *sess, Packet *pak, const char *uinline);
 
-void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const char *text, UDWORD tstatus);
+void IMSrvMsg  (Contact *cont, Session *sess, time_t stamp, UWORD type, const char *text, UDWORD tstatus);
+void IMOnline  (Contact *cont, Session *sess, UDWORD status);
+void IMOffline (Contact *cont, Session *sess);
