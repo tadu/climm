@@ -90,7 +90,6 @@ void i18nInit (const char *arg)
             {
                 if (!prG->locale_orig)
                     s_repl (&prG->locale_orig, arg);
-                earg = arg;
             }
             if (!prG->locale_full)
                 s_repl (&prG->locale_full, arg);
