@@ -253,7 +253,7 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
     {
         if (mkdir (buffer, S_IRWXU) == -1 && errno != EEXIST)
         {
-            free (t.txt);
+            s_done (&t);
             return -1;
         }
 
@@ -278,13 +278,13 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
         == -1)
     {
         fprintf (stderr, "\nCouldn't open %s for logging\n", buffer);
-        free (t.txt);
+        s_done (&t);
         return -1;
     }
     if (!(logfile = fdopen (fd, "a")))
     {
         fprintf (stderr, "\nCouldn't open %s for logging\n", buffer);
-        free (t.txt);
+        s_done (&t);
         close (fd);
         return -1;
     }
@@ -293,7 +293,7 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
      * of multiple mICQ instances.
      */
     fputs (t.txt, logfile);
-    free (t.txt);
+    s_done (&t);
 
     /* Closes stream and file descriptor. */
     fclose (logfile);

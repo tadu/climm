@@ -131,7 +131,7 @@ static void FlapChannel1 (Connection *conn, Packet *pak)
                 TLV *tlv = conn->tlv;
                 
                 assert (tlv);
-                FlapCliCookie (conn, tlv[6].str, tlv[6].len);
+                FlapCliCookie (conn, tlv[6].str.txt, tlv[6].str.len);
                 TLVD (tlv);
                 tlv = NULL;
             }
@@ -148,7 +148,7 @@ static void FlapChannel4 (Connection *conn, Packet *pak)
     TLV *tlv;
     
     tlv = TLVRead (pak, PacketReadLeft (pak));
-    if (!tlv[5].len)
+    if (!tlv[5].str.len)
     {
         M_printf ("%s " COLINDENT, s_now);
         if (!(conn->connect & CONNECT_OK))
@@ -156,10 +156,10 @@ static void FlapChannel4 (Connection *conn, Packet *pak)
         else
             M_print (i18n (1896, "Server closed connection:\n"));
         M_printf (i18n (1048, "Error code: %ld\n"), tlv[9].nr ? tlv[9].nr : tlv[8].nr);
-        if (tlv[1].len && atoi (tlv[1].str) != conn->uin)
-            M_printf (i18n (2218, "UIN: %s\n"), tlv[1].str);
-        if (tlv[4].len)
-            M_printf (i18n (1961, "URL: %s\n"), tlv[4].str);
+        if (tlv[1].str.len && atoi (tlv[1].str.txt) != conn->uin)
+            M_printf (i18n (2218, "UIN: %s\n"), tlv[1].str.txt);
+        if (tlv[4].str.len)
+            M_printf (i18n (1961, "URL: %s\n"), tlv[4].str.txt);
         M_print (COLEXDENT "\n");
         
         if (tlv[8].nr == 24)
@@ -174,15 +174,15 @@ static void FlapChannel4 (Connection *conn, Packet *pak)
     }
     else
     {
-        assert (strchr (tlv[5].str, ':'));
+        assert (strchr (tlv[5].str.txt, ':'));
 
-        M_printf (i18n (1898, "Redirect to server %s... "), tlv[5].str);
+        M_printf (i18n (1898, "Redirect to server %s... "), tlv[5].str.txt);
 
         FlapCliGoodbye (conn);
 
-        conn->port = atoi (strchr (tlv[5].str, ':') + 1);
-        *strchr (tlv[5].str, ':') = '\0';
-        s_repl (&conn->server, tlv[5].str);
+        conn->port = atoi (strchr (tlv[5].str.txt, ':') + 1);
+        *strchr (tlv[5].str.txt, ':') = '\0';
+        s_repl (&conn->server, tlv[5].str.txt);
         conn->ip = 0;
 
         conn->connect = 8;

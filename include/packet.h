@@ -1,5 +1,7 @@
 /* $Id$ */
 
+#include "util_str.h"
+
 #ifndef MICQ_PACKET_H
 #define MICQ_PACKET_H
 
@@ -97,10 +99,10 @@ UWORD       PacketReadB2      (      Packet *pak);
 UDWORD      PacketRead4       (      Packet *pak);
 UDWORD      PacketReadB4      (      Packet *pak);
 Cap        *PacketReadCap     (      Packet *pak);
-void        PacketReadData    (      Packet *pak,           char  *data, UWORD len);
-char       *PacketReadStrB    (      Packet *pak);
-char       *PacketReadLNTS    (      Packet *pak);
-char       *PacketReadDLStr   (      Packet *pak);
+void        PacketReadData    (      Packet *pak, str_t str, UWORD len);
+strc_t      PacketReadB2Str   (      Packet *pak, str_t str);
+strc_t      PacketReadL2Str   (      Packet *pak, str_t str);
+strc_t      PacketReadL4Str   (      Packet *pak, str_t str);
 UDWORD      PacketReadUIN     (      Packet *pak);
 
 UBYTE       PacketReadAt1     (const Packet *pak, UWORD at);
@@ -108,9 +110,8 @@ UWORD       PacketReadAt2     (const Packet *pak, UWORD at);
 UWORD       PacketReadAtB2    (const Packet *pak, UWORD at);
 UDWORD      PacketReadAt4     (const Packet *pak, UWORD at);
 UDWORD      PacketReadAtB4    (const Packet *pak, UWORD at);
-void        PacketReadAtData  (const Packet *pak, UWORD at, char  *data, UWORD len);
-char       *PacketReadAtStrB  (const Packet *pak, UWORD at);
-char       *PacketReadAtLNTS  (      Packet *pak, UWORD at);
+void        PacketReadAtData  (const Packet *pak, UWORD at, str_t str, UWORD len);
+strc_t      PacketReadAtL2Str (const Packet *pak, UWORD at, str_t str);
 
 UWORD       PacketWritePos    (const Packet *pak);
 UWORD       PacketReadPos     (const Packet *pak);

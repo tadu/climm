@@ -39,7 +39,6 @@
 TLV *TLVRead (Packet *pak, UDWORD TLVlen)
 {
     TLV *tlv = calloc (__maxTLV, sizeof (TLV));
-    char *p;
     int typ, len, pos, i = __minTLV, n, max = __maxTLV;
 
     assert (tlv);
@@ -53,7 +52,7 @@ TLV *TLVRead (Packet *pak, UDWORD TLVlen)
             M_printf (i18n (1897, "Incomplete TLV %d, len %ld of %d - ignoring.\n"), typ, TLVlen, len);
             return tlv;
         }
-        if (typ >= __minTLV || tlv[typ].len)
+        if (typ >= __minTLV || tlv[typ].str.len)
             n = i++;
         else
             n = typ;
@@ -69,21 +68,22 @@ TLV *TLVRead (Packet *pak, UDWORD TLVlen)
             
             memcpy (tlvn, tlv, (max - 5) * sizeof (TLV));
             free (tlv);
+
+            tlv = tlvn;
         }
 
-        p = calloc (1, len + 1);
         pos = PacketReadPos (pak);
-        PacketReadData (pak, p, len);
-        p[len] = '\0';
-
-        tlv[n].tag = typ;
-        tlv[n].len = len;
-        tlv[n].str = p;
-        
         if (len == 2)
             tlv[n].nr = PacketReadAtB2 (pak, pos);
         if (len == 4)
             tlv[n].nr = PacketReadAtB4 (pak, pos);
+        
+        PacketReadData (pak, &tlv[n].str, len);
+        if (tlv[n].str.max < len)
+            return tlv;
+        
+        tlv[n].str.txt[len] = '\0';
+        tlv[n].tag = typ;
         
         TLVlen -= 2 + 2 + len;
     }
@@ -116,7 +116,7 @@ UWORD TLVGet (TLV *tlv, UWORD nr)
 void TLVDone (TLV *tlv, UWORD nr)
 {
     int i;
-    s_repl (&tlv[nr].str, NULL);
+    s_done (&tlv[nr].str);
     tlv[nr].tag = 0;
     if (nr < __minTLV)
     {
@@ -136,7 +136,9 @@ void TLVDone (TLV *tlv, UWORD nr)
     i--;
     tlv[nr] = tlv[i];
     tlv[i].tag = 0;
-    tlv[i].str = NULL;
+    tlv[i].str.txt = NULL;
+    tlv[i].str.len = 0;
+    tlv[i].str.max = 0;
 }
 
 /*
@@ -146,8 +148,8 @@ void TLVD (TLV *tlv)
 {
     int i;
     for (i = 0; i < __minTLV; i++)
-        s_repl (&tlv[i].str, NULL);
+        s_done (&tlv[i].str);
     for ( ; tlv[i].tag; i++)
-        s_repl (&tlv[i].str, NULL);
+        s_done (&tlv[i].str);
     free (tlv);
 }

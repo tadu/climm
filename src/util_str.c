@@ -48,16 +48,16 @@
  *
  * Returns NULL if not enough memory.
  */
-str_t s_init (str_t str, const char *init, size_t len)
+str_t s_init (str_t str, const char *init, size_t add)
 {
     size_t initlen, size;
     
     initlen = strlen (init);
-    size = initlen + (len >= 0 ? len : 0) + 2;
+    size = initlen + (add >= 0 ? add : 0) + 2;
     
     if (!str->txt || size >= str->max)
     {
-        if (str->txt)
+        if (str->txt && str->max)
             free (str->txt);
         str->max = 1 + (size | 0x3f);
         str->txt = malloc (str->max);
@@ -172,6 +172,17 @@ str_t s_catf (str_t str, const char *fmt, ...)
         }
     }
     return str;
+}
+
+/*
+ * Frees a dynamically allocated string.
+ */
+void s_done (str_t str)
+{
+    if (str->txt && str->max)
+        free (str->txt);
+    str->txt = NULL;
+    str->len = str->max = 0;
 }
 
 /*
@@ -326,22 +337,23 @@ const char *s_msgtok (char *txt)
  */
 const char *s_ind (const char *str)
 {
-    static char *t = NULL;
-    static UDWORD size = 0;
+    static str_s t;
     UDWORD cnt = 5;
     const char *p;
     char *q;
     
+    if (!str || !*str)
+        return "";
+
     for (p = str; *p; p++, cnt++)
         if (*p == '\n')
             cnt += 2;
-    if (!t || !str || !*str)
-        t = calloc (1, size = 100);
-    if (size < cnt)
-        t = realloc (t, cnt);
-    if (!t || !str || !*str)
-        return str;
-    q = t;
+    
+    s_init (&t, "", cnt);
+    if (t.max < cnt)
+        return "<out of memory>";
+
+    q = t.txt;
     *q++ = ' ';
     *q++ = ' ';
     for (p = str; *p; )
@@ -352,7 +364,7 @@ const char *s_ind (const char *str)
                 *q++ = ' ';
             }
     *q = '\0';
-    return t;
+    return t.txt;
 }
 
 /*

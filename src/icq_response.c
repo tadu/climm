@@ -42,7 +42,7 @@
 #include <winsock2.h>
 #endif
 
-#define s_read(s) do { char *data = PacketReadLNTS (pak); s_repl (&s, c_in_to (data, cont)); free (data); } while (0)
+#define s_read(s) s_repl (&s, c_in_to (PacketReadL2Str (pak, NULL)->txt, cont))
 
 static BOOL Meta_Read_List (Packet *pak, Extra **list, Contact *cont)
 {
@@ -160,7 +160,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
 
     switch (subtype)
     {
-        char *data, *data2;
+        const char *data;
         UWORD wdata, i, j;
         UDWORD dwdata;
         MetaGeneral *mg;
@@ -170,13 +170,11 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
         MetaObsolete *mo;
 
         case META_SRV_SMS_OK:
-                    PacketRead4 (pak);
-                    PacketRead2 (pak);
-            data  = PacketReadStrB (pak);
-            data2 = PacketReadStrB (pak);
-            M_printf (i18n (2080, "Server SMS delivery response:\n%s\n"), c_in (data2));
-            free (data);
-            free (data2);
+                   PacketRead4 (pak);
+                   PacketRead2 (pak);
+                   PacketReadB2Str (pak, NULL);
+            data = PacketReadB2Str (pak, NULL)->txt;
+            M_printf (i18n (2080, "Server SMS delivery response:\n%s\n"), c_in (data));
             break;
         case META_SRV_INFO:
             Display_Info_Reply (conn, cont, pak, 0);
@@ -446,7 +444,7 @@ void Recv_Message (Connection *conn, Packet *pak)
 {
     struct tm stamp;
     Contact *cont;
-    char *text, *ctext;
+    const char *text, *ctext;
     UDWORD uin;
     UWORD type, len;
 
@@ -470,24 +468,22 @@ void Recv_Message (Connection *conn, Packet *pak)
     stamp.tm_isdst = -1;
     type           = PacketRead2 (pak);
     len            = PacketReadAt2 (pak, pak->rpos);
-    ctext          = PacketReadLNTS (pak);
+    ctext          = PacketReadL2Str (pak, NULL)->txt; /* FIXME: use str_t */
     
     cont = ContactUIN (conn, uin);
     if (!cont)
         return;
     
     if (len - 1 == strlen (ctext) && ConvIsUTF8 (ctext))
-        text = strdup (ConvToUTF8 (ctext, ENC_UTF8, -1, 1));
+        text = ConvToUTF8 (ctext, ENC_UTF8, -1, 1);
     else if (len - 1 != strlen (ctext) && type == MSG_NORM && len & 1)
-        text = strdup (ConvToUTF8 (ctext, ENC_UCS2BE, len - 1, 1));
+        text = ConvToUTF8 (ctext, ENC_UCS2BE, len - 1, 1);
     else
-        text = strdup (c_in_to (ctext, cont));
-    free (ctext);
+        text = c_in_to (ctext, cont);
 
     uiG.last_rcvd_uin = uin;
     IMSrvMsg (cont, conn, mktime (&stamp),
               ExtraSet (NULL, EXTRA_MESSAGE, type, text));
-    free (text);
 }
 
 /*

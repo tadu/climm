@@ -71,6 +71,22 @@ static Cap caps[CAP_MAX] =
     { 0, 0, NULL, NULL }
 };
 
+static str_s packetstr[] =
+{
+    { NULL, 0, 0 },
+    { NULL, 0, 0 },
+    { NULL, 0, 0 },
+    { NULL, 0, 0 },
+    { "<invalidlen>", 12, 0 },
+    { "", 0, 0 },
+};
+
+static int packetstrind = 0;
+
+#define PACKETMAXSTR 4
+#define PACKETSTRINVALID 4
+#define PACKETSTREMPTY 5
+
 Packet *PacketC (void)
 {
     Packet *pak;
@@ -541,74 +557,119 @@ Cap *PacketReadCap (Packet *pak)
     return &caps[id];
 }
 
-void PacketReadData (Packet *pak, char *buf, UWORD len)
+void PacketReadData (Packet *pak, str_t str, UWORD len)
 {
     assert (pak);
     
     if (pak->rpos + len > PacketMaxData)
+    {
+        if (str)
+        {
+            str->len = 0;
+            if (str->max)
+                *str->txt = '\0';
+        }
         return;
-    
-    if (buf)
-        memcpy (buf, pak->data + pak->rpos, len);
-
+    }
+    if (str)
+    {
+        s_init (str, "", len + 1);
+        if (str->max >= len + 1)
+        {
+            str->len = len;
+            memcpy (str->txt, pak->data + pak->rpos, len);
+        }
+    }
     pak->rpos += len;
 }
 
-char *PacketReadStrB (Packet *pak)
+strc_t PacketReadB2Str (Packet *pak, str_t str)
 {
-    UWORD len;
-    char *str;
+    unsigned int len;
     
     len = PacketReadB2 (pak);
-
     if (pak->rpos + len >= PacketMaxData)
-        return strdup ("<invalidlen>");
+    {
+        if (!str)
+            return &packetstr[PACKETSTRINVALID];
+        s_init (str, packetstr[PACKETSTRINVALID].txt, 0);
+        return str;
+    }
 
-    str = malloc (len + 1);
-    assert (str);
+    if (!str)
+    {
+        packetstrind %= 4;
+        str = &packetstr[packetstrind++];
+    }
+
+    s_init (str, "", len + 2);
+    assert (str->max >= len + 2);
     
     PacketReadData (pak, str, len);
-    str[len] = '\0';
+    str->txt[str->len = len] = '\0';
     
     return str;
 }
 
-char *PacketReadLNTS (Packet *pak)
+strc_t PacketReadL2Str (Packet *pak, str_t str)
 {
-    UWORD len;
-    char *str;
+    unsigned int len;
     
     len = PacketRead2 (pak);
-
     if (pak->rpos + len >= PacketMaxData)
-        str = strdup ("<invalidlen>");
+    {
+        if (!str)
+            return &packetstr[PACKETSTRINVALID];
+        s_init (str, packetstr[PACKETSTRINVALID].txt, 0);
+        return str;
+    }
     if (!len)
-        return strdup ("");
+    {
+        if (!str)
+            return &packetstr[PACKETSTREMPTY];
+        s_init (str, "", 0);
+        return str;
+    }
+    
+    if (!str)
+    {
+        packetstrind %= 4;
+        str = &packetstr[packetstrind++];
+    }
 
-    str = malloc (len);
-    assert (str);
+    s_init (str, "", len + 2);
+    assert (str->max >= len + 2);
 
     PacketReadData (pak, str, len);
-    str[len - 1] = '\0';
+    str->txt[str->len = len - 1] = '\0';
 
     return str;
 }
 
-char *PacketReadDLStr (Packet *pak)
+strc_t PacketReadL4Str (Packet *pak, str_t str)
 {
     UWORD len;
-    char *str;
     
     len = PacketRead4 (pak);
-
     if (pak->rpos + len >= PacketMaxData)
-        return strdup ("<invalidlen>");
+    {
+        if (!str)
+            return &packetstr[PACKETSTRINVALID];
+        s_init (str, packetstr[PACKETSTRINVALID].txt, 0);
+        return str;
+    }
 
-    str = malloc (len + 1);
-    assert (str);
+    if (!str)
+    {
+        packetstrind %= 4;
+        str = &packetstr[packetstrind++];
+    }
+
+    s_init (str, "", len + 2);
+    assert (str->max >= len + 2);
     
     PacketReadData (pak, str, len);
-    str[len] = '\0';
+    str->txt[str->len = len] = '\0';
 
     return str;
 }
@@ -616,13 +677,13 @@ char *PacketReadDLStr (Packet *pak)
 UDWORD PacketReadUIN (Packet *pak)
 {
     UBYTE len = PacketRead1 (pak);
-    char *str = malloc (len + 1);
     UDWORD uin;
+    str_s str = { NULL };
 
-    PacketReadData (pak, str, len);
-    str[len] = '\0';
-    uin = atoi (str);
-    free (str);
+    PacketReadData (pak, &str, len);
+    str.txt[len] = '\0';
+    uin = atoi (str.txt);
+    s_done (&str);
     return uin;
 }
 
@@ -701,52 +762,59 @@ UDWORD PacketReadAtB4 (const Packet *pak, UWORD at)
     return data;
 }
 
-void PacketReadAtData (const Packet *pak, UWORD at, char *buf, UWORD len)
+void PacketReadAtData (const Packet *pak, UWORD at, str_t str, UWORD len)
 {
     assert (pak);
 
     if (at + len > PacketMaxData)
+    {
+        if (str)
+        {
+            str->len = 0;
+            if (str->max)
+                *str->txt = '\0';
+        }
         return;
-
-    memcpy (buf, pak->data + at, len);
+    }
+    if (str)
+    {
+        s_init (str, "", len + 1);
+        if (str->max >= len + 1)
+            memcpy (str->txt, pak->data + at, len);
+    }
 }
 
-char *PacketReadAtStrB (const Packet *pak, UWORD at)
+strc_t PacketReadAtL2Str (const Packet *pak, UWORD at, str_t str)
 {
-    UWORD len;
-    char *str;
-    
-    len = PacketReadAtB2 (pak, at);
-
-    if (!len)
-        return "";
-    
-    str = malloc (len + 1);
-    assert (str);
-    
-    PacketReadAtData (pak, at + 2, str, len);
-    str[len] = '\0';
-
-    return str;
-}
-
-char *PacketReadAtLNTS (Packet *pak, UWORD at)
-{
-    UWORD len;
-    char *str;
+    unsigned int len;
     
     len = PacketReadAt2 (pak, at);
-
     if (at + 2 + len >= PacketMaxData)
-        return strdup ("<invalid>");
+    {
+        if (!str)
+            return &packetstr[PACKETSTRINVALID];
+        s_init (str, packetstr[PACKETSTRINVALID].txt, 0);
+        return str;
+    }
     if (!len)
-        return strdup ("");
+    {
+        if (!str)
+            return &packetstr[PACKETSTREMPTY];
+        s_init (str, "", 0);
+        return str;
+    }
 
-    str = malloc (len);
-    assert (str);
+    if (!str)
+    {
+        packetstrind %= 4;
+        str = &packetstr[packetstrind++];
+    }
+
+    s_init (str, "", len + 2);
+    assert (str->max >= len + 2);
 
     PacketReadAtData (pak, at + 2, str, len);
-    str[len - 1] = '\0';
+    str->txt[str->len = len - 1] = '\0';
 
     return str;
 }

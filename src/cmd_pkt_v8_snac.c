@@ -374,7 +374,7 @@ static JUMP_SNAC_F(SnacSrvReplyinfo)
     PacketReadB2 (pak);
     PacketReadB2 (pak);
     tlv = TLVRead (pak, PacketReadLeft (pak));
-    if (tlv[10].len)
+    if (tlv[10].str.len)
     {
         event->conn->our_outside_ip = tlv[10].nr;
         if (prG->verbose)
@@ -382,7 +382,7 @@ static JUMP_SNAC_F(SnacSrvReplyinfo)
         if (event->conn->assoc)
             event->conn->assoc->our_outside_ip = event->conn->our_outside_ip;
     }
-    if (tlv[6].len)
+    if (tlv[6].str.len)
     {
         status = tlv[6].nr;
         if (status != event->conn->status)
@@ -552,13 +552,13 @@ static JUMP_SNAC_F(SnacSrvUseronline)
     PacketReadB2 (pak);
     PacketReadB2 (pak);
     tlv = TLVRead (pak, PacketReadLeft (pak));
-    if (tlv[10].len && CONTACT_DC (cont))
+    if (tlv[10].str.len && CONTACT_DC (cont))
         cont->dc->ip_rem = tlv[10].nr;
     
-    if (tlv[12].len && CONTACT_DC (cont))
+    if (tlv[12].str.len && CONTACT_DC (cont))
     {
         UDWORD ip;
-        p = PacketCreate (tlv[12].str, tlv[12].len);
+        p = PacketCreate (tlv[12].str.txt, tlv[12].str.len);
         
                        ip = PacketReadB4 (p);
         cont->dc->port    = PacketReadB4 (p);
@@ -579,16 +579,16 @@ static JUMP_SNAC_F(SnacSrvUseronline)
     if (!~cont->status)
         cont->caps = 0;
 
-    if (tlv[13].len)
+    if (tlv[13].str.len)
     {
-        p = PacketCreate (tlv[13].str, tlv[13].len);
+        p = PacketCreate (tlv[13].str.txt, tlv[13].str.len);
         
         while (PacketReadLeft (p))
             ContactSetCap (cont, PacketReadCap (p));
         PacketD (p);
     }
     ContactSetVersion (cont);
-    IMOnline (cont, event->conn, tlv[6].len ? tlv[6].nr : 0);
+    IMOnline (cont, event->conn, tlv[6].str.len ? tlv[6].nr : 0);
     TLVD (tlv);
 }
 
@@ -650,7 +650,8 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
     UWORD msgtype, seq_dc;
     Contact *cont;
     Packet *pak;
-    char *text, *ctext;
+    const char *ctext;
+    char *text;
     
     pak = event->pak;
     /*midtime*/PacketReadB4 (pak);
@@ -667,14 +668,13 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
     msgtype = PacketRead2 (pak);
               PacketRead2 (pak);
               PacketRead2 (pak);
-    ctext   = PacketReadLNTS (pak);
+    ctext   = PacketReadL2Str (pak, NULL)->txt;
     
     cont = ContactUIN (event->conn, uin);
     if (!cont)
         return;
     
     text = strdup (c_in_to (ctext, cont));
-    free (ctext);
 
     event = QueueDequeue (event->conn, QUEUE_TYPE2_RESEND, seq_dc);
 
@@ -720,8 +720,8 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     TLV *tlv;
     UDWORD midtim, midrnd, midtime, midrand, uin, unk, tmp, type1enc;
     UWORD seq1, tcpver, len, i, msgtyp, type;
-    const char *txt = NULL;
-    char *text = NULL;
+    const char *ctext, *txt = NULL;
+    str_s str = { NULL };
 
     pak = event->pak;
 
@@ -739,28 +739,28 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     tlv = TLVRead (pak, PacketReadLeft (pak));
 
 #ifdef WIP
-    if (tlv[6].len && tlv[6].nr != cont->status)
+    if (tlv[6].str.len && tlv[6].nr != cont->status)
         M_printf ("FIXME: status for %ld embedded in message 0x%08lx different from server status 0x%08lx.\n", uin, tlv[6].nr, cont->status);
 #endif
 
-    if (tlv[6].len)
+    if (tlv[6].str.len)
         extra = ExtraSet (extra, EXTRA_STATUS, tlv[6].nr, NULL);
 
     /* tlv[2] may be there twice - ignore the member since time(NULL). */
-    if (tlv[2].len == 4)
+    if (tlv[2].str.len == 4)
         TLVDone (tlv, 2);
 
     switch (type)
     {
         case 1:
-            if (!tlv[2].len)
+            if (!tlv[2].str.len)
             {
                 SnacSrvUnknown (event);
                 TLVD (tlv);
                 return;
             }
 
-            p = PacketCreate (tlv[2].str, tlv[2].len);
+            p = PacketCreate (tlv[2].str.txt, tlv[2].str.len);
             PacketReadB2 (p);
             PacketReadData (p, NULL, PacketReadB2 (p));
                        PacketReadB2 (p);
@@ -774,36 +774,36 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                 PacketD (p);
                 return;
             }
-            text = calloc (1, len - 2);
-            PacketReadData (p, text, len - 4);
+            PacketReadData (p, &str, len - 4); /* FIXME: user str_t */
             PacketD (p);
             /* TLV 1, 2(!), 3, 4, f ignored */
             switch (type1enc & 0xf0000)
             {
                 case 0x00020000:
-                    txt = ConvToUTF8 (text, ENC_UCS2BE, len - 4, 0);
+                    txt = ConvToUTF8 (str.txt, ENC_UCS2BE, len - 4, 0);
                     break;
                 case 0x00030000:
-                    txt = ConvToUTF8 (text, cont->encoding ? cont->encoding : prG->enc_rem, -1, 0);
+                    txt = ConvToUTF8 (str.txt, cont->encoding ? cont->encoding : prG->enc_rem, -1, 0);
                     break;
                 case 0x00000000:
-                    if (ConvIsUTF8 (text) && len - 4 == strlen (text))
-                        txt = ConvToUTF8 (text, ENC_UTF8, -1, 0);
+                    if (ConvIsUTF8 (str.txt) && len - 4 == strlen (str.txt))
+                        txt = ConvToUTF8 (str.txt, ENC_UTF8, -1, 0);
                     else
-                        txt = c_in_to_0 (text, cont);
+                        txt = c_in_to_0 (str.txt, cont);
                     break;
                 default:
                     SnacSrvUnknown (event);
-                    txt = c_in_to_0 (text, cont);
+                    txt = c_in_to_0 (str.txt, cont);
                     break;
             }
             IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (extra,
                       EXTRA_ORIGIN, EXTRA_ORIGIN_v5, NULL),
                       EXTRA_MESSAGE, MSG_NORM, txt));
             Auto_Reply (event->conn, cont);
+            s_done (&str);
             break;
         case 2:
-            p = PacketCreate (tlv[5].str, tlv[5].len);
+            p = PacketCreate (tlv[5].str.txt, tlv[5].str.len);
             type   = PacketReadB2 (p);
             midtim = PacketReadB4 (p);
             midrnd = PacketReadB4 (p);
@@ -839,13 +839,13 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             switch (cap1->id)
             {
                 case CAP_ISICQ:
-                    if (tlv[i].len != 0x1b)
+                    if (tlv[i].str.len != 0x1b)
                     {
                         SnacSrvUnknown (event);
                         TLVD (tlv);
                         return;
                     }
-                    pp = PacketCreate (tlv[i].str, tlv[i].len);
+                    pp = PacketCreate (tlv[i].str.txt, tlv[i].str.len);
                     {
                         UDWORD suin = PacketRead4  (pp);
                         UDWORD sip  = PacketReadB4 (pp);
@@ -885,13 +885,13 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                     return;
 
                 case CAP_SRVRELAY:
-                    if (tlv[i].str[0] != 0x1b)
+                    if (tlv[i].str.txt[0] != 0x1b)
                     {
                         SnacSrvUnknown (event);
                         TLVD (tlv);
                         return;
                     }
-                    pp = PacketCreate (tlv[i].str, tlv[i].len);
+                    pp = PacketCreate (tlv[i].str.txt, tlv[i].str.len);
 
                     p = SnacC (event->conn, 4, 11, 0, 0);
                     PacketWriteB4 (p, midtim);
@@ -928,7 +928,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             /* TLV 1, 2(!), 3, 4, f ignored */
             break;
         case 4:
-            p = PacketCreate (tlv[5].str, tlv[5].len);
+            p = PacketCreate (tlv[5].str.txt, tlv[5].str.len);
             unk  = PacketRead4 (p);
             msgtyp = PacketRead2 (p);
             if (unk != uin)
@@ -937,7 +937,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                 SnacSrvUnknown (event);
                 return;
             }
-            text = PacketReadLNTS (p);
+            ctext = PacketReadL2Str (p, NULL)->txt;
             PacketD (p);
             /* FOREGROUND / BACKGROUND ignored */
             /* TLV 1, 2(!), 3, 4, f ignored */
@@ -945,7 +945,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (extra,
                       EXTRA_ORIGIN, EXTRA_ORIGIN_v5, NULL),
                       EXTRA_MESSAGE, msgtyp, msgtyp == MSG_NORM ?
-                      c_in_to_0 (text, cont) : c_in_to (text, cont)));
+                      c_in_to_0 (ctext, cont) : c_in_to (ctext, cont)));
             Auto_Reply (event->conn, cont);
             break;
         default:
@@ -954,7 +954,6 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             return;
     }
     TLVD (tlv);
-    s_free (text);
 }
 
 /*
@@ -1041,9 +1040,10 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
     Packet *pak;
     ContactGroup *cg = NULL;
     Contact *cont;
-    char *name, *cname, *nick;
+    const char *cname;
+    char *name, *nick;
     TLV *tlv;
-    UWORD type, tag, id, TLVlen, j, data;
+    UWORD type, tag, id, TLVlen, j, data = 0;
     int cnt_sbl_add, cnt_sbl_chn, cnt_sbl_del;
     int i, k, l, count;
     
@@ -1052,7 +1052,7 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
     count = PacketReadB2 (pak);
     for (i = k = l = 0; i < count; i++)
     {
-        cname  = PacketReadStrB (pak);   /* GROUP NAME */
+        cname  = PacketReadB2Str (pak, NULL)->txt;   /* GROUP NAME */
         tag    = PacketReadB2 (pak);     /* TAG  */
         id     = PacketReadB2 (pak);     /* ID   */
         type   = PacketReadB2 (pak);     /* TYPE */
@@ -1060,7 +1060,6 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
         tlv    = TLVRead (pak, TLVlen);
         
         name = strdup (c_in (cname));
-        free (cname);
 
         switch (type)
         {
@@ -1090,7 +1089,7 @@ static JUMP_SNAC_F(SnacSrvReplyrosterexport)
                     break;
                 j = TLVGet (tlv, 305);
                 assert (j < 200 || j == (UWORD)-1);
-                nick = strdup (j != (UWORD)-1 ? c_in (tlv[j].str) : name);
+                nick = strdup (j != (UWORD)-1 ? c_in (tlv[j].str.txt) : name);
 
                 switch (data)
                 {
@@ -1170,7 +1169,8 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
     int i, k, l;
     int cnt_sbl_add, cnt_sbl_chn, cnt_sbl_del;
     int cnt_loc_add, cnt_loc_chn, cnt_loc_del;
-    char *name, *cname, *nick;
+    const char *cname;
+    char *name, *nick;
     UWORD count, type, tag, id, TLVlen, j, data;
     time_t stmp;
 
@@ -1187,7 +1187,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
     cnt_loc_add = cnt_loc_chn = cnt_loc_del = 0;
     for (i = k = l = 0; i < count; i++)
     {
-        cname  = PacketReadStrB (pak);   /* GROUP NAME */
+        cname  = PacketReadB2Str (pak, NULL)->txt;   /* GROUP NAME */
         tag    = PacketReadB2 (pak);     /* TAG  */
         id     = PacketReadB2 (pak);     /* ID   */
         type   = PacketReadB2 (pak);     /* TYPE */
@@ -1195,7 +1195,6 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
         tlv    = TLVRead (pak, TLVlen);
         
         name = strdup (c_in (cname));
-        free (cname);
 
         switch (type)
         {
@@ -1205,7 +1204,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                     j = TLVGet (tlv, 200);
                     if (j == (UWORD)-1)
                         break;
-                    p = PacketCreate (tlv[j].str, tlv[j].len);
+                    p = PacketCreate (tlv[j].str.txt, tlv[j].str.len);
                     while ((id = PacketReadB2 (p)))
                         if (!ContactGroupFind (id, event->conn, NULL, 0))
                             if (IMROSTER_ISDOWN (data))
@@ -1240,7 +1239,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                         break;
                 j = TLVGet (tlv, 305);
                 assert (j < 200 || j == (UWORD)-1);
-                nick = strdup (j != (UWORD)-1 && tlv[j].len ? c_in (tlv[j].str) : name);
+                nick = strdup (j != (UWORD)-1 && tlv[j].str.len ? c_in (tlv[j].str.txt) : name);
 
                 switch (data)
                 {
@@ -1359,19 +1358,19 @@ static JUMP_SNAC_F(SnacSrvAuthreq)
 {
     Packet *pak;
     Contact *cont;
-    char *text, *ctext;
+    const char *ctext;
+    char *text;
     UDWORD uin;
 
     pak   = event->pak;
     uin   = PacketReadUIN (pak);
-    ctext = PacketReadStrB (pak);
+    ctext = PacketReadB2Str (pak, NULL)->txt;
     
     cont = ContactUIN (event->conn, uin);
     if (!cont)
         return;
     
     text = strdup (c_in_to (ctext, cont));
-    free (ctext);
     
     IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (NULL,
               EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
@@ -1387,21 +1386,21 @@ static JUMP_SNAC_F(SnacSrvAuthreply)
 {
     Packet *pak;
     Contact *cont;
-    char *text, *ctext;
+    const char *ctext;
+    char *text;
     UDWORD uin;
     UBYTE acc;
 
     pak = event->pak;
     uin   = PacketReadUIN  (pak);
     acc   = PacketRead1    (pak);
-    ctext = PacketReadStrB (pak);
+    ctext = PacketReadB2Str (pak, NULL)->txt;
     
     cont = ContactUIN (event->conn, uin);
     if (!cont)
         return;
     
     text = strdup (c_in_to (ctext, cont));
-    free (ctext);
 
     IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (NULL,
               EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
@@ -1455,13 +1454,13 @@ static JUMP_SNAC_F(SnacSrvFromicqsrv)
     
     pak = event->pak;
     tlv = TLVRead (pak, PacketReadLeft (pak));
-    if (tlv[1].len < 10)
+    if (tlv[1].str.len < 10)
     {
         SnacSrvUnknown (event);
         TLVD (tlv);
         return;
     }
-    p = PacketCreate (tlv[1].str, tlv[1].len);
+    p = PacketCreate (tlv[1].str.txt, tlv[1].str.len);
     p->ref = pak->ref; /* copy reference */
     len = PacketRead2 (p);
     uin = PacketRead4 (p);
@@ -1478,7 +1477,7 @@ static JUMP_SNAC_F(SnacSrvFromicqsrv)
         PacketD (p);
         return;
     }
-    else if (len != tlv[1].len - 2)
+    else if (len != tlv[1].str.len - 2)
     {
         if (prG->verbose & DEB_PROTOCOL)
         {

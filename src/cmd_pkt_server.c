@@ -187,7 +187,8 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
     jump_srv_t *t;
     static int loginmsg = 0;
     unsigned char ip[4];
-    char *text, *ctext;
+    const char *ctext;
+    char *text;
     UWORD wdata;
     UDWORD status, uin;
     
@@ -385,10 +386,9 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
         case SRV_SYS_DELIVERED_MESS:
             uin   = PacketRead4 (pak);
             wdata = PacketRead2 (pak);
-            ctext = PacketReadLNTS (pak);
+            ctext = PacketReadL2Str (pak, NULL)->txt;
             
             text = strdup (c_in_to (ctext, cont));
-            free (ctext);
 
             if ((cont = ContactUIN (conn, uin)))
             {
@@ -503,8 +503,7 @@ static JUMP_SRV_F (CmdPktSrvAck)
             return;
 
         IMIntMsg (cont, event->conn, NOW, STATUS_OFFLINE, INT_MSGACK_V5,
-                  c_in_to (tmp = PacketReadAtLNTS (event->pak, 30), cont), NULL);
-        free (tmp);
+                  c_in_to (PacketReadAtL2Str (event->pak, 30, NULL)->txt, cont), NULL);
     }
     
     PacketD (pak);

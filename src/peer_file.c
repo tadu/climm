@@ -240,7 +240,7 @@ void PeerFileDispatch (Connection *fpeer)
 
     switch (PacketRead1 (pak))
     {
-        char *name, *text;
+        const char *name, *text;
         UDWORD len, off, nr, speed;
 
         case 0:
@@ -248,7 +248,7 @@ void PeerFileDispatch (Connection *fpeer)
             nr   = PacketRead4 (pak); /* COUNT */
             len  = PacketRead4 (pak); /* BYTES */
             speed= PacketRead4 (pak); /* SPEED */
-            name = PacketReadLNTS (pak); /* NICK  */
+            name = PacketReadL2Str (pak, NULL)->txt; /* NICK  */
             PacketD (pak);
             
             M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
@@ -267,13 +267,11 @@ void PeerFileDispatch (Connection *fpeer)
             PacketWriteLNTS (pak, "my Nick0");
             PeerPacketSend (fpeer, pak);
             PacketD (pak);
-            
-            free (name);
             return;
         
         case 1:
             speed= PacketRead4 (pak); /* SPEED */
-            name = PacketReadLNTS (pak); /* NICK  */
+            name = PacketReadL2Str (pak, NULL)->txt; /* NICK  */
             PacketD (pak);
             
             M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
@@ -281,14 +279,12 @@ void PeerFileDispatch (Connection *fpeer)
             
             fpeer->our_seq = 1;
             QueueRetry (fpeer, QUEUE_PEER_FILE, fpeer->uin);
-            
-            free (name);
             return;
             
         case 2:
                    PacketRead1 (pak); /* EMPTY */
-            name = PacketReadLNTS (pak);
-            text = PacketReadLNTS (pak);
+            name = PacketReadL2Str (pak, NULL)->txt;
+            text = PacketReadL2Str (pak, NULL)->txt;
             len  = PacketRead4 (pak);
                    PacketRead4 (pak); /* EMPTY */
                    PacketRead4 (pak); /* SPEED */
@@ -329,8 +325,6 @@ void PeerFileDispatch (Connection *fpeer)
                         M_printf (i18n (2083, "Cannot open file %s: %s (%d).\n"),
                                  buf, strerror (rc), rc);
                         ConnectionClose (fpeer);
-                        free (name);
-                        free (text);
                         return;
                     }
                 }
@@ -350,8 +344,6 @@ void PeerFileDispatch (Connection *fpeer)
             PacketWrite4 (pak, 1);
             PeerPacketSend (fpeer, pak);
             PacketD (pak);
-            free (name);
-            free (text);
             return;
 
         case 3:

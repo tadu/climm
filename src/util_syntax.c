@@ -171,22 +171,19 @@ char *PacketDump (Packet *pak, const char *syntax)
                 nr = PacketReadAtB2 (pak, pak->rpos);
                 if (pak->len < pak->rpos + nr + 2) break;
                 s_cat  (&t, s_dumpnd (pak->data + pak->rpos, nr + 2));
-                s_catf (&t, " " COLDEBUG "BStr     '%s'" COLNONE "\n", c_pin (tmp = PacketReadStrB (pak)));
-                free (tmp);
+                s_catf (&t, " " COLDEBUG "BStr     '%s'" COLNONE "\n", c_pin (PacketReadB2Str (pak, NULL)->txt));
                 continue;
             case 'L':
                 nr = PacketReadAt2 (pak, pak->rpos);
                 if (pak->len < pak->rpos + nr + 2) break;
                 s_cat  (&t, s_dumpnd (pak->data + pak->rpos, nr + 2));
-                s_catf (&t, " " COLDEBUG "LNTS     '%s'" COLNONE "\n", c_pin (tmp = PacketReadLNTS (pak)));
-                free (tmp);
+                s_catf (&t, " " COLDEBUG "LNTS     '%s'" COLNONE "\n", c_pin (PacketReadL2Str (pak, NULL)->txt));
                 continue;
             case 'S':
                 nr = PacketReadAt4 (pak, pak->rpos);
                 if (pak->len < pak->rpos + nr + 4) break;
                 s_cat  (&t, s_dumpnd (pak->data + pak->rpos, nr + 4));
-                s_catf (&t, " " COLDEBUG "DLStr    '%s'" COLNONE "\n", c_pin (tmp = PacketReadDLStr (pak)));
-                free (tmp);
+                s_catf (&t, " " COLDEBUG "DLStr    '%s'" COLNONE "\n", c_pin (PacketReadL4Str (pak, NULL)->txt));
                 continue;
             case '-':
                 l = last;

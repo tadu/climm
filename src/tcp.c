@@ -1566,7 +1566,8 @@ static void TCPCallBackReceive (Event *event)
     Event *oldevent;
     Contact *cont;
     Packet *pak, *ack_pak = NULL;
-    char *tmp, *ctmp, *ctext, *text, *reason, *name, *cname;
+    const char *ctmp, *ctext, *cname, *reason;
+    char *tmp, *text, *name;
     UWORD cmd, type, seq, port /*, unk*/;
     UDWORD /*len,*/ status /*, flags, xtmp1, xtmp2, xtmp3*/;
     const char *e_msg_text;
@@ -1602,13 +1603,12 @@ static void TCPCallBackReceive (Event *event)
             type   = PacketRead2 (pak);
             status = PacketRead2 (pak);
             /*flags*/PacketRead2 (pak);
-            ctmp   = PacketReadLNTS (pak);
+            ctmp   = PacketReadL2Str (pak, NULL)->txt;
             /* fore/background color ignored */
             tmp = strdup (c_in_to (ctmp, cont));
             
             if (!(oldevent = QueueDequeue (peer, QUEUE_TCP_RESEND, seq)))
             {
-                free (ctmp);
                 free (tmp);
                 break;
             }
@@ -1657,24 +1657,22 @@ static void TCPCallBackReceive (Event *event)
                              PacketReadB4 (pak);
                              PacketReadB4 (pak);
                              PacketRead2 (pak);    /* EMPTY */
-                    ctext  = PacketReadDLStr (pak);
+                    ctext  = PacketReadL4Str (pak, NULL)->txt;
                              PacketReadB4 (pak);   /* UNKNOWN */
                              PacketReadB4 (pak);
                              PacketReadB4 (pak);
                              PacketReadB2 (pak);
                              PacketRead1 (pak);
                              PacketRead4 (pak);    /* LEN */
-                    reason = PacketReadDLStr (pak);
+                    reason = PacketReadL4Str (pak, NULL)->txt;
                     port   = PacketReadB2 (pak);
                              PacketRead2 (pak);    /* PAD */
-                    cname  = PacketReadLNTS (pak);
+                    cname  = PacketReadL2Str (pak, NULL)->txt;
                     /*len=*/ PacketRead4 (pak);
                              /* PORT2 ignored */
 
                     text = strdup (c_in_to (ctext, cont));
-                    free (ctext);
                     name = strdup (c_in_to (cname, cont));
-                    free (cname);
 
                     switch (cmd)
                     {
@@ -1690,7 +1688,6 @@ static void TCPCallBackReceive (Event *event)
                     }
                     free (name);
                     free (text);
-                    free (reason);
                     if (cmd)
                         break;
 
@@ -1699,7 +1696,6 @@ static void TCPCallBackReceive (Event *event)
                     Debug (DEB_TCP, "ACK %d uin %ld nick %s pak %p peer %p seq %04x",
                                      peer->sok, peer->uin, cont->nick, oldevent->pak, peer, seq);
             }
-            free (ctmp);
             free (tmp);
             EventD (oldevent);
             break;
