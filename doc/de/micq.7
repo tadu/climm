@@ -1,5 +1,5 @@
 .\" $Id$ -*- nroff -*-
-.\"  EN: micq.7,v 1.36.2.2
+.\"  EN: micq.7,v 1.36.2.9
 .TH MICQ 7 mICQ DE
 .SH NAME
 .B mICQ
@@ -271,8 +271,14 @@ Ausgehende und eingehende Nachrichten werden unterschiedlich je nach Transport m
 .B \(Fo\(Fo\(Fo
 und
 .B \(Fc\(Fc\(Fc
-bezeichnet Nachrichten, die \(:uber eine direkte Verbindung versandt wurden;
-wenn eine ausgehende Nachricht nach einer Weile noch nicht von der Gegenseite
+bezeichnet Nachrichten, die \(:uber eine direkte Verbindung versandt wurden.
+Wenn die SSL-Erweiterung mitkompiliert wurde und diese Verbindung eine
+gesicherte Verbindung (SSL) ist, dann wird stattdessen
+.B \(Fo%\(Fo
+und
+.B \(Fc%\(Fc
+ausgegeben. Wenn eine ausgehende Nachricht
+nach einer Weile noch nicht von der Gegenseite
 best\(:atigt wurde, wird sie mit
 .BR ===
 markiert wiederholt.
@@ -290,6 +296,8 @@ und
 .B >>>
 "icq5"-Nachrichten, welche auch "type-"-, "type-4"- oder "Offline"-Nachrichten
 genannt werden. Diese Art von Nachrichten werden nicht best\(:atigt.
+In Lokalisierungen, die die Zeichen \(Fo und \(Fc nicht darstellen k\(:onnen,
+wird stattdessen { und } verwendet.
 .br
 Eine Nachricht wird zun\(:achst versucht, \(:uber eine vorher bestehende
 direkte Verbindung verschickt zu werden; ist keine vorhanden, wird im
@@ -453,6 +461,9 @@ solange es kein
 .BR ^ 
 ist.
 .TP
+.B %
+Die SSL-Erweiterung wurde mitkompiliert und eine gesicherte direkte Verbindung
+wurde aufgebaut.
 .B &
 Eine direkte Verbindung wurde aufgebaut.
 .TP
@@ -723,44 +734,73 @@ K\(:urzel f\(:ur
 .BR peer\ file .
 Neu seit 0.4.10.
 .TP
-.BI peer \ Befehl\ Benutzernummer|Spitzname
-wendet den Befehl
-.I Befehl
-auf den durch Benutzernummer
-.I Benutzernummer
-oder Spitzname
-.I Spitzname
-angegebenen Benutzer an.
+.BI accept \ [...]
+K\(:urzel f\(:ur
+.BR peer\ accept .
+Neu seit 0.4.10.4.
+.TP
+.BI peer \ <Befehl>\ <Argumente>
+Verwaltet Direktverbindungen.
 .RS
 .TP
-.B open
-\(:O\(ffnet eine Direktverbindung \(:uber TCP zu diesem Benutzer.
+.B open <Kontakt>...
+\(:O\(ffnet eine Direktverbindung \(:uber TCP zu diesen Benutzern.
 .TP
-.B close
-Schlie\(sst eine Direktverbindung zu diesem Benutzer bzw. setzt sie zur\(:uck.
+.B close <Kontakt>...
+Schlie\(sst eine Direktverbindung zu diesen Benutzern bzw. setzt sie zur\(:uck.
 .TP
-.B off
-Deaktiviert Direktverbindungen f\(:ur diesen Benutzer.
+.B off <Kontakt>...
+Deaktiviert Direktverbindungen f\(:ur diese Benutzer.
 .TP
-.BI file \ Datei\ Beschreibung
+.BI file \ <Kontakt>\ <Datei>\ <Beschreibung>
 Sendet eine einzelne Datei
 .I Datei
 mit der Beschreibung
-.IR Beschreibung .
+.IR Beschreibung
+an den Kontakt
+.IR Kontakt .
 .TP
-.BI files \ [Datei\ als]...\ Beschreibung
-Sende Dateien zum Benutzer. Es darf beliebig viele Paare von tats\(:achlichen Dateinamen
+.BI files \ <Kontakt> [<Datei>\ <als>]...\ <Beschreibung>
+Sendet beliebig viele Dateien zu einem Kontakt. F\(:ur jedes mu\(ss der
+tats\(:achlichen Dateiname
 .I Datei
-und dem gegen\(:uber pr\(:asentierten Dateinamen
+und der gegen\(:uber zu pr\(:asentierende Dateiname
 .I als
-geben. Wenn
+angegeben werden. Wenn
 .IR als
 .RB ' / '
 is, dann gebe den Dateinamen ohne den Pfad an, wenn
 .IR als
 .RB ' . '
-ist, dann gebe den richtigen Dateinamen an.
+ist, dann gebe den tats\(:achlichen Dateinamen an.
+.TP
+.BR accept \ [<contact>]\ [<id>]
+Nehme eine eingehende Datei\(:ubertragung vom Kontakt
+.IR contact
+mit der Kennung
+.IR id an.
+Gibt es nur eine eingehende Datei\(:ubertragung, dann k\(:onnen die Parameter
+.IR contact \ und\  id
+weggelassen werden, andernfalls ist es undefiniert, welche Datei\(:ubertragung
+angenommen wird, wenn mehrere passen.
+.TP
+.BR deny \ [<contact>]\ [<id>]\ [<reason>]
+Weist eine eingehende Datei\(:ubertragung vom Kontakt
+.IR contact
+mit der Kennung
+.IR id
+mit der Begr\(:undung
+.IR reason ab.
+.TP
+.BR ssl \ <contact>...
+\(:Offne eine gesicherte Verbindung zu jedem Kontakt
+.IR contact .
 .RE
+.TP
+.BI login \ [...]
+K\(:urzel f\(:ur
+.BR conn\ login .
+Neu f\(:ur 0.4.10.4.
 .TP
 .BI conn \ [Befehl\ Nr]
 Zeigt alle o\(ffenen Verbindungen, oder wendet den Befehl
@@ -813,6 +853,175 @@ Es gibt noch keine M\(:oglichkeit, die Kontaktliste auf dem Server zu speichern.
 .I Spitzname
 tats\(:achlich verbunden ist oder nicht. Dies mi\(ssbraucht einen Fehler im ICQ-Protokoll, um
 dies herauszu\(finden; es kann nur herausgefunden werden, ob verbunden oder nicht.
+.SH KOMMANDOS, UM MICQ MIT TCL ZU STEUERN
+.TP
+.BI tcl \ <Befehl>
+Führt den TCL-Befehl
+.IR Befehl aus.
+Beispiel: tcl puts "Hallo, Welt"
+.TP
+.BI tclscript \ <Datei>
+F\(:uhrt das TCL-Skript in Datei
+.IR <Datei> aus.
+.PP
+Die folgenden TCL-Befehle werden von mICQ bereitgestellt, um mit ihnen
+mICQ zu steuern. Um den Namensraum nicht unn\(:otig zu f\(:ullen, sind alle
+von mICQ bereitgestellten Befehle Unterbefehle das TCL-Befehls "micq".
+Das bedeutet zum Beispiel, daß "micq receive Roman myproc" einen R\(:uckruf
+f\(:ur von Roman empfangene Nachrichten installiert. Die folgenden Befehle
+m\(:ussen also alle ein "micq" vorangestellt bekommen.
+.TP
+.BI receive \ <Befehl>\ [<Kontakt>]
+Installiert einen R\(:uckruf f\(:ur eingehende Nachrichten.
+.I Befehl
+ist der bei eingehenden Nachrichten auszuf\(:uhrende TCL-Befehl.
+.I Kontakt
+ist ein optionaler Filter. Wenn kein Filter angegeben ist, wird der
+R\(:uckruf auf alle eingehenden Nachrichten reagieren. Es k\(:onnen
+beliebig viele R\(:uckrufe installiert werden. Wenn f\(:ur einen
+Kontakt bereits ein R\(:uckruf existiert, wird dieser ersetzt, und
+der vorherige zur\(:uckgegeben.
+.sp
+Es werden nur einfache Text-Nachrichten aufgefangen. F\(:ur andere
+Nachrichtentypen m\(:ussen Ereignis-R\(:uckrufe verwendet werden.
+.sp
+Wann immer eine Nachricht von mICQ empfangen wird, wird der angegebene
+Befehl mit zwei Argumenten aufgerufen: die Benutzernummer das Absenders
+und der Nachrichtentext.
+.sp
+Hinweis: Diese Funktion existiert zur Bequemlichkeit. Ereignis-R\(:uckrufe
+(weiter unten beschrieben) k\(:onnen die gleiche Aufgabe in einer allgemeineren
+Weise erledigen, haben aber keine M\(:oglichkeit f\(:ur Filter.
+.TP
+.BI unreceive \ [<Kontakt>]
+Entfernt den installierten R\(:uckruf f\(:ur den Filter
+.IR Kontakt .
+Wenn es f\(:ur diesen Filter einen R\(:uckruf gegeben hat, wird
+dieser zur\(:uckgegeben.
+.TP
+.BI event \ <Befehl>
+Installiert einen Ereignis-R\(:uckruf.
+.I Befehl
+ist der bei einem Ereignis aufzurufende TCL-Befehl. Wenn bereits ein
+R\(:uckruf existierte, wird dieser zur\(:uckgegeben. Im Gegensatz zu
+Nachrichten-R\(:uckrufen kann es immer nur einen einzigen
+Ereignis-R\(:uckruf geben. Weitere Aufrufe dieser Funktion
+\(:uberschreiben den vorhergehenden.
+.sp
+Der angegebene Befehl wird bei einem Ereignis mit einer variablen
+Anzahl an Argumenten aufgerufen. Dabei gibt das erste Argument immer
+den Typ des Ereignisses an. Alle weiteren Argumente h\(:angen von
+diesem Typ ab. Die folgende Liste erkl\(:art alle Ereignisse. Dabei
+ist der Typ fett gedruckt und die weiteren Argumente kursiv.
+.RS
+.TP
+.BI status \ <uin>\ <Status>
+Ein Benutzer hat seinen Status gewechselt.
+.TP
+.BI message \ <uin>\ <Text>
+Eine einfache Nachricht wurde empfangen.
+.TP
+.BI mail \ <uin>\ <Inhalt>
+Eine Mail-Nachricht wurde empfangen.
+.TP
+.BI web \ <uin>\ <URL>
+Eine URL-Nachricht wurde empfangen.
+.TP
+.BI file_request \ <uin>\ <Dateiname>\ <Gr\(:o\(sse>\ <Kennung>
+Eine eingehende Datei\(:ubertragung.
+.TP
+.BI contactlistadded \ <uin>
+Ein Eintrag in die Kontaktliste von <uin>.
+.TP
+.BI authorization \ <uin>\  \fR{\fPrequest\fR,\fPrefused\fR,\fPgranted\fR}\fP
+Autorisierung wurde angefragt, abgelehnt beziehungsweise erteilt.
+.TP
+.BI ssl \ <uin> \ <Status> \ [<Grund>]
+Eine gesicherte Verbindung (SSL) zu
+.IR uin
+konnte oder konnte nicht aufgebaut werden.
+.I Status
+ist
+.BR ok
+(konnte\ aufgebaut werden) oder
+.BR failed
+(konnte nicht aufgebaut werden).
+.RS
+.I Grund
+kann sein:
+.TP
+.BI precondition
+Eine gesicherte Verbindung konnte schon verher nicht aufgebaut werden.
+Ein erneuter Versuch ist also sinnlos.
+.TP
+.BI init
+Die SSL-Bibliothek konnte nicht initialisiert werden.
+.TP
+.BI key
+Der SSL-Schl\(:ussel konnte nicht erzeugt werden.
+.TP
+.BI incapable
+Das Gegen\(:uber gibt an, SSL nicht zu unterst\(:utzen.
+.TP
+.BI handshake
+Der SSL-Verbindungsaufbau ist fehlgeschlagen.
+.RE
+.RE
+.TP
+.BI ssl \ <uin>\  \fR{\fPcandidate\fR,\fPno_candidate\fR}\fP
+Gibt zu\(:uck, ob
+.I uin
+m\(:oglicherweise SSL unterst\(:utzt.
+.TP
+.BI unevent
+Entfernt den Ereignis-R\(:uckruf. Falls es einen gegeben hat, gibt es
+diesen zur\(:uck.
+.TP
+.BI hooks
+Gibt eine Liste aller installierten R\(:uckrufe zur\(:uck. Jedes
+Listenelement besteht aus einer Liste mit je zwei Elementen:
+den Filter und der zugeh\(:orige Befehl.
+.TP
+.BI exec \ <Befehl>
+F\(:uhrt einen mICQ-Befehl aus und gibt die Ausgabe als Zeichenkette zur\(:uck.
+Einige Steuersequenzen werden entfernt.
+.TP
+.BI nick \ <UIN>
+Schl\(:agt den Spitznamen des Benutzers mit der angegebenen Benutzernummer
+nach, falls dieser schon bekannt ist.
+Hinweise: benutze "exec finger <UIN>" f\(:ur Benutzer, die nicht
+in der Kontaktliste sind.
+.TP
+.BI help
+Gibt eine kurze Zusammenfassung aller mICQ-spezifischen TCL-Befehle.
+.PP
+Die folgenden TCL-Varbianlen werden definiert. Sie k\(:onnen \(:uberschrieben
+werden, verlieren dann aber ihre urspr\(:unglichen Werte:
+.TP
+.BI micq_version
+Die Versionskennung von mICQ.
+.TP
+.BI micq_basedir
+Basisverzeichnis (wie es mit dem optionalen Parameter \-b von mICQ eingestellt werden kann).
+.TP
+.BI micq_uin
+Eine Liste aller eigenen Benutzernummern.
+.PP
+.nf
+.ta 4n 19n 31n
+Einfaches Beispiel eines Ereignis-R\(:uckrufes:
+
+# Anfang eines TCL-Skriptes
+proc wir_haben_ein_ereignis {typ parameter} {
+    puts "Typ='$typ' Parameter=[join $parameter {,}]"
+    # weitere Aktionen...
+}
+# R\(:uckruf installieren
+micq event wir_haben_ein_ereignis
+# Ende eines TCL-Skriptes
+.ta
+.fi
+
 .SH SIEHE AUCH
 .BR micq (1),
 .BR micqrc (5)

@@ -1,5 +1,5 @@
 .\" $Id$
-.\"  EN: micqrc.5,v 1.23.2.7
+.\"  EN: micqrc.5,v 1.23.2.8
 .TH MICQRC 5 mICQ DE
 .SH NAME
 .B ~/.micq/micqrc
@@ -125,8 +125,8 @@ Fernbedienungs-FIFOs verwenden diese Einstellung nicht.
 .RE
 .SH ALLGEMEINES - general
 Dieser Abschnitt enth\(:alt Optionen f\(:ur SOCKS 5, die m\(:oglicherweise sp\(:ater
-in einen eigenen Abschnitt wandern, allgemeine Optionen, und ein paar
-Texte, die man anpassen kann.
+in einen eigenen Abschnitt wandern, allgemeine Optionen, TCL-Skript-Definitionen
+und ein paar Texte, die man anpassen kann.
 .TP
 .BI s5_use \ number
 Falls
@@ -155,6 +155,18 @@ als Benutzername beim SOCKS-5-Server.
 Verwende Pa\(sswort
 .I password
 beim SOCKS-5-Server.
+.PP
+TCL-Skript-Start-Definitionen:
+.TP
+.BI tcl \ <Befehl>
+F\(:uhre TCL-Befehl
+.I Befehl
+beim Starten von mICQ aus. Kann beliebig oft angegeben werden.
+.TP
+.BI tclscript \ <Datei>
+F\(:uhre ein TCL-Skript aus Datei
+.I Datei
+beim Starten von mICQ aus. Kann beliebig oft angegeben werden.
 .PP
 Einige Optionen befinden sich \(:ublicherweise am Anfang der Datei:
 .TP
