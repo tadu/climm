@@ -380,7 +380,7 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc)
         switch (enc & ~ENC_AUTO)
         {
             case ENC_UTF8:
-                if (*in == 0xfe) /* we _do_ allow 0xFE here, it's the ICQ seperator character */
+                if (*in == 0xfe) /* we _do_ allow 0xFE here, it's the ICQ separator character */
                 {
                     t = s_catf (t, &size, "\xfe");
                     continue;
@@ -469,7 +469,7 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
             t = s_catf (t, &size, "%c", *in);
             continue;
         }
-        if (*in == 0xfe) /* we _do_ allow 0xFE here, it's the ICQ seperator character */
+        if (*in == 0xfe) /* we _do_ allow 0xFE here, it's the ICQ separator character */
         {
             t = s_catf (t, &size, "\xfe");
             continue;

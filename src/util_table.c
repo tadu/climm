@@ -68,7 +68,7 @@ static const char *TableCountry[] = {
     _i18n (1256, "Denmark"),     _i18n (1257, "Diego Garcia"),                  _i18n (1258, "Djibouti"),
                                 _i18n (1259, "Dominica"),                      _i18n (1260, "Dominican Republic"),
     _i18n (1261, "Ecuador"),     _i18n (1262, "Egypt"),                         _i18n (1263, "El Salvador"),
-                                _i18n (1264, "Equitorial Guinea"),             _i18n (1265, "Eritrea"),
+                                _i18n (1264, "Equatorial Guinea"),             _i18n (1265, "Eritrea"),
     _i18n (1266, "Estonia"),     _i18n (1267, "Ethiopia"),                      _i18n (1268, "F.Y.R.O.M. (Former Yugoslavia)"),
                                 _i18n (1269, "Faeroe Islands"),                _i18n (1270, "Falkland Islands"),
     _i18n (1271, "Federated States of Micronesia"), _i18n (1272, "Fiji"),       _i18n (1273, "Finland"),
@@ -152,7 +152,7 @@ static UWORD TableCountryCodes[] = {
 
 static const char *TableOccupation[] = {
     _i18n (1200, "not entered"),
-    _i18n (1161, "Academic"),                    _i18n (1162, "Administrative"),        _i18n (1163, "Art/Entertainmant"),
+    _i18n (1161, "Academic"),                    _i18n (1162, "Administrative"),        _i18n (1163, "Art/Entertainment"),
     _i18n (1164, "College Student"),             _i18n (1165, "Computers"),             _i18n (1166, "Community & Social"),
     _i18n (1167, "Education"),                   _i18n (1168, "Engineering"),           _i18n (1169, "Financial Services"),
     _i18n (1170, "Government"),                  _i18n (1171, "High School Student"),   _i18n (1172, "Home"),

@@ -466,7 +466,7 @@ const char *s_realpath (const char *path)
 
 /*
  * s_parse* - find a parameter of given type in string.
- * input is avdanced to point after the parsed argument,
+ * input is advanced to point after the parsed argument,
  *   or to the next non-whitespace or end of string if not found.
  * parsed is cleared (0, NULL) if no suitable argument found.
  */

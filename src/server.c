@@ -132,11 +132,14 @@ void IMCliInfo (Connection *conn, Contact *cont, int group)
             ref = CmdPktCmdMetaReqInfo (conn, cont);
     }
     else
+    {
         if (conn->ver > 6)
             ref = SnacCliSearchrandom (conn, group);
         else
             ref = CmdPktCmdRandSearch (conn, group);
-    QueueEnqueueData (conn, QUEUE_REQUEST_META, ref, time (NULL) + 10, NULL, cont->uin, NULL, &CallbackMeta);
+    }
+    QueueEnqueueData (conn, QUEUE_REQUEST_META, ref, time (NULL) + 10, NULL,
+                      cont ? cont->uin : 0, NULL, &CallbackMeta);
 }
 
 static void CallbackMeta (Event *event)

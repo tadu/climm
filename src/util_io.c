@@ -160,7 +160,7 @@ void UtilIOConnectUDP (Connection *conn)
             {
                 if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
                 {
-                    M_print (i18n (1599, "[SOCKS] Authentification method incorrect"));
+                    M_print (i18n (1599, "[SOCKS] Authentication method incorrect"));
                     M_print (".\n");
                 }
                 sockclose (s5Sok);
@@ -192,7 +192,7 @@ void UtilIOConnectUDP (Connection *conn)
             {
                 if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
                 {
-                    M_print (i18n (1599, "[SOCKS] Authentification method incorrect"));
+                    M_print (i18n (1599, "[SOCKS] Authentication method incorrect"));
                     M_print (".\n");
                 }
                 sockclose (s5Sok);
@@ -534,7 +534,7 @@ static void UtilIOConnectCallback (Connection *conn)
                 rc = sockread (conn->sok, buf, 2);
                 CONN_CHECK (i18n (1601, "[SOCKS] General SOCKS server failure"));
                 if (buf[0] != 5 || !(buf[1] == 0 || (buf[1] == 2 && prG->s5Auth)))
-                    CONN_FAIL (i18n (1599, "[SOCKS] Authentification method incorrect"));
+                    CONN_FAIL (i18n (1599, "[SOCKS] Authentication method incorrect"));
 
                 conn->connect += CONNECT_SOCKS_ADD;
                 if (buf[1] == 2)

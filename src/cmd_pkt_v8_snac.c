@@ -549,7 +549,7 @@ static JUMP_SNAC_F(SnacSrvIcbmerr)
     event = QueueDequeue (event->conn, QUEUE_TYPE2_RESEND_ACK, event->pak->ref);
     if (event && event->callback)
         event->callback (event);
-    else
+    else if (err != 0xd)
         M_printf (i18n (2191, "Instant message error: %d.\n"), err);
 }
 

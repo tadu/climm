@@ -105,3 +105,42 @@ if test x$ac_cv_have_working_memmove != "xyes"; then
   AC_MSG_WARN([Replacing missing/broken memmove.])
   AC_DEFINE(PREFER_PORTABLE_MEMMOVE, 1, "enable replacement memmove if system memmove is broken or missing")
 fi])
+
+m4_define([AC_LANG_FUNC_LINK_TRY(C)],
+[AC_LANG_PROGRAM(
+[/* Define $1 to an innocuous variant, in case <limits.h> declares $1.
+   For example, HP-UX 11i <limits.h> declares gettimeofday.  */
+#define $1 innocuous_$1
+
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char $1 (); below.
+    Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
+    <limits.h> exists even on freestanding compilers.  */
+#ifdef __STDC__
+# include <limits.h>
+#else
+# include <assert.h>
+#endif
+
+#undef $1
+
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char $1 ();
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_$1) || defined (__stub___$1)
+choke me
+#else
+char (*f) () = $1;
+#endif
+#ifdef __cplusplus
+}
+#endif
+], [return f != $1;])])

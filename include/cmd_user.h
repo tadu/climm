@@ -5,7 +5,7 @@
 
 #define END_MSG_STR    "."
 #define CANCEL_MSG_STR "#"
-#define W_SEPERATOR COLMESSAGE "============================================" COLNONE "\n"
+#define W_SEPARATOR COLMESSAGE "============================================" COLNONE "\n"
 
 #define CU_DEFAULT 1
 #define CU_USER    2

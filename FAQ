@@ -101,7 +101,7 @@ A: Of course. It takes time to clean up all the mess.
     different status than before).
 
   * 0.4.9.3 and earlier: reception of web messages, sms messages and some
-    other types where a 'þ' is expected as seperator between message parts
+    other types where a 'þ' is expected as separator between message parts
     but none is given, will crash mICQ.
 
   * 0.4.9.2: request of auto messages will accidently free them, leading to

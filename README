@@ -15,7 +15,7 @@ When the Author passed away 2001-01-05, some of us users overtook the
 freaks.
 
 For some time, Rico Glöckner <rg@micq.org> maintained the code. He also set
-up the mailinglist and hosts www.micq.org.
+up the mailing list and hosts www.micq.org.
 
 Right now, Rüdiger Kuhlmann maintains the code. All code to implement the
 new v8 ICQ protocol is from him. In fact, huge parts of mICQ have been
@@ -35,7 +35,7 @@ Features of mICQ include:
    * contact groups - arrange contacts into groups
    * server side contact list
                     - download server side contact list and show, diff or import
-   * status         - set status arbitrarely
+   * status         - set status arbitrarily
    * messages       - send and receive messages and urls
    * utf-8 messages - first non-official client to support sending and receiving
                       of utf-8 encoded messages
@@ -46,7 +46,7 @@ Features of mICQ include:
                       be invisible to certain users at any time
    * ignore         - ignore certain users completely
    * chat group     - request user from interest group and set own's interest group
-   * events         - can beep or execute arbitrarely commands when other users go online,
+   * events         - can beep or execute arbitrary commands when other users go online,
                       offline or send a message.
    * remote control - can be operated from other programs via a FIFO
    * connections    - can show a users connection info and last seen online time
@@ -62,9 +62,9 @@ Features of mICQ include:
                       concise packet monitor
    * i18n           - translations include English, German, Russian, French,
                       partially Spanish, Polish, Swedish, Hungarian.
-   * transcoding    - transcode texts into arbitrarely character encodings,
+   * transcoding    - transcode texts into arbitrary character encodings,
                       in particular for Russian and Japanese users.
-   * utf-8          - can hande unicode input and output of arbitrarely
+   * utf-8          - can hande unicode input and output of arbitrary
                       single-charactercell unicode characters
    * birthday flag  - show if it is user's birthday
    * socks5         - supports connections via socks5
@@ -144,5 +144,5 @@ i) NOTE!
 
 mICQ is in a phase of being re-organized, thus things may change
 very fast. When in doubt, have a Look at http://www.micq.org/ or
-the maililng list or contact me via ICQ.
+the mailing list or contact me via ICQ.
 However, look out for announcements on Freshmeat.net.
