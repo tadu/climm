@@ -61,7 +61,7 @@ UBYTE ConvEnc (const char *enc)
         conv_encs[3].enc = strdup (ICONV_LATIN9_NAME);
         conv_encs[4].enc = strdup ("KOI8-U");
         conv_encs[5].enc = strdup ("CP1251");      /* NOT cp-1251, NOT windows* */
-        conv_encs[6].enc = strdup ("UCS-2BE");
+        conv_encs[6].enc = strdup (ICONV_UCS2BE_NAME);
         conv_encs[7].enc = strdup ("CP1257");
         conv_encs[8].enc = strdup ("EUC-JP");
         conv_encs[9].enc = strdup ("SHIFT-JIS");
@@ -74,6 +74,9 @@ UBYTE ConvEnc (const char *enc)
         enc = ICONV_LATIN1_NAME;
     if (!strcasecmp (enc, "ISO-8859-15") || !strcasecmp (enc, "ISO8859-15") || !strcasecmp (enc, "LATIN9"))
         enc = ICONV_LATIN9_NAME;
+    if (!strcasecmp (enc, "UCS-2BE") || !strcasecmp (enc, "UNICODEBIG"))
+        enc = ICONV_UCS2BE_NAME;
+
 #ifndef ENABLE_ICONV
     if (!strncasecmp (enc, "KOI8", 4))
         enc = "KOI8-U";

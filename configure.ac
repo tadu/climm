@@ -91,9 +91,18 @@ if test "x$ac_arg_use_iconv" != "xbuiltin"; then
           res = iconv_open ("KOI8-U", "UTF-8");
           if (res == (iconv_t)-1 || !res) exit (9);
           res = iconv_open ("UTF-8", "UCS-2BE");
-          if (res == (iconv_t)-1 || !res) exit (10);
-          res = iconv_open ("UCS-2BE", "UTF-8");
-          if (res == (iconv_t)-1 || !res) exit (11);
+          if (res == (iconv_t)-1 || !res)
+          {
+              res = iconv_open ("UTF-8", "UNICODEBIG");
+              if (res == (iconv_t)-1 || !res) exit (10);
+              res = iconv_open ("UNICODEBIG", "UTF-8");
+              if (res == (iconv_t)-1 || !res) exit (11);
+          }
+          else
+          {
+              res = iconv_open ("UCS-2BE", "UTF-8");
+              if (res == (iconv_t)-1 || !res) exit (12);
+          }
           exit (0);]])],
       [ac_cv_iconv_min=ok],
       [ac_cv_iconv_min=broken],
@@ -144,12 +153,25 @@ if test "x$ac_arg_use_iconv" != "xbuiltin"; then
         [ac_cv_iconv_latin9_name=cannothappen])
     ])
     AC_DEFINE_UNQUOTED([ICONV_LATIN9_NAME], ["$ac_cv_iconv_latin9_name"], [the name of the latin9 encoding])
+    AC_CACHE_CHECK(for iconv name of ucs-2be encoding, ac_cv_iconv_ucs2be_name,
+      [AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
+            #include <iconv.h>]],
+          [[iconv_t res;
+            res = iconv_open ("UTF-8", "UCS-2BE");
+            if (res == (iconv_t)-1 || !res) exit (1);
+            exit (0);]])],
+        [ac_cv_iconv_ucs2be_name=UCS-2BE],
+        [ac_cv_iconv_ucs2be_name=UNICODEBIG],
+        [ac_cv_iconv_ucs2be_name=cannothappen])
+    ])
+    AC_DEFINE_UNQUOTED([ICONV_UCS2BE_NAME], ["$ac_cv_iconv_ucs2be_name"], [the name of the ucs-2be encoding])
   fi
 fi
 
 if test "x$ac_arg_use_iconv" = "buildin"; then
   AC_DEFINE([ICONV_LATIN1_NAME], ["ISO-8859-1"])
   AC_DEFINE([ICONV_LATIN9_NAME], ["ISO-8859-15"])
+  AC_DEFINE([ICONV_UCS2BE_NAME], ["UCS-2BE"])
 fi
 
 if test "x$ac_arg_use_remote" != "xno"; then
