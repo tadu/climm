@@ -466,7 +466,10 @@ static void rl_goto (UDWORD pos)
     }
     if (!((rl_prompt_len + rl_colpos) % rl_columns))
     {
-        s_catn (&rl_operate, rl_display.txt + rl_bytepos, rl_ucsbytes.txt[rl_ucspos]);
+        if (rl_ucspos < rl_ucscol.len)
+            s_catn (&rl_operate, rl_display.txt + rl_bytepos, rl_ucsbytes.txt[rl_ucspos]);
+        else
+            s_catc (&rl_operate, ' ');
         s_catc (&rl_operate, '\r');
     }
     assert (rl_colpos == pos);
