@@ -71,12 +71,29 @@ static Cap caps[CAP_MAX] =
     { CAP_TRILL_CRYPT, 16, "\xf2\xe7\xc7\xf4\xfe\xad\x4d\xfb\xb2\x35\x36\x79\x8b\xdf\x00\x00", "CAP_TRILL_CRYPT", NULL },
     { CAP_TRILL_2,     16, "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x09", "CAP_TRILL_2",     NULL },
     { CAP_LICQ,        16, "\x09\x49\x13\x49" cap_mid cap_id,   "CAP_LICQ",        NULL },
+    { CAP_LICQNEW,     12, "Licq client \x00\x00\x00\x00",      "CAP_LICQNEW",     NULL },
     { CAP_SIM,         15, "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x48", "CAP_SIM",         NULL },
     { CAP_SIMNEW,      12, "SIM client  \x00\x00\x00\x00",      "CAP_SIMNEW",      NULL },
     { CAP_MACICQ,      16, "\xdd\x16\xf2\x02\x84\xe6\x11\xd4\x90\xdb\x00\x10\x4b\x9b\x4b\x7d", "CAP_MACICQ",      NULL },
     { CAP_MICQ,        12, "mICQ \xa9 R.K. \x00\x00\x00\x00",   "CAP_MICQ",        NULL },
     { CAP_KXICQ,       16, "\x09\x49\x13\x44" cap_mid cap_id,   "CAP_KXICQ",       NULL },
     { CAP_KOPETE,      12, "Kopete ICQ  \x00\x00\x00\x00",      "CAP_KOPETE",      NULL },
+    { CAP_IMSECURE,    12, "IMsecureCphr\x00\x00\x00\x00",      "CAP_IMSECURE",    NULL },
+    { CAP_ARQ,          9, "&RQinside\x00\x00\x00\x00\x00\x00\x00", "CAP_ARQ",     NULL },
+    { CAP_UTF8ii,      16, cap_aim "\x4e" cap_mid "\x82\x22\x44\x45\x53\x54ii", "CAP_UTF8ii", NULL },
+    { CAP_AIM_INTER,   16, cap_aim "\x4c" cap_mid cap_id,       "CAP_AIM_INTER",   NULL },
+    { CAP_WIERD1,      16, "\x17\x8c\x2d\x9b\xda\xa5\x45\xbb\x8d\xdb\xf3\xbd\xbd\x53\xa1\x0a", "CAP_WIERD1", NULL },
+    { CAP_WIERD2,      16, "\x1a\x09\x3c\x6c\xd7\xfd\x4e\xc5\x9d\x51\xa6\x47\x4e\x34\xf5\xa0", "CAP_WIERD2", NULL },
+    { CAP_11,          16, "\x01\x01\x01\x01\x01\x01\x19\x04\x4a\x16\xed\x79\x2c\xb1\x71\x01", "CAP_11", NULL },
+    { CAP_12,          16, "\x02\x02\x02\x02\x02\x02\xb3\xf8\x53\x44\x7f\x0d\x2d\x83\xbd\x76", "CAP_12", NULL },  
+    
+    
+    /* CAP_UNK_37: 01 01 01 01 01 01 19 04  4a 16 ed 79 2c b1 71 01  "........ J.íy,±q." IMsecure?
+    // CAP_UNK_38: 02 02 02 02 02 02 b3 f8  53 44 7f 0d 2d 83 bd 76  "......³ø SD..-.½v" IMsecure?
+    // CAP_UNK_28: 17 8c 2d 9b da a5 45 bb  8d db f3 bd bd 53 a1 0a  "..-.Ú¥E» .Ûó½½S¡."
+    // CAP_UNK_29: 1a 09 3c 6c d7 fd 4e c5  9d 51 a6 47 4e 34 f5 a0  "..<l×ýNÅ .Q¦GN4õ "
+    */
+
     { 0, 0, NULL, NULL, NULL }
 };
 

@@ -28,34 +28,16 @@ struct Cap_s
     char *var;
 };
 
-#define CAP_NONE        0
-#define CAP_AIM_VOICE   1
-#define CAP_AIM_SFILE   2
-#define CAP_ISICQ       3
-#define CAP_AIM_IMIMAGE 4
-#define CAP_AIM_BUDICON 5
-#define CAP_AIM_STOCKS  6
-#define CAP_AIM_GETFILE 7
-#define CAP_SRVRELAY    8
-#define CAP_AIM_GAMES   9
-#define CAP_AIM_SBUD    10
-#define CAP_UTF8        11
-#define CAP_RTFMSGS     12
-#define CAP_IS_2001     13
-#define CAP_STR_2001    14
-#define CAP_STR_2002    15
-#define CAP_AIM_CHAT    16
-#define CAP_IS_WEB      17
-#define CAP_TRILL_CRYPT 18
-#define CAP_TRILL_2     19
-#define CAP_LICQ        20
-#define CAP_SIM         21
-#define CAP_SIMNEW      22
-#define CAP_MACICQ      23
-#define CAP_MICQ        24
-#define CAP_KXICQ       25
-#define CAP_KOPETE      26
-#define CAP_MAX         63
+typedef enum {
+  CAP_NONE = 0, CAP_AIM_VOICE, CAP_AIM_SFILE, CAP_ISICQ, CAP_AIM_IMIMAGE,
+  CAP_AIM_BUDICON, CAP_AIM_STOCKS, CAP_AIM_GETFILE, CAP_SRVRELAY, CAP_AIM_GAMES,
+  CAP_AIM_SBUD, CAP_UTF8, CAP_RTFMSGS, CAP_IS_2001, CAP_STR_2001,
+  CAP_STR_2002, CAP_AIM_CHAT, CAP_IS_WEB,
+  CAP_TRILL_CRYPT, CAP_TRILL_2, CAP_LICQ, CAP_LICQNEW, CAP_SIM, CAP_SIMNEW,
+  CAP_MACICQ, CAP_MICQ, CAP_KXICQ, CAP_KOPETE,
+  CAP_IMSECURE, CAP_ARQ, CAP_UTF8ii, CAP_AIM_INTER, CAP_WIERD1, CAP_WIERD2, CAP_11, CAP_12,
+  CAP_MAX = 63
+} cap_id_t;
 
 #define CAP_GID_UTF8    "{0946134E-4C7F-11D1-8222-444553540000}"
 
