@@ -60,10 +60,12 @@ void i18nInit (const char *arg)
 
     if (!arg || !*arg || !strcasecmp (arg, "C") || !strcasecmp (arg, "POSIX"))
         arg = NULL;
+    prG->locale_broken = FALSE;
 
 #if HAVE_SETLOCALE && defined(LC_MESSAGES)
     if (!setlocale (LC_ALL, arg ? arg : ""))
-        prG->locale_broken = TRUE;
+        if (!arg || strcmp (arg, "en_US.US-ASCII") || !setlocale (LC_ALL, "C"))
+            prG->locale_broken = TRUE;
     if (!arg)
     {
         arg = setlocale (LC_MESSAGES, NULL);
