@@ -25,7 +25,7 @@
 #define TCP_AUTO_RESPONSE_MASK  0x03E0
 #define TCP_CMD_CANCEL          2000
 #define TCP_CMD_ACK             2010
-#define TCP_CMD_MESSAGE         2020
+#define TCP_CMD_MESSAGE         2030
 
 /* Message types */
 #define TCP_MSG_AUTO            0x0000
