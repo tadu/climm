@@ -155,6 +155,7 @@ static UDWORD rl_tab_common = 0; /* number of given codepoints */
 static str_s  rl_colon      = { NULL, 0, 0 };
 static str_s  rl_coloff     = { NULL, 0, 0 };
 static const Contact *rl_tab_cont = NULL;
+static const ContactAlias *rl_tab_alias = NULL;
 
 static str_s  rl_prompt   = { NULL, 0, 0 };
 static UWORD  rl_prompt_len = 0;
@@ -847,6 +848,7 @@ static const Contact *rl_tab_getnext (strc_t common)
     const Contact *cont;
     
     rl_tab_state &= ~8;
+    rl_tab_alias = NULL;
     while (1)
     {
         switch (rl_tab_state & 7)
@@ -865,16 +867,27 @@ static const Contact *rl_tab_getnext (strc_t common)
                 rl_tab_state++;
             case 3:
                 while ((cont = ContactIndex (NULL, rl_tab_index++)))
-                    if (!strncasecmp (cont->nick, common->txt, common->len)
-                        && cont->status != STATUS_OFFLINE && !TabHas (cont))
-                        return cont;
+                    if (cont->status != STATUS_OFFLINE && !TabHas (cont))
+                    {
+                        if (!strncasecmp (cont->nick, common->txt, common->len))
+                            return cont;
+                        for (rl_tab_alias = cont->alias; rl_tab_alias; rl_tab_alias = rl_tab_alias->more)
+                            if (!strncasecmp (rl_tab_alias->alias, common->txt, common->len))
+                                return cont;
+                    }
+                
                 rl_tab_index = 0;
                 rl_tab_state++;
             case 4:
                 while ((cont = ContactIndex (NULL, rl_tab_index++)))
-                    if (!strncasecmp (cont->nick, common->txt, common->len)
-                        && cont->status == STATUS_OFFLINE && !TabHas (cont))
-                        return cont;
+                    if (cont->status == STATUS_OFFLINE && !TabHas (cont))
+                    {
+                        if (!strncasecmp (cont->nick, common->txt, common->len))
+                            return cont;
+                        for (rl_tab_alias = cont->alias; rl_tab_alias; rl_tab_alias = rl_tab_alias->more)
+                            if (!strncasecmp (rl_tab_alias->alias, common->txt, common->len))
+                                return cont;
+                    }
                 if (rl_tab_state & 8)
                     return NULL;
                 rl_tab_index = 0;
@@ -894,6 +907,7 @@ static const Contact *rl_tab_getprev (strc_t common)
     
     rl_tab_index--;
     rl_tab_state &= ~8;
+    rl_tab_alias = NULL;
     while (1)
     {
         switch (rl_tab_state & 7)
@@ -922,11 +936,15 @@ static const Contact *rl_tab_getprev (strc_t common)
                     rl_tab_index++;
             case 3:
                 while (rl_tab_index && (cont = ContactIndex (NULL, --rl_tab_index)))
-                    if (!strncasecmp (cont->nick, common->txt, common->len)
-                        && cont->status != STATUS_OFFLINE && !TabHas (cont))
+                    if (cont->status != STATUS_OFFLINE && !TabHas (cont))
                     {
                         rl_tab_index++;
-                        return cont;
+                        if (!strncasecmp (cont->nick, common->txt, common->len))
+                            return cont;
+                        for (rl_tab_alias = cont->alias; rl_tab_alias; rl_tab_alias = rl_tab_alias->more)
+                            if (!strncasecmp (rl_tab_alias->alias, common->txt, common->len))
+                                return cont;
+                        rl_tab_index--;
                     }
                 rl_tab_index = 0;
                 rl_tab_state++;
@@ -934,11 +952,15 @@ static const Contact *rl_tab_getprev (strc_t common)
                     rl_tab_index++;
             case 4:
                 while (rl_tab_index && (cont = ContactIndex (NULL, --rl_tab_index)))
-                    if (!strncasecmp (cont->nick, common->txt, common->len)
-                        && cont->status == STATUS_OFFLINE && !TabHas (cont))
+                    if (cont->status == STATUS_OFFLINE && !TabHas (cont))
                     {
                         rl_tab_index++;
-                        return cont;
+                        if (!strncasecmp (cont->nick, common->txt, common->len))
+                            return cont;
+                        for (rl_tab_alias = cont->alias; rl_tab_alias; rl_tab_alias = rl_tab_alias->more)
+                            if (!strncasecmp (rl_tab_alias->alias, common->txt, common->len))
+                                return cont;
+                        rl_tab_index--;
                     }
                 if (rl_tab_state & 8)
                     return NULL;
@@ -967,7 +989,7 @@ static void rl_tab_accept (void)
     rl_left (rl_tab_common);
     for ( ; rl_tab_len; rl_tab_len--)
         rl_delete ();
-    str.txt = rl_tab_cont->nick;
+    str.txt = rl_tab_alias ? rl_tab_alias->alias : rl_tab_cont->nick;
     str.len = strlen (str.txt);
     for (off = 0; off < str.len; )
     {
@@ -994,7 +1016,7 @@ static void rl_tab_cancel (void)
     rl_left (rl_tab_common);
     for ( ; rl_tab_len; rl_tab_len--)
         rl_delete ();
-    str.txt = rl_tab_cont->nick;
+    str.txt = rl_tab_alias ? rl_tab_alias->alias : rl_tab_cont->nick;
     str.len = strlen (str.txt);
     for (off = i = 0; off < str.len && i < rl_tab_common; i++)
     {
@@ -1011,10 +1033,10 @@ static void rl_tab_cancel (void)
  */
 static void rl_key_tab (void)
 {
-    str_s inss = { NULL, 0, 0 };
+    str_s str = { NULL, 0, 0 };
     strc_t ins;
     const char *display;
-    UDWORD i;
+    int i, off;
     UWORD columns;
 
     if (!rl_tab_state)
@@ -1071,19 +1093,18 @@ static void rl_key_tab (void)
         rl_recheck (TRUE);
         return;
     }
-    ins = ConvTo (rl_tab_cont->nick, ENC_UCS2BE);
-    s_init (&inss, "", 0);
-    s_catn (&inss, ins->txt, ins->len);
-    for (i = 0; i < inss.len / 2; i++)
+
+    str.txt = rl_tab_alias ? rl_tab_alias->alias : rl_tab_cont->nick;
+    str.len = strlen (str.txt);
+    for (off = 0; off < str.len; )
     {
-        UWORD ucs = rl_ucs_at (&inss, i);
+        wint_tt ucs = ConvGetUTF8 (&str, &off);
         rl_analyze_ucs (ucs, &display, &columns);
         rl_insert_basic (ucs, s_sprintf ("%s%s%s", rl_colon.txt, display, rl_coloff.txt),
                          strlen (display) + rl_colon.len + rl_coloff.len, columns);
         rl_tab_len++;
     }
     rl_left (rl_tab_len - rl_tab_common);
-    s_done (&inss);
     rl_recheck (TRUE);
 }
 
@@ -1092,10 +1113,9 @@ static void rl_key_tab (void)
  */
 static void rl_key_shifttab (void)
 {
-    str_s inss = { NULL, 0, 0 };
-    strc_t ins;
+    str_s str = { NULL, 0, 0 };
     const char *display;
-    UDWORD i;
+    int off;
     UWORD columns;
 
     if (!rl_tab_state)
@@ -1117,19 +1137,18 @@ static void rl_key_shifttab (void)
         rl_recheck (TRUE);
         return;
     }
-    ins = ConvTo (rl_tab_cont->nick, ENC_UCS2BE);
-    s_init (&inss, "", 0);
-    s_catn (&inss, ins->txt, ins->len);
-    for (i = 0; i < inss.len / 2; i++)
+
+    str.txt = rl_tab_alias ? rl_tab_alias->alias : rl_tab_cont->nick;
+    str.len = strlen (str.txt);
+    for (off = 0; off < str.len; )
     {
-        UWORD ucs = rl_ucs_at (&inss, i);
+        wint_tt ucs = ConvGetUTF8 (&str, &off);
         rl_analyze_ucs (ucs, &display, &columns);
         rl_insert_basic (ucs, s_sprintf ("%s%s%s", rl_colon.txt, display, rl_coloff.txt),
                          strlen (display) + rl_colon.len + rl_coloff.len, columns);
         rl_tab_len++;
     }
     rl_left (rl_tab_len - rl_tab_common);
-    s_done (&inss);
     rl_recheck (TRUE);
 }
 
