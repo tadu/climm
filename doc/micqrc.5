@@ -1,265 +1,307 @@
 .\" $Id$
 .\"This is the man page for ~/.micqrc."
-.Dd February 15, 2002
-.Dt MICQRC 5
-.Os MICQRC(5)
-.\".TH micqrc 5 "February 15, 2002"
-.Sh NAME
-.Ic ~/.micq/micqrc
+.TH MICQRC 5 mICQ
+.SH NAME
+.B ~/.micq/micqrc
 \- The configuration file for micq
-.Sh DESCRIPTION
+.SH DESCRIPTION
 This manual page describes the configuration file for micq. It consists
 of several sections that are started by
-.Ic [section] ,
+.IR [section] ,
 where
-.Ic section
+.I section
 is the name of the section.
-.Sh CONNECTIONS
+.SH CONNECTIONS
 A
-.Ic Connection
+.B Connection
 section describes a connection within ICQ. Typically, there are two of them,
 that are related to each other: a connection to the ICQ server, and a
 connection to listen to peer to peer communication.
-.Bl -tag -width Fl
-.It Ic type Ar type Op Ar auto
+.TP
+.BI type \ type\ [auto]
 Set the connection type to
-.Ar type ,
+.IR type ,
 which can be
-.Ic server
+.B server
 for a connection to the ICQ server, or
-.Ic peer
+.B peer
 for a connection listening to peer to peer communication. If
-.Ar auto
+.I auto
 is given, create this connection on startup. You presumable want to do this,
 unless you have several UINs, then set this on the connection corresponding
 to this UIN you are using.
-.It Ic version Ar nr
+.TP
+.BI version \ nr
 Set the version of the protocol used for this connection to
-.Ar nr .
-Please note that for server connections, only version
-.Ic 5
-is supported, though
-.Ic 8
-is planned, and for peer to peer connections only
-.Ic 6 .
-.It Ic server Ar server
+.IR nr .
+Please note that for a server connections, versions
+.BR 5 ,
+.B 7
+and
+.B 8
+are supported, and for peer to peer connections
+.BR 6 ,
+.B 7
+and
+.BR 8 .
+.TP
+.BI server \ server
 Set the server to connect to to
-.Ar server .
+.IR server .
 This defaults to
-.Ic icq.icq.com .
+.IR login.icq.com .
 Unused for peer to peer connections.
-.It Ic port Ar port
+.TP
+.BI port \ port
 Set the port to connect on the server to
-.Ar port ,
+.IR port ,
 or the port to listen on for peer to peer connections to
-.Ar port.
-.It Ic uin Ar UIN
+.IR port .
+.TP
+.BI uin \ UIN
 Set the UIN to log in with to
-.Ar UIN .
+.IR UIN .
 Unused for peer to peer connections.
-.It Ic password Op Ar password
+.TP
+.BI password \ [password]
 Se the password to log in with to
-.Ar password .
+.IR password .
 Unused for peer to peer connections. If omitted, ask for password on startup.
-.It Ic status Ar nr
+Note: BeOS users may not omit the password.
+.TP
+.BI status \ nr
 Set the status to be on log in in to
-.Ar nr .
+.IR nr .
 Status can be:
-.br
-0   online
-.br
-1   away
-.br
-5   not available
-.br
-17  occupied
-.br
-19  do not disturb
-.br
-32  free for chat
-.br
-256 invisible
-.El
-.Sh GENERAL
-This section includes the options for SOCKS 5, that may be eventually
+.RS
+.TP
+0
+online
+.TP
+1
+away
+.TP
+5
+not available
+.TP
+17
+occupied
+.TP
+19
+do not disturb
+.TP
+32
+free for chat
+.TP
+256
+invisible
+.RE
+.SH GENERAL
+The
+.B General
+section includes the options for SOCKS 5, that may be eventually
 moved to their own section, general options, and some strings to override.
-.Bl -tag -width Fl
-.It Ic s5_use Ar number
+.TP
+.BI s5_use \ number
 Set
-.Ar number
+.I number
 to 0 to disable and 1 to enable.
-.It Ic s5_host Ar host
+.TP
+.BI s5_host \ host
 Connect to socks 5 proxy on host
-.Ar host .
-.It Ic s5_port Ar port
+.IR host .
+.TP
+.BI s5_port \ port
 Connect to socks 5 proxy listening on port
-.Ar port .
-.It Ic s5_auth Ar number
+.IR port .
+.TP
+.BI s5_auth \ number
 Set
-.Ar number
+.I number
 to 0 to omit authentification and 1 to do authentification.
-.It Ic s5_name Ar name
+.TP
+.BI s5_name \ name
 Identify as user
-.Ar name
+.I name
 to socks 5 proxy.
-.br
-.It Ic s5_pass Ar password
+.TP
+.BI s5_pass \ password
 Authenticate with password
-.Ar password
+.I password
 to socks 5 proxy.
-.El
-.sp
+.PP
 Now the options:
-.Bl -tag -width Fl
-.It Ic verbose Ar level
+.TP
+.BI verbose \ level
 Set the verbosity level on startup to
-.Ar level .
-.It Ic auto_away Ar time
+.IR level .
+.TP
+.BI auto_away \ time
 Set the time to set status to away after to
-.Ar time
+.I time
 seconds. Set to
-.Ic 0
+.I 0
 to disable.
-.It Ic Screen_width Ar width
+.TP
+.BI Screen_width \ width
 Set the default screen with to
-.Ar width .
+.IR width .
 If unset or
-.Ic 0 , 80
+.IR 0 , \ 80
 will be used. This is rarely needed as usually
 the current screen width can be deduced on runtime.
-.It Ic set delbs Ar on|off
+.TP
+.BI set \ delbs\ on|off
 If set to
-.Ar on ,
+.BR on ,
 let the delete character act as a backspace. When
-.Ar off ,
+.BR off ,
 let it act as a delete character.
-.It Ic set russian Ar on|off
+.TP
+.BI set \ russian\ on|off
 Disable or enable Russian character conversion between koi8-r/u and cp1251.
-.It Ic set japanese Ar on|off
+.TP
+.BI set \ japanese\ on|off
 Disable or enable Japanese character conversion between Shift-JIS and EUC.
-.It Ic set funny Ar on|off
+.TP
+.BI set \ funny\ on|off
 Disable or enable "funny" messages.
-.It Ic set color Ar on|off
+.TP
+.BI set \ color\ on|off
 Disable or enable the use of colors.
-.It Ic set hermit Ar on|off
+.TP
+.BI set \ hermit\ on|off
 If set to
-.Ar on ,
+.BR on ,
 ignore all messages from everyone not on your contact list.
-.It Ic set log Ar on|off
+.TP
+.BI set \ log\ on|off
 Disable or enable logging.
-.It Ic set logonoff Ar on|off
+.TP
+.BI set \ logonoff\ on|off
 Whenn logging, disable or enable the logging of online/offline status changes.
-.It Ic set auto Ar on|off
+.TP
+.BI set \ auto\ on|off
 Disable or enable automatic responses (reply messages).
-.It Ic set uinprompt Ar on|off
+.TP
+.BI set \ uinprompt\ on|off
 Disable or enable the use of the nick you last received a message from in the prompt.
-.It Ic set linebreak Ar type
+.TP
+.BI set \ linebreak\ type
 The the line break type for incoming messages to
-.Ar type ,
+.IR type ,
 which can be
-.Ic simple
+.B simple
 to just wrap lines as usual,
-.Ic break
+.B break
 to have a line break before each message,
-.Ic indent
+.B indent
 to have a line break and indent the message and
-.Ic smart
+.B smart
 to have a line break only if the message doesn't fit on the current line.
-.It Ic set tabs simple|cycle|cycleall
+.TP
+.BI set \ tabs\ simple|cycle|cycleall
 Selects the style of tab cycling. Older versions of mICQ only knew
-.Ic simple ,
+.BR simple ,
 which would only work with the
-.Ic msg
+.B msg
 command and would complete the command and cycle through all contacts that
 messages had been sent to or received from. Already typed text after the
 nick name was lost.
-.Ic cycle
+.B cycle
 however cycles through all online contacts on your contact list. It keeps all
 other input text intact, however it also doesn't add the default
-.Ic msg
+.B msg
 command.
-.Ic cycleall
+.B cycleall
 is like
-.Ic cycle ,
+.BR cycle ,
 it just cycles through all, and not only online, contacts.
-.El
-.sp
+.PP
 At last, some strings can be defined:
-.Bl -tag -width Fl
-.It Ic logplace Ar file|dir
+.TP
+.BI logplace \ file|dir
 Set the file to log into to
-.Ar file ,
+.IR file ,
 or the directory to log into to
-.Ar dir .
+.IR dir .
 Please note that a path is assumed to be a directory if it has a trailing
-.Ic / .
-.It Ic sound Ar on|off|cmd
+.IR / .
+.TP
+.BI sound \ on|off|cmd
 Disable or enable beeping. If the argument is neither
-.Ar on
+.B on
 nor
-.Ar off,
+.BR off ,
 it is assumed to be a program to execute instead of beeping.
-.It Ic soundonline Ar on|off|cmd
+.TP
+.BI soundonline \ on|off|cmd
 The same as above for users coming online.
-.It Ic soundoffline Ar on|off|cmd
+.TP
+.BI soundoffline \ on|off|cmd
 The same as above for users going offline.
-.It Ic receivescript Ar cmd
+.TP
+.BI receivescript \ cmd
 The command to execute for incoming messages. Leave blank to do nothing.
-.It Ic auto Ar status Ar string
+.TP
+.BI auto \ status\ string
 Set the automatic reply in status
-.Ar status
+.I status
 to
-.Ar string .
+.IR string .
 This option may be repeated for all possible values
-.Ic away ,
-.Ic na ,
-.Ic dnd ,
-.Ic occ ,
-.Ic inv ,
+.BR away ,
+.BR na ,
+.BR dnd ,
+.BR occ ,
+.BR inv ,
 and
-.Ic ffc
+.B ffc
 for
-.Ar status .
-.El
+.IR status .
 
-.Sh STRINGS
-This sections contains command renames.
-.Bl -tag -width Fl
-.It Ic alter Ar old Ar new
+.SH STRINGS
+The
+.B Strings
+section contains command renames.
+.TP
+.BI alter \ old\ new
 Rename command
-.Ar old
+.I old
 to
-.Ar new .
+.IR new .
 Note the old name may still be used, unless it conflicts with some
-.Ar new
+.I new
 name.
 For posible command names, see
-.Xr micq 7 .
+.BR micq (7).
 This option may be repeated as desired.
-.El
-.Sh CONTACTS
-This section contains the contact list.
-.Bl -tag -width Fl
-.It Ic [ Ar * ] [ Ar ~ ] [ Ar ^ ] Ar uin Ar nick
+
+.SH CONTACTS
+The
+.B Contacts
+section contains the contact list.
+.TP
+.I [*][~][^] uin nick
 Make user with UIN
-.Ar uin
+.I uin
 known under the nick
-.Ar nick .
+.IR nick .
 If
-.Ar *
+.B *
 is given, the user may see you while you're invisible. If
-.Ar ~
+.B ~
 is given, let him see you as always offline. If
-.Ar ^
+.B ^
 is given, ignore this user.
 If a uin occurs multiple times, all except the first are treated as aliases.
-.El
+
 Note: the contact list has to be the last part of this file.
-.Sh SEE ALSO
-.Xr micq 1 ,
-.Xr micq 7
-.Sh AUTHOR
+.SH SEE ALSO
+.BR micq (1),
+.BR micq (7)
+.SH AUTHOR
 This man page was written by James Morrison
-.Pa <ja2morrison@student.math.uwaterloo.ca> .
+.IR <ja2morrison@student.math.uwaterloo.ca> .
 It was rewritten to match new config file syntax by Rüdiger Kuhlmann
-.Pa <micq@ruediger-kuhlmann.de> .
+.IR <micq@ruediger-kuhlmann.de> .

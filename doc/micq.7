@@ -1,41 +1,38 @@
 .\" $Id$
 .\"This is the man page for ~/.micq/micqrc."
-.\".TH MICQ 7 "February 15, 2002" "MICQ(7)"
-.Dd February 15, 2002
-.Dt MICQ 7
-.Os MICQ(7)
-.Sh NAME
-micq interactive commands
-.Sh DESCRIPTION
+.TH MICQ 7 mICQ
+.SH NAME
+mICQ - interactive commands
+.SH DESCRIPTION
 This manual page describes the commands that can be used within micq.  This
 page holds the same information as the online help.
-.Sh COMMANDS
-.Bl -tag -width Fl
-.It Ic trans Op Ar lang|nr ...
+.SH COMMANDS
+.TP
+.BI trans \ [lang|nr\ ...]
 Switch to the language 
-.Ar lang ,
+.IR lang ,
 given by iso code, or output translation string number
-.Ar nr .
+.IR nr .
 To select the default language given by the environment
 variables
-.Ic LANG ,
-.Ic LC_ALL
+.BR LANG ,
+.B LC_ALL
 and
-.Ic LC_MESSAGES ,
+.BR LC_MESSAGES ,
 use
-.Ic \&! ,
-.Ic auto
+.BR ! ,
+.B auto
 or
-.Ic default .
+.BR default .
 To select no translation at all, use
-.Ic \&. ,
-.Ic none
+.BR . ,
+.B none
 or
-.Ic unload .
+.BR unload .
 To get debugging information, prefix it with
-.Ic debug .
+.BR debug .
 To get funny messages, postfix it with
-.Ic _fun .
+.BR _fun .
 .sp
 The files from ~/.micq/i18n/*.i18n take precedence over the global
 ones, while the "funny" ones take precedence over the standard ones.
@@ -43,297 +40,361 @@ ones, while the "funny" ones take precedence over the standard ones.
 Actually you may specify as many arguments as you wish, e.g. to print
 string number 117 in German and then switch back to default language,
 use "trans de 117 default".
-.It Ic tabs 
+.TP
+.B tabs 
 Shows of a list of users you can tab through.
-.It Ic save
+.TP
+.B save
 Saves current settings in the configuration file, which is
-.Pa ~/.micq/micqrc ,
+.IR ~/.micq/micqrc ,
 unless specified otherwise.
 Beware, it will clobber any comments in this file.
-.It Ic r Op Ar message
+.TP
+.BI r \ [message]
 Reply to last message received.  Without
-.Ar message
+.I message
 multi-line message mode is enabled.  To send the multi-line message, put
 a period
-.Ic ( . )
+.RB ( . )
 on a line of its own.  To cancel the message, put a hash sign
-.Ic ( # )
+.RB ( # )
 on a line of its own.
-.It Ic a Op Ar message
+.TP
+.BI a \ [message]
 Send a message to the last person you sent a message to.  See
-.Ic r
+.B r
 for behaviour without
-.Ar message .
-.It Ic msg Ar uin|nickname Ic Op Ar message
+.IR message .
+.TP
+.BI msg \ uin|nickname\ [message]
 Send a message to
-.Ar uin|nickname .
+.IR uin|nickname .
 See
-.Ic r 
+.B r 
 for behaviour without
-.Ar message .
-.It Ic url Ar uin|nickname Ic Ar url Ar message
+.IR message .
+.TP
+.BI url \ uin|nickname\ url\ message
 Send a
-.Ar message
+.I message
 regarding an
-.Ar url
+.I url
 to
-.Ar uin|nickname .
-.It Ic sms Ar cell message
+.IR uin|nickname .
+.TP
+.BI sms \ cell\ message
 Send an SMS message
-.Ar message
+.I message
 to cell phone number
-.Ar cell ,
+.IR cell ,
 which looks like +<country code><number>.
-.It Ic msga
+.TP
+.B msga
 Send a multiple line message to everyone on your list.  Use a period
-.Ic ( . )
+.RI ( . )
 on a line of its own to send the message, or a hash sign
-.Ic ( # )
+.RI ( # )
 on a line of its own to cancel the message.
-.It Ic resend Ar uin|nickname ...
+.TP
+.BI resend \ uin|nickname \fR...
 Resend the last message to the new
-.Ar uin
+.I uin
 or
-.Ar nickname .
+.IR nickname .
 The argument may be repeated as often as needed.
-.It Ic uptime
-Show the time micq has been running.
-.It Ic last Op Ar contact
+.TP
+.B uptime
+Show the time mICQ has been running, plus some statistics.
+.TP
+.BI last \ [contact]
 Show a list of users who have sent you messages or the last message
 received from
-.Ar contact ,
+.IR contact ,
 which can be a
-.Ar uin
+.I uin
 or a
-.Ar nickname .
-.It Ic verbose Op Ar verb
-Set verbosity of micq to
-.Ar verb ,
+.IR nickname .
+.TP
+.BI verbose \ [verb]
+Set verbosity of mICQ to
+.IR verb ,
 or show the current verbosity. The verbosity level is a set of flags:
-.Bl -tag -width Fl
-.It 128
+.RS
+.TP
+.B 128
 Dump incoming and outgoing packets.
-.It 256
+.TP
+.B 256
 Write incoming and outgoing server packets to disc (~/.micq/debug/packets).
-.El
+.RE
+
+.RS
 And some more.
-.It Ic clear
+.RE
+.TP
+.B clear
 Clear the screen.
-.It Ic sound Op Ar command
+.TP
+.BI sound \ [command]
 Toggle sound on or off, or set to
-.Ar command .
-.It Ic soundonline Op Ar command
+.IR command .
+.TP
+.BI soundonline \ [command]
 Toggle sound for users coming online on or off, or set to
-.Ar command .
-.It Ic soundoffline Op Ar command
+.IR command .
+.TP
+.BI soundoffline \ [command]
 Toggle sound for users going offline on or off, or set to
-.Ar command .
-.It Ic q
-Quit micq.
-.It Ic auto Op Ar on|off
+.IR command .
+.TP
+.B q
+Quit mICQ.
+.TP
+.BI auto \ [on|off]
 Turn auto reply messages on or off. If neither on or off is given
 the auto reply messages are displayed.
-.It Ic auto Ar status message
+.TP
+.BI auto \ status\ message
 Change auto reply message for status
-.Ar status
+.I status
 to
-.Ar message .
-.It Ic autoaway Op Ar timeout|on|off
+.IR message .
+.TP
+.BI autoaway \ [timeout|on|off]
 Set the timeout to
-.Ar timeout ,
+.IR timeout ,
 or switch auto away
-.Ar on
+.I on
 using the last used or default auto away time, or switch auto away
-.Ar off
+.I off
 saving the current used auto away time. A timeout of 0 is equivalent to
-.Ar off .
+.IR off .
 If no argument is given, the current setting is displayed.
-.It Ic alter Ar command new
+.TP
+.BI alter \ command\ new
 Make command initially or previously known as
-.Ar command
+.I command
 from now on known as
-.Ar new .
-.It Ic auth Ar uin|nickname
+.IR new .
+.TP
+.BI auth \ uin|nickname
 Allow
-.Ar uin|nickname
+.I uin|nickname
 to add you to their list.
-.It Ic rand Ar number
+.TP
+.BI rand \ number
 Find a random user in interest group
-.Ar number .
-.It Ic pass Ar password
+.IR number .
+.TP
+.BI pass \ password
 Changes your icq password to
-.Ar password . 
+.IR password . 
 .br
 Note: you need to
-.Ar save
+.B save
 to make this persistent in case you save your password in your
-.Pa ~/.micq/micqrc
+.I ~/.micq/micqrc
 file (see
-.Xr micqrc 7 ) ,
+.BR micqrc (7)),
 or you will get a mismatched password
 on your next login.
-.It Ic search
-.It Ic search Ar email
-.It Ic search Ar nick
-.It Ic search Ar first last
+.TP
+.B search
+.TP
+.BI search \ email
+.TP
+.BI search \ nick
+.TP
+.BI search \ first\ last
 Search for a user with
-.Ar email
+.I email
 as their email address, with
-.Ar nick
-as their nick (which can't contain an @), or with
-.Ar first
+.I nick
+as their nick (which mustn't contain an @), or with
+.I first
 as their first and
-.Ar last
+.I last
 as their last name. If no argument is given, ask for
 nick name, first name, last name, email address and a whole bunch of other data
 to search for.
-.It Ic add Ar uin Op Ar nickname
+.TP
+.BI add \ uin\ [nickname]
 Add
-.Ar uin
+.I uin
 to your contact list as
-.Ar nickname ,
+.IR nickname ,
 or renames
-.Ar uin
+.I uin
 to
-.Ar nickname .
+.IR nickname .
 If
-.Ar nickname
+.I nickname
 is not given, use
-.Ar uin
+.I uin
 as nickname.
 .br
 Note: you need to
-.Ar save
+.B save
 to make this persistent.
-.It Ic rem Ar nick
+.TP
+.BI rem \ nick
 Remove
-.Ar nick
+.I nick
 from your contact list.
 .br
 Note: you need to
-.Ar save
+.B save
 to make this persistent.
-.It Ic togvis Ar nickname
+.TP
+.BI togvis \ nickname
 Toggles whether
-.Ar nickname
+.I nickname
 can see you even if you are invisible.
-.It Ic toginvis Ar nickname
+.TP
+.BI toginvis \ nickname
 Toggles whether you will be hidden for
-.Ar nickname .
-.It Ic togig Ar nickname
+.IR nickname .
+.TP
+.BI togig \ nickname
 Toggles whether
-.Ar nickname's
+.I nickname's
 messages and status changes are ignored.
-.It Ic info Ar uin|nickname
+.TP
+.BI info \ uin|nickname
 Show all white page info for
-.Ar uin|nickname .
-.It Ic w
+.IR uin|nickname .
+.TP
+.B w
 List all people in your contact list.
-.It Ic e
+.TP
+.B e
 List all people who are online in your contact list.
-.It Ic wide
+.TP
+.B wide
 List all people who are in your contact list in a screen wide format.
-.It Ic ewide
+.TP
+.B ewide
 List all people who are online in your contact list in a screen wide format.
-.It Ic s
+.TP
+.B s
 Show your current status.
-.It Ic i
+.TP
+.B i
 List all the people on your ignore list.
-.It Ic status Ar nickname
+.TP
+.BI status \ [nickname]
 Show the status of
-.Ar nickname .
-This includes IP address, ICQ protocol version and connection type.
-.It Ic change Op Ar number
+.IR nickname .
+This includes IP address, ICQ protocol version and connection type,
+or list shortly UIN, nick, status and last online time for all contacts.
+.TP
+.BI change \ [number]
 Changes your status to
-.Ar number .
+.IR number .
 Without a number it lists some available modes.
-.It Ic reg password
+.TP
+.BI reg \ password
 Creates a new user account with password
-.Ar password .
-.It Ic online
-Change status to Online.
-.It Ic away
-Change status to Away.
-.It Ic na
-Change status to Not Available.
-.It Ic occ             
-Change status to Occupied.
-.It Ic dnd 
-Change status to Do not Disturb.
-.It Ic ffc
-Change status to Free for Chat.
-.It Ic inv
-Change status to Invisible
-.It Ic update
+.IR password .
+.TP
+.B online
+Change status to "online".
+.TP
+.B away
+Change status to "away".
+.TP
+.B na
+Change status to "not available".
+.TP
+.B occ             
+Change status to "occupied".
+.TP
+.B dnd 
+Change status to "do not disturb".
+.TP
+.B ffc
+Change status to "free for chat".
+.TP
+.B inv
+Change status to "invisible".
+.TP
+.B update
 Updates your basic user information (email, nickname, etc.).
-.It Ic other
+.TP
+.B other
 Updates other user information like age and sex.
-.It Ic about
+.TP
+.B about
 Updates your about user information.
-.It Ic set Ar option Ar value
+.TP
+.BI set \ option\ value
 Set option
-.Ar option
+.I option
 to either
-.Ic on
+.I on
 or
-.Ic off .
-.Ar option
+.IR off .
+.I option
 can be
-.Ic color ,
-.Ic funny
+.BR color ,
+.B funny
 or
-.Ic quiet .
-.It Ic peek Ar nick
+.BR quiet .
+.TP
+.BI peek \ nick
 Check whether
-.Ar nick
+.I nick
 is actually online or not. Abuses a bug in the ICQ protocol to figure this out;
 no additional information except online or offline can be found out this way.
-.It Ic setr Op Ar number
+.TP
+.BI setr\ [number]
 Sets your random user group to
-.Ar number .
+.IR number .
 Without argument, lists possible interest groups.
-.It Ic tcp Ar command Ar uin|nick
+.TP
+.BI tcp \ command\ uin|nick
 Operate command
-.Ar command
+.I command
 on user given by UIN
-.Ar uin
+.I uin
 or nick name
-.Ar nick .
-.Ar command
+.IR nick .
+.I command
 can be
-.Ic open
+.B open
 to open a peer to peer connection over TCP to the user, or
-.Ic close
+.B close
 to close and reset such a connection, or
-.Ic off
+.B off
 to switch off trying to establish such a connection for sending
 messages until it is explicitly opened or reset, or
-.Ic auto
+.B auto
 to get the user's current auto response, or
-.Ic away ,
-.Ic na ,
-.Ic dnd ,
-.Ic occ
+.BR away ,
+.BR na ,
+.BR dnd ,
+.B occ
 or
-.Ic ffc
+.B ffc
 to get the user's current (auto) response for that status.
-.It Ic conn Op Ar command Ar nr
+.TP
+.BI conn \ [command\ nr]
 List all connections, or operate
-.Ar command
+.I command
 on connection
-.Ar nr .
-.Ar command
+.IR nr .
+.I command
 can be
-.Ic open
+.B open
 or
-.Ic login
+.B login
 to open this connection if it is not currently open.
-.El
-.Sh SEE ALSO
-.Xr micq 1 ,
-.Xr micqrc 5
-.Sh AUTHOR
+
+.SH SEE ALSO
+.BR micq (1),
+.BR micqrc (5)
+.SH AUTHOR
 This man page was created by James Morrison
-.Pa <ja2morrison@student.math.uwaterloo.ca>
+.I <ja2morrison@student.math.uwaterloo.ca>
 for a reference to all interactive commands in 
-.Ic micq .
+.BR mICQ .

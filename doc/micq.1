@@ -1,97 +1,106 @@
 .\" $Id$
 .\"                                      Hey, EMACS: -*- nroff -*-
-.Dd February 15, 2002
-.Dt MICQ 1
-.Os MICQ(1)
-.\" Please adjust this date whenever revising the manpage.
-.Sh NAME
-.Ic micq
+.TH MICQ 1 mICQ
+.SH NAME
+.B mICQ
 \- a small, text mode ICQ client
-.Sh SYNOPSIS
-.Ic micq Op Ar -v
-.Op Ar -f filename
-.br
-.Sh DESCRIPTION
-.Ic mICQ
+.SH SYNOPSIS
+.B micq
+.I [-v[leve]]
+.I [-f filename]
+.SH DESCRIPTION
+.B mICQ
 is a text based ICQ client supporting many of the ICQ features provided by
-the client by Mirabillis. Micq allows to change the user password, create
+the client by Mirabillis. mICQ allows to change the user password, create
 new accounts, updating user info, search other users, etc.
-.Sh OPTIONS
-.Bl -tag -width flag
-.It Fl v Op Ar level
+.SH OPTIONS
+.TP
+.BI -v \ [level]
 Set verbose mode, or set verbosity to
-.Ar level .
-.It Fl f Ar filename
+.IR level .
+.TP
+.BI -f \ filename
 Use
-.Ar filename
+.I filename
 as the rc file.
-.It Fl l Ar file|dir
+.TP
+.BI -l \ file|dir
 Use
-.Ar file
+.I file
 as file to write log into, or use
-.Ar dir
+.I dir
 as a directory to create per user log files in.
-.It Fl ?, h
+.TP
+.B -?, -h
 Print usage.
-.El
 
-.Sh FEATURES
-.Ic mICQ
+
+.SH FEATURES
+.B mICQ
 is very portable and has run on Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD and any
 other modern unix system.  
-.Ic mICQ version 0.4.9
-is known to run on Linux, AIX, HPUX, Tru64, partially BeOS and other unices.  However, the other ports
+.B mICQ version 0.4.9.2
+is known to run on Linux, AIX, HPUX, Tru64, AmigaOS, partially BeOS and other unices.
+However, the other ports
 may or may not still work and anyone wishing to test them is welcome to.
-.Sh HISTORY
-.Bl -tag -width Fl
-.It 16 Aug 1998
+.SH HISTORY
+.TP
+16 Aug 1998
 Matthew D. Smith releases micq unto the world. 
 Followed by 12 dated releases until 25 Sept 1998.
-.It 05 Jan 2001
+.TP
+05 Jan 2001
 Matthew D. Smith died in a car accident.
-Users pick up where Matthew left off, formalize micq under the BSD 
+Users pick up where Matthew left off, formalize mICQ under the BSD 
 license and restart the development of
-.Ic mICQ .
-.It 10 June 2002
+.BR mICQ .
+.TP
+10 June 2002
 Version 0.4.9 is released under the GPL licence, finally
 implementing the new version 8 of the ICQ protocol, done
 by Rüdiger Kuhlmann.
-.Sh MAILING-LIST
-The micq mailing list is
-.Pa micq-list@mc.ukeer.de .
+.SH MAILING-LIST
+The mICQ mailing list is
+.IR micq-list@mc.ukeer.de .
 Information about subscribing and archives is available at
-.Pa http://www.micq.org/pipermail/micq-list/ .
-.Sh DOWNLOAD
+.IR http://www.micq.org/pipermail/micq-list/ .
+.SH DOWNLOAD
 Via HTTP from
-.Pa http://www.micq.org/download .
+.IR http://www.micq.org/download .
 .br
 To get the newest version from CVS, enter:
 .br
+
 cvs -d:pserver:anonymous@micq.org:/usr/local/cvsroot co micq
 .br
-.Sh SEE ALSO
-.Xr micqrc 5 ,
-.Xr micq 7
-.Sh FILES
-.Bl -tag -width Fl
-.It ~/.micqrc
+.SH SEE ALSO
+.BR micqrc (5),
+.BR micq (7)
+.SH FILES
+.TP
+.I ~/.micqrc
 Old configuration file for mICQ - obsolete.
-.It ~/.micq/micqrc
+.TP
+.I ~/.micq/micqrc
 Configuration file for mICQ.
-.It PREFIX/share/micq/*.i18n
+.TP
+.I PREFIX/share/micq/*.i18n
 Internationalization files containing translations of all strings
 mICQ outputs.
-.It ~/.micq/i18n/*.i18n
+.TP
+.I ~/.micq/i18n/*.i18n
 Local overrides for the files above.
-.It ~/.micq/history/
+.TP
+.I ~/.micq/history/
 Default location of directory where log files are created in.
-.El
-.Sh BUGS
+
+.SH BUGS
 Send bug reports or comments to Rüdiger Kuhlmann
-<micq@ruediger-kuhlmann.de> (German or English).
-.Sh AUTHOR
+.I <micq@ruediger-kuhlmann.de>
+(in German or English).
+.SH AUTHOR
 This manual page was derived by James Morrison
-.Pa <ja2morrison@student.math.uwaterloo.ca>
+.I <ja2morrison@student.math.uwaterloo.ca>
 from the minimal man page written by Jordi Mallach
-.Pa <jordi@sindominio.net>
+.I <jordi@sindominio.net>
 for the Debian GNU/Linux system.
