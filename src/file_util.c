@@ -1417,6 +1417,10 @@ void PrefReadStat (FILE *stf)
                 {
                     OptImport (&cont->copts, args);
                 }
+                else if (conn && !cont && !strcasecmp (cmd, "options"))
+                {
+                    OptImport (&conn->contacts->copts, args);
+                }
                 else
                 {
                     rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
@@ -1501,6 +1505,7 @@ int PrefWriteStatusFile (void)
 
         fprintf (stf, "[Contacts]\n");
         fprintf (stf, "server %s %ld\n", ss->type == TYPE_SERVER ? "icq8" : "icq5", ss->uin);
+        fprintf (stf, "%s\n", OptString (&ss->contacts->copts));
 
         for (i = 0; (cont = ContactIndex (0, i)); i++)
         {
