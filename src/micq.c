@@ -203,11 +203,11 @@ int main (int argc, char *argv[])
     if (arg_b && *arg_b != '/' && (*arg_b != '~' || arg_b[1] != '/'))
     {
 #ifndef PATH_MAX
-#define PATH_MAX 256
+#define PATH_MAX 1023
 #endif
-        char buf[PATH_MAX];
+        char buf[PATH_MAX + 1];
         buf[0] = '\0';
-        getcwd  (buf, PATH_MAX - 1);
+        getcwd  (buf, PATH_MAX);
         prG->basedir = strdup (arg_b[strlen (arg_b) - 1] == '/'
                        ? s_sprintf ("%s/%s", buf, arg_b)
                        : s_sprintf ("%s/%s/", buf, arg_b));
