@@ -47,9 +47,9 @@ binary-arch: install
 	dh_installchangelogs ChangeLog
 
 #	dh_installmenu
-	dh_installman doc/micq.1.gz
-	dh_installman doc/micq.7.gz
-	dh_installman doc/micqrc.5.gz
+	dh_installman doc/micq.1
+	dh_installman doc/micq.7
+	dh_installman doc/micqrc.5
 
 	dh_strip
 	dh_compress
