@@ -49,6 +49,7 @@ void SrvCallBackFlap (struct Event *event)
         case 4: /* Logoff */
             FlapChannel4 (event->sess, event->pak);
             break;
+        case 5: /* Ping */
         default:
             M_print (i18n (884, "FLAP with unknown channel %d received.\n"), event->pak->cmd);
     }
@@ -77,7 +78,12 @@ void FlapChannel1 (Session *sess, Packet *pak)
                 Hex_Dump (pak->data + pak->rpos, PacketReadLeft (pak));
                 break;
             }
-            if ((sess->connect & CONNECT_MASK) < 3)
+            if (!sess->uin)
+            {
+                FlapCliHello (sess);
+                SnacCliRegisteruser (sess);
+            }
+            else if ((sess->connect & CONNECT_MASK) < 3)
                 FlapCliIdent (sess);
             else
             {
@@ -144,7 +150,11 @@ void FlapChannel4 (Session *sess, Packet *pak)
 void FlapPrint (Packet *pak)
 {
     if (PacketReadAt1 (pak, 1) == 2)
+    {
+        M_print (i18n (910, "FLAP seq %08x length %04x channel %d" COLNONE "\n"),
+                 PacketReadBAt2 (pak, 2), pak->len - 6, PacketReadAt1 (pak, 1));
         SnacPrint (pak);
+    }
     else
     {
         M_print (i18n (910, "FLAP seq %08x length %04x channel %d" COLNONE "\n"),
@@ -247,6 +257,15 @@ void FlapCliCookie (Session *sess, const char *cookie, UWORD len)
     FlapSend (sess, pak);
 }
 
+void FlapCliHello (Session *sess)
+{
+    Packet *pak;
+    
+    pak = FlapC (1);
+    PacketWriteB4 (pak, CLI_HELLO);
+    FlapSend (sess, pak);
+}
+
 void FlapCliGoodbye (Session *sess)
 {
     Packet *pak;
@@ -261,5 +280,3 @@ void FlapCliGoodbye (Session *sess)
     sess->sok = -1;
     sess->connect = 0;
 }
-
-

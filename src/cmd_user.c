@@ -34,7 +34,7 @@ static jump_f
     CmdUserAuto, CmdUserAlter, CmdUserMessage, CmdUserResend,
     CmdUserVerbose, CmdUserRandomSet, CmdUserIgnoreStatus,
     CmdUserStatusDetail, CmdUserStatusWide, CmdUserStatusShort,
-    CmdUserStatusSelf, CmdUserSound, CmdUserSoundOnline,
+    CmdUserStatusSelf, CmdUserSound, CmdUserSoundOnline, CmdUserRegister,
     CmdUserSoundOffline, CmdUserAutoaway, CmdUserSet, CmdUserClear,
     CmdUserTogIgnore, CmdUserTogVisible, CmdUserAdd, CmdUserRem, CmdUserRInfo,
     CmdUserAuth, CmdUserURL, CmdUserSave, CmdUserTabs, CmdUserLast,
@@ -82,6 +82,7 @@ static jump_t jump[] = {
     { &CmdUserTogVisible,    "togvis",       NULL, 0,   0 },
     { &CmdUserAdd,           "add",          NULL, 0,   0 },
     { &CmdUserRem,           "rem",          NULL, 0,   0 },
+    { &CmdUserRegister,      "reg",          NULL, 0,   0 },
     { &CmdUserRInfo,         "rinfo",        NULL, 0,   0 },
     { &CmdUserAuth,          "auth",         NULL, 0,   0 },
     { &CmdUserURL,           "url",          NULL, 0,   0 },
@@ -1565,6 +1566,28 @@ JUMP_F(CmdUserClear)
     return 0;
 }
 
+
+/*
+ * Registers a new user.
+ */
+JUMP_F(CmdUserRegister)
+{
+    char *arg1;
+    
+    arg1 = strtok (args, "");
+    if (arg1)
+    {
+        Session *sess;
+        if ((sess = SessionFind (TYPE_SERVER, 0)))
+            SrvRegisterUIN (sess, arg1);
+        else if ((sess = SessionFind (TYPE_SERVER_OLD, 0)))
+            CmdPktCmdRegNewUser (sess, arg1);     /* TODO */
+        else
+            SrvRegisterUIN (NULL, arg1);
+    }
+    return 0;
+}
+
 /*
  * Toggles ignoring a user.
  */
@@ -2598,12 +2621,6 @@ void CmdUserProcess (const char *command, int *idle_val, int *idle_flag)
             }
 
             /* goto's removed and code fixed by Paul Laufer. Enjoy! */
-            else if (!strcasecmp (cmd, "reg"))
-            {
-                arg1 = strtok (NULL, "");
-                if (arg1)
-                    CmdPktCmdRegNewUser (NULL, arg1);     /* TODO */
-            }
             else if (!strcasecmp (cmd, "pass"))
             {
                 arg1 = strtok (NULL, "");

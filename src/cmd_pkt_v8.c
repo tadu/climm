@@ -104,3 +104,39 @@ void SrvCallBackReceive (Session *sess)
                       pak, NULL, &SrvCallBackFlap);
     pak = NULL;
 }
+
+Session *SrvRegisterUIN (Session *sess, const char *pass)
+{
+    Session *new;
+    
+    new = SessionC ();
+    if (!new)
+        return NULL;
+    new->spref = PreferencesSessionC ();
+    if (!new->spref)
+        return NULL;
+    if (sess)
+    {
+        assert (sess->spref->type == TYPE_SERVER);
+        
+        memcpy (new->spref, sess->spref, sizeof (*new->spref));
+        new->spref->server = strdup (new->spref->server);
+        new->spref->uin = 0;
+    }
+    else
+    {
+        new->spref->type = TYPE_SERVER;
+        new->spref->version = 8;
+        new->spref->server = strdup ("login.icq.com");
+        new->spref->port = 5190;
+    }
+    new->spref->passwd = strdup (pass);
+    new->type = TYPE_SERVER;
+    new->ver  = new->spref->version;
+    new->server = strdup (new->spref->server);
+    new->port = new->spref->port;
+    new->passwd = strdup (pass);
+    
+    SessionInitServer (new);
+    return new;
+}

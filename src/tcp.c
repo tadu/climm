@@ -141,7 +141,8 @@ void TCPDirectOff (UDWORD uin)
     Session *peer;
     
     peer = SessionFind (TYPE_DIRECT, uin);
-    UtilCheckUIN (peer->assoc, uin);
+    if (peer)
+        UtilCheckUIN (peer->assoc, uin);
     cont = ContactFind (uin);
     
     if (!peer && cont)

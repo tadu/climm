@@ -672,6 +672,7 @@ void Display_Search_Reply (Session *sess, UBYTE * pak)
 void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin, BOOL tcp)
 {
     char *cdata, *tmp = NULL;
+    char *url_url, *url_desc;
     int x, m;
     
     cdata = strdup (data);
@@ -684,197 +685,195 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
         ExecScript (prG->event_cmd, uin, type, cdata);
 #endif
 
-    if (type == USER_ADDED_MESS)
+    switch (type)
     {
-        tmp = strchr (cdata, '\xFE');
-        if (tmp == NULL)
-        {
-            M_print (i18n (585, "Ack!!!!!!!  Bad packet"));
-            return;
-        }
-        *tmp = 0;
-        ConvWinUnix (cdata); /* By Kunia User's nick was not transcoded...;( */
-        M_print (i18n (586, COLCONTACT "\n%s" COLNONE " has added you to their contact list.\n"), cdata);
-        tmp++;
-        cdata = tmp;
-        tmp = strchr (tmp, '\xFE');
-        if (tmp == NULL)
-        {
-            M_print (i18n (585, "Ack!!!!!!!  Bad packet"));
-            return;
-        }
-        *tmp = 0;
-        ConvWinUnix (cdata);
-        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (564, "First name:"), cdata);
-        tmp++;
-        cdata = tmp;
-        tmp = strchr (tmp, '\xFE');
-        if (tmp == NULL)
-        {
-            M_print (i18n (585, "Ack!!!!!!!  Bad packet"));
-            return;
-        }
-        *tmp = 0;
-        ConvWinUnix (cdata);
-        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (565, "Last name:"), cdata);
-        tmp++;
-        cdata = tmp;
-        tmp = strchr (tmp, '\xFE');
-        *tmp = 0;
-        ConvWinUnix (cdata);
-        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (566, "Email address:"), cdata);
-    }
-    else if (type == AUTH_REQ_MESS)
-    {
-        tmp = strchr (cdata, '\xFE');
-        *tmp = 0;
-        M_print (i18n (590, COLCONTACT "\n%s" COLNONE " has requested your authorization to be added to their contact list.\n"), cdata);
-        tmp++;
-        cdata = tmp;
-        tmp = strchr (tmp, '\xFE');
-        if (tmp == NULL)
-        {
-            M_print (i18n (585, "Ack!!!!!!!  Bad packet"));
-            return;
-        }
-        *tmp = 0;
-        ConvWinUnix (cdata);
-        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (564, "First name:"), cdata);
-        tmp++;
-        cdata = tmp;
-        tmp = strchr (tmp, '\xFE');
-        if (tmp == NULL)
-        {
-            M_print (i18n (585, "Ack!!!!!!!  Bad packet"));
-            return;
-        }
-        *tmp = 0;
-        ConvWinUnix (cdata);
-        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (565, "Last name:"), cdata);
-        tmp++;
-        cdata = tmp;
-        tmp = strchr (tmp, '\xFE');
-        if (tmp == NULL)
-        {
-            M_print (i18n (585, "Ack!!!!!!!  Bad packet"));
-            return;
-        }
-        *tmp = 0;
-        ConvWinUnix (cdata);
-        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (566, "Email address:"), cdata);
-        tmp++;
-        cdata = tmp;
-        tmp = strchr (tmp, '\xFE');
-        if (tmp == NULL)
-        {
-            M_print (i18n (585, "Ack!!!!!!!  Bad packet"));
-            return;
-        }
-        *tmp = 0;
-        tmp++;
-        cdata = tmp;
-        tmp = strchr (tmp, '\x00');
-        if (tmp == NULL)
-        {
-            M_print (i18n (585, "Ack!!!!!!!  Bad packet"));
-            return;
-        }
-        *tmp = 0;
-        ConvWinUnix (cdata);
-        M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (591, "Reason:"), cdata);
-    }
-    else if ((type == EMAIL_MESS) || (type == WEB_MESS))
-    {
-        tmp = strchr (cdata, '\xFE');
-        *tmp = 0;
-        M_print ("\n%s ", cdata);
-        tmp++;
-        cdata = tmp;
-        tmp = strchr (cdata, '\xFE');
-        tmp++;
-        cdata = tmp;
-
-        tmp = strchr (cdata, '\xFE');
-        tmp++;
-        cdata = tmp;
-
-        tmp = strchr (cdata, '\xFE');
-        *tmp = 0;
-        if (type == EMAIL_MESS)
-            M_print (i18n (592, "<%s> emailed you a message:\n"), cdata);
-        else
-            M_print (i18n (593, "<%s> send you a web message:\n"), cdata);
-        tmp++;
-        cdata = tmp;
-        tmp = strchr (cdata, '\xFE');
-        *tmp = 0;
-        if (prG->verbose)
-        {
-            M_print ("??? '%s'\n", cdata);
-        }
-        tmp++;
-        cdata = tmp;
-        M_print (COLMESS "%s" COLNONE "\n", cdata);
-    }
-    else if (type == URL_MESS || type == MRURL_MESS)
-    {
-        char *url_url, *url_desc;
-
-        url_desc = cdata;
-        url_url = strchr (cdata, '\xFE');
-        if (url_url == NULL)
-        {
-            url_url = url_desc;
-            url_desc = "";
-        }
-        else
-        {
-            *url_url = '\0';
-            url_url++;
-        }
-
-        ConvWinUnix (url_desc);
-        ConvWinUnix (url_url);
-
-        log_event (uin, LOG_MESS,
-                   "You received URL message from %s\nDescription: %s\nURL: %s\n",
-                   ContactFindName (uin), url_desc, url_url);
-
-        M_print ("%s" COLMESS "%s" COLNONE "\n", tcp ? MSGTCPRECSTR : MSGRECSTR, url_desc);
-        Time_Stamp ();
-        M_print (i18n (594, "        URL: %s" COLMESS "%s" COLNONE "\n"),
-                 tcp ? MSGTCPRECSTR : MSGRECSTR, url_url);
-    }
-    else if (type == CONTACT_MESS || type == MRCONTACT_MESS)
-    {
-        tmp = strchr (cdata, '\xFE');
-        *tmp = 0;
-        M_print (i18n (595, "\nContact List.\n" COLMESS "============================================\n" COLNONE "%d Contacts\n"),
-                 atoi (cdata));
-        tmp++;
-        m = atoi (cdata);
-        for (x = 0; m > x; x++)
-        {
+        case USER_ADDED_MESS:
+            tmp = strchr (cdata, '\xFE');
+            if (tmp == NULL)
+            {
+                M_print (i18n (585, "Ack!!!!!!!  Bad packet"));
+                return;
+            }
+            *tmp = 0;
+            ConvWinUnix (cdata); /* By Kunia User's nick was not transcoded...;( */
+            M_print (i18n (586, COLCONTACT "\n%s" COLNONE " has added you to their contact list.\n"), cdata);
+            tmp++;
             cdata = tmp;
             tmp = strchr (tmp, '\xFE');
+            if (tmp == NULL)
+            {
+                M_print (i18n (585, "Ack!!!!!!!  Bad packet"));
+                return;
+            }
             *tmp = 0;
-            M_print (COLCONTACT "%s\t\t\t", cdata);
+            ConvWinUnix (cdata);
+            M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (564, "First name:"), cdata);
+            tmp++;
+            cdata = tmp;
+            tmp = strchr (tmp, '\xFE');
+            if (tmp == NULL)
+            {
+                M_print (i18n (585, "Ack!!!!!!!  Bad packet"));
+                return;
+            }
+            *tmp = 0;
+            ConvWinUnix (cdata);
+            M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (565, "Last name:"), cdata);
             tmp++;
             cdata = tmp;
             tmp = strchr (tmp, '\xFE');
             *tmp = 0;
+            ConvWinUnix (cdata);
+            M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (566, "Email address:"), cdata);
+            break;
+        case AUTH_REQ_MESS:
+            tmp = strchr (cdata, '\xFE');
+            *tmp = 0;
+            M_print (i18n (590, COLCONTACT "\n%s" COLNONE " has requested your authorization to be added to their contact list.\n"), cdata);
+            tmp++;
+            cdata = tmp;
+            tmp = strchr (tmp, '\xFE');
+            if (tmp == NULL)
+            {
+                M_print (i18n (585, "Ack!!!!!!!  Bad packet"));
+                return;
+            }
+            *tmp = 0;
+            ConvWinUnix (cdata);
+            M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (564, "First name:"), cdata);
+            tmp++;
+            cdata = tmp;
+            tmp = strchr (tmp, '\xFE');
+            if (tmp == NULL)
+            {
+                M_print (i18n (585, "Ack!!!!!!!  Bad packet"));
+                return;
+            }
+            *tmp = 0;
+            ConvWinUnix (cdata);
+            M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (565, "Last name:"), cdata);
+            tmp++;
+            cdata = tmp;
+            tmp = strchr (tmp, '\xFE');
+            if (tmp == NULL)
+            {
+                M_print (i18n (585, "Ack!!!!!!!  Bad packet"));
+                return;
+            }
+            *tmp = 0;
+            ConvWinUnix (cdata);
+            M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (566, "Email address:"), cdata);
+            tmp++;
+            cdata = tmp;
+            tmp = strchr (tmp, '\xFE');
+            if (tmp == NULL)
+            {
+                M_print (i18n (585, "Ack!!!!!!!  Bad packet"));
+                return;
+            }
+            *tmp = 0;
+            tmp++;
+            cdata = tmp;
+            tmp = strchr (tmp, '\x00');
+            if (tmp == NULL)
+            {
+                M_print (i18n (585, "Ack!!!!!!!  Bad packet"));
+                return;
+            }
+            *tmp = 0;
+            ConvWinUnix (cdata);
+            M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (591, "Reason:"), cdata);
+            break;
+        case EMAIL_MESS:
+        case WEB_MESS:
+            tmp = strchr (cdata, '\xFE');
+            *tmp = 0;
+            M_print ("\n%s ", cdata);
+            tmp++;
+            cdata = tmp;
+            tmp = strchr (cdata, '\xFE');
+            tmp++;
+            cdata = tmp;
+
+            tmp = strchr (cdata, '\xFE');
+            tmp++;
+            cdata = tmp;
+
+            tmp = strchr (cdata, '\xFE');
+            *tmp = 0;
+            if (type == EMAIL_MESS)
+                M_print (i18n (592, "<%s> emailed you a message:\n"), cdata);
+            else
+                M_print (i18n (593, "<%s> send you a web message:\n"), cdata);
+            tmp++;
+            cdata = tmp;
+            tmp = strchr (cdata, '\xFE');
+            *tmp = 0;
+            if (prG->verbose)
+            {
+                M_print ("??? '%s'\n", cdata);
+            }
+            tmp++;
+            cdata = tmp;
             M_print (COLMESS "%s" COLNONE "\n", cdata);
+            break;
+        case URL_MESS:
+        case MRURL_MESS:
+            url_desc = cdata;
+            url_url = strchr (cdata, '\xFE');
+            if (url_url == NULL)
+            {
+                url_url = url_desc;
+                url_desc = "";
+            }
+            else
+            {
+                *url_url = '\0';
+                url_url++;
+            }
+
+            ConvWinUnix (url_desc);
+            ConvWinUnix (url_url);
+
+            log_event (uin, LOG_MESS,
+                       "You received URL message from %s\nDescription: %s\nURL: %s\n",
+                       ContactFindName (uin), url_desc, url_url);
+
+            M_print ("%s" COLMESS "%s" COLNONE "\n", tcp ? MSGTCPRECSTR : MSGRECSTR, url_desc);
+            Time_Stamp ();
+            M_print (i18n (594, "        URL: %s" COLMESS "%s" COLNONE "\n"),
+                     tcp ? MSGTCPRECSTR : MSGRECSTR, url_url);
+            break;
+        case CONTACT_MESS:
+        case MRCONTACT_MESS:
+            tmp = strchr (cdata, '\xFE');
+            *tmp = 0;
+            M_print (i18n (595, "\nContact List.\n" COLMESS "============================================\n" COLNONE "%d Contacts\n"),
+                     atoi (cdata));
             tmp++;
-        }
-    }
-    else
-    {
-        ConvWinUnix (cdata);
-        while (*cdata && (cdata[strlen (cdata) - 1] == '\n' || cdata[strlen (cdata) - 1] == '\r'))
-            cdata[strlen (cdata) - 1] = '\0';
-        log_event (uin, LOG_MESS, "You received instant message from %s\n%s\n",
-                   ContactFindName (uin), cdata);
-        M_print ("%s" COLMESS "\x1b<%s" COLNONE "\x1b>\n", tcp ? MSGTCPRECSTR : MSGRECSTR, cdata);
+            m = atoi (cdata);
+            for (x = 0; m > x; x++)
+            {
+                cdata = tmp;
+                tmp = strchr (tmp, '\xFE');
+                *tmp = 0;
+                M_print (COLCONTACT "%s\t\t\t", cdata);
+                tmp++;
+                cdata = tmp;
+                tmp = strchr (tmp, '\xFE');
+                *tmp = 0;
+                M_print (COLMESS "%s" COLNONE "\n", cdata);
+                tmp++;
+            }
+            break;
+        default:
+            ConvWinUnix (cdata);
+            while (*cdata && (cdata[strlen (cdata) - 1] == '\n' || cdata[strlen (cdata) - 1] == '\r'))
+                cdata[strlen (cdata) - 1] = '\0';
+            log_event (uin, LOG_MESS, "You received instant message from %s\n%s\n",
+                       ContactFindName (uin), cdata);
+            M_print ("%s" COLMESS "\x1b<%s" COLNONE "\x1b>\n", tcp ? MSGTCPRECSTR : MSGRECSTR, cdata);
+            break;
     }
     /* aaron
        If we just received a message from someone on the contact list,

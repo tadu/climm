@@ -26,9 +26,11 @@ typedef void (jump_snac_f)(struct Event *);
 typedef struct { UWORD fam; UWORD cmd; const char *name; jump_snac_f *f; } SNAC;
 #define JUMP_SNAC_F(f) void f (struct Event *event)
 
-static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd, SnacSrvRates,
-    SnacSrvReplyicbm, SnacSrvReplybuddy, SnacSrvReplybos, SnacSrvReplyinfo, SnacSrvReplylocation,
-    SnacSrvUseronline, SnacSrvUseroffline, SnacSrvRecvmsg, SnacSrvUnknown, SnacSrvFromoldicq;
+static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd,
+    SnacSrvRates, SnacSrvReplyicbm, SnacSrvReplybuddy, SnacSrvReplybos,
+    SnacSrvReplyinfo, SnacSrvReplylocation, SnacSrvUseronline, SnacSrvRegrefused,
+    SnacSrvUseroffline, SnacSrvRecvmsg, SnacSrvUnknown, SnacSrvFromoldicq,
+    SnacSrvAddedyou, SnacSrvNewuin;
 
 static SNAC SNACv[] = {
     {  1,  3, NULL, NULL},
@@ -63,8 +65,10 @@ static SNAC SNACS[] = {
     { 19,  6, "SRV_REPLYROSTER",     SnacSrvUnknown},
     { 19, 14, "SRV_UPDATEACK",       SnacSrvUnknown},
     { 19, 15, "SRV_REPLYROSTEROK",   SnacSrvUnknown},
-    { 19, 28, "SRV_ADDEDYOU",        SnacSrvUnknown},
+    { 19, 28, "SRV_ADDEDYOU",        SnacSrvAddedyou},
     { 21,  3, "SRV_FROMOLDICQ",      SnacSrvFromoldicq},
+    { 23,  1, "SRV_REGREFUSED",      SnacSrvRegrefused},
+    { 23,  5, "SRV_NEWUIN",          SnacSrvNewuin},
     {  1,  2, "CLI_READY",           NULL},
     {  1,  6, "CLI_RATESREQUEST",    NULL},
     {  1,  8, "CLI_ACKRATES",        NULL},
@@ -92,6 +96,7 @@ static SNAC SNACS[] = {
     { 19, 17, "CLI_ADDSTART",        NULL},
     { 19, 18, "CLI_ADDREND",         NULL},
     { 21,  2, "CLI_TOICQSRV",        NULL},
+    { 23,  4, "CLI_REGISTERUSER",    NULL},
     {  0,  0, "unknown",             NULL}
 };
 
@@ -309,7 +314,7 @@ JUMP_SNAC_F(SnacSrvFamilies2)
 }
 
 /*
- * SRV_MOTD - SNAC (1,13)
+ * SRV_MOTD - SNAC(1,13)
  */
 JUMP_SNAC_F(SnacSrvMotd)
 {
@@ -413,7 +418,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
     Contact *cont;
     Packet *p, *pak;
     TLV *tlv;
-    UDWORD uin, oldstat = 0;
+    UDWORD uin;
     int i, len;
     const char *text;
 
@@ -426,8 +431,8 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
     switch (PacketReadB2 (pak))
     {
         case 1:
-            if ((cont = ContactFind (uin = PacketReadUIN (pak))) != NULL)
-                oldstat = cont->status;
+            uin = PacketReadUIN (pak);
+            cont = ContactFind (uin);
             PacketReadB2 (pak); /* WARNING */
             PacketReadB2 (pak); /* COUNT */
             tlv = TLVRead (pak);
@@ -486,11 +491,38 @@ JUMP_SNAC_F(SnacSrvReplybos)
     SnacCliSetuserinfo (event->sess);
     SnacCliSetstatus (event->sess, event->sess->spref->status);
     SnacCliReady (event->sess);
-    SnacCliReqOfflineMsgs (event->sess);
+    SnacCliReqofflinemsgs (event->sess);
 /*    SnacCliReqroster (event->sess); */
     SnacCliAddcontact (event->sess, 0);
 
     event->sess->connect = CONNECT_OK | CONNECT_SELECT_R;
+}
+
+/*
+ * SRV_ADDEDYOU - SNAC(13,1c)
+ */
+JUMP_SNAC_F(SnacSrvAddedyou)
+{
+    Contact *cont;
+    Packet *pak;
+    UDWORD uin;
+    int len;
+
+    pak = event->pak;
+
+    for (len = PacketReadB2 (pak); len > 0; len--)
+        PacketRead1 (pak);
+    /* TLV 1 ignored */
+    uin = PacketReadUIN (pak);
+    cont = ContactFind (uin);
+    Time_Stamp ();
+    M_print (" " COLCONTACT "%10s" COLNONE " ", ContactFindName (uin));
+    M_print (i18n (755, "added you to their contact list.\n"));
+    log_event (uin, LOG_EVENT, "Added to the contact list by %s\n",
+               ContactFindName (uin));
+    /* Not using Do_Msg/USER_ADDED_MESS here because it's way too
+     * v5 specific.  --rtc
+     */
 }
 
 /*
@@ -550,11 +582,28 @@ JUMP_SNAC_F(SnacSrvFromoldicq)
             return;
         }
         case 0x42:
-            SnacCliAckOfflineMsgs (event->sess);
+            SnacCliAckofflinemsgs (event->sess);
             return;
         default:
     }
     SnacSrvUnknown (event);
+}
+
+/*
+ * SRV_REGREFUSED - SNAC(17,1)
+ */
+JUMP_SNAC_F(SnacSrvRegrefused)
+{
+    M_print (i18n (780, "Registration of new UIN refused.\n"));
+}
+
+/*
+ * SRV_NEWUIN - SNAC(17,5)
+ */
+JUMP_SNAC_F(SnacSrvNewuin)
+{
+    event->sess->uin = event->sess->spref->uin = PacketReadAt4 (event->pak, 6 + 10 + 46);
+    M_print (i18n (762, "Your new UIN is: %d.\n"), event->sess->uin);
 }
 
 /*************************************/
@@ -891,9 +940,10 @@ void SnacCliReqroster (Session *sess)
 /*
  * CLI_REQOFFLINEMSGS - SNAC(15,2) - 60
  */
-void SnacCliReqOfflineMsgs (Session *sess)
+void SnacCliReqofflinemsgs (Session *sess)
 {
     Packet *pak;
+
     pak = SnacC (sess, 21, 2, 0, 0);
     PacketWriteB2 (pak, 1);  /* TLV(1) */
     PacketWriteB2 (pak, 10);
@@ -904,9 +954,13 @@ void SnacCliReqOfflineMsgs (Session *sess)
     SnacSend (sess, pak);
 }
 
-void SnacCliAckOfflineMsgs (Session *sess)
+/*
+ * CLI_ACKOFFLINEMSGS - SNAC(15,2) - 62
+ */
+void SnacCliAckofflinemsgs (Session *sess)
 {
     Packet *pak;
+
     pak = SnacC (sess, 21, 2, 0, 0);
     PacketWriteB2 (pak, 1);  /* TLV(1) */
     PacketWriteB2 (pak, 10);
@@ -914,5 +968,37 @@ void SnacCliAckOfflineMsgs (Session *sess)
     PacketWrite4  (pak, sess->uin);
     PacketWrite2  (pak, 0x3e);
     PacketWrite2  (pak, 2);
+    SnacSend (sess, pak);
+}
+
+/*
+ * CLI_REGISTERUSER - SNAC(17,4)
+ */
+#define _REG_X2 0x28000300
+#define _REG_X3 0x8a4c0000
+#define _REG_X4 0x00000602
+#define REG_X1 0x00010033
+#define REG_X2 0x28000300
+#define REG_X3 0x9e270000
+#define REG_X4 0x00000302
+void SnacCliRegisteruser (Session *sess)
+{
+    Packet *pak;
+    
+    pak = SnacC (sess, 23, 4, 0, 0);
+    PacketWriteB4 (pak, REG_X1 + strlen (sess->passwd));
+    PacketWriteB4 (pak, 0);
+    PacketWriteB4 (pak, REG_X2);
+    PacketWriteB4 (pak, 0);
+    PacketWriteB4 (pak, 0);
+    PacketWriteB4 (pak, REG_X3);
+    PacketWriteB4 (pak, REG_X3);
+    PacketWriteB4 (pak, 0);
+    PacketWriteB4 (pak, 0);
+    PacketWriteB4 (pak, 0);
+    PacketWriteB4 (pak, 0);
+    PacketWriteStrN (pak, sess->passwd);
+    PacketWriteB4 (pak, REG_X3);
+    PacketWriteB4 (pak, REG_X4);
     SnacSend (sess, pak);
 }

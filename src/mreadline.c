@@ -69,10 +69,19 @@ static int cpos = 0;
 static int clen = 0;
 static int istat = 0;
 
+#ifndef ANSI_COLOR
+static char bsbuf[HISTORY_LINE_LEN];
+#endif
+
 void R_init (void)
 {
     int k;
     static int inited = 0;
+    
+#ifndef ANSI_COLOR
+    for (k = 0; k < HISTORY_LINE_LEN; k++)
+        bsbuf[k] = '\b';
+#endif
 
     if (inited)
         return;
@@ -119,7 +128,9 @@ void R_resume (void)
  */
 void R_goto (int pos)
 {
+#ifdef ANSI_COLOR
     int scr, off;
+#endif
 
     assert (pos >= 0);
     
@@ -142,12 +153,13 @@ void R_goto (int pos)
     if (pos < cpos)
         printf (ESC "[%dD", cpos - pos);
 #else
-    while (pos < cpos)
+    if (pos < cpos)
     {
-        printf ("\b");
-        cpos--;
+        printf ("%.*s", cpos - pos, bsbuf);
+        cpos = pos;
     }
 #endif
+
     if (cpos < pos)
         printf ("%.*s", pos - cpos, s + cpos);
     cpos = pos;
