@@ -15,5 +15,5 @@
 2003-09-22: 0.4.10.4: bug fix release, fixes remote DoS, SSL support a la licq,
                       TCL scripting, fixes a few file transfer glitches
 2003-10-06: 0.4.10.5: fixes a bunch of annoying yet easy to fix bugs
-2004-01-17: 0.4.10.6: history seach/dump, avoid deleted new registered UINs by initializing ICQ meta data,
+2004-01-17: 0.4.11:   history seach/dump, avoid deleted new registered UINs by initializing ICQ meta data,
                       bug fixes

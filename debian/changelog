@@ -1,4 +1,4 @@
-micq (1:0.4.10.6-1) unstable; urgency=low
+micq (1:0.4.11-1) unstable; urgency=low
 
   * New upstream release
   + new history dump and search commands

@@ -8,8 +8,8 @@ Standards-Version: 3.5.9
 Package: micq
 Architecture: any
 Depends: ${shlibs:Depends}
-Provides: micq-ssl
-Conflicts: micq-ssl
+Provides: micq
+Conflicts: micq
 Description: text/line based ICQ client with many features
  mICQ is a portable, small, yet powerful console based ICQ client. It
  supports password changing, auto-away, creation of new accounts, searching,
@@ -23,3 +23,68 @@ Description: text/line based ICQ client with many features
  .
  A lot of other ICQ clients are based in spirit on mICQ, nevertheless
  mICQ is still _the_ console based ICQ client.
+ .
+ This package is compiled with support for Tcl and SSL.
+
+Package: micq-notcl
+Architecture: any
+Depends: ${shlibs:Depends}
+Provides: micq
+Conflicts: micq
+Description: text/line based ICQ client with many features [no Tcl]
+ mICQ is a portable, small, yet powerful console based ICQ client. It
+ supports password changing, auto-away, creation of new accounts, searching,
+ file transfer, acknowledged messages, SMS, client identification, logging,
+ scripting, transcoding, multi-UIN usage and other features that makes it a
+ very complete yet simple internationalized client supporting the current
+ ICQ v8 protocol.
+ .
+ It has leading support for (ICQ2002+/ICQ Lite/ICQ2go) unicode encoded
+ messages unreached by other ICQ clones.
+ .
+ A lot of other ICQ clients are based in spirit on mICQ, nevertheless
+ mICQ is still _the_ console based ICQ client.
+ .
+ This package is compiled without support for Tcl, but with support for SSL.
+
+Package: micq-nossl
+Architecture: any
+Depends: ${shlibs:Depends}
+Provides: micq
+Conflicts: micq
+Description: text/line based ICQ client with many features [no SSL]
+ mICQ is a portable, small, yet powerful console based ICQ client. It
+ supports password changing, auto-away, creation of new accounts, searching,
+ file transfer, acknowledged messages, SMS, client identification, logging,
+ scripting, transcoding, multi-UIN usage and other features that makes it a
+ very complete yet simple internationalized client supporting the current
+ ICQ v8 protocol.
+ .
+ It has leading support for (ICQ2002+/ICQ Lite/ICQ2go) unicode encoded
+ messages unreached by other ICQ clones.
+ .
+ A lot of other ICQ clients are based in spirit on mICQ, nevertheless
+ mICQ is still _the_ console based ICQ client.
+ .
+ This package is compiled without support for SSL, but with support for Tcl.
+
+Package: micq-notcl-nossl
+Architecture: any
+Depends: ${shlibs:Depends}
+Provides: micq
+Conflicts: micq
+Description: text/line based ICQ client with many features [no Tcl] [no SSL]
+ mICQ is a portable, small, yet powerful console based ICQ client. It
+ supports password changing, auto-away, creation of new accounts, searching,
+ file transfer, acknowledged messages, SMS, client identification, logging,
+ scripting, transcoding, multi-UIN usage and other features that makes it a
+ very complete yet simple internationalized client supporting the current
+ ICQ v8 protocol.
+ .
+ It has leading support for (ICQ2002+/ICQ Lite/ICQ2go) unicode encoded
+ messages unreached by other ICQ clones.
+ .
+ A lot of other ICQ clients are based in spirit on mICQ, nevertheless
+ mICQ is still _the_ console based ICQ client.
+ .
+ This package is compiled without support for Tcl and SSL.

@@ -22,14 +22,19 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 endif
 ifneq (,$(findstring nossl,$(DEB_BUILD_OPTIONS)))
 	CONFIGURE_OPTIONS += --disable-ssl
+	MYSUBST += -Vwith:ssl=-nossl
+	MYSUBSTSSL = -nossl
 else
         CONFIGURE_OPTIONS += --enable-ssl
 endif
 ifneq (,$(findstring notcl,$(DEB_BUILD_OPTIONS)))
 	CONFIGURE_OPTIONS += --disable-tcl
+	MYSUBST += -Vwith:ssl=-notcl
+	MYSUBSTTCL = -notcl
 else
         CONFIGURE_OPTIONS += --enable-tcl
 endif
+PACKAGE = micq$(MYSUBSTTCL)$(MYSUBSTSSL)
 
 ifeq (,$(MICQ_EXTRAVERSION))
 	MICQ_EXTRAVERSION = Debian hand compiled
@@ -59,7 +64,7 @@ clean:
 install:
 	dh_clean -k
 	dh_testroot
-	$(MAKE) install DESTDIR=`pwd`/debian/micq
+	$(MAKE) install DESTDIR=`pwd`/debian/$(PACKAGE)
 
 binary-indep: build install
 
@@ -68,10 +73,10 @@ binary-arch: build install
 	dh_installdocs
 	
 	dh_installchangelogs ChangeLog
-	install -D -m 644 doc/micq.xpm debian/micq/usr/share/pixmaps/micq.xpm
-	install -D -m 644 doc/micq@48x48.png debian/micq/usr/share/icons/hicolor/48x48/apps/micq.png
-	install -D -m 644 doc/micq@32x32.png debian/micq/usr/share/icons/hicolor/32x32/apps/micq.png
-	install -D -m 644 doc/micq@16x16.png debian/micq/usr/share/icons/hicolor/16x16/apps/micq.png
+	install -D -m 644 doc/micq.xpm debian/$(PACKAGE)/usr/share/pixmaps/micq.xpm
+	install -D -m 644 doc/micq@48x48.png debian/$(PACKAGE)/usr/share/icons/hicolor/48x48/apps/micq.png
+	install -D -m 644 doc/micq@32x32.png debian/$(PACKAGE)/usr/share/icons/hicolor/32x32/apps/micq.png
+	install -D -m 644 doc/micq@16x16.png debian/$(PACKAGE)/usr/share/icons/hicolor/16x16/apps/micq.png
 	dh_installmenu
 	
 	dh_strip
@@ -79,9 +84,9 @@ binary-arch: build install
 	dh_fixperms
 	dh_installdeb
 	dh_shlibdeps
-	dh_gencontrol
+	dh_gencontrol -p $(PACKAGE) $(MYSUBST)
 	dh_md5sums
-	dh_builddeb
+	dh_builddeb -p $(PACKAGE)
 
 binary: install binary-indep binary-arch
 .PHONY: build clean binary-indep binary-arch binary install
