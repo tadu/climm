@@ -1,5 +1,80 @@
 -*- coding: utf-8 -*-
 
+
+2005-02-01 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* add parameter to quit command
+	* add 'verbose sane' for typical verbosity
+	* add peek2 command, alias for getauto away
+	* fix getauto command
+	* apply chat-command patch from gnomeking__at__gmail.com
+	* fix toggling intimate/hidefrom (previously could lead to nothing,
+	  or to becoming visible to everyone)
+	* be 'intimate' for a user for 5min after talking to him
+	* hopefully fix segfault in roster.c
+	* fix \r in messages corrupting terminal output
+	* interpret \r \n \r\n \n\r all as one newline
+	* fix parsing of contacts to better find the longest match
+	* try to fix -u -p -C
+	* actually save connection options
+	* more sk.i18n and man page updates
+	* hide unimplemented contact list functions
+	* fix away for W32
+	* add example ~/.micq/event script
+	* update capability list, detect newer licq versions
+	* add big fat warning to reference version in .i18n file
+	* fix email/web pager messages
+
+2005-01-25 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* fix a few translation strings
+	* fix %s order
+	* add a few new capabilities
+
+2005-01-04 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* fix capability array overflow, now allow 63
+	* update sk.i18n
+	* assume setlocale() to be working correctly if nl_charset() exists
+	* add sk man pages
+	* implement hideack option
+	* ignore trailing white space on add command
+	* allow C for no translation - C locale still sucks
+	* set locale to broken if encoding locale is set
+	* merge man page installation into one Makefile.am
+	* update all en and de man pages
+	* allow for a forth encoding alias - HPUX sucks
+	* fix allocating too few bytes in history/find commands
+	* fix segfault in conv.c
+	* try to fix HPUX iconv
+	* fix a few compiler warnings
+
+2004-12-16 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* compile fixes in OpenSSL code
+	* fix missing @LIBICONV@
+	* ru.i18n update by _Iww_
+	* also search translations in the default base dir
+	* don't open connection twice
+	* use mICQ as my name pre-installed nick
+	* fix color handling
+	* create base dir early
+	* fix bulk adding of contacts
+	* interpret rosterok as empty list
+	* show (wrong) contact for which an upload error occured
+	* do not overwrite contact flags while downloading
+	* show tag and id if verbose
+	* add notab keyword to msg command to suppress addition to tab list
+
+2004-12-04 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* use different option for loading the sbl
+	* fix uninitialized variable on cmd_user.c
+	* #define timelocal mktime if it doesn't exist
+
+2004-11-09 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* fix double-free found by Ralf Kutschenreiter
+	* ru man page update
+
+2004-10-23 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* a bit more syntax in util_syntax.c
+	* add OpenSSL exemption to licence
+
 2004-09-07 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 	* another attempt at fixing -s
 	* check-in missing update
