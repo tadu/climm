@@ -83,14 +83,15 @@ void FlapChannel1 (Session *sess, Packet *pak)
                 FlapCliHello (sess);
                 SnacCliRegisteruser (sess);
             }
-            else if ((sess->connect & CONNECT_MASK) < 3)
-                FlapCliIdent (sess);
-            else
+            else if (sess->connect & 8)
             {
+                assert (tlv);
                 FlapCliCookie (sess, tlv[6].str, tlv[6].len);
                 TLVD (tlv);
                 tlv = NULL;
             }
+            else
+                FlapCliIdent (sess);
             break;
         default:
             M_print (i18n (883, "FLAP channel 1 unknown command %d.\n"), i);
@@ -124,24 +125,23 @@ void FlapChannel4 (Session *sess, Packet *pak)
     }
     else
     {
-        assert ((sess->connect & CONNECT_MASK) == 2 ||
-                (sess->connect & CONNECT_MASK) == 1);
-        assert (tlv[5].len);
-        assert (strchr (tlv[5].str, ':'));
 
-        FlapCliGoodbye (sess);
 
-        if (prG->verbose)
-            M_print (i18n (898, "Redirect to server %s... "), tlv[5].str);
+        if (tlv[5].len)
+        {
+            assert (strchr (tlv[5].str, ':'));
 
-        sess->port = atoi (strchr (tlv[5].str, ':') + 1);
-        *strchr (tlv[5].str, ':') = '\0';
-        sess->server = strdup (tlv[5].str);
-        sess->ip = 0;
+            if (prG->verbose)
+                M_print (i18n (898, "Redirect to server %s... "), tlv[5].str);
 
-        sess->connect = 2;
-        UtilIOConnectTCP (sess);
-        /* connect = 3, 4 */
+            sess->port = atoi (strchr (tlv[5].str, ':') + 1);
+            *strchr (tlv[5].str, ':') = '\0';
+            sess->server = strdup (tlv[5].str);
+            sess->ip = 0;
+
+            sess->connect = 8;
+            UtilIOConnectTCP (sess);
+        }
     }
 }
 

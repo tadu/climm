@@ -37,12 +37,14 @@ struct Session_s
         jump_sess_f *dispatch;
 };
 
-#define CONNECT_MASK      255
-#define CONNECT_OK        128
-#define CONNECT_FAIL      256
-#define CONNECT_SELECT_R 1024
-#define CONNECT_SELECT_W 2048
-#define CONNECT_SELECT_X 4096
+#define CONNECT_MASK       255
+#define CONNECT_OK         128
+#define CONNECT_FAIL       256
+#define CONNECT_SELECT_R  1024
+#define CONNECT_SELECT_W  2048
+#define CONNECT_SELECT_X  4096
+#define CONNECT_SOCKS_ADD 8192
+#define CONNECT_SOCKS    61440
 
 Session    *SessionC     (void);
 Session    *SessionClone (Session *sess);

@@ -211,8 +211,14 @@ void Initalize_RC_File ()
 
     sesst->assoc = sess;
     sess->assoc = sesst;
-    sesst->spref->type = TYPE_PEER | TYPE_AUTOLOGIN;
+    if (uin)
+        sesst->spref->type = TYPE_PEER | TYPE_AUTOLOGIN;
+    sesst->type = sesst->spref->type;
     sesst->spref->version = 6;
+    sesst->ver = 6;
+
+    if (uin)
+        Save_RC ();
 
     prG->status = STATUS_ONLINE;
     prG->flags = FLAG_COLOR | FLAG_LOG | FLAG_LOG_ONOFF | FLAG_DELBS;
@@ -654,6 +660,7 @@ void Read_RC_File (FILE *rcf)
         sess->status = sess->spref->status;
         sess->uin    = sess->spref->uin;
         sess->ver    = sess->spref->version;
+        sess->type   = sess->spref->type;
         if (sess->spref->type & (TYPE_SERVER | TYPE_SERVER_OLD))
             oldsess = sess;
     }
@@ -662,8 +669,8 @@ void Read_RC_File (FILE *rcf)
     {
         M_print (i18n (189, "UIN = %ld\n"),    oldsess->spref->uin);
         M_print (i18n (190, "port = %ld\n"),   oldsess->spref->port);
-        M_print (i18n (191, "passwd = %s\n"),  oldsess->spref->passwd);
-        M_print (i18n (192, "server = %s\n"),  oldsess->spref->server);
+        M_print (i18n (191, "passwd = %s\n"),  oldsess->spref->passwd ? oldsess->spref->passwd : "[none]");
+        M_print (i18n (192, "server = %s\n"),  oldsess->spref->server ? oldsess->spref->server : "[none]");
         M_print (i18n (193, "status = %ld\n"), oldsess->spref->status);
         M_print (i18n (196, "Message_cmd = %s\n"), CmdUserLookupName ("msg"));
         M_print ("flags: %08x\n", prG->flags);

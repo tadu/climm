@@ -167,11 +167,15 @@ void R_goto (int pos)
 
 void R_rlap (const char *s)
 {
-   int pos = cpos;
-   printf (s);
-   printf (ESC "[J");
-   cpos += strlen (s);
-   R_goto (pos);
+    int pos = cpos;
+    printf (s);
+    printf (ESC "[J");
+    cpos += strlen (s);
+#ifdef ANSI_COLOR
+    if ((M_pos () + cpos) % Get_Max_Screen_Width() == 0)
+        printf (" \b");
+#endif
+    R_goto (pos);
 }
 
 
@@ -246,7 +250,7 @@ int R_process_input (void)
                 case 11:       /* ^K, as requested by Bernhard Sadlowski */
                     clen = cpos;
                     s[cpos] = '\0';
-                    R_rlap ("");
+                    printf (ESC "[J");
                     break;
                 case '\n':
                 case '\r':
@@ -324,8 +328,7 @@ int R_process_input (void)
             clen++;
             s[clen] = 0;
             printf ("%c", ch);
-            if (strlen (s + cpos))
-                R_rlap (s + cpos);
+            R_rlap (s + cpos);
         }
         return 0;
     }

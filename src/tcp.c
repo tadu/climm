@@ -204,7 +204,7 @@ void TCPDispatchMain (Session *sess)
 void TCPDispatchConn (Session *sess)
 {
     Contact *cont;
-    int flags, rc;
+    int rc;
     
     ASSERT_DIRECT (sess);
     
@@ -234,37 +234,12 @@ void TCPDispatchConn (Session *sess)
                 
                 M_print (i18n (631, "Opening TCP connection to %s%s%s at %s:%d... "),
                              COLCONTACT, cont->nick, COLNONE, UtilIOIP (sess->ip), sess->port);
-                UtilIOConnectTCP (sess);
-                switch (sess->connect & CONNECT_MASK)
-                {
-                    case 0:
-                        sess->connect = 3;
-                        break;
-                    case 1:
-                        QueueEnqueueData (queue, sess, sess->ip, QUEUE_TYPE_TCP_TIMEOUT,
-                                          cont->uin, time (NULL) + 10,
-                                          NULL, NULL, &TCPCallBackTOConn);
-                        return;
-                    case 2:
-                        sess->connect = TCP_STATE_CONNECTED;
-                        break;
-                }
+                if (!UtilIOConnectTCP (sess))
+                    return;
                 break;
             case 1:
-                flags = sizeof (int);
-                if (getsockopt (sess->sok, SOL_SOCKET, SO_ERROR, &rc, &flags) < 0)
-                    rc = errno;
-                if (!rc)
-                {
-                    sess->connect = TCP_STATE_CONNECTED;
-                    break;
-                }
-                QueueDequeue (queue, sess->ip, QUEUE_TYPE_TCP_TIMEOUT);
-            case 2:
-                if (!rc)
-                    rc = ETIMEDOUT;
-                sockclose (sess->sok);
-                M_print (i18n (634, "Connection failed: %s (%d)\n"), strerror (rc), rc);
+                UtilIOAgain (sess);
+                break;
             case 3:
                 if (!cont->local_ip || !cont->port)
                 {
@@ -279,39 +254,12 @@ void TCPDispatchConn (Session *sess)
                 M_print (i18n (631, "Opening TCP connection to %s%s%s at %s:%d... "),
                              COLCONTACT, cont->nick, COLNONE, UtilIOIP (sess->ip), sess->port);
 
-                UtilIOConnectTCP (sess);
-                /* connect = 4,5 */
-                
-                switch (sess->connect)
-                {
-                    case 0:
-                        sess->connect = 5;
-                        break;
-                    case 4:
-                        QueueEnqueueData (queue, sess, sess->ip, QUEUE_TYPE_TCP_TIMEOUT,
-                                          cont->uin, time (NULL) + 10,
-                                          NULL, NULL, &TCPCallBackTOConn);
-                        return;
-                    case 5:
-                        sess->connect = TCP_STATE_CONNECTED;
-                        break;
-                }
+                if (!UtilIOConnectTCP (sess))
+                    return;
                 break;
             case 4:
-                flags = sizeof (int);
-                if (getsockopt (sess->sok, SOL_SOCKET, SO_ERROR, &rc, &flags) < 0)
-                    rc = errno;
-                if (!rc)
-                {
-                    sess->connect = TCP_STATE_CONNECTED;
-                    break;
-                }
-                QueueDequeue (queue, sess->ip, QUEUE_TYPE_TCP_TIMEOUT);
-            case 5:
-                if (!rc)
-                    rc = ETIMEDOUT;
-                sockclose (sess->sok);
-                M_print (i18n (634, "Connection failed: %s (%d)\n"), strerror (rc), rc);
+                UtilIOAgain (sess);
+                break;
             case 6:
             {
                 if (sess->assoc && sess->assoc->assoc && sess->assoc->assoc->ver < 7)
@@ -328,8 +276,9 @@ void TCPDispatchConn (Session *sess)
                 sess->sok = -1;
                 return;
             }
+            case 2:
+            case 5:
             case TCP_STATE_CONNECTED:
-                QueueDequeue (queue, sess->ip, QUEUE_TYPE_TCP_TIMEOUT);
                 if (prG->verbose)
                 {
                     M_print (i18n (779, "Opening TCP connection to %s at %s:%d... "), cont->nick, UtilIOIP (sess->ip), sess->port);
@@ -343,7 +292,6 @@ void TCPDispatchConn (Session *sess)
                 TCPSendInit (sess);
                 return;
             case TCP_STATE_WAITING:
-                QueueDequeue (queue, sess->ip, QUEUE_TYPE_TCP_TIMEOUT);
                 M_print (i18n (855, "TCP connection to %s at %s:%d failed.\n") , cont->nick, UtilIOIP (sess->ip), sess->port);
                 sess->connect = -1;
                 sess->sok = -1;
@@ -977,7 +925,7 @@ void TCPCallBackResend (struct Event *event)
         if (peer->connect & CONNECT_OK)
         {
             Time_Stamp ();
-            M_print (" " COLCONTACT "%10s" COLNONE " %s%s\n", cont->nick, MSGTCPSENTSTR, event->info);
+            M_print (" " CYAN BOLD "%10s" COLNONE " %s%s\n", cont->nick, MSGTCPSENTSTR, event->info);
 
             event->attempts++;
             TCPSendPacket (pak, peer);

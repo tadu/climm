@@ -37,14 +37,10 @@ void SessionInitServer (Session *sess)
     sess->dispatch = &SrvCallBackReceive;
     sess->server = strdup (sess->spref->server);
     sess->type = TYPE_SERVER;
+    QueueEnqueueData (queue, sess, sess->our_seq, sess->connect,
+                      sess->uin, time (NULL) + 10,
+                      NULL, NULL, &SrvCallBackTimeout);
     UtilIOConnectTCP (sess);
-    
-    if (sess->connect)
-    {
-        QueueEnqueueData (queue, sess, sess->our_seq, sess->connect,
-                          sess->uin, time (NULL) + 10,
-                          NULL, NULL, &SrvCallBackTimeout);
-    }
 }
 
 void SrvCallBackTimeout (struct Event *event)
@@ -74,6 +70,22 @@ void SrvCallBackTimeout (struct Event *event)
 void SrvCallBackReceive (Session *sess)
 {
     Packet *pak;
+
+    if (!(sess->connect & CONNECT_OK))
+    {
+        switch (sess->connect & 3)
+        {
+            case 1:
+                UtilIOAgain (sess);
+                return;
+            case 2:
+                sess->connect |= CONNECT_OK | CONNECT_SELECT_R;
+                return;
+            case 3:
+                sess->connect = 0;
+        }
+        return;
+    }
 
     pak = UtilIOReceiveTCP (sess);
     

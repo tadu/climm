@@ -420,64 +420,139 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
     Packet *p, *pak;
     TLV *tlv;
     UDWORD uin;
-    int i, len;
+    int i, len, type, t;
     const char *text;
 
     pak = event->pak;
 
-    PacketReadB4 (pak); /* TIME */
-    PacketReadB2 (pak); /* RANDOM */
-    PacketReadB2 (pak); /* ??? */
+           PacketReadB4 (pak); /* TIME */
+           PacketReadB2 (pak); /* RANDOM */
+           PacketReadB2 (pak); /* WARN */
+    type = PacketReadB2 (pak);
+    uin =  PacketReadUIN (pak);
+           PacketReadB2 (pak); /* WARNING */
+           PacketReadB2 (pak); /* COUNT */
+    
+    UtilCheckUIN (event->sess, uin);
+    cont = ContactFind (uin);
+    tlv = TLVRead (pak);
 
-    switch (PacketReadB2 (pak))
+    if (tlv[6].len && cont)
+        UtilUIUserOnline (cont, tlv[6].nr);
+
+    /* tlv[2] may be there twice - ignore the member since time(NULL). */
+    if (tlv[2].len == 4)
+    {
+        for (i = 16; i < 20; i++)
+            if (tlv[i].tlv == 2)
+            {
+                int typ = tlv[i].tlv, len = tlv[i].len, nr = tlv[i].nr;
+                const char *str = tlv[i].str;
+                tlv[i].tlv = tlv[2].tlv; tlv[i].len = tlv[2].len;
+                tlv[i].nr  = tlv[2].nr;  tlv[i].str = tlv[2].str;
+                tlv[2].tlv = typ; tlv[2].len = len;
+                tlv[2].nr  = nr;  tlv[2].str = str;
+            }
+    }
+
+    switch (type)
     {
         case 1:
-            uin = PacketReadUIN (pak);
-            cont = ContactFind (uin);
-            PacketReadB2 (pak); /* WARNING */
-            PacketReadB2 (pak); /* COUNT */
+            if (!tlv[2].len)
+            {
+                SnacSrvUnknown (event);
+                return;
+            }
+
+            p = TLVPak (tlv + 2);
+            PacketReadB2 (p);
+            for (len = PacketReadB2 (p); len > 0; len--)
+                PacketRead1 (p);
+            PacketReadB2 (p);
+            len = PacketReadBAt2 (p, PacketReadPos (p));
+            text = PacketReadStrB (p);
+
+            Time_Stamp ();
+            M_print (" " CYAN BOLD "%10s" COLNONE " ",
+                     ContactFindName (uin));
+            Do_Msg (event->sess, NORM_MESS, len - 4, text + 4, uin, 0);
+            free ((char *)text);
+
+            /* TLV 1, 2(!), 3, 4, f ignored */
+            if (prG->sound & SFLAG_CMD)
+                ExecScript (prG->sound_cmd, uin, 0, NULL);
+            else if (prG->sound & SFLAG_BEEP)
+                printf ("\a");
+            return;
+        case 2:
+            p = TLVPak (tlv + 5);
+            type = PacketReadB2 (p); /* ACKTYPE */
+                   PacketReadB4 (p); /* TIME */
+                   PacketReadB2 (p); /* RANDOM */
+                   PacketReadB2 (p); /* UNKNOWN */
+                   PacketReadB4 (p); PacketReadB4 (p); PacketReadB4 (p); PacketReadB4 (p); /* CAP */
             tlv = TLVRead (pak);
-
-            if (tlv[6].len && cont)
-                UtilUIUserOnline (cont, tlv[6].nr);
-
-            if (tlv[2].len == 4)
+            for (i = 16; i < 20; i++)
+                if (tlv[i].nr == 0x2711)
+                    break;
+            if (i == 20)
             {
-                for (i = 16; i < 20; i++)
-                    if (tlv[i].tlv == 2)
-                    {
-                        int typ = tlv[i].tlv, len = tlv[i].len, nr = tlv[i].nr;
-                        const char *str = tlv[i].str;
-                        tlv[i].tlv = tlv[2].tlv; tlv[i].len = tlv[2].len;
-                        tlv[i].nr  = tlv[2].nr;  tlv[i].str = tlv[2].str;
-                        tlv[2].tlv = typ; tlv[2].len = len;
-                        tlv[2].nr  = nr;  tlv[2].str = str;
-                    }
+                SnacSrvUnknown (event);
+                return;
             }
-
-            if (tlv[2].len > 4)
+            p = TLVPak (tlv + i);
+            if (PacketRead1 (p) != 0x1b)
             {
-                p = TLVPak (tlv + 2);
-                PacketReadB2 (p);
-                for (len = PacketReadB2 (p); len > 0; len--)
-                    PacketRead1 (p);
-                PacketReadB2 (p);
-                len = PacketReadBAt2 (p, PacketReadPos (p));
-                text = PacketReadStrB (p);
-
-                Time_Stamp ();
-                M_print (" " CYAN BOLD "%10s" COLNONE " ",
-                         ContactFindName (uin));
-                Do_Msg (event->sess, NORM_MESS, len - 4, text + 4, uin, 0);
-                free ((char *)text);
+                SnacSrvUnknown (event);
+                return;
             }
+            t = PacketReadB2 (p);
+            if (cont)
+                cont->TCP_version = t;
+            PacketRead1 (p); /* UNKNOWN */
+            PacketRead4 (p); PacketRead4 (p); PacketRead4 (p); PacketRead4 (p); /* CAP */
+            PacketRead1 (p); PacketRead2 (p); /* UNKNOWN */
+            PacketReadB4 (p); /* UNKNOWN */
+            PacketReadB2 (p); /* SEQ1 */
+            PacketReadB2 (p); /* UNKNOWN */
+            PacketReadB2 (p); /* SEQ2 */
+            PacketRead4 (p); PacketRead4 (p); PacketRead4 (p); /* UNKNOWN */
+            type = PacketRead1 (p);
+                   PacketRead1 (p); /* FLAGS */
+            PacketReadB2 (p); /* UNKNOWN */
+            PacketReadB2 (p); /* UNKNOWN */
+            text = PacketReadStrN (p);
+            /* FOREGROUND / BACKGROUND ignored */
+            
+            Time_Stamp ();
+            M_print (" " CYAN BOLD "%10s" COLNONE " ", ContactFindName (uin));
+            Do_Msg (event->sess, type, strlen (text), text, uin, 0);
+
             /* TLV 1, 2(!), 3, 4, f ignored */
             if (prG->sound & SFLAG_CMD)
                 ExecScript (prG->sound_cmd, uin, 0, NULL);
             else if (prG->sound & SFLAG_BEEP)
                 printf ("\a");
             break;
-        case 2:
+        case 4:
+            p = TLVPak (tlv + 5);
+            uin  = PacketRead4 (p);
+            type = PacketRead1 (p);
+                   PacketRead1 (p);
+            text = PacketReadStrN (p);
+            /* FOREGROUND / BACKGROUND ignored */
+            
+            Time_Stamp ();
+            M_print (" " CYAN BOLD "%10s" COLNONE " ", ContactFindName (uin));
+            Do_Msg (event->sess, type, strlen (text), text, uin, 0);
+
+
+            /* TLV 1, 2(!), 3, 4, f ignored */
+            if (prG->sound & SFLAG_CMD)
+                ExecScript (prG->sound_cmd, uin, 0, NULL);
+            else if (prG->sound & SFLAG_BEEP)
+                printf ("\a");
+            break;
         default:
             SnacSrvUnknown (event);
             break;
@@ -824,7 +899,7 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, char *text, UDWORD type)
     UBYTE format;
     
     Time_Stamp ();
-    M_print (" " COLACK "%10s" COLNONE " " MSGACKSTR "%s\n", ContactFindName (uin), MsgEllipsis (text));
+    M_print (" " COLACK "%10s" COLNONE " " MSGSENTSTR "%s\n", ContactFindName (uin), MsgEllipsis (text));
     
     switch (type)
     {
