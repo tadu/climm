@@ -1,3 +1,6 @@
+2002-07-10 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* es translation by Alberto  Bertogli (albertogli@telpin.com.ar)
+	* lower requirement for gethostbyname() for BeOS
 
 2002-07-04 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Fix Russian/Japanese.
@@ -12,6 +15,8 @@
 	* sync and update man page and run-time help texts
 	* de_DE
 	* fr_FR translation by Guillaume Coqueblin <esquimo_2ooo@caramail.com>
+	* use v8 for p2p for wizard
+	* 0.4.9
 
 2002-05-25 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* tcp.c: s/TYPE_PEER/TYPE_LISTEN; get rid of assert()s; mem leaks;

@@ -35,6 +35,13 @@ const char *hstrerror (int rc)
 }
 #endif
 
+#ifndef HAVE_GETHOSTBYNAME
+struct hostent *gethostbyname(const char *name)
+{
+    return NULL;
+}
+#endif
+
 #define BACKLOG 10
 
 static void UtilIOTOConn (struct Event *event);

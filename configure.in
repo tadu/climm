@@ -56,12 +56,16 @@ AC_CHECK_FUNCS([atexit gethostbyname memmove memset mkdir select socket strcasec
                 symlink chmod tcgetattr hstrerror])
 
 # vprintf stat malloc \
-for f in gethostbyname memset memmove mkdir select socket atexit \
+for f in memset memmove mkdir select socket atexit \
          strcasecmp strchr strdup strncasecmp strpbrk strrchr strstr strtol; do
     if eval test "x\$ac_cv_func_$f" != "xyes"; then
         AC_MSG_ERROR([Required function $f is missing. Sorry.])
     fi
 done
+
+if test "x$ac_cv_func_gethostbyname" != "xyes"; then
+    AC_MSG_WARN([Function gethostbyname() not found; you will need to specify all host names as IP addresses.])
+fi
 
 if test "x$GCC" = xyes; then
     CFLAGS="$CFLAGS -Wall"
