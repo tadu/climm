@@ -278,7 +278,7 @@ void ContactSetVersion (Contact *cont)
     }
 #endif
 
-    if ((cont->id1 & 0xffff0000) == 0xffff0000)
+    else if ((cont->id1 & 0xffff0000) == 0xffff0000)
     {
         v1 = (cont->id2 & 0x7f000000) >> 24;
         v2 = (cont->id2 &   0xff0000) >> 16;
@@ -341,13 +341,13 @@ void ContactSetVersion (Contact *cont)
         new = "ICQ 2001";
     else if (HAS_CAP (cont->caps, CAP_MACICQ))
         new = "ICQ for Mac";
-    else if (HAS_CAP (cont->caps, CAP_IS_2002))
+    else if (cont->TCP_version == 8 && HAS_CAP (cont->caps, CAP_IS_2002))
         new = "ICQ 2002 (?)";
-    else if (HAS_CAP (cont->caps, CAP_IS_2001))
+    else if (cont->TCP_version == 8 && HAS_CAP (cont->caps, CAP_IS_2001))
         new = "ICQ 2001 (?)";
     else if (HAS_CAP (cont->caps, CAP_AIM_CHAT))
         new = "AIM(?)";
-    else if (!HAS_CAP (cont->caps, CAP_RTFMSGS))
+    else if (cont->TCP_version == 7 && !HAS_CAP (cont->caps, CAP_RTFMSGS))
         new = "ICQ 2000 (?)";
     
     if (new)
