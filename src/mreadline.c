@@ -1326,7 +1326,7 @@ void M_print (const char *org)
 void M_printf (const char *str, ...)
 {
     va_list args;
-    char buf[4048];
+    char buf[8 * 1024];
 
     va_start (args, str);
     vsnprintf (buf, sizeof (buf), str, args);

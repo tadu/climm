@@ -258,7 +258,7 @@ void UtilIOConnectUDP (Connection *conn)
     if (conct == -1)            /* did we connect ? */
     {
         if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
-            M_printf (i18n (1966, " Conection Refused on port %ld at %s\n"), conn->port, conn->server);
+            M_printf (i18n (1966, " Connection refused on port %ld at %s\n"), conn->port, conn->server);
         conn->sok = -1;
         return;
     }

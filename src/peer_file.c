@@ -112,7 +112,7 @@ UBYTE PeerFileRequested (Connection *peer, const char *files, UDWORD bytes)
     if (stat (buf, &finfo))
     {
         M_printf ("%s " COLACK "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-        M_printf (i18n (2193, "Directory %s does not exists.\n"), buf);
+        M_printf (i18n (2193, "Directory %s does not exist.\n"), buf);
         return 0;
     }
     

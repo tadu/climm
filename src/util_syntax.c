@@ -43,7 +43,7 @@ static const char *syntable[] = {
     "s4x2s",   "W-",
     "s4x4s",   "",
     "s4x5s",   "W-",
-    "s4x6s",   "DDW[1uWWt[2t[257D]-]-][2uWWt[5WDDCt[10001(wCwdbw)WWDDDWWWLDDS]-]-][4uWWt[5DWL]-]",
+    "s4x6s",   "DDW[1uWWt[2t[257D]-]-][2ut[5WDDCt[10001(wCwdbw)wwdddwwwLDDS]-]-][4uWWt[5DWL]-]",
     "s4x7s",   "DDW[1uWWt[2t[257D]-]-][2uWWt[5WDDCt[10001(wCwdbw)wwdddwwwLDDS]-]-][4uWWt[5DWL]-]",
     "s4x11s",  "DDwuW(wCwdbw)wwdddwwwLDD",
     "s4x12s",  "DDwu",
@@ -58,7 +58,8 @@ static const char *syntable[] = {
     "s19x3s",  "t-",
     "s19x4s",  "",
     "s19x5s",  "DW",
-    "s19x6s",  "",
+    "s19x6s",  "bWgs19x6cs",
+    "s19x6cs", "BWWW<t-)gs19x6cs",
     "s19x7s",  "",
     "s19x8s",  "uWWWWt-",
     "s19x9s",  "BWWWWt-",
@@ -258,19 +259,24 @@ char *PacketDump (Packet *pak, const char *syntax)
                 pak->rpos += len + 4;
                 continue;
             case '(':
-                len = PacketReadAt2 (pak, pak->rpos);
+            case '<':
+                if (*f == '<')
+                    len = PacketReadAtB2 (pak, pak->rpos);
+                else
+                    len = PacketReadAt2 (pak, pak->rpos);
                 if (pak->len < pak->rpos + 2 + len) break;
                 t = s_cat  (t, &size, s_dumpnd (pak->data + pak->rpos, 2));
-                t = s_catf (t, &size, " " COLDEBUG "DWORD.L  \"%s\"" COLNONE "\n", f);
+                t = s_catf (t, &size, " " COLDEBUG "DWORD.%c  \"%s\"" COLNONE "\n", *f == '<' ? 'B' : 'L', f);
                 p = PacketCreate (pak->data + pak->rpos + 2, len);
                 pak->rpos += len + 2;
-                t = s_cat  (t, &size, s_ind (tmp = PacketDump (p, ++f)));
+                if (*(tmp = PacketDump (p, ++f)))
+                    t = s_cat  (t, &size, s_ind (tmp));
                 PacketD (p);
                 free (tmp);
                 p = NULL;
                 for (lev = 1; *f && lev; f++)
                 {
-                    if (strchr ("()", *f))
+                    if (strchr ("<()", *f))
                         lev += (*f == ')' ? -1 : 1);
                 }
                 f--;
