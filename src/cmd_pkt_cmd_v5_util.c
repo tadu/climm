@@ -395,8 +395,8 @@ void UDPCallBackResend (Event *event)
                     ConvUnixWin (data);
                     strcpy (url_data, data);
 
-                    M_print (i18n (1628, " Description: " COLMESSAGE "%s" COLNONE "\n"), url_desc);
-                    M_print (i18n (1629, " URL:         " COLMESSAGE "%s" COLNONE), url_data);
+                    M_print (i18n (2128, " Description: %s%s%s\n"), COLMESSAGE, url_desc, COLNONE);
+                    M_print (i18n (2129, "         URL: %s%s%s\n"), COLMESSAGE, url_data, COLNONE);
                 }
             }
             else if ((type & ~MESSF_MASS) == NORM_MESS)

@@ -1,4 +1,3 @@
-
 /*
  * Handles commands the user sends.
  *
@@ -178,15 +177,14 @@ static JUMP_F(CmdUserChange)
     {
         if (!UtilUIParseInt (&args, &data))
         {
-            M_print (i18n (1703, COLCLIENT "Status modes: \n"));
+            M_print (i18n (1703, "Status modes:\n"));
             M_print ("  %-20s %d\n", i18n (1921, "Online"),         STATUS_ONLINE);
             M_print ("  %-20s %d\n", i18n (1923, "Away"),           STATUS_AWAY);
             M_print ("  %-20s %d\n", i18n (1922, "Do not disturb"), STATUS_DND);
             M_print ("  %-20s %d\n", i18n (1924, "Not Available"),  STATUS_NA);
             M_print ("  %-20s %d\n", i18n (1927, "Free for chat"),  STATUS_FFC);
             M_print ("  %-20s %d\n", i18n (1925, "Occupied"),       STATUS_OCC);
-            M_print ("  %-20s %d",   i18n (1926, "Invisible"),      STATUS_INV);
-            M_print (COLNONE "\n");
+            M_print ("  %-20s %d\n", i18n (1926, "Invisible"),      STATUS_INV);
             return 0;
         }
     }
@@ -222,7 +220,7 @@ static JUMP_F(CmdUserRandom)
     
     if (!UtilUIParseInt (&args, &arg1))
     {
-        M_print (i18n (1704, COLCLIENT "Groups: \n"));
+        M_print (i18n (1704, "Groups:\n"));
         M_print ("  %2d %s\n",  1, i18n (1705, "General"));
         M_print ("  %2d %s\n",  2, i18n (1706, "Romance"));
         M_print ("  %2d %s\n",  3, i18n (1707, "Games"));
@@ -234,7 +232,6 @@ static JUMP_F(CmdUserRandom)
         M_print ("  %2d %s\n", 10, i18n (1713, "Man chat requesting women"));
         M_print ("  %2d %s\n", 11, i18n (1714, "Woman chat requesting men"));
         M_print ("  %2d %s\n", 49, i18n (1715, "mICQ"));
-        M_print (COLNONE "\n");
     }
     else
     {
@@ -256,7 +253,7 @@ static JUMP_F(CmdUserRandomSet)
     
     if (!UtilUIParseInt (&args, &arg1))
     {
-        M_print (i18n (1704, COLCLIENT "Groups: \n"));
+        M_print (i18n (1704, "Groups:\n"));
         M_print ("  %2d %s\n", sess->ver > 6 ? 0 : -1, i18n (1716, "None"));
         M_print ("  %2d %s\n",  1, i18n (1705, "General"));
         M_print ("  %2d %s\n",  2, i18n (1706, "Romance"));
@@ -269,7 +266,6 @@ static JUMP_F(CmdUserRandomSet)
         M_print ("  %2d %s\n", 10, i18n (1713, "Man chat requesting women"));
         M_print ("  %2d %s\n", 11, i18n (1714, "Woman chat requesting men"));
         M_print ("  %2d %s\n", 49, i18n (1715, "mICQ"));
-        M_print (COLNONE "\n");
     }
     else
     {
@@ -1108,11 +1104,11 @@ static JUMP_F (CmdUserMessage)
         }
         multi_uin = uin;
         if (uin == -1)
-            M_print (i18n (1664, "Composing message to " COLCONTACT "all" COLNONE ":\n"));
+            M_print (i18n (2130, "Composing message to %sall%s:\n"), COLCONTACT, COLNONE);
         else if (ContactFindNick (uin))
-            M_print (i18n (1739, "Composing message to " COLCONTACT "%s" COLNONE ":\n"), ContactFindNick (uin));
+            M_print (i18n (2131, "Composing message to %s%s%s:\n"), COLCONTACT, ContactFindNick (uin), COLNONE);
         else
-            M_print (i18n (1740, "Composing message to " COLCLIENT "%d" COLNONE ":\n"), uin);
+            M_print (i18n (2132, "Composing message to %s%d%s:\n"), COLCONTACT, uin, COLNONE);
         offset = 0;
         status = data;
     }
@@ -1674,9 +1670,11 @@ static JUMP_F(CmdUserSet)
         if (!quiet)
         {
             if (prG->flags & FLAG_COLOR)
-                M_print (i18n (1195, "Color is " COLMESSAGE "%s" COLNONE ".\n"), i18n (1085, "on"));
+                M_print (i18n (2133, "Color is %s%s%s.\n"),
+                         COLMESSAGE, i18n (1085, "on"), COLNONE);
             else
-                M_print (i18n (1195, "Color is " COLMESSAGE "%s" COLNONE ".\n"), i18n (1086, "off"));
+                M_print (i18n (2133, "Color is %s%s%s.\n"),
+                         COLMESSAGE, i18n (1086, "off"), COLNONE);
         }
     }
     else if (!strcmp (arg1, "funny"))
@@ -1696,9 +1694,11 @@ static JUMP_F(CmdUserSet)
         if (!quiet)
         {
             if (prG->flags & FLAG_FUNNY)
-                M_print (i18n (1821, "Funny messages are " COLMESSAGE "%s" COLNONE ".\n"), i18n (1085, "on"));
+                M_print (i18n (2134, "Funny messages are %s%s%s.\n"),
+                         COLMESSAGE, i18n (1085, "on"), COLNONE);
             else
-                M_print (i18n (1821, "Funny messages are " COLMESSAGE "%s" COLNONE ".\n"), i18n (1086, "off"));
+                M_print (i18n (2134, "Funny messages are %s%s%s.\n"),
+                         COLMESSAGE, i18n (1086, "off"), COLNONE);
         }
     }
     else if (!strcmp (arg1, "quiet"))
@@ -1718,9 +1718,11 @@ static JUMP_F(CmdUserSet)
         if (!quiet)
         {
             if (prG->flags & FLAG_QUIET)
-                M_print (i18n (2019, "Quiet output is " COLMESSAGE "%s" COLNONE ".\n"), i18n (1085, "on"));
+                M_print (i18n (2135, "Quiet output is %s%s%s.\n"),
+                         COLMESSAGE, i18n (1085, "on"), COLNONE);
             else
-                M_print (i18n (2019, "Quiet output is " COLMESSAGE "%s" COLNONE ".\n"), i18n (1086, "off"));
+                M_print (i18n (2135, "Quiet output is %s%s%s.\n"),
+                         COLMESSAGE, i18n (1086, "off"), COLNONE);
         }
     }
     else

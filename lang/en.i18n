@@ -1,5 +1,5 @@
 # $Id$ English (English)
-#  EN: build.i18n,v 1.40 2002/09/09 14:23:10
+#  EN: __.i18n,v 1.43 2002/09/10 02:20:59
 1001:en
 1002:en_US
 1003:0-4-9-3
@@ -52,7 +52,8 @@
 1055:Socket creation failed
 1056:Socket created attempting to connect¶
 1060:Verbosity level is %d.¶
-1061:'%s' not recognized as a nick name.¶
+#-#1061:'%s' not recognized as a nick name.¶
+#1061:'%s' not recognized as a nick name.¶
 1062:Users ignored:
 1063:Enter password:
 1064:Auto-Changed status to
@@ -175,9 +176,7 @@
 1191:passwd = %s¶
 1192:server = %s¶
 1193:status = %ld¶
-1195:Color is ©3%s©0.¶
 1196:Message_cmd = %s¶
-1197:Password change was ©2%s©0.¶
 1198:Other Services
 1199:Unknown country
 1200:Not entered
@@ -375,10 +374,6 @@
 1392:Zimbabwe
 1393:successful
 1394:unsuccessful
-1395:About info change was ©2%s©0.¶
-1396:Info change was ©2%s©0.¶
-1397:Other info change was ©2%s©0.¶
-1398:Search ©2failed©0.
 1400:Shows locally stored info on user.
 1401:Updates more user info like age and sex.
 1402:Updates your about user info.
@@ -536,8 +531,8 @@
 1564:First name:
 1565:Last name:
 1566:Email address:
-1567:No authorization needed.©0 
-1568:Must request authorization.©0 
+#1567:No authorization needed.
+#1568:Must request authorization.
 1570:City:
 1574:State:
 1575:Age:
@@ -545,13 +540,12 @@
 1579:Enter company: 
 1584:Warning! Script command '%s' failed with exit value %d¶
 1585:Ack!!!!!!!  Bad packet¶
-1586:¶©4%s©0 
 1587:Enter department: 
-1590:©4%10s©0 has requested your authorization to be added to their contact list.¶
+#1590:has requested your authorization to be added to their contact list.
 1591:Reason:
 1592:<%s> emailed you a message:¶
 1593:<%s> send you a web message:¶
-1595:¶Contact List.¶©3============================================¶©0%d Contacts¶
+#1595:¶Contact List.¶============================================¶%d Contacts¶
 1596:[SOCKS] Can't find hostname %s: %s.
 1597:[SOCKS] Socket creation failed¶
 1598:[SOCKS] Connection request refused
@@ -580,8 +574,6 @@
 1622:Do you want to apply these changes? (YES/NO)
 1623:Doubled packet %04X¶
 1624:Sorry, can't initialize Windows Sockets...
-1628: Description: ©3%s©0¶
-1629: URL:         ©3%s©0
 1632:¶Connection unstable. Exiting....
 1634:ok¶
 1637:Can't bind socket to free port¶
@@ -592,9 +584,9 @@
 1642:IP
 1643:Acknowleged SRV_X1 0x021C Done Contact list?¶
 1644:Acknowleged SRV_X2 0x00E6 Done old messages?¶
-1645:©3You entered an incorrect password.©0¶
-1646:©3Server is busy.¶
-1648: ©2The response was %04X	
+#1645:You entered an incorrect password.¶
+#1646:Server is busy.¶
+#1648:The response was %04X	
 1649:The version was %X	
 1650:¶The SEQ was %04X	
 1651:The size was %d¶
@@ -608,7 +600,6 @@
 1659:Unknown section %s in configuration file.
 1660:Invalid Command: %s¶
 1661:Shell commands have been disabled.¶
-1664:Composing message to ©4all©0:¶
 1666:Unignored %s.
 1667:Ignoring %s.
 1670:Normal visible to %s now.
@@ -617,7 +608,8 @@
 1673:	The port is %d¶
 1674:	The port is unknown¶
 1675:Ignored line:
-1676:Need uin/nick to send to.¶
+#-#1676:Need uin/nick to send to.¶
+#1676:Need uin/nick to send to.¶
 1678:Need URL please.¶
 1679:Sorry saving your personal reply messages went wrong!¶
 1680:Your personal settings have been saved!¶
@@ -631,20 +623,32 @@
 1692:Contacts:
 1696:Sex:
 1700:%s is not a valid user in your list.¶
-1703:©2Status modes: ¶
-1704:©2Groups: ¶
-1705:General
-1706:Romance
-1707:Games
-1708:Students
-1709:20 something
-1710:30 something
-1711:40 something
-1712:50+
-1713:Man chat requesting women
-1714:Woman chat requesting men
-1715:mICQ
-1716:None
+#-#1705:General
+#-#1706:Romance
+#-#1707:Games
+#-#1708:Students
+#-#1709:20 something
+#-#1710:30 something
+#-#1711:40 something
+#-#1712:50+
+#-#1713:Man chat requesting women
+#-#1714:Woman chat requesting men
+#-#1715:mICQ
+#-#1716:None
+#1703:Status modes:¶
+#1704:Groups:¶
+#1705:General
+#1706:Romance
+#1707:Games
+#1708:Students
+#1709:20 something
+#1710:30 something
+#1711:40 something
+#1712:50+
+#1713:Man chat requesting women
+#1714:Woman chat requesting men
+#1715:mICQ
+#1716:None
 1717:! as the first character of a command will execute a shell command (e.g. "!ls"  "!dir" "!mkdir temp")
 1719:Shows how long mICQ has been running.
 1720:uin can be either a number or the nickname of the user.
@@ -656,9 +660,8 @@
 1730:The "occupied" message is:
 1731:The "invisible" message is:
 1735:Must give a message.¶
-1738:Need a command to alter.¶
-1739:Composing message to ©4%s©0:¶
-1740:Composing message to ©2%d©0:¶
+#-#1738:Need a command to alter.¶
+#1738:Need a command to alter.¶
 1741:Must receive a message first¶
 1742:Must write one message first¶
 1743:Size mismatch in packet lengths.¶
@@ -669,7 +672,8 @@
 1749:UIN %d renamed to %s.¶
 1751:Nick %s removed.
 1754: Note: You need to 'save' to write new contact list to disc.¶
-1755:has added you to their contact list.¶
+#-#1755:has added you to their contact list.¶
+#1755:has added you to their contact list.¶
 1756:¶Creating Connection...¶
 1757:Couldn't establish connection.¶
 1758:Sending Request...¶
@@ -682,7 +686,8 @@
 1765:%s has UIN %d.
 1766:Changing status to away resp. not available after idling %s%d%s seconds.¶
 1767:Toggles auto cycling to away/not available.
-1768:The command name '%s' is already being used.¶
+#-#1768:The command name '%s' is already being used.¶
+#1768:The command name '%s' is already being used.¶
 1769:Displays your current online status.
 1770:Resend your last message to a new uin.
 1771:You haven't sent a message to anyone yet!¶
@@ -725,7 +730,6 @@
 1817:Warning: ReceiveScript feature not enabled!¶
 1818:Warning: Deprecated syntax found in rc file!¶    Please update or "save" the rc file and check for changes.¶
 1820:%s <option> [on|off] - control simple options.¶
-1821:Funny messages are ©3%s©0.¶
 1822:    color: use colored text output.¶
 1823:Incoming partial packet:
 1825:Discarded a %04x (%s) packet
@@ -789,7 +793,7 @@
 1907:Warning: Server thinks our UIN is %d, while it is %d.¶
 1908:Received USERONLINE packet for non-contact.¶
 1909:Received USEROFFLINE packet for non-contact.¶
-1910:FLAP seq %08x length %04x channel %d©0¶
+#1910:FLAP seq %08x length %04x channel %d¶
 1911:connecting
 1912:closed
 1914:Can't allocate connection structure.¶
@@ -873,7 +877,6 @@
 2005:Household products
 2006:Mail order catalog
 2007:Business services
-2008:Random chat group change was ©2%s©0.¶
 2009:Found random chat partner UIN %d in chat group %d.¶
 2011:You do not have a listening peer-to-peer connection.¶
 2012:No password given.¶
@@ -882,7 +885,6 @@
 2015:No message given.¶
 2017:The user is actually online.¶
 2018:    quiet: be quiet about status changes.¶
-2019:Quiet output is ©3%s©0.¶
 2020:Being visible to %s.
 2021:Being invisible to %s.
 2022:The user is indeed offline.¶
@@ -980,4 +982,19 @@
 2123:%sSyntax error%s: Too few arguments: '%s'¶
 2124:%sSyntax error%s: Not an integer: '%s'¶
 2126:User is offline, message (%s#%08lx:%08lx%s) queued.¶
-2127:    URL: %s%s%s%s¶
+#-#2127:    URL: %s%s%s%s¶
+#2127:       URL: %s%s%s%s¶
+#2128: Description: %s%s%s¶
+#2129:         URL: %s%s%s¶
+#2130:Composing message to %sall%s:¶
+#2131:Composing message to %s%s%s:¶
+#2132:Composing message to %s%d%s:¶
+#2133:Color is %s%s%s.¶
+#2134:Funny messages are %s%s%s.¶
+#2135:Quiet output is %s%s%s.¶
+#2136:Password change was %s%s%s.¶
+#2137:About info change was %s%s%s.¶
+#2138:Info change was %s%s%s.¶
+#2139:Other info change was %s%s%s.¶
+#2140:Random chat group change was %s%s%s.¶
+#2141:Search %sfailed%s.¶

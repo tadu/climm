@@ -1,17 +1,15 @@
 # $Id$ (Swedish)
-#  EN:
-#1001: 
-#1002: 
-#1003: 
-#1004: 
-#1005: 
-#1006: 
-#1007: 
-#1008: 
-#1009: 
-#1010:User is Away [Auto-Message]
+#  EN: __.i18n,v 1.43 2002/09/10 02:20:59
+#1001:<lang>
+#1002:<lang_cc>
+#1003:0
+#1004:<translation authors>
+#1005:<last editor>
+#1006:<last edit date>
+#1007:iso-8859-1
+#1010:User is away [Auto-Message]
 #1011:User is not available [Auto-Message]
-#1012:User is Occupied [Auto-Message]
+#1012:User is occupied [Auto-Message]
 #1013:User is offline
 #1014:None
 1015:jan
@@ -22,25 +20,32 @@
 1020:jun
 1021:jul
 1022:aug
-1023:sep
+#-#1023:sep
+#1023:Sep
 1024:okt
 1025:nov
 1026:dec
 1027:JA
 1028:NEJ
-1029:Svara JA eller NEJ!
-1030:loggade av
-1031:loggade på
-1032: - Meddelande
-1033: - Meddelande med flera mottagare
+#-#1029:Svara JA eller NEJ!
+#-#1030:loggade av
+#-#1031:loggade på
+#-#1032: - Meddelande
+#-#1033: - Meddelande med flera mottagare
+#1029:Please enter YES or NO!
+#1030:logged off.
+#1031:logged on
+#1032:debug: Doppeltes Packet #%04x vom Typ %04x (%s)¶
+#1033:Incoming v8 server packet:
 1034:Har försökt max antal gånger, ger upp.
-1035:bytte status till
+#-#1035:bytte status till
+#1035:changed status to
 1036:Kommandot %s finns ej, skriv /help för hjälp.
 1037:Meddelandet skickat innan bufferten var full¶
 1038:Meddelandet avbrutet¶
 #-#1039:Servern kopplade ifrån, detta kan bero på nätverksproblem
-#1039:Server claims we're not connected.¶
 #-#1040:Micq> 
+#1039:Server claims we're not connected.¶
 #1040:mICQ> 
 1041:med> 
 1042:med alla> 
@@ -52,31 +57,27 @@
 #1048:Error code: %d¶
 #1049:UIN: %d¶
 1050:Inloggning klar!
-1051:Servern bekräftade kommandot %04x.
 #-#1052:Kunde inte skapa anslutning¶
-#1052:Opening v5 connection to %s:%d... 
 1053:Ansluten till %s, väntar på svar¶
-1054: Kunde ej ansluta till port %d på %s¶
 1055:Socket creation failed
 1056:Socket created attempting to connect¶
-#1057:Outgoing v8 server packet:
-#1058:SNAC (%x,%x) [%s] flags %x ref %x¶
-1059:Den port som kommer användas för TCP (ännu ej implementerat) är %d¶
 1060:Debugnivån är %d.¶
-1061:%s är inte ett registrerat namn¶
-1062:Användare ignorerade:
-1063:Ange lösenord:
-1064:Ändrade automatiskt status till
+#-#1061:%s är inte ett registrerat namn¶
+#-#1062:Användare ignorerade:
+#-#1063:Ange lösenord:
+#-#1064:Ändrade automatiskt status till
+#1061:'%s' not recognized as a nick name.¶
+#1062:Users ignored:
+#1063:Enter password:
+#1064:Auto-Changed status to
 1065:Using intel byte ordering.
 1066:Using motorola byte ordering.
-#1067:Warning: Server thinks our UIN is %d, while it is %d.¶
-1068: Inloggad sedan %s
-1069: Senast inloggad %s
-1070: Last on-line unknown.
 1071:Du är
-1072:Ej inloggade användare:
-1073:Inloggade användare:
+#-#1072:Ej inloggade användare:
+#-#1073:Inloggade användare:
 #-#1074:Micq (Matt's ICQ clone)
+#1072:Users offline:
+#1073:Users online:
 #1074:mICQ (Matt's ICQ clone)
 1075:version
 1076:kompilerad
@@ -91,12 +92,7 @@
 #1084:Sound
 1085:på
 1086:av
-#1087:Ignoring garbage after number.
-#1088:Can't send this (%x) yet.¶
 1089:Tog bort översättning.
-1090:%s är ett nummer, inte ett namn.
-1091:Du måste ange lösenord!
-1092:Bekräfta lösenord:
 1093:Lösenorden inte like, försök igen!
 1094:SOCKS5 server namn eller IP-nummer (svara 0 om du inte vill använda SOCKS):
 1095:SOCKS5 port (brukar vara 1080):
@@ -164,7 +160,6 @@
 1157:Persian
 1158:Albanian
 1159:Armenian
-1160:Ej angett
 1161:Akademiskt
 1162:Administrativt
 1163:Konst/underhållning
@@ -198,10 +193,7 @@
 1191:lösenord = %s¶
 1192:server = %s¶
 1193:status = %ld¶
-#1194:Need uin to ask for.¶
-#1195:Color is ©3%s©0.¶
 #1196:Message_cmd = %s¶
-1197:Lösenordsbytet gick ©2%s©0.¶
 1198:Annan tjänst
 1199:Okänt land
 1200:Ej angett
@@ -399,55 +391,88 @@
 1392:Zimbabwe
 1393:lyckades
 1394:misslyckades
-1395:Bytet av information ©2%s©0.¶
-1396:Bytet av information ©2%s©0.¶
-1397:Uppdateringen av informationen ©2%s©0.¶
-1398:Sökningen ©2failed©0.
-#1399:Unknown Meta User response ©1%04X©0¶
-1400:Visar lokal infomation om användaren.
-1401:Uppdaterar information som ålder och kön.
-1402:Uppdaterar informationen om dig.
-1403:Visar det sista meddelandet du har fått från <namn>.¶Namnet måste vara med på din lista.
-1404:Väljer att ignorera/ej ignorera en användare.
-1405:Visar ignorerade användare.
-1406:Väljer om de är synlig för en användare när du är osynlig.
-1407:Visar status för användare på din lista.
-1408:Byter lösenord.
-1409:Skickar ett meddelande till uin.
-1410:Skickar en webadress och ett meddelande till uin.
-1411:Skickar ett meddelande till alla i din lista.
-1412:Skickar ett meddelande till den du sist skickade ett meddelande till.
-1413:Tillåter uin att lägga till dig på din lista.
-1414:Svarar på det meddelande du fick sist.
-1415:Hittar en slumpmässig användare i den specificerade gruppen eller listan av grupper.
-1416:Visar nuvarande status på alla i din kontaktlista.
-1417:Det här kommandot tillåter dig att ändra dina kommandon under drift.
-1418:Ändra debug nivå (standard 0).
-1419:Rensa skärmen.
-1420:Ändrar om det piper när du får meddelande.
-1421:Sätter av och på färger.
-1422:Loggar av och avslutar.
-1423:Visar din automatiskasvarsstatus.
-1424:Ändrar om du skickar automatiska svar när du är DND, NA, och så vidare.
-1425:Ställer in dina automatiska svar för en viss status.
-1426:Skapar en ny ICQ-användare med detta lösenord.
-1427:Ändrar din status till statusnumret. Utan ett nummer listar det alternativen.
-1428:Lägg till uin till din lista med smeknamn.
-1429:Letar efter ICQ-användare.
-1430:Visar allmän information om uin.
-1431:Ändra status till inloggad.
-1432:Ändra status till borta.
-1433:Ändra status till ej tillgänglig.
-1434:Ändra status till upptagen.
-1435:Ändra status till stör ej.
-#1436:Mark as Free for Chat.
-1437:Ändra status till osynlig.
-1438:Uppdaterar informationen om dig själv.
-1439:Ställer in din slumpmässiga användaregrupp.
+#-#1400:Visar lokal infomation om användaren.
+#-#1401:Uppdaterar information som ålder och kön.
+#-#1402:Uppdaterar informationen om dig.
+#-#1403:Visar det sista meddelandet du har fått från <namn>.¶Namnet måste vara med på din lista.
+#-#1404:Väljer att ignorera/ej ignorera en användare.
+#-#1405:Visar ignorerade användare.
+#-#1406:Väljer om de är synlig för en användare när du är osynlig.
+#-#1407:Visar status för användare på din lista.
+#-#1408:Byter lösenord.
+#-#1409:Skickar ett meddelande till uin.
+#-#1410:Skickar en webadress och ett meddelande till uin.
+#-#1411:Skickar ett meddelande till alla i din lista.
+#-#1412:Skickar ett meddelande till den du sist skickade ett meddelande till.
+#-#1413:Tillåter uin att lägga till dig på din lista.
+#-#1414:Svarar på det meddelande du fick sist.
+#-#1415:Hittar en slumpmässig användare i den specificerade gruppen eller listan av grupper.
+#-#1416:Visar nuvarande status på alla i din kontaktlista.
+#-#1417:Det här kommandot tillåter dig att ändra dina kommandon under drift.
+#-#1418:Ändra debug nivå (standard 0).
+#-#1419:Rensa skärmen.
+#-#1420:Ändrar om det piper när du får meddelande.
+#-#1422:Loggar av och avslutar.
+#-#1423:Visar din automatiskasvarsstatus.
+#-#1424:Ändrar om du skickar automatiska svar när du är DND, NA, och så vidare.
+#-#1425:Ställer in dina automatiska svar för en viss status.
+#-#1426:Skapar en ny ICQ-användare med detta lösenord.
+#-#1427:Ändrar din status till statusnumret. Utan ett nummer listar det alternativen.
+#-#1428:Lägg till uin till din lista med smeknamn.
+#-#1429:Letar efter ICQ-användare.
+#-#1430:Visar allmän information om uin.
+#-#1431:Ändra status till inloggad.
+#-#1432:Ändra status till borta.
+#-#1433:Ändra status till ej tillgänglig.
+#-#1434:Ändra status till upptagen.
+#-#1435:Ändra status till stör ej.
+#-#1437:Ändra status till osynlig.
+#-#1438:Uppdaterar informationen om dig själv.
+#-#1439:Ställer in din slumpmässiga användaregrupp.
+#1400:Shows locally stored info on user.
+#1401:Updates more user info like age and sex.
+#1402:Updates your about user info.
+#1403:Displays the last message received from <nick>, or a list of who has send you at least one message.
+#1404:Toggles ignoring/unignoring nick.
+#1405:Lists ignored nicks/uins.
+#1406:Toggles your visibility to a user when you're invisible.
+#1407:Displays the current status of online people on your contact list.
+#1408:Changes your password to secret.
+#1409:Sends a message to uin or nick.
+#1410:Sends a url and message to uin.
+#1411:Sends a multiline message to everyone on your list.
+#1412:Sends a message to the last person you sent a message to.
+#1413:Authorize uin or nick to add you to their list.
+#1414:Replys to the last person to send you a message.
+#1415:Finds a random user in the specified group or lists the groups.
+#1416:Displays the current status of everyone on your contact list.
+#1417:This command allows you to alter your command set on the fly.
+#1418:Set the verbosity level, or display verbosity level.
+#1419:Clears the screen.
+#1420:Switches beeping when receiving new messages on or off, sets a command for this event or displays current state of this option.
+#1422:Logs off and quits.
+#1423:Displays your autoreply status.
+#1424:Toggles sending messages when your status is DND, NA, etc.
+#1425:Sets the message to send as an auto reply for the status.
+#1426:Creates a new UIN with the specified password.
+#1427:Changes your status to the status number. Without a number it lists the available modes.
+#1428:Adds the uin number to your contact list with nickname, or renames it.
+#1429:Searches for a ICQ user.
+#1430:Displays general info on uin.
+#1431:Change status to Online.
+#1432:Mark as "away".
+#1433:Mark as "not available".
+#1434:Mark as "occupied".
+#1435:Mark as "do not disturb".
+#1436:Mark as "free for chat".
+#1437:Mark as "invisible".
+#1438:Updates your basic info (email, nickname, etc.).
+#1439:Sets your random user group.
 1440:Slumpmässig användare:
 1441:IP:
 1442:Var vänlig välj ett ämne ur hjälpen.
-1443:Kommandon relaterade till mICQ.se's uppvisning och konfiguration.
+#-#1443:Kommandon relaterade till mICQ.se's uppvisning och konfiguration.
+#1443:Commands relating to mICQ displays and configuration.
 1444:Kommandon relaterade till att hitta andra användare.
 1445:Kommandon relaterade till ditt ICQ konto.
 1446:Kommandon relaterade till att skicka meddelanden.
@@ -468,7 +493,6 @@
 1461:Hälsa
 #1462:Games
 #1463:Hobbies
-#1464:ICQ - Providing Help
 1465:Internet
 1466:Livstil
 1467:Film/TV
@@ -500,109 +524,141 @@
 1493:Direktkontakt
 1494:Server enbart
 1495:Hittade ingen slumpvis användare
-#1496:%02d/%02d/%04d
 #1497:failed
 1498:Information om:
 1499:Övrigt
-1500:ICQ-namn:
-1501:Namn:
-1502:E-post:
-1503:Annan e-post:
-1504:Gammal e-post:
-1505:Position:
-1506:Telefon:
-1507:Fax:
-1508:Adress:
-1509:Mobil:
-1510:Postnummer:
-1511:Land:
-1512:Landsnummer:
-1513:Landsnummer jobb:
-1514:Land jobb:
-1515:Hemsida jobb:
-1516:Yrke:
-1517:Tjänst:
-1518:Avdelning:
-1519:Företag:
-1520:Work Zip:
-1521:Work Fax:
-1522:Work Address:
-1523:jobbtelefon:
-1524:jobb position:
-1525:Om:
-1526:ej angett
-1527:Ålder:
-1528:kvinna
-1529:man
-1530:ej angett
-1531:Hemsida:
-1532:Född:
-1533:Språk:
-1534:Ange språkets nummer, eller tryck L för att få en lista:
-1535:Ange ålder:
-1536:Ange kön:
-1537:Ange hemsida:
-1538:Ange födelseår (fyra siffror):
-1539:Ange födelsemånad:
-1540:Ange födelsedag:
+#-#1500:ICQ-namn:
+#-#1501:Namn:
+#-#1502:E-post:
+#-#1503:Annan e-post:
+#-#1504:Gammal e-post:
+#-#1505:Position:
+#-#1506:Telefon:
+#-#1507:Fax:
+#-#1508:Adress:
+#-#1509:Mobil:
+#-#1510:Postnummer:
+#-#1511:Land:
+#-#1512:Landsnummer:
+#-#1513:Landsnummer jobb:
+#-#1514:Land jobb:
+#-#1515:Hemsida jobb:
+#-#1516:Yrke:
+#-#1517:Tjänst:
+#-#1518:Avdelning:
+#-#1519:Företag:
+#-#1520:Work Zip:
+#-#1521:Work Fax:
+#-#1522:Work Address:
+#-#1523:jobbtelefon:
+#-#1524:jobb position:
+#-#1525:Om:
+#-#1528:kvinna
+#-#1529:man
+#-#1530:ej angett
+#-#1531:Hemsida:
+#-#1532:Född:
+#-#1533:Språk:
+#-#1534:Ange språkets nummer, eller tryck L för att få en lista:
+#-#1535:Ange ålder:
+#-#1536:Ange kön:
+#-#1537:Ange hemsida:
+#-#1538:Ange födelseår (fyra siffror):
+#-#1539:Ange födelsemånad:
+#-#1540:Ange födelsedag:
+#1500:Nickname:
+#1501:Name:
+#1502:Email:
+#1503:Other Email:
+#1504:Old Email:
+#1505:Location:
+#1506:Phone:
+#1507:Fax:
+#1508:Street:
+#1509:Cellular:
+#1510:Zip:
+#1511:Country:
+#1512:Country code:
+#1513:Work Country Code:
+#1514:Work Country:
+#1515:Work Homepage:
+#1516:Occupation:
+#1517:Job Position:
+#1518:Department:
+#1519:Company Name:
+#1520:Work Zip:
+#1521:Work Fax:
+#1522:Work Address:
+#1523:Work Phone:
+#1524:Work Location:
+#1525:About:
+#1528:female
+#1529:male
+#1530:not specified
+#1531:Homepage:
+#1532:Born:
+#1533:Languages:
+#1534:Enter a language by number or L for a list:
+#1535:Enter new age:
+#1536:Enter new sex:
+#1537:Enter new homepage:
+#1538:Enter new year of birth (4 digits):
+#1539:Enter new month of birth:
+#1540:Enter new day of birth:
 1541:Om> 
-1542:Ange annan e-postadress:
-1543:Ange gammal e-postadress:
-1544:Ange stad:
-1545:Ange stat:
-1546:Ange telefonnummer:
-1547:Ange faxnummer:
-1548:Ange gatuadress:
-1549:Ange mobiltelefonnummer:
-1550:Ange postnummer (måste vara nummer):
-1551:Ange landets landsnummer:
-1552:Ange din tidszon (+/- 0-12):
-1553:Ange ditt namn:
-1554:Ange ditt förnamn:
-1555:Ange ditt efternamn:
-1556:Ange din e-postadress:
-1557:Vill du att de som använder Mirabilis behöver din tillåtelse för att lägga till dig? (JA/NEJ)
-#1558:connected
-#1559:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x¶
-#1560:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
-#1561:Enter max age (22,29,39,49,59,120):
-#1562:©1Info for %ld¶
-1563:Namn:
+#-#1542:Ange annan e-postadress:
+#-#1543:Ange gammal e-postadress:
+#-#1544:Ange stad:
+#-#1545:Ange stat:
+#-#1546:Ange telefonnummer:
+#-#1547:Ange faxnummer:
+#-#1548:Ange gatuadress:
+#-#1549:Ange mobiltelefonnummer:
+#-#1550:Ange postnummer (måste vara nummer):
+#-#1551:Ange landets landsnummer:
+#-#1552:Ange din tidszon (+/- 0-12):
+#-#1553:Ange ditt namn:
+#-#1554:Ange ditt förnamn:
+#-#1555:Ange ditt efternamn:
+#-#1556:Ange din e-postadress:
+#-#1557:Vill du att de som använder Mirabilis behöver din tillåtelse för att lägga till dig? (JA/NEJ)
+#1542:Enter other email address:
+#1543:Enter old email address:
+#1544:Enter new city:
+#1545:Enter new state:
+#1546:Enter new phone number:
+#1547:Enter new fax number:
+#1548:Enter new street address:
+#1549:Enter new cellular number:
+#1550:Enter new zip code (must be numeric):
+#1551:Enter your country's phone ID number:
+#1552:Enter your time zone (+/- 0-12):
+#1553:Enter Your New Nickname:
+#1554:Enter your new first name:
+#1555:Enter your new last name:
+#1556:Enter your new email address:
+#1557:Do you want to require Mirabilis users to request your authorization? (YES/NO)
+#1562:Info for
 1564:Förnamn:
 1565:Efternamn:
 1562:©1Information om %ld¶
-#1563:Nick name:
 #1564:First name:
 #1565:Last name:
 1566:E-post adress:
 1567:Inget bekräftelse behövs.©0 
 1568:Bekräftelse behövs.©0 
-1569:©1More Info for %ld¶
 1570:Stad:
-1571:Land:
-1572:Landsnummer:
-1573:Tidszon:
 1574:State:
 1575:Ålder:
-1576:ej angett
-1577:Kön:
 1578:Landets landsnummer:
 1579:Ange företag:
-1580:Telefonnummer:
-1581:Hemsida:
-1582:Om:
-1583:©1Användaren hittad %ld¶
 1584:Varning! Snabbkommandot '%s' misslyckades med returvärdet %d¶
 1585:Ack!!!!!!! Felaktigt paket
-1586:©4¶%s©0 har lagt till dig på sin lista.¶
 1587:Ange avdelning: 
-#1588:Enter sex:
-#1589:Enter a city:
 1590:©4%10s©0 har begärt ditt tillstånd att lägga till dig på sin lista.¶
 1591:Anledning:
 1592:<%s> skickade ett meddelande med e-post:¶
 1593:<%s> skickade dig en webadress:¶
-1594:        URL: %s©3%s©0¶
 1595:¶Lista.¶©3============================================¶©0%d Användare¶
 #-#1596:[SOCKS] Hittade ej namnet %s: %s.
 #1596:[SOCKS] Can't find hostname %s: %s.
@@ -625,29 +681,18 @@
 1613:Vi har ej försökt dekompilera någon av Mirabilis källkod.¶
 1614:Konfigurationsfilen för denna session är "%s"¶
 1615:Katalogen med logfilerna denna session är "%s"¶
-#1616:Started BeOS InputThread¶\r
 #1617:<all>
-#1618:Enter UIN or 0 for new UIN:
+#1618:UIN:
 #1619:Warning:
 #1620:maximal number of contacts reached. Ask a wizard to enlarge me!
 1621: from resend queue because of ack.¶
 1622:Vill du använda dessa ändringar? (JA/NEJ)
 1623:¶Dubblerat paket %04X¶
 1624:Återsänder meddelande med SEQ nummer %04X CMD 
-1625:(Försök #%d.)
-1626:Avbryter meddelande till
-1627: efter %d sändningsförsök.  Innehåll:¶
-1628: Beskrivning: ©3%s©0¶
-1629: URL:         ©3%s©0
-1630:Avbröt ett
-1631: paket.
 1632:¶Anslutningen instabil. Avbryter...
-#1633:failed:¶
-#1634:Connection failed: %s (%d)¶
-#1635:You have encounterd a bug in my code :( I now own you a beer!¶Greetings Fryslan!¶
-#1636:Auto-response message for %s:¶
+#1634:ok¶
 #1637:Can't bind socket to free port¶
-#1638:[SOCKS] Can't find hostname %s.
+#1638:Couldn't create socket
 1639:Det nya ICQ-nummret är %ld!¶
 1640:Misslyckades med att uppdatera informationen.¶
 1641:Informationen uppdaterad.¶
@@ -656,8 +701,7 @@
 #1644:Acknowleged SRV_X2 0x00E6 Done old messages?¶
 1645:©3Felaktigt lösenord.©0¶
 #-#1646:©3Servern är överbelastad.¶Försöker igen...¶
-#1646:©3Server is busy.¶
-1647: Type = %04x	
+#1646:Server is busy.¶
 1648: ©2Svaret var %04X	
 1649:Versionen var %X	
 #1650:¶The SEQ was %04X	
@@ -672,14 +716,8 @@
 #1659:Unknown section %s in configuration file.
 1660:Felaktigt kommando: %s¶
 1661:Skalkommandor är avstängda.¶
-#1662:Can't find hostname %s: %s.
-#1663:Couldn't create socket: %s (%d).¶
-1664:Skriver meddelande till ©4all©0:¶
-1665:%s är inte något känt namn.
 1666:Slutar ignornera %s.
 1667:Ignorerar %s.
-1668:Du måste ange ett namn.
-1669:Lade till %s.¶
 1670:Osynlig för %s nu.
 1671:Synlig för %s nu.
 #-#1672:'s IP adress är
@@ -688,39 +726,28 @@
 1674:	Porten är okänd¶
 #1675:Ignored line:
 1676:Behöver ICQ-nummer för att skicka.¶
-1677:%s är inte ett känt namn¶
 1678:Ange URL.¶
 1679:Tyvärr, kunde ej spara ditt svarsmeddelande!¶
 1680:Dina inställningar är sparade!¶
 1681:De senaste %d du pratade med:¶
 1682:Du har mottagit meddelanden från:¶
-1683:Okänd kontakt: %s¶
-1684:%s är ej känd¶
 #-#1687:Micq har varit igång i
-#1687:mICQ has been running for
 #-#1688: dagar
-#1688:days
 #-#1689: timmar
-#1689:hours
 #-#1690: minuter
-#1690:minutes
 #-#1691: sekunder
-#1691:seconds
 #-#1692:Vänner::
-#1692:Contacts:
-1693:Paket skickadee:
 #-#1694:Paket mottagna:
-#1694:Packets received:
-1695:Lag:
+#1687:mICQ has been running for
+#1688:days
+#1689:hours
+#1690:minutes
+#1691:seconds
+#1692:Contacts:
 1696:Kön:
-#1697:Distinct packets sent:
-#1698:Distinct packets received:
-#1699:Must give a valid uin/nickname¶
 #1700:%s is not a valid user in your list.¶
-#1701:Couldn't set socket nonblocking: %s (%d).¶
-#1702:Can't find hostname %s: %s (%d).
-#1703:©2Status modes: ¶
-#1704:©2Groups: ¶
+#1703:Status modes:¶
+#1704:Groups:¶
 1705:Allmänt                    1¶
 1706:Kärlek                     2¶
 1707:Spel                       3¶
@@ -732,92 +759,95 @@
 1713:Män söker kvinnor         10¶
 1714:Kvinnor söker män         11¶
 #-#1715:Micq                      49 (kanske inte fungerar, men testa!)
-#1715:mICQ                      49 (might not work but try it)
-#1716:None                      -1¶
+#1715:mICQ
+#1716:None
 1717:! som det första tecknet av ett kommando kommer köra ett skalkommando (t.ex. "!ls"  "!dir" "!mkdir temp").
-#1718:Can't find hostname %s: %d.
 #-#1719:Visar hur länge micq varit igång.
 #1719:Shows how long mICQ has been running.
 1720:kan vara ett nummer eller namn på användare.
 #1721:Sending a blank message will put the client into multiline mode.¶Use . on a line by itself to end message.¶Use # on a line by itself to cancel the message.
-#1722:Type help to see your current command, because this one you typed wasn't one!
-1723:%s IP adress är
 1724:Automatiska svar är %s.¶
-#1727:The Do not disturb message is:
-#1728:The Away message is:
-#1729:The Not available message is:
-#1730:The Occupied message is:
-#1731:The Invisible message is:
-#1734:Sorry wrong syntax, can't find a status somewhere.\r¶
+#1727:The "do not disturb" message is:
+#1728:The "away" message is:
+#1729:The "not available" message is:
+#1730:The "occupied" message is:
+#1731:The "invisible" message is:
 #1735:Must give a message.¶
-#1736:Sorry wrong syntax. Read tha help man!¶
-#1737:Automatic reply setting¶
-#1738:Need a command to alter!¶
-1739:Skriver meddelande till ©4%s©0:¶
-1740:Skriver meddelande till ©2%d©0:¶
+#1738:Need a command to alter.¶
 1741:Du måste ta emot till meddelande först¶
 1742:Måste skicka ett meddelande först¶
+#1743:Size mismatch in packet lengths.¶
+#1744:server (v5)
 1745:Lista
 1746:Osynlig lista
 1747:Synlig lista
-1753:Skicka meddelande
+#1749:UIN %d renamed to %s.¶
+#1751:Nick %s removed.
 1754:Begär info
-#1756:¶Creating Connection...¶
 #-#1757:Kunde inte skapa anslutning¶
+#1755:has added you to their contact list.¶
+#1756:¶Creating Connection...¶
 #1757:Couldn't establish connection.¶
 #1758:Sending Request...¶
 1759:Väntar på stav...¶
 1760:¶Ditt nya nummer är %s%ld%s!¶
 1761:okänt
+#1762:Your new UIN is: %d.¶
 #1763:The command '%s' has been renamed to '%s'.
 #1764:The command '%s' is unchanged.
 #1765:%s has UIN %d.
-#1766:Auto_away is ©3%d©0.¶
+#1766:Changing status to away resp. not available after idling %s%d%s seconds.¶
 #1767:Toggles auto cycling to away/not available.
-#1768:The label '%s' is already being used.
+#1768:The command name '%s' is already being used.¶
 #1769:Displays your current online status.
 #1770:Resend your last message to a new uin.
 #1771:You haven't sent a message to anyone yet!¶
-#1772:Can't find hostname %s.
-#1773:%s could not be added.
 #1774:Incoming packet:
 #1775:Outgoing packet:
-#1776:Outgoing TCP packet:
 #1777:Opening peer-to-peer connection at localhost:%d... 
-#1778:Incoming TCP packet:
-#1779:Opening TCP connection to %s at %s:%d... 
+#1781:Your password for UIN %d:¶
+#1782:You need a password for your new UIN.¶
+#1783:To prevent typos, please enter your password again.¶
+#1784:If you are firewalled, you may need to use a SOCKS5 server. If you do, please enter its hostname or IP address. Otherwise, or if unsure, just press return.¶
 #1785:success.¶
-#1789:Received malformed packet.
+#1786:I also need the port the socks server listens on. If unsure, press return for the default port.¶
+#1787:You probably need to authentificate yourself to the socks server. If so, you need to enter the user name the administrator of the socks server gave you. Otherwise, just press return.¶
+#1788:Now I also need the password for this user.¶
+#1789:Received malformed packet: (%d)
+#1790:Setup wizard finished. Congratulations to your new UIN!¶
+#1791:Setup wizard finished. Congratulations!¶
+#1792:I'm sorry, AOL doesn't want to give us a new UIN, probably because of too many new UIN requests from this IP. Please try again later.¶
+#1793:No valid UIN found. The setup wizard will guide you through the process of setting one up.¶
+#1794:If you already have an UIN, please enter it. Otherwise, enter 0, and I will request one for you.¶
+#1795:Password:
+#1796:Setup wizard finished. Please wait until registration has finished.¶
+#1797:Finance and corporate
+#1798:Elementary School
+#1799:High School
 #1800:Change the working language to <lang>.
 #1801:Displays a list of people on your contact list in a screen wide format.
 #1802:SoundOnline cmd
 #1803:SoundOffline cmd
 #1804:SoundOnline
 #1805:SoundOffline
-#1806:Received ACK for message (seq %04X) from %s¶
-#1807:Cancelled incoming message (seq %04X) from %s¶
-#1809:Unable to retrieve auto-response message for %s.
+#1807:Cancelled incoming message (seq %04x) from %s¶
+#1808:College
+#1810:University
+#1812:Past Work Place
+#1813:Past Organization
 #1814:Sent auto-response message to %s%s%s.¶
 #1815:    funny: use funny messages for output.¶
 #1816:Unknown option %s to set command.¶
 #1817:Warning: ReceiveScript feature not enabled!¶
 #1818:Warning: Deprecated syntax found in rc file!¶    Please update or "save" the rc file and check for changes.¶
 #1820:%s <option> [on|off] - control simple options.¶
-#1821:Funny messages are ©3%s©0.¶
 #1822:    color: use colored text output.¶
 #1823:Incoming partial packet:
-#1824:Acknowledged packet type %04x (%s) sequence %04x removed from queue.¶
 #1825:Discarded a %04x (%s) packet
 #1826:Resending message %04x (%s) sequence %04x (attempt #%d, len %d).¶
-#1827:Unknown client
 #1830:Discarding message to %s after %d send attempts.  Message content:¶
-#1833:Client-to-client TCP connection to %s established.¶
+#1833:Peer to peer TCP connection established.¶
 #1835:Error while writing to socket - %s (%d)¶
-#1836:Sending TCP direct connection initialization packet.¶
-#1837:Acknowledging TCP direct connection initialization packet.¶
-#1838:Received direct connection initialization.¶
-#1839:Version %04x:%04x, Port %d, UIN %d, session %08x¶
-#1840:Received malformed direct connection initialization.¶
 #1841:Received malformed initialization acknowledgement packet.¶
 #1842:Closing socket %d to %s.¶
 #1843:Closing socket %d.¶
@@ -831,21 +861,21 @@
 #1855:TCP connection to %s at %s:%d failed.¶
 #1856:Discarded a %04x (%s) packet from old session %08x (current: %08x).¶
 #1857:Do you want to hide your IP from other contacts? (YES/NO)
-#1858:sending packet
-#1860:freeing packet
-#1863:creating new packet
 #1864:Can't open rcfile %s.
-#1865:cloning existing packet
-#1866:This version of micq is compiled without TCP support.¶
+#1866:This version of mICQ is compiled without TCP support.¶
 #1867:Got a malformed (too short) packet - ignored.¶
 #1868:Got a malformed (to long subpacket) multi-packet - remainder ignored.¶
 #1869:Protocoll versions less than 5 are not supported anymore.¶
 #1870:    off   <nick> - Closes TCP connection(s) and don't try TCP again.¶
 #1871:Opening v8 connection to %s:%d... 
 #1872:failed: %s (%d)¶
-#1873:ok.¶
+#1873:Work City:
+#1874:Work State:
+#1875:Personal interests:
+#1876:Personal past background:
 #1877:ok.¶
 #1878:Error while reading from socket: %s (%d)¶
+#1879:Affiliations:
 #1880:Incoming packet is not a FLAP: id is %d.¶
 #1881:FLAP channel 1 out of data.¶
 #1882:FLAP channel 1 cmd 1 extra data:¶
@@ -853,30 +883,35 @@
 #1884:FLAP with unknown channel %d received.¶
 #1885:Connection v8 timed out.¶
 #1887:Connections:
+#1888:Not webaware
 #1889:server
 #1890:peer-to-peer
 #1891:Connection %d is already open.¶
-#1892:conn             List available connections.¶
-#1893:conn login <nr>  Open connection <nr>.¶
+#1892:conn               List available connections.¶
+#1893:conn login <nr>    Open connection <nr>.¶
 #1894:There is no connection number %d.¶
 #1895:Login failed:¶
 #1896:Server closed connection:¶
 #1897:Incomplete TLV %d, len %d of %d - ignoring.¶
 #1898:Redirect to server %s... 
 #1899:Unknown family requested: %d¶
+#1900:It's readonly.
+#1901:has authorized you to add them to your contact list.
+#1902:Opening v5 connection to %s:%d... 
+#1903:Outgoing v8 server packet:
 #1904:Server doesn't understand ver %d (only %d) for family %d!¶
-#1906:This command operates only on connections of type %s.¶
-#1907:couldn't bind socket to free port: %s (%d).¶
-#1908:unable to listen on socket: %s (%d).¶
-#1909:Couldn't open connection: %s (%d)¶
-#1910:FLAP seq %08x length %04x channel %d©0¶
+#1905:SNAC (%x,%x) [%s] flags %x ref %x¶
+#1907:Warning: Server thinks our UIN is %d, while it is %d.¶
+#1908:Received USERONLINE packet for non-contact.¶
+#1909:Received USEROFFLINE packet for non-contact.¶
+#1910:FLAP seq %08x length %04x channel %d¶
 #1911:connecting
 #1912:closed
-#1913:Wrote new config file %s. Exiting.¶
 #1914:Can't allocate connection structure.¶
 #1915:Server says we're at %s.¶
-#1916:Need a nick or uin.¶
-#1917:%-12s version %d for %s (%x), at %s:%d %s¶
+#1918:Ignored server request for a minimum report interval of %d.¶
+#1919:UIN mismatch: %d vs %d.¶
+#1920:Registration of new UIN refused.¶
 1921:inloggad
 1922:stör ej
 1923:ej här
@@ -884,7 +919,192 @@
 1925:upptagen
 1926:osynlig
 1927:Free for chat
-1928:ej inloggad
-#1929:User is DND [Auto-Message]
+#1929:User is dnd [Auto-Message]
+#1930:Can't send this (%x) yet.¶
+#1931:Couldn't find server connection.¶
+#1934:connected
+#1935:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x¶
+#1936:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
+#1937:Enter max age (22,29,39,49,59,120):
+#1938:Enter sex:
+#1939:Enter a city:
+#1940:Unknown Meta User result %x.¶
+#1941:Publish Email:
+#1942:Additional Email addresses:
+#1943:(no authorization needed)
+#1944:(must request authorization)
+#1945:Unknown Meta User response
+#1947:listener
+#1948:Can't find hostname %s: %s.
+#1949:failed:¶
+#1950:Couldn't set socket nonblocking
+#1951:Can't find hostname %s
+#1952:Couldn't open connection
+#1953:couldn't bind socket to free port
+#1954:unable to listen on socket
+#1955:Connection failed
+#1958:[SOCKS] Connection request refused (%d)
+#1960:Enter data to search user for. Enter '.' to start the search.¶
+#1961:URL: %s¶
+#1966: Conection Refused on port %d at %s¶
+#1967:More Info for
+#1968:User found
+#1969:offline
+#1970:online
+#1971:do not disturb
+#1972:away
+#1973:occupied
+#1974:not available
+#1975:invisible
+#1976:free for chat
+#1977:Audio and visual
+#1978:Sporting and athletic
+#1979:Publishing
+#1980:Home automation
+#1981:Alumni Org.
+#1982:Charity Org.
+#1983:Club/Social Org.
+#1984:Community Org.
+#1985:Cultural Org.
+#1986:Fan Clubs
+#1987:Fraternity/Sorority
+#1988:Hobbyists Org.
+#1989:International Org.
+#1990:Nature and Environment Org.
+#1991:Professional Org.
+#1992:Scientific/Technical Org.
+#1993:Self Improvement Group
+#1994:Spiritual/Religious Org.
+#1995:Sports Org.
+#1996:Support Org.
+#1997:Trade and Business Org.
+#1998:Union
+#1999:Volunteer Org.
+#2000:Entertainment
+#2001:Consumer electronics
+#2002:Retail stores
+#2003:Health and beauty
+#2004:Media
+#2005:Household products
+#2006:Mail order catalog
+#2007:Business services
+#2009:Found random chat partner UIN %d in chat group %d.¶
+#2011:You do not have a listening peer-to-peer connection.¶
+#2012:No password given.¶
+#2013:This command is v8 only.¶
+#2014:No number given.¶
+#2015:No message given.¶
+#2017:The user is actually online.¶
+#2018:    quiet: be quiet about status changes.¶
+#2020:Being visible to %s.
+#2021:Being invisible to %s.
+#2022:The user is indeed offline.¶
+#2023:Direct connection closed by peer.¶
+#2024:Unknown protocol version %d for ICQ peer-to-peer protocol.¶
+#2026:TCP cookie:
+#2029:Protocol error on peer-to-peer connection
+#2031:Connecting failed too often, giving up.¶
+#2032:Scheduling v8 reconnect in %d seconds.¶
+#2033:born today
+#2034:Opening TCP connection at %s:%d... 
+#2035:Show uptime and some statistics.
+#2036:Save current preferences to disc.
+#2037:Open or close a peer-to-peer connection, or disable using peer-to-peer connections for uin|nick.
+#2038:Opens connection number nr.
+#2039:Sends a message to a cell phone.
+#2040:Switches beeping for incoming contacts on or off, sets a command for this event or displays current state of this option.
+#2041:Switches beeping for offgoing contacts on or off, sets a command for this event or displays current state of this option.
+#2042:Displays a list of online people on your contact list in a screen wide format.
+#2043:Remove contact from your contact list.
+#2044:Set or clear an option.
+#2045:Toggles your visibility to a user when you're online.
+#2046:You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.¶
+#2047:Creating directory %s.¶
+#2048:Saving preferences to %s.¶
+#2049:Receiving group "%s":¶
+#2050:Imported %d contacts.¶
+#2051:Error on socket: %s (%d)¶
+#2052:Accepting file '%s' (%d bytes) from %s.¶
+#2053:TCP %s seq %x type %x status %x flags %x: '%s'¶
+#2054:The "free for chat" message is:
+#2055:User is ffc and wants to chat about everything.
+#2056:    auto  <nick> - Get the auto-response from the contact.¶
+#2057:    away  <nick> - Get the auto-response for away from the contact.¶
+#2058:    na    <nick> - Get the auto-response for not available from the contact.¶
+#2059:    dnd   <nick> - Get the auto-response for do not disturb from the contact.¶
+#2060:    ffc   <nick> - Get the auto-response for free for chat from the contact.¶
+#2061:Refused file request '%s' (%d bytes) from %s (unknown: %x, %x)¶
+#2063:You need to save your password in your ~/.micq/micqrc file.¶
+#2064:Refusing chat request (%s/%s/%s) from %s.¶
+#2065:Unknown TCP_MSG_GREET_ command %04x.¶
+#2066:Unknown TCP_MSG_ command %04x.¶
+#2067:file io
+#2068:Opening file transfer connection at %s:%d... ¶
+#2069:File transfer '%s' rejected by peer (%x,%x): %s.¶
+#2070:File transfer '%s' to port %d.¶
+#2071:Couldn't stat file %s: %s (%d)¶
+#2072:Dropping file transfer %d (%s) because of closed connection.¶
+#2073:Memory usage: %d packets processing.¶
+#2078:Outgoing TCP packet (%d - %s): %s
+#2079:Incoming TCP packet (%d - %s): %s
+#2080:The server says about the SMS delivery:¶%s¶
+#2081:    at %p parent %p assoc %p¶
+#2082:Opening file listener connection at localhost:%d... 
+#2083:Cannot open file %s: %s (%d).¶
+#2084:Error while seeking to offset %d: %s (%d).¶
+#2085:Dropping file transfer because of timeout: %d %d.¶
+#2086:Error while reading file %s: %s (%d).¶
+#2087:Finished sending file %s.¶
+#2088:Finished sending all %d files.¶
+#2089:file listener
+#2090:file peer-to-peer
+#2091:Queueing %s as %s for transfer.¶
+#2092:TCP message %s discarded - lost session.¶
+#2093:%02d %-12s version %d for %s (%x), at %s:%d %s¶
+#2094:conn login         Open first server connection.¶
+#2095:conn remove <nr>   Remove connection <nr>.¶
+#2096:Connection %d is not open.¶
+#2097:conn select <nr>   Select connection <nr> as server connection.¶
+#2098:Connection %d is not a server connection.¶
+#2099:Selected connection %d (version %d, UIN %d) as current connection.¶
+#2100:conn select <uin>  Select connection with UIN <uin> as server connection.¶
+#2101:Removing connection %d and its dependands completely.¶
+#2102:Connection %d is a configured connection.¶
+#2103:contact show    Show server side contact list.¶
+#2104:contact diff    Show server side contacts not on local contact list.¶
+#2105:contact import  Add server side contact list to local contact list.¶
 2106:Senaste meddelandet från %s%s%s (%s):¶
 2107:Du har inte fått nåt meddelande från %s%s%s.¶
+#2108:auto
+#2109:version
+#2110:    file  <nick> <file1> <as1> ... <description>¶
+#2111:                 - Send file1 as as1, ..., with description.¶
+#2112:                 - as = '/': strip path, as = '.': as is¶
+#2113:Unknown status '%s'.¶
+#2114:The command name '%s' does not exist.¶
+#2115:'%s' is not an integer.¶
+#2116:No new nick name given.¶
+#2117:%d added as %s.¶
+#2118:Out of memory.¶
+#2119:auth [grant] <nick>    - grant authorization.¶
+#2120:auth deny <nick> <msg> - refuse authorization.¶
+#2121:auth req  <nick> <msg> - request authorization.¶
+#2122: Note: You need to 'save' to write new password to disc.¶
+#2123:%sSyntax error%s: Too few arguments: '%s'¶
+#2124:%sSyntax error%s: Not an integer: '%s'¶
+#2126:User is offline, message (%s#%08lx:%08lx%s) queued.¶
+#2127:       URL: %s%s%s%s¶
+2128: Beskrivning: %s%s%s¶
+2129: URL:         %s%s%s
+2130:Skriver meddelande till %sall%s:¶
+2131:Skriver meddelande till %s%s%s:¶
+2132:Skriver meddelande till %s%d%s:¶
+#2133:Color is %s%s%s.¶
+#2134:Funny messages are %s%s%s.¶
+#2135:Quiet output is %s%s%s.¶
+2136:Lösenordsbytet gick %s%s%s.¶
+2137:Bytet av information %s%s%s.¶
+2138:Bytet av information %s%s%s.¶
+2139:Uppdateringen av informationen %s%s%s.¶
+#2140:Random chat group change was %s%s%s.¶
+2141:Sökningen %sfailed%s.

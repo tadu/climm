@@ -162,8 +162,9 @@ static void FlapChannel4 (Session *sess, Packet *pak)
 
 void FlapPrint (Packet *pak)
 {
-    M_print (i18n (1910, "FLAP seq %08x length %04x channel %d" COLNONE "\n"),
+    M_print (i18n (1910, "FLAP seq %08x length %04x channel %d\n"),
              PacketReadAtB2 (pak, 2), pak->len - 6, PacketReadAt1 (pak, 1));
+    M_print (COLNONE);
     if (PacketReadAt1 (pak, 1) != 2)
     {
         if (prG->verbose & DEB_PACK8DATA)

@@ -43,24 +43,29 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
     switch (subtype)
     {
         case META_SRV_PASS_UPDATE:
-            M_print (i18n (1197, "Password change was " COLCLIENT "%s" COLNONE ".\n"),
-                     result == META_SUCCESS ? i18n (1393, "successful") : i18n (1394, "unsuccessful"));
+            M_print (i18n (2136, "Password change was %s%s%s.\n"),
+                     COLCLIENT, result == META_SUCCESS ? i18n (1393, "successful")
+                     : i18n (1394, "unsuccessful"), COLNONE);
             break;
         case META_SRV_ABOUT_UPDATE:
-            M_print (i18n (1395, "About info change was " COLCLIENT "%s" COLNONE ".\n"),
-                     result == META_SUCCESS ? i18n (1393, "successful") : i18n (1394, "unsuccessful"));
+            M_print (i18n (2137, "About info change was %s%s%s.\n"),
+                     COLCLIENT, result == META_SUCCESS ? i18n (1393, "successful")
+                     : i18n (1394, "unsuccessful"), COLNONE);
             break;
         case META_SRV_GEN_UPDATE:
-            M_print (i18n (1396, "Info change was " COLCLIENT "%s" COLNONE ".\n"),
-                     result == META_SUCCESS ? i18n (1393, "successful") : i18n (1394, "unsuccessful"));
+            M_print (i18n (2138, "Info change was %s%s%s.\n"),
+                     COLCLIENT, result == META_SUCCESS ? i18n (1393, "successful")
+                     : i18n (1394, "unsuccessful"), COLNONE);
             break;
         case META_SRV_OTHER_UPDATE:
-            M_print (i18n (1397, "Other info change was " COLCLIENT "%s" COLNONE ".\n"),
-                     result == META_SUCCESS ? i18n (1393, "successful") : i18n (1394, "unsuccessful"));
+            M_print (i18n (2139, "Other info change was %s%s%s.\n"),
+                     COLCLIENT, result == META_SUCCESS ? i18n (1393, "successful")
+                     : i18n (1394, "unsuccessful"), COLNONE);
             break;
         case META_SRV_RANDOM_UPDATE:
-            M_print (i18n (2008, "Random chat group change was " COLCLIENT "%s" COLNONE ".\n"),
-                     result == META_SUCCESS ? i18n (1393, "successful") : i18n (1394, "unsuccessful"));
+            M_print (i18n (2140, "Random chat group change was %s%s%s.\n"),
+                     COLCLIENT, result == META_SUCCESS ? i18n (1393, "successful")
+                     : i18n (1394, "unsuccessful"), COLNONE);
             break;
     }
 
@@ -69,7 +74,8 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
         case 0x32:
         case 0x14:
             Time_Stamp ();
-            M_print (" %s\n", i18n (1398, "Search " COLCLIENT "failed" COLNONE "."));
+            M_print (" ");
+            M_print (i18n (2141, "Search %sfailed%s.\n"), COLCLIENT, COLNONE);
             return;
         case META_READONLY:
             Time_Stamp ();
@@ -170,8 +176,8 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             wdata = PacketRead1 (p); /* publish email, 01: yes, 00: no */
             M_print (COLSERVER "%-15s" COLNONE " %s\n", 
                 i18n (1941, "Publish Email:"), wdata 
-                ? i18n (1567, "No authorization needed." COLNONE " ")
-                : i18n (1568, "Must request authorization." COLNONE " "));
+                ? i18n (1567, "No authorization needed.")
+                : i18n (1568, "Must request authorization."));
             /* one unknown word ignored according to v7 doc */
             break;
         case META_SRV_MORE:
@@ -356,8 +362,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
         case META_SRV_WP_LAST_USER:
             if (PacketRead2 (p) < 19)
             {
-                M_print (i18n (1398, "Search " COLCLIENT "failed" COLNONE "."));
-                M_print ("\n");
+                M_print (i18n (2141, "Search %sfailed%s.\n"), COLCLIENT, COLNONE);
                 break;
             }
 
@@ -689,7 +694,7 @@ void Do_Msg (Session *sess, time_t stamp, UWORD type, const char *text, UDWORD u
                     return;
                 }
                 *tmp = '\0';
-                M_print (i18n (1586, "\n" COLCONTACT "%s" COLNONE " "), cdata);
+                M_print ("\n" COLCONTACT "%s" COLNONE " ", cdata);
             }
 
             M_print (i18n (1755, "has added you to their contact list.\n"));
@@ -726,7 +731,8 @@ void Do_Msg (Session *sess, time_t stamp, UWORD type, const char *text, UDWORD u
         case AUTH_REQ_MESS:
             tmp = strchr (cdata, sep);
             *tmp = 0;
-            M_print (i18n (1590, COLCONTACT "%10s" COLNONE " has requested your authorization to be added to their contact list.\n"), cdata);
+            M_print ("" COLCONTACT "%10s" COLNONE "%s\n", cdata,
+                     i18n (1590, "has requested your authorization to be added to their contact list."));
             tmp++;
             cdata = tmp;
             tmp = strchr (tmp, sep);
@@ -835,7 +841,7 @@ void Do_Msg (Session *sess, time_t stamp, UWORD type, const char *text, UDWORD u
         case CONTACT_MESS:
             tmp = strchr (cdata, sep);
             *tmp = 0;
-            M_print (i18n (1595, "\nContact List.\n" COLMESSAGE "============================================\n" COLNONE "%d Contacts\n"),
+            M_print (i18n (1595, "\nContact List.\n============================================\n%d Contacts\n"),
                      atoi (cdata));
             tmp++;
             m = atoi (cdata);

@@ -263,13 +263,13 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
                 UtilUIUserOffline (sess, cont);
             break;
         case SRV_BAD_PASS:
-            M_print (i18n (1645, COLMESSAGE "You entered an incorrect password." COLNONE "\n"));
+            M_print (i18n (1645, "You entered an incorrect password.\n"));
             exit (1);
             break;
         case SRV_TRY_AGAIN:
             Time_Stamp ();
-            M_print (" ");
-            M_print (i18n (1646, COLMESSAGE "Server is busy.\n"));
+            M_print (" " COLMESSAGE);
+            M_print (i18n (1646, "Server is busy.\n"));
             uiG.reconnect_count++;
             if (uiG.reconnect_count >= MAX_RECONNECT_ATTEMPTS)
             {
@@ -358,7 +358,8 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             break;
         default:               /* commands we dont handle yet */
             Time_Stamp ();
-            M_print (i18n (1648, " " COLCLIENT "The response was %04X\t"), cmd);
+            M_print (" " COLCLIENT);
+            M_print (i18n (1648, "The response was %04X\t"), cmd);
             M_print (i18n (1649, "The version was %X\t"), ver);
             M_print (i18n (1650, "\nThe SEQ was %04X\t"), seq);
             M_print (i18n (1651, "The size was %d\n"), pak->len - pak->rpos);
