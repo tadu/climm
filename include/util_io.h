@@ -10,7 +10,3 @@ void        UtilIOSend       (Session *sess, Packet *pak);
 
 void   M_fdprint (FD_T fd, const char *str, ...);
 int    M_fdnreadln (FILE *fd, char *buf, size_t len);
-
-#ifndef HAVE_HSTRERROR
-#define hstrerror(x) ""
-#endif

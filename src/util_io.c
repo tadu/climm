@@ -27,6 +27,14 @@
 #include "contact.h"
 
 extern int h_errno;
+
+#ifndef HAVE_HSTRERROR
+const char *hstrerror (int rc)
+{
+    return "";
+}
+#endif
+
 #define BACKLOG 10
 
 static void UtilIOTOConn (struct Event *event);
