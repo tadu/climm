@@ -1,5 +1,38 @@
 -*- coding: utf-8 -*-
 
+
+2004-01-15 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
+	* change malloc()ed size as suggested by Sebastian Felis
+	* apply Sebastian Felis' history dump and search patch
+	* add large file configure check
+	* remove code and documentation for (now dysfunctional) peek
+	* fix registration: use random cookie, initialize meta data
+	  after registration
+	* fix segfault on auto-replies from offline users
+	* update ja.UTF-8.i18n
+	* fix segfault when no server connection is given
+	* ignore CAP_STR_2001 and CAP_STR_2002 messages
+	* improve conn login semantic as in unstable
+	* display "Your status is offline (<last status>)" instead of
+	  "Your status is <last status>" when offline
+
+2003-11-26 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
+	* detect new Kopete capability
+	* apply rtc's spec patch
+	* fix contact group wandering to first connection
+	* fix typos in file_util.c
+
+2003-10-20 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
+	* fix wrong argument in util_io.c
+	* fix compilation under --disable-peer2peer
+	* fix QNX compilation, remove #includes that are already done in micq.h
+	* fix another 0xfe issue
+	* add ru@fun.i18n ro Makefile
+	* small ru.i18n update
+	* recognize CAP_UTF8 on auto-replies to normal messages
+	* detect MobICQ
+	* update se.i18n by Sebastian Rasmussen
+
 2003-10-06 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
 	* allow --enable-ssl=auto and --enable-tcl=auto
 	* fix typos in man pages
@@ -12,7 +45,7 @@
 	* cache C.i18n versions in i18n-template
 	* fix contact list downloading
 	* add missing queue types for debugging
-	* prepare for 0.4.10.5.
+	* Release as 0.4.10.5.
 
 2003-09-30 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
 	* fix i18n string numbers
