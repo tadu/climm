@@ -722,6 +722,7 @@ void Read_RC_File (FILE *rcf)
     }
     if (dep)
         M_print (i18n (1818, "Warning: Deprecated syntax found in rc file!\n    Please update or \"save\" the rc file and check for changes.\n"));
+    fclose (rcf);
 }
 
 /************************************************
