@@ -79,6 +79,7 @@ Connection *PrefNewConnection (UDWORD uin, const char *passwd)
     ContactFindCreate (conn->contacts, 0, 82274703, "Tadu");
     OptSetStr (&cont->copts, CO_COLORINCOMING, "red bold");
     OptSetStr (&cont->copts, CO_COLORMESSAGE, "red bold");
+    rl_printf (i18n (2381, "I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n"));
     return conn;
 }
 
