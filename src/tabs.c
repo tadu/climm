@@ -37,7 +37,10 @@ void TabInit (void)
     int i;
     
     for (i = 0; i <= TAB_SLOTS; i++)
+    {
         tab_list[i] = NULL;
+        tab_stamp[i] = 0;
+    }
     for (i = 0; (cont = ContactIndex (NULL, i)); i++)
         if (ContactPrefVal (cont, CO_TABSPOOL))
             TabAddOut (cont);
@@ -48,25 +51,24 @@ void TabInit (void)
  */
 static void tab_add (const Contact *cont, int offset)
 {
-    time_t now = time (NULL) - offset, tnow;
-    Contact *tcont;
-    int found;
-
-    for (found = 0; found <= TAB_SLOTS; found++)
-    {
-        if (tab_stamp[found] < now)
-        {
-            tnow  = tab_stamp[found];
-            tab_stamp[found] = now;
-            tcont = tab_list[found];
-            if (tcont == cont)
-                return;
-            tab_list[found] = cont;
-            cont = tcont;
-            now = tnow;
-        }
-        else if (tab_list[found] == cont)
+    time_t istamp = time (NULL) - offset, tstamp;
+    const Contact *tcont, *icont = cont;
+    int found = 0;
+    
+    for (found = 0; found <= TAB_SLOTS && tab_stamp[found] > istamp; found++)
+        if (tab_list[found] == cont)
             return;
+
+    for ( ; found <= TAB_SLOTS; found++)
+    {
+        tstamp = tab_stamp[found];
+        tcont  = tab_list[found];
+        tab_stamp[found] = istamp;
+        tab_list[found]  = icont;
+        if (!tcont || tcont == cont)
+            return;
+        icont  = tcont;
+        istamp = tstamp;
     }
 }
 
@@ -89,11 +91,19 @@ void TabAddOut (const Contact *cont)
 }
 
 /*
- * Returns the nr.th entry, or NULL.
+ * Returns the nr.th entrys time stamp, or NULL.
  */
 const Contact *TabGet (int nr)
 {
     return nr > TAB_SLOTS ? NULL : tab_list[nr];
+}
+
+/*
+ * Returns the nr.th entry, or NULL.
+ */
+time_t TabTime (int nr)
+{
+    return nr > TAB_SLOTS ? 0 : tab_stamp[nr];
 }
 
 /*

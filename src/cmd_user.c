@@ -2754,6 +2754,7 @@ static JUMP_F(CmdUserTabs)
 {
     int i;
     const Contact *cont;
+    time_t when;
     ANYCONN;
 
     for (i = 0; TabGet (i); i++)
@@ -2761,7 +2762,8 @@ static JUMP_F(CmdUserTabs)
     rl_printf (i18n (9999, "Last %d people you talked with:\n"), i);
     for (i = 0; (cont = TabGet (i)); i++)
     {
-        rl_printf ("    %s", cont->nick);
+        when = TabTime (i);
+        rl_printf ("%s    %s", s_time (&when), cont->nick);
         rl_printf (" %s(%s)%s\n", COLQUOTE, s_status (cont->status), COLNONE);
     }
     return 0;
