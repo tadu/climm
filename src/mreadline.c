@@ -321,7 +321,15 @@ void R_process_input_tab (void)
     int nicklen = 0;
     int gotmatch = 0;
 
-/* FIXME: */
+    if (bytelen < strlen (msgcmd) &&
+        !strncmp (s, msgcmd, bytelen < strlen (msgcmd) ? bytelen : strlen (msgcmd)))
+    {
+        sprintf (s, "%s ", msgcmd);
+        bytepos = bytelen = strlen (s);
+#ifdef ENABLE_UTF8
+        curpos = curlen = c_strlen (s);
+#endif
+    }
 
     if (prG->tabs == TABS_SIMPLE)
     {
@@ -344,20 +352,23 @@ void R_process_input_tab (void)
 
         R_remprompt ();
         curlen = curpos = strlen (s);
+#ifdef ENABLE_UTF8
+        bytelen = bytepos = c_strlen (s);
+#endif
     }
     else
     {
         if (tabstate == 0)
         {
             tabcont = ContactStart ();
-            tabwstart = s + curpos;
+            tabwstart = s + bytepos;
             if (*tabwstart == ' ' && tabwstart > s) tabwstart --;
             while (*tabwstart != ' ' && tabwstart >= s) tabwstart --;
             tabwstart ++;
             if (!(tabwend = strchr (tabwstart, ' ')))
                 tabwend = s + curlen;
             tabwlen = sizeof (tabword) < tabwend - tabwstart ? sizeof (tabword) : tabwend - tabwstart;
-            strncpy (tabword, tabwstart, tabwlen);
+            snprintf (tabword, sizeof (tabword), "%.*s", tabwend - tabwstart, tabwstart);
         }
         else
             tabcont = ContactHasNext (tabcont) ? ContactNext (tabcont) : ContactStart ();
@@ -368,9 +379,10 @@ void R_process_input_tab (void)
         {
             while (!gotmatch && ContactHasNext (tabcont))
             {
-                nicklen = strlen(tabcont->nick);
+                nicklen = strlen (tabcont->nick);
                 if (((prG->tabs == TABS_CYCLE && tabcont->status != STATUS_OFFLINE) || prG->tabs == TABS_CYCLEALL)
-                    && nicklen >= tabwlen && !strncasecmp (tabword, tabcont->nick, tabwlen))
+                    && nicklen >= tabwlen && !strncasecmp (tabword, tabcont->nick, tabwlen)
+                    && (tabwlen > 0 || ~tabcont->flags & CONT_ALIAS) && ~tabcont->flags & CONT_TEMPORARY)
                     gotmatch = 1;
                 else
                     tabcont = ContactNext (tabcont);
@@ -383,15 +395,22 @@ void R_process_input_tab (void)
                     return;
                 }
                 else
+                {
                     tabcont = ContactStart ();
+                    tabstate = 0;
+                }
             }
         }
-        memmove (tabwstart + nicklen, tabwend, strlen (tabwend) + 1);
+        *tabwstart = '\0';
+        memmove (s, s_sprintf ("%s%s%s", s, tabcont->nick, tabwend), HISTORY_LINE_LEN);
         tabwend = tabwstart + nicklen;
-        strncpy (tabwstart, tabcont->nick, nicklen);
         R_remprompt ();
-        curlen = strlen (s);
-        curpos = tabwstart - s + nicklen;
+        bytelen = strlen (s);
+        bytepos = tabwstart - s + nicklen;
+#ifdef ENABLE_UTF8
+        curlen = c_strlen (s);
+        curpos = (prG->enc_loc == ENC_UTF8) ? s_strnlen (s, bytepos) : bytepos;
+#endif
         tabstate = 1;
     }
 }
@@ -550,14 +569,14 @@ int R_process_input (void)
             
             strncat (buf, &ch, 1);
             charbytes = strlen (buf);
+            curlen += 1;
+            curpos += 1;
 #else
             buf[0] = ch;
             buf[1] = '\0';
 #endif
 
             bytelen += charbytes;
-            curlen += 1;
-            curpos += 1;
             memmove (s + bytepos + charbytes, s + bytepos, bytelen - bytepos);
             memmove (s + bytepos, buf, charbytes);
             bytepos += charbytes;
@@ -817,6 +836,9 @@ void R_redraw ()
 void R_remprompt ()
 {
     int pos;
+#ifdef ENABLE_UTF8
+    int bpos = bytepos;
+#endif
     
     if (prstat != 1 && prstat != 3)
         return;
@@ -824,6 +846,9 @@ void R_remprompt ()
     prstat = 2;
     R_goto (0);
     curpos = pos;
+#ifdef ENABLE_UTF8
+    bytepos = bpos;
+#endif
     M_print ("\r");             /* for tab stop reasons */
     printf (ESC "[J");
     prstat = 2;
