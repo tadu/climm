@@ -390,17 +390,6 @@ void Display_Info_Reply (Connection *conn, Contact *cont, Packet *pak, UBYTE fla
     mg->auth = (flags & IREP_HASAUTHFLAG) ? PacketRead1 (pak) : 0;
     
     cont->updated |= UPF_GENERAL_A;
-
-    if (*mg->nick)
-        M_printf (COLSERVER "%-15s" COLNONE " " COLCONTACT "%s" COLNONE "\n",
-                 i18n (1500, "Nickname:"), mg->nick);
-    if (*mg->first && *mg->last)
-        M_printf (COLSERVER "%-15s" COLNONE " %s\t %s\n",
-                 i18n (1501, "Name:"), mg->first, mg->last);
-    else if (*mg->first)
-        M_printf (AVPFMT, i18n (1564, "First name:"), mg->first);
-    else if (*mg->last)
-        M_printf (AVPFMT, i18n (1565, "Last name:"), mg->last);
 }
 
 void Display_Ext_Info_Reply (Connection *conn, Packet *pak)
