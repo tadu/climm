@@ -35,6 +35,7 @@
 #include "oscar_snac.h"
 #include "oscar_roster.h"
 #include "oscar_contact.h"
+#include "preferences.h"
 #include "im_icq8.h"
 
 static void IMRosterCancel (Event *event)
@@ -153,6 +154,8 @@ static void IMRosterShow (Event *event)
     for (rg = roster->groups; rg; rg = rg->next)
     {
         IMRosterCheckGroup (serv, rg);
+        if (prG->verbose)
+            rl_printf ("  %6d", rg->id);
         rl_printf ("  %s%s%s\n",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE);
         cnt_groups++;
@@ -163,9 +166,14 @@ static void IMRosterShow (Event *event)
     {
         cont = IMRosterCheckCont (serv, rc);
         rg = IMRosterGroup (roster, rc->tag);
-        rl_printf ("  %s%-25s%s %s%-15s%s %s%s%s\n",
+        if (prG->verbose)
+            rl_printf ("  %6d", rc->tag);
+        rl_printf ("  %s%-25s%s %s%-15s%s",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
-            COLCONTACT, rc->name, COLNONE,
+            COLCONTACT, rc->name, COLNONE);
+        if (prG->verbose)
+            rl_printf ("  %6d", rc->id);
+        rl_printf (" %s%s%s\n",
             COLCONTACT, rc->nick ? rc->nick : "", COLNONE);
         if (cont)
             cnt_ignored++;
@@ -175,9 +183,14 @@ static void IMRosterShow (Event *event)
     {
         cont = IMRosterCheckCont (serv, rc);
         rg = IMRosterGroup (roster, rc->tag);
-        rl_printf ("  %s%-25s%s %s%-15s%s %s%s%s\n",
+        if (prG->verbose)
+            rl_printf ("  %6d", rc->tag);
+        rl_printf ("  %s%-25s%s %s%-15s%s",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
-            COLCONTACT, rc->name, COLNONE,
+            COLCONTACT, rc->name, COLNONE);
+        if (prG->verbose)
+            rl_printf ("  %6d", rc->id);
+        rl_printf (" %s%s%s\n",
             COLCONTACT, rc->nick ? rc->nick : "", COLNONE);
         if (cont)
             cnt_hidden++;
@@ -187,9 +200,14 @@ static void IMRosterShow (Event *event)
     {
         cont = IMRosterCheckCont (serv, rc);
         rg = IMRosterGroup (roster, rc->tag);
-        rl_printf ("  %s%-25s%s %s%-15s%s %s%s%s\n",
+        if (prG->verbose)
+            rl_printf ("  %6d", rc->tag);
+        rl_printf ("  %s%-25s%s %s%-15s%s",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
-            COLCONTACT, rc->name, COLNONE,
+            COLCONTACT, rc->name, COLNONE);
+        if (prG->verbose)
+            rl_printf ("  %6d", rc->id);
+        rl_printf (" %s%s%s\n",
             COLCONTACT, rc->nick ? rc->nick : "", COLNONE);
         if (cont)
             cnt_normal++;
@@ -199,9 +217,14 @@ static void IMRosterShow (Event *event)
     {
         cont = IMRosterCheckCont (serv, rc);
         rg = IMRosterGroup (roster, rc->tag);
-        rl_printf ("  %s%-25s%s %s%-15s%s %s%s%s\n",
+        if (prG->verbose)
+            rl_printf ("  %6d", rc->tag);
+        rl_printf ("  %s%-25s%s %s%-15s%s",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
-            COLCONTACT, rc->name, COLNONE,
+            COLCONTACT, rc->name, COLNONE);
+        if (prG->verbose)
+            rl_printf ("  %6d", rc->id);
+        rl_printf (" %s%s%s\n",
             COLCONTACT, rc->nick ? rc->nick : "", COLNONE);
         if (cont)
             cnt_intimate++;
@@ -251,11 +274,11 @@ static void IMRosterAdddown (Event *event)
         {
             ContactCreate (serv, cont);
             ContactAdd (cg, cont);
+            OptSetVal (&cont->copts, CO_IGNORE, 1);
             cnt_ignored++;
         }
         if (cont)
         {
-            OptSetVal (&cont->copts, CO_IGNORE, 1);
             ContactAddAlias (cont, rc->nick);
             ContactAddAlias (cont, rc->name);
         }
@@ -273,12 +296,12 @@ static void IMRosterAdddown (Event *event)
         {
             ContactCreate (serv, cont);
             ContactAdd (cg, cont);
+            OptSetVal (&cont->copts, CO_HIDEFROM, 1);
+            OptSetVal (&cont->copts, CO_INTIMATE, 0);
             cnt_hidden++;
         }
         if (cont)
         {
-            OptSetVal (&cont->copts, CO_HIDEFROM, 1);
-            OptSetVal (&cont->copts, CO_INTIMATE, 0);
             ContactAddAlias (cont, rc->nick);
             ContactAddAlias (cont, rc->name);
         }
@@ -296,12 +319,12 @@ static void IMRosterAdddown (Event *event)
         {
             ContactCreate (serv, cont);
             ContactAdd (cg, cont);
+            OptSetVal (&cont->copts, CO_HIDEFROM, 0);
+            OptSetVal (&cont->copts, CO_INTIMATE, 0);
             cnt_normal++;
         }
         if (cont)
         {
-            OptSetVal (&cont->copts, CO_HIDEFROM, 0);
-            OptSetVal (&cont->copts, CO_INTIMATE, 0);
             ContactAddAlias (cont, rc->nick);
             ContactAddAlias (cont, rc->name);
         }
@@ -319,12 +342,12 @@ static void IMRosterAdddown (Event *event)
         {
             ContactCreate (serv, cont);
             ContactAdd (cg, cont);
+            OptSetVal (&cont->copts, CO_HIDEFROM, 0);
+            OptSetVal (&cont->copts, CO_INTIMATE, 1);
             cnt_intimate++;
         }
         if (cont)
         {
-            OptSetVal (&cont->copts, CO_HIDEFROM, 0);
-            OptSetVal (&cont->copts, CO_INTIMATE, 1);
             ContactAddAlias (cont, rc->nick);
             ContactAddAlias (cont, rc->name);
         }
@@ -395,13 +418,16 @@ static void IMRosterAddup (Event *event)
             SnacCliRosterupdate (serv, cont->group, cont);
     }
 
+    cg = ContactGroupC (NULL, 0, "");
     for (i = 0; (cont = ContactIndex (serv->contacts, i)); i++)
         if (!ContactPrefVal (cont, CO_ISSBL))
             if (ContactPrefVal (cont, CO_WANTSBL) && !ContactPrefVal (cont, CO_IGNORE))
             {
                 cnt_normal++;
-                SnacCliRosteradd (serv, cont->group, cont);
+                ContactAdd (cg, cont);
             }
+    if (ContactIndex (cg, 0))
+        SnacCliRosterbulkadd (serv, cg);
 
     IMRosterCancel (event);
     rl_printf (i18n (2477, "Uploading %d contact groups and %d contacts.\n"),
