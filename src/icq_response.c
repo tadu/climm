@@ -10,6 +10,7 @@
 #include "conv.h"
 #include "packet.h"
 #include "cmd_pkt_cmd_v5.h"
+#include "preferences.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -414,12 +415,12 @@ void Recv_Message (Session *sess, UBYTE * pak)
     RECV_MESSAGE_PTR r_mesg;
 
     r_mesg = (RECV_MESSAGE_PTR) pak;
-    uiG.last_recv_uin = Chars_2_DW (r_mesg->uin);
+    uiG.last_rcvd_uin = Chars_2_DW (r_mesg->uin);
     M_print (i18n (496, "%02d/%02d/%04d"), r_mesg->month, r_mesg->day, Chars_2_Word (r_mesg->year));
     M_print (" %02d:%02d UTC \a" CYAN BOLD "%10s" COLNONE " ",
              r_mesg->hour, r_mesg->minute, ContactFindName (Chars_2_DW (r_mesg->uin)));
     Do_Msg (sess, Chars_2_Word (r_mesg->type), Chars_2_Word (r_mesg->len),
-            (r_mesg->len + 2), uiG.last_recv_uin, 0);
+            (r_mesg->len + 2), uiG.last_rcvd_uin, 0);
 }
 
 
@@ -490,7 +491,7 @@ void User_Online (Session *sess, UBYTE * pak)
 
     new_status = Chars_2_DW (&pak[17]);
 
-    if (sess->Done_Login)
+    if (sess->connect & CONNECT_OK)
     {
 
         if (prG->sound & SFLAG_ON_CMD)
@@ -898,17 +899,17 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
        If we just received a message from someone on the contact list,
        save it with the person's contact information. If they are not in
        the list, don't do anything special with it.                              */
-    if (ContactFind (uiG.last_recv_uin) != NULL)
+    if (ContactFind (uiG.last_rcvd_uin) != NULL)
     {
-        ContactFind (uiG.last_recv_uin)->LastMessage =
-           realloc (ContactFind (uiG.last_recv_uin)->LastMessage, len + 5);
+        ContactFind (uiG.last_rcvd_uin)->LastMessage =
+           realloc (ContactFind (uiG.last_rcvd_uin)->LastMessage, len + 5);
         /* I add on so many characters because I always have segfaults in
            my own program when I try to allocate strings like this. Somehow
            it tries to write too much to the string even though I think I
            allocate the right amount. Oh well. It shouldn't be too much
            wasted space, I hope.                                                          */
         ConvWinUnix (cdata);
-        strcpy (ContactFind (uiG.last_recv_uin)->LastMessage, cdata);
+        strcpy (ContactFind (uiG.last_rcvd_uin)->LastMessage, cdata);
     }
     /* end of aaron */
 }

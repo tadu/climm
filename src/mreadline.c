@@ -28,6 +28,7 @@
 #include "cmd_user.h"
 #include "tabs.h"
 #include "contact.h"
+#include "preferences.h"
 
 #include <stdio.h>
 #include <stdarg.h>

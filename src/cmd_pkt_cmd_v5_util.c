@@ -11,6 +11,7 @@
 #include "util.h"
 #include "conv.h"
 #include "cmd_pkt_server.h"
+#include "preferences.h"
 #include "contact.h"
 #include "util_io.h"
 #include <string.h>
@@ -326,7 +327,7 @@ void UDPCallBackResend (struct Event *event)
             if (cmd == CMD_LOGIN || cmd == CMD_KEEP_ALIVE)
             {
                 M_print (i18n (632, "\n\aConnection unstable. Exiting...."));
-                event->sess->Quit = TRUE;
+                uiG.quit = TRUE;
             }
         }
         M_print ("\n");

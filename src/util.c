@@ -23,6 +23,7 @@ Changes :
 #include "cmd_pkt_cmd_v5.h"
 #include "contact.h"
 #include "util_io.h"
+#include "preferences.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>

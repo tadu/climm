@@ -1,5 +1,11 @@
 
 2002-02-06 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* finish big rename by moving stuff from session.h to uiG;
+	  realized that session is the wrong name...
+	* reset reconnect_count on successfull login
+	* fix typo in last release
+
+2002-02-06 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* new: util_io.c for all IO related stuff (that what SOCK* did);
 	  there's still stuff around that belongs there
 	* removed: sendmsg.c

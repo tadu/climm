@@ -9,10 +9,10 @@ AC_CONFIG_SRCDIR([include/micq.h])
 
 AC_CANONICAL_HOST
 
-AM_INIT_AUTOMAKE(micq, 0.4.7+cvs-2002-02-06)
+AM_INIT_AUTOMAKE(micq, 0.4.7+cvs-2002-02-06b)
 AM_CONFIG_HEADER(include/config.h)
 AC_DEFINE(MICQ_VERSION,VERSION,[mICQ's current version])
-AC_DEFINE(MICQ_VERSION_NUM,474,[mICQ's current version numerical])
+AC_DEFINE(MICQ_VERSION_NUM,475,[mICQ's current version numerical])
 
 # prefer 2.50 auto{conf,header}
 AM_MISSING_PROG(AUTOCONFNG, autoconf-2.50, $missing_dir)
@@ -52,11 +52,11 @@ AC_TYPE_SIGNAL
 dnl AC_FUNC_STAT
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([atexit gethostbyname memset mkdir select socket strcasecmp \
-                strchr strdup strncasecmp strpbrk strrchr strstr strtol fork \
+                strchr strdup strncasecmp strpbrk strrchr strstr strtol \
                 symlink chmod tcgetattr hstrerror])
 
 # vprintf stat malloc \
-for f in gethostbyname memset mkdir select socket fork atexit \
+for f in gethostbyname memset mkdir select socket atexit \
          strcasecmp strchr strdup strncasecmp strpbrk strrchr strstr strtol; do
     if eval test "x\$ac_cv_func_$f" != "xyes"; then
         AC_MSG_ERROR([Required function $f is missing. Sorry.])

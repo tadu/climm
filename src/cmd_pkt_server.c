@@ -8,6 +8,7 @@
 #include "cmd_user.h"
 #include "cmd_pkt_server.h"
 #include "icq_response.h"
+#include "preferences.h"
 #include "server.h"
 #include "contact.h"
 #include "util_io.h"
@@ -49,8 +50,6 @@ static jump_srv_t jump[] = {
     { SRV_META_USER,          NULL,            "SRV_META_USER"          },
     { 0, NULL, "" }
 };
-
-static int Reconnect_Count = 0;
 
 /*
  * Returns the name of the server packet.
@@ -189,7 +188,8 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             CmdPktCmdContactList (sess);
             CmdPktCmdInvisList (sess);
             CmdPktCmdVisList (sess);
-            uiG.Current_Status = sess->set_status;
+            sess->status = prG->status;
+            uiG.reconnect_count = 0;
             if (loginmsg++)
                 break;
 
@@ -212,7 +212,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
                 M_print (i18n (643, "Acknowleged SRV_X1 0x021C Done Contact list?\n"));
             }
             CmdUser (sess, "¶e");
-            sess->Done_Login = TRUE;
+            sess->connect |= CONNECT_OK;
             break;
         case SRV_X2:
             if (prG->verbose)
@@ -235,9 +235,19 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             exit (1);
             break;
         case SRV_TRY_AGAIN:
-            M_print (i18n (646, COLMESS "Server is busy please try again.\nTrying again...\n"));
-            sess->our_seq2 = 0;
+            Time_Stamp ();
+            M_print (" ");
+            M_print (i18n (646, COLMESS "Server is busy.\n"));
+            uiG.reconnect_count++;
+            if (uiG.reconnect_count >= MAX_RECONNECT_ATTEMPTS)
+            {
+                M_print ("%s\n", i18n (34, "Maximum number of tries reached. Giving up."));
+                uiG.quit = TRUE;
+                break;
+            }
+            M_print (i18n (82, "Trying to reconnect... [try %d out of %d]\n"), uiG.reconnect_count, MAX_RECONNECT_ATTEMPTS);
             QueueEnqueueData (queue, sess, 0, 0, 0, time (NULL) + 5, NULL, NULL, &CallBackLoginUDP);
+            break;
         case SRV_USER_ONLINE:
             User_Online (sess, data);
             break;
@@ -248,16 +258,15 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
         case SRV_NOT_CONNECTED:
             Time_Stamp ();
             M_print (" ");
-            Reconnect_Count++;
-            if (Reconnect_Count >= MAX_RECONNECT_ATTEMPTS)
+            M_print ("%s\n", i18n (39, "Server claims we're not connected.\n"));
+            uiG.reconnect_count++;
+            if (uiG.reconnect_count >= MAX_RECONNECT_ATTEMPTS)
             {
                 M_print ("%s\n", i18n (34, "Maximum number of tries reached. Giving up."));
-                sess->Quit = TRUE;
+                uiG.quit = TRUE;
                 break;
             }
-            M_print ("%s\n", i18n (39, "Server claims we're not connected.\n"));
-            M_print (i18n (82, "Trying to reconnect... [try %d out of %d]\n"), Reconnect_Count, MAX_RECONNECT_ATTEMPTS);
-            sess->our_seq2    = 0;
+            M_print (i18n (82, "Trying to reconnect... [try %d out of %d]\n"), uiG.reconnect_count, MAX_RECONNECT_ATTEMPTS);
             QueueEnqueueData (queue, sess, 0, 0, 0, time (NULL) + 5, NULL, NULL, &CallBackLoginUDP);
             break;
         case SRV_END_OF_SEARCH:
@@ -291,13 +300,13 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             s_mesg = (SIMPLE_MESSAGE_PTR) data;
             if (!((NULL == ContactFind (Chars_2_DW (s_mesg->uin))) && (prG->flags & FLAG_HERMIT)))
             {
-                uiG.last_recv_uin = Chars_2_DW (s_mesg->uin);
+                uiG.last_rcvd_uin = Chars_2_DW (s_mesg->uin);
                 Time_Stamp ();
                 M_print ("\a " CYAN BOLD "%10s" COLNONE " ", ContactFindName (Chars_2_DW (s_mesg->uin)));
                 if (prG->verbose)
                     M_print (i18n (647, " Type = %04x\t"), Chars_2_Word (s_mesg->type));
                 Do_Msg (sess, Chars_2_Word (s_mesg->type), Chars_2_Word (s_mesg->len),
-                        s_mesg->len + 2, uiG.last_recv_uin, 0);
+                        s_mesg->len + 2, uiG.last_rcvd_uin, 0);
                 Auto_Reply (sess, s_mesg);
             }
             break;

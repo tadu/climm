@@ -5,6 +5,7 @@
 #include "util_ui.h"
 #include "util.h"
 #include "contact.h"
+#include "preferences.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -542,13 +543,12 @@ void Kill_Prompt (void)
 Displays the Micq prompt.  Maybe someday this will be 
 configurable
 ******************************************************/
-extern UDWORD last_uin;
 void Prompt (void)
 {
     static char buff[200];
-    if (prG->flags & FLAG_UINPROMPT && last_uin)
+    if (prG->flags & FLAG_UINPROMPT && uiG.last_sent_uin)
     {
-        snprintf (buff, sizeof (buff), COLSERV "[%s]" COLNONE " ", ContactFindName (last_uin));
+        snprintf (buff, sizeof (buff), COLSERV "[%s]" COLNONE " ", ContactFindName (uiG.last_sent_uin));
         R_doprompt (buff);
     }
     else

@@ -10,6 +10,7 @@
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_user.h"
 #include "contact.h"
+#include "preferences.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -41,7 +42,7 @@
  * Returns the appropriate auto-reply string IF user has enabled auto-replys
  * dup's the string to prevent Russian conversion from happening on the
  * original */
-char *Get_Auto_Reply ()
+char *Get_Auto_Reply (Session *sess)
 {
     char *nullmsg;
     nullmsg = malloc (1);
@@ -50,7 +51,7 @@ char *Get_Auto_Reply ()
     if (!(prG->flags & FLAG_AUTOREPLY))
         return nullmsg;
 
-    switch (uiG.Current_Status & 0x1FF)
+    switch (sess->status & 0x1FF)
     {
         case STATUS_OCCUPIED:
             return strdup (prG->auto_occ);
@@ -90,9 +91,9 @@ void Auto_Reply (Session *sess, SIMPLE_MESSAGE_PTR s_mesg)
         /*** !!!!???? What does this if do?  Why is it here ????!!!!! ****/
     if (0xfe != *(((unsigned char *) s_mesg) + sizeof (s_mesg)))
     {
-        if (prG->flags & FLAG_AUTOREPLY && (uiG.Current_Status != STATUS_ONLINE) && (uiG.Current_Status != STATUS_FREE_CHAT))
+        if (prG->flags & FLAG_AUTOREPLY && (sess->status != STATUS_ONLINE) && (sess->status != STATUS_FREE_CHAT))
         {
-            switch (uiG.Current_Status & 0x1ff)
+            switch (sess->status & 0x1ff)
             {
                 case STATUS_OCCUPIED:
                     temp = prG->auto_occ;
@@ -117,12 +118,12 @@ void Auto_Reply (Session *sess, SIMPLE_MESSAGE_PTR s_mesg)
             icq_sendmsg (sess, Chars_2_DW (s_mesg->uin), temp, NORM_MESS);
             free (temp);
 
-            if (ContactFindNick (uiG.last_recv_uin) != NULL)
-                log_event (uiG.last_recv_uin, LOG_AUTO_MESS,
-                           "Sending an auto-reply message to %s\n", ContactFindNick (uiG.last_recv_uin));
+            if (ContactFindNick (uiG.last_rcvd_uin) != NULL)
+                log_event (uiG.last_rcvd_uin, LOG_AUTO_MESS,
+                           "Sending an auto-reply message to %s\n", ContactFindNick (uiG.last_rcvd_uin));
             else
-                log_event (uiG.last_recv_uin, LOG_AUTO_MESS,
-                           "Sending an auto-reply message to %d\n", uiG.last_recv_uin);
+                log_event (uiG.last_rcvd_uin, LOG_AUTO_MESS,
+                           "Sending an auto-reply message to %d\n", uiG.last_rcvd_uin);
         }
     }
 #ifndef TCP_COMM

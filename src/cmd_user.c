@@ -5,6 +5,7 @@
 #include "util_ui.h"
 #include "util_table.h"
 #include "cmd_pkt_cmd_v5.h"
+#include "preferences.h"
 #include "tabs.h"
 #include "file_util.h"
 #include "buildmark.h"
@@ -14,8 +15,6 @@
 #include <stdio.h>
 #include <assert.h>
 #include <ctype.h>
-
-UDWORD last_uin = 0;
 
 static jump_f
     CmdUserChange, CmdUserRandom, CmdUserHelp, CmdUserInfo, CmdUserTrans,
@@ -154,7 +153,7 @@ JUMP_F(CmdUserChange)
     CmdPktCmdStatusChange (sess, data);
     Time_Stamp ();
     M_print (" ");
-    Print_Status (uiG.Current_Status);
+    Print_Status (sess->status);
     M_print ("\n");
     return 0;
 }
@@ -715,10 +714,10 @@ JUMP_F(CmdUserAlter)
 JUMP_F (CmdUserResend)
 {
     UDWORD uin;
-    char *arg1, *temp;
+    char *arg1;
 
     arg1 = strtok (args, UIN_DELIMS);
-    if (!sess->last_message_sent) 
+    if (!uiG.last_message_sent) 
     {
         M_print (i18n (771, "You haven't sent a message to anyone yet!\n"));
         return 0;
@@ -735,10 +734,8 @@ JUMP_F (CmdUserResend)
         M_print ("\n");
         return 0;
     }
-    temp = strdup (sess->last_message_sent);
-    icq_sendmsg (sess, uin, temp, sess->last_message_sent_type);
-    free (temp);
-    last_uin = uin;
+    icq_sendmsg (sess, uin, uiG.last_message_sent, uiG.last_message_sent_type);
+    uiG.last_sent_uin = uin;
     return 0;
 }
 
@@ -775,7 +772,7 @@ JUMP_F (CmdUserMessage)
             else
             {
                 icq_sendmsg (sess, multi_uin, msg, NORM_MESS);
-                last_uin = multi_uin;
+                uiG.last_sent_uin = multi_uin;
             }
             return 0;
         }
@@ -809,7 +806,7 @@ JUMP_F (CmdUserMessage)
                 else
                 {
                     icq_sendmsg (sess, multi_uin, msg, NORM_MESS);
-                    last_uin = multi_uin;
+                    uiG.last_sent_uin = multi_uin;
                 }
                 return 0;
             }
@@ -836,21 +833,21 @@ JUMP_F (CmdUserMessage)
                 arg1 = strtok (NULL, "");
                 break;
             case 2:
-                if (!uiG.last_recv_uin)
+                if (!uiG.last_rcvd_uin)
                 {
                     M_print (i18n (741, "Must receive a message first\n"));
                     return 0;
                 }
-                uin = uiG.last_recv_uin;
+                uin = uiG.last_rcvd_uin;
                 arg1 = strtok (args, "");
                 break;
             case 4:
-                if (!last_uin)
+                if (!uiG.last_sent_uin)
                 {
                     M_print (i18n (742, "Must write one message first\n"));
                     return 0;
                 }
-                uin = last_uin;
+                uin = uiG.last_sent_uin;
                 arg1 = strtok (args, "");
                 break;
             case 8:
@@ -862,7 +859,7 @@ JUMP_F (CmdUserMessage)
         }
         if (data != 8)
         {
-            last_uin = uin;
+            uiG.last_sent_uin = uin;
             TabAddUIN (uin);
         }
         if (arg1)
@@ -881,7 +878,7 @@ JUMP_F (CmdUserMessage)
             else
             {
                 icq_sendmsg (sess, uin, arg1, NORM_MESS);
-                last_uin = uin;
+                uiG.last_sent_uin = uin;
             }
             return 0;
         }
@@ -992,7 +989,7 @@ JUMP_F(CmdUserStatusDetail)
     Time_Stamp ();
     M_print (" ");
     M_print (i18n (71, "Your status is "));
-    Print_Status (uiG.Current_Status);
+    Print_Status (sess->status);
     M_print ("\n");
     /*  First loop sorts thru all offline users */
     M_print ("%s%s\n", W_SEPERATOR, i18n (72, "Users offline:"));
@@ -1253,7 +1250,7 @@ JUMP_F(CmdUserStatusSelf)
     Time_Stamp ();
     M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", sess->uin);
     M_print (i18n (71, "Your status is "));
-    Print_Status (uiG.Current_Status);
+    Print_Status (sess->status);
     M_print ("\n");
     M_print (W_SEPERATOR);
     return 0;
@@ -1270,7 +1267,7 @@ JUMP_F(CmdUserStatusShort)
     Time_Stamp ();
     M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", sess->uin);
     M_print (i18n (71, "Your status is "));
-    Print_Status (uiG.Current_Status);
+    Print_Status (sess->status);
     M_print ("\n");
 
     if (data)
@@ -1424,34 +1421,34 @@ JUMP_F(CmdUserAutoaway)
     char *arg1;
     if ((arg1 = strtok (args, ""))) /* assign a value */
     {
-        if (sess->away_time == 0 || sess->away_time_prev == 0 || atoi (arg1) == 0)
+        if (prG->away_time == 0 || uiG.away_time_prev == 0 || atoi (arg1) == 0)
         {
-            sess->away_time_prev = sess->away_time;
-            sess->away_time = atoi (arg1);
+            uiG.away_time_prev = prG->away_time;
+            prG->away_time = atoi (arg1);
         }
         else
         {
-            sess->away_time = atoi (arg1);
+            prG->away_time = atoi (arg1);
         }
     }
     else                            /* toggle */
     {
-        if (sess->away_time == 0 && sess->away_time_prev == 0)
+        if (prG->away_time == 0 && uiG.away_time_prev == 0)
         {
-            sess->away_time = default_away_time;
+            prG->away_time = default_away_time;
         }
-        else if (sess->away_time == 0)
+        else if (prG->away_time == 0)
         {
-            sess->away_time = sess->away_time_prev;
-            sess->away_time_prev = 0;
+            prG->away_time = uiG.away_time_prev;
+            uiG.away_time_prev = 0;
         }
         else
         {
-            sess->away_time_prev = sess->away_time;
-            sess->away_time = 0;
+            uiG.away_time_prev = prG->away_time;
+            prG->away_time = 0;
         }
     }
-    M_print (i18n (766, "Auto_away is " COLMESS "%d" COLNONE ".\n"), sess->away_time);
+    M_print (i18n (766, "Auto_away is " COLMESS "%d" COLNONE ".\n"), prG->away_time);
     return 0;
 }
 
@@ -1578,10 +1575,10 @@ JUMP_F(CmdUserTogIgnore)
                 CmdPktCmdContactList (sess);
                 CmdPktCmdInvisList (sess);
                 CmdPktCmdVisList (sess);
-                CmdPktCmdStatusChange (sess, uiG.Current_Status);
+                CmdPktCmdStatusChange (sess, sess->status);
                 Time_Stamp ();
                 M_print (" ");
-                Print_Status (uiG.Current_Status);
+                Print_Status (sess->status);
                 M_print ("\n");
             }
         }
@@ -1673,14 +1670,14 @@ JUMP_F(CmdUserAdd)
  */
 JUMP_F(CmdUserRInfo)
 {
-    M_print (i18n (672, "%s's IP address is "), ContactFindName (uiG.last_recv_uin));
-    Print_IP (uiG.last_recv_uin);
-    if ((UWORD) Get_Port (uiG.last_recv_uin) != (UWORD) 0xffff)
-        M_print (i18n (673, "\tThe port is %d\n"), (UWORD) Get_Port (uiG.last_recv_uin));
+    M_print (i18n (672, "%s's IP address is "), ContactFindName (uiG.last_rcvd_uin));
+    Print_IP (uiG.last_rcvd_uin);
+    if ((UWORD) Get_Port (uiG.last_rcvd_uin) != (UWORD) 0xffff)
+        M_print (i18n (673, "\tThe port is %d\n"), (UWORD) Get_Port (uiG.last_rcvd_uin));
     else
         M_print (i18n (674, "\tThe port is unknown\n"));
-    CmdPktCmdMetaReqInfo (sess, uiG.last_recv_uin);
-/*  send_ext_info_req( sok, uiG.last_recv_uin );*/
+    CmdPktCmdMetaReqInfo (sess, uiG.last_rcvd_uin);
+/*  send_ext_info_req( sok, uiG.last_rcvd_uin );*/
     return 0;
 }
 
@@ -1746,7 +1743,7 @@ JUMP_F(CmdUserURL)
         else
         {
             arg1 = strtok (NULL, " ");
-            last_uin = uin;
+            uiG.last_sent_uin = uin;
             if (arg1)
             {
                 arg2 = strtok (NULL, "");
@@ -1755,7 +1752,7 @@ JUMP_F(CmdUserURL)
                 icq_sendurl (sess, uin, arg1, arg2);
                 Time_Stamp ();
                 M_print (" " COLCONTACT "%10s" COLNONE " " MSGSENTSTR "%s\n",
-                         ContactFindName (last_uin), MsgEllipsis (arg1));
+                         ContactFindName (uiG.last_sent_uin), MsgEllipsis (arg1));
             }
             else
             {
@@ -1842,7 +1839,7 @@ JUMP_F(CmdUserLast)
  */
 JUMP_F(CmdUserUptime)
 {
-    double TimeDiff = difftime (time (NULL), uiG.MicqStartTime);
+    double TimeDiff = difftime (time (NULL), uiG.start_time);
     int Days, Hours, Minutes, Seconds;
 
     Seconds = (int) TimeDiff % 60;
@@ -1879,7 +1876,7 @@ JUMP_F(CmdUserUptime)
  */
 JUMP_F(CmdUserQuit)
 {
-    sess->Quit = TRUE;
+    uiG.quit = TRUE;
     return 0;
 }
 
@@ -2456,6 +2453,6 @@ void CmdUserProcess (Session *sess, const char *command, int *idle_val, int *idl
             }
         }
     }
-    if (!status && !sess->Quit && !command)
+    if (!status && !uiG.quit && !command)
         Prompt ();
 }

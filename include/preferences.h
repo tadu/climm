@@ -2,9 +2,7 @@
 #ifndef MICQ_PREFERENCES_H
 #define MICQ_PREFERENCES_H
 
-#include "session.h"
-
-typedef struct
+struct Preferences_s
 {
     char  *rcfile;      /* the preference file to load */
     BOOL   rcisdef;     /* whether this is the default location */
@@ -14,6 +12,7 @@ typedef struct
     UDWORD status;      /* status to use when logging in */
     UWORD  screen;      /* manual maximum screen width; 0 = auto */
     UWORD  flags;       /* flags for output */
+    UDWORD away_time;   /* time after which to be away automatically; 0 = disable */
     
     char  *logplace;
 
@@ -35,6 +34,7 @@ typedef struct
     char  *s5Name;
     char  *s5Pass;
 
+    SessionPreferences  *sessions[4];
 
     UDWORD s5DestIP;    /* this doesn't belong here %TODO% */
     UDWORD s5DestPort;  /* neither this %TODO%             */
@@ -42,7 +42,19 @@ typedef struct
 
     /* Much more stuff to go here - %TODO% */
 
-} Preferences;
+};
+
+struct SessionPreferences_s
+{
+    char   *server;
+    char   *passwd;
+    UDWORD  port;
+    UDWORD  uin;
+    UBYTE   ver;
+    UBYTE   type;
+    UDWORD  status;
+    
+};
 
 Preferences *PreferencesC (void);
 
@@ -75,6 +87,9 @@ void PrefLoad (Preferences *pref);
 #define SFLAG_ON_CMD      8
 #define SFLAG_OFF_BEEP   16
 #define SFLAG_OFF_CMD    32
+
+#define TYPE_SERVER       1
+#define TYPE_PEER         2
 
 #endif
 

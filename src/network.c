@@ -3,6 +3,7 @@
 #include "micq.h"
 #include "util_ui.h"
 #include "network.h"
+#include "preferences.h"
 #include <assert.h>
 
 static UWORD recv_packs[MAX_SEQ_DEPTH];

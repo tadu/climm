@@ -10,6 +10,7 @@
 #include "cmd_user.h"
 #include "cmd_pkt_server.h"
 #include "icq_response.h"
+#include "preferences.h"
 #include "server.h"
 #include "contact.h"
 #include "tcp.h"
@@ -61,27 +62,29 @@ struct Queue *queue = NULL;
 
 void init_global_defaults () {
   /* Initialize User Interface global state */
-  uiG.Current_Status = STATUS_OFFLINE;
-  uiG.MicqStartTime = time (NULL);
-  uiG.last_recv_uin = 0;
+  ssG.status = STATUS_OFFLINE;
+  uiG.start_time = time (NULL);
+  uiG.last_rcvd_uin = 0;
+  uiG.quit = FALSE;
+  uiG.last_message_sent = NULL;
+  uiG.last_sent_uin  = 0;
+  uiG.reconnect_count = 0;
+
+  prG->verbose = -2;
 
   /* Initialize ICQ session global state    */
   ssG.our_seq2 = 0;  /* current sequence number */
   ssG.our_local_ip = 0x0100007f; /* Intel-ism??? why little-endian? */
   ssG.our_port = 0;
   ssG.our_outside_ip = 0x0100007f;
-  ssG.Quit = FALSE;
   ssG.passwd = NULL;
   ssG.server = NULL;
-  ssG.Done_Login = FALSE;
+  ssG.connect = 0;
   ssG.stat_pak_rcvd = 0;
   ssG.stat_pak_sent = 0;
   ssG.stat_real_pak_sent = 0;
   ssG.stat_real_pak_rcvd = 0;
-  ssG.last_message_sent = NULL;
-  ssG.last_recv_uin  = 0;
   ssG.sok = -1;
-  prG->verbose = -2;
 }
 
 /**********************************************
@@ -122,39 +125,39 @@ void Idle_Check (Session *sess)
 {
     int tm;
 
-    if (ssG.away_time == 0)
+    if (prG->away_time == 0)
         return;
     tm = (time (NULL) - idle_val);
-    if ((uiG.Current_Status == STATUS_AWAY || uiG.Current_Status == STATUS_NA)
-        && tm < ssG.away_time && idle_flag == 1)
+    if ((sess->status == STATUS_AWAY || sess->status == STATUS_NA)
+        && tm < prG->away_time && idle_flag == 1)
     {
         CmdPktCmdStatusChange (sess, STATUS_ONLINE);
         Time_Stamp ();
         M_print (" %s ", i18n (64, "Auto-Changed status to"));
-        Print_Status (uiG.Current_Status);
+        Print_Status (sess->status);
         M_print ("\n");
         idle_flag = 0;
         return;
     }
-    if ((uiG.Current_Status == STATUS_AWAY) && (tm >= (ssG.away_time * 2)) && (idle_flag == 1))
+    if ((sess->status == STATUS_AWAY) && (tm >= (prG->away_time * 2)) && (idle_flag == 1))
     {
         CmdPktCmdStatusChange (sess, STATUS_NA);
         Time_Stamp ();
         M_print (" %s ", i18n (64, "Auto-Changed status to"));
-        Print_Status (uiG.Current_Status);
+        Print_Status (sess->status);
         M_print ("\n");
         return;
     }
-    if (uiG.Current_Status != STATUS_ONLINE && uiG.Current_Status != STATUS_FREE_CHAT)
+    if (sess->status != STATUS_ONLINE && sess->status != STATUS_FREE_CHAT)
     {
         return;
     }
-    if (tm >= ssG.away_time)
+    if (tm >= prG->away_time)
     {
         CmdPktCmdStatusChange (sess, STATUS_AWAY);
         Time_Stamp ();
         M_print (" %s ", i18n (64, "Auto-Changed status to"));
-        Print_Status (uiG.Current_Status);
+        Print_Status (sess->status);
         M_print ("\n");
         idle_flag = 1;
     }
@@ -191,6 +194,7 @@ void CallBackLoginUDP (struct Event *event)
             return;
         }
     }
+    sess->our_seq2    = 0;
     CmdPktCmdLogin (sess);
 }
 
@@ -225,11 +229,6 @@ int main (int argc, char *argv[])
         M_print (i18n (81, "Successfully loaded en translation (%d entries).\n"), i);
     else
         M_print ("No internationalization requested.\n");
-
-    /* and now we save the time that Micq was started, so that uptime will be
-       able to appear semi intelligent.                                                                          */
-    uiG.MicqStartTime = time (NULL);
-    /* end of aaron */
 
     prG->sess = &ssG;
     if (argc > 1)
@@ -313,7 +312,7 @@ int main (int argc, char *argv[])
     idle_val = time (NULL);
     R_init ();
     Prompt ();
-    while (!ssG.Quit)
+    while (!uiG.quit)
     {
         Idle_Check (&ssG);
 #if _WIN32 || defined(__BEOS__)

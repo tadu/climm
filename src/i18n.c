@@ -11,6 +11,7 @@
 #include "i18n.h"
 #include "util.h"
 #include "util_ui.h"
+#include "preferences.h"
 #include <string.h>
 
 #define i18nSLOTS  900

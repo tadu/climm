@@ -35,6 +35,15 @@
     #include <sys/time.h>
   #endif
 #endif
+
+struct Session_s;
+struct Preferences_s;
+struct SessionPreferences_s;
+
+typedef struct Session_s            Session;
+typedef struct Preferences_s        Preferences;
+typedef struct SessionPreferences_s SessionPreferences;
+
 #include "micqconfig.h"
 #include "datatype.h"
 #include <stdlib.h>
@@ -54,6 +63,7 @@
 #define STDIN 0
 #define STDOUT 1
 #define STDERR 2
+
 
 
 #include "icq_v2.h"
@@ -132,15 +142,20 @@ typedef struct
  */
 
 /* user interface global state variables */
-typedef struct {
-        UDWORD Current_Status;
-        UDWORD last_recv_uin;
-        time_t MicqStartTime;
+typedef struct
+{
+        UDWORD last_rcvd_uin;
+        UDWORD last_sent_uin;
+        char*  last_message_sent;
+        UDWORD last_message_sent_type;
+        time_t start_time;
+        UDWORD away_time_prev;
+        UBYTE  reconnect_count;
+        BOOL   quit;
 } user_interface_state;
 
 extern user_interface_state uiG;
 extern struct Queue *queue;
-#include "preferences.h"
 extern Preferences *prG;
 
 void CallBackLoginUDP (struct Event *Event);

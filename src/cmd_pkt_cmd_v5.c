@@ -11,6 +11,7 @@
 #include "contact.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_cmd_v5_util.h"
+#include "preferences.h"
 #include "util.h"
 #include "util_ui.h"
 #include <string.h>
@@ -35,9 +36,9 @@ void CmdPktCmdSendMessage (Session *sess, UDWORD uin, const char *text, UDWORD t
 {
     Packet *pak = PacketCv5 (sess, CMD_SEND_MESSAGE);
     
-    if (sess->last_message_sent != NULL) free (sess->last_message_sent);
-    sess->last_message_sent = strdup (text);
-    sess->last_message_sent_type = type;
+    if (uiG.last_message_sent) free (uiG.last_message_sent);
+    uiG.last_message_sent = strdup (text);
+    uiG.last_message_sent_type = type;
     
     Time_Stamp ();
     M_print (" " COLSENT "%10s" COLNONE " " MSGSENTSTR "%s\n", ContactFindName (uin), MsgEllipsis (text));
@@ -90,7 +91,7 @@ void CmdPktCmdLogin (Session *sess)
     PacketWrite4 (pak, 0x000000d5);
     PacketWrite4 (pak, htonl (sess->our_local_ip));
     PacketWrite1 (pak, 0x04);         /* 1=firewall | 2=proxy | 4=tcp */
-    PacketWrite4 (pak, sess->set_status);
+    PacketWrite4 (pak, prG->status);
     PacketWrite2 (pak, TCP_VER);      /* 6 */
     PacketWrite2 (pak, 0);
     PacketWrite4 (pak, 0x822c01ec);   /* 0x00d50008, 0x00780008 */
@@ -270,7 +271,7 @@ void CmdPktCmdStatusChange (Session *sess, UDWORD status)
     PacketWrite4 (pak, status);
     PacketEnqueuev5 (pak, sess);
 
-    uiG.Current_Status = status;
+    sess->status = status;
 }
 
 /*

@@ -26,6 +26,7 @@
 #include "network.h"
 #include "cmd_user.h"
 #include "icq_response.h"
+#include "preferences.h"
 #include "server.h"
 #include "contact.h"
 #include "tcp.h"
@@ -763,7 +764,7 @@ BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
     if (!cont->sok.state)
         TCPDirectOpen (sess, cont);
 
-    switch (uiG.Current_Status)
+    switch (sess->status)
     {
         case STATUS_AWAY:
             msgtype = TCP_MSGF_AWAY;
@@ -923,7 +924,7 @@ void Handle_TCP_Comm (Session *sess, UDWORD uin)
                     if (PacketReadAt2 (pak, 26) == NORM_MESS)
                     {
                         log_event (cont->uin, LOG_MESS, "You sent a TCP message to %s\n%s\n",
-                                   cont->name, PacketReadAtStr (pak, 28));
+                                   cont->nick, PacketReadAtStr (pak, 28));
 
                         Time_Stamp ();
                         M_print (" " COLACK "%10s" COLNONE " " MSGTCPACKSTR "%s\n",
@@ -996,19 +997,19 @@ void TCPCallBackReceive (struct Event *event)
         case TCP_CMD_GET_FFC:
             M_print (i18n (814, "Sent auto-response message to %s%s%s.\n"),
                      COLCONTACT, cont->nick, COLNONE);
-            Send_TCP_Ack (&cont->sok, PacketReadAt2 (pak, 8), PacketReadAt2 (pak, 22), TRUE);
+            Send_TCP_Ack (event->sess, &cont->sok, PacketReadAt2 (pak, 8), PacketReadAt2 (pak, 22), TRUE);
             break;
 
         /* Automatically reject file xfer and chat requests
              as these are not implemented yet. */ 
         case CHAT_MESS:
         case FILE_MESS:
-            Send_TCP_Ack (&cont->sok, PacketReadAt2 (pak, 8), PacketReadAt2 (pak, 22), FALSE);
+            Send_TCP_Ack (event->sess, &cont->sok, PacketReadAt2 (pak, 8), PacketReadAt2 (pak, 22), FALSE);
             break;
 
         /* Regular messages */
         default:
-            event->sess->last_recv_uin = cont->uin;
+            uiG.last_rcvd_uin = cont->uin;
             
             Time_Stamp ();
             M_print ("\a " CYAN BOLD "%10s" COLNONE " ", ContactFindName (cont->uin));
@@ -1020,7 +1021,7 @@ void TCPCallBackReceive (struct Event *event)
             log_event (cont->uin, LOG_MESS, "You received a TCP message from %s\n%s\n",
                        ContactFindName (cont->uin), tmp);
 
-            Send_TCP_Ack (&cont->sok, PacketReadAt2 (pak, 8),
+            Send_TCP_Ack (event->sess, &cont->sok, PacketReadAt2 (pak, 8),
                           PacketReadAt2 (pak, 22), TRUE);
     }
     free (pak);
@@ -1090,13 +1091,13 @@ void Get_Auto_Resp (UDWORD uin)
 /*
  * Acks a TCP packet.
  */
-int Send_TCP_Ack (tcpsock_t *sok, UWORD seq, UWORD sub_cmd, BOOL accept)
+int Send_TCP_Ack (Session *sess, tcpsock_t *sok, UWORD seq, UWORD sub_cmd, BOOL accept)
 {
     Packet *pak;
     int size;
     char *msg;
 
-    msg = Get_Auto_Reply ();
+    msg = Get_Auto_Reply (sess);
  
     size = TCP_MSG_OFFSET + strlen(msg) + 1 + 8;    /* header + msg + null + tail */
 

@@ -21,6 +21,7 @@
 #include "util.h"
 #include "cmd_user.h"
 #include "cmd_pkt_cmd_v5.h"
+#include "preferences.h"
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -87,7 +88,7 @@ void Initalize_RC_File (Session *sess)
     sess->server = "icq1.mirabilis.com";
     sess->server_port = 4000;
 
-    sess->away_time = default_away_time;
+    prG->away_time = default_away_time;
 
     M_print ("%s ", i18n (88, "Enter UIN or 0 for new UIN:"));
     fflush (stdout);
@@ -154,7 +155,7 @@ void Initalize_RC_File (Session *sess)
         prG->s5Use = 0;
 /* SOCKS5 stuff end */
 
-    sess->set_status = STATUS_ONLINE;
+    prG->status = STATUS_ONLINE;
 
     ContactAdd (11290140, "mICQ author (dead)");
     ContactAdd (99798577, "Rico \"mc\" Glöckner");
@@ -162,7 +163,7 @@ void Initalize_RC_File (Session *sess)
     ContactAdd (82274703, "Rüdiger Kuhlmann");
     ContactAdd (-82274703, "mICQ developer");
 
-    uiG.Current_Status = STATUS_ONLINE;
+    sess->status = STATUS_ONLINE;
 
     rcf = open (prG->rcfile, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     if (rcf == -1)
@@ -192,7 +193,7 @@ void Read_RC_File (Session *sess, FD_T rcf)
 
     sess->passwd = NULL;
     sess->uin = 0;
-    sess->away_time = default_away_time;
+    prG->away_time = default_away_time;
 
     spooled_tab_nicks = 0;
     for (section = 0; !M_fdnreadln (rcf, buf, sizeof (buf)); )
@@ -350,7 +351,7 @@ void Read_RC_File (Session *sess, FD_T rcf)
                 }
                 else if (!strcasecmp (tmp, "Status"))
                 {
-                    sess->set_status = atoi (strtok (NULL, " \n\t"));
+                    prG->status = atoi (strtok (NULL, " \n\t"));
                 }
                 ADD_CMD_D ("auto_rep_str_away", auto_away);
                 ADD_CMD_D ("auto_rep_str_na",   auto_na);
@@ -464,7 +465,7 @@ void Read_RC_File (Session *sess, FD_T rcf)
                 }
                 else if (!strcasecmp (tmp, "Auto_away"))
                 {
-                    sess->away_time = atoi (strtok (NULL, " \n\t"));
+                    prG->away_time = atoi (strtok (NULL, " \n\t"));
                 }
                 else if (!strcasecmp (tmp, "Screen_width"))
                 {
@@ -716,7 +717,7 @@ void Read_RC_File (Session *sess, FD_T rcf)
         M_print (i18n (190, "port = %ld\n"),   sess->server_port);
         M_print (i18n (191, "passwd = %s\n"),  sess->passwd);
         M_print (i18n (192, "server = %s\n"),  sess->server);
-        M_print (i18n (193, "status = %ld\n"), sess->set_status);
+        M_print (i18n (193, "status = %ld\n"), prG->status);
         M_print (i18n (196, "Message_cmd = %s\n"), CmdUserLookupName ("msg"));
         M_print ("flags: %08x\n", prG->flags);
     }
@@ -755,7 +756,7 @@ int Save_RC (Session *sess)
     M_fdprint (rcf, "#    0 Online\n");
     M_fdprint (rcf, "#   32 Free for Chat\n");
     M_fdprint (rcf, "#  256 Invisible\n");
-    M_fdprint (rcf, "Status %d\n", uiG.Current_Status);
+    M_fdprint (rcf, "Status %d\n", sess->status);
     M_fdprint (rcf, "\nServer %s\n", "icq1.mirabilis.com");
     M_fdprint (rcf, "Port %d\n", 4000);
     M_fdprint (rcf, "\nverbose %d\n", prG->verbose);
@@ -778,7 +779,7 @@ int Save_RC (Session *sess)
     else
         M_fdprint (rcf, "s5_pass %s\n", prG->s5Pass);
 
-    M_fdprint (rcf, "\n#in seconds\nAuto_Away %d\n", sess->away_time);
+    M_fdprint (rcf, "\n#in seconds\nauto_away %d\n", prG->away_time);
     M_fdprint (rcf, "\n#For dumb terminals that don't wrap set this.");
     M_fdprint (rcf, "\nScreen_Width %d\n", prG->screen);
 
