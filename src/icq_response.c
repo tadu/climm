@@ -512,16 +512,17 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
 
             if (opt_type == MSG_EMAIL)
             {
-                rl_printf (i18n (9999, "\"%s\" <%s> emailed you a message:\n"), s_cquote (tmp4, COLCONTACT));
-                TCLEvent (cont, "mail", s_sprintf ("{%s} {%s} {%s} {%s}", tmp1, tmp4, tmp5, tmp6));
-                rl_printf ("%s\n", s_msgquote (tmp5));
+                rl_printf (i18n (9999, "\"%s\" <%s> emailed you a message [%s]: %s\n"),
+                    s_cquote (tmp, COLCONTACT), s_cquote (tmp4, COLCONTACT),
+                    s_cquote (tmp5, COLCONTACT), s_msgquote (tmp6));
+                TCLEvent (cont, "mail", s_sprintf ("{%s} {%s} {%s} {%s}", tmp, tmp4, tmp5, tmp6));
             }
             else
             {
                 rl_printf (i18n (9999, "\"%s\" <%s> sent you a web message [%s]: %s\n"),
-                  s_cquote (tmp1, COLCONTACT), s_cquote (tmp4, COLCONTACT),
-                  s_cquote (tmp5, COLCONTACT), s_msgquote (tmp6));
-                TCLEvent (cont, "web", s_sprintf ("{%s} {%s} {%s} {%s}", tmp1, tmp4, tmp5, tmp6));
+                    s_cquote (tmp, COLCONTACT), s_cquote (tmp4, COLCONTACT),
+                    s_cquote (tmp5, COLCONTACT), s_msgquote (tmp6));
+                TCLEvent (cont, "web", s_sprintf ("{%s} {%s} {%s} {%s}", tmp, tmp4, tmp5, tmp6));
             }
             break;
 
