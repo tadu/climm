@@ -443,7 +443,7 @@ BOOL ContactMetaSave (Contact *cont)
 #ifdef ENABLE_UTF8
     fprintf (f, "encoding utf-8\n"); 
 #else
-    fprintf (f, "encoding %s\n", s_quote (ConvEncName (prG->enc_local)));
+    fprintf (f, "encoding %s\n", s_quote (ConvEncName (prG->enc_loc)));
 #endif
     fprintf (f, "format 1\n\n");
     fprintf (f, "b_uin      %ld\n", cont->uin);
@@ -689,6 +689,10 @@ BOOL ContactMetaLoad (Contact *cont)
                 cont->meta_interest = ExtraSet (NULL, 0, i, ConvToUTF8 (cmd, enc));
                 cont->meta_interest->more = extra;
             }
+        }
+        else if (!strcmp (cmd, "format"))
+        {
+            s_parseint (&args, &i); /* ignored for now */
         }
 #ifdef WIP
         if (s_parse (&args, &cmd))
