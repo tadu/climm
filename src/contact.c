@@ -44,7 +44,8 @@ static int            cnt_count = 0;
 
 #define MAX_ENTRIES 32
 
-#define CONTACTGROUP_GLOBAL (*cnt_groups)
+#define CONTACTGROUP_GLOBAL      (cnt_groups[0])
+#define CONTACTGROUP_NONCONTACTS (cnt_groups[1])
 
 #define BUILD_MIRANDA  0xffffffffL
 #define BUILD_STRICQ   0xffffff8fL
@@ -81,7 +82,7 @@ static void ContactGroupInit (void)
     {
         cnt_groups = calloc (cnt_count = 32, sizeof (ContactGroup *));
         cnt_groups[0] = calloc (1, sizeof (ContactGroup));
-        cnt_groups[0]->used = 0;
+        cnt_groups[1] = calloc (1, sizeof (ContactGroup));
     }
 }
 
@@ -283,14 +284,13 @@ Contact *ContactUIN (Connection *conn, UDWORD uin)
     if ((cont = ContactFind (conn->contacts, 0, uin, NULL)))
         return cont;
     
-    if ((cont = ContactFind (conn->noncontacts, 0, uin, NULL)))
+    if ((cont = ContactFind (CONTACTGROUP_NONCONTACTS, 0, uin, NULL)))
         return cont;
 
     if (!(cont = ContactC (0, uin, NULL)))
         return NULL;
 
-    ContactAdd (conn->noncontacts, cont);
-    cont->group = conn->noncontacts;
+    ContactAdd (CONTACTGROUP_NONCONTACTS, cont);
     return cont;
 }
 
@@ -346,11 +346,11 @@ Contact *ContactFindCreate (ContactGroup *group, UWORD id, UDWORD uin, const cha
         return cont;
     }
     
-    if ((cont = ContactFind (group->serv->noncontacts, id, uin, NULL)))
+    if ((cont = ContactFind (CONTACTGROUP_NONCONTACTS, id, uin, NULL)))
     {
         if (!nick)
             return cont;
-        ContactRem (group->serv->noncontacts, cont);
+        ContactRem (CONTACTGROUP_NONCONTACTS, cont);
         ContactAdd (group, cont);
         cont->group = group;
         s_repl (&cont->nick, nick);
@@ -369,8 +369,7 @@ Contact *ContactFindCreate (ContactGroup *group, UWORD id, UDWORD uin, const cha
     }
     else
     {
-        ContactAdd (group->serv->noncontacts, cont);
-        cont->group = group->serv->noncontacts;
+        ContactAdd (CONTACTGROUP_NONCONTACTS, cont);
         Debug (DEB_CONTACT, "temp  #%d %ld %p", id, uin, cont);
     }
 
@@ -400,8 +399,8 @@ void ContactD (Contact *cont)
     for (i = 1; (cg = ContactGroupIndex (i)); i++)
         if (cg != cont->group->serv->contacts)
             ContactRem (cg, cont);
-    ContactAdd (cont->group->serv->noncontacts, cont);
-    cont->group = cont->group->serv->noncontacts;
+    ContactAdd (CONTACTGROUP_NONCONTACTS, cont);
+    cont->group = NULL;
     Debug (DEB_CONTACT, "del   #%d %ld %p", cont->id, cont->uin, cont);
 }
 

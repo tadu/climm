@@ -25,7 +25,6 @@ struct Connection_s
         Packet   *outgoing;       /* packet we're sending                     */
         
         ContactGroup *contacts;   /* The contacts for this connection         */
-        ContactGroup *noncontacts;/* Non-contacts encountered                 */
 
         UDWORD    our_local_ip;   /* LAN-internal IP (host byte order)        */
         UDWORD    our_outside_ip; /* the IP address the server sees from us   */

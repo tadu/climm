@@ -1658,7 +1658,7 @@ int Save_RC ()
 
     for (i = 0; (cont = ContactIndex (0, i)); i++)
     {
-        if (cont->group != cont->group->serv->noncontacts)
+        if (cont->group)
         {
             ContactAlias *alias;
             fprintf (stf, "entry %9ld %s", cont->uin, s_quote (cont->nick));

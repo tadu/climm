@@ -1690,8 +1690,7 @@ static JUMP_F(CmdUserVerbose)
 static UDWORD __status (Contact *cont)
 {
     if (ContactPrefVal (cont, CO_IGNORE))   return 0xfffffffe;
-    if (cont->group == cont->group->serv->noncontacts)
-                                            return 0xfffffffe;
+    if (!cont->group)                       return 0xfffffffe;
     if (cont->status == STATUS_OFFLINE)     return STATUS_OFFLINE;
     if (cont->status  & STATUSF_BIRTH)      return STATUSF_BIRTH;
     if (cont->status  & STATUSF_DND)        return STATUS_DND;
@@ -1776,7 +1775,7 @@ static JUMP_F(CmdUserStatusDetail)
     {
         if (uin && cont->uin != uin)
             continue;
-        if ((cont->group == conn->noncontacts) && ~data & 2)
+        if (!cont->group && ~data & 2)
             continue;
         if (cont->uin > tuin)
             tuin = cont->uin;
@@ -1883,7 +1882,7 @@ static JUMP_F(CmdUserStatusDetail)
 #endif
                 if (data & 2)
                     M_printf (COLSERVER "%s%c%c%c%1.1d%c" COLNONE "%s %*ld", ul,
-                         cont->group == conn->noncontacts ? '#' : ' ',
+                         !cont->group                        ? '#' : ' ',
                          ContactPrefVal (cont,  CO_INTIMATE) ? '*' :
                           ContactPrefVal (cont, CO_HIDEFROM) ? '-' : ' ',
                          ContactPrefVal (cont,  CO_IGNORE)   ? '^' : ' ',
@@ -1898,7 +1897,7 @@ static JUMP_F(CmdUserStatusDetail)
 
                 M_printf (COLSERVER "%s%c" COLCONTACT "%s%-*s" COLNONE "%s " COLMESSAGE "%s%-*s" COLNONE "%s %-*s%s%s" COLNONE "\n",
                          ul, data & 2                       ? ' ' :
-                         cont->group == conn->noncontacts ? '#' :
+                         !cont->group                       ? '#' :
                          ContactPrefVal (cont, CO_INTIMATE) ? '*' :
                          ContactPrefVal (cont, CO_HIDEFROM) ? '-' :
                          ContactPrefVal (cont, CO_IGNORE)   ? '^' :
@@ -2934,7 +2933,7 @@ static JUMP_F(CmdUserAdd)
 
     if (arg1)
     {
-        if (cont->group == conn->noncontacts)
+        if (!cont->group)
         {
             M_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, arg1);
             M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
@@ -3040,7 +3039,7 @@ static JUMP_F(CmdUserRemove)
         }
         else
         {
-            if (cont->group == conn->noncontacts)
+            if (!cont->group)
                 continue;
 
             if (all || !cont->alias)
