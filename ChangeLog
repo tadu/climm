@@ -1,5 +1,45 @@
 -*- coding: utf-8 -*-
 
+2003-08-09 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
+	* fix those freakin' \x## parsing
+	* add zh_TW translation from Kenneth Chan
+
+2003-04-08 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
+	* update it.i18n
+
+2003-07-22 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+	* fix mem leak, fix handling of failed malloc()
+	* fix handling if uname()/gethostname() fails
+	* fix crash if too many tlvs
+	* these bugs were reportet by Robert Lemmon
+
+2003-07-04 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+	* update Japanese ja.UTF-8.i18n
+	* fix sound command, mark auto replies as such, add missing translations
+	* update  de.i18n en.i18n
+	* fix i18n-template to use stable branch only
+
+
+2003-05-29 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+	* fix: contact list loading; fix setup wizard; fix compile warnings (+stable-0-4-10)
+	* fix possible segfault when connection fails (+stable-0-4-10)
+	* fix --nocolor flag (+stable-0-4-10)
+	* fix auto-away for Windows (stable)
+
+2003-05-14 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+	* add UCS-2BE, drop CP1257 from list of required encodings
+	* fix verbosity getting set to 0x8000
+	* test for UCS-2BE as well
+	* fix silent acception in DND/OCC state
+	* don't send UCS-2BE type-1 to offline clients
+	* show type-2 auto messages
+	* add libiconv question to FAQ
+	* fix yet another typo in iconv() check
+	* don't regenerate *.i18n from *-UTF-8.i18n during build; fix compile error
+	* interpret trailing \ as itself, fixes trailing \ on msg command
+	* don't show status as offline for auto-responses
+	* don't double-unquote the input line
+
 2003-05-13 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
 	* activate code using new strings: better display of used locale, add one missing help text
 	* remove unused beos.[ch]
@@ -32,7 +72,7 @@
 	* make sure contacts don't tunnel to other connections via the global list
 	* new undocumented command "as" to run a command on a different connection
 	* add i18n string: version without build date
-	* make copyright visible so that thos blind Debian/Mandrake/Red Hat guys realize that mICQ is GPLv2
+	* make copyright visible so that those blind Debian/Mandrake/Red Hat guys realize that mICQ is GPLv2
 	* add numeric build platform id, use
 	* add loads of GPLv2 notices
 	* fix iconv() configure check (s/none/buildin)
