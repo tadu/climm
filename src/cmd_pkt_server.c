@@ -8,6 +8,7 @@
 #include "cmd_pkt_cmd_v5_util.h"
 #include "util.h"
 #include "util_ui.h"
+#include "util_extra.h"
 #include "network.h"
 #include "cmd_user.h"
 #include "cmd_pkt_server.h"
@@ -387,7 +388,9 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
 
             if ((cont = ContactByUIN (uin, 1)))
             {
-                IMSrvMsg (cont, conn, NOW, STATUS_OFFLINE, wdata, text, 0);
+                IMSrvMsg (cont, conn, NOW, ExtraSet (ExtraSet (NULL,
+                          EXTRA_ORIGIN, EXTRA_ORIGIN_v5, NULL),
+                          EXTRA_MESSAGE, wdata, text));
                 Auto_Reply (conn, uin);
             }
             free (text);

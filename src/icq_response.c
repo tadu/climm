@@ -486,7 +486,8 @@ void Recv_Message (Connection *conn, Packet *pak)
     free (ctext);
 
     uiG.last_rcvd_uin = uin;
-    IMSrvMsg (ContactByUIN (uin, 1), conn, mktime (&stamp), STATUS_ONLINE, type, text, 0);
+    IMSrvMsg (ContactByUIN (uin, 1), conn, mktime (&stamp),
+              ExtraSet (NULL, EXTRA_MESSAGE, type, text));
     free (text);
 }
 
@@ -652,30 +653,40 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
 /*
  * Central entry point for incoming messages.
  */
-void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UWORD type, const char *text, Event *event)
+void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
 {
     const char *tmp, *tmp2, *tmp3, *tmp4, *tmp5, *tmp6;
     char *cdata, *carr;
+    Extra *e;
+    const char *e_msg_text;
+    UDWORD e_msg_type;
     int i;
     
     if (!cont)
+    {
         return;
+        ExtraD (extra);
+    }
 
-    cdata = strdup (text);
+    cdata = strdup (e_msg_text = ExtraGetS (extra, EXTRA_MESSAGE));
     assert (cdata);
     while (*cdata && strchr ("\n\r", cdata[strlen (cdata) - 1]))
         cdata[strlen (cdata) - 1] = '\0';
+    e_msg_type = ExtraGet (extra, EXTRA_MESSAGE);
 
-    carr = conn->type & TYPEF_ANY_SERVER ? MSGRECSTR : MSGTCPRECSTR;
+    carr = ExtraGet (extra, EXTRA_ORIGIN) == EXTRA_ORIGIN_dc ? MSGTCPRECSTR :
+           ExtraGet (extra, EXTRA_ORIGIN) == EXTRA_ORIGIN_v8 ? "«<< " : MSGRECSTR;
 
-    putlog (conn, stamp, cont->uin, tstatus, 
-        type == MSG_AUTH_ADDED ? LOG_ADDED : LOG_RECVD, type,
+    putlog (conn, stamp, cont->uin,
+        (e = ExtraFind (extra, EXTRA_STATUS)) ? e->data : STATUS_OFFLINE, 
+        e_msg_type == MSG_AUTH_ADDED ? LOG_ADDED : LOG_RECVD, e_msg_type,
         *cdata ? "%s\n" : "%s", cdata);
     
-    if (cont->flags & CONT_IGNORE)
+    if (cont->flags & CONT_IGNORE || (((cont->flags & CONT_TEMPORARY) && (prG->flags & FLAG_HERMIT))))
+    {
+        ExtraD (extra);
         return;
-    if ((cont->flags & CONT_TEMPORARY) && (prG->flags & FLAG_HERMIT))
-        return;
+    }
 
     TabAddUIN (cont->uin);            /* Adds <uin> to the tab-list */
 
@@ -696,30 +707,30 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
 
 #ifdef MSGEXEC
     if (prG->event_cmd && strlen (prG->event_cmd))
-        EventExec (cont, prG->event_cmd, 1, type, cdata);
+        EventExec (cont, prG->event_cmd, 1, e_msg_type, e_msg_text);
 #endif
     M_printf ("\a%s " COLINCOMING "%*s" COLNONE " ", s_time (&stamp), uiG.nick_len + s_delta (cont->nick), cont->nick);
     
-    if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
-        M_printf ("(%s) ", s_status (tstatus));
+    if ((e = ExtraFind (extra, EXTRA_STATUS)) && (!cont || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
+        M_printf ("(%s) ", s_status (e->data));
 
     if (prG->verbose > 1)
-        M_printf ("<%d> ", type);
+        M_printf ("<%d> ", e_msg_type);
 
     uiG.last_rcvd_uin = cont->uin;
     if (cont)
     {
-        s_repl (&cont->last_message, text);
+        s_repl (&cont->last_message, cdata);
         cont->last_time = time (NULL);
     }
 
-    switch (type & ~MSGF_MASS)
+    switch (e_msg_type & ~MSGF_MASS)
     {
         while (1)
         {
-            M_printf ("?%x? %s%s\n", type, COLMSGINDENT, text);
+            M_printf ("?%x? %s%s\n", e_msg_type, COLMSGINDENT, e_msg_text);
             M_printf ("    ");
-            for (i = 0; i < strlen (text); i++)
+            for (i = 0; i < strlen (e_msg_text); i++)
                 M_printf ("%c", cdata[i] ? cdata[i] : '.');
             M_print ("'\n");
             break;
@@ -837,7 +848,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
             M_printf ("\n??? %s", tmp2);
             M_printf ("\n??? %s", tmp3);
 
-            if (type == MSG_EMAIL)
+            if (e_msg_type == MSG_EMAIL)
                 M_printf (i18n (1592, "<%s> emailed you a message:\n"), tmp4);
             else
                 M_printf (i18n (1593, "<%s> send you a web message:\n"), tmp4);
@@ -863,4 +874,5 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
         }
     }
     free (cdata);
+    ExtraD (extra);
 }

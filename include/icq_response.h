@@ -11,7 +11,7 @@ void Display_Info_Reply (Connection *conn, Contact *cont, Packet *pak, UBYTE fla
 void Display_Ext_Info_Reply (Connection *conn, Packet *pak);
 
 void IMIntMsg  (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UWORD type, const char *text, Extra *extra);
-void IMSrvMsg  (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UWORD type, const char *text, Event *event);
+void IMSrvMsg  (Contact *cont, Connection *conn, time_t stamp, Extra *extra);
 void IMOnline  (Contact *cont, Connection *conn, UDWORD status);
 void IMOffline (Contact *cont, Connection *conn);
 

@@ -1829,10 +1829,14 @@ static void TCPCallBackReceive (Event *event)
             switch (type)
             {
                 case MSG_NORM:
+                case MSG_URL:
                     IMIntMsg (cont, aevent->conn, NOW, STATUS_OFFLINE, INT_MSGACK_DC, e_msg_text, NULL);
                     if (~cont->flags & CONT_SEENAUTO && strlen (tmp))
                     {
-                        IMSrvMsg (cont, aevent->conn, NOW, status, MSG_NORM, tmp, 0);
+                        IMSrvMsg (cont, aevent->conn, NOW, ExtraSet (ExtraSet (ExtraSet (NULL,
+                                  EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
+                                  EXTRA_STATUS, status, NULL),
+                                  EXTRA_MESSAGE, MSG_NORM, tmp));
                         cont->flags |= CONT_SEENAUTO;
                     }
                     break;
@@ -1843,7 +1847,10 @@ static void TCPCallBackReceive (Event *event)
                 case MSGF_GETAUTO | MSG_GET_DND:
                 case MSGF_GETAUTO | MSG_GET_FFC:
                 case MSGF_GETAUTO | MSG_GET_VER:
-                    IMSrvMsg (cont, aevent->conn, NOW, status & ~MSGF_GETAUTO, type, tmp, 0);
+                    IMSrvMsg (cont, aevent->conn, NOW, ExtraSet (ExtraSet (ExtraSet (NULL,
+                              EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
+                              EXTRA_STATUS, status & ~MSGF_GETAUTO, NULL),
+                              EXTRA_MESSAGE, type, tmp));
                     break;
 
                 case TCP_MSG_FILE:
@@ -1988,9 +1995,18 @@ static void TCPCallBackReceive (Event *event)
                             case 0x0032:
                                 break;
                             case 0x002d:
-                                event->extra = ExtraSet (event->extra, EXTRA_MESSAGE, TCP_MSG_GREETING, name);
-                                IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_CHAT, text, event);
-                                IMSrvMsg (cont, event->conn, NOW, status, TCP_MSG_CHAT, reason, event);
+                                IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (ExtraSet (NULL,
+                                          EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
+                                          EXTRA_STATUS, status, NULL),
+                                          EXTRA_MESSAGE, TCP_MSG_CHAT, name));
+                                IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (ExtraSet (NULL,
+                                          EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
+                                          EXTRA_STATUS, status, NULL),
+                                          EXTRA_MESSAGE, TCP_MSG_CHAT, text));
+                                IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (ExtraSet (NULL,
+                                          EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
+                                          EXTRA_STATUS, status, NULL),
+                                          EXTRA_MESSAGE, TCP_MSG_CHAT, reason));
                                 TCPSendGreetAck (event->conn, seq, cmd, FALSE);
 
                             default:
@@ -2035,7 +2051,10 @@ static void TCPCallBackReceive (Event *event)
                     else
                         free (cctmp);
 #endif
-                    IMSrvMsg (cont, event->conn, NOW, status, type, tmp, 0);
+                    IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (ExtraSet (NULL,
+                              EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
+                              EXTRA_STATUS, status, NULL),
+                              EXTRA_MESSAGE, type, tmp));
 
                     TCPSendMsgAck (event->conn, seq, type, TRUE);
                     break;

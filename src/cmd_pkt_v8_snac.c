@@ -558,12 +558,12 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
     event = QueueDequeue (event->conn, QUEUE_TYPE2_RESEND, seq_dc);
 
     if ((msgtype & 0x300) == 0x300)
-        IMSrvMsg (cont, event->conn, NOW, STATUS_OFFLINE, msgtype, text, 0);
+        IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (NULL,
+                  EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
+                  EXTRA_MESSAGE, msgtype, text));
     else if (event)
-    {
         IMIntMsg (cont, event->conn, NOW, STATUS_OFFLINE, INT_MSGACK_TYPE2, ExtraGetS (event->extra, EXTRA_MESSAGE), NULL);
-        EventD (event);
-    }
+    EventD (event);
     free (text);
 }
 
@@ -575,6 +575,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     Contact *cont;
     Cap *cap1, *cap2;
     Packet *p = NULL, *pp = NULL, *pak;
+    Extra *extra = NULL;
     TLV *tlv;
     UDWORD midtim, midrnd, midtime, midrand, uin, unk, tmp;
     UWORD seq1, seq2, tcpver, len, i, msgtyp, type, /*status,*/ pri;
@@ -601,6 +602,8 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
         M_printf ("FIXME: status for %d embedded in message 0x%08x different from server status 0x%08x.\n", uin, tlv[6].nr, cont->status);
 #endif
 
+    if (tlv[6].len)
+        extra = ExtraSet (extra, EXTRA_STATUS, tlv[6].nr, NULL);
     if (tlv[6].len && tlv[6].nr != cont->status && cont->status != STATUS_OFFLINE)
         IMOnline (cont, event->conn, tlv[6].nr);
 
@@ -623,9 +626,11 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             PacketReadB2 (p);
             text = PacketReadStrB (p);
             PacketD (p);
-            txt = c_in (text + 4);
-            msgtyp = MSG_NORM;
             /* TLV 1, 2(!), 3, 4, f ignored */
+            IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (extra,
+                      EXTRA_ORIGIN, EXTRA_ORIGIN_v5, NULL),
+                      EXTRA_MESSAGE, MSG_NORM, c_in (text + 4)));
+            Auto_Reply (event->conn, uin);
             break;
         case 2:
             p = PacketCreate (tlv[5].str, tlv[5].len);
@@ -765,6 +770,10 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             PacketWriteLNTS (p, "");
             SnacSend (event->conn, p);
             /* TLV 1, 2(!), 3, 4, f ignored */
+
+            IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (extra,
+                      EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
+                      EXTRA_MESSAGE, msgtyp, txt));
             break;
         case 4:
             p = PacketCreate (tlv[5].str, tlv[5].len);
@@ -777,20 +786,19 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                 return;
             }
             text = PacketReadLNTS (p);
-            txt = c_in (text);
             PacketD (p);
             /* FOREGROUND / BACKGROUND ignored */
             /* TLV 1, 2(!), 3, 4, f ignored */
+
+            IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (extra,
+                      EXTRA_ORIGIN, EXTRA_ORIGIN_v5, NULL),
+                      EXTRA_MESSAGE, msgtyp, c_in (text)));
+            Auto_Reply (event->conn, uin);
             break;
         default:
             SnacSrvUnknown (event);
             return;
     }
-
-    IMSrvMsg (cont, event->conn, NOW, tlv[6].len ? tlv[6].nr : STATUS_OFFLINE,
-              msgtyp, txt, 0);
-    Auto_Reply (event->conn, uin);
-
     TLVD (tlv);
     s_free (text);
 }
@@ -975,7 +983,9 @@ static JUMP_SNAC_F(SnacSrvAuthreq)
     text = strdup (c_in (ctext));
     free (ctext);
     
-    IMSrvMsg (ContactByUIN (uin, 1), event->conn, NOW, STATUS_OFFLINE, MSG_AUTH_REQ, text, 0);
+    IMSrvMsg (ContactByUIN (uin, 1), event->conn, NOW, ExtraSet (ExtraSet (NULL,
+              EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
+              EXTRA_MESSAGE, MSG_AUTH_REQ, text));
 
     free (text);
 }
@@ -998,8 +1008,9 @@ static JUMP_SNAC_F(SnacSrvAuthreply)
     text = strdup (c_in (ctext));
     free (ctext);
 
-    IMSrvMsg (ContactByUIN (uin, 1), event->conn, NOW, STATUS_OFFLINE,
-              acc ? MSG_AUTH_GRANT : MSG_AUTH_DENY, text, 0);
+    IMSrvMsg (ContactByUIN (uin, 1), event->conn, NOW, ExtraSet (ExtraSet (NULL,
+              EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
+              EXTRA_MESSAGE, acc ? MSG_AUTH_GRANT : MSG_AUTH_DENY, text));
 
     free (text);
 }
@@ -1015,7 +1026,9 @@ static JUMP_SNAC_F(SnacSrvAddedyou)
     pak = event->pak;
     uin = PacketReadUIN (pak);
 
-    IMSrvMsg (ContactByUIN (uin, 1), event->conn, NOW, STATUS_ONLINE, MSG_AUTH_ADDED, "", 0);
+    IMSrvMsg (ContactByUIN (uin, 1), event->conn, NOW, ExtraSet (ExtraSet (NULL,
+              EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
+              EXTRA_MESSAGE, MSG_AUTH_ADDED, ""));
 }
 
 /*
