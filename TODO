@@ -19,5 +19,18 @@ various people:
  : configurable colors
  : saving personal information
  : fix memory leaks
+ : fix contact list download segfault
+ : finish implementing file transfer
+ : fix missing online flags
+ : fix wrong-destination messages
+   (re-check session pointers validity)
 
 
+21:47:57  m:1126630 <<< Hello,
+I have been talking with friends about mICQ and about how much we like it ..
+A couple of things have come up:
+- It would be nice to know just how many messages a person has sent while
+  one was away - regarding the 'last' function.
+- All mode changes should be in a central system log and not each user
+- Trillian compatibility would be great.
+- last <uin> doesn't show the time.

@@ -107,10 +107,11 @@ const char *SessionType  (Session *sess);
 
 #define ASSERT_LISTEN(s)      (assert (s), assert ((s)->type == TYPE_LISTEN))
 #define ASSERT_DIRECT(s)      (assert (s), assert ((s)->type == TYPE_DIRECT))
-#define ASSERT_DIRECT_FILE(s) (assert (s), assert ((s)->type == TYPE_FILE || (s)->type == TYPE_DIRECT))
+#define ASSERT_FILEDIRECT(s)  (assert (s), assert ((s)->type == TYPE_FILEDIRECT))
 #define ASSERT_FILE(s)        (assert (s), assert ((s)->type == TYPE_FILE))
 #define ASSERT_SERVER(s)      (assert (s), assert ((s)->type == TYPE_SERVER))
 #define ASSERT_ANY_LISTEN(s)  (assert (s), assert ((s)->type & TYPEF_ANY_LISTEN))
 #define ASSERT_ANY_SERVER(s)  (assert (s), assert ((s)->type & TYPEF_ANY_SERVER))
+#define ASSERT_ANY_DIRECT(s)  (assert (s), assert ((s)->type & TYPEF_ANY_DIRECT))
 
 #endif

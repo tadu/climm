@@ -169,8 +169,12 @@ const char *SessionType (Session *sess)
             return i18n (1947, "listener");
         case TYPE_DIRECT:
             return i18n (1890, "peer-to-peer");
+        case TYPE_FILELISTEN:
+            return i18n (9999, "file listener");
+        case TYPE_FILEDIRECT:
+            return i18n (9999, "file peer-to-peer");
         case TYPE_FILE:
-            return i18n (2067, "file transfer");
+            return i18n (2067, "file io");
         default:
             return i18n (1745, "unknown");
     }

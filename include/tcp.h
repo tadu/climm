@@ -19,4 +19,22 @@ BOOL TCPGetAuto        (Session *sess, UDWORD uin, UWORD which);
 
 Session *TCPPeer (UDWORD uin);
 
+Session *PeerFileCreate (Session *serv);
+BOOL     PeerFileRequested (Session *peer, const char *files, UDWORD bytes);
+
+void PeerFileStart (Session *fpeer);
+void PeerFileResend (Event *event);
+void PeerFileDispatchIncoming (Session *fpeer);
+void PeerFileResend (Event *event);
+void PeerFileDispatch (Session *);
+
+void       TCPDispatchShake   (Session *sess);
+void       TCPDispatchReconn  (Session *sess);
+void       TCPDispatchMain    (Session *sess);
+void       TCPDispatchConn    (Session *sess);
+void       TCPSendPacket      (Packet *pak, Session *sess);
+void       TCPClose           (Session *sess);
+void       TCPPrint           (Packet *pak, Session *sess, BOOL out);
+
+
 #endif

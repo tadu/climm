@@ -56,9 +56,6 @@
 1064:Auto-Changed status to
 1065:Using intel byte ordering.
 1066:Using motorola byte ordering.
-1068: Online since %s
-1069: Last online at %s
-1070: Last on-line unknown.
 1071:Your status is 
 1072:Users offline:
 1073:Users online:
@@ -707,9 +704,7 @@
 1773:%s could not be added.¶
 1774:Incoming packet:
 1775:Outgoing packet:
-1776:Outgoing TCP packet (%d - %s): %s
 1777:Opening peer-to-peer connection at localhost:%d... 
-1778:Incoming TCP packet (%d - %s): %s
 1781:Your password for UIN %d:¶
 1782:You need a password for your new UIN.¶
 1783:To prevent typos, please enter your password again.¶
@@ -867,7 +862,6 @@
 1958:[SOCKS] Connection request refused (%d)
 1960:Enter data to search user for. Enter \'.\' to start the search.¶
 1961:URL: %s¶
-1964:couldn't dequeue type %d seq %08x
 1966: Conection Refused on port %d at %s¶
 1967:More Info for
 1968:User found
@@ -918,7 +912,6 @@
 2013:This command is v8 only.¶
 2014:No number given.¶
 2015:No message given.¶
-2016:The server says about the SMS delivery:¶%s
 2017:The user is actually online.¶
 2018:    quiet: be quiet about status changes.¶
 2019:Quiet output is ©3%s©0.¶
@@ -973,8 +966,22 @@
 2068:Opening file transfer connection at %s:%d... 
 2069:File transfer %s rejected by peer (%x,%x): %s.¶
 2070:File transfer to port %d.¶
+2071:Couldn't stat file %s: %s (%d)¶
+2072:Dropping file transfer %d (%s) because of closed connection.¶
 2073:Memory usage: %d packets processing.¶
 2074:popping type %s seq %08x at %p (pak %p)
-2075:enqueuing type %s seq %08x at %p (pak %p)
 2076:couldn't dequeue type %s seq %08x
 2077:dequeue type %s seq %08x at %p (pak %p)
+2078:Outgoing TCP packet (%d - %s): %s
+2079:Incoming TCP packet (%d - %s): %s
+2080:The server says about the SMS delivery:¶%s¶
+2081:dangling type %s seq %08x at %p (pak %p)
+2082:enqueuing type %s seq %08x at %p (pak %p) %x
+9999:Cannot open file %s: %s (%d).¶
+9999:Dropping file transfer because of timeout: %d %d.¶
+9999:Error while reading file %s: %s (%d).¶
+9999:Error while seeking to offset %d: %s (%d).¶
+9999:Finished sending all %d files.¶
+9999:Finished sending file %s.¶
+9999:Opening file listener connection at localhost:%d... 
+9999:Queueing %s as %s for transfer.¶

@@ -13,6 +13,7 @@
 	* add Spanish translation
 	* add sprintf() replacement (for IRIX 6.x)
 	* restrict CONT_ALIAS handlich to contact.c, ignore dupe aliases
+	* add ~-expansion to logplace
 
 2002-08-10 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* convert man pages to an-old macros (for conversion to HTML)
