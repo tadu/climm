@@ -1,5 +1,5 @@
 %define name		micq
-%define version	0.4.9.pl1
+%define version	0.4.9.pl2
 %define release	0
 
 %define prefix	/usr
@@ -31,6 +31,8 @@ Authors: Matthew D. Smith (dead)
 %changelog
 * Tue Jun 11 2002 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 - first RPM
+* Tue Aug 05 2002 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+- new upstream release
 
 %prep
 %setup

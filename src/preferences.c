@@ -118,6 +118,18 @@ void PrefLoad (Preferences *pref)
     rcf = PrefOpenRC (pref);
     if (rcf)
         Read_RC_File (rcf);
+
+#ifdef WIP
+    {
+        char extra[200];
+
+        strcpy (extra, PrefUserDir ());
+        strcat (extra, "contacts");
+        rcf = fopen (extra, "r");
+        if (rcf)
+            Read_RC_File (rcf);
+    }
+#endif
     if (!SessionNr (0))
         Initalize_RC_File ();
 }
