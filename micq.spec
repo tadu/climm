@@ -1,5 +1,5 @@
 %define name		micq
-%define version	0.4.10
+%define version	0.4.10.1
 %define release	0
 
 %define prefix	/usr
@@ -26,9 +26,12 @@ A lot of other ICQ clients are based in spirit on mICQ, nevertheless
 mICQ is still _the_ console based ICQ client.
       
 Authors: Matthew D. Smith (dead)
-         R�diger Kuhlmann <info@ruediger-kuhlmann.de>
+         Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 
 %changelog
+* Tue Jan 24 2003 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+- new upstream bug fix release 0.4.10
+
 * Tue Jan 07 2003 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 - new upstream release 0.4.10
 

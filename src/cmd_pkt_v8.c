@@ -350,7 +350,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     if (serv->status & STATUSF_INV)  ack_flags |= TCP_MSGF_INV;
     ack_flags ^= TCP_MSGF_LIST;
 
-    switch (msgtype)
+    switch (msgtype & ~MSGF_MASS)
     {
         /* Requests for auto-response message */
         do  {

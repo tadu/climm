@@ -52,6 +52,7 @@ struct Cap_s
 #define CAP_SIM         21
 #define CAP_MACICQ      22
 #define CAP_MICQ        23
+#define CAP_KXICQ       24
 #define CAP_MAX         30
 
 #define CAP_GID_UTF8    "{0946134E-4C7F-11D1-8222-444553540000}"

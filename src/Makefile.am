@@ -2,7 +2,7 @@
 
 bin_PROGRAMS = micq
 
-AM_CFLAGS = -DPKGDATADIR=\"$(pkgdatadir)\"
+AM_CFLAGS = -DPKGDATADIR=\"$(pkgdatadir)\" -I$(top_srcdir)/include
 
 micq_SOURCES = conv.c file_util.c icq_response.c micq.c \
        server.c util.c  util_ui.c mreadline.c mselect.c network.c \
@@ -19,14 +19,14 @@ snprintf.o: snprintf.c
 snprintf.c: snprintf.h
 snprintf.h:
 	rm -f snprintf.c snprintf.h
-	ln -s ../replace/snprintf.c . || cp ../replace/snprintf.c .
-	ln -s ../replace/snprintf.h . || cp ../replace/snprintf.h .
+	ln -s $(top_srcdir)/replace/snprintf.c . || cp $(top_srcdir)/replace/snprintf.c .
+	ln -s $(top_srcdir)/replace/snprintf.h . || cp $(top_srcdir)/replace/snprintf.h .
 memmove.o: memmove.c
 memmove.c: memmove.h
 memmove.h:
 	rm -rf memmove.c memmove.h
-	ln -s ../replace/memmove.c . || cp ../replace/memmove.c .
-	ln -s ../replace/memmove.h . || cp ../replace/memmove.h .
+	ln -s $(top_srcdir)/replace/memmove.c . || cp $(top_srcdir)/replace/memmove.c .
+	ln -s $(top_srcdir)/replace/memmove.h . || cp $(top_srcdir)/replace/memmove.h .
 
 clean:
 	rm -f snprintf.c snprintf.h memmove.c memmove.h .cvsupdate
@@ -34,7 +34,8 @@ clean:
 buildmark.o: .cvsupdate
 
 .cvsupdate: force
-	grep Id: *.c ../include/*.h | sed "s,.*\(20../../.. ..:..:..\).*,#define CVSUPDATE \"\1 UTC\"," \
+	grep Id: $(top_srcdir)/src/*.c $(top_srcdir)/include/*.h \
+	    | sed "s,.*\(20../../.. ..:..:..\).*,#define CVSUPDATE \"\1 UTC\"," \
 	    | sort | tail -1 | tr / - > .cvsupdate
 	date "+#define BUILDDATE \"%Y-%m-%d %T %Z\"" >> .cvsupdate
 

@@ -1,5 +1,11 @@
 -*- coding: utf-8 -*-
 
+2003-01-24 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+	* recognize kxICQ
+	* fix reception of mass messages
+	* fix building for builddir != srcdir
+	* RELEASE as 0.4.10.1
+
 2003-01-22 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
 	* fix remgroup command
 	* fix url/msg order

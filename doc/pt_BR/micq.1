@@ -4,67 +4,90 @@
 .TH MICQ 1 mICQ PT_BR
 .SH NOME
 .B mICQ
-\- um Cliente ICQ leve em modo texto
+\- um cliente ICQ leve em modo texto
 .SH SINOPSE
 .B micq
+.I [\-h]
+.I [\-c]
+.I [\-i <locale>]
+.I [\-b <diret\('orio>>]
+.I [\-f <arquivo>]
 .I [\-v[n\('ivel]]
-.I [\-f arquivo]
-.SH NOTE - THIS FILE HAS NOT YET BEEN UPDATED FOR mICQ 0.4.10.
+.I [\-l <logplace>]
 .SH DESCRI\(,C\(~AO
 .B mICQ
 \('e um cliente ICQ em modo texto que possui muitos dos recursos providos pelos
-clientes de ICQ da Mirabilis. mICQ permite que se mude a senha do usu\('ario,
-criem novas contas, atualize as informa\(,c\(~oes pessoais, procure por outros usu\('arios, etc.
+clientes de ICQ da Mirabillis. mICQ permite que se mude a senha do usu\('ario,
+crie novas contas, atualize as informa\(,c\(~oes pessoais, procure por outros
+usu\('arios, envie SMS, abra conex\(~oes diretas, envie mensagens conhecidas,
+transfira arquivos, detecte o cliente de outros usu\('arios, envie mensagens
+com codifica\(,c\(~ao UTF-8, execute comandos arbitr\('arios para qualquer
+evento, etc.
 .SH OP\(,C\(~OES
 .TP
-.BI \-v [n\('ivel]
+.BI \-h|--help
+Mostra uma curta mensagem de ajuda e encerra.
+.TP
+.BI \-c|--nocolor
+Desabilita o uso de cores.
+.TP
+.BI \-i|--i18n \ <locale>
+Usa o local
+.IR locale
+ao inv\('es do obtido pelas vari\('aveis do ambiente.
+.TP
+.BI \-b|--basedir \ <diret\('orio>
+Especifica um
+.IR diret\('orio
+como o diret\('orio base onde mICQ procurar\('a seus arquivos, em particular
+seu arquivo micqrc.
+.TP
+.BI \-f|--config \ <arquivo>
+Use
+.I arquivo
+como um arquivo de configura\(,c\(~ao.
+.TP
+.BI \-v|--verbose [n\('ivel]
 Inicia ou ajusta o n\('ivel de informa\(,c\(~ao verbal para
 .IR n\('ivel .
 .TP
-.BI \-f \ arquivo
-Use
-.I arquivo
-como um arquivo rc.
-.TP
-.BI \-l \ arquivo|dir
-Use
+.BI \-l|--logplace \ arquivo|dir
+Usa
 .I arquivo
 como um arquivo de log, ou use
 .I dir
 como um diret\('orio para criar os logs por usu\('ario individual.
-.TP
-.BI \-?,\ \-h
-Mostra a ajuda/modo de usar.
 
 
 .SH RECURSOS
 .B mICQ
-\('e muito port\('avel e funciona em Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD e
-quaisquer outros sistemas Unix modernos.
-.B mICQ vers\(~ao 0.4.9.2
+\('e muito port\('avel e funciona em Linux, DOS, OS/2, Win32, BeOS, AmigaOS,
+GNU HURD e quaisquer outros sistemas Unix modernos.
+.B mICQ vers\(~ao 0.4.10
 sabidamente funciona em Linux, AIX, HPUX, Tru64, AmigaOS, parcialmente BeOS
 e outros sabores de Unix.
-No entanto, os outros sabores de Unix podem ou n\(~ao funcionar e qualquer pessoa
-ser\('a bem-vinda para testar e nos avisar.
+No entanto, os outros sabores de Unix podem ou n\(~ao funcionar e qualquer
+pessoa ser\('a bem-vinda a testar e nos avisar.
 .SH HIST\('ORICO
 .TP
 16 de Agosto de 1998
-Matthew D. Smith publica o primeiro micq para o mundo. 
-Seguido por 12 "releases" ate 25 de Setembro de 1998.
+Matthew D. Smith publica o primeiro micq para o mundo.
+Seguido por 12 "releases" at\('e 25 de Setembro de 1998.
 .TP
 05 de Janeiro de 2001
 Matthew D. Smith morre em um acidente de carro.
-Os usu\('arios continuam de onde Matthew parou, passam o mICQ para a licen\(,ca BSD
-e reiniciam o desenvolvimento do
+Os usu\('arios continuam de onde Matthew parou, passam o mICQ para a
+licen\(,ca BSD e reiniciam o desenvolvimento do
 .BR mICQ .
 .TP
 10 de Junho de 2002
-A vers\(~ao 0.4.9 e publicada sobre a licen\(,ca GPL, finalmente implementando a nova
-vers\(~ao 8 do protocolo ICQ, por R\(:udiger Kuhlmann.
+A vers\(~ao 0.4.9 e publicada sobre a licen\(,ca GPL, finalmente implementando
+a nova vers\(~ao 8 do protocolo ICQ, por R\(:udiger Kuhlmann.
 .SH MAILING-LIST - LISTAS DE DISCUSS\(~AO
-A lista de discuss\(~ao oficial do mICQ e
+A lista de discuss\(~ao oficial do mICQ \('e
 .IR micq\-list@micq.org .
-Informa\(,c\(~ao sobre subscri\(,c\(~ao e arquivos esta dispon\('ivel no endere\(,co 
+Informa\(,c\(~ao sobre subscri\(,c\(~ao e arquivos est\(~ao dispon\('iveis
+no endere\(,co
 .IR http://www.micq.org/pipermail/micq\-list/ .
 .SH DOWNLOAD
 Via HTTP no site
@@ -72,8 +95,7 @@ Via HTTP no site
 .br
 Para obter a mais nova vers\(~ao via CVS, acesse:
 .br
-
-cvs \-d:pserver:anonymous@micq.org:/usr/local/cvsroot co micq
+cvs \-d:pserver:anonymous@micq.org:/var/lib/cvs co micq
 .br
 .SH VEJA TAMB\('EM
 .BR micqrc (5),
@@ -81,19 +103,26 @@ cvs \-d:pserver:anonymous@micq.org:/usr/local/cvsroot co micq
 .SH ARQUIVOS
 .TP
 .I ~/.micqrc
-Antigo arquivo de configura\(,c\(~ao do mICQ (obsoleto).
+Antigo arquivo de configura\(,c\(~ao do mICQ - obsoleto.
 .TP
-.I ~/.micq/micqrc
+.I ~/.micq/
+Diret\('orio padr\(~ao onde mICQ procura por seus arquivos.
+.TP
+.I BASE/micqrc
 Arquivo de configura\(,c\(~ao do mICQ.
 .TP
+.I BASE/i18n/*.i18n
+Arquivo de Internacionaliza\(,c\(~ao local que sobrep\(~oe os arquivos de Internacionaliza\(,c\(~ao do mICQ.
+.TP
+.I BASE/history
+Diret\('orio padr\(~ao para os arquivos de log do mICQ.
+.TP
+.I BASE/files
+Diret\('orio onde arquivos de transfer\(^encia recebidos s\(~ao salvos.
+.TP
 .I PREFIXO/share/micq/*.i18n
-Arquivos de Internacionaliza\(,c\(~ao contendo tradu\(,c\(~oes das mensagens e informa\(,c\(~oes do mICQ.
-.TP
-.I ~/.micq/i18n/*.i18n
-Um arquivo de Internacionaliza\(,c\(~ao local sobrep\(~oe os arquivos descritos acima.
-.TP
-.I ~/.micq/history/
-Localiza\(,c\(~ao padr\(~ao do diret\('orio no qual os logs s\(~ao criados.
+Arquivos de Internacionaliza\(,c\(~ao contendo tradu\(,c\(~oes das mensagens e
+informa\(,c\(~oes de todos os textos do mICQ.
 
 .SH BUGS - PROBLEMAS
 Envie relat\('orios de Bugs/Problemas ou coment\('arios para R\(:udiger Kuhlmann
@@ -102,9 +131,10 @@ Envie relat\('orios de Bugs/Problemas ou coment\('arios para R\(:udiger Kuhlmann
 .SH AUTHOR
 Esta man-page foi derivada por James Morrison
 .I <ja2morrison@student.math.uwaterloo.ca>
-da pagina original m\('inima escrita por Jordi Mallach
+da p\('agina original m\('inima escrita por Jordi Mallach
 .I <jordi@sindominio.net>
 para o sistema Debian GNU/Linux.
 Traduzido por Deives Michellis
-.I <dmichellis@yahoo.com>
-
+.IR <dmichellis@yahoo.com> ,
+e atualizado por Leonardo Rosa
+.IR <leorosa@feq.unicamp.br> .
