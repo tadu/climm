@@ -1,3 +1,8 @@
+2002-08-10 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* convert man pages to an-old macros (for conversion to HTML)
+	* move packet read position pointer even for broken data
+	* fix segfault for overlong url messages
+
 2002-08-08 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* replace struct Event by Event, dito for struct Queue
 	* remove queue argument to message queue functions
@@ -6,7 +11,7 @@
 	  (e.g. allows instant reaction to established direct connection)
 	* allow requeing with same time (necessary for file transfer)
 	* fix HHHUUUGGGEEEE memory leaks
-	* actually restrict select timeout to time difference to next event"
+	* actually restrict select timeout to time difference to next event
 	* WIP: first file transfer happened today
 
 2002-08-01 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
