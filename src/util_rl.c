@@ -1386,6 +1386,7 @@ void ReadLinePromptHide ()
     printf ("%s", rl_operate.txt);
     rl_prompt_stat = 0;
     rl_colpos = pos;
+    M_print ("\r");
 }
 
 /*
