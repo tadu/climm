@@ -205,5 +205,5 @@ if test "x$MICQ_EXTRAVERSION" != "x"; then
 fi
 
 AC_CONFIG_FILES([doc/Makefile src/Makefile Makefile lang/Makefile])
-AC_CONFIG_FILES([doc/de/Makefile doc/ru/Makefile doc/fr/Makefile doc/es/Makefile doc/pt_BR/Makefile])
+AC_CONFIG_FILES([doc/de/Makefile doc/ru/Makefile doc/fr/Makefile doc/es/Makefile doc/uk/Makefile doc/pt_BR/Makefile])
 AC_OUTPUT
