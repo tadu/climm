@@ -55,21 +55,28 @@ AC_CHECK_HEADERS([locale.h sys/select.h arpa/inet.h ctype.h errno.h fcntl.h limi
 
 if test "x$ac_arg_use_ssl" != "xno"; then
   AM_PATH_LIBGNUTLS(0.8.8, ac_arg_use_ssl=yes, ac_arg_use_ssl=no)
+  if test "x$ac_use_ssl$ac_arg_use_ssl" = "xnoyes"; then
+    AC_MSG_FAILURE([cannot find a suitable SSL library])
+  fi
   if test "x$ac_arg_use_ssl" = "xyes"; then
     LIBS="$LIBGNUTLS_LIBS $LIBS"
     CFLAGS="$LIBGNUTLS_CFLAGS $CFLAGS"
     AC_CHECK_FUNC(gnutls_dh_params_generate2, [AC_DEFINE(HAVE_DH_GENPARAM2, 1, [Whether new DH prime generator is available])],)
   fi
+  ac_arg_use_ssl=$ac_use_ssl
 fi
 
 if test "x$ac_arg_use_tcl" != "xno"; then
+  ac_use_tcl=no
   AC_CHECK_HEADERS([tcl8.4/tcl.h tcl8.3/tcl.h tcl.h] , [ac_arg_use_tcl=header
                                                         break])
   if test "x$ac_arg_use_tcl" = "xheader"; then
     AC_SEARCH_LIBS([Tcl_CreateInterp], [tcl8.4 tcl8.3], [ac_arg_use_tcl=yes], [ac_arg_use_tcl=no])
-  else
-    ac_arg_use_tcl=no
   fi
+  if test "x$ac_usl_tcl$ac_arg_use_tcl" = "xnoyes"; then
+    AC_MSG_FAILURE([cannot find a suitable Tcl interpreter library])
+  fi
+  ac_arg_use_tcl=$ac_use_tcl;
 fi
 
 if test "x$ac_arg_use_utf8" = "xno"; then
