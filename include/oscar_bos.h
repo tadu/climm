@@ -2,7 +2,7 @@
 #ifndef MICQ_OSCAR_BOS_H
 #define MICQ_OSCAR_BOS_H
 
-jump_snac_f SnacSrvReplybos;
+jump_snac_f SnacSrvBoserr, SnacSrvReplybos;
 
 #define SnacCliReqbos(serv)       SnacSend (serv, SnacC (serv, 9, 2, 0, 0))
 

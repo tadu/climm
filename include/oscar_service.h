@@ -2,7 +2,7 @@
 #ifndef MICQ_OSCAR_SERVICE_H
 #define MICQ_OSCAR_SERVICE_H
 
-jump_snac_f SnacSrvFamilies, SnacSrvRates, SnacSrvRateexceeded,
+jump_snac_f SnacSrvServiceerr, SnacSrvFamilies, SnacSrvRates, SnacSrvRateexceeded,
     SnacServerpause, SnacSrvReplyinfo, SnacSrvFamilies2, SnacSrvMotd;
 
 void SnacCliReady (Connection *serv);

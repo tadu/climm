@@ -46,6 +46,7 @@
 #include "connection.h"
 #include "preferences.h"
 #include "buildmark.h"
+#include "util_ui.h"
 
 static void SrvCallBackKeepalive (Event *event);
 
@@ -66,6 +67,7 @@ static SNAC SNACv[] = {
     {  0,  0, NULL, NULL}
 };
 
+
 /*
  * Keeps track of sending a keep alive every 30 seconds.
  */
@@ -79,6 +81,24 @@ static void SrvCallBackKeepalive (Event *event)
         return;
     }
     EventD (event);
+}
+
+/*
+ * SRV_SERVICEERR - SNAC(1,1)
+ */
+JUMP_SNAC_F (SnacSrvServiceerr)
+{
+    UWORD err;
+    TLV *tlv;
+    
+    err = PacketReadB2 (event->pak);
+    tlv = TLVRead (event->pak, PacketReadLeft (event->pak));
+    
+    if (tlv[8].str.len)
+        DebugH (DEB_PROTOCOL, "Server returned error code %d, sub code %ld for service family.", err, tlv[8].nr);
+    else
+        DebugH (DEB_PROTOCOL, "Server returned error %d for service family.", err);
+    TLVD (tlv);
 }
 
 /*

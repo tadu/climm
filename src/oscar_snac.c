@@ -53,6 +53,7 @@
 jump_snac_f SnacSrvUnknown, SnacSrvSetinterval;
 
 static SNAC SNACS[] = {
+    {  1,  1, "SRV_SERVICEERR",      SnacSrvServiceerr},
     {  1,  3, "SRV_FAMILIES",        SnacSrvFamilies},
     {  1,  7, "SRV_RATES",           SnacSrvRates},
     {  1, 10, "SRV_RATEEXCEEDED",    SnacSrvRateexceeded},
@@ -72,6 +73,7 @@ static SNAC SNACS[] = {
     {  4,  7, "SRV_RECVMSG",         SnacSrvRecvmsg},
     {  4, 11, "SRV/CLI_ACKMSG",      SnacSrvAckmsg},
     {  4, 12, "SRV_SRVACKMSG",       SnacSrvSrvackmsg},
+    {  9,  1, "SRV_BOSERR",          SnacSrvBoserr},
     {  9,  3, "SRV_REPLYBOS",        SnacSrvReplybos},
     { 11,  2, "SRV_SETINTERVAL",     SnacSrvSetinterval},
     { 19,  3, "SRV_REPLYLISTS",      SnacSrvReplylists},
