@@ -2023,13 +2023,13 @@ void SnacCliSearchbypersinf (Connection *conn, const char *email, const char *ni
 
     pak = SnacMetaC  (conn, 2000, META_SEARCH_PERSINFO, 0);
     PacketWrite2     (pak, 320); /* key: first name */
-    PacketWriteLLNTS (pak, name);
+    PacketWriteLLNTS (pak, c_out (name));
     PacketWrite2     (pak, 330); /* key: last name */
-    PacketWriteLLNTS (pak, surname);
+    PacketWriteLLNTS (pak, c_out (surname));
     PacketWrite2     (pak, 340); /* key: nick */
-    PacketWriteLLNTS (pak, nick);
+    PacketWriteLLNTS (pak, c_out (nick));
     PacketWrite2     (pak, 350); /* key: email address */
-    PacketWriteLLNTS (pak, email);
+    PacketWriteLLNTS (pak, c_out (email));
     SnacMetaSend     (conn, pak);
 }
 
@@ -2042,7 +2042,7 @@ void SnacCliSearchbymail (Connection *conn, const char *email)
 
     pak = SnacMetaC  (conn, 2000, META_SEARCH_EMAIL, 0);
     PacketWrite2     (pak, 350); /* key: email address */
-    PacketWriteLLNTS (pak, email);
+    PacketWriteLLNTS (pak, c_out (email));
     SnacMetaSend     (conn, pak);
 }
 
