@@ -622,7 +622,8 @@ static JUMP_SNAC_F(SnacSrvIcbmerr)
         if (err == 0xe)
             M_print (i18n (2017, "The user is online, but possibly invisible.\n"));
         else
-            M_print (i18n (2022, "The user is offline.\n"));
+            M_printf (i18n (2397, "The user seems offline. %sNote:%s users can be detected only with a lot of luck.\n"),
+                     COLERROR, COLNONE);
         return;
     }
 

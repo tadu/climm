@@ -62,9 +62,7 @@ static jump_f
     CmdUserOldSearch, CmdUserSearch, CmdUserUpdate, CmdUserPass,
     CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserPeer, CmdUserConn,
     CmdUserContact, CmdUserAnyMess, CmdUserGetAuto;
-#if 0
 static jump_f CmdUserPeek;
-#endif
 
 static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag);
 
@@ -154,9 +152,7 @@ static jump_t jump[] = {
     { &CmdUserQuit,          "exit",         NULL, 0,   0 },
     { &CmdUserPass,          "pass",         NULL, 0,   0 },
     { &CmdUserSMS,           "sms",          NULL, 0,   0 },
-#if 0
     { &CmdUserPeek,          "peek",         NULL, 0,   0 },
-#endif
     { &CmdUserAsSession,     "as",           NULL, 0,   0 },
     { &CmdUserContact,       "contact",      NULL, 0,   0 },
     { &CmdUserContact,       "contactshow",  NULL, 0,   1 },
@@ -829,7 +825,6 @@ static JUMP_F(CmdUserInfo)
 /*
  * Peeks whether a user is really offline.
  */
-#if 0
 static JUMP_F(CmdUserPeek)
 {
     Contact *cont = NULL;
@@ -855,7 +850,6 @@ static JUMP_F(CmdUserPeek)
     }
     return 0;
 }
-#endif
 
 /*
  * Gives information about internationalization and translates
