@@ -1,3 +1,42 @@
+2002-09-30 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* add tel code for Moldava
+	* debian merge
+	* fix & improve file transfer
+	* snychronize help texts, man pages with reality
+	* do not wait for direct connection when automatically creating one
+	* more translation updates
+	* implement sess->close() hook (allows closing of given connection)
+	* fix prompt bug, limit prompt change frequency
+	* random chat group is now configurable and set upon login
+	* make cont->nick a char*
+	* sync packet names with protocol database
+	* actually check for autotools; add last cvs up to compiled in version
+	* message: new undocumented command to explicitly specifiy delivery to use;
+	  let SnacCliSendmsg have an extra parameter to specify format to use
+	* fix type-2 msg reception, fix unknown packet dump
+	* recognize &RQ, ICQ for Mac, ICQ2go, ICQ Lite, SIM
+	* recognize AIM-based clients, ICQ 2001, 2002, partially 2000
+	* implement feature to dump packet according to a syntax string
+	* remove flag 0x8000 skips that are already done in Snac...Receive
+	* add session parameter to some Queue* functions
+	* util_io.c/preferences.h cleanup
+	* use cap for identification, display caps
+	* log but ignore instead of ignore and don't log ignored contacts
+	* support server/type-2 auto response requests
+	* s_sprintf(), s_catf(), s_status(), s_now(), s_time(), s_ip(),
+	  s_repl(), s_free(): new, create static string functions library
+	* s_dump(), s_dumpnd(): new string lib functions to dump data
+	* s_ind(): indent string; s_cat(): like s_catf()
+	* s_msgsep(): new, was _septok()
+	* s_parse(), s_parsenick(), s_parserem(), s_parseint(): new, was UtilUIParse*
+	* Chars_2_DW(): remove.
+	* Move UtilUIUser{On,Off}line as IM{On,Off}line to icq_response.c
+	* PacketCreate(): new, replace TLVPak()
+	* M_print(): rename to M_printf(), add new to print unformatted string
+	* PacketReadCap(), PacketWriteCap(), PacketCap():
+	  implement capabilities in packet library and use
+	* ContactSetVersion(): new, was UtilUISetVersion()
+
 2002-09-22 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* fix file send transfer corruption
 	* UtilUIParseNick(): return the 'real' Contact* as well

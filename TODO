@@ -29,33 +29,11 @@ TODO:
  : alias for commands
  : tab completion (improve)
  : saving personal information
- : fix memory leaks (most fixed)
  : finish implementing file transfer (fixed?)
-   + add prompt display (fixed)
    + add receive command
    + add better syntax (a bit fixed, awaiting user feedback)
    + figure out server file sending
- : Trillian bugaround (fixed?)
- : add list of allowed trailing characters for parsing
- : implement more server message types, unify handling
  : make MSGSENTSTR etc configurable (awaiting user feedback)
- : auto-chat group feature
- : re-check queue usage
- : shorten direct message display
- : add close() hook to connection
-
-DONE:
- : use old-style auth stuff for now :-/ (fixed)
- : "" quoting of arguments (fixed)
- : change add/rem-behaviour (fixed?)
- : connection closing (fixed)
- : add UIN to SMS (fixed)
- : remove color codes from i18n strings (fixed)
- : do not show temporary/ignored contacts (fixed)
- : do not interpret deny as authorize (fixed)
- : give TCPOpenDirect a BOOL to return whether a new connection is now in progress (fixed)
- : fix receivescript (done)
- : rewrite Do_Msg (done)
- : add incoming message/debug color (done)
- : recognize vICQ, Trillian (done)
- : update online help (done)
+ : add list of allowed trailing characters for parsing (for e.g. uinlist arguments)
+ : implement more server message types, unify handling
+ : use ASCII art for setup wizard
