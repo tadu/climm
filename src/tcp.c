@@ -1535,17 +1535,23 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
  */
 static void TCPCallBackResend (Event *event)
 {
-    Contact *cont = ContactUIN (event->conn, event->uin);
+    Contact *cont;
+    UWORD delta, e_trans;
     Connection *peer = event->conn;
     Packet *pak = event->pak;
-    UWORD delta, e_trans;
     int msgtype = ExtraGet (event->extra, EXTRA_MESSAGE);
     char isfile = msgtype == MSG_FILE || msgtype == MSG_SSL_OPEN;
 
-    if (!peer || !cont)
+    if (!peer)
     {
-        if (!peer)
-            M_printf (i18n (2092, "TCP message %s discarded - lost session.\n"), ExtraGetS (event->extra, EXTRA_MESSAGE));
+        M_printf (i18n (2092, "TCP message %s discarded - lost session.\n"), ExtraGetS (event->extra, EXTRA_MESSAGE));
+        EventD (event);
+        return;
+    }
+    
+    cont = ContactUIN (peer, event->uin);
+    if (!cont)
+    {
         EventD (event);
         return;
     }
