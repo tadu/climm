@@ -39,19 +39,17 @@ void CmdPktCmdAck (Connection *conn, UDWORD seq)
 /*
  * CMD_SEND_MESSAGE - send a message through ICQ.
  */
-void CmdPktCmdSendMessage (Connection *conn, UDWORD uin, const char *text, UDWORD type)
+void CmdPktCmdSendMessage (Connection *conn, Contact *cont, const char *text, UDWORD type)
 {
     Packet *pak;
-    Contact *cont;
     
-    cont = ContactUIN (conn, uin);
     if (!cont)
         return;
     
     IMIntMsg (cont, conn, NOW, STATUS_OFFLINE, INT_MSGACK_V8, text, NULL);
                     
     pak = PacketCv5 (conn, CMD_SEND_MESSAGE);
-    PacketWrite4    (pak, uin);
+    PacketWrite4    (pak, cont->uin);
     PacketWrite2    (pak, type);
     PacketWriteLNTS (pak, c_out (text));
     PacketEnqueuev5 (pak, conn);
@@ -60,15 +58,15 @@ void CmdPktCmdSendMessage (Connection *conn, UDWORD uin, const char *text, UDWOR
 /*
  * CMD_TCP_REQUEST - request peer to open a TCP connection.
  */
-void CmdPktCmdTCPRequest (Connection *conn, UDWORD tuin, UDWORD port)
+void CmdPktCmdTCPRequest (Connection *conn, Contact *cont, UDWORD port)
 {
     Packet *pak;
 
-    if (!conn->assoc || !(conn->assoc->connect & CONNECT_OK))
+    if (!cont || !conn->assoc || !(conn->assoc->connect & CONNECT_OK))
         return;
 
     pak = PacketCv5 (conn, CMD_TCP_REQUEST);
-    PacketWrite4 (pak, tuin);
+    PacketWrite4 (pak, cont->uin);
     PacketWrite4 (pak, conn->our_local_ip);
     PacketWrite4 (pak, conn->assoc->port);
     PacketWrite1 (pak, conn->assoc->status);
@@ -252,10 +250,14 @@ void CmdPktCmdLogin1 (Connection *conn)
 /*
  * CMD_EXT_INFO_REQ - request extended information on a user (unused)
  */
-void CmdPktCmdExtInfoReq (Connection *conn, UDWORD uin)
+void CmdPktCmdExtInfoReq (Connection *conn, Contact *cont)
 {
-    Packet *pak = PacketCv5 (conn, CMD_EXT_INFO_REQ);
-    PacketWrite4 (pak, uin);
+    Packet *pak;
+    
+    if (!cont)
+        return;
+    pak = PacketCv5 (conn, CMD_EXT_INFO_REQ);
+    PacketWrite4 (pak, cont->uin);
     PacketEnqueuev5 (pak, conn);
 }
 
@@ -611,10 +613,14 @@ void CmdPktCmdVisList (Connection *conn)
 /*
  * CMD_UPDATE_LIST - update contact visible/invisible status
  */
-void CmdPktCmdUpdateList (Connection *conn, UDWORD uin, int which, BOOL add)
+void CmdPktCmdUpdateList (Connection *conn, Contact *cont, int which, BOOL add)
 {
-    Packet *pak = PacketCv5 (conn, CMD_UPDATE_LIST);
-    PacketWrite4 (pak, uin);
+    Packet *pak;
+    
+    if (!cont)
+        return;
+    pak = PacketCv5 (conn, CMD_UPDATE_LIST);
+    PacketWrite4 (pak, cont->uin);
     PacketWrite1 (pak, which);
     PacketWrite1 (pak, add);
     PacketEnqueuev5 (pak, conn);

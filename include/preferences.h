@@ -60,7 +60,7 @@ struct PreferencesConnection_s
     char     *passwd;
 };
 
-Preferences        *PreferencesC (void);
+Preferences           *PreferencesC (void);
 PreferencesConnection *PreferencesConnectionC (void);
 
 BOOL        PrefLoad (Preferences *pref);
@@ -71,10 +71,6 @@ void        PrefSetColorScheme (Preferences *pref, UBYTE scheme);
 
 const char *PrefUserDirReal (Preferences *pref);
 const char *PrefLogNameReal (Preferences *pref);
-
-#define VERB_PACK         4
-#define VERB_PACK_DEBUG   8
-#define VERB_QUEUE       16
 
 #define FLAG_DELBS         1
 #define FLAG_CONVRUSS      2

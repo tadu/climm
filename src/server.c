@@ -31,19 +31,23 @@
 void icq_sendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD msg_type)
 {
     char *old;
+    Contact *cont = ContactUIN (conn, uin);
+    
+    if (!cont)
+        return;
 
-    putlog (conn, NOW, uin, STATUS_ONLINE, 
+    putlog (conn, NOW, cont, STATUS_ONLINE, 
         msg_type == MSG_AUTO ? LOG_AUTO : LOG_SENT, msg_type, text);
 #ifdef ENABLE_PEER2PEER
-    if (!conn->assoc || !TCPSendMsg (conn->assoc, uin, text, msg_type))
+    if (!conn->assoc || !TCPSendMsg (conn->assoc, cont, text, msg_type))
 #endif
     {
         if (~conn->connect & CONNECT_OK)
             return;
         if (conn->type == TYPE_SERVER)
-            SnacCliSendmsg (conn, uin, text, msg_type, 0);
+            SnacCliSendmsg (conn, cont, text, msg_type, 0);
         else
-            CmdPktCmdSendMessage (conn, uin, text, msg_type);
+            CmdPktCmdSendMessage (conn, cont, text, msg_type);
     }
 
     old = uiG.last_message_sent;
@@ -83,7 +87,7 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, Extra *extra)
     if (old)
         free (old);
 
-    putlog (conn, NOW, cont->uin, STATUS_ONLINE, 
+    putlog (conn, NOW, cont, STATUS_ONLINE, 
             e_msg->data == MSG_AUTO ? LOG_AUTO : LOG_SENT, e_msg->data, e_msg->text);
 
 #ifdef ENABLE_PEER2PEER
@@ -101,7 +105,7 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, Extra *extra)
     if (e_trans->data & EXTRA_TRANS_ICQv8)
         if (conn->connect & CONNECT_OK && conn->type == TYPE_SERVER)
         {
-            SnacCliSendmsg (conn, cont->uin, e_msg->text, e_msg->data, 0);
+            SnacCliSendmsg (conn, cont, e_msg->text, e_msg->data, 0);
             ExtraD (extra);
             return RET_OK;
         }
@@ -109,7 +113,7 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, Extra *extra)
     if (e_trans->data & EXTRA_TRANS_ICQv5)
         if (conn->connect & CONNECT_OK && conn->type == TYPE_SERVER_OLD)
         {
-            CmdPktCmdSendMessage (conn, cont->uin, e_msg->text, e_msg->data);
+            CmdPktCmdSendMessage (conn, cont, e_msg->text, e_msg->data);
             ExtraD (extra);
             return RET_OK;
         }

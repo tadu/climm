@@ -58,17 +58,14 @@ static BOOL Meta_Read_List (Packet *pak, Extra **list)
     return TRUE;
 }
 
-void Meta_User (Connection *conn, UDWORD uin, Packet *pak)
+void Meta_User (Connection *conn, Contact *cont, Packet *pak)
 {
     UWORD subtype;
     UDWORD result;
     Event *event = NULL;
-    Contact *cont;
 
-    cont = ContactUIN (conn, uin);
     if (!cont)
         return;
-
     subtype = PacketRead2 (pak);
     result  = PacketRead1 (pak);
 
@@ -519,7 +516,7 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
     cont->status = status;
     cont->flags &= ~CONT_SEENAUTO;
     
-    putlog (conn, NOW, cont->uin, status, ~old ? LOG_CHANGE : LOG_ONLINE, 0xFFFF, "");
+    putlog (conn, NOW, cont, status, ~old ? LOG_CHANGE : LOG_ONLINE, 0xFFFF, "");
  
     if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || (prG->flags & FLAG_QUIET) || !(conn->connect & CONNECT_OK))
         return;
@@ -562,7 +559,7 @@ void IMOffline (Contact *cont, Connection *conn)
     if (cont->status == STATUS_OFFLINE)
         return;
 
-    putlog (conn, NOW, cont->uin, STATUS_OFFLINE, LOG_OFFLINE, 0xFFFF, "");
+    putlog (conn, NOW, cont, STATUS_OFFLINE, LOG_OFFLINE, 0xFFFF, "");
 
     old = cont->status;
     cont->status = STATUS_OFFLINE;
@@ -679,7 +676,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
     carr = ExtraGet (extra, EXTRA_ORIGIN) == EXTRA_ORIGIN_dc ? MSGTCPRECSTR :
            ExtraGet (extra, EXTRA_ORIGIN) == EXTRA_ORIGIN_v8 ? MSGTYPE2RECSTR : MSGRECSTR;
 
-    putlog (conn, stamp, cont->uin,
+    putlog (conn, stamp, cont,
         (e = ExtraFind (extra, EXTRA_STATUS)) ? e->data : STATUS_OFFLINE, 
         e_msg_type == MSG_AUTH_ADDED ? LOG_ADDED : LOG_RECVD, e_msg_type,
         cdata);

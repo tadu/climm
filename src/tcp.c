@@ -111,21 +111,18 @@ void ConnectionInitPeer (Connection *list)
 /*
  *  Starts establishing a TCP connection to given contact.
  */
-BOOL TCPDirectOpen (Connection *list, UDWORD uin)
+BOOL TCPDirectOpen (Connection *list, Contact *cont)
 {
     Connection *peer;
-    Contact *cont;
 
     ASSERT_MSGLISTEN (list);
 
-    if (uin == list->parent->uin)
-        return FALSE;
-
-    cont = ContactUIN (list->parent, uin);
     if (!cont || !cont->dc || cont->dc->version < 6)
         return FALSE;
+    if (cont->uin == list->parent->uin)
+        return FALSE;
 
-    if ((peer = ConnectionFind (TYPE_MSGDIRECT, uin, list)))
+    if ((peer = ConnectionFind (TYPE_MSGDIRECT, cont->uin, list)))
     {
         if (peer->connect & CONNECT_MASK)
             return TRUE;
@@ -137,7 +134,7 @@ BOOL TCPDirectOpen (Connection *list, UDWORD uin)
         return FALSE;
     
     peer->port   = 0;
-    peer->uin    = uin;
+    peer->uin    = cont->uin;
     peer->flags  = 0;
     peer->spref  = NULL;
     peer->parent = list;
@@ -153,15 +150,17 @@ BOOL TCPDirectOpen (Connection *list, UDWORD uin)
 /*
  * Closes TCP message/file connection(s) to given contact.
  */
-void TCPDirectClose (Connection *list, UDWORD uin)
+void TCPDirectClose (Connection *list, Contact *cont)
 {
     Connection *peer;
     int i;
 
     ASSERT_MSGLISTEN (list);
+    if (!cont)
+        return;
     
     for (i = 0; (peer = ConnectionNr (i)); i++)
-        if (peer->uin == uin && peer->parent == list)
+        if (peer->uin == cont->uin && peer->parent == list)
             if (peer->type == TYPE_MSGDIRECT || peer->type == TYPE_FILEDIRECT)
                 TCPClose (peer);
 }
@@ -169,18 +168,17 @@ void TCPDirectClose (Connection *list, UDWORD uin)
 /*
  * Switchs off TCP for a given uin.
  */
-void TCPDirectOff (Connection *list, UDWORD uin)
+void TCPDirectOff (Connection *list, Contact *cont)
 {
-    Contact *cont;
     Connection *peer;
     
     ASSERT_MSGLISTEN (list);
-    peer = ConnectionFind (TYPE_MSGDIRECT, uin, list);
-    cont = ContactUIN (list->parent, uin);
+    if (!cont)
+        return;
+    peer = ConnectionFind (TYPE_MSGDIRECT, cont->uin, list);
     
-    if (!peer && cont)
+    if (!peer)
         peer = ConnectionC ();
-
     if (!peer)
         return;
     
@@ -380,7 +378,7 @@ void TCPDispatchConn (Connection *peer)
             {
                 if (peer->parent && peer->parent->parent && peer->parent->parent->ver < 7)
                 {
-                    CmdPktCmdTCPRequest (peer->parent->parent, cont->uin, cont->dc->port);
+                    CmdPktCmdTCPRequest (peer->parent->parent, cont, cont->dc->port);
                     QueueEnqueueData (peer, QUEUE_TCP_TIMEOUT, peer->ip, time (NULL) + 30,
                                       NULL, cont->uin, NULL, &TCPCallBackTOConn);
                     peer->connect = TCP_STATE_WAITING;
@@ -1398,29 +1396,25 @@ static int TCPSendGreetAck (Connection *peer, UWORD seq, UWORD cmd, BOOL accept)
 /*
  * Requests the auto-response message from remote user.
  */
-BOOL TCPGetAuto (Connection *list, UDWORD uin, UWORD which)
+BOOL TCPGetAuto (Connection *list, Contact *cont, UWORD which)
 {
-    Contact *cont;
     Packet *pak;
     Connection *peer;
 
+    if (!cont || !cont->dc || !cont->dc->port)
+        return FALSE;
     if (!list || !list->parent)
         return FALSE;
-    if (uin == list->parent->uin)
-        return FALSE;
-    cont = ContactUIN (list->parent, uin);
-    if (!cont || !cont->dc)
+    if (cont->uin == list->parent->uin)
         return FALSE;
     if (!(list->connect & CONNECT_MASK))
-        return FALSE;
-    if (!cont->dc->port)
         return FALSE;
     if (!cont->dc->ip_loc && !cont->dc->ip_rem)
         return FALSE;
 
     ASSERT_MSGLISTEN(list);
     
-    peer = ConnectionFind (TYPE_MSGDIRECT, uin, list);
+    peer = ConnectionFind (TYPE_MSGDIRECT, cont->uin, list);
     if (peer)
     {
         if (peer->connect & CONNECT_FAIL)
@@ -1428,9 +1422,9 @@ BOOL TCPGetAuto (Connection *list, UDWORD uin, UWORD which)
     }
     else
     {
-        if (!TCPDirectOpen (list, uin))
+        if (!TCPDirectOpen (list, cont))
             return FALSE;
-        peer = ConnectionFind (TYPE_MSGDIRECT, uin, list);
+        peer = ConnectionFind (TYPE_MSGDIRECT, cont->uin, list);
         if (!peer)
             return FALSE;
     }
@@ -1461,7 +1455,7 @@ BOOL TCPGetAuto (Connection *list, UDWORD uin, UWORD which)
     peer->stat_real_pak_sent++;
 
     QueueEnqueueData (peer, QUEUE_TCP_RESEND, peer->our_seq--, time (NULL),
-                      pak, uin, ExtraSet (NULL, EXTRA_MESSAGE, which, "..."), &TCPCallBackResend);
+                      pak, cont->uin, ExtraSet (NULL, EXTRA_MESSAGE, which, "..."), &TCPCallBackResend);
     return 1;
 }
 
@@ -1469,29 +1463,25 @@ BOOL TCPGetAuto (Connection *list, UDWORD uin, UWORD which)
  * Sends a message via TCP.
  * Adds it to the resend queue until acked.
  */
-BOOL TCPSendMsg (Connection *list, UDWORD uin, const char *msg, UWORD sub_cmd)
+BOOL TCPSendMsg (Connection *list, Contact *cont, const char *msg, UWORD sub_cmd)
 {
-    Contact *cont;
     Packet *pak;
     Connection *peer;
 
+    if (!cont || !cont->dc || !cont->dc->port)
+        return FALSE;
     if (!list || !list->parent)
         return FALSE;
-    if (uin == list->parent->uin)
-        return FALSE;
-    cont = ContactUIN (list->parent, uin);
-    if (!cont || !cont->dc)
+    if (cont->uin == list->parent->uin)
         return FALSE;
     if (!(list->connect & CONNECT_MASK))
-        return FALSE;
-    if (!cont->dc->port)
         return FALSE;
     if (!cont->dc->ip_loc && !cont->dc->ip_rem)
         return FALSE;
 
     ASSERT_MSGLISTEN(list);
     
-    peer = ConnectionFind (TYPE_MSGDIRECT, uin, list);
+    peer = ConnectionFind (TYPE_MSGDIRECT, cont->uin, list);
     if (peer)
     {
         if (peer->connect & CONNECT_FAIL)
@@ -1501,7 +1491,7 @@ BOOL TCPSendMsg (Connection *list, UDWORD uin, const char *msg, UWORD sub_cmd)
     }
     if (!peer)
     {
-       TCPDirectOpen (list, uin);
+       TCPDirectOpen (list, cont);
        return FALSE;
     }
 
@@ -1519,7 +1509,7 @@ BOOL TCPSendMsg (Connection *list, UDWORD uin, const char *msg, UWORD sub_cmd)
     peer->stat_real_pak_sent++;
 
     QueueEnqueueData (peer, QUEUE_TCP_RESEND, peer->our_seq--, time (NULL),
-                      pak, uin, ExtraSet (NULL, EXTRA_MESSAGE, 1, msg), &TCPCallBackResend);
+                      pak, cont->uin, ExtraSet (NULL, EXTRA_MESSAGE, 1, msg), &TCPCallBackResend);
     return 1;
 }
 
@@ -1553,7 +1543,7 @@ UBYTE PeerSendMsg (Connection *list, Contact *cont, Extra *extra)
     }
     if (!peer)
     {
-       TCPDirectOpen (list, cont->uin);
+       TCPDirectOpen (list, cont);
        return RET_DEFER;
     }
 
@@ -1582,9 +1572,8 @@ UBYTE PeerSendMsg (Connection *list, Contact *cont, Extra *extra)
  * Sends a message via TCP.
  * Adds it to the resend queue until acked.
  */
-BOOL TCPSendFiles (Connection *list, UDWORD uin, const char *description, const char **files, const char **as, int count)
+BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, const char **files, const char **as, int count)
 {
-    Contact *cont;
     Packet *pak;
     Connection *peer, *flist, *fpeer;
     int i, rc, sumlen, sum;
@@ -1593,24 +1582,21 @@ BOOL TCPSendFiles (Connection *list, UDWORD uin, const char *description, const 
         return TRUE;
     if (count < 0)
         return FALSE;
+    if (!cont || !cont->dc || !cont->dc->port)
+        return FALSE;
     
     if (!list || !list->parent)
         return FALSE;
-    if (uin == list->parent->uin)
-        return FALSE;
-    cont = ContactUIN (list->parent, uin);
-    if (!cont || !cont->dc)
+    if (cont->uin == list->parent->uin)
         return FALSE;
     if (!(list->connect & CONNECT_MASK))
-        return FALSE;
-    if (!cont->dc->port)
         return FALSE;
     if (!cont->dc->ip_loc && !cont->dc->ip_rem)
         return FALSE;
 
     ASSERT_MSGLISTEN(list);
     
-    peer = ConnectionFind (TYPE_MSGDIRECT, uin, list);
+    peer = ConnectionFind (TYPE_MSGDIRECT, cont->uin, list);
     if (peer)
     {
         if (peer->connect & CONNECT_FAIL)
@@ -1618,9 +1604,9 @@ BOOL TCPSendFiles (Connection *list, UDWORD uin, const char *description, const 
     }
     else
     {
-        if (!TCPDirectOpen (list, uin))
+        if (!TCPDirectOpen (list, cont))
             return FALSE;
-        peer = ConnectionFind (TYPE_MSGDIRECT, uin, list);
+        peer = ConnectionFind (TYPE_MSGDIRECT, cont->uin, list);
         if (!peer)
             return FALSE;
     }
@@ -1633,14 +1619,14 @@ BOOL TCPSendFiles (Connection *list, UDWORD uin, const char *description, const 
     
     ASSERT_FILELISTEN(flist);
 
-    if (ConnectionFind (TYPE_FILEDIRECT, uin, flist))
+    if (ConnectionFind (TYPE_FILEDIRECT, cont->uin, flist))
         return FALSE;
 
     fpeer = ConnectionClone (flist, TYPE_FILEDIRECT);
     
     assert (fpeer);
     
-    fpeer->uin     = uin;
+    fpeer->uin     = cont->uin;
     fpeer->connect = 77;
         
     for (sumlen = sum = i = 0; i < count; i++)
@@ -1667,7 +1653,7 @@ BOOL TCPSendFiles (Connection *list, UDWORD uin, const char *description, const 
             PacketWrite4 (pak, 0);
             PacketWrite4 (pak, 64);
             QueueEnqueueData (fpeer, QUEUE_PEER_FILE, sum,
-                              time (NULL), pak, uin, ExtraSet (NULL, EXTRA_MESSAGE, -1, strdup (files[i])), &PeerFileResend);
+                              time (NULL), pak, cont->uin, ExtraSet (NULL, EXTRA_MESSAGE, -1, strdup (files[i])), &PeerFileResend);
         }
     }
     
@@ -1684,7 +1670,7 @@ BOOL TCPSendFiles (Connection *list, UDWORD uin, const char *description, const 
     PacketWrite4 (pak, 64);
     PacketWriteLNTS (pak, "Sender's nick");
     QueueEnqueueData (fpeer, QUEUE_PEER_FILE, 0,
-                      time (NULL), pak, uin, ExtraSet (NULL, EXTRA_MESSAGE, -1, strdup (description)), &PeerFileResend);
+                      time (NULL), pak, cont->uin, ExtraSet (NULL, EXTRA_MESSAGE, -1, strdup (description)), &PeerFileResend);
         
     if (peer->ver < 8)
     {
@@ -1706,7 +1692,7 @@ BOOL TCPSendFiles (Connection *list, UDWORD uin, const char *description, const 
     peer->stat_real_pak_sent++;
 
     QueueEnqueueData (peer, QUEUE_TCP_RESEND, peer->our_seq--,
-                      time (NULL), pak, uin, ExtraSet (NULL, EXTRA_MESSAGE, 1, strdup (description)), &TCPCallBackResend);
+                      time (NULL), pak, cont->uin, ExtraSet (NULL, EXTRA_MESSAGE, 1, strdup (description)), &TCPCallBackResend);
     return TRUE;
 }
 

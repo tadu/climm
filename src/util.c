@@ -143,13 +143,12 @@ void Init_New_User (Connection *conn)
 /*
  * Log the event provided to the log with a time stamp.
  */
-int putlog (Connection *conn, time_t stamp, UDWORD uin, 
+int putlog (Connection *conn, time_t stamp, Contact *cont, 
             UDWORD status, enum logtype level, UWORD type, const char *log)
 {
     char buffer[LOG_MAX_PATH + 1],                   /* path to the logfile */
         symbuf[LOG_MAX_PATH + 1];                     /* path of a sym link */
     char *target = buffer;                        /* Target of the sym link */
-    Contact *cont = ContactUIN (conn, uin);
     const char *username = PrefLogName (prG);
     FILE *logfile;
     int fd;
@@ -208,20 +207,20 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
     {
         case TYPE_SERVER_OLD:
             t = s_catf (t, &size, "[icq5:%lu]!%s %s %s%s%s[icq5:%lu+%lX]", 
-                conn->uin, username, indic, pos, cont->uin ? cont->nick : "", pos, uin, status);
+                conn->uin, username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, status);
             break;
         case TYPE_SERVER:
             t = s_catf (t, &size, "[icq8:%lu]!%s %s %s%s%s[icq8:%lu+%lX]", 
-                conn->uin, username, indic, pos, cont->uin ? cont->nick : "", pos, uin, status);
+                conn->uin, username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, status);
             break;
         case TYPE_MSGLISTEN:
         case TYPE_MSGDIRECT:
             t = s_catf (t, &size, "%s %s %s%s%s[tcp:%lu+%lX]",
-                      username, indic, pos, cont->uin ? cont->nick : "", pos, uin, status);
+                      username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, status);
             break;
         default:
             t = s_catf (t, &size, "%s %s %s%s%s[tcp:%lu+%lX]",
-                      username, indic, pos, cont->uin ? cont->nick : "", pos, uin, status);
+                      username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, status);
             break;
     }
 
@@ -254,7 +253,7 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
         if (mkdir (buffer, S_IRWXU) == -1 && errno != EEXIST)
             return -1;
 
-        snprintf (target, buffer + sizeof (buffer) - target, "%lu.log", uin);
+        snprintf (target, buffer + sizeof (buffer) - target, "%lu.log", cont->uin);
 
 #if HAVE_SYMLINK
         if (cont->uin)

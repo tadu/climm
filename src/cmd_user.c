@@ -844,15 +844,15 @@ static JUMP_F(CmdUserPeer)
 
         if (!strcmp (arg1, "open"))
         {
-            if (!TCPDirectOpen  (list, cont->uin))
+            if (!TCPDirectOpen  (list, cont))
                 M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
         }
         else if (!strcmp (arg1, "close"))
-            TCPDirectClose (list, cont->uin);
+            TCPDirectClose (list, cont);
         else if (!strcmp (arg1, "reset"))
-            TCPDirectClose (list, cont->uin);
+            TCPDirectClose (list, cont);
         else if (!strcmp (arg1, "off"))
-            TCPDirectOff   (list, cont->uin);
+            TCPDirectOff   (list, cont);
         else if (!strcmp (arg1, "file"))
         {
             const char *files[1], *ass[1];
@@ -870,7 +870,7 @@ static JUMP_F(CmdUserPeer)
 
             ass[0] = (strchr (file, '/')) ? strrchr (file, '/') + 1 : file;
             
-            if (!TCPSendFiles (list, cont->uin, des, files, ass, 1))
+            if (!TCPSendFiles (list, cont, des, files, ass, 1))
                 M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
             
             free (file);
@@ -903,7 +903,7 @@ static JUMP_F(CmdUserPeer)
                 M_print (i18n (2158, "No file given.\n"));
                 return 0;
             }
-            if (!TCPSendFiles (list, cont->uin, des, (const char **)files, (const char **)ass, count))
+            if (!TCPSendFiles (list, cont, des, (const char **)files, (const char **)ass, count))
                 M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
             
             while (count--)
@@ -916,33 +916,33 @@ static JUMP_F(CmdUserPeer)
 #ifdef WIP
         else if (!strcmp (arg1, "ver"))
         {
-            if (!TCPGetAuto     (list, cont->uin, MSGF_GETAUTO | MSG_GET_VER))
+            if (!TCPGetAuto     (list, cont, MSGF_GETAUTO | MSG_GET_VER))
                 M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
         }
 #endif
         else if (!strcmp (arg1, "auto"))
         {
-            if (!TCPGetAuto     (list, cont->uin, 0))
+            if (!TCPGetAuto     (list, cont, 0))
                 M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
         }
         else if (!strcmp (arg1, "away"))
         {
-            if (!TCPGetAuto     (list, cont->uin, MSGF_GETAUTO | MSG_GET_AWAY))
+            if (!TCPGetAuto     (list, cont, MSGF_GETAUTO | MSG_GET_AWAY))
                 M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
         }
         else if (!strcmp (arg1, "na"))
         {
-            if (!TCPGetAuto     (list, cont->uin, MSGF_GETAUTO | MSG_GET_NA))
+            if (!TCPGetAuto     (list, cont, MSGF_GETAUTO | MSG_GET_NA))
                 M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
         }
         else if (!strcmp (arg1, "dnd"))
         {
-            if (!TCPGetAuto     (list, cont->uin, MSGF_GETAUTO | MSG_GET_DND))
+            if (!TCPGetAuto     (list, cont, MSGF_GETAUTO | MSG_GET_DND))
                 M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
         }
         else if (!strcmp (arg1, "ffc"))
         {
-            if (!TCPGetAuto     (list, cont->uin, MSGF_GETAUTO | MSG_GET_FFC))
+            if (!TCPGetAuto     (list, cont, MSGF_GETAUTO | MSG_GET_FFC))
                 M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
         }
         else
@@ -1168,20 +1168,20 @@ static JUMP_F (CmdUserAnyMess)
     if (data & 1)
     {
 #ifdef ENABLE_PEER2PEER
-        if (!conn->assoc || !TCPDirectOpen  (conn->assoc, cont->uin))
+        if (!conn->assoc || !TCPDirectOpen  (conn->assoc, cont))
         {
             M_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
             return 0;
         }
-        TCPSendMsg (conn->assoc, cont->uin, arg1, data >> 2);
+        TCPSendMsg (conn->assoc, cont, arg1, data >> 2);
     }
 #endif
     else
     {
         if (conn->type != TYPE_SERVER)
-            CmdPktCmdSendMessage (conn, cont->uin, arg1, data >> 2);
+            CmdPktCmdSendMessage (conn, cont, arg1, data >> 2);
         else if (f != 2)
-            SnacCliSendmsg (conn, cont->uin, arg1, data >> 2, f);
+            SnacCliSendmsg (conn, cont, arg1, data >> 2, f);
         else
             SnacCliSendmsg2 (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, data >> 2, arg1));
     }
@@ -2332,9 +2332,9 @@ static JUMP_F(CmdUserTogInvis)
         {
             contr->flags &= ~CONT_HIDEFROM;
             if (conn->ver > 6)
-                SnacCliReminvis (conn, cont->uin);
+                SnacCliReminvis (conn, cont);
             else
-                CmdPktCmdUpdateList (conn, cont->uin, INV_LIST_UPDATE, FALSE);
+                CmdPktCmdUpdateList (conn, cont, INV_LIST_UPDATE, FALSE);
             M_printf (i18n (2020, "Being visible to %s.\n"), cont->nick);
         }
         else
@@ -2342,9 +2342,9 @@ static JUMP_F(CmdUserTogInvis)
             contr->flags |= CONT_HIDEFROM;
             contr->flags &= ~CONT_INTIMATE;
             if (conn->ver > 6)
-                SnacCliAddinvis (conn, cont->uin);
+                SnacCliAddinvis (conn, cont);
             else
-                CmdPktCmdUpdateList (conn, cont->uin, INV_LIST_UPDATE, TRUE);
+                CmdPktCmdUpdateList (conn, cont, INV_LIST_UPDATE, TRUE);
             M_printf (i18n (2021, "Being invisible to %s.\n"), cont->nick);
         }
         if (*args == ',')
@@ -2380,9 +2380,9 @@ static JUMP_F(CmdUserTogVisible)
         {
             contr->flags &= ~CONT_INTIMATE;
             if (conn->ver > 6)
-                SnacCliRemvisible (conn, cont->uin);
+                SnacCliRemvisible (conn, cont);
             else
-                CmdPktCmdUpdateList (conn, cont->uin, VIS_LIST_UPDATE, FALSE);
+                CmdPktCmdUpdateList (conn, cont, VIS_LIST_UPDATE, FALSE);
             M_printf (i18n (1670, "Normal visible to %s now.\n"), cont->nick);
         }
         else
@@ -2390,9 +2390,9 @@ static JUMP_F(CmdUserTogVisible)
             contr->flags |= CONT_INTIMATE;
             contr->flags &= ~CONT_HIDEFROM;
             if (conn-> ver > 6)
-                SnacCliAddvisible (conn, cont->uin);
+                SnacCliAddvisible (conn, cont);
             else
-                CmdPktCmdUpdateList (conn, cont->uin, VIS_LIST_UPDATE, TRUE);
+                CmdPktCmdUpdateList (conn, cont, VIS_LIST_UPDATE, TRUE);
             M_printf (i18n (1671, "Always visible to %s now.\n"), cont->nick);
         }
         if (*args == ',')
@@ -2488,13 +2488,13 @@ static JUMP_F(CmdUserAdd)
         if (cont->flags & CONT_TEMPORARY)
         {
             M_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, arg1);
-            if (!Add_User (conn, cont->uin, arg1))
+            if (!Add_User (conn, cont, arg1))
                 M_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
             if (c_strlen (arg1) > uiG.nick_len)
                 uiG.nick_len = c_strlen (arg1);
             ContactFind (conn->contacts, 0, cont->uin, cont->nick, 1);
             if (conn->ver > 6)
-                SnacCliAddcontact (conn, cont->uin);
+                SnacCliAddcontact (conn, cont);
             else
                 CmdPktCmdContactList (conn);
             s_repl (&cont->nick, arg1);
@@ -2612,7 +2612,7 @@ static JUMP_F(CmdUserRemove)
             else
             {
                 if (conn->ver > 6)
-                    SnacCliRemcontact (conn, uin);
+                    SnacCliRemcontact (conn, cont);
                 else
                     CmdPktCmdContactList (conn);
                 M_printf (i18n (2150, "Removed contact '%s' (%ld).\n"),
@@ -2655,13 +2655,13 @@ static JUMP_F(CmdUserAuth)
                 msg = "Please authorize my request and add me to your Contact List\n";
 #ifdef WIP
             if (conn->type == TYPE_SERVER && conn->ver >= 8)
-                SnacCliReqauth (conn, cont->uin, msg);
+                SnacCliReqauth (conn, cont, msg);
             else
 #endif
             if (conn->type == TYPE_SERVER)
-                SnacCliSendmsg (conn, cont->uin, msg, MSG_AUTH_REQ, 0);
+                SnacCliSendmsg (conn, cont, msg, MSG_AUTH_REQ, 0);
             else
-                CmdPktCmdSendMessage (conn, cont->uin, msg, MSG_AUTH_REQ);
+                CmdPktCmdSendMessage (conn, cont, msg, MSG_AUTH_REQ);
             free (cmd);
             return 0;
         }
@@ -2671,13 +2671,13 @@ static JUMP_F(CmdUserAuth)
                 msg = "Authorization refused\n";
 #ifdef WIP
             if (conn->type == TYPE_SERVER && conn->ver >= 8)
-                SnacCliAuthorize (conn, cont->uin, 0, msg);
+                SnacCliAuthorize (conn, cont, 0, msg);
             else
 #endif
             if (conn->type == TYPE_SERVER)
-                SnacCliSendmsg (conn, cont->uin, msg, MSG_AUTH_DENY, 0);
+                SnacCliSendmsg (conn, cont, msg, MSG_AUTH_DENY, 0);
             else
-                CmdPktCmdSendMessage (conn, cont->uin, msg, MSG_AUTH_DENY);
+                CmdPktCmdSendMessage (conn, cont, msg, MSG_AUTH_DENY);
             free (cmd);
             return 0;
         }
@@ -2685,13 +2685,13 @@ static JUMP_F(CmdUserAuth)
         {
 #ifdef WIP
             if (conn->type == TYPE_SERVER && conn->ver >= 8)
-                SnacCliGrantauth (conn, cont->uin);
+                SnacCliGrantauth (conn, cont);
             else
 #endif
             if (conn->type == TYPE_SERVER)
-                SnacCliSendmsg (conn, cont->uin, "\x03", MSG_AUTH_ADDED, 0);
+                SnacCliSendmsg (conn, cont, "\x03", MSG_AUTH_ADDED, 0);
             else
-                CmdPktCmdSendMessage (conn, cont->uin, "\x03", MSG_AUTH_ADDED);
+                CmdPktCmdSendMessage (conn, cont, "\x03", MSG_AUTH_ADDED);
             free (cmd);
             return 0;
         }
@@ -2706,13 +2706,13 @@ static JUMP_F(CmdUserAuth)
 
 #ifdef WIP
     if (conn->type == TYPE_SERVER && conn->ver >= 8)
-        SnacCliAuthorize (conn, cont->uin, 1, NULL);
+        SnacCliAuthorize (conn, cont, 1, NULL);
     else
 #endif
     if (conn->type == TYPE_SERVER)
-        SnacCliSendmsg (conn, cont->uin, "\x03", MSG_AUTH_GRANT, 0);
+        SnacCliSendmsg (conn, cont, "\x03", MSG_AUTH_GRANT, 0);
     else
-        CmdPktCmdSendMessage (conn, cont->uin, "\x03", MSG_AUTH_GRANT);
+        CmdPktCmdSendMessage (conn, cont, "\x03", MSG_AUTH_GRANT);
     return 0;
 }
 

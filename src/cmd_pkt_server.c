@@ -85,10 +85,10 @@ const char *CmdPktSrvName (int cmd)
 void CmdPktSrvRead (Connection *conn)
 {
     Packet *pak;
-    int s;
     char *f;
     UDWORD session, uin, id;
     UWORD cmd, seq, seq2;
+    int s;
 
     pak = UtilIOReceiveUDP (conn);
     if (!pak)
@@ -156,7 +156,7 @@ void CmdPktSrvRead (Connection *conn)
         CmdPktCmdAck (conn, id);
         conn->stat_real_pak_rcvd++;
     }
-    CmdPktSrvProcess (conn, pak, cmd, pak->ver, id, uin);
+    CmdPktSrvProcess (conn, ContactUIN (conn, uin), pak, cmd, pak->ver, id);
 }
 
 /*
@@ -177,22 +177,24 @@ static void CmdPktSrvCallBackKeepAlive (Event *event)
 /*
  * Process the given server packet
  */
-void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
-                       UWORD ver, UDWORD seq, UDWORD uin)
+void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
+                       UWORD cmd, UWORD ver, UDWORD seq)
 {
     jump_srv_t *t;
     static int loginmsg = 0;
     unsigned char ip[4];
     char *text, *ctext;
     UWORD wdata;
-    Contact *cont;
-    UDWORD status;
+    UDWORD status, uin;
+    
+    if (!cont)
+        return;
     
     for (t = jump; t->cmd; t++)
     {
         if (cmd == t->cmd && t->f)
         {
-            t->f (conn, pak, cmd, ver, seq, uin);
+            t->f (conn, cont, pak, cmd, ver, seq);
             return;
         }
     }
@@ -200,10 +202,10 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
     switch (cmd)
     {
         case SRV_META_USER:
-            Meta_User (conn, uin, pak);
+            Meta_User (conn, cont, pak);
             break;
         case SRV_NEW_UIN:
-            M_printf (i18n (1639, "The new UIN is %ld!\n"), uin);
+            M_printf (i18n (1639, "The new UIN is %ld!\n"), cont->uin);
             break;
         case SRV_UPDATE_FAIL:
             M_print (i18n (1640, "Failed to update info.\n"));
@@ -212,7 +214,7 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             M_print (i18n (1641, "User info successfully updated.\n"));
             break;
         case SRV_LOGIN_REPLY:
-            M_printf ("%s " COLCONTACT "%10lu" COLNONE " %s\n", s_now, uin, i18n (1050, "Login successful!"));
+            M_printf ("%s " COLCONTACT "%10lu" COLNONE " %s\n", s_now, cont->uin, i18n (1050, "Login successful!"));
             CmdPktCmdLogin1 (conn);
             CmdPktCmdContactList (conn);
             CmdPktCmdInvisList (conn);
@@ -234,11 +236,9 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             ip[1] = PacketRead1 (pak);
             ip[2] = PacketRead1 (pak);
             ip[3] = PacketRead1 (pak);
-            cont = ContactUIN (conn, uin);
-            if (cont)
-                M_printf ("%s " COLCONTACT "%*s" COLNONE " %s: %u.%u.%u.%u\n",
-                    s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, i18n (1642, "IP"),
-                    ip[0], ip[1], ip[2], ip[3]);
+            M_printf ("%s " COLCONTACT "%*s" COLNONE " %s: %u.%u.%u.%u\n",
+                s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, i18n (1642, "IP"),
+                ip[0], ip[1], ip[2], ip[3]);
             QueueEnqueueData (conn, QUEUE_UDP_KEEPALIVE, 0, time (NULL) + 120,
                               NULL, 0, NULL, &CmdPktSrvCallBackKeepAlive);
             break;
@@ -391,7 +391,7 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
                 IMSrvMsg (cont, conn, NOW, ExtraSet (ExtraSet (NULL,
                           EXTRA_ORIGIN, EXTRA_ORIGIN_v5, NULL),
                           EXTRA_MESSAGE, wdata, text));
-                Auto_Reply (conn, uin);
+                Auto_Reply (conn, cont);
             }
             free (text);
             break;
@@ -417,7 +417,7 @@ static JUMP_SRV_F (CmdPktSrvMulti)
 {
     int i, num_pack, llen;
     Packet *npak;
-    UDWORD session /*,uin*/;
+    UDWORD session, uin;
     UWORD /*cmd, seq,*/ seq2;
     char *f;
 
@@ -465,7 +465,7 @@ static JUMP_SRV_F (CmdPktSrvMulti)
             M_print (COLEXDENT "\n");
         }
 
-        CmdPktSrvProcess (conn, npak, cmd, ver, seq << 16 | seq2, uin);
+        CmdPktSrvProcess (conn, ContactUIN (conn, uin), npak, cmd, ver, seq << 16 | seq2);
     }
 }
 

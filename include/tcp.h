@@ -10,18 +10,16 @@
 void ConnectionInitPeer   (Connection *list);
 
 /* Open, close, disallow connection of UIN with this listener */
-BOOL TCPDirectOpen     (Connection *list, UDWORD uin);
-void TCPDirectClose    (Connection *list, UDWORD uin);
-void TCPDirectOff      (Connection *list, UDWORD uin);
+BOOL TCPDirectOpen     (Connection *list, Contact *cont);
+void TCPDirectClose    (Connection *list, Contact *cont);
+void TCPDirectOff      (Connection *list, Contact *cont);
 
 /* Do the given peer2peer request */
-BOOL TCPSendMsg        (Connection *list, UDWORD uin, const char *msg, UWORD sub_cmd);
+BOOL TCPSendMsg        (Connection *list, Contact *cont, const char *msg, UWORD sub_cmd);
 UBYTE PeerSendMsg      (Connection *list, Contact *cont, Extra *extra);
-BOOL TCPSendFiles      (Connection *list, UDWORD uin, const char *description, const char **file, const char **as, int count);
-BOOL TCPGetAuto        (Connection *list, UDWORD uin, UWORD which);
+BOOL TCPSendFiles      (Connection *list, Contact *cont, const char *description, const char **file, const char **as, int count);
+BOOL TCPGetAuto        (Connection *list, Contact *cont, UWORD which);
 int  TCPSendMsgAck     (Connection *peer, UWORD seq, UWORD sub_cmd, BOOL accept);
-
-Connection *TCPPeer (UDWORD uin);
 
 Connection *PeerFileCreate    (Connection *serv);
 UBYTE       PeerFileRequested (Connection *peer, const char *files, UDWORD bytes);

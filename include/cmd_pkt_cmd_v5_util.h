@@ -10,7 +10,7 @@ void UDPCallBackResend (Event *event);
 const char *CmdPktCmdName (UWORD cmd);
 void ConnectionInitServerV5 (Connection *conn);
 void CallBackServerInitV5 (Event *event);
-void Auto_Reply (Connection *conn, UDWORD uin);
+void Auto_Reply (Connection *conn, Contact *cont);
 
 #define CMD_v5_OFF_VER    0
 #define CMD_v5_OFF_ZERO   2

@@ -340,11 +340,11 @@ void PacketSendv5 (const Packet *pak, Connection *conn)
     PacketD (cpak);
 }
 
-void Auto_Reply (Connection *conn, UDWORD uin)
+void Auto_Reply (Connection *conn, Contact *cont)
 {
     char *temp;
 
-    if (!(prG->flags & FLAG_AUTOREPLY))
+    if (!(prG->flags & FLAG_AUTOREPLY) || !cont)
         return;
 
           if (conn->status & STATUSF_DND)
@@ -360,7 +360,7 @@ void Auto_Reply (Connection *conn, UDWORD uin)
      else
          return;
 
-    IMCliMsg (conn, ContactUIN (conn, uin), ExtraSet (NULL, EXTRA_MESSAGE, MSG_AUTO, temp));
+    IMCliMsg (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, MSG_AUTO, temp));
 }
 
 /*
