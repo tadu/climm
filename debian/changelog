@@ -1,8 +1,14 @@
-micq (1:0.4.9.3.cvs-0) unstable; urgency=low
+micq (1:0.4.9.4-0) unstable; urgency=low
 
-  * No new upstream release yet
+  * New upstream release:
+  + fix/improve file transfer
+  + Peter Backes' new log file format
+  + recognize most clients
+  + capabilities support
+  + dump packets following a syntax definition
+  + allow quoting of parameters
 
- -- Rüdiger Kuhlmann <Ruediger.Kuhlmann@stud.uni-karlsruhe.de>  Mon, 26 Aug 2099 18:00:00 +0100
+ -- Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>  Thu,  3 Oct 2002 19:00:00 +0200
 
 micq (1:0.4.9.3.1-1) unstable; urgency=low
 

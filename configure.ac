@@ -4,7 +4,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.53)
-AC_INIT(micq, 0.4.9.3.1)
+AC_INIT(micq, 0.4.9.4)
 AC_CONFIG_SRCDIR([include/micq.h])
 AC_CANONICAL_HOST
 
@@ -131,7 +131,13 @@ if test "x$GCC" = xyes; then
 fi
 
 if test "x$WIP" != "x"; then
-     AC_DEFINE(WIP,1,[Include probably buggy work-in-progress code])
+    AC_DEFINE(WIP,1,[Include probably buggy work-in-progress code])
+fi
+
+if text "x$MICQ_EXTRAVERSION" != "x"; then
+    AC_DEFINE(EXTRAVERSION,$MICQ_EXTRAVERSION,[Extra version information like the distribution used])
+else
+    AC_DEFINE(EXTRAVERSION,[hand compiled])
 fi
 
 AC_CONFIG_FILES([doc/Makefile src/Makefile Makefile lang/Makefile])

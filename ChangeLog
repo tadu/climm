@@ -1,3 +1,14 @@
+2002-10-03 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* add error message for missing file reception directory
+	* web page: add blurb for misconfigured browsers
+	* final translation updates
+	* .. or non-updates (english text copied to translated man pages)
+	* compile fixes (thanks, Andy)
+	* do not send CAP_IS_2002 (it means UTF-8, we can't do that yet)
+	* show failing connections only when verbose or for server connections
+	* display 0x46 meta result (just output the text)
+	* 0.4.9.4 released
+
 2002-09-30 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* add tel code for Moldava
 	* debian merge

@@ -34,6 +34,7 @@ TODO:
    + add better syntax (a bit fixed, awaiting user feedback)
    + figure out server file sending
  : make MSGSENTSTR etc configurable (awaiting user feedback)
- : add list of allowed trailing characters for parsing (for e.g. uinlist arguments)
+ : allow uinlist parameters instead of single uins only
  : implement more server message types, unify handling
  : use ASCII art for setup wizard
+ : implement UTF-8 input
