@@ -32,7 +32,7 @@ Authors: Matthew D. Smith (deceased)
          Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 
 %changelog
-* Mon May 12 2003 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+* Mon May 13 2003 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 - new upstream bug fix release 0.4.10.3
 
 * Tue Feb 27 2003 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>

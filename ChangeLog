@@ -36,6 +36,7 @@
 	* add numeric build platform id, use
 	* add loads of GPLv2 notices
 	* fix iconv() configure check (s/none/buildin)
+	* release as 0.4.10.3
 
 2003-04-22 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
 	* fix sending to DND and OCC, fix embedded status
