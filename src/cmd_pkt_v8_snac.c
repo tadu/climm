@@ -714,7 +714,10 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                     txt = ConvToUTF8 (text, ENC_LATIN1, -1, 0);
                     break;
                 case 0x0003ffff:
-                    txt = ConvToUTF8 (text, ConvEnc ("CP1257"), -1, 0);
+                    if (prG->enc_loc == ConvEnc ("CP1257"))
+                        txt = ConvToUTF8 (text, ConvEnc ("CP1257"), -1, 0);
+                    else
+                        txt = ConvToUTF8 (text, ConvEnc ("CP1251"), -1, 0);
                     break;
                 case 0x00000000:
                 case 0x0000ffff: /* vICQ sends them */
@@ -1553,6 +1556,11 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
             {
                 enc = ENC_LATIN1;
                 icqenc = 0x30000;
+            }
+            else if (remenc == ENC_WIN1251 && ConvFits (text, ENC_WIN1251))
+            {
+                enc = ENC_WIN1251;
+                icqenc = 0x3ffff;
             }
             else if (remenc == ENC_WIN1257 && ConvFits (text, ENC_WIN1257))
             {
