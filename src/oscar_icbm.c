@@ -134,6 +134,18 @@ JUMP_SNAC_F(SnacSrvAckmsg)
         return;
     
     text = strdup (c_in_to_split (ctext, cont));
+    if (msgtype == MSG_NORM)
+    {
+        strc_t cctmp;
+        PacketRead4 (pak);
+        PacketRead4 (pak);
+        cctmp = PacketReadL2Str (pak, NULL);
+        if (!strcmp (cctmp->txt, CAP_GID_UTF8))
+        {
+            free (text);
+            text = strdup (ctext->txt);
+        }
+    }
 
     event = QueueDequeue (serv, QUEUE_TYPE2_RESEND, seq_dc);
 
