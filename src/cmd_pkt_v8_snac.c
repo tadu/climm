@@ -1430,7 +1430,7 @@ void SnacCliReady (Connection *conn)
     
     for (s = SNACv; s->fam; s++)
     {
-        if (s->fam == 12 || s->fam == 8)
+        if (s->fam == 12 || s->fam == 8 || s->fam == 34)
             continue;
 
         PacketWriteB2 (pak, s->fam);
@@ -1452,7 +1452,7 @@ void SnacCliFamilies (Connection *conn)
     
     for (s = SNACv; s->fam; s++)
     {
-        if (s->fam == 12 || s->fam == 8)
+        if (s->fam == 12 || s->fam == 8 || s->fam == 34)
             continue;
 
         PacketWriteB2 (pak, s->fam);
