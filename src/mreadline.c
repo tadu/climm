@@ -1221,7 +1221,7 @@ void M_print (const char *org)
                 }
                 break;
             case '\a':
-                if (prG->sound == SFLAG_EVENT)
+                if (prG->sound == SFLAG_EVENT && prG->event_cmd && *prG->event_cmd)
                     EventExec (NULL, prG->event_cmd, 4, 0, NULL);
                 else if (prG->sound == SFLAG_BEEP)
                     printf ("\a");
@@ -1378,7 +1378,7 @@ void M_print (char *str)
                 }
             }
         }
-        else if (prG->sound == SFLAG_EVENT)
+        else if (prG->sound == SFLAG_EVENT && prG->event_cmd && *prG->event_cmd)
             EventExec (NULL, prG->event_cmd, 4, 0, NULL);
         else if (prG->sound == SFLAG_BEEP)
             printf ("\a");

@@ -526,10 +526,8 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
     if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || (prG->flags & FLAG_QUIET) || !(conn->connect & CONNECT_OK))
         return;
 
-    if (!~old)
-        EventExec (cont, prG->event_cmd, 2, status, NULL);
-    else
-        EventExec (cont, prG->event_cmd, 5, status, NULL);
+    if (prG->event_cmd && *prG->event_cmd)
+        EventExec (cont, prG->event_cmd, !~old ? 2 : 5, status, NULL);
 
     M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
     M_printf (~old ? i18n (2212, "changed status to %s") : i18n (2213, "logged on (%s)"), s_status (status));
@@ -571,7 +569,8 @@ void IMOffline (Contact *cont, Connection *conn)
     if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || (prG->flags & FLAG_QUIET))
         return;
 
-    EventExec (cont, prG->event_cmd, 3, old, NULL);
+    if (prG->event_cmd && *prG->event_cmd)
+        EventExec (cont, prG->event_cmd, 3, old, NULL);
  
     M_printf ("%s " COLCONTACT "%*s" COLNONE " %s\n",
              s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, i18n (1030, "logged off."));
@@ -705,7 +704,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
     }
 
 #ifdef MSGEXEC
-    if (prG->event_cmd && strlen (prG->event_cmd))
+    if (prG->event_cmd && *prG->event_cmd)
         EventExec (cont, prG->event_cmd, 1, e_msg_type, e_msg_text);
 #endif
     M_printf ("\a%s " COLINCOMING "%*s" COLNONE " ", s_time (&stamp), uiG.nick_len + s_delta (cont->nick), cont->nick);

@@ -440,6 +440,8 @@ const char *s_realpath (const char *path)
 {
     char *f = NULL;
 
+    if (!*path)
+        path = "";
     if (*path == '~' && path[1] == '/' && getenv ("HOME"))
         return s_sprintf ("%s%s", getenv ("HOME"), path + 1);
     if (*path == '/')
