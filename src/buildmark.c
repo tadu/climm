@@ -118,19 +118,23 @@ static const char *ver = 0;
 
 const char *BuildVersion (void)
 {
-    if (!ver)
-        ver = strdup (s_sprintf (i18n (2327, "%smICQ (Matt's ICQ clone)%s version %s%s%s\n"),
-            COLSERVER, COLNONE, COLSERVER, MICQ_VERSION " " CVSUPDATE, COLNONE));
-    return ver;
+    return s_sprintf (i18n (2327, "%smICQ (Matt's ICQ clone)%s version %s%s%s\n"),
+            COLSERVER, COLNONE, COLSERVER, MICQ_VERSION " (" CVSUPDATE ")", COLNONE);
 }
 
 const char *BuildAttribution (void)
 {
-    return (s_sprintf ("%s 1998-2000 %sMatthew D. Smith%s, %s 2001-2004 %sR%sdiger Kuhlmann%s,\n"
-            "released under version 2 of the GNU General Public License (%sGPLv2%s).\n",
-            ConvTranslit ("\xc2\xa9", "(c)"), COLQUOTE, COLNONE,
-            ConvTranslit ("\xc2\xa9", "(c)"), COLQUOTE,
-            ConvTranslit ("\xc3\xbc", "ue"), COLNONE, COLQUOTE, COLNONE));
+    char *name;
+    const char *full;
+    
+    name = strdup (s_sprintf ("%s 1998-2000 %sMatthew D. Smith%s, %s 2001-2005 %sR%sdiger Kuhlmann%s.\n",
+                   ConvTranslit ("\xc2\xa9", "(c)"), COLQUOTE, COLNONE,
+                   ConvTranslit ("\xc2\xa9", "(c)"), COLQUOTE,
+                   ConvTranslit ("\xc3\xbc", "ue"), COLNONE));
+    full = s_sprintf (i18n (2574, "%sReleased under version 2 of the GNU General Public License (%sGPL v2%s).\n"),
+                   name, COLQUOTE, COLNONE);
+    free (name);
+    return full;
 }                  
 
 const UDWORD BuildVersionNum = MICQ_BUILD_NUM;
@@ -145,4 +149,5 @@ const char  *BuildVersionText = "$VER: mICQ " VERSION " " EV EXTRAVERSION " (" C
  i19n (1005, "Ruediger Kuhlmann") last contributor
  i19n (1006, "2002-05-02")       last change
  i19n (1007, "iso-8859-1")       charset used (obsolete)
+ i19n (1008, "US-ASCII")         default language's charset
  */
