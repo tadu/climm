@@ -4,7 +4,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT([micq], [0.4.10.3])
+AC_INIT([micq], [0.4.10.4])
 AC_CONFIG_SRCDIR([include/micq.h])
 AC_CONFIG_LIBOBJ_DIR(replace)
 AC_CONFIG_HEADER(include/config.h)
@@ -54,11 +54,7 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS([locale.h sys/select.h arpa/inet.h ctype.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h])
 
 if test "x$ac_arg_use_ssl" != "xno"; then
-  AM_PATH_LIBGNUTLS(0.8.8, ac_arg_use_ssl=yes, AC_MSG_ERROR([[
-***
-*** libgnutls was not found. You may want to get it from
-*** ftp://ftp.gnutls.org/pub/gnutls/
-]]))
+  AM_PATH_LIBGNUTLS(0.8.8, ac_arg_use_ssl=yes, ac_arg_use_ssl=no)
   if test "x$ac_arg_use_ssl" = "xyes"; then
     LIBS="$LIBGNUTLS_LIBS $LIBS"
     CFLAGS="$LIBGNUTLS_CFLAGS $CLFAGS"

@@ -61,31 +61,12 @@ A: Try again in 30min. AOL will block you with that error message if you
 Q: What do these symbols mean that are printed for each contact with the
    'e', 'w', 'ee', 'ww' and 's' commands?
 
-A: The symbol printed after the peer-to-peer protocol version with the 'ee'
-   and 'ww' commands are connectivity flags:
-   * '&': direct connection with contact established.
-   * '|': direct connection with contact failed.
-   * ':': direct connection with contact is tried to establish.
-   * '.': direct connection with contact closed.
-   * '^': no direct connection, but IP address and port number known.
-   * ' ': no direct connection possible. 
-   The symbols printed with all commands are contact flags:
-   * '+': alias entry, only with 'ww'
-   * '#': temporary contact (i.e. UIN was mentioned, but not added to
-          contact list), only with 'w' and 'ww'
-   * '*': intimate: sees you when invisible
-   * '-': hide: doesn't see you at any time
-   * '^': ignore this contact 
-   If none of the latter are applicable, '&', '|', ':', '.' as above are
-   printed if applicable.
+A: Why not check micq(7), the man page of all mICQ commands?
 
 Q: Why do messages to and from some contacts are noted with '«««' and
    '»»»', while for some others '<<<' and '>>>' are used?
 
-A: The former are used when a direct connection to the contact is
-   established and the message is acknowledged, while the latter is printed
-   when the message is sent through the server (as a non-acknowledged
-   message). '>>»' and '«<<' are used for acknowledged messages.
+A: Why not check micq(7), the man page of all mICQ commands?
 
 Q: How can I set a specific encoding for a given user?
 
@@ -102,11 +83,22 @@ A: Yes, partially. As of mICQ 0.4.10.2, you could use the change command to
    undocumented: you can "set" the options "webaware", "hideip", "dcauth"
    and "dccont", which then will also be saved to your micqrc.
 
-Q: mICQ claims my iconv() is broken, but doesn't detect my replacement libiconv. What do I do?
+Q: mICQ claims my iconv() is broken, but doesn't detect my replacement
+   libiconv. What do I do?
 
 A: Do ./configure LDFLAGS=-liconv instead. If your libiconv lib and includes
    dir is not found, try ./configure "LDFLAGS=-liconv -L/path/to/libiconv/lib"
    CPPFLAGS=-I/path/to/libiconv/include/" instead.
+
+Q: Does mICQ support uploading of contacts to the server.
+
+A: Not as of 0.4.10.x. But it nowhere claims to be able to.
+
+Q: Does mICQ support double wide (i.e. Japanese, Chinese characters)?
+
+A: Not really: they display correctly, but line breaking and editing does not work
+   correctly. If you really need those, try out the unstable CVS snapshot, which
+   does support them.
 
 Q: Are there any known bugs in 0.4.10?
 

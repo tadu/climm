@@ -1,9 +1,9 @@
 Package: micq
-Version: 0.4.10.3
+Version: 0.4.10.4
 Revision: 1
-ConfigureParams: CFLAGS=-O4
+ConfigureParams: --enable-ssl --enable-tcl CFLAGS=-O4
 Source: http://www.micq.org/source/micq-%v.tgz
-DocFiles: README COPYING AUTHORS NEWS TODO ChangeLog doc/README.i18n doc/README.logformat
+DocFiles: README COPYING COPYING-GPLv2 AUTHORS NEWS TODO ChangeLog doc/README.i18n doc/README.logformat
 #
 Description: text/line based ICQ client with many features
 DescDetail: <<

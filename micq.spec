@@ -1,5 +1,5 @@
 %define name		micq
-%define version	0.4.10.3
+%define version	0.4.10.4
 %define release	1
 
 Summary:		text/line based ICQ client with many features
@@ -32,6 +32,10 @@ Authors: Matthew D. Smith (deceased)
          Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 
 %changelog
+* Mon Sep 22 2003 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+- new upstream bug fix release 0.4.10.4
+- fixes remote DoS
+
 * Mon May 13 2003 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 - new upstream bug fix release 0.4.10.3
 
@@ -62,7 +66,7 @@ rm -rf $RPM_BUILD_ROOT
 %setup -q -n %{name}-%{version}
 
 %build
-%configure --disable-dependency-tracking CFLAGS=-O4
+%configure --disable-dependency-tracking --enable-tcl --enable-ssl CFLAGS=-O4
 make
 
 %install
@@ -81,7 +85,7 @@ rm -rf "${RPM_BUILD_ROOT}"
 
 %files
 %defattr(-,root,root,0755)
-%doc NEWS AUTHORS FAQ README TODO COPYING
+%doc NEWS AUTHORS FAQ README TODO COPYING COPYING-GPLv2
 %doc doc/README.i18n doc/README.logformat doc/icq091.txt doc/icqv7.txt
 %{_bindir}/*
 %{_datadir}/micq

@@ -1,5 +1,13 @@
 -*- coding: utf-8 -*-
 
+2003-09-22 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
+	* apply Roman's patch to fix SSL
+	* rewrite SSL hand-shake to be non-blocking
+	* fix SSL for invisible
+	* use different indicator for SSL encrypted messages and in
+	  the contact list display
+	* a few compile and packaging fixes for woody
+	* Release as 0.4.10.4.
 
 2003-09-19 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
 	* add missing/undocumented/broken peer deny command,
