@@ -89,7 +89,7 @@ Extra *ExtraSet (Extra *extra, UDWORD type, UDWORD value, const char *text)
     tmp->text = text ? strdup (text) : NULL;
     if (!old)
     {
-        Debug (DEB_EXTRA, "<*** %p (%04x: '%s' %08lx)", tmp, type, tmp->text ? tmp->text : "", value);
+        Debug (DEB_EXTRA, "<*** %p (%04lx: '%s' %08lx)", tmp, type, tmp->text ? tmp->text : "", value);
         return tmp;
     }
     old->more = tmp;
