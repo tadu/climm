@@ -680,7 +680,7 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
         if (~cont->flags & CONT_SEENAUTO && strlen (text) && strcmp (text, ExtraGetS (event->extra, EXTRA_MESSAGE)))
         {
             IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (NULL,
-                      EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
+                      EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
                       EXTRA_MESSAGE, MSG_AUTO, text));
             cont->flags |= CONT_SEENAUTO;
         }

@@ -260,7 +260,12 @@ used.
 .B \(Fo\(Fo\(Fo
 and
 .B \(Fc\(Fc\(Fc
-mark messages sent via a direct connection; if an outgoing message is not
+mark messages sent via a direct connection. If the SSL extension has been
+compiled in and this direct connection has SSL established,
+.B \(Fo%\(Fo
+and
+.B \(Fc%\(Fc
+is used instead. If an outgoing message is not
 acknowledged by the peer for some time, it is printed marked
 .BR === .
 .B \(Fo<<
@@ -275,6 +280,8 @@ and
 .B >>>
 mark icq5 messages, which can be so called type-1, type-4 or offline
 message. These kind of messages are not acknowledged.
+Note that in locales that do not have the \(Fo and \(Fc characters,
+{ and } are used instead)
 .br
 A message is first tried to be sent via a pre-existing direct connection; if
 none is established, one is initiated in the background for further
@@ -421,6 +428,9 @@ display another column for direct connection flags. If the first column would be
 it will be displayed in the first contact for all of those commands unless it's
 .BR ^ .
 .TP
+.B %
+The SSL extension is compiled in, and a direct connection using SSL to this
+contact is established.
 .B &
 A direct connection to this contact is established.
 .TP
@@ -744,6 +754,10 @@ with the given ID
 .IR id
 with the reason
 .IR reason .
+.TP
+.BR ssl \ contact
+Request SSL encryption from
+.IR contact .
 .RE
 .TP
 .BI login \ [...]

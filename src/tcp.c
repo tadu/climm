@@ -55,6 +55,12 @@
 #include <winsock2.h>
 #endif
 
+#ifdef ENABLE_SSL
+#define EXTRA_ORIGIN_dcssl (peer->ssl_status == SSL_STATUS_OK ? EXTRA_ORIGIN_ssl : EXTRA_ORIGIN_dc)
+#else
+#define EXTRA_ORIGIN_dcssl EXTRA_ORIGIN_dc
+#endif
+
 #ifdef ENABLE_PEER2PEER
 
 static void        TCPDispatchPeer    (Connection *peer);
@@ -638,8 +644,10 @@ static void TCPDispatchPeer (Connection *peer)
 
                 default:
                     /* Store the event in the recv queue for handling later */            
-                    QueueEnqueueData (peer, QUEUE_TCP_RECEIVE, seq_in,
-                                      0, pak, cont->uin, NULL, &TCPCallBackReceive);
+                    QueueEnqueueData (peer, QUEUE_TCP_RECEIVE, seq_in, 0, pak,
+                                      cont->uin, ExtraSet (NULL, EXTRA_ORIGIN,
+                                                           EXTRA_ORIGIN_dcssl, NULL),
+                                      &TCPCallBackReceive);
 
                     peer->our_seq--;
                 break;
@@ -1609,6 +1617,7 @@ static void TCPCallBackReceive (Event *event)
     UWORD cmd, type, seq, port /*, unk*/;
     UDWORD /*len,*/ status /*, flags, xtmp1, xtmp2, xtmp3*/;
     const char *e_msg_text;
+    int origin = ExtraGet (event->extra, EXTRA_ORIGIN);
 /*    UWORD e_msg_type;*/
 
     if (!(peer = event->conn))
@@ -1659,11 +1668,11 @@ static void TCPCallBackReceive (Event *event)
             {
                 case MSG_NORM:
                 case MSG_URL:
-                    IMIntMsg (cont, peer, NOW, STATUS_OFFLINE, INT_MSGACK_DC, e_msg_text, NULL);
+                    IMIntMsg (cont, peer, NOW, STATUS_OFFLINE, origin == EXTRA_ORIGIN_dc ? INT_MSGACK_DC : INT_MSGACK_SSL, e_msg_text, NULL);
                     if (~cont->flags & CONT_SEENAUTO && strlen (tmp) && strcmp (tmp, e_msg_text))
                     {
                         IMSrvMsg (cont, peer, NOW, ExtraSet (ExtraSet (NULL,
-                                  EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
+                                  EXTRA_ORIGIN, origin, NULL),
                                   EXTRA_MESSAGE, MSG_AUTO, tmp));
                         cont->flags |= CONT_SEENAUTO;
                     }
@@ -1676,7 +1685,7 @@ static void TCPCallBackReceive (Event *event)
                 case MSGF_GETAUTO | MSG_GET_FFC:
                 case MSGF_GETAUTO | MSG_GET_VER:
                     IMSrvMsg (cont, peer, NOW, ExtraSet (ExtraSet (ExtraSet (NULL,
-                              EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
+                              EXTRA_ORIGIN, origin, NULL),
                               EXTRA_STATUS, status & ~MSGF_GETAUTO, NULL),
                               EXTRA_MESSAGE, type, tmp));
                     break;
@@ -1760,7 +1769,6 @@ static void TCPCallBackReceive (Event *event)
 
         case TCP_CMD_MESSAGE:
             ack_pak = PacketTCPC (peer, TCP_CMD_ACK);
-            event->extra = ExtraSet (event->extra, EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL);
             oldevent = QueueEnqueueData (event->conn, QUEUE_ACKNOWLEDGE, rand () % 0xff,
                          (time_t)-1, ack_pak, cont->uin, NULL, &PeerCallbackReceiveAdvanced);
             SrvReceiveAdvanced (event->conn->parent->parent, event, event->pak, oldevent);

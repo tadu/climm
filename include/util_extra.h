@@ -36,5 +36,6 @@ void        ExtraD     (Extra *extra);
 #define EXTRA_ORIGIN_v5    0x1
 #define EXTRA_ORIGIN_v8    0x2
 #define EXTRA_ORIGIN_dc    0x3
+#define EXTRA_ORIGIN_ssl   0x4
 
 #endif /* MICQ_UTIL_EXTRA_H */

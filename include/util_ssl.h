@@ -22,6 +22,7 @@ void ssl_disconnect (Connection *conn);
 int check_ssl_init ();
 int ssl_supported (Connection *c);
 int ssl_connect (Connection *c, BOOL is_client);
+int ssl_handshake (Connection *conn);
 const char *ssl_strerror (int error);
 BOOL TCPSendSSLReq (Connection *list, Contact *cont);
 
@@ -31,6 +32,7 @@ BOOL TCPSendSSLReq (Connection *list, Contact *cont);
 #define SSL_STATUS_INIT     3       /* SSL handshake may start */
 #define SSL_STATUS_CLOSE    4       /* SSL session to be terminated */
 #define SSL_STATUS_REQUEST  5       /* SSL session to be requested */
+#define SSL_STATUS_HANDSHAKE 6      /* SSL session is being hand shaked */
 
 #define LICQ_WITHSSL        0x7D800000  /* taken from licq 1.2.7 */
 

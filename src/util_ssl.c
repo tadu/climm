@@ -37,6 +37,7 @@
 
 #include <gnutls/gnutls.h>
 #include <string.h>
+#include <errno.h>
 
 #ifndef ENABLE_TCL
 #define TCLMessage(from, text) {}
@@ -75,6 +76,9 @@ static int ssl_init_ok;
 int SSLInit ()
 {
     int ret;
+#ifndef HAVE_DH_GENPARAM2
+    gnutls_datum p1, p2;
+#endif
 
     ssl_init_ok = 0;
 
@@ -90,9 +94,16 @@ int SSLInit ()
     ret = gnutls_dh_params_init (&dh_parm);
     SSL_CHECK_SUCCESS_0_OK (ret, -1, "DH param init", "[server]");
 
-#if 0
+#ifdef HAVE_DH_GENPARAM2
     ret = gnutls_dh_params_generate2 (dh_parm, DH_OFFER_BITS);
     SSL_CHECK_SUCCESS_0_OK (ret, -1, "DH param generate2", "[server]");
+#else
+    ret = gnutls_dh_params_generate (&p1, &p2, DH_OFFER_BITS);
+    SSL_CHECK_SUCCESS_0_OK (ret, -1, "DH param generate", "[server]");
+    ret = gnutls_dh_params_set (dh_parm, p1, p2, DH_OFFER_BITS);
+    SSL_CHECK_SUCCESS_0_OK (ret, -1, "DH param set", "[server]");
+    free (p1.data);
+    free (p2.data);
 #endif
 
     gnutls_anon_set_server_dh_params (server_cred, dh_parm);
@@ -135,7 +146,7 @@ int ssl_supported (Connection *conn)
     /* Caveat: if we are server, contact is our own contact, not the peers!
      *         how can we get the peers contact/CAPs? 
      * Note: we never initialize SSL for incoming direct connections yet
-     *        in order to avoid mutual SSL init trials among micq peers.
+     *        in order to avoid mutual SSL init trials among mICQ peers.
      */
     if (!contact || !(HAS_CAP(contact->caps, CAP_MICQ) || (HAS_CAP(contact->caps, CAP_LICQ) && contact->dc && (contact->dc->id1 & 0xFFFF0000) == LICQ_WITHSSL)))
     {
@@ -161,14 +172,15 @@ int ssl_connect (Connection *conn, BOOL is_client)
 {
     int ret;
     int kx_prio[2] = { GNUTLS_KX_ANON_DH, 0 };
-    Contact *contact = ContactUIN (conn, conn->uin);    
 
+    Debug (DEB_SSL, "ssl_connect");
     if (!ssl_init_ok || (conn->ssl_status != SSL_STATUS_NA && conn->ssl_status != SSL_STATUS_INIT && conn->ssl_status != SSL_STATUS_REQUEST))
     {
         TCLEvent ("ssl", s_sprintf ("%lu failed precondition", contact->uin));
         return 0;
     }    
     conn->ssl_status = SSL_STATUS_FAILED;
+    conn->connect = 1;
 
     ret = gnutls_init (&conn->ssl, is_client ? GNUTLS_CLIENT : GNUTLS_SERVER);
     if (ret)
@@ -190,21 +202,44 @@ int ssl_connect (Connection *conn, BOOL is_client)
     
     gnutls_transport_set_ptr (conn->ssl, (gnutls_transport_ptr)conn->sok); /* return type void */
 
-    ret = GNUTLS_E_AGAIN;
-    while (ret == GNUTLS_E_AGAIN || ret == GNUTLS_E_INTERRUPTED)
-        ret = gnutls_handshake (conn->ssl);
+    return ssl_handshake (conn) != 0;
+}
+
+int ssl_handshake (Connection *conn)
+{
+    Contact *contact = ContactUIN (conn, conn->uin);    
+    int ret;
+
+    ret = gnutls_handshake (conn->ssl);
+    Debug (DEB_SSL, "handshake %d (%d,%d)", ret, GNUTLS_E_AGAIN, GNUTLS_E_INTERRUPTED);
+    if (ret == GNUTLS_E_AGAIN || ret == GNUTLS_E_INTERRUPTED)
+    {
+        conn->ssl_status = SSL_STATUS_HANDSHAKE;
+        conn->connect |= CONNECT_SELECT_R | CONNECT_SELECT_W;
+        return 1;
+    }
 
     if (ret)
+    {
         TCLEvent ("ssl", s_sprintf ("%lu failed handshake", contact->uin));
 
-    SSL_CHECK_SUCCESS_0_OK (ret, 0, "handshake", is_client ? "[client]" : "[server]");
+        SSL_FAIL (s_sprintf ("%s %s", "handshake", gnutls_strerror (ret)), ret);
+        conn->ssl_status = SSL_STATUS_FAILED;
+        TCPClose (conn);
+        conn->connect = 0;
+        return 0;
+    }
 
     conn->ssl_status = SSL_STATUS_OK;
-    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (contact->nick), contact->nick, COLNONE);
-    M_printf (i18n (2375, "SSL handshake ok\n"));
+    conn->connect = CONNECT_OK | CONNECT_SELECT_R;
+    if (prG->verbose)
+    {
+        M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (contact->nick), contact->nick, COLNONE);
+        M_printf (i18n (2375, "SSL handshake ok\n"));
+    }
     TCLEvent ("ssl", s_sprintf ("%lu ok", contact->uin));
 
-    return 1;
+    return 2;
 }
 
 /*
@@ -214,11 +249,24 @@ int ssl_connect (Connection *conn, BOOL is_client)
  */
 int ssl_sockread (Connection *conn, UBYTE *data, UWORD len_p)
 {
-    int len;
+    int len, rc;
     Contact *contact = ContactUIN (conn, conn->uin);    
     
+    if (conn->ssl_status == SSL_STATUS_HANDSHAKE)
+    {
+        ssl_handshake (conn);
+        errno = EAGAIN;
+        return -1;
+    }
     if (conn->ssl_status != SSL_STATUS_OK)
-        return sockread (conn->sok, data, len_p);
+    {
+        len = sockread (conn->sok, data, len_p);
+        rc = errno;
+        if (!len && !rc)
+            rc = ECONNRESET;
+        errno = rc;
+        return len;
+    }
 
     len = gnutls_record_recv (conn->ssl, data, len_p);
     if (len > 0)
@@ -228,6 +276,11 @@ int ssl_sockread (Connection *conn, UBYTE *data, UWORD len_p)
         SSL_FAIL (s_sprintf (i18n (2376, "SSL read from %s [ERR=%d]: %s"), 
                   contact->nick, len, gnutls_strerror (len)), len);
         ssl_disconnect (conn);
+    }
+    if (!len)
+    {
+        errno = EAGAIN;
+        len = -1;
     }
     return len;
 }
@@ -242,6 +295,11 @@ int ssl_sockwrite (Connection *conn, UBYTE *data, UWORD len_p)
     int len;
     Contact *contact = ContactUIN (conn, conn->uin);    
     
+    if (conn->ssl_status == SSL_STATUS_HANDSHAKE)
+    {
+        ssl_handshake (conn);
+        return 0;
+    }
     if (conn->ssl_status != SSL_STATUS_OK)
         return sockwrite (conn->sok, data, len_p);
 
@@ -316,8 +374,3 @@ BOOL TCPSendSSLReq (Connection *list, Contact *cont)
     return TCPSendMsg (list, cont, "", MSG_SSL_OPEN);
 }                      
 #endif /* ENABLE_SSL */
-
-
-
-
-

@@ -1117,3 +1117,6 @@
 2375:SSL handshake ok\n
 2376:SSL read from %s [ERR=%d]: %s
 2377:SSL write to %s [ERR=%d]: %s
+2378:peer ssl <nick>   - initiate SSL handshake.
+2379:»%»
+2380:«%«

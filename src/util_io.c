@@ -772,7 +772,7 @@ Packet *UtilIOReceiveTCP (Connection *conn)
             {
                 M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
 #ifdef ENABLE_SSL
-                if(conn->ssl_status == SSL_STATUS_OK)
+                if (conn->ssl_status == SSL_STATUS_OK)
                     M_printf (i18n (2373, "Error while reading from socket (SSL): %s (%d)\n"), ssl_strerror (rc), rc);
                 else    
 #endif /* ENABLE SSL */

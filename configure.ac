@@ -37,7 +37,7 @@ AC_ARG_ENABLE([remote], AC_HELP_STRING([--disable-remote], [disable remote contr
               ac_arg_use_remote=$enableval, ac_arg_use_remote=auto)
 AC_ARG_ENABLE([tcl], AC_HELP_STRING([--enable-tcl], [enable Tcl scripting (EXPERIMENTAL)]),
               ac_arg_use_tcl=$enableval, ac_arg_use_tcl=no)
-AC_ARG_ENABLE([ssl], AC_HELP_STRING([--enable-ssl], [enable SSL encryption (EXPERIMENTAL BROKEN)]),
+AC_ARG_ENABLE([ssl], AC_HELP_STRING([--enable-ssl], [enable SSL encryption (EXPERIMENTAL)]),
               ac_arg_use_ssl=$enableval, ac_arg_use_ssl=no)
 
 # Checks for libraries.
@@ -62,6 +62,7 @@ if test "x$ac_arg_use_ssl" != "xno"; then
   if test "x$ac_arg_use_ssl" = "xyes"; then
     LIBS="$LIBGNUTLS_LIBS $LIBS"
     CFLAGS="$LIBGNUTLS_CFLAGS $CLFAGS"
+    AC_CHECK_FUNC(gnutls_dh_params_generate2, [AC_DEFINE(HAVE_DH_GENPARAM2, 1, [Whether new DH prime generator is available])],)
   fi
 fi
 

@@ -984,6 +984,9 @@ static JUMP_F(CmdUserPeer)
         else if (!strcmp (arg1, "files"))  data = 5;
         else if (!strcmp (arg1, "accept")) data = 16 + 6;
         else if (!strcmp (arg1, "deny"))   data = 16 + 7;
+#ifdef ENABLE_SSL        
+        else if (!strcmp (arg1, "ssl"))    data = 8;
+#endif /* ENABLE_SSL */      
         else if (!strcmp (arg1, "auto"))   data = 10;
         else if (!strcmp (arg1, "away"))   data = 11;
         else if (!strcmp (arg1, "na"))     data = 12;
@@ -1093,6 +1096,11 @@ static JUMP_F(CmdUserPeer)
                     return 0;
                 }
                 break;
+#ifdef ENABLE_SSL                
+            case 8:
+                TCPSendSSLReq (list, cont);
+                break;
+#endif /* ENABLE_SSL */
             case 10:
             case 11:
             case 12:
@@ -1118,9 +1126,12 @@ static JUMP_F(CmdUserPeer)
     M_print (i18n (2112, "                  - as = '/': strip path, as = '.': as is\n"));
     M_print (i18n (2320, "peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n"));
     M_print (i18n (2368, "peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n"));
+#ifdef ENABLE_SSL
+    M_print (i18n (2378, "peer ssl <nick>   - initiate SSL handshake."));
+#endif /* ENABLE_SSL */
 #else
     M_print (i18n (1866, "This version of mICQ is compiled without direct connection (peer to peer) support.\n"));
-#endif
+#endif /* ENABLE_PEER2PEER */
     return 0;
 }
 
@@ -1906,6 +1917,9 @@ static JUMP_F(CmdUserStatusDetail)
                              cont->flags  & CONT_IGNORE    ? '^' : ' ',
                              cont->dc ? cont->dc->version : 0,
                              peer ? (
+#ifdef ENABLE_SSL
+                              peer->connect & CONNECT_OK && peer->ssl_status == SSL_STATUS_OK ? '%' :
+#endif
                               peer->connect & CONNECT_OK   ? '&' :
                               peer->connect & CONNECT_FAIL ? '|' :
                               peer->connect & CONNECT_MASK ? ':' : '.' ) :
@@ -1921,6 +1935,9 @@ static JUMP_F(CmdUserStatusDetail)
                              cont->flags  & CONT_HIDEFROM  ? '-' :
                              cont->flags  & CONT_IGNORE    ? '^' :
                              !peer                         ? ' ' :
+#ifdef ENABLE_SSL
+                              peer->connect & CONNECT_OK && peer->ssl_status == SSL_STATUS_OK ? '%' :
+#endif
                              peer->connect & CONNECT_OK    ? '&' :
                              peer->connect & CONNECT_FAIL  ? '|' :
                              peer->connect & CONNECT_MASK  ? ':' : '.' ,
@@ -3228,7 +3245,7 @@ static JUMP_F(CmdUserConn)
                          conn->ssl_status == SSL_STATUS_OK ? " SSL" : "",
 #else
                          "",
-#endif
+#endif /* ENABLE_SSL */
                          cont && conn->uin ? cont->nick : "", conn->status,
                          conn->server ? conn->server : s_ip (conn->ip), conn->port,
                          conn->connect & CONNECT_FAIL ? i18n (1497, "failed") :

@@ -594,12 +594,16 @@ void IMOffline (Contact *cont, Connection *conn)
 #ifndef ENABLE_UTF8
 #define MSGTCPACKSTR   "\xbb\xbb\xbb"
 #define MSGTCPRECSTR   "\xab\xab\xab"
+#define MSGSSLACKSTR   "\xbb%\xbb"
+#define MSGSSLRECSTR   "\xab%\xab"
 #define MSGTYPE2ACKSTR ">>+"
 #define MSGTYPE2RECSTR "+<<"
 #else
 #define i19n i18n
 #define MSGTCPACKSTR   i19n (2289, "Â»Â»Â»")  /* i18n (2289, "»»»") */
 #define MSGTCPRECSTR   i19n (2290, "Â«Â«Â«")  /* i18n (2290, "«««") */
+#define MSGSSLACKSTR   i19n (2289, "Â»%Â»")  /* i18n (2379, "»%»") */
+#define MSGSSLRECSTR   i19n (2290, "Â«%Â«")  /* i18n (2380, "«%«") */
 #define MSGTYPE2ACKSTR i19n (2291, ">>Â»")    /* i18n (2291, ">>»") */
 #define MSGTYPE2RECSTR i19n (2292, "Â«<<")    /* i18n (2292, "«<<") */
 #endif
@@ -656,6 +660,12 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
             col = COLACK;
             line = s_sprintf ("%s%s %s\n", MSGTCPACKSTR, COLSINGLE, text);
             break;
+#ifdef ENABLE_SSL
+        case INT_MSGACK_SSL:
+            col = COLACK;
+            line = s_sprintf ("%s%s %s\n", MSGSSLACKSTR, COLSINGLE, text);
+            break;
+#endif
         case INT_MSGACK_V8:
         case INT_MSGACK_V5:
             col = COLACK;
@@ -766,7 +776,11 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
     e_msg_type = ExtraGet (extra, EXTRA_MESSAGE);
 
     carr = ExtraGet (extra, EXTRA_ORIGIN) == EXTRA_ORIGIN_dc ? MSGTCPRECSTR :
-           ExtraGet (extra, EXTRA_ORIGIN) == EXTRA_ORIGIN_v8 ? MSGTYPE2RECSTR : i18n (2296, "<<<");
+           ExtraGet (extra, EXTRA_ORIGIN) == EXTRA_ORIGIN_v8 ? MSGTYPE2RECSTR :
+#ifdef ENABLE_SSL
+           ExtraGet (extra, EXTRA_ORIGIN) == EXTRA_ORIGIN_ssl ? MSGSSLRECSTR :
+#endif
+           i18n (2296, "<<<");
 
     putlog (conn, stamp, cont,
         (e = ExtraFind (extra, EXTRA_STATUS)) ? e->data : STATUS_OFFLINE, 
