@@ -1346,6 +1346,8 @@ static JUMP_F(CmdUserStatusDetail)
     while (tuin)
         lenuin++, tuin /= 10;
     totallen = 1 + lennick + 1 + lenstat + 3 + lenid + 2;
+    if (prG->verbose)
+        totallen += 29;
     if (data & 2)
         totallen += 2 + 3 + 1 + 1 + lenuin + 24;
 
@@ -1371,7 +1373,7 @@ static JUMP_F(CmdUserStatusDetail)
         status = stati[i];
         for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
         {
-            char statbuf[100], verbuf[100];
+            char *stat, *ver = NULL, *ver2 = NULL;
             
             if (uin && cont->uin != uin)
                 continue;
@@ -1386,15 +1388,13 @@ static JUMP_F(CmdUserStatusDetail)
                 continue;
 
             peer = (sess && sess->assoc) ? SessionFind (TYPE_MSGDIRECT, cont->uin, sess->assoc) : NULL;
-
-            snprintf (statbuf, sizeof (statbuf), "(%s)", s_status (contr->status));
+            
+            stat = strdup (s_sprintf ("(%s)", s_status (contr->status)));
             if (contr->version)
-                snprintf (verbuf,  sizeof (verbuf), "[%s]", contr->version);
-            else
-                verbuf[0] = '\0';
+                ver  = strdup (s_sprintf ("[%s]", contr->version));
             if (prG->verbose)
-                M_printf ("<%08x:%08x:%08x>", (unsigned int)cont->id1,
-                          (unsigned int)cont->id2, (unsigned int)cont->id3);
+                ver2 = strdup (s_sprintf (" <%08x:%08x:%08x>", (unsigned int)cont->id1,
+                                           (unsigned int)cont->id2, (unsigned int)cont->id3));
 
             if (data & 2)
                 M_printf (COLSERVER "%c%c%c%1.1d%c" COLNONE " %*ld",
@@ -1412,7 +1412,7 @@ static JUMP_F(CmdUserStatusDetail)
                       contr->outside_ip && ~contr->outside_ip ? '^' : ' ',
                      lenuin, cont->uin);
 
-            M_printf (COLSERVER "%c" COLCONTACT "%-*s" COLNONE " " COLMESSAGE "%-*s" COLNONE " %-*s %s",
+            M_printf (COLSERVER "%c" COLCONTACT "%-*s" COLNONE " " COLMESSAGE "%-*s" COLNONE " %-*s%s %s",
                      data & 2                      ? ' ' :
                      cont->flags  & CONT_ALIAS     ? '+' :
                      contr->flags & CONT_TEMPORARY ? '#' :
@@ -1423,9 +1423,12 @@ static JUMP_F(CmdUserStatusDetail)
                      peer->connect & CONNECT_OK    ? '&' :
                      peer->connect & CONNECT_FAIL  ? '|' :
                      peer->connect & CONNECT_MASK  ? ':' : '.' ,
-                     lennick, cont->nick, lenstat + 2, statbuf, lenid + 2, verbuf,
+                     lennick, cont->nick, lenstat + 2, stat,
+                     lenid + 2, ver ? ver : "", ver2 ? ver2 : "",
                      contr->seen_time != -1L && data & 2 ? ctime ((time_t *) &contr->seen_time) : "\n");
-            
+            free (stat);
+            s_free (ver);
+            s_free (ver2);
         }
     }
     if (uin)
@@ -2140,7 +2143,7 @@ static JUMP_F(CmdUserRem)
     else
     {
         if (sess->ver > 6)
-            SnacCliRemcontact (sess, cont->uin);
+            SnacCliRemcontact (sess, uin);
         else
             CmdPktCmdContactList (sess);
         M_printf (i18n (2150, "Removed contact '%s' (%d).\n"),
