@@ -50,7 +50,7 @@
 static jump_f
     CmdUserChange, CmdUserRandom, CmdUserHelp, CmdUserInfo, CmdUserTrans,
     CmdUserAuto, CmdUserAlter, CmdUserAlias, CmdUserUnalias, CmdUserMessage,
-    CmdUserMessageNG, CmdUserResend, CmdUserPeek, CmdUserAsSession,
+    CmdUserMessageNG, CmdUserResend, CmdUserAsSession,
     CmdUserVerbose, CmdUserRandomSet, CmdUserIgnoreStatus, CmdUserSMS,
     CmdUserStatusDetail, CmdUserStatusWide, CmdUserStatusShort,
     CmdUserSound, CmdUserSoundOnline, CmdUserRegister, CmdUserStatusMeta,
@@ -61,6 +61,9 @@ static jump_f
     CmdUserOldSearch, CmdUserSearch, CmdUserUpdate, CmdUserPass,
     CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserPeer, CmdUserConn,
     CmdUserContact, CmdUserAnyMess, CmdUserGetAuto;
+#if 0
+static jump_f CmdUserPeek;
+#endif
 
 static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag);
 
@@ -3775,7 +3778,7 @@ static JUMP_F(CmdUserConn)
 {
     char *arg1 = NULL;
     int i;
-    UDWORD nr, j;
+    UDWORD nr;
     Connection *conn;
     
     if (!data)
@@ -3846,15 +3849,15 @@ static JUMP_F(CmdUserConn)
         case 2:
             nr = 0;
             if (!s_parseint (&args, &nr))
-                for (j = 0; (conn = ConnectionNr (j)); j++)
-                    if (conn->type & TYPEF_SERVER)
-                    {
-                        nr = j + 1;
-                        break;
-                    }
+            {
+                if (ConnectionFindNr (currconn))
+                    nr = ConnectionFindNr (currconn) + 1;
+                else
+                    nr = 1 + ConnectionFindNr (ConnectionFind (TYPEF_SERVER, 0, NULL));
+            }
 
             conn = ConnectionNr (nr - 1);
-            if (!conn)
+            if (!conn && !(conn = ConnectionFind (TYPEF_SERVER, nr, NULL)))
             {
                 M_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
                 return 0;
