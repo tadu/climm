@@ -8,3 +8,4 @@
 2003-01-07: 0.4.10: autosaving, autofingering, new event script handling, contact meta data saving, contact groups,
                     log file utils (from rtc), ^C handler, type-2 message sending, remote control via a FIFO,
                     send and receive UTF-8 encoded message, ASCII art mICQ logo, alias'ing of commands, history
+2003-01-24: 0.4.10.1: bug fix release
