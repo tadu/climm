@@ -739,14 +739,14 @@ int R_process_input (void)
         case 4:
             istat = 0;
             if (ch == '~')
-                R_goto (curlen);
+                R_goto (0);
             else
                 printf ("\a");
             break;
         case 5:
             istat = 0;
             if (ch == '~')
-                R_goto (0);
+                R_goto (curlen);
             else
                 printf ("\a");
             break;
