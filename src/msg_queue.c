@@ -79,8 +79,8 @@ Event *QueuePop ()
             queue->due = INT_MAX;
         else
             queue->due = queue->head->event->due;
-        Debug (DEB_QUEUE, i18n (1963, "popping type %d seq %08x at %p (pak %p)"),
-               event->type, event->seq, event, event->pak);
+        Debug (DEB_QUEUE, i18n (####, "popping type %s seq %08x at %p (pak %p)"),
+               QueueType (event->type), event->seq, event, event->pak);
         return event;
     }
     return NULL;
@@ -102,8 +102,8 @@ void QueueEnqueue (Event *event)
     entry->next = NULL;
     entry->event  = event;
 
-    Debug (DEB_QUEUE, i18n (1626, "enqueuing type %d seq %08x at %p (pak %p)"),
-           event->type, event->seq, event, event->pak);
+    Debug (DEB_QUEUE, i18n (####, "enqueuing type %s seq %08x at %p (pak %p)"),
+           QueueType (event->type), event->seq, event, event->pak);
 
     if (!queue->head)
     {
@@ -163,7 +163,8 @@ Event *QueueDequeue (UDWORD seq, UDWORD type)
 
     if (!queue->head)
     {
-        Debug (DEB_QUEUE, i18n (1964, "couldn't dequeue type %d seq %08x"), type, seq);
+        Debug (DEB_QUEUE, i18n (####, "couldn't dequeue type %s seq %08x"),
+               QueueType (type), seq);
         return NULL;
     }
 
@@ -179,8 +180,8 @@ Event *QueueDequeue (UDWORD seq, UDWORD type)
         else
             queue->due = queue->head->event->due;
 
-        Debug (DEB_QUEUE, i18n (1630, "dequeue type %d seq %08x at %p (pak %p)"),
-               type, seq, event, event->pak);
+        Debug (DEB_QUEUE, i18n (####, "dequeue type %s seq %08x at %p (pak %p)"),
+               QueueType (type), seq, event, event->pak);
         return event;
     }
     for (iter = queue->head; iter->next; iter = iter->next)
@@ -191,8 +192,8 @@ Event *QueueDequeue (UDWORD seq, UDWORD type)
             event = tmp->event;
             iter->next=iter->next->next;
             free (tmp);
-            Debug (DEB_QUEUE, i18n (1630, "dequeue type %d seq %08x at %p (pak %p)"),
-                   type, seq, event, event->pak);
+            Debug (DEB_QUEUE, i18n (####, "dequeue type %s seq %08x at %p (pak %p)"),
+                   QueueType (type), seq, event, event->pak);
             return event;
         }
     }
@@ -217,3 +218,27 @@ void QueueRun ()
             event->callback (event);
     }
 }
+
+/*
+ * Returns a string representation of the queue type.
+ */
+const char *QueueType (UDWORD type)
+{
+    static char buf[10];
+    switch (type)
+    {
+        case QUEUE_TYPE_FLAP:          return "FLAP";
+        case QUEUE_TYPE_SRV_KEEPALIVE: return "SRV_KEEPALIVE";
+        case QUEUE_TYPE_UDP_KEEPALIVE: return "UDP_KEEPALIVE";
+        case QUEUE_TYPE_TCP_RECEIVE:   return "TCP_RECEIVE";
+        case QUEUE_TYPE_CON_TIMEOUT:   return "CON_TIMEOUT";
+        case QUEUE_TYPE_TCP_TIMEOUT:   return "TCP_TIMEOUT";
+        case QUEUE_TYPE_TCP_RESEND:    return "TCP_RESEND";
+        case QUEUE_TYPE_UDP_RESEND:    return "UDP_RESEND";
+        case QUEUE_TYPE_PEER_FILE:     return "PEER_FILE";
+        case QUEUE_TYPE_PEER_RESEND:   return "PEER_RESEND";
+    }
+    snprintf (buf, sizeof (buf), "%lx", type);
+    return buf;
+}
+

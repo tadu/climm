@@ -29,7 +29,10 @@ void        QueueRun         ();
 Event      *QueuePeek        ();
 Event      *QueuePop         ();
 
+const char *QueueType   (UDWORD type);
+
 #define QUEUE_TYPE_PEER_RESEND   45
+#define QUEUE_TYPE_PEER_FILE     60
 #define QUEUE_TYPE_UDP_RESEND    43
 #define QUEUE_TYPE_TCP_RESEND    42
 #define QUEUE_TYPE_TCP_TIMEOUT   72
