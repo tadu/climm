@@ -32,7 +32,7 @@
 1032:debug: doppio pacchetto #%04lx tipo %04x (%s)\n
 1033:Pacchetti v8 dal server in arrivo:
 1034:Ho raggiunto il numero massimo di tentativi. Rinuncio.
-1036:Comando %s sconosciuto, scrivi /help per un aiuto.
+1036:Comando %s sconosciuto, scrivi help per un aiuto.
 1037:Messaggio inviato parzialmente.\n
 1038:Messaggio cancellato.\n
 1039:Il server sostiene che non siamo connessi.\n
@@ -376,7 +376,7 @@
 1422:Disconnetti mICQ ed esci.
 1424:Decide se attivare o meno la risposta automatica quando non sei in linea, o mostra le impostazioni.
 1425:Imposta il messaggio da inviare come risposta automatica per quello stato.
-1426:Crea un nuovo UIN con la passwrod specificata.
+1426:Crea un nuovo UIN con la password specificata.
 1427:Cambia il tuo stato in quello corrispondente al numero, o elenca i modi disponibili.
 1428:Aggiungi tutti i contatti in <contatti> al gruppo contatti <gruppo>.
 1429:Cerca un utente ICQ.
@@ -1008,7 +1008,7 @@
 2250:Il numero '%s' non è nel formato +<codice-nazione><prefisso><numero>.\n
 2251:Errore:
 2252:Un segnale sonoro è generato da %sbeep%sing.\n
-2253:Un segnale sonoro è generato eseguendo lo script %sevent%s.\n
+2253:Un segnale sonoro è generato eseguendo lo script %sevent%so.\n
 2254:Non viene mai generato un segnale sonoro.\n
 2255:Un segnale sonoro viene sempre generato per i contatti che si connettono, eseguendo lo script %sevent%so.\n
 2256:Un segnale sonoro viene sempre generato per i contatti che si disconnettono, eseguendo lo script %sevent%so.\n
@@ -1090,42 +1090,42 @@
 2339: rget - richiedi al server i meta dati dell'ultimo mittente\n
 2340:Trasferimento file '%s' respinto dal nodo: %s%s.\n
 2341:Rifiuto la richiesta di file '%s' (%ld bytes): %s%s.\n
-#2342:Scripting
-#2343:Scripting extensions.
-#2344:Execute Tcl script from <file>.
-#2345:Execute Tcl script in <string>.
-#2346:The following Tcl commands are supported:\n
-#2347:micq receive <script> [<contact>]
-#2348:Install hook to receive messages from UIN or nick, or all if omitted.
-#2349:Callback arguments: from message
-#2350:micq unreceive [<contact>]
-#2351:Uninstall message hook for UIN or nick.
-#2352:micq event <script>
-#2353:Install event hook. Callback arguments: type ...
-#2354:micq unevent
-#2355:Uninstall event hook.
-#2356:List all installed hooks. Format: <type> <command> <filter>.
-#2357:micq exec <cmd>
-#2358:Execute micq command.
-#2359:micq nick <uin>
-#2360:Find nick from <uin>.
-#2361:Wrong number of arguments for command '%s %s'. Expected %d.\n
-#2362:Wrong number of arguments. Try 'help'.
-#2363:Error: recursive 'micq exec' not allowed.
-#2364:No connection found.
-#2365:unknown command: %s
-#2366:TCL error in file %s: %s\n
-#2367:TCL error: %s\n
-#2368:peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n
-#2369:Refuse an incoming file transfer from <uin> or <nick>.
+2342:Scripting
+2343:Estensioni dello scripting.
+2344:Esegue uno script Tcl dal <file>.
+2345:Esegue uno script Tcl nella <stringa>.
+2346:I comandi Tcl supportati sono i seguenti:\n
+2347:micq receive <script> [<contatto>]
+2348:Installa gancio per ricevere messaggi da UIN o nick, or chiunque se omesso.
+2349:Richiama argomenti: dal messaggio
+2350:micq unreceive [<contatto>]
+2351:Disinstalla il messaggio gancio per UIN o nick.
+2352:micq event <script>
+2353:Install event hook. Callback arguments: type ...
+2354:micq unevent
+2355:Disinstalla il gancio per gli eventi.
+2356:Mostra tutti i ganci installati. Formato: <tipo> <comando> <filtro>.
+2357:micq exec <cmd>
+2358:Esegue un comando micq.
+2359:micq nick <uin>
+2360:Trova il nick da <uin>.
+2361:Numero di argomanti errato per il comando '%s %s'. Ne servono %d.\n
+2362:Numero di argomenti errato. Prova 'help'.
+2363:Errore: non ammetto 'micq exec' ricorsivo.
+2364:Non trovo nessuna connessione.
+2365:comando sconosciuto: %s
+2366:Errore TCL nel file %s: %s\n
+2367:Errore TCL: %s\n
+2368:peer deny <nick> [<id>] [<motivo>]\n                  - deny an incoming file transfer.\n
+2369:Rifiuta un trasferimento di file entrante da <uin> or <nick>.
 2370:%02d %-12s versione %d%s per %s (%lx), a %s:%ld %s\n
-#2371:SSL init failed.\n
-#2372:Could not send SSL request to %s\n
-#2373:Error while reading from socket (SSL): %s (%d)\n
-#2374:SSL error: %s [%d]\n
-#2375:SSL handshake ok\n
-#2376:SSL read from %s [ERR=%d]: %s
-#2377:SSL write to %s [ERR=%d]: %s
-#2378:peer ssl <nick>   - initiate SSL handshake.
+2371:Inizializzazione SSL fallita.\n
+2372:Non inviare richieste di SSL a %s\n
+2373:Errore mentre leggevo dal socket (SSL): %s (%d)\n
+2374:Errore SSL: %s [%d]\n
+2375:Stretta di mano SSL avvenuta\n
+2376:Lettura SSL da %s [ERR=%d]: %s
+2377:Scrittura SSL a %s [ERR=%d]: %s
+2378:peer ssl <nick>   - inizia una stretta di mano SSL.
 2379:»%»
 2380:«%«
