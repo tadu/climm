@@ -1463,7 +1463,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     {
         pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
         SrvMsgAdvanced   (pak, peer->our_seq, TCP_MSG_GREETING, 0, list->parent->status, "");
-        SrvMsgGreet (pak, 0x29, description, 0, 12345, "many, really many files");
+        SrvMsgGreet (pak, 0x29, description, 0, sumlen, "many, really many files");
     }
 
     peer->stat_real_pak_sent++;
