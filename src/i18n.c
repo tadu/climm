@@ -133,7 +133,7 @@ void i18nInit (const char *arg)
     s_free (prG->locale);
     prG->locale = new;
 
-#if HAVE_NL_LANGINFO
+#if HAVE_NL_LANGINFO && defined (CODESET)
     if (prG->enc_loc == ENC_AUTO && !prG->locale_broken)
     {
         const char *encnli = nl_langinfo (CODESET);
