@@ -3408,7 +3408,7 @@ static JUMP_F(CmdUserConn)
 
     if (!data)
     {
-        if (!(par = s_parse (&args)))            data = 1;
+        if (!(par = s_parse (&args)))          data = 1;
         else if (!strcmp (par->txt, "login"))  data = 2;
         else if (!strcmp (par->txt, "open"))   data = 2;
         else if (!strcmp (par->txt, "select")) data = 3;
@@ -3423,7 +3423,7 @@ static JUMP_F(CmdUserConn)
     {
         case 0:
             rl_print (i18n (1892, "conn               List available connections.\n"));
-            rl_print (i18n (2094, "conn login         Open first server connection.\n"));
+            rl_print (i18n (2094, "conn login         Open current/first server connection.\n"));
             rl_print (i18n (1893, "conn login <nr>    Open connection <nr>.\n"));
             rl_print (i18n (2156, "conn close <nr>    Close connection <nr>.\n"));
             rl_print (i18n (2095, "conn remove <nr>   Remove connection <nr>.\n"));
