@@ -14,6 +14,7 @@
 #include "util_ui.h"
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 
 Packet *PacketC (void)
 {

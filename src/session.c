@@ -13,6 +13,7 @@
 #include "cmd_pkt_v8.h"
 #include "tcp.h"
 #include "preferences.h"
+#include <string.h>
 #include <assert.h>
 
 #define listlen 10

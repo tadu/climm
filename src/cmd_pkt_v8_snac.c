@@ -18,6 +18,7 @@
 #include "cmd_pkt_v8_flap.h"
 #include "cmd_pkt_v8_tlv.h"
 #include <stdio.h>
+#include <string.h>
 #include <assert.h>
 
 typedef void (jump_snac_f)(struct Event *);

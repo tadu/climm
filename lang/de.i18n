@@ -53,8 +53,8 @@
 052:Öffne Version-5-Verbindung nach %s:%d... 
 053: Auf %s verbunden, warte auf Antwort.¶
 054: Verbindung verweigert auf Port: %d, Server: %s¶
-055: Konnte keinen Socket erstellen!"
-056: Socket erhalten, versuche zu verbinden...¶
+055:Konnte keinen Socket erstellen!
+056:Socket erhalten, versuche zu verbinden...¶
 057:Ausgehendes Server-Paket (Version 8):
 058:SNAC (%x,%x) [%s] Flags %x Referenz %x¶
 059:©1Eingehendes Server-Paket (Version 8):
@@ -78,7 +78,7 @@
 076:kompiliert am
 077:gewidmet Matthew D. Smith.
 078:Keine Übersetzung verfügbar.
-079:Übersetzung von Rico -mc- Glöckner und Rüdiger Kuhlmann, zuletzt geändert am 1.11.2001.¶
+079:Übersetzung von Rico -mc- Glöckner und Rüdiger Kuhlmann, zuletzt geändert am 3.4.2002.¶
 080:Konnte Übersetzung "%s" nicht laden.¶
 081:Deutsche Übersetzung erfolgreich geladen (%d Einträge).¶
 082:Versuche, neu zu verbinden... [Versuch %d von %d]¶
@@ -475,7 +475,7 @@
 461:Fitness
 462:Spiele
 463:Hobbies
-464: ICQ - Hilfe bereitstellen
+464:ICQ - Hilfe bereitstellen
 465:Internet
 466:Lebensstil
 467:Filme/Fernsehen
@@ -747,7 +747,7 @@
 734:Leider falsche Syntax, kann keinen Status finden.¶
 735:Benötige eine Nachricht.¶
 736:Leider falsche Syntax. Lies doch die Hilfe, Mensch!¶
-737:Automatische Antwort Einstellung dieser 4 Substantive¶
+737:Automatische Antwort¶
 738:Benötige eine Kommando, das umgenannt werden soll!¶
 739:Erstelle Nachricht an ©4%s©0:¶
 740:Erstelle Nachricht an ©2%d©0:¶

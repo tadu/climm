@@ -9,10 +9,10 @@ AC_CONFIG_SRCDIR([include/micq.h])
 
 AC_CANONICAL_HOST
 
-AM_INIT_AUTOMAKE(micq, 0.4.8+cvs-2002-03-07)
+AM_INIT_AUTOMAKE(micq, 0.4.8+cvs-2002-04-03)
 AM_CONFIG_HEADER(include/config.h)
 AC_DEFINE(MICQ_VERSION,VERSION,[mICQ's current version])
-AC_DEFINE(MICQ_VERSION_NUM,482,[mICQ's current version numerical])
+AC_DEFINE(MICQ_VERSION_NUM,483,[mICQ's current version numerical])
 
 # prefer 2.50 auto{conf,header}
 AM_MISSING_PROG(AUTOCONFNG, autoconf-2.50, $missing_dir)
@@ -62,6 +62,10 @@ for f in gethostbyname memset mkdir select socket atexit \
         AC_MSG_ERROR([Required function $f is missing. Sorry.])
     fi
 done
+
+if test "x$GCC" = xyes; then
+    CFLAGS="$CFLAGS -Wall"
+fi
 
 # autoconf 2.50 uses this syntax, but automake uses the vars in AC_OUTPUT
 # so this is commented out until automake is updated.
