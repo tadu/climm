@@ -257,9 +257,22 @@ as their last name. If no argument is given, ask for
 nick name, first name, last name, email address and a whole bunch of other data
 to search for.
 .TP
-.BI add \ nickname\ alias
+.BI add[group] \ group [nicklist]
+Add all nicks in
+.IR nicklist
+to the contact group
+.IR group ,
+which is created if it doesn't exist and the command is given as
+.BI addgroup .
+New for 0.4.9.5.
+.br
+Note: you need to
+.B save
+to make this persistent.
 .TP
-.BI add \ uin\ [nickname]
+.BI add[alias] \ nickname\ alias
+.TP
+.BI add[alias] \ uin\ nickname
 Add
 .I uin
 to your contact list as
@@ -268,23 +281,35 @@ or add alias
 .IR alias
 for
 .IR nickname .
-If
-.I nickname
-is not given, use
-.I uin
-as nickname.
+New (addalias) for 0.4.9.5.
 .br
 Note: you need to
 .B save
 to make this persistent.
 .TP
-.BI rem \ alias
-Remove the alias
-.IR alias .
-If
-.IR alias
-is the last alias for this contact, remove the contact completely.
+.BI rem[group] \ [all]\ group
+.TP
+.BI rem[group] \ group\ nicklist
+Remove all contacts in
+.IR nicklist
+from the contact group
+.IR group ,
+or remove the contact group completely if
+.B all
+is given.
+New for 0.4.9.5.
+Note: you need to
+.B save
+to make this persistent.
+.TP
+.BI rem[alias] \ [all]\ nicklist
+Remove the aliases in
+.IR nicklist .
+If any nick is the last alias for this contact, or if
+.B all
+is given, remove the contact completely.
 .br
+New (remalias) for 0.4.9.5.
 Note: you need to
 .B save
 to make this persistent.
@@ -320,6 +345,18 @@ List all people who are online in your contact list with more details.
 .TP
 .B ww
 List all people in your contact list with more details. Also shows all aliases.
+.TP
+.B eg
+List all people who are online in your contact list, sorted by contact groups. New for 0.4.9.5.
+.TP
+.B wg
+List all people in your contact list, sorted by contact groups. New for 0.4.9.5.
+.TP
+.B eeg
+List all people who are online in your contact list with more details, sorted by contact groups. New for 0.4.9.5.
+.TP
+.B wwg
+List all people in your contact list with more details. Also shows all aliases, sorted by contact groups. New for 0.4.9.5.
 .TP
 .B wide
 List all people who are in your contact list in a screen wide format.
