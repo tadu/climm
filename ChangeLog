@@ -1,8 +1,11 @@
 
-2001-05-24 Björn Hansson <hansson@netera.se>
+2001-05-24 Dmitri Lukyanov <ldv@sdsl-64-7-10-170.dsl.iad.megapath.net>
+	* lang/ru.i18n: Update language/country name translations again.
+
+2001-05-23 Björn Hansson <hansson@netera.se>
 	* lang/se.i18n: update.
 
-2001-05-24 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+2001-05-23 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	+ configure.in: prefer *-2.50 for autoconf, autoheader.
 	* configure.in: complain if necessary functions are missing.
 	* prepare: added to create generated files.
