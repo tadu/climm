@@ -1,10 +1,10 @@
-$Id$ -*- utf-8 -*-
+$Id$ -*- coding: utf-8 -*-
 
 mICQ's original Author was:
 	Matthew D. Smith
 
 current Maintainer:
-	Rüdiger Kuhlmann	<micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	Rüdiger Kuhlmann	<info@ruediger-kuhlmann.de>
 
 Contributors:
 
@@ -20,9 +20,10 @@ Contributors:
         Per Olofsson		<pelle@dsv.su.se>
 	    alias support (GPL >= v2)
 
-	Frederic Lamorce	<flamorce@dataradio.com>
-	    added Socks5 Support (for v5)
-	    
+	Frédéric Lamorce	<fred@bemail.org>	BeDevId #15453
+	    added UDP Socks5 support (for v5)
+	    /* BeDevId #15453, http://www.colba.net/~tiange/ */
+
 	Sergey Shkonda		<serg@bcs.zp.ua>
 	    mreadline
 

@@ -1,0 +1,87 @@
+
+FILE FORMAT
+
+The *.i18n files follow a simple file format. All empty lines or lines
+starting with a hash sign (#) are comments and thus ignored. All other lines
+should be translation entries, that consist of a four digit number, a colon
+or dot, and the translated string. The order of the strings does not matter
+for mICQ, but it does matter for the scripts updating these files. The first
+10 entries contain meta data:
+
+  1000: character encoding used for this file.
+  1001: the ISO 3166 country code, e.g. de for German.
+  1002: the current locale, e.g. de_DE for German/Germany.
+  1003: mICQ version this file was last updated for, e.g. 0-4-9-4.
+  1004: maintainers and contributors to this translation
+  1005: maintainer who last updated this file
+  1006: date of last update
+  1007: reserved (was character encoding)
+  1008: reserved
+  1009: reserved
+
+CREATING A NEW TRANSLATION WITHOUT CVS
+
+If you want to make a new translation, lets assume for Danish (language
+code: da), you start by copying the build.i18n file from the latest mICQ
+source package to a new file, da.i18n. Add a hash sign in front of every
+line of this file. Then translate each line, and for each line done, remove
+the leading hash sign. This way, all untranslated lines are commented out,
+while all translated lines are not. When you've done a significant part of
+the file, simply mail it to me (i18n@ruediger-kuhlmann.de, ICQ # 82274703).
+You may want to contact me when you start working on a translation as well.
+From this on, follow the directions for translation updates.
+
+UPDATING A TRANSLATION WITHOUT CVS
+
+Download the current translation file from the mICQ web page, namely from
+<URL:http://www.micq.org/documentation.shtml>, which is for the example
+given the file <URL:http://www.micq.org/doc/da.i18n>. DO THIS EVEN IF YOU
+HAVE A PREVIOUS VERSION OF THIS FILE. If I have made changes since you sent
+me the file the last time that you don't agree with, undo them now, but for
+heavens sake work on the file you downloaded from micq.org. Then update
+whatever needs updating. Often, same strings have changed. Then, instead of
+your translation, the file will now contain three lines: a line preceded by
+"#-#" containing your previous translation, a line preceded by "+"
+containing the previous English string, and a line preceded by "# #"
+containing the current English string. Thus, you can see what exactly has
+changed in the English string and whether any change and which is necessary
+for your translation. If, e.g., a typo in the English string is fixed, your
+translation doesn't need to be changed, but it needs to be checked anyway.
+When finished, mail the file to me as usual.
+
+CREATING A NEW TRANSLATION WITH CVS
+
+Get the newest CVS check-out from mICQ. Type "./i18n-template <cc>.i18n",
+where <cc> is the language code of the language you're going to translate
+to.
+
+UPDATING A TRANSLATION WITH CVS
+
+Update your CVS checkout to the current version. Watch for conflicts in the
+file you're maintaining, as you're the one who needs to fix them. Type
+"./i18n-template <cc>.i18n" to update the translation file; any <cc>.i18n~
+file needs to be removed first. See the section for updating without CVS
+about changed English strings. When finished updating, type "./i18n-format
+<cc>.i18n" to check for format string errors; any differences will be
+printed. You may want to remove all .*.fmt files if the output seems bogus.
+If there are still differences, you need to fix them. Remember: the order of
+format string interpolates cannot be changed! When you're done, check the
+file in (if you have CVS write access), send me a diff (cvs diff -u
+<cc>.i18n, DO NOT SEND ME ANY OTHER DIFF NOT GENERATED THIS WAY) or
+otherwise the complete file.
+
+PROGRAMMERS INFORMATION
+
+The scripts i18n-extract and i18n-number extract the current set of strings
+into build.i18n resp. number new strings without a number. They're usually
+called by typing "make lang" in the src/ subdirectory after new strings have
+been added. These script create backups.
+
+To add a new string to be translated, add
+    i18n (###, "new string")
+
+in your new code. Please never use tabs ("\t") and color codes (COLNONE,
+COL<whatever>), and use trailing white space only if you *absolutely* need
+them. Newlines ("\n") are fine. Never add an untranslated string. It is okay
+for patches to contain unnumbered new strings. It is not okay to have
+numbers that do not have the same english string.

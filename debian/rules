@@ -28,7 +28,7 @@ config.status: configure
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
-	./configure --host=$(DEB_HOST_GNU_TYPE) CFLAGS="-O4 $CFLAGS"\
+	./configure --host=$(DEB_HOST_GNU_TYPE) CFLAGS="-O4 $(CFLAGS)"\
 	  --build=$(DEB_BUILD_GNU_TYPE) \
 	  --prefix=/usr \
 	  --mandir=\$${prefix}/share/man \
