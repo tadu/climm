@@ -428,11 +428,23 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *p)
             /* 14 unknown bytes ignored */
             break;
         case META_SRV_UNKNOWN_270:
-            /* 0, counter like more-email-info? */
-            if (!PacketRead2 (p))
-                break;
+            /* ignored - obsoleted as of ICQ 2002 */
+            if (PacketRead1 (p))
+            {
+                UWORD nr = PacketReadB2 (p);
+                char *text = PacketReadLNTS (p);
+                M_printf ("%s: " COLSERVER "%04x = %d" COLNONE "\n",
+                          i18n (2195, "Obsolete number"), nr, nr);
+                M_printf ("%s: " COLSERVER "%s" COLNONE "\n",
+                          i18n (2196, "Obsolete text"), text);
+                free (text);
+            }
+            if ((i = PacketRead1 (p)))
+                M_printf ("%s: " COLSERVER "%d" COLNONE "\n",
+                          i18n (2197, "Obsolete byte"), i);
+            break;
         default:
-            M_printf ("%s: " COLSERVER "%04X" COLNONE "\n", 
+            M_printf ("%s: " COLSERVER "%04x" COLNONE "\n", 
                      i18n (1945, "Unknown Meta User response"), subtype);
             Hex_Dump (p->data + p->rpos, p->len - p->rpos);
             break;
