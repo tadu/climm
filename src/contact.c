@@ -108,7 +108,7 @@ Contact *ContactByUIN (UDWORD uin, BOOL create)
             cnt_contacts[i].flags &= ~CONT_ALIAS;
             return &cnt_contacts[i];
         }
-    if (!create)
+    if (!create || !uin)
         return NULL;
 
     return ContactAdd (uin, NULL);
