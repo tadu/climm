@@ -731,6 +731,8 @@ void ContactSetCap (Contact *cont, Cap *cap)
             cont->v1 = (ver >> 6) - 1;
             cont->v2 = ver & 0x1f;
             cont->v3 = cont->v4 = 0;
+            if (ver <= 0x108)
+                cont->caps &= ~(1 << CAP_UTF8);
         }
         else /* KOtzPEKE */
         {
