@@ -140,7 +140,7 @@ or
 To get debugging information, prefix it with
 .BR debug .
 To get funny messages, postfix it with
-.BR _fun .
+.BR @fun .
 .sp
 The files from ~/.micq/i18n/*.i18n take precedence over the global
 ones, while the "funny" ones take precedence over the standard ones.
@@ -172,6 +172,9 @@ ignore all non-contacts,
 .TP
 .BR delbs :
 interpret delete characters as backspace,
+.TP
+.BR funny :
+use funny messages,
 .TP
 .BR log :
 do logging,
@@ -365,10 +368,6 @@ Resend the last message to more
 Show the last message 
 received from
 .IR contact ,
-which can be a
-.I uin
-or a
-.IR nickname ,
 or from everyone who already sent a message.
 .TP
 .B tabs 
@@ -586,8 +585,7 @@ Creates a new user account with password
 Changes your icq password to
 .IR password . 
 .br
-Note: your password may not start with \('o (the byte
-0xf3).
+Note: your password may not start with \('o (the byte 0xf3).
 .br
 Note: you need to
 .B save
