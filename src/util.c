@@ -34,6 +34,7 @@ Changes :
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/utsname.h>
 #include <fcntl.h>
 #include <util_ui.h>
 #ifdef _WIN32
@@ -61,6 +62,8 @@ struct timeval
     long tv_usec;
 };
 #endif
+
+static char username[L_cuserid + SYS_NMLN] = "";
 
 /*
  * Return a string describing the status.
@@ -308,92 +311,213 @@ UWORD Chars_2_Word (UBYTE * buf)
     return i;
 }
 
+#define LOG_MAX_PATH 255
+#define DSCSIZ 192 /* Maximum length of log file descriptor lines. */
+
 /*************************************************************************
- *        Function: log_event
+ *        Function: putlog
  *        Purpose: Log the event provided to the log with a time stamp.
  *        Andrew Frolov dron@ilm.net
  *        6-20-98 Added names to the logs. Fryslan
  *************************************************************************/
-int log_event (UDWORD uin, int type, char *str, ...)
+int putlog (Session *sess, time_t stamp, UDWORD uin, 
+    UDWORD status, enum logtype level, UWORD type, char *str, ...)
 {
-    char symbuf[256], symbuf2[256];           /* holds the path for a sym link */
-    FILE *msgfd;
+    static const char deflogdir[] = "history/";
+    char buffer[LOG_MAX_PATH + 1],                   /* path to the logfile */
+        symbuf[LOG_MAX_PATH + 1];                     /* path of a sym link */
+    char *target = buffer;                        /* Target of the sym link */
+    const char *nick = ContactFindNick (uin);
+    FILE *logfile;
+    int fd;
     va_list args;
-    int k;
-    char buf[2048];             /* this should big enough - This holds the message to be logged */
-    char buffer[256], *b, *home;
-    time_t timeval;
-    struct stat statbuf;
+    size_t l, lcnt;
+    char buf[2048], *home;                   /* Buffer to compute log entry */
+    char *pos, *indic;
+    time_t now;
+    struct tm *utctime;
 
-    if (!(prG->flags & FLAG_LOG))
+    if (~prG->flags & FLAG_LOG)
         return 0;
 
-    if (!(prG->flags & FLAG_LOG_ONOFF) && type == LOG_ONLINE)
+    if (~prG->flags & FLAG_LOG_ONOFF 
+        && (level == LOG_ONLINE || level == LOG_CHANGE || level == LOG_OFFLINE))
         return 0;
+
+    switch (level)
+    {
+        case LOG_MISC: indic = "--"; break;
+        case LOG_SENT: indic = "->"; break;
+        case LOG_AUTO: indic = "=>"; break;
+        case LOG_RECVD: indic = "<-"; break;
+        case LOG_CHANGE: indic = "::"; break;
+        case LOG_REPORT: indic = ":!"; break;
+        case LOG_GUESS: indic = ":?"; break;
+        case LOG_ONLINE: indic = ":+"; break;
+        case LOG_OFFLINE: indic = ":-"; break;
+        case LOG_ACK: indic = "<#"; break;
+        case LOG_ADDED: indic = "<*"; break;
+        case LOG_LIST: indic = "*>"; break;
+        case LOG_EVENT: indic = "<="; break;
+        default: indic = "=="; break;
+    }
+    
+    pos = buf + DSCSIZ;
+
+    now = time (NULL);
+    va_start (args, str);
+    vsnprintf (pos, sizeof (buf) - DSCSIZ, str, args);
+    va_end (args);
+
+    l = strlen (pos);
+
+    for (lcnt = 0; pos < buf + DSCSIZ + l; lcnt += *pos++ == '\n')
+        if (pos[0] == '\r' && pos[1] == '\n')
+            *pos = ' ';
+
+    utctime = gmtime (&now);
+
+    snprintf (buf, DSCSIZ, "# %04d%02d%02d%02d%02d%02d%s%.0ld ",
+        utctime->tm_year + 1900, utctime->tm_mon + 1, 
+        utctime->tm_mday, utctime->tm_hour, utctime->tm_min, 
+        utctime->tm_sec, stamp != -1 ? "/" : "", 
+        stamp != -1 ? stamp - now : 0);
+
+    l = strlen (buf);
+
+    pos = strchr (nick, ' ') ? "\"" : "";
+    
+    switch (sess->type)
+    {
+        case TYPE_SERVER_OLD:
+            snprintf (buf + l, DSCSIZ - l, "[icq5:%lu]!%s %s %s%s%s[icq5:%lu+%lX]", 
+                sess->uin, username, indic, pos, nick ? nick : "", pos, uin, status);
+            break;
+        case TYPE_SERVER:
+            snprintf (buf + l, DSCSIZ - l, "[icq8:%lu]!%s %s %s%s%s[icq8:%lu+%lX]", 
+                sess->uin, username, indic, pos, nick ? nick : "", pos, uin, status);
+            break;
+        case TYPE_MSGLISTEN:
+        case TYPE_MSGDIRECT:
+            snprintf (buf + l, DSCSIZ - l, "%s %s %s%s%s[tcp:%lu+%lX]", username, 
+                indic, pos, nick ? nick : "", pos, uin, status);
+            break;
+        default:
+            snprintf (buf + l, DSCSIZ - l, "%s %s %s%s%s[tcp:%lu+%lX]", username, 
+                indic, pos, nick ? nick : "", pos, uin, status);
+            break;
+    }
+    l += strlen (buf + l);
+
+    if (lcnt != 0)
+    {
+        snprintf (buf + l, DSCSIZ - l, " +%u", lcnt);
+        l += strlen (buf + l);
+    }
+
+    if (type != 0xFFFF && type != NORM_MESS)
+    {
+        snprintf (buf + l, DSCSIZ - l, " (%u)", type);
+        l += strlen (buf + l);
+    }
+    buf[l++] = '\n';
+    pos = buf + DSCSIZ;
+    
+    memmove (buf + l, pos, strlen (pos) + 1);
 
     if (!prG->logplace)
     {
-        prG->logplace = malloc (strlen (PrefUserDir ()) + 10);
-        strcpy (prG->logplace, PrefUserDir ());
-        strcat (prG->logplace, "history/");
+        register const char *userdir = PrefUserDir ();
+        prG->logplace = strcat (strcpy (malloc (strlen (userdir) 
+            + sizeof (deflogdir)), userdir), deflogdir);
     }
 
-    timeval = time (0);
-    va_start (args, str);
-    snprintf (buf, sizeof (buf), "\n%-24.24s ", ctime (&timeval));
-    vsprintf (&buf[strlen (buf)], str, args);
-    va_end (args);
+    /* Check for '/' below doesn't work for empty strings. */
+    assert (*prG->logplace != '\0');
 
     if (prG->logplace[0] == '~' && prG->logplace[1] == '/' && (home = getenv ("HOME")))
         snprintf (buffer, sizeof (buffer), "%s%s", home, prG->logplace + 1);
     else
         snprintf (buffer, sizeof (buffer), "%s", prG->logplace);
+
+    target += strlen (buffer);
     
-    if (buffer[strlen (buffer) - 1] == '/')
+    if (target[-1] == '/')
     {
-        if (stat (buffer, &statbuf) == -1)
-        {
-            if (errno == ENOENT)
-                mkdir (buffer, 0700);
-            else
-                return -1;
-        }
+        if (mkdir (prG->logplace, S_IRWXU) == -1 && errno != EEXIST)
+            return -1;
+
+        snprintf (target, buffer + sizeof (buffer) - target, "%lu.log", uin);
+
 #if HAVE_SYMLINK
-        if (ContactFindNick (uin))
+        if (nick != NULL)
         {
-            snprintf (symbuf, sizeof (symbuf), "%snick-%s.log", buffer, ContactFindNick (uin));
-            snprintf (symbuf2, sizeof (symbuf2), "%ld.log", uin);
-            for (b = symbuf + strlen (buffer); (b = strchr (b, '/')); )
+            char *b = target - buffer + symbuf;
+
+            strncpy (symbuf, buffer, target - buffer);
+            snprintf (b, symbuf + sizeof (symbuf) - b, "nick-%s.log", nick);
+
+            while ((b = strchr (b, '/')) != NULL)
                 *b = '_';
-            symlink  (symbuf2, symbuf);
+            symlink (target, symbuf);
         }
 #endif
-        snprintf (buffer + strlen (buffer), sizeof (buffer) - strlen (buffer), "%ld.log", uin);
     }
 
-    if (!(msgfd = fopen (buffer, "a")))
+    if ((fd = open (buffer, O_CREAT | O_WRONLY | O_APPEND, S_IRUSR | S_IWUSR))
+        == -1)
     {
         fprintf (stderr, "\nCouldn't open %s for logging\n", buffer);
         return -1;
     }
-
-    if (strlen (buf))
+    if (!(logfile = fdopen (fd, "a")))
     {
-        fwrite ("<", 1, 1, msgfd);
-        k = fwrite (buf, 1, strlen (buf), msgfd);
-        if (k != strlen (buf))
-        {
-            perror ("\nLog file write error\n");
-            return -1;
-        }
-        fwrite (">\n", 1, 2, msgfd);
+        fprintf (stderr, "\nCouldn't open %s for logging\n", buffer);
+        close (fd);
+        return -1;
     }
-    fclose (msgfd);
 
-#if HAVE_CHMOD
-    chmod (buffer, 0600);
+    /* Write the log entry as a single chunk to cope with concurrent writes 
+     * of multiple mICQ instances.
+     */
+    fputs (buf, logfile);
+
+    /* Closes stream and file descriptor. */
+    fclose (logfile);
+
+    return 0;
+}
+
+void init_log (void)
+{
+    const char *me = getenv ("LOGNAME");
+    char *hostname = username;
+#ifndef HAVE_GETHOSTNAME
+    struct utsname name;
 #endif
-    return (0);
+
+    if (me != NULL)
+    {
+        strncpy (username, me, sizeof (username));
+        username[sizeof (username) - 1] = '\0';
+        hostname += strlen (username);
+    }
+
+    hostname++;
+#ifdef HAVE_GETHOSTNAME
+    if (gethostname (hostname, username + sizeof (username) - hostname) == 0)
+        hostname[-1] = '@';
+#else
+    if (uname (&name) == 0)
+    {
+        strncpy (hostname, name.nodename, 
+            username + sizeof (username) - hostname);
+        username[sizeof (username) - 1] = '\0';
+        hostname[-1] = '@';
+    }
+#endif
+
+    tzset ();
 }
 
 /*************************************************
@@ -517,5 +641,6 @@ UDWORD UtilCheckUIN (Session *sess, UDWORD uin)
         if (cont)
             cont->flags |= CONT_TEMPORARY;
     }
+
     return uin;
 }

@@ -349,8 +349,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             if (~prG->flags & FLAG_HERMIT || ContactFind (uin) != NULL)
             {
                 uiG.last_rcvd_uin = uin;
-                Do_Msg (sess, NULL, wdata, text, uin, 
-                    STATUS_OFFLINE, 0);
+                Do_Msg (sess, NOW, wdata, text, uin, STATUS_OFFLINE);
                 Auto_Reply (sess, uin);
             }
             free (text);

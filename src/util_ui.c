@@ -459,30 +459,46 @@ BOOL Debug (UDWORD level, const char *str, ...)
     return 1;
 }
 
+/* Outputs a given time stamp (or current time if it is NOW). */
+void Time_Output (time_t stamp)
+{
+    struct timeval p = {0L, 0L};
+    struct tm now;
+    struct tm *thetime;
+    char tbuf[32];
+
+#ifdef HAVE_GETTIMEOFDAY
+    if (gettimeofday (&p, NULL) == -1)
+    {
+        p.tv_usec = 0L;
+        p.tv_sec = time (NULL);
+    }
+#else
+    p.tv_sec = time (NULL);
+#endif
+
+    now = *localtime (&p.tv_sec);
+
+    thetime = stamp == NOW ? &now : localtime (&stamp);
+
+    strftime(tbuf, sizeof (tbuf), thetime->tm_year == now.tm_year 
+        && thetime->tm_mon == now.tm_mon && thetime->tm_mday == now.tm_mday
+        ? "%X" : "%a %b %d %X %Y", thetime);
+
+    if (prG->verbose > 7)
+        M_print ("%s.%.06d", tbuf, p.tv_usec);
+    else if (prG->verbose > 1)
+        M_print ("%s.%.03d", tbuf, p.tv_usec / 1000);
+    else
+        M_print ("%s", tbuf);
+}
+
 /*
  * Output the current time. Add µs for high enough debug level.
  */
 void Time_Stamp (void)
 {
-    struct timeval tv;
-    struct tm *thetime;
-
-#ifdef HAVE_GETTIMEOFDAY
-    tv.tv_sec = 0;
-    tv.tv_usec = 0;
-    gettimeofday (&tv, NULL);
-#else
-    tv.tv_usec = 0;
-    tv.tv_sec = time (NULL);
-#endif
-    thetime = localtime (&tv.tv_sec);
-
-    M_print ("%.02d:%.02d:%.02d", thetime->tm_hour, thetime->tm_min, thetime->tm_sec);
-    
-    if (prG->verbose > 7)
-        M_print (".%.06d", tv.tv_usec);
-    else if (prG->verbose > 1)
-        M_print (".%.03d", tv.tv_usec / 1000);
+    Time_Output (NOW);
 }
 
 /*
@@ -715,7 +731,8 @@ void UtilUIUserOnline (Session *sess, Contact *cont, UDWORD status)
     cont->status = status;
     cont->flags &= ~CONT_SEENAUTO;
 
-    log_event (cont->uin, LOG_ONLINE, "User logged on %s (%08lx)\n", ContactFindName (cont->uin), status);
+    putlog (sess, NOW, cont->uin, status, ~old ? LOG_CHANGE : LOG_ONLINE, 
+        0xFFFF, "");
  
     if ((cont->flags & (CONT_TEMPORARY | CONT_IGNORE)) || (prG->flags & FLAG_QUIET) || !(sess->connect & CONNECT_OK))
         return;
@@ -758,7 +775,7 @@ void UtilUIUserOnline (Session *sess, Contact *cont, UDWORD status)
  */
 void UtilUIUserOffline (Session *sess, Contact *cont)
 {
-    log_event (cont->uin, LOG_ONLINE, "User logged off %s\n", ContactFindName (cont->uin));
+    putlog (sess, NOW, cont->uin, STATUS_OFFLINE, LOG_OFFLINE, 0xFFFF, "");
 
     cont->status = STATUS_OFFLINE;
     cont->seen_time = time (NULL);

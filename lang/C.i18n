@@ -543,13 +543,12 @@
 1579:Enter company: 
 1584:Warning! Script command '%s' failed with exit value %d¶
 1585:Ack!!!!!!!  Bad packet¶
-1586:©4¶%s©0 has added you to their contact list.¶
+1586:¶©4%s©0 
 1587:Enter department: 
 1590:©4%10s©0 has requested your authorization to be added to their contact list.¶
 1591:Reason:
 1592:<%s> emailed you a message:¶
 1593:<%s> send you a web message:¶
-1594:        URL: %s©3%s©0¶
 1595:¶Contact List.¶©3============================================¶©0%d Contacts¶
 1596:[SOCKS] Can't find hostname %s: %s.
 1597:[SOCKS] Socket creation failed¶
@@ -668,7 +667,7 @@
 1749:UIN %d renamed to %s.¶
 1751:Nick %s removed.
 1754: Note: You need to 'save' to write new contact list to disc.¶
-1755:added you to their contact list.¶
+1755:has added you to their contact list.¶
 1756:¶Creating Connection...¶
 1757:Couldn't establish connection.¶
 1758:Sending Request...¶
@@ -890,7 +889,6 @@
 2024:Unknown protocol version %d for ICQ peer-to-peer protocol.¶
 2026:TCP cookie:
 2029:Protocol error on peer-to-peer connection
-2030:%04d-%02d-%02d %02d:%02d UTC
 2031:Connecting failed too often, giving up.¶
 2032:Scheduling v8 reconnect in %d seconds.¶
 2033:born today
@@ -978,3 +976,6 @@
 2120:auth deny <nick> <msg> - refuse authorization.¶
 2121:auth req  <nick> <msg> - request authorization.¶
 2122: Note: You need to 'save' to write new password to disc.¶
+2123:%sSyntax error%s: Too few arguments: '%s'¶
+2124:%sSyntax error%s: Not an integer: '%s'¶
+2125:        URL: %s%s%s¶

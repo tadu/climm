@@ -973,7 +973,7 @@ static JUMP_F (CmdUserMessage)
                 for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
                 {
                     temp = strdup (msg);
-                    icq_sendmsg (sess, cont->uin, temp, MRNORM_MESS);
+                    icq_sendmsg (sess, cont->uin, temp, NORM_MESS | MESSF_MASS);
                     free (temp);
                 }
             }
@@ -1018,7 +1018,7 @@ static JUMP_F (CmdUserMessage)
                     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
                     {
                         temp = strdup (msg);
-                        icq_sendmsg (sess, cont->uin, temp, MRNORM_MESS);
+                        icq_sendmsg (sess, cont->uin, temp, NORM_MESS | MESSF_MASS);
                         free (temp);
                     }
                 }
@@ -1089,7 +1089,7 @@ static JUMP_F (CmdUserMessage)
                 for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
                 {
                     temp = strdup (arg1);
-                    icq_sendmsg (sess, cont->uin, temp, MRNORM_MESS);
+                    icq_sendmsg (sess, cont->uin, temp, NORM_MESS | MESSF_MASS);
                     free (temp);
                 }
             }

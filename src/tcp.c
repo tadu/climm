@@ -1777,21 +1777,18 @@ static void TCPCallBackReceive (Event *event)
                              cont->nick, event->info);
                     if (~cont->flags & CONT_SEENAUTO && strlen (tmp))
                     {
-                        Do_Msg (event->sess->parent->parent, NULL, NORM_MESS, tmp, cont->uin, status, 2);
+                        Do_Msg (event->sess, NOW, type, tmp, cont->uin, status);
                         cont->flags |= CONT_SEENAUTO;
                     }
                     break;
 
-                    while (0) {  /* Duff-uesque */
-                case TCP_MSG_GET_AWAY: i = 3; break;
-                case TCP_MSG_GET_OCC:  i = 4; break;
-                case TCP_MSG_GET_NA:   i = 5; break;
-                case TCP_MSG_GET_DND:  i = 6; break;
-                case TCP_MSG_GET_FFC:  i = 7; break;
-                case TCP_MSG_GET_VER:  i = 8; }
-                    Do_Msg (event->sess->parent->parent, NULL, NORM_MESS, tmp, cont->uin, status, i);
-                    break;
-                    
+                case TCP_MSG_GET_AWAY:
+                case TCP_MSG_GET_OCC:
+                case TCP_MSG_GET_NA:
+                case TCP_MSG_GET_DND:
+                case TCP_MSG_GET_FFC:
+                case TCP_MSG_GET_VER:
+                    Do_Msg (event->sess, NOW, type, tmp, cont->uin, status);
                     break;
 
                 case TCP_MSG_FILE:
@@ -1969,7 +1966,7 @@ static void TCPCallBackReceive (Event *event)
                 case TCP_MSG_WEB_PAGER:
                 case TCP_MSG_EMAIL_PAGER:
                 case TCP_MSG_ADDUIN:
-                    Do_Msg (event->sess->parent->parent, NULL, type, tmp, cont->uin, STATUS_OFFLINE, 1);
+                    Do_Msg (event->sess, NOW, type, tmp, cont->uin, status);
 
                     TCPSendMsgAck (event->sess, seq, type, TRUE);
                     break;

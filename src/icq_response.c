@@ -472,7 +472,7 @@ void Recv_Message (Session *sess, Packet *pak)
 {
     struct tm stamp;
     UWORD type;
-    char buf[100], *text;
+    char *text;
 
     uiG.last_rcvd_uin = PacketRead4 (pak);
     stamp.tm_year     = PacketRead2 (pak) - 1900;
@@ -480,13 +480,15 @@ void Recv_Message (Session *sess, Packet *pak)
     stamp.tm_mday     = PacketRead1 (pak);
     stamp.tm_hour     = PacketRead1 (pak);
     stamp.tm_min      = PacketRead1 (pak);
+    /* kludge to convert that strange UTC-DST time to time_t */
+    stamp.tm_sec      = -timezone;
+    /* FIXME The following proabably only works correctly in Europe. */
+    stamp.tm_isdst    = -1;
     type              = PacketRead2 (pak);
     text              = PacketReadLNTS (pak);
 
-    snprintf (buf, sizeof (buf), i18n (2030, "%04d-%02d-%02d %02d:%02d UTC"),
-              stamp.tm_year + 1900, stamp.tm_mon + 1, stamp.tm_mday, 
-              stamp.tm_hour, stamp.tm_min);
-    Do_Msg (sess, buf, type, text, uiG.last_rcvd_uin, STATUS_OFFLINE, 0);
+    Do_Msg (sess, mktime (&stamp), type, text, 
+        uiG.last_rcvd_uin, STATUS_ONLINE);
     free (text);
 }
 
@@ -601,12 +603,11 @@ void Display_Ext_Info_Reply (Session *sess, Packet *pak, const char *uinline)
 /*
  * Central entry point for incoming messages.
  */
-void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, UDWORD uin, UDWORD tstatus, UBYTE origin)
+void Do_Msg (Session *sess, time_t stamp, UWORD type, const char *text, 
+    UDWORD uin, UDWORD tstatus)
 {
     char *cdata, *tmp = NULL;
     char *url_url, *url_desc;
-    const char *logstr;
-    char orgstr[20];
     char sep = ConvSep ();
     Contact *cont;
     int x, m;
@@ -616,21 +617,9 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
     TabAddUIN (uin);            /* Adds <uin> to the tab-list */
     UtilCheckUIN (sess, uin);
 
-    switch (origin)
-    {
-        default: snprintf (orgstr, sizeof (orgstr), "%s", MSGRECSTR);                        logstr = "inst"; break;
-        case 1:  snprintf (orgstr, sizeof (orgstr), "%s", MSGTCPRECSTR);                     logstr = "tcp "; break;
-        case 2:  snprintf (orgstr, sizeof (orgstr), "<%s> ", i18n (2108, "auto"));           logstr = "auto"; break;
-        case 3:  snprintf (orgstr, sizeof (orgstr), "<%s> ", i18n (1972, "away"));           logstr = "away"; break;
-        case 4:  snprintf (orgstr, sizeof (orgstr), "<%s> ", i18n (1973, "occupied"));       logstr = "occ "; break;
-        case 5:  snprintf (orgstr, sizeof (orgstr), "<%s> ", i18n (1974, "not available"));  logstr = "na  "; break;
-        case 6:  snprintf (orgstr, sizeof (orgstr), "<%s> ", i18n (1971, "do not disturb")); logstr = "dnd "; break;
-        case 7:  snprintf (orgstr, sizeof (orgstr), "<%s> ", i18n (1976, "free for chat"));  logstr = "ffc "; break;
-        case 8:  snprintf (orgstr, sizeof (orgstr), "<%s> ", i18n (2109, "version"));        logstr = "ver "; break;
-    }
-
-    log_event (uin, LOG_MESS, "You received %s message type %x from %s\n%s\n",
-               logstr, type, ContactFindName (uin), cdata);
+    putlog (sess, stamp, uin, tstatus, 
+        type == USER_ADDED_MESS ? LOG_ADDED : LOG_RECVD, type,
+        *cdata ? "%s\n" : "%s", cdata);
     
     cont = ContactFind (uin);
     if (cont && (cont->flags & CONT_IGNORE))
@@ -663,10 +652,7 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
     if (prG->sound & SFLAG_BEEP)
         printf ("\a");
 
-    if (timestr)
-        M_print ("%s", timestr);
-    else
-        Time_Stamp ();
+    Time_Output (stamp);
     M_print (" " CYAN BOLD "%10s" COLNONE " ", ContactFindName (uin));
     
     if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
@@ -685,17 +671,26 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
         cont->last_time = time (NULL);
     }
 
-    switch (type)
+    switch (type & ~MESSF_MASS)
     {
         case USER_ADDED_MESS:
-            tmp = strchr (cdata, sep);
-            if (tmp == NULL)
+            if (*cdata)
             {
-                M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
-                return;
+                tmp = strchr (cdata, sep);
+                if (tmp == NULL)
+                {
+                    M_print (i18n (1585, "Ack!!!!!!!  Bad packet\n"));
+                    return;
+                }
+                *tmp = '\0';
+                M_print (i18n (1586, "\n" COLCONTACT "%s" COLNONE " "), cdata);
             }
-            *tmp = 0;
-            M_print (i18n (1586, COLCONTACT "\n%s" COLNONE " has added you to their contact list.\n"), cdata);
+
+            M_print (i18n (1755, "has added you to their contact list.\n"));
+
+            if (tmp == NULL)
+                break;
+
             tmp++;
             cdata = tmp;
             tmp = strchr (tmp, sep);
@@ -810,7 +805,6 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
             M_print (COLMESSAGE "%s" COLNONE "\n", cdata);
             break;
         case URL_MESS:
-        case MRURL_MESS:
             url_desc = cdata;
             url_url = strchr (cdata, sep);
             if (url_url == NULL)
@@ -824,13 +818,13 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
                 url_url++;
             }
 
-            M_print ("%s" COLMESSAGE "%s" COLNONE "\n", orgstr, url_desc);
+            M_print ("%s" COLMESSAGE "%s" COLNONE "\n", sess->type 
+                     & TYPEF_ANY_SERVER ? MSGRECSTR : MSGTCPRECSTR, url_desc);
             Time_Stamp ();
-            M_print (i18n (1594, "        URL: %s" COLMESSAGE "%s" COLNONE "\n"),
-                     orgstr, url_url);
+            M_print (i18n (2125, "        URL: %s%s%s\n"), 
+                     COLMESSAGE, url_url, COLNONE);
             break;
         case CONTACT_MESS:
-        case MRCONTACT_MESS:
             tmp = strchr (cdata, sep);
             *tmp = 0;
             M_print (i18n (1595, "\nContact List.\n" COLMESSAGE "============================================\n" COLNONE "%d Contacts\n"),
@@ -851,10 +845,39 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
                 tmp++;
             }
             break;
+        case TCP_MSG_AUTO:
+            M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
+                i18n (2108, "auto"), cdata);
+            break;
+        case TCP_MSG_GET_AWAY: 
+            M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
+                i18n (1972, "away"), cdata);
+            break;
+        case TCP_MSG_GET_OCC:
+            M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
+                i18n (1973, "occupied"), cdata);
+            break;
+        case TCP_MSG_GET_NA:
+            M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
+                i18n (1974, "not available"), cdata);
+            break;
+        case TCP_MSG_GET_DND:
+            M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
+                i18n (1971, "do not disturb"), cdata);
+            break;
+        case TCP_MSG_GET_FFC:
+            M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
+                i18n (1976, "free for chat"), cdata);
+            break;
+        case TCP_MSG_GET_VER:
+            M_print ("<%s>" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
+                i18n (2109, "version"), cdata);
+            break;
         default:
             while (*cdata && (cdata[strlen (cdata) - 1] == '\n' || cdata[strlen (cdata) - 1] == '\r'))
                 cdata[strlen (cdata) - 1] = '\0';
-            M_print ("%s" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", orgstr, cdata);
+            M_print ("%s" COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n", 
+                sess->type & TYPEF_ANY_SERVER ? MSGRECSTR : MSGTCPRECSTR, cdata);
             break;
     }
 }

@@ -186,6 +186,7 @@ int main (int argc, char *argv[])
     prG = PreferencesC ();
     psG = PreferencesSessionC ();
     init_global_defaults ();
+    init_log ();
 
     i = i18nOpen ("!");
 

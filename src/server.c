@@ -45,14 +45,7 @@ void Auto_Reply (Session *sess, UDWORD uin)
      else
          return;
     
-    icq_sendmsg (sess, uin, temp, NORM_MESS);
-
-    if (ContactFindNick (uiG.last_rcvd_uin) != NULL)
-        log_event (uin, LOG_AUTO_MESS,
-                   "Sending an auto-reply message to %s\n", ContactFindNick (uin));
-    else
-        log_event (uin, LOG_AUTO_MESS,
-                   "Sending an auto-reply message to %d\n", uin);
+    icq_sendmsg (sess, uin, temp, AUTO_MESS);
 }
 
 void icq_sendurl (Session *sess, UDWORD uin, char *description, char *url)
@@ -67,7 +60,8 @@ void icq_sendmsg (Session *sess, UDWORD uin, char *text, UDWORD msg_type)
 {
     char *old;
 
-    log_event (uin, LOG_MESS, "You sent instant message to %s\n%s\n", ContactFindName (uin), text);
+    putlog (sess, NOW, uin, STATUS_ONLINE, 
+        msg_type == AUTO_MESS ? LOG_AUTO : LOG_SENT, msg_type, "%s\n", text);
 #ifdef TCP_COMM
     if (!sess->assoc || !TCPSendMsg (sess->assoc, uin, text, msg_type))
 #endif

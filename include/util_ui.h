@@ -1,9 +1,10 @@
 /* $Id$ */
 
-UWORD  Get_Max_Screen_Width();
+UWORD  Get_Max_Screen_Width ();
 SDWORD Echo_Off (void);
 SDWORD Echo_On (void);
 
+void   Time_Output (time_t stamp);
 void   Time_Stamp (void);
 void   M_print (const char *str, ...);
 int    M_pos ();

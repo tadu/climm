@@ -101,19 +101,20 @@ typedef struct PreferencesSession_s PreferencesSession;
 #define STATUS_FFC         STATUSF_FFC
 #define STATUS_ONLINE     0x00000000
 
+#define NOW -1
+
+#define MESSF_MASS              0x8000
+
+#define AUTO_MESS               0x0000
+#define NORM_MESS               0x0001
+#define URL_MESS                0x0004
 #define AUTH_REQ_MESS           0x0006
 #define AUTH_REF_MESS           0x0007
 #define AUTH_OK_MESS            0x0008
 #define USER_ADDED_MESS         0x000C
-#define URL_MESS                0x0004
 #define WEB_MESS                0x000d
 #define EMAIL_MESS              0x000e
-#define MASS_MESS_MASK          0x8000
-#define MRURL_MESS              0x8004
-#define NORM_MESS               0x0001
-#define MRNORM_MESS             0x8001
 #define CONTACT_MESS            0x0013
-#define MRCONTACT_MESS          0x8013
 
 #define INV_LIST_UPDATE         0x01
 #define VIS_LIST_UPDATE         0x02
@@ -148,9 +149,22 @@ typedef struct
 extern user_interface_state uiG;
 extern Preferences *prG;
 
-#define LOG_MESS 1
-#define LOG_AUTO_MESS 2
-#define LOG_ONLINE 3
-#define LOG_EVENT 4
+enum logtype
+{
+    LOG_MISC,    /* miscellaneous */
+    LOG_SENT,    /* sent message */
+    LOG_AUTO,    /* automatic reply */
+    LOG_RECVD,   /* received message */
+    LOG_CHANGE,  /* status change */
+    LOG_REPORT,  /* status report */
+    LOG_GUESS,   /* status guess */
+    LOG_ONLINE,  /* went online */
+    LOG_OFFLINE, /* went offline */
+    LOG_ACK,     /* message acknowedgment */
+    LOG_ADDED,   /* added to contact list by someone */
+    LOG_LIST,    /* added someone to the contact list */
+    LOG_EVENT    /* other event */
+};
+
 
 #include "i18n.h"

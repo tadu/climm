@@ -8,4 +8,4 @@ void Recv_Message (Session *sess, Packet *pak);
 void ack_srv (Session *sess, UDWORD seq);
 void Display_Info_Reply (Session *sess, Packet *pak, const char *uinline, unsigned int flags);
 void Display_Ext_Info_Reply (Session *sess, Packet *pak, const char *uinline);
-void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, UDWORD uin, UDWORD tstatus, UBYTE origin);
+void Do_Msg (Session *sess, time_t stamp, UWORD type, const char *text, UDWORD uin, UDWORD tstatus);

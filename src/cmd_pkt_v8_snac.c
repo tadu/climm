@@ -560,7 +560,8 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             return;
     }
 
-    Do_Msg (event->sess, NULL, type, txt, uin, tlv[6].len ? tlv[6].nr : STATUS_OFFLINE, 0);
+    Do_Msg (event->sess, NOW, type, txt, uin, tlv[6].len 
+        ? tlv[6].nr : STATUS_OFFLINE);
     Auto_Reply (event->sess, uin);
 
     if (text)
@@ -595,11 +596,11 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
 
     uin = PacketReadUIN (pak);
     Time_Stamp ();
-    M_print (" ");
+    M_print (" " COLCONTACT "%10s" COLNONE " ", ContactFindName (uin));
     M_print (i18n (1913, "Received server acknowledge for %s#%08lx:%08lx%s sent to %s%s%s.\n"),
              COLSERVER, mid1, mid2, COLNONE, COLCONTACT, ContactFindName (uin), COLNONE);
-    log_event (uin, LOG_EVENT, "Received ACK for #%08lx%08lx to %s\n",
-               mid1, mid2, ContactFindName (uin));
+    putlog (event->sess, NOW, uin, STATUS_OFFLINE, LOG_ACK, 0xFFFF, 
+        "%08lx%08lx\n", mid1, mid2);
 }
 
 /*
@@ -783,14 +784,8 @@ static JUMP_SNAC_F(SnacSrvAddedyou)
     PacketReadData (pak, NULL, PacketReadB2 (pak));
     /* TLV 1 ignored */
     uin = PacketReadUIN (pak);
-    Time_Stamp ();
-    M_print (" " COLCONTACT "%10s" COLNONE " ", ContactFindName (uin));
-    M_print (i18n (1755, "added you to their contact list.\n"));
-    log_event (uin, LOG_EVENT, "Added to the contact list by %s\n",
-               ContactFindName (uin));
-    /* Not using Do_Msg/USER_ADDED_MESS here because it's way too
-     * v5 specific.  --rtc
-     */
+
+    Do_Msg (event->sess, NOW, USER_ADDED_MESS, "", uin, STATUS_ONLINE);
 }
 /*
  * SRV_FROMOLDICQ - SNAC(15,3)
@@ -1121,6 +1116,7 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, const char *text, UDWORD type)
         case AUTH_REF_MESS:
             format = 4;
             break;
+        case AUTO_MESS:
         case NORM_MESS:
             format = 1;
             break;

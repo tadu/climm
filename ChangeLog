@@ -1,4 +1,8 @@
 
+2002-09-06 Peter Backes <rtc@gmx.de>
+	* Well-defined logging format.
+	* Message handling cleanup.
+
 2002-09-04 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* util_ui.c: UtilUIParse{,Int,Nick,Remainder}: new, quote
 	  arguments with " or \, detects intelligent nick names intelligently.

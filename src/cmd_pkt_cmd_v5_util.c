@@ -380,7 +380,7 @@ void UDPCallBackResend (Event *event)
             M_print (i18n (1830, "Discarding message to %s after %d send attempts.  Message content:\n"),
                      ContactFindName (tuin), event->attempts - 1);
 
-            if (type == URL_MESS || type == MRURL_MESS)
+            if ((type & ~MESSF_MASS) == URL_MESS)
             {
                 char *tmp = strchr (data, '\xFE');
                 if (tmp != NULL)
@@ -399,7 +399,7 @@ void UDPCallBackResend (Event *event)
                     M_print (i18n (1629, " URL:         " COLMESSAGE "%s" COLNONE), url_data);
                 }
             }
-            else if (type == NORM_MESS || type == MRNORM_MESS)
+            else if ((type & ~MESSF_MASS) == NORM_MESS)
             {
                 ConvUnixWin (data);
                 M_print (COLMESSAGE "%s", data);
