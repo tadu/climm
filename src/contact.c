@@ -45,6 +45,7 @@ static int            cnt_count = 0;
 #define CONTACTGROUP_NONCONTACTS (cnt_groups[1])
 
 #define BUILD_MIRANDA  0xffffffffL
+#define BUILD_MOBICQ   0xfffffffeL
 #define BUILD_STRICQ   0xffffff8fL
 #define BUILD_YSM      0xffffffabL
 #define BUILD_ARQ      0xffffff7fL
@@ -1020,6 +1021,9 @@ void ContactSetVersion (Contact *cont)
                 new = "Miranda";
                 if (dc->id2 & 0x80000000)
                     tail = " cvs";
+                break;
+            case BUILD_MOBICQ:
+                new = "MobICQ";
                 break;
             case BUILD_STRICQ:
                 new = "StrICQ";
