@@ -2,9 +2,6 @@ Summary:		text/line based ICQ client with many features
 Name:			micq
 Version:		0.4.10.6
 Release:		1
-Name:			%{name}
-Version:		%{version}
-Release:		%{release}
 Source:			%{name}-%{version}.tgz
 URL:			http://www.micq.org/
 Group:			Networking/ICQ
