@@ -19,7 +19,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#define i18nSLOTS  900
+/* use numbers 1000 ... 2999 */
+#define i18nSLOTS  2000
+#define i18nOffset 1000
 
 char *i18nStrings[i18nSLOTS] = { 0 };
 
@@ -119,7 +121,7 @@ int i18nAdd (FILE *i18nf, int debug, int *res)
         int i;
         char *p;
 
-        i = strtol (buf, &p, 10);
+        i = strtol (buf, &p, 10) - i18nOffset;
 
         if (p == buf || i < 0 || i >= i18nSLOTS || i18nStrings[i])
             continue;
@@ -169,8 +171,8 @@ const char *i18n (int i, const char *txt)
         txt = ++q;
     }
 
-    if (i >= 0 && i < i18nSLOTS)
-        if ((p = i18nStrings[i]))
+    if (i >= i18nOffset && i < i18nSLOTS + i18nOffset)
+        if ((p = i18nStrings[i - i18nOffset]))
             return p;
 
     return txt;
