@@ -1110,7 +1110,9 @@ void M_logo_clear ()
 
 #define chardiff(aa,bb)  (ENC(enc_loc) == ENC_UTF8 ? s_strnlen ((bb), (aa) - (bb)) : (aa) - (bb))
 
-#define USECOLOR(c)  ((prG->flags & FLAG_COLOR) ? ContactPrefStr (NULL, CO_COLORNONE + c) : "")
+#define USECOLOR(c)        col = ((prG->flags & FLAG_COLOR) ? ContactPrefStr (NULL, CO_COLORNONE + c) : "")
+#define USECOLORNONE       (colnone ? colnone : colnone = ((prG->flags & FLAG_COLOR) ? ContactPrefStr (NULL, CO_COLORNONE) : ""))
+#define USECOLORCONTACT    (colcontact ? colcontact : colcontact = ((prG->flags & FLAG_COLOR) ? ContactPrefStr (NULL, CO_COLORCONTACT) : ""))
 
 /*
  * Print a string to the output, interpreting color and indenting codes.
@@ -1119,7 +1121,8 @@ void M_print (const char *org)
 {
     const char *test, *save, *temp, *str, *para;
     char *fstr;
-    UBYTE isline = 0, ismsg = 0, col = CXNONE;
+    const char *colnone = NULL, *colcontact = NULL, *col;
+    UBYTE isline = 0, ismsg = 0;
     int i;
     int sw = Get_Max_Screen_Width () - IndentCount;
     
@@ -1132,6 +1135,7 @@ void M_print (const char *org)
         case ENC_LATIN9: para = "\xb6";  break;
         default:         para = "P";  break;
     }
+    col = USECOLORNONE;
 
     if (first)
     {
@@ -1178,7 +1182,7 @@ void M_print (const char *org)
                 str += c_offset (str, sw - CharCount);
                 if (isline)
                 {
-                    printf ("%s...%s", USECOLOR (CXCONTACT), USECOLOR (col));
+                    printf ("%s...%s", USECOLORCONTACT, col);
                     CharCount = 0;
                     free (fstr);
                     return;
@@ -1189,12 +1193,12 @@ void M_print (const char *org)
             {
                 if (isline)
                 {
-                    printf ("%s...%s\n", USECOLOR (CXCONTACT), USECOLOR (col));
+                    printf ("%s...%s\n", USECOLORCONTACT, col);
                     CharCount = 0;
                     free (fstr);
                     return;
                 }
-                printf ("\n%s%*s%s", M_getlogo (), IndentCount, "", USECOLOR (col));
+                printf ("\n%s%*s%s", M_getlogo (), IndentCount, "", col);
                 CharCount = 0;
             }
             printf ("%.*s", (int)(test - str), str);
@@ -1209,8 +1213,8 @@ void M_print (const char *org)
         if (isline && (*str == '\n' || *str == '\r'))
         {
             if (str[1])
-                printf ("%s%s..", USECOLOR (CXCONTACT), para);
-            printf ("%s\n", USECOLOR (col));
+                printf ("%s%s..", USECOLORCONTACT, para);
+            printf ("%s\n", col);
             CharCount = 0;
             free (fstr);
             return;
@@ -1219,7 +1223,7 @@ void M_print (const char *org)
         {
             if (!str[1] && ismsg)
             {
-                printf ("%s\n", USECOLOR (CXNONE));
+                printf ("%s\n", USECOLORNONE);
                 CharCount = 0;
                 IndentCount = 0;
                 free (fstr);
@@ -1228,7 +1232,7 @@ void M_print (const char *org)
         }
         else if (ismsg || isline)
         {
-            printf ("%s%c%s", USECOLOR (CXCONTACT), *str - 1 + 'A', USECOLOR (col));
+            printf ("%s%c%s", USECOLORCONTACT, *str - 1 + 'A', col);
             CharCount++;
             continue;
         }
@@ -1239,7 +1243,7 @@ void M_print (const char *org)
                 printf ("\b");
                 break;
             case '\n':
-                printf ("\n%s%*s%s", M_getlogo (), IndentCount, "", USECOLOR (col));
+                printf ("\n%s%*s%s", M_getlogo (), IndentCount, "", col);
                 CharCount = 0;
                 break;
             case '\r':
@@ -1276,8 +1280,6 @@ void M_print (const char *org)
                 {
                     case '<':
                         ismsg = 1;
-                        col = CXMESSAGE;
-                        printf ("%s", USECOLOR (CXMESSAGE));
                         switch (prG->flags & (FLAG_LIBR_BR | FLAG_LIBR_INT))
                         {
                             case FLAG_LIBR_BR:
@@ -1318,7 +1320,7 @@ void M_print (const char *org)
                         sw -= 3;
                         if (sw <= CharCount)
                         {
-                            printf ("%s\n", USECOLOR (col));
+                            printf ("%s\n", col);
                             CharCount = IndentCount = 0;
                             free (fstr);
                             return;
@@ -1334,8 +1336,8 @@ void M_print (const char *org)
                         test++;
                         if (*test >= '0' && *test <= '0' + CXCOUNT)
                         {
-                            col = *test - '0';
-                            printf ("%s", USECOLOR (col));
+                            USECOLOR (*test - '0');
+                            printf ("%s", col);
                             str++;
                         }
                         str++;
@@ -1352,7 +1354,7 @@ void M_print (const char *org)
                 }
                 break;
             default:
-                printf ("%s%c%s", USECOLOR (CXCONTACT), *str - 1 + 'A', USECOLOR (col));
+                printf ("%s%c%s", USECOLORCONTACT, *str - 1 + 'A', col);
                 
         }
     }
