@@ -112,30 +112,33 @@ char *s_catf (char *str, UDWORD *size, const char *fmt, ...)
     va_list args;
     UDWORD nsize;
     char *nstr;
+    int rc, strln;
     
-    if (!str)
-        str = strdup ("");
     if (!size)
         return str;
+    if (!str || !*size)
+        str = calloc (*size = 1024, 1);
+    strln = strlen (str);
     
-    nsize = strlen (nstr = str) + 1024;
-    if (nsize > *size)
+    while (1)
     {
-        nstr = realloc (str, nsize += 64);
-        if (nstr)
-            *size = nsize;
-        else
+        str[*size - 2] = '\0';
+        va_start (args, fmt);
+        rc = vsnprintf (str + strln, *size - strln, fmt, args);
+        va_end (args);
+        if (rc >= 0 && rc < *size - strln && !str[*size - 2])
+            return str;
+        nsize = (rc > 0 ? rc + strln + 5 : 2 * *size);
+        nstr = realloc (str, nsize);
+        if (!nstr)
         {
-            nstr = str;
-            nsize = *size;
+            str[*size - 2] = '\0';
+            return str;
         }
+        str = nstr;
+        *size = nsize;
     }
-    
-    va_start (args, fmt);
-    vsnprintf (nstr + strlen (nstr), nsize - strlen (nstr), fmt, args);
-    va_end (args);
-    
-    return nstr;
+    return str;
 }
 
 /*
