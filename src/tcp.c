@@ -34,19 +34,21 @@
 
 #ifdef TCP_COMM
 
-static void       TCPDispatchMain   (Session *sess);
-static void       TCPDispatchConn   (Session *sess);
-static void       TCPDispatchShake  (Session *sess);
-static void       TCPDispatchPeer   (Session *sess);
+static void       TCPDispatchMain    (Session *sess);
+static void       TCPDispatchConn    (Session *sess);
+static void       TCPDispatchShake   (Session *sess);
+static void       TCPDispatchPeer    (Session *sess);
 
-static Packet    *TCPReceivePacket  (Session *sess);
-static void       TCPSendPacket     (Packet *pak, Session *sess);
-static void       TCPClose          (Session *sess);
+static Packet    *TCPReceivePacket   (Session *sess);
+static void       TCPSendPacket      (Packet *pak, Session *sess);
+static void       TCPClose           (Session *sess);
 
-static void       TCPSendInit       (Session *sess);
-static void       TCPSendInitAck    (Session *sess);
-static Session   *TCPReceiveInit    (Session *sess, Packet *pak);
-static void       TCPReceiveInitAck (Session *sess, Packet *pak);
+static void       TCPSendInit        (Session *sess);
+static void       TCPSendInitAck     (Session *sess);
+static void       TCPSendInit2       (Session *sess);
+static Session   *TCPReceiveInit     (Session *sess, Packet *pak);
+static void       TCPReceiveInitAck  (Session *sess, Packet *pak);
+/*static void       TCPReceiveInit2    (Session *sess, Packet *pak);*/
 
 static void       TCPCallBackTimeout (struct Event *event);
 static void       TCPCallBackTOConn  (struct Event *event);
@@ -69,6 +71,12 @@ void SessionInitPeer (Session *sess)
     
     assert (sess);
     
+    if (sess->ver < 6 || sess->ver > 8)
+    {
+        M_print (i18n (2024, "Unknown protocol version %d for ICQ peer-to-peer protocol.\n"), sess->ver);
+        return;
+    }
+
     port = sess->port;
     M_print (i18n (1777, "Opening peer-to-peer connection at localhost:%d... "), port);
 
@@ -359,9 +367,13 @@ void TCPDispatchShake (Session *sess)
                 TCPReceiveInit (sess, pak);
                 continue;
             case 3:
-                sess->connect = 31 | CONNECT_SELECT_R;
+                sess->connect++;
                 TCPSendInitAck (sess);
                 continue;
+            case 4:
+                sess->connect = 31 | CONNECT_SELECT_R;
+                TCPSendInit2 (sess);
+                return;
             case 10:
                 sess = TCPReceiveInit (sess, pak);
                 if (!sess || !sess->connect)
@@ -625,7 +637,7 @@ void TCPSendPacket (Packet *pak, Session *sess)
         if (sockwrite (sess->sok, buf, 2) < 2)
             break;
 
-        if (prG->verbose & 4)
+/*        if (prG->verbose & 4)
         {
             Time_Stamp ();
             M_print (" \x1b«" COLCLIENT "");
@@ -633,7 +645,7 @@ void TCPSendPacket (Packet *pak, Session *sess)
             M_print (COLNONE "*\n");
             Hex_Dump (data, tpak->len);
             M_print (ESC "»\r");
-        }
+        } */
 
         for (todo = tpak->len; todo > 0; todo -= bytessend, data += bytessend)
         {
@@ -660,7 +672,7 @@ void TCPSendPacket (Packet *pak, Session *sess)
 /*
  * Sends a TCP initialization packet.
  */
-void TCPSendInit (Session *sess)
+void TCPSendInitv6 (Session *sess)
 {
     Packet *pak;
     
@@ -669,18 +681,18 @@ void TCPSendInit (Session *sess)
     if (!(sess->connect & CONNECT_MASK))
         return;
 
-    sess->stat_real_pak_sent++;
-
-    if (!sess->our_session)
+    if (!(sess->our_session))
         sess->our_session = rand ();
+
+    sess->stat_real_pak_sent++;
 
     if (prG->verbose)
         M_print (i18n (1836, "Sending TCP direct connection initialization packet.\n"));
 
     pak = PacketC ();
     PacketWrite1 (pak, TCP_CMD_INIT);                 /* command          */
-    PacketWrite2 (pak, TCP_VER);                      /* TCP version      */
-    PacketWrite2 (pak, TCP_VER_REV);                  /* TCP revision     */
+    PacketWrite2 (pak, 6);                            /* TCP version      */
+    PacketWrite2 (pak, 0);                            /* TCP revision     */
     PacketWrite4 (pak, sess->uin);                    /* destination UIN  */
     PacketWrite2 (pak, 0);                            /* unknown - zero   */
     PacketWrite4 (pak, sess->assoc->port);            /* our port         */
@@ -690,6 +702,62 @@ void TCPSendInit (Session *sess)
     PacketWrite1 (pak, TCP_OK_FLAG);                  /* connection type  */
     PacketWrite4 (pak, sess->assoc->port);            /* our (other) port */
     PacketWrite4 (pak, sess->our_session);            /* session id       */
+
+    TCPSendPacket (pak, sess);
+}
+
+/*
+ * Sends a v7/v8 TCP initialization packet.
+ */
+void TCPSendInit (Session *sess)
+{
+    Packet *pak;
+    
+    ASSERT_DIRECT (sess);
+
+    if (sess->ver == 6)
+    {
+        TCPSendInitv6 (sess);
+        return;
+    }
+
+    if (!(sess->connect & CONNECT_MASK))
+        return;
+
+    if (!sess->our_session)
+    {
+        Contact *cont;
+
+        cont = ContactFind (sess->uin);
+        if (!cont)
+        {
+            TCPClose (sess);
+            return;
+        }
+        sess->our_session = cont->cookie;
+    }
+
+    sess->stat_real_pak_sent++;
+
+    if (prG->verbose)
+        M_print (i18n (2025, "Sending v8 TCP direct connection initialization packet.\n"));
+
+    pak = PacketC ();
+    PacketWrite1 (pak, TCP_CMD_INIT);                 /* command          */
+    PacketWrite2 (pak, sess->assoc->ver);             /* TCP version      */
+    PacketWrite2 (pak, 43);                           /* length           */
+    PacketWrite4 (pak, sess->uin);                    /* destination UIN  */
+    PacketWrite2 (pak, 0);                            /* unknown - zero   */
+    PacketWrite4 (pak, sess->assoc->port);            /* our port         */
+    PacketWrite4 (pak, sess->assoc->assoc->uin);             /* our UIN          */
+    PacketWrite4 (pak, sess->assoc->assoc->our_outside_ip);  /* our (remote) IP  */
+    PacketWrite4 (pak, sess->assoc->assoc->our_local_ip);    /* our (local)  IP  */
+    PacketWrite1 (pak, TCP_OK_FLAG);                  /* connection type  */
+    PacketWrite4 (pak, sess->assoc->port);            /* our (other) port */
+    PacketWrite4 (pak, sess->our_session);            /* session id       */
+    PacketWrite4 (pak, 0x00000050);
+    PacketWrite4 (pak, 0x00000003);
+    PacketWrite4 (pak, 0);
 
     TCPSendPacket (pak, sess);
 }
@@ -717,10 +785,41 @@ void TCPSendInitAck (Session *sess)
     TCPSendPacket (pak, sess);
 }
 
+void TCPSendInit2 (Session *sess)
+{
+    Packet *pak;
+    
+    ASSERT_DIRECT (sess);
+    
+    if (sess->ver == 6)
+        return;
+    
+    if (!(sess->connect & CONNECT_MASK))
+        return;
+    
+    if (prG->verbose)
+        M_print (i18n (2027, "Sending third TCP direct connection packet.\n"));
+
+    sess->stat_real_pak_sent++;
+    
+    pak = PacketC ();
+    PacketWrite1 (pak, 3);
+    PacketWrite4 (pak, 10);
+    PacketWrite4 (pak, 1);
+    PacketWrite4 (pak, 0);
+    PacketWrite4 (pak, 0);
+    PacketWrite4 (pak, 0);
+    PacketWrite4 (pak, 0);
+    PacketWrite4 (pak, 0);
+    PacketWrite2 (pak, 1);
+    PacketWrite2 (pak, 4);
+    TCPSendPacket (pak, sess);
+}
+
 Session *TCPReceiveInit (Session *sess, Packet *pak)
 {
     Contact *cont;
-    UDWORD uin, sid, size;
+    UDWORD uin, size;
     Session *peer;
 
     ASSERT_DIRECT (sess);
@@ -741,10 +840,17 @@ Session *TCPReceiveInit (Session *sess, Packet *pak)
             break;
         
         cont = ContactFind (uin);
-        sid  = PacketReadAt4 (pak, 32);
+        if (sess->our_session != PacketReadAt4 (pak, 32))
+            break;
 
         if (!cont)
             break;
+
+        if (cont->flags & CONT_IGNORE)
+        {
+            TCPClose (sess);
+            return NULL;
+        }
 
         if (prG->verbose)
         {
@@ -773,11 +879,10 @@ Session *TCPReceiveInit (Session *sess, Packet *pak)
                     TCPClose (peer);
                 SessionClose (peer);
             }
-            else if (sess->our_session != sid)
+            else if (sess->our_session != PacketReadAt4 (pak, 32))
                 break;
         }
         sess->uin = uin;
-        sess->our_session = sid;
         
         PacketD (pak);
         return sess;

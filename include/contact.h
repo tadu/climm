@@ -19,6 +19,7 @@ struct Contact_s
    UDWORD last_time; /* last time online or when came online */
    UWORD  TCP_version;
    UBYTE  connection_type;
+   UDWORD cookie;
    char  *version;
    char  *LastMessage;
    char   nick[20];

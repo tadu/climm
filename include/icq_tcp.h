@@ -1,5 +1,4 @@
 
-#define TCP_VER		6
 #define TCP_VER_REV	0
 
 /* TCP related constants */

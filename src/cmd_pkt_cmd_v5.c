@@ -102,7 +102,8 @@ void CmdPktCmdLogin (Session *sess)
     PacketWrite1 (pak, sess->assoc && sess->assoc->connect & CONNECT_OK ?
                        0x04 : 0);         /* 1=firewall | 2=proxy | 4=tcp */
     PacketWrite4 (pak, prG->status);
-    PacketWrite2 (pak, TCP_VER);      /* 6 */
+    PacketWrite2 (pak, sess->assoc && sess->assoc->connect & CONNECT_OK ?
+                       sess->assoc->ver : 0);
     PacketWrite2 (pak, 0);
     PacketWrite4 (pak, 0x822c01ec);   /* 0x00d50008, 0x00780008 */
     PacketWrite4 (pak, 0x00000050);

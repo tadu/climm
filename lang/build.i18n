@@ -1021,3 +1021,7 @@
 2021:Being invisible to %s.
 2022:The user is indeed offline.¶
 2023:Direct connection closed by peer.¶
+2024:Unknown protocol version %d for ICQ peer-to-peer protocol.¶
+2025:Sending v8 TCP direct connection initialization packet.¶
+2026:TCP cookie:
+2027:Sending third TCP direct connection packet.¶

@@ -376,12 +376,16 @@ JUMP_SNAC_F(SnacSrvUseronline)
     
     if (tlv[12].len)
     {
+        UDWORD ip;
         p = TLVPak (tlv + 12);
-        cont->local_ip = PacketReadB4 (p);
-        cont->port     = PacketReadB4 (p);
+        
+                           ip = PacketReadB4 (p);
+        cont->port            = PacketReadB4 (p);
         cont->connection_type = PacketRead1 (p);
-        cont->TCP_version = PacketReadB2 (p);
-        PacketReadB4 (p);
+        cont->TCP_version     = PacketReadB2 (p);
+        cont->cookie          = PacketReadB4 (p);
+        if (ip)
+            cont->local_ip = ip;
         PacketReadB4 (p);
         PacketReadB4 (p);
         t1 = PacketReadB4 (p);
@@ -868,12 +872,20 @@ void SnacCliSetstatus (Session *sess, UWORD status, UWORD action)
         PacketWriteB2 (pak, 0x0c); /* TLV 0C */
         PacketWriteB2 (pak, 0x25);
         PacketWriteB4 (pak, sess->our_local_ip);
-        PacketWriteB4 (pak, sess->assoc && sess->assoc->connect & CONNECT_OK 
-                            ? sess->assoc->port : 0);
-        PacketWrite1  (pak, sess->assoc && sess->assoc->connect & CONNECT_OK
-                            ? 0x04 : 0);
-        PacketWriteB2 (pak, TCP_VER);
-        PacketWriteB4 (pak, rand() % 0x7fff); /* TCP cookie */
+        if (sess->assoc && sess->assoc->connect & CONNECT_OK)
+        {
+            PacketWriteB4 (pak, sess->assoc->port);
+            PacketWrite1  (pak, 0x04);
+            PacketWriteB2 (pak, sess->assoc->ver);
+            PacketWriteB4 (pak, sess->assoc->our_session);
+        }
+        else
+        {
+            PacketWriteB4 (pak, 0);
+            PacketWrite1  (pak, 0);
+            PacketWriteB2 (pak, 0);
+            PacketWriteB4 (pak, 0);
+        }
         PacketWriteB2 (pak, 0);
         PacketWriteB2 (pak, 80);
         PacketWriteB2 (pak, 0);
@@ -1060,7 +1072,8 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, char *text, UDWORD type)
             PacketWriteB4      (pak, 0x000f0000); /* empty TLV(5) */
             PacketWriteTLV     (pak, 10001);
             PacketWrite1       (pak, 27);
-            PacketWriteB2      (pak, TCP_VER);
+            PacketWriteB2      (pak, sess->assoc && sess->assoc->connect & CONNECT_OK
+                                     ? sess->assoc->ver : 0);
             PacketWrite1       (pak, 0);
             PacketWriteB4      (pak, 0); /* capability */
             PacketWriteB4      (pak, 0);
@@ -1377,8 +1390,10 @@ void SnacCliSetrandom (Session *sess, UWORD group)
         PacketWriteB4 (pak, 0);
         PacketWriteB4 (pak, 0);
         PacketWriteB4 (pak, 0);
-        PacketWrite1  (pak, 0x04);
-        PacketWrite2  (pak, TCP_VER);
+        PacketWrite1  (pak, sess->assoc && sess->assoc->connect & CONNECT_OK
+                            ? 0x04 : 0);
+        PacketWrite2  (pak, sess->assoc && sess->assoc->connect & CONNECT_OK
+                            ? sess->assoc->ver : 0);
         PacketWriteB4 (pak, 0);
         PacketWriteB4 (pak, 0x00005000);
         PacketWriteB4 (pak, 0x00000300);

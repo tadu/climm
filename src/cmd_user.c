@@ -1119,6 +1119,7 @@ JUMP_F(CmdUserStatusDetail)
         M_print ("%-15s %d\n", i18n (1453, "TCP version:"), cont->TCP_version);
         M_print ("%-15s %s\n", i18n (1454, "Connection:"),
                  cont->connection_type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"));
+        M_print ("%-15s %08x\n", i18n (2026, "TCP cookie:"), cont->cookie);
         return 0;
     }
     M_print (W_SEPERATOR);
