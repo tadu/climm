@@ -90,10 +90,11 @@ void PrefLoad (Preferences *pref);
 #define SFLAG_OFF_BEEP   16
 #define SFLAG_OFF_CMD    32
 
-#define TYPE_SERVER_OLD   1
-#define TYPE_SERVER       2
-#define TYPE_LISTEN       3
-#define TYPE_DIRECT       4
+#define TYPE_SERVER_OLD   1  /* v5 server connection            */
+#define TYPE_SERVER       2  /* v7/v8 server connection         */
+#define TYPE_LISTEN       3  /* listener fpr direct connections */
+#define TYPE_DIRECT       4  /* direct connection               */
+#define TYPE_FILE         5  /* file transfer                   */
 
 #define CONN_AUTOLOGIN   1
 #define CONN_WIZARD      2
@@ -102,9 +103,11 @@ void PrefLoad (Preferences *pref);
 #define TABS_CYCLE       2
 #define TABS_CYCLEALL    3
 
-#define ASSERT_LISTEN(s) (assert (s), assert (s->type == TYPE_LISTEN))
-#define ASSERT_DIRECT(s) (assert (s), assert (s->type == TYPE_DIRECT))
-#define ASSERT_SERVER(s) (assert (s), assert (s->type == TYPE_SERVER))
+#define ASSERT_LISTEN(s)      (assert (s), assert ((s)->type == TYPE_LISTEN))
+#define ASSERT_DIRECT(s)      (assert (s), assert ((s)->type == TYPE_DIRECT))
+#define ASSERT_DIRECT_FILE(s) (assert (s), assert ((s)->type == TYPE_FILE || (s)->type == TYPE_DIRECT))
+#define ASSERT_FILE(s)        (assert (s), assert ((s)->type == TYPE_FILE))
+#define ASSERT_SERVER(s)      (assert (s), assert ((s)->type == TYPE_SERVER))
 
 #endif
 
