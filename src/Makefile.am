@@ -35,7 +35,7 @@ timegm.c:
 	rm -rf timegm.c
 	ln -s $(top_srcdir)/replace/timegm.c . || cp $(top_srcdir)/replace/timegm.c .
 
-clean:
+clean-local:
 	rm -f snprintf.c snprintf.h memmove.c memmove.h timegm.c .cvsupdate
 
 buildmark.o: .cvsupdate
