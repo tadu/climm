@@ -152,7 +152,7 @@ typedef struct
     UDWORD   away_time_prev;
     UBYTE    reconnect_count;
     BOOL     quit;
-    UDWORD   packets;
+    UDWORD   packets, events;
     time_t   idle_val;
     UDWORD   idle_msgs;
     UBYTE    idle_flag;

@@ -169,6 +169,7 @@ Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD id,
                          ContactOptions *opt, Queuef *callback)
 {
     Event *event = calloc (sizeof (Event), 1);
+    uiG.events++;
     assert (event);
     
     event->conn = conn;
@@ -197,6 +198,7 @@ Event *QueueEnqueueDep (Connection *conn, UDWORD type, UDWORD id,
                         ContactOptions *opt, Queuef *callback)
 {
     Event *event = calloc (sizeof (Event), 1);
+    uiG.events++;
     assert (event);
     
     event->wait = dep;
@@ -398,7 +400,7 @@ void EventD (Event *event)
         oevent->due = 0;
         q_QueueEnqueue (oevent);
     }
-    
+    uiG.events--;
     free (event);
 }
 
@@ -470,8 +472,6 @@ void QueueRun (void)
     Event *event;
     struct QueueEntry *iter;
     
-    assert (queue);
-    
     for (iter = queue->head; iter && iter->event->due <= now; iter = iter->next)
         iter->event->flags &= ~QUEUE_FLAG_CONSIDERED;
     
@@ -517,6 +517,24 @@ void QueueRetry (Connection *conn, UDWORD type, Contact *cont)
     else
         Debug (DEB_QUEUE, STR_DOT STR_DOT "s" STR_DOT " %ld %s", cont ? cont->uin : 0, QueueType (type));
 }
+
+#ifdef ENABLE_DEBUG
+/*
+ * Prints the event queue.
+ */
+void QueuePrint (void)
+{
+    struct QueueEntry *iter;
+    int i = 0;
+    
+    for (iter = queue->head; iter; iter = iter->next)
+        M_printf ("%02u %08lx %p %-15s conn %p cont %p pak %p seq %ld att %ld call %p dep %p\n",
+                  i++, iter->event->due, iter->event, QueueType (iter->event->type),
+                  iter->event->conn, iter->event->cont, iter->event->pak,
+                  iter->event->seq, iter->event->attempts, iter->event->callback, iter->event->wait);
+    M_printf ("Total: %d events of %ld queued.\n", i, uiG.events);
+}
+#endif
 
 /*
  * Returns a string representation of the queue type.

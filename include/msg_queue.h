@@ -36,8 +36,11 @@ void        QueueCancel       (Connection *conn);
 void        QueueRun          (void);
 void        EventD            (Event *event);
 
-
 const char *QueueType (UDWORD type);
+
+#ifdef ENABLE_DEBUG
+void        QueuePrint (void);
+#endif
 
 #define NOW   (time_t)-1
 #define NEVER (time_t)0x7fffffff

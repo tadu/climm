@@ -54,6 +54,10 @@ static jump_f
     CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserPeer, CmdUserConn,
     CmdUserContact, CmdUserAnyMess, CmdUserGetAuto, CmdUserOpt;
 
+#ifdef ENABLE_DEBUG
+static jump_f CmdUserListQueue;
+#endif
+    
 static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag);
 
 static alias_t *CmdUserLookupAlias (const char *name);
@@ -163,7 +167,9 @@ static jump_t jump[] = {
     { &CmdUserTclScript,     "tclscript",    0,   0 },
     { &CmdUserTclScript,     "tcl",          0,   1 },
 #endif
-
+#ifdef ENABLE_DEBUG
+    { &CmdUserListQueue,     "_queue",       0,   0 },
+#endif
     { NULL, NULL, 0, 0 }
 };
 
@@ -3081,6 +3087,13 @@ static JUMP_F(CmdUserAsSession)
     return 0;
 }
 
+#ifdef ENABLE_DEBUG
+static JUMP_F(CmdUserListQueue)
+{
+    QueuePrint ();
+    return 0;
+}
+#endif
 
 /******************************************************************************
  *
