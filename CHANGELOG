@@ -1,3 +1,24 @@
+2001-04-17 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* include/*.h, src/*.c:
+	  Move prototypes to proper place. Remove lang.h.
+	  Add necessary #includes.
+	* include/mreadline.h, src/mreadline.c, src/ui.c, src/util.c,
+	  src/util_ui.c:
+	  Tighten char * to const where appropriate.
+	* lang/*.h: Remove.
+	* lang/??.i18n: New localization files.
+	* include/tabs.h, src/tabs.c, src/micq.c, src/file_util.c,
+	  src/icq_response.c, src/mreadline.c, src/ui.c:
+	  Implement tab list in a new extra module and use it.  Rename
+	  get_tab() to R_process_input_tab(); avoid clobbering of input.
+	* include/i18n.h, src/i18n.c, src/*.c:
+	  Implement simple internationalization functions and use them.
+	  Move some initialision from micq.c and add Show_String_A()
+	  to aid using the new functions.
+	* src/*.c:
+	  Change indenting to 4 chars, no tabs whereever I came across.
+	* src/util_ui.c:
+	  Add M_fdopen() to wrap the open() call.
 
 2001-04-13 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* include/micq.h, src/msg_queue.c, src/server.c, src/util.c:

@@ -15,9 +15,14 @@
  *   added more editing commands: delete (as VEOF),
  *   ^A, ^E, ^K, ^U and ^Y, all in R_process_input()
  *****************************************************/
+
 #include "micq.h"
 
 #ifdef USE_MREADLINE
+
+#include "mreadline.h"
+#include "util_ui.h"
+#include "ui.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,15 +36,6 @@
 
 #define HISTORY_LINES 10
 #define HISTORY_LINE_LEN 1024
-
-void R_init (void);
-void R_setprompt (char *prompt);
-void R_prompt (void);
-void R_doprompt (char *prompt);
-int R_process_input (void);
-void R_getline (char *buf, int len);
-void R_undraw (void);
-void R_redraw (void);
 
 static struct termios t_attr;
 static void tty_prepare(void);
@@ -58,305 +54,330 @@ static int istat = 0;
 
 void R_init (void)
 {
-	int	k;
-	static int inited = 0;
+    int    k;
+    static int inited = 0;
 
-	if (inited)
-		return;
-	for (k = 0; k < HISTORY_LINES+1; k++)
-	{
-		history[k] = (char *) malloc (HISTORY_LINE_LEN);
-		history[k][0] = 0;
-	}
-	s[0] = 0;
-	inited = 1;
-	tty_prepare ();
-	atexit (tty_restore);
+    if (inited)
+        return;
+    for (k = 0; k < HISTORY_LINES+1; k++)
+    {
+        history[k] = (char *) malloc (HISTORY_LINE_LEN);
+        history[k][0] = 0;
+    }
+    s[0] = 0;
+    inited = 1;
+    tty_prepare ();
+    atexit (tty_restore);
 }
 
 void R_pause (void)
 {
-	tty_restore ();
+    tty_restore ();
 }
 
 void R_resume (void)
 {
-	tty_prepare ();
+    tty_prepare ();
 }
 
 void R_process_input_backspace (void)
 {
-   if (cpos)
-   {
-      clen--;
-      cpos--;
-      strcpy (s + cpos, s + cpos + 1);
+    if (cpos)
+    {
+        clen--;
+        cpos--;
+        strcpy (s + cpos, s + cpos + 1);
 #ifndef ANSI_COLOR
-      {
-         int i;
-         print ("\b%s", s + cpos);
-         for (i = clen - cpos; i; i--) print ("\b");
-      }
+        {
+            int i;
+            print ("\b%s", s + cpos);
+            for (i = clen - cpos; i; i--) print ("\b");
+        }
 #else
-      printf ("\b\033[K%s", s + cpos);
-      if (cpos < clen)
-         printf ("\033[%dD", clen - cpos);
+        printf ("\b\033[K%s", s + cpos);
+        if (cpos < clen)
+            printf ("\033[%dD", clen - cpos);
 #endif
-   }
+    }
 }
 
 void R_process_input_delete (void)
 {
-   if (cpos < clen)
-   {
-      clen--;
-      strcpy (s + cpos, s + cpos + 1);
+    if (cpos < clen)
+    {
+        clen--;
+        strcpy (s + cpos, s + cpos + 1);
 #ifndef ANSI_COLOR
-      {
-         int i;
-         print (s + cpos);
-         for (i = clen - cpos; i; i--) print ("\b");
-      }
+        {
+            int i;
+            print (s + cpos);
+            for (i = clen - cpos; i; i--) print ("\b");
+        }
 #else
-      printf ("\033[K%s", s + cpos);
-      if (cpos < clen)
-         printf ("\033[%dD", clen - cpos);
+        printf ("\033[K%s", s + cpos);
+        if (cpos < clen)
+            printf ("\033[%dD", clen - cpos);
 #endif
-   }
+    }
+}
+
+void R_process_input_tab (void)
+{
+    DWORD uin;
+
+    if (*s && strlen (s) <= strlen (message_cmd))
+    {
+        if (strncmp (s, message_cmd, strlen (s)))
+        {
+            M_print ("\a");
+            return;
+        }
+    }
+    else
+    {
+        if (strncmp (s, message_cmd, strlen (message_cmd)) ||
+           (strpbrk (s, UIN_DELIMS) && strpbrk (s, UIN_DELIMS) - s < strlen (s) - 1))
+        {
+            M_print ("\a");
+            return;
+        }
+    }
+
+    if ((uin = TabGetNext ()))
+        sprintf (s, "%s %s/", message_cmd, UIN2Name (uin));
+    else
+        sprintf (s, "%s ", message_cmd);
+
+    clen = cpos = strlen (s);
+    R_undraw();
+    R_redraw();
 }
 
 int R_process_input (void)
 {
-	char	ch;
-	int	k;
-	char s1[HISTORY_LINE_LEN];
+    char  ch;
+    int   k;
+    char  s1[HISTORY_LINE_LEN];
 
-	if (!read (STDIN_FILENO, &ch, 1))
-		return 0;
-	if (!istat)
-	{
-		if (ch == t_attr.c_cc[VERASE] &&
-				t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
-		{
-			if (del_is_bs)
-				R_process_input_backspace ();
-			else
-				R_process_input_delete ();
-			return 0;
-		}
-		if (ch == t_attr.c_cc[VEOF] &&
-				t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
-		{
-			if (clen)
-			{
-				R_process_input_delete ();
-				return 0;
-			}
-			strcpy (s,"q");
-			printf ("\n");
-			return 1;
-		}
-		if (ch == t_attr.c_cc[VKILL] &&
-				t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
-		{
-			strcpy (y, s);
-			s[0] = '\0';
-			cpos = clen = 0;
-			R_undraw ();
-			R_redraw ();
-			return 0;
-		}
-#ifdef	VREPRINT
-		if (ch == t_attr.c_cc[VREPRINT] &&
-				t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
-		{
-			R_undraw ();
-			R_redraw ();
-			return 0;
-		}
-#endif	/* VREPRINT */
-		if (ch == '\t' &&
-				t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
-		{
-			get_tab();
-			return 0;
-		}
-		if (ch >= 0 && ch < ' ')
-		{
-			switch (ch) {
-				case  1: /* ^A */
-					printf ("\033[%dD", cpos);
-					cpos = 0;
-					break;
-				case  5: /* ^E */
-					printf ("\033[%dC", clen-cpos);
-					cpos = clen;
-					break;
-				case  8: /* ^H = \b */
-					R_process_input_backspace ();
-					return 0;
-				case 11: /* ^K, as requested by Bernhard Sadlowski */
-					clen = cpos;
-					printf ("\033[K");
-					break;
-				case '\n':
-				case '\r':
-					s[clen + 1] = 0; /* just to be sure */
-					M_print ("\n");
-					history_cur = 0;
-					tab_pointer = 0;
-					strcpy (history[0], s);
-					if (!s[0])
-						return 1;
-					if (strcmp (s, history[1]))
-						for (k = HISTORY_LINES; k; k--)
-							strcpy (history[k], history[k-1]);
-					return 1;
-				case 12: /* ^L */
-					system ("clear");
-					R_redraw ();
-					break;
-				case 25: /* ^Y */
-					strcpy (s, y);
-					clen = cpos = strlen (s);
-					R_undraw ();
-					R_redraw ();
+    if (!read (STDIN_FILENO, &ch, 1))
+        return 0;
+    if (!istat)
+    {
+        if (ch == t_attr.c_cc[VERASE] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
+        {
+            if (del_is_bs)
+                R_process_input_backspace ();
+            else
+                R_process_input_delete ();
+            return 0;
+        }
+        if (ch == t_attr.c_cc[VEOF] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
+        {
+            if (clen)
+            {
+                R_process_input_delete ();
+                return 0;
+            }
+            strcpy (s,"q");
+            printf ("\n");
+            return 1;
+        }
+        if (ch == t_attr.c_cc[VKILL] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
+        {
+            strcpy (y, s);
+            s[0] = '\0';
+            cpos = clen = 0;
+            R_undraw ();
+            R_redraw ();
+            return 0;
+        }
+#ifdef    VREPRINT
+        if (ch == t_attr.c_cc[VREPRINT] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
+        {
+            R_undraw ();
+            R_redraw ();
+            return 0;
+        }
+#endif    /* VREPRINT */
+        if (ch == '\t' && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
+        {
+            R_process_input_tab ();
+            return 0;
+        }
+        if (ch >= 0 && ch < ' ')
+        {
+            switch (ch) {
+                case  1: /* ^A */
+                    printf ("\033[%dD", cpos);
+                    cpos = 0;
+                    break;
+                case  5: /* ^E */
+                    printf ("\033[%dC", clen-cpos);
+                    cpos = clen;
+                    break;
+                case  8: /* ^H = \b */
+                    R_process_input_backspace ();
+                    return 0;
+                case 11: /* ^K, as requested by Bernhard Sadlowski */
+                    clen = cpos;
+                    printf ("\033[K");
+                    break;
+                case '\n':
+                case '\r':
+                    s[clen + 1] = 0; /* just to be sure */
+                    M_print ("\n");
+                    history_cur = 0;
+                    TabReset ();
+                    strcpy (history[0], s);
+                    if (!s[0])
+                        return 1;
+                    if (strcmp (s, history[1]))
+                        for (k = HISTORY_LINES; k; k--)
+                            strcpy (history[k], history[k-1]);
+                    return 1;
+                case 12: /* ^L */
+                    system ("clear");
+                    R_redraw ();
+                    break;
+                case 25: /* ^Y */
+                    strcpy (s, y);
+                    clen = cpos = strlen (s);
+                    R_undraw ();
+                    R_redraw ();
 #ifdef ANSI_COLOR
-				case 27: /* ESC */
-					istat = 1;
-					break;
+                case 27: /* ESC */
+                    istat = 1;
+                    break;
 #endif
-			}
-		}
-		else if (clen + 1 < HISTORY_LINE_LEN)
-		{
-			printf ("%c", ch);
+            }
+        }
+        else if (clen + 1 < HISTORY_LINE_LEN)
+        {
+            printf ("%c", ch);
 #ifdef ANSI_COLOR
-			printf ("%s", s + cpos);
-			strcpy (s1, s + cpos);
-			strcpy (s+cpos+1, s1);
-			if (cpos < clen)
-				printf ("\033[%dD", clen-cpos);
+            printf ("%s", s + cpos);
+            strcpy (s1, s + cpos);
+            strcpy (s+cpos+1, s1);
+            if (cpos < clen)
+                printf ("\033[%dD", clen-cpos);
 #endif
-			s[cpos++] = ch;
-			clen++;
-			s[clen] = 0;
-		}
-		return 0;
-	}
+            s[cpos++] = ch;
+            clen++;
+            s[clen] = 0;
+        }
+        return 0;
+    }
 #ifdef ANSI_COLOR
-	switch (istat)
-	{
-		case 1: /* ESC */
-			if (ch == '[' || ch == 'O')
-				istat = 2;
-			else
-				istat = 0;
-			break;
-		case 2: /* CSI */
-			istat = 0;
-			switch (ch)
-			{
-				case 'A': /* Up key */
-				case 'B': /* Down key */
-					if (	(ch == 'A' && history_cur >= HISTORY_LINES) ||
-						(ch == 'B' && history_cur == 0))
-						break;
-					k = history_cur;
-					strcpy (history[history_cur], s);
-					if (ch == 'A')
-						history_cur++;
-					else
-						history_cur--;
-					if (history[history_cur][0] || history_cur == 0)
-					{
-						strcpy(s, history[history_cur]);
-						cpos = clen = strlen (s);
-						R_undraw ();
-						R_redraw ();
-					}
-					else
-					{
-						history_cur = k;
-					}
-					break;
-				case 'C': /* Right key */
-					if (cpos == clen)
-						break;
-					cpos++;
-					printf ("\033[C");
-					break;
-				case 'D': /* Left key */
-					if (!cpos)
-						break;
-					cpos--;
-					printf ("\033[D");
-					break;
-				case '3': /* ESC [ 3 ~ = Delete */
-					istat = 3;
-					break;
-				default:
-					printf ("\007");
-			}
-			break;
-		case 3: /* Del Key */
-			istat = 0;
-			switch (ch)
-			{
-				case '~': /* Del Key */
-					R_process_input_delete ();
-					break;
-				default:
-					printf ("\007");
-			}
-	}
+    switch (istat)
+    {
+        case 1: /* ESC */
+            if (ch == '[' || ch == 'O')
+                istat = 2;
+            else
+                istat = 0;
+            break;
+        case 2: /* CSI */
+            istat = 0;
+            switch (ch)
+            {
+                case 'A': /* Up key */
+                case 'B': /* Down key */
+                    if ( (ch == 'A' && history_cur >= HISTORY_LINES) ||
+                         (ch == 'B' && history_cur == 0))
+                        break;
+                    k = history_cur;
+                    strcpy (history[history_cur], s);
+                    if (ch == 'A')
+                        history_cur++;
+                    else
+                        history_cur--;
+                    if (history[history_cur][0] || history_cur == 0)
+                    {
+                        strcpy(s, history[history_cur]);
+                        cpos = clen = strlen (s);
+                        R_undraw ();
+                        R_redraw ();
+                    }
+                    else
+                    {
+                        history_cur = k;
+                    }
+                    break;
+                case 'C': /* Right key */
+                    if (cpos == clen)
+                        break;
+                    cpos++;
+                    printf ("\033[C");
+                    break;
+                case 'D': /* Left key */
+                    if (!cpos)
+                        break;
+                    cpos--;
+                    printf ("\033[D");
+                    break;
+                case '3': /* ESC [ 3 ~ = Delete */
+                    istat = 3;
+                    break;
+                default:
+                    printf ("\007");
+            }
+            break;
+        case 3: /* Del Key */
+            istat = 0;
+            switch (ch)
+            {
+                case '~': /* Del Key */
+                    R_process_input_delete ();
+                    break;
+                default:
+                    printf ("\007");
+            }
+    }
 #endif
-	return 0;
+    return 0;
 }
 
 void R_redraw (void)
 {
-	R_prompt ();
-	printf ("%s", s);
+    R_prompt ();
+    printf ("%s", s);
 #ifdef ANSI_COLOR
-	if (cpos != clen)
-		printf ("\033[%dD", clen-cpos);
+    if (cpos != clen)
+        printf ("\033[%dD", clen-cpos);
 #endif
 }
 
 void R_getline (char *buf, int len)
 {
-	strncpy (buf, s, len);
-	cpos = 0;
-	clen = 0;
-	s[0] = 0;
+    strncpy (buf, s, len);
+    cpos = 0;
+    clen = 0;
+    s[0] = 0;
 }
 
-static char *curprompt = NULL;
-void R_setprompt (char *prompt)
+static const char *curprompt = NULL;
+void R_setprompt (const char *prompt)
 {
-	curprompt = prompt;
+    curprompt = prompt;
 }
 
 void R_prompt (void)
 {
-        
-	if (curprompt)
-		M_print ( curprompt);
+    if (curprompt)
+        M_print (curprompt);
 }
 
-void R_doprompt (char *prompt)
+void R_doprompt (const char *prompt)
 {
-	R_setprompt (prompt);
-/*	M_print( "\n\a" );*/
-	R_prompt ();
+    R_setprompt (prompt);
+/*    M_print( "\n\a" );*/
+    R_prompt ();
 }
 
-void
-R_undraw ()
+void R_undraw ()
 {
-	M_print("\r"); /* for tab stop reasons */
-	printf ("\033[K");
+    M_print("\r"); /* for tab stop reasons */
+    printf ("\033[K");
 }
 
 static struct termios saved_attr;
@@ -364,57 +385,27 @@ static int attrs_saved = 0;
 
 static void tty_restore (void)
 {
-	if (!attrs_saved)
-		return;
-	if (tcsetattr(STDIN_FILENO,TCSAFLUSH,&saved_attr) != 0)
-		perror ("can't restore tty modes");
-	else
-		attrs_saved = 0;
+    if (!attrs_saved)
+        return;
+    if (tcsetattr(STDIN_FILENO,TCSAFLUSH,&saved_attr) != 0)
+        perror ("can't restore tty modes");
+    else
+        attrs_saved = 0;
 }
 
 static void tty_prepare (void)
 {
-	istat = 0;
-	if (tcgetattr(STDIN_FILENO, &t_attr) != 0)
-		return;
-	saved_attr = t_attr;
-	attrs_saved = 1;
+    istat = 0;
+    if (tcgetattr(STDIN_FILENO, &t_attr) != 0)
+        return;
+    saved_attr = t_attr;
+    attrs_saved = 1;
 
-	t_attr.c_lflag &= ~(ECHO|ICANON);
-	t_attr.c_cc[VMIN] = 1;
-	if (tcsetattr(STDIN_FILENO,TCSAFLUSH,&t_attr) != 0)
-		perror ("can't change tty modes");
+    t_attr.c_lflag &= ~(ECHO|ICANON);
+    t_attr.c_cc[VMIN] = 1;
+    if (tcsetattr(STDIN_FILENO,TCSAFLUSH,&t_attr) != 0)
+        perror ("can't change tty modes");
 }
 
-void get_tab( void )
-{
-        while ( tab_array[tab_pointer] == NULL ) {
-           if ( ++tab_pointer == TAB_SLOTS ) {
-              tab_pointer = 0;
-              break;
-           }
-        }
-        /* aaron
-           on operating systems other than Linux, it seems that one cannot
-           print the contents of a NULL pointer. When no messages have yet
-           been sent, pressing Tab will cause Micq to segfault because it
-           looks through the tab_array for non-NULL entries, but there are
-           none. So it wraps back to the beginning and tries to print anyway.
-           This isn't the right thing to do; we have to detect the problem
-           and work around it.
-        */
-        if (tab_array[tab_pointer] == NULL) {
-               sprintf(s, "%s (null)/", message_cmd);
-        } else {
-               sprintf (s, "%s %s/", message_cmd,
-               tab_array[tab_pointer]);
-        }  /* end if */
-
-	clen = cpos = strlen (s);
-	R_undraw();
-	R_redraw();
-	if (++tab_pointer == TAB_SLOTS)
-		tab_pointer = 0;
-}
 
 #endif /* USE_MREADLINE */

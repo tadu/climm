@@ -1,5 +1,7 @@
 #include "micq.h"
+#include "util_ui.h"
 #include "datatype.h"
+#include "mreadline.h"
 #include "msg_queue.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -98,11 +100,11 @@ static void Multi_Packet( SOK_T sok, BYTE *data )
        memcpy( &pak, j, sizeof( pak ) );
        j += 2;
 #if 0
-       M_print( "\nPacket Number %d\n", i );
-       M_print( LENGTH_STR " %04X\n", len );
-       M_print( COMMAND_STR " %04X\n", Chars_2_Word( pak.head.cmd ) );
-       M_print( SEQ_STR " %04X\n", Chars_2_Word( pak.head.seq ) );
-       M_print( VER_STR " %04X\n", Chars_2_Word( pak.head.ver ) );
+       M_print ("\nPacket Number %d\n", i);
+       M_print ("%s %04X\n", i18n (46, "Length"), len );
+       M_print (COMMAND_STR " %04X\n", Chars_2_Word (pak.head.cmd));
+       M_print ("%s %04X\n", i18n (48, "SEQ"), Chars_2_Word (pak.head.seq));
+       M_print ("%s %04X\n", i18n (49, "Ver"), Chars_2_Word (pak.head.ver));
 #endif
       Kill_Prompt();
        Server_Response( sok, pak.data, (len+2) - sizeof( pak.head ), Chars_2_Word( pak.head.cmd ),
@@ -124,18 +126,18 @@ void Server_Response( SOK_T sok, BYTE *data, DWORD len, WORD cmd, WORD ver, DWOR
 	 Kill_Prompt();
 	 R_undraw ();
       }
-      if ( Verbose > 1 )
+      if (Verbose > 1)
       {
-         M_print( SERVER_ACK_STR "\n", last_cmd[ seq>>16 ] );
-         M_print( "The SEQ was %04X\n", seq );
+         M_print (i18n (51, "The server acknowledged the %04x command."), last_cmd[ seq>>16 ] );
+         M_print ("\nThe SEQ was %04X\n", seq );
       }
-      Check_Queue( seq );
-      if ( Verbose ) {
-	 if ( len != 0 )
+      Check_Queue (seq);
+      if (Verbose) {
+	 if (len != 0)
 	 {
-	    M_print( EXTRA_DATA_STR " " LENGTH_STR " %d\n", len );
-	    Hex_Dump( data, len );
-            M_print( "\n" );
+	    M_print ("%s %s %d\n", i18n (47, "Extra Data"), i18n (46, "Length"), len );
+	    Hex_Dump (data, len);
+            M_print ("\n");
 	 }
 	 R_redraw ();
       }
@@ -170,7 +172,7 @@ void Server_Response( SOK_T sok, BYTE *data, DWORD len, WORD cmd, WORD ver, DWOR
       R_undraw ();
       our_ip = Chars_2_DW( &data[0] );
       Time_Stamp();
-      M_print (" " MAGENTA BOLD "%10lu" NOCOL " " LOGIN_SUCCESS_STR "\n", uin);
+      M_print (" " MAGENTA BOLD "%10lu" NOCOL " %s\n", uin, i18n (50, "Login successful!"));
       if (loginmsg++)
         break;
       Time_Stamp ();
@@ -279,12 +281,14 @@ void Server_Response( SOK_T sok, BYTE *data, DWORD len, WORD cmd, WORD ver, DWOR
       break;
    case SRV_END_OF_SEARCH:
       R_undraw ();
-      M_print( SEARCH_DONE_STR );
-      if ( len >= 1 ) {
-         if (  data[0] == 1 ) {
-            M_print( "\t" TOO_MANY_STR  );
+      M_print (i18n (45, "Search Done."));
+      if (len >= 1) {
+         M_print ("\t");
+         if (data[0] == 1) 
+         {
+            M_print (i18n (44, "Too many users found."));
 	 } else {
-            M_print( "\t" ALL_FOUND_STR );
+            M_print (i18n (43, "All users found."));
 	 }
       } 
       M_print ("\n");
@@ -317,9 +321,10 @@ void Server_Response( SOK_T sok, BYTE *data, DWORD len, WORD cmd, WORD ver, DWOR
         M_print ("\a " CYAN BOLD "%10s" NOCOL " ", UIN2Name (Chars_2_DW (s_mesg->uin)));
         /*
         if ( 0 == ( Chars_2_Word( s_mesg->type ) & MASS_MESS_MASK ) )
-           M_print( INSTANT_MSG_STR "\a " );
+           M_print (i18n (32, " - Instant Message"));
         else
-           M_print( INSTANT_MASS_MSG_STR "\a " );
+           M_print (i18n (33, " - Instant " SERVCOL "Mass" NOCOL " Message"));
+        M_print ("\a ");
         */
         if ( Verbose )
            M_print( " Type = %04x\t", Chars_2_Word( s_mesg->type ) );

@@ -40,7 +40,7 @@ static 	BOOL No_Prompt = FALSE;
 /***************************************************************
 Turns keybord echo off for the password
 ****************************************************************/
-S_DWORD Echo_Off( void )
+S_DWORD Echo_Off(void)
 {
 #ifdef UNIX
     struct termios attr; /* used for getting and setting terminal
@@ -67,7 +67,7 @@ S_DWORD Echo_Off( void )
 /***************************************************************
 Turns keybord echo back on after the password
 ****************************************************************/
-S_DWORD Echo_On( void )
+S_DWORD Echo_On(void)
 {
 #ifdef UNIX
     struct termios attr; /* used for getting and setting terminal
@@ -84,24 +84,36 @@ S_DWORD Echo_On( void )
 /**************************************************************
 Same as M_print but for FD_T's
 ***************************************************************/
-void M_fdprint( FD_T fd, char *str, ... )
+void M_fdprint (FD_T fd, const char *str, ...)
 {
    va_list args;
    int k;
-   char buf[2048]; /* this should big enough */
-        
-   assert( buf != NULL );
-   assert( 2048 >= strlen( str ) );
-   
-   va_start( args, str );
-   vsnprintf( buf, sizeof(buf), str, args );
-   k = write( fd, buf, strlen( buf ) );
-   if ( k != strlen( buf ) )
+   char buf[2048];
+
+   va_start (args, str);
+   vsnprintf (buf, sizeof(buf), str, args);
+   k = write (fd, buf, strlen(buf));
+   if (k != strlen(buf))
    {
-      perror(str);
+      perror (str);
       exit (10);
    }
-   va_end(args);
+   va_end (args);
+}
+
+/*
+ * Open a file for reading.
+ */
+FD_T M_fdopen (const char *fmt, ...)
+{
+   va_list args;
+   char buf[2048];
+
+   va_start(args, fmt);
+   vsnprintf (buf, sizeof(buf), fmt, args);
+   va_end (args);
+   
+   return open (buf, O_RDONLY);
 }
 
 #ifdef UNIX
@@ -149,7 +161,7 @@ static void M_prints(const char *str)
    int         i;
    int         sw = Get_Max_Screen_Width () - IndentCount;
 
-   for ( ; *str; str++)
+   for (; *str; str++)
    {
       for (p = s = str; *p; p++)
       {
@@ -281,7 +293,7 @@ static void M_prints(const char *str)
 /**************************************************************
 M_print with colors.
 ***************************************************************/
-void M_print (char *str, ...)
+void M_print (const char *str, ...)
 {
    va_list args;
    char buf[2048];
@@ -303,45 +315,45 @@ void M_print (char *str, ...)
 Prints the preformatted string to stdout.
 Plays sounds if appropriate.
 ************************************************************/
-static void M_prints( char *str )
+static void M_prints(char *str)
 {
    int i, temp;
    static int chars_printed=0;
    
-   for ( i=0; str[i] != 0; i++ )
+   for (i=0; str[i] != 0; i++)
    {
-      if ( str[i] != '\a' )
+      if (str[i] != '\a')
          {
-            if ( str[ i ] == '\n' ) {
-               printf( "\n" ) ;
+            if (str[ i ] == '\n') {
+               printf("\n") ;
                chars_printed = 0;
             }
-            else if ( str[ i ] == '\r' ) {
-               printf( "\r" ) ;
+            else if (str[ i ] == '\r') {
+               printf("\r") ;
                chars_printed = 0;
             }
-            else if ( str[ i ] == '\t' ) {
-               temp = (chars_printed % TAB_STOP );
+            else if (str[ i ] == '\t') {
+               temp = (chars_printed % TAB_STOP);
                /*chars_printed += TAB_STOP - temp; */
                temp = TAB_STOP - temp;
-               for ( ; temp != 0; temp-- ) { 
-			M_prints( " " );
+               for (; temp != 0; temp--) { 
+			M_prints(" ");
 		 }
             }
-            else if ( ( str[ i ] >= 32 ) || ( str[i] < 0 ) ) {
-               printf( "%c", str[i] );
+            else if ((str[ i ] >= 32) || (str[i] < 0)) {
+               printf("%c", str[i]);
                chars_printed++;
-               if ( ( Get_Max_Screen_Width() != 0 ) &&
-			( chars_printed > Get_Max_Screen_Width() ) ) {
-                  printf( "\n" );
+               if ((Get_Max_Screen_Width() != 0) &&
+			(chars_printed > Get_Max_Screen_Width())) {
+                  printf("\n");
 		  chars_printed = 0;
                }
             }
          }
-      else if ( SOUND_ON == Sound )
-         printf( "\a" );
-      else if ( SOUND_CMD == Sound )
-     system ( Sound_Str );
+      else if (SOUND_ON == Sound)
+         printf("\a");
+      else if (SOUND_CMD == Sound)
+     system (Sound_Str);
    }
 }
 
@@ -387,41 +399,41 @@ Reads a line of input from the file descriptor fd into buf
 an entire line is read but no more than len bytes are 
 actually stored
 ************************************************************/
-int M_fdnreadln( FD_T fd, char *buf, size_t len )
+int M_fdnreadln(FD_T fd, char *buf, size_t len)
 {
    int i,j;
    char tmp;
 
-   assert( buf != NULL );
-   assert( len > 0 );
+   assert(buf != NULL);
+   assert(len > 0);
    tmp = 0;
    len--;
-   for ( i=-1; ( tmp != '\n' )  ; )
+   for (i=-1; (tmp != '\n')  ;)
    {
-      if  ( ( i < len ) || ( i == -1 ) )
+      if  ((i < len) || (i == -1))
       {
          i++;
-         j = read( fd, &buf[i], 1 );
+         j = read(fd, &buf[i], 1);
          tmp = buf[i];
       }
       else
       {
-         j = read( fd, &tmp, 1 );
+         j = read(fd, &tmp, 1);
       }
-      assert( j != -1 );
-      if ( j == 0 )
+      assert(j != -1);
+      if (j == 0)
       {
          buf[i] =  0;
          return -1;
       }
    }
-   if ( i < 1 )
+   if (i < 1)
    {
       buf[i] = 0;
    }
    else
    {
-      if ( buf[i-1] == '\r' )
+      if (buf[i-1] == '\r')
       {
          buf[i-1] = 0;
       }
@@ -437,7 +449,7 @@ int M_fdnreadln( FD_T fd, char *buf, size_t len )
 Disables the printing of the next prompt.
 useful for multipacket messages.
 ******************************************************/
-void Kill_Prompt( void )
+void Kill_Prompt(void)
 {
      No_Prompt = TRUE;
 }
@@ -447,16 +459,19 @@ Displays the Micq prompt.  Maybe someday this will be
 configurable
 ******************************************************/
 extern DWORD last_uin;
-void Prompt( void )
+void Prompt(void)
 {
    static char buff[200];
    if (last_uin_prompt && last_uin)
    {
-      snprintf (buff, 198, SERVCOL "[%s]" NOCOL " ", UIN2Name (last_uin));
+      snprintf (buff, sizeof (buff), SERVCOL "[%s]" NOCOL " ", UIN2Name (last_uin));
       R_doprompt (buff);
    }
    else
-      R_doprompt (SERVCOL PROMPT_STR NOCOL);
+   {
+      snprintf (buff, sizeof (buff), SERVCOL "%s" NOCOL, i18n (40, "Micq> "));
+      R_doprompt (buff);
+   }
    No_Prompt = FALSE;
 #ifndef USE_MREADLINE
    fflush (stdout);
@@ -467,22 +482,24 @@ void Prompt( void )
 Displays the Micq prompt.  Maybe someday this will be 
 configurable
 ******************************************************/
-void Soft_Prompt( void )
+void Soft_Prompt(void)
 {
 #if 1
-   R_doprompt ( SERVCOL PROMPT_STR NOCOL );
+   static char buff[200];
+   snprintf (buff, sizeof (buff), SERVCOL "%s" NOCOL, i18n (40, "Micq> "));
+   R_doprompt (buff);
    No_Prompt = FALSE;
 #else
-   if ( !No_Prompt ) {
-      M_print( PROMPT_STR );
-      fflush( stdout );
+   if (!No_Prompt) {
+      M_print (SERVCOL i18n (40, "Micq> ") NOCOL);
+      fflush(stdout);
    } else {
      No_Prompt = FALSE;
    }
 #endif
 }
 
-void Time_Stamp( void )
+void Time_Stamp(void)
 {
    struct tm *thetime;
    time_t p;
@@ -490,58 +507,5 @@ void Time_Stamp( void )
    p=time(NULL);
    thetime=localtime(&p);
 
-   M_print( "%.02d:%.02d:%.02d",thetime->tm_hour,thetime->tm_min,thetime->tm_sec );
-}
-
-
-/***   adds <uin> to the tablist  ***/
-void add_tab( DWORD uin )
-{
-    int i, j;
-    char *new = NULL;
-    char *temp = NULL;
-    char *orig = NULL;
-
-    /** If the UIN is in the Userlist, add the nick **/
-    for ( i=0; i < Num_Contacts; i++ )
-    {
-	if ( Contacts[i].uin == uin )
-	{
-	    /* checking for repeated entry missing */
-	    new = strdup( Contacts[i].nick );
-	    break;
-	}
-    }
-    
-    /** else, add the UIN only. **/
-    if ( NULL == new ) 
-    {
-	new = calloc( 1, 3 * sizeof( DWORD ) + 1 );
-	sprintf( new, "%ld", uin );
-    }
-    
-    orig = new;
-    
-    /** insert the new UIN at place [0]
-     ** place [0] into [1] (...) until 
-     ** (([n] == NULL) or ([0] == [n])) -> entry exists.
-    **/
-    for ( j=0; j<TAB_SLOTS; j++ ) 
-    {
-        temp = tab_array[j];
-	tab_array[j] = new;
-
-        if ( temp == NULL ) 
-	    break;
-
-        if ( ! strcasecmp( orig, temp ) )
-    	    break;
-
-        new = temp;
-    }
-    
-    /** Now, if the tab-list is full, throw the last entry out **/
-    if ( temp != NULL )
-	    free( temp );
-
+   M_print ("%.02d:%.02d:%.02d",thetime->tm_hour,thetime->tm_min,thetime->tm_sec);
 }

@@ -18,6 +18,7 @@ Author : zed@mentasm.com
 #include <assert.h>
 #include <limits.h>
 #include "micq.h"
+#include "util_ui.h"
 
 /*unsigned int next_resend;*/
 DWORD Packets_Sent = 0;

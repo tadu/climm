@@ -12,9 +12,9 @@
 #ifdef USE_MREADLINE
 
 void R_init (void);			/* init mreadline lib */
-void R_setprompt (char *prompt);	/* set prompt */
+void R_setprompt (const char *prompt);	/* set prompt */
 void R_prompt (void);			/* type prompt */
-void R_doprompt (char *prompt);		/* = {R_setprompt(p);R_prompt() */
+void R_doprompt (const char *prompt);		/* = {R_setprompt(p);R_prompt() */
 int R_process_input (void);		/* parse input, returns 1 if CR typed */
 void R_getline (char *buf, int len);	/* returns line */
 void R_undraw (void);			/* hide input */

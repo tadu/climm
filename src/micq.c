@@ -1,4 +1,5 @@
 #include "micq.h"
+#include "util_ui.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -85,11 +86,11 @@ WORD s5DestPort;
 /* SOCKS5 stuff end */
 
 BOOL auto_resp=FALSE;
-char auto_rep_str_dnd[450] = { DND_DEFAULT_STR };
-char auto_rep_str_away[450] = { AWAY_DEFAULT_STR };
-char auto_rep_str_na[450] = { NA_DEFAULT_STR };
-char auto_rep_str_occ[450] = { OCC_DEFAULT_STR };
-char auto_rep_str_inv[450] = { INV_DEFAULT_STR };
+char auto_rep_str_dnd[450] = { 0 };
+char auto_rep_str_away[450] = { 0 };
+char auto_rep_str_na[450] = { 0 };
+char auto_rep_str_occ[450] = { 0 };
+char auto_rep_str_inv[450] = { 0 };
 char clear_cmd[16];
 char message_cmd[16];
 char info_cmd[16];
@@ -132,9 +133,6 @@ unsigned int away_time;
 
 unsigned int next_resend;
 
-char * tab_array[TAB_SLOTS];
-int tab_pointer;
-
 /* aaron
    Actual definition of the variable holding Micq's start time.				*/
 time_t	MicqStartTime;
@@ -172,14 +170,14 @@ SOK_T Connect_Remote( char *hostname, int port, FD_T aux )
 
    sok = socket( AF_INET, SOCK_DGRAM, 0 );/* create the unconnected socket*/
 
-   if ( sok == -1 ) 
+   if (sok == -1) 
    {
-      perror( SOCKET_FAIL_STR );
-      exit( 1 );
+      perror (i18n (55, "Socket creation failed"));
+      exit (1);
    }   
-   if ( Verbose )
+   if (Verbose)
    {
-      M_fdprint( aux, SOCKET_CREAT_STR );
+      M_fdprint (aux, i18n (56, "Socket created attempting to connect\n"));
    }
 
 if( s5Use )
@@ -291,8 +289,8 @@ if( s5Use )
       {
          if ( Verbose )
          {
-            M_fdprint( aux, BAD_HOST1_STR );
-            M_fdprint( aux, BAD_HOST2_STR, hostname );
+            M_fdprint (aux, i18n (57, "The hostname "));
+            M_fdprint (aux, i18n (58, "%s was not found.\n"), hostname);
             /*herror( "Can't find hostname" );*/
          }
          return -1;
@@ -314,17 +312,17 @@ if( s5Use )
 
    conct = connect( sok, (struct sockaddr *) &sin, sizeof( sin ) );
 
-   if ( conct == -1 )/* did we connect ?*/
+   if (conct == -1)/* did we connect ?*/
    {
-      if ( Verbose )
+      if (Verbose)
       {
-   	   M_fdprint( aux, CONNECT_REFUSED_STR, port, hostname );
+   	   M_fdprint (aux, i18n (54, " Conection Refused on port %d at %s\n"), port, hostname);
          #ifdef FUNNY_MSGS
             M_fdprint( aux, " D'oh!\n" );
          #endif
-   	   perror( "connect" );
+   	   perror ("connect");
       }
-	   return -1;
+      return -1;
    }
 
    length = sizeof( sin ) ;
@@ -332,10 +330,10 @@ if( s5Use )
    our_ip = ntohl(sin.sin_addr.s_addr);
    our_port = ntohs(sin.sin_port);
 
-   if (Verbose )
+   if (Verbose)
    {
-      M_fdprint( aux, OUR_PORT_STR, ntohs( sin.sin_port ) );
-      M_fdprint( aux, CONNECT_SUCCESS, hostname );
+      M_fdprint (aux, i18n (59, "The port that will be used for tcp ( not yet implemented ) is %d\n"), ntohs (sin.sin_port));
+      M_fdprint (aux, i18n (53, "Connected to %s, waiting for response\n"), hostname);
    }
 
    return sok;
@@ -366,8 +364,8 @@ int Connect_Remote_Old( char *hostname, int port, FD_T aux )
       {
          if ( Verbose )
          {
-            M_fdprint( aux, BAD_HOST1_STR );
-            M_fdprint( aux, BAD_HOST2_STR, hostname );
+            M_fdprint (aux, i18n (57, "The hostname "));
+            M_fdprint (aux, i18n (58, "%s was not found.\n"), hostname);
             /*herror( "Can't find hostname" );*/
          }
          return 0;
@@ -377,25 +375,25 @@ int Connect_Remote_Old( char *hostname, int port, FD_T aux )
 	sin.sin_family = AF_INET; /* we're using the inet not appletalk*/
 	sin.sin_port = htons( port );	/* port */
 	sok = socket( AF_INET, SOCK_DGRAM, 0 );/* create the unconnected socket*/
-   if ( sok == -1 ) 
+   if (sok == -1) 
    {
-      perror( SOCKET_FAIL_STR );
-      exit( 1 );
+      perror (i18n (55, "Socket creation failed"));
+      exit (1);
    }   
-   if ( Verbose )
+   if (Verbose)
    {
-      M_fdprint( aux, SOCKET_CREAT_STR );
+      M_fdprint (aux, i18n (56, "Socket created attempting to connect\n"));
    }
 	conct = connect( sok, (struct sockaddr *) &sin, sizeof( sin ) );
 	if ( conct == -1 )/* did we connect ?*/
 	{
-      if ( Verbose )
+      if (Verbose)
       {
-   	   M_fdprint( aux,CONNECT_REFUSED_STR , port, hostname );
+   	   M_fdprint (aux,i18n (54, " Conection Refused on port %d at %s\n"), port, hostname);
          #ifdef FUNNY_MSGS
             M_fdprint( aux, " D'oh!\n" );
          #endif
-   	   perror( "connect" );
+   	   perror ("connect");
       }
 	   return 0;
 	}
@@ -403,10 +401,10 @@ int Connect_Remote_Old( char *hostname, int port, FD_T aux )
    getsockname( sok, (struct sockaddr *) &sin, &length );
    our_ip = sin.sin_addr.s_addr;
    our_port = sin.sin_port;
-   if (Verbose )
+   if (Verbose)
    {
-      M_fdprint( aux, OUR_PORT_STR, ntohs( sin.sin_port ) );
-      M_fdprint( aux, CONNECT_SUCCESS, hostname );
+      M_fdprint (aux, i18n (59, "The port that will be used for tcp (not yet implemented) is %d\n"), ntohs (sin.sin_port));
+      M_fdprint (aux, i18n (53, "Connected to %s, waiting for response\n"), hostname);
    }
    return sok;
 }
@@ -464,9 +462,9 @@ if (Verbose) {
       if ( Chars_2_Word( pak.head.seq ) == 0 ) {;} else {  /*yes ugly*/
       if ( Chars_2_Word( pak.head.cmd ) != SRV_ACK ) /* ACKs don't matter */
       {
-         if ( Verbose ) {
+         if (Verbose) {
        	    R_undraw();
-            M_print( IGNORE_CMD_STR, Chars_2_Word( pak.head.cmd )  );
+            M_print (i18n (67, "\nIgnored a message cmd  %04x\n"), Chars_2_Word (pak.head.cmd));
 	    R_redraw();
 	 }
          ack_srv( sok, Chars_2_DW( pak.head.seq ) ); /* LAGGGGG!! */
@@ -506,13 +504,13 @@ void Check_Endian( void )
    passwd[8] = 0;
    passwd[9] = 0;
    i = *  ( DWORD *) passwd;
-   if ( i == 1 )
+   if (i == 1)
    {
-      M_print( INTEL_BO_STR  );
+      M_print (i18n (65, "Using intel byte ordering."));
    }
    else
    {
-      M_print( MOTOROLA_BO_STR );
+      M_print (i18n (66, "Using motorola byte ordering."));
    }
 }
 
@@ -530,11 +528,11 @@ void Idle_Check( SOK_T sok )
            && tm < away_time && idle_flag == 1) {
       icq_change_status(sok,STATUS_ONLINE);
       R_undraw ();
-      M_print( AUTO_STATUS_CHANGE_STR );
-      Print_Status(Current_Status);
-      M_print( " " );
+      M_print (i18n (64, "\nAuto-Changed status to "));
+      Print_Status (Current_Status);
+      M_print (" ");
       Time_Stamp();
-      M_print( "\n" );
+      M_print ("\n");
       R_redraw ();
       idle_flag=0;
       return;
@@ -542,8 +540,8 @@ void Idle_Check( SOK_T sok )
    if ( (Current_Status == STATUS_AWAY) && (tm >= (away_time*2)) && (idle_flag == 1) ) {
       icq_change_status(sok,STATUS_NA);
       R_undraw ();
-      M_print( AUTO_STATUS_CHANGE_STR );
-      Print_Status(Current_Status);
+      M_print (i18n (64, "Auto-Changed status to "));
+      Print_Status (Current_Status);
       M_print( " " );
       Time_Stamp();
       M_print( "\n" );
@@ -556,11 +554,11 @@ void Idle_Check( SOK_T sok )
    if(tm>=away_time) {
       icq_change_status(sok,STATUS_AWAY); 
       R_undraw ();
-      M_print( AUTO_STATUS_CHANGE_STR );
-      Print_Status(Current_Status);
-      M_print( " " );
+      M_print (i18n (64, "\nAuto-Changed status to "));
+      Print_Status (Current_Status);
+      M_print (" ");
       Time_Stamp();
-      M_print( "\n" );
+      M_print ("\n");
       R_redraw ();
       idle_flag=1;
    }
@@ -592,6 +590,8 @@ int main( int argc, char *argv[] )
    WSADATA wsaData;
 #endif
 
+   i = i18nOpen (NULL);
+
    setbuf (stdout, NULL); /* Don't buffer stdout */
    M_print( SERVCOL "Matt's ICQ clone " NOCOL "compiled on %s %s\n" \
             SERVCOL "Version " MICQ_VERSION NOCOL "\n",      \
@@ -604,13 +604,10 @@ int main( int argc, char *argv[] )
    M_print( "No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n" );
 #endif
 
-   /* aaron
-    "tabs" is a neat feature, but if you've talked to less than TAB_SLOTS
-    people, the first person in the list will repeat. This appears to be
-    because tab_array is initialized to zero (*somewhere*, but I can't find
-    it). So we'll try initializing to -1 and see if it helps at all -- this
-    way we can detect an early-exit condition.                              */
-   memset(tab_array, 0, (TAB_SLOTS * sizeof(int) ) );
+   if (i)
+       M_print (i18n (0, "Successfully loaded translations (%d entries). No version.\n"), i);
+   else
+       M_print ("Couldn't load internationalization.\n");
 
    /* and now we save the time that Micq was started, so that uptime will be
       able to appear semi intelligent.										*/
@@ -641,12 +638,12 @@ int main( int argc, char *argv[] )
    }
    
    Get_Config_Info();
-   srand( time( NULL ) );
-   if ( !strcmp( passwd, "" ) )
+   srand (time (NULL));
+   if (!strcmp (passwd, ""))
    {
-      M_print( ENTER_PW_STR );
+      M_print( i18n (63, "Enter password : ") );
       Echo_Off();
-      M_fdnreadln(STDIN, passwd, sizeof(passwd));
+      M_fdnreadln (STDIN, passwd, sizeof(passwd));
       Echo_On();
    }
    memset( serv_mess, FALSE, 1024 );
@@ -681,8 +678,8 @@ int main( int argc, char *argv[] )
    if ( ( sok == -1 ) || ( sok == 0 ) )
 #endif
    {
-   	M_print( CONNECT_ERROR );
-   	exit( 1 );
+   	M_print (i18n (52, "Couldn't establish connection\n"));
+   	exit (1);
    }
    Login( sok, UIN, &passwd[0], our_ip, our_port, set_status );
    next = time( NULL );

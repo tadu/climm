@@ -3,6 +3,7 @@ Author Lawrence Gold
 Handles resending missed packets.
 *************************************************************/
 #include "micq.h"
+#include "util_ui.h"
 #include <stdlib.h>
 #include <assert.h>
 #include <limits.h>

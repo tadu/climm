@@ -17,9 +17,9 @@ CLIBS =
 #CFLAGS += -posix
 OBJS =file_util.o icq_response.o micq.o msg_queue.o rus_conv.o sendmsg.o \
       server.o  ui.o util.o  util_ui.o mreadline.o mselect.o network.o \
-      char_conv.o jp_conv.o
+      char_conv.o jp_conv.o tabs.o i18n.o
       
-HEADERS = config.h datatype.h micq.h ui.h msg_queue.h mreadline.h mselect.h util_ui.h
+HEADERS = config.h datatype.h micq.h ui.h msg_queue.h mreadline.h mselect.h util_ui.h tabs.h i18n.h
 
 INCLUDE = -I../include -I../lang
 

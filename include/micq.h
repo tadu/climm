@@ -73,7 +73,6 @@ Changes :
    #define CLIENTCOL       ""
    #define NOCOL           ""
 #endif
-#include "lang.h"
 
 #define SOUND_ON 1
 #define SOUND_OFF 0
@@ -86,13 +85,6 @@ Changes :
 #define STDIN 0
 #define STDOUT 1
 #define STDERR 2
-
-
-/* The maximum number of contacts to store in the "last people
-   I talked to" array (tab_array) */
-#define TAB_SLOTS 10
-extern char * tab_array[TAB_SLOTS];
-extern int tab_pointer;
 
 #if ICQ_VER == 0x0005
    typedef struct
@@ -502,6 +494,8 @@ typedef struct {
 	BYTE lang3;
 } OTHER_INFO_STRUCT, *OTHER_INFO_PTR;
 
+#include "i18n.h"
+#include "tabs.h"
 void Keep_Alive( int sok );
 void snd_got_messages( int sok );
 void snd_contact_list( int sok );
@@ -514,9 +508,6 @@ void ack_srv( SOK_T sok, DWORD seq );
 void User_Offline( int sok, BYTE * pak );
 int Save_RC();
 void User_Online( int sok, BYTE * pak );
-void M_fdprint( FD_T fd, char *str, ... );
-int M_fdnreadln( FD_T fd, char *buf, size_t len );
-char *Convert_Status_2_Str( DWORD status );
 void Print_Status( DWORD new_status );
 void Get_Input( SOK_T sok , int *idle_val, int *idle_flag ); /* GRYN */
 void Quit_ICQ( SOK_T sok );
@@ -562,7 +553,6 @@ size_t SOCKWRITE( SOK_T sok, void * ptr, size_t len );
 size_t SOCKREAD( SOK_T sok, void * ptr, size_t len );
 void Hex_Dump( void *buffer, size_t len );
 void icq_sendurl( SOK_T sok, DWORD uin, char *description, char *url );
-void M_print( char *str, ... );
 void Server_Response( SOK_T sok, BYTE *data, DWORD len, WORD cmd, WORD ver, DWORD seq, DWORD uin );
 void icq_rand_user_req( SOK_T sok, DWORD group );
 void icq_rand_set( SOK_T sok, DWORD group );
@@ -582,7 +572,7 @@ CONTACT_PTR UIN2Contact( DWORD uin );
 void Get_Unix_Config_Info( void );
 #endif
 void add_tab( DWORD uin );
-void get_tab( void );
+/*void get_tab( void );*/
 void update_list( int sok, DWORD uin, int which, BOOL add );
 void Update_About( SOK_T sok, const char *about );
 void Update_Other( SOK_T sok, OTHER_INFO_PTR info );

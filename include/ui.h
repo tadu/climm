@@ -1,8 +1,4 @@
 extern DWORD last_uin;
-static DWORD multi_uin;
-static int status = 0;
-static void Show_Status( char * );
-static DWORD uin;
 
 #define UIN_DELIMS ":|/" /* add space if you don't want your nick names to have spaces */
 #define END_MSG_STR "."
@@ -48,17 +44,3 @@ static DWORD uin;
                             M_print (" "); \
                             Print_Status (Current_Status); \
                             M_print ("\n");
-
-
-static void Change_Function( SOK_T sok );
-static void Help_Function( void );
-static void Info_Function( SOK_T sok );
-static void Auto_Function( SOK_T sok );
-static void Alter_Function( void );
-static void Message_Function( SOK_T sok );
-static void Reply_Function( SOK_T sok );
-static void Again_Function( SOK_T sok );
-static void Verbose_Function( void );
-static void Random_Function( SOK_T sok );
-static void Random_Set_Function( SOK_T sok );
-static void Show_Ignore_Status( void );

@@ -1,4 +1,5 @@
 #include "micq.h"
+#include "util_ui.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -542,8 +543,8 @@ static void Read_RC_File( FD_T rcf )
    /* now tab the nicks we may have spooled earlier */
    for( i=0; i<spooled_tab_nicks; i++)
    {
-      add_tab( nick2uin( tab_nick_spool[i] ) );
-      free( tab_nick_spool[i] );
+      TabAddUIN (nick2uin (tab_nick_spool[i]));
+      free (tab_nick_spool[i]);
    }
 
    if(clear_cmd[0]=='\0')
@@ -611,10 +612,20 @@ static void Read_RC_File( FD_T rcf )
        strcpy(iglist_cmd, "i");
    if(about_cmd[0]=='\0')
        strcpy(about_cmd, "about");
-
-
    if(change_cmd[0]=='\0')
        strcpy(change_cmd, "change");
+       
+   if (!*auto_rep_str_dnd)
+       strcpy (auto_rep_str_dnd, i18n (9, "User is DND [Auto-Message]"));
+   if (!*auto_rep_str_away)
+       strcpy (auto_rep_str_away, i18n (10, "User is Away [Auto-Message]"));
+   if (!*auto_rep_str_na)
+       strcpy (auto_rep_str_na, i18n (11, "User is not available [Auto-Message]"));
+   if (!*auto_rep_str_occ)
+       strcpy (auto_rep_str_occ, i18n (12, "User is Occupied [Auto-Message]"));
+   if (!*auto_rep_str_inv)
+       strcpy (auto_rep_str_inv, i18n (13, "User is offline"));
+
    if ( Verbose )
    {
       M_print( "UIN = %ld\n", UIN );
