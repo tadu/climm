@@ -375,10 +375,11 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
         ack_msg = "";
 
 /*  if (serv->status & STATUSF_DND)  ack_status  = pri & 4 ? TCP_ACK_ONLINE : TCP_ACK_DND; else
-    if (serv->status & STATUSF_OCC)  ack_status  = TCP_ACK_OCC;    else
  *
  * Don't refuse until we have sensible preferences for that
  */
+    if (serv->status & STATUSF_DND)  ack_status  = TCP_ACK_ONLINE; else
+    if (serv->status & STATUSF_OCC)  ack_status  = TCP_ACK_ONLINE; else
     if (serv->status & STATUSF_NA)   ack_status  = TCP_ACK_NA;     else
     if (serv->status & STATUSF_AWAY) ack_status  = TCP_ACK_AWAY;
     else                             ack_status  = TCP_ACK_ONLINE;
