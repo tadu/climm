@@ -53,6 +53,11 @@ binary-arch: build install
 	dh_installdocs
 	
 	dh_installchangelogs ChangeLog
+	install -D -m 644 doc/micq.xpm debian/micq/usr/X11R6/include/X11/pixmaps/micq.xpm
+	install -D -m 644 doc/micq@16x16.png debian/micq/usr/share/icons/hicolor/16x16/apps/micq.png
+	install -D -m 644 doc/micq@32x32.png debian/micq/usr/share/icons/hicolor/32x32/apps/micq.png
+	install -D -m 644 doc/micq@48x48.png debian/micq/usr/share/icons/hicolor/48x48/apps/micq.png
+	dh_installmenu
 	
 	dh_strip
 	dh_compress
