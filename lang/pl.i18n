@@ -1,5 +1,5 @@
 # $Id$ (Polish)
-#  EN: __.i18n,v 1.63.2.14 2004/01/05 23:59:18
+#  EN: __.i18n,v 1.63.2.15 2004/01/16 01:02:29
 #-#1010:Nie ma mnie przy komputerze
 #1000:iso-8859-1
 #1001:<lang>
@@ -1224,3 +1224,4 @@
 #2389:%s <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
 #2390:No or empty pattern given.\n
 #2391:Case sensitive search of <pattern> in log file of <contact>.
+#2392:Your status is %s (%s).\n
