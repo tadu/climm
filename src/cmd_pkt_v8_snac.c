@@ -233,7 +233,7 @@ void SnacPrint (Packet *pak)
 
     if (prG->verbose & DEB_PACK8DATA || ~prG->verbose & DEB_PACK8)
     {
-        char *syn = strdup (s_sprintf ("gs%dx%d", fam, cmd));
+        char *syn = strdup (s_sprintf ("gs%dx%ds", fam, cmd));
         M_print (PacketDump (pak, syn));
         free (syn);
     }
