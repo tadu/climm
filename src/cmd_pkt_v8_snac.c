@@ -93,7 +93,8 @@ static SNAC SNACS[] = {
     { 19, 27, "ubBW",     "SRV_AUTHREPLY",       SnacSrvAuthreply},
     { 19, 28, "u",        "SRV_ADDEDYOU",        SnacSrvAddedyou},
     { 21,  1, "Wt-",      "SRV_TOICQERR",        NULL},
-    { 21,  3, "t-",       "SRV_FROMICQSRV",      SnacSrvFromicqsrv},
+    { 21,  3, "t[1wDw[2010ww[270bbwLb]]]-",
+                          "SRV_FROMICQSRV",      SnacSrvFromicqsrv},
     { 23,  1, "Wt-",      "SRV_REGREFUSED",      SnacSrvRegrefused},
     { 23,  5, "t-",       "SRV_NEWUIN",          SnacSrvNewuin},
     {  1,  2, "W-",       "CLI_READY",           NULL},
@@ -791,6 +792,7 @@ static JUMP_SNAC_F(SnacSrvSrvackmsg)
     
     switch (type)
     {
+        case 1:
         case 4:
             IMOffline (cont, event->conn);
 
