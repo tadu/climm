@@ -241,10 +241,8 @@ void Initalize_RC_File ()
         Save_RC ();
 
     ContactAdd (11290140, "mICQ author (dead)");
-/*    ContactAdd (99798577, "Rico \"mc\" Glöckner");
-    ContactAdd (-99798577, "mICQ maintainer"); */
     ContactAdd (82274703, "Rüdiger Kuhlmann");
-    ContactAdd (-82274703, "mICQ maintainer");
+    ContactAdd (82274703, "mICQ maintainer");
 }
 
 void Read_RC_File (FILE *rcf)
@@ -252,7 +250,7 @@ void Read_RC_File (FILE *rcf)
     char buf[450];
     char *tmp;
     char *p;
-    Contact *cont;
+    Contact *cont = NULL;
     Session *oldsess = NULL, *sess = NULL;
     int i, section, dep = 0;
     UDWORD uin;
@@ -544,6 +542,7 @@ void Read_RC_File (FILE *rcf)
                             flags &= ~CONT_INTIMATE;
                             continue;
                         case ' ':
+                        case '-':
                             continue;
                     }
                     break;
@@ -561,7 +560,9 @@ void Read_RC_File (FILE *rcf)
                 }
                 else
                 {
-                    uin = -1;
+                    if (!cont)     /* ignore noise */
+                        continue;
+                    uin = cont->uin;
                     tmp = strtok (NULL, "");
                     flags |= CONT_ALIAS;
                 }
