@@ -75,7 +75,7 @@ Connection *PrefNewConnection (UDWORD uin, const char *passwd)
 
     conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%ld", uin));
     OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
-    cont = ContactFindCreate (conn->contacts, 0, 82274703, "R\xc3\xbc" "diger Kuhlmann");
+    cont = ContactFindCreate (conn->contacts, 0, 82274703, "mICQ");
     ContactFindCreate (conn->contacts, 0, 82274703, "Tadu");
     OptSetStr (&cont->copts, CO_COLORINCOMING, OptC2S ("red bold"));
     OptSetStr (&cont->copts, CO_COLORMESSAGE, OptC2S ("red bold"));
@@ -152,7 +152,6 @@ void Initialize_RC_File ()
     prG->s5Use = 0;
     prG->s5Port = 0;
 
-    rl_print ("\n");
     rl_print (i18n (1784, "If you are firewalled, you may need to use a SOCKS5 server. If you do, please enter its hostname or IP address. Otherwise, or if unsure, just press return.\n"));
     rl_printf ("%s ", i18n (1094, "SOCKS5 server:"));
     fflush (stdout);
@@ -210,19 +209,26 @@ void Initialize_RC_File ()
         conn->open = &ConnectionInitServer;
         conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%ld", uin));
         OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
-        cont = ContactFindCreate (conn->contacts, 0, 82274703, "R\xc3\xbc" "diger Kuhlmann");
+        cont = ContactFindCreate (conn->contacts, 0, 82274703, "mICQ");
         ContactFindCreate (conn->contacts, 0, 82274703, "Tadu");
-        OptSetStr (&cont->copts, CO_COLORINCOMING, "red bold");
-        OptSetStr (&cont->copts, CO_COLORMESSAGE, "red bold");
+        OptSetStr (&cont->copts, CO_COLORINCOMING, OptC2S ("red bold"));
+        OptSetStr (&cont->copts, CO_COLORMESSAGE, OptC2S ("red bold"));
     }
     else
     {
         conn = PrefNewConnection (uin, passwd);
         rl_print (i18n (1791, "Setup wizard finished. Congratulations!\n"));
     }
+    rl_print ("\n");
     
+    {
+        char *tmp = strdup (PrefUserDir (prG));
+        if (tmp[strlen (tmp) - 1] == '/')
+            tmp[strlen (tmp) - 1] = '\0';
+        mkdir (tmp, 0700);
+        free (tmp);
+    }
     conn->flags |= CONN_WIZARD;
-
 #ifdef ENABLE_REMOTECONTROL
     conns = ConnectionC (TYPE_REMOTE);
     conns->open = &RemoteOpen;
