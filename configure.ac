@@ -293,7 +293,7 @@ fi
 AC_FUNC_VPRINTF
 AC_FUNC_SNPRINTF
 AC_FUNC_MEMMOVE
-AC_CHECK_FUNCS([atexit memset mkdir strcasecmp uname fcntl \
+AC_CHECK_FUNCS([atexit memset memcmp mkdir strcasecmp uname fcntl \
                 strchr strdup strncasecmp strpbrk strrchr strstr strtol strtok_r \
                 symlink chmod tcgetattr gettimeofday setlocale select])
 

@@ -345,6 +345,9 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             mg->webaware = PacketRead2 (pak);
             mm->sex = PacketRead1 (pak);
             mm->age = PacketRead2 (pak);
+            mm->age = PacketRead2 (pak);
+
+            cont->updated |= UPF_GENERAL_C;
             
             UtilUIDisplayMeta (cont);
             if (subtype == META_SRV_WP_LAST_USER && (dwdata = PacketRead4 (pak)))
@@ -414,7 +417,6 @@ void Display_Info_Reply (Connection *conn, Contact *cont, Packet *pak, UBYTE fla
 
 void Display_Ext_Info_Reply (Connection *conn, Packet *pak)
 {
-    const char *tabd;
     Contact *cont;
     MetaGeneral *mg;
     MetaMore *mm;
@@ -424,8 +426,6 @@ void Display_Ext_Info_Reply (Connection *conn, Packet *pak)
     
     if (!(mg = CONTACT_GENERAL (cont)) || !(mm = CONTACT_MORE (cont)))
         return;
-
-    M_printf ("%s " COLSERVER "%lu" COLNONE "\n", i18n (1967, "More Info for"), cont->uin);
 
     s_read (mg->city);
     mg->country = PacketRead2 (pak);
@@ -438,42 +438,9 @@ void Display_Ext_Info_Reply (Connection *conn, Packet *pak)
     s_read (mm->homepage);
     s_read (cont->meta_about);
 
-    if (*mg->city && *mg->state)
-        M_printf (COLSERVER "%-15s" COLNONE " %s, %s\n",
-                 i18n (1505, "Location:"), mg->city, mg->state);
-    else if (*mg->city)
-        M_printf (AVPFMT, i18n (1570, "City:"), mg->city);
-    else if (*mg->state)
-        M_printf (AVPFMT, i18n (1574, "State:"), mg->state);
+    cont->updated |= UPF_GENERAL_E;
 
-    if ((tabd = TableGetCountry (mg->country)))
-        M_printf (COLSERVER "%-15s" COLNONE " %s\t", 
-                 i18n (1511, "Country:"), tabd);
-    else
-        M_printf (COLSERVER "%-15s" COLNONE " %d\t", 
-                 i18n (1512, "Country code:"), mg->country);
-
-    M_printf ("(UTC %+05d)\n", -100 * (mg->tz / 2) + 30 * (mg->tz % 2));
-
-    if (mm->age && ~mm->age)
-        M_printf (COLSERVER "%-15s" COLNONE " %d\n", 
-                 i18n (1575, "Age:"), mm->age);
-    else
-        M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
-                 i18n (1575, "Age:"), i18n (1200, "not entered"));
-
-    M_printf (COLSERVER "%-15s" COLNONE " %s\n", i18n (1696, "Sex:"),
-               mm->sex == 1 ? i18n (1528, "female")
-             : mm->sex == 2 ? i18n (1529, "male")
-             :                i18n (1530, "not specified"));
-
-    if (*mg->phone)
-        M_printf (AVPFMT, i18n (1506, "Phone:"), mg->phone);
-    if (*mm->homepage)
-        M_printf (AVPFMT, i18n (1531, "Homepage:"), mm->homepage);
-    if (*cont->meta_about)
-        M_printf (COLSERVER "%-15s" COLNONE "\n%s\n",
-                 i18n (1525, "About:"), s_ind (cont->meta_about));
+    UtilUIDisplayMeta (cont);
 }
 
 void Recv_Message (Connection *conn, Packet *pak)

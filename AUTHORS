@@ -55,10 +55,9 @@ Current Translators:
 	Fabio KaLiF		<f.venturi__at__email.it>
 	    italian (it.i18n) translation
 	
-	"Pest"			<pezt__at__mail.ru>
-	    update russian (ru.i18n) translation to 0.4.9.3
-	    russian man pages, russian web page
-
+	Seva Gluschenko		<gvs__at__demos.net>
+	    updated russian (ru) translation to 0.4.10
+	
 	Guido Gloor		<haslo__at__haslo.ch>
 	    swiss-german (de_CH.i18n) translation to 0.4.9.3
 
@@ -66,6 +65,10 @@ Current Translators:
             (partial) romanian (ro.i18n) translation
         
 Former Translators:
+
+	"Pest"			<pezt__at__mail.ru>
+	    update russian (ru.i18n) translation to 0.4.9.3
+	    russian man pages, russian web page
 
         Deives Michellis	<dmichellis__at__yahoo.com>
             portuguese/brazil (pt_br) man pages to 0.4.9.?

@@ -480,7 +480,7 @@ Cap *PacketReadCap (Packet *pak)
         if (caps[id].cap)
         {
 #ifdef HAVE_MEMCMP
-            if (!memcmp (cap, caps[id].cap, caps[id].len)
+            if (!memcmp (cap, caps[id].cap, caps[id].len))
             {
                 if (caps[id].len != 16)
                 {
