@@ -1,5 +1,5 @@
 Summary:		text/line based ICQ client with many features
-Name:			micq%{!?_with_tcl:-notcl}%{!?_with_ssl:-nossl}
+Name:			micq
 Version:		0.4.10.6
 Release:		1
 Source:			micq-%{version}.tgz
@@ -92,6 +92,7 @@ install -D -m 644 -p doc/micq.xpm $RPM_BUILD_ROOT%{_datadir}/pixmaps/micq.xpm
 %clean
 test $RPM_BUILD_ROOT != / && rm -rf $RPM_BUILD_ROOT
 
+%package -n micq%{!?_with_tcl:-notcl}%{!?_with_ssl:-nossl}
 %files
 %defattr(-,root,root,0755)
 %doc NEWS AUTHORS FAQ README TODO COPYING COPYING-GPLv2
