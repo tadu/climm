@@ -70,7 +70,8 @@ Preferences *prG;
 
 void Idle_Check (Connection *conn)
 {
-    int delta;
+    int delta, saver = -1;
+    time_t now;
     UDWORD new = 0xffffffffL;
 
     if (~conn->type & TYPEF_ANY_SERVER)
@@ -82,13 +83,50 @@ void Idle_Check (Connection *conn)
         uiG.idle_val = 0;
         return;
     }
+    
+    now = time (NULL);
+
+    if (!uiG.idle_val)
+        uiG.idle_val = now;
+
+    delta = now - uiG.idle_val;
+
+    if (!prG->away_time && delta > 10)
+    {
+        saver = os_DetectLockedWorkstation();
+        
+        if (saver >= 0 && saver <= 3)
+        {
+            switch (saver)
+            {
+                case 0: /* no screen saver, not locked */
+                    if (!(conn->status & (STATUSF_AWAY | STATUSF_NA)))
+                        return;
+                    new = (conn->status & STATUSF_INV) | STATUS_ONLINE;
+                    break;
+                case 2: /* no scrren saver, but locked workstation */
+                    if ((conn->status & (STATUSF_AWAY | STATUSF_NA)) == STATUS_AWAY)
+                        return;
+                    new = (conn->status & STATUSF_INV) | STATUS_AWAY;
+                    break;
+                case 1: /* screen saver */
+                case 3:
+                    if (conn->status & STATUS_NA)
+                        return;
+                    new = (conn->status & STATUSF_INV) | STATUS_NA;
+                    break;
+            }
+
+            uiG.idle_val = 0;
+            uiG.idle_flag = 1;
+            delta = 0;
+        }
+    }
+
     if (!prG->away_time && !uiG.idle_flag)
         return;
-    if (!uiG.idle_val)
-        uiG.idle_val = time (NULL);
 
-    delta = (time (NULL) - uiG.idle_val);
-    if (uiG.idle_flag)
+    if (uiG.idle_flag && new != 0xffffffffL)
     {
         if (conn->status & STATUSF_NA)
         {
@@ -111,7 +149,7 @@ void Idle_Check (Connection *conn)
             }
         }
     }
-    else if (delta >= prG->away_time && !(conn->status & (STATUSF_AWAY | STATUSF_NA)))
+    else if (!uiG.idle_flag && delta >= prG->away_time && !(conn->status & (STATUSF_AWAY | STATUSF_NA)))
     {
         new = (conn->status & STATUSF_INV) | STATUS_AWAY;
         uiG.idle_flag = 1;
