@@ -2846,6 +2846,7 @@ static JUMP_F(CmdUserAuth)
         else if (s_parsekey (&args, "req"))   data = 3;
         else if (s_parsekey (&args, "add"))   data = 4;
         else if (s_parsekey (&args, "grant")) data = 5;
+        else                                  data = 5;
     }
     if (!*args && !data)
     {
@@ -2866,8 +2867,10 @@ static JUMP_F(CmdUserAuth)
             case 2:
                 if (!msg)         /* FIXME: let it untranslated? */
                     msg = "Authorization refused\n";
+#if 0
                 if (conn->type == TYPE_SERVER && conn->version >= 8)
                     SnacCliAuthorize (conn, cont, 0, msg);
+#endif
                 else if (conn->type == TYPE_SERVER)
                     SnacCliSendmsg (conn, cont, msg, MSG_AUTH_DENY, 0);
                 else
@@ -2876,24 +2879,30 @@ static JUMP_F(CmdUserAuth)
             case 3:
                 if (!msg)         /* FIXME: let it untranslated? */
                     msg = "Please authorize my request and add me to your Contact List\n";
+#if 0
                 if (conn->type == TYPE_SERVER && conn->version >= 8)
                     SnacCliReqauth (conn, cont, msg);
+#endif
                 else if (conn->type == TYPE_SERVER)
                     SnacCliSendmsg (conn, cont, msg, MSG_AUTH_REQ, 0);
                 else
                     CmdPktCmdSendMessage (conn, cont, msg, MSG_AUTH_REQ);
                 break;
             case 4:
+#if 0
                 if (conn->type == TYPE_SERVER && conn->version >= 8)
                     SnacCliGrantauth (conn, cont);
+#endif
                 else if (conn->type == TYPE_SERVER)
                     SnacCliSendmsg (conn, cont, "\x03", MSG_AUTH_ADDED, 0);
                 else
                     CmdPktCmdSendMessage (conn, cont, "\x03", MSG_AUTH_ADDED);
                 break;
             case 5:
+#if 0
                 if (conn->type == TYPE_SERVER && conn->version >= 8)
                     SnacCliAuthorize (conn, cont, 1, NULL);
+#endif
                 else if (conn->type == TYPE_SERVER)
                     SnacCliSendmsg (conn, cont, "\x03", MSG_AUTH_GRANT, 0);
                 else
