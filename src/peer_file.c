@@ -437,7 +437,7 @@ void PeerFileDispatch (Connection *fpeer)
             {
                 rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
                 rl_printf (i18n (2165, "The peer sent more bytes (%ld) than the file length (%ld).\n"),
-                         fpeer->assoc->done + len, fpeer->assoc->len);
+                         fpeer->assoc->done + pak->len - 1, fpeer->assoc->len);
                 PacketD (pak);
                 TCPClose (fpeer);
                 return;
