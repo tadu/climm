@@ -4,7 +4,8 @@
 #define MICQ_UTIL_UI_H
 
 void UtilUIDisplayMeta (Contact *cont);
-BOOL   Debug (UDWORD level, const char *str, ...) __attribute__ ((format (__printf__, 2, 3)));
+BOOL   DebugReal (UDWORD level, const char *str, ...) __attribute__ ((format (__printf__, 2, 3)));
+#define Debug DebugReal
 
 #define DEB_PROTOCOL      0x00000008L
 #define DEB_PACKET        0x00000010L
