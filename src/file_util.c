@@ -310,10 +310,15 @@ void Read_RC_File (FILE *rcf)
                         dep = 1;
                         continue;
                     }
-                    prG->event_cmd = strdup (tmp);
+                    if (!strcmp (tmp, "off"))
+                        prG->event_cmd = NULL;
+                    else
+                    {
 #ifndef MSGEXEC
-                    printf (i18n (1817, "Warning: ReceiveScript feature not enabled!\n"));
+                        prG->event_cmd = strdup (tmp);
+                        printf (i18n (1817, "Warning: ReceiveScript feature not enabled!\n"));
 #endif
+                    }
                 }
                 else if (!strcasecmp (cmd, "s5_use"))
                 {
@@ -991,10 +996,7 @@ int Save_RC ()
     fprintf (rcf, "soundoffline %s\n\n", prG->sound & SFLAG_OFF_BEEP ? "on" :
                                            prG->sound & SFLAG_OFF_CMD && prG->sound_off_cmd ?
                                            prG->sound_off_cmd : "off");
-    if (prG->event_cmd)
-         fprintf (rcf, "receivescript %s\n\n", prG->event_cmd);
-    else
-         fprintf (rcf, "#receivescript\n\n");
+    fprintf (rcf, "receivescript %s\n\n", prG->event_cmd ? prG->event_cmd : "off");
 
     fprintf (rcf, "\n# automatic responses\n");
     fprintf (rcf, "auto away %s\n", prG->auto_away);
