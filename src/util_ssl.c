@@ -563,7 +563,7 @@ int ssl_handshake (Connection *conn DEBUGPARAM)
 #if ENABLE_GNUTLS
         SSL_FAIL (s_sprintf ("%s %s", "handshake", gnutls_strerror (ret)), ret);
 #else
-        rl_printf (i18n (2533, "SSL handshake failed"));
+        rl_printf (i18n (2533, "SSL handshake failed.\n"));
 #endif
         conn->ssl_status = SSL_STATUS_FAILED;
         ssl_disconnect (conn);
@@ -576,7 +576,7 @@ int ssl_handshake (Connection *conn DEBUGPARAM)
     if (prG->verbose)
     {
         rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-        rl_printf (i18n (2375, "SSL handshake ok\n"));
+        rl_printf (i18n (2375, "SSL handshake ok.\n"));
     }
     TCLEvent (cont, "ssl", "ok");
 

@@ -724,7 +724,7 @@ static JUMP_F(CmdUserHelp)
             CMD_USER_HELP  ("tcl <string>", i18n (2345, "Execute Tcl script in <string>."));
 #endif
         else if (strcmp (par->txt, "=") && strcmp (par->txt, "..."))
-            rl_printf (i18n (2546, "No help available for '%s'\n"), par->txt);
+            rl_printf (i18n (2546, "No help available for '%s'.\n"), par->txt);
     } while ((par = s_parse_s (&args, " \t\r\n,")));
     s_free (newargs);
     return 0;
@@ -2651,7 +2651,7 @@ static JUMP_F(CmdUserAdd)
     {
         if (cg)
         {
-            rl_printf (i18n (2448, "Contact group '%s' already exists\n"), cg->name);
+            rl_printf (i18n (2448, "Contact group '%s' already exists.\n"), cg->name);
             return 0;
         }
         if (!(cg = s_parsecg (&args, conn)))
@@ -3146,7 +3146,7 @@ static JUMP_F(CmdUserHistory)
                     }
                     else
                     {
-                        rl_printf (i18n (2396, "Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n"), par->txt);
+                        rl_printf (i18n (2396, "Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-01-31' or '2004-01-31T23:12:05'.\n"), par->txt);
                         return 0;
                     }
                 }
