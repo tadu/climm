@@ -74,7 +74,7 @@ void CmdPktCmdSendMessage (Connection *conn, Contact *cont, const char *text, UD
     pak = PacketCv5 (conn, CMD_SEND_MESSAGE);
     PacketWrite4    (pak, cont->uin);
     PacketWrite2    (pak, type);
-    PacketWriteLNTS (pak, c_out_to (text, cont));
+    PacketWriteLNTS (pak, c_out_to_split (text, cont));
     PacketEnqueuev5 (pak, conn);
 }
 

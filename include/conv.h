@@ -16,9 +16,10 @@ const char *ConvCrush0xFE  (const char *in);
 BOOL        ConvFits           (const char *in, UBYTE enc);
 
 #define     ConvIsUTF8(t)      ConvFits (t, ENC_UTF8)
-#define     c_out_for(t,c,mt)  (CONT_UTF8 (c,mt) ? t : c_out_to (t,c))
+#define     c_out_for(t,c,mt)  (CONT_UTF8 (c,mt) ? t : c_out_to_split (t,c))
 #define     c_out(t)           (ConvTo        (t, ContactPrefVal (NULL, CO_ENCODING))->txt)
 #define     c_out_to(t,c)      (ConvTo        (t, ContactPrefVal ((c), CO_ENCODING))->txt)
+#define     c_out_to_split(t,c) (ConvToSplit   (t, ContactPrefVal ((c), CO_ENCODING))->txt)
 #define     ConvFromServ(t)    (ConvFrom      (t, ContactPrefVal (NULL, CO_ENCODING))->txt)
 #define     c_in_to_split(t,c) (ConvFromSplit (t, ContactPrefVal ((c), CO_ENCODING))->txt)
 #define     ConvFromCont(t,c)  (ConvFrom      (t, ContactPrefVal ((c), CO_ENCODING))->txt)
@@ -32,6 +33,7 @@ const char *ConvTranslit (const char *orig, const char *trans);
 strc_t      ConvFrom       (strc_t in, UBYTE enc);
 strc_t      ConvFromSplit  (strc_t in, UBYTE enc);
 strc_t      ConvTo         (const char *in, UBYTE enc);
+strc_t      ConvToSplit    (const char *in, UBYTE enc);
 strc_t      ConvToLen      (const char *in, UBYTE enc, size_t len);
 
 #define CHAR_NOT_AVAILABLE '?'

@@ -1429,7 +1429,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     {
         pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
         SrvMsgAdvanced   (pak, peer->our_seq, MSG_FILE, list->parent->status,
-                          cont->status, -1, c_out_to (description, cont));
+                          cont->status, -1, c_out_to_split (description, cont));
         PacketWrite2 (pak, 0);
         PacketWrite2 (pak, 0);
         PacketWriteLNTS (pak, filenames.txt);

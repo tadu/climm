@@ -460,6 +460,26 @@ strc_t ConvFromSplit (strc_t text, UBYTE enc)
     return &str;
 }
 
+strc_t ConvToSplit (const char *text, UBYTE enc)
+{
+    static str_s str;
+    const char *p;
+    size_t tlen = strlen (text);
+    size_t plen;
+    
+    s_init (&str, "", 100);
+    while ((p = memchr (text, '\xfe', tlen)))
+    {
+        plen = p - text;
+        s_cat (&str, ConvToLen (text, enc, plen)->txt);
+        s_catc (&str, '\xfe');
+        text += plen + 1;
+        tlen -= plen + 1;
+    }
+    s_cat (&str, ConvToLen (text, enc, tlen)->txt);
+    return &str;
+}
+
 strc_t ConvToLen (const char *ctext, UBYTE enc, size_t len)
 {
     str_s text;

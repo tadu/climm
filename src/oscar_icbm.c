@@ -234,7 +234,6 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
     
     switch (format)
     {
-        const char *convtext;
         int remenc;
 
         case 1:
@@ -294,22 +293,11 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
             }
             break;
         case 4:
-            remenc = ContactPrefVal (cont, CO_ENCODING);
-            convtext = ConvTo (text, remenc)->txt;
-            
             PacketWriteTLV     (pak, 5);
             PacketWrite4       (pak, serv->uin);
             PacketWrite1       (pak, type % 256);
             PacketWrite1       (pak, type / 256);
-#if 0
-            PacketWrite2 (pak, strlen (convtext) + strlen (ConvEncName (remenc)) + 2);
-            PacketWriteData (pak, convtext, strlen (convtext));
-            PacketWrite1 (pak, 0);
-            PacketWriteData (pak, ConvEncName (remenc), strlen (ConvEncName (remenc)));
-            PacketWrite1 (pak, 0);
-#else
-            PacketWriteLNTS    (pak, c_out_to (text, cont));
-#endif
+            PacketWriteLNTS    (pak, c_out_to_split (text, cont));
             PacketWriteTLVDone (pak);
             PacketWriteB2 (pak, 6);
             PacketWriteB2 (pak, 0);
