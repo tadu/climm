@@ -743,8 +743,8 @@ void TCPSendInitv6 (Session *sess)
     PacketWrite2 (pak, 0);                            /* unknown - zero   */
     PacketWrite4 (pak, sess->assoc->port);            /* our port         */
     PacketWrite4 (pak, sess->assoc->assoc->uin);             /* our UIN          */
-    PacketWrite4 (pak, sess->assoc->assoc->our_outside_ip);  /* our (remote) IP  */
-    PacketWrite4 (pak, sess->assoc->assoc->our_local_ip);    /* our (local)  IP  */
+    PacketWriteB4 (pak, sess->assoc->assoc->our_outside_ip);  /* our (remote) IP  */
+    PacketWriteB4 (pak, sess->assoc->assoc->our_local_ip);    /* our (local)  IP  */
     PacketWrite1 (pak, TCP_OK_FLAG);                  /* connection type  */
     PacketWrite4 (pak, sess->assoc->port);            /* our (other) port */
     PacketWrite4 (pak, sess->our_session);            /* session id       */
@@ -800,8 +800,8 @@ void TCPSendInit (Session *sess)
     PacketWrite2 (pak, 0);                            /* unknown - zero   */
     PacketWrite4 (pak, sess->assoc->port);            /* our port         */
     PacketWrite4 (pak, sess->assoc->assoc->uin);             /* our UIN          */
-    PacketWrite4 (pak, sess->assoc->assoc->our_outside_ip);  /* our (remote) IP  */
-    PacketWrite4 (pak, sess->assoc->assoc->our_local_ip);    /* our (local)  IP  */
+    PacketWriteB4 (pak, sess->assoc->assoc->our_outside_ip);  /* our (remote) IP  */
+    PacketWriteB4 (pak, sess->assoc->assoc->our_local_ip);    /* our (local)  IP  */
     PacketWrite1 (pak, TCP_OK_FLAG);                  /* connection type  */
     PacketWrite4 (pak, sess->assoc->port);            /* our (other) port */
     PacketWrite4 (pak, sess->our_session);            /* session id       */
@@ -932,12 +932,12 @@ Session *TCPReceiveInit (Session *sess, Packet *pak)
         port      = PacketRead4 (pak);
         sid       = PacketRead4 (pak);
         
-        if (oip  != cont->outside_ip && cont->outside_ip && oip != cont->local_ip)
-            FAIL (9);                             /* licq mixes up those IP addresses */
-/*              M_print ("Debug: OIP: %x %x\n", oip, cont->outside_ip); */
-        if (iip  != cont->local_ip && cont->local_ip && iip != cont->outside_ip)
+        if (oip  != cont->outside_ip && cont->outside_ip && oip && ~cont->outside_ip && oip != cont->local_ip)
+            FAIL (9);                                                        /* licq mixes up those IP addresses */
+/*            M_print ("Debug: OIP: %x %x\n", oip, cont->outside_ip);*/
+        if (iip  != cont->local_ip && cont->local_ip && iip && ~cont->local_ip && iip != cont->outside_ip)
             FAIL (10);
-/*              M_print ("Debug: IIP: %x %x\n", iip, cont->local_ip); */
+/*            M_print ("Debug: IIP: %x %x\n", iip, cont->local_ip);*/
         if (tcpflag != cont->connection_type)
             FAIL (11);
         if (port != cont->port)
