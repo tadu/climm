@@ -701,7 +701,7 @@ static JUMP_F(CmdUserTCP)
             TCPDirectOff   (      uin);
 #ifdef WIP
         else if (!strcmp (cmd, "file"))
-            TCPSendFile    (sess, uin, strtok (NULL, "\n"));
+            TCPSendFile    (sess, uin, (cmd = strtok (NULL, "\n")) ? cmd : "/dev/null");
 #endif
         else if (!strcmp (cmd, "auto"))
             TCPGetAuto     (sess, uin, 0);
