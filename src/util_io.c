@@ -704,7 +704,7 @@ Packet *UtilIOReceiveTCP (Connection *conn)
         {
             Contact *cont;
             
-            if ((cont = ContactByUIN (conn->uin, 1)))
+            if ((cont = ContactUIN (conn, conn->uin)))
             {
                 M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
                 M_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
@@ -777,7 +777,7 @@ Packet *UtilIOReceiveF (Connection *conn)
         if (prG->verbose)
         {
             Contact *cont;
-            if ((cont = ContactByUIN (conn->uin, 1)))
+            if ((cont = ContactUIN (conn, conn->uin)))
             {
                 M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
                 M_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);

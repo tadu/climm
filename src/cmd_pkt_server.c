@@ -234,7 +234,7 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             ip[1] = PacketRead1 (pak);
             ip[2] = PacketRead1 (pak);
             ip[3] = PacketRead1 (pak);
-            cont = ContactByUIN (uin, 1);
+            cont = ContactUIN (conn, uin);
             if (cont)
                 M_printf ("%s " COLCONTACT "%*s" COLNONE " %s: %u.%u.%u.%u\n",
                     s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, i18n (1642, "IP"),
@@ -258,7 +258,7 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             break;
         case SRV_INFO_REPLY:
             uin = PacketRead4 (pak);
-            if (!uin || !(cont = ContactByUIN (uin, 1)))
+            if (!uin || !(cont = ContactUIN (conn, uin)))
                 break;
             M_printf (i18n (2214, "Info for %s%lu%s:\n"), COLSERVER, uin, COLNONE);
             Display_Info_Reply (conn, cont, pak, IREP_HASAUTHFLAG);
@@ -268,7 +268,7 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             break;
         case SRV_USER_OFFLINE:
             uin = PacketRead4 (pak);
-            if ((cont = ContactByUIN (uin, 1)))
+            if ((cont = ContactUIN (conn, uin)))
                 IMOffline (cont, conn);
             break;
         case SRV_BAD_PASS:
@@ -290,7 +290,7 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             break;
         case SRV_USER_ONLINE:
             uin = PacketRead4 (pak);
-            cont = ContactByUIN (uin, 1);
+            cont = ContactUIN (conn, uin);
             cont->seen_time = time (NULL);
             if (!cont || !CONTACT_DC (cont))
                 return;
@@ -311,7 +311,7 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             break;
         case SRV_STATUS_UPDATE:
             uin = PacketRead4 (pak);
-            if ((cont = ContactByUIN (uin, 1)))
+            if ((cont = ContactUIN (conn, uin)))
                 IMOnline (cont, conn, PacketRead4 (pak));
             break;
         case SRV_GO_AWAY:
@@ -341,7 +341,7 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             break;
         case SRV_USER_FOUND:
             uin = PacketRead4 (pak);
-            if (!uin || !(cont = ContactByUIN (uin, 1)))
+            if (!uin || !(cont = ContactUIN (conn, uin)))
                 break;
             M_printf (i18n (1968, "User found:\n"));
             Display_Info_Reply (conn, cont, pak, IREP_HASAUTHFLAG);
@@ -355,7 +355,7 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
 
             M_print (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
 
-            if (!(cont = ContactByUIN (PacketRead4 (pak), 1)))
+            if (!(cont = ContactUIN (conn, PacketRead4 (pak))))
                 return;
             if (!CONTACT_DC (cont))
                 return;
@@ -386,7 +386,7 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             text = strdup (c_in (ctext));
             free (ctext);
 
-            if ((cont = ContactByUIN (uin, 1)))
+            if ((cont = ContactUIN (conn, uin)))
             {
                 IMSrvMsg (cont, conn, NOW, ExtraSet (ExtraSet (NULL,
                           EXTRA_ORIGIN, EXTRA_ORIGIN_v5, NULL),
@@ -495,7 +495,7 @@ static JUMP_SRV_F (CmdPktSrvAck)
         char *tmp;
         Contact *cont;
         
-        if (!(cont = ContactByUIN (PacketReadAt4 (event->pak, CMD_v5_OFF_PARAM), 1)))
+        if (!(cont = ContactUIN (conn, PacketReadAt4 (event->pak, CMD_v5_OFF_PARAM))))
             return;
 
         IMIntMsg (cont, event->conn, NOW, STATUS_OFFLINE, INT_MSGACK_V5,

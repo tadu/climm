@@ -60,7 +60,7 @@ static void SrvCallBackReconn (Connection *conn)
     Contact *cont;
     int i;
 
-    cont = ContactByUIN (conn->uin, 1);
+    cont = ContactUIN (conn, conn->uin);
     if (!cont)
         return;
 

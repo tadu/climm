@@ -149,7 +149,7 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
     char buffer[LOG_MAX_PATH + 1],                   /* path to the logfile */
         symbuf[LOG_MAX_PATH + 1];                     /* path of a sym link */
     char *target = buffer;                        /* Target of the sym link */
-    Contact *cont = ContactByUIN (uin, 1);
+    Contact *cont = ContactUIN (conn, uin);
     const char *username = PrefLogName (prG);
     FILE *logfile;
     int fd;

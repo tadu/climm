@@ -32,6 +32,7 @@ static const char *DebugStr (UDWORD level)
     if (level & DEB_TCP)         return "TCP HS ";
     if (level & DEB_IO)          return "In/Out ";
     if (level & DEB_CONNECT)     return "Connect";
+    if (level & DEB_CONTACT)     return "Contact";
     return "unknown";
 }
 

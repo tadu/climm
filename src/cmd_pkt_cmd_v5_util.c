@@ -360,7 +360,7 @@ void Auto_Reply (Connection *conn, UDWORD uin)
      else
          return;
 
-    IMCliMsg (conn, ContactByUIN (uin, 1), ExtraSet (NULL, EXTRA_MESSAGE, MSG_AUTO, temp));
+    IMCliMsg (conn, ContactUIN (conn, uin), ExtraSet (NULL, EXTRA_MESSAGE, MSG_AUTO, temp));
 }
 
 /*
@@ -410,7 +410,7 @@ void UDPCallBackResend (Event *event)
         {
             UWORD  type = PacketReadAt2 (pak, CMD_v5_OFF_PARAM + 4);
             UDWORD tuin = PacketReadAt4 (pak, CMD_v5_OFF_PARAM);
-            Contact *cont = ContactByUIN (tuin, 1);
+            Contact *cont = ContactUIN (event->conn, tuin);
             char *data = (char *) &pak->data[CMD_v5_OFF_PARAM + 8];
 
             M_print ("\n");

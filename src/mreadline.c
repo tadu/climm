@@ -363,7 +363,7 @@ static char tabword[20];
 static int tabwlen;
 /* length of tabword */
 
-static Contact *tabcont;
+static int      tabconti;
 /* current contact in contact list cycle */
 
 static char *tabwstart;
@@ -374,7 +374,7 @@ containing spaces */
 void R_process_input_tab (void)
 {
     UDWORD uin;
-    Contact *cont;
+    Contact *cont, *tabcont;
     const char *msgcmd = CmdUserLookupName ("msg");
     int nicklen = 0;
     int gotmatch = 0;
@@ -404,7 +404,7 @@ void R_process_input_tab (void)
         }
 
         if ((uin = TabGetNext ()))
-            sprintf (s, "%s %s ", msgcmd, (cont = ContactByUIN (uin, 1)) ? cont->nick : s_sprintf ("%ld", uin));
+            sprintf (s, "%s %s ", msgcmd, (cont = ContactFind (NULL, 0, uin, NULL, 1)) ? cont->nick : s_sprintf ("%ld", uin));
         else
             sprintf (s, "%s ", msgcmd);
 
@@ -418,7 +418,7 @@ void R_process_input_tab (void)
     {
         if (tabstate == 0)
         {
-            tabcont = ContactStart ();
+            tabcont = ContactIndex (0, tabconti = 0);
             tabwstart = s + bytepos;
             if (*tabwstart == ' ' && tabwstart > s) tabwstart --;
             while (*tabwstart != ' ' && tabwstart >= s) tabwstart --;
@@ -429,13 +429,15 @@ void R_process_input_tab (void)
             snprintf (tabword, sizeof (tabword), "%.*s", tabwend - tabwstart, tabwstart);
         }
         else
-            tabcont = ContactHasNext (tabcont) ? ContactNext (tabcont) : ContactStart ();
+            tabcont = ContactIndex (0, ++tabconti);
         if (prG->tabs == TABS_CYCLE)
-            while (tabcont->status == STATUS_OFFLINE && ContactHasNext (tabcont))
-                tabcont = ContactNext (tabcont);
+            while (tabcont && tabcont->status == STATUS_OFFLINE)
+                tabcont = ContactIndex (0, ++tabconti);
+        if (!tabcont)
+             tabcont = ContactIndex (0, tabconti = 0);
         while (!gotmatch)
         {
-            while (!gotmatch && ContactHasNext (tabcont))
+            while (!gotmatch && tabcont)
             {
                 nicklen = strlen (tabcont->nick);
                 if (((prG->tabs == TABS_CYCLE && tabcont->status != STATUS_OFFLINE) || prG->tabs == TABS_CYCLEALL)
@@ -443,7 +445,7 @@ void R_process_input_tab (void)
                     && (tabwlen > 0 || ~tabcont->flags & CONT_ALIAS) && ~tabcont->flags & CONT_TEMPORARY)
                     gotmatch = 1;
                 else
-                    tabcont = ContactNext (tabcont);
+                    tabcont = ContactIndex (NULL, ++tabconti);
             }
             if (!gotmatch)
             {
@@ -453,10 +455,7 @@ void R_process_input_tab (void)
                     return;
                 }
                 else
-                {
-                    tabcont = ContactStart ();
-                    tabstate = 0;
-                }
+                    tabcont = ContactIndex (NULL, tabstate = tabconti = 0);
             }
         }
         *tabwstart = '\0';
@@ -847,7 +846,7 @@ void R_setpromptf (const char *prompt, ...)
  */
 void R_resetprompt (void)
 {
-    Contact *cont = ContactByUIN (uiG.last_sent_uin, 1);
+    Contact *cont = ContactFind (NULL, 0, uiG.last_sent_uin, NULL, 1);
     prlast = 0;
     if (prG->flags & FLAG_UINPROMPT && uiG.last_sent_uin && cont)
         R_setpromptf (COLSERVER "[%s]" COLNONE " ", cont->nick);

@@ -44,7 +44,7 @@ void CmdPktCmdSendMessage (Connection *conn, UDWORD uin, const char *text, UDWOR
     Packet *pak;
     Contact *cont;
     
-    cont = ContactByUIN (uin, 1);
+    cont = ContactUIN (conn, uin);
     if (!cont)
         return;
     

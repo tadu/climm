@@ -241,12 +241,12 @@ void Initalize_RC_File ()
     prG->chat      = 49;
 
 #ifdef ENABLE_UTF8
-    ContactAdd (82274703, "R\xc3\xbc" "diger Kuhlmann");
+    ContactFind (conn->contacts, 0, 82274703, "R\xc3\xbc" "diger Kuhlmann", 1);
 #else
-    ContactAdd (82274703, "R\xfc" "diger Kuhlmann");
+    ContactFind (conn->contacts, 0, 82274703, "R\xfc" "diger Kuhlmann", 1);
 #endif
-    ContactAdd (82274703, "mICQ maintainer");
-    ContactAdd (82274703, "Tadu");
+    ContactFind (conn->contacts, 0, 82274703, "mICQ maintainer", 1);
+    ContactFind (conn->contacts, 0, 82274703, "Tadu", 1);
 
     if (uin)
         Save_RC ();
@@ -757,7 +757,7 @@ void Read_RC_File (FILE *rcf)
                 }
                 
                 
-                if (!(cont = ContactAdd (uin, cmd)))
+                if (!(cont = ContactFind (NULL, 0, uin, cmd, 1)))
                 {
                     M_printf (COLERROR "%s" COLNONE " %s\n", i18n (1619, "Warning:"),
                              i18n (1620, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
@@ -945,7 +945,7 @@ void Read_RC_File (FILE *rcf)
                     PrefParseInt (i);
                     PrefParseInt (uin);
                     
-                    ContactGroupAdd (cg, ContactByUIN (uin, 1));
+                    ContactFind (cg, i, uin, NULL, 1);
                 }
                 else
                 {
@@ -960,7 +960,7 @@ void Read_RC_File (FILE *rcf)
     /* now tab the nicks we may have spooled earlier */
     for (i = 0; i < spooled_tab_nicks; i++)
     {
-        Contact *cont = ContactByNick (tab_nick_spool[i], 1);
+        Contact *cont = ContactFind (NULL, 0, 0, tab_nick_spool[i], 1);
         if (cont)
             TabAddUIN (cont->uin);
         free (tab_nick_spool[i]);
@@ -1024,8 +1024,8 @@ void Read_RC_File (FILE *rcf)
         {
             conn->contacts = cg = ContactGroupFind (0, conn, s_sprintf ("contacts-%s-%ld",
                                 conn->type == TYPE_SERVER ? "icq8" : "icq5", conn->uin), 1);
-            for (cont = ContactStart(); ContactHasNext (cont); cont = ContactNext (cont))
-                ContactGroupAdd (cg, cont);
+            for (i = 0; (cont = ContactIndex (NULL, i)); i++)
+                ContactFind (cg, 0, cont->uin, cont->nick, 1);
             dep = 1;
         }
     }
@@ -1057,7 +1057,7 @@ int Save_RC ()
 {
     FILE *rcf;
     time_t t;
-    int k;
+    int i, k, l;
     Contact *cont;
     Connection *ss;
     ContactGroup *cg;
@@ -1175,7 +1175,6 @@ int Save_RC ()
 
     fprintf (rcf, "# Colors. color scheme 0|1|2|3 or color <use> <color>");
     {
-        int i, l;
         char *t, *c;
 
         for (i = 0; i < CXCOUNT; i++)
@@ -1266,9 +1265,8 @@ int Save_RC ()
         fprintf (rcf, "id %d\n", cg->id);
         while (cg)
         {
-            int i;
             for (i = 0; i < cg->used; i++)
-                fprintf (rcf, "entry 0 %ld\n", cg->uins[i]);
+                fprintf (rcf, "entry 0 %ld\n", cg->contacts[i]->uin);
             cg = cg->more;
         }
     }
@@ -1279,7 +1277,7 @@ int Save_RC ()
     fprintf (rcf, "#  Use ^ in front of the number of anyone you want to ignore.\n");
     fprintf (rcf, "[Contacts]\n");
 
-    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+    for (i = 0; (cont = ContactIndex (0, i)); i++)
     {
         if (!(cont->flags & (CONT_TEMPORARY | CONT_ALIAS)))
         {
@@ -1288,11 +1286,8 @@ int Save_RC ()
             if (cont->flags & CONT_HIDEFROM) fprintf (rcf, "~"); else fprintf (rcf, " ");
             if (cont->flags & CONT_IGNORE)   fprintf (rcf, "^"); else fprintf (rcf, " ");
             fprintf (rcf, "%9ld %s\n", cont->uin, cont->nick);
-            for (cont2 = ContactStart (); ContactHasNext (cont2); cont2 = ContactNext (cont2))
-            {
-                if (cont2->uin == cont->uin && cont2->flags & CONT_ALIAS)
-                    fprintf (rcf, "   %9ld %s\n", cont->uin, cont2->nick);
-            }
+            for (cont2 = cont->alias; cont2; cont2 = cont2->alias)
+                fprintf (rcf, "   %9ld %s\n", cont->uin, cont2->nick);
         }
     }
     fprintf (rcf, "\n");

@@ -44,7 +44,9 @@ static BOOL Meta_Read_List (Packet *pak, Extra **list)
     i = PacketRead1 (pak);
     for (j = 0; j < i; j++)
     {
-        if (!CONTACT_LIST (list))
+        if (!*list)
+            *list = calloc (1, sizeof (Extra));
+        if (!*list)
             return FALSE;
         (*list)->data = PacketRead2 (pak);
         s_read ((*list)->text);
@@ -63,7 +65,7 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *pak)
     Event *event = NULL;
     Contact *cont;
 
-    cont = ContactByUIN (uin, 1);
+    cont = ContactUIN (conn, uin);
     if (!cont)
         return;
 
@@ -145,7 +147,7 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *pak)
         }
         if (event->uin)
         {
-            cont = ContactByUIN (event->uin, 1);
+            cont = ContactUIN (event->conn, event->uin);
             if (!cont)
                 return;
         }
@@ -318,7 +320,7 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *pak)
                 M_printf (i18n (2141, "Search %sfailed%s.\n"), COLCLIENT, COLNONE);
                 break;
             }
-            cont = ContactByUIN (PacketRead4 (pak), 1);
+            cont = ContactUIN (conn, PacketRead4 (pak));
             if (!cont || !(mg = CONTACT_GENERAL (cont)) || !(mm = CONTACT_MORE (cont)))
                 break;
 
@@ -333,7 +335,7 @@ void Meta_User (Connection *conn, UDWORD uin, Packet *pak)
             break;
         case META_SRV_RANDOM:
             event->uin = PacketRead4 (pak);
-            cont = ContactByUIN (event->uin, 1);
+            cont = ContactUIN (event->conn, event->uin);
             wdata = PacketRead2 (pak);
             M_printf (i18n (2009, "Found random chat partner UIN %ld in chat group %d.\n"),
                       cont->uin, wdata);
@@ -400,7 +402,7 @@ void Display_Ext_Info_Reply (Connection *conn, Packet *pak)
     MetaGeneral *mg;
     MetaMore *mo;
 
-    if (!(cont = ContactByUIN (PacketRead4 (pak), 1)))
+    if (!(cont = ContactUIN (conn, PacketRead4 (pak))))
         return;
     
     if (!(mg = CONTACT_GENERAL (cont)) || !(mo = CONTACT_MORE (cont)))
@@ -487,7 +489,7 @@ void Recv_Message (Connection *conn, Packet *pak)
     free (ctext);
 
     uiG.last_rcvd_uin = uin;
-    IMSrvMsg (ContactByUIN (uin, 1), conn, mktime (&stamp),
+    IMSrvMsg (ContactUIN (conn, uin), conn, mktime (&stamp),
               ExtraSet (NULL, EXTRA_MESSAGE, type, text));
     free (text);
 }

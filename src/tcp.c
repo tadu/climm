@@ -121,7 +121,7 @@ BOOL TCPDirectOpen (Connection *list, UDWORD uin)
     if (uin == list->parent->uin)
         return FALSE;
 
-    cont = ContactByUIN (uin, 1);
+    cont = ContactUIN (list->parent, uin);
     if (!cont || !cont->dc || cont->dc->version < 6)
         return FALSE;
 
@@ -176,7 +176,7 @@ void TCPDirectOff (Connection *list, UDWORD uin)
     
     ASSERT_MSGLISTEN (list);
     peer = ConnectionFind (TYPE_MSGDIRECT, uin, list);
-    cont = ContactByUIN (uin, 1);
+    cont = ContactUIN (list->parent, uin);
     
     if (!peer && cont)
         peer = ConnectionC ();
@@ -212,7 +212,7 @@ void TCPDispatchReconn (Connection *peer)
     {
         Contact *cont;
         
-        if (!(cont = ContactByUIN (peer->uin, 1)))
+        if (!(cont = ContactUIN (peer->parent->parent, peer->uin)))
             return;
         M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
         M_print  (i18n (2023, "Direct connection closed by peer.\n"));
@@ -325,7 +325,7 @@ void TCPDispatchConn (Connection *peer)
 
     while (1)
     {
-        cont = ContactByUIN (peer->uin, 1);
+        cont = ContactUIN (peer->parent->parent, peer->uin);
         if (!cont || !cont->dc)
         {
             TCPClose (peer);
@@ -444,7 +444,7 @@ void TCPDispatchShake (Connection *peer)
         if (!peer)
             return;
 
-        cont = ContactByUIN (peer->uin, 1);
+        cont = ContactUIN (peer->parent->parent, peer->uin);
         if (!cont && (peer->connect & CONNECT_MASK) != 16)
         {
             TCPClose (peer);
@@ -576,7 +576,7 @@ static void TCPDispatchPeer (Connection *peer)
     
     ASSERT_MSGDIRECT (peer);
     
-    cont = ContactByUIN (peer->uin, 1);
+    cont = ContactUIN (peer->parent->parent, peer->uin);
     if (!cont)
     {
         TCPClose (peer);
@@ -657,7 +657,7 @@ static void TCPCallBackTimeout (Event *event)
     {
         Contact *cont;
         
-        if ((cont = ContactByUIN (peer->uin, 1)))
+        if ((cont = ContactUIN (peer->parent->parent, peer->uin)))
             M_printf (i18n (1850, "Timeout on connection with %s at %s:%ld\n"),
                       cont->nick, s_ip (peer->ip), peer->port);
         TCPClose (peer);
@@ -844,7 +844,7 @@ static void TCPSendInit (Connection *peer)
     {
         Contact *cont;
 
-        cont = ContactByUIN (peer->uin, 1);
+        cont = ContactUIN (peer->parent->parent, peer->uin);
         if (!cont || !cont->dc)
         {
             TCPClose (peer);
@@ -983,7 +983,7 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
         if (uin  == peer->parent->parent->uin)
             FAIL (6);
         
-        if (!(cont = ContactByUIN (uin, 1)))
+        if (!(cont = ContactUIN (peer->parent->parent, uin)))
             FAIL (7);
 
         if (!CONTACT_DC (cont))
@@ -1118,7 +1118,7 @@ void TCPClose (Connection *peer)
     {
         if (peer->connect & CONNECT_MASK && prG->verbose)
         {
-            Contact *cont = ContactByUIN (peer->uin, 1);
+            Contact *cont = ContactUIN (peer->parent->parent, peer->uin);
             M_printf ("%s ", s_now);
             if (cont)
                 M_printf (i18n (1842, "Closing socket %d to %s.\n"), peer->sok, cont->nick);
@@ -1185,7 +1185,7 @@ void TCPPrint (Packet *pak, Connection *peer, BOOL out)
     
     pak->rpos = 0;
     cmd = *pak->data;
-    cont = ContactByUIN (peer->uin, 1);
+    cont = ContactUIN (peer->parent->parent, peer->uin);
 
     M_printf ("%s " COLINDENT "%s", s_now, out ? COLCLIENT : COLSERVER);
     M_printf (out ? i18n (2078, "Outgoing TCP packet (%d - %s): %s")
@@ -1408,7 +1408,7 @@ BOOL TCPGetAuto (Connection *list, UDWORD uin, UWORD which)
         return FALSE;
     if (uin == list->parent->uin)
         return FALSE;
-    cont = ContactByUIN (uin, 1);
+    cont = ContactUIN (list->parent, uin);
     if (!cont || !cont->dc)
         return FALSE;
     if (!(list->connect & CONNECT_MASK))
@@ -1479,7 +1479,7 @@ BOOL TCPSendMsg (Connection *list, UDWORD uin, const char *msg, UWORD sub_cmd)
         return FALSE;
     if (uin == list->parent->uin)
         return FALSE;
-    cont = ContactByUIN (uin, 1);
+    cont = ContactUIN (list->parent, uin);
     if (!cont || !cont->dc)
         return FALSE;
     if (!(list->connect & CONNECT_MASK))
@@ -1598,7 +1598,7 @@ BOOL TCPSendFiles (Connection *list, UDWORD uin, const char *description, const 
         return FALSE;
     if (uin == list->parent->uin)
         return FALSE;
-    cont = ContactByUIN (uin, 1);
+    cont = ContactUIN (list->parent, uin);
     if (!cont || !cont->dc)
         return FALSE;
     if (!(list->connect & CONNECT_MASK))
@@ -1715,7 +1715,7 @@ BOOL TCPSendFiles (Connection *list, UDWORD uin, const char *description, const 
  */
 static void TCPCallBackResend (Event *event)
 {
-    Contact *cont = ContactByUIN (event->uin, 1);
+    Contact *cont = ContactUIN (event->conn, event->uin);
     Connection *peer = event->conn;
     Packet *pak = event->pak;
     UWORD delta, e_trans;
@@ -1795,7 +1795,7 @@ static void TCPCallBackReceive (Event *event)
     assert (event->pak);
     
     pak = event->pak;
-    cont = ContactByUIN (event->uin, 1);
+    cont = ContactUIN (event->conn, event->uin);
     if (!cont)
         return;
     

@@ -64,7 +64,7 @@ struct ContactGroup_s
     ContactGroup *more;
     Connection   *serv;
     char         *name;
-    UDWORD        uins[32];
+    Contact      *contacts[32];
     UWORD         id;
     UBYTE         used;
 };
@@ -82,6 +82,8 @@ struct Contact_s
     char  *version;
     char  *last_message;
     time_t last_time, seen_time, seen_micq_time;
+    
+    Contact *alias; /* the next alias for this entry */
 
     UWORD  updated; /* which meta_* has been updated */
 
@@ -96,38 +98,31 @@ struct Contact_s
 };
 
 
-ContactGroup *ContactGroupFind  (UWORD id, Connection *serv, const char *name, BOOL create);
 ContactGroup *ContactGroupIndex (int i);
-BOOL          ContactGroupAdd   (ContactGroup *group, Contact *cont);
-BOOL          ContactGroupRem   (ContactGroup *group, Contact *cont);
+ContactGroup *ContactGroupFind  (UWORD id, Connection *serv, const char *name, BOOL create);
 UWORD         ContactGroupID    (ContactGroup *group);
-BOOL          ContactGroupHas   (ContactGroup *group, Contact *cont);
 UDWORD        ContactGroupCount (ContactGroup *group);
 void          ContactGroupD     (ContactGroup *group);
 
-Contact    *ContactIndex (ContactGroup *group, int i);
+/* NULL ContactGroup accesses global list */
+Contact      *ContactIndex      (ContactGroup *group, int i);
+Contact      *ContactFind       (ContactGroup *group, UWORD id, UDWORD uin, const char *nick, BOOL create);
+BOOL          ContactAdd        (ContactGroup *group, Contact *cont);
+BOOL          ContactRem        (ContactGroup *group, Contact *cont);
+BOOL          ContactRemAlias   (ContactGroup *group, Contact *cont);
 
-Contact    *ContactByUIN (UDWORD uin, BOOL create);
-Contact    *ContactByNick (const char *nick, BOOL create);
+UWORD         ContactID         (Contact *cont);
+void          ContactSetCap     (Contact *cont, Cap *cap);
+void          ContactSetVersion (Contact *cont);
 
-Contact    *ContactAdd (UDWORD uin, const char *nick);
-void        ContactRem (Contact *cont);
-Contact    *ContactFindAlias (UDWORD uin, const char *nick);
+#define ContactUIN(conn,uin)   ContactFind ((conn)->contacts, 0, uin, NULL, 1)
 
-Contact    *ContactStart ();
-Contact    *ContactNext (Contact *cont);
-BOOL        ContactHasNext (Contact *cont);
-
-void        ContactSetCap (Contact *cont, Cap *cap);
-void        ContactSetVersion (Contact *cont);
-
-#define CONTACT_GENERAL(cont)     ((cont)->meta_general     ? (cont)->meta_general     : ((cont)->meta_general     = calloc (1, sizeof (MetaGeneral))))
-#define CONTACT_WORK(cont)        ((cont)->meta_work        ? (cont)->meta_work        : ((cont)->meta_work        = calloc (1, sizeof (MetaWork))))
-#define CONTACT_MORE(cont)        ((cont)->meta_more        ? (cont)->meta_more        : ((cont)->meta_more        = calloc (1, sizeof (MetaMore))))
-#define CONTACT_EMAIL(cont)       ((cont)->meta_email       ? (cont)->meta_email       : ((cont)->meta_email       = calloc (1, sizeof (MetaEmail))))
-#define CONTACT_LIST(listpp)      (*(listpp)                ? *(listpp)                : (*(listpp)                = calloc (1, sizeof (Extra))))
-#define CONTACT_OBSOLETE(cont)    ((cont)->meta_obsolete    ? (cont)->meta_obsolete    : ((cont)->meta_obsolete    = calloc (1, sizeof (MetaObsolete))))
-#define CONTACT_DC(cont)          ((cont)->dc               ? (cont)->dc               : ((cont)->dc               = calloc (1, sizeof (ContactDC))))
+#define CONTACT_GENERAL(cont)  ((cont)->meta_general  ? (cont)->meta_general  : ((cont)->meta_general  = calloc (1, sizeof (MetaGeneral))))
+#define CONTACT_WORK(cont)     ((cont)->meta_work     ? (cont)->meta_work     : ((cont)->meta_work     = calloc (1, sizeof (MetaWork))))
+#define CONTACT_MORE(cont)     ((cont)->meta_more     ? (cont)->meta_more     : ((cont)->meta_more     = calloc (1, sizeof (MetaMore))))
+#define CONTACT_EMAIL(cont)    ((cont)->meta_email    ? (cont)->meta_email    : ((cont)->meta_email    = calloc (1, sizeof (MetaEmail))))
+#define CONTACT_OBSOLETE(cont) ((cont)->meta_obsolete ? (cont)->meta_obsolete : ((cont)->meta_obsolete = calloc (1, sizeof (MetaObsolete))))
+#define CONTACT_DC(cont)       ((cont)->dc            ? (cont)->dc            : ((cont)->dc            = calloc (1, sizeof (ContactDC))))
 
 #define CONT_UTF8(cont) ((cont->caps & (1 << CAP_UTF8)) && (prG->enc_loc != ENC_EUC))
 

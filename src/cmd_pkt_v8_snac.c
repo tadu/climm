@@ -425,7 +425,7 @@ static JUMP_SNAC_F(SnacSrvUseronline)
     TLV *tlv;
     
     pak = event->pak;
-    cont = ContactByUIN (PacketReadUIN (pak), 0);
+    cont = ContactFind (event->conn->contacts, 0, PacketReadUIN (pak), NULL, 0);
     if (!cont)
     {
         if (prG->verbose & DEB_PROTOCOL)
@@ -486,7 +486,7 @@ static JUMP_SNAC_F(SnacSrvUseroffline)
     Packet *pak;
     
     pak = event->pak;
-    cont = ContactByUIN (PacketReadUIN (pak), 0);
+    cont = ContactFind (event->conn->contacts, 0, PacketReadUIN (pak), NULL, 0);
     if (!cont)
     {
         if (prG->verbose & DEB_PROTOCOL)
@@ -554,7 +554,7 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
     text = strdup (c_in (ctext));
     free (ctext);
 
-    cont = ContactByUIN (uin, 1);
+    cont = ContactUIN (event->conn, uin);
     if (!cont)
         return;
     
@@ -594,7 +594,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
               PacketReadB2 (pak); /* WARNING */
               PacketReadB2 (pak); /* COUNT */
     
-    cont = ContactByUIN (uin, 1);
+    cont = ContactUIN (event->conn, uin);
     if (!cont)
         return;
 
@@ -837,7 +837,7 @@ static JUMP_SNAC_F(SnacSrvSrvackmsg)
 
     uin = PacketReadUIN (pak);
     
-    cont = ContactByUIN (uin, 1);
+    cont = ContactUIN (event->conn, uin);
     if (!cont)
         return;
     
@@ -898,7 +898,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
     Event *event2;
     ContactGroup *cg = NULL;
     Contact *cont;
-    int i, k;
+    int i, k, l;
     char *name, *cname, *nick;
     UWORD count, type, tag, id, TLVlen, j, data;
 
@@ -916,7 +916,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
 
     PacketRead1 (pak);
     count = PacketReadB2 (pak);          /* COUNT */
-    for (i = k = 0; i < count; i++)
+    for (i = k = l = 0; i < count; i++)
     {
         cname  = PacketReadStrB (pak);   /* GROUP NAME */
         tag    = PacketReadB2 (pak);     /* TAG  */
@@ -964,25 +964,31 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                 switch (data)
                 {
                     case 3:
-                        if (j != (UWORD)-1 && !ContactFindAlias (atoi (name), nick))
-                            ContactAdd (atoi (name), nick);
-                        if (!(cont = ContactByUIN (atoi (name), 1)))
-                            break;
-                        cont->id = id;   /* FIXME: should be in ContactGroup? */
-                        ContactGroupAdd (cg, cont);
-                        if (!ContactGroupHas (event->conn->contacts, cont))
+                        if (j != (UWORD)-1 || !(cont = ContactFind (event->conn->contacts, 0, atoi (name), NULL, 0))
+                                           || cont->flags & CONT_TEMPORARY)
                         {
-                            ContactGroupAdd (event->conn->contacts, cont);
-                            SnacCliAddcontact (event->conn, atoi (name));
+                            cont = ContactFind (event->conn->contacts, id, atoi (name), nick, 1);
+                            SnacCliAddcontact (event->conn, cont->uin);
                             k++;
                         }
-                        M_printf ("  %10d %s\n", atoi (name), nick);
+                        if (!cont)
+                            break;
+                        if (!ContactFind (event->conn->contacts, 0, atoi (name), nick, 0))
+                            ContactFind (event->conn->contacts, id, atoi (name), nick, 1);
+                        cont->id = id;   /* FIXME: should be in ContactGroup? */
+                        if (!ContactFind (cg, 0, cont->uin, NULL, 0))
+                        {
+                            ContactAdd (cg, cont);
+                            l++;
+                        }
+                        M_printf (" #%d %10d %s\n", id, atoi (name), nick);
                         break;
                     case 2:
-                        if (ContactFindAlias (atoi (name), nick))
+                        if ((cont = ContactFind (event->conn->contacts, id, atoi (name), nick, 0))
+                            && ~cont->flags & CONT_TEMPORARY)
                             break;
                     case 1:
-                        M_printf ("  %10d %s\n", atoi (name), nick);
+                        M_printf (" #%d %10d %s\n", id, atoi (name), nick);
                 }
                 free (nick);
                 break;
@@ -996,9 +1002,9 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
         TLVD (tlv);
     }
     /* TIMESTAMP ignored */
-    if (k)
+    if (k || l)
     {
-        M_printf (i18n (2050, "Imported %d contacts.\n"), k);
+        M_printf (i18n (2242, "Imported %d new contacts, added %d times to a contact group.\n"), k, l);
         if (event->conn->flags & CONN_WIZARD)
         {
             if (Save_RC () == -1)
@@ -1025,7 +1031,7 @@ static JUMP_SNAC_F(SnacSrvAuthreq)
     text = strdup (c_in (ctext));
     free (ctext);
     
-    IMSrvMsg (ContactByUIN (uin, 1), event->conn, NOW, ExtraSet (ExtraSet (NULL,
+    IMSrvMsg (ContactUIN (event->conn, uin), event->conn, NOW, ExtraSet (ExtraSet (NULL,
               EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
               EXTRA_MESSAGE, MSG_AUTH_REQ, text));
 
@@ -1050,7 +1056,7 @@ static JUMP_SNAC_F(SnacSrvAuthreply)
     text = strdup (c_in (ctext));
     free (ctext);
 
-    IMSrvMsg (ContactByUIN (uin, 1), event->conn, NOW, ExtraSet (ExtraSet (NULL,
+    IMSrvMsg (ContactUIN (event->conn, uin), event->conn, NOW, ExtraSet (ExtraSet (NULL,
               EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
               EXTRA_MESSAGE, acc ? MSG_AUTH_GRANT : MSG_AUTH_DENY, text));
 
@@ -1068,7 +1074,7 @@ static JUMP_SNAC_F(SnacSrvAddedyou)
     pak = event->pak;
     uin = PacketReadUIN (pak);
 
-    IMSrvMsg (ContactByUIN (uin, 1), event->conn, NOW, ExtraSet (ExtraSet (NULL,
+    IMSrvMsg (ContactUIN (event->conn, uin), event->conn, NOW, ExtraSet (ExtraSet (NULL,
               EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL),
               EXTRA_MESSAGE, MSG_AUTH_ADDED, ""));
 }
@@ -1425,7 +1431,7 @@ void SnacCliReqicbm (Connection *conn)
 void SnacCliSendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD type, UBYTE format)
 {
     Packet *pak;
-    Contact *cont = ContactByUIN (uin, 1);
+    Contact *cont = ContactUIN (conn, uin);
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
     
     if (!cont)
@@ -1501,7 +1507,7 @@ void SnacCliSendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD type
 
 void SnacCallbackType2Ack (Event *event)
 {
-    Contact *cont = ContactByUIN (event->uin, 1);
+    Contact *cont = ContactUIN (event->conn, event->uin);
     Connection *serv = event->conn;
     Event *aevent;
 
@@ -1526,7 +1532,7 @@ void SnacCallbackType2Ack (Event *event)
 
 void SnacCallbackType2 (Event *event)
 {
-    Contact *cont = ContactByUIN (event->uin, 1);
+    Contact *cont = ContactUIN (event->conn, event->uin);
     Connection *serv = event->conn;
     Packet *pak = event->pak;
 
