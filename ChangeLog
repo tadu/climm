@@ -1,6 +1,8 @@
 
-2001-09-07 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+2001-09-13 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* fix delete.
+	* fix line length in wide for LANG != C.
+	* fix about.
 
 2001-09-07 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Fix "search" commands.

@@ -2166,7 +2166,7 @@ JUMP_F(CmdUserAbout)
     }
     else
     {
-        if (args)
+        if (args && strlen (args))
         {
             Update_About (sok, args);
             return 0;
