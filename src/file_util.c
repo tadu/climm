@@ -5,6 +5,7 @@
 #include "util_ui.h"
 #include "file_util.h"
 #include "tabs.h"
+#include "contact.h"
 #include "util.h"
 #include "cmd_user.h"
 #include "sendmsg.h"
@@ -186,45 +187,12 @@ static void Initalize_RC_File (void)
 /* SOCKS5 stuff end */
 
     ssG.set_status = STATUS_ONLINE;
-    uiG.Num_Contacts = 2;
-    uiG.Contacts[0].vis_list = FALSE;
-    uiG.Contacts[1].vis_list = FALSE;
-    uiG.Contacts[0].uin = 11290140;
-    strcpy (uiG.Contacts[0].nick, "Micq Author");
-    uiG.Contacts[0].status = STATUS_OFFLINE;
-    uiG.Contacts[0].last_time = -1L;
-    uiG.Contacts[0].current_ip[0] = 0xff;
-    uiG.Contacts[0].current_ip[1] = 0xff;
-    uiG.Contacts[0].current_ip[2] = 0xff;
-    uiG.Contacts[0].current_ip[3] = 0xff;
-    uiG.Contacts[0].port = 0;
-    uiG.Contacts[0].sok = (SOK_T) - 1L;
-    uiG.Contacts[1].uin = -11290140;
-    strcpy (uiG.Contacts[1].nick, "alias1");
-    uiG.Contacts[1].status = STATUS_OFFLINE;
-    uiG.Contacts[1].current_ip[0] = 0xff;
-    uiG.Contacts[1].current_ip[1] = 0xff;
-    uiG.Contacts[1].current_ip[2] = 0xff;
-    uiG.Contacts[1].current_ip[3] = 0xff;
-    uiG.Contacts[1].current_ip[0] = 0xff;
-    uiG.Contacts[1].current_ip[1] = 0xff;
-    uiG.Contacts[1].current_ip[2] = 0xff;
-    uiG.Contacts[1].current_ip[3] = 0xff;
-    uiG.Contacts[1].port = 0;
-    uiG.Contacts[1].sok = (SOK_T) - 1L;
-    uiG.Contacts[2].uin = 82274703;
-    strcpy (uiG.Contacts[2].nick, "Rüdiger (mICQ developer)");
-    uiG.Contacts[2].status = STATUS_OFFLINE;
-    uiG.Contacts[2].current_ip[0] = 0xff;
-    uiG.Contacts[2].current_ip[1] = 0xff;
-    uiG.Contacts[2].current_ip[2] = 0xff;
-    uiG.Contacts[2].current_ip[3] = 0xff;
-    uiG.Contacts[2].current_ip[0] = 0xff;
-    uiG.Contacts[2].current_ip[1] = 0xff;
-    uiG.Contacts[2].current_ip[2] = 0xff;
-    uiG.Contacts[2].current_ip[3] = 0xff;
-    uiG.Contacts[2].port = 0;
-    uiG.Contacts[2].sok = (SOK_T) - 1L;
+
+    ContactAdd (11290140, "mICQ author (dead)");
+    ContactAdd (99798577, "Rico \"mc\" Glöckner");
+    ContactAdd (-99798577, "mICQ maintainer");
+    ContactAdd (82274703, "Rüdiger Kuhlmann");
+    ContactAdd (-82274703, "mICQ developer");
 
     uiG.Current_Status = STATUS_ONLINE;
 
@@ -248,8 +216,9 @@ static void Read_RC_File (FD_T rcf)
     char buf[450];
     char *tmp;
     char *p;
+    Contact *cont;
     int i, section, dep;
-    UDWORD tmp_uin;
+    UDWORD uin;
     char *tab_nick_spool[TAB_SLOTS];
     int spooled_tab_nicks;
 
@@ -560,14 +529,6 @@ static void Read_RC_File (FD_T rcf)
                 }
                 break;
             case 1:
-                if (uiG.Num_Contacts == MAX_CONTACTS)
-                {
-                    M_print (COLERR "%s" COLNONE " %s\n", i18n (733, "Warning:"),
-                             i18n (732, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
-                    section = -1;
-                    break;
-                }
-
                 p = buf;
 
                 while (*p == ' ')
@@ -577,97 +538,54 @@ static void Read_RC_File (FD_T rcf)
                     continue;
 
                 if (isdigit ((int) *p))
-                {
-                    uiG.Contacts[uiG.Num_Contacts].uin = atoi (strtok (p, " "));
-                    uiG.Contacts[uiG.Num_Contacts].status = STATUS_OFFLINE;
-                    uiG.Contacts[uiG.Num_Contacts].last_time = -1L;
-                    uiG.Contacts[uiG.Num_Contacts].current_ip[0] = 0xff;
-                    uiG.Contacts[uiG.Num_Contacts].current_ip[1] = 0xff;
-                    uiG.Contacts[uiG.Num_Contacts].current_ip[2] = 0xff;
-                    uiG.Contacts[uiG.Num_Contacts].current_ip[3] = 0xff;
-                    uiG.Contacts[uiG.Num_Contacts].version = NULL;
-                    tmp = strtok (NULL, "");
-                    if (tmp != NULL)
-                        memcpy (uiG.Contacts[uiG.Num_Contacts].nick, tmp, sizeof (uiG.Contacts->nick));
-                    else
-                        uiG.Contacts[uiG.Num_Contacts].nick[0] = 0;
-                    if (uiG.Contacts[uiG.Num_Contacts].nick[19] != 0)
-                        uiG.Contacts[uiG.Num_Contacts].nick[19] = 0;
-                    if (uiG.Verbose > 2)
-                        M_print ("%ld = %s\n", uiG.Contacts[uiG.Num_Contacts].uin, uiG.Contacts[uiG.Num_Contacts].nick);
-                    uiG.Contacts[uiG.Num_Contacts].vis_list = FALSE;
-                    uiG.Num_Contacts++;
-                }
+                    i = 0;
                 else if (*p == '*')
                 {
+                    i = 1;
                     for (p++; *p == ' '; p++) ;
-                    uiG.Contacts[uiG.Num_Contacts].uin = atoi (strtok (p, " "));
-                    uiG.Contacts[uiG.Num_Contacts].status = STATUS_OFFLINE;
-                    uiG.Contacts[uiG.Num_Contacts].last_time = -1L;
-                    uiG.Contacts[uiG.Num_Contacts].current_ip[0] = 0xff;
-                    uiG.Contacts[uiG.Num_Contacts].current_ip[1] = 0xff;
-                    uiG.Contacts[uiG.Num_Contacts].current_ip[2] = 0xff;
-                    uiG.Contacts[uiG.Num_Contacts].current_ip[3] = 0xff;
-                    uiG.Contacts[uiG.Num_Contacts].version = NULL;
-                    tmp = strtok (NULL, "");
-                    if (tmp != NULL)
-                        memcpy (uiG.Contacts[uiG.Num_Contacts].nick, tmp, sizeof (uiG.Contacts->nick));
-                    else
-                        uiG.Contacts[uiG.Num_Contacts].nick[0] = 0;
-                    if (uiG.Contacts[uiG.Num_Contacts].nick[19] != 0)
-                        uiG.Contacts[uiG.Num_Contacts].nick[19] = 0;
-                    if (uiG.Verbose > 2)
-                        M_print ("%ld = %s\n", uiG.Contacts[uiG.Num_Contacts].uin, uiG.Contacts[uiG.Num_Contacts].nick);
-                    uiG.Contacts[uiG.Num_Contacts].invis_list = FALSE;
-                    uiG.Contacts[uiG.Num_Contacts].vis_list = TRUE;
-                    uiG.Num_Contacts++;
                 }
                 else if (*p == '~')
                 {
+                    i = 2;
                     for (p++; *p == ' '; p++) ;
-                    uiG.Contacts[uiG.Num_Contacts].uin = atoi (strtok (p, " "));
-                    uiG.Contacts[uiG.Num_Contacts].status = STATUS_OFFLINE;
-                    uiG.Contacts[uiG.Num_Contacts].last_time = -1L;
-                    uiG.Contacts[uiG.Num_Contacts].current_ip[0] = 0xff;
-                    uiG.Contacts[uiG.Num_Contacts].current_ip[1] = 0xff;
-                    uiG.Contacts[uiG.Num_Contacts].current_ip[2] = 0xff;
-                    uiG.Contacts[uiG.Num_Contacts].current_ip[3] = 0xff;
-                    uiG.Contacts[uiG.Num_Contacts].version = NULL;
-                    tmp = strtok (NULL, "");
-                    if (tmp != NULL)
-                        memcpy (uiG.Contacts[uiG.Num_Contacts].nick, tmp, sizeof (uiG.Contacts->nick));
-                    else
-                        uiG.Contacts[uiG.Num_Contacts].nick[0] = 0;
-                    if (uiG.Contacts[uiG.Num_Contacts].nick[19] != 0)
-                        uiG.Contacts[uiG.Num_Contacts].nick[19] = 0;
-                    if (uiG.Verbose > 2)
-                        M_print ("%ld = %s\n", uiG.Contacts[uiG.Num_Contacts].uin, uiG.Contacts[uiG.Num_Contacts].nick);
-                    uiG.Contacts[uiG.Num_Contacts].invis_list = TRUE;
-                    uiG.Contacts[uiG.Num_Contacts].vis_list = FALSE;
-                    uiG.Num_Contacts++;
+                }
+                else
+                    i = 3;
+                
+                if (i == 3)
+                {
+                    uin = -1;
+                    tmp = p;
                 }
                 else
                 {
-                    tmp_uin = uiG.Contacts[uiG.Num_Contacts - 1].uin;
-                    tmp = strtok (p, ", \t");     /* aliases may not have spaces */
-                    for (; tmp != NULL; uiG.Num_Contacts++)
-                    {
-                        uiG.Contacts[uiG.Num_Contacts].uin = -tmp_uin;
-                        uiG.Contacts[uiG.Num_Contacts].status = STATUS_OFFLINE;
-                        uiG.Contacts[uiG.Num_Contacts].last_time = -1L;
-                        uiG.Contacts[uiG.Num_Contacts].current_ip[0] = 0xff;
-                        uiG.Contacts[uiG.Num_Contacts].current_ip[1] = 0xff;
-                        uiG.Contacts[uiG.Num_Contacts].current_ip[2] = 0xff;
-                        uiG.Contacts[uiG.Num_Contacts].current_ip[3] = 0xff;
-                        uiG.Contacts[uiG.Num_Contacts].version = NULL;
-                        uiG.Contacts[uiG.Num_Contacts].port = 0;
-                        uiG.Contacts[uiG.Num_Contacts].sok = (SOK_T) - 1L;
-                        uiG.Contacts[uiG.Num_Contacts].invis_list = FALSE;
-                        uiG.Contacts[uiG.Num_Contacts].vis_list = FALSE;
-                        memcpy (uiG.Contacts[uiG.Num_Contacts].nick, tmp, sizeof (uiG.Contacts->nick));
-                        tmp = strtok (NULL, ", \t");
-                    }
+                    uin = atoi (strtok (p, " "));
+                    tmp = strtok (NULL, "");
                 }
+                
+                if (!(cont = ContactAdd (uin, tmp)))
+                {
+                    M_print (COLERR "%s" COLNONE " %s\n", i18n (733, "Warning:"),
+                             i18n (732, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
+                    section = -1;
+                    break;
+                }
+                
+                if (i == 1)
+                {
+                    cont->vis_list = TRUE;
+                }
+                else if (i == 2)
+                {
+                    cont->invis_list = TRUE;
+                }
+                else if (i == 3)
+                {
+                    strncpy (cont->nick, (cont - 1)->nick, 20);
+                }
+
+                if (uiG.Verbose > 2)
+                    M_print ("%ld = %s\n", cont->uin, cont->nick);
                 break;
             case 2:
                 tmp = strtok (buf, " ");
@@ -688,7 +606,7 @@ static void Read_RC_File (FD_T rcf)
     /* now tab the nicks we may have spooled earlier */
     for (i = 0; i < spooled_tab_nicks; i++)
     {
-        TabAddUIN (nick2uin (tab_nick_spool[i]));
+        TabAddUIN (ContactFindByNick (tab_nick_spool[i]));
         free (tab_nick_spool[i]);
     }
 
@@ -717,8 +635,6 @@ static void Read_RC_File (FD_T rcf)
         M_print (i18n (191, "passwd = %s\n"), ssG.passwd);
         M_print (i18n (192, "server = %s\n"), ssG.server);
         M_print (i18n (193, "status = %ld\n"), ssG.set_status);
-        M_print (i18n (194, "# of contacts = %d\n"), uiG.Num_Contacts);
-        M_print (i18n (195, "UIN of contact[0] = %ld\n"), uiG.Contacts[0].uin);
         M_print (i18n (196, "Message_cmd = %s\n"), CmdUserLookupName ("msg"));
     }
     if (ssG.UIN == 0)
@@ -739,7 +655,8 @@ int Save_RC ()
 {
     FD_T rcf;
     time_t t;
-    int i, j, k;
+    int k;
+    Contact *cont;
 
     rcf = open (rcfile, O_WRONLY | O_CREAT | O_TRUNC, 0600);
     if (rcf == -1)
@@ -867,27 +784,26 @@ int Save_RC ()
     /* adding contacts to the rc file. */
     /* we start counting at zero in the index. */
 
-    for (i = 0; i < uiG.Num_Contacts; i++)
+    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
     {
-        if (!(uiG.Contacts[i].uin & 0x80000000L))
+        if (!(cont->uin & 0x80000000L))
         {
-            M_fdprint (rcf, uiG.Contacts[i].vis_list ? "*" : uiG.Contacts[i].invis_list ? "~" : " ");
-            M_fdprint (rcf, "%9d %s\n", uiG.Contacts[i].uin, uiG.Contacts[i].nick);
-/*     M_fdprint( rcf, "#Begining of aliases for %s\n", uiG.Contacts[i].nick ); */
+            Contact *cont2;
+            M_fdprint (rcf, cont->vis_list ? "*" : cont->invis_list ? "~" : " ");
+            M_fdprint (rcf, "%9d %s\n", cont->uin, cont->nick);
             k = 0;
-            for (j = 0; j < uiG.Num_Contacts; j++)
+            for (cont2 = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
             {
-                if (uiG.Contacts[j].uin == -uiG.Contacts[i].uin)
+                if (cont2->uin == - cont->uin)
                 {
                     if (k)
                         M_fdprint (rcf, " ");
-                    M_fdprint (rcf, "%s", uiG.Contacts[j].nick);
+                    M_fdprint (rcf, "%s", cont2->nick);
                     k++;
                 }
             }
             if (k)
                 M_fdprint (rcf, "\n");
-/*     M_fdprint( rcf, "\n#End of aliases for %s\n", uiG.Contacts[i].nick ); */
         }
     }
     M_fdprint (rcf, "\n");
@@ -933,13 +849,11 @@ void Get_Unix_Config_Info (void)
 int Add_User (SOK_T sok, UDWORD uin, char *name)
 {
     FD_T rcf;
-    int i;
 
     if (!uin)
         return 0;
 
-    for (i = 0; i < uiG.Num_Contacts; i++)
-        if (uiG.Contacts[i].uin == uin)
+    if (ContactFind (uin))
             return 0;
 
     rcf = open (rcfile, O_RDWR | O_APPEND);
@@ -947,19 +861,9 @@ int Add_User (SOK_T sok, UDWORD uin, char *name)
         return 0;
     M_fdprint (rcf, "%d %s\n", uin, name);
     close (rcf);
-    uiG.Contacts[uiG.Num_Contacts].uin = uin;
-    uiG.Contacts[uiG.Num_Contacts].status = STATUS_OFFLINE;
-    uiG.Contacts[uiG.Num_Contacts].last_time = -1L;
-    uiG.Contacts[uiG.Num_Contacts].current_ip[0] = 0xff;
-    uiG.Contacts[uiG.Num_Contacts].current_ip[1] = 0xff;
-    uiG.Contacts[uiG.Num_Contacts].current_ip[2] = 0xff;
-    uiG.Contacts[uiG.Num_Contacts].current_ip[3] = 0xff;
-    uiG.Contacts[uiG.Num_Contacts].port = 0;
-    uiG.Contacts[uiG.Num_Contacts].sok = (SOK_T) - 1L;
-    uiG.Contacts[uiG.Num_Contacts].vis_list = FALSE;
-    uiG.Contacts[uiG.Num_Contacts].invis_list = FALSE;
-    uiG.Contacts[uiG.Num_Contacts].version = NULL;
-    snprintf (uiG.Contacts[uiG.Num_Contacts++].nick, sizeof (uiG.Contacts->nick), "%s", name);
+
+    ContactAdd (uin, name);
+
     snd_contact_list (sok);
     return 1;
 }

@@ -14,7 +14,6 @@ char *MsgEllipsis (char *msg);
 char *UIN2nick (UDWORD uin);
 char *UIN2Name (UDWORD uin);
 UDWORD nick2uin (char *nick);
-CONTACT_PTR UIN2Contact (UDWORD uin);
 
 void Init_New_User (void);
 UDWORD Get_Port (UDWORD uin);

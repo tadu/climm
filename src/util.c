@@ -21,6 +21,7 @@ Changes :
 #include "micq.h"
 #include "util.h"
 #include "sendmsg.h"
+#include "contact.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -177,139 +178,6 @@ char *MsgEllipsis (char *msg)
     return buff;
 }
 
-/*
- * Returns the nick of a UIN if we know it else
- * it will return Unknown UIN
- */
-char *UIN2nick (UDWORD uin)
-{
-    int i;
-
-    if (uin == -1)
-        return strdup (i18n (725, "<all>"));
-    for (i = 0; i < uiG.Num_Contacts; i++)
-    {
-        if (uiG.Contacts[i].uin == uin)
-            return uiG.Contacts[i].nick;
-    }
-    return NULL;
-}
-
-/*
- * Returns the nick of a UIN if we know it else
- * it will return UIN
- */
-char *UIN2Name (UDWORD uin)
-{
-    int i;
-    char buff[100];
-
-    if (uin == -1)
-        return strdup (i18n (725, "<all>"));
-    for (i = 0; i < uiG.Num_Contacts; i++)
-    {
-        if (uiG.Contacts[i].uin == uin)
-            return strdup (uiG.Contacts[i].nick);
-    }
-    snprintf (buff, 98, "%lu", uin);
-    return strdup (buff);
-}
-
-/*
- * Prints the name of a user or their UIN if name
- * is not known.
- */
-int Print_UIN_Name (UDWORD uin)
-{
-    int i;
-
-    for (i = 0; i < uiG.Num_Contacts; i++)
-    {
-        if (uiG.Contacts[i].uin == uin)
-        {
-            M_print (COLCONTACT "%s" COLNONE, uiG.Contacts[i].nick);
-            return i;
-        }
-    }
-    M_print (COLCLIENT "%lu" COLNONE, uin);
-    return -1;
-}
-
-/*
- * Prints the name of a user or their UIN if name
- * is not known, but use exactly 8 chars if possible.
- */
-int Print_UIN_Name_10 (UDWORD uin)
-{
-    int i;
-
-    for (i = 0; i < uiG.Num_Contacts; i++)
-    {
-        if (uiG.Contacts[i].uin == uin)
-        {
-            M_print (COLCONTACT "%10s" COLNONE, uiG.Contacts[i].nick);
-            return i;
-        }
-    }
-
-    M_print (COLCLIENT "%10lu" COLNONE, uin);
-    return -1;
-}
-
-/**********************************************
-Returns the contact list with uin
-***********************************************/
-CONTACT_PTR UIN2Contact (UDWORD uin)
-{
-    int i;
-
-    for (i = 0; i < uiG.Num_Contacts; i++)
-        if (uiG.Contacts[i].uin == uin)
-            return &uiG.Contacts[i];
-
-    return (CONTACT_PTR) NULL;
-}
-
-/*********************************************
-Converts a nick name into a uin from the contact
-list.
-**********************************************/
-UDWORD nick2uin (char *nick)
-{
-    int i;
-    BOOL non_numeric = FALSE;
-
-    /*cut off whitespace at the end (i.e. \t or space */
-    i = strlen (nick) - 1;
-    while (isspace (nick[i]))
-        i--;
-    nick[i + 1] = '\0';
-
-
-    for (i = 0; i < uiG.Num_Contacts; i++)
-    {
-        if (!strncasecmp (nick, uiG.Contacts[i].nick, 19))
-        {
-            if ((SDWORD) uiG.Contacts[i].uin > 0)
-                return uiG.Contacts[i].uin;
-            else
-                return -uiG.Contacts[i].uin;        /* alias */
-        }
-    }
-    for (i = 0; i < strlen (nick); i++)
-    {
-        if (!isdigit ((int) nick[i]))
-        {
-            non_numeric = TRUE;
-            break;
-        }
-    }
-    if (non_numeric)
-        return -1;              /* not found and not a number */
-    else
-        return atoi (nick);
-}
-
 /**************************************************
 Automates the process of creating a new user.
 ***************************************************/
@@ -381,29 +249,16 @@ void Init_New_User (void)
 
 void Print_IP (UDWORD uin)
 {
-    int i;
-#if 0
-    struct in_addr sin;
-#endif
+    Contact *cont;
 
-    for (i = 0; i < uiG.Num_Contacts; i++)
+    if (!(cont = ContactFind (uin)) || (*(UDWORD *)(&cont->current_ip) == -1L))
     {
-        if (uiG.Contacts[i].uin == uin)
-        {
-            if (*(UDWORD *) uiG.Contacts[i].current_ip != -1L)
-            {
-                M_print ("%d.%d.%d.%d", uiG.Contacts[i].current_ip[0],
-                         uiG.Contacts[i].current_ip[1], uiG.Contacts[i].current_ip[2],
-                         uiG.Contacts[i].current_ip[3]);
-            }
-            else
-            {
-                M_print (i18n (761, "unknown"));
-            }
-            return;
-        }
+        M_print (i18n (761, "unknown"));
+        return;
     }
-    M_print (i18n (761, "unknown"));
+    
+    M_print ("%d.%d.%d.%d", cont->current_ip[0], cont->current_ip[1],
+                            cont->current_ip[2], cont->current_ip[3]);
 }
 
 /*
@@ -411,16 +266,12 @@ void Print_IP (UDWORD uin)
  */
 UDWORD Get_Port (UDWORD uin)
 {
-    int i;
+    Contact *cont;
+    
+    if (!(cont = ContactFind (uin)))
+        return -1L;
 
-    for (i = 0; i < uiG.Num_Contacts; i++)
-    {
-        if (uiG.Contacts[i].uin == uin)
-        {
-            return uiG.Contacts[i].port;
-        }
-    }
-    return -1L;
+    return cont->port;
 }
 
 /********************************************
@@ -527,9 +378,9 @@ int log_event (UDWORD uin, int type, char *str, ...)
         sprintf (buffer, "%s%ld.log", uiG.LogPlace, uin);
 
 #if HAVE_SYMLINK
-        if (UIN2nick (uin))
+        if (ContactFindNick (uin))
         {
-            sprintf (symbuf, "%s%s.log", uiG.LogPlace, UIN2nick (uin));
+            sprintf (symbuf, "%s%s.log", uiG.LogPlace, ContactFindNick (uin));
             symlink (buffer, symbuf);
         }
 #endif
@@ -620,18 +471,16 @@ void Hex_Dump (void *buffer, size_t len)
     }
 }
 
-/* i18n (762, " ") i18n */
-
 /*
  * Executes a program and feeds some shell-proof information data into it
  */
 void ExecScript (char *script, UDWORD uin, long num, char *data)
 {
     int cmdlen, rc;
-    char *mydata, *cmd, *who, *tmp;
+    char *mydata, *cmd, *tmp, *who;
 
     mydata = strdup (data ? data : "");
-    who = UIN2Name (uin);
+    who = ContactFindName (uin);
 
     for (tmp = mydata; *tmp; tmp++)
         if (*tmp == '\'')

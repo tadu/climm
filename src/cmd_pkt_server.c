@@ -8,6 +8,7 @@
 #include "cmd_pkt_server.h"
 #include "icq_response.h"
 #include "server.h"
+#include "contact.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -206,7 +207,7 @@ void CmdPktSrvProcess (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd,
                 break;
             }
             Time_Stamp ();
-            M_print (" " MAGENTA BOLD "%10s" COLNONE " %s: %u.%u.%u.%u\n", UIN2Name (uin), i18n (642, "IP"),
+            M_print (" " MAGENTA BOLD "%10s" COLNONE " %s: %u.%u.%u.%u\n", ContactFindName (uin), i18n (642, "IP"),
 #if ICQ_VER == 0x0002
                      data[4], data[5], data[6], data[7]);
 #elif ICQ_VER == 0x0004
@@ -360,11 +361,11 @@ void CmdPktSrvProcess (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd,
         /*** Edit Do_Msg() in icq_response.c so you handle all messages */
             R_undraw ();
             s_mesg = (SIMPLE_MESSAGE_PTR) data;
-            if (!((NULL == UIN2Contact (Chars_2_DW (s_mesg->uin))) && (uiG.Hermit)))
+            if (!((NULL == ContactFind (Chars_2_DW (s_mesg->uin))) && (uiG.Hermit)))
             {
                 uiG.last_recv_uin = Chars_2_DW (s_mesg->uin);
                 Time_Stamp ();
-                M_print ("\a " CYAN BOLD "%10s" COLNONE " ", UIN2Name (Chars_2_DW (s_mesg->uin)));
+                M_print ("\a " CYAN BOLD "%10s" COLNONE " ", ContactFindName (Chars_2_DW (s_mesg->uin)));
                 if (uiG.Verbose)
                     M_print (i18n (647, " Type = %04x\t"), Chars_2_Word (s_mesg->type));
                 Do_Msg (sok, Chars_2_Word (s_mesg->type), Chars_2_Word (s_mesg->len),
@@ -442,15 +443,3 @@ JUMP_SRV_F (CmdPktSrvMulti)
         j += llen;
     }
 }
-
-/*
- * old i18n strings; keep them from beeing reused
- *
- * i18n (602, " ") i18n (603, " ") i18n (604, " ") i18n (605, " ") i18n
- * i18n (620, " ") i18n (621, " ") i18n (624, " ") i18n (625, " ") i18n (630, " ") i18n
- * i18n (631, " ") i18n (636, " ") i18n (637, " ") i18n (638, " ") i18n
- * i18n (743, " ") i18n (744, " ") i18n (745, " ") i18n (746, " ") i18n (747, " ") i18n
- * i18n (748, " ") i18n (749, " ") i18n (750, " ") i18n (751, " ") i18n (752, " ") i18n
- * i18n (753, " ") i18n (754, " ") i18n (755, " ") i18n
- * i18n (32, " ") i18n (33, " ") i18n (48, " ") i18n (49, " ") i18n (51, " ")
- */

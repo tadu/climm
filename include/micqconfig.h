@@ -46,6 +46,9 @@
 /* Define what to output additionally when sending a tcp message. */
 #define MSGTCPSENTSTR "»»» "
 
+/* Define what to output additionally when sending a tcp message. */
+#define MSGTCPACKSTR "=== "
+
 /* Define what to output additionally when a tcp message is received. */
 #define MSGTCPRECSTR  "««« "
 

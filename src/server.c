@@ -10,6 +10,7 @@
 #include "util.h"
 #include "icq_response.h"
 #include "cmd_user.h"
+#include "contact.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -118,9 +119,9 @@ void Auto_Reply (SOK_T sok, SIMPLE_MESSAGE_PTR s_mesg)
             icq_sendmsg (sok, Chars_2_DW (s_mesg->uin), temp, NORM_MESS);
             free (temp);
 
-            if (UIN2nick (uiG.last_recv_uin) != NULL)
+            if (ContactFindNick (uiG.last_recv_uin) != NULL)
                 log_event (uiG.last_recv_uin, LOG_AUTO_MESS,
-                           "Sending an auto-reply message to %s\n", UIN2nick (uiG.last_recv_uin));
+                           "Sending an auto-reply message to %s\n", ContactFindNick (uiG.last_recv_uin));
             else
                 log_event (uiG.last_recv_uin, LOG_AUTO_MESS,
                            "Sending an auto-reply message to %d\n", uiG.last_recv_uin);

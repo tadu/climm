@@ -2,7 +2,9 @@
 2001-12-## Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Let msg_queue.c sort the queue by exp_time; fix long-standing
 	  memory corruption bug
-	*
+	* Move all this contact list stuff to a new src/contact.c. All
+	  funtions now named Contact*(), all source files changed
+	  acordingly. Lots of stuff!
 	*
 	*
 

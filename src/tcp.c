@@ -2,6 +2,7 @@
  * This file handles TCP client-to-client communications.
  *
  *  Author: James Schofield (jschofield@ottawa.com) 22 Feb 2001
+ *  Lots of changes from Rüdiger Kuhlmann.
  */
 
 /*
@@ -13,6 +14,19 @@
 .#include "util.h"
 */
 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <time.h>
+#include <assert.h>
+#include <fcntl.h>
+#include <errno.h>
+
 #include "micq.h"
 #include "util_ui.h"
 #include "file_util.h"
@@ -23,17 +37,10 @@
 #include "cmd_user.h"
 #include "icq_response.h"
 #include "server.h"
+#include "contact.h"
 #include "tcp.h"
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <time.h>
+#define BACKLOG 10
 
 #ifdef TCP_COMM
 
@@ -47,125 +54,301 @@ const UBYTE client_check_data[] = {
     "ICQ Service and Information may\0"
 };
 
-/*
- *  Establishes a TCP connection 
- *  On error, returns -1.
- */
-int Open_TCP_Connection (CONTACT_PTR cont)
+struct msg_queue *tcp_rq = NULL, *tcp_sq = NULL;
+
+void TCPClose (Contact *cont)
 {
-    struct sockaddr_in sin;
-
-    sin.sin_family = AF_INET;
-    sin.sin_port = htons (cont->port);
-    sin.sin_addr.s_addr = Chars_2_DW (cont->current_ip);
-
-    M_print (i18n (779, "Opening TCP connection to %s at %s:%d...") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
-
-    cont->sok = socket (AF_INET, SOCK_STREAM, 0);
-  
-    if (cont->sok <= 0)
-    {
-        M_print (i18n (780, " failure - couldn't create socket.\n"));
-        return -1;
-    }
-
-    if (connect (cont->sok, (struct sockaddr *) &sin, 
-                          sizeof (struct sockaddr)) < 0)
-    {
-        M_print (i18n (783, " failure.\n"));
-
-        sin.sin_family = AF_INET;
-        sin.sin_port = htons (cont->port);
-        sin.sin_addr.s_addr = Chars_2_DW (cont->other_ip);
-
-        M_print (i18n (779, "Opening TCP connection to %s at %s:%d...") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
-
-        /* Try the internal (other) IP now */
-        cont->sok = socket (AF_INET, SOCK_STREAM, 0);
-        if (cont->sok <= 0)
-        {
-            M_print (i18n (780, " failure - couldn't create socket.\n"));
-            return -1;
-        }
-    
-        if (connect (cont->sok, (struct sockaddr *) &sin,
-                            sizeof (struct sockaddr)) < 0)
-        {
-             close (cont->sok);
-             cont->sok = 0;
-             cont->connection_type &= ~TCP_OK_FLAG;
-             M_print (i18n (783, " failure.\n"));
-             return -1;
-        }
-    }
-    M_print (i18n (785, " success.\n"));
-    return 0;
+    close (cont->sok);
+    cont->sok = 0;
+    cont->sokflag = 0;
+    cont->session_id = 0;
 }
 
-/* i18n (784, " ") i18n */
+/* Initializes TCP socket for incoming connections on given port.
+ * 0 = random port
+ */
+SOK_T TCPInit (int port)
+{
+    int sok;
+    int length;
+    struct sockaddr_in sin;
+
+    msg_queue_init (&tcp_rq);
+    msg_queue_init (&tcp_sq);
+
+    sok = socket (AF_INET, SOCK_STREAM, 0);
+    if (sok == -1)
+    {
+        perror ("Error creating TCP socket.");
+        exit (1);
+    }
+
+    sin.sin_family = AF_INET;
+    sin.sin_port = htons (port);
+    sin.sin_addr.s_addr = INADDR_ANY;
+
+    if (bind (sok, (struct sockaddr*)&sin, sizeof (struct sockaddr)) < 0)
+    {
+        perror ("Can't bind socket to free port.");
+        return (-1);
+    }
+
+    if (listen (sok, BACKLOG) < 0)
+    {
+        perror ("Unable to listen on TCP socket");
+        return (-1);
+    }
+
+    /* Get the port used -- needs to be sent in login packet to ICQ server */
+    length = sizeof (struct sockaddr);
+    getsockname (sok, (struct sockaddr *) &sin, &length);
+    ssG.our_port = ntohs (sin.sin_port);
+    M_print (i18n (777, "The port that will be used for tcp (partially implemented) is %d\n"),
+             ssG.our_port);
+
+    return sok;
+}
 
 /*
- *  Receives a TCP packet 
- *  Returns size of packet received.
- *  On error, returns -1 and closes socket.
+ * Handles activity on socket for given contact.
  */
-int Recv_TCP_Pak (SOK_T sok, void **pak)
+void TCPHandleComm (Contact *cont)
+{
+    if (cont->sokflag > 0 && cont->sokflag < 10)
+        TCPConnect (cont);
+    else if (cont->session_id > 0)
+        Recv_TCP_Init (cont->sok);
+    else
+        Handle_TCP_Comm (cont->uin);
+}
+
+/*
+ *  Establishes a TCP connection to given contact.
+ *  On error, returns -1.
+ */
+int TCPConnect (Contact *cont)
+{
+    struct sockaddr_in sin;
+    int flags, rc;
+/*    TCP_INIT_PTR pak;*/
+    static time_t last;
+    time_t now;
+    
+    R_undraw ();
+    M_print ("Debug: entered TCPConnect\n");
+    R_redraw ();
+    while (1)
+    {
+        R_undraw ();
+        M_print ("Debug: on %s sok %d sokflag %d\n", cont->nick, cont->sok, cont->sokflag);
+        R_redraw ();
+        switch (cont->sokflag)
+        {
+            case -1:
+                return -1;
+            case 0:
+                sin.sin_family = AF_INET;
+                sin.sin_port = htons (cont->port);
+                sin.sin_addr.s_addr = Chars_2_DW (cont->current_ip);
+
+                cont->sok = socket (AF_INET, SOCK_STREAM, 0);
+              
+                if (cont->sok <= 0)
+                {
+                    R_undraw ();
+                    M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
+                    M_print (i18n (780, "failure - couldn't create socket.\n"));
+                    R_redraw ();
+                    return -1;
+                }
+
+                flags = fcntl (cont->sok, F_GETFL, 0);
+                if (flags != -1)
+                    flags = fcntl (cont->sok, F_SETFL, flags | O_NONBLOCK);
+                if (flags == -1)
+                {
+                    R_undraw ();
+                    M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
+                    M_print (i18n (828, "failure - couldn't set socket nonblocking.\n"));
+                    R_redraw ();
+                    close (cont->sok);
+                    return -1;
+                }
+
+                last = time (NULL);
+                cont->session_id = sin.sin_addr.s_addr;
+                rc = connect (cont->sok, (struct sockaddr *) &sin, sizeof (struct sockaddr));
+                if (rc >= 0)
+                {
+                    cont->sokflag = 3;
+                    break;
+                }
+                if (errno == EINPROGRESS)
+                {
+                    cont->sokflag = 1;
+                    return 0;
+                }
+                R_undraw ();
+                M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
+                M_print (i18n (829, "failure - connect failed %d (%s) (%d)\n"), errno, strerror (rc), 1);
+                R_redraw ();
+                close (cont->sok);
+                cont->sok = 0;
+                return -1;
+            case 1:
+                now = time (NULL);
+                rc = 0;
+                flags = sizeof (int);
+                if (getsockopt (cont->sok, SOL_SOCKET, SO_ERROR, &rc, &flags) < 0)
+                    rc = errno;
+                if (!rc)
+                {
+                    cont->sokflag = 3;
+                    break;
+                }
+                close (cont->sok);
+
+                sin.sin_addr.s_addr = cont->session_id;
+                R_undraw ();
+                M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
+                M_print (i18n (829, "failure - connect failed %d (%s) (%d)\n"), errno, strerror (rc), 2);
+                R_redraw ();
+
+                sin.sin_family = AF_INET;
+                sin.sin_port = htons (cont->port);
+                sin.sin_addr.s_addr = Chars_2_DW (cont->other_ip);
+
+                cont->sok = socket (AF_INET, SOCK_STREAM, 0);
+              
+                if (cont->sok <= 0)
+                {
+                    R_undraw ();
+                    M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
+                    M_print (i18n (780, "failure - couldn't create socket.\n"));
+                    R_redraw ();
+                    cont->sok = 0;
+                    return -1;
+                }
+
+                flags = fcntl (cont->sok, F_GETFL, 0);
+                if (flags != -1)
+                    flags = fcntl (cont->sok, F_SETFL, flags | O_NONBLOCK);
+                if (flags == -1)
+                {
+                    R_undraw ();
+                    M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
+                    M_print (i18n (828, "failure - couldn't set socket nonblocking.\n"));
+                    R_redraw ();
+                    close (cont->sok);
+                    cont->sok = 0;
+                    return -1;
+                }
+
+                last = time (NULL);
+                rc = connect (cont->sok, (struct sockaddr *) &sin, sizeof (struct sockaddr));
+                if (rc >= 0)
+                {
+                    cont->sokflag = 3;
+                    break;
+                }
+                if (errno == EINPROGRESS)
+                {
+                    cont->sokflag = 2;
+                    return 0;
+                }
+                R_undraw ();
+                M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
+                M_print (i18n (829, "failure - connect failed %d (%s) (%d)\n"), errno, strerror (rc), 3);
+                R_redraw ();
+                close (cont->sok);
+                cont->sok = 0;
+                cont->sokflag = 0;
+                return -1;
+            case 2:
+                now = time (NULL);
+                rc = 0;
+                flags = sizeof (int);
+                if (getsockopt (cont->sok, SOL_SOCKET, SO_ERROR, &rc, &flags) < 0)
+                    rc = errno;
+                if (!rc)
+                {
+                    cont->sokflag = 3;
+                    break;
+                }
+                sin.sin_addr.s_addr = cont->session_id;
+                R_undraw ();
+                M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
+                M_print (i18n (829, "failure - connect failed %d (%s) (%d)\n"), errno, strerror (rc), 4);
+                R_redraw ();
+                close (cont->sok);
+                cont->sok = 0;
+                cont->sokflag = -1;
+                return -1;
+            case 3:
+                sin.sin_addr.s_addr = cont->session_id;
+                R_undraw ();
+                M_print (i18n (779, "Opening TCP connection to %s at %s:%d... ") , cont->nick, inet_ntoa (sin.sin_addr), cont->port);
+                M_print (i18n (785, "success.\n"));
+                R_redraw ();
+                Send_TCP_Init (cont->uin);
+                return 0;
+            case 4:
+            case 5:
+            default:
+                assert (0);
+        }
+    }
+}
+
+
+
+/*
+ *  Reads an incoming TCP packet and returns size of packet.
+ *  Returns -1 on error. Paket must be free()d.
+ */
+int TCPReadPacket (SOK_T sok, void **pak)
 {
     UBYTE s[2];
     int recvSize = 0;
     int offset = 0;
     UWORD size;
 
-    /* Read size of packet */
     if (sockread (sok, s, 2) < 0)
-    {
-        /* error */
-        close (sok);
-        return (-1);
-    }
+        return -1;
 
     size = Chars_2_Word (s);
-    if (size <= 0)
-    {
-        close (sok);
-        return (-1);
-    }
+    if (size <= 0 || size > 100000)
+        return -1;
 
-    /* Read packet */
     *pak = malloc (size);
-    do
+    if (!pak)
+        return -1;
+    
+    while ((offset += recvSize) < size)
     {
         recvSize = sockread (sok, *pak + offset, (size - offset));
         if (recvSize < 0)
         {
-            /* error */
-            close (sok);
-            return (-1);
+            free (pak);
+            return -1;
         }
-    } while ((offset += recvSize) < size);
-    /* ensure we get entire packet */
+    }
     return size;
 }
 
 /*
- * Sends a TCP packet
- * Returns 1 on success.
- * On error, returns -1 and closes socket
+ * Sends an outgoing TCP packet.
+ * Returns -1 on error, 1 on success.
  */
-int Send_TCP_Pak (SOK_T sok, void *pak, UWORD size)
+int TCPSendPacket (SOK_T sok, void *pak, UWORD size)
 {
     UBYTE s[2];
     int sendSize = 0;
     int offset = 0;
     
-    /* Send size of packet */
     Word_2_Chars (s, size);
     if (sockwrite (sok, s, 2) < 0)
-    {
-        /* error */
-        close (sok);
-        return (-1);
-    }
+        return -1;
 
     if (uiG.Verbose & 4)
     {
@@ -179,30 +362,13 @@ int Send_TCP_Pak (SOK_T sok, void *pak, UWORD size)
         R_redraw ();
     }
 
-    /* Send Packet */
-    do
+    while ((offset += sendSize) < size)
     {
         sendSize = sockwrite (sok, pak + offset, (size - offset));
         if (sendSize < 0)
-        {
-            /* error */
-            close (sok);
-            return (-1);
-        }
-    } while ((offset += sendSize) < size);
-    /* ensure entire packet is sent */
-
-    return (1);
-}
-
-/*
- * Saves a "dead" sok with the contact member.
- * To be called after the sok is closed.
- */
-void Save_Dead_Sok (CONTACT_PTR cont)
-{
-    cont->sok = -1;
-    cont->session_id = 0;    
+            return -1;
+    }
+    return 1;
 }
 
 /*
@@ -212,11 +378,14 @@ void Save_Dead_Sok (CONTACT_PTR cont)
  */
 void Send_TCP_Init (UDWORD dest_uin)
 {
-    CONTACT_PTR cont;
+    Contact *cont;
     TCP_INIT_PAK pak;
 
-    cont = UIN2Contact (dest_uin);
-    
+    cont = ContactFind (dest_uin);
+
+    assert (cont->sokflag >= 3);
+    assert (cont->sokflag <= 4);    
+
     /* Form the packet */
     pak.cmd = 0xFF;
     Word_2_Chars (pak.version, TCP_VER);
@@ -230,7 +399,7 @@ void Send_TCP_Init (UDWORD dest_uin)
     pak.connection_type = TCP_OK_FLAG;
     DW_2_Chars (pak.other_port, ssG.our_port);
 
-    if (cont->session_id <= 0)
+    if (cont->sokflag == 3)
     {    
         /* Create a random session id, and save the value
             (to verify against the init packet the other side sends back) */
@@ -245,27 +414,16 @@ void Send_TCP_Init (UDWORD dest_uin)
         cont->session_id = 0;
     }
 
-    /* If we are initiating a connection must be established first */
-    if (cont->sok <= 0)
+    if (TCPSendPacket (cont->sok, (void *) &pak, sizeof(pak)) < 0)
     {
-        if (Open_TCP_Connection (cont) == -1)
-            return;
-    }
-
-    if (Send_TCP_Pak (cont->sok, (void *) &pak, sizeof(pak)) < 0)
-    {
-        /* error; sok is dead */
+        R_undraw ();
         M_print (i18n (787, "Error sending TCP packet.\n"));
-        Save_Dead_Sok (cont);
+        R_redraw ();
+        TCPClose (cont);
         return;
-    }            
-
-    /* Other side should ack this immediately */
-    if (Wait_TCP_Init_Ack (cont->sok) < 0)
-    {
-        Save_Dead_Sok (cont);
     }
 
+    cont->sokflag = 5;
 }
 
 /*
@@ -276,17 +434,17 @@ int Wait_TCP_Init_Ack (SOK_T sok)
 {
     TCP_INIT_ACK_PTR pak;
 
-    if (Recv_TCP_Pak (sok, (void *) &pak) < 0)
+    if (TCPReadPacket (sok, (void *) &pak) < 0)
     {
         M_print (i18n (788, "Error receiving TCP packet."));
-        return (-1);
+        return -1;
     }
 
     if (pak->cmd != TCP_INIT_ACK)
     {
         M_print (i18n (789, "Received malformed packet."));
         close (sok);
-        return (-1);
+        return -1;
     }
 
     return 0;
@@ -295,7 +453,7 @@ int Wait_TCP_Init_Ack (SOK_T sok)
 /*
  * Acks the init packet
  */
-void TCP_Init_Ack (SOK_T sok)
+int TCP_Init_Ack (SOK_T sok)
 {
     TCP_INIT_ACK_PAK pak;
 
@@ -305,10 +463,12 @@ void TCP_Init_Ack (SOK_T sok)
     if (uiG.Verbose)
         M_print (i18n (790, "Sending init ACK...\n"));
 
-    if (Send_TCP_Pak (sok, (void *) &pak, sizeof(pak)) < 0)
+    if (TCPSendPacket (sok, (void *) &pak, sizeof(pak)) < 0)
     {
         M_print (i18n (791, "Error sending TCP packet."));
+        return -1;
     }
+    return 1;
 }
 
 /*
@@ -331,14 +491,15 @@ void New_TCP (SOK_T sok)
     Recv_TCP_Init (newSok);
 }
 
-void Recv_TCP_Init (SOK_T sok)
+int Recv_TCP_Init (SOK_T sok)
 {
     TCP_INIT_PTR pak;
-    CONTACT_PTR cont;
+    Contact *cont;
 
-    if (Recv_TCP_Pak (sok, (void *) &pak) < 0)
+    if (TCPReadPacket (sok, (void *) &pak) < 0)
     {
         M_print (i18n (788, "Error receiving TCP packet."));
+        return -1;
     }
 
     if (uiG.Verbose)
@@ -354,8 +515,8 @@ void Recv_TCP_Init (SOK_T sok)
     }
 
     /* Save the socket with contact */
-    cont = UIN2Contact (Chars_2_DW (pak->uin));
-    if (cont != (CONTACT_PTR) NULL)
+    cont = ContactFind (Chars_2_DW (pak->uin));
+    if (cont)
     {
         cont->sok = sok;
         if (cont->session_id == 0)
@@ -374,7 +535,7 @@ void Recv_TCP_Init (SOK_T sok)
             {
                 /* Bad session ID, close the connection */
                 close (sok);
-                Save_Dead_Sok (cont);
+                TCPClose (cont);
                 if (uiG.Verbose)
                     M_print (i18n (796, "Error initiating a TCP connection.\n"));
             }
@@ -392,6 +553,7 @@ void Recv_TCP_Init (SOK_T sok)
         close (sok);
     }
     free(pak);
+    return 1;
 }
 
 /*
@@ -401,7 +563,7 @@ void Recv_TCP_Init (SOK_T sok)
  */
 void Handle_TCP_Comm (UDWORD uin)
 {
-    CONTACT_PTR cont;
+    Contact *cont;
     TCP_MSG_PTR pak;
     struct msg *msg_in;
     int size;
@@ -409,36 +571,33 @@ void Handle_TCP_Comm (UDWORD uin)
     UWORD seq_in = 0;
     struct msg *queued_msg;
      
-    cont = UIN2Contact (uin);
+    cont = ContactFind (uin);
     msg_in = (struct msg *) malloc (sizeof (struct msg));
 
     /* Recv all packets before doing anything else.
          The objective is to delete any packets CANCELLED by the remote user. */
     while (M_Is_Set (cont->sok) && i <= TCP_MSG_QUEUE)
     {
-        if ((size = Recv_TCP_Pak (cont->sok, (void *) &pak)) <0)
+        if ((size = TCPReadPacket (cont->sok, (void **) &pak)) < 0)
         {
-            /* Remote user disconnected */
             if (uiG.Verbose)
             {
                 R_undraw ();
                 M_print (i18n (797, "User %s%s%s closed socket.\n"), COLCONTACT, cont->nick, COLNONE);
                 R_redraw ();
             }
-            Save_Dead_Sok (cont);
-            return;
+            TCPClose (cont);
+            break;
         }
         else 
         {
             if (Decrypt_Pak ((UBYTE *) pak, size) < 0)
             {
-                /* Decryption error - wrong TCP version? */
+                TCPClose (cont);
                 R_undraw ();
                 M_print (i18n (789, "Received malformed packet."));
-                close (cont->sok);
-                Save_Dead_Sok (cont);
                 R_redraw ();
-                return;
+                break;
             }
     
             if (uiG.Verbose & 4)
@@ -455,7 +614,7 @@ void Handle_TCP_Comm (UDWORD uin)
                 M_print ("\x1b»\n");
                 R_redraw ();
             }
-
+            
             /* Make sure this isn't a resend */
             if ((seq_in == 0) || (Chars_2_Word (pak->seq) < seq_in))
             { 
@@ -470,16 +629,16 @@ void Handle_TCP_Comm (UDWORD uin)
                         if (Chars_2_Word (pak->sub_cmd) == NORM_MESS)
                         {
                             R_undraw ();
-                            M_print (i18n (798, "Message sent direct to %s%s%s!\n"),
-                                     COLCONTACT, cont->nick, COLNONE);
+                            Time_Stamp ();
+                            M_print (" " COLACK "%10s" COLNONE " " MSGTCPACKSTR "%s\n",
+                                     cont->nick, (char *)(pak+1));
                             R_redraw ();
                         }
                         else if (Chars_2_Word (pak->sub_cmd) & TCP_AUTO_RESPONSE_MASK)
                         {
                             R_undraw ();
-                            M_print (i18n (799, "Auto-response message for "));
-                            Print_UIN_Name (cont->uin);
-                            M_print (":\n" MESSCOL "%s\n" NOCOL, ((UBYTE *)pak) + TCP_MSG_OFFSET);
+                            M_print (i18n (194, "Auto-response message for %s:\n"), ContactFindNick (cont->uin));
+                            M_print (MESSCOL "%s\n" NOCOL, ((UBYTE *)pak) + TCP_MSG_OFFSET);
                             R_redraw ();
                         }
                         if (uiG.Verbose)
@@ -523,7 +682,6 @@ void Handle_TCP_Comm (UDWORD uin)
         M_select_init();
         M_Add_rsocket (cont->sok);
         M_select();
-
     }
 
     /* Set the next resend time */
@@ -562,7 +720,7 @@ void Handle_TCP_Comm (UDWORD uin)
                 ssG.last_recv_uin = cont->uin;
                 
                 Time_Stamp ();
-                M_print ("\a " CYAN BOLD "%10s" COLNONE " ", UIN2Name (cont->uin));
+                M_print ("\a " CYAN BOLD "%10s" COLNONE " ", ContactFindName (cont->uin));
                 
 /*                if (Chars_2_Word(pak->sub_cmd) & MASS_MESS_MASK)
                     M_print (" - Sofortnachricht \a ");
@@ -588,36 +746,39 @@ void Handle_TCP_Comm (UDWORD uin)
  * Sends a message via TCP.
  * Adds it to the resend queue until acked.
  */
-void Send_TCP_Msg (SOK_T srv_sok, UDWORD uin, char *msg, UWORD sub_cmd)
+BOOL TCPSendMsg (SOK_T srv_sok, UDWORD uin, char *msg, UWORD sub_cmd)
 {
-    CONTACT_PTR cont;
+    Contact *cont;
     TCP_MSG_PTR pak;
     struct msg *q_item;
     int paksize;
     int msgtype = 0;
 
+    cont = ContactFind (uin);
+    if (!cont)
+        return 0;
+    if (cont->status == STATUS_OFFLINE)
+        return 0;
+    if (cont->sokflag < 0)
+        return 0;
+
     paksize = sizeof(TCP_MSG_PAK) + strlen(msg) + 1 + 8; 
                     /*   header   +     msg  + null + footer */
     q_item = (struct msg *) malloc (sizeof (struct msg));
 
-    cont = UIN2Contact (uin);
-    if (cont == NULL) return;
-
     /* Open a connection if necessary */
-    if (cont->sok <= 0)
-    { 
-        Send_TCP_Init (uin);
+    if (!cont->sokflag)
+    {
+        if (TCPConnect (cont) < 0)
+/*        Send_TCP_Init (uin);*/
 
         /* Did we connect? If not, send by server */
-        if (cont->sok <= 0 && srv_sok > 0)
-        {
-            icq_sendmsg_srv (srv_sok, uin, msg, sub_cmd);
-            return;
-        }
+/*        if (cont->sokflag <= 0 && srv_sok > 0)*/
+            return 0;
     }     
 
     Time_Stamp ();
-    M_print (" " COLSENT "%10s" COLNONE " " MSGTCPSENTSTR "%s\n", UIN2Name (uin), MsgEllipsis (msg));
+    M_print (" " COLSENT "%10s" COLNONE " ... %s\n", ContactFindName (uin), MsgEllipsis (msg));
     
     /* Make the packet */
     pak = (TCP_MSG_PTR) malloc (paksize);
@@ -672,17 +833,18 @@ void Send_TCP_Msg (SOK_T srv_sok, UDWORD uin, char *msg, UWORD sub_cmd)
     /* Queue the message */
     q_item->seq = ssG.seq_tcp + 1;
     q_item->attempts = 1;
+    q_item->exp_time = time (NULL);
 
-    if (cont->session_id > 0)
-    {
+/*    if (cont->session_id > 0)
+    {*/
         /* We're still initializing, so the packet can't be sent yet.
              Set the exp_time really small so it can be sent ASAP.         */
-        q_item->exp_time = time(NULL) + 1;
+/*        q_item->exp_time = time(NULL) + 1;
     }
     else
     {
         q_item->exp_time = time(NULL) + 10;
-    }
+    }*/
     q_item->dest_uin = uin;
     q_item->len = paksize;
     q_item->body = (UBYTE *) pak;
@@ -691,16 +853,17 @@ void Send_TCP_Msg (SOK_T srv_sok, UDWORD uin, char *msg, UWORD sub_cmd)
         ssG.next_tcp_resend = q_item->exp_time;
 
     /* Are we still initializing? If so, don't try to send now. */
-    if (cont->session_id <= 0)
+/*    if (cont->session_id <= 0)
     {
-        if (Send_TCP_Pak (cont->sok, pak, paksize) < 0 && srv_sok > 0)
-        {
+        if (Se nd_TCP_Pak (cont->sok, pak, paksize) < 0 && srv_sok > 0)
+        {*/
             /* Yuck... send it through the server */
-            M_print (i18n (791, "Error sending TCP packet."));
+/*            M_print (i18n (791, "Error sending TCP packet."));
             Check_Queue (ssG.seq_tcp + 1, tcp_sq);
-            icq_sendmsg_srv (srv_sok, uin, msg, sub_cmd);
+            return 0;
         }
-    }
+    }*/
+    return 1;
 }
 
 /*
@@ -709,11 +872,11 @@ void Send_TCP_Msg (SOK_T srv_sok, UDWORD uin, char *msg, UWORD sub_cmd)
  */
 void Get_Auto_Resp (UDWORD uin)
 {
-    CONTACT_PTR cont;
+    Contact *cont;
     UWORD sub_cmd;
     char *msg = "...";    /* seem to need something (anything!) in the msg */
 
-    cont = UIN2Contact (uin);
+    cont = ContactFind (uin);
 
     switch (cont->status & 0x1ff)
     {
@@ -753,21 +916,16 @@ void Get_Auto_Resp (UDWORD uin)
     }
 
     if (sub_cmd == 0)
-    {
-        M_print (i18n (809, "Unable to retrieve auto-response message for "));
-        Print_UIN_Name (uin);
-        M_print (" finden.\n");
-    }
+        M_print (i18n (809, "Unable to retrieve auto-response message for %s."),
+                 ContactFindName (uin));
     else
-    {
-        Send_TCP_Msg (0, uin, msg, sub_cmd);
-    }
+        TCPSendMsg (0, uin, msg, sub_cmd);
 }
 
 /*
  * Acks a TCP packet.
  */
-void Send_TCP_Ack (SOK_T sok, UWORD seq, UWORD sub_cmd, BOOL accept)
+int Send_TCP_Ack (SOK_T sok, UWORD seq, UWORD sub_cmd, BOOL accept)
 {
     TCP_MSG_PTR pak;
     int size;
@@ -783,7 +941,7 @@ void Send_TCP_Ack (SOK_T sok, UWORD seq, UWORD sub_cmd, BOOL accept)
     Word_2_Chars (pak->seq, seq);
     bzero (&(pak->X2), 12);        /* X2 X3 X4 are all null */
     Word_2_Chars (pak->sub_cmd, sub_cmd);
-    Word_2_Chars (pak->status, (accept ? TCP_STAT_OK : TCP_STAT_REFUSE)); 
+    Word_2_Chars (pak->status, (accept ? TCP_STAT_ONLINE : TCP_STAT_REFUSE)); 
     Word_2_Chars (pak->msg_type, TCP_MSG_AUTO);
     Word_2_Chars (pak->size, strlen(msg) + 1);
     strcpy (&((char *) pak)[TCP_MSG_OFFSET], msg);    
@@ -791,10 +949,13 @@ void Send_TCP_Ack (SOK_T sok, UWORD seq, UWORD sub_cmd, BOOL accept)
     DW_2_Chars (&((char *) pak)[TCP_MSG_OFFSET + strlen(msg) + 5], COL_BG);
 
     Encrypt_Pak ((UBYTE *) pak, size);
-    if (Send_TCP_Pak (sok, pak, size) < 0)
+    if (TCPSendPacket (sok, pak, size) < 0)
+    {
         M_print (i18n (791, "Error sending TCP packet."));
-
+        return -1;
+    }
     free (msg);
+    return 1;
 }
 
 /*
@@ -804,29 +965,30 @@ void Do_TCP_Resend (SOK_T srv_sok)
 {
     struct msg *queued_msg;
     TCP_MSG_PTR pak;
-    CONTACT_PTR cont;
+    Contact *cont;
 
     if ((queued_msg = msg_queue_pop (tcp_sq)) != NULL)
     {
         queued_msg->attempts++;
         pak = (TCP_MSG_PAK *) queued_msg->body;
-        cont = UIN2Contact (queued_msg->dest_uin);
+        cont = ContactFind (queued_msg->dest_uin);
 
         if (queued_msg->attempts <= MAX_RETRY_ATTEMPTS)
         {
             if (uiG.Verbose)
             {
                 R_undraw ();
-                M_print (i18n (810, "\nResending TCP message with SEQ num %04X to %s.\t"),
+                M_print (i18n (810, "Resending TCP message with SEQ num %04X to %s."),
                          queued_msg->seq, cont->nick);
-                M_print (i18n (811, " (Attempt #%d.)"), queued_msg->attempts);
+                M_print (i18n (811, " (Attempt #%d.)\n"), queued_msg->attempts);
                 R_redraw ();
             }
 
-            if ((cont->sok >= 0) && (cont->session_id <= 0))
+            if ((cont->sokflag > 0) && (cont->session_id <= 0))
             {
-                Send_TCP_Pak (cont->sok, (UBYTE *) pak, queued_msg->len);
-                queued_msg->exp_time = time(NULL) + 10;
+                if (cont->sokflag == 10)
+                    TCPSendPacket (cont->sok, (UBYTE *) pak, queued_msg->len);
+                queued_msg->exp_time = time (NULL) + 10;
                 msg_queue_push (queued_msg, tcp_sq);
             }
             else
@@ -834,9 +996,9 @@ void Do_TCP_Resend (SOK_T srv_sok)
                 /* Send by the server (except for auto-response messages) */
                 if ((Chars_2_Word(pak->msg_type) && TCP_AUTO_RESPONSE_MASK) == 0)
                 {
-                    icq_sendmsg_srv (srv_sok, cont->uin,
+                    UDPSendMsg (srv_sok, cont->uin,
                                   ((UBYTE *) pak) + TCP_MSG_OFFSET,
-                                    Chars_2_Word(pak->msg_type));
+                                    Chars_2_Word (pak->msg_type));
                     free (queued_msg->body);
                     free (queued_msg);
                 }
@@ -844,15 +1006,14 @@ void Do_TCP_Resend (SOK_T srv_sok)
         }
         else
         {
-            if (TCP_CMD_MESSAGE    == Chars_2_Word (pak->cmd)) 
+            if (TCP_CMD_MESSAGE == Chars_2_Word (pak->cmd)) 
             {
                  R_undraw ();
-                 M_print (i18n (812, "\nTCP timeout; sending message to "));
-                 Print_UIN_Name (cont->uin);
-                 M_print (i18n (813, " after %d send attempts."), queued_msg->attempts - 1);
+                 M_print (i18n (195, "TCP timeout; sending message to %s after %d send attempts."),
+                          cont->nick, queued_msg->attempts - 1);
                  R_redraw ();
 
-                 icq_sendmsg_srv (srv_sok, cont->uin,
+                 UDPSendMsg (srv_sok, cont->uin,
                                   ((UBYTE *) pak) + TCP_MSG_OFFSET, Chars_2_Word(pak->msg_type));
                  free(queued_msg->body);
                  free(queued_msg);
@@ -952,3 +1113,21 @@ int Decrypt_Pak (UBYTE *pak, UDWORD size)
     return (1);
 }
 #endif
+
+/* i18n (798, " ") i18n (783, " ") i18n (786, " ") i18n 
+ * i18n (784, " ") i18n (497, " ") i18n (617, " ") i18n
+ * i18n (799, " ") i18n (781, " ") i18n (782, " ") i18n
+ * i18n (812, " ") i18n (813, " ") i18n
+ * i18n (602, " ") i18n (603, " ") i18n (604, " ") i18n (605, " ") i18n
+ * i18n (620, " ") i18n (621, " ") i18n (624, " ") i18n (625, " ") i18n (630, " ") i18n
+ * i18n (631, " ") i18n (636, " ") i18n (637, " ") i18n (638, " ") i18n
+ * i18n (743, " ") i18n (744, " ") i18n (745, " ") i18n (746, " ") i18n (747, " ") i18n
+ * i18n (748, " ") i18n (749, " ") i18n (750, " ") i18n (751, " ") i18n (752, " ") i18n
+ * i18n (753, " ") i18n (754, " ") i18n (755, " ") i18n
+ * i18n (32, " ") i18n (33, " ") i18n (48, " ") i18n (49, " ") i18n (51, " ") i18n
+ * i18n (98, " ") i18n
+ * i18n (59, " ") i18n
+ * i18n (626, " ") i18n (627, " ") i18n
+ * i18n (634, " ") i18n
+ * i18n (762, " ") i18n
+ */

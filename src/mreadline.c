@@ -27,6 +27,7 @@
 #include "util.h"
 #include "cmd_user.h"
 #include "tabs.h"
+#include "contact.h"
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -172,7 +173,7 @@ void R_process_input_tab (void)
     }
 
     if ((uin = TabGetNext ()))
-        sprintf (s, "%s %s/", msgcmd, UIN2Name (uin));
+        sprintf (s, "%s %s/", msgcmd, ContactFindName (uin));
     else
         sprintf (s, "%s ", msgcmd);
 

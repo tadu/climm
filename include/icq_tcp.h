@@ -55,6 +55,7 @@ typedef struct
 /* Commands */
 #define TCP_INIT		0xFF
 #define TCP_INIT_ACK		0x01
+
 #define TCP_CMD_CANCEL		0x07D0
 #define TCP_CMD_ACK		0x07DA
 #define TCP_CMD_MESSAGE		0x07EE 
@@ -67,6 +68,19 @@ typedef struct
 
 /* Message types */
 #define TCP_MSG_AUTO		0x0000
+#define TCP_MSG_MESS		0x0002
+#define TCP_MSG_FILE		0x0003
+#define TCP_MSG_URL		0x0004
+#define TCP_MSG_REQ_AUTH	0x0006
+#define TCP_MSG_DENY_AUTH	0x0007
+#define TCP_MSG_GIVE_AUTH	0x0008
+#define TCP_MSG_ADDED		0x000C
+#define TCP_MSG_WEB_PAGER	0x000D
+#define TCP_MSG_EMAIL_PAGER	0x000E
+#define TCP_MSG_ADDUIN		0x0013
+#define TCP_MSG_GREETING	0x001A
+
+
 #define TCP_MSG_REAL		0x0010
 #define TCP_MSG_LIST		0x0020
 #define TCP_MSG_URGENT		0x0040
@@ -77,7 +91,7 @@ typedef struct
 #define TCP_MSGF_DND		0x1000
 
 /* Message statuses */
-#define TCP_STAT_OK		0x0000
+#define TCP_STAT_ONLINE		0x0000
 #define TCP_STAT_REFUSE		0x0001
 #define TCP_STAT_AWAY		0x0004
 #define TCP_STAT_OCC		0x0009
@@ -95,5 +109,3 @@ extern struct msg_queue *tcp_rq, *tcp_sq;   /* recv and send queues */
 #endif
 
 
-#define CHAT_MESS       0x0002
-#define FILE_MESS       0x0003

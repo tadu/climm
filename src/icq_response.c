@@ -4,6 +4,7 @@
 #include "icq_response.h"
 #include "util_ui.h"
 #include "tabs.h"
+#include "contact.h"
 #include "util_table.h"
 #include "util.h"
 #include "sendmsg.h"
@@ -416,7 +417,7 @@ void Recv_Message (int sok, UBYTE * pak)
     uiG.last_recv_uin = Chars_2_DW (r_mesg->uin);
     M_print (i18n (496, "%02d/%02d/%04d"), r_mesg->month, r_mesg->day, Chars_2_Word (r_mesg->year));
     M_print (" %02d:%02d UTC \a" CYAN BOLD "%10s" COLNONE " ",
-             r_mesg->hour, r_mesg->minute, UIN2Name (Chars_2_DW (r_mesg->uin)));
+             r_mesg->hour, r_mesg->minute, ContactFindName (Chars_2_DW (r_mesg->uin)));
     Do_Msg (sok, Chars_2_Word (r_mesg->type), Chars_2_Word (r_mesg->len),
             (r_mesg->len + 2), uiG.last_recv_uin, 0);
 }
@@ -427,28 +428,27 @@ This is called when a user goes offline
 *************************************************/
 void User_Offline (int sok, UBYTE * pak)
 {
-    CONTACT_PTR con;
+    Contact *con;
     int remote_uin;
 
     remote_uin = Chars_2_DW (&pak[0]);
 
     Time_Stamp ();
-    M_print (" ");
-    Print_UIN_Name_10 (remote_uin);
-    M_print (" %s\n", i18n (30, "logged off."));
-    log_event (remote_uin, LOG_ONLINE, "User logged off %s\n", UIN2Name (remote_uin));
+    M_print (" " COLCONTACT "%10s" COLNONE " %s\n",
+             ContactFindName (remote_uin), i18n (30, "logged off."));
+    log_event (remote_uin, LOG_ONLINE, "User logged off %s\n", ContactFindName (remote_uin));
 
     if (uiG.SoundOffline == SOUND_CMD)
         ExecScript (uiG.Sound_Str_Offline, remote_uin, 0, NULL);
 
-    if ((con = UIN2Contact (remote_uin)) != NULL)
+    if ((con = ContactFind (remote_uin)) != NULL)
     {
         con->status = STATUS_OFFLINE;
         con->last_time = time (NULL);
     }
 }
 
-static void UserOnlineSetVersion (CONTACT_PTR con, UDWORD tstamp)
+static void UserOnlineSetVersion (Contact *con, UDWORD tstamp)
 {
     char buf[100];
     char *new = NULL;
@@ -481,9 +481,8 @@ static void UserOnlineSetVersion (CONTACT_PTR con, UDWORD tstamp)
 
 void User_Online (int sok, UBYTE * pak)
 {
-    CONTACT_PTR con;
+    Contact *con;
     int remote_uin, new_status;
-    int index;
 
     remote_uin = Chars_2_DW (&pak[0]);
 
@@ -495,7 +494,7 @@ void User_Online (int sok, UBYTE * pak)
         if (uiG.SoundOnline == SOUND_CMD)
             ExecScript (uiG.Sound_Str_Online, remote_uin, 0, NULL);
 
-        if ((con = UIN2Contact (remote_uin)))
+        if ((con = ContactFind (remote_uin)))
         {
             UserOnlineSetVersion (con, Chars_2_DW (&pak[37]));
             con->status = new_status;
@@ -513,13 +512,12 @@ void User_Online (int sok, UBYTE * pak)
             con->connection_type = pak[16];
             
         }
-        log_event (remote_uin, LOG_ONLINE, "User logged on %s\n", UIN2Name (remote_uin));
+        log_event (remote_uin, LOG_ONLINE, "User logged on %s\n", ContactFindName (remote_uin));
 
         R_undraw ();
         Time_Stamp ();
-        M_print (" ");
-        Print_UIN_Name_10 (remote_uin);
-        M_print (" %s (", i18n (31, "logged on"));
+        M_print (" " COLCONTACT "%10s" COLNONE " %s (",
+                 ContactFindName (remote_uin), i18n (31, "logged on"));
         Print_Status (new_status);
         M_print (")");
         if (con->version)
@@ -538,54 +536,45 @@ void User_Online (int sok, UBYTE * pak)
     else
     {
         Kill_Prompt ();
-        for (index = 0; index < uiG.Num_Contacts; index++)
+        if ((con = ContactFind (remote_uin)))
         {
-            if (uiG.Contacts[index].uin == remote_uin)
-            {
-                uiG.Contacts[index].status = new_status;
-                uiG.Contacts[index].current_ip[0] = pak[4];
-                uiG.Contacts[index].current_ip[1] = pak[5];
-                uiG.Contacts[index].current_ip[2] = pak[6];
-                uiG.Contacts[index].current_ip[3] = pak[7];
-                uiG.Contacts[index].port = Chars_2_DW (&pak[8]);
-                uiG.Contacts[index].last_time = time (NULL);
-                uiG.Contacts[index].TCP_version = Chars_2_Word (&pak[21]);
-                uiG.Contacts[index].connection_type = pak[16];
-                UserOnlineSetVersion (&uiG.Contacts[index], Chars_2_DW (&pak[37]));
-                break;
-            }
+            con->status = new_status;
+            con->current_ip[0] = pak[4];
+            con->current_ip[1] = pak[5];
+            con->current_ip[2] = pak[6];
+            con->current_ip[3] = pak[7];
+            con->port = Chars_2_DW (&pak[8]);
+            con->last_time = time (NULL);
+            con->TCP_version = Chars_2_Word (&pak[21]);
+            con->connection_type = pak[16];
+            UserOnlineSetVersion (con, Chars_2_DW (&pak[37]));
         }
     }
 }
 
 void Status_Update (int sok, UBYTE * pak)
 {
-    CONTACT_PTR bud;
+    Contact *cont;
     int remote_uin, new_status;
-    int index;
 
     remote_uin = Chars_2_DW (&pak[0]);
 
     new_status = Chars_2_DW (&pak[4]);
     if (pak[8])
         M_print ("%02X\n", pak[8]);
-    bud = UIN2Contact (remote_uin);
-    if (bud != NULL)
+    cont = ContactFind (remote_uin);
+    if (cont)
     {
-        if (bud->status == new_status)
+        if (cont->status == new_status)
         {
             Kill_Prompt ();
             return;
         }
+        cont->status = new_status;
     }
     Time_Stamp ();
-    M_print (" ");
-    index = Print_UIN_Name_10 (remote_uin);
-    if (index != -1)
-    {
-        uiG.Contacts[index].status = new_status;
-    }
-    M_print (" %s ", i18n (35, "changed status to"));
+    M_print (" " COLCONTACT "%10s" COLNONE " %s ",
+             ContactFindName (remote_uin), i18n (35, "changed status to"));
     Print_Status (new_status);
     M_print ("\n");
 }
@@ -933,7 +922,7 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin, BOOL tcp
 
         log_event (uin, LOG_MESS,
                    "You received URL message from %s\nDescription: %s\nURL: %s\n",
-                   UIN2Name (uin), url_desc, url_url);
+                   ContactFindName (uin), url_desc, url_url);
 
         M_print ("%s" COLMESS "%s" COLNONE "\n", tcp ? MSGTCPRECSTR : MSGRECSTR, url_desc);
         Time_Stamp ();
@@ -966,24 +955,24 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin, BOOL tcp
     {
         ConvWinUnix (data);
         log_event (uin, LOG_MESS, "You received instant message from %s\n%s\n",
-                   UIN2Name (uin), data);
+                   ContactFindName (uin), data);
         M_print ("%s" COLMESS "\x1b<%s" COLNONE "\x1b>\n", tcp ? MSGTCPRECSTR : MSGRECSTR, data);
     }
     /* aaron
        If we just received a message from someone on the contact list,
        save it with the person's contact information. If they are not in
        the list, don't do anything special with it.                              */
-    if (UIN2Contact (uiG.last_recv_uin) != NULL)
+    if (ContactFind (uiG.last_recv_uin) != NULL)
     {
-        UIN2Contact (uiG.last_recv_uin)->LastMessage =
-           realloc (UIN2Contact (uiG.last_recv_uin)->LastMessage, len + 5);
+        ContactFind (uiG.last_recv_uin)->LastMessage =
+           realloc (ContactFind (uiG.last_recv_uin)->LastMessage, len + 5);
         /* I add on so many characters because I always have segfaults in
            my own program when I try to allocate strings like this. Somehow
            it tries to write too much to the string even though I think I
            allocate the right amount. Oh well. It shouldn't be too much
            wasted space, I hope.                                                          */
         ConvWinUnix (data);
-        strcpy (UIN2Contact (uiG.last_recv_uin)->LastMessage, data);
+        strcpy (ContactFind (uiG.last_recv_uin)->LastMessage, data);
     }
     /* end of aaron */
 }

@@ -46,10 +46,10 @@
 045:Fertig mit suchen.
 046:Länge
 047:Extra-Daten
-048:Seq
-049:Ver
+048: 
+049: 
 050:Login erfolgreich!
-051:Der Server hat das %04x Kommando bestätigt!
+051: 
 052: Konnte Verbindung nicht herstellen¶
 053: Auf %s verbunden, warte auf Antwort.¶
 054: Verbindung verweigert auf Port: %d, Server: %s¶
@@ -510,7 +510,8 @@
 494:Nur Server
 495:Kein zufälliger Benutzer gefunden
 496:%02d/%02d/%04d
-497:Typ: %d	Länge: %d¶
+#-#497:Typ: %d	Länge: %d¶
+#497:Discarding message to %s after %d send attempts.  Message content:¶
 498:Information über:
 499:Anderes
 500:Spitzname:
@@ -633,25 +634,25 @@
 617:Speicher erschöpft!¶
 618:¶Insgesamt %d Einträge.¶
 619:Folgenummer = %04x	Kommando = %04x	Versuche = %d	Länge = %d¶
-620:Entferne Nachricht mit Folgenummer %04X und Kommando 
-621: von der Warteschlange wegen Bestätigung.¶
+620: 
+621: 
 622:Möchten Sie die Änderungen anwenden? (JA/NEIN)
 623:Doppeltes Paket %04X.¶
-624:Sende Nachricht mit Folgenummer %04x und Kommando 
-625: erneut (Versuch #%d).
-626:Werfe Nachricht an 
-627: weg nach %d Sendeversuchen. Inhalt der Nachricht:¶
+624: 
+625: 
+626: 
+627: 
 628: Beschreibung: ©3%s©0¶
 629: URL:          ©3%s©0 
-630:Habe ein 
-631:Paket weggeworfen.
+630: 
+631: 
 632:¶Verbindung instabil. Beende...
 633:Bestätigung! %d¶
 634: 
 635:Du bist auf einen Fehler in meinem Programmcode gestoßen :(. Jetzt schulde ich Dir ein Bier! Grüße, Fryslan!¶
-636:[ Sende automatische Antwort an %d(%d)]¶
-637:¶Paket-Nummer %d¶
-638:¶Die Folgenummer war %04X¶
+636: 
+637: 
+638: 
 639:Die neue Benutzernummer ist %ld!¶
 640:Aktualisieren der Informationen fehlgeschlagen.¶
 641:Benutzerinformationen erfolgreich aktualisiert.¶
@@ -685,7 +686,7 @@
 669:%s hinzugefügt.
 670:Für %s jetzt unsichtbar.
 671:Für %s jetzt sichtbar.
-672:s IP-Adresse ist 
+672:%ss IP-Adresse ist 
 673:	Der Port ist %d.¶
 674:	Der Port ist unbekannt.¶
 675:Ignoriere Zeile:
@@ -756,19 +757,19 @@
 740:Erstelle Nachricht an ©2%d©0:¶
 741:Man muß erst eine Nachricht empfangen.¶
 742:Man muß erst eine Nachricht schreiben.¶
-743:Am-Leben-erhalten
-744:zweitrangiges Am-Leben-erhalten
-745:Kontaktliste
-746:Unsichtbar-Liste
-747:Sichtbar-Liste
-748:Zufällige Suche
-749:Setze Zufall
-750:Lösche Server-Nachrichten
-751:Anmeldung fertigstellen
-752:Anmeldung
-753:Sende Nachricht
-754:Informations-Anfrage
-755:Erweiterte Informations-Anfrage
+743: 
+744: 
+745: 
+746: 
+747: 
+748: 
+749: 
+750: 
+751: 
+752: 
+753: 
+754: 
+755: 
 756:¶Erstelle Verbindung...¶
 757:Konnte keine Verbindung herstellen.¶
 758:Sende Anfrage...¶
@@ -792,14 +793,14 @@
 776:Ausgehendes TCP-Paket:
 777:Eingehende TCP-Verbindungen (teilweise implementiert) werden auf Port %d empfangen.¶
 778:Eingehendes TCP-Paket:
-779:Öffne TCP-Verbindung zu %s.¶
-780:Fehler beim erzeugen eines sockets.¶
-781:Versuche %s:%d...
-782: fehlgeschlagen.¶Versuche %s:%d...
-783: fehlgeschlagen.¶
-784:Fehler beim Verbinden zum entfernten Benutzer.¶
-785: erfolgreich.¶
-786:Fehler beim Erstellen einer direkten TCP-Verbindung.¶
+779:Öffne TCP-Verbindung zu %s auf %s:%d... 
+780:fehlgeschlagen - konnte Verbinsungsendpunkt nicht erzeugen.¶
+781: 
+782: 
+783: 
+784: 
+785:erfolgreich.¶
+786:
 787:Fehler beim Senden eines TCP-Paketes.¶
 788:Fehler beim Empfangen eines TCP-Paketes.
 789:Fehlerhaftes Paket empfangen.
@@ -811,22 +812,22 @@
 #795:SID : 0x%08X¶
 796:Fehler beim initiieren einer TCP-Verbindung.¶
 797:Benutzer %s%s%s hat die Verbindung beendet.¶
-798:Nachricht direkt an %s%s%s gesendet!¶
-799:Automatische Antwortnachricht für
+798: 
+799: 
 800:Wählt die Sprache <lang> aus.
 801:Zeigt die Kontaktliste im ausführlichen Format an.
 802:Klang-Befehl, wenn jemand verbindet:
 803:Klang-Befehl, wenn jemand sich abmeldet:
 804:Klang, wenn jemand verbindet:
 805:Klang, wenn sich jemand abmeldet:
-#806:Received ACK for message (seq %04X) from %s
-#807:Cancelled incoming message (seq %04X) from %s
+806:Nachricht %04x von %s bestätigt.¶
+807:Eingehende Nachricht %04x von %s abgebrochen.¶
 #808: Typ    = %04x	
-#809:Unable to retrieve auto-response message for 
+#809:Unable to retrieve auto-response message for %s.
 #810:¶Resending TCP message with SEQ num %04X to %s.	
 #811: (Attempt #%d.)
-#812:¶TCP timeout; sending message to 
-#813: after %d send attempts.
+812: 
+813: 
 #814:Sent auto-response message to %s%s%s.¶
 815:    funny: Lustige Meldungen verwenden.¶
 816:Unbekannte Option %s des set-Kommandos.¶
@@ -836,3 +837,10 @@
 820:%s <option> [an|aus] - einfach Optionen ändern.¶
 821:Lustige Meldungen sind ©3%s©0.¶
 822:    color: Farbe verwenden.¶
+823:Eingehendes Unter-Paket:
+824:Bestätigtes Paket vom Typ %04x (%s), Sequenz-Nummer %04x, von der Warteschlange entfernt.¶
+825:Werfe ein Paket vom Typ %04x (%s) weg.
+826:Sende Paket vom Typ %04x (%s), Sequenz-Nummer %04x, erneut (Versuch #%d, Länge %d).¶
+827:Unbekanntes Programm
+828:fehlgeschlagen - konnte Verbindungsendpunkt nicht nicht-blockierend setzen.¶
+829:fehlgeschlagen - %d (%s) (%d)¶

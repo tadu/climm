@@ -11,8 +11,9 @@
 #include "cmd_pkt_server.h"
 #include "icq_response.h"
 #include "server.h"
-
+#include "contact.h"
 #include "tcp.h"
+#include "msg_queue.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,9 +46,6 @@
 #include "beos.h"
 #endif
 
-
-#define BACKLOG 10 /* james */
-
 extern int h_error;
 
 user_interface_state uiG;
@@ -59,14 +57,9 @@ static int idle_val = 0;
 static int idle_flag = 0;
 
 struct msg_queue *queue = NULL;
-#ifdef TCP_COMM
-struct msg_queue *tcp_rq = NULL, *tcp_sq = NULL;
-#endif
 
 void init_global_defaults () {
   /* Initialize User Interface global state */
-  uiG.Num_Contacts = 0;
-  uiG.Contact_List = FALSE;
   uiG.Verbose      = FALSE;
   uiG.Sound = SOUND_ON;         /* Beeps on by default */
   uiG.SoundOnline = SOUND_OFF;  /* sound for ppl coming online */
@@ -120,59 +113,6 @@ void init_global_defaults () {
   s5G.s5Pass[0] = 0;
 }
 
-
-#ifdef TCP_COMM
-/* TCP: init function james -- initializes TCP socket for incoming
- * connections Set port to 0 for random port
- */
-SOK_T Init_TCP (int port, FD_T aux)
-{
-    int sok;
-    int length;
-    struct sockaddr_in sin;
-
-    /* Create the socket */
-    sok = socket (AF_INET, SOCK_STREAM, 0);
-    if (sok == -1)
-    {
-        perror ("Error creating TCP socket.");
-        exit (1);
-    }
-    else if (uiG.Verbose)
-    {
-        M_fdprint (aux, "Created TCP socket.\n");
-    }
-
-    /* Bind the socket to a port */
-    sin.sin_family = AF_INET;
-    sin.sin_port = htons (port);
-    sin.sin_addr.s_addr = INADDR_ANY;   /* my ip */
-   
-    if (bind (sok, (struct sockaddr*)&sin, sizeof (struct sockaddr)) < 0)
-    {
-        perror ("Can't bind socket to free port.");
-        return (-1);
-    }
-
-    /* Listen on socket */
-    if (listen (sok, BACKLOG) < 0)
-    {
-        perror ("Unable to listen on TCP socket");
-        return (-1);
-    }
-
-    /* Get the port used -- needs to be sent in login packet to ICQ server */
-    length = sizeof (struct sockaddr);
-    getsockname (sok, (struct sockaddr *) &sin, &length);
-    ssG.our_port = ntohs (sin.sin_port);
-    M_fdprint (aux, i18n (777, "The port that will be used for tcp (partially implemented) is %d\n"),
-               ssG.our_port);
-
-    return sok;
-}
-#endif
-
-/* i18n (59, " ") i18n */
 
 /*
  * Connects to hostname on port port
@@ -472,6 +412,7 @@ int main (int argc, char *argv[])
     int sok;
 #ifdef TCP_COMM
     int tcpSok;
+    Contact *cont;
 #endif
     int i, j;
     int next;
@@ -566,9 +507,8 @@ int main (int argc, char *argv[])
     }
 #endif
 
-/*** TCP: tcp init ***/
 #ifdef TCP_COMM
-    tcpSok = Init_TCP (TCP_PORT, STDERR);
+    tcpSok = TCPInit (TCP_PORT);
 #endif
 
     sok = Connect_Remote (ssG.server, ssG.remote_port, STDERR);
@@ -604,47 +544,24 @@ int main (int argc, char *argv[])
         M_Add_rsocket (STDIN);
 #endif
 
-/*** TCP: add tcp socket into select queue ***/
 #ifdef TCP_COMM
         M_Add_rsocket (tcpSok);
-        for (i = 0; i < uiG.Num_Contacts; i++)
-        {
-            if (uiG.Contacts[i].sok > 0)
-            {
-                M_Add_rsocket (uiG.Contacts[i].sok);
-            }
-        }
+        for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+            if (cont->sokflag > 0)
+                M_Add_rsocket (cont->sok);
 #endif
-
 
         M_select ();
 
         if (M_Is_Set (sok))
             CmdPktSrvRead (sok);
-/*** TCP: on receiving a connection ***/
 #ifdef TCP_COMM
         if (M_Is_Set (tcpSok))
             New_TCP (tcpSok);
-        for (i = 0; i < uiG.Num_Contacts; i++)
-        {
-            if (uiG.Contacts[i].sok > 0)
-            {
-                if (M_Is_Set (uiG.Contacts[i].sok))
-                {
-                    /* Are we waiting for an init packet
-                     * ... or is init already finished? */
-                    if (uiG.Contacts[i].session_id > 0)
-                    {
-                        /* session id is non-zero only during init */
-                        Recv_TCP_Init (uiG.Contacts[i].sok);
-                    }
-                    else
-                    {
-                        Handle_TCP_Comm (uiG.Contacts[i].uin);
-                    }
-                }
-            }
-        }
+        for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+            if (cont->sokflag > 0)
+                if (M_Is_Set (cont->sok))
+                    TCPHandleComm (cont);
 #endif
 
 

@@ -4,6 +4,7 @@
 #include "mreadline.h"
 #include "util_ui.h"
 #include "util.h"
+#include "contact.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -526,7 +527,7 @@ void Prompt (void)
     static char buff[200];
     if (uiG.last_uin_prompt && last_uin)
     {
-        snprintf (buff, sizeof (buff), COLSERV "[%s]" COLNONE " ", UIN2Name (last_uin));
+        snprintf (buff, sizeof (buff), COLSERV "[%s]" COLNONE " ", ContactFindName (last_uin));
         R_doprompt (buff);
     }
     else

@@ -191,8 +191,8 @@
 191:passwd = %s¶
 192:server = %s¶
 193:status = %ld¶
-194:# of contacts = %d¶
-195:UIN of contact[0] = %ld¶
+194:Auto-response message for %s:¶
+195:TCP timeout; sending message to %s after %d send attempts.
 196:Message_cmd = %s¶
 197:Password change was ©2%s©0.¶
 198:Other Services
@@ -494,7 +494,7 @@
 494:Server Only
 495:No Random User Found
 496:%02d/%02d/%04d
-497:Type: %d	 Len: %d¶
+497: 
 498:Info for:
 499:Other
 500:Nickname:
@@ -623,8 +623,8 @@
 623:Doubled packet %04X¶
 624: 
 625: 
-626:Discarding message to 
-627: after %d send attempts.  Message content:¶
+626: 
+627: 
 628: Description: ©3%s©0¶
 629: URL:         ©3%s©0
 630: 
@@ -669,7 +669,7 @@
 669:%s added.
 670:Invisible to %s now.
 671:Visible to %s now.
-672:'s IP address is 
+672:%s's IP address is 
 673:	The port is %d¶
 674:	The port is unknown¶
 675:Ignored line:
@@ -776,14 +776,14 @@
 776:Outgoing TCP packet:
 777:The port that will be used for tcp (partially implemented) is %d¶
 778:Incoming TCP packet:
-779:Opening TCP connection to %s.¶
-780:Error creating socket.¶
-781:Trying %s:%d...
-782: failure.¶Trying %s:%d...
-783: failure.¶
-784:Error connecting to remote user.¶
-785: success.¶
-786:Error establishing a direct TCP connection.¶
+779:Opening TCP connection to %s at %s:%d... 
+780:failure - couldn't create socket.¶
+781: 
+782: 
+783: 
+784: 
+785:success.¶
+786: 
 787:Error sending TCP packet.¶
 788:Error receiving TCP packet.
 789:Received malformed packet.
@@ -795,8 +795,8 @@
 795:SID : 0x%08X¶
 796:Error initiating a TCP connection.¶
 797:User %s%s%s closed socket.¶
-798:Message sent direct to %s%s%s!¶
-799:Auto-response message for 
+798: 
+799: 
 800:Change the working language to <lang>.
 801:Displays a list of people on your contact list in a screen wide format.
 802:SoundOnline cmd
@@ -806,11 +806,11 @@
 806:Received ACK for message (seq %04X) from %s¶
 807:Cancelled incoming message (seq %04X) from %s¶
 808: Typ    = %04x	
-809:Unable to retrieve auto-response message for 
+809:Unable to retrieve auto-response message for %s.
 810:¶Resending TCP message with SEQ num %04X to %s.	
 811: (Attempt #%d.)
-812:¶TCP timeout; sending message to 
-813: after %d send attempts.
+812: 
+813: 
 814:Sent auto-response message to %s%s%s.¶
 815:    funny: use funny messages for output.¶
 816:Unknown option %s to set command.¶
@@ -821,7 +821,10 @@
 821:Funny messages are ©3%s©0.¶
 822:    color: use colored text output.¶
 823:Incoming partial packet:
-824:Acknowledged packet type %04x (%s) sequence %04x removed vom queue.¶
+824:Acknowledged packet type %04x (%s) sequence %04x removed from queue.¶
 825:Discarded a %04x (%s) packet
 826:Resending message %04x (%s) sequence %04x (attempt #%d, len %d).¶
 827:Unknown client
+828:failure - couldn't set socket nonblocking.¶
+829:failure - connect failed %d (%s) (%d)¶
+830:Discarding message to %s after %d send attempts.  Message content:¶

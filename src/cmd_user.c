@@ -8,6 +8,7 @@
 #include "tabs.h"
 #include "file_util.h"
 #include "buildmark.h"
+#include "contact.h"
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
@@ -404,7 +405,7 @@ JUMP_F(CmdUserInfo)
         M_print (i18n (726, "Need uin to ask for.\n"));
         return 0;
     }
-    uin = nick2uin (arg1);
+    uin = ContactFindByNick (arg1);
     if (-1 == uin)
     {
         M_print (i18n (61, "%s not recognized as a nick name"), arg1);
@@ -671,7 +672,7 @@ JUMP_F (CmdUserResend)
         M_print (i18n (676, "Need uin to send to.\n"));
         return 0;
     }
-    uin = nick2uin (arg1);
+    uin = ContactFindByNick (arg1);
     if (uin == -1)
     {
         M_print (i18n (61, "%s not recognized as a nick name"), arg1);
@@ -695,6 +696,7 @@ JUMP_F (CmdUserMessage)
     static int offset = 0;
     static char msg[1024];
     char *arg1;
+    Contact *cont;
 
     if (status)
     {
@@ -705,13 +707,12 @@ JUMP_F (CmdUserMessage)
             msg[offset - 1] = msg[offset - 2] = 0;
             if (multi_uin == -1)
             {
-                int i;
                 char *temp;
                 
-                for (i = 0; i < uiG.Num_Contacts; i++)
+                for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
                 {
                     temp = strdup (msg);
-                    icq_sendmsg (sok, uiG.Contacts[i].uin, temp, MRNORM_MESS);
+                    icq_sendmsg (sok, cont->uin, temp, MRNORM_MESS);
                     free (temp);
                 }
             }
@@ -740,13 +741,12 @@ JUMP_F (CmdUserMessage)
                 M_print (i18n (37, "Message sent before last line buffer is full\n"));
                 if (multi_uin == -1)
                 {
-                    int i;
                     char *temp;
                     
-                    for (i = 0; i < uiG.Num_Contacts; i++)
+                    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
                     {
                         temp = strdup (msg);
-                        icq_sendmsg (sok, uiG.Contacts[i].uin, temp, MRNORM_MESS);
+                        icq_sendmsg (sok, cont->uin, temp, MRNORM_MESS);
                         free (temp);
                     }
                 }
@@ -770,7 +770,7 @@ JUMP_F (CmdUserMessage)
                     M_print (i18n (676, "Need uin to send to.\n"));
                     return 0;
                 }
-                uin = nick2uin (arg1);
+                uin = ContactFindByNick (arg1);
                 if (uin == -1)
                 {
                     M_print (i18n (61, "%s not recognized as a nick name"), arg1);
@@ -813,13 +813,12 @@ JUMP_F (CmdUserMessage)
         {
             if (data == 8)
             {
-                int i;
                 char *temp;
                 
-                for (i = 0; i < uiG.Num_Contacts; i++)
+                for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
                 {
                     temp = strdup (arg1);
-                    icq_sendmsg (sok, uiG.Contacts[i].uin, temp, MRNORM_MESS);
+                    icq_sendmsg (sok, cont->uin, temp, MRNORM_MESS);
                     free (temp);
                 }
             }
@@ -833,8 +832,8 @@ JUMP_F (CmdUserMessage)
         multi_uin = uin;
         if (uin == -1)
             M_print (i18n (664, "Composing message to " COLCONTACT "all" COLNONE ":\n"));
-        else if (UIN2nick (uin))
-            M_print (i18n (739, "Composing message to " COLCONTACT "%s" COLNONE ":\n"), UIN2nick (uin));
+        else if (ContactFindNick (uin))
+            M_print (i18n (739, "Composing message to " COLCONTACT "%s" COLNONE ":\n"), ContactFindNick (uin));
         else
             M_print (i18n (740, "Composing message to " COLCLIENT "%d" COLNONE ":\n"), uin);
         offset = 0;
@@ -868,20 +867,19 @@ JUMP_F(CmdUserVerbose)
  */
 JUMP_F(CmdUserStatusDetail)
 {
-    int i;
     UDWORD num;
-    CONTACT_PTR cont;
+    Contact *cont;
     char *name = strtok (args, "");
 
     if (name)
     {
-        num = nick2uin (name);
+        num = ContactFindByNick (name);
         if (num == -1)
         {
             M_print (i18n (699, "Must give a valid uin/nickname\n"));
             return 0;
         }
-        cont = UIN2Contact (num);
+        cont = ContactFind (num);
         if (cont == NULL)
         {
             M_print (i18n (700, "%s is not a valid user in your list.\n"), name);
@@ -942,15 +940,15 @@ JUMP_F(CmdUserStatusDetail)
     M_print ("\n");
     /*  First loop sorts thru all offline users */
     M_print ("%s%s\n", W_SEPERATOR, i18n (72, "Users offline:"));
-    for (i = 0; i < uiG.Num_Contacts; i++)
+    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
     {
-        if ((SDWORD) uiG.Contacts[i].uin > 0)
+        if ((SDWORD) cont->uin > 0)
         {
-            if (FALSE == uiG.Contacts[i].invis_list)
+            if (!cont->invis_list)
             {
-                if (uiG.Contacts[i].status == STATUS_OFFLINE)
+                if (cont->status == STATUS_OFFLINE)
                 {
-                    if (uiG.Contacts[i].vis_list)
+                    if (cont->vis_list)
                     {
                         M_print ("%s*%s", COLSERV, COLNONE);
                     }
@@ -958,14 +956,14 @@ JUMP_F(CmdUserStatusDetail)
                     {
                         M_print (" ");
                     }
-                    M_print ("%8ld=", uiG.Contacts[i].uin);
-                    M_print (COLCONTACT "%-20s\t%s(", uiG.Contacts[i].nick, COLMESS);
-                    Print_Status (uiG.Contacts[i].status);
+                    M_print ("%8ld=", cont->uin);
+                    M_print (COLCONTACT "%-20s\t%s(", cont->nick, COLMESS);
+                    Print_Status (cont->status);
                     M_print (")" COLNONE);
-                    if (-1L != uiG.Contacts[i].last_time)
+                    if (-1L != cont->last_time)
                     {
                         M_print (i18n (69, " Last online at %s"),
-                                 ctime ((time_t *) & uiG.Contacts[i].last_time));
+                                 ctime ((time_t *) & cont->last_time));
                     }
                     else
                     {
@@ -980,15 +978,15 @@ JUMP_F(CmdUserStatusDetail)
     }
     /* The second loop displays all the online users */
     M_print ("%s%s\n", W_SEPERATOR, i18n (73, "Users online:"));
-    for (i = 0; i < uiG.Num_Contacts; i++)
+    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
     {
-        if ((SDWORD) uiG.Contacts[i].uin > 0)
+        if ((SDWORD) cont->uin > 0)
         {
-            if (FALSE == uiG.Contacts[i].invis_list)
+            if (FALSE == cont->invis_list)
             {
-                if (uiG.Contacts[i].status != STATUS_OFFLINE)
+                if (cont->status != STATUS_OFFLINE)
                 {
-                    if (uiG.Contacts[i].vis_list)
+                    if (cont->vis_list)
                     {
                         M_print ("%s*%s", COLSERV, COLNONE);
                     }
@@ -996,18 +994,18 @@ JUMP_F(CmdUserStatusDetail)
                     {
                         M_print (" ");
                     }
-                    M_print ("%8ld=", uiG.Contacts[i].uin);
-                    M_print (COLCONTACT "%-20s\t%s(", uiG.Contacts[i].nick, COLMESS);
-                    Print_Status (uiG.Contacts[i].status);
+                    M_print ("%8ld=", cont->uin);
+                    M_print (COLCONTACT "%-20s\t%s(", cont->nick, COLMESS);
+                    Print_Status (cont->status);
                     M_print (")" COLNONE);
-                    if (-1L != uiG.Contacts[i].last_time)
+                    if (-1L != cont->last_time)
                     {
-                        if (uiG.Contacts[i].status == STATUS_OFFLINE)
+                        if (cont->status == STATUS_OFFLINE)
                             M_print (i18n (69, " Last online at %s"),
-                                     ctime ((time_t *) & uiG.Contacts[i].last_time));
+                                     ctime ((time_t *) & cont->last_time));
                         else
                             M_print (i18n (68, " Online since %s"),
-                                     ctime ((time_t *) & uiG.Contacts[i].last_time));
+                                     ctime ((time_t *) & cont->last_time));
                     }
                     else
                     {
@@ -1029,17 +1027,17 @@ JUMP_F(CmdUserStatusDetail)
  */
 JUMP_F(CmdUserIgnoreStatus)
 {
-    int i;
+    Contact *cont;
 
     M_print ("%s%s\n", W_SEPERATOR, i18n (62, "Users ignored:"));
     /*  Sorts thru all ignored users */
-    for (i = 0; i < uiG.Num_Contacts; i++)
+    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
     {
-        if ((SDWORD) uiG.Contacts[i].uin > 0)
+        if ((SDWORD) cont->uin > 0)
         {
-            if (TRUE == uiG.Contacts[i].invis_list)
+            if (TRUE == cont->invis_list)
             {
-                if (uiG.Contacts[i].vis_list)
+                if (cont->vis_list)
                 {
                     M_print (COLSERV "*" COLNONE);
                 }
@@ -1047,8 +1045,8 @@ JUMP_F(CmdUserIgnoreStatus)
                 {
                     M_print (" ");
                 }
-                M_print (COLCONTACT "%-20s\t" COLMESS "(", uiG.Contacts[i].nick);
-                Print_Status (uiG.Contacts[i].status);
+                M_print (COLCONTACT "%-20s\t" COLMESS "(", cont->nick);
+                Print_Status (cont->status);
                 M_print (")" COLNONE "\n");
             }
         }
@@ -1063,24 +1061,25 @@ JUMP_F(CmdUserIgnoreStatus)
  */
 JUMP_F(CmdUserStatusWide)
 {
-    int *Online;                /* definitely won't need more; could    */
-    int *Offline;               /* probably get away with less.    */
+    Contact **Online;           /* definitely won't need more; could    */
+    Contact **Offline;          /* probably get away with less.    */
     int MaxLen = 0;             /* legnth of longest contact name */
     int i;
     int OnIdx = 0;              /* for inserting and tells us how many there are */
     int OffIdx = 0;             /* for inserting and tells us how many there are */
     int NumCols;                /* number of columns to display on screen        */
+    Contact *cont;
 
     if (data)
     {
-        if ((Offline = (int *) malloc (uiG.Num_Contacts * sizeof (int))) == NULL)
+        if ((Offline = (Contact **) malloc (MAX_CONTACTS * sizeof (Contact *))) == NULL)
         {
             M_print (i18n (652, "Insuffificient memory to display a wide Contact List.\n"));
             return 0;
         }
     }
 
-    if ((Online = (int *) malloc (uiG.Num_Contacts * sizeof (int))) == NULL)
+    if ((Online = (Contact **) malloc (MAX_CONTACTS * sizeof (Contact *))) == NULL)
     {
         M_print (i18n (652, "Insuffificient memory to display a wide Contact List.\n"));
         return 0;
@@ -1088,25 +1087,25 @@ JUMP_F(CmdUserStatusWide)
 
     /* Filter the contact list into two lists -- online and offline. Also
        find the longest name in the list -- this is used to determine how
-       many columns will fit on the screen.                                */
-    for (i = 0; i < uiG.Num_Contacts; i++)
+       many columns will fit on the screen.
+    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))                                */
     {
-        if ((SDWORD) uiG.Contacts[i].uin > 0)
+        if ((SDWORD) cont->uin > 0)
         {                       /* Aliases */
-            if (uiG.Contacts[i].status == STATUS_OFFLINE)
+            if (cont->status == STATUS_OFFLINE)
             {
                 if (data)
                 {
-                    Offline[OffIdx++] = i;
-                    if (strlen (uiG.Contacts[i].nick) > MaxLen)
-                        MaxLen = strlen (uiG.Contacts[i].nick);
+                    Offline[OffIdx++] = cont;
+                    if (strlen (cont->nick) > MaxLen)
+                        MaxLen = strlen (cont->nick);
                 }
             }
             else
             {
-                Online[OnIdx++] = i;
-                if (strlen (uiG.Contacts[i].nick) > MaxLen)
-                    MaxLen = strlen (uiG.Contacts[i].nick);
+                Online[OnIdx++] = cont;
+                if (strlen (cont->nick) > MaxLen)
+                    MaxLen = strlen (cont->nick);
             }
         }
     }                           /* end for */
@@ -1134,7 +1133,7 @@ JUMP_F(CmdUserStatusWide)
         M_print (COLNONE "\n");
         for (i = 0; i < OffIdx; i++)
         {
-            M_print (COLCONTACT "  %-*s" COLNONE, MaxLen + 2, uiG.Contacts[Offline[i]].nick);
+            M_print (COLCONTACT "  %-*s" COLNONE, MaxLen + 2, Offline[i]->nick);
             if ((i + 1) % NumCols == 0)
                 M_print ("\n");
         }
@@ -1162,14 +1161,14 @@ JUMP_F(CmdUserStatusWide)
         const char *status;
         char weird = 'W';       /* for weird statuses that are reported as hex */
 
-        status = Convert_Status_2_Str (uiG.Contacts[Online[i]].status);
+        status = Convert_Status_2_Str (Online[i]->status);
         status = status ? status : &weird;
-        if ((uiG.Contacts[Online[i]].status & 0xfff) == STATUS_ONLINE)
+        if ((Online[i]->status & 0xfff) == STATUS_ONLINE)
         {
             status = " ";
         }
         M_print (COLNONE "%c " COLCONTACT "%-*s" COLNONE,
-                 *status, MaxLen + 2, uiG.Contacts[Online[i]].nick);
+                 *status, MaxLen + 2, Online[i]->nick);
         if ((i + 1) % NumCols == 0)
             M_print ("\n");
     }
@@ -1209,7 +1208,7 @@ JUMP_F(CmdUserStatusSelf)
  */
 JUMP_F(CmdUserStatusShort)
 {
-    int i;
+    Contact *cont;
 
     M_print (W_SEPERATOR);
     Time_Stamp ();
@@ -1221,15 +1220,15 @@ JUMP_F(CmdUserStatusShort)
     if (data)
     {
         M_print ("%s%s\n", W_SEPERATOR, i18n (72, "Users offline:"));
-        for (i = 0; i < uiG.Num_Contacts; i++)
+        for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
         {
-            if ((SDWORD) uiG.Contacts[i].uin > 0)
+            if ((SDWORD) cont->uin > 0)
             {
-                if (FALSE == uiG.Contacts[i].invis_list)
+                if (FALSE == cont->invis_list)
                 {
-                    if (uiG.Contacts[i].status == STATUS_OFFLINE)
+                    if (cont->status == STATUS_OFFLINE)
                     {
-                        if (uiG.Contacts[i].vis_list)
+                        if (cont->vis_list)
                         {
                             M_print (COLSERV "*" COLNONE);
                         }
@@ -1237,8 +1236,8 @@ JUMP_F(CmdUserStatusShort)
                         {
                             M_print (" ");
                         }
-                        M_print (COLCONTACT "%-20s\t" COLMESS "(", uiG.Contacts[i].nick);
-                        Print_Status (uiG.Contacts[i].status);
+                        M_print (COLCONTACT "%-20s\t" COLMESS "(", cont->nick);
+                        Print_Status (cont->status);
                         M_print (")" COLNONE "\n");
                     }
                 }
@@ -1247,15 +1246,15 @@ JUMP_F(CmdUserStatusShort)
     }
 
     M_print ("%s%s\n", W_SEPERATOR, i18n (73, "Users online:"));
-    for (i = 0; i < uiG.Num_Contacts; i++)
+    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
     {
-        if ((SDWORD) uiG.Contacts[i].uin > 0)
+        if ((SDWORD) cont->uin > 0)
         {
-            if (FALSE == uiG.Contacts[i].invis_list)
+            if (!cont->invis_list)
             {
-                if (uiG.Contacts[i].status != STATUS_OFFLINE)
+                if (cont->status != STATUS_OFFLINE)
                 {
-                    if (uiG.Contacts[i].vis_list)
+                    if (cont->vis_list)
                     {
                         M_print (COLSERV "*" COLNONE);
                     }
@@ -1263,11 +1262,11 @@ JUMP_F(CmdUserStatusShort)
                     {
                         M_print (" ");
                     }
-                    M_print (COLCONTACT "%-20s\t" COLMESS "(", uiG.Contacts[i].nick);
-                    Print_Status (uiG.Contacts[i].status);
+                    M_print (COLCONTACT "%-20s\t" COLMESS "(", cont->nick);
+                    Print_Status (cont->status);
                     M_print (")" COLNONE);
-                    if (uiG.Contacts[i].version)
-                       M_print (" [%s]", uiG.Contacts[i].version);
+                    if (cont->version)
+                       M_print (" [%s]", cont->version);
                     M_print ("\n");
                 }
             }
@@ -1397,8 +1396,6 @@ JUMP_F(CmdUserAutoaway)
     return 0;
 }
 
-/* i18n (98, " ") i18n */
-
 /*
  * Toggles simple options.
  */
@@ -1492,14 +1489,14 @@ JUMP_F(CmdUserTogIgnore)
     arg1 = strtok (args, "\n");
     if (arg1)
     {
-        uin = nick2uin (arg1);
+        uin = ContactFindByNick (arg1);
         if (uin == -1)
         {
             M_print (i18n (665, "%s not recognized as a nick name."), arg1);
         }
         else
         {
-            CONTACT_PTR bud =  UIN2Contact (uin);
+            Contact *bud =  ContactFind (uin);
             if (!bud)
             {
                 M_print (i18n (90, "%s is a UIN, not a nick name."), arg1);
@@ -1510,14 +1507,14 @@ JUMP_F(CmdUserTogIgnore)
                 {
                     bud->invis_list = FALSE;
                     update_list (sok, uin, INV_LIST_UPDATE, FALSE);
-                    M_print (i18n (666, "Unignored %s."), UIN2nick (uin));
+                    M_print (i18n (666, "Unignored %s."), ContactFindNick (uin));
                 }
                 else
                 {
                     bud->vis_list = FALSE;
                     bud->invis_list = TRUE;
                     update_list (sok, uin, INV_LIST_UPDATE, TRUE);
-                    M_print (i18n (667, "Ignoring %s."), UIN2nick (uin));
+                    M_print (i18n (667, "Ignoring %s."), ContactFindNick (uin));
                 }
                 snd_contact_list (sok);
                 snd_invis_list (sok);
@@ -1549,14 +1546,14 @@ JUMP_F(CmdUserTogVisible)
     arg1 = strtok (args, " \t");
     if (arg1)
     {
-        uin = nick2uin (arg1);
+        uin = ContactFindByNick (arg1);
         if (uin == -1)
         {
             M_print (i18n (665, "%s not recognized as a nick name."), arg1);
         }
         else
         {
-            CONTACT_PTR bud = UIN2Contact (uin);
+            Contact *bud = ContactFind (uin);
             if (!bud)
             {
                 M_print (i18n (90, "%s is a UIN, not a nick name."), arg1);
@@ -1567,13 +1564,13 @@ JUMP_F(CmdUserTogVisible)
                 {
                     bud->vis_list = FALSE;
                     update_list (sok, uin, VIS_LIST_UPDATE, FALSE);
-                    M_print (i18n (670, "Invisible to %s now."), UIN2nick (uin));
+                    M_print (i18n (670, "Invisible to %s now."), ContactFindNick (uin));
                 }
                 else
                 {
                     bud->vis_list = TRUE;
                     update_list (sok, uin, VIS_LIST_UPDATE, TRUE);
-                    M_print (i18n (671, "Visible to %s now."), UIN2nick (uin));
+                    M_print (i18n (671, "Visible to %s now."), ContactFindNick (uin));
                 }
                  /*FIXME*/          /* 
                 snd_contact_list( sok );
@@ -1621,8 +1618,7 @@ JUMP_F(CmdUserAdd)
  */
 JUMP_F(CmdUserRInfo)
 {
-    Print_UIN_Name (uiG.last_recv_uin);
-    M_print (i18n (672, "'s IP address is "));
+    M_print (i18n (672, "%s's IP address is "), ContactFindName (uiG.last_recv_uin));
     Print_IP (uiG.last_recv_uin);
     if ((UWORD) Get_Port (uiG.last_recv_uin) != (UWORD) 0xffff)
         M_print (i18n (673, "\tThe port is %d\n"), (UWORD) Get_Port (uiG.last_recv_uin));
@@ -1648,7 +1644,7 @@ JUMP_F(CmdUserAuth)
     }
     else
     {
-        uin = nick2uin (arg1);
+        uin = ContactFindByNick (arg1);
         if (-1 == uin)
         {
             M_print (i18n (665, "%s not recognized as a nick name."), arg1);
@@ -1687,7 +1683,7 @@ JUMP_F(CmdUserURL)
     }
     else
     {
-        uin = nick2uin (arg1);
+        uin = ContactFindByNick (arg1);
         if (uin == -1)
         {
             M_print (i18n (677, "%s not recognized as a nick name\n"), arg1);
@@ -1703,9 +1699,8 @@ JUMP_F(CmdUserURL)
                     arg2 = "";
                 icq_sendurl (sok, uin, arg1, arg2);
                 Time_Stamp ();
-                M_print (" ");
-                Print_UIN_Name_10 (last_uin);
-                M_print (" " MSGSENTSTR "%s\n", MsgEllipsis (arg1));
+                M_print (" " COLCONTACT "%10s" COLNONE " " MSGSENTSTR "%s\n",
+                         ContactFindName (last_uin), MsgEllipsis (arg1));
             }
             else
             {
@@ -1729,10 +1724,9 @@ JUMP_F(CmdUserTabs)
     for (TabReset (); TabHasNext ();)
     {
         UDWORD uin = TabGetNext ();
-        CONTACT_PTR cont;
-        M_print ("    ");
-        Print_UIN_Name (uin);
-        cont = UIN2Contact (uin);
+        Contact *cont;
+        M_print ("    %s", ContactFindName (uin));
+        cont = ContactFind (uin);
         if (cont)
         {
             M_print (COLMESS " (now ");
@@ -1751,36 +1745,36 @@ JUMP_F(CmdUserLast)
 {
     char *arg1;
     UDWORD uin;
+    Contact *cont;
 
     arg1 = strtok (args, "\t\n");
     if (!arg1)
     {
-        int i;
         M_print (i18n (682, "You have received messages from:\n"));
-        for (i = 0; i < uiG.Num_Contacts; i++)
-            if (uiG.Contacts[i].LastMessage != NULL)
-                M_print (COLCONTACT "  %s" COLNONE "\n", uiG.Contacts[i].nick);
+        for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
+            if (cont->LastMessage)
+                M_print (COLCONTACT "  %s" COLNONE "\n", cont->nick);
     }
     else
     {
-        if ((uin = nick2uin (arg1)) == -1)
+        if ((uin = ContactFindByNick (arg1)) == -1)
             M_print (i18n (683, "Unknown Contact: %s\n"), arg1);
         else
         {
-            if (UIN2Contact (uin) == NULL)
+            if (ContactFind (uin) == NULL)
                 M_print (i18n (684, "%s is not a known Contact\n"), arg1);
             else
             {
-                if (UIN2Contact (uin)->LastMessage != NULL)
+                if (ContactFind (uin)->LastMessage != NULL)
                 {
                     M_print (i18n (685, "Last message from " COLCONTACT "%s" COLNONE ":\n"),
-                             UIN2Contact (uin)->nick);
-                    M_print (COLMESS "%s" COLNONE "\n", UIN2Contact (uin)->LastMessage);
+                             ContactFind (uin)->nick);
+                    M_print (COLMESS "%s" COLNONE "\n", ContactFind (uin)->LastMessage);
                 }
                 else
                 {
                     M_print (i18n (686, "No messages received from " COLCONTACT "%s" COLNONE "\n"),
-                             UIN2Contact (uin)->nick);
+                             ContactFind (uin)->nick);
                 }
             }
         }
@@ -1812,7 +1806,7 @@ JUMP_F(CmdUserUptime)
     if (Minutes != 0)
         M_print (COLMESS "%02d" COLNONE "%s, ", Minutes, i18n (690, "minutes"));
     M_print (COLMESS "%02d" COLNONE "%s.\n", Seconds, i18n (691, "seconds"));
-    M_print ("%s " COLMESS "%d" COLNONE " / %d\n", i18n (692, "Contacts:"), uiG.Num_Contacts, MAX_CONTACTS);
+/*    M_print ("%s " COLMESS "%d" COLNONE " / %d\n", i18n (692, "Contacts:"), uiG.Num_Contacts, MAX_CONTACTS); */
     M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (693, "Packets sent:"), ssG.Packets_Sent);
     M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (694, "Packets recieved:"), ssG.Packets_Recv);
     if (ssG.Packets_Sent || ssG.Packets_Recv)

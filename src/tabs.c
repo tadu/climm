@@ -10,6 +10,7 @@
 
 #include "micq.h"
 #include "tabs.h"
+#include "contact.h"
 
 static UDWORD tab_array[TAB_SLOTS + 1] = { 0 };
 static int tab_pointer = 0;
@@ -20,19 +21,10 @@ static int tab_pointer = 0;
  */
 void TabAddUIN (UDWORD uin)
 {
-    int i, found = 0;
+    int found;
 
-    for (i = 0; i < uiG.Num_Contacts; i++)
-    {
-        if (uiG.Contacts[i].uin == uin)
-        {
-            found = 1;
-            break;
-        }
-    }
-
-    if (!found)
-        return;
+    if (!ContactFind (uin))
+        return ;
 
     for (found = 0; found < TAB_SLOTS; found++)
         if (tab_array[found] == uin)

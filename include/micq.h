@@ -135,35 +135,6 @@ typedef struct
 
 typedef struct
 {
-   UDWORD uin;
-   UDWORD status;
-   UDWORD last_time; /* last time online or when came online */
-   UBYTE current_ip[4];
-   UDWORD port;
-   BOOL invis_list;
-   BOOL vis_list;
-   BOOL not_in_list;
-   SOK_T sok;
-   UWORD TCP_version;
-   UBYTE connection_type;
-   UBYTE other_ip[4];
-   char *version;
-   /* aaron
-    Pointer to a string containing the last message recieved from this
-    person. If we haven't received a message from them, this pointer will
-    be NULL due to the way the Contact is initially initialized.            */
-   char *LastMessage;
-   /* end of aaron */
-   char nick[20];
-
-   UDWORD session_id; 
-   /* james
-    Random number set in first packet. All other TCP packets for remainder
-    or the session must send same number. */
-} Contact_Member, *CONTACT_PTR;
-
-typedef struct
-{
    char *nick;
    char *first;
    char *last;
@@ -235,9 +206,6 @@ typedef struct {
 
 /* user interface global state variables */
 typedef struct {
-        Contact_Member Contacts[ MAX_CONTACTS ]; /* MAX_CONTACTS <= 100 */
-        int Num_Contacts;
-        BOOL Contact_List;     /* I think we always have a contact list now */
         BOOL Verbose;          /* displays extra debugging info */
         UBYTE Sound;           /* sound setting for normal beeps etc */
         UBYTE SoundOnline;     /* sound setting for users comming online */

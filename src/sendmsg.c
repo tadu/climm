@@ -24,12 +24,15 @@ Author : zed@mentasm.com
 #include "cmd_pkt_server.h"
 #include "util.h"
 #include "conv.h"
+#include "contact.h"
 #include "tcp.h"
 
 static size_t SOCKWRITE_LOW (SOK_T sok, void *ptr, size_t len);
 static void Fill_Header (net_icq_pak * pak, UWORD cmd);
 static void info_req_99 (SOK_T sok, UDWORD uin);
+#if 0
 static void info_req_old (SOK_T sok, UDWORD uin);
+#endif
 static void Gen_Checksum (UBYTE * buf, UDWORD len);
 static UDWORD Scramble_cc (UDWORD cc);
 static void Wrinkle (void *buf, size_t len);
@@ -38,10 +41,6 @@ static void Wrinkle (void *buf, size_t len);
 void Initialize_Msg_Queue ()
 {
     msg_queue_init (&queue);
-#ifdef TCP_COMM
-    msg_queue_init (&tcp_rq);
-    msg_queue_init (&tcp_sq);
-#endif
 }
 
 /****************************************************************
@@ -72,10 +71,6 @@ void Do_Resend (SOK_T sok)
                          queued_msg->seq >> 16, queued_msg->attempts, queued_msg->len);
                 R_redraw ();
             }
-            if (0x1000 < Chars_2_Word (&queued_msg->body[CMD_OFFSET]))
-            {
-                Dump_Queue ();
-            }
             temp = malloc (queued_msg->len + 3);        /* make sure packet fits in UDWORDS */
             assert (temp != NULL);
             memcpy (temp, queued_msg->body, queued_msg->len);
@@ -93,9 +88,8 @@ void Do_Resend (SOK_T sok)
             {
                 s_mesg = (SIMPLE_MESSAGE_PTR) pak.data;
                 M_print ("\n");
-                M_print (i18n (626, "Discarding message to "));
-                Print_UIN_Name (Chars_2_DW (s_mesg->uin));
-                M_print (i18n (627, " after %d send attempts.  Message content:\n"), queued_msg->attempts - 1);
+                M_print (i18n (830, "Discarding message to %s after %d send attempts.  Message content:\n"),
+                         ContactFindName (Chars_2_DW (s_mesg->uin)), queued_msg->attempts - 1);
 
                 type = Chars_2_Word (s_mesg->type);
                 data = s_mesg->len + 2;
@@ -261,11 +255,11 @@ void snd_contact_list (int sok)
 {
     net_icq_pak pak;
     int num_used;
-    int i, size;
-    int j;
+    int j, size;
     char *tmp;
+    Contact *cont;
 
-    for (i = 0; i < uiG.Num_Contacts;)
+    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
     {
         Word_2_Chars (pak.head.ver, ICQ_VER);
         Word_2_Chars (pak.head.cmd, CMD_CONT_LIST);
@@ -274,11 +268,11 @@ void snd_contact_list (int sok)
 
         tmp = pak.data;
         tmp++;
-        for (j = 0, num_used = 0; (j < MAX_CONTS_PACKET) && (i < uiG.Num_Contacts); i++)
+        for (j = 0, num_used = 0; (j < MAX_CONTS_PACKET) && ContactHasNext (cont); cont = ContactNext (cont))
         {
-            if ((SDWORD) uiG.Contacts[i].uin > 0)
+            if ((SDWORD) cont->uin > 0)
             {
-                DW_2_Chars (tmp, uiG.Contacts[i].uin);
+                DW_2_Chars (tmp, cont->uin);
                 tmp += 4;
                 num_used++;
                 j++;
@@ -290,6 +284,8 @@ void snd_contact_list (int sok)
         ssG.last_cmd[ssG.seq_num - 1] = Chars_2_Word (pak.head.cmd);
         SOCKWRITE (sok, &(pak.head.ver), size);
 /*      M_print( "Sent %d Contacts.\n", num_used );*/
+        if (!ContactHasNext (cont))
+            break;
     }
 }
 
@@ -302,8 +298,9 @@ void snd_invis_list (int sok)
 {
     net_icq_pak pak;
     int num_used;
-    int i, size;
+    int size;
     char *tmp;
+    Contact *cont;
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_INVIS_LIST);
@@ -312,13 +309,13 @@ void snd_invis_list (int sok)
 
     tmp = pak.data;
     tmp++;
-    for (i = 0, num_used = 0; i < uiG.Num_Contacts; i++)
+    for (cont = ContactStart (), num_used = 0; ContactHasNext (cont); cont = ContactNext (cont))
     {
-        if ((SDWORD) uiG.Contacts[i].uin > 0)
+        if ((SDWORD) cont->uin > 0)
         {
-            if (uiG.Contacts[i].invis_list)
+            if (cont->invis_list)
             {
-                DW_2_Chars (tmp, uiG.Contacts[i].uin);
+                DW_2_Chars (tmp, cont->uin);
                 tmp += 4;
                 num_used++;
             }
@@ -345,8 +342,9 @@ void snd_vis_list (int sok)
 {
     net_icq_pak pak;
     int num_used;
-    int i, size;
+    int size;
     char *tmp;
+    Contact *cont;
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_VIS_LIST);
@@ -355,18 +353,18 @@ void snd_vis_list (int sok)
 
     tmp = pak.data;
     tmp++;
-    for (i = 0, num_used = 0; i < uiG.Num_Contacts; i++)
+    for (cont = ContactStart (), num_used = 0; ContactHasNext (cont); cont = ContactNext (cont))
     {
-        if ((SDWORD) uiG.Contacts[i].uin > 0)
+        if ((SDWORD) cont->uin > 0)
         {
-            if (uiG.Contacts[i].vis_list)
+            if (cont->vis_list)
             {
-                DW_2_Chars (tmp, uiG.Contacts[i].uin);
+                DW_2_Chars (tmp, cont->uin);
                 tmp += 4;
                 num_used++;
-                if (uiG.Contacts[i].invis_list)
+                if (cont->invis_list)
                 {
-                    M_print (i18n (633, "ACK!!! %d\n"), uiG.Contacts[i].uin);
+                    M_print (i18n (633, "ACK!!! %d\n"), cont->uin);
                 }
             }
         }
@@ -431,8 +429,6 @@ void Keep_Alive (int sok)
 #endif
 }
 
-/* i18n (634, " ") i18n */
-
 /********************************************************
 The following data constitutes fair use for compatibility.
 *********************************************************/
@@ -461,17 +457,9 @@ Sends a message to uin. Text is the message to send.
 void icq_sendmsg (SOK_T sok, UDWORD uin, char *text, UDWORD msg_type)
 {	
 #ifdef TCP_COMM
-    CONTACT_PTR cont;
-
-    /* attempt to send message directly if user is on contact list */
-    cont = UIN2Contact (uin);
-    if (cont && (cont->connection_type & TCP_OK_FLAG) && (cont->status != STATUS_OFFLINE))
-    {
-        Send_TCP_Msg (sok, uin, text, msg_type);
-    }
-    else        
+    if (!TCPSendMsg (sok, uin, text, msg_type))
 #endif
-    icq_sendmsg_srv (sok, uin, text, msg_type);
+    UDPSendMsg (sok, uin, text, msg_type);
 }
 
 
@@ -479,7 +467,7 @@ void icq_sendmsg (SOK_T sok, UDWORD uin, char *text, UDWORD msg_type)
 Sends a message thru the server to uin.  Text is the
 message to send.
 ****************************************************/
-void icq_sendmsg_srv (SOK_T sok, UDWORD uin, char *text, UDWORD msg_type)
+void UDPSendMsg (SOK_T sok, UDWORD uin, char *text, UDWORD msg_type)
 {
     SIMPLE_MESSAGE msg;
     net_icq_pak pak;
@@ -490,10 +478,10 @@ void icq_sendmsg_srv (SOK_T sok, UDWORD uin, char *text, UDWORD msg_type)
     ssG.last_message_sent_type = msg_type;
     
     Time_Stamp ();
-    M_print (" " COLSENT "%10s" COLNONE " " MSGSENTSTR "%s\n", UIN2Name (uin), MsgEllipsis (text));
+    M_print (" " COLSENT "%10s" COLNONE " " MSGSENTSTR "%s\n", ContactFindName (uin), MsgEllipsis (text));
 
-    if (UIN2nick (uin) != NULL)
-        log_event (uin, LOG_MESS, "You sent instant message to %s\n%s\n", UIN2nick (uin), text);
+    if (ContactFindNick (uin) != NULL)
+        log_event (uin, LOG_MESS, "You sent instant message to %s\n%s\n", ContactFindNick (uin), text);
     else
         log_event (uin, LOG_MESS, "You sent instant message to %d\n%s\n", uin, text);
 
@@ -1285,7 +1273,6 @@ static size_t SOCKWRITE_LOW (SOK_T sok, void *ptr, size_t len)
 
     Wrinkle (ptr, len);
 
-/*   Dump_Queue()*/
     ssG.Packets_Sent++;
 /* SOCKS5 stuff begin */
     if (s5G.s5Use)
