@@ -17,39 +17,39 @@
 .B mICQ
 is a text based ICQ client supporting many of the ICQ features provided by
 the client by Mirabillis. mICQ allows to change the user password, create
-new accounts, updating user info, search other users, SMS sending, direct
-connections, acknowledged messages, file transfer, detect other user's
-client, send UTF-8 encoded messages, execute arbitrarely commands upon
-any event, etc.
+new accounts, updating user info, search other users, send SMS, open direct
+connections, send acknowledged messages, transfer files, detect other user's
+client, send UTF-8 encoded messages, execute arbitrarely commands upon any
+event, etc.
 .SH OPTIONS
 .TP
-.BI \-h
+.BI \-h|\-\-help
 Display a short help text and exit.
 .TP
-.BI \-c
+.BI \-c|\-\-nocolor
 Disable the use of color.
 .TP
-.BI \-i \ <locale>
+.BI \-i|\-\-i18n \ <locale>
 Use the locale
 .I locale
 instead of the one derived from environment variables.
 .TP
-.BI \-b \ <basedir>
+.BI \-b|\-\-basedir \ <basedir>
 Specify
 .I basedir
-as the base directory where mICQ will look for it's files, in particular
-it's micqrc file.
+as the base directory where mICQ will look for its files, in particular
+its micqrc file.
 .TP
-.BI \-f \ <configfile>
+.BI \-f|\-\-config \ <configfile>
 Specify
 .I configfile
 as the configuration file to use.
 .TP
-.BI \-v [level]
+.BI \-v|\-\-verbose [level]
 Set verbose mode, or set verbosity to
 .IR level .
 .TP
-.BI \-l \ file|dir
+.BI \-l|\-\-logplace \ file|dir
 Use
 .I file
 as file to write log into, or use
