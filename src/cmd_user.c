@@ -668,11 +668,12 @@ static JUMP_F(CmdUserTCP)
 #ifdef TCP_COMM
     char *cmd, *nick;
     UDWORD uin;
+    Session *sess;
 
     cmd = strtok (args, " \t\n");
     if (cmd)
     {
-        nick = strtok (NULL, "\n");
+        nick = strtok (NULL, " \t\n");
         if (!nick)
         {
             M_print (i18n (1916, "Need a nick or uin.\n"));
@@ -684,22 +685,34 @@ static JUMP_F(CmdUserTCP)
             M_print (i18n (1845, "Nick %s unknown.\n"), nick);
             return 0;
         }
-        if (!strcmp (cmd, "open"))
+        sess = SessionFind (TYPE_LISTEN, 0);
+        if (!sess)
         {
-            Session *sess;
-            
-            sess = SessionFind (TYPE_LISTEN, 0);
-            if (!sess)
-                M_print (i18n (2011, "You do not have a listening peer-to-peer connection.\n"));
-            else
-                TCPDirectOpen  (sess, uin);
+            M_print (i18n (2011, "You do not have a listening peer-to-peer connection.\n"));
+            return 0;
         }
+        if (!strcmp (cmd, "open"))
+            TCPDirectOpen  (sess, uin);
         else if (!strcmp (cmd, "close"))
             TCPDirectClose (      uin);
         else if (!strcmp (cmd, "reset"))
             TCPDirectClose (      uin);
         else if (!strcmp (cmd, "off"))
             TCPDirectOff   (      uin);
+#ifdef WIP
+        else if (!strcmp (cmd, "file"))
+            TCPSendFile    (sess, uin, strtok (NULL, "\n"));
+        else if (!strcmp (cmd, "auto"))
+            TCPGetAuto     (sess, uin, 0);
+        else if (!strcmp (cmd, "away"))
+            TCPGetAuto     (sess, uin, TCP_MSG_GET_AWAY);
+        else if (!strcmp (cmd, "na"))
+            TCPGetAuto     (sess, uin, TCP_MSG_GET_NA);
+        else if (!strcmp (cmd, "dnd"))
+            TCPGetAuto     (sess, uin, TCP_MSG_GET_DND);
+        else if (!strcmp (cmd, "ffc"))
+            TCPGetAuto     (sess, uin, TCP_MSG_GET_FFC);
+#endif
     }
     else
     {
@@ -727,11 +740,12 @@ static JUMP_F(CmdUserAuto)
     {
         M_print (i18n (1724, "Automatic replies are %s.\n"),
                  prG->flags & FLAG_AUTOREPLY ? i18n (1085, "on") : i18n (1086, "off"));
-        M_print ("%30s %s\n", i18n (1727, "The Do not disturb message is:"), prG->auto_dnd);
-        M_print ("%30s %s\n", i18n (1728, "The Away message is:"),           prG->auto_away);
-        M_print ("%30s %s\n", i18n (1729, "The Not available message is:"),  prG->auto_na);
-        M_print ("%30s %s\n", i18n (1730, "The Occupied message is:"),       prG->auto_occ);
-        M_print ("%30s %s\n", i18n (1731, "The Invisible message is:"),      prG->auto_inv);
+        M_print ("%30s %s\n", i18n (1727, "The do not disturb message is:"), prG->auto_dnd);
+        M_print ("%30s %s\n", i18n (1728, "The away message is:"),           prG->auto_away);
+        M_print ("%30s %s\n", i18n (1729, "The not available message is:"),  prG->auto_na);
+        M_print ("%30s %s\n", i18n (1730, "The occupied message is:"),       prG->auto_occ);
+        M_print ("%30s %s\n", i18n (1731, "The invisible message is:"),      prG->auto_inv);
+        M_print ("%30s %s\n", i18n (2054, "The free for chat message is:"),  prG->auto_ffc);
         return 0;
     }
     else if (strcasecmp (cmd, "on") == 0)
@@ -801,6 +815,16 @@ static JUMP_F(CmdUserAuto)
                 return 0;
             }
             prG->auto_inv = strdup (cmd);
+        }
+        else if (!strcasecmp (arg1, CmdUserLookupName ("ffc")))
+        {
+            cmd = strtok (NULL, "\n");
+            if (cmd == NULL)
+            {
+                M_print (i18n (1735, "Must give a message.\n"));
+                return 0;
+            }
+            prG->auto_ffc = strdup (cmd);
         }
         else
             M_print (i18n (1736, "Sorry wrong syntax. Read tha help man!\n"));

@@ -27,6 +27,7 @@ struct Preferences_s
     char  *auto_occ;
     char  *auto_inv;
     char  *auto_dnd;
+    char  *auto_ffc;
 
     BOOL   s5Use;
     char  *s5Host;

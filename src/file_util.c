@@ -227,11 +227,12 @@ void Initalize_RC_File ()
 #else
     prG->flags =              FLAG_LOG | FLAG_LOG_ONOFF | FLAG_DELBS;
 #endif
-    prG->auto_dnd  = strdup (i18n (1929, "User is DND [Auto-Message]"));
-    prG->auto_away = strdup (i18n (1010, "User is Away [Auto-Message]"));
+    prG->auto_dnd  = strdup (i18n (1929, "User is dnd [Auto-Message]"));
+    prG->auto_away = strdup (i18n (1010, "User is away [Auto-Message]"));
     prG->auto_na   = strdup (i18n (1011, "User is not available [Auto-Message]"));
-    prG->auto_occ  = strdup (i18n (1012, "User is Occupied [Auto-Message]"));
+    prG->auto_occ  = strdup (i18n (1012, "User is occupied [Auto-Message]"));
     prG->auto_inv  = strdup (i18n (1013, "User is offline"));
+    prG->auto_ffc  = strdup (i18n (2055, "User is ffc and wants to chat about everything."));
     prG->logplace = malloc (strlen (PrefUserDir ()) + 10);
     assert (prG->logplace);
     strcpy (prG->logplace, PrefUserDir ());
@@ -363,6 +364,7 @@ void Read_RC_File (FILE *rcf)
                     ADD_CMD ("dnd",  auto_dnd);
                     ADD_CMD ("occ",  auto_occ);
                     ADD_CMD ("inv",  auto_inv);
+                    ADD_CMD ("ffc",  auto_ffc);
                     else
                         prG->flags |= FLAG_AUTOREPLY;
                 }
@@ -677,15 +679,17 @@ void Read_RC_File (FILE *rcf)
     }
 
     if (!prG->auto_dnd)
-        prG->auto_dnd  = strdup (i18n (1929, "User is DND [Auto-Message]"));
+        prG->auto_dnd  = strdup (i18n (1929, "User is dnd [Auto-Message]"));
     if (!prG->auto_away)
-        prG->auto_away = strdup (i18n (1010, "User is Away [Auto-Message]"));
+        prG->auto_away = strdup (i18n (1010, "User is away [Auto-Message]"));
     if (!prG->auto_na)
         prG->auto_na   = strdup (i18n (1011, "User is not available [Auto-Message]"));
     if (!prG->auto_occ)
-        prG->auto_occ  = strdup (i18n (1012, "User is Occupied [Auto-Message]"));
+        prG->auto_occ  = strdup (i18n (1012, "User is occupied [Auto-Message]"));
     if (!prG->auto_inv)
         prG->auto_inv  = strdup (i18n (1013, "User is offline"));
+    if (!prG->auto_ffc)
+        prG->auto_ffc  = strdup (i18n (2055, "User is ffc and wants to chat about everything."));
 
     if (prG->flags & FLAG_LOG && !prG->logplace)
     {
@@ -870,6 +874,7 @@ int Save_RC ()
     fprintf (rcf, "auto dnd  %s\n", prG->auto_dnd);
     fprintf (rcf, "auto occ  %s\n", prG->auto_occ);
     fprintf (rcf, "auto inv  %s\n", prG->auto_inv);
+    fprintf (rcf, "auto ffc  %s\n", prG->auto_ffc);
 
     fprintf (rcf, "\n# The strings section - runtime redefinable strings.\n");
     fprintf (rcf, "# The alter command redefines command names.\n");
