@@ -1,5 +1,5 @@
 # $Id$ Romana (Romanian)
-#  EN: __.i18n,v 1.63.2.1 2003/01/09 18:00:20
+#  EN: __.i18n,v 1.63.2.2 2003/01/10 15:57:15
 1000:iso-8859-2
 1001:ro
 1002:ro_RO
@@ -500,7 +500,6 @@
 1555:Introduceti prenumele d-stra:
 1556:Introduceti adresa d-stra email noua:
 1557:Doriti utilizatorii Mirabilis sa va ceara autorizarea? (DA/NU)
-#1557:Do you want to require Mirabilis users to request your authorization? (YES/NO)
 1564:Numele:
 1565:Prenumele:
 1566:Adresa email:
@@ -1043,6 +1042,7 @@
 2282:    uinprompt:  ultimul nick sa fie in prompt.\n
 2283:    autosave:   automat salveaza micqrc.\n
 2284:    autofinger: automat fa finger la UINurile noi.\n
+#2285:    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n
 2286:    tabs:       stil pentru lucrul cu tab-ul: simple, cycle, cycleall.\n
 #2287:    silent:     suppress some output: off, on, complete.\n
 #2288:Indentation style is %s%s%s.\n

@@ -141,7 +141,7 @@ BOOL PeerFileAccept (Connection *peer, UWORD status, UDWORD port)
     flist = PeerFileCreate (peer->parent->parent);
     fpeer = ConnectionFind (TYPE_FILEDIRECT, peer->uin, flist);
     
-    if (!flist || !fpeer || !port || (status == TCP_STAT_REFUSE))
+    if (!flist || !fpeer || !port || (status == TCP_ACK_REFUSE))
     {
         if (fpeer)
             TCPClose (fpeer);
