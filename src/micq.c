@@ -36,13 +36,17 @@
 #include <ctype.h>
 #include <assert.h>
 
-#ifdef _WIN32
-#include <conio.h>
-#include <io.h>
-#include <winsock2.h>
-#else
+#if HAVE_SYS_STAT_H
 #include <sys/stat.h>
+#endif
+#if HAVE_SYS_WAIT_H
 #include <sys/wait.h>
+#endif
+#if HAVE_WINSOCK_H
+#include <winsock.h>
+#endif
+#if HAVE_CONIO_H
+#include <conio.h>
 #endif
 
 #define MICQ_ICON_1 "   " GREEN "_" SGR0 "     "
@@ -209,12 +213,12 @@ int main (int argc, char *argv[])
         buf[0] = '\0';
         getcwd  (buf, PATH_MAX);
         prG->basedir = strdup (arg_b[strlen (arg_b) - 1] == '/'
-                       ? s_sprintf ("%s/%s", buf, arg_b)
-                       : s_sprintf ("%s/%s/", buf, arg_b));
+                       ? s_sprintf ("%s" _OS_PATHSEPSTR "%s", buf, arg_b)
+                       : s_sprintf ("%s" _OS_PATHSEPSTR "%s" _OS_PATHSEPSTR, buf, arg_b));
     }
     else
         prG->basedir = arg_b ? strdup (arg_b[strlen (arg_b) - 1] == '/'
-                               ? arg_b : s_sprintf ("%s/", arg_b)) : NULL;
+                               ? arg_b : s_sprintf ("%s" _OS_PATHSEPSTR, arg_b)) : NULL;
     
     prG->enc_loc = prG->enc_rem = ENC_AUTO;
     i18nInit (&prG->locale, &prG->enc_loc, arg_i);
@@ -272,9 +276,9 @@ int main (int argc, char *argv[])
         M_print  (i18n (1607, "Usage: micq [-h] [-c] [-i <locale>] [-b <basedir>] \n            [-f <configfile>] [-v[<level>]] [-l <logplace>]\n"));
         M_print  (i18n (2199, "  -h, --help     gives this help text\n"));
         M_print  (i18n (2200, "  -v, --verbose  set (or increase) verbosity (mostly for debugging)\n"));
-        M_printf (i18n (2201, "  -b, --basedir  use given BASE dir (default: %s)\n"), "~/.micq/");
-        M_printf (i18n (2202, "  -f, --config   use given configuration file (default: %s)\n"), "BASE/micqrc");
-        M_printf (i18n (2203, "  -l, --logplace use given log file/dir (default: %s)\n"), "BASE/history/");
+        M_printf (i18n (2201, "  -b, --basedir  use given BASE dir (default: %s)\n"), "$HOME" _OS_PATHSEPSTR ".micq" _OS_PATHSEPSTR);
+        M_printf (i18n (2202, "  -f, --config   use given configuration file (default: %s)\n"), "BASE" _OS_PATHSEPSTR "micqrc");
+        M_printf (i18n (2203, "  -l, --logplace use given log file/dir (default: %s)\n"), "BASE" _OS_PATHSEPSTR "history" _OS_PATHSEPSTR);
         M_print  (i18n (2204, "  -i, --i1" "8n     use given locale (default: auto-detected)\n"));
         M_print  (i18n (2205, "  -c, --nocolor  disable colors\n"));
         exit (0);
@@ -304,8 +308,7 @@ int main (int argc, char *argv[])
         Initialize_RC_File ();
 
 #ifdef _WIN32
-    i = WSAStartup (0x0101, &wsaData);
-    if (i != 0)
+    if ((rc = WSAStartup (0x0101, &wsaData)))
     {
 /* FUNNY: "Windows Sockets broken blame Bill -" */
         perror (i18n (1624, "Sorry, can't initialize Windows Sockets..."));
@@ -322,7 +325,7 @@ int main (int argc, char *argv[])
     while (!uiG.quit)
     {
 
-#if _WIN32 || defined(__BEOS__)
+#if INPUT_BY_POLL
         M_set_timeout (0, 1000);
 #else
         if (QueuePeek ())
@@ -354,7 +357,7 @@ int main (int argc, char *argv[])
                 M_Add_xsocket (conn->sok);
         }
 
-#ifndef _WIN32
+#if !INPUT_BY_POLL
         M_Add_rsocket (STDIN_FILENO);
 #endif
 

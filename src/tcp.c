@@ -38,12 +38,21 @@
 #include <assert.h>
 #include <fcntl.h>
 #include <errno.h>
+#if HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
+#endif
+#if HAVE_NETINET_IN_H
 #include <netinet/in.h>
+#endif
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
+#if HAVE_SYS_STAT_H
 #include <sys/stat.h>
+#endif
+#if HAVE_WINSOCK_H
+#include <winsock.h>
+#endif
 
 #ifdef ENABLE_PEER2PEER
 

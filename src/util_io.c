@@ -11,17 +11,32 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+#if HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+#if HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
+#endif
+#if HAVE_SYS_STAT_H
 #include <sys/stat.h>
+#endif
+#if HAVE_SYS_UN_H
 #include <sys/un.h>
+#endif
+#if HAVE_NETDB_H
 #include <netdb.h>
+#endif
 #include <fcntl.h>
 #include <unistd.h>
 #include <assert.h>
+#if HAVE_NETINET_IN_H
 #include <netinet/in.h>
-#ifdef HAVE_ARPA_INET_H
+#endif
+#if HAVE_ARPA_INET_H
 #include <arpa/inet.h>
+#endif
+#if HAVE_WINSOCK_H
+#include <winsock.h>
 #endif
 #if !HAVE_DECL_H_ERRNO
 extern int h_errno;
@@ -323,12 +338,13 @@ void UtilIOConnectTCP (Connection *conn)
     conn->sok = socket (AF_INET, SOCK_STREAM, 0);
     if (conn->sok < 0)
         CONN_FAIL_RC (i18n (1638, "Couldn't create socket"));
+#if HAVE_FCNTL
     rc = fcntl (conn->sok, F_GETFL, 0);
     if (rc != -1)
         rc = fcntl (conn->sok, F_SETFL, rc | O_NONBLOCK);
     if (rc == -1)
         CONN_FAIL_RC (i18n (1950, "Couldn't set socket nonblocking"));
-
+#endif
     if (conn->server || conn->ip || prG->s5Use)
     {
         if (prG->s5Use)
@@ -393,11 +409,14 @@ void UtilIOConnectTCP (Connection *conn)
             CONN_OK
         }
 
-#ifndef __AMIGA__
-        if ((rc = errno) == EINPROGRESS)
-#else
+#ifdef __AMIGA__
         rc = errno;
         if (rc == EINPROGRESS || rc == 115) /* UAE sucks */
+#elif defined(EINPROGRESS)
+        if ((rc = errno) == EINPROGRESS)
+#else
+        rc = 1;
+        if (0)
 #endif
         {
             M_print ("");
@@ -422,6 +441,7 @@ void UtilIOConnectTCP (Connection *conn)
 
         if (bind (conn->sok, (struct sockaddr*)&sin, sizeof (struct sockaddr)) < 0)
         {
+#if defined(EADDRINUSE)
             while ((rc = errno) == EADDRINUSE && conn->port)
             {
                 rc = 0;
@@ -430,6 +450,7 @@ void UtilIOConnectTCP (Connection *conn)
                     break;
                 rc = errno;
             }
+#endif
             if (rc)
             {
                 errno = rc;
@@ -461,6 +482,7 @@ void UtilIOConnectTCP (Connection *conn)
                            conn->connect = 0;                \
                            return; }
 
+#if ENABLE_REMOTECONTROL
 void UtilIOConnectF (Connection *conn)
 {
     int rc;
@@ -472,20 +494,27 @@ void UtilIOConnectF (Connection *conn)
     if (mkfifo (conn->server, 0600) < 0)
         CONNS_FAIL_RC (i18n (2226, "Couldn't create FIFO"));
 
+#if defined(O_NONBLOCK)
     if ((conn->sok = open (conn->server, O_RDWR /*ONLY*/ | O_NONBLOCK)) < 0)
+#else
+    if ((conn->sok = open (conn->server, O_RDWR)) < 0)
+#endif
         CONNS_FAIL_RC (i18n (2227, "Couldn't open FIFO"));
 
+#if HAVE_FCNTL
     rc = fcntl (conn->sok, F_GETFL, 0);
     if (rc != -1)
         rc = fcntl (conn->sok, F_SETFL, rc | O_NONBLOCK);
     if (rc == -1)
         CONNS_FAIL_RC (i18n (2228, "Couldn't set FIFO nonblocking"));
+#endif
 
     if (M_pos () > 0)
         M_print (i18n (1634, "ok.\n"));
 
     conn->connect = CONNECT_OK;
 }
+#endif
 
 int UtilIOError (Connection *conn)
 {
@@ -620,9 +649,17 @@ static void UtilIOTOConn (Event *event)
      Connection *conn = event->conn;
      EventD (event);
      if (conn)
+#if defined (ETIMEDOUT)
          CONN_FAIL (s_sprintf ("%s: %s (%d).", i18n (1955, "Connection failed"),
                     strerror (ETIMEDOUT), ETIMEDOUT));
+#else
+         CONN_FAIL (s_sprintf ("%s: connection timed out", i18n (1955, "Connection failed")));
+#endif
 }
+
+#ifndef ECONNRESET
+#define ECONNRESET 0x424242
+#endif
 
 /*
  * Receive a packet via TCP.
@@ -658,7 +695,9 @@ Packet *UtilIOReceiveTCP (Connection *conn)
             rc = ENOMEM;
             break;
         }
+#if defined(SIGPIPE)
         signal (SIGPIPE, SIG_IGN);
+#endif
         rc = sockread (conn->sok, pak->data + pak->len, len - pak->len);
         if (rc <= 0)
         {
@@ -717,6 +756,7 @@ Packet *UtilIOReceiveTCP (Connection *conn)
     return NULL;
 }
 
+#if ENABLE_REMOTECONTROL
 /*
  * Receives a line from a FIFO socket.
  */
@@ -735,7 +775,9 @@ Packet *UtilIOReceiveF (Connection *conn)
     while (1)
     {
         errno = 0;
+#if defined(SIGPIPE)
         signal (SIGPIPE, SIG_IGN);
+#endif
         rc = sockread (conn->sok, pak->data + pak->len, sizeof (pak->data) - pak->len);
         if (rc <= 0)
         {
@@ -789,6 +831,7 @@ Packet *UtilIOReceiveF (Connection *conn)
         conn->reconnect (conn);
     return NULL;
 }
+#endif
 
 /*
  * Send packet via TCP. Consumes packet.

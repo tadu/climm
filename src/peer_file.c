@@ -18,12 +18,18 @@
 #include <assert.h>
 #include <fcntl.h>
 #include <errno.h>
+#if HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
+#endif
+#if HAVE_NETINET_IN_H
 #include <netinet/in.h>
-#ifdef HAVE_ARPA_INET_H
+#endif
+#if HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
+#if HAVE_SYS_STAT_H
 #include <sys/stat.h>
+#endif
 
 #include "preferences.h"
 #include "session.h"
@@ -283,7 +289,8 @@ void PeerFileDispatch (Connection *fpeer)
                 struct stat finfo;
 
                 assert (ffile);
-                pos = snprintf (buf, sizeof (buf), "%s/files/%ld/", PrefUserDir (prG), fpeer->uin);
+                pos = snprintf (buf, sizeof (buf), "%sfiles" _OS_PATHSEPSTR "%ld" _OS_PATHSEPSTR,
+                                PrefUserDir (prG), fpeer->uin);
                 snprintf (buf + pos, sizeof (buf) - pos, "%s", c_in_to (name, cont));
                 for (p = buf + pos; *p; p++)
                     if (*p == '/')
@@ -299,8 +306,8 @@ void PeerFileDispatch (Connection *fpeer)
                     int rc = errno;
                     if (rc == ENOENT)
                     {
-                        mkdir (s_sprintf ("%s/files", PrefUserDir (prG)), 0700);
-                        mkdir (s_sprintf ("%s/files/%ld", PrefUserDir (prG), fpeer->uin), 0700);
+                        mkdir (s_sprintf ("%sfiles", PrefUserDir (prG)), 0700);
+                        mkdir (s_sprintf ("%sfiles" _OS_PATHSEPSTR "%ld", PrefUserDir (prG), fpeer->uin), 0700);
                         ffile->sok = open (buf, O_CREAT | O_WRONLY | (off ? O_APPEND : O_TRUNC), 0660);
                     }
                     if (ffile->sok == -1)

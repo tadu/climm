@@ -24,17 +24,24 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include <sys/types.h>
-#ifdef _WIN32
-#include <winsock2.h>
-#else
-#include <netinet/in.h>
-#include <unistd.h>
-#include <netdb.h>
-#endif
 #include <time.h>
 #include <string.h>
 #include <assert.h>
+#if HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#if HAVE_NETINET_IN_H
+#include <netinet/in.h>
+#endif
+#if HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#if HAVE_NETDB_H
+#include <netdb.h>
+#endif
+#if HAVE_WINSOCK_H
+#include <winsock.h>
+#endif
 
 #define s_read(s) do { char *data = PacketReadLNTS (pak); s_repl (&s, c_in_to (data, cont)); free (data); } while (0)
 

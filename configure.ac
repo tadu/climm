@@ -189,7 +189,7 @@ fi
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([locale.h sys/select.h arpa/inet.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h])
+AC_CHECK_HEADERS([locale.h sys/select.h arpa/inet.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h winsock.h conio.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -233,6 +233,9 @@ AC_PROG_GCC_TRADITIONAL
 AC_CHECK_DECLS(h_errno,,,[$ac_includes_default
 #ifdef HAVE_NETDB_H
 #include <netdb.h>
+#endif
+#ifdef HAVE_WINSOCK_H
+#include <winsock.h>
 #endif])
 
 AC_TYPE_SIGNAL
@@ -262,18 +265,67 @@ AC_CHECK_TYPES(socklen_t,,,[$ac_includes_default
 AC_FUNC_VPRINTF
 AC_FUNC_SNPRINTF
 AC_FUNC_MEMMOVE
-AC_CHECK_FUNCS([atexit gethostbyname memset mkdir select socket strcasecmp \
+AC_CHECK_FUNCS([atexit memset mkdir strcasecmp uname fcntl \
                 strchr strdup strncasecmp strpbrk strrchr strstr strtol strtok_r \
-                symlink chmod tcgetattr hstrerror gettimeofday setlocale])
+                symlink chmod tcgetattr gettimeofday setlocale \
+                select socket gethostbyname hstrerror])
 
-
-# vprintf stat malloc
-for f in memset mkdir select socket atexit \
+for f in memset mkdir atexit \
          strcasecmp strchr strdup strncasecmp strpbrk strrchr strstr strtol; do
     if eval test "x\$ac_cv_func_$f" != "xyes"; then
         AC_MSG_ERROR([Required function $f is missing. Sorry.])
     fi
 done
+
+if test "x$ac_cv_func_select$ac_cv_func_socket" != "xyesyes"; then
+    my_old_LIBS=$LIBS
+    LIBS="-lwsock32 $LIBS"
+    AC_CACHE_CHECK(for library containing select, ac_cv_search_select,
+      [AC_LINK_IFELSE([AC_LANG_PROGRAM([[/* argl */
+          #if HAVE_SYS_TYPES_H
+          #include <sys/types.h>
+          #endif
+          #if TIME_WITH_SYS_TIME
+          #include <sys/time.h>
+          #include <time.h>
+          #elif HAVE_SYS_TIME_H
+          #include <sys/time.h>
+          #else
+          #include <time.h>
+          #endif
+          #if HAVE_UNISTD_H
+          #include <unistd.h>
+          #endif
+          #if HAVE_SYS_SOCKET_H
+          #include <sys/socket.h>
+          #endif
+          #if HAVE_NETDB_H
+          #include <netdb.h>
+          #endif
+          #if HAVE_WINSOCK_H
+          #include <winsock.h>
+          #endif]],
+          [[struct timeval *tm;
+            fd_set *fds;
+            select (1, fds, fds, fds, tm);
+            socket (1, 1, 1);
+            gethostbyname ("www.micq.org");]])],
+        [ac_cv_search_select=wsock32],
+        [ac_cv_search_select=no])])
+    LIBS=$my_old_LIBS
+    if test x$ac_cv_search_select != xno; then
+       AC_DEFINE([ICONV_CONST], const, [Define as const if the declaration of iconv() needs const.])
+       LIBS="-lwsock32 $LIBS"
+       ac_cv_func_select=yes
+       ac_cv_func_socket=yes
+       ac_cv_func_gethostbyname=yes
+       AC_DEFINE(HAVE_SELECT, 1)
+       AC_DEFINE(HAVE_SOCKET, 1)
+       AC_DEFINE(HAVE_GETHOSTBYNAME, 1)
+    else
+       AC_MSG_ERROR([Required functions select and/or socket is missing. Sorry.])
+    fi
+fi
 
 if test "x$ac_cv_func_gethostbyname" != "xyes"; then
     AC_MSG_WARN([Function gethostbyname() not found; you will need to specify all host names as IP addresses.])

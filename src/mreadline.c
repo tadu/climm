@@ -44,7 +44,9 @@
 #if HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
+#if HAVE_NETINET_IN_H
 #include <netinet/in.h>
+#endif
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
@@ -55,15 +57,21 @@ struct termios sattr;
 #define HISTORY_LINES 10
 #define HISTORY_LINE_LEN 1024
 
+#if HAVE_TCGETATTR
 static struct termios t_attr;
+static struct termios saved_attr;
+#endif
+static int attrs_saved = 0;
 static void tty_prepare (void);
 static void tty_restore (void);
 
 static void R_process_input_backspace (void);
 static void R_process_input_delete (void);
 
+#if defined(SIGTSTP) && defined(SIGCONT)
 static RETSIGTYPE micq_ttystop_handler (int);
 static RETSIGTYPE micq_cont_handler (int);
+#endif
 static RETSIGTYPE micq_int_handler (int);
 
 static char *history[HISTORY_LINES + 1];
@@ -108,8 +116,10 @@ void R_init (void)
     curpos = curlen = 0;
     bytepos = bytelen = 0;
     inited = 1;
+#if defined(SIGTSTP) && defined(SIGCONT)
     signal (SIGTSTP, &micq_ttystop_handler);
     signal (SIGCONT, &micq_cont_handler);
+#endif
     signal (SIGINT, &micq_int_handler);
     tty_prepare ();
     atexit (tty_restore);
@@ -131,7 +141,7 @@ void R_clrscr (void)
 static int tabstate = 0;
 /* set to 1 on first tab, reset to 0 on any other key in R_process_input */
 
-
+#if defined(SIGTSTP) && defined(SIGCONT)
 static RETSIGTYPE micq_ttystop_handler (int a)
 {
     tty_restore ();
@@ -146,6 +156,7 @@ static RETSIGTYPE micq_cont_handler (int a)
     signal (SIGTSTP, &micq_ttystop_handler);
     signal (SIGCONT, &micq_cont_handler);
 }
+#endif
 
 volatile static UBYTE interrupted = 0;
 
@@ -567,7 +578,17 @@ int R_process_input (void)
                     istat = 1;
                     break;
 #endif
+#if !defined(VERASE)
+                case 127:      /* DEL */
+                    if (prG->flags & FLAG_DELBS)
+                        R_process_input_backspace ();
+                    else
+                        R_process_input_delete ();
+                    return 0;
+#endif
                 default:
+#if HAVE_TCGETATTR
+#if defined(VERASE)
                     if (ch == t_attr.c_cc[VERASE] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
                     {
                         if (prG->flags & FLAG_DELBS)
@@ -576,6 +597,8 @@ int R_process_input (void)
                             R_process_input_delete ();
                         return 0;
                     }
+#endif
+#if defined(VEOF) && defined(VERASE)
                     if (ch == t_attr.c_cc[VEOF] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
                     {
                         if (curlen)
@@ -587,6 +610,8 @@ int R_process_input (void)
                         printf ("q\n");
                         return 1;
                     }
+#endif
+#if defined(VKILL) && defined(VERASE)
                     if (ch == t_attr.c_cc[VKILL] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
                     {
                         R_remprompt ();
@@ -596,13 +621,16 @@ int R_process_input (void)
                         bytepos = bytelen = 0;
                         return 0;
                     }
-#ifdef    VREPRINT
+#endif
+#if defined(VREPRINT) && defined(VERASE)
                     if (ch == t_attr.c_cc[VREPRINT] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
                     {
                         R_remprompt ();
                         return 0;
                     }
-#endif /* VREPRINT */
+#endif
+#endif
+                    /* silence warning */ ;
             }
         }
         else if (bytelen + 1 < HISTORY_LINE_LEN)
@@ -970,8 +998,6 @@ void R_remprompt ()
     prstat = 2;
 }
 
-static struct termios saved_attr;
-static int attrs_saved = 0;
 
 static void tty_restore (void)
 {
@@ -1038,6 +1064,8 @@ SDWORD Echo_On (void)
 }
 
 static volatile UDWORD scrwd = 0;
+
+#if defined(SIGWINCH)
 static RETSIGTYPE micq_sigwinch_handler (int a)
 {
     struct winsize ws;
@@ -1046,6 +1074,7 @@ static RETSIGTYPE micq_sigwinch_handler (int a)
     ioctl (STDIN_FILENO, TIOCGWINSZ, &ws);
     scrwd = ws.ws_col;
 }
+#endif
 
 UWORD Get_Max_Screen_Width ()
 {
@@ -1054,6 +1083,7 @@ UWORD Get_Max_Screen_Width ()
     if (scrwdtmp)
         return scrwdtmp;
 
+#if defined(SIGWINCH)
     micq_sigwinch_handler (0);
     if ((scrwdtmp = scrwd))
     {
@@ -1061,6 +1091,7 @@ UWORD Get_Max_Screen_Width ()
             scrwd = 0;
         return scrwdtmp;
     }
+#endif
     if (prG->screen)
         return prG->screen;
     return 80;                  /* a reasonable screen width default. */

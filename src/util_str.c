@@ -9,9 +9,14 @@
 
 #include "micq.h"
 #include <stdarg.h>
+#if HAVE_NETINET_IN_H
 #include <netinet/in.h>
-#ifdef HAVE_ARPA_INET_H
+#endif
+#if HAVE_ARPA_INET_H
 #include <arpa/inet.h>
+#endif
+#if HAVE_WINSOCK_H
+#include <winsock.h>
 #endif
 #include <string.h>
 #include <ctype.h>

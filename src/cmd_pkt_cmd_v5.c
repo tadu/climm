@@ -23,7 +23,9 @@
 #include "util_str.h"
 #include <string.h>
 #include <assert.h>
+#if HAVE_NETINET_IN_H
 #include <netinet/in.h> /* for htonl, htons */
+#endif
 
 /*
  * CMD_ACK - acknowledge a received packet.

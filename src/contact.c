@@ -441,10 +441,10 @@ BOOL ContactMetaSave (Contact *cont)
     Extra *extra;
     FILE *f;
     
-    if (!(f = fopen (s_sprintf ("%s/contacts/icq-%ld", PrefUserDir (prG), cont->uin), "w")))
+    if (!(f = fopen (s_sprintf ("%scontacts" _OS_PATHSEPSTR "icq-%ld", PrefUserDir (prG), cont->uin), "w")))
     {
-        mkdir (s_sprintf ("%s/contacts", PrefUserDir (prG)), 0700);
-        if (!(f = fopen (s_sprintf ("%s/contacts/icq-%ld", PrefUserDir (prG), cont->uin), "w")))
+        mkdir (s_sprintf ("%scontacts", PrefUserDir (prG)), 0700);
+        if (!(f = fopen (s_sprintf ("%scontacts" _OS_PATHSEPSTR "icq-%ld", PrefUserDir (prG), cont->uin), "w")))
             return FALSE;
     }
     fprintf (f, "#\n# Meta data for contact %ld.\n#\n\n", cont->uin);
@@ -549,7 +549,7 @@ BOOL ContactMetaLoad (Contact *cont)
     char buf[450], *args, *cmd;
     UDWORD i;
     
-    if (!(f = fopen (s_sprintf ("%s/contacts/icq-%ld", PrefUserDir (prG), cont->uin), "r")))
+    if (!(f = fopen (s_sprintf ("%scontacts" _OS_PATHSEPSTR "icq-%ld", PrefUserDir (prG), cont->uin), "r")))
         return FALSE;
 
     cont->updated = 0;

@@ -28,7 +28,12 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#if HAVE_NETDB_H
 #include <netdb.h>
+#endif
+#if HAVE_WINSOCK_H
+#include <winsock.h>
+#endif
 #include <assert.h>
 
 jump_conn_f SrvCallBackReceive;

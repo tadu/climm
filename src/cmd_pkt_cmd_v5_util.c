@@ -28,7 +28,12 @@
 #include <assert.h>
 #include <stdio.h>
 #include <errno.h>
+#if HAVE_NETINET_IN_H
 #include <netinet/in.h> /* for htonl, htons */
+#endif
+#if HAVE_WINSOCK_H
+#include <winsock.h>
+#endif
 
 static UDWORD Gen_Checksum (const Packet *pak);
 static UDWORD Scramble_cc (UDWORD cc);
