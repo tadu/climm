@@ -699,7 +699,7 @@ static JUMP_F(CmdUserTrans)
                     free (t);
                     continue;
                 }
-                i = i18nOpen (arg1);
+                i = i18nOpen (arg1, prG->enc_loc);
                 if (i == -1)
                     M_printf (i18n (1080, "Couldn't load \"%s\" internationalization.\n"), arg1);
                 else if (i)

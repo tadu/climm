@@ -51,7 +51,6 @@ void i18nInit (char **loc, UBYTE *enc, const char *arg)
         arg = "en";
     *loc = q = strdup (arg);
 
-    *enc = ENC_AUTO;
     if (*q == '/')
         q = strrchr (q, '/');
     if ((p = strrchr (q, '@')))
@@ -74,11 +73,11 @@ void i18nInit (char **loc, UBYTE *enc, const char *arg)
  * Opens and reads the localization file defined by parameter or the
  * environment variables LANG, LC_ALL, LC_MESSAGES.
  */
-int i18nOpen (const char *loc)
+int i18nOpen (const char *loc, UBYTE enc)
 {
     int j = 0, debug = 0, res = 1;
     char *floc = NULL;
-    UBYTE enc, utf8 = 0;
+    UBYTE utf8 = 0;
     FILE *i18nf;
 
     if (*loc == '+')
