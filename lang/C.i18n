@@ -1,6 +1,5 @@
 # $Id$ strings extracted from mICQ sources
 1001:<lang>
-1001:<lang>
 1002:<lang_cc>
 1003:0
 1004:<translation authors>
@@ -538,10 +537,7 @@
 1578:Enter country's phone ID number:
 1579:Enter company: 
 1584:Warning! Script command '%s' failed with exit value %d¶
-1585:Ack!!!!!!!  Bad packet¶
 1587:Enter department: 
-1590:has requested your authorization to be added to their contact list.
-1591:Reason:
 1592:<%s> emailed you a message:¶
 1593:<%s> send you a web message:¶
 1595:¶Contact List.¶============================================¶%d Contacts¶
@@ -768,7 +764,7 @@
 1898:Redirect to server %s... 
 1899:Unknown family requested: %d¶
 1900:It's readonly.
-1901:has authorized you to add them to your contact list.
+1901:has authorized you to add them to your contact list.¶
 1902:Opening v5 connection to %s:%d... 
 1903:Outgoing v8 server packet:
 1904:Server doesn't understand ver %d (only %d) for family %d!¶
@@ -980,3 +976,7 @@
 2139:Other info change was %s%s%s.¶
 2140:Random chat group change was %s%s%s.¶
 2141:Search %sfailed%s.¶
+2142:Direct connection with %s not possible.¶
+2143:refused authorization: %s%s%s¶
+2144:requests authorization: %s%s%s¶
+2145:auth add  <nick>       - authorized add.¶
