@@ -13,6 +13,8 @@
 #include "util_ui.h"
 #include "util_io.h"
 #include "contact.h"
+#include "session.h"
+#include "packet.h"
 #include "preferences.h"
 #include "cmd_pkt_v8_flap.h"
 #include "cmd_pkt_v8_snac.h"

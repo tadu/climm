@@ -28,6 +28,8 @@
 #include "util_io.h"
 #include "util.h"
 #include "contact.h"
+#include "session.h"
+#include "packet.h"
 
 #ifndef HAVE_HSTRERROR
 const char *hstrerror (int rc)

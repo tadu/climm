@@ -19,6 +19,7 @@
 #include "cmd_pkt_v8_snac.h"
 #include "preferences.h"
 #include "tabs.h"
+#include "session.h"
 #include "tcp.h"
 #include "file_util.h"
 #include "buildmark.h"

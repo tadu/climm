@@ -14,6 +14,8 @@
 #include "util_ui.h"
 #include "util_io.h"
 #include "preferences.h"
+#include "session.h"
+#include "packet.h"
 #include "file_util.h"
 #include "cmd_pkt_v8_tlv.h"
 #include <assert.h>

@@ -14,6 +14,8 @@
 #include "util_io.h"
 #include "contact.h"
 #include "server.h"
+#include "packet.h"
+#include "session.h"
 #include "preferences.h"
 #include "icq_response.h"
 #include "cmd_pkt_cmd_v5_util.h"

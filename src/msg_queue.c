@@ -32,11 +32,11 @@ struct Queue_s
 /*
  * Create a new empty queue.
  */
-void QueueInit (struct Queue **queue)
+void QueueInit (Queue **queue)
 {
     assert (queue);
     
-    *queue = malloc (sizeof (struct Queue));
+    *queue = malloc (sizeof (Queue));
     (*queue)->head = NULL;
     (*queue)->due = INT_MAX;
 }
@@ -44,7 +44,7 @@ void QueueInit (struct Queue **queue)
 /*
  * Returns the event most due without removing it, or NULL.
  */
-struct Event *QueuePeek (struct Queue *queue)
+Event *QueuePeek (Queue *queue)
 {
     assert (queue);
 
@@ -56,7 +56,7 @@ struct Event *QueuePeek (struct Queue *queue)
 /*
  * Removes the event most due from the queue, or NULL.
  */
-Event *QueuePop (struct Queue *queue)
+Event *QueuePop (Queue *queue)
 {
     Event *event;
     struct QueueEntry *temp;
@@ -124,9 +124,9 @@ void QueueEnqueue (Event *event)
 }
 
 /*
- * Adds a new entry to the queue. Creates struct Event for you.
+ * Adds a new entry to the queue. Creates Event for you.
  */
-void QueueEnqueueData (struct Queue *queue, Session *sess, UDWORD seq, UDWORD type,
+void QueueEnqueueData (Queue *queue, Session *sess, UDWORD seq, UDWORD type,
                        UDWORD uin, time_t due,
                        Packet *pak, UBYTE *info, Queuef *callback)
 {
@@ -201,10 +201,10 @@ Event *QueueDequeue (UDWORD seq, UDWORD type)
  * function.
  * Callback function may re-enqueue them with a later due time.
  */
-void QueueRun (struct Queue *queue)
+void QueueRun (Queue *queue)
 {
     time_t now = time (NULL);
-    struct Event *event;
+    Event *event;
     
     while (queue->due <= now)
     {

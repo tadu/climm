@@ -18,6 +18,8 @@
 #include "preferences.h"
 #include "server.h"
 #include "contact.h"
+#include "session.h"
+#include "packet.h"
 #include "tcp.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_v8_snac.h"

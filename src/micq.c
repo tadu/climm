@@ -16,6 +16,7 @@
 #include "preferences.h"
 #include "server.h"
 #include "contact.h"
+#include "session.h"
 #include "tcp.h"
 #include "msg_queue.h"
 #include "util_io.h"
