@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: en.i18n,v 1.50 2002/08/26 13:11:47
+#  EN: __.i18n,v 1.32 2002/08/23 14:00:42
 1001:de
 1002:de_DE
 1003:0-4-9-3
@@ -74,9 +74,7 @@
 1084:Klang ist
 1085:an
 1086:aus
-1087:Ignoriere Müll nach der Zahl.
 1089:Entferne Übersetzung aus dem Speicher.
-1090:%s ist eine Benutzernummer, kein Spitzname.
 1093:Die Paßwörter stimmen nicht überein, nochmal!
 1094:Rechnername oder IP-Adresse für SOCKS5 (oder 0, wenn Sie kein SOCKS5 benötigen):
 1095:Port für SOCKS5 (normalerweise 1080):
@@ -565,7 +563,6 @@
 1591:Grund:
 1592:<%s> schickt eine Nachricht per eMail:¶
 1593:<%s> schickt eine Nachricht per Web:¶
-1594:        URL: %s©3%s©0¶
 1595:¶Kontaktliste:¶©3============================================¶©0%d Kontakte.¶
 1596:[SOCKS] Kann den Rechnernamen %s nicht auflösen: %s.
 1597:[SOCKS] Kann keinen Socket erzeugen.¶
@@ -626,8 +623,6 @@
 1664:Erstelle Nachricht an ©4alle©0:¶
 1666:Ignoriere %s nicht mehr.
 1667:Ignoriere %s.
-1668:Sie müssen einen Spitznamen angeben.
-1669:%s hinzugefügt.¶
 1670:Für %s jetzt normal sichtbar.
 1671:Für %s jetzt immer sichtbar.
 1672:%ss IP-Adresse ist 
@@ -640,7 +635,6 @@
 1680:Ihre persönlichen Einstellungen wurden gespeichert!¶
 1681:Die letzten %d Leute, zu denen Sie gesprochen haben:¶
 1682:Sie haben Nachrichten empfangen von:¶
-1684:%s ist kein bekannter Kontakt.¶
 1687:mICQ läuft seit
 1688:Tagen
 1689:Stunden
@@ -648,7 +642,6 @@
 1691:Sekunden
 1692:Kontakte:
 1696:Geschlecht:
-1699:Benötige gültige Benutzernummer oder Spitzname.¶
 1700:%s ist kein gültiger Benutzer in Ihrer Kontaktliste.¶
 1703:©2Status-Modi: ¶
 1704:©2Gruppen: ¶
@@ -668,17 +661,13 @@
 1719:Zeigt, wie lange mICQ schon läuft.
 1720:<uin> kann die Benutzernummer oder der Spitzname eines Benutzers sein.
 1721:Bei einer leeren Nachricht können mehrere Zeilen eingegeben werden.¶Dabei bedeutet eine Zeile nur mit . das Ende der Nachricht.¶Ebenso verwirft eine Zeile nur mit # die Nachricht.
-1722:Unbekanntes Kommando zum Umbenennen, gebe "help" für Hilfe ein.
 1724:Automatische Antworten sind %s.¶
 1727:Die "bitte nicht stören"-Nachricht lautet:
 1728:Die "nicht da"-Nachricht lautet:
 1729:Die "nicht erreichbar"-Nachricht lautet:
 1730:Die "beschäftigt"-Nachricht lautet:
 1731:Die "unsichtbar"-Nachricht lautet:
-1734:Leider falsche Syntax, kann keinen Status finden.¶
 1735:Benötige eine Nachricht.¶
-1736:Leider falsche Syntax. Lies doch die Hilfe, Mensch!¶
-1737:Automatische Antwort¶
 1738:Benötige eine Kommando, das umgenannt werden soll!¶
 1739:Erstelle Nachricht an ©4%s©0:¶
 1740:Erstelle Nachricht an ©2%d©0:¶
@@ -689,12 +678,8 @@
 1745:Unbekannt
 1746: Nr Type                aus/eingehend Pakete/identische Pakete¶
 1747:Gesamt
-1748:Keine Benutzernummer angegeben.¶
 1749:Benutzernummer %d in %s umbenannt.¶
-1750:Der Spitzname %s ist nicht auf der Kontaktliste.¶
 1751:Spitzname %s entfernt.
-1752:Kein Spitzname angegeben.¶
-1753:Sie müssen eine Benutzernummer und einen neuen Spitznamen angeben.¶
 1754: Hinweis: Sie müssen diese Änderung mit "save" abspeichern.¶
 1755:hat Sie zu seiner Kontaktliste hinzugefügt.¶
 1756:¶Erstelle Verbindung...¶
@@ -713,7 +698,6 @@
 1769:Zeigt Deinen aktuellen Verbindungsstatus.
 1770:Sendet die letzte Nachricht an einen neuen Benutzer.
 1771:Noch keine Nachricht an irgendwen verschickt!¶
-1773:Konnte Nick %s nicht hinzufügen.
 1774:Eingehendes Paket:
 1775:Ausgehendes Paket:
 1777:Öffne Direkt-Verbindung auf localhost:%d...
@@ -820,10 +804,8 @@
 #1910:FLAP seq %08x length %04x channel %d©0¶
 1911:verbinde
 1912:geschlossen
-1913:Empfange Bestätigung für Nachricht %s#%08lx:%08lx%s, die an %s%s%s geschickt wurde.¶
 1914:Kann Verbindungs-Datenstruktur nicht allokieren.¶
 1915:Der Server hat %s als IP-Adresse ermittelt.¶
-1916:Benötige einen Spitznamen oder eine Benutzernummer.¶
 1918:Ignoriere Anfrage des Servers für eine Mindestwartezeit von %d.¶
 1919:Benutzernummern stimmen nicht überein: %d gegenüber %d.¶
 1920:Beantragung einer neuen Benutzernummer abgelehnt.¶
@@ -837,8 +819,6 @@
 1929:[Automatische Nachricht] Bitte nicht stören (Do Not Disturb)
 #1930:Can't send this (%x) yet.¶
 1931:Keine Verbindung zum Server.¶
-1932:Benötige Benutzernummer.¶
-1933:%s ist weder ein Spitzname oder eine Benutzernummer.¶
 1934:verbunden
 #1935:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x¶
 1936:Bitte Mindestalter eingeben (18-22,23-29,30-39,40-49,50-59,60-120):
@@ -907,7 +887,6 @@
 2007:Geschäftsdienste
 2008:Interessengruppenänderung war ©2%s©0.¶
 2009:Zufälligen Plauderpartner mit Benutzernummer %d in Interessengruppe %d gefunden.¶
-2010:Keine                      0¶
 2011:Keine Verbindungsannahme-Verbindung gefunden.¶
 2012:Kein Paßwort angegeben.¶
 2013:Dieses Kommando ist nur für Version 7 oder neuer gültig.¶
@@ -922,9 +901,7 @@
 2023:Direkte Verbindung von Verbindungspartner geschlossen.¶
 2024:Unbekannte Protokoll-Version %d für ICQ-Direktverbindungen.¶
 2026:Direktverbindungs-Kennung:
-2028:Falsche Anzahl an Argumenten.¶
 2029:Protokoll-Fehler einer Direktverbindung
-2030:%04d-%02d-%02d %02d:%02d UTC
 2031:Verbindung zu oft fehlgeschlagen, gebe auf.¶
 2032:Verbinde in %d Sekunden neu.¶
 2033:Geburtstagskind
@@ -999,3 +976,20 @@
 2107:Noch keine Nachrichten von %s%s%s empfangen.¶
 2108:automatisch
 2109:Version
+#2110:    file  <nick> <file1> <as1> ... <description>¶
+#2111:                 - Send file1 as as1, ..., with description.¶
+#2112:                 - as = '/': strip path, as = '.': as is¶
+#2113:Unknown status '%s'.¶
+#2114:The command name '%s' does not exist.¶
+#2115:'%s' is not an integer.¶
+#2116:No new nick name given.¶
+#2117:%d added as %s.¶
+#2118:Out of memory.¶
+#2119:auth [grant] <nick>    - grant authorization.¶
+#2120:auth deny <nick> <msg> - refuse authorization.¶
+#2121:auth req  <nick> <msg> - request authorization.¶
+#2122: Note: You need to 'save' to write new password to disc.¶
+#2123:%sSyntax error%s: Too few arguments: '%s'¶
+#2124:%sSyntax error%s: Not an integer: '%s'¶
+#2126:User is offline, message (%s#%08lx:%08lx%s) queued.¶
+#2127:    URL: %s%s%s%s¶
