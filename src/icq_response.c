@@ -648,7 +648,7 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
     if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
         M_printf ("(%s) ", s_status (tstatus));
 
-    M_printf ("\a%s ", s_time (&stamp));
+    M_printf ("%s ", s_time (&stamp));
     if (cont)
         M_printf ("%s%*s" COLNONE " ", col, uiG.nick_len + s_delta (cont->nick), cont->nick);
     
