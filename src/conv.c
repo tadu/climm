@@ -417,7 +417,7 @@ strc_t ConvTo (const char *ctext, UBYTE enc)
         iconv_check (enc);
 #endif
     text.txt = (char *)ctext;
-    text.len = strlen (ctext);
+    text.len = ctext ? strlen (ctext) : 0;
     text.max = 0;
     if ((enc >= conv_nr) || (!conv_encs[enc].fto))
         enc = ENC_ASCII;
