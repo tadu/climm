@@ -3020,7 +3020,7 @@ static JUMP_F(CmdUserLast)
 /*    ContactGroup *cg; */
     Contact *cont = NULL, *contr = NULL;
 /*    int i; */
-    OPENCONN;
+    ANYCONN;
 
     if (!s_parsenick (&args, &cont, &contr, conn))
     {
