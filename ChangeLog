@@ -1,13 +1,19 @@
-2002-07-12 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+2002-06<24 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* fix auto-away
+	* be more verbose if saving fails
+	* #define DATADIR instead of PREFIX "/share/micq/"
+	* set CONNECT_FAIL more often to avoid reconnect loops
+
+2002-06-12 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* compile fixes
 	* recognize YSM
 	* actually install man pages
 
-2002-07-10 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+2002-06-10 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* es translation by Alberto  Bertogli (albertogli@telpin.com.ar)
 	* lower requirement for gethostbyname() for BeOS
 
-2002-07-04 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+2002-06-04 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Fix Russian/Japanese.
 	* Close log file desciptor (thanks, Alberto  Bertogli)
 	* Automatic responses.
