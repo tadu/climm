@@ -69,6 +69,7 @@ TLV *TLVRead (Packet *pak, UDWORD TLVlen)
             
             memcpy (tlvn, tlv, (max - 5) * sizeof (TLV));
             free (tlv);
+            tlv = tlvn;
         }
 
         p = calloc (1, len + 1);
