@@ -174,20 +174,19 @@ static void Idle_Check (Connection *conn)
     return;
 }
 
-/******************************
-Main function connects gets UIN
-and passwd and logins in and sits
-in a loop waiting for server responses.
-******************************/
-int main (int argc, char *argv[])
+/*
+ * Parse command line and initialize everything
+ */
+static void Init (int argc, char *argv[])
 {
 #ifdef _WIN32
     WSADATA wsaData;
 #endif
     Connection *conn;
-    
+    Event *loginevent = NULL;
     const char *arg_v, *arg_f, *arg_l, *arg_i, *arg_b, *arg_s;
-    UDWORD rc, arg_h = 0, arg_vv = 0, arg_c = 0, arg_ss = 0;
+    UDWORD loaded, arg_h = 0, arg_vv = 0, arg_c = 0, arg_ss = 0;
+    str_s arg_C = { NULL, 0, 0 };
     val_t res;
     UBYTE save_conv_error;
     SDWORD i;
@@ -198,47 +197,47 @@ int main (int argc, char *argv[])
     tzset ();
 
     arg_v = arg_f = arg_l = arg_i = arg_b = arg_s = NULL;
+    s_init (&arg_C, "", 0);
     for (i = 1; i < argc; i++)
     {
-        if (argv[i][0] != '-')
-        {
-            ;
-        }
-        else if ((argv[i][1] == 'v') || !strcmp (argv[i], "--verbose"))
-        {
-            arg_v = argv[i] + 2;
-            arg_vv = (*arg_v ? (unsigned int)atol (arg_v) : arg_vv + 1);
-        }
-        else if ((argv[i][1] == 'b') || !strcmp (argv[i], "--basedir"))
-            arg_b = argv[++i];
-        else if ((argv[i][1] == 'f') || !strcmp (argv[i], "--config"))
-            arg_f = argv[++i];
-        else if ((argv[i][1] == 'l') || !strcmp (argv[i], "--logplace"))
-            arg_l = argv[++i];
-        else if ((argv[i][1] == 'i') || !strcmp (argv[i], "--i18n") || !strcmp (argv[i], "--locale"))
-            arg_i = argv[++i];
-        else if ((argv[i][1] == '?') || (argv[i][1] == 'h') ||
-                 !strcmp (argv[i], "--help") || !strcmp (argv[i], "--version"))
+        if (   !strcmp (argv[i], "-?") || !strcmp (argv[i], "-h")
+            || !strcmp (argv[i], "--help") || !strcmp (argv[i], "--version"))
             arg_h++;
-        else if ((argv[i][1] == 'c') || !strcmp (argv[i], "--nocolor") || !strcmp (argv[i], "--nocolour"))
+        else if (   !strcmp (argv[i], "-c") || !strcmp (argv[i], "--nocolor")
+                 || !strcmp (argv[i], "--nocolour"))
             arg_c++;
-        else if ((argv[i][1] == 's') || !strcmp (argv[i], "--status"))
-        {
+        else if (!strcmp (argv[i], "-s") || !strcmp (argv[i], "--status"))
             arg_s = argv[++i];
-            if (!strncmp (arg_s, "inv", 3))
-                arg_ss = STATUS_INV;
-            else if (!strcmp (arg_s, "dnd"))
-                arg_ss = STATUS_DND;
-            else if (!strcmp (arg_s, "occ"))
-                arg_ss = STATUS_OCC;
-            else if (!strcmp (arg_s, "na"))
-                arg_ss = STATUS_NA;
-            else if (!strcmp (arg_s, "away"))
-                arg_ss = STATUS_AWAY;
-            else if (!strcmp (arg_s, "ffc"))
-                arg_ss = STATUS_FFC;
-            else
-                arg_ss = atoll (arg_s);
+        else if (!strcmp (argv[i], "-b") || !strcmp (argv[i], "--basedir"))
+            arg_b = argv[++i];
+        else if (!strcmp (argv[i], "-f") || !strcmp (argv[i], "--config"))
+            arg_f = argv[++i];
+        else if (!strncmp (argv[i], "-v", 2) || !strcmp (argv[i], "--verbose"))
+        {
+            arg_v = argv[i] + ((argv[i][1] == '-') ? 9 : 2);
+            if (*arg_v)
+                arg_vv = atoll (arg_v) | 0x80000000UL;
+            else if (argv[i + 1])
+            {
+                char *t;
+                UDWORD n = strtol (argv[i + 1], &t, 10);
+                if (*t)
+                    arg_vv++;
+                else
+                    i++, arg_vv = n | 0x80000000UL;
+            }
+        }
+        else if (!strcmp (argv[i], "-i") || !strcmp (argv[i], "--i18n") || !strcmp (argv[i], "--locale"))
+            arg_i = argv[++i];
+        else if (!strcmp (argv[i], "-l") || !strcmp (argv[i], "--logplace"))
+            arg_l = argv[++i];
+        else
+        {
+            if (argv[i + 1] && (!strcmp (argv[i], "-C") || !strcmp (argv[i], "--cmd")))
+                i++;
+            if (arg_C.len)
+                s_catc (&arg_C, ' ');
+            s_cat (&arg_C, s_quote (argv[i]));
         }
     }
 
@@ -246,7 +245,7 @@ int main (int argc, char *argv[])
     save_conv_error = conv_error;
 
     prG = PreferencesC ();
-    prG->verbose  = arg_vv | 0x8000;
+    prG->verbose  = arg_vv;
     prG->rcfile   = arg_f ? strdup (arg_f) : NULL;
     prG->logplace = arg_l ? strdup (arg_l) : NULL;
     prG->flags |= arg_c ? 0 : FLAG_COLOR;
@@ -272,10 +271,10 @@ int main (int argc, char *argv[])
     i18nInit (arg_i);
     prG->verbose &= ~0x8000;
     PreferencesInit (prG);
-    ReadLineInit ();
     
-    rc = arg_h ? 0 : PrefLoad (prG);
+    loaded = arg_h ? 0 : PrefLoad (prG);
     i = i18nOpen (prG->locale);
+    ReadLineInit ();
 
     if (prG->enc_loc == ENC_AUTO)
         prG->enc_loc = ENC_FAUTO | ENC_ASCII;
@@ -325,14 +324,16 @@ int main (int argc, char *argv[])
 
     if (arg_h)
     {
-        M_print  (i18n (1607, "Usage: micq [-h] [-c] [-i <locale>] [-b <basedir>] \n            [-f <configfile>] [-v[<level>]] [-l <logplace>]\n"));
+        M_print  (i18n (9999, "Usage: micq [-h] [-c] [-p <passwd>] [-u <UIN>] [-s <status>] [-b <basedir>]\n"));
+        M_print  (i18n (9999, "            [-i <locale>] [-v[<level>]] [-l <logplace>] [[-C] <command>]...\n"));
         M_print  (i18n (2199, "  -h, --help     gives this help text\n"));
-        M_print  (i18n (2200, "  -v, --verbose  set (or increase) verbosity (mostly for debugging)\n"));
-        M_printf (i18n (2201, "  -b, --basedir  use given BASE dir (default: %s)\n"), "$HOME" _OS_PATHSEPSTR ".micq" _OS_PATHSEPSTR);
-        M_printf (i18n (2203, "  -l, --logplace use given log file/dir (default: %s)\n"), "BASE" _OS_PATHSEPSTR "history" _OS_PATHSEPSTR);
-        M_print  (i18n (2204, "  -i, --i1" "8n     use given locale (default: auto-detected)\n"));
-        M_print  (i18n (9999, "  -s, --status   overide status of auto-login server connections\n"));
         M_print  (i18n (2205, "  -c, --nocolor  disable colors\n"));
+        M_print  (i18n (9999, "  -s, --status   overide status of auto-login server connections\n"));
+        M_printf (i18n (2201, "  -b, --basedir  use given BASE dir (default: %s)\n"), "$HOME" _OS_PATHSEPSTR ".micq" _OS_PATHSEPSTR);
+        M_print  (i18n (2200, "  -v, --verbose  set (or increase) verbosity (mostly for debugging)\n"));
+        M_print  (i18n (2204, "  -i, --i1" "8n     use given locale (default: auto-detected)\n"));
+        M_printf (i18n (2203, "  -l, --logplace use given log file/dir (default: %s)\n"), "BASE" _OS_PATHSEPSTR "history" _OS_PATHSEPSTR);
+        M_print  (i18n (9999, "  -C, --cmd      execute mICQ command\n"));
         exit (0);
     }
     
@@ -382,7 +383,7 @@ int main (int argc, char *argv[])
         }
     }
 
-    if (!rc && arg_l)
+    if (!loaded && arg_l)
     {
         M_printf (i18n (9999, "Could not open configuration file %s%s%s."), COLQUOTE, prG->rcfile, COLNONE);
         exit (20);
@@ -407,18 +408,16 @@ int main (int argc, char *argv[])
     else
         M_printf ("No translation requested. You live in nowhereland, eh?\n");
 
-    if (!rc)
-        Initialize_RC_File ();
-
 #ifdef _WIN32
-    if ((rc = WSAStartup (0x0101, &wsaData)))
+    if (WSAStartup (0x0101, &wsaData))
     {
-/* FUNNY: "Windows Sockets broken blame Bill -" */
-        perror (i18n (1624, "Sorry, can't initialize Windows Sockets..."));
+        perror (i18n (9999, "WSAStartup() for WinSocks 1.1 failed"));
         exit (1);
     }
 #endif
 
+    if (!loaded)
+        Initialize_RC_File ();
     TabInit ();
 
 #ifdef ENABLE_SSL
@@ -430,14 +429,62 @@ int main (int argc, char *argv[])
     TCLInit ();
 #endif
 
+    if (arg_s)
+    {
+        if (!strncmp (arg_s, "inv", 3))
+            arg_ss = STATUS_INV;
+        else if (!strcmp (arg_s, "dnd"))
+            arg_ss = STATUS_DND;
+        else if (!strcmp (arg_s, "occ"))
+            arg_ss = STATUS_OCC;
+        else if (!strcmp (arg_s, "na"))
+            arg_ss = STATUS_NA;
+        else if (!strcmp (arg_s, "away"))
+            arg_ss = STATUS_AWAY;
+        else if (!strcmp (arg_s, "ffc"))
+            arg_ss = STATUS_FFC;
+        else if (!strncmp (arg_s, "off", 3))
+            arg_ss = STATUS_OFFLINE;
+        else
+            arg_ss = atoll (arg_s);
+    }
+    
+        
     for (i = 0; (conn = ConnectionNr (i)); i++)
         if ((conn->flags & CONN_AUTOLOGIN) && conn->open)
         {
-            if (arg_s && conn->type & TYPEF_ANY_SERVER)
-                conn->status = arg_ss;
-            conn->open (conn);
+            if (conn->type & TYPEF_ANY_SERVER)
+            {
+                if (arg_s)
+                    conn->status = arg_ss;
+                if (conn->status == STATUS_OFFLINE)
+                    continue;
+                if ((loginevent = conn->open (conn)))
+                {
+                    QueueEnqueueDep (conn, QUEUE_MICQ_COMMAND, 0, loginevent,
+                                     NULL, conn->cont, ContactOptionsSetVals (NULL, CO_MICQCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
+                                     &CmdUserCallbackTodo);
+                    arg_C.len = 0;
+                }
+            }
+            else
+                conn->open (conn);
         }
+}
 
+/******************************
+Main function connects gets UIN
+and passwd and logins in and sits
+in a loop waiting for server responses.
+******************************/
+int main (int argc, char *argv[])
+{
+    Connection *conn;
+    UDWORD rc;
+    int i;
+    
+
+    Init (argc, argv);
     while (!uiG.quit)
     {
 

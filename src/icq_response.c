@@ -493,9 +493,9 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
         || (~conn->connect & CONNECT_OK))
         return;
     
-    if ((egevent = QueueDequeue2 (conn, QUEUE_TODO_EG, 0, 0)))
+    if ((egevent = QueueDequeue2 (conn, QUEUE_DEP_OSCARLOGIN, 0, 0)))
     {
-        egevent->due = time (NULL) + 2;
+        egevent->due = time (NULL) + 3;
         QueueEnqueue (egevent);
         return;
     }

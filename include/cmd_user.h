@@ -36,6 +36,7 @@ alias_t *CmdUserAliases (void);
 void CmdUser (const char *command);
 void CmdUserInput (strc_t line);
 void CmdUserInterrupt (void);
+void CmdUserCallbackTodo (Event *event);
 
 #define CMD_USER_HELP(syn,des) M_printf ("%s" syn "%s\n\t" COLINDENT "%s" COLEXDENT "\n", COLQUOTE, COLNONE, des);
 #define CMD_USER_HELP3(syn,d,e,f) M_printf ("%s" syn "%s\n\t" COLINDENT "%s" COLEXDENT "\n", COLQUOTE, COLNONE, d, e, f);

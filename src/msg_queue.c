@@ -543,21 +543,22 @@ const char *QueueType (UDWORD type)
 {
     switch (type)
     {
-        case QUEUE_FLAP:          return "FLAP";
-        case QUEUE_SRV_KEEPALIVE: return "SRV_KEEPALIVE";
-        case QUEUE_UDP_KEEPALIVE: return "UDP_KEEPALIVE";
-        case QUEUE_TCP_RECEIVE:   return "TCP_RECEIVE";
-        case QUEUE_CON_TIMEOUT:   return "CON_TIMEOUT";
-        case QUEUE_TCP_TIMEOUT:   return "TCP_TIMEOUT";
-        case QUEUE_TCP_RESEND:    return "TCP_RESEND";
-        case QUEUE_UDP_RESEND:    return "UDP_RESEND";
-        case QUEUE_PEER_FILE:     return "PEER_FILE";
-        case QUEUE_PEER_RESEND:   return "PEER_RESEND";
-        case QUEUE_TYPE2_RESEND:  return "TYPE2_RESEND";
-        case QUEUE_ACKNOWLEDGE:   return "ACKNOWLEDGE";
-        case QUEUE_USERFILEACK:   return "USERFILEACK";
-        case QUEUE_REQUEST_ROSTER:return "REQUEST_ROSTER";
-        case QUEUE_TODO_EG:       return "TODO_EG";
+        case QUEUE_FLAP:           return "FLAP";
+        case QUEUE_SRV_KEEPALIVE:  return "SRV_KEEPALIVE";
+        case QUEUE_UDP_KEEPALIVE:  return "UDP_KEEPALIVE";
+        case QUEUE_TCP_RECEIVE:    return "TCP_RECEIVE";
+        case QUEUE_CON_TIMEOUT:    return "CON_TIMEOUT";
+        case QUEUE_TCP_TIMEOUT:    return "TCP_TIMEOUT";
+        case QUEUE_TCP_RESEND:     return "TCP_RESEND";
+        case QUEUE_UDP_RESEND:     return "UDP_RESEND";
+        case QUEUE_PEER_FILE:      return "PEER_FILE";
+        case QUEUE_PEER_RESEND:    return "PEER_RESEND";
+        case QUEUE_TYPE2_RESEND:   return "TYPE2_RESEND";
+        case QUEUE_ACKNOWLEDGE:    return "ACKNOWLEDGE";
+        case QUEUE_USERFILEACK:    return "USERFILEACK";
+        case QUEUE_REQUEST_ROSTER: return "REQUEST_ROSTER";
+        case QUEUE_MICQ_COMMAND:   return "MICQ_COMMAND";
+        case QUEUE_DEP_OSCARLOGIN: return "DEP_OSCARLOGIN";
     }
     return s_sprintf ("%lx", type);
 }

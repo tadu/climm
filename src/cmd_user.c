@@ -3598,6 +3598,27 @@ static JUMP_F(CmdUserAbout)
 }
 
 /*
+ * executes queued commands
+ */
+void CmdUserCallbackTodo (Event *event)
+{
+    Connection *tconn;
+    const char *args;
+    strc_t par;
+    
+    if (event && event->conn && event->conn->type & TYPEF_ANY_SERVER
+        && ContactOptionsGetStr (event->opt, CO_MICQCOMMAND, &args))
+    {
+        tconn = conn;
+        conn = event->conn;
+        while ((par = s_parse (&args)))
+            CmdUser (par->txt);
+        conn = tconn;
+    }
+    EventD (event);
+}
+
+/*
  * Process one command, but ignore idle times.
  */
 void CmdUser (const char *command)

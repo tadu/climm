@@ -95,6 +95,8 @@ extern struct ContactOption_s ContactOptionsList[];
 #define CO_COLORINCOMING (COF_COLOR   | CO_CONTACT | 0x8aUL) /* the escape sequence to print for incoming messages     */
 #define CO_COLORCONTACT  (COF_COLOR   | CO_CONTACT | 0x8bUL) /* the escape sequence to print for contacts              */
 
+#define CO_MICQCOMMAND   (COF_STRING               | 0x30UL) /* the mICQ command to execute */
+
 #define CO_MSGTEXT       (COF_STRING               | 0x20UL) /* the message text */
 #define CO_MSGTYPE       (COF_NUMERIC              | 0x21UL) /* the message type */
 #define CO_MSGTRANS      (COF_NUMERIC              | 0x22UL) /* message transportations to try */

@@ -62,7 +62,7 @@ void        QueuePrint (void);
 #define QUEUE_CHANGE_ROSTER     92
 #define QUEUE_USERFILEACK       81
 #define QUEUE_ACKNOWLEDGE       80
-#define QUEUE_TODO_EG           11
+#define QUEUE_MICQ_COMMAND      11
 #define QUEUE_DEP_OSCARLOGIN    12
 #define QUEUE_CACHE_MSG         100
 

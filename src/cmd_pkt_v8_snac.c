@@ -370,12 +370,6 @@ static JUMP_SNAC_F(SnacServerpause)
         cont->status = STATUS_OFFLINE;
 }
 
-static void SrvCallbackTodoEg (Event *event)
-{
-    if (event && event->conn && event->conn->cont && event->conn->type == TYPE_SERVER)
-        CmdUser (s_sprintf ("\\as %ld eg", event->conn->cont->uin));
-}
-
 /*
  * SRV_REPLYINFO - SNAC(1,15)
  */
@@ -422,8 +416,6 @@ static JUMP_SNAC_F(SnacSrvReplyinfo)
         serv->connect = CONNECT_OK | CONNECT_SELECT_R;
         QueueEnqueueData (serv, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
                           NULL, event->cont, NULL, &SrvCallBackKeepalive);
-        QueueEnqueueData (serv, QUEUE_TODO_EG, 0, time (NULL) + 3,
-                          NULL, NULL, NULL, &SrvCallbackTodoEg);
         if ((event = QueueDequeue2 (serv, QUEUE_DEP_OSCARLOGIN, 0, NULL)))
         {
             event->due = time (NULL) + 5;
