@@ -344,8 +344,36 @@ void CmdPktSrvProcess (Connection *conn, Packet *pak, UWORD cmd,
             Display_Info_Reply (conn, cont, pak, IREP_HASAUTHFLAG);
             break;
         case SRV_RAND_USER:
-            Display_Rand_User (conn, pak);
-            M_print ("\n");
+            if (PacketReadLeft (pak) != 37)
+            {
+                M_printf ("%s\n", i18n (1495, "No Random User Found"));
+                return;
+            }
+
+            M_print (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
+
+            if (!(cont = ContactByUIN (PacketRead4 (pak), 1)))
+                return;
+            if (!CONTACT_DC (cont))
+                return;
+
+            cont->dc->ip_rem  = PacketReadB4 (pak);
+            cont->dc->port    = PacketRead4  (pak);
+            cont->dc->ip_loc  = PacketReadB4 (pak);
+            cont->dc->type    = PacketRead1  (pak);
+            cont->status      = PacketRead4  (pak);
+            cont->dc->version = PacketRead2  (pak);
+
+            M_printf ("%-15s %lu\n", i18n (1440, "Random User:"), cont->uin);
+            M_printf ("%-15s %s:%lu\n", i18n (1441, "IP:"), 
+                      s_ip (cont->dc->ip_rem), cont->dc->port);
+            M_printf ("%-15s %s\n", i18n (1451, "IP2:"),  s_ip (cont->dc->ip_loc));
+            M_printf ("%-15s %s\n", i18n (1454, "Connection:"), cont->dc->type == 4
+                      ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"));
+            M_printf ("%-15s %s\n", i18n (1452, "Status:"), s_status (cont->status));
+            M_printf ("%-15s %d\n", i18n (1453, "TCP version:"), cont->dc->version);
+        
+            CmdPktCmdMetaReqInfo (conn, cont);
             break;
         case SRV_SYS_DELIVERED_MESS:
             uin   = PacketRead4 (pak);
