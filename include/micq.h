@@ -20,7 +20,11 @@
  *  2-26-99 Added TAB_SLOTS, tab_array, add_tab() and get_tab() (Lalo)
  **********************************************/
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
+
+#include "micqconfig.h"
 #include "datatype.h"
 #include <stdlib.h>
 #include "mreadline.h"

@@ -1,3 +1,5 @@
+/* $Id$ */
+
 #include "micq.h"
 #include "mreadline.h"
 #include "util_ui.h"

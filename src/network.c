@@ -1,3 +1,5 @@
+/* $Id$ */
+
 #include "micq.h"
 #include "util_ui.h"
 #include "network.h"

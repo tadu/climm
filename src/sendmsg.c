@@ -1,3 +1,5 @@
+/* $Id$ */
+
 /*
 Send Message Function for ICQ... 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -1,3 +1,5 @@
+/* $Id$ */
+
 /**  rus_conv.c  **/
 
 #include "micq.h"

@@ -1,3 +1,5 @@
+$Id$
+
 Jeff Bearer <jbearer@tribweb.com>
  : But the idea is to add PGP encryption to micq working with GNU Privacy
  : Guard.  There is a plugin for ICQ that enables PGP that's where I got

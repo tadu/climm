@@ -1,3 +1,4 @@
+/* $Id$ */
 
 /*
  * Poor man's gettext; handles internationalization of texts.

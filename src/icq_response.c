@@ -1,3 +1,4 @@
+/* $Id$ */
 
 #include "micq.h"
 #include "icq_response.h"

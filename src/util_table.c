@@ -1,3 +1,4 @@
+/* $Id$ */
 
 #include "micq.h"
 #include "util_table.h"

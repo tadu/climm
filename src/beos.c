@@ -3,6 +3,7 @@
 #include <KernelKit.h>
 #include <stdio.h>
 #include <string.h>
+#include <micq.h>
 #include "beos.h"
 
 int BeStatus = BE_NO;

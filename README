@@ -4,34 +4,7 @@ $Id$
 current Version: 0.4.6
 ====================================
 
-
-a) Copyright and stuff
-
-Code written by Matt D. Smith is released under the
-BSD Licence. He never had a real Licence, but i got this:
-| Micq is not really under any license.  If you need to
-| list one make it BSD.  I tell anyone who asks they can
-| use it but give me credit which as I understand it is
-| the essense of BDS license.  I never planned for micq
-| to take off so much and so never worried about a
-| license.
-| There will hopefully be a new version by the end of
-| february and you could include that in the next
-| debian.
-| 
-| -- MAtt
-
-I got this cite from the debian-package maintainer from
-micq.
-
-Beginning from 0.4.7 all the Code is released
-as BSD-ish Licence - when not otherwise noted.
-
-No-one from the micq Project is in any way affiliated with
-Mirabelis. We get neither money nor any hints from them.
-
-
-b) about mICQ
+a) about mICQ
 
 mICQ is a very portable ICQ Console Client originally
 written by "Matthew D. Smith". mICQ is known to compile
@@ -43,7 +16,7 @@ overtook the "leadership" of the project and its now
 actively developed by some of us Freaks.
 
 
-c) Mailinglist
+b) Mailinglist
 
 They are hosted by <dan@iquest.net>, but might move to
 sourceforge.
@@ -58,7 +31,7 @@ An Archive might be found at:
 <http://phantom.iquest.net:/micq/>
 
 
-d) Download
+c) Download
 
 You might get it at:
     http://sourceforge.net/projects/micq/
@@ -75,7 +48,7 @@ $ cvs -z9 co micq
 
 (Yes: '$' is the Prompt only ;)
 
-e) Compile
+d) Compile
 
 Edit include/config.h to your needs, then `make` and
 then (optionally) `make install`.
@@ -86,17 +59,17 @@ $ su
 # make install
 
 
-f) Usage
+e) Usage
 
 just type 'micq'
 It will ask you for an UID (if you have none, just type '0') and a
 Password.
 
 
-g) Youll find original docs in the src/ Subdirectory.
+h) You'll find original docs in the src/ Subdirectory.
 
 
-h) NOTE!
+i) NOTE!
 
 mICQ is in a Phase of being re-organized, thus things may change
 very fast. When in Doubt, have a Look at http://micq.ukeer.de/ or
