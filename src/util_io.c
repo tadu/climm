@@ -1049,7 +1049,7 @@ void UtilIOSelect (void)
         FD_ZERO (&fds[READFDS & 3]);
         FD_ZERO (&fds[WRITEFDS & 3]);
         FD_ZERO (&fds[EXCEPTFDS & 3]);
-        if (rc != EINTR || rc != EAGAIN)
+        if (rc != EINTR && rc != EAGAIN)
         {
             printf (i18n (1849, "Error on select: %s (%d)\n"), strerror (rc), rc);
             exit (0);
