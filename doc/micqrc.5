@@ -5,14 +5,13 @@
 .B ~/.micq/micqrc
 \- The configuration file for micq
 .SH DESCRIPTION
-This manual page describes the configuration file for micq. It consists
+This manual page describes the configuration files for micq. It consists
 of several sections that are started by
 .IR [section] ,
 where
 .I section
 is the name of the section. File or directory names given are taken relative
 to the base directory, which is usually ~/.micq/.
-
 .SH CONNECTIONS
 A
 .B Connection
@@ -22,7 +21,7 @@ connection to listen to peer to peer communication. You may also have a
 remote control connection: that means a FIFO is opened, and lines read from
 it are interpreted in the same way as input lines.
 .TP
-.BI type \ type\ [auto]
+.BI type \ <type>\ [auto]
 Set the connection type to
 .IR type ,
 which can be
@@ -39,7 +38,7 @@ is given, create this connection on startup. You presumable want to do this,
 unless you have several UINs, then set this on the connection corresponding
 to this UIN you are using.
 .TP
-.BI version \ nr
+.BI version \ <nr>
 Set the version of the protocol used for this connection to
 .IR nr .
 Please note that for a server connections, versions
@@ -52,9 +51,9 @@ are supported, and for peer to peer connections
 .B 7
 and
 .BR 8 .
-Remote control FIFOs don't have a version.
+Remote control FIFOs don\'t have a version.
 .TP
-.BI server \ server
+.BI server \ <server>
 Set the server to connect to to
 .IR server .
 This defaults to
@@ -62,24 +61,24 @@ This defaults to
 Unused for peer to peer connections. For remote control fifos,
 this is the path of the FIFO to be created.
 .TP
-.BI port \ port
+.BI port \ <port>
 Set the port to connect on the server to
 .IR port ,
-or the port to listen on for peer to peer connections to
+or the first port to try to listen on for peer to peer connections to
 .IR port .
 .TP
-.BI uin \ UIN
+.BI uin \ <uin>
 Set the UIN to log in with to
-.IR UIN .
+.IR uin .
 Unused for peer to peer connections and remote control FIFOs.
 .TP
-.BI password \ [password]
+.BI password \ [<password>]
 Set the password to log in with to
 .IR password .
 Unused for peer to peer connections. If omitted, ask for password on startup.
 Note: BeOS users may not omit the password.
 .TP
-.BI status \ nr
+.BI status \ <nr>
 Set the status to be on log in in to
 .IR nr .
 Status can be:
@@ -111,13 +110,13 @@ invisible
 For peer to peer connections, this is used for the direct connection setting:
 .TP
 1
-We're firewalled and can't receive any connection. Don't even try.
+We\'re firewalled and can\'t receive any connection. Don\'t even try.
 .TP
 2
-We're firewalled, but use SOCKS and can receive connections.
+We\'re firewalled, but use SOCKS and can receive connections.
 .TP
 4
-We're not firewalled at all. This is the default.
+We\'re not firewalled at all. This is the default.
 .RE
 .RS
 Remote control FIFOs do not use this setting.
@@ -128,30 +127,30 @@ The
 section includes the options for SOCKS 5, that may be eventually
 moved to their own section, general options, and some strings to override.
 .TP
-.BI s5_use \ number
+.BI s5_use \ <number>
 Set
 .I number
 to 0 to disable and 1 to enable.
 .TP
-.BI s5_host \ host
+.BI s5_host \ <host>
 Connect to socks 5 proxy on host
 .IR host .
 .TP
-.BI s5_port \ port
+.BI s5_port \ <port>
 Connect to socks 5 proxy listening on port
 .IR port .
 .TP
-.BI s5_auth \ number
+.BI s5_auth \ <number>
 Set
 .I number
 to 0 to omit authentication and 1 to do authentication.
 .TP
-.BI s5_name \ name
+.BI s5_name \ <name>
 Identify as user
 .I name
 to socks 5 proxy.
 .TP
-.BI s5_pass \ password
+.BI s5_pass \ <password>
 Authenticate with password
 .I password
 to socks 5 proxy.
@@ -159,52 +158,59 @@ to socks 5 proxy.
 A few book-keeping options are usually placed at the beginning of
 the micqrc file:
 .TP
-.BI encoding\ file\  encoding
+.BI encoding\ file\  <encoding>
 Specify the encoding which is used for strings in this file as
 .IR encoding .
-mICQ will write this file in utf8 it utf8 is enabled, otherwise in the
-current local encoding. If utf8 is disabled, mICQ will refuse to load the
-file if the encoding given in this option does not agree with the current
-local one.
+mICQ will always write this file in UTF-8.
 .TP
-.BI encoding\ local\  encoding
-Specify the user's terminal's encoding as
+.BI encoding\ local\  <encoding>
+Specify the user\'s terminal\'s encoding as
 .IR encoding .
 This overrides the encoding derived from environment variables.
+.br
+.B Note:
+Using this will cause the locale to be flagged as broken, thus causing
+characters outside the iso-8859-1 range to be printed in input handling as
+hex unicode code points as their screen cell width cannot be determined with
+wcwidth() anymore. Thus, always use the LC_CTYPE locale setting to override
+the used character encoding.
 .TP
-.BI encoding\ remote\  encoding
+.BI encoding\ remote\  <encoding>
 Set the encoding to use for meta data on the server,
 including the password, to
 .IR encoding .
 This encoding is also used for communicating with other contacts
-whose client doesn't understand utf8 messages unless a specific
+whose client doesn\'t understand utf8 messages unless a specific
 encoding is set for this contact.
+Deprecated as of mICQ 0.5; use the
+.I encoding
+global option instead.
 .TP
-.BI format \ nr
+.BI format \ <nr>
 Set the format this config file is to
 .IR nr .
-Currently, only format 1 is known and accepted.
+Format 2 is current, but format 1 is also accepted.
 .PP
 Now the other options:
 .TP
-.BI verbose \ level
+.BI verbose \ <level>
 Set the verbosity level on startup to
 .IR level .
 .TP
-.BI auto_away \ time
+.BI auto_away \ <time>
 Set the time to set status to away after to
 .I time
 seconds. Set to
 .I 0
 to disable.
 .TP
-.BI Screen_width \ width
+.BI Screen_width \ <width>
 Set the default screen with to
 .IR width .
 If unset or
 .IR 0 , \ 80
 will be used. This is rarely needed as usually
-the current screen width can be deduced on runtime.
+the current screen width can be deduced at runtime.
 .TP
 .BI set \ delbs\ on|off
 If set to
@@ -223,12 +229,27 @@ Disable or enable the use of colors.
 If set to
 .BR on ,
 ignore all messages from everyone not on your contact list.
+Deprecated as of mICQ 0.5, set the global option
+.I ignore
+to
+.I on
+for the same effect.
 .TP
 .BI set \ log\ on|off
 Disable or enable logging.
+Deprecated as of mICQ 0.5, set the global option
+.I logmess
+to
+.I on
+for the same effect.
 .TP
 .BI set \ logonoff\ on|off
 When logging, disable or enable the logging of online/offline status changes.
+Deprecated as of mICQ 0.5, set the global options
+.IR logmess \ and \ logchange
+to
+.I on
+for the same effect.
 .TP
 .BI set \ auto\ on|off
 Disable or enable automatic responses (reply messages).
@@ -242,7 +263,7 @@ Disable or enable the automatic saving of the micqrc.
 .BI set \ autofinger\ on|off
 Disable or enable the automatic fingering of new UINs.
 .TP
-.BI set \ linebreak\ type
+.BI set \ linebreak\ <type>
 Configure the line break type for incoming messages to
 .IR type ,
 which can be
@@ -253,48 +274,50 @@ to have a line break before each message,
 .B indent
 to have a line break and indent the message and
 .B smart
-to have a line break only if the message doesn't fit on the current line.
+to have a line break only if the message doesn\'t fit on the current line.
 .TP
 .BI set \ tabs\ simple|cycle|cycleall
-Selects the style of tab cycling. Older versions of mICQ only knew
-.BR simple ,
-which would only work with the
-.B msg
-command and would complete the command and cycle through all contacts that
-messages had been sent to or received from. Already typed text after the
-nick name was lost.
-.B cycle
-however cycles through all online contacts on your contact list. It keeps all
-other input text intact, however it also doesn't add the default
-.B msg
-command.
-.B cycleall
-is like
-.BR cycle ,
-it just cycles through all, and not only online, contacts.
+Deprecated as of mICQ 0.5, as it uses a much improved tab handling now
+which has all of the previous features.
 .TP
-.BI set \ silent\ type
+.BI set \ silent\ <type>
 Suppress some output, namely status changes for
 .B on
 and status changes, logins and logouts for
 .BR complete .
+Deprecated as of mICQ 0.5, use global options
+.IR showchange \ and \ showonoff
+to
+.I on
+for the same effect.
 .TP
-.BI chat \ nr
+.BI options \ <options>
+Set global options. See the
+.I opt
+command for details.
+.TP
+.BI chat \ <nr>
 Set the random chat group to
 .IR nr .
 Use
-.B -1
+.B \-1
 to disable, and
 .B 49
 for mICQ (which is the default).
+.TP
+.B autoupdate \ <level>
+Current level of automatic configuration updates done. Will be
+incremented to a bigger value each time configuration is updated
+to new default values. Do not make the mistake to set to 0 to
+disable as that will have the effect of all updates being re-done.
 .PP
 At last, some strings can be defined:
 .TP
-.BI color\ scheme \ nr
+.BI color\ scheme \ <nr>
 Select the color scheme number
 .IR nr .
 .TP
-.BI color \ use\ color
+.BI color \ <use>\ <color>
 Select color
 .IR color
 for
@@ -329,10 +352,10 @@ or
 or a combination of those
 .RB ( bold ,
 however, must be last to take effect),
-or any verbatim string to make the user's terminal
+or any verbatim string to make the user\'s terminal
 select the desired color.
 .TP
-.BI logplace \ file|dir
+.BI logplace \ <file>|<dir>
 Set the file to log into to
 .IR file ,
 or the directory to log into to
@@ -352,7 +375,7 @@ while
 .B event
 will call the script for events.
 .TP
-.BI event \ script
+.BI event \ <script>
 Set the script to execute for events to
 .IR script .
 It is called with the following arguments:
@@ -375,7 +398,7 @@ It is called with the following arguments:
 or
 .BR status ,
 where
-.BR on and off
+.BR on \ and \ off
 are for oncoming and offgoing contacts. This list may not be exhaustive.
 .br
 6. For messages, the message type, for offgoing contacts, the previous status,
@@ -383,10 +406,12 @@ and for oncoming contacts or status changes, the new status, otherwise 0.
 .br
 7. The text of the message.
 .br
+8. The contact\'s user agent.
+.br
 Note that for security reasons, single quotes may be replaced by double
 quotes, and the message text may be truncated.
 .TP
-.BI auto \ status\ string
+.BI auto \ <status>\ <string>
 Set the automatic reply in status
 .I status
 to
@@ -418,7 +443,9 @@ For possible command names, see
 .BR micq (7).
 This option may be repeated as desired.
 .br
-Note: this option is obsolete.
+Note: this option is obsolete, use
+.I alias
+instead.
 .TP
 .BI alias \ <alias>\ <expansion>
 Define an alias named
@@ -433,10 +460,12 @@ New for 0.4.10.
 .SH GROUP
 The
 .B Group
-section contacts a contact group and may be repeated as required.
+section contacts a contact group and may be repeated as required. Note
+that for format 2, it is saved in the BASE/status file, not in
+BASE/micqrc.
 It may have the following commands:
 .TP
-.BI server \ <type> <uin>
+.BI server \ <type>\ <uin>
 Set the server connection this contact group belongs to to the one of type
 .IR type ,
 which currently can be 
@@ -452,25 +481,38 @@ If this command is omitted, the first active server connection is assumed.
 Set the label of this contact group to
 .IR label .
 If it is
-.BI contacts- type - uin,
-then it is the contact list for this server connection.
+.BI contacts- <type> - <uin>,
+then it is the contact list for this server connection. Note that for format 2
+of the BASE/status file, this is obsolete, as the contacts distributed to
+the server connections according to the server statement in their Contacts
+section.
 .TP
 .BI id \ <id>
 Set the id of this contact group to
 .IR id .
 .B 0
-means no id defined. This will be set when downloading a contact list.
+means no id defined. This will be set when downloading or uploading a contact list.
+.TP
+.BI options \ <options>...
+Define options for this contact group. See the
+.I opt
+command for details.
 .TP
 .BI entry \ <id>\ <uin>
 Add contact with UIN
 .I uin
 as id
 .I id
-to this contact group.
-.SH CONTACTS
+to this contact group. Note that
+.I id 
+is obsolete as of mICQ 0.5 and always set to 0. The id is set
+in the
+.I Contacts
+section instead.
+.SH CONTACTS (obsolete format)
 The
 .B Contacts
-section contains the (global) contact list. It may become obsolete.
+section contains the (global) contact list. It is obsolete in this format.
 .TP
 .I [*][~][^] uin nick
 Make user with UIN
@@ -479,12 +521,38 @@ known under the nick
 .IR nick .
 If
 .B *
-is given, the user may see you while you're invisible. If
+is given, the user may see you while you\'re invisible. If
 .B ~
 is given, let him see you as always offline. If
 .B ^
 is given, ignore this user.
 If a uin occurs multiple times, all except the first are treated as aliases.
+.SH CONTACTS
+The
+.B Contacts
+section contains a contact list for one server connection. It is
+repeated for each server connection.
+Note that it is saved in the BASE/status file, not in BASE/micqrc.
+It may have the following commands:
+.TP
+.BI server \ <type>\ <uin>
+Defines the server connection this is the contact list for, with the
+same syntax as in the
+.I Group
+section.
+.TP
+.BI entry \ <id>\ <uin>\ <nick>...
+Adds user with the UIN
+.I uin
+and id
+.I id
+to this contact list, with nick and arbitrary many aliases
+.IR nick .
+.TP
+.BI options \ <options>...
+Define options for the previous contact. See the
+.I opt
+command for details.
 .SH SEE ALSO
 .BR micq (1),
 .BR micq (7)
