@@ -31,6 +31,7 @@
 #include "cmd_user.h"
 #include "util_str.h"
 #include "color.h"
+#include <signal.h>
 #if HAVE_TCL8_4_TCL_H
 #include <tcl8.4/tcl.h>
 #elif HAVE_TCL8_3_TCL_H
@@ -333,8 +334,17 @@ void TCLInit ()
     tcl_pref_p pref;
     int i, result;
     Connection *conn;
+#if HAVE_SIGPROCMASK
+    sigset_t sigs;
 
+    sigemptyset (&sigs);
+    sigaddset (&sigs, SIGINT);
+    sigprocmask (SIG_BLOCK, &sigs, NULL);
+#endif
     tinterp = Tcl_CreateInterp ();   
+#if HAVE_SIGPROCMASK
+    sigprocmask (SIG_UNBLOCK, &sigs, NULL);
+#endif
 
     Tcl_CreateCommand (tinterp, "micq", TCL_command_micq, 
         (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);

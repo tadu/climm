@@ -335,7 +335,7 @@ AC_FUNC_SNPRINTF
 AC_FUNC_MEMMOVE
 AC_CHECK_FUNCS([atexit memset memcmp mkdir strcasecmp uname fcntl \
                 strchr memchr strdup strncasecmp strpbrk strrchr strstr strtol strtok_r \
-                symlink chmod tcgetattr gettimeofday setlocale select])
+                symlink chmod tcgetattr gettimeofday setlocale select sigprocmask])
 
 for f in memset mkdir atexit \
          strcasecmp strchr memchr strdup strncasecmp strpbrk strrchr strstr strtol; do
