@@ -3,7 +3,14 @@ Makefile.in
 aclocal.m4
 config.log
 config.status
+config.guess
+config.sub
 configure
 autom4te.cache
+depcomp
+install-sh
+missing
+mkinstalldirs
 configure-stamp
 build-stamp
+pack-*
