@@ -37,6 +37,12 @@ AC_ARG_ENABLE([iconv], AC_HELP_STRING([--enable-iconv], [use libiconv for charac
               ac_arg_use_iconv=$enableval, ac_arg_use_iconv=auto)
 AC_ARG_ENABLE([iconv], AC_HELP_STRING([--disable-iconv], [do not use iconv() at all]),
               ac_arg_use_iconv=$enableval)
+AC_ARG_ENABLE([remote], AC_HELP_STRING([--disable-remote], [disable remote control FIFO]),
+              ac_arg_use_remote=$enableval, ac_arg_use_remote=auto)
+
+if test "x$ac_arg_use_utf8" = "xno"; then
+  ac_arg_use_iconv=no
+fi
 
 if test "x$ac_arg_use_iconv" != "xno"; then
   if test "x$ac_arg_use_iconv" = "xauto"; then
@@ -75,16 +81,49 @@ else
   ac_arg_use_iconv=none
 fi
 
-AC_MSG_CHECKING([whether to enable peer to peer connections])
-AC_MSG_RESULT([$ac_arg_use_peer2peer])
+if test "x$ac_arg_use_remote" != "xno"; then
+  AC_CACHE_CHECK(for FIFO functionality, ac_cv_fifo_stuff,
+    [AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
+          #include <sys/types.h>
+          #include <stdio.h>
+          
+          #include <sys/stat.h>
+          #include <fcntl.h>]],
+        [[int res, sok, so2;
+          char buf[10];
+          unlink ("./conftest.fifo");
+          res = mkfifo ("./conftest.fifo", 0600);   if (res < 0) exit (1);
+          sok = open ("./conftest.fifo", O_RDWR);   if (sok < 0) exit (2);
+          so2 = open ("./conftest.fifo", O_RDONLY); if (so2 < 0) exit (3);
+          res = write (sok, "bla", 3);              if (res < 3) exit (4);
+          buf[0] = buf[3] = buf[5] = 0;
+          res = read (so2, buf, 3);                 if (res < 3) exit (5);
+          if (strcmp (buf, "bla"))                               exit (6);
+          close (sok);
+          close (so2);
+          unlink ("./conftest.fifo");
+          exit (0);]])],
+      [ac_cv_fifo_stuff=yes],
+      [ac_cv_fifo_stuff=no],
+      [ac_cv_fifo_stuff=cross])
+  ])
+  if test $ac_cv_fifo_stuff != yes; then
+    ac_arg_use_remote=none
+  else
+    ac_arg_use_remote=yes
+  fi
+else
+  ac_arg_use_remote=none
+fi
+
 AC_MSG_CHECKING([whether to enable usage of utf-8 internally])
 AC_MSG_RESULT([$ac_arg_use_utf8])
 AC_MSG_CHECKING([whether to enable iconv and which iconv to use])
 AC_MSG_RESULT([$ac_arg_use_iconv])
-
-if test "x$ac_arg_use_peer2peer" = "xyes"; then
-  AC_DEFINE(ENABLE_PEER2PEER, 1, [Whether to enable peer to peer connections])
-fi
+AC_MSG_CHECKING([whether to enable peer to peer connections])
+AC_MSG_RESULT([$ac_arg_use_peer2peer])
+AC_MSG_CHECKING([whether to enable remote control FIFO])
+AC_MSG_RESULT([$ac_arg_use_remote])
 
 if test "x$ac_arg_use_utf8" = "xyes"; then
   AC_DEFINE(ENABLE_UTF8, 1, [Whether to use UTF-8 internally])
@@ -92,6 +131,14 @@ fi
 
 if test "x$ac_arg_use_iconv" != "xnone"; then
   AC_DEFINE_UNQUOTED(ENABLE_ICONV, "$ac_arg_use_iconv", [Whether to use iconv functions])
+fi
+
+if test "x$ac_arg_use_peer2peer" = "xyes"; then
+  AC_DEFINE(ENABLE_PEER2PEER, 1, [Whether to enable peer to peer connections])
+fi
+
+if test "x$ac_arg_use_remote" = "xyes"; then
+  AC_DEFINE(ENABLE_REMOTECONTROL, 1, [Whether to enable remote control FIFO])
 fi
 
 # Checks for libraries.

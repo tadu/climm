@@ -212,6 +212,7 @@ void Initalize_RC_File ()
     connt->status = prG->s5Use ? 2 : TCP_OK_FLAG;
 #endif
 
+#ifdef ENABLE_REMOTECONTROL
     conns = ConnectionC ();
     conns->open = &RemoteOpen;
     conns->spref = PreferencesConnectionC ();
@@ -223,6 +224,7 @@ void Initalize_RC_File ()
     conns->type  = conns->spref->type;
     conns->flags = conns->spref->flags;
     conns->server = strdup (conns->spref->server);
+#endif
 
     prG->status = STATUS_ONLINE;
     prG->tabs = TABS_SIMPLE;
@@ -266,7 +268,10 @@ void Read_RC_File (FILE *rcf)
     char *tmp = NULL, *cmd = NULL;
     char *p, *args;
     Contact *cont = NULL, *lastcont = NULL;
-    Connection *oldconn = NULL, *conn = NULL, *conns = NULL;
+    Connection *oldconn = NULL, *conn = NULL;
+#ifdef ENABLE_REMOTECONTROL
+    Connection *conns = NULL;
+#endif
     ContactGroup *cg = NULL;
     int section, dep = 0;
     UDWORD uin, i;
@@ -1017,10 +1022,12 @@ void Read_RC_File (FILE *rcf)
                 conn->open = &ConnectionInitPeer;
                 break;
 #endif
+#ifdef ENABLE_REMOTECONTROL
             case TYPE_REMOTE:
                 conn->open = &RemoteOpen;
                 conns = conn;
                 break;
+#endif
             default:
                 conn->open = NULL;
                 break;
@@ -1035,6 +1042,7 @@ void Read_RC_File (FILE *rcf)
         }
     }
 
+#ifdef ENABLE_REMOTECONTROL
     if (!conns)
     {
         conns = ConnectionC ();
@@ -1047,7 +1055,8 @@ void Read_RC_File (FILE *rcf)
         conns->server = strdup (conns->spref->server);
         dep = 1;
     }
-                            
+#endif
+                           
     if (dep || !format)
         M_print (i18n (1818, "Warning: Deprecated syntax found in rc file!\n    Please update or \"save\" the rc file and check for changes.\n"));
     fclose (rcf);

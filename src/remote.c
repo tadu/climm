@@ -20,6 +20,8 @@
 #include "packet.h"
 #include "preferences.h"
 
+#ifdef ENABLE_REMOTECONTROL
+
 static void RemoteDispatch (Connection *remo);
 static void RemoteClose (Connection *remo);
 
@@ -71,3 +73,4 @@ static void RemoteClose (Connection *remo)
     unlink (remo->server);
 }
 
+#endif
