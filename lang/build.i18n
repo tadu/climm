@@ -410,12 +410,12 @@
 1429:Searches for a ICQ user.
 1430:Displays general info on uin.
 1431:Change status to Online.
-1432:Mark as Away.
-1433:Mark as Not Available.
-1434:Mark as Occupied.
-1435:Mark as Do not Disturb.
-1436:Mark as Free for Chat.
-1437:Mark as Invisible.
+1432:Mark as "away".
+1433:Mark as "not available".
+1434:Mark as "occupied".
+1435:Mark as "do not disturb".
+1436:Mark as "free for chat".
+1437:Mark as "invisible".
 1438:Updates your basic info (email, nickname, etc.).
 1439:Sets your random user group.
 1440:Random User:
@@ -547,7 +547,7 @@
 1585:Ack!!!!!!!  Bad packet¶
 1586:©4¶%s©0 has added you to their contact list.¶
 1587:Enter department: 
-1590:©4%10s ©0 has requested your authorization to be added to their contact list.¶
+1590:©4%10s©0 has requested your authorization to be added to their contact list.¶
 1591:Reason:
 1592:<%s> emailed you a message:¶
 1593:<%s> send you a web message:¶
@@ -658,11 +658,11 @@
 1721:Sending a blank message will put the client into multiline mode.¶Use . on a line by itself to end message.¶Use # on a line by itself to cancel the message.
 1722:Type help to see your current command, because this one you typed wasn't one!
 1724:Automatic replies are %s.¶
-1727:The do not disturb message is:
-1728:The away message is:
-1729:The not available message is:
-1730:The occupied message is:
-1731:The invisible message is:
+1727:The "do not disturb" message is:
+1728:The "away" message is:
+1729:The "not available" message is:
+1730:The "occupied" message is:
+1731:The "invisible" message is:
 1734:Sorry wrong syntax, can't find a status somewhere.\r¶
 1735:Must give a message.¶
 1736:Sorry wrong syntax. Read tha help man!¶
@@ -850,7 +850,7 @@
 1954:unable to listen on socket
 1955:Connection failed
 1958:[SOCKS] Connection request refused (%d)
-1960:Enter data to search user for. Enter \'.\' to start the search.¶
+1960:Enter data to search user for. Enter '.' to start the search.¶
 1961:URL: %s¶
 1966: Conection Refused on port %d at %s¶
 1967:More Info for
@@ -937,7 +937,7 @@
 2051:Error on socket: %s (%d)¶
 2052:Accepting file '%s' (%d bytes) from %s.¶
 2053:TCP %s seq %x type %x status %x flags %x: '%s'¶
-2054:The free for chat message is:
+2054:The "free for chat" message is:
 2055:User is ffc and wants to chat about everything.
 2056:    auto  <nick> - Get the auto-response from the contact.¶
 2057:    away  <nick> - Get the auto-response for away from the contact.¶

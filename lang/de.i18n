@@ -2,7 +2,7 @@
 #  EN:
 1001:de
 1002:de_DE
-1003:489
+1003:0-4-9-2
 1004:Rico -mc- Glöckner, Rüdiger Kuhlmann
 1005:Rüdiger Kuhlmann
 1006:27. Juni 2002
@@ -390,7 +390,7 @@
 1385:Vietnam
 #1386:Wallis and Futuna Islands
 1387:West-Samoa
-#1388:Yemen
+1388:Jemen
 1389:Jugoslavien
 1390:Zaire
 1391:Sambia
@@ -455,7 +455,6 @@
 1448:Nachricht
 1449:User
 1450:Account
-##
 1451:IP-Adresse 2:
 1452:Status:
 1453:TCP-Version:
@@ -619,14 +618,12 @@
 #1618:UIN:
 #1619:Warning:
 #1620:maximal number of contacts reached. Ask a wizard to enlarge me!
-#1621:users not returned.
+1621:Suchergebnisse nicht zurückgegeben.
 1622:Möchten Sie die Änderungen anwenden? (JA/NEIN)
 1623:Doppeltes Paket %04X.¶
 #1624:Sorry, can't initialize Windows Sockets...
-#1626:enqueuing type %d seq %08x at %p (pak %p)
 1628: Beschreibung: ©3%s©0¶
 1629: URL:          ©3%s©0 
-#1630:dequeue type %d seq %08x at %p (pak %p)
 1632:¶Verbindung instabil. Beende...
 #1634:ok¶
 #1637:Can't bind socket to free port¶
@@ -737,7 +734,7 @@
 1752:Kein Spitzname angegeben.¶
 1753:Sie müssen eine Benutzernummer und einen neuen Spitznamen angeben.¶
 1754: Hinweis: Sie müssen diese Änderung mit "save" abspeichern.¶
-#1755:added you to their contact list.¶
+1755:hat Sie zu seiner Kontaktliste hinzugefügt.¶
 1756:¶Erstelle Verbindung...¶
 1757:Konnte keine Verbindung herstellen.¶
 1758:Sende Anfrage...¶
@@ -790,7 +787,6 @@
 1806:Nachricht %04x von %s bestätigt.¶
 1807:Eingehende Nachricht %04x von %s abgebrochen.¶
 #1808:College
-#1809:Unable to retrieve auto-response message for %s.
 1810:Universität
 #1812:Past Work Place
 #1813:Past Organization
@@ -810,11 +806,7 @@
 #1830:Discarding message to %s after %d send attempts.  Message content:¶
 1831:[SOCKS] Autorisationsmethode ungültig.
 1833:Direkte Verbindung aufgebaut.¶
-#1835:Error while writing to socket - %s (%d)¶
-#1836:Sending TCP direct connection initialization packet.¶
-#1837:Acknowledging TCP direct connection initialization packet.¶
-#1838:Received direct connection initialization.¶
-#1839:Version %04x:%04x, Port %d, UIN %d, session %08x¶
+1835:Fehler beim Schreiben in den Kommunikationsendpunkt: %s (%d)¶
 #1841:Received malformed initialization acknowledgement packet.¶
 1842:Schließe Verbindung (Verbindungsendpunkt Nr. %d) zu %s.¶
 1843:Schließe Verbindungsendpunkt Nr. %d.¶
@@ -828,10 +820,7 @@
 1855:Direkt-Verbindung zu %s bei %s:%d ist fehlgeschlagen.¶
 #1856:Discarded a %04x (%s) packet from old session %08x (current: %08x).¶
 1857:Möchten Sie Ihre IP-Adresse vor anderen Benutzern verbergen? (Ja/Nein)
-#1858:sending packet
-#1863:creating new packet
 #1864:Can't open rcfile %s.
-#1865:cloning existing packet
 1866:Diese Version von mICQ ist ohne Unterstützung von Direkt-Verbindungen übersetzt worden.¶
 #1867:Got a malformed (too short) packet - ignored.¶
 #1868:Got a malformed (to long subpacket) multi-packet - remainder ignored.¶
@@ -844,7 +833,7 @@
 #1875:Personal interests:
 #1876:Personal past background:
 #1877:ok.¶
-#1878:Error while reading from socket: %s (%d)¶
+1878:Fehler beim Lesen vom Kommunikationsendpunkt: %s (%d)¶
 #1879:Affiliations:
 #1880:Incoming packet is not a FLAP: id is %d.¶
 #1881:FLAP channel 1 out of data.¶
@@ -852,7 +841,7 @@
 #1883:FLAP channel 1 unknown command %d.¶
 #1884:FLAP with unknown channel %d received.¶
 1885:Zeitüberschreitung bei v8-Server-Verbindung.¶
-#1887:Connections:
+1887:Verbindungen:
 #1888:Not webaware
 1889:Server
 1890:Direktverbindung
@@ -868,20 +857,20 @@
 #1900:It's readonly.
 1901:hat Dich authorisiert, ihn zu Deiner Kontaktliste hinzuzufügen.
 1902:Öffne Verbindung zu v5-Server bei %s:%d... 
-#1903:Outgoing v8 server packet:
+1903:Ausgehendes v8-Server-Paket:
 #1904:Server doesn't understand ver %d (only %d) for family %d!¶
 #1905:SNAC (%x,%x) [%s] flags %x ref %x¶
 #1907:Warning: Server thinks our UIN is %d, while it is %d.¶
-#1908:Received USERONLINE packet for non-contact.¶
-#1909:Received USEROFFLINE packet for non-contact.¶
+1908:Eingehendes USERONLINE-Paket für nicht-Kontakt.¶
+1909:Eingehendes USEROFFLINE-Paket für nicht-Kontakt.¶
 #1910:FLAP seq %08x length %04x channel %d©0¶
 1911:verbinde
 1912:geschlossen
 #1913:Received server acknowledge for %s#%08lx:%08lx%s sent to %s%s%s.¶
 #1914:Can't allocate connection structure.¶
-#1915:Server says we're at %s.¶
+1915:Der Server hat %s als IP-Adresse ermittelt.¶
 #1916:Need a nick or uin.¶
-#1917:%-12s version %d for %s (%x), at %s:%d %s¶
+1917:%-20s Version %d für %s (%x), bei %s:%d %s¶
 #1918:Ignored server request for a minimum report interval of %d.¶
 #1919:UIN mismatch: %d vs %d.¶
 1920:Beantragung einer neuen Benutzernummer abgelehnt.¶
@@ -895,26 +884,25 @@
 1928:Abgeklemmt
 1929:[Automatische Nachricht] Bitte nicht stören (Do Not Disturb)
 #1930:Can't send this (%x) yet.¶
-#1931:Couldn't find server connection.¶
+1931:Keine Verbindung zum Server.¶
 #1932:Need uin to ask for.¶
 1933:%s ist weder ein Spitzname oder eine Benutzernummer.¶
 1934:verbunden
 #1935:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x¶
-#1936:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
-#1937:Enter max age (22,29,39,49,59,120):
-#1938:Enter sex:
-#1939:Enter a city:
+1936:Bitte Mindestalter eingeben (18-22,23-29,30-39,40-49,50-59,60-120):
+1937:Bitte Maximalalter eingeben (22,29,39,49,59,120):
+1938:Bitte Geschlecht eingeben:
+1939:Bitte Stadt eingeben:
 #1940:Unknown Meta User result %x.¶
 #1941:Publish Email:
-#1942:Additional Email addresses:
+1942:Weitere eMail-Adressen:
 #1943:(no authorization needed)
 #1944:(must request authorization)
 #1945:Unknown Meta User response
-#1946:freeing packet
-#1947:listener
+1947:Verbindungsannahme
 1948:Kann den Rechnernamen %s nicht auflösen: %s.
 1949:fehlgeschlagen:¶
-#1950:Couldn't set socket nonblocking
+1950:Kann Verbindungsendpunkt nicht nicht-blockierend machen
 1951:Kann den Rechnernamen %s nicht auflösen
 1952:Kann Verbindung nicht aufbauen
 1953:Kann nicht mit einem freien Port verknüpfen
@@ -923,11 +911,8 @@
 1956:[SOCKS] Allgemeiner SOCKS-Server-Fehler
 1957:[SOCKS] Authorisierung fehlgeschlagen
 1958:[SOCKS] Verbindung verweigert (%d)
-#1960:Enter data to search user for. Enter '.' to start the search.¶
-#1961:URL: %s¶
-#1963:popping type %d seq %08x at %p (pak %p)
-#1964:couldn't dequeue type %d seq %08x
-#1965:Auto-response message for %s:¶
+1960:Bitte Suchdaten eingeben. Zum Starten "." eingeben.¶
+1961:URL: %s¶
 #1966: Conection Refused on port %d at %s¶
 #1967:More Info for
 #1968:User found
@@ -973,12 +958,11 @@
 #2008:Random chat group change was ©2%s©0.¶
 #2009:Found random chat partner UIN %d in chat group %d.¶
 #2010:None                       0¶
-#2011:You do not have a listening peer-to-peer connection.¶
-#2012:No password given.¶
+2011:Keine Verbindungsannahme-Verbindung gefunden.¶
+2012:Kein Paßwort angegeben.¶
 #2013:This command is v8 only.¶
-#2014:No number given.¶
-#2015:No message given.¶
-#2016:The server says about the SMS delivery:¶%s
+2014:Keine Zahl angegeben.¶
+2015:Keine Nachricht angegeben.¶
 2017:Der Benutzer ist in Wirklichkeit verbunden.¶
 2018:    quiet: keine Ausgabe für Statuswechsel.¶
 2019:Verringerte Ausgabe ist ©3%s©0.¶
@@ -987,9 +971,7 @@
 2022:Der Benutzer ist in Wirklichkeit nicht verbunden.¶
 2023:Direkte Verbindung von Verbindungspartner geschlossen.¶
 #2024:Unknown protocol version %d for ICQ peer-to-peer protocol.¶
-#2025:Sending v8 TCP direct connection initialization packet.¶
 #2026:TCP cookie:
-#2027:Sending third TCP direct connection packet.¶
 #2028:Wrong argument count.¶
 2029:Protokoll-Fehler einer Direktverbindung
 #2030:%04d-%02d-%02d %02d:%02d UTC
