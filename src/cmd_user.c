@@ -1915,7 +1915,15 @@ static JUMP_F(CmdUserStatusDetail)
 
         if (cont->dc)
         {
-            M_printf ("%-15s %s/%s:%ld\n", i18n (1441, "remote IP:"),
+            M_printf ("    %-15s %s / %s:%ld\n    %s %d    %s (%d)    %s %08lx\n",
+                  i18n (1642, "IP:"), t1 = strdup (s_ip (cont->dc->ip_rem)),
+                  t2 = strdup (s_ip (cont->dc->ip_loc)), cont->dc->port,
+                  i18n (1453, "TCP version:"), cont->dc->version,
+                  cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer")
+                    : i18n (1494, "Server Only"), cont->dc->type,
+                  i18n (2026, "TCP cookie:"), cont->dc->cookie);
+#if 0
+            M_printf ("%-15s %s/%s:%ld\n", i18n (1642, "IP:"),
                       t1 = strdup (s_ip (cont->dc->ip_rem)),
                       t2 = strdup (s_ip (cont->dc->ip_loc)), cont->dc->port);
             M_printf ("%-15s %d\n", i18n (1453, "TCP version:"), cont->dc->version);
@@ -1923,6 +1931,7 @@ static JUMP_F(CmdUserStatusDetail)
                       cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),
                       cont->dc->type);
             M_printf ("%-15s %08lx\n", i18n (2026, "TCP cookie:"), cont->dc->cookie);
+#endif
             free (t1);
             free (t2);
         }
@@ -1933,7 +1942,7 @@ static JUMP_F(CmdUserStatusDetail)
                 if (i++)
                     M_print (", ");
                 else
-                    M_print (i18n (2192, "Capabilities: "));
+                    M_printf ("    %s", i18n (2192, "Capabilities: "));
                 M_print (cap->name);
                 if (cap->name[4] == 'U' && cap->name[5] == 'N')
                 {
