@@ -7,16 +7,12 @@
 #define CANCEL_MSG_STR "#"
 #define W_SEPARATOR COLQUOTE, "============================================", COLNONE, "\n"
 
-#define CU_DEFAULT 1
-#define CU_USER    2
-
 typedef int (jump_f)(const char *args, UDWORD data, UDWORD status);
 #define JUMP_F(f) int f (const char *args, UDWORD data, UDWORD status)
 
 struct jumpstr {
     jump_f *f;
     const char *defname;
-    char *name;
     int unidle;
     int data;
 };
@@ -33,8 +29,7 @@ typedef struct aliasstr alias_t;
 	
 
 jump_t *CmdUserTable (void);
-jump_t *CmdUserLookup (const char *command, int flags);
-const char *CmdUserLookupName (const char *command);
+jump_t *CmdUserLookup (const char *command);
 
 alias_t *CmdUserAliases (void);
 

@@ -57,99 +57,99 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
 /* 1 = do not apply idle stuff next time           v
    2 = count this line as being idle               v */
 static jump_t jump[] = {
-    { &CmdUserRandom,        "rand",         NULL, 0,   0 },
-    { &CmdUserRandomSet,     "setr",         NULL, 0,   0 },
-    { &CmdUserHelp,          "help",         NULL, 0,   0 },
-    { &CmdUserInfo,          "f",            NULL, 0,   0 },
-    { &CmdUserInfo,          "finger",       NULL, 0,   0 },
-    { &CmdUserInfo,          "info",         NULL, 0,   0 },
-    { &CmdUserInfo,          "rinfo",        NULL, 0,   1 },
-    { &CmdUserTrans,         "lang",         NULL, 0,   0 },
-    { &CmdUserTrans,         "trans",        NULL, 0,   0 },
-    { &CmdUserAuto,          "auto",         NULL, 0,   0 },
-    { &CmdUserAlias,         "alias",        NULL, 0,   0 },
-    { &CmdUserUnalias,       "unalias",      NULL, 0,   0 },
-    { &CmdUserAnyMess,       "message",      NULL, 0,   0 },
-    { &CmdUserMessage,       "msg",          NULL, 0,   1 },
-    { &CmdUserMessage,       "r",            NULL, 0,   2 },
-    { &CmdUserMessage,       "a",            NULL, 0,   4 },
-    { &CmdUserGetAuto,       "getauto",      NULL, 0,   0 },
-    { &CmdUserResend,        "resend",       NULL, 0,   0 },
-    { &CmdUserVerbose,       "verbose",      NULL, 0,   0 },
-    { &CmdUserIgnoreStatus,  "i",            NULL, 0,   0 },
-    { &CmdUserStatusDetail,  "status",       NULL, 2,  10 },
-    { &CmdUserStatusDetail,  "ww",           NULL, 2,   2 },
-    { &CmdUserStatusDetail,  "ee",           NULL, 2,   3 },
-    { &CmdUserStatusDetail,  "w",            NULL, 2,   4 },
-    { &CmdUserStatusDetail,  "e",            NULL, 2,   5 },
-    { &CmdUserStatusDetail,  "wwg",          NULL, 2,  34 },
-    { &CmdUserStatusDetail,  "eeg",          NULL, 2,  35 },
-    { &CmdUserStatusDetail,  "wg",           NULL, 2,  36 },
-    { &CmdUserStatusDetail,  "eg",           NULL, 2,  37 },
-    { &CmdUserStatusDetail,  "s",            NULL, 2,  30 },
-    { &CmdUserStatusDetail,  "s-any",        NULL, 2,   0 },
-    { &CmdUserStatusMeta,    "ss",           NULL, 2,   1 },
-    { &CmdUserStatusMeta,    "meta",         NULL, 2,   0 },
-    { &CmdUserStatusWide,    "wide",         NULL, 2,   1 },
-    { &CmdUserStatusWide,    "ewide",        NULL, 2,   0 },
-    { &CmdUserSet,           "set",          NULL, 0,   0 },
-    { &CmdUserOpt,           "opt",          NULL, 0,   0 },
-    { &CmdUserOpt,           "optglobal",    NULL, 0, COF_GLOBAL  },
-    { &CmdUserOpt,           "optgroup",     NULL, 0, COF_GROUP   },
-    { &CmdUserOpt,           "optcontact",   NULL, 0, COF_CONTACT },
-    { &CmdUserSound,         "sound",        NULL, 2,   0 },
-    { &CmdUserSoundOnline,   "soundonline",  NULL, 2,   0 },
-    { &CmdUserSoundOffline,  "soundoffline", NULL, 2,   0 },
-    { &CmdUserAutoaway,      "autoaway",     NULL, 2,   0 },
-    { &CmdUserChange,        "change",       NULL, 1,  -1 },
-    { &CmdUserChange,        "online",       NULL, 1, STATUS_ONLINE },
-    { &CmdUserChange,        "away",         NULL, 1, STATUS_AWAY },
-    { &CmdUserChange,        "na",           NULL, 1, STATUS_NA   },
-    { &CmdUserChange,        "occ",          NULL, 1, STATUS_OCC  },
-    { &CmdUserChange,        "dnd",          NULL, 1, STATUS_DND  },
-    { &CmdUserChange,        "ffc",          NULL, 1, STATUS_FFC  },
-    { &CmdUserChange,        "inv",          NULL, 1, STATUS_INV  },
-    { &CmdUserClear,         "clear",        NULL, 2,   0 },
-    { &CmdUserTogIgnore,     "togig",        NULL, 0,   0 },
-    { &CmdUserTogVisible,    "togvis",       NULL, 0,   0 },
-    { &CmdUserTogInvis,      "toginv",       NULL, 0,   0 },
-    { &CmdUserAdd,           "add",          NULL, 0,   0 },
-    { &CmdUserAdd,           "addalias",     NULL, 0,   1 },
-    { &CmdUserAdd,           "addgroup",     NULL, 0,   2 },
-    { &CmdUserRemove,        "rem",          NULL, 0,   0 },
-    { &CmdUserRemove,        "remalias",     NULL, 0,   1 },
-    { &CmdUserRemove,        "remgroup",     NULL, 0,   2 },
-    { &CmdUserRegister,      "reg",          NULL, 0,   0 },
-    { &CmdUserAuth,          "auth",         NULL, 0,   0 },
-    { &CmdUserURL,           "url",          NULL, 0,   0 },
-    { &CmdUserSave,          "save",         NULL, 0,   0 },
-    { &CmdUserTabs,          "tabs",         NULL, 0,   0 },
-    { &CmdUserLast,          "last",         NULL, 0,   0 },
-    { &CmdUserUptime,        "uptime",       NULL, 0,   0 },
-    { &CmdUserPeer,          "peer",         NULL, 0,   0 },
-    { &CmdUserPeer,          "tcp",          NULL, 0,   0 },
-    { &CmdUserPeer,          "file",         NULL, 0,   4 },
-    { &CmdUserQuit,          "q",            NULL, 0,   0 },
-    { &CmdUserQuit,          "quit",         NULL, 0,   0 },
-    { &CmdUserQuit,          "exit",         NULL, 0,   0 },
-    { &CmdUserPass,          "pass",         NULL, 0,   0 },
-    { &CmdUserSMS,           "sms",          NULL, 0,   0 },
-    { &CmdUserPeek,          "peek",         NULL, 0,   0 },
-    { &CmdUserAsSession,     "as",           NULL, 0,   0 },
-    { &CmdUserContact,       "contact",      NULL, 0,   0 },
-    { &CmdUserContact,       "contactshow",  NULL, 0,   1 },
-    { &CmdUserContact,       "contactdiff",  NULL, 0,   2 },
-    { &CmdUserContact,       "contactadd",   NULL, 0,   3 },
-    { &CmdUserContact,       "contactdl",    NULL, 0,   1 },
+    { &CmdUserRandom,        "rand",         0,   0 },
+    { &CmdUserRandomSet,     "setr",         0,   0 },
+    { &CmdUserHelp,          "help",         0,   0 },
+    { &CmdUserInfo,          "f",            0,   0 },
+    { &CmdUserInfo,          "finger",       0,   0 },
+    { &CmdUserInfo,          "info",         0,   0 },
+    { &CmdUserInfo,          "rinfo",        0,   1 },
+    { &CmdUserTrans,         "lang",         0,   0 },
+    { &CmdUserTrans,         "trans",        0,   0 },
+    { &CmdUserAuto,          "auto",         0,   0 },
+    { &CmdUserAlias,         "alias",        0,   0 },
+    { &CmdUserUnalias,       "unalias",      0,   0 },
+    { &CmdUserAnyMess,       "message",      0,   0 },
+    { &CmdUserMessage,       "msg",          0,   1 },
+    { &CmdUserMessage,       "r",            0,   2 },
+    { &CmdUserMessage,       "a",            0,   4 },
+    { &CmdUserGetAuto,       "getauto",      0,   0 },
+    { &CmdUserResend,        "resend",       0,   0 },
+    { &CmdUserVerbose,       "verbose",      0,   0 },
+    { &CmdUserIgnoreStatus,  "i",            0,   0 },
+    { &CmdUserStatusDetail,  "status",       2,  10 },
+    { &CmdUserStatusDetail,  "ww",           2,   2 },
+    { &CmdUserStatusDetail,  "ee",           2,   3 },
+    { &CmdUserStatusDetail,  "w",            2,   4 },
+    { &CmdUserStatusDetail,  "e",            2,   5 },
+    { &CmdUserStatusDetail,  "wwg",          2,  34 },
+    { &CmdUserStatusDetail,  "eeg",          2,  35 },
+    { &CmdUserStatusDetail,  "wg",           2,  36 },
+    { &CmdUserStatusDetail,  "eg",           2,  37 },
+    { &CmdUserStatusDetail,  "s",            2,  30 },
+    { &CmdUserStatusDetail,  "s-any",        2,   0 },
+    { &CmdUserStatusMeta,    "ss",           2,   1 },
+    { &CmdUserStatusMeta,    "meta",         2,   0 },
+    { &CmdUserStatusWide,    "wide",         2,   1 },
+    { &CmdUserStatusWide,    "ewide",        2,   0 },
+    { &CmdUserSet,           "set",          0,   0 },
+    { &CmdUserOpt,           "opt",          0,   0 },
+    { &CmdUserOpt,           "optglobal",    0, COF_GLOBAL  },
+    { &CmdUserOpt,           "optgroup",     0, COF_GROUP   },
+    { &CmdUserOpt,           "optcontact",   0, COF_CONTACT },
+    { &CmdUserSound,         "sound",        2,   0 },
+    { &CmdUserSoundOnline,   "soundonline",  2,   0 },
+    { &CmdUserSoundOffline,  "soundoffline", 2,   0 },
+    { &CmdUserAutoaway,      "autoaway",     2,   0 },
+    { &CmdUserChange,        "change",       1,  -1 },
+    { &CmdUserChange,        "online",       1, STATUS_ONLINE },
+    { &CmdUserChange,        "away",         1, STATUS_AWAY },
+    { &CmdUserChange,        "na",           1, STATUS_NA   },
+    { &CmdUserChange,        "occ",          1, STATUS_OCC  },
+    { &CmdUserChange,        "dnd",          1, STATUS_DND  },
+    { &CmdUserChange,        "ffc",          1, STATUS_FFC  },
+    { &CmdUserChange,        "inv",          1, STATUS_INV  },
+    { &CmdUserClear,         "clear",        2,   0 },
+    { &CmdUserTogIgnore,     "togig",        0,   0 },
+    { &CmdUserTogVisible,    "togvis",       0,   0 },
+    { &CmdUserTogInvis,      "toginv",       0,   0 },
+    { &CmdUserAdd,           "add",          0,   0 },
+    { &CmdUserAdd,           "addalias",     0,   1 },
+    { &CmdUserAdd,           "addgroup",     0,   2 },
+    { &CmdUserRemove,        "rem",          0,   0 },
+    { &CmdUserRemove,        "remalias",     0,   1 },
+    { &CmdUserRemove,        "remgroup",     0,   2 },
+    { &CmdUserRegister,      "reg",          0,   0 },
+    { &CmdUserAuth,          "auth",         0,   0 },
+    { &CmdUserURL,           "url",          0,   0 },
+    { &CmdUserSave,          "save",         0,   0 },
+    { &CmdUserTabs,          "tabs",         0,   0 },
+    { &CmdUserLast,          "last",         0,   0 },
+    { &CmdUserUptime,        "uptime",       0,   0 },
+    { &CmdUserPeer,          "peer",         0,   0 },
+    { &CmdUserPeer,          "tcp",          0,   0 },
+    { &CmdUserPeer,          "file",         0,   4 },
+    { &CmdUserQuit,          "q",            0,   0 },
+    { &CmdUserQuit,          "quit",         0,   0 },
+    { &CmdUserQuit,          "exit",         0,   0 },
+    { &CmdUserPass,          "pass",         0,   0 },
+    { &CmdUserSMS,           "sms",          0,   0 },
+    { &CmdUserPeek,          "peek",         0,   0 },
+    { &CmdUserAsSession,     "as",           0,   0 },
+    { &CmdUserContact,       "contact",      0,   0 },
+    { &CmdUserContact,       "contactshow",  0,   1 },
+    { &CmdUserContact,       "contactdiff",  0,   2 },
+    { &CmdUserContact,       "contactadd",   0,   3 },
+    { &CmdUserContact,       "contactdl",    0,   1 },
 
-    { &CmdUserOldSearch,     "oldsearch",    NULL, 0,   0 },
-    { &CmdUserSearch,        "search",       NULL, 0,   0 },
-    { &CmdUserUpdate,        "update",       NULL, 0,   0 },
-    { &CmdUserOther,         "other",        NULL, 0,   0 },
-    { &CmdUserAbout,         "about",        NULL, 0,   0 },
-    { &CmdUserConn,          "conn",         NULL, 0,   0 },
+    { &CmdUserOldSearch,     "oldsearch",    0,   0 },
+    { &CmdUserSearch,        "search",       0,   0 },
+    { &CmdUserUpdate,        "update",       0,   0 },
+    { &CmdUserOther,         "other",        0,   0 },
+    { &CmdUserAbout,         "about",        0,   0 },
+    { &CmdUserConn,          "conn",         0,   0 },
 
-    { NULL, NULL, NULL, 0 }
+    { NULL, NULL, 0 }
 };
 
 static alias_t *aliases = NULL;
@@ -177,31 +177,13 @@ jump_t *CmdUserTable (void)
 /*
  * Looks up an entry in the jump table.
  */
-jump_t *CmdUserLookup (const char *cmd, int flags)
+jump_t *CmdUserLookup (const char *cmd)
 {
     jump_t *j;
     for (j = CmdUserTable (); j->f; j++)
-        if (   ((flags & CU_DEFAULT) && j->defname && !strcasecmp (cmd, j->defname))
-            || ((flags & CU_USER)    && j->name    && !strcasecmp (cmd, j->name)))
+        if (!strcasecmp (cmd, j->defname))
             return j;
     return NULL;
-}
-
-/*
- * Looks up just the current command name.
- */
-const char *CmdUserLookupName (const char *cmd)
-{
-    jump_t *j;
-
-    j = CmdUserLookup (cmd, CU_DEFAULT);
-    if (!j)
-        j = CmdUserLookup (cmd, CU_USER);
-    if (!j)
-        return "";
-    if (j->name)
-        return j->name;
-    return j->defname;
 }
 
 /*
@@ -1936,7 +1918,6 @@ static JUMP_F(CmdUserSet)
         else if (!strcasecmp (par->txt, "autosave"))   { data = FLAG_AUTOSAVE;   str = i18n (2267, "Automatic saves are %s%s%s.\n"); }
         else if (!strcasecmp (par->txt, "autofinger")) { data = FLAG_AUTOFINGER; str = i18n (2268, "Automatic fingering of new UINs is %s%s%s.\n"); }
         else if (!strcasecmp (par->txt, "linebreak"))  data = -1;
-        else if (!strcasecmp (par->txt, "tabs"))       data = -2;
         else if (!strcasecmp (par->txt, "webaware"))   { data = FLAG_WEBAWARE; setstatus = 1; }
         else if (!strcasecmp (par->txt, "hideip"))     { data = FLAG_HIDEIP;   setstatus = 1; }
         else if (!strcasecmp (par->txt, "dcauth"))     { data = FLAG_DC_AUTH;  setstatus = 1; }
@@ -1991,27 +1972,10 @@ static JUMP_F(CmdUserSet)
                           ~prG->flags & FLAG_LIBR_BR ? (~prG->flags & FLAG_LIBR_INT ? i18n (2270, "simple") : i18n (2271, "indent")) :
                           ~prG->flags & FLAG_LIBR_INT ? i18n (2269, "break") : i18n (2272, "smart"), COLNONE);
             break;
-        case -2:
-            if (par)
-            {
-                if (!strcasecmp (par->txt, "cycle") || !strcasecmp (par->txt, i18n (2273, "cycle")))
-                    prG->tabs = TABS_CYCLE;
-                else if (!strcasecmp (par->txt, "cycleall") || !strcasecmp (par->txt, i18n (2274, "cycleall")))
-                    prG->tabs = TABS_CYCLEALL;
-                else if (!strcasecmp (par->txt, "simple") || !strcasecmp (par->txt, i18n (2270, "simple")))
-                    prG->tabs = TABS_SIMPLE;
-                else
-                    data = 0;
-            }
-            if (!quiet)
-                M_printf (i18n (2275, "Tab style is %s%s%s.\n"), COLQUOTE,
-                          prG->tabs == TABS_CYCLE ? i18n (2273, "cycle") :
-                          prG->tabs == TABS_CYCLEALL ? i18n (2274, "cycleall") : i18n (2270, "simple"), COLNONE);
-            break;
     }
     if (!data)
     {
-        M_printf (i18n (1820, "%s <option> [on|off|<value>] - control simple options.\n"), CmdUserLookupName ("set"));
+        M_printf (i18n (1820, "%s <option> [on|off|<value>] - control simple options.\n"), "set");
         M_print (i18n (1822, "    color:      use colored text output.\n"));
         M_print (i18n (2277, "    hermit:     ignore all non-contacts.\n"));
         M_print (i18n (2278, "    delbs:      interpret delete characters as backspace.\n"));
@@ -3830,7 +3794,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
                 if (*cmd != '\\' &&
                     *argsd && CmdUserProcessAlias (cmd, argsd + 1, &idle_save, idle_flag))
                     ;
-                else if ((j = CmdUserLookup (*cmd == '\\' ? cmd + 1 : cmd , CU_DEFAULT)))
+                else if ((j = CmdUserLookup (*cmd == '\\' ? cmd + 1 : cmd)))
                 {
                     if (j->unidle == 2)
                         *idle_val = idle_save;

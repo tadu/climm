@@ -241,7 +241,6 @@ void Initialize_RC_File ()
 #endif
 
     prG->status = STATUS_ONLINE;
-    prG->tabs = TABS_SIMPLE;
     prG->flags = FLAG_DELBS | FLAG_AUTOSAVE | FLAG_AUTOFINGER;
 #ifdef ANSI_TERM
     prG->flags |= FLAG_COLOR;
@@ -736,15 +735,7 @@ int Read_RC_File (FILE *rcf)
                     }
                     else if (which == -3)
                     {
-                        PrefParse (cmd);
-
-                        prG->tabs = TABS_SIMPLE;
-                        if (!strcasecmp (cmd, "cycle"))
-                            prG->tabs = TABS_CYCLE;
-                        else if (!strcasecmp (cmd, "cycleall"))
-                            prG->tabs = TABS_CYCLEALL;
-                        else if (strcasecmp (cmd, "simple"))
-                            dep = 17;
+                        dep = 8374;
                     }
                     else if (which == -4)
                     {
@@ -1501,9 +1492,6 @@ int Save_RC ()
                     prG->flags & FLAG_LIBR_INT 
                     ? prG->flags & FLAG_LIBR_BR ? "smart " : "indent"
                     : prG->flags & FLAG_LIBR_BR ? "break " : "simple");
-    fprintf (rcf, "set tabs       %s # type of tab completion (simple, cycle, cycleall)\n",
-                    prG->tabs == TABS_SIMPLE ? "simple" :
-                    prG->tabs == TABS_CYCLE ? "cycle" : "cycleall");
     fprintf (rcf, "set webaware   %s # whether to be globally webaware\n",
                     prG->flags & FLAG_WEBAWARE ? "on" : "off");
     fprintf (rcf, "set hideip     %s # whether to hide the local IP globally\n",

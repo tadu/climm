@@ -28,7 +28,6 @@ struct Preferences_s
     UWORD  screen;      /* manual maximum screen width; 0 = auto */
     UDWORD flags;       /* flags for output */
     UDWORD away_time;   /* time after which to be away automatically; 0 = disable */
-    UWORD  tabs;        /* type of tab completion */
     
     char  *basedir;     /* the base dir where micqrc etc. reside in */
     char  *rcfile;      /* the preference file to load */

@@ -182,7 +182,6 @@ BOOL PrefLoad (Preferences *pref)
     BOOL ok = TRUE;
     
     pref->away_time = default_away_time;
-    pref->tabs = TABS_SIMPLE;
 
     rcf = PrefOpenRC (pref);
     if (rcf)
