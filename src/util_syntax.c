@@ -38,8 +38,10 @@
 #define c_pin(x) ConvFrom (x, ENC_LATIN1)->txt
 
 static const char *syntable[] = {
+    "s1x1s",   "Wt[8W]",
     "s1x2s",   "W-",
     "s1x3s",   "W-",
+    "s1x4s",   "W-",
     "s1x6s",   "",
     "s1x7s",   "W,{WDDDDDDDDb}.{WW{D}}",
     "s1x8s",   "W-",
