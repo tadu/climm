@@ -518,21 +518,30 @@ void UtilUIUserOnline (Contact *cont, UDWORD status)
 {
     if (status == cont->status)
         return;
-    cont->status = status;
-    if (prG->sound & SFLAG_ON_CMD)
-        ExecScript (prG->sound_on_cmd, cont->uin, 0, NULL);
-    else if (prG->sound & SFLAG_ON_BEEP)
-        printf ("\a");
+    if (~status)
+    {
+        if (prG->sound & SFLAG_ON_CMD)
+            ExecScript (prG->sound_on_cmd, cont->uin, 0, NULL);
+        else if (prG->sound & SFLAG_ON_BEEP)
+            printf ("\a");
+    }
     log_event (cont->uin, LOG_ONLINE, "User logged on %s\n", ContactFindName (cont->uin));
  
     Time_Stamp ();
-    M_print (" " COLCONTACT "%10s" COLNONE " %s (",
-             ContactFindName (cont->uin), i18n (31, "logged on"));
-    Print_Status (cont->status);
-    M_print (")");
-    if (cont->version)
-        M_print ("[%s]", cont->version);
+    M_print (" " COLCONTACT "%10s" COLNONE " %s ",
+             ContactFindName (cont->uin),
+             ~cont->status ? i18n (35, "changed status to") : i18n (31, "logged on"));
+
+    if (!~cont->status)
+        M_print ("(");
+    Print_Status (status);
+    if (!~cont->status)
+        M_print (")");
+    if (cont->version && !~cont->status)
+        M_print (" [%s]", cont->version);
     M_print (".\n");
+
+    cont->status = status;
     if (prG->verbose)
     {
         M_print ("%-15s %s\n", i18n (441, "IP:"), UtilIOIP (cont->outside_ip));
