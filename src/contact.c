@@ -891,14 +891,20 @@ void ContactSetVersion (Contact *cont)
     {
         if (new != buf)
             strcpy (buf, new);
-        if (cont->v1 || cont->v2 || cont->v3 || cont->v4)
-        {
-            strcat (buf, " ");
-                                      sprintf (buf + strlen (buf), "%d.%d", cont->v1, cont->v2);
-            if (cont->v3 || cont->v4) sprintf (buf + strlen (buf), ".%d", cont->v3);
-            if (cont->v4)             sprintf (buf + strlen (buf), ".%d", cont->v4);
-        }
-        if (tail) strcat (buf, tail);
+        if (cont->v4)
+            snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf),
+                      " %d.%d.%d.%d", cont->v1, cont->v2, cont->v3, cont->v4);
+        else if (cont->v3)
+            snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf),
+                      " %d.%d.%d", cont->v1, cont->v2, cont->v3);
+        else if (cont->v1 || cont->v2)
+            snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf),
+                      " %d.%d", cont->v1, cont->v2);
+        else
+            snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), " ");
+        if (tail)
+            snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf),
+                      "%s", tail);
     }
     else
         buf[0] = '\0';

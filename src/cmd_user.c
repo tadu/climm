@@ -3834,12 +3834,11 @@ static int CmdUserProcessAlias (const char *cmd, const char *argsd,
             ptr = strstr (exp, "%s");
             *ptr = '\0';
             
-            sprintf (cmdline, "%s%s%s", exp, argsd, ptr + 2);
-
+            cmdline = strdup (s_sprintf ("%s%s%s", exp, argsd, ptr + 2));
             free (exp);
         }
         else
-            sprintf (cmdline, "%s %s", alias->expansion, argsd);
+            cmdline = strdup (s_sprintf ("%s %s", alias->expansion, argsd));
 
         recurs_level++;
         CmdUserProcess (cmdline, idle_val, idle_flag);
