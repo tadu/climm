@@ -96,7 +96,7 @@ AC_TYPE_SIGNAL
 
 AC_STRUCT_TIMEZONE
 AC_CACHE_CHECK(for timezone external, ac_cv_var_timezone,
-[  AC_TRY_LINK([#include <time.h>], [return (int)timezone;],
+[  AC_TRY_LINK([#include <time.h>], [int x = - timezone;],
       ac_cv_var_timezone=yes,
       ac_cv_var_timezone=no)
 ])
