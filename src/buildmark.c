@@ -114,7 +114,7 @@ const char *BuildVersion (void)
 
 const char *BuildAttribution (void)
 {
-    return (s_sprintf ("%s 1998-2000 %sMatthew D. Smith%s, %s 2001-2003 %sR%sdiger Kuhlmann%s,\n"
+    return (s_sprintf ("%s 1998-2000 %sMatthew D. Smith%s, %s 2001-2004 %sR%sdiger Kuhlmann%s,\n"
             "released under version 2 of the GNU General Public License (%sGPLv2%s).\n",
             ConvTranslit ("\xc2\xa9", "(c)"), COLQUOTE, COLNONE,
             ConvTranslit ("\xc2\xa9", "(c)"), COLQUOTE,
