@@ -2,7 +2,7 @@
  * This file handles TCP client-to-client communications.
  *
  *  Author/Copyright: James Schofield (jschofield@ottawa.com) 22 Feb 2001
- *  Lots of changes from Rüdiger Kuhlmann.
+ *  Lots of changes from Rüdiger Kuhlmann. File transfer by Rüdiger Kuhlmann.
  *  This file may be distributed under version 2 of the GPL licence.
  */
 
@@ -61,8 +61,10 @@ static void       TCPPrint           (Packet *pak, Session *sess, BOOL out);
 
 static Packet    *PacketTCPC         (Session *peer, UDWORD cmd, UDWORD seq,
                                       UWORD type, UWORD flags, UWORD status, char *msg);
+#ifdef WIP
 static void       TCPGreet           (Packet *pak, UWORD cmd, char *reason,
                                       UWORD port, UDWORD len, char *msg);
+#endif
 
 static void       TCPCallBackTimeout (Event *event);
 static void       TCPCallBackTOConn  (Event *event);
@@ -1211,6 +1213,7 @@ static void TCPPrint (Packet *pak, Session *peer, BOOL out)
     }
 /*    else   */
 #endif
+    if (cmd != 6)
         if (prG->verbose & DEB_PACKTCPDATA)
             Hex_Dump (pak->data, pak->len);
     M_print (ESC "»\r");
