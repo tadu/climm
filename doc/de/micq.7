@@ -1,5 +1,5 @@
 .\" $Id$
-.\"  EN: micq.7,v 1.17 2002/08/09 01:22:20
+.\"  EN: micq.7,v 1.28 2002/08/09 01:22:20
 .TH MICQ 7 mICQ DE
 .SH NAME
 .B mICQ
@@ -218,7 +218,7 @@ bekannten Befehl unter dem Namen
 .I Neu
 bekannt.
 .TP
-.BI auth [req|grant|deny|add]\ Benutzernummer|Spitzname
+.BI auth \ [req|grant|deny|add]\ Benutzernummer|Spitzname
 Erlaubt es
 .IR Benutzernummer|Spitzname ,
 Sie zu seiner Kontaktliste hinzuzufügen
@@ -279,7 +279,7 @@ für
 .IR Spitzname .
 Ist
 .I Spitzname
-nicht gegeben, benutze
+nicht angegeben, benutze
 .I Benutzernummer
 als Spitzname.
 .br
@@ -488,8 +488,6 @@ is, dann gebe den Dateinamen ohne den Pfad an, wenn
 .IR als
 .RB ' . '
 ist, dann gebe den richtigen Dateinamen an.
-.sp
-Hinweis: Weder Dateinamen noch die Beschreibung darf derzeit Leerzeichen enthalten.
 .RE
 .TP
 .BI conn \ [Befehl\ Nr]
