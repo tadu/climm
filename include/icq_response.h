@@ -6,5 +6,5 @@ void Recv_Message (Session *sess, UBYTE * pak);
 void ack_srv (Session *sess, UDWORD seq);
 void Display_Info_Reply (Session *sess, Packet *pak, const char *uinline, unsigned int flags);
 void Display_Ext_Info_Reply (Session *sess, Packet *pak, const char *uinline);
-void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin, BOOL tcp);
+void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, UDWORD uin, UDWORD tstatus, BOOL tcp);
 void UserOnlineSetVersion (Contact *con, UDWORD tstamp, UDWORD tstamp2);

@@ -255,6 +255,7 @@ void Read_RC_File (FILE *rcf)
     Session *oldsess = NULL, *sess = NULL;
     int i, section, dep = 0;
     UDWORD uin;
+    UWORD flags;
     char *tab_nick_spool[TAB_SLOTS];
     int spooled_tab_nicks;
 
@@ -509,39 +510,49 @@ void Read_RC_File (FILE *rcf)
                 }
                 break;
             case 1:
-                p = buf;
+                flags = 0;
+                
+                for (p = buf; *p && *p != '#'; p++)
+                {
+                    if (!*p || *p == '#' || isdigit ((int) *p))
+                        break;
 
-                while (*p == ' ')
-                    p++;
+                    switch (*p)
+                    {
+                        case '*':
+                            flags |= CONT_INTIMATE;
+                            flags &= ~CONT_HIDEFROM;
+                            continue;
+                        case '^':
+                            flags |= CONT_IGNORE;
+                            continue;
+                        case '~':
+                            flags |= CONT_HIDEFROM;
+                            flags &= ~CONT_INTIMATE;
+                            continue;
+                        case ' ':
+                            continue;
+                    }
+                    break;
+                }
 
                 if (!*p || *p == '#' )
                     continue;
 
-                if (isdigit ((int) *p))
-                    i = 0;
-                else if (*p == '*')
-                {
-                    i = 1;
-                    for (p++; *p == ' '; p++) ;
-                }
-                else if (*p == '~')
-                {
-                    i = 2;
-                    for (p++; *p == ' '; p++) ;
-                }
-                else
-                    i = 3;
-                
-                if (i == 3)
-                {
-                    uin = -1;
-                    tmp = p;
-                }
-                else
+                if (isdigit (*p))
                 {
                     uin = atoi (strtok (p, " "));
                     tmp = strtok (NULL, "");
+                    if (ContactFind (uin))
+                        flags |= CONT_ALIAS;
                 }
+                else
+                {
+                    uin = -1;
+                    tmp = strtok (NULL, "");
+                    flags |= CONT_ALIAS;
+                }
+                
                 
                 if (!(cont = ContactAdd (uin, tmp)))
                 {
@@ -550,20 +561,11 @@ void Read_RC_File (FILE *rcf)
                     section = -1;
                     break;
                 }
-                
-                switch (i)
-                {
-                    case 1:
-                        cont->flags |= CONT_INTIMATE;
-                        break;
-                    case 2:
-                        cont->flags |= CONT_HIDEFROM;
-                        break;
-                    case 3:
-                        strncpy (cont->nick, (cont - 1)->nick, 20);
-                        break;
-                }
-
+                cont->flags = flags;
+                if (uin == -1)
+                    cont->uin = (cont - 1)->uin;
+                if (flags & CONT_ALIAS)
+                    cont->flags = ContactFind (uin)->flags | CONT_ALIAS;
                 if (prG->verbose > 2)
                     M_print ("%ld = %s\n", cont->uin, cont->nick);
                 break;
@@ -846,29 +848,23 @@ int Save_RC ()
     fprintf (rcf, "\n# The contact list section.\n");
     fprintf (rcf, "#  Use * in front of the number of anyone you want to see you while you're invisible.\n");
     fprintf (rcf, "#  Use ~ in front of the number of anyone you want to always see you as offline.\n");
-    fprintf (rcf, "#  People in the second group won't show up in your list.\n");
+    fprintf (rcf, "#  Use ^ in front of the number of anyone you want to ignore.\n");
     fprintf (rcf, "[Contacts]\n");
 
     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
     {
-        if (!(cont->uin & 0x80000000L) && !(cont->flags & CONT_TEMPORARY))
+        if (!(cont->flags & (CONT_TEMPORARY | CONT_ALIAS)))
         {
             Contact *cont2;
-            fprintf (rcf, cont->flags & CONT_INTIMATE ? "*" : cont->flags & CONT_HIDEFROM ? "~" : " ");
+            if (cont->flags & CONT_INTIMATE) fprintf (rcf, "*"); else fprintf (rcf, " ");
+            if (cont->flags & CONT_HIDEFROM) fprintf (rcf, "~"); else fprintf (rcf, " ");
+            if (cont->flags & CONT_IGNORE)   fprintf (rcf, "^"); else fprintf (rcf, " ");
             fprintf (rcf, "%9ld %s\n", cont->uin, cont->nick);
-            k = 0;
             for (cont2 = ContactStart (); ContactHasNext (cont2); cont2 = ContactNext (cont2))
             {
-                if (cont2->uin == - cont->uin)
-                {
-                    if (k)
-                        fprintf (rcf, " ");
-                    fprintf (rcf, "%s", cont2->nick);
-                    k++;
-                }
+                if (cont2->uin == cont->uin && cont2->flags & CONT_ALIAS)
+                    fprintf (rcf, "   %9ld %s\n", cont->uin, cont2->nick);
             }
-            if (k)
-                fprintf (rcf, "\n");
         }
     }
     fprintf (rcf, "\n");
@@ -882,7 +878,7 @@ int Add_User (Session *sess, UDWORD uin, char *name)
     rcf = fopen (prG->rcfile, "a");
     if (!rcf)
         return 0;
-    fprintf (rcf, "%ld %s\n", uin, name);
+    fprintf (rcf, "   %ld %s\n", uin, name);
     fclose (rcf);
     return 1;
 }

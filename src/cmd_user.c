@@ -31,12 +31,12 @@
 
 static jump_f
     CmdUserChange, CmdUserRandom, CmdUserHelp, CmdUserInfo, CmdUserTrans,
-    CmdUserAuto, CmdUserAlter, CmdUserMessage, CmdUserResend,
+    CmdUserAuto, CmdUserAlter, CmdUserMessage, CmdUserResend, CmdUserPeek,
     CmdUserVerbose, CmdUserRandomSet, CmdUserIgnoreStatus, CmdUserSMS,
     CmdUserStatusDetail, CmdUserStatusWide, CmdUserStatusShort,
     CmdUserStatusSelf, CmdUserSound, CmdUserSoundOnline, CmdUserRegister,
     CmdUserSoundOffline, CmdUserAutoaway, CmdUserSet, CmdUserClear,
-    CmdUserTogIgnore, CmdUserTogVisible, CmdUserAdd, CmdUserRem, CmdUserRInfo,
+    CmdUserTogIgnore, CmdUserTogInvis, CmdUserTogVisible, CmdUserAdd, CmdUserRem, CmdUserRInfo,
     CmdUserAuth, CmdUserURL, CmdUserSave, CmdUserTabs, CmdUserLast,
     CmdUserUptime, CmdUserOldSearch, CmdUserSearch, CmdUserUpdate, CmdUserPass,
     CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserTCP, CmdUserConn;
@@ -81,6 +81,7 @@ static jump_t jump[] = {
     { &CmdUserClear,         "clear",        NULL, 2,   0 },
     { &CmdUserTogIgnore,     "togig",        NULL, 0,   0 },
     { &CmdUserTogVisible,    "togvis",       NULL, 0,   0 },
+    { &CmdUserTogInvis,      "toginv",       NULL, 0,   0 },
     { &CmdUserAdd,           "add",          NULL, 0,   0 },
     { &CmdUserRem,           "rem",          NULL, 0,   0 },
     { &CmdUserRegister,      "reg",          NULL, 0,   0 },
@@ -96,6 +97,7 @@ static jump_t jump[] = {
     { &CmdUserQuit,          "q",            NULL, 0,   0 },
     { &CmdUserPass,          "pass",         NULL, 0,   0 },
     { &CmdUserSMS,           "sms",          NULL, 0,   0 },
+    { &CmdUserPeek,          "peek",         NULL, 0,   0 },
 
     { &CmdUserOldSearch,     "oldsearch",    NULL, 0,   0 },
     { &CmdUserSearch,        "search",       NULL, 0,   0 },
@@ -489,7 +491,6 @@ JUMP_F(CmdUserSMS)
  */
 JUMP_F(CmdUserInfo)
 {
-    Contact *cont;
     char *arg1;
     UDWORD uin;
     SESSION;
@@ -519,14 +520,27 @@ JUMP_F(CmdUserInfo)
     M_print (i18n (1765, "%s has UIN %d."), arg1, uin);
     M_print ("\n");
     if (sess->ver > 6)
-    {
         SnacCliMetareqinfo (sess, uin);
-        if (!(cont = ContactFind (uin)) || (cont->status == STATUS_OFFLINE))
-            SnacCliSendmsg (sess, uin, "", 0xe8);
-    }
     else
         CmdPktCmdMetaReqInfo (sess, uin);
 /*   send_ext_info_req( sok, uin );*/
+    return 0;
+}
+
+/*
+ * Peeks whether a user is really offline.
+ */
+JUMP_F(CmdUserPeek)
+{
+    UDWORD uin;
+    SESSION;
+    
+    if (sess->ver < 6)
+        return 0;
+    if (!args)
+        return 0;
+    uin = ContactFindByNick (args);
+    SnacCliSendmsg (sess, uin, "", 0xe8);
     return 0;
 }
 
@@ -1063,6 +1077,8 @@ JUMP_F(CmdUserStatusDetail)
             M_print (COLSERV "*" COLNONE);
         else if (cont->flags & CONT_HIDEFROM)
             M_print (COLSERV "-" COLNONE);
+        else if (cont->flags & CONT_IGNORE)
+            M_print (COLSERV "^" COLNONE);
         else
             M_print (" ");
         M_print ("%6ld=", cont->uin);
@@ -1109,9 +1125,9 @@ JUMP_F(CmdUserStatusDetail)
     M_print ("%s%s\n", W_SEPERATOR, i18n (1072, "Users offline:"));
     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
     {
-        if ((SDWORD) cont->uin > 0)
+        if (!(cont->flags & CONT_ALIAS))
         {
-            if (!(cont->flags & CONT_HIDEFROM))
+            if (!(cont->flags & CONT_IGNORE))
             {
                 if (cont->status == STATUS_OFFLINE)
                 {
@@ -1144,9 +1160,9 @@ JUMP_F(CmdUserStatusDetail)
     M_print ("%s%s\n", W_SEPERATOR, i18n (1073, "Users online:"));
     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
     {
-        if ((SDWORD) cont->uin > 0)
+        if (!(cont->flags & CONT_ALIAS))
         {
-            if (!(cont->flags & CONT_HIDEFROM))
+            if (!(cont->flags & CONT_IGNORE))
             {
                 if (cont->status != STATUS_OFFLINE)
                 {
@@ -1194,12 +1210,14 @@ JUMP_F(CmdUserIgnoreStatus)
     /*  Sorts thru all ignored users */
     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
     {
-        if ((SDWORD) cont->uin > 0)
+        if (!(cont->flags & CONT_ALIAS))
         {
-            if (cont->flags & CONT_HIDEFROM)
+            if (cont->flags & CONT_IGNORE)
             {
                 if (cont->flags & CONT_INTIMATE)
                     M_print (COLSERV "*" COLNONE);
+                else if (cont->flags & CONT_HIDEFROM)
+                    M_print (COLSERV "~" COLNONE);
                 else
                     M_print (" ");
 
@@ -1248,8 +1266,8 @@ JUMP_F(CmdUserStatusWide)
        many columns will fit on the screen. */
     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
     {
-        if ((SDWORD) cont->uin > 0)
-        {                       /* Aliases */
+        if (!(cont->flags & CONT_ALIAS))
+        {
             if (cont->status == STATUS_OFFLINE)
             {
                 if (data)
@@ -1383,9 +1401,9 @@ JUMP_F(CmdUserStatusShort)
         M_print ("%s%s\n", W_SEPERATOR, i18n (1072, "Users offline:"));
         for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
         {
-            if ((SDWORD) cont->uin > 0)
+            if (!(cont->flags & CONT_ALIAS))
             {
-                if (!(cont->flags & CONT_HIDEFROM))
+                if (!(cont->flags & CONT_IGNORE))
                 {
                     if (cont->status == STATUS_OFFLINE)
                     {
@@ -1406,9 +1424,9 @@ JUMP_F(CmdUserStatusShort)
     M_print ("%s%s\n", W_SEPERATOR, i18n (1073, "Users online:"));
     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
     {
-        if ((SDWORD) cont->uin > 0)
+        if (!(cont->flags & CONT_ALIAS))
         {
-            if (!(cont->flags & CONT_HIDEFROM))
+            if (!(cont->flags & CONT_IGNORE))
             {
                 if (cont->status != STATUS_OFFLINE)
                 {
@@ -1564,17 +1582,12 @@ JUMP_F(CmdUserSet)
     
     arg1 = strtok (args, " \t");
     
-    if (arg1 && !strcmp (arg1, "quiet"))
-    {
-        quiet = 1;
-        arg1 = strtok (NULL, " \t");
-    }
-    
     if (!arg1 || !strcmp (arg1, "help") || !strcmp (arg1, "?"))
     {
         M_print (i18n (1820, "%s <option> [on|off] - control simple options.\n"), CmdUserLookupName ("set"));
         M_print (i18n (1822, "    color: use colored text output.\n"));
         M_print (i18n (1815, "    funny: use funny messages for output.\n"));
+        M_print (i18n (2018, "    quiet: be quiet about status changes.\n"));
     }
     else if (!strcmp (arg1, "color"))
     {
@@ -1620,6 +1633,29 @@ JUMP_F(CmdUserSet)
                 M_print (i18n (1821, "Funny messages are " COLMESS "%s" COLNONE ".\n"), i18n (1085, "on"));
             else
                 M_print (i18n (1821, "Funny messages are " COLMESS "%s" COLNONE ".\n"), i18n (1086, "off"));
+        }
+    }
+    else if (!strcmp (arg1, "quiet"))
+    {
+        arg1 = strtok (NULL, "\n");
+        if (arg1)
+        {
+            if (!strcmp (arg1, "on") || !strcmp (arg1, i18n (1085, "on")))
+            {
+                prG->flags |= FLAG_QUIET;
+            }
+            else if (!strcmp (arg1, "off") || !strcmp (arg1, i18n (1086, "off")))
+            {
+                prG->flags &= ~FLAG_QUIET;
+            }
+        }
+        
+        if (!quiet)
+        {
+            if (prG->flags & FLAG_QUIET)
+                M_print (i18n (2019, "Quiet output is " COLMESS "%s" COLNONE ".\n"), i18n (1085, "on"));
+            else
+                M_print (i18n (2019, "Quiet output is " COLMESS "%s" COLNONE ".\n"), i18n (1086, "off"));
         }
     }
     else
@@ -1691,6 +1727,53 @@ JUMP_F(CmdUserTogIgnore)
         return 0;
     }
 
+    if (bud->flags & CONT_IGNORE)
+    {
+        bud->flags &= ~CONT_IGNORE;
+        M_print (i18n (1666, "Unignored %s."), bud->nick);
+    }
+    else
+    {
+        bud->flags |= CONT_IGNORE;
+        M_print (i18n (1667, "Ignoring %s."), bud->nick);
+    }
+    M_print ("\n");
+    return 0;
+}
+
+/*
+ * Toggles beeing invisible to a user.
+ */
+JUMP_F(CmdUserTogInvis)
+{
+    char *arg1;
+    Contact *bud;
+    UDWORD uin;
+    SESSION;
+
+    arg1 = strtok (args, "\n");
+    if (!arg1)
+    {
+        M_print (i18n (1668, "You must specify a nick name."));
+        M_print ("\n");
+        return 0;
+    }
+
+    uin = ContactFindByNick (arg1);
+    if (uin == -1)
+    {
+        M_print (i18n (1061, "%s not recognized as a nick name.\n"), arg1);
+        return 0;
+    }
+
+    bud =  ContactFind (uin);
+    if (!bud)
+    {
+        M_print (i18n (1090, "%s is a UIN, not a nick name."), arg1);
+        M_print ("\n");
+        return 0;
+    }
+
     if (bud->flags & CONT_HIDEFROM)
     {
         bud->flags &= ~CONT_HIDEFROM;
@@ -1698,7 +1781,7 @@ JUMP_F(CmdUserTogIgnore)
             SnacCliReminvis (sess, uin);
         else
             CmdPktCmdUpdateList (sess, uin, INV_LIST_UPDATE, FALSE);
-        M_print (i18n (1666, "Unignored %s."), bud->nick);
+        M_print (i18n (2020, "Being visible to %s."), bud->nick);
     }
     else
     {
@@ -1708,7 +1791,7 @@ JUMP_F(CmdUserTogIgnore)
             SnacCliAddinvis (sess, uin);
         else
             CmdPktCmdUpdateList (sess, uin, INV_LIST_UPDATE, TRUE);
-        M_print (i18n (1667, "Ignoring %s."), bud->nick);
+        M_print (i18n (2021, "Being invisible to %s."), bud->nick);
     }
     if (sess->ver < 6)
     {
@@ -1718,10 +1801,6 @@ JUMP_F(CmdUserTogIgnore)
         CmdPktCmdStatusChange (sess, sess->status);
     }
     M_print ("\n");
-/*    Time_Stamp ();
-    M_print (" ");
-    Print_Status (sess->status);
-    M_print ("\n"); */
     return 0;
 }
 
@@ -1765,7 +1844,7 @@ JUMP_F(CmdUserTogVisible)
             SnacCliRemvisible (sess, uin);
         else
             CmdPktCmdUpdateList (sess, uin, VIS_LIST_UPDATE, FALSE);
-        M_print (i18n (1670, "Invisible to %s now."), ContactFindNick (uin));
+        M_print (i18n (1670, "Normal visible to %s now."), ContactFindNick (uin));
     }
     else
     {
@@ -1775,7 +1854,7 @@ JUMP_F(CmdUserTogVisible)
             SnacCliAddvisible (sess, uin);
         else
             CmdPktCmdUpdateList (sess, uin, VIS_LIST_UPDATE, TRUE);
-        M_print (i18n (1671, "Visible to %s now."), ContactFindNick (uin));
+        M_print (i18n (1671, "Always visible to %s now."), ContactFindNick (uin));
     }
 
     M_print ("\n");

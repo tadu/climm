@@ -1017,15 +1017,8 @@ void TCPCallBackReceive (struct Event *event)
         default:
             uiG.last_rcvd_uin = cont->uin;
             
-            Time_Stamp ();
-            M_print ("\a " CYAN BOLD "%10s" COLNONE " ", ContactFindName (cont->uin));
-            
             tmp = PacketReadAtLNTS (pak, 28);
-            Do_Msg (event->sess, PacketReadAt2 (pak, 22), strlen (tmp),
-                    tmp, cont->uin, 1);
-
-            log_event (cont->uin, LOG_MESS, "You received a TCP message from %s\n%s\n",
-                       ContactFindName (cont->uin), tmp);
+            Do_Msg (event->sess, NULL, PacketReadAt2 (pak, 22), tmp, cont->uin, STATUS_OFFLINE, 1);
 
             Send_TCP_Ack (event->sess, PacketReadAt2 (pak, 8),
                           PacketReadAt2 (pak, 22), TRUE);

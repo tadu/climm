@@ -139,6 +139,20 @@ void SrvCallBackSnac (struct Event *event)
 }
 
 /*
+ * Keeps track of sending a keep alive every 30 seconds.
+ */
+void SrvCallBackKeepalive (struct Event *event)
+{
+    if (event->sess->connect & CONNECT_OK)
+    {
+        SnacCliReqofflinemsgs (event->sess);
+        event->due = time (NULL) + 30;
+        QueueEnqueue (queue, event);
+    }
+    free (event);
+}
+
+/*
  * Returns the name of the SNAC, or "unknown".
  */
 const char *SnacName (UWORD fam, UWORD cmd)
@@ -450,7 +464,6 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
     int i, type, t;
     char *text = NULL;
     const char *txt;
-    UDWORD old;
 
     pak = event->pak;
 
@@ -466,7 +479,6 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
     cont = ContactFind (uin);
     tlv = TLVRead (pak);
 
-    old = cont ? cont->status : STATUS_OFFLINE;
     if (tlv[6].len && cont && cont->status != STATUS_OFFLINE)
         UtilUIUserOnline (cont, tlv[6].nr);
 
@@ -558,17 +570,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
             return;
     }
 
-    Time_Stamp ();
-    M_print (" " CYAN BOLD "%10s" COLNONE " ", ContactFindName (uin));
-
-    if (tlv[6].len && (!cont || cont->status != old || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
-    {
-        M_print ("(");
-        Print_Status (tlv[6].nr);
-        M_print (") ");
-    }
-
-    Do_Msg (event->sess, type, strlen (txt), txt, uin, 0);
+    Do_Msg (event->sess, NULL, type, txt, uin, tlv[6].len ? tlv[6].nr : STATUS_OFFLINE, 0);
 
     if (text)
         free (text);
@@ -616,6 +618,10 @@ JUMP_SNAC_F(SnacSrvReplybos)
     SnacCliAddcontact (event->sess, 0);
 
     event->sess->connect = CONNECT_OK | CONNECT_SELECT_R;
+    
+    QueueEnqueueData (queue, event->sess, event->sess->connect, QUEUE_TYPE_SRV_KEEPALIVE,
+                      event->sess->uin, time (NULL) + 30,
+                      NULL, NULL, &SrvCallBackKeepalive);
 }
 
 /*
@@ -739,7 +745,9 @@ JUMP_SNAC_F(SnacSrvFromoldicq)
     {
         case 65:
         {
-            UDWORD year, mon, mday, hour, min, flags;
+            UWORD year, mon, mday, hour, min, flags;
+            char buf[20];
+
             if (len < 14)
                 break;
             uin  = PacketRead4 (p);
@@ -750,11 +758,10 @@ JUMP_SNAC_F(SnacSrvFromoldicq)
             min  = PacketRead1 (p);
             flags= PacketRead2 (p);
             text = PacketReadLNTS (p);
+            
+            snprintf (buf, sizeof (buf), "%04d-%02d-%02d %2d:%02d UTC", year, mon, mday, hour, min);
 
-            M_print ("%04d-%02d-%02d %2d:%02d:%02d", year, mon, mday, hour, min, 0);
-            M_print (" " CYAN BOLD "%10s" COLNONE " ",
-                     ContactFindName (uin));
-            Do_Msg (event->sess, flags, strlen (text), text, uin, 0);
+            Do_Msg (event->sess, buf, flags, text, uin, STATUS_OFFLINE, 0);
             return;
         }
         case 66:

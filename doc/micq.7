@@ -235,9 +235,15 @@ or
 .Ic off .
 .Ar option
 can be
-.Ic color
+.Ic color ,
+.Ic funny
 or
-.Ic funny.
+.Ic quiet .
+.It Ic peek Ar nick
+Check whether
+.Ar nick
+is actually online or not. Abuses a bug in the ICQ protocol to figure this out;
+no additional information except online or offline can be found out this way.
 .It Ic setr Op Ar number
 Sets your random user group to
 .Ar number .

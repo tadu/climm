@@ -667,8 +667,8 @@
 1667:Ignoring %s.
 1668:You must specify a nick name.
 1669:%s added.¶
-1670:Invisible to %s now.
-1671:Visible to %s now.
+1670:Normal visible to %s now.
+1671:Always visible to %s now.
 1672:%s's IP address is 
 1673:	The port is %d¶
 1674:	The port is unknown¶
@@ -1015,3 +1015,7 @@
 2015:No message given.¶
 2016:The server says about the SMS delivery:¶%s
 2017:The user is actually online.¶
+2018:    quiet: be quiet about status changes.¶
+2019:Quiet output is ©3%s©0.¶
+2020:Being visible to %s.
+2021:Being invisible to %s.

@@ -11,7 +11,7 @@ Jeff Bearer <jbearer@tribweb.com>
 various people:
  : add https support
  : add missing v8 pieces
-   : ignoring people
    : server side contact list
    : contact groups
-   : keep alive
+   : history of messages
+ : tab completion

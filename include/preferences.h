@@ -75,6 +75,7 @@ void PrefLoad (Preferences *pref);
 #define FLAG_UINPROMPT   512
 #define FLAG_LIBR_BR    1024 /* 0, 3: posssible line break before message */
 #define FLAG_LIBR_INT   2048 /* 2, 3: indent if appropriate */
+#define FLAG_QUIET      4096
 /*      FLAG_S5
  *      FLAG_S5_USE
  */

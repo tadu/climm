@@ -342,12 +342,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             if (!((NULL == ContactFind (Chars_2_DW (s_mesg->uin))) && (prG->flags & FLAG_HERMIT)))
             {
                 uiG.last_rcvd_uin = Chars_2_DW (s_mesg->uin);
-                Time_Stamp ();
-                M_print ("\a " CYAN BOLD "%10s" COLNONE " ", ContactFindName (Chars_2_DW (s_mesg->uin)));
-                if (prG->verbose)
-                    M_print (i18n (1647, " Type = %04x\t"), Chars_2_Word (s_mesg->type));
-                Do_Msg (sess, Chars_2_Word (s_mesg->type), Chars_2_Word (s_mesg->len),
-                        s_mesg->len + 2, uiG.last_rcvd_uin, 0);
+                Do_Msg (sess, NULL, Chars_2_Word (s_mesg->type), s_mesg->len + 2, uiG.last_rcvd_uin, STATUS_OFFLINE, 0);
                 Auto_Reply (sess, s_mesg);
             }
             break;

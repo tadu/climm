@@ -431,14 +431,14 @@ void Display_Rand_User (Session *sess, UBYTE *data, UDWORD len)
 void Recv_Message (Session *sess, UBYTE * pak)
 {
     RECV_MESSAGE_PTR r_mesg;
+    char buf[100];
 
     r_mesg = (RECV_MESSAGE_PTR) pak;
     uiG.last_rcvd_uin = Chars_2_DW (r_mesg->uin);
     M_print (i18n (1962, "%04d-%02d-%02d"), Chars_2_Word (r_mesg->year), r_mesg->month, r_mesg->day);
-    M_print (" %02d:%02d UTC \a" CYAN BOLD "%10s" COLNONE " ",
-             r_mesg->hour, r_mesg->minute, ContactFindName (Chars_2_DW (r_mesg->uin)));
-    Do_Msg (sess, Chars_2_Word (r_mesg->type), Chars_2_Word (r_mesg->len),
-            (r_mesg->len + 2), uiG.last_rcvd_uin, 0);
+    snprintf (buf, sizeof (buf), " %02d:%02d UTC ", r_mesg->hour, r_mesg->minute);
+    /* TODO: check if null-terminated */
+    Do_Msg (sess, buf, Chars_2_Word (r_mesg->type), r_mesg->len + 2, uiG.last_rcvd_uin, STATUS_OFFLINE, 0);
 }
 
 
@@ -598,7 +598,7 @@ void Display_Ext_Info_Reply (Session *sess, Packet *pak, const char *uinline)
 /*    ack_srv( sok, Chars_2_Word( pak.head.seq ) ); */
 }
 
-void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin, BOOL tcp)
+void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, UDWORD uin, UDWORD tstatus, BOOL tcp)
 {
     char *cdata, *tmp = NULL;
     char *url_url, *url_desc;
@@ -606,15 +606,37 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
     Contact *cont;
     int x, m;
     
-    cdata = strdup (data);
+    cdata = strdup (text);
 
     TabAddUIN (uin);            /* Adds <uin> to the tab-list */
     UtilCheckUIN (sess, uin);
+
+    log_event (uin, LOG_MESS, "You received instant message type %x (TCP? %d) from %s\n%s\n",
+               type, tcp, ContactFindName (uin), cdata);
+
+    cont = ContactFind (uin);
+    if (cont && (cont->flags & CONT_IGNORE))
+        return;
+    if (!cont && (prG->flags & FLAG_HERMIT))
+        return;
 
 #ifdef MSGEXEC
     if (prG->event_cmd && strlen (prG->event_cmd))
         ExecScript (prG->event_cmd, uin, type, cdata);
 #endif
+
+    if (timestr)
+        M_print ("%s", timestr);
+    else
+        Time_Stamp ();
+    M_print (" " CYAN BOLD "%10s" COLNONE " ", ContactFindName (uin));
+    
+    if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
+    {
+        M_print ("(");
+        Print_Status (tstatus);
+        M_print (") ");
+    }
 
     switch (type)
     {
@@ -755,10 +777,6 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
                 url_url++;
             }
 
-            log_event (uin, LOG_MESS,
-                       "You received URL message from %s\nDescription: %s\nURL: %s\n",
-                       ContactFindName (uin), url_desc, url_url);
-
             M_print ("%s" COLMESS "%s" COLNONE "\n", tcp ? MSGTCPRECSTR : MSGRECSTR, url_desc);
             Time_Stamp ();
             M_print (i18n (1594, "        URL: %s" COLMESS "%s" COLNONE "\n"),
@@ -789,16 +807,14 @@ void Do_Msg (Session *sess, UDWORD type, UWORD len, const char *data, UDWORD uin
         default:
             while (*cdata && (cdata[strlen (cdata) - 1] == '\n' || cdata[strlen (cdata) - 1] == '\r'))
                 cdata[strlen (cdata) - 1] = '\0';
-            log_event (uin, LOG_MESS, "You received instant message from %s\n%s\n",
-                       ContactFindName (uin), cdata);
             M_print ("%s" COLMESS "\x1b<%s" COLNONE "\x1b>\n", tcp ? MSGTCPRECSTR : MSGRECSTR, cdata);
             break;
     }
     uiG.last_rcvd_uin = uin;
-    if ((cont = ContactFind (uin)))
+    if (cont)
     {
-        cont->LastMessage = realloc (cont->LastMessage, len + 1);
-        strncpy (cont->LastMessage, cdata, len + 1);
-        cont->LastMessage [len] = '\0';
+        cont->LastMessage = realloc (cont->LastMessage, strlen (text) + 1);
+        strncpy (cont->LastMessage, cdata, strlen (text) + 1);
+        cont->LastMessage [strlen (text)] = '\0';
     }
 }

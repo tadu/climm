@@ -127,10 +127,7 @@ UDWORD ContactFindByNick (const char *nick)
                 if (!strncasecmp (mynick, cnt_contacts[i].nick, 19))
                 {
                     free (mynick);
-                    if ((SDWORD) cnt_contacts[i].uin > 0)
-                        return cnt_contacts[i].uin;
-                    else
-                        return -cnt_contacts[i].uin;        /* alias */
+                    return cnt_contacts[i].uin;
                 }
             }
             free (mynick);

@@ -219,7 +219,7 @@ This option may be repeated as desired.
 .Sh CONTACTS
 This section contains the contact list.
 .Bl -tag -width Fl
-.It Ic [ Ar * ] [ Ar ~ ] Ar uin Ar nick
+.It Ic [ Ar * ] [ Ar ~ ] [ Ar ^ ] Ar uin Ar nick
 Make user with UIN
 .Ar uin
 known under the nick
@@ -228,7 +228,10 @@ If
 .Ar *
 is given, the user may see you while you're invisible. If
 .Ar ~
-is given, ignore this user and let him see you as always offline.
+is given, let him see you as always offline. If
+.Ar ^
+is given, ignore this user.
+If a uin occurs multiple times, all except the first are treated as aliases.
 .El
 Note: the contact list has to be the last part of this file.
 .Sh SEE ALSO
