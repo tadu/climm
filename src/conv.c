@@ -73,6 +73,8 @@ UBYTE ConvEnc (const char *enc)
  */
 const char *ConvEncName (UBYTE enc)
 {
+    if (!conv_encs)
+        ConvEnc ("none");
     return conv_encs[enc & ~ENC_AUTO].enc;
 }
 
