@@ -739,6 +739,8 @@ void ContactSetCap (Contact *cont, Cap *cap)
             cont->v1 = 0;
             cont->v3 = ver & 0x1f;
             cont->v2 = cont->v4 = 0;
+            if (ver <= 1)
+                cont->caps &= ~(1 << CAP_UTF8);
         }
     }
     else if (cap->id == CAP_MICQ && cap->var)
