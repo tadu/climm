@@ -586,6 +586,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
 static JUMP_SNAC_F(SnacSrvAckmsg)
 {
     Packet *pak;
+    Contact *cont;
     UDWORD uin, mid1, mid2;
 /*  UWORD vers; */
 
@@ -596,8 +597,15 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
 /*  vers=*/PacketReadB2 (pak);
 
     uin = PacketReadUIN (pak);
+    
+    UtilCheckUIN (event->sess, uin);
+    cont = ContactFind (uin);
+    if (!cont)
+        return;
+    cont->status = STATUS_OFFLINE;
+
     Time_Stamp ();
-    M_print (" " COLCONTACT "%10s" COLNONE " ", ContactFindName (uin));
+    M_print (" " COLCONTACT "%10s" COLNONE " ", cont->nick);
     M_print (i18n (2126, "User is offline, message (%s#%08lx:%08lx%s) queued.\n"),
              COLSERVER, mid1, mid2, COLNONE);
     putlog (event->sess, NOW, uin, STATUS_OFFLINE, LOG_ACK, 0xFFFF, 

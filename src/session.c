@@ -128,6 +128,10 @@ Session *SessionFind (UWORD type, UDWORD uin, const Session *parent)
             for (i = 0; i < listlen; i++)
                 if (slist[i] && ((slist[i]->type & type) == type) && (slist[i]->connect & CONNECT_OK))
                     return slist[i];
+        if (!uin)
+            for (i = 0; i < listlen; i++)
+                if (slist[i] && ((slist[i]->type & type) == type))
+                    return slist[i];
     }
     return NULL;
 }

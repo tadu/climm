@@ -93,6 +93,9 @@ void SessionInitPeer (Session *list)
     list->dispatch    = &TCPDispatchMain;
     list->reconnect   = &TCPDispatchReconn;
     list->our_session = 0;
+    list->ip          = 0;
+    list->server      = NULL;
+    list->port        = list->spref->port;
 
     UtilIOConnectTCP (list);
 }

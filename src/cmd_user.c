@@ -15,6 +15,7 @@
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_cmd_v5_util.h"
 #include "cmd_pkt_v8.h"
+#include "cmd_pkt_v8_flap.h"
 #include "cmd_pkt_v8_snac.h"
 #include "preferences.h"
 #include "tabs.h"
@@ -124,8 +125,15 @@ static jump_t jump[] = {
 
 static Session *currsess = NULL;
 
-#define SESSION Session *sess = currsess; if (!sess && !(currsess = sess = SessionFind (TYPEF_ANY_SERVER, 0, NULL))) \
-    { M_print (i18n (1931, "Couldn't find server connection.\n")); return 0; }
+/* Have an opened server connection ready. */
+#define OSESSION Session *sess = currsess; \
+    if (!sess)                     currsess = sess = SessionFind (TYPEF_ANY_SERVER, 0, NULL); \
+    if (!sess || ~sess->connect & CONNECT_OK) \
+    { M_print (i18n (1931, "Current session is closed. Try another or open this one.\n")); return 0; }
+
+/* Try to have any server connection ready. */
+#define ASESSION Session *sess = currsess; \
+    if (!sess) currsess = sess = SessionFind (TYPEF_ANY_SERVER, 0, NULL);
 
 /*
  * Returns a pointer to the jump table.
@@ -171,7 +179,7 @@ const char *CmdUserLookupName (const char *cmd)
 static JUMP_F(CmdUserChange)
 {
     char *arg1 = NULL;
-    SESSION;
+    OSESSION;
 
     if (data == -1)
     {
@@ -216,7 +224,7 @@ static JUMP_F(CmdUserChange)
 static JUMP_F(CmdUserRandom)
 {
     UDWORD arg1 = 0;
-    SESSION;
+    OSESSION;
     
     if (!UtilUIParseInt (&args, &arg1))
     {
@@ -249,7 +257,7 @@ static JUMP_F(CmdUserRandom)
 static JUMP_F(CmdUserRandomSet)
 {
     UDWORD arg1 = 0;
-    SESSION;
+    OSESSION;
     
     if (!UtilUIParseInt (&args, &arg1))
     {
@@ -492,7 +500,7 @@ static JUMP_F(CmdUserHelp)
 static JUMP_F(CmdUserPass)
 {
     char *arg1 = NULL;
-    SESSION;
+    OSESSION;
     
     if (!UtilUIParseRemainder (&args, &arg1))
         M_print (i18n (2012, "No password given.\n"));
@@ -518,7 +526,7 @@ static JUMP_F(CmdUserPass)
 static JUMP_F(CmdUserSMS)
 {
     char *arg1 = NULL, *arg2 = NULL;
-    SESSION;
+    OSESSION;
     
     if (sess->ver < 6)
     {
@@ -545,7 +553,7 @@ static JUMP_F(CmdUserSMS)
 static JUMP_F(CmdUserInfo)
 {
     Contact *cont = NULL, *contr = NULL;
-    SESSION;
+    OSESSION;
 
     if (!UtilUIParseNick (&args, &cont, &contr, sess))
     {
@@ -578,7 +586,7 @@ static JUMP_F(CmdUserInfo)
 static JUMP_F(CmdUserPeek)
 {
     Contact *cont = NULL;
-    SESSION;
+    OSESSION;
     
     if (sess->ver < 6)
     {
@@ -683,11 +691,11 @@ static JUMP_F(CmdUserTCP)
     char *arg1 = NULL;
     Contact *cont = NULL;
     Session *list;
-    SESSION;
+    ASESSION;
 
     while (1)
     {
-        if (!(list = sess->assoc))
+        if (!sess || !(list = sess->assoc))
         {
             M_print (i18n (2011, "You do not have a listening peer-to-peer connection.\n"));
             return 0;
@@ -922,7 +930,7 @@ static JUMP_F(CmdUserAlter)
 static JUMP_F (CmdUserResend)
 {
     Contact *cont = NULL;
-    SESSION;
+    OSESSION;
 
     if (!uiG.last_message_sent) 
     {
@@ -963,7 +971,7 @@ static JUMP_F (CmdUserMessage)
     char *arg1 = NULL, *temp;
     UDWORD uin = 0;
     Contact *cont = NULL;
-    SESSION;
+    OSESSION;
 
     if (status)
     {
@@ -1171,12 +1179,12 @@ static JUMP_F(CmdUserStatusDetail)
     Session *peer;
     UDWORD stati[] = { -2, STATUS_OFFLINE, STATUS_DND,    STATUS_OCC, STATUS_NA,
                            STATUS_AWAY,    STATUS_ONLINE, STATUS_FFC, STATUSF_BIRTH };
-    SESSION;
+    ASESSION;
 
     if (!data)
         UtilUIParseInt (&args, &data);
 
-    if ((data & 8) && !UtilUIParseNick (&args, &cont, NULL, sess) && *args)
+    if ((data & 8) && (!sess || !UtilUIParseNick (&args, &cont, NULL, sess)) && *args)
     {
         M_print (i18n (1700, "%s is not a valid user in your list.\n"), args);
         return 0;
@@ -1211,11 +1219,14 @@ static JUMP_F(CmdUserStatusDetail)
 
     if (data & 4 && !uin)
     {
-        Time_Stamp ();
-        M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", sess->uin);
-        M_print (i18n (1071, "Your status is "));
-        Print_Status (sess->status);
-        M_print ("\n");
+        if (sess)
+        {
+            Time_Stamp ();
+            M_print (" " COLCONTACT "%10lu" COLNONE " ", sess->uin);
+            M_print (i18n (1071, "Your status is "));
+            Print_Status (sess->status);
+            M_print ("\n");
+        }
         if (data & 16)
             return 0;
     }
@@ -1245,7 +1256,7 @@ static JUMP_F(CmdUserStatusDetail)
             if (cont->flags & CONT_ALIAS && (~data & 2 || data & 1))
                 continue;
 
-            peer = sess->assoc ? SessionFind (TYPE_MSGDIRECT, cont->uin, sess->assoc) : NULL;
+            peer = (sess && sess->assoc) ? SessionFind (TYPE_MSGDIRECT, cont->uin, sess->assoc) : NULL;
 
             snprintf (statbuf, sizeof (statbuf), "(%s)", UtilStatus (contr->status));
             if (contr->version)
@@ -1353,20 +1364,20 @@ static JUMP_F(CmdUserStatusWide)
     int StatusLen;
     Contact *cont = NULL;
     char *stat;
-    SESSION;
+    OSESSION;
 
     if (data)
     {
         if ((Offline = (Contact **) malloc (MAX_CONTACTS * sizeof (Contact *))) == NULL)
         {
-            M_print (i18n (1652, "Insuffificient memory to display a wide Contact List.\n"));
+            M_print (i18n (2118, "Out of memory.\n"));
             return 0;
         }
     }
 
     if ((Online = (Contact **) malloc (MAX_CONTACTS * sizeof (Contact *))) == NULL)
     {
-        M_print (i18n (1652, "Insuffificient memory to display a wide Contact List.\n"));
+        M_print (i18n (2118, "Out of memory.\n"));
         return 0;
     }
 
@@ -1445,7 +1456,7 @@ static JUMP_F(CmdUserStatusWide)
     }
 
    /* Print our status */
-    M_print (" " MAGENTA BOLD "%10lu" COLNONE " %s%s",
+    M_print (" " COLCONTACT "%10lu" COLNONE " %s%s",
              sess->uin, i18n (1071, "Your status is "), stat);
     
     M_print (COLNONE "\n");
@@ -1488,7 +1499,7 @@ static JUMP_F(CmdUserStatusWide)
 static JUMP_F(CmdUserStatusShort)
 {
     Contact *cont;
-    SESSION;
+    OSESSION;
 
     M_print (W_SEPERATOR);
     Time_Stamp ();
@@ -1768,13 +1779,14 @@ static JUMP_F(CmdUserRegister)
 {
     if (strlen (args))
     {
-        Session *sess;
-        if ((sess = SessionFind (TYPE_SERVER, 0, NULL)))
-            SrvRegisterUIN (sess, args);
-        else if ((sess = SessionFind (TYPE_SERVER_OLD, 0, NULL)))
+        ASESSION;
+
+        if (!sess)
+            SrvRegisterUIN (NULL, args);
+        else if (sess->type & TYPEF_SERVER_OLD)
             CmdPktCmdRegNewUser (sess, args);     /* TODO */
         else
-            SrvRegisterUIN (NULL, args);
+            SrvRegisterUIN (sess, args);
     }
     return 0;
 }
@@ -1785,7 +1797,7 @@ static JUMP_F(CmdUserRegister)
 static JUMP_F(CmdUserTogIgnore)
 {
     Contact *cont = NULL, *contr = NULL;
-    SESSION;
+    OSESSION;
 
     if (!UtilUIParseNick (&args, &cont, &contr, sess))
     {
@@ -1813,7 +1825,7 @@ static JUMP_F(CmdUserTogIgnore)
 static JUMP_F(CmdUserTogInvis)
 {
     Contact *cont = NULL, *contr = NULL;
-    SESSION;
+    OSESSION;
 
     if (!UtilUIParseNick (&args, &cont, &contr, sess))
     {
@@ -1857,7 +1869,7 @@ static JUMP_F(CmdUserTogInvis)
 static JUMP_F(CmdUserTogVisible)
 {
     Contact *cont = NULL, *contr = NULL;
-    SESSION;
+    OSESSION;
 
     if (!UtilUIParseNick (&args, &cont, &contr, sess))
     {
@@ -1896,7 +1908,7 @@ static JUMP_F(CmdUserAdd)
 {
     Contact *cont = NULL, *cont2;
     char *arg1;
-    SESSION;
+    OSESSION;
 
     if (!UtilUIParseNick (&args, &cont, NULL, sess))
     {
@@ -1961,7 +1973,7 @@ static JUMP_F(CmdUserRem)
     Contact *cont = NULL;
     UDWORD uin;
     char *alias;
-    SESSION;
+    OSESSION;
 
     if (!UtilUIParseNick (&args, &cont, NULL, sess))
     {
@@ -1999,7 +2011,7 @@ static JUMP_F(CmdUserRem)
 static JUMP_F(CmdUserRInfo)
 {
     Contact *cont;
-    SESSION;
+    OSESSION;
 
     cont = ContactFind (uiG.last_rcvd_uin);
     if (!cont)
@@ -2032,7 +2044,7 @@ static JUMP_F(CmdUserAuth)
 {
     char *cmd = NULL, *argsb, *msg = NULL;
     Contact *cont = NULL;
-    SESSION;
+    OSESSION;
 
     argsb = args;
     if (!UtilUIParse (&args, &cmd))
@@ -2124,7 +2136,7 @@ static JUMP_F(CmdUserURL)
 {
     char *url, *msg;
     Contact *cont = NULL;
-    SESSION;
+    OSESSION;
 
     if (!UtilUIParseNick (&args, &cont, NULL, sess))
     {
@@ -2183,7 +2195,7 @@ static JUMP_F(CmdUserTabs)
 static JUMP_F(CmdUserLast)
 {
     Contact *cont = NULL, *contr = NULL;
-    SESSION;
+    OSESSION;
 
     if (!UtilUIParseNick (&args, &cont, &contr, sess))
     {
@@ -2362,11 +2374,53 @@ static JUMP_F(CmdUserConn)
         M_print (i18n (2101, "Removing connection %d and its dependands completely.\n"), i);
         SessionClose (sess);
     }
+    else if (!strcmp (arg1, "close") || !strcmp (arg1, "logoff"))
+    {
+        UDWORD i = 0;
+
+        UtilUIParseInt (&args, &i);
+
+        sess = SessionNr (i - 1);
+        if (!sess)
+        {
+            M_print (i18n (1894, "There is no connection number %d.\n"), i);
+            return 0;
+        }
+        if (sess->type == TYPE_SERVER_OLD)
+        {
+            M_print (i18n (2152, "Closing v5 server connection.\n"));
+            CmdPktCmdSendTextCode (sess, "B_USER_DISCONNECTED");
+        }
+        else if (sess->type == TYPE_SERVER)
+        {
+            M_print (i18n (2153, "Closing v8 server connection.\n"));
+            FlapCliGoodbye (sess);
+        }
+        else if (sess->type == TYPE_MSGLISTEN)
+        {
+            M_print (i18n (2154, "Closing message listener.\n"));
+            if (sess->sok != -1)
+                sockclose (sess->sok);
+            sess->sok = -1;
+            sess->connect = 0;
+        }
+        else if (sess->type == TYPE_MSGDIRECT)
+        {
+            M_print (i18n (2155, "Closing direct connection.\n"));
+            TCPClose (sess);
+        }
+        else
+        {
+            M_print (i18n (2101, "Removing connection %d and its dependands completely.\n"), i);
+            SessionClose (sess);
+        }
+    }
     else
     {
         M_print (i18n (1892, "conn               List available connections.\n"));
         M_print (i18n (2094, "conn login         Open first server connection.\n"));
         M_print (i18n (1893, "conn login <nr>    Open connection <nr>.\n"));
+        M_print (i18n (2156, "conn close <nr>    Close connection <nr>.\n"));
         M_print (i18n (2095, "conn remove <nr>   Remove connection <nr>.\n"));
         M_print (i18n (2097, "conn select <nr>   Select connection <nr> as server connection.\n"));
         M_print (i18n (2100, "conn select <uin>  Select connection with UIN <uin> as server connection.\n"));
@@ -2380,7 +2434,7 @@ static JUMP_F(CmdUserConn)
 static JUMP_F(CmdUserContact)
 {
     char *tmp = NULL;
-    SESSION;
+    OSESSION;
 
     if (sess->type != TYPE_SERVER)
         return 0;
@@ -2429,7 +2483,7 @@ static JUMP_F(CmdUserQuit)
 static JUMP_F(CmdUserOldSearch)
 {
     static char *email, *nick, *first, *last;
-    SESSION;
+    OSESSION;
 
     switch (status)
     {
@@ -2480,7 +2534,7 @@ static JUMP_F(CmdUserSearch)
     int temp;
     static MetaWP wp = { 0 };
     char *arg1 = NULL, *arg2 = NULL;
-    SESSION;
+    OSESSION;
 
     if (!strcmp (args, "."))
         status += 400;
@@ -2643,7 +2697,7 @@ static JUMP_F(CmdUserSearch)
 static JUMP_F(CmdUserUpdate)
 {
     static MetaGeneral user;
-    SESSION;
+    OSESSION;
 
     switch (status)
     {
@@ -2779,7 +2833,7 @@ static JUMP_F(CmdUserOther)
 {
     static MetaMore other;
     int temp;
-    SESSION;
+    OSESSION;
 
     switch (status)
     {
@@ -2873,7 +2927,7 @@ static JUMP_F(CmdUserAbout)
 {
     static int offset = 0;
     static char msg[1024];
-    SESSION;
+    OSESSION;
 
     if (status > 100)
     {
