@@ -540,7 +540,10 @@ JUMP_F(CmdUserPeek)
     if (!args)
         return 0;
     uin = ContactFindByNick (args);
-    SnacCliSendmsg (sess, uin, "", 0xe8);
+    if (uin == -1)
+        M_print (i18n (1061, "%s not recognized as a nick name.\n"));
+    else
+        SnacCliSendmsg (sess, uin, "", 0xe8);
     return 0;
 }
 

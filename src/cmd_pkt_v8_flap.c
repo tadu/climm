@@ -169,7 +169,7 @@ void FlapSave (Packet *pak, BOOL in)
     char buf[200];
     
     snprintf (buf, sizeof (buf), "%s/debug", PrefUserDir ());
-    mkdir (buf, 0600);
+    mkdir (buf, 0700);
     snprintf (buf, sizeof (buf), "%s/debug/packets", PrefUserDir ());
     if (!(logf = fopen (buf, "a")))
         return;
