@@ -41,10 +41,6 @@ void CmdPktCmdSendMessage (Session *sess, UDWORD uin, const char *text, UDWORD t
     
     UtilCheckUIN (sess, uin);
     
-    if (uiG.last_message_sent) free (uiG.last_message_sent);
-    uiG.last_message_sent = strdup (text);
-    uiG.last_message_sent_type = type;
-    
     Time_Stamp ();
     M_print (" " COLSENT "%10s" COLNONE " " MSGSENTSTR "%s\n", ContactFindName (uin), MsgEllipsis (text));
 

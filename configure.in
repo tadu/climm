@@ -50,7 +50,7 @@ AC_PROG_GCC_TRADITIONAL
 AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([atexit gethostbyname memmove memset mkdir select socket strcasecmp \
-                strchr strdup strncasecmp strpbrk strrchr strstr strtol \
+                strchr strdup strncasecmp strpbrk strrchr strstr strtol strtok_r \
                 symlink chmod tcgetattr hstrerror snprintf vsnprintf])
 
 if test "x$ac_cv_func_snprintf" != "xyes"; then

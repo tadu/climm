@@ -879,28 +879,40 @@ static JUMP_F(CmdUserAlter)
 static JUMP_F (CmdUserResend)
 {
     UDWORD uin;
-    char *arg1;
+    char *arg1, *b;
     SESSION;
 
-    arg1 = strtok (args, UIN_DELIMS);
     if (!uiG.last_message_sent) 
     {
         M_print (i18n (1771, "You haven't sent a message to anyone yet!\n"));
         return 0;
     }
+
+#ifdef HAVE_STRTOK_R
+    arg1 = strtok_r (args, UIN_DELIMS, &b);
+#else
+    arg1 = strtok (args, UIN_DELIMS);
+#endif
     if (!arg1)
     {
         M_print (i18n (1676, "Need uin to send to.\n"));
         return 0;
     }
-    uin = ContactFindByNick (arg1);
-    if (uin == -1)
+    
+    while (arg1)
     {
-        M_print (i18n (1061, "%s not recognized as a nick name.\n"), arg1);
-        return 0;
+        uin = ContactFindByNick (arg1);
+        if (uin == -1)
+            M_print (i18n (1061, "%s not recognized as a nick name.\n"), arg1);
+        else
+            icq_sendmsg (sess, uiG.last_sent_uin = uin,
+                         uiG.last_message_sent, uiG.last_message_sent_type);
+#ifdef HAVE_STRTOK_R
+        arg1 = strtok_r (NULL, UIN_DELIMS, &b);
+#else
+        arg1 = NULL;
+#endif
     }
-    icq_sendmsg (sess, uin, uiG.last_message_sent, uiG.last_message_sent_type);
-    uiG.last_sent_uin = uin;
     return 0;
 }
 

@@ -88,6 +88,8 @@ void icq_sendurl (Session *sess, UDWORD uin, char *description, char *url)
 
 void icq_sendmsg (Session *sess, UDWORD uin, char *text, UDWORD msg_type)
 {
+    char *old;
+
     log_event (uin, LOG_MESS, "You sent instant message to %s\n%s\n", ContactFindName (uin), text);
 #ifdef TCP_COMM
     if (!sess->assoc || !TCPSendMsg (sess->assoc, uin, text, msg_type))
@@ -98,4 +100,10 @@ void icq_sendmsg (Session *sess, UDWORD uin, char *text, UDWORD msg_type)
         else
             CmdPktCmdSendMessage (sess, uin, text, msg_type);
     }
+
+    old = uiG.last_message_sent;
+    uiG.last_message_sent      = strdup (text);
+    uiG.last_message_sent_type = msg_type;
+    if (old)
+        free (old);
 }
