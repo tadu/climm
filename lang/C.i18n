@@ -1031,7 +1031,7 @@
 2393:%Y-%m-%d
 2394: %I:%M %p
 2395:View your messages of <contact> since <date>.
-2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n
+2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-01-31' or '2004-01-31T23:12:05'.\n
 2397:No server session found.\n
 2398:Set or display options for a contact group, a contact or global.\n
 2399:Request SSL connection.
@@ -1136,7 +1136,7 @@
 2499:Please recompile using the '--enable-iconvrepl' configure option.\n
 2500:Manual locale setting %s ignored - use a real locale instead.\n
 2501:Your locale is unset. Please use the %s--i18n%s command line option or set one of the environment variables %sLC_ALL%s, %sLC_MESSAGES%s, or %sLANG%s to your current locale.\n
-2502:Locale setting %s ignored - use a real locale instead.\n
+2502:Locale setting %s is no real locale and probably not what you want.\n
 2503:Your system doesn't know the %s locale - try %siconv --list%s.\n
 2504:Could not open configuration file %s%s%s.
 2505:Deprecated option -f used. Please use the similar -b instead.\n
