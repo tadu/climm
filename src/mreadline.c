@@ -546,7 +546,6 @@ int R_process_input (void)
                     break;
 #ifdef ENABLE_UTF8
                 case 16:       /* ^P */
-                case 21:       /* ^U */
                     istat = 10;
                     break;
 #endif
