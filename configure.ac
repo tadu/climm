@@ -3,7 +3,7 @@
 
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.56)
+AC_PREREQ(2.57)
 AC_INIT([micq], [0.4.9.5])
 AC_CONFIG_SRCDIR([include/micq.h])
 AC_CONFIG_LIBOBJ_DIR(replace)
@@ -11,13 +11,11 @@ AC_CONFIG_HEADER(include/config.h)
 AC_CANONICAL_HOST
 
 AC_CHECK_PROG(AUTOMAKE, automake-1.7, automake-1.7)
-AC_CHECK_PROG(AUTOMAKE, automake-1.6, automake-1.6)
 AC_CHECK_PROG(ACLOCAL, aclocal-1.7, aclocal-1.7)
-AC_CHECK_PROG(ACLOCAL, aclocal-1.6, aclocal-1.6)
 AC_CHECK_PROG(AUTOHEADER, autoheader, autoheader)
 AC_CHECK_PROG(AUTOCONF, autoconf, autoconf)
 
-AM_INIT_AUTOMAKE(1.6)
+AM_INIT_AUTOMAKE(1.7)
 AM_MAINTAINER_MODE
 
 AC_DEFINE(MICQ_VERSION,VERSION,[mICQ's current version])
@@ -58,27 +56,57 @@ if test "x$ac_arg_use_iconv" != "xno"; then
       AC_CHECK_FUNC([iconv], [ac_arg_use_iconv=glibc])
     fi
   fi
+else
+  ac_arg_use_iconv=none
+fi
+
+if test "x$ac_arg_use_iconv" != "xnone"; then
   AC_CACHE_CHECK(for iconv declaration, ac_cv_iconv_const,
     [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
-                  #include <iconv.h>]],
-                 [[#ifdef __cplusplus
-                  "C"
-                  #endif
-                  #if defined(__STDC__) || defined(__cplusplus)
-                  size_t iconv (iconv_t cd, char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);
-                  #else
-                  size_t iconv();
-                  #endif]])],
-        [ac_cv_iconv_const=no-const],
-        [ac_cv_iconv_const=const])
-  ])
+        #include <iconv.h>]],
+        [[#ifdef __cplusplus
+          "C"
+          #endif
+          #if defined(__STDC__) || defined(__cplusplus)
+          size_t iconv (iconv_t cd, char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);
+          #else
+          size_t iconv();
+          #endif]])],
+      [ac_cv_iconv_const=no-const],
+      [ac_cv_iconv_const=const])])
   if test $ac_cv_iconv_const = const; then
      AC_DEFINE([ICONV_CONST], const, [Define as const if the declaration of iconv() needs const.])
   else
      AC_DEFINE([ICONV_CONST], /* no-const */)
   fi
-else
-  ac_arg_use_iconv=none
+  AC_CACHE_CHECK(for iconv minimal functionality, ac_cv_iconv_min,
+    [AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
+          #include <iconv.h>]],
+        [[iconv_t res;
+          res = iconv_open ("utf-8", "iso-8859-1");
+          if (res == (iconv_t)-1 || !res) exit (2);
+          res = iconv_open ("iso-8859-1", "utf-8");
+          if (res == (iconv_t)-1 || !res) exit (2);
+          res = iconv_open ("utf-8", "iso-8859-15");
+          if (res == (iconv_t)-1 || !res) exit (3);
+          res = iconv_open ("iso-8859-15", "utf-8");
+          if (res == (iconv_t)-1 || !res) exit (3);
+          res = iconv_open ("utf-8", "koi8-u");
+          if (res == (iconv_t)-1 || !res) exit (4);
+          res = iconv_open ("koi8-u", "utf-8");
+          if (res == (iconv_t)-1 || !res) exit (4);
+          res = iconv_open ("utf-8", "windows-1251");
+          if (res == (iconv_t)-1 || !res) exit (5);
+          res = iconv_open ("windows-1251", "utf-8");
+          if (res == (iconv_t)-1 || !res) exit (5);
+          exit (0);]])],
+      [ac_cv_iconv_min=ok],
+      [ac_cv_iconv_min=broken],
+      [ac_cv_iconv_min=cross])
+  ])
+  if test $ac_cv_iconv_min != ok; then
+    ac_arg_use_iconv=none
+  fi
 fi
 
 if test "x$ac_arg_use_remote" != "xno"; then
