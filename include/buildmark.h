@@ -3,7 +3,7 @@
 #define MICQ_VERSION VERSION
 
 #define BUILD_MICQ     0xffffff42
-#define BUILD_MICQ_OLD 0x7d0001e9
+#define BUILD_MICQ_OLD 0x7d0001ea
 #define BUILD_MIRANDA  0xffffffff
 #define BUILD_STRICQ   0xffffff8f
 
