@@ -57,16 +57,17 @@ void Set_rcfile( char * name )
    path = ".\\";
 #endif
 
+#ifdef __amigaos__
+   path = "PROGDIR:";
+#endif
+
 #ifdef UNIX
-   home = getenv( "HOME" );
+   home = getenv ("HOME");
+   if (!home) home = "";
    path = malloc( strlen( home ) + 2 );
    strcpy( path, home );
    if ( path[ strlen( path ) - 1 ] != '/' )
       strcat( path, "/" );
-#endif
-
-#ifdef __amigaos__
-   path = "PROGDIR:";
 #endif
 
    strcpy( rcfile, path );

@@ -78,6 +78,11 @@ BOOL M_Is_Set( FD_T sok )
 
 int M_select( void )
 {
-      /* don't care about writefds and exceptfds: */
-      return select( max_fd+1, &readfds, NULL, NULL, &tv);
+   int res;
+
+   /* don't care about writefds and exceptfds: */
+   res = select( max_fd+1, &readfds, NULL, NULL, &tv);
+   if (res == -1)
+      FD_ZERO (&readfds);
+   return res;
 }

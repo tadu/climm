@@ -516,8 +516,25 @@ void Print_Status( DWORD new_status  )
 }
 
 /**********************************************
+ * Returns at most MSGID_LENGTH characters of a
+ * message, possibly using ellipsis.
+ **********************************************/
+
+char *MsgEllipsis (char *msg)
+{
+   static char buff[MSGID_LENGTH + 2];
+   
+   if (strlen (msg) <= MSGID_LENGTH)
+      return msg;
+   strncpy (buff, msg, MSGID_LENGTH - 3);
+   buff[MSGID_LENGTH - 3] = '\0';
+   strcat (buff, "...");
+   return buff;
+}
+
+/**********************************************
  * Returns the nick of a UIN if we know it else
- * it will return Unknow UIN
+ * it will return Unknown UIN
  **********************************************/
 char *UIN2nick( DWORD uin)
 {
@@ -526,44 +543,69 @@ char *UIN2nick( DWORD uin)
    for ( i=0; i < Num_Contacts; i++ )
    {
      if ( Contacts[i].uin == uin )
-        break;
+        return Contacts[i].nick;
    }
-    
-   if ( i == Num_Contacts )
-   {
-      return NULL;
-   }
-   else
-   {
-      return Contacts[i].nick;
-   }
+   return NULL;
 }
 
 /**********************************************
-Prints the name of a user or there UIN if name
-is not know.
+ * Returns the nick of a UIN if we know it else
+ * it will return UIN
+ **********************************************/
+char *UIN2Name (DWORD uin)
+{
+   int i;
+   char buff[100];
+
+   for (i = 0; i < Num_Contacts; i++)
+   {
+     if (Contacts[i].uin == uin)
+        return Contacts[i].nick;
+    }
+   snprintf (buff, 98, "%lu", uin);
+   return strdup (buff);
+}
+
+/**********************************************
+Prints the name of a user or their UIN if name
+is not known.
 ***********************************************/
 int Print_UIN_Name( DWORD uin )
 {
    int i;
    
-   for ( i=0; i < Num_Contacts; i++ )
+   for (i = 0; i < Num_Contacts; i++)
    {
-      if ( Contacts[i].uin == uin )
-         break;
+      if (Contacts[i].uin == uin)
+      {
+         M_print (CONTACTCOL "%s" NOCOL, Contacts[i].nick);
+         return i;
+      }
+   }
+   M_print (CLIENTCOL "%lu" NOCOL, uin);
+   return -1;
+}
+
+/**********************************************
+Prints the name of a user or their UIN if name
+is not known, but use exactly 8 chars if possible.
+***********************************************/
+int Print_UIN_Name_8 (DWORD uin)
+{
+   int i;
+
+   for (i = 0; i < Num_Contacts; i++)
+   {
+      if (Contacts[i].uin == uin)
+      {
+          M_print (CONTACTCOL "%8s" NOCOL, Contacts[i].nick);
+          return i;
+      }
    }
 
-   if ( i == Num_Contacts )
-   {
-      M_print( CLIENTCOL "%lu" NOCOL, uin );
-      return -1 ;
-   }
-   else
-   {
-      M_print( "%s%s%s", CONTACTCOL, Contacts[i].nick, NOCOL );
-      return i;
-   }
-}
+   M_print (CLIENTCOL "%8lu" NOCOL, uin );
+   return -1 ;
+ }
 
 /**********************************************
 Returns the contact list with uin
@@ -822,19 +864,21 @@ char * Set_Log_Dir( const char *newpath )
 	   path = ".\\";
 #endif
 
+#ifdef __amigaos__
+	   path = "PROGDIR:";
+#endif
+
 #ifdef UNIX
-	   home = getenv( "HOME" );
+	   home = getenv ("HOME");
+	   if (!home) home = "";
 	   path = malloc( strlen( home ) + 2 );
 	   strcpy( path, home );
 	   if ( path[ strlen( path ) - 1 ] != '/' )
 	      strcat( path, "/" );
 #endif
 
-#ifdef __amigaos__
-	   path = "PROGDIR:";
-#endif
-		Log_Dir = path;
-		return path;
+	   Log_Dir = path;
+	   return path;
 	} else {
 #ifdef _WIN32
 		char sep = '\\';
@@ -900,16 +944,17 @@ int log_event( DWORD uin, int type, char *str, ... )
    path = ".\\";
 #endif
 
+#ifdef __amigaos__
+   path = "PROGDIR:";
+#endif
+
 #ifdef UNIX
    home = getenv( "HOME" );
+   if (!home) home = "";
    path = malloc( strlen( home ) + 2 );
    strcpy( path, home );
    if ( path[ strlen( path ) - 1 ] != '/' )
       strcat( path, "/" );
-#endif
-
-#ifdef __amigaos__
-   path = "PROGDIR:";
 #endif
 
    strcpy( buffer, path );

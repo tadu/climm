@@ -63,6 +63,8 @@ Changes :
    #define CLIENTCOL       GREEN
    #define NOCOL           "\x1B[0m"
 #endif
+#define SENTCOL            MAGENTA BOLD
+#define ACKCOL             GREEN BOLD
 
 #else
    #define SERVCOL         ""
@@ -521,6 +523,8 @@ void Quit_ICQ( SOK_T sok );
 void icq_sendmsg( SOK_T sok, DWORD uin, char *text, DWORD msg_type);
 void Recv_Message( SOK_T sok, BYTE * pak );
 int Print_UIN_Name( DWORD uin );
+int Print_UIN_Name_8 (DWORD uin);
+char *MsgEllipsis (char *msg);
 void icq_change_status( SOK_T sok, DWORD status );
 DWORD nick2uin( char * nick );
 S_DWORD Echo_On( void );
@@ -571,6 +575,7 @@ void Meta_User( SOK_T sok, BYTE *data, DWORD len, DWORD uin );
 void Kill_Prompt( void );
 void Soft_Prompt( void );
 char *UIN2nick( DWORD uin);
+char *UIN2Name (DWORD uin);
 void Init_New_User( void );
 CONTACT_PTR UIN2Contact( DWORD uin );
 #ifdef UNIX 

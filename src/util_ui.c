@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <signal.h>
 
 
 #ifdef _WIN32
@@ -34,14 +35,6 @@
 
 static 	BOOL No_Prompt = FALSE;
 	WORD Max_Screen_Width = 0;
-
-#define ADD_COLOR(a)      else if ( ! strncmp( str2, a , strlen( a ) ) ) \
-      {                                                                  \
-         if ( Color )                                                    \
-            printf( a );                                                 \
-         str2 += strlen( a );                                            \
-      }
-
 
 
 /***************************************************************
@@ -111,30 +104,39 @@ void M_fdprint( FD_T fd, char *str, ... )
    va_end(args);
 }
 
+#ifdef UNIX
+static volatile DWORD scrwd = 0;
+static void micq_sigwinch_handler (int a)
+{
+   struct winsize ws;
+   
+   scrwd = 0;
+   ioctl (STDOUT, TIOCGWINSZ, &ws);
+   scrwd = ws.ws_col;
+};
+#endif
+
 WORD Get_Max_Screen_Width()
 {
-#ifdef UNIX
-      struct winsize  WindowSize;
+   DWORD scrwdtmp = scrwd;
 
-      ioctl(0, TIOCGWINSZ, &WindowSize);
-	if ( WindowSize.ws_col ) {
-	      return WindowSize.ws_col;
-	} else {
-	  if ( Max_Screen_Width ) {
-	           return Max_Screen_Width;
-	   } else {
-	       	    return 80; /* a reasonable screen width default. */
-	   }
-	}
-#else
-	/* Could put more code here to determine the width dynamically of 
-		xterms etc */
-   if ( Max_Screen_Width ) {
-	   return Max_Screen_Width;
-   } else {
-	   return 80; /* a reasonable screen width default. */
+   if (scrwdtmp)
+       return scrwdtmp;
+
+#ifdef UNIX
+   micq_sigwinch_handler (0);
+   if ((scrwdtmp = scrwd))
+   {
+      if (signal (SIGWINCH, &micq_sigwinch_handler) == SIG_ERR)
+         scrwd = 0;
+      return scrwdtmp;
    }
+#else
+   /* Could put more code here to determine the width dynamically of xterms etc */
 #endif
+   if (Max_Screen_Width)
+      return Max_Screen_Width;
+   return 80;  /* a reasonable screen width default. */
 }
 
 #ifdef WORD_WRAP
@@ -298,17 +300,15 @@ void M_print( char *str, ... )
       str1[0] = 0;
       M_prints( str2 );
       str1[0] = 0x1B;
-      str2 = str1;
-      if ( FALSE ) {;}
-      ADD_COLOR( NOCOL )
-      ADD_COLOR( SERVCOL )
-      ADD_COLOR( MESSCOL )
-      ADD_COLOR( CONTACTCOL )
-      ADD_COLOR( CLIENTCOL )
-      else
+      str2 = strchr (str1, 'm');
+      if (str2)
       {
-          str2++;
+         str2[0] = 0;
+         if (Color) printf ("%sm", str1);
+         str2++;
       }
+      else
+         str2 = str1 + 1;
    }
    M_prints( str2 );
 #else

@@ -30,6 +30,10 @@
 ** But you can change the tab stops if you so desire */
 #define TAB_STOP 8
 
+/* Define how many characters to print when messages are sent
+ * or acknowledged to identify a message. */
+#define MSGID_LENGTH 20
+
 /* Color schemes  leave them all commented out for the default */
 /*
 #define COLOR_SCHEME_A
