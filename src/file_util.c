@@ -212,11 +212,12 @@ void Initialize_RC_File ()
     conn->assoc = connt;
     connt->spref->type = TYPE_MSGLISTEN;
     connt->spref->flags = CONN_AUTOLOGIN;
+    connt->spref->status = prG->s5Use ? 2 : TCP_OK_FLAG;
     connt->type  = connt->spref->type;
     connt->flags = connt->spref->flags;
+    connt->status = connt->spref->status;
     connt->spref->version = 8;
     connt->ver = 8;
-    connt->status = prG->s5Use ? 2 : TCP_OK_FLAG;
 #endif
 
 #ifdef ENABLE_REMOTECONTROL
@@ -249,6 +250,7 @@ void Initialize_RC_File ()
     prG->logplace  = strdup ("history" _OS_PATHSEPSTR);
     prG->chat      = 49;
 
+    conn->contacts = ContactGroupFind (0, conn, s_sprintf ("contacts-icq8-%ld", uin), 1);
 #ifdef ENABLE_UTF8
     ContactFind (conn->contacts, 0, 82274703, "R\xc3\xbc" "diger Kuhlmann", 1);
 #else
@@ -1192,18 +1194,18 @@ int Save_RC ()
     fprintf (rcf, "\n[General]\n# Support for SOCKS5 server\n");
     fprintf (rcf, "s5_use %d\n", prG->s5Use);
     if (!prG->s5Host)
-        fprintf (rcf, "s5_host [none]\n");
+        fprintf (rcf, "s5_host \"[none]\"\n");
     else
         fprintf (rcf, "s5_host %s\n", s_quote (prG->s5Host));
     fprintf (rcf, "s5_port %d\n", prG->s5Port);
     fprintf (rcf, "# If you need authentication, put 1 for s5_auth and fill your name/password\n");
     fprintf (rcf, "s5_auth %d\n", prG->s5Auth);
     if (!prG->s5Name)
-        fprintf (rcf, "s5_name [none]\n");
+        fprintf (rcf, "s5_name \"[none]\"\n");
     else
         fprintf (rcf, "s5_name %s\n", s_quote (prG->s5Name));
     if (!prG->s5Pass)
-        fprintf (rcf, "s5_pass [none]\n");
+        fprintf (rcf, "s5_pass \"[none]\"\n");
     else
         fprintf (rcf, "s5_pass %s\n", s_quote (prG->s5Pass));
 

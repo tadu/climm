@@ -31,6 +31,7 @@ Changes :
 #include "packet.h"
 #include "util_str.h"
 #include "cmd_user.h"
+#include "conv.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>

@@ -1212,6 +1212,7 @@ static JUMP_SNAC_F(SnacSrvNewuin)
 {
     event->conn->uin = event->conn->spref->uin = PacketReadAt4 (event->pak, 6 + 10 + 46);
     M_printf (i18n (1762, "Your new UIN is: %ld.\n"), event->conn->uin);
+
     if (event->conn->flags & CONN_WIZARD)
     {
         assert (event->conn->spref);
@@ -1222,7 +1223,10 @@ static JUMP_SNAC_F(SnacSrvNewuin)
 
         event->conn->spref->flags |= CONN_AUTOLOGIN;
         event->conn->assoc->spref->flags |= CONN_AUTOLOGIN;
+
+        s_repl (&event->conn->contacts->name, s_sprintf ("contacts-icq8-%ld", event->conn->uin));
         M_print (i18n (1790, "Setup wizard finished. Congratulations to your new UIN!\n"));
+
         if (Save_RC () == -1)
         {
             M_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
