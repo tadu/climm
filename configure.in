@@ -9,17 +9,17 @@ AC_CONFIG_SRCDIR([include/micq.h])
 
 AC_CANONICAL_HOST
 
-AM_INIT_AUTOMAKE(micq, 0.4.6)
-AM_CONFIG_HEADER(include/config.h)
-
 AM_MISSING_PROG(AUTOCONF, autoconf-2.50, $missing_dir)
-if printenv AUTOCONF | grep -q >/dev/null 2>/dev/null missing; then
+if echo "$AUTOCONF" | grep -q >/dev/null 2>/dev/null missing; then
   AM_MISSING_PROG(AUTOCONF, autoconf, $missing_dir)
 fi
 AM_MISSING_PROG(AUTOHEADER, autoheader-2.50, $missing_dir)
-if printenv AUTOHEADER | grep -q >/dev/null 2>/dev/null missing; then
+if echo "$AUTOHEADER" | grep -q >/dev/null 2>/dev/null missing; then
   AM_MISSING_PROG(AUTOHEADER, autoheader, $missing_dir)
 fi
+
+AM_INIT_AUTOMAKE(micq, 0.4.6)
+AM_CONFIG_HEADER(include/config.h)
 
 
 # Checks for programs.
@@ -32,7 +32,7 @@ AC_CHECK_FUNCS([inet_ntoa getpeername])
 if test "x$ac_cv_func_inet_ntoa" = "xno"; then
   AC_CHECK_LIB(nsl, inet_ntoa)
 fi
-if test "x$ac_cv_func_inet_getpeername" = "xno"; then
+if test "x$ac_cv_func_getpeername" = "xno"; then
   AC_CHECK_LIB(socket, getpeername)
 fi
 
