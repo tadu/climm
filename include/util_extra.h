@@ -25,6 +25,7 @@ void        ExtraD     (Extra *extra);
 #define EXTRA_REF          0x61
 #define EXTRA_FORCE        0x71
 #define EXTRA_FILETRANS    0x83
+#define EXTRA_FILEACCEPT   0x93
 
 #define EXTRA_TRANS_DC     0x1
 #define EXTRA_TRANS_TYPE2  0x2

@@ -683,6 +683,11 @@ Alias for
 .BR peer\ file .
 New for 0.4.10.
 .TP
+.BI accept \ [...]
+Alias for
+.BR peer\ accept .
+New for 0.4.10.4.
+.TP
 .BI peer \ command\ uin|nick
 Operate command
 .I command
@@ -721,7 +726,30 @@ is
 the file name without the path is sent, and if it is
 .RB ' . '
 the same name is sent.
+.TP
+.BR accept \ [contact]\ [id]
+Accept an incoming file request from
+.IR contact
+with the given ID
+.IR id .
+If there is only one pending incoming file request, the
+.IR contact \ and\  id
+arguments may be omitted, otherwise it is undefined which file request
+is answered when several match.
+.TP
+.BR deny \ [contact]\ [id]\ [reason]
+Deny an incoming file request from
+.IR contact
+with the given ID
+.IR id
+with the reason
+.IR reason .
 .RE
+.TP
+.BI login \ [...]
+Alias for
+.BR conn\ login .
+New for 0.4.10.4.
 .TP
 .BI conn \ [command\ nr]
 List all connections, or operate

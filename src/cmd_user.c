@@ -133,6 +133,7 @@ static jump_t jump[] = {
     { &CmdUserPeer,          "peer",         0,   0 },
     { &CmdUserPeer,          "tcp",          0,   0 },
     { &CmdUserPeer,          "file",         0,   4 },
+    { &CmdUserPeer,          "accept",       0,  22 },
     { &CmdUserQuit,          "q",            0,   0 },
     { &CmdUserQuit,          "quit",         0,   0 },
     { &CmdUserQuit,          "exit",         0,   0 },
@@ -152,6 +153,7 @@ static jump_t jump[] = {
     { &CmdUserOther,         "other",        0,   0 },
     { &CmdUserAbout,         "about",        0,   0 },
     { &CmdUserConn,          "conn",         0,   0 },
+    { &CmdUserConn,          "login",        0,   2 },
 
     { NULL, NULL, 0, 0 }
 };
@@ -493,7 +495,8 @@ static JUMP_F(CmdUserHelp)
         CMD_USER_HELP  ("peer open|close|off <uin|nick>", i18n (2037, "Open or close a peer-to-peer connection, or disable using peer-to-peer connections for <uin> or <nick>."));
         CMD_USER_HELP  ("peer file <contacts> <file> <description>", i18n (2179, "Send all <contacts> a single file."));
         CMD_USER_HELP  ("peer files <uin|nick> <file1> <as1> ... <fileN> <asN> <description>", i18n (2180, "Send <uin> or <nick> several files."));
-        CMD_USER_HELP  ("peer accept <uin|nick> [<id>]", i18n (2319, "Accept an incoming file transfer from <uin> or <nick>."));
+        CMD_USER_HELP  ("peer accept [<uin|nick>] [<id>]", i18n (2319, "Accept an incoming file transfer from <uin> or <nick>."));
+        CMD_USER_HELP  ("peer deny [<uin|nick>] [<id>] [<reason>]", i18n (2369, "Refuse an incoming file transfer from <uin> or <nick>."));
         CMD_USER_HELP  ("conn open|login [<nr>]", i18n (2038, "Opens connection number <nr>, or the first server connection."));
         CMD_USER_HELP  ("conn close|remove <nr>", i18n (2181, "Closes or removes connection number <nr>."));
         CMD_USER_HELP  ("conn select [<nr>]", i18n (2182, "Select server connection number <nr> as current server connection."));
@@ -809,16 +812,17 @@ static JUMP_F(CmdUserPeer)
         else if (!strcmp (par->txt, "off"))    data = 3;
         else if (!strcmp (par->txt, "file"))   data = 4;
         else if (!strcmp (par->txt, "files"))  data = 5;
-        else if (!strcmp (par->txt, "accept")) data = 6;
-        else if (!strcmp (par->txt, "deny"))   data = 7;
+        else if (!strcmp (par->txt, "accept")) data = 16 + 6;
+        else if (!strcmp (par->txt, "deny"))   data = 16 + 7;
         else if (!strcmp (par->txt, "auto"))   data = 10;
         else if (!strcmp (par->txt, "away"))   data = 11;
         else if (!strcmp (par->txt, "na"))     data = 12;
         else if (!strcmp (par->txt, "dnd"))    data = 13;
         else if (!strcmp (par->txt, "ffc"))    data = 14;
     }
-    while (data && s_parsenick_s (&args, &cont, MULTI_SEP, conn))
+    while (data && (s_parsenick_s (&args, &cont, MULTI_SEP, conn) || (data & 16)))
     {
+        data &= 15;
         switch (data)
         {
             case 1:
@@ -898,21 +902,6 @@ static JUMP_F(CmdUserPeer)
                 }
                 return 0;
             case 6:
-                {
-                    Event *event, *revent = NULL;
-
-                    s_parseint (&args, &seq);
-                    if (!(event = QueueDequeue2 (conn, QUEUE_ACKNOWLEDGE, seq, cont)) || !(revent = event->rel) ||
-                        !(revent = QueueDequeue2 (event->rel->conn, event->rel->type, event->rel->seq, event->rel->cont)))
-                    {
-                        M_printf (i18n (2258, "No pending incoming file transfer request for %s with (sequence %ld) found.\n"),
-                                  cont->nick, seq);
-                    }
-                    else
-                        revent->callback (revent);
-                    EventD (event);
-                }
-                break;
             case 7:
                 {
                     Event *event, *revent = NULL;
@@ -922,11 +911,20 @@ static JUMP_F(CmdUserPeer)
                         !(revent = QueueDequeue2 (event->rel->conn, event->rel->type, event->rel->seq, event->rel->cont)))
                     {
                         M_printf (i18n (2258, "No pending incoming file transfer request for %s with (sequence %ld) found.\n"),
-                                  cont->nick, seq);
+                                  cont ? cont->nick : "<?>", seq);
                     }
                     else
-                        event->callback (revent);
+                    {
+                        char *reason = NULL;
+                        
+                        if (data == 6)
+                            revent->extra = ExtraSet (revent->extra, EXTRA_FILEACCEPT, 1, NULL);
+                        else if (s_parserem (&args, &reason))
+                            revent->extra = ExtraSet (revent->extra, EXTRA_FILEACCEPT, 0, reason);
+                        revent->callback (revent);
+                    }
                     EventD (event);
+                    return 0;
                 }
                 break;
             case 10:
@@ -953,6 +951,7 @@ static JUMP_F(CmdUserPeer)
     M_print (i18n (2111, "                  - Send file1 as as1, ..., with description.\n"));
     M_print (i18n (2112, "                  - as = '/': strip path, as = '.': as is\n"));
     M_print (i18n (2320, "peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n"));
+    M_print (i18n (2368, "peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n"));
 #else
     M_print (i18n (1866, "This version of mICQ is compiled without direct connection (peer to peer) support.\n"));
 #endif
@@ -2884,151 +2883,147 @@ static JUMP_F(CmdUserUptime)
 static JUMP_F(CmdUserConn)
 {
     int i;
+    UDWORD nr;
     strc_t par;
     Connection *connl;
 
-    if (!s_parse (&args, &par))
+    if (!data)
     {
-        M_print (i18n (1887, "Connections:"));
-        M_print ("\n  " COLINDENT);
-        
-        for (i = 0; (connl = ConnectionNr (i)); i++)
-        {
-            Contact *cont = connl->cont;
+        if (!s_parse (&args, &par))            data = 1;
+        else if (!strcmp (par->txt, "login"))  data = 2;
+        else if (!strcmp (par->txt, "open"))   data = 2;
+        else if (!strcmp (par->txt, "select")) data = 3;
+        else if (!strcmp (par->txt, "delete")) data = 4;
+        else if (!strcmp (par->txt, "remove")) data = 4;
+        else if (!strcmp (par->txt, "close"))  data = 5;
+        else if (!strcmp (par->txt, "logoff")) data = 5;
+        else                                   data = 0;
+    }
+     
+    switch (data)
+    {
+        case 0:
+            M_print (i18n (1892, "conn               List available connections.\n"));
+            M_print (i18n (2094, "conn login         Open first server connection.\n"));
+            M_print (i18n (1893, "conn login <nr>    Open connection <nr>.\n"));
+            M_print (i18n (2156, "conn close <nr>    Close connection <nr>.\n"));
+            M_print (i18n (2095, "conn remove <nr>   Remove connection <nr>.\n"));
+            M_print (i18n (2097, "conn select <nr>   Select connection <nr> as server connection.\n"));
+            M_print (i18n (2100, "conn select <uin>  Select connection with UIN <uin> as server connection.\n"));
+            break;
 
-            M_printf (i18n (2093, "%02d %-15s version %d for %s (%lx), at %s:%ld %s\n"),
-                     i + 1, ConnectionType (connl), connl->version, cont ? cont->nick : "", connl->status,
-                     connl->server ? connl->server : s_ip (connl->ip), connl->port,
-                     connl->connect & CONNECT_FAIL ? i18n (1497, "failed") :
-                     connl->connect & CONNECT_OK   ? i18n (1934, "connected") :
-                     connl->connect & CONNECT_MASK ? i18n (1911, "connecting") : i18n (1912, "closed"));
-            if (prG->verbose)
+        case 1:
+            M_print (i18n (1887, "Connections:"));
+            M_print ("\n  " COLINDENT);
+            
+            for (i = 0; (connl = ConnectionNr (i)); i++)
             {
-                char *t1, *t2, *t3;
-                M_printf (i18n (1935, "    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n"),
-                     connl->type, connl->sok, t1 = strdup (s_ip (connl->ip)),
-                     connl->connect, t2 = strdup (s_ip (connl->our_local_ip)),
-                     t3 = strdup (s_ip (connl->our_outside_ip)),
-                     connl->our_session, connl->our_seq, connl->our_seq2);
-                M_printf (i18n (2081, "    at %p parent %p assoc %p\n"), connl, connl->parent, connl->assoc);
-                free (t1);
-                free (t2);
-                free (t3);
-            }
-        } 
-        M_print (COLEXDENT "\r");
-    }
-    else if (!strcmp (par->txt, "login") || !strcmp (par->txt, "open"))
-    {
-        UDWORD i = 0, j;
+                Contact *cont = connl->cont;
 
-        if (!s_parseint (&args, &i))
-            for (j = 0; (connl = ConnectionNr (j)); j++)
-                if (connl->type & TYPEF_SERVER)
+                M_printf (i18n (2093, "%02d %-15s version %d for %s (%lx), at %s:%ld %s\n"),
+                         i + 1, ConnectionType (connl), connl->version, cont ? cont->nick : "", connl->status,
+                         connl->server ? connl->server : s_ip (connl->ip), connl->port,
+                         connl->connect & CONNECT_FAIL ? i18n (1497, "failed") :
+                         connl->connect & CONNECT_OK   ? i18n (1934, "connected") :
+                         connl->connect & CONNECT_MASK ? i18n (1911, "connecting") : i18n (1912, "closed"));
+                if (prG->verbose)
                 {
-                    i = j + 1;
-                    break;
+                    char *t1, *t2, *t3;
+                    M_printf (i18n (1935, "    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n"),
+                         connl->type, connl->sok, t1 = strdup (s_ip (connl->ip)),
+                         connl->connect, t2 = strdup (s_ip (connl->our_local_ip)),
+                         t3 = strdup (s_ip (connl->our_outside_ip)),
+                         connl->our_session, connl->our_seq, connl->our_seq2);
+                    M_printf (i18n (2081, "    at %p parent %p assoc %p\n"), connl, connl->parent, connl->assoc);
+                    free (t1);
+                    free (t2);
+                    free (t3);
                 }
+            } 
+            M_print (COLEXDENT "\r");
+            break;
+            
+        case 2:
+            if (!s_parseint (&args, &nr))
+                nr = 1 + ConnectionFindNr (ConnectionFind (TYPEF_SERVER, NULL, 0));
 
-        connl = ConnectionNr (i - 1);
-        if (!connl)
-        {
-            M_printf (i18n (1894, "There is no connection number %ld.\n"), i);
-            return 0;
-        }
-        if (connl->connect & CONNECT_OK)
-        {
-            M_printf (i18n (1891, "Connection %ld is already open.\n"), i);
-            return 0;
-        }
-        if (!connl->open)
-        {
-            M_printf (i18n (2194, "Don't know how to open this connection type.\n"));
-            return 0;
-        }
-        connl->open (connl);
-    }
-    else if (!strcmp (par->txt, "select"))
-    {
-        UDWORD i = 0;
+            connl = ConnectionNr (nr - 1);
+            if (!connl)
+            {
+                M_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
+                return 0;
+            }
+            if (connl->connect & CONNECT_OK)
+            {
+                M_printf (i18n (1891, "Connection %ld is already open.\n"), nr);
+                return 0;
+            }
+            if (!connl->open)
+            {
+                M_printf (i18n (2194, "Don't know how to open this connection type.\n"));
+                return 0;
+            }
+            connl->open (connl);
 
-        if (!s_parseint (&args, &i))
-            i = ConnectionFindNr (conn) + 1;
+        case 3:
+            if (!s_parseint (&args, &nr))
+                nr = ConnectionFindNr (conn) + 1;
 
-        connl = ConnectionNr (i - 1);
-        if (!connl && !(connl = ConnectionFindUIN (TYPEF_SERVER, i)))
-        {
-            M_printf (i18n (1894, "There is no connection number %ld.\n"), i);
-            return 0;
-        }
-        if (~connl->type & TYPEF_SERVER)
-        {
-            M_printf (i18n (2098, "Connection %ld is not a server connection.\n"), i);
-            return 0;
-        }
-#if 0
-        if (~connl->connect & CONNECT_OK)
-        {
-            M_printf (i18n (2096, "Connection %ld is not open.\n"), i);
-            return 0;
-        }
-#endif
-        conn = connl;
-        M_printf (i18n (2099, "Selected connection %ld (version %d, UIN %ld) as current connection.\n"),
-                 i, connl->version, connl->uin);
-    }
-    else if (!strcmp (par->txt, "remove") || !strcmp (par->txt, "delete"))
-    {
-        UDWORD i = 0;
+            connl = ConnectionNr (nr - 1);
+            if (!connl && !(connl = ConnectionFindUIN (TYPEF_SERVER, nr)))
+            {
+                M_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
+                return 0;
+            }
+            if (~connl->type & TYPEF_SERVER)
+            {
+                M_printf (i18n (2098, "Connection %ld is not a server connection.\n"), nr);
+                return 0;
+            }
+            conn = connl;
+            M_printf (i18n (2099, "Selected connection %ld (version %d, UIN %ld) as current connection.\n"),
+                      nr, connl->version, connl->uin);
+            break;
+        
+        case 4:
+            if (!s_parseint (&args, &nr))
+                nr = 0;
 
-        s_parseint (&args, &i);
-
-        connl = ConnectionNr (i - 1);
-        if (!connl)
-        {
-            M_printf (i18n (1894, "There is no connection number %ld.\n"), i);
-            return 0;
-        }
-        if (connl->flags & CONN_CONFIGURED)
-        {
-            M_printf (i18n (2102, "Connection %ld is a configured connection.\n"), i);
-            return 0;
-        }
-        M_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), i);
-        ConnectionClose (connl);
-    }
-    else if (!strcmp (par->txt, "close") || !strcmp (par->txt, "logoff"))
-    {
-        UDWORD i = 0;
-
-        s_parseint (&args, &i);
-
-        connl = ConnectionNr (i - 1);
-        if (!connl)
-        {
-            M_printf (i18n (1894, "There is no connection number %ld.\n"), i);
-            return 0;
-        }
-        if (connl->close)
-        {
-            M_printf (i18n (2185, "Closing connection %ld.\n"), i);
-            connl->close (connl);
-        }
-        else
-        {
-            M_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), i);
+            connl = ConnectionNr (nr - 1);
+            if (!connl)
+            {
+                M_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
+                return 0;
+            }
+            if (connl->flags & CONN_CONFIGURED)
+            {
+                M_printf (i18n (2102, "Connection %ld is a configured connection.\n"), nr);
+                return 0;
+            }
+            M_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), nr);
             ConnectionClose (connl);
-        }
-    }
-    else
-    {
-        M_print (i18n (1892, "conn               List available connections.\n"));
-        M_print (i18n (2094, "conn login         Open first server connection.\n"));
-        M_print (i18n (1893, "conn login <nr>    Open connection <nr>.\n"));
-        M_print (i18n (2156, "conn close <nr>    Close connection <nr>.\n"));
-        M_print (i18n (2095, "conn remove <nr>   Remove connection <nr>.\n"));
-        M_print (i18n (2097, "conn select <nr>   Select connection <nr> as server connection.\n"));
-        M_print (i18n (2100, "conn select <uin>  Select connection with UIN <uin> as server connection.\n"));
+            break;
+        
+        case 5:
+            if (!s_parseint (&args, &nr))
+                nr = 0;
+
+            connl = ConnectionNr (nr - 1);
+            if (!connl)
+            {
+                M_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
+                return 0;
+            }
+            if (connl->close)
+            {
+                M_printf (i18n (2185, "Closing connection %ld.\n"), nr);
+                connl->close (connl);
+            }
+            else
+            {
+                M_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), nr);
+                ConnectionClose (connl);
+            }
     }
     return 0;
 }

@@ -1280,6 +1280,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     Connection *peer, *flist, *fpeer;
     int i, rc, sumlen, sum;
     time_t now = time (NULL);
+    str_s filenames = { NULL, 0, 0};
 
     ASSERT_MSGLISTEN(list);
     assert (cont);
@@ -1298,18 +1299,12 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     if (!cont->dc->ip_loc && !cont->dc->ip_rem)
         return FALSE;
 
-    if ((peer = ConnectionFind (TYPE_MSGDIRECT, cont, list)))
-    {
-        if (peer->connect & CONNECT_FAIL)
+    if (!TCPDirectOpen (list, cont))
+        return FALSE;
+    if (!(peer = ConnectionFind (TYPE_MSGDIRECT, cont, list)))
+        return FALSE;
+    if (peer->connect & CONNECT_FAIL)
             return FALSE;
-    }
-    else
-    {
-        if (!TCPDirectOpen (list, cont))
-            return FALSE;
-        if (!(peer = ConnectionFind (TYPE_MSGDIRECT, cont, list)))
-            return FALSE;
-    }
 
     ASSERT_MSGDIRECT(peer);
     
@@ -1326,7 +1321,8 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     
     fpeer->cont    = cont;
     fpeer->connect = 77;
-        
+    
+    s_init (&filenames, "", 0);
     for (sumlen = sum = i = 0; i < count; i++)
     {
         struct stat fstat;
@@ -1342,6 +1338,9 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
             M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick),
                       cont->nick, COLNONE);
             M_printf (i18n (2091, "Queueing %s as %s for transfer.\n"), files[i], as[i]);
+            if (sum)
+                s_catn (&filenames, ", ", 2);
+            s_cat (&filenames, as[i]);
             sum++;
             sumlen += fstat.st_size;
             pak = PeerPacketC (fpeer, 2);
@@ -1359,6 +1358,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     if (!sum)
     {
         ConnectionClose (fpeer);
+        s_done (&filenames);
         return FALSE;
     }
     
@@ -1367,7 +1367,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     PacketWrite4 (pak, sum);
     PacketWrite4 (pak, sumlen);
     PacketWrite4 (pak, 64);
-    PacketWriteLNTS (pak, "Sender's nick");
+    PacketWriteLNTS (pak, cont->nick);
     QueueEnqueueData (fpeer, QUEUE_PEER_FILE, 0, now, pak, cont,
                       ExtraSet (NULL, EXTRA_MESSAGE, MSG_FILE, description), &PeerFileResend);
         
@@ -1378,7 +1378,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
                           cont->status, -1, c_out_to (description, cont));
         PacketWrite2 (pak, 0);
         PacketWrite2 (pak, 0);
-        PacketWriteLNTS (pak, "many, really many, files");
+        PacketWriteLNTS (pak, filenames.txt);
         PacketWrite4 (pak, sumlen);
         PacketWrite4 (pak, 0);
     }
@@ -1387,13 +1387,14 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
         pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
         SrvMsgAdvanced   (pak, peer->our_seq, MSG_EXTENDED, list->parent->status,
                           cont->status, -1, "");
-        SrvMsgGreet (pak, 0x29, description, 0, sumlen, "many, really many files");
+        SrvMsgGreet (pak, 0x29, description, 0, sumlen, filenames.txt);
     }
 
     peer->stat_real_pak_sent++;
 
     QueueEnqueueData (peer, QUEUE_TCP_RESEND, peer->our_seq--, now, pak, cont,
                       ExtraSet (NULL, EXTRA_MESSAGE, MSG_FILE, description), &TCPCallBackResend);
+    s_done (&filenames);
     return TRUE;
 }
 
@@ -1406,6 +1407,7 @@ static void TCPCallBackResend (Event *event)
     Connection *peer = event->conn;
     Packet *pak = event->pak;
     UWORD delta, e_trans;
+    char isfile = ExtraGet (event->extra, EXTRA_MESSAGE) == MSG_FILE;
 
     if (!peer || !cont)
     {
@@ -1420,12 +1422,7 @@ static void TCPCallBackResend (Event *event)
     
     e_trans = ExtraGet (event->extra, EXTRA_TRANS);
     
-    if (event->attempts >= MAX_RETRY_P2P_ATTEMPTS)
-    {
-        if (ExtraGet (event->extra, EXTRA_MESSAGE) != MSG_FILE)
-            TCPClose (peer);
-    }
-    else if (peer->connect & CONNECT_MASK)
+    if (peer->connect & CONNECT_MASK && event->attempts < (isfile ? MAX_RETRY_P2PFILE_ATTEMPTS : MAX_RETRY_P2P_ATTEMPTS))
     {
         if (peer->connect & CONNECT_OK)
         {
@@ -1443,16 +1440,20 @@ static void TCPCallBackResend (Event *event)
         return;
     }
 
-    peer->connect = CONNECT_FAIL;
-    event->extra = ExtraSet (event->extra, EXTRA_TRANS, e_trans & ~EXTRA_TRANS_DC, NULL);
-    delta = (peer->version > 6 ? 1 : 0);
-    if (PacketReadAt2 (pak, 4 + delta) == TCP_CMD_MESSAGE)
+    if (!isfile)
     {
-        IMCliMsg (peer->parent->parent, cont, event->extra);
-        event->extra = NULL;
+        TCPClose (peer);
+        peer->connect = CONNECT_FAIL;
+        event->extra = ExtraSet (event->extra, EXTRA_TRANS, e_trans & ~EXTRA_TRANS_DC, NULL);
+        delta = (peer->version > 6 ? 1 : 0);
+        if (PacketReadAt2 (pak, 4 + delta) == TCP_CMD_MESSAGE)
+        {
+            IMCliMsg (peer->parent->parent, cont, event->extra);
+            event->extra = NULL;
+        }
+        else
+            M_printf (i18n (1844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4 + delta));
     }
-    else
-        M_printf (i18n (1844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4 + delta));
     
     EventD (event);
 }

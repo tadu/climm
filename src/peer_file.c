@@ -120,10 +120,13 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
 
     extra = ExtraSet (NULL, 0, bytes, files);
 
-    if (((txt = ExtraGetS (event->extra, EXTRA_REF)) && *txt) || !cont || !flist
+    if (((txt = ExtraGetS (event->extra, EXTRA_FILEACCEPT)) && *txt) || !cont || !flist
+        || !ExtraGet (event->extra, EXTRA_FILEACCEPT)
         || !(fpeer = ConnectionClone (flist, TYPE_FILEDIRECT)))
     {
-        IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_FILE_REJING, txt ? txt : "auto-refused", extra);
+        if (!txt || !*txt)
+            event->extra = ExtraSet (event->extra, EXTRA_FILEACCEPT, 0, txt = "auto-refused");
+        IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_FILE_REJING, txt, extra);
         return FALSE;
     }
     
@@ -498,7 +501,7 @@ void PeerFileResend (Event *event)
     
     e_msg_text = ExtraGetS (event->extra, EXTRA_MESSAGE);
 
-    if (event->attempts >= MAX_RETRY_P2P_ATTEMPTS || (!event->pak && !event->seq))
+    if (event->attempts >= MAX_RETRY_P2PFILE_ATTEMPTS || (!event->pak && !event->seq))
     {
         M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
         M_printf (i18n (2168, "File transfer #%ld (%s) dropped after %ld attempts because of timeout.\n"),
@@ -515,7 +518,7 @@ void PeerFileResend (Event *event)
     {
         if (!event->seq)
             event->attempts++;
-        event->due = time (NULL) + 10;
+        event->due = time (NULL) + 20;
         QueueEnqueue (event);
         return;
     }
