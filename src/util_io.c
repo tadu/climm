@@ -693,7 +693,10 @@ Packet *UtilIOReceiveTCP (Connection *conn)
         return NULL;
     
     if (!(pak = conn->incoming))
+    {
         conn->incoming = pak = PacketC ();
+        memset (pak->data, 0, 6);
+    }
     
     if (conn->type == TYPE_SERVER)
     {

@@ -725,8 +725,8 @@ static int rl_left (UDWORD i)
     gpos = rl_colpos;
     for ( ; i > 0; i--)
     {
-        while (rl_ucspos > 0 && (!rl_ucscol.txt[rl_ucspos - 1] || 
-               (rl_ucs_at (&rl_ucs, rl_ucspos) == WEOF)))
+        while (rl_ucspos > 0 && (!rl_ucscol.txt[rl_ucspos - 1] ||
+               (rl_ucs_at (&rl_ucs, rl_ucspos - 1) == WEOF)))
             gpos -= rl_ucscol.txt[--rl_ucspos];
         if (rl_ucspos > 0)
             gpos -= rl_ucscol.txt[--rl_ucspos];
