@@ -315,12 +315,6 @@ void Read_RC_File (FILE *rcf)
                 section = 4;
                 cg = ContactGroupFind (0, (Connection *)(-1), "", 1);
                 cg->serv = NULL;
-                for (i = 0; (conn = ConnectionNr (i)); i++)
-                    if (conn->flags & CONN_AUTOLOGIN)
-                    {
-                        cg->serv = conn;
-                        break;
-                    }
             }
             else
             {
@@ -1012,6 +1006,8 @@ void Read_RC_File (FILE *rcf)
                             if (conn->spref && conn->spref->type & TYPEF_SERVER)
                             {
                                 cg->serv = conn;
+                                if (!cg->serv->contacts)
+                                    cg->serv->contacts = cg;
                                 break;
                             }
                     }
@@ -1033,24 +1029,23 @@ void Read_RC_File (FILE *rcf)
                     PrefParseInt (uin);
                     
                     for (i = 0; (conn = ConnectionNr (i)); i++)
-                        if (conn->type == type && conn->uin == uin)
+                        if (conn->spref && conn->spref->type == type && conn->spref->uin == uin)
                         {
-                            if (cg->serv->contacts == cg)
-                                cg->serv->contacts = NULL;
                             cg->serv = conn;
-                            cg->serv->contacts = cg;
+                            if (!cg->serv->contacts)
+                                cg->serv->contacts = cg;
                             break;
                         }
                 }
-                else if (!strcasecmp (cmd, "entry"))
+                else if (!strcasecmp (cmd, "entry") && cg->conn)
                 {
                     UDWORD uin;
                     
                     PrefParseInt (i);
                     PrefParseInt (uin);
                     
-                    cont = ContactFind (conn->contacts, i, uin, s_sprintf ("%ld", uin), 1);
-                    if (cg != conn->contacts)
+                    cont = ContactFind (cg->conn->contacts, i, uin, s_sprintf ("%ld", uin), 1);
+                    if (cg != cg->conn->contacts)
                         ContactAdd (cg, cont);
                     cont->flags |= CONT_TEMPORARY;
                 }
