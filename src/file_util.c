@@ -407,12 +407,47 @@ static void Read_RC_File (FD_T rcf)
                     }
                     else
                     {
-                        Sound = SOUND_OFF;
+                        Sound = SOUND_ON;
                     }
                 }
                 else if (!strcasecmp (tmp, "No_Sound"))
                 {
                     Sound = SOUND_OFF;
+                    Sound_Str[0] = '\0';
+                }
+                else if (!strcasecmp (tmp, "SoundOnline"))
+                {
+                    M_strcpy (Sound_Str_Online, strtok (NULL, "\n\t"));
+                    if (Sound_Str_Online[0])
+                    {
+                        SoundOnline = SOUND_CMD;
+                    }
+                    else 
+                    {
+                        SoundOnline = SOUND_ON;
+                    }
+                }
+                else if (!strcasecmp (tmp, "No_SoundOnline"))
+                {
+                    SoundOnline = SOUND_OFF;
+                    Sound_Str[0] = '\0';
+                }
+                else if (!strcasecmp (tmp, "SoundOffline"))
+                {       
+                    M_strcpy (Sound_Str_Offline, strtok (NULL, "\n\t"));
+                    if (Sound_Str_Offline[0])
+                    {
+                        SoundOffline = SOUND_CMD;
+                    }
+                    else
+                    {
+                        SoundOffline = SOUND_ON;
+                    }
+                }
+                else if (!strcasecmp (tmp, "No_SoundOffline"))
+                {
+                    SoundOffline = SOUND_OFF;
+                    Sound_Str[0] = '\0';
                 }
                 else if (!strcasecmp (tmp, "Auto_away"))
                 {
@@ -701,7 +736,16 @@ int Save_RC ()
     M_fdprint (rcf, "LogType %d\n\n", LogType);
 
     M_fdprint (rcf, "# Define to a program which is executed to play sound when a message is received.\n");
-    M_fdprint (rcf, "sound %s%s\n\n", Sound_Str, Sound == SOUND_OFF ? "" : "\nNo_Sound");
+    M_fdprint (rcf, "%sSound %s\n%sNo_Sound\n\n", Sound == SOUND_OFF ? "#" : "", 
+                    Sound_Str, Sound == SOUND_OFF ? "" : "#");
+
+    M_fdprint (rcf, "# Execute this cmd when a user comes online in your contacts.\n");
+    M_fdprint (rcf, "%sSoundOnline %s\n%sNo_SoundOnline\n\n", SoundOnline == SOUND_OFF ? "#" : "",
+                    Sound_Str_Online, SoundOnline == SOUND_OFF ? "" : "#");
+
+    M_fdprint (rcf, "# Execute this cmd when a user goes offline in your contacts.\n");
+    M_fdprint (rcf, "%sSoundOffline %s\n%sNo_SoundOffline\n\n", SoundOffline == SOUND_OFF ? "#" : "",
+                    Sound_Str_Offline, SoundOffline == SOUND_OFF ? "" : "#");
 
     if (Color)
         M_fdprint (rcf, "#No_Color\n");

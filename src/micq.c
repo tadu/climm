@@ -48,6 +48,10 @@ UDWORD real_packs_recv = 0;
 
 UBYTE Sound = SOUND_ON;          /* Beeps on by default */
 UBYTE Sound_Str[150];            /* the command to run from the shell to play sound files */
+UBYTE SoundOnline = SOUND_OFF;   /* Sound for ppl coming online default off */
+UBYTE Sound_Str_Online[150];     /* Command to run from shell when someone comes online */
+UBYTE SoundOffline = SOUND_OFF;  /* Sound for ppl going offline default off */
+UBYTE Sound_Str_Offline[150];    /* Command to run from shell when someone goes offline */
 BOOL Hermit = FALSE;
 BOOL Russian = FALSE;           /* Do we do kio8-r <->Cp1251 codeset translation? */
 BOOL JapaneseEUC = FALSE;       /* Do we do Shift-JIS <->EUC codeset translation? */
@@ -107,7 +111,7 @@ unsigned int away_time;
 unsigned int next_resend;
 
 /* aaron
-   Actual definition of the variable holding Micq's start time.				*/
+   Actual definition of the variable holding Micq's start time.                */
 time_t MicqStartTime;
 /* end of aaron */
 

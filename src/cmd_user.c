@@ -31,6 +31,8 @@ static jump_f CmdUserStatusWide;
 static jump_f CmdUserStatusW;
 static jump_f CmdUserStatusE;
 static jump_f CmdUserSound;
+static jump_f CmdUserSoundOnline;
+static jump_f CmdUserSoundOffline;
 static jump_f CmdUserColor;
 static jump_f CmdUserClear;
 static jump_f CmdUserTogIgnore;
@@ -71,6 +73,8 @@ static jump_t jump[] = {
     { &CmdUserStatusW,       "w",        NULL, 2,   0 },
     { &CmdUserStatusE,       "e",        NULL, 2,   0 },
     { &CmdUserSound,         "sound",    NULL, 2,   0 },
+    { &CmdUserSoundOnline,   "soundonline",  NULL, 2,   0 },
+    { &CmdUserSoundOffline,  "soundoffline", NULL, 2,   0 },
     { &CmdUserColor,         "color",    NULL, 2,   0 },
     { &CmdUserChange,        "change",   NULL, 0,  -1 },
     { &CmdUserChange,        "online",   NULL, 1,   0 },
@@ -261,7 +265,7 @@ JUMP_F(CmdUserHelp)
                  i18n (418, "Set the verbosity level (default 0)."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("clear"),
-		 i18n (419, "Clears the screen."));
+                 i18n (419, "Clears the screen."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("sound"),
                  i18n (420, "Toggles beeping when recieving new messages."));
@@ -270,7 +274,7 @@ JUMP_F(CmdUserHelp)
                  i18n (421, "Toggles displaying colors."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("q"),
-		 i18n (422, "Logs off and quits."));
+                 i18n (422, "Logs off and quits."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("auto"),
                  i18n (423, "Displays your autoreply status."));
@@ -311,9 +315,9 @@ JUMP_F(CmdUserHelp)
         M_print (COLMESS "%s <nick>" COLNONE "\n\t\x1b«%s\x1b»\n", "last",
                  i18n (403, "Displays the last message received from <nick>, or a list of who has send you at least one message."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", "tabs", 
-		 i18n (702, "Display a list of nicknames that you can tab through.")); 
+                 i18n (702, "Display a list of nicknames that you can tab through.")); 
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", "uptime", 
-		 i18n (719, "Shows how long Micq has been running."));
+                 i18n (719, "Shows how long Micq has been running."));
         M_print ("  " COLCLIENT "\x1b«%s\x1b»" COLNONE "\n",
                  i18n (720, "uin can be either a number or the nickname of the user."));
         M_print ("  " COLCLIENT "\x1b«%s\x1b»" COLNONE "\n",
@@ -364,26 +368,26 @@ JUMP_F(CmdUserHelp)
         M_print (COLMESS "reg <password>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  i18n (426, "Creates a new UIN with the specified password."));
         M_print (COLMESS "%s|%s|%s|%s|%s|%s|%s" COLNONE "\n\t\x1b«%s\n%s\n%s\n%s\n%s\n%s\n%s\x1b»\n", 
-		 CmdUserLookupName ("online"),
-		 CmdUserLookupName ("away"),
-		 CmdUserLookupName ("na"),
-		 CmdUserLookupName ("occ"),
-		 CmdUserLookupName ("dnd"),
-		 CmdUserLookupName ("ffc"),
-		 CmdUserLookupName ("inv"),
-		 i18n (431, "Change status to Online."),
-		 /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("online"), */ 
-		 i18n (432, "Mark as Away."),
-		 /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("away"), */
-		 i18n (433, "Mark as Not Available."),
-		 /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("na"), */
-		 i18n (434, "Mark as Occupied."),
-		 /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("dnd"), */
-		 i18n (435, "Mark as Do not Disturb."),
-		 /*        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("ffc"), */ 
-		 i18n (436, "Mark as Free for Chat."),
-		 /*        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("inv"), */
-		 i18n (437, "Mark as Invisible."));
+                 CmdUserLookupName ("online"),
+                 CmdUserLookupName ("away"),
+                 CmdUserLookupName ("na"),
+                 CmdUserLookupName ("occ"),
+                 CmdUserLookupName ("dnd"),
+                 CmdUserLookupName ("ffc"),
+                 CmdUserLookupName ("inv"),
+                 i18n (431, "Change status to Online."),
+                 /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("online"), */ 
+                 i18n (432, "Mark as Away."),
+                 /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("away"), */
+                 i18n (433, "Mark as Not Available."),
+                 /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("na"), */
+                 i18n (434, "Mark as Occupied."),
+                 /*M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("dnd"), */
+                 i18n (435, "Mark as Do not Disturb."),
+                 /*        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("ffc"), */ 
+                 i18n (436, "Mark as Free for Chat."),
+                 /*        M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", CmdUserLookupName ("inv"), */
+                 i18n (437, "Mark as Invisible."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("update"),
                  i18n (438, "Updates your basic info (email, nickname, etc.)."));
@@ -393,7 +397,7 @@ JUMP_F(CmdUserHelp)
                  CmdUserLookupName ("about"),
                  i18n (402, "Updates your about user info."));
         M_print (COLMESS "set <nr>" COLNONE "\n\t\x1b«%s\x1b»\n", 
-		 i18n (439, "Sets your random user group."));
+                 i18n (439, "Sets your random user group."));
     }
     return 0;
 }
@@ -1288,9 +1292,10 @@ JUMP_F(CmdUserSound)
     if ((arg1 = strtok (args, "")))
     {
         *Sound_Str = 0;
-        if (!strcasecmp(arg1, "on"))
+        Sound = SOUND_ON;
+        if (!strcasecmp (arg1, i18n (85, "on")))
            Sound = SOUND_ON;
-        else if (!strcasecmp(arg1, "off"))
+        else if (!strcasecmp (arg1, i18n (86, "off")))
            Sound = SOUND_OFF;
         else /* treat it as a command */
            strcpy (Sound_Str, arg1);
@@ -1303,6 +1308,61 @@ JUMP_F(CmdUserSound)
         M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (84, "Sound"), i18n (86, "off"));
     return 0;
 }
+
+/*
+ * Toggles soundonline or changes soundonline command.
+ */
+JUMP_F(CmdUserSoundOnline)
+{
+    char *arg1;
+    
+    if ((arg1 = strtok (args, "")))
+    {
+        *Sound_Str = 0;
+        SoundOnline = SOUND_ON;
+        if (!strcasecmp (arg1, i18n (85, "on")))
+           SoundOnline = SOUND_ON;
+        else if (!strcasecmp (arg1, i18n (86, "off")))
+           SoundOnline = SOUND_OFF;
+        else /* treat it as a command */
+           strcpy (Sound_Str_Online, arg1);
+    }
+    if (*Sound_Str_Online)
+        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (802, "SoundOnline cmd"), Sound_Str_Online);
+    else if (SOUND_ON == SoundOnline)
+        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (804, "SoundOnline"), i18n (85, "on"));
+    else if (SOUND_OFF == SoundOnline)
+        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (804, "SoundOnline"), i18n (86, "off"));
+    return 0;
+}
+
+/*
+ * Toggles soundoffine or changes soundoffline command.
+ */
+JUMP_F(CmdUserSoundOffline)
+{
+    char *arg1;
+    
+    if ((arg1 = strtok (args, "")))
+    {
+        *Sound_Str_Offline = 0;
+        SoundOffline = SOUND_ON;
+        if (!strcasecmp (arg1, i18n (85, "on")))
+           SoundOffline = SOUND_ON;
+        else if (!strcasecmp (arg1, i18n (86, "off")))
+           SoundOffline = SOUND_OFF;
+        else /* treat it as a command */
+           strcpy (Sound_Str_Offline, arg1);
+    }
+    if (*Sound_Str_Offline)
+        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (803, "SoundOffline cmd"), Sound_Str_Offline);
+    else if (SOUND_ON == SoundOffline)
+        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (805, "SoundOffline"), i18n (85, "on"));
+    else if (SOUND_OFF == SoundOffline)
+        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (805, "SoundOffline"), i18n (86, "off"));
+    return 0;
+}
+
 
 /*
  * Toggles color on/off.

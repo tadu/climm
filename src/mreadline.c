@@ -236,8 +236,11 @@ int R_process_input (void)
                     cpos = 0;
                     break;
                 case 5:        /* ^E */
-                    printf ("\033[%dC", clen - cpos);
-                    cpos = clen;
+                    if (cpos != clen)
+                    {
+                        printf ("\033[%dC", clen - cpos);
+                        cpos = clen;
+                    }
                     break;
                 case 8:        /* ^H = \b */
                     R_process_input_backspace ();

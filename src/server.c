@@ -185,8 +185,16 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
             our_ip = Chars_2_DW (&data[0]);
             Time_Stamp ();
             M_print (" " MAGENTA BOLD "%10lu" COLNONE " %s\n", uin, i18n (50, "Login successful!"));
+            snd_login_1 (sok);
+            snd_contact_list (sok);
+            snd_invis_list (sok);
+            snd_vis_list (sok);
+            Current_Status = set_status;
             if (loginmsg++)
+            {
+                R_redraw ();
                 break;
+            }
             Time_Stamp ();
             M_print (" " MAGENTA BOLD "%10s" COLNONE " %s: %u.%u.%u.%u\n", UIN2Name (uin), i18n (642, "IP"),
 #if ICQ_VER == 0x0002
@@ -197,11 +205,6 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
                      data[12], data[13], data[14], data[15]);
 #endif
             R_redraw ();
-            snd_login_1 (sok);
-            snd_contact_list (sok);
-            snd_invis_list (sok);
-            snd_vis_list (sok);
-            Current_Status = set_status;
 /*      icq_change_status( sok, set_status );*/
 /*      Prompt();*/
             break;
