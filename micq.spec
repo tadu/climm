@@ -1,5 +1,5 @@
 Summary:		text/line based ICQ client with many features
-Name:			micq
+Name:			micq%{!?_with_tcl:-notcl}%{!?_with_ssl:-nossl}
 Version:		0.4.10.6
 Release:		1
 Source:			%{name}-%{version}.tgz
@@ -71,8 +71,9 @@ test $RPM_BUILD_ROOT != / && rm -rf $RPM_BUILD_ROOT
 %setup -q -n %{name}-%{version}
 
 %build
-%configure --disable-dependency-tracking %{?_with_tcl:--enable-tcl} \
-	%{?_with_ssl:--enable-ssl} CFLAGS=-O4
+%configure --disable-dependency-tracking CFLAGS=-O4 \
+	%{?_with_tcl:--enable-tcl}%{!?_with_tcl:--disable-tcl} \
+	%{?_with_ssl:--enable-ssl}%{!?_with_ssl:--disable-ssl}
 make
 
 %install
