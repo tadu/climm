@@ -23,7 +23,7 @@ current ICQ v8 protocol.
 A lot of other ICQ clients are based in spirit on mICQ, nevertheless
 mICQ is still _the_ console based ICQ client.
       
-Authors: Matthew D. Smith (dead)
+Authors: Matthew D. Smith (deceased)
          Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 
 %changelog
