@@ -46,7 +46,7 @@ Authors: Matthew D. Smith (dead)
 ./prepare || true
 
 %build
-%configure
+%configure --disable-dependency-tracking
 make
 
 %install

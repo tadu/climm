@@ -31,7 +31,8 @@ configure-stamp:
 	./configure --host=$(DEB_HOST_GNU_TYPE) \
 	  --build=$(DEB_BUILD_GNU_TYPE) \
 	  --prefix=/usr \
-	  --mandir=\$${prefix}/share/man
+	  --mandir=\$${prefix}/share/man \
+	  --disable-dependency-tracking
 	touch configure-stamp
 
 build: configure-stamp build-stamp
