@@ -29,8 +29,8 @@
 027:Ja
 028:Nein
 029:Bitte Ja oder Nein eingeben!
-030:ausgeloggt.
-031:eingeloggt.
+030:hat sich ausgeloggt.
+031:hat sich eingeloggt
 032:Nachricht:
 033:MassenNachricht:
 035:hat Status gewechselt nach:
@@ -72,10 +72,13 @@
 071:Dein status ist: 
 072:User abgeklemmt: 
 073:User verbunden: 
+074:Micq (Matts ICQ-Klon)
+075:Version
+076:kompiliert am
+077:gewidmet Matthew D. Smith.
 ##
 ## Sprachen
 ##
-#
 099:Unbekannte Sprache
 100:Keine
 101:Arabisch
@@ -138,9 +141,39 @@
 158:Albanisch
 159:Armenisch
 ##
+160:Nicht angegeben
+161:Akademiker
+162:Verwaltung
+163:Kunst/Unterhaltung
+164:Student (FH)
+165:Computer
+166:Gemeinde & Soziales
+167:Erziehung
+168:Ingenieurwesen
+169:Finanzdienstleistungen
+170:Regierung
+171:Schüler
+172:Heim
+173:ICQ - Hilfe bereitstellen
+174:Gesetz
+175:Managerial
+176:Fertigung
+177:Medizin/Gesundheit
+178:Militär
+179:Nicht-Regierungs-Organisation
+180:Fachmann
+181:Einzelhandel
+182:Rentner
+183:Wissenschaft & Forschung
+184:Sport
+## 185:Handwerker (?)
+185:Techniker
+186:Student (Uni)
+187:Webdesigner
+198:Andere Dienste
+##
 ## Länder
 ##
-#
 199:Unbekanntes Land
 200:Nicht angegeben
 201:Afghanistan
@@ -154,7 +187,7 @@
 209:Argentinen
 210:Armenien
 211:Aruba
-212:«»Ascention Island
+#212:Ascention Island
 213:Australien
 214:Australisch-Antarktisches Gebiet
 215:Österreich
@@ -173,21 +206,21 @@
 228:Bosnien-Herzegovina
 229:Botswana
 230:Brasilien
-231:«»British Virgin Islands
+#231:British Virgin Islands
 232:Brunei
 233:Bulgarien
-234:«»Burkina Faso
+#234:Burkina Faso
 235:Burundi
 236:Kambodscha
 237:Kamerun
 238:Kanada
-239:«»Cape Verde Islands
+#239:Cape Verde Islands
 240:Kaiman-Inseln
 241:Zentral-Afrikanische Republik
 242:Tschad
 243:Weihnachtsinseln
-244:«»Cocos-Keeling Islands
-245:«»Comoros
+#244:Cocos-Keeling Islands
+#245:Comoros
 246:Kongo
 247:Cook-Inseln
 248:Chile
@@ -199,9 +232,9 @@
 254:Zypern
 255:Tschechische Republik
 256:Dänemark
-257:«»Diego Garcia
-258:«»Djibouti
-259:«»Dominica
+#257:Diego Garcia
+#258:Djibouti
+#259:Dominica
 260:Dominikanische Republik
 261:Äquador
 262:Ägypten
@@ -211,7 +244,7 @@
 266:Estland
 267:Äthiopien
 268:Ehemaliges Jugoslavien
-269:«»Faeroe
+#269:Faeroe
 270:Falkland-Inseln
 271:Vereinigte Staaten von Mikronesien
 272:Fidschi
@@ -230,12 +263,12 @@
 285:Griechenland
 286:Grönland
 287:Grenada
-288:«»Guadeloupe
+#288:Guadeloupe
 289:Guam
-290:«»Guantanomo Bay
+#290:Guantanomo Bay
 291:Guatemala
 292:Guinea
-293:«»Guinea-Bissau
+#293:Guinea-Bissau
 294:Guyana
 295:Haiti
 296:Honduras
@@ -244,8 +277,8 @@
 299:Island
 300:Indien
 301:Indonesien
-302:«»INMARSAT
-303:«»INMARSAT Atlantic-East
+#302:INMARSAT
+#303:INMARSAT Atlantic-East
 304:Iran
 305:Irak
 306:Irland
@@ -262,7 +295,7 @@
 317:Libyen
 318:Liechtenstein
 319:Luxemburg
-320:«»Malawi
+#320:Malawi
 321:Malaysien
 322:Mali
 323:Malta
@@ -288,10 +321,10 @@
 343:Polen
 344:Portugal
 345:Puerto Rico
-346:«»Qatar
+#346:Qatar
 347:Rumänien
 348:Russland
-349:«»Saipan
+#349:Saipan
 350:San Marino
 351:Saudi-Arabien
 352:Senegal
@@ -300,13 +333,13 @@
 355:Süd-Afrika
 356:Spanien
 357:Sri Lanka
-358:«»Suriname
+#358:Suriname
 359:Schweden
 360:Schweitz
 361:Taiwan
 362:Tansania
 363:Thailand
-364:«»Tinian Island
+#364:Tinian Island
 365:Togo
 366:Tokelau
 367:Tonga
@@ -314,7 +347,7 @@
 369:Tunesien
 370:Türkei
 371:Turkmenistan
-372:«»Turks and Caicos Islands
+#372:Turks and Caicos Islands
 373:Tuvalu
 374:Uganda
 375:Ukraine
@@ -324,13 +357,13 @@
 379:USA
 380:Uruguay
 381:Uzbekistan
-382:«»Vanuatu
+#382:Vanuatu
 383:Vatikan (Stadt)
 384:Venezuela
 385:Vietnam
-386:«»Wallis and Futuna Islands
+#386:Wallis and Futuna Islands
 387:West-Samoa
-388:«»Yemen
+#388:Yemen
 389:Jugoslavien
 390:Zaire
 391:Sambia
@@ -388,7 +421,47 @@
 448:Nachricht
 449:User
 450:Account
-##                   v
+##
+455:Kunst
+456:Autos
+457:Fan
+458:Sammeln
+459:Computer
+460:Kultur & Literatur
+461:Fitness
+462:Spiele
+463:Hobbies
+464: ICQ - Hilfe bereitstellen
+465:Internet
+466:Lebensstil
+467:Filme/Fernsehen
+468:Musik
+##469:??
+469:Geländeaktivitäten
+470:Erziehung
+471:Tiere
+472:Religion
+473:Wissenschaft/Technologie
+474:Fertigkeiten
+475:Sport
+476:Webdesign
+477:Natur und Umwelt
+478:Nachrichten und Medien
+479:Regierung
+480:Geschäft & Ökonomie
+481:Mystizismus
+482:Reisen
+483:Astronomie
+484:Weltraum
+485:Kleidung
+486:Feiern
+487:Frauen
+488:Sozialwissenschaft
+489:60iger Jahre
+490:70iger Jahre
+491:80iger Jahre
+492:50iger Jahre
+499:Anderes
 500:Spitzname:       
 501:Name:            
 502:eMail:           

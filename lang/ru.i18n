@@ -1,5 +1,5 @@
 # russian
-#000: (эbersetzung erfolgreich geladen (%d EintrДge). Version 0.1.╤)
+#000:Successfully loaded translations (%d entries).╤
 001:На линии
 002:Не беспокоить
 003:Вышел
@@ -33,7 +33,6 @@
 031: включился.
 032: - Сообщение
 033: - Instant " SERVCOL "Mass" NOCOL " Message
-#034: (Nachricht)
 035: сменил статус на 
 036:Неизвестная команда %s, неберите /help для справки.
 037:Сообщение было послано, когда закончился буфер╤
@@ -73,7 +72,11 @@
 071:Ваш статус: 
 072:Отсутствующие люди: 
 073:Люди на линии: 
-#099: (Unbekannte Sprache)
+#074:Micq (Matt's ICQ clone)
+#075:version
+#076:compiled on
+#077:in dedication to Matthew D. Smith.
+#099:Unknown language.
 100:нет
 101:Арабский
 102:Бжоржпурский
@@ -134,7 +137,36 @@
 157:Персидский
 158:Албанский
 159:Армянский
-#199: (Unbekanntes Land)
+#160:Not Entered
+#161:Academic
+#162:Administrative
+#163:Art/Entertainmant
+#164:College Student
+#165:Computers
+#166:Community & Social
+#167:Education
+#168:Engineering
+#169:Financial Services
+#170:Government
+#171:High School Student
+#172:Home
+#173:ICQ - Providing Help
+#174:Law
+#175:Managerial
+#176:Manufacturing
+#177:Medical/Health
+#178:Military
+#179:Non-government Organization
+#180:Professional
+#181:Retail
+#182:Retired
+#183:Science & Research
+#184:Sports
+#185:Technical
+#186:University Student
+#187:Web Building
+#198:Other Services
+#199:Unknown country
 200:не определено
 201:Афганистан
 202:Албания
@@ -211,7 +243,7 @@
 273:Финляндия
 274:Франция
 275:Антильские острова (Франция)
-#276: (FranzЖsische Antillen)
+#276:French Antilles
 277:French Guiana
 278:Французская Полинезия
 279:Габон
@@ -368,8 +400,6 @@
 437:		Режим 'Невидимость'.╤
 438:		Изменить информацию о Вас на сервере (email, имя, и т.д..)╤
 439:		Указать вашу группу для случайных пользователей.╤
-#440:PROMPT_HELP_STR (		дndert den mICQ Prompt.╤)
-#441:GOTO_HELP_STR (				жffnet die letzte erhaltene URL in Lynx╤)
 442:Выберите одну из тем.
 443:Команды, относящиеся к дисплею и конфигурации.
 444:Команды, относящиеся к поиску пользователей.
@@ -379,6 +409,45 @@
 448:Message
 449:User
 450:Account
+#455:Art               
+#456:Cars              
+#457:Celebrity Fans    
+#458:Collections       
+#459:Computers         
+#460:Culture & Literature 
+#461:Fitness           
+#462:Games             
+#463:Hobbies           
+#464:ICQ - Providing Help 
+#465:Internet          
+#466:Lifestyle         
+#467:Movies/TV         
+#468:Music             
+#469:Outdoor Activities
+#470:Parenting         
+#471:Pets/Animals      
+#472:Religion          
+#473:Science/Technology
+#474:Skills            
+#475:Sports            
+#476:Web Design        
+#477:Nature and Environment
+#478:News & Media      
+#479:Government        
+#480:Business & Economy
+#481:Mystics           
+#482:Travel            
+#483:Astronomy         
+#484:Space             
+#485:Clothing          
+#486:Parties           
+#487:Women             
+#488:Social science    
+#489:60's              
+#490:70's              
+#491:80's              
+#492:50's              
+#499:Other             
 500:Ник            : 
 501:Имя            : 
 502:E-mail         : 

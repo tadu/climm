@@ -1,5 +1,5 @@
 # bulgarian
-#000: (Ьbersetzung erfolgreich geladen (%d Eintrдge). Version 0.1¶)
+#000:Successfully loaded translations (%d entries).¶
 001:Онлайн
 002:Не пречи
 003:Далеч
@@ -33,7 +33,6 @@
 031: влезе.
 032: - Неотложно съобщение
 033: - Нетложно " SERVCOL "масово" NOCOL " съобщение
-#034: (Nachricht)
 035: промени статуса си на 
 036:Неизвестна команда %s, напишете /help за помощ.
 037:Съобщението е изпратено преди да се запълни редовия буфер.¶
@@ -73,7 +72,11 @@
 071:Състоянието ви е 
 072:Потребители Офлайн: 
 073:Потребители Онлайн: 
-#099: (Unbekannte Sprache)
+#074:Micq (Matt's ICQ clone)
+#075:version
+#076:compiled on
+#077:in dedication to Matthew D. Smith.
+#099:Unknown language.
 100:Няма
 101:Арабски
 102:Bhojpuri
@@ -134,7 +137,36 @@
 157:Перскийски
 158:Албански
 159:Арменски
-#199: (Unbekanntes Land)
+#160:Not Entered
+#161:Academic
+#162:Administrative
+#163:Art/Entertainmant
+#164:College Student
+#165:Computers
+#166:Community & Social
+#167:Education
+#168:Engineering
+#169:Financial Services
+#170:Government
+#171:High School Student
+#172:Home
+#173:ICQ - Providing Help
+#174:Law
+#175:Managerial
+#176:Manufacturing
+#177:Medical/Health
+#178:Military
+#179:Non-government Organization
+#180:Professional
+#181:Retail
+#182:Retired
+#183:Science & Research
+#184:Sports
+#185:Technical
+#186:University Student
+#187:Web Building
+#198:Other Services
+#199:Unknown country
 200:Не е въведен
 201:Афганистан
 202:Албания
@@ -368,8 +400,6 @@
 437:		Отбелязва ви като Невидим.¶
 438:		Обновява елементарната ви информация (email, псевдоним, и т.н.)¶
 439:		Определя групата ви като произволен потребител.¶
-#440:PROMPT_HELP_STR (		Дndert den mICQ Prompt.¶)
-#441:GOTO_HELP_STR (				Цffnet die letzte erhaltene URL in Lynx¶)
 442:Моля, изберете някоя от помощните теми по-долу.
 443:Команди отнасящи се до изхода на micq и конфигурирането му.
 444:Команди отнасящи се до намирането на други потребители.
@@ -379,6 +409,45 @@
 448:Message
 449:User
 450:Account
+#455:Art               
+#456:Cars              
+#457:Celebrity Fans    
+#458:Collections       
+#459:Computers         
+#460:Culture & Literature 
+#461:Fitness           
+#462:Games             
+#463:Hobbies           
+#464:ICQ - Providing Help 
+#465:Internet          
+#466:Lifestyle         
+#467:Movies/TV         
+#468:Music             
+#469:Outdoor Activities
+#470:Parenting         
+#471:Pets/Animals      
+#472:Religion          
+#473:Science/Technology
+#474:Skills            
+#475:Sports            
+#476:Web Design        
+#477:Nature and Environment
+#478:News & Media      
+#479:Government        
+#480:Business & Economy
+#481:Mystics           
+#482:Travel            
+#483:Astronomy         
+#484:Space             
+#485:Clothing          
+#486:Parties           
+#487:Women             
+#488:Social science    
+#489:60's              
+#490:70's              
+#491:80's              
+#492:50's              
+#499:Other             
 500:Прякор: 
 501:Име: 
 502:E-mail: 

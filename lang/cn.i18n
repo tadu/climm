@@ -1,5 +1,5 @@
 # chinese
-#000: (Übersetzung erfolgreich geladen (%d Einträge). Version 0.1.¶)
+#000:Successfully loaded translations (%d entries).¶
 001:Online
 002:Do not disturb
 003:Away
@@ -33,7 +33,6 @@
 031: logged on.
 032: - Instant Message
 033: - Instant " SERVCOL "Mass" NOCOL " Message
-#034: (Nachricht)
 035: changed status to 
 036:Unknown command %s, type /help for help.
 037:Message sent before last line buffer is full¶
@@ -73,7 +72,11 @@
 071:¥Ø«eª¬ºA¬O 
 072:Â÷½u¦n¤Í: 
 073:¤W½u¦n¤Í: 
-#099: (Unbekannte Sprache)
+#074:Micq (Matt's ICQ clone)
+#075:version
+#076:compiled on
+#077:in dedication to Matthew D. Smith.
+#099:Unknown language.
 100:None
 101:Arabic
 102:Bhojpuri
@@ -134,7 +137,36 @@
 157:Persian
 158:Albanian
 159:Armenian
-#199: (Unbekanntes Land)
+#160:Not Entered
+#161:Academic
+#162:Administrative
+#163:Art/Entertainmant
+#164:College Student
+#165:Computers
+#166:Community & Social
+#167:Education
+#168:Engineering
+#169:Financial Services
+#170:Government
+#171:High School Student
+#172:Home
+#173:ICQ - Providing Help
+#174:Law
+#175:Managerial
+#176:Manufacturing
+#177:Medical/Health
+#178:Military
+#179:Non-government Organization
+#180:Professional
+#181:Retail
+#182:Retired
+#183:Science & Research
+#184:Sports
+#185:Technical
+#186:University Student
+#187:Web Building
+#198:Other Services
+#199:Unknown country
 200:Not entered
 201:Afghanistan
 202:Albania
@@ -211,7 +243,7 @@
 273:Finland
 274:France
 275:French Antilles
-#276: (Französische Antillen)
+#276:French Antilles
 277:French Guiana
 278:French Polynesia
 279:Gabon
@@ -368,8 +400,6 @@
 437:		ª¬ºA³]¬° Invisible.¶
 438:		§ó·s­Ó¤H°ò¥»¸ê®Æ (email, nickname, etc.)¶
 439:		³]©w§Aªº random user group.¶
-#440:PROMPT_HELP_STR (		Ändert den mICQ Prompt.¶)
-#441:GOTO_HELP_STR (				Öffnet die letzte erhaltene URL in Lynx¶)
 442:½Ð¿ï¾Ü¤U­±¤@­Ó»¡©ú¥DÃD
 443:¦³Ãö micq ªºÅã¥Ü©M³]©wªº«ü¥O
 444:¦³Ãö´M§ä¨ä¥L¨Ï¥ÎªÌªº«ü¥O
@@ -379,6 +409,45 @@
 448:Message
 449:User
 450:Account
+#455:Art               
+#456:Cars              
+#457:Celebrity Fans    
+#458:Collections       
+#459:Computers         
+#460:Culture & Literature 
+#461:Fitness           
+#462:Games             
+#463:Hobbies           
+#464:ICQ - Providing Help 
+#465:Internet          
+#466:Lifestyle         
+#467:Movies/TV         
+#468:Music             
+#469:Outdoor Activities
+#470:Parenting         
+#471:Pets/Animals      
+#472:Religion          
+#473:Science/Technology
+#474:Skills            
+#475:Sports            
+#476:Web Design        
+#477:Nature and Environment
+#478:News & Media      
+#479:Government        
+#480:Business & Economy
+#481:Mystics           
+#482:Travel            
+#483:Astronomy         
+#484:Space             
+#485:Clothing          
+#486:Parties           
+#487:Women             
+#488:Social science    
+#489:60's              
+#490:70's              
+#491:80's              
+#492:50's              
+#499:Other             
 500:Nickname     : 
 501:Name         : 
 502:Email        : 

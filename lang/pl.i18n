@@ -1,5 +1,5 @@
 # polish
-#000: (Übersetzung erfolgreich geladen (%d Einträge). Version 0.1.¶)
+#000:Successfully loaded translations (%d entries).¶
 001:Obecny
 002:Nie przeszkadzaæ
 003:Oddalony
@@ -7,7 +7,7 @@
 005:Zajêty
 006:Niewidzialny
 007:Chêtny do rozmowy
-#008:STATUS_OFFLINE_STR (Abgeklemmt)
+#008:Offline
 009:Proszê nie przeszkadzaæ
 010:Nie ma mnie przy komputerze
 011:Jestem nieobecny
@@ -29,13 +29,12 @@
 027:TAK
 028:NIE
 029:Wpisz " YES_STR " albo " NO_STR "¶
-#030:LOGGED_OFF_STR (ausgeloggt.)
-#031:LOGGED_ON_STR (eingeloggt.)
-#032:INSTANT_MSG_STR (Nachricht:)
-#033:INSTANT_MASS_MSG_STR (Massen)
-#034: (Nachricht)
-#035:CHANGE_STATUS_STR (hat Status gewechselt nach:)
-#036:UNKNOWN_COMMAND_STR (Unbekanntes Kommando %s, tippe "help" für Hilfe.)
+#030:logged off.
+#031:logged on
+#032: - Instant Message
+#033: - Instant Mass Message
+#035:changed status to
+#036:Unknown command %s, type /help for help.
 037:Wiadomo¶æ wys³ana przed wype³nieniem bufora ostatniej linii¶
 038:Zaniechano wys³ania wiadomo¶ci¶
 039:!¶
@@ -73,7 +72,11 @@
 071:Twój status to 
 072:Niepo³±czeni u¿ytkownicy: 
 073:Po³±czeni u¿ytkownicy: 
-#099: (Unbekannte Sprache)
+#074:Micq (Matt's ICQ clone)
+#075:version
+#076:compiled on
+#077:in dedication to Matthew D. Smith.
+#099:Unknown language.
 100:¯aden
 101:Arabski
 102:Bhojpuri
@@ -134,7 +137,36 @@
 157:Perski
 158:Albañski
 159:Armeñski
-#199: (Unbekanntes Land)
+#160:Not Entered
+#161:Academic
+#162:Administrative
+#163:Art/Entertainmant
+#164:College Student
+#165:Computers
+#166:Community & Social
+#167:Education
+#168:Engineering
+#169:Financial Services
+#170:Government
+#171:High School Student
+#172:Home
+#173:ICQ - Providing Help
+#174:Law
+#175:Managerial
+#176:Manufacturing
+#177:Medical/Health
+#178:Military
+#179:Non-government Organization
+#180:Professional
+#181:Retail
+#182:Retired
+#183:Science & Research
+#184:Sports
+#185:Technical
+#186:University Student
+#187:Web Building
+#198:Other Services
+#199:Unknown country
 200:Brak informacji
 201:Afganistan
 202:Albania
@@ -280,7 +312,7 @@
 342:Filipiny
 343:Polska
 344:Portugalia
-#345:Puerto_Rico_COUNTRY_STR (Puerto Rico)
+#345:Puerto Rico
 346:Katar
 347:Rumunia
 348:Rosja
@@ -299,34 +331,34 @@
 361:Tajwan
 362:Tanzania
 363:Tajlandia
-#364:Tinian_Island_COUNTRY_STR («»Tinian Island)
-#365:Togo_COUNTRY_STR (Togo)
-#366:Tokelau_COUNTRY_STR (Tokelau)
-#367:Tonga_COUNTRY_STR (Tonga)
-#368:Trinadad_and_Tabago_COUNTRY_STR (Trinidad und Tobago)
+#364:Tinian Island
+#365:Togo
+#366:Tokelau
+#367:Tonga
+#368:Trinadad and Tabago
 369:Tunezja
 370:Turcja
-#371:Turkmenistan_COUNTRY_STR (Turkmenistan)
-#372:Turks_and_Caicos_Islands_COUNTRY_STR («»Turks and Caicos Islands)
-#373:Tuvalu_COUNTRY_STR (Tuvalu)
-#374:Uganda_COUNTRY_STR (Uganda)
+#371:Turkmenistan
+#372:Turks and Caicos Islands
+#373:Tuvalu
+#374:Uganda
 375:Ukraina
 376:Zjednoczone Emiraty Arabskie
 377:Zjednoczone Królestwo
-#378:US_Virgin_Islands (USA/Jungferninseln)
+#378:United States Virgin Islands
 379:Stany Zjednoczone Ameryki Pó³nocnej
 380:Urugwaj
-#381:Uzbekistan_COUNTRY_STR (Uzbekistan)
-#382:Vanuatu_COUNTRY_STR («»Vanuatu)
+#381:Uzbekistan
+#382:Vanuatu
 383:Watykan
 384:Wenezuela
 385:Wietnam
-#386:Wallis_and_Futuna_Islands_COUNTRY_STR («»Wallis and Futuna Islands)
-#387:Western_Samoa_COUNTRY_STR (West-Samoa)
+#386:Wallis and Futuna Islands
+#387:Western Samoa
 388:Jemen
 389:Jugos³awia
 390:Zair
-#391:Zambia_COUNTRY_STR (Sambia)
+#391:Zambia
 392:Zimbabwe
 400:		Pokazuje lokalnie zapisane dane o u¿ytkowniku¶
 401:		Uaktalnia dodatkowe informacje jak wiek czy p³eæ¶
@@ -368,8 +400,6 @@
 437:		Ustaw status Niewidzialny (Invisible).¶
 438:		Uaktualnia podstawowe informacje o tobie (adres, ksywa, etc.)¶
 439:		Ustawia twoj± losow± grupê.¶
-#440:PROMPT_HELP_STR (		Ändert den mICQ Prompt.¶)
-#441:GOTO_HELP_STR (				Öffnet die letzte erhaltene URL in Lynx¶)
 442:Wybierz jeden z poni¿szych tematów pomocy.
 443:Komendy dotycz±ce interfejsu i konfiguracji programu.
 444:Komendy dotycz±ce znajdywania innych u¿ytkowników.
@@ -379,40 +409,79 @@
 448:Wiadomo¶ci
 449:U¿ytkownik
 450:Konto	
-#500:NICKNAME_INFO_STR (Spitzname:       )
-#501:NAME_INFO_STR (Name:            )
-#502:EMAIL_INFO_STR (eMail:           )
-#503:OTHER_EMAIL_INFO_STR (Zweit-eMail:     )
-#504:OLD_EMAIL_INFO_STR (Alte eMail:      )
-#505:LOCATION_INFO_STR (Ort:             )
-#506:PHONE_INFO_STR (Telephon:        )
-#507:FAX_INFO_STR (Fax:             )
-#508:STREET_INFO_STR (Straße:          )
-#509:CELLULAR_INFO_STR (Handy:           )
-#510:ZIP_INFO_STR (PLZ:             )
-#511:COUNTRY_INFO_STR (Land:           )
-#512:COUNTRY_CODE_INFO_STR (ISO-Landescode: )
-#513:WORK_COUNTRY_CODE_INFO_STR (ISO-Landescode auf der Arbeit: )
-#514:WORK_COUNTRY_INFO_STR (Work Country : )
-#515:WORK_HOMEPAGE_INFO_STR (Work Homepage: )
-#516:WORK_OCCUPATION_INFO_STR (Occupation   : )
-#517:WORK_JOB_POS_INFO_STR (Job Position : )
-#518:WORK_DEPT_INFO_STR (Department   : )
-#519:WORK_COMP_NAME_INFO_STR (Company Name : )
-#520:WORK_ZIP_INFO_STR (Work Zip     : )
-#521:WORK_FAX_INFO_STR (Work Fax     : )
-#522:WORK_ADDRESS_INFO_STR (Work Address : )
-#523:WORK_PHONE_INFO_STR (Work Phone   : )
-#524:WORK_LOCATION_INFO_STR (Work Location: )
-#525:ABOUT_INFO_STR (About : )
-#526:INFO_NE_STR (Not Entered)
-#527:AGE_INFO_STR (Age          : )
-#528:FEMALE_INFO_STR (Sex : Female)
-#529:MALE_INFO_STR (Sex : Male)
-#530:SEX_UNKNOWN_INFO_STR (Sex : Not Specified)
-#531:HOMEPAGE_INFO_STR (Homepage     : )
-#532:BIRTH_INFO_STR (Born         : )
-#533:LANGUAGE_INFO_STR (Languages    : )
+#455:Art               
+#456:Cars              
+#457:Celebrity Fans    
+#458:Collections       
+#459:Computers         
+#460:Culture & Literature 
+#461:Fitness           
+#462:Games             
+#463:Hobbies           
+#464:ICQ - Providing Help 
+#465:Internet          
+#466:Lifestyle         
+#467:Movies/TV         
+#468:Music             
+#469:Outdoor Activities
+#470:Parenting         
+#471:Pets/Animals      
+#472:Religion          
+#473:Science/Technology
+#474:Skills            
+#475:Sports            
+#476:Web Design        
+#477:Nature and Environment
+#478:News & Media      
+#479:Government        
+#480:Business & Economy
+#481:Mystics           
+#482:Travel            
+#483:Astronomy         
+#484:Space             
+#485:Clothing          
+#486:Parties           
+#487:Women             
+#488:Social science    
+#489:60's              
+#490:70's              
+#491:80's              
+#492:50's              
+#499:Other             
+#500:Nickname     : 
+#501:Name         : 
+#502:Email        : 
+#503:Other Email  : 
+#504:Old Email    : 
+#505:Location     : 
+#506:Phone        : 
+#507:Fax          : 
+#508:Street       : 
+#509:Cellular     : 
+#510:Zip          : 
+#511:Country      : 
+#512:Country Code : 
+#513:Work Country Code : 
+#514:Work Country : 
+#515:Work Homepage: 
+#516:Occupation   : 
+#517:Job Position : 
+#518:Department   : 
+#519:Company Name : 
+#520:Work Zip     : 
+#521:Work Fax     : 
+#522:Work Address : 
+#523:Work Phone   : 
+#524:Work Location: 
+#525:About : 
+#526:Not Entered
+#527:Age          : 
+#528:Sex : Female
+#529:Sex : Male
+#530:Sex : Not Specified
+#531:Homepage     : 
+#532:Born         : 
+#533:Languages    : 
 534:Wpisz numer jêzyka. Komenda L listuje dostêpne : 
 535:Wpisz nowy wiek: 
 536:Wpisz now± p³eæ: 
