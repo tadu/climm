@@ -4045,9 +4045,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
                 int is_alias = FALSE;
                 
                 cmd = strdup (cmd);
-                if (!s_parserem (&args, &argsd))
-                    argsd = "";
-                argsd = strdup (argsd);
+                argsd = strdup (args);
 
                 if (*cmd != '\xb6')
                 {
