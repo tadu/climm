@@ -18,6 +18,7 @@
 #include "cmd_pkt_v8_flap.h"
 #include "cmd_pkt_v8_snac.h"
 #include "preferences.h"
+#include "packet.h"
 #include "tabs.h"
 #include "session.h"
 #include "tcp.h"
@@ -1445,7 +1446,7 @@ static JUMP_F(CmdUserStatusDetail)
         for (i = id = 0; id < 16; id++)
             if (contr->caps && (1 << id))
             {
-                Caps *cap = PacketCap (id);
+                Cap *cap = PacketCap (id);
                 if (i++)
                     M_print (", ");
                 else
