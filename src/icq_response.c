@@ -351,6 +351,8 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
     if (prG->event_cmd && *prG->event_cmd)
         EventExec (cont, prG->event_cmd, 1, opt_type, opt_text);
 #endif
+    if (uiG.nick_len < 4)
+        uiG.nick_len = 4;
     rl_printf ("\a%s %s%*s%s ", s_time (&stamp), COLINCOMING, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
     
     if (OptGetVal (opt, CO_STATUS, &opt_status) && (!cont || cont->status != opt_status || !cont->group))
@@ -428,8 +430,8 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
             tmp  = s_msgtok (cdata); if (!tmp)  continue;
             tmp2 = s_msgtok (NULL);  if (!tmp2) continue;
             
-            rl_printf ("%s %s\n%s", carr, s_msgquote (tmp), s_now);
-            rl_printf (i18n (2127, "       URL: %s %s\n"), carr, s_wordquote (tmp2));
+            rl_printf ("%s %s\n%s %*s", carr, s_msgquote (tmp), s_now, uiG.nick_len - 4, "");
+            rl_printf ("%s %s %s\n", i18n (9999, "URL:"), carr, s_wordquote (tmp2));
             HistMsg (conn, cont, stamp == NOW ? time (NULL) : stamp, cdata, HIST_IN);
             break;
 
