@@ -6,6 +6,7 @@
 1004:<translation authors>
 1005:<last editor>
 1006:<last edit date>
+1008:US-ASCII
 1010:User is away [Auto-Message]
 1011:User is not available [Auto-Message]
 1012:User is occupied [Auto-Message]
@@ -492,8 +493,6 @@
 1578:Enter country's phone ID number:
 1579:Enter company: 
 1587:Enter department: 
-1592:<%s> emailed you a message:\n
-1593:<%s> send you a web message:\n
 1595:\nContact List.\n============================================\n%d Contacts\n
 1596:[SOCKS] Can't find hostname %s: %s.
 1597:[SOCKS] Socket creation failed\n
@@ -1205,3 +1204,5 @@
 2568:Ignored request for auto-response from %s%s%s.\n
 2569:Send <message> and further messages to <contacts> until canceled.
 2570:Continuing chat with %s%s%s:\n
+2571:"%s" <%s> emailed you a message [%s]: %s\n
+2572:"%s" <%s> sent you a web message [%s]: %s\n
