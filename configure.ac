@@ -26,23 +26,50 @@ AC_PROG_LN_S
 
 # Check for arguments.
 
-AC_CACHE_CHECK(whether to enable peer to peer connections, ac_cv_use_peer2peer,
-               [AC_ARG_ENABLE(peer2peer, AC_HELP_STRING([--disable-peer2peer],
-                                                        [disable peer to peer connections]),
-                           ac_cv_use_peer2peer=$enableval, ac_cv_use_peer2peer=yes)])
 
-if test "x$ac_cv_use_peer2peer" = "xyes"; then
+AC_ARG_ENABLE(peer2peer, AC_HELP_STRING([--disable-peer2peer], [disable peer to peer connections]),
+              ac_arg_use_peer2peer=$enableval, ac_arg_use_peer2peer=yes)
+AC_ARG_ENABLE(utf8, AC_HELP_STRING([--enable-utf8], [enable use of UTF-8 internally]),
+              ac_arg_use_utf8=$enableval, ac_arg_use_utf8=no)
+AC_ARG_ENABLE([iconv], AC_HELP_STRING([--enable-iconv], [use libiconv for character conversion]),
+              ac_arg_use_iconv=$enableval, ac_arg_use_iconv=auto)
+AC_ARG_ENABLE([iconv], AC_HELP_STRING([--disable-iconv], [do not use iconv() at all]),
+              ac_arg_use_iconv=$enableval)
+
+if test "x$ac_arg_use_iconv" != "xno"; then
+  if test "x$ac_arg_use_iconv" = "xauto"; then
+    AC_CHECK_FUNC([iconv], [ac_arg_use_iconv=glibc], [ac_arg_use_iconv=none])
+  else
+    AC_CHECK_LIB([iconv], [iconv], [ac_arg_use_iconv=iconv], [ac_arg_use_iconv=none])
+    if test "x$ac_arg_use_iconv" = "xnone"; then
+      AC_CHECK_LIB([libiconv], [iconv], [ac_arg_use_iconv=libiconv])
+    fi
+    if test "x$ac_arg_use_iconv" = "xnone"; then
+      AC_CHECK_FUNC([iconv], [ac_arg_use_iconv=glibc])
+    fi
+  fi
+else
+  ac_arg_use_iconv=none
+fi
+
+AC_MSG_CHECKING([whether to enable peer to peer connections])
+AC_MSG_RESULT([$ac_arg_use_peer2peer])
+AC_MSG_CHECKING([whether to enable usage of utf-8 internally])
+AC_MSG_RESULT([$ac_arg_use_utf8])
+AC_MSG_CHECKING([whether to enable iconv and which iconv to use])
+AC_MSG_RESULT([$ac_arg_use_iconv])
+
+if test "x$ac_arg_use_peer2peer" = "xyes"; then
   AC_DEFINE(ENABLE_PEER2PEER, 1, [Whether to enable peer to peer connections])
-fi;
+fi
 
-AC_CACHE_CHECK(whether to enable usage of utf-8 internally, ac_cv_use_utf8,
-               [AC_ARG_ENABLE(utf8, AC_HELP_STRING([--enable-utf8],
-                                                   [enable use of UTF-8 internally]),
-                           ac_cv_use_utf8=$enableval, ac_cv_use_utf8=no)])
-
-if test "x$ac_cv_use_utf8" = "xyes"; then
+if test "x$ac_arg_use_utf8" = "xyes"; then
   AC_DEFINE(ENABLE_UTF8, 1, [Whether to use UTF-8 internally])
-fi;
+fi
+
+if test "x$ac_arg_use_iconv" != "xnone"; then
+  AC_DEFINE(ENABLE_ICONV, 1, [Whether to use iconv functions])
+fi
 
 # Checks for libraries.
 AC_CHECK_FUNCS([inet_ntoa getpeername])
