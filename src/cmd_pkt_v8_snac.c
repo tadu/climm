@@ -1332,8 +1332,24 @@ static JUMP_SNAC_F(SnacSrvToicqerr)
     else
     {
         UWORD err = PacketReadB2 (pak);
-        M_printf (i18n (2207, "Protocol error in command to old ICQ server: %d.\n"), err);
-        M_print (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
+        Event *oevent;
+
+        if ((oevent = QueueDequeue (event->conn, QUEUE_REQUEST_META, pak->ref)))
+        {
+            M_printf (i18n (2207, "Protocol error in command to old ICQ server: %d.\n"), err);
+            if (err == 2)
+                M_printf (i18n (9999, "You queried already too many users today - come back tomorrow.\n"));
+            else if (err == 5)
+                M_printf (i18n (9999, "The query got stuck. Or somesuch. Try again later.\n"));
+            else
+                M_printf (i18n (9999, "I'm out of wisdom about the server's problem. It just didn't work out.\n"));
+            EventD (oevent);
+        }
+        else
+        {
+            M_printf (i18n (2207, "Protocol error in command to old ICQ server: %d.\n"), err);
+            M_print (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
+        }
     }
 }
 

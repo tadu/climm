@@ -114,6 +114,8 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
     {
         case 0x32:
         case 0x14:
+            if ((event = QueueDequeue (conn, QUEUE_REQUEST_META, pak->ref)))
+                EventD (event);
             M_printf ("%s ", s_now);
             M_printf (i18n (2141, "Search %sfailed%s.\n"), COLCLIENT, COLNONE);
             return;
