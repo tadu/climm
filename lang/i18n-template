@@ -100,7 +100,10 @@ sub ProcessLine($)
         }
         elsif ($neu != 9999)
         {
-            print "Dropping $neu: $line.\n";
+            if ($2 != ".")
+            {
+                print "Dropping $neu: $line.\n";
+            }
             print OUT "$1.$3\n";
         }
         $last = $neu;

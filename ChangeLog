@@ -1,3 +1,14 @@
+2002-09-22 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* fix file send transfer corruption
+	* UtilUIParseNick(): return the 'real' Contact* as well
+	* Get_Port(): obsolete
+	* add/rem: only add or remove alias
+	* recognize vICQ
+	* add color for debug
+	* remove all remaining hard coded color values
+	* allow connections to be closed
+	* f,finger: new alias for info
+
 2002-09-19 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* use version from build.i18n to tag *.i18n files
 	* don't physically drop old translations anymore automatically

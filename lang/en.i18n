@@ -5,7 +5,7 @@
 1003:0-4-9-3
 1004:Rüdiger Kuhlmann
 1005:Rüdiger Kuhlmann
-1006:2002-08-23
+1006:2002-09-22
 1007:iso-8859-1
 1010:User is away [Auto-Message]
 1011:User is not available [Auto-Message]
@@ -589,7 +589,7 @@
 1649:The version was %X	
 1650:¶The SEQ was %04X	
 1651:The size was %d¶
-1652:Insuffificient memory to display a wide Contact List.¶
+1652.Insuffificient memory to display a wide Contact List.¶
 1653:Offline
 1654:Online
 1655:Enter the user's e-mail address:
@@ -604,8 +604,8 @@
 1670:Normal visible to %s now.
 1671:Always visible to %s now.
 1672:%s's IP address is 
-1673:	The port is %d¶
-1674:	The port is unknown¶
+1673:The port is %d.¶
+1674:The port is unknown.¶
 1675:Ignored line:
 1676:Need uin/nick to send to.¶
 1678:Need URL please.¶
@@ -654,8 +654,8 @@
 1745:unknown
 1746: nr type         sent/received packets/unique packets¶
 1747:total
-1749:UIN %d renamed to %s.¶
-1751:Nick %s removed.
+1749.UIN %d renamed to %s.¶
+1751.Nick %s removed.
 1754: Note: You need to 'save' to write new contact list to disc.¶
 1755:has added you to their contact list.¶
 1756:¶Creating Connection...¶
@@ -759,8 +759,8 @@
 1889:server
 1890:peer-to-peer
 1891:Connection %d is already open.¶
-1892:conn             List available connections.¶
-1893:conn login <nr>  Open connection <nr>.¶
+1892:conn               List available connections.¶
+1893:conn login <nr>    Open connection <nr>.¶
 1894:There is no connection number %d.¶
 1895:Login failed:¶
 1896:Server closed connection:¶
@@ -793,7 +793,7 @@
 1927:Free for chat
 1929:User is dnd [Auto-Message]
 1930:Can't send this (%x) yet.¶
-1931:Couldn't find server connection.¶
+1931:Current session is closed. Try another or open this one.¶
 1934:connected
 1935:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x¶
 1936:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
@@ -984,3 +984,14 @@
 2143:refused authorization: %s%s%s¶
 2144:requests authorization: %s%s%s¶
 2145:auth add  <nick>       - authorized add.¶
+2146:'%s' is already an alias for '%s' (%d).¶
+2147:'%s' (%d) is already used as a nick.¶
+2148:Added '%s' as an alias for '%s' (%d).¶
+2149:Removed alias '%s' for '%s' (%d).¶
+2150:Removed contact '%s' (%d).
+2151:%d is not on your contact list anymore.¶
+2152:Closing v5 server connection.¶
+2153:Closing v8 server connection.¶
+2154:Closing message listener.¶
+2155:Closing direct connection.¶
+2156:conn close <nr>    Close connection <nr>.¶
