@@ -408,7 +408,7 @@ static JUMP_F(CmdUserHelp)
                  i18n (1414, "Replies to the last person to send you a message."));
         M_printf (COLMESSAGE "%s [<uin|nick>]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("last"),
-                 i18n (1403, "Displays the last message received from <uin> or <nick> or from everyone who who has send you at least one message."));
+                 i18n (1403, "Displays the last message received from <uin> or <nick> or from everyone who has sent you at least one message."));
         M_printf (COLMESSAGE "%s" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("tabs"),
                  i18n (1098, "Display a list of nicknames that you can tab through.")); 
