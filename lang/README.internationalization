@@ -3,12 +3,11 @@ This directory contains the i18n files, which consists of lines
 <nr>:<translation>
 where <nr> is the number of the translated string and <translation> is the
 translation in the language the filename specifies. <nr> is written as a
-three digit number. These files are sorted by number, although the micq
+four digit number. These files are sorted by number, although the micq
 binary can handle any order, but the i18n-* scripts can't.
 
 i18n-extract will extract i18n() calls from the source files given (or all
-src/*.c) and output it to en.i18n. Backup is en.i18n~, it refuses to run
-if the backup file still exists.
+src/*.c) and output it to build.i18n. Backup is build.i18n~.
 
 i18n-number will number new i18n() calls in the source files given (or all
 src/*.c) and will replace the source files. Backup is *.c~, and it refuses
@@ -18,10 +17,13 @@ i18n-template will copy new translations to the other *.i18n files. Not
 existing strings will be added as "#<nr>:<english string>", changed strings
 will also be added this way, but the old will be retained as "#-#<nr>:<old
 string>". Comments not starting with "#<nr>:" or "#-#<nr>." will be
-retained.
+retained. Note: this script uses cvs to figure out which strings changed
+since the last update to the translation. So change the version number
+only after you updated the translation!
 
-The file en.tainted contains a list of changed translations. Remove this file
-in your checkout once you've successfully run i18n-template.
+i18n-format will check file $1.i18n whether it has strings whose format differ
+from those in build.i18n. mICQ will most likely crash if such a bogus string
+is encountered. Note: you have to do "i18n-format build" first.
 
 In src/, type "make lang" to call all the above scripts, removing backups
 before.

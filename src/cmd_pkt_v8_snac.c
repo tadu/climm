@@ -1169,6 +1169,87 @@ void SnacCliAckofflinemsgs (Session *sess)
 }
 
 /*
+ * CLI_METASETGENERAL - SNAC(15,2) - 2000/1002
+ */
+void SnacCliMetasetgeneral (Session *sess, const MetaGeneral *user)
+{
+    Packet *pak;
+
+    pak = SnacC (sess, 21, 2, 0, 0);
+    PacketWriteTLV     (pak, 1);
+    PacketWriteLen     (pak);
+    PacketWrite4       (pak, sess->uin);
+    PacketWrite2       (pak, 2000);
+    PacketWrite2       (pak, 2);
+    PacketWrite2       (pak, 1002);
+    PacketWriteLNTS    (pak, user->nick);
+    PacketWriteLNTS    (pak, user->first);
+    PacketWriteLNTS    (pak, user->last);
+    PacketWriteLNTS    (pak, user->email);
+    PacketWriteLNTS    (pak, user->city);
+    PacketWriteLNTS    (pak, user->state);
+    PacketWriteLNTS    (pak, user->phone);
+    PacketWriteLNTS    (pak, user->fax);
+    PacketWriteLNTS    (pak, user->street);
+    PacketWriteLNTS    (pak, user->cellular);
+    PacketWriteLNTS    (pak, UtilFill ("%05d", user->zip));
+    PacketWriteB2      (pak, user->country);
+    PacketWrite1       (pak, user->tz);
+    PacketWrite1       (pak, user->webaware);
+    PacketWriteLenDone (pak);
+    PacketWriteTLVDone (pak);
+    SnacSend (sess, pak);
+}
+
+/*
+ * CLI_METASETABOUT - SNAC(15,2) - 2000/1030
+ */
+void SnacCliMetasetabout (Session *sess, const char *text)
+{
+    Packet *pak;
+
+    pak = SnacC (sess, 21, 2, 0, 0);
+    PacketWriteTLV     (pak, 1);
+    PacketWriteLen     (pak);
+    PacketWrite4       (pak, sess->uin);
+    PacketWrite2       (pak, 2000); /* Command: request information */
+    PacketWrite2       (pak, 2);
+    PacketWrite2       (pak, 1030); /* Type: user info */
+    PacketWriteLNTS    (pak, text);
+    PacketWriteLenDone (pak);
+    PacketWriteTLVDone (pak);
+    SnacSend (sess, pak);
+}
+
+/*
+ * CLI_METASETMORE - SNAC(15,2) - 2000/1021
+ */
+void SnacCliMetasetmore (Session *sess, const MetaMore *user)
+{
+    Packet *pak;
+
+    pak = SnacC (sess, 21, 2, 0, 0);
+    PacketWriteTLV     (pak, 1);
+    PacketWriteLen     (pak);
+    PacketWrite4       (pak, sess->uin);
+    PacketWrite2       (pak, 2000);
+    PacketWrite2       (pak, 2);
+    PacketWrite2       (pak, 1021);
+    PacketWrite2       (pak, user->age);
+    PacketWrite1       (pak, user->sex);
+    PacketWriteLNTS    (pak, user->hp);
+    PacketWrite2       (pak, user->year);
+    PacketWrite1       (pak, user->month);
+    PacketWrite1       (pak, user->day);
+    PacketWrite1       (pak, user->lang1);
+    PacketWrite1       (pak, user->lang2);
+    PacketWrite1       (pak, user->lang3);
+    PacketWriteLenDone (pak);
+    PacketWriteTLVDone (pak);
+    SnacSend (sess, pak);
+}
+
+/*
  * CLI_METAREQINFO - SNAC(15,2) - 2000/1232
  */
 void SnacCliMetareqinfo (Session *sess, UDWORD uin)
@@ -1176,13 +1257,14 @@ void SnacCliMetareqinfo (Session *sess, UDWORD uin)
     Packet *pak;
 
     pak = SnacC (sess, 21, 2, 0, 0);
-    PacketWriteTLV (pak, 1);
-    PacketWrite2  (pak, 14);
-    PacketWrite4  (pak, sess->uin);
-    PacketWrite2  (pak, 2000); /* Command: request information */
-    PacketWrite2  (pak, 2);
-    PacketWrite2  (pak, 1232); /* Type: user info */
-    PacketWrite4  (pak, uin);
+    PacketWriteTLV     (pak, 1);
+    PacketWriteLen     (pak);
+    PacketWrite4       (pak, sess->uin);
+    PacketWrite2       (pak, 2000);
+    PacketWrite2       (pak, 2);
+    PacketWrite2       (pak, 1232);
+    PacketWrite4       (pak, uin);
+    PacketWriteLenDone (pak);
     PacketWriteTLVDone (pak);
     SnacSend (sess, pak);
 }
@@ -1190,8 +1272,7 @@ void SnacCliMetareqinfo (Session *sess, UDWORD uin)
 /*
  * CLI_SEARCHBYPERSINF - SNAC(15,2) - 2000/1375
  */
-void SnacCliSearchbypersinf (Session *sess, const char *nick, const char *name,
-    char *surname)
+void SnacCliSearchbypersinf (Session *sess, const char *nick, const char *name, char *surname)
 {
     Packet *pak;
 
@@ -1249,7 +1330,7 @@ void SnacCliSearchbymail (Session *sess, const char *email)
 /*
  * CLI_SEARCHWP - SNAC(15,2) - 2000/3305
  */
-void SnacCliSearchwp (Session *sess, MetaWP *wp)
+void SnacCliSearchwp (Session *sess, const MetaWP *wp)
 {
     Packet *pak;
 

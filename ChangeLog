@@ -1,5 +1,5 @@
 
-2002-05-02 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+2002-05-03 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* add & use new funtions to write LLNTS, TLV and length markers.
 	* recognize MirandaICQ version number
 	* implement white page search; amend "search" syntax, so that
@@ -7,6 +7,8 @@
 	* i18n news: use 4 digit numbers; enable mechanism to reliably
 	  track changed strings; remove strings where even the format
 	  has changed!
+	* implement general/other/about change.
+	* fix "wide" command (Peter Backes)
 
 2002-05-02 Peter Stuge <stuge@cdy.org>
 	* SNAC(13,19) SNAC(13,1b): authorization requests and grants

@@ -383,7 +383,7 @@ void CmdPktCmdMetaMore (Session *sess, MetaMore *info)
     PacketWrite2    (pak, META_SET_MORE_INFO);
     PacketWrite2    (pak, info->age);
     PacketWrite1    (pak, info->sex);
-    PacketWriteLNTS  (pak, info->hp);
+    PacketWriteLNTS (pak, info->hp);
     PacketWrite2    (pak, info->year);
     PacketWrite2    (pak, info->month);
     PacketWrite2    (pak, info->day);

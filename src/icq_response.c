@@ -84,6 +84,11 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
         UDWORD len, dwdata;
         int tz;
 
+        case META_SRV_ABOUT_UPDATE:
+        case META_SRV_OTHER_UPDATE:
+        case META_SRV_GEN_UPDATE:
+        case META_SRV_PASS:
+            break;
         case 0x0104: /* 2001-short-info */
             if (*(data = PacketReadLNTS (p)))
                 M_print (AVPFMT, i18n (1563, "Nick name:"), data);

@@ -28,10 +28,9 @@ void SnacCliReqofflinemsgs  (Session *sess);
 void SnacCliAckofflinemsgs  (Session *sess);
 void SnacCliRegisteruser    (Session *sess);
 void SnacCliMetareqinfo     (Session *sess, UDWORD uin);
+void SnacCliMetasetabout    (Session *sess, const char *text);
+void SnacCliMetasetmore     (Session *sess, const MetaMore *user);
+void SnacCliMetasetgeneral  (Session *sess, const MetaGeneral *user);
 void SnacCliSearchbypersinf (Session *sess, const char *nick, const char *name, char *surname);
 void SnacCliSearchbymail    (Session *sess, const char *email);
-void SnacCliSearchwp        (Session *sess, MetaWP *wp);
-/*void  (Session *sess);
-void  (Session *sess);
-void  (Session *sess);
-void  (Session *sess);*/
+void SnacCliSearchwp        (Session *sess, const MetaWP *wp);

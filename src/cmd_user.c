@@ -1190,8 +1190,8 @@ JUMP_F(CmdUserStatusWide)
 
     /* Filter the contact list into two lists -- online and offline. Also
        find the longest name in the list -- this is used to determine how
-       many columns will fit on the screen.
-    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))                                */
+       many columns will fit on the screen. */
+    for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
     {
         if ((SDWORD) cont->uin > 0)
         {                       /* Aliases */
@@ -1247,7 +1247,7 @@ JUMP_F(CmdUserStatusWide)
     /* The user status for Online users is indicated by a one-character
        prefix to the nickname. Unfortunately not all statuses (statusae? :)
        are unique at one character. A better way to encode the information
-       is needed.                                                            */
+       is needed.  */
     M_print (COLMESS);
     for (i = 0; i < (Get_Max_Screen_Width () - strlen (i18n (1654, "Online"))) / 2; i++)
     {
@@ -2345,7 +2345,7 @@ JUMP_F(CmdUserSearch)
 JUMP_F(CmdUserUpdate)
 {
     static MetaGeneral user;
-    SESSION_TYPE(TYPE_SERVER_OLD);
+    SERVER_SESSION;
 
     switch (status)
     {
@@ -2366,6 +2366,12 @@ JUMP_F(CmdUserUpdate)
             return ++status;
         case 303:
             user.email = strdup ((char *) args);
+            if (sess->ver > 8)
+            {
+                R_dopromptf ("%s ", i18n (1544, "Enter new city:"));
+                status += 3;
+                return status;
+            }
             R_dopromptf ("%s ", i18n (1542, "Enter other email address:"));
             return ++status;
         case 304:
@@ -2452,7 +2458,12 @@ JUMP_F(CmdUserUpdate)
             }
 
             if (!strcasecmp (args, i18n (1027, "YES")))
-                CmdPktCmdMetaGeneral (sess, &user);
+            {
+                if (sess->ver > 6)
+                    SnacCliMetasetgeneral (sess, &user);
+                else
+                    CmdPktCmdMetaGeneral (sess, &user);
+            }
 
             free (user.nick);
             free (user.last);
@@ -2470,7 +2481,7 @@ JUMP_F(CmdUserOther)
 {
     static MetaMore other;
     int temp;
-    SESSION_TYPE(TYPE_SERVER_OLD);
+    SERVER_SESSION;
 
     switch (status)
     {
@@ -2547,7 +2558,10 @@ JUMP_F(CmdUserOther)
                 return status;
             }
             other.lang3 = temp;
-            CmdPktCmdMetaMore (sess, &other);
+            if (sess->ver > 6)
+                SnacCliMetasetmore (sess, &other);
+            else
+                CmdPktCmdMetaMore (sess, &other);
             free (other.hp);
             return 0;
     }
@@ -2561,14 +2575,17 @@ JUMP_F(CmdUserAbout)
 {
     static int offset = 0;
     static char msg[1024];
-    SESSION_TYPE(TYPE_SERVER_OLD);
+    SERVER_SESSION;
 
     if (status > 100)
     {
         msg[offset] = 0;
         if (!strcmp (args, END_MSG_STR))
         {
-            CmdPktCmdMetaAbout (sess, msg);
+            if (sess->ver > 6)
+                SnacCliMetasetabout (sess, msg);
+            else
+                CmdPktCmdMetaAbout (sess, msg);
             return 0;
         }
         else if (!strcmp (args, CANCEL_MSG_STR))
@@ -2585,7 +2602,10 @@ JUMP_F(CmdUserAbout)
             }
             else
             {
-                CmdPktCmdMetaAbout (sess, msg);
+                if (sess->ver > 6)
+                    SnacCliMetasetabout (sess, msg);
+                else
+                    CmdPktCmdMetaAbout (sess, msg);
                 return 0;
             }
         }
@@ -2594,7 +2614,10 @@ JUMP_F(CmdUserAbout)
     {
         if (args && strlen (args))
         {
-            CmdPktCmdMetaAbout (sess, args);
+            if (sess->ver > 6)
+                SnacCliMetasetabout (sess, args);
+            else
+                CmdPktCmdMetaAbout (sess, args);
             return 0;
         }
         offset = 0;
