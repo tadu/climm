@@ -1,0 +1,24 @@
+mICQ 0.4.10.2, released 2003-03-07.
+
+mICQ is (c) Matt Smith, Rüdiger Kuhlmann, and released under version 2 of the GPL.
+
+Note: This package requires libiconv. Get it from <URL:http://www.bebits.com/app/2971/>.
+
+Note 2: This package requires a properly set locale. If you don't understand this, enter
+"export LC_ALL=en_US.UTF-8" before you start mICQ, or edit your micqrc to contain
+a line "encoding local UTF-8".
+
+Note 3: I do develop mICQ, but I am not a BeOS developer. If you have BeOS-specific
+questions, ask someone else. If you're a BeOS developer, you might want to help porting.
+
+Note 4: There is a mailing list for mICQ, go to <URL:http://www.micq.org/> and subscribe.
+
+Note 5: Don't ask me to make a version for SKELETONs. Access to this software is illegal
+for me. If you do have access, then you're able to compile from source. Consider note 4.
+
+Note 6: Don't ask me to make a GUI for this program, or whine that it's not a native BeOS
+application. It is command-line only, and it comes from Linux. If you don't understand this,
+come up with a commonly-used GUI toolkit that works under BeOS, AmigaOS, Linux, *BSD,
+commercial Unices and Windows. Then make one yourself.
+
+If you don't accept any of these notes, then please do not install this software.
