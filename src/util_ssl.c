@@ -381,10 +381,10 @@ int ssl_handshake (Connection *conn)
                 return 1;
             case SSL_ERROR_SSL:
                 ERR_get_error_line (&file, &line);
-                M_printf (i18n (9999, "OpenSSL internal error: %s:%i\n"), file, line);
+                M_printf (i18n (2398, "OpenSSL internal error: %s:%i\n"), file, line);
                 ret = 1;
             default:
-                M_printf (i18n (9999, "OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n"), err_i, err_j);
+                M_printf (i18n (2399, "OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n"), err_i, err_j);
                 ret = 1;
         }
     }
@@ -397,7 +397,7 @@ int ssl_handshake (Connection *conn)
 #if ENABLE_GNUTLS
         SSL_FAIL (s_sprintf ("%s %s", "handshake", gnutls_strerror (ret)), ret);
 #else
-        M_printf (i18n (9999, "SSL handshake failed"));
+        M_printf (i18n (2400, "SSL handshake failed"));
 #endif
         conn->ssl_status = SSL_STATUS_FAILED;
         ssl_disconnect (conn);
@@ -484,17 +484,17 @@ int ssl_sockread (Connection *conn, UBYTE *data, UWORD len_p)
                 break;
             case SSL_ERROR_SSL:
                 ERR_get_error_line (&file, &line);
-                M_printf (i18n (9999, "OpenSSL internal error: %s:%i\n"), file, line);
+                M_printf (i18n (2398, "OpenSSL internal error: %s:%i\n"), file, line);
                 return -1;
             case SSL_ERROR_SYSCALL:
-                M_printf (i18n (9999, "OpenSSL read error: %s\n"), strerror(tmp));
+                M_printf (i18n (2401, "OpenSSL read error: %s\n"), strerror(tmp));
                 ssl_disconnect (conn);
                 return -1;
             case SSL_ERROR_ZERO_RETURN:
                 ssl_disconnect (conn);
                 return -1;
             default:
-                M_printf (i18n (9999, "OpenSSL read error %d (unknown)\n"), tmp);
+                M_printf (i18n (2402, "OpenSSL read error %d (unknown)\n"), tmp);
                 ssl_disconnect (conn);
                 return -1;
         }
@@ -561,11 +561,11 @@ int ssl_sockwrite (Connection *conn, UBYTE *data, UWORD len_p)
                 len = -1;
                 break;
             case SSL_ERROR_SYSCALL:
-                M_printf (i18n (9999, "OpenSSL write error: %s\n"), strerror (tmp));
+                M_printf (i18n (2403, "OpenSSL write error: %s\n"), strerror (tmp));
                 ssl_disconnect (conn);
                 return -1;
             default:
-                M_printf (i18n (9999, "OpenSSL write error %d (unknown)\n"), tmp);
+                M_printf (i18n (2404, "OpenSSL write error %d (unknown)\n"), tmp);
                 ssl_disconnect (conn);
                 return -1;
         }
