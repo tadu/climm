@@ -85,7 +85,8 @@ Event *QueuePop ()
             queue->due = INT_MAX;
         else
             queue->due = queue->head->event->due;
-        Debug (DEB_QUEUE, STR_DOT STR_DOT STR_DOT "> %s %p: %08lx %p", QueueType (event->type), event, event->seq, event->pak);
+        Debug (DEB_QUEUE, STR_DOT STR_DOT STR_DOT "> %s %p: %08lx %p %ld @ %p",
+               QueueType (event->type), event, event->seq, event->pak, event->uin, event->conn);
         return event;
     }
     return NULL;
@@ -107,7 +108,8 @@ void QueueEnqueue (Event *event)
     entry->next = NULL;
     entry->event  = event;
 
-    Debug (DEB_QUEUE, "<" STR_DOT STR_DOT STR_DOT " %s %p: %08lx %p %x", QueueType (event->type), event, event->seq, event->pak, event->flags);
+    Debug (DEB_QUEUE, "<" STR_DOT STR_DOT STR_DOT " %s %p: %08lx %p %ld %x @ %p",
+           QueueType (event->type), event, event->seq, event->pak, event->uin, event->flags, event->conn);
 
     if (!queue->head)
     {
@@ -145,6 +147,7 @@ Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD id,
     Event *event = calloc (sizeof (Event), 1);
     assert (event);
     
+    event->rel = NULL;
     event->conn = conn;
     event->type = type;
     event->seq  = id;
@@ -155,7 +158,8 @@ Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD id,
     event->extra = extra;
     event->callback = callback;
     
-    Debug (DEB_EVENT, "<+" STR_DOT STR_DOT " %s %p: %08lx %p %x", QueueType (event->type), event, event->seq, event->pak, event->flags);
+    Debug (DEB_EVENT, "<+" STR_DOT STR_DOT " %s %p: %08lx %p %ld %x @ %p",
+           QueueType (event->type), event, event->seq, event->pak, event->uin, event->flags, event->conn);
     QueueEnqueue (event);
 
     return event;
@@ -231,7 +235,8 @@ Event *QueueDequeue (Connection *conn, UDWORD type, UDWORD seq)
         && queue->head->event->seq  == seq)
     {
         event = QueueDequeueEvent (queue->head->event, NULL);
-        Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08lx %p", QueueType (type), event, seq, event->pak);
+        Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08lx %p %ld",
+               QueueType (type), event, seq, event->pak, event->uin);
         return event;
     }
     for (iter = queue->head; iter->next; iter = iter->next)
@@ -241,7 +246,8 @@ Event *QueueDequeue (Connection *conn, UDWORD type, UDWORD seq)
             && iter->next->event->seq  == seq)
         {
             event = QueueDequeueEvent (iter->next->event, iter);
-            Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08lx %p", QueueType (type), event, seq, event->pak);
+            Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08lx %p %ld",
+                   QueueType (type), event, seq, event->pak, event->uin);
             return event;
         }
     }
@@ -249,14 +255,61 @@ Event *QueueDequeue (Connection *conn, UDWORD type, UDWORD seq)
     return NULL;
 }
 
+/*
+ * Removes and returns an event given by type, and sequence number and/or UIN.
+ */
+Event *QueueDequeue2 (Connection *conn, UDWORD type, UDWORD seq, UDWORD uin)
+{
+    Event *event;
+    struct QueueEntry *iter;
+
+    assert (queue);
+
+    if (!queue->head)
+    {
+        Debug (DEB_QUEUE, STR_DOT "??" STR_DOT " %s %08lx %ld", QueueType (type), seq, uin);
+        return NULL;
+    }
+
+    if (   queue->head->event->conn == conn
+        && queue->head->event->type == type
+        && (!seq || queue->head->event->seq == seq)
+        && (!uin || queue->head->event->uin == uin))
+    {
+        event = QueueDequeueEvent (queue->head->event, NULL);
+        Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08lx %p %ld",
+               QueueType (type), event, event->seq, event->pak, event->uin);
+        return event;
+    }
+    for (iter = queue->head; iter->next; iter = iter->next)
+    {
+        if (   iter->next->event->conn == conn
+            && iter->next->event->type == type
+            && (!seq || iter->next->event->seq  == seq)
+            && (!uin || iter->next->event->uin == uin))
+        {
+            event = QueueDequeueEvent (iter->next->event, iter);
+            Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08lx %p %ld",
+                   QueueType (type), event, event->seq, event->pak, event->uin);
+            return event;
+        }
+    }
+    Debug (DEB_QUEUE, STR_DOT "??" STR_DOT " %s %08lx %ld @ %p",
+           QueueType (type), seq, uin, conn);
+    return NULL;
+}
+
 void EventD (Event *event)
 {
     if (!event)
         return;
-    Debug (DEB_EVENT, STR_DOT STR_DOT ">> %s %p: %08lx %p", QueueType (event->type), event, event->seq, event->pak);
+    Debug (DEB_EVENT, STR_DOT STR_DOT ">> %s %p: %08lx %p %ld",
+           QueueType (event->type), event, event->seq, event->pak, event->uin);
     if (event->pak)
         PacketD (event->pak);
     ExtraD (event->extra);
+    if (event->rel && event->rel->rel == event)
+        event->rel->rel = NULL;
     free (event);
 }
 
@@ -274,7 +327,8 @@ void QueueCancel (Connection *conn)
     while (queue->head && queue->head->event->conn == conn)
     {
         event = QueueDequeueEvent (queue->head->event, NULL);
-        Debug (DEB_QUEUE, STR_DOT STR_DOT "!> %s %p %p: %08lx %p", QueueType (event->type), conn, event, event->seq, event->pak);
+        Debug (DEB_QUEUE, STR_DOT STR_DOT "!> %s %p %p: %08lx %p %ld",
+               QueueType (event->type), conn, event, event->seq, event->pak, event->uin);
         event->conn = NULL;
         if (event->callback)
             event->callback (event);
@@ -288,8 +342,8 @@ void QueueCancel (Connection *conn)
         while (iter->next && iter->next->event->conn == conn)
         {
             event = QueueDequeueEvent (iter->next->event, iter);
-            Debug (DEB_QUEUE, STR_DOT STR_DOT "!> %s %p %p: %08lx %p", QueueType (event->type),
-                   conn, event, event->seq, event->pak);
+            Debug (DEB_QUEUE, STR_DOT STR_DOT "!> %s %p %p: %08lx %p %ld",
+                   QueueType (event->type), conn, event, event->seq, event->pak, event->uin);
             event->conn = NULL;
             if (event->callback)
                 event->callback (event);

@@ -8,6 +8,7 @@ typedef void (Queuef)(Event *event);
 struct Event_s
 {
     Connection *conn;
+    Event      *rel;
     UDWORD      type;
     UDWORD      seq;
     UDWORD      attempts;
@@ -24,6 +25,7 @@ void        QueueEnqueue     (Event *event);
 Event      *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD seq, time_t due,
                               Packet *pak, UDWORD uin, Extra *extra, Queuef *callback);
 Event      *QueueDequeue     (Connection *conn, UDWORD type, UDWORD seq);
+Event      *QueueDequeue2    (Connection *conn, UDWORD type, UDWORD seq, UDWORD uin);
 void        QueueRun         ();
 void        QueueRetry       (Connection *conn, UDWORD type, UDWORD uin);
 void        QueueCancel      (Connection *conn);
