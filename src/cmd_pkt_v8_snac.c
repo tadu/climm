@@ -1566,7 +1566,7 @@ void SnacCliSendsms (Session *sess, const char *target, const char *text)
 
     strftime (tbuf, sizeof (tbuf), "%a, %d %b %Y %H:%M:%S GMT", gmtime (&t));
     snprintf (buf, sizeof (buf), "<icq_sms_message><destination>%s</destination>"
-             "<text>%s (%d www.mICQ.org)</text><codepage>1252</codepage><senders_UIN>%ld</senders_UIN>"
+             "<text>%s (%ld www.mICQ.org)</text><codepage>1252</codepage><senders_UIN>%ld</senders_UIN>"
              "<senders_name>%s</senders_name><delivery_receipt>Yes</delivery_receipt>"
              "<time>%s</time></icq_sms_message>",
              target, text, sess->uin, sess->uin, "mICQ", tbuf);

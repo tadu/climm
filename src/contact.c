@@ -51,7 +51,7 @@ Contact *ContactAdd (UDWORD uin, const char *nick)
         cont->nick[19] = '\0';
     }
     else
-        snprintf (cont->nick, sizeof (cont->nick), "%d", uin);
+        snprintf (cont->nick, sizeof (cont->nick), "%ld", uin);
     (cont + 1)->uin = 0;
 
     cont->flags = flags;

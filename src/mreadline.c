@@ -336,7 +336,7 @@ int R_process_input (void)
     {
         if (prG->tabs != TABS_SIMPLE && ch != '\t')
             tabstate = 0;
-        if ((ch >= 0 && ch < ' ') || ch == 127)
+        if ((ch > 0 && ch < ' ') || ch == 127 || !ch)
         {
             switch (ch)
             {
