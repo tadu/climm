@@ -1,5 +1,5 @@
 # $Id$ Chinese/Taiwan (中文)
-#  EN: __.i18n,v 1.63.2.7 2003/08/31 18:50:54
+#  EN: __.i18n,v 1.63.2.8 2003/09/03 19:01:01
 1000:big5
 1001:zh
 1002:zh_TW
@@ -651,6 +651,7 @@
 1800:把語言轉為 <lang> 或顯示 <nr>。
 1801:以螢幕闊度格式顯示閣下好友列表上的人。
 ###1807:取消了從 %s 進來的訊息 (seq %04x)\n
+#1807:Cancelled incoming message (seq %04x) from %s\n
 1808:大專
 1810:大學
 1812:過去的工作地方
@@ -665,6 +666,7 @@
 1825:捨棄了一個 %04x (%s) 封包
 1826:Resending message %04x (%s) sequence %04lx (attempt #%ld, len %d).\n
 ###1830:%ld 傳送嘗試後拾棄給 %s 的訊息，訊息內容:\n
+#1830:Discarding message to %s after %ld send attempts.  Message content:\n
 1833:Peer to peer TCP 連線已建立。\n
 1835:寫入 socket 時發生錯誤 - %s (%d)\n
 1841:收到畸形的初始確認封包。\n
@@ -1087,3 +1089,29 @@
 2339:  rget - 詢問伺服器前一個發送者的 meta 資訊\n
 2340:檔案傳送 '%s' 被 peer: %s%s 拒絕。\n
 2341:正在拒絕檔案要求 '%s' (%ld bytes): %s%s。\n
+#2342:Scripting
+#2343:Scripting extensions.
+#2344:Execute Tcl script from <file>.
+#2345:Execute Tcl script in <string>.
+#2346:The following Tcl commands are supported:\n
+#2347:micq receive <script> [<contact>]
+#2348:Install hook to receive messages from UIN or nick, or all if omitted.
+#2349:Callback arguments: from message
+#2350:micq unreceive [<contact>]
+#2351:Uninstall message hook for UIN or nick.
+#2352:micq event <script>
+#2353:Install event hook. Callback arguments: type ...
+#2354:micq unevent
+#2355:Uninstall event hook.
+#2356:List all installed hooks. Format: <type> <command> <filter>.
+#2357:micq exec <cmd>
+#2358:Execute micq command.
+#2359:micq nick <uin>
+#2360:Find nick from <uin>.
+#2361:Wrong number of arguments for command '%s %s'. Expected %d.\n
+#2362:Wrong number of arguments. Try 'help'.
+#2363:Error: recursive 'micq exec' not allowed.
+#2364:No connection found.
+#2365:unknown command: %s
+#2366:TCL error in file %s: %s\n
+#2367:TCL error: %s\n

@@ -1,5 +1,5 @@
 # $Id$ (Croatian)
-#  EN: __.i18n,v 1.63.2.7 2003/08/31 18:50:54
+#  EN: __.i18n,v 1.63.2.8 2003/09/03 19:01:01
 #-#1010:User is Away [Auto-Message]
 #1000:iso-8859-1
 #1001:<lang>
@@ -1215,3 +1215,29 @@
 #2339:  rget - query server for last sender's meta data\n
 #2340:File transfer '%s' rejected by peer: %s%s.\n
 #2341:Refusing file request '%s' (%ld bytes): %s%s.\n
+#2342:Scripting
+#2343:Scripting extensions.
+#2344:Execute Tcl script from <file>.
+#2345:Execute Tcl script in <string>.
+#2346:The following Tcl commands are supported:\n
+#2347:micq receive <script> [<contact>]
+#2348:Install hook to receive messages from UIN or nick, or all if omitted.
+#2349:Callback arguments: from message
+#2350:micq unreceive [<contact>]
+#2351:Uninstall message hook for UIN or nick.
+#2352:micq event <script>
+#2353:Install event hook. Callback arguments: type ...
+#2354:micq unevent
+#2355:Uninstall event hook.
+#2356:List all installed hooks. Format: <type> <command> <filter>.
+#2357:micq exec <cmd>
+#2358:Execute micq command.
+#2359:micq nick <uin>
+#2360:Find nick from <uin>.
+#2361:Wrong number of arguments for command '%s %s'. Expected %d.\n
+#2362:Wrong number of arguments. Try 'help'.
+#2363:Error: recursive 'micq exec' not allowed.
+#2364:No connection found.
+#2365:unknown command: %s
+#2366:TCL error in file %s: %s\n
+#2367:TCL error: %s\n
