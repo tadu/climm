@@ -722,11 +722,14 @@
 722:Type help to see your current command, because this one you typed wasn't one!
 723:%s's IP address is 
 724:Automatic replies are %s.¶
+725:Received USERONLINE packet for non-contact.¶
+726:Received USEROFFLINE packet for non-contact.¶
 727:The Do not disturb message is:
 728:The Away message is:
 729:The Not available message is:
 730:The Occupied message is:
 731:The Invisible message is:
+732:listener
 734:Sorry wrong syntax, can't find a status somewhere.\r¶
 735:Must give a message.¶
 736:Sorry wrong syntax. Read tha help man!¶

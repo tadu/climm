@@ -331,7 +331,7 @@ int log_event (UDWORD uin, int type, char *str, ...)
     if (!(prG->flags & FLAG_LOG))
         return 0;
 
-    if ((prG->flags & FLAG_LOG_ONOFF) && (LOG_ONLINE == type))
+    if (!(prG->flags & FLAG_LOG_ONOFF) && (type == LOG_ONLINE))
         return 0;
 
     if (!prG->logplace)
@@ -489,7 +489,6 @@ void ExecScript (char *script, UDWORD uin, long num, char *data)
                  script, rc);
     }
     free (cmd);
-    free (who);
     free (mydata);
 }
 

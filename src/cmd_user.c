@@ -542,19 +542,21 @@ JUMP_F(CmdUserTCP)
             return 0;
         }
         uin = ContactFindByNick (nick);
-        if (!uin)
+        if (uin == -1)
         {
             M_print (i18n (845, "Nick %s unknown.\n"), nick);
             return 0;
         }
-        if (uin && !strcmp (cmd, "open"))
+        if (!strcmp (cmd, "open"))
         {
             SESSION(TYPE_PEER);
             TCPDirectOpen  (sess, uin);
         }
-        else if (uin && !strcmp (cmd, "close"))
+        else if (!strcmp (cmd, "close"))
             TCPDirectClose (      uin);
-        else if (uin && !strcmp (cmd, "off"))
+        else if (!strcmp (cmd, "reset"))
+            TCPDirectClose (      uin);
+        else if (!strcmp (cmd, "off"))
             TCPDirectOff   (      uin);
     }
     else
@@ -1926,7 +1928,8 @@ JUMP_F(CmdUserConn)
         for (i = 0; (sess = SessionNr (i)); i++)
         {
             M_print (i18n (917, "%-12s version %d for %s (%x), at %s:%d %s\n"),
-                     sess->type & (TYPE_SERVER | TYPE_SERVER_OLD) ? i18n (889, "server") : i18n (890, "peer-to-peer"),
+                     sess->type & (TYPE_SERVER | TYPE_SERVER_OLD) ? i18n (889, "server") : 
+                     sess->type & TYPE_PEER ? i18n (732, "listener") : i18n (890, "peer-to-peer"),
                      sess->ver, ContactFindName (sess->uin), sess->status,
                      sess->server ? sess->server : UtilIOIP (sess->ip), sess->port,
                      sess->connect & CONNECT_FAIL ? i18n (497, "failed") :

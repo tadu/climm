@@ -1,3 +1,17 @@
+2002-04-16 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* mention GPL-2 in COPYING
+	* UtilUIUserOnline, UtilUIUserOffline - notify another user's status change
+	* implement SRV_RECVMSG for type 1 messages following patch from
+	  Peter Backes <rtc@helen.PLASMA.Xg8.DE>
+	* don't crash on online/offline message for non-contacts
+	* add missing output on server sent messages
+	* some tcp fixes: unknown nicks were treated as UIN -1;
+	  list listening "connection" as "listening", not "peer-to-peer";
+	  fix crash after tcp off/close/open cycle
+	* allow to direct connect even if user is offline
+	* fix crash in ExecScript()
+	* prompt redraw fixes
+
 2002-04-05 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Fix remember password (thanks Pavel Roskin).
 	* update debian/ to be more like in the real Debian package.

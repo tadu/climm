@@ -8,3 +8,6 @@ void   Time_Stamp (void);
 void   Kill_Prompt (void);
 void   M_print (const char *str, ...);
 void   Debug (UDWORD level, const char *str, ...);
+
+void   UtilUIUserOnline  (Contact *cont);
+void   UtilUIUserOffline (Contact *cont);

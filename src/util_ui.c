@@ -4,6 +4,7 @@
 #include "micq.h"
 #include "mreadline.h"
 #include "util_ui.h"
+#include "util_io.h"
 #include "util.h"
 #include "contact.h"
 #include "preferences.h"
@@ -448,6 +449,7 @@ configurable
 void Prompt (void)
 {
     static char buff[200];
+    printf ("\r" ESC "[K");
     if (prG->flags & FLAG_UINPROMPT && uiG.last_sent_uin)
     {
         snprintf (buff, sizeof (buff), COLSERV "[%s]" COLNONE " ", ContactFindName (uiG.last_sent_uin));
@@ -472,6 +474,7 @@ void Soft_Prompt (void)
 {
 #if 1
     static char buff[200];
+    printf ("\r" ESC "[K");
     snprintf (buff, sizeof (buff), COLSERV "%s" COLNONE, i18n (40, "mICQ> "));
     R_doprompt (buff);
     No_Prompt = FALSE;
@@ -497,4 +500,49 @@ void Time_Stamp (void)
     thetime = localtime (&p);
 
     M_print ("%.02d:%.02d:%.02d", thetime->tm_hour, thetime->tm_min, thetime->tm_sec);
+}
+
+/*
+ * Inform that a user went online
+ */
+void UtilUIUserOnline  (Contact *cont)
+{
+    if (prG->sound & SFLAG_ON_CMD)
+        ExecScript (prG->sound_on_cmd, cont->uin, 0, NULL);
+    else if (prG->sound & SFLAG_ON_BEEP)
+        printf ("\a");
+    log_event (cont->uin, LOG_ONLINE, "User logged on %s\n", ContactFindName (cont->uin));
+ 
+    Time_Stamp ();
+    M_print (" " COLCONTACT "%10s" COLNONE " %s (",
+             ContactFindName (cont->uin), i18n (31, "logged on"));
+    Print_Status (cont->status);
+    M_print (")");
+    if (cont->version)
+        M_print ("[%s]", cont->version);
+    M_print (".\n");
+    if (prG->verbose)
+    {
+        M_print ("%-15s %s\n", i18n (441, "IP:"), UtilIOIP (cont->outside_ip));
+        M_print ("%-15s %s\n", i18n (451, "IP2:"), UtilIOIP (cont->local_ip));
+        M_print ("%-15s %d\n", i18n (453, "TCP version:"), cont->TCP_version);
+        M_print ("%-15s %s\n", i18n (454, "Connection:"),
+                 cont->connection_type == 4 ? i18n (493, "Peer-to-Peer") : i18n (494, "Server Only"));
+    }
+}
+
+/*
+ * Inform that a user went offline
+ */
+void UtilUIUserOffline (Contact *cont)
+{
+    if (prG->sound & SFLAG_OFF_CMD)
+        ExecScript (prG->sound_off_cmd, cont->uin, 0, NULL);
+    else if (prG->sound & SFLAG_OFF_BEEP)
+        printf ("\a");
+    log_event (cont->uin, LOG_ONLINE, "User logged off %s\n", ContactFindName (cont->uin));
+ 
+    Time_Stamp ();
+    M_print (" " COLCONTACT "%10s" COLNONE " %s\n",
+             ContactFindName (cont->uin), i18n (30, "logged off."));
 }

@@ -14,6 +14,7 @@
 #include "util_io.h"
 #include "contact.h"
 #include "preferences.h"
+#include "icq_response.h"
 #include "cmd_pkt_v8_snac.h"
 #include "cmd_pkt_v8_flap.h"
 #include "cmd_pkt_v8_tlv.h"
@@ -27,7 +28,7 @@ typedef struct { UWORD fam; UWORD cmd; const char *name; jump_snac_f *f; } SNAC;
 
 static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd, SnacSrvRates,
     SnacSrvReplyicbm, SnacSrvReplybuddy, SnacSrvReplybos, SnacSrvReplyinfo, SnacSrvReplylocation,
-    SnacSrvUseronline, SnacSrvUseroffline, SnacSrvUnknown;
+    SnacSrvUseronline, SnacSrvUseroffline, SnacSrvRecvmsg, SnacSrvUnknown;
 
 static SNAC SNACv[] = {
     {  1,  3, NULL, NULL},
@@ -56,7 +57,7 @@ static SNAC SNACS[] = {
     {  3, 11, "SRV_USERONLINE",      SnacSrvUseronline},
     {  3, 12, "SRV_USEROFFLINE",     SnacSrvUseroffline},
     {  4,  5, "SRV_REPLYICBM",       SnacSrvReplyicbm},
-    {  4,  7, "SRV_RECVMSG",         SnacSrvUnknown},
+    {  4,  7, "SRV_RECVMSG",         SnacSrvRecvmsg},
     {  9,  3, "SRV_REPLYBOS",        SnacSrvReplybos},
     { 19,  3, "SRV_REPLYUNKNOWN",    SnacSrvUnknown},
     { 19,  6, "SRV_REPLYROSTER",     SnacSrvUnknown},
@@ -336,15 +337,20 @@ JUMP_SNAC_F(SnacSrvUseronline)
     
     pak = event->pak;
     cont = ContactFind (PacketReadUIN (pak));
+    if (!cont)
+    {
+        if (prG->verbose)
+            M_print (i18n (725, "Received USERONLINE packet for non-contact.\n"));
+        return;
+    }
+    
     PacketReadB2 (pak);
     PacketReadB2 (pak);
     tlv = TLVRead (pak);
     if (tlv[10].len)
         cont->outside_ip = tlv[10].nr;
-    if (tlv[6].len)
-        cont->status = tlv[6].nr;
-    else
-        cont->status = 0;
+    cont->status = tlv[6].len ? tlv[6].nr : 0;
+    
     if (tlv[12].len)
     {
         p = TLVPak (tlv + 12);
@@ -359,28 +365,8 @@ JUMP_SNAC_F(SnacSrvUseronline)
         /* remainder ignored */
     }
     /* TLV 1, d, f, 2, 3 ignored */
-    if (prG->sound & SFLAG_ON_CMD)
-        ExecScript (prG->sound_on_cmd, cont->uin, 0, NULL);
-    else if (prG->sound & SFLAG_ON_BEEP)
-        printf ("\a");
-    log_event (cont->uin, LOG_ONLINE, "User logged on %s\n", ContactFindName (cont->uin));
- 
-    Time_Stamp ();
-    M_print (" " COLCONTACT "%10s" COLNONE " %s (",
-             ContactFindName (cont->uin), i18n (31, "logged on"));
-    Print_Status (cont->status);
-    M_print (")");
-    if (cont->version)
-        M_print ("[%s]", cont->version);
-    M_print (".\n");
-    if (prG->verbose)
-    {
-        M_print ("%-15s %s\n", i18n (441, "IP:"), UtilIOIP (cont->outside_ip));
-        M_print ("%-15s %s\n", i18n (451, "IP2:"), UtilIOIP (cont->local_ip));
-        M_print ("%-15s %d\n", i18n (453, "TCP version:"), cont->TCP_version);
-        M_print ("%-15s %s\n", i18n (454, "Connection:"),
-                 cont->connection_type == 4 ? i18n (493, "Peer-to-Peer") : i18n (494, "Server Only"));
-    }
+
+    UtilUIUserOnline (cont);
 }
 
 /*
@@ -393,20 +379,17 @@ JUMP_SNAC_F(SnacSrvUseroffline)
     
     pak = event->pak;
     cont = ContactFind (PacketReadUIN (pak));
-    /* ignoring unknowns */
+    if (!cont)
+    {
+        if (prG->verbose)
+            M_print (i18n (726, "Received USEROFFLINE packet for non-contact.\n"));
+        return;
+    }
 
     cont->status = STATUS_OFFLINE;
     cont->last_time = time (NULL);
     
-    if (prG->sound & SFLAG_OFF_CMD)
-        ExecScript (prG->sound_off_cmd, cont->uin, 0, NULL);
-    else if (prG->sound & SFLAG_OFF_BEEP)
-        printf ("\a");
-    log_event (cont->uin, LOG_ONLINE, "User logged off %s\n", ContactFindName (cont->uin));
- 
-    Time_Stamp ();
-    M_print (" " COLCONTACT "%10s" COLNONE " %s\n",
-             ContactFindName (cont->uin), i18n (30, "logged off."));
+    UtilUIUserOffline (cont);
 }
 
 /*
@@ -415,6 +398,78 @@ JUMP_SNAC_F(SnacSrvUseroffline)
 JUMP_SNAC_F(SnacSrvReplyicbm)
 {
    SnacCliSeticbm (event->sess);
+}
+
+/*
+ * SRV_RECVMSG - SNAC(4,7)
+ */
+JUMP_SNAC_F(SnacSrvRecvmsg)
+{
+    Contact *cont;
+    Packet *p, *pak;
+    TLV *tlv;
+    UDWORD uin, oldstat = 0;
+    int i, len;
+    const char *text;
+
+    pak = event->pak;
+
+    PacketReadB4 (pak); /* TIME */
+    PacketReadB2 (pak); /* RANDOM */
+    PacketReadB2 (pak); /* ??? */
+
+    switch (PacketReadB2 (pak))
+    {
+        case 1:
+            if ((cont = ContactFind (uin = PacketReadUIN (pak))) != NULL)
+                oldstat = cont->status;
+            PacketReadB2 (pak); /* WARNING */
+            PacketReadB2 (pak); /* COUNT */
+            tlv = TLVRead (pak);
+
+            if (tlv[6].len && cont && (cont->status = tlv[6].nr) != oldstat)
+                UtilUIUserOnline (cont);
+
+            if (tlv[2].len == 4)
+            {
+                for (i = 16; i < 20; i++)
+                    if (tlv[i].tlv == i)
+                    {
+                        int typ = tlv[i].tlv, len = tlv[i].len, nr = tlv[i].nr;
+                        const char *str = tlv[i].str;
+                        tlv[i].tlv = tlv[2].tlv; tlv[i].len = tlv[2].len;
+                        tlv[i].nr  = tlv[2].nr;  tlv[i].str = tlv[2].str;
+                        tlv[2].tlv = typ; tlv[2].len = len;
+                        tlv[2].nr  = nr;  tlv[2].str = str;
+                    }
+            }
+
+            if (tlv[2].len > 4)
+            {
+                p = TLVPak (tlv + 2);
+                PacketReadB2 (p);
+                for (len = PacketReadB2 (p); len > 0; len--)
+                    PacketRead1 (p);
+                PacketReadB2 (p);
+                len = PacketReadBAt2 (p, PacketReadPos (p));
+                text = PacketReadStrB (p);
+
+                Time_Stamp ();
+                M_print (" " CYAN BOLD "%10s" COLNONE " ",
+                         ContactFindName (uin));
+                Do_Msg (event->sess, NORM_MESS, len - 4, text + 4, uin, 0);
+            }
+            /* TLV 1, 2(!), 3, 4, f ignored */
+            if (prG->sound & SFLAG_CMD)
+                ExecScript (prG->sound_cmd, uin, 0, NULL);
+            else if (prG->sound & SFLAG_BEEP)
+                printf ("\a");
+            break;
+        case 2:
+        default:
+            SnacSrvUnknown (event);
+            break;
+    }
 }
 
 /*
@@ -606,6 +661,10 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, char *text, UDWORD type)
 {
     Packet *pak;
     UBYTE format;
+    
+    Time_Stamp ();
+    M_print (" " COLACK "%10s" COLNONE " " MSGACKSTR "%s\n", ContactFindName (uin), MsgEllipsis (text));
+    log_event (uin, LOG_MESS, "You sent instant message to %s\n%s\n", ContactFindName (uin), text);
     
     switch (type)
     {

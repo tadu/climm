@@ -411,6 +411,7 @@ void R_redraw ()
     }
     prstat = 0;
     R_prompt ();
+    printf ("\r" ESC "[K");
     if (curprompt)
         M_print (curprompt);
     printf ("%s", s);

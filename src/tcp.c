@@ -113,6 +113,7 @@ void TCPDirectOpen (Session *sess, UDWORD uin)
     peer->uin   = uin;
     peer->type  = TYPE_DIRECT;
     peer->spref = NULL;
+    peer->assoc = sess;
 
     TCPDispatchConn (peer);
 }
@@ -147,6 +148,7 @@ void TCPDirectOff (UDWORD uin)
     }
     peer->uin = cont->uin;
     peer->connect = CONNECT_FAIL;
+    peer->type = TYPE_DIRECT;
 }
 
 /**************************************************/
@@ -256,7 +258,6 @@ void TCPDispatchConn (Session *sess)
                 if (!rc)
                     rc = ETIMEDOUT;
                 sockclose (sess->sok);
-                M_print (i18n (633, "failed:\n"));
                 M_print (i18n (634, "Connection failed: %s (%d)\n"), strerror (rc), rc);
             case 3:
                 if (!cont->local_ip || !cont->port)
@@ -304,7 +305,6 @@ void TCPDispatchConn (Session *sess)
                 if (!rc)
                     rc = ETIMEDOUT;
                 sockclose (sess->sok);
-                M_print (i18n (633, "failed:\n"));
                 M_print (i18n (634, "Connection failed: %s (%d)\n"), strerror (rc), rc);
             case 6:
             {
@@ -857,8 +857,6 @@ BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
         return 0;
     cont = ContactFind (uin);
     if (!cont)
-        return 0;
-    if (cont->status == STATUS_OFFLINE)
         return 0;
     if (!(sess->connect & CONNECT_MASK))
         return 0;
