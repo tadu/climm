@@ -15,6 +15,8 @@
 #include <string.h>
 #include <stdio.h>
 
+static void CmdPktSrvCallBackKeepAlive (struct Event *event);
+
 static jump_srv_f CmdPktSrvMulti, CmdPktSrvAck;
 
 static jump_srv_t jump[] = {
@@ -147,6 +149,16 @@ void CmdPktSrvRead (Session *sess)
 }
 
 /*
+ * Handles sending keep alives regularly
+ */
+void CmdPktSrvCallBackKeepAlive (struct Event *event)
+{
+    CmdPktCmdKeepAlive (event->sess);
+    event->due = time (NULL) + 120;
+    QueueEnqueue (queue, event);
+}
+
+/*
  * Process the given server packet
  */
 void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
@@ -189,6 +201,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             CmdPktCmdInvisList (sess);
             CmdPktCmdVisList (sess);
             sess->status = prG->status;
+            sess->connect = CONNECT_OK | CONNECT_SELECT_R;
             uiG.reconnect_count = 0;
             if (loginmsg++)
                 break;
@@ -202,6 +215,8 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
 #else
                      data[12], data[13], data[14], data[15]);
 #endif
+            QueueEnqueueData (queue, sess, 0, QUEUE_TYPE_UDP_KEEPALIVE, 0, time (NULL) + 120,
+                              NULL, NULL, &CmdPktSrvCallBackKeepAlive);
             break;
         case SRV_RECV_MESSAGE:
             Recv_Message (sess, data);
@@ -421,13 +436,11 @@ JUMP_SRV_F (CmdPktSrvAck)
         Time_Stamp ();
         M_print (" " COLACK "%10s" COLNONE " %s%s\n",
                  ContactFindName (PacketReadAt4 (event->pak, CMD_v5_OFF_PARAM)),
-                 MSGACKSTR, MsgEllipsis (PacketReadAtStr (event->pak, 30)));
+                 MSGACKSTR, MsgEllipsis (PacketReadAtStrN (event->pak, 30)));
     }
     
-    Debug (64, "--> %p (^%p ^-%p) %s", event->pak, event, event->info,
-           i18n (859, "freeing (ack'ed) packet"));
+    PacketD (pak);
     if (event->info)
         free (event->info);
-    free (event->pak);
     free (event);
 }

@@ -540,7 +540,7 @@ void Kill_Prompt (void)
 }
 
 /*****************************************************
-Displays the Micq prompt.  Maybe someday this will be 
+Displays the mICQ prompt.  Maybe someday this will be 
 configurable
 ******************************************************/
 void Prompt (void)
@@ -553,7 +553,7 @@ void Prompt (void)
     }
     else
     {
-        snprintf (buff, sizeof (buff), COLSERV "%s" COLNONE, i18n (40, "Micq> "));
+        snprintf (buff, sizeof (buff), COLSERV "%s" COLNONE, i18n (40, "mICQ> "));
         R_doprompt (buff);
     }
     No_Prompt = FALSE;
@@ -563,20 +563,20 @@ void Prompt (void)
 }
 
 /*****************************************************
-Displays the Micq prompt.  Maybe someday this will be 
+Displays the mICQ prompt.  Maybe someday this will be 
 configurable
 ******************************************************/
 void Soft_Prompt (void)
 {
 #if 1
     static char buff[200];
-    snprintf (buff, sizeof (buff), COLSERV "%s" COLNONE, i18n (40, "Micq> "));
+    snprintf (buff, sizeof (buff), COLSERV "%s" COLNONE, i18n (40, "mICQ> "));
     R_doprompt (buff);
     No_Prompt = FALSE;
 #else
     if (!No_Prompt)
     {
-        M_print (COLSERV "%s" COLNONE, i18n (40, "Micq> "));
+        M_print (COLSERV "%s" COLNONE, i18n (40, "mICQ> "));
         fflush (stdout);
     }
     else

@@ -36,10 +36,12 @@
   #endif
 #endif
 
+struct Packet_s;
 struct Session_s;
 struct Preferences_s;
 struct SessionPreferences_s;
 
+typedef struct Packet_s             Packet;
 typedef struct Session_s            Session;
 typedef struct Preferences_s        Preferences;
 typedef struct PreferencesSession_s PreferencesSession;

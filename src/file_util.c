@@ -41,29 +41,15 @@
 
 /****/
 
-static char *fill (const char *fmt, const char *in);
 
 #define      ADD_ALTER(a,b)      else if (!strcasecmp (tmp, a))    \
-                                       CmdUser (NULL, fill ("턠lter quiet " #b " %s", strtok (NULL, " \n\t")))
-#define      ADD_CMD_D(a,b)      else if (!strcasecmp (tmp, a))        \
-                                       { prG->b = strtok (NULL, "\n");\
-                                         if (!prG->b) prG->b = ""; \
-                                         while (*prG->b == ' ' || *prG->b == '\t') prG->b++; \
-                                         prG->b = strdup (prG->b);     \
-                                         dep |= 1; } else if (0)
+                                       CmdUser (NULL, UtilFill ("턠lter quiet " #b " %s", strtok (NULL, " \n\t")))
 #define      ADD_CMD(a,b)        else if (!strcasecmp (tmp, a))        \
                                        { prG->b = strtok (NULL, "\n");\
                                          if (!prG->b) prG->b = ""; \
                                          while (*prG->b == ' ' || *prG->b == '\t') prG->b++; \
                                          prG->b = strdup (prG->b);     \
                                          } else if (0)
-
-char *fill (const char *fmt, const char *in)
-{
-    char buf[1024];
-    snprintf (buf, sizeof (buf), fmt, in);
-    return strdup (buf);
-}
 
 /************************************************************************
  Copies src string into dest.  If src is NULL dest becomes ""
@@ -211,7 +197,7 @@ void Read_RC_File (FD_T rcf)
     char *tmp;
     char *p;
     Contact *cont;
-    Session *oldsess = NULL, *newsess = NULL;
+    Session *oldsess = NULL, *sess = NULL;
     int i, section, dep = 0;
     UDWORD uin;
     char *tab_nick_spool[TAB_SLOTS];
@@ -235,9 +221,9 @@ void Read_RC_File (FD_T rcf)
             else if (!strcasecmp (buf, "[Connection]"))
             {
                 section = 3;
-                oldsess = newsess;
-                newsess = SessionC ();
-                newsess->spref = PreferencesSessionC ();
+                oldsess = sess;
+                sess = SessionC ();
+                sess->spref = PreferencesSessionC ();
             }
             else
             {
@@ -257,27 +243,7 @@ void Read_RC_File (FD_T rcf)
                 break;
             case 0:
                 tmp = strtok (buf, " ");
-                if (!strcasecmp (tmp, "Server"))
-                {
-                    if (!newsess)
-                    {
-                        newsess = SessionC ();
-                        newsess->spref = PreferencesSessionC ();
-                    }
-                    dep |= 2;
-                    newsess->spref->server = M_strdup (strtok (NULL, " \n\t"));
-                }
-                else if (!strcasecmp (tmp, "Password"))
-                {
-                    if (!newsess)
-                    {
-                        newsess = SessionC ();
-                        newsess->spref = PreferencesSessionC ();
-                    }
-                    dep |= 2;
-                    newsess->spref->passwd = M_strdup (strtok (NULL, "\n\t"));
-                }
-                else if (!strcasecmp (tmp, "ReceiveScript"))
+                if (!strcasecmp (tmp, "ReceiveScript"))
                 {
 #ifdef MSGEXEC
                     prG->event_cmd = M_strdup (strtok (NULL, "\n"));
@@ -314,68 +280,10 @@ void Read_RC_File (FD_T rcf)
                     if (!prG->verbose)
                         prG->verbose = atoi (strtok (NULL, "\n"));
                 }
-                else if (!strcasecmp (tmp, "Russian"))
-                {
-                    prG->flags |= FLAG_CONVRUSS;
-                    dep |= 1;
-                }
-                else if (!strcasecmp (tmp, "JapaneseEUC"))
-                {
-                    prG->flags |= FLAG_CONVEUC;
-                    dep |= 1;
-                }
-                else if (!strcasecmp (tmp, "Hermit"))
-                {
-                    prG->flags |= FLAG_HERMIT;
-                    dep |= 1;
-                }
                 else if (!strcasecmp (tmp, "logplace"))
                 {
                     if (!prG->logplace) /* don't overwrite command line arg */
                         prG->logplace = strdup (strtok (NULL, " \t\n"));
-                }
-                else if (!strcasecmp (tmp, "LogType"))
-                {
-                    char *home = getenv ("HOME");
-                    if (!home) home = "";
-                    i = atoi (strtok (NULL, " \n\t"));
-                    prG->flags &= ~FLAG_LOG & ~FLAG_LOG_ONOFF;
-                    switch (i)
-                    {
-                        case 1:
-                            prG->logplace = malloc (strlen (home) + 10);
-                            strcpy (prG->logplace, home);
-                            strcpy (prG->logplace, "/micq_log");
-                            break;
-                        case 3:
-                            prG->flags |= FLAG_LOG_ONOFF;
-                        case 2:
-                            prG->flags |= FLAG_LOG;
-                            prG->logplace = malloc (strlen (home) + 10);
-                            strcpy (prG->logplace, home);
-                            strcpy (prG->logplace, "/micq.log/");
-                    }
-                    dep |= 1;
-                }
-                else if (!strcasecmp (tmp, "No_Log"))
-                {
-                    prG->flags &= ~FLAG_LOG & ~FLAG_LOG_ONOFF;
-                    dep |= 1;
-                }
-                else if (!strcasecmp (tmp, "No_Color"))
-                {
-                    prG->flags &= ~FLAG_COLOR;
-                    dep |= 1;
-                }
-                else if (!strcasecmp (tmp, "Last_UIN_Prompt"))
-                {
-                    prG->flags |= FLAG_UINPROMPT;
-                    dep |= 1;
-                }
-                else if (!strcasecmp (tmp, "Del_is_Del"))
-                {
-                    prG->flags &= ~FLAG_DELBS;
-                    dep |= 1;
                 }
                 else if (!strcasecmp (tmp, "LineBreakType"))
                 {
@@ -386,41 +294,6 @@ void Read_RC_File (FD_T rcf)
                     if (i & 2)
                         prG->flags |= FLAG_LIBR_INT;
                 }
-                else if (!strcasecmp (tmp, "UIN"))
-                {
-                    if (!newsess)
-                    {
-                        newsess = SessionC ();
-                        newsess->spref = PreferencesSessionC ();
-                    }
-                    dep |= 2;
-                    newsess->spref->uin = atoi (strtok (NULL, " \n\t"));
-                }
-                else if (!strcasecmp (tmp, "port"))
-                {
-                    if (!newsess)
-                    {
-                        newsess = SessionC ();
-                        newsess->spref = PreferencesSessionC ();
-                    }
-                    dep |= 2;
-                    newsess->spref->port = atoi (strtok (NULL, " \n\t"));
-                }
-                else if (!strcasecmp (tmp, "status"))
-                {
-                    if (!newsess)
-                    {
-                        newsess = SessionC ();
-                        newsess->spref = PreferencesSessionC ();
-                    }
-                    dep |= 2;
-                    newsess->spref->status = atoi (strtok (NULL, " \n\t"));
-                }
-                ADD_CMD_D ("auto_rep_str_away", auto_away);
-                ADD_CMD_D ("auto_rep_str_na",   auto_na);
-                ADD_CMD_D ("auto_rep_str_dnd",  auto_dnd);
-                ADD_CMD_D ("auto_rep_str_occ",  auto_occ);
-                ADD_CMD_D ("auto_rep_str_inv",  auto_inv);
                 else if (!strcasecmp (tmp, "auto"))
                 {
                     tmp = strtok (NULL, " \t\n");
@@ -436,23 +309,6 @@ void Read_RC_File (FD_T rcf)
                     ADD_CMD ("inv",  auto_inv);
                     else
                         prG->flags |= FLAG_AUTOREPLY;
-                }
-                else if (!strcasecmp (tmp, "LogDir"))
-                {
-                    char *tmp = strtok (NULL, "\n");
-                    if (!tmp) tmp = "";
-                    if (*tmp && tmp[strlen (tmp) - 1] == '/')
-                    {
-                        prG->logplace = strdup (tmp);
-                    }
-                    else
-                    {
-                        prG->logplace = malloc (strlen (tmp) + 2);
-                        strcpy (prG->logplace, tmp);
-                        strcat (prG->logplace, "/");
-                    }
-                    prG->flags |= FLAG_LOG;
-                    dep |= 1;
                 }
                 else if (!strcasecmp (tmp, "Sound"))
                 {
@@ -473,11 +329,6 @@ void Read_RC_File (FD_T rcf)
                         prG->sound_cmd = strdup (tmp);
                     }
                 }
-                else if (!strcasecmp (tmp, "No_Sound"))
-                {
-                    prG->sound &= ~SFLAG_BEEP & ~SFLAG_CMD;
-                    dep |= 1;
-                }
                 else if (!strcasecmp (tmp, "SoundOnline"))
                 {
                     tmp = strtok (NULL, "\n\t");
@@ -496,11 +347,6 @@ void Read_RC_File (FD_T rcf)
                         prG->sound |= SFLAG_ON_CMD;
                         prG->sound_on_cmd = strdup (tmp);
                     }
-                }
-                else if (!strcasecmp (tmp, "No_SoundOnline"))
-                {
-                    prG->sound &= ~SFLAG_ON_BEEP & ~SFLAG_ON_CMD;
-                    dep |= 1;
                 }
                 else if (!strcasecmp (tmp, "SoundOffline"))
                 {
@@ -521,11 +367,6 @@ void Read_RC_File (FD_T rcf)
                         prG->sound_on_cmd = strdup (tmp);
                     }
                 }
-                else if (!strcasecmp (tmp, "No_SoundOffline"))
-                {
-                    prG->sound &= ~SFLAG_OFF_BEEP & ~SFLAG_OFF_CMD;
-                    dep |= 1;
-                }
                 else if (!strcasecmp (tmp, "Auto_away"))
                 {
                     prG->away_time = atoi (strtok (NULL, " \n\t"));
@@ -534,48 +375,10 @@ void Read_RC_File (FD_T rcf)
                 {
                     prG->screen = atoi (strtok (NULL, " \n\t"));
                 }
-                ADD_ALTER ("clear_cmd", clear);
-                ADD_ALTER ("message_cmd", msg);
-                ADD_ALTER ("info_cmd", info);
-                ADD_ALTER ("rand_cmd", rand);
-                ADD_ALTER ("color_cmd", color);
-                ADD_ALTER ("sound_cmd", sound);
-                ADD_ALTER ("quit_cmd", q);
-                ADD_ALTER ("reply_cmd", r);
-                ADD_ALTER ("again_cmd", a);
-                ADD_ALTER ("list_cmd", w);
-                ADD_ALTER ("away_cmd", away);
-                ADD_ALTER ("na_cmd", na);
-                ADD_ALTER ("dnd_cmd", dnd);
-                ADD_ALTER ("togig_cmd", togig);
-                ADD_ALTER ("iglist_cmd", i);
-                ADD_ALTER ("online_cmd", online);
-                ADD_ALTER ("occ_cmd", occ);
-                ADD_ALTER ("ffc_cmd", ffc);
-                ADD_ALTER ("inv_cmd", inv);
-                ADD_ALTER ("status_cmd", status);
-                ADD_ALTER ("auth_cmd", auth);
-                ADD_ALTER ("auto_cmd", auto);
-                ADD_ALTER ("change_cmd", change);
-                ADD_ALTER ("add_cmd", add);
-                ADD_ALTER ("togvis_cmd", togvis);
-                ADD_ALTER ("search_cmd", search);
-                ADD_ALTER ("save_cmd", save);
-                ADD_ALTER ("alter_cmd", alter);
-                ADD_ALTER ("online_list_cmd", e);
-                ADD_ALTER ("msga_cmd", msga);
-                ADD_ALTER ("update_cmd", update);
-                ADD_ALTER ("url_cmd", url);
-                ADD_ALTER ("about_cmd", about);
                 else if (!strcasecmp (tmp, "Tab"))
                 {
                     if (spooled_tab_nicks < TAB_SLOTS)
                         tab_nick_spool[spooled_tab_nicks++] = M_strdup (strtok (NULL, "\n\t"));
-                }
-                else if (!strcasecmp (tmp, "Contacts"))
-                {
-                    section = 1;
-                    dep |= 1;
                 }
                 else if (!strcasecmp (tmp, "set"))
                 {
@@ -641,27 +444,6 @@ void Read_RC_File (FD_T rcf)
                             prG->flags |= FLAG_LIBR_INT;
                         else if (!strcasecmp (tmp, "smart"))
                             prG->flags |= FLAG_LIBR_BR | FLAG_LIBR_INT;
-                    }
-                }
-                else if (!strcasecmp (tmp, "logging"))
-                {
-                    dep |= 1;
-                    tmp = strtok (NULL, " \t\n");
-                    if (tmp)
-                    {
-                        i = atoi (tmp);
-                        prG->flags &= ~FLAG_LOG & ~FLAG_LOG_ONOFF;
-                        if (i)
-                            prG->flags |= FLAG_LOG;
-                        if (i & 2)
-                            prG->flags |= FLAG_LOG_ONOFF;
-                        tmp = strtok (NULL, "\n");
-                        if (tmp)
-                        {
-                            prG->logplace = strdup (tmp);
-                            if (!strlen (prG->logplace))
-                                prG->logplace = NULL;
-                        }
                     }
                 }
                 else
@@ -734,7 +516,7 @@ void Read_RC_File (FD_T rcf)
                 tmp = strtok (buf, " ");
                 if (!strcasecmp (tmp, "alter"))
                 {
-                    CmdUser (NULL, fill ("턠lter quiet %s", strtok (NULL, "\n")));
+                    CmdUser (NULL, UtilFill ("턠lter quiet %s", strtok (NULL, "\n")));
                 }
                 else
                 {
@@ -751,14 +533,14 @@ void Read_RC_File (FD_T rcf)
                     if (!tmp)
                         continue;
                     if (!strcasecmp (tmp, "server"))
-                        newsess->spref->type = TYPE_SERVER;
+                        sess->spref->type = TYPE_SERVER;
                     else if (!strcasecmp (tmp, "peer"))
                     {
-                        newsess->spref->type = TYPE_PEER;
+                        sess->spref->type = TYPE_PEER;
                         if (oldsess->spref->type & TYPE_SERVER)
                         {
-                            oldsess->assoc = newsess;
-                            newsess->assoc = oldsess;
+                            oldsess->assoc = sess;
+                            sess->assoc = oldsess;
                         }
                     }
                     else
@@ -767,31 +549,31 @@ void Read_RC_File (FD_T rcf)
                     if (!tmp)
                         continue;
                     if (!strcasecmp (tmp, "auto"))
-                        newsess->spref->type |= TYPE_AUTOLOGIN;
+                        sess->spref->type |= TYPE_AUTOLOGIN;
                 }
                 else if (!strcasecmp (tmp, "version"))
                 {
-                    newsess->spref->version = atoi (strtok (NULL, " \n\t"));
+                    sess->spref->version = atoi (strtok (NULL, " \n\t"));
                 }
                 else if (!strcasecmp (tmp, "server"))
                 {
-                    newsess->spref->server = M_strdup (strtok (NULL, " \n\t"));
+                    sess->spref->server = M_strdup (strtok (NULL, " \n\t"));
                 }
                 else if (!strcasecmp (tmp, "port"))
                 {
-                    newsess->spref->port = atoi (strtok (NULL, " \n\t"));
+                    sess->spref->port = atoi (strtok (NULL, " \n\t"));
                 }
                 else if (!strcasecmp (tmp, "uin"))
                 {
-                    newsess->spref->uin = atoi (strtok (NULL, " \n\t"));
+                    sess->spref->uin = atoi (strtok (NULL, " \n\t"));
                 }
                 else if (!strcasecmp (tmp, "password"))
                 {
-                    newsess->spref->passwd = M_strdup (strtok (NULL, "\n\t"));
+                    sess->spref->passwd = M_strdup (strtok (NULL, "\n\t"));
                 }
                 else if (!strcasecmp (tmp, "status"))
                 {
-                    newsess->spref->status = atoi (strtok (NULL, " \n\t"));
+                    sess->spref->status = atoi (strtok (NULL, " \n\t"));
                 }
                 else
                     printf ("Bad line in section 3: %s\n", buf);
@@ -801,18 +583,18 @@ void Read_RC_File (FD_T rcf)
     if (dep & 2)
     {
         mkdir (PrefUserDir (), 0700);
-        oldsess = newsess;
-        newsess = SessionC ();
-        newsess->spref = PreferencesSessionC ();
+        oldsess = sess;
+        sess = SessionC ();
+        sess->spref = PreferencesSessionC ();
         
-        oldsess->assoc = newsess;
-        newsess->assoc = oldsess;
+        oldsess->assoc = sess;
+        sess->assoc = oldsess;
         
         oldsess->spref->version = 5;
         oldsess->spref->type = TYPE_SERVER | TYPE_AUTOLOGIN;
         
-        newsess->spref->version = 6;
-        newsess->spref->type = TYPE_PEER | TYPE_AUTOLOGIN;
+        sess->spref->version = 6;
+        sess->spref->type = TYPE_PEER | TYPE_AUTOLOGIN;
     }
 
     /* now tab the nicks we may have spooled earlier */
@@ -840,16 +622,28 @@ void Read_RC_File (FD_T rcf)
         strcat (prG->logplace, "history/");
     }
 
-    assert (newsess);
-    assert (newsess->spref);
+    assert (sess);
+    assert (sess->spref);
 
-    if (prG->verbose)
+    for (i = 0; (sess = SessionNr (i)); i++)
     {
-        M_print (i18n (189, "UIN = %ld\n"),    newsess->spref->uin);
-        M_print (i18n (190, "port = %ld\n"),   newsess->spref->port);
-        M_print (i18n (191, "passwd = %s\n"),  newsess->spref->passwd);
-        M_print (i18n (192, "server = %s\n"),  newsess->spref->server);
-        M_print (i18n (193, "status = %ld\n"), prG->status);
+        sess->server_port = sess->spref->port;
+        sess->server = sess->spref->server;
+        sess->passwd = sess->spref->passwd;
+        sess->status = sess->spref->status;
+        sess->uin = sess->spref->uin;
+        sess->ver = sess->spref->version;
+        if (sess->spref->type & TYPE_SERVER)
+            oldsess = sess;
+    }
+
+    if (prG->verbose && oldsess)
+    {
+        M_print (i18n (189, "UIN = %ld\n"),    oldsess->spref->uin);
+        M_print (i18n (190, "port = %ld\n"),   oldsess->spref->port);
+        M_print (i18n (191, "passwd = %s\n"),  oldsess->spref->passwd);
+        M_print (i18n (192, "server = %s\n"),  oldsess->spref->server);
+        M_print (i18n (193, "status = %ld\n"), oldsess->spref->status);
         M_print (i18n (196, "Message_cmd = %s\n"), CmdUserLookupName ("msg"));
         M_print ("flags: %08x\n", prG->flags);
     }
@@ -873,10 +667,10 @@ int Save_RC (Session *sess)
     rcf = open (prG->rcfile, O_WRONLY | O_CREAT | O_TRUNC, 0600);
     if (rcf == -1)
         return -1;
-    M_fdprint (rcf, "# This file was generated by Micq of %s %s\n", __TIME__, __DATE__);
+    M_fdprint (rcf, "# This file was generated by mICQ of %s %s\n", __TIME__, __DATE__);
     t = time (NULL);
     M_fdprint (rcf, "# This file was generated on %s", ctime (&t));
-    M_fdprint (rcf, "# Micq version " MICQ_VERSION "\n");
+    M_fdprint (rcf, "# mICQ version " MICQ_VERSION "\n");
     M_fdprint (rcf, "\n");
     
     for (k = 0; (ss = SessionNr (k)); k++)

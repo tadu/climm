@@ -276,7 +276,7 @@ Packet *UtilIORecvUDP (Session *sess)
     
     if (pak->len <= 4 + s5len)
     {
-        free (pak);
+        PacketD (pak);
         return NULL;
     }
     pak->len -= s5len;

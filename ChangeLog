@@ -1,4 +1,7 @@
 
+2002-03-04 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Implement v8. Can log in, nothing more.
+
 2002-03-02 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* fix ~/.micq/ creation
 

@@ -16,7 +16,7 @@ const char *BuildVersion (void)
         
         snprintf (buf, sizeof (buf), COLSERV "%s" COLNONE " %s " COLSERV MICQ_VERSION COLNONE " (%s " \
                                      __DATE__ " " __TIME__ ")\n%s\n",
-                  i18n (74, "Micq (Matt's ICQ clone)"),
+                  i18n (74, "mICQ (Matt's ICQ clone)"),
                   i18n (75, "version"),
                   i18n (76, "compiled on"),
                   i18n (77, "in dedication to Matthew D. Smith."));

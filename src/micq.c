@@ -16,6 +16,8 @@
 #include "tcp.h"
 #include "msg_queue.h"
 #include "util_io.h"
+#include "cmd_pkt_v8.h"
+#include "cmd_pkt_cmd_v5_util.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -109,8 +111,13 @@ void Idle_Check (Session *sess)
 {
     int tm;
 
-    if (prG->away_time == 0)
+    if (prG->away_time == 0 || !(sess->connect & CONNECT_OK))
         return;
+    if (!idle_val)
+    {
+        idle_val = time (NULL);
+        return;
+    }
     tm = (time (NULL) - idle_val);
     if ((sess->status == STATUS_AWAY || sess->status == STATUS_NA)
         && tm < prG->away_time && idle_flag == 1)
@@ -130,6 +137,7 @@ void Idle_Check (Session *sess)
         M_print (" %s ", i18n (64, "Auto-Changed status to"));
         Print_Status (sess->status);
         M_print ("\n");
+        idle_val = time (NULL);
         return;
     }
     if (sess->status != STATUS_ONLINE && sess->status != STATUS_FREE_CHAT)
@@ -144,6 +152,7 @@ void Idle_Check (Session *sess)
         Print_Status (sess->status);
         M_print ("\n");
         idle_flag = 1;
+        idle_val = time (NULL);
     }
     return;
 }
@@ -152,7 +161,7 @@ void Usage ()
 {
     M_print (i18n (607, "Usage: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]\n"));
     M_print (i18n (608, "        -v   Turn on verbose Mode (useful for Debugging only)\n"));
-    M_print (i18n (609, "        -f   specifies an alternate Config File (default: ~/.micqrc)\n"));
+    M_print (i18n (609, "        -f   specifies an alternate Config File (default: ~/.micq/micqrc)\n"));
     M_print (i18n (610, "        -l   specifies an alternate logfile resp. logdir\n"));
     M_print (i18n (611, "        -?   gives this help screen\n\n"));
     exit (0);
@@ -166,8 +175,6 @@ in a loop waiting for server responses.
 int main (int argc, char *argv[])
 {
     int i, j, rc;
-    int next;
-    int time_delay = 120;
 #ifdef _WIN32
     WSADATA wsaData;
 #endif
@@ -269,8 +276,6 @@ int main (int argc, char *argv[])
             SessionInitPeer (sess);
     }
 
-    next = time (NULL) + 120;
-    idle_val = time (NULL);
     R_init ();
     Prompt ();
     while (!uiG.quit)
@@ -285,8 +290,16 @@ int main (int argc, char *argv[])
 
         M_select_init ();
         for (i = 0; (sess = SessionNr (i)); i++)
-            if (sess->sok != -1)
+        {
+            if (sess->sok < 0 || !sess->dispatch)
+                continue;
+            if (sess->connect & CONNECT_SELECT_R)
                 M_Add_rsocket (sess->sok);
+            if (sess->connect & CONNECT_SELECT_W)
+                M_Add_wsocket (sess->sok);
+            if (sess->connect & CONNECT_SELECT_X)
+                M_Add_xsocket (sess->sok);
+        }
 
 #ifndef _WIN32
         M_Add_rsocket (STDIN);
@@ -314,26 +327,19 @@ int main (int argc, char *argv[])
 
         R_undraw ();
 
-        if (ssG && ssG->sok > 0 && M_Is_Set (ssG->sok))
-            CmdPktSrvRead (ssG);
-
 #ifdef TCP_COMM
         if (ssG)
             TCPDispatch (ssG);
 #endif
 
-
-        if (time (NULL) > next)
+        for (i = 0; (sess = SessionNr (i)); i++)
         {
-            next = time (NULL) + time_delay;
-            CmdPktCmdKeepAlive (ssG);
+            if (sess->sok < 0 || !sess->dispatch || !M_Is_Set (sess->sok))
+                continue;
+            sess->dispatch (sess);
         }
 
         QueueRun (queue);
-
-#if HAVE_FORK
-        while (waitpid (-1, NULL, WNOHANG) > 0);        /* clean up child processes */
-#endif
     }
 
 #ifdef __BEOS__

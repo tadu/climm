@@ -454,7 +454,7 @@ Packet *TCPReceivePacket (tcpsock_t *sok)
     }
     
     if (pak)
-        free (pak);
+        PacketD (pak);
 
     if (prG->verbose)
     {
@@ -660,7 +660,7 @@ tcpsock_t *TCPReceiveInit (tcpsock_t *sok)
             M_print ("\x1b»\n");
         }
 
-        free (pak);
+        PacketD (pak);
         return sok;
     }
     if (prG->verbose)
@@ -862,13 +862,13 @@ void TCPCallBackResend (struct Event *event)
     }
 
     if (event->attempts < MAX_RETRY_ATTEMPTS && PacketReadAt2 (pak, 4) == TCP_CMD_MESSAGE)
-        CmdPktCmdSendMessage (event->sess, cont->uin, PacketReadAtStr (event->pak, 28),
+        CmdPktCmdSendMessage (event->sess, cont->uin, PacketReadAtStrN (event->pak, 28),
                               PacketReadAt2 (pak, 26));
     else
         M_print (i18n (844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4));
     
+    PacketD (event->pak);
     free (event->info);
-    free (event->pak);
     free (event);
 }
 
@@ -931,7 +931,7 @@ void Handle_TCP_Comm (Session *sess, UDWORD uin)
                     if (PacketReadAt2 (pak, 26) == NORM_MESS)
                     {
                         log_event (cont->uin, LOG_MESS, "You sent a TCP message to %s\n%s\n",
-                                   cont->nick, PacketReadAtStr (pak, 28));
+                                   cont->nick, PacketReadAtStrN (pak, 28));
 
                         Time_Stamp ();
                         M_print (" " COLACK "%10s" COLNONE " " MSGTCPACKSTR "%s\n",
@@ -940,14 +940,14 @@ void Handle_TCP_Comm (Session *sess, UDWORD uin)
                     else if (PacketReadAt2 (pak, 26) & TCP_AUTO_RESPONSE_MASK)
                     {
                         M_print (i18n (194, "Auto-response message for %s:\n"), ContactFindNick (cont->uin));
-                        M_print (MESSCOL "%s\n" NOCOL, PacketReadAtStr (pak, 28));
+                        M_print (MESSCOL "%s\n" NOCOL, PacketReadAtStrN (pak, 28));
                     }
                     if (prG->verbose && PacketReadAt2 (pak, 26) != NORM_MESS)
                     {
                         M_print (i18n (806, "Received ACK for message (seq %04X) from %s\n"),
                                  seq_in, cont->nick);
                     }
-                    free (event->pak);
+                    PacketD (event->pak);
                     free (event);
                     break;
                 
@@ -961,7 +961,7 @@ void Handle_TCP_Comm (Session *sess, UDWORD uin)
                         M_print (i18n (807, "Cancelled incoming message (seq %04X) from %s\n"),
                                  seq_in, cont->nick);
                     }
-                    free (event->pak);
+                    PacketD (event->pak);
                     free (event);
                     break;
 
@@ -1021,7 +1021,7 @@ void TCPCallBackReceive (struct Event *event)
             Time_Stamp ();
             M_print ("\a " CYAN BOLD "%10s" COLNONE " ", ContactFindName (cont->uin));
             
-            tmp = PacketReadAtStr (pak, 28);
+            tmp = PacketReadAtStrN (pak, 28);
             Do_Msg (event->sess, PacketReadAt2 (pak, 24), strlen (tmp),
                     tmp, cont->uin, 1);
 
@@ -1031,7 +1031,7 @@ void TCPCallBackReceive (struct Event *event)
             Send_TCP_Ack (event->sess, &cont->sok, PacketReadAt2 (pak, 8),
                           PacketReadAt2 (pak, 22), TRUE);
     }
-    free (pak);
+    PacketD (pak);
     free (event);
 }
 

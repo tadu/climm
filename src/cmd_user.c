@@ -5,6 +5,8 @@
 #include "util_ui.h"
 #include "util_table.h"
 #include "cmd_pkt_cmd_v5.h"
+#include "cmd_pkt_cmd_v5_util.h"
+#include "cmd_pkt_v8.h"
 #include "preferences.h"
 #include "tabs.h"
 #include "file_util.h"
@@ -26,7 +28,7 @@ static jump_f
     CmdUserTogIgnore, CmdUserTogVisible, CmdUserAdd, CmdUserRInfo,
     CmdUserAuth, CmdUserURL, CmdUserSave, CmdUserTabs, CmdUserLast,
     CmdUserUptime, CmdUserSearch, CmdUserWpSearch, CmdUserUpdate,
-    CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserTCP;
+    CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserTCP, CmdUserConn;
 
 static void CmdUserProcess (Session *sess, const char *command, int *idle_val, int *idle_flag);
 
@@ -83,6 +85,7 @@ static jump_t jump[] = {
     { &CmdUserUpdate,        "update",       NULL, 0,   0 },
     { &CmdUserOther,         "other",        NULL, 0,   0 },
     { &CmdUserAbout,         "about",        NULL, 0,   0 },
+    { &CmdUserConn,          "conn",         NULL, 0,   0 },
 
     { NULL, NULL, NULL, 0 }
 };
@@ -178,7 +181,7 @@ JUMP_F(CmdUserRandom)
         M_print (i18n (712, "50+                        9\n"));
         M_print (i18n (713, "Man chat requesting women 10\n"));
         M_print (i18n (714, "Woman chat requesting men 11\n"));
-        M_print (i18n (715, "Micq                      49 (might not work but try it)"));
+        M_print (i18n (715, "mICQ                      49 (might not work but try it)"));
         M_print (COLNONE "\n");
     }
     else
@@ -209,7 +212,7 @@ JUMP_F(CmdUserRandomSet)
         M_print (i18n (712, "50+                        9\n"));
         M_print (i18n (713, "Man chat requesting women 10\n"));
         M_print (i18n (714, "Woman chat requesting men 11\n"));
-        M_print (i18n (715, "Micq                      49 (might not work but try it)"));
+        M_print (i18n (715, "mICQ                      49 (might not work but try it)"));
         M_print (COLNONE "\n");
     }
     else
@@ -304,7 +307,7 @@ JUMP_F(CmdUserHelp)
                  CmdUserLookupName ("resend"),
                  i18n (770, "Resend your last message to a new uin."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", "uptime", 
-                 i18n (719, "Shows how long Micq has been running."));
+                 i18n (719, "Shows how long mICQ has been running."));
         M_print ("  " COLCLIENT "\x1b«%s\x1b»" COLNONE "\n",
                  i18n (720, "uin can be either a number or the nickname of the user."));
         M_print ("  " COLCLIENT "\x1b«%s\x1b»" COLNONE "\n",
@@ -1851,7 +1854,7 @@ JUMP_F(CmdUserUptime)
     TimeDiff = TimeDiff / 24.0;
     Days = TimeDiff;
 
-    M_print ("%s ", i18n (687, "Micq has been running for"));
+    M_print ("%s ", i18n (687, "mICQ has been running for"));
     if (Days != 0)
         M_print (COLMESS "%02d" COLNONE "%s, ", Days, i18n (688, "days"));
     if (Hours != 0)
@@ -1871,6 +1874,63 @@ JUMP_F(CmdUserUptime)
     M_print ("%s " COLMESS "%d" COLNONE "\n", i18n (698, "Distinct packets received:"), sess->stat_real_pak_rcvd);
     return 0;
 }
+
+/*
+ * List connections, and open/close them.
+ */
+JUMP_F(CmdUserConn)
+{
+    char *arg1;
+    int i;
+    Session *sess;
+
+    arg1 = strtok (args, " \t\n");
+    if (!arg1)
+    {
+        M_print (i18n (887, "Connections:"));
+        M_print ("\n  " ESC "«");
+        
+        for (i = 0; (sess = SessionNr (i)); i++)
+        {
+            M_print (i18n (888, "%s version %d for %d at %s:%d\n"),
+                     sess->spref->type & TYPE_SERVER ? i18n (889, "server") : i18n (890, "peer-to-peer"),
+                     sess->ver, sess->uin, sess->server, sess->server_port);
+        } 
+        M_print (ESC "»\n");
+    }
+    else if (!strcmp (arg1, "login") || !strcmp (arg1, "open"))
+    {
+        i = atoi (strtok (NULL, "\n"));
+        sess = SessionNr (i - 1);
+        if (!sess)
+        {
+            M_print (i18n (894, "There is no connection number %d.\n"), i);
+            return 0;
+        }
+        if (sess->connect & CONNECT_OK)
+        {
+            M_print (i18n (891, "Connection %d is already open.\n"), i);
+            return 0;
+        }
+
+        if (sess->spref->type & TYPE_SERVER)
+        {
+            if (sess->spref->version <= 5)
+                SessionInitServerV5 (sess);
+            else
+                SessionInitServer (sess);
+        }
+        else
+            SessionInitPeer (sess);
+    }
+    else
+    {
+        M_print (i18n (892, "conn             List available connections.\n"));
+        M_print (i18n (893, "conn login <nr>  Open connection <nr>.\n"));
+    }
+    return 0;
+}
+
 
 /*
  * Exits mICQ.

@@ -17,6 +17,7 @@
 #include <string.h>
 #include <assert.h>
 #include <stdio.h>
+#include <errno.h>
 #include <netinet/in.h> /* for htonl, htons */
 
 static UDWORD Gen_Checksum (const Packet *pak);
@@ -126,10 +127,7 @@ void PacketEnqueuev5 (Packet *pak, Session *sess)
                           pak, NULL, &UDPCallBackResend);
     }
     else
-    {
-        Debug (64, "--> %p %s", pak, i18n (860, "freeing (is-ack) packet"));
-        free (pak);
-    }
+        PacketD (pak);
 }
 
 void SessionInitServerV5 (Session *sess)
@@ -140,12 +138,6 @@ void SessionInitServerV5 (Session *sess)
         return;
     }
     
-    sess->server      = sess->spref->server;
-    sess->server_port = sess->spref->port;
-    sess->uin         = sess->spref->uin;
-    sess->passwd      = sess->spref->passwd;
-    sess->ver         = sess->spref->version;
-
     if (!sess->server || !strlen (sess->server))
         sess->server = "icq.icq.com";
     if (!sess->server_port)
@@ -166,6 +158,8 @@ void SessionInitServerV5 (Session *sess)
 void CallBackServerInitV5 (struct Event *event)
 {
     Session *sess = event->sess;
+    int rc;
+
     free (event);
     
     if (sess->assoc && !sess->our_port)
@@ -174,6 +168,8 @@ void CallBackServerInitV5 (struct Event *event)
         QueueEnqueue (queue, event);
         return;
     }
+    
+    M_print (i18n (52, "Opening v5 connection to %s:%d... "), sess->server, sess->server_port);
     
     if (sess->sok < 0)
     {
@@ -185,17 +181,19 @@ void CallBackServerInitV5 (struct Event *event)
         if (sess->sok == -1 || sess->sok == 0)
 #endif
         {
-            M_print (i18n (52, "Couldn't establish connection for this session.\n"));
+            rc = errno;
+            M_print (i18n (876, "failed: %s (%d)\n"), strerror (rc), rc);
+            sess->connect = 0;
             sess->sok = -1;
             return;
         }
     }
+    M_print (i18n (877, "ok.\n"));
     sess->our_seq2    = 0;
+    sess->connect = 1 | CONNECT_SELECT_R;
+    sess->dispatch = &CmdPktSrvRead;
     CmdPktCmdLogin (sess);
 }
-
-
-
 
 /**
  ** Wrinkling the packet
@@ -308,7 +306,7 @@ void PacketSendv5 (const Packet *pak, Session *sess)
 
     cpak = Wrinkle (pak);
     UtilIOSend (sess, cpak);
-    free (cpak);
+    PacketD (cpak);
 }
 
 /*
@@ -328,9 +326,7 @@ void UDPCallBackResend (struct Event *event)
         M_print (i18n (856, "Discarded a %04x (%s) packet from old session %08x (current: %08x).\n"),
                  cmd, CmdPktSrvName (cmd),
                  session, event->sess->our_session);
-
-        Debug (64, "--> %p (^%p ^-%p) %s", event->pak, event, event->info, i18n (861, "freeing (old) packet"));
-        free (event->pak);
+        PacketD (pak);
         if (event->info)
             free (event->info);
         free (event);
@@ -396,8 +392,7 @@ void UDPCallBackResend (struct Event *event)
         }
         M_print ("\n");
 
-        Debug (64, "--> %p (^%p ^-%p) %s", event->pak, event, event->info, i18n (862, "freeing (disc) packet"));
-        free (event->pak);
+        PacketD (event->pak);
         if (event->info)
             free (event->info);
         free (event);
