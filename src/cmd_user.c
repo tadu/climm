@@ -1156,10 +1156,12 @@ static JUMP_F (CmdUserAnyMess)
 #endif
     else
     {
-        if (conn->type == TYPE_SERVER)
+        if (conn->type != TYPE_SERVER)
+            CmdPktCmdSendMessage (conn, cont->uin, arg1, data >> 2);
+        else if (f != 2)
             SnacCliSendmsg (conn, cont->uin, arg1, data >> 2, f);
         else
-            CmdPktCmdSendMessage (conn, cont->uin, arg1, data >> 2);
+            SnacCliSendmsg2 (conn, cont, ExtraSet (NULL, EXTRA_MESSAGE, data >> 2, arg1));
     }
     return 0;
 }
@@ -2405,7 +2407,7 @@ static JUMP_F(CmdUserAdd)
             if ((cont2 = ContactFind (conn->contacts, 0, cont->uin, arg1, 0)))
                 M_printf (i18n (2146, "'%s' is already an alias for '%s' (%ld).\n"),
                          cont2->nick, cont->nick, cont->uin);
-            else if ((cont2 = ContactFind (conn->contacts, 0, 0, arg1, 1)))
+            else if ((cont2 = ContactFind (conn->contacts, 0, 0, arg1, 0)))
                 M_printf (i18n (2147, "'%s' (%ld) is already used as a nick.\n"),
                          cont2->nick, cont2->uin);
             else
