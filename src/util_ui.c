@@ -217,40 +217,40 @@ void UtilUIDisplayMeta (Contact *cont)
     if ((ml = cont->meta_interest))
     {
         M_printf (COLSERVER "%-15s" COLNONE "\n", i18n (1875, "Personal interests:"));
-        for ( ; ml; ml = ml->meta_list)
+        for ( ; ml; ml = ml->more)
         {
             if (!ml->description)
                 continue;
-            if ((tabd = TableGetInterest (ml->type)))
+            if ((tabd = TableGetInterest (ml->data)))
                 M_printf ("  %s: %s\n", tabd, ml->description);
             else
-                M_printf ("  %d: %s\n", ml->type, ml->description);
+                M_printf ("  %d: %s\n", ml->data, ml->description);
         }
     }
     if ((ml = cont->meta_background))
     {
         M_printf (COLSERVER "%-15s" COLNONE "\n", i18n (1876, "Personal past background:"));
-        for ( ; ml; ml = ml->meta_list)
+        for ( ; ml; ml = ml->more)
         {
             if (!ml->description)
                 continue;
-            if ((tabd = TableGetPast (ml->type)))
+            if ((tabd = TableGetPast (ml->data)))
                 M_printf ("  %s: %s\n", tabd, ml->description);
             else
-                M_printf ("  %d: %s\n", ml->type, ml->description);
+                M_printf ("  %d: %s\n", ml->data, ml->description);
         }
     }
     if ((ml = cont->meta_affiliation))
     {
         M_printf (COLSERVER "%-15s" COLNONE "\n", i18n (1879, "Affiliations:"));
-        for ( ; ml; ml = ml->meta_list)
+        for ( ; ml; ml = ml->more)
         {
             if (!ml->description)
                 continue;
-            if ((tabd = TableGetAffiliation (ml->type)))
+            if ((tabd = TableGetAffiliation (ml->data)))
                 M_printf ("  %s: %s\n", tabd, ml->description);
             else
-                M_printf ("  %d: %s\n", ml->type, ml->description);
+                M_printf ("  %d: %s\n", ml->data, ml->description);
         }
     }
     if ((mo = CONTACT_OBSOLETE (cont)))

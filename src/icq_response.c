@@ -36,9 +36,20 @@
 
 #define s_read(s) do { char *data = PacketReadLNTS (pak); s_repl (&s, c_in (data)); free (data); } while (0)
 
-static BOOL Meta_Read_List (Packet *pak, MetaList **list)
+void Meta_Free (MetaList *extra)
 {
     MetaList *tmp;
+    while (extra)
+    {
+        tmp = extra->more;
+        s_free (extra->description);
+        free (extra);
+        extra = tmp;
+    }
+}
+
+static BOOL Meta_Read_List (Packet *pak, MetaList **list)
+{
     UBYTE i, j;
     
     i = PacketRead1 (pak);
@@ -51,13 +62,8 @@ static BOOL Meta_Read_List (Packet *pak, MetaList **list)
         if ((*list)->data || *(*list)->description)
             list = &(*list)->more;
     }
-    while (*list)
-    {
-        tmp = (*list)->more;
-        s_free ((*list)->description);
-        free (*list);
-        *list = tmp;
-    }
+    Meta_Free (*list);
+    *list = NULL;
     return TRUE;
 }
 

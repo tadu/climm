@@ -36,6 +36,7 @@ struct Connection_s;
 struct Preferences_s;
 struct ConnectionPreferences_s;
 struct Cap_s;
+struct ContactMetaList_s;
 
 typedef struct Queue_s                 Queue;
 typedef struct Event_s                 Event;
@@ -45,6 +46,7 @@ typedef struct Connection_s            Connection;
 typedef struct Preferences_s           Preferences;
 typedef struct PreferencesConnection_s PreferencesConnection;
 typedef struct Cap_s                   Cap;
+typedef struct ContactMetaList_s       MetaList;
 
 #include "datatype.h"
 #include <stdlib.h>
