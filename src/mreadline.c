@@ -380,10 +380,10 @@ void R_process_input_tab (void)
     int gotmatch = 0;
 
     msgcmd = CmdUserLookupName ("r");
-    if (strncmp (s, msgcmd, strlen (msgcmd)) && s[strlen (msgcmd)] == ' ')
+    if (msgcmd && *msgcmd && strncmp (s, msgcmd, strlen (msgcmd)) && s[strlen (msgcmd)] == ' ')
         return;
     msgcmd = CmdUserLookupName ("a");
-    if (strncmp (s, msgcmd, strlen (msgcmd)) && s[strlen (msgcmd)] == ' ')
+    if (msgcmd && *msgcmd && strncmp (s, msgcmd, strlen (msgcmd)) && s[strlen (msgcmd)] == ' ')
         return;
     msgcmd = CmdUserLookupName ("msg");
 
