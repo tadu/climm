@@ -29,8 +29,8 @@
 1029:Por favor ingrese SI o NO!
 1030:se desconectó
 1031:se conectó
-#1032:debug: Doppeltes Packet #%04x vom Typ %04x (%s)¶
-#1033:Incoming v8 server packet:
+1032:debug: Doppeltes Packet #%04x vom Typ %04x (%s)¶
+1033:Incoming v8 server packet:
 1034:Se alcanzó el numero maximo de reintentos, descartando.
 1035:cambio el estado a
 1036:Comando %s desconocido, escribir /help para ver la ayuda.
@@ -281,7 +281,7 @@
 1300:India
 1301:Indonesia
 1302:INMARSAT
-1303:INMARSAT Atlantic-East
+1303:INMARSAT Atlantico-Este
 1304:Iran
 1305:Iraq
 1306:Irlanda
@@ -538,7 +538,7 @@
 1578:Ingresa el código telefónico de tu país:
 1579:Ingresa tu compañia: 
 1584:Alerta! El comando de script '%s' falló con valor %d¶
-#1585:Ack!!!!!!!  Bad packet¶
+1585:Ack!!!!!!!  Bad packet¶
 1587:Ingresa tu departamento/area: 
 1590:te pidió autorización para agregarte a su lista de contactos.
 1591:Motivo:
@@ -555,7 +555,7 @@
 1603:Ingresa tu posición/puesto: 
 1604:Deberian estar conectados los usuarios?
 1605:Queres que tu estado sea visible desde la web? (SI/NO)
-#1606:Got a bad session ID %08x (correct: %08x) with cmd %04x ignored.¶
+1606:Got a bad session ID %08x (correct: %08x) with cmd %04x ignored.¶
 1607:Usao: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]¶
 1608:        -v   Activa el modo verbose (solo util para debugging)¶
 1609:        -f   especifica un archivo de configuración alternativo (si no se especifica, ~/.micq/micqrc)¶
@@ -581,8 +581,8 @@
 1640:Error actualizando la información.¶
 1641:La información se actualizó con exito.¶
 1642:IP
-#1643:Acknowleged SRV_X1 0x021C Done Contact list?¶
-#1644:Acknowleged SRV_X2 0x00E6 Done old messages?¶
+1643:Acknowleged SRV_X1 0x021C Done Contact list?¶
+1644:Acknowleged SRV_X2 0x00E6 Done old messages?¶
 1645:Ingresaste una clave incorrecta.¶
 1646:El servidor se encuentra ocupado.¶
 1648:La respuesta fue %04X	
@@ -748,11 +748,11 @@
 1877:ok.¶
 1878:Error leyendo del socket: %s (%d)¶
 1879:Afiliaciones:
-#1880:Incoming packet is not a FLAP: id is %d.¶
-#1881:FLAP channel 1 out of data.¶
-#1882:FLAP channel 1 cmd 1 extra data:¶
-#1883:FLAP channel 1 unknown command %d.¶
-#1884:FLAP with unknown channel %d received.¶
+1880:Incoming packet is not a FLAP: id is %d.¶
+1881:FLAP channel 1 out of data.¶
+1882:FLAP channel 1 cmd 1 extra data:¶
+1883:FLAP channel 1 unknown command %d.¶
+1884:FLAP with unknown channel %d received.¶
 1885:Timeout en conexión v8.¶
 1887:Conexiónes:
 1888:No disponible en la web
@@ -772,17 +772,17 @@
 1902:Abriendo conexión v5 a %s:%d... 
 1903:Mensaje saliente v8 al servidor:
 1904:El servidor no comprende ver %d (solo %d) para la familia %d!¶
-#1905:SNAC (%x,%x) [%s] flags %x ref %x¶
+1905:SNAC (%x,%x) [%s] flags %x ref %x¶
 1907:Alerta: el servidor cree que nuestro UIN is %d, cuando en realidad es %d.¶
-#1908:Received USERONLINE packet for non-contact.¶
-#1909:Received USEROFFLINE packet for non-contact.¶
-#1910:FLAP seq %08x length %04x channel %d¶
+1908:Received USERONLINE packet for non-contact.¶
+1909:Received USEROFFLINE packet for non-contact.¶
+1910:FLAP seq %08x length %04x channel %d¶
 1911:conectando
 1912:cerrado
-#1914:Can't allocate connection structure.¶
+1914:Can't allocate connection structure.¶
 1915:El servidor dice que estamos en %s.¶
-#1918:Ignored server request for a minimum report interval of %d.¶
-#1919:UIN mismatch: %d vs %d.¶
+1918:Ignored server request for a minimum report interval of %d.¶
+1919:UIN mismatch: %d vs %d.¶
 1920:Registración de un nuevo UIN rechazada.¶
 1921:Conectado
 1922:No molestar
@@ -795,7 +795,7 @@
 1930:No se puede mandar esto (%x) todavia.¶
 1931:No se pudo encontrar la conexión con el servidor.¶
 1934:conectado
-#1935:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x¶
+1935:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x¶
 1936:Ingresa la edad minima (18-22,23-29,30-39,40-49,50-59,60-120):
 1937:Ingresa la edad maxima (22,29,39,49,59,120):
 1938:Ingresa el genero:
@@ -897,7 +897,7 @@
 2050:Se importaron %d contactos.¶
 2051:Error en socket: %s (%d)¶
 2052:Aceptando archivo '%s' (%d bytes) de %s.¶
-#2053:TCP %s seq %x type %x status %x flags %x: '%s'¶
+2053:TCP %s seq %x type %x status %x flags %x: '%s'¶
 2054:El mensaje del modo "libre para hablar" es:
 2055:El usuario esta "libre para hablar" y quiere hablar de cualquier cosa.
 2056:    auto  <nick> - Obtiene la respuesta automatica del contacto.¶
@@ -908,8 +908,8 @@
 2061:Pedido de transferencia del archivo '%s' (%d bytes) de %s (desconocido: %x, %x) rechazado¶
 2063:Necesitas guardar tu clave en tu archivo ~/.micq/micqrc.¶
 2064:Rechazando pedido de chat (%s/%s/%s) de %s.¶
-#2065:Unknown TCP_MSG_GREET_ command %04x.¶
-#2066:Unknown TCP_MSG_ command %04x.¶
+2065:Unknown TCP_MSG_GREET_ command %04x.¶
+2066:Unknown TCP_MSG_ command %04x.¶
 2067:entrada y salida de archivos
 2068:Abriendo transferencia de archivo a %s:%d... ¶
 2069:La transferencia de archivo '%s' fue rechazada por el par (%x,%x): %s.¶
@@ -917,10 +917,10 @@
 2071:No se pudo efectuar stat sobre el archivo %s: %s (%d)¶
 2072:Cerrando la transferencia de archivos %d (%s) debido a que se cerro la conexión.¶
 2073:Uso de memoria: %d paquetes en proceso.¶
-#2078:Outgoing TCP packet (%d - %s): %s
-#2079:Incoming TCP packet (%d - %s): %s
+2078:Outgoing TCP packet (%d - %s): %s
+2079:Incoming TCP packet (%d - %s): %s
 2080:El servidor responde acerca del envio de mensaje SMS:¶%s¶
-#2081:    at %p parent %p assoc %p¶
+2081:    at %p parent %p assoc %p¶
 2082:Abriendo conexion en espera de archivos en localhost:%d... 
 2083:No se pudo abrir el archivo %s: %s (%d).¶
 2084:Error moviendo al offset %d: %s (%d).¶
@@ -931,8 +931,8 @@
 2089:conexión en espera de archivos
 2090:conexión par-a-par de archivos
 2091:Agregando %s como %s a la lista de transferencias.¶
-#2092:TCP message %s discarded - lost session.¶
-#2093:%02d %-12s version %d for %s (%x), at %s:%d %s¶
+2092:TCP message %s discarded - lost session.¶
+2093:%02d %-12s version %d for %s (%x), at %s:%d %s¶
 2094:conn login         Abre la primer conexión con el servidor.¶
 2095:conn remove <nr>   Remueve la conexión numero <nr>.¶
 2096:La conexion %d no esta abierta.¶
