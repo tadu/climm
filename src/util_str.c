@@ -790,7 +790,7 @@ BOOL s_parserem_s (const char **input, char **parsed, const char *sep)
                 p++;
                 *q = (*p >= '0' && *p <= '9' ? *p - '0' : *p >= 'a' && *p <= 'f' ? *p - 'a' + 10 : *p - 'A' + 10) << 4;
                 p++;
-                *q = *p >= '0' && *p <= '9' ? *p - '0' : *p >= 'a' && *p <= 'f' ? *p - 'a' + 10 : *p - 'A' + 10;
+                *q |= *p >= '0' && *p <= '9' ? *p - '0' : *p >= 'a' && *p <= 'f' ? *p - 'a' + 10 : *p - 'A' + 10;
                 p++, q++;
             }
             else if (*p)
@@ -937,7 +937,7 @@ const char *s_cquote (const char *input, const char *color)
     const char *tmp;
     
     if (!input || !*input)
-        return "";
+        return "\"\"";
     s_init (&t, "", 100);
 
     for (tmp = input; *tmp; tmp++)
