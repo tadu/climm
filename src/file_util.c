@@ -168,6 +168,7 @@ void Initalize_RC_File ()
         M_print (i18n (1796, "Setup wizard finished. Please wait until registration has finished.\n"));
         conn = SrvRegisterUIN (NULL, passwd);
         conn->flags = CONN_WIZARD;
+        conn->open = &ConnectionInitServer;
     }
     else
     {
